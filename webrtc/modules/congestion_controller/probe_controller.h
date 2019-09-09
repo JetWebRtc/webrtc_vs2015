@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,62 +17,65 @@
 #include "webrtc/common_types.h"
 #include "webrtc/modules/pacing/paced_sender.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Clock;
 
 // This class controls initiation of probing to estimate initial channel
 // capacity. There is also support for probing during a session when max
 // bitrate is adjusted by an application.
-class ProbeController {
- public:
-  ProbeController(PacedSender* pacer, Clock* clock);
+class ProbeController
+{
+public:
+    ProbeController(PacedSender* pacer, Clock* clock);
 
-  void SetBitrates(int64_t min_bitrate_bps,
-                   int64_t start_bitrate_bps,
-                   int64_t max_bitrate_bps);
+    void SetBitrates(int64_t min_bitrate_bps,
+                     int64_t start_bitrate_bps,
+                     int64_t max_bitrate_bps);
 
-  void OnNetworkStateChanged(NetworkState state);
+    void OnNetworkStateChanged(NetworkState state);
 
-  void SetEstimatedBitrate(int64_t bitrate_bps);
+    void SetEstimatedBitrate(int64_t bitrate_bps);
 
-  void EnablePeriodicAlrProbing(bool enable);
-  void Process();
+    void EnablePeriodicAlrProbing(bool enable);
+    void Process();
 
- private:
-  enum class State {
-    // Initial state where no probing has been triggered yet.
-    kInit,
-    // Waiting for probing results to continue further probing.
-    kWaitingForProbingResult,
-    // Probing is complete.
-    kProbingComplete,
-  };
+private:
+    enum class State
+    {
+        // Initial state where no probing has been triggered yet.
+        kInit,
+        // Waiting for probing results to continue further probing.
+        kWaitingForProbingResult,
+        // Probing is complete.
+        kProbingComplete,
+    };
 
-  void InitiateExponentialProbing() EXCLUSIVE_LOCKS_REQUIRED(critsect_);
-  void InitiateProbing(int64_t now_ms,
-                       std::initializer_list<int64_t> bitrates_to_probe,
-                       bool probe_further) EXCLUSIVE_LOCKS_REQUIRED(critsect_);
+    void InitiateExponentialProbing() EXCLUSIVE_LOCKS_REQUIRED(critsect_);
+    void InitiateProbing(int64_t now_ms,
+                         std::initializer_list<int64_t> bitrates_to_probe,
+                         bool probe_further) EXCLUSIVE_LOCKS_REQUIRED(critsect_);
 
-  rtc::CriticalSection critsect_;
-  PacedSender* const pacer_;
-  Clock* const clock_;
-  NetworkState network_state_ GUARDED_BY(critsect_);
-  State state_ GUARDED_BY(critsect_);
-  int64_t min_bitrate_to_probe_further_bps_ GUARDED_BY(critsect_);
-  int64_t time_last_probing_initiated_ms_ GUARDED_BY(critsect_);
-  int64_t estimated_bitrate_bps_ GUARDED_BY(critsect_);
-  int64_t start_bitrate_bps_ GUARDED_BY(critsect_);
-  int64_t max_bitrate_bps_ GUARDED_BY(critsect_);
-  int64_t last_alr_probing_time_ GUARDED_BY(critsect_);
-  bool enable_periodic_alr_probing_ GUARDED_BY(critsect_);
+    rtc::CriticalSection critsect_;
+    PacedSender* const pacer_;
+    Clock* const clock_;
+    NetworkState network_state_ GUARDED_BY(critsect_);
+    State state_ GUARDED_BY(critsect_);
+    int64_t min_bitrate_to_probe_further_bps_ GUARDED_BY(critsect_);
+    int64_t time_last_probing_initiated_ms_ GUARDED_BY(critsect_);
+    int64_t estimated_bitrate_bps_ GUARDED_BY(critsect_);
+    int64_t start_bitrate_bps_ GUARDED_BY(critsect_);
+    int64_t max_bitrate_bps_ GUARDED_BY(critsect_);
+    int64_t last_alr_probing_time_ GUARDED_BY(critsect_);
+    bool enable_periodic_alr_probing_ GUARDED_BY(critsect_);
 
-  // For WebRTC.BWE.MidCallProbing.* metric.
-  bool mid_call_probing_waiting_for_result_ GUARDED_BY(&critsect_);
-  int64_t mid_call_probing_bitrate_bps_ GUARDED_BY(&critsect_);
-  int64_t mid_call_probing_succcess_threshold_ GUARDED_BY(&critsect_);
+    // For WebRTC.BWE.MidCallProbing.* metric.
+    bool mid_call_probing_waiting_for_result_ GUARDED_BY(&critsect_);
+    int64_t mid_call_probing_bitrate_bps_ GUARDED_BY(&critsect_);
+    int64_t mid_call_probing_succcess_threshold_ GUARDED_BY(&critsect_);
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(ProbeController);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(ProbeController);
 };
 
 }  // namespace webrtc

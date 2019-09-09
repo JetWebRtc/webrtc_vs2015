@@ -1,4 +1,4 @@
-/*
+﻿/*
  * APNG muxer
  * Copyright (c) 2015 Donny Yang
  *
@@ -31,7 +31,8 @@
 #include "libavcodec/png.h"
 #include "libavcodec/apng.h"
 
-typedef struct APNGMuxContext {
+typedef struct APNGMuxContext
+{
     AVClass *class;
 
     uint32_t plays;
@@ -68,7 +69,8 @@ static void apng_write_chunk(AVIOContext *io_context, uint32_t tag,
     AV_WB32(tagbuf, tag);
     crc = av_crc(crc_table, crc, tagbuf, 4);
     avio_wb32(io_context, tag);
-    if (length > 0) {
+    if (length > 0)
+    {
         crc = av_crc(crc_table, crc, buf, length);
         avio_write(io_context, buf, length);
     }
@@ -80,14 +82,16 @@ static int apng_write_header(AVFormatContext *format_context)
     APNGMuxContext *apng = format_context->priv_data;
 
     if (format_context->nb_streams != 1 ||
-        format_context->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
-        format_context->streams[0]->codec->codec_id   != AV_CODEC_ID_APNG) {
+            format_context->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
+            format_context->streams[0]->codec->codec_id   != AV_CODEC_ID_APNG)
+    {
         av_log(format_context, AV_LOG_ERROR,
                "APNG muxer supports only a single video APNG stream.\n");
         return AVERROR(EINVAL);
     }
 
-    if (apng->last_delay.num > USHRT_MAX || apng->last_delay.den > USHRT_MAX) {
+    if (apng->last_delay.num > USHRT_MAX || apng->last_delay.den > USHRT_MAX)
+    {
         av_reduce(&apng->last_delay.num, &apng->last_delay.den,
                   apng->last_delay.num, apng->last_delay.den, USHRT_MAX);
         av_log(format_context, AV_LOG_WARNING,
@@ -110,7 +114,8 @@ static void flush_packet(AVFormatContext *format_context, AVPacket *packet)
 
     av_assert0(apng->prev_packet);
 
-    if (apng->frame_number == 0 && !packet) {
+    if (apng->frame_number == 0 && !packet)
+    {
         uint8_t *existing_acTL_chunk;
         uint8_t *existing_fcTL_chunk;
 
@@ -118,34 +123,44 @@ static void flush_packet(AVFormatContext *format_context, AVPacket *packet)
 
         // Write normal PNG headers without acTL chunk
         existing_acTL_chunk = apng_find_chunk(MKBETAG('a', 'c', 'T', 'L'), codec_context->extradata, codec_context->extradata_size);
-        if (existing_acTL_chunk) {
+        if (existing_acTL_chunk)
+        {
             uint8_t *chunk_after_acTL = existing_acTL_chunk + AV_RB32(existing_acTL_chunk) + 12;
             avio_write(io_context, codec_context->extradata, existing_acTL_chunk - codec_context->extradata);
             avio_write(io_context, chunk_after_acTL, codec_context->extradata + codec_context->extradata_size - chunk_after_acTL);
-        } else {
+        }
+        else
+        {
             avio_write(io_context, codec_context->extradata, codec_context->extradata_size);
         }
 
         // Write frame data without fcTL chunk
         existing_fcTL_chunk = apng_find_chunk(MKBETAG('f', 'c', 'T', 'L'), apng->prev_packet->data, apng->prev_packet->size);
-        if (existing_fcTL_chunk) {
+        if (existing_fcTL_chunk)
+        {
             uint8_t *chunk_after_fcTL = existing_fcTL_chunk + AV_RB32(existing_fcTL_chunk) + 12;
             avio_write(io_context, apng->prev_packet->data, existing_fcTL_chunk - apng->prev_packet->data);
             avio_write(io_context, chunk_after_fcTL, apng->prev_packet->data + apng->prev_packet->size - chunk_after_fcTL);
-        } else {
+        }
+        else
+        {
             avio_write(io_context, apng->prev_packet->data, apng->prev_packet->size);
         }
-    } else {
+    }
+    else
+    {
         uint8_t *existing_fcTL_chunk;
 
-        if (apng->frame_number == 0) {
+        if (apng->frame_number == 0)
+        {
             uint8_t *existing_acTL_chunk;
 
             // Write normal PNG headers
             avio_write(io_context, codec_context->extradata, codec_context->extradata_size);
 
             existing_acTL_chunk = apng_find_chunk(MKBETAG('a', 'c', 'T', 'L'), codec_context->extradata, codec_context->extradata_size);
-            if (!existing_acTL_chunk) {
+            if (!existing_acTL_chunk)
+            {
                 uint8_t buf[8];
                 // Write animation control header
                 apng->acTL_offset = avio_tell(io_context);
@@ -156,26 +171,34 @@ static void flush_packet(AVFormatContext *format_context, AVPacket *packet)
         }
 
         existing_fcTL_chunk = apng_find_chunk(MKBETAG('f', 'c', 'T', 'L'), apng->prev_packet->data, apng->prev_packet->size);
-        if (existing_fcTL_chunk) {
+        if (existing_fcTL_chunk)
+        {
             AVRational delay;
 
             existing_fcTL_chunk += 8;
             delay.num = AV_RB16(existing_fcTL_chunk + 20);
             delay.den = AV_RB16(existing_fcTL_chunk + 22);
 
-            if (delay.num == 0 && delay.den == 0) {
-                if (packet) {
+            if (delay.num == 0 && delay.den == 0)
+            {
+                if (packet)
+                {
                     int64_t delay_num_raw = (packet->dts - apng->prev_packet->dts) * codec_stream->time_base.num;
                     int64_t delay_den_raw = codec_stream->time_base.den;
                     if (!av_reduce(&delay.num, &delay.den, delay_num_raw, delay_den_raw, USHRT_MAX) &&
-                        !apng->framerate_warned) {
+                            !apng->framerate_warned)
+                    {
                         av_log(format_context, AV_LOG_WARNING,
                                "Frame rate is too high or specified too precisely. Unable to copy losslessly.\n");
                         apng->framerate_warned = 1;
                     }
-                } else if (apng->last_delay.num > 0) {
+                }
+                else if (apng->last_delay.num > 0)
+                {
                     delay = apng->last_delay;
-                } else {
+                }
+                else
+                {
                     delay = apng->prev_delay;
                 }
 
@@ -201,13 +224,16 @@ static int apng_write_packet(AVFormatContext *format_context, AVPacket *packet)
 {
     APNGMuxContext *apng = format_context->priv_data;
 
-    if (!apng->prev_packet) {
+    if (!apng->prev_packet)
+    {
         apng->prev_packet = av_malloc(sizeof(*apng->prev_packet));
         if (!apng->prev_packet)
             return AVERROR(ENOMEM);
 
         av_copy_packet(apng->prev_packet, packet);
-    } else {
+    }
+    else
+    {
         flush_packet(format_context, packet);
     }
 
@@ -220,14 +246,16 @@ static int apng_write_trailer(AVFormatContext *format_context)
     AVIOContext *io_context = format_context->pb;
     uint8_t buf[8];
 
-    if (apng->prev_packet) {
+    if (apng->prev_packet)
+    {
         flush_packet(format_context, NULL);
         av_freep(&apng->prev_packet);
     }
 
     apng_write_chunk(io_context, MKBETAG('I', 'E', 'N', 'D'), NULL, 0);
 
-    if (apng->acTL_offset && io_context->seekable) {
+    if (apng->acTL_offset && io_context->seekable)
+    {
         avio_seek(io_context, apng->acTL_offset, SEEK_SET);
 
         AV_WB32(buf, apng->frame_number);
@@ -240,22 +268,29 @@ static int apng_write_trailer(AVFormatContext *format_context)
 
 #define OFFSET(x) offsetof(APNGMuxContext, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
-    { "plays", "Number of times to play the output: 0 - infinite loop, 1 - no loop", OFFSET(plays),
-      AV_OPT_TYPE_INT, { .i64 = 1 }, 0, UINT_MAX, ENC },
-    { "final_delay", "Force delay after the last frame", OFFSET(last_delay),
-      AV_OPT_TYPE_RATIONAL, { .dbl = 0 }, 0, USHRT_MAX, ENC },
+static const AVOption options[] =
+{
+    {
+        "plays", "Number of times to play the output: 0 - infinite loop, 1 - no loop", OFFSET(plays),
+        AV_OPT_TYPE_INT, { .i64 = 1 }, 0, UINT_MAX, ENC
+    },
+    {
+        "final_delay", "Force delay after the last frame", OFFSET(last_delay),
+        AV_OPT_TYPE_RATIONAL, { .dbl = 0 }, 0, USHRT_MAX, ENC
+    },
     { NULL },
 };
 
-static const AVClass apng_muxer_class = {
+static const AVClass apng_muxer_class =
+{
     .class_name = "APNG muxer",
     .item_name  = av_default_item_name,
     .version    = LIBAVUTIL_VERSION_INT,
     .option     = options,
 };
 
-AVOutputFormat ff_apng_muxer = {
+AVOutputFormat ff_apng_muxer =
+{
     .name           = "apng",
     .long_name      = NULL_IF_CONFIG_SMALL("Animated Portable Network Graphics"),
     .mime_type      = "image/png",

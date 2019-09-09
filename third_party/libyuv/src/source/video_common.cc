@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The LibYuv Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,15 +11,17 @@
 #include "libyuv/video_common.h"
 
 #ifdef __cplusplus
-namespace libyuv {
-extern "C" {
+namespace libyuv
+{
+extern "C"
+{
 #endif
 
 #define ARRAY_SIZE(x) (int)(sizeof(x) / sizeof(x[0]))
 
 struct FourCCAliasEntry {
-  uint32 alias;
-  uint32 canonical;
+    uint32 alias;
+    uint32 canonical;
 };
 
 static const struct FourCCAliasEntry kFourCCAliases[] = {
@@ -46,15 +48,18 @@ static const struct FourCCAliasEntry kFourCCAliases[] = {
 //  {FOURCC_BGRA, FOURCC_ARGB},  // kCMPixelFormat_32BGRA
 
 LIBYUV_API
-uint32 CanonicalFourCC(uint32 fourcc) {
-  int i;
-  for (i = 0; i < ARRAY_SIZE(kFourCCAliases); ++i) {
-    if (kFourCCAliases[i].alias == fourcc) {
-      return kFourCCAliases[i].canonical;
+uint32 CanonicalFourCC(uint32 fourcc)
+{
+    int i;
+    for (i = 0; i < ARRAY_SIZE(kFourCCAliases); ++i)
+    {
+        if (kFourCCAliases[i].alias == fourcc)
+        {
+            return kFourCCAliases[i].canonical;
+        }
     }
-  }
-  // Not an alias, so return it as-is.
-  return fourcc;
+    // Not an alias, so return it as-is.
+    return fourcc;
 }
 
 #ifdef __cplusplus

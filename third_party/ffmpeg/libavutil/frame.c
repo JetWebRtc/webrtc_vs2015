@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * This file is part of FFmpeg.
  *
@@ -94,14 +94,17 @@ static void get_frame_defaults(AVFrame *frame)
     memset(frame, 0, sizeof(*frame));
 
     frame->pts                   =
-    frame->pkt_dts               =
-    frame->pkt_pts               = AV_NOPTS_VALUE;
+        frame->pkt_dts               =
+            frame->pkt_pts               = AV_NOPTS_VALUE;
     av_frame_set_best_effort_timestamp(frame, AV_NOPTS_VALUE);
     av_frame_set_pkt_duration         (frame, 0);
     av_frame_set_pkt_pos              (frame, -1);
     av_frame_set_pkt_size             (frame, -1);
     frame->key_frame           = 1;
-    frame->sample_aspect_ratio = (AVRational){ 0, 1 };
+    frame->sample_aspect_ratio = (AVRational)
+    {
+        0, 1
+    };
     frame->format              = -1; /* unknown */
     frame->extended_data       = frame->data;
     frame->color_primaries     = AVCOL_PRI_UNSPECIFIED;
@@ -124,7 +127,8 @@ static void wipe_side_data(AVFrame *frame)
 {
     int i;
 
-    for (i = 0; i < frame->nb_side_data; i++) {
+    for (i = 0; i < frame->nb_side_data; i++)
+    {
         free_side_data(&frame->side_data[i]);
     }
     frame->nb_side_data = 0;
@@ -165,8 +169,10 @@ static int get_video_buffer(AVFrame *frame, int align)
     if ((ret = av_image_check_size(frame->width, frame->height, 0, NULL)) < 0)
         return ret;
 
-    if (!frame->linesize[0]) {
-        for(i=1; i<=align; i+=i) {
+    if (!frame->linesize[0])
+    {
+        for(i=1; i<=align; i+=i)
+        {
             ret = av_image_fill_linesizes(frame->linesize, frame->format,
                                           FFALIGN(frame->width, i));
             if (ret < 0)
@@ -179,7 +185,8 @@ static int get_video_buffer(AVFrame *frame, int align)
             frame->linesize[i] = FFALIGN(frame->linesize[i], align);
     }
 
-    for (i = 0; i < 4 && frame->linesize[i]; i++) {
+    for (i = 0; i < 4 && frame->linesize[i]; i++)
+    {
         int h = FFALIGN(frame->height, 32);
         if (i == 1 || i == 2)
             h = FF_CEIL_RSHIFT(h, desc->log2_chroma_h);
@@ -190,7 +197,8 @@ static int get_video_buffer(AVFrame *frame, int align)
 
         frame->data[i] = frame->buf[i]->data;
     }
-    if (desc->flags & AV_PIX_FMT_FLAG_PAL || desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) {
+    if (desc->flags & AV_PIX_FMT_FLAG_PAL || desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL)
+    {
         av_buffer_unref(&frame->buf[1]);
         frame->buf[1] = av_buffer_alloc(1024);
         if (!frame->buf[1])
@@ -220,7 +228,8 @@ static int get_audio_buffer(AVFrame *frame, int align)
     planes = planar ? channels : 1;
 
     CHECK_CHANNELS_CONSISTENCY(frame);
-    if (!frame->linesize[0]) {
+    if (!frame->linesize[0])
+    {
         ret = av_samples_get_buffer_size(&frame->linesize[0], channels,
                                          frame->nb_samples, frame->format,
                                          align);
@@ -228,31 +237,38 @@ static int get_audio_buffer(AVFrame *frame, int align)
             return ret;
     }
 
-    if (planes > AV_NUM_DATA_POINTERS) {
+    if (planes > AV_NUM_DATA_POINTERS)
+    {
         frame->extended_data = av_mallocz_array(planes,
-                                          sizeof(*frame->extended_data));
+                                                sizeof(*frame->extended_data));
         frame->extended_buf  = av_mallocz_array((planes - AV_NUM_DATA_POINTERS),
-                                          sizeof(*frame->extended_buf));
-        if (!frame->extended_data || !frame->extended_buf) {
+                                                sizeof(*frame->extended_buf));
+        if (!frame->extended_data || !frame->extended_buf)
+        {
             av_freep(&frame->extended_data);
             av_freep(&frame->extended_buf);
             return AVERROR(ENOMEM);
         }
         frame->nb_extended_buf = planes - AV_NUM_DATA_POINTERS;
-    } else
+    }
+    else
         frame->extended_data = frame->data;
 
-    for (i = 0; i < FFMIN(planes, AV_NUM_DATA_POINTERS); i++) {
+    for (i = 0; i < FFMIN(planes, AV_NUM_DATA_POINTERS); i++)
+    {
         frame->buf[i] = av_buffer_alloc(frame->linesize[0]);
-        if (!frame->buf[i]) {
+        if (!frame->buf[i])
+        {
             av_frame_unref(frame);
             return AVERROR(ENOMEM);
         }
         frame->extended_data[i] = frame->data[i] = frame->buf[i]->data;
     }
-    for (i = 0; i < planes - AV_NUM_DATA_POINTERS; i++) {
+    for (i = 0; i < planes - AV_NUM_DATA_POINTERS; i++)
+    {
         frame->extended_buf[i] = av_buffer_alloc(frame->linesize[0]);
-        if (!frame->extended_buf[i]) {
+        if (!frame->extended_buf[i])
+        {
             av_frame_unref(frame);
             return AVERROR(ENOMEM);
         }
@@ -290,9 +306,9 @@ static int frame_copy_props(AVFrame *dst, const AVFrame *src, int force_copy)
     dst->sample_rate            = src->sample_rate;
     dst->opaque                 = src->opaque;
 #if FF_API_AVFRAME_LAVC
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     dst->type                   = src->type;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     dst->pkt_pts                = src->pkt_pts;
     dst->pkt_dts                = src->pkt_dts;
@@ -316,28 +332,35 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
     memcpy(dst->error, src->error, sizeof(dst->error));
 
-    for (i = 0; i < src->nb_side_data; i++) {
+    for (i = 0; i < src->nb_side_data; i++)
+    {
         const AVFrameSideData *sd_src = src->side_data[i];
         AVFrameSideData *sd_dst;
         if (   sd_src->type == AV_FRAME_DATA_PANSCAN
-            && (src->width != dst->width || src->height != dst->height))
+                && (src->width != dst->width || src->height != dst->height))
             continue;
-        if (force_copy) {
+        if (force_copy)
+        {
             sd_dst = av_frame_new_side_data(dst, sd_src->type,
                                             sd_src->size);
-            if (!sd_dst) {
+            if (!sd_dst)
+            {
                 wipe_side_data(dst);
                 return AVERROR(ENOMEM);
             }
             memcpy(sd_dst->data, sd_src->data, sd_src->size);
-        } else {
+        }
+        else
+        {
             sd_dst = av_frame_new_side_data(dst, sd_src->type, 0);
-            if (!sd_dst) {
+            if (!sd_dst)
+            {
                 wipe_side_data(dst);
                 return AVERROR(ENOMEM);
             }
             sd_dst->buf = av_buffer_ref(sd_src->buf);
-            if (!sd_dst->buf) {
+            if (!sd_dst->buf)
+            {
                 wipe_side_data(dst);
                 return AVERROR(ENOMEM);
             }
@@ -350,9 +373,11 @@ FF_ENABLE_DEPRECATION_WARNINGS
     dst->qscale_table = NULL;
     dst->qstride      = 0;
     dst->qscale_type  = 0;
-    if (src->qp_table_buf) {
+    if (src->qp_table_buf)
+    {
         dst->qp_table_buf = av_buffer_ref(src->qp_table_buf);
-        if (dst->qp_table_buf) {
+        if (dst->qp_table_buf)
+        {
             dst->qscale_table = dst->qp_table_buf->data;
             dst->qstride      = src->qstride;
             dst->qscale_type  = src->qscale_type;
@@ -378,7 +403,8 @@ int av_frame_ref(AVFrame *dst, const AVFrame *src)
         return ret;
 
     /* duplicate the frame data if it's not refcounted */
-    if (!src->buf[0]) {
+    if (!src->buf[0])
+    {
         ret = av_frame_get_buffer(dst, 32);
         if (ret < 0)
             return ret;
@@ -391,28 +417,34 @@ int av_frame_ref(AVFrame *dst, const AVFrame *src)
     }
 
     /* ref the buffers */
-    for (i = 0; i < FF_ARRAY_ELEMS(src->buf); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(src->buf); i++)
+    {
         if (!src->buf[i])
             continue;
         dst->buf[i] = av_buffer_ref(src->buf[i]);
-        if (!dst->buf[i]) {
+        if (!dst->buf[i])
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
     }
 
-    if (src->extended_buf) {
+    if (src->extended_buf)
+    {
         dst->extended_buf = av_mallocz_array(sizeof(*dst->extended_buf),
-                                       src->nb_extended_buf);
-        if (!dst->extended_buf) {
+                                             src->nb_extended_buf);
+        if (!dst->extended_buf)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
         dst->nb_extended_buf = src->nb_extended_buf;
 
-        for (i = 0; i < src->nb_extended_buf; i++) {
+        for (i = 0; i < src->nb_extended_buf; i++)
+        {
             dst->extended_buf[i] = av_buffer_ref(src->extended_buf[i]);
-            if (!dst->extended_buf[i]) {
+            if (!dst->extended_buf[i])
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -420,22 +452,26 @@ int av_frame_ref(AVFrame *dst, const AVFrame *src)
     }
 
     /* duplicate extended data */
-    if (src->extended_data != src->data) {
+    if (src->extended_data != src->data)
+    {
         int ch = src->channels;
 
-        if (!ch) {
+        if (!ch)
+        {
             ret = AVERROR(EINVAL);
             goto fail;
         }
         CHECK_CHANNELS_CONSISTENCY(src);
 
         dst->extended_data = av_malloc_array(sizeof(*dst->extended_data), ch);
-        if (!dst->extended_data) {
+        if (!dst->extended_data)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
         memcpy(dst->extended_data, src->extended_data, sizeof(*src->extended_data) * ch);
-    } else
+    }
+    else
         dst->extended_data = dst->data;
 
     memcpy(dst->data,     src->data,     sizeof(src->data));
@@ -530,13 +566,15 @@ int av_frame_make_writable(AVFrame *frame)
         return ret;
 
     ret = av_frame_copy(&tmp, frame);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_frame_unref(&tmp);
         return ret;
     }
 
     ret = av_frame_copy_props(&tmp, frame);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_frame_unref(&tmp);
         return ret;
     }
@@ -560,25 +598,29 @@ AVBufferRef *av_frame_get_plane_buffer(AVFrame *frame, int plane)
     uint8_t *data;
     int planes, i;
 
-    if (frame->nb_samples) {
+    if (frame->nb_samples)
+    {
         int channels = frame->channels;
         if (!channels)
             return NULL;
         CHECK_CHANNELS_CONSISTENCY(frame);
         planes = av_sample_fmt_is_planar(frame->format) ? channels : 1;
-    } else
+    }
+    else
         planes = 4;
 
     if (plane < 0 || plane >= planes || !frame->extended_data[plane])
         return NULL;
     data = frame->extended_data[plane];
 
-    for (i = 0; i < FF_ARRAY_ELEMS(frame->buf) && frame->buf[i]; i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(frame->buf) && frame->buf[i]; i++)
+    {
         AVBufferRef *buf = frame->buf[i];
         if (data >= buf->data && data < buf->data + buf->size)
             return buf;
     }
-    for (i = 0; i < frame->nb_extended_buf; i++) {
+    for (i = 0; i < frame->nb_extended_buf; i++)
+    {
         AVBufferRef *buf = frame->extended_buf[i];
         if (data >= buf->data && data < buf->data + buf->size)
             return buf;
@@ -596,7 +638,7 @@ AVFrameSideData *av_frame_new_side_data(AVFrame *frame,
         return NULL;
 
     tmp = av_realloc(frame->side_data,
-                     (frame->nb_side_data + 1) * sizeof(*frame->side_data));
+    (frame->nb_side_data + 1) * sizeof(*frame->side_data));
     if (!tmp)
         return NULL;
     frame->side_data = tmp;
@@ -605,9 +647,11 @@ AVFrameSideData *av_frame_new_side_data(AVFrame *frame,
     if (!ret)
         return NULL;
 
-    if (size > 0) {
+    if (size > 0)
+    {
         ret->buf = av_buffer_alloc(size);
-        if (!ret->buf) {
+        if (!ret->buf)
+        {
             av_freep(&ret);
             return NULL;
         }
@@ -627,7 +671,8 @@ AVFrameSideData *av_frame_get_side_data(const AVFrame *frame,
 {
     int i;
 
-    for (i = 0; i < frame->nb_side_data; i++) {
+    for (i = 0; i < frame->nb_side_data; i++)
+    {
         if (frame->side_data[i]->type == type)
             return frame->side_data[i];
     }
@@ -640,7 +685,7 @@ static int frame_copy_video(AVFrame *dst, const AVFrame *src)
     int i, planes;
 
     if (dst->width  < src->width ||
-        dst->height < src->height)
+            dst->height < src->height)
         return AVERROR(EINVAL);
 
     planes = av_pix_fmt_count_planes(dst->format);
@@ -664,8 +709,8 @@ static int frame_copy_audio(AVFrame *dst, const AVFrame *src)
     int i;
 
     if (dst->nb_samples     != src->nb_samples ||
-        dst->channels       != src->channels ||
-        dst->channel_layout != src->channel_layout)
+            dst->channels       != src->channels ||
+            dst->channel_layout != src->channel_layout)
         return AVERROR(EINVAL);
 
     CHECK_CHANNELS_CONSISTENCY(src);
@@ -697,9 +742,11 @@ void av_frame_remove_side_data(AVFrame *frame, enum AVFrameSideDataType type)
 {
     int i;
 
-    for (i = 0; i < frame->nb_side_data; i++) {
+    for (i = 0; i < frame->nb_side_data; i++)
+    {
         AVFrameSideData *sd = frame->side_data[i];
-        if (sd->type == type) {
+        if (sd->type == type)
+        {
             free_side_data(&frame->side_data[i]);
             frame->side_data[i] = frame->side_data[frame->nb_side_data - 1];
             frame->nb_side_data--;
@@ -709,15 +756,24 @@ void av_frame_remove_side_data(AVFrame *frame, enum AVFrameSideDataType type)
 
 const char *av_frame_side_data_name(enum AVFrameSideDataType type)
 {
-    switch(type) {
-    case AV_FRAME_DATA_PANSCAN:         return "AVPanScan";
-    case AV_FRAME_DATA_A53_CC:          return "ATSC A53 Part 4 Closed Captions";
-    case AV_FRAME_DATA_STEREO3D:        return "Stereoscopic 3d metadata";
-    case AV_FRAME_DATA_MATRIXENCODING:  return "AVMatrixEncoding";
-    case AV_FRAME_DATA_DOWNMIX_INFO:    return "Metadata relevant to a downmix procedure";
-    case AV_FRAME_DATA_REPLAYGAIN:      return "AVReplayGain";
-    case AV_FRAME_DATA_DISPLAYMATRIX:   return "3x3 displaymatrix";
-    case AV_FRAME_DATA_MOTION_VECTORS:  return "Motion vectors";
+    switch(type)
+    {
+    case AV_FRAME_DATA_PANSCAN:
+        return "AVPanScan";
+    case AV_FRAME_DATA_A53_CC:
+        return "ATSC A53 Part 4 Closed Captions";
+    case AV_FRAME_DATA_STEREO3D:
+        return "Stereoscopic 3d metadata";
+    case AV_FRAME_DATA_MATRIXENCODING:
+        return "AVMatrixEncoding";
+    case AV_FRAME_DATA_DOWNMIX_INFO:
+        return "Metadata relevant to a downmix procedure";
+    case AV_FRAME_DATA_REPLAYGAIN:
+        return "AVReplayGain";
+    case AV_FRAME_DATA_DISPLAYMATRIX:
+        return "3x3 displaymatrix";
+    case AV_FRAME_DATA_MOTION_VECTORS:
+        return "Motion vectors";
     }
     return NULL;
 }

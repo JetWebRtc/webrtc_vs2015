@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD-optimized halfpel functions are compiled twice for rnd/no_rnd
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -138,28 +138,28 @@ static void DEF(put, pixels8_y2)(uint8_t *block, const uint8_t *pixels, ptrdiff_
 static void DEF(avg, pixels16_x2)(uint8_t *block, const uint8_t *pixels, ptrdiff_t line_size, int h)
 {
     MOVQ_BFE(mm6);
-        __asm__ volatile(
-            ".p2align 3                 \n\t"
-            "1:                         \n\t"
-            "movq  (%1), %%mm0          \n\t"
-            "movq  1(%1), %%mm1         \n\t"
-            "movq  (%2), %%mm3          \n\t"
-            PAVGB(%%mm0, %%mm1, %%mm2, %%mm6)
-            PAVGB_MMX(%%mm3, %%mm2, %%mm0, %%mm6)
-            "movq  %%mm0, (%2)          \n\t"
-            "movq  8(%1), %%mm0         \n\t"
-            "movq  9(%1), %%mm1         \n\t"
-            "movq  8(%2), %%mm3         \n\t"
-            PAVGB(%%mm0, %%mm1, %%mm2, %%mm6)
-            PAVGB_MMX(%%mm3, %%mm2, %%mm0, %%mm6)
-            "movq  %%mm0, 8(%2)         \n\t"
-            "add    %3, %1              \n\t"
-            "add    %3, %2              \n\t"
-            "subl   $1, %0              \n\t"
-            "jnz    1b                  \n\t"
-            :"+g"(h), "+S"(pixels), "+D"(block)
-            :"r"((x86_reg)line_size)
-            :"memory");
+    __asm__ volatile(
+        ".p2align 3                 \n\t"
+        "1:                         \n\t"
+        "movq  (%1), %%mm0          \n\t"
+        "movq  1(%1), %%mm1         \n\t"
+        "movq  (%2), %%mm3          \n\t"
+        PAVGB(%%mm0, %%mm1, %%mm2, %%mm6)
+        PAVGB_MMX(%%mm3, %%mm2, %%mm0, %%mm6)
+        "movq  %%mm0, (%2)          \n\t"
+        "movq  8(%1), %%mm0         \n\t"
+        "movq  9(%1), %%mm1         \n\t"
+        "movq  8(%2), %%mm3         \n\t"
+        PAVGB(%%mm0, %%mm1, %%mm2, %%mm6)
+        PAVGB_MMX(%%mm3, %%mm2, %%mm0, %%mm6)
+        "movq  %%mm0, 8(%2)         \n\t"
+        "add    %3, %1              \n\t"
+        "add    %3, %2              \n\t"
+        "subl   $1, %0              \n\t"
+        "jnz    1b                  \n\t"
+        :"+g"(h), "+S"(pixels), "+D"(block)
+        :"r"((x86_reg)line_size)
+        :"memory");
 }
 
 static void DEF(avg, pixels8_y2)(uint8_t *block, const uint8_t *pixels, ptrdiff_t line_size, int h)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -20,11 +20,13 @@
 
 #include "idct.h"
 
-static const struct algo fdct_tab_arch[] = {
+static const struct algo fdct_tab_arch[] =
+{
     { 0 }
 };
 
-static const struct algo idct_tab_arch[] = {
+static const struct algo idct_tab_arch[] =
+{
     { "SIMPLE-ARM",     ff_simple_idct_arm,     FF_IDCT_PERM_NONE },
     { "INT-ARM",        ff_j_rev_dct_arm,       FF_IDCT_PERM_LIBMPEG2 },
 #if HAVE_ARMV5TE

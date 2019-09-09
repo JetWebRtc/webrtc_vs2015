@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -46,26 +46,29 @@
 #include "typedefs.h"
 #include "WelsTask.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
-class CWelsBaseTask : public WelsCommon::IWelsTask {
- public:
-  enum ETaskType {
-    WELS_ENC_TASK_ENCODING = 0,
-    WELS_ENC_TASK_ENCODE_FIXED_SLICE = WELS_ENC_TASK_ENCODING,
-    WELS_ENC_TASK_ENCODE_SLICE_LOADBALANCING = WELS_ENC_TASK_ENCODING,
-    WELS_ENC_TASK_ENCODE_SLICE_SIZECONSTRAINED = WELS_ENC_TASK_ENCODING,
-    WELS_ENC_TASK_UPDATEMBMAP = 1,
-    WELS_ENC_TASK_PREPROCESS = 2,
-    WELS_ENC_TASK_ALL = 3,
-  };
+class CWelsBaseTask : public WelsCommon::IWelsTask
+{
+public:
+    enum ETaskType
+    {
+        WELS_ENC_TASK_ENCODING = 0,
+        WELS_ENC_TASK_ENCODE_FIXED_SLICE = WELS_ENC_TASK_ENCODING,
+        WELS_ENC_TASK_ENCODE_SLICE_LOADBALANCING = WELS_ENC_TASK_ENCODING,
+        WELS_ENC_TASK_ENCODE_SLICE_SIZECONSTRAINED = WELS_ENC_TASK_ENCODING,
+        WELS_ENC_TASK_UPDATEMBMAP = 1,
+        WELS_ENC_TASK_PREPROCESS = 2,
+        WELS_ENC_TASK_ALL = 3,
+    };
 
-  CWelsBaseTask (WelsCommon::IWelsTaskSink* pSink): IWelsTask (pSink) {};
-  virtual ~CWelsBaseTask();
+    CWelsBaseTask (WelsCommon::IWelsTaskSink* pSink): IWelsTask (pSink) {};
+    virtual ~CWelsBaseTask();
 
-  virtual uint32_t GetTaskType() const = 0;
+    virtual uint32_t GetTaskType() const = 0;
 
- private:
+private:
 
 };
 

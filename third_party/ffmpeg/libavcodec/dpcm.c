@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Assorted DPCM codecs
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -43,59 +43,64 @@
 #include "internal.h"
 #include "mathops.h"
 
-typedef struct DPCMContext {
+typedef struct DPCMContext
+{
     int16_t roq_square_array[256];
     int sample[2];                  ///< previous sample (for SOL_DPCM)
     const int8_t *sol_table;        ///< delta table for SOL_DPCM
 } DPCMContext;
 
-static const int16_t interplay_delta_table[] = {
-         0,      1,      2,      3,      4,      5,      6,      7,
-         8,      9,     10,     11,     12,     13,     14,     15,
-        16,     17,     18,     19,     20,     21,     22,     23,
-        24,     25,     26,     27,     28,     29,     30,     31,
-        32,     33,     34,     35,     36,     37,     38,     39,
-        40,     41,     42,     43,     47,     51,     56,     61,
-        66,     72,     79,     86,     94,    102,    112,    122,
-       133,    145,    158,    173,    189,    206,    225,    245,
-       267,    292,    318,    348,    379,    414,    452,    493,
-       538,    587,    640,    699,    763,    832,    908,    991,
-      1081,   1180,   1288,   1405,   1534,   1673,   1826,   1993,
-      2175,   2373,   2590,   2826,   3084,   3365,   3672,   4008,
-      4373,   4772,   5208,   5683,   6202,   6767,   7385,   8059,
-      8794,   9597,  10472,  11428,  12471,  13609,  14851,  16206,
-     17685,  19298,  21060,  22981,  25078,  27367,  29864,  32589,
+static const int16_t interplay_delta_table[] =
+{
+    0,      1,      2,      3,      4,      5,      6,      7,
+    8,      9,     10,     11,     12,     13,     14,     15,
+    16,     17,     18,     19,     20,     21,     22,     23,
+    24,     25,     26,     27,     28,     29,     30,     31,
+    32,     33,     34,     35,     36,     37,     38,     39,
+    40,     41,     42,     43,     47,     51,     56,     61,
+    66,     72,     79,     86,     94,    102,    112,    122,
+    133,    145,    158,    173,    189,    206,    225,    245,
+    267,    292,    318,    348,    379,    414,    452,    493,
+    538,    587,    640,    699,    763,    832,    908,    991,
+    1081,   1180,   1288,   1405,   1534,   1673,   1826,   1993,
+    2175,   2373,   2590,   2826,   3084,   3365,   3672,   4008,
+    4373,   4772,   5208,   5683,   6202,   6767,   7385,   8059,
+    8794,   9597,  10472,  11428,  12471,  13609,  14851,  16206,
+    17685,  19298,  21060,  22981,  25078,  27367,  29864,  32589,
     -29973, -26728, -23186, -19322, -15105, -10503,  -5481,     -1,
-         1,      1,   5481,  10503,  15105,  19322,  23186,  26728,
-     29973, -32589, -29864, -27367, -25078, -22981, -21060, -19298,
+    1,      1,   5481,  10503,  15105,  19322,  23186,  26728,
+    29973, -32589, -29864, -27367, -25078, -22981, -21060, -19298,
     -17685, -16206, -14851, -13609, -12471, -11428, -10472,  -9597,
-     -8794,  -8059,  -7385,  -6767,  -6202,  -5683,  -5208,  -4772,
-     -4373,  -4008,  -3672,  -3365,  -3084,  -2826,  -2590,  -2373,
-     -2175,  -1993,  -1826,  -1673,  -1534,  -1405,  -1288,  -1180,
-     -1081,   -991,   -908,   -832,   -763,   -699,   -640,   -587,
-      -538,   -493,   -452,   -414,   -379,   -348,   -318,   -292,
-      -267,   -245,   -225,   -206,   -189,   -173,   -158,   -145,
-      -133,   -122,   -112,   -102,    -94,    -86,    -79,    -72,
-       -66,    -61,    -56,    -51,    -47,    -43,    -42,    -41,
-       -40,    -39,    -38,    -37,    -36,    -35,    -34,    -33,
-       -32,    -31,    -30,    -29,    -28,    -27,    -26,    -25,
-       -24,    -23,    -22,    -21,    -20,    -19,    -18,    -17,
-       -16,    -15,    -14,    -13,    -12,    -11,    -10,     -9,
-        -8,     -7,     -6,     -5,     -4,     -3,     -2,     -1
+    -8794,  -8059,  -7385,  -6767,  -6202,  -5683,  -5208,  -4772,
+    -4373,  -4008,  -3672,  -3365,  -3084,  -2826,  -2590,  -2373,
+    -2175,  -1993,  -1826,  -1673,  -1534,  -1405,  -1288,  -1180,
+    -1081,   -991,   -908,   -832,   -763,   -699,   -640,   -587,
+    -538,   -493,   -452,   -414,   -379,   -348,   -318,   -292,
+    -267,   -245,   -225,   -206,   -189,   -173,   -158,   -145,
+    -133,   -122,   -112,   -102,    -94,    -86,    -79,    -72,
+    -66,    -61,    -56,    -51,    -47,    -43,    -42,    -41,
+    -40,    -39,    -38,    -37,    -36,    -35,    -34,    -33,
+    -32,    -31,    -30,    -29,    -28,    -27,    -26,    -25,
+    -24,    -23,    -22,    -21,    -20,    -19,    -18,    -17,
+    -16,    -15,    -14,    -13,    -12,    -11,    -10,     -9,
+    -8,     -7,     -6,     -5,     -4,     -3,     -2,     -1
 
 };
 
-static const int8_t sol_table_old[16] = {
-      0x0,  0x1,  0x2,  0x3,  0x6,  0xA,  0xF, 0x15,
+static const int8_t sol_table_old[16] =
+{
+    0x0,  0x1,  0x2,  0x3,  0x6,  0xA,  0xF, 0x15,
     -0x15, -0xF, -0xA, -0x6, -0x3, -0x2, -0x1,  0x0
 };
 
-static const int8_t sol_table_new[16] = {
+static const int8_t sol_table_new[16] =
+{
     0x0,  0x1,  0x2,  0x3,  0x6,  0xA,  0xF,  0x15,
     0x0, -0x1, -0x2, -0x3, -0x6, -0xA, -0xF, -0x15
 };
 
-static const int16_t sol_table_16[128] = {
+static const int16_t sol_table_16[128] =
+{
     0x000, 0x008, 0x010, 0x020, 0x030, 0x040, 0x050, 0x060, 0x070, 0x080,
     0x090, 0x0A0, 0x0B0, 0x0C0, 0x0D0, 0x0E0, 0x0F0, 0x100, 0x110, 0x120,
     0x130, 0x140, 0x150, 0x160, 0x170, 0x180, 0x190, 0x1A0, 0x1B0, 0x1C0,
@@ -117,18 +122,21 @@ static av_cold int dpcm_decode_init(AVCodecContext *avctx)
     DPCMContext *s = avctx->priv_data;
     int i;
 
-    if (avctx->channels < 1 || avctx->channels > 2) {
+    if (avctx->channels < 1 || avctx->channels > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid number of channels\n");
         return AVERROR(EINVAL);
     }
 
     s->sample[0] = s->sample[1] = 0;
 
-    switch(avctx->codec->id) {
+    switch(avctx->codec->id)
+    {
 
     case AV_CODEC_ID_ROQ_DPCM:
         /* initialize square table */
-        for (i = 0; i < 128; i++) {
+        for (i = 0; i < 128; i++)
+        {
             int16_t square = i * i;
             s->roq_square_array[i      ] =  square;
             s->roq_square_array[i + 128] = -square;
@@ -136,7 +144,8 @@ static av_cold int dpcm_decode_init(AVCodecContext *avctx)
         break;
 
     case AV_CODEC_ID_SOL_DPCM:
-        switch(avctx->codec_tag){
+        switch(avctx->codec_tag)
+        {
         case 1:
             s->sol_table = sol_table_old;
             s->sample[0] = s->sample[1] = 0x80;
@@ -184,7 +193,8 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
     bytestream2_init(&gb, avpkt->data, buf_size);
 
     /* calculate output size */
-    switch(avctx->codec->id) {
+    switch(avctx->codec->id)
+    {
     case AV_CODEC_ID_ROQ_DPCM:
         out = buf_size - 8;
         break;
@@ -201,11 +211,13 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
             out = buf_size;
         break;
     }
-    if (out <= 0) {
+    if (out <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "packet is too small\n");
         return AVERROR(EINVAL);
     }
-    if (out % avctx->channels) {
+    if (out % avctx->channels)
+    {
         av_log(avctx, AV_LOG_WARNING, "channels have differing number of samples\n");
     }
 
@@ -216,20 +228,25 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
     output_samples = (int16_t *)frame->data[0];
     samples_end = output_samples + out;
 
-    switch(avctx->codec->id) {
+    switch(avctx->codec->id)
+    {
 
     case AV_CODEC_ID_ROQ_DPCM:
         bytestream2_skipu(&gb, 6);
 
-        if (stereo) {
+        if (stereo)
+        {
             predictor[1] = sign_extend(bytestream2_get_byteu(&gb) << 8, 16);
             predictor[0] = sign_extend(bytestream2_get_byteu(&gb) << 8, 16);
-        } else {
+        }
+        else
+        {
             predictor[0] = sign_extend(bytestream2_get_le16u(&gb), 16);
         }
 
         /* decode the samples */
-        while (output_samples < samples_end) {
+        while (output_samples < samples_end)
+        {
             predictor[ch] += s->roq_square_array[bytestream2_get_byteu(&gb)];
             predictor[ch]  = av_clip_int16(predictor[ch]);
             *output_samples++ = predictor[ch];
@@ -242,13 +259,15 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
     case AV_CODEC_ID_INTERPLAY_DPCM:
         bytestream2_skipu(&gb, 6);  /* skip over the stream mask and stream length */
 
-        for (ch = 0; ch < avctx->channels; ch++) {
+        for (ch = 0; ch < avctx->channels; ch++)
+        {
             predictor[ch] = sign_extend(bytestream2_get_le16u(&gb), 16);
             *output_samples++ = predictor[ch];
         }
 
         ch = 0;
-        while (output_samples < samples_end) {
+        while (output_samples < samples_end)
+        {
             predictor[ch] += interplay_delta_table[bytestream2_get_byteu(&gb)];
             predictor[ch]  = av_clip_int16(predictor[ch]);
             *output_samples++ = predictor[ch];
@@ -266,7 +285,8 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
             predictor[ch] = sign_extend(bytestream2_get_le16u(&gb), 16);
 
         ch = 0;
-        while (output_samples < samples_end) {
+        while (output_samples < samples_end)
+        {
             int diff = bytestream2_get_byteu(&gb);
             int n    = diff & 3;
 
@@ -292,10 +312,12 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
         break;
     }
     case AV_CODEC_ID_SOL_DPCM:
-        if (avctx->codec_tag != 3) {
+        if (avctx->codec_tag != 3)
+        {
             uint8_t *output_samples_u8 = frame->data[0],
-                    *samples_end_u8 = output_samples_u8 + out;
-            while (output_samples_u8 < samples_end_u8) {
+                     *samples_end_u8 = output_samples_u8 + out;
+            while (output_samples_u8 < samples_end_u8)
+            {
                 int n = bytestream2_get_byteu(&gb);
 
                 s->sample[0] += s->sol_table[n >> 4];
@@ -306,8 +328,11 @@ static int dpcm_decode_frame(AVCodecContext *avctx, void *data,
                 s->sample[stereo]  = av_clip_uint8(s->sample[stereo]);
                 *output_samples_u8++ = s->sample[stereo];
             }
-        } else {
-            while (output_samples < samples_end) {
+        }
+        else
+        {
+            while (output_samples < samples_end)
+            {
                 int n = bytestream2_get_byteu(&gb);
                 if (n & 0x80) s->sample[ch] -= sol_table_16[n & 0x7F];
                 else          s->sample[ch] += sol_table_16[n & 0x7F];

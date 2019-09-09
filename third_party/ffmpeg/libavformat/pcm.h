@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PCM common functions
  * Copyright (C) 2007  Aurelien Jacobs <aurel@gnuage.org>
  *

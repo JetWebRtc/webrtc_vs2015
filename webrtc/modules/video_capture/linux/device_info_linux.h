@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -41,7 +41,10 @@ public:
         const char* /*dialogTitleUTF8*/,
         void* /*parentWindow*/,
         uint32_t /*positionX*/,
-        uint32_t /*positionY*/) { return -1;}
+        uint32_t /*positionY*/)
+    {
+        return -1;
+    }
     int32_t FillCapabilities(int fd);
     int32_t Init();
 private:

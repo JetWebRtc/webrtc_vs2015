@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -51,13 +51,13 @@ size_t WebRtcSpl_FilterAR(const int16_t* a,
         stop = (i < a_length) ? i + 1 : a_length;
         for (j = 1; j < stop; j++)
         {
-          o -= *a_ptr * *filtered_ptr--;
-          oLOW -= *a_ptr++ * *filtered_low_ptr--;
+            o -= *a_ptr * *filtered_ptr--;
+            oLOW -= *a_ptr++ * *filtered_low_ptr--;
         }
         for (j = i + 1; j < a_length; j++)
         {
-          o -= *a_ptr * *state_ptr--;
-          oLOW -= *a_ptr++ * *state_low_ptr--;
+            o -= *a_ptr * *state_ptr--;
+            oLOW -= *a_ptr++ * *state_low_ptr--;
         }
 
         o += (oLOW >> 12);
@@ -71,7 +71,8 @@ size_t WebRtcSpl_FilterAR(const int16_t* a,
     {
         WebRtcSpl_CopyFromEndW16(filtered, x_length, a_length - 1, state);
         WebRtcSpl_CopyFromEndW16(filtered_low, x_length, a_length - 1, state_low);
-    } else
+    }
+    else
     {
         for (i = 0; i < state_length - x_length; i++)
         {

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
+﻿// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file in the root of the source
@@ -14,13 +14,15 @@
 
 #include "mkvmuxer/mkvmuxer.h"
 
-namespace mkvparser {
+namespace mkvparser
+{
 struct Colour;
 struct MasteringMetadata;
 struct PrimaryChromaticity;
 }  // namespace mkvparser
 
-namespace libwebm {
+namespace libwebm
+{
 // Utility types and functions for working with the Colour element and its
 // children. Copiers return true upon success. Presence functions return true
 // when the specified element is present.
@@ -31,20 +33,21 @@ namespace libwebm {
 // Features of the VP9 codec that may be set in the CodecPrivate of a VP9 video
 // stream. A value of kValueNotPresent represents that the value was not set in
 // the CodecPrivate.
-struct Vp9CodecFeatures {
-  static const int kValueNotPresent;
+struct Vp9CodecFeatures
+{
+    static const int kValueNotPresent;
 
-  Vp9CodecFeatures()
-      : profile(kValueNotPresent),
-        level(kValueNotPresent),
-        bit_depth(kValueNotPresent),
-        chroma_subsampling(kValueNotPresent) {}
-  ~Vp9CodecFeatures() {}
+    Vp9CodecFeatures()
+        : profile(kValueNotPresent),
+          level(kValueNotPresent),
+          bit_depth(kValueNotPresent),
+          chroma_subsampling(kValueNotPresent) {}
+    ~Vp9CodecFeatures() {}
 
-  int profile;
-  int level;
-  int bit_depth;
-  int chroma_subsampling;
+    int profile;
+    int level;
+    int bit_depth;
+    int chroma_subsampling;
 };
 
 typedef std::auto_ptr<mkvmuxer::PrimaryChromaticity> PrimaryChromaticityPtr;

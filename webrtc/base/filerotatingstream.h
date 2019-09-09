@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,113 +18,130 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/base/stream.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // FileRotatingStream writes to a file in the directory specified in the
 // constructor. It rotates the files once the current file is full. The
 // individual file size and the number of files used is configurable in the
 // constructor. Open() must be called before using this stream.
-class FileRotatingStream : public StreamInterface {
- public:
-  // Use this constructor for reading a directory previously written to with
-  // this stream.
-  FileRotatingStream(const std::string& dir_path,
-                     const std::string& file_prefix);
+class FileRotatingStream : public StreamInterface
+{
+public:
+    // Use this constructor for reading a directory previously written to with
+    // this stream.
+    FileRotatingStream(const std::string& dir_path,
+                       const std::string& file_prefix);
 
-  // Use this constructor for writing to a directory. Files in the directory
-  // matching the prefix will be deleted on open.
-  FileRotatingStream(const std::string& dir_path,
-                     const std::string& file_prefix,
-                     size_t max_file_size,
-                     size_t num_files);
+    // Use this constructor for writing to a directory. Files in the directory
+    // matching the prefix will be deleted on open.
+    FileRotatingStream(const std::string& dir_path,
+                       const std::string& file_prefix,
+                       size_t max_file_size,
+                       size_t num_files);
 
-  ~FileRotatingStream() override;
+    ~FileRotatingStream() override;
 
-  // StreamInterface methods.
-  StreamState GetState() const override;
-  StreamResult Read(void* buffer,
-                    size_t buffer_len,
-                    size_t* read,
-                    int* error) override;
-  StreamResult Write(const void* data,
-                     size_t data_len,
-                     size_t* written,
-                     int* error) override;
-  bool Flush() override;
-  // Returns the total file size currently used on disk.
-  bool GetSize(size_t* size) const override;
-  void Close() override;
+    // StreamInterface methods.
+    StreamState GetState() const override;
+    StreamResult Read(void* buffer,
+                      size_t buffer_len,
+                      size_t* read,
+                      int* error) override;
+    StreamResult Write(const void* data,
+                       size_t data_len,
+                       size_t* written,
+                       int* error) override;
+    bool Flush() override;
+    // Returns the total file size currently used on disk.
+    bool GetSize(size_t* size) const override;
+    void Close() override;
 
-  // Opens the appropriate file(s). Call this before using the stream.
-  bool Open();
+    // Opens the appropriate file(s). Call this before using the stream.
+    bool Open();
 
-  // Disabling buffering causes writes to block until disk is updated. This is
-  // enabled by default for performance.
-  bool DisableBuffering();
+    // Disabling buffering causes writes to block until disk is updated. This is
+    // enabled by default for performance.
+    bool DisableBuffering();
 
-  // Returns the path used for the i-th newest file, where the 0th file is the
-  // newest file. The file may or may not exist, this is just used for
-  // formatting. Index must be less than GetNumFiles().
-  std::string GetFilePath(size_t index) const;
+    // Returns the path used for the i-th newest file, where the 0th file is the
+    // newest file. The file may or may not exist, this is just used for
+    // formatting. Index must be less than GetNumFiles().
+    std::string GetFilePath(size_t index) const;
 
-  // Returns the number of files that will used by this stream.
-  size_t GetNumFiles() { return file_names_.size(); }
+    // Returns the number of files that will used by this stream.
+    size_t GetNumFiles()
+    {
+        return file_names_.size();
+    }
 
- protected:
-  size_t GetMaxFileSize() const { return max_file_size_; }
+protected:
+    size_t GetMaxFileSize() const
+    {
+        return max_file_size_;
+    }
 
-  void SetMaxFileSize(size_t size) { max_file_size_ = size; }
+    void SetMaxFileSize(size_t size)
+    {
+        max_file_size_ = size;
+    }
 
-  size_t GetRotationIndex() const { return rotation_index_; }
+    size_t GetRotationIndex() const
+    {
+        return rotation_index_;
+    }
 
-  void SetRotationIndex(size_t index) { rotation_index_ = index; }
+    void SetRotationIndex(size_t index)
+    {
+        rotation_index_ = index;
+    }
 
-  virtual void OnRotation() {}
+    virtual void OnRotation() {}
 
- private:
-  enum Mode { kRead, kWrite };
+private:
+    enum Mode { kRead, kWrite };
 
-  FileRotatingStream(const std::string& dir_path,
-                     const std::string& file_prefix,
-                     size_t max_file_size,
-                     size_t num_files,
-                     Mode mode);
+    FileRotatingStream(const std::string& dir_path,
+                       const std::string& file_prefix,
+                       size_t max_file_size,
+                       size_t num_files,
+                       Mode mode);
 
-  bool OpenCurrentFile();
-  void CloseCurrentFile();
+    bool OpenCurrentFile();
+    void CloseCurrentFile();
 
-  // Rotates the files by creating a new current file, renaming the
-  // existing files, and deleting the oldest one. e.g.
-  // file_0 -> file_1
-  // file_1 -> file_2
-  // file_2 -> delete
-  // create new file_0
-  void RotateFiles();
+    // Rotates the files by creating a new current file, renaming the
+    // existing files, and deleting the oldest one. e.g.
+    // file_0 -> file_1
+    // file_1 -> file_2
+    // file_2 -> delete
+    // create new file_0
+    void RotateFiles();
 
-  // Returns a list of file names in the directory beginning with the prefix.
-  std::vector<std::string> GetFilesWithPrefix() const;
-  // Private version of GetFilePath.
-  std::string GetFilePath(size_t index, size_t num_files) const;
+    // Returns a list of file names in the directory beginning with the prefix.
+    std::vector<std::string> GetFilesWithPrefix() const;
+    // Private version of GetFilePath.
+    std::string GetFilePath(size_t index, size_t num_files) const;
 
-  const std::string dir_path_;
-  const std::string file_prefix_;
-  const Mode mode_;
+    const std::string dir_path_;
+    const std::string file_prefix_;
+    const Mode mode_;
 
-  // FileStream is used to write to the current file.
-  std::unique_ptr<FileStream> file_stream_;
-  // Convenience storage for file names so we don't generate them over and over.
-  std::vector<std::string> file_names_;
-  size_t max_file_size_;
-  size_t current_file_index_;
-  // The rotation index indicates the index of the file that will be
-  // deleted first on rotation. Indices lower than this index will be rotated.
-  size_t rotation_index_;
-  // Number of bytes written to current file. We need this because with
-  // buffering the file size read from disk might not be accurate.
-  size_t current_bytes_written_;
-  bool disable_buffering_;
+    // FileStream is used to write to the current file.
+    std::unique_ptr<FileStream> file_stream_;
+    // Convenience storage for file names so we don't generate them over and over.
+    std::vector<std::string> file_names_;
+    size_t max_file_size_;
+    size_t current_file_index_;
+    // The rotation index indicates the index of the file that will be
+    // deleted first on rotation. Indices lower than this index will be rotated.
+    size_t rotation_index_;
+    // Number of bytes written to current file. We need this because with
+    // buffering the file size read from disk might not be accurate.
+    size_t current_bytes_written_;
+    bool disable_buffering_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(FileRotatingStream);
+    RTC_DISALLOW_COPY_AND_ASSIGN(FileRotatingStream);
 };
 
 // CallSessionFileRotatingStream is meant to be used in situations where we will
@@ -141,31 +158,32 @@ class FileRotatingStream : public StreamInterface {
 // (earliest) file on rotate, and that that file's size is bigger.
 //
 // Open() must be called before using this stream.
-class CallSessionFileRotatingStream : public FileRotatingStream {
- public:
-  // Use this constructor for reading a directory previously written to with
-  // this stream.
-  explicit CallSessionFileRotatingStream(const std::string& dir_path);
-  // Use this constructor for writing to a directory. Files in the directory
-  // matching what's used by the stream will be deleted. |max_total_log_size|
-  // must be at least 4.
-  CallSessionFileRotatingStream(const std::string& dir_path,
-                                size_t max_total_log_size);
-  ~CallSessionFileRotatingStream() override {}
+class CallSessionFileRotatingStream : public FileRotatingStream
+{
+public:
+    // Use this constructor for reading a directory previously written to with
+    // this stream.
+    explicit CallSessionFileRotatingStream(const std::string& dir_path);
+    // Use this constructor for writing to a directory. Files in the directory
+    // matching what's used by the stream will be deleted. |max_total_log_size|
+    // must be at least 4.
+    CallSessionFileRotatingStream(const std::string& dir_path,
+                                  size_t max_total_log_size);
+    ~CallSessionFileRotatingStream() override {}
 
- protected:
-  void OnRotation() override;
+protected:
+    void OnRotation() override;
 
- private:
-  static size_t GetRotatingLogSize(size_t max_total_log_size);
-  static size_t GetNumRotatingLogFiles(size_t max_total_log_size);
-  static const char* kLogPrefix;
-  static const size_t kRotatingLogFileDefaultSize;
+private:
+    static size_t GetRotatingLogSize(size_t max_total_log_size);
+    static size_t GetNumRotatingLogFiles(size_t max_total_log_size);
+    static const char* kLogPrefix;
+    static const size_t kRotatingLogFileDefaultSize;
 
-  const size_t max_total_log_size_;
-  size_t num_rotations_;
+    const size_t max_total_log_size_;
+    size_t num_rotations_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(CallSessionFileRotatingStream);
+    RTC_DISALLOW_COPY_AND_ASSIGN(CallSessionFileRotatingStream);
 };
 
 }  // namespace rtc

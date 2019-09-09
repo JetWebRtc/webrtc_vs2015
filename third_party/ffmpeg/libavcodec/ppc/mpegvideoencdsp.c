@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -40,7 +40,8 @@ static int pix_norm1_altivec(uint8_t *pix, int line_size)
     vector unsigned int sv = (vector unsigned int) vec_splat_u32(0);
     vector signed int sum;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         /* Read the potentially unaligned pixels. */
         //vector unsigned char pixl = vec_ld(0,  pix);
         //vector unsigned char pixr = vec_ld(15, pix);
@@ -68,7 +69,8 @@ static int pix_norm1_altivec(uint8_t *pix, int line_size)
     vector unsigned int sv = (vector unsigned int) vec_splat_u32(0);
     vector signed int sum;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         /* Read the potentially unaligned pixels. */
         vector unsigned char pixl = vec_ld(0,  pix);
         vector unsigned char pixr = vec_ld(15, pix);
@@ -97,7 +99,8 @@ static int pix_sum_altivec(uint8_t *pix, int line_size)
     vector unsigned int sad = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumdiffs;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         /* Read the potentially unaligned 16 pixels into t1. */
         //vector unsigned char pixl = vec_ld(0,  pix);
         //vector unsigned char pixr = vec_ld(15, pix);
@@ -126,7 +129,8 @@ static int pix_sum_altivec(uint8_t *pix, int line_size)
     vector unsigned int sad = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumdiffs;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         /* Read the potentially unaligned 16 pixels into t1. */
         vector unsigned char pixl = vec_ld(0,  pix);
         vector unsigned char pixr = vec_ld(15, pix);
@@ -151,7 +155,7 @@ static int pix_sum_altivec(uint8_t *pix, int line_size)
 #endif /* HAVE_ALTIVEC */
 
 av_cold void ff_mpegvideoencdsp_init_ppc(MpegvideoEncDSPContext *c,
-                                         AVCodecContext *avctx)
+        AVCodecContext *avctx)
 {
 #if HAVE_ALTIVEC
     if (!PPC_ALTIVEC(av_get_cpu_flags()))

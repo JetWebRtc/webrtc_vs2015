@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 Affine Systems, Inc (Michael Sullivan, Bobby Impollonia)
  * Copyright (c) 2013 Andrey Utkin <andrey.krieger.utkin gmail com>
  *
@@ -36,7 +36,8 @@
 #include "internal.h"
 #include "video.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "dar",
     "hsub", "vsub",
     "in_h", "ih",      ///< height of the input video
@@ -53,7 +54,8 @@ static const char *const var_names[] = {
 
 enum { Y, U, V, A };
 
-enum var_name {
+enum var_name
+{
     VAR_DAR,
     VAR_HSUB, VAR_VSUB,
     VAR_IN_H, VAR_IH,
@@ -68,7 +70,8 @@ enum var_name {
     VARS_NB
 };
 
-typedef struct DrawBoxContext {
+typedef struct DrawBoxContext
+{
     const AVClass *class;
     int x, y, w, h;
     int thickness;
@@ -93,7 +96,8 @@ static av_cold int init(AVFilterContext *ctx)
     else if (av_parse_color(rgba_color, s->color_str, -1, ctx) < 0)
         return AVERROR(EINVAL);
 
-    if (!s->invert_color) {
+    if (!s->invert_color)
+    {
         s->yuv_color[Y] = RGB_TO_Y_CCIR(rgba_color[0], rgba_color[1], rgba_color[2]);
         s->yuv_color[U] = RGB_TO_U_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
         s->yuv_color[V] = RGB_TO_V_CCIR(rgba_color[0], rgba_color[1], rgba_color[2], 0);
@@ -105,7 +109,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ420P,
@@ -143,7 +148,8 @@ static int config_input(AVFilterLink *inlink)
     var_values[VAR_W] = NAN;
     var_values[VAR_T] = NAN;
 
-    for (i = 0; i <= NUM_EXPR_EVALS; i++) {
+    for (i = 0; i <= NUM_EXPR_EVALS; i++)
+    {
         /* evaluate expressions, fail on last iteration */
         var_values[VAR_MAX] = inlink->w;
         if ((ret = av_expr_parse_and_eval(&res, (expr = s->x_expr),
@@ -186,7 +192,8 @@ static int config_input(AVFilterLink *inlink)
     s->h = (s->h > 0) ? s->h : inlink->h;
 
     /* sanity check width and height */
-    if (s->w <  0 || s->h <  0) {
+    if (s->w <  0 || s->h <  0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Size values less than 0 are not acceptable.\n");
         return AVERROR(EINVAL);
     }
@@ -210,24 +217,30 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int plane, x, y, xb = s->x, yb = s->y;
     unsigned char *row[4];
 
-    for (y = FFMAX(yb, 0); y < frame->height && y < (yb + s->h); y++) {
+    for (y = FFMAX(yb, 0); y < frame->height && y < (yb + s->h); y++)
+    {
         row[0] = frame->data[0] + y * frame->linesize[0];
 
         for (plane = 1; plane < 3; plane++)
             row[plane] = frame->data[plane] +
-                 frame->linesize[plane] * (y >> s->vsub);
+                         frame->linesize[plane] * (y >> s->vsub);
 
-        if (s->invert_color) {
+        if (s->invert_color)
+        {
             for (x = FFMAX(xb, 0); x < xb + s->w && x < frame->width; x++)
                 if ((y - yb < s->thickness) || (yb + s->h - 1 - y < s->thickness) ||
-                    (x - xb < s->thickness) || (xb + s->w - 1 - x < s->thickness))
+                        (x - xb < s->thickness) || (xb + s->w - 1 - x < s->thickness))
                     row[0][x] = 0xff - row[0][x];
-        } else {
-            for (x = FFMAX(xb, 0); x < xb + s->w && x < frame->width; x++) {
+        }
+        else
+        {
+            for (x = FFMAX(xb, 0); x < xb + s->w && x < frame->width; x++)
+            {
                 double alpha = (double)s->yuv_color[A] / 255;
 
                 if ((y - yb < s->thickness) || (yb + s->h - 1 - y < s->thickness) ||
-                    (x - xb < s->thickness) || (xb + s->w - 1 - x < s->thickness)) {
+                        (x - xb < s->thickness) || (xb + s->w - 1 - x < s->thickness))
+                {
                     row[0][x                 ] = (1 - alpha) * row[0][x                 ] + alpha * s->yuv_color[Y];
                     row[1][x >> s->hsub] = (1 - alpha) * row[1][x >> s->hsub] + alpha * s->yuv_color[U];
                     row[2][x >> s->hsub] = (1 - alpha) * row[2][x >> s->hsub] + alpha * s->yuv_color[V];
@@ -244,7 +257,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
 
 #if CONFIG_DRAWBOX_FILTER
 
-static const AVOption drawbox_options[] = {
+static const AVOption drawbox_options[] =
+{
     { "x",         "set horizontal position of the left box edge", OFFSET(x_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
     { "y",         "set vertical position of the top box edge",    OFFSET(y_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
     { "width",     "set width of the box",                         OFFSET(w_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
@@ -260,7 +274,8 @@ static const AVOption drawbox_options[] = {
 
 AVFILTER_DEFINE_CLASS(drawbox);
 
-static const AVFilterPad drawbox_inputs[] = {
+static const AVFilterPad drawbox_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_VIDEO,
@@ -271,7 +286,8 @@ static const AVFilterPad drawbox_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad drawbox_outputs[] = {
+static const AVFilterPad drawbox_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -279,7 +295,8 @@ static const AVFilterPad drawbox_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_drawbox = {
+AVFilter ff_vf_drawbox =
+{
     .name          = "drawbox",
     .description   = NULL_IF_CONFIG_SMALL("Draw a colored box on the input video."),
     .priv_size     = sizeof(DrawBoxContext),
@@ -314,7 +331,7 @@ static av_pure av_always_inline int pixel_belongs_to_grid(DrawBoxContext *drawgr
         y_modulo += drawgrid->h;
 
     return x_modulo < drawgrid->thickness  // Belongs to vertical line
-        || y_modulo < drawgrid->thickness;  // Belongs to horizontal line
+           || y_modulo < drawgrid->thickness;  // Belongs to horizontal line
 }
 
 static int drawgrid_filter_frame(AVFilterLink *inlink, AVFrame *frame)
@@ -323,22 +340,28 @@ static int drawgrid_filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int plane, x, y;
     uint8_t *row[4];
 
-    for (y = 0; y < frame->height; y++) {
+    for (y = 0; y < frame->height; y++)
+    {
         row[0] = frame->data[0] + y * frame->linesize[0];
 
         for (plane = 1; plane < 3; plane++)
             row[plane] = frame->data[plane] +
-                 frame->linesize[plane] * (y >> drawgrid->vsub);
+                         frame->linesize[plane] * (y >> drawgrid->vsub);
 
-        if (drawgrid->invert_color) {
+        if (drawgrid->invert_color)
+        {
             for (x = 0; x < frame->width; x++)
                 if (pixel_belongs_to_grid(drawgrid, x, y))
                     row[0][x] = 0xff - row[0][x];
-        } else {
-            for (x = 0; x < frame->width; x++) {
+        }
+        else
+        {
+            for (x = 0; x < frame->width; x++)
+            {
                 double alpha = (double)drawgrid->yuv_color[A] / 255;
 
-                if (pixel_belongs_to_grid(drawgrid, x, y)) {
+                if (pixel_belongs_to_grid(drawgrid, x, y))
+                {
                     row[0][x                  ] = (1 - alpha) * row[0][x                  ] + alpha * drawgrid->yuv_color[Y];
                     row[1][x >> drawgrid->hsub] = (1 - alpha) * row[1][x >> drawgrid->hsub] + alpha * drawgrid->yuv_color[U];
                     row[2][x >> drawgrid->hsub] = (1 - alpha) * row[2][x >> drawgrid->hsub] + alpha * drawgrid->yuv_color[V];
@@ -350,7 +373,8 @@ static int drawgrid_filter_frame(AVFilterLink *inlink, AVFrame *frame)
     return ff_filter_frame(inlink->dst->outputs[0], frame);
 }
 
-static const AVOption drawgrid_options[] = {
+static const AVOption drawgrid_options[] =
+{
     { "x",         "set horizontal offset",   OFFSET(x_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
     { "y",         "set vertical offset",     OFFSET(y_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
     { "width",     "set width of grid cell",  OFFSET(w_expr),    AV_OPT_TYPE_STRING, { .str="0" },       CHAR_MIN, CHAR_MAX, FLAGS },
@@ -366,7 +390,8 @@ static const AVOption drawgrid_options[] = {
 
 AVFILTER_DEFINE_CLASS(drawgrid);
 
-static const AVFilterPad drawgrid_inputs[] = {
+static const AVFilterPad drawgrid_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_VIDEO,
@@ -377,7 +402,8 @@ static const AVFilterPad drawgrid_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad drawgrid_outputs[] = {
+static const AVFilterPad drawgrid_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -385,7 +411,8 @@ static const AVFilterPad drawgrid_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_drawgrid = {
+AVFilter ff_vf_drawgrid =
+{
     .name          = "drawgrid",
     .description   = NULL_IF_CONFIG_SMALL("Draw a colored grid on the input video."),
     .priv_size     = sizeof(DrawBoxContext),

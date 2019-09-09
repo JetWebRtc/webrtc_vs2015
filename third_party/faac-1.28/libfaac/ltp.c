@@ -1,4 +1,4 @@
-/**************************************************************************
+﻿/**************************************************************************
 
 This software module was originally developed by
 Nokia in the course of development of the MPEG-2 AAC/MPEG-4
@@ -60,7 +60,7 @@ static double codebook[CODESIZE] =
 
 
 static double snr_pred(double *mdct_in, double *mdct_pred, int *sfb_flag, int *sfb_offset,
-                int block_type, int side_info, int num_of_sfb)
+                       int block_type, int side_info, int num_of_sfb)
 {
     int i, j, flen;
     double snr_limit;
@@ -72,7 +72,9 @@ static double snr_pred(double *mdct_in, double *mdct_pred, int *sfb_flag, int *s
     {
         flen = BLOCK_LEN_LONG;
         snr_limit = 1.e-30;
-    } else {
+    }
+    else
+    {
         flen = BLOCK_LEN_SHORT;
         snr_limit = 1.e-20;
     }
@@ -112,7 +114,9 @@ static double snr_pred(double *mdct_in, double *mdct_pred, int *sfb_flag, int *s
                 sfb_flag[i] = 0;
                 for (j = sfb_offset[i]; j < sfb_offset[i + 1]; j++)
                     mdct_pred[j] = 0.0;
-            } else {
+            }
+            else
+            {
                 num_bit += snr[i] / 6. * (sfb_offset[i + 1] - sfb_offset[i]);
             }
         }
@@ -126,7 +130,9 @@ static double snr_pred(double *mdct_in, double *mdct_pred, int *sfb_flag, int *s
             mdct_pred[j] = 0.0;
         for (i = 0; i < num_of_sfb; i++)
             sfb_flag[i] = 0;
-    } else {
+    }
+    else
+    {
         num_bit -= side_info;
 //      printf("LTP used!, num_bit: %f    ", num_bit);
     }
@@ -135,7 +141,7 @@ static double snr_pred(double *mdct_in, double *mdct_pred, int *sfb_flag, int *s
 }
 
 static void prediction(double *buffer, double *predicted_samples, double *weight, int lag,
-                int flen)
+                       int flen)
 {
     int i, offset;
     int num_samples;
@@ -151,7 +157,7 @@ static void prediction(double *buffer, double *predicted_samples, double *weight
     for( ; i < flen; i++)
         predicted_samples[i] = 0.0;
 
-	
+
 }
 
 static void w_quantize(double *freq, int *ltp_idx)
@@ -175,7 +181,7 @@ static void w_quantize(double *freq, int *ltp_idx)
 }
 
 static int pitch(double *sb_samples, double *x_buffer, int flen, int lag0, int lag1,
-          double *predicted_samples, double *gain, int *cb_idx)
+                 double *predicted_samples, double *gain, int *cb_idx)
 {
     int i, j, delay;
     double corr1, corr2, lag_corr;
@@ -209,23 +215,23 @@ static int pitch(double *sb_samples, double *x_buffer, int flen, int lag0, int l
     delay = lag0;
 
 
-	for (i = lag0; i<lag1; i++)
-	{
-		energy	= 0.0;
-		corr1	= 0.0;
-		for (j=0; j < flen; j++)
-		{
-			if (j < i+BLOCK_LEN_LONG)
-			{
-				corr1  += sb_samples[j] * _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j];
-				energy += _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j] * _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j];
-			}
-		}
+    for (i = lag0; i<lag1; i++)
+    {
+        energy	= 0.0;
+        corr1	= 0.0;
+        for (j=0; j < flen; j++)
+        {
+            if (j < i+BLOCK_LEN_LONG)
+            {
+                corr1  += sb_samples[j] * _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j];
+                energy += _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j] * _MDCT_SCALE * x_buffer[NOK_LT_BLEN - flen/2 - i + j];
+            }
+        }
         if (energy != 0.0)
             corr2 = corr1 / sqrt(energy);
         else
             corr2 = 0.0;
-		
+
         if (p_max < corr2)
         {
             p_max = corr2;
@@ -233,7 +239,7 @@ static int pitch(double *sb_samples, double *x_buffer, int flen, int lag0, int l
             lag_corr = corr1;
             lag_energy = energy;
         }
-	}		
+    }
     /* Compute the gain. */
     if(lag_energy != 0.0)
         *gain =  lag_corr / (1.010 * lag_energy);
@@ -243,16 +249,16 @@ static int pitch(double *sb_samples, double *x_buffer, int flen, int lag0, int l
     /* Quantize the gain. */
     w_quantize(gain, cb_idx);
 //  printf("Delay: %d, Coeff: %f", delay, *gain);
-	
+
     /* Get the predicted signal. */
     prediction(x_buffer, predicted_samples, gain, delay, flen);
 
-	
+
     return (delay);
 }
 
 static double ltp_enc_tf(faacEncHandle hEncoder,
-                CoderInfo *coderInfo, double *p_spectrum, double *predicted_samples,
+                         CoderInfo *coderInfo, double *p_spectrum, double *predicted_samples,
                          double *mdct_predicted, int *sfb_offset,
                          int num_of_sfb, int last_band, int side_info,
                          int *sfb_prediction_used, TnsInfo *tnsInfo)
@@ -261,16 +267,16 @@ static double ltp_enc_tf(faacEncHandle hEncoder,
 
     /* Transform prediction to frequency domain. */
     FilterBank(hEncoder, coderInfo, predicted_samples, mdct_predicted,
-        NULL, MNON_OVERLAPPED);
-	
+               NULL, MNON_OVERLAPPED);
+
     /* Apply TNS analysis filter to the predicted spectrum. */
     if(tnsInfo != NULL)
         TnsEncodeFilterOnly(tnsInfo, num_of_sfb, num_of_sfb, coderInfo->block_type, sfb_offset,
-        mdct_predicted);
-	
+                            mdct_predicted);
+
     /* Get the prediction gain. */
     bit_gain = snr_pred(p_spectrum, mdct_predicted, sfb_prediction_used,
-        sfb_offset, side_info, last_band, coderInfo->nr_of_sfb);
+                        sfb_offset, side_info, last_band, coderInfo->nr_of_sfb);
 
     return (bit_gain);
 }
@@ -280,7 +286,8 @@ void LtpInit(faacEncHandle hEncoder)
     int i;
     unsigned int channel;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         LtpInfo *ltpInfo = &(hEncoder->coderInfo[channel].ltpInfo);
 
         ltpInfo->buffer = AllocMemory(NOK_LT_BLEN * sizeof(double));
@@ -303,33 +310,34 @@ void LtpInit(faacEncHandle hEncoder)
         for(i = 0; i < 2 * BLOCK_LEN_LONG; i++)
             ltpInfo->mdct_predicted[i] = 0.0;
 
-	}
+    }
 }
 
 void LtpEnd(faacEncHandle hEncoder)
 {
     unsigned int channel;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         LtpInfo *ltpInfo = &(hEncoder->coderInfo[channel].ltpInfo);
 
-	if (ltpInfo->buffer)
-	  FreeMemory(ltpInfo->buffer);
-	if (ltpInfo->mdct_predicted)
-	  FreeMemory(ltpInfo->mdct_predicted);
-	if (ltpInfo->time_buffer)
-	  FreeMemory(ltpInfo->time_buffer);
-	if (ltpInfo->ltp_overlap_buffer)
-	  FreeMemory(ltpInfo->ltp_overlap_buffer);
+        if (ltpInfo->buffer)
+            FreeMemory(ltpInfo->buffer);
+        if (ltpInfo->mdct_predicted)
+            FreeMemory(ltpInfo->mdct_predicted);
+        if (ltpInfo->time_buffer)
+            FreeMemory(ltpInfo->time_buffer);
+        if (ltpInfo->ltp_overlap_buffer)
+            FreeMemory(ltpInfo->ltp_overlap_buffer);
     }
 }
 
 int LtpEncode(faacEncHandle hEncoder,
-                CoderInfo *coderInfo,
-                LtpInfo *ltpInfo,
-                TnsInfo *tnsInfo,
-                double *p_spectrum,
-                double *p_time_signal)
+              CoderInfo *coderInfo,
+              LtpInfo *ltpInfo,
+              TnsInfo *tnsInfo,
+              double *p_spectrum,
+              double *p_time_signal)
 {
     int i, last_band;
     double num_bit[MAX_SHORT_WINDOWS];
@@ -349,27 +357,27 @@ int LtpEncode(faacEncHandle hEncoder,
 
         ltpInfo->delay[0] =
             pitch(p_time_signal, ltpInfo->buffer, 2 * BLOCK_LEN_LONG,
-                0, 2 * BLOCK_LEN_LONG, predicted_samples, &ltpInfo->weight,
-                &ltpInfo->weight_idx);
+                  0, 2 * BLOCK_LEN_LONG, predicted_samples, &ltpInfo->weight,
+                  &ltpInfo->weight_idx);
 
-		
+
         num_bit[0] =
             ltp_enc_tf(hEncoder, coderInfo, p_spectrum, predicted_samples,
-                ltpInfo->mdct_predicted,
-                coderInfo->sfb_offset, coderInfo->nr_of_sfb,
-                last_band, ltpInfo->side_info, ltpInfo->sfb_prediction_used,
-                tnsInfo);
+                       ltpInfo->mdct_predicted,
+                       coderInfo->sfb_offset, coderInfo->nr_of_sfb,
+                       last_band, ltpInfo->side_info, ltpInfo->sfb_prediction_used,
+                       tnsInfo);
 
 
-		ltpInfo->global_pred_flag = (num_bit[0] == 0.0) ? 0 : 1;
+        ltpInfo->global_pred_flag = (num_bit[0] == 0.0) ? 0 : 1;
 
         if(ltpInfo->global_pred_flag)
             for (i = 0; i < coderInfo->sfb_offset[last_band]; i++)
                 p_spectrum[i] -= ltpInfo->mdct_predicted[i];
-            else
-                ltpInfo->side_info = 1;
+        else
+            ltpInfo->side_info = 1;
 
-            break;
+        break;
 
     default:
         break;
@@ -392,7 +400,7 @@ void LtpReconstruct(CoderInfo *coderInfo, LtpInfo *ltpInfo, double *p_spectrum)
         case LONG_SHORT_WINDOW:
         case SHORT_LONG_WINDOW:
             last_band = (coderInfo->nr_of_sfb < MAX_LT_PRED_LONG_SFB) ?
-                coderInfo->nr_of_sfb : MAX_LT_PRED_LONG_SFB;
+                        coderInfo->nr_of_sfb : MAX_LT_PRED_LONG_SFB;
 
             for (i = 0; i < coderInfo->sfb_offset[last_band]; i++)
                 p_spectrum[i] += ltpInfo->mdct_predicted[i];
@@ -405,7 +413,7 @@ void LtpReconstruct(CoderInfo *coderInfo, LtpInfo *ltpInfo, double *p_spectrum)
 }
 
 void  LtpUpdate(LtpInfo *ltpInfo, double *time_signal,
-                     double *overlap_signal, int block_size_long)
+                double *overlap_signal, int block_size_long)
 {
     int i;
 

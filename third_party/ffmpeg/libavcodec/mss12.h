@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Konstantin Shishkov
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@
 #define THRESH_LOW       15
 #define THRESH_HIGH      50
 
-typedef struct Model {
+typedef struct Model
+{
     int16_t cum_prob[MODEL_MAX_SYMS + 1];
     int16_t weights[MODEL_MAX_SYMS + 1];
     uint8_t idx2sym[MODEL_MAX_SYMS + 1];
@@ -45,9 +46,11 @@ typedef struct Model {
     int thr_weight, threshold;
 } Model;
 
-typedef struct ArithCoder {
+typedef struct ArithCoder
+{
     int low, high, value;
-    union {
+    union
+    {
         GetBitContext *gb;
         GetByteContext *gB;
     } gbc;
@@ -55,7 +58,8 @@ typedef struct ArithCoder {
     int (*get_number)   (struct ArithCoder *c, int n);
 } ArithCoder;
 
-typedef struct PixContext {
+typedef struct PixContext
+{
     int cache_size, num_syms;
     uint8_t cache[12];
     Model cache_model, full_model;
@@ -65,14 +69,16 @@ typedef struct PixContext {
 
 struct MSS12Context;
 
-typedef struct SliceContext {
+typedef struct SliceContext
+{
     struct MSS12Context *c;
     Model      intra_region, inter_region;
     Model      pivot, edge_mode, split_mode;
     PixContext intra_pix_ctx, inter_pix_ctx;
 } SliceContext;
 
-typedef struct MSS12Context {
+typedef struct MSS12Context
+{
     AVCodecContext *avctx;
     uint32_t       pal[256];
     uint8_t        *pal_pic;

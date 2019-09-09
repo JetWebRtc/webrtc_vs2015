@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
 
 This software module was originally developed by
 and edited by Nokia in the course of
@@ -38,7 +38,8 @@ void PredInit(faacEncHandle hEncoder)
 {
     unsigned int channel;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         BwpInfo *bwpInfo = &(hEncoder->coderInfo[channel].bwpInfo);
 
         bwpInfo->psy_init_mc = 0;
@@ -92,17 +93,21 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     thisChannel = &(channelInfo[chanNum]);
     *psy_init = (*psy_init && (btype!=2));
 
-    if((*psy_init) == 0) {
-        for (j=0; j<BLOCK_LEN_LONG; j++) {
+    if((*psy_init) == 0)
+    {
+        for (j=0; j<BLOCK_LEN_LONG; j++)
+        {
             thisLineNeedsResetting[j]=1;
         }
         *psy_init = 1;
     }
 
-    if (btype==2) {
+    if (btype==2)
+    {
         pred_global_flag[0]=0;
         /* SHORT WINDOWS reset all the co-efficients    */
-        if (thisChannel->ch_is_left) {
+        if (thisChannel->ch_is_left)
+        {
             (*reset_count)++;
             if (*reset_count >= 31 * RESET_FRAME)
                 *reset_count = RESET_FRAME;
@@ -114,23 +119,24 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     /**************************************************/
     /*  Compute state using last_spec                 */
     /**************************************************/
-    for (i=0;i<BLOCK_LEN_LONG;i++)
+    for (i=0; i<BLOCK_LEN_LONG; i++)
     {
         /* e[0][i]=last_spec[i]; */
         e[0][i]=last_spec[i]+sb_samples_pred[i];
 
-        for(j=1;j<=LPC;j++)
+        for(j=1; j<=LPC; j++)
             e[j][i] = e[j-1][i]-K[j][i]*R[j-1][i];
 
-        for(j=1;j<LPC;j++)
+        for(j=1; j<LPC; j++)
             dr[j][i] = K[j][i]*e[j-1][i];
 
-        for(j=1;j<=LPC;j++) {
+        for(j=1; j<=LPC; j++)
+        {
             VAR[j][i] = ALPHA*VAR[j][i]+.5*(R[j-1][i]*R[j-1][i]+e[j-1][i]*e[j-1][i]);
             KOR[j][i] = ALPHA*KOR[j][i]+R[j-1][i]*e[j-1][i];
         }
 
-        for(j=LPC-1;j>=1;j--)
+        for(j=LPC-1; j>=1; j--)
             R[j][i] = A*(R[j-1][i]-dr[j][i]);
         R[0][i] = A*e[0][i];
     }
@@ -139,8 +145,10 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     /**************************************************/
     /* Reset state here if resets were sent           */
     /**************************************************/
-    for (i=0;i<BLOCK_LEN_LONG;i++) {
-        if (thisLineNeedsResetting[i]) {
+    for (i=0; i<BLOCK_LEN_LONG; i++)
+    {
+        if (thisLineNeedsResetting[i])
+        {
             for (j = 0; j <= LPC; j++)
             {
                 K[j][i] = 0.0;
@@ -158,9 +166,10 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     /**************************************************/
     /* Compute predictor coefficients, predicted data */
     /**************************************************/
-    for (i=0;i<BLOCK_LEN_LONG;i++)
+    for (i=0; i<BLOCK_LEN_LONG; i++)
     {
-        for(j=1;j<=LPC;j++) {
+        for(j=1; j<=LPC; j++)
+        {
             if(VAR[j][i]>MINVAR)
                 K[j][i] = KOR[j][i]/VAR[j][i]*B;
             else
@@ -187,14 +196,17 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     /* already been determined for the left channel!!          */
     /***********************************************************/
     isRightWithCommonWindow = 0;     /* Is this a right channel with common_window?*/
-    if ((thisChannel->cpe)&&( !(thisChannel->ch_is_left))) {
+    if ((thisChannel->cpe)&&( !(thisChannel->ch_is_left)))
+    {
         leftChanNum = thisChannel->paired_ch;
-        if (channelInfo[leftChanNum].common_window) {
+        if (channelInfo[leftChanNum].common_window)
+        {
             isRightWithCommonWindow = 1;
         }
     }
 
-    if (isRightWithCommonWindow) {
+    if (isRightWithCommonWindow)
+    {
 
         /**************************************************/
         /* Use predictor data from the left channel.      */
@@ -203,9 +215,12 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
 
         /* Make sure to turn off bands with intensity stereo */
 #if 0
-        if (thisChannel->is_info.is_present) {
-            for (i=0; i<nsfb; i++) {
-                if (thisChannel->is_info.is_used[i]) {
+        if (thisChannel->is_info.is_present)
+        {
+            for (i=0; i<nsfb; i++)
+            {
+                if (thisChannel->is_info.is_used[i])
+                {
                     pred_sfb_flag[i] = 0;
                 }
             }
@@ -215,7 +230,8 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
         cb_long=0;
         for (i=0; i<nsfb; i++)
         {
-            if (!pred_sfb_flag[i]) {
+            if (!pred_sfb_flag[i])
+            {
                 for (j=cb_long; j<cb_long+isfb_width[i]; j++)
                     sb_samples_pred[j]=0.0;
             }
@@ -223,38 +239,46 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
         }
 
         /* Disable prediction for bands nsfb through SBMAX_L */
-        for (i=j;i<BLOCK_LEN_LONG;i++) {
+        for (i=j; i<BLOCK_LEN_LONG; i++)
+        {
             sb_samples_pred[i]=0.0;
         }
-        for (i=nsfb;i<SBMAX_L;i++) {
+        for (i=nsfb; i<SBMAX_L; i++)
+        {
             pred_sfb_flag[i]=0;
         }
 
         /* Is global enable set, if not enabled predicted samples are zeroed */
-        if(!pred_global_flag[0]) {
+        if(!pred_global_flag[0])
+        {
             for (j=0; j<BLOCK_LEN_LONG; j++)
                 sb_samples_pred[j]=0.0;
         }
         for (j=0; j<BLOCK_LEN_LONG; j++)
             act_spec[j]-=sb_samples_pred[j];
 
-    } else {
+    }
+    else
+    {
 
         /**************************************************/
         /* Determine whether to enable/disable prediction */
         /**************************************************/
 
-        for (k=0; k<BLOCK_LEN_LONG; k++) {
+        for (k=0; k<BLOCK_LEN_LONG; k++)
+        {
             energy[k]=act_spec[k]*act_spec[k];
             snr_p[k]=(act_spec[k]-sb_samples_pred[k])*(act_spec[k]-sb_samples_pred[k]);
         }
 
         cb_long=0;
-        for (i=0; i<nsfb; i++) {
+        for (i=0; i<nsfb; i++)
+        {
             pred_sfb_flag[i]=1;
             temp1=0.0;
             temp2=0.0;
-            for (j=cb_long; j<cb_long+isfb_width[i]; j++) {
+            for (j=cb_long; j<cb_long+isfb_width[i]; j++)
+            {
                 temp1+=energy[j];
                 temp2+=snr_p[j];
             }
@@ -265,7 +289,8 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
             else
                 snr[i]=0.0;
 
-            if(snr[i]<=0.0) {
+            if(snr[i]<=0.0)
+            {
                 pred_sfb_flag[i]=0;
                 for (j=cb_long; j<cb_long+isfb_width[i]; j++)
                     sb_samples_pred[j]=0.0;
@@ -274,10 +299,12 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
         }
 
         /* Disable prediction for bands nsfb through SBMAX_L */
-        for (i=j;i<BLOCK_LEN_LONG;i++) {
+        for (i=j; i<BLOCK_LEN_LONG; i++)
+        {
             sb_samples_pred[i]=0.0;
         }
-        for (i=nsfb;i<SBMAX_L;i++) {
+        for (i=nsfb; i<SBMAX_L; i++)
+        {
             pred_sfb_flag[i]=0;
         }
 
@@ -288,8 +315,10 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
 
         /* Determine global enable, if not enabled predicted samples are zeroed */
         pred_global_flag[0]=1;
-        if(num_bit<50) {
-            pred_global_flag[0]=0; num_bit=0.0;
+        if(num_bit<50)
+        {
+            pred_global_flag[0]=0;
+            num_bit=0.0;
             for (j=0; j<BLOCK_LEN_LONG; j++)
                 sb_samples_pred[j]=0.0;
         }
@@ -303,19 +332,22 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
     /* If this is a right channel, using pred reset data from */
     /* left channel.  Keep left and right resets in sync.     */
     /**********************************************************/
-    if ((thisChannel->cpe)&&( !(thisChannel->ch_is_left))) {
+    if ((thisChannel->cpe)&&( !(thisChannel->ch_is_left)))
+    {
         /*  if (!thisChannel->ch_is_left) {*/
         /**********************************************************/
         /* Using predictor reset data from the left channel.      */
         /**********************************************************/
         reset_count = &coderInfo[leftChanNum].bwpInfo.reset_count_mc;
         /* Reset the frame counter */
-        for (i=0;i<BLOCK_LEN_LONG;i++) {
+        for (i=0; i<BLOCK_LEN_LONG; i++)
+        {
             thisLineNeedsResetting[i]=0;
         }
         reset_group = &(coderInfo[chanNum].reset_group_number);
         if (*reset_count % RESET_FRAME == 0)
-        { /* Send a reset in this frame */
+        {
+            /* Send a reset in this frame */
             *reset_group = *reset_count / 8;
             for (i = *reset_group - 1; i < BLOCK_LEN_LONG; i += 30)
             {
@@ -324,7 +356,9 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
         }
         else
             *reset_group = -1;
-    } else {
+    }
+    else
+    {
         /******************************************************************/
         /* Determine whether a prediction reset is required - if so, then */
         /* set reset flag for the appropriate group.                      */
@@ -334,13 +368,15 @@ void PredCalcPrediction(double *act_spec, double *last_spec, int btype,
         (*reset_count)++;
 
         /* Reset the frame counter */
-        for (i=0;i<BLOCK_LEN_LONG;i++) {
+        for (i=0; i<BLOCK_LEN_LONG; i++)
+        {
             thisLineNeedsResetting[i]=0;
         }
         if (*reset_count >= 31 * RESET_FRAME)
             *reset_count = RESET_FRAME;
         if (*reset_count % RESET_FRAME == 0)
-        { /* Send a reset in this frame */
+        {
+            /* Send a reset in this frame */
             *reset_group = *reset_count / 8;
             for (i = *reset_group - 1; i < BLOCK_LEN_LONG; i += 30)
             {
@@ -371,7 +407,8 @@ void CopyPredInfo(CoderInfo *right, CoderInfo *left)
     right->pred_global_flag = left->pred_global_flag;
     right->reset_group_number = left->reset_group_number;
 
-    for (band = 0; band<MAX_SCFAC_BANDS; band++) {
+    for (band = 0; band<MAX_SCFAC_BANDS; band++)
+    {
         right->pred_sfb_flag[band] = left->pred_sfb_flag[band];
     }
 }

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -143,6 +143,6 @@ AAC_DECODER_ERROR CChannelElement_Read(HANDLE_FDK_BITSTREAM hBs,
                                        const UCHAR numberOfChannels,
                                        const SCHAR epConfig,
                                        HANDLE_TRANSPORTDEC pTpDec
-                                       );
+                                      );
 
 #endif /* #ifndef CHANNEL_H */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Work around broken floating point limits on some systems.
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,28 +13,31 @@
 
 #include "webrtc/modules/video_capture/device_info_impl.h"
 
-namespace webrtc {
-namespace videocapturemodule {
+namespace webrtc
+{
+namespace videocapturemodule
+{
 
 // Provides video capture device information using the Media Foundation API.
-class DeviceInfoMF : public DeviceInfoImpl {
- public:
-  DeviceInfoMF();
-  virtual ~DeviceInfoMF();
+class DeviceInfoMF : public DeviceInfoImpl
+{
+public:
+    DeviceInfoMF();
+    virtual ~DeviceInfoMF();
 
-  int32_t Init();
-  virtual uint32_t NumberOfDevices();
+    int32_t Init();
+    virtual uint32_t NumberOfDevices();
 
-  virtual int32_t GetDeviceName(uint32_t deviceNumber, char* deviceNameUTF8,
-                                uint32_t deviceNameLength,
-                                char* deviceUniqueIdUTF8,
-                                uint32_t deviceUniqueIdUTF8Length,
-                                char* productUniqueIdUTF8,
-                                uint32_t productUniqueIdUTF8Length);
+    virtual int32_t GetDeviceName(uint32_t deviceNumber, char* deviceNameUTF8,
+                                  uint32_t deviceNameLength,
+                                  char* deviceUniqueIdUTF8,
+                                  uint32_t deviceUniqueIdUTF8Length,
+                                  char* productUniqueIdUTF8,
+                                  uint32_t productUniqueIdUTF8Length);
 
-  virtual int32_t DisplayCaptureSettingsDialogBox(
-      const char* deviceUniqueIdUTF8, const char* dialogTitleUTF8,
-      void* parentWindow, uint32_t positionX, uint32_t positionY);
+    virtual int32_t DisplayCaptureSettingsDialogBox(
+        const char* deviceUniqueIdUTF8, const char* dialogTitleUTF8,
+        void* parentWindow, uint32_t positionX, uint32_t positionY);
 };
 
 }  // namespace videocapturemodule

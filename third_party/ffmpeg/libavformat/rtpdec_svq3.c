@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sorenson-3 (SVQ3/SV3V) payload for RTP
  * Copyright (c) 2010 Ronald S. Bultje
  *
@@ -34,7 +34,8 @@
 #include "rtpdec.h"
 #include "rtpdec_formats.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *pktbuf;
     int64_t        timestamp;
 };
@@ -57,7 +58,8 @@ static int svq3_parse_packet (AVFormatContext *s, PayloadContext *sv,
     buf += 2;     // ignore buf[1]
     len -= 2;
 
-    if (config_packet) {
+    if (config_packet)
+    {
 
         av_freep(&st->codec->extradata);
         st->codec->extradata_size = 0;
@@ -79,7 +81,8 @@ static int svq3_parse_packet (AVFormatContext *s, PayloadContext *sv,
         return AVERROR(EAGAIN);
     }
 
-    if (start_packet) {
+    if (start_packet)
+    {
         int res;
 
         ffio_free_dyn_buf(&sv->pktbuf);
@@ -93,7 +96,8 @@ static int svq3_parse_packet (AVFormatContext *s, PayloadContext *sv,
 
     avio_write(sv->pktbuf, buf, len);
 
-    if (end_packet) {
+    if (end_packet)
+    {
         int ret = ff_rtp_finalize_packet(pkt, &sv->pktbuf, st->index);
         if (ret < 0)
             return ret;
@@ -110,7 +114,8 @@ static void svq3_close_context(PayloadContext *sv)
     ffio_free_dyn_buf(&sv->pktbuf);
 }
 
-RTPDynamicProtocolHandler ff_svq3_dynamic_handler = {
+RTPDynamicProtocolHandler ff_svq3_dynamic_handler =
+{
     .enc_name         = "X-SV3V-ES",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_NONE,      // see if (config_packet) above

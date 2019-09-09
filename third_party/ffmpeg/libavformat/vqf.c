@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VQF demuxer
  * Copyright (c) 2009 Vitor Sessak
  *
@@ -26,7 +26,8 @@
 #include "libavutil/mathematics.h"
 #include "riff.h"
 
-typedef struct VqfContext {
+typedef struct VqfContext
+{
     int frame_bit_len;
     uint8_t last_frame_bits;
     int remaining_bits;
@@ -67,7 +68,8 @@ static void add_metadata(AVFormatContext *s, uint32_t tag,
     av_dict_set(&s->metadata, key, buf, AV_DICT_DONT_STRDUP_VAL);
 }
 
-static const AVMetadataConv vqf_metadata_conv[] = {
+static const AVMetadataConv vqf_metadata_conv[] =
+{
     { "(c) ", "copyright" },
     { "ARNG", "arranger"  },
     { "AUTH", "author"    },
@@ -111,7 +113,8 @@ static int vqf_read_header(AVFormatContext *s)
     st->codec->codec_id   = AV_CODEC_ID_TWINVQ;
     st->start_time = 0;
 
-    do {
+    do
+    {
         int len;
         chunk_tag = avio_rl32(s->pb);
 
@@ -120,14 +123,16 @@ static int vqf_read_header(AVFormatContext *s)
 
         len = avio_rb32(s->pb);
 
-        if ((unsigned) len > INT_MAX/2) {
+        if ((unsigned) len > INT_MAX/2)
+        {
             av_log(s, AV_LOG_ERROR, "Malformed header\n");
             return -1;
         }
 
         header_size -= 8;
 
-        switch(chunk_tag){
+        switch(chunk_tag)
+        {
         case MKTAG('C','O','M','M'):
             avio_read(s->pb, comm_chunk, 12);
             st->codec->channels = AV_RB32(comm_chunk    ) + 1;
@@ -135,7 +140,8 @@ static int vqf_read_header(AVFormatContext *s)
             rate_flag           = AV_RB32(comm_chunk + 8);
             avio_skip(s->pb, len-12);
 
-            if (st->codec->channels <= 0) {
+            if (st->codec->channels <= 0)
+            {
                 av_log(s, AV_LOG_ERROR, "Invalid number of channels\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -146,7 +152,7 @@ static int vqf_read_header(AVFormatContext *s)
         {
             av_dict_set_int(&s->metadata, "size", avio_rb32(s->pb), 0);
         }
-            break;
+        break;
         case MKTAG('Y','E','A','R'): // recording date
         case MKTAG('E','N','C','D'): // compression date
         case MKTAG('E','X','T','R'): // reserved
@@ -162,9 +168,11 @@ static int vqf_read_header(AVFormatContext *s)
 
         header_size -= len;
 
-    } while (header_size >= 0 && !avio_feof(s->pb));
+    }
+    while (header_size >= 0 && !avio_feof(s->pb));
 
-    switch (rate_flag) {
+    switch (rate_flag)
+    {
     case -1:
         av_log(s, AV_LOG_ERROR, "COMM tag not found!\n");
         return -1;
@@ -178,7 +186,8 @@ static int vqf_read_header(AVFormatContext *s)
         st->codec->sample_rate = 11025;
         break;
     default:
-        if (rate_flag < 8 || rate_flag > 44) {
+        if (rate_flag < 8 || rate_flag > 44)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid rate flag %d\n", rate_flag);
             return AVERROR_INVALIDDATA;
         }
@@ -187,14 +196,16 @@ static int vqf_read_header(AVFormatContext *s)
     }
 
     if (read_bitrate / st->codec->channels <  8 ||
-        read_bitrate / st->codec->channels > 48) {
+            read_bitrate / st->codec->channels > 48)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid bitrate per channel %d\n",
                read_bitrate / st->codec->channels);
         return AVERROR_INVALIDDATA;
     }
 
     switch (((st->codec->sample_rate/1000) << 8) +
-            read_bitrate/st->codec->channels) {
+            read_bitrate/st->codec->channels)
+    {
     case (11<<8) + 8 :
     case (8 <<8) + 8 :
     case (11<<8) + 10:
@@ -245,7 +256,8 @@ static int vqf_read_packet(AVFormatContext *s, AVPacket *pkt)
     pkt->data[1] = c->last_frame_bits;
     ret = avio_read(s->pb, pkt->data+2, size);
 
-    if (ret != size) {
+    if (ret != size)
+    {
         av_free_packet(pkt);
         return AVERROR(EIO);
     }
@@ -269,7 +281,7 @@ static int vqf_read_seek(AVFormatContext *s,
                          st->time_base.num,
                          st->time_base.den * (int64_t)c->frame_bit_len,
                          (flags & AVSEEK_FLAG_BACKWARD) ?
-                                                   AV_ROUND_DOWN : AV_ROUND_UP);
+                         AV_ROUND_DOWN : AV_ROUND_UP);
     pos *= c->frame_bit_len;
 
     st->cur_dts = av_rescale(pos, st->time_base.den,
@@ -282,7 +294,8 @@ static int vqf_read_seek(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_vqf_demuxer = {
+AVInputFormat ff_vqf_demuxer =
+{
     .name           = "vqf",
     .long_name      = NULL_IF_CONFIG_SMALL("Nippon Telegraph and Telephone Corporation (NTT) TwinVQ"),
     .priv_data_size = sizeof(VqfContext),

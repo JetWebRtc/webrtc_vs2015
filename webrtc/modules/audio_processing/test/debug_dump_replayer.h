@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,53 +22,56 @@ RTC_PUSH_IGNORING_WUNDEF()
 #include "webrtc/modules/audio_processing/debug.pb.h"
 RTC_POP_IGNORING_WUNDEF()
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class DebugDumpReplayer {
- public:
-  DebugDumpReplayer();
-  ~DebugDumpReplayer();
+class DebugDumpReplayer
+{
+public:
+    DebugDumpReplayer();
+    ~DebugDumpReplayer();
 
-  // Set dump file
-  bool SetDumpFile(const std::string& filename);
+    // Set dump file
+    bool SetDumpFile(const std::string& filename);
 
-  // Return next event.
-  rtc::Optional<audioproc::Event> GetNextEvent() const;
+    // Return next event.
+    rtc::Optional<audioproc::Event> GetNextEvent() const;
 
-  // Run the next event. Returns true if succeeded.
-  bool RunNextEvent();
+    // Run the next event. Returns true if succeeded.
+    bool RunNextEvent();
 
-  const ChannelBuffer<float>* GetOutput() const;
-  StreamConfig GetOutputConfig() const;
+    const ChannelBuffer<float>* GetOutput() const;
+    StreamConfig GetOutputConfig() const;
 
- private:
-  // Following functions are facilities for replaying debug dumps.
-  void OnInitEvent(const audioproc::Init& msg);
-  void OnStreamEvent(const audioproc::Stream& msg);
-  void OnReverseStreamEvent(const audioproc::ReverseStream& msg);
-  void OnConfigEvent(const audioproc::Config& msg);
+private:
+    // Following functions are facilities for replaying debug dumps.
+    void OnInitEvent(const audioproc::Init& msg);
+    void OnStreamEvent(const audioproc::Stream& msg);
+    void OnReverseStreamEvent(const audioproc::ReverseStream& msg);
+    void OnConfigEvent(const audioproc::Config& msg);
 
-  void MaybeRecreateApm(const audioproc::Config& msg);
-  void ConfigureApm(const audioproc::Config& msg);
+    void MaybeRecreateApm(const audioproc::Config& msg);
+    void ConfigureApm(const audioproc::Config& msg);
 
-  void LoadNextMessage();
+    void LoadNextMessage();
 
-  // Buffer for APM input/output.
-  std::unique_ptr<ChannelBuffer<float>> input_;
-  std::unique_ptr<ChannelBuffer<float>> reverse_;
-  std::unique_ptr<ChannelBuffer<float>> output_;
+    // Buffer for APM input/output.
+    std::unique_ptr<ChannelBuffer<float>> input_;
+    std::unique_ptr<ChannelBuffer<float>> reverse_;
+    std::unique_ptr<ChannelBuffer<float>> output_;
 
-  std::unique_ptr<AudioProcessing> apm_;
+    std::unique_ptr<AudioProcessing> apm_;
 
-  FILE* debug_file_;
+    FILE* debug_file_;
 
-  StreamConfig input_config_;
-  StreamConfig reverse_config_;
-  StreamConfig output_config_;
+    StreamConfig input_config_;
+    StreamConfig reverse_config_;
+    StreamConfig output_config_;
 
-  bool has_next_event_;
-  audioproc::Event next_event_;
+    bool has_next_event_;
+    audioproc::Event next_event_;
 };
 
 }  // namespace test

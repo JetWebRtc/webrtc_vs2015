@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Rodger Combs
  *
  * This file is part of FFmpeg.
@@ -40,7 +40,8 @@
 SecIdentityRef SecIdentityCreate(CFAllocatorRef allocator, SecCertificateRef certificate, SecKeyRef privateKey);
 #define ioErr -36
 
-typedef struct TLSContext {
+typedef struct TLSContext
+{
     const AVClass *class;
     TLSShared tls_shared;
     SSLContextRef ssl_context;
@@ -51,7 +52,8 @@ typedef struct TLSContext {
 static int print_tls_error(URLContext *h, int ret)
 {
     TLSContext *c = h->priv_data;
-    switch (ret) {
+    switch (ret)
+    {
     case errSSLWouldBlock:
         break;
     case errSSLXCertChainInvalid:
@@ -75,7 +77,8 @@ static int import_pem(URLContext *h, char *path, CFArrayRef *array)
     SecExternalFormat format = kSecFormatPEMSequence;
     SecExternalFormat type = kSecItemTypeAggregate;
     CFStringRef pathStr = CFStringCreateWithCString(NULL, path, 0x08000100);
-    if (!pathStr) {
+    if (!pathStr)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -87,12 +90,14 @@ static int import_pem(URLContext *h, char *path, CFArrayRef *array)
     if ((ret = avio_size(s)) < 0)
         goto end;
 
-    if (ret == 0) {
+    if (ret == 0)
+    {
         ret = AVERROR_INVALIDDATA;
         goto end;
     }
 
-    if (!(buf = av_malloc(ret))) {
+    if (!(buf = av_malloc(ret)))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -103,12 +108,14 @@ static int import_pem(URLContext *h, char *path, CFArrayRef *array)
     data = CFDataCreate(kCFAllocatorDefault, buf, ret);
 
     if (SecItemImport(data, pathStr, &format, &type,
-                      0, NULL, NULL, array) != noErr || !array) {
+                      0, NULL, NULL, array) != noErr || !array)
+    {
         ret = AVERROR_UNKNOWN;
         goto end;
     }
 
-    if (CFArrayGetCount(*array) == 0) {
+    if (CFArrayGetCount(*array) == 0)
+    {
         ret = AVERROR_INVALIDDATA;
         goto end;
     }
@@ -133,7 +140,8 @@ static int load_ca(URLContext *h)
     if ((ret = import_pem(h, c->tls_shared.ca_file, &array)) < 0)
         goto end;
 
-    if (!(c->ca_array = CFRetain(array))) {
+    if (!(c->ca_array = CFRetain(array)))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -161,12 +169,14 @@ static int load_cert(URLContext *h)
 
     if (!(id = SecIdentityCreate(kCFAllocatorDefault,
                                  (SecCertificateRef)CFArrayGetValueAtIndex(certArray, 0),
-                                 (SecKeyRef)CFArrayGetValueAtIndex(keyArray, 0)))) {
+                                 (SecKeyRef)CFArrayGetValueAtIndex(keyArray, 0))))
+    {
         ret = AVERROR_UNKNOWN;
         goto end;
     }
 
-    if (!(outArray = CFArrayCreateMutableCopy(kCFAllocatorDefault, 0, certArray))) {
+    if (!(outArray = CFArrayCreateMutableCopy(kCFAllocatorDefault, 0, certArray)))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -192,21 +202,25 @@ static OSStatus tls_read_cb(SSLConnectionRef connection, void *data, size_t *dat
     URLContext *h = (URLContext*)connection;
     TLSContext *c = h->priv_data;
     int read = ffurl_read_complete(c->tls_shared.tcp, data, *dataLength);
-    if (read <= 0) {
+    if (read <= 0)
+    {
         *dataLength = 0;
-        switch(AVUNERROR(read)) {
-            case ENOENT:
-            case 0:
-                return errSSLClosedGraceful;
-            case ECONNRESET:
-                return errSSLClosedAbort;
-            case EAGAIN:
-                return errSSLWouldBlock;
-            default:
-                c->lastErr = read;
-                return ioErr;
+        switch(AVUNERROR(read))
+        {
+        case ENOENT:
+        case 0:
+            return errSSLClosedGraceful;
+        case ECONNRESET:
+            return errSSLClosedAbort;
+        case EAGAIN:
+            return errSSLWouldBlock;
+        default:
+            c->lastErr = read;
+            return ioErr;
         }
-    } else {
+    }
+    else
+    {
         *dataLength = read;
         return noErr;
     }
@@ -217,16 +231,20 @@ static OSStatus tls_write_cb(SSLConnectionRef connection, const void *data, size
     URLContext *h = (URLContext*)connection;
     TLSContext *c = h->priv_data;
     int written = ffurl_write(c->tls_shared.tcp, data, *dataLength);
-    if (written <= 0) {
+    if (written <= 0)
+    {
         *dataLength = 0;
-        switch(AVUNERROR(written)) {
-            case EAGAIN:
-                return errSSLWouldBlock;
-            default:
-                c->lastErr = written;
-                return ioErr;
+        switch(AVUNERROR(written))
+        {
+        case EAGAIN:
+            return errSSLWouldBlock;
+        default:
+            c->lastErr = written;
+            return ioErr;
         }
-    } else {
+    }
+    else
+    {
         *dataLength = written;
         return noErr;
     }
@@ -235,7 +253,8 @@ static OSStatus tls_write_cb(SSLConnectionRef connection, const void *data, size
 static int tls_close(URLContext *h)
 {
     TLSContext *c = h->priv_data;
-    if (c->ssl_context) {
+    if (c->ssl_context)
+    {
         SSLClose(c->ssl_context);
         CFRelease(c->ssl_context);
     }
@@ -265,12 +284,14 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
         goto fail;
 
     c->ssl_context = SSLCreateContext(NULL, s->listen ? kSSLServerSide : kSSLClientSide, kSSLStreamType);
-    if (!c->ssl_context) {
+    if (!c->ssl_context)
+    {
         av_log(h, AV_LOG_ERROR, "Unable to create SSL context\n");
         ret = AVERROR(ENOMEM);
         goto fail;
     }
-    if (s->ca_file) {
+    if (s->ca_file)
+    {
         if ((ret = load_ca(h)) < 0)
             goto fail;
     }
@@ -282,37 +303,47 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
     CHECK_ERROR(SSLSetPeerDomainName, c->ssl_context, s->host, strlen(s->host));
     CHECK_ERROR(SSLSetIOFuncs, c->ssl_context, tls_read_cb, tls_write_cb);
     CHECK_ERROR(SSLSetConnection, c->ssl_context, h);
-    while (1) {
+    while (1)
+    {
         OSStatus status = SSLHandshake(c->ssl_context);
-        if (status == errSSLServerAuthCompleted) {
+        if (status == errSSLServerAuthCompleted)
+        {
             SecTrustRef peerTrust;
             SecTrustResultType trustResult;
             if (!s->verify)
                 continue;
 
-            if (SSLCopyPeerTrust(c->ssl_context, &peerTrust) != noErr) {
+            if (SSLCopyPeerTrust(c->ssl_context, &peerTrust) != noErr)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
 
-            if (SecTrustSetAnchorCertificates(peerTrust, c->ca_array) != noErr) {
+            if (SecTrustSetAnchorCertificates(peerTrust, c->ca_array) != noErr)
+            {
                 ret = AVERROR_UNKNOWN;
                 goto fail;
             }
 
-            if (SecTrustEvaluate(peerTrust, &trustResult) != noErr) {
+            if (SecTrustEvaluate(peerTrust, &trustResult) != noErr)
+            {
                 ret = AVERROR_UNKNOWN;
                 goto fail;
             }
 
             if (trustResult == kSecTrustResultProceed ||
-                trustResult == kSecTrustResultUnspecified) {
+                    trustResult == kSecTrustResultUnspecified)
+            {
                 // certificate is trusted
                 status = errSSLWouldBlock; // so we call SSLHandshake again
-            } else if (trustResult == kSecTrustResultRecoverableTrustFailure) {
+            }
+            else if (trustResult == kSecTrustResultRecoverableTrustFailure)
+            {
                 // not trusted, for some reason other than being expired
                 status = errSSLXCertChainInvalid;
-            } else {
+            }
+            else
+            {
                 // cannot use this certificate (fatal)
                 status = errSSLBadCert;
             }
@@ -336,7 +367,8 @@ fail:
 
 static int map_ssl_error(OSStatus status, size_t processed)
 {
-    switch (status) {
+    switch (status)
+    {
     case noErr:
         return processed;
     case errSSLClosedGraceful:
@@ -371,19 +403,22 @@ static int tls_write(URLContext *h, const uint8_t *buf, int size)
     return print_tls_error(h, ret);
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     TLS_COMMON_OPTIONS(TLSContext, tls_shared),
     { NULL }
 };
 
-static const AVClass tls_class = {
+static const AVClass tls_class =
+{
     .class_name = "tls",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_tls_securetransport_protocol = {
+URLProtocol ff_tls_securetransport_protocol =
+{
     .name           = "tls",
     .url_open2      = tls_open,
     .url_read       = tls_read,

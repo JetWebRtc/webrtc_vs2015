@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTMP Diffie-Hellmann utilities
  * Copyright (c) 2009 Andrej Stepanchuk
  * Copyright (c) 2009-2010 Howard Chu
@@ -130,7 +130,8 @@ static FFBigNum dh_generate_key(FF_DH *dh)
     bn_random(dh->priv_key, 8 * num_bytes);
 
     bn_new(dh->pub_key);
-    if (!dh->pub_key) {
+    if (!dh->pub_key)
+    {
         bn_free(dh->priv_key);
         return NULL;
     }
@@ -280,7 +281,8 @@ int ff_dh_generate_public_key(FF_DH *dh)
 {
     int ret = 0;
 
-    while (!ret) {
+    while (!ret)
+    {
         FFBigNum q1 = NULL;
 
         if (!dh_generate_key(dh))
@@ -293,7 +295,8 @@ int ff_dh_generate_public_key(FF_DH *dh)
         ret = dh_is_valid_public_key(dh->pub_key, dh->p, q1);
         bn_free(q1);
 
-        if (!ret) {
+        if (!ret)
+        {
             /* the public key is valid */
             break;
         }
@@ -332,16 +335,20 @@ int ff_dh_compute_shared_secret_key(FF_DH *dh, const uint8_t *pub_key,
 
     /* convert the string containing a hexadecimal number into a bignum */
     bn_hex2bn(q1, Q1024, ret);
-    if (!ret) {
+    if (!ret)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
     /* when the public key is valid we have to compute the shared secret key */
-    if ((ret = dh_is_valid_public_key(pub_key_bn, dh->p, q1)) < 0) {
+    if ((ret = dh_is_valid_public_key(pub_key_bn, dh->p, q1)) < 0)
+    {
         goto fail;
-    } else if ((ret = dh_compute_key(dh, pub_key_bn, secret_key_len,
-                                     secret_key)) < 0) {
+    }
+    else if ((ret = dh_compute_key(dh, pub_key_bn, secret_key_len,
+                                   secret_key)) < 0)
+    {
         ret = AVERROR(EINVAL);
         goto fail;
     }
@@ -363,7 +370,8 @@ static int test_random_shared_secret(void)
 
     peer1 = ff_dh_init(1024);
     peer2 = ff_dh_init(1024);
-    if (!peer1 || !peer2) {
+    if (!peer1 || !peer2)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -376,15 +384,18 @@ static int test_random_shared_secret(void)
     if ((ret = ff_dh_write_public_key(peer2, pubkey2, sizeof(pubkey2))) < 0)
         goto fail;
     if ((ret = ff_dh_compute_shared_secret_key(peer1, pubkey2, sizeof(pubkey2),
-                                               sharedkey1, sizeof(sharedkey1))) < 0)
+               sharedkey1, sizeof(sharedkey1))) < 0)
         goto fail;
     if ((ret = ff_dh_compute_shared_secret_key(peer2, pubkey1, sizeof(pubkey1),
-                                               sharedkey2, sizeof(sharedkey2))) < 0)
+               sharedkey2, sizeof(sharedkey2))) < 0)
         goto fail;
-    if (memcmp(sharedkey1, sharedkey2, sizeof(sharedkey1))) {
+    if (memcmp(sharedkey1, sharedkey2, sizeof(sharedkey1)))
+    {
         printf("Mismatched generated shared key\n");
         ret = AVERROR_INVALIDDATA;
-    } else {
+    }
+    else
+    {
         printf("Generated shared key ok\n");
     }
 fail:
@@ -403,7 +414,8 @@ static const char *public_key =
     "FC270C26382BF315C19E97A76104A716FC998A651E8610A3AE6CF65D8FAE5D3F32EEA0"
     "0B32CB9609B494116A825D7142D17B88E3D20EDD98743DE29CF37A23A9F6A58B960591"
     "3157D5965FCB46DDA73A1F08DD897BAE88DFE6FC937CBA";
-static const uint8_t public_key_bin[] = {
+static const uint8_t public_key_bin[] =
+{
     0xf2, 0x72, 0xec, 0xf8, 0x36, 0x22, 0x57, 0xc5, 0xd2, 0xc3, 0xcc, 0x22,
     0x29, 0xcf, 0x9c, 0x0a, 0x03, 0x22, 0x5b, 0xc1, 0x09, 0xb1, 0xdb, 0xc7,
     0x6a, 0x68, 0xc3, 0x94, 0xf2, 0x56, 0xac, 0xa3, 0xef, 0x5f, 0x64, 0xfc,
@@ -416,7 +428,8 @@ static const uint8_t public_key_bin[] = {
     0x96, 0x5f, 0xcb, 0x46, 0xdd, 0xa7, 0x3a, 0x1f, 0x08, 0xdd, 0x89, 0x7b,
     0xae, 0x88, 0xdf, 0xe6, 0xfc, 0x93, 0x7c, 0xba
 };
-static const uint8_t peer_public_key[] = {
+static const uint8_t peer_public_key[] =
+{
     0x58, 0x66, 0x05, 0x49, 0x94, 0x23, 0x2b, 0x66, 0x52, 0x13, 0xff, 0x46,
     0xf2, 0xb3, 0x79, 0xa9, 0xee, 0xae, 0x1a, 0x13, 0xf0, 0x71, 0x52, 0xfb,
     0x93, 0x4e, 0xee, 0x97, 0x05, 0x73, 0x50, 0x7d, 0xaf, 0x02, 0x07, 0x72,
@@ -429,7 +442,8 @@ static const uint8_t peer_public_key[] = {
     0x9d, 0xb5, 0x50, 0xe3, 0x99, 0xda, 0xe0, 0xa6, 0x14, 0xc9, 0x80, 0x12,
     0xf9, 0x3c, 0xac, 0x06, 0x02, 0x7a, 0xde, 0x74
 };
-static const uint8_t shared_secret[] = {
+static const uint8_t shared_secret[] =
+{
     0xb2, 0xeb, 0xcb, 0x71, 0xf3, 0x61, 0xfb, 0x5b, 0x4e, 0x5c, 0x4c, 0xcf,
     0x5c, 0x08, 0x5f, 0x96, 0x26, 0x77, 0x1d, 0x31, 0xf1, 0xe1, 0xf7, 0x4b,
     0x92, 0xac, 0x82, 0x2a, 0x88, 0xc7, 0x83, 0xe1, 0xc7, 0xf3, 0xd3, 0x1a,
@@ -461,20 +475,26 @@ static int test_ref_data(void)
         goto fail;
     if ((ret = ff_dh_write_public_key(dh, pubkey_test, sizeof(pubkey_test))) < 0)
         goto fail;
-    if (memcmp(pubkey_test, public_key_bin, sizeof(pubkey_test))) {
+    if (memcmp(pubkey_test, public_key_bin, sizeof(pubkey_test)))
+    {
         printf("Mismatched generated public key\n");
         ret = AVERROR_INVALIDDATA;
         goto fail;
-    } else {
+    }
+    else
+    {
         printf("Generated public key ok\n");
     }
     if ((ret = ff_dh_compute_shared_secret_key(dh, peer_public_key, sizeof(peer_public_key),
-                                               sharedkey_test, sizeof(sharedkey_test))) < 0)
+               sharedkey_test, sizeof(sharedkey_test))) < 0)
         goto fail;
-    if (memcmp(shared_secret, sharedkey_test, sizeof(sharedkey_test))) {
+    if (memcmp(shared_secret, sharedkey_test, sizeof(sharedkey_test)))
+    {
         printf("Mismatched generated shared key\n");
         ret = AVERROR_INVALIDDATA;
-    } else {
+    }
+    else
+    {
         printf("Generated shared key ok\n");
     }
 fail:

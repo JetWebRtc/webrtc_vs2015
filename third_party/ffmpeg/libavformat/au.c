@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AU muxer and demuxer
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -38,7 +38,8 @@
 /* the specification requires an annotation field of at least eight bytes */
 #define AU_HEADER_SIZE (24+8)
 
-static const AVCodecTag codec_au_tags[] = {
+static const AVCodecTag codec_au_tags[] =
+{
     { AV_CODEC_ID_PCM_MULAW,  1 },
     { AV_CODEC_ID_PCM_S8,     2 },
     { AV_CODEC_ID_PCM_S16BE,  3 },
@@ -60,7 +61,7 @@ static const AVCodecTag codec_au_tags[] = {
 static int au_probe(AVProbeData *p)
 {
     if (p->buf[0] == '.' && p->buf[1] == 's' &&
-        p->buf[2] == 'n' && p->buf[3] == 'd')
+            p->buf[2] == 'n' && p->buf[3] == 'd')
         return AVPROBE_SCORE_MAX;
     else
         return 0;
@@ -84,7 +85,8 @@ static int au_read_header(AVFormatContext *s)
     size = avio_rb32(pb); /* header size */
     data_size = avio_rb32(pb); /* data size in bytes */
 
-    if (data_size < 0 && data_size != AU_UNKNOWN_SIZE) {
+    if (data_size < 0 && data_size != AU_UNKNOWN_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid negative data size '%d' found\n", data_size);
         return AVERROR_INVALIDDATA;
     }
@@ -93,38 +95,48 @@ static int au_read_header(AVFormatContext *s)
     rate     = avio_rb32(pb);
     channels = avio_rb32(pb);
 
-    if (size > 24) {
+    if (size > 24)
+    {
         /* skip unused data */
         avio_skip(pb, size - 24);
     }
 
     codec = ff_codec_get_id(codec_au_tags, id);
 
-    if (codec == AV_CODEC_ID_NONE) {
+    if (codec == AV_CODEC_ID_NONE)
+    {
         avpriv_request_sample(s, "unknown or unsupported codec tag: %u", id);
         return AVERROR_PATCHWELCOME;
     }
 
     bps = av_get_bits_per_sample(codec);
-    if (codec == AV_CODEC_ID_ADPCM_G726LE) {
-        if (id == MKBETAG('7','2','6','2')) {
+    if (codec == AV_CODEC_ID_ADPCM_G726LE)
+    {
+        if (id == MKBETAG('7','2','6','2'))
+        {
             bps = 2;
-        } else {
+        }
+        else
+        {
             const uint8_t bpcss[] = {4, 0, 3, 5};
             av_assert0(id >= 23 && id < 23 + 4);
             bps = bpcss[id - 23];
         }
-    } else if (!bps) {
+    }
+    else if (!bps)
+    {
         avpriv_request_sample(s, "Unknown bits per sample");
         return AVERROR_PATCHWELCOME;
     }
 
-    if (channels == 0 || channels >= INT_MAX / (BLOCK_SIZE * bps >> 3)) {
+    if (channels == 0 || channels >= INT_MAX / (BLOCK_SIZE * bps >> 3))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid number of channels %u\n", channels);
         return AVERROR_INVALIDDATA;
     }
 
-    if (rate == 0 || rate > INT_MAX) {
+    if (rate == 0 || rate > INT_MAX)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid sample rate: %u\n", rate);
         return AVERROR_INVALIDDATA;
     }
@@ -141,7 +153,7 @@ static int au_read_header(AVFormatContext *s)
     st->codec->bit_rate    = channels * rate * bps;
     st->codec->block_align = FFMAX(bps * st->codec->channels / 8, 1);
     if (data_size != AU_UNKNOWN_SIZE)
-    st->duration = (((int64_t)data_size)<<3) / (st->codec->channels * (int64_t)bps);
+        st->duration = (((int64_t)data_size)<<3) / (st->codec->channels * (int64_t)bps);
 
     st->start_time = 0;
     avpriv_set_pts_info(st, 64, 1, rate);
@@ -149,7 +161,8 @@ static int au_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_au_demuxer = {
+AVInputFormat ff_au_demuxer =
+{
     .name        = "au",
     .long_name   = NULL_IF_CONFIG_SMALL("Sun AU"),
     .read_probe  = au_probe,
@@ -170,13 +183,15 @@ static int au_write_header(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     AVCodecContext *enc = s->streams[0]->codec;
 
-    if (s->nb_streams != 1) {
+    if (s->nb_streams != 1)
+    {
         av_log(s, AV_LOG_ERROR, "only one stream is supported\n");
         return AVERROR(EINVAL);
     }
 
     enc->codec_tag = ff_codec_get_tag(codec_au_tags, enc->codec_id);
-    if (!enc->codec_tag) {
+    if (!enc->codec_tag)
+    {
         av_log(s, AV_LOG_ERROR, "unsupported codec\n");
         return AVERROR(EINVAL);
     }
@@ -198,7 +213,8 @@ static int au_write_trailer(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     int64_t file_size = avio_tell(pb);
 
-    if (s->pb->seekable && file_size < INT32_MAX) {
+    if (s->pb->seekable && file_size < INT32_MAX)
+    {
         /* update file size */
         avio_seek(pb, 8, SEEK_SET);
         avio_wb32(pb, (uint32_t)(file_size - AU_HEADER_SIZE));
@@ -209,7 +225,8 @@ static int au_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_au_muxer = {
+AVOutputFormat ff_au_muxer =
+{
     .name          = "au",
     .long_name     = NULL_IF_CONFIG_SMALL("Sun AU"),
     .mime_type     = "audio/basic",

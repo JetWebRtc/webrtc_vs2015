@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,11 +13,12 @@
 
 #include "NETEQTEST_RTPpacket.h"
 
-class NETEQTEST_DummyRTPpacket : public NETEQTEST_RTPpacket {
- public:
-  int readFromFile(FILE* fp) override;
-  int writeToFile(FILE* fp) override;
-  void parseHeader() override;
+class NETEQTEST_DummyRTPpacket : public NETEQTEST_RTPpacket
+{
+public:
+    int readFromFile(FILE* fp) override;
+    int writeToFile(FILE* fp) override;
+    void parseHeader() override;
 };
 
 #endif  // NETEQTEST_DUMMYRTPPACKET_H

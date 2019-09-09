@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Provide registration of all codecs, parsers and bitstream filters for libavcodec.
  * Copyright (c) 2002 Fabrice Bellard
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RIFF demuxing functions and data
  * Copyright (c) 2000 Fabrice Bellard
  *
@@ -34,7 +34,8 @@ int ff_get_guid(AVIOContext *s, ff_asf_guid *g)
     int ret;
     av_assert0(sizeof(*g) == 16); //compiler will optimize this out
     ret = avio_read(s, *g, sizeof(*g));
-    if (ret < (int)sizeof(*g)) {
+    if (ret < (int)sizeof(*g))
+    {
         memset(*g, 0, sizeof(*g));
         return ret < 0 ? ret : AVERROR_INVALIDDATA;
     }
@@ -69,11 +70,17 @@ static void parse_waveformatex(AVIOContext *pb, AVCodecContext *c)
 
     ff_get_guid(pb, &subformat);
     if (!memcmp(subformat + 4,
-                (const uint8_t[]){ FF_MEDIASUBTYPE_BASE_GUID }, 12)) {
+                (const uint8_t[])
+{
+    FF_MEDIASUBTYPE_BASE_GUID
+}, 12))
+    {
         c->codec_tag = AV_RL32(subformat);
         c->codec_id  = ff_wav_codec_get_id(c->codec_tag,
                                            c->bits_per_coded_sample);
-    } else {
+    }
+    else
+    {
         c->codec_id = ff_codec_guid_get_id(ff_codec_wav_guids, subformat);
         if (!c->codec_id)
             av_log(c, AV_LOG_WARNING,
@@ -89,55 +96,72 @@ int ff_get_wav_header(AVFormatContext *s, AVIOContext *pb,
     int id;
     uint64_t bitrate;
 
-    if (size < 14) {
+    if (size < 14)
+    {
         avpriv_request_sample(codec, "wav header size < 14");
         return AVERROR_INVALIDDATA;
     }
 
     codec->codec_type  = AVMEDIA_TYPE_AUDIO;
-    if (!big_endian) {
+    if (!big_endian)
+    {
         id                 = avio_rl16(pb);
         codec->channels    = avio_rl16(pb);
         codec->sample_rate = avio_rl32(pb);
         bitrate            = avio_rl32(pb) * 8LL;
         codec->block_align = avio_rl16(pb);
-    } else {
+    }
+    else
+    {
         id                 = avio_rb16(pb);
         codec->channels    = avio_rb16(pb);
         codec->sample_rate = avio_rb32(pb);
         bitrate            = avio_rb32(pb) * 8LL;
         codec->block_align = avio_rb16(pb);
     }
-    if (size == 14) {  /* We're dealing with plain vanilla WAVEFORMAT */
+    if (size == 14)    /* We're dealing with plain vanilla WAVEFORMAT */
+    {
         codec->bits_per_coded_sample = 8;
-    } else {
-        if (!big_endian) {
+    }
+    else
+    {
+        if (!big_endian)
+        {
             codec->bits_per_coded_sample = avio_rl16(pb);
-        } else {
+        }
+        else
+        {
             codec->bits_per_coded_sample = avio_rb16(pb);
         }
     }
-    if (id == 0xFFFE) {
+    if (id == 0xFFFE)
+    {
         codec->codec_tag = 0;
-    } else {
+    }
+    else
+    {
         codec->codec_tag = id;
         codec->codec_id  = ff_wav_codec_get_id(id,
                                                codec->bits_per_coded_sample);
     }
-    if (size >= 18) {  /* We're obviously dealing with WAVEFORMATEX */
+    if (size >= 18)    /* We're obviously dealing with WAVEFORMATEX */
+    {
         int cbSize = avio_rl16(pb); /* cbSize */
-        if (big_endian) {
+        if (big_endian)
+        {
             avpriv_report_missing_feature(codec, "WAVEFORMATEX support for RIFX files\n");
             return AVERROR_PATCHWELCOME;
         }
         size  -= 18;
         cbSize = FFMIN(size, cbSize);
-        if (cbSize >= 22 && id == 0xfffe) { /* WAVEFORMATEXTENSIBLE */
+        if (cbSize >= 22 && id == 0xfffe)   /* WAVEFORMATEXTENSIBLE */
+        {
             parse_waveformatex(pb, codec);
             cbSize -= 22;
             size   -= 22;
         }
-        if (cbSize > 0) {
+        if (cbSize > 0)
+        {
             av_freep(&codec->extradata);
             if (ff_get_extradata(codec, pb, cbSize) < 0)
                 return AVERROR(ENOMEM);
@@ -149,28 +173,36 @@ int ff_get_wav_header(AVFormatContext *s, AVIOContext *pb,
             avio_skip(pb, size);
     }
 
-    if (bitrate > INT_MAX) {
-        if (s->error_recognition & AV_EF_EXPLODE) {
+    if (bitrate > INT_MAX)
+    {
+        if (s->error_recognition & AV_EF_EXPLODE)
+        {
             av_log(s, AV_LOG_ERROR,
                    "The bitrate %"PRIu64" is too large.\n",
-                    bitrate);
+                   bitrate);
             return AVERROR_INVALIDDATA;
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_WARNING,
                    "The bitrate %"PRIu64" is too large, resetting to 0.",
                    bitrate);
             codec->bit_rate = 0;
         }
-    } else {
+    }
+    else
+    {
         codec->bit_rate = bitrate;
     }
 
-    if (codec->sample_rate <= 0) {
+    if (codec->sample_rate <= 0)
+    {
         av_log(s, AV_LOG_ERROR,
                "Invalid sample rate: %d\n", codec->sample_rate);
         return AVERROR_INVALIDDATA;
     }
-    if (codec->codec_id == AV_CODEC_ID_AAC_LATM) {
+    if (codec->codec_id == AV_CODEC_ID_AAC_LATM)
+    {
         /* Channels and sample_rate values are those prior to applying SBR
          * and/or PS. */
         codec->channels    = 0;
@@ -227,7 +259,8 @@ int ff_read_riff_info(AVFormatContext *s, int64_t size)
     end   = start + size;
 
     while ((cur = avio_tell(pb)) >= 0 &&
-           cur <= end - 8 /* = tag + size */) {
+            cur <= end - 8 /* = tag + size */)
+    {
         uint32_t chunk_code;
         int64_t chunk_size;
         char key[5] = { 0 };
@@ -235,20 +268,24 @@ int ff_read_riff_info(AVFormatContext *s, int64_t size)
 
         chunk_code = avio_rl32(pb);
         chunk_size = avio_rl32(pb);
-        if (avio_feof(pb)) {
-            if (chunk_code || chunk_size) {
+        if (avio_feof(pb))
+        {
+            if (chunk_code || chunk_size)
+            {
                 av_log(s, AV_LOG_WARNING, "INFO subchunk truncated\n");
                 return AVERROR_INVALIDDATA;
             }
             return AVERROR_EOF;
         }
         if (chunk_size > end ||
-            end - chunk_size < cur ||
-            chunk_size == UINT_MAX) {
+                end - chunk_size < cur ||
+                chunk_size == UINT_MAX)
+        {
             avio_seek(pb, -9, SEEK_CUR);
             chunk_code = avio_rl32(pb);
             chunk_size = avio_rl32(pb);
-            if (chunk_size > end || end - chunk_size < cur || chunk_size == UINT_MAX) {
+            if (chunk_size > end || end - chunk_size < cur || chunk_size == UINT_MAX)
+            {
                 av_log(s, AV_LOG_WARNING, "too big INFO subchunk\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -256,10 +293,12 @@ int ff_read_riff_info(AVFormatContext *s, int64_t size)
 
         chunk_size += (chunk_size & 1);
 
-        if (!chunk_code) {
+        if (!chunk_code)
+        {
             if (chunk_size)
                 avio_skip(pb, chunk_size);
-            else if (pb->eof_reached) {
+            else if (pb->eof_reached)
+            {
                 av_log(s, AV_LOG_WARNING, "truncated file\n");
                 return AVERROR_EOF;
             }
@@ -267,7 +306,8 @@ int ff_read_riff_info(AVFormatContext *s, int64_t size)
         }
 
         value = av_mallocz(chunk_size + 1);
-        if (!value) {
+        if (!value)
+        {
             av_log(s, AV_LOG_ERROR,
                    "out of memory, unable to read INFO tag\n");
             return AVERROR(ENOMEM);
@@ -275,7 +315,8 @@ int ff_read_riff_info(AVFormatContext *s, int64_t size)
 
         AV_WL32(key, chunk_code);
 
-        if (avio_read(pb, value, chunk_size) != chunk_size) {
+        if (avio_read(pb, value, chunk_size) != chunk_size)
+        {
             av_log(s, AV_LOG_WARNING,
                    "premature end of file while reading INFO tag\n");
         }

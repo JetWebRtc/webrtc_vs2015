@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC Spectral Band Replication decoding functions
  * Copyright (c) 2008-2009 Robert Swain ( rob opendot cl )
  * Copyright (c) 2009-2010 Alex Converse <alex.converse@gmail.com>
@@ -48,7 +48,8 @@ static void sbr_neg_odd_64_c(float *x)
 {
     union av_intfloat32 *xi = (union av_intfloat32*) x;
     int i;
-    for (i = 1; i < 64; i += 4) {
+    for (i = 1; i < 64; i += 4)
+    {
         xi[i + 0].i ^= 1U << 31;
         xi[i + 2].i ^= 1U << 31;
     }
@@ -60,7 +61,8 @@ static void sbr_qmf_pre_shuffle_c(float *z)
     int k;
     zi[64].i = zi[0].i;
     zi[65].i = zi[1].i;
-    for (k = 1; k < 31; k += 2) {
+    for (k = 1; k < 31; k += 2)
+    {
         zi[64 + 2 * k + 0].i = zi[64 - k].i ^ (1U << 31);
         zi[64 + 2 * k + 1].i = zi[ k + 1].i;
         zi[64 + 2 * k + 2].i = zi[63 - k].i ^ (1U << 31);
@@ -76,7 +78,8 @@ static void sbr_qmf_post_shuffle_c(float W[32][2], const float *z)
     const union av_intfloat32 *zi = (const union av_intfloat32*) z;
     union av_intfloat32 *Wi       = (union av_intfloat32*) W;
     int k;
-    for (k = 0; k < 32; k += 2) {
+    for (k = 0; k < 32; k += 2)
+    {
         Wi[2 * k + 0].i = zi[63 - k].i ^ (1U << 31);
         Wi[2 * k + 1].i = zi[ k + 0].i;
         Wi[2 * k + 2].i = zi[62 - k].i ^ (1U << 31);
@@ -89,35 +92,42 @@ static void sbr_qmf_deint_neg_c(float *v, const float *src)
     const union av_intfloat32 *si = (const union av_intfloat32*)src;
     union av_intfloat32 *vi = (union av_intfloat32*)v;
     int i;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < 32; i++)
+    {
         vi[     i].i = si[63 - 2 * i    ].i;
         vi[63 - i].i = si[63 - 2 * i - 1].i ^ (1U << 31);
     }
 }
 
 #if 0
-    /* This code is slower because it multiplies memory accesses.
-     * It is left for educational purposes and because it may offer
-     * a better reference for writing arch-specific DSP functions. */
+/* This code is slower because it multiplies memory accesses.
+ * It is left for educational purposes and because it may offer
+ * a better reference for writing arch-specific DSP functions. */
 static av_always_inline void autocorrelate(const float x[40][2],
-                                           float phi[3][2][2], int lag)
+        float phi[3][2][2], int lag)
 {
     int i;
     float real_sum = 0.0f;
     float imag_sum = 0.0f;
-    if (lag) {
-        for (i = 1; i < 38; i++) {
+    if (lag)
+    {
+        for (i = 1; i < 38; i++)
+        {
             real_sum += x[i][0] * x[i+lag][0] + x[i][1] * x[i+lag][1];
             imag_sum += x[i][0] * x[i+lag][1] - x[i][1] * x[i+lag][0];
         }
         phi[2-lag][1][0] = real_sum + x[ 0][0] * x[lag][0] + x[ 0][1] * x[lag][1];
         phi[2-lag][1][1] = imag_sum + x[ 0][0] * x[lag][1] - x[ 0][1] * x[lag][0];
-        if (lag == 1) {
+        if (lag == 1)
+        {
             phi[0][0][0] = real_sum + x[38][0] * x[39][0] + x[38][1] * x[39][1];
             phi[0][0][1] = imag_sum + x[38][0] * x[39][1] - x[38][1] * x[39][0];
         }
-    } else {
-        for (i = 1; i < 38; i++) {
+    }
+    else
+    {
+        for (i = 1; i < 38; i++)
+        {
             real_sum += x[i][0] * x[i][0] + x[i][1] * x[i][1];
         }
         phi[2][1][0] = real_sum + x[ 0][0] * x[ 0][0] + x[ 0][1] * x[ 0][1];
@@ -138,7 +148,8 @@ static void sbr_autocorrelate_c(const float x[40][2], float phi[3][2][2])
     float imag_sum2 = x[0][0] * x[2][1] - x[0][1] * x[2][0];
     float real_sum1 = 0.0f, imag_sum1 = 0.0f, real_sum0 = 0.0f;
     int   i;
-    for (i = 1; i < 38; i++) {
+    for (i = 1; i < 38; i++)
+    {
         real_sum0 += x[i][0] * x[i    ][0] + x[i][1] * x[i    ][1];
         real_sum1 += x[i][0] * x[i + 1][0] + x[i][1] * x[i + 1][1];
         imag_sum1 += x[i][0] * x[i + 1][1] - x[i][1] * x[i + 1][0];
@@ -168,7 +179,8 @@ static void sbr_hf_gen_c(float (*X_high)[2], const float (*X_low)[2],
     alpha[2] = alpha0[0] * bw;
     alpha[3] = alpha0[1] * bw;
 
-    for (i = start; i < end; i++) {
+    for (i = start; i < end; i++)
+    {
         X_high[i][0] =
             X_low[i - 2][0] * alpha[0] -
             X_low[i - 2][1] * alpha[1] +
@@ -189,30 +201,35 @@ static void sbr_hf_g_filt_c(float (*Y)[2], const float (*X_high)[40][2],
 {
     int m;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
         Y[m][0] = X_high[m][ixh][0] * g_filt[m];
         Y[m][1] = X_high[m][ixh][1] * g_filt[m];
     }
 }
 
 static av_always_inline void sbr_hf_apply_noise(float (*Y)[2],
-                                                const float *s_m,
-                                                const float *q_filt,
-                                                int noise,
-                                                float phi_sign0,
-                                                float phi_sign1,
-                                                int m_max)
+        const float *s_m,
+        const float *q_filt,
+        int noise,
+        float phi_sign0,
+        float phi_sign1,
+        int m_max)
 {
     int m;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
         float y0 = Y[m][0];
         float y1 = Y[m][1];
         noise = (noise + 1) & 0x1ff;
-        if (s_m[m]) {
+        if (s_m[m])
+        {
             y0 += s_m[m] * phi_sign0;
             y1 += s_m[m] * phi_sign1;
-        } else {
+        }
+        else
+        {
             y0 += q_filt[m] * ff_sbr_noise_table[noise][0];
             y1 += q_filt[m] * ff_sbr_noise_table[noise][1];
         }

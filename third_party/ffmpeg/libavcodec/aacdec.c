@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC decoder
  * Copyright (c) 2005-2006 Oded Shimon ( ods15 ods15 dyndns org )
  * Copyright (c) 2006-2007 Maxim Gavrilov ( maxim.gavrilov gmail com )
@@ -130,11 +130,13 @@ static inline float *VMUL4S(float *dst, const float *v, unsigned idx,
     t.i = s.i ^ (sign & 1U<<31);
     *dst++ = v[idx    & 3] * t.f;
 
-    sign <<= nz & 1; nz >>= 1;
+    sign <<= nz & 1;
+    nz >>= 1;
     t.i = s.i ^ (sign & 1U<<31);
     *dst++ = v[idx>>2 & 3] * t.f;
 
-    sign <<= nz & 1; nz >>= 1;
+    sign <<= nz & 1;
+    nz >>= 1;
     t.i = s.i ^ (sign & 1U<<31);
     *dst++ = v[idx>>4 & 3] * t.f;
 
@@ -215,17 +217,23 @@ static void apply_dependent_coupling(AACContext *ac,
     float *dest = target->coeffs;
     const float *src = cce->ch[0].coeffs;
     int g, i, group, k, idx = 0;
-    if (ac->oc[1].m4ac.object_type == AOT_AAC_LTP) {
+    if (ac->oc[1].m4ac.object_type == AOT_AAC_LTP)
+    {
         av_log(ac->avctx, AV_LOG_ERROR,
                "Dependent coupling is not supported together with LTP\n");
         return;
     }
-    for (g = 0; g < ics->num_window_groups; g++) {
-        for (i = 0; i < ics->max_sfb; i++, idx++) {
-            if (cce->ch[0].band_type[idx] != ZERO_BT) {
+    for (g = 0; g < ics->num_window_groups; g++)
+    {
+        for (i = 0; i < ics->max_sfb; i++, idx++)
+        {
+            if (cce->ch[0].band_type[idx] != ZERO_BT)
+            {
                 const float gain = cce->coup.gain[index][idx];
-                for (group = 0; group < ics->group_len[g]; group++) {
-                    for (k = offsets[i]; k < offsets[i + 1]; k++) {
+                for (group = 0; group < ics->group_len[g]; group++)
+                {
+                    for (k = offsets[i]; k < offsets[i + 1]; k++)
+                    {
                         // FIXME: SIMDify
                         dest[group * 128 + k] += gain * src[group * 128 + k];
                     }
@@ -260,7 +268,8 @@ static void apply_independent_coupling(AACContext *ac,
 
 #define LOAS_SYNC_WORD   0x2b7       ///< 11 bits LOAS sync word
 
-struct LATMContext {
+struct LATMContext
+{
     AACContext aac_ctx;     ///< containing AACContext
     int initialized;        ///< initialized after a valid extradata was seen
 
@@ -278,7 +287,7 @@ static inline uint32_t latm_get_value(GetBitContext *b)
 }
 
 static int latm_decode_audio_specific_config(struct LATMContext *latmctx,
-                                             GetBitContext *gb, int asclen)
+        GetBitContext *gb, int asclen)
 {
     AACContext *ac        = &latmctx->aac_ctx;
     AVCodecContext *avctx = ac->avctx;
@@ -287,13 +296,16 @@ static int latm_decode_audio_specific_config(struct LATMContext *latmctx,
     int sync_extension    = 0;
     int bits_consumed, esize;
 
-    if (asclen) {
+    if (asclen)
+    {
         sync_extension = 1;
         asclen         = FFMIN(asclen, get_bits_left(gb));
-    } else
+    }
+    else
         asclen         = get_bits_left(gb);
 
-    if (config_start_bit % 8) {
+    if (config_start_bit % 8)
+    {
         avpriv_request_sample(latmctx->aac_ctx.avctx,
                               "Non-byte-aligned audio-specific config");
         return AVERROR_PATCHWELCOME;
@@ -301,26 +313,31 @@ static int latm_decode_audio_specific_config(struct LATMContext *latmctx,
     if (asclen <= 0)
         return AVERROR_INVALIDDATA;
     bits_consumed = decode_audio_specific_config(NULL, avctx, &m4ac,
-                                         gb->buffer + (config_start_bit / 8),
-                                         asclen, sync_extension);
+                    gb->buffer + (config_start_bit / 8),
+                    asclen, sync_extension);
 
     if (bits_consumed < 0)
         return AVERROR_INVALIDDATA;
 
     if (!latmctx->initialized ||
-        ac->oc[1].m4ac.sample_rate != m4ac.sample_rate ||
-        ac->oc[1].m4ac.chan_config != m4ac.chan_config) {
+            ac->oc[1].m4ac.sample_rate != m4ac.sample_rate ||
+            ac->oc[1].m4ac.chan_config != m4ac.chan_config)
+    {
 
-        if(latmctx->initialized) {
+        if(latmctx->initialized)
+        {
             av_log(avctx, AV_LOG_INFO, "audio config changed\n");
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_DEBUG, "initializing latmctx\n");
         }
         latmctx->initialized = 0;
 
         esize = (bits_consumed+7) / 8;
 
-        if (avctx->extradata_size < esize) {
+        if (avctx->extradata_size < esize)
+        {
             av_free(avctx->extradata);
             avctx->extradata = av_malloc(esize + AV_INPUT_BUFFER_PADDING_SIZE);
             if (!avctx->extradata)
@@ -345,7 +362,8 @@ static int read_stream_mux_config(struct LATMContext *latmctx,
     if (audio_mux_version)
         latmctx->audio_mux_version_A = get_bits(gb, 1);
 
-    if (!latmctx->audio_mux_version_A) {
+    if (!latmctx->audio_mux_version_A)
+    {
 
         if (audio_mux_version)
             latm_get_value(gb);                 // taraFullness
@@ -353,7 +371,8 @@ static int read_stream_mux_config(struct LATMContext *latmctx,
         skip_bits(gb, 1);                       // allStreamSameTimeFraming
         skip_bits(gb, 6);                       // numSubFrames
         // numPrograms
-        if (get_bits(gb, 4)) {                  // numPrograms
+        if (get_bits(gb, 4))                    // numPrograms
+        {
             avpriv_request_sample(latmctx->aac_ctx.avctx, "Multiple programs");
             return AVERROR_PATCHWELCOME;
         }
@@ -361,16 +380,20 @@ static int read_stream_mux_config(struct LATMContext *latmctx,
         // for each program (which there is only one in DVB)
 
         // for each layer (which there is only one in DVB)
-        if (get_bits(gb, 3)) {                   // numLayer
+        if (get_bits(gb, 3))                     // numLayer
+        {
             avpriv_request_sample(latmctx->aac_ctx.avctx, "Multiple layers");
             return AVERROR_PATCHWELCOME;
         }
 
         // for all but first stream: use_same_config = get_bits(gb, 1);
-        if (!audio_mux_version) {
+        if (!audio_mux_version)
+        {
             if ((ret = latm_decode_audio_specific_config(latmctx, gb, 0)) < 0)
                 return ret;
-        } else {
+        }
+        else
+        {
             int ascLen = latm_get_value(gb);
             if ((ret = latm_decode_audio_specific_config(latmctx, gb, ascLen)) < 0)
                 return ret;
@@ -379,7 +402,8 @@ static int read_stream_mux_config(struct LATMContext *latmctx,
         }
 
         latmctx->frame_length_type = get_bits(gb, 3);
-        switch (latmctx->frame_length_type) {
+        switch (latmctx->frame_length_type)
+        {
         case 0:
             skip_bits(gb, 8);       // latmBufferFullness
             break;
@@ -397,15 +421,21 @@ static int read_stream_mux_config(struct LATMContext *latmctx,
             break;
         }
 
-        if (get_bits(gb, 1)) {                  // other data
-            if (audio_mux_version) {
+        if (get_bits(gb, 1))                    // other data
+        {
+            if (audio_mux_version)
+            {
                 latm_get_value(gb);             // other_data_bits
-            } else {
+            }
+            else
+            {
                 int esc;
-                do {
+                do
+                {
                     esc = get_bits(gb, 1);
                     skip_bits(gb, 8);
-                } while (esc);
+                }
+                while (esc);
             }
         }
 
@@ -420,18 +450,25 @@ static int read_payload_length_info(struct LATMContext *ctx, GetBitContext *gb)
 {
     uint8_t tmp;
 
-    if (ctx->frame_length_type == 0) {
+    if (ctx->frame_length_type == 0)
+    {
         int mux_slot_length = 0;
-        do {
+        do
+        {
             tmp = get_bits(gb, 8);
             mux_slot_length += tmp;
-        } while (tmp == 255);
+        }
+        while (tmp == 255);
         return mux_slot_length;
-    } else if (ctx->frame_length_type == 1) {
+    }
+    else if (ctx->frame_length_type == 1)
+    {
         return ctx->frame_length;
-    } else if (ctx->frame_length_type == 3 ||
-               ctx->frame_length_type == 5 ||
-               ctx->frame_length_type == 7) {
+    }
+    else if (ctx->frame_length_type == 3 ||
+             ctx->frame_length_type == 5 ||
+             ctx->frame_length_type == 7)
+    {
         skip_bits(gb, 2);          // mux_slot_length_coded
     }
     return 0;
@@ -442,20 +479,27 @@ static int read_audio_mux_element(struct LATMContext *latmctx,
 {
     int err;
     uint8_t use_same_mux = get_bits(gb, 1);
-    if (!use_same_mux) {
+    if (!use_same_mux)
+    {
         if ((err = read_stream_mux_config(latmctx, gb)) < 0)
             return err;
-    } else if (!latmctx->aac_ctx.avctx->extradata) {
+    }
+    else if (!latmctx->aac_ctx.avctx->extradata)
+    {
         av_log(latmctx->aac_ctx.avctx, AV_LOG_DEBUG,
                "no decoder config found\n");
         return AVERROR(EAGAIN);
     }
-    if (latmctx->audio_mux_version_A == 0) {
+    if (latmctx->audio_mux_version_A == 0)
+    {
         int mux_slot_length_bytes = read_payload_length_info(latmctx, gb);
-        if (mux_slot_length_bytes * 8 > get_bits_left(gb)) {
+        if (mux_slot_length_bytes * 8 > get_bits_left(gb))
+        {
             av_log(latmctx->aac_ctx.avctx, AV_LOG_ERROR, "incomplete frame\n");
             return AVERROR_INVALIDDATA;
-        } else if (mux_slot_length_bytes * 8 + 256 < get_bits_left(gb)) {
+        }
+        else if (mux_slot_length_bytes * 8 + 256 < get_bits_left(gb))
+        {
             av_log(latmctx->aac_ctx.avctx, AV_LOG_ERROR,
                    "frame length mismatch %d << %d\n",
                    mux_slot_length_bytes * 8, get_bits_left(gb));
@@ -488,15 +532,20 @@ static int latm_decode_frame(AVCodecContext *avctx, void *out,
     if ((err = read_audio_mux_element(latmctx, &gb)) < 0)
         return err;
 
-    if (!latmctx->initialized) {
-        if (!avctx->extradata) {
+    if (!latmctx->initialized)
+    {
+        if (!avctx->extradata)
+        {
             *got_frame_ptr = 0;
             return avpkt->size;
-        } else {
+        }
+        else
+        {
             push_output_configuration(&latmctx->aac_ctx);
             if ((err = decode_audio_specific_config(
-                    &latmctx->aac_ctx, avctx, &latmctx->aac_ctx.oc[1].m4ac,
-                    avctx->extradata, avctx->extradata_size*8LL, 1)) < 0) {
+                           &latmctx->aac_ctx, avctx, &latmctx->aac_ctx.oc[1].m4ac,
+                           avctx->extradata, avctx->extradata_size*8LL, 1)) < 0)
+            {
                 pop_output_configuration(&latmctx->aac_ctx);
                 return err;
             }
@@ -504,14 +553,16 @@ static int latm_decode_frame(AVCodecContext *avctx, void *out,
         }
     }
 
-    if (show_bits(&gb, 12) == 0xfff) {
+    if (show_bits(&gb, 12) == 0xfff)
+    {
         av_log(latmctx->aac_ctx.avctx, AV_LOG_ERROR,
                "ADTS header detected, probably as result of configuration "
                "misparsing\n");
         return AVERROR_INVALIDDATA;
     }
 
-    switch (latmctx->aac_ctx.oc[1].m4ac.object_type) {
+    switch (latmctx->aac_ctx.oc[1].m4ac.object_type)
+    {
     case AOT_ER_AAC_LC:
     case AOT_ER_AAC_LTP:
     case AOT_ER_AAC_LD:
@@ -538,7 +589,8 @@ static av_cold int latm_decode_init(AVCodecContext *avctx)
     return ret;
 }
 
-AVCodec ff_aac_decoder = {
+AVCodec ff_aac_decoder =
+{
     .name            = "aac",
     .long_name       = NULL_IF_CONFIG_SMALL("AAC (Advanced Audio Coding)"),
     .type            = AVMEDIA_TYPE_AUDIO,
@@ -562,7 +614,8 @@ AVCodec ff_aac_decoder = {
     in MPEG transport streams which only contain one program.
     To do a more complex LATM demuxing a separate LATM demuxer should be used.
 */
-AVCodec ff_aac_latm_decoder = {
+AVCodec ff_aac_latm_decoder =
+{
     .name            = "aac_latm",
     .long_name       = NULL_IF_CONFIG_SMALL("AAC LATM (Advanced Audio Coding LATM syntax)"),
     .type            = AVMEDIA_TYPE_AUDIO,

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -43,8 +43,8 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Autocorrelations for a warped frequency axis */
 #define OVERRIDE_silk_warped_autocorrelation_FIX
 void silk_warped_autocorrelation_FIX(
-          opus_int32                *corr,                                  /* O    Result [order + 1]                                                          */
-          opus_int                  *scale,                                 /* O    Scaling of the correlation vector                                           */
+    opus_int32                *corr,                                  /* O    Result [order + 1]                                                          */
+    opus_int                  *scale,                                 /* O    Scaling of the correlation vector                                           */
     const opus_int16                *input,                                 /* I    Input data to correlate                                                     */
     const opus_int                  warping_Q16,                            /* I    Warping coefficient                                                         */
     const opus_int                  length,                                 /* I    Length of input                                                             */
@@ -65,7 +65,8 @@ void silk_warped_autocorrelation_FIX(
     silk_assert( 2 * QS - QC >= 0 );
 
     /* Loop over samples */
-    for( n = 0; n < length; n=n+4 ) {
+    for( n = 0; n < length; n=n+4 )
+    {
 
         tmp1_QS = silk_LSHIFT32( (opus_int32)input[ n ], QS );
         start_1 = tmp1_QS;
@@ -76,7 +77,8 @@ void silk_warped_autocorrelation_FIX(
         tmp7_QS = silk_LSHIFT32( (opus_int32)input[ n+3], QS );
 
         /* Loop over allpass sections */
-        for( i = 0; i < order; i += 2 ) {
+        for( i = 0; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2_QS = silk_SMLAWB( state_QS[ i ], state_QS[ i + 1 ] - tmp1_QS, warping_Q16 );
             corr_QC[  i ] = __builtin_mips_madd( corr_QC[  i ], tmp1_QS,  start_1);
@@ -114,12 +116,14 @@ void silk_warped_autocorrelation_FIX(
         corr_QC[  order ] = __builtin_mips_madd( corr_QC[  order ], tmp7_QS,  state_QS[ 0 ]);
     }
 
-    for(;n< length; n++ ) {
+    for(; n< length; n++ )
+    {
 
         tmp1_QS = silk_LSHIFT32( (opus_int32)input[ n ], QS );
 
         /* Loop over allpass sections */
-        for( i = 0; i < order; i += 2 ) {
+        for( i = 0; i < order; i += 2 )
+        {
 
             /* Output of allpass section */
             tmp2_QS = silk_SMLAWB( state_QS[ i ], state_QS[ i + 1 ] - tmp1_QS, warping_Q16 );
@@ -142,15 +146,20 @@ void silk_warped_autocorrelation_FIX(
     lsh = silk_LIMIT( lsh, -12 - QC, 30 - QC );
     *scale = -( QC + lsh );
     silk_assert( *scale >= -30 && *scale <= 12 );
-    if( lsh >= 0 ) {
-        for( i = 0; i < order + 1; i++ ) {
+    if( lsh >= 0 )
+    {
+        for( i = 0; i < order + 1; i++ )
+        {
             temp64 = corr_QC[ i ];
             //temp64 = __builtin_mips_shilo(temp64, val);
             temp64 = (val >= 0) ? (temp64 >> val) : (temp64 << -val);
             corr[ i ] = (opus_int32)silk_CHECK_FIT32( __builtin_mips_shilo( temp64, -lsh ) );
         }
-    } else {
-        for( i = 0; i < order + 1; i++ ) {
+    }
+    else
+    {
+        for( i = 0; i < order + 1; i++ )
+        {
             temp64 = corr_QC[ i ];
             //temp64 = __builtin_mips_shilo(temp64, val);
             temp64 = (val >= 0) ? (temp64 >> val) : (temp64 << -val);
@@ -158,8 +167,8 @@ void silk_warped_autocorrelation_FIX(
         }
     }
 
-     corr_QC[ 0 ] = __builtin_mips_shilo(corr_QC[ 0 ], val);
+    corr_QC[ 0 ] = __builtin_mips_shilo(corr_QC[ 0 ], val);
 
-     silk_assert( corr_QC[ 0 ] >= 0 ); /* If breaking, decrease QC*/
+    silk_assert( corr_QC[ 0 ] >= 0 ); /* If breaking, decrease QC*/
 }
 #endif /* __WARPED_AUTOCORRELATION_FIX_MIPSR1_H__ */

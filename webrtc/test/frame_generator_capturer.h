@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,78 +19,85 @@
 #include "webrtc/test/video_capturer.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class CriticalSectionWrapper;
 class EventTimerWrapper;
 
-namespace test {
+namespace test
+{
 
 class FrameGenerator;
 
-class FrameGeneratorCapturer : public VideoCapturer {
- public:
-  class SinkWantsObserver {
-   public:
-    // OnSinkWantsChanged is called when FrameGeneratorCapturer::AddOrUpdateSink
-    // is called.
-    virtual void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
-                                    const rtc::VideoSinkWants& wants) = 0;
+class FrameGeneratorCapturer : public VideoCapturer
+{
+public:
+    class SinkWantsObserver
+    {
+    public:
+        // OnSinkWantsChanged is called when FrameGeneratorCapturer::AddOrUpdateSink
+        // is called.
+        virtual void OnSinkWantsChanged(rtc::VideoSinkInterface<VideoFrame>* sink,
+                                        const rtc::VideoSinkWants& wants) = 0;
 
-   protected:
-    virtual ~SinkWantsObserver() {}
-  };
+    protected:
+        virtual ~SinkWantsObserver() {}
+    };
 
-  static FrameGeneratorCapturer* Create(size_t width,
-                                        size_t height,
-                                        int target_fps,
-                                        Clock* clock);
+    static FrameGeneratorCapturer* Create(size_t width,
+                                          size_t height,
+                                          int target_fps,
+                                          Clock* clock);
 
-  static FrameGeneratorCapturer* CreateFromYuvFile(const std::string& file_name,
-                                                   size_t width,
-                                                   size_t height,
-                                                   int target_fps,
-                                                   Clock* clock);
-  virtual ~FrameGeneratorCapturer();
+    static FrameGeneratorCapturer* CreateFromYuvFile(const std::string& file_name,
+            size_t width,
+            size_t height,
+            int target_fps,
+            Clock* clock);
+    virtual ~FrameGeneratorCapturer();
 
-  void Start() override;
-  void Stop() override;
-  void ChangeResolution(size_t width, size_t height);
+    void Start() override;
+    void Stop() override;
+    void ChangeResolution(size_t width, size_t height);
 
-  void SetSinkWantsObserver(SinkWantsObserver* observer);
+    void SetSinkWantsObserver(SinkWantsObserver* observer);
 
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override;
+    void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
+                         const rtc::VideoSinkWants& wants) override;
+    void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override;
 
-  void ForceFrame();
-  void SetFakeRotation(VideoRotation rotation);
+    void ForceFrame();
+    void SetFakeRotation(VideoRotation rotation);
 
-  int64_t first_frame_capture_time() const { return first_frame_capture_time_; }
+    int64_t first_frame_capture_time() const
+    {
+        return first_frame_capture_time_;
+    }
 
-  FrameGeneratorCapturer(Clock* clock,
-                         FrameGenerator* frame_generator,
-                         int target_fps);
-  bool Init();
+    FrameGeneratorCapturer(Clock* clock,
+                           FrameGenerator* frame_generator,
+                           int target_fps);
+    bool Init();
 
- private:
-  void InsertFrame();
-  static bool Run(void* obj);
+private:
+    void InsertFrame();
+    static bool Run(void* obj);
 
-  Clock* const clock_;
-  bool sending_;
-  rtc::VideoSinkInterface<VideoFrame>* sink_ GUARDED_BY(&lock_);
-  SinkWantsObserver* sink_wants_observer_ GUARDED_BY(&lock_);
+    Clock* const clock_;
+    bool sending_;
+    rtc::VideoSinkInterface<VideoFrame>* sink_ GUARDED_BY(&lock_);
+    SinkWantsObserver* sink_wants_observer_ GUARDED_BY(&lock_);
 
-  std::unique_ptr<EventTimerWrapper> tick_;
-  rtc::CriticalSection lock_;
-  rtc::PlatformThread thread_;
-  std::unique_ptr<FrameGenerator> frame_generator_;
+    std::unique_ptr<EventTimerWrapper> tick_;
+    rtc::CriticalSection lock_;
+    rtc::PlatformThread thread_;
+    std::unique_ptr<FrameGenerator> frame_generator_;
 
-  int target_fps_;
-  VideoRotation fake_rotation_ = kVideoRotation_0;
+    int target_fps_;
+    VideoRotation fake_rotation_ = kVideoRotation_0;
 
-  int64_t first_frame_capture_time_;
+    int64_t first_frame_capture_time_;
 };
 }  // test
 }  // webrtc

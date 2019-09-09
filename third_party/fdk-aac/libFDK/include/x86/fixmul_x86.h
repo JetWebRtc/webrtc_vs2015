@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -108,26 +108,26 @@ amm-info@iis.fraunhofer.de
 
 inline INT fixmul_DD (INT a, const INT b)
 {
-  __asm
-  {
-    mov eax, a
-    imul b
-    shl edx, 1
-    mov a, edx
-  }
-  return a ;
+    __asm
+    {
+        mov eax, a
+        imul b
+        shl edx, 1
+        mov a, edx
+    }
+    return a ;
 }
 
 
 inline INT fixmuldiv2_DD (INT a, const INT b)
 {
-  __asm
-  {
-    mov eax, a
-    imul b
-    mov a, edx
-  }
-  return a ;
+    __asm
+    {
+        mov eax, a
+        imul b
+        mov a, edx
+    }
+    return a ;
 }
 
 /* ############################################################################# */
@@ -150,26 +150,26 @@ inline INT fixmuldiv2_DD (INT a, const INT b)
 
 inline INT fixmul_DD (INT a, const INT b)
 {
-  INT result;
+    INT result;
 
-  asm( "imul %2;\n"
-       "shl $1, %0;\n"
-            : "=d"(result), "+a"(a)
-            : "r"(b) );
+    asm( "imul %2;\n"
+         "shl $1, %0;\n"
+         : "=d"(result), "+a"(a)
+         : "r"(b) );
 
-  return result;
+    return result;
 }
 
 
 inline INT fixmuldiv2_DD (INT a, const INT b)
 {
-  INT result;
+    INT result;
 
-  asm ( "imul %2;"
-             : "=d"(result), "+a"(a)
-             : "r"(b) );
+    asm ( "imul %2;"
+          : "=d"(result), "+a"(a)
+          : "r"(b) );
 
-  return result;
+    return result;
 }
 
 #endif /* (defined(__GNUC__)||defined(__gnu_linux__)) && defined(__x86__) */

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -111,46 +111,48 @@ amm-info@iis.fraunhofer.de
 
 typedef enum { LATMVAR_SIMPLE_SEQUENCE } LATM_VAR_MODE;
 
-typedef struct {
-  signed int frameLengthType;
-  signed int frameLengthBits;
-  signed int varFrameLengthTable[4];
-  signed int streamID;
+typedef struct
+{
+    signed int frameLengthType;
+    signed int frameLengthBits;
+    signed int varFrameLengthTable[4];
+    signed int streamID;
 } LATM_LAYER_INFO;
 
 
-typedef struct {
-  LATM_LAYER_INFO      m_linfo[LATM_MAX_PROGRAMS][LATM_MAX_LAYERS];
-  CODER_CONFIG        *config[LATM_MAX_PROGRAMS][LATM_MAX_LAYERS];
+typedef struct
+{
+    LATM_LAYER_INFO      m_linfo[LATM_MAX_PROGRAMS][LATM_MAX_LAYERS];
+    CODER_CONFIG        *config[LATM_MAX_PROGRAMS][LATM_MAX_LAYERS];
 
-  LATM_VAR_MODE        varMode;
-  TRANSPORT_TYPE       tt;
+    LATM_VAR_MODE        varMode;
+    TRANSPORT_TYPE       tt;
 
-  int                  audioMuxLengthBytes;
+    int                  audioMuxLengthBytes;
 
-  int                  audioMuxLengthBytesPos;
-  int                  taraBufferFullness; /* state of the bit reservoir */
-  int                  varStreamCnt;
-  unsigned int         otherDataLenBytes;
+    int                  audioMuxLengthBytesPos;
+    int                  taraBufferFullness; /* state of the bit reservoir */
+    int                  varStreamCnt;
+    unsigned int         otherDataLenBytes;
 
-  UCHAR                latmFrameCounter;   /* Current frame number. Counts modulo muxConfigPeriod */
-  UCHAR                muxConfigPeriod;    /* Distance in frames between MuxConfig */
+    UCHAR                latmFrameCounter;   /* Current frame number. Counts modulo muxConfigPeriod */
+    UCHAR                muxConfigPeriod;    /* Distance in frames between MuxConfig */
 
-  UCHAR                audioMuxVersion;    /* AMV1 supports transmission of taraBufferFullness and ASC lengths */
-  UCHAR                audioMuxVersionA;   /* for future extensions */
+    UCHAR                audioMuxVersion;    /* AMV1 supports transmission of taraBufferFullness and ASC lengths */
+    UCHAR                audioMuxVersionA;   /* for future extensions */
 
-  UCHAR                noProgram;
-  UCHAR                noLayer[LATM_MAX_PROGRAMS];
-  UCHAR                fractDelayPresent;
+    UCHAR                noProgram;
+    UCHAR                noLayer[LATM_MAX_PROGRAMS];
+    UCHAR                fractDelayPresent;
 
-  UCHAR                allStreamsSameTimeFraming;
-  UCHAR                subFrameCnt;        /* Current Subframe frame */
-  UCHAR                noSubframes;        /* Number of subframes    */
-  UINT                 latmSubframeStart;  /* Position of current subframe start */
-  UCHAR                noSubframes_next;
+    UCHAR                allStreamsSameTimeFraming;
+    UCHAR                subFrameCnt;        /* Current Subframe frame */
+    UCHAR                noSubframes;        /* Number of subframes    */
+    UINT                 latmSubframeStart;  /* Position of current subframe start */
+    UCHAR                noSubframes_next;
 
-  UCHAR                fillBits;           /* AudioMuxElement fill bits */
-  UCHAR                streamMuxConfigBits;
+    UCHAR                fillBits;           /* AudioMuxElement fill bits */
+    UCHAR                streamMuxConfigBits;
 
 } LATM_STREAM;
 
@@ -172,13 +174,13 @@ typedef LATM_STREAM *HANDLE_LATM_STREAM;
  * \return an TRANSPORTENC_ERROR error code
  */
 TRANSPORTENC_ERROR transportEnc_Latm_Init(
-        HANDLE_LATM_STREAM hLatmStreamInfo,
-        HANDLE_FDK_BITSTREAM hBs,
-        CODER_CONFIG *layerConfig,
-        UINT audioMuxVersion,
-        TRANSPORT_TYPE tt,
-        CSTpCallBacks *cb
-        );
+    HANDLE_LATM_STREAM hLatmStreamInfo,
+    HANDLE_FDK_BITSTREAM hBs,
+    CODER_CONFIG *layerConfig,
+    UINT audioMuxVersion,
+    TRANSPORT_TYPE tt,
+    CSTpCallBacks *cb
+);
 
 /**
  * \brief Get bit demand of next LATM/LOAS header
@@ -189,9 +191,9 @@ TRANSPORTENC_ERROR transportEnc_Latm_Init(
  * \return the number of bits required by the LATM/LOAS headers
  */
 unsigned int transportEnc_LatmCountTotalBitDemandHeader (
-                                                          HANDLE_LATM_STREAM hAss,
-                                                          unsigned int streamDataLength
-                                                         );
+    HANDLE_LATM_STREAM hAss,
+    unsigned int streamDataLength
+);
 
 /**
  * \brief Write LATM/LOAS header into given bitstream handle
@@ -206,12 +208,12 @@ unsigned int transportEnc_LatmCountTotalBitDemandHeader (
  */
 TRANSPORTENC_ERROR
 transportEnc_LatmWrite (
-        HANDLE_LATM_STREAM    hAss,
-        HANDLE_FDK_BITSTREAM  hBitstream,
-        int                   auBits,
-        int                   bufferFullness,
-        CSTpCallBacks     *cb
-        );
+    HANDLE_LATM_STREAM    hAss,
+    HANDLE_FDK_BITSTREAM  hBitstream,
+    int                   auBits,
+    int                   bufferFullness,
+    CSTpCallBacks     *cb
+);
 
 /**
  * \brief Adjust bit count relative to current subframe
@@ -223,7 +225,7 @@ transportEnc_LatmWrite (
  * \return void
  */
 void transportEnc_LatmAdjustSubframeBits(HANDLE_LATM_STREAM    hAss,
-                                         int                  *pBits);
+        int                  *pBits);
 
 /**
  * \brief Request an LATM frame, which may, or may not be available
@@ -237,10 +239,10 @@ void transportEnc_LatmAdjustSubframeBits(HANDLE_LATM_STREAM    hAss,
  * \return void
  */
 void transportEnc_LatmGetFrame(
-                               HANDLE_LATM_STREAM    hAss,
-                               HANDLE_FDK_BITSTREAM  hBs,
-                               int                  *pBytes
-                               );
+    HANDLE_LATM_STREAM    hAss,
+    HANDLE_FDK_BITSTREAM  hBs,
+    int                  *pBytes
+);
 
 /**
  * \brief Write a StreamMuxConfig into the given bitstream handle
@@ -254,11 +256,11 @@ void transportEnc_LatmGetFrame(
  */
 TRANSPORTENC_ERROR
 CreateStreamMuxConfig(
-        HANDLE_LATM_STREAM hAss,
-        HANDLE_FDK_BITSTREAM hBs,
-        int bufferFullness,
-        CSTpCallBacks *cb
-        );
+    HANDLE_LATM_STREAM hAss,
+    HANDLE_FDK_BITSTREAM hBs,
+    int bufferFullness,
+    CSTpCallBacks *cb
+);
 
 
 #endif /* TPENC_LATM_H */

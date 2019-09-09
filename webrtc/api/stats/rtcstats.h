@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class RTCStatsMemberInterface;
 
@@ -47,54 +48,62 @@ class RTCStatsMemberInterface;
 // for (const RTCStatsMemberInterface* member : foo.Members()) {
 //   printf("%s = %s\n", member->name(), member->ValueToString().c_str());
 // }
-class RTCStats {
- public:
-  RTCStats(const std::string& id, int64_t timestamp_us)
-      : id_(id), timestamp_us_(timestamp_us) {}
-  RTCStats(std::string&& id, int64_t timestamp_us)
-      : id_(std::move(id)), timestamp_us_(timestamp_us) {}
-  virtual ~RTCStats() {}
+class RTCStats
+{
+public:
+    RTCStats(const std::string& id, int64_t timestamp_us)
+        : id_(id), timestamp_us_(timestamp_us) {}
+    RTCStats(std::string&& id, int64_t timestamp_us)
+        : id_(std::move(id)), timestamp_us_(timestamp_us) {}
+    virtual ~RTCStats() {}
 
-  virtual std::unique_ptr<RTCStats> copy() const = 0;
+    virtual std::unique_ptr<RTCStats> copy() const = 0;
 
-  const std::string& id() const { return id_; }
-  // Time relative to the UNIX epoch (Jan 1, 1970, UTC), in microseconds.
-  int64_t timestamp_us() const { return timestamp_us_; }
-  // Returns the static member variable |kType| of the implementing class.
-  virtual const char* type() const = 0;
-  // Returns a vector of pointers to all the |RTCStatsMemberInterface| members
-  // of this class. This allows for iteration of members. For a given class,
-  // |Members| always returns the same members in the same order.
-  std::vector<const RTCStatsMemberInterface*> Members() const;
-  // Checks if the two stats objects are of the same type and have the same
-  // member values. Timestamps are not compared. These operators are exposed for
-  // testing.
-  bool operator==(const RTCStats& other) const;
-  bool operator!=(const RTCStats& other) const;
+    const std::string& id() const
+    {
+        return id_;
+    }
+    // Time relative to the UNIX epoch (Jan 1, 1970, UTC), in microseconds.
+    int64_t timestamp_us() const
+    {
+        return timestamp_us_;
+    }
+    // Returns the static member variable |kType| of the implementing class.
+    virtual const char* type() const = 0;
+    // Returns a vector of pointers to all the |RTCStatsMemberInterface| members
+    // of this class. This allows for iteration of members. For a given class,
+    // |Members| always returns the same members in the same order.
+    std::vector<const RTCStatsMemberInterface*> Members() const;
+    // Checks if the two stats objects are of the same type and have the same
+    // member values. Timestamps are not compared. These operators are exposed for
+    // testing.
+    bool operator==(const RTCStats& other) const;
+    bool operator!=(const RTCStats& other) const;
 
-  // Creates a human readable string representation of the stats object, listing
-  // all of its members (names and values).
-  std::string ToString() const;
+    // Creates a human readable string representation of the stats object, listing
+    // all of its members (names and values).
+    std::string ToString() const;
 
-  // Downcasts the stats object to an |RTCStats| subclass |T|. DCHECKs that the
-  // object is of type |T|.
-  template<typename T>
-  const T& cast_to() const {
-    RTC_DCHECK_EQ(type(), T::kType);
-    return static_cast<const T&>(*this);
-  }
+    // Downcasts the stats object to an |RTCStats| subclass |T|. DCHECKs that the
+    // object is of type |T|.
+    template<typename T>
+    const T& cast_to() const
+    {
+        RTC_DCHECK_EQ(type(), T::kType);
+        return static_cast<const T&>(*this);
+    }
 
- protected:
-  // Gets a vector of all members of this |RTCStats| object, including members
-  // derived from parent classes. |additional_capacity| is how many more members
-  // shall be reserved in the vector (so that subclasses can allocate a vector
-  // with room for both parent and child members without it having to resize).
-  virtual std::vector<const RTCStatsMemberInterface*>
-  MembersOfThisObjectAndAncestors(
-      size_t additional_capacity) const;
+protected:
+    // Gets a vector of all members of this |RTCStats| object, including members
+    // derived from parent classes. |additional_capacity| is how many more members
+    // shall be reserved in the vector (so that subclasses can allocate a vector
+    // with room for both parent and child members without it having to resize).
+    virtual std::vector<const RTCStatsMemberInterface*>
+    MembersOfThisObjectAndAncestors(
+        size_t additional_capacity) const;
 
-  std::string const id_;
-  int64_t timestamp_us_;
+    std::string const id_;
+    int64_t timestamp_us_;
 };
 
 // All |RTCStats| classes should use these macros.
@@ -187,54 +196,64 @@ class RTCStats {
 // defined in a subclass. Only the types listed in |Type| are supported, these
 // are implemented by |RTCStatsMember<T>|. The value of a member may be
 // undefined, the value can only be read if |is_defined|.
-class RTCStatsMemberInterface {
- public:
-  // Member value types.
-  enum Type {
-    kBool,                  // bool
-    kInt32,                 // int32_t
-    kUint32,                // uint32_t
-    kInt64,                 // int64_t
-    kUint64,                // uint64_t
-    kDouble,                // double
-    kString,                // std::string
+class RTCStatsMemberInterface
+{
+public:
+    // Member value types.
+    enum Type
+    {
+        kBool,                  // bool
+        kInt32,                 // int32_t
+        kUint32,                // uint32_t
+        kInt64,                 // int64_t
+        kUint64,                // uint64_t
+        kDouble,                // double
+        kString,                // std::string
 
-    kSequenceBool,          // std::vector<bool>
-    kSequenceInt32,         // std::vector<int32_t>
-    kSequenceUint32,        // std::vector<uint32_t>
-    kSequenceInt64,         // std::vector<int64_t>
-    kSequenceUint64,        // std::vector<uint64_t>
-    kSequenceDouble,        // std::vector<double>
-    kSequenceString,        // std::vector<std::string>
-  };
+        kSequenceBool,          // std::vector<bool>
+        kSequenceInt32,         // std::vector<int32_t>
+        kSequenceUint32,        // std::vector<uint32_t>
+        kSequenceInt64,         // std::vector<int64_t>
+        kSequenceUint64,        // std::vector<uint64_t>
+        kSequenceDouble,        // std::vector<double>
+        kSequenceString,        // std::vector<std::string>
+    };
 
-  virtual ~RTCStatsMemberInterface() {}
+    virtual ~RTCStatsMemberInterface() {}
 
-  const char* name() const { return name_; }
-  virtual Type type() const = 0;
-  virtual bool is_sequence() const = 0;
-  virtual bool is_string() const = 0;
-  bool is_defined() const { return is_defined_; }
-  // Type and value comparator. The names are not compared. These operators are
-  // exposed for testing.
-  virtual bool operator==(const RTCStatsMemberInterface& other) const = 0;
-  bool operator!=(const RTCStatsMemberInterface& other) const {
-    return !(*this == other);
-  }
-  virtual std::string ValueToString() const = 0;
+    const char* name() const
+    {
+        return name_;
+    }
+    virtual Type type() const = 0;
+    virtual bool is_sequence() const = 0;
+    virtual bool is_string() const = 0;
+    bool is_defined() const
+    {
+        return is_defined_;
+    }
+    // Type and value comparator. The names are not compared. These operators are
+    // exposed for testing.
+    virtual bool operator==(const RTCStatsMemberInterface& other) const = 0;
+    bool operator!=(const RTCStatsMemberInterface& other) const
+    {
+        return !(*this == other);
+    }
+    virtual std::string ValueToString() const = 0;
 
-  template<typename T>
-  const T& cast_to() const {
-    RTC_DCHECK_EQ(type(), T::kType);
-    return static_cast<const T&>(*this);
-  }
+    template<typename T>
+    const T& cast_to() const
+    {
+        RTC_DCHECK_EQ(type(), T::kType);
+        return static_cast<const T&>(*this);
+    }
 
- protected:
-  RTCStatsMemberInterface(const char* name, bool is_defined)
-      : name_(name), is_defined_(is_defined) {}
+protected:
+    RTCStatsMemberInterface(const char* name, bool is_defined)
+        : name_(name), is_defined_(is_defined) {}
 
-  const char* const name_;
-  bool is_defined_;
+    const char* const name_;
+    bool is_defined_;
 };
 
 // Template implementation of |RTCStatsMemberInterface|. Every possible |T| is
@@ -242,82 +261,94 @@ class RTCStatsMemberInterface {
 // (undefined reference to |kType|). The supported types are the ones described
 // by |RTCStatsMemberInterface::Type|.
 template<typename T>
-class RTCStatsMember : public RTCStatsMemberInterface {
- public:
-  static const Type kType;
+class RTCStatsMember : public RTCStatsMemberInterface
+{
+public:
+    static const Type kType;
 
-  explicit RTCStatsMember(const char* name)
-      : RTCStatsMemberInterface(name, false),
-        value_() {}
-  RTCStatsMember(const char* name, const T& value)
-      : RTCStatsMemberInterface(name, true),
-        value_(value) {}
-  RTCStatsMember(const char* name, T&& value)
-      : RTCStatsMemberInterface(name, true),
-        value_(std::move(value)) {}
-  explicit RTCStatsMember(const RTCStatsMember<T>& other)
-      : RTCStatsMemberInterface(other.name_, other.is_defined_),
-        value_(other.value_) {}
-  explicit RTCStatsMember(RTCStatsMember<T>&& other)
-      : RTCStatsMemberInterface(other.name_, other.is_defined_),
-        value_(std::move(other.value_)) {}
+    explicit RTCStatsMember(const char* name)
+        : RTCStatsMemberInterface(name, false),
+          value_() {}
+    RTCStatsMember(const char* name, const T& value)
+        : RTCStatsMemberInterface(name, true),
+          value_(value) {}
+    RTCStatsMember(const char* name, T&& value)
+        : RTCStatsMemberInterface(name, true),
+          value_(std::move(value)) {}
+    explicit RTCStatsMember(const RTCStatsMember<T>& other)
+        : RTCStatsMemberInterface(other.name_, other.is_defined_),
+          value_(other.value_) {}
+    explicit RTCStatsMember(RTCStatsMember<T>&& other)
+        : RTCStatsMemberInterface(other.name_, other.is_defined_),
+          value_(std::move(other.value_)) {}
 
-  Type type() const override { return kType; }
-  bool is_sequence() const override;
-  bool is_string() const override;
-  bool operator==(const RTCStatsMemberInterface& other) const override {
-    if (type() != other.type())
-      return false;
-    const RTCStatsMember<T>& other_t =
-        static_cast<const RTCStatsMember<T>&>(other);
-    if (!is_defined_)
-      return !other_t.is_defined();
-    if (!other.is_defined())
-      return false;
-    return value_ == other_t.value_;
-  }
-  std::string ValueToString() const override;
+    Type type() const override
+    {
+        return kType;
+    }
+    bool is_sequence() const override;
+    bool is_string() const override;
+    bool operator==(const RTCStatsMemberInterface& other) const override
+    {
+        if (type() != other.type())
+            return false;
+        const RTCStatsMember<T>& other_t =
+            static_cast<const RTCStatsMember<T>&>(other);
+        if (!is_defined_)
+            return !other_t.is_defined();
+        if (!other.is_defined())
+            return false;
+        return value_ == other_t.value_;
+    }
+    std::string ValueToString() const override;
 
-  // Assignment operators.
-  T& operator=(const T& value) {
-    value_ = value;
-    is_defined_ = true;
-    return value_;
-  }
-  T& operator=(const T&& value) {
-    value_ = std::move(value);
-    is_defined_ = true;
-    return value_;
-  }
-  T& operator=(const RTCStatsMember<T>& other) {
-    RTC_DCHECK(other.is_defined_);
-    value_ = other.is_defined_;
-    is_defined_ = true;
-    return value_;
-  }
+    // Assignment operators.
+    T& operator=(const T& value)
+    {
+        value_ = value;
+        is_defined_ = true;
+        return value_;
+    }
+    T& operator=(const T&& value)
+    {
+        value_ = std::move(value);
+        is_defined_ = true;
+        return value_;
+    }
+    T& operator=(const RTCStatsMember<T>& other)
+    {
+        RTC_DCHECK(other.is_defined_);
+        value_ = other.is_defined_;
+        is_defined_ = true;
+        return value_;
+    }
 
-  // Value getters.
-  T& operator*() {
-    RTC_DCHECK(is_defined_);
-    return value_;
-  }
-  const T& operator*() const {
-    RTC_DCHECK(is_defined_);
-    return value_;
-  }
+    // Value getters.
+    T& operator*()
+    {
+        RTC_DCHECK(is_defined_);
+        return value_;
+    }
+    const T& operator*() const
+    {
+        RTC_DCHECK(is_defined_);
+        return value_;
+    }
 
-  // Value getters, arrow operator.
-  T* operator->() {
-    RTC_DCHECK(is_defined_);
-    return &value_;
-  }
-  const T* operator->() const {
-    RTC_DCHECK(is_defined_);
-    return &value_;
-  }
+    // Value getters, arrow operator.
+    T* operator->()
+    {
+        RTC_DCHECK(is_defined_);
+        return &value_;
+    }
+    const T* operator->() const
+    {
+        RTC_DCHECK(is_defined_);
+        return &value_;
+    }
 
- private:
-  T value_;
+private:
+    T value_;
 };
 
 }  // namespace webrtc

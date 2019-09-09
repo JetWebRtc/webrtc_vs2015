@@ -1,4 +1,4 @@
-/*
+﻿/*
  * check NEON registers for clobbers
  * Copyright (c) 2013 Martin Storsjo
  *

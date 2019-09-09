@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -253,97 +253,104 @@
         figure, title, y_label, num_flows);                       \
   } while (0)
 
-namespace webrtc {
+namespace webrtc
+{
 
 class CriticalSectionWrapper;
 
-namespace testing {
-namespace bwe {
+namespace testing
+{
+namespace bwe
+{
 
-class Logging {
- public:
-  class Context {
-   public:
-    Context(uint32_t name, int64_t timestamp_ms, bool enabled);
-    Context(const std::string& name, int64_t timestamp_ms, bool enabled);
-    Context(const char* name, int64_t timestamp_ms, bool enabled);
-    ~Context();
-   private:
-    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(Context);
-  };
+class Logging
+{
+public:
+    class Context
+    {
+    public:
+        Context(uint32_t name, int64_t timestamp_ms, bool enabled);
+        Context(const std::string& name, int64_t timestamp_ms, bool enabled);
+        Context(const char* name, int64_t timestamp_ms, bool enabled);
+        ~Context();
+    private:
+        RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(Context);
+    };
 
-  static Logging* GetInstance();
+    static Logging* GetInstance();
 
-  void SetGlobalContext(uint32_t name);
-  void SetGlobalContext(const std::string& name);
-  void SetGlobalContext(const char* name);
-  void SetGlobalEnable(bool enabled);
+    void SetGlobalContext(uint32_t name);
+    void SetGlobalContext(const std::string& name);
+    void SetGlobalContext(const char* name);
+    void SetGlobalEnable(bool enabled);
 
-  void Log(const char format[], ...);
-  void Plot(int figure, const std::string& name, double value);
-  void Plot(int figure,
-            const std::string& name,
-            double value,
-            const std::string& alg_name);
-  void Plot(int figure, const std::string& name, double value, uint32_t ssrc);
-  void Plot(int figure,
-            const std::string& name,
-            double value,
-            uint32_t ssrc,
-            const std::string& alg_name);
-  void PlotBar(int figure, const std::string& name, double value, int flow_id);
-  void PlotBaselineBar(int figure,
-                       const std::string& name,
-                       double value,
-                       int flow_id);
-  void PlotErrorBar(int figure,
-                    const std::string& name,
-                    double value,
-                    double ylow,
-                    double yhigh,
-                    const std::string& error_title,
-                    int flow_id);
-
-  void PlotLimitErrorBar(int figure,
+    void Log(const char format[], ...);
+    void Plot(int figure, const std::string& name, double value);
+    void Plot(int figure,
+              const std::string& name,
+              double value,
+              const std::string& alg_name);
+    void Plot(int figure, const std::string& name, double value, uint32_t ssrc);
+    void Plot(int figure,
+              const std::string& name,
+              double value,
+              uint32_t ssrc,
+              const std::string& alg_name);
+    void PlotBar(int figure, const std::string& name, double value, int flow_id);
+    void PlotBaselineBar(int figure,
                          const std::string& name,
                          double value,
-                         double ylow,
-                         double yhigh,
-                         const std::string& error_title,
-                         double ymax,
-                         const std::string& limit_title,
                          int flow_id);
-  void PlotLabel(int figure,
-                 const std::string& title,
-                 const std::string& y_label,
-                 int num_flows);
+    void PlotErrorBar(int figure,
+                      const std::string& name,
+                      double value,
+                      double ylow,
+                      double yhigh,
+                      const std::string& error_title,
+                      int flow_id);
 
- private:
-  struct State {
-    State();
-    State(const std::string& new_tag, int64_t timestamp_ms, bool enabled);
-    void MergePrevious(const State& previous);
+    void PlotLimitErrorBar(int figure,
+                           const std::string& name,
+                           double value,
+                           double ylow,
+                           double yhigh,
+                           const std::string& error_title,
+                           double ymax,
+                           const std::string& limit_title,
+                           int flow_id);
+    void PlotLabel(int figure,
+                   const std::string& title,
+                   const std::string& y_label,
+                   int num_flows);
 
-    std::string tag;
-    int64_t timestamp_ms;
-    bool enabled;
-  };
-  struct ThreadState {
-    State global_state;
-    std::stack<State> stack;
-  };
-  typedef std::map<uint32_t, ThreadState> ThreadMap;
+private:
+    struct State
+    {
+        State();
+        State(const std::string& new_tag, int64_t timestamp_ms, bool enabled);
+        void MergePrevious(const State& previous);
 
-  Logging();
-  void PushState(const std::string& append_to_tag, int64_t timestamp_ms,
-                 bool enabled);
-  void PopState();
+        std::string tag;
+        int64_t timestamp_ms;
+        bool enabled;
+    };
+    struct ThreadState
+    {
+        State global_state;
+        std::stack<State> stack;
+    };
+    typedef std::map<uint32_t, ThreadState> ThreadMap;
 
-  static Logging g_Logging;
-  std::unique_ptr<CriticalSectionWrapper> crit_sect_;
-  ThreadMap thread_map_;
+    Logging();
+    void PushState(const std::string& append_to_tag, int64_t timestamp_ms,
+                   bool enabled);
+    void PopState();
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(Logging);
+    static Logging g_Logging;
+    std::unique_ptr<CriticalSectionWrapper> crit_sect_;
+    ThreadMap thread_map_;
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(Logging);
 };
 }  // namespace bwe
 }  // namespace testing

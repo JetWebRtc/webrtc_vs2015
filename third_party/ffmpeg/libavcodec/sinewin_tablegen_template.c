@@ -43,7 +43,8 @@ int main(void)
 
     write_fileheader();
 
-    for (i = 5; i <= 13; i++) {
+    for (i = 5; i <= 13; i++)
+    {
         AAC_RENAME(ff_init_ff_sine_windows)(i);
         printf("SINETABLE(%4i) = {\n", 1 << i);
         WRITE_FUNC(AAC_RENAME(ff_sine_windows)[i], 1 << i);

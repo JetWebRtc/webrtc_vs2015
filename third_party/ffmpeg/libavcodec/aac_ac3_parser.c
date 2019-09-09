@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common AAC and AC-3 parser
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2003 Michael Niedermayer
@@ -37,24 +37,33 @@ int ff_aac_ac3_parse(AVCodecParserContext *s1,
 
 get_next:
     i=END_NOT_FOUND;
-    if(s->remaining_size <= buf_size){
-        if(s->remaining_size && !s->need_next_header){
+    if(s->remaining_size <= buf_size)
+    {
+        if(s->remaining_size && !s->need_next_header)
+        {
             i= s->remaining_size;
             s->remaining_size = 0;
-        }else{ //we need a header first
+        }
+        else   //we need a header first
+        {
             len=0;
-            for(i=s->remaining_size; i<buf_size; i++){
+            for(i=s->remaining_size; i<buf_size; i++)
+            {
                 s->state = (s->state<<8) + buf[i];
                 if((len=s->sync(s->state, s, &s->need_next_header, &new_frame_start)))
                     break;
             }
-            if(len<=0){
+            if(len<=0)
+            {
                 i=END_NOT_FOUND;
-            }else{
+            }
+            else
+            {
                 s->state=0;
                 i-= s->header_size -1;
                 s->remaining_size = len;
-                if(!new_frame_start || pc->index+i<=0){
+                if(!new_frame_start || pc->index+i<=0)
+                {
                     s->remaining_size += i;
                     goto get_next;
                 }
@@ -62,7 +71,8 @@ get_next:
         }
     }
 
-    if(ff_combine_frame(pc, i, &buf, &buf_size)<0){
+    if(ff_combine_frame(pc, i, &buf, &buf_size)<0)
+    {
         s->remaining_size -= FFMIN(s->remaining_size, buf_size);
         *poutbuf = NULL;
         *poutbuf_size = 0;
@@ -80,27 +90,33 @@ get_next:
        and total number of samples found in an AAC ADTS header are not
        reliable. Bit rate is still accurate because the total frame duration in
        seconds is still correct (as is the number of bits in the frame). */
-    if (avctx->codec_id != AV_CODEC_ID_AAC) {
+    if (avctx->codec_id != AV_CODEC_ID_AAC)
+    {
         avctx->sample_rate = s->sample_rate;
 
         /* (E-)AC-3: allow downmixing to stereo or mono */
 #if FF_API_REQUEST_CHANNELS
-FF_DISABLE_DEPRECATION_WARNINGS
+        FF_DISABLE_DEPRECATION_WARNINGS
         if (avctx->request_channels == 1)
             avctx->request_channel_layout = AV_CH_LAYOUT_MONO;
         else if (avctx->request_channels == 2)
             avctx->request_channel_layout = AV_CH_LAYOUT_STEREO;
-FF_ENABLE_DEPRECATION_WARNINGS
+        FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         if (s->channels > 1 &&
-            avctx->request_channel_layout == AV_CH_LAYOUT_MONO) {
+                avctx->request_channel_layout == AV_CH_LAYOUT_MONO)
+        {
             avctx->channels       = 1;
             avctx->channel_layout = AV_CH_LAYOUT_MONO;
-        } else if (s->channels > 2 &&
-                   avctx->request_channel_layout == AV_CH_LAYOUT_STEREO) {
+        }
+        else if (s->channels > 2 &&
+                 avctx->request_channel_layout == AV_CH_LAYOUT_STEREO)
+        {
             avctx->channels       = 2;
             avctx->channel_layout = AV_CH_LAYOUT_STEREO;
-        } else {
+        }
+        else
+        {
             avctx->channels = s->channels;
             avctx->channel_layout = s->channel_layout;
         }

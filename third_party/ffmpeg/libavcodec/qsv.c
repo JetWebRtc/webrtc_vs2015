@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV encoder/decoder shared code
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 
 int ff_qsv_codec_id_to_mfx(enum AVCodecID codec_id)
 {
-    switch (codec_id) {
+    switch (codec_id)
+    {
     case AV_CODEC_ID_H264:
         return MFX_CODEC_AVC;
 #if QSV_VERSION_ATLEAST(1, 8)
@@ -53,7 +54,8 @@ int ff_qsv_codec_id_to_mfx(enum AVCodecID codec_id)
 
 int ff_qsv_error(int mfx_err)
 {
-    switch (mfx_err) {
+    switch (mfx_err)
+    {
     case MFX_ERR_NONE:
         return 0;
     case MFX_ERR_MEMORY_ALLOC:
@@ -103,48 +105,58 @@ static int ff_qsv_set_display_handle(AVCodecContext *avctx, QSVSession *qs)
     qs->va_display = NULL;
 
     //search for valid graphics device
-    for (adapter_num = 0;adapter_num < 6;adapter_num++) {
+    for (adapter_num = 0; adapter_num < 6; adapter_num++)
+    {
 
-        if (adapter_num<3) {
+        if (adapter_num<3)
+        {
             snprintf(adapterpath,sizeof(adapterpath),
-                "/dev/dri/renderD%d", adapter_num+128);
-        } else {
+                     "/dev/dri/renderD%d", adapter_num+128);
+        }
+        else
+        {
             snprintf(adapterpath,sizeof(adapterpath),
-                "/dev/dri/card%d", adapter_num-3);
+                     "/dev/dri/card%d", adapter_num-3);
         }
 
         fd = open(adapterpath, O_RDWR);
-        if (fd < 0) {
+        if (fd < 0)
+        {
             av_log(avctx, AV_LOG_ERROR,
-                "mfx init: %s fd open failed\n", adapterpath);
+                   "mfx init: %s fd open failed\n", adapterpath);
             continue;
         }
 
         va_dpy = vaGetDisplayDRM(fd);
-        if (!va_dpy) {
+        if (!va_dpy)
+        {
             av_log(avctx, AV_LOG_ERROR,
-                "mfx init: %s vaGetDisplayDRM failed\n", adapterpath);
+                   "mfx init: %s vaGetDisplayDRM failed\n", adapterpath);
             close(fd);
             continue;
         }
 
         va_res = vaInitialize(va_dpy, &major_version, &minor_version);
-        if (VA_STATUS_SUCCESS != va_res) {
+        if (VA_STATUS_SUCCESS != va_res)
+        {
             av_log(avctx, AV_LOG_ERROR,
-                "mfx init: %s vaInitialize failed\n", adapterpath);
+                   "mfx init: %s vaInitialize failed\n", adapterpath);
             close(fd);
             fd = -1;
             continue;
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_VERBOSE,
-            "mfx initialization: %s vaInitialize successful\n",adapterpath);
+                   "mfx initialization: %s vaInitialize successful\n",adapterpath);
             qs->fd_display = fd;
             qs->va_display = va_dpy;
             ret = MFXVideoCORE_SetHandle(qs->session,
-                  (mfxHandleType)MFX_HANDLE_VA_DISPLAY, (mfxHDL)va_dpy);
-            if (ret < 0) {
+                                         (mfxHandleType)MFX_HANDLE_VA_DISPLAY, (mfxHDL)va_dpy);
+            if (ret < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR,
-                "Error %d during set display handle\n", ret);
+                       "Error %d during set display handle\n", ret);
                 return ff_qsv_error(ret);
             }
             break;
@@ -178,7 +190,8 @@ int ff_qsv_init_internal_session(AVCodecContext *avctx, QSVSession *qs,
     int ret;
 
     ret = MFXInit(impl, &ver, &qs->session);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error initializing an internal MFX session\n");
         return ff_qsv_error(ret);
     }
@@ -189,7 +202,8 @@ int ff_qsv_init_internal_session(AVCodecContext *avctx, QSVSession *qs,
 
     MFXQueryIMPL(qs->session, &impl);
 
-    switch (MFX_IMPL_BASETYPE(impl)) {
+    switch (MFX_IMPL_BASETYPE(impl))
+    {
     case MFX_IMPL_SOFTWARE:
         desc = "software";
         break;
@@ -203,23 +217,28 @@ int ff_qsv_init_internal_session(AVCodecContext *avctx, QSVSession *qs,
         desc = "unknown";
     }
 
-    if (load_plugins && *load_plugins) {
-        while (*load_plugins) {
+    if (load_plugins && *load_plugins)
+    {
+        while (*load_plugins)
+        {
             mfxPluginUID uid;
             int i, err = 0;
 
             char *plugin = av_get_token(&load_plugins, ":");
             if (!plugin)
                 return AVERROR(ENOMEM);
-            if (strlen(plugin) != 2 * sizeof(uid.Data)) {
+            if (strlen(plugin) != 2 * sizeof(uid.Data))
+            {
                 av_log(avctx, AV_LOG_ERROR, "Invalid plugin UID length\n");
                 err = AVERROR(EINVAL);
                 goto load_plugin_fail;
             }
 
-            for (i = 0; i < sizeof(uid.Data); i++) {
+            for (i = 0; i < sizeof(uid.Data); i++)
+            {
                 err = sscanf(plugin + 2 * i, "%2hhx", uid.Data + i);
-                if (err != 1) {
+                if (err != 1)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Invalid plugin UID\n");
                     err = AVERROR(EINVAL);
                     goto load_plugin_fail;
@@ -228,7 +247,8 @@ int ff_qsv_init_internal_session(AVCodecContext *avctx, QSVSession *qs,
             }
 
             ret = MFXVideoUSER_Load(qs->session, &uid, 1);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Could not load the requested plugin: %s\n",
                        plugin);
                 err = ff_qsv_error(ret);
@@ -251,16 +271,19 @@ load_plugin_fail:
 
 int ff_qsv_close_internal_session(QSVSession *qs)
 {
-    if (qs->session) {
+    if (qs->session)
+    {
         MFXClose(qs->session);
         qs->session = NULL;
     }
 #ifdef AVCODEC_QSV_LINUX_SESSION_HANDLE
-    if (qs->va_display) {
+    if (qs->va_display)
+    {
         vaTerminate(qs->va_display);
         qs->va_display = NULL;
     }
-    if (qs->fd_display > 0) {
+    if (qs->fd_display > 0)
+    {
         close(qs->fd_display);
         qs->fd_display = -1;
     }

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -133,7 +133,8 @@ void silk_warped_LPC_analysis_filter_FIX_sse4_1(
         }
     }
 
-    for( n = 0; n < length; n++ ) {
+    for( n = 0; n < length; n++ )
+    {
         /* Output of lowpass section */
         tmp2 = silk_SMLAWB( state[ 0 ], state[ 1 ], lambda_Q16 );
         state[ 0 ] = silk_LSHIFT( input[ n ], 14 );
@@ -143,7 +144,8 @@ void silk_warped_LPC_analysis_filter_FIX_sse4_1(
         acc_Q11 = silk_RSHIFT( order, 1 );
         acc_Q11 = silk_SMLAWB( acc_Q11, tmp2, coef_Q13[ 0 ] );
         /* Loop over allpass sections */
-        for( i = 2; i < order; i += 2 ) {
+        for( i = 2; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2 = silk_SMLAWB( state[ i ], state[ i + 1 ] - tmp1, lambda_Q16 );
             state[ i ] = tmp1;

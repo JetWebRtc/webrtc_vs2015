@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 #include "config.h"
 #include "h263dsp.h"
 
-const uint8_t ff_h263_loop_filter_strength[32] = {
+const uint8_t ff_h263_loop_filter_strength[32] =
+{
     0, 1, 1, 2, 2, 3, 3,  4,  4,  4,  5,  5,  6,  6,  7, 7,
     7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12
 };
@@ -33,7 +34,8 @@ static void h263_h_loop_filter_c(uint8_t *src, int stride, int qscale)
     int y;
     const int strength = ff_h263_loop_filter_strength[qscale];
 
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         int d1, d2, ad1;
         int p0 = src[y * stride - 2];
         int p1 = src[y * stride - 1];
@@ -76,7 +78,8 @@ static void h263_v_loop_filter_c(uint8_t *src, int stride, int qscale)
     int x;
     const int strength = ff_h263_loop_filter_strength[qscale];
 
-    for (x = 0; x < 8; x++) {
+    for (x = 0; x < 8; x++)
+    {
         int d1, d2, ad1;
         int p0 = src[x - 2 * stride];
         int p1 = src[x - 1 * stride];

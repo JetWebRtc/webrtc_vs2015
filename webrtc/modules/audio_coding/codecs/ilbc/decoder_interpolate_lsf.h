@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,6 +33,6 @@ void WebRtcIlbcfix_DecoderInterpolateLsp(
     int16_t length,   /* (i) length of lsf coefficient vector */
     IlbcDecoder *iLBCdec_inst
     /* (i) the decoder state structure */
-                                          );
+);
 
 #endif

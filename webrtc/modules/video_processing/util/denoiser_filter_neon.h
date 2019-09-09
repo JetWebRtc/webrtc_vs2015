@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,28 +13,30 @@
 
 #include "webrtc/modules/video_processing/util/denoiser_filter.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class DenoiserFilterNEON : public DenoiserFilter {
- public:
-  DenoiserFilterNEON() {}
-  void CopyMem16x16(const uint8_t* src,
-                    int src_stride,
-                    uint8_t* dst,
-                    int dst_stride) override;
-  uint32_t Variance16x8(const uint8_t* a,
-                        int a_stride,
-                        const uint8_t* b,
-                        int b_stride,
-                        unsigned int* sse) override;
-  DenoiserDecision MbDenoise(const uint8_t* mc_running_avg_y,
-                             int mc_avg_y_stride,
-                             uint8_t* running_avg_y,
-                             int avg_y_stride,
-                             const uint8_t* sig,
-                             int sig_stride,
-                             uint8_t motion_magnitude,
-                             int increase_denoising) override;
+class DenoiserFilterNEON : public DenoiserFilter
+{
+public:
+    DenoiserFilterNEON() {}
+    void CopyMem16x16(const uint8_t* src,
+                      int src_stride,
+                      uint8_t* dst,
+                      int dst_stride) override;
+    uint32_t Variance16x8(const uint8_t* a,
+                          int a_stride,
+                          const uint8_t* b,
+                          int b_stride,
+                          unsigned int* sse) override;
+    DenoiserDecision MbDenoise(const uint8_t* mc_running_avg_y,
+                               int mc_avg_y_stride,
+                               uint8_t* running_avg_y,
+                               int avg_y_stride,
+                               const uint8_t* sig,
+                               int sig_stride,
+                               uint8_t motion_magnitude,
+                               int increase_denoising) override;
 };
 
 }  // namespace webrtc

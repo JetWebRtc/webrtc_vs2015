@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -98,8 +98,8 @@ static av_always_inline void ff_lsp2polyf_mips(const double *lsp, double *f, int
             "ff_lsp2polyf_lp_j_end%=:                           \n\t"
 
             : [f_j_2]"=&f"(f_j_2), [f_j_1]"=&f"(f_j_1), [val]"+f"(val),
-              [tmp]"=&f"(tmp), [f_j]"=&f"(f_j), [p_f]"+r"(p_f),
-              [j]"+r"(j), [p_fi]"+r"(p_fi)
+            [tmp]"=&f"(tmp), [f_j]"=&f"(f_j), [p_f]"+r"(p_f),
+            [j]"+r"(j), [p_fi]"+r"(p_fi)
             : [i]"r"(i)
             : "memory"
         );

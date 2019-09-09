@@ -1,4 +1,4 @@
-/*
+﻿/*
  * null-cipher.h
  *
  * header file for the null cipher
@@ -51,7 +51,8 @@
 #include "datatypes.h"
 #include "cipher.h"
 
-typedef struct {
+typedef struct
+{
     char foo; /* empty, for now */
 } srtp_null_cipher_ctx_t;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SMJPEG common code
  * Copyright (c) 2011-2012 Paul B Mahol
  *

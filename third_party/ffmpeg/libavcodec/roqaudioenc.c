@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RoQ audio encoder
  *
  * Copyright (c) 2005 Eric Lasota
@@ -32,7 +32,8 @@
 #define MAX_DPCM (127*127)
 
 
-typedef struct ROQDPCMContext {
+typedef struct ROQDPCMContext
+{
     short lastSample[2];
     int input_frames;
     int buffered_samples;
@@ -55,11 +56,13 @@ static av_cold int roq_dpcm_encode_init(AVCodecContext *avctx)
     ROQDPCMContext *context = avctx->priv_data;
     int ret;
 
-    if (avctx->channels > 2) {
+    if (avctx->channels > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Audio must be mono or stereo\n");
         return AVERROR(EINVAL);
     }
-    if (avctx->sample_rate != 22050) {
+    if (avctx->sample_rate != 22050)
+    {
         av_log(avctx, AV_LOG_ERROR, "Audio must be 22050 Hz\n");
         return AVERROR(EINVAL);
     }
@@ -70,7 +73,8 @@ static av_cold int roq_dpcm_encode_init(AVCodecContext *avctx)
 
     context->frame_buffer = av_malloc(8 * ROQ_FRAME_SIZE * avctx->channels *
                                       sizeof(*context->frame_buffer));
-    if (!context->frame_buffer) {
+    if (!context->frame_buffer)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
@@ -97,20 +101,22 @@ static unsigned char dpcm_predict(short *previous, short current)
 
     if (diff >= MAX_DPCM)
         result = 127;
-    else {
+    else
+    {
         result = ff_sqrt(diff);
         result += diff > result*result+result;
     }
 
     /* See if this overflows */
- retry:
+retry:
     diff = result*result;
     if (negative)
         diff = -diff;
     predicted = *previous + diff;
 
     /* If it overflows, back off a step */
-    if (predicted > 32767 || predicted < -32768) {
+    if (predicted > 32767 || predicted < -32768)
+    {
         result--;
         goto retry;
     }
@@ -136,13 +142,15 @@ static int roq_dpcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     if (!in && context->input_frames >= 8)
         return 0;
 
-    if (in && context->input_frames < 8) {
+    if (in && context->input_frames < 8)
+    {
         memcpy(&context->frame_buffer[context->buffered_samples * avctx->channels],
                in, avctx->frame_size * avctx->channels * sizeof(*in));
         context->buffered_samples += avctx->frame_size;
         if (context->input_frames == 0)
             context->first_pts = frame->pts;
-        if (context->input_frames < 7) {
+        if (context->input_frames < 7)
+        {
             context->input_frames++;
             return 0;
         }
@@ -150,7 +158,8 @@ static int roq_dpcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     if (context->input_frames < 8)
         in = context->frame_buffer;
 
-    if (stereo) {
+    if (stereo)
+    {
         context->lastSample[0] &= 0xFF00;
         context->lastSample[1] &= 0xFF00;
     }
@@ -168,10 +177,12 @@ static int roq_dpcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     bytestream_put_byte(&out, 0x10);
     bytestream_put_le32(&out, data_size);
 
-    if (stereo) {
+    if (stereo)
+    {
         bytestream_put_byte(&out, (context->lastSample[1])>>8);
         bytestream_put_byte(&out, (context->lastSample[0])>>8);
-    } else
+    }
+    else
         bytestream_put_le16(&out, context->lastSample[0]);
 
     /* Write the actual samples */
@@ -189,7 +200,8 @@ static int roq_dpcm_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-AVCodec ff_roq_dpcm_encoder = {
+AVCodec ff_roq_dpcm_encoder =
+{
     .name           = "roq_dpcm",
     .long_name      = NULL_IF_CONFIG_SMALL("id RoQ DPCM"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -199,6 +211,8 @@ AVCodec ff_roq_dpcm_encoder = {
     .encode2        = roq_dpcm_encode_frame,
     .close          = roq_dpcm_encode_close,
     .capabilities   = AV_CODEC_CAP_DELAY,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
 };

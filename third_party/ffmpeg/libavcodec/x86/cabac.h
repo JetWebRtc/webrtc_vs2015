@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -176,7 +176,7 @@
 #if HAVE_7REGS && !BROKEN_COMPILER
 #define get_cabac_inline get_cabac_inline_x86
 static av_always_inline int get_cabac_inline_x86(CABACContext *c,
-                                                 uint8_t *const state)
+        uint8_t *const state)
 {
     int bit, tmp;
 #ifdef BROKEN_RELOCATIONS
@@ -199,10 +199,10 @@ static av_always_inline int get_cabac_inline_x86(CABACContext *c,
                              "%8")
         : "=&r"(bit), "=&r"(c->low), "=&r"(c->range), "=&q"(tmp)
         : "r"(state), "r"(c),
-          "i"(offsetof(CABACContext, bytestream)),
-          "i"(offsetof(CABACContext, bytestream_end))
-          TABLES_ARG
-          ,"1"(c->low), "2"(c->range)
+        "i"(offsetof(CABACContext, bytestream)),
+        "i"(offsetof(CABACContext, bytestream_end))
+        TABLES_ARG
+        ,"1"(c->low), "2"(c->range)
         : "%"REG_c, "memory"
     );
     return bit & 1;
@@ -247,10 +247,10 @@ static av_always_inline int get_cabac_bypass_sign_x86(CABACContext *c, int val)
 
         : "+c"(val), "=&r"(tmp)
         : "r"(c),
-          "i"(offsetof(CABACContext, low)),
-          "i"(offsetof(CABACContext, bytestream)),
-          "i"(offsetof(CABACContext, bytestream_end)),
-          "i"(offsetof(CABACContext, range))
+        "i"(offsetof(CABACContext, low)),
+        "i"(offsetof(CABACContext, bytestream)),
+        "i"(offsetof(CABACContext, bytestream_end)),
+        "i"(offsetof(CABACContext, range))
         : "%eax", "%edx", "memory"
     );
     return val;
@@ -287,10 +287,10 @@ static av_always_inline int get_cabac_bypass_x86(CABACContext *c)
 
         : "=&d"(res), "=&r"(tmp)
         : "r"(c),
-          "i"(offsetof(CABACContext, low)),
-          "i"(offsetof(CABACContext, bytestream)),
-          "i"(offsetof(CABACContext, bytestream_end)),
-          "i"(offsetof(CABACContext, range))
+        "i"(offsetof(CABACContext, low)),
+        "i"(offsetof(CABACContext, bytestream)),
+        "i"(offsetof(CABACContext, bytestream_end)),
+        "i"(offsetof(CABACContext, range))
         : "%eax", "%ecx", "memory"
     );
     return res;

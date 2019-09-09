@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GDI video grab interface
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@
 /**
  * GDI Device Demuxer context
  */
-struct gdigrab {
+struct gdigrab
+{
     const AVClass *class;   /**< Class for private options */
 
     int        frame_size;  /**< Size in bytes of the frame pixel data */
@@ -89,17 +90,24 @@ gdigrab_region_wnd_proc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
     HDC hdc;
     RECT rect;
 
-    switch (msg) {
+    switch (msg)
+    {
     case WM_PAINT:
         hdc = BeginPaint(hwnd, &ps);
 
         GetClientRect(hwnd, &rect);
         FrameRect(hdc, &rect, GetStockObject(BLACK_BRUSH));
 
-        rect.left++; rect.top++; rect.right--; rect.bottom--;
+        rect.left++;
+        rect.top++;
+        rect.right--;
+        rect.bottom--;
         FrameRect(hdc, &rect, GetStockObject(WHITE_BRUSH));
 
-        rect.left++; rect.top++; rect.right--; rect.bottom--;
+        rect.left++;
+        rect.top++;
+        rect.right--;
+        rect.bottom--;
         FrameRect(hdc, &rect, GetStockObject(BLACK_BRUSH));
 
         EndPaint(hwnd, &ps);
@@ -128,17 +136,20 @@ gdigrab_region_wnd_init(AVFormatContext *s1, struct gdigrab *gdigrab)
     DWORD style = WS_POPUP | WS_VISIBLE;
     DWORD ex = WS_EX_TOOLWINDOW | WS_EX_TOPMOST | WS_EX_TRANSPARENT;
 
-    rect.left -= REGION_WND_BORDER; rect.top -= REGION_WND_BORDER;
-    rect.right += REGION_WND_BORDER; rect.bottom += REGION_WND_BORDER;
+    rect.left -= REGION_WND_BORDER;
+    rect.top -= REGION_WND_BORDER;
+    rect.right += REGION_WND_BORDER;
+    rect.bottom += REGION_WND_BORDER;
 
     AdjustWindowRectEx(&rect, style, FALSE, ex);
 
     // Create a window with no owner; use WC_DIALOG instead of writing a custom
     // window class
     hwnd = CreateWindowEx(ex, WC_DIALOG, NULL, style, rect.left, rect.top,
-            rect.right - rect.left, rect.bottom - rect.top,
-            NULL, NULL, NULL, NULL);
-    if (!hwnd) {
+                          rect.right - rect.left, rect.bottom - rect.top,
+                          NULL, NULL, NULL, NULL);
+    if (!hwnd)
+    {
         WIN32_API_ERROR("Could not create region display window");
         goto error;
     }
@@ -146,12 +157,13 @@ gdigrab_region_wnd_init(AVFormatContext *s1, struct gdigrab *gdigrab)
     // Set the window shape to only include the border area
     GetClientRect(hwnd, &rect);
     region = CreateRectRgn(0, 0,
-            rect.right - rect.left, rect.bottom - rect.top);
+                           rect.right - rect.left, rect.bottom - rect.top);
     region_interior = CreateRectRgn(REGION_WND_BORDER, REGION_WND_BORDER,
-            rect.right - rect.left - REGION_WND_BORDER,
-            rect.bottom - rect.top - REGION_WND_BORDER);
+                                    rect.right - rect.left - REGION_WND_BORDER,
+                                    rect.bottom - rect.top - REGION_WND_BORDER);
     CombineRgn(region, region, region_interior, RGN_DIFF);
-    if (!SetWindowRgn(hwnd, region, FALSE)) {
+    if (!SetWindowRgn(hwnd, region, FALSE))
+    {
         WIN32_API_ERROR("Could not set window region");
         goto error;
     }
@@ -207,7 +219,8 @@ gdigrab_region_wnd_update(AVFormatContext *s1, struct gdigrab *gdigrab)
     HWND hwnd = gdigrab->region_hwnd;
     MSG msg;
 
-    while (PeekMessage(&msg, hwnd, 0, 0, PM_REMOVE)) {
+    while (PeekMessage(&msg, hwnd, 0, 0, PM_REMOVE))
+    {
         DispatchMessage(&msg);
     }
 }
@@ -240,32 +253,42 @@ gdigrab_read_header(AVFormatContext *s1)
     BITMAP bmp;
     int ret;
 
-    if (!strncmp(filename, "title=", 6)) {
+    if (!strncmp(filename, "title=", 6))
+    {
         name = filename + 6;
         hwnd = FindWindow(NULL, name);
-        if (!hwnd) {
+        if (!hwnd)
+        {
             av_log(s1, AV_LOG_ERROR,
                    "Can't find window '%s', aborting.\n", name);
             ret = AVERROR(EIO);
             goto error;
         }
-        if (gdigrab->show_region) {
+        if (gdigrab->show_region)
+        {
             av_log(s1, AV_LOG_WARNING,
-                    "Can't show region when grabbing a window.\n");
+                   "Can't show region when grabbing a window.\n");
             gdigrab->show_region = 0;
         }
-    } else if (!strcmp(filename, "desktop")) {
+    }
+    else if (!strcmp(filename, "desktop"))
+    {
         hwnd = NULL;
-    } else {
+    }
+    else
+    {
         av_log(s1, AV_LOG_ERROR,
                "Please use \"desktop\" or \"title=<windowname>\" to specify your target.\n");
         ret = AVERROR(EIO);
         goto error;
     }
 
-    if (hwnd) {
+    if (hwnd)
+    {
         GetClientRect(hwnd, &virtual_rect);
-    } else {
+    }
+    else
+    {
         virtual_rect.left = GetSystemMetrics(SM_XVIRTUALSCREEN);
         virtual_rect.top = GetSystemMetrics(SM_YVIRTUALSCREEN);
         virtual_rect.right = virtual_rect.left + GetSystemMetrics(SM_CXVIRTUALSCREEN);
@@ -273,12 +296,15 @@ gdigrab_read_header(AVFormatContext *s1)
     }
 
     /* If no width or height set, use full screen/window area */
-    if (!gdigrab->width || !gdigrab->height) {
+    if (!gdigrab->width || !gdigrab->height)
+    {
         clip_rect.left = virtual_rect.left;
         clip_rect.top = virtual_rect.top;
         clip_rect.right = virtual_rect.right;
         clip_rect.bottom = virtual_rect.bottom;
-    } else {
+    }
+    else
+    {
         clip_rect.left = gdigrab->offset_x;
         clip_rect.top = gdigrab->offset_y;
         clip_rect.right = gdigrab->width + gdigrab->offset_x;
@@ -288,35 +314,40 @@ gdigrab_read_header(AVFormatContext *s1)
     if (clip_rect.left < virtual_rect.left ||
             clip_rect.top < virtual_rect.top ||
             clip_rect.right > virtual_rect.right ||
-            clip_rect.bottom > virtual_rect.bottom) {
-            av_log(s1, AV_LOG_ERROR,
-                    "Capture area (%li,%li),(%li,%li) extends outside window area (%li,%li),(%li,%li)",
-                    clip_rect.left, clip_rect.top,
-                    clip_rect.right, clip_rect.bottom,
-                    virtual_rect.left, virtual_rect.top,
-                    virtual_rect.right, virtual_rect.bottom);
-            ret = AVERROR(EIO);
-            goto error;
+            clip_rect.bottom > virtual_rect.bottom)
+    {
+        av_log(s1, AV_LOG_ERROR,
+               "Capture area (%li,%li),(%li,%li) extends outside window area (%li,%li),(%li,%li)",
+               clip_rect.left, clip_rect.top,
+               clip_rect.right, clip_rect.bottom,
+               virtual_rect.left, virtual_rect.top,
+               virtual_rect.right, virtual_rect.bottom);
+        ret = AVERROR(EIO);
+        goto error;
     }
 
     /* This will get the device context for the selected window, or if
      * none, the primary screen */
     source_hdc = GetDC(hwnd);
-    if (!source_hdc) {
+    if (!source_hdc)
+    {
         WIN32_API_ERROR("Couldn't get window device context");
         ret = AVERROR(EIO);
         goto error;
     }
     bpp = GetDeviceCaps(source_hdc, BITSPIXEL);
 
-    if (name) {
+    if (name)
+    {
         av_log(s1, AV_LOG_INFO,
                "Found window %s, capturing %lix%lix%i at (%li,%li)\n",
                name,
                clip_rect.right - clip_rect.left,
                clip_rect.bottom - clip_rect.top,
                bpp, clip_rect.left, clip_rect.top);
-    } else {
+    }
+    else
+    {
         av_log(s1, AV_LOG_INFO,
                "Capturing whole desktop as %lix%lix%i at (%li,%li)\n",
                clip_rect.right - clip_rect.left,
@@ -325,14 +356,16 @@ gdigrab_read_header(AVFormatContext *s1)
     }
 
     if (clip_rect.right - clip_rect.left <= 0 ||
-            clip_rect.bottom - clip_rect.top <= 0 || bpp%8) {
+            clip_rect.bottom - clip_rect.top <= 0 || bpp%8)
+    {
         av_log(s1, AV_LOG_ERROR, "Invalid properties, aborting\n");
         ret = AVERROR(EIO);
         goto error;
     }
 
     dest_hdc = CreateCompatibleDC(source_hdc);
-    if (!dest_hdc) {
+    if (!dest_hdc)
+    {
         WIN32_API_ERROR("Screen DC CreateCompatibleDC");
         ret = AVERROR(EIO);
         goto error;
@@ -351,14 +384,16 @@ gdigrab_read_header(AVFormatContext *s1)
     bmi.bmiHeader.biClrUsed       = 0;
     bmi.bmiHeader.biClrImportant  = 0;
     hbmp = CreateDIBSection(dest_hdc, &bmi, DIB_RGB_COLORS,
-            &buffer, NULL, 0);
-    if (!hbmp) {
+                            &buffer, NULL, 0);
+    if (!hbmp)
+    {
         WIN32_API_ERROR("Creating DIB Section");
         ret = AVERROR(EIO);
         goto error;
     }
 
-    if (!SelectObject(dest_hdc, hbmp)) {
+    if (!SelectObject(dest_hdc, hbmp))
+    {
         WIN32_API_ERROR("SelectObject");
         ret = AVERROR(EIO);
         goto error;
@@ -368,7 +403,8 @@ gdigrab_read_header(AVFormatContext *s1)
     GetObject(hbmp, sizeof(BITMAP), &bmp);
 
     st = avformat_new_stream(s1, NULL);
-    if (!st) {
+    if (!st)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
@@ -390,8 +426,10 @@ gdigrab_read_header(AVFormatContext *s1)
 
     gdigrab->cursor_error_printed = 0;
 
-    if (gdigrab->show_region) {
-        if (gdigrab_region_wnd_init(s1, gdigrab)) {
+    if (gdigrab->show_region)
+    {
+        if (gdigrab_region_wnd_init(s1, gdigrab))
+        {
             ret = AVERROR(EIO);
             goto error;
         }
@@ -434,7 +472,8 @@ static void paint_mouse_pointer(AVFormatContext *s1, struct gdigrab *gdigrab)
 
     ci.cbSize = sizeof(ci);
 
-    if (GetCursorInfo(&ci)) {
+    if (GetCursorInfo(&ci))
+    {
         HCURSOR icon = CopyCursor(ci.hCursor);
         ICONINFO info;
         POINT pos;
@@ -446,14 +485,16 @@ static void paint_mouse_pointer(AVFormatContext *s1, struct gdigrab *gdigrab)
         if (ci.flags != CURSOR_SHOWING)
             return;
 
-        if (!icon) {
+        if (!icon)
+        {
             /* Use the standard arrow cursor as a fallback.
              * You'll probably only hit this in Wine, which can't fetch
              * the current system cursor. */
             icon = CopyCursor(LoadCursor(NULL, IDC_ARROW));
         }
 
-        if (!GetIconInfo(icon, &info)) {
+        if (!GetIconInfo(icon, &info))
+        {
             CURSOR_ERROR("Could not get icon info");
             goto icon_error;
         }
@@ -461,23 +502,28 @@ static void paint_mouse_pointer(AVFormatContext *s1, struct gdigrab *gdigrab)
         pos.x = ci.ptScreenPos.x - clip_rect.left - info.xHotspot;
         pos.y = ci.ptScreenPos.y - clip_rect.top - info.yHotspot;
 
-        if (hwnd) {
+        if (hwnd)
+        {
             RECT rect;
 
-            if (GetWindowRect(hwnd, &rect)) {
+            if (GetWindowRect(hwnd, &rect))
+            {
                 pos.x -= rect.left;
                 pos.y -= rect.top;
-            } else {
+            }
+            else
+            {
                 CURSOR_ERROR("Couldn't get window rectangle");
                 goto icon_error;
             }
         }
 
         av_log(s1, AV_LOG_DEBUG, "Cursor pos (%li,%li) -> (%li,%li)\n",
-                ci.ptScreenPos.x, ci.ptScreenPos.y, pos.x, pos.y);
+               ci.ptScreenPos.x, ci.ptScreenPos.y, pos.x, pos.y);
 
         if (pos.x >= 0 && pos.x <= clip_rect.right - clip_rect.left &&
-                pos.y >= 0 && pos.y <= clip_rect.bottom - clip_rect.top) {
+                pos.y >= 0 && pos.y <= clip_rect.bottom - clip_rect.top)
+        {
             if (!DrawIcon(gdigrab->dest_hdc, pos.x, pos.y, icon))
                 CURSOR_ERROR("Couldn't draw icon");
         }
@@ -489,7 +535,9 @@ icon_error:
             DeleteObject(info.hbmColor);
         if (icon)
             DestroyCursor(icon);
-    } else {
+    }
+    else
+    {
         CURSOR_ERROR("Couldn't get cursor info");
     }
 }
@@ -524,18 +572,24 @@ static int gdigrab_read_packet(AVFormatContext *s1, AVPacket *pkt)
         gdigrab_region_wnd_update(s1, gdigrab);
 
     /* wait based on the frame rate */
-    for (;;) {
+    for (;;)
+    {
         curtime = av_gettime();
         delay = time_frame * av_q2d(time_base) - curtime;
-        if (delay <= 0) {
-            if (delay < INT64_C(-1000000) * av_q2d(time_base)) {
+        if (delay <= 0)
+        {
+            if (delay < INT64_C(-1000000) * av_q2d(time_base))
+            {
                 time_frame += INT64_C(1000000);
             }
             break;
         }
-        if (s1->flags & AVFMT_FLAG_NONBLOCK) {
+        if (s1->flags & AVFMT_FLAG_NONBLOCK)
+        {
             return AVERROR(EAGAIN);
-        } else {
+        }
+        else
+        {
             av_usleep(delay);
         }
     }
@@ -549,7 +603,8 @@ static int gdigrab_read_packet(AVFormatContext *s1, AVPacket *pkt)
                 clip_rect.right - clip_rect.left,
                 clip_rect.bottom - clip_rect.top,
                 source_hdc,
-                clip_rect.left, clip_rect.top, SRCCOPY | CAPTUREBLT)) {
+                clip_rect.left, clip_rect.top, SRCCOPY | CAPTUREBLT))
+    {
         WIN32_API_ERROR("Failed to capture image");
         return AVERROR(EIO);
     }
@@ -570,7 +625,7 @@ static int gdigrab_read_packet(AVFormatContext *s1, AVPacket *pkt)
 
     if (gdigrab->bmi.bmiHeader.biBitCount <= 8)
         GetDIBColorTable(dest_hdc, 0, 1 << gdigrab->bmi.bmiHeader.biBitCount,
-                (RGBQUAD *) (pkt->data + sizeof(bfh) + sizeof(gdigrab->bmi.bmiHeader)));
+                         (RGBQUAD *) (pkt->data + sizeof(bfh) + sizeof(gdigrab->bmi.bmiHeader)));
 
     memcpy(pkt->data + gdigrab->header_size, gdigrab->buffer, gdigrab->frame_size);
 
@@ -606,7 +661,8 @@ static int gdigrab_read_close(AVFormatContext *s1)
 
 #define OFFSET(x) offsetof(struct gdigrab, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "draw_mouse", "draw the mouse pointer", OFFSET(draw_mouse), AV_OPT_TYPE_INT, {.i64 = 1}, 0, 1, DEC },
     { "show_region", "draw border around capture area", OFFSET(show_region), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, DEC },
     { "framerate", "set video frame rate", OFFSET(framerate), AV_OPT_TYPE_VIDEO_RATE, {.str = "ntsc"}, 0, 0, DEC },
@@ -616,7 +672,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass gdigrab_class = {
+static const AVClass gdigrab_class =
+{
     .class_name = "GDIgrab indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -624,7 +681,8 @@ static const AVClass gdigrab_class = {
 };
 
 /** gdi grabber device demuxer declaration */
-AVInputFormat ff_gdigrab_demuxer = {
+AVInputFormat ff_gdigrab_demuxer =
+{
     .name           = "gdigrab",
     .long_name      = NULL_IF_CONFIG_SMALL("GDI API Windows frame grabber"),
     .priv_data_size = sizeof(struct gdigrab),

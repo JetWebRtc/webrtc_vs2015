@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -103,15 +103,15 @@ amm-info@iis.fraunhofer.de
 
 void
 FDKaacEnc_CalcFormFactor(QC_OUT_CHANNEL   *qcOutChannel[(2)],
-               PSY_OUT_CHANNEL  *psyOutChannel[(2)],
-               const INT        nChannels);
+                         PSY_OUT_CHANNEL  *psyOutChannel[(2)],
+                         const INT        nChannels);
 
 void
 FDKaacEnc_EstimateScaleFactors(PSY_OUT_CHANNEL *psyOutChannel[],
-                     QC_OUT_CHANNEL* qcOutChannel[],
-                     const int invQuant,
-                     const INT dZoneQuantEnable,
-                     const int nChannels);
+                               QC_OUT_CHANNEL* qcOutChannel[],
+                               const int invQuant,
+                               const INT dZoneQuantEnable,
+                               const int nChannels);
 
 
 

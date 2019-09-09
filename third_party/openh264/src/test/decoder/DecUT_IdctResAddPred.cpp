@@ -1,64 +1,71 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include "macros.h"
 #include "decode_mb_aux.h"
 #include "deblocking.h"
 #include "cpu.h"
 using namespace WelsDec;
 
-namespace {
+namespace
+{
 
-void IdctResAddPred_ref (uint8_t* pPred, const int32_t kiStride, int16_t* pRs) {
-  int16_t iSrc[16];
+void IdctResAddPred_ref (uint8_t* pPred, const int32_t kiStride, int16_t* pRs)
+{
+    int16_t iSrc[16];
 
-  uint8_t* pDst             = pPred;
-  const int32_t kiStride2   = kiStride << 1;
-  const int32_t kiStride3   = kiStride + kiStride2;
-  int32_t i;
+    uint8_t* pDst             = pPred;
+    const int32_t kiStride2   = kiStride << 1;
+    const int32_t kiStride3   = kiStride + kiStride2;
+    int32_t i;
 
-  for (i = 0; i < 4; i++) {
-    const int32_t kiY  = i << 2;
-    const int32_t kiT0 = pRs[kiY] + pRs[kiY + 2];
-    const int32_t kiT1 = pRs[kiY] - pRs[kiY + 2];
-    const int32_t kiT2 = (pRs[kiY + 1] >> 1) - pRs[kiY + 3];
-    const int32_t kiT3 = pRs[kiY + 1] + (pRs[kiY + 3] >> 1);
+    for (i = 0; i < 4; i++)
+    {
+        const int32_t kiY  = i << 2;
+        const int32_t kiT0 = pRs[kiY] + pRs[kiY + 2];
+        const int32_t kiT1 = pRs[kiY] - pRs[kiY + 2];
+        const int32_t kiT2 = (pRs[kiY + 1] >> 1) - pRs[kiY + 3];
+        const int32_t kiT3 = pRs[kiY + 1] + (pRs[kiY + 3] >> 1);
 
-    iSrc[kiY] = kiT0 + kiT3;
-    iSrc[kiY + 1] = kiT1 + kiT2;
-    iSrc[kiY + 2] = kiT1 - kiT2;
-    iSrc[kiY + 3] = kiT0 - kiT3;
-  }
+        iSrc[kiY] = kiT0 + kiT3;
+        iSrc[kiY + 1] = kiT1 + kiT2;
+        iSrc[kiY + 2] = kiT1 - kiT2;
+        iSrc[kiY + 3] = kiT0 - kiT3;
+    }
 
-  for (i = 0; i < 4; i++) {
-    int32_t kT1 = iSrc[i]     +  iSrc[i + 8];
-    int32_t kT2 = iSrc[i + 4] + (iSrc[i + 12] >> 1);
-    int32_t kT3 = (32 + kT1 + kT2) >> 6;
-    int32_t kT4 = (32 + kT1 - kT2) >> 6;
+    for (i = 0; i < 4; i++)
+    {
+        int32_t kT1 = iSrc[i]     +  iSrc[i + 8];
+        int32_t kT2 = iSrc[i + 4] + (iSrc[i + 12] >> 1);
+        int32_t kT3 = (32 + kT1 + kT2) >> 6;
+        int32_t kT4 = (32 + kT1 - kT2) >> 6;
 
-    pDst[i] = WelsClip1 (kT3 + pPred[i]);
-    pDst[i + kiStride3] = WelsClip1 (kT4 + pPred[i + kiStride3]);
+        pDst[i] = WelsClip1 (kT3 + pPred[i]);
+        pDst[i + kiStride3] = WelsClip1 (kT4 + pPred[i + kiStride3]);
 
-    kT1 =  iSrc[i]           - iSrc[i + 8];
-    kT2 = (iSrc[i + 4] >> 1) - iSrc[i + 12];
-    pDst[i + kiStride] = WelsClip1 (((32 + kT1 + kT2) >> 6) + pDst[i + kiStride]);
-    pDst[i + kiStride2] = WelsClip1 (((32 + kT1 - kT2) >> 6) + pDst[i + kiStride2]);
-  }
+        kT1 =  iSrc[i]           - iSrc[i + 8];
+        kT2 = (iSrc[i + 4] >> 1) - iSrc[i + 12];
+        pDst[i + kiStride] = WelsClip1 (((32 + kT1 + kT2) >> 6) + pDst[i + kiStride]);
+        pDst[i + kiStride2] = WelsClip1 (((32 + kT1 - kT2) >> 6) + pDst[i + kiStride2]);
+    }
 }
 
-void SetNonZeroCount_ref (int8_t* pNonZeroCount) {
-  int32_t i;
+void SetNonZeroCount_ref (int8_t* pNonZeroCount)
+{
+    int32_t i;
 
-  for (i = 0; i < 24; i++) {
-    pNonZeroCount[i] = !!pNonZeroCount[i];
-  }
+    for (i = 0; i < 24; i++)
+    {
+        pNonZeroCount[i] = !!pNonZeroCount[i];
+    }
 }
 
 #if defined(X86_ASM)
 #if defined(HAVE_AVX2)
-void IdctFourResAddPred_ref (uint8_t* pPred, int32_t iStride, int16_t* pRs) {
-  IdctResAddPred_ref (pPred + 0 * iStride + 0, iStride, pRs + 0 * 16);
-  IdctResAddPred_ref (pPred + 0 * iStride + 4, iStride, pRs + 1 * 16);
-  IdctResAddPred_ref (pPred + 4 * iStride + 0, iStride, pRs + 2 * 16);
-  IdctResAddPred_ref (pPred + 4 * iStride + 4, iStride, pRs + 3 * 16);
+void IdctFourResAddPred_ref (uint8_t* pPred, int32_t iStride, int16_t* pRs)
+{
+    IdctResAddPred_ref (pPred + 0 * iStride + 0, iStride, pRs + 0 * 16);
+    IdctResAddPred_ref (pPred + 0 * iStride + 4, iStride, pRs + 1 * 16);
+    IdctResAddPred_ref (pPred + 4 * iStride + 0, iStride, pRs + 2 * 16);
+    IdctResAddPred_ref (pPred + 4 * iStride + 4, iStride, pRs + 3 * 16);
 }
 #endif
 #endif

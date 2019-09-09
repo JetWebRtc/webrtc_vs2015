@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Quicktime Graphics (SMC) Video Decoder
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -43,7 +43,8 @@
 
 #define COLORS_PER_TABLE 256
 
-typedef struct SmcContext {
+typedef struct SmcContext
+{
 
     AVCodecContext *avctx;
     AVFrame *frame;
@@ -118,28 +119,32 @@ static void smc_decode_stream(SmcContext *s)
     chunk_size = bytestream2_get_be24(&s->gb);
     if (chunk_size != buf_size)
         av_log(s->avctx, AV_LOG_INFO, "warning: MOV chunk size != encoded chunk size (%d != %d); using MOV chunk size\n",
-            chunk_size, buf_size);
+               chunk_size, buf_size);
 
     chunk_size = buf_size;
     total_blocks = ((s->avctx->width + 3) / 4) * ((s->avctx->height + 3) / 4);
 
     /* traverse through the blocks */
-    while (total_blocks) {
+    while (total_blocks)
+    {
         /* sanity checks */
         /* make sure the row pointer hasn't gone wild */
-        if (row_ptr >= image_size) {
+        if (row_ptr >= image_size)
+        {
             av_log(s->avctx, AV_LOG_INFO, "SMC decoder just went out of bounds (row ptr = %d, height = %d)\n",
-                row_ptr, image_size);
+                   row_ptr, image_size);
             return;
         }
 
         opcode = bytestream2_get_byte(&s->gb);
-        switch (opcode & 0xF0) {
+        switch (opcode & 0xF0)
+        {
         /* skip n blocks */
         case 0x00:
         case 0x10:
             n_blocks = GET_BLOCK_COUNT();
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 ADVANCE_BLOCK();
             }
             break;
@@ -150,9 +155,10 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks = GET_BLOCK_COUNT();
 
             /* sanity check */
-            if ((row_ptr == 0) && (pixel_ptr == 0)) {
+            if ((row_ptr == 0) && (pixel_ptr == 0))
+            {
                 av_log(s->avctx, AV_LOG_INFO, "encountered repeat block opcode (%02X) but no blocks rendered yet\n",
-                    opcode & 0xF0);
+                       opcode & 0xF0);
                 return;
             }
 
@@ -163,11 +169,14 @@ static void smc_decode_stream(SmcContext *s)
             else
                 prev_block_ptr1 = row_ptr + pixel_ptr - 4;
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 block_ptr = row_ptr + pixel_ptr;
                 prev_block_ptr = prev_block_ptr1;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixels[block_ptr++] = pixels[prev_block_ptr++];
                     }
                     block_ptr += row_inc;
@@ -184,16 +193,17 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks *= 2;
 
             /* sanity check */
-            if ((row_ptr == 0) && (pixel_ptr < 2 * 4)) {
+            if ((row_ptr == 0) && (pixel_ptr < 2 * 4))
+            {
                 av_log(s->avctx, AV_LOG_INFO, "encountered repeat block opcode (%02X) but not enough blocks rendered yet\n",
-                    opcode & 0xF0);
+                       opcode & 0xF0);
                 return;
             }
 
             /* figure out where the previous 2 blocks started */
             if (pixel_ptr == 0)
                 prev_block_ptr1 = (row_ptr - s->avctx->width * 4) +
-                    s->avctx->width - 4 * 2;
+                                  s->avctx->width - 4 * 2;
             else if (pixel_ptr == 4)
                 prev_block_ptr1 = (row_ptr - s->avctx->width * 4) + row_inc;
             else
@@ -205,7 +215,8 @@ static void smc_decode_stream(SmcContext *s)
                 prev_block_ptr2 = row_ptr + pixel_ptr - 4;
 
             prev_block_flag = 0;
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 block_ptr = row_ptr + pixel_ptr;
                 if (prev_block_flag)
                     prev_block_ptr = prev_block_ptr2;
@@ -213,8 +224,10 @@ static void smc_decode_stream(SmcContext *s)
                     prev_block_ptr = prev_block_ptr1;
                 prev_block_flag = !prev_block_flag;
 
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixels[block_ptr++] = pixels[prev_block_ptr++];
                     }
                     block_ptr += row_inc;
@@ -230,10 +243,13 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks = GET_BLOCK_COUNT();
             pixel = bytestream2_get_byte(&s->gb);
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixels[block_ptr++] = pixel;
                     }
                     block_ptr += row_inc;
@@ -248,10 +264,12 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks = (opcode & 0x0F) + 1;
 
             /* figure out which color pair to use to paint the 2-color block */
-            if ((opcode & 0xF0) == 0x80) {
+            if ((opcode & 0xF0) == 0x80)
+            {
                 /* fetch the next 2 colors from bytestream and store in next
                  * available entry in the color pair table */
-                for (i = 0; i < CPAIR; i++) {
+                for (i = 0; i < CPAIR; i++)
+                {
                     pixel = bytestream2_get_byte(&s->gb);
                     color_table_index = CPAIR * color_pair_index + i;
                     s->color_pairs[color_table_index] = pixel;
@@ -262,15 +280,19 @@ static void smc_decode_stream(SmcContext *s)
                 /* wraparound */
                 if (color_pair_index == COLORS_PER_TABLE)
                     color_pair_index = 0;
-            } else
+            }
+            else
                 color_table_index = CPAIR * bytestream2_get_byte(&s->gb);
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 color_flags = bytestream2_get_be16(&s->gb);
                 flag_mask = 0x8000;
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         if (color_flags & flag_mask)
                             pixel = color_table_index + 1;
                         else
@@ -290,10 +312,12 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks = (opcode & 0x0F) + 1;
 
             /* figure out which color quad to use to paint the 4-color block */
-            if ((opcode & 0xF0) == 0xA0) {
+            if ((opcode & 0xF0) == 0xA0)
+            {
                 /* fetch the next 4 colors from bytestream and store in next
                  * available entry in the color quad table */
-                for (i = 0; i < CQUAD; i++) {
+                for (i = 0; i < CQUAD; i++)
+                {
                     pixel = bytestream2_get_byte(&s->gb);
                     color_table_index = CQUAD * color_quad_index + i;
                     s->color_quads[color_table_index] = pixel;
@@ -304,18 +328,22 @@ static void smc_decode_stream(SmcContext *s)
                 /* wraparound */
                 if (color_quad_index == COLORS_PER_TABLE)
                     color_quad_index = 0;
-            } else
+            }
+            else
                 color_table_index = CQUAD * bytestream2_get_byte(&s->gb);
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 color_flags = bytestream2_get_be32(&s->gb);
                 /* flag mask actually acts as a bit shift count here */
                 flag_mask = 30;
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixel = color_table_index +
-                            ((color_flags >> flag_mask) & 0x03);
+                                ((color_flags >> flag_mask) & 0x03);
                         flag_mask -= 2;
                         pixels[block_ptr++] = s->color_quads[pixel];
                     }
@@ -331,10 +359,12 @@ static void smc_decode_stream(SmcContext *s)
             n_blocks = (opcode & 0x0F) + 1;
 
             /* figure out which color octet to use to paint the 8-color block */
-            if ((opcode & 0xF0) == 0xC0) {
+            if ((opcode & 0xF0) == 0xC0)
+            {
                 /* fetch the next 8 colors from bytestream and store in next
                  * available entry in the color octet table */
-                for (i = 0; i < COCTET; i++) {
+                for (i = 0; i < COCTET; i++)
+                {
                     pixel = bytestream2_get_byte(&s->gb);
                     color_table_index = COCTET * color_octet_index + i;
                     s->color_octets[color_table_index] = pixel;
@@ -345,10 +375,12 @@ static void smc_decode_stream(SmcContext *s)
                 /* wraparound */
                 if (color_octet_index == COLORS_PER_TABLE)
                     color_octet_index = 0;
-            } else
+            }
+            else
                 color_table_index = COCTET * bytestream2_get_byte(&s->gb);
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 /*
                   For this input of 6 hex bytes:
                     01 23 45 67 89 AB
@@ -361,21 +393,24 @@ static void smc_decode_stream(SmcContext *s)
                 int val3 = bytestream2_get_be16(&s->gb);
                 color_flags_a = ((val1 & 0xFFF0) << 8) | (val2 >> 4);
                 color_flags_b = ((val3 & 0xFFF0) << 8) |
-                    ((val1 & 0x0F) << 8) | ((val2 & 0x0F) << 4) | (val3 & 0x0F);
+                                ((val1 & 0x0F) << 8) | ((val2 & 0x0F) << 4) | (val3 & 0x0F);
 
                 color_flags = color_flags_a;
                 /* flag mask actually acts as a bit shift count here */
                 flag_mask = 21;
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     /* reload flags at third row (iteration pixel_y == 2) */
-                    if (pixel_y == 2) {
+                    if (pixel_y == 2)
+                    {
                         color_flags = color_flags_b;
                         flag_mask = 21;
                     }
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixel = color_table_index +
-                            ((color_flags >> flag_mask) & 0x07);
+                                ((color_flags >> flag_mask) & 0x07);
                         flag_mask -= 3;
                         pixels[block_ptr++] = s->color_octets[pixel];
                     }
@@ -389,10 +424,13 @@ static void smc_decode_stream(SmcContext *s)
         case 0xE0:
             n_blocks = (opcode & 0x0F) + 1;
 
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixels[block_ptr++] = bytestream2_get_byte(&s->gb);
                     }
                     block_ptr += row_inc;
@@ -425,8 +463,8 @@ static av_cold int smc_decode_init(AVCodecContext *avctx)
 }
 
 static int smc_decode_frame(AVCodecContext *avctx,
-                             void *data, int *got_frame,
-                             AVPacket *avpkt)
+                            void *data, int *got_frame,
+                            AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
@@ -439,7 +477,8 @@ static int smc_decode_frame(AVCodecContext *avctx,
     if ((ret = ff_reget_buffer(avctx, s->frame)) < 0)
         return ret;
 
-    if (pal) {
+    if (pal)
+    {
         s->frame->palette_has_changed = 1;
         memcpy(s->pal, pal, AVPALETTE_SIZE);
     }
@@ -463,7 +502,8 @@ static av_cold int smc_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_smc_decoder = {
+AVCodec ff_smc_decoder =
+{
     .name           = "smc",
     .long_name      = NULL_IF_CONFIG_SMALL("QuickTime Graphics (SMC)"),
     .type           = AVMEDIA_TYPE_VIDEO,

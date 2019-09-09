@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 #include "video.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     unsigned w, h;
     unsigned margin;
@@ -49,15 +50,24 @@ typedef struct {
 #define OFFSET(x) offsetof(TileContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption tile_options[] = {
-    { "layout", "set grid size", OFFSET(w), AV_OPT_TYPE_IMAGE_SIZE,
-        {.str = "6x5"}, 0, 0, FLAGS },
-    { "nb_frames", "set maximum number of frame to render", OFFSET(nb_frames),
-        AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, FLAGS },
-    { "margin",  "set outer border margin in pixels",    OFFSET(margin),
-        AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1024, FLAGS },
-    { "padding", "set inner border thickness in pixels", OFFSET(padding),
-        AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1024, FLAGS },
+static const AVOption tile_options[] =
+{
+    {
+        "layout", "set grid size", OFFSET(w), AV_OPT_TYPE_IMAGE_SIZE,
+        {.str = "6x5"}, 0, 0, FLAGS
+    },
+    {
+        "nb_frames", "set maximum number of frame to render", OFFSET(nb_frames),
+        AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, FLAGS
+    },
+    {
+        "margin",  "set outer border margin in pixels",    OFFSET(margin),
+        AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1024, FLAGS
+    },
+    {
+        "padding", "set inner border thickness in pixels", OFFSET(padding),
+        AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1024, FLAGS
+    },
     { "color",   "set the color of the unused area", OFFSET(rgba_color), AV_OPT_TYPE_COLOR, {.str = "black"}, .flags = FLAGS },
     { NULL }
 };
@@ -68,15 +78,19 @@ static av_cold int init(AVFilterContext *ctx)
 {
     TileContext *tile = ctx->priv;
 
-    if (tile->w > REASONABLE_SIZE || tile->h > REASONABLE_SIZE) {
+    if (tile->w > REASONABLE_SIZE || tile->h > REASONABLE_SIZE)
+    {
         av_log(ctx, AV_LOG_ERROR, "Tile size %ux%u is insane.\n",
                tile->w, tile->h);
         return AVERROR(EINVAL);
     }
 
-    if (tile->nb_frames == 0) {
+    if (tile->nb_frames == 0)
+    {
         tile->nb_frames = tile->w * tile->h;
-    } else if (tile->nb_frames > tile->w * tile->h) {
+    }
+    else if (tile->nb_frames > tile->w * tile->h)
+    {
         av_log(ctx, AV_LOG_ERROR, "nb_frames must be less than or equal to %dx%d=%d\n",
                tile->w, tile->h, tile->w * tile->h);
         return AVERROR(EINVAL);
@@ -98,12 +112,14 @@ static int config_props(AVFilterLink *outlink)
     const unsigned total_margin_w = (tile->w - 1) * tile->padding + 2*tile->margin;
     const unsigned total_margin_h = (tile->h - 1) * tile->padding + 2*tile->margin;
 
-    if (inlink->w > (INT_MAX - total_margin_w) / tile->w) {
+    if (inlink->w > (INT_MAX - total_margin_w) / tile->w)
+    {
         av_log(ctx, AV_LOG_ERROR, "Total width %ux%u is too much.\n",
                tile->w, inlink->w);
         return AVERROR(EINVAL);
     }
-    if (inlink->h > (INT_MAX - total_margin_h) / tile->h) {
+    if (inlink->h > (INT_MAX - total_margin_h) / tile->h)
+    {
         av_log(ctx, AV_LOG_ERROR, "Total height %ux%u is too much.\n",
                tile->h, inlink->h);
         return AVERROR(EINVAL);
@@ -169,9 +185,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *picref)
     AVFilterLink *outlink = ctx->outputs[0];
     unsigned x0, y0;
 
-    if (!tile->current) {
+    if (!tile->current)
+    {
         tile->out_ref = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!tile->out_ref) {
+        if (!tile->out_ref)
+        {
             av_frame_free(&picref);
             return AVERROR(ENOMEM);
         }
@@ -213,7 +231,8 @@ static int request_frame(AVFilterLink *outlink)
     return r;
 }
 
-static const AVFilterPad tile_inputs[] = {
+static const AVFilterPad tile_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -222,7 +241,8 @@ static const AVFilterPad tile_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad tile_outputs[] = {
+static const AVFilterPad tile_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -232,7 +252,8 @@ static const AVFilterPad tile_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_tile = {
+AVFilter ff_vf_tile =
+{
     .name          = "tile",
     .description   = NULL_IF_CONFIG_SMALL("Tile several successive frames together."),
     .init          = init,

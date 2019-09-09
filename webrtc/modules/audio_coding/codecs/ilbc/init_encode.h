@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,6 +28,6 @@
 int WebRtcIlbcfix_InitEncode(  /* (o) Number of bytes encoded */
     IlbcEncoder *iLBCenc_inst, /* (i/o) Encoder instance */
     int16_t mode     /* (i) frame size mode */
-                                         );
+);
 
 #endif

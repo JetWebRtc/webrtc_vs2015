@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H261 encoder
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2004 Maarten Daniels
@@ -91,9 +91,12 @@ void ff_h261_encode_picture_header(MpegEncContext *s, int picture_number)
 static void h261_encode_gob_header(MpegEncContext *s, int mb_line)
 {
     H261Context *h = (H261Context *)s;
-    if (ff_h261_get_picture_format(s->width, s->height) == 0) {
+    if (ff_h261_get_picture_format(s->width, s->height) == 0)
+    {
         h->gob_number += 2; // QCIF
-    } else {
+    }
+    else
+    {
         h->gob_number++;    // CIF
     }
     put_bits(&s->pb, 16, 1);            /* GBSC */
@@ -109,7 +112,8 @@ void ff_h261_reorder_mb_index(MpegEncContext *s)
 {
     int index = s->mb_x + s->mb_y * s->mb_width;
 
-    if (index % 11 == 0) {
+    if (index % 11 == 0)
+    {
         if (index % 33 == 0)
             h261_encode_gob_header(s, 0);
         s->last_mv[0][0][0] = 0;
@@ -118,7 +122,8 @@ void ff_h261_reorder_mb_index(MpegEncContext *s)
 
     /* for CIF the GOB's are fragmented in the middle of a scanline
      * that's why we need to adjust the x and y index of the macroblocks */
-    if (ff_h261_get_picture_format(s->width, s->height) == 1) { // CIF
+    if (ff_h261_get_picture_format(s->width, s->height) == 1)   // CIF
+    {
         s->mb_x  = index % 11;
         index   /= 11;
         s->mb_y  = index % 3;
@@ -136,10 +141,13 @@ static void h261_encode_motion(H261Context *h, int val)
 {
     MpegEncContext *const s = &h->s;
     int sign, code;
-    if (val == 0) {
+    if (val == 0)
+    {
         code = 0;
         put_bits(&s->pb, ff_h261_mv_tab[code][1], ff_h261_mv_tab[code][0]);
-    } else {
+    }
+    else
+    {
         if (val > 15)
             val -= 32;
         if (val < -16)
@@ -173,16 +181,19 @@ static void h261_encode_block(H261Context *h, int16_t *block, int n)
     RLTable *rl;
 
     rl = &ff_h261_rl_tcoeff;
-    if (s->mb_intra) {
+    if (s->mb_intra)
+    {
         /* DC coef */
         level = block[0];
         /* 255 cannot be represented, so we clamp */
-        if (level > 254) {
+        if (level > 254)
+        {
             level    = 254;
             block[0] = 254;
         }
         /* 0 cannot be represented also */
-        else if (level < 1) {
+        else if (level < 1)
+        {
             level    = 1;
             block[0] = 1;
         }
@@ -191,26 +202,33 @@ static void h261_encode_block(H261Context *h, int16_t *block, int n)
         else
             put_bits(&s->pb, 8, level);
         i = 1;
-    } else if ((block[0] == 1 || block[0] == -1) &&
-               (s->block_last_index[n] > -1)) {
+    }
+    else if ((block[0] == 1 || block[0] == -1) &&
+             (s->block_last_index[n] > -1))
+    {
         // special case
         put_bits(&s->pb, 2, block[0] > 0 ? 2 : 3);
         i = 1;
-    } else {
+    }
+    else
+    {
         i = 0;
     }
 
     /* AC coefs */
     last_index    = s->block_last_index[n];
     last_non_zero = i - 1;
-    for (; i <= last_index; i++) {
+    for (; i <= last_index; i++)
+    {
         j     = s->intra_scantable.permutated[i];
         level = block[j];
-        if (level) {
+        if (level)
+        {
             run    = i - last_non_zero - 1;
             sign   = 0;
             slevel = level;
-            if (level < 0) {
+            if (level < 0)
+            {
                 sign  = 1;
                 level = -level;
             }
@@ -219,12 +237,15 @@ static void h261_encode_block(H261Context *h, int16_t *block, int n)
             if (run == 0 && level < 16)
                 code += 1;
             put_bits(&s->pb, rl->table_vlc[code][1], rl->table_vlc[code][0]);
-            if (code == rl->n) {
+            if (code == rl->n)
+            {
                 put_bits(&s->pb, 6, run);
                 av_assert1(slevel != 0);
                 av_assert1(level <= 127);
                 put_sbits(&s->pb, 8, slevel);
-            } else {
+            }
+            else
+            {
                 put_bits(&s->pb, 1, sign);
             }
             last_non_zero = i;
@@ -244,14 +265,16 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
 
     h->mtype = 0;
 
-    if (!s->mb_intra) {
+    if (!s->mb_intra)
+    {
         /* compute cbp */
         cbp = get_cbp(s, block);
 
         /* mvd indicates if this block is motion compensated */
         mvd = motion_x | motion_y;
 
-        if ((cbp | mvd) == 0) {
+        if ((cbp | mvd) == 0)
+        {
             /* skip macroblock */
             s->skip_count++;
             s->mb_skip_run++;
@@ -269,7 +292,8 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
     s->mb_skip_run = 0;
 
     /* calculate MTYPE */
-    if (!s->mb_intra) {
+    if (!s->mb_intra)
+    {
         h->mtype++;
 
         if (mvd || s->loop_filter)
@@ -281,9 +305,11 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
         av_assert1(h->mtype > 1);
     }
 
-    if (s->dquant && cbp) {
+    if (s->dquant && cbp)
+    {
         h->mtype++;
-    } else
+    }
+    else
         s->qscale -= s->dquant;
 
     put_bits(&s->pb,
@@ -292,12 +318,14 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
 
     h->mtype = ff_h261_mtype_map[h->mtype];
 
-    if (IS_QUANT(h->mtype)) {
+    if (IS_QUANT(h->mtype))
+    {
         ff_set_qscale(s, s->qscale + s->dquant);
         put_bits(&s->pb, 5, s->qscale);
     }
 
-    if (IS_16X16(h->mtype)) {
+    if (IS_16X16(h->mtype))
+    {
         mv_diff_x       = (motion_x >> 1) - s->last_mv[0][0][0];
         mv_diff_y       = (motion_y >> 1) - s->last_mv[0][0][1];
         s->last_mv[0][0][0] = (motion_x >> 1);
@@ -306,7 +334,8 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
         h261_encode_motion(h, mv_diff_y);
     }
 
-    if (HAS_CBP(h->mtype)) {
+    if (HAS_CBP(h->mtype))
+    {
         av_assert1(cbp > 0);
         put_bits(&s->pb,
                  ff_h261_cbp_tab[cbp - 1][1],
@@ -316,24 +345,28 @@ void ff_h261_encode_mb(MpegEncContext *s, int16_t block[6][64],
         /* encode each block */
         h261_encode_block(h, block[i], i);
 
-    if (!IS_16X16(h->mtype)) {
+    if (!IS_16X16(h->mtype))
+    {
         s->last_mv[0][0][0] = 0;
         s->last_mv[0][0][1] = 0;
     }
 }
 
 static av_cold void init_uni_h261_rl_tab(RLTable *rl, uint32_t *bits_tab,
-                                         uint8_t *len_tab)
+        uint8_t *len_tab)
 {
     int slevel, run, last;
 
     av_assert0(MAX_LEVEL >= 64);
     av_assert0(MAX_RUN   >= 63);
 
-    for(slevel=-64; slevel<64; slevel++){
+    for(slevel=-64; slevel<64; slevel++)
+    {
         if(slevel==0) continue;
-        for(run=0; run<64; run++){
-            for(last=0; last<=1; last++){
+        for(run=0; run<64; run++)
+        {
+            for(last=0; last<=1; last++)
+            {
                 const int index= UNI_ENC_INDEX(last, run, slevel+64);
                 int level= slevel < 0 ? -slevel : slevel;
                 int len, code;
@@ -346,7 +379,8 @@ static av_cold void init_uni_h261_rl_tab(RLTable *rl, uint32_t *bits_tab,
                 if(last)
                     len += 2;
 
-                if(code!=rl->n && len < len_tab[index]){
+                if(code!=rl->n && len < len_tab[index])
+                {
                     len_tab [index]= len;
                 }
                 /* ESC */
@@ -354,7 +388,8 @@ static av_cold void init_uni_h261_rl_tab(RLTable *rl, uint32_t *bits_tab,
                 if(last)
                     len += 2;
 
-                if(len < len_tab[index]){
+                if(len < len_tab[index])
+                {
                     len_tab [index]= len;
                 }
             }
@@ -369,7 +404,7 @@ av_cold void ff_h261_encode_init(MpegEncContext *s)
     s->min_qcoeff       = -127;
     s->max_qcoeff       = 127;
     s->y_dc_scale_table =
-    s->c_dc_scale_table = ff_mpeg1_dc_scale_table;
+        s->c_dc_scale_table = ff_mpeg1_dc_scale_table;
     s->ac_esc_length    = 6+6+8;
 
     init_uni_h261_rl_tab(&ff_h261_rl_tcoeff, NULL, uni_h261_rl_len);
@@ -378,14 +413,16 @@ av_cold void ff_h261_encode_init(MpegEncContext *s)
     s->intra_ac_vlc_last_length = s->inter_ac_vlc_last_length = uni_h261_rl_len + 128*64;
 }
 
-static const AVClass h261_class = {
+static const AVClass h261_class =
+{
     .class_name = "h261 encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_h261_encoder = {
+AVCodec ff_h261_encoder =
+{
     .name           = "h261",
     .long_name      = NULL_IF_CONFIG_SMALL("H.261"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -394,7 +431,9 @@ AVCodec ff_h261_encoder = {
     .init           = ff_mpv_encode_init,
     .encode2        = ff_mpv_encode_picture,
     .close          = ff_mpv_encode_end,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
     .priv_class     = &h261_class,
 };

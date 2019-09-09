@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@ static void FUNCC(get_pixels)(int16_t *av_restrict block, const uint8_t *_pixels
     int i;
 
     /* read the pixels */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         block[0] = pixels[0];
         block[1] = pixels[1];
         block[2] = pixels[2];

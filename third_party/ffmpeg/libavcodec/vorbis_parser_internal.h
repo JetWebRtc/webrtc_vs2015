@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 #include "avcodec.h"
 #include "vorbis_parser.h"
 
-struct AVVorbisParseContext {
+struct AVVorbisParseContext
+{
     const AVClass *class;
     int extradata_parsed;       ///< we have attempted to parse extradata
     int valid_extradata;        ///< extradata is valid, so we can calculate duration

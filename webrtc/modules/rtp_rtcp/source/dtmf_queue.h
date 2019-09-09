@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,26 +15,29 @@
 
 #include "webrtc/base/criticalsection.h"
 
-namespace webrtc {
-class DtmfQueue {
- public:
-  struct Event {
-    uint16_t duration_ms = 0;
-    uint8_t payload_type = 0;
-    uint8_t key = 0;
-    uint8_t level = 0;
-  };
+namespace webrtc
+{
+class DtmfQueue
+{
+public:
+    struct Event
+    {
+        uint16_t duration_ms = 0;
+        uint8_t payload_type = 0;
+        uint8_t key = 0;
+        uint8_t level = 0;
+    };
 
-  DtmfQueue();
-  ~DtmfQueue();
+    DtmfQueue();
+    ~DtmfQueue();
 
-  bool AddDtmf(const Event& event);
-  bool NextDtmf(Event* event);
-  bool PendingDtmf() const;
+    bool AddDtmf(const Event& event);
+    bool NextDtmf(Event* event);
+    bool PendingDtmf() const;
 
- private:
-  rtc::CriticalSection dtmf_critsect_;
-  std::list<Event> queue_;
+private:
+    rtc::CriticalSection dtmf_critsect_;
+    std::list<Event> queue_;
 };
 }  // namespace webrtc
 

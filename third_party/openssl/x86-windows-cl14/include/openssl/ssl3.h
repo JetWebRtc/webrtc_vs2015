@@ -1,4 +1,4 @@
-/* ssl/ssl3.h */
+﻿/* ssl/ssl3.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -284,14 +284,14 @@ extern "C" {
 # define SSL3_HM_HEADER_LENGTH                  4
 
 # ifndef SSL3_ALIGN_PAYLOAD
- /*
-  * Some will argue that this increases memory footprint, but it's not
-  * actually true. Point is that malloc has to return at least 64-bit aligned
-  * pointers, meaning that allocating 5 bytes wastes 3 bytes in either case.
-  * Suggested pre-gaping simply moves these wasted bytes from the end of
-  * allocated region to its front, but makes data payload aligned, which
-  * improves performance:-)
-  */
+/*
+ * Some will argue that this increases memory footprint, but it's not
+ * actually true. Point is that malloc has to return at least 64-bit aligned
+ * pointers, meaning that allocating 5 bytes wastes 3 bytes in either case.
+ * Suggested pre-gaping simply moves these wasted bytes from the end of
+ * allocated region to its front, but makes data payload aligned, which
+ * improves performance:-)
+ */
 #  define SSL3_ALIGN_PAYLOAD                     8
 # else
 #  if (SSL3_ALIGN_PAYLOAD&(SSL3_ALIGN_PAYLOAD-1))!=0
@@ -400,7 +400,8 @@ extern "C" {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl3_record_st {
+typedef struct ssl3_record_st
+{
     /* type of record */
     /*
      * r
@@ -435,7 +436,8 @@ typedef struct ssl3_record_st {
      */ unsigned char seq_num[8];
 } SSL3_RECORD;
 
-typedef struct ssl3_buffer_st {
+typedef struct ssl3_buffer_st
+{
     /* at least SSL3_RT_MAX_PACKET_SIZE bytes, see ssl3_setup_buffers() */
     unsigned char *buf;
     /* buffer size */
@@ -478,7 +480,8 @@ typedef struct ssl3_buffer_st {
 
 # ifndef OPENSSL_NO_SSL_INTERN
 
-typedef struct ssl3_state_st {
+typedef struct ssl3_state_st
+{
     long flags;
     int delay_buf_pop_ret;
     unsigned char read_sequence[8];
@@ -550,7 +553,8 @@ typedef struct ssl3_state_st {
     size_t client_opaque_prf_input_len;
     void *server_opaque_prf_input;
     size_t server_opaque_prf_input_len;
-    struct {
+    struct
+    {
         /* actually only needs to be 16+20 */
         unsigned char cert_verify_md[EVP_MAX_MD_SIZE * 2];
         /* actually only need to be 16+20 for SSLv3 and 12 for TLS */

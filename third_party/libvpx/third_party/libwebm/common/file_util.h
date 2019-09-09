@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
+﻿// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file in the root of the source
@@ -14,7 +14,8 @@
 
 #include "mkvmuxer/mkvmuxertypes.h"  // LIBWEBM_DISALLOW_COPY_AND_ASSIGN()
 
-namespace libwebm {
+namespace libwebm
+{
 
 // Returns a temporary file name.
 std::string GetTempFileName();
@@ -24,16 +25,20 @@ uint64_t GetFileSize(const std::string& file_name);
 
 // Manages life of temporary file specified at time of construction. Deletes
 // file upon destruction.
-class TempFileDeleter {
- public:
-  TempFileDeleter();
-  explicit TempFileDeleter(std::string file_name) : file_name_(file_name) {}
-  ~TempFileDeleter();
-  const std::string& name() const { return file_name_; }
+class TempFileDeleter
+{
+public:
+    TempFileDeleter();
+    explicit TempFileDeleter(std::string file_name) : file_name_(file_name) {}
+    ~TempFileDeleter();
+    const std::string& name() const
+    {
+        return file_name_;
+    }
 
- private:
-  std::string file_name_;
-  LIBWEBM_DISALLOW_COPY_AND_ASSIGN(TempFileDeleter);
+private:
+    std::string file_name_;
+    LIBWEBM_DISALLOW_COPY_AND_ASSIGN(TempFileDeleter);
 };
 
 }  // namespace libwebm

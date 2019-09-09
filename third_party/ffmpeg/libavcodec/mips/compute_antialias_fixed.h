@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -57,26 +57,30 @@
 
 #if HAVE_INLINE_ASM
 static void compute_antialias_mips_fixed(MPADecodeContext *s,
-                                        GranuleDef *g)
+        GranuleDef *g)
 {
     int32_t *ptr, *csa;
     int n, i;
     int MAX_lo = 0xffffffff;
 
     /* we antialias only "long" bands */
-    if (g->block_type == 2) {
+    if (g->block_type == 2)
+    {
         if (!g->switch_point)
             return;
         /* XXX: check this for 8000Hz case */
         n = 1;
-    } else {
+    }
+    else
+    {
         n = SBLIMIT - 1;
     }
 
 
     ptr = g->sb_hybrid + 18;
 
-    for(i = n;i > 0;i--) {
+    for(i = n; i > 0; i--)
+    {
         int tmp0, tmp1, tmp2, tmp00, tmp11;
         int temp_reg1, temp_reg2, temp_reg3, temp_reg4, temp_reg5, temp_reg6;
         csa = &csa_table[0][0];
@@ -231,15 +235,15 @@ static void compute_antialias_mips_fixed(MPADecodeContext *s,
             "sw   %[temp_reg5], 7*4(%[ptr])                             \n\t"
 
             : [tmp0] "=&r" (tmp0), [tmp1] "=&r" (tmp1), [tmp2] "=&r" (tmp2),
-              [tmp00] "=&r" (tmp00), [tmp11] "=&r" (tmp11),
-              [temp_reg1] "=&r" (temp_reg1), [temp_reg2] "=&r" (temp_reg2),
-              [temp_reg3] "=&r" (temp_reg3), [temp_reg4] "=&r" (temp_reg4),
-              [temp_reg5] "=&r" (temp_reg5), [temp_reg6] "=&r" (temp_reg6)
+            [tmp00] "=&r" (tmp00), [tmp11] "=&r" (tmp11),
+            [temp_reg1] "=&r" (temp_reg1), [temp_reg2] "=&r" (temp_reg2),
+            [temp_reg3] "=&r" (temp_reg3), [temp_reg4] "=&r" (temp_reg4),
+            [temp_reg5] "=&r" (temp_reg5), [temp_reg6] "=&r" (temp_reg6)
             : [csa] "r" (csa), [ptr] "r" (ptr),
-              [MAX_lo] "r" (MAX_lo)
+            [MAX_lo] "r" (MAX_lo)
             : "memory", "hi", "lo", "$ac1hi", "$ac1lo", "$ac2hi", "$ac2lo",
-              "$ac3hi", "$ac3lo"
-         );
+            "$ac3hi", "$ac3lo"
+        );
 
         ptr += 18;
     }

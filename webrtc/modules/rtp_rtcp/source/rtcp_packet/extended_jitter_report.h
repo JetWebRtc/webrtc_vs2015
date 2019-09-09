@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,41 +15,46 @@
 
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 
-class ExtendedJitterReport : public RtcpPacket {
- public:
-  static constexpr uint8_t kPacketType = 195;
-  static constexpr size_t kMaxNumberOfJitterValues = 0x1f;
+class ExtendedJitterReport : public RtcpPacket
+{
+public:
+    static constexpr uint8_t kPacketType = 195;
+    static constexpr size_t kMaxNumberOfJitterValues = 0x1f;
 
-  ExtendedJitterReport() {}
-  ~ExtendedJitterReport() override {}
+    ExtendedJitterReport() {}
+    ~ExtendedJitterReport() override {}
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& packet);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& packet);
 
-  bool SetJitterValues(std::vector<uint32_t> jitter_values);
+    bool SetJitterValues(std::vector<uint32_t> jitter_values);
 
-  const std::vector<uint32_t>& jitter_values() {
-    return inter_arrival_jitters_;
-  }
+    const std::vector<uint32_t>& jitter_values()
+    {
+        return inter_arrival_jitters_;
+    }
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
- private:
-  static constexpr size_t kJitterSizeBytes = 4;
+private:
+    static constexpr size_t kJitterSizeBytes = 4;
 
-  size_t BlockLength() const override {
-    return kHeaderLength + kJitterSizeBytes * inter_arrival_jitters_.size();
-  }
+    size_t BlockLength() const override
+    {
+        return kHeaderLength + kJitterSizeBytes * inter_arrival_jitters_.size();
+    }
 
-  std::vector<uint32_t> inter_arrival_jitters_;
+    std::vector<uint32_t> inter_arrival_jitters_;
 };
 
 }  // namespace rtcp

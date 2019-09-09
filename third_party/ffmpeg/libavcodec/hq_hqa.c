@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQ/HQA decoder
  *
  * This file is part of FFmpeg.
@@ -66,15 +66,19 @@ static int hq_decode_block(HQContext *c, GetBitContext *gb, int16_t block[64],
 
     memset(block, 0, 64 * sizeof(*block));
 
-    if (!is_hqa) {
+    if (!is_hqa)
+    {
         block[0] = get_sbits(gb, 9) << 6;
         q = ff_hq_quants[qsel][is_chroma][get_bits(gb, 2)];
-    } else {
+    }
+    else
+    {
         q = ff_hq_quants[qsel][is_chroma][get_bits(gb, 2)];
         block[0] = get_sbits(gb, 9) << 6;
     }
 
-    for (;;) {
+    for (;;)
+    {
         val = get_vlc2(gb, c->hq_ac_vlc.table, 9, 2);
         if (val < 0)
             return AVERROR_INVALIDDATA;
@@ -98,7 +102,8 @@ static int hq_decode_mb(HQContext *c, AVFrame *pic,
     qgroup = get_bits(gb, 4);
     flag = get_bits1(gb);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         ret = hq_decode_block(c, gb, c->block[i], qgroup, i >= 4, 0);
         if (ret < 0)
             return ret;
@@ -121,10 +126,13 @@ static int hq_decode_frame(HQContext *ctx, AVFrame *pic,
     uint32_t slice_off[21];
     int slice, start_off, next_off, i, ret;
 
-    if ((unsigned)prof_num >= NUM_HQ_PROFILES) {
+    if ((unsigned)prof_num >= NUM_HQ_PROFILES)
+    {
         profile = &ff_hq_profile[0];
         avpriv_request_sample(ctx->avctx, "HQ Profile %d", prof_num);
-    } else {
+    }
+    else
+    {
         profile = &ff_hq_profile[prof_num];
         av_log(ctx->avctx, AV_LOG_VERBOSE, "HQ Profile %d\n", prof_num);
     }
@@ -145,14 +153,16 @@ static int hq_decode_frame(HQContext *ctx, AVFrame *pic,
         slice_off[i] = bytestream2_get_be24(&ctx->gbc) - 4;
 
     next_off = 0;
-    for (slice = 0; slice < profile->num_slices; slice++) {
+    for (slice = 0; slice < profile->num_slices; slice++)
+    {
         start_off = next_off;
         next_off  = profile->tab_h * (slice + 1) / profile->num_slices;
         perm = profile->perm_tab + start_off * profile->tab_w * 2;
 
         if (slice_off[slice] < (profile->num_slices + 1) * 3 ||
-            slice_off[slice] >= slice_off[slice + 1] ||
-            slice_off[slice + 1] > data_size) {
+                slice_off[slice] >= slice_off[slice + 1] ||
+                slice_off[slice + 1] > data_size)
+        {
             av_log(ctx->avctx, AV_LOG_ERROR,
                    "Invalid slice size %zu.\n", data_size);
             break;
@@ -160,9 +170,11 @@ static int hq_decode_frame(HQContext *ctx, AVFrame *pic,
         init_get_bits(&gb, src + slice_off[slice],
                       (slice_off[slice + 1] - slice_off[slice]) * 8);
 
-        for (i = 0; i < (next_off - start_off) * profile->tab_w; i++) {
+        for (i = 0; i < (next_off - start_off) * profile->tab_w; i++)
+        {
             ret = hq_decode_mb(ctx, pic, &gb, perm[0] * 16, perm[1] * 16);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(ctx->avctx, AV_LOG_ERROR,
                        "Error decoding macroblock %d at slice %d.\n", i, slice);
                 return ret;
@@ -187,7 +199,8 @@ static int hqa_decode_mb(HQContext *c, AVFrame *pic, int qgroup,
     for (i = 0; i < 12; i++)
         c->block[i][0] = -128 * (1 << 6);
 
-    if (cbp) {
+    if (cbp)
+    {
         flag = get_bits1(gb);
 
         cbp |= cbp << 4;
@@ -195,7 +208,8 @@ static int hqa_decode_mb(HQContext *c, AVFrame *pic, int qgroup,
             cbp |= 0x500;
         if (cbp & 0xC)
             cbp |= 0xA00;
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < 12; i++)
+        {
             if (!(cbp & (1 << i)))
                 continue;
             ret = hq_decode_block(c, gb, c->block[i], qgroup, i >= 8, 1);
@@ -220,11 +234,14 @@ static int hqa_decode_slice(HQContext *ctx, AVFrame *pic, GetBitContext *gb,
     int i, j, off;
     int ret;
 
-    for (i = 0; i < h; i += 16) {
+    for (i = 0; i < h; i += 16)
+    {
         off = (slice_no * 16 + i * 3) & 0x70;
-        for (j = off; j < w; j += 128) {
+        for (j = off; j < w; j += 128)
+        {
             ret = hqa_decode_mb(ctx, pic, quant, gb, j, i);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(ctx->avctx, AV_LOG_ERROR,
                        "Error decoding macroblock at %dx%d.\n", i, j);
                 return ret;
@@ -258,7 +275,8 @@ static int hqa_decode_frame(HQContext *ctx, AVFrame *pic, size_t data_size)
 
     quant = bytestream2_get_byte(&ctx->gbc);
     bytestream2_skip(&ctx->gbc, 3);
-    if (quant >= NUM_HQ_QUANTS) {
+    if (quant >= NUM_HQ_QUANTS)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR,
                "Invalid quantization matrix %d.\n", quant);
         return AVERROR_INVALIDDATA;
@@ -272,10 +290,12 @@ static int hqa_decode_frame(HQContext *ctx, AVFrame *pic, size_t data_size)
     for (i = 0; i < num_slices + 1; i++)
         slice_off[i] = bytestream2_get_be32(&ctx->gbc) - 4;
 
-    for (slice = 0; slice < num_slices; slice++) {
+    for (slice = 0; slice < num_slices; slice++)
+    {
         if (slice_off[slice] < (num_slices + 1) * 3 ||
-            slice_off[slice] >= slice_off[slice + 1] ||
-            slice_off[slice + 1] > data_size) {
+                slice_off[slice] >= slice_off[slice + 1] ||
+                slice_off[slice + 1] > data_size)
+        {
             av_log(ctx->avctx, AV_LOG_ERROR,
                    "Invalid slice size %zu.\n", data_size);
             break;
@@ -302,17 +322,20 @@ static int hq_hqa_decode_frame(AVCodecContext *avctx, void *data,
     unsigned tag;
 
     bytestream2_init(&ctx->gbc, avpkt->data, avpkt->size);
-    if (bytestream2_get_bytes_left(&ctx->gbc) < 4 + 4) {
+    if (bytestream2_get_bytes_left(&ctx->gbc) < 4 + 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small (%d).\n", avpkt->size);
         return AVERROR_INVALIDDATA;
     }
 
     info_tag = bytestream2_peek_le32(&ctx->gbc);
-    if (info_tag == MKTAG('I', 'N', 'F', 'O')) {
+    if (info_tag == MKTAG('I', 'N', 'F', 'O'))
+    {
         int info_size;
         bytestream2_skip(&ctx->gbc, 4);
         info_size = bytestream2_get_le32(&ctx->gbc);
-        if (bytestream2_get_bytes_left(&ctx->gbc) < info_size) {
+        if (bytestream2_get_bytes_left(&ctx->gbc) < info_size)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid INFO size (%d).\n", info_size);
             return AVERROR_INVALIDDATA;
         }
@@ -322,7 +345,8 @@ static int hq_hqa_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     data_size = bytestream2_get_bytes_left(&ctx->gbc);
-    if (data_size < 4) {
+    if (data_size < 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small (%d).\n", data_size);
         return AVERROR_INVALIDDATA;
     }
@@ -331,15 +355,21 @@ static int hq_hqa_decode_frame(AVCodecContext *avctx, void *data,
      * order. HQA has no size constraint and a fixed number of slices, so it
      * needs a separate scheme for it. */
     tag = bytestream2_get_le32(&ctx->gbc);
-    if ((tag & 0x00FFFFFF) == (MKTAG('U', 'V', 'C', ' ') & 0x00FFFFFF)) {
+    if ((tag & 0x00FFFFFF) == (MKTAG('U', 'V', 'C', ' ') & 0x00FFFFFF))
+    {
         ret = hq_decode_frame(ctx, pic, tag >> 24, data_size);
-    } else if (tag == MKTAG('H', 'Q', 'A', '1')) {
+    }
+    else if (tag == MKTAG('H', 'Q', 'A', '1'))
+    {
         ret = hqa_decode_frame(ctx, pic, data_size);
-    } else {
+    }
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "Not a HQ/HQA frame.\n");
         return AVERROR_INVALIDDATA;
     }
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error decoding frame.\n");
         return ret;
     }
@@ -372,7 +402,8 @@ static av_cold int hq_hqa_decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_hq_hqa_decoder = {
+AVCodec ff_hq_hqa_decoder =
+{
     .name           = "hq_hqa",
     .long_name      = NULL_IF_CONFIG_SMALL("Canopus HQ/HQA"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -383,5 +414,5 @@ AVCodec ff_hq_hqa_decoder = {
     .close          = hq_hqa_decode_close,
     .capabilities   = AV_CODEC_CAP_DR1,
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE |
-                      FF_CODEC_CAP_INIT_CLEANUP,
+    FF_CODEC_CAP_INIT_CLEANUP,
 };

@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2011 Octasic Inc.
+﻿/* Copyright (c) 2008-2011 Octasic Inc.
    Written by Jean-Marc Valin */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -30,10 +30,11 @@
 
 #include "arch.h"
 
-typedef struct {
-    int layers;
-    const int *topo;
-    const float *weights;
+typedef struct
+{
+int layers;
+const int *topo;
+const float *weights;
 } MLP;
 
 extern const MLP net;

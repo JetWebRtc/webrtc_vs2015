@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MSMPEG4 backend for encoder and decoder
  * Copyright (c) 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -51,74 +51,88 @@
  * except that it is inverted. */
 static av_cold void init_h263_dc_for_msmpeg4(void)
 {
-        int level, uni_code, uni_len;
+    int level, uni_code, uni_len;
 
-        if(ff_v2_dc_chroma_table[255 + 256][1])
-            return;
+    if(ff_v2_dc_chroma_table[255 + 256][1])
+        return;
 
-        for(level=-256; level<256; level++){
-            int size, v, l;
-            /* find number of bits */
-            size = 0;
-            v = abs(level);
-            while (v) {
-                v >>= 1;
-                    size++;
-            }
-
-            if (level < 0)
-                l= (-level) ^ ((1 << size) - 1);
-            else
-                l= level;
-
-            /* luminance h263 */
-            uni_code= ff_mpeg4_DCtab_lum[size][0];
-            uni_len = ff_mpeg4_DCtab_lum[size][1];
-            uni_code ^= (1<<uni_len)-1; //M$ does not like compatibility
-
-            if (size > 0) {
-                uni_code<<=size; uni_code|=l;
-                uni_len+=size;
-                if (size > 8){
-                    uni_code<<=1; uni_code|=1;
-                    uni_len++;
-                }
-            }
-            ff_v2_dc_lum_table[level + 256][0] = uni_code;
-            ff_v2_dc_lum_table[level + 256][1] = uni_len;
-
-            /* chrominance h263 */
-            uni_code= ff_mpeg4_DCtab_chrom[size][0];
-            uni_len = ff_mpeg4_DCtab_chrom[size][1];
-            uni_code ^= (1<<uni_len)-1; //M$ does not like compatibility
-
-            if (size > 0) {
-                uni_code<<=size; uni_code|=l;
-                uni_len+=size;
-                if (size > 8){
-                    uni_code<<=1; uni_code|=1;
-                    uni_len++;
-                }
-            }
-            ff_v2_dc_chroma_table[level + 256][0] = uni_code;
-            ff_v2_dc_chroma_table[level + 256][1] = uni_len;
-
+    for(level=-256; level<256; level++)
+    {
+        int size, v, l;
+        /* find number of bits */
+        size = 0;
+        v = abs(level);
+        while (v)
+        {
+            v >>= 1;
+            size++;
         }
+
+        if (level < 0)
+            l= (-level) ^ ((1 << size) - 1);
+        else
+            l= level;
+
+        /* luminance h263 */
+        uni_code= ff_mpeg4_DCtab_lum[size][0];
+        uni_len = ff_mpeg4_DCtab_lum[size][1];
+        uni_code ^= (1<<uni_len)-1; //M$ does not like compatibility
+
+        if (size > 0)
+        {
+            uni_code<<=size;
+            uni_code|=l;
+            uni_len+=size;
+            if (size > 8)
+            {
+                uni_code<<=1;
+                uni_code|=1;
+                uni_len++;
+            }
+        }
+        ff_v2_dc_lum_table[level + 256][0] = uni_code;
+        ff_v2_dc_lum_table[level + 256][1] = uni_len;
+
+        /* chrominance h263 */
+        uni_code= ff_mpeg4_DCtab_chrom[size][0];
+        uni_len = ff_mpeg4_DCtab_chrom[size][1];
+        uni_code ^= (1<<uni_len)-1; //M$ does not like compatibility
+
+        if (size > 0)
+        {
+            uni_code<<=size;
+            uni_code|=l;
+            uni_len+=size;
+            if (size > 8)
+            {
+                uni_code<<=1;
+                uni_code|=1;
+                uni_len++;
+            }
+        }
+        ff_v2_dc_chroma_table[level + 256][0] = uni_code;
+        ff_v2_dc_chroma_table[level + 256][1] = uni_len;
+
+    }
 }
 
 av_cold void ff_msmpeg4_common_init(MpegEncContext *s)
 {
-    switch(s->msmpeg4_version){
+    switch(s->msmpeg4_version)
+    {
     case 1:
     case 2:
         s->y_dc_scale_table=
-        s->c_dc_scale_table= ff_mpeg1_dc_scale_table;
+            s->c_dc_scale_table= ff_mpeg1_dc_scale_table;
         break;
     case 3:
-        if(s->workaround_bugs){
+        if(s->workaround_bugs)
+        {
             s->y_dc_scale_table= ff_old_ff_y_dc_scale_table;
             s->c_dc_scale_table= ff_wmv1_c_dc_scale_table;
-        } else{
+        }
+        else
+        {
             s->y_dc_scale_table= ff_mpeg4_y_dc_scale_table;
             s->c_dc_scale_table= ff_mpeg4_c_dc_scale_table;
         }
@@ -138,7 +152,8 @@ av_cold void ff_msmpeg4_common_init(MpegEncContext *s)
     }
 
 
-    if(s->msmpeg4_version>=4){
+    if(s->msmpeg4_version>=4)
+    {
         ff_init_scantable(s->idsp.idct_permutation, &s->intra_scantable,   ff_wmv1_scantable[1]);
         ff_init_scantable(s->idsp.idct_permutation, &s->intra_h_scantable, ff_wmv1_scantable[2]);
         ff_init_scantable(s->idsp.idct_permutation, &s->intra_v_scantable, ff_wmv1_scantable[3]);
@@ -164,9 +179,12 @@ int ff_msmpeg4_coded_block_pred(MpegEncContext * s, int n, uint8_t **coded_block
     b = s->coded_block[xy - 1 - wrap];
     c = s->coded_block[xy     - wrap];
 
-    if (b == c) {
+    if (b == c)
+    {
         pred = a;
-    } else {
+    }
+    else
+    {
         pred = c;
     }
 
@@ -180,9 +198,11 @@ static int get_dc(uint8_t *src, int stride, int scale, int block_size)
 {
     int y;
     int sum=0;
-    for(y=0; y<block_size; y++){
+    for(y=0; y<block_size; y++)
+    {
         int x;
-        for(x=0; x<block_size; x++){
+        for(x=0; x<block_size; x++)
+        {
             sum+=src[x + y*stride];
         }
     }
@@ -197,9 +217,12 @@ int ff_msmpeg4_pred_dc(MpegEncContext *s, int n,
     int16_t *dc_val;
 
     /* find prediction */
-    if (n < 4) {
+    if (n < 4)
+    {
         scale = s->y_dc_scale;
-    } else {
+    }
+    else
+    {
         scale = s->c_dc_scale;
     }
 
@@ -213,7 +236,8 @@ int ff_msmpeg4_pred_dc(MpegEncContext *s, int n,
     b = dc_val[ - 1 - wrap];
     c = dc_val[ - wrap];
 
-    if(s->first_slice_line && (n&2)==0 && s->msmpeg4_version<4){
+    if(s->first_slice_line && (n&2)==0 && s->msmpeg4_version<4)
+    {
         b=c=1024;
     }
 
@@ -242,11 +266,14 @@ int ff_msmpeg4_pred_dc(MpegEncContext *s, int n,
     );
 #else
     /* Divisions are costly everywhere; optimize the most common case. */
-    if (scale == 8) {
+    if (scale == 8)
+    {
         a = (a + (8 >> 1)) / 8;
         b = (b + (8 >> 1)) / 8;
         c = (c + (8 >> 1)) / 8;
-    } else {
+    }
+    else
+    {
         a = FASTDIV((a + (scale >> 1)), scale);
         b = FASTDIV((b + (scale >> 1)), scale);
         c = FASTDIV((c + (scale >> 1)), scale);
@@ -254,31 +281,46 @@ int ff_msmpeg4_pred_dc(MpegEncContext *s, int n,
 #endif
     /* XXX: WARNING: they did not choose the same test as MPEG4. This
        is very important ! */
-    if(s->msmpeg4_version>3){
-        if(s->inter_intra_pred){
+    if(s->msmpeg4_version>3)
+    {
+        if(s->inter_intra_pred)
+        {
             uint8_t *dest;
             int wrap;
 
-            if(n==1){
+            if(n==1)
+            {
                 pred=a;
                 *dir_ptr = 0;
-            }else if(n==2){
+            }
+            else if(n==2)
+            {
                 pred=c;
                 *dir_ptr = 1;
-            }else if(n==3){
-                if (abs(a - b) < abs(b - c)) {
+            }
+            else if(n==3)
+            {
+                if (abs(a - b) < abs(b - c))
+                {
                     pred = c;
                     *dir_ptr = 1;
-                } else {
+                }
+                else
+                {
                     pred = a;
                     *dir_ptr = 0;
                 }
-            }else{
+            }
+            else
+            {
                 int bs = 8 >> s->avctx->lowres;
-                if(n<4){
+                if(n<4)
+                {
                     wrap= s->linesize;
                     dest= s->current_picture.f->data[0] + (((n >> 1) + 2*s->mb_y) * bs*  wrap ) + ((n & 1) + 2*s->mb_x) * bs;
-                }else{
+                }
+                else
+                {
                     wrap= s->uvlinesize;
                     dest= s->current_picture.f->data[n - 3] + (s->mb_y * bs * wrap) + s->mb_x * bs;
                 }
@@ -287,44 +329,67 @@ int ff_msmpeg4_pred_dc(MpegEncContext *s, int n,
                 if(s->mb_y==0) c= (1024 + (scale>>1))/scale;
                 else           c= get_dc(dest-bs*wrap, wrap, scale*8>>(2*s->avctx->lowres), bs);
 
-                if (s->h263_aic_dir==0) {
+                if (s->h263_aic_dir==0)
+                {
                     pred= a;
                     *dir_ptr = 0;
-                }else if (s->h263_aic_dir==1) {
-                    if(n==0){
-                        pred= c;
-                        *dir_ptr = 1;
-                    }else{
-                        pred= a;
-                        *dir_ptr = 0;
-                    }
-                }else if (s->h263_aic_dir==2) {
-                    if(n==0){
-                        pred= a;
-                        *dir_ptr = 0;
-                    }else{
+                }
+                else if (s->h263_aic_dir==1)
+                {
+                    if(n==0)
+                    {
                         pred= c;
                         *dir_ptr = 1;
                     }
-                } else {
+                    else
+                    {
+                        pred= a;
+                        *dir_ptr = 0;
+                    }
+                }
+                else if (s->h263_aic_dir==2)
+                {
+                    if(n==0)
+                    {
+                        pred= a;
+                        *dir_ptr = 0;
+                    }
+                    else
+                    {
+                        pred= c;
+                        *dir_ptr = 1;
+                    }
+                }
+                else
+                {
                     pred= c;
                     *dir_ptr = 1;
                 }
             }
-        }else{
-            if (abs(a - b) < abs(b - c)) {
+        }
+        else
+        {
+            if (abs(a - b) < abs(b - c))
+            {
                 pred = c;
                 *dir_ptr = 1;
-            } else {
+            }
+            else
+            {
                 pred = a;
                 *dir_ptr = 0;
             }
         }
-    }else{
-        if (abs(a - b) <= abs(b - c)) {
+    }
+    else
+    {
+        if (abs(a - b) <= abs(b - c))
+        {
             pred = c;
             *dir_ptr = 1;
-        } else {
+        }
+        else
+        {
             pred = a;
             *dir_ptr = 0;
         }

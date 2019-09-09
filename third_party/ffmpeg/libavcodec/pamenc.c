@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PAM image format
  * Copyright (c) 2002, 2003 Fabrice Bellard
  *
@@ -32,7 +32,8 @@ static int pam_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     h = avctx->height;
     w = avctx->width;
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_MONOBLACK:
         n          = w;
         depth      = 1;
@@ -95,7 +96,7 @@ static int pam_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         return ret;
 
     bytestream_start =
-    bytestream       = pkt->data;
+        bytestream       = pkt->data;
     bytestream_end   = pkt->data + pkt->size;
 
     snprintf(bytestream, bytestream_end - bytestream,
@@ -106,15 +107,20 @@ static int pam_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     ptr      = p->data[0];
     linesize = p->linesize[0];
 
-    if (avctx->pix_fmt == AV_PIX_FMT_MONOBLACK){
+    if (avctx->pix_fmt == AV_PIX_FMT_MONOBLACK)
+    {
         int j;
-        for (i = 0; i < h; i++) {
+        for (i = 0; i < h; i++)
+        {
             for (j = 0; j < w; j++)
                 *bytestream++ = ptr[j >> 3] >> (7 - j & 7) & 1;
             ptr += linesize;
         }
-    } else {
-        for (i = 0; i < h; i++) {
+    }
+    else
+    {
+        for (i = 0; i < h; i++)
+        {
             memcpy(bytestream, ptr, n);
             bytestream += n;
             ptr        += linesize;
@@ -130,16 +136,17 @@ static int pam_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 static av_cold int pam_encode_init(AVCodecContext *avctx)
 {
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     return 0;
 }
 
-AVCodec ff_pam_encoder = {
+AVCodec ff_pam_encoder =
+{
     .name           = "pam",
     .long_name      = NULL_IF_CONFIG_SMALL("PAM (Portable AnyMap) image"),
     .type           = AVMEDIA_TYPE_VIDEO,

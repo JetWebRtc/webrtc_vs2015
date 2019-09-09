@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Romain Dolbeau <romain@dolbeau.org>
  *
  * This file is part of FFmpeg.
@@ -56,7 +56,8 @@ av_cold void ff_h264chroma_init_ppc(H264ChromaContext *c, int bit_depth)
     if (!PPC_ALTIVEC(av_get_cpu_flags()))
         return;
 
-    if (!high_bit_depth) {
+    if (!high_bit_depth)
+    {
         c->put_h264_chroma_pixels_tab[0] = put_h264_chroma_mc8_altivec;
         c->avg_h264_chroma_pixels_tab[0] = avg_h264_chroma_mc8_altivec;
     }

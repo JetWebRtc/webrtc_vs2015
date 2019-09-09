@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MXF
  * Copyright (c) 2006 SmartJog S.A., Baptiste Coudurier <baptiste dot coudurier at smartjog dot com>
  *
@@ -27,7 +27,8 @@
 
 typedef uint8_t UID[16];
 
-enum MXFMetadataSetType {
+enum MXFMetadataSetType
+{
     AnyType,
     MaterialPackage,
     SourcePackage,
@@ -50,7 +51,8 @@ enum MXFMetadataSetType {
     TaggedValue,
 };
 
-enum MXFFrameLayout {
+enum MXFFrameLayout
+{
     FullFrame = 0,
     SeparateFields,
     OneField,
@@ -58,19 +60,22 @@ enum MXFFrameLayout {
     SegmentedFrame,
 };
 
-typedef struct KLVPacket {
+typedef struct KLVPacket
+{
     UID key;
     int64_t offset;
     uint64_t length;
 } KLVPacket;
 
-typedef struct MXFCodecUL {
+typedef struct MXFCodecUL
+{
     UID uid;
     unsigned matching_len;
     int id;
 } MXFCodecUL;
 
-typedef struct {
+typedef struct
+{
     struct AVRational time_base;
     int samples_per_frame[6];
 } MXFSamplesPerFrame;

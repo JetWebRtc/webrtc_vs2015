@@ -1,4 +1,4 @@
-/*
+﻿/*
  * XWD image format
  *
  * Copyright (c) 2012 Paul B Mahol

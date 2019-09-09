@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,22 +14,24 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-enum {
-  VP8D_NOFILTERING = 0,
-  VP8D_DEBLOCK = 1 << 0,
-  VP8D_DEMACROBLOCK = 1 << 1,
-  VP8D_ADDNOISE = 1 << 2,
-  VP8D_MFQE = 1 << 3
+enum
+{
+    VP8D_NOFILTERING = 0,
+    VP8D_DEBLOCK = 1 << 0,
+    VP8D_DEMACROBLOCK = 1 << 1,
+    VP8D_ADDNOISE = 1 << 2,
+    VP8D_MFQE = 1 << 3
 };
 
-typedef struct {
-  int post_proc_flag;
-  int deblocking_level;
-  int noise_level;
-  int display_ref_frame_flag;
-  int display_mb_modes_flag;
-  int display_b_modes_flag;
-  int display_mv_flag;
+typedef struct
+{
+    int post_proc_flag;
+    int deblocking_level;
+    int noise_level;
+    int display_ref_frame_flag;
+    int display_mb_modes_flag;
+    int display_b_modes_flag;
+    int display_mv_flag;
 } vp8_ppflags_t;
 
 #ifdef __cplusplus

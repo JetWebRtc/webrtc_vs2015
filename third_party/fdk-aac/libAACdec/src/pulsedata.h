@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -100,11 +100,11 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  UCHAR PulseDataPresent;
-  UCHAR NumberPulse;
-  UCHAR PulseStartBand;
-  UCHAR PulseOffset[N_MAX_LINES];
-  UCHAR PulseAmp[N_MAX_LINES];
+    UCHAR PulseDataPresent;
+    UCHAR NumberPulse;
+    UCHAR PulseStartBand;
+    UCHAR PulseOffset[N_MAX_LINES];
+    UCHAR PulseAmp[N_MAX_LINES];
 } CPulseData;
 
 /**
@@ -119,12 +119,12 @@ typedef struct
  * \return 0 on success, != 0 on parse error.
  */
 INT CPulseData_Read(
-        const HANDLE_FDK_BITSTREAM bs,
-        CPulseData *const PulseData,
-        const SHORT *sfb_startlines,
-        const void *pIcsInfo,
-        const SHORT frame_length
-        );
+    const HANDLE_FDK_BITSTREAM bs,
+    CPulseData *const PulseData,
+    const SHORT *sfb_startlines,
+    const void *pIcsInfo,
+    const SHORT frame_length
+);
 
 /**
  * \brief Apply pulse data to spectral lines

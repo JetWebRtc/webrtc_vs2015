@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SMPTE 302M encoder
  * Copyright (c) 2010 Google, Inc.
  * Copyright (c) 2013 Darryl Wallace <wallacdj@gmail.com>
@@ -27,7 +27,8 @@
 
 #define AES3_HEADER_LEN 4
 
-typedef struct S302MEncContext {
+typedef struct S302MEncContext
+{
     uint8_t framing_index; /* Set for even channels on multiple of 192 samples */
 } S302MEncContext;
 
@@ -35,32 +36,39 @@ static av_cold int s302m_encode_init(AVCodecContext *avctx)
 {
     S302MEncContext *s = avctx->priv_data;
 
-    if (avctx->channels & 1 || avctx->channels > 8) {
+    if (avctx->channels & 1 || avctx->channels > 8)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Encoding %d channel(s) is not allowed. Only 2, 4, 6 and 8 channels are supported.\n",
                avctx->channels);
         return AVERROR(EINVAL);
     }
 
-    switch (avctx->sample_fmt) {
+    switch (avctx->sample_fmt)
+    {
     case AV_SAMPLE_FMT_S16:
         avctx->bits_per_raw_sample = 16;
         break;
     case AV_SAMPLE_FMT_S32:
-        if (avctx->bits_per_raw_sample > 20) {
+        if (avctx->bits_per_raw_sample > 20)
+        {
             if (avctx->bits_per_raw_sample > 24)
                 av_log(avctx, AV_LOG_WARNING, "encoding as 24 bits-per-sample\n");
             avctx->bits_per_raw_sample = 24;
-        } else if (!avctx->bits_per_raw_sample) {
+        }
+        else if (!avctx->bits_per_raw_sample)
+        {
             avctx->bits_per_raw_sample = 24;
-        } else if (avctx->bits_per_raw_sample <= 20) {
+        }
+        else if (avctx->bits_per_raw_sample <= 20)
+        {
             avctx->bits_per_raw_sample = 20;
         }
     }
 
     avctx->frame_size = 0;
     avctx->bit_rate   = 48000 * avctx->channels *
-                       (avctx->bits_per_raw_sample + 4);
+                        (avctx->bits_per_raw_sample + 4);
     s->framing_index  = 0;
 
     return 0;
@@ -71,9 +79,9 @@ static int s302m_encode2_frame(AVCodecContext *avctx, AVPacket *avpkt,
 {
     S302MEncContext *s = avctx->priv_data;
     const int buf_size = AES3_HEADER_LEN +
-                        (frame->nb_samples *
-                         avctx->channels *
-                        (avctx->bits_per_raw_sample + 4)) / 8;
+                         (frame->nb_samples *
+                          avctx->channels *
+                          (avctx->bits_per_raw_sample + 4)) / 8;
     int ret, c, channels;
     uint8_t *o;
     PutBitContext pb;
@@ -91,13 +99,16 @@ static int s302m_encode2_frame(AVCodecContext *avctx, AVPacket *avpkt,
     flush_put_bits(&pb);
     o += AES3_HEADER_LEN;
 
-    if (avctx->bits_per_raw_sample == 24) {
+    if (avctx->bits_per_raw_sample == 24)
+    {
         const uint32_t *samples = (uint32_t *)frame->data[0];
 
-        for (c = 0; c < frame->nb_samples; c++) {
+        for (c = 0; c < frame->nb_samples; c++)
+        {
             uint8_t vucf = s->framing_index == 0 ? 0x10: 0;
 
-            for (channels = 0; channels < avctx->channels; channels += 2) {
+            for (channels = 0; channels < avctx->channels; channels += 2)
+            {
                 o[0] = ff_reverse[(samples[0] & 0x0000FF00) >> 8];
                 o[1] = ff_reverse[(samples[0] & 0x00FF0000) >> 16];
                 o[2] = ff_reverse[(samples[0] & 0xFF000000) >> 24];
@@ -113,13 +124,17 @@ static int s302m_encode2_frame(AVCodecContext *avctx, AVPacket *avpkt,
             if (s->framing_index >= 192)
                 s->framing_index = 0;
         }
-    } else if (avctx->bits_per_raw_sample == 20) {
+    }
+    else if (avctx->bits_per_raw_sample == 20)
+    {
         const uint32_t *samples = (uint32_t *)frame->data[0];
 
-        for (c = 0; c < frame->nb_samples; c++) {
+        for (c = 0; c < frame->nb_samples; c++)
+        {
             uint8_t vucf = s->framing_index == 0 ? 0x80: 0;
 
-            for (channels = 0; channels < avctx->channels; channels += 2) {
+            for (channels = 0; channels < avctx->channels; channels += 2)
+            {
                 o[0] = ff_reverse[ (samples[0] & 0x000FF000) >> 12];
                 o[1] = ff_reverse[ (samples[0] & 0x0FF00000) >> 20];
                 o[2] = ff_reverse[((samples[0] & 0xF0000000) >> 28) | vucf];
@@ -134,13 +149,17 @@ static int s302m_encode2_frame(AVCodecContext *avctx, AVPacket *avpkt,
             if (s->framing_index >= 192)
                 s->framing_index = 0;
         }
-    } else if (avctx->bits_per_raw_sample == 16) {
+    }
+    else if (avctx->bits_per_raw_sample == 16)
+    {
         const uint16_t *samples = (uint16_t *)frame->data[0];
 
-        for (c = 0; c < frame->nb_samples; c++) {
+        for (c = 0; c < frame->nb_samples; c++)
+        {
             uint8_t vucf = s->framing_index == 0 ? 0x10 : 0;
 
-            for (channels = 0; channels < avctx->channels; channels += 2) {
+            for (channels = 0; channels < avctx->channels; channels += 2)
+            {
                 o[0] = ff_reverse[ samples[0] & 0xFF];
                 o[1] = ff_reverse[(samples[0] & 0xFF00) >>  8];
                 o[2] = ff_reverse[(samples[1] & 0x0F)   <<  4] | vucf;
@@ -162,7 +181,8 @@ static int s302m_encode2_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-AVCodec ff_s302m_encoder = {
+AVCodec ff_s302m_encoder =
+{
     .name                  = "s302m",
     .long_name             = NULL_IF_CONFIG_SMALL("SMPTE 302M"),
     .type                  = AVMEDIA_TYPE_AUDIO,
@@ -170,9 +190,11 @@ AVCodec ff_s302m_encoder = {
     .priv_data_size        = sizeof(S302MEncContext),
     .init                  = s302m_encode_init,
     .encode2               = s302m_encode2_frame,
-    .sample_fmts           = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S32,
-                                                            AV_SAMPLE_FMT_S16,
-                                                            AV_SAMPLE_FMT_NONE },
+    .sample_fmts           = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S32,
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
     .capabilities          = AV_CODEC_CAP_VARIABLE_FRAME_SIZE | AV_CODEC_CAP_EXPERIMENTAL,
     .supported_samplerates = (const int[]) { 48000, 0 },
 };

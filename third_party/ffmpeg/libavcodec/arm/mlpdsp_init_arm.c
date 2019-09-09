@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 RISC OS Open Ltd
  * Author: Ben Avison <bavison@riscosopen.org>
  *
@@ -87,22 +87,24 @@ PACK_ALL(DECLARE_PACK)
 #endif
 
 static int32_t (*mlp_select_pack_output_armv6(uint8_t *ch_assign,
-                                              int8_t *output_shift,
-                                              uint8_t max_matrix_channel,
-                                              int is32))(int32_t, uint16_t, int32_t (*)[], void *, uint8_t*, int8_t *, uint8_t, int)
+                int8_t *output_shift,
+                uint8_t max_matrix_channel,
+                int is32))(int32_t, uint16_t, int32_t (*)[], void *, uint8_t*, int8_t *, uint8_t, int)
 {
     int ch_index;
     int shift = output_shift[0] < 0 || output_shift[0] > 5 ? 6 : output_shift[0];
     int inorder = 1;
-    static int32_t (*const routine[2*3*7])(int32_t, uint16_t, int32_t (*)[], void *, uint8_t*, int8_t *, uint8_t, int) = {
-            PACK_ALL(ENUMERATE_PACK)
+    static int32_t (*const routine[2*3*7])(int32_t, uint16_t, int32_t (*)[], void *, uint8_t*, int8_t *, uint8_t, int) =
+    {
+        PACK_ALL(ENUMERATE_PACK)
     };
     int i;
 
     if (!is32) // don't support 16-bit output (it's not used by TrueHD)
         return ff_mlp_pack_output;
 
-    switch (max_matrix_channel) {
+    switch (max_matrix_channel)
+    {
     case 1:
         ch_index = 0;
         break;
@@ -116,7 +118,8 @@ static int32_t (*mlp_select_pack_output_armv6(uint8_t *ch_assign,
         return ff_mlp_pack_output;
     }
 
-    for (i = 0; i <= max_matrix_channel; i++) {
+    for (i = 0; i <= max_matrix_channel; i++)
+    {
         if (shift != 6 && output_shift[i] != shift)
             shift = 6; // indicate mixed shifts
         if (ch_assign[i] != i)
@@ -137,7 +140,8 @@ av_cold void ff_mlpdsp_init_arm(MLPDSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_armv5te(cpu_flags)) {
+    if (have_armv5te(cpu_flags))
+    {
         c->mlp_filter_channel = ff_mlp_filter_channel_arm;
         c->mlp_rematrix_channel = ff_mlp_rematrix_channel_arm;
     }

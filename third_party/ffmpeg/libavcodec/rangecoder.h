@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Range coder
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -32,7 +32,8 @@
 #include "libavutil/common.h"
 #include "libavutil/avassert.h"
 
-typedef struct RangeCoder {
+typedef struct RangeCoder
+{
     int low;
     int range;
     int outstanding_count;
@@ -52,20 +53,28 @@ void ff_build_rac_states(RangeCoder *c, int factor, int max_p);
 static inline void renorm_encoder(RangeCoder *c)
 {
     // FIXME: optimize
-    while (c->range < 0x100) {
-        if (c->outstanding_byte < 0) {
+    while (c->range < 0x100)
+    {
+        if (c->outstanding_byte < 0)
+        {
             c->outstanding_byte = c->low >> 8;
-        } else if (c->low <= 0xFF00) {
+        }
+        else if (c->low <= 0xFF00)
+        {
             *c->bytestream++ = c->outstanding_byte;
             for (; c->outstanding_count; c->outstanding_count--)
                 *c->bytestream++ = 0xFF;
             c->outstanding_byte = c->low >> 8;
-        } else if (c->low >= 0x10000) {
+        }
+        else if (c->low >= 0x10000)
+        {
             *c->bytestream++ = c->outstanding_byte + 1;
             for (; c->outstanding_count; c->outstanding_count--)
                 *c->bytestream++ = 0x00;
             c->outstanding_byte = (c->low >> 8) & 0xFF;
-        } else {
+        }
+        else
+        {
             c->outstanding_count++;
         }
 
@@ -89,10 +98,13 @@ static inline void put_rac(RangeCoder *c, uint8_t *const state, int bit)
     av_assert2(*state);
     av_assert2(range1 < c->range);
     av_assert2(range1 > 0);
-    if (!bit) {
+    if (!bit)
+    {
         c->range -= range1;
         *state    = c->zero_state[*state];
-    } else {
+    }
+    else
+    {
         c->low  += c->range - range1;
         c->range = range1;
         *state   = c->one_state[*state];
@@ -103,7 +115,8 @@ static inline void put_rac(RangeCoder *c, uint8_t *const state, int bit)
 
 static inline void refill(RangeCoder *c)
 {
-    if (c->range < 0x100) {
+    if (c->range < 0x100)
+    {
         c->range <<= 8;
         c->low   <<= 8;
         if (c->bytestream < c->bytestream_end)
@@ -118,11 +131,14 @@ static inline int get_rac(RangeCoder *c, uint8_t *const state)
 
     c->range -= range1;
 #if 1
-    if (c->low < c->range) {
+    if (c->low < c->range)
+    {
         *state = c->zero_state[*state];
         refill(c);
         return 0;
-    } else {
+    }
+    else
+    {
         c->low  -= c->range;
         *state   = c->one_state[*state];
         c->range = range1;

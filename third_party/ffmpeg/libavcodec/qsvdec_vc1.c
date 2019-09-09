@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV based VC-1 video decoder
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 #include "avcodec.h"
 #include "qsvdec.h"
 
-typedef struct QSVVC1Context {
+typedef struct QSVVC1Context
+{
     AVClass *class;
     QSVContext qsv;
 } QSVVC1Context;
@@ -52,7 +53,8 @@ static int qsv_decode_frame(AVCodecContext *avctx, void *data,
     return ff_qsv_decode(avctx, &s->qsv, frame, got_frame, avpkt);
 }
 
-AVHWAccel ff_vc1_qsv_hwaccel = {
+AVHWAccel ff_vc1_qsv_hwaccel =
+{
     .name           = "vc1_qsv",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_VC1,
@@ -61,19 +63,22 @@ AVHWAccel ff_vc1_qsv_hwaccel = {
 
 #define OFFSET(x) offsetof(QSVVC1Context, x)
 #define VD AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "async_depth", "Internal parallelization depth, the higher the value the higher the latency.", OFFSET(qsv.async_depth), AV_OPT_TYPE_INT, { .i64 = ASYNC_DEPTH_DEFAULT }, 0, INT_MAX, VD },
     { NULL },
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "vc1_qsv",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_vc1_qsv_decoder = {
+AVCodec ff_vc1_qsv_decoder =
+{
     .name           = "vc1_qsv",
     .long_name      = NULL_IF_CONFIG_SMALL("VC-1 video (Intel Quick Sync Video acceleration)"),
     .priv_data_size = sizeof(QSVVC1Context),

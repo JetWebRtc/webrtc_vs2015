@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW PCM demuxers
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -26,7 +26,8 @@
 #include "libavutil/opt.h"
 #include "libavutil/avassert.h"
 
-typedef struct PCMAudioDemuxerContext {
+typedef struct PCMAudioDemuxerContext
+{
     AVClass *class;
     int sample_rate;
     int channels;
@@ -59,7 +60,8 @@ static int pcm_read_header(AVFormatContext *s)
     return 0;
 }
 
-static const AVOption pcm_options[] = {
+static const AVOption pcm_options[] =
+{
     { "sample_rate", "", offsetof(PCMAudioDemuxerContext, sample_rate), AV_OPT_TYPE_INT, {.i64 = 44100}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { "channels",    "", offsetof(PCMAudioDemuxerContext, channels),    AV_OPT_TYPE_INT, {.i64 = 1}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
@@ -145,20 +147,23 @@ PCMDEF(alaw, "PCM A-law",
 PCMDEF(mulaw, "PCM mu-law",
        "ul", AV_CODEC_ID_PCM_MULAW)
 
-static const AVOption sln_options[] = {
+static const AVOption sln_options[] =
+{
     { "sample_rate", "", offsetof(PCMAudioDemuxerContext, sample_rate), AV_OPT_TYPE_INT, {.i64 = 8000}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { "channels",    "", offsetof(PCMAudioDemuxerContext, channels),    AV_OPT_TYPE_INT, {.i64 = 1}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass sln_demuxer_class = {
+static const AVClass sln_demuxer_class =
+{
     .class_name = "sln demuxer",
     .item_name  = av_default_item_name,
     .option     = sln_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_sln_demuxer = {
+AVInputFormat ff_sln_demuxer =
+{
     .name           = "sln",
     .long_name      = NULL_IF_CONFIG_SMALL("Asterisk raw pcm"),
     .priv_data_size = sizeof(PCMAudioDemuxerContext),

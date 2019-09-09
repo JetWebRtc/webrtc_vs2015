@@ -1,4 +1,4 @@
-/* crypto/x509/x509_vfy.h */
+﻿/* crypto/x509/x509_vfy.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -81,7 +81,8 @@ extern "C" {
 
 # if 0
 /* Outer object */
-typedef struct x509_hash_dir_st {
+typedef struct x509_hash_dir_st
+{
     int num_dirs;
     char **dirs;
     int *dirs_type;
@@ -89,7 +90,8 @@ typedef struct x509_hash_dir_st {
 } X509_HASH_DIR_CTX;
 # endif
 
-typedef struct x509_file_st {
+typedef struct x509_file_st
+{
     int num_paths;              /* number of paths to files or directories */
     int num_alloced;
     char **paths;               /* the list of paths or directories */
@@ -120,10 +122,12 @@ certificate chain.
 # define X509_LU_CRL             2
 # define X509_LU_PKEY            3
 
-typedef struct x509_object_st {
+typedef struct x509_object_st
+{
     /* one of the above types */
     int type;
-    union {
+    union
+    {
         char *ptr;
         X509 *x509;
         X509_CRL *crl;
@@ -137,7 +141,8 @@ DECLARE_STACK_OF(X509_LOOKUP)
 DECLARE_STACK_OF(X509_OBJECT)
 
 /* This is a static that defines the function interface */
-typedef struct x509_lookup_method_st {
+typedef struct x509_lookup_method_st
+{
     const char *name;
     int (*new_item) (X509_LOOKUP *ctx);
     void (*free) (X509_LOOKUP *ctx);
@@ -164,7 +169,8 @@ typedef struct X509_VERIFY_PARAM_ID_st X509_VERIFY_PARAM_ID;
  * parameters used can be customized
  */
 
-typedef struct X509_VERIFY_PARAM_st {
+typedef struct X509_VERIFY_PARAM_st
+{
     char *name;
     time_t check_time;          /* Time to use */
     unsigned long inh_flags;    /* Inheritance flags */
@@ -183,7 +189,8 @@ DECLARE_STACK_OF(X509_VERIFY_PARAM)
  * validation.  Once we have a certificate chain, the 'verify' function is
  * then called to actually check the cert chain.
  */
-struct x509_store_st {
+struct x509_store_st
+{
     /* The following is a cache of trusted certs */
     int cache;                  /* if true, stash any hits */
     STACK_OF(X509_OBJECT) *objs; /* Cache of all objects */
@@ -220,7 +227,8 @@ int X509_STORE_set_depth(X509_STORE *store, int depth);
 # define X509_STORE_set_verify_func(ctx,func)    ((ctx)->verify=(func))
 
 /* This is the functions plus an instance of the local variables. */
-struct x509_lookup_st {
+struct x509_lookup_st
+{
     int init;                   /* have we been started */
     int skip;                   /* don't use us. */
     X509_LOOKUP_METHOD *method; /* the functions */
@@ -233,7 +241,8 @@ struct x509_lookup_st {
  * cert chain can take some time (and have to be 'retried', this needs to be
  * kept and passed around.
  */
-struct x509_store_ctx_st {      /* X509_STORE_CTX */
+struct x509_store_ctx_st        /* X509_STORE_CTX */
+{
     X509_STORE *ctx;
     /* used when looking up certs */
     int current_method;
@@ -454,7 +463,7 @@ void X509_STORE_CTX_set_depth(X509_STORE_CTX *ctx, int depth);
 int X509_OBJECT_idx_by_subject(STACK_OF(X509_OBJECT) *h, int type,
                                X509_NAME *name);
 X509_OBJECT *X509_OBJECT_retrieve_by_subject(STACK_OF(X509_OBJECT) *h,
-                                             int type, X509_NAME *name);
+        int type, X509_NAME *name);
 X509_OBJECT *X509_OBJECT_retrieve_match(STACK_OF(X509_OBJECT) *h,
                                         X509_OBJECT *x);
 void X509_OBJECT_up_ref_count(X509_OBJECT *a);
@@ -474,8 +483,8 @@ void X509_STORE_set_verify_cb(X509_STORE *ctx,
 
 void X509_STORE_set_lookup_crls_cb(X509_STORE *ctx,
                                    STACK_OF(X509_CRL) *(*cb) (X509_STORE_CTX
-                                                              *ctx,
-                                                              X509_NAME *nm));
+                                           *ctx,
+                                           X509_NAME *nm));
 
 X509_STORE_CTX *X509_STORE_CTX_new(void);
 
@@ -618,28 +627,28 @@ void X509_policy_tree_free(X509_POLICY_TREE *tree);
 
 int X509_policy_tree_level_count(const X509_POLICY_TREE *tree);
 X509_POLICY_LEVEL *X509_policy_tree_get0_level(const X509_POLICY_TREE *tree,
-                                               int i);
+        int i);
 
 STACK_OF(X509_POLICY_NODE) *X509_policy_tree_get0_policies(const
-                                                           X509_POLICY_TREE
-                                                           *tree);
+        X509_POLICY_TREE
+        *tree);
 
 STACK_OF(X509_POLICY_NODE) *X509_policy_tree_get0_user_policies(const
-                                                                X509_POLICY_TREE
-                                                                *tree);
+        X509_POLICY_TREE
+        *tree);
 
 int X509_policy_level_node_count(X509_POLICY_LEVEL *level);
 
 X509_POLICY_NODE *X509_policy_level_get0_node(X509_POLICY_LEVEL *level,
-                                              int i);
+        int i);
 
 const ASN1_OBJECT *X509_policy_node_get0_policy(const X509_POLICY_NODE *node);
 
 STACK_OF(POLICYQUALINFO) *X509_policy_node_get0_qualifiers(const
-                                                           X509_POLICY_NODE
-                                                           *node);
+        X509_POLICY_NODE
+        *node);
 const X509_POLICY_NODE *X509_policy_node_get0_parent(const X509_POLICY_NODE
-                                                     *node);
+        *node);
 
 #ifdef  __cplusplus
 }

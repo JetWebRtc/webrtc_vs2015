@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFT/IFFT transforms
  * Copyright (c) 2008 Loren Merritt
  * Copyright (c) 2002 Fabrice Bellard
@@ -52,7 +52,8 @@ COSTABLE(16384);
 COSTABLE(32768);
 COSTABLE(65536);
 #endif
-COSTABLE_CONST FFTSample * const FFT_NAME(ff_cos_tabs)[] = {
+COSTABLE_CONST FFTSample * const FFT_NAME(ff_cos_tabs)[] =
+{
     NULL, NULL, NULL, NULL,
     FFT_NAME(ff_cos_16),
     FFT_NAME(ff_cos_32),
@@ -99,7 +100,8 @@ av_cold void ff_init_ff_cos_tabs(int index)
 #endif
 }
 
-static const int avx_tab[] = {
+static const int avx_tab[] =
+{
     0, 4, 1, 5, 8, 12, 9, 13, 2, 6, 3, 7, 10, 14, 11, 15
 };
 
@@ -120,15 +122,20 @@ static av_cold void fft_perm_avx(FFTContext *s)
     int i;
     int n = 1 << s->nbits;
 
-    for (i = 0; i < n; i += 16) {
+    for (i = 0; i < n; i += 16)
+    {
         int k;
-        if (is_second_half_of_fft32(i, n)) {
+        if (is_second_half_of_fft32(i, n))
+        {
             for (k = 0; k < 16; k++)
                 s->revtab[-split_radix_permutation(i + k, n, s->inverse) & (n - 1)] =
                     i + avx_tab[k];
 
-        } else {
-            for (k = 0; k < 16; k++) {
+        }
+        else
+        {
+            for (k = 0; k < 16; k++)
+            {
                 int j = i + k;
                 j = (j & ~7) | ((j >> 1) & 3) | ((j << 2) & 4);
                 s->revtab[-split_radix_permutation(i + k, n, s->inverse) & (n - 1)] = j;
@@ -180,16 +187,21 @@ av_cold int ff_fft_init(FFTContext *s, int nbits, int inverse)
     if (CONFIG_MDCT)  s->mdct_calcw = ff_mdct_calcw_c;
     if (ARCH_ARM)     ff_fft_fixed_init_arm(s);
 #endif
-    for(j=4; j<=nbits; j++) {
+    for(j=4; j<=nbits; j++)
+    {
         ff_init_ff_cos_tabs(j);
     }
 #endif /* FFT_FIXED_32 */
 
 
-    if (s->fft_permutation == FF_FFT_PERM_AVX) {
+    if (s->fft_permutation == FF_FFT_PERM_AVX)
+    {
         fft_perm_avx(s);
-    } else {
-        for(i=0; i<n; i++) {
+    }
+    else
+    {
+        for(i=0; i<n; i++)
+        {
             j = i;
             if (s->fft_permutation == FF_FFT_PERM_SWAP_LSBS)
                 j = (j&~3) | ((j>>1)&1) | ((j<<1)&2);
@@ -198,7 +210,7 @@ av_cold int ff_fft_init(FFTContext *s, int nbits, int inverse)
     }
 
     return 0;
- fail:
+fail:
     av_freep(&s->revtab);
     av_freep(&s->tmp_buf);
     return -1;
@@ -210,7 +222,7 @@ static void fft_permute_c(FFTContext *s, FFTComplex *z)
     const uint16_t *revtab = s->revtab;
     np = 1 << s->nbits;
     /* TODO: handle split-radix permute in a more optimal way, probably in-place */
-    for(j=0;j<np;j++) s->tmp_buf[revtab[j]] = z[j];
+    for(j=0; j<np; j++) s->tmp_buf[revtab[j]] = z[j];
     memcpy(z, s->tmp_buf, np * sizeof(FFTComplex));
 }
 
@@ -222,7 +234,8 @@ av_cold void ff_fft_end(FFTContext *s)
 
 #if FFT_FIXED_32
 
-static void fft_calc_c(FFTContext *s, FFTComplex *z) {
+static void fft_calc_c(FFTContext *s, FFTComplex *z)
+{
 
     int nbits, i, n, num_transforms, offset, step;
     int n4, n2, n34;
@@ -233,7 +246,8 @@ static void fft_calc_c(FFTContext *s, FFTComplex *z) {
 
     num_transforms = (0x2aab >> (16 - s->nbits)) | 1;
 
-    for (n=0; n<num_transforms; n++){
+    for (n=0; n<num_transforms; n++)
+    {
         offset = ff_fft_offsets_lut[n] << 2;
         tmpz = z + offset;
 
@@ -261,7 +275,8 @@ static void fft_calc_c(FFTContext *s, FFTComplex *z) {
 
     num_transforms = (num_transforms >> 1) | 1;
 
-    for (n=0; n<num_transforms; n++){
+    for (n=0; n<num_transforms; n++)
+    {
         offset = ff_fft_offsets_lut[n] << 3;
         tmpz = z + offset;
 
@@ -314,12 +329,14 @@ static void fft_calc_c(FFTContext *s, FFTComplex *z) {
     step = 1 << ((MAX_LOG2_NFFT-4) - 4);
     n4 = 4;
 
-    for (nbits=4; nbits<=s->nbits; nbits++){
+    for (nbits=4; nbits<=s->nbits; nbits++)
+    {
         n2  = 2*n4;
         n34 = 3*n4;
         num_transforms = (num_transforms >> 1) | 1;
 
-        for (n=0; n<num_transforms; n++){
+        for (n=0; n<num_transforms; n++)
+        {
             const FFTSample *w_re_ptr = ff_w_tab_sr + step;
             const FFTSample *w_im_ptr = ff_w_tab_sr + MAX_FFT_SIZE/(4*16) - step;
             offset = ff_fft_offsets_lut[n] << nbits;
@@ -339,7 +356,8 @@ static void fft_calc_c(FFTContext *s, FFTComplex *z) {
             tmpz[n34].im = tmpz[n4].im + tmp1;
             tmpz[ n4].im = tmpz[n4].im - tmp1;
 
-            for (i=1; i<n4; i++){
+            for (i=1; i<n4; i++)
+            {
                 FFTSample w_re = w_re_ptr[0];
                 FFTSample w_im = w_im_ptr[0];
                 accu  = (int64_t)w_re*tmpz[ n2+i].re;
@@ -516,7 +534,8 @@ DECL_FFT(16384,8192,4096)
 DECL_FFT(32768,16384,8192)
 DECL_FFT(65536,32768,16384)
 
-static void (* const fft_dispatch[])(FFTComplex*) = {
+static void (* const fft_dispatch[])(FFTComplex*) =
+{
     fft4, fft8, fft16, fft32, fft64, fft128, fft256, fft512, fft1024,
     fft2048, fft4096, fft8192, fft16384, fft32768, fft65536,
 };

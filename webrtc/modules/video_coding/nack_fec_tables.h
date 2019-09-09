@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,12 +11,14 @@
 #ifndef WEBRTC_MODULES_VIDEO_CODING_NACK_FEC_TABLES_H_
 #define WEBRTC_MODULES_VIDEO_CODING_NACK_FEC_TABLES_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Table for adjusting FEC rate for NACK/FEC protection method
 // Table values are built as a sigmoid function, ranging from 0 to 100, based on
 // the HybridNackTH values defined in media_opt_util.h.
-const uint16_t VCMNackFecTable[100] = {
+const uint16_t VCMNackFecTable[100] =
+{
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   1,   1,   1,
     1,   2,   2,   2,   3,   3,   4,   5,   6,   7,   9,   10,  12,  15,  18,
     21,  24,  28,  32,  37,  41,  46,  51,  56,  61,  66,  70,  74,  78,  81,

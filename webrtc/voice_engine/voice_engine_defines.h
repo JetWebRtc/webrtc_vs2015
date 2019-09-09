@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // VolumeControl
 enum { kMinVolumeLevel = 0 };
@@ -71,23 +72,28 @@ enum { kVoiceEngineMaxRtpExtensionId = 14 };
   stat.SetLastError(VE_FUNC_NOT_SUPPORTED); \
   return -1;
 
-namespace webrtc {
+namespace webrtc
+{
 
-inline int VoEId(int veId, int chId) {
-  if (chId == -1) {
-    const int dummyChannel(99);
-    return (int)((veId << 16) + dummyChannel);
-  }
-  return (int)((veId << 16) + chId);
+inline int VoEId(int veId, int chId)
+{
+    if (chId == -1)
+    {
+        const int dummyChannel(99);
+        return (int)((veId << 16) + dummyChannel);
+    }
+    return (int)((veId << 16) + chId);
 }
 
-inline int VoEModuleId(int veId, int chId) {
-  return (int)((veId << 16) + chId);
+inline int VoEModuleId(int veId, int chId)
+{
+    return (int)((veId << 16) + chId);
 }
 
 // Convert module ID to internal VoE channel ID
-inline int VoEChannelId(int moduleId) {
-  return (int)(moduleId & 0xffff);
+inline int VoEChannelId(int moduleId)
+{
+    return (int)(moduleId & 0xffff);
 }
 
 }  // namespace webrtc

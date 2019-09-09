@@ -36,7 +36,8 @@ typedef void (*vp9_scaled_mc_func)(uint8_t *dst, ptrdiff_t dst_stride,
                                    const uint8_t *ref, ptrdiff_t ref_stride,
                                    int h, int mx, int my, int dx, int dy);
 
-typedef struct VP9DSPContext {
+typedef struct VP9DSPContext
+{
     /*
      * dimension 1: 0=4x4, 1=8x8, 2=16x16, 3=32x32
      * dimension 2: intra prediction modes
@@ -49,9 +50,9 @@ typedef struct VP9DSPContext {
     // HAVE_LEFT/HAVE_TOPRIGHT flags instead, and then handle it in-place?
     // also needs to fit in with what h264/vp8/etc do
     void (*intra_pred[N_TXFM_SIZES][N_INTRA_PRED_MODES])(uint8_t *dst,
-                                                         ptrdiff_t stride,
-                                                         const uint8_t *left,
-                                                         const uint8_t *top);
+            ptrdiff_t stride,
+            const uint8_t *left,
+            const uint8_t *top);
 
     /*
      * dimension 1: 0=4x4, 1=8x8, 2=16x16, 3=32x32, 4=lossless (3-4=dct only)
@@ -68,8 +69,8 @@ typedef struct VP9DSPContext {
     // FIXME also write idct_add_block() versions for whole (inter) pred
     // blocks, so we can do 2 4x4s at once
     void (*itxfm_add[N_TXFM_SIZES + 1][N_TXFM_TYPES])(uint8_t *dst,
-                                                      ptrdiff_t stride,
-                                                      int16_t *block, int eob);
+            ptrdiff_t stride,
+            int16_t *block, int eob);
 
     /*
      * dimension 1: width of filter (0=4, 1=8, 2=16)

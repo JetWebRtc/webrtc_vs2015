@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,16 +15,19 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockFrameReader : public FrameReader {
- public:
-  MOCK_METHOD0(Init, bool());
-  MOCK_METHOD0(ReadFrame, rtc::scoped_refptr<I420Buffer>());
-  MOCK_METHOD0(Close, void());
-  MOCK_METHOD0(FrameLength, size_t());
-  MOCK_METHOD0(NumberOfFrames, int());
+class MockFrameReader : public FrameReader
+{
+public:
+    MOCK_METHOD0(Init, bool());
+    MOCK_METHOD0(ReadFrame, rtc::scoped_refptr<I420Buffer>());
+    MOCK_METHOD0(Close, void());
+    MOCK_METHOD0(FrameLength, size_t());
+    MOCK_METHOD0(NumberOfFrames, int());
 };
 
 }  // namespace test

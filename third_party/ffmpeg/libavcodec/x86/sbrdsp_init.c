@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC Spectral Band Replication decoding functions
  * Copyright (c) 2012 Christophe Gisquet <christophe.gisquet@gmail.com>
  *
@@ -60,7 +60,8 @@ av_cold void ff_sbrdsp_init_x86(SBRDSPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         s->neg_odd_64 = ff_sbr_neg_odd_64_sse;
         s->sum_square = ff_sbr_sum_square_sse;
         s->sum64x5    = ff_sbr_sum64x5_sse;
@@ -72,7 +73,8 @@ av_cold void ff_sbrdsp_init_x86(SBRDSPContext *s)
         s->autocorrelate    = ff_sbr_autocorrelate_sse;
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         s->qmf_deint_bfly   = ff_sbr_qmf_deint_bfly_sse2;
         s->qmf_pre_shuffle  = ff_sbr_qmf_pre_shuffle_sse2;
         s->hf_apply_noise[0] = ff_sbr_hf_apply_noise_0_sse2;
@@ -81,7 +83,8 @@ av_cold void ff_sbrdsp_init_x86(SBRDSPContext *s)
         s->hf_apply_noise[3] = ff_sbr_hf_apply_noise_3_sse2;
     }
 
-    if (EXTERNAL_SSE3(cpu_flags)) {
+    if (EXTERNAL_SSE3(cpu_flags))
+    {
         s->autocorrelate = ff_sbr_autocorrelate_sse3;
     }
 }

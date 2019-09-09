@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
 *                                                                       *
 *   dmusicf.h -- This module defines the DirectMusic file formats       *
 *                                                                       *
@@ -214,7 +214,7 @@ typedef struct _DMUS_IO_TIMESIG
     /* the beat, and the grid resolution. */
     BYTE    bBeatsPerMeasure;   /* beats per measure (top of time sig) */
     BYTE    bBeat;              /* what note receives the beat (bottom of time sig.) */
-                                /* we can assume that 0 means 256th note */
+    /* we can assume that 0 means 256th note */
     WORD    wGridsPerBeat;      /* grids per beat */
 } DMUS_IO_TIMESIG;
 
@@ -260,13 +260,13 @@ typedef struct _DMUS_IO_PARTREF
     GUID    guidPartID;         /* unique ID for matching up with parts */
     WORD    wLogicalPartID;     /* corresponds to port/device/midi channel OBSOLETE */
     BYTE    bVariationLockID;   /* parts with the same ID lock variations. */
-                                /* high bit is used to identify master Part */
+    /* high bit is used to identify master Part */
     BYTE    bSubChordLevel;     /* tells which sub chord level this part wants */
     BYTE    bPriority;          /* 256 priority levels. Parts with lower priority */
-                                /* aren't played first when a device runs out of */
-                                /* notes */
+    /* aren't played first when a device runs out of */
+    /* notes */
     BYTE    bRandomVariation;   /* when set, matching variations play in random order */
-                                /* when clear, matching variations play sequentially */
+    /* when clear, matching variations play sequentially */
     WORD    wPad;               /* not used */
     DWORD   dwPChannel;         /* replaces wLogicalPartID */
 } DMUS_IO_PARTREF;
@@ -883,7 +883,7 @@ RIFF
 #define DMUS_IO_INST_XG             (1 << 10)       /* Instrument is from XG collection */
 #define DMUS_IO_INST_CHANNEL_PRIORITY (1 << 11)     /* dwChannelPriority is valid */
 #define DMUS_IO_INST_USE_DEFAULT_GM_SET (1 << 12)   /* Always use the default GM set for this patch,  */
-                                                    /* don't rely on the synth caps stating GM or GS in hardware. */
+/* don't rely on the synth caps stating GM or GS in hardware. */
 #define DMUS_IO_INST_PITCHBENDRANGE (1 << 13)     /* nPitchBendRange is valid */
 
 /* io structures */
@@ -1088,8 +1088,8 @@ typedef struct _DMUS_IO_CONTAINED_OBJECT_HEADER
     DWORD       dwFlags;        /* Flags, for example DMUS_CONTAINED_OBJF_KEEP. */
     FOURCC      ckid;           /* chunk ID of track's data chunk if 0 fccType valid. */
     FOURCC      fccType;        /* list type if NULL ckid valid */
-        /* Note that LIST:DMRF may be used for ckid and fccType in order to reference an
-           object instead of embedding it within the container. */
+    /* Note that LIST:DMRF may be used for ckid and fccType in order to reference an
+       object instead of embedding it within the container. */
 } DMUS_IO_CONTAINED_OBJECT_HEADER;
 
 #define DMUS_CONTAINED_OBJF_KEEP    1   /* Keep the object cached in the loader after the container is released. */
@@ -1516,11 +1516,11 @@ typedef struct _DMUS_IO_SCRIPT_HEADER
 } DMUS_IO_SCRIPT_HEADER;
 
 #define DMUS_SCRIPTIOF_LOAD_ALL_CONTENT       (1 << 0)
-    /* If set, when the script loads it will also load all the content in its container. */
+/* If set, when the script loads it will also load all the content in its container. */
 #define DMUS_SCRIPTIOF_DOWNLOAD_ALL_SEGMENTS  (1 << 1)
-    /* If set and LOAD_ALL_CONTENT is also set, when the script initializes it will also download all the segments in its container.
-       If set and LOAD_ALL_CONTENT is not set, when the script calls segment.Load on a segment then the segment will also be downloaded.
-       If not set, the script must manually download and unload by calling segment.DownloadSoundData and segment.UnloadSoundData. */
+/* If set and LOAD_ALL_CONTENT is also set, when the script initializes it will also download all the segments in its container.
+   If set and LOAD_ALL_CONTENT is not set, when the script calls segment.Load on a segment then the segment will also be downloaded.
+   If not set, the script must manually download and unload by calling segment.DownloadSoundData and segment.UnloadSoundData. */
 
 /*
 RIFF
@@ -1733,7 +1733,7 @@ typedef struct _DMUS_IO_TIMESIGNATURE_ITEM
     MUSIC_TIME    lTime;
     BYTE          bBeatsPerMeasure;   /* beats per measure (top of time sig) */
     BYTE          bBeat;              /* what note receives the beat (bottom of time sig.) */
-                                      /* we can assume that 0 means 256th note */
+    /* we can assume that 0 means 256th note */
     WORD          wGridsPerBeat;      /* grids per beat */
 } DMUS_IO_TIMESIGNATURE_ITEM;
 

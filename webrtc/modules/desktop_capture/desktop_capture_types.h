@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Type used to identify windows on the desktop. Values are platform-specific:
 //   - On Windows: HWND cast to intptr_t.

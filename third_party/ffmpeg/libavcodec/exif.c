@@ -1,4 +1,4 @@
-/*
+﻿/*
  * EXIF metadata parser
  * Copyright (c) 2013 Thilo Borgmann <thilo.borgmann _at_ mail.de>
  *
@@ -32,7 +32,8 @@ static const char *exif_get_tag_name(uint16_t id)
 {
     int i;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(tag_list); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(tag_list); i++)
+    {
         if (tag_list[i].id == id)
             return tag_list[i].name;
     }
@@ -46,23 +47,32 @@ static int exif_add_metadata(AVCodecContext *avctx, int count, int type,
                              GetByteContext *gb, int le,
                              AVDictionary **metadata)
 {
-    switch(type) {
+    switch(type)
+    {
     case 0:
         av_log(avctx, AV_LOG_WARNING,
                "Invalid TIFF tag type 0 found for %s with size %d\n",
                name, count);
         return 0;
-    case TIFF_DOUBLE   : return ff_tadd_doubles_metadata(count, name, sep, gb, le, metadata);
-    case TIFF_SSHORT   : return ff_tadd_shorts_metadata(count, name, sep, gb, le, 1, metadata);
-    case TIFF_SHORT    : return ff_tadd_shorts_metadata(count, name, sep, gb, le, 0, metadata);
-    case TIFF_SBYTE    : return ff_tadd_bytes_metadata(count, name, sep, gb, le, 1, metadata);
+    case TIFF_DOUBLE   :
+        return ff_tadd_doubles_metadata(count, name, sep, gb, le, metadata);
+    case TIFF_SSHORT   :
+        return ff_tadd_shorts_metadata(count, name, sep, gb, le, 1, metadata);
+    case TIFF_SHORT    :
+        return ff_tadd_shorts_metadata(count, name, sep, gb, le, 0, metadata);
+    case TIFF_SBYTE    :
+        return ff_tadd_bytes_metadata(count, name, sep, gb, le, 1, metadata);
     case TIFF_BYTE     :
-    case TIFF_UNDEFINED: return ff_tadd_bytes_metadata(count, name, sep, gb, le, 0, metadata);
-    case TIFF_STRING   : return ff_tadd_string_metadata(count, name, gb, le, metadata);
+    case TIFF_UNDEFINED:
+        return ff_tadd_bytes_metadata(count, name, sep, gb, le, 0, metadata);
+    case TIFF_STRING   :
+        return ff_tadd_string_metadata(count, name, gb, le, metadata);
     case TIFF_SRATIONAL:
-    case TIFF_RATIONAL : return ff_tadd_rational_metadata(count, name, sep, gb, le, metadata);
+    case TIFF_RATIONAL :
+        return ff_tadd_rational_metadata(count, name, sep, gb, le, metadata);
     case TIFF_SLONG    :
-    case TIFF_LONG     : return ff_tadd_long_metadata(count, name, sep, gb, le, metadata);
+    case TIFF_LONG     :
+        return ff_tadd_long_metadata(count, name, sep, gb, le, metadata);
     default:
         avpriv_request_sample(avctx, "TIFF tag type (%u)", type);
         return 0;
@@ -77,13 +87,15 @@ static int exif_decode_tag(AVCodecContext *avctx, GetByteContext *gbytes, int le
     unsigned id, count;
     enum TiffTypes type;
 
-    if (depth > 2) {
+    if (depth > 2)
+    {
         return 0;
     }
 
     ff_tread_tag(gbytes, le, &id, &type, &count, &cur_pos);
 
-    if (!bytestream2_tell(gbytes)) {
+    if (!bytestream2_tell(gbytes))
+    {
         bytestream2_seek(gbytes, cur_pos, SEEK_SET);
         return 0;
     }
@@ -91,15 +103,20 @@ static int exif_decode_tag(AVCodecContext *avctx, GetByteContext *gbytes, int le
     // read count values and add it metadata
     // store metadata or proceed with next IFD
     ret = ff_tis_ifd(id);
-    if (ret) {
+    if (ret)
+    {
         ret = avpriv_exif_decode_ifd(avctx, gbytes, le, depth + 1, metadata);
-    } else {
+    }
+    else
+    {
         const char *name = exif_get_tag_name(id);
         char *use_name   = (char*) name;
 
-        if (!use_name) {
+        if (!use_name)
+        {
             use_name = av_malloc(7);
-            if (!use_name) {
+            if (!use_name)
+            {
                 return AVERROR(ENOMEM);
             }
             snprintf(use_name, 7, "0x%04X", id);
@@ -108,7 +125,8 @@ static int exif_decode_tag(AVCodecContext *avctx, GetByteContext *gbytes, int le
         ret = exif_add_metadata(avctx, count, type, use_name, NULL,
                                 gbytes, le, metadata);
 
-        if (!name) {
+        if (!name)
+        {
             av_freep(&use_name);
         }
     }
@@ -127,12 +145,15 @@ int avpriv_exif_decode_ifd(AVCodecContext *avctx, GetByteContext *gbytes, int le
 
     entries = ff_tget_short(gbytes, le);
 
-    if (bytestream2_get_bytes_left(gbytes) < entries * 12) {
+    if (bytestream2_get_bytes_left(gbytes) < entries * 12)
+    {
         return AVERROR_INVALIDDATA;
     }
 
-    for (i = 0; i < entries; i++) {
-        if ((ret = exif_decode_tag(avctx, gbytes, le, depth, metadata)) < 0) {
+    for (i = 0; i < entries; i++)
+    {
+        if ((ret = exif_decode_tag(avctx, gbytes, le, depth, metadata)) < 0)
+        {
             return ret;
         }
     }

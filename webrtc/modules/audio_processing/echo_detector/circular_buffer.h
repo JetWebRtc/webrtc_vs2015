@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,26 +15,31 @@
 
 #include "webrtc/base/optional.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Ring buffer containing floating point values.
-struct CircularBuffer {
- public:
-  explicit CircularBuffer(size_t size);
-  ~CircularBuffer();
+struct CircularBuffer
+{
+public:
+    explicit CircularBuffer(size_t size);
+    ~CircularBuffer();
 
-  void Push(float value);
-  rtc::Optional<float> Pop();
-  size_t Size() const { return nr_elements_in_buffer_; }
-  // This function fills the buffer with zeros, but does not change its size.
-  void Clear();
+    void Push(float value);
+    rtc::Optional<float> Pop();
+    size_t Size() const
+    {
+        return nr_elements_in_buffer_;
+    }
+    // This function fills the buffer with zeros, but does not change its size.
+    void Clear();
 
- private:
-  std::vector<float> buffer_;
-  size_t next_insertion_index_ = 0;
-  // This is the number of elements that have been pushed into the circular
-  // buffer, not the allocated buffer size.
-  size_t nr_elements_in_buffer_ = 0;
+private:
+    std::vector<float> buffer_;
+    size_t next_insertion_index_ = 0;
+    // This is the number of elements that have been pushed into the circular
+    // buffer, not the allocated buffer size.
+    size_t nr_elements_in_buffer_ = 0;
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * IRCAM common code
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -22,7 +22,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-const AVCodecTag ff_codec_ircam_le_tags[] = {
+const AVCodecTag ff_codec_ircam_le_tags[] =
+{
     { AV_CODEC_ID_PCM_ALAW,  0x10001 },
     { AV_CODEC_ID_PCM_F32LE, 0x00004 },
     { AV_CODEC_ID_PCM_F64LE, 0x00008 },
@@ -34,7 +35,8 @@ const AVCodecTag ff_codec_ircam_le_tags[] = {
     { AV_CODEC_ID_NONE,      0       },
 };
 
-const AVCodecTag ff_codec_ircam_be_tags[] = {
+const AVCodecTag ff_codec_ircam_be_tags[] =
+{
     { AV_CODEC_ID_PCM_ALAW,  0x10001 },
     { AV_CODEC_ID_PCM_F32BE, 0x00004 },
     { AV_CODEC_ID_PCM_F64BE, 0x00008 },

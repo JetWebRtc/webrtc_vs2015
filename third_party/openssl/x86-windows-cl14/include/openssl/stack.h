@@ -1,4 +1,4 @@
-/* crypto/stack/stack.h */
+﻿/* crypto/stack/stack.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -63,7 +63,8 @@
 extern "C" {
 #endif
 
-typedef struct stack_st {
+typedef struct stack_st
+{
     int num;
     char **data;
     int sorted;
@@ -95,7 +96,7 @@ void *sk_shift(_STACK *st);
 void *sk_pop(_STACK *st);
 void sk_zero(_STACK *st);
 int (*sk_set_cmp_func(_STACK *sk, int (*c) (const void *, const void *)))
- (const void *, const void *);
+(const void *, const void *);
 _STACK *sk_dup(_STACK *st);
 void sk_sort(_STACK *st);
 int sk_is_sorted(const _STACK *st);

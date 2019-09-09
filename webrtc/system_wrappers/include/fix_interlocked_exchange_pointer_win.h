@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -27,10 +27,11 @@
 // The problem is that the macro provided for InterlockedExchangePointer() is
 // doing a (LONG) C-style cast that triggers invariably the warning C4312 when
 // building on 32 bits.
-inline void* InterlockedExchangePointer(void* volatile* target, void* value) {
-  return reinterpret_cast<void*>(static_cast<LONG_PTR>(InterlockedExchange(
-      reinterpret_cast<volatile LONG*>(target),
-      static_cast<LONG>(reinterpret_cast<LONG_PTR>(value)))));
+inline void* InterlockedExchangePointer(void* volatile* target, void* value)
+{
+    return reinterpret_cast<void*>(static_cast<LONG_PTR>(InterlockedExchange(
+                                       reinterpret_cast<volatile LONG*>(target),
+                                       static_cast<LONG>(reinterpret_cast<LONG_PTR>(value)))));
 }
 #endif  // #ifdef InterlockedExchangePointer
 

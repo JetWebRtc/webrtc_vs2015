@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -38,7 +38,8 @@ av_cold void ff_vc1dsp_init_aarch64(VC1DSPContext *dsp)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         dsp->put_no_rnd_vc1_chroma_pixels_tab[0] = ff_put_vc1_chroma_mc8_neon;
         dsp->avg_no_rnd_vc1_chroma_pixels_tab[0] = ff_avg_vc1_chroma_mc8_neon;
         dsp->put_no_rnd_vc1_chroma_pixels_tab[1] = ff_put_vc1_chroma_mc4_neon;

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,7 +42,8 @@ void silk_scale_vector_FLP(
 
     /* 4x unrolled loop */
     dataSize4 = dataSize & 0xFFFC;
-    for( i = 0; i < dataSize4; i += 4 ) {
+    for( i = 0; i < dataSize4; i += 4 )
+    {
         data1[ i + 0 ] *= gain;
         data1[ i + 1 ] *= gain;
         data1[ i + 2 ] *= gain;
@@ -50,7 +51,8 @@ void silk_scale_vector_FLP(
     }
 
     /* any remaining elements */
-    for( ; i < dataSize; i++ ) {
+    for( ; i < dataSize; i++ )
+    {
         data1[ i ] *= gain;
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -40,8 +40,8 @@ static void diff_pixels_msa(int16_t *block, const uint8_t *src1,
 }
 
 static void copy_8bit_to_16bit_width8_msa(const uint8_t *src, int32_t src_stride,
-                                          int16_t *dst, int32_t dst_stride,
-                                          int32_t height)
+        int16_t *dst, int32_t dst_stride,
+        int32_t height)
 {
     uint8_t *dst_ptr;
     int32_t cnt;
@@ -50,7 +50,8 @@ static void copy_8bit_to_16bit_width8_msa(const uint8_t *src, int32_t src_stride
 
     dst_ptr = (uint8_t *) dst;
 
-    for (cnt = (height >> 2); cnt--;) {
+    for (cnt = (height >> 2); cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -71,11 +72,13 @@ static void copy_16multx8mult_msa(const uint8_t *src, int32_t src_stride,
     uint8_t *dst_tmp;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    for (cnt = (width >> 4); cnt--;) {
+    for (cnt = (width >> 4); cnt--;)
+    {
         src_tmp = src;
         dst_tmp = dst;
 
-        for (loop_cnt = (height >> 3); loop_cnt--;) {
+        for (loop_cnt = (height >> 3); loop_cnt--;)
+        {
             LD_UB8(src_tmp, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src_tmp += (8 * src_stride);
@@ -97,8 +100,10 @@ static void copy_width16_msa(const uint8_t *src, int32_t src_stride,
     int32_t cnt;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    if (0 == height % 12) {
-        for (cnt = (height / 12); cnt--;) {
+    if (0 == height % 12)
+    {
+        for (cnt = (height / 12); cnt--;)
+        {
             LD_UB8(src, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src += (8 * src_stride);
@@ -111,10 +116,15 @@ static void copy_width16_msa(const uint8_t *src, int32_t src_stride,
             ST_UB4(src0, src1, src2, src3, dst, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 8) {
+    }
+    else if (0 == height % 8)
+    {
         copy_16multx8mult_msa(src, src_stride, dst, dst_stride, height, 16);
-    } else if (0 == height % 4) {
-        for (cnt = (height >> 2); cnt--;) {
+    }
+    else if (0 == height % 4)
+    {
+        for (cnt = (height >> 2); cnt--;)
+        {
             LD_UB4(src, src_stride, src0, src1, src2, src3);
             src += (4 * src_stride);
 

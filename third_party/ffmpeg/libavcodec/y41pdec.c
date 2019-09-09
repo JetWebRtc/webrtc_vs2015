@@ -1,4 +1,4 @@
-/*
+﻿/*
  * y41p decoder
  *
  * Copyright (c) 2012 Paul B Mahol
@@ -28,7 +28,8 @@ static av_cold int y41p_decode_init(AVCodecContext *avctx)
     avctx->pix_fmt             = AV_PIX_FMT_YUV411P;
     avctx->bits_per_raw_sample = 12;
 
-    if (avctx->width & 7) {
+    if (avctx->width & 7)
+    {
         av_log(avctx, AV_LOG_WARNING, "y41p requires width to be divisible by 8.\n");
     }
 
@@ -43,7 +44,8 @@ static int y41p_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *y, *u, *v;
     int i, j, ret;
 
-    if (avpkt->size < 3LL * avctx->height * avctx->width / 2) {
+    if (avpkt->size < 3LL * avctx->height * avctx->width / 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -54,11 +56,13 @@ static int y41p_decode_frame(AVCodecContext *avctx, void *data,
     pic->key_frame = 1;
     pic->pict_type = AV_PICTURE_TYPE_I;
 
-    for (i = avctx->height - 1; i >= 0 ; i--) {
+    for (i = avctx->height - 1; i >= 0 ; i--)
+    {
         y = &pic->data[0][i * pic->linesize[0]];
         u = &pic->data[1][i * pic->linesize[1]];
         v = &pic->data[2][i * pic->linesize[2]];
-        for (j = 0; j < avctx->width; j += 8) {
+        for (j = 0; j < avctx->width; j += 8)
+        {
             *(u++) = *src++;
             *(y++) = *src++;
             *(v++) = *src++;
@@ -81,7 +85,8 @@ static int y41p_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_y41p_decoder = {
+AVCodec ff_y41p_decoder =
+{
     .name         = "y41p",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed YUV 4:1:1 12-bit"),
     .type         = AVMEDIA_TYPE_VIDEO,

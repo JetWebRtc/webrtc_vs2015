@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file   qmf.h
-  \brief  Complex qmf analysis/synthesis   
+  \brief  Complex qmf analysis/synthesis
   \author Markus Werner
 
 */
@@ -143,34 +143,34 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  int lb_scale;        /*!< Scale of low band area                   */
-  int ov_lb_scale;     /*!< Scale of adjusted overlap low band area  */
-  int hb_scale;        /*!< Scale of high band area                  */
-  int ov_hb_scale;     /*!< Scale of adjusted overlap high band area */
+    int lb_scale;        /*!< Scale of low band area                   */
+    int ov_lb_scale;     /*!< Scale of adjusted overlap low band area  */
+    int hb_scale;        /*!< Scale of high band area                  */
+    int ov_hb_scale;     /*!< Scale of adjusted overlap high band area */
 } QMF_SCALE_FACTOR;
 
 struct QMF_FILTER_BANK
 {
-  const FIXP_PFT *p_filter;     /*!< Pointer to filter coefficients */
+    const FIXP_PFT *p_filter;     /*!< Pointer to filter coefficients */
 
-  void *FilterStates;           /*!< Pointer to buffer of filter states
+    void *FilterStates;           /*!< Pointer to buffer of filter states
                                      FIXP_PCM in analyse and
                                      FIXP_DBL in synthesis filter */
-  int FilterSize;               /*!< Size of prototype filter. */
-  const FIXP_QTW *t_cos;        /*!< Modulation tables. */
-  const FIXP_QTW *t_sin;
-  int filterScale;              /*!< filter scale */
+    int FilterSize;               /*!< Size of prototype filter. */
+    const FIXP_QTW *t_cos;        /*!< Modulation tables. */
+    const FIXP_QTW *t_sin;
+    int filterScale;              /*!< filter scale */
 
-  int no_channels;              /*!< Total number of channels (subbands) */
-  int no_col;                   /*!< Number of time slots       */
-  int lsb;                      /*!< Top of low subbands */
-  int usb;                      /*!< Top of high subbands */
+    int no_channels;              /*!< Total number of channels (subbands) */
+    int no_col;                   /*!< Number of time slots       */
+    int lsb;                      /*!< Top of low subbands */
+    int usb;                      /*!< Top of high subbands */
 
-  int outScalefactor;           /*!< Scale factor of output data (syn only) */
-  FIXP_DBL outGain;             /*!< Gain output data (syn only) (init with 0x80000000 to ignore) */
+    int outScalefactor;           /*!< Scale factor of output data (syn only) */
+    FIXP_DBL outGain;             /*!< Gain output data (syn only) (init with 0x80000000 to ignore) */
 
-  UINT flags;                   /*!< flags */
-  UCHAR p_stride;               /*!< Stride Factor of polyphase filters */
+    UINT flags;                   /*!< flags */
+    UCHAR p_stride;               /*!< Stride Factor of polyphase filters */
 
 };
 
@@ -184,7 +184,7 @@ qmfAnalysisFiltering( HANDLE_QMF_FILTER_BANK anaQmf,  /*!< Handle of Qmf Analysi
                       const INT_PCM *timeIn,          /*!< Time signal */
                       const int  stride,              /*!< Stride factor of audio data   */
                       FIXP_QMF  *pWorkBuffer          /*!< pointer to temporal working buffer */
-                      );
+                    );
 
 void
 qmfSynthesisFiltering( HANDLE_QMF_FILTER_BANK synQmf,       /*!< Handle of Qmf Synthesis Bank  */
@@ -195,7 +195,7 @@ qmfSynthesisFiltering( HANDLE_QMF_FILTER_BANK synQmf,       /*!< Handle of Qmf S
                        INT_PCM    *timeOut,                 /*!< Time signal */
                        const int   stride,                  /*!< Stride factor of audio data   */
                        FIXP_QMF   *pWorkBuffer              /*!< pointer to temporal working buffer */
-                       );
+                     );
 
 int
 qmfInitAnalysisFilterBank( HANDLE_QMF_FILTER_BANK h_Qmf, /*!< QMF Handle */
@@ -213,7 +213,7 @@ qmfAnalysisFilteringSlot( HANDLE_QMF_FILTER_BANK anaQmf,  /*!< Handle of Qmf Syn
                           const INT_PCM *timeIn,          /*!< Pointer to input */
                           const int      stride,          /*!< stride factor of input */
                           FIXP_QMF      *pWorkBuffer      /*!< pointer to temporal working buffer */
-                         );
+                        );
 
 int
 qmfInitSynthesisFilterBank( HANDLE_QMF_FILTER_BANK h_Qmf, /*!< QMF Handle */

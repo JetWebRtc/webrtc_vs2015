@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,16 +16,19 @@
 #include "webrtc/modules/audio_processing/aec3/render_delay_controller.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockRenderDelayController : public RenderDelayController {
- public:
-  virtual ~MockRenderDelayController() = default;
+class MockRenderDelayController : public RenderDelayController
+{
+public:
+    virtual ~MockRenderDelayController() = default;
 
-  MOCK_METHOD1(GetDelay, size_t(rtc::ArrayView<const float> capture));
-  MOCK_METHOD1(AnalyzeRender, bool(rtc::ArrayView<const float> capture));
-  MOCK_CONST_METHOD0(AlignmentHeadroomSamples, rtc::Optional<size_t>());
+    MOCK_METHOD1(GetDelay, size_t(rtc::ArrayView<const float> capture));
+    MOCK_METHOD1(AnalyzeRender, bool(rtc::ArrayView<const float> capture));
+    MOCK_CONST_METHOD0(AlignmentHeadroomSamples, rtc::Optional<size_t>());
 };
 
 }  // namespace test

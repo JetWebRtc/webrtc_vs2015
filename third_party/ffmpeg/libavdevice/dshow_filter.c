@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DirectShow capture interface
  * Copyright (c) 2010 Ramiro Polla
  *
@@ -22,7 +22,7 @@
 #include "dshow_capture.h"
 
 DECLARE_QUERYINTERFACE(libAVFilter,
-    { {&IID_IUnknown,0}, {&IID_IBaseFilter,0} })
+{ {&IID_IUnknown,0}, {&IID_IBaseFilter,0} })
 DECLARE_ADDREF(libAVFilter)
 DECLARE_RELEASE(libAVFilter)
 
@@ -69,7 +69,8 @@ libAVFilter_SetSyncSource(libAVFilter *this, IReferenceClock *clock)
 {
     dshowdebug("libAVFilter_SetSyncSource(%p)\n", this);
 
-    if (this->clock != clock) {
+    if (this->clock != clock)
+    {
         if (this->clock)
             IReferenceClock_Release(this->clock);
         this->clock = clock;
@@ -115,7 +116,8 @@ libAVFilter_FindPin(libAVFilter *this, const wchar_t *id, IPin **pin)
 
     if (!id || !pin)
         return E_POINTER;
-    if (!wcscmp(id, L"In")) {
+    if (!wcscmp(id, L"In"))
+    {
         found = this->pin;
         libAVPin_AddRef(found);
     }

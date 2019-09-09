@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -45,7 +45,8 @@ extern CABAC_TABLE_CONST uint8_t ff_h264_cabac_tables[512 + 4*2*64 + 4*64 + 63];
 #define CABAC_BITS 16
 #define CABAC_MASK ((1<<CABAC_BITS)-1)
 
-typedef struct CABACContext{
+typedef struct CABACContext
+{
     int low;
     int range;
     int outstanding_count;
@@ -53,7 +54,7 @@ typedef struct CABACContext{
     const uint8_t *bytestream;
     const uint8_t *bytestream_end;
     PutBitContext pb;
-}CABACContext;
+} CABACContext;
 
 void ff_init_cabac_encoder(CABACContext *c, uint8_t *buf, int buf_size);
 void ff_init_cabac_decoder(CABACContext *c, const uint8_t *buf, int buf_size);

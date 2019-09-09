@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,8 +16,10 @@
 #include "webrtc/modules/audio_processing/audio_buffer.h"
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Copies a vector into an audiobuffer.
 void CopyVectorToAudioBuffer(const StreamConfig& stream_config,

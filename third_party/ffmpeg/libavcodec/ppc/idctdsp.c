@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001 Michel Lespinasse
  *
  * This file is part of FFmpeg.
@@ -145,7 +145,8 @@
     vx6 = vec_sra(vy6, shift);                                              \
     vx7 = vec_sra(vy7, shift)
 
-static const vec_s16 constants[5] = {
+static const vec_s16 constants[5] =
+{
     { 23170, 13573,  6518, 21895, -23170, -21895,    32,    31 },
     { 16384, 22725, 21407, 19266,  16384,  19266, 21407, 22725 },
     { 22725, 31521, 29692, 26722,  22725,  26722, 29692, 31521 },
@@ -260,9 +261,11 @@ av_cold void ff_idctdsp_init_ppc(IDCTDSPContext *c, AVCodecContext *avctx,
     if (!PPC_ALTIVEC(av_get_cpu_flags()))
         return;
 
-    if (!high_bit_depth && avctx->lowres == 0) {
+    if (!high_bit_depth && avctx->lowres == 0)
+    {
         if ((avctx->idct_algo == FF_IDCT_AUTO && !(avctx->flags & AV_CODEC_FLAG_BITEXACT)) ||
-            (avctx->idct_algo == FF_IDCT_ALTIVEC)) {
+                (avctx->idct_algo == FF_IDCT_ALTIVEC))
+        {
             c->idct      = idct_altivec;
             c->idct_add  = idct_add_altivec;
             c->idct_put  = idct_put_altivec;

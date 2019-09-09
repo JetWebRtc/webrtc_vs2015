@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Raw Video Codec
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -28,7 +28,8 @@
 #include "raw.h"
 #include "libavutil/common.h"
 
-const PixelFormatTag ff_raw_pix_fmt_tags[] = {
+const PixelFormatTag ff_raw_pix_fmt_tags[] =
+{
     { AV_PIX_FMT_YUV420P, MKTAG('I', '4', '2', '0') }, /* Planar formats */
     { AV_PIX_FMT_YUV420P, MKTAG('I', 'Y', 'U', 'V') },
     { AV_PIX_FMT_YUV420P, MKTAG('Y', 'V', '1', '2') },
@@ -232,7 +233,8 @@ const struct PixelFormatTag *avpriv_get_raw_pix_fmt_tags(void)
 unsigned int avcodec_pix_fmt_to_codec_tag(enum AVPixelFormat fmt)
 {
     const PixelFormatTag *tags = ff_raw_pix_fmt_tags;
-    while (tags->pix_fmt >= 0) {
+    while (tags->pix_fmt >= 0)
+    {
         if (tags->pix_fmt == fmt)
             return tags->fourcc;
         tags++;
@@ -240,7 +242,8 @@ unsigned int avcodec_pix_fmt_to_codec_tag(enum AVPixelFormat fmt)
     return 0;
 }
 
-const PixelFormatTag avpriv_pix_fmt_bps_avi[] = {
+const PixelFormatTag avpriv_pix_fmt_bps_avi[] =
+{
     { AV_PIX_FMT_MONOWHITE, 1 },
     { AV_PIX_FMT_PAL8,    2 },
     { AV_PIX_FMT_PAL8,    4 },
@@ -253,7 +256,8 @@ const PixelFormatTag avpriv_pix_fmt_bps_avi[] = {
     { AV_PIX_FMT_NONE,    0 },
 };
 
-const PixelFormatTag avpriv_pix_fmt_bps_mov[] = {
+const PixelFormatTag avpriv_pix_fmt_bps_mov[] =
+{
     { AV_PIX_FMT_MONOWHITE, 1 },
     { AV_PIX_FMT_PAL8,      2 },
     { AV_PIX_FMT_PAL8,      4 },

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * id Quake II CIN File Demuxer
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -77,7 +77,8 @@
 #define HUFFMAN_TABLE_SIZE (64 * 1024)
 #define IDCIN_FPS 14
 
-typedef struct IdcinDemuxContext {
+typedef struct IdcinDemuxContext
+{
     int video_stream_index;
     int audio_stream_index;
     int audio_chunk_size1;
@@ -116,12 +117,12 @@ static int idcin_probe(AVProbeData *p)
     /* check the video width */
     w = AV_RL32(&p->buf[0]);
     if ((w == 0) || (w > 1024))
-       return 0;
+        return 0;
 
     /* check the video height */
     h = AV_RL32(&p->buf[4]);
     if ((h == 0) || (h > 1024))
-       return 0;
+        return 0;
 
     /* check the audio sample rate */
     sample_rate = AV_RL32(&p->buf[8]);
@@ -165,29 +166,36 @@ static int idcin_read_header(AVFormatContext *s)
     bytes_per_sample = avio_rl32(pb);
     channels = avio_rl32(pb);
 
-    if (s->pb->eof_reached) {
+    if (s->pb->eof_reached)
+    {
         av_log(s, AV_LOG_ERROR, "incomplete header\n");
         return s->pb->error ? s->pb->error : AVERROR_EOF;
     }
 
     if (av_image_check_size(width, height, 0, s) < 0)
         return AVERROR_INVALIDDATA;
-    if (sample_rate > 0) {
-        if (sample_rate < 14 || sample_rate > INT_MAX) {
+    if (sample_rate > 0)
+    {
+        if (sample_rate < 14 || sample_rate > INT_MAX)
+        {
             av_log(s, AV_LOG_ERROR, "invalid sample rate: %u\n", sample_rate);
             return AVERROR_INVALIDDATA;
         }
-        if (bytes_per_sample < 1 || bytes_per_sample > 2) {
+        if (bytes_per_sample < 1 || bytes_per_sample > 2)
+        {
             av_log(s, AV_LOG_ERROR, "invalid bytes per sample: %u\n",
                    bytes_per_sample);
             return AVERROR_INVALIDDATA;
         }
-        if (channels < 1 || channels > 2) {
+        if (channels < 1 || channels > 2)
+        {
             av_log(s, AV_LOG_ERROR, "invalid channels: %u\n", channels);
             return AVERROR_INVALIDDATA;
         }
         idcin->audio_present = 1;
-    } else {
+    }
+    else
+    {
         /* if sample rate is 0, assume no audio */
         idcin->audio_present = 0;
     }
@@ -208,7 +216,8 @@ static int idcin_read_header(AVFormatContext *s)
     if ((ret = ff_get_extradata(st->codec, pb, HUFFMAN_TABLE_SIZE)) < 0)
         return ret;
 
-    if (idcin->audio_present) {
+    if (idcin->audio_present)
+    {
         idcin->audio_present = 1;
         st = avformat_new_stream(s, NULL);
         if (!st)
@@ -220,7 +229,7 @@ static int idcin_read_header(AVFormatContext *s)
         st->codec->codec_tag = 1;
         st->codec->channels = channels;
         st->codec->channel_layout = channels > 1 ? AV_CH_LAYOUT_STEREO :
-                                                   AV_CH_LAYOUT_MONO;
+                                    AV_CH_LAYOUT_MONO;
         st->codec->sample_rate = sample_rate;
         st->codec->bits_per_coded_sample = bytes_per_sample * 8;
         st->codec->bit_rate = sample_rate * bytes_per_sample * 8 * channels;
@@ -230,14 +239,17 @@ static int idcin_read_header(AVFormatContext *s)
         else
             st->codec->codec_id = AV_CODEC_ID_PCM_S16LE;
 
-        if (sample_rate % 14 != 0) {
+        if (sample_rate % 14 != 0)
+        {
             idcin->audio_chunk_size1 = (sample_rate / 14) *
-            bytes_per_sample * channels;
+                                       bytes_per_sample * channels;
             idcin->audio_chunk_size2 = (sample_rate / 14 + 1) *
-                bytes_per_sample * channels;
-        } else {
+                                       bytes_per_sample * channels;
+        }
+        else
+        {
             idcin->audio_chunk_size1 = idcin->audio_chunk_size2 =
-                (sample_rate / 14) * bytes_per_sample * channels;
+                                           (sample_rate / 14) * bytes_per_sample * channels;
         }
         idcin->current_audio_chunk = 0;
     }
@@ -265,28 +277,37 @@ static int idcin_read_packet(AVFormatContext *s,
     if (avio_feof(s->pb))
         return s->pb->error ? s->pb->error : AVERROR_EOF;
 
-    if (idcin->next_chunk_is_video) {
+    if (idcin->next_chunk_is_video)
+    {
         command = avio_rl32(pb);
-        if (command == 2) {
+        if (command == 2)
+        {
             return AVERROR(EIO);
-        } else if (command == 1) {
+        }
+        else if (command == 1)
+        {
             /* trigger a palette change */
             ret = avio_read(pb, palette_buffer, 768);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 return ret;
-            } else if (ret != 768) {
+            }
+            else if (ret != 768)
+            {
                 av_log(s, AV_LOG_ERROR, "incomplete packet\n");
                 return AVERROR(EIO);
             }
             /* scale the palette as necessary */
             palette_scale = 2;
             for (i = 0; i < 768; i++)
-                if (palette_buffer[i] > 63) {
+                if (palette_buffer[i] > 63)
+                {
                     palette_scale = 0;
                     break;
                 }
 
-            for (i = 0; i < 256; i++) {
+            for (i = 0; i < 256; i++)
+            {
                 r = palette_buffer[i * 3    ] << palette_scale;
                 g = palette_buffer[i * 3 + 1] << palette_scale;
                 b = palette_buffer[i * 3 + 2] << palette_scale;
@@ -296,12 +317,14 @@ static int idcin_read_packet(AVFormatContext *s,
             }
         }
 
-        if (s->pb->eof_reached) {
+        if (s->pb->eof_reached)
+        {
             av_log(s, AV_LOG_ERROR, "incomplete packet\n");
             return s->pb->error ? s->pb->error : AVERROR_EOF;
         }
         chunk_size = avio_rl32(pb);
-        if (chunk_size < 4 || chunk_size > INT_MAX - 4) {
+        if (chunk_size < 4 || chunk_size > INT_MAX - 4)
+        {
             av_log(s, AV_LOG_ERROR, "invalid chunk size: %u\n", chunk_size);
             return AVERROR_INVALIDDATA;
         }
@@ -311,17 +334,20 @@ static int idcin_read_packet(AVFormatContext *s,
         ret= av_get_packet(pb, pkt, chunk_size);
         if (ret < 0)
             return ret;
-        else if (ret != chunk_size) {
+        else if (ret != chunk_size)
+        {
             av_log(s, AV_LOG_ERROR, "incomplete packet\n");
             av_free_packet(pkt);
             return AVERROR(EIO);
         }
-        if (command == 1) {
+        if (command == 1)
+        {
             uint8_t *pal;
 
             pal = av_packet_new_side_data(pkt, AV_PKT_DATA_PALETTE,
                                           AVPALETTE_SIZE);
-            if (!pal) {
+            if (!pal)
+            {
                 av_free_packet(pkt);
                 return AVERROR(ENOMEM);
             }
@@ -330,7 +356,9 @@ static int idcin_read_packet(AVFormatContext *s,
         }
         pkt->stream_index = idcin->video_stream_index;
         pkt->duration     = 1;
-    } else {
+    }
+    else
+    {
         /* send out the audio chunk */
         if (idcin->current_audio_chunk)
             chunk_size = idcin->audio_chunk_size2;
@@ -356,7 +384,8 @@ static int idcin_read_seek(AVFormatContext *s, int stream_index,
 {
     IdcinDemuxContext *idcin = s->priv_data;
 
-    if (idcin->first_pkt_pos > 0) {
+    if (idcin->first_pkt_pos > 0)
+    {
         int64_t ret = avio_seek(s->pb, idcin->first_pkt_pos, SEEK_SET);
         if (ret < 0)
             return ret;
@@ -368,7 +397,8 @@ static int idcin_read_seek(AVFormatContext *s, int stream_index,
     return -1;
 }
 
-AVInputFormat ff_idcin_demuxer = {
+AVInputFormat ff_idcin_demuxer =
+{
     .name           = "idcin",
     .long_name      = NULL_IF_CONFIG_SMALL("id Cinematic"),
     .priv_data_size = sizeof(IdcinDemuxContext),

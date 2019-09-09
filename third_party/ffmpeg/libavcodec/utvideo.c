@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common Ut Video code
  * Copyright (c) 2011 Konstantin Shishkov
  *
@@ -26,7 +26,8 @@
 
 #include "utvideo.h"
 
-const int ff_ut_pred_order[5] = {
+const int ff_ut_pred_order[5] =
+{
     PRED_LEFT, PRED_MEDIAN, PRED_MEDIAN, PRED_NONE, PRED_GRADIENT
 };
 

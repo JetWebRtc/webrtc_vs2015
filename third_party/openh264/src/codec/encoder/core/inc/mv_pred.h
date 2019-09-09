@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 #include "svc_enc_macroblock.h"
 #include "mb_cache.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 /*!
  * \brief   update pMv and uiRefIndex cache for current MB, only for P_16x16 (SKIP inclusive)
  * \param

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  CRC checking routines  
+  \brief  CRC checking routines
 */
 #ifndef __SBR_CRC_H
 #define __SBR_CRC_H
@@ -108,9 +108,9 @@ crc8: x^8+x^2+x+x+1
 
 typedef struct
 {
-  USHORT crcState;
-  USHORT crcMask;
-  USHORT crcPoly;
+    USHORT crcState;
+    USHORT crcMask;
+    USHORT crcPoly;
 }
 CRC_BUFFER;
 

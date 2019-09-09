@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,23 +14,25 @@
 #include "webrtc/base/event.h"
 #include "webrtc/base/socketserver.h"
 
-namespace rtc {
+namespace rtc
+{
 
-class NullSocketServer : public SocketServer {
- public:
-  NullSocketServer();
-  ~NullSocketServer() override;
+class NullSocketServer : public SocketServer
+{
+public:
+    NullSocketServer();
+    ~NullSocketServer() override;
 
-  bool Wait(int cms, bool process_io) override;
-  void WakeUp() override;
+    bool Wait(int cms, bool process_io) override;
+    void WakeUp() override;
 
-  Socket* CreateSocket(int type) override;
-  Socket* CreateSocket(int family, int type) override;
-  AsyncSocket* CreateAsyncSocket(int type) override;
-  AsyncSocket* CreateAsyncSocket(int family, int type) override;
+    Socket* CreateSocket(int type) override;
+    Socket* CreateSocket(int family, int type) override;
+    AsyncSocket* CreateAsyncSocket(int type) override;
+    AsyncSocket* CreateAsyncSocket(int family, int type) override;
 
- private:
-  Event event_;
+private:
+    Event event_;
 };
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,39 +19,45 @@
 #include "webrtc/modules/audio_coding/neteq/tools/audio_sink.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class AudioChecksum : public AudioSink {
- public:
-  AudioChecksum() : finished_(false) {}
+class AudioChecksum : public AudioSink
+{
+public:
+    AudioChecksum() : finished_(false) {}
 
-  bool WriteArray(const int16_t* audio, size_t num_samples) override {
-    if (finished_)
-      return false;
+    bool WriteArray(const int16_t* audio, size_t num_samples) override
+    {
+        if (finished_)
+            return false;
 
 #ifndef WEBRTC_ARCH_LITTLE_ENDIAN
 #error "Big-endian gives a different checksum"
 #endif
-    checksum_.Update(audio, num_samples * sizeof(*audio));
-    return true;
-  }
-
-  // Finalizes the computations, and returns the checksum.
-  std::string Finish() {
-    if (!finished_) {
-      finished_ = true;
-      checksum_.Finish(checksum_result_, rtc::Md5Digest::kSize);
+        checksum_.Update(audio, num_samples * sizeof(*audio));
+        return true;
     }
-    return rtc::hex_encode(checksum_result_, rtc::Md5Digest::kSize);
-  }
 
- private:
-  rtc::Md5Digest checksum_;
-  char checksum_result_[rtc::Md5Digest::kSize];
-  bool finished_;
+    // Finalizes the computations, and returns the checksum.
+    std::string Finish()
+    {
+        if (!finished_)
+        {
+            finished_ = true;
+            checksum_.Finish(checksum_result_, rtc::Md5Digest::kSize);
+        }
+        return rtc::hex_encode(checksum_result_, rtc::Md5Digest::kSize);
+    }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioChecksum);
+private:
+    rtc::Md5Digest checksum_;
+    char checksum_result_[rtc::Md5Digest::kSize];
+    bool finished_;
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioChecksum);
 };
 
 }  // namespace test

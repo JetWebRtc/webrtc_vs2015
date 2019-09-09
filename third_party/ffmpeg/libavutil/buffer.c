@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -46,7 +46,8 @@ AVBufferRef *av_buffer_create(uint8_t *data, int size,
         buf->flags |= BUFFER_FLAG_READONLY;
 
     ref = av_mallocz(sizeof(*ref));
-    if (!ref) {
+    if (!ref)
+    {
         av_freep(&buf);
         return NULL;
     }
@@ -109,13 +110,16 @@ static void buffer_replace(AVBufferRef **dst, AVBufferRef **src)
 
     b = (*dst)->buffer;
 
-    if (src) {
+    if (src)
+    {
         **dst = **src;
         av_freep(src);
-    } else
+    }
+    else
         av_freep(dst);
 
-    if (!avpriv_atomic_int_add_and_fetch(&b->refcount, -1)) {
+    if (!avpriv_atomic_int_add_and_fetch(&b->refcount, -1))
+    {
         b->free(b->opaque, b->data);
         av_freep(&b);
     }
@@ -170,7 +174,8 @@ int av_buffer_realloc(AVBufferRef **pbuf, int size)
     AVBufferRef *buf = *pbuf;
     uint8_t *tmp;
 
-    if (!buf) {
+    if (!buf)
+    {
         /* allocate a new buffer with av_realloc(), so it will be reallocatable
          * later */
         uint8_t *data = av_realloc(NULL, size);
@@ -178,7 +183,8 @@ int av_buffer_realloc(AVBufferRef **pbuf, int size)
             return AVERROR(ENOMEM);
 
         buf = av_buffer_create(data, size, av_buffer_default_free, NULL, 0);
-        if (!buf) {
+        if (!buf)
+        {
             av_freep(&data);
             return AVERROR(ENOMEM);
         }
@@ -187,11 +193,13 @@ int av_buffer_realloc(AVBufferRef **pbuf, int size)
         *pbuf = buf;
 
         return 0;
-    } else if (buf->size == size)
+    }
+    else if (buf->size == size)
         return 0;
 
     if (!(buf->buffer->flags & BUFFER_FLAG_REALLOCATABLE) ||
-        !av_buffer_is_writable(buf)) {
+            !av_buffer_is_writable(buf))
+    {
         /* cannot realloc, allocate a new reallocable buffer and copy data */
         AVBufferRef *new = NULL;
 
@@ -236,7 +244,8 @@ AVBufferPool *av_buffer_pool_init(int size, AVBufferRef* (*alloc)(int size))
  */
 static void buffer_pool_free(AVBufferPool *pool)
 {
-    while (pool->pool) {
+    while (pool->pool)
+    {
         BufferPoolEntry *buf = pool->pool;
         pool->pool = buf->next;
 
@@ -266,7 +275,8 @@ static BufferPoolEntry *get_pool(AVBufferPool *pool)
 {
     BufferPoolEntry *cur = *(void * volatile *)&pool->pool, *last = NULL;
 
-    while (cur != last) {
+    while (cur != last)
+    {
         last = cur;
         cur = avpriv_atomic_ptr_cas((void * volatile *)&pool->pool, last, NULL);
         if (!cur)
@@ -288,7 +298,8 @@ static void add_to_pool(BufferPoolEntry *buf)
     while (end->next)
         end = end->next;
 
-    while (avpriv_atomic_ptr_cas((void * volatile *)&pool->pool, NULL, buf)) {
+    while (avpriv_atomic_ptr_cas((void * volatile *)&pool->pool, NULL, buf))
+    {
         /* pool is not empty, retrieve it and append it to our list */
         cur = get_pool(pool);
         end->next = cur;
@@ -331,7 +342,8 @@ static AVBufferRef *pool_alloc_buffer(AVBufferPool *pool)
         return NULL;
 
     buf = av_mallocz(sizeof(*buf));
-    if (!buf) {
+    if (!buf)
+    {
         av_buffer_unref(&ret);
         return NULL;
     }
@@ -360,7 +372,8 @@ AVBufferRef *av_buffer_pool_get(AVBufferPool *pool)
 #if USE_ATOMICS
     /* check whether the pool is empty */
     buf = get_pool(pool);
-    if (!buf && pool->refcount <= pool->nb_allocated) {
+    if (!buf && pool->refcount <= pool->nb_allocated)
+    {
         av_log(NULL, AV_LOG_DEBUG, "Pool race dectected, spining to avoid overallocation and eventual OOM\n");
         while (!buf && avpriv_atomic_int_get(&pool->refcount) <= avpriv_atomic_int_get(&pool->nb_allocated))
             buf = get_pool(pool);
@@ -375,21 +388,26 @@ AVBufferRef *av_buffer_pool_get(AVBufferPool *pool)
 
     ret = av_buffer_create(buf->data, pool->size, pool_release_buffer,
                            buf, 0);
-    if (!ret) {
+    if (!ret)
+    {
         add_to_pool(buf);
         return NULL;
     }
 #else
     ff_mutex_lock(&pool->mutex);
     buf = pool->pool;
-    if (buf) {
+    if (buf)
+    {
         ret = av_buffer_create(buf->data, pool->size, pool_release_buffer,
                                buf, 0);
-        if (ret) {
+        if (ret)
+        {
             pool->pool = buf->next;
             buf->next = NULL;
         }
-    } else {
+    }
+    else
+    {
         ret = pool_alloc_buffer(pool);
     }
     ff_mutex_unlock(&pool->mutex);

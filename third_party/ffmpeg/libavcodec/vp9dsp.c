@@ -27,11 +27,16 @@
 
 av_cold void ff_vp9dsp_init(VP9DSPContext *dsp, int bpp)
 {
-    if (bpp == 8) {
+    if (bpp == 8)
+    {
         ff_vp9dsp_init_8(dsp);
-    } else if (bpp == 10) {
+    }
+    else if (bpp == 10)
+    {
         ff_vp9dsp_init_10(dsp);
-    } else {
+    }
+    else
+    {
         av_assert0(bpp == 12);
         ff_vp9dsp_init_12(dsp);
     }

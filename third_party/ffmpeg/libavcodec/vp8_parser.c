@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2008 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -26,14 +26,15 @@ static int parse(AVCodecParserContext *s,
                  const uint8_t *buf, int buf_size)
 {
     s->pict_type = (buf[0] & 0x01) ? AV_PICTURE_TYPE_P
-                                   : AV_PICTURE_TYPE_I;
+                   : AV_PICTURE_TYPE_I;
 
     *poutbuf      = buf;
     *poutbuf_size = buf_size;
     return buf_size;
 }
 
-AVCodecParser ff_vp8_parser = {
+AVCodecParser ff_vp8_parser =
+{
     .codec_ids    = { AV_CODEC_ID_VP8 },
     .parser_parse = parse,
 };

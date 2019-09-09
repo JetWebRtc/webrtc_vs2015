@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -117,23 +117,23 @@ extern "C" {
 #endif
 void __aeabi_memcpy(void *dest, void *src, int size)
 {
-  memcpy(dest, src, size);
+    memcpy(dest, src, size);
 }
 void __aeabi_memcpy4(void *dest, void *src, int size)
 {
-  memcpy(dest, src, size);
+    memcpy(dest, src, size);
 }
 void __aeabi_memmove4(void *dest, void *src, int size)
 {
-  memmove(dest, src, size);
+    memmove(dest, src, size);
 }
 void __aeabi_memclr(void *ptr, int size)
 {
-  memset(ptr, 0, size);
+    memset(ptr, 0, size);
 }
 void __aeabi_memclr4(void *ptr, int size)
 {
-  memset(ptr, 0, size);
+    memset(ptr, 0, size);
 }
 #ifdef __cplusplus
 }
@@ -188,63 +188,63 @@ static unsigned char *__pScratchBuffer = NULL;
 static int fd;
 static inline void * getSram(void)
 {
-  unsigned long *ptr = NULL;
+    unsigned long *ptr = NULL;
 
-  /* Open driver */
-  fd = open("/dev/sram", 0);
-  if (fd < 0)
-  {
-    printf("Unable to open /dev/sram. Fallback to malloc\n");
-    /* Signal "no sram driver at use". */
-    fd = -1;
-    /* Return malloced pointer (fallback) */
-    return FDKaalloc(KERNEL_SRAM_SIZE, 8);
-  }
+    /* Open driver */
+    fd = open("/dev/sram", 0);
+    if (fd < 0)
+    {
+        printf("Unable to open /dev/sram. Fallback to malloc\n");
+        /* Signal "no sram driver at use". */
+        fd = -1;
+        /* Return malloced pointer (fallback) */
+        return FDKaalloc(KERNEL_SRAM_SIZE, 8);
+    }
 
-  /* Get memory mapped into CPU (virtual) address space */
-  ptr = (unsigned long *)mmap(NULL, KERNEL_SRAM_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-  if(ptr == MAP_FAILED)
-  {
-     printf("Unable to mmap(). Fallback to malloc\n");
-     /* Give up on the sram driver */
-     close(fd);
-     /* Signal "no sram driver at use". */
-     fd = -1;
-     /* Return malloced pointer (fallback) */
-     ptr = (unsigned long *)FDKaalloc(KERNEL_SRAM_SIZE, 8);
-  }
+    /* Get memory mapped into CPU (virtual) address space */
+    ptr = (unsigned long *)mmap(NULL, KERNEL_SRAM_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    if(ptr == MAP_FAILED)
+    {
+        printf("Unable to mmap(). Fallback to malloc\n");
+        /* Give up on the sram driver */
+        close(fd);
+        /* Signal "no sram driver at use". */
+        fd = -1;
+        /* Return malloced pointer (fallback) */
+        ptr = (unsigned long *)FDKaalloc(KERNEL_SRAM_SIZE, 8);
+    }
 
 
-  /* Return pointer to sram */
-  return (void*)ptr;
+    /* Return pointer to sram */
+    return (void*)ptr;
 }
 
 static inline void freeSram(void* ptr)
 {
-  /* Check if sram driver is being used. */
-  if (fd == -1)
-  {
-    FDKafree(ptr);
+    /* Check if sram driver is being used. */
+    if (fd == -1)
+    {
+        FDKafree(ptr);
+        return;
+    }
+
+    /* Unmap memory */
+    munmap(ptr, KERNEL_SRAM_SIZE);
+    /* Close driver */
+    close(fd);
+
     return;
-  }
-
-  /* Unmap memory */
-  munmap(ptr, KERNEL_SRAM_SIZE);
-  /* Close driver */
-  close(fd);
-
-  return;
 }
 
 #else
 
 static inline void * getSram(void)
 {
-  return FDKaalloc(KERNEL_SRAM_SIZE, 8);
+    return FDKaalloc(KERNEL_SRAM_SIZE, 8);
 }
 static inline void * freeSram(void* ptr)
 {
-  FDKafree(ptr);
+    FDKafree(ptr);
 }
 
 #endif
@@ -253,38 +253,38 @@ static inline void * freeSram(void* ptr)
 #ifdef FUNCTION_FDKprolog
 void FDKprolog(void)
 {
-   unsigned char *addr = (unsigned char*)getSram();
+    unsigned char *addr = (unsigned char*)getSram();
 
 
-   if (addr == NULL)
-   {
-     printf("SRAM allocation failed ! This is fatal.\n");
-     exit(-1);
-   }
+    if (addr == NULL)
+    {
+        printf("SRAM allocation failed ! This is fatal.\n");
+        exit(-1);
+    }
 
 #ifdef RESOURCE_scratchBuffer
-   __scratchBuffer = (INT*) ( addr + (KERNEL_SRAM_SIZE-KERNEL_SCRATCH_SIZE) );
-   __pScratchBuffer = addr + (KERNEL_SRAM_SIZE);
+    __scratchBuffer = (INT*) ( addr + (KERNEL_SRAM_SIZE-KERNEL_SCRATCH_SIZE) );
+    __pScratchBuffer = addr + (KERNEL_SRAM_SIZE);
 #endif
 
-   printf("SRAM @ 0x%08x\n", (unsigned int) addr);
-   atexit(FDKepilog);
+    printf("SRAM @ 0x%08x\n", (unsigned int) addr);
+    atexit(FDKepilog);
 
-   FDKprolog_generic();
+    FDKprolog_generic();
 }
 #endif
 
 #ifdef FUNCTION_FDKepilog
 void FDKepilog(void)
 {
-   /* Because of atexit(), make sure to call this only once */
-   if (L1_DATA_A != NULL)
-   {
-     freeSram(L1_DATA_A);
-     L1_DATA_A = NULL;
+    /* Because of atexit(), make sure to call this only once */
+    if (L1_DATA_A != NULL)
+    {
+        freeSram(L1_DATA_A);
+        L1_DATA_A = NULL;
 
-     FDKepilog_generic();
-   }
+        FDKepilog_generic();
+    }
 }
 #endif
 

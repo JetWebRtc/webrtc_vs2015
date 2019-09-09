@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SBG (SBaGen) file format decoder
  * Copyright (c) 2011 Nicolas George
  *
@@ -33,29 +33,34 @@
 #define DAY (24 * 60 * 60)
 #define DAY_TS ((int64_t)DAY * AV_TIME_BASE)
 
-struct sbg_demuxer {
+struct sbg_demuxer
+{
     AVClass *class;
     int sample_rate;
     int frame_size;
     int max_file_size;
 };
 
-struct sbg_string {
+struct sbg_string
+{
     char *s;
     char *e;
 };
 
-enum sbg_fade_type {
+enum sbg_fade_type
+{
     SBG_FADE_SILENCE = 0,
     SBG_FADE_SAME    = 1,
     SBG_FADE_ADAPT   = 3,
 };
 
-struct sbg_fade {
+struct sbg_fade
+{
     int8_t in, out, slide;
 };
 
-enum sbg_synth_type {
+enum sbg_synth_type
+{
     SBG_TYPE_NONE,
     SBG_TYPE_SINE,
     SBG_TYPE_NOISE,
@@ -66,29 +71,34 @@ enum sbg_synth_type {
 
 /* bell: freq constant, ampl decreases exponentially, can be approx lin */
 
-struct sbg_timestamp {
+struct sbg_timestamp
+{
     int64_t t;
     char type; /* 0 for relative, 'N' for now, 'T' for absolute */
 };
 
-struct sbg_script_definition {
+struct sbg_script_definition
+{
     char *name;
     int name_len;
     int elements, nb_elements;
     char type; /* 'S' or 'B' */
 };
 
-struct sbg_script_synth {
+struct sbg_script_synth
+{
     int carrier;
     int beat;
     int vol;
     enum sbg_synth_type type;
-    struct {
+    struct
+    {
         int l, r;
     } ref;
 };
 
-struct sbg_script_tseq {
+struct sbg_script_tseq
+{
     struct sbg_timestamp ts;
     char *name;
     int name_len;
@@ -96,14 +106,16 @@ struct sbg_script_tseq {
     struct sbg_fade fade;
 };
 
-struct sbg_script_event {
+struct sbg_script_event
+{
     int64_t ts;
     int64_t ts_int, ts_trans, ts_next;
     int elements, nb_elements;
     struct sbg_fade fade;
 };
 
-struct sbg_script {
+struct sbg_script
+{
     struct sbg_script_definition *def;
     struct sbg_script_synth *synth;
     struct sbg_script_tseq *tseq;
@@ -123,7 +135,8 @@ struct sbg_script {
     uint8_t opt_end_at_last;
 };
 
-struct sbg_parser {
+struct sbg_parser
+{
     void *log;
     char *script, *end;
     char *cursor;
@@ -135,12 +148,14 @@ struct sbg_parser {
     char err_msg[128];
 };
 
-enum ws_interval_type {
+enum ws_interval_type
+{
     WS_SINE  = MKTAG('S','I','N','E'),
     WS_NOISE = MKTAG('N','O','I','S'),
 };
 
-struct ws_interval {
+struct ws_interval
+{
     int64_t ts1, ts2;
     enum ws_interval_type type;
     uint32_t channels;
@@ -149,7 +164,8 @@ struct ws_interval {
     uint32_t phi;
 };
 
-struct ws_intervals {
+struct ws_intervals
+{
     struct ws_interval *inter;
     int nb_inter;
     int max_inter;
@@ -160,7 +176,8 @@ static void *alloc_array_elem(void **array, size_t elsize,
 {
     void *ret;
 
-    if (*size == *max_size) {
+    if (*size == *max_size)
+    {
         int m = FFMAX(32, FFMIN(*max_size, INT_MAX / 2) * 2);
         if (*size >= m)
             return NULL;
@@ -192,7 +209,8 @@ static int str_to_time(const char *str, int64_t *rtime)
     if (end == cur)
         return 0;
     cur = end;
-    if (*end == ':'){
+    if (*end == ':')
+    {
         seconds = strtod(cur + 1, &end);
         if (end > cur + 1)
             cur = end;
@@ -209,7 +227,8 @@ static inline int is_space(char c)
 static inline int scale_double(void *log, double d, double m, int *r)
 {
     m *= d * SBG_SCALE;
-    if (m < INT_MIN || m >= INT_MAX) {
+    if (m < INT_MIN || m >= INT_MAX)
+    {
         if (log)
             av_log(log, AV_LOG_ERROR, "%g is too large\n", d);
         return AVERROR(EDOM);
@@ -243,7 +262,8 @@ static int lex_double(struct sbg_parser *p, double *r)
     if (p->cursor == p->end || is_space(*p->cursor) || *p->cursor == '\n')
         return 0;
     d = strtod(p->cursor, &end);
-    if (end > p->cursor) {
+    if (end > p->cursor)
+    {
         *r = d;
         p->cursor = end;
         return 1;
@@ -261,7 +281,8 @@ static int lex_fixed(struct sbg_parser *p, const char *t, int l)
 
 static int lex_line_end(struct sbg_parser *p)
 {
-    if (p->cursor < p->end && *p->cursor == '#') {
+    if (p->cursor < p->end && *p->cursor == '#')
+    {
         p->cursor++;
         while (p->cursor < p->end && *p->cursor != '\n')
             p->cursor++;
@@ -296,7 +317,7 @@ static int lex_name(struct sbg_parser *p, struct sbg_string *rs)
     char *s = p->cursor, *c = s;
 
     while (c < p->end && ((*c >= 'a' && *c <= 'z') || (*c >= 'A' && *c <= 'Z')
-           || (*c >= '0' && *c <= '9') || *c == '_' || *c == '-'))
+                          || (*c >= '0' && *c <= '9') || *c == '_' || *c == '-'))
         c++;
     if (c == s)
         return 0;
@@ -335,7 +356,8 @@ static int parse_preprogrammed(struct sbg_parser *p)
 
 static int parse_optarg(struct sbg_parser *p, char o, struct sbg_string *r)
 {
-    if (!lex_wsword(p, r)) {
+    if (!lex_wsword(p, r))
+    {
         snprintf(p->err_msg, sizeof(p->err_msg),
                  "option '%c' requires an argument", o);
         return AVERROR_INVALIDDATA;
@@ -353,131 +375,147 @@ static int parse_options(struct sbg_parser *p)
 
     if (p->cursor == p->end || *p->cursor != '-')
         return 0;
-    while (lex_char(p, '-') && lex_wsword(p, &ostr)) {
-        for (; ostr.s < ostr.e; ostr.s++) {
+    while (lex_char(p, '-') && lex_wsword(p, &ostr))
+    {
+        for (; ostr.s < ostr.e; ostr.s++)
+        {
             char opt = *ostr.s;
-            switch (opt) {
-                case 'S':
-                    p->scs.opt_start_at_first = 1;
-                    break;
-                case 'E':
-                    p->scs.opt_end_at_last = 1;
-                    break;
-                case 'i':
-                    mode = 'i';
-                    break;
-                case 'p':
-                    mode = 'p';
-                    break;
-                case 'F':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    v = strtod(oarg.s, &tptr);
-                    if (oarg.e != tptr) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "syntax error for option -F");
-                        return AVERROR_INVALIDDATA;
-                    }
-                    p->scs.opt_fade_time = v * AV_TIME_BASE / 1000;
-                    break;
-                case 'L':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    r = str_to_time(oarg.s, &p->scs.opt_duration);
-                    if (oarg.e != oarg.s + r) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "syntax error for option -L");
-                        return AVERROR_INVALIDDATA;
-                    }
-                    break;
-                case 'T':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    r = str_to_time(oarg.s, &p->scs.start_ts);
-                    if (oarg.e != oarg.s + r) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "syntax error for option -T");
-                        return AVERROR_INVALIDDATA;
-                    }
-                    break;
-                case 'm':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    tptr = av_malloc(oarg.e - oarg.s + 1);
-                    if (!tptr)
-                        return AVERROR(ENOMEM);
-                    memcpy(tptr, oarg.s, oarg.e - oarg.s);
-                    tptr[oarg.e - oarg.s] = 0;
-                    av_free(p->scs.opt_mix);
-                    p->scs.opt_mix = tptr;
-                    break;
-                case 'q':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    v = strtod(oarg.s, &tptr);
-                    if (oarg.e != tptr) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "syntax error for option -q");
-                        return AVERROR_INVALIDDATA;
-                    }
-                    if (v != 1) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "speed factor other than 1 not supported");
-                        return AVERROR_PATCHWELCOME;
-                    }
-                    break;
-                case 'r':
-                    FORWARD_ERROR(parse_optarg(p, opt, &oarg));
-                    r = strtol(oarg.s, &tptr, 10);
-                    if (oarg.e != tptr) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "syntax error for option -r");
-                        return AVERROR_INVALIDDATA;
-                    }
-                    if (r < 40) {
-                        snprintf(p->err_msg, sizeof(p->err_msg),
-                                 "invalid sample rate");
-                        return AVERROR_PATCHWELCOME;
-                    }
-                    p->scs.sample_rate = r;
-                    break;
-                default:
+            switch (opt)
+            {
+            case 'S':
+                p->scs.opt_start_at_first = 1;
+                break;
+            case 'E':
+                p->scs.opt_end_at_last = 1;
+                break;
+            case 'i':
+                mode = 'i';
+                break;
+            case 'p':
+                mode = 'p';
+                break;
+            case 'F':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                v = strtod(oarg.s, &tptr);
+                if (oarg.e != tptr)
+                {
                     snprintf(p->err_msg, sizeof(p->err_msg),
-                             "unknown option: '%c'", *ostr.s);
+                             "syntax error for option -F");
                     return AVERROR_INVALIDDATA;
+                }
+                p->scs.opt_fade_time = v * AV_TIME_BASE / 1000;
+                break;
+            case 'L':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                r = str_to_time(oarg.s, &p->scs.opt_duration);
+                if (oarg.e != oarg.s + r)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "syntax error for option -L");
+                    return AVERROR_INVALIDDATA;
+                }
+                break;
+            case 'T':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                r = str_to_time(oarg.s, &p->scs.start_ts);
+                if (oarg.e != oarg.s + r)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "syntax error for option -T");
+                    return AVERROR_INVALIDDATA;
+                }
+                break;
+            case 'm':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                tptr = av_malloc(oarg.e - oarg.s + 1);
+                if (!tptr)
+                    return AVERROR(ENOMEM);
+                memcpy(tptr, oarg.s, oarg.e - oarg.s);
+                tptr[oarg.e - oarg.s] = 0;
+                av_free(p->scs.opt_mix);
+                p->scs.opt_mix = tptr;
+                break;
+            case 'q':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                v = strtod(oarg.s, &tptr);
+                if (oarg.e != tptr)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "syntax error for option -q");
+                    return AVERROR_INVALIDDATA;
+                }
+                if (v != 1)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "speed factor other than 1 not supported");
+                    return AVERROR_PATCHWELCOME;
+                }
+                break;
+            case 'r':
+                FORWARD_ERROR(parse_optarg(p, opt, &oarg));
+                r = strtol(oarg.s, &tptr, 10);
+                if (oarg.e != tptr)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "syntax error for option -r");
+                    return AVERROR_INVALIDDATA;
+                }
+                if (r < 40)
+                {
+                    snprintf(p->err_msg, sizeof(p->err_msg),
+                             "invalid sample rate");
+                    return AVERROR_PATCHWELCOME;
+                }
+                p->scs.sample_rate = r;
+                break;
+            default:
+                snprintf(p->err_msg, sizeof(p->err_msg),
+                         "unknown option: '%c'", *ostr.s);
+                return AVERROR_INVALIDDATA;
             }
         }
     }
-    switch (mode) {
-        case 'i':
-            return parse_immediate(p);
-        case 'p':
-            return parse_preprogrammed(p);
-        case 0:
-            if (!lex_line_end(p))
-                return AVERROR_INVALIDDATA;
-            return 1;
+    switch (mode)
+    {
+    case 'i':
+        return parse_immediate(p);
+    case 'p':
+        return parse_preprogrammed(p);
+    case 0:
+        if (!lex_line_end(p))
+            return AVERROR_INVALIDDATA;
+        return 1;
     }
     return AVERROR_BUG;
 }
 
 static int parse_timestamp(struct sbg_parser *p,
-                               struct sbg_timestamp *rts, int64_t *rrel)
+                           struct sbg_timestamp *rts, int64_t *rrel)
 {
     int64_t abs = 0, rel = 0, dt;
     char type = 0;
     int r;
 
-    if (lex_fixed(p, "NOW", 3)) {
+    if (lex_fixed(p, "NOW", 3))
+    {
         type = 'N';
         r = 1;
-    } else {
+    }
+    else
+    {
         r = lex_time(p, &abs);
         if (r)
             type = 'T';
     }
-    while (lex_char(p, '+')) {
+    while (lex_char(p, '+'))
+    {
         if (!lex_time(p, &dt))
             return AVERROR_INVALIDDATA;
         rel += dt;
         r = 1;
     }
-    if (r) {
+    if (r)
+    {
         if (!lex_space(p))
             return AVERROR_INVALIDDATA;
         rts->type = type;
@@ -525,12 +563,15 @@ static int parse_time_sequence(struct sbg_parser *p, int inblock)
         return 0;
     if (r < 0)
         return r;
-    if (ts.type) {
+    if (ts.type)
+    {
         if (inblock)
             return AVERROR_INVALIDDATA;
         p->current_time.type = ts.type;
         p->current_time.t    = ts.t;
-    } else if(!inblock && !p->current_time.type) {
+    }
+    else if(!inblock && !p->current_time.type)
+    {
         snprintf(p->err_msg, sizeof(p->err_msg),
                  "relative time without previous absolute time");
         return AVERROR_INVALIDDATA;
@@ -544,7 +585,8 @@ static int parse_time_sequence(struct sbg_parser *p, int inblock)
     if (!lex_name(p, &name))
         return AVERROR_INVALIDDATA;
     lex_space(p);
-    if (lex_fixed(p, "->", 2)) {
+    if (lex_fixed(p, "->", 2))
+    {
         fade.slide = SBG_FADE_ADAPT;
         lex_space(p);
     }
@@ -580,7 +622,8 @@ static int parse_block_def(struct sbg_parser *p,
     if (!lex_line_end(p))
         return AVERROR_INVALIDDATA;
     tseq = p->nb_block_tseq;
-    while (1) {
+    while (1)
+    {
         r = parse_time_sequence(p, 1);
         if (r < 0)
             return r;
@@ -625,7 +668,7 @@ static int parse_synth_channel_sine(struct sbg_parser *p,
         beatf = 0;
     FORWARD_ERROR(parse_volume(p, &vol));
     if (scale_double(p->log, carrierf, 1, &carrier) < 0 ||
-        scale_double(p->log, beatf, 1, &beat) < 0)
+            scale_double(p->log, beatf, 1, &beat) < 0)
         return AVERROR(EDOM);
     synth->type    = SBG_TYPE_SINE;
     synth->carrier = carrier;
@@ -693,7 +736,7 @@ static int parse_synth_channel_spin(struct sbg_parser *p,
         return AVERROR_INVALIDDATA;
     FORWARD_ERROR(parse_volume(p, &vol));
     if (scale_double(p->log, carrierf, 1, &carrier) < 0 ||
-        scale_double(p->log, beatf, 1, &beat) < 0)
+            scale_double(p->log, beatf, 1, &beat) < 0)
         return AVERROR(EDOM);
     synth->type    = SBG_TYPE_SPIN;
     synth->carrier = carrier;
@@ -734,7 +777,8 @@ static int parse_synth_def(struct sbg_parser *p,
     int r, synth;
 
     synth = p->scs.nb_synth;
-    while (1) {
+    while (1)
+    {
         r = parse_synth_channel(p);
         if (r < 0)
             return r;
@@ -758,13 +802,15 @@ static int parse_named_def(struct sbg_parser *p)
     struct sbg_string name;
     struct sbg_script_definition *def;
 
-    if (!lex_name(p, &name) || !lex_char(p, ':') || !lex_space(p)) {
+    if (!lex_name(p, &name) || !lex_char(p, ':') || !lex_space(p))
+    {
         p->cursor = cursor_save;
         return 0;
     }
     if (name.e - name.s == 6 && !memcmp(name.s, "wave", 4) &&
-        name.s[4] >= '0' && name.s[4] <= '9' &&
-        name.s[5] >= '0' && name.s[5] <= '9') {
+            name.s[4] >= '0' && name.s[4] <= '9' &&
+            name.s[5] >= '0' && name.s[5] <= '9')
+    {
         int wavenum = (name.s[4] - '0') * 10 + (name.s[5] - '0');
         return parse_wave_def(p, wavenum);
     }
@@ -790,9 +836,10 @@ static void free_script(struct sbg_script *s)
 }
 
 static int parse_script(void *log, char *script, int script_len,
-                            struct sbg_script *rscript)
+                        struct sbg_script *rscript)
 {
-    struct sbg_parser sp = {
+    struct sbg_parser sp =
+    {
         .log     = log,
         .script  = script,
         .end     = script + script_len,
@@ -809,14 +856,16 @@ static int parse_script(void *log, char *script, int script_len,
     int r;
 
     lex_space(&sp);
-    while (sp.cursor < sp.end) {
+    while (sp.cursor < sp.end)
+    {
         r = parse_options(&sp);
         if (r < 0)
             goto fail;
         if (!r && !lex_line_end(&sp))
             break;
     }
-    while (sp.cursor < sp.end) {
+    while (sp.cursor < sp.end)
+    {
         r = parse_named_def(&sp);
         if (!r)
             r = parse_time_sequence(&sp, 0);
@@ -832,7 +881,8 @@ fail:
     if (!*sp.err_msg)
         if (r == AVERROR_INVALIDDATA)
             snprintf(sp.err_msg, sizeof(sp.err_msg), "syntax error");
-    if (log && *sp.err_msg) {
+    if (log && *sp.err_msg)
+    {
         const char *ctx = sp.cursor;
         const char *ectx = av_x_if_null(memchr(ctx, '\n', sp.end - sp.cursor),
                                         sp.end);
@@ -840,7 +890,8 @@ fail:
         const char *quote = "\"";
         if (lctx > 0 && ctx[lctx - 1] == '\r')
             lctx--;
-        if (lctx == 0) {
+        if (lctx == 0)
+        {
             ctx = "the end of line";
             lctx = strlen(ctx);
             quote = "";
@@ -856,15 +907,19 @@ static int read_whole_file(AVIOContext *io, int max_size, char **rbuf)
     char *buf = NULL;
     int size = 0, bufsize = 0, r;
 
-    while (1) {
-        if (bufsize - size < 1024) {
+    while (1)
+    {
+        if (bufsize - size < 1024)
+        {
             bufsize = FFMIN(FFMAX(2 * bufsize, 8192), max_size);
-            if (bufsize - size < 2) {
+            if (bufsize - size < 2)
+            {
                 size = AVERROR(EFBIG);
                 goto fail;
             }
             buf = av_realloc_f(buf, bufsize, 1);
-            if (!buf) {
+            if (!buf)
+            {
                 size = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -891,19 +946,24 @@ static void expand_timestamps(void *log, struct sbg_script *s)
 
     for (i = 0; i < s->nb_tseq; i++)
         nb_rel += s->tseq[i].ts.type == 'N';
-    if (nb_rel == s->nb_tseq) {
+    if (nb_rel == s->nb_tseq)
+    {
         /* All ts are relative to NOW: consider NOW = 0 */
         now = 0;
         if (s->start_ts != AV_NOPTS_VALUE)
             av_log(log, AV_LOG_WARNING,
                    "Start time ignored in a purely relative script.\n");
-    } else if (nb_rel == 0 && s->start_ts != AV_NOPTS_VALUE ||
-               s->opt_start_at_first) {
+    }
+    else if (nb_rel == 0 && s->start_ts != AV_NOPTS_VALUE ||
+             s->opt_start_at_first)
+    {
         /* All ts are absolute and start time is specified */
         if (s->start_ts == AV_NOPTS_VALUE)
             s->start_ts = s->tseq[0].ts.t;
         now = s->start_ts;
-    } else {
+    }
+    else
+    {
         /* Mixed relative/absolute ts: expand */
         time_t now0;
         struct tm *tm, tmpbuf;
@@ -915,12 +975,14 @@ static void expand_timestamps(void *log, struct sbg_script *s)
         time(&now0);
         tm = localtime_r(&now0, &tmpbuf);
         now = tm ? tm->tm_hour * 3600 + tm->tm_min * 60 + tm->tm_sec :
-                   now0 % DAY;
+              now0 % DAY;
         av_log(log, AV_LOG_INFO, "Using %02d:%02d:%02d as NOW.\n",
                (int)(now / 3600), (int)(now / 60) % 60, (int)now % 60);
         now *= AV_TIME_BASE;
-        for (i = 0; i < s->nb_tseq; i++) {
-            if (s->tseq[i].ts.type == 'N') {
+        for (i = 0; i < s->nb_tseq; i++)
+        {
+            if (s->tseq[i].ts.type == 'N')
+            {
                 s->tseq[i].ts.t += now;
                 s->tseq[i].ts.type = 'T'; /* not necessary */
             }
@@ -931,7 +993,8 @@ static void expand_timestamps(void *log, struct sbg_script *s)
     s->end_ts = s->opt_duration ? s->start_ts + s->opt_duration :
                 AV_NOPTS_VALUE; /* may be overridden later by -E option */
     cur_ts = now;
-    for (i = 0; i < s->nb_tseq; i++) {
+    for (i = 0; i < s->nb_tseq; i++)
+    {
         if (s->tseq[i].ts.t + delta < cur_ts)
             delta += DAY_TS;
         cur_ts = s->tseq[i].ts.t += delta;
@@ -946,31 +1009,38 @@ static int expand_tseq(void *log, struct sbg_script *s, int *nb_ev_max,
     struct sbg_script_tseq *be;
     struct sbg_script_event *ev;
 
-    if (tseq->lock++) {
+    if (tseq->lock++)
+    {
         av_log(log, AV_LOG_ERROR, "Recursion loop on \"%.*s\"\n",
                tseq->name_len, tseq->name);
         return AVERROR(EINVAL);
     }
     t0 += tseq->ts.t;
-    for (i = 0; i < s->nb_def; i++) {
+    for (i = 0; i < s->nb_def; i++)
+    {
         if (s->def[i].name_len == tseq->name_len &&
-            !memcmp(s->def[i].name, tseq->name, tseq->name_len))
+                !memcmp(s->def[i].name, tseq->name, tseq->name_len))
             break;
     }
-    if (i >= s->nb_def) {
+    if (i >= s->nb_def)
+    {
         av_log(log, AV_LOG_ERROR, "Tone-set \"%.*s\" not defined\n",
                tseq->name_len, tseq->name);
         return AVERROR(EINVAL);
     }
     def = &s->def[i];
-    if (def->type == 'B') {
+    if (def->type == 'B')
+    {
         be = s->block_tseq + def->elements;
-        for (i = 0; i < def->nb_elements; i++) {
+        for (i = 0; i < def->nb_elements; i++)
+        {
             r = expand_tseq(log, s, nb_ev_max, t0, &be[i]);
             if (r < 0)
                 return r;
         }
-    } else {
+    }
+    else
+    {
         ev = alloc_array_elem((void **)&s->events, sizeof(*ev),
                               &s->nb_events, nb_ev_max);
         if (!ev)
@@ -989,12 +1059,14 @@ static int expand_script(void *log, struct sbg_script *s)
     int i, r, nb_events_max = 0;
 
     expand_timestamps(log, s);
-    for (i = 0; i < s->nb_tseq; i++) {
+    for (i = 0; i < s->nb_tseq; i++)
+    {
         r = expand_tseq(log, s, &nb_events_max, 0, &s->tseq[i]);
         if (r < 0)
             return r;
     }
-    if (!s->nb_events) {
+    if (!s->nb_events)
+    {
         av_log(log, AV_LOG_ERROR, "No events in script\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1010,13 +1082,15 @@ static int add_interval(struct ws_intervals *inter,
 {
     struct ws_interval *i, *ri;
 
-    if (ref >= 0) {
+    if (ref >= 0)
+    {
         ri = &inter->inter[ref];
         /* ref and new intervals are constant, identical and adjacent */
         if (ri->type == type && ri->channels == channels &&
-            ri->f1 == ri->f2 && ri->f2 == f1 && f1 == f2 &&
-            ri->a1 == ri->a2 && ri->a2 == a1 && a1 == a2 &&
-            ri->ts2 == ts1) {
+        ri->f1 == ri->f2 && ri->f2 == f1 && f1 == f2 &&
+        ri->a1 == ri->a2 && ri->a2 == a1 && a1 == a2 &&
+        ri->ts2 == ts1)
+        {
             ri->ts2 = ts2;
             return ref;
         }
@@ -1042,7 +1116,8 @@ static int add_bell(struct ws_intervals *inter, struct sbg_script *s,
 {
     /* SBaGen uses an exponential decrease every 50ms.
        We approximate it with piecewise affine segments. */
-    int32_t cpoints[][2] = {
+    int32_t cpoints[][2] =
+    {
         {  2, a },
         {  4, a - a / 4 },
         {  8, a / 2 },
@@ -1053,7 +1128,8 @@ static int add_bell(struct ws_intervals *inter, struct sbg_script *s,
     };
     int i, r;
     int64_t dt = s->sample_rate / 20, ts3 = ts1, ts4;
-    for (i = 0; i < FF_ARRAY_ELEMS(cpoints); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(cpoints); i++)
+    {
         ts4 = FFMIN(ts2, ts1 + cpoints[i][0] * dt);
         r = add_interval(inter, WS_SINE, 3, -1,
                          ts3, f, a, ts4, f, cpoints[i][1]);
@@ -1076,70 +1152,75 @@ static int generate_interval(void *log, struct sbg_script *s,
 
     if (ts2 <= ts1 || (s1->vol == 0 && s2->vol == 0))
         return 0;
-    switch (s1->type) {
-        case SBG_TYPE_NONE:
-            break;
-        case SBG_TYPE_SINE:
-            if (s1->beat == 0 && s2->beat == 0) {
-                r = add_interval(inter, WS_SINE, 3, s1->ref.l,
-                                 ts1, s1->carrier, s1->vol,
-                                 ts2, s2->carrier, s2->vol);
-                if (r < 0)
-                    return r;
-                s2->ref.l = s2->ref.r = r;
-            } else {
-                r = add_interval(inter, WS_SINE, 1, s1->ref.l,
-                                 ts1, s1->carrier + s1->beat / 2, s1->vol,
-                                 ts2, s2->carrier + s2->beat / 2, s2->vol);
-                if (r < 0)
-                    return r;
-                s2->ref.l = r;
-                r = add_interval(inter, WS_SINE, 2, s1->ref.r,
-                                 ts1, s1->carrier - s1->beat / 2, s1->vol,
-                                 ts2, s2->carrier - s2->beat / 2, s2->vol);
-                if (r < 0)
-                    return r;
-                s2->ref.r = r;
-            }
-            break;
-
-        case SBG_TYPE_BELL:
-            if (transition == 2) {
-                r = add_bell(inter, s, ts1, ts2, s1->carrier, s2->vol);
-                if (r < 0)
-                    return r;
-            }
-            break;
-
-        case SBG_TYPE_SPIN:
-            av_log(log, AV_LOG_WARNING, "Spinning noise not implemented, "
-                                        "using pink noise instead.\n");
-            /* fall through */
-        case SBG_TYPE_NOISE:
-            /* SBaGen's pink noise generator uses:
-               - 1 band of white noise, mean square: 1/3;
-               - 9 bands of subsampled white noise with linear
-                 interpolation, mean square: 2/3 each;
-               with 1/10 weight each: the total mean square is 7/300.
-               Our pink noise generator uses 8 bands of white noise with
-               rectangular subsampling: the total mean square is 1/24.
-               Therefore, to match SBaGen's volume, we must multiply vol by
-               sqrt((7/300) / (1/24)) = sqrt(14/25) =~ 0.748
-             */
-            r = add_interval(inter, WS_NOISE, 3, s1->ref.l,
-                             ts1, 0, s1->vol - s1->vol / 4,
-                             ts2, 0, s2->vol - s2->vol / 4);
+    switch (s1->type)
+    {
+    case SBG_TYPE_NONE:
+        break;
+    case SBG_TYPE_SINE:
+        if (s1->beat == 0 && s2->beat == 0)
+        {
+            r = add_interval(inter, WS_SINE, 3, s1->ref.l,
+                             ts1, s1->carrier, s1->vol,
+                             ts2, s2->carrier, s2->vol);
             if (r < 0)
                 return r;
             s2->ref.l = s2->ref.r = r;
-            break;
+        }
+        else
+        {
+            r = add_interval(inter, WS_SINE, 1, s1->ref.l,
+                             ts1, s1->carrier + s1->beat / 2, s1->vol,
+                             ts2, s2->carrier + s2->beat / 2, s2->vol);
+            if (r < 0)
+                return r;
+            s2->ref.l = r;
+            r = add_interval(inter, WS_SINE, 2, s1->ref.r,
+                             ts1, s1->carrier - s1->beat / 2, s1->vol,
+                             ts2, s2->carrier - s2->beat / 2, s2->vol);
+            if (r < 0)
+                return r;
+            s2->ref.r = r;
+        }
+        break;
 
-        case SBG_TYPE_MIX:
-            /* Unimplemented: silence; warning present elsewhere */
-        default:
-            av_log(log, AV_LOG_ERROR,
-                   "Type %d is not implemented\n", s1->type);
-            return AVERROR_PATCHWELCOME;
+    case SBG_TYPE_BELL:
+        if (transition == 2)
+        {
+            r = add_bell(inter, s, ts1, ts2, s1->carrier, s2->vol);
+            if (r < 0)
+                return r;
+        }
+        break;
+
+    case SBG_TYPE_SPIN:
+        av_log(log, AV_LOG_WARNING, "Spinning noise not implemented, "
+               "using pink noise instead.\n");
+    /* fall through */
+    case SBG_TYPE_NOISE:
+        /* SBaGen's pink noise generator uses:
+           - 1 band of white noise, mean square: 1/3;
+           - 9 bands of subsampled white noise with linear
+             interpolation, mean square: 2/3 each;
+           with 1/10 weight each: the total mean square is 7/300.
+           Our pink noise generator uses 8 bands of white noise with
+           rectangular subsampling: the total mean square is 1/24.
+           Therefore, to match SBaGen's volume, we must multiply vol by
+           sqrt((7/300) / (1/24)) = sqrt(14/25) =~ 0.748
+         */
+        r = add_interval(inter, WS_NOISE, 3, s1->ref.l,
+                         ts1, 0, s1->vol - s1->vol / 4,
+                         ts2, 0, s2->vol - s2->vol / 4);
+        if (r < 0)
+            return r;
+        s2->ref.l = s2->ref.r = r;
+        break;
+
+    case SBG_TYPE_MIX:
+    /* Unimplemented: silence; warning present elsewhere */
+    default:
+        av_log(log, AV_LOG_ERROR,
+               "Type %d is not implemented\n", s1->type);
+        return AVERROR_PATCHWELCOME;
     }
     return 0;
 }
@@ -1152,7 +1233,8 @@ static int generate_plateau(void *log, struct sbg_script *s,
     int i, r;
     struct sbg_script_synth *s1;
 
-    for (i = 0; i < ev1->nb_elements; i++) {
+    for (i = 0; i < ev1->nb_elements; i++)
+    {
         s1 = &s->synth[ev1->elements + i];
         r = generate_interval(log, s, inter, ts1, ts2, s1, s1, 0);
         if (r < 0)
@@ -1186,7 +1268,8 @@ static int generate_transition(void *log, struct sbg_script *s,
     struct sbg_script_synth *s1, *s2, s1mod, s2mod, smid;
     int pass, i, r;
 
-    for (pass = 0; pass < 2; pass++) {
+    for (pass = 0; pass < 2; pass++)
+    {
         /* pass = 0 -> compatible and first half of incompatible
            pass = 1 -> second half of incompatible
            Using two passes like that ensures that the intervals are generated
@@ -1194,45 +1277,63 @@ static int generate_transition(void *log, struct sbg_script *s,
            Otherwise it would be necessary to sort them
            while keeping the mutual references.
          */
-        for (i = 0; i < nb_elements; i++) {
+        for (i = 0; i < nb_elements; i++)
+        {
             s1 = i < ev1->nb_elements ? &s->synth[ev1->elements + i] : &s1mod;
             s2 = i < ev2->nb_elements ? &s->synth[ev2->elements + i] : &s2mod;
-            s1mod = s1 != &s1mod ? *s1 : (struct sbg_script_synth){ 0 };
-            s2mod = s2 != &s2mod ? *s2 : (struct sbg_script_synth){ 0 };
-            if (ev1->fade.slide) {
+            s1mod = s1 != &s1mod ? *s1 : (struct sbg_script_synth)
+            {
+                0
+            };
+            s2mod = s2 != &s2mod ? *s2 : (struct sbg_script_synth)
+            {
+                0
+            };
+            if (ev1->fade.slide)
+            {
                 /* for slides, and only for slides, silence ("-") is equivalent
                    to anything with volume 0 */
-                if (s1mod.type == SBG_TYPE_NONE) {
+                if (s1mod.type == SBG_TYPE_NONE)
+                {
                     s1mod = s2mod;
                     s1mod.vol = 0;
-                } else if (s2mod.type == SBG_TYPE_NONE) {
+                }
+                else if (s2mod.type == SBG_TYPE_NONE)
+                {
                     s2mod = s1mod;
                     s2mod.vol = 0;
                 }
             }
             if (s1mod.type == s2mod.type &&
-                s1mod.type != SBG_TYPE_BELL &&
-                (type == SBG_FADE_ADAPT ||
-                 (s1mod.carrier == s2mod.carrier &&
-                  s1mod.beat == s2mod.beat))) {
+                    s1mod.type != SBG_TYPE_BELL &&
+                    (type == SBG_FADE_ADAPT ||
+                     (s1mod.carrier == s2mod.carrier &&
+                      s1mod.beat == s2mod.beat)))
+            {
                 /* compatible: single transition */
-                if (!pass) {
+                if (!pass)
+                {
                     r = generate_interval(log, s, inter,
                                           ts1, ts2, &s1mod, &s2mod, 3);
                     if (r < 0)
                         return r;
                     s2->ref = s2mod.ref;
                 }
-            } else {
+            }
+            else
+            {
                 /* incompatible: silence at midpoint */
-                if (!pass) {
+                if (!pass)
+                {
                     smid = s1mod;
                     smid.vol = 0;
                     r = generate_interval(log, s, inter,
                                           ts1, tsmid, &s1mod, &smid, 1);
                     if (r < 0)
                         return r;
-                } else {
+                }
+                else
+                {
                     smid = s2mod;
                     smid.vol = 0;
                     r = generate_interval(log, s, inter,
@@ -1275,17 +1376,20 @@ static int generate_intervals(void *log, struct sbg_script *s, int sample_rate,
     period = FFMAX(period, DAY_TS);
 
     /* Prepare timestamps for transitions */
-    for (i = 0; i < s->nb_events; i++) {
+    for (i = 0; i < s->nb_events; i++)
+    {
         ev1 = &s->events[i];
         ev2 = &s->events[(i + 1) % s->nb_events];
         ev1->ts_int   = ev1->ts;
         ev1->ts_trans = ev1->fade.slide ? ev1->ts
-                                        : ev2->ts + (ev1 < ev2 ? 0 : period);
+                        : ev2->ts + (ev1 < ev2 ? 0 : period);
     }
-    for (i = 0; i < s->nb_events; i++) {
+    for (i = 0; i < s->nb_events; i++)
+    {
         ev1 = &s->events[i];
         ev2 = &s->events[(i + 1) % s->nb_events];
-        if (!ev1->fade.slide) {
+        if (!ev1->fade.slide)
+        {
             ev1->ts_trans = FFMAX(ev1->ts_int,   ev1->ts_trans - trans_time);
             ev2->ts_int   = FFMIN(ev2->ts_trans, ev2->ts_int   + trans_time);
         }
@@ -1299,7 +1403,8 @@ static int generate_intervals(void *log, struct sbg_script *s, int sample_rate,
     ev0.ts_next  -= period;
 
     /* Convert timestamps */
-    for (i = -1; i < s->nb_events; i++) {
+    for (i = -1; i < s->nb_events; i++)
+    {
         ev1 = i < 0 ? &ev0 : &s->events[i];
         ev1->ts_int   = av_rescale(ev1->ts_int,   sample_rate, AV_TIME_BASE);
         ev1->ts_trans = av_rescale(ev1->ts_trans, sample_rate, AV_TIME_BASE);
@@ -1309,7 +1414,8 @@ static int generate_intervals(void *log, struct sbg_script *s, int sample_rate,
     /* Generate intervals */
     for (i = 0; i < s->nb_synth; i++)
         s->synth[i].ref.l = s->synth[i].ref.r = -1;
-    for (i = -1; i < s->nb_events; i++) {
+    for (i = -1; i < s->nb_events; i++)
+    {
         ev1 = i < 0 ? &ev0 : &s->events[i];
         ev2 = &s->events[(i + 1) % s->nb_events];
         r = generate_plateau(log, s, inter, ev1);
@@ -1330,7 +1436,8 @@ static int encode_intervals(struct sbg_script *s, AVCodecContext *avc,
     int i, edata_size = 4;
     uint8_t *edata;
 
-    for (i = 0; i < inter->nb_inter; i++) {
+    for (i = 0; i < inter->nb_inter; i++)
+    {
         edata_size += inter->inter[i].type == WS_SINE  ? 44 :
                       inter->inter[i].type == WS_NOISE ? 32 : 0;
         if (edata_size < 0)
@@ -1343,23 +1450,25 @@ static int encode_intervals(struct sbg_script *s, AVCodecContext *avc,
 #define ADD_EDATA32(v) do { AV_WL32(edata, (v)); edata += 4; } while(0)
 #define ADD_EDATA64(v) do { AV_WL64(edata, (v)); edata += 8; } while(0)
     ADD_EDATA32(inter->nb_inter);
-    for (i = 0; i < inter->nb_inter; i++) {
+    for (i = 0; i < inter->nb_inter; i++)
+    {
         ADD_EDATA64(inter->inter[i].ts1);
         ADD_EDATA64(inter->inter[i].ts2);
         ADD_EDATA32(inter->inter[i].type);
         ADD_EDATA32(inter->inter[i].channels);
-        switch (inter->inter[i].type) {
-            case WS_SINE:
-                ADD_EDATA32(inter->inter[i].f1);
-                ADD_EDATA32(inter->inter[i].f2);
-                ADD_EDATA32(inter->inter[i].a1);
-                ADD_EDATA32(inter->inter[i].a2);
-                ADD_EDATA32(inter->inter[i].phi);
-                break;
-            case WS_NOISE:
-                ADD_EDATA32(inter->inter[i].a1);
-                ADD_EDATA32(inter->inter[i].a2);
-                break;
+        switch (inter->inter[i].type)
+        {
+        case WS_SINE:
+            ADD_EDATA32(inter->inter[i].f1);
+            ADD_EDATA32(inter->inter[i].f2);
+            ADD_EDATA32(inter->inter[i].a1);
+            ADD_EDATA32(inter->inter[i].a2);
+            ADD_EDATA32(inter->inter[i].phi);
+            break;
+        case WS_NOISE:
+            ADD_EDATA32(inter->inter[i].a1);
+            ADD_EDATA32(inter->inter[i].a2);
+            break;
         }
     }
     if (edata != avc->extradata + edata_size)
@@ -1480,27 +1589,36 @@ static int sbg_read_seek(AVFormatContext *avf, int stream_index,
     return sbg_read_seek2(avf, stream_index, ts, ts, ts, 0);
 }
 
-static const AVOption sbg_options[] = {
-    { "sample_rate", "", offsetof(struct sbg_demuxer, sample_rate),
-      AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX,
-      AV_OPT_FLAG_DECODING_PARAM },
-    { "frame_size", "", offsetof(struct sbg_demuxer, frame_size),
-      AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX,
-      AV_OPT_FLAG_DECODING_PARAM },
-    { "max_file_size", "", offsetof(struct sbg_demuxer, max_file_size),
-      AV_OPT_TYPE_INT, { .i64 = 5000000 }, 0, INT_MAX,
-      AV_OPT_FLAG_DECODING_PARAM },
+static const AVOption sbg_options[] =
+{
+    {
+        "sample_rate", "", offsetof(struct sbg_demuxer, sample_rate),
+        AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX,
+        AV_OPT_FLAG_DECODING_PARAM
+    },
+    {
+        "frame_size", "", offsetof(struct sbg_demuxer, frame_size),
+        AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX,
+        AV_OPT_FLAG_DECODING_PARAM
+    },
+    {
+        "max_file_size", "", offsetof(struct sbg_demuxer, max_file_size),
+        AV_OPT_TYPE_INT, { .i64 = 5000000 }, 0, INT_MAX,
+        AV_OPT_FLAG_DECODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass sbg_demuxer_class = {
+static const AVClass sbg_demuxer_class =
+{
     .class_name = "sbg_demuxer",
     .item_name  = av_default_item_name,
     .option     = sbg_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_sbg_demuxer = {
+AVInputFormat ff_sbg_demuxer =
+{
     .name           = "sbg",
     .long_name      = NULL_IF_CONFIG_SMALL("SBaGen binaural beats script"),
     .priv_data_size = sizeof(struct sbg_demuxer),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008-2010 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -45,7 +45,8 @@ static void usage(void)
            "-h                print this help\n");
 }
 
-struct line {
+struct line
+{
     char data[256];
     struct line *next;
 };
@@ -58,7 +59,8 @@ static void print_digraph(FILE *outfile, AVFilterGraph *graph)
     fprintf(outfile, "node [shape=box]\n");
     fprintf(outfile, "rankdir=LR\n");
 
-    for (i = 0; i < graph->nb_filters; i++) {
+    for (i = 0; i < graph->nb_filters; i++)
+    {
         char filter_ctx_label[128];
         const AVFilterContext *filter_ctx = graph->filters[i];
 
@@ -66,9 +68,11 @@ static void print_digraph(FILE *outfile, AVFilterGraph *graph)
                  filter_ctx->name,
                  filter_ctx->filter->name);
 
-        for (j = 0; j < filter_ctx->nb_outputs; j++) {
+        for (j = 0; j < filter_ctx->nb_outputs; j++)
+        {
             AVFilterLink *link = filter_ctx->outputs[j];
-            if (link) {
+            if (link)
+            {
                 char dst_filter_ctx_label[128];
                 const AVFilterContext *dst_filter_ctx = link->dst;
 
@@ -82,14 +86,17 @@ static void print_digraph(FILE *outfile, AVFilterGraph *graph)
                         avfilter_pad_get_name(link->srcpad, 0),
                         avfilter_pad_get_name(link->dstpad, 0));
 
-                if (link->type == AVMEDIA_TYPE_VIDEO) {
+                if (link->type == AVMEDIA_TYPE_VIDEO)
+                {
                     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(link->format);
                     fprintf(outfile,
                             "fmt:%s w:%d h:%d tb:%d/%d",
                             desc->name,
                             link->w, link->h,
                             link->time_base.num, link->time_base.den);
-                } else if (link->type == AVMEDIA_TYPE_AUDIO) {
+                }
+                else if (link->type == AVMEDIA_TYPE_AUDIO)
+                {
                     char buf[255];
                     av_get_channel_layout_string(buf, sizeof(buf), -1,
                                                  link->channel_layout);
@@ -118,8 +125,10 @@ int main(int argc, char **argv)
 
     av_log_set_level(AV_LOG_DEBUG);
 
-    while ((c = getopt(argc, argv, "hi:o:")) != -1) {
-        switch (c) {
+    while ((c = getopt(argc, argv, "hi:o:")) != -1)
+    {
+        switch (c)
+        {
         case 'h':
             usage();
             return 0;
@@ -137,7 +146,8 @@ int main(int argc, char **argv)
     if (!infilename || !strcmp(infilename, "-"))
         infilename = "/dev/stdin";
     infile = fopen(infilename, "r");
-    if (!infile) {
+    if (!infile)
+    {
         fprintf(stderr, "Failed to open input file '%s': %s\n",
                 infilename, strerror(errno));
         return 1;
@@ -146,7 +156,8 @@ int main(int argc, char **argv)
     if (!outfilename || !strcmp(outfilename, "-"))
         outfilename = "/dev/stdout";
     outfile = fopen(outfilename, "w");
-    if (!outfile) {
+    if (!outfile)
+    {
         fprintf(stderr, "Failed to open output file '%s': %s\n",
                 outfilename, strerror(errno));
         return 1;
@@ -158,14 +169,17 @@ int main(int argc, char **argv)
         struct line *line, *last_line, *first_line;
         char *p;
         last_line = first_line = av_malloc(sizeof(struct line));
-        if (!last_line) {
+        if (!last_line)
+        {
             fprintf(stderr, "Memory allocation failure\n");
             return 1;
         }
 
-        while (fgets(last_line->data, sizeof(last_line->data), infile)) {
+        while (fgets(last_line->data, sizeof(last_line->data), infile))
+        {
             struct line *new_line = av_malloc(sizeof(struct line));
-            if (!new_line) {
+            if (!new_line)
+            {
                 fprintf(stderr, "Memory allocation failure\n");
                 return 1;
             }
@@ -176,12 +190,14 @@ int main(int argc, char **argv)
         last_line->next = NULL;
 
         graph_string = av_malloc(count + 1);
-        if (!graph_string) {
+        if (!graph_string)
+        {
             fprintf(stderr, "Memory allocation failure\n");
             return 1;
         }
         p = graph_string;
-        for (line = first_line; line->next; line = line->next) {
+        for (line = first_line; line->next; line = line->next)
+        {
             size_t l = strlen(line->data);
             memcpy(p, line->data, l);
             p += l;
@@ -191,7 +207,8 @@ int main(int argc, char **argv)
 
     avfilter_register_all();
 
-    if (avfilter_graph_parse(graph, graph_string, NULL, NULL, NULL) < 0) {
+    if (avfilter_graph_parse(graph, graph_string, NULL, NULL, NULL) < 0)
+    {
         fprintf(stderr, "Failed to parse the graph description\n");
         return 1;
     }

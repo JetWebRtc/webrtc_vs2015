@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LCL (LossLess Codec Library) Codec
  * Copyright (c) 2002-2004 Roberto Togni
  *

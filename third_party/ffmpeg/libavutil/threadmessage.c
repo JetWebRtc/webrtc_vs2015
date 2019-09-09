@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #endif
 #endif
 
-struct AVThreadMessageQueue {
+struct AVThreadMessageQueue
+{
 #if HAVE_THREADS
     AVFifoBuffer *fifo;
     pthread_mutex_t lock;
@@ -57,16 +58,19 @@ int av_thread_message_queue_alloc(AVThreadMessageQueue **mq,
         return AVERROR(EINVAL);
     if (!(rmq = av_mallocz(sizeof(*rmq))))
         return AVERROR(ENOMEM);
-    if ((ret = pthread_mutex_init(&rmq->lock, NULL))) {
+    if ((ret = pthread_mutex_init(&rmq->lock, NULL)))
+    {
         av_free(rmq);
         return AVERROR(ret);
     }
-    if ((ret = pthread_cond_init(&rmq->cond, NULL))) {
+    if ((ret = pthread_cond_init(&rmq->cond, NULL)))
+    {
         pthread_mutex_destroy(&rmq->lock);
         av_free(rmq);
         return AVERROR(ret);
     }
-    if (!(rmq->fifo = av_fifo_alloc(elsize * nelem))) {
+    if (!(rmq->fifo = av_fifo_alloc(elsize * nelem)))
+    {
         pthread_cond_destroy(&rmq->cond);
         pthread_mutex_destroy(&rmq->lock);
         av_free(rmq);
@@ -84,7 +88,8 @@ int av_thread_message_queue_alloc(AVThreadMessageQueue **mq,
 void av_thread_message_queue_free(AVThreadMessageQueue **mq)
 {
 #if HAVE_THREADS
-    if (*mq) {
+    if (*mq)
+    {
         av_fifo_freep(&(*mq)->fifo);
         pthread_cond_destroy(&(*mq)->cond);
         pthread_mutex_destroy(&(*mq)->lock);
@@ -96,10 +101,11 @@ void av_thread_message_queue_free(AVThreadMessageQueue **mq)
 #if HAVE_THREADS
 
 static int av_thread_message_queue_send_locked(AVThreadMessageQueue *mq,
-                                               void *msg,
-                                               unsigned flags)
+        void *msg,
+        unsigned flags)
 {
-    while (!mq->err_send && av_fifo_space(mq->fifo) < mq->elsize) {
+    while (!mq->err_send && av_fifo_space(mq->fifo) < mq->elsize)
+    {
         if ((flags & AV_THREAD_MESSAGE_NONBLOCK))
             return AVERROR(EAGAIN);
         pthread_cond_wait(&mq->cond, &mq->lock);
@@ -112,10 +118,11 @@ static int av_thread_message_queue_send_locked(AVThreadMessageQueue *mq,
 }
 
 static int av_thread_message_queue_recv_locked(AVThreadMessageQueue *mq,
-                                               void *msg,
-                                               unsigned flags)
+        void *msg,
+        unsigned flags)
 {
-    while (!mq->err_recv && av_fifo_size(mq->fifo) < mq->elsize) {
+    while (!mq->err_recv && av_fifo_size(mq->fifo) < mq->elsize)
+    {
         if ((flags & AV_THREAD_MESSAGE_NONBLOCK))
             return AVERROR(EAGAIN);
         pthread_cond_wait(&mq->cond, &mq->lock);
@@ -162,7 +169,7 @@ int av_thread_message_queue_recv(AVThreadMessageQueue *mq,
 }
 
 void av_thread_message_queue_set_err_send(AVThreadMessageQueue *mq,
-                                          int err)
+        int err)
 {
 #if HAVE_THREADS
     pthread_mutex_lock(&mq->lock);
@@ -173,7 +180,7 @@ void av_thread_message_queue_set_err_send(AVThreadMessageQueue *mq,
 }
 
 void av_thread_message_queue_set_err_recv(AVThreadMessageQueue *mq,
-                                          int err)
+        int err)
 {
 #if HAVE_THREADS
     pthread_mutex_lock(&mq->lock);

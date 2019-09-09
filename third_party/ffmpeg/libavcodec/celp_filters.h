@@ -1,4 +1,4 @@
-/*
+﻿/*
  * various filters for CELP-based codecs
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -25,7 +25,8 @@
 
 #include <stdint.h>
 
-typedef struct CELPFContext {
+typedef struct CELPFContext
+{
     /**
      * LP synthesis filter.
      * @param[out] out pointer to output buffer
@@ -66,7 +67,7 @@ typedef struct CELPFContext {
                                            const float *in, int buffer_length,
                                            int filter_length);
 
-}CELPFContext;
+} CELPFContext;
 
 /**
  * Initialize CELPFContext.

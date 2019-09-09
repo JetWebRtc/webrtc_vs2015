@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -47,7 +47,8 @@
 #include "encoder_context.h"
 #include "wels_func_ptr_def.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 void WelsDctMb (int16_t* pRs, uint8_t* pEncMb, int32_t iEncStride, uint8_t* pBestPred, PDctFunc pfDctFourT4);
 
 void WelsEncRecI16x16Y (sWelsEncCtx* pEncCtx, SMB* pCurMb, SMbCache* pMbCache);

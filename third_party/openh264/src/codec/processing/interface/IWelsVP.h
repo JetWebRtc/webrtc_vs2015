@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2004-2013, Cisco Systems
  *     All rights reserved.
@@ -51,220 +51,241 @@
 #define WELSVP_MINOR_VERSION   1
 #define WELSVP_VERSION         ((WELSVP_MAJOR_VERSION << 8) + WELSVP_MINOR_VERSION)
 
-typedef enum {
-  RET_SUCCESS          =  0,
-  RET_FAILED           = -1,
-  RET_INVALIDPARAM     = -2,
-  RET_OUTOFMEMORY      = -3,
-  RET_NOTSUPPORTED     = -4,
-  RET_UNEXPECTED       = -5,
-  RET_NEEDREINIT       = -6
+typedef enum
+{
+    RET_SUCCESS          =  0,
+    RET_FAILED           = -1,
+    RET_INVALIDPARAM     = -2,
+    RET_OUTOFMEMORY      = -3,
+    RET_NOTSUPPORTED     = -4,
+    RET_UNEXPECTED       = -5,
+    RET_NEEDREINIT       = -6
 } EResult;
 
-typedef enum {
-  VIDEO_FORMAT_NULL       = 0,   /* invalid format   */
-  /*rgb color formats*/
-  VIDEO_FORMAT_RGB        = 1,   /* rgb 24bits       */
-  VIDEO_FORMAT_RGBA       = 2,   /* rgba             */
-  VIDEO_FORMAT_RGB555     = 3,   /* rgb555           */
-  VIDEO_FORMAT_RGB565     = 4,   /* rgb565           */
-  VIDEO_FORMAT_BGR        = 5,   /* bgr 24bits       */
-  VIDEO_FORMAT_BGRA       = 6,   /* bgr 32bits       */
-  VIDEO_FORMAT_ABGR       = 7,   /* abgr             */
-  VIDEO_FORMAT_ARGB       = 8,   /* argb             */
+typedef enum
+{
+    VIDEO_FORMAT_NULL       = 0,   /* invalid format   */
+    /*rgb color formats*/
+    VIDEO_FORMAT_RGB        = 1,   /* rgb 24bits       */
+    VIDEO_FORMAT_RGBA       = 2,   /* rgba             */
+    VIDEO_FORMAT_RGB555     = 3,   /* rgb555           */
+    VIDEO_FORMAT_RGB565     = 4,   /* rgb565           */
+    VIDEO_FORMAT_BGR        = 5,   /* bgr 24bits       */
+    VIDEO_FORMAT_BGRA       = 6,   /* bgr 32bits       */
+    VIDEO_FORMAT_ABGR       = 7,   /* abgr             */
+    VIDEO_FORMAT_ARGB       = 8,   /* argb             */
 
-  /*yuv color formats*/
-  VIDEO_FORMAT_YUY2       = 20,   /* yuy2             */
-  VIDEO_FORMAT_YVYU       = 21,   /* yvyu             */
-  VIDEO_FORMAT_UYVY       = 22,   /* uyvy             */
-  VIDEO_FORMAT_I420       = 23,   /* yuv 4:2:0 planar */
-  VIDEO_FORMAT_YV12       = 24,   /* yuv 4:2:0 planar */
-  VIDEO_FORMAT_INTERNAL   = 25,   /* Only Used for SVC decoder testbed */
-  VIDEO_FORMAT_NV12       = 26,   /* y planar + uv packed */
-  VIDEO_FORMAT_I422       = 27,   /* yuv 4:2:2 planar */
-  VIDEO_FORMAT_I444       = 28,   /* yuv 4:4:4 planar */
-  VIDEO_FORMAT_YUYV       = 20,   /* yuv 4:2:2 packed */
+    /*yuv color formats*/
+    VIDEO_FORMAT_YUY2       = 20,   /* yuy2             */
+    VIDEO_FORMAT_YVYU       = 21,   /* yvyu             */
+    VIDEO_FORMAT_UYVY       = 22,   /* uyvy             */
+    VIDEO_FORMAT_I420       = 23,   /* yuv 4:2:0 planar */
+    VIDEO_FORMAT_YV12       = 24,   /* yuv 4:2:0 planar */
+    VIDEO_FORMAT_INTERNAL   = 25,   /* Only Used for SVC decoder testbed */
+    VIDEO_FORMAT_NV12       = 26,   /* y planar + uv packed */
+    VIDEO_FORMAT_I422       = 27,   /* yuv 4:2:2 planar */
+    VIDEO_FORMAT_I444       = 28,   /* yuv 4:4:4 planar */
+    VIDEO_FORMAT_YUYV       = 20,   /* yuv 4:2:2 packed */
 
-  VIDEO_FORMAT_RGB24      = 1,
-  VIDEO_FORMAT_RGB32      = 2,
-  VIDEO_FORMAT_RGB24_INV  = 5,
-  VIDEO_FORMAT_RGB32_INV  = 6,
-  VIDEO_FORMAT_RGB555_INV = 7,
-  VIDEO_FORMAT_RGB565_INV = 8,
-  VIDEO_FORMAT_YUV2       = 21,
-  VIDEO_FORMAT_420        = 23,
+    VIDEO_FORMAT_RGB24      = 1,
+    VIDEO_FORMAT_RGB32      = 2,
+    VIDEO_FORMAT_RGB24_INV  = 5,
+    VIDEO_FORMAT_RGB32_INV  = 6,
+    VIDEO_FORMAT_RGB555_INV = 7,
+    VIDEO_FORMAT_RGB565_INV = 8,
+    VIDEO_FORMAT_YUV2       = 21,
+    VIDEO_FORMAT_420        = 23,
 
-  VIDEO_FORMAT_VFlip      = 0x80000000
+    VIDEO_FORMAT_VFlip      = 0x80000000
 } EVideoFormat;
 
-typedef enum {
-  BUFFER_HOSTMEM  = 0,
-  BUFFER_SURFACE
+typedef enum
+{
+    BUFFER_HOSTMEM  = 0,
+    BUFFER_SURFACE
 } EPixMapBufferProperty;
 
-typedef struct {
-  int iRectTop;
-  int iRectLeft;
-  int iRectWidth;
-  int iRectHeight;
+typedef struct
+{
+    int iRectTop;
+    int iRectLeft;
+    int iRectWidth;
+    int iRectHeight;
 } SRect;
 
-typedef struct {
-  void*        pPixel[3];
-  int          iSizeInBits;
-  int          iStride[3];
-  SRect        sRect;
-  EVideoFormat eFormat;
-  EPixMapBufferProperty eProperty;//not use? to remove? but how about the size of SPixMap?
+typedef struct
+{
+    void*        pPixel[3];
+    int          iSizeInBits;
+    int          iStride[3];
+    SRect        sRect;
+    EVideoFormat eFormat;
+    EPixMapBufferProperty eProperty;//not use? to remove? but how about the size of SPixMap?
 } SPixMap;
 
-typedef enum {
-  METHOD_NULL              = 0,
-  METHOD_COLORSPACE_CONVERT    ,//not support yet
-  METHOD_DENOISE              ,
-  METHOD_SCENE_CHANGE_DETECTION_VIDEO ,
-  METHOD_SCENE_CHANGE_DETECTION_SCREEN ,
-  METHOD_DOWNSAMPLE            ,
-  METHOD_VAA_STATISTICS        ,
-  METHOD_BACKGROUND_DETECTION  ,
-  METHOD_ADAPTIVE_QUANT ,
-  METHOD_COMPLEXITY_ANALYSIS   ,
-  METHOD_COMPLEXITY_ANALYSIS_SCREEN,
-  METHOD_IMAGE_ROTATE          ,
-  METHOD_SCROLL_DETECTION,
-  METHOD_MASK
+typedef enum
+{
+    METHOD_NULL              = 0,
+    METHOD_COLORSPACE_CONVERT    ,//not support yet
+    METHOD_DENOISE              ,
+    METHOD_SCENE_CHANGE_DETECTION_VIDEO ,
+    METHOD_SCENE_CHANGE_DETECTION_SCREEN ,
+    METHOD_DOWNSAMPLE            ,
+    METHOD_VAA_STATISTICS        ,
+    METHOD_BACKGROUND_DETECTION  ,
+    METHOD_ADAPTIVE_QUANT ,
+    METHOD_COMPLEXITY_ANALYSIS   ,
+    METHOD_COMPLEXITY_ANALYSIS_SCREEN,
+    METHOD_IMAGE_ROTATE          ,
+    METHOD_SCROLL_DETECTION,
+    METHOD_MASK
 } EMethods;
 
 //-----------------------------------------------------------------//
 //  Algorithm parameters define
 //-----------------------------------------------------------------//
 
-typedef enum {
-  SIMILAR_SCENE,   //similar scene
-  MEDIUM_CHANGED_SCENE,   //medium changed scene
-  LARGE_CHANGED_SCENE     //large changed scene
+typedef enum
+{
+    SIMILAR_SCENE,   //similar scene
+    MEDIUM_CHANGED_SCENE,   //medium changed scene
+    LARGE_CHANGED_SCENE     //large changed scene
 } ESceneChangeIdc;
 
-typedef enum {
-  NO_STATIC,  // motion block
-  COLLOCATED_STATIC, // collocated static block
-  SCROLLED_STATIC,  // scrolled static block
-  BLOCK_STATIC_IDC_ALL
+typedef enum
+{
+    NO_STATIC,  // motion block
+    COLLOCATED_STATIC, // collocated static block
+    SCROLLED_STATIC,  // scrolled static block
+    BLOCK_STATIC_IDC_ALL
 } EStaticBlockIdc;
 
-typedef struct {
-  SRect sMaskRect;
-  bool bMaskInfoAvailable;
-  int iScrollMvX;
-  int iScrollMvY;
-  bool bScrollDetectFlag; // 0:false ; 1:ltr; 2: scene change
+typedef struct
+{
+    SRect sMaskRect;
+    bool bMaskInfoAvailable;
+    int iScrollMvX;
+    int iScrollMvY;
+    bool bScrollDetectFlag; // 0:false ; 1:ltr; 2: scene change
 } SScrollDetectionParam;
 
-typedef struct {
-  ESceneChangeIdc eSceneChangeIdc; // SIMILAR_SCENE, MEDIUM_CHANGED_SCENE, LARGE_CHANGED_SCENE
-  int             iMotionBlockNum; // Number of motion blocks
-  long long       iFrameComplexity; // frame complexity
-  unsigned char* pStaticBlockIdc;   // static block idc
-  SScrollDetectionParam sScrollResult; //results from scroll detection
+typedef struct
+{
+    ESceneChangeIdc eSceneChangeIdc; // SIMILAR_SCENE, MEDIUM_CHANGED_SCENE, LARGE_CHANGED_SCENE
+    int             iMotionBlockNum; // Number of motion blocks
+    long long       iFrameComplexity; // frame complexity
+    unsigned char* pStaticBlockIdc;   // static block idc
+    SScrollDetectionParam sScrollResult; //results from scroll detection
 } SSceneChangeResult;
 
-typedef struct {
-  unsigned char* pCurY;             // Y data of current frame
-  unsigned char* pRefY;             // Y data of pRef frame for diff calc
-  int (*pSad8x8)[4];                // sad of 8x8, every 4 in the same 16x16 get together
-  int* pSsd16x16;                   // sum of square difference of 16x16
-  int* pSum16x16;                   // sum of 16x16
-  int* pSumOfSquare16x16;           // sum of square of 16x16
-  int   (*pSumOfDiff8x8)[4];
-  unsigned char (*pMad8x8)[4];
-  int iFrameSad;                    // sad of frame
+typedef struct
+{
+    unsigned char* pCurY;             // Y data of current frame
+    unsigned char* pRefY;             // Y data of pRef frame for diff calc
+    int (*pSad8x8)[4];                // sad of 8x8, every 4 in the same 16x16 get together
+    int* pSsd16x16;                   // sum of square difference of 16x16
+    int* pSum16x16;                   // sum of 16x16
+    int* pSumOfSquare16x16;           // sum of square of 16x16
+    int   (*pSumOfDiff8x8)[4];
+    unsigned char (*pMad8x8)[4];
+    int iFrameSad;                    // sad of frame
 } SVAACalcResult;
 
-typedef struct {
-  int iCalcVar;
-  int iCalcBgd;
-  int iCalcSsd;
-  int iReserved;
-  SVAACalcResult*  pCalcResult;
+typedef struct
+{
+    int iCalcVar;
+    int iCalcBgd;
+    int iCalcSsd;
+    int iReserved;
+    SVAACalcResult*  pCalcResult;
 } SVAACalcParam;
 
-typedef struct {
-  signed char*     pBackgroundMbFlag;
-  SVAACalcResult*  pCalcRes;
+typedef struct
+{
+    signed char*     pBackgroundMbFlag;
+    SVAACalcResult*  pCalcRes;
 } SBGDInterface;
 
-typedef enum {
-  AQ_QUALITY_MODE,   //Quality mode
-  AQ_BITRATE_MODE    //Bitrate mode
+typedef enum
+{
+    AQ_QUALITY_MODE,   //Quality mode
+    AQ_BITRATE_MODE    //Bitrate mode
 } EAQModes;
 
-typedef struct {
-  unsigned short    uiMotionIndex;
-  unsigned short    uiTextureIndex;
+typedef struct
+{
+    unsigned short    uiMotionIndex;
+    unsigned short    uiTextureIndex;
 } SMotionTextureUnit;
 
-typedef struct {
-  int                  iAdaptiveQuantMode; // 0:quality mode, 1:bitrates mode
-  SVAACalcResult*      pCalcResult;
-  SMotionTextureUnit*  pMotionTextureUnit;
+typedef struct
+{
+    int                  iAdaptiveQuantMode; // 0:quality mode, 1:bitrates mode
+    SVAACalcResult*      pCalcResult;
+    SMotionTextureUnit*  pMotionTextureUnit;
 
-  signed char*      pMotionTextureIndexToDeltaQp;
-  int               iAverMotionTextureIndexToDeltaQp; // *AQ_STEP_INT_MULTIPLY
+    signed char*      pMotionTextureIndexToDeltaQp;
+    int               iAverMotionTextureIndexToDeltaQp; // *AQ_STEP_INT_MULTIPLY
 } SAdaptiveQuantizationParam;
 
-typedef enum {
-  FRAME_SAD     =  0,
-  GOM_SAD       = -1,
-  GOM_VAR       = -2
+typedef enum
+{
+    FRAME_SAD     =  0,
+    GOM_SAD       = -1,
+    GOM_VAR       = -2
 } EComplexityAnalysisMode;
 
-typedef struct {
-  int  iComplexityAnalysisMode;
-  int  iCalcBgd;
-  int  iMbNumInGom;
-  long long  iFrameComplexity;
-  int*  pGomComplexity;
-  int*  pGomForegroundBlockNum;
-  signed char*  pBackgroundMbFlag;
-  unsigned int* uiRefMbType;
-  SVAACalcResult*  pCalcResult;
+typedef struct
+{
+    int  iComplexityAnalysisMode;
+    int  iCalcBgd;
+    int  iMbNumInGom;
+    long long  iFrameComplexity;
+    int*  pGomComplexity;
+    int*  pGomForegroundBlockNum;
+    signed char*  pBackgroundMbFlag;
+    unsigned int* uiRefMbType;
+    SVAACalcResult*  pCalcResult;
 } SComplexityAnalysisParam;
 
-typedef struct {
-  int  iMbRowInGom;
-  int*  pGomComplexity;
-  int  iGomNumInFrame;
-  long long  iFrameComplexity; //255*255(MaxMbSAD)*36864(MaxFS) make the highest bit of 32-bit integer 1
-  int  iIdrFlag;
-  SScrollDetectionParam sScrollResult;
+typedef struct
+{
+    int  iMbRowInGom;
+    int*  pGomComplexity;
+    int  iGomNumInFrame;
+    long long  iFrameComplexity; //255*255(MaxMbSAD)*36864(MaxFS) make the highest bit of 32-bit integer 1
+    int  iIdrFlag;
+    SScrollDetectionParam sScrollResult;
 } SComplexityAnalysisScreenParam;
 /////////////////////////////////////////////////////////////////////////////////////////////
 
-typedef struct {
-  void*    pCtx;
-  EResult (*Init) (void* pCtx, int iType, void* pCfg);
-  EResult (*Uninit) (void* pCtx, int iType);
-  EResult (*Flush) (void* pCtx, int iType);
-  EResult (*Process) (void* pCtx, int iType, SPixMap* pSrc, SPixMap* dst);
-  EResult (*Get) (void* pCtx, int iType, void* pParam);
-  EResult (*Set) (void* pCtx, int iType, void* pParam);
-  EResult (*SpecialFeature) (void* pCtx, int iType, void* pIn, void* pOut);
+typedef struct
+{
+    void*    pCtx;
+    EResult (*Init) (void* pCtx, int iType, void* pCfg);
+    EResult (*Uninit) (void* pCtx, int iType);
+    EResult (*Flush) (void* pCtx, int iType);
+    EResult (*Process) (void* pCtx, int iType, SPixMap* pSrc, SPixMap* dst);
+    EResult (*Get) (void* pCtx, int iType, void* pParam);
+    EResult (*Set) (void* pCtx, int iType, void* pParam);
+    EResult (*SpecialFeature) (void* pCtx, int iType, void* pIn, void* pOut);
 } IWelsVPc;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)  /* C++ style interface */
 
-class IWelsVP {
- public:
-  virtual ~IWelsVP() {}
+class IWelsVP
+{
+public:
+    virtual ~IWelsVP() {}
 
- public:
-  virtual EResult Init (int iType, void* pCfg) = 0;
-  virtual EResult Uninit (int iType) = 0;
-  virtual EResult Flush (int iType) = 0;
-  virtual EResult Process (int iType, SPixMap* pSrc, SPixMap* dst) = 0;
-  virtual EResult Get (int iType, void* pParam) = 0;
-  virtual EResult Set (int iType, void* pParam) = 0;
-  virtual EResult SpecialFeature (int iType, void* pIn, void* pOut) = 0;
+public:
+    virtual EResult Init (int iType, void* pCfg) = 0;
+    virtual EResult Uninit (int iType) = 0;
+    virtual EResult Flush (int iType) = 0;
+    virtual EResult Process (int iType, SPixMap* pSrc, SPixMap* dst) = 0;
+    virtual EResult Get (int iType, void* pParam) = 0;
+    virtual EResult Set (int iType, void* pParam) = 0;
+    virtual EResult SpecialFeature (int iType, void* pIn, void* pOut) = 0;
 };
 
 /* Recommend to invoke the interface via the micro for convenient */

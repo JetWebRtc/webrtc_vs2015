@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ColorMatrix v2.2 for Avisynth 2.5.x
  *
  * Copyright (C) 2006-2007 Kevin Stone
@@ -40,22 +40,28 @@
 #define NS(n) ((n) < 0 ? (int)((n)*65536.0-0.5+DBL_EPSILON) : (int)((n)*65536.0+0.5))
 #define CB(n) av_clip_uint8(n)
 
-static const double yuv_coeff[4][3][3] = {
-    { { +0.7152, +0.0722, +0.2126 }, // Rec.709 (0)
-      { -0.3850, +0.5000, -0.1150 },
-      { -0.4540, -0.0460, +0.5000 } },
-    { { +0.5900, +0.1100, +0.3000 }, // FCC (1)
-      { -0.3310, +0.5000, -0.1690 },
-      { -0.4210, -0.0790, +0.5000 } },
-    { { +0.5870, +0.1140, +0.2990 }, // Rec.601 (ITU-R BT.470-2/SMPTE 170M) (2)
-      { -0.3313, +0.5000, -0.1687 },
-      { -0.4187, -0.0813, +0.5000 } },
-    { { +0.7010, +0.0870, +0.2120 }, // SMPTE 240M (3)
-      { -0.3840, +0.5000, -0.1160 },
-      { -0.4450, -0.0550, +0.5000 } },
+static const double yuv_coeff[4][3][3] =
+{
+    {   { +0.7152, +0.0722, +0.2126 }, // Rec.709 (0)
+        { -0.3850, +0.5000, -0.1150 },
+        { -0.4540, -0.0460, +0.5000 }
+    },
+    {   { +0.5900, +0.1100, +0.3000 }, // FCC (1)
+        { -0.3310, +0.5000, -0.1690 },
+        { -0.4210, -0.0790, +0.5000 }
+    },
+    {   { +0.5870, +0.1140, +0.2990 }, // Rec.601 (ITU-R BT.470-2/SMPTE 170M) (2)
+        { -0.3313, +0.5000, -0.1687 },
+        { -0.4187, -0.0813, +0.5000 }
+    },
+    {   { +0.7010, +0.0870, +0.2120 }, // SMPTE 240M (3)
+        { -0.3840, +0.5000, -0.1160 },
+        { -0.4450, -0.0550, +0.5000 }
+    },
 };
 
-enum ColorMode {
+enum ColorMode
+{
     COLOR_MODE_NONE = -1,
     COLOR_MODE_BT709,
     COLOR_MODE_FCC,
@@ -64,7 +70,8 @@ enum ColorMode {
     COLOR_MODE_COUNT
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int yuv_convert[16][3][3];
     int interlaced;
@@ -73,7 +80,8 @@ typedef struct {
     int hsub, vsub;
 } ColorMatrixContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *dst;
     const AVFrame *src;
     int c2;
@@ -87,7 +95,8 @@ typedef struct ThreadData {
 #define OFFSET(x) offsetof(ColorMatrixContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption colormatrix_options[] = {
+static const AVOption colormatrix_options[] =
+{
     { "src", "set source color matrix",      OFFSET(source), AV_OPT_TYPE_INT, {.i64=COLOR_MODE_NONE}, COLOR_MODE_NONE, COLOR_MODE_COUNT-1, .flags=FLAGS, .unit="color_mode" },
     { "dst", "set destination color matrix", OFFSET(dest),   AV_OPT_TYPE_INT, {.i64=COLOR_MODE_NONE}, COLOR_MODE_NONE, COLOR_MODE_COUNT-1, .flags=FLAGS, .unit="color_mode" },
     { "bt709",     "set BT.709 colorspace",      0, AV_OPT_TYPE_CONST, {.i64=COLOR_MODE_BT709},       .flags=FLAGS, .unit="color_mode" },
@@ -155,16 +164,20 @@ static void calc_coefficients(AVFilterContext *ctx)
 
     for (i = 0; i < 4; i++)
         inverse3x3(rgb_coeffd[i], yuv_coeff[i]);
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 4; j++)
+        {
             solve_coefficients(yuv_convertd[v], rgb_coeffd[i], yuv_coeff[j]);
-            for (k = 0; k < 3; k++) {
+            for (k = 0; k < 3; k++)
+            {
                 color->yuv_convert[v][k][0] = NS(yuv_convertd[v][k][0]);
                 color->yuv_convert[v][k][1] = NS(yuv_convertd[v][k][1]);
                 color->yuv_convert[v][k][2] = NS(yuv_convertd[v][k][2]);
             }
             if (color->yuv_convert[v][0][0] != 65536 || color->yuv_convert[v][1][0] != 0 ||
-                color->yuv_convert[v][2][0] != 0) {
+                    color->yuv_convert[v][2][0] != 0)
+            {
                 av_log(ctx, AV_LOG_ERROR, "error calculating conversion coefficients\n");
             }
             v++;
@@ -178,12 +191,14 @@ static av_cold int init(AVFilterContext *ctx)
 {
     ColorMatrixContext *color = ctx->priv;
 
-    if (color->dest == COLOR_MODE_NONE) {
+    if (color->dest == COLOR_MODE_NONE)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unspecified destination color space\n");
         return AVERROR(EINVAL);
     }
 
-    if (color->source == color->dest) {
+    if (color->source == color->dest)
+    {
         av_log(ctx, AV_LOG_ERROR, "Source and destination color space must not be identical\n");
         return AVERROR(EINVAL);
     }
@@ -214,8 +229,10 @@ static int process_slice_uyvy422(AVFilterContext *ctx, void *arg, int jobnr, int
     const int c7 = td->c7;
     int x, y;
 
-    for (y = slice_start; y < slice_end; y++) {
-        for (x = 0; x < width; x += 4) {
+    for (y = slice_start; y < slice_end; y++)
+    {
+        for (x = 0; x < width; x += 4)
+        {
             const int u = srcp[x + 0] - 128;
             const int v = srcp[x + 2] - 128;
             const int uvval = c2 * u + c3 * v + 1081344;
@@ -258,8 +275,10 @@ static int process_slice_yuv444p(AVFilterContext *ctx, void *arg, int jobnr, int
     const int c7 = td->c7;
     int x, y;
 
-    for (y = slice_start; y < slice_end; y++) {
-        for (x = 0; x < width; x++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
             const int u = srcpU[x] - 128;
             const int v = srcpV[x] - 128;
             const int uvval = c2 * u + c3 * v + 1081344;
@@ -305,8 +324,10 @@ static int process_slice_yuv422p(AVFilterContext *ctx, void *arg, int jobnr, int
     const int c7 = td->c7;
     int x, y;
 
-    for (y = slice_start; y < slice_end; y++) {
-        for (x = 0; x < width; x += 2) {
+    for (y = slice_start; y < slice_end; y++)
+    {
+        for (x = 0; x < width; x += 2)
+        {
             const int u = srcpU[x >> 1] - 128;
             const int v = srcpV[x >> 1] - 128;
             const int uvval = c2 * u + c3 * v + 1081344;
@@ -355,8 +376,10 @@ static int process_slice_yuv420p(AVFilterContext *ctx, void *arg, int jobnr, int
     const int c7 = td->c7;
     int x, y;
 
-    for (y = slice_start; y < slice_end; y += 2) {
-        for (x = 0; x < width; x += 2) {
+    for (y = slice_start; y < slice_end; y += 2)
+    {
+        for (x = 0; x < width; x += 2)
+        {
             const int u = srcpU[x >> 1] - 128;
             const int v = srcpV[x >> 1] - 128;
             const int uvval = c2 * u + c3 * v + 1081344;
@@ -397,7 +420,8 @@ static int config_input(AVFilterLink *inlink)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,
@@ -419,36 +443,59 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     ThreadData td = {0};
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    if (color->source == COLOR_MODE_NONE) {
+    if (color->source == COLOR_MODE_NONE)
+    {
         enum AVColorSpace cs = av_frame_get_colorspace(in);
         enum ColorMode source;
 
-        switch(cs) {
-        case AVCOL_SPC_BT709     : source = COLOR_MODE_BT709     ; break;
-        case AVCOL_SPC_FCC       : source = COLOR_MODE_FCC       ; break;
-        case AVCOL_SPC_SMPTE240M : source = COLOR_MODE_SMPTE240M ; break;
-        case AVCOL_SPC_BT470BG   : source = COLOR_MODE_BT601     ; break;
-        case AVCOL_SPC_SMPTE170M : source = COLOR_MODE_BT601     ; break;
+        switch(cs)
+        {
+        case AVCOL_SPC_BT709     :
+            source = COLOR_MODE_BT709     ;
+            break;
+        case AVCOL_SPC_FCC       :
+            source = COLOR_MODE_FCC       ;
+            break;
+        case AVCOL_SPC_SMPTE240M :
+            source = COLOR_MODE_SMPTE240M ;
+            break;
+        case AVCOL_SPC_BT470BG   :
+            source = COLOR_MODE_BT601     ;
+            break;
+        case AVCOL_SPC_SMPTE170M :
+            source = COLOR_MODE_BT601     ;
+            break;
         default :
             av_log(ctx, AV_LOG_ERROR, "Input frame does not specify a supported colorspace, and none has been specified as source either\n");
             av_frame_free(&out);
             return AVERROR(EINVAL);
         }
         color->mode = source * 4 + color->dest;
-    } else
+    }
+    else
         color->mode = color->source * 4 + color->dest;
 
-    switch(color->dest) {
-    case COLOR_MODE_BT709    : av_frame_set_colorspace(out, AVCOL_SPC_BT709)    ; break;
-    case COLOR_MODE_FCC      : av_frame_set_colorspace(out, AVCOL_SPC_FCC)      ; break;
-    case COLOR_MODE_SMPTE240M: av_frame_set_colorspace(out, AVCOL_SPC_SMPTE240M); break;
-    case COLOR_MODE_BT601    : av_frame_set_colorspace(out, AVCOL_SPC_BT470BG)  ; break;
+    switch(color->dest)
+    {
+    case COLOR_MODE_BT709    :
+        av_frame_set_colorspace(out, AVCOL_SPC_BT709)    ;
+        break;
+    case COLOR_MODE_FCC      :
+        av_frame_set_colorspace(out, AVCOL_SPC_FCC)      ;
+        break;
+    case COLOR_MODE_SMPTE240M:
+        av_frame_set_colorspace(out, AVCOL_SPC_SMPTE240M);
+        break;
+    case COLOR_MODE_BT601    :
+        av_frame_set_colorspace(out, AVCOL_SPC_BT470BG)  ;
+        break;
     }
 
     td.src = in;
@@ -477,7 +524,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad colormatrix_inputs[] = {
+static const AVFilterPad colormatrix_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -487,7 +535,8 @@ static const AVFilterPad colormatrix_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad colormatrix_outputs[] = {
+static const AVFilterPad colormatrix_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -495,7 +544,8 @@ static const AVFilterPad colormatrix_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_colormatrix = {
+AVFilter ff_vf_colormatrix =
+{
     .name          = "colormatrix",
     .description   = NULL_IF_CONFIG_SMALL("Convert color matrix."),
     .priv_size     = sizeof(ColorMatrixContext),

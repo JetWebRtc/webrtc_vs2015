@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ATRAC3+ compatible decoder
  *
  * Copyright (c) 2010-2013 Maxim Poliakovski
@@ -39,22 +39,25 @@ static const uint8_t atrac3p_wl_huff_bits2[5] = { 1, 3, 3, 3, 3 };
 
 static const uint8_t atrac3p_wl_huff_xlat2[5] = { 0, 1, 2, 6, 7 };
 
-static const uint8_t atrac3p_wl_huff_code3[8] = {
+static const uint8_t atrac3p_wl_huff_code3[8] =
+{
     0, 4, 0xC, 0x1E, 0x1F, 0xD, 0xE, 5
 };
 
 static const uint8_t atrac3p_wl_huff_bits3[8] = { 1, 3, 4, 5, 5, 4, 4, 3 };
 
-static const uint8_t atrac3p_wl_huff_code4[8] = {
+static const uint8_t atrac3p_wl_huff_code4[8] =
+{
     0, 4, 0xC, 0xD, 0x1E, 0x1F, 0xE, 5
 };
 
 static const uint8_t atrac3p_wl_huff_bits4[8] = { 1, 3, 4, 4, 5, 5, 4, 3 };
 
 /** VLC tables for scale factor indexes */
-static const uint16_t atrac3p_sf_huff_code1[64] = {
-        0,     2,     3,     4,     5,   0xC,   0xD,  0xE0,
-     0xE1,  0xE2,  0xE3,  0xE4,  0xE5,  0xE6, 0x1CE, 0x1CF,
+static const uint16_t atrac3p_sf_huff_code1[64] =
+{
+    0,     2,     3,     4,     5,   0xC,   0xD,  0xE0,
+    0xE1,  0xE2,  0xE3,  0xE4,  0xE5,  0xE6, 0x1CE, 0x1CF,
     0x1D0, 0x1D1, 0x1D2, 0x1D3, 0x1D4, 0x1D5, 0x1D6, 0x1D7,
     0x1D8, 0x1D9, 0x1DA, 0x1DB, 0x1DC, 0x1DD, 0x1DE, 0x1DF,
     0x1E0, 0x1E1, 0x1E2, 0x1E3, 0x1E4, 0x1E5, 0x1E6, 0x1E7,
@@ -63,29 +66,33 @@ static const uint16_t atrac3p_sf_huff_code1[64] = {
     0x1F8, 0x1F9, 0x1FA, 0x1FB, 0x1FC, 0x1FD, 0x1FE, 0x1FF
 };
 
-static const uint8_t atrac3p_sf_huff_bits1[64] = {
+static const uint8_t atrac3p_sf_huff_bits1[64] =
+{
     2, 3, 3, 3, 3, 4, 4, 8, 8, 8, 8, 8, 8, 8, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9
 };
 
-static const uint8_t atrac3p_sf_huff_xlat1[64] = {
-     0,  1, 61, 62, 63,  2, 60,  3,  4,  5,  6, 57, 58, 59,  7,  8,
-     9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
+static const uint8_t atrac3p_sf_huff_xlat1[64] =
+{
+    0,  1, 61, 62, 63,  2, 60,  3,  4,  5,  6, 57, 58, 59,  7,  8,
+    9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
     25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56
 };
 
-static const uint8_t atrac3p_sf_huff_xlat2[64] = {
+static const uint8_t atrac3p_sf_huff_xlat2[64] =
+{
     0,   1,  2, 62, 63,  3, 61,  4,  5,  6, 57, 58, 59, 60,  7,  8,
     9,  10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24,
     25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56
 };
 
-static const uint16_t atrac3p_sf_huff_code2[64] = {
-        0,     4,  0x18,  0x19,  0x70, 0x1CA, 0x1CB, 0x1CC,
+static const uint16_t atrac3p_sf_huff_code2[64] =
+{
+    0,     4,  0x18,  0x19,  0x70, 0x1CA, 0x1CB, 0x1CC,
     0x1CD, 0x1CE, 0x1CF, 0x1D0, 0x1D1, 0x1D2, 0x1D3, 0x1D4,
     0x1D5, 0x1D6, 0x1D7, 0x1D8, 0x1D9, 0x1DA, 0x1DB, 0x1DC,
     0x1DD, 0x1DE, 0x1DF, 0x1E0, 0x1E1, 0x1E2, 0x1E3, 0x1E4,
@@ -95,15 +102,17 @@ static const uint16_t atrac3p_sf_huff_code2[64] = {
     0x1FD, 0x1FE, 0x1FF,  0xE4,  0x71,  0x1A,  0x1B,     5
 };
 
-static const uint8_t atrac3p_sf_huff_bits2[64] = {
+static const uint8_t atrac3p_sf_huff_bits2[64] =
+{
     1, 3, 5, 5, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 7, 5, 5, 3
 };
 
-static const uint16_t atrac3p_sf_huff_code3[64] = {
-        0,     2,     3,  0x18,  0x19,  0x70, 0x1CC, 0x1CD,
+static const uint16_t atrac3p_sf_huff_code3[64] =
+{
+    0,     2,     3,  0x18,  0x19,  0x70, 0x1CC, 0x1CD,
     0x1CE, 0x1CF, 0x1D0, 0x1D1, 0x1D2, 0x1D3, 0x1D4, 0x1D5,
     0x1D6, 0x1D7, 0x1D8, 0x1D9, 0x1DA, 0x1DB, 0x1DC, 0x1DD,
     0x1DE, 0x1DF, 0x1E0, 0x1E1, 0x1E2, 0x1E3, 0x1E4, 0x1E5,
@@ -113,43 +122,52 @@ static const uint16_t atrac3p_sf_huff_code3[64] = {
     0x1FE, 0x1FF,  0x71,  0x72,  0x1A,  0x1B,     4,     5
 };
 
-static const uint8_t atrac3p_sf_huff_bits3[64] = {
+static const uint8_t atrac3p_sf_huff_bits3[64] =
+{
     2, 3, 3, 5, 5, 7, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 7, 7, 5, 5, 3, 3
 };
 
-static const uint16_t atrac3p_sf_huff_code4[16] = {
+static const uint16_t atrac3p_sf_huff_code4[16] =
+{
     0, 2, 3, 4, 5, 0xC, 0xD, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0, 0x3D, 0x3E, 0x3F
 };
 
-static const uint8_t atrac3p_sf_huff_bits4[16] = {
+static const uint8_t atrac3p_sf_huff_bits4[16] =
+{
     2, 3, 3, 3, 3, 4, 4, 6, 6, 6, 6, 6, 0, 6, 6, 6
 };
 
-static const uint8_t atrac3p_sf_huff_xlat4[16] = {
+static const uint8_t atrac3p_sf_huff_xlat4[16] =
+{
     0, 1, 13, 14, 15, 2, 12, 3, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
-static const uint8_t atrac3p_sf_huff_xlat5[16] = {
+static const uint8_t atrac3p_sf_huff_xlat5[16] =
+{
     0, 1, 2, 14, 15, 3, 13, 4, 5, 6, 7, 9, 8, 10, 11, 12
 };
 
-static const uint16_t atrac3p_sf_huff_code5[16] = {
+static const uint16_t atrac3p_sf_huff_code5[16] =
+{
     0,    4,  0xC, 0x1C, 0x78, 0x79, 0x7A, 0x7B,
     0, 0x7C, 0x7D, 0x7E, 0x7F, 0x1D, 0xD,     5
 };
 
-static const uint8_t atrac3p_sf_huff_bits5[16] = {
+static const uint8_t atrac3p_sf_huff_bits5[16] =
+{
     1, 3, 4, 5, 7, 7, 7, 7, 0, 7, 7, 7, 7, 5, 4, 3
 };
 
-static const uint16_t atrac3p_sf_huff_code6[16] = {
+static const uint16_t atrac3p_sf_huff_code6[16] =
+{
     0, 2, 3, 0xC, 0x1C, 0x3C, 0x7C, 0x7D, 0, 0x7E, 0x7F, 0x3D, 0x1D, 0xD, 4, 5
 };
 
-static const uint8_t atrac3p_sf_huff_bits6[16] = {
+static const uint8_t atrac3p_sf_huff_bits6[16] =
+{
     2, 3, 3, 4, 5, 6, 7, 7, 0, 7, 7, 6, 5, 4, 3, 3
 };
 
@@ -164,53 +182,75 @@ static const uint8_t atrac3p_ct_huff_bits2[8] = { 2, 3, 3, 3, 3, 3, 4, 4 };
 
 static const uint8_t atrac3p_ct_huff_xlat1[8] = { 0, 1, 2, 3, 6, 7, 4, 5 };
 
-static const uint8_t atrac3p_ct_huff_code3[8] = {
+static const uint8_t atrac3p_ct_huff_code3[8] =
+{
     0, 4, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF
 };
 
 static const uint8_t atrac3p_ct_huff_bits3[8] = { 1, 3, 4, 4, 4, 4, 4, 4 };
 
 /* weights for quantized word lengths */
-static const int8_t atrac3p_wl_weights[6][32] = {
-    { 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 6, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,
-      1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0 },
-    { 5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-    { 6, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3, 2, 2, 1, 1,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+static const int8_t atrac3p_wl_weights[6][32] =
+{
+    {
+        5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    },
+    {
+        5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    },
+    {
+        6, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 2, 2, 1, 1,
+        1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0
+    },
+    {
+        5, 5, 4, 4, 3, 3, 2, 2, 1, 1, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    },
+    {
+        5, 5, 5, 4, 4, 4, 3, 3, 3, 2, 2, 2, 1, 1, 1, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    },
+    {
+        6, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 3, 2, 2, 1, 1,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+    }
 };
 
 /* weights for quantized scale factors
  * sf_weights[i] = i / (tab_idx + 1)
  * where tab_idx = [1,2] */
-static const int8_t atrac3p_sf_weights[2][32] = {
-    { 0, 0, 1, 1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7,
-      8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15 },
-    { 0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4,  4,  5,
-      5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10 }
+static const int8_t atrac3p_sf_weights[2][32] =
+{
+    {
+        0, 0, 1, 1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7,
+        8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15
+    },
+    {
+        0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4,  4,  5,
+        5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 10, 10
+    }
 };
 
 /** Ungroup table for word length segments.
  *  Numbers in this table tell which coeff belongs to which segment. */
-static const uint8_t atrac3p_qu_num_to_seg[32] = {
+static const uint8_t atrac3p_qu_num_to_seg[32] =
+{
     0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5,
     5, 5, 6, 6, 6, 7, 7, 7, 8, 8, 8, 9, 9, 9, 9, 9
 };
 
 /** Map quant unit number to subband number */
-static const uint8_t atrac3p_qu_to_subband[32] = {
+static const uint8_t atrac3p_qu_to_subband[32] =
+{
     0, 0, 0, 0, 0, 0, 0, 0, 1, 1,  1,  1,  2,  2,  2, 2,
     3, 3, 4, 4, 5, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
 /** Map subband number to number of power compensation groups */
-static const int atrac3p_subband_to_num_powgrps[16] = {
+static const int atrac3p_subband_to_num_powgrps[16] =
+{
     1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5
 };
 
@@ -218,141 +258,151 @@ static const int atrac3p_subband_to_num_powgrps[16] = {
  *  [num_start_values = 8][num_shape_tables = 16][num_seg_coeffs = 9]
  *  For each of the 8 start values there are 16 different shapes each
  *  9 coefficients long. */
-static const int8_t atrac3p_wl_shapes[8][16][9] = {
-    { {  0,  0,  0,  0,  0,  0,  0, -2, -1 },
-      {  0,  0,  0,  0,  0,  0,  0, -5, -1 },
-      {  0,  0,  0, -7,  0,  0,  0,  0,  0 },
-      {  0,  0,  0,  0,  0, -7,  0,  0,  0 },
-      {  0,  0,  0,  0,  0,  0, -5,  0,  0 },
-      {  0,  0,  0,  0, -5,  0,  0,  0,  0 },
-      { -7, -7,  0,  0,  0,  0,  0,  0,  0 },
-      {  0, -7,  0,  0,  0,  0,  0,  0,  0 },
-      { -2, -2, -5,  0,  0,  0,  0,  0,  0 },
-      {  0,  0,  0, -2, -5,  0,  0,  0,  0 },
-      {  0,  0,  0,  0,  0, -2, -5,  0,  0 },
-      {  0,  0,  0, -5,  0,  0,  0,  0,  0 },
-      {  0, -2, -7, -2,  0,  0,  0,  0,  0 },
-      {  0,  0,  0,  0, -2, -5,  0,  0,  0 },
-      {  0,  0,  0, -5, -5,  0,  0,  0,  0 },
-      {  0,  0,  0, -5, -2,  0,  0,  0,  0 } },
-    { { -1, -5, -3, -2, -1, -1,  0,  0,  0 },
-      { -2, -5, -3, -3, -2, -1, -1,  0,  0 },
-      {  0, -1, -1, -1,  0,  0,  0,  0,  0 },
-      { -1, -3,  0,  0,  0,  0,  0,  0,  0 },
-      { -1, -2,  0,  0,  0,  0,  0,  0,  0 },
-      { -1, -3, -1,  0,  0,  0,  0,  1,  1 },
-      { -1, -5, -3, -3, -2, -1,  0,  0,  0 },
-      { -1, -1, -4, -2, -2, -1, -1,  0,  0 },
-      { -1, -1, -3, -2, -3, -1, -1, -1,  0 },
-      { -1, -4, -2, -3, -1,  0,  0,  0,  0 },
-      {  0, -1, -2, -2, -1, -1,  0,  0,  0 },
-      {  0, -2, -1,  0,  0,  0,  0,  0,  0 },
-      { -1, -1,  0,  0,  0,  0,  0,  0,  0 },
-      { -1, -1, -3, -2, -2, -1, -1, -1,  0 },
-      {  0,  0,  0,  0,  0,  0,  0,  0,  0 },
-      {  0, -1, -3, -2, -2, -1, -1, -1,  0 }, },
-    { { -1, -2,  0,  1,  1,  1,  1,  1,  1 },
-      {  0, -1,  1,  1,  1,  1,  1,  1,  1 },
-      {  0, -2,  1,  1,  1,  1,  1,  1,  1 },
-      {  0, -2,  0,  1,  1,  1,  1,  1,  1 },
-      { -1, -1,  0,  1,  1,  1,  1,  1,  1 },
-      {  0,  0, -1,  0,  1,  1,  1,  1,  1 },
-      { -1, -1,  1,  1,  1,  1,  1,  1,  1 },
-      {  0,  0, -1,  1,  1,  1,  1,  1,  1 },
-      {  0, -1,  0,  1,  1,  1,  1,  1,  1 },
-      { -1, -1, -1,  1,  1,  1,  1,  1,  1 },
-      {  0,  0,  0,  0,  1,  1,  1,  1,  1 },
-      {  0,  0,  0,  1,  1,  1,  1,  1,  1 },
-      {  0, -1, -1,  1,  1,  1,  1,  1,  1 },
-      {  0,  1,  0,  1,  1,  1,  1,  1,  1 },
-      {  0, -3, -2,  1,  1,  1,  1,  2,  2 },
-      { -3, -5, -3,  2,  2,  2,  2,  2,  2 }, },
-    { { -1, -2,  0,  2,  2,  2,  2,  2,  2 },
-      { -1, -2,  0,  1,  2,  2,  2,  2,  2 },
-      {  0, -2,  0,  2,  2,  2,  2,  2,  2 },
-      { -1,  0,  1,  2,  2,  2,  2,  2,  2 },
-      {  0,  0,  1,  2,  2,  2,  2,  2,  2 },
-      {  0, -2,  0,  1,  2,  2,  2,  2,  2 },
-      {  0, -1,  1,  2,  2,  2,  2,  2,  2 },
-      { -1, -1,  0,  2,  2,  2,  2,  2,  2 },
-      { -1, -1,  0,  1,  2,  2,  2,  2,  2 },
-      { -1, -2, -1,  2,  2,  2,  2,  2,  2 },
-      {  0, -1,  0,  2,  2,  2,  2,  2,  2 },
-      {  1,  1,  0,  1,  2,  2,  2,  2,  2 },
-      {  0,  1,  2,  2,  2,  2,  2,  2,  2 },
-      {  1,  0,  0,  1,  2,  2,  2,  2,  2 },
-      {  0,  0,  0,  1,  2,  2,  2,  2,  2 },
-      { -1, -1, -1,  1,  2,  2,  2,  2,  2 }, },
-    { {  0,  1,  2,  3,  3,  3,  3,  3,  3 },
-      {  1,  1,  2,  3,  3,  3,  3,  3,  3 },
-      { -1,  0,  1,  2,  3,  3,  3,  3,  3 },
-      {  0,  0,  2,  3,  3,  3,  3,  3,  3 },
-      { -1,  0,  1,  3,  3,  3,  3,  3,  3 },
-      {  0,  0,  1,  3,  3,  3,  3,  3,  3 },
-      {  1,  2,  3,  3,  3,  3,  3,  3,  3 },
-      {  1,  2,  2,  3,  3,  3,  3,  3,  3 },
-      {  0,  1,  1,  3,  3,  3,  3,  3,  3 },
-      {  0,  0,  1,  2,  3,  3,  3,  3,  3 },
-      { -1,  1,  2,  3,  3,  3,  3,  3,  3 },
-      { -1,  0,  2,  3,  3,  3,  3,  3,  3 },
-      {  2,  2,  3,  3,  3,  3,  3,  3,  3 },
-      {  1,  1,  3,  3,  3,  3,  3,  3,  3 },
-      {  0,  2,  3,  3,  3,  3,  3,  3,  3 },
-      {  0,  1,  1,  2,  3,  3,  3,  3,  3 }, },
-    { {  0,  1,  2,  3,  4,  4,  4,  4,  4 },
-      {  1,  2,  3,  4,  4,  4,  4,  4,  4 },
-      {  0,  0,  2,  3,  4,  4,  4,  4,  4 },
-      {  1,  1,  2,  4,  4,  4,  4,  4,  4 },
-      {  0,  1,  2,  4,  4,  4,  4,  4,  4 },
-      { -1,  0,  1,  3,  4,  4,  4,  4,  4 },
-      {  0,  0,  1,  3,  4,  4,  4,  4,  4 },
-      {  1,  1,  2,  3,  4,  4,  4,  4,  4 },
-      {  0,  1,  1,  3,  4,  4,  4,  4,  4 },
-      {  2,  2,  3,  4,  4,  4,  4,  4,  4 },
-      {  1,  1,  3,  4,  4,  4,  4,  4,  4 },
-      {  1,  2,  2,  4,  4,  4,  4,  4,  4 },
-      { -1,  0,  2,  3,  4,  4,  4,  4,  4 },
-      {  0,  1,  3,  4,  4,  4,  4,  4,  4 },
-      {  1,  2,  2,  3,  4,  4,  4,  4,  4 },
-      {  0,  2,  3,  4,  4,  4,  4,  4,  4 }, },
-    { {  1,  2,  3,  4,  5,  5,  5,  5,  5 },
-      {  0,  1,  2,  3,  4,  5,  5,  5,  5 },
-      {  0,  1,  2,  3,  5,  5,  5,  5,  5 },
-      {  1,  1,  3,  4,  5,  5,  5,  5,  5 },
-      {  1,  1,  2,  4,  5,  5,  5,  5,  5 },
-      {  1,  2,  2,  4,  5,  5,  5,  5,  5 },
-      {  1,  1,  2,  3,  5,  5,  5,  5,  5 },
-      {  2,  2,  3,  4,  5,  5,  5,  5,  5 },
-      {  0,  1,  2,  4,  5,  5,  5,  5,  5 },
-      {  2,  2,  3,  5,  5,  5,  5,  5,  5 },
-      {  1,  2,  3,  5,  5,  5,  5,  5,  5 },
-      {  0,  1,  3,  4,  5,  5,  5,  5,  5 },
-      {  1,  2,  2,  3,  5,  5,  5,  5,  5 },
-      {  2,  3,  4,  5,  5,  5,  5,  5,  5 },
-      {  0,  2,  3,  4,  5,  5,  5,  5,  5 },
-      {  1,  1,  1,  3,  4,  5,  5,  5,  5 }, },
-    { {  1,  2,  3,  4,  5,  5,  5,  6,  6 },
-      {  1,  2,  3,  4,  5,  6,  6,  6,  6 },
-      {  2,  3,  4,  5,  6,  6,  6,  6,  6 },
-      {  1,  2,  3,  4,  6,  6,  6,  6,  6 },
-      {  2,  2,  3,  4,  5,  5,  5,  6,  6 },
-      {  1,  2,  3,  4,  5,  5,  6,  6,  6 },
-      {  2,  2,  3,  4,  6,  6,  6,  6,  6 },
-      {  2,  2,  3,  4,  5,  6,  6,  6,  6 },
-      {  2,  2,  4,  5,  6,  6,  6,  6,  6 },
-      {  2,  2,  3,  5,  6,  6,  6,  6,  6 },
-      {  1,  2,  3,  5,  6,  6,  6,  6,  6 },
-      {  2,  3,  3,  5,  6,  6,  6,  6,  6 },
-      {  1,  2,  4,  5,  6,  6,  6,  6,  6 },
-      {  2,  2,  3,  4,  5,  5,  6,  6,  6 },
-      {  2,  3,  3,  4,  6,  6,  6,  6,  6 },
-      {  1,  3,  4,  5,  6,  6,  6,  6,  6 } }
+static const int8_t atrac3p_wl_shapes[8][16][9] =
+{
+    {   {  0,  0,  0,  0,  0,  0,  0, -2, -1 },
+        {  0,  0,  0,  0,  0,  0,  0, -5, -1 },
+        {  0,  0,  0, -7,  0,  0,  0,  0,  0 },
+        {  0,  0,  0,  0,  0, -7,  0,  0,  0 },
+        {  0,  0,  0,  0,  0,  0, -5,  0,  0 },
+        {  0,  0,  0,  0, -5,  0,  0,  0,  0 },
+        { -7, -7,  0,  0,  0,  0,  0,  0,  0 },
+        {  0, -7,  0,  0,  0,  0,  0,  0,  0 },
+        { -2, -2, -5,  0,  0,  0,  0,  0,  0 },
+        {  0,  0,  0, -2, -5,  0,  0,  0,  0 },
+        {  0,  0,  0,  0,  0, -2, -5,  0,  0 },
+        {  0,  0,  0, -5,  0,  0,  0,  0,  0 },
+        {  0, -2, -7, -2,  0,  0,  0,  0,  0 },
+        {  0,  0,  0,  0, -2, -5,  0,  0,  0 },
+        {  0,  0,  0, -5, -5,  0,  0,  0,  0 },
+        {  0,  0,  0, -5, -2,  0,  0,  0,  0 }
+    },
+    {   { -1, -5, -3, -2, -1, -1,  0,  0,  0 },
+        { -2, -5, -3, -3, -2, -1, -1,  0,  0 },
+        {  0, -1, -1, -1,  0,  0,  0,  0,  0 },
+        { -1, -3,  0,  0,  0,  0,  0,  0,  0 },
+        { -1, -2,  0,  0,  0,  0,  0,  0,  0 },
+        { -1, -3, -1,  0,  0,  0,  0,  1,  1 },
+        { -1, -5, -3, -3, -2, -1,  0,  0,  0 },
+        { -1, -1, -4, -2, -2, -1, -1,  0,  0 },
+        { -1, -1, -3, -2, -3, -1, -1, -1,  0 },
+        { -1, -4, -2, -3, -1,  0,  0,  0,  0 },
+        {  0, -1, -2, -2, -1, -1,  0,  0,  0 },
+        {  0, -2, -1,  0,  0,  0,  0,  0,  0 },
+        { -1, -1,  0,  0,  0,  0,  0,  0,  0 },
+        { -1, -1, -3, -2, -2, -1, -1, -1,  0 },
+        {  0,  0,  0,  0,  0,  0,  0,  0,  0 },
+        {  0, -1, -3, -2, -2, -1, -1, -1,  0 },
+    },
+    {   { -1, -2,  0,  1,  1,  1,  1,  1,  1 },
+        {  0, -1,  1,  1,  1,  1,  1,  1,  1 },
+        {  0, -2,  1,  1,  1,  1,  1,  1,  1 },
+        {  0, -2,  0,  1,  1,  1,  1,  1,  1 },
+        { -1, -1,  0,  1,  1,  1,  1,  1,  1 },
+        {  0,  0, -1,  0,  1,  1,  1,  1,  1 },
+        { -1, -1,  1,  1,  1,  1,  1,  1,  1 },
+        {  0,  0, -1,  1,  1,  1,  1,  1,  1 },
+        {  0, -1,  0,  1,  1,  1,  1,  1,  1 },
+        { -1, -1, -1,  1,  1,  1,  1,  1,  1 },
+        {  0,  0,  0,  0,  1,  1,  1,  1,  1 },
+        {  0,  0,  0,  1,  1,  1,  1,  1,  1 },
+        {  0, -1, -1,  1,  1,  1,  1,  1,  1 },
+        {  0,  1,  0,  1,  1,  1,  1,  1,  1 },
+        {  0, -3, -2,  1,  1,  1,  1,  2,  2 },
+        { -3, -5, -3,  2,  2,  2,  2,  2,  2 },
+    },
+    {   { -1, -2,  0,  2,  2,  2,  2,  2,  2 },
+        { -1, -2,  0,  1,  2,  2,  2,  2,  2 },
+        {  0, -2,  0,  2,  2,  2,  2,  2,  2 },
+        { -1,  0,  1,  2,  2,  2,  2,  2,  2 },
+        {  0,  0,  1,  2,  2,  2,  2,  2,  2 },
+        {  0, -2,  0,  1,  2,  2,  2,  2,  2 },
+        {  0, -1,  1,  2,  2,  2,  2,  2,  2 },
+        { -1, -1,  0,  2,  2,  2,  2,  2,  2 },
+        { -1, -1,  0,  1,  2,  2,  2,  2,  2 },
+        { -1, -2, -1,  2,  2,  2,  2,  2,  2 },
+        {  0, -1,  0,  2,  2,  2,  2,  2,  2 },
+        {  1,  1,  0,  1,  2,  2,  2,  2,  2 },
+        {  0,  1,  2,  2,  2,  2,  2,  2,  2 },
+        {  1,  0,  0,  1,  2,  2,  2,  2,  2 },
+        {  0,  0,  0,  1,  2,  2,  2,  2,  2 },
+        { -1, -1, -1,  1,  2,  2,  2,  2,  2 },
+    },
+    {   {  0,  1,  2,  3,  3,  3,  3,  3,  3 },
+        {  1,  1,  2,  3,  3,  3,  3,  3,  3 },
+        { -1,  0,  1,  2,  3,  3,  3,  3,  3 },
+        {  0,  0,  2,  3,  3,  3,  3,  3,  3 },
+        { -1,  0,  1,  3,  3,  3,  3,  3,  3 },
+        {  0,  0,  1,  3,  3,  3,  3,  3,  3 },
+        {  1,  2,  3,  3,  3,  3,  3,  3,  3 },
+        {  1,  2,  2,  3,  3,  3,  3,  3,  3 },
+        {  0,  1,  1,  3,  3,  3,  3,  3,  3 },
+        {  0,  0,  1,  2,  3,  3,  3,  3,  3 },
+        { -1,  1,  2,  3,  3,  3,  3,  3,  3 },
+        { -1,  0,  2,  3,  3,  3,  3,  3,  3 },
+        {  2,  2,  3,  3,  3,  3,  3,  3,  3 },
+        {  1,  1,  3,  3,  3,  3,  3,  3,  3 },
+        {  0,  2,  3,  3,  3,  3,  3,  3,  3 },
+        {  0,  1,  1,  2,  3,  3,  3,  3,  3 },
+    },
+    {   {  0,  1,  2,  3,  4,  4,  4,  4,  4 },
+        {  1,  2,  3,  4,  4,  4,  4,  4,  4 },
+        {  0,  0,  2,  3,  4,  4,  4,  4,  4 },
+        {  1,  1,  2,  4,  4,  4,  4,  4,  4 },
+        {  0,  1,  2,  4,  4,  4,  4,  4,  4 },
+        { -1,  0,  1,  3,  4,  4,  4,  4,  4 },
+        {  0,  0,  1,  3,  4,  4,  4,  4,  4 },
+        {  1,  1,  2,  3,  4,  4,  4,  4,  4 },
+        {  0,  1,  1,  3,  4,  4,  4,  4,  4 },
+        {  2,  2,  3,  4,  4,  4,  4,  4,  4 },
+        {  1,  1,  3,  4,  4,  4,  4,  4,  4 },
+        {  1,  2,  2,  4,  4,  4,  4,  4,  4 },
+        { -1,  0,  2,  3,  4,  4,  4,  4,  4 },
+        {  0,  1,  3,  4,  4,  4,  4,  4,  4 },
+        {  1,  2,  2,  3,  4,  4,  4,  4,  4 },
+        {  0,  2,  3,  4,  4,  4,  4,  4,  4 },
+    },
+    {   {  1,  2,  3,  4,  5,  5,  5,  5,  5 },
+        {  0,  1,  2,  3,  4,  5,  5,  5,  5 },
+        {  0,  1,  2,  3,  5,  5,  5,  5,  5 },
+        {  1,  1,  3,  4,  5,  5,  5,  5,  5 },
+        {  1,  1,  2,  4,  5,  5,  5,  5,  5 },
+        {  1,  2,  2,  4,  5,  5,  5,  5,  5 },
+        {  1,  1,  2,  3,  5,  5,  5,  5,  5 },
+        {  2,  2,  3,  4,  5,  5,  5,  5,  5 },
+        {  0,  1,  2,  4,  5,  5,  5,  5,  5 },
+        {  2,  2,  3,  5,  5,  5,  5,  5,  5 },
+        {  1,  2,  3,  5,  5,  5,  5,  5,  5 },
+        {  0,  1,  3,  4,  5,  5,  5,  5,  5 },
+        {  1,  2,  2,  3,  5,  5,  5,  5,  5 },
+        {  2,  3,  4,  5,  5,  5,  5,  5,  5 },
+        {  0,  2,  3,  4,  5,  5,  5,  5,  5 },
+        {  1,  1,  1,  3,  4,  5,  5,  5,  5 },
+    },
+    {   {  1,  2,  3,  4,  5,  5,  5,  6,  6 },
+        {  1,  2,  3,  4,  5,  6,  6,  6,  6 },
+        {  2,  3,  4,  5,  6,  6,  6,  6,  6 },
+        {  1,  2,  3,  4,  6,  6,  6,  6,  6 },
+        {  2,  2,  3,  4,  5,  5,  5,  6,  6 },
+        {  1,  2,  3,  4,  5,  5,  6,  6,  6 },
+        {  2,  2,  3,  4,  6,  6,  6,  6,  6 },
+        {  2,  2,  3,  4,  5,  6,  6,  6,  6 },
+        {  2,  2,  4,  5,  6,  6,  6,  6,  6 },
+        {  2,  2,  3,  5,  6,  6,  6,  6,  6 },
+        {  1,  2,  3,  5,  6,  6,  6,  6,  6 },
+        {  2,  3,  3,  5,  6,  6,  6,  6,  6 },
+        {  1,  2,  4,  5,  6,  6,  6,  6,  6 },
+        {  2,  2,  3,  4,  5,  5,  6,  6,  6 },
+        {  2,  3,  3,  4,  6,  6,  6,  6,  6 },
+        {  1,  3,  4,  5,  6,  6,  6,  6,  6 }
+    }
 };
 
 /** 2D base shape tables for scale factor coding.
  *  The values are grouped together as follows:
  *  [num_shape_tables = 64][num_seg_coeffs = 9] */
-static const int8_t atrac3p_sf_shapes[64][9] = {
+static const int8_t atrac3p_sf_shapes[64][9] =
+{
     { -3, -2, -1,  0,  3,  5,  6,  8, 40 },
     { -3, -2,  0,  1,  7,  9, 11, 13, 20 },
     { -1,  0,  0,  1,  6,  8, 10, 13, 41 },
@@ -419,29 +469,34 @@ static const int8_t atrac3p_sf_shapes[64][9] = {
     { 10, 15, 17, 18, 21, 22, 23, 25, 43 }
 };
 
-static const uint8_t atrac3p_ct_restricted_to_full[2][7][4] = {
-    { { 0, 5, 4, 1 },
-      { 0, 1, 2, 3 },
-      { 3, 0, 4, 2 },
-      { 4, 0, 1, 2 },
-      { 1, 0, 4, 3 },
-      { 3, 0, 2, 1 },
-      { 0, 3, 1, 2 } },
-    { { 4, 0, 1, 2 },
-      { 0, 3, 2, 1 },
-      { 0, 1, 2, 3 },
-      { 0, 1, 2, 4 },
-      { 0, 1, 2, 3 },
-      { 1, 4, 2, 0 },
-      { 0, 1, 2, 3 } }
+static const uint8_t atrac3p_ct_restricted_to_full[2][7][4] =
+{
+    {   { 0, 5, 4, 1 },
+        { 0, 1, 2, 3 },
+        { 3, 0, 4, 2 },
+        { 4, 0, 1, 2 },
+        { 1, 0, 4, 3 },
+        { 3, 0, 2, 1 },
+        { 0, 3, 1, 2 }
+    },
+    {   { 4, 0, 1, 2 },
+        { 0, 3, 2, 1 },
+        { 0, 1, 2, 3 },
+        { 0, 1, 2, 4 },
+        { 0, 1, 2, 3 },
+        { 1, 4, 2, 0 },
+        { 0, 1, 2, 3 }
+    }
 };
 
 /** Tables for spectrum coding */
-static const uint8_t huff_a01_cb[14] = {
+static const uint8_t huff_a01_cb[14] =
+{
     1, 12, 1, 0, 0, 1, 7, 0, 19, 5, 13, 21, 6, 8
 };
 
-static const uint8_t huff_a01_xlat[81] = {
+static const uint8_t huff_a01_xlat[81] =
+{
     0x00, 0x03, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x50, 0xD0, 0x70,
     0xF0, 0xC4, 0x14, 0x34, 0x4C, 0x1C, 0x3C, 0x41, 0xC1, 0x31, 0x05, 0x0D,
     0xC3, 0x13, 0x07, 0x0F, 0x44, 0xCC, 0x11, 0x43, 0x33, 0x54, 0x74, 0xDC,
@@ -451,11 +506,13 @@ static const uint8_t huff_a01_xlat[81] = {
     0xFF, 0xD5, 0x75, 0x5D, 0xFD, 0x57, 0xF7, 0xDF, 0x7F
 };
 
-static const uint8_t huff_a02_cb[13] = {
+static const uint8_t huff_a02_cb[13] =
+{
     2, 12, 1, 0, 4, 11, 0, 1, 29, 6, 20, 7, 2
 };
 
-static const uint8_t huff_a02_xlat[81] = {
+static const uint8_t huff_a02_xlat[81] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x50, 0x44, 0x14, 0x54, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x90, 0x80, 0x20, 0x60, 0x84, 0x94, 0x24, 0x64,
     0x08, 0x48, 0x18, 0x58, 0x81, 0x91, 0x21, 0x85, 0x95, 0x65, 0x09, 0x49,
@@ -467,7 +524,8 @@ static const uint8_t huff_a02_xlat[81] = {
 
 static const uint8_t huff_a03_cb[9] = { 3, 9, 1, 8, 0, 13, 18, 7, 2 };
 
-static const uint8_t huff_a03_xlat[49] = {
+static const uint8_t huff_a03_xlat[49] =
+{
     0x00, 0x08, 0x38, 0x01, 0x09, 0x39, 0x07, 0x0F, 0x3F, 0x10, 0x30, 0x11,
     0x31, 0x02, 0x0A, 0x3A, 0x05, 0x06, 0x0E, 0x3E, 0x17, 0x37, 0x18, 0x28,
     0x19, 0x29, 0x2A, 0x32, 0x03, 0x0B, 0x33, 0x3B, 0x0D, 0x15, 0x3D, 0x16,
@@ -478,11 +536,13 @@ static const uint8_t huff_a03_xlat[49] = {
 static const uint8_t huff_a04_cb[4]   = { 2, 3, 2, 4 };
 static const uint8_t huff_a04_xlat[6] = { 1, 2, 0, 3, 4, 5 };
 
-static const uint8_t huff_a05_cb[12] = {
+static const uint8_t huff_a05_cb[12] =
+{
     3, 12, 1, 3, 5, 8, 12, 23, 72, 68, 31, 2
 };
 
-static const uint8_t huff_a05_xlat[225] = {
+static const uint8_t huff_a05_xlat[225] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x11, 0xF1, 0x0F, 0x1F, 0xFF, 0x20, 0xE0, 0xE1,
     0x02, 0xF2, 0x0E, 0x1E, 0x2F, 0x30, 0xD0, 0x21, 0x12, 0x22, 0xE2, 0x03,
     0x0D, 0x2E, 0xEE, 0xFE, 0xEF, 0x40, 0xC0, 0x31, 0xC1, 0xD1, 0x32, 0xD2,
@@ -504,30 +564,36 @@ static const uint8_t huff_a05_xlat[225] = {
     0xBA, 0x5B, 0x9B, 0xAB, 0xBB, 0xCB, 0xBC, 0x77, 0x99
 };
 
-static const uint8_t huff_a06_cb[7] = {
+static const uint8_t huff_a06_cb[7] =
+{
     2, 6, 1, 3, 2, 6, 4
 };
 
-static const uint8_t huff_a06_xlat[16] = {
+static const uint8_t huff_a06_xlat[16] =
+{
     1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 10, 11, 12, 15
 };
 
-static const uint8_t huff_a07_cb[11] = {
+static const uint8_t huff_a07_cb[11] =
+{
     2, 10, 1, 2, 2, 2, 6, 14, 21, 13, 2
 };
 
-static const uint8_t huff_a07_xlat[63] = {
+static const uint8_t huff_a07_xlat[63] =
+{
     0,   1, 63,  2, 62,  3, 61,  4,  5,  6, 58, 59, 60,  7,  8,  9,
     10, 26, 27, 28, 36, 37, 38, 54, 55, 56, 57, 11, 12, 13, 14, 15,
     16, 25, 29, 30, 31, 33, 34, 35, 39, 47, 48, 49, 50, 51, 52, 53,
     17, 18, 19, 20, 21, 22, 23, 41, 42, 43, 44, 45, 46, 24, 40
 };
 
-static const uint8_t huff_a11_cb[13] = {
+static const uint8_t huff_a11_cb[13] =
+{
     1, 11, 1, 0, 0, 0, 8, 1, 18, 9, 22, 10, 12
 };
 
-static const uint8_t huff_a11_xlat[81] = {
+static const uint8_t huff_a11_xlat[81] =
+{
     0x00, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x03, 0xD0, 0x50, 0x70,
     0xF0, 0xC4, 0x34, 0x4C, 0xCC, 0x1C, 0x41, 0xC1, 0x31, 0x05, 0x0D, 0x43,
     0xC3, 0x13, 0x07, 0x0F, 0x44, 0x14, 0x74, 0xDC, 0x3C, 0x11, 0x1D, 0x33,
@@ -539,7 +605,8 @@ static const uint8_t huff_a11_xlat[81] = {
 
 static const uint8_t huff_a12_cb[8] = { 5, 10, 16, 11, 32, 19, 1, 2 };
 
-static const uint8_t huff_a12_xlat[81] = {
+static const uint8_t huff_a12_xlat[81] =
+{
     0x00, 0x40, 0x10, 0x50, 0x04, 0x44, 0x14, 0x54, 0x01, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x90, 0x94, 0x58, 0x91, 0x95, 0x19, 0x59, 0x06,
     0x46, 0x16, 0x56, 0x80, 0x60, 0x84, 0x24, 0x64, 0xA4, 0x08, 0x48, 0x18,
@@ -549,11 +616,13 @@ static const uint8_t huff_a12_xlat[81] = {
     0xA6, 0x0A, 0x4A, 0x9A, 0x6A, 0xAA, 0xA2, 0x8A, 0x2A
 };
 
-static const uint8_t huff_a13_cb[12] = {
+static const uint8_t huff_a13_cb[12] =
+{
     1, 10, 1, 0, 0, 4, 2, 2, 9, 15, 12, 4
 };
 
-static const uint8_t huff_a13_xlat[49] = {
+static const uint8_t huff_a13_xlat[49] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x39, 0x0F, 0x09, 0x3F, 0x10, 0x30, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x3E, 0x17, 0x18, 0x28, 0x11, 0x29, 0x0A, 0x32,
     0x03, 0x0B, 0x3B, 0x05, 0x0D, 0x3D, 0x16, 0x1F, 0x37, 0x19, 0x12, 0x1A,
@@ -561,11 +630,13 @@ static const uint8_t huff_a13_xlat[49] = {
     0x2D
 };
 
-static const uint8_t huff_a14_cb[12] = {
+static const uint8_t huff_a14_cb[12] =
+{
     2, 11, 1, 0, 4, 3, 5, 16, 28, 34, 26, 4
 };
 
-static const uint8_t huff_a14_xlat[121] = {
+static const uint8_t huff_a14_xlat[121] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x11, 0x02,
     0x0E, 0x30, 0x50, 0xB0, 0xD0, 0x21, 0xE1, 0x12, 0xF2, 0x03, 0x05, 0x0B,
     0x0D, 0x1E, 0xFE, 0x2F, 0xEF, 0x40, 0xC0, 0x31, 0x51, 0xB1, 0xC1, 0xD1,
@@ -581,7 +652,8 @@ static const uint8_t huff_a14_xlat[121] = {
 
 static const uint8_t huff_a15_cb[9] = { 5, 11, 9, 12, 16, 44, 98, 42, 4 };
 
-static const uint8_t huff_a15_xlat[225] = {
+static const uint8_t huff_a15_xlat[225] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x11, 0xF1, 0x0F, 0x1F, 0xFF, 0x20, 0xE0, 0x21,
     0xE1, 0x02, 0x12, 0xF2, 0x0E, 0x1E, 0xFE, 0x2F, 0xEF, 0x30, 0xD0, 0x31,
     0xD1, 0x22, 0xE2, 0x03, 0x13, 0xF3, 0x0D, 0x1D, 0xFD, 0x2E, 0xEE, 0x3F,
@@ -603,11 +675,13 @@ static const uint8_t huff_a15_xlat[225] = {
     0x7B, 0x9B, 0xAB, 0xBB, 0x5C, 0x77, 0x97, 0x79, 0x99
 };
 
-static const uint8_t huff_a16_cb[13] = {
+static const uint8_t huff_a16_cb[13] =
+{
     2, 12, 1, 1, 2, 2, 5, 7, 21, 54, 85, 62, 16
 };
 
-static const uint8_t huff_a16_xlat[256] = {
+static const uint8_t huff_a16_xlat[256] =
+{
     0x00, 0x01, 0x10, 0x11, 0x21, 0x12, 0x20, 0x31, 0x02, 0x22, 0x13, 0x30,
     0x41, 0x32, 0x03, 0x23, 0x14, 0x24, 0x40, 0x51, 0x61, 0xD1, 0xE1, 0x42,
     0x52, 0xD2, 0x33, 0x43, 0xD3, 0x04, 0x34, 0x05, 0x15, 0x25, 0x16, 0x1D,
@@ -634,18 +708,21 @@ static const uint8_t huff_a16_xlat[256] = {
 
 static const uint8_t huff_a17_cb[9] = { 3, 9, 3, 2, 5, 7, 17, 23, 6 };
 
-static const uint8_t huff_a17_xlat[63] = {
+static const uint8_t huff_a17_xlat[63] =
+{
     0,   1, 63,  2, 62,  3,  4, 59, 60, 61,  5,  6,  7,  8, 56, 57,
     58,  9, 10, 11, 12, 13, 14, 26, 27, 36, 37, 38, 50, 51, 52, 53,
     54, 55, 15, 16, 17, 18, 19, 20, 21, 25, 28, 29, 30, 31, 33, 34,
     35, 39, 43, 44, 45, 46, 47, 48, 49, 22, 23, 24, 40, 41, 42
 };
 
-static const uint8_t huff_a21_cb[14] = {
+static const uint8_t huff_a21_cb[14] =
+{
     1, 12, 1, 0, 0, 2, 6, 0, 7, 21, 15, 17, 8, 4
 };
 
-static const uint8_t huff_a21_xlat[81] = {
+static const uint8_t huff_a21_xlat[81] =
+{
     0x00, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x03, 0xD0, 0x70, 0x34,
     0x1C, 0x0D, 0x13, 0x07, 0x50, 0xF0, 0x44, 0xC4, 0x14, 0x74, 0x4C, 0xCC,
     0xDC, 0x3C, 0x41, 0xC1, 0x11, 0x31, 0x05, 0x1D, 0x43, 0xC3, 0x33, 0x37,
@@ -657,7 +734,8 @@ static const uint8_t huff_a21_xlat[81] = {
 
 static const uint8_t huff_a22_cb[10] = { 2, 9, 1, 4, 0, 4, 3, 8, 3, 2 };
 
-static const uint8_t huff_a22_xlat[25] = {
+static const uint8_t huff_a22_xlat[25] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x09, 0x39, 0x0F, 0x3F, 0x10, 0x02, 0x06,
     0x30, 0x11, 0x31, 0x0A, 0x3A, 0x0E, 0x17, 0x37, 0x32, 0x16, 0x3E, 0x12,
     0x36
@@ -665,7 +743,8 @@ static const uint8_t huff_a22_xlat[25] = {
 
 static const uint8_t huff_a23_cb[9] = { 3, 9, 5, 0, 4, 6, 10, 16, 8 };
 
-static const uint8_t huff_a23_xlat[49] = {
+static const uint8_t huff_a23_xlat[49] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x09, 0x39, 0x0F, 0x3F, 0x10, 0x30, 0x02,
     0x3A, 0x06, 0x0E, 0x18, 0x28, 0x11, 0x31, 0x0A, 0x03, 0x05, 0x3E, 0x17,
     0x37, 0x19, 0x29, 0x12, 0x2A, 0x32, 0x0B, 0x33, 0x3B, 0x0D, 0x15, 0x3D,
@@ -681,7 +760,8 @@ static const uint8_t huff_a25_xlat[8] = { 1, 0, 2, 3, 4, 5, 6, 7 };
 
 static const uint8_t huff_a26_cb[10] = { 4, 11, 3, 4, 12, 15, 34, 83, 75, 30 };
 
-static const uint8_t huff_a26_xlat[256] = {
+static const uint8_t huff_a26_xlat[256] =
+{
     0x00, 0x01, 0x11, 0x10, 0x21, 0x12, 0x22, 0x20, 0x30, 0x31, 0x41, 0x02,
     0x32, 0x03, 0x13, 0x23, 0x33, 0x14, 0x24, 0x40, 0x51, 0x61, 0x42, 0x52,
     0x43, 0x53, 0x04, 0x34, 0x44, 0x15, 0x25, 0x35, 0x16, 0x26, 0x50, 0x60,
@@ -708,8 +788,9 @@ static const uint8_t huff_a26_xlat[256] = {
 
 static const uint8_t huff_a27_cb[7] = { 4, 8, 3, 14, 10, 20, 16 };
 
-static const uint8_t huff_a27_xlat[63] = {
-     0,  2,  3,  1,  5,  6,  7,  9, 54, 55, 56, 58, 59, 60, 61, 62,
+static const uint8_t huff_a27_xlat[63] =
+{
+    0,  2,  3,  1,  5,  6,  7,  9, 54, 55, 56, 58, 59, 60, 61, 62,
     63,  4,  8, 10, 11, 12, 14, 49, 52, 53, 57, 13, 15, 16, 17, 18,
     19, 22, 23, 25, 26, 30, 39, 43, 44, 45, 46, 47, 48, 50, 51, 20,
     21, 24, 27, 28, 29, 31, 33, 34, 35, 36, 37, 38, 40, 41, 42
@@ -717,15 +798,18 @@ static const uint8_t huff_a27_xlat[63] = {
 
 static const uint8_t huff_a31_cb[8] = { 1, 6, 1, 0, 3, 1, 0, 4 };
 
-static const uint8_t huff_a31_xlat[9] = {
+static const uint8_t huff_a31_xlat[9] =
+{
     0x00, 0x04, 0x0C, 0x01, 0x03, 0x05, 0x0D, 0x07, 0x0F
 };
 
-static const uint8_t huff_a32_cb[13] = {
+static const uint8_t huff_a32_cb[13] =
+{
     1, 11, 1, 0, 0, 2, 2, 6, 12, 18, 19, 15, 6
 };
 
-static const uint8_t huff_a32_xlat[81] = {
+static const uint8_t huff_a32_xlat[81] =
+{
     0x00, 0x40, 0x01, 0x10, 0x04, 0x80, 0x50, 0x20, 0x14, 0x05, 0x02, 0x90,
     0x60, 0x44, 0x54, 0x24, 0x08, 0x18, 0x41, 0x11, 0x15, 0x09, 0x06, 0xA0,
     0x84, 0x94, 0x64, 0xA4, 0x48, 0x58, 0x28, 0x51, 0x21, 0x45, 0x55, 0x25,
@@ -735,11 +819,13 @@ static const uint8_t huff_a32_xlat[81] = {
     0x4A, 0x5A, 0x6A, 0xA2, 0x96, 0xA6, 0x8A, 0x9A, 0xAA
 };
 
-static const uint8_t huff_a33_cb[12] = {
+static const uint8_t huff_a33_cb[12] =
+{
     3, 12, 1, 1, 13, 1, 14, 28, 33, 81, 32, 52
 };
 
-static const uint8_t huff_a33_xlat[256] = {
+static const uint8_t huff_a33_xlat[256] =
+{
     0x00, 0x10, 0x40, 0x50, 0x04, 0x44, 0x14, 0x54, 0x01, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x90, 0x20, 0x94, 0x64, 0x18, 0x21, 0x95, 0x19,
     0x69, 0x02, 0x52, 0x06, 0x46, 0x16, 0x80, 0x60, 0x84, 0xD4, 0x24, 0x08,
@@ -770,7 +856,8 @@ static const uint8_t huff_a34_xlat[6] = { 1, 0, 2, 3, 4, 5 };
 
 static const uint8_t huff_a35_cb[11] = { 2, 10, 1, 0, 2, 3, 6, 19, 9, 75, 110 };
 
-static const uint8_t huff_a35_xlat[225] = {
+static const uint8_t huff_a35_xlat[225] =
+{
     0x00, 0xF0, 0x0F, 0x10, 0x01, 0xFF, 0x20, 0xE0, 0x11, 0xF1, 0x0E, 0x1F,
     0x30, 0x40, 0xD0, 0x21, 0xE1, 0x02, 0x12, 0x22, 0xE2, 0xF2, 0x03, 0x13,
     0x1E, 0x2E, 0x3E, 0xEE, 0xFE, 0x2F, 0xEF, 0xD2, 0x43, 0xF3, 0x04, 0x0D,
@@ -792,11 +879,13 @@ static const uint8_t huff_a35_xlat[225] = {
     0xAE, 0xBE, 0x4F, 0x5F, 0x6F, 0x9F, 0xAF, 0xBF, 0xCF
 };
 
-static const uint8_t huff_a36_cb[12] = {
+static const uint8_t huff_a36_cb[12] =
+{
     3, 12, 1, 3, 5, 5, 13, 27, 69, 96, 35, 2
 };
 
-static const uint8_t huff_a36_xlat[256] = {
+static const uint8_t huff_a36_xlat[256] =
+{
     0x00, 0x10, 0x01, 0x11, 0x20, 0x21, 0x02, 0x12, 0x22, 0x31, 0x41, 0x32,
     0x13, 0x23, 0x30, 0x40, 0x51, 0x42, 0x03, 0x33, 0x43, 0x04, 0x14, 0x24,
     0x34, 0x15, 0x25, 0x50, 0x61, 0x71, 0xD1, 0x52, 0x62, 0x72, 0xD2, 0x53,
@@ -823,18 +912,21 @@ static const uint8_t huff_a36_xlat[256] = {
 
 static const uint8_t huff_a37_cb[7] = { 4, 8, 7, 6, 8, 22, 20 };
 
-static const uint8_t huff_a37_xlat[63] = {
-     0,  1,  2,  3, 61, 62, 63,  4,  5,  6, 58, 59, 60,  7,  8,  9,
+static const uint8_t huff_a37_xlat[63] =
+{
+    0,  1,  2,  3, 61, 62, 63,  4,  5,  6, 58, 59, 60,  7,  8,  9,
     10, 54, 55, 56, 57, 11, 12, 13, 14, 15, 16, 25, 26, 27, 28, 29,
     30, 35, 36, 37, 38, 48, 49, 50, 51, 52, 53, 17, 18, 19, 20, 21,
     22, 23, 24, 31, 33, 34, 39, 40, 41, 42, 43, 44, 45, 46, 47
 };
 
-static const uint8_t huff_a41_cb[14] = {
+static const uint8_t huff_a41_cb[14] =
+{
     1, 12, 1, 0, 0, 6, 2, 0, 0, 0, 19, 9, 24, 20
 };
 
-static const uint8_t huff_a41_xlat[81] = {
+static const uint8_t huff_a41_xlat[81] =
+{
     0x00, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x03, 0x50, 0xD0, 0x70,
     0xF0, 0xC4, 0x34, 0x4C, 0xCC, 0x1C, 0x41, 0xC1, 0x31, 0x05, 0x0D, 0x43,
     0xC3, 0x13, 0x07, 0x0F, 0x44, 0x14, 0x74, 0xDC, 0x3C, 0x11, 0x1D, 0x33,
@@ -846,7 +938,8 @@ static const uint8_t huff_a41_xlat[81] = {
 
 static const uint8_t huff_a42_cb[10] = { 3, 10, 1, 2, 13, 1, 31, 13, 16, 4 };
 
-static const uint8_t huff_a42_xlat[81] = {
+static const uint8_t huff_a42_xlat[81] =
+{
     0x00, 0x40, 0x01, 0x10, 0x50, 0x04, 0x44, 0x14, 0x54, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x59, 0x80, 0x90, 0x20, 0x60, 0x84, 0x94, 0x24,
     0x64, 0x08, 0x48, 0x18, 0x58, 0x81, 0x91, 0x21, 0x61, 0x85, 0x95, 0x25,
@@ -862,7 +955,8 @@ static const uint8_t huff_a43_xlat[7] = { 0, 7, 1, 2, 6, 3, 5 };
 
 static const uint8_t huff_a44_cb[9] = { 4, 10, 5, 4, 12, 17, 47, 24, 12 };
 
-static const uint8_t huff_a44_xlat[121] = {
+static const uint8_t huff_a44_xlat[121] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x11, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x21,
     0xE1, 0x02, 0x12, 0xF2, 0x0E, 0x1E, 0xFE, 0x2F, 0xEF, 0x30, 0x50, 0xD0,
     0xD1, 0x22, 0xE2, 0x03, 0x13, 0xF3, 0x0D, 0x1D, 0x2D, 0xFD, 0x2E, 0xEE,
@@ -882,7 +976,8 @@ static const uint8_t huff_a45_xlat[8] = { 1, 2, 0, 3, 4, 5, 6, 7 };
 
 static const uint8_t huff_a46_cb[7] = { 5, 9, 1, 16, 31, 36, 172 };
 
-static const uint8_t huff_a46_xlat[256] = {
+static const uint8_t huff_a46_xlat[256] =
+{
     0x02, 0x00, 0x30, 0x21, 0x31, 0x41, 0x61, 0x12, 0x22, 0x42, 0x62, 0x43,
     0x53, 0x24, 0x45, 0x26, 0x27, 0x10, 0x40, 0xB0, 0x01, 0x11, 0x81, 0x32,
     0x52, 0x72, 0x92, 0x03, 0x13, 0x33, 0x63, 0x14, 0x34, 0x54, 0x64, 0x74,
@@ -909,18 +1004,21 @@ static const uint8_t huff_a46_xlat[256] = {
 
 static const uint8_t huff_a47_cb[8] = { 4, 9, 5, 12, 9, 12, 15, 10 };
 
-static const uint8_t huff_a47_xlat[63] = {
-     0,  1,  2, 62, 63,  3,  4,  5,  6,  8, 54, 56, 57, 58, 59, 60,
+static const uint8_t huff_a47_xlat[63] =
+{
+    0,  1,  2, 62, 63,  3,  4,  5,  6,  8, 54, 56, 57, 58, 59, 60,
     61,  7,  9, 10, 11, 12, 13, 14, 53, 55, 15, 16, 17, 18, 19, 20,
     21, 36, 37, 39, 42, 52, 22, 25, 28, 35, 38, 40, 41, 43, 45, 46,
     47, 48, 49, 50, 51, 23, 24, 26, 27, 29, 30, 31, 33, 34, 44
 };
 
-static const uint8_t huff_a51_cb[12] = {
+static const uint8_t huff_a51_cb[12] =
+{
     2, 11, 1, 0, 6, 2, 6, 18, 4, 26, 6, 12
 };
 
-static const uint8_t huff_a51_xlat[81] = {
+static const uint8_t huff_a51_xlat[81] =
+{
     0x00, 0x40, 0xC0, 0x30, 0x04, 0x01, 0x03, 0x10, 0x0C, 0xD0, 0x70, 0x34,
     0x1C, 0x0D, 0x07, 0x50, 0xF0, 0x44, 0xC4, 0x14, 0x4C, 0xCC, 0x3C, 0x41,
     0xC1, 0x11, 0x31, 0x05, 0x43, 0xC3, 0x13, 0x33, 0x0F, 0x74, 0xDC, 0x1D,
@@ -932,7 +1030,8 @@ static const uint8_t huff_a51_xlat[81] = {
 
 static const uint8_t huff_a52_cb[12] = { 1, 10, 1, 0, 2, 2, 0, 4, 3, 8, 3, 2 };
 
-static const uint8_t huff_a52_xlat[25] = {
+static const uint8_t huff_a52_xlat[25] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x09, 0x39, 0x0F, 0x3F, 0x10, 0x02, 0x06,
     0x30, 0x11, 0x31, 0x0A, 0x3A, 0x0E, 0x17, 0x37, 0x32, 0x16, 0x3E, 0x12,
     0x36
@@ -942,7 +1041,8 @@ static const uint8_t huff_a53_xlat[7] = { 0, 1, 2, 6, 7, 3, 5 };
 
 static const uint8_t huff_a54_cb[8] = { 4, 9, 4, 7, 12, 19, 21, 58 };
 
-static const uint8_t huff_a54_xlat[121] = {
+static const uint8_t huff_a54_xlat[121] =
+{
     0x00, 0x01, 0x0F, 0x1F, 0x10, 0xE0, 0xF0, 0x11, 0xF1, 0x2F, 0xFF, 0x20,
     0x21, 0xE1, 0x02, 0x12, 0xF2, 0x03, 0xF3, 0x0E, 0x2E, 0xFE, 0x3F, 0x30,
     0x40, 0xD0, 0xC1, 0xD1, 0x22, 0xC2, 0x33, 0xE3, 0x0C, 0xCC, 0x0D, 0x1D,
@@ -962,15 +1062,17 @@ static const uint8_t huff_a55_xlat[8] = { 0, 1, 2, 3, 6, 7, 4, 5 };
 
 static const uint8_t huff_a56_cb[7] = { 3, 7, 1, 8, 6, 8, 8 };
 
-static const uint8_t huff_a56_xlat[31] = {
+static const uint8_t huff_a56_xlat[31] =
+{
     4,  0,  1,  2,  3, 28, 29, 30, 31,  5,  6,  7, 24, 25, 27, 8,
     9, 14, 19, 21, 22, 23, 26, 10, 11, 12, 13, 15, 17, 18, 20
 };
 
 static const uint8_t huff_a57_cb[9] = { 3, 9, 1, 5, 7, 8, 16, 22, 4 };
 
-static const uint8_t huff_a57_xlat[63] = {
-     0,  1,  2, 61, 62, 63,  3,  4,  5,  6, 58, 59,
+static const uint8_t huff_a57_xlat[63] =
+{
+    0,  1,  2, 61, 62, 63,  3,  4,  5,  6, 58, 59,
     60,  7,  8,  9, 10, 54, 55, 56, 57, 11, 12, 13,
     14, 15, 26, 27, 28, 36, 37, 38, 49, 50, 51, 52,
     53, 16, 17, 18, 19, 20, 21, 23, 24, 25, 29, 30,
@@ -978,11 +1080,13 @@ static const uint8_t huff_a57_xlat[63] = {
     40, 41, 42
 };
 
-static const uint8_t huff_a61_cb[12] = {
+static const uint8_t huff_a61_cb[12] =
+{
     2, 11, 1, 0, 8, 0, 1, 16, 10, 29, 12, 4
 };
 
-static const uint8_t huff_a61_xlat[81] = {
+static const uint8_t huff_a61_xlat[81] =
+{
     0x00, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x03, 0x70, 0x50, 0xD0,
     0xF0, 0x44, 0xC4, 0x14, 0x34, 0x4C, 0x1C, 0x3C, 0x31, 0x05, 0x0D, 0x13,
     0x07, 0x0F, 0x74, 0xCC, 0xDC, 0xFC, 0x41, 0xC1, 0x11, 0x43, 0xC3, 0x33,
@@ -994,17 +1098,20 @@ static const uint8_t huff_a61_xlat[81] = {
 
 static const uint8_t huff_a62_cb[8] = { 3, 8, 5, 2, 2, 9, 5, 2 };
 
-static const uint8_t huff_a62_xlat[25] = {
+static const uint8_t huff_a62_xlat[25] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x39, 0x0F, 0x09, 0x3F, 0x10, 0x30, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x17, 0x37, 0x11, 0x0A, 0x32, 0x16, 0x3E, 0x12,
     0x36
 };
 
-static const uint8_t huff_a63_cb[11] = {
+static const uint8_t huff_a63_cb[11] =
+{
     3, 11, 1, 1, 10, 4, 16, 29, 46, 75, 74
 };
 
-static const uint8_t huff_a63_xlat[256] = {
+static const uint8_t huff_a63_xlat[256] =
+{
     0x00, 0x40, 0x10, 0x50, 0x04, 0x44, 0x14, 0x01, 0x41, 0x05, 0x45, 0x55,
     0x54, 0x11, 0x51, 0x15, 0x80, 0x90, 0x60, 0x24, 0x64, 0xA4, 0x48, 0x61,
     0x95, 0x25, 0xA5, 0x02, 0x42, 0x52, 0x16, 0x56, 0x20, 0x84, 0x94, 0x18,
@@ -1031,7 +1138,8 @@ static const uint8_t huff_a63_xlat[256] = {
 
 static const uint8_t huff_a64_cb[8] = { 4, 9, 1, 7, 12, 36, 63, 2 };
 
-static const uint8_t huff_a64_xlat[121] = {
+static const uint8_t huff_a64_xlat[121] =
+{
     0x00, 0x10, 0x20, 0xE0, 0xF0, 0x02, 0x0E, 0xEF, 0x30, 0x01, 0x11, 0x21,
     0x31, 0xF1, 0x12, 0xF2, 0x1E, 0xEE, 0xDF, 0xFF, 0x40, 0xC0, 0xD0, 0xD1,
     0xE1, 0x22, 0x32, 0x42, 0xD2, 0xE2, 0x03, 0x13, 0x23, 0xB3, 0xC3, 0xE3,
@@ -1047,33 +1155,38 @@ static const uint8_t huff_a64_xlat[121] = {
 
 static const uint8_t huff_a65_cb[8] = { 2, 7, 3, 0, 1, 3, 4, 4 };
 
-static const uint8_t huff_a65_xlat[15] = {
+static const uint8_t huff_a65_xlat[15] =
+{
     0, 1, 15, 14, 2, 3, 13, 4, 6, 10, 12, 5, 7, 9, 11
 };
 
 static const uint8_t huff_a66_cb[11] = { 2, 10, 1, 2, 2, 6, 8, 6, 3, 1, 2 };
 
-static const uint8_t huff_a66_xlat[31] = {
-     0,  1, 31, 2, 30,  3,  4, 15, 17, 28, 29,  5,  6,  7,  8, 24,
+static const uint8_t huff_a66_xlat[31] =
+{
+    0,  1, 31, 2, 30,  3,  4, 15, 17, 28, 29,  5,  6,  7,  8, 24,
     25, 26, 27, 9, 10, 11, 21, 22, 23, 12, 19, 20, 13, 14, 18
 };
 
 static const uint8_t huff_a67_cb[10] = { 2, 9, 1, 1, 3, 4, 6, 13, 25, 10 };
 
-static const uint8_t huff_a67_xlat[63] = {
-     0,  1,  2, 62, 63,  3,  4, 60, 61,  5,  6,  7, 57, 58, 59,  8,
-     9, 10, 11, 12, 13, 26, 38, 52, 53, 54, 55, 56, 14, 15, 16, 17,
+static const uint8_t huff_a67_xlat[63] =
+{
+    0,  1,  2, 62, 63,  3,  4, 60, 61,  5,  6,  7, 57, 58, 59,  8,
+    9, 10, 11, 12, 13, 26, 38, 52, 53, 54, 55, 56, 14, 15, 16, 17,
     18, 19, 25, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 39, 45, 46,
     47, 48, 49, 50, 51, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44
 };
 
 static const uint8_t huff_a71_cb[5] = { 1, 3, 1, 1, 2 };
 
-static const uint8_t huff_a72_cb[12] = {
+static const uint8_t huff_a72_cb[12] =
+{
     2, 11, 1, 0, 4, 8, 3, 8, 24, 17, 12, 4
 };
 
-static const uint8_t huff_a72_xlat[81] = {
+static const uint8_t huff_a72_xlat[81] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x50, 0x44, 0x14, 0x54, 0x41, 0x11, 0x05,
     0x15, 0x51, 0x45, 0x55, 0x80, 0x90, 0x20, 0x64, 0x08, 0x19, 0x02, 0x06,
     0x60, 0x84, 0x94, 0x24, 0x48, 0x18, 0x58, 0x81, 0x91, 0x21, 0x61, 0x85,
@@ -1085,7 +1198,8 @@ static const uint8_t huff_a72_xlat[81] = {
 
 static const uint8_t huff_a73_cb[11] = { 2, 10, 1, 1, 5, 2, 8, 7, 13, 8, 4 };
 
-static const uint8_t huff_a73_xlat[49] = {
+static const uint8_t huff_a73_xlat[49] =
+{
     0x00, 0x08, 0x38, 0x01, 0x39, 0x07, 0x0F, 0x09, 0x3F, 0x10, 0x30, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x17, 0x11, 0x0A, 0x32, 0x0D, 0x16, 0x3E, 0x37,
     0x18, 0x28, 0x19, 0x29, 0x12, 0x2A, 0x03, 0x3B, 0x05, 0x15, 0x1E, 0x1F,
@@ -1093,11 +1207,13 @@ static const uint8_t huff_a73_xlat[49] = {
     0x2D
 };
 
-static const uint8_t huff_a74_cb[14] = {
+static const uint8_t huff_a74_cb[14] =
+{
     1, 12, 1, 0, 0, 4, 0, 4, 5, 9, 30, 45, 21, 2
 };
 
-static const uint8_t huff_a74_xlat[121] = {
+static const uint8_t huff_a74_xlat[121] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x11, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x02,
     0xF2, 0x0E, 0x21, 0xE1, 0x12, 0xE2, 0x1E, 0x2E, 0xFE, 0x2F, 0xEF, 0x30,
     0x50, 0xB0, 0xC0, 0xD0, 0x31, 0xB1, 0xD1, 0x22, 0xD2, 0x03, 0x13, 0xE3,
@@ -1113,15 +1229,18 @@ static const uint8_t huff_a74_xlat[121] = {
 
 static const uint8_t huff_a75_cb[7] = { 2, 6, 1, 3, 3, 4, 4 };
 
-static const uint8_t huff_a75_xlat[15] = {
+static const uint8_t huff_a75_xlat[15] =
+{
     0, 1, 14, 15, 2, 3, 13, 4, 6, 10, 12, 5, 7, 9, 11
 };
 
-static const uint8_t huff_a76_cb[12] = {
+static const uint8_t huff_a76_cb[12] =
+{
     3, 12, 1, 3, 4, 8, 10, 36, 60, 78, 48, 8
 };
 
-static const uint8_t huff_a76_xlat[256] = {
+static const uint8_t huff_a76_xlat[256] =
+{
     0x00, 0x10, 0x01, 0x11, 0x20, 0x21, 0x02, 0x12, 0x30, 0x31, 0x41, 0x22,
     0x03, 0x13, 0x23, 0x14, 0x40, 0x51, 0x61, 0x32, 0x42, 0x33, 0x04, 0x24,
     0x15, 0x16, 0x50, 0x60, 0xD0, 0x71, 0x81, 0xD1, 0xE1, 0xF1, 0x52, 0x62,
@@ -1146,11 +1265,13 @@ static const uint8_t huff_a76_xlat[256] = {
     0xBB, 0xCC, 0xEF, 0xFF
 };
 
-static const uint8_t huff_b01_cb[14] = {
+static const uint8_t huff_b01_cb[14] =
+{
     1, 12, 1, 0, 0, 2, 6, 0, 11, 13, 12, 24, 4, 8
 };
 
-static const uint8_t huff_b01_xlat[81] = {
+static const uint8_t huff_b01_xlat[81] =
+{
     0x00, 0x01, 0x03, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x50, 0xD0, 0x70,
     0xF0, 0x34, 0x1C, 0x05, 0x0D, 0x13, 0x07, 0x0F, 0x44, 0xC4, 0x14, 0x4C,
     0xCC, 0x3C, 0x41, 0xC1, 0x11, 0x31, 0x43, 0xC3, 0x33, 0x54, 0x74, 0xDC,
@@ -1160,11 +1281,13 @@ static const uint8_t huff_b01_xlat[81] = {
     0x5F, 0xD5, 0x75, 0x5D, 0xFD, 0x57, 0xF7, 0xDF, 0x7F
 };
 
-static const uint8_t huff_b02_cb[14] = {
+static const uint8_t huff_b02_cb[14] =
+{
     1, 12, 1, 0, 0, 4, 0, 8, 4, 9, 19, 13, 13, 10
 };
 
-static const uint8_t huff_b02_xlat[81] = {
+static const uint8_t huff_b02_xlat[81] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x50, 0x44, 0x14, 0x54, 0x41, 0x11, 0x05,
     0x15, 0x80, 0x51, 0x45, 0x55, 0x90, 0x20, 0x60, 0x24, 0x08, 0x18, 0x09,
     0x02, 0x06, 0x84, 0x94, 0x64, 0x48, 0x58, 0x81, 0x91, 0x21, 0x61, 0x95,
@@ -1176,7 +1299,8 @@ static const uint8_t huff_b02_xlat[81] = {
 
 static const uint8_t huff_b03_cb[11] = { 1, 9, 1, 0, 0, 4, 0, 5, 12, 13, 14 };
 
-static const uint8_t huff_b03_xlat[49] = {
+static const uint8_t huff_b03_xlat[49] =
+{
     0x00, 0x08, 0x38, 0x01, 0x07, 0x30, 0x09, 0x39, 0x0F, 0x3F, 0x10, 0x18,
     0x28, 0x31, 0x02, 0x3A, 0x03, 0x05, 0x06, 0x0E, 0x17, 0x37, 0x11, 0x19,
     0x29, 0x0A, 0x32, 0x0B, 0x3B, 0x0D, 0x15, 0x3D, 0x3E, 0x1F, 0x2F, 0x12,
@@ -1184,11 +1308,13 @@ static const uint8_t huff_b03_xlat[49] = {
     0x36
 };
 
-static const uint8_t huff_b04_cb[12] = {
+static const uint8_t huff_b04_cb[12] =
+{
     2, 11, 1, 0, 4, 4, 5, 9, 30, 45, 21, 2
 };
 
-static const uint8_t huff_b04_xlat[121] = {
+static const uint8_t huff_b04_xlat[121] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x11, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x02,
     0xF2, 0x0E, 0x21, 0xE1, 0x12, 0xE2, 0x1E, 0x2E, 0xFE, 0x2F, 0xEF, 0x30,
     0x50, 0xB0, 0xC0, 0xD0, 0x31, 0xB1, 0xD1, 0x22, 0xD2, 0x03, 0x13, 0xE3,
@@ -1202,11 +1328,13 @@ static const uint8_t huff_b04_xlat[121] = {
     0xBB
 };
 
-static const uint8_t huff_b05_cb[11] = {
+static const uint8_t huff_b05_cb[11] =
+{
     3, 11, 1, 4, 4, 4, 12, 30, 73, 75, 22
 };
 
-static const uint8_t huff_b05_xlat[225] = {
+static const uint8_t huff_b05_xlat[225] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x11, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x02,
     0x0E, 0x30, 0xD0, 0x21, 0xE1, 0x12, 0xF2, 0x03, 0x0D, 0x1E, 0xFE, 0x2F,
     0xEF, 0x40, 0x60, 0x70, 0x90, 0xA0, 0xC0, 0x31, 0xD1, 0x22, 0x32, 0xD2,
@@ -1230,8 +1358,9 @@ static const uint8_t huff_b05_xlat[225] = {
 
 static const uint8_t huff_b07_cb[9] = { 3, 9, 3, 2, 4, 8, 23, 13, 10 };
 
-static const uint8_t huff_b07_xlat[63] = {
-     0,  1, 63,  2, 62,  3,  4, 60, 61,  5,  6,  7,  8, 56, 57, 58,
+static const uint8_t huff_b07_xlat[63] =
+{
+    0,  1, 63,  2, 62,  3,  4, 60, 61,  5,  6,  7,  8, 56, 57, 58,
     59,  9, 10, 11, 12, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36,
     37, 38, 39, 51, 52, 53, 54, 55, 13, 14, 15, 16, 17, 18, 19, 45,
     46, 47, 48, 49, 50, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44
@@ -1239,7 +1368,8 @@ static const uint8_t huff_b07_xlat[63] = {
 
 static const uint8_t huff_b12_cb[10] = { 3, 10, 1, 3, 12, 0, 30, 9, 18, 8 };
 
-static const uint8_t huff_b12_xlat[81] = {
+static const uint8_t huff_b12_xlat[81] =
+{
     0x00, 0x40, 0x04, 0x01, 0x10, 0x50, 0x44, 0x14, 0x54, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x80, 0x90, 0x20, 0x60, 0x84, 0x94, 0x24, 0x64,
     0x08, 0x48, 0x18, 0x81, 0x91, 0x61, 0x85, 0x95, 0x25, 0x65, 0x09, 0x49,
@@ -1249,11 +1379,13 @@ static const uint8_t huff_b12_xlat[81] = {
     0x6A, 0xA8, 0x82, 0xA2, 0xA6, 0x8A, 0x9A, 0x2A, 0xAA
 };
 
-static const uint8_t huff_b14_cb[14] = {
+static const uint8_t huff_b14_cb[14] =
+{
     1, 12, 1, 0, 0, 4, 0, 3, 5, 16, 28, 34, 26, 4
 };
 
-static const uint8_t huff_b14_xlat[121] = {
+static const uint8_t huff_b14_xlat[121] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0xF1, 0x1F, 0xFF, 0x20, 0xE0, 0x11, 0x02,
     0x0E, 0x30, 0x50, 0xB0, 0xD0, 0x21, 0xE1, 0x12, 0xF2, 0x03, 0x05, 0x0B,
     0x0D, 0x1E, 0xFE, 0x2F, 0xEF, 0x40, 0xC0, 0x31, 0x51, 0xB1, 0xC1, 0xD1,
@@ -1267,11 +1399,13 @@ static const uint8_t huff_b14_xlat[121] = {
     0xBB
 };
 
-static const uint8_t huff_b16_cb[11] = {
+static const uint8_t huff_b16_cb[11] =
+{
     4, 12, 4, 4, 9, 13, 37, 76, 72, 39, 2
 };
 
-static const uint8_t huff_b16_xlat[256] = {
+static const uint8_t huff_b16_xlat[256] =
+{
     0x00, 0x10, 0x01, 0x11, 0x20, 0x21, 0x02, 0x12, 0x30, 0x31, 0x41, 0x22,
     0x32, 0x03, 0x13, 0x23, 0x14, 0x40, 0x51, 0x61, 0x42, 0x52, 0x33, 0x43,
     0x04, 0x24, 0x34, 0x15, 0x25, 0x16, 0x50, 0x60, 0x70, 0x71, 0x81, 0xD1,
@@ -1296,11 +1430,13 @@ static const uint8_t huff_b16_xlat[256] = {
     0xCF, 0xDF, 0xEF, 0xFF
 };
 
-static const uint8_t huff_b26_cb[12] = {
+static const uint8_t huff_b26_cb[12] =
+{
     3, 12, 2, 2, 4, 5, 11, 26, 67, 78, 51, 10
 };
 
-static const uint8_t huff_b26_xlat[256] = {
+static const uint8_t huff_b26_xlat[256] =
+{
     0x00, 0x01, 0x10, 0x11, 0x20, 0x21, 0x02, 0x12, 0x30, 0x31, 0x22, 0x03,
     0x13, 0x40, 0x41, 0x51, 0x32, 0x42, 0x23, 0x33, 0x04, 0x14, 0x24, 0x15,
     0x50, 0x61, 0x71, 0xD1, 0xE1, 0x52, 0x62, 0xD2, 0x43, 0x53, 0xD3, 0x34,
@@ -1325,11 +1461,13 @@ static const uint8_t huff_b26_xlat[256] = {
     0x9B, 0xAB, 0xBB, 0xFF
 };
 
-static const uint8_t huff_b32_cb[12] = {
+static const uint8_t huff_b32_cb[12] =
+{
     2, 11, 1, 0, 4, 6, 7, 10, 22, 11, 16, 4
 };
 
-static const uint8_t huff_b32_xlat[81] = {
+static const uint8_t huff_b32_xlat[81] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x50, 0x44, 0x14, 0x41, 0x11, 0x05, 0x80,
     0x54, 0x51, 0x45, 0x15, 0x55, 0x02, 0x90, 0x20, 0x60, 0x84, 0x24, 0x08,
     0x18, 0x09, 0x12, 0x06, 0xA0, 0x94, 0x64, 0x48, 0x58, 0x81, 0x91, 0x21,
@@ -1339,11 +1477,13 @@ static const uint8_t huff_b32_xlat[81] = {
     0x96, 0x66, 0x9A, 0x2A, 0x6A, 0xA2, 0xA6, 0x8A, 0xAA
 };
 
-static const uint8_t huff_b33_cb[13] = {
+static const uint8_t huff_b33_cb[13] =
+{
     2, 12, 1, 0, 0, 4, 11, 8, 28, 92, 97, 13, 2
 };
 
-static const uint8_t huff_b33_xlat[256] = {
+static const uint8_t huff_b33_xlat[256] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x50, 0x44, 0x14, 0x54, 0x41, 0x11, 0x51,
     0x05, 0x45, 0x15, 0x55, 0x20, 0x95, 0x65, 0x49, 0x59, 0x52, 0x46, 0x16,
     0x80, 0x90, 0x60, 0x84, 0x94, 0x24, 0x64, 0xA4, 0x08, 0x48, 0x18, 0x58,
@@ -1368,11 +1508,13 @@ static const uint8_t huff_b33_xlat[256] = {
     0x2F, 0x3F, 0x33, 0x0B
 };
 
-static const uint8_t huff_b35_cb[14] = {
+static const uint8_t huff_b35_cb[14] =
+{
     1, 12, 1, 0, 0, 0, 4, 6, 6, 14, 42, 63, 59, 30
 };
 
-static const uint8_t huff_b35_xlat[225] = {
+static const uint8_t huff_b35_xlat[225] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x11, 0xF1, 0x02, 0x0E, 0x1F, 0xFF, 0x20,
     0xE0, 0x21, 0xF2, 0xFE, 0xEF, 0x30, 0xD0, 0xE1, 0x12, 0x22, 0xE2, 0x03,
     0x0D, 0x1D, 0x1E, 0x2E, 0xEE, 0x2F, 0xDF, 0x40, 0x60, 0x70, 0x90, 0xA0,
@@ -1394,22 +1536,26 @@ static const uint8_t huff_b35_xlat[225] = {
     0xBA, 0x4B, 0x5B, 0x7B, 0xBB, 0xCB, 0x4C, 0x5C, 0xBC
 };
 
-static const uint8_t huff_b37_cb[13] = {
+static const uint8_t huff_b37_cb[13] =
+{
     1, 11, 1, 0, 2, 0, 2, 2, 6, 17, 14, 13, 6
 };
 
-static const uint8_t huff_b37_xlat[63] = {
-     0,  1, 63,  2, 62,  3, 61,  4,  5,  6, 58, 59, 60,  7,  8,  9,
+static const uint8_t huff_b37_xlat[63] =
+{
+    0,  1, 63,  2, 62,  3, 61,  4,  5,  6, 58, 59, 60,  7,  8,  9,
     10, 25, 26, 27, 28, 29, 34, 35, 37, 38, 39, 55, 56, 57, 11, 13,
     14, 15, 30, 31, 33, 36, 49, 50, 51, 52, 53, 54, 12, 16, 17, 18,
     19, 21, 41, 43, 44, 45, 46, 47, 48, 20, 22, 23, 24, 40, 42
 };
 
-static const uint8_t huff_b41_cb[14] = {
+static const uint8_t huff_b41_cb[14] =
+{
     1, 12, 1, 0, 0, 1, 7, 0, 20, 4, 10, 24, 2, 12
 };
 
-static const uint8_t huff_b41_xlat[81] = {
+static const uint8_t huff_b41_xlat[81] =
+{
     0x00, 0x01, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x03, 0x50, 0xD0, 0x70,
     0xF0, 0xC4, 0x14, 0x34, 0x4C, 0x1C, 0x3C, 0xC1, 0x11, 0x31, 0x05, 0x0D,
     0xC3, 0x13, 0x33, 0x07, 0x0F, 0x44, 0xCC, 0x41, 0x43, 0x54, 0x74, 0xDC,
@@ -1421,7 +1567,8 @@ static const uint8_t huff_b41_xlat[81] = {
 
 static const uint8_t huff_b42_cb[11] = { 1, 9, 1, 0, 1, 3, 2, 3, 7, 4, 4 };
 
-static const uint8_t huff_b42_xlat[25] = {
+static const uint8_t huff_b42_xlat[25] =
+{
     0x00, 0x07, 0x08, 0x38, 0x01, 0x39, 0x0F, 0x10, 0x09, 0x3F, 0x30, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x17, 0x11, 0x0A, 0x3E, 0x37, 0x12, 0x32, 0x16,
     0x36
@@ -1429,7 +1576,8 @@ static const uint8_t huff_b42_xlat[25] = {
 
 static const uint8_t huff_b43_cb[10] = { 2, 9, 1, 1, 3, 4, 9, 15, 12, 4 };
 
-static const uint8_t huff_b43_xlat[49] = {
+static const uint8_t huff_b43_xlat[49] =
+{
     0x00, 0x07, 0x08, 0x38, 0x01, 0x09, 0x39, 0x0F, 0x3F, 0x10, 0x30, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x17, 0x37, 0x18, 0x28, 0x11, 0x19, 0x29, 0x0A,
     0x03, 0x0B, 0x3B, 0x05, 0x0D, 0x3D, 0x3E, 0x1F, 0x2F, 0x12, 0x1A, 0x2A,
@@ -1439,16 +1587,18 @@ static const uint8_t huff_b43_xlat[49] = {
 
 static const uint8_t huff_b47_cb[10] = { 2, 9, 1, 1, 3, 4, 6, 14, 22, 12 };
 
-static const uint8_t huff_b47_xlat[63] = {
-     0,  1,  2, 62, 63,  3,  4, 60, 61,  5,  6,  7, 57, 58, 59,  8,
-     9, 10, 11, 12, 26, 27, 37, 38, 52, 53, 54, 55, 56, 13, 14, 15,
+static const uint8_t huff_b47_xlat[63] =
+{
+    0,  1,  2, 62, 63,  3,  4, 60, 61,  5,  6,  7, 57, 58, 59,  8,
+    9, 10, 11, 12, 26, 27, 37, 38, 52, 53, 54, 55, 56, 13, 14, 15,
     16, 17, 18, 25, 28, 29, 30, 31, 33, 34, 35, 36, 39, 46, 47, 48,
     49, 50, 51, 19, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44, 45
 };
 
 static const uint8_t huff_b52_cb[11] = { 1, 9, 1, 0, 1, 3, 2, 3, 7, 4, 4 };
 
-static const uint8_t huff_b52_xlat[25] = {
+static const uint8_t huff_b52_xlat[25] =
+{
     0x00, 0x01, 0x08, 0x38, 0x07, 0x39, 0x0F, 0x30, 0x09, 0x3F, 0x10, 0x31,
     0x02, 0x3A, 0x06, 0x0E, 0x17, 0x11, 0x0A, 0x3E, 0x37, 0x12, 0x32, 0x16,
     0x36
@@ -1460,16 +1610,19 @@ static const uint8_t huff_b53_xlat[7] = { 0, 7, 1, 2, 3, 5, 6 };
 
 static const uint8_t huff_b56_cb[11] = { 1, 9, 1, 0, 2, 0, 2, 4, 11, 9, 2 };
 
-static const uint8_t huff_b56_xlat[31] = {
-     0,  1, 31,  2, 30, 3,  4, 13, 29,  5,  6,  7, 14, 15, 17, 18,
+static const uint8_t huff_b56_xlat[31] =
+{
+    0,  1, 31,  2, 30, 3,  4, 13, 29,  5,  6,  7, 14, 15, 17, 18,
     19, 26, 27, 28,  8, 9, 12, 20, 21, 22, 23, 24, 25, 10, 11
 };
 
-static const uint8_t huff_b62_cb[14] = {
+static const uint8_t huff_b62_cb[14] =
+{
     1, 12, 1, 0, 0, 2, 3, 5, 12, 14, 18, 15, 9, 2
 };
 
-static const uint8_t huff_b62_xlat[81] = {
+static const uint8_t huff_b62_xlat[81] =
+{
     0x00, 0x40, 0x01, 0x10, 0x04, 0x02, 0x80, 0x50, 0x90, 0x05, 0x06, 0x20,
     0x60, 0x44, 0x14, 0x54, 0x24, 0x08, 0x18, 0x41, 0x11, 0x15, 0x09, 0xA0,
     0x84, 0x94, 0x64, 0xA4, 0x28, 0x51, 0x45, 0x55, 0x19, 0x12, 0x16, 0x0A,
@@ -1487,11 +1640,13 @@ static const uint8_t huff_b64_cb[7] = { 1, 5, 1, 1, 1, 1, 2 };
 
 static const uint8_t huff_b64_xlat[6] = { 1, 0, 2, 5, 3, 4 };
 
-static const uint8_t huff_b65_cb[14] = {
+static const uint8_t huff_b65_cb[14] =
+{
     1, 12, 1, 0, 0, 2, 2, 2, 6, 12, 34, 92, 54, 20
 };
 
-static const uint8_t huff_b65_xlat[225] = {
+static const uint8_t huff_b65_xlat[225] =
+{
     0x00, 0xF0, 0x01, 0x10, 0x0F, 0x11, 0xF1, 0x20, 0xE0, 0x02, 0x0E, 0x1F,
     0xFF, 0xD0, 0x21, 0xE1, 0x12, 0xF2, 0x07, 0x0A, 0x0D, 0x1E, 0xFE, 0x2F,
     0xEF, 0x30, 0x70, 0x90, 0xA0, 0xC0, 0x71, 0x91, 0xC1, 0xD1, 0x32, 0x92,
@@ -1513,11 +1668,13 @@ static const uint8_t huff_b65_xlat[225] = {
     0x79, 0x99, 0x5B, 0xBB, 0xCB, 0x5C, 0xDC, 0x7F, 0xAF
 };
 
-static const uint8_t huff_b66_cb[14] = {
+static const uint8_t huff_b66_cb[14] =
+{
     1, 12, 1, 0, 0, 3, 0, 3, 3, 10, 40, 85, 61, 50
 };
 
-static const uint8_t huff_b66_xlat[256] = {
+static const uint8_t huff_b66_xlat[256] =
+{
     0x00, 0x10, 0x01, 0x11, 0x21, 0x02, 0x12, 0x20, 0x22, 0x13, 0x30, 0x31,
     0x41, 0xD1, 0xE1, 0x32, 0x52, 0x03, 0x23, 0x2D, 0x40, 0x50, 0x60, 0x80,
     0xD0, 0xE0, 0x51, 0x61, 0xF1, 0x42, 0x62, 0xD2, 0xE2, 0xF2, 0x33, 0x43,
@@ -1544,18 +1701,21 @@ static const uint8_t huff_b66_xlat[256] = {
 
 static const uint8_t huff_b67_cb[10] = { 2, 9, 1, 2, 1, 4, 7, 10, 26, 12 };
 
-static const uint8_t huff_b67_xlat[63] = {
-     0,  1, 63, 62,  2,  3, 60, 61,  4,  5,  6,  7, 57, 58, 59,  8,
-     9, 10, 11, 12, 52, 53, 54, 55, 56, 13, 14, 15, 16, 17, 18, 25,
+static const uint8_t huff_b67_xlat[63] =
+{
+    0,  1, 63, 62,  2,  3, 60, 61,  4,  5,  6,  7, 57, 58, 59,  8,
+    9, 10, 11, 12, 52, 53, 54, 55, 56, 13, 14, 15, 16, 17, 18, 25,
     26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 46, 47, 48,
     49, 50, 51, 19, 20, 21, 22, 23, 24, 40, 41, 42, 43, 44, 45
 };
 
-static const uint8_t huff_b71_cb[14] = {
+static const uint8_t huff_b71_cb[14] =
+{
     1, 12, 1, 0, 0, 1, 7, 0, 19, 5, 13, 23, 0, 12
 };
 
-static const uint8_t huff_b71_xlat[81] = {
+static const uint8_t huff_b71_xlat[81] =
+{
     0x00, 0x03, 0x40, 0xC0, 0x10, 0x30, 0x04, 0x0C, 0x01, 0x50, 0xD0, 0x70,
     0xF0, 0xC4, 0x14, 0x34, 0x4C, 0x1C, 0x3C, 0xC1, 0x11, 0x31, 0x05, 0x0D,
     0x13, 0x33, 0x07, 0x0F, 0x44, 0xCC, 0x41, 0x43, 0xC3, 0x54, 0x74, 0xDC,
@@ -1565,11 +1725,13 @@ static const uint8_t huff_b71_xlat[81] = {
     0x5D, 0x7D, 0xFD, 0x57, 0xD7, 0xF7, 0x5F, 0xDF, 0x7F
 };
 
-static const uint8_t huff_b73_cb[13] = {
+static const uint8_t huff_b73_cb[13] =
+{
     1, 11, 1, 0, 0, 0, 1, 4, 9, 4, 103, 110, 24
 };
 
-static const uint8_t huff_b73_xlat[256] = {
+static const uint8_t huff_b73_xlat[256] =
+{
     0x00, 0x40, 0x10, 0x04, 0x01, 0x05, 0x50, 0x14, 0x54, 0x41, 0x11, 0x51,
     0x45, 0x15, 0x55, 0x44, 0x95, 0x6A, 0x03, 0x80, 0xC0, 0x90, 0xD0, 0x94,
     0xD4, 0x24, 0x64, 0x58, 0x91, 0xA1, 0x85, 0xD5, 0x25, 0x65, 0xA5, 0xE5,
@@ -1596,15 +1758,18 @@ static const uint8_t huff_b73_xlat[256] = {
 
 static const uint8_t huff_b74_cb[8] = { 1, 6, 1, 0, 2, 2, 2, 4 };
 
-static const uint8_t huff_b74_xlat[11] = {
+static const uint8_t huff_b74_xlat[11] =
+{
     0, 1, 15, 2, 14, 5, 13, 3, 4, 11, 12
 };
 
-static const uint8_t huff_b75_cb[13] = {
+static const uint8_t huff_b75_cb[13] =
+{
     2, 12, 1, 4, 0, 0, 0, 8, 11, 24, 53, 64, 60
 };
 
-static const uint8_t huff_b75_xlat[225] = {
+static const uint8_t huff_b75_xlat[225] =
+{
     0x00, 0x10, 0xF0, 0x01, 0x0F, 0x20, 0xE0, 0x11, 0xF1, 0x02, 0x0E, 0x1F,
     0xFF, 0xD0, 0x21, 0xE1, 0x12, 0xF2, 0x03, 0x0D, 0x1E, 0xFE, 0x2F, 0xEF,
     0x30, 0x40, 0x60, 0x70, 0x90, 0xA0, 0xC0, 0x31, 0xD1, 0x22, 0xE2, 0x13,
@@ -1626,19 +1791,22 @@ static const uint8_t huff_b75_xlat[225] = {
     0x4C, 0x5C, 0xBC, 0xCC, 0xDC, 0x5D, 0xCD, 0xBE, 0xBF
 };
 
-static const uint8_t huff_b77_cb[12] = {
+static const uint8_t huff_b77_cb[12] =
+{
     2, 11, 1, 0, 4, 6, 10, 12, 7, 15, 4, 4
 };
 
-static const uint8_t huff_b77_xlat[63] = {
-     0,  1,  2, 62, 63,  3,  4,  5, 59, 60, 61,  6,  7,  8,  9, 10,
+static const uint8_t huff_b77_xlat[63] =
+{
+    0,  1,  2, 62, 63,  3,  4,  5, 59, 60, 61,  6,  7,  8,  9, 10,
     54, 55, 56, 57, 58, 11, 12, 13, 14, 15, 16, 47, 49, 50, 51, 52,
     53, 17, 18, 19, 20, 45, 46, 48, 21, 22, 23, 24, 25, 26, 27, 37,
     38, 39, 40, 41, 42, 43, 44, 28, 29, 30, 35, 31, 33, 34, 36
 };
 
 /** Tables for spectrum coding. */
-typedef struct Atrac3pSpecCodeTab {
+typedef struct Atrac3pSpecCodeTab
+{
     uint8_t group_size;  ///< number of coefficients grouped together
     uint8_t num_coeffs;  ///< 1 - map index to a single value, > 1 - map index to a vector of values
     uint8_t bits;        ///< number of bits a single coefficient occupy
@@ -1649,7 +1817,8 @@ typedef struct Atrac3pSpecCodeTab {
     const uint8_t *xlat; ///< pointer to the translation table or NULL if none
 } Atrac3pSpecCodeTab;
 
-static const Atrac3pSpecCodeTab atrac3p_spectra_tabs[112] = {
+static const Atrac3pSpecCodeTab atrac3p_spectra_tabs[112] =
+{
     /* table set = A */
     /* code table = 0 */
     { 1, 4, 2, 1, -1, huff_a01_cb, huff_a01_xlat }, // wordlen = 1
@@ -1798,69 +1967,83 @@ static const Atrac3pSpecCodeTab atrac3p_spectra_tabs[112] = {
 };
 
 /* Huffman tables for gain control data. */
-static const uint8_t atrac3p_huff_gain_npoints1_cb[9] = {
+static const uint8_t atrac3p_huff_gain_npoints1_cb[9] =
+{
     1, 7, 1, 1, 1, 1, 1, 1, 2
 };
 
-static const uint8_t atrac3p_huff_gain_npoints2_xlat[8] = {
+static const uint8_t atrac3p_huff_gain_npoints2_xlat[8] =
+{
     0, 1, 7, 2, 6, 3, 4, 5
 };
 
 static const uint8_t atrac3p_huff_gain_lev1_cb[9] = { 1, 7, 1, 0, 2, 2, 1, 2, 8 };
-static const uint8_t atrac3p_huff_gain_lev1_xlat[16] = {
+static const uint8_t atrac3p_huff_gain_lev1_xlat[16] =
+{
     7, 5, 8, 6, 9, 4, 10, 11, 0, 1, 2, 3, 12, 13, 14, 15
 };
 
-static const uint8_t atrac3p_huff_gain_lev2_cb[11] = {
+static const uint8_t atrac3p_huff_gain_lev2_cb[11] =
+{
     1, 9, 1, 1, 1, 1, 1, 0, 2, 0, 8
 };
 
-static const uint8_t atrac3p_huff_gain_lev2_xlat[15] = {
+static const uint8_t atrac3p_huff_gain_lev2_xlat[15] =
+{
     15, 14, 1, 13, 2, 3, 12, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
-static const uint8_t atrac3p_huff_gain_lev3_cb[11] = {
+static const uint8_t atrac3p_huff_gain_lev3_cb[11] =
+{
     1, 9, 1, 0, 3, 1, 1, 0, 2, 0, 8
 };
 
-static const uint8_t atrac3p_huff_gain_lev3_xlat[16] = {
+static const uint8_t atrac3p_huff_gain_lev3_xlat[16] =
+{
     0, 1, 14, 15, 2, 13, 3, 12, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
-static const uint8_t atrac3p_huff_gain_lev4_cb[11] = {
+static const uint8_t atrac3p_huff_gain_lev4_cb[11] =
+{
     1, 9, 1, 1, 1, 1, 1, 0, 1, 2, 8
 };
 
-static const uint8_t atrac3p_huff_gain_lev4_xlat[16] = {
+static const uint8_t atrac3p_huff_gain_lev4_xlat[16] =
+{
     0, 1, 15, 14, 2, 13, 3, 12, 4, 5, 6, 7, 8, 9, 10, 11
 };
 
 static const uint8_t atrac3p_huff_gain_loc1_cb[9] = { 2, 8, 1, 2, 4, 4, 4, 0, 16 };
-static const uint8_t atrac3p_huff_gain_loc1_xlat[31] = {
-     1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+static const uint8_t atrac3p_huff_gain_loc1_xlat[31] =
+{
+    1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
 };
 
 static const uint8_t atrac3p_huff_gain_loc2_cb[8] = { 3, 8, 5, 3, 2, 3, 2, 16 };
-static const uint8_t atrac3p_huff_gain_loc2_xlat[31] = {
-     2,  3,  4,  5,  6,  1,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
+static const uint8_t atrac3p_huff_gain_loc2_xlat[31] =
+{
+    2,  3,  4,  5,  6,  1,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
 };
 
 static const uint8_t atrac3p_huff_gain_loc3_cb[7] = { 2, 6, 1, 0, 2, 11, 18 };
-static const uint8_t atrac3p_huff_gain_loc3_xlat[32] = {
+static const uint8_t atrac3p_huff_gain_loc3_xlat[32] =
+{
     0,   1, 31,  2,  3,  4,  5,  6,  7, 26, 27, 28, 29, 30,  8,  9,
     10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25
 };
 
 static const uint8_t atrac3p_huff_gain_loc4_cb[5] = { 4, 6, 3, 23, 6 };
-static const uint8_t atrac3p_huff_gain_loc4_xlat[32] = {
+static const uint8_t atrac3p_huff_gain_loc4_xlat[32] =
+{
     0,  28, 29,  1,  2,  3,  4, 11, 12, 13, 14, 15, 16, 17, 18, 19,
     20, 21, 22, 23, 24, 25, 26, 27, 30, 31,  5,  6,  7,  8,  9, 10
 };
 
 static const uint8_t atrac3p_huff_gain_loc5_cb[9] = { 1, 7, 1, 0, 0, 3, 2, 6, 20 };
-static const uint8_t atrac3p_huff_gain_loc5_xlat[32] = {
+static const uint8_t atrac3p_huff_gain_loc5_xlat[32] =
+{
     0,   1,  2, 31,  3,  4,  5,  6,  7,  8, 29, 30,  9, 10, 11, 12,
     13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
 };
@@ -1871,39 +2054,44 @@ static const uint8_t atrac3p_huff_numwavs1_cb[9] = { 1, 7, 1, 1, 1, 1, 1, 1, 2 }
 static const uint8_t atrac3p_huff_numwavs2_cb[8] = { 1, 6, 1, 1, 1, 1, 0, 4 };
 static const uint8_t atrac3p_huff_numwavs2_xlat[8] = { 0, 1, 7, 2, 3, 4, 5, 6 };
 static const uint8_t atrac3p_huff_wav_ampsf1_cb[7] = { 4, 8, 10, 8, 6, 0, 8 };
-static const uint8_t atrac3p_huff_wav_ampsf1_xlat[32] = {
-     8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 5, 6,  7, 18, 19, 20,
+static const uint8_t atrac3p_huff_wav_ampsf1_xlat[32] =
+{
+    8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 5, 6,  7, 18, 19, 20,
     21, 22,  4, 23, 24, 25, 26, 27,  0,  1, 2, 3, 28, 29, 30, 31
 };
 
 static const uint8_t atrac3p_huff_wav_ampsf2_cb[7] = { 4, 8, 11, 5, 6, 6, 4 };
-static const uint8_t atrac3p_huff_wav_ampsf2_xlat[32] = {
+static const uint8_t atrac3p_huff_wav_ampsf2_xlat[32] =
+{
     18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 14, 15, 16, 17, 29,
-     9, 10, 11, 12, 13, 30,  4,  5,  6,  7,  8, 31,  0,  1,  2,  3
+    9, 10, 11, 12, 13, 30,  4,  5,  6,  7,  8, 31,  0,  1,  2,  3
 };
 
 static const uint8_t atrac3p_huff_wav_ampsf3_cb[9] = { 2, 8, 1, 3, 3, 1, 4, 4, 16 };
-static const uint8_t atrac3p_huff_wav_ampsf3_xlat[32] = {
+static const uint8_t atrac3p_huff_wav_ampsf3_xlat[32] =
+{
     0, 1,  2, 31,  3, 29, 30,  4,  5,  6, 27, 28,  7, 24, 25, 26,
     8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23
 };
 
-static const uint8_t atrac3p_huff_freq_cb[13] = {
+static const uint8_t atrac3p_huff_freq_cb[13] =
+{
     1, 11, 1, 0, 0, 2, 2, 0, 9, 9, 29, 104, 100
 };
 
-static const uint8_t atrac3p_huff_freq_xlat[256] = {
-      0,   1, 255,   2, 254,   3,   4,   5,   6,   7,   8, 251, 252, 253,   9,  10,
-     11,  12, 246, 247, 248, 249, 250,  13,  14,  15,  16,  17,  18,  19,  20,  21,
-     22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,
-     38, 243, 244, 245,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,
-     51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  65,  66,
-     67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,
-     83,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93, 194, 195, 196, 197, 198,
+static const uint8_t atrac3p_huff_freq_xlat[256] =
+{
+    0,   1, 255,   2, 254,   3,   4,   5,   6,   7,   8, 251, 252, 253,   9,  10,
+    11,  12, 246, 247, 248, 249, 250,  13,  14,  15,  16,  17,  18,  19,  20,  21,
+    22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34,  35,  36,  37,
+    38, 243, 244, 245,  39,  40,  41,  42,  43,  44,  45,  46,  47,  48,  49,  50,
+    51,  52,  53,  54,  55,  56,  57,  58,  59,  60,  61,  62,  63,  64,  65,  66,
+    67,  68,  69,  70,  71,  72,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,
+    83,  84,  85,  86,  87,  88,  89,  90,  91,  92,  93, 194, 195, 196, 197, 198,
     199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214,
     215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230,
     231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242,  94,  95,  96,  97,
-     98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113,
+    98,  99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113,
     114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
     130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145,
     146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161,

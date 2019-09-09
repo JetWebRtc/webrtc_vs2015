@@ -20,7 +20,8 @@
 #include "avformat.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct IVFEncContext {
+typedef struct IVFEncContext
+{
     unsigned frame_cnt;
     uint64_t last_pts, sum_delta_pts;
 } IVFEncContext;
@@ -30,13 +31,15 @@ static int ivf_write_header(AVFormatContext *s)
     AVCodecContext *ctx;
     AVIOContext *pb = s->pb;
 
-    if (s->nb_streams != 1) {
+    if (s->nb_streams != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Format supports only exactly one video stream\n");
         return AVERROR(EINVAL);
     }
     ctx = s->streams[0]->codec;
     if (ctx->codec_type != AVMEDIA_TYPE_VIDEO ||
-        !(ctx->codec_id == AV_CODEC_ID_VP8 || ctx->codec_id == AV_CODEC_ID_VP9)) {
+            !(ctx->codec_id == AV_CODEC_ID_VP8 || ctx->codec_id == AV_CODEC_ID_VP9))
+    {
         av_log(s, AV_LOG_ERROR, "Currently only VP8 and VP9 are supported!\n");
         return AVERROR(EINVAL);
     }
@@ -72,7 +75,8 @@ static int ivf_write_packet(AVFormatContext *s, AVPacket *pkt)
 static int ivf_write_trailer(AVFormatContext *s)
 {
     AVIOContext *pb = s->pb;
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         IVFEncContext *ctx = s->priv_data;
         size_t end = avio_tell(pb);
 
@@ -84,7 +88,8 @@ static int ivf_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_ivf_muxer = {
+AVOutputFormat ff_ivf_muxer =
+{
     .priv_data_size = sizeof(IVFEncContext),
     .name         = "ivf",
     .long_name    = NULL_IF_CONFIG_SMALL("On2 IVF"),

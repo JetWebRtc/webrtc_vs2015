@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,15 +24,15 @@ const int NETEQTEST_RTPpacket::_kRDHeaderLen = 8;
 const int NETEQTEST_RTPpacket::_kBasicHeaderLen = 12;
 
 NETEQTEST_RTPpacket::NETEQTEST_RTPpacket()
-:
-_datagram(NULL),
-_payloadPtr(NULL),
-_memSize(0),
-_datagramLen(-1),
-_payloadLen(0),
-_rtpParsed(false),
-_receiveTime(0),
-_lost(false)
+    :
+    _datagram(NULL),
+    _payloadPtr(NULL),
+    _memSize(0),
+    _datagramLen(-1),
+    _payloadLen(0),
+    _rtpParsed(false),
+    _receiveTime(0),
+    _lost(false)
 {
     memset(&_rtpInfo, 0, sizeof(_rtpInfo));
     _blockList.clear();
@@ -48,7 +48,8 @@ NETEQTEST_RTPpacket::~NETEQTEST_RTPpacket()
 
 void NETEQTEST_RTPpacket::reset()
 {
-    if(_datagram) {
+    if(_datagram)
+    {
         delete [] _datagram;
     }
     _datagram = NULL;
@@ -64,22 +65,28 @@ void NETEQTEST_RTPpacket::reset()
 
 int NETEQTEST_RTPpacket::skipFileHeader(FILE *fp)
 {
-    if (!fp) {
+    if (!fp)
+    {
         return -1;
     }
 
     const int kFirstLineLength = 40;
     char firstline[kFirstLineLength];
-    if (fgets(firstline, kFirstLineLength, fp) == NULL) {
+    if (fgets(firstline, kFirstLineLength, fp) == NULL)
+    {
         return -1;
     }
-    if (strncmp(firstline, "#!rtpplay", 9) == 0) {
-        if (strncmp(firstline, "#!rtpplay1.0", 12) != 0) {
+    if (strncmp(firstline, "#!rtpplay", 9) == 0)
+    {
+        if (strncmp(firstline, "#!rtpplay1.0", 12) != 0)
+        {
             return -1;
         }
     }
-    else if (strncmp(firstline, "#!RTPencode", 11) == 0) {
-        if (strncmp(firstline, "#!RTPencode1.0", 14) != 0) {
+    else if (strncmp(firstline, "#!RTPencode", 11) == 0)
+    {
+        if (strncmp(firstline, "#!RTPencode1.0", 14) != 0)
+        {
             return -1;
         }
     }
@@ -108,7 +115,8 @@ int NETEQTEST_RTPpacket::readFromFile(FILE *fp)
     int packetLen = 0;
 
     bool readNextPacket = true;
-    while (readNextPacket) {
+    while (readNextPacket)
+    {
         readNextPacket = false;
         if (fread(&length,2,1,fp)==0)
         {
@@ -280,17 +288,20 @@ void NETEQTEST_RTPpacket::parseHeader()
 
 }
 
-void NETEQTEST_RTPpacket::parseHeader(webrtc::WebRtcRTPHeader* rtp_header) {
-  if (!_rtpParsed) {
-    parseHeader();
-  }
-  if (rtp_header) {
-    rtp_header->header.markerBit = _rtpInfo.header.markerBit;
-    rtp_header->header.payloadType = _rtpInfo.header.payloadType;
-    rtp_header->header.sequenceNumber = _rtpInfo.header.sequenceNumber;
-    rtp_header->header.timestamp = _rtpInfo.header.timestamp;
-    rtp_header->header.ssrc = _rtpInfo.header.ssrc;
-  }
+void NETEQTEST_RTPpacket::parseHeader(webrtc::WebRtcRTPHeader* rtp_header)
+{
+    if (!_rtpParsed)
+    {
+        parseHeader();
+    }
+    if (rtp_header)
+    {
+        rtp_header->header.markerBit = _rtpInfo.header.markerBit;
+        rtp_header->header.payloadType = _rtpInfo.header.payloadType;
+        rtp_header->header.sequenceNumber = _rtpInfo.header.sequenceNumber;
+        rtp_header->header.timestamp = _rtpInfo.header.timestamp;
+        rtp_header->header.ssrc = _rtpInfo.header.ssrc;
+    }
 }
 
 const webrtc::WebRtcRTPHeader* NETEQTEST_RTPpacket::RTPinfo() const
@@ -540,11 +551,11 @@ int NETEQTEST_RTPpacket::setRTPheader(const webrtc::WebRtcRTPHeader* RTPinfo)
     }
 
     makeRTPheader(_datagram,
-        RTPinfo->header.payloadType,
-        RTPinfo->header.sequenceNumber,
-        RTPinfo->header.timestamp,
-        RTPinfo->header.ssrc,
-        RTPinfo->header.markerBit);
+                  RTPinfo->header.payloadType,
+                  RTPinfo->header.sequenceNumber,
+                  RTPinfo->header.timestamp,
+                  RTPinfo->header.ssrc,
+                  RTPinfo->header.markerBit);
 
     return 0;
 }
@@ -580,34 +591,34 @@ int NETEQTEST_RTPpacket::splitStereo(NETEQTEST_RTPpacket* slaveRtp,
     switch(mode)
     {
     case stereoModeSample1:
-        {
-            // sample based codec with 1-byte samples
-            splitStereoSample(slaveRtp, 1 /* 1 byte/sample */);
-            break;
-        }
+    {
+        // sample based codec with 1-byte samples
+        splitStereoSample(slaveRtp, 1 /* 1 byte/sample */);
+        break;
+    }
     case stereoModeSample2:
-        {
-            // sample based codec with 2-byte samples
-            splitStereoSample(slaveRtp, 2 /* 2 bytes/sample */);
-            break;
-        }
+    {
+        // sample based codec with 2-byte samples
+        splitStereoSample(slaveRtp, 2 /* 2 bytes/sample */);
+        break;
+    }
     case stereoModeFrame:
-        {
-            // frame based codec
-            splitStereoFrame(slaveRtp);
-            break;
-        }
+    {
+        // frame based codec
+        splitStereoFrame(slaveRtp);
+        break;
+    }
     case stereoModeDuplicate:
-        {
-            // frame based codec, send the whole packet to both master and slave
-            splitStereoDouble(slaveRtp);
-            break;
-        }
+    {
+        // frame based codec, send the whole packet to both master and slave
+        splitStereoDouble(slaveRtp);
+        break;
+    }
     case stereoModeMono:
-        {
-            assert(false);
-            return -1;
-        }
+    {
+        assert(false);
+        return -1;
+    }
     }
 
     return 0;
@@ -636,7 +647,7 @@ void NETEQTEST_RTPpacket::makeRTPheader(unsigned char* rtp_data,
 }
 
 uint16_t NETEQTEST_RTPpacket::parseRTPheader(webrtc::WebRtcRTPHeader* RTPinfo,
-                                             uint8_t **payloadPtr) const
+        uint8_t **payloadPtr) const
 {
     uint16_t* rtp_data = reinterpret_cast<uint16_t*>(_datagram);
     int i_P, i_X, i_CC;
@@ -659,7 +670,7 @@ uint16_t NETEQTEST_RTPpacket::parseRTPheader(webrtc::WebRtcRTPHeader* RTPinfo,
 
 
 void NETEQTEST_RTPpacket::parseBasicHeader(webrtc::WebRtcRTPHeader* RTPinfo,
-                                           int *i_P, int *i_X, int *i_CC) const
+        int *i_P, int *i_X, int *i_CC) const
 {
     uint16_t* rtp_data = reinterpret_cast<uint16_t*>(_datagram);
     if (_datagramLen < 12)
@@ -697,7 +708,7 @@ int NETEQTEST_RTPpacket::calcHeaderLength(int i_X, int i_CC) const
         if (_datagramLen > 2 * offset)
         {
             i_extlength = 1 +
-                (((rtp_data[offset]) >> 8) | ((rtp_data[offset] & 0xFF) << 8));
+                          (((rtp_data[offset]) >> 8) | ((rtp_data[offset] & 0xFF) << 8));
         }
     }
 
@@ -725,10 +736,10 @@ int NETEQTEST_RTPpacket::calcPadLength(int i_P) const
 }
 
 void NETEQTEST_RTPpacket::splitStereoSample(NETEQTEST_RTPpacket* slaveRtp,
-                                            int stride)
+        int stride)
 {
     if(!_payloadPtr || !slaveRtp || !slaveRtp->_payloadPtr
-        || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
+            || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
     {
         return;
     }
@@ -740,14 +751,16 @@ void NETEQTEST_RTPpacket::splitStereoSample(NETEQTEST_RTPpacket* slaveRtp,
     while (readDataPtr - _payloadPtr < static_cast<ptrdiff_t>(_payloadLen))
     {
         // master data
-        for (int ix = 0; ix < stride; ix++) {
+        for (int ix = 0; ix < stride; ix++)
+        {
             *writeDataPtr = *readDataPtr;
             writeDataPtr++;
             readDataPtr++;
         }
 
         // slave data
-        for (int ix = 0; ix < stride; ix++) {
+        for (int ix = 0; ix < stride; ix++)
+        {
             *slaveData = *readDataPtr;
             slaveData++;
             readDataPtr++;
@@ -762,7 +775,7 @@ void NETEQTEST_RTPpacket::splitStereoSample(NETEQTEST_RTPpacket* slaveRtp,
 void NETEQTEST_RTPpacket::splitStereoFrame(NETEQTEST_RTPpacket* slaveRtp)
 {
     if(!_payloadPtr || !slaveRtp || !slaveRtp->_payloadPtr
-        || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
+            || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
     {
         return;
     }
@@ -775,7 +788,7 @@ void NETEQTEST_RTPpacket::splitStereoFrame(NETEQTEST_RTPpacket* slaveRtp)
 void NETEQTEST_RTPpacket::splitStereoDouble(NETEQTEST_RTPpacket* slaveRtp)
 {
     if(!_payloadPtr || !slaveRtp || !slaveRtp->_payloadPtr
-        || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
+            || _payloadLen == 0 || slaveRtp->_memSize < _memSize)
     {
         return;
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,8 +17,10 @@
 
 using webrtc::rtcp::ReportBlock;
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 const uint32_t kRemoteSsrc = 0x23456789;
 const uint8_t kFractionLost = 55;
@@ -30,56 +32,60 @@ const uint32_t kLastSr = 0x44454647;
 const uint32_t kDelayLastSr = 0x55565758;
 const size_t kBufferLength = ReportBlock::kLength;
 
-TEST(RtcpPacketReportBlockTest, ParseChecksLength) {
-  uint8_t buffer[kBufferLength];
-  memset(buffer, 0, sizeof(buffer));
+TEST(RtcpPacketReportBlockTest, ParseChecksLength)
+{
+    uint8_t buffer[kBufferLength];
+    memset(buffer, 0, sizeof(buffer));
 
-  ReportBlock rb;
-  EXPECT_FALSE(rb.Parse(buffer, kBufferLength - 1));
-  EXPECT_TRUE(rb.Parse(buffer, kBufferLength));
+    ReportBlock rb;
+    EXPECT_FALSE(rb.Parse(buffer, kBufferLength - 1));
+    EXPECT_TRUE(rb.Parse(buffer, kBufferLength));
 }
 
-TEST(RtcpPacketReportBlockTest, ParseAnyData) {
-  uint8_t buffer[kBufferLength];
-  // Fill buffer with semi-random data.
-  Random generator(0x256F8A285EC829ull);
-  for (size_t i = 0; i < kBufferLength; ++i)
-    buffer[i] = static_cast<uint8_t>(generator.Rand(0, 0xff));
+TEST(RtcpPacketReportBlockTest, ParseAnyData)
+{
+    uint8_t buffer[kBufferLength];
+    // Fill buffer with semi-random data.
+    Random generator(0x256F8A285EC829ull);
+    for (size_t i = 0; i < kBufferLength; ++i)
+        buffer[i] = static_cast<uint8_t>(generator.Rand(0, 0xff));
 
-  ReportBlock rb;
-  EXPECT_TRUE(rb.Parse(buffer, kBufferLength));
+    ReportBlock rb;
+    EXPECT_TRUE(rb.Parse(buffer, kBufferLength));
 }
 
-TEST(RtcpPacketReportBlockTest, ParseMatchCreate) {
-  ReportBlock rb;
-  rb.SetMediaSsrc(kRemoteSsrc);
-  rb.SetFractionLost(kFractionLost);
-  rb.SetCumulativeLost(kCumulativeLost);
-  rb.SetExtHighestSeqNum(kExtHighestSeqNum);
-  rb.SetJitter(kJitter);
-  rb.SetLastSr(kLastSr);
-  rb.SetDelayLastSr(kDelayLastSr);
+TEST(RtcpPacketReportBlockTest, ParseMatchCreate)
+{
+    ReportBlock rb;
+    rb.SetMediaSsrc(kRemoteSsrc);
+    rb.SetFractionLost(kFractionLost);
+    rb.SetCumulativeLost(kCumulativeLost);
+    rb.SetExtHighestSeqNum(kExtHighestSeqNum);
+    rb.SetJitter(kJitter);
+    rb.SetLastSr(kLastSr);
+    rb.SetDelayLastSr(kDelayLastSr);
 
-  uint8_t buffer[kBufferLength];
-  rb.Create(buffer);
+    uint8_t buffer[kBufferLength];
+    rb.Create(buffer);
 
-  ReportBlock parsed;
-  EXPECT_TRUE(parsed.Parse(buffer, kBufferLength));
+    ReportBlock parsed;
+    EXPECT_TRUE(parsed.Parse(buffer, kBufferLength));
 
-  EXPECT_EQ(kRemoteSsrc, parsed.source_ssrc());
-  EXPECT_EQ(kFractionLost, parsed.fraction_lost());
-  EXPECT_EQ(kCumulativeLost, parsed.cumulative_lost());
-  EXPECT_EQ(kExtHighestSeqNum, parsed.extended_high_seq_num());
-  EXPECT_EQ(kJitter, parsed.jitter());
-  EXPECT_EQ(kLastSr, parsed.last_sr());
-  EXPECT_EQ(kDelayLastSr, parsed.delay_since_last_sr());
+    EXPECT_EQ(kRemoteSsrc, parsed.source_ssrc());
+    EXPECT_EQ(kFractionLost, parsed.fraction_lost());
+    EXPECT_EQ(kCumulativeLost, parsed.cumulative_lost());
+    EXPECT_EQ(kExtHighestSeqNum, parsed.extended_high_seq_num());
+    EXPECT_EQ(kJitter, parsed.jitter());
+    EXPECT_EQ(kLastSr, parsed.last_sr());
+    EXPECT_EQ(kDelayLastSr, parsed.delay_since_last_sr());
 }
 
-TEST(RtcpPacketReportBlockTest, ValidateCumulativeLost) {
-  const uint32_t kMaxCumulativeLost = 0xffffff;
-  ReportBlock rb;
-  EXPECT_FALSE(rb.SetCumulativeLost(kMaxCumulativeLost + 1));
-  EXPECT_TRUE(rb.SetCumulativeLost(kMaxCumulativeLost));
+TEST(RtcpPacketReportBlockTest, ValidateCumulativeLost)
+{
+    const uint32_t kMaxCumulativeLost = 0xffffff;
+    ReportBlock rb;
+    EXPECT_FALSE(rb.SetCumulativeLost(kMaxCumulativeLost + 1));
+    EXPECT_TRUE(rb.SetCumulativeLost(kMaxCumulativeLost));
 }
 
 }  // namespace

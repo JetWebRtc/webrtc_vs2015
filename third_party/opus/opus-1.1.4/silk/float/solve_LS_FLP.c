@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -100,7 +100,8 @@ void silk_solve_LDL_FLP(
     D*(L^T)*x = T <=> (L^T)*x = inv(D)*T, because D is
     diagonal just multiply with 1/d_i
     ****************************************************/
-    for( i = 0; i < M; i++ ) {
+    for( i = 0; i < M; i++ )
+    {
         T[ i ] = T[ i ] * Dinv[ i ];
     }
     /****************************************************
@@ -120,10 +121,12 @@ static OPUS_INLINE void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
     silk_float temp;
     const silk_float *ptr1;
 
-    for( i = M - 1; i >= 0; i-- ) {
+    for( i = M - 1; i >= 0; i-- )
+    {
         ptr1 =  matrix_adr( L, 0, i, M );
         temp = 0;
-        for( j = M - 1; j > i ; j-- ) {
+        for( j = M - 1; j > i ; j-- )
+        {
             temp += ptr1[ j * M ] * x[ j ];
         }
         temp = b[ i ] - temp;
@@ -142,10 +145,12 @@ static OPUS_INLINE void silk_SolveWithLowerTriangularWdiagOnes_FLP(
     silk_float temp;
     const silk_float *ptr1;
 
-    for( i = 0; i < M; i++ ) {
+    for( i = 0; i < M; i++ )
+    {
         ptr1 =  matrix_adr( L, i, 0, M );
         temp = 0;
-        for( j = 0; j < i; j++ ) {
+        for( j = 0; j < i; j++ )
+        {
             temp += ptr1[ j ] * x[ j ];
         }
         temp = b[ i ] - temp;
@@ -168,19 +173,24 @@ static OPUS_INLINE void silk_LDL_FLP(
     silk_assert( M <= MAX_MATRIX_SIZE );
 
     diag_min_value = FIND_LTP_COND_FAC * 0.5f * ( A[ 0 ] + A[ M * M - 1 ] );
-    for( loop_count = 0; loop_count < M && err == 1; loop_count++ ) {
+    for( loop_count = 0; loop_count < M && err == 1; loop_count++ )
+    {
         err = 0;
-        for( j = 0; j < M; j++ ) {
+        for( j = 0; j < M; j++ )
+        {
             ptr1 = matrix_adr( L, j, 0, M );
             temp = matrix_ptr( A, j, j, M ); /* element in row j column j*/
-            for( i = 0; i < j; i++ ) {
+            for( i = 0; i < j; i++ )
+            {
                 v[ i ] = ptr1[ i ] * D[ i ];
                 temp  -= ptr1[ i ] * v[ i ];
             }
-            if( temp < diag_min_value ) {
+            if( temp < diag_min_value )
+            {
                 /* Badly conditioned matrix: add white noise and run again */
                 temp = ( loop_count + 1 ) * diag_min_value - temp;
-                for( i = 0; i < M; i++ ) {
+                for( i = 0; i < M; i++ )
+                {
                     matrix_ptr( A, i, i, M ) += ( silk_float )temp;
                 }
                 err = 1;
@@ -192,9 +202,11 @@ static OPUS_INLINE void silk_LDL_FLP(
 
             ptr1 = matrix_adr( A, j, 0, M );
             ptr2 = matrix_adr( L, j + 1, 0, M);
-            for( i = j + 1; i < M; i++ ) {
+            for( i = j + 1; i < M; i++ )
+            {
                 temp = 0.0;
-                for( k = 0; k < j; k++ ) {
+                for( k = 0; k < j; k++ )
+                {
                     temp += ptr2[ k ] * v[ k ];
                 }
                 matrix_ptr( L, i, j, M ) = ( silk_float )( ( ptr1[ i ] - temp ) * Dinv[ j ] );

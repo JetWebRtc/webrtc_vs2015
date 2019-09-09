@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MQ-coder encoder
  * Copyright (c) 2007 Kamil Nowosad
  *
@@ -31,16 +31,21 @@
 static void byteout(MqcState *mqc)
 {
 retry:
-    if (*mqc->bp == 0xff){
+    if (*mqc->bp == 0xff)
+    {
         mqc->bp++;
         *mqc->bp = mqc->c >> 20;
         mqc->c &= 0xfffff;
         mqc->ct = 7;
-    } else if ((mqc->c & 0x8000000)){
+    }
+    else if ((mqc->c & 0x8000000))
+    {
         (*mqc->bp)++;
         mqc->c &= 0x7ffffff;
         goto retry;
-    } else{
+    }
+    else
+    {
         mqc->bp++;
         *mqc->bp = mqc->c >> 19;
         mqc->c &= 0x7ffff;
@@ -50,12 +55,14 @@ retry:
 
 static void renorme(MqcState *mqc)
 {
-    do{
+    do
+    {
         mqc->a += mqc->a;
         mqc->c += mqc->c;
         if (!--mqc->ct)
             byteout(mqc);
-    } while (!(mqc->a & 0x8000));
+    }
+    while (!(mqc->a & 0x8000));
 }
 
 static void setbits(MqcState *mqc)
@@ -82,17 +89,22 @@ void ff_mqc_encode(MqcState *mqc, uint8_t *cxstate, int d)
 
     qe = ff_mqc_qe[*cxstate];
     mqc->a -= qe;
-    if ((*cxstate & 1) == d){
-        if (!(mqc->a & 0x8000)){
+    if ((*cxstate & 1) == d)
+    {
+        if (!(mqc->a & 0x8000))
+        {
             if (mqc->a < qe)
                 mqc->a = qe;
             else
                 mqc->c += qe;
             *cxstate = ff_mqc_nmps[*cxstate];
             renorme(mqc);
-        } else
+        }
+        else
             mqc->c += qe;
-    } else{
+    }
+    else
+    {
         if (mqc->a < qe)
             mqc->c += qe;
         else
@@ -123,11 +135,12 @@ int ff_mqc_flush_to(MqcState *mqc, uint8_t *dst, int *dst_len)
 {
     MqcState mqc2 = *mqc;
     mqc2.bpstart=
-    mqc2.bp = dst;
+        mqc2.bp = dst;
     *mqc2.bp = *mqc->bp;
     ff_mqc_flush(&mqc2);
     *dst_len = mqc2.bp - dst;
-    if (mqc->bp < mqc->bpstart) {
+    if (mqc->bp < mqc->bpstart)
+    {
         av_assert1(mqc->bpstart - mqc->bp == 1);
         av_assert1(*dst_len > 0);
         av_assert1(mqc->bp[0] == 0 && dst[0] == 0);

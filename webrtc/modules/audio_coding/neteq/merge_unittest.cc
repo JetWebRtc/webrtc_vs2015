@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,17 +21,19 @@
 #include "webrtc/modules/audio_coding/neteq/sync_buffer.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(Merge, CreateAndDestroy) {
-  int fs = 8000;
-  size_t channels = 1;
-  BackgroundNoise bgn(channels);
-  SyncBuffer sync_buffer(1, 1000);
-  RandomVector random_vector;
-  StatisticsCalculator statistics;
-  Expand expand(&bgn, &sync_buffer, &random_vector, &statistics, fs, channels);
-  Merge merge(fs, channels, &expand, &sync_buffer);
+TEST(Merge, CreateAndDestroy)
+{
+    int fs = 8000;
+    size_t channels = 1;
+    BackgroundNoise bgn(channels);
+    SyncBuffer sync_buffer(1, 1000);
+    RandomVector random_vector;
+    StatisticsCalculator statistics;
+    Expand expand(&bgn, &sync_buffer, &random_vector, &statistics, fs, channels);
+    Merge merge(fs, channels, &expand, &sync_buffer);
 }
 
 // TODO(hlundin): Write more tests.

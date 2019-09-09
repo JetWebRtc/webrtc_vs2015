@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,51 +19,55 @@
 #include "webrtc/modules/remote_bitrate_estimator/test/bwe_test_framework.h"
 #include "webrtc/modules/remote_bitrate_estimator/test/metric_recorder.h"
 
-namespace webrtc {
-namespace testing {
-namespace bwe {
+namespace webrtc
+{
+namespace testing
+{
+namespace bwe
+{
 
-class PacketReceiver : public PacketProcessor {
- public:
-  PacketReceiver(PacketProcessorListener* listener,
-                 int flow_id,
-                 BandwidthEstimatorType bwe_type,
-                 bool plot_delay,
-                 bool plot_bwe);
-  PacketReceiver(PacketProcessorListener* listener,
-                 int flow_id,
-                 BandwidthEstimatorType bwe_type,
-                 bool plot_delay,
-                 bool plot_bwe,
-                 MetricRecorder* metric_recorder);
-  ~PacketReceiver();
+class PacketReceiver : public PacketProcessor
+{
+public:
+    PacketReceiver(PacketProcessorListener* listener,
+                   int flow_id,
+                   BandwidthEstimatorType bwe_type,
+                   bool plot_delay,
+                   bool plot_bwe);
+    PacketReceiver(PacketProcessorListener* listener,
+                   int flow_id,
+                   BandwidthEstimatorType bwe_type,
+                   bool plot_delay,
+                   bool plot_bwe,
+                   MetricRecorder* metric_recorder);
+    ~PacketReceiver();
 
-  // Implements PacketProcessor.
-  void RunFor(int64_t time_ms, Packets* in_out) override;
+    // Implements PacketProcessor.
+    void RunFor(int64_t time_ms, Packets* in_out) override;
 
-  void LogStats();
+    void LogStats();
 
-  Stats<double> GetDelayStats() const;
+    Stats<double> GetDelayStats() const;
 
-  float GlobalPacketLoss();
+    float GlobalPacketLoss();
 
- protected:
-  void UpdateMetrics(int64_t arrival_time_ms,
-                     int64_t send_time_ms,
-                     size_t payload_size);
+protected:
+    void UpdateMetrics(int64_t arrival_time_ms,
+                       int64_t send_time_ms,
+                       size_t payload_size);
 
-  Stats<double> delay_stats_;
-  std::unique_ptr<BweReceiver> bwe_receiver_;
+    Stats<double> delay_stats_;
+    std::unique_ptr<BweReceiver> bwe_receiver_;
 
- private:
-  void PlotDelay(int64_t arrival_time_ms, int64_t send_time_ms);
-  MetricRecorder* metric_recorder_;
-  bool plot_delay_;  // Used in case there isn't a metric recorder.
-  int64_t last_delay_plot_ms_;
-  std::string delay_prefix_;
-  BandwidthEstimatorType bwe_type_;
+private:
+    void PlotDelay(int64_t arrival_time_ms, int64_t send_time_ms);
+    MetricRecorder* metric_recorder_;
+    bool plot_delay_;  // Used in case there isn't a metric recorder.
+    int64_t last_delay_plot_ms_;
+    std::string delay_prefix_;
+    BandwidthEstimatorType bwe_type_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(PacketReceiver);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(PacketReceiver);
 };
 }  // namespace bwe
 }  // namespace testing

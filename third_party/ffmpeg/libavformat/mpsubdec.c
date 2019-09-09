@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } MPSubContext;
 
@@ -36,7 +37,8 @@ static int mpsub_probe(AVProbeData *p)
     const char *ptr     = p->buf;
     const char *ptr_end = p->buf + p->buf_size;
 
-    while (ptr < ptr_end) {
+    while (ptr < ptr_end)
+    {
         int inc;
 
         if (!memcmp(ptr, "FORMAT=TIME", 11))
@@ -56,14 +58,18 @@ static int mpsub_read_header(AVFormatContext *s)
     MPSubContext *mpsub = s->priv_data;
     AVStream *st;
     AVBPrint buf;
-    AVRational pts_info = (AVRational){ 100, 1 }; // ts based by default
+    AVRational pts_info = (AVRational)
+    {
+        100, 1
+    }; // ts based by default
     int res = 0;
     int multiplier = 100;
     double current_pts = 0;
 
     av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[1024];
         double start, duration;
         int fps, len = ff_get_line(s->pb, line, sizeof(line));
@@ -73,18 +79,26 @@ static int mpsub_read_header(AVFormatContext *s)
 
         line[strcspn(line, "\r\n")] = 0;
 
-        if (sscanf(line, "FORMAT=%d", &fps) == 1 && fps > 3 && fps < 100) {
+        if (sscanf(line, "FORMAT=%d", &fps) == 1 && fps > 3 && fps < 100)
+        {
             /* frame based timing */
-            pts_info = (AVRational){ fps, 1 };
+            pts_info = (AVRational)
+            {
+                fps, 1
+            };
             multiplier = 1;
-        } else if (sscanf(line, "%lf %lf", &start, &duration) == 2) {
+        }
+        else if (sscanf(line, "%lf %lf", &start, &duration) == 2)
+        {
             AVPacket *sub;
             const int64_t pos = avio_tell(s->pb);
 
             ff_subtitles_read_chunk(s->pb, &buf);
-            if (buf.len) {
+            if (buf.len)
+            {
                 sub = ff_subtitles_queue_insert(&mpsub->q, buf.str, buf.len, 0);
-                if (!sub) {
+                if (!sub)
+                {
                     res = AVERROR(ENOMEM);
                     goto end;
                 }
@@ -131,7 +145,8 @@ static int mpsub_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_mpsub_demuxer = {
+AVInputFormat ff_mpsub_demuxer =
+{
     .name           = "mpsub",
     .long_name      = NULL_IF_CONFIG_SMALL("MPlayer subtitles"),
     .priv_data_size = sizeof(MPSubContext),

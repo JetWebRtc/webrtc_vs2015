@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -32,8 +32,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface DEMOViewController : UIViewController {
-  BOOL bEnableFlag;
+@interface DEMOViewController : UIViewController
+{
+    BOOL bEnableFlag;
 }
 @property (strong, nonatomic) NSMutableArray* resFileArray;
 @property (retain, nonatomic)UIAlertView* statusIndication;

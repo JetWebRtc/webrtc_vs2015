@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,9 +12,10 @@
 
 #import <WebRTC/RTCMacros.h>
 
-typedef NS_ENUM(NSUInteger, RTCTlsCertPolicy) {
-  RTCTlsCertPolicySecure,
-  RTCTlsCertPolicyInsecureNoCheck
+typedef NS_ENUM(NSUInteger, RTCTlsCertPolicy)
+{
+    RTCTlsCertPolicySecure,
+    RTCTlsCertPolicyInsecureNoCheck
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,8 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCIceServer : NSObject
 
-/** URI(s) for this server represented as NSStrings. */
-@property(nonatomic, readonly) NSArray<NSString *> *urlStrings;
+    /** URI(s) for this server represented as NSStrings. */
+    @property(nonatomic, readonly) NSArray<NSString *> *urlStrings;
 
 /** Username to use if this RTCIceServer object is a TURN server. */
 @property(nonatomic, readonly, nullable) NSString *username;
@@ -46,17 +47,17 @@ RTC_EXPORT
  * optional credential, and credentialType.
  */
 - (instancetype)initWithURLStrings:(NSArray<NSString *> *)urlStrings
-                          username:(nullable NSString *)username
-                        credential:(nullable NSString *)credential;
+    username:(nullable NSString *)username
+    credential:(nullable NSString *)credential;
 
 /**
  * Initialize an RTCIceServer with its associated URLs, optional username,
  * optional credential, and TLS cert policy.
  */
 - (instancetype)initWithURLStrings:(NSArray<NSString *> *)urlStrings
-                          username:(nullable NSString *)username
-                        credential:(nullable NSString *)credential
-                     tlsCertPolicy:(RTCTlsCertPolicy)tlsCertPolicy
+    username:(nullable NSString *)username
+    credential:(nullable NSString *)credential
+    tlsCertPolicy:(RTCTlsCertPolicy)tlsCertPolicy
     NS_DESIGNATED_INITIALIZER;
 
 @end

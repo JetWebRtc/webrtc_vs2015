@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,7 +22,8 @@
 #include <stdint.h>
 #include "ttadata.h"
 
-typedef struct TTADSPContext {
+typedef struct TTADSPContext
+{
     void (*ttafilter_process_dec)(int32_t *qm, int32_t *dx, int32_t *dl,
                                   int32_t *error, int32_t *in, int32_t shift,
                                   int32_t round);

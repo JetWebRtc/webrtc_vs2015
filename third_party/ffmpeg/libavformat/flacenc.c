@@ -1,4 +1,4 @@
-/*
+﻿/*
  * raw FLAC muxer
  * Copyright (c) 2006-2009 Justin Ruggles
  *
@@ -29,7 +29,8 @@
 #include "libavcodec/bytestream.h"
 
 
-typedef struct FlacMuxerContext {
+typedef struct FlacMuxerContext
+{
     const AVClass *class;
     int write_header;
 
@@ -84,11 +85,13 @@ static int flac_write_header(struct AVFormatContext *s)
     if (!c->write_header)
         return 0;
 
-    if (s->nb_streams > 1) {
+    if (s->nb_streams > 1)
+    {
         av_log(s, AV_LOG_ERROR, "only one stream is supported\n");
         return AVERROR(EINVAL);
     }
-    if (codec->codec_id != AV_CODEC_ID_FLAC) {
+    if (codec->codec_id != AV_CODEC_ID_FLAC)
+    {
         av_log(s, AV_LOG_ERROR, "unsupported codec\n");
         return AVERROR(EINVAL);
     }
@@ -106,15 +109,19 @@ static int flac_write_header(struct AVFormatContext *s)
 
     /* add the channel layout tag */
     if (codec->channel_layout &&
-        !(codec->channel_layout & ~0x3ffffULL) &&
-        !ff_flac_is_native_layout(codec->channel_layout)) {
+            !(codec->channel_layout & ~0x3ffffULL) &&
+            !ff_flac_is_native_layout(codec->channel_layout))
+    {
         AVDictionaryEntry *chmask = av_dict_get(s->metadata, "WAVEFORMATEXTENSIBLE_CHANNEL_MASK",
                                                 NULL, 0);
 
-        if (chmask) {
+        if (chmask)
+        {
             av_log(s, AV_LOG_WARNING, "A WAVEFORMATEXTENSIBLE_CHANNEL_MASK is "
                    "already present, this muxer will not overwrite it.\n");
-        } else {
+        }
+        else
+        {
             uint8_t buf[32];
             snprintf(buf, sizeof(buf), "0x%"PRIx64, codec->channel_layout);
             av_dict_set(&s->metadata, "WAVEFORMATEXTENSIBLE_CHANNEL_MASK", buf, 0);
@@ -142,19 +149,22 @@ static int flac_write_trailer(struct AVFormatContext *s)
     int64_t file_size;
     FlacMuxerContext *c = s->priv_data;
     uint8_t *streaminfo = c->streaminfo ? c->streaminfo :
-                                          s->streams[0]->codec->extradata;
+                          s->streams[0]->codec->extradata;
 
     if (!c->write_header || !streaminfo)
         return 0;
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         /* rewrite the STREAMINFO header block data */
         file_size = avio_tell(pb);
         avio_seek(pb, 8, SEEK_SET);
         avio_write(pb, streaminfo, FLAC_STREAMINFO_SIZE);
         avio_seek(pb, file_size, SEEK_SET);
         avio_flush(pb);
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_WARNING, "unable to rewrite FLAC header.\n");
     }
 
@@ -172,7 +182,8 @@ static int flac_write_packet(struct AVFormatContext *s, AVPacket *pkt)
     /* check for updated streaminfo */
     streaminfo = av_packet_get_side_data(pkt, AV_PKT_DATA_NEW_EXTRADATA,
                                          &streaminfo_size);
-    if (streaminfo && streaminfo_size == FLAC_STREAMINFO_SIZE) {
+    if (streaminfo && streaminfo_size == FLAC_STREAMINFO_SIZE)
+    {
         av_freep(&c->streaminfo);
 
         c->streaminfo = av_malloc(FLAC_STREAMINFO_SIZE);
@@ -186,19 +197,22 @@ static int flac_write_packet(struct AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-static const AVOption flacenc_options[] = {
+static const AVOption flacenc_options[] =
+{
     { "write_header", "Write the file header", offsetof(FlacMuxerContext, write_header), AV_OPT_TYPE_INT, {.i64 = 1}, 0, 1, AV_OPT_FLAG_ENCODING_PARAM },
     { NULL },
 };
 
-static const AVClass flac_muxer_class = {
+static const AVClass flac_muxer_class =
+{
     .class_name = "flac muxer",
     .item_name  = av_default_item_name,
     .option     = flacenc_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_flac_muxer = {
+AVOutputFormat ff_flac_muxer =
+{
     .name              = "flac",
     .long_name         = NULL_IF_CONFIG_SMALL("raw FLAC"),
     .priv_data_size    = sizeof(FlacMuxerContext),

@@ -47,11 +47,14 @@ static uint32_t cbrt_tab[1 << 13];
 
 static av_cold void AAC_RENAME(cbrt_tableinit)(void)
 {
-    if (!cbrt_tab[(1<<13) - 1]) {
+    if (!cbrt_tab[(1<<13) - 1])
+    {
         int i;
         /* cbrtf() isn't available on all systems, so we use powf(). */
-        for (i = 0; i < 1<<13; i++) {
-            union {
+        for (i = 0; i < 1<<13; i++)
+        {
+            union
+            {
                 float f;
                 uint32_t i;
             } f;

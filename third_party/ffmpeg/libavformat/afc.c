@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AFC demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -23,7 +23,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct AFCDemuxContext {
+typedef struct AFCDemuxContext
+{
     int64_t    data_end;
 } AFCDemuxContext;
 
@@ -68,7 +69,8 @@ static int afc_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_afc_demuxer = {
+AVInputFormat ff_afc_demuxer =
+{
     .name           = "afc",
     .long_name      = NULL_IF_CONFIG_SMALL("AFC"),
     .priv_data_size = sizeof(AFCDemuxContext),

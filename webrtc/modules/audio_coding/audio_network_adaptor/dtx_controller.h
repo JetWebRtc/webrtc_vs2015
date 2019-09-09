@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,34 +14,37 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/audio_network_adaptor/controller.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class DtxController final : public Controller {
- public:
-  struct Config {
-    Config(bool initial_dtx_enabled,
-           int dtx_enabling_bandwidth_bps,
-           int dtx_disabling_bandwidth_bps);
-    bool initial_dtx_enabled;
-    // Uplink bandwidth below which DTX should be switched on.
-    int dtx_enabling_bandwidth_bps;
-    // Uplink bandwidth above which DTX should be switched off.
-    int dtx_disabling_bandwidth_bps;
-  };
+class DtxController final : public Controller
+{
+public:
+    struct Config
+    {
+        Config(bool initial_dtx_enabled,
+               int dtx_enabling_bandwidth_bps,
+               int dtx_disabling_bandwidth_bps);
+        bool initial_dtx_enabled;
+        // Uplink bandwidth below which DTX should be switched on.
+        int dtx_enabling_bandwidth_bps;
+        // Uplink bandwidth above which DTX should be switched off.
+        int dtx_disabling_bandwidth_bps;
+    };
 
-  explicit DtxController(const Config& config);
+    explicit DtxController(const Config& config);
 
-  ~DtxController() override;
+    ~DtxController() override;
 
-  void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
+    void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
 
-  void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
+    void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
 
- private:
-  const Config config_;
-  bool dtx_enabled_;
-  rtc::Optional<int> uplink_bandwidth_bps_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(DtxController);
+private:
+    const Config config_;
+    bool dtx_enabled_;
+    rtc::Optional<int> uplink_bandwidth_bps_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(DtxController);
 };
 
 }  // namespace webrtc

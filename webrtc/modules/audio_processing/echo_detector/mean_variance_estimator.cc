@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,32 +14,38 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 // Parameter controlling the adaptation speed.
 constexpr float kAlpha = 0.001f;
 
 }  // namespace
 
-void MeanVarianceEstimator::Update(float value) {
-  mean_ = (1.f - kAlpha) * mean_ + kAlpha * value;
-  variance_ =
-      (1.f - kAlpha) * variance_ + kAlpha * (value - mean_) * (value - mean_);
+void MeanVarianceEstimator::Update(float value)
+{
+    mean_ = (1.f - kAlpha) * mean_ + kAlpha * value;
+    variance_ =
+        (1.f - kAlpha) * variance_ + kAlpha * (value - mean_) * (value - mean_);
 }
 
-float MeanVarianceEstimator::std_deviation() const {
-  RTC_DCHECK_GE(variance_, 0.f);
-  return sqrtf(variance_);
+float MeanVarianceEstimator::std_deviation() const
+{
+    RTC_DCHECK_GE(variance_, 0.f);
+    return sqrtf(variance_);
 }
 
-float MeanVarianceEstimator::mean() const {
-  return mean_;
+float MeanVarianceEstimator::mean() const
+{
+    return mean_;
 }
 
-void MeanVarianceEstimator::Clear() {
-  mean_ = 0.f;
-  variance_ = 0.f;
+void MeanVarianceEstimator::Clear()
+{
+    mean_ = 0.f;
+    variance_ = 0.f;
 }
 
 }  // namespace webrtc

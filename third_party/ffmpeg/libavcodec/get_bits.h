@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -51,7 +51,8 @@
 #define UNCHECKED_BITSTREAM_READER !CONFIG_SAFE_BITSTREAM_READER
 #endif
 
-typedef struct GetBitContext {
+typedef struct GetBitContext
+{
     const uint8_t *buffer, *buffer_end;
     int index;
     int size_in_bits;
@@ -60,13 +61,15 @@ typedef struct GetBitContext {
 
 #define VLC_TYPE int16_t
 
-typedef struct VLC {
+typedef struct VLC
+{
     int bits;
     VLC_TYPE (*table)[2]; ///< code, bits
     int table_size, table_allocated;
 } VLC;
 
-typedef struct RL_VLC_ELEM {
+typedef struct RL_VLC_ELEM
+{
     int16_t level;
     int8_t len;
     uint8_t run;
@@ -336,11 +339,16 @@ static inline void skip_bits1(GetBitContext *s)
  */
 static inline unsigned int get_bits_long(GetBitContext *s, int n)
 {
-    if (!n) {
+    if (!n)
+    {
         return 0;
-    } else if (n <= MIN_CACHE_BITS) {
+    }
+    else if (n <= MIN_CACHE_BITS)
+    {
         return get_bits(s, n);
-    } else {
+    }
+    else
+    {
 #ifdef BITSTREAM_READER_LE
         unsigned ret = get_bits(s, 16);
         return ret | (get_bits(s, n - 16) << 16);
@@ -356,9 +364,12 @@ static inline unsigned int get_bits_long(GetBitContext *s, int n)
  */
 static inline uint64_t get_bits64(GetBitContext *s, int n)
 {
-    if (n <= 32) {
+    if (n <= 32)
+    {
         return get_bits_long(s, n);
-    } else {
+    }
+    else
+    {
 #ifdef BITSTREAM_READER_LE
         uint64_t ret = get_bits_long(s, 32);
         return ret | (uint64_t) get_bits_long(s, n - 32) << 32;
@@ -382,9 +393,12 @@ static inline int get_sbits_long(GetBitContext *s, int n)
  */
 static inline unsigned int show_bits_long(GetBitContext *s, int n)
 {
-    if (n <= MIN_CACHE_BITS) {
+    if (n <= MIN_CACHE_BITS)
+    {
         return show_bits(s, n);
-    } else {
+    }
+    else
+    {
         GetBitContext gb = *s;
         return get_bits_long(&gb, n);
     }
@@ -413,7 +427,8 @@ static inline int init_get_bits(GetBitContext *s, const uint8_t *buffer,
     int buffer_size;
     int ret = 0;
 
-    if (bit_size >= INT_MAX - 7 || bit_size < 0 || !buffer) {
+    if (bit_size >= INT_MAX - 7 || bit_size < 0 || !buffer)
+    {
         bit_size    = 0;
         buffer      = NULL;
         ret         = AVERROR_INVALIDDATA;
@@ -595,7 +610,8 @@ static inline int skip_1stop_8data_bits(GetBitContext *gb)
     if (get_bits_left(gb) <= 0)
         return AVERROR_INVALIDDATA;
 
-    while (get_bits1(gb)) {
+    while (get_bits1(gb))
+    {
         skip_bits(gb, 8);
         if (get_bits_left(gb) <= 0)
             return AVERROR_INVALIDDATA;

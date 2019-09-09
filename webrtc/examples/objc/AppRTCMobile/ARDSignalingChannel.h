@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,15 +12,16 @@
 
 #import "ARDSignalingMessage.h"
 
-typedef NS_ENUM(NSInteger, ARDSignalingChannelState) {
-  // State when disconnected.
-  kARDSignalingChannelStateClosed,
-  // State when connection is established but not ready for use.
-  kARDSignalingChannelStateOpen,
-  // State when connection is established and registered.
-  kARDSignalingChannelStateRegistered,
-  // State when connection encounters a fatal error.
-  kARDSignalingChannelStateError
+typedef NS_ENUM(NSInteger, ARDSignalingChannelState)
+{
+    // State when disconnected.
+    kARDSignalingChannelStateClosed,
+    // State when connection is established but not ready for use.
+    kARDSignalingChannelStateOpen,
+    // State when connection is established and registered.
+    kARDSignalingChannelStateRegistered,
+    // State when connection encounters a fatal error.
+    kARDSignalingChannelStateError
 };
 
 @protocol ARDSignalingChannel;
@@ -43,7 +44,7 @@ typedef NS_ENUM(NSInteger, ARDSignalingChannelState) {
 
 // Registers the channel for the given room and client id.
 - (void)registerForRoomId:(NSString *)roomId
-                 clientId:(NSString *)clientId;
+    clientId:(NSString *)clientId;
 
 // Sends signaling message over the channel.
 - (void)sendMessage:(ARDSignalingMessage *)message;

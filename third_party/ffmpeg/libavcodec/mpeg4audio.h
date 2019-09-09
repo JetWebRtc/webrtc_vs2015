@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-4 Audio common header
  * Copyright (c) 2008 Baptiste Coudurier <baptiste.coudurier@free.fr>
  *
@@ -26,7 +26,8 @@
 #include "get_bits.h"
 #include "put_bits.h"
 
-typedef struct MPEG4AudioConfig {
+typedef struct MPEG4AudioConfig
+{
     int object_type;
     int sampling_index;
     int sample_rate;
@@ -55,9 +56,10 @@ extern const uint8_t ff_mpeg4audio_channels[8];
 int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
                                  int bit_size, int sync_extension);
 
-enum AudioObjectType {
+enum AudioObjectType
+{
     AOT_NULL,
-                               // Support?                Name
+    // Support?                Name
     AOT_AAC_MAIN,              ///< Y                       Main
     AOT_AAC_LC,                ///< Y                       Low Complexity
     AOT_AAC_SSR,               ///< N (code in SoC repo)    Scalable Sample Rate
@@ -103,7 +105,7 @@ enum AudioObjectType {
 };
 
 #define MAX_PCE_SIZE 320 ///<Maximum size of a PCE including the 3-bit ID_PCE
-                         ///<marker and the comment
+///<marker and the comment
 
 int avpriv_copy_pce_data(PutBitContext *pb, GetBitContext *gb);
 

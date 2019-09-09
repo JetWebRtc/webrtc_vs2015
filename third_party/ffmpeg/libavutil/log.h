@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 #include "attributes.h"
 #include "version.h"
 
-typedef enum {
+typedef enum
+{
     AV_CLASS_CATEGORY_NA = 0,
     AV_CLASS_CATEGORY_INPUT,
     AV_CLASS_CATEGORY_OUTPUT,
@@ -45,7 +46,7 @@ typedef enum {
     AV_CLASS_CATEGORY_DEVICE_OUTPUT,
     AV_CLASS_CATEGORY_DEVICE_INPUT,
     AV_CLASS_CATEGORY_NB, ///< not part of ABI/API
-}AVClassCategory;
+} AVClassCategory;
 
 #define AV_IS_INPUT_DEVICE(category) \
     (((category) == AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT) || \
@@ -64,7 +65,8 @@ struct AVOptionRanges;
  * arbitrary struct of which the first field is a pointer to an
  * AVClass struct (e.g. AVCodecContext, AVFormatContext etc.).
  */
-typedef struct AVClass {
+typedef struct AVClass
+{
     /**
      * The name of the class; usually it is the same name as the
      * context structure type to which the AVClass is associated.

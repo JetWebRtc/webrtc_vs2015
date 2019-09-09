@@ -22,11 +22,13 @@
 #include <stdint.h>
 #include "gsmdec_data.h"
 
-const uint16_t ff_gsm_long_term_gain_tab[4] = {
+const uint16_t ff_gsm_long_term_gain_tab[4] =
+{
     3277, 11469, 21299, 32767
 };
 
-const int16_t ff_gsm_dequant_tab[64][8] = {
+const int16_t ff_gsm_dequant_tab[64][8] =
+{
     {   -28,    -20,    -12,     -4,      4,     12,     20,     28},
     {   -56,    -40,    -24,     -8,      8,     24,     40,     56},
     {   -84,    -60,    -36,    -12,     12,     36,     60,     84},
@@ -93,7 +95,8 @@ const int16_t ff_gsm_dequant_tab[64][8] = {
     {-28671, -20479, -12288,  -4096,   4096,  12288,  20479,  28671}
 };
 
-static const int apcm_bits[11][13] = {
+static const int apcm_bits[11][13] =
+{
     { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1 },
     { 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1 },
@@ -107,7 +110,8 @@ static const int apcm_bits[11][13] = {
     { 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3 }
 };
 
-const int* const ff_gsm_apcm_bits[][4] = {
+const int* const ff_gsm_apcm_bits[][4] =
+{
     { apcm_bits[10], apcm_bits[10], apcm_bits[10], apcm_bits[10] }, // 13000
     { apcm_bits[10], apcm_bits[10], apcm_bits[10], apcm_bits[ 6] }, // 12400
     { apcm_bits[10], apcm_bits[10], apcm_bits[ 7], apcm_bits[ 5] }, // 11800

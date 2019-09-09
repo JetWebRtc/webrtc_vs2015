@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,10 +19,13 @@
 int16_t WebRtcG722_CreateEncoder(G722EncInst **G722enc_inst)
 {
     *G722enc_inst=(G722EncInst*)malloc(sizeof(G722EncoderState));
-    if (*G722enc_inst!=NULL) {
-      return(0);
-    } else {
-      return(-1);
+    if (*G722enc_inst!=NULL)
+    {
+        return(0);
+    }
+    else
+    {
+        return(-1);
     }
 }
 
@@ -31,10 +34,13 @@ int16_t WebRtcG722_EncoderInit(G722EncInst *G722enc_inst)
     // Create and/or reset the G.722 encoder
     // Bitrate 64 kbps and wideband mode (2)
     G722enc_inst = (G722EncInst *) WebRtc_g722_encode_init(
-        (G722EncoderState*) G722enc_inst, 64000, 2);
-    if (G722enc_inst == NULL) {
+                       (G722EncoderState*) G722enc_inst, 64000, 2);
+    if (G722enc_inst == NULL)
+    {
         return -1;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
@@ -59,17 +65,21 @@ size_t WebRtcG722_Encode(G722EncInst *G722enc_inst,
 int16_t WebRtcG722_CreateDecoder(G722DecInst **G722dec_inst)
 {
     *G722dec_inst=(G722DecInst*)malloc(sizeof(G722DecoderState));
-    if (*G722dec_inst!=NULL) {
-      return(0);
-    } else {
-      return(-1);
+    if (*G722dec_inst!=NULL)
+    {
+        return(0);
+    }
+    else
+    {
+        return(-1);
     }
 }
 
-void WebRtcG722_DecoderInit(G722DecInst* inst) {
-  // Create and/or reset the G.722 decoder
-  // Bitrate 64 kbps and wideband mode (2)
-  WebRtc_g722_decode_init((G722DecoderState*)inst, 64000, 2);
+void WebRtcG722_DecoderInit(G722DecInst* inst)
+{
+    // Create and/or reset the G.722 decoder
+    // Bitrate 64 kbps and wideband mode (2)
+    WebRtc_g722_decode_init((G722DecoderState*)inst, 64000, 2);
 }
 
 int WebRtcG722_FreeDecoder(G722DecInst *G722dec_inst)

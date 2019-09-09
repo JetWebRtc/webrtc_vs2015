@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 David Conrad
  * Copyright (C) 2010 Ronald S. Bultje
  * Copyright (C) 2014 Peter Ross
@@ -56,7 +56,8 @@ static void vp7_luma_dc_wht_c(int16_t block[4][4][16], int16_t dc[16])
     int i, a1, b1, c1, d1;
     int16_t tmp[16];
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         a1 = (dc[i * 4 + 0] + dc[i * 4 + 2]) * 23170;
         b1 = (dc[i * 4 + 0] - dc[i * 4 + 2]) * 23170;
         c1 = dc[i * 4 + 1] * 12540 - dc[i * 4 + 3] * 30274;
@@ -67,7 +68,8 @@ static void vp7_luma_dc_wht_c(int16_t block[4][4][16], int16_t dc[16])
         tmp[i * 4 + 2] = (b1 - c1) >> 14;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         a1 = (tmp[i + 0] + tmp[i + 8]) * 23170;
         b1 = (tmp[i + 0] - tmp[i + 8]) * 23170;
         c1 = tmp[i + 4] * 12540 - tmp[i + 12] * 30274;
@@ -85,7 +87,8 @@ static void vp7_luma_dc_wht_dc_c(int16_t block[4][4][16], int16_t dc[16])
     int i, val = (23170 * (23170 * dc[0] >> 14) + 0x20000) >> 18;
     dc[0] = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         block[i][0][0] = val;
         block[i][1][0] = val;
         block[i][2][0] = val;
@@ -98,7 +101,8 @@ static void vp7_idct_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
     int i, a1, b1, c1, d1;
     int16_t tmp[16];
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         a1 = (block[i * 4 + 0] + block[i * 4 + 2]) * 23170;
         b1 = (block[i * 4 + 0] - block[i * 4 + 2]) * 23170;
         c1 = block[i * 4 + 1] * 12540 - block[i * 4 + 3] * 30274;
@@ -110,7 +114,8 @@ static void vp7_idct_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
         tmp[i * 4 + 2] = (b1 - c1) >> 14;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         a1 = (tmp[i + 0] + tmp[i + 8]) * 23170;
         b1 = (tmp[i + 0] - tmp[i + 8]) * 23170;
         c1 = tmp[i + 4] * 12540 - tmp[i + 12] * 30274;
@@ -131,7 +136,8 @@ static void vp7_idct_dc_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
     int i, dc = (23170 * (23170 * block[0] >> 14) + 0x20000) >> 18;
     block[0] = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dst[0] = av_clip_uint8(dst[0] + dc);
         dst[1] = av_clip_uint8(dst[1] + dc);
         dst[2] = av_clip_uint8(dst[2] + dc);
@@ -149,7 +155,8 @@ static void vp8_luma_dc_wht_c(int16_t block[4][4][16], int16_t dc[16])
 {
     int i, t0, t1, t2, t3;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t0 = dc[0 * 4 + i] + dc[3 * 4 + i];
         t1 = dc[1 * 4 + i] + dc[2 * 4 + i];
         t2 = dc[1 * 4 + i] - dc[2 * 4 + i];
@@ -161,7 +168,8 @@ static void vp8_luma_dc_wht_c(int16_t block[4][4][16], int16_t dc[16])
         dc[3 * 4 + i] = t3 - t2;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t0 = dc[i * 4 + 0] + dc[i * 4 + 3] + 3; // rounding
         t1 = dc[i * 4 + 1] + dc[i * 4 + 2];
         t2 = dc[i * 4 + 1] - dc[i * 4 + 2];
@@ -180,7 +188,8 @@ static void vp8_luma_dc_wht_dc_c(int16_t block[4][4][16], int16_t dc[16])
     int i, val = (dc[0] + 3) >> 3;
     dc[0] = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         block[i][0][0] = val;
         block[i][1][0] = val;
         block[i][2][0] = val;
@@ -196,7 +205,8 @@ static void vp8_idct_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
     int i, t0, t1, t2, t3;
     int16_t tmp[16];
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t0 = block[0 * 4 + i] + block[2 * 4 + i];
         t1 = block[0 * 4 + i] - block[2 * 4 + i];
         t2 = MUL_35468(block[1 * 4 + i]) - MUL_20091(block[3 * 4 + i]);
@@ -212,7 +222,8 @@ static void vp8_idct_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
         tmp[i * 4 + 3] = t0 - t3;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t0 = tmp[0 * 4 + i] + tmp[2 * 4 + i];
         t1 = tmp[0 * 4 + i] - tmp[2 * 4 + i];
         t2 = MUL_35468(tmp[1 * 4 + i]) - MUL_20091(tmp[3 * 4 + i]);
@@ -231,7 +242,8 @@ static void vp8_idct_dc_add_c(uint8_t *dst, int16_t block[16], ptrdiff_t stride)
     int i, dc = (block[0] + 4) >> 3;
     block[0] = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dst[0] = av_clip_uint8(dst[0] + dc);
         dst[1] = av_clip_uint8(dst[1] + dc);
         dst[2] = av_clip_uint8(dst[2] + dc);
@@ -257,7 +269,7 @@ MK_IDCT_DC_ADD4_C(vp8)
 #define clip_int8(n) (cm[(n) + 0x80] - 0x80)
 
 static av_always_inline void filter_common(uint8_t *p, ptrdiff_t stride,
-                                           int is4tap, int is_vp7)
+        int is4tap, int is_vp7)
 {
     LOAD_PIXELS
     int a, f1, f2;
@@ -285,7 +297,8 @@ static av_always_inline void filter_common(uint8_t *p, ptrdiff_t stride,
     p[ 0 * stride] = cm[q0 - f1];
 
     // only used for _inner on blocks without high edge variance
-    if (!is4tap) {
+    if (!is4tap)
+    {
         a              = (f1 + 1) >> 1;
         p[-2 * stride] = cm[p1 + a];
         p[ 1 * stride] = cm[q1 - a];
@@ -293,26 +306,26 @@ static av_always_inline void filter_common(uint8_t *p, ptrdiff_t stride,
 }
 
 static av_always_inline void vp7_filter_common(uint8_t *p, ptrdiff_t stride,
-                                               int is4tap)
+        int is4tap)
 {
     filter_common(p, stride, is4tap, IS_VP7);
 }
 
 static av_always_inline void vp8_filter_common(uint8_t *p, ptrdiff_t stride,
-                                               int is4tap)
+        int is4tap)
 {
     filter_common(p, stride, is4tap, IS_VP8);
 }
 
 static av_always_inline int vp7_simple_limit(uint8_t *p, ptrdiff_t stride,
-                                             int flim)
+        int flim)
 {
     LOAD_PIXELS
     return FFABS(p0 - q0) <= flim;
 }
 
 static av_always_inline int vp8_simple_limit(uint8_t *p, ptrdiff_t stride,
-                                             int flim)
+        int flim)
 {
     LOAD_PIXELS
     return 2 * FFABS(p0 - q0) + (FFABS(p1 - q1) >> 1) <= flim;
@@ -452,7 +465,8 @@ static void vpn ## _h_loop_filter_simple_c(uint8_t *dst, ptrdiff_t stride,    \
     UV_LOOP_FILTER(vpn, h, stride, 1)    \
     LOOP_FILTER_SIMPLE(vpn)              \
 
-static const uint8_t subpel_filters[7][6] = {
+static const uint8_t subpel_filters[7][6] =
+{
     { 0,  6, 123,  12,  1, 0 },
     { 2, 11, 108,  36,  8, 1 },
     { 0,  9,  93,  50,  6, 0 },

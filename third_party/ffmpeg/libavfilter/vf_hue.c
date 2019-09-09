@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer
  * Copyright (c) 2012 Jeremy Tran
  *
@@ -39,7 +39,8 @@
 #define SAT_MIN_VAL -10
 #define SAT_MAX_VAL 10
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "n",   // frame count
     "pts", // presentation timestamp expressed in AV_TIME_BASE units
     "r",   // frame rate
@@ -48,7 +49,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_N,
     VAR_PTS,
     VAR_R,
@@ -57,7 +59,8 @@ enum var_name {
     VAR_NB
 };
 
-typedef struct {
+typedef struct
+{
     const    AVClass *class;
     float    hue_deg; /* hue expressed in degrees */
     float    hue; /* hue expressed in radians */
@@ -84,15 +87,24 @@ typedef struct {
 
 #define OFFSET(x) offsetof(HueContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption hue_options[] = {
-    { "h", "set the hue angle degrees expression", OFFSET(hue_deg_expr), AV_OPT_TYPE_STRING,
-      { .str = NULL }, .flags = FLAGS },
-    { "s", "set the saturation expression", OFFSET(saturation_expr), AV_OPT_TYPE_STRING,
-      { .str = "1" }, .flags = FLAGS },
-    { "H", "set the hue angle radians expression", OFFSET(hue_expr), AV_OPT_TYPE_STRING,
-      { .str = NULL }, .flags = FLAGS },
-    { "b", "set the brightness expression", OFFSET(brightness_expr), AV_OPT_TYPE_STRING,
-      { .str = "0" }, .flags = FLAGS },
+static const AVOption hue_options[] =
+{
+    {
+        "h", "set the hue angle degrees expression", OFFSET(hue_deg_expr), AV_OPT_TYPE_STRING,
+        { .str = NULL }, .flags = FLAGS
+    },
+    {
+        "s", "set the saturation expression", OFFSET(saturation_expr), AV_OPT_TYPE_STRING,
+        { .str = "1" }, .flags = FLAGS
+    },
+    {
+        "H", "set the hue angle radians expression", OFFSET(hue_expr), AV_OPT_TYPE_STRING,
+        { .str = NULL }, .flags = FLAGS
+    },
+    {
+        "b", "set the brightness expression", OFFSET(brightness_expr), AV_OPT_TYPE_STRING,
+        { .str = "0" }, .flags = FLAGS
+    },
     { NULL }
 };
 
@@ -114,13 +126,14 @@ static inline void create_luma_lut(HueContext *h)
     const float b = h->brightness;
     int i;
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         h->lut_l[i] = av_clip_uint8(i + b * 25.5);
     }
 }
 
 static inline void create_chrominance_lut(HueContext *h, const int32_t c,
-                                          const int32_t s)
+        const int32_t s)
 {
     int32_t i, j, u, v, new_u, new_v;
 
@@ -128,8 +141,10 @@ static inline void create_chrominance_lut(HueContext *h, const int32_t c,
      * If we consider U and V as the components of a 2D vector then its angle
      * is the hue and the norm is the saturation
      */
-    for (i = 0; i < 256; i++) {
-        for (j = 0; j < 256; j++) {
+    for (i = 0; i < 256; i++)
+    {
+        for (j = 0; j < 256; j++)
+        {
             /* Normalize the components from range [16;140] to [-112;112] */
             u = i - 128;
             v = j - 128;
@@ -162,7 +177,8 @@ static int set_expr(AVExpr **pexpr_ptr, char **expr_ptr,
         return AVERROR(ENOMEM);
     ret = av_expr_parse(&new_pexpr, expr, var_names,
                         NULL, NULL, NULL, NULL, 0, log_ctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "Error when evaluating the expression '%s' for %s\n",
                expr, option);
@@ -184,7 +200,8 @@ static av_cold int init(AVFilterContext *ctx)
     HueContext *hue = ctx->priv;
     int ret;
 
-    if (hue->hue_expr && hue->hue_deg_expr) {
+    if (hue->hue_expr && hue->hue_deg_expr)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "H and h options are incompatible and cannot be specified "
                "at the same time\n");
@@ -225,7 +242,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,      AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,      AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV410P,      AV_PIX_FMT_YUV440P,
@@ -250,7 +268,7 @@ static int config_props(AVFilterLink *inlink)
     hue->var_values[VAR_N]  = 0;
     hue->var_values[VAR_TB] = av_q2d(inlink->time_base);
     hue->var_values[VAR_R]  = inlink->frame_rate.num == 0 || inlink->frame_rate.den == 0 ?
-        NAN : av_q2d(inlink->frame_rate);
+                              NAN : av_q2d(inlink->frame_rate);
 
     return 0;
 }
@@ -262,7 +280,8 @@ static void apply_luma_lut(HueContext *s,
 {
     int i;
 
-    while (h--) {
+    while (h--)
+    {
         for (i = 0; i < w; i++)
             ldst[i] = s->lut_l[lsrc[i]];
 
@@ -278,8 +297,10 @@ static void apply_lut(HueContext *s,
 {
     int i;
 
-    while (h--) {
-        for (i = 0; i < w; i++) {
+    while (h--)
+    {
+        for (i = 0; i < w; i++)
+        {
             const int u = usrc[i];
             const int v = vsrc[i];
 
@@ -306,12 +327,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     const float old_brightness = hue->brightness;
     int direct = 0;
 
-    if (av_frame_is_writable(inpic)) {
+    if (av_frame_is_writable(inpic))
+    {
         direct = 1;
         outpic = inpic;
-    } else {
+    }
+    else
+    {
         outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!outpic) {
+        if (!outpic)
+        {
             av_frame_free(&inpic);
             return AVERROR(ENOMEM);
         }
@@ -322,10 +347,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     hue->var_values[VAR_T]   = TS2T(inpic->pts, inlink->time_base);
     hue->var_values[VAR_PTS] = TS2D(inpic->pts);
 
-    if (hue->saturation_expr) {
+    if (hue->saturation_expr)
+    {
         hue->saturation = av_expr_eval(hue->saturation_pexpr, hue->var_values, NULL);
 
-        if (hue->saturation < SAT_MIN_VAL || hue->saturation > SAT_MAX_VAL) {
+        if (hue->saturation < SAT_MIN_VAL || hue->saturation > SAT_MAX_VAL)
+        {
             hue->saturation = av_clip(hue->saturation, SAT_MIN_VAL, SAT_MAX_VAL);
             av_log(inlink->dst, AV_LOG_WARNING,
                    "Saturation value not in range [%d,%d]: clipping value to %0.1f\n",
@@ -333,10 +360,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
         }
     }
 
-    if (hue->brightness_expr) {
+    if (hue->brightness_expr)
+    {
         hue->brightness = av_expr_eval(hue->brightness_pexpr, hue->var_values, NULL);
 
-        if (hue->brightness < -10 || hue->brightness > 10) {
+        if (hue->brightness < -10 || hue->brightness > 10)
+        {
             hue->brightness = av_clipf(hue->brightness, -10, 10);
             av_log(inlink->dst, AV_LOG_WARNING,
                    "Brightness value not in range [%d,%d]: clipping value to %0.1f\n",
@@ -344,10 +373,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
         }
     }
 
-    if (hue->hue_deg_expr) {
+    if (hue->hue_deg_expr)
+    {
         hue->hue_deg = av_expr_eval(hue->hue_deg_pexpr, hue->var_values, NULL);
         hue->hue = hue->hue_deg * M_PI / 180;
-    } else if (hue->hue_expr) {
+    }
+    else if (hue->hue_expr)
+    {
         hue->hue = av_expr_eval(hue->hue_pexpr, hue->var_values, NULL);
         hue->hue_deg = hue->hue * 180 / M_PI;
     }
@@ -364,7 +396,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     if (hue->is_first || (old_brightness != hue->brightness && hue->brightness))
         create_luma_lut(hue);
 
-    if (!direct) {
+    if (!direct)
+    {
         if (!hue->brightness)
             av_image_copy_plane(outpic->data[0], outpic->linesize[0],
                                 inpic->data[0],  inpic->linesize[0],
@@ -404,23 +437,32 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
             return ret;                                                 \
     } while (0)
 
-    if (!strcmp(cmd, "h")) {
+    if (!strcmp(cmd, "h"))
+    {
         SET_EXPR(hue_deg, "h");
         av_freep(&hue->hue_expr);
-    } else if (!strcmp(cmd, "H")) {
+    }
+    else if (!strcmp(cmd, "H"))
+    {
         SET_EXPR(hue, "H");
         av_freep(&hue->hue_deg_expr);
-    } else if (!strcmp(cmd, "s")) {
+    }
+    else if (!strcmp(cmd, "s"))
+    {
         SET_EXPR(saturation, "s");
-    } else if (!strcmp(cmd, "b")) {
+    }
+    else if (!strcmp(cmd, "b"))
+    {
         SET_EXPR(brightness, "b");
-    } else
+    }
+    else
         return AVERROR(ENOSYS);
 
     return 0;
 }
 
-static const AVFilterPad hue_inputs[] = {
+static const AVFilterPad hue_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -430,7 +472,8 @@ static const AVFilterPad hue_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad hue_outputs[] = {
+static const AVFilterPad hue_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -438,7 +481,8 @@ static const AVFilterPad hue_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_hue = {
+AVFilter ff_vf_hue =
+{
     .name            = "hue",
     .description     = NULL_IF_CONFIG_SMALL("Adjust the hue and saturation of the input video."),
     .priv_size       = sizeof(HueContext),

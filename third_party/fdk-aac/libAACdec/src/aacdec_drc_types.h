@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -95,7 +95,7 @@ amm-info@iis.fraunhofer.de
 
 #include "common_fix.h"
 
- #define MAX_DRC_THREADS      (   3 )        /* Heavy compression value is handled just like MPEG DRC data */
+#define MAX_DRC_THREADS      (   3 )        /* Heavy compression value is handled just like MPEG DRC data */
 #define MAX_DRC_BANDS         (  16 )        /* 2^LEN_DRC_BAND_INCR (LEN_DRC_BAND_INCR = 4) */
 
 /**
@@ -103,68 +103,68 @@ amm-info@iis.fraunhofer.de
  */
 typedef enum
 {
-  UNKNOWN_PAYLOAD   =  0,
-  MPEG_DRC_EXT_DATA =  1,
-  DVB_DRC_ANC_DATA  =  2
+    UNKNOWN_PAYLOAD   =  0,
+    MPEG_DRC_EXT_DATA =  1,
+    DVB_DRC_ANC_DATA  =  2
 
 } AACDEC_DRC_PAYLOAD_TYPE;
 
 typedef struct
 {
-  UINT    expiryCount;
-  UINT    numBands;
-  USHORT  bandTop[MAX_DRC_BANDS];
-  SHORT   drcInterpolationScheme;
-  UCHAR   drcValue[MAX_DRC_BANDS];
-  SCHAR   drcDataType;
+    UINT    expiryCount;
+    UINT    numBands;
+    USHORT  bandTop[MAX_DRC_BANDS];
+    SHORT   drcInterpolationScheme;
+    UCHAR   drcValue[MAX_DRC_BANDS];
+    SCHAR   drcDataType;
 
 } CDrcChannelData;
 
 typedef struct
 {
-  UINT   excludedChnsMask;
-  SCHAR  progRefLevel;
-  SCHAR  presMode;     /* Presentation mode: 0 (not indicated), 1, 2, and 3 (reserved). */
-  SCHAR  pceInstanceTag;
+    UINT   excludedChnsMask;
+    SCHAR  progRefLevel;
+    SCHAR  presMode;     /* Presentation mode: 0 (not indicated), 1, 2, and 3 (reserved). */
+    SCHAR  pceInstanceTag;
 
-  CDrcChannelData channelData;
+    CDrcChannelData channelData;
 
 } CDrcPayload;
 
 typedef struct
 {
-  FIXP_DBL  cut;       /* The attenuation scale factor currently used.     */
-  FIXP_DBL  usrCut;    /* The latest attenuation scale factor set by user. */
-  FIXP_DBL  boost;     /* The boost scale factor currently used.           */
-  FIXP_DBL  usrBoost;  /* The latest boost scale factor set by user.       */
+    FIXP_DBL  cut;       /* The attenuation scale factor currently used.     */
+    FIXP_DBL  usrCut;    /* The latest attenuation scale factor set by user. */
+    FIXP_DBL  boost;     /* The boost scale factor currently used.           */
+    FIXP_DBL  usrBoost;  /* The latest boost scale factor set by user.       */
 
-  UINT   expiryFrame;
-  SCHAR  targetRefLevel;
-  UCHAR  bsDelayEnable;
-  UCHAR  applyDigitalNorm;
-  UCHAR  applyHeavyCompression;
+    UINT   expiryFrame;
+    SCHAR  targetRefLevel;
+    UCHAR  bsDelayEnable;
+    UCHAR  applyDigitalNorm;
+    UCHAR  applyHeavyCompression;
 
 } CDrcParams;
 
 
 typedef struct
 {
-  CDrcParams params;                         /* Module parameters that can be set by user (via SetParam API function) */
+    CDrcParams params;                         /* Module parameters that can be set by user (via SetParam API function) */
 
-  UCHAR  enable;                             /* Switch that controls dynamic range processing */
-  UCHAR  digitalNorm;                        /* Switch to en-/disable reference level normalization in digital domain */
+    UCHAR  enable;                             /* Switch that controls dynamic range processing */
+    UCHAR  digitalNorm;                        /* Switch to en-/disable reference level normalization in digital domain */
 
-  USHORT numPayloads;                        /* The number of DRC data payload elements found within frame */
-  USHORT numThreads;                         /* The number of DRC data threads extracted from the found payload elements */
-  SCHAR  progRefLevel;                       /* Program reference level for all channels */
-  UCHAR  progRefLevelPresent;                /* Program reference level found in bitstream */
+    USHORT numPayloads;                        /* The number of DRC data payload elements found within frame */
+    USHORT numThreads;                         /* The number of DRC data threads extracted from the found payload elements */
+    SCHAR  progRefLevel;                       /* Program reference level for all channels */
+    UCHAR  progRefLevelPresent;                /* Program reference level found in bitstream */
 
-  UINT   prlExpiryCount;                     /* Counter that can be used to monitor the life time of the program reference level. */
+    UINT   prlExpiryCount;                     /* Counter that can be used to monitor the life time of the program reference level. */
 
-  SCHAR  presMode;                            /* Presentation mode as defined in ETSI TS 101 154 */
-  UCHAR  dvbAncDataAvailable;                  /* Flag that indicates whether DVB ancillary data is present or not */
-  UINT   dvbAncDataPosition;                   /* Used to store the DVB ancillary data payload position in the bitstream (only one per frame) */
-  UINT   drcPayloadPosition[MAX_DRC_THREADS];  /* Used to store the DRC payload positions in the bitstream */
+    SCHAR  presMode;                            /* Presentation mode as defined in ETSI TS 101 154 */
+    UCHAR  dvbAncDataAvailable;                  /* Flag that indicates whether DVB ancillary data is present or not */
+    UINT   dvbAncDataPosition;                   /* Used to store the DVB ancillary data payload position in the bitstream (only one per frame) */
+    UINT   drcPayloadPosition[MAX_DRC_THREADS];  /* Used to store the DRC payload positions in the bitstream */
 
 } CDrcInfo;
 

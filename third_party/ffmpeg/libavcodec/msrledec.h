@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft RLE decoder
  * Copyright (C) 2008 Konstantin Shishkov
  *

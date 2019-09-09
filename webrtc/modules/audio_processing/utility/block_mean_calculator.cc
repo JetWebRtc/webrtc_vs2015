@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,42 +12,50 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 BlockMeanCalculator::BlockMeanCalculator(size_t block_length)
     : block_length_(block_length),
       count_(0),
       sum_(0.0),
-      mean_(0.0) {
-  RTC_DCHECK(block_length_ != 0);
+      mean_(0.0)
+{
+    RTC_DCHECK(block_length_ != 0);
 }
 
-void BlockMeanCalculator::Reset() {
-  Clear();
-  mean_ = 0.0;
-}
-
-void BlockMeanCalculator::AddValue(float value) {
-  sum_ += value;
-  ++count_;
-  if (count_ == block_length_) {
-    mean_ = sum_ / block_length_;
+void BlockMeanCalculator::Reset()
+{
     Clear();
-  }
+    mean_ = 0.0;
 }
 
-bool BlockMeanCalculator::EndOfBlock() const {
-  return count_ == 0;
+void BlockMeanCalculator::AddValue(float value)
+{
+    sum_ += value;
+    ++count_;
+    if (count_ == block_length_)
+    {
+        mean_ = sum_ / block_length_;
+        Clear();
+    }
 }
 
-float BlockMeanCalculator::GetLatestMean() const {
-  return mean_;
+bool BlockMeanCalculator::EndOfBlock() const
+{
+    return count_ == 0;
+}
+
+float BlockMeanCalculator::GetLatestMean() const
+{
+    return mean_;
 }
 
 // Flush all samples added.
-void BlockMeanCalculator::Clear() {
-  count_ = 0;
-  sum_ = 0.0;
+void BlockMeanCalculator::Clear()
+{
+    count_ = 0;
+    sum_ = 0.0;
 }
 
 }  // namespace webrtc

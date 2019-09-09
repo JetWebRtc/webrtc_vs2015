@@ -1,4 +1,4 @@
-/*
+﻿/*
  * BMP image format encoder
  * Copyright (c) 2006, 2007 Michel Bardiaux
  * Copyright (c) 2009 Daniel Verkamp <daniel at drv.nu>
@@ -31,8 +31,10 @@ static const uint32_t monoblack_pal[] = { 0x000000, 0xFFFFFF };
 static const uint32_t rgb565_masks[]  = { 0xF800, 0x07E0, 0x001F };
 static const uint32_t rgb444_masks[]  = { 0x0F00, 0x00F0, 0x000F };
 
-static av_cold int bmp_encode_init(AVCodecContext *avctx){
-    switch (avctx->pix_fmt) {
+static av_cold int bmp_encode_init(AVCodecContext *avctx)
+{
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_BGRA:
         avctx->bits_per_coded_sample = 32;
         break;
@@ -75,12 +77,13 @@ static int bmp_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint8_t *ptr, *buf;
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_RGB444:
         compression = BMP_BITFIELDS;
         pal = rgb444_masks; // abuse pal to hold color masks
@@ -143,13 +146,17 @@ FF_ENABLE_DEPRECATION_WARNINGS
     // BMP files are bottom-to-top so we start from the end...
     ptr = p->data[0] + (avctx->height - 1) * p->linesize[0];
     buf = pkt->data + hsize;
-    for(i = 0; i < avctx->height; i++) {
-        if (bit_count == 16) {
+    for(i = 0; i < avctx->height; i++)
+    {
+        if (bit_count == 16)
+        {
             const uint16_t *src = (const uint16_t *) ptr;
             uint16_t *dst = (uint16_t *) buf;
             for(n = 0; n < avctx->width; n++)
                 AV_WL16(dst + n, src[n]);
-        } else {
+        }
+        else
+        {
             memcpy(buf, ptr, n_bytes_per_row);
         }
         buf += n_bytes_per_row;
@@ -163,7 +170,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     return 0;
 }
 
-AVCodec ff_bmp_encoder = {
+AVCodec ff_bmp_encoder =
+{
     .name           = "bmp",
     .long_name      = NULL_IF_CONFIG_SMALL("BMP (Windows and OS/2 bitmap)"),
     .type           = AVMEDIA_TYPE_VIDEO,

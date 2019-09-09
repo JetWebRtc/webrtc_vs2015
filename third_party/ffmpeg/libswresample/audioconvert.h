@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio conversion
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2008 Peter Ross
@@ -36,7 +36,8 @@
 typedef void (conv_func_type)(uint8_t *po, const uint8_t *pi, int is, int os, uint8_t *end);
 typedef void (simd_func_type)(uint8_t **dst, const uint8_t **src, int len);
 
-typedef struct AudioConvert {
+typedef struct AudioConvert
+{
     int channels;
     int  in_simd_align_mask;
     int out_simd_align_mask;
@@ -44,7 +45,7 @@ typedef struct AudioConvert {
     simd_func_type *simd_f;
     const int *ch_map;
     uint8_t silence[8]; ///< silence input sample
-}AudioConvert;
+} AudioConvert;
 
 /**
  * Create an audio sample format converter context

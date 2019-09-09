@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003-2010 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -74,9 +74,12 @@ av_cold void ff_h264dsp_init(H264DSPContext *c, const int bit_depth,
     c->h264_add_pixels4_clear = FUNC(ff_h264_add_pixels4, depth);\
     c->h264_add_pixels8_clear = FUNC(ff_h264_add_pixels8, depth)
 
-    if (bit_depth > 8 && bit_depth <= 16) {
+    if (bit_depth > 8 && bit_depth <= 16)
+    {
         ADDPX_DSP(16);
-    } else {
+    }
+    else
+    {
         ADDPX_DSP(8);
     }
 
@@ -133,7 +136,8 @@ av_cold void ff_h264dsp_init(H264DSPContext *c, const int bit_depth,
         c->h264_h_loop_filter_chroma_mbaff_intra= FUNC(h264_h_loop_filter_chroma422_mbaff_intra, depth);\
     c->h264_loop_filter_strength= NULL;
 
-    switch (bit_depth) {
+    switch (bit_depth)
+    {
     case 9:
         H264_DSP(9);
         break;

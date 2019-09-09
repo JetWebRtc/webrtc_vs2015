@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -90,7 +90,8 @@ int ff_wmv2_encode_picture_header(MpegEncContext *s, int picture_number)
 
     av_assert0(s->flipflop_rounding);
 
-    if (s->pict_type == AV_PICTURE_TYPE_I) {
+    if (s->pict_type == AV_PICTURE_TYPE_I)
+    {
         av_assert0(s->no_rounding == 1);
         if (w->j_type_bit)
             put_bits(&s->pb, 1, w->j_type);
@@ -98,7 +99,8 @@ int ff_wmv2_encode_picture_header(MpegEncContext *s, int picture_number)
         if (w->per_mb_rl_bit)
             put_bits(&s->pb, 1, s->per_mb_rl_table);
 
-        if (!s->per_mb_rl_table) {
+        if (!s->per_mb_rl_table)
+        {
             ff_msmpeg4_code012(&s->pb, s->rl_chroma_table_index);
             ff_msmpeg4_code012(&s->pb, s->rl_table_index);
         }
@@ -106,7 +108,9 @@ int ff_wmv2_encode_picture_header(MpegEncContext *s, int picture_number)
         put_bits(&s->pb, 1, s->dc_table_index);
 
         s->inter_intra_pred = 0;
-    } else {
+    }
+    else
+    {
         int cbp_index;
 
         put_bits(&s->pb, 2, SKIP_TYPE_NONE);
@@ -117,7 +121,8 @@ int ff_wmv2_encode_picture_header(MpegEncContext *s, int picture_number)
         if (w->mspel_bit)
             put_bits(&s->pb, 1, s->mspel);
 
-        if (w->abt_flag) {
+        if (w->abt_flag)
+        {
             put_bits(&s->pb, 1, w->per_mb_abt ^ 1);
             if (!w->per_mb_abt)
                 ff_msmpeg4_code012(&s->pb, w->abt_type);
@@ -126,7 +131,8 @@ int ff_wmv2_encode_picture_header(MpegEncContext *s, int picture_number)
         if (w->per_mb_rl_bit)
             put_bits(&s->pb, 1, s->per_mb_rl_table);
 
-        if (!s->per_mb_rl_table) {
+        if (!s->per_mb_rl_table)
+        {
             ff_msmpeg4_code012(&s->pb, s->rl_table_index);
             s->rl_chroma_table_index = s->rl_table_index;
         }
@@ -154,7 +160,8 @@ void ff_wmv2_encode_mb(MpegEncContext *s, int16_t block[6][64],
 
     ff_msmpeg4_handle_slices(s);
 
-    if (!s->mb_intra) {
+    if (!s->mb_intra)
+    {
         /* compute cbp */
         cbp = 0;
         for (i = 0; i < 6; i++)
@@ -171,15 +178,19 @@ void ff_wmv2_encode_mb(MpegEncContext *s, int16_t block[6][64],
         ff_msmpeg4_encode_motion(s, motion_x - pred_x,
                                  motion_y - pred_y);
         s->mv_bits += get_bits_diff(s);
-    } else {
+    }
+    else
+    {
         /* compute cbp */
         cbp       = 0;
         coded_cbp = 0;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
             int val, pred;
             val  = (s->block_last_index[i] >= 1);
             cbp |= val << (5 - i);
-            if (i < 4) {
+            if (i < 4)
+            {
                 /* predict value for close blocks only for luma */
                 pred         = ff_msmpeg4_coded_block_pred(s, i, &coded_block);
                 *coded_block = val;
@@ -197,7 +208,8 @@ void ff_wmv2_encode_mb(MpegEncContext *s, int16_t block[6][64],
                      ff_wmv2_inter_table[w->cbp_table_index][cbp][1],
                      ff_wmv2_inter_table[w->cbp_table_index][cbp][0]);
         put_bits(&s->pb, 1, 0);         /* no AC prediction yet */
-        if (s->inter_intra_pred) {
+        if (s->inter_intra_pred)
+        {
             s->h263_aic_dir = 0;
             put_bits(&s->pb,
                      ff_table_inter_intra[s->h263_aic_dir][1],
@@ -214,14 +226,16 @@ void ff_wmv2_encode_mb(MpegEncContext *s, int16_t block[6][64],
         s->p_tex_bits += get_bits_diff(s);
 }
 
-static const AVClass wmv2_class = {
+static const AVClass wmv2_class =
+{
     .class_name = "wmv2 encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_wmv2_encoder = {
+AVCodec ff_wmv2_encoder =
+{
     .name           = "wmv2",
     .long_name      = NULL_IF_CONFIG_SMALL("Windows Media Video 8"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -231,6 +245,8 @@ AVCodec ff_wmv2_encoder = {
     .init           = wmv2_encode_init,
     .encode2        = ff_mpv_encode_picture,
     .close          = ff_mpv_encode_end,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
 };

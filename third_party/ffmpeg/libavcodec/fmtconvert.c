@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Format Conversion Utils
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -25,7 +25,7 @@
 #include "libavutil/common.h"
 
 static void int32_to_float_fmul_scalar_c(float *dst, const int32_t *src,
-                                         float mul, int len)
+        float mul, int len)
 {
     int i;
     for(i=0; i<len; i++)
@@ -33,8 +33,8 @@ static void int32_to_float_fmul_scalar_c(float *dst, const int32_t *src,
 }
 
 static void int32_to_float_fmul_array8_c(FmtConvertContext *c, float *dst,
-                                         const int32_t *src, const float *mul,
-                                         int len)
+        const int32_t *src, const float *mul,
+        int len)
 {
     int i;
     for (i = 0; i < len; i += 8)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,97 +13,113 @@
 #include "webrtc/modules/video_capture/video_capture_factory.h"
 #include "webrtc/video_send_stream.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 VcmCapturer::VcmCapturer() : started_(false), sink_(nullptr), vcm_(NULL) {}
 
-bool VcmCapturer::Init(size_t width, size_t height, size_t target_fps) {
-  VideoCaptureModule::DeviceInfo* device_info =
-      VideoCaptureFactory::CreateDeviceInfo();
+bool VcmCapturer::Init(size_t width, size_t height, size_t target_fps)
+{
+    VideoCaptureModule::DeviceInfo* device_info =
+        VideoCaptureFactory::CreateDeviceInfo();
 
-  char device_name[256];
-  char unique_name[256];
-  if (device_info->GetDeviceName(0, device_name, sizeof(device_name),
-                                 unique_name, sizeof(unique_name)) !=
-      0) {
-    Destroy();
-    return false;
-  }
+    char device_name[256];
+    char unique_name[256];
+    if (device_info->GetDeviceName(0, device_name, sizeof(device_name),
+                                   unique_name, sizeof(unique_name)) !=
+            0)
+    {
+        Destroy();
+        return false;
+    }
 
-  vcm_ = webrtc::VideoCaptureFactory::Create(unique_name);
-  vcm_->RegisterCaptureDataCallback(this);
+    vcm_ = webrtc::VideoCaptureFactory::Create(unique_name);
+    vcm_->RegisterCaptureDataCallback(this);
 
-  device_info->GetCapability(vcm_->CurrentDeviceName(), 0, capability_);
-  delete device_info;
+    device_info->GetCapability(vcm_->CurrentDeviceName(), 0, capability_);
+    delete device_info;
 
-  capability_.width = static_cast<int32_t>(width);
-  capability_.height = static_cast<int32_t>(height);
-  capability_.maxFPS = static_cast<int32_t>(target_fps);
-  capability_.rawType = kVideoI420;
+    capability_.width = static_cast<int32_t>(width);
+    capability_.height = static_cast<int32_t>(height);
+    capability_.maxFPS = static_cast<int32_t>(target_fps);
+    capability_.rawType = kVideoI420;
 
-  if (vcm_->StartCapture(capability_) != 0) {
-    Destroy();
-    return false;
-  }
+    if (vcm_->StartCapture(capability_) != 0)
+    {
+        Destroy();
+        return false;
+    }
 
-  assert(vcm_->CaptureStarted());
+    assert(vcm_->CaptureStarted());
 
-  return true;
+    return true;
 }
 
 VcmCapturer* VcmCapturer::Create(size_t width,
                                  size_t height,
-                                 size_t target_fps) {
-  VcmCapturer* vcm_capturer = new VcmCapturer();
-  if (!vcm_capturer->Init(width, height, target_fps)) {
-    // TODO(pbos): Log a warning that this failed.
-    delete vcm_capturer;
-    return NULL;
-  }
-  return vcm_capturer;
+                                 size_t target_fps)
+{
+    VcmCapturer* vcm_capturer = new VcmCapturer();
+    if (!vcm_capturer->Init(width, height, target_fps))
+    {
+        // TODO(pbos): Log a warning that this failed.
+        delete vcm_capturer;
+        return NULL;
+    }
+    return vcm_capturer;
 }
 
 
-void VcmCapturer::Start() {
-  rtc::CritScope lock(&crit_);
-  started_ = true;
+void VcmCapturer::Start()
+{
+    rtc::CritScope lock(&crit_);
+    started_ = true;
 }
 
-void VcmCapturer::Stop() {
-  rtc::CritScope lock(&crit_);
-  started_ = false;
+void VcmCapturer::Stop()
+{
+    rtc::CritScope lock(&crit_);
+    started_ = false;
 }
 
 void VcmCapturer::AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                                  const rtc::VideoSinkWants& wants) {
-  rtc::CritScope lock(&crit_);
-  RTC_CHECK(!sink_ || sink_ == sink);
-  sink_ = sink;
+                                  const rtc::VideoSinkWants& wants)
+{
+    rtc::CritScope lock(&crit_);
+    RTC_CHECK(!sink_ || sink_ == sink);
+    sink_ = sink;
 }
 
-void VcmCapturer::RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) {
-  rtc::CritScope lock(&crit_);
-  RTC_CHECK(sink_ == sink);
-  sink_ = nullptr;
+void VcmCapturer::RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink)
+{
+    rtc::CritScope lock(&crit_);
+    RTC_CHECK(sink_ == sink);
+    sink_ = nullptr;
 }
 
-void VcmCapturer::Destroy() {
-  if (!vcm_)
-    return;
+void VcmCapturer::Destroy()
+{
+    if (!vcm_)
+        return;
 
-  vcm_->StopCapture();
-  vcm_->DeRegisterCaptureDataCallback();
-  // Release reference to VCM.
-  vcm_ = nullptr;
+    vcm_->StopCapture();
+    vcm_->DeRegisterCaptureDataCallback();
+    // Release reference to VCM.
+    vcm_ = nullptr;
 }
 
-VcmCapturer::~VcmCapturer() { Destroy(); }
+VcmCapturer::~VcmCapturer()
+{
+    Destroy();
+}
 
-void VcmCapturer::OnFrame(const VideoFrame& frame) {
-  rtc::CritScope lock(&crit_);
-  if (started_ && sink_)
-    sink_->OnFrame(frame);
+void VcmCapturer::OnFrame(const VideoFrame& frame)
+{
+    rtc::CritScope lock(&crit_);
+    if (started_ && sink_)
+        sink_->OnFrame(frame);
 }
 
 }  // test

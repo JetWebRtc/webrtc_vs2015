@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Jeff Moguillansky
  *
  * This file is part of FFmpeg.
@@ -38,7 +38,8 @@
 #include "libavformat/internal.h"
 #include "avdevice.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     GC gc;
 
@@ -67,7 +68,8 @@ typedef struct XVTagFormatMap
     enum AVPixelFormat format;
 } XVTagFormatMap;
 
-static const XVTagFormatMap tag_codec_map[] = {
+static const XVTagFormatMap tag_codec_map[] =
+{
     { MKTAG('I','4','2','0'), AV_PIX_FMT_YUV420P },
     { MKTAG('U','Y','V','Y'), AV_PIX_FMT_UYVY422 },
     { MKTAG('Y','U','Y','2'), AV_PIX_FMT_YUYV422 },
@@ -78,7 +80,8 @@ static int xv_get_tag_from_format(enum AVPixelFormat format)
 {
     const XVTagFormatMap *m = tag_codec_map;
     int i;
-    for (i = 0; m->tag; m = &tag_codec_map[++i]) {
+    for (i = 0; m->tag; m = &tag_codec_map[++i])
+    {
         if (m->format == format)
             return m->tag;
     }
@@ -88,7 +91,8 @@ static int xv_get_tag_from_format(enum AVPixelFormat format)
 static int xv_write_trailer(AVFormatContext *s)
 {
     XVContext *xv = s->priv_data;
-    if (xv->display) {
+    if (xv->display)
+    {
         XShmDetach(xv->display, &xv->yuv_shminfo);
         if (xv->yuv_image)
             shmdt(xv->yuv_image->data);
@@ -112,13 +116,15 @@ static int xv_write_header(AVFormatContext *s)
     AVCodecContext *encctx = s->streams[0]->codec;
 
     if (   s->nb_streams > 1
-        || encctx->codec_type != AVMEDIA_TYPE_VIDEO
-        || encctx->codec_id   != AV_CODEC_ID_RAWVIDEO) {
+            || encctx->codec_type != AVMEDIA_TYPE_VIDEO
+            || encctx->codec_id   != AV_CODEC_ID_RAWVIDEO)
+    {
         av_log(s, AV_LOG_ERROR, "Only supports one rawvideo stream\n");
         return AVERROR(EINVAL);
     }
 
-    if (!(tag = xv_get_tag_from_format(encctx->pix_fmt))) {
+    if (!(tag = xv_get_tag_from_format(encctx->pix_fmt)))
+    {
         av_log(s, AV_LOG_ERROR,
                "Unsupported pixel format '%s', only yuv420p, uyvy422, yuyv422 are currently supported\n",
                av_get_pix_fmt_name(encctx->pix_fmt));
@@ -127,31 +133,37 @@ static int xv_write_header(AVFormatContext *s)
     xv->image_format = encctx->pix_fmt;
 
     xv->display = XOpenDisplay(xv->display_name);
-    if (!xv->display) {
+    if (!xv->display)
+    {
         av_log(s, AV_LOG_ERROR, "Could not open the X11 display '%s'\n", xv->display_name);
         return AVERROR(EINVAL);
     }
 
     xv->image_width  = encctx->width;
     xv->image_height = encctx->height;
-    if (!xv->window_width && !xv->window_height) {
+    if (!xv->window_width && !xv->window_height)
+    {
         AVRational sar = encctx->sample_aspect_ratio;
         xv->window_width  = encctx->width;
         xv->window_height = encctx->height;
-        if (sar.num) {
+        if (sar.num)
+        {
             if (sar.num > sar.den)
                 xv->window_width = av_rescale(xv->window_width, sar.num, sar.den);
             if (sar.num < sar.den)
                 xv->window_height = av_rescale(xv->window_height, sar.den, sar.num);
         }
     }
-    if (!xv->window_id) {
+    if (!xv->window_id)
+    {
         xv->window = XCreateSimpleWindow(xv->display, DefaultRootWindow(xv->display),
                                          xv->window_x, xv->window_y,
                                          xv->window_width, xv->window_height,
                                          0, 0, 0);
-        if (!xv->window_title) {
-            if (!(xv->window_title = av_strdup(s->filename))) {
+        if (!xv->window_title)
+        {
+            if (!(xv->window_title = av_strdup(s->filename)))
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -160,14 +172,17 @@ static int xv_write_header(AVFormatContext *s)
         xv->wm_delete_message = XInternAtom(xv->display, "WM_DELETE_WINDOW", False);
         XSetWMProtocols(xv->display, xv->window, &xv->wm_delete_message, 1);
         XMapWindow(xv->display, xv->window);
-    } else
+    }
+    else
         xv->window = xv->window_id;
 
-    if (XvQueryAdaptors(xv->display, DefaultRootWindow(xv->display), &num_adaptors, &ai) != Success) {
+    if (XvQueryAdaptors(xv->display, DefaultRootWindow(xv->display), &num_adaptors, &ai) != Success)
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
-    if (!num_adaptors) {
+    if (!num_adaptors)
+    {
         av_log(s, AV_LOG_ERROR, "No X-Video adaptors present\n");
         return AVERROR(ENODEV);
     }
@@ -175,18 +190,22 @@ static int xv_write_header(AVFormatContext *s)
     XvFreeAdaptorInfo(ai);
 
     fv = XvListImageFormats(xv->display, xv->xv_port, &num_formats);
-    if (!fv) {
+    if (!fv)
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
-    for (j = 0; j < num_formats; j++) {
-        if (fv[j].id == tag) {
+    for (j = 0; j < num_formats; j++)
+    {
+        if (fv[j].id == tag)
+        {
             break;
         }
     }
     XFree(fv);
 
-    if (j >= num_formats) {
+    if (j >= num_formats)
+    {
         av_log(s, AV_LOG_ERROR,
                "Device does not support pixel format %s, aborting\n",
                av_get_pix_fmt_name(encctx->pix_fmt));
@@ -218,7 +237,7 @@ static int xv_write_header(AVFormatContext *s)
     xv->window_width = xv->window_height = 0;
 
     return 0;
-  fail:
+fail:
     xv_write_trailer(s);
     return ret;
 }
@@ -231,19 +250,31 @@ static void compute_display_area(AVFormatContext *s)
     AVCodecContext *encctx = st->codec;
 
     /* compute overlay width and height from the codec context information */
-    sar = st->sample_aspect_ratio.num ? st->sample_aspect_ratio : (AVRational){ 1, 1 };
-    dar = av_mul_q(sar, (AVRational){ encctx->width, encctx->height });
+    sar = st->sample_aspect_ratio.num ? st->sample_aspect_ratio : (AVRational)
+    {
+        1, 1
+    };
+    dar = av_mul_q(sar, (AVRational)
+    {
+        encctx->width, encctx->height
+    });
 
     /* we suppose the screen has a 1/1 sample aspect ratio */
     /* fit in the window */
-    if (av_cmp_q(dar, (AVRational){ xv->dest_w, xv->dest_h }) > 0) {
+    if (av_cmp_q(dar, (AVRational)
+{
+    xv->dest_w, xv->dest_h
+}) > 0)
+    {
         /* fit in width */
         xv->dest_y = xv->dest_h;
         xv->dest_x = 0;
         xv->dest_h = av_rescale(xv->dest_w, dar.den, dar.num);
         xv->dest_y -= xv->dest_h;
         xv->dest_y /= 2;
-    } else {
+    }
+    else
+    {
         /* fit in height */
         xv->dest_x = xv->dest_w;
         xv->dest_y = 0;
@@ -259,12 +290,14 @@ static int xv_repaint(AVFormatContext *s)
     XWindowAttributes window_attrs;
 
     XGetWindowAttributes(xv->display, xv->window, &window_attrs);
-    if (window_attrs.width != xv->window_width || window_attrs.height != xv->window_height) {
+    if (window_attrs.width != xv->window_width || window_attrs.height != xv->window_height)
+    {
         XRectangle rect[2];
         xv->dest_w = window_attrs.width;
         xv->dest_h = window_attrs.height;
         compute_display_area(s);
-        if (xv->dest_x) {
+        if (xv->dest_x)
+        {
             rect[0].width  = rect[1].width  = xv->dest_x;
             rect[0].height = rect[1].height = window_attrs.height;
             rect[0].y      = rect[1].y      = 0;
@@ -272,7 +305,8 @@ static int xv_repaint(AVFormatContext *s)
             rect[1].x = xv->dest_w + xv->dest_x;
             XFillRectangles(xv->display, xv->window, xv->gc, rect, 2);
         }
-        if (xv->dest_y) {
+        if (xv->dest_y)
+        {
             rect[0].width  = rect[1].width  = window_attrs.width;
             rect[0].height = rect[1].height = xv->dest_y;
             rect[0].x      = rect[1].x      = 0;
@@ -284,7 +318,8 @@ static int xv_repaint(AVFormatContext *s)
 
     if (XvShmPutImage(xv->display, xv->xv_port, xv->window, xv->gc,
                       xv->yuv_image, 0, 0, xv->image_width, xv->image_height,
-                      xv->dest_x, xv->dest_y, xv->dest_w, xv->dest_h, True) != Success) {
+                      xv->dest_x, xv->dest_y, xv->dest_w, xv->dest_h, True) != Success)
+    {
         av_log(s, AV_LOG_ERROR, "Could not copy image to XV shared memory buffer\n");
         return AVERROR_EXTERNAL;
     }
@@ -295,18 +330,22 @@ static int write_picture(AVFormatContext *s, AVPicture *pict)
 {
     XVContext *xv = s->priv_data;
     XvImage *img = xv->yuv_image;
-    uint8_t *data[3] = {
+    uint8_t *data[3] =
+    {
         img->data + img->offsets[0],
         img->data + img->offsets[1],
         img->data + img->offsets[2]
     };
 
     /* Check messages. Window might get closed. */
-    if (!xv->window_id) {
+    if (!xv->window_id)
+    {
         XEvent event;
-        while (XPending(xv->display)) {
+        while (XPending(xv->display))
+        {
             XNextEvent(xv->display, &event);
-            if (event.type == ClientMessage && event.xclient.data.l[0] == xv->wm_delete_message) {
+            if (event.type == ClientMessage && event.xclient.data.l[0] == xv->wm_delete_message)
+            {
                 av_log(xv, AV_LOG_DEBUG, "Window close event.\n");
                 return AVERROR(EPIPE);
             }
@@ -338,7 +377,8 @@ static int xv_write_frame(AVFormatContext *s, int stream_index, AVFrame **frame,
 
 static int xv_control_message(AVFormatContext *s, int type, void *data, size_t data_size)
 {
-    switch(type) {
+    switch(type)
+    {
     case AV_APP_TO_DEV_WINDOW_REPAINT:
         return xv_repaint(s);
     default:
@@ -348,7 +388,8 @@ static int xv_control_message(AVFormatContext *s, int type, void *data, size_t d
 }
 
 #define OFFSET(x) offsetof(XVContext, x)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "display_name", "set display name",       OFFSET(display_name), AV_OPT_TYPE_STRING, {.str = NULL }, 0, 0, AV_OPT_FLAG_ENCODING_PARAM },
     { "window_id",    "set existing window id", OFFSET(window_id),    AV_OPT_TYPE_INT64,  {.i64 = 0 }, 0, INT64_MAX, AV_OPT_FLAG_ENCODING_PARAM },
     { "window_size",  "set window forced size", OFFSET(window_width), AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL}, 0, 0, AV_OPT_FLAG_ENCODING_PARAM },
@@ -359,7 +400,8 @@ static const AVOption options[] = {
 
 };
 
-static const AVClass xv_class = {
+static const AVClass xv_class =
+{
     .class_name = "xvideo outdev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -367,7 +409,8 @@ static const AVClass xv_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT,
 };
 
-AVOutputFormat ff_xv_muxer = {
+AVOutputFormat ff_xv_muxer =
+{
     .name           = "xv",
     .long_name      = NULL_IF_CONFIG_SMALL("XV (XVideo) output device"),
     .priv_data_size = sizeof(XVContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,12 +30,13 @@ extern "C" {
 // for Block_16x16
 #define BORDER_MV_PIXELS_B16 (16 + VP9_INTERP_EXTEND)
 
-typedef struct search_site_config {
-  // motion search sites
-  MV ss_mv[8 * MAX_MVSEARCH_STEPS];        // Motion vector
-  intptr_t ss_os[8 * MAX_MVSEARCH_STEPS];  // Offset
-  int searches_per_step;
-  int total_steps;
+typedef struct search_site_config
+{
+    // motion search sites
+    MV ss_mv[8 * MAX_MVSEARCH_STEPS];        // Motion vector
+    intptr_t ss_os[8 * MAX_MVSEARCH_STEPS];  // Offset
+    int searches_per_step;
+    int total_steps;
 } search_site_config;
 
 void vp9_init_dsmotion_compensation(search_site_config *cfg, int stride);
@@ -65,8 +66,8 @@ int vp9_refining_search_sad(const struct macroblock *x, struct mv *ref_mv,
 
 // Perform integral projection based motion estimation.
 unsigned int vp9_int_pro_motion_estimation(const struct VP9_COMP *cpi,
-                                           MACROBLOCK *x, BLOCK_SIZE bsize,
-                                           int mi_row, int mi_col);
+        MACROBLOCK *x, BLOCK_SIZE bsize,
+        int mi_row, int mi_col);
 
 typedef uint32_t(fractional_mv_step_fp)(
     const MACROBLOCK *x, MV *bestmv, const MV *ref_mv, int allow_hp,

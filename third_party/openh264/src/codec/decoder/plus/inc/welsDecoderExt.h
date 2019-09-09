@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -50,12 +50,14 @@
 
 class ISVCDecoder;
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 //#define OUTPUT_BIT_STREAM  ////for test to output bitstream
 
-class CWelsDecoder : public ISVCDecoder {
- public:
+class CWelsDecoder : public ISVCDecoder
+{
+public:
 CWelsDecoder (void);
 virtual ~CWelsDecoder();
 
@@ -75,37 +77,37 @@ virtual long EXTAPI Uninitialize();
 *   return: if decode frame success return 0, otherwise corresponding error returned.
 ***************************************************************************/
 virtual DECODING_STATE EXTAPI DecodeFrame (const unsigned char* kpSrc,
-    const int kiSrcLen,
-    unsigned char** ppDst,
-    int* pStride,
-    int& iWidth,
-    int& iHeight);
+        const int kiSrcLen,
+        unsigned char** ppDst,
+        int* pStride,
+        int& iWidth,
+        int& iHeight);
 
 virtual DECODING_STATE EXTAPI DecodeFrameNoDelay (const unsigned char* kpSrc,
-    const int kiSrcLen,
-    unsigned char** ppDst,
-    SBufferInfo* pDstInfo);
+        const int kiSrcLen,
+        unsigned char** ppDst,
+        SBufferInfo* pDstInfo);
 
 virtual DECODING_STATE EXTAPI DecodeFrame2 (const unsigned char* kpSrc,
-    const int kiSrcLen,
-    unsigned char** ppDst,
-    SBufferInfo* pDstInfo);
+        const int kiSrcLen,
+        unsigned char** ppDst,
+        SBufferInfo* pDstInfo);
 virtual DECODING_STATE EXTAPI DecodeParser (const unsigned char* kpSrc,
-    const int kiSrcLen,
-    SParserBsInfo* pDstInfo);
+        const int kiSrcLen,
+        SParserBsInfo* pDstInfo);
 virtual DECODING_STATE EXTAPI DecodeFrameEx (const unsigned char* kpSrc,
-    const int kiSrcLen,
-    unsigned char* pDst,
-    int iDstStride,
-    int& iDstLen,
-    int& iWidth,
-    int& iHeight,
-    int& color_format);
+        const int kiSrcLen,
+        unsigned char* pDst,
+        int iDstStride,
+        int& iDstLen,
+        int& iWidth,
+        int& iHeight,
+        int& color_format);
 
 virtual long EXTAPI SetOption (DECODER_OPTION eOptID, void* pOption);
 virtual long EXTAPI GetOption (DECODER_OPTION eOptID, void* pOption);
 
- private:
+private:
 PWelsDecoderContext     m_pDecContext;
 welsCodecTrace*         m_pWelsTrace;
 

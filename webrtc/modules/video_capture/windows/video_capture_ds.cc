@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -151,7 +151,7 @@ int32_t VideoCaptureDS::Init(const char* deviceUniqueIdUTF8)
 }
 
 int32_t VideoCaptureDS::StartCapture(
-                                      const VideoCaptureCapability& capability)
+    const VideoCaptureCapability& capability)
 {
     CriticalSectionScoped cs(&_apiCs);
 
@@ -202,14 +202,14 @@ bool VideoCaptureDS::CaptureStarted()
 
 }
 int32_t VideoCaptureDS::CaptureSettings(
-                                             VideoCaptureCapability& settings)
+    VideoCaptureCapability& settings)
 {
     settings = _requestedCapability;
     return 0;
 }
 
 int32_t VideoCaptureDS::SetCameraOutput(
-                             const VideoCaptureCapability& requestedCapability)
+    const VideoCaptureCapability& requestedCapability)
 {
 
     // Get the best matching capability
@@ -220,8 +220,8 @@ int32_t VideoCaptureDS::SetCameraOutput(
     _requestedCapability = requestedCapability;
     // Match the requested capability with the supported.
     if ((capabilityIndex = _dsInfo.GetBestMatchedCapability(_deviceUniqueId,
-                                                            _requestedCapability,
-                                                            capability)) < 0)
+                           _requestedCapability,
+                           capability)) < 0)
     {
         return -1;
     }
@@ -229,7 +229,8 @@ int32_t VideoCaptureDS::SetCameraOutput(
     if (capability.maxFPS > requestedCapability.maxFPS)
     {
         capability.maxFPS = requestedCapability.maxFPS;
-    } else if (capability.maxFPS <= 0)
+    }
+    else if (capability.maxFPS <= 0)
     {
         capability.maxFPS = 30;
     }
@@ -249,7 +250,7 @@ int32_t VideoCaptureDS::SetCameraOutput(
     VIDEO_STREAM_CONFIG_CAPS caps;
 
     HRESULT hr = _outputCapturePin->QueryInterface(IID_IAMStreamConfig,
-                                                   (void**) &streamConfig);
+                 (void**) &streamConfig);
     if (hr)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
@@ -260,8 +261,8 @@ int32_t VideoCaptureDS::SetCameraOutput(
     //Get the windows capability from the capture device
     bool isDVCamera = false;
     hr = streamConfig->GetStreamCaps(
-                                    windowsCapability.directShowCapabilityIndex,
-                                    &pmt, reinterpret_cast<BYTE*> (&caps));
+             windowsCapability.directShowCapabilityIndex,
+             &pmt, reinterpret_cast<BYTE*> (&caps));
     if (!FAILED(hr))
     {
         if (pmt->formattype == FORMAT_VideoInfo2)
@@ -269,7 +270,7 @@ int32_t VideoCaptureDS::SetCameraOutput(
             VIDEOINFOHEADER2* h =
                 reinterpret_cast<VIDEOINFOHEADER2*> (pmt->pbFormat);
             if (capability.maxFPS > 0
-                && windowsCapability.supportFrameRateControl)
+                    && windowsCapability.supportFrameRateControl)
             {
                 h->AvgTimePerFrame = REFERENCE_TIME(10000000.0
                                                     / capability.maxFPS);
@@ -278,9 +279,9 @@ int32_t VideoCaptureDS::SetCameraOutput(
         else
         {
             VIDEOINFOHEADER* h = reinterpret_cast<VIDEOINFOHEADER*>
-                                (pmt->pbFormat);
+                                 (pmt->pbFormat);
             if (capability.maxFPS > 0
-                && windowsCapability.supportFrameRateControl)
+                    && windowsCapability.supportFrameRateControl)
             {
                 h->AvgTimePerFrame = REFERENCE_TIME(10000000.0
                                                     / capability.maxFPS);
@@ -295,8 +296,8 @@ int32_t VideoCaptureDS::SetCameraOutput(
 
         //Check if this is a DV camera and we need to add MS DV Filter
         if (pmt->subtype == MEDIASUBTYPE_dvsl
-           || pmt->subtype == MEDIASUBTYPE_dvsd
-           || pmt->subtype == MEDIASUBTYPE_dvhd)
+                || pmt->subtype == MEDIASUBTYPE_dvsd
+                || pmt->subtype == MEDIASUBTYPE_dvhd)
             isDVCamera = true; // This is a DV camera. Use MS DV filter
     }
     RELEASE_AND_CLEAR(streamConfig);
@@ -341,8 +342,8 @@ int32_t VideoCaptureDS::DisconnectGraph()
     if (hr != S_OK)
     {
         WEBRTC_TRACE( webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                     "Failed to Stop the Capture device for reconfiguration %d",
-                     hr);
+                      "Failed to Stop the Capture device for reconfiguration %d",
+                      hr);
         return -1;
     }
     return 0;

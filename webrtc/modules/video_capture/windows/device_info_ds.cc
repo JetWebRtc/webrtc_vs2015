@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,22 +23,23 @@ namespace webrtc
 namespace videocapturemodule
 {
 const int32_t NoWindowsCaptureDelays = 1;
-const DelayValues WindowsCaptureDelays[NoWindowsCaptureDelays] = {
-  "Microsoft LifeCam Cinema",
-  "usb#vid_045e&pid_075d",
-  {
-    {640,480,125},
-    {640,360,117},
-    {424,240,111},
-    {352,288,111},
-    {320,240,116},
-    {176,144,101},
-    {160,120,109},
-    {1280,720,166},
-    {960,544,126},
-    {800,448,120},
-    {800,600,127}
-  },
+const DelayValues WindowsCaptureDelays[NoWindowsCaptureDelays] =
+{
+    "Microsoft LifeCam Cinema",
+    "usb#vid_045e&pid_075d",
+    {
+        {640,480,125},
+        {640,360,117},
+        {424,240,111},
+        {352,288,111},
+        {320,240,116},
+        {176,144,101},
+        {160,120,109},
+        {1280,720,166},
+        {960,544,126},
+        {800,448,120},
+        {800,600,127}
+    },
 };
 
 // static
@@ -126,13 +127,13 @@ uint32_t DeviceInfoDS::NumberOfDevices()
 }
 
 int32_t DeviceInfoDS::GetDeviceName(
-                                       uint32_t deviceNumber,
-                                       char* deviceNameUTF8,
-                                       uint32_t deviceNameLength,
-                                       char* deviceUniqueIdUTF8,
-                                       uint32_t deviceUniqueIdUTF8Length,
-                                       char* productUniqueIdUTF8,
-                                       uint32_t productUniqueIdUTF8Length)
+    uint32_t deviceNumber,
+    char* deviceNameUTF8,
+    uint32_t deviceNameLength,
+    char* deviceUniqueIdUTF8,
+    uint32_t deviceUniqueIdUTF8Length,
+    char* productUniqueIdUTF8,
+    uint32_t productUniqueIdUTF8Length)
 {
     ReadLockScoped cs(_apiLock);
     const int32_t result = GetDeviceInfo(deviceNumber, deviceNameUTF8,
@@ -145,13 +146,13 @@ int32_t DeviceInfoDS::GetDeviceName(
 }
 
 int32_t DeviceInfoDS::GetDeviceInfo(
-                                       uint32_t deviceNumber,
-                                       char* deviceNameUTF8,
-                                       uint32_t deviceNameLength,
-                                       char* deviceUniqueIdUTF8,
-                                       uint32_t deviceUniqueIdUTF8Length,
-                                       char* productUniqueIdUTF8,
-                                       uint32_t productUniqueIdUTF8Length)
+    uint32_t deviceNumber,
+    char* deviceNameUTF8,
+    uint32_t deviceNameLength,
+    char* deviceUniqueIdUTF8,
+    uint32_t deviceUniqueIdUTF8Length,
+    char* productUniqueIdUTF8,
+    uint32_t productUniqueIdUTF8Length)
 
 {
 
@@ -190,8 +191,8 @@ int32_t DeviceInfoDS::GetDeviceInfo(
             {
                 // ignore all VFW drivers
                 if ((wcsstr(varName.bstrVal, (L"(VFW)")) == NULL) &&
-                    (_wcsnicmp(varName.bstrVal, (L"Google Camera Adapter"),21)
-                        != 0))
+                        (_wcsnicmp(varName.bstrVal, (L"Google Camera Adapter"),21)
+                         != 0))
                 {
                     // Found a valid device.
                     if (index == static_cast<int>(deviceNumber))
@@ -228,13 +229,13 @@ int32_t DeviceInfoDS::GetDeviceInfo(
                             else
                             {
                                 convResult = WideCharToMultiByte(
-                                                          CP_UTF8,
-                                                          0,
-                                                          varName.bstrVal,
-                                                          -1,
-                                                          (char*) deviceUniqueIdUTF8,
-                                                          deviceUniqueIdUTF8Length,
-                                                          NULL, NULL);
+                                                 CP_UTF8,
+                                                 0,
+                                                 varName.bstrVal,
+                                                 -1,
+                                                 (char*) deviceUniqueIdUTF8,
+                                                 deviceUniqueIdUTF8Length,
+                                                 NULL, NULL);
                                 if (convResult == 0)
                                 {
                                     WEBRTC_TRACE(webrtc::kTraceError,
@@ -244,7 +245,7 @@ int32_t DeviceInfoDS::GetDeviceInfo(
                                     return -1;
                                 }
                                 if (productUniqueIdUTF8
-                                    && productUniqueIdUTF8Length > 0)
+                                        && productUniqueIdUTF8Length > 0)
                                 {
                                     GetProductId(deviceUniqueIdUTF8,
                                                  productUniqueIdUTF8,
@@ -273,9 +274,9 @@ int32_t DeviceInfoDS::GetDeviceInfo(
 }
 
 IBaseFilter * DeviceInfoDS::GetDeviceFilter(
-                                     const char* deviceUniqueIdUTF8,
-                                     char* productUniqueIdUTF8,
-                                     uint32_t productUniqueIdUTF8Length)
+    const char* deviceUniqueIdUTF8,
+    char* productUniqueIdUTF8,
+    uint32_t productUniqueIdUTF8Length)
 {
 
     const int32_t deviceUniqueIdUTF8Length =
@@ -290,7 +291,7 @@ IBaseFilter * DeviceInfoDS::GetDeviceFilter(
     // enumerate all video capture devices
     RELEASE_AND_CLEAR(_dsMonikerDevEnum);
     HRESULT hr = _dsDevEnum->CreateClassEnumerator(CLSID_VideoInputDeviceCategory,
-                                                   &_dsMonikerDevEnum, 0);
+                 &_dsMonikerDevEnum, 0);
     if (hr != NOERROR)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
@@ -349,7 +350,7 @@ IBaseFilter * DeviceInfoDS::GetDeviceFilter(
                         }
 
                         if (productUniqueIdUTF8
-                            && productUniqueIdUTF8Length > 0) // Get the device name
+                                && productUniqueIdUTF8Length > 0) // Get the device name
                         {
 
                             GetProductId(deviceUniqueIdUTF8,
@@ -370,20 +371,22 @@ IBaseFilter * DeviceInfoDS::GetDeviceFilter(
 
 int32_t DeviceInfoDS::GetWindowsCapability(
     const int32_t capabilityIndex,
-    VideoCaptureCapabilityWindows& windowsCapability) {
-  ReadLockScoped cs(_apiLock);
+    VideoCaptureCapabilityWindows& windowsCapability)
+{
+    ReadLockScoped cs(_apiLock);
 
-  if (capabilityIndex < 0 || static_cast<size_t>(capabilityIndex) >=
-                                 _captureCapabilitiesWindows.size()) {
-    return -1;
-  }
+    if (capabilityIndex < 0 || static_cast<size_t>(capabilityIndex) >=
+            _captureCapabilitiesWindows.size())
+    {
+        return -1;
+    }
 
-  windowsCapability = _captureCapabilitiesWindows[capabilityIndex];
-  return 0;
+    windowsCapability = _captureCapabilitiesWindows[capabilityIndex];
+    return 0;
 }
 
 int32_t DeviceInfoDS::CreateCapabilityMap(
-                                         const char* deviceUniqueIdUTF8)
+    const char* deviceUniqueIdUTF8)
 
 {
     // Reset old capability list
@@ -403,9 +406,9 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
 
     char productId[kVideoCaptureProductIdLength];
     IBaseFilter* captureDevice = DeviceInfoDS::GetDeviceFilter(
-                                               deviceUniqueIdUTF8,
-                                               productId,
-                                               kVideoCaptureProductIdLength);
+                                     deviceUniqueIdUTF8,
+                                     productId,
+                                     kVideoCaptureProductIdLength);
     if (!captureDevice)
         return -1;
     IPin* outputCapturePin = GetOutputPin(captureDevice, GUID_NULL);
@@ -418,7 +421,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
     }
     IAMExtDevice* extDevice = NULL;
     HRESULT hr = captureDevice->QueryInterface(IID_IAMExtDevice,
-                                               (void **) &extDevice);
+                 (void **) &extDevice);
     if (SUCCEEDED(hr) && extDevice)
     {
         WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
@@ -439,7 +442,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
     // this  gets the FPS
     IAMVideoControl* videoControlConfig = NULL;
     HRESULT hrVC = captureDevice->QueryInterface(IID_IAMVideoControl,
-                                      (void**) &videoControlConfig);
+                   (void**) &videoControlConfig);
     if (FAILED(hrVC))
     {
         WEBRTC_TRACE(webrtc::kTraceWarning, webrtc::kTraceVideoCapture, 0,
@@ -476,7 +479,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
         if (!FAILED(hr))
         {
             if (pmt->majortype == MEDIATYPE_Video
-                && pmt->formattype == FORMAT_VideoInfo2)
+                    && pmt->formattype == FORMAT_VideoInfo2)
             {
                 WEBRTC_TRACE(webrtc::kTraceDebug, webrtc::kTraceVideoCapture, 0,
                              " Device support FORMAT_VideoInfo2");
@@ -485,11 +488,11 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
                     reinterpret_cast<VIDEOINFOHEADER2*> (pmt->pbFormat);
                 assert(h);
                 foundInterlacedFormat |= h->dwInterlaceFlags
-                                        & (AMINTERLACE_IsInterlaced
-                                           | AMINTERLACE_DisplayModeBobOnly);
+                                         & (AMINTERLACE_IsInterlaced
+                                            | AMINTERLACE_DisplayModeBobOnly);
             }
             if (pmt->majortype == MEDIATYPE_Video
-                && pmt->formattype == FORMAT_VideoInfo)
+                    && pmt->formattype == FORMAT_VideoInfo)
             {
                 WEBRTC_TRACE(webrtc::kTraceDebug, webrtc::kTraceVideoCapture, 0,
                              " Device support FORMAT_VideoInfo2");
@@ -525,7 +528,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
         }
 
         if (pmt->majortype == MEDIATYPE_Video
-            && pmt->formattype == preferedVideoFormat)
+                && pmt->formattype == preferedVideoFormat)
         {
 
             VideoCaptureCapabilityWindows capability;
@@ -570,18 +573,18 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
                 // a util method written. Can't assume the first value will return
                 // the max fps.
                 hrVC = videoControlConfig->GetFrameRateList(outputCapturePin,
-                                                            tmp, size,
-                                                            &listSize,
-                                                            &frameDurationList);
+                        tmp, size,
+                        &listSize,
+                        &frameDurationList);
 
                 // On some odd cameras, you may get a 0 for duration.
                 // GetMaxOfFrameArray returns the lowest duration (highest FPS)
                 if (hrVC == S_OK && listSize > 0 &&
-                    0 != (maxFPS = GetMaxOfFrameArray(frameDurationList,
-                                                      listSize)))
+                        0 != (maxFPS = GetMaxOfFrameArray(frameDurationList,
+                                       listSize)))
                 {
                     capability.maxFPS = static_cast<int> (10000000
-                                                           / maxFPS);
+                                                          / maxFPS);
                     capability.supportFrameRateControl = true;
                 }
                 else // use existing method
@@ -591,7 +594,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
                                  "GetMaxAvailableFrameRate NOT SUPPORTED");
                     if (avgTimePerFrame > 0)
                         capability.maxFPS = static_cast<int> (10000000
-                                                               / avgTimePerFrame);
+                                                              / avgTimePerFrame);
                     else
                         capability.maxFPS = 0;
                 }
@@ -600,7 +603,7 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
             {
                 if (avgTimePerFrame > 0)
                     capability.maxFPS = static_cast<int> (10000000
-                                                           / avgTimePerFrame);
+                                                          / avgTimePerFrame);
                 else
                     capability.maxFPS = 0;
             }
@@ -631,8 +634,8 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
                 capability.rawType = kVideoMJPEG;
             }
             else if (pmt->subtype == MEDIASUBTYPE_dvsl
-                    || pmt->subtype == MEDIASUBTYPE_dvsd
-                    || pmt->subtype == MEDIASUBTYPE_dvhd) // If this is an external DV camera
+                     || pmt->subtype == MEDIASUBTYPE_dvsd
+                     || pmt->subtype == MEDIASUBTYPE_dvhd) // If this is an external DV camera
             {
                 capability.rawType = kVideoYUY2;// MS DV filter seems to create this type
             }
@@ -652,25 +655,25 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
                 WCHAR strGuid[39];
                 StringFromGUID2(pmt->subtype, strGuid, 39);
                 WEBRTC_TRACE( webrtc::kTraceWarning,
-                             webrtc::kTraceVideoCapture, 0,
-                             "Device support unknown media type %ls, width %d, height %d",
-                             strGuid);
+                              webrtc::kTraceVideoCapture, 0,
+                              "Device support unknown media type %ls, width %d, height %d",
+                              strGuid);
                 continue;
             }
 
             // Get the expected capture delay from the static list
             capability.expectedCaptureDelay
-                            = GetExpectedCaptureDelay(WindowsCaptureDelays,
-                                                      NoWindowsCaptureDelays,
-                                                      productId,
-                                                      capability.width,
-                                                      capability.height);
+                = GetExpectedCaptureDelay(WindowsCaptureDelays,
+                                          NoWindowsCaptureDelays,
+                                          productId,
+                                          capability.width,
+                                          capability.height);
             _captureCapabilities.push_back(capability);
             _captureCapabilitiesWindows.push_back(capability);
             WEBRTC_TRACE( webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
-                         "Camera capability, width:%d height:%d type:%d fps:%d",
-                         capability.width, capability.height,
-                         capability.rawType, capability.maxFPS);
+                          "Camera capability, width:%d height:%d type:%d fps:%d",
+                          capability.width, capability.height,
+                          capability.rawType, capability.maxFPS);
         }
         DeleteMediaType(pmt);
         pmt = NULL;
@@ -683,8 +686,8 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
     // Store the new used device name
     _lastUsedDeviceNameLength = deviceUniqueIdUTF8Length;
     _lastUsedDeviceName = (char*) realloc(_lastUsedDeviceName,
-                                                   _lastUsedDeviceNameLength
-                                                       + 1);
+                                          _lastUsedDeviceNameLength
+                                          + 1);
     memcpy(_lastUsedDeviceName, deviceUniqueIdUTF8, _lastUsedDeviceNameLength+ 1);
     WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
                  "CreateCapabilityMap %d", _captureCapabilities.size());
@@ -699,8 +702,8 @@ int32_t DeviceInfoDS::CreateCapabilityMap(
  "\\?\avc#sony&dv-vcr&camcorder&dv#65b2d50301460008#{65e8773d-8f56-11d0-a3b9-00a0c9223196}\global"
  */
 void DeviceInfoDS::GetProductId(const char* devicePath,
-                                      char* productUniqueIdUTF8,
-                                      uint32_t productUniqueIdUTF8Length)
+                                char* productUniqueIdUTF8,
+                                uint32_t productUniqueIdUTF8Length)
 {
     *productUniqueIdUTF8 = '\0';
     char* startPos = strstr((char*) devicePath, "\\\\?\\");
@@ -725,7 +728,7 @@ void DeviceInfoDS::GetProductId(const char* devicePath,
     pos = strchr(pos + 1, '&');
     uint32_t bytesToCopy = (uint32_t)(pos - startPos);
     if (pos && (bytesToCopy <= productUniqueIdUTF8Length) && bytesToCopy
-        <= kVideoCaptureProductIdLength)
+            <= kVideoCaptureProductIdLength)
     {
         strncpy_s((char*) productUniqueIdUTF8, productUniqueIdUTF8Length,
                   (char*) startPos, bytesToCopy);
@@ -739,11 +742,11 @@ void DeviceInfoDS::GetProductId(const char* devicePath,
 }
 
 int32_t DeviceInfoDS::DisplayCaptureSettingsDialogBox(
-                                         const char* deviceUniqueIdUTF8,
-                                         const char* dialogTitleUTF8,
-                                         void* parentWindow,
-                                         uint32_t positionX,
-                                         uint32_t positionY)
+    const char* deviceUniqueIdUTF8,
+    const char* dialogTitleUTF8,
+    void* parentWindow,
+    uint32_t positionX,
+    uint32_t positionY)
 {
     ReadLockScoped cs(_apiLock);
     HWND window = (HWND) parentWindow;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #include "video.h"
 #include "libswscale/swscale.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "in_w",   "iw",
     "in_h",   "ih",
     "out_w",  "ow",
@@ -50,7 +51,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_IN_W,   VAR_IW,
     VAR_IN_H,   VAR_IH,
     VAR_OUT_W,  VAR_OW,
@@ -73,7 +75,8 @@ enum var_name {
     VARS_NB
 };
 
-typedef struct ZPcontext {
+typedef struct ZPcontext
+{
     const AVClass *class;
     char *zoom_expr_str;
     char *x_expr_str;
@@ -89,7 +92,8 @@ typedef struct ZPcontext {
 
 #define OFFSET(x) offsetof(ZPContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption zoompan_options[] = {
+static const AVOption zoompan_options[] =
+{
     { "zoom", "set the zoom expression", OFFSET(zoom_expr_str), AV_OPT_TYPE_STRING, {.str = "1" }, .flags = FLAGS },
     { "z", "set the zoom expression", OFFSET(zoom_expr_str), AV_OPT_TYPE_STRING, {.str = "1" }, .flags = FLAGS },
     { "x", "set the x expression", OFFSET(x_expr_str), AV_OPT_TYPE_STRING, {.str="0"}, .flags = FLAGS },
@@ -145,7 +149,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     var_values[VAR_PDURATION] = s->prev_nb_frames;
     var_values[VAR_A]     = (double) in->width / in->height;
     var_values[VAR_SAR]   = inlink->sample_aspect_ratio.num ?
-        (double) inlink->sample_aspect_ratio.num / inlink->sample_aspect_ratio.den : 1;
+                            (double) inlink->sample_aspect_ratio.num / inlink->sample_aspect_ratio.den : 1;
     var_values[VAR_DAR]   = var_values[VAR_A] * var_values[VAR_SAR];
     var_values[VAR_HSUB]  = 1 << desc->log2_chroma_w;
     var_values[VAR_VSUB]  = 1 << desc->log2_chroma_h;
@@ -156,7 +160,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         goto fail;
 
     var_values[VAR_DURATION] = nb_frames;
-    for (i = 0; i < nb_frames; i++) {
+    for (i = 0; i < nb_frames; i++)
+    {
         int px[4];
         int py[4];
         uint8_t *input[4];
@@ -193,7 +198,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         y &= ~((1 << desc->log2_chroma_h) - 1);
 
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -205,7 +211,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         py[0] = py[3] = y;
 
         s->sws = sws_alloc_context();
-        if (!s->sws) {
+        if (!s->sws)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -253,7 +260,8 @@ fail:
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,  AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUV440P,
@@ -281,7 +289,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     s->sws = NULL;
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -290,7 +299,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -299,7 +309,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_zoompan = {
+AVFilter ff_vf_zoompan =
+{
     .name          = "zoompan",
     .description   = NULL_IF_CONFIG_SMALL("Apply Zoom & Pan effect."),
     .priv_size     = sizeof(ZPContext),

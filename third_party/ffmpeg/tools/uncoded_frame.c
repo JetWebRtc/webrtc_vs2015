@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "libavutil/avassert.h"
@@ -7,7 +7,8 @@
 #include "libavfilter/buffersink.h"
 #include "libavformat/avformat.h"
 
-typedef struct {
+typedef struct
+{
     AVFormatContext *mux;
     AVStream *stream;
     AVFilterContext *sink;
@@ -21,9 +22,14 @@ static int create_sink(Stream *st, AVFilterGraph *graph,
     const char *sink_name;
     int ret;
 
-    switch (type) {
-    case AVMEDIA_TYPE_VIDEO: sink_name =  "buffersink"; break;
-    case AVMEDIA_TYPE_AUDIO: sink_name = "abuffersink"; break;
+    switch (type)
+    {
+    case AVMEDIA_TYPE_VIDEO:
+        sink_name =  "buffersink";
+        break;
+    case AVMEDIA_TYPE_AUDIO:
+        sink_name = "abuffersink";
+        break;
     default:
         av_log(NULL, AV_LOG_ERROR, "Stream type not supported\n");
         return AVERROR(EINVAL);
@@ -51,7 +57,8 @@ int main(int argc, char **argv)
 
     //av_log_set_level(AV_LOG_DEBUG);
 
-    if (argc < 3) {
+    if (argc < 3)
+    {
         av_log(NULL, AV_LOG_ERROR,
                "Usage: %s filter_graph dev:out [dev2:out2...]\n\n"
                "Examples:\n"
@@ -69,23 +76,28 @@ int main(int argc, char **argv)
     avfilter_register_all();
 
     /* Create input graph */
-    if (!(in_graph = avfilter_graph_alloc())) {
+    if (!(in_graph = avfilter_graph_alloc()))
+    {
         ret = AVERROR(ENOMEM);
         av_log(NULL, AV_LOG_ERROR, "Unable to alloc graph graph: %s\n",
                av_err2str(ret));
         goto fail;
     }
     ret = avfilter_graph_parse_ptr(in_graph, in_graph_desc, NULL, NULL, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Unable to parse graph: %s\n",
                av_err2str(ret));
         goto fail;
     }
     nb_streams = 0;
-    for (i = 0; i < in_graph->nb_filters; i++) {
+    for (i = 0; i < in_graph->nb_filters; i++)
+    {
         AVFilterContext *f = in_graph->filters[i];
-        for (j = 0; j < f->nb_inputs; j++) {
-            if (!f->inputs[j]) {
+        for (j = 0; j < f->nb_inputs; j++)
+        {
+            if (!f->inputs[j])
+            {
                 av_log(NULL, AV_LOG_ERROR, "Graph has unconnected inputs\n");
                 ret = AVERROR(EINVAL);
                 goto fail;
@@ -95,12 +107,14 @@ int main(int argc, char **argv)
             if (!f->outputs[j])
                 nb_streams++;
     }
-    if (!nb_streams) {
+    if (!nb_streams)
+    {
         av_log(NULL, AV_LOG_ERROR, "Graph has no output stream\n");
         ret = AVERROR(EINVAL);
         goto fail;
     }
-    if (nb_out_dev != 1 && nb_out_dev != nb_streams) {
+    if (nb_out_dev != 1 && nb_out_dev != nb_streams)
+    {
         av_log(NULL, AV_LOG_ERROR,
                "Graph has %d output streams, %d devices given\n",
                nb_streams, nb_out_dev);
@@ -108,44 +122,54 @@ int main(int argc, char **argv)
         goto fail;
     }
 
-    if (!(streams = av_calloc(nb_streams, sizeof(*streams)))) {
+    if (!(streams = av_calloc(nb_streams, sizeof(*streams))))
+    {
         ret = AVERROR(ENOMEM);
         av_log(NULL, AV_LOG_ERROR, "Could not allocate streams\n");
     }
     st = streams;
-    for (i = 0; i < in_graph->nb_filters; i++) {
+    for (i = 0; i < in_graph->nb_filters; i++)
+    {
         AVFilterContext *f = in_graph->filters[i];
-        for (j = 0; j < f->nb_outputs; j++) {
-            if (!f->outputs[j]) {
+        for (j = 0; j < f->nb_outputs; j++)
+        {
+            if (!f->outputs[j])
+            {
                 if ((ret = create_sink(st++, in_graph, f, j)) < 0)
                     goto fail;
             }
         }
     }
     av_assert0(st - streams == nb_streams);
-    if ((ret = avfilter_graph_config(in_graph, NULL)) < 0) {
+    if ((ret = avfilter_graph_config(in_graph, NULL)) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Failed to configure graph\n");
         goto fail;
     }
 
     /* Create output devices */
-    for (i = 0; i < nb_out_dev; i++) {
+    for (i = 0; i < nb_out_dev; i++)
+    {
         char *fmt = NULL, *dev = out_dev_name[i];
         st = &streams[i];
-        if ((dev = strchr(dev, ':'))) {
+        if ((dev = strchr(dev, ':')))
+        {
             *(dev++) = 0;
             fmt = out_dev_name[i];
         }
         ret = avformat_alloc_output_context2(&st->mux, NULL, fmt, dev);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(NULL, AV_LOG_ERROR, "Failed to allocate output: %s\n",
                    av_err2str(ret));
             goto fail;
         }
-        if (!(st->mux->oformat->flags & AVFMT_NOFILE)) {
+        if (!(st->mux->oformat->flags & AVFMT_NOFILE))
+        {
             ret = avio_open2(&st->mux->pb, st->mux->filename, AVIO_FLAG_WRITE,
                              NULL, NULL);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(st->mux, AV_LOG_ERROR, "Failed to init output: %s\n",
                        av_err2str(ret));
                 goto fail;
@@ -156,21 +180,24 @@ int main(int argc, char **argv)
         streams[i].mux = streams[0].mux;
 
     /* Create output device streams */
-    for (i = 0; i < nb_streams; i++) {
+    for (i = 0; i < nb_streams; i++)
+    {
         st = &streams[i];
-        if (!(st->stream = avformat_new_stream(st->mux, NULL))) {
+        if (!(st->stream = avformat_new_stream(st->mux, NULL)))
+        {
             ret = AVERROR(ENOMEM);
             av_log(NULL, AV_LOG_ERROR, "Failed to create output stream\n");
             goto fail;
         }
         st->stream->codec->codec_type = st->link->type;
         st->stream->time_base = st->stream->codec->time_base =
-            st->link->time_base;
-        switch (st->link->type) {
+                                    st->link->time_base;
+        switch (st->link->type)
+        {
         case AVMEDIA_TYPE_VIDEO:
             st->stream->codec->codec_id = AV_CODEC_ID_RAWVIDEO;
             st->stream->avg_frame_rate =
-            st->stream->  r_frame_rate = av_buffersink_get_frame_rate(st->sink);
+                st->stream->  r_frame_rate = av_buffersink_get_frame_rate(st->sink);
             st->stream->codec->width               = st->link->w;
             st->stream->codec->height              = st->link->h;
             st->stream->codec->sample_aspect_ratio = st->link->sample_aspect_ratio;
@@ -190,9 +217,11 @@ int main(int argc, char **argv)
     }
 
     /* Init output devices */
-    for (i = 0; i < nb_out_dev; i++) {
+    for (i = 0; i < nb_out_dev; i++)
+    {
         st = &streams[i];
-        if ((ret = avformat_write_header(st->mux, NULL)) < 0) {
+        if ((ret = avformat_write_header(st->mux, NULL)) < 0)
+        {
             av_log(st->mux, AV_LOG_ERROR, "Failed to init output: %s\n",
                    av_err2str(ret));
             goto fail;
@@ -200,10 +229,12 @@ int main(int argc, char **argv)
     }
 
     /* Check output devices */
-    for (i = 0; i < nb_streams; i++) {
+    for (i = 0; i < nb_streams; i++)
+    {
         st = &streams[i];
         ret = av_write_uncoded_frame_query(st->mux, st->stream->index);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(st->mux, AV_LOG_ERROR,
                    "Uncoded frames not supported on stream #%d: %s\n",
                    i, av_err2str(ret));
@@ -211,28 +242,37 @@ int main(int argc, char **argv)
         }
     }
 
-    while (run) {
+    while (run)
+    {
         ret = avfilter_graph_request_oldest(in_graph);
-        if (ret < 0) {
-            if (ret == AVERROR_EOF) {
+        if (ret < 0)
+        {
+            if (ret == AVERROR_EOF)
+            {
                 run = 0;
-            } else {
+            }
+            else
+            {
                 av_log(NULL, AV_LOG_ERROR, "Error filtering: %s\n",
                        av_err2str(ret));
                 break;
             }
         }
-        for (i = 0; i < nb_streams; i++) {
+        for (i = 0; i < nb_streams; i++)
+        {
             st = &streams[i];
-            while (1) {
-                if (!frame && !(frame = av_frame_alloc())) {
+            while (1)
+            {
+                if (!frame && !(frame = av_frame_alloc()))
+                {
                     ret = AVERROR(ENOMEM);
                     av_log(NULL, AV_LOG_ERROR, "Could not allocate frame\n");
                     goto fail;
                 }
                 ret = av_buffersink_get_frame_flags(st->sink, frame,
                                                     AV_BUFFERSINK_FLAG_NO_REQUEST);
-                if (ret < 0) {
+                if (ret < 0)
+                {
                     if (ret != AVERROR(EAGAIN) && ret != AVERROR_EOF)
                         av_log(NULL, AV_LOG_WARNING, "Error in sink: %s\n",
                                av_err2str(ret));
@@ -243,10 +283,11 @@ int main(int argc, char **argv)
                                               st->link  ->time_base,
                                               st->stream->time_base);
                 ret = av_interleaved_write_uncoded_frame(st->mux,
-                                                         st->stream->index,
-                                                         frame);
+                        st->stream->index,
+                        frame);
                 frame = NULL;
-                if (ret < 0) {
+                if (ret < 0)
+                {
                     av_log(st->stream->codec, AV_LOG_ERROR,
                            "Error writing frame: %s\n", av_err2str(ret));
                     goto fail;
@@ -256,7 +297,8 @@ int main(int argc, char **argv)
     }
     ret = 0;
 
-    for (i = 0; i < nb_out_dev; i++) {
+    for (i = 0; i < nb_out_dev; i++)
+    {
         st = &streams[i];
         av_write_trailer(st->mux);
     }
@@ -264,10 +306,13 @@ int main(int argc, char **argv)
 fail:
     av_frame_free(&frame);
     avfilter_graph_free(&in_graph);
-    if (streams) {
-        for (i = 0; i < nb_out_dev; i++) {
+    if (streams)
+    {
+        for (i = 0; i < nb_out_dev; i++)
+        {
             st = &streams[i];
-            if (st->mux) {
+            if (st->mux)
+            {
                 if (st->mux->pb)
                     avio_closep(&st->mux->pb);
                 avformat_free_context(st->mux);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010-2011 Maxim Poliakovski
  * Copyright (c) 2010-2011 Elvis Presley
  *
@@ -72,21 +72,24 @@ static int decode_frame_header(ProresContext *ctx, const uint8_t *buf,
 
     hdr_size = AV_RB16(buf);
     ff_dlog(avctx, "header size %d\n", hdr_size);
-    if (hdr_size > data_size) {
+    if (hdr_size > data_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "error, wrong header size\n");
         return AVERROR_INVALIDDATA;
     }
 
     version = AV_RB16(buf + 2);
     ff_dlog(avctx, "%.4s version %d\n", buf+4, version);
-    if (version > 1) {
+    if (version > 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "unsupported version: %d\n", version);
         return AVERROR_PATCHWELCOME;
     }
 
     width  = AV_RB16(buf + 8);
     height = AV_RB16(buf + 10);
-    if (width != avctx->width || height != avctx->height) {
+    if (width != avctx->width || height != avctx->height)
+    {
         av_log(avctx, AV_LOG_ERROR, "picture resolution change: %dx%d -> %dx%d\n",
                avctx->width, avctx->height, width, height);
         return AVERROR_PATCHWELCOME;
@@ -95,7 +98,8 @@ static int decode_frame_header(ProresContext *ctx, const uint8_t *buf,
     ctx->frame_type = (buf[12] >> 2) & 3;
     ctx->alpha_info = buf[17] & 0xf;
 
-    if (ctx->alpha_info > 2) {
+    if (ctx->alpha_info > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid alpha mode %d\n", ctx->alpha_info);
         return AVERROR_INVALIDDATA;
     }
@@ -103,17 +107,23 @@ static int decode_frame_header(ProresContext *ctx, const uint8_t *buf,
 
     ff_dlog(avctx, "frame type %d\n", ctx->frame_type);
 
-    if (ctx->frame_type == 0) {
+    if (ctx->frame_type == 0)
+    {
         ctx->scan = ctx->progressive_scan; // permuted
-    } else {
+    }
+    else
+    {
         ctx->scan = ctx->interlaced_scan; // permuted
         ctx->frame->interlaced_frame = 1;
         ctx->frame->top_field_first = ctx->frame_type == 1;
     }
 
-    if (ctx->alpha_info) {
+    if (ctx->alpha_info)
+    {
         avctx->pix_fmt = (buf[12] & 0xC0) == 0xC0 ? AV_PIX_FMT_YUVA444P10 : AV_PIX_FMT_YUVA422P10;
-    } else {
+    }
+    else
+    {
         avctx->pix_fmt = (buf[12] & 0xC0) == 0xC0 ? AV_PIX_FMT_YUV444P10 : AV_PIX_FMT_YUV422P10;
     }
 
@@ -121,24 +131,32 @@ static int decode_frame_header(ProresContext *ctx, const uint8_t *buf,
     flags = buf[19];
     ff_dlog(avctx, "flags %x\n", flags);
 
-    if (flags & 2) {
-        if(buf + data_size - ptr < 64) {
+    if (flags & 2)
+    {
+        if(buf + data_size - ptr < 64)
+        {
             av_log(avctx, AV_LOG_ERROR, "Header truncated\n");
             return AVERROR_INVALIDDATA;
         }
         permute(ctx->qmat_luma, ctx->prodsp.idct_permutation, ptr);
         ptr += 64;
-    } else {
+    }
+    else
+    {
         memset(ctx->qmat_luma, 4, 64);
     }
 
-    if (flags & 1) {
-        if(buf + data_size - ptr < 64) {
+    if (flags & 1)
+    {
+        if(buf + data_size - ptr < 64)
+        {
             av_log(avctx, AV_LOG_ERROR, "Header truncated\n");
             return AVERROR_INVALIDDATA;
         }
         permute(ctx->qmat_chroma, ctx->prodsp.idct_permutation, ptr);
-    } else {
+    }
+    else
+    {
         memset(ctx->qmat_chroma, 4, 64);
     }
 
@@ -155,20 +173,23 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
     const uint8_t *data_ptr, *index_ptr;
 
     hdr_size = buf[0] >> 3;
-    if (hdr_size < 8 || hdr_size > buf_size) {
+    if (hdr_size < 8 || hdr_size > buf_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "error, wrong picture header size\n");
         return AVERROR_INVALIDDATA;
     }
 
     pic_data_size = AV_RB32(buf + 1);
-    if (pic_data_size > buf_size) {
+    if (pic_data_size > buf_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "error, wrong picture data size\n");
         return AVERROR_INVALIDDATA;
     }
 
     log2_slice_mb_width  = buf[7] >> 4;
     log2_slice_mb_height = buf[7] & 0xF;
-    if (log2_slice_mb_width > 3 || log2_slice_mb_height) {
+    if (log2_slice_mb_width > 3 || log2_slice_mb_height)
+    {
         av_log(avctx, AV_LOG_ERROR, "unsupported slice resolution: %dx%d\n",
                1 << log2_slice_mb_width, 1 << log2_slice_mb_height);
         return AVERROR_INVALIDDATA;
@@ -182,7 +203,8 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
 
     slice_count = AV_RB16(buf + 5);
 
-    if (ctx->slice_count != slice_count || !ctx->slices) {
+    if (ctx->slice_count != slice_count || !ctx->slices)
+    {
         av_freep(&ctx->slices);
         ctx->slice_count = 0;
         ctx->slices = av_mallocz_array(slice_count, sizeof(*ctx->slices));
@@ -194,7 +216,8 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
     if (!slice_count)
         return AVERROR(EINVAL);
 
-    if (hdr_size + slice_count*2 > buf_size) {
+    if (hdr_size + slice_count*2 > buf_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "error, wrong slice count\n");
         return AVERROR_INVALIDDATA;
     }
@@ -207,7 +230,8 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
     mb_x = 0;
     mb_y = 0;
 
-    for (i = 0; i < slice_count; i++) {
+    for (i = 0; i < slice_count; i++)
+    {
         SliceContext *slice = &ctx->slices[i];
 
         slice->data = data_ptr;
@@ -221,24 +245,28 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
         slice->mb_count = slice_mb_count;
         slice->data_size = data_ptr - slice->data;
 
-        if (slice->data_size < 6) {
+        if (slice->data_size < 6)
+        {
             av_log(avctx, AV_LOG_ERROR, "error, wrong slice data size\n");
             return AVERROR_INVALIDDATA;
         }
 
         mb_x += slice_mb_count;
-        if (mb_x == ctx->mb_width) {
+        if (mb_x == ctx->mb_width)
+        {
             slice_mb_count = 1 << log2_slice_mb_width;
             mb_x = 0;
             mb_y++;
         }
-        if (data_ptr > buf + buf_size) {
+        if (data_ptr > buf + buf_size)
+        {
             av_log(avctx, AV_LOG_ERROR, "error, slice out of bounds\n");
             return AVERROR_INVALIDDATA;
         }
     }
 
-    if (mb_x || mb_y != ctx->mb_height) {
+    if (mb_x || mb_y != ctx->mb_height)
+    {
         av_log(avctx, AV_LOG_ERROR, "error wrong mb count y %d h %d\n",
                mb_y, ctx->mb_height);
         return AVERROR_INVALIDDATA;
@@ -284,7 +312,7 @@ static int decode_picture_header(AVCodecContext *avctx, const uint8_t *buf, cons
 static const uint8_t dc_codebook[7] = { 0x04, 0x28, 0x28, 0x4D, 0x4D, 0x70, 0x70};
 
 static av_always_inline void decode_dc_coeffs(GetBitContext *gb, int16_t *out,
-                                              int blocks_per_slice)
+        int blocks_per_slice)
 {
     int16_t prev_dc;
     int code, i, sign;
@@ -299,7 +327,8 @@ static av_always_inline void decode_dc_coeffs(GetBitContext *gb, int16_t *out,
 
     code = 5;
     sign = 0;
-    for (i = 1; i < blocks_per_slice; i++, out += 64) {
+    for (i = 1; i < blocks_per_slice; i++, out += 64)
+    {
         DECODE_CODEWORD(code, dc_codebook[FFMIN(code, 6U)]);
         if(code) sign ^= -(code & 1);
         else     sign  = 0;
@@ -314,7 +343,7 @@ static const uint8_t run_to_cb[16] = { 0x06, 0x06, 0x05, 0x05, 0x04, 0x29, 0x29,
 static const uint8_t lev_to_cb[10] = { 0x04, 0x0A, 0x05, 0x06, 0x04, 0x28, 0x28, 0x28, 0x28, 0x4C };
 
 static av_always_inline int decode_ac_coeffs(AVCodecContext *avctx, GetBitContext *gb,
-                                             int16_t *out, int blocks_per_slice)
+        int16_t *out, int blocks_per_slice)
 {
     ProresContext *ctx = avctx->priv_data;
     int block_mask, sign;
@@ -323,21 +352,24 @@ static av_always_inline int decode_ac_coeffs(AVCodecContext *avctx, GetBitContex
     int log2_block_count = av_log2(blocks_per_slice);
 
     OPEN_READER(re, gb);
-    UPDATE_CACHE(re, gb);                                           \
+    UPDATE_CACHE(re, gb);
+    \
     run   = 4;
     level = 2;
 
     max_coeffs = 64 << log2_block_count;
     block_mask = blocks_per_slice - 1;
 
-    for (pos = block_mask;;) {
+    for (pos = block_mask;;)
+    {
         bits_left = gb->size_in_bits - re_index;
         if (!bits_left || (bits_left < 32 && !SHOW_UBITS(re, gb, bits_left)))
             break;
 
         DECODE_CODEWORD(run, run_to_cb[FFMIN(run,  15)]);
         pos += run + 1;
-        if (pos >= max_coeffs) {
+        if (pos >= max_coeffs)
+        {
             av_log(avctx, AV_LOG_ERROR, "ac tex damaged %d, %d\n", pos, max_coeffs);
             return AVERROR_INVALIDDATA;
         }
@@ -378,7 +410,8 @@ static int decode_slice_luma(AVCodecContext *avctx, SliceContext *slice,
         return ret;
 
     block = blocks;
-    for (i = 0; i < slice->mb_count; i++) {
+    for (i = 0; i < slice->mb_count; i++)
+    {
         ctx->prodsp.idct_put(dst, dst_stride, block+(0<<6), qmat);
         ctx->prodsp.idct_put(dst             +8, dst_stride, block+(1<<6), qmat);
         ctx->prodsp.idct_put(dst+4*dst_stride  , dst_stride, block+(2<<6), qmat);
@@ -411,8 +444,10 @@ static int decode_slice_chroma(AVCodecContext *avctx, SliceContext *slice,
         return ret;
 
     block = blocks;
-    for (i = 0; i < slice->mb_count; i++) {
-        for (j = 0; j < log2_blocks_per_mb; j++) {
+    for (i = 0; i < slice->mb_count; i++)
+    {
+        for (j = 0; j < log2_blocks_per_mb; j++)
+        {
             ctx->prodsp.idct_put(dst,              dst_stride, block+(0<<6), qmat);
             ctx->prodsp.idct_put(dst+4*dst_stride, dst_stride, block+(1<<6), qmat);
             block += 2*64;
@@ -430,11 +465,16 @@ static void unpack_alpha(GetBitContext *gb, uint16_t *dst, int num_coeffs,
 
     idx       = 0;
     alpha_val = mask;
-    do {
-        do {
-            if (get_bits1(gb)) {
+    do
+    {
+        do
+        {
+            if (get_bits1(gb))
+            {
                 val = get_bits(gb, num_bits);
-            } else {
+            }
+            else
+            {
                 int sign;
                 val  = get_bits(gb, num_bits == 16 ? 7 : 4);
                 sign = val & 1;
@@ -443,28 +483,36 @@ static void unpack_alpha(GetBitContext *gb, uint16_t *dst, int num_coeffs,
                     val = -val;
             }
             alpha_val = (alpha_val + val) & mask;
-            if (num_bits == 16) {
+            if (num_bits == 16)
+            {
                 dst[idx++] = alpha_val >> 6;
-            } else {
+            }
+            else
+            {
                 dst[idx++] = (alpha_val << 2) | (alpha_val >> 6);
             }
             if (idx >= num_coeffs)
                 break;
-        } while (get_bits_left(gb)>0 && get_bits1(gb));
+        }
+        while (get_bits_left(gb)>0 && get_bits1(gb));
         val = get_bits(gb, 4);
         if (!val)
             val = get_bits(gb, 11);
         if (idx + val > num_coeffs)
             val = num_coeffs - idx;
-        if (num_bits == 16) {
+        if (num_bits == 16)
+        {
             for (i = 0; i < val; i++)
                 dst[idx++] = alpha_val >> 6;
-        } else {
+        }
+        else
+        {
             for (i = 0; i < val; i++)
                 dst[idx++] = (alpha_val << 2) | (alpha_val >> 6);
 
         }
-    } while (idx < num_coeffs);
+    }
+    while (idx < num_coeffs);
 }
 
 /**
@@ -485,14 +533,18 @@ static void decode_slice_alpha(ProresContext *ctx,
 
     init_get_bits(&gb, buf, buf_size << 3);
 
-    if (ctx->alpha_info == 2) {
+    if (ctx->alpha_info == 2)
+    {
         unpack_alpha(&gb, blocks, blocks_per_slice * 4 * 64, 16);
-    } else {
+    }
+    else
+    {
         unpack_alpha(&gb, blocks, blocks_per_slice * 4 * 64, 8);
     }
 
     block = blocks;
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         memcpy(dst, block, 16 * blocks_per_slice * sizeof(*dst));
         dst   += dst_stride >> 1;
         block += 16 * blocks_per_slice;
@@ -530,30 +582,38 @@ static int decode_slice_thread(AVCodecContext *avctx, void *arg, int jobnr, int 
                   v_data_size - hdr_size;
 
     if (y_data_size < 0 || u_data_size < 0 || v_data_size < 0
-        || hdr_size+y_data_size+u_data_size+v_data_size > slice->data_size){
+            || hdr_size+y_data_size+u_data_size+v_data_size > slice->data_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid plane data size\n");
         return AVERROR_INVALIDDATA;
     }
 
     buf += hdr_size;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         qmat_luma_scaled  [i] = ctx->qmat_luma  [i] * qscale;
         qmat_chroma_scaled[i] = ctx->qmat_chroma[i] * qscale;
     }
 
-    if (ctx->frame_type == 0) {
+    if (ctx->frame_type == 0)
+    {
         luma_stride   = pic->linesize[0];
         chroma_stride = pic->linesize[1];
-    } else {
+    }
+    else
+    {
         luma_stride   = pic->linesize[0] << 1;
         chroma_stride = pic->linesize[1] << 1;
     }
 
-    if (avctx->pix_fmt == AV_PIX_FMT_YUV444P10 || avctx->pix_fmt == AV_PIX_FMT_YUVA444P10) {
+    if (avctx->pix_fmt == AV_PIX_FMT_YUV444P10 || avctx->pix_fmt == AV_PIX_FMT_YUVA444P10)
+    {
         mb_x_shift = 5;
         log2_chroma_blocks_per_mb = 2;
-    } else {
+    }
+    else
+    {
         mb_x_shift = 4;
         log2_chroma_blocks_per_mb = 1;
     }
@@ -563,7 +623,8 @@ static int decode_slice_thread(AVCodecContext *avctx, void *arg, int jobnr, int 
     dest_v = pic->data[2] + (slice->mb_y << 4) * chroma_stride + (slice->mb_x << mb_x_shift);
     dest_a = pic->data[3] + (slice->mb_y << 4) * luma_stride + (slice->mb_x << 5);
 
-    if (ctx->frame_type && ctx->first_field ^ ctx->frame->top_field_first) {
+    if (ctx->frame_type && ctx->first_field ^ ctx->frame->top_field_first)
+    {
         dest_y += pic->linesize[0];
         dest_u += pic->linesize[1];
         dest_v += pic->linesize[2];
@@ -575,7 +636,8 @@ static int decode_slice_thread(AVCodecContext *avctx, void *arg, int jobnr, int 
     if (ret < 0)
         return ret;
 
-    if (!(avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         ret = decode_slice_chroma(avctx, slice, (uint16_t*)dest_u, chroma_stride,
                                   buf + y_data_size, u_data_size,
                                   qmat_chroma_scaled, log2_chroma_blocks_per_mb);
@@ -621,7 +683,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     int buf_size = avpkt->size;
     int frame_hdr_size, pic_size, ret;
 
-    if (buf_size < 28 || AV_RL32(buf + 4) != AV_RL32("icpf")) {
+    if (buf_size < 28 || AV_RL32(buf + 4) != AV_RL32("icpf"))
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid frame header\n");
         return AVERROR_INVALIDDATA;
     }
@@ -644,14 +707,16 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
- decode_picture:
+decode_picture:
     pic_size = decode_picture_header(avctx, buf, buf_size);
-    if (pic_size < 0) {
+    if (pic_size < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "error decoding picture header\n");
         return pic_size;
     }
 
-    if ((ret = decode_picture(avctx)) < 0) {
+    if ((ret = decode_picture(avctx)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "error decoding picture\n");
         return ret;
     }
@@ -659,7 +724,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     buf += pic_size;
     buf_size -= pic_size;
 
-    if (ctx->frame_type && buf_size > 0 && ctx->first_field) {
+    if (ctx->frame_type && buf_size > 0 && ctx->first_field)
+    {
         ctx->first_field = 0;
         goto decode_picture;
     }
@@ -678,7 +744,8 @@ static av_cold int decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_prores_decoder = {
+AVCodec ff_prores_decoder =
+{
     .name           = "prores",
     .long_name      = NULL_IF_CONFIG_SMALL("ProRes"),
     .type           = AVMEDIA_TYPE_VIDEO,

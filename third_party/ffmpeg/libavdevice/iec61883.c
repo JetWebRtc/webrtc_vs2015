@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Georg Lippitsch <georg.lippitsch@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -49,13 +49,15 @@
  * For HDV, these are MPEG2 transport stream packets.
  * The queue is implemented as linked list.
  */
-typedef struct DVPacket {
+typedef struct DVPacket
+{
     uint8_t *buf;                       ///< actual buffer data
     int len;                            ///< size of buffer allocated
     struct DVPacket *next;              ///< next DVPacket
 } DVPacket;
 
-struct iec61883_data {
+struct iec61883_data
+{
     AVClass *class;
     raw1394handle_t raw1394;            ///< handle for libraw1394
     iec61883_dv_fb_t iec61883_dv;       ///< handle for libiec61883 when used with DV
@@ -106,20 +108,23 @@ static int iec61883_callback(unsigned char *data, int length,
     pthread_mutex_lock(&dv->mutex);
 #endif
 
-    if (dv->packets >= dv->max_packets) {
+    if (dv->packets >= dv->max_packets)
+    {
         av_log(NULL, AV_LOG_ERROR, "DV packet queue overrun, dropping.\n");
         ret = 0;
         goto exit;
     }
 
     packet = av_mallocz(sizeof(*packet));
-    if (!packet) {
+    if (!packet)
+    {
         ret = -1;
         goto exit;
     }
 
     packet->buf = av_malloc(length);
-    if (!packet->buf) {
+    if (!packet->buf)
+    {
         ret = -1;
         goto exit;
     }
@@ -127,10 +132,13 @@ static int iec61883_callback(unsigned char *data, int length,
 
     memcpy(packet->buf, data, length);
 
-    if (dv->queue_first) {
+    if (dv->queue_first)
+    {
         dv->queue_last->next = packet;
         dv->queue_last = packet;
-    } else {
+    }
+    else
+    {
         dv->queue_first = packet;
         dv->queue_last = packet;
     }
@@ -155,18 +163,23 @@ static void *iec61883_receive_task(void *opaque)
     while (dv->thread_loop)
 #endif
     {
-        while ((result = poll(&dv->raw1394_poll, 1, 200)) < 0) {
-            if (!(errno == EAGAIN || errno == EINTR)) {
+        while ((result = poll(&dv->raw1394_poll, 1, 200)) < 0)
+        {
+            if (!(errno == EAGAIN || errno == EINTR))
+            {
                 av_log(NULL, AV_LOG_ERROR, "Raw1394 poll error occurred.\n");
                 dv->receive_error = AVERROR(EIO);
                 return NULL;
             }
         }
         if (result > 0 && ((dv->raw1394_poll.revents & POLLIN)
-                           || (dv->raw1394_poll.revents & POLLPRI))) {
+                           || (dv->raw1394_poll.revents & POLLPRI)))
+        {
             dv->receiving = 1;
             raw1394_loop_iterate(dv->raw1394);
-        } else if (dv->receiving) {
+        }
+        else if (dv->receiving)
+        {
             av_log(NULL, AV_LOG_ERROR, "No more input data available\n");
 #if THREADS
             pthread_mutex_lock(&dv->mutex);
@@ -199,9 +212,9 @@ static int iec61883_parse_queue_dv(struct iec61883_data *dv, AVPacket *pkt)
     size = avpriv_dv_produce_packet(dv->dv_demux, pkt,
                                     packet->buf, packet->len, -1);
 #if FF_API_DESTRUCT_PACKET
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     pkt->destruct = av_destruct_packet;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     dv->queue_first = packet->next;
     av_free(packet);
@@ -218,7 +231,8 @@ static int iec61883_parse_queue_hdv(struct iec61883_data *dv, AVPacket *pkt)
     DVPacket *packet;
     int size;
 
-    while (dv->queue_first) {
+    while (dv->queue_first)
+    {
         packet = dv->queue_first;
         size = avpriv_mpegts_parse_packet(dv->mpeg_demux, pkt, packet->buf,
                                           packet->len);
@@ -253,62 +267,77 @@ static int iec61883_read_header(AVFormatContext *context)
 
     dv->raw1394 = raw1394_new_handle();
 
-    if (!dv->raw1394) {
+    if (!dv->raw1394)
+    {
         av_log(context, AV_LOG_ERROR, "Failed to open IEEE1394 interface.\n");
         return AVERROR(EIO);
     }
 
-    if ((nb_ports = raw1394_get_port_info(dv->raw1394, pinf, 16)) < 0) {
+    if ((nb_ports = raw1394_get_port_info(dv->raw1394, pinf, 16)) < 0)
+    {
         av_log(context, AV_LOG_ERROR, "Failed to get number of IEEE1394 ports.\n");
         goto fail;
     }
 
     inport = strtol(context->filename, &endptr, 10);
-    if (endptr != context->filename && *endptr == '\0') {
+    if (endptr != context->filename && *endptr == '\0')
+    {
         av_log(context, AV_LOG_INFO, "Selecting IEEE1394 port: %d\n", inport);
         j = inport;
         nb_ports = inport + 1;
-    } else if (strcmp(context->filename, "auto")) {
+    }
+    else if (strcmp(context->filename, "auto"))
+    {
         av_log(context, AV_LOG_ERROR, "Invalid input \"%s\", you should specify "
                "\"auto\" for auto-detection, or the port number.\n", context->filename);
         goto fail;
     }
 
-    if (dv->device_guid) {
-        if (sscanf(dv->device_guid, "%"SCNu64, &guid) != 1) {
+    if (dv->device_guid)
+    {
+        if (sscanf(dv->device_guid, "%"SCNu64, &guid) != 1)
+        {
             av_log(context, AV_LOG_INFO, "Invalid dvguid parameter: %s\n",
                    dv->device_guid);
             goto fail;
         }
     }
 
-    for (; j < nb_ports && port==-1; ++j) {
+    for (; j < nb_ports && port==-1; ++j)
+    {
         raw1394_destroy_handle(dv->raw1394);
 
-        if (!(dv->raw1394 = raw1394_new_handle_on_port(j))) {
+        if (!(dv->raw1394 = raw1394_new_handle_on_port(j)))
+        {
             av_log(context, AV_LOG_ERROR, "Failed setting IEEE1394 port.\n");
             goto fail;
         }
 
-        for (i=0; i<raw1394_get_nodecount(dv->raw1394); ++i) {
+        for (i=0; i<raw1394_get_nodecount(dv->raw1394); ++i)
+        {
 
             /* Select device explicitly by GUID */
 
-            if (guid > 1) {
-                if (guid == rom1394_get_guid(dv->raw1394, i)) {
+            if (guid > 1)
+            {
+                if (guid == rom1394_get_guid(dv->raw1394, i))
+                {
                     dv->node = i;
                     port = j;
                     break;
                 }
-            } else {
+            }
+            else
+            {
 
                 /* Select first AV/C tape recorder player node */
 
                 if (rom1394_get_directory(dv->raw1394, i, &rom_dir) < 0)
                     continue;
                 if (((rom1394_get_node_type(&rom_dir) == ROM1394_NODE_TYPE_AVC) &&
-                     avc1394_check_subunit_type(dv->raw1394, i, AVC1394_SUBUNIT_TYPE_VCR)) ||
-                    (rom_dir.unit_spec_id == MOTDCT_SPEC_ID)) {
+                        avc1394_check_subunit_type(dv->raw1394, i, AVC1394_SUBUNIT_TYPE_VCR)) ||
+                        (rom_dir.unit_spec_id == MOTDCT_SPEC_ID))
+                {
                     rom1394_free_directory(&rom_dir);
                     dv->node = i;
                     port = j;
@@ -319,7 +348,8 @@ static int iec61883_read_header(AVFormatContext *context)
         }
     }
 
-    if (port == -1) {
+    if (port == -1)
+    {
         av_log(context, AV_LOG_ERROR, "No AV/C devices found.\n");
         goto fail;
     }
@@ -330,7 +360,8 @@ static int iec61883_read_header(AVFormatContext *context)
 
     /* Find out if device is DV or HDV */
 
-    if (dv->type == IEC61883_AUTO) {
+    if (dv->type == IEC61883_AUTO)
+    {
         response = avc1394_transaction(dv->raw1394, dv->node,
                                        AVC1394_CTYPE_STATUS |
                                        AVC1394_SUBUNIT_TYPE_TAPE_RECORDER |
@@ -339,7 +370,7 @@ static int iec61883_read_header(AVFormatContext *context)
                                        0xFF, 2);
         response = AVC1394_GET_OPERAND0(response);
         dv->type = (response == 0x10 || response == 0x90 || response == 0x1A || response == 0x9A) ?
-            IEC61883_HDV : IEC61883_DV;
+                   IEC61883_HDV : IEC61883_DV;
     }
 
     /* Connect to device, and do initialization */
@@ -354,7 +385,8 @@ static int iec61883_read_header(AVFormatContext *context)
     if (!dv->max_packets)
         dv->max_packets = 100;
 
-    if (CONFIG_MPEGTS_DEMUXER && dv->type == IEC61883_HDV) {
+    if (CONFIG_MPEGTS_DEMUXER && dv->type == IEC61883_HDV)
+    {
 
         /* Init HDV receive */
 
@@ -367,11 +399,13 @@ static int iec61883_read_header(AVFormatContext *context)
         dv->parse_queue = iec61883_parse_queue_hdv;
 
         dv->iec61883_mpeg2 = iec61883_mpeg2_recv_init(dv->raw1394,
-                                                      (iec61883_mpeg2_recv_t)iec61883_callback,
-                                                      dv);
+                             (iec61883_mpeg2_recv_t)iec61883_callback,
+                             dv);
 
         dv->max_packets *= 766;
-    } else {
+    }
+    else
+    {
 
         /* Init DV receive */
 
@@ -430,7 +464,8 @@ static int iec61883_read_packet(AVFormatContext *context, AVPacket *pkt)
     pthread_mutex_unlock(&dv->mutex);
 #else
     int result;
-    while ((size = dv->parse_queue(dv, pkt)) == -1) {
+    while ((size = dv->parse_queue(dv, pkt)) == -1)
+    {
         iec61883_receive_task((void *)dv);
         if (dv->receive_error)
             return dv->receive_error;
@@ -451,15 +486,19 @@ static int iec61883_close(AVFormatContext *context)
     pthread_mutex_destroy(&dv->mutex);
 #endif
 
-    if (CONFIG_MPEGTS_DEMUXER && dv->type == IEC61883_HDV) {
+    if (CONFIG_MPEGTS_DEMUXER && dv->type == IEC61883_HDV)
+    {
         iec61883_mpeg2_recv_stop(dv->iec61883_mpeg2);
         iec61883_mpeg2_close(dv->iec61883_mpeg2);
         avpriv_mpegts_parse_close(dv->mpeg_demux);
-    } else {
+    }
+    else
+    {
         iec61883_dv_fb_stop(dv->iec61883_dv);
         iec61883_dv_fb_close(dv->iec61883_dv);
     }
-    while (dv->queue_first) {
+    while (dv->queue_first)
+    {
         DVPacket *packet = dv->queue_first;
         dv->queue_first = packet->next;
         av_freep(&packet->buf);
@@ -475,7 +514,8 @@ static int iec61883_close(AVFormatContext *context)
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "dvtype", "override autodetection of DV/HDV", offsetof(struct iec61883_data, type), AV_OPT_TYPE_INT, {.i64 = IEC61883_AUTO}, IEC61883_AUTO, IEC61883_HDV, AV_OPT_FLAG_DECODING_PARAM, "dvtype" },
     { "auto",   "auto detect DV/HDV", 0, AV_OPT_TYPE_CONST, {.i64 = IEC61883_AUTO}, 0, 0, AV_OPT_FLAG_DECODING_PARAM, "dvtype" },
     { "dv",     "force device being treated as DV device", 0, AV_OPT_TYPE_CONST, {.i64 = IEC61883_DV},   0, 0, AV_OPT_FLAG_DECODING_PARAM, "dvtype" },
@@ -485,7 +525,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass iec61883_class = {
+static const AVClass iec61883_class =
+{
     .class_name = "iec61883 indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -493,7 +534,8 @@ static const AVClass iec61883_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
 };
 
-AVInputFormat ff_iec61883_demuxer = {
+AVInputFormat ff_iec61883_demuxer =
+{
     .name           = "iec61883",
     .long_name      = NULL_IF_CONFIG_SMALL("libiec61883 (new DV1394) A/V input device"),
     .priv_data_size = sizeof(struct iec61883_data),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,26 +13,31 @@
 // The implementation is borrowed from chromium except that it does not
 // implement SupportsWeakPtr.
 
-namespace rtc {
-namespace internal {
+namespace rtc
+{
+namespace internal
+{
 
-WeakReference::Flag::Flag() : is_valid_(true) {
-  // Flags only become bound when checked for validity, or invalidated,
-  // so that we can check that later validity/invalidation operations on
-  // the same Flag take place on the same sequence.
-  checker_.Detach();
+WeakReference::Flag::Flag() : is_valid_(true)
+{
+    // Flags only become bound when checked for validity, or invalidated,
+    // so that we can check that later validity/invalidation operations on
+    // the same Flag take place on the same sequence.
+    checker_.Detach();
 }
 
-void WeakReference::Flag::Invalidate() {
-  RTC_DCHECK(checker_.CalledSequentially())
-      << "WeakPtrs must be invalidated on the same sequence.";
-  is_valid_ = false;
+void WeakReference::Flag::Invalidate()
+{
+    RTC_DCHECK(checker_.CalledSequentially())
+            << "WeakPtrs must be invalidated on the same sequence.";
+    is_valid_ = false;
 }
 
-bool WeakReference::Flag::IsValid() const {
-  RTC_DCHECK(checker_.CalledSequentially())
-      << "WeakPtrs must be checked on the same sequence.";
-  return is_valid_;
+bool WeakReference::Flag::IsValid() const
+{
+    RTC_DCHECK(checker_.CalledSequentially())
+            << "WeakPtrs must be checked on the same sequence.";
+    return is_valid_;
 }
 
 WeakReference::Flag::~Flag() {}
@@ -47,34 +52,40 @@ WeakReference::WeakReference(WeakReference&& other) = default;
 
 WeakReference::WeakReference(const WeakReference& other) = default;
 
-bool WeakReference::is_valid() const {
-  return flag_.get() && flag_->IsValid();
+bool WeakReference::is_valid() const
+{
+    return flag_.get() && flag_->IsValid();
 }
 
-WeakReferenceOwner::WeakReferenceOwner() {
-  checker_.Detach();
+WeakReferenceOwner::WeakReferenceOwner()
+{
+    checker_.Detach();
 }
 
-WeakReferenceOwner::~WeakReferenceOwner() {
-  RTC_DCHECK(checker_.CalledSequentially());
-  Invalidate();
+WeakReferenceOwner::~WeakReferenceOwner()
+{
+    RTC_DCHECK(checker_.CalledSequentially());
+    Invalidate();
 }
 
-WeakReference WeakReferenceOwner::GetRef() const {
-  RTC_DCHECK(checker_.CalledSequentially());
-  // If we hold the last reference to the Flag then create a new one.
-  if (!HasRefs())
-    flag_ = new RefCountedObject<WeakReference::Flag>();
+WeakReference WeakReferenceOwner::GetRef() const
+{
+    RTC_DCHECK(checker_.CalledSequentially());
+    // If we hold the last reference to the Flag then create a new one.
+    if (!HasRefs())
+        flag_ = new RefCountedObject<WeakReference::Flag>();
 
-  return WeakReference(flag_.get());
+    return WeakReference(flag_.get());
 }
 
-void WeakReferenceOwner::Invalidate() {
-  RTC_DCHECK(checker_.CalledSequentially());
-  if (flag_.get()) {
-    flag_->Invalidate();
-    flag_ = NULL;
-  }
+void WeakReferenceOwner::Invalidate()
+{
+    RTC_DCHECK(checker_.CalledSequentially());
+    if (flag_.get())
+    {
+        flag_->Invalidate();
+        flag_ = NULL;
+    }
 }
 
 WeakPtrBase::WeakPtrBase() {}

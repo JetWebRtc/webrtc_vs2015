@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Psygnosis YOP decoder
  *
  * Copyright (C) 2010 Mohamed Naufal Basheer <naufal11@gmail.com>
@@ -29,7 +29,8 @@
 #include "get_bits.h"
 #include "internal.h"
 
-typedef struct YopDecContext {
+typedef struct YopDecContext
+{
     AVCodecContext *avctx;
     AVFrame *frame;
 
@@ -54,30 +55,32 @@ typedef struct YopDecContext {
  * equal to max(bytes 0-2) + 1.
  */
 static const uint8_t paint_lut[15][4] =
-    {{1, 2, 3, 4}, {1, 2, 0, 3},
-     {1, 2, 1, 3}, {1, 2, 2, 3},
-     {1, 0, 2, 3}, {1, 0, 0, 2},
-     {1, 0, 1, 2}, {1, 1, 2, 3},
-     {0, 1, 2, 3}, {0, 1, 0, 2},
-     {1, 1, 0, 2}, {0, 1, 1, 2},
-     {0, 0, 1, 2}, {0, 0, 0, 1},
-     {1, 1, 1, 2},
-    };
+{
+    {1, 2, 3, 4}, {1, 2, 0, 3},
+    {1, 2, 1, 3}, {1, 2, 2, 3},
+    {1, 0, 2, 3}, {1, 0, 0, 2},
+    {1, 0, 1, 2}, {1, 1, 2, 3},
+    {0, 1, 2, 3}, {0, 1, 0, 2},
+    {1, 1, 0, 2}, {0, 1, 1, 2},
+    {0, 0, 1, 2}, {0, 0, 0, 1},
+    {1, 1, 1, 2},
+};
 
 /**
  * Lookup table for copying macroblocks. Each entry contains the respective
  * x and y pixel offset for the copy source.
  */
 static const int8_t motion_vector[16][2] =
-    {{-4, -4}, {-2, -4},
-     { 0, -4}, { 2, -4},
-     {-4, -2}, {-4,  0},
-     {-3, -3}, {-1, -3},
-     { 1, -3}, { 3, -3},
-     {-3, -1}, {-2, -2},
-     { 0, -2}, { 2, -2},
-     { 4, -2}, {-2,  0},
-    };
+{
+    {-4, -4}, {-2, -4},
+    { 0, -4}, { 2, -4},
+    {-4, -2}, {-4,  0},
+    {-3, -3}, {-1, -3},
+    { 1, -3}, { 3, -3},
+    {-3, -1}, {-2, -2},
+    { 0, -2}, { 2, -2},
+    { 4, -2}, {-2,  0},
+};
 
 static av_cold int yop_decode_close(AVCodecContext *avctx)
 {
@@ -94,12 +97,14 @@ static av_cold int yop_decode_init(AVCodecContext *avctx)
     s->avctx = avctx;
 
     if (avctx->width & 1 || avctx->height & 1 ||
-        av_image_check_size(avctx->width, avctx->height, 0, avctx) < 0) {
+            av_image_check_size(avctx->width, avctx->height, 0, avctx) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "YOP has invalid dimensions\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (avctx->extradata_size < 3) {
+    if (avctx->extradata_size < 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Missing or incomplete extradata.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -111,7 +116,8 @@ static av_cold int yop_decode_init(AVCodecContext *avctx)
     s->first_color[1] = avctx->extradata[2];
 
     if (s->num_pal_colors + s->first_color[0] > 256 ||
-        s->num_pal_colors + s->first_color[1] > 256) {
+            s->num_pal_colors + s->first_color[1] > 256)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Palette parameters invalid, header probably corrupt\n");
         return AVERROR_INVALIDDATA;
@@ -131,7 +137,8 @@ static av_cold int yop_decode_init(AVCodecContext *avctx)
  */
 static int yop_paint_block(YopDecContext *s, int linesize, int tag)
 {
-    if (s->src_end - s->srcptr < paint_lut[tag][3]) {
+    if (s->src_end - s->srcptr < paint_lut[tag][3])
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Packet too small.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -157,7 +164,8 @@ static int yop_copy_previous_block(YopDecContext *s, int linesize, int copy_tag)
     // Calculate position for the copy source
     bufptr = s->dstptr + motion_vector[copy_tag][0] +
              linesize * motion_vector[copy_tag][1];
-    if (bufptr < s->dstbuf) {
+    if (bufptr < s->dstbuf)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "File probably corrupt\n");
         return AVERROR_INVALIDDATA;
     }
@@ -178,10 +186,13 @@ static uint8_t yop_get_next_nibble(YopDecContext *s)
 {
     int ret;
 
-    if (s->low_nibble) {
+    if (s->low_nibble)
+    {
         ret           = *s->low_nibble & 0xf;
         s->low_nibble = NULL;
-    }else {
+    }
+    else
+    {
         s->low_nibble = s->srcptr++;
         ret           = *s->low_nibble >> 4;
     }
@@ -197,7 +208,8 @@ static int yop_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     int ret, i, x, y;
     uint32_t *palette;
 
-    if (avpkt->size < 4 + 3 * s->num_pal_colors) {
+    if (avpkt->size < 4 + 3 * s->num_pal_colors)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet too small.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -215,14 +227,16 @@ static int yop_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     s->low_nibble = NULL;
 
     is_odd_frame = avpkt->data[0];
-    if(is_odd_frame>1){
+    if(is_odd_frame>1)
+    {
         av_log(avctx, AV_LOG_ERROR, "frame is too odd %d\n", is_odd_frame);
         return AVERROR_INVALIDDATA;
     }
     firstcolor   = s->first_color[is_odd_frame];
     palette      = (uint32_t *)frame->data[1];
 
-    for (i = 0; i < s->num_pal_colors; i++, s->srcptr += 3) {
+    for (i = 0; i < s->num_pal_colors; i++, s->srcptr += 3)
+    {
         palette[i + firstcolor] = (s->srcptr[0] << 18) |
                                   (s->srcptr[1] << 10) |
                                   (s->srcptr[2] << 2);
@@ -232,20 +246,26 @@ static int yop_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     frame->palette_has_changed = 1;
 
-    for (y = 0; y < avctx->height; y += 2) {
-        for (x = 0; x < avctx->width; x += 2) {
-            if (s->srcptr - avpkt->data >= avpkt->size) {
+    for (y = 0; y < avctx->height; y += 2)
+    {
+        for (x = 0; x < avctx->width; x += 2)
+        {
+            if (s->srcptr - avpkt->data >= avpkt->size)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Packet too small.\n");
                 return AVERROR_INVALIDDATA;
             }
 
             tag = yop_get_next_nibble(s);
 
-            if (tag != 0xf) {
+            if (tag != 0xf)
+            {
                 ret = yop_paint_block(s, frame->linesize[0], tag);
                 if (ret < 0)
                     return ret;
-            } else {
+            }
+            else
+            {
                 tag = yop_get_next_nibble(s);
                 ret = yop_copy_previous_block(s, frame->linesize[0], tag);
                 if (ret < 0)
@@ -263,7 +283,8 @@ static int yop_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     return avpkt->size;
 }
 
-AVCodec ff_yop_decoder = {
+AVCodec ff_yop_decoder =
+{
     .name           = "yop",
     .long_name      = NULL_IF_CONFIG_SMALL("Psygnosis YOP Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Timo Rothenpieler <timo@rothenpieler.org>
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct ColorkeyContext {
+typedef struct ColorkeyContext
+{
     const AVClass *class;
 
     /* color offsets rgba */
@@ -44,9 +45,12 @@ static uint8_t do_colorkey_pixel(ColorkeyContext *ctx, uint8_t r, uint8_t g, uin
 
     double diff = sqrt((dr * dr + dg * dg + db * db) / (255.0 * 255.0));
 
-    if (ctx->blend > 0.0001) {
+    if (ctx->blend > 0.0001)
+    {
         return av_clipd((diff - ctx->similarity) / ctx->blend, 0.0, 1.0) * 255.0;
-    } else {
+    }
+    else
+    {
         return (diff > ctx->similarity) ? 255 : 0;
     }
 }
@@ -62,8 +66,10 @@ static int do_colorkey_slice(AVFilterContext *avctx, void *arg, int jobnr, int n
 
     int o, x, y;
 
-    for (y = slice_start; y < slice_end; ++y) {
-        for (x = 0; x < frame->width; ++x) {
+    for (y = slice_start; y < slice_end; ++y)
+    {
+        for (x = 0; x < frame->width; ++x)
+        {
             o = frame->linesize[0] * y + x * 4;
 
             frame->data[0][o + ctx->co[3]] =
@@ -110,7 +116,8 @@ static av_cold int config_output(AVFilterLink *outlink)
 
 static av_cold int query_formats(AVFilterContext *avctx)
 {
-    static const enum AVPixelFormat pixel_fmts[] = {
+    static const enum AVPixelFormat pixel_fmts[] =
+    {
         AV_PIX_FMT_ARGB,
         AV_PIX_FMT_RGBA,
         AV_PIX_FMT_ABGR,
@@ -127,7 +134,8 @@ static av_cold int query_formats(AVFilterContext *avctx)
     return ff_set_common_formats(avctx, formats);
 }
 
-static const AVFilterPad colorkey_inputs[] = {
+static const AVFilterPad colorkey_inputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -136,7 +144,8 @@ static const AVFilterPad colorkey_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad colorkey_outputs[] = {
+static const AVFilterPad colorkey_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -148,7 +157,8 @@ static const AVFilterPad colorkey_outputs[] = {
 #define OFFSET(x) offsetof(ColorkeyContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption colorkey_options[] = {
+static const AVOption colorkey_options[] =
+{
     { "color", "set the colorkey key color", OFFSET(colorkey_rgba), AV_OPT_TYPE_COLOR, { .str = "black" }, CHAR_MIN, CHAR_MAX, FLAGS },
     { "similarity", "set the colorkey similarity value", OFFSET(similarity), AV_OPT_TYPE_FLOAT, { .dbl = 0.01 }, 0.01, 1.0, FLAGS },
     { "blend", "set the colorkey key blend value", OFFSET(blend), AV_OPT_TYPE_FLOAT, { .dbl = 0.0 }, 0.0, 1.0, FLAGS },
@@ -157,7 +167,8 @@ static const AVOption colorkey_options[] = {
 
 AVFILTER_DEFINE_CLASS(colorkey);
 
-AVFilter ff_vf_colorkey = {
+AVFilter ff_vf_colorkey =
+{
     .name          = "colorkey",
     .description   = NULL_IF_CONFIG_SMALL("colorkey filter"),
     .priv_size     = sizeof(ColorkeyContext),

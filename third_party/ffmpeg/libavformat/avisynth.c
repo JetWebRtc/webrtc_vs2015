@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AviSynth/AvxSynth support
  * Copyright (c) 2012 AvxSynth Team.
  *
@@ -29,23 +29,24 @@
 
 /* Platform-specific directives for AviSynth vs AvxSynth. */
 #ifdef _WIN32
-  #include <windows.h>
-  #undef EXTERN_C
-  #include "compat/avisynth/avisynth_c.h"
-  #define AVISYNTH_LIB "avisynth"
-  #define USING_AVISYNTH
+#include <windows.h>
+#undef EXTERN_C
+#include "compat/avisynth/avisynth_c.h"
+#define AVISYNTH_LIB "avisynth"
+#define USING_AVISYNTH
 #else
-  #include <dlfcn.h>
-  #include "compat/avisynth/avxsynth_c.h"
-  #define AVISYNTH_NAME "libavxsynth"
-  #define AVISYNTH_LIB AVISYNTH_NAME SLIBSUF
+#include <dlfcn.h>
+#include "compat/avisynth/avxsynth_c.h"
+#define AVISYNTH_NAME "libavxsynth"
+#define AVISYNTH_LIB AVISYNTH_NAME SLIBSUF
 
-  #define LoadLibrary(x) dlopen(x, RTLD_NOW | RTLD_LOCAL)
-  #define GetProcAddress dlsym
-  #define FreeLibrary dlclose
+#define LoadLibrary(x) dlopen(x, RTLD_NOW | RTLD_LOCAL)
+#define GetProcAddress dlsym
+#define FreeLibrary dlclose
 #endif
 
-typedef struct AviSynthLibrary {
+typedef struct AviSynthLibrary
+{
     void *library;
 #define AVSC_DECLARE_FUNC(name) name ## _func name
     AVSC_DECLARE_FUNC(avs_bit_blt);
@@ -76,7 +77,8 @@ typedef struct AviSynthLibrary {
 #undef AVSC_DECLARE_FUNC
 } AviSynthLibrary;
 
-typedef struct AviSynthContext {
+typedef struct AviSynthContext
+{
     AVS_ScriptEnvironment *env;
     AVS_Clip *clip;
     const AVS_VideoInfo *vi;
@@ -98,7 +100,8 @@ typedef struct AviSynthContext {
 static const int avs_planes_packed[1] = { 0 };
 static const int avs_planes_grey[1]   = { AVS_PLANAR_Y };
 static const int avs_planes_yuv[3]    = { AVS_PLANAR_Y, AVS_PLANAR_U,
-                                          AVS_PLANAR_V };
+                                          AVS_PLANAR_V
+                                        };
 
 /* A conflict between C++ global objects, atexit, and dynamic loading requires
  * us to register our own atexit handler to prevent double freeing. */
@@ -170,17 +173,22 @@ static av_cold int avisynth_context_create(AVFormatContext *s)
             return ret;
 
     avs->env = avs_library.avs_create_script_environment(3);
-    if (avs_library.avs_get_error) {
+    if (avs_library.avs_get_error)
+    {
         const char *error = avs_library.avs_get_error(avs->env);
-        if (error) {
+        if (error)
+        {
             av_log(s, AV_LOG_ERROR, "%s\n", error);
             return AVERROR_UNKNOWN;
         }
     }
 
-    if (!avs_ctx_list) {
+    if (!avs_ctx_list)
+    {
         avs_ctx_list = avs;
-    } else {
+    }
+    else
+    {
         avs->next    = avs_ctx_list;
         avs_ctx_list = avs;
     }
@@ -193,20 +201,25 @@ static av_cold void avisynth_context_destroy(AviSynthContext *avs)
     if (avs_atexit_called)
         return;
 
-    if (avs == avs_ctx_list) {
+    if (avs == avs_ctx_list)
+    {
         avs_ctx_list = avs->next;
-    } else {
+    }
+    else
+    {
         AviSynthContext *prev = avs_ctx_list;
         while (prev->next != avs)
             prev = prev->next;
         prev->next = avs->next;
     }
 
-    if (avs->clip) {
+    if (avs->clip)
+    {
         avs_library.avs_release_clip(avs->clip);
         avs->clip = NULL;
     }
-    if (avs->env) {
+    if (avs->env)
+    {
         avs_library.avs_delete_script_environment(avs->env);
         avs->env = NULL;
     }
@@ -216,7 +229,8 @@ static av_cold void avisynth_atexit_handler(void)
 {
     AviSynthContext *avs = avs_ctx_list;
 
-    while (avs) {
+    while (avs)
+    {
         AviSynthContext *next = avs->next;
         avisynth_context_destroy(avs);
         avs = next;
@@ -237,14 +251,18 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
     st->codec->width      = avs->vi->width;
     st->codec->height     = avs->vi->height;
 
-    st->avg_frame_rate    = (AVRational) { avs->vi->fps_numerator,
-                                           avs->vi->fps_denominator };
+    st->avg_frame_rate    = (AVRational)
+    {
+        avs->vi->fps_numerator,
+            avs->vi->fps_denominator
+    };
     st->start_time        = 0;
     st->duration          = avs->vi->num_frames;
     st->nb_frames         = avs->vi->num_frames;
     avpriv_set_pts_info(st, 32, avs->vi->fps_denominator, avs->vi->fps_numerator);
 
-    switch (avs->vi->pixel_type) {
+    switch (avs->vi->pixel_type)
+    {
 #ifdef USING_AVISYNTH
     case AVS_CS_YV24:
         st->codec->pix_fmt = AV_PIX_FMT_YUV444P;
@@ -287,7 +305,8 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         return AVERROR_UNKNOWN;
     }
 
-    switch (planar) {
+    switch (planar)
+    {
     case 2: // Y8
         avs->n_planes = 1;
         avs->planes   = avs_planes_grey;
@@ -313,7 +332,8 @@ static int avisynth_create_stream_audio(AVFormatContext *s, AVStream *st)
     st->duration           = avs->vi->num_audio_samples;
     avpriv_set_pts_info(st, 64, 1, avs->vi->audio_samples_per_second);
 
-    switch (avs->vi->sample_type) {
+    switch (avs->vi->sample_type)
+    {
     case AVS_SAMPLE_INT8:
         st->codec->codec_id = AV_CODEC_ID_PCM_U8;
         break;
@@ -345,7 +365,8 @@ static int avisynth_create_stream(AVFormatContext *s)
     int ret;
     int id = 0;
 
-    if (avs_has_video(avs->vi)) {
+    if (avs_has_video(avs->vi))
+    {
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR_UNKNOWN;
@@ -353,7 +374,8 @@ static int avisynth_create_stream(AVFormatContext *s)
         if (ret = avisynth_create_stream_video(s, st))
             return ret;
     }
-    if (avs_has_audio(avs->vi)) {
+    if (avs_has_audio(avs->vi))
+    {
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR_UNKNOWN;
@@ -387,12 +409,14 @@ static int avisynth_open_file(AVFormatContext *s)
     arg = avs_new_value_string(s->filename);
 #endif
     val = avs_library.avs_invoke(avs->env, "Import", arg, 0);
-    if (avs_is_error(val)) {
+    if (avs_is_error(val))
+    {
         av_log(s, AV_LOG_ERROR, "%s\n", avs_as_error(val));
         ret = AVERROR_UNKNOWN;
         goto fail;
     }
-    if (!avs_is_clip(val)) {
+    if (!avs_is_clip(val))
+    {
         av_log(s, AV_LOG_ERROR, "AviSynth script did not return a clip\n");
         ret = AVERROR_UNKNOWN;
         goto fail;
@@ -407,7 +431,8 @@ static int avisynth_open_file(AVFormatContext *s)
      * and excludes 2.5 and the 2.6 alphas. Since AvxSynth identifies itself
      * as interface version 3 like 2.5.8, this needs to be special-cased. */
 
-    if (avs_library.avs_get_version(avs->clip) < 6) {
+    if (avs_library.avs_get_version(avs->clip) < 6)
+    {
         av_log(s, AV_LOG_ERROR,
                "AviSynth version is too old. Please upgrade to either AviSynth 2.6 >= RC1 or AviSynth+ >= r1718.\n");
         ret = AVERROR_UNKNOWN;
@@ -500,7 +525,8 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
 
     frame = avs_library.avs_get_frame(avs->clip, n);
     error = avs_library.avs_clip_get_error(avs->clip);
-    if (error) {
+    if (error)
+    {
         av_log(s, AV_LOG_ERROR, "%s\n", error);
         avs->error = 1;
         av_packet_unref(pkt);
@@ -508,7 +534,8 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     }
 
     dst_p = pkt->data;
-    for (i = 0; i < avs->n_planes; i++) {
+    for (i = 0; i < avs->n_planes; i++)
+    {
         plane = avs->planes[i];
 #ifdef USING_AVISYNTH
         src_p = avs_library.avs_get_read_ptr_p(frame, plane);
@@ -525,13 +552,14 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
 #endif
 
         /* Flip RGB video. */
-        if (avs_is_rgb24(avs->vi) || avs_is_rgb(avs->vi)) {
+        if (avs_is_rgb24(avs->vi) || avs_is_rgb(avs->vi))
+        {
             src_p = src_p + (planeheight - 1) * pitch;
             pitch = -pitch;
         }
 
         avs_library.avs_bit_blt(avs->env, dst_p, rowsize, src_p, pitch,
-                                 rowsize, planeheight);
+                                rowsize, planeheight);
         dst_p += rowsize * planeheight;
     }
 
@@ -556,18 +584,22 @@ static int avisynth_read_packet_audio(AVFormatContext *s, AVPacket *pkt,
     samplerate.num = avs->vi->audio_samples_per_second;
     samplerate.den = 1;
 
-    if (avs_has_video(avs->vi)) {
+    if (avs_has_video(avs->vi))
+    {
         if (avs->curr_frame < avs->vi->num_frames)
             samples = av_rescale_q(avs->curr_frame, samplerate, fps) -
                       avs->curr_sample;
         else
             samples = av_rescale_q(1, samplerate, fps);
-    } else {
+    }
+    else
+    {
         samples = 1000;
     }
 
     /* After seeking, audio may catch up with video. */
-    if (samples <= 0) {
+    if (samples <= 0)
+    {
         pkt->size = 0;
         pkt->data = NULL;
         return 0;
@@ -597,7 +629,8 @@ static int avisynth_read_packet_audio(AVFormatContext *s, AVPacket *pkt,
 
     avs_library.avs_get_audio(avs->clip, pkt->data, n, samples);
     error = avs_library.avs_clip_get_error(avs->clip);
-    if (error) {
+    if (error)
+    {
         av_log(s, AV_LOG_ERROR, "%s\n", error);
         avs->error = 1;
         av_packet_unref(pkt);
@@ -614,7 +647,8 @@ static av_cold int avisynth_read_header(AVFormatContext *s)
     if (ret = avpriv_lock_avformat())
         return ret;
 
-    if (ret = avisynth_open_file(s)) {
+    if (ret = avisynth_open_file(s))
+    {
         avpriv_unlock_avformat();
         return ret;
     }
@@ -636,15 +670,20 @@ static int avisynth_read_packet(AVFormatContext *s, AVPacket *pkt)
     /* If either stream reaches EOF, try to read the other one before
      * giving up. */
     avisynth_next_stream(s, &st, pkt, &discard);
-    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+    {
         ret = avisynth_read_packet_video(s, pkt, discard);
-        if (ret == AVERROR_EOF && avs_has_audio(avs->vi)) {
+        if (ret == AVERROR_EOF && avs_has_audio(avs->vi))
+        {
             avisynth_next_stream(s, &st, pkt, &discard);
             return avisynth_read_packet_audio(s, pkt, discard);
         }
-    } else {
+    }
+    else
+    {
         ret = avisynth_read_packet_audio(s, pkt, discard);
-        if (ret == AVERROR_EOF && avs_has_video(avs->vi)) {
+        if (ret == AVERROR_EOF && avs_has_video(avs->vi))
+        {
             avisynth_next_stream(s, &st, pkt, &discard);
             return avisynth_read_packet_video(s, pkt, discard);
         }
@@ -673,28 +712,40 @@ static int avisynth_read_seek(AVFormatContext *s, int stream_index,
     if (avs->error)
         return AVERROR_UNKNOWN;
 
-    fps        = (AVRational) { avs->vi->fps_numerator,
-                                avs->vi->fps_denominator };
-    samplerate = (AVRational) { avs->vi->audio_samples_per_second, 1 };
+    fps        = (AVRational)
+    {
+        avs->vi->fps_numerator,
+            avs->vi->fps_denominator
+    };
+    samplerate = (AVRational)
+    {
+        avs->vi->audio_samples_per_second, 1
+    };
 
     st = s->streams[stream_index];
-    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+    {
         /* AviSynth frame counts are signed int. */
         if ((timestamp >= avs->vi->num_frames) ||
-            (timestamp > INT_MAX)              ||
-            (timestamp < 0))
+                (timestamp > INT_MAX)              ||
+                (timestamp < 0))
             return AVERROR_EOF;
         avs->curr_frame = timestamp;
         if (avs_has_audio(avs->vi))
             avs->curr_sample = av_rescale_q(timestamp, samplerate, fps);
-    } else {
+    }
+    else
+    {
         if ((timestamp >= avs->vi->num_audio_samples) || (timestamp < 0))
             return AVERROR_EOF;
         /* Force frame granularity for seeking. */
-        if (avs_has_video(avs->vi)) {
+        if (avs_has_video(avs->vi))
+        {
             avs->curr_frame  = av_rescale_q(timestamp, fps, samplerate);
             avs->curr_sample = av_rescale_q(avs->curr_frame, samplerate, fps);
-        } else {
+        }
+        else
+        {
             avs->curr_sample = timestamp;
         }
     }
@@ -702,7 +753,8 @@ static int avisynth_read_seek(AVFormatContext *s, int stream_index,
     return 0;
 }
 
-AVInputFormat ff_avisynth_demuxer = {
+AVInputFormat ff_avisynth_demuxer =
+{
     .name           = "avisynth",
     .long_name      = NULL_IF_CONFIG_SMALL("AviSynth script"),
     .priv_data_size = sizeof(AviSynthContext),

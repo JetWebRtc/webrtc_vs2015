@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 #include "webrtc/base/logging.h"
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/common_header.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 constexpr uint8_t RapidResyncRequest::kFeedbackMessageType;
 // RFC 4585: Feedback format.
 // Rapid Resynchronisation Request (draft-perkins-avt-rapid-rtp-sync-03).
@@ -29,36 +31,40 @@ constexpr uint8_t RapidResyncRequest::kFeedbackMessageType;
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //  |                  SSRC of media source                         |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-bool RapidResyncRequest::Parse(const CommonHeader& packet) {
-  RTC_DCHECK_EQ(packet.type(), kPacketType);
-  RTC_DCHECK_EQ(packet.fmt(), kFeedbackMessageType);
+bool RapidResyncRequest::Parse(const CommonHeader& packet)
+{
+    RTC_DCHECK_EQ(packet.type(), kPacketType);
+    RTC_DCHECK_EQ(packet.fmt(), kFeedbackMessageType);
 
-  if (packet.payload_size_bytes() != kCommonFeedbackLength) {
-    LOG(LS_WARNING) << "Packet payload size should be " << kCommonFeedbackLength
-                    << " instead of " << packet.payload_size_bytes()
-                    << " to be a valid Rapid Resynchronisation Request";
-    return false;
-  }
+    if (packet.payload_size_bytes() != kCommonFeedbackLength)
+    {
+        LOG(LS_WARNING) << "Packet payload size should be " << kCommonFeedbackLength
+                        << " instead of " << packet.payload_size_bytes()
+                        << " to be a valid Rapid Resynchronisation Request";
+        return false;
+    }
 
-  ParseCommonFeedback(packet.payload());
-  return true;
+    ParseCommonFeedback(packet.payload());
+    return true;
 }
 
 bool RapidResyncRequest::Create(
     uint8_t* packet,
     size_t* index,
     size_t max_length,
-    RtcpPacket::PacketReadyCallback* callback) const {
-  while (*index + BlockLength() > max_length) {
-    if (!OnBufferFull(packet, index, callback))
-      return false;
-  }
+    RtcpPacket::PacketReadyCallback* callback) const
+{
+    while (*index + BlockLength() > max_length)
+    {
+        if (!OnBufferFull(packet, index, callback))
+            return false;
+    }
 
-  CreateHeader(kFeedbackMessageType, kPacketType, HeaderLength(), packet,
-               index);
-  CreateCommonFeedback(packet + *index);
-  *index += kCommonFeedbackLength;
-  return true;
+    CreateHeader(kFeedbackMessageType, kPacketType, HeaderLength(), packet,
+                 index);
+    CreateCommonFeedback(packet + *index);
+    *index += kCommonFeedbackLength;
+    return true;
 }
 }  // namespace rtcp
 }  // namespace webrtc

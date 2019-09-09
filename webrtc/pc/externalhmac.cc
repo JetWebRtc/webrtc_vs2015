@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,29 +22,33 @@
 #if defined(HAVE_SRTP) && defined(ENABLE_EXTERNAL_AUTH)
 
 // Begin test case 0 */
-static const uint8_t kExternalHmacTestCase0Key[20] = {
-  0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
-  0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
-  0x0b, 0x0b, 0x0b, 0x0b
+static const uint8_t kExternalHmacTestCase0Key[20] =
+{
+    0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+    0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b, 0x0b,
+    0x0b, 0x0b, 0x0b, 0x0b
 };
 
-static const uint8_t kExternalHmacTestCase0Data[8] = {
-  0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65   // "Hi There"
+static const uint8_t kExternalHmacTestCase0Data[8] =
+{
+    0x48, 0x69, 0x20, 0x54, 0x68, 0x65, 0x72, 0x65   // "Hi There"
 };
 
-static const uint8_t kExternalHmacFakeTag[10] = {
-  0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd
+static const uint8_t kExternalHmacFakeTag[10] =
+{
+    0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd, 0xba, 0xdd
 };
 
-static const srtp_auth_test_case_t kExternalHmacTestCase0 = {
-  20,                                                    // Octets in key
-  const_cast<uint8_t*>(kExternalHmacTestCase0Key),   // Key
-  8,                                                     // Octets in data
-  const_cast<uint8_t*>(kExternalHmacTestCase0Data),  // Data
-  10,                                                    // Octets in tag
-  const_cast<uint8_t*>(kExternalHmacFakeTag),          // Tag
-  NULL                                                   // Pointer to next
-                                                         // testcase
+static const srtp_auth_test_case_t kExternalHmacTestCase0 =
+{
+    20,                                                    // Octets in key
+    const_cast<uint8_t*>(kExternalHmacTestCase0Key),   // Key
+    8,                                                     // Octets in data
+    const_cast<uint8_t*>(kExternalHmacTestCase0Data),  // Data
+    10,                                                    // Octets in tag
+    const_cast<uint8_t*>(kExternalHmacFakeTag),          // Tag
+    NULL                                                   // Pointer to next
+    // testcase
 };
 
 static const char kExternalHmacDescription[] =
@@ -52,103 +56,112 @@ static const char kExternalHmacDescription[] =
 
 // srtp_auth_type_t external_hmac is the hmac metaobject
 
-static const srtp_auth_type_t external_hmac  = {
-  external_hmac_alloc,
-  external_hmac_dealloc,
-  (srtp_auth_init_func)    external_hmac_init,
-  (srtp_auth_compute_func) external_hmac_compute,
-  (srtp_auth_update_func)  external_hmac_update,
-  (srtp_auth_start_func)   external_hmac_start,
-  const_cast<char*>(kExternalHmacDescription),
-  const_cast<srtp_auth_test_case_t*>(&kExternalHmacTestCase0),
-  EXTERNAL_HMAC_SHA1
+static const srtp_auth_type_t external_hmac  =
+{
+    external_hmac_alloc,
+    external_hmac_dealloc,
+    (srtp_auth_init_func)    external_hmac_init,
+    (srtp_auth_compute_func) external_hmac_compute,
+    (srtp_auth_update_func)  external_hmac_update,
+    (srtp_auth_start_func)   external_hmac_start,
+    const_cast<char*>(kExternalHmacDescription),
+    const_cast<srtp_auth_test_case_t*>(&kExternalHmacTestCase0),
+    EXTERNAL_HMAC_SHA1
 };
 
 srtp_err_status_t external_hmac_alloc(srtp_auth_t** a,
                                       int key_len,
-                                      int out_len) {
-  uint8_t* pointer;
+                                      int out_len)
+{
+    uint8_t* pointer;
 
-  // Check key length - note that we don't support keys larger
-  // than 20 bytes yet
-  if (key_len > 20)
-    return srtp_err_status_bad_param;
+    // Check key length - note that we don't support keys larger
+    // than 20 bytes yet
+    if (key_len > 20)
+        return srtp_err_status_bad_param;
 
-  // Check output length - should be less than 20 bytes/
-  if (out_len > 20)
-    return srtp_err_status_bad_param;
+    // Check output length - should be less than 20 bytes/
+    if (out_len > 20)
+        return srtp_err_status_bad_param;
 
-  // Allocate memory for auth and hmac_ctx_t structures.
-  pointer = new uint8_t[(sizeof(ExternalHmacContext) + sizeof(srtp_auth_t))];
-  if (pointer == NULL)
-    return srtp_err_status_alloc_fail;
+    // Allocate memory for auth and hmac_ctx_t structures.
+    pointer = new uint8_t[(sizeof(ExternalHmacContext) + sizeof(srtp_auth_t))];
+    if (pointer == NULL)
+        return srtp_err_status_alloc_fail;
 
-  // Set pointers
-  *a = (srtp_auth_t *)pointer;
-  // |external_hmac| is const and libsrtp expects |type| to be non-const.
-  // const conversion is required. |external_hmac| is constant because we don't
-  // want to increase global count in Chrome.
-  (*a)->type = const_cast<srtp_auth_type_t*>(&external_hmac);
-  (*a)->state = pointer + sizeof(srtp_auth_t);
-  (*a)->out_len = out_len;
-  (*a)->key_len = key_len;
-  (*a)->prefix_len = 0;
+    // Set pointers
+    *a = (srtp_auth_t *)pointer;
+    // |external_hmac| is const and libsrtp expects |type| to be non-const.
+    // const conversion is required. |external_hmac| is constant because we don't
+    // want to increase global count in Chrome.
+    (*a)->type = const_cast<srtp_auth_type_t*>(&external_hmac);
+    (*a)->state = pointer + sizeof(srtp_auth_t);
+    (*a)->out_len = out_len;
+    (*a)->key_len = key_len;
+    (*a)->prefix_len = 0;
 
-  return srtp_err_status_ok;
+    return srtp_err_status_ok;
 }
 
-srtp_err_status_t external_hmac_dealloc(srtp_auth_t* a) {
-  // Zeroize entire state
-  memset((uint8_t *)a, 0, sizeof(ExternalHmacContext) + sizeof(srtp_auth_t));
+srtp_err_status_t external_hmac_dealloc(srtp_auth_t* a)
+{
+    // Zeroize entire state
+    memset((uint8_t *)a, 0, sizeof(ExternalHmacContext) + sizeof(srtp_auth_t));
 
-  // Free memory
-  delete[] a;
+    // Free memory
+    delete[] a;
 
-  return srtp_err_status_ok;
+    return srtp_err_status_ok;
 }
 
 srtp_err_status_t external_hmac_init(ExternalHmacContext* state,
                                      const uint8_t* key,
-                                     int key_len) {
-  if (key_len > HMAC_KEY_LENGTH)
-    return srtp_err_status_bad_param;
+                                     int key_len)
+{
+    if (key_len > HMAC_KEY_LENGTH)
+        return srtp_err_status_bad_param;
 
-  memset(state->key, 0, key_len);
-  memcpy(state->key, key, key_len);
-  state->key_length = key_len;
-  return srtp_err_status_ok;
+    memset(state->key, 0, key_len);
+    memcpy(state->key, key, key_len);
+    state->key_length = key_len;
+    return srtp_err_status_ok;
 }
 
-srtp_err_status_t external_hmac_start(ExternalHmacContext* state) {
-  return srtp_err_status_ok;
+srtp_err_status_t external_hmac_start(ExternalHmacContext* state)
+{
+    return srtp_err_status_ok;
 }
 
 srtp_err_status_t external_hmac_update(ExternalHmacContext* state,
                                        const uint8_t* message,
-                                       int msg_octets) {
-  return srtp_err_status_ok;
+                                       int msg_octets)
+{
+    return srtp_err_status_ok;
 }
 
 srtp_err_status_t external_hmac_compute(ExternalHmacContext* state,
-                                       const void* message,
-                                       int msg_octets,
-                                       int tag_len,
-                                       uint8_t* result) {
-  memcpy(result, kExternalHmacFakeTag, tag_len);
-  return srtp_err_status_ok;
+                                        const void* message,
+                                        int msg_octets,
+                                        int tag_len,
+                                        uint8_t* result)
+{
+    memcpy(result, kExternalHmacFakeTag, tag_len);
+    return srtp_err_status_ok;
 }
 
-srtp_err_status_t external_crypto_init() {
-  // |external_hmac| is const. const_cast is required as libsrtp expects
-  // non-const.
-  srtp_err_status_t status = srtp_replace_auth_type(
-      const_cast<srtp_auth_type_t*>(&external_hmac), EXTERNAL_HMAC_SHA1);
-  if (status) {
-    LOG(LS_ERROR) << "Error in replacing default auth module, error: "
-                  << status;
-    return srtp_err_status_fail;
-  }
-  return srtp_err_status_ok;
+srtp_err_status_t external_crypto_init()
+{
+    // |external_hmac| is const. const_cast is required as libsrtp expects
+    // non-const.
+    srtp_err_status_t status = srtp_replace_auth_type(
+                                   const_cast<srtp_auth_type_t*>(&external_hmac), EXTERNAL_HMAC_SHA1);
+    if (status)
+    {
+        LOG(LS_ERROR) << "Error in replacing default auth module, error: "
+                      << status;
+        return srtp_err_status_fail;
+    }
+    return srtp_err_status_ok;
 }
 
 #endif  // defined(HAVE_SRTP) && defined(ENABLE_EXTERNAL_AUTH)

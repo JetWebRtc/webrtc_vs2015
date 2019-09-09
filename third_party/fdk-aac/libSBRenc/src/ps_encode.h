@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -89,7 +89,7 @@ amm-info@iis.fraunhofer.de
 ******************************************************************************/
 /*!
   \file
-  \brief  PS parameter extraction, encoding functions  
+  \brief  PS parameter extraction, encoding functions
 */
 
 #ifndef __INCLUDED_PS_ENCODE_H
@@ -113,47 +113,49 @@ amm-info@iis.fraunhofer.de
 #define SUBQMF_GROUPS_HI_RES   30
 
 
-typedef struct T_PS_DATA {
+typedef struct T_PS_DATA
+{
 
-  INT iidEnable;
-  INT iidEnableLast;
-  INT iidQuantMode;
-  INT iidQuantModeLast;
-  INT iidDiffMode[PS_MAX_ENVELOPES];
-  INT iidIdx     [PS_MAX_ENVELOPES][PS_MAX_BANDS];
-  INT iidIdxLast [PS_MAX_BANDS];
+    INT iidEnable;
+    INT iidEnableLast;
+    INT iidQuantMode;
+    INT iidQuantModeLast;
+    INT iidDiffMode[PS_MAX_ENVELOPES];
+    INT iidIdx     [PS_MAX_ENVELOPES][PS_MAX_BANDS];
+    INT iidIdxLast [PS_MAX_BANDS];
 
-  INT iccEnable;
-  INT iccEnableLast;
-  INT iccQuantMode;
-  INT iccQuantModeLast;
-  INT iccDiffMode[PS_MAX_ENVELOPES];
-  INT iccIdx     [PS_MAX_ENVELOPES][PS_MAX_BANDS];
-  INT iccIdxLast [PS_MAX_BANDS];
+    INT iccEnable;
+    INT iccEnableLast;
+    INT iccQuantMode;
+    INT iccQuantModeLast;
+    INT iccDiffMode[PS_MAX_ENVELOPES];
+    INT iccIdx     [PS_MAX_ENVELOPES][PS_MAX_BANDS];
+    INT iccIdxLast [PS_MAX_BANDS];
 
-  INT nEnvelopesLast;
+    INT nEnvelopesLast;
 
-  INT headerCnt;
-  INT iidTimeCnt;
-  INT iccTimeCnt;
-  INT noEnvCnt;
+    INT headerCnt;
+    INT iidTimeCnt;
+    INT iccTimeCnt;
+    INT noEnvCnt;
 
 } PS_DATA, *HANDLE_PS_DATA;
 
 
-typedef struct T_PS_ENCODE{
+typedef struct T_PS_ENCODE
+{
 
-  PS_DATA         psData;
+    PS_DATA         psData;
 
-  PS_BANDS        psEncMode;
-  INT             nQmfIidGroups;
-  INT             nSubQmfIidGroups;
-  INT             iidGroupBorders[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES + 1];
-  INT             subband2parameterIndex[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES];
-  UCHAR           iidGroupWidthLd[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES];
-  FIXP_DBL        iidQuantErrorThreshold;
+    PS_BANDS        psEncMode;
+    INT             nQmfIidGroups;
+    INT             nSubQmfIidGroups;
+    INT             iidGroupBorders[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES + 1];
+    INT             subband2parameterIndex[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES];
+    UCHAR           iidGroupWidthLd[QMF_GROUPS_HI_RES + SUBQMF_GROUPS_HI_RES];
+    FIXP_DBL        iidQuantErrorThreshold;
 
-  UCHAR           psBandNrgScale [PS_MAX_BANDS];
+    UCHAR           psBandNrgScale [PS_MAX_BANDS];
 
 } PS_ENCODE;
 
@@ -161,27 +163,27 @@ typedef struct T_PS_ENCODE{
 typedef struct T_PS_ENCODE *HANDLE_PS_ENCODE;
 
 FDK_PSENC_ERROR FDKsbrEnc_CreatePSEncode(
-        HANDLE_PS_ENCODE         *phPsEncode
-        );
+    HANDLE_PS_ENCODE         *phPsEncode
+);
 
 FDK_PSENC_ERROR FDKsbrEnc_InitPSEncode(
-        HANDLE_PS_ENCODE          hPsEncode,
-        const PS_BANDS            psEncMode,
-        const FIXP_DBL            iidQuantErrorThreshold
-        );
+    HANDLE_PS_ENCODE          hPsEncode,
+    const PS_BANDS            psEncMode,
+    const FIXP_DBL            iidQuantErrorThreshold
+);
 
 FDK_PSENC_ERROR FDKsbrEnc_DestroyPSEncode(
-        HANDLE_PS_ENCODE         *phPsEncode
-        );
+    HANDLE_PS_ENCODE         *phPsEncode
+);
 
 FDK_PSENC_ERROR FDKsbrEnc_PSEncode(
-        HANDLE_PS_ENCODE          hPsEncode,
-        HANDLE_PS_OUT             hPsOut,
-        UCHAR                    *dynBandScale,
-        UINT                      maxEnvelopes,
-        FIXP_DBL                 *hybridData[HYBRID_FRAMESIZE][MAX_PS_CHANNELS][2],
-        const INT                 frameSize,
-        const INT                 sendHeader
-        );
+    HANDLE_PS_ENCODE          hPsEncode,
+    HANDLE_PS_OUT             hPsOut,
+    UCHAR                    *dynBandScale,
+    UINT                      maxEnvelopes,
+    FIXP_DBL                 *hybridData[HYBRID_FRAMESIZE][MAX_PS_CHANNELS][2],
+    const INT                 frameSize,
+    const INT                 sendHeader
+);
 
 #endif

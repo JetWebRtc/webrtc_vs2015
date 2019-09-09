@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Martin Storsjo
  *
  * This file is part of FFmpeg.
@@ -42,18 +42,28 @@ int main(int argc, char **argv)
     av_register_all();
     avformat_network_init();
 
-    for (i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-b") && i + 1 < argc) {
+    for (i = 1; i < argc; i++)
+    {
+        if (!strcmp(argv[i], "-b") && i + 1 < argc)
+        {
             bps = atoi(argv[i + 1]);
             i++;
-        } else if (!strcmp(argv[i], "-d") && i + 1 < argc) {
+        }
+        else if (!strcmp(argv[i], "-d") && i + 1 < argc)
+        {
             duration = atoi(argv[i + 1]);
             i++;
-        } else if (!input_url) {
+        }
+        else if (!input_url)
+        {
             input_url = argv[i];
-        } else if (!output_url) {
+        }
+        else if (!output_url)
+        {
             output_url = argv[i];
-        } else {
+        }
+        else
+        {
             return usage(argv[0], 1);
         }
     }
@@ -61,14 +71,17 @@ int main(int argc, char **argv)
         return usage(argv[0], 1);
 
     ret = avio_open2(&input, input_url, AVIO_FLAG_READ, NULL, NULL);
-    if (ret) {
+    if (ret)
+    {
         av_strerror(ret, errbuf, sizeof(errbuf));
         fprintf(stderr, "Unable to open %s: %s\n", input_url, errbuf);
         return 1;
     }
-    if (duration && !bps) {
+    if (duration && !bps)
+    {
         int64_t size = avio_size(input);
-        if (size < 0) {
+        if (size < 0)
+        {
             av_strerror(ret, errbuf, sizeof(errbuf));
             fprintf(stderr, "Unable to get size of %s: %s\n", input_url, errbuf);
             goto fail;
@@ -76,14 +89,16 @@ int main(int argc, char **argv)
         bps = size / duration;
     }
     ret = avio_open2(&output, output_url, AVIO_FLAG_WRITE, NULL, NULL);
-    if (ret) {
+    if (ret)
+    {
         av_strerror(ret, errbuf, sizeof(errbuf));
         fprintf(stderr, "Unable to open %s: %s\n", output_url, errbuf);
         goto fail;
     }
 
     start_time = av_gettime_relative();
-    while (1) {
+    while (1)
+    {
         uint8_t buf[1024];
         int n;
         n = avio_read(input, buf, sizeof(buf));
@@ -91,7 +106,8 @@ int main(int argc, char **argv)
             break;
         avio_write(output, buf, n);
         stream_pos += n;
-        if (bps) {
+        if (bps)
+        {
             avio_flush(output);
             while ((av_gettime_relative() - start_time) * bps / AV_TIME_BASE < stream_pos)
                 av_usleep(50 * 1000);

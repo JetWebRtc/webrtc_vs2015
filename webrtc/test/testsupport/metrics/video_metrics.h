@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,34 +14,38 @@
 #include <limits>
 #include <vector>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // The highest PSNR value our algorithms will return.
 extern double kMetricsPerfectPSNR;
 
 // Contains video quality metrics result for a single frame.
-struct FrameResult {
-  int frame_number;
-  double value;
+struct FrameResult
+{
+    int frame_number;
+    double value;
 };
 
 // Result from a PSNR/SSIM calculation operation.
 // The frames in this data structure are 0-indexed.
-struct QualityMetricsResult {
-  QualityMetricsResult() :
-    average(0.0),
-    min(std::numeric_limits<double>::max()),
-    max(std::numeric_limits<double>::min()),
-    min_frame_number(-1),
-    max_frame_number(-1)
-  {};
-  double average;
-  double min;
-  double max;
-  int min_frame_number;
-  int max_frame_number;
-  std::vector<FrameResult> frames;
+struct QualityMetricsResult
+{
+    QualityMetricsResult() :
+        average(0.0),
+        min(std::numeric_limits<double>::max()),
+        max(std::numeric_limits<double>::min()),
+        min_frame_number(-1),
+        max_frame_number(-1)
+    {};
+    double average;
+    double min;
+    double max;
+    int min_frame_number;
+    int max_frame_number;
+    std::vector<FrameResult> frames;
 };
 
 // Calculates PSNR and SSIM values for the reference and test video files

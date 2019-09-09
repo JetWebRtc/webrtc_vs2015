@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,21 +10,27 @@
 
 #include "webrtc/modules/video_capture/windows/device_info_mf.h"
 
-namespace webrtc {
-namespace videocapturemodule {
+namespace webrtc
+{
+namespace videocapturemodule
+{
 
-DeviceInfoMF::DeviceInfoMF() {
+DeviceInfoMF::DeviceInfoMF()
+{
 }
 
-DeviceInfoMF::~DeviceInfoMF() {
+DeviceInfoMF::~DeviceInfoMF()
+{
 }
 
-int32_t DeviceInfoMF::Init() {
-  return -1;
+int32_t DeviceInfoMF::Init()
+{
+    return -1;
 }
 
-uint32_t DeviceInfoMF::NumberOfDevices() {
-  return 0;
+uint32_t DeviceInfoMF::NumberOfDevices()
+{
+    return 0;
 }
 
 int32_t DeviceInfoMF::GetDeviceName(
@@ -34,8 +40,9 @@ int32_t DeviceInfoMF::GetDeviceName(
     char* deviceUniqueIdUTF8,
     uint32_t deviceUniqueIdUTF8Length,
     char* productUniqueIdUTF8,
-    uint32_t productUniqueIdUTF8Length) {
-  return -1;
+    uint32_t productUniqueIdUTF8Length)
+{
+    return -1;
 }
 
 int32_t DeviceInfoMF::DisplayCaptureSettingsDialogBox(
@@ -43,8 +50,9 @@ int32_t DeviceInfoMF::DisplayCaptureSettingsDialogBox(
     const char* dialogTitleUTF8,
     void* parentWindow,
     uint32_t positionX,
-    uint32_t positionY) {
-  return -1;
+    uint32_t positionY)
+{
+    return -1;
 }
 
 }  // namespace videocapturemodule

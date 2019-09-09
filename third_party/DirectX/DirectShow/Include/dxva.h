@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: DXVA.h
 //
 // Desc: DirectX Video Acceleration header file.
@@ -134,9 +134,10 @@ DEFINE_GUID(DXVA_NoEncrypt,   0x1b81beD0, 0xa0c7,0x11d3,0xb9,0x84,0x00,0xc0,0x4f
 #pragma pack(push, BeforeDXVApacking, 1)
 
 
-typedef struct _DXVA_ConnectMode {
-  GUID guidMode;
-  WORD wRestrictedMode;
+typedef struct _DXVA_ConnectMode
+{
+    GUID guidMode;
+    WORD wRestrictedMode;
 } DXVA_ConnectMode, *LPDXVA_ConnectMode;
 
 
@@ -179,99 +180,102 @@ typedef DWORD DXVA_EncryptProtocolFunc, *LPDXVA_EncryptProtocolFunc;
 #define setDXVA_EncryptProtocolFuncFlag(ptr, flg) ((*(ptr)) |= ((flg) << 8))
 #define setDXVA_EncryptProtocolFuncFunc(ptr, fnc) ((*(ptr)) |= (fnc));
 
-typedef struct _DXVA_EncryptProtocolHeader {
-  DXVA_EncryptProtocolFunc dwFunction;
-  DWORD ReservedBits[3];
-  GUID  guidEncryptProtocol;
+typedef struct _DXVA_EncryptProtocolHeader
+{
+    DXVA_EncryptProtocolFunc dwFunction;
+    DWORD ReservedBits[3];
+    GUID  guidEncryptProtocol;
 } DXVA_EncryptProtocolHeader, *LPDXVA_EncryptProtocolHeader;
 
-typedef struct _DXVA_ConfigPictureDecode {
+typedef struct _DXVA_ConfigPictureDecode
+{
 
-  // Operation Indicated
-  DXVA_ConfigQueryOrReplyFunc dwFunction;
+    // Operation Indicated
+    DXVA_ConfigQueryOrReplyFunc dwFunction;
 
-  // Alignment
-  DWORD dwReservedBits[3];
+    // Alignment
+    DWORD dwReservedBits[3];
 
-  // Encryption GUIDs
-  GUID guidConfigBitstreamEncryption;
-  GUID guidConfigMBcontrolEncryption;
-  GUID guidConfigResidDiffEncryption;
+    // Encryption GUIDs
+    GUID guidConfigBitstreamEncryption;
+    GUID guidConfigMBcontrolEncryption;
+    GUID guidConfigResidDiffEncryption;
 
-  // Bitstream Processing Indicator
-  BYTE bConfigBitstreamRaw;
+    // Bitstream Processing Indicator
+    BYTE bConfigBitstreamRaw;
 
-  // Macroblock Control Config
-  BYTE bConfigMBcontrolRasterOrder;
+    // Macroblock Control Config
+    BYTE bConfigMBcontrolRasterOrder;
 
-  // Host Resid Diff Config
-  BYTE bConfigResidDiffHost;
-  BYTE bConfigSpatialResid8;
-  BYTE bConfigResid8Subtraction;
-  BYTE bConfigSpatialHost8or9Clipping;
-  BYTE bConfigSpatialResidInterleaved;
-  BYTE bConfigIntraResidUnsigned;
+    // Host Resid Diff Config
+    BYTE bConfigResidDiffHost;
+    BYTE bConfigSpatialResid8;
+    BYTE bConfigResid8Subtraction;
+    BYTE bConfigSpatialHost8or9Clipping;
+    BYTE bConfigSpatialResidInterleaved;
+    BYTE bConfigIntraResidUnsigned;
 
-  // Accelerator Resid Diff Config
-  BYTE bConfigResidDiffAccelerator;
-  BYTE bConfigHostInverseScan;
-  BYTE bConfigSpecificIDCT;
-  BYTE bConfig4GroupedCoefs;
+    // Accelerator Resid Diff Config
+    BYTE bConfigResidDiffAccelerator;
+    BYTE bConfigHostInverseScan;
+    BYTE bConfigSpecificIDCT;
+    BYTE bConfig4GroupedCoefs;
 } DXVA_ConfigPictureDecode, *LPDXVA_ConfigPictureDecode;
 
 
 /* Picture Decoding Parameters */
 
-typedef struct _DXVA_PictureParameters {
+typedef struct _DXVA_PictureParameters
+{
 
-  WORD wDecodedPictureIndex;
-  WORD wDeblockedPictureIndex;
+    WORD wDecodedPictureIndex;
+    WORD wDeblockedPictureIndex;
 
-  WORD wForwardRefPictureIndex;
-  WORD wBackwardRefPictureIndex;
+    WORD wForwardRefPictureIndex;
+    WORD wBackwardRefPictureIndex;
 
-  WORD wPicWidthInMBminus1;
-  WORD wPicHeightInMBminus1;
+    WORD wPicWidthInMBminus1;
+    WORD wPicHeightInMBminus1;
 
-  BYTE bMacroblockWidthMinus1;
-  BYTE bMacroblockHeightMinus1;
+    BYTE bMacroblockWidthMinus1;
+    BYTE bMacroblockHeightMinus1;
 
-  BYTE bBlockWidthMinus1;
-  BYTE bBlockHeightMinus1;
+    BYTE bBlockWidthMinus1;
+    BYTE bBlockHeightMinus1;
 
-  BYTE bBPPminus1;
+    BYTE bBPPminus1;
 
-  BYTE bPicStructure;
-  BYTE bSecondField;
-  BYTE bPicIntra;
-  BYTE bPicBackwardPrediction;
+    BYTE bPicStructure;
+    BYTE bSecondField;
+    BYTE bPicIntra;
+    BYTE bPicBackwardPrediction;
 
-  BYTE bBidirectionalAveragingMode;
-  BYTE bMVprecisionAndChromaRelation;
-  BYTE bChromaFormat;
+    BYTE bBidirectionalAveragingMode;
+    BYTE bMVprecisionAndChromaRelation;
+    BYTE bChromaFormat;
 
-  BYTE bPicScanFixed;
-  BYTE bPicScanMethod;
-  BYTE bPicReadbackRequests;
+    BYTE bPicScanFixed;
+    BYTE bPicScanMethod;
+    BYTE bPicReadbackRequests;
 
-  BYTE bRcontrol;
-  BYTE bPicSpatialResid8;
-  BYTE bPicOverflowBlocks;
-  BYTE bPicExtrapolation;
+    BYTE bRcontrol;
+    BYTE bPicSpatialResid8;
+    BYTE bPicOverflowBlocks;
+    BYTE bPicExtrapolation;
 
-  BYTE bPicDeblocked;
-  BYTE bPicDeblockConfined;
-  BYTE bPic4MVallowed;
-  BYTE bPicOBMC;
-  BYTE bPicBinPB;
-  BYTE bMV_RPS;
+    BYTE bPicDeblocked;
+    BYTE bPicDeblockConfined;
+    BYTE bPic4MVallowed;
+    BYTE bPicOBMC;
+    BYTE bPicBinPB;
+    BYTE bMV_RPS;
 
-  BYTE bReservedBits;
+    BYTE bReservedBits;
 
-  WORD wBitstreamFcodes;
-  WORD wBitstreamPCEelements;
-  BYTE bBitstreamConcealmentNeed;
-  BYTE bBitstreamConcealmentMethod;
+    WORD wBitstreamFcodes;
+    WORD wBitstreamPCEelements;
+    BYTE bBitstreamConcealmentNeed;
+    BYTE bBitstreamConcealmentMethod;
 
 } DXVA_PictureParameters, *LPDXVA_PictureParameters;
 
@@ -279,23 +283,24 @@ typedef struct _DXVA_PictureParameters {
 
 /* Picture Resampling */
 
-typedef struct _DXVA_PicResample {
+typedef struct _DXVA_PicResample
+{
 
-  WORD  wPicResampleSourcePicIndex;
-  WORD  wPicResampleDestPicIndex;
+    WORD  wPicResampleSourcePicIndex;
+    WORD  wPicResampleDestPicIndex;
 
-  WORD  wPicResampleRcontrol;
-  BYTE  bPicResampleExtrapWidth;
-  BYTE  bPicResampleExtrapHeight;
+    WORD  wPicResampleRcontrol;
+    BYTE  bPicResampleExtrapWidth;
+    BYTE  bPicResampleExtrapHeight;
 
-  DWORD dwPicResampleSourceWidth;
-  DWORD dwPicResampleSourceHeight;
+    DWORD dwPicResampleSourceWidth;
+    DWORD dwPicResampleSourceHeight;
 
-  DWORD dwPicResampleDestWidth;
-  DWORD dwPicResampleDestHeight;
+    DWORD dwPicResampleDestWidth;
+    DWORD dwPicResampleDestHeight;
 
-  DWORD dwPicResampleFullDestWidth;
-  DWORD dwPicResampleFullDestHeight;
+    DWORD dwPicResampleFullDestWidth;
+    DWORD dwPicResampleFullDestHeight;
 
 } DXVA_PicResample, *LPDXVA_PicResample;
 
@@ -333,30 +338,33 @@ typedef struct _DXVA_PicResample {
 
 /* Buffer Description Data */
 
-typedef struct _DXVA_BufferDescription {
-  DWORD dwTypeIndex;
-  DWORD dwBufferIndex;
-  DWORD dwDataOffset;
-  DWORD dwDataSize;
-  DWORD dwFirstMBaddress;
-  DWORD dwNumMBsInBuffer;
-  DWORD dwWidth;
-  DWORD dwHeight;
-  DWORD dwStride;
-  DWORD dwReservedBits;
+typedef struct _DXVA_BufferDescription
+{
+    DWORD dwTypeIndex;
+    DWORD dwBufferIndex;
+    DWORD dwDataOffset;
+    DWORD dwDataSize;
+    DWORD dwFirstMBaddress;
+    DWORD dwNumMBsInBuffer;
+    DWORD dwWidth;
+    DWORD dwHeight;
+    DWORD dwStride;
+    DWORD dwReservedBits;
 } DXVA_BufferDescription, *LPDXVA_BufferDescription;
 
 
 /* Off-Host IDCT Coefficient Data Structures */
 
-typedef struct _DXVA_TCoef4Group {
-  BYTE  TCoefIDX[4];
-  SHORT TCoefValue[4];
+typedef struct _DXVA_TCoef4Group
+{
+    BYTE  TCoefIDX[4];
+    SHORT TCoefValue[4];
 } DXVA_TCoef4Group, *LPDXVA_TCoef4Group;
 
-typedef struct _DXVA_TCoefSingle {
-  WORD  wIndexWithEOB;
-  SHORT TCoefValue;
+typedef struct _DXVA_TCoefSingle
+{
+    WORD  wIndexWithEOB;
+    SHORT TCoefValue;
 } DXVA_TCoefSingle, *LPDXVA_TCoefSingle;
 
 /* Macros for Reading EOB and Index Values */
@@ -399,32 +407,35 @@ typedef DXVA_DeblockingEdgeControl * LPDXVA_DeblockingEdgeControl;
 
 /* Macroblock Control Command Data Structures */
 
-typedef struct _DXVA_MVvalue {
-  SHORT horz, vert;
+typedef struct _DXVA_MVvalue
+{
+    SHORT horz, vert;
 } DXVA_MVvalue, *LPDXVA_MVvalue;
 
 
 /* Inverse Quantization Matrices */
 
-typedef struct _DXVA_QmatrixData {
-  BYTE bNewQmatrix[4]; /* intra Y, inter Y, intra chroma, inter chroma */
-  WORD Qmatrix[4][DXVA_USUAL_BLOCK_WIDTH * DXVA_USUAL_BLOCK_HEIGHT];
+typedef struct _DXVA_QmatrixData
+{
+    BYTE bNewQmatrix[4]; /* intra Y, inter Y, intra chroma, inter chroma */
+    WORD Qmatrix[4][DXVA_USUAL_BLOCK_WIDTH * DXVA_USUAL_BLOCK_HEIGHT];
 } DXVA_QmatrixData, *LPDXVA_QmatrixData;
 
 
 /* Slice Control Buffer Data */
 
-typedef struct _DXVA_SliceInfo {
-  WORD  wHorizontalPosition;
-  WORD  wVerticalPosition;
-  DWORD dwSliceBitsInBuffer;
-  DWORD dwSliceDataLocation;
-  BYTE  bStartCodeBitOffset;
-  BYTE  bReservedBits;
-  WORD  wMBbitOffset;
-  WORD  wNumberMBsInSlice;
-  WORD  wQuantizerScaleCode;
-  WORD  wBadSliceChopping;
+typedef struct _DXVA_SliceInfo
+{
+    WORD  wHorizontalPosition;
+    WORD  wVerticalPosition;
+    DWORD dwSliceBitsInBuffer;
+    DWORD dwSliceDataLocation;
+    BYTE  bStartCodeBitOffset;
+    BYTE  bReservedBits;
+    WORD  wMBbitOffset;
+    WORD  wNumberMBsInSlice;
+    WORD  wQuantizerScaleCode;
+    WORD  wBadSliceChopping;
 } DXVA_SliceInfo, *LPDXVA_SliceInfo;
 
 
@@ -439,61 +450,66 @@ typedef struct _DXVA_SliceInfo {
 
 /* Basic form for I pictures */
 /* Host Residual Differences */
-typedef struct _DXVA_MBctrl_I_HostResidDiff_1 {
-  WORD  wMBaddress;
-  WORD  wMBtype;
-  DWORD dwMB_SNL;
-  WORD  wPatternCode;
-  WORD  wPC_Overflow; /* zero if not overflow format */
-  DWORD dwReservedBits2;
+typedef struct _DXVA_MBctrl_I_HostResidDiff_1
+{
+    WORD  wMBaddress;
+    WORD  wMBtype;
+    DWORD dwMB_SNL;
+    WORD  wPatternCode;
+    WORD  wPC_Overflow; /* zero if not overflow format */
+    DWORD dwReservedBits2;
 } DXVA_MBctrl_I_HostResidDiff_1;
 
 /* Basic form for I pictures */
 /* Off-Host IDCT, 4:2:0 sampling */
-typedef struct _DXVA_MBctrl_I_OffHostIDCT_1 {
-  WORD  wMBaddress;
-  WORD  wMBtype;
-  DWORD dwMB_SNL;
-  WORD  wPatternCode;
-  BYTE  bNumCoef[DXVA_NumBlocksPerMB_420];
+typedef struct _DXVA_MBctrl_I_OffHostIDCT_1
+{
+    WORD  wMBaddress;
+    WORD  wMBtype;
+    DWORD dwMB_SNL;
+    WORD  wPatternCode;
+    BYTE  bNumCoef[DXVA_NumBlocksPerMB_420];
 } DXVA_MBctrl_I_OffHostIDCT_1;
 
 /* Basic form for P and B pictures */
 /* Should also be used for concealment MVs in MPEG-2 I pictures */
 /* Without OBMC, without BinPB and 4MV together, without MV RPS */
 /* Host Residual Differences */
-typedef struct _DXVA_MBctrl_P_HostResidDiff_1 {
-  WORD         wMBaddress;
-  WORD         wMBtype;
-  DWORD        dwMB_SNL;
-  WORD         wPatternCode;
-  WORD         wPC_Overflow; /* zero if not overflow format */
-  DWORD        dwReservedBits2;
-  DXVA_MVvalue MVector[DXVA_NumMV_OBMC_off_BinPBwith4MV_off];
+typedef struct _DXVA_MBctrl_P_HostResidDiff_1
+{
+    WORD         wMBaddress;
+    WORD         wMBtype;
+    DWORD        dwMB_SNL;
+    WORD         wPatternCode;
+    WORD         wPC_Overflow; /* zero if not overflow format */
+    DWORD        dwReservedBits2;
+    DXVA_MVvalue MVector[DXVA_NumMV_OBMC_off_BinPBwith4MV_off];
 } DXVA_MBctrl_P_HostResidDiff_1;
 
 /* Basic form for P and B pictures */
 /* Without OBMC, without BinPB and 4MV together, without MV RPS */
 /* Off-Host IDCT, 4:2:0 sampling */
-typedef struct _DXVA_MBctrl_P_OffHostIDCT_1 {
-  WORD         wMBaddress;
-  WORD         wMBtype;
-  DWORD        dwMB_SNL;
-  WORD         wPatternCode;
-  BYTE         bNumCoef[DXVA_NumBlocksPerMB_420];
-  DXVA_MVvalue MVector[DXVA_NumMV_OBMC_off_BinPBwith4MV_off];
+typedef struct _DXVA_MBctrl_P_OffHostIDCT_1
+{
+    WORD         wMBaddress;
+    WORD         wMBtype;
+    DWORD        dwMB_SNL;
+    WORD         wPatternCode;
+    BYTE         bNumCoef[DXVA_NumBlocksPerMB_420];
+    DXVA_MVvalue MVector[DXVA_NumMV_OBMC_off_BinPBwith4MV_off];
 } DXVA_MBctrl_P_OffHostIDCT_1;
 
 /* How to load alpha blending graphic data */
-typedef struct _DXVA_ConfigAlphaLoad {
+typedef struct _DXVA_ConfigAlphaLoad
+{
 
-  // Operation Indicated
-  DXVA_ConfigQueryOrReplyFunc dwFunction;
+    // Operation Indicated
+    DXVA_ConfigQueryOrReplyFunc dwFunction;
 
-  // Alignment
-  DWORD dwReservedBits[3];
+    // Alignment
+    DWORD dwReservedBits[3];
 
-  BYTE  bConfigDataType;
+    BYTE  bConfigDataType;
 } DXVA_ConfigAlphaLoad, *LPDXVA_ConfigAlphaLoad;
 
 #define DXVA_CONFIG_DATA_TYPE_IA44  0
@@ -503,19 +519,20 @@ typedef struct _DXVA_ConfigAlphaLoad {
 
 
 /* How to combine alpha blending graphic data */
-typedef struct _DXVA_ConfigAlphaCombine {
+typedef struct _DXVA_ConfigAlphaCombine
+{
 
-  // Operation Indicated
-  DXVA_ConfigQueryOrReplyFunc dwFunction;
+    // Operation Indicated
+    DXVA_ConfigQueryOrReplyFunc dwFunction;
 
-  // Alignment
-  DWORD dwReservedBits[3];
+    // Alignment
+    DWORD dwReservedBits[3];
 
-  BYTE  bConfigBlendType;
-  BYTE  bConfigPictureResizing;
-  BYTE  bConfigOnlyUsePicDestRectArea;
-  BYTE  bConfigGraphicResizing;
-  BYTE  bConfigWholePlaneAlpha;
+    BYTE  bConfigBlendType;
+    BYTE  bConfigPictureResizing;
+    BYTE  bConfigOnlyUsePicDestRectArea;
+    BYTE  bConfigGraphicResizing;
+    BYTE  bConfigWholePlaneAlpha;
 
 } DXVA_ConfigAlphaCombine, *LPDXVA_ConfigAlphaCombine;
 
@@ -525,11 +542,12 @@ typedef struct _DXVA_ConfigAlphaCombine {
 
 /* AYUV sample for 16-entry YUV palette or graphic surface */
 
-typedef struct _DXVA_AYUVsample2 {
-  BYTE bCrValue;
-  BYTE bCbValue;
-  BYTE bY_Value;
-  BYTE bSampleAlpha8;
+typedef struct _DXVA_AYUVsample2
+{
+    BYTE bCrValue;
+    BYTE bCbValue;
+    BYTE bY_Value;
+    BYTE bSampleAlpha8;
 } DXVA_AYUVsample2, *LPDXVA_AYUVsample2;
 
 /* Macros for IA44 alpha blending surface samples */
@@ -559,11 +577,12 @@ typedef BYTE DXVA_AI44sample, *LPDXVA_AI44sample;
 
 /* Highlight data structure */
 
-typedef struct _DXVA_Highlight {
-  WORD wHighlightActive;
-  WORD wHighlightIndices;
-  WORD wHighlightAlphas;
-  RECT HighlightRect;
+typedef struct _DXVA_Highlight
+{
+    WORD wHighlightActive;
+    WORD wHighlightIndices;
+    WORD wHighlightAlphas;
+    RECT HighlightRect;
 } DXVA_Highlight, *LPDXVA_Highlight;
 
 typedef BYTE DXVA_DPXD,  *LPDXVA_DPXD;
@@ -571,17 +590,18 @@ typedef WORD DXVA_DCCMD, *LPDXVA_DCCMD;
 
 /* Alpha blend combination */
 
-typedef struct _DXVA_BlendCombination {
-  WORD wPictureSourceIndex;
-  WORD wBlendedDestinationIndex;
-  RECT PictureSourceRect16thPel;
-  RECT PictureDestinationRect;
-  RECT GraphicSourceRect;
-  RECT GraphicDestinationRect;
-  WORD wBlendDelay;
-  BYTE bBlendOn;
-  BYTE bWholePlaneAlpha;
-  DXVA_AYUVsample2 OutsideYUVcolor;
+typedef struct _DXVA_BlendCombination
+{
+    WORD wPictureSourceIndex;
+    WORD wBlendedDestinationIndex;
+    RECT PictureSourceRect16thPel;
+    RECT PictureDestinationRect;
+    RECT GraphicSourceRect;
+    RECT GraphicDestinationRect;
+    WORD wBlendDelay;
+    BYTE bBlendOn;
+    BYTE bWholePlaneAlpha;
+    DXVA_AYUVsample2 OutsideYUVcolor;
 } DXVA_BlendCombination, *LPDXVA_BlendCombination;
 
 
@@ -589,16 +609,16 @@ typedef struct _DXVA_BlendCombination {
 
 
 typedef DXVA_MBctrl_I_HostResidDiff_1 *
-       LPDXVA_MBctrl_I_HostResidDiff_1;
+LPDXVA_MBctrl_I_HostResidDiff_1;
 
 typedef DXVA_MBctrl_I_OffHostIDCT_1 *
-       LPDXVA_MBctrl_I_OffHostIDCT_1;
+LPDXVA_MBctrl_I_OffHostIDCT_1;
 
 typedef DXVA_MBctrl_P_HostResidDiff_1 *
-       LPDXVA_MBctrl_P_HostResidDiff_1;
+LPDXVA_MBctrl_P_HostResidDiff_1;
 
 typedef DXVA_MBctrl_P_OffHostIDCT_1 *
-       LPDXVA_MBctrl_P_OffHostIDCT_1;
+LPDXVA_MBctrl_P_OffHostIDCT_1;
 
 
 #pragma pack(pop)
@@ -687,7 +707,8 @@ typedef DXVA_MBctrl_P_OffHostIDCT_1 *
 #ifndef __DIRECTX_VA_SAMPLEFORMAT__
 #define __DIRECTX_VA_SAMPLEFORMAT__
 
-typedef enum _DXVA_SampleFormat {
+typedef enum _DXVA_SampleFormat
+{
     DXVA_SampleFormatMask = 0xFF,   // 8 bits used for DXVA Sample format
     DXVA_SampleUnknown = 0,
     DXVA_SamplePreviousFrame = 1,
@@ -815,15 +836,16 @@ typedef struct _DXVA_ExtendedFormat
 typedef LONGLONG REFERENCE_TIME;
 
 DEFINE_GUID(DXVA_DeinterlaceBobDevice,
-    0x335aa36e,0x7884,0x43a4,0x9c,0x91,0x7f,0x87,0xfa,0xf3,0xe3,0x7e);
+            0x335aa36e,0x7884,0x43a4,0x9c,0x91,0x7f,0x87,0xfa,0xf3,0xe3,0x7e);
 
 DEFINE_GUID(DXVA_DeinterlaceContainerDevice,
-    0x0e85cb93,0x3046,0x4ff0,0xae,0xcc,0xd5,0x8c,0xb5,0xf0,0x35,0xfd);
+            0x0e85cb93,0x3046,0x4ff0,0xae,0xcc,0xd5,0x8c,0xb5,0xf0,0x35,0xfd);
 
 
 #if (DIRECT3D_VERSION < 0x0800) || !defined(DIRECT3D_VERSION)
 typedef DWORD D3DFORMAT;
-enum {
+enum
+{
     D3DPOOL_DEFAULT                 = 0,
     D3DPOOL_MANAGED                 = 1,
     D3DPOOL_SYSTEMMEM               = 2,
@@ -840,12 +862,14 @@ enum {
 // -------------------------------------------------------------------------
 //
 
-typedef struct _DXVA_Frequency {
+typedef struct _DXVA_Frequency
+{
     DWORD Numerator;
     DWORD Denominator;
 } DXVA_Frequency;
 
-typedef struct _DXVA_VideoDesc {
+typedef struct _DXVA_VideoDesc
+{
     DWORD               Size;
     DWORD               SampleWidth;
     DWORD               SampleHeight;
@@ -855,7 +879,8 @@ typedef struct _DXVA_VideoDesc {
     DXVA_Frequency      OutputFrameFreq;
 } DXVA_VideoDesc, *LPDXVA_VideoDesc;
 
-typedef enum _DXVA_VideoProcessCaps {
+typedef enum _DXVA_VideoProcessCaps
+{
     DXVA_VideoProcess_None                  = 0x0000,
     DXVA_VideoProcess_YUV2RGB               = 0x0001,
     DXVA_VideoProcess_StretchX              = 0x0002,
@@ -868,7 +893,8 @@ typedef enum _DXVA_VideoProcessCaps {
     DXVA_VideoProcess_AlphaBlendExtended    = 0x0100
 } DXVA_VideoProcessCaps;
 
-typedef enum _DXVA_DeinterlaceTech {
+typedef enum _DXVA_DeinterlaceTech
+{
 
     // the algorithm is unknown or proprietary
     DXVA_DeinterlaceTech_Unknown                = 0x0000,
@@ -914,7 +940,8 @@ typedef enum _DXVA_DeinterlaceTech {
 } DXVA_DeinterlaceTech;
 
 
-typedef struct _DXVA_VideoSample {
+typedef struct _DXVA_VideoSample
+{
     REFERENCE_TIME      rtStart;
     REFERENCE_TIME      rtEnd;
     DXVA_SampleFormat   SampleFormat;   // only lower 8 bits used
@@ -928,7 +955,8 @@ typedef struct _DXVA_VideoSample {
 // -------------------------------------------------------------------------
 //
 
-typedef enum _DXVA_SampleFlags {
+typedef enum _DXVA_SampleFlags
+{
     DXVA_SampleFlagsMask = DXVABit(3)|DXVABit(2)|DXVABit(1)|DXVABit(0),
 
     DXVA_SampleFlag_Palette_Changed         = 0x0001,
@@ -937,7 +965,8 @@ typedef enum _DXVA_SampleFlags {
     DXVA_SampleFlag_ColorData_Changed       = 0x0008,
 } DXVA_SampleFlags;
 
-typedef enum _DXVA_DestinationFlags {
+typedef enum _DXVA_DestinationFlags
+{
     DXVA_DestinationFlagMask = DXVABit(3)|DXVABit(2)|DXVABit(1)|DXVABit(0),
 
     DXVA_DestinationFlag_Background_Changed = 0x0001,
@@ -949,7 +978,8 @@ typedef enum _DXVA_DestinationFlags {
 
 
 
-typedef struct _DXVA_VideoSample2 {
+typedef struct _DXVA_VideoSample2
+{
 #ifdef _WIN64
     DWORD               Size;
     DWORD               Reserved;
@@ -964,7 +994,8 @@ typedef struct _DXVA_VideoSample2 {
     DXVA_AYUVsample2    Palette[16];
 } DXVA_VideoSample2, *LPDXVA_VideoSample2;
 
-typedef struct _DXVA_DeinterlaceCaps {
+typedef struct _DXVA_DeinterlaceCaps
+{
     DWORD                   Size;
     DWORD                   NumPreviousOutputFrames;
     DWORD                   InputPool;
@@ -991,8 +1022,9 @@ typedef struct _DXVA_DeinterlaceCaps {
 //
 // These structures are used for thunking 32 bit DeinterlaceBltEx calls on
 // 64 bit drivers.
-// 
-typedef struct _DXVA_VideoSample32 {
+//
+typedef struct _DXVA_VideoSample32
+{
     REFERENCE_TIME      rtStart;
     REFERENCE_TIME      rtEnd;
     DWORD               SampleFormat;
@@ -1001,11 +1033,12 @@ typedef struct _DXVA_VideoSample32 {
     RECT                rcSrc;
     RECT                rcDst;
     DXVA_AYUVsample2    Palette[16];
-    // DWORD Pad; 
+    // DWORD Pad;
     // 4 bytes of padding added by the compiler to align the struct to 8 bytes.
 } DXVA_VideoSample32;
- 
-typedef struct _DXVA_DeinterlaceBltEx32 {
+
+typedef struct _DXVA_DeinterlaceBltEx32
+{
     DWORD               Size;
     DXVA_AYUVsample2    BackgroundColor;
     RECT                rcTarget;
@@ -1019,7 +1052,8 @@ typedef struct _DXVA_DeinterlaceBltEx32 {
 #endif
 
 
-typedef struct _DXVA_DeinterlaceBlt {
+typedef struct _DXVA_DeinterlaceBlt
+{
     DWORD               Size;
     DWORD               Reserved;
     REFERENCE_TIME      rtTarget;
@@ -1035,7 +1069,8 @@ typedef struct _DXVA_DeinterlaceBlt {
 // lpOuput => NULL /* not currently used */
 
 
-typedef struct _DXVA_DeinterlaceBltEx {
+typedef struct _DXVA_DeinterlaceBltEx
+{
     DWORD               Size;
     DXVA_AYUVsample2    BackgroundColor;
     RECT                rcTarget;
@@ -1053,7 +1088,8 @@ typedef struct _DXVA_DeinterlaceBltEx {
 
 
 #define MAX_DEINTERLACE_DEVICE_GUIDS                    32
-typedef struct _DXVA_DeinterlaceQueryAvailableModes {
+typedef struct _DXVA_DeinterlaceQueryAvailableModes
+{
     DWORD               Size;
     DWORD               NumGuids;
     GUID                Guids[MAX_DEINTERLACE_DEVICE_GUIDS];
@@ -1064,7 +1100,8 @@ typedef struct _DXVA_DeinterlaceQueryAvailableModes {
 // lpOuput => DXVA_DeinterlaceQueryAvailableModes*
 
 
-typedef struct _DXVA_DeinterlaceQueryModeCaps {
+typedef struct _DXVA_DeinterlaceQueryModeCaps
+{
     DWORD               Size;
     GUID                Guid;
     DXVA_VideoDesc      VideoDesc;
@@ -1089,9 +1126,10 @@ typedef struct _DXVA_DeinterlaceQueryModeCaps {
 #define __DIRECTX_VA_PROCAMPCONTROL__
 
 DEFINE_GUID(DXVA_ProcAmpControlDevice,
-    0x9f200913,0x2ffd,0x4056,0x9f,0x1e,0xe1,0xb5,0x08,0xf2,0x2d,0xcf);
+            0x9f200913,0x2ffd,0x4056,0x9f,0x1e,0xe1,0xb5,0x08,0xf2,0x2d,0xcf);
 
-typedef enum _DXVA_ProcAmpControlProp {
+typedef enum _DXVA_ProcAmpControlProp
+{
     DXVA_ProcAmp_None       = 0x0000,
     DXVA_ProcAmp_Brightness = 0x0001,
     DXVA_ProcAmp_Contrast   = 0x0002,
@@ -1100,7 +1138,8 @@ typedef enum _DXVA_ProcAmpControlProp {
 } DXVA_ProcAmpControlProp;
 
 
-typedef struct _DXVA_ProcAmpControlCaps {
+typedef struct _DXVA_ProcAmpControlCaps
+{
     DWORD                   Size;
     DWORD                   InputPool;
     D3DFORMAT               d3dOutputFormat;
@@ -1113,13 +1152,15 @@ typedef struct _DXVA_ProcAmpControlCaps {
 // lpOuput => DXVA_ProcAmpControlCaps*
 
 
-typedef struct _DXVA_ProcAmpControlQueryRange {
+typedef struct _DXVA_ProcAmpControlQueryRange
+{
     DWORD                   Size;
     DXVA_ProcAmpControlProp ProcAmpControlProp;
     DXVA_VideoDesc          VideoDesc;
 } DXVA_ProcAmpControlQueryRange, *LPDXVA_ProcAmpControlQueryRange;
 
-typedef struct _DXVA_VideoPropertyRange {
+typedef struct _DXVA_VideoPropertyRange
+{
     FLOAT   MinValue;
     FLOAT   MaxValue;
     FLOAT   DefaultValue;
@@ -1131,7 +1172,8 @@ typedef struct _DXVA_VideoPropertyRange {
 // lpOuput => DXVA_VideoPropertyRange*
 
 
-typedef struct _DXVA_ProcAmpControlBlt {
+typedef struct _DXVA_ProcAmpControlBlt
+{
     DWORD               Size;
     RECT                DstRect;
     RECT                SrcRect;
@@ -1163,7 +1205,7 @@ typedef struct _DXVA_ProcAmpControlBlt {
 
 
 DEFINE_GUID(DXVA_COPPDevice,
-    0xd2457add,0x8999,0x45ed,0x8a,0x8a,0xd1,0xaa,0x04,0x7b,0xa4,0xd5);
+            0xd2457add,0x8999,0x45ed,0x8a,0x8a,0xd1,0xaa,0x04,0x7b,0xa4,0xd5);
 
 
 // -------------------------------------------------------------------------
@@ -1185,7 +1227,8 @@ DEFINE_GUID(DXVA_COPPDevice,
 // -------------------------------------------------------------------------
 // COPPSequenceStart
 // -------------------------------------------------------------------------
-typedef struct _DXVA_COPPSignature {
+typedef struct _DXVA_COPPSignature
+{
     UCHAR   Signature[256];
 } DXVA_COPPSignature, *LPDXVA_COPPSignature;
 
@@ -1198,7 +1241,8 @@ typedef struct _DXVA_COPPSignature {
 // -------------------------------------------------------------------------
 // COPPCommand
 // -------------------------------------------------------------------------
-typedef struct _DXVA_COPPCommand {
+typedef struct _DXVA_COPPCommand
+{
     GUID    macKDI;             //   16 bytes
     GUID    guidCommandID;      //   16 bytes
     ULONG   dwSequence;         //    4 bytes
@@ -1212,9 +1256,10 @@ typedef struct _DXVA_COPPCommand {
 
 
 DEFINE_GUID(DXVA_COPPSetProtectionLevel,
-    0x9bb9327c,0x4eb5,0x4727,0x9f,0x00,0xb4,0x2b,0x09,0x19,0xc0,0xda);
+            0x9bb9327c,0x4eb5,0x4727,0x9f,0x00,0xb4,0x2b,0x09,0x19,0xc0,0xda);
 
-typedef struct _DXVA_COPPSetProtectionLevelCmdData {
+typedef struct _DXVA_COPPSetProtectionLevelCmdData
+{
     ULONG   ProtType;
     ULONG   ProtLevel;
     ULONG   ExtendedInfoChangeMask;
@@ -1224,7 +1269,8 @@ typedef struct _DXVA_COPPSetProtectionLevelCmdData {
 
 // Set the HDCP protection level - (0 - 1 DWORD, 4 bytes)
 
-typedef enum _COPP_HDCP_Protection_Level {
+typedef enum _COPP_HDCP_Protection_Level
+{
     COPP_HDCP_Level0    = 0,
     COPP_HDCP_LevelMin  = COPP_HDCP_Level0,
     COPP_HDCP_Level1    = 1,
@@ -1232,7 +1278,8 @@ typedef enum _COPP_HDCP_Protection_Level {
     COPP_HDCP_ForceDWORD = 0x7fffffff
 } COPP_HDCP_Protection_Level;
 
-typedef enum _COPP_CGMSA_Protection_Level {
+typedef enum _COPP_CGMSA_Protection_Level
+{
     COPP_CGMSA_Disabled = 0,
     COPP_CGMSA_LevelMin = COPP_CGMSA_Disabled,
     COPP_CGMSA_CopyFreely = 1,
@@ -1244,7 +1291,8 @@ typedef enum _COPP_CGMSA_Protection_Level {
     COPP_CGMSA_ForceDWORD = 0x7fffffff
 } COPP_CGMSA_Protection_Level;
 
-typedef enum _COPP_ACP_Protection_Level {
+typedef enum _COPP_ACP_Protection_Level
+{
     COPP_ACP_Level0     = 0,
     COPP_ACP_LevelMin   = COPP_ACP_Level0,
     COPP_ACP_Level1     = 1,
@@ -1262,10 +1310,11 @@ typedef enum _COPP_ACP_Protection_Level {
 // Bit flags of possible protection types.  Note that it is possible to apply
 // different protection settings to a single connector.
 //
-enum {
+enum
+{
     COPP_ProtectionType_Unknown      = 0x80000000,
     COPP_ProtectionType_None         = 0x00000000,
-    COPP_ProtectionType_HDCP         = 0x00000001, 	
+    COPP_ProtectionType_HDCP         = 0x00000001,
     COPP_ProtectionType_ACP          = 0x00000002,
     COPP_ProtectionType_CGMSA        = 0x00000004,
     COPP_ProtectionType_Mask         = 0x80000007,
@@ -1273,9 +1322,10 @@ enum {
 };
 
 DEFINE_GUID(DXVA_COPPSetSignaling,
-    0x9a631a5, 0xd684, 0x4c60, 0x8e, 0x4d, 0xd3, 0xbb, 0xf, 0xb, 0xe3, 0xee);
+            0x9a631a5, 0xd684, 0x4c60, 0x8e, 0x4d, 0xd3, 0xbb, 0xf, 0xb, 0xe3, 0xee);
 
-typedef struct _DXVA_COPPSetSignalingCmdData {
+typedef struct _DXVA_COPPSetSignalingCmdData
+{
     ULONG   ActiveTVProtectionStandard;           // See COPP_TVProtectionStandard
     ULONG   AspectRatioChangeMask1;
     ULONG   AspectRatioData1;                     // See COPP_ImageAspectRatio_EN300294 for ETSI EN 300 294 values
@@ -1289,7 +1339,8 @@ typedef struct _DXVA_COPPSetSignalingCmdData {
 } DXVA_COPPSetSignalingCmdData;
 
 // Add format enum and data enum
-typedef enum _COPP_TVProtectionStandard {
+typedef enum _COPP_TVProtectionStandard
+{
     COPP_ProtectionStandard_Unknown                         = 0x80000000,
     COPP_ProtectionStandard_None                            = 0x00000000,
     COPP_ProtectionStandard_IEC61880_525i                   = 0x00000001,
@@ -1313,7 +1364,8 @@ typedef enum _COPP_TVProtectionStandard {
 
 #define COPP_ImageAspectRatio_EN300294_Mask                 0x00000007
 
-typedef enum _COPP_ImageAspectRatio_EN300294 {
+typedef enum _COPP_ImageAspectRatio_EN300294
+{
     COPP_AspectRatio_EN300294_FullFormat4by3                = 0,
     COPP_AspectRatio_EN300294_Box14by9Center                = 1,
     COPP_AspectRatio_EN300294_Box14by9Top                   = 2,
@@ -1329,7 +1381,8 @@ typedef enum _COPP_ImageAspectRatio_EN300294 {
 // -------------------------------------------------------------------------
 // COPPQueryStatus
 // -------------------------------------------------------------------------
-typedef struct _DXVA_COPPStatusInput {
+typedef struct _DXVA_COPPStatusInput
+{
     GUID    rApp;               //   16 bytes
     GUID    guidStatusRequestID;//   16 bytes
     ULONG   dwSequence;         //    4 bytes
@@ -1337,20 +1390,23 @@ typedef struct _DXVA_COPPStatusInput {
     UCHAR   StatusData[4056];   // 4056 bytes (4056+4+4+16+16 = 4096)
 } DXVA_COPPStatusInput, *LPDXVA_COPPStatusInput;
 
-typedef struct _DXVA_COPPStatusOutput {
+typedef struct _DXVA_COPPStatusOutput
+{
     GUID    macKDI;             //   16 bytes
     ULONG   cbSizeData;         //    4 bytes
     UCHAR   COPPStatus[4076];   // 4076 bytes (4076+16+4 = 4096)
 } DXVA_COPPStatusOutput, *LPDXVA_COPPStatusOutput;
 
-typedef enum _COPP_StatusFlags {
+typedef enum _COPP_StatusFlags
+{
     COPP_StatusNormal           = 0x00,
     COPP_LinkLost               = 0x01,
     COPP_RenegotiationRequired  = 0x02,
     COPP_StatusFlagsReserved    = 0xFFFFFFFC
 } COPP_StatusFlags;
 
-typedef struct _DXVA_COPPStatusData {
+typedef struct _DXVA_COPPStatusData
+{
     GUID    rApp;
     ULONG   dwFlags;    // See COPP_StatusFlags above
     ULONG   dwData;
@@ -1358,7 +1414,8 @@ typedef struct _DXVA_COPPStatusData {
     ULONG   ExtendedInfoData;
 } DXVA_COPPStatusData;
 
-typedef struct _DXVA_COPPStatusDisplayData {
+typedef struct _DXVA_COPPStatusDisplayData
+{
     GUID    rApp;
     ULONG   dwFlags;    // See COPP_StatusFlags above
     ULONG   DisplayWidth;
@@ -1369,12 +1426,14 @@ typedef struct _DXVA_COPPStatusDisplayData {
     ULONG   FreqDenominator;
 } DXVA_COPPStatusDisplayData;
 
-typedef enum _COPP_StatusHDCPFlags {
+typedef enum _COPP_StatusHDCPFlags
+{
     COPP_HDCPRepeater       = 0x01,
     COPP_HDCPFlagsReserved  = 0xFFFFFFFE
 } COPP_StatusHDCPFlags;
 
-typedef struct _DXVA_COPPStatusHDCPKeyData {
+typedef struct _DXVA_COPPStatusHDCPKeyData
+{
     GUID    rApp;
     ULONG   dwFlags;        // See COPP_StatusFlags above
     ULONG   dwHDCPFlags;    // See COPP_StatusHDCPFlags above
@@ -1393,9 +1452,10 @@ typedef struct _DXVA_COPPStatusHDCPKeyData {
 // Status GUID and enumerations
 //
 DEFINE_GUID(DXVA_COPPQueryConnectorType,
-      0x81d0bfd5,0x6afe,0x48c2,0x99,0xc0,0x95,0xa0,0x8f,0x97,0xc5,0xda);
+            0x81d0bfd5,0x6afe,0x48c2,0x99,0xc0,0x95,0xa0,0x8f,0x97,0xc5,0xda);
 
-typedef enum _COPP_ConnectorType {
+typedef enum _COPP_ConnectorType
+{
     COPP_ConnectorType_Unknown = -1,
     COPP_ConnectorType_VGA = 0,
     COPP_ConnectorType_SVideo = 1,
@@ -1411,24 +1471,25 @@ typedef enum _COPP_ConnectorType {
 } COPP_ConnectorType;
 
 DEFINE_GUID(DXVA_COPPQueryProtectionType,
-    0x38f2a801,0x9a6c,0x48bb,0x91,0x07,0xb6,0x69,0x6e,0x6f,0x17,0x97);
+            0x38f2a801,0x9a6c,0x48bb,0x91,0x07,0xb6,0x69,0x6e,0x6f,0x17,0x97);
 
 DEFINE_GUID(DXVA_COPPQueryLocalProtectionLevel,
-    0xb2075857,0x3eda,0x4d5d,0x88,0xdb,0x74,0x8f,0x8c,0x1a,0x05,0x49);
+            0xb2075857,0x3eda,0x4d5d,0x88,0xdb,0x74,0x8f,0x8c,0x1a,0x05,0x49);
 
 DEFINE_GUID(DXVA_COPPQueryGlobalProtectionLevel,
-    0x1957210a,0x7766,0x452a,0xb9,0x9a,0xd2,0x7a,0xed,0x54,0xf0,0x3a);
+            0x1957210a,0x7766,0x452a,0xb9,0x9a,0xd2,0x7a,0xed,0x54,0xf0,0x3a);
 
 DEFINE_GUID(DXVA_COPPQueryDisplayData,
-    0xd7bf1ba3,0xad13,0x4f8e,0xaf,0x98,0x0d,0xcb,0x3c,0xa2,0x04,0xcc);
+            0xd7bf1ba3,0xad13,0x4f8e,0xaf,0x98,0x0d,0xcb,0x3c,0xa2,0x04,0xcc);
 
 DEFINE_GUID(DXVA_COPPQueryHDCPKeyData,
-    0xdb59d74, 0xa992, 0x492e, 0xa0, 0xbd, 0xc2, 0x3f, 0xda, 0x56, 0x4e, 0x0);
+            0xdb59d74, 0xa992, 0x492e, 0xa0, 0xbd, 0xc2, 0x3f, 0xda, 0x56, 0x4e, 0x0);
 
 DEFINE_GUID(DXVA_COPPQueryBusData,
-    0xc6f4d673, 0x6174, 0x4184, 0x8e, 0x35, 0xf6, 0xdb, 0x52, 0x0, 0xbc, 0xba);
+            0xc6f4d673, 0x6174, 0x4184, 0x8e, 0x35, 0xf6, 0xdb, 0x52, 0x0, 0xbc, 0xba);
 
-typedef enum _COPP_BusType {
+typedef enum _COPP_BusType
+{
     COPP_BusType_Unknown    = 0,
     COPP_BusType_PCI        = 1,
     COPP_BusType_PCIX       = 2,
@@ -1439,9 +1500,10 @@ typedef enum _COPP_BusType {
 } COPP_BusType;
 
 DEFINE_GUID(DXVA_COPPQuerySignaling,
-    0x6629a591, 0x3b79, 0x4cf3, 0x92, 0x4a, 0x11, 0xe8, 0xe7, 0x81, 0x16, 0x71);
+            0x6629a591, 0x3b79, 0x4cf3, 0x92, 0x4a, 0x11, 0xe8, 0xe7, 0x81, 0x16, 0x71);
 
-typedef struct _DXVA_COPPStatusSignalingCmdData {
+typedef struct _DXVA_COPPStatusSignalingCmdData
+{
     GUID    rApp;
     ULONG   dwFlags;                                // See COPP_StatusFlags above
     ULONG   AvailableTVProtectionStandards;         // See COPP_TVProtectionStandard

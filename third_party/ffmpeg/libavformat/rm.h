@@ -1,4 +1,4 @@
-/*
+﻿/*
  * "Real" compatible muxer and demuxer.
  * Copyright (c) 2000, 2001 Fabrice Bellard
  *

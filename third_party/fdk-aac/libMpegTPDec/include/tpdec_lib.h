@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -100,29 +100,30 @@ amm-info@iis.fraunhofer.de
                                                  assure that it fulfills the requirements of the
                                                  supported transport format(s).                    */
 
-typedef enum {
-  TRANSPORTDEC_OK = 0,             /*!< All fine.                                                  */
+typedef enum
+{
+    TRANSPORTDEC_OK = 0,             /*!< All fine.                                                  */
 
-  /* Synchronization errors. Wait for new input data and try again. */
-  tpdec_sync_error_start   = 0x100,
-  TRANSPORTDEC_NOT_ENOUGH_BITS,    /*!< Out of bits. Provide more bits and try again.              */
-  TRANSPORTDEC_SYNC_ERROR,         /*!< No sync was found or sync got lost. Keep trying.           */
-  tpdec_sync_error_end,
+    /* Synchronization errors. Wait for new input data and try again. */
+    tpdec_sync_error_start   = 0x100,
+    TRANSPORTDEC_NOT_ENOUGH_BITS,    /*!< Out of bits. Provide more bits and try again.              */
+    TRANSPORTDEC_SYNC_ERROR,         /*!< No sync was found or sync got lost. Keep trying.           */
+    tpdec_sync_error_end,
 
-  /* Decode errors. Mostly caused due to bit errors. */
-  tpdec_decode_error_start = 0x400,
-  TRANSPORTDEC_PARSE_ERROR,        /*!< Bitstream data showed inconsistencies (wrong syntax).      */
-  TRANSPORTDEC_UNSUPPORTED_FORMAT, /*!< Unsupported format or feature found in the bitstream data. */
-  TRANSPORTDEC_CRC_ERROR,          /*!< CRC error encountered in bitstream data.                   */
-  tpdec_decode_error_end,
+    /* Decode errors. Mostly caused due to bit errors. */
+    tpdec_decode_error_start = 0x400,
+    TRANSPORTDEC_PARSE_ERROR,        /*!< Bitstream data showed inconsistencies (wrong syntax).      */
+    TRANSPORTDEC_UNSUPPORTED_FORMAT, /*!< Unsupported format or feature found in the bitstream data. */
+    TRANSPORTDEC_CRC_ERROR,          /*!< CRC error encountered in bitstream data.                   */
+    tpdec_decode_error_end,
 
-  /* Fatal errors. Stop immediately on one of these errors! */
-  tpdec_fatal_error_start  = 0x200,
-  TRANSPORTDEC_UNKOWN_ERROR,       /*!< An unknown error occured.                                  */
-  TRANSPORTDEC_INVALID_PARAMETER,  /*!< An invalid parameter was passed to a function.             */
-  TRANSPORTDEC_NEED_TO_RESTART,    /*!< The decoder needs to be restarted, since the requiered
+    /* Fatal errors. Stop immediately on one of these errors! */
+    tpdec_fatal_error_start  = 0x200,
+    TRANSPORTDEC_UNKOWN_ERROR,       /*!< An unknown error occured.                                  */
+    TRANSPORTDEC_INVALID_PARAMETER,  /*!< An invalid parameter was passed to a function.             */
+    TRANSPORTDEC_NEED_TO_RESTART,    /*!< The decoder needs to be restarted, since the requiered
                                         configuration change cannot be performed.                  */
-  tpdec_fatal_error_end
+    tpdec_fatal_error_end
 
 } TRANSPORTDEC_ERROR;
 
@@ -136,13 +137,14 @@ typedef enum {
 /**
  * \brief Parameter identifiers for transportDec_SetParam()
  */
-typedef enum {
-  TPDEC_PARAM_MINIMIZE_DELAY = 1,        /** Delay minimization strategy. 0: none, 1: discard as many frames as possible. */
-  TPDEC_PARAM_EARLY_CONFIG,              /** Enable early config discovery. */
-  TPDEC_PARAM_IGNORE_BUFFERFULLNESS,     /** Ignore buffer fullness. */
-  TPDEC_PARAM_SET_BITRATE,               /** Set average bit rate for bit stream interruption frame misses estimation. */
-  TPDEC_PARAM_RESET,                     /** Reset transport decoder instance status. */
-  TPDEC_PARAM_BURST_PERIOD               /** Set data reception burst period in mili seconds. */
+typedef enum
+{
+    TPDEC_PARAM_MINIMIZE_DELAY = 1,        /** Delay minimization strategy. 0: none, 1: discard as many frames as possible. */
+    TPDEC_PARAM_EARLY_CONFIG,              /** Enable early config discovery. */
+    TPDEC_PARAM_IGNORE_BUFFERFULLNESS,     /** Ignore buffer fullness. */
+    TPDEC_PARAM_SET_BITRATE,               /** Set average bit rate for bit stream interruption frame misses estimation. */
+    TPDEC_PARAM_RESET,                     /** Reset transport decoder instance status. */
+    TPDEC_PARAM_BURST_PERIOD               /** Set data reception burst period in mili seconds. */
 } TPDEC_PARAM;
 
 /* ISO/IEC 14496-3 4.4.1.1 Table 4.2 Program config element */
@@ -227,17 +229,17 @@ void CProgramConfig_GetDefault ( CProgramConfig *pPce,
  *                    if it does not.
  */
 int CProgramConfig_LookupElement(
-        CProgramConfig *pPce,
-        UINT            channelConfig,
-        const UINT      tag,
-        const UINT      channelIdx,
-        UCHAR           chMapping[],
-        AUDIO_CHANNEL_TYPE chType[],
-        UCHAR           chIndex[],
-        UCHAR          *elMapping,
-        MP4_ELEMENT_ID  elList[],
-        MP4_ELEMENT_ID  elType
-        );
+    CProgramConfig *pPce,
+    UINT            channelConfig,
+    const UINT      tag,
+    const UINT      channelIdx,
+    UCHAR           chMapping[],
+    AUDIO_CHANNEL_TYPE chType[],
+    UCHAR           chIndex[],
+    UCHAR          *elMapping,
+    MP4_ELEMENT_ID  elList[],
+    MP4_ELEMENT_ID  elType
+);
 
 /**
  * \brief             Get table of elements in canonical order from a
@@ -273,18 +275,19 @@ void AudioSpecificConfig_Init(CSAudioSpecificConfig *pAsc);
  * \return  Total element count including all SCE, CPE and LFE.
  */
 TRANSPORTDEC_ERROR AudioSpecificConfig_Parse(
-        CSAudioSpecificConfig *pAsc,
-        HANDLE_FDK_BITSTREAM hBs,
-        int fExplicitBackwardCompatible,
-        CSTpCallBacks *cb
-        );
+    CSAudioSpecificConfig *pAsc,
+    HANDLE_FDK_BITSTREAM hBs,
+    int fExplicitBackwardCompatible,
+    CSTpCallBacks *cb
+);
 
 /* CELP stuff */
-enum {
-  MPE     = 0,
-  RPE     = 1,
-  fs8KHz  = 0,
-  fs16KHz = 1
+enum
+{
+    MPE     = 0,
+    RPE     = 1,
+    fs8KHz  = 0,
+    fs16KHz = 1
 };
 
 /* Defintion of flags that can be passed to transportDecOpen() */
@@ -312,9 +315,9 @@ typedef struct TRANSPORTDEC *HANDLE_TRANSPORTDEC;
  * \return        Error code.
  */
 TRANSPORTDEC_ERROR transportDec_OutOfBandConfig( const HANDLE_TRANSPORTDEC hTp,
-                                                 UCHAR              *conf,
-                                                 const UINT          length,
-                                                 const UINT          layer );
+        UCHAR              *conf,
+        const UINT          length,
+        const UINT          layer );
 
 /**
  * \brief Open Transport medium for reading.
@@ -336,9 +339,9 @@ HANDLE_TRANSPORTDEC transportDec_Open( TRANSPORT_TYPE transportDecFmt,
  * \return               0 on success.
  */
 int transportDec_RegisterAscCallback (
-        HANDLE_TRANSPORTDEC hTp,
-        const cbUpdateConfig_t cbUpdateConfig,
-        void* user_data );
+    HANDLE_TRANSPORTDEC hTp,
+    const cbUpdateConfig_t cbUpdateConfig,
+    void* user_data );
 
 /**
  * \brief                Register SSC parser callback.
@@ -348,16 +351,16 @@ int transportDec_RegisterAscCallback (
  * \return               0 on success.
  */
 int transportDec_RegisterSscCallback (
-        HANDLE_TRANSPORTDEC hTp,
-        const cbSsc_t cbSscParse,
-        void* user_data );
+    HANDLE_TRANSPORTDEC hTp,
+    const cbSsc_t cbSscParse,
+    void* user_data );
 
 /**
  * \brief                Register SBR header parser callback.
  * \param hTp            Handle of transport decoder.
  * \param cbUpdateConfig Pointer to a callback function to handle SBR header parsing.
  * \param user_data      void pointer for user data passed to the callback as first parameter.
- * \return               0 on success. 
+ * \return               0 on success.
  */
 int transportDec_RegisterSbrCallback( HANDLE_TRANSPORTDEC hTpDec, const cbSbr_t cbSbr, void* user_data);
 
@@ -382,11 +385,11 @@ int transportDec_RegisterSbrCallback( HANDLE_TRANSPORTDEC hTpDec, const cbSbr_t 
  * \return            Error code.
  */
 TRANSPORTDEC_ERROR transportDec_FillData(
-        const HANDLE_TRANSPORTDEC  hTp,
-        UCHAR                     *pBuffer,
-        const UINT                 bufferSize,
-        UINT                      *pBytesValid,
-        const INT                  layer );
+    const HANDLE_TRANSPORTDEC  hTp,
+    UCHAR                     *pBuffer,
+    const UINT                 bufferSize,
+    UINT                      *pBytesValid,
+    const INT                  layer );
 
 /**
  * \brief      Get transportDec bitstream handle.
@@ -451,14 +454,14 @@ INT transportDec_GetAuBitsTotal( const HANDLE_TRANSPORTDEC hTp, const UINT layer
 TRANSPORTDEC_ERROR transportDec_EndAccessUnit ( const HANDLE_TRANSPORTDEC hTp );
 
 /**
- * \brief      Obtain the amount of missing access units if applicable in case of 
+ * \brief      Obtain the amount of missing access units if applicable in case of
  *             a bit stream synchronization error. Each time transportDec_ReadAccessUnit()
  *             returns TRANSPORTDEC_SYNC_ERROR this function can be called to retrieve an estimate
  *             of the amount of missing access units. This works only in case of constant average
  *             bit rate (has to be known) and if the parameter TPDEC_PARAM_SET_BITRATE has been set
  *             accordingly.
  * \param hTp  Transport Handle.
- * \param pNAccessUnits pointer to a memory location where the estimated lost frame count will be stored into.      
+ * \param pNAccessUnits pointer to a memory location where the estimated lost frame count will be stored into.
  * \return     Error code.
  */
 TRANSPORTDEC_ERROR transportDec_GetMissingAccessUnitCount ( INT *pNAccessUnits, HANDLE_TRANSPORTDEC hTp );
@@ -472,8 +475,8 @@ TRANSPORTDEC_ERROR transportDec_GetMissingAccessUnitCount ( INT *pNAccessUnits, 
  * \return       Error code.
  */
 TRANSPORTDEC_ERROR transportDec_SetParam ( const HANDLE_TRANSPORTDEC hTp,
-                                           const TPDEC_PARAM         param,
-                                           const INT                 value );
+        const TPDEC_PARAM         param,
+        const INT                 value );
 
 /**
  * \brief        Get number of subframes (for LATM or ADTS)

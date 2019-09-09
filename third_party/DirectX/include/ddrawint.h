@@ -1,4 +1,4 @@
-/*++
+﻿/*++
 
 Copyright (c) Microsoft Corporation. All Rights Reserved.
 
@@ -114,9 +114,9 @@ typedef ULONG_PTR FLATPTR;
 #define D3DFORMAT_OP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH 0x00000080L
 
 // This format can be used as a render target if the current display mode
-// is the same depth if the alpha channel is ignored. e.g. if the device 
+// is the same depth if the alpha channel is ignored. e.g. if the device
 // can render to A8R8G8B8 when the display mode is X8R8G8B8, then the
-// format op list entry for A8R8G8B8 should have this cap. 
+// format op list entry for A8R8G8B8 should have this cap.
 #define D3DFORMAT_OP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET 0x00000100L
 
 // This format contains DirectDraw support (including Flip).  This flag
@@ -124,7 +124,7 @@ typedef ULONG_PTR FLATPTR;
 #define D3DFORMAT_OP_DISPLAYMODE                0x00000400L
 
 // The rasterizer can support some level of Direct3D support in this format
-// and implies that the driver can create a Context in this mode (for some 
+// and implies that the driver can create a Context in this mode (for some
 // render target format).  When this flag is set, the D3DFORMAT_OP_DISPLAYMODE
 // flag must also be set.
 #define D3DFORMAT_OP_3DACCELERATION             0x00000800L
@@ -172,7 +172,7 @@ typedef ULONG_PTR FLATPTR;
 #define D3DFORMAT_OP_AUTOGENMIPMAP              0x00400000L
 
 // Indicates that this format cannot be used by vertex texture sampler
-#define D3DFORMAT_OP_VERTEXTEXTURE              0x00800000L 
+#define D3DFORMAT_OP_VERTEXTEXTURE              0x00800000L
 
 // Indicates that this format supports neither texture coordinate wrap modes, nor mipmapping
 #define D3DFORMAT_OP_NOTEXCOORDWRAPNORMIP		0x01000000L
@@ -384,7 +384,8 @@ typedef DD_CALLBACKS *PDD_CALLBACKS;
 
 typedef DWORD   (APIENTRY *PDD_GETAVAILDRIVERMEMORY)(PDD_GETAVAILDRIVERMEMORYDATA);
 
-typedef struct _DD_MISCELLANEOUSCALLBACKS {
+typedef struct _DD_MISCELLANEOUSCALLBACKS
+{
     DWORD                               dwSize;
     DWORD                               dwFlags;
     PDD_GETAVAILDRIVERMEMORY            GetAvailDriverMemory;
@@ -401,7 +402,8 @@ typedef DWORD   (APIENTRY *PDD_CREATESURFACEEX)(PDD_CREATESURFACEEXDATA);
 typedef DWORD   (APIENTRY *PDD_GETDRIVERSTATE)(PDD_GETDRIVERSTATEDATA);
 typedef DWORD   (APIENTRY *PDD_DESTROYDDLOCAL)(PDD_DESTROYDDLOCALDATA);
 
-typedef struct _DD_MISCELLANEOUS2CALLBACKS {
+typedef struct _DD_MISCELLANEOUS2CALLBACKS
+{
     DWORD                               dwSize;
     DWORD                               dwFlags;
     PDD_ALPHABLT                        AlphaBlt;
@@ -426,7 +428,8 @@ typedef DWORD   (APIENTRY *PDD_FREEDRIVERMEMORY)(PDD_FREEDRIVERMEMORYDATA);
 typedef DWORD   (APIENTRY *PDD_SETEXCLUSIVEMODE)(PDD_SETEXCLUSIVEMODEDATA);
 typedef DWORD   (APIENTRY *PDD_FLIPTOGDISURFACE)(PDD_FLIPTOGDISURFACEDATA);
 
-typedef struct _DD_NTCALLBACKS {
+typedef struct _DD_NTCALLBACKS
+{
     DWORD                   dwSize;
     DWORD                   dwFlags;
     PDD_FREEDRIVERMEMORY    FreeDriverMemory;
@@ -733,13 +736,13 @@ typedef struct _DD_SURFACE_INT
  */
 typedef struct _DD_SURFACE_GLOBAL
 {
-    union 
+    union
     {
         DWORD                   dwBlockSizeY;   // block size that display driver requested (return)
         LONG                    lSlicePitch;    // slice pitch for volume textures
     };
 
-    union 
+    union
     {
         LPVIDEOMEMORY           lpVidMemHeap;   // heap vidmem was alloc'ed from
         DWORD                   dwBlockSizeX;   // block size that display driver requested (return)
@@ -918,11 +921,11 @@ typedef struct _DD_D3DBUFCALLBACKS
 /*
  * NT friendly names
  */
-#define DDHAL_D3DBUFCB32_CANCREATED3DBUF    DDHAL_EXEBUFCB32_CANCREATEEXEBUF    
-#define DDHAL_D3DBUFCB32_CREATED3DBUF       DDHAL_EXEBUFCB32_CREATEEXEBUF       
-#define DDHAL_D3DBUFCB32_DESTROYD3DBUF      DDHAL_EXEBUFCB32_DESTROYEXEBUF      
-#define DDHAL_D3DBUFCB32_LOCKD3DBUF         DDHAL_EXEBUFCB32_LOCKEXEBUF         
-#define DDHAL_D3DBUFCB32_UNLOCKD3DBUF       DDHAL_EXEBUFCB32_UNLOCKEXEBUF       
+#define DDHAL_D3DBUFCB32_CANCREATED3DBUF    DDHAL_EXEBUFCB32_CANCREATEEXEBUF
+#define DDHAL_D3DBUFCB32_CREATED3DBUF       DDHAL_EXEBUFCB32_CREATEEXEBUF
+#define DDHAL_D3DBUFCB32_DESTROYD3DBUF      DDHAL_EXEBUFCB32_DESTROYEXEBUF
+#define DDHAL_D3DBUFCB32_LOCKD3DBUF         DDHAL_EXEBUFCB32_LOCKEXEBUF
+#define DDHAL_D3DBUFCB32_UNLOCKD3DBUF       DDHAL_EXEBUFCB32_UNLOCKEXEBUF
 
 
 /*
@@ -952,7 +955,7 @@ typedef struct _DD_HALINFO
 
 #define DDHALINFO_GETDRIVERINFOSET      0x00000004l     // indicates that GetDriverInfo is set
 #define DDHALINFO_GETDRIVERINFO2        0x00000008l     // indicates driver support GetDriverInfo2 variant
-                                                        // of GetDriverInfo. New for DX 8.0
+// of GetDriverInfo. New for DX 8.0
 
 
 /*
@@ -1035,7 +1038,7 @@ typedef struct _DD_MORESURFACECAPS
     } ddsExtendedHeapRestrictions[1];
 } DD_MORESURFACECAPS;
 
-// for DX7, we check each mode in the driver if it supports 
+// for DX7, we check each mode in the driver if it supports
 // Stereo, driver returns DD_OK if mode is ok for stereo
 typedef struct _DD_STEREOMODE
 {
@@ -1132,13 +1135,13 @@ typedef struct _DD_BLTDATA
     VOID*                       Blt;            // Unused: Win95 compatibility
     BOOL                        IsClipped;      // clipped blt?
     RECTL                       rOrigDest;      // unclipped dest rect
-                                                // (only valid if IsClipped)
+    // (only valid if IsClipped)
     RECTL                       rOrigSrc;       // unclipped src rect
-                                                // (only valid if IsClipped)
+    // (only valid if IsClipped)
     DWORD                       dwRectCnt;      // count of dest rects
-                                                // (only valid if IsClipped)
+    // (only valid if IsClipped)
     LPRECT                      prDestRects;    // array of dest rects
-                                                // (only valid if IsClipped)
+    // (only valid if IsClipped)
     DWORD                       dwAFlags;       // DDABLT_ flags (for AlphaBlt DDI)
     DDARGB                      ddargbScaleFactors;  // ARGB scaling factors (AlphaBlt)
 } DD_BLTDATA;
@@ -1666,7 +1669,8 @@ typedef struct _DD_COLORCONTROLDATA
  *
  ***************************************************************************/
 
-typedef struct _DD_GETDRIVERINFODATA {
+typedef struct _DD_GETDRIVERINFODATA
+{
 
     // Input fields filled in by DirectDraw
 
@@ -1959,7 +1963,7 @@ typedef struct _DD_CREATESURFACEEXDATA
     DWORD                       dwFlags;
     PDD_DIRECTDRAW_LOCAL        lpDDLcl;        // driver struct
     PDD_SURFACE_LOCAL           lpDDSLcl;       // created surface
-                                                // objects
+    // objects
     HRESULT                     ddRVal;         // return value
 } DD_CREATESURFACEEXDATA;
 
@@ -1968,15 +1972,15 @@ typedef struct _DD_CREATESURFACEEXDATA
 typedef struct _DD_GETDRIVERSTATEDATA
 {
     DWORD                       dwFlags;        // Flags to indicate the data
-                                                // required
+    // required
     union
     {
         PDD_DIRECTDRAW_GLOBAL       lpDD;           // driver struct
         DWORD_PTR                   dwhContext;     // d3d context
     };
     LPDWORD                     lpdwStates;     // ptr to the state data
-                                                // to be filled in by the
-                                                // driver
+    // to be filled in by the
+    // driver
     DWORD                       dwLength;
     HRESULT                     ddRVal;         // return value
 } DD_GETDRIVERSTATEDATA;

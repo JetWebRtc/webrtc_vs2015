@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA compatible decoder
  * Copyright (C) 2004 Gildas Bazin
  * Copyright (C) 2004 Benjamin Zores
@@ -64,7 +64,8 @@
 
 #define DCA_BUFFER_PADDING_SIZE   1024
 
-enum DCAExtensionMask {
+enum DCAExtensionMask
+{
     DCA_EXT_CORE       = 0x001, ///< core in core substream
     DCA_EXT_XXCH       = 0x002, ///< XXCh channels extension in core substream
     DCA_EXT_X96        = 0x004, ///< 96/24 extension in core substream
@@ -77,7 +78,8 @@ enum DCAExtensionMask {
     DCA_EXT_EXSS_XLL   = 0x200, ///< lossless extension in ExSS
 };
 
-typedef struct XllChSetSubHeader {
+typedef struct XllChSetSubHeader
+{
     int channels;               ///< number of channels in channel set, at most 16
     int residual_encode;        ///< residual channel encoding
     int bit_resolution;         ///< input sample bit-width
@@ -111,28 +113,31 @@ typedef struct XllChSetSubHeader {
     uint8_t fixed_order[DCA_XLL_FBANDS_MAX][DCA_XLL_CHANNELS_MAX];
     /* m_pnLPCReflCoeffsQInd, unsigned version */
     uint8_t lpc_refl_coeffs_q_ind[DCA_XLL_FBANDS_MAX]
-                                 [DCA_XLL_CHANNELS_MAX][DCA_XLL_AORDER_MAX];
+    [DCA_XLL_CHANNELS_MAX][DCA_XLL_AORDER_MAX];
 
     int lsb_fsize[DCA_XLL_FBANDS_MAX];
     int8_t scalable_lsbs[DCA_XLL_FBANDS_MAX][DCA_XLL_CHANNELS_MAX];
     int8_t bit_width_adj_per_ch[DCA_XLL_FBANDS_MAX][DCA_XLL_CHANNELS_MAX];
 } XllChSetSubHeader;
 
-typedef struct XllNavi {
+typedef struct XllNavi
+{
     GetBitContext gb;  // Context for parsing the data segments
     unsigned band_size[DCA_XLL_FBANDS_MAX];
     unsigned segment_size[DCA_XLL_FBANDS_MAX][DCA_XLL_SEGMENTS_MAX];
     unsigned chset_size[DCA_XLL_FBANDS_MAX][DCA_XLL_SEGMENTS_MAX][DCA_XLL_CHSETS_MAX];
 } XllNavi;
 
-typedef struct QMF64_table {
+typedef struct QMF64_table
+{
     float dct4_coeff[32][32];
     float dct2_coeff[32][32];
     float rcos[32];
     float rsin[32];
 } QMF64_table;
 
-typedef struct DCAContext {
+typedef struct DCAContext
+{
     const AVClass *class;       ///< class for AVOptions
     AVCodecContext *avctx;
     /* Frame header */
@@ -292,7 +297,7 @@ extern av_export const uint32_t avpriv_dca_sample_rates[16];
  * Convert bitstream to one representation based on sync marker
  */
 int avpriv_dca_convert_bitstream(const uint8_t *src, int src_size, uint8_t *dst,
-                             int max_size);
+                                 int max_size);
 
 int ff_dca_xbr_parse_frame(DCAContext *s);
 int ff_dca_xxch_decode_frame(DCAContext *s);

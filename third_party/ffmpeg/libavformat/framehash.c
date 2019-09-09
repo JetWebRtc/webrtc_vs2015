@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common functions for the frame{crc,md5} muxers
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@ int ff_framehash_write_header(AVFormatContext *s)
 
     if (s->nb_streams && !(s->flags & AVFMT_FLAG_BITEXACT))
         avio_printf(s->pb, "#software: %s\n", LIBAVFORMAT_IDENT);
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *st = s->streams[i];
         avio_printf(s->pb, "#tb %d: %d/%d\n", i, st->time_base.num, st->time_base.den);
         avio_flush(s->pb);

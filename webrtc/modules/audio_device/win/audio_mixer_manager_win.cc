@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,7 +25,8 @@
 #define  WAVE_MAPPED_kDefaultCommunicationDevice   0x0010
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 // ============================================================================
 //                             CONSTRUCTION/DESTRUCTION
@@ -204,15 +205,15 @@ int32_t AudioMixerManager::EnumerateSpeakers()
         {
             GetDestinationLineInfo(mixId, destId, destLine);
             if ((destLine.cControls == 0)                         ||    // no controls or
-                (destLine.cConnections == 0)                      ||    // no source lines or
-                (destLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED) ||    // disconnected or
-                !(destLine.fdwLine & MIXERLINE_LINEF_ACTIVE))           // inactive
+                    (destLine.cConnections == 0)                      ||    // no source lines or
+                    (destLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED) ||    // disconnected or
+                    !(destLine.fdwLine & MIXERLINE_LINEF_ACTIVE))           // inactive
             {
                 // don't store this line ID since it will not be possible to control
                 continue;
             }
             if ((destLine.dwComponentType == MIXERLINE_COMPONENTTYPE_DST_SPEAKERS) ||
-                (destLine.dwComponentType == MIXERLINE_COMPONENTTYPE_DST_HEADPHONES))
+                    (destLine.dwComponentType == MIXERLINE_COMPONENTTYPE_DST_HEADPHONES))
             {
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, "found valid speaker/headphone (name: %s, ID: %u)", WideToUTF8(destLine.szName), destLine.dwLineID);
                 _speakerState[mixId].dwLineID = destLine.dwLineID;
@@ -292,8 +293,8 @@ int32_t AudioMixerManager::EnumerateMicrophones()
             GetDestinationLineInfo(mixId, destId, destLine);
 
             if ((destLine.cConnections == 0)                      ||    // no source lines or
-                (destLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED) ||    // disconnected or
-               !(destLine.fdwLine & MIXERLINE_LINEF_ACTIVE))            // inactive
+                    (destLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED) ||    // disconnected or
+                    !(destLine.fdwLine & MIXERLINE_LINEF_ACTIVE))            // inactive
             {
                 // Don't store this line ID since there are no sources connected to this destination.
                 // Compare with the speaker side where we also exclude lines with no controls.
@@ -310,66 +311,66 @@ int32_t AudioMixerManager::EnumerateMicrophones()
                 if (!GetAllLineControls(mixId, destLine, controlArray))
                 {
                     // This destination has no controls. We must try to control
-                    // one of its sources instead. 
+                    // one of its sources instead.
                     // This is a rare state but has been found for some
                     // Logitech USB headsets.
 
-                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, 
-                    "this destination has no controls => must control source");
+                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+                                 "this destination has no controls => must control source");
                     for (DWORD sourceId = 0; sourceId < destLine.cConnections; sourceId++)
                     {
-                        GetSourceLineInfo(mixId, destId, sourceId, sourceLine, false); 
-                        if (sourceLine.dwComponentType == 
-                            MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE)
+                        GetSourceLineInfo(mixId, destId, sourceId, sourceLine, false);
+                        if (sourceLine.dwComponentType ==
+                                MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE)
                         {
-                            WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, 
-                            "found microphone source ( name: %s, ID: %u)", 
-                            WideToUTF8(sourceLine.szName), sourceId);
+                            WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+                                         "found microphone source ( name: %s, ID: %u)",
+                                         WideToUTF8(sourceLine.szName), sourceId);
                             GetAllLineControls(mixId, sourceLine, controlArray, false);
-                            // scan the controls for this source and search for volume, 
+                            // scan the controls for this source and search for volume,
                             // mute and on/off (<=> boost) controls
                             for (UINT sc = 0; sc < sourceLine.cControls; sc++)
                             {
-                                if (controlArray[sc].dwControlType == 
-                                    MIXERCONTROL_CONTROLTYPE_VOLUME)
+                                if (controlArray[sc].dwControlType ==
+                                        MIXERCONTROL_CONTROLTYPE_VOLUME)
                                 {
                                     // store this volume control
-                                    _microphoneState[mixId].dwVolumeControlID = 
-                                    controlArray[sc].dwControlID;
+                                    _microphoneState[mixId].dwVolumeControlID =
+                                        controlArray[sc].dwControlID;
                                     _microphoneState[mixId].volumeControlIsValid = true;
-                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, 
-                                    "found volume control (name: %s, ID: %u)", 
-                                    WideToUTF8(controlArray[sc].szName), 
-                                    controlArray[sc].dwControlID);
+                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+                                                 "found volume control (name: %s, ID: %u)",
+                                                 WideToUTF8(controlArray[sc].szName),
+                                                 controlArray[sc].dwControlID);
                                 }
-                                else if (controlArray[sc].dwControlType == 
+                                else if (controlArray[sc].dwControlType ==
                                          MIXERCONTROL_CONTROLTYPE_MUTE)
                                 {
                                     // store this mute control
                                     _microphoneState[mixId].dwMuteControlID =
-                                    controlArray[sc].dwControlID;
+                                        controlArray[sc].dwControlID;
                                     _microphoneState[mixId].muteControlIsValid = true;
-                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, 
-                                    "found mute control (name: %s, ID: %u)", 
-                                    WideToUTF8(controlArray[sc].szName), 
-                                    controlArray[sc].dwControlID);
+                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+                                                 "found mute control (name: %s, ID: %u)",
+                                                 WideToUTF8(controlArray[sc].szName),
+                                                 controlArray[sc].dwControlID);
                                 }
-                                else if (controlArray[sc].dwControlType == 
+                                else if (controlArray[sc].dwControlType ==
                                          MIXERCONTROL_CONTROLTYPE_ONOFF ||
-                                         controlArray[sc].dwControlType == 
+                                         controlArray[sc].dwControlType ==
                                          MIXERCONTROL_CONTROLTYPE_LOUDNESS)
                                 {
                                     // store this on/off control (most likely a Boost control)
-                                    _microphoneState[mixId].dwOnOffControlID = 
-                                    controlArray[sc].dwControlID;
+                                    _microphoneState[mixId].dwOnOffControlID =
+                                        controlArray[sc].dwControlID;
                                     _microphoneState[mixId].onOffControlIsValid = true;
-                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id, 
-                                    "found on/off control (name: %s, ID: %u)", 
-                                    WideToUTF8(controlArray[sc].szName), 
-                                    controlArray[sc].dwControlID);
-                                 }
-                             }
-                         }
+                                    WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
+                                                 "found on/off control (name: %s, ID: %u)",
+                                                 WideToUTF8(controlArray[sc].szName),
+                                                 controlArray[sc].dwControlID);
+                                }
+                            }
+                        }
                     }
 
                     break;
@@ -404,7 +405,7 @@ int32_t AudioMixerManager::EnumerateMicrophones()
                 //                     - add more...
 
                 if ((destLine.cControls == 1) &&
-                    (controlArray[0].dwControlType == MIXERCONTROL_CONTROLTYPE_MUX))
+                        (controlArray[0].dwControlType == MIXERCONTROL_CONTROLTYPE_MUX))
                 {
                     // Case 1: MUX control detected  => locate the selected source and its volume control
                     //         Note that, the selecion might not be a microphone. A warning is given for
@@ -425,9 +426,9 @@ int32_t AudioMixerManager::EnumerateMicrophones()
                         // condition 3: disconnected
                         // condition 4: inactive
                         if (!GetSourceLineInfo(mixId, destId, selection, sourceLine)  ||
-                           (sourceLine.cControls == 0)                                ||
-                           (sourceLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED)        ||
-                          !(sourceLine.fdwLine & MIXERLINE_LINEF_ACTIVE))               
+                                (sourceLine.cControls == 0)                                ||
+                                (sourceLine.fdwLine & MIXERLINE_LINEF_DISCONNECTED)        ||
+                                !(sourceLine.fdwLine & MIXERLINE_LINEF_ACTIVE))
                         {
                             continue;
                         }
@@ -483,7 +484,7 @@ int32_t AudioMixerManager::EnumerateMicrophones()
 
                     GetSourceLineInfo(mixId, destId, 0, sourceLine);
                     if ((sourceLine.dwComponentType == MIXERLINE_COMPONENTTYPE_SRC_MICROPHONE) &&
-                        (sourceLine.cControls > 0))
+                            (sourceLine.cControls > 0))
                     {
                         // Case 3: same as Case 2 below but we have also detected a Microphone source
                         //         with its own controls. So far, I have not been able to find any device
@@ -610,7 +611,7 @@ int32_t AudioMixerManager::OpenSpeaker(AudioDeviceModule::WindowsDeviceType devi
     {
         // check if it is possible to open the default communication device (supported on Windows 7)
         res = waveOutOpen(NULL, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL |
-            WAVE_MAPPED_kDefaultCommunicationDevice | WAVE_FORMAT_QUERY);
+                          WAVE_MAPPED_kDefaultCommunicationDevice | WAVE_FORMAT_QUERY);
         if (MMSYSERR_NOERROR == res)
         {
             // if so, open the default communication device for real
@@ -622,7 +623,7 @@ int32_t AudioMixerManager::OpenSpeaker(AudioDeviceModule::WindowsDeviceType devi
             // use default device since default communication device was not avaliable
             res = waveOutOpen(&hWaveOut, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL);
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
-                "unable to open default communication device => using default instead");
+                         "unable to open default communication device => using default instead");
         }
     }
     else if (device == AudioDeviceModule::kDefaultDevice)
@@ -832,7 +833,7 @@ int32_t AudioMixerManager::OpenMicrophone(AudioDeviceModule::WindowsDeviceType d
     {
         // check if it is possible to open the default communication device (supported on Windows 7)
         res = waveInOpen(NULL, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL |
-            WAVE_MAPPED_kDefaultCommunicationDevice | WAVE_FORMAT_QUERY);
+                         WAVE_MAPPED_kDefaultCommunicationDevice | WAVE_FORMAT_QUERY);
         if (MMSYSERR_NOERROR == res)
         {
             // if so, open the default communication device for real
@@ -844,7 +845,7 @@ int32_t AudioMixerManager::OpenMicrophone(AudioDeviceModule::WindowsDeviceType d
             // use default device since default communication device was not avaliable
             res = waveInOpen(&hWaveIn, WAVE_MAPPER, &waveFormat, 0, 0, CALLBACK_NULL);
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
-                "unable to open default communication device => using default instead");
+                         "unable to open default communication device => using default instead");
         }
     }
     else if (device == AudioDeviceModule::kDefaultDevice)
@@ -1949,7 +1950,7 @@ bool AudioMixerManager::GetControlDetails(UINT mixId, MIXERCONTROL& controlArray
     controlDetails.dwControlID    = controlArray.dwControlID;       // control identifier
     controlDetails.cChannels      = 1;                              // we need to set values as if they were uniform
     controlDetails.cMultipleItems = controlArray.cMultipleItems;    // only nonzero for CONTROLF_MULTIPLE controls
-                                                                    // can e.g. happen for CONTROLTYPE_MUX
+    // can e.g. happen for CONTROLTYPE_MUX
     if (controlDetails.cMultipleItems > MAX_NUMBER_OF_MULTIPLE_ITEMS)
     {
         WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id, "cMultipleItems > %d", MAX_NUMBER_OF_MULTIPLE_ITEMS);
@@ -2704,7 +2705,8 @@ void AudioMixerManager::TraceWaveOutError(MMRESULT error) const
 //  WideToUTF8
 // ----------------------------------------------------------------------------
 
-char* AudioMixerManager::WideToUTF8(const TCHAR* src) const {
+char* AudioMixerManager::WideToUTF8(const TCHAR* src) const
+{
 #ifdef UNICODE
     const size_t kStrLen = sizeof(_str);
     memset(_str, 0, kStrLen);

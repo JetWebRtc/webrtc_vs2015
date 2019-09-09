@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTSP definitions
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -34,7 +34,8 @@
 /**
  * Network layer over which RTP/etc packet data will be transported.
  */
-enum RTSPLowerTransport {
+enum RTSPLowerTransport
+{
     RTSP_LOWER_TRANSPORT_UDP = 0,           /**< UDP/unicast */
     RTSP_LOWER_TRANSPORT_TCP = 1,           /**< TCP; interleaved in RTSP */
     RTSP_LOWER_TRANSPORT_UDP_MULTICAST = 2, /**< UDP/multicast */
@@ -53,7 +54,8 @@ enum RTSPLowerTransport {
  * commonly send RDT (although they can sometimes send RTP as well),
  * whereas most others will send RTP.
  */
-enum RTSPTransport {
+enum RTSPTransport
+{
     RTSP_TRANSPORT_RTP, /**< Standards-compliant RTP */
     RTSP_TRANSPORT_RDT, /**< Realmedia Data Transport */
     RTSP_TRANSPORT_RAW, /**< Raw data (over UDP) */
@@ -64,7 +66,8 @@ enum RTSPTransport {
  * Transport mode for the RTSP data. This may be plain, or
  * tunneled, which is done over HTTP.
  */
-enum RTSPControlTransport {
+enum RTSPControlTransport
+{
     RTSP_MODE_PLAIN,   /**< Normal RTSP */
     RTSP_MODE_TUNNEL   /**< RTSP over HTTP (tunneling) */
 };
@@ -85,7 +88,8 @@ enum RTSPControlTransport {
  * client_port=1000-1001;server_port=1800-1801") and described in separate
  * RTSPTransportFields.
  */
-typedef struct RTSPTransportField {
+typedef struct RTSPTransportField
+{
     /** interleave ids, if TCP transport; each TCP/RTSP data packet starts
      * with a '$', stream length and stream ID. If the stream ID is within
      * the range of this interleaved_min-max, then the packet belongs to
@@ -124,7 +128,8 @@ typedef struct RTSPTransportField {
 /**
  * This describes the server response to each RTSP command.
  */
-typedef struct RTSPMessageHeader {
+typedef struct RTSPMessageHeader
+{
     /** length of the data following this header */
     int content_length;
 
@@ -192,7 +197,8 @@ typedef struct RTSPMessageHeader {
  * setup-but-not-receiving (PAUSED). State can be changed in applications
  * by calling av_read_play/pause().
  */
-enum RTSPClientState {
+enum RTSPClientState
+{
     RTSP_STATE_IDLE,    /**< not initialized */
     RTSP_STATE_STREAMING, /**< initialized and sending/receiving data */
     RTSP_STATE_PAUSED,  /**< initialized, but not receiving data */
@@ -203,7 +209,8 @@ enum RTSPClientState {
  * Identify particular servers that require special handling, such as
  * standards-incompliant "Transport:" lines in the SETUP request.
  */
-enum RTSPServerType {
+enum RTSPServerType
+{
     RTSP_SERVER_RTP,  /**< Standards-compliant RTP-server */
     RTSP_SERVER_REAL, /**< Realmedia-style server */
     RTSP_SERVER_WMS,  /**< Windows Media server */
@@ -215,7 +222,8 @@ enum RTSPServerType {
  *
  * @todo Use AVIOContext instead of URLContext
  */
-typedef struct RTSPState {
+typedef struct RTSPState
+{
     const AVClass *class;             /**< Class for private options. */
     URLContext *rtsp_hd; /* RTSP TCP connection handle */
 
@@ -419,7 +427,8 @@ typedef struct RTSPState {
                                           address of received packets. */
 #define RTSP_FLAG_PREFER_TCP  0x10   /**< Try RTP via TCP first if possible. */
 
-typedef struct RTSPSource {
+typedef struct RTSPSource
+{
     char addr[128]; /**< Source-specific multicast include source IP address (from SDP content) */
 } RTSPSource;
 
@@ -429,7 +438,8 @@ typedef struct RTSPSource {
  * AVStreams. In this case, each AVStream in this set has similar content
  * (but different codec/bitrate).
  */
-typedef struct RTSPStream {
+typedef struct RTSPStream
+{
     URLContext *rtp_handle;   /**< RTP stream handle (if UDP) */
     void *transport_priv; /**< RTP/RDT parse context if input, RTP AVFormatContext if output */
 

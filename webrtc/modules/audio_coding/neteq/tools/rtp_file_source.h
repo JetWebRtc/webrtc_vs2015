@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,44 +21,47 @@
 #include "webrtc/modules/audio_coding/neteq/tools/packet_source.h"
 #include "webrtc/modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class RtpHeaderParser;
 
-namespace test {
+namespace test
+{
 
 class RtpFileReader;
 
-class RtpFileSource : public PacketSource {
- public:
-  // Creates an RtpFileSource reading from |file_name|. If the file cannot be
-  // opened, or has the wrong format, NULL will be returned.
-  static RtpFileSource* Create(const std::string& file_name);
+class RtpFileSource : public PacketSource
+{
+public:
+    // Creates an RtpFileSource reading from |file_name|. If the file cannot be
+    // opened, or has the wrong format, NULL will be returned.
+    static RtpFileSource* Create(const std::string& file_name);
 
-  // Checks whether a files is a valid RTP dump or PCAP (Wireshark) file.
-  static bool ValidRtpDump(const std::string& file_name);
-  static bool ValidPcap(const std::string& file_name);
+    // Checks whether a files is a valid RTP dump or PCAP (Wireshark) file.
+    static bool ValidRtpDump(const std::string& file_name);
+    static bool ValidPcap(const std::string& file_name);
 
-  virtual ~RtpFileSource();
+    virtual ~RtpFileSource();
 
-  // Registers an RTP header extension and binds it to |id|.
-  virtual bool RegisterRtpHeaderExtension(RTPExtensionType type, uint8_t id);
+    // Registers an RTP header extension and binds it to |id|.
+    virtual bool RegisterRtpHeaderExtension(RTPExtensionType type, uint8_t id);
 
-  std::unique_ptr<Packet> NextPacket() override;
+    std::unique_ptr<Packet> NextPacket() override;
 
- private:
-  static const int kFirstLineLength = 40;
-  static const int kRtpFileHeaderSize = 4 + 4 + 4 + 2 + 2;
-  static const size_t kPacketHeaderSize = 8;
+private:
+    static const int kFirstLineLength = 40;
+    static const int kRtpFileHeaderSize = 4 + 4 + 4 + 2 + 2;
+    static const size_t kPacketHeaderSize = 8;
 
-  RtpFileSource();
+    RtpFileSource();
 
-  bool OpenFile(const std::string& file_name);
+    bool OpenFile(const std::string& file_name);
 
-  std::unique_ptr<RtpFileReader> rtp_reader_;
-  std::unique_ptr<RtpHeaderParser> parser_;
+    std::unique_ptr<RtpFileReader> rtp_reader_;
+    std::unique_ptr<RtpHeaderParser> parser_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RtpFileSource);
+    RTC_DISALLOW_COPY_AND_ASSIGN(RtpFileSource);
 };
 
 }  // namespace test

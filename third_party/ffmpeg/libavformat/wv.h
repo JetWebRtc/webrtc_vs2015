@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WavPack shared functions
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 // specs say that maximum block size is 1Mb
 #define WV_BLOCK_LIMIT 1048576
 
-typedef struct WvHeader {
+typedef struct WvHeader
+{
     uint32_t blocksize;     //< size of the block data (excluding the header)
     uint16_t version;       //< bitstream version
     uint32_t total_samples; //< total number of samples in the stream

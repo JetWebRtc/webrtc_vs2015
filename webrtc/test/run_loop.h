@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,8 +10,10 @@
 #ifndef WEBRTC_TEST_RUN_LOOP_H_
 #define WEBRTC_TEST_RUN_LOOP_H_
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Blocks until the user presses enter.
 void PressEnterToContinue();

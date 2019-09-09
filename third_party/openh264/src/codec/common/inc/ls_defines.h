@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -38,14 +38,17 @@
 
 #ifdef __GNUC__
 
-struct tagUnaligned_64 {
-  uint64_t l;
+struct tagUnaligned_64
+{
+    uint64_t l;
 } __attribute__ ((packed)) __attribute__ ((may_alias));
-struct tagUnaligned_32 {
-  uint32_t l;
+struct tagUnaligned_32
+{
+    uint32_t l;
 } __attribute__ ((packed)) __attribute__ ((may_alias));
-struct tagUnaligned_16 {
-  uint16_t l;
+struct tagUnaligned_16
+{
+    uint16_t l;
 } __attribute__ ((packed)) __attribute__ ((may_alias));
 
 #define LD16(a) (((struct tagUnaligned_16 *) (a))->l)

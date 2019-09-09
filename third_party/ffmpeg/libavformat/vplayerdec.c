@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } VPlayerContext;
 
@@ -47,7 +48,8 @@ static int64_t read_ts(char **line)
     int hh, mm, ss, ms, len;
 
     if (sscanf(*line, "%d:%d:%d.%d%c%n",
-               &hh, &mm, &ss, &ms, &c, &len) >= 5) {
+               &hh, &mm, &ss, &ms, &c, &len) >= 5)
+    {
         *line += len;
         return (hh*3600LL + mm*60LL + ss) * 100LL + ms;
     }
@@ -65,7 +67,8 @@ static int vplayer_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_VPLAYER;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         char *p = line;
         const int64_t pos = avio_tell(s->pb);
@@ -78,7 +81,8 @@ static int vplayer_read_header(AVFormatContext *s)
         line[strcspn(line, "\r\n")] = 0;
 
         pts_start = read_ts(&p);
-        if (pts_start != AV_NOPTS_VALUE) {
+        if (pts_start != AV_NOPTS_VALUE)
+        {
             AVPacket *sub;
 
             sub = ff_subtitles_queue_insert(&vplayer->q, p, strlen(p), 0);
@@ -115,7 +119,8 @@ static int vplayer_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_vplayer_demuxer = {
+AVInputFormat ff_vplayer_demuxer =
+{
     .name           = "vplayer",
     .long_name      = NULL_IF_CONFIG_SMALL("VPlayer subtitles"),
     .priv_data_size = sizeof(VPlayerContext),

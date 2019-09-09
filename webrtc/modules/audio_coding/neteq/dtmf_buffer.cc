@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,16 +21,19 @@
 // enables).
 #define LEGACY_BITEXACT
 
-namespace webrtc {
+namespace webrtc
+{
 
-DtmfBuffer::DtmfBuffer(int fs_hz) {
-  SetSampleRate(fs_hz);
+DtmfBuffer::DtmfBuffer(int fs_hz)
+{
+    SetSampleRate(fs_hz);
 }
 
 DtmfBuffer::~DtmfBuffer() = default;
 
-void DtmfBuffer::Flush() {
-  buffer_.clear();
+void DtmfBuffer::Flush()
+{
+    buffer_.clear();
 }
 
 // The ParseEvent method parses 4 bytes from |payload| according to this format
@@ -69,20 +72,22 @@ void DtmfBuffer::Flush() {
 int DtmfBuffer::ParseEvent(uint32_t rtp_timestamp,
                            const uint8_t* payload,
                            size_t payload_length_bytes,
-                           DtmfEvent* event) {
-  RTC_CHECK(payload);
-  RTC_CHECK(event);
-  if (payload_length_bytes < 4) {
-    LOG(LS_WARNING) << "ParseEvent payload too short";
-    return kPayloadTooShort;
-  }
+                           DtmfEvent* event)
+{
+    RTC_CHECK(payload);
+    RTC_CHECK(event);
+    if (payload_length_bytes < 4)
+    {
+        LOG(LS_WARNING) << "ParseEvent payload too short";
+        return kPayloadTooShort;
+    }
 
-  event->event_no = payload[0];
-  event->end_bit = ((payload[1] & 0x80) != 0);
-  event->volume = (payload[1] & 0x3F);
-  event->duration = payload[2] << 8 | payload[3];
-  event->timestamp = rtp_timestamp;
-  return kOK;
+    event->event_no = payload[0];
+    event->end_bit = ((payload[1] & 0x80) != 0);
+    event->volume = (payload[1] & 0x3F);
+    event->duration = payload[2] << 8 | payload[3];
+    event->timestamp = rtp_timestamp;
+    return kOK;
 }
 
 // Inserts a DTMF event into the buffer. The event should be parsed from the
@@ -97,114 +102,137 @@ int DtmfBuffer::ParseEvent(uint32_t rtp_timestamp,
 // inserting a new event, the InsertEvent method tries to find a matching event
 // already in the buffer. If so, the new event is simply merged with the
 // existing one.
-int DtmfBuffer::InsertEvent(const DtmfEvent& event) {
-  if (event.event_no < 0 || event.event_no > 15 ||
-      event.volume < 0 || event.volume > 63 ||
-      event.duration <= 0 || event.duration > 65535) {
-    LOG(LS_WARNING) << "InsertEvent invalid parameters";
-    return kInvalidEventParameters;
-  }
-  DtmfList::iterator it = buffer_.begin();
-  while (it != buffer_.end()) {
-    if (MergeEvents(it, event)) {
-      // A matching event was found and the new event was merged.
-      return kOK;
+int DtmfBuffer::InsertEvent(const DtmfEvent& event)
+{
+    if (event.event_no < 0 || event.event_no > 15 ||
+            event.volume < 0 || event.volume > 63 ||
+            event.duration <= 0 || event.duration > 65535)
+    {
+        LOG(LS_WARNING) << "InsertEvent invalid parameters";
+        return kInvalidEventParameters;
     }
-    ++it;
-  }
-  buffer_.push_back(event);
-  // Sort the buffer using CompareEvents to rank the events.
-  buffer_.sort(CompareEvents);
-  return kOK;
-}
-
-bool DtmfBuffer::GetEvent(uint32_t current_timestamp, DtmfEvent* event) {
-  DtmfList::iterator it = buffer_.begin();
-  while (it != buffer_.end()) {
-    // |event_end| is an estimate of where the current event ends. If the end
-    // bit is set, we know that the event ends at |timestamp| + |duration|.
-    uint32_t event_end = it->timestamp + it->duration;
-#ifdef LEGACY_BITEXACT
-    bool next_available = false;
-#endif
-    if (!it->end_bit) {
-      // If the end bit is not set, we allow extrapolation of the event for
-      // some time.
-      event_end += max_extrapolation_samples_;
-      DtmfList::iterator next = it;
-      ++next;
-      if (next != buffer_.end()) {
-        // If there is a next event in the buffer, we will not extrapolate over
-        // the start of that new event.
-        event_end = std::min(event_end, next->timestamp);
-#ifdef LEGACY_BITEXACT
-        next_available = true;
-#endif
-      }
-    }
-    if (current_timestamp >= it->timestamp
-        && current_timestamp <= event_end) {  // TODO(hlundin): Change to <.
-      // Found a matching event.
-      if (event) {
-        event->event_no = it->event_no;
-        event->end_bit = it->end_bit;
-        event->volume = it->volume;
-        event->duration = it->duration;
-        event->timestamp = it->timestamp;
-      }
-#ifdef LEGACY_BITEXACT
-      if (it->end_bit &&
-          current_timestamp + frame_len_samples_ >= event_end) {
-        // We are done playing this. Erase the event.
-        buffer_.erase(it);
-      }
-#endif
-      return true;
-    } else if (current_timestamp > event_end) {  // TODO(hlundin): Change to >=.
-      // Erase old event. Operation returns a valid pointer to the next element
-      // in the list.
-#ifdef LEGACY_BITEXACT
-      if (!next_available) {
-        if (event) {
-          event->event_no = it->event_no;
-          event->end_bit = it->end_bit;
-          event->volume = it->volume;
-          event->duration = it->duration;
-          event->timestamp = it->timestamp;
+    DtmfList::iterator it = buffer_.begin();
+    while (it != buffer_.end())
+    {
+        if (MergeEvents(it, event))
+        {
+            // A matching event was found and the new event was merged.
+            return kOK;
         }
-        it = buffer_.erase(it);
-        return true;
-      } else {
-        it = buffer_.erase(it);
-      }
-#else
-      it = buffer_.erase(it);
-#endif
-    } else {
-      ++it;
+        ++it;
     }
-  }
-  return false;
+    buffer_.push_back(event);
+    // Sort the buffer using CompareEvents to rank the events.
+    buffer_.sort(CompareEvents);
+    return kOK;
 }
 
-size_t DtmfBuffer::Length() const {
-  return buffer_.size();
+bool DtmfBuffer::GetEvent(uint32_t current_timestamp, DtmfEvent* event)
+{
+    DtmfList::iterator it = buffer_.begin();
+    while (it != buffer_.end())
+    {
+        // |event_end| is an estimate of where the current event ends. If the end
+        // bit is set, we know that the event ends at |timestamp| + |duration|.
+        uint32_t event_end = it->timestamp + it->duration;
+#ifdef LEGACY_BITEXACT
+        bool next_available = false;
+#endif
+        if (!it->end_bit)
+        {
+            // If the end bit is not set, we allow extrapolation of the event for
+            // some time.
+            event_end += max_extrapolation_samples_;
+            DtmfList::iterator next = it;
+            ++next;
+            if (next != buffer_.end())
+            {
+                // If there is a next event in the buffer, we will not extrapolate over
+                // the start of that new event.
+                event_end = std::min(event_end, next->timestamp);
+#ifdef LEGACY_BITEXACT
+                next_available = true;
+#endif
+            }
+        }
+        if (current_timestamp >= it->timestamp
+                && current_timestamp <= event_end)    // TODO(hlundin): Change to <.
+        {
+            // Found a matching event.
+            if (event)
+            {
+                event->event_no = it->event_no;
+                event->end_bit = it->end_bit;
+                event->volume = it->volume;
+                event->duration = it->duration;
+                event->timestamp = it->timestamp;
+            }
+#ifdef LEGACY_BITEXACT
+            if (it->end_bit &&
+                    current_timestamp + frame_len_samples_ >= event_end)
+            {
+                // We are done playing this. Erase the event.
+                buffer_.erase(it);
+            }
+#endif
+            return true;
+        }
+        else if (current_timestamp > event_end)      // TODO(hlundin): Change to >=.
+        {
+            // Erase old event. Operation returns a valid pointer to the next element
+            // in the list.
+#ifdef LEGACY_BITEXACT
+            if (!next_available)
+            {
+                if (event)
+                {
+                    event->event_no = it->event_no;
+                    event->end_bit = it->end_bit;
+                    event->volume = it->volume;
+                    event->duration = it->duration;
+                    event->timestamp = it->timestamp;
+                }
+                it = buffer_.erase(it);
+                return true;
+            }
+            else
+            {
+                it = buffer_.erase(it);
+            }
+#else
+            it = buffer_.erase(it);
+#endif
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    return false;
 }
 
-bool DtmfBuffer::Empty() const {
-  return buffer_.empty();
+size_t DtmfBuffer::Length() const
+{
+    return buffer_.size();
 }
 
-int DtmfBuffer::SetSampleRate(int fs_hz) {
-  if (fs_hz != 8000 &&
-      fs_hz != 16000 &&
-      fs_hz != 32000 &&
-      fs_hz != 48000) {
-    return kInvalidSampleRate;
-  }
-  max_extrapolation_samples_ = 7 * fs_hz / 100;
-  frame_len_samples_ = fs_hz / 100;
-  return kOK;
+bool DtmfBuffer::Empty() const
+{
+    return buffer_.empty();
+}
+
+int DtmfBuffer::SetSampleRate(int fs_hz)
+{
+    if (fs_hz != 8000 &&
+            fs_hz != 16000 &&
+            fs_hz != 32000 &&
+            fs_hz != 48000)
+    {
+        return kInvalidSampleRate;
+    }
+    max_extrapolation_samples_ = 7 * fs_hz / 100;
+    frame_len_samples_ = fs_hz / 100;
+    return kOK;
 }
 
 // The method returns true if the two events are considered to be the same.
@@ -212,24 +240,31 @@ int DtmfBuffer::SetSampleRate(int fs_hz) {
 // The special case with long-lasting events that have to be split into segments
 // is not handled in this method. These will be treated as separate events in
 // the buffer.
-bool DtmfBuffer::SameEvent(const DtmfEvent& a, const DtmfEvent& b) {
-  return (a.event_no == b.event_no) && (a.timestamp == b.timestamp);
+bool DtmfBuffer::SameEvent(const DtmfEvent& a, const DtmfEvent& b)
+{
+    return (a.event_no == b.event_no) && (a.timestamp == b.timestamp);
 }
 
-bool DtmfBuffer::MergeEvents(DtmfList::iterator it, const DtmfEvent& event) {
-  if (SameEvent(*it, event)) {
-    if (!it->end_bit) {
-      // Do not extend the duration of an event for which the end bit was
-      // already received.
-      it->duration = std::max(event.duration, it->duration);
+bool DtmfBuffer::MergeEvents(DtmfList::iterator it, const DtmfEvent& event)
+{
+    if (SameEvent(*it, event))
+    {
+        if (!it->end_bit)
+        {
+            // Do not extend the duration of an event for which the end bit was
+            // already received.
+            it->duration = std::max(event.duration, it->duration);
+        }
+        if (event.end_bit)
+        {
+            it->end_bit = true;
+        }
+        return true;
     }
-    if (event.end_bit) {
-      it->end_bit = true;
+    else
+    {
+        return false;
     }
-    return true;
-  } else {
-    return false;
-  }
 }
 
 // Returns true if |a| goes before |b| in the sorting order ("|a| < |b|").
@@ -238,11 +273,13 @@ bool DtmfBuffer::MergeEvents(DtmfList::iterator it, const DtmfEvent& event) {
 // timestamp, the event number is used to rank the two. Note that packets
 // that belong to the same events, and therefore sharing the same start
 // timestamp, have already been merged before the sort method is called.
-bool DtmfBuffer::CompareEvents(const DtmfEvent& a, const DtmfEvent& b) {
-  if (a.timestamp == b.timestamp) {
-    return a.event_no < b.event_no;
-  }
-  // Take wrap-around into account.
-  return (static_cast<uint32_t>(b.timestamp - a.timestamp) < 0xFFFFFFFF / 2);
+bool DtmfBuffer::CompareEvents(const DtmfEvent& a, const DtmfEvent& b)
+{
+    if (a.timestamp == b.timestamp)
+    {
+        return a.event_no < b.event_no;
+    }
+    // Take wrap-around into account.
+    return (static_cast<uint32_t>(b.timestamp - a.timestamp) < 0xFFFFFFFF / 2);
 }
 }  // namespace webrtc

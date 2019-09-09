@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,7 +26,8 @@
 #include "internal.h"
 #include "video.h"
 
-static const AVFilterPad avfilter_vf_null_inputs[] = {
+static const AVFilterPad avfilter_vf_null_inputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -34,7 +35,8 @@ static const AVFilterPad avfilter_vf_null_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_null_outputs[] = {
+static const AVFilterPad avfilter_vf_null_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -42,7 +44,8 @@ static const AVFilterPad avfilter_vf_null_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_null = {
+AVFilter ff_vf_null =
+{
     .name        = "null",
     .description = NULL_IF_CONFIG_SMALL("Pass the source unchanged to the output."),
     .inputs      = avfilter_vf_null_inputs,

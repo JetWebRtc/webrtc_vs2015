@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,83 +16,97 @@
 #include "webrtc/base/task.h"
 #include "webrtc/base/taskrunner.h"
 
-namespace rtc {
+namespace rtc
+{
 
 TaskParent::TaskParent(Task* derived_instance, TaskParent *parent)
-    : parent_(parent) {
-  RTC_DCHECK(derived_instance != NULL);
-  RTC_DCHECK(parent != NULL);
-  runner_ = parent->GetRunner();
-  parent_->AddChild(derived_instance);
-  Initialize();
+    : parent_(parent)
+{
+    RTC_DCHECK(derived_instance != NULL);
+    RTC_DCHECK(parent != NULL);
+    runner_ = parent->GetRunner();
+    parent_->AddChild(derived_instance);
+    Initialize();
 }
 
 TaskParent::TaskParent(TaskRunner *derived_instance)
     : parent_(NULL),
-      runner_(derived_instance) {
-  RTC_DCHECK(derived_instance != NULL);
-  Initialize();
+      runner_(derived_instance)
+{
+    RTC_DCHECK(derived_instance != NULL);
+    Initialize();
 }
 
 TaskParent::~TaskParent() = default;
 
 // Does common initialization of member variables
-void TaskParent::Initialize() {
-  children_.reset(new ChildSet());
-  child_error_ = false;
+void TaskParent::Initialize()
+{
+    children_.reset(new ChildSet());
+    child_error_ = false;
 }
 
-void TaskParent::AddChild(Task *child) {
-  children_->insert(child);
+void TaskParent::AddChild(Task *child)
+{
+    children_->insert(child);
 }
 
 #if RTC_DCHECK_IS_ON
-bool TaskParent::IsChildTask(Task *task) {
-  RTC_DCHECK(task != NULL);
-  return task->parent_ == this && children_->find(task) != children_->end();
+bool TaskParent::IsChildTask(Task *task)
+{
+    RTC_DCHECK(task != NULL);
+    return task->parent_ == this && children_->find(task) != children_->end();
 }
 #endif
 
-bool TaskParent::AllChildrenDone() {
-  for (ChildSet::iterator it = children_->begin();
-       it != children_->end();
-       ++it) {
-    if (!(*it)->IsDone())
-      return false;
-  }
-  return true;
-}
-
-bool TaskParent::AnyChildError() {
-  return child_error_;
-}
-
-void TaskParent::AbortAllChildren() {
-  if (children_->size() > 0) {
-#if RTC_DCHECK_IS_ON
-    runner_->IncrementAbortCount();
-#endif
-
-    ChildSet copy = *children_;
-    for (ChildSet::iterator it = copy.begin(); it != copy.end(); ++it) {
-      (*it)->Abort(true);  // Note we do not wake
+bool TaskParent::AllChildrenDone()
+{
+    for (ChildSet::iterator it = children_->begin();
+            it != children_->end();
+            ++it)
+    {
+        if (!(*it)->IsDone())
+            return false;
     }
+    return true;
+}
+
+bool TaskParent::AnyChildError()
+{
+    return child_error_;
+}
+
+void TaskParent::AbortAllChildren()
+{
+    if (children_->size() > 0)
+    {
+#if RTC_DCHECK_IS_ON
+        runner_->IncrementAbortCount();
+#endif
+
+        ChildSet copy = *children_;
+        for (ChildSet::iterator it = copy.begin(); it != copy.end(); ++it)
+        {
+            (*it)->Abort(true);  // Note we do not wake
+        }
 
 #if RTC_DCHECK_IS_ON
-    runner_->DecrementAbortCount();
+        runner_->DecrementAbortCount();
 #endif
-  }
+    }
 }
 
-void TaskParent::OnStopped(Task *task) {
-  AbortAllChildren();
-  parent_->OnChildStopped(task);
+void TaskParent::OnStopped(Task *task)
+{
+    AbortAllChildren();
+    parent_->OnChildStopped(task);
 }
 
-void TaskParent::OnChildStopped(Task *child) {
-  if (child->HasError())
-    child_error_ = true;
-  children_->erase(child);
+void TaskParent::OnChildStopped(Task *child)
+{
+    if (child->HasError())
+        child_error_ = true;
+    children_->erase(child);
 }
 
 } // namespace rtc

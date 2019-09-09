@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Pulseaudio input
  * Copyright (c) 2011 Luca Barbato <lu_zero@gentoo.org>
  * Copyright 2004-2006 Lennart Poettering
@@ -35,7 +35,8 @@
 
 #define DEFAULT_CODEC_ID AV_NE(AV_CODEC_ID_PCM_S16BE, AV_CODEC_ID_PCM_S16LE)
 
-typedef struct PulseData {
+typedef struct PulseData
+{
     AVClass *class;
     char *server;
     char *name;
@@ -72,37 +73,43 @@ typedef struct PulseData {
         }                                                               \
     } while (0)
 
-static void context_state_cb(pa_context *c, void *userdata) {
+static void context_state_cb(pa_context *c, void *userdata)
+{
     PulseData *p = userdata;
 
-    switch (pa_context_get_state(c)) {
-        case PA_CONTEXT_READY:
-        case PA_CONTEXT_TERMINATED:
-        case PA_CONTEXT_FAILED:
-            pa_threaded_mainloop_signal(p->mainloop, 0);
-            break;
+    switch (pa_context_get_state(c))
+    {
+    case PA_CONTEXT_READY:
+    case PA_CONTEXT_TERMINATED:
+    case PA_CONTEXT_FAILED:
+        pa_threaded_mainloop_signal(p->mainloop, 0);
+        break;
     }
 }
 
-static void stream_state_cb(pa_stream *s, void * userdata) {
+static void stream_state_cb(pa_stream *s, void * userdata)
+{
     PulseData *p = userdata;
 
-    switch (pa_stream_get_state(s)) {
-        case PA_STREAM_READY:
-        case PA_STREAM_FAILED:
-        case PA_STREAM_TERMINATED:
-            pa_threaded_mainloop_signal(p->mainloop, 0);
-            break;
+    switch (pa_stream_get_state(s))
+    {
+    case PA_STREAM_READY:
+    case PA_STREAM_FAILED:
+    case PA_STREAM_TERMINATED:
+        pa_threaded_mainloop_signal(p->mainloop, 0);
+        break;
     }
 }
 
-static void stream_request_cb(pa_stream *s, size_t length, void *userdata) {
+static void stream_request_cb(pa_stream *s, size_t length, void *userdata)
+{
     PulseData *p = userdata;
 
     pa_threaded_mainloop_signal(p->mainloop, 0);
 }
 
-static void stream_latency_update_cb(pa_stream *s, void *userdata) {
+static void stream_latency_update_cb(pa_stream *s, void *userdata)
+{
     PulseData *p = userdata;
 
     pa_threaded_mainloop_signal(p->mainloop, 0);
@@ -119,7 +126,8 @@ static av_cold int pulse_close(AVFormatContext *s)
         pa_stream_unref(pd->stream);
     pd->stream = NULL;
 
-    if (pd->context) {
+    if (pd->context)
+    {
         pa_context_disconnect(pd->context);
         pa_context_unref(pd->context);
     }
@@ -145,13 +153,15 @@ static av_cold int pulse_read_header(AVFormatContext *s)
         s->audio_codec_id == AV_CODEC_ID_NONE ? DEFAULT_CODEC_ID : s->audio_codec_id;
     const pa_sample_spec ss = { ff_codec_id_to_pulse_format(codec_id),
                                 pd->sample_rate,
-                                pd->channels };
+                                pd->channels
+                              };
 
     pa_buffer_attr attr = { -1 };
 
     st = avformat_new_stream(s, NULL);
 
-    if (!st) {
+    if (!st)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot add stream\n");
         return AVERROR(ENOMEM);
     }
@@ -161,31 +171,36 @@ static av_cold int pulse_read_header(AVFormatContext *s)
     if (s->filename[0] != '\0' && strcmp(s->filename, "default"))
         device = s->filename;
 
-    if (!(pd->mainloop = pa_threaded_mainloop_new())) {
+    if (!(pd->mainloop = pa_threaded_mainloop_new()))
+    {
         pulse_close(s);
         return AVERROR_EXTERNAL;
     }
 
-    if (!(pd->context = pa_context_new(pa_threaded_mainloop_get_api(pd->mainloop), pd->name))) {
+    if (!(pd->context = pa_context_new(pa_threaded_mainloop_get_api(pd->mainloop), pd->name)))
+    {
         pulse_close(s);
         return AVERROR_EXTERNAL;
     }
 
     pa_context_set_state_callback(pd->context, context_state_cb, pd);
 
-    if (pa_context_connect(pd->context, pd->server, 0, NULL) < 0) {
+    if (pa_context_connect(pd->context, pd->server, 0, NULL) < 0)
+    {
         pulse_close(s);
         return AVERROR(pa_context_errno(pd->context));
     }
 
     pa_threaded_mainloop_lock(pd->mainloop);
 
-    if (pa_threaded_mainloop_start(pd->mainloop) < 0) {
+    if (pa_threaded_mainloop_start(pd->mainloop) < 0)
+    {
         ret = -1;
         goto unlock_and_fail;
     }
 
-    for (;;) {
+    for (;;)
+    {
         pa_context_state_t state;
 
         state = pa_context_get_state(pd->context);
@@ -193,7 +208,8 @@ static av_cold int pulse_read_header(AVFormatContext *s)
         if (state == PA_CONTEXT_READY)
             break;
 
-        if (!PA_CONTEXT_IS_GOOD(state)) {
+        if (!PA_CONTEXT_IS_GOOD(state))
+        {
             ret = AVERROR(pa_context_errno(pd->context));
             goto unlock_and_fail;
         }
@@ -202,7 +218,8 @@ static av_cold int pulse_read_header(AVFormatContext *s)
         pa_threaded_mainloop_wait(pd->mainloop);
     }
 
-    if (!(pd->stream = pa_stream_new(pd->context, pd->stream_name, &ss, NULL))) {
+    if (!(pd->stream = pa_stream_new(pd->context, pd->stream_name, &ss, NULL)))
+    {
         ret = AVERROR(pa_context_errno(pd->context));
         goto unlock_and_fail;
     }
@@ -213,16 +230,18 @@ static av_cold int pulse_read_header(AVFormatContext *s)
     pa_stream_set_latency_update_callback(pd->stream, stream_latency_update_cb, pd);
 
     ret = pa_stream_connect_record(pd->stream, device, &attr,
-                                    PA_STREAM_INTERPOLATE_TIMING
-                                    |PA_STREAM_ADJUST_LATENCY
-                                    |PA_STREAM_AUTO_TIMING_UPDATE);
+                                   PA_STREAM_INTERPOLATE_TIMING
+                                   |PA_STREAM_ADJUST_LATENCY
+                                   |PA_STREAM_AUTO_TIMING_UPDATE);
 
-    if (ret < 0) {
+    if (ret < 0)
+    {
         ret = AVERROR(pa_context_errno(pd->context));
         goto unlock_and_fail;
     }
 
-    for (;;) {
+    for (;;)
+    {
         pa_stream_state_t state;
 
         state = pa_stream_get_state(pd->stream);
@@ -230,7 +249,8 @@ static av_cold int pulse_read_header(AVFormatContext *s)
         if (state == PA_STREAM_READY)
             break;
 
-        if (!PA_STREAM_IS_GOOD(state)) {
+        if (!PA_STREAM_IS_GOOD(state))
+        {
             ret = AVERROR(pa_context_errno(pd->context));
             goto unlock_and_fail;
         }
@@ -251,7 +271,8 @@ static av_cold int pulse_read_header(AVFormatContext *s)
     pd->timefilter = ff_timefilter_new(1000000.0 / pd->sample_rate,
                                        1000, 1.5E-6);
 
-    if (!pd->timefilter) {
+    if (!pd->timefilter)
+    {
         pulse_close(s);
         return AVERROR(ENOMEM);
     }
@@ -279,16 +300,20 @@ static int pulse_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     CHECK_DEAD_GOTO(pd, ret, unlock_and_fail);
 
-    while (!read_data) {
+    while (!read_data)
+    {
         int r;
 
         r = pa_stream_peek(pd->stream, &read_data, &read_length);
         CHECK_SUCCESS_GOTO(ret, r == 0, unlock_and_fail);
 
-        if (read_length <= 0) {
+        if (read_length <= 0)
+        {
             pa_threaded_mainloop_wait(pd->mainloop);
             CHECK_DEAD_GOTO(pd, ret, unlock_and_fail);
-        } else if (!read_data) {
+        }
+        else if (!read_data)
+        {
             /* There's a hole in the stream, skip it. We could generate
                 * silence, but that wouldn't work for compressed streams. */
             r = pa_stream_drop(pd->stream);
@@ -296,7 +321,8 @@ static int pulse_read_packet(AVFormatContext *s, AVPacket *pkt)
         }
     }
 
-    if (av_new_packet(pkt, read_length) < 0) {
+    if (av_new_packet(pkt, read_length) < 0)
+    {
         ret = AVERROR(ENOMEM);
         goto unlock_and_fail;
     }
@@ -304,22 +330,27 @@ static int pulse_read_packet(AVFormatContext *s, AVPacket *pkt)
     dts = av_gettime();
     pa_operation_unref(pa_stream_update_timing_info(pd->stream, NULL, NULL));
 
-    if (pa_stream_get_latency(pd->stream, &latency, &negative) >= 0) {
+    if (pa_stream_get_latency(pd->stream, &latency, &negative) >= 0)
+    {
         enum AVCodecID codec_id =
             s->audio_codec_id == AV_CODEC_ID_NONE ? DEFAULT_CODEC_ID : s->audio_codec_id;
         int frame_size = ((av_get_bits_per_sample(codec_id) >> 3) * pd->channels);
         int frame_duration = read_length / frame_size;
 
 
-        if (negative) {
+        if (negative)
+        {
             dts += latency;
-        } else
+        }
+        else
             dts -= latency;
         if (pd->wallclock)
             pkt->pts = ff_timefilter_update(pd->timefilter, dts, pd->last_period);
 
         pd->last_period = frame_duration;
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_WARNING, "pa_stream_get_latency() failed\n");
     }
 
@@ -343,7 +374,8 @@ static int pulse_get_device_list(AVFormatContext *h, AVDeviceInfoList *device_li
 #define OFFSET(a) offsetof(PulseData, a)
 #define D AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "server",        "set PulseAudio server",                             OFFSET(server),        AV_OPT_TYPE_STRING, {.str = NULL},     0, 0, D },
     { "name",          "set application name",                              OFFSET(name),          AV_OPT_TYPE_STRING, {.str = LIBAVFORMAT_IDENT},  0, 0, D },
     { "stream_name",   "set stream description",                            OFFSET(stream_name),   AV_OPT_TYPE_STRING, {.str = "record"}, 0, 0, D },
@@ -355,7 +387,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass pulse_demuxer_class = {
+static const AVClass pulse_demuxer_class =
+{
     .class_name     = "Pulse demuxer",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -363,7 +396,8 @@ static const AVClass pulse_demuxer_class = {
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_pulse_demuxer = {
+AVInputFormat ff_pulse_demuxer =
+{
     .name           = "pulse",
     .long_name      = NULL_IF_CONFIG_SMALL("Pulse audio input"),
     .priv_data_size = sizeof(PulseData),

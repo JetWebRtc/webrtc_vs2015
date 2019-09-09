@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #include "webrtc/api/peerconnectioninterface.h"
 #include "webrtc/base/stringencode.h"
 
-namespace {
+namespace
+{
 
 // Find the highest-priority instance of the T-valued constraint named by
 // |key| and return its value as |value|. |constraints| can be null.
@@ -29,12 +30,14 @@ template <typename T>
 bool FindConstraint(const webrtc::MediaConstraintsInterface* constraints,
                     const std::string& key,
                     T* value,
-                    size_t* mandatory_constraints) {
-  std::string string_value;
-  if (!FindConstraint(constraints, key, &string_value, mandatory_constraints)) {
-    return false;
-  }
-  return rtc::FromString(string_value, value);
+                    size_t* mandatory_constraints)
+{
+    std::string string_value;
+    if (!FindConstraint(constraints, key, &string_value, mandatory_constraints))
+    {
+        return false;
+    }
+    return rtc::FromString(string_value, value);
 }
 
 // Specialization for std::string, since a string doesn't need conversion.
@@ -42,20 +45,25 @@ template <>
 bool FindConstraint(const webrtc::MediaConstraintsInterface* constraints,
                     const std::string& key,
                     std::string* value,
-                    size_t* mandatory_constraints) {
-  if (!constraints) {
-    return false;
-  }
-  if (constraints->GetMandatory().FindFirst(key, value)) {
-    if (mandatory_constraints) {
-      ++*mandatory_constraints;
+                    size_t* mandatory_constraints)
+{
+    if (!constraints)
+    {
+        return false;
     }
-    return true;
-  }
-  if (constraints->GetOptional().FindFirst(key, value)) {
-    return true;
-  }
-  return false;
+    if (constraints->GetMandatory().FindFirst(key, value))
+    {
+        if (mandatory_constraints)
+        {
+            ++*mandatory_constraints;
+        }
+        return true;
+    }
+    if (constraints->GetOptional().FindFirst(key, value))
+    {
+        return true;
+    }
+    return false;
 }
 
 // Converts a constraint (mandatory takes precedence over optional) to an
@@ -63,16 +71,19 @@ bool FindConstraint(const webrtc::MediaConstraintsInterface* constraints,
 template <typename T>
 void ConstraintToOptional(const webrtc::MediaConstraintsInterface* constraints,
                           const std::string& key,
-                          rtc::Optional<T>* value_out) {
-  T value;
-  bool present = FindConstraint<T>(constraints, key, &value, nullptr);
-  if (present) {
-    *value_out = rtc::Optional<T>(value);
-  }
+                          rtc::Optional<T>* value_out)
+{
+    T value;
+    bool present = FindConstraint<T>(constraints, key, &value, nullptr);
+    if (present)
+    {
+        *value_out = rtc::Optional<T>(value);
+    }
 }
 }  // namespace
 
-namespace webrtc {
+namespace webrtc
+{
 
 const char MediaConstraintsInterface::kValueTrue[] = "true";
 const char MediaConstraintsInterface::kValueFalse[] = "false";
@@ -157,119 +168,130 @@ const char MediaConstraintsInterface::kPayloadPadding[] = "googPayloadPadding";
 // Set |value| to the value associated with the first appearance of |key|, or
 // return false if |key| is not found.
 bool MediaConstraintsInterface::Constraints::FindFirst(
-    const std::string& key, std::string* value) const {
-  for (Constraints::const_iterator iter = begin(); iter != end(); ++iter) {
-    if (iter->key == key) {
-      *value = iter->value;
-      return true;
+    const std::string& key, std::string* value) const
+{
+    for (Constraints::const_iterator iter = begin(); iter != end(); ++iter)
+    {
+        if (iter->key == key)
+        {
+            *value = iter->value;
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
 bool FindConstraint(const MediaConstraintsInterface* constraints,
                     const std::string& key, bool* value,
-                    size_t* mandatory_constraints) {
-  return ::FindConstraint<bool>(constraints, key, value, mandatory_constraints);
+                    size_t* mandatory_constraints)
+{
+    return ::FindConstraint<bool>(constraints, key, value, mandatory_constraints);
 }
 
 bool FindConstraint(const MediaConstraintsInterface* constraints,
                     const std::string& key,
                     int* value,
-                    size_t* mandatory_constraints) {
-  return ::FindConstraint<int>(constraints, key, value, mandatory_constraints);
+                    size_t* mandatory_constraints)
+{
+    return ::FindConstraint<int>(constraints, key, value, mandatory_constraints);
 }
 
 void CopyConstraintsIntoRtcConfiguration(
     const MediaConstraintsInterface* constraints,
-    PeerConnectionInterface::RTCConfiguration* configuration) {
-  // Copy info from constraints into configuration, if present.
-  if (!constraints) {
-    return;
-  }
+    PeerConnectionInterface::RTCConfiguration* configuration)
+{
+    // Copy info from constraints into configuration, if present.
+    if (!constraints)
+    {
+        return;
+    }
 
-  bool enable_ipv6;
-  if (FindConstraint(constraints, MediaConstraintsInterface::kEnableIPv6,
-                     &enable_ipv6, nullptr)) {
-    configuration->disable_ipv6 = !enable_ipv6;
-  }
-  FindConstraint(constraints, MediaConstraintsInterface::kEnableDscp,
-                 &configuration->media_config.enable_dscp, nullptr);
-  FindConstraint(
-      constraints, MediaConstraintsInterface::kCpuOveruseDetection,
-      &configuration->media_config.video.enable_cpu_overuse_detection, nullptr);
-  FindConstraint(constraints, MediaConstraintsInterface::kEnableRtpDataChannels,
-                 &configuration->enable_rtp_data_channel, nullptr);
-  // Find Suspend Below Min Bitrate constraint.
-  FindConstraint(constraints,
-                 MediaConstraintsInterface::kEnableVideoSuspendBelowMinBitrate,
-                 &configuration->media_config.video.suspend_below_min_bitrate,
-                 nullptr);
-  ConstraintToOptional<int>(constraints,
-                            MediaConstraintsInterface::kScreencastMinBitrate,
-                            &configuration->screencast_min_bitrate);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kCombinedAudioVideoBwe,
-                             &configuration->combined_audio_video_bwe);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kEnableDtlsSrtp,
-                             &configuration->enable_dtls_srtp);
+    bool enable_ipv6;
+    if (FindConstraint(constraints, MediaConstraintsInterface::kEnableIPv6,
+                       &enable_ipv6, nullptr))
+    {
+        configuration->disable_ipv6 = !enable_ipv6;
+    }
+    FindConstraint(constraints, MediaConstraintsInterface::kEnableDscp,
+                   &configuration->media_config.enable_dscp, nullptr);
+    FindConstraint(
+        constraints, MediaConstraintsInterface::kCpuOveruseDetection,
+        &configuration->media_config.video.enable_cpu_overuse_detection, nullptr);
+    FindConstraint(constraints, MediaConstraintsInterface::kEnableRtpDataChannels,
+                   &configuration->enable_rtp_data_channel, nullptr);
+    // Find Suspend Below Min Bitrate constraint.
+    FindConstraint(constraints,
+                   MediaConstraintsInterface::kEnableVideoSuspendBelowMinBitrate,
+                   &configuration->media_config.video.suspend_below_min_bitrate,
+                   nullptr);
+    ConstraintToOptional<int>(constraints,
+                              MediaConstraintsInterface::kScreencastMinBitrate,
+                              &configuration->screencast_min_bitrate);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kCombinedAudioVideoBwe,
+                               &configuration->combined_audio_video_bwe);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kEnableDtlsSrtp,
+                               &configuration->enable_dtls_srtp);
 }
 
 void CopyConstraintsIntoAudioOptions(
     const MediaConstraintsInterface* constraints,
-    cricket::AudioOptions* options) {
-  if (!constraints) {
-    return;
-  }
+    cricket::AudioOptions* options)
+{
+    if (!constraints)
+    {
+        return;
+    }
 
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kGoogEchoCancellation,
-                             &options->echo_cancellation);
-  ConstraintToOptional<bool>(
-      constraints, MediaConstraintsInterface::kExtendedFilterEchoCancellation,
-      &options->extended_filter_aec);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kDAEchoCancellation,
-                             &options->delay_agnostic_aec);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kAutoGainControl,
-                             &options->auto_gain_control);
-  ConstraintToOptional<bool>(
-      constraints, MediaConstraintsInterface::kExperimentalAutoGainControl,
-      &options->experimental_agc);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kNoiseSuppression,
-                             &options->noise_suppression);
-  ConstraintToOptional<bool>(
-      constraints, MediaConstraintsInterface::kExperimentalNoiseSuppression,
-      &options->experimental_ns);
-  ConstraintToOptional<bool>(
-      constraints, MediaConstraintsInterface::kIntelligibilityEnhancer,
-      &options->intelligibility_enhancer);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kLevelControl,
-                             &options->level_control);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kHighpassFilter,
-                             &options->highpass_filter);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kTypingNoiseDetection,
-                             &options->typing_detection);
-  ConstraintToOptional<bool>(constraints,
-                             MediaConstraintsInterface::kAudioMirroring,
-                             &options->stereo_swapping);
-  ConstraintToOptional<float>(
-      constraints, MediaConstraintsInterface::kLevelControlInitialPeakLevelDBFS,
-      &options->level_control_initial_peak_level_dbfs);
-  ConstraintToOptional<std::string>(
-      constraints, MediaConstraintsInterface::kAudioNetworkAdaptorConfig,
-      &options->audio_network_adaptor_config);
-  // When |kAudioNetworkAdaptorConfig| is defined, it both means that audio
-  // network adaptor is desired, and provides the config string.
-  if (options->audio_network_adaptor_config) {
-    options->audio_network_adaptor = rtc::Optional<bool>(true);
-  }
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kGoogEchoCancellation,
+                               &options->echo_cancellation);
+    ConstraintToOptional<bool>(
+        constraints, MediaConstraintsInterface::kExtendedFilterEchoCancellation,
+        &options->extended_filter_aec);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kDAEchoCancellation,
+                               &options->delay_agnostic_aec);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kAutoGainControl,
+                               &options->auto_gain_control);
+    ConstraintToOptional<bool>(
+        constraints, MediaConstraintsInterface::kExperimentalAutoGainControl,
+        &options->experimental_agc);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kNoiseSuppression,
+                               &options->noise_suppression);
+    ConstraintToOptional<bool>(
+        constraints, MediaConstraintsInterface::kExperimentalNoiseSuppression,
+        &options->experimental_ns);
+    ConstraintToOptional<bool>(
+        constraints, MediaConstraintsInterface::kIntelligibilityEnhancer,
+        &options->intelligibility_enhancer);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kLevelControl,
+                               &options->level_control);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kHighpassFilter,
+                               &options->highpass_filter);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kTypingNoiseDetection,
+                               &options->typing_detection);
+    ConstraintToOptional<bool>(constraints,
+                               MediaConstraintsInterface::kAudioMirroring,
+                               &options->stereo_swapping);
+    ConstraintToOptional<float>(
+        constraints, MediaConstraintsInterface::kLevelControlInitialPeakLevelDBFS,
+        &options->level_control_initial_peak_level_dbfs);
+    ConstraintToOptional<std::string>(
+        constraints, MediaConstraintsInterface::kAudioNetworkAdaptorConfig,
+        &options->audio_network_adaptor_config);
+    // When |kAudioNetworkAdaptorConfig| is defined, it both means that audio
+    // network adaptor is desired, and provides the config string.
+    if (options->audio_network_adaptor_config)
+    {
+        options->audio_network_adaptor = rtc::Optional<bool>(true);
+    }
 }
 
 }  // namespace webrtc

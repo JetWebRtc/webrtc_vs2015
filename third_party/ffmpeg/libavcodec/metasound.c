@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Voxware MetaSound decoder
  * Copyright (c) 2013 Konstantin Shishkov
  * based on TwinVQ decoder
@@ -48,7 +48,8 @@ static void add_peak(float period, int width, const float *shape,
     for (i = 0; i < width / 2; i++)
         speech[i] += ppc_gain * *shape++;
 
-    for (i = 1; i < ROUNDED_DIV(len, width); i++) {
+    for (i = 1; i < ROUNDED_DIV(len, width); i++)
+    {
         center = (int)(i * period + 0.5);
         for (j = -width / 2; j < (width + 1) / 2; j++)
             speech[j + center] += ppc_gain * *shape++;
@@ -74,10 +75,13 @@ static void decode_ppc(TwinVQContext *tctx, int period_coef, int g_coef,
 
     float pgain_base, pgain_step, ppc_gain;
 
-    if (tctx->avctx->channels == 1) {
+    if (tctx->avctx->channels == 1)
+    {
         min_period = log2(ratio * 0.2);
         max_period = min_period + log2(6);
-    } else {
+    }
+    else
+    {
         min_period = (int)(ratio * 0.2 * 400     + 0.5) / 400.0;
         max_period = (int)(ratio * 0.2 * 400 * 6 + 0.5) / 400.0;
     }
@@ -89,13 +93,25 @@ static void decode_ppc(TwinVQContext *tctx, int period_coef, int g_coef,
     else
         period = (int)(period * 400 + 0.5) / 400.0;
 
-    switch (isampf) {
-    case  8: some_mult = 2.0; break;
-    case 11: some_mult = 3.0; break;
-    case 16: some_mult = 3.0; break;
-    case 22: some_mult = ibps == 32 ? 2.0 : 4.0; break;
-    case 44: some_mult = 8.0; break;
-    default: some_mult = 4.0;
+    switch (isampf)
+    {
+    case  8:
+        some_mult = 2.0;
+        break;
+    case 11:
+        some_mult = 3.0;
+        break;
+    case 16:
+        some_mult = 3.0;
+        break;
+    case 22:
+        some_mult = ibps == 32 ? 2.0 : 4.0;
+        break;
+    case 44:
+        some_mult = 8.0;
+        break;
+    default:
+        some_mult = 4.0;
     }
 
     width = (int)(some_mult / (mtab->size / period) * mtab->ppc_shape_len);
@@ -118,7 +134,10 @@ static void dec_bark_env(TwinVQContext *tctx, const uint8_t *in, int use_hist,
     const TwinVQModeTab *mtab = tctx->mtab;
     int i, j;
     float *hist     = tctx->bark_hist[ftype][ch];
-    float val       = ((const float []) { 0.4, 0.35, 0.28 })[ftype];
+    float val       = ((const float [])
+    {
+        0.4, 0.35, 0.28
+    })[ftype];
     int bark_n_coef = mtab->fmode[ftype].bark_n_coef;
     int fw_cb_len   = mtab->fmode[ftype].bark_env_size / bark_n_coef;
     int idx         = 0;
@@ -126,24 +145,25 @@ static void dec_bark_env(TwinVQContext *tctx, const uint8_t *in, int use_hist,
     if (tctx->avctx->channels == 1)
         val = 0.5;
     for (i = 0; i < fw_cb_len; i++)
-        for (j = 0; j < bark_n_coef; j++, idx++) {
+        for (j = 0; j < bark_n_coef; j++, idx++)
+        {
             float tmp2 = mtab->fmode[ftype].bark_cb[fw_cb_len * in[j] + i] *
-                         (1.0 / 2048);
+            (1.0 / 2048);
             float st;
 
             if (tctx->avctx->channels == 1)
                 st = use_hist ?
-                    tmp2 + val * hist[idx] + 1.0 : tmp2 + 1.0;
+                tmp2 + val * hist[idx] + 1.0 : tmp2 + 1.0;
             else
                 st = use_hist ? (1.0 - val) * tmp2 + val * hist[idx] + 1.0
-                              : tmp2 + 1.0;
+                : tmp2 + 1.0;
 
             hist[idx] = tmp2;
             if (st < 0.1)
                 st = 0.1;
 
             twinvq_memset_float(out, st * gain,
-                                mtab->fmode[ftype].bark_tab[idx]);
+            mtab->fmode[ftype].bark_tab[idx]);
             out += mtab->fmode[ftype].bark_tab[idx];
         }
 }
@@ -153,7 +173,8 @@ static void read_cb_data(TwinVQContext *tctx, GetBitContext *gb,
 {
     int i;
 
-    for (i = 0; i < tctx->n_div[ftype]; i++) {
+    for (i = 0; i < tctx->n_div[ftype]; i++)
+    {
         int bs_second_part = (i >= tctx->bits_main_spec_change[ftype]);
 
         *dst++ = get_bits(gb, tctx->bits_main_spec[0][ftype][bs_second_part]);
@@ -174,12 +195,14 @@ static int metasound_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
     init_get_bits(&gb, buf, buf_size * 8);
 
     for (tctx->cur_frame = 0; tctx->cur_frame < tctx->frames_per_packet;
-         tctx->cur_frame++) {
+            tctx->cur_frame++)
+    {
         bits = tctx->bits + tctx->cur_frame;
 
         bits->window_type = get_bits(&gb, TWINVQ_WINDOW_TYPE_BITS);
 
-        if (bits->window_type > 8) {
+        if (bits->window_type > 8)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid window type, broken sample?\n");
             return AVERROR_INVALIDDATA;
         }
@@ -203,11 +226,15 @@ static int metasound_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
             for (j = 0; j < sub; j++)
                 bits->bark_use_hist[i][j] = get_bits1(&gb);
 
-        if (bits->ftype == TWINVQ_FT_LONG) {
+        if (bits->ftype == TWINVQ_FT_LONG)
+        {
             for (i = 0; i < channels; i++)
                 bits->gain_bits[i] = get_bits(&gb, TWINVQ_GAIN_BITS);
-        } else {
-            for (i = 0; i < channels; i++) {
+        }
+        else
+        {
+            for (i = 0; i < channels; i++)
+            {
                 bits->gain_bits[i] = get_bits(&gb, TWINVQ_GAIN_BITS);
                 for (j = 0; j < sub; j++)
                     bits->sub_gain_bits[i * sub + j] =
@@ -215,7 +242,8 @@ static int metasound_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
             }
         }
 
-        for (i = 0; i < channels; i++) {
+        for (i = 0; i < channels; i++)
+        {
             bits->lpc_hist_idx[i] = get_bits(&gb, mtab->lsp_bit0);
             bits->lpc_idx1[i]     = get_bits(&gb, mtab->lsp_bit1);
 
@@ -223,9 +251,11 @@ static int metasound_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
                 bits->lpc_idx2[i][j] = get_bits(&gb, mtab->lsp_bit2);
         }
 
-        if (bits->ftype == TWINVQ_FT_LONG) {
+        if (bits->ftype == TWINVQ_FT_LONG)
+        {
             read_cb_data(tctx, &gb, bits->ppc_coeffs, 3);
-            for (i = 0; i < channels; i++) {
+            for (i = 0; i < channels; i++)
+            {
                 bits->p_coef[i] = get_bits(&gb, mtab->ppc_period_bit);
                 bits->g_coef[i] = get_bits(&gb, mtab->pgain_bit);
             }
@@ -239,14 +269,16 @@ static int metasound_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
     return (get_bits_count(&gb) + 7) / 8;
 }
 
-typedef struct MetasoundProps {
+typedef struct MetasoundProps
+{
     uint32_t tag;
     int      bit_rate;
     int      channels;
     int      sample_rate;
 } MetasoundProps;
 
-static const MetasoundProps codec_props[] = {
+static const MetasoundProps codec_props[] =
+{
     { MKTAG('V','X','0','3'),  6, 1,  8000 },
     { MKTAG('V','X','0','4'), 12, 2,  8000 },
 
@@ -275,19 +307,23 @@ static av_cold int metasound_decode_init(AVCodecContext *avctx)
     uint32_t tag;
     const MetasoundProps *props = codec_props;
 
-    if (!avctx->extradata || avctx->extradata_size < 16) {
+    if (!avctx->extradata || avctx->extradata_size < 16)
+    {
         av_log(avctx, AV_LOG_ERROR, "Missing or incomplete extradata\n");
         return AVERROR_INVALIDDATA;
     }
 
     tag = AV_RL32(avctx->extradata + 12);
 
-    for (;;) {
-        if (!props->tag) {
+    for (;;)
+    {
+        if (!props->tag)
+        {
             av_log(avctx, AV_LOG_ERROR, "Could not find tag %08"PRIX32"\n", tag);
             return AVERROR_INVALIDDATA;
         }
-        if (props->tag == tag) {
+        if (props->tag == tag)
+        {
             avctx->sample_rate = props->sample_rate;
             avctx->channels    = props->channels;
             avctx->bit_rate    = props->bit_rate * 1000;
@@ -297,17 +333,19 @@ static av_cold int metasound_decode_init(AVCodecContext *avctx)
         props++;
     }
 
-    if (avctx->channels <= 0 || avctx->channels > TWINVQ_CHANNELS_MAX) {
+    if (avctx->channels <= 0 || avctx->channels > TWINVQ_CHANNELS_MAX)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported number of channels: %i\n",
                avctx->channels);
         return AVERROR_INVALIDDATA;
     }
     avctx->channel_layout = avctx->channels == 1 ? AV_CH_LAYOUT_MONO
-                                                 : AV_CH_LAYOUT_STEREO;
+                            : AV_CH_LAYOUT_STEREO;
 
     ibps = avctx->bit_rate / (1000 * avctx->channels);
 
-    switch ((avctx->channels << 16) + (isampf << 8) + ibps) {
+    switch ((avctx->channels << 16) + (isampf << 8) + ibps)
+    {
     case (1 << 16) + ( 8 << 8) +  6:
         tctx->mtab = &ff_metasound_mode0806;
         break;
@@ -368,13 +406,14 @@ static av_cold int metasound_decode_init(AVCodecContext *avctx)
     tctx->dec_bark_env   = dec_bark_env;
     tctx->decode_ppc     = decode_ppc;
     tctx->frame_size     = avctx->bit_rate * tctx->mtab->size
-                                           / avctx->sample_rate;
+                           / avctx->sample_rate;
     tctx->is_6kbps       = ibps == 6;
 
     return ff_twinvq_decode_init(avctx);
 }
 
-AVCodec ff_metasound_decoder = {
+AVCodec ff_metasound_decoder =
+{
     .name           = "metasound",
     .long_name      = NULL_IF_CONFIG_SMALL("Voxware MetaSound"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -384,6 +423,8 @@ AVCodec ff_metasound_decoder = {
     .close          = ff_twinvq_decode_close,
     .decode         = ff_twinvq_decode_frame,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLTP,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
 };

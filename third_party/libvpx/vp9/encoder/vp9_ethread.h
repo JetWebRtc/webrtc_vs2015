@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,24 +22,26 @@ extern "C" {
 struct VP9_COMP;
 struct ThreadData;
 
-typedef struct EncWorkerData {
-  struct VP9_COMP *cpi;
-  struct ThreadData *td;
-  int start;
-  int thread_id;
-  int tile_completion_status[MAX_NUM_TILE_COLS];
+typedef struct EncWorkerData
+{
+    struct VP9_COMP *cpi;
+    struct ThreadData *td;
+    int start;
+    int thread_id;
+    int tile_completion_status[MAX_NUM_TILE_COLS];
 } EncWorkerData;
 
 // Encoder row synchronization
-typedef struct VP9RowMTSyncData {
+typedef struct VP9RowMTSyncData
+{
 #if CONFIG_MULTITHREAD
-  pthread_mutex_t *mutex_;
-  pthread_cond_t *cond_;
+    pthread_mutex_t *mutex_;
+    pthread_cond_t *cond_;
 #endif
-  // Allocate memory to store the sb/mb block index in each row.
-  int *cur_col;
-  int sync_range;
-  int rows;
+    // Allocate memory to store the sb/mb block index in each row.
+    int *cur_col;
+    int sync_range;
+    int rows;
 } VP9RowMTSync;
 
 void vp9_encode_tiles_mt(struct VP9_COMP *cpi);

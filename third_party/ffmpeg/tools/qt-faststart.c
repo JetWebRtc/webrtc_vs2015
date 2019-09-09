@@ -1,4 +1,4 @@
-/*
+﻿/*
  * qt-faststart.c, v0.2
  * by Mike Melanson (melanson@pcisys.net)
  * This file is placed in the public domain. Use the program however you
@@ -105,61 +105,76 @@ int main(int argc, char *argv[])
     unsigned char *copy_buffer = NULL;
     int bytes_to_copy;
 
-    if (argc != 3) {
+    if (argc != 3)
+    {
         printf("Usage: qt-faststart <infile.mov> <outfile.mov>\n"
                "Note: alternatively you can use -movflags +faststart in ffmpeg\n");
         return 0;
     }
 
-    if (!strcmp(argv[1], argv[2])) {
+    if (!strcmp(argv[1], argv[2]))
+    {
         fprintf(stderr, "input and output files need to be different\n");
         return 1;
     }
 
     infile = fopen(argv[1], "rb");
-    if (!infile) {
+    if (!infile)
+    {
         perror(argv[1]);
         goto error_out;
     }
 
     /* traverse through the atoms in the file to make sure that 'moov' is
      * at the end */
-    while (!feof(infile)) {
-        if (fread(atom_bytes, ATOM_PREAMBLE_SIZE, 1, infile) != 1) {
+    while (!feof(infile))
+    {
+        if (fread(atom_bytes, ATOM_PREAMBLE_SIZE, 1, infile) != 1)
+        {
             break;
         }
         atom_size = BE_32(&atom_bytes[0]);
         atom_type = BE_32(&atom_bytes[4]);
 
         /* keep ftyp atom */
-        if (atom_type == FTYP_ATOM) {
+        if (atom_type == FTYP_ATOM)
+        {
             ftyp_atom_size = atom_size;
             free(ftyp_atom);
             ftyp_atom = malloc(ftyp_atom_size);
-            if (!ftyp_atom) {
+            if (!ftyp_atom)
+            {
                 printf("could not allocate %"PRIu64" bytes for ftyp atom\n",
                        atom_size);
                 goto error_out;
             }
             if (fseeko(infile, -ATOM_PREAMBLE_SIZE, SEEK_CUR) ||
-                fread(ftyp_atom, atom_size, 1, infile) != 1 ||
-                (start_offset = ftello(infile)) < 0) {
+                    fread(ftyp_atom, atom_size, 1, infile) != 1 ||
+                    (start_offset = ftello(infile)) < 0)
+            {
                 perror(argv[1]);
                 goto error_out;
             }
-        } else {
+        }
+        else
+        {
             int ret;
             /* 64-bit special case */
-            if (atom_size == 1) {
-                if (fread(atom_bytes, ATOM_PREAMBLE_SIZE, 1, infile) != 1) {
+            if (atom_size == 1)
+            {
+                if (fread(atom_bytes, ATOM_PREAMBLE_SIZE, 1, infile) != 1)
+                {
                     break;
                 }
                 atom_size = BE_64(&atom_bytes[0]);
                 ret = fseeko(infile, atom_size - ATOM_PREAMBLE_SIZE * 2, SEEK_CUR);
-            } else {
+            }
+            else
+            {
                 ret = fseeko(infile, atom_size - ATOM_PREAMBLE_SIZE, SEEK_CUR);
             }
-            if (ret) {
+            if (ret)
+            {
                 perror(argv[1]);
                 goto error_out;
             }
@@ -172,15 +187,16 @@ int main(int argc, char *argv[])
                atom_offset,
                atom_size);
         if ((atom_type != FREE_ATOM) &&
-            (atom_type != JUNK_ATOM) &&
-            (atom_type != MDAT_ATOM) &&
-            (atom_type != MOOV_ATOM) &&
-            (atom_type != PNOT_ATOM) &&
-            (atom_type != SKIP_ATOM) &&
-            (atom_type != WIDE_ATOM) &&
-            (atom_type != PICT_ATOM) &&
-            (atom_type != UUID_ATOM) &&
-            (atom_type != FTYP_ATOM)) {
+                (atom_type != JUNK_ATOM) &&
+                (atom_type != MDAT_ATOM) &&
+                (atom_type != MOOV_ATOM) &&
+                (atom_type != PNOT_ATOM) &&
+                (atom_type != SKIP_ATOM) &&
+                (atom_type != WIDE_ATOM) &&
+                (atom_type != PICT_ATOM) &&
+                (atom_type != UUID_ATOM) &&
+                (atom_type != FTYP_ATOM))
+        {
             printf("encountered non-QT top-level atom (is this a QuickTime file?)\n");
             break;
         }
@@ -193,7 +209,8 @@ int main(int argc, char *argv[])
             break;
     }
 
-    if (atom_type != MOOV_ATOM) {
+    if (atom_type != MOOV_ATOM)
+    {
         printf("last atom in file was not a moov atom\n");
         free(ftyp_atom);
         fclose(infile);
@@ -202,29 +219,34 @@ int main(int argc, char *argv[])
 
     /* moov atom was, in fact, the last atom in the chunk; load the whole
      * moov atom */
-    if (fseeko(infile, -atom_size, SEEK_END)) {
+    if (fseeko(infile, -atom_size, SEEK_END))
+    {
         perror(argv[1]);
         goto error_out;
     }
     last_offset    = ftello(infile);
-    if (last_offset < 0) {
+    if (last_offset < 0)
+    {
         perror(argv[1]);
         goto error_out;
     }
     moov_atom_size = atom_size;
     moov_atom      = malloc(moov_atom_size);
-    if (!moov_atom) {
+    if (!moov_atom)
+    {
         printf("could not allocate %"PRIu64" bytes for moov atom\n", atom_size);
         goto error_out;
     }
-    if (fread(moov_atom, atom_size, 1, infile) != 1) {
+    if (fread(moov_atom, atom_size, 1, infile) != 1)
+    {
         perror(argv[1]);
         goto error_out;
     }
 
     /* this utility does not support compressed atoms yet, so disqualify
      * files with compressed QT atoms */
-    if (BE_32(&moov_atom[12]) == CMOV_ATOM) {
+    if (BE_32(&moov_atom[12]) == CMOV_ATOM)
+    {
         printf("this utility does not support compressed moov atoms yet\n");
         goto error_out;
     }
@@ -234,21 +256,26 @@ int main(int argc, char *argv[])
     infile = NULL;
 
     /* crawl through the moov chunk in search of stco or co64 atoms */
-    for (i = 4; i < moov_atom_size - 4; i++) {
+    for (i = 4; i < moov_atom_size - 4; i++)
+    {
         atom_type = BE_32(&moov_atom[i]);
-        if (atom_type == STCO_ATOM) {
+        if (atom_type == STCO_ATOM)
+        {
             printf(" patching stco atom...\n");
             atom_size = BE_32(&moov_atom[i - 4]);
-            if (i + atom_size - 4 > moov_atom_size) {
+            if (i + atom_size - 4 > moov_atom_size)
+            {
                 printf(" bad atom size\n");
                 goto error_out;
             }
             offset_count = BE_32(&moov_atom[i + 8]);
-            if (i + 12 + offset_count * UINT64_C(4) > moov_atom_size) {
+            if (i + 12 + offset_count * UINT64_C(4) > moov_atom_size)
+            {
                 printf(" bad atom size/element count\n");
                 goto error_out;
             }
-            for (j = 0; j < offset_count; j++) {
+            for (j = 0; j < offset_count; j++)
+            {
                 current_offset  = BE_32(&moov_atom[i + 12 + j * 4]);
                 current_offset += moov_atom_size;
                 moov_atom[i + 12 + j * 4 + 0] = (current_offset >> 24) & 0xFF;
@@ -257,19 +284,24 @@ int main(int argc, char *argv[])
                 moov_atom[i + 12 + j * 4 + 3] = (current_offset >>  0) & 0xFF;
             }
             i += atom_size - 4;
-        } else if (atom_type == CO64_ATOM) {
+        }
+        else if (atom_type == CO64_ATOM)
+        {
             printf(" patching co64 atom...\n");
             atom_size = BE_32(&moov_atom[i - 4]);
-            if (i + atom_size - 4 > moov_atom_size) {
+            if (i + atom_size - 4 > moov_atom_size)
+            {
                 printf(" bad atom size\n");
                 goto error_out;
             }
             offset_count = BE_32(&moov_atom[i + 8]);
-            if (i + 12 + offset_count * UINT64_C(8) > moov_atom_size) {
+            if (i + 12 + offset_count * UINT64_C(8) > moov_atom_size)
+            {
                 printf(" bad atom size/element count\n");
                 goto error_out;
             }
-            for (j = 0; j < offset_count; j++) {
+            for (j = 0; j < offset_count; j++)
+            {
                 current_offset  = BE_64(&moov_atom[i + 12 + j * 8]);
                 current_offset += moov_atom_size;
                 moov_atom[i + 12 + j * 8 + 0] = (current_offset >> 56) & 0xFF;
@@ -287,13 +319,16 @@ int main(int argc, char *argv[])
 
     /* re-open the input file and open the output file */
     infile = fopen(argv[1], "rb");
-    if (!infile) {
+    if (!infile)
+    {
         perror(argv[1]);
         goto error_out;
     }
 
-    if (start_offset > 0) { /* seek after ftyp atom */
-        if (fseeko(infile, start_offset, SEEK_SET)) {
+    if (start_offset > 0)   /* seek after ftyp atom */
+    {
+        if (fseeko(infile, start_offset, SEEK_SET))
+        {
             perror(argv[1]);
             goto error_out;
         }
@@ -302,15 +337,18 @@ int main(int argc, char *argv[])
     }
 
     outfile = fopen(argv[2], "wb");
-    if (!outfile) {
+    if (!outfile)
+    {
         perror(argv[2]);
         goto error_out;
     }
 
     /* dump the same ftyp atom */
-    if (ftyp_atom_size > 0) {
+    if (ftyp_atom_size > 0)
+    {
         printf(" writing ftyp atom...\n");
-        if (fwrite(ftyp_atom, ftyp_atom_size, 1, outfile) != 1) {
+        if (fwrite(ftyp_atom, ftyp_atom_size, 1, outfile) != 1)
+        {
             perror(argv[2]);
             goto error_out;
         }
@@ -318,7 +356,8 @@ int main(int argc, char *argv[])
 
     /* dump the new moov atom */
     printf(" writing moov atom...\n");
-    if (fwrite(moov_atom, moov_atom_size, 1, outfile) != 1) {
+    if (fwrite(moov_atom, moov_atom_size, 1, outfile) != 1)
+    {
         perror(argv[2]);
         goto error_out;
     }
@@ -326,19 +365,23 @@ int main(int argc, char *argv[])
     /* copy the remainder of the infile, from offset 0 -> last_offset - 1 */
     bytes_to_copy = MIN(COPY_BUFFER_SIZE, last_offset);
     copy_buffer = malloc(bytes_to_copy);
-    if (!copy_buffer) {
+    if (!copy_buffer)
+    {
         printf("could not allocate %d bytes for copy_buffer\n", bytes_to_copy);
         goto error_out;
     }
     printf(" copying rest of file...\n");
-    while (last_offset) {
+    while (last_offset)
+    {
         bytes_to_copy = MIN(bytes_to_copy, last_offset);
 
-        if (fread(copy_buffer, bytes_to_copy, 1, infile) != 1) {
+        if (fread(copy_buffer, bytes_to_copy, 1, infile) != 1)
+        {
             perror(argv[1]);
             goto error_out;
         }
-        if (fwrite(copy_buffer, bytes_to_copy, 1, outfile) != 1) {
+        if (fwrite(copy_buffer, bytes_to_copy, 1, outfile) != 1)
+        {
             perror(argv[2]);
             goto error_out;
         }

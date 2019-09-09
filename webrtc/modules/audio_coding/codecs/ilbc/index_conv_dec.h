@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,6 +23,6 @@
 
 void WebRtcIlbcfix_IndexConvDec(
     int16_t *index   /* (i/o) Codebook indexes */
-                                );
+);
 
 #endif

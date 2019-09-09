@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,9 +10,11 @@
 
 #include "webrtc/modules/video_coding/codec_timer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
 // The first kIgnoredSampleCount samples will be ignored.
 const int kIgnoredSampleCount = 5;
@@ -26,28 +28,32 @@ const int64_t kTimeLimitMs = 10000;
 VCMCodecTimer::VCMCodecTimer()
     : ignored_sample_count_(0), filter_(kPercentile) {}
 
-void VCMCodecTimer::AddTiming(int64_t decode_time_ms, int64_t now_ms) {
-  // Ignore the first |kIgnoredSampleCount| samples.
-  if (ignored_sample_count_ < kIgnoredSampleCount) {
-    ++ignored_sample_count_;
-    return;
-  }
+void VCMCodecTimer::AddTiming(int64_t decode_time_ms, int64_t now_ms)
+{
+    // Ignore the first |kIgnoredSampleCount| samples.
+    if (ignored_sample_count_ < kIgnoredSampleCount)
+    {
+        ++ignored_sample_count_;
+        return;
+    }
 
-  // Insert new decode time value.
-  filter_.Insert(decode_time_ms);
-  history_.emplace(decode_time_ms, now_ms);
+    // Insert new decode time value.
+    filter_.Insert(decode_time_ms);
+    history_.emplace(decode_time_ms, now_ms);
 
-  // Pop old decode time values.
-  while (!history_.empty() &&
-         now_ms - history_.front().sample_time_ms > kTimeLimitMs) {
-    filter_.Erase(history_.front().decode_time_ms);
-    history_.pop();
-  }
+    // Pop old decode time values.
+    while (!history_.empty() &&
+            now_ms - history_.front().sample_time_ms > kTimeLimitMs)
+    {
+        filter_.Erase(history_.front().decode_time_ms);
+        history_.pop();
+    }
 }
 
 // Get the 95th percentile observed decode time within a time window.
-int64_t VCMCodecTimer::RequiredDecodeTimeMs() const {
-  return filter_.GetPercentileValue();
+int64_t VCMCodecTimer::RequiredDecodeTimeMs() const
+{
+    return filter_.GetPercentileValue();
 }
 
 VCMCodecTimer::Sample::Sample(int64_t decode_time_ms, int64_t sample_time_ms)

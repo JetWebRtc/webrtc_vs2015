@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003-2010 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -38,7 +38,8 @@ typedef void (*h264_biweight_func)(uint8_t *dst, uint8_t *src,
 /**
  * Context for storing H.264 DSP functions
  */
-typedef struct H264DSPContext {
+typedef struct H264DSPContext
+{
     /* weighted MC */
     h264_weight_func weight_h264_pixels_tab[4];
     h264_biweight_func biweight_h264_pixels_tab[4];
@@ -56,7 +57,7 @@ typedef struct H264DSPContext {
     void (*h264_h_loop_filter_luma_intra)(uint8_t *pix, int stride,
                                           int alpha, int beta);
     void (*h264_h_loop_filter_luma_mbaff_intra)(uint8_t *pix /*align 16*/,
-                                                int stride, int alpha, int beta);
+            int stride, int alpha, int beta);
     void (*h264_v_loop_filter_chroma)(uint8_t *pix /*align 8*/, int stride,
                                       int alpha, int beta, int8_t *tc0);
     void (*h264_h_loop_filter_chroma)(uint8_t *pix /*align 4*/, int stride,
@@ -69,7 +70,7 @@ typedef struct H264DSPContext {
     void (*h264_h_loop_filter_chroma_intra)(uint8_t *pix /*align 8*/,
                                             int stride, int alpha, int beta);
     void (*h264_h_loop_filter_chroma_mbaff_intra)(uint8_t *pix /*align 8*/,
-                                                  int stride, int alpha, int beta);
+            int stride, int alpha, int beta);
     // h264_loop_filter_strength: simd only. the C version is inlined in h264.c
     void (*h264_loop_filter_strength)(int16_t bS[2][4][4], uint8_t nnz[40],
                                       int8_t ref[2][40], int16_t mv[2][40][2],

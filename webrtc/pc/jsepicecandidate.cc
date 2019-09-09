@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,24 +15,28 @@
 #include "webrtc/base/stringencode.h"
 #include "webrtc/pc/webrtcsdp.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 IceCandidateInterface* CreateIceCandidate(const std::string& sdp_mid,
-                                          int sdp_mline_index,
-                                          const std::string& sdp,
-                                          SdpParseError* error) {
-  JsepIceCandidate* jsep_ice = new JsepIceCandidate(sdp_mid, sdp_mline_index);
-  if (!jsep_ice->Initialize(sdp, error)) {
-    delete jsep_ice;
-    return NULL;
-  }
-  return jsep_ice;
+        int sdp_mline_index,
+        const std::string& sdp,
+        SdpParseError* error)
+{
+    JsepIceCandidate* jsep_ice = new JsepIceCandidate(sdp_mid, sdp_mline_index);
+    if (!jsep_ice->Initialize(sdp, error))
+    {
+        delete jsep_ice;
+        return NULL;
+    }
+    return jsep_ice;
 }
 
 JsepIceCandidate::JsepIceCandidate(const std::string& sdp_mid,
                                    int sdp_mline_index)
     : sdp_mid_(sdp_mid),
-      sdp_mline_index_(sdp_mline_index) {
+      sdp_mline_index_(sdp_mline_index)
+{
 }
 
 JsepIceCandidate::JsepIceCandidate(const std::string& sdp_mid,
@@ -40,56 +44,68 @@ JsepIceCandidate::JsepIceCandidate(const std::string& sdp_mid,
                                    const cricket::Candidate& candidate)
     : sdp_mid_(sdp_mid),
       sdp_mline_index_(sdp_mline_index),
-      candidate_(candidate) {
+      candidate_(candidate)
+{
 }
 
-JsepIceCandidate::~JsepIceCandidate() {
+JsepIceCandidate::~JsepIceCandidate()
+{
 }
 
-bool JsepIceCandidate::Initialize(const std::string& sdp, SdpParseError* err) {
-  return SdpDeserializeCandidate(sdp, this, err);
+bool JsepIceCandidate::Initialize(const std::string& sdp, SdpParseError* err)
+{
+    return SdpDeserializeCandidate(sdp, this, err);
 }
 
-bool JsepIceCandidate::ToString(std::string* out) const {
-  if (!out)
-    return false;
-  *out = SdpSerializeCandidate(*this);
-  return !out->empty();
+bool JsepIceCandidate::ToString(std::string* out) const
+{
+    if (!out)
+        return false;
+    *out = SdpSerializeCandidate(*this);
+    return !out->empty();
 }
 
-JsepCandidateCollection::~JsepCandidateCollection() {
-  for (std::vector<JsepIceCandidate*>::iterator it = candidates_.begin();
-       it != candidates_.end(); ++it) {
-    delete *it;
-  }
+JsepCandidateCollection::~JsepCandidateCollection()
+{
+    for (std::vector<JsepIceCandidate*>::iterator it = candidates_.begin();
+            it != candidates_.end(); ++it)
+    {
+        delete *it;
+    }
 }
 
 bool JsepCandidateCollection::HasCandidate(
-    const IceCandidateInterface* candidate) const {
-  bool ret = false;
-  for (std::vector<JsepIceCandidate*>::const_iterator it = candidates_.begin();
-      it != candidates_.end(); ++it) {
-    if ((*it)->sdp_mid() == candidate->sdp_mid() &&
-        (*it)->sdp_mline_index() == candidate->sdp_mline_index() &&
-        (*it)->candidate().IsEquivalent(candidate->candidate())) {
-      ret = true;
-      break;
+    const IceCandidateInterface* candidate) const
+{
+    bool ret = false;
+    for (std::vector<JsepIceCandidate*>::const_iterator it = candidates_.begin();
+            it != candidates_.end(); ++it)
+    {
+        if ((*it)->sdp_mid() == candidate->sdp_mid() &&
+                (*it)->sdp_mline_index() == candidate->sdp_mline_index() &&
+                (*it)->candidate().IsEquivalent(candidate->candidate()))
+        {
+            ret = true;
+            break;
+        }
     }
-  }
-  return ret;
+    return ret;
 }
 
-size_t JsepCandidateCollection::remove(const cricket::Candidate& candidate) {
-  auto iter = std::find_if(candidates_.begin(), candidates_.end(),
-                           [candidate](JsepIceCandidate* c) {
-                             return candidate.MatchesForRemoval(c->candidate());
-                           });
-  if (iter != candidates_.end()) {
-    delete *iter;
-    candidates_.erase(iter);
-    return 1;
-  }
-  return 0;
+size_t JsepCandidateCollection::remove(const cricket::Candidate& candidate)
+{
+    auto iter = std::find_if(candidates_.begin(), candidates_.end(),
+                             [candidate](JsepIceCandidate* c)
+    {
+        return candidate.MatchesForRemoval(c->candidate());
+    });
+    if (iter != candidates_.end())
+    {
+        delete *iter;
+        candidates_.erase(iter);
+        return 1;
+    }
+    return 0;
 }
 
 }  // namespace webrtc

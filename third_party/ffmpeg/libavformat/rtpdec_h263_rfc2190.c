@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP H.263 Depacketizer, RFC 2190
  * Copyright (c) 2012 Martin Storsjo
  * Based on the GStreamer H.263 Depayloder:
@@ -32,7 +32,8 @@
 #include "libavutil/intreadwrite.h"
 #include "libavcodec/get_bits.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *buf;
     uint8_t      endbyte;
     int          endbyte_bits;
@@ -58,28 +59,34 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         return ff_h263_handle_packet(ctx, data, st, pkt, timestamp, buf, len,
                                      seq, flags);
 
-    if (data->buf && data->timestamp != *timestamp) {
+    if (data->buf && data->timestamp != *timestamp)
+    {
         /* Dropping old buffered, unfinished data */
         ffio_free_dyn_buf(&data->buf);
         data->endbyte_bits = 0;
     }
 
-    if (len < 4) {
+    if (len < 4)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short H.263 RTP packet: %d\n", len);
         return AVERROR_INVALIDDATA;
     }
 
     f = buf[0] & 0x80;
     p = buf[0] & 0x40;
-    if (!f) {
+    if (!f)
+    {
         /* Mode A */
         header_size = 4;
         i = buf[1] & 0x10;
         r = ((buf[1] & 0x01) << 3) | ((buf[2] & 0xe0) >> 5);
-    } else if (!p) {
+    }
+    else if (!p)
+    {
         /* Mode B */
         header_size = 8;
-        if (len < header_size) {
+        if (len < header_size)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Too short H.263 RTP packet: %d bytes, %d header bytes\n",
                    len, header_size);
@@ -87,10 +94,13 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         }
         r = buf[3] & 0x03;
         i = buf[4] & 0x80;
-    } else {
+    }
+    else
+    {
         /* Mode C */
         header_size = 12;
-        if (len < header_size) {
+        if (len < header_size)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Too short H.263 RTP packet: %d bytes, %d header bytes\n",
                    len, header_size);
@@ -102,8 +112,10 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     sbit = (buf[0] >> 3) & 0x7;
     ebit =  buf[0]       & 0x7;
     src  = (buf[1] & 0xe0) >> 5;
-    if (!(buf[0] & 0xf8)) { /* Reserved bits in RFC 2429/4629 are zero */
-        if ((src == 0 || src >= 6) && r) {
+    if (!(buf[0] & 0xf8))   /* Reserved bits in RFC 2429/4629 are zero */
+    {
+        if ((src == 0 || src >= 6) && r)
+        {
             /* Invalid src for this format, and bits that should be zero
              * according to RFC 2190 aren't zero. */
             av_log(ctx, AV_LOG_WARNING,
@@ -118,33 +130,42 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     buf += header_size;
     len -= header_size;
 
-    if (!data->buf) {
+    if (!data->buf)
+    {
         /* Check the picture start code, only start buffering a new frame
          * if this is correct */
-        if (len > 4 && AV_RB32(buf) >> 10 == 0x20) {
+        if (len > 4 && AV_RB32(buf) >> 10 == 0x20)
+        {
             ret = avio_open_dyn_buf(&data->buf);
             if (ret < 0)
                 return ret;
             data->timestamp = *timestamp;
-        } else {
+        }
+        else
+        {
             /* Frame not started yet, skipping */
             return AVERROR(EAGAIN);
         }
     }
 
-    if (data->endbyte_bits || sbit) {
-        if (data->endbyte_bits == sbit) {
+    if (data->endbyte_bits || sbit)
+    {
+        if (data->endbyte_bits == sbit)
+        {
             data->endbyte |= buf[0] & (0xff >> sbit);
             data->endbyte_bits = 0;
             buf++;
             len--;
             avio_w8(data->buf, data->endbyte);
-        } else {
+        }
+        else
+        {
             /* Start/end skip bits not matching - missed packets? */
             GetBitContext gb;
             init_get_bits(&gb, buf, len*8 - ebit);
             skip_bits(&gb, sbit);
-            if (data->endbyte_bits) {
+            if (data->endbyte_bits)
+            {
                 data->endbyte |= get_bits(&gb, 8 - data->endbyte_bits);
                 avio_w8(data->buf, data->endbyte);
             }
@@ -158,12 +179,15 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
             len = 0;
         }
     }
-    if (ebit) {
+    if (ebit)
+    {
         if (len > 0)
             avio_write(data->buf, buf, len - 1);
         data->endbyte_bits = 8 - ebit;
         data->endbyte = buf[len - 1] & (0xff << ebit);
-    } else {
+    }
+    else
+    {
         avio_write(data->buf, buf, len);
     }
 
@@ -183,7 +207,8 @@ static int h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_h263_rfc2190_dynamic_handler = {
+RTPDynamicProtocolHandler ff_h263_rfc2190_dynamic_handler =
+{
     .codec_type        = AVMEDIA_TYPE_VIDEO,
     .codec_id          = AV_CODEC_ID_H263,
     .need_parsing      = AVSTREAM_PARSE_FULL,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 // For EncodedImage
 #include "webrtc/video_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Error codes
 #define VCM_FRAME_NOT_READY 3
@@ -43,102 +44,113 @@ namespace webrtc {
 
 enum { kDefaultStartBitrateKbps = 300 };
 
-enum VCMVideoProtection {
-  kProtectionNone,
-  kProtectionNack,
-  kProtectionFEC,
-  kProtectionNackFEC,
+enum VCMVideoProtection
+{
+    kProtectionNone,
+    kProtectionNack,
+    kProtectionFEC,
+    kProtectionNackFEC,
 };
 
-enum VCMTemporalDecimation {
-  kBitrateOverUseDecimation,
+enum VCMTemporalDecimation
+{
+    kBitrateOverUseDecimation,
 };
 
-struct VCMFrameCount {
-  uint32_t numKeyFrames;
-  uint32_t numDeltaFrames;
+struct VCMFrameCount
+{
+    uint32_t numKeyFrames;
+    uint32_t numDeltaFrames;
 };
 
 // Callback class used for passing decoded frames which are ready to be
 // rendered.
-class VCMReceiveCallback {
- public:
-  virtual int32_t FrameToRender(VideoFrame& videoFrame,  // NOLINT
-                                rtc::Optional<uint8_t> qp) = 0;
-  virtual int32_t ReceivedDecodedReferenceFrame(const uint64_t pictureId) {
-    return -1;
-  }
-  // Called when the current receive codec changes.
-  virtual void OnIncomingPayloadType(int payload_type) {}
-  virtual void OnDecoderImplementationName(const char* implementation_name) {}
+class VCMReceiveCallback
+{
+public:
+    virtual int32_t FrameToRender(VideoFrame& videoFrame,  // NOLINT
+                                  rtc::Optional<uint8_t> qp) = 0;
+    virtual int32_t ReceivedDecodedReferenceFrame(const uint64_t pictureId)
+    {
+        return -1;
+    }
+    // Called when the current receive codec changes.
+    virtual void OnIncomingPayloadType(int payload_type) {}
+    virtual void OnDecoderImplementationName(const char* implementation_name) {}
 
- protected:
-  virtual ~VCMReceiveCallback() {}
+protected:
+    virtual ~VCMReceiveCallback() {}
 };
 
 // Callback class used for informing the user of the bit rate and frame rate,
 // and the name of the encoder.
-class VCMSendStatisticsCallback {
- public:
-  virtual void SendStatistics(uint32_t bitRate, uint32_t frameRate) = 0;
+class VCMSendStatisticsCallback
+{
+public:
+    virtual void SendStatistics(uint32_t bitRate, uint32_t frameRate) = 0;
 
- protected:
-  virtual ~VCMSendStatisticsCallback() {}
+protected:
+    virtual ~VCMSendStatisticsCallback() {}
 };
 
 // Callback class used for informing the user of the incoming bit rate and frame
 // rate.
-class VCMReceiveStatisticsCallback {
- public:
-  virtual void OnReceiveRatesUpdated(uint32_t bitRate, uint32_t frameRate) = 0;
-  virtual void OnDiscardedPacketsUpdated(int discarded_packets) = 0;
-  virtual void OnFrameCountsUpdated(const FrameCounts& frame_counts) = 0;
+class VCMReceiveStatisticsCallback
+{
+public:
+    virtual void OnReceiveRatesUpdated(uint32_t bitRate, uint32_t frameRate) = 0;
+    virtual void OnDiscardedPacketsUpdated(int discarded_packets) = 0;
+    virtual void OnFrameCountsUpdated(const FrameCounts& frame_counts) = 0;
 
- protected:
-  virtual ~VCMReceiveStatisticsCallback() {}
+protected:
+    virtual ~VCMReceiveStatisticsCallback() {}
 };
 
 // Callback class used for informing the user of decode timing info.
-class VCMDecoderTimingCallback {
- public:
-  virtual void OnDecoderTiming(int decode_ms,
-                               int max_decode_ms,
-                               int current_delay_ms,
-                               int target_delay_ms,
-                               int jitter_buffer_ms,
-                               int min_playout_delay_ms,
-                               int render_delay_ms) = 0;
+class VCMDecoderTimingCallback
+{
+public:
+    virtual void OnDecoderTiming(int decode_ms,
+                                 int max_decode_ms,
+                                 int current_delay_ms,
+                                 int target_delay_ms,
+                                 int jitter_buffer_ms,
+                                 int min_playout_delay_ms,
+                                 int render_delay_ms) = 0;
 
- protected:
-  virtual ~VCMDecoderTimingCallback() {}
+protected:
+    virtual ~VCMDecoderTimingCallback() {}
 };
 
 // Callback class used for telling the user about how to configure the FEC,
 // and the rates sent the last second is returned to the VCM.
-class VCMProtectionCallback {
- public:
-  virtual int ProtectionRequest(const FecProtectionParams* delta_params,
-                                const FecProtectionParams* key_params,
-                                uint32_t* sent_video_rate_bps,
-                                uint32_t* sent_nack_rate_bps,
-                                uint32_t* sent_fec_rate_bps) = 0;
+class VCMProtectionCallback
+{
+public:
+    virtual int ProtectionRequest(const FecProtectionParams* delta_params,
+                                  const FecProtectionParams* key_params,
+                                  uint32_t* sent_video_rate_bps,
+                                  uint32_t* sent_nack_rate_bps,
+                                  uint32_t* sent_fec_rate_bps) = 0;
 
- protected:
-  virtual ~VCMProtectionCallback() {}
+protected:
+    virtual ~VCMProtectionCallback() {}
 };
 
 // Callback class used for telling the user about what frame type needed to
 // continue decoding.
 // Typically a key frame when the stream has been corrupted in some way.
-class VCMFrameTypeCallback {
- public:
-  virtual int32_t RequestKeyFrame() = 0;
-  virtual int32_t SliceLossIndicationRequest(const uint64_t pictureId) {
-    return -1;
-  }
+class VCMFrameTypeCallback
+{
+public:
+    virtual int32_t RequestKeyFrame() = 0;
+    virtual int32_t SliceLossIndicationRequest(const uint64_t pictureId)
+    {
+        return -1;
+    }
 
- protected:
-  virtual ~VCMFrameTypeCallback() {}
+protected:
+    virtual ~VCMFrameTypeCallback() {}
 };
 
 // Callback class used for telling the user about which packet sequence numbers
@@ -146,29 +158,32 @@ class VCMFrameTypeCallback {
 // missing and need to be resent.
 // TODO(philipel): Deprecate VCMPacketRequestCallback
 //                 and use NackSender instead.
-class VCMPacketRequestCallback {
- public:
-  virtual int32_t ResendPackets(const uint16_t* sequenceNumbers,
-                                uint16_t length) = 0;
+class VCMPacketRequestCallback
+{
+public:
+    virtual int32_t ResendPackets(const uint16_t* sequenceNumbers,
+                                  uint16_t length) = 0;
 
- protected:
-  virtual ~VCMPacketRequestCallback() {}
+protected:
+    virtual ~VCMPacketRequestCallback() {}
 };
 
-class NackSender {
- public:
-  virtual void SendNack(const std::vector<uint16_t>& sequence_numbers) = 0;
+class NackSender
+{
+public:
+    virtual void SendNack(const std::vector<uint16_t>& sequence_numbers) = 0;
 
- protected:
-  virtual ~NackSender() {}
+protected:
+    virtual ~NackSender() {}
 };
 
-class KeyFrameRequestSender {
- public:
-  virtual void RequestKeyFrame() = 0;
+class KeyFrameRequestSender
+{
+public:
+    virtual void RequestKeyFrame() = 0;
 
- protected:
-  virtual ~KeyFrameRequestSender() {}
+protected:
+    virtual ~KeyFrameRequestSender() {}
 };
 
 }  // namespace webrtc

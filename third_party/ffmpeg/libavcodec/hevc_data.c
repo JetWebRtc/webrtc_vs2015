@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC shared tables
  *
  * This file is part of FFmpeg.
@@ -22,21 +22,24 @@
 
 #include "hevc.h"
 
-const uint8_t ff_hevc_diag_scan4x4_x[16] = {
+const uint8_t ff_hevc_diag_scan4x4_x[16] =
+{
     0, 0, 1, 0,
     1, 2, 0, 1,
     2, 3, 1, 2,
     3, 2, 3, 3,
 };
 
-const uint8_t ff_hevc_diag_scan4x4_y[16] = {
+const uint8_t ff_hevc_diag_scan4x4_y[16] =
+{
     0, 1, 0, 2,
     1, 0, 3, 2,
     1, 0, 3, 2,
     1, 3, 2, 3,
 };
 
-const uint8_t ff_hevc_diag_scan8x8_x[64] = {
+const uint8_t ff_hevc_diag_scan8x8_x[64] =
+{
     0, 0, 1, 0,
     1, 2, 0, 1,
     2, 3, 0, 1,
@@ -55,7 +58,8 @@ const uint8_t ff_hevc_diag_scan8x8_x[64] = {
     7, 6, 7, 7,
 };
 
-const uint8_t ff_hevc_diag_scan8x8_y[64] = {
+const uint8_t ff_hevc_diag_scan8x8_y[64] =
+{
     0, 1, 0, 2,
     1, 0, 3, 2,
     1, 0, 4, 3,

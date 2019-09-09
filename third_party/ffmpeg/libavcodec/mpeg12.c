@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-1/2 decoder
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -44,7 +44,8 @@
 
 uint8_t ff_mpeg12_static_rl_table_store[2][2][2*MAX_RUN + MAX_LEVEL + 3];
 
-static const uint8_t table_mb_ptype[7][2] = {
+static const uint8_t table_mb_ptype[7][2] =
+{
     { 3, 5 }, // 0x01 MB_INTRA
     { 1, 2 }, // 0x02 MB_PAT
     { 1, 3 }, // 0x08 MB_FOR
@@ -54,7 +55,8 @@ static const uint8_t table_mb_ptype[7][2] = {
     { 2, 5 }, // 0x1A MB_QUANT|MB_FOR|MB_PAT
 };
 
-static const uint8_t table_mb_btype[11][2] = {
+static const uint8_t table_mb_btype[11][2] =
+{
     { 3, 5 }, // 0x01 MB_INTRA
     { 2, 3 }, // 0x04 MB_BACK
     { 3, 3 }, // 0x06 MB_BACK|MB_PAT
@@ -83,25 +85,36 @@ static av_cold void init_2d_vlc_rl(RLTable *rl, unsigned static_size)
     av_assert0(static_size <= FF_ARRAY_ELEMS(table));
     init_vlc(&vlc, TEX_VLC_BITS, rl->n + 2, &rl->table_vlc[0][1], 4, 2, &rl->table_vlc[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC);
 
-    for (i = 0; i < vlc.table_size; i++) {
+    for (i = 0; i < vlc.table_size; i++)
+    {
         int code = vlc.table[i][0];
         int len  = vlc.table[i][1];
         int level, run;
 
-        if (len == 0) { // illegal code
+        if (len == 0)   // illegal code
+        {
             run   = 65;
             level = MAX_LEVEL;
-        } else if (len<0) { //more bits needed
+        }
+        else if (len<0)     //more bits needed
+        {
             run   = 0;
             level = code;
-        } else {
-            if (code == rl->n) { //esc
+        }
+        else
+        {
+            if (code == rl->n)   //esc
+            {
                 run   = 65;
                 level = 0;
-            } else if (code == rl->n+1) { //eob
+            }
+            else if (code == rl->n+1)     //eob
+            {
                 run   = 0;
                 level = 127;
-            } else {
+            }
+            else
+            {
                 run   = rl->table_run  [code] + 1;
                 level = rl->table_level[code];
             }
@@ -116,7 +129,7 @@ av_cold void ff_mpeg12_common_init(MpegEncContext *s)
 {
 
     s->y_dc_scale_table =
-    s->c_dc_scale_table = ff_mpeg2_dc_scale_table[s->intra_dc_precision];
+        s->c_dc_scale_table = ff_mpeg2_dc_scale_table[s->intra_dc_precision];
 
 }
 
@@ -146,7 +159,8 @@ av_cold void ff_mpeg12_init_vlcs(void)
 {
     static int done = 0;
 
-    if (!done) {
+    if (!done)
+    {
         done = 1;
 
         INIT_VLC_STATIC(&ff_dc_lum_vlc, DC_VLC_BITS, 12,
@@ -192,33 +206,40 @@ int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, 
     if (buf_size == 0)
         return 0;
 
-/*
- 0  frame start         -> 1/4
- 1  first_SEQEXT        -> 0/2
- 2  first field start   -> 3/0
- 3  second_SEQEXT       -> 2/0
- 4  searching end
-*/
+    /*
+     0  frame start         -> 1/4
+     1  first_SEQEXT        -> 0/2
+     2  first field start   -> 3/0
+     3  second_SEQEXT       -> 2/0
+     4  searching end
+    */
 
-    for (i = 0; i < buf_size; i++) {
+    for (i = 0; i < buf_size; i++)
+    {
         av_assert1(pc->frame_start_found >= 0 && pc->frame_start_found <= 4);
-        if (pc->frame_start_found & 1) {
+        if (pc->frame_start_found & 1)
+        {
             if (state == EXT_START_CODE && (buf[i] & 0xF0) != 0x80)
                 pc->frame_start_found--;
-            else if (state == EXT_START_CODE + 2) {
+            else if (state == EXT_START_CODE + 2)
+            {
                 if ((buf[i] & 3) == 3)
                     pc->frame_start_found = 0;
                 else
                     pc->frame_start_found = (pc->frame_start_found + 1) & 3;
             }
             state++;
-        } else {
+        }
+        else
+        {
             i = avpriv_find_start_code(buf + i, buf + buf_size, &state) - buf - 1;
-            if (pc->frame_start_found == 0 && state >= SLICE_MIN_START_CODE && state <= SLICE_MAX_START_CODE) {
+            if (pc->frame_start_found == 0 && state >= SLICE_MIN_START_CODE && state <= SLICE_MAX_START_CODE)
+            {
                 i++;
                 pc->frame_start_found = 4;
             }
-            if (state == SEQ_END_CODE) {
+            if (state == SEQ_END_CODE)
+            {
                 pc->frame_start_found = 0;
                 pc->state=-1;
                 return i+1;
@@ -227,14 +248,17 @@ int ff_mpeg1_find_frame_end(ParseContext *pc, const uint8_t *buf, int buf_size, 
                 pc->frame_start_found = 0;
             if (pc->frame_start_found  < 4 && state == EXT_START_CODE)
                 pc->frame_start_found++;
-            if (pc->frame_start_found == 4 && (state & 0xFFFFFF00) == 0x100) {
-                if (state < SLICE_MIN_START_CODE || state > SLICE_MAX_START_CODE) {
+            if (pc->frame_start_found == 4 && (state & 0xFFFFFF00) == 0x100)
+            {
+                if (state < SLICE_MIN_START_CODE || state > SLICE_MAX_START_CODE)
+                {
                     pc->frame_start_found = 0;
                     pc->state             = -1;
                     return i - 3;
                 }
             }
-            if (pc->frame_start_found == 0 && s && state == PICTURE_START_CODE) {
+            if (pc->frame_start_found == 0 && s && state == PICTURE_START_CODE)
+            {
                 ff_fetch_timestamp(s, i - 3, 1, i > 3);
             }
         }

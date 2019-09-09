@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -94,58 +94,63 @@ amm-info@iis.fraunhofer.de
 
 #include "psy_const.h"
 
-typedef struct {
-   FIXP_DBL clipSaveLow, clipSaveHigh;
-   FIXP_DBL minBitSave, maxBitSave;
-   FIXP_DBL clipSpendLow, clipSpendHigh;
-   FIXP_DBL minBitSpend, maxBitSpend;
+typedef struct
+{
+    FIXP_DBL clipSaveLow, clipSaveHigh;
+    FIXP_DBL minBitSave, maxBitSave;
+    FIXP_DBL clipSpendLow, clipSpendHigh;
+    FIXP_DBL minBitSpend, maxBitSpend;
 } BRES_PARAM;
 
-typedef struct {
-   INT modifyMinSnr;
-   INT startSfbL, startSfbS;
+typedef struct
+{
+    INT modifyMinSnr;
+    INT startSfbL, startSfbS;
 } AH_PARAM;
 
-typedef struct {
-  FIXP_DBL maxRed;
-  FIXP_DBL startRatio;
-  FIXP_DBL maxRatio;
-  FIXP_DBL redRatioFac;
-  FIXP_DBL redOffs;
+typedef struct
+{
+    FIXP_DBL maxRed;
+    FIXP_DBL startRatio;
+    FIXP_DBL maxRatio;
+    FIXP_DBL redRatioFac;
+    FIXP_DBL redOffs;
 } MINSNR_ADAPT_PARAM;
 
-typedef struct {
-  /* parameters for bitreservoir control */
-  INT peMin, peMax;
-  /* constant offset to pe               */
-  INT    peOffset;
-  /* constant PeFactor */
-  FIXP_DBL bits2PeFactor_m;
-  INT      bits2PeFactor_e;
-  /* avoid hole parameters               */
-  AH_PARAM ahParam;
-  /* values for correction of pe */
-  /* paramters for adaptation of minSnr */
-  MINSNR_ADAPT_PARAM minSnrAdaptParam;
-  INT peLast;
-  INT dynBitsLast;
-  FIXP_DBL peCorrectionFactor_m;
-  INT      peCorrectionFactor_e;
+typedef struct
+{
+    /* parameters for bitreservoir control */
+    INT peMin, peMax;
+    /* constant offset to pe               */
+    INT    peOffset;
+    /* constant PeFactor */
+    FIXP_DBL bits2PeFactor_m;
+    INT      bits2PeFactor_e;
+    /* avoid hole parameters               */
+    AH_PARAM ahParam;
+    /* values for correction of pe */
+    /* paramters for adaptation of minSnr */
+    MINSNR_ADAPT_PARAM minSnrAdaptParam;
+    INT peLast;
+    INT dynBitsLast;
+    FIXP_DBL peCorrectionFactor_m;
+    INT      peCorrectionFactor_e;
 
-  /* vbr encoding */
-  FIXP_DBL vbrQualFactor;
-  FIXP_DBL chaosMeasureOld;
+    /* vbr encoding */
+    FIXP_DBL vbrQualFactor;
+    FIXP_DBL chaosMeasureOld;
 
-  /* threshold weighting */
-  FIXP_DBL chaosMeasureEnFac[(2)];
-  INT      lastEnFacPatch[(2)];
+    /* threshold weighting */
+    FIXP_DBL chaosMeasureEnFac[(2)];
+    INT      lastEnFacPatch[(2)];
 
 } ATS_ELEMENT;
 
-typedef struct {
-  BRES_PARAM bresParamLong, bresParamShort;
-  ATS_ELEMENT* adjThrStateElem[(8)];
-  INT maxIter2ndGuess;
+typedef struct
+{
+    BRES_PARAM bresParamLong, bresParamShort;
+    ATS_ELEMENT* adjThrStateElem[(8)];
+    INT maxIter2ndGuess;
 } ADJ_THR_STATE;
 
 #endif

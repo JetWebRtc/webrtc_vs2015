@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,21 +14,24 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 static const size_t kWavHeaderSize = 44;
 
-class ReadableWav {
- public:
-  // Returns the number of bytes read.
-  size_t virtual Read(void* buf, size_t num_bytes) = 0;
-  virtual ~ReadableWav() {}
+class ReadableWav
+{
+public:
+    // Returns the number of bytes read.
+    size_t virtual Read(void* buf, size_t num_bytes) = 0;
+    virtual ~ReadableWav() {}
 };
 
-enum WavFormat {
-  kWavFormatPcm   = 1,  // PCM, each sample of size bytes_per_sample
-  kWavFormatALaw  = 6,  // 8-bit ITU-T G.711 A-law
-  kWavFormatMuLaw = 7,  // 8-bit ITU-T G.711 mu-law
+enum WavFormat
+{
+    kWavFormatPcm   = 1,  // PCM, each sample of size bytes_per_sample
+    kWavFormatALaw  = 6,  // 8-bit ITU-T G.711 A-law
+    kWavFormatMuLaw = 7,  // 8-bit ITU-T G.711 mu-law
 };
 
 // Return true if the given parameters will make a well-formed WAV header.

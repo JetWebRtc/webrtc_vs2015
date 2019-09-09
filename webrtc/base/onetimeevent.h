@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/base/criticalsection.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 // Provides a simple way to perform an operation (such as logging) one
 // time in a certain scope.
 // Example:
@@ -23,37 +24,43 @@ namespace webrtc {
 //   if (firstFrame()) {
 //     LOG(LS_INFO) << "This is the first frame".
 //   }
-class OneTimeEvent {
- public:
-  OneTimeEvent() {}
-  bool operator()() {
-    rtc::CritScope cs(&critsect_);
-    if (happened_) {
-      return false;
+class OneTimeEvent
+{
+public:
+    OneTimeEvent() {}
+    bool operator()()
+    {
+        rtc::CritScope cs(&critsect_);
+        if (happened_)
+        {
+            return false;
+        }
+        happened_ = true;
+        return true;
     }
-    happened_ = true;
-    return true;
-  }
 
- private:
-  bool happened_ = false;
-  rtc::CriticalSection critsect_;
+private:
+    bool happened_ = false;
+    rtc::CriticalSection critsect_;
 };
 
 // A non-thread-safe, ligher-weight version of the OneTimeEvent class.
-class ThreadUnsafeOneTimeEvent {
- public:
-  ThreadUnsafeOneTimeEvent() {}
-  bool operator()() {
-    if (happened_) {
-      return false;
+class ThreadUnsafeOneTimeEvent
+{
+public:
+    ThreadUnsafeOneTimeEvent() {}
+    bool operator()()
+    {
+        if (happened_)
+        {
+            return false;
+        }
+        happened_ = true;
+        return true;
     }
-    happened_ = true;
-    return true;
-  }
 
- private:
-  bool happened_ = false;
+private:
+    bool happened_ = false;
 };
 
 }  // namespace webrtc

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -114,15 +114,15 @@ int getChannelConfig( CHANNEL_MODE channel_mode );
  * \return zero on success, non-zero on failure.
  */
 int transportEnc_writePCE(
-        HANDLE_FDK_BITSTREAM hBs,
-        CHANNEL_MODE         channelMode,
-        INT                  sampleRate,
-        int                  instanceTagPCE,
-        int                  profile,
-        int                  matrixMixdownA,
-        int                  pseudoSurroundEnable,
-        UINT                 alignAnchor
-        );
+    HANDLE_FDK_BITSTREAM hBs,
+    CHANNEL_MODE         channelMode,
+    INT                  sampleRate,
+    int                  instanceTagPCE,
+    int                  profile,
+    int                  matrixMixdownA,
+    int                  pseudoSurroundEnable,
+    UINT                 alignAnchor
+);
 
 /**
  * \brief Get the bit count required by a Program Config Element
@@ -133,10 +133,10 @@ int transportEnc_writePCE(
  * \return the amount of bits required for the PCE including the given bit offset.
  */
 int transportEnc_GetPCEBits(
-        CHANNEL_MODE channelMode,
-        int          matrixMixdownA,
-        int          bits
-        );
+    CHANNEL_MODE channelMode,
+    int          matrixMixdownA,
+    int          bits
+);
 
 #endif /* TPENC_ASC_H */
 

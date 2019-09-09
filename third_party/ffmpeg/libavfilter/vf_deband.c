@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Niklas Haas
  * Copyright (c) 2015 Paul B Mahol
  *
@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct DebandContext {
+typedef struct DebandContext
+{
     const AVClass *class;
 
     float threshold[4];
@@ -49,7 +50,8 @@ typedef struct DebandContext {
 #define OFFSET(x) offsetof(DebandContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption deband_options[] = {
+static const AVOption deband_options[] =
+{
     { "1thr",      "set 1st plane threshold", OFFSET(threshold[0]), AV_OPT_TYPE_FLOAT, {.dbl=0.02},  0.00003,     0.5, FLAGS },
     { "2thr",      "set 2nd plane threshold", OFFSET(threshold[1]), AV_OPT_TYPE_FLOAT, {.dbl=0.02},  0.00003,     0.5, FLAGS },
     { "3thr",      "set 3rd plane threshold", OFFSET(threshold[2]), AV_OPT_TYPE_FLOAT, {.dbl=0.02},  0.00003,     0.5, FLAGS },
@@ -66,7 +68,8 @@ AVFILTER_DEFINE_CLASS(deband);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_GRAY8, AV_PIX_FMT_GRAY16,
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUV440P,
@@ -105,7 +108,8 @@ static int inline get_avg(int ref0, int ref1, int ref2, int ref3)
     return (ref0 + ref1 + ref2 + ref3) / 4;
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
@@ -117,7 +121,8 @@ static int deband_8_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     AVFrame *out = td->out;
     int x, y, p;
 
-    for (p = 0; p < s->nb_components; p++) {
+    for (p = 0; p < s->nb_components; p++)
+    {
         const uint8_t *src_ptr = (const uint8_t *)in->data[p];
         uint8_t *dst_ptr = (uint8_t *)out->data[p];
         const int dst_linesize = out->linesize[p];
@@ -128,10 +133,12 @@ static int deband_8_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
         const int w = s->planewidth[p] - 1;
         const int h = s->planeheight[p] - 1;
 
-        for (y = start; y < end; y++) {
+        for (y = start; y < end; y++)
+        {
             const int pos = y * s->planeheight[0];
 
-            for (x = 0; x < s->planewidth[p]; x++) {
+            for (x = 0; x < s->planewidth[p]; x++)
+            {
                 const int x_pos = s->x_pos[pos + x];
                 const int y_pos = s->y_pos[pos + x];
                 const int ref0 = src_ptr[av_clip(y +  y_pos, 0, h) * src_linesize + av_clip(x +  x_pos, 0, w)];
@@ -140,12 +147,15 @@ static int deband_8_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
                 const int ref3 = src_ptr[av_clip(y +  y_pos, 0, h) * src_linesize + av_clip(x + -x_pos, 0, w)];
                 const int src0 = src_ptr[y * src_linesize + x];
 
-                if (s->blur) {
+                if (s->blur)
+                {
                     const int avg = get_avg(ref0, ref1, ref2, ref3);
                     const int diff = FFABS(src0 - avg);
 
                     dst_ptr[y * dst_linesize + x] = diff < thr ? avg : src0;
-                } else {
+                }
+                else
+                {
                     dst_ptr[y * dst_linesize + x] = (FFABS(src0 - ref0) < thr) &&
                                                     (FFABS(src0 - ref1) < thr) &&
                                                     (FFABS(src0 - ref2) < thr) &&
@@ -166,7 +176,8 @@ static int deband_16_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     AVFrame *out = td->out;
     int x, y, p;
 
-    for (p = 0; p < s->nb_components; p++) {
+    for (p = 0; p < s->nb_components; p++)
+    {
         const uint16_t *src_ptr = (const uint16_t *)in->data[p];
         uint16_t *dst_ptr = (uint16_t *)out->data[p];
         const int dst_linesize = out->linesize[p] / 2;
@@ -177,10 +188,12 @@ static int deband_16_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
         const int w = s->planewidth[p] - 1;
         const int h = s->planeheight[p] - 1;
 
-        for (y = start; y < end; y++) {
+        for (y = start; y < end; y++)
+        {
             const int pos = y * s->planeheight[0];
 
-            for (x = 0; x < s->planewidth[p]; x++) {
+            for (x = 0; x < s->planewidth[p]; x++)
+            {
                 const int x_pos = s->x_pos[pos + x];
                 const int y_pos = s->y_pos[pos + x];
                 const int ref0 = src_ptr[av_clip(y +  y_pos, 0, h) * src_linesize + av_clip(x +  x_pos, 0, w)];
@@ -189,12 +202,15 @@ static int deband_16_c(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
                 const int ref3 = src_ptr[av_clip(y +  y_pos, 0, h) * src_linesize + av_clip(x + -x_pos, 0, w)];
                 const int src0 = src_ptr[y * src_linesize + x];
 
-                if (s->blur) {
+                if (s->blur)
+                {
                     const int avg = get_avg(ref0, ref1, ref2, ref3);
                     const int diff = FFABS(src0 - avg);
 
                     dst_ptr[y * dst_linesize + x] = diff < thr ? avg : src0;
-                } else {
+                }
+                else
+                {
                     dst_ptr[y * dst_linesize + x] = (FFABS(src0 - ref0) < thr) &&
                                                     (FFABS(src0 - ref1) < thr) &&
                                                     (FFABS(src0 - ref2) < thr) &&
@@ -235,8 +251,10 @@ static int config_input(AVFilterLink *inlink)
     if (!s->x_pos || !s->y_pos)
         return AVERROR(ENOMEM);
 
-    for (y = 0; y < s->planeheight[0]; y++) {
-        for (x = 0; x < s->planewidth[0]; x++) {
+    for (y = 0; y < s->planeheight[0]; y++)
+    {
+        for (x = 0; x < s->planewidth[0]; x++)
+        {
             const float r = frand(x, y);
             const float dir = direction < 0 ? -direction : r * direction;
             const int dist = range < 0 ? -range : r * range;
@@ -258,16 +276,18 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     ThreadData td;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    td.in = in; td.out = out;
+    td.in = in;
+    td.out = out;
     ctx->internal->execute(ctx, s->deband, &td, NULL, FFMIN3(s->planeheight[1],
-                                                             s->planeheight[2],
-                                                             ctx->graph->nb_threads));
+                           s->planeheight[2],
+                           ctx->graph->nb_threads));
 
     av_frame_free(&in);
     return ff_filter_frame(outlink, out);
@@ -281,7 +301,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->y_pos);
 }
 
-static const AVFilterPad avfilter_vf_deband_inputs[] = {
+static const AVFilterPad avfilter_vf_deband_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -291,7 +312,8 @@ static const AVFilterPad avfilter_vf_deband_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_deband_outputs[] = {
+static const AVFilterPad avfilter_vf_deband_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -299,7 +321,8 @@ static const AVFilterPad avfilter_vf_deband_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_deband = {
+AVFilter ff_vf_deband =
+{
     .name          = "deband",
     .description   = NULL_IF_CONFIG_SMALL("Debands video."),
     .priv_size     = sizeof(DebandContext),

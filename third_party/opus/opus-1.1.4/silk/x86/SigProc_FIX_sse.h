@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -82,9 +82,9 @@ opus_int64 silk_inner_prod16_aligned_64_sse4_1(
 #else
 
 extern opus_int64 (*const SILK_INNER_PROD16_ALIGNED_64_IMPL[OPUS_ARCHMASK + 1])(
-                    const opus_int16 *inVec1,
-                    const opus_int16 *inVec2,
-                    const opus_int   len);
+    const opus_int16 *inVec1,
+    const opus_int16 *inVec2,
+    const opus_int   len);
 
 #  define silk_inner_prod16_aligned_64(inVec1, inVec2, len, arch) \
     ((*SILK_INNER_PROD16_ALIGNED_64_IMPL[(arch) & OPUS_ARCHMASK])(inVec1, inVec2, len))

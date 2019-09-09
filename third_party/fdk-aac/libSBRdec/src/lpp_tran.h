@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Low Power Profile Transposer,  
+  \brief  Low Power Profile Transposer,
 */
 
 #ifndef _LPP_TRANS_H
@@ -135,59 +135,62 @@ amm-info@iis.fraunhofer.de
 
 typedef enum
 {
-  INVF_OFF = 0,
-  INVF_LOW_LEVEL,
-  INVF_MID_LEVEL,
-  INVF_HIGH_LEVEL,
-  INVF_SWITCHED /* not a real choice but used here to control behaviour */
+    INVF_OFF = 0,
+    INVF_LOW_LEVEL,
+    INVF_MID_LEVEL,
+    INVF_HIGH_LEVEL,
+    INVF_SWITCHED /* not a real choice but used here to control behaviour */
 }
 INVF_MODE;
 
 
 /** parameter set for one single patch */
-typedef struct {
-  UCHAR  sourceStartBand;   /*!< first band in lowbands where to take the samples from */
-  UCHAR  sourceStopBand;    /*!< first band in lowbands which is not included in the patch anymore */
-  UCHAR  guardStartBand;    /*!< first band in highbands to be filled with zeros in order to
+typedef struct
+{
+    UCHAR  sourceStartBand;   /*!< first band in lowbands where to take the samples from */
+    UCHAR  sourceStopBand;    /*!< first band in lowbands which is not included in the patch anymore */
+    UCHAR  guardStartBand;    /*!< first band in highbands to be filled with zeros in order to
                                          reduce interferences between patches */
-  UCHAR  targetStartBand;   /*!< first band in highbands to be filled with whitened lowband signal */
-  UCHAR  targetBandOffs;    /*!< difference between 'startTargetBand' and 'startSourceBand' */
-  UCHAR  numBandsInPatch;   /*!< number of consecutive bands in this one patch */
+    UCHAR  targetStartBand;   /*!< first band in highbands to be filled with whitened lowband signal */
+    UCHAR  targetBandOffs;    /*!< difference between 'startTargetBand' and 'startSourceBand' */
+    UCHAR  numBandsInPatch;   /*!< number of consecutive bands in this one patch */
 } PATCH_PARAM;
 
 
 /** whitening factors for different levels of whitening
     need to be initialized corresponding to crossover frequency */
-typedef struct {
-  FIXP_DBL  off;                       /*!< bw factor for signal OFF */
-  FIXP_DBL  transitionLevel;
-  FIXP_DBL  lowLevel;                  /*!< bw factor for signal LOW_LEVEL */
-  FIXP_DBL  midLevel;                  /*!< bw factor for signal MID_LEVEL */
-  FIXP_DBL  highLevel;                 /*!< bw factor for signal HIGH_LEVEL */
+typedef struct
+{
+    FIXP_DBL  off;                       /*!< bw factor for signal OFF */
+    FIXP_DBL  transitionLevel;
+    FIXP_DBL  lowLevel;                  /*!< bw factor for signal LOW_LEVEL */
+    FIXP_DBL  midLevel;                  /*!< bw factor for signal MID_LEVEL */
+    FIXP_DBL  highLevel;                 /*!< bw factor for signal HIGH_LEVEL */
 } WHITENING_FACTORS;
 
 
 /*! The transposer settings are calculated on a header reset and are shared by both channels. */
-typedef struct {
-  UCHAR  nCols;                       /*!< number subsamples of a codec frame */
-  UCHAR  noOfPatches;                 /*!< number of patches */
-  UCHAR  lbStartPatching;             /*!< first band of lowbands that will be patched */
-  UCHAR  lbStopPatching;              /*!< first band that won't be patched anymore*/
-  UCHAR  bwBorders[MAX_NUM_NOISE_VALUES]; /*!< spectral bands with different inverse filtering levels */
+typedef struct
+{
+    UCHAR  nCols;                       /*!< number subsamples of a codec frame */
+    UCHAR  noOfPatches;                 /*!< number of patches */
+    UCHAR  lbStartPatching;             /*!< first band of lowbands that will be patched */
+    UCHAR  lbStopPatching;              /*!< first band that won't be patched anymore*/
+    UCHAR  bwBorders[MAX_NUM_NOISE_VALUES]; /*!< spectral bands with different inverse filtering levels */
 
-  PATCH_PARAM    patchParam[MAX_NUM_PATCHES]; /*!< new parameter set for patching */
-  WHITENING_FACTORS whFactors;                /*!< the pole moving factors for certain whitening levels as indicated
+    PATCH_PARAM    patchParam[MAX_NUM_PATCHES]; /*!< new parameter set for patching */
+    WHITENING_FACTORS whFactors;                /*!< the pole moving factors for certain whitening levels as indicated
                                                    in the bitstream depending on the crossover frequency */
-  UCHAR  overlap;                             /*!< Overlap size */
+    UCHAR  overlap;                             /*!< Overlap size */
 } TRANSPOSER_SETTINGS;
 
 
 typedef struct
 {
-  TRANSPOSER_SETTINGS *pSettings;                /*!< Common settings for both channels */
-  FIXP_DBL  bwVectorOld[MAX_NUM_PATCHES];        /*!< pole moving factors of past frame */
-  FIXP_DBL  lpcFilterStatesReal[LPC_ORDER][(32)];     /*!< pointer array to save filter states */
-  FIXP_DBL  lpcFilterStatesImag[LPC_ORDER][(32)];     /*!< pointer array to save filter states */
+    TRANSPOSER_SETTINGS *pSettings;                /*!< Common settings for both channels */
+    FIXP_DBL  bwVectorOld[MAX_NUM_PATCHES];        /*!< pole moving factors of past frame */
+    FIXP_DBL  lpcFilterStatesReal[LPC_ORDER][(32)];     /*!< pointer array to save filter states */
+    FIXP_DBL  lpcFilterStatesImag[LPC_ORDER][(32)];     /*!< pointer array to save filter states */
 }
 SBR_LPP_TRANS;
 
@@ -207,7 +210,7 @@ void lppTransposer (HANDLE_SBR_LPP_TRANS hLppTrans,
                     const int nInvfBands,
                     INVF_MODE *sbr_invf_mode,
                     INVF_MODE *sbr_invf_mode_prev
-                    );
+                   );
 
 
 SBR_ERROR

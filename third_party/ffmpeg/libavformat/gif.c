@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Animated GIF muxer
  * Copyright (c) 2000 Fabrice Bellard
  *
@@ -40,9 +40,11 @@ static int get_palette_transparency_index(const uint32_t *palette)
     if (!palette)
         return -1;
 
-    for (i = 0; i < AVPALETTE_COUNT; i++) {
+    for (i = 0; i < AVPALETTE_COUNT; i++)
+    {
         const uint32_t v = palette[i];
-        if (v >> 24 < smallest_alpha) {
+        if (v >> 24 < smallest_alpha)
+        {
             smallest_alpha = v >> 24;
             transparent_color_index = i;
         }
@@ -57,7 +59,8 @@ static int gif_image_write_header(AVIOContext *pb, const AVCodecContext *avctx,
     int64_t aspect = 0;
     const AVRational sar = avctx->sample_aspect_ratio;
 
-    if (sar.num > 0 && sar.den > 0) {
+    if (sar.num > 0 && sar.den > 0)
+    {
         aspect = sar.num * 64LL / sar.den - 15;
         if (aspect < 0 || aspect > 255)
             aspect = 0;
@@ -68,24 +71,29 @@ static int gif_image_write_header(AVIOContext *pb, const AVCodecContext *avctx,
     avio_wl16(pb, avctx->width);
     avio_wl16(pb, avctx->height);
 
-    if (palette) {
+    if (palette)
+    {
         const int bcid = get_palette_transparency_index(palette);
 
         avio_w8(pb, 0xf7); /* flags: global clut, 256 entries */
         avio_w8(pb, bcid < 0 ? DEFAULT_TRANSPARENCY_INDEX : bcid); /* background color index */
         avio_w8(pb, aspect);
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             const uint32_t v = palette[i] & 0xffffff;
             avio_wb24(pb, v);
         }
-    } else {
+    }
+    else
+    {
         avio_w8(pb, 0); /* flags */
         avio_w8(pb, 0); /* background color index */
         avio_w8(pb, aspect);
     }
 
 
-    if (loop_count >= 0 ) {
+    if (loop_count >= 0 )
+    {
         /* "NETSCAPE EXTENSION" for looped animation GIF */
         avio_w8(pb, 0x21); /* GIF Extension code */
         avio_w8(pb, 0xff); /* Application Extension Label */
@@ -101,7 +109,8 @@ static int gif_image_write_header(AVIOContext *pb, const AVCodecContext *avctx,
     return 0;
 }
 
-typedef struct GIFContext {
+typedef struct GIFContext
+{
     AVClass *class;
     int loop;
     int last_delay;
@@ -116,8 +125,9 @@ static int gif_write_header(AVFormatContext *s)
     uint32_t palette[AVPALETTE_COUNT];
 
     if (s->nb_streams != 1 ||
-        s->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
-        s->streams[0]->codec->codec_id   != AV_CODEC_ID_GIF) {
+            s->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
+            s->streams[0]->codec->codec_id   != AV_CODEC_ID_GIF)
+    {
         av_log(s, AV_LOG_ERROR,
                "GIF muxer supports only a single video GIF stream.\n");
         return AVERROR(EINVAL);
@@ -126,11 +136,14 @@ static int gif_write_header(AVFormatContext *s)
     video_enc = s->streams[0]->codec;
 
     avpriv_set_pts_info(s->streams[0], 64, 1, 100);
-    if (avpriv_set_systematic_pal2(palette, video_enc->pix_fmt) < 0) {
+    if (avpriv_set_systematic_pal2(palette, video_enc->pix_fmt) < 0)
+    {
         av_assert0(video_enc->pix_fmt == AV_PIX_FMT_PAL8);
         /* delay header writing: we wait for the first palette to put it
          * globally */
-    } else {
+    }
+    else
+    {
         gif_image_write_header(s->pb, video_enc, gif->loop, palette);
     }
 
@@ -151,7 +164,8 @@ static int flush_packet(AVFormatContext *s, AVPacket *new)
     /* Mark one colour as transparent if the input palette contains at least
      * one colour that is more than 50% transparent. */
     palette = (uint32_t*)av_packet_get_side_data(pkt, AV_PKT_DATA_PALETTE, &size);
-    if (palette && size != AVPALETTE_SIZE) {
+    if (palette && size != AVPALETTE_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid palette extradata\n");
         return AVERROR_INVALIDDATA;
     }
@@ -185,21 +199,25 @@ static int gif_write_packet(AVFormatContext *s, AVPacket *pkt)
     GIFContext *gif = s->priv_data;
     const AVCodecContext *video_enc = s->streams[0]->codec;
 
-    if (!gif->prev_pkt) {
+    if (!gif->prev_pkt)
+    {
         gif->prev_pkt = av_malloc(sizeof(*gif->prev_pkt));
         if (!gif->prev_pkt)
             return AVERROR(ENOMEM);
 
         /* Write the first palette as global palette */
-        if (video_enc->pix_fmt == AV_PIX_FMT_PAL8) {
+        if (video_enc->pix_fmt == AV_PIX_FMT_PAL8)
+        {
             int size;
             void *palette = av_packet_get_side_data(pkt, AV_PKT_DATA_PALETTE, &size);
 
-            if (!palette) {
+            if (!palette)
+            {
                 av_log(s, AV_LOG_ERROR, "PAL8 packet is missing palette in extradata\n");
                 return AVERROR_INVALIDDATA;
             }
-            if (size != AVPALETTE_SIZE) {
+            if (size != AVPALETTE_SIZE)
+            {
                 av_log(s, AV_LOG_ERROR, "Invalid palette extradata\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -225,22 +243,29 @@ static int gif_write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(GIFContext, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
-    { "loop", "Number of times to loop the output: -1 - no loop, 0 - infinite loop", OFFSET(loop),
-      AV_OPT_TYPE_INT, { .i64 = 0 }, -1, 65535, ENC },
-    { "final_delay", "Force delay (in centiseconds) after the last frame", OFFSET(last_delay),
-      AV_OPT_TYPE_INT, { .i64 = -1 }, -1, 65535, ENC },
+static const AVOption options[] =
+{
+    {
+        "loop", "Number of times to loop the output: -1 - no loop, 0 - infinite loop", OFFSET(loop),
+        AV_OPT_TYPE_INT, { .i64 = 0 }, -1, 65535, ENC
+    },
+    {
+        "final_delay", "Force delay (in centiseconds) after the last frame", OFFSET(last_delay),
+        AV_OPT_TYPE_INT, { .i64 = -1 }, -1, 65535, ENC
+    },
     { NULL },
 };
 
-static const AVClass gif_muxer_class = {
+static const AVClass gif_muxer_class =
+{
     .class_name = "GIF muxer",
     .item_name  = av_default_item_name,
     .version    = LIBAVUTIL_VERSION_INT,
     .option     = options,
 };
 
-AVOutputFormat ff_gif_muxer = {
+AVOutputFormat ff_gif_muxer =
+{
     .name           = "gif",
     .long_name      = NULL_IF_CONFIG_SMALL("GIF Animation"),
     .mime_type      = "image/gif",

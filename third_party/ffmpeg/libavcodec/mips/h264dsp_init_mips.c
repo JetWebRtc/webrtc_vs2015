@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (Parag.Salasakar@imgtec.com)
  * Copyright (c) 2015 Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *
@@ -26,7 +26,8 @@ static av_cold void h264dsp_init_msa(H264DSPContext *c,
                                      const int bit_depth,
                                      const int chroma_format_idc)
 {
-    if (8 == bit_depth) {
+    if (8 == bit_depth)
+    {
         c->h264_v_loop_filter_luma = ff_h264_v_lpf_luma_inter_msa;
         c->h264_h_loop_filter_luma = ff_h264_h_lpf_luma_inter_msa;
         c->h264_h_loop_filter_luma_mbaff =
@@ -86,7 +87,8 @@ static av_cold void h264dsp_init_mmi(H264DSPContext * c,
                                      const int bit_depth,
                                      const int chroma_format_idc)
 {
-    if (bit_depth == 8) {
+    if (bit_depth == 8)
+    {
         c->weight_h264_pixels_tab[0] = ff_h264_weight_pixels16_8_mmi;
         c->weight_h264_pixels_tab[1] = ff_h264_weight_pixels8_8_mmi;
         c->weight_h264_pixels_tab[2] = ff_h264_weight_pixels4_8_mmi;

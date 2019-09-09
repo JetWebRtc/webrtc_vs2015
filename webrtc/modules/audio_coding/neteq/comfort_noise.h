@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 #include "webrtc/modules/audio_coding/neteq/audio_multi_vector.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Forward declarations.
 class DecoderDatabase;
@@ -23,48 +24,54 @@ class SyncBuffer;
 struct Packet;
 
 // This class acts as an interface to the CNG generator.
-class ComfortNoise {
- public:
-  enum ReturnCodes {
-    kOK = 0,
-    kUnknownPayloadType,
-    kInternalError,
-    kMultiChannelNotSupported
-  };
+class ComfortNoise
+{
+public:
+    enum ReturnCodes
+    {
+        kOK = 0,
+        kUnknownPayloadType,
+        kInternalError,
+        kMultiChannelNotSupported
+    };
 
-  ComfortNoise(int fs_hz, DecoderDatabase* decoder_database,
-               SyncBuffer* sync_buffer)
-      : fs_hz_(fs_hz),
-        first_call_(true),
-        overlap_length_(5 * fs_hz_ / 8000),
-        decoder_database_(decoder_database),
-        sync_buffer_(sync_buffer) {
-  }
+    ComfortNoise(int fs_hz, DecoderDatabase* decoder_database,
+                 SyncBuffer* sync_buffer)
+        : fs_hz_(fs_hz),
+          first_call_(true),
+          overlap_length_(5 * fs_hz_ / 8000),
+          decoder_database_(decoder_database),
+          sync_buffer_(sync_buffer)
+    {
+    }
 
-  // Resets the state. Should be called before each new comfort noise period.
-  void Reset();
+    // Resets the state. Should be called before each new comfort noise period.
+    void Reset();
 
-  // Update the comfort noise generator with the parameters in |packet|.
-  int UpdateParameters(const Packet& packet);
+    // Update the comfort noise generator with the parameters in |packet|.
+    int UpdateParameters(const Packet& packet);
 
-  // Generates |requested_length| samples of comfort noise and writes to
-  // |output|. If this is the first in call after Reset (or first after creating
-  // the object), it will also mix in comfort noise at the end of the
-  // SyncBuffer object provided in the constructor.
-  int Generate(size_t requested_length, AudioMultiVector* output);
+    // Generates |requested_length| samples of comfort noise and writes to
+    // |output|. If this is the first in call after Reset (or first after creating
+    // the object), it will also mix in comfort noise at the end of the
+    // SyncBuffer object provided in the constructor.
+    int Generate(size_t requested_length, AudioMultiVector* output);
 
-  // Returns the last error code that was produced by the comfort noise
-  // decoder. Returns 0 if no error has been encountered since the last reset.
-  int internal_error_code() { return internal_error_code_; }
+    // Returns the last error code that was produced by the comfort noise
+    // decoder. Returns 0 if no error has been encountered since the last reset.
+    int internal_error_code()
+    {
+        return internal_error_code_;
+    }
 
- private:
-  int fs_hz_;
-  bool first_call_;
-  size_t overlap_length_;
-  DecoderDatabase* decoder_database_;
-  SyncBuffer* sync_buffer_;
-  int internal_error_code_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(ComfortNoise);
+private:
+    int fs_hz_;
+    bool first_call_;
+    size_t overlap_length_;
+    DecoderDatabase* decoder_database_;
+    SyncBuffer* sync_buffer_;
+    int internal_error_code_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(ComfortNoise);
 };
 
 }  // namespace webrtc

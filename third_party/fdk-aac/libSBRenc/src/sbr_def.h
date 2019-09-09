@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  SBR main definitions  
+  \brief  SBR main definitions
 */
 #ifndef __SBR_DEF_H
 #define __SBR_DEF_H
@@ -247,28 +247,28 @@ amm-info@iis.fraunhofer.de
 
 typedef enum
 {
-  SBR_AMP_RES_1_5=0,
-  SBR_AMP_RES_3_0
+    SBR_AMP_RES_1_5=0,
+    SBR_AMP_RES_3_0
 }
 AMP_RES;
 
 typedef enum
 {
-  XPOS_MDCT,
-  XPOS_MDCT_CROSS,
-  XPOS_LC,
-  XPOS_RESERVED,
-  XPOS_SWITCHED /* not a real choice but used here to control behaviour */
+    XPOS_MDCT,
+    XPOS_MDCT_CROSS,
+    XPOS_LC,
+    XPOS_RESERVED,
+    XPOS_SWITCHED /* not a real choice but used here to control behaviour */
 }
 XPOS_MODE;
 
 typedef enum
 {
-  INVF_OFF = 0,
-  INVF_LOW_LEVEL,
-  INVF_MID_LEVEL,
-  INVF_HIGH_LEVEL,
-  INVF_SWITCHED /* not a real choice but used here to control behaviour */
+    INVF_OFF = 0,
+    INVF_LOW_LEVEL,
+    INVF_MID_LEVEL,
+    INVF_HIGH_LEVEL,
+    INVF_SWITCHED /* not a real choice but used here to control behaviour */
 }
 INVF_MODE;
 

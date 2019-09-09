@@ -1,4 +1,4 @@
-/*
+﻿/*
  * sndio play and grab interface
  * Copyright (c) 2010 Jacob Meuser
  *
@@ -66,7 +66,8 @@ static int audio_read_packet(AVFormatContext *s1, AVPacket *pkt)
         return ret;
 
     ret = sio_read(s->hdl, pkt->data, pkt->size);
-    if (ret == 0 || sio_eof(s->hdl)) {
+    if (ret == 0 || sio_eof(s->hdl))
+    {
         av_free_packet(pkt);
         return AVERROR_EOF;
     }
@@ -81,7 +82,7 @@ static int audio_read_packet(AVFormatContext *s1, AVPacket *pkt)
 
     /* convert to pts */
     pkt->pts = cur_time - ((bdelay * 1000000) /
-        (s->bps * s->channels * s->sample_rate));
+                           (s->bps * s->channels * s->sample_rate));
 
     return 0;
 }
@@ -95,13 +96,15 @@ static av_cold int audio_read_close(AVFormatContext *s1)
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "sample_rate", "", offsetof(SndioData, sample_rate), AV_OPT_TYPE_INT, {.i64 = 48000}, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { "channels",    "", offsetof(SndioData, channels),    AV_OPT_TYPE_INT, {.i64 = 2},     1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass sndio_demuxer_class = {
+static const AVClass sndio_demuxer_class =
+{
     .class_name     = "sndio indev",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -109,7 +112,8 @@ static const AVClass sndio_demuxer_class = {
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_sndio_demuxer = {
+AVInputFormat ff_sndio_demuxer =
+{
     .name           = "sndio",
     .long_name      = NULL_IF_CONFIG_SMALL("sndio audio capture"),
     .priv_data_size = sizeof(SndioData),

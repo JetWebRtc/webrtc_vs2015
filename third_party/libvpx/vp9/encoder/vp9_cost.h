@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,22 +30,26 @@ extern const uint16_t vp9_prob_cost[256];
 #define vp9_cost_bit(prob, bit) vp9_cost_zero((bit) ? 256 - (prob) : (prob))
 
 static INLINE unsigned int cost_branch256(const unsigned int ct[2],
-                                          vpx_prob p) {
-  return ct[0] * vp9_cost_zero(p) + ct[1] * vp9_cost_one(p);
+        vpx_prob p)
+{
+    return ct[0] * vp9_cost_zero(p) + ct[1] * vp9_cost_one(p);
 }
 
 static INLINE int treed_cost(vpx_tree tree, const vpx_prob *probs, int bits,
-                             int len) {
-  int cost = 0;
-  vpx_tree_index i = 0;
+                             int len)
+{
+    int cost = 0;
+    vpx_tree_index i = 0;
 
-  do {
-    const int bit = (bits >> --len) & 1;
-    cost += vp9_cost_bit(probs[i >> 1], bit);
-    i = tree[i + bit];
-  } while (len);
+    do
+    {
+        const int bit = (bits >> --len) & 1;
+        cost += vp9_cost_bit(probs[i >> 1], bit);
+        i = tree[i + bit];
+    }
+    while (len);
 
-  return cost;
+    return cost;
 }
 
 void vp9_cost_tokens(int *costs, const vpx_prob *probs, vpx_tree tree);

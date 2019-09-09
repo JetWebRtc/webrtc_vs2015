@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,14 +18,16 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_manager_wrapper.h"
 
 #if defined(_WIN32)
-    #include "webrtc/voice_engine/test/channel_transport/udp_socket2_win.h"
+#include "webrtc/voice_engine/test/channel_transport/udp_socket2_win.h"
 #else
-    #include "webrtc/voice_engine/test/channel_transport/udp_socket_posix.h"
+#include "webrtc/voice_engine/test/channel_transport/udp_socket_posix.h"
 #endif
 
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 bool UdpSocketWrapper::_initiated = false;
 
@@ -46,8 +48,8 @@ UdpSocketWrapper::~UdpSocketWrapper()
 {
     if(_deleteEvent)
     {
-      _deleteEvent->Set();
-      _deleteEvent = NULL;
+        _deleteEvent->Set();
+        _deleteEvent = NULL;
     }
 }
 
@@ -60,11 +62,11 @@ void UdpSocketWrapper::SetEventToNull()
 }
 
 UdpSocketWrapper* UdpSocketWrapper::CreateSocket(const int32_t id,
-                                                 UdpSocketManager* mgr,
-                                                 CallbackObj obj,
-                                                 IncomingSocketCallback cb,
-                                                 bool ipV6Enable,
-                                                 bool disableGQOS)
+        UdpSocketManager* mgr,
+        CallbackObj obj,
+        IncomingSocketCallback cb,
+        bool ipV6Enable,
+        bool disableGQOS)
 
 {
     WEBRTC_TRACE(kTraceMemory, kTraceTransport, id,
@@ -107,7 +109,8 @@ UdpSocketWrapper* UdpSocketWrapper::CreateSocket(const int32_t id,
         if (sl->GetFd() != INVALID_SOCKET && sl->GetFd() < FD_SETSIZE)
         {
             // ok
-        } else
+        }
+        else
         {
             WEBRTC_TRACE(
                 kTraceError,
@@ -141,8 +144,9 @@ bool UdpSocketWrapper::StartReceiving()
     return true;
 }
 
-bool UdpSocketWrapper::StartReceiving(const uint32_t /*receiveBuffers*/) {
-  return StartReceiving();
+bool UdpSocketWrapper::StartReceiving(const uint32_t /*receiveBuffers*/)
+{
+    return StartReceiving();
 }
 
 bool UdpSocketWrapper::StopReceiving()
@@ -151,9 +155,15 @@ bool UdpSocketWrapper::StopReceiving()
     return true;
 }
 
-int32_t UdpSocketWrapper::SetPCP(const int32_t /*pcp*/) { return -1; }
+int32_t UdpSocketWrapper::SetPCP(const int32_t /*pcp*/)
+{
+    return -1;
+}
 
-uint32_t UdpSocketWrapper::ReceiveBuffers() { return 0; }
+uint32_t UdpSocketWrapper::ReceiveBuffers()
+{
+    return 0;
+}
 
 }  // namespace test
 }  // namespace webrtc

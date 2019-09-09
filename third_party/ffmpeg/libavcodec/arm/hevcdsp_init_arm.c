@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Seppo Tomperi <seppo.tomperi@vtt.fi>
  *
  * This file is part of FFmpeg.

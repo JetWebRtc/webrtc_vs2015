@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVCodecParser prototypes and definitions
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2003 Michael Niedermayer
@@ -25,7 +25,8 @@
 
 #include "avcodec.h"
 
-typedef struct ParseContext{
+typedef struct ParseContext
+{
     uint8_t *buffer;
     int index;
     int last_index;

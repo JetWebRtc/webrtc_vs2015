@@ -1,5 +1,5 @@
-/*
- * Cinepak encoder (c) 2011 Tomas H�rdin
+﻿/*
+ * Cinepak encoder (c) 2011 Tomas Härdin
  * http://titan.codemill.se/~tomhar/cinepakenc.patch
  *
  * Fixes and improvements, vintage decoders compatibility
@@ -100,7 +100,8 @@ OTHER DEALINGS IN THE SOFTWARE.
 // NOTE the decoder in ffmpeg has its own arbitrary limitation on the number
 // of strips, currently 32
 
-typedef enum {
+typedef enum
+{
     MODE_V1_ONLY = 0,
     MODE_V1_V4,
     MODE_MC,
@@ -108,7 +109,8 @@ typedef enum {
     MODE_COUNT,
 } CinepakMode;
 
-typedef enum {
+typedef enum
+{
     ENC_V1,
     ENC_V4,
     ENC_SKIP,
@@ -116,7 +118,8 @@ typedef enum {
     ENC_UNCERTAIN
 } mb_encoding;
 
-typedef struct {
+typedef struct
+{
     int v1_vector;                  //index into v1 codebook
     int v1_error;                   //error when using V1 encoding
     int v4_vector[4];               //indices into v4 codebooks
@@ -125,7 +128,8 @@ typedef struct {
     mb_encoding best_encoding;      //last result from calculate_mode_score()
 } mb_info;
 
-typedef struct {
+typedef struct
+{
     int v1_codebook[CODEBOOK_MAX*VECTOR_MAX];
     int v4_codebook[CODEBOOK_MAX*VECTOR_MAX];
     int v1_size;
@@ -133,7 +137,8 @@ typedef struct {
     CinepakMode mode;
 } strip_info;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     AVCodecContext *avctx;
     unsigned char *pict_bufs[4], *strip_buf, *frame_buf;
@@ -167,7 +172,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(CinepakEncContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "max_extra_cb_iterations", "Max extra codebook recalculation passes, more is better and slower", OFFSET(max_extra_cb_iterations), AV_OPT_TYPE_INT, { .i64 = 2 }, 0, INT_MAX, VE },
     { "skip_empty_cb", "Avoid wasting bytes, ignore vintage MacOS decoder", OFFSET(skip_empty_cb), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, VE },
     { "max_strips", "Limit strips/frame, vintage compatible is 1..3, otherwise the more the better", OFFSET(max_max_strips), AV_OPT_TYPE_INT, { .i64 = 3 }, MIN_STRIPS, MAX_STRIPS, VE },
@@ -176,7 +182,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass cinepak_class = {
+static const AVClass cinepak_class =
+{
     .class_name = "cinepak",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -188,15 +195,17 @@ static av_cold int cinepak_encode_init(AVCodecContext *avctx)
     CinepakEncContext *s = avctx->priv_data;
     int x, mb_count, strip_buf_size, frame_buf_size;
 
-    if (avctx->width & 3 || avctx->height & 3) {
+    if (avctx->width & 3 || avctx->height & 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "width and height must be multiples of four (got %ix%i)\n",
-                avctx->width, avctx->height);
+               avctx->width, avctx->height);
         return AVERROR(EINVAL);
     }
 
-    if (s->min_min_strips > s->max_max_strips) {
+    if (s->min_min_strips > s->max_max_strips)
+    {
         av_log(avctx, AV_LOG_ERROR, "minimal number of strips can not exceed maximal (got %i and %i)\n",
-                s->min_min_strips, s->max_max_strips);
+               s->min_min_strips, s->max_max_strips);
         return AVERROR(EINVAL);
     }
 
@@ -261,7 +270,8 @@ static av_cold int cinepak_encode_init(AVCodecContext *avctx)
     s->scratch_frame->data[0]     = s->pict_bufs[2];
     s->scratch_frame->linesize[0] = s->w;
 
-    if (s->pix_fmt == AV_PIX_FMT_RGB24) {
+    if (s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
         s->last_frame->data[1]        = s->last_frame->data[0] + s->w * s->h;
         s->last_frame->data[2]        = s->last_frame->data[1] + ((s->w * s->h) >> 2);
         s->last_frame->linesize[1]    = s->last_frame->linesize[2] = s->w >> 1;
@@ -313,9 +323,9 @@ enomem:
 
 static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *info, int report, int *training_set_v1_shrunk, int *training_set_v4_shrunk
 #ifdef CINEPAK_REPORT_SERR
-, int64_t *serr
+                                    , int64_t *serr
 #endif
-)
+                                   )
 {
     //score = FF_LAMBDA_SCALE * error + lambda * bits
     int x;
@@ -324,8 +334,8 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
     mb_info *mb;
     int64_t score1, score2, score3;
     int64_t ret = s->lambda * ((info->v1_size ? CHUNK_HEADER_SIZE + info->v1_size * entry_size : 0) +
-                   (info->v4_size ? CHUNK_HEADER_SIZE + info->v4_size * entry_size : 0) +
-                   CHUNK_HEADER_SIZE) << 3;
+                               (info->v4_size ? CHUNK_HEADER_SIZE + info->v4_size * entry_size : 0) +
+                               CHUNK_HEADER_SIZE) << 3;
 
     //av_log(s->avctx, AV_LOG_INFO, "sizes %3i %3i -> %9"PRId64" score mb_count %i", info->v1_size, info->v4_size, ret, mb_count);
 
@@ -333,13 +343,15 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
     *serr = 0;
 #endif
 
-    switch(info->mode) {
+    switch(info->mode)
+    {
     case MODE_V1_ONLY:
         //one byte per MB
         ret += s->lambda * 8 * mb_count;
 
 // while calculating we assume all blocks are ENC_V1
-        for(x = 0; x < mb_count; x++) {
+        for(x = 0; x < mb_count; x++)
+        {
             mb = &s->mb[x];
             ret += FF_LAMBDA_SCALE * mb->v1_error;
 #ifdef CINEPAK_REPORT_SERR
@@ -353,10 +365,12 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
         break;
     case MODE_V1_V4:
         //9 or 33 bits per MB
-        if(report) {
+        if(report)
+        {
 // no moves between the corresponding training sets are allowed
             *training_set_v1_shrunk = *training_set_v4_shrunk = 0;
-            for(x = 0; x < mb_count; x++) {
+            for(x = 0; x < mb_count; x++)
+            {
                 int mberr;
                 mb = &s->mb[x];
                 if(mb->best_encoding == ENC_V1)
@@ -368,19 +382,25 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
                 *serr += mberr;
 #endif
             }
-        } else { // find best mode per block
-            for(x = 0; x < mb_count; x++) {
+        }
+        else     // find best mode per block
+        {
+            for(x = 0; x < mb_count; x++)
+            {
                 mb = &s->mb[x];
                 score1 = s->lambda * 9  + FF_LAMBDA_SCALE * mb->v1_error;
                 score2 = s->lambda * 33 + FF_LAMBDA_SCALE * mb->v4_error;
 
-                if(score1 <= score2) {
+                if(score1 <= score2)
+                {
                     ret += score1;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->v1_error;
 #endif
                     mb->best_encoding = ENC_V1;
-                } else {
+                }
+                else
+                {
                     ret += score2;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->v4_error;
@@ -393,41 +413,54 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
         break;
     case MODE_MC:
         //1, 10 or 34 bits per MB
-        if(report) {
+        if(report)
+        {
             int v1_shrunk = 0, v4_shrunk = 0;
-            for(x = 0; x < mb_count; x++) {
+            for(x = 0; x < mb_count; x++)
+            {
                 mb = &s->mb[x];
 // it is OK to move blocks to ENC_SKIP here
 // but not to any codebook encoding!
                 score1 = s->lambda * 1  + FF_LAMBDA_SCALE * mb->skip_error;
-                if(mb->best_encoding == ENC_SKIP) {
+                if(mb->best_encoding == ENC_SKIP)
+                {
                     ret += score1;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->skip_error;
 #endif
-                } else if(mb->best_encoding == ENC_V1) {
-                    if((score2=s->lambda * 10 + FF_LAMBDA_SCALE * mb->v1_error) >= score1) {
+                }
+                else if(mb->best_encoding == ENC_V1)
+                {
+                    if((score2=s->lambda * 10 + FF_LAMBDA_SCALE * mb->v1_error) >= score1)
+                    {
                         mb->best_encoding = ENC_SKIP;
                         ++v1_shrunk;
                         ret += score1;
 #ifdef CINEPAK_REPORT_SERR
                         *serr += mb->skip_error;
 #endif
-                    } else {
+                    }
+                    else
+                    {
                         ret += score2;
 #ifdef CINEPAK_REPORT_SERR
                         *serr += mb->v1_error;
 #endif
                     }
-                } else {
-                    if((score3=s->lambda * 34 + FF_LAMBDA_SCALE * mb->v4_error) >= score1) {
+                }
+                else
+                {
+                    if((score3=s->lambda * 34 + FF_LAMBDA_SCALE * mb->v4_error) >= score1)
+                    {
                         mb->best_encoding = ENC_SKIP;
                         ++v4_shrunk;
                         ret += score1;
 #ifdef CINEPAK_REPORT_SERR
                         *serr += mb->skip_error;
 #endif
-                    } else {
+                    }
+                    else
+                    {
                         ret += score3;
 #ifdef CINEPAK_REPORT_SERR
                         *serr += mb->v4_error;
@@ -437,26 +470,34 @@ static int64_t calculate_mode_score(CinepakEncContext *s, int h, strip_info *inf
             }
             *training_set_v1_shrunk = v1_shrunk;
             *training_set_v4_shrunk = v4_shrunk;
-        } else { // find best mode per block
-            for(x = 0; x < mb_count; x++) {
+        }
+        else     // find best mode per block
+        {
+            for(x = 0; x < mb_count; x++)
+            {
                 mb = &s->mb[x];
                 score1 = s->lambda * 1  + FF_LAMBDA_SCALE * mb->skip_error;
                 score2 = s->lambda * 10 + FF_LAMBDA_SCALE * mb->v1_error;
                 score3 = s->lambda * 34 + FF_LAMBDA_SCALE * mb->v4_error;
 
-                if(score1 <= score2 && score1 <= score3) {
+                if(score1 <= score2 && score1 <= score3)
+                {
                     ret += score1;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->skip_error;
 #endif
                     mb->best_encoding = ENC_SKIP;
-                } else if(score2 <= score3) {
+                }
+                else if(score2 <= score3)
+                {
                     ret += score2;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->v1_error;
 #endif
                     mb->best_encoding = ENC_V1;
-                } else {
+                }
+                else
+                {
                     ret += score3;
 #ifdef CINEPAK_REPORT_SERR
                     *serr += mb->v4_error;
@@ -483,40 +524,46 @@ static int encode_codebook(CinepakEncContext *s, int *codebook, int size, int ch
 {
     int x, y, ret, entry_size = s->pix_fmt == AV_PIX_FMT_RGB24 ? 6 : 4;
     int incremental_codebook_replacement_mode = 0; // hardcoded here,
-                // the compiler should notice that this is a constant -- rl
+    // the compiler should notice that this is a constant -- rl
 
     ret = write_chunk_header(buf,
-          s->pix_fmt == AV_PIX_FMT_RGB24 ?
-           chunk_type_yuv+(incremental_codebook_replacement_mode?1:0) :
-           chunk_type_gray+(incremental_codebook_replacement_mode?1:0),
-          entry_size * size
-           + (incremental_codebook_replacement_mode?(size+31)/32*4:0) );
+                             s->pix_fmt == AV_PIX_FMT_RGB24 ?
+                             chunk_type_yuv+(incremental_codebook_replacement_mode?1:0) :
+                             chunk_type_gray+(incremental_codebook_replacement_mode?1:0),
+                             entry_size * size
+                             + (incremental_codebook_replacement_mode?(size+31)/32*4:0) );
 
 // we do codebook encoding according to the "intra" mode
 // but we keep the "dead" code for reference in case we will want
 // to use incremental codebook updates (which actually would give us
 // "kind of" motion compensation, especially in 1 strip/frame case) -- rl
 // (of course, the code will be not useful as-is)
-    if(incremental_codebook_replacement_mode) {
+    if(incremental_codebook_replacement_mode)
+    {
         int flags = 0;
         int flagsind;
-        for(x = 0; x < size; x++) {
-            if(flags == 0) {
+        for(x = 0; x < size; x++)
+        {
+            if(flags == 0)
+            {
                 flagsind = ret;
                 ret += 4;
                 flags = 0x80000000;
-            } else
+            }
+            else
                 flags = ((flags>>1) | 0x80000000);
             for(y = 0; y < entry_size; y++)
                 buf[ret++] = codebook[y + x*entry_size] ^ (y >= 4 ? 0x80 : 0);
-            if((flags&0xffffffff) == 0xffffffff) {
+            if((flags&0xffffffff) == 0xffffffff)
+            {
                 AV_WB32(&buf[flagsind], flags);
                 flags = 0;
             }
         }
         if(flags)
             AV_WB32(&buf[flagsind], flags);
-    } else
+    }
+    else
         for(x = 0; x < size; x++)
             for(y = 0; y < entry_size; y++)
                 buf[ret++] = codebook[y + x*entry_size] ^ (y >= 4 ? 0x80 : 0);
@@ -530,7 +577,8 @@ static void get_sub_picture(CinepakEncContext *s, int x, int y, AVPicture *in, A
     out->data[0] = in->data[0] + x + y * in->linesize[0];
     out->linesize[0] = in->linesize[0];
 
-    if(s->pix_fmt == AV_PIX_FMT_RGB24) {
+    if(s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
         out->data[1] = in->data[1] + (x >> 1) + (y >> 1) * in->linesize[1];
         out->linesize[1] = in->linesize[1];
 
@@ -545,35 +593,36 @@ static void decode_v1_vector(CinepakEncContext *s, AVPicture *sub_pict, int v1_v
     int entry_size = s->pix_fmt == AV_PIX_FMT_RGB24 ? 6 : 4;
 
     sub_pict->data[0][0] =
-            sub_pict->data[0][1] =
+        sub_pict->data[0][1] =
             sub_pict->data[0][    sub_pict->linesize[0]] =
-            sub_pict->data[0][1+  sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size];
+                sub_pict->data[0][1+  sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size];
 
     sub_pict->data[0][2] =
-            sub_pict->data[0][3] =
+        sub_pict->data[0][3] =
             sub_pict->data[0][2+  sub_pict->linesize[0]] =
-            sub_pict->data[0][3+  sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+1];
+                sub_pict->data[0][3+  sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+1];
 
     sub_pict->data[0][2*sub_pict->linesize[0]] =
-            sub_pict->data[0][1+2*sub_pict->linesize[0]] =
+        sub_pict->data[0][1+2*sub_pict->linesize[0]] =
             sub_pict->data[0][  3*sub_pict->linesize[0]] =
-            sub_pict->data[0][1+3*sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+2];
+                sub_pict->data[0][1+3*sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+2];
 
     sub_pict->data[0][2+2*sub_pict->linesize[0]] =
-            sub_pict->data[0][3+2*sub_pict->linesize[0]] =
+        sub_pict->data[0][3+2*sub_pict->linesize[0]] =
             sub_pict->data[0][2+3*sub_pict->linesize[0]] =
-            sub_pict->data[0][3+3*sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+3];
+                sub_pict->data[0][3+3*sub_pict->linesize[0]] = info->v1_codebook[v1_vector*entry_size+3];
 
-    if(s->pix_fmt == AV_PIX_FMT_RGB24) {
+    if(s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
         sub_pict->data[1][0] =
             sub_pict->data[1][1] =
-            sub_pict->data[1][    sub_pict->linesize[1]] =
-            sub_pict->data[1][1+  sub_pict->linesize[1]] = info->v1_codebook[v1_vector*entry_size+4];
+                sub_pict->data[1][    sub_pict->linesize[1]] =
+                    sub_pict->data[1][1+  sub_pict->linesize[1]] = info->v1_codebook[v1_vector*entry_size+4];
 
         sub_pict->data[2][0] =
             sub_pict->data[2][1] =
-            sub_pict->data[2][    sub_pict->linesize[2]] =
-            sub_pict->data[2][1+  sub_pict->linesize[2]] = info->v1_codebook[v1_vector*entry_size+5];
+                sub_pict->data[2][    sub_pict->linesize[2]] =
+                    sub_pict->data[2][1+  sub_pict->linesize[2]] = info->v1_codebook[v1_vector*entry_size+5];
     }
 }
 
@@ -582,14 +631,17 @@ static void decode_v4_vector(CinepakEncContext *s, AVPicture *sub_pict, int *v4_
 {
     int i, x, y, entry_size = s->pix_fmt == AV_PIX_FMT_RGB24 ? 6 : 4;
 
-    for(i = y = 0; y < 4; y += 2) {
-        for(x = 0; x < 4; x += 2, i++) {
+    for(i = y = 0; y < 4; y += 2)
+    {
+        for(x = 0; x < 4; x += 2, i++)
+        {
             sub_pict->data[0][x   +     y*sub_pict->linesize[0]] = info->v4_codebook[v4_vector[i]*entry_size];
             sub_pict->data[0][x+1 +     y*sub_pict->linesize[0]] = info->v4_codebook[v4_vector[i]*entry_size+1];
             sub_pict->data[0][x   + (y+1)*sub_pict->linesize[0]] = info->v4_codebook[v4_vector[i]*entry_size+2];
             sub_pict->data[0][x+1 + (y+1)*sub_pict->linesize[0]] = info->v4_codebook[v4_vector[i]*entry_size+3];
 
-            if(s->pix_fmt == AV_PIX_FMT_RGB24) {
+            if(s->pix_fmt == AV_PIX_FMT_RGB24)
+            {
                 sub_pict->data[1][(x>>1) + (y>>1)*sub_pict->linesize[1]] = info->v4_codebook[v4_vector[i]*entry_size+4];
                 sub_pict->data[2][(x>>1) + (y>>1)*sub_pict->linesize[2]] = info->v4_codebook[v4_vector[i]*entry_size+5];
             }
@@ -601,14 +653,18 @@ static void copy_mb(CinepakEncContext *s, AVPicture *a, AVPicture *b)
 {
     int y, p;
 
-    for(y = 0; y < MB_SIZE; y++) {
+    for(y = 0; y < MB_SIZE; y++)
+    {
         memcpy(a->data[0]+y*a->linesize[0], b->data[0]+y*b->linesize[0],
                MB_SIZE);
     }
 
-    if(s->pix_fmt == AV_PIX_FMT_RGB24) {
-        for(p = 1; p <= 2; p++) {
-            for(y = 0; y < MB_SIZE/2; y++) {
+    if(s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
+        for(p = 1; p <= 2; p++)
+        {
+            for(y = 0; y < MB_SIZE/2; y++)
+            {
                 memcpy(a->data[p] + y*a->linesize[p],
                        b->data[p] + y*b->linesize[p],
                        MB_SIZE/2);
@@ -636,23 +692,28 @@ static int encode_mode(CinepakEncContext *s, int h, AVPicture *scratch_pict, AVP
         ret += encode_codebook(s, info->v1_codebook, info->v1_size, 0x22, 0x26, buf + ret);
 
     //update scratch picture
-    for(z = y = 0; y < h; y += MB_SIZE) {
-        for(x = 0; x < s->w; x += MB_SIZE, z++) {
+    for(z = y = 0; y < h; y += MB_SIZE)
+    {
+        for(x = 0; x < s->w; x += MB_SIZE, z++)
+        {
             mb = &s->mb[z];
 
             get_sub_picture(s, x, y, scratch_pict, &sub_scratch);
 
-            if(info->mode == MODE_MC && mb->best_encoding == ENC_SKIP) {
+            if(info->mode == MODE_MC && mb->best_encoding == ENC_SKIP)
+            {
                 get_sub_picture(s, x, y, last_pict, &sub_last);
                 copy_mb(s, &sub_scratch, &sub_last);
-            } else if(info->mode == MODE_V1_ONLY || mb->best_encoding == ENC_V1)
+            }
+            else if(info->mode == MODE_V1_ONLY || mb->best_encoding == ENC_V1)
                 decode_v1_vector(s, &sub_scratch, mb->v1_vector, info);
             else
                 decode_v4_vector(s, &sub_scratch, mb->v4_vector, info);
         }
     }
 
-    switch(info->mode) {
+    switch(info->mode)
+    {
     case MODE_V1_ONLY:
         //av_log(s->avctx, AV_LOG_INFO, "mb_count = %i\n", mb_count);
         ret += write_chunk_header(buf + ret, 0x32, mb_count);
@@ -666,7 +727,8 @@ static int encode_mode(CinepakEncContext *s, int h, AVPicture *scratch_pict, AVP
         header_ofs = ret;
         ret += CHUNK_HEADER_SIZE;
 
-        for(x = 0; x < mb_count; x += 32) {
+        for(x = 0; x < mb_count; x += 32)
+        {
             flags = 0;
             for(y = x; y < FFMIN(x+32, mb_count); y++)
                 if(s->mb[y].best_encoding == ENC_V4)
@@ -675,7 +737,8 @@ static int encode_mode(CinepakEncContext *s, int h, AVPicture *scratch_pict, AVP
             AV_WB32(&buf[ret], flags);
             ret += 4;
 
-            for(y = x; y < FFMIN(x+32, mb_count); y++) {
+            for(y = x; y < FFMIN(x+32, mb_count); y++)
+            {
                 mb = &s->mb[y];
 
                 if(mb->best_encoding == ENC_V1)
@@ -695,33 +758,39 @@ static int encode_mode(CinepakEncContext *s, int h, AVPicture *scratch_pict, AVP
         ret += CHUNK_HEADER_SIZE;
         flags = bits = temp_size = 0;
 
-        for(x = 0; x < mb_count; x++) {
+        for(x = 0; x < mb_count; x++)
+        {
             mb = &s->mb[x];
             flags |= (mb->best_encoding != ENC_SKIP) << (31 - bits++);
             needs_extra_bit = 0;
             should_write_temp = 0;
 
-            if(mb->best_encoding != ENC_SKIP) {
+            if(mb->best_encoding != ENC_SKIP)
+            {
                 if(bits < 32)
                     flags |= (mb->best_encoding == ENC_V4) << (31 - bits++);
                 else
                     needs_extra_bit = 1;
             }
 
-            if(bits == 32) {
+            if(bits == 32)
+            {
                 AV_WB32(&buf[ret], flags);
                 ret += 4;
                 flags = bits = 0;
 
-                if(mb->best_encoding == ENC_SKIP || needs_extra_bit) {
+                if(mb->best_encoding == ENC_SKIP || needs_extra_bit)
+                {
                     memcpy(&buf[ret], temp, temp_size);
                     ret += temp_size;
                     temp_size = 0;
-                } else
+                }
+                else
                     should_write_temp = 1;
             }
 
-            if(needs_extra_bit) {
+            if(needs_extra_bit)
+            {
                 flags = (mb->best_encoding == ENC_V4) << 31;
                 bits = 1;
             }
@@ -732,14 +801,16 @@ static int encode_mode(CinepakEncContext *s, int h, AVPicture *scratch_pict, AVP
                 for(z = 0; z < 4; z++)
                     temp[temp_size++] = mb->v4_vector[z];
 
-            if(should_write_temp) {
+            if(should_write_temp)
+            {
                 memcpy(&buf[ret], temp, temp_size);
                 ret += temp_size;
                 temp_size = 0;
             }
         }
 
-        if(bits > 0) {
+        if(bits > 0)
+        {
             AV_WB32(&buf[ret], flags);
             ret += 4;
             memcpy(&buf[ret], temp, temp_size);
@@ -759,17 +830,23 @@ static int compute_mb_distortion(CinepakEncContext *s, AVPicture *a, AVPicture *
 {
     int x, y, p, d, ret = 0;
 
-    for(y = 0; y < MB_SIZE; y++) {
-        for(x = 0; x < MB_SIZE; x++) {
+    for(y = 0; y < MB_SIZE; y++)
+    {
+        for(x = 0; x < MB_SIZE; x++)
+        {
             d = a->data[0][x + y*a->linesize[0]] - b->data[0][x + y*b->linesize[0]];
             ret += d*d;
         }
     }
 
-    if(s->pix_fmt == AV_PIX_FMT_RGB24) {
-        for(p = 1; p <= 2; p++) {
-            for(y = 0; y < MB_SIZE/2; y++) {
-                for(x = 0; x < MB_SIZE/2; x++) {
+    if(s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
+        for(p = 1; p <= 2; p++)
+        {
+            for(y = 0; y < MB_SIZE/2; y++)
+            {
+                for(x = 0; x < MB_SIZE/2; x++)
+                {
                     d = a->data[p][x + y*a->linesize[p]] - b->data[p][x + y*b->linesize[p]];
                     ret += d*d;
                 }
@@ -794,20 +871,26 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
     uint8_t vq_pict_buf[(MB_AREA*3)/2];
     AVPicture sub_pict, vq_pict;
 
-    for(mbn = i = y = 0; y < h; y += MB_SIZE) {
-        for(x = 0; x < s->w; x += MB_SIZE, ++mbn) {
+    for(mbn = i = y = 0; y < h; y += MB_SIZE)
+    {
+        for(x = 0; x < s->w; x += MB_SIZE, ++mbn)
+        {
             int *base;
 
-            if(CERTAIN(encoding)) {
+            if(CERTAIN(encoding))
+            {
 // use for the training only the blocks known to be to be encoded [sic:-]
-               if(s->mb[mbn].best_encoding != encoding) continue;
+                if(s->mb[mbn].best_encoding != encoding) continue;
             }
 
             base = s->codebook_input + i*entry_size;
-            if(v1mode) {
+            if(v1mode)
+            {
                 //subsample
-                for(j = y2 = 0; y2 < entry_size; y2 += 2) {
-                    for(x2 = 0; x2 < 4; x2 += 2, j++) {
+                for(j = y2 = 0; y2 < entry_size; y2 += 2)
+                {
+                    for(x2 = 0; x2 < 4; x2 += 2, j++)
+                    {
                         plane = y2 < 4 ? 0 : 1 + (x2 >> 1);
                         shift = y2 < 4 ? 0 : 1;
                         x3 = shift ? 0 : x2;
@@ -818,17 +901,25 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
                                    pict->data[plane][((x+x3) >> shift) + 1 + (((y+y3) >> shift) + 1) * pict->linesize[plane]]) >> 2;
                     }
                 }
-            } else {
+            }
+            else
+            {
                 //copy
-                for(j = y2 = 0; y2 < MB_SIZE; y2 += 2) {
-                    for(x2 = 0; x2 < MB_SIZE; x2 += 2) {
-                        for(k = 0; k < entry_size; k++, j++) {
+                for(j = y2 = 0; y2 < MB_SIZE; y2 += 2)
+                {
+                    for(x2 = 0; x2 < MB_SIZE; x2 += 2)
+                    {
+                        for(k = 0; k < entry_size; k++, j++)
+                        {
                             plane = k >= 4 ? k - 3 : 0;
 
-                            if(k >= 4) {
+                            if(k >= 4)
+                            {
                                 x3 = (x+x2) >> 1;
                                 y3 = (y+y2) >> 1;
-                            } else {
+                            }
+                            else
+                            {
                                 x3 = x + x2 + (k & 1);
                                 y3 = y + y2 + (k >> 1);
                             }
@@ -847,7 +938,8 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
 
     if(i == 0) // empty training set, nothing to do
         return 0;
-    if(i < size) {
+    if(i < size)
+    {
         //av_log(s->avctx, (CERTAIN(encoding) ? AV_LOG_ERROR : AV_LOG_INFO), "WOULD WASTE: %s cbsize %i bigger than training set size %i (encoding %i)\n", v1mode?"v1":"v4", size, i, encoding);
         size = i;
     }
@@ -863,8 +955,10 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
     vq_pict.linesize[1] = vq_pict.linesize[2] = MB_SIZE >> 1;
 
     //copy indices
-    for(i = j = y = 0; y < h; y += MB_SIZE) {
-        for(x = 0; x < s->w; x += MB_SIZE, j++) {
+    for(i = j = y = 0; y < h; y += MB_SIZE)
+    {
+        for(x = 0; x < s->w; x += MB_SIZE, j++)
+        {
             mb_info *mb = &s->mb[j];
 // skip uninteresting blocks if we know their preferred encoding
             if(CERTAIN(encoding) && mb->best_encoding != encoding)
@@ -873,7 +967,8 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
             //point sub_pict to current MB
             get_sub_picture(s, x, y, pict, &sub_pict);
 
-            if(v1mode) {
+            if(v1mode)
+            {
                 mb->v1_vector = s->codebook_closest[i];
 
                 //fill in vq_pict with V1 data
@@ -881,7 +976,9 @@ static int quantize(CinepakEncContext *s, int h, AVPicture *pict,
 
                 mb->v1_error = compute_mb_distortion(s, &sub_pict, &vq_pict);
                 total_error += mb->v1_error;
-            } else {
+            }
+            else
+            {
                 for(k = 0; k < 4; k++)
                     mb->v4_vector[k] = s->codebook_closest[i+k];
 
@@ -907,8 +1004,10 @@ static void calculate_skip_errors(CinepakEncContext *s, int h, AVPicture *last_p
     int x, y, i;
     AVPicture sub_last, sub_pict;
 
-    for(i = y = 0; y < h; y += MB_SIZE) {
-        for(x = 0; x < s->w; x += MB_SIZE, i++) {
+    for(i = y = 0; y < h; y += MB_SIZE)
+    {
+        for(x = 0; x < s->w; x += MB_SIZE, i++)
+        {
             get_sub_picture(s, x, y, last_pict, &sub_last);
             get_sub_picture(s, x, y, pict,      &sub_pict);
 
@@ -937,9 +1036,9 @@ static void write_strip_header(CinepakEncContext *s, int y, int h, int keyframe,
 
 static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture *last_pict, AVPicture *pict, AVPicture *scratch_pict, unsigned char *buf, int64_t *best_score
 #ifdef CINEPAK_REPORT_SERR
-, int64_t *best_serr
+                    , int64_t *best_serr
 #endif
-)
+                   )
 {
     int64_t score = 0;
 #ifdef CINEPAK_REPORT_SERR
@@ -960,15 +1059,19 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
     //(and no less than v1_size/4)
     //thus making v1 preferable and possibly losing small details? should be ok
 #define SMALLEST_CODEBOOK 1
-    for(v1enough = 0, v1_size = SMALLEST_CODEBOOK; v1_size <= CODEBOOK_MAX && !v1enough; v1_size <<= 2) {
-        for(v4enough = 0, v4_size = 0; v4_size <= v1_size && !v4enough; v4_size = v4_size ? v4_size << 2 : v1_size >= SMALLEST_CODEBOOK << 2 ? v1_size >> 2 : SMALLEST_CODEBOOK) {
+    for(v1enough = 0, v1_size = SMALLEST_CODEBOOK; v1_size <= CODEBOOK_MAX && !v1enough; v1_size <<= 2)
+    {
+        for(v4enough = 0, v4_size = 0; v4_size <= v1_size && !v4enough; v4_size = v4_size ? v4_size << 2 : v1_size >= SMALLEST_CODEBOOK << 2 ? v1_size >> 2 : SMALLEST_CODEBOOK)
+        {
             //try all modes
-            for(CinepakMode mode = 0; mode < MODE_COUNT; mode++) {
+            for(CinepakMode mode = 0; mode < MODE_COUNT; mode++)
+            {
                 //don't allow MODE_MC in intra frames
                 if(keyframe && mode == MODE_MC)
                     continue;
 
-                if(mode == MODE_V1_ONLY) {
+                if(mode == MODE_V1_ONLY)
+                {
                     info.v1_size = v1_size;
 // the size may shrink even before optimizations if the input is short:
                     info.v1_size = quantize(s, h, pict, 1, &info, ENC_UNCERTAIN);
@@ -977,12 +1080,15 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
                         v1enough = 1;
 
                     info.v4_size = 0;
-                } else { // mode != MODE_V1_ONLY
+                }
+                else     // mode != MODE_V1_ONLY
+                {
                     // if v4 codebook is empty then only allow V1-only mode
                     if(!v4_size)
                         continue;
 
-                    if(mode == MODE_V1_V4) {
+                    if(mode == MODE_V1_V4)
+                    {
                         info.v4_size = v4_size;
                         info.v4_size = quantize(s, h, pict, 0, &info, ENC_UNCERTAIN);
                         if(info.v4_size < v4_size)
@@ -996,24 +1102,27 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
                 score = calculate_mode_score(s, h, &info, 0,
                                              &v1shrunk, &v4shrunk
 #ifdef CINEPAK_REPORT_SERR
-, &serr
+                                             , &serr
 #endif
-);
+                                            );
 
-                if(mode != MODE_V1_ONLY){
+                if(mode != MODE_V1_ONLY)
+                {
                     int extra_iterations_limit = s->max_extra_cb_iterations;
 // recompute the codebooks, omitting the extra blocks
 // we assume we _may_ come here with more blocks to encode than before
                     info.v1_size = v1_size;
                     new_v1_size = quantize(s, h, pict, 1, &info, ENC_V1);
-                    if(new_v1_size < info.v1_size){
+                    if(new_v1_size < info.v1_size)
+                    {
                         //av_log(s->avctx, AV_LOG_INFO, "mode %i, %3i, %3i: cut v1 codebook to %i entries\n", mode, v1_size, v4_size, new_v1_size);
                         info.v1_size = new_v1_size;
                     }
 // we assume we _may_ come here with more blocks to encode than before
                     info.v4_size = v4_size;
                     new_v4_size = quantize(s, h, pict, 0, &info, ENC_V4);
-                    if(new_v4_size < info.v4_size) {
+                    if(new_v4_size < info.v4_size)
+                    {
                         //av_log(s->avctx, AV_LOG_INFO, "mode %i, %3i, %3i: cut v4 codebook to %i entries at first iteration\n", mode, v1_size, v4_size, new_v4_size);
                         info.v4_size = new_v4_size;
                     }
@@ -1021,28 +1130,33 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
 // (do not move blocks to codebook encodings now, as some blocks may have
 // got bigger errors despite a smaller training set - but we do not
 // ever grow the training sets back)
-                    for(;;) {
+                    for(;;)
+                    {
                         score = calculate_mode_score(s, h, &info, 1,
                                                      &v1shrunk, &v4shrunk
 #ifdef CINEPAK_REPORT_SERR
-, &serr
+                                                     , &serr
 #endif
-);
+                                                    );
 // do we have a reason to reiterate? if so, have we reached the limit?
                         if((!v1shrunk && !v4shrunk) || !extra_iterations_limit--) break;
 // recompute the codebooks, omitting the extra blocks
-                        if(v1shrunk) {
+                        if(v1shrunk)
+                        {
                             info.v1_size = v1_size;
                             new_v1_size = quantize(s, h, pict, 1, &info, ENC_V1);
-                            if(new_v1_size < info.v1_size){
+                            if(new_v1_size < info.v1_size)
+                            {
                                 //av_log(s->avctx, AV_LOG_INFO, "mode %i, %3i, %3i: cut v1 codebook to %i entries\n", mode, v1_size, v4_size, new_v1_size);
                                 info.v1_size = new_v1_size;
                             }
                         }
-                        if(v4shrunk) {
+                        if(v4shrunk)
+                        {
                             info.v4_size = v4_size;
                             new_v4_size = quantize(s, h, pict, 0, &info, ENC_V4);
-                            if(new_v4_size < info.v4_size) {
+                            if(new_v4_size < info.v4_size)
+                            {
                                 //av_log(s->avctx, AV_LOG_INFO, "mode %i, %3i, %3i: cut v4 codebook to %i entries\n", mode, v1_size, v4_size, new_v4_size);
                                 info.v4_size = new_v4_size;
                             }
@@ -1052,7 +1166,8 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
 
                 //av_log(s->avctx, AV_LOG_INFO, "%3i %3i score = %"PRId64"\n", v1_size, v4_size, score);
 
-                if(best_size == 0 || score < *best_score) {
+                if(best_size == 0 || score < *best_score)
+                {
 
                     *best_score = score;
 #ifdef CINEPAK_REPORT_SERR
@@ -1081,10 +1196,13 @@ static int rd_strip(CinepakEncContext *s, int y, int h, int keyframe, AVPicture 
 
 #ifdef CINEPAKENC_DEBUG
     //gather stats. this will only work properly of MAX_STRIPS == 1
-    if(best_info.mode == MODE_V1_ONLY) {
+    if(best_info.mode == MODE_V1_ONLY)
+    {
         s->num_v1_mode++;
         s->num_v1_encs += s->w*h/MB_AREA;
-    } else {
+    }
+    else
+    {
         if(best_info.mode == MODE_V1_V4)
             s->num_v4_mode++;
         else
@@ -1129,23 +1247,31 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
 
     int best_nstrips = -1, best_size = -1; // mark as uninitialzed
 
-    if(s->pix_fmt == AV_PIX_FMT_RGB24) {
+    if(s->pix_fmt == AV_PIX_FMT_RGB24)
+    {
         int x;
 // build a copy of the given frame in the correct colorspace
-        for(y = 0; y < s->h; y += 2) {
-            for(x = 0; x < s->w; x += 2) {
-                uint8_t *ir[2]; int32_t r, g, b, rr, gg, bb;
+        for(y = 0; y < s->h; y += 2)
+        {
+            for(x = 0; x < s->w; x += 2)
+            {
+                uint8_t *ir[2];
+                int32_t r, g, b, rr, gg, bb;
                 ir[0] = ((AVPicture*)frame)->data[0] + x*3 + y*((AVPicture*)frame)->linesize[0];
                 ir[1] = ir[0] + ((AVPicture*)frame)->linesize[0];
                 get_sub_picture(s, x, y, (AVPicture*)s->input_frame, &scratch_pict);
                 r = g = b = 0;
-                for(i=0; i<4; ++i) {
+                for(i=0; i<4; ++i)
+                {
                     int i1, i2;
-                    i1 = (i&1); i2 = (i>=2);
+                    i1 = (i&1);
+                    i2 = (i>=2);
                     rr = ir[i2][i1*3+0];
                     gg = ir[i2][i1*3+1];
                     bb = ir[i2][i1*3+2];
-                    r += rr; g += gg; b += bb;
+                    r += rr;
+                    g += gg;
+                    b += bb;
 // using fixed point arithmetic for portable repeatability, scaling by 2^23
 // "Y"
 //                    rr = 0.2857*rr + 0.5714*gg + 0.1429*bb;
@@ -1174,14 +1300,16 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
 
     //would be nice but quite certainly incompatible with vintage players:
     // support encoding zero strips (meaning skip the whole frame)
-    for(num_strips = s->min_strips; num_strips <= s->max_strips && num_strips <= s->h / MB_SIZE; num_strips++) {
+    for(num_strips = s->min_strips; num_strips <= s->max_strips && num_strips <= s->h / MB_SIZE; num_strips++)
+    {
         score = 0;
         size = 0;
 #ifdef CINEPAK_REPORT_SERR
         serr = 0;
 #endif
 
-        for(y = 0, strip = 1; y < s->h; strip++, y = nexty) {
+        for(y = 0, strip = 1; y < s->h; strip++, y = nexty)
+        {
             int strip_height;
 
             nexty = strip * s->h / num_strips; // <= s->h
@@ -1190,7 +1318,8 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
                 nexty += 4 - (nexty & 3);
 
             strip_height = nexty - y;
-            if(strip_height <= 0) { // can this ever happen?
+            if(strip_height <= 0)   // can this ever happen?
+            {
                 av_log(s->avctx, AV_LOG_INFO, "skipping zero height strip %i of %i\n", strip, num_strips);
                 continue;
             }
@@ -1204,9 +1333,9 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
 
             if((temp_size = rd_strip(s, y, strip_height, isakeyframe, &last_pict, &pict, &scratch_pict, s->frame_buf + size + CVID_HEADER_SIZE, &score_temp
 #ifdef CINEPAK_REPORT_SERR
-, &serr_temp
+                                     , &serr_temp
 #endif
-)) < 0)
+                                    )) < 0)
                 return temp_size;
 
             score += score_temp;
@@ -1218,7 +1347,8 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
             //av_log(s->avctx, AV_LOG_INFO, "\n");
         }
 
-        if(best_score == 0 || score < best_score) {
+        if(best_score == 0 || score < best_score)
+        {
             best_score = score;
 #ifdef CINEPAK_REPORT_SERR
             best_serr = serr;
@@ -1244,18 +1374,24 @@ static int rd_frame(CinepakEncContext *s, const AVFrame *frame, int isakeyframe,
 // let the number of strips slowly adapt to the changes in the contents,
 // compared to full bruteforcing every time this will occasionally lead
 // to some r/d performance loss but makes encoding up to several times faster
-    if(!s->strip_number_delta_range) {
-        if(best_nstrips == s->max_strips) { // let us try to step up
+    if(!s->strip_number_delta_range)
+    {
+        if(best_nstrips == s->max_strips)   // let us try to step up
+        {
             s->max_strips = best_nstrips + 1;
             if(s->max_strips >= s->max_max_strips)
                 s->max_strips = s->max_max_strips;
-        } else { // try to step down
+        }
+        else     // try to step down
+        {
             s->max_strips = best_nstrips;
         }
         s->min_strips = s->max_strips - 1;
         if(s->min_strips < s->min_min_strips)
             s->min_strips = s->min_min_strips;
-    } else {
+    }
+    else
+    {
         s->max_strips = best_nstrips + s->strip_number_delta_range;
         if(s->max_strips >= s->max_max_strips)
             s->max_strips = s->max_max_strips;
@@ -1315,13 +1451,14 @@ static av_cold int cinepak_encode_end(AVCodecContext *avctx)
 
 #ifdef CINEPAKENC_DEBUG
     av_log(avctx, AV_LOG_INFO, "strip coding stats: %i V1 mode, %i V4 mode, %i MC mode (%i V1 encs, %i V4 encs, %i skips)\n",
-        s->num_v1_mode, s->num_v4_mode, s->num_mc_mode, s->num_v1_encs, s->num_v4_encs, s->num_skips);
+           s->num_v1_mode, s->num_v4_mode, s->num_mc_mode, s->num_v1_encs, s->num_v4_encs, s->num_skips);
 #endif
 
     return 0;
 }
 
-AVCodec ff_cinepak_encoder = {
+AVCodec ff_cinepak_encoder =
+{
     .name           = "cinepak",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_CINEPAK,

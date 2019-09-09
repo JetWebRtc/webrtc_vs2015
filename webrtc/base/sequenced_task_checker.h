@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,17 +21,22 @@
 #include "webrtc/base/thread_annotations.h"
 #include "webrtc/base/sequenced_task_checker_impl.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Do nothing implementation, for use in release mode.
 //
 // Note: You should almost always use the SequencedTaskChecker class to get the
 // right version for your build configuration.
-class SequencedTaskCheckerDoNothing {
- public:
-  bool CalledSequentially() const { return true; }
+class SequencedTaskCheckerDoNothing
+{
+public:
+    bool CalledSequentially() const
+    {
+        return true;
+    }
 
-  void Detach() {}
+    void Detach() {}
 };
 
 // SequencedTaskChecker is a helper class used to help verify that some methods
@@ -59,12 +64,14 @@ class LOCKABLE SequencedTaskChecker : public SequencedTaskCheckerImpl {};
 class LOCKABLE SequencedTaskChecker : public SequencedTaskCheckerDoNothing {};
 #endif  // ENABLE_SEQUENCED_TASK_CHECKER_H_
 
-namespace internal {
-class SCOPED_LOCKABLE SequencedTaskCheckerScope {
- public:
-  explicit SequencedTaskCheckerScope(const SequencedTaskChecker* checker)
-      EXCLUSIVE_LOCK_FUNCTION(checker);
-  ~SequencedTaskCheckerScope() UNLOCK_FUNCTION();
+namespace internal
+{
+class SCOPED_LOCKABLE SequencedTaskCheckerScope
+{
+public:
+    explicit SequencedTaskCheckerScope(const SequencedTaskChecker* checker)
+    EXCLUSIVE_LOCK_FUNCTION(checker);
+    ~SequencedTaskCheckerScope() UNLOCK_FUNCTION();
 };
 
 }  // namespace internal

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -27,8 +27,8 @@
 
 #if HAVE_INLINE_ASM
 av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
-                                       int16_t *filter, int32_t *filterPos,
-                                       int numSplits)
+                                   int16_t *filter, int32_t *filterPos,
+                                   int numSplits)
 {
     uint8_t *fragmentA;
     x86_reg imm8OfPShufW1A;
@@ -87,8 +87,8 @@ av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
 
 
         : "=r" (fragmentA), "=r" (imm8OfPShufW1A), "=r" (imm8OfPShufW2A),
-          "=r" (fragmentLengthA)
-        );
+        "=r" (fragmentLengthA)
+    );
 
     __asm__ volatile (
         "jmp                         9f                 \n\t"
@@ -124,16 +124,18 @@ av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
 
 
         : "=r" (fragmentB), "=r" (imm8OfPShufW1B), "=r" (imm8OfPShufW2B),
-          "=r" (fragmentLengthB)
-        );
+        "=r" (fragmentLengthB)
+    );
 
     xpos        = 0; // lumXInc/2 - 0x8000; // difference between pixel centers
     fragmentPos = 0;
 
-    for (i = 0; i < dstW / numSplits; i++) {
+    for (i = 0; i < dstW / numSplits; i++)
+    {
         int xx = xpos >> 16;
 
-        if ((i & 3) == 0) {
+        if ((i & 3) == 0)
+        {
             int a                  = 0;
             int b                  = ((xpos + xInc) >> 16) - xx;
             int c                  = ((xpos + xInc * 2) >> 16) - xx;
@@ -146,7 +148,8 @@ av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
             int maxShift           = 3 - (d + inc);
             int shift              = 0;
 
-            if (filterCode) {
+            if (filterCode)
+            {
                 filter[i]        = ((xpos              & 0xFFFF) ^ 0xFFFF) >> 9;
                 filter[i + 1]    = (((xpos + xInc)     & 0xFFFF) ^ 0xFFFF) >> 9;
                 filter[i + 2]    = (((xpos + xInc * 2) & 0xFFFF) ^ 0xFFFF) >> 9;
@@ -156,19 +159,20 @@ av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
                 memcpy(filterCode + fragmentPos, fragment, fragmentLength);
 
                 filterCode[fragmentPos + imm8OfPShufW1] =  (a + inc)       |
-                                                          ((b + inc) << 2) |
-                                                          ((c + inc) << 4) |
-                                                          ((d + inc) << 6);
+                        ((b + inc) << 2) |
+                        ((c + inc) << 4) |
+                        ((d + inc) << 6);
                 filterCode[fragmentPos + imm8OfPShufW2] =  a | (b << 2) |
-                                                               (c << 4) |
-                                                               (d << 6);
+                        (c << 4) |
+                        (d << 6);
 
                 if (i + 4 - inc >= dstW)
                     shift = maxShift;               // avoid overread
                 else if ((filterPos[i / 2] & 3) <= maxShift)
                     shift = filterPos[i / 2] & 3;   // align
 
-                if (shift && i >= shift) {
+                if (shift && i >= shift)
+                {
                     filterCode[fragmentPos + imm8OfPShufW1] += 0x55 * shift;
                     filterCode[fragmentPos + imm8OfPShufW2] += 0x55 * shift;
                     filterPos[i / 2]                        -= shift;
@@ -189,8 +193,8 @@ av_cold int ff_init_hscaler_mmxext(int dstW, int xInc, uint8_t *filterCode,
 }
 
 void ff_hyscale_fast_mmxext(SwsContext *c, int16_t *dst,
-                                 int dstWidth, const uint8_t *src,
-                                 int srcW, int xInc)
+                            int dstWidth, const uint8_t *src,
+                            int srcW, int xInc)
 {
     int32_t *filterPos = c->hLumFilterPos;
     int16_t *filter    = c->hLumFilter;
@@ -260,17 +264,17 @@ void ff_hyscale_fast_mmxext(SwsContext *c, int16_t *dst,
 #endif
 #endif
         :: "m" (src), "m" (dst), "m" (filter), "m" (filterPos),
-           "m" (mmxextFilterCode)
+        "m" (mmxextFilterCode)
 #if ARCH_X86_64
-          ,"m"(retsave)
+        ,"m"(retsave)
 #else
 #if defined(PIC)
-          ,"m" (ebxsave)
+        ,"m" (ebxsave)
 #endif
 #endif
         : "%"REG_a, "%"REG_c, "%"REG_d, "%"REG_S, "%"REG_D
 #if ARCH_X86_64 || !defined(PIC)
-         ,"%"REG_b
+        ,"%"REG_b
 #endif
     );
 
@@ -279,8 +283,8 @@ void ff_hyscale_fast_mmxext(SwsContext *c, int16_t *dst,
 }
 
 void ff_hcscale_fast_mmxext(SwsContext *c, int16_t *dst1, int16_t *dst2,
-                                 int dstWidth, const uint8_t *src1,
-                                 const uint8_t *src2, int srcW, int xInc)
+                            int dstWidth, const uint8_t *src1,
+                            const uint8_t *src2, int srcW, int xInc)
 {
     int32_t *filterPos = c->hChrFilterPos;
     int16_t *filter    = c->hChrFilter;
@@ -337,21 +341,22 @@ void ff_hcscale_fast_mmxext(SwsContext *c, int16_t *dst1, int16_t *dst2,
 #endif
 #endif
         :: "m" (src1), "m" (dst1), "m" (filter), "m" (filterPos),
-           "m" (mmxextFilterCode), "m" (src2), "m"(dst2)
+        "m" (mmxextFilterCode), "m" (src2), "m"(dst2)
 #if ARCH_X86_64
-          ,"m"(retsave)
+        ,"m"(retsave)
 #else
 #if defined(PIC)
-          ,"m" (ebxsave)
+        ,"m" (ebxsave)
 #endif
 #endif
         : "%"REG_a, "%"REG_c, "%"REG_d, "%"REG_S, "%"REG_D
 #if ARCH_X86_64 || !defined(PIC)
-         ,"%"REG_b
+        ,"%"REG_b
 #endif
     );
 
-    for (i=dstWidth-1; (i*xInc)>>16 >=srcW-1; i--) {
+    for (i=dstWidth-1; (i*xInc)>>16 >=srcW-1; i--)
+    {
         dst1[i] = src1[srcW-1]*128;
         dst2[i] = src2[srcW-1]*128;
     }

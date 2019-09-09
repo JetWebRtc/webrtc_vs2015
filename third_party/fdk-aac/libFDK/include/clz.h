@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -122,16 +122,17 @@ amm-info@iis.fraunhofer.de
 #ifdef FUNCTION_fixnormz_D
 inline INT fixnormz_S (SHORT a)
 {
-  return fixnormz_D((INT)(a));
+    return fixnormz_D((INT)(a));
 }
 #else
 inline INT fixnormz_S (SHORT a)
 {
     int leadingBits = 0;
     a = ~a;
-    while(a & 0x8000) {
-      leadingBits++;
-      a <<= 1;
+    while(a & 0x8000)
+    {
+        leadingBits++;
+        a <<= 1;
     }
 
     return (leadingBits);
@@ -144,9 +145,10 @@ inline INT fixnormz_D (LONG a)
 {
     INT leadingBits = 0;
     a = ~a;
-    while(a & 0x80000000) {
-      leadingBits++;
-      a <<= 1;
+    while(a & 0x80000000)
+    {
+        leadingBits++;
+        a <<= 1;
     }
 
     return (leadingBits);
@@ -164,14 +166,16 @@ inline INT fixnormz_D (LONG a)
 #ifdef FUNCTION_fixnorm_D
 inline INT fixnorm_S(FIXP_SGL val)
 {
-  return fixnorm_D((INT)(val));
+    return fixnorm_D((INT)(val));
 }
 #else
 inline INT fixnorm_S(FIXP_SGL val)
 {
     INT leadingBits = 0;
-    if ( val != (FIXP_SGL)0 ) {
-        if ( val < (FIXP_SGL)0 ) {
+    if ( val != (FIXP_SGL)0 )
+    {
+        if ( val < (FIXP_SGL)0 )
+        {
             val = ~val;
         }
         leadingBits = fixnormz_S(val) - 1;
@@ -185,8 +189,10 @@ inline INT fixnorm_S(FIXP_SGL val)
 inline INT fixnorm_D(FIXP_DBL val)
 {
     INT leadingBits = 0;
-    if ( val != (FIXP_DBL)0 ) {
-        if ( val < (FIXP_DBL)0 ) {
+    if ( val != (FIXP_DBL)0 )
+    {
+        if ( val < (FIXP_DBL)0 )
+        {
             val = ~val;
         }
         leadingBits = fixnormz_D(val) - 1;

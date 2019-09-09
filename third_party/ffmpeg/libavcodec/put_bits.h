@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "libavutil/intreadwrite.h"
 #include "libavutil/avassert.h"
 
-typedef struct PutBitContext {
+typedef struct PutBitContext
+{
     uint32_t bit_buf;
     int bit_left;
     uint8_t *buf, *buf_ptr, *buf_end;
@@ -48,7 +49,8 @@ typedef struct PutBitContext {
 static inline void init_put_bits(PutBitContext *s, uint8_t *buffer,
                                  int buffer_size)
 {
-    if (buffer_size < 0) {
+    if (buffer_size < 0)
+    {
         buffer_size = 0;
         buffer      = NULL;
     }
@@ -104,7 +106,8 @@ static inline void flush_put_bits(PutBitContext *s)
     if (s->bit_left < 32)
         s->bit_buf <<= s->bit_left;
 #endif
-    while (s->bit_left < 32) {
+    while (s->bit_left < 32)
+    {
         /* XXX: should test end of buffer */
 #ifdef BITSTREAM_WRITER_LE
         *s->buf_ptr++ = s->bit_buf;
@@ -162,7 +165,8 @@ static inline void put_bits(PutBitContext *s, int n, unsigned int value)
     /* XXX: optimize */
 #ifdef BITSTREAM_WRITER_LE
     bit_buf |= value << (32 - bit_left);
-    if (n >= bit_left) {
+    if (n >= bit_left)
+    {
         av_assert2(s->buf_ptr+3<s->buf_end);
         AV_WL32(s->buf_ptr, bit_buf);
         s->buf_ptr += 4;
@@ -171,10 +175,13 @@ static inline void put_bits(PutBitContext *s, int n, unsigned int value)
     }
     bit_left -= n;
 #else
-    if (n < bit_left) {
+    if (n < bit_left)
+    {
         bit_buf     = (bit_buf << n) | value;
         bit_left   -= n;
-    } else {
+    }
+    else
+    {
         bit_buf   <<= bit_left;
         bit_buf    |= value >> (n - bit_left);
         av_assert2(s->buf_ptr+3<s->buf_end);

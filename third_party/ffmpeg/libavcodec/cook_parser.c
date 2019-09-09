@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "libavutil/intreadwrite.h"
 #include "parser.h"
 
-typedef struct CookParseContext {
+typedef struct CookParseContext
+{
     int duration;
 } CookParseContext;
 
@@ -41,7 +42,7 @@ static int cook_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
     CookParseContext *s = s1->priv_data;
 
     if (!s->duration &&
-                avctx->extradata && avctx->extradata_size >= 8 && avctx->channels)
+            avctx->extradata && avctx->extradata_size >= 8 && avctx->channels)
         s->duration = AV_RB16(avctx->extradata + 4) / avctx->channels;
 
     s1->duration = s->duration;
@@ -53,7 +54,8 @@ static int cook_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
     return buf_size;
 }
 
-AVCodecParser ff_cook_parser = {
+AVCodecParser ff_cook_parser =
+{
     .codec_ids      = { AV_CODEC_ID_COOK },
     .priv_data_size = sizeof(CookParseContext),
     .parser_parse   = cook_parse,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio resampling
  * Copyright (c) 2004-2012 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -31,26 +31,29 @@
 /**
  * 0th order modified bessel function of the first kind.
  */
-static double bessel(double x){
+static double bessel(double x)
+{
     double v=1;
     double lastv=0;
     double t=1;
     int i;
-    static const double inv[100]={
- 1.0/( 1* 1), 1.0/( 2* 2), 1.0/( 3* 3), 1.0/( 4* 4), 1.0/( 5* 5), 1.0/( 6* 6), 1.0/( 7* 7), 1.0/( 8* 8), 1.0/( 9* 9), 1.0/(10*10),
- 1.0/(11*11), 1.0/(12*12), 1.0/(13*13), 1.0/(14*14), 1.0/(15*15), 1.0/(16*16), 1.0/(17*17), 1.0/(18*18), 1.0/(19*19), 1.0/(20*20),
- 1.0/(21*21), 1.0/(22*22), 1.0/(23*23), 1.0/(24*24), 1.0/(25*25), 1.0/(26*26), 1.0/(27*27), 1.0/(28*28), 1.0/(29*29), 1.0/(30*30),
- 1.0/(31*31), 1.0/(32*32), 1.0/(33*33), 1.0/(34*34), 1.0/(35*35), 1.0/(36*36), 1.0/(37*37), 1.0/(38*38), 1.0/(39*39), 1.0/(40*40),
- 1.0/(41*41), 1.0/(42*42), 1.0/(43*43), 1.0/(44*44), 1.0/(45*45), 1.0/(46*46), 1.0/(47*47), 1.0/(48*48), 1.0/(49*49), 1.0/(50*50),
- 1.0/(51*51), 1.0/(52*52), 1.0/(53*53), 1.0/(54*54), 1.0/(55*55), 1.0/(56*56), 1.0/(57*57), 1.0/(58*58), 1.0/(59*59), 1.0/(60*60),
- 1.0/(61*61), 1.0/(62*62), 1.0/(63*63), 1.0/(64*64), 1.0/(65*65), 1.0/(66*66), 1.0/(67*67), 1.0/(68*68), 1.0/(69*69), 1.0/(70*70),
- 1.0/(71*71), 1.0/(72*72), 1.0/(73*73), 1.0/(74*74), 1.0/(75*75), 1.0/(76*76), 1.0/(77*77), 1.0/(78*78), 1.0/(79*79), 1.0/(80*80),
- 1.0/(81*81), 1.0/(82*82), 1.0/(83*83), 1.0/(84*84), 1.0/(85*85), 1.0/(86*86), 1.0/(87*87), 1.0/(88*88), 1.0/(89*89), 1.0/(90*90),
- 1.0/(91*91), 1.0/(92*92), 1.0/(93*93), 1.0/(94*94), 1.0/(95*95), 1.0/(96*96), 1.0/(97*97), 1.0/(98*98), 1.0/(99*99), 1.0/(10000)
+    static const double inv[100]=
+    {
+        1.0/( 1* 1), 1.0/( 2* 2), 1.0/( 3* 3), 1.0/( 4* 4), 1.0/( 5* 5), 1.0/( 6* 6), 1.0/( 7* 7), 1.0/( 8* 8), 1.0/( 9* 9), 1.0/(10*10),
+        1.0/(11*11), 1.0/(12*12), 1.0/(13*13), 1.0/(14*14), 1.0/(15*15), 1.0/(16*16), 1.0/(17*17), 1.0/(18*18), 1.0/(19*19), 1.0/(20*20),
+        1.0/(21*21), 1.0/(22*22), 1.0/(23*23), 1.0/(24*24), 1.0/(25*25), 1.0/(26*26), 1.0/(27*27), 1.0/(28*28), 1.0/(29*29), 1.0/(30*30),
+        1.0/(31*31), 1.0/(32*32), 1.0/(33*33), 1.0/(34*34), 1.0/(35*35), 1.0/(36*36), 1.0/(37*37), 1.0/(38*38), 1.0/(39*39), 1.0/(40*40),
+        1.0/(41*41), 1.0/(42*42), 1.0/(43*43), 1.0/(44*44), 1.0/(45*45), 1.0/(46*46), 1.0/(47*47), 1.0/(48*48), 1.0/(49*49), 1.0/(50*50),
+        1.0/(51*51), 1.0/(52*52), 1.0/(53*53), 1.0/(54*54), 1.0/(55*55), 1.0/(56*56), 1.0/(57*57), 1.0/(58*58), 1.0/(59*59), 1.0/(60*60),
+        1.0/(61*61), 1.0/(62*62), 1.0/(63*63), 1.0/(64*64), 1.0/(65*65), 1.0/(66*66), 1.0/(67*67), 1.0/(68*68), 1.0/(69*69), 1.0/(70*70),
+        1.0/(71*71), 1.0/(72*72), 1.0/(73*73), 1.0/(74*74), 1.0/(75*75), 1.0/(76*76), 1.0/(77*77), 1.0/(78*78), 1.0/(79*79), 1.0/(80*80),
+        1.0/(81*81), 1.0/(82*82), 1.0/(83*83), 1.0/(84*84), 1.0/(85*85), 1.0/(86*86), 1.0/(87*87), 1.0/(88*88), 1.0/(89*89), 1.0/(90*90),
+        1.0/(91*91), 1.0/(92*92), 1.0/(93*93), 1.0/(94*94), 1.0/(95*95), 1.0/(96*96), 1.0/(97*97), 1.0/(98*98), 1.0/(99*99), 1.0/(10000)
     };
 
     x= x*x/4;
-    for(i=0; v != lastv; i++){
+    for(i=0; v != lastv; i++)
+    {
         lastv=v;
         t *= x*inv[i];
         v += t;
@@ -68,7 +71,8 @@ static double bessel(double x){
  * @return 0 on success, negative on error
  */
 static int build_filter(ResampleContext *c, void *filter, double factor, int tap_count, int alloc, int phase_count, int scale,
-                        int filter_type, int kaiser_beta){
+                        int filter_type, int kaiser_beta)
+{
     int ph, i;
     double x, y, w;
     double *tab = av_malloc_array(tap_count,  sizeof(*tab));
@@ -81,19 +85,24 @@ static int build_filter(ResampleContext *c, void *filter, double factor, int tap
     if (factor > 1.0)
         factor = 1.0;
 
-    for(ph=0;ph<phase_count;ph++) {
+    for(ph=0; ph<phase_count; ph++)
+    {
         double norm = 0;
-        for(i=0;i<tap_count;i++) {
+        for(i=0; i<tap_count; i++)
+        {
             x = M_PI * ((double)(i - center) - (double)ph / phase_count) * factor;
             if (x == 0) y = 1.0;
             else        y = sin(x) / x;
-            switch(filter_type){
-            case SWR_FILTER_TYPE_CUBIC:{
+            switch(filter_type)
+            {
+            case SWR_FILTER_TYPE_CUBIC:
+            {
                 const float d= -0.5; //first order derivative = -0.5
                 x = fabs(((double)(i - center) - (double)ph / phase_count) * factor);
                 if(x<1.0) y= 1 - 3*x*x + 2*x*x*x + d*(            -x*x + x*x*x);
                 else      y=                       d*(-4 + 8*x - 5*x*x + x*x*x);
-                break;}
+                break;
+            }
             case SWR_FILTER_TYPE_BLACKMAN_NUTTALL:
                 w = 2.0*x / (factor*tap_count) + M_PI;
                 y *= 0.3635819 - 0.4891775 * cos(w) + 0.1365995 * cos(2*w) - 0.0106411 * cos(3*w);
@@ -111,21 +120,22 @@ static int build_filter(ResampleContext *c, void *filter, double factor, int tap
         }
 
         /* normalize so that an uniform color remains the same */
-        switch(c->format){
+        switch(c->format)
+        {
         case AV_SAMPLE_FMT_S16P:
-            for(i=0;i<tap_count;i++)
+            for(i=0; i<tap_count; i++)
                 ((int16_t*)filter)[ph * alloc + i] = av_clip(lrintf(tab[i] * scale / norm), INT16_MIN, INT16_MAX);
             break;
         case AV_SAMPLE_FMT_S32P:
-            for(i=0;i<tap_count;i++)
+            for(i=0; i<tap_count; i++)
                 ((int32_t*)filter)[ph * alloc + i] = av_clipl_int32(llrint(tab[i] * scale / norm));
             break;
         case AV_SAMPLE_FMT_FLTP:
-            for(i=0;i<tap_count;i++)
+            for(i=0; i<tap_count; i++)
                 ((float*)filter)[ph * alloc + i] = tab[i] * scale / norm;
             break;
         case AV_SAMPLE_FMT_DBLP:
-            for(i=0;i<tap_count;i++)
+            for(i=0; i<tap_count; i++)
                 ((double*)filter)[ph * alloc + i] = tab[i] * scale / norm;
             break;
         }
@@ -137,11 +147,13 @@ static int build_filter(ResampleContext *c, void *filter, double factor, int tap
         double sine[LEN + tap_count];
         double filtered[LEN];
         double maxff=-2, minff=2, maxsf=-2, minsf=2;
-        for(i=0; i<LEN; i++){
+        for(i=0; i<LEN; i++)
+        {
             double ss=0, sf=0, ff=0;
             for(j=0; j<LEN+tap_count; j++)
                 sine[j]= cos(i*j*M_PI/LEN);
-            for(j=0; j<LEN; j++){
+            for(j=0; j<LEN; j++)
+            {
                 double sum=0;
                 ph=0;
                 for(k=0; k<tap_count; k++)
@@ -158,7 +170,8 @@ static int build_filter(ResampleContext *c, void *filter, double factor, int tap
             minff= FFMIN(minff, ff);
             maxsf= FFMAX(maxsf, sf);
             minsf= FFMIN(minsf, sf);
-            if(i%11==0){
+            if(i%11==0)
+            {
                 av_log(NULL, AV_LOG_ERROR, "i:%4d ss:%f ff:%13.6e-%13.6e sf:%13.6e-%13.6e\n", i, ss, maxff, minff, maxsf, minsf);
                 minff=minsf= 2;
                 maxff=maxsf= -2;
@@ -172,16 +185,17 @@ static int build_filter(ResampleContext *c, void *filter, double factor, int tap
 }
 
 static ResampleContext *resample_init(ResampleContext *c, int out_rate, int in_rate, int filter_size, int phase_shift, int linear,
-                                    double cutoff0, enum AVSampleFormat format, enum SwrFilterType filter_type, int kaiser_beta,
-                                    double precision, int cheby)
+                                      double cutoff0, enum AVSampleFormat format, enum SwrFilterType filter_type, int kaiser_beta,
+                                      double precision, int cheby)
 {
     double cutoff = cutoff0? cutoff0 : 0.97;
     double factor= FFMIN(out_rate * cutoff / in_rate, 1.0);
     int phase_count= 1<<phase_shift;
 
     if (!c || c->phase_shift != phase_shift || c->linear!=linear || c->factor != factor
-           || c->filter_length != FFMAX((int)ceil(filter_size/factor), 1) || c->format != format
-           || c->filter_type != filter_type || c->kaiser_beta != kaiser_beta) {
+    || c->filter_length != FFMAX((int)ceil(filter_size/factor), 1) || c->format != format
+    || c->filter_type != filter_type || c->kaiser_beta != kaiser_beta)
+    {
         c = av_mallocz(sizeof(*c));
         if (!c)
             return NULL;
@@ -190,7 +204,8 @@ static ResampleContext *resample_init(ResampleContext *c, int out_rate, int in_r
 
         c->felem_size= av_get_bytes_per_sample(c->format);
 
-        switch(c->format){
+        switch(c->format)
+        {
         case AV_SAMPLE_FMT_S16P:
             c->filter_shift = 15;
             break;
@@ -206,7 +221,8 @@ static ResampleContext *resample_init(ResampleContext *c, int out_rate, int in_r
             av_assert0(0);
         }
 
-        if (filter_size/factor > INT32_MAX/256) {
+        if (filter_size/factor > INT32_MAX/256)
+        {
             av_log(NULL, AV_LOG_ERROR, "Filter length too large\n");
             goto error;
         }
@@ -247,14 +263,16 @@ error:
     return NULL;
 }
 
-static void resample_free(ResampleContext **c){
+static void resample_free(ResampleContext **c)
+{
     if(!*c)
         return;
     av_freep(&(*c)->filter_bank);
     av_freep(c);
 }
 
-static int set_compensation(ResampleContext *c, int sample_delta, int compensation_distance){
+static int set_compensation(ResampleContext *c, int sample_delta, int compensation_distance)
+{
     c->compensation_distance= compensation_distance;
     if (compensation_distance)
         c->dst_incr = c->ideal_dst_incr - c->ideal_dst_incr * (int64_t)sample_delta / compensation_distance;
@@ -271,7 +289,8 @@ static int swri_resample(ResampleContext *c,
                          uint8_t *dst, const uint8_t *src, int *consumed,
                          int src_size, int dst_size, int update_ctx)
 {
-    if (c->filter_length == 1 && c->phase_shift == 0) {
+    if (c->filter_length == 1 && c->phase_shift == 0)
+    {
         int index= c->index;
         int frac= c->frac;
         int64_t index2= (1LL<<32)*c->frac/c->src_incr + (1LL<<32)*index;
@@ -285,19 +304,25 @@ static int swri_resample(ResampleContext *c,
         index += (frac + dst_size * (int64_t)c->dst_incr_mod) / c->src_incr;
         av_assert2(index >= 0);
         *consumed= index;
-        if (update_ctx) {
+        if (update_ctx)
+        {
             c->frac   = (frac + dst_size * (int64_t)c->dst_incr_mod) % c->src_incr;
             c->index = 0;
         }
-    } else {
+    }
+    else
+    {
         int64_t end_index = (1LL + src_size - c->filter_length) << c->phase_shift;
         int64_t delta_frac = (end_index - c->index) * c->src_incr - c->frac;
         int delta_n = (delta_frac + c->dst_incr - 1) / c->dst_incr;
 
         dst_size = FFMIN(dst_size, delta_n);
-        if (dst_size > 0) {
+        if (dst_size > 0)
+        {
             *consumed = c->dsp.resample(c, dst, src, dst_size, update_ctx);
-        } else {
+        }
+        else
+        {
             *consumed = 0;
         }
     }
@@ -305,7 +330,8 @@ static int swri_resample(ResampleContext *c,
     return dst_size;
 }
 
-static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, AudioData *src, int src_size, int *consumed){
+static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, AudioData *src, int src_size, int *consumed)
+{
     int i, ret= -1;
     int av_unused mm_flags = av_get_cpu_flags();
     int need_emms = c->format == AV_SAMPLE_FMT_S16P && ARCH_X86_32 &&
@@ -316,16 +342,19 @@ static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, A
         dst_size = FFMIN(dst_size, c->compensation_distance);
     src_size = FFMIN(src_size, max_src_size);
 
-    for(i=0; i<dst->ch_count; i++){
+    for(i=0; i<dst->ch_count; i++)
+    {
         ret= swri_resample(c, dst->ch[i], src->ch[i],
                            consumed, src_size, dst_size, i+1==dst->ch_count);
     }
     if(need_emms)
         emms_c();
 
-    if (c->compensation_distance) {
+    if (c->compensation_distance)
+    {
         c->compensation_distance -= ret;
-        if (!c->compensation_distance) {
+        if (!c->compensation_distance)
+        {
             c->dst_incr     = c->ideal_dst_incr;
             c->dst_incr_div = c->dst_incr / c->src_incr;
             c->dst_incr_mod = c->dst_incr % c->src_incr;
@@ -335,7 +364,8 @@ static int multiple_resample(ResampleContext *c, AudioData *dst, int dst_size, A
     return ret;
 }
 
-static int64_t get_delay(struct SwrContext *s, int64_t base){
+static int64_t get_delay(struct SwrContext *s, int64_t base)
+{
     ResampleContext *c = s->resample;
     int64_t num = s->in_buffer_count - (c->filter_length-1)/2;
     num *= 1 << c->phase_shift;
@@ -345,7 +375,8 @@ static int64_t get_delay(struct SwrContext *s, int64_t base){
     return av_rescale(num, base, s->in_sample_rate*(int64_t)c->src_incr << c->phase_shift);
 }
 
-static int64_t get_out_samples(struct SwrContext *s, int in_samples) {
+static int64_t get_out_samples(struct SwrContext *s, int in_samples)
+{
     ResampleContext *c = s->resample;
     // The + 2 are added to allow implementations to be slightly inaccurate, they should not be needed currently.
     // They also make it easier to proof that changes and optimizations do not
@@ -355,7 +386,8 @@ static int64_t get_out_samples(struct SwrContext *s, int in_samples) {
     num -= c->index;
     num = av_rescale_rnd(num, s->out_sample_rate, ((int64_t)s->in_sample_rate) << c->phase_shift, AV_ROUND_UP) + 2;
 
-    if (c->compensation_distance) {
+    if (c->compensation_distance)
+    {
         if (num > INT_MAX)
             return AVERROR(EINVAL);
 
@@ -364,16 +396,19 @@ static int64_t get_out_samples(struct SwrContext *s, int in_samples) {
     return num;
 }
 
-static int resample_flush(struct SwrContext *s) {
+static int resample_flush(struct SwrContext *s)
+{
     AudioData *a= &s->in_buffer;
     int i, j, ret;
     if((ret = swri_realloc_audio(a, s->in_buffer_index + 2*s->in_buffer_count)) < 0)
         return ret;
     av_assert0(a->planar);
-    for(i=0; i<a->ch_count; i++){
-        for(j=0; j<s->in_buffer_count; j++){
+    for(i=0; i<a->ch_count; i++)
+    {
+        for(j=0; j<s->in_buffer_count; j++)
+        {
             memcpy(a->ch[i] + (s->in_buffer_index+s->in_buffer_count+j  )*a->bps,
-                a->ch[i] + (s->in_buffer_index+s->in_buffer_count-j-1)*a->bps, a->bps);
+                   a->ch[i] + (s->in_buffer_index+s->in_buffer_count-j-1)*a->bps, a->bps);
         }
     }
     s->in_buffer_count += (s->in_buffer_count+1)/2;
@@ -393,23 +428,28 @@ static int invert_initial_buffer(ResampleContext *c, AudioData *dst, const Audio
         return res;
 
     // copy
-    for (n = *out_sz; n < num; n++) {
-        for (ch = 0; ch < src->ch_count; ch++) {
+    for (n = *out_sz; n < num; n++)
+    {
+        for (ch = 0; ch < src->ch_count; ch++)
+        {
             memcpy(dst->ch[ch] + ((c->filter_length + n) * c->felem_size),
                    src->ch[ch] + ((n - *out_sz) * c->felem_size), c->felem_size);
         }
     }
 
     // if not enough data is in, return and wait for more
-    if (num < c->filter_length + 1) {
+    if (num < c->filter_length + 1)
+    {
         *out_sz = num;
         *out_idx = c->filter_length;
         return INT_MAX;
     }
 
     // else invert
-    for (n = 1; n <= c->filter_length; n++) {
-        for (ch = 0; ch < src->ch_count; ch++) {
+    for (n = 1; n <= c->filter_length; n++)
+    {
+        for (ch = 0; ch < src->ch_count; ch++)
+        {
             memcpy(dst->ch[ch] + ((c->filter_length - n) * c->felem_size),
                    dst->ch[ch] + ((c->filter_length + n) * c->felem_size),
                    c->felem_size);
@@ -425,13 +465,14 @@ static int invert_initial_buffer(ResampleContext *c, AudioData *dst, const Audio
     return FFMAX(res, 0);
 }
 
-struct Resampler const swri_resampler={
-  resample_init,
-  resample_free,
-  multiple_resample,
-  resample_flush,
-  set_compensation,
-  get_delay,
-  invert_initial_buffer,
-  get_out_samples,
+struct Resampler const swri_resampler=
+{
+    resample_init,
+    resample_free,
+    multiple_resample,
+    resample_flush,
+    set_compensation,
+    get_delay,
+    invert_initial_buffer,
+    get_out_samples,
 };

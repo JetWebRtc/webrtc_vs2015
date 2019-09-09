@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,11 +97,11 @@ void FDKaacEnc_InitPreEchoControl(FIXP_DBL    *RESTRICT pbThresholdNm1,
                                   FIXP_DBL    *RESTRICT sfbPcmQuantThreshold,
                                   INT         *mdctScalenm1)
 {
-  *mdctScalenm1 = PCM_QUANT_THR_SCALE>>1;
+    *mdctScalenm1 = PCM_QUANT_THR_SCALE>>1;
 
-  FDKmemcpy(pbThresholdNm1, sfbPcmQuantThreshold, numPb*sizeof(FIXP_DBL));
+    FDKmemcpy(pbThresholdNm1, sfbPcmQuantThreshold, numPb*sizeof(FIXP_DBL));
 
-  *calcPreEcho = 1;
+    *calcPreEcho = 1;
 }
 
 
@@ -118,26 +118,29 @@ void FDKaacEnc_PreEchoControl(FIXP_DBL   *RESTRICT pbThresholdNm1,
     FIXP_DBL tmpThreshold1, tmpThreshold2;
     int scaling;
 
-	/* If lastWindowSequence in previous frame was start- or stop-window,
-	   skip preechocontrol calculation */
-    if (calcPreEcho==0) {
-      /* copy thresholds to internal memory */
-      FDKmemcpy(pbThresholdNm1, pbThreshold, numPb*sizeof(FIXP_DBL));
-      *mdctScalenm1 = mdctScale;
-      return;
+    /* If lastWindowSequence in previous frame was start- or stop-window,
+       skip preechocontrol calculation */
+    if (calcPreEcho==0)
+    {
+        /* copy thresholds to internal memory */
+        FDKmemcpy(pbThresholdNm1, pbThreshold, numPb*sizeof(FIXP_DBL));
+        *mdctScalenm1 = mdctScale;
+        return;
     }
 
-    if ( mdctScale > *mdctScalenm1 ) {
+    if ( mdctScale > *mdctScalenm1 )
+    {
         /* if current thresholds are downscaled more than the ones from the last block */
         scaling = 2*(mdctScale-*mdctScalenm1);
-        for(i = 0; i < numPb; i++) {
+        for(i = 0; i < numPb; i++)
+        {
 
             /* multiplication with return data type fract ist equivalent to int multiplication */
             FDK_ASSERT(scaling>=0);
             tmpThreshold1 = maxAllowedIncreaseFactor * (pbThresholdNm1[i]>>scaling);
             tmpThreshold2 = fMult(minRemainingThresholdFactor, pbThreshold[i]);
 
-			FIXP_DBL tmp = pbThreshold[i];
+            FIXP_DBL tmp = pbThreshold[i];
 
             /* copy thresholds to internal memory */
             pbThresholdNm1[i] = tmp;
@@ -146,10 +149,12 @@ void FDKaacEnc_PreEchoControl(FIXP_DBL   *RESTRICT pbThresholdNm1,
             pbThreshold[i] = fixMax(tmp, tmpThreshold2);
         }
     }
-    else {
+    else
+    {
         /* if thresholds of last block are more downscaled than the current ones */
         scaling = 2*(*mdctScalenm1-mdctScale);
-        for(i = 0; i < numPb; i++) {
+        for(i = 0; i < numPb; i++)
+        {
 
             /* multiplication with return data type fract ist equivalent to int multiplication */
             tmpThreshold1 = (maxAllowedIncreaseFactor>>1) * pbThresholdNm1[i];
@@ -159,7 +164,8 @@ void FDKaacEnc_PreEchoControl(FIXP_DBL   *RESTRICT pbThresholdNm1,
             pbThresholdNm1[i] = pbThreshold[i];
 
             FDK_ASSERT(scaling>=0);
-            if((pbThreshold[i]>>(scaling+1)) > tmpThreshold1) {
+            if((pbThreshold[i]>>(scaling+1)) > tmpThreshold1)
+            {
                 pbThreshold[i] = tmpThreshold1<<(scaling+1);
             }
             pbThreshold[i] = fixMax(pbThreshold[i], tmpThreshold2);

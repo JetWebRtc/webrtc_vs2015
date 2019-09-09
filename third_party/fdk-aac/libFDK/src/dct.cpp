@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file   dct.cpp
-  \brief  DCT Implementations   
+  \brief  DCT Implementations
   Library functions to calculate standard DCTs. This will most likely be replaced by hand-optimized
   functions for the specific target processor.
 
@@ -114,71 +114,73 @@ void dct_III(FIXP_DBL *pDat, /*!< pointer to input/output */
              FIXP_DBL *tmp,  /*!< pointer to temporal working buffer */
              int L,          /*!< lenght of transform */
              int *pDat_e
-             )
+            )
 {
-  FDK_ASSERT(L == 64 || L == 32);
-  int  i;
-  FIXP_DBL xr, accu1, accu2;
-  int inc;
-  int M = L>>1;
-  int ld_M;
+    FDK_ASSERT(L == 64 || L == 32);
+    int  i;
+    FIXP_DBL xr, accu1, accu2;
+    int inc;
+    int M = L>>1;
+    int ld_M;
 
-  if (L == 64)  ld_M = 5;
-  else          ld_M = 4;
+    if (L == 64)  ld_M = 5;
+    else          ld_M = 4;
 
-  /* This loop performs multiplication for index i (i*inc) */
-  inc = (64/2) >> ld_M; /* 64/L */
+    /* This loop performs multiplication for index i (i*inc) */
+    inc = (64/2) >> ld_M; /* 64/L */
 
-  FIXP_DBL *pTmp_0 = &tmp[2];
-  FIXP_DBL *pTmp_1 = &tmp[(M-1)*2];
+    FIXP_DBL *pTmp_0 = &tmp[2];
+    FIXP_DBL *pTmp_1 = &tmp[(M-1)*2];
 
-  for(i=1; i<M>>1; i++,pTmp_0+=2,pTmp_1-=2) {
+    for(i=1; i<M>>1; i++,pTmp_0+=2,pTmp_1-=2)
+    {
 
-    FIXP_DBL accu3,accu4,accu5,accu6;
+        FIXP_DBL accu3,accu4,accu5,accu6;
 
-    cplxMultDiv2(&accu2, &accu1, pDat[L - i], pDat[i], sin_twiddle_L64[i*inc]);
-    cplxMultDiv2(&accu4, &accu3, pDat[M+i], pDat[M-i], sin_twiddle_L64[(M-i)*inc]);
-    accu3 >>= 1; accu4 >>= 1;
+        cplxMultDiv2(&accu2, &accu1, pDat[L - i], pDat[i], sin_twiddle_L64[i*inc]);
+        cplxMultDiv2(&accu4, &accu3, pDat[M+i], pDat[M-i], sin_twiddle_L64[(M-i)*inc]);
+        accu3 >>= 1;
+        accu4 >>= 1;
 
-    /* This method is better for ARM926, that uses operand2 shifted right by 1 always */
-    cplxMultDiv2(&accu6, &accu5, (accu3 - (accu1>>1)), ((accu2>>1) + accu4), sin_twiddle_L64[(4*i)*inc]);
-    xr = (accu1>>1) + accu3;
-    pTmp_0[0] = (xr>>1) - accu5;
-    pTmp_1[0] = (xr>>1) + accu5;
+        /* This method is better for ARM926, that uses operand2 shifted right by 1 always */
+        cplxMultDiv2(&accu6, &accu5, (accu3 - (accu1>>1)), ((accu2>>1) + accu4), sin_twiddle_L64[(4*i)*inc]);
+        xr = (accu1>>1) + accu3;
+        pTmp_0[0] = (xr>>1) - accu5;
+        pTmp_1[0] = (xr>>1) + accu5;
 
-    xr = (accu2>>1) - accu4;
-    pTmp_0[1] =  (xr>>1) - accu6;
-    pTmp_1[1] = -((xr>>1) + accu6);
+        xr = (accu2>>1) - accu4;
+        pTmp_0[1] =  (xr>>1) - accu6;
+        pTmp_1[1] = -((xr>>1) + accu6);
 
-  }
+    }
 
-  xr     = fMultDiv2(pDat[M], sin_twiddle_L64[64/2].v.re );/* cos((PI/(2*L))*M); */
-  tmp[0] = ((pDat[0]>>1) + xr)>>1;
-  tmp[1] = ((pDat[0]>>1) - xr)>>1;
+    xr     = fMultDiv2(pDat[M], sin_twiddle_L64[64/2].v.re );/* cos((PI/(2*L))*M); */
+    tmp[0] = ((pDat[0]>>1) + xr)>>1;
+    tmp[1] = ((pDat[0]>>1) - xr)>>1;
 
-  cplxMultDiv2(&accu2, &accu1, pDat[L - (M/2)], pDat[M/2], sin_twiddle_L64[64/4]);
-  tmp[M]   = accu1>>1;
-  tmp[M+1] = accu2>>1;
+    cplxMultDiv2(&accu2, &accu1, pDat[L - (M/2)], pDat[M/2], sin_twiddle_L64[64/4]);
+    tmp[M]   = accu1>>1;
+    tmp[M+1] = accu2>>1;
 
-  /* dit_fft expects 1 bit scaled input values */
-  fft(M, tmp, pDat_e);
+    /* dit_fft expects 1 bit scaled input values */
+    fft(M, tmp, pDat_e);
 
-  /* ARM926: 12 cycles per 2-iteration, no overhead code by compiler */
-  pTmp_1 = &tmp[L];
-  for (i = M>>1; i--;)
-  {
-    FIXP_DBL tmp1, tmp2, tmp3, tmp4;
-    tmp1 = *tmp++;
-    tmp2 = *tmp++;
-    tmp3 = *--pTmp_1;
-    tmp4 = *--pTmp_1;
-    *pDat++ = tmp1;
-    *pDat++ = tmp3;
-    *pDat++ = tmp2;
-    *pDat++ = tmp4;
-  }
+    /* ARM926: 12 cycles per 2-iteration, no overhead code by compiler */
+    pTmp_1 = &tmp[L];
+    for (i = M>>1; i--;)
+    {
+        FIXP_DBL tmp1, tmp2, tmp3, tmp4;
+        tmp1 = *tmp++;
+        tmp2 = *tmp++;
+        tmp3 = *--pTmp_1;
+        tmp4 = *--pTmp_1;
+        *pDat++ = tmp1;
+        *pDat++ = tmp3;
+        *pDat++ = tmp2;
+        *pDat++ = tmp4;
+    }
 
-  *pDat_e += 2;
+    *pDat_e += 2;
 }
 #endif
 
@@ -187,7 +189,7 @@ void dct_II(FIXP_DBL *pDat, /*!< pointer to input/output */
             FIXP_DBL *tmp,  /*!< pointer to temporal working buffer */
             int L,          /*!< lenght of transform */
             int *pDat_e
-            )
+           )
 {
     FDK_ASSERT(L == 64 || L == 32);
     FIXP_DBL accu1,accu2;
@@ -209,18 +211,18 @@ void dct_II(FIXP_DBL *pDat, /*!< pointer to input/output */
     pTmp_1 = &tmp[L-1];
     for (i = M>>1; i--; )
     {
-      accu1 = *pdat++;
-      accu2 = *pdat++;
-      accu3 = *pdat++;
-      accu4 = *pdat++;
-      accu1 >>= 1;
-      accu2 >>= 1;
-      accu3 >>= 1;
-      accu4 >>= 1;
-      *pTmp_0++ = accu1;
-      *pTmp_0++ = accu3;
-      *pTmp_1-- = accu2;
-      *pTmp_1-- = accu4;
+        accu1 = *pdat++;
+        accu2 = *pdat++;
+        accu3 = *pdat++;
+        accu4 = *pdat++;
+        accu1 >>= 1;
+        accu2 >>= 1;
+        accu3 >>= 1;
+        accu4 >>= 1;
+        *pTmp_0++ = accu1;
+        *pTmp_0++ = accu3;
+        *pTmp_1-- = accu2;
+        *pTmp_1-- = accu4;
     }
 
 
@@ -229,27 +231,29 @@ void dct_II(FIXP_DBL *pDat, /*!< pointer to input/output */
     pTmp_0 = &tmp[2];
     pTmp_1 = &tmp[(M-1)*2];
 
-    for (i=1; i<M>>1; i++,pTmp_0+=2,pTmp_1-=2) {
+    for (i=1; i<M>>1; i++,pTmp_0+=2,pTmp_1-=2)
+    {
 
-      FIXP_DBL a1,a2;
-      FIXP_DBL accu3, accu4;
+        FIXP_DBL a1,a2;
+        FIXP_DBL accu3, accu4;
 
-      a1 = ((pTmp_0[1]>>1) + (pTmp_1[1]>>1));
-      a2 = ((pTmp_1[0]>>1) - (pTmp_0[0]>>1));
+        a1 = ((pTmp_0[1]>>1) + (pTmp_1[1]>>1));
+        a2 = ((pTmp_1[0]>>1) - (pTmp_0[0]>>1));
 
-      cplxMultDiv2(&accu1, &accu2, a2, a1, sin_twiddle_L64[(4*i)*inc]);
-      accu1<<=1; accu2<<=1;
+        cplxMultDiv2(&accu1, &accu2, a2, a1, sin_twiddle_L64[(4*i)*inc]);
+        accu1<<=1;
+        accu2<<=1;
 
-      a1 = ((pTmp_0[0]>>1) + (pTmp_1[0]>>1));
-      a2 = ((pTmp_0[1]>>1) - (pTmp_1[1]>>1));
+        a1 = ((pTmp_0[0]>>1) + (pTmp_1[0]>>1));
+        a2 = ((pTmp_0[1]>>1) - (pTmp_1[1]>>1));
 
-      cplxMultDiv2(&accu3, &accu4, (a1 + accu2), -(accu1 + a2), sin_twiddle_L64[i*inc]);
-      pDat[L - i] = accu4;
-      pDat[i]     = accu3;
+        cplxMultDiv2(&accu3, &accu4, (a1 + accu2), -(accu1 + a2), sin_twiddle_L64[i*inc]);
+        pDat[L - i] = accu4;
+        pDat[i]     = accu3;
 
-      cplxMultDiv2(&accu3, &accu4, (a1 - accu2), -(accu1 - a2), sin_twiddle_L64[(M-i)*inc]);
-      pDat[M + i] = accu4;
-      pDat[M - i] = accu3;
+        cplxMultDiv2(&accu3, &accu4, (a1 - accu2), -(accu1 - a2), sin_twiddle_L64[(M-i)*inc]);
+        pDat[M + i] = accu4;
+        pDat[M - i] = accu3;
 
     }
 
@@ -267,35 +271,36 @@ void dct_II(FIXP_DBL *pDat, /*!< pointer to input/output */
 static
 void getTables(const FIXP_WTP **twiddle, const FIXP_STP **sin_twiddle, int *sin_step, int length)
 {
-  int ld2_length;
+    int ld2_length;
 
- /* Get ld2 of length - 2 + 1
-     -2: because first table entry is window of size 4
-     +1: because we already include +1 because of ceil(log2(length)) */
-  ld2_length = DFRACT_BITS-1-fNormz((FIXP_DBL)length) - 1;
+    /* Get ld2 of length - 2 + 1
+        -2: because first table entry is window of size 4
+        +1: because we already include +1 because of ceil(log2(length)) */
+    ld2_length = DFRACT_BITS-1-fNormz((FIXP_DBL)length) - 1;
 
-  /* Extract sort of "eigenvalue" (the 4 left most bits) of length. */
-  switch ( (length) >> (ld2_length-1) ) {
+    /* Extract sort of "eigenvalue" (the 4 left most bits) of length. */
+    switch ( (length) >> (ld2_length-1) )
+    {
     case 0x4: /* radix 2 */
-      *sin_twiddle = SineTable512;
-      *sin_step = 1<<(9 - ld2_length);
-      *twiddle = windowSlopes[0][0][ld2_length-1];
-      break;
+        *sin_twiddle = SineTable512;
+        *sin_step = 1<<(9 - ld2_length);
+        *twiddle = windowSlopes[0][0][ld2_length-1];
+        break;
     case 0x7: /* 10 ms */
-      *sin_twiddle = SineTable480;
-      *sin_step = 1<<(8 - ld2_length);
-      *twiddle = windowSlopes[0][1][ld2_length];
-      break;
+        *sin_twiddle = SineTable480;
+        *sin_step = 1<<(8 - ld2_length);
+        *twiddle = windowSlopes[0][1][ld2_length];
+        break;
     default:
-      *sin_twiddle = NULL;
-      *sin_step = 0;
-      *twiddle = NULL;
-      break;
-  }
+        *sin_twiddle = NULL;
+        *sin_step = 0;
+        *twiddle = NULL;
+        break;
+    }
 
-  FDK_ASSERT(*twiddle != NULL);
+    FDK_ASSERT(*twiddle != NULL);
 
-  FDK_ASSERT(*sin_step > 0);
+    FDK_ASSERT(*sin_step > 0);
 
 }
 
@@ -305,108 +310,118 @@ void dct_IV(FIXP_DBL *pDat,
             int L,
             int *pDat_e)
 {
-  int sin_step = 0;
-  int M = L >> 1;
+    int sin_step = 0;
+    int M = L >> 1;
 
-  const FIXP_WTP *twiddle;
-  const FIXP_STP *sin_twiddle;
+    const FIXP_WTP *twiddle;
+    const FIXP_STP *sin_twiddle;
 
-  FDK_ASSERT(L >= 4);
+    FDK_ASSERT(L >= 4);
 
-  getTables(&twiddle, &sin_twiddle, &sin_step, L);
+    getTables(&twiddle, &sin_twiddle, &sin_step, L);
 
 #ifdef FUNCTION_dct_IV_func1
-  if (M>=4 && (M&3) == 0) {
-     /* ARM926: 44 cycles for 2 iterations = 22 cycles/iteration */
-    dct_IV_func1(M>>2, twiddle,  &pDat[0], &pDat[L-1]);
-  } else
+    if (M>=4 && (M&3) == 0)
+    {
+        /* ARM926: 44 cycles for 2 iterations = 22 cycles/iteration */
+        dct_IV_func1(M>>2, twiddle,  &pDat[0], &pDat[L-1]);
+    }
+    else
 #endif /* FUNCTION_dct_IV_func1 */
-  {
-    FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
-    FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
-    int i;
-
-    /* 29 cycles on ARM926 */
-    for (i = 0; i < M-1; i+=2,pDat_0+=2,pDat_1-=2)
     {
-      FIXP_DBL accu1,accu2,accu3,accu4;
+        FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
+        FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
+        int i;
 
-      accu1 = pDat_1[1]; accu2 = pDat_0[0];
-      accu3 = pDat_0[1]; accu4 = pDat_1[0];
+        /* 29 cycles on ARM926 */
+        for (i = 0; i < M-1; i+=2,pDat_0+=2,pDat_1-=2)
+        {
+            FIXP_DBL accu1,accu2,accu3,accu4;
 
-      cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
-      cplxMultDiv2(&accu3, &accu4, accu4, accu3, twiddle[i+1]);
+            accu1 = pDat_1[1];
+            accu2 = pDat_0[0];
+            accu3 = pDat_0[1];
+            accu4 = pDat_1[0];
 
-      pDat_0[0] = accu2; pDat_0[1] = accu1;
-      pDat_1[0] = accu4; pDat_1[1] = -accu3;
+            cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
+            cplxMultDiv2(&accu3, &accu4, accu4, accu3, twiddle[i+1]);
+
+            pDat_0[0] = accu2;
+            pDat_0[1] = accu1;
+            pDat_1[0] = accu4;
+            pDat_1[1] = -accu3;
+        }
+        if (M&1)
+        {
+            FIXP_DBL accu1,accu2;
+
+            accu1 = pDat_1[1];
+            accu2 = pDat_0[0];
+
+            cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
+
+            pDat_0[0] = accu2;
+            pDat_0[1] = accu1;
+        }
     }
-    if (M&1)
-    {
-      FIXP_DBL accu1,accu2;
 
-      accu1 = pDat_1[1]; accu2 = pDat_0[0];
-
-      cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
-
-      pDat_0[0] = accu2; pDat_0[1] = accu1;
-    }
-  }
-
-  fft(M, pDat, pDat_e);
+    fft(M, pDat, pDat_e);
 
 #ifdef FUNCTION_dct_IV_func2
-  if (M>=4 && (M&3) == 0) {
-     /* ARM926: 42 cycles for 2 iterations = 21 cycles/iteration */
-    dct_IV_func2(M>>2, sin_twiddle, &pDat[0], &pDat[L], sin_step);
-  } else
+    if (M>=4 && (M&3) == 0)
+    {
+        /* ARM926: 42 cycles for 2 iterations = 21 cycles/iteration */
+        dct_IV_func2(M>>2, sin_twiddle, &pDat[0], &pDat[L], sin_step);
+    }
+    else
 #endif /* FUNCTION_dct_IV_func2 */
-  {
-    FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
-    FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
-    FIXP_DBL accu1,accu2,accu3,accu4;
-    int idx, i;
-
-    /* Sin and Cos values are 0.0f and 1.0f */
-    accu1 = pDat_1[0];
-    accu2 = pDat_1[1];
-
-    pDat_1[1] = -(pDat_0[1]>>1);
-    pDat_0[0] = (pDat_0[0]>>1);
-
-
-    /* 28 cycles for ARM926 */
-    for (idx = sin_step,i=1; i<(M+1)>>1; i++, idx+=sin_step)
     {
-      FIXP_STP twd = sin_twiddle[idx];
-      cplxMultDiv2(&accu3, &accu4, accu1, accu2, twd);
-      pDat_0[1] =  accu3;
-      pDat_1[0] =  accu4;
+        FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
+        FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
+        FIXP_DBL accu1,accu2,accu3,accu4;
+        int idx, i;
 
-      pDat_0+=2;
-      pDat_1-=2;
+        /* Sin and Cos values are 0.0f and 1.0f */
+        accu1 = pDat_1[0];
+        accu2 = pDat_1[1];
 
-      cplxMultDiv2(&accu3, &accu4, pDat_0[1], pDat_0[0], twd);
+        pDat_1[1] = -(pDat_0[1]>>1);
+        pDat_0[0] = (pDat_0[0]>>1);
 
-      accu1 = pDat_1[0];
-      accu2 = pDat_1[1];
 
-      pDat_1[1] = -accu3;
-      pDat_0[0] =  accu4;
+        /* 28 cycles for ARM926 */
+        for (idx = sin_step,i=1; i<(M+1)>>1; i++, idx+=sin_step)
+        {
+            FIXP_STP twd = sin_twiddle[idx];
+            cplxMultDiv2(&accu3, &accu4, accu1, accu2, twd);
+            pDat_0[1] =  accu3;
+            pDat_1[0] =  accu4;
+
+            pDat_0+=2;
+            pDat_1-=2;
+
+            cplxMultDiv2(&accu3, &accu4, pDat_0[1], pDat_0[0], twd);
+
+            accu1 = pDat_1[0];
+            accu2 = pDat_1[1];
+
+            pDat_1[1] = -accu3;
+            pDat_0[0] =  accu4;
+        }
+
+        if ( (M&1) == 0 )
+        {
+            /* Last Sin and Cos value pair are the same */
+            accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
+            accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
+
+            pDat_1[0] = accu1 + accu2;
+            pDat_0[1] = accu1 - accu2;
+        }
     }
 
-    if ( (M&1) == 0 )
-    {
-      /* Last Sin and Cos value pair are the same */
-      accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
-      accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
-
-      pDat_1[0] = accu1 + accu2;
-      pDat_0[1] = accu1 - accu2;
-    }
-  }
-
-  /* Add twiddeling scale. */
-  *pDat_e += 2;
+    /* Add twiddeling scale. */
+    *pDat_e += 2;
 }
 #endif /* defined (FUNCTION_dct_IV) */
 
@@ -415,125 +430,136 @@ void dst_IV(FIXP_DBL *pDat,
             int L,
             int *pDat_e )
 {
-  int sin_step = 0;
-  int M = L >> 1;
+    int sin_step = 0;
+    int M = L >> 1;
 
-  const FIXP_WTP *twiddle;
-  const FIXP_STP *sin_twiddle;
+    const FIXP_WTP *twiddle;
+    const FIXP_STP *sin_twiddle;
 
 #ifdef DSTIV2_ENABLE
-  if (L == 2) {
-    const FIXP_STP tab = STCP(0x7641AF3D, 0x30FB9452);
-    FIXP_DBL tmp1, tmp2;
+    if (L == 2)
+    {
+        const FIXP_STP tab = STCP(0x7641AF3D, 0x30FB9452);
+        FIXP_DBL tmp1, tmp2;
 
-    cplxMultDiv2(&tmp2, &tmp1, pDat[0], pDat[1], tab);
+        cplxMultDiv2(&tmp2, &tmp1, pDat[0], pDat[1], tab);
 
-    pDat[0] = tmp1;
-    pDat[1] = tmp2;
+        pDat[0] = tmp1;
+        pDat[1] = tmp2;
 
-    *pDat_e += 1;
+        *pDat_e += 1;
 
-    return;
-  }
+        return;
+    }
 #else
-  FDK_ASSERT(L >= 4);
+    FDK_ASSERT(L >= 4);
 #endif
 
-  getTables(&twiddle, &sin_twiddle, &sin_step, L);
+    getTables(&twiddle, &sin_twiddle, &sin_step, L);
 
 #ifdef FUNCTION_dst_IV_func1
-  if ( (M>=4) && ((M&3) == 0) ) {
-    dst_IV_func1(M, twiddle, &pDat[0], &pDat[L]);
-  } else
+    if ( (M>=4) && ((M&3) == 0) )
+    {
+        dst_IV_func1(M, twiddle, &pDat[0], &pDat[L]);
+    }
+    else
 #endif
-  {
-    FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
-    FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
-
-    int i;
-
-    /* 34 cycles on ARM926 */
-    for (i = 0; i < M-1; i+=2,pDat_0+=2,pDat_1-=2)
     {
-      FIXP_DBL accu1,accu2,accu3,accu4;
+        FIXP_DBL *RESTRICT pDat_0 = &pDat[0];
+        FIXP_DBL *RESTRICT pDat_1 = &pDat[L - 2];
 
-      accu1 =  pDat_1[1]; accu2 = -pDat_0[0];
-      accu3 =  pDat_0[1]; accu4 = -pDat_1[0];
+        int i;
 
-      cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
-      cplxMultDiv2(&accu3, &accu4, accu4, accu3, twiddle[i+1]);
+        /* 34 cycles on ARM926 */
+        for (i = 0; i < M-1; i+=2,pDat_0+=2,pDat_1-=2)
+        {
+            FIXP_DBL accu1,accu2,accu3,accu4;
 
-      pDat_0[0] = accu2; pDat_0[1] = accu1;
-      pDat_1[0] = accu4; pDat_1[1] = -accu3;
+            accu1 =  pDat_1[1];
+            accu2 = -pDat_0[0];
+            accu3 =  pDat_0[1];
+            accu4 = -pDat_1[0];
+
+            cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
+            cplxMultDiv2(&accu3, &accu4, accu4, accu3, twiddle[i+1]);
+
+            pDat_0[0] = accu2;
+            pDat_0[1] = accu1;
+            pDat_1[0] = accu4;
+            pDat_1[1] = -accu3;
+        }
+        if (M&1)
+        {
+            FIXP_DBL accu1,accu2;
+
+            accu1 =  pDat_1[1];
+            accu2 = -pDat_0[0];
+
+            cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
+
+            pDat_0[0] = accu2;
+            pDat_0[1] = accu1;
+        }
     }
-    if (M&1)
-    {
-      FIXP_DBL accu1,accu2;
 
-      accu1 =  pDat_1[1]; accu2 = -pDat_0[0];
-
-      cplxMultDiv2(&accu1, &accu2, accu1, accu2, twiddle[i]);
-
-      pDat_0[0] = accu2; pDat_0[1] = accu1;
-    }
-  }
-
-  fft(M, pDat, pDat_e);
+    fft(M, pDat, pDat_e);
 
 #ifdef FUNCTION_dst_IV_func2
-  if ( (M>=4) && ((M&3) == 0) ) {
-    dst_IV_func2(M>>2, sin_twiddle + sin_step, &pDat[0], &pDat[L - 1], sin_step);
-  } else
+    if ( (M>=4) && ((M&3) == 0) )
+    {
+        dst_IV_func2(M>>2, sin_twiddle + sin_step, &pDat[0], &pDat[L - 1], sin_step);
+    }
+    else
 #endif /* FUNCTION_dst_IV_func2 */
-  {
-    FIXP_DBL *RESTRICT pDat_0;
-    FIXP_DBL *RESTRICT pDat_1;
-    FIXP_DBL accu1,accu2,accu3,accu4;
-    int idx, i;
-
-    pDat_0 = &pDat[0];
-    pDat_1 = &pDat[L - 2];
-
-    /* Sin and Cos values are 0.0f and 1.0f */
-    accu1 = pDat_1[0];
-    accu2 = pDat_1[1];
-
-    pDat_1[1] = -(pDat_0[0]>>1);
-    pDat_0[0] = (pDat_0[1]>>1);
-
-    for (idx = sin_step,i=1; i<(M+1)>>1; i++, idx+=sin_step)
     {
-      FIXP_STP twd = sin_twiddle[idx];
+        FIXP_DBL *RESTRICT pDat_0;
+        FIXP_DBL *RESTRICT pDat_1;
+        FIXP_DBL accu1,accu2,accu3,accu4;
+        int idx, i;
 
-      cplxMultDiv2(&accu3, &accu4, accu1, accu2, twd);
-      pDat_1[0] =  -accu3;
-      pDat_0[1] =  -accu4;
+        pDat_0 = &pDat[0];
+        pDat_1 = &pDat[L - 2];
 
-      pDat_0+=2;
-      pDat_1-=2;
+        /* Sin and Cos values are 0.0f and 1.0f */
+        accu1 = pDat_1[0];
+        accu2 = pDat_1[1];
 
-      cplxMultDiv2(&accu3, &accu4, pDat_0[1], pDat_0[0], twd);
+        pDat_1[1] = -(pDat_0[0]>>1);
+        pDat_0[0] = (pDat_0[1]>>1);
 
-      accu1 = pDat_1[0];
-      accu2 = pDat_1[1];
+        for (idx = sin_step,i=1; i<(M+1)>>1; i++, idx+=sin_step)
+        {
+            FIXP_STP twd = sin_twiddle[idx];
 
-      pDat_0[0] =  accu3;
-      pDat_1[1] = -accu4;
+            cplxMultDiv2(&accu3, &accu4, accu1, accu2, twd);
+            pDat_1[0] =  -accu3;
+            pDat_0[1] =  -accu4;
+
+            pDat_0+=2;
+            pDat_1-=2;
+
+            cplxMultDiv2(&accu3, &accu4, pDat_0[1], pDat_0[0], twd);
+
+            accu1 = pDat_1[0];
+            accu2 = pDat_1[1];
+
+            pDat_0[0] =  accu3;
+            pDat_1[1] = -accu4;
+        }
+
+        if ( (M&1) == 0 )
+        {
+            /* Last Sin and Cos value pair are the same */
+            accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
+            accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
+
+            pDat_0[1] = - accu1 - accu2;
+            pDat_1[0] =   accu2 - accu1;
+        }
     }
 
-    if ( (M&1) == 0 )
-    {
-      /* Last Sin and Cos value pair are the same */
-      accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
-      accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
-
-      pDat_0[1] = - accu1 - accu2;
-      pDat_1[0] =   accu2 - accu1;
-    }
-  }
-
-  /* Add twiddeling scale. */
-  *pDat_e += 2;
+    /* Add twiddeling scale. */
+    *pDat_e += 2;
 }
 #endif /* !defined(FUNCTION_dst_IV) */
 

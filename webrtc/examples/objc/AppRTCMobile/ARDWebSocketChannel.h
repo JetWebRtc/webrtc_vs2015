@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,13 +16,13 @@
 @interface ARDWebSocketChannel : NSObject <ARDSignalingChannel>
 
 - (instancetype)initWithURL:(NSURL *)url
-                    restURL:(NSURL *)restURL
-                   delegate:(id<ARDSignalingChannelDelegate>)delegate;
+    restURL:(NSURL *)restURL
+    delegate:(id<ARDSignalingChannelDelegate>)delegate;
 
 // Registers with the WebSocket server for the given room and client id once
 // the web socket connection is open.
 - (void)registerForRoomId:(NSString *)roomId
-                 clientId:(NSString *)clientId;
+    clientId:(NSString *)clientId;
 
 // Sends message over the WebSocket connection if registered, otherwise POSTs to
 // the web socket server instead.

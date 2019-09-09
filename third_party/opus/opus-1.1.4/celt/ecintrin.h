@@ -1,4 +1,4 @@
-/* Copyright (c) 2003-2008 Timothy B. Terriberry
+﻿/* Copyright (c) 2003-2008 Timothy B. Terriberry
    Copyright (c) 2008 Xiph.Org Foundation */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -53,10 +53,11 @@
 /*In _DEBUG mode this is not an intrinsic by default.*/
 # pragma intrinsic(_BitScanReverse)
 
-static __inline int ec_bsr(unsigned long _x){
-  unsigned long ret;
-  _BitScanReverse(&ret,_x);
-  return (int)ret;
+static __inline int ec_bsr(unsigned long _x)
+{
+    unsigned long ret;
+    _BitScanReverse(&ret,_x);
+    return (int)ret;
 }
 # define EC_CLZ0    (1)
 # define EC_CLZ(_x) (-ec_bsr(_x))

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,25 +96,26 @@ amm-info@iis.fraunhofer.de
 
 #define TRANSPORTENC_INBUF_SIZE 8192
 
-typedef enum {
-  TRANSPORTENC_OK = 0,                            /*!< All fine.                                                */
-  TRANSPORTENC_NO_MEM,                            /*!< Out of memory.                                           */
-  TRANSPORTENC_UNKOWN_ERROR = 1,                  /*!< Unknown error (embarrasing).                             */
-  TRANSPORTENC_INVALID_PARAMETER,                 /*!< An invalid parameter was passed to a function .          */
-  TRANSPORTENC_PARSE_ERROR,                       /*!< Bitstream data contained inconsistencies (wrong syntax). */
-  TRANSPORTENC_UNSUPPORTED_FORMAT,                /*!< Unsupported transport format.                            */
-  TRANSPORTENC_NOT_ENOUGH_BITS,                   /*!< Out of bits. Provide more bits and try again.            */
+typedef enum
+{
+    TRANSPORTENC_OK = 0,                            /*!< All fine.                                                */
+    TRANSPORTENC_NO_MEM,                            /*!< Out of memory.                                           */
+    TRANSPORTENC_UNKOWN_ERROR = 1,                  /*!< Unknown error (embarrasing).                             */
+    TRANSPORTENC_INVALID_PARAMETER,                 /*!< An invalid parameter was passed to a function .          */
+    TRANSPORTENC_PARSE_ERROR,                       /*!< Bitstream data contained inconsistencies (wrong syntax). */
+    TRANSPORTENC_UNSUPPORTED_FORMAT,                /*!< Unsupported transport format.                            */
+    TRANSPORTENC_NOT_ENOUGH_BITS,                   /*!< Out of bits. Provide more bits and try again.            */
 
-  TRANSPORTENC_INVALID_CONFIG,                    /*!< Error in configuration.                                  */
-  TRANSPORTENC_LATM_INVALID_NR_OF_SUBFRAMES,      /*!< LATM: number of subframes out of range.                  */
-  TRANSPORTENC_LOAS_NOT_AVAILABLE,                /*!< LOAS format not supported.                               */
-  TRANSPORTENC_INVALID_LATM_ALIGNMENT,            /*!< AudioMuxElement length not aligned to 1 byte.            */
+    TRANSPORTENC_INVALID_CONFIG,                    /*!< Error in configuration.                                  */
+    TRANSPORTENC_LATM_INVALID_NR_OF_SUBFRAMES,      /*!< LATM: number of subframes out of range.                  */
+    TRANSPORTENC_LOAS_NOT_AVAILABLE,                /*!< LOAS format not supported.                               */
+    TRANSPORTENC_INVALID_LATM_ALIGNMENT,            /*!< AudioMuxElement length not aligned to 1 byte.            */
 
-  TRANSPORTENC_INVALID_TRANSMISSION_FRAME_LENGTH, /*!< Invalid transmission frame length (< 0).                 */
-  TRANSPORTENC_INVALID_CELP_FRAME_LENGTH,         /*!< Invalid CELP frame length found (>= 62).                 */
-  TRANSPORTENC_INVALID_FRAME_BITS,                /*!< Frame bits is not 40 and not 80.                         */
-  TRANSPORTENC_INVALID_AOT,                       /*!< Unknown AOT found.                                       */
-  TRANSPORTENC_INVALID_AU_LENGTH                  /*!< Invalid Access Unit length (not byte-aligned).           */
+    TRANSPORTENC_INVALID_TRANSMISSION_FRAME_LENGTH, /*!< Invalid transmission frame length (< 0).                 */
+    TRANSPORTENC_INVALID_CELP_FRAME_LENGTH,         /*!< Invalid CELP frame length found (>= 62).                 */
+    TRANSPORTENC_INVALID_FRAME_BITS,                /*!< Frame bits is not 40 and not 80.                         */
+    TRANSPORTENC_INVALID_AOT,                       /*!< Unknown AOT found.                                       */
+    TRANSPORTENC_INVALID_AU_LENGTH                  /*!< Invalid Access Unit length (not byte-aligned).           */
 
 } TRANSPORTENC_ERROR;
 
@@ -135,10 +136,10 @@ CHANNEL_MODE transportEnc_GetChannelMode( int noChannels );
  * \return               0 on success.
  */
 int transportEnc_RegisterSbrCallback (
-        HANDLE_TRANSPORTENC hTpEnc,
-        const cbSbr_t cbSbr,
-        void* user_data
-        );
+    HANDLE_TRANSPORTENC hTpEnc,
+    const cbSbr_t cbSbr,
+    void* user_data
+);
 
 /**
  * \brief                Register SSC writer callback.
@@ -148,10 +149,10 @@ int transportEnc_RegisterSbrCallback (
  * \return               0 on success.
  */
 int transportEnc_RegisterSscCallback (
-        HANDLE_TRANSPORTENC hTpEnc,
-        const cbSsc_t cbSsc,
-        void* user_data
-        );
+    HANDLE_TRANSPORTENC hTpEnc,
+    const cbSsc_t cbSsc,
+    void* user_data
+);
 
 /**
  * \brief         Write ASC from given parameters.
@@ -161,10 +162,10 @@ int transportEnc_RegisterSscCallback (
  * \return        0 on success.
  */
 int transportEnc_writeASC (
-        HANDLE_FDK_BITSTREAM asc,
-        CODER_CONFIG *config,
-        CSTpCallBacks *cb
-        );
+    HANDLE_FDK_BITSTREAM asc,
+    CODER_CONFIG *config,
+    CSTpCallBacks *cb
+);
 
 
 /* Defintion of flags that can be passed to transportEnc_Open() */
@@ -190,13 +191,13 @@ TRANSPORTENC_ERROR transportEnc_Open( HANDLE_TRANSPORTENC *phTpEnc );
  * \return              Error code.
  */
 TRANSPORTENC_ERROR transportEnc_Init(
-        HANDLE_TRANSPORTENC hTpEnc,
-        UCHAR              *bsBuffer,
-        INT                 bsBufferSize,
-        TRANSPORT_TYPE     transportFmt,
-        CODER_CONFIG      *config,
-        UINT               flags
-        );
+    HANDLE_TRANSPORTENC hTpEnc,
+    UCHAR              *bsBuffer,
+    INT                 bsBufferSize,
+    TRANSPORT_TYPE     transportFmt,
+    CODER_CONFIG      *config,
+    UINT               flags
+);
 
 /**
  * \brief      Get transport encoder bitstream.
@@ -228,9 +229,9 @@ void transportEnc_Close( HANDLE_TRANSPORTENC *phTp );
  * \return                      Error code.
  */
 TRANSPORTENC_ERROR transportEnc_WriteAccessUnit( HANDLE_TRANSPORTENC hTp,
-                                                 INT total_bits,
-                                                 int bufferFullness,
-                                                 int noConsideredChannels );
+        INT total_bits,
+        int bufferFullness,
+        int noConsideredChannels );
 
 /**
  * \brief        Inform the transportEnc layer that writing of access unit has finished. This function
@@ -282,9 +283,9 @@ void transportEnc_CrcEndReg(HANDLE_TRANSPORTENC hTpEnc, int reg);
  * \return            Error code.
  */
 TRANSPORTENC_ERROR transportEnc_GetConf( HANDLE_TRANSPORTENC  hTpEnc,
-                                         CODER_CONFIG        *cc,
-                                         FDK_BITSTREAM       *dataBuffer,
-                                         UINT                *confType );
+        CODER_CONFIG        *cc,
+        FDK_BITSTREAM       *dataBuffer,
+        UINT                *confType );
 
 /**
  * \brief       Get information (version among other things) of the transport encoder library.

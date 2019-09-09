@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  * Common code for Vorbis I encoder and decoder
  * @author Denes Balatoni  ( dbalatoni programozo hu )
@@ -40,11 +40,13 @@ unsigned int ff_vorbis_nth_root(unsigned int x, unsigned int n)
 {
     unsigned int ret = 0, i, j;
 
-    do {
+    do
+    {
         ++ret;
         for (i = 0, j = ret; i < n - 1; i++)
             j *= ret;
-    } while (j <= x);
+    }
+    while (j <= x);
 
     return ret - 1;
 }
@@ -90,21 +92,22 @@ int ff_vorbis_len2vlc(uint8_t *bits, uint32_t *codes, unsigned num)
     if (i == num)
         return 0;
 
-    for (; p < num; ++p) {
+    for (; p < num; ++p)
+    {
         if (bits[p] > 32)
-             return AVERROR_INVALIDDATA;
+            return AVERROR_INVALIDDATA;
         if (bits[p] == 0)
-             continue;
+            continue;
         // find corresponding exit(node which the tree can grow further from)
         for (i = bits[p]; i > 0; --i)
             if (exit_at_level[i])
                 break;
         if (!i) // overspecified tree
-             return AVERROR_INVALIDDATA;
+            return AVERROR_INVALIDDATA;
         code = exit_at_level[i];
         exit_at_level[i] = 0;
         // construct code (append 0s to end) and introduce new exits
-        for (j = i + 1 ;j <= bits[p]; ++j)
+        for (j = i + 1 ; j <= bits[p]; ++j)
             exit_at_level[j] = code + (1 << (j - 1));
         codes[p] = code;
 
@@ -132,31 +135,40 @@ int ff_vorbis_ready_floor1_list(AVCodecContext *avctx,
     int i;
     list[0].sort = 0;
     list[1].sort = 1;
-    for (i = 2; i < values; i++) {
+    for (i = 2; i < values; i++)
+    {
         int j;
         list[i].low  = 0;
         list[i].high = 1;
         list[i].sort = i;
-        for (j = 2; j < i; j++) {
+        for (j = 2; j < i; j++)
+        {
             int tmp = list[j].x;
-            if (tmp < list[i].x) {
+            if (tmp < list[i].x)
+            {
                 if (tmp > list[list[i].low].x)
                     list[i].low  =  j;
-            } else {
+            }
+            else
+            {
                 if (tmp < list[list[i].high].x)
                     list[i].high = j;
             }
         }
     }
-    for (i = 0; i < values - 1; i++) {
+    for (i = 0; i < values - 1; i++)
+    {
         int j;
-        for (j = i + 1; j < values; j++) {
-            if (list[i].x == list[j].x) {
+        for (j = i + 1; j < values; j++)
+        {
+            if (list[i].x == list[j].x)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Duplicate value found in floor 1 X coordinates\n");
                 return AVERROR_INVALIDDATA;
             }
-            if (list[list[i].sort].x > list[list[j].sort].x) {
+            if (list[list[i].sort].x > list[list[j].sort].x)
+            {
                 int tmp = list[i].sort;
                 list[i].sort = list[j].sort;
                 list[j].sort = tmp;
@@ -173,16 +185,19 @@ static inline void render_line_unrolled(intptr_t x, int y, int x1,
     int err = -adx;
     x -= x1 - 1;
     buf += x1 - 1;
-    while (++x < 0) {
+    while (++x < 0)
+    {
         err += ady;
-        if (err >= 0) {
+        if (err >= 0)
+        {
             err += ady - adx;
             y   += sy;
             buf[x++] = ff_vorbis_floor1_inverse_db_table[av_clip_uint8(y)];
         }
         buf[x] = ff_vorbis_floor1_inverse_db_table[av_clip_uint8(y)];
     }
-    if (x <= 0) {
+    if (x <= 0)
+    {
         if (err + ady >= 0)
             y += sy;
         buf[x] = ff_vorbis_floor1_inverse_db_table[av_clip_uint8(y)];
@@ -196,18 +211,23 @@ static void render_line(int x0, int y0, int x1, int y1, float *buf)
     int ady = FFABS(dy);
     int sy  = dy < 0 ? -1 : 1;
     buf[x0] = ff_vorbis_floor1_inverse_db_table[av_clip_uint8(y0)];
-    if (ady*2 <= adx) { // optimized common case
+    if (ady*2 <= adx)   // optimized common case
+    {
         render_line_unrolled(x0, y0, x1, sy, ady, adx, buf);
-    } else {
+    }
+    else
+    {
         int base  = dy / adx;
         int x     = x0;
         int y     = y0;
         int err   = -adx;
         ady -= FFABS(base) * adx;
-        while (++x < x1) {
+        while (++x < x1)
+        {
             y += base;
             err += ady;
-            if (err >= 0) {
+            if (err >= 0)
+            {
                 err -= adx;
                 y   += sy;
             }
@@ -223,9 +243,11 @@ void ff_vorbis_floor1_render_list(vorbis_floor1_entry * list, int values,
     int lx, ly, i;
     lx = 0;
     ly = y_list[0] * multiplier;
-    for (i = 1; i < values; i++) {
+    for (i = 1; i < values; i++)
+    {
         int pos = list[i].sort;
-        if (flag[pos]) {
+        if (flag[pos])
+        {
             int x1 = list[pos].x;
             int y1 = y_list[pos] * multiplier;
             if (lx < samples)

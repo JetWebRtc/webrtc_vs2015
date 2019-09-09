@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,8 +18,10 @@
 #include "webrtc/voice_engine/statistics.h"
 #include "webrtc/voice_engine/utility.h"
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 
 void
 OutputMixer::NewMixedAudio(int32_t id,
@@ -125,9 +127,10 @@ OutputMixer::~OutputMixer()
                  "OutputMixer::~OutputMixer() - dtor");
     {
         rtc::CritScope cs(&_fileCritSect);
-        if (output_file_recorder_) {
-          output_file_recorder_->RegisterModuleFileCallback(NULL);
-          output_file_recorder_->StopRecording();
+        if (output_file_recorder_)
+        {
+            output_file_recorder_->RegisterModuleFileCallback(NULL);
+            output_file_recorder_->StopRecording();
         }
     }
     _mixerModule.UnRegisterMixedStreamCallback();
@@ -162,7 +165,7 @@ OutputMixer::SetMixabilityStatus(MixerParticipant& participant,
 
 int32_t
 OutputMixer::SetAnonymousMixabilityStatus(MixerParticipant& participant,
-                                          bool mixable)
+        bool mixable)
 {
     return _mixerModule.SetAnonymousMixabilityStatus(&participant, mixable);
 }
@@ -230,10 +233,10 @@ int OutputMixer::StartRecordingPlayout(const char* fileName,
 
     FileFormats format;
     const uint32_t notificationTime(0);
-    CodecInst dummyCodec={100,"L16",16000,320,1,320000};
+    CodecInst dummyCodec= {100,"L16",16000,320,1,320000};
 
     if ((codecInst != NULL) &&
-      ((codecInst->channels < 1) || (codecInst->channels > 2)))
+            ((codecInst->channels < 1) || (codecInst->channels > 2)))
     {
         _engineStatisticsPtr->SetLastError(
             VE_BAD_ARGUMENT, kTraceError,
@@ -246,8 +249,8 @@ int OutputMixer::StartRecordingPlayout(const char* fileName,
         codecInst=&dummyCodec;
     }
     else if((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+            (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+            (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
     }
@@ -259,28 +262,31 @@ int OutputMixer::StartRecordingPlayout(const char* fileName,
     rtc::CritScope cs(&_fileCritSect);
 
     // Destroy the old instance
-    if (output_file_recorder_) {
-      output_file_recorder_->RegisterModuleFileCallback(NULL);
-      output_file_recorder_.reset();
+    if (output_file_recorder_)
+    {
+        output_file_recorder_->RegisterModuleFileCallback(NULL);
+        output_file_recorder_.reset();
     }
 
     output_file_recorder_ = FileRecorder::CreateFileRecorder(
-        _instanceId, (const FileFormats)format);
-    if (!output_file_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingPlayout() fileRecorder format isnot correct");
-      return -1;
+                                _instanceId, (const FileFormats)format);
+    if (!output_file_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingPlayout() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (output_file_recorder_->StartRecordingAudioFile(
-            fileName, (const CodecInst&)*codecInst, notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      output_file_recorder_->StopRecording();
-      output_file_recorder_.reset();
-      return -1;
+                fileName, (const CodecInst&)*codecInst, notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        output_file_recorder_->StopRecording();
+        output_file_recorder_.reset();
+        return -1;
     }
     output_file_recorder_->RegisterModuleFileCallback(this);
     _outputFileRecording = true;
@@ -303,7 +309,7 @@ int OutputMixer::StartRecordingPlayout(OutStream* stream,
 
     FileFormats format;
     const uint32_t notificationTime(0);
-    CodecInst dummyCodec={100,"L16",16000,320,1,320000};
+    CodecInst dummyCodec= {100,"L16",16000,320,1,320000};
 
     if (codecInst != NULL && codecInst->channels != 1)
     {
@@ -318,8 +324,8 @@ int OutputMixer::StartRecordingPlayout(OutStream* stream,
         codecInst=&dummyCodec;
     }
     else if((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+            (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+            (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
     }
@@ -331,28 +337,31 @@ int OutputMixer::StartRecordingPlayout(OutStream* stream,
     rtc::CritScope cs(&_fileCritSect);
 
     // Destroy the old instance
-    if (output_file_recorder_) {
-      output_file_recorder_->RegisterModuleFileCallback(NULL);
-      output_file_recorder_.reset();
+    if (output_file_recorder_)
+    {
+        output_file_recorder_->RegisterModuleFileCallback(NULL);
+        output_file_recorder_.reset();
     }
 
     output_file_recorder_ = FileRecorder::CreateFileRecorder(
-        _instanceId, (const FileFormats)format);
-    if (!output_file_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingPlayout() fileRecorder format isnot correct");
-      return -1;
+                                _instanceId, (const FileFormats)format);
+    if (!output_file_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingPlayout() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (output_file_recorder_->StartRecordingAudioFile(stream, *codecInst,
-                                                       notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      output_file_recorder_->StopRecording();
-      output_file_recorder_.reset();
-      return -1;
+            notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        output_file_recorder_->StopRecording();
+        output_file_recorder_.reset();
+        return -1;
     }
 
     output_file_recorder_->RegisterModuleFileCallback(this);
@@ -375,11 +384,12 @@ int OutputMixer::StopRecordingPlayout()
 
     rtc::CritScope cs(&_fileCritSect);
 
-    if (output_file_recorder_->StopRecording() != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_STOP_RECORDING_FAILED, kTraceError,
-          "StopRecording(), could not stop recording");
-      return -1;
+    if (output_file_recorder_->StopRecording() != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_STOP_RECORDING_FAILED, kTraceError,
+            "StopRecording(), could not stop recording");
+        return -1;
     }
     output_file_recorder_->RegisterModuleFileCallback(NULL);
     output_file_recorder_.reset();
@@ -390,25 +400,26 @@ int OutputMixer::StopRecordingPlayout()
 
 int OutputMixer::GetMixedAudio(int sample_rate_hz,
                                size_t num_channels,
-                               AudioFrame* frame) {
-  WEBRTC_TRACE(
-      kTraceStream, kTraceVoice, VoEId(_instanceId,-1),
-      "OutputMixer::GetMixedAudio(sample_rate_hz=%d, num_channels=%" PRIuS ")",
-      sample_rate_hz, num_channels);
+                               AudioFrame* frame)
+{
+    WEBRTC_TRACE(
+        kTraceStream, kTraceVoice, VoEId(_instanceId,-1),
+        "OutputMixer::GetMixedAudio(sample_rate_hz=%d, num_channels=%" PRIuS ")",
+        sample_rate_hz, num_channels);
 
-  // --- Record playout if enabled
-  {
-    rtc::CritScope cs(&_fileCritSect);
-    if (_outputFileRecording && output_file_recorder_)
-      output_file_recorder_->RecordAudioToFile(_audioFrame);
-  }
+    // --- Record playout if enabled
+    {
+        rtc::CritScope cs(&_fileCritSect);
+        if (_outputFileRecording && output_file_recorder_)
+            output_file_recorder_->RecordAudioToFile(_audioFrame);
+    }
 
-  frame->num_channels_ = num_channels;
-  frame->sample_rate_hz_ = sample_rate_hz;
-  // TODO(andrew): Ideally the downmixing would occur much earlier, in
-  // AudioCodingModule.
-  RemixAndResample(_audioFrame, &resampler_, frame);
-  return 0;
+    frame->num_channels_ = num_channels;
+    frame->sample_rate_hz_ = sample_rate_hz;
+    // TODO(andrew): Ideally the downmixing would occur much earlier, in
+    // AudioCodingModule.
+    RemixAndResample(_audioFrame, &resampler_, frame);
+    return 0;
 }
 
 int32_t
@@ -439,12 +450,14 @@ OutputMixer::DoOperationsOnCombinedSignal(bool feed_data_to_apm)
     }
 
     // --- Far-end Voice Quality Enhancement (AudioProcessing Module)
-    if (feed_data_to_apm) {
-      if (_audioProcessingModulePtr->ProcessReverseStream(&_audioFrame) != 0) {
-        WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                     "AudioProcessingModule::ProcessReverseStream() => error");
-        RTC_NOTREACHED();
-      }
+    if (feed_data_to_apm)
+    {
+        if (_audioProcessingModulePtr->ProcessReverseStream(&_audioFrame) != 0)
+        {
+            WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
+                         "AudioProcessingModule::ProcessReverseStream() => error");
+            RTC_NOTREACHED();
+        }
     }
 
     // --- Measure audio level (0-9) for the combined signal

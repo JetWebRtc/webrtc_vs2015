@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized h264pred
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -108,7 +108,7 @@ void ff_pred16x16_dc_8_mmi(uint8_t *src, ptrdiff_t stride)
 }
 
 void ff_pred8x8l_top_dc_8_mmi(uint8_t *src, int has_topleft,
-        int has_topright, ptrdiff_t stride)
+                              int has_topright, ptrdiff_t stride)
 {
     uint32_t dc;
 
@@ -156,10 +156,10 @@ void ff_pred8x8l_top_dc_8_mmi(uint8_t *src, int has_topleft,
         "mul %[dc], $9, %[ff_pb_1]          \r\n"
         : [dc]"=r"(dc)
         : [srcA]"r"(src-stride-1),[src0]"r"(src-stride),
-          [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
-          [has_topright]"r"(has_topright),[ff_pb_1]"r"(ff_pb_1)
+        [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
+        [has_topright]"r"(has_topright),[ff_pb_1]"r"(ff_pb_1)
         : "$8","$9","$10","$f2","$f4","$f6","$f8","$f10","$f12","$f14","$f16",
-          "$f18","$f20","$f22"
+        "$f18","$f20","$f22"
     );
 
     __asm__ volatile (
@@ -178,7 +178,7 @@ void ff_pred8x8l_top_dc_8_mmi(uint8_t *src, int has_topleft,
 }
 
 void ff_pred8x8l_dc_8_mmi(uint8_t *src, int has_topleft,
-        int has_topright, ptrdiff_t stride)
+                          int has_topright, ptrdiff_t stride)
 {
     uint32_t dc, dc1, dc2;
 
@@ -239,10 +239,10 @@ void ff_pred8x8l_dc_8_mmi(uint8_t *src, int has_topleft,
         "mfc1 %[dc2], $f2                   \r\n"
         : [dc2]"=r"(dc2)
         : [srcA]"r"(src-stride-1),[src0]"r"(src-stride),
-          [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
-          [has_topright]"r"(has_topright)
+        [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
+        [has_topright]"r"(has_topright)
         : "$8","$9","$10","$f2","$f4","$f6","$f8","$f10","$f12","$f14","$f16",
-          "$f18","$f20","$f22"
+        "$f18","$f20","$f22"
     );
 
     dc1 = l0+l1+l2+l3+l4+l5+l6+l7;
@@ -264,7 +264,7 @@ void ff_pred8x8l_dc_8_mmi(uint8_t *src, int has_topleft,
 }
 
 void ff_pred8x8l_vertical_8_mmi(uint8_t *src, int has_topleft,
-        int has_topright, ptrdiff_t stride)
+                                int has_topright, ptrdiff_t stride)
 {
     __asm__ volatile (
         "ldl $8, 7(%[srcA])                 \r\n"
@@ -306,10 +306,10 @@ void ff_pred8x8l_vertical_8_mmi(uint8_t *src, int has_topleft,
         "sdc1 $f4, 0(%[src])                \r\n"
         : [src]"=r"(src)
         : [srcA]"r"(src-stride-1),[src0]"r"(src-stride),
-          [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
-          [has_topright]"r"(has_topright)
+        [src1]"r"(src-stride+1),[has_topleft]"r"(has_topleft),
+        [has_topright]"r"(has_topright)
         : "$8","$9","$10","$f2","$f4","$f6","$f8","$f10","$f12","$f14","$f16",
-          "$f18","$f20","$f22"
+        "$f18","$f20","$f22"
     );
 
     __asm__ volatile (
@@ -330,11 +330,11 @@ void ff_pred8x8l_vertical_8_mmi(uint8_t *src, int has_topleft,
 }
 
 void ff_pred4x4_dc_8_mmi(uint8_t *src, const uint8_t *topright,
-        ptrdiff_t stride)
+                         ptrdiff_t stride)
 {
     const int dc = (src[-stride] + src[1-stride] + src[2-stride]
-                 + src[3-stride] + src[-1+0*stride] + src[-1+1*stride]
-                 + src[-1+2*stride] + src[-1+3*stride] + 4) >>3;
+                    + src[3-stride] + src[-1+0*stride] + src[-1+1*stride]
+                    + src[-1+2*stride] + src[-1+3*stride] + 4) >>3;
 
     __asm__ volatile (
         "daddu $2, %[dc], $0                \r\n"
@@ -583,13 +583,13 @@ static void ff_pred16x16_plane_compat_8_mmi(uint8_t *src, ptrdiff_t stride,
         "daddiu $2, -1                      \r\n"
         "bnez $2, 1b                        \r\n"
         ::[src]"r"(src),[stride]"r"(stride),[svq3]"r"(svq3),[rv40]"r"(rv40),
-          [ff_pw_m8tom5]"r"(ff_pw_m8tom5),[ff_pw_m4tom1]"r"(ff_pw_m4tom1),
-          [ff_pw_1to4]"r"(ff_pw_1to4),[ff_pw_5to8]"r"(ff_pw_5to8),
-          [ff_pw_0to3]"f"(ff_pw_0to3),[ff_pw_4to7]"f"(ff_pw_4to7),
-          [ff_pw_8tob]"f"(ff_pw_8tob),[ff_pw_ctof]"f"(ff_pw_ctof)
+        [ff_pw_m8tom5]"r"(ff_pw_m8tom5),[ff_pw_m4tom1]"r"(ff_pw_m4tom1),
+        [ff_pw_1to4]"r"(ff_pw_1to4),[ff_pw_5to8]"r"(ff_pw_5to8),
+        [ff_pw_0to3]"f"(ff_pw_0to3),[ff_pw_4to7]"f"(ff_pw_4to7),
+        [ff_pw_8tob]"f"(ff_pw_8tob),[ff_pw_ctof]"f"(ff_pw_ctof)
         : "$2","$3","$4","$5","$6","$7","$8","$f0","$f2","$f4","$f6","$f8",
-          "$f10","$f12","$f14","$f16","$f18","$f20","$f22","$f24","$f26",
-          "$f28","$f30"
+        "$f10","$f12","$f14","$f16","$f18","$f20","$f22","$f24","$f26",
+        "$f28","$f30"
     );
 }
 

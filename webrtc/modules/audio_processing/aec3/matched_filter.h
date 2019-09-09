@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,64 +19,72 @@
 #include "webrtc/base/optional.h"
 #include "webrtc/modules/audio_processing/aec3/aec3_constants.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
 // Produces recursively updated cross-correlation estimates for several signal
 // shifts where the intra-shift spacing is uniform.
-class MatchedFilter {
- public:
-  // Stores properties for the lag estimate corresponding to a particular signal
-  // shift.
-  struct LagEstimate {
-    LagEstimate() = default;
-    LagEstimate(float accuracy, bool reliable, size_t lag, bool updated)
-        : accuracy(accuracy), reliable(reliable), lag(lag), updated(updated) {}
+class MatchedFilter
+{
+public:
+    // Stores properties for the lag estimate corresponding to a particular signal
+    // shift.
+    struct LagEstimate
+    {
+        LagEstimate() = default;
+        LagEstimate(float accuracy, bool reliable, size_t lag, bool updated)
+            : accuracy(accuracy), reliable(reliable), lag(lag), updated(updated) {}
 
-    float accuracy = 0.f;
-    bool reliable = false;
-    size_t lag = 0;
-    bool updated = false;
-  };
+        float accuracy = 0.f;
+        bool reliable = false;
+        size_t lag = 0;
+        bool updated = false;
+    };
 
-  MatchedFilter(ApmDataDumper* data_dumper,
-                size_t window_size_sub_blocks,
-                int num_matched_filters,
-                size_t alignment_shift_sub_blocks);
+    MatchedFilter(ApmDataDumper* data_dumper,
+                  size_t window_size_sub_blocks,
+                  int num_matched_filters,
+                  size_t alignment_shift_sub_blocks);
 
-  ~MatchedFilter();
+    ~MatchedFilter();
 
-  // Updates the correlation with the values in render and capture.
-  void Update(const std::array<float, kSubBlockSize>& render,
-              const std::array<float, kSubBlockSize>& capture);
+    // Updates the correlation with the values in render and capture.
+    void Update(const std::array<float, kSubBlockSize>& render,
+                const std::array<float, kSubBlockSize>& capture);
 
-  // Returns the current lag estimates.
-  rtc::ArrayView<const MatchedFilter::LagEstimate> GetLagEstimates() const {
-    return lag_estimates_;
-  }
+    // Returns the current lag estimates.
+    rtc::ArrayView<const MatchedFilter::LagEstimate> GetLagEstimates() const
+    {
+        return lag_estimates_;
+    }
 
-  // Returns the number of lag estimates produced using the shifted signals.
-  size_t NumLagEstimates() const { return filters_.size(); }
+    // Returns the number of lag estimates produced using the shifted signals.
+    size_t NumLagEstimates() const
+    {
+        return filters_.size();
+    }
 
- private:
-  // Provides buffer with a related index.
-  struct IndexedBuffer {
-    explicit IndexedBuffer(size_t size);
-    ~IndexedBuffer();
+private:
+    // Provides buffer with a related index.
+    struct IndexedBuffer
+    {
+        explicit IndexedBuffer(size_t size);
+        ~IndexedBuffer();
 
-    std::vector<float> data;
-    int index = 0;
-    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(IndexedBuffer);
-  };
+        std::vector<float> data;
+        int index = 0;
+        RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(IndexedBuffer);
+    };
 
-  ApmDataDumper* const data_dumper_;
-  const size_t filter_intra_lag_shift_;
-  std::vector<std::vector<float>> filters_;
-  std::vector<LagEstimate> lag_estimates_;
-  IndexedBuffer x_buffer_;
+    ApmDataDumper* const data_dumper_;
+    const size_t filter_intra_lag_shift_;
+    std::vector<std::vector<float>> filters_;
+    std::vector<LagEstimate> lag_estimates_;
+    IndexedBuffer x_buffer_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(MatchedFilter);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(MatchedFilter);
 };
 
 }  // namespace webrtc

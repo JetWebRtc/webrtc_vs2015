@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,16 +15,18 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Helper class with generators for various signal transform windows.
-class WindowGenerator {
- public:
-  static void Hanning(int length, float* window);
-  static void KaiserBesselDerived(float alpha, size_t length, float* window);
+class WindowGenerator
+{
+public:
+    static void Hanning(int length, float* window);
+    static void KaiserBesselDerived(float alpha, size_t length, float* window);
 
- private:
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WindowGenerator);
+private:
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WindowGenerator);
 };
 
 }  // namespace webrtc

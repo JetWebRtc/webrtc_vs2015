@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -74,12 +74,13 @@ av_cold void ff_h264dsp_init_aarch64(H264DSPContext *c, const int bit_depth,
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags) && bit_depth == 8) {
+    if (have_neon(cpu_flags) && bit_depth == 8)
+    {
         c->h264_v_loop_filter_luma   = ff_h264_v_loop_filter_luma_neon;
         c->h264_h_loop_filter_luma   = ff_h264_h_loop_filter_luma_neon;
         c->h264_v_loop_filter_chroma = ff_h264_v_loop_filter_chroma_neon;
         if (chroma_format_idc <= 1)
-        c->h264_h_loop_filter_chroma = ff_h264_h_loop_filter_chroma_neon;
+            c->h264_h_loop_filter_chroma = ff_h264_h_loop_filter_chroma_neon;
 
         c->weight_h264_pixels_tab[0] = ff_weight_h264_pixels_16_neon;
         c->weight_h264_pixels_tab[1] = ff_weight_h264_pixels_8_neon;

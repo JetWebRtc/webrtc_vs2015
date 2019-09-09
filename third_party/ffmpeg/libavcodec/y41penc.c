@@ -1,4 +1,4 @@
-/*
+﻿/*
  * y41p encoder
  *
  * Copyright (c) 2012 Paul B Mahol
@@ -25,7 +25,8 @@
 
 static av_cold int y41p_encode_init(AVCodecContext *avctx)
 {
-    if (avctx->width & 7) {
+    if (avctx->width & 7)
+    {
         av_log(avctx, AV_LOG_ERROR, "y41p requires width to be divisible by 8.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -47,11 +48,13 @@ static int y41p_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     dst = pkt->data;
 
-    for (i = avctx->height - 1; i >= 0; i--) {
+    for (i = avctx->height - 1; i >= 0; i--)
+    {
         y = &pic->data[0][i * pic->linesize[0]];
         u = &pic->data[1][i * pic->linesize[1]];
         v = &pic->data[2][i * pic->linesize[2]];
-        for (j = 0; j < avctx->width; j += 8) {
+        for (j = 0; j < avctx->width; j += 8)
+        {
             *(dst++) = *(u++);
             *(dst++) = *(y++);
             *(dst++) = *(v++);
@@ -79,7 +82,8 @@ static av_cold int y41p_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_y41p_encoder = {
+AVCodec ff_y41p_encoder =
+{
     .name         = "y41p",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed YUV 4:1:1 12-bit"),
     .type         = AVMEDIA_TYPE_VIDEO,
@@ -87,7 +91,9 @@ AVCodec ff_y41p_encoder = {
     .init         = y41p_encode_init,
     .encode2      = y41p_encode_frame,
     .close        = y41p_encode_close,
-    .pix_fmts     = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV411P,
-                                                 AV_PIX_FMT_NONE },
+    .pix_fmts     = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV411P,
+        AV_PIX_FMT_NONE
+    },
     .capabilities = AV_CODEC_CAP_INTRA_ONLY,
 };

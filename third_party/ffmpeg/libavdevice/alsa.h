@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ALSA input and output
  * Copyright (c) 2007 Luca Abeni ( lucabe72 email it )
  * Copyright (c) 2007 Benoit Fouet ( benoit fouet free fr )
@@ -45,7 +45,8 @@ typedef void (*ff_reorder_func)(const void *, void *, int);
 
 #define ALSA_BUFFER_SIZE_MAX 65536
 
-typedef struct AlsaData {
+typedef struct AlsaData
+{
     AVClass *class;
     snd_pcm_t *h;
     int frame_size;  ///< bytes per sample * channels

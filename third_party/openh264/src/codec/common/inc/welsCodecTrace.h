@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -39,26 +39,27 @@
 #include "codec_app_def.h"
 #include "codec_api.h"
 
-class welsCodecTrace {
- public:
-  welsCodecTrace();
-  ~welsCodecTrace();
+class welsCodecTrace
+{
+public:
+    welsCodecTrace();
+    ~welsCodecTrace();
 
-  void SetCodecInstance (void* pCodecInstance);
-  void SetTraceLevel (const int32_t kiLevel);
-  void SetTraceCallback (WelsTraceCallback func);
-  void SetTraceCallbackContext (void* pCtx);
+    void SetCodecInstance (void* pCodecInstance);
+    void SetTraceLevel (const int32_t kiLevel);
+    void SetTraceCallback (WelsTraceCallback func);
+    void SetTraceCallbackContext (void* pCtx);
 
- private:
-  static void StaticCodecTrace (void* pCtx, const int32_t kiLevel, const char* kpStrFormat, va_list vl);
-  void CodecTrace (const int32_t kiLevel, const char* kpStrFormat, va_list vl);
+private:
+    static void StaticCodecTrace (void* pCtx, const int32_t kiLevel, const char* kpStrFormat, va_list vl);
+    void CodecTrace (const int32_t kiLevel, const char* kpStrFormat, va_list vl);
 
-  int32_t       m_iTraceLevel;
-  WelsTraceCallback m_fpTrace;
-  void*         m_pTraceCtx;
- public:
+    int32_t       m_iTraceLevel;
+    WelsTraceCallback m_fpTrace;
+    void*         m_pTraceCtx;
+public:
 
-  SLogContext m_sLogCtx;
+    SLogContext m_sLogCtx;
 };
 
 #endif //WELS_CODEC_TRACE

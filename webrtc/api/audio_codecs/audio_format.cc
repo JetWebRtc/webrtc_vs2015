@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 SdpAudioFormat::SdpAudioFormat(const SdpAudioFormat&) = default;
 SdpAudioFormat::SdpAudioFormat(SdpAudioFormat&&) = default;
@@ -49,32 +50,36 @@ SdpAudioFormat::~SdpAudioFormat() = default;
 SdpAudioFormat& SdpAudioFormat::operator=(const SdpAudioFormat&) = default;
 SdpAudioFormat& SdpAudioFormat::operator=(SdpAudioFormat&&) = default;
 
-bool operator==(const SdpAudioFormat& a, const SdpAudioFormat& b) {
-  return STR_CASE_CMP(a.name.c_str(), b.name.c_str()) == 0 &&
-         a.clockrate_hz == b.clockrate_hz && a.num_channels == b.num_channels &&
-         a.parameters == b.parameters;
+bool operator==(const SdpAudioFormat& a, const SdpAudioFormat& b)
+{
+    return STR_CASE_CMP(a.name.c_str(), b.name.c_str()) == 0 &&
+           a.clockrate_hz == b.clockrate_hz && a.num_channels == b.num_channels &&
+           a.parameters == b.parameters;
 }
 
-void swap(SdpAudioFormat& a, SdpAudioFormat& b) {
-  using std::swap;
-  swap(a.name, b.name);
-  swap(a.clockrate_hz, b.clockrate_hz);
-  swap(a.num_channels, b.num_channels);
-  swap(a.parameters, b.parameters);
+void swap(SdpAudioFormat& a, SdpAudioFormat& b)
+{
+    using std::swap;
+    swap(a.name, b.name);
+    swap(a.clockrate_hz, b.clockrate_hz);
+    swap(a.num_channels, b.num_channels);
+    swap(a.parameters, b.parameters);
 }
 
-std::ostream& operator<<(std::ostream& os, const SdpAudioFormat& saf) {
-  os << "{name: " << saf.name;
-  os << ", clockrate_hz: " << saf.clockrate_hz;
-  os << ", num_channels: " << saf.num_channels;
-  os << ", parameters: {";
-  const char* sep = "";
-  for (const auto& kv : saf.parameters) {
-    os << sep << kv.first << ": " << kv.second;
-    sep = ", ";
-  }
-  os << "}}";
-  return os;
+std::ostream& operator<<(std::ostream& os, const SdpAudioFormat& saf)
+{
+    os << "{name: " << saf.name;
+    os << ", clockrate_hz: " << saf.clockrate_hz;
+    os << ", num_channels: " << saf.num_channels;
+    os << ", parameters: {";
+    const char* sep = "";
+    for (const auto& kv : saf.parameters)
+    {
+        os << sep << kv.first << ": " << kv.second;
+        sep = ", ";
+    }
+    os << "}}";
+    return os;
 }
 
 AudioCodecSpec::AudioCodecSpec(const SdpAudioFormat& format) : format(format) {}

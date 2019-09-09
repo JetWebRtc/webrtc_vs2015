@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -389,7 +389,7 @@ int32_t AudioMixerManagerLinuxALSA::SetSpeakerVolume(
 
     int errVal =
         LATE(snd_mixer_selem_set_playback_volume_all)(_outputMixerElement,
-                                                      volume);
+                volume);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -415,10 +415,10 @@ int32_t AudioMixerManagerLinuxALSA::SpeakerVolume(
     long int vol(0);
 
     int
-        errVal = LATE(snd_mixer_selem_get_playback_volume)(
-            _outputMixerElement,
-            (snd_mixer_selem_channel_id_t) 0,
-            &vol);
+    errVal = LATE(snd_mixer_selem_get_playback_volume)(
+                 _outputMixerElement,
+                 (snd_mixer_selem_channel_id_t) 0,
+                 &vol);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -451,7 +451,7 @@ int32_t AudioMixerManagerLinuxALSA::MaxSpeakerVolume(
 
     int errVal =
         LATE(snd_mixer_selem_get_playback_volume_range)(_outputMixerElement,
-                                                        &minVol, &maxVol);
+                &minVol, &maxVol);
 
     WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                  "     Playout hardware volume range, min: %d, max: %d",
@@ -485,7 +485,7 @@ int32_t AudioMixerManagerLinuxALSA::MinSpeakerVolume(
 
     int errVal =
         LATE(snd_mixer_selem_get_playback_volume_range)(_outputMixerElement,
-                                                        &minVol, &maxVol);
+                &minVol, &maxVol);
 
     WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                  "     Playout hardware volume range, min: %d, max: %d",
@@ -664,7 +664,7 @@ int32_t AudioMixerManagerLinuxALSA::SetSpeakerMute(bool enable)
     // Note value = 0 (off) means muted
     int errVal =
         LATE(snd_mixer_selem_set_playback_switch_all)(_outputMixerElement,
-                                                      !enable);
+                !enable);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -701,10 +701,10 @@ int32_t AudioMixerManagerLinuxALSA::SpeakerMute(bool& enabled) const
     // Retrieve one boolean control value for a specified mute-control
     //
     int
-        errVal = LATE(snd_mixer_selem_get_playback_switch)(
-            _outputMixerElement,
-            (snd_mixer_selem_channel_id_t) 0,
-            &value);
+    errVal = LATE(snd_mixer_selem_get_playback_switch)(
+                 _outputMixerElement,
+                 (snd_mixer_selem_channel_id_t) 0,
+                 &value);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -761,7 +761,7 @@ int32_t AudioMixerManagerLinuxALSA::SetMicrophoneMute(bool enable)
     // Note value = 0 (off) means muted
     int errVal =
         LATE(snd_mixer_selem_set_capture_switch_all)(_inputMixerElement,
-                                                     !enable);
+                !enable);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -798,10 +798,10 @@ int32_t AudioMixerManagerLinuxALSA::MicrophoneMute(bool& enabled) const
     // Retrieve one boolean control value for a specified mute-control
     //
     int
-        errVal = LATE(snd_mixer_selem_get_capture_switch)(
-            _inputMixerElement,
-            (snd_mixer_selem_channel_id_t) 0,
-            &value);
+    errVal = LATE(snd_mixer_selem_get_capture_switch)(
+                 _inputMixerElement,
+                 (snd_mixer_selem_channel_id_t) 0,
+                 &value);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -910,9 +910,9 @@ int32_t AudioMixerManagerLinuxALSA::SetMicrophoneVolume(
     }
 
     int
-        errVal =
-            LATE(snd_mixer_selem_set_capture_volume_all)(_inputMixerElement,
-                                                         volume);
+    errVal =
+        LATE(snd_mixer_selem_set_capture_volume_all)(_inputMixerElement,
+                volume);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -1026,11 +1026,11 @@ int32_t AudioMixerManagerLinuxALSA::MicrophoneVolume(
     long int vol(0);
 
     int
-        errVal =
-            LATE(snd_mixer_selem_get_capture_volume)(
-                _inputMixerElement,
-                (snd_mixer_selem_channel_id_t) 0,
-                &vol);
+    errVal =
+        LATE(snd_mixer_selem_get_capture_volume)(
+            _inputMixerElement,
+            (snd_mixer_selem_channel_id_t) 0,
+            &vol);
     if (errVal < 0)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -1071,7 +1071,7 @@ int32_t AudioMixerManagerLinuxALSA::MaxMicrophoneVolume(
 
     int errVal =
         LATE(snd_mixer_selem_get_capture_volume_range)(_inputMixerElement,
-                                                       &minVol, &maxVol);
+                &minVol, &maxVol);
 
     WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                  "     Microphone hardware volume range, min: %d, max: %d",
@@ -1104,7 +1104,7 @@ int32_t AudioMixerManagerLinuxALSA::MinMicrophoneVolume(
 
     int errVal =
         LATE(snd_mixer_selem_get_capture_volume_range)(_inputMixerElement,
-                                                       &minVol, &maxVol);
+                &minVol, &maxVol);
 
     WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                  "     Microphone hardware volume range, min: %d, max: %d",
@@ -1161,7 +1161,7 @@ int32_t AudioMixerManagerLinuxALSA::LoadMicMixerElement() const
 
     // Find and store handles to the right mixer elements
     for (elem = LATE(snd_mixer_first_elem)(_inputMixerHandle); elem; elem
-        = LATE(snd_mixer_elem_next)(elem), mixerIdx++)
+            = LATE(snd_mixer_elem_next)(elem), mixerIdx++)
     {
         if (LATE(snd_mixer_selem_is_active)(elem))
         {
@@ -1171,7 +1171,8 @@ int32_t AudioMixerManagerLinuxALSA::LoadMicMixerElement() const
                 _inputMixerElement = elem;
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice,
                              _id, "     Capture element set");
-            } else if (strcmp(selemName, "Mic") == 0)
+            }
+            else if (strcmp(selemName, "Mic") == 0)
             {
                 micElem = elem;
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice,
@@ -1195,7 +1196,8 @@ int32_t AudioMixerManagerLinuxALSA::LoadMicMixerElement() const
             _inputMixerElement = micElem;
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                          "     Using Mic as capture volume.");
-        } else
+        }
+        else
         {
             _inputMixerElement = NULL;
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -1228,7 +1230,7 @@ int32_t AudioMixerManagerLinuxALSA::LoadSpeakerMixerElement() const
 
     // Find and store handles to the right mixer elements
     for (elem = LATE(snd_mixer_first_elem)(_outputMixerHandle); elem; elem
-        = LATE(snd_mixer_elem_next)(elem), mixerIdx++)
+            = LATE(snd_mixer_elem_next)(elem), mixerIdx++)
     {
         if (LATE(snd_mixer_selem_is_active)(elem))
         {
@@ -1243,12 +1245,14 @@ int32_t AudioMixerManagerLinuxALSA::LoadSpeakerMixerElement() const
                 _outputMixerElement = elem;
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice,
                              _id, "     PCM element set");
-            } else if (strcmp(selemName, "Master") == 0)
+            }
+            else if (strcmp(selemName, "Master") == 0)
             {
                 masterElem = elem;
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice,
                              _id, "     Master element found");
-            } else if (strcmp(selemName, "Speaker") == 0)
+            }
+            else if (strcmp(selemName, "Speaker") == 0)
             {
                 speakerElem = elem;
                 WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice,
@@ -1271,12 +1275,14 @@ int32_t AudioMixerManagerLinuxALSA::LoadSpeakerMixerElement() const
             _outputMixerElement = masterElem;
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                          "     Using Master as output volume.");
-        } else if (speakerElem != NULL)
+        }
+        else if (speakerElem != NULL)
         {
             _outputMixerElement = speakerElem;
             WEBRTC_TRACE(kTraceInfo, kTraceAudioDevice, _id,
                          "     Using Speaker as output volume.");
-        } else
+        }
+        else
         {
             _outputMixerElement = NULL;
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -1289,7 +1295,7 @@ int32_t AudioMixerManagerLinuxALSA::LoadSpeakerMixerElement() const
 }
 
 void AudioMixerManagerLinuxALSA::GetControlName(char* controlName,
-                                                char* deviceName) const
+        char* deviceName) const
 {
     // Example
     // deviceName: "front:CARD=Intel,DEV=0"
@@ -1307,7 +1313,8 @@ void AudioMixerManagerLinuxALSA::GetControlName(char* controlName,
         int nChar = (int) (pos2 - pos1);
         strncpy(&controlName[2], pos1, nChar);
         controlName[2 + nChar] = '\0';
-    } else
+    }
+    else
     {
         strcpy(controlName, deviceName);
     }

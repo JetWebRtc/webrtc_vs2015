@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Real Audio 1.0 (14.4K)
  *
  * Copyright (c) 2008 Vitor Sessak
@@ -77,7 +77,8 @@ static int ra144_decode_frame(AVCodecContext * avctx, void *data,
     RA144Context *ractx = avctx->priv_data;
     GetBitContext gb;
 
-    if (buf_size < FRAME_SIZE) {
+    if (buf_size < FRAME_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Frame too small (%d bytes). Truncated file?\n", buf_size);
         *got_frame_ptr = 0;
@@ -109,7 +110,8 @@ static int ra144_decode_frame(AVCodecContext * avctx, void *data,
 
     ff_int_to_int16(block_coefs[3], ractx->lpc_coef[0]);
 
-    for (i=0; i < NBLOCKS; i++) {
+    for (i=0; i < NBLOCKS; i++)
+    {
         do_output_subblock(ractx, block_coefs[i], refl_rms[i], &gb);
 
         for (j=0; j < BLOCKSIZE; j++)
@@ -126,7 +128,8 @@ static int ra144_decode_frame(AVCodecContext * avctx, void *data,
     return FRAME_SIZE;
 }
 
-AVCodec ff_ra_144_decoder = {
+AVCodec ff_ra_144_decoder =
+{
     .name           = "real_144",
     .long_name      = NULL_IF_CONFIG_SMALL("RealAudio 1.0 (14.4K)"),
     .type           = AVMEDIA_TYPE_AUDIO,

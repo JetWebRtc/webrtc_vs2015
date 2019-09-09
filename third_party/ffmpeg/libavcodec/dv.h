@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Constants for DV codec
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -32,12 +32,14 @@
 #include "get_bits.h"
 #include "me_cmp.h"
 
-typedef struct DVwork_chunk {
+typedef struct DVwork_chunk
+{
     uint16_t buf_offset;
     uint16_t mb_coordinates[5];
 } DVwork_chunk;
 
-typedef struct DVVideoContext {
+typedef struct DVVideoContext
+{
     const AVDVProfile *sys;
     AVFrame         *frame;
     AVCodecContext  *avctx;
@@ -53,7 +55,8 @@ typedef struct DVVideoContext {
     uint32_t idct_factor[2 * 4 * 16 * 64];
 } DVVideoContext;
 
-enum dv_section_type {
+enum dv_section_type
+{
     dv_sect_header  = 0x1f,
     dv_sect_subcode = 0x3f,
     dv_sect_vaux    = 0x56,
@@ -61,7 +64,8 @@ enum dv_section_type {
     dv_sect_video   = 0x96,
 };
 
-enum dv_pack_type {
+enum dv_pack_type
+{
     dv_header525     = 0x3f,  /* see dv_write_pack for important details on */
     dv_header625     = 0xbf,  /* these two packs */
     dv_timecode      = 0x13,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Directshow capture interface
  * Copyright (c) 2010 Ramiro Polla
  *
@@ -25,7 +25,8 @@ long ff_copy_dshow_media_type(AM_MEDIA_TYPE *dst, const AM_MEDIA_TYPE *src)
 {
     uint8_t *pbFormat = NULL;
 
-    if (src->cbFormat) {
+    if (src->cbFormat)
+    {
         pbFormat = CoTaskMemAlloc(src->cbFormat);
         if (!pbFormat)
             return E_OUTOFMEMORY;
@@ -73,7 +74,7 @@ static void dump_bih(void *s, BITMAPINFOHEADER *bih)
     dstruct(s, bih, biBitCount, "d");
     dstruct(s, bih, biCompression, "lu");
     dshowdebug("      biCompression:\t\"%.4s\"\n",
-                   (char*) &bih->biCompression);
+               (char*) &bih->biCompression);
     dstruct(s, bih, biSizeImage, "lu");
     dstruct(s, bih, biXPelsPerMeter, "lu");
     dstruct(s, bih, biYPelsPerMeter, "lu");
@@ -150,7 +151,8 @@ void ff_print_AM_MEDIA_TYPE(const AM_MEDIA_TYPE *type)
     dshowdebug("    cbFormat\t%lu\n", type->cbFormat);
     dshowdebug("    pbFormat\t%p\n", type->pbFormat);
 
-    if (IsEqualGUID(&type->formattype, &FORMAT_VideoInfo)) {
+    if (IsEqualGUID(&type->formattype, &FORMAT_VideoInfo))
+    {
         VIDEOINFOHEADER *v = (void *) type->pbFormat;
         dshowdebug("      rcSource: left %ld top %ld right %ld bottom %ld\n",
                    v->rcSource.left, v->rcSource.top, v->rcSource.right, v->rcSource.bottom);
@@ -160,7 +162,9 @@ void ff_print_AM_MEDIA_TYPE(const AM_MEDIA_TYPE *type)
         dshowdebug("      dwBitErrorRate: %lu\n", v->dwBitErrorRate);
         dshowdebug("      AvgTimePerFrame: %"PRId64"\n", v->AvgTimePerFrame);
         dump_bih(NULL, &v->bmiHeader);
-    } else if (IsEqualGUID(&type->formattype, &FORMAT_VideoInfo2)) {
+    }
+    else if (IsEqualGUID(&type->formattype, &FORMAT_VideoInfo2))
+    {
         VIDEOINFOHEADER2 *v = (void *) type->pbFormat;
         dshowdebug("      rcSource: left %ld top %ld right %ld bottom %ld\n",
                    v->rcSource.left, v->rcSource.top, v->rcSource.right, v->rcSource.bottom);
@@ -176,7 +180,9 @@ void ff_print_AM_MEDIA_TYPE(const AM_MEDIA_TYPE *type)
 //        dshowdebug("      dwReserved1: %lu\n", v->u.dwReserved1); /* mingw-w64 is buggy and doesn't name unnamed unions */
         dshowdebug("      dwReserved2: %lu\n", v->dwReserved2);
         dump_bih(NULL, &v->bmiHeader);
-    } else if (IsEqualGUID(&type->formattype, &FORMAT_WaveFormatEx)) {
+    }
+    else if (IsEqualGUID(&type->formattype, &FORMAT_WaveFormatEx))
+    {
         WAVEFORMATEX *fx = (void *) type->pbFormat;
         dshowdebug("      wFormatTag: %u\n", fx->wFormatTag);
         dshowdebug("      nChannels: %u\n", fx->nChannels);

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -107,25 +107,29 @@ UCHAR rvlcReadBitFromBitstream (HANDLE_FDK_BITSTREAM  bs,
                                 USHORT               *pPosition,
                                 UCHAR                 readDirection)
 {
-  UINT   bit;
-  INT    readBitOffset = *pPosition-FDKgetBitCnt(bs);
+    UINT   bit;
+    INT    readBitOffset = *pPosition-FDKgetBitCnt(bs);
 
-  if( readBitOffset ) {
-    FDKpushBiDirectional(bs, readBitOffset);
-  }
+    if( readBitOffset )
+    {
+        FDKpushBiDirectional(bs, readBitOffset);
+    }
 
-  if (readDirection == FWD) {
-    bit = FDKreadBits(bs, 1);
+    if (readDirection == FWD)
+    {
+        bit = FDKreadBits(bs, 1);
 
-    *pPosition += 1;
-  } else {
-    /* to be replaced with a brother function of FDKreadBits() */
-    bit = FDKreadBits(bs, 1);
-    FDKpushBack(bs, 2);
+        *pPosition += 1;
+    }
+    else
+    {
+        /* to be replaced with a brother function of FDKreadBits() */
+        bit = FDKreadBits(bs, 1);
+        FDKpushBack(bs, 2);
 
-    *pPosition -= 1;
-  }
+        *pPosition -= 1;
+    }
 
-  return (bit);
+    return (bit);
 }
 

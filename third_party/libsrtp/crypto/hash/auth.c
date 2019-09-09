@@ -1,4 +1,4 @@
-/*
+﻿/*
  * auth.c
  *
  * some bookkeeping functions for authentication functions
@@ -44,7 +44,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "auth.h"
@@ -53,7 +53,8 @@
 
 /* the debug module for authentiation */
 
-srtp_debug_module_t srtp_mod_auth = {
+srtp_debug_module_t srtp_mod_auth =
+{
     0,                /* debugging is off by default */
     "auth func"       /* printable name for module   */
 };
@@ -99,28 +100,33 @@ srtp_auth_type_test (const srtp_auth_type_t *at, const srtp_auth_test_case_t *te
      * check to make sure that we have at least one test case, and
      * return an error if we don't - we need to be paranoid here
      */
-    if (test_case == NULL) {
+    if (test_case == NULL)
+    {
         return srtp_err_status_cant_check;
     }
 
     /* loop over all test cases */
-    while (test_case != NULL) {
+    while (test_case != NULL)
+    {
 
         /* check test case parameters */
-        if (test_case->tag_length_octets > SELF_TEST_TAG_BUF_OCTETS) {
+        if (test_case->tag_length_octets > SELF_TEST_TAG_BUF_OCTETS)
+        {
             return srtp_err_status_bad_param;
         }
 
         /* allocate auth */
         status = srtp_auth_type_alloc(at, &a, test_case->key_length_octets,
-                                 test_case->tag_length_octets);
-        if (status) {
+                                      test_case->tag_length_octets);
+        if (status)
+        {
             return status;
         }
 
         /* initialize auth */
         status = srtp_auth_init(a, test_case->key);
-        if (status) {
+        if (status)
+        {
             srtp_auth_dealloc(a);
             return status;
         }
@@ -128,41 +134,46 @@ srtp_auth_type_test (const srtp_auth_type_t *at, const srtp_auth_test_case_t *te
         /* zeroize tag then compute */
         octet_string_set_to_zero(tag, test_case->tag_length_octets);
         status = srtp_auth_compute(a, test_case->data,
-                              test_case->data_length_octets, tag);
-        if (status) {
+                                   test_case->data_length_octets, tag);
+        if (status)
+        {
             srtp_auth_dealloc(a);
             return status;
         }
 
         debug_print(srtp_mod_auth, "key: %s",
                     srtp_octet_string_hex_string(test_case->key,
-                                                 test_case->key_length_octets));
+                            test_case->key_length_octets));
         debug_print(srtp_mod_auth, "data: %s",
                     srtp_octet_string_hex_string(test_case->data,
-                                                 test_case->data_length_octets));
+                            test_case->data_length_octets));
         debug_print(srtp_mod_auth, "tag computed: %s",
                     srtp_octet_string_hex_string(tag, test_case->tag_length_octets));
         debug_print(srtp_mod_auth, "tag expected: %s",
                     srtp_octet_string_hex_string(test_case->tag,
-                                                 test_case->tag_length_octets));
+                            test_case->tag_length_octets));
 
         /* check the result */
         status = srtp_err_status_ok;
-        for (i = 0; i < test_case->tag_length_octets; i++) {
-            if (tag[i] != test_case->tag[i]) {
+        for (i = 0; i < test_case->tag_length_octets; i++)
+        {
+            if (tag[i] != test_case->tag[i])
+            {
                 status = srtp_err_status_algo_fail;
                 debug_print(srtp_mod_auth, "test case %d failed", case_num);
                 debug_print(srtp_mod_auth, "  (mismatch at octet %d)", i);
             }
         }
-        if (status) {
+        if (status)
+        {
             srtp_auth_dealloc(a);
             return srtp_err_status_algo_fail;
         }
 
         /* deallocate the auth function */
         status = srtp_auth_dealloc(a);
-        if (status) {
+        if (status)
+        {
             return status;
         }
 

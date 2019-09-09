@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Renderware TeXture Dictionary (.txd) demuxer
  * Copyright (c) 2007 Ivo van Poorten
  *
@@ -31,14 +31,16 @@
 #define TXD_MARKER          0x1803ffff
 #define TXD_MARKER2         0x1003ffff
 
-static int txd_probe(AVProbeData * pd) {
+static int txd_probe(AVProbeData * pd)
+{
     if (AV_RL32(pd->buf  ) == TXD_FILE &&
-       (AV_RL32(pd->buf+8) == TXD_MARKER || AV_RL32(pd->buf+8) == TXD_MARKER2))
+            (AV_RL32(pd->buf+8) == TXD_MARKER || AV_RL32(pd->buf+8) == TXD_MARKER2))
         return AVPROBE_SCORE_MAX;
     return 0;
 }
 
-static int txd_read_header(AVFormatContext *s) {
+static int txd_read_header(AVFormatContext *s)
+{
     AVStream *st;
 
     st = avformat_new_stream(s, NULL);
@@ -53,7 +55,8 @@ static int txd_read_header(AVFormatContext *s) {
     return 0;
 }
 
-static int txd_read_packet(AVFormatContext *s, AVPacket *pkt) {
+static int txd_read_packet(AVFormatContext *s, AVPacket *pkt)
+{
     AVIOContext *pb = s->pb;
     unsigned int id, chunk_size, marker;
     int ret;
@@ -65,12 +68,14 @@ next_chunk:
 
     if (avio_feof(s->pb))
         return AVERROR_EOF;
-    if (marker != TXD_MARKER && marker != TXD_MARKER2) {
+    if (marker != TXD_MARKER && marker != TXD_MARKER2)
+    {
         av_log(s, AV_LOG_ERROR, "marker does not match\n");
         return AVERROR_INVALIDDATA;
     }
 
-    switch (id) {
+    switch (id)
+    {
     case TXD_INFO:
         if (chunk_size > 100)
             break;
@@ -92,7 +97,8 @@ next_chunk:
     return 0;
 }
 
-AVInputFormat ff_txd_demuxer = {
+AVInputFormat ff_txd_demuxer =
+{
     .name        = "txd",
     .long_name   = NULL_IF_CONFIG_SMALL("Renderware TeXture Dictionary"),
     .read_probe  = txd_probe,

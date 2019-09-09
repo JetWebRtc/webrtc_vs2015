@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -19,7 +19,8 @@
 #ifndef AVCODEC_DCA_SYNCWORDS_H
 #define AVCODEC_DCA_SYNCWORDS_H
 
-enum DCASyncwords {
+enum DCASyncwords
+{
     DCA_SYNCWORD_CORE_BE        = 0x7FFE8001U,
     DCA_SYNCWORD_CORE_LE        = 0xFE7F0180U,
     DCA_SYNCWORD_CORE_14B_BE    = 0x1FFFE800U,

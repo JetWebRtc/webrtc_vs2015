@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -98,7 +98,8 @@ void av_bprintf(AVBPrint *buf, const char *fmt, ...)
     va_list vl;
     int extra_len;
 
-    while (1) {
+    while (1)
+    {
         room = av_bprint_room(buf);
         dst = room ? buf->str + buf->len : NULL;
         va_start(vl, fmt);
@@ -121,7 +122,8 @@ void av_vbprintf(AVBPrint *buf, const char *fmt, va_list vl_arg)
     int extra_len;
     va_list vl;
 
-    while (1) {
+    while (1)
+    {
         room = av_bprint_room(buf);
         dst = room ? buf->str + buf->len : NULL;
         va_copy(vl, vl_arg);
@@ -141,14 +143,16 @@ void av_bprint_chars(AVBPrint *buf, char c, unsigned n)
 {
     unsigned room, real_n;
 
-    while (1) {
+    while (1)
+    {
         room = av_bprint_room(buf);
         if (n < room)
             break;
         if (av_bprint_alloc(buf, n))
             break;
     }
-    if (room) {
+    if (room)
+    {
         real_n = FFMIN(n, room - 1);
         memset(buf->str + buf->len, c, real_n);
     }
@@ -159,14 +163,16 @@ void av_bprint_append_data(AVBPrint *buf, const char *data, unsigned size)
 {
     unsigned room, real_n;
 
-    while (1) {
+    while (1)
+    {
         room = av_bprint_room(buf);
         if (size < room)
             break;
         if (av_bprint_alloc(buf, size))
             break;
     }
-    if (room) {
+    if (room)
+    {
         real_n = FFMIN(size, room - 1);
         memcpy(buf->str + buf->len, data, real_n);
     }
@@ -180,7 +186,8 @@ void av_bprint_strftime(AVBPrint *buf, const char *fmt, const struct tm *tm)
 
     if (!*fmt)
         return;
-    while (1) {
+    while (1)
+    {
         room = av_bprint_room(buf);
         if (room && (l = strftime(buf->str + buf->len, room, fmt, tm)))
             break;
@@ -188,20 +195,24 @@ void av_bprint_strftime(AVBPrint *buf, const char *fmt, const struct tm *tm)
            retry with twice as much until the buffer is large enough */
         room = !room ? strlen(fmt) + 1 :
                room <= INT_MAX / 2 ? room * 2 : INT_MAX;
-        if (av_bprint_alloc(buf, room)) {
+        if (av_bprint_alloc(buf, room))
+        {
             /* impossible to grow, try to manage something useful anyway */
             room = av_bprint_room(buf);
-            if (room < 1024) {
+            if (room < 1024)
+            {
                 /* if strftime fails because the buffer has (almost) reached
                    its maximum size, let us try in a local buffer; 1k should
                    be enough to format any real date+time string */
                 char buf2[1024];
-                if ((l = strftime(buf2, sizeof(buf2), fmt, tm))) {
+                if ((l = strftime(buf2, sizeof(buf2), fmt, tm)))
+                {
                     av_bprintf(buf, "%s", buf2);
                     return;
                 }
             }
-            if (room) {
+            if (room)
+            {
                 /* if anything else failed and the buffer is not already
                    truncated, let us add a stock string and force truncation */
                 static const char txt[] = "[truncated strftime output]";
@@ -226,7 +237,8 @@ void av_bprint_get_buffer(AVBPrint *buf, unsigned size,
 
 void av_bprint_clear(AVBPrint *buf)
 {
-    if (buf->len) {
+    if (buf->len)
+    {
         *buf->str = 0;
         buf->len  = 0;
     }
@@ -238,13 +250,17 @@ int av_bprint_finalize(AVBPrint *buf, char **ret_str)
     char *str;
     int ret = 0;
 
-    if (ret_str) {
-        if (av_bprint_is_allocated(buf)) {
+    if (ret_str)
+    {
+        if (av_bprint_is_allocated(buf))
+        {
             str = av_realloc(buf->str, real_size);
             if (!str)
                 str = buf->str;
             buf->str = NULL;
-        } else {
+        }
+        else
+        {
             str = av_malloc(real_size);
             if (str)
                 memcpy(str, buf->str, real_size);
@@ -252,7 +268,9 @@ int av_bprint_finalize(AVBPrint *buf, char **ret_str)
                 ret = AVERROR(ENOMEM);
         }
         *ret_str = str;
-    } else {
+    }
+    else
+    {
         if (av_bprint_is_allocated(buf))
             av_freep(&buf->str);
     }
@@ -270,11 +288,13 @@ void av_bprint_escape(AVBPrint *dstbuf, const char *src, const char *special_cha
     if (mode == AV_ESCAPE_MODE_AUTO)
         mode = AV_ESCAPE_MODE_BACKSLASH; /* TODO: implement a heuristic */
 
-    switch (mode) {
+    switch (mode)
+    {
     case AV_ESCAPE_MODE_QUOTE:
         /* enclose the string between '' */
         av_bprint_chars(dstbuf, '\'', 1);
-        for (; *src; src++) {
+        for (; *src; src++)
+        {
             if (*src == '\'')
                 av_bprintf(dstbuf, "'\\''");
             else
@@ -286,7 +306,8 @@ void av_bprint_escape(AVBPrint *dstbuf, const char *src, const char *special_cha
     /* case AV_ESCAPE_MODE_BACKSLASH or unknown mode */
     default:
         /* \-escape characters */
-        for (; *src; src++) {
+        for (; *src; src++)
+        {
             int is_first_last       = src == src0 || !*(src+1);
             int is_ws               = !!strchr(WHITESPACES, *src);
             int is_strictly_special = special_chars && strchr(special_chars, *src);
@@ -295,8 +316,8 @@ void av_bprint_escape(AVBPrint *dstbuf, const char *src, const char *special_cha
                 (is_ws && (flags & AV_ESCAPE_FLAG_WHITESPACE));
 
             if (is_strictly_special ||
-                (!(flags & AV_ESCAPE_FLAG_STRICT) &&
-                 (is_special || (is_ws && is_first_last))))
+                    (!(flags & AV_ESCAPE_FLAG_STRICT) &&
+                     (is_special || (is_ws && is_first_last))))
                 av_bprint_chars(dstbuf, '\\', 1);
             av_bprint_chars(dstbuf, *src, 1);
         }
@@ -317,7 +338,8 @@ static void bprint_pascal(AVBPrint *b, unsigned size)
 
     p[0] = 1;
     av_bprintf(b, "%8d\n", 1);
-    for (i = 1; i <= size; i++) {
+    for (i = 1; i <= size; i++)
+    {
         p[i] = 1;
         for (j = i - 1; j > 0; j--)
             p[j] = p[j] + p[j - 1];

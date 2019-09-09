@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,43 +99,46 @@ amm-info@iis.fraunhofer.de
 /*
   psych internal
 */
-typedef struct  {
+typedef struct
+{
 
-  PSY_STATIC*        psyStatic[(2)];
+    PSY_STATIC*        psyStatic[(2)];
 
-}PSY_ELEMENT;
+} PSY_ELEMENT;
 
-typedef struct  {
+typedef struct
+{
 
-  PSY_DATA           psyData[(2)];
-  TNS_DATA           tnsData[(2)];
-  PNS_DATA           pnsData[(2)];
+    PSY_DATA           psyData[(2)];
+    TNS_DATA           tnsData[(2)];
+    PNS_DATA           pnsData[(2)];
 
-}PSY_DYNAMIC;
+} PSY_DYNAMIC;
 
 
-typedef struct  {
+typedef struct
+{
 
-  PSY_CONFIGURATION  psyConf[2]; /* LONG / SHORT */
-  PSY_ELEMENT*       psyElement[(8)];
-  PSY_STATIC*        pStaticChannels[(8)];
-  PSY_DYNAMIC*       psyDynamic;
-  INT                granuleLength;
+    PSY_CONFIGURATION  psyConf[2]; /* LONG / SHORT */
+    PSY_ELEMENT*       psyElement[(8)];
+    PSY_STATIC*        pStaticChannels[(8)];
+    PSY_DYNAMIC*       psyDynamic;
+    INT                granuleLength;
 
-}PSY_INTERNAL;
+} PSY_INTERNAL;
 
 
 AAC_ENCODER_ERROR FDKaacEnc_PsyNew(PSY_INTERNAL  **phpsy,
                                    const INT       nElements,
                                    const INT       nChannels
-                                  ,UCHAR          *dynamic_RAM
+                                   ,UCHAR          *dynamic_RAM
                                   );
 
 AAC_ENCODER_ERROR FDKaacEnc_PsyOutNew(PSY_OUT    **phpsyOut,
                                       const INT    nElements,
                                       const INT    nChannels,
                                       const INT    nSubFrames
-                                     ,UCHAR       *dynamic_RAM
+                                      ,UCHAR       *dynamic_RAM
                                      );
 
 AAC_ENCODER_ERROR FDKaacEnc_psyInit(PSY_INTERNAL    *hPsy,

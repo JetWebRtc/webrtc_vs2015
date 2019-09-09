@@ -1,4 +1,4 @@
-/*
+﻿/*
  * buffered file I/O
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -67,7 +67,8 @@
 
 /* standard file protocol */
 
-typedef struct FileContext {
+typedef struct FileContext
+{
     const AVClass *class;
     int fd;
     int trunc;
@@ -77,25 +78,29 @@ typedef struct FileContext {
 #endif
 } FileContext;
 
-static const AVOption file_options[] = {
+static const AVOption file_options[] =
+{
     { "truncate", "truncate existing files on write", offsetof(FileContext, trunc), AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 1, AV_OPT_FLAG_ENCODING_PARAM },
     { "blocksize", "set I/O operation maximum block size", offsetof(FileContext, blocksize), AV_OPT_TYPE_INT, { .i64 = INT_MAX }, 1, INT_MAX, AV_OPT_FLAG_ENCODING_PARAM },
     { NULL }
 };
 
-static const AVOption pipe_options[] = {
+static const AVOption pipe_options[] =
+{
     { "blocksize", "set I/O operation maximum block size", offsetof(FileContext, blocksize), AV_OPT_TYPE_INT, { .i64 = INT_MAX }, 1, INT_MAX, AV_OPT_FLAG_ENCODING_PARAM },
     { NULL }
 };
 
-static const AVClass file_class = {
+static const AVClass file_class =
+{
     .class_name = "file",
     .item_name  = av_default_item_name,
     .option     = file_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-static const AVClass pipe_class = {
+static const AVClass pipe_class =
+{
     .class_name = "pipe",
     .item_name  = av_default_item_name,
     .option     = pipe_options,
@@ -134,22 +139,22 @@ static int file_check(URLContext *h, int mask)
 
     {
 #if HAVE_ACCESS && defined(R_OK)
-    if (access(filename, F_OK) < 0)
-        return AVERROR(errno);
-    if (mask&AVIO_FLAG_READ)
-        if (access(filename, R_OK) >= 0)
-            ret |= AVIO_FLAG_READ;
-    if (mask&AVIO_FLAG_WRITE)
-        if (access(filename, W_OK) >= 0)
-            ret |= AVIO_FLAG_WRITE;
+        if (access(filename, F_OK) < 0)
+            return AVERROR(errno);
+        if (mask&AVIO_FLAG_READ)
+            if (access(filename, R_OK) >= 0)
+                ret |= AVIO_FLAG_READ;
+        if (mask&AVIO_FLAG_WRITE)
+            if (access(filename, W_OK) >= 0)
+                ret |= AVIO_FLAG_WRITE;
 #else
-    struct stat st;
-    ret = stat(filename, &st);
-    if (ret < 0)
-        return AVERROR(errno);
+        struct stat st;
+        ret = stat(filename, &st);
+        if (ret < 0)
+            return AVERROR(errno);
 
-    ret |= st.st_mode&S_IRUSR ? mask&AVIO_FLAG_READ  : 0;
-    ret |= st.st_mode&S_IWUSR ? mask&AVIO_FLAG_WRITE : 0;
+        ret |= st.st_mode&S_IRUSR ? mask&AVIO_FLAG_READ  : 0;
+        ret |= st.st_mode&S_IWUSR ? mask&AVIO_FLAG_WRITE : 0;
 #endif
     }
     return ret;
@@ -202,15 +207,20 @@ static int file_open(URLContext *h, const char *filename, int flags)
 
     av_strstart(filename, "file:", &filename);
 
-    if (flags & AVIO_FLAG_WRITE && flags & AVIO_FLAG_READ) {
+    if (flags & AVIO_FLAG_WRITE && flags & AVIO_FLAG_READ)
+    {
         access = O_CREAT | O_RDWR;
         if (c->trunc)
             access |= O_TRUNC;
-    } else if (flags & AVIO_FLAG_WRITE) {
+    }
+    else if (flags & AVIO_FLAG_WRITE)
+    {
         access = O_CREAT | O_WRONLY;
         if (c->trunc)
             access |= O_TRUNC;
-    } else {
+    }
+    else
+    {
         access = O_RDONLY;
     }
 #ifdef O_BINARY
@@ -232,7 +242,8 @@ static int64_t file_seek(URLContext *h, int64_t pos, int whence)
     FileContext *c = h->priv_data;
     int64_t ret;
 
-    if (whence == AVSEEK_SIZE) {
+    if (whence == AVSEEK_SIZE)
+    {
         struct stat st;
         ret = fstat(c->fd, &st);
         return ret < 0 ? AVERROR(errno) : (S_ISFIFO(st.st_mode) ? 0 : st.st_size);
@@ -274,19 +285,24 @@ static int file_read_dir(URLContext *h, AVIODirEntry **next)
     *next = ff_alloc_dir_entry();
     if (!*next)
         return AVERROR(ENOMEM);
-    do {
+    do
+    {
         errno = 0;
         dir = readdir(c->dir);
-        if (!dir) {
+        if (!dir)
+        {
             av_freep(next);
             return AVERROR(errno);
         }
-    } while (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."));
+    }
+    while (!strcmp(dir->d_name, ".") || !strcmp(dir->d_name, ".."));
 
     fullpath = av_append_path_component(h->filename, dir->d_name);
-    if (fullpath) {
+    if (fullpath)
+    {
         struct stat st;
-        if (!lstat(fullpath, &st)) {
+        if (!lstat(fullpath, &st))
+        {
             if (S_ISDIR(st.st_mode))
                 (*next)->type = AVIO_ENTRY_DIRECTORY;
             else if (S_ISFIFO(st.st_mode))
@@ -333,7 +349,8 @@ static int file_close_dir(URLContext *h)
 #endif /* HAVE_LSTAT */
 }
 
-URLProtocol ff_file_protocol = {
+URLProtocol ff_file_protocol =
+{
     .name                = "file",
     .url_open            = file_open,
     .url_read            = file_read,
@@ -363,10 +380,14 @@ static int pipe_open(URLContext *h, const char *filename, int flags)
     av_strstart(filename, "pipe:", &filename);
 
     fd = strtol(filename, &final, 10);
-    if((filename == final) || *final ) {/* No digits found, or something like 10ab */
-        if (flags & AVIO_FLAG_WRITE) {
+    if((filename == final) || *final )  /* No digits found, or something like 10ab */
+    {
+        if (flags & AVIO_FLAG_WRITE)
+        {
             fd = 1;
-        } else {
+        }
+        else
+        {
             fd = 0;
         }
     }
@@ -378,7 +399,8 @@ static int pipe_open(URLContext *h, const char *filename, int flags)
     return 0;
 }
 
-URLProtocol ff_pipe_protocol = {
+URLProtocol ff_pipe_protocol =
+{
     .name                = "pipe",
     .url_open            = pipe_open,
     .url_read            = file_read,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,69 +29,72 @@
 // 4. Parse the flags by calling ProcessFlags.
 // 5. Get the values of the flags using GetFlag.
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class CommandLineParser {
- public:
-  CommandLineParser();
-  ~CommandLineParser();
+class CommandLineParser
+{
+public:
+    CommandLineParser();
+    ~CommandLineParser();
 
-  void Init(int argc, char** argv);
+    void Init(int argc, char** argv);
 
-  // Prints the entered flags and their values (without --help).
-  void PrintEnteredFlags();
+    // Prints the entered flags and their values (without --help).
+    void PrintEnteredFlags();
 
-  // Processes the vector of command line arguments and puts the value of each
-  // flag in the corresponding map entry for this flag's name. We don't process
-  // flags which haven't been defined in the map.
-  void ProcessFlags();
+    // Processes the vector of command line arguments and puts the value of each
+    // flag in the corresponding map entry for this flag's name. We don't process
+    // flags which haven't been defined in the map.
+    void ProcessFlags();
 
-  // Sets the usage message to be shown if we pass --help.
-  void SetUsageMessage(std::string usage_message);
+    // Sets the usage message to be shown if we pass --help.
+    void SetUsageMessage(std::string usage_message);
 
-  // prints the usage message.
-  void PrintUsageMessage();
+    // prints the usage message.
+    void PrintUsageMessage();
 
-  // Set a flag into the map of flag names/values.
-  // To set a boolean flag, use "false" as the default flag value.
-  // The flag_name should not include the -- prefix.
-  void SetFlag(std::string flag_name, std::string default_flag_value);
+    // Set a flag into the map of flag names/values.
+    // To set a boolean flag, use "false" as the default flag value.
+    // The flag_name should not include the -- prefix.
+    void SetFlag(std::string flag_name, std::string default_flag_value);
 
-  // Gets a flag when provided a flag name (name is without the -- prefix).
-  // Returns "" if the flag is unknown and "true"/"false" if the flag is a
-  // boolean flag.
-  std::string GetFlag(std::string flag_name);
+    // Gets a flag when provided a flag name (name is without the -- prefix).
+    // Returns "" if the flag is unknown and "true"/"false" if the flag is a
+    // boolean flag.
+    std::string GetFlag(std::string flag_name);
 
- private:
-  // The vector of passed command line arguments.
-  std::vector<std::string> args_;
-  // The map of the flag names/values.
-  std::map<std::string, std::string> flags_;
-  // The usage message.
-  std::string usage_message_;
+private:
+    // The vector of passed command line arguments.
+    std::vector<std::string> args_;
+    // The map of the flag names/values.
+    std::map<std::string, std::string> flags_;
+    // The usage message.
+    std::string usage_message_;
 
-  // Returns whether the passed flag is standalone or not. By standalone we
-  // understand e.g. --standalone (in contrast to --non_standalone=1).
-  bool IsStandaloneFlag(std::string flag);
+    // Returns whether the passed flag is standalone or not. By standalone we
+    // understand e.g. --standalone (in contrast to --non_standalone=1).
+    bool IsStandaloneFlag(std::string flag);
 
-  // Checks whether the flag is in the format --flag_name=flag_value.
-  // or just --flag_name.
-  bool IsFlagWellFormed(std::string flag);
+    // Checks whether the flag is in the format --flag_name=flag_value.
+    // or just --flag_name.
+    bool IsFlagWellFormed(std::string flag);
 
-  // Extracts the flag name from the flag, i.e. return foo for --foo=bar.
-  std::string GetCommandLineFlagName(std::string flag);
+    // Extracts the flag name from the flag, i.e. return foo for --foo=bar.
+    std::string GetCommandLineFlagName(std::string flag);
 
-  // Extracts the flag value from the flag, i.e. return bar for --foo=bar.
-  // If the flag has no value (i.e. no equals sign) an empty string is returned.
-  std::string GetCommandLineFlagValue(std::string flag);
+    // Extracts the flag value from the flag, i.e. return bar for --foo=bar.
+    // If the flag has no value (i.e. no equals sign) an empty string is returned.
+    std::string GetCommandLineFlagValue(std::string flag);
 
-  FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, IsStandaloneFlag);
-  FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, IsFlagWellFormed);
-  FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, GetCommandLineFlagName);
-  FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, GetCommandLineFlagValue);
+    FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, IsStandaloneFlag);
+    FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, IsFlagWellFormed);
+    FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, GetCommandLineFlagName);
+    FRIEND_TEST_ALL_PREFIXES(CommandLineParserTest, GetCommandLineFlagValue);
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(CommandLineParser);
+    RTC_DISALLOW_COPY_AND_ASSIGN(CommandLineParser);
 };
 
 }  // namespace test

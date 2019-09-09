@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -38,9 +38,10 @@ extern "C" {
 
 #pragma pack(push, 1)
 
-typedef struct {
-  void *ptr;
-  char *name;
+typedef struct
+{
+    void *ptr;
+    char *name;
 }
 psymodellist_t;
 
@@ -60,30 +61,30 @@ typedef signed int int32_t;
 	Returns FAAC_CFG_VERSION.
 */
 int FAACAPI faacEncGetVersion(char **faac_id_string,
-			      char **faac_copyright_string);
+                              char **faac_copyright_string);
 
 
 faacEncConfigurationPtr FAACAPI
-  faacEncGetCurrentConfiguration(faacEncHandle hEncoder);
+faacEncGetCurrentConfiguration(faacEncHandle hEncoder);
 
 
 int FAACAPI faacEncSetConfiguration(faacEncHandle hEncoder,
-				    faacEncConfigurationPtr config);
+                                    faacEncConfigurationPtr config);
 
 
 faacEncHandle FAACAPI faacEncOpen(unsigned long sampleRate,
-				  unsigned int numChannels,
-				  unsigned long *inputSamples,
-				  unsigned long *maxOutputBytes);
+                                  unsigned int numChannels,
+                                  unsigned long *inputSamples,
+                                  unsigned long *maxOutputBytes);
 
 
 int FAACAPI faacEncGetDecoderSpecificInfo(faacEncHandle hEncoder, unsigned char **ppBuffer,
-					  unsigned long *pSizeOfDecoderSpecificInfo);
+        unsigned long *pSizeOfDecoderSpecificInfo);
 
 
 int FAACAPI faacEncEncode(faacEncHandle hEncoder, int32_t * inputBuffer, unsigned int samplesInput,
-			 unsigned char *outputBuffer,
-			 unsigned int bufferSize);
+                          unsigned char *outputBuffer,
+                          unsigned int bufferSize);
 
 
 int FAACAPI faacEncClose(faacEncHandle hEncoder);

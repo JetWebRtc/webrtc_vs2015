@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,19 +23,21 @@
 // Warnings
 #define AGC_BAD_PARAMETER_WARNING 18050
 
-enum {
-  kAgcModeUnchanged,
-  kAgcModeAdaptiveAnalog,
-  kAgcModeAdaptiveDigital,
-  kAgcModeFixedDigital
+enum
+{
+    kAgcModeUnchanged,
+    kAgcModeAdaptiveAnalog,
+    kAgcModeAdaptiveDigital,
+    kAgcModeFixedDigital
 };
 
 enum { kAgcFalse = 0, kAgcTrue };
 
-typedef struct {
-  int16_t targetLevelDbfs;    // default 3 (-3 dBOv)
-  int16_t compressionGaindB;  // default 9 dB
-  uint8_t limiterEnable;      // default kAgcTrue (on)
+typedef struct
+{
+    int16_t targetLevelDbfs;    // default 3 (-3 dBOv)
+    int16_t compressionGaindB;  // default 9 dB
+    uint8_t limiterEnable;      // default kAgcTrue (on)
 } WebRtcAgcConfig;
 
 #if defined(__cplusplus)

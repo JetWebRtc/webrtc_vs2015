@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -38,7 +38,8 @@
 #include "wels_const.h"
 #include "macros.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /*
  *  MB Cache information, such one cache should be defined within a slice
@@ -59,7 +60,8 @@ namespace WelsEnc {
 extern const uint8_t g_kuiSmb4AddrIn256[16];
 extern const uint8_t g_kuiCache12_8x8RefIdx[4];
 
-typedef struct TagDCTCoeff {
+typedef struct TagDCTCoeff
+{
 //ALIGNED_DECLARE( int16_t, residual_ac[16], 16 ); //I_16x16
 int16_t iLumaBlock[16][16]; //based on block4x4 luma DC/AC
 //ALIGNED_DECLARE( int16_t, iLumaI16x16Dc[16], 16 ); //I_16x16 DC
@@ -69,7 +71,8 @@ int16_t iChromaBlock[8][16]; //based on block4x4  chroma DC/AC
 int16_t iChromaDc[2][4];
 } SDCTCoeff ;
 
-typedef struct TagMbCache {
+typedef struct TagMbCache
+{
 //the followed pData now is promised aligned to 16 bytes
 ALIGNED_DECLARE (SMVComponentUnit, sMvComponents, 16);
 
@@ -122,15 +125,16 @@ uint8_t uiChmaI8x8Mode;
 bool         bCollocatedPredFlag;//denote if current MB is collocated predicted (MV==0).
 uint32_t     uiRefMbType;
 
-struct {
-  /* pointer of current mb location in original frame */
-  uint8_t* pEncMb[3];
-  /* pointer of current mb location in recovery frame */
-  uint8_t* pDecMb[3];
-  /* pointer of co-located mb location in reference frame */
-  uint8_t* pRefMb[3];
-  //for SVC
-  uint8_t*      pCsMb[3];//locating current mb's CS in whole frame
+struct
+{
+    /* pointer of current mb location in original frame */
+    uint8_t* pEncMb[3];
+    /* pointer of current mb location in recovery frame */
+    uint8_t* pDecMb[3];
+    /* pointer of co-located mb location in reference frame */
+    uint8_t* pRefMb[3];
+    //for SVC
+    uint8_t*      pCsMb[3];//locating current mb's CS in whole frame
 //              int16_t *p_rs[3];//locating current mb's RS     in whole frame
 
 } SPicData;

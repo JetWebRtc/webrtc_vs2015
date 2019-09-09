@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  Copyright (C) Microsoft Corporation.  All Rights Reserved.
  *
@@ -286,21 +286,21 @@ typedef struct D3D10DDIARG_OPENRESOURCE
 
 typedef struct D3D10DDI_RANGE
 {
-   UINT Start;
-   UINT End; // one past end. (End - Start) = size
+    UINT Start;
+    UINT End; // one past end. (End - Start) = size
 } D3D10DDI_RANGE;
 
 typedef struct D3D10DDI_RECT
 {
-   D3D10DDI_RANGE X;
-   D3D10DDI_RANGE Y;
+    D3D10DDI_RANGE X;
+    D3D10DDI_RANGE Y;
 } D3D10DDI_RECT;
 
 typedef struct D3D10DDI_BOX
 {
-   D3D10DDI_RANGE X;
-   D3D10DDI_RANGE Y;
-   D3D10DDI_RANGE Z;
+    D3D10DDI_RANGE X;
+    D3D10DDI_RANGE Y;
+    D3D10DDI_RANGE Z;
 } D3D10DDI_BOX;
 
 typedef enum D3D10DDI_SHADERUNITTYPE
@@ -942,7 +942,7 @@ typedef enum D3D10_DDI_COLOR_WRITE_ENABLE
     D3D10_DDI_COLOR_WRITE_ENABLE_BLUE = 4,
     D3D10_DDI_COLOR_WRITE_ENABLE_ALPHA = 8,
     D3D10_DDI_COLOR_WRITE_ENABLE_ALL = (D3D10_DDI_COLOR_WRITE_ENABLE_RED|D3D10_DDI_COLOR_WRITE_ENABLE_GREEN|
-        D3D10_DDI_COLOR_WRITE_ENABLE_BLUE|D3D10_DDI_COLOR_WRITE_ENABLE_ALPHA),
+                                        D3D10_DDI_COLOR_WRITE_ENABLE_BLUE|D3D10_DDI_COLOR_WRITE_ENABLE_ALPHA),
 } D3D10_DDI_COLOR_WRITE_ENABLE;
 
 #define D3D10_DDI_SIMULTANEOUS_RENDER_TARGET_COUNT 8
@@ -1331,10 +1331,10 @@ typedef struct D3D10DDI_DEVICEFUNCS
 // would return 1, which allows applications to to request quality level 0 or D3D10_1_DDIARG_STANDARD_MULTISAMPLE_PATTERN,
 // and both will give the same behavior.
 //
-// For every sample count where STANDARD_MULTISAMPLE_PATTERN is supported, a sibling pattern 
+// For every sample count where STANDARD_MULTISAMPLE_PATTERN is supported, a sibling pattern
 // must be supported: D3D10_1_DDIARG_CENTER_MULTISAMPLE_PATTERN, which just has the same number of samples,
 // except they all overlap the center of the pixel.
-// 
+//
 // This enum matches D3D10_STANDARD_MULTISAMPLE_QUALITY_LEVELS in the sdk header.
 typedef enum D3D10_1_DDIARG_STANDARD_MULTISAMPLE_QUALITY_LEVELS
 {
@@ -1659,11 +1659,11 @@ typedef HRESULT (APIENTRY *PFND3D10DDI_OPENADAPTER)(D3D10DDIARG_OPENADAPTER*);
 // The most significant 16 bits of the Interface field is the DDI Major Version. This value should always be 10.
 //
 // The least significant 16 bits of the Interface field is the DDI Minor Version. This value is bumped everytime a DDI breaking
-// change is introduced (or can be bumped artifically to signify a stronger version change). The #defines associate which DDI 
+// change is introduced (or can be bumped artifically to signify a stronger version change). The #defines associate which DDI
 // minor version is associated with which marketedable version number (ie. D3D10_0 == x, D3D10_1 == y, where y > x).
 //
 // The driver is suggested to pay attention only to the most significant 16 bits of the Version field.
-// 
+//
 // The most significant 16 bits of the Version field is the DDI Build Version. This value is manually bumped everytime there,
 // is a non-breaking DDI change. The driver may come to depened on each non-breaking DDI change over time, so it is advisable
 // for the driver to ensure that the passed in DDI Build Version is >= to the *_BUILD_VERSION of the current driver;
@@ -1676,7 +1676,7 @@ typedef HRESULT (APIENTRY *PFND3D10DDI_OPENADAPTER)(D3D10DDIARG_OPENADAPTER*);
 // may appear that have version numbers between the two known numbers and do not contain the required fixes. Case in point
 // is the linked adapter QFE: any further d3d10 runtime updates might result in a version like ((4<<16)|6001), if run on
 // a system missing the linked adapter QFE.
-// 
+//
 #define D3D10_DDI_MAJOR_VERSION 10
 #define D3D10_0_DDI_MINOR_VERSION 1
 #define D3D10_0_DDI_INTERFACE_VERSION ((D3D10_DDI_MAJOR_VERSION << 16) | D3D10_0_DDI_MINOR_VERSION)

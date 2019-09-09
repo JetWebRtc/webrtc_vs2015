@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003-2011 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -34,7 +34,8 @@ static void FUNCC(ff_h264_add_pixels4)(uint8_t *_dst, int16_t *_src, int stride)
     dctcoef *src = (dctcoef *) _src;
     stride /= sizeof(pixel);
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dst[0] += src[0];
         dst[1] += src[1];
         dst[2] += src[2];
@@ -54,7 +55,8 @@ static void FUNCC(ff_h264_add_pixels8)(uint8_t *_dst, int16_t *_src, int stride)
     dctcoef *src = (dctcoef *) _src;
     stride /= sizeof(pixel);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dst[0] += src[0];
         dst[1] += src[1];
         dst[2] += src[2];

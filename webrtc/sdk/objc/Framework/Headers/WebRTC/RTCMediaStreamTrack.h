@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,9 +15,10 @@
 /**
  * Represents the state of the track. This exposes the same states in C++.
  */
-typedef NS_ENUM(NSInteger, RTCMediaStreamTrackState) {
-  RTCMediaStreamTrackStateLive,
-  RTCMediaStreamTrackStateEnded
+typedef NS_ENUM(NSInteger, RTCMediaStreamTrackState)
+{
+    RTCMediaStreamTrackStateLive,
+    RTCMediaStreamTrackStateEnded
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -28,11 +29,11 @@ RTC_EXTERN NSString * const kRTCMediaStreamTrackKindVideo;
 RTC_EXPORT
 @interface RTCMediaStreamTrack : NSObject
 
-/**
- * The kind of track. For example, "audio" if this track represents an audio
- * track and "video" if this track represents a video track.
- */
-@property(nonatomic, readonly) NSString *kind;
+    /**
+     * The kind of track. For example, "audio" if this track represents an audio
+     * track and "video" if this track represents a video track.
+     */
+    @property(nonatomic, readonly) NSString *kind;
 
 /** An identifier string. */
 @property(nonatomic, readonly) NSString *trackId;

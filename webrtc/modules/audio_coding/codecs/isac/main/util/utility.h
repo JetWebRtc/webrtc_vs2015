@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -88,52 +88,53 @@ extern "C" {
     }                                                   \
   } while(0)
 
-  typedef struct {
+typedef struct
+{
     unsigned int whenPackGeneratedMs;
     unsigned int whenPrevPackLeftMs;
     unsigned int sendTimeMs ;          /* milisecond */
     unsigned int arrival_time;         /* samples */
     unsigned int sample_count;         /* samples, also used as "send time stamp" */
     unsigned int rtp_number;
-  } BottleNeckModel;
+} BottleNeckModel;
 
-  void get_arrival_time(
-      int              current_framesamples,   /* samples */
-      size_t           packet_size,            /* bytes */
-      int              bottleneck,             /* excluding headers; bits/s */
-      BottleNeckModel* BN_data,
-      short            senderSampFreqHz,
-      short            receiverSampFreqHz);
+void get_arrival_time(
+    int              current_framesamples,   /* samples */
+    size_t           packet_size,            /* bytes */
+    int              bottleneck,             /* excluding headers; bits/s */
+    BottleNeckModel* BN_data,
+    short            senderSampFreqHz,
+    short            receiverSampFreqHz);
 
-  /* function for reading audio data from PCM file */
-  int readframe(
-      short* data,
-      FILE*  inp,
-      int    length);
+/* function for reading audio data from PCM file */
+int readframe(
+    short* data,
+    FILE*  inp,
+    int    length);
 
-  short readSwitch(
-      int   argc,
-      char* argv[],
-      char* strID);
+short readSwitch(
+    int   argc,
+    char* argv[],
+    char* strID);
 
-  double readParamDouble(
-      int    argc,
-      char*  argv[],
-      char*  strID,
-      double defaultVal);
+double readParamDouble(
+    int    argc,
+    char*  argv[],
+    char*  strID,
+    double defaultVal);
 
-  int readParamInt(
-      int   argc,
-      char* argv[],
-      char* strID,
-      int   defaultVal);
+int readParamInt(
+    int   argc,
+    char* argv[],
+    char* strID,
+    int   defaultVal);
 
-  int readParamString(
-      int   argc,
-      char* argv[],
-      char* strID,
-      char* stringParam,
-      int   maxSize);
+int readParamString(
+    int   argc,
+    char* argv[],
+    char* strID,
+    char* stringParam,
+    int   maxSize);
 
 #if defined(__cplusplus)
 }

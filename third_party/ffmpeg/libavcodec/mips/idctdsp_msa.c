@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,7 @@ static void put_pixels_clamped_msa(const int16_t *block, uint8_t *pixels,
 }
 
 static void put_signed_pixels_clamped_msa(const int16_t *block, uint8_t *pixels,
-                                          int32_t stride)
+        int32_t stride)
 {
     uint64_t in0_d, in1_d, in2_d, in3_d, in4_d, in5_d, in6_d, in7_d;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;

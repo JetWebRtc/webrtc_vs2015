@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,16 +12,18 @@
 
 #import <WebRTC/RTCMacros.h>
 
-typedef NS_ENUM(NSUInteger, RTCFileLoggerSeverity) {
-  RTCFileLoggerSeverityVerbose,
-  RTCFileLoggerSeverityInfo,
-  RTCFileLoggerSeverityWarning,
-  RTCFileLoggerSeverityError
+typedef NS_ENUM(NSUInteger, RTCFileLoggerSeverity)
+{
+    RTCFileLoggerSeverityVerbose,
+    RTCFileLoggerSeverityInfo,
+    RTCFileLoggerSeverityWarning,
+    RTCFileLoggerSeverityError
 };
 
-typedef NS_ENUM(NSUInteger, RTCFileLoggerRotationType) {
-  RTCFileLoggerTypeCall,
-  RTCFileLoggerTypeApp,
+typedef NS_ENUM(NSUInteger, RTCFileLoggerRotationType)
+{
+    RTCFileLoggerTypeCall,
+    RTCFileLoggerTypeApp,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -37,7 +39,7 @@ RTC_EXPORT
 @interface RTCFileLogger : NSObject
 
 // The severity level to capture. The default is kRTCFileLoggerSeverityInfo.
-@property(nonatomic, assign) RTCFileLoggerSeverity severity;
+    @property(nonatomic, assign) RTCFileLoggerSeverity severity;
 
 // The rotation type for this file logger. The default is
 // kRTCFileLoggerTypeCall.
@@ -53,11 +55,11 @@ RTC_EXPORT
 
 // Create file logger with default rotation type.
 - (instancetype)initWithDirPath:(NSString *)dirPath
-                    maxFileSize:(NSUInteger)maxFileSize;
+    maxFileSize:(NSUInteger)maxFileSize;
 
 - (instancetype)initWithDirPath:(NSString *)dirPath
-                    maxFileSize:(NSUInteger)maxFileSize
-                   rotationType:(RTCFileLoggerRotationType)rotationType
+    maxFileSize:(NSUInteger)maxFileSize
+    rotationType:(RTCFileLoggerRotationType)rotationType
     NS_DESIGNATED_INITIALIZER;
 
 // Starts writing WebRTC logs to disk if not already started. Overwrites any

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -38,7 +38,7 @@
 
 
 int WebRtcIsac_Fftns (unsigned int ndim, const int dims[], double Re[], double Im[],
-                     int isign, double scaling, FFTstr *fftstate);
+                      int isign, double scaling, FFTstr *fftstate);
 
 
 

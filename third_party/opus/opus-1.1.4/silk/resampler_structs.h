@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -35,9 +35,11 @@ extern "C" {
 #define SILK_RESAMPLER_MAX_FIR_ORDER                 36
 #define SILK_RESAMPLER_MAX_IIR_ORDER                 6
 
-typedef struct _silk_resampler_state_struct{
+typedef struct _silk_resampler_state_struct
+{
     opus_int32       sIIR[ SILK_RESAMPLER_MAX_IIR_ORDER ]; /* this must be the first element of this struct */
-    union{
+    union
+    {
         opus_int32   i32[ SILK_RESAMPLER_MAX_FIR_ORDER ];
         opus_int16   i16[ SILK_RESAMPLER_MAX_FIR_ORDER ];
     }                sFIR;

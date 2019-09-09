@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple ProRes compatible decoder
  *
  * Copyright (c) 2010-2011 Maxim Poliakovski

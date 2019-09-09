@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (C) 2014 Vidyo
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -99,9 +99,9 @@ opus_int32 silk_NSQ_noise_shape_feedback_loop_neon(const opus_int32 *data0, opus
         silk_noise_shape_quantizer_short_prediction_c(in, coef, order))
 
 extern opus_int32
- (*const SILK_NSQ_NOISE_SHAPE_FEEDBACK_LOOP_IMPL[OPUS_ARCHMASK+1])(
- const opus_int32 *data0, opus_int32 *data1, const opus_int16 *coef,
- opus_int order);
+(*const SILK_NSQ_NOISE_SHAPE_FEEDBACK_LOOP_IMPL[OPUS_ARCHMASK+1])(
+    const opus_int32 *data0, opus_int32 *data1, const opus_int16 *coef,
+    opus_int order);
 
 #undef silk_NSQ_noise_shape_feedback_loop
 #define silk_NSQ_noise_shape_feedback_loop(data0, data1, coef, order, arch) \

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 #define WEBRTC_MODULES_RTP_RTCP_SOURCE_RTP_RTCP_CONFIG_H_
 
 // Configuration file for RTP utilities (RTPSender, RTPReceiver ...)
-namespace webrtc {
+namespace webrtc
+{
 enum { NACK_BYTECOUNT_SIZE = 60 };  // size of our NACK history
 // A sanity for the NACK list parsing at the send-side.
 enum { kSendSideNackListSizeSanity = 20000 };
@@ -24,8 +25,9 @@ enum { RTCP_INTERVAL_AUDIO_MS = 5000 };
 enum { RTCP_SEND_BEFORE_KEY_FRAME_MS = 100 };
 enum { RTCP_MAX_REPORT_BLOCKS = 31 };  // RFC 3550 page 37
 enum { RTCP_MIN_FRAME_LENGTH_MS = 17 };
-enum {
-  kRtcpAppCode_DATA_SIZE = 32 * 4
+enum
+{
+    kRtcpAppCode_DATA_SIZE = 32 * 4
 };  // multiple of 4, this is not a limitation of the size
 enum { RTCP_RPSI_DATA_SIZE = 30 };
 enum { RTCP_NUMBER_OF_SR = 60 };

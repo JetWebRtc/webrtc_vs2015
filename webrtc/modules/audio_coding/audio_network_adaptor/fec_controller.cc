@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,12 +15,13 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 FecController::Config::Threshold::Threshold(int low_bandwidth_bps,
-                                            float low_bandwidth_packet_loss,
-                                            int high_bandwidth_bps,
-                                            float high_bandwidth_packet_loss)
+        float low_bandwidth_packet_loss,
+        int high_bandwidth_bps,
+        float high_bandwidth_packet_loss)
     : low_bandwidth_bps(low_bandwidth_bps),
       low_bandwidth_packet_loss(low_bandwidth_packet_loss),
       high_bandwidth_bps(high_bandwidth_bps),
@@ -43,98 +44,107 @@ FecController::FecController(const Config& config,
       fec_enabled_(config.initial_fec_enabled),
       packet_loss_smoother_(std::move(smoothing_filter)),
       fec_enabling_threshold_info_(config_.fec_enabling_threshold),
-      fec_disabling_threshold_info_(config_.fec_disabling_threshold) {
-  RTC_DCHECK_LE(fec_enabling_threshold_info_.slope, 0);
-  RTC_DCHECK_LE(fec_enabling_threshold_info_.slope, 0);
-  RTC_DCHECK_LE(
-      GetPacketLossThreshold(config_.fec_enabling_threshold.low_bandwidth_bps,
-                             config_.fec_disabling_threshold,
-                             fec_disabling_threshold_info_),
-      config_.fec_enabling_threshold.low_bandwidth_packet_loss);
-  RTC_DCHECK_LE(
-      GetPacketLossThreshold(config_.fec_enabling_threshold.high_bandwidth_bps,
-                             config_.fec_disabling_threshold,
-                             fec_disabling_threshold_info_),
-      config_.fec_enabling_threshold.high_bandwidth_packet_loss);
+      fec_disabling_threshold_info_(config_.fec_disabling_threshold)
+{
+    RTC_DCHECK_LE(fec_enabling_threshold_info_.slope, 0);
+    RTC_DCHECK_LE(fec_enabling_threshold_info_.slope, 0);
+    RTC_DCHECK_LE(
+        GetPacketLossThreshold(config_.fec_enabling_threshold.low_bandwidth_bps,
+                               config_.fec_disabling_threshold,
+                               fec_disabling_threshold_info_),
+        config_.fec_enabling_threshold.low_bandwidth_packet_loss);
+    RTC_DCHECK_LE(
+        GetPacketLossThreshold(config_.fec_enabling_threshold.high_bandwidth_bps,
+                               config_.fec_disabling_threshold,
+                               fec_disabling_threshold_info_),
+        config_.fec_enabling_threshold.high_bandwidth_packet_loss);
 }
 
 FecController::FecController(const Config& config)
     : FecController(
           config,
           std::unique_ptr<SmoothingFilter>(
-              new SmoothingFilterImpl(config.time_constant_ms, config.clock))) {
+              new SmoothingFilterImpl(config.time_constant_ms, config.clock)))
+{
 }
 
 FecController::~FecController() = default;
 
 void FecController::UpdateNetworkMetrics(
-    const NetworkMetrics& network_metrics) {
-  if (network_metrics.uplink_bandwidth_bps)
-    uplink_bandwidth_bps_ = network_metrics.uplink_bandwidth_bps;
-  if (network_metrics.uplink_packet_loss_fraction) {
-    packet_loss_smoother_->AddSample(
-        *network_metrics.uplink_packet_loss_fraction);
-  }
+    const NetworkMetrics& network_metrics)
+{
+    if (network_metrics.uplink_bandwidth_bps)
+        uplink_bandwidth_bps_ = network_metrics.uplink_bandwidth_bps;
+    if (network_metrics.uplink_packet_loss_fraction)
+    {
+        packet_loss_smoother_->AddSample(
+            *network_metrics.uplink_packet_loss_fraction);
+    }
 }
 
 void FecController::MakeDecision(
-    AudioNetworkAdaptor::EncoderRuntimeConfig* config) {
-  RTC_DCHECK(!config->enable_fec);
-  RTC_DCHECK(!config->uplink_packet_loss_fraction);
+    AudioNetworkAdaptor::EncoderRuntimeConfig* config)
+{
+    RTC_DCHECK(!config->enable_fec);
+    RTC_DCHECK(!config->uplink_packet_loss_fraction);
 
-  const auto& packet_loss = packet_loss_smoother_->GetAverage();
+    const auto& packet_loss = packet_loss_smoother_->GetAverage();
 
-  fec_enabled_ = fec_enabled_ ? !FecDisablingDecision(packet_loss)
-                              : FecEnablingDecision(packet_loss);
+    fec_enabled_ = fec_enabled_ ? !FecDisablingDecision(packet_loss)
+                   : FecEnablingDecision(packet_loss);
 
-  config->enable_fec = rtc::Optional<bool>(fec_enabled_);
+    config->enable_fec = rtc::Optional<bool>(fec_enabled_);
 
-  config->uplink_packet_loss_fraction =
-      rtc::Optional<float>(packet_loss ? *packet_loss : 0.0);
+    config->uplink_packet_loss_fraction =
+        rtc::Optional<float>(packet_loss ? *packet_loss : 0.0);
 }
 
 FecController::ThresholdInfo::ThresholdInfo(
-    const Config::Threshold& threshold) {
-  int bandwidth_diff_bps =
-      threshold.high_bandwidth_bps - threshold.low_bandwidth_bps;
-  float packet_loss_diff = threshold.high_bandwidth_packet_loss -
-                           threshold.low_bandwidth_packet_loss;
-  slope = bandwidth_diff_bps == 0 ? 0.0 : packet_loss_diff / bandwidth_diff_bps;
-  offset =
-      threshold.low_bandwidth_packet_loss - slope * threshold.low_bandwidth_bps;
+    const Config::Threshold& threshold)
+{
+    int bandwidth_diff_bps =
+        threshold.high_bandwidth_bps - threshold.low_bandwidth_bps;
+    float packet_loss_diff = threshold.high_bandwidth_packet_loss -
+                             threshold.low_bandwidth_packet_loss;
+    slope = bandwidth_diff_bps == 0 ? 0.0 : packet_loss_diff / bandwidth_diff_bps;
+    offset =
+        threshold.low_bandwidth_packet_loss - slope * threshold.low_bandwidth_bps;
 }
 
 float FecController::GetPacketLossThreshold(
     int bandwidth_bps,
     const Config::Threshold& threshold,
-    const ThresholdInfo& threshold_info) const {
-  if (bandwidth_bps < threshold.low_bandwidth_bps)
-    return std::numeric_limits<float>::max();
-  if (bandwidth_bps >= threshold.high_bandwidth_bps)
-    return threshold.high_bandwidth_packet_loss;
-  return threshold_info.offset + threshold_info.slope * bandwidth_bps;
+    const ThresholdInfo& threshold_info) const
+{
+    if (bandwidth_bps < threshold.low_bandwidth_bps)
+        return std::numeric_limits<float>::max();
+    if (bandwidth_bps >= threshold.high_bandwidth_bps)
+        return threshold.high_bandwidth_packet_loss;
+    return threshold_info.offset + threshold_info.slope * bandwidth_bps;
 }
 
 bool FecController::FecEnablingDecision(
-    const rtc::Optional<float>& packet_loss) const {
-  if (!uplink_bandwidth_bps_)
-    return false;
-  if (!packet_loss)
-    return false;
-  return *packet_loss >= GetPacketLossThreshold(*uplink_bandwidth_bps_,
-                                                config_.fec_enabling_threshold,
-                                                fec_enabling_threshold_info_);
+    const rtc::Optional<float>& packet_loss) const
+{
+    if (!uplink_bandwidth_bps_)
+        return false;
+    if (!packet_loss)
+        return false;
+    return *packet_loss >= GetPacketLossThreshold(*uplink_bandwidth_bps_,
+            config_.fec_enabling_threshold,
+            fec_enabling_threshold_info_);
 }
 
 bool FecController::FecDisablingDecision(
-    const rtc::Optional<float>& packet_loss) const {
-  if (!uplink_bandwidth_bps_)
-    return false;
-  if (!packet_loss)
-    return false;
-  return *packet_loss <= GetPacketLossThreshold(*uplink_bandwidth_bps_,
-                                                config_.fec_disabling_threshold,
-                                                fec_disabling_threshold_info_);
+    const rtc::Optional<float>& packet_loss) const
+{
+    if (!uplink_bandwidth_bps_)
+        return false;
+    if (!packet_loss)
+        return false;
+    return *packet_loss <= GetPacketLossThreshold(*uplink_bandwidth_bps_,
+            config_.fec_disabling_threshold,
+            fec_disabling_threshold_info_);
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * mtv demuxer
  * Copyright (c) 2006 Reynaldo H. Verdejo Pinochet
  *
@@ -35,7 +35,8 @@
 #define MTV_IMAGE_DEFAULT_BPP 16
 #define MTV_AUDIO_SAMPLING_RATE 44100
 
-typedef struct MTVDemuxContext {
+typedef struct MTVDemuxContext
+{
 
     unsigned int file_size;         ///< filesize, not always right
     unsigned int segments;          ///< number of 512 byte segments
@@ -120,7 +121,8 @@ static int mtv_read_header(AVFormatContext *s)
     /* Assume 16bpp even if claimed otherwise.
      * We know its going to be RGBG565/555 anyway
      */
-    if (mtv->img_bpp != MTV_IMAGE_DEFAULT_BPP) {
+    if (mtv->img_bpp != MTV_IMAGE_DEFAULT_BPP)
+    {
         av_log (s, AV_LOG_WARNING, "Header claims %dbpp (!= 16). Ignoring\n",
                 mtv->img_bpp);
         mtv->img_bpp = MTV_IMAGE_DEFAULT_BPP;
@@ -130,13 +132,14 @@ static int mtv_read_header(AVFormatContext *s)
 
     if (!mtv->img_width && mtv->img_height > 0 && mtv->img_bpp >= 8)
         mtv->img_width=mtv->img_segment_size / (mtv->img_bpp>>3)
-                        / mtv->img_height;
+                       / mtv->img_height;
 
     if (!mtv->img_height && mtv->img_width > 0 && mtv->img_bpp >= 8)
         mtv->img_height=mtv->img_segment_size / (mtv->img_bpp>>3)
                         / mtv->img_width;
 
-    if(!mtv->img_height || !mtv->img_width || !mtv->img_segment_size){
+    if(!mtv->img_height || !mtv->img_width || !mtv->img_segment_size)
+    {
         av_log(s, AV_LOG_ERROR, "width or height or segment_size is invalid and I cannot calculate them from other information\n");
         return AVERROR_INVALIDDATA;
     }
@@ -144,7 +147,8 @@ static int mtv_read_header(AVFormatContext *s)
     avio_skip(pb, 4);
     audio_subsegments = avio_rl16(pb);
 
-    if (audio_subsegments == 0) {
+    if (audio_subsegments == 0)
+    {
         avpriv_request_sample(s, "MTV files without audio");
         return AVERROR_PATCHWELCOME;
     }
@@ -211,7 +215,8 @@ static int mtv_read_packet(AVFormatContext *s, AVPacket *pkt)
         pkt->pos -= MTV_AUDIO_PADDING_SIZE;
         pkt->stream_index = 1;
 
-    }else
+    }
+    else
     {
         ret = av_get_packet(pb, pkt, mtv->img_segment_size);
         if(ret < 0)
@@ -223,7 +228,8 @@ static int mtv_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_mtv_demuxer = {
+AVInputFormat ff_mtv_demuxer =
+{
     .name           = "mtv",
     .long_name      = NULL_IF_CONFIG_SMALL("MTV"),
     .priv_data_size = sizeof(MTVDemuxContext),

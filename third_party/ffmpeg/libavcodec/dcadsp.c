@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Gildas Bazin
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
@@ -34,7 +34,8 @@ static void decode_hf_c(float dst[DCA_SUBBANDS][8],
 {
     int i, l;
 
-    for (l = start; l < end; l++) {
+    for (l = start; l < end; l++)
+    {
         /* 1 vector -> 32 samples but we only need the 8 samples
          * for this subsubframe. */
         const int8_t *ptr = &hf_vq[vq_num[l]][vq_offset];
@@ -52,10 +53,12 @@ static inline void dca_lfe_fir(float *out, const float *in, const float *coefs,
     int j, k;
 
     /* One decimated sample generates 2*decifactor interpolated ones */
-    for (k = 0; k < decifactor; k++) {
+    for (k = 0; k < decifactor; k++)
+    {
         float v0 = 0.0;
         float v1 = 0.0;
-        for (j = 0; j < num_coeffs; j++, coefs++) {
+        for (j = 0; j < num_coeffs; j++, coefs++)
+        {
             v0 += in[-j]                 * *coefs;
             v1 += in[j + 1 - num_coeffs] * *coefs;
         }
@@ -78,9 +81,11 @@ static void dca_qmf_32_subbands(float samples_in[32][8], int sb_act,
         raXin[i] = 0.0;
 
     /* Reconstructed channel sample index */
-    for (subindex = 0; subindex < 8; subindex++) {
+    for (subindex = 0; subindex < 8; subindex++)
+    {
         /* Load in one sample from each subband and clear inactive subbands */
-        for (i = 0; i < sb_act; i++) {
+        for (i = 0; i < sb_act; i++)
+        {
             unsigned sign = (i - 1) & 2;
             uint32_t v    = AV_RN32A(&samples_in[i][subindex]) ^ sign << 30;
             AV_WN32A(&raXin[i], v);

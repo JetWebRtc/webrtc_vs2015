@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 8088flex TMV video decoder
  * Copyright (c) 2009 Daniel Verkamp <daniel at drv.nu>
  *
@@ -49,7 +49,8 @@ static int tmv_decode_frame(AVCodecContext *avctx, void *data,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    if (avpkt->size < 2*char_rows*char_cols) {
+    if (avpkt->size < 2*char_rows*char_cols)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Input buffer too small, truncated sample?\n");
         *got_frame = 0;
@@ -64,8 +65,10 @@ static int tmv_decode_frame(AVCodecContext *avctx, void *data,
     memcpy(frame->data[1], ff_cga_palette, 16 * 4);
     memset(frame->data[1] + 16 * 4, 0, AVPALETTE_SIZE - 16 * 4);
 
-    for (y = 0; y < char_rows; y++) {
-        for (x = 0; x < char_cols; x++) {
+    for (y = 0; y < char_rows; y++)
+    {
+        for (x = 0; x < char_cols; x++)
+        {
             c  = *src++;
             bg = *src  >> 4;
             fg = *src++ & 0xF;
@@ -86,7 +89,8 @@ static av_cold int tmv_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_tmv_decoder = {
+AVCodec ff_tmv_decoder =
+{
     .name           = "tmv",
     .long_name      = NULL_IF_CONFIG_SMALL("8088flex TMV"),
     .type           = AVMEDIA_TYPE_VIDEO,

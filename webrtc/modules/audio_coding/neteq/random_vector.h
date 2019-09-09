@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,34 +16,43 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This class generates pseudo-random samples.
-class RandomVector {
- public:
-  static const size_t kRandomTableSize = 256;
-  static const int16_t kRandomTable[kRandomTableSize];
+class RandomVector
+{
+public:
+    static const size_t kRandomTableSize = 256;
+    static const int16_t kRandomTable[kRandomTableSize];
 
-  RandomVector()
-      : seed_(777),
-        seed_increment_(1) {
-  }
+    RandomVector()
+        : seed_(777),
+          seed_increment_(1)
+    {
+    }
 
-  void Reset();
+    void Reset();
 
-  void Generate(size_t length, int16_t* output);
+    void Generate(size_t length, int16_t* output);
 
-  void IncreaseSeedIncrement(int16_t increase_by);
+    void IncreaseSeedIncrement(int16_t increase_by);
 
-  // Accessors and mutators.
-  int16_t seed_increment() { return seed_increment_; }
-  void set_seed_increment(int16_t value) { seed_increment_ = value; }
+    // Accessors and mutators.
+    int16_t seed_increment()
+    {
+        return seed_increment_;
+    }
+    void set_seed_increment(int16_t value)
+    {
+        seed_increment_ = value;
+    }
 
- private:
-  uint32_t seed_;
-  int16_t seed_increment_;
+private:
+    uint32_t seed_;
+    int16_t seed_increment_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RandomVector);
+    RTC_DISALLOW_COPY_AND_ASSIGN(RandomVector);
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,19 +31,22 @@
 #define WEBRTC_VOICE_ENGINE_TYPING_DETECTION 0
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioProcessing;
 class ProcessThread;
 
-namespace voe {
+namespace voe
+{
 
 class ChannelManager;
 class MixedAudio;
 class Statistics;
 
 class TransmitMixer : public MonitorObserver,
-                      public FileCallback {
+    public FileCallback
+{
 public:
     static int32_t Create(TransmitMixer*& mixer, uint32_t instanceId);
 
@@ -158,8 +161,8 @@ public:
                                      int typeEventDelay);
 #endif
 
-  void EnableStereoChannelSwapping(bool enable);
-  bool IsStereoChannelSwappingEnabled();
+    void EnableStereoChannelSwapping(bool enable);
+    bool IsStereoChannelSwappingEnabled();
 
 private:
     TransmitMixer(uint32_t instanceId);

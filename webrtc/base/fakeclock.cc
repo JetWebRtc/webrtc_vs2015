@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,38 +13,44 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/messagequeue.h"
 
-namespace rtc {
+namespace rtc
+{
 
-int64_t FakeClock::TimeNanos() const {
-  CritScope cs(&lock_);
-  return time_;
-}
-
-void FakeClock::SetTimeNanos(int64_t nanos) {
-  {
+int64_t FakeClock::TimeNanos() const
+{
     CritScope cs(&lock_);
-    RTC_DCHECK(nanos >= time_);
-    time_ = nanos;
-  }
-  // If message queues are waiting in a socket select() with a timeout provided
-  // by the OS, they should wake up and dispatch all messages that are ready.
-  MessageQueueManager::ProcessAllMessageQueues();
+    return time_;
 }
 
-void FakeClock::AdvanceTime(TimeDelta delta) {
-  {
-    CritScope cs(&lock_);
-    time_ += delta.ToNanoseconds();
-  }
-  MessageQueueManager::ProcessAllMessageQueues();
+void FakeClock::SetTimeNanos(int64_t nanos)
+{
+    {
+        CritScope cs(&lock_);
+        RTC_DCHECK(nanos >= time_);
+        time_ = nanos;
+    }
+    // If message queues are waiting in a socket select() with a timeout provided
+    // by the OS, they should wake up and dispatch all messages that are ready.
+    MessageQueueManager::ProcessAllMessageQueues();
 }
 
-ScopedFakeClock::ScopedFakeClock() {
-  prev_clock_ = SetClockForTesting(this);
+void FakeClock::AdvanceTime(TimeDelta delta)
+{
+    {
+        CritScope cs(&lock_);
+        time_ += delta.ToNanoseconds();
+    }
+    MessageQueueManager::ProcessAllMessageQueues();
 }
 
-ScopedFakeClock::~ScopedFakeClock() {
-  SetClockForTesting(prev_clock_);
+ScopedFakeClock::ScopedFakeClock()
+{
+    prev_clock_ = SetClockForTesting(this);
+}
+
+ScopedFakeClock::~ScopedFakeClock()
+{
+    SetClockForTesting(prev_clock_);
 }
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,7 +22,8 @@
 #include "webrtc/modules/audio_coding/codecs/g722/g722_interface.h"
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 using NetEqDecoder = acm2::RentACodec::NetEqDecoder;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B. Mahol
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "framesync.h"
 #include "video.h"
 
-typedef struct StackContext {
+typedef struct StackContext
+{
     const AVClass *class;
     const AVPixFmtDescriptor *desc;
     int nb_inputs;
@@ -45,11 +46,12 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *pix_fmts = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & AV_PIX_FMT_FLAG_PAL ||
-              desc->flags & AV_PIX_FMT_FLAG_HWACCEL ||
-              desc->flags & AV_PIX_FMT_FLAG_BITSTREAM))
+                desc->flags & AV_PIX_FMT_FLAG_HWACCEL ||
+                desc->flags & AV_PIX_FMT_FLAG_BITSTREAM))
             ff_add_format(&pix_fmts, fmt);
     }
 
@@ -74,7 +76,8 @@ static av_cold int init(AVFilterContext *ctx)
     if (!s->frames)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         AVFilterPad pad = { 0 };
 
         pad.type = AVMEDIA_TYPE_VIDEO;
@@ -83,7 +86,8 @@ static av_cold int init(AVFilterContext *ctx)
             return AVERROR(ENOMEM);
         pad.filter_frame = filter_frame;
 
-        if ((ret = ff_insert_inpad(ctx, i, &pad)) < 0) {
+        if ((ret = ff_insert_inpad(ctx, i, &pad)) < 0)
+        {
             av_freep(&pad.name);
             return ret;
         }
@@ -101,7 +105,8 @@ static int process_frame(FFFrameSync *fs)
     AVFrame *out;
     int i, p, ret, offset[4] = { 0 };
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         if ((ret = ff_framesync_get_frame(&s->fs, i, &in[i], 0)) < 0)
             return ret;
     }
@@ -111,12 +116,14 @@ static int process_frame(FFFrameSync *fs)
         return AVERROR(ENOMEM);
     out->pts = av_rescale_q(s->fs.pts, s->fs.time_base, outlink->time_base);
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         AVFilterLink *inlink = ctx->inputs[i];
         int linesize[4];
         int height[4];
 
-        if ((ret = av_image_fill_linesizes(linesize, inlink->format, inlink->w)) < 0) {
+        if ((ret = av_image_fill_linesizes(linesize, inlink->format, inlink->w)) < 0)
+        {
             av_frame_free(&out);
             return ret;
         }
@@ -124,15 +131,19 @@ static int process_frame(FFFrameSync *fs)
         height[1] = height[2] = FF_CEIL_RSHIFT(inlink->h, s->desc->log2_chroma_h);
         height[0] = height[3] = inlink->h;
 
-        for (p = 0; p < s->nb_planes; p++) {
-            if (s->is_vertical) {
+        for (p = 0; p < s->nb_planes; p++)
+        {
+            if (s->is_vertical)
+            {
                 av_image_copy_plane(out->data[p] + offset[p] * out->linesize[p],
                                     out->linesize[p],
                                     in[i]->data[p],
                                     in[i]->linesize[p],
                                     linesize[p], height[p]);
                 offset[p] += height[p];
-            } else {
+            }
+            else
+            {
                 av_image_copy_plane(out->data[p] + offset[p],
                                     out->linesize[p],
                                     in[i]->data[p],
@@ -157,17 +168,24 @@ static int config_output(AVFilterLink *outlink)
     FFFrameSyncIn *in;
     int i, ret;
 
-    if (s->is_vertical) {
-        for (i = 1; i < s->nb_inputs; i++) {
-            if (ctx->inputs[i]->w != width) {
+    if (s->is_vertical)
+    {
+        for (i = 1; i < s->nb_inputs; i++)
+        {
+            if (ctx->inputs[i]->w != width)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Input %d width %d does not match input %d width %d.\n", i, ctx->inputs[i]->w, 0, width);
                 return AVERROR(EINVAL);
             }
             height += ctx->inputs[i]->h;
         }
-    } else {
-        for (i = 1; i < s->nb_inputs; i++) {
-            if (ctx->inputs[i]->h != height) {
+    }
+    else
+    {
+        for (i = 1; i < s->nb_inputs; i++)
+        {
+            if (ctx->inputs[i]->h != height)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Input %d height %d does not match input %d height %d.\n", i, ctx->inputs[i]->h, 0, height);
                 return AVERROR(EINVAL);
             }
@@ -192,7 +210,8 @@ static int config_output(AVFilterLink *outlink)
     s->fs.opaque = s;
     s->fs.on_event = process_frame;
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         AVFilterLink *inlink = ctx->inputs[i];
 
         in[i].time_base = inlink->time_base;
@@ -219,12 +238,14 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 #define OFFSET(x) offsetof(StackContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption stack_options[] = {
+static const AVOption stack_options[] =
+{
     { "inputs", "set number of inputs", OFFSET(nb_inputs), AV_OPT_TYPE_INT, {.i64=2}, 2, INT_MAX, .flags = FLAGS },
     { NULL },
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -239,7 +260,8 @@ static const AVFilterPad outputs[] = {
 #define hstack_options stack_options
 AVFILTER_DEFINE_CLASS(hstack);
 
-AVFilter ff_vf_hstack = {
+AVFilter ff_vf_hstack =
+{
     .name          = "hstack",
     .description   = NULL_IF_CONFIG_SMALL("Stack video inputs horizontally."),
     .priv_size     = sizeof(StackContext),
@@ -258,7 +280,8 @@ AVFilter ff_vf_hstack = {
 #define vstack_options stack_options
 AVFILTER_DEFINE_CLASS(vstack);
 
-AVFilter ff_vf_vstack = {
+AVFilter ff_vf_vstack =
+{
     .name          = "vstack",
     .description   = NULL_IF_CONFIG_SMALL("Stack video inputs vertically."),
     .priv_size     = sizeof(StackContext),

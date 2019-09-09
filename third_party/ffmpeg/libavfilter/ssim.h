@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct SSIMDSPContext {
+typedef struct SSIMDSPContext
+{
     void (*ssim_4x4_line)(const uint8_t *buf, ptrdiff_t buf_stride,
                           const uint8_t *ref, ptrdiff_t ref_stride,
                           int (*sums)[4], int w);

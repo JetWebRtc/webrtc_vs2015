@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,12 +97,12 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  INT NumProgramConfigElements;
-  UINT BitRate;
-  UCHAR CopyrightIdPresent;
-  UCHAR OriginalCopy;
-  UCHAR Home;
-  UCHAR BitstreamType;
+    INT NumProgramConfigElements;
+    UINT BitRate;
+    UCHAR CopyrightIdPresent;
+    UCHAR OriginalCopy;
+    UCHAR Home;
+    UCHAR BitstreamType;
 } CAdifHeader;
 
 /**
@@ -115,9 +115,9 @@ typedef struct
  * \return TRANSPORTDEC_ERROR error code
  */
 TRANSPORTDEC_ERROR adifRead_DecodeHeader(
-        CAdifHeader         *pAdifHeader,
-        CProgramConfig      *pPce,
-        HANDLE_FDK_BITSTREAM bs
-        );
+    CAdifHeader         *pAdifHeader,
+    CProgramConfig      *pPce,
+    HANDLE_FDK_BITSTREAM bs
+);
 
 #endif /* TPDEC_ADIF_H */

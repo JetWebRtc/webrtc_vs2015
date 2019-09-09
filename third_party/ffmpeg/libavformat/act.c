@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ACT file format demuxer
  * Copyright (c) 2007-2008 Vladimir Voroshilov
  *
@@ -27,7 +27,8 @@
 #define RIFF_TAG MKTAG('R','I','F','F')
 #define WAVE_TAG MKTAG('W','A','V','E')
 
-typedef struct{
+typedef struct
+{
     int bytes_left_in_chunk;
     uint8_t audio_buffer[22];///< temporary buffer for ACT frame
     char second_packet;      ///< 1 - if temporary buffer contains valid (second) G.729 packet
@@ -38,9 +39,9 @@ static int probe(AVProbeData *p)
     int i;
 
     if ((AV_RL32(&p->buf[0]) != RIFF_TAG) ||
-        (AV_RL32(&p->buf[8]) != WAVE_TAG) ||
-        (AV_RL32(&p->buf[16]) != 16))
-    return 0;
+            (AV_RL32(&p->buf[8]) != WAVE_TAG) ||
+            (AV_RL32(&p->buf[16]) != 16))
+        return 0;
 
     //We can't be sure that this is ACT and not regular WAV
     if (p->buf_size<512)
@@ -81,7 +82,8 @@ static int read_header(AVFormatContext *s)
       8000Hz (Fine-rec) file format has 10 bytes long
       packets with 10ms of sound data in them
     */
-    if (st->codec->sample_rate != 8000) {
+    if (st->codec->sample_rate != 8000)
+    {
         av_log(s, AV_LOG_ERROR, "Sample rate %d is not supported.\n", st->codec->sample_rate);
         return AVERROR_INVALIDDATA;
     }
@@ -108,7 +110,7 @@ static int read_header(AVFormatContext *s)
 
 
 static int read_packet(AVFormatContext *s,
-                          AVPacket *pkt)
+                       AVPacket *pkt)
 {
     ACTContext *ctx = s->priv_data;
     AVIOContext *pb = s->pb;
@@ -197,7 +199,8 @@ static int read_packet(AVFormatContext *s,
     return ret;
 }
 
-AVInputFormat ff_act_demuxer = {
+AVInputFormat ff_act_demuxer =
+{
     .name           = "act",
     .long_name      = "ACT Voice file format",
     .priv_data_size = sizeof(ACTContext),

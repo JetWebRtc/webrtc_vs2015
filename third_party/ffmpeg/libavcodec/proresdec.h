@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010-2011 Maxim Poliakovski
  * Copyright (c) 2010-2011 Elvis Presley
  *
@@ -25,7 +25,8 @@
 #include "blockdsp.h"
 #include "proresdsp.h"
 
-typedef struct {
+typedef struct
+{
     const uint8_t *data;
     unsigned mb_x;
     unsigned mb_y;
@@ -34,7 +35,8 @@ typedef struct {
     int ret;
 } SliceContext;
 
-typedef struct {
+typedef struct
+{
     BlockDSPContext bdsp;
     ProresDSPContext prodsp;
     AVFrame *frame;

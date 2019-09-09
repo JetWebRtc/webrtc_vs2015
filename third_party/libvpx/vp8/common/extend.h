@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,8 +22,8 @@ void vp8_extend_mb_row(YV12_BUFFER_CONFIG *ybf, unsigned char *YPtr,
 void vp8_copy_and_extend_frame(YV12_BUFFER_CONFIG *src,
                                YV12_BUFFER_CONFIG *dst);
 void vp8_copy_and_extend_frame_with_rect(YV12_BUFFER_CONFIG *src,
-                                         YV12_BUFFER_CONFIG *dst, int srcy,
-                                         int srcx, int srch, int srcw);
+        YV12_BUFFER_CONFIG *dst, int srcy,
+        int srcx, int srch, int srcw);
 
 #ifdef __cplusplus
 }  // extern "C"

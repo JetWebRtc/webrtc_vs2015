@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/modules/video_processing/util/denoiser_filter.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 #define DISPLAY 0      // Rectangle diagnostics
 #define DISPLAYNEON 0  // Rectangle diagnostics on NEON
@@ -32,30 +33,31 @@ const int kBlockSelectionVarMax = kNoiseThreshold << 1;
 // Collect noise data every NOISE_SUBSAMPLE_INTERVAL blocks.
 #define NOISE_SUBSAMPLE_INTERVAL 41
 
-class NoiseEstimation {
- public:
-  void Init(int width, int height, CpuType cpu_type);
-  // Collect noise data from one qualified block.
-  void GetNoise(int mb_index, uint32_t var, uint32_t luma);
-  // Reset the counter for consecutive low-var blocks.
-  void ResetConsecLowVar(int mb_index);
-  // Update noise level for current frame.
-  void UpdateNoiseLevel();
-  // 0: low noise, 1: high noise
-  uint8_t GetNoiseLevel();
+class NoiseEstimation
+{
+public:
+    void Init(int width, int height, CpuType cpu_type);
+    // Collect noise data from one qualified block.
+    void GetNoise(int mb_index, uint32_t var, uint32_t luma);
+    // Reset the counter for consecutive low-var blocks.
+    void ResetConsecLowVar(int mb_index);
+    // Update noise level for current frame.
+    void UpdateNoiseLevel();
+    // 0: low noise, 1: high noise
+    uint8_t GetNoiseLevel();
 
- private:
-  int width_;
-  int height_;
-  int mb_rows_;
-  int mb_cols_;
-  int num_noisy_block_;
-  int num_static_block_;
-  CpuType cpu_type_;
-  uint32_t noise_var_;
-  double noise_var_accum_;
-  double percent_static_block_;
-  std::unique_ptr<uint32_t[]> consec_low_var_;
+private:
+    int width_;
+    int height_;
+    int mb_rows_;
+    int mb_cols_;
+    int num_noisy_block_;
+    int num_static_block_;
+    CpuType cpu_type_;
+    uint32_t noise_var_;
+    double noise_var_accum_;
+    double percent_static_block_;
+    std::unique_ptr<uint32_t[]> consec_low_var_;
 };
 
 }  // namespace webrtc

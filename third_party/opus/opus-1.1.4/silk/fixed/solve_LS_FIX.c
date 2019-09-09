@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -37,7 +37,8 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Internal function headers */
 /*****************************/
 
-typedef struct {
+typedef struct
+{
     opus_int32 Q36_part;
     opus_int32 Q48_part;
 } inv_D_t;
@@ -130,21 +131,26 @@ static OPUS_INLINE void silk_LDL_factorize_FIX(
 
     status = 1;
     diag_min_value = silk_max_32( silk_SMMUL( silk_ADD_SAT32( A[ 0 ], A[ silk_SMULBB( M, M ) - 1 ] ), SILK_FIX_CONST( FIND_LTP_COND_FAC, 31 ) ), 1 << 9 );
-    for( loop_count = 0; loop_count < M && status == 1; loop_count++ ) {
+    for( loop_count = 0; loop_count < M && status == 1; loop_count++ )
+    {
         status = 0;
-        for( j = 0; j < M; j++ ) {
+        for( j = 0; j < M; j++ )
+        {
             ptr1 = matrix_adr( L_Q16, j, 0, M );
             tmp_32 = 0;
-            for( i = 0; i < j; i++ ) {
+            for( i = 0; i < j; i++ )
+            {
                 v_Q0[ i ] = silk_SMULWW(         D_Q0[ i ], ptr1[ i ] ); /* Q0 */
                 tmp_32    = silk_SMLAWW( tmp_32, v_Q0[ i ], ptr1[ i ] ); /* Q0 */
             }
             tmp_32 = silk_SUB32( matrix_ptr( A, j, j, M ), tmp_32 );
 
-            if( tmp_32 < diag_min_value ) {
+            if( tmp_32 < diag_min_value )
+            {
                 tmp_32 = silk_SUB32( silk_SMULBB( loop_count + 1, diag_min_value ), tmp_32 );
                 /* Matrix not positive semi-definite, or ill conditioned */
-                for( i = 0; i < M; i++ ) {
+                for( i = 0; i < M; i++ )
+                {
                     matrix_ptr( A, i, i, M ) = silk_ADD32( matrix_ptr( A, i, i, M ), tmp_32 );
                 }
                 status = 1;
@@ -165,16 +171,18 @@ static OPUS_INLINE void silk_LDL_factorize_FIX(
             matrix_ptr( L_Q16, j, j, M ) = 65536; /* 1.0 in Q16 */
             ptr1 = matrix_adr( A, j, 0, M );
             ptr2 = matrix_adr( L_Q16, j + 1, 0, M );
-            for( i = j + 1; i < M; i++ ) {
+            for( i = j + 1; i < M; i++ )
+            {
                 tmp_32 = 0;
-                for( k = 0; k < j; k++ ) {
+                for( k = 0; k < j; k++ )
+                {
                     tmp_32 = silk_SMLAWW( tmp_32, v_Q0[ k ], ptr2[ k ] ); /* Q0 */
                 }
                 tmp_32 = silk_SUB32( ptr1[ i ], tmp_32 ); /* always < max(Correlation) */
 
                 /* tmp_32 / D_Q0[j] : Divide to Q16 */
                 matrix_ptr( L_Q16, i, j, M ) = silk_ADD32( silk_SMMUL( tmp_32, one_div_diag_Q48 ),
-                    silk_RSHIFT( silk_SMULWW( tmp_32, one_div_diag_Q36 ), 4 ) );
+                                               silk_RSHIFT( silk_SMULWW( tmp_32, one_div_diag_Q36 ), 4 ) );
 
                 /* go to next column */
                 ptr2 += M;
@@ -195,7 +203,8 @@ static OPUS_INLINE void silk_LS_divide_Q16_FIX(
     opus_int32 tmp_32;
     opus_int32 one_div_diag_Q36, one_div_diag_Q48;
 
-    for( i = 0; i < M; i++ ) {
+    for( i = 0; i < M; i++ )
+    {
         one_div_diag_Q36 = inv_D[ i ].Q36_part;
         one_div_diag_Q48 = inv_D[ i ].Q48_part;
 
@@ -216,10 +225,12 @@ static OPUS_INLINE void silk_LS_SolveFirst_FIX(
     const opus_int32 *ptr32;
     opus_int32 tmp_32;
 
-    for( i = 0; i < M; i++ ) {
+    for( i = 0; i < M; i++ )
+    {
         ptr32 = matrix_adr( L_Q16, i, 0, M );
         tmp_32 = 0;
-        for( j = 0; j < i; j++ ) {
+        for( j = 0; j < i; j++ )
+        {
             tmp_32 = silk_SMLAWW( tmp_32, ptr32[ j ], x_Q16[ j ] );
         }
         x_Q16[ i ] = silk_SUB32( b[ i ], tmp_32 );
@@ -238,10 +249,12 @@ static OPUS_INLINE void silk_LS_SolveLast_FIX(
     const opus_int32 *ptr32;
     opus_int32 tmp_32;
 
-    for( i = M - 1; i >= 0; i-- ) {
+    for( i = M - 1; i >= 0; i-- )
+    {
         ptr32 = matrix_adr( L_Q16, 0, i, M );
         tmp_32 = 0;
-        for( j = M - 1; j > i; j-- ) {
+        for( j = M - 1; j > i; j-- )
+        {
             tmp_32 = silk_SMLAWW( tmp_32, ptr32[ silk_SMULBB( j, M ) ], x_Q16[ j ] );
         }
         x_Q16[ i ] = silk_SUB32( b[ i ], tmp_32 );

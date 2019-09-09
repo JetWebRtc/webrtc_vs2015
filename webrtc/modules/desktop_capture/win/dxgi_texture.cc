@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,19 +20,22 @@
 
 using Microsoft::WRL::ComPtr;
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
-class DxgiDesktopFrame : public DesktopFrame {
- public:
-  explicit DxgiDesktopFrame(const DxgiTexture& texture)
-      : DesktopFrame(texture.desktop_size(),
-                     texture.pitch(),
-                     texture.bits(),
-                     nullptr) {}
+class DxgiDesktopFrame : public DesktopFrame
+{
+public:
+    explicit DxgiDesktopFrame(const DxgiTexture& texture)
+        : DesktopFrame(texture.desktop_size(),
+                       texture.pitch(),
+                       texture.bits(),
+                       nullptr) {}
 
-  ~DxgiDesktopFrame() override = default;
+    ~DxgiDesktopFrame() override = default;
 };
 
 }  // namespace
@@ -41,44 +44,51 @@ DxgiTexture::DxgiTexture() = default;
 DxgiTexture::~DxgiTexture() = default;
 
 bool DxgiTexture::CopyFrom(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
-                           IDXGIResource* resource) {
-  RTC_DCHECK(resource && frame_info.AccumulatedFrames > 0);
-  ComPtr<ID3D11Texture2D> texture;
-  _com_error error = resource->QueryInterface(
-      __uuidof(ID3D11Texture2D),
-      reinterpret_cast<void**>(texture.GetAddressOf()));
-  if (error.Error() != S_OK || !texture) {
-    LOG(LS_ERROR) << "Failed to convert IDXGIResource to ID3D11Texture2D, "
-                     "error "
-                  << error.ErrorMessage() << ", code " << error.Error();
-    return false;
-  }
+                           IDXGIResource* resource)
+{
+    RTC_DCHECK(resource && frame_info.AccumulatedFrames > 0);
+    ComPtr<ID3D11Texture2D> texture;
+    _com_error error = resource->QueryInterface(
+                           __uuidof(ID3D11Texture2D),
+                           reinterpret_cast<void**>(texture.GetAddressOf()));
+    if (error.Error() != S_OK || !texture)
+    {
+        LOG(LS_ERROR) << "Failed to convert IDXGIResource to ID3D11Texture2D, "
+                      "error "
+                      << error.ErrorMessage() << ", code " << error.Error();
+        return false;
+    }
 
-  D3D11_TEXTURE2D_DESC desc = {0};
-  texture->GetDesc(&desc);
-  desktop_size_.set(desc.Width, desc.Height);
-  if (resolution_change_detector_.IsChanged(desktop_size_)) {
-    LOG(LS_ERROR) << "Texture size is not consistent with current DxgiTexture.";
-    return false;
-  }
+    D3D11_TEXTURE2D_DESC desc = {0};
+    texture->GetDesc(&desc);
+    desktop_size_.set(desc.Width, desc.Height);
+    if (resolution_change_detector_.IsChanged(desktop_size_))
+    {
+        LOG(LS_ERROR) << "Texture size is not consistent with current DxgiTexture.";
+        return false;
+    }
 
-  return CopyFromTexture(frame_info, texture.Get());
+    return CopyFromTexture(frame_info, texture.Get());
 }
 
-const DesktopFrame& DxgiTexture::AsDesktopFrame() {
-  if (!frame_) {
-    frame_.reset(new DxgiDesktopFrame(*this));
-  }
-  return *frame_;
+const DesktopFrame& DxgiTexture::AsDesktopFrame()
+{
+    if (!frame_)
+    {
+        frame_.reset(new DxgiDesktopFrame(*this));
+    }
+    return *frame_;
 }
 
-bool DxgiTexture::Release() {
-  frame_.reset();
-  return DoRelease();
+bool DxgiTexture::Release()
+{
+    frame_.reset();
+    return DoRelease();
 }
 
-DXGI_MAPPED_RECT* DxgiTexture::rect() {
-  return &rect_;
+DXGI_MAPPED_RECT* DxgiTexture::rect()
+{
+    return &rect_;
 }
 
 }  // namespace webrtc

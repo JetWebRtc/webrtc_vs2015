@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -130,13 +130,13 @@ void CTns_ReadDataPresentFlag(HANDLE_FDK_BITSTREAM bs,
                               CTnsData *pTnsData);
 
 void CTns_ReadDataPresentUsac(
-        HANDLE_FDK_BITSTREAM hBs,
-        CTnsData *pTnsData0,
-        CTnsData *pTnsData1,
-        const CIcsInfo *pIcsInfo,
-        const UINT flags,
-        const int fCommonWindow
-        );
+    HANDLE_FDK_BITSTREAM hBs,
+    CTnsData *pTnsData0,
+    CTnsData *pTnsData1,
+    const CIcsInfo *pIcsInfo,
+    const UINT flags,
+    const int fCommonWindow
+);
 
 AAC_DECODER_ERROR CTns_Read(HANDLE_FDK_BITSTREAM bs,
                             CTnsData *pTnsData,
@@ -162,10 +162,10 @@ LONG CBlock_GetEscape(HANDLE_FDK_BITSTREAM bs, const LONG q);
  * \param flags the decoder flags.
  */
 AAC_DECODER_ERROR CBlock_ReadScaleFactorData(
-        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-        HANDLE_FDK_BITSTREAM bs,
-        const UINT flags
-        );
+    CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+    HANDLE_FDK_BITSTREAM bs,
+    const UINT flags
+);
 
 /**
  * \brief Read Huffman encoded spectral data.
@@ -174,15 +174,15 @@ AAC_DECODER_ERROR CBlock_ReadScaleFactorData(
  * \param flags syntax flags.
  */
 AAC_DECODER_ERROR  CBlock_ReadSpectralData(HANDLE_FDK_BITSTREAM bs,
-                                           CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-                                           const SamplingRateInfo *pSamplingRateInfo,
-                                           const UINT  flags);
+        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+        const SamplingRateInfo *pSamplingRateInfo,
+        const UINT  flags);
 
 
 AAC_DECODER_ERROR CBlock_ReadSectionData(HANDLE_FDK_BITSTREAM bs,
-                                         CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-                                         const SamplingRateInfo *pSamplingRateInfo,
-                                         const UINT  flags);
+        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+        const SamplingRateInfo *pSamplingRateInfo,
+        const UINT  flags);
 
 /**
  * \brief find a common exponent (shift factor) for all sfb in each Spectral window, and store them into
@@ -233,32 +233,32 @@ FDK_INLINE
 int EvaluatePower43 ( FIXP_DBL *pValue,
                       UINT lsb )
 {
-  FIXP_DBL value;
-  UINT freeBits;
-  UINT exponent;
+    FIXP_DBL value;
+    UINT freeBits;
+    UINT exponent;
 
-  value = *pValue;
-  freeBits = fNormz (value) ;
-  exponent = DFRACT_BITS - freeBits ;
-  FDK_ASSERT (exponent < 14);
+    value = *pValue;
+    freeBits = fNormz (value) ;
+    exponent = DFRACT_BITS - freeBits ;
+    FDK_ASSERT (exponent < 14);
 
-  UINT x = (((int)value << freeBits) >> 19) ;
-  UINT tableIndex = (x & 0x0FFF) >> 4 ;
-  FIXP_DBL invQVal ;
+    UINT x = (((int)value << freeBits) >> 19) ;
+    UINT tableIndex = (x & 0x0FFF) >> 4 ;
+    FIXP_DBL invQVal ;
 
-  x = x & 0x0F;
+    x = x & 0x0F;
 
-  UINT r0=(LONG)InverseQuantTable [tableIndex+0];
-  UINT r1=(LONG)InverseQuantTable [tableIndex+1];
-  USHORT nx=16-x;
-  UINT temp=(r0)*nx+(r1)*x;
-  invQVal = (FIXP_DBL)temp;
+    UINT r0=(LONG)InverseQuantTable [tableIndex+0];
+    UINT r1=(LONG)InverseQuantTable [tableIndex+1];
+    USHORT nx=16-x;
+    UINT temp=(r0)*nx+(r1)*x;
+    invQVal = (FIXP_DBL)temp;
 
-  FDK_ASSERT(lsb < 4);
-  *pValue = fMultDiv2 (invQVal, MantissaTable [lsb][exponent]) ;
+    FDK_ASSERT(lsb < 4);
+    *pValue = fMultDiv2 (invQVal, MantissaTable [lsb][exponent]) ;
 
-  /* + 1 compensates fMultDiv2(). */
-  return ExponentTable [lsb][exponent] + 1;
+    /* + 1 compensates fMultDiv2(). */
+    return ExponentTable [lsb][exponent] + 1;
 }
 
 /**
@@ -266,13 +266,13 @@ int EvaluatePower43 ( FIXP_DBL *pValue,
  */
 FDK_INLINE int GetScaleFromValue (FIXP_DBL value, unsigned int lsb)
 {
-  if (value!=(FIXP_DBL)0)
-  {
-    int scale = EvaluatePower43 (&value, lsb) ;
-    return CntLeadingZeros (value) - scale - 2 ;
-  }
-  else
-    return 0; /* Return zero, because its useless to scale a zero value, saves workload and avoids scaling overshifts. */
+    if (value!=(FIXP_DBL)0)
+    {
+        int scale = EvaluatePower43 (&value, lsb) ;
+        return CntLeadingZeros (value) - scale - 2 ;
+    }
+    else
+        return 0; /* Return zero, because its useless to scale a zero value, saves workload and avoids scaling overshifts. */
 }
 
 
@@ -289,32 +289,32 @@ FDK_INLINE int GetScaleFromValue (FIXP_DBL value, unsigned int lsb)
 inline int CBlock_DecodeHuffmanWord( HANDLE_FDK_BITSTREAM bs,                           /*!< pointer to bitstream */
                                      const CodeBookDescription *hcb )                   /*!< pointer to codebook description */
 {
-  UINT val;
-  UINT index = 0;
-  const USHORT (*CodeBook) [HuffmanEntries] = hcb->CodeBook;
+    UINT val;
+    UINT index = 0;
+    const USHORT (*CodeBook) [HuffmanEntries] = hcb->CodeBook;
 
-  while (1)
-  {
-    val = CodeBook[index][FDKreadBits(bs,HuffmanBits)]; /* Expensive memory access */
-
-    if ((val & 1) == 0)
+    while (1)
     {
-      index = val>>2;
-      continue;
-    }
-    else
-    {
-      if (val & 2)
-      {
-        FDKpushBackCache(bs,1);
-      }
+        val = CodeBook[index][FDKreadBits(bs,HuffmanBits)]; /* Expensive memory access */
 
-      val >>= 2;
-      break;
-    }
-  }
+        if ((val & 1) == 0)
+        {
+            index = val>>2;
+            continue;
+        }
+        else
+        {
+            if (val & 2)
+            {
+                FDKpushBackCache(bs,1);
+            }
 
-  return val;
+            val >>= 2;
+            break;
+        }
+    }
+
+    return val;
 }
 
 //#endif /* AACDEC_HUFFMANDECODER_ENABLE */

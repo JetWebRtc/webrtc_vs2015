@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Lukasz Marek <lukasz.m.luki@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "internal.h"
 #include "url.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     SMBCCTX *ctx;
     int dh;
@@ -50,12 +51,14 @@ static av_cold int libsmbc_connect(URLContext *h)
     LIBSMBContext *libsmbc = h->priv_data;
 
     libsmbc->ctx = smbc_new_context();
-    if (!libsmbc->ctx) {
+    if (!libsmbc->ctx)
+    {
         int ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Cannot create context: %s.\n", strerror(errno));
         return ret;
     }
-    if (!smbc_init_context(libsmbc->ctx)) {
+    if (!smbc_init_context(libsmbc->ctx))
+    {
         int ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Cannot initialize context: %s.\n", strerror(errno));
         return ret;
@@ -70,7 +73,8 @@ static av_cold int libsmbc_connect(URLContext *h)
     if (libsmbc->workgroup)
         smbc_setWorkgroup(libsmbc->ctx, libsmbc->workgroup);
 
-    if (smbc_init(NULL, 0) < 0) {
+    if (smbc_init(NULL, 0) < 0)
+    {
         int ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Initialization failed: %s\n", strerror(errno));
         return ret;
@@ -81,11 +85,13 @@ static av_cold int libsmbc_connect(URLContext *h)
 static av_cold int libsmbc_close(URLContext *h)
 {
     LIBSMBContext *libsmbc = h->priv_data;
-    if (libsmbc->fd >= 0) {
+    if (libsmbc->fd >= 0)
+    {
         smbc_close(libsmbc->fd);
         libsmbc->fd = -1;
     }
-    if (libsmbc->ctx) {
+    if (libsmbc->ctx)
+    {
         smbc_free_context(libsmbc->ctx, 1);
         libsmbc->ctx = NULL;
     }
@@ -104,19 +110,24 @@ static av_cold int libsmbc_open(URLContext *h, const char *url, int flags)
     if ((ret = libsmbc_connect(h)) < 0)
         goto fail;
 
-    if ((flags & AVIO_FLAG_WRITE) && (flags & AVIO_FLAG_READ)) {
+    if ((flags & AVIO_FLAG_WRITE) && (flags & AVIO_FLAG_READ))
+    {
         access = O_CREAT | O_RDWR;
         if (libsmbc->trunc)
             access |= O_TRUNC;
-    } else if (flags & AVIO_FLAG_WRITE) {
+    }
+    else if (flags & AVIO_FLAG_WRITE)
+    {
         access = O_CREAT | O_WRONLY;
         if (libsmbc->trunc)
             access |= O_TRUNC;
-    } else
+    }
+    else
         access = O_RDONLY;
 
     /* 0666 = -rw-rw-rw- = read+write for everyone, minus umask */
-    if ((libsmbc->fd = smbc_open(url, access, 0666)) < 0) {
+    if ((libsmbc->fd = smbc_open(url, access, 0666)) < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "File open failed: %s\n", strerror(errno));
         goto fail;
@@ -128,7 +139,7 @@ static av_cold int libsmbc_open(URLContext *h, const char *url, int flags)
         libsmbc->filesize = st.st_size;
 
     return 0;
-  fail:
+fail:
     libsmbc_close(h);
     return ret;
 }
@@ -138,15 +149,19 @@ static int64_t libsmbc_seek(URLContext *h, int64_t pos, int whence)
     LIBSMBContext *libsmbc = h->priv_data;
     int64_t newpos;
 
-    if (whence == AVSEEK_SIZE) {
-        if (libsmbc->filesize == -1) {
+    if (whence == AVSEEK_SIZE)
+    {
+        if (libsmbc->filesize == -1)
+        {
             av_log(h, AV_LOG_ERROR, "Error during seeking: filesize is unknown.\n");
             return AVERROR(EIO);
-        } else
+        }
+        else
             return libsmbc->filesize;
     }
 
-    if ((newpos = smbc_lseek(libsmbc->fd, pos, whence)) < 0) {
+    if ((newpos = smbc_lseek(libsmbc->fd, pos, whence)) < 0)
+    {
         int err = errno;
         av_log(h, AV_LOG_ERROR, "Error during seeking: %s\n", strerror(err));
         return AVERROR(err);
@@ -160,7 +175,8 @@ static int libsmbc_read(URLContext *h, unsigned char *buf, int size)
     LIBSMBContext *libsmbc = h->priv_data;
     int bytes_read;
 
-    if ((bytes_read = smbc_read(libsmbc->fd, buf, size)) < 0) {
+    if ((bytes_read = smbc_read(libsmbc->fd, buf, size)) < 0)
+    {
         int ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Read error: %s\n", strerror(errno));
         return ret;
@@ -174,7 +190,8 @@ static int libsmbc_write(URLContext *h, const unsigned char *buf, int size)
     LIBSMBContext *libsmbc = h->priv_data;
     int bytes_written;
 
-    if ((bytes_written = smbc_write(libsmbc->fd, buf, size)) < 0) {
+    if ((bytes_written = smbc_write(libsmbc->fd, buf, size)) < 0)
+    {
         int ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Write error: %s\n", strerror(errno));
         return ret;
@@ -191,7 +208,8 @@ static int libsmbc_open_dir(URLContext *h)
     if ((ret = libsmbc_connect(h)) < 0)
         goto fail;
 
-    if ((libsmbc->dh = smbc_opendir(h->filename)) < 0) {
+    if ((libsmbc->dh = smbc_opendir(h->filename)) < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Error opening dir: %s\n", strerror(errno));
         goto fail;
@@ -199,7 +217,7 @@ static int libsmbc_open_dir(URLContext *h)
 
     return 0;
 
-  fail:
+fail:
     libsmbc_close(h);
     return ret;
 }
@@ -216,14 +234,17 @@ static int libsmbc_read_dir(URLContext *h, AVIODirEntry **next)
     if (!entry)
         return AVERROR(ENOMEM);
 
-    do {
+    do
+    {
         skip_entry = 0;
         dirent = smbc_readdir(libsmbc->dh);
-        if (!dirent) {
+        if (!dirent)
+        {
             av_freep(next);
             return 0;
         }
-        switch (dirent->smbc_type) {
+        switch (dirent->smbc_type)
+        {
         case SMBC_DIR:
             entry->type = AVIO_ENTRY_DIRECTORY;
             break;
@@ -249,19 +270,23 @@ static int libsmbc_read_dir(URLContext *h, AVIODirEntry **next)
             entry->type = AVIO_ENTRY_UNKNOWN;
             break;
         }
-    } while (skip_entry || !strcmp(dirent->name, ".") ||
-             !strcmp(dirent->name, ".."));
+    }
+    while (skip_entry || !strcmp(dirent->name, ".") ||
+            !strcmp(dirent->name, ".."));
 
     entry->name = av_strdup(dirent->name);
-    if (!entry->name) {
+    if (!entry->name)
+    {
         av_freep(next);
         return AVERROR(ENOMEM);
     }
 
     url = av_append_path_component(h->filename, dirent->name);
-    if (url) {
+    if (url)
+    {
         struct stat st;
-        if (!smbc_stat(url, &st)) {
+        if (!smbc_stat(url, &st))
+        {
             entry->group_id = st.st_gid;
             entry->user_id = st.st_uid;
             entry->size = st.st_size;
@@ -279,7 +304,8 @@ static int libsmbc_read_dir(URLContext *h, AVIODirEntry **next)
 static int libsmbc_close_dir(URLContext *h)
 {
     LIBSMBContext *libsmbc = h->priv_data;
-    if (libsmbc->dh >= 0) {
+    if (libsmbc->dh >= 0)
+    {
         smbc_closedir(libsmbc->dh);
         libsmbc->dh = -1;
     }
@@ -296,12 +322,14 @@ static int libsmbc_delete(URLContext *h)
     if ((ret = libsmbc_connect(h)) < 0)
         goto cleanup;
 
-    if ((libsmbc->fd = smbc_open(h->filename, O_WRONLY, 0666)) < 0) {
+    if ((libsmbc->fd = smbc_open(h->filename, O_WRONLY, 0666)) < 0)
+    {
         ret = AVERROR(errno);
         goto cleanup;
     }
 
-    if (smbc_fstat(libsmbc->fd, &st) < 0) {
+    if (smbc_fstat(libsmbc->fd, &st) < 0)
+    {
         ret = AVERROR(errno);
         goto cleanup;
     }
@@ -309,13 +337,18 @@ static int libsmbc_delete(URLContext *h)
     smbc_close(libsmbc->fd);
     libsmbc->fd = -1;
 
-    if (S_ISDIR(st.st_mode)) {
-        if (smbc_rmdir(h->filename) < 0) {
+    if (S_ISDIR(st.st_mode))
+    {
+        if (smbc_rmdir(h->filename) < 0)
+        {
             ret = AVERROR(errno);
             goto cleanup;
         }
-    } else {
-        if (smbc_unlink(h->filename) < 0) {
+    }
+    else
+    {
+        if (smbc_unlink(h->filename) < 0)
+        {
             ret = AVERROR(errno);
             goto cleanup;
         }
@@ -336,7 +369,8 @@ static int libsmbc_move(URLContext *h_src, URLContext *h_dst)
     if ((ret = libsmbc_connect(h_src)) < 0)
         goto cleanup;
 
-    if ((libsmbc->dh = smbc_rename(h_src->filename, h_dst->filename)) < 0) {
+    if ((libsmbc->dh = smbc_rename(h_src->filename, h_dst->filename)) < 0)
+    {
         ret = AVERROR(errno);
         goto cleanup;
     }
@@ -351,21 +385,24 @@ cleanup:
 #define OFFSET(x) offsetof(LIBSMBContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"timeout",   "set timeout in ms of socket I/O operations",    OFFSET(timeout), AV_OPT_TYPE_INT, {.i64 = -1}, -1, INT_MAX, D|E },
     {"truncate",  "truncate existing files on write",              OFFSET(trunc),   AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 1, E },
     {"workgroup", "set the workgroup used for making connections", OFFSET(workgroup), AV_OPT_TYPE_STRING, { 0 }, 0, 0, D|E },
     {NULL}
 };
 
-static const AVClass libsmbclient_context_class = {
+static const AVClass libsmbclient_context_class =
+{
     .class_name     = "libsmbc",
     .item_name      = av_default_item_name,
     .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_libsmbclient_protocol = {
+URLProtocol ff_libsmbclient_protocol =
+{
     .name                = "smb",
     .url_open            = libsmbc_open,
     .url_read            = libsmbc_read,

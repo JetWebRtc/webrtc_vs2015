@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,27 +13,35 @@
 
 #include "webrtc/base/socketaddress.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Records a pair (source,destination) of socket addresses.  The two addresses
 // identify a connection between two machines.  (For UDP, this "connection" is
 // not maintained explicitly in a socket.)
-class SocketAddressPair {
+class SocketAddressPair
+{
 public:
-  SocketAddressPair() {}
-  SocketAddressPair(const SocketAddress& srs, const SocketAddress& dest);
+    SocketAddressPair() {}
+    SocketAddressPair(const SocketAddress& srs, const SocketAddress& dest);
 
-  const SocketAddress& source() const { return src_; }
-  const SocketAddress& destination() const { return dest_; }
+    const SocketAddress& source() const
+    {
+        return src_;
+    }
+    const SocketAddress& destination() const
+    {
+        return dest_;
+    }
 
-  bool operator ==(const SocketAddressPair& r) const;
-  bool operator <(const SocketAddressPair& r) const;
+    bool operator ==(const SocketAddressPair& r) const;
+    bool operator <(const SocketAddressPair& r) const;
 
-  size_t Hash() const;
+    size_t Hash() const;
 
 private:
-  SocketAddress src_;
-  SocketAddress dest_;
+    SocketAddress src_;
+    SocketAddress dest_;
 };
 
 } // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,64 +18,69 @@
 #include "webrtc/base/scoped_ref_ptr.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockAudioDecoderFactory : public AudioDecoderFactory {
- public:
-  MOCK_METHOD0(GetSupportedDecoders, std::vector<AudioCodecSpec>());
-  MOCK_METHOD1(IsSupportedDecoder, bool(const SdpAudioFormat&));
-  std::unique_ptr<AudioDecoder> MakeAudioDecoder(
-      const SdpAudioFormat& format) {
-    std::unique_ptr<AudioDecoder> return_value;
-    MakeAudioDecoderMock(format, &return_value);
-    return return_value;
-  }
-  MOCK_METHOD2(MakeAudioDecoderMock,
-               void(const SdpAudioFormat& format,
-                    std::unique_ptr<AudioDecoder>* return_value));
+class MockAudioDecoderFactory : public AudioDecoderFactory
+{
+public:
+    MOCK_METHOD0(GetSupportedDecoders, std::vector<AudioCodecSpec>());
+    MOCK_METHOD1(IsSupportedDecoder, bool(const SdpAudioFormat&));
+    std::unique_ptr<AudioDecoder> MakeAudioDecoder(
+        const SdpAudioFormat& format)
+    {
+        std::unique_ptr<AudioDecoder> return_value;
+        MakeAudioDecoderMock(format, &return_value);
+        return return_value;
+    }
+    MOCK_METHOD2(MakeAudioDecoderMock,
+                 void(const SdpAudioFormat& format,
+                      std::unique_ptr<AudioDecoder>* return_value));
 
-  // Creates a MockAudioDecoderFactory with no formats and that may not be
-  // invoked to create a codec - useful for initializing a voice engine, for
-  // example.
-  static rtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
-  CreateUnusedFactory() {
-    using testing::_;
-    using testing::AnyNumber;
-    using testing::Return;
+    // Creates a MockAudioDecoderFactory with no formats and that may not be
+    // invoked to create a codec - useful for initializing a voice engine, for
+    // example.
+    static rtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
+    CreateUnusedFactory()
+    {
+        using testing::_;
+        using testing::AnyNumber;
+        using testing::Return;
 
-    rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> factory =
-        new rtc::RefCountedObject<webrtc::MockAudioDecoderFactory>;
-    ON_CALL(*factory.get(), GetSupportedDecoders())
+        rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> factory =
+            new rtc::RefCountedObject<webrtc::MockAudioDecoderFactory>;
+        ON_CALL(*factory.get(), GetSupportedDecoders())
         .WillByDefault(Return(std::vector<webrtc::AudioCodecSpec>()));
-    EXPECT_CALL(*factory.get(), GetSupportedDecoders()).Times(AnyNumber());
-    ON_CALL(*factory, IsSupportedDecoder(_)).WillByDefault(Return(false));
-    EXPECT_CALL(*factory, IsSupportedDecoder(_)).Times(AnyNumber());
-    EXPECT_CALL(*factory.get(), MakeAudioDecoderMock(_, _)).Times(0);
-    return factory;
-  }
+        EXPECT_CALL(*factory.get(), GetSupportedDecoders()).Times(AnyNumber());
+        ON_CALL(*factory, IsSupportedDecoder(_)).WillByDefault(Return(false));
+        EXPECT_CALL(*factory, IsSupportedDecoder(_)).Times(AnyNumber());
+        EXPECT_CALL(*factory.get(), MakeAudioDecoderMock(_, _)).Times(0);
+        return factory;
+    }
 
-  // Creates a MockAudioDecoderFactory with no formats that may be invoked to
-  // create a codec any number of times. It will, though, return nullptr on each
-  // call, since it supports no codecs.
-  static rtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
-  CreateEmptyFactory() {
-    using testing::_;
-    using testing::AnyNumber;
-    using testing::Return;
-    using testing::SetArgPointee;
+    // Creates a MockAudioDecoderFactory with no formats that may be invoked to
+    // create a codec any number of times. It will, though, return nullptr on each
+    // call, since it supports no codecs.
+    static rtc::scoped_refptr<webrtc::MockAudioDecoderFactory>
+    CreateEmptyFactory()
+    {
+        using testing::_;
+        using testing::AnyNumber;
+        using testing::Return;
+        using testing::SetArgPointee;
 
-    rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> factory =
-        new rtc::RefCountedObject<webrtc::MockAudioDecoderFactory>;
-    ON_CALL(*factory.get(), GetSupportedDecoders())
+        rtc::scoped_refptr<webrtc::MockAudioDecoderFactory> factory =
+            new rtc::RefCountedObject<webrtc::MockAudioDecoderFactory>;
+        ON_CALL(*factory.get(), GetSupportedDecoders())
         .WillByDefault(Return(std::vector<webrtc::AudioCodecSpec>()));
-    EXPECT_CALL(*factory.get(), GetSupportedDecoders()).Times(AnyNumber());
-    ON_CALL(*factory, IsSupportedDecoder(_)).WillByDefault(Return(false));
-    EXPECT_CALL(*factory, IsSupportedDecoder(_)).Times(AnyNumber());
-    ON_CALL(*factory.get(), MakeAudioDecoderMock(_, _))
+        EXPECT_CALL(*factory.get(), GetSupportedDecoders()).Times(AnyNumber());
+        ON_CALL(*factory, IsSupportedDecoder(_)).WillByDefault(Return(false));
+        EXPECT_CALL(*factory, IsSupportedDecoder(_)).Times(AnyNumber());
+        ON_CALL(*factory.get(), MakeAudioDecoderMock(_, _))
         .WillByDefault(SetArgPointee<1>(nullptr));
-    EXPECT_CALL(*factory.get(), MakeAudioDecoderMock(_, _)).Times(AnyNumber());
-    return factory;
-  }
+        EXPECT_CALL(*factory.get(), MakeAudioDecoderMock(_, _)).Times(AnyNumber());
+        return factory;
+    }
 };
 
 }  // namespace webrtc

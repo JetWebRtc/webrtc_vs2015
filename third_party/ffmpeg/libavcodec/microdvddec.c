@@ -38,7 +38,8 @@ static int indexof(const char *s, int c)
     return f ? (f - s) : -1;
 }
 
-struct microdvd_tag {
+struct microdvd_tag
+{
     char key;
     int persistent;
     uint32_t data1;
@@ -70,7 +71,8 @@ static void microdvd_set_tag(struct microdvd_tag *tags, struct microdvd_tag tag)
  * marker */
 static char *check_for_italic_slash_marker(struct microdvd_tag *tags, char *s)
 {
-    if (*s == '/') {
+    if (*s == '/')
+    {
         struct microdvd_tag tag = tags[indexof(MICRODVD_TAGS, 'y')];
         tag.key = 'y';
         tag.data1 |= 1 << 0 /* 'i' position in MICRODVD_STYLES */;
@@ -84,7 +86,8 @@ static char *microdvd_load_tags(struct microdvd_tag *tags, char *s)
 {
     s = check_for_italic_slash_marker(tags, s);
 
-    while (*s == '{') {
+    while (*s == '{')
+    {
         char *start = s;
         char tag_char = *(s + 1);
         struct microdvd_tag tag = {0};
@@ -93,13 +96,15 @@ static char *microdvd_load_tags(struct microdvd_tag *tags, char *s)
             break;
         s += 3;
 
-        switch (tag_char) {
+        switch (tag_char)
+        {
 
         /* Style */
         case 'Y':
             tag.persistent = MICRODVD_PERSISTENT_ON;
         case 'y':
-            while (*s && *s != '}') {
+            while (*s && *s != '}')
+            {
                 int style_index = indexof(MICRODVD_STYLES, *s);
 
                 if (style_index >= 0)
@@ -128,7 +133,8 @@ static char *microdvd_load_tags(struct microdvd_tag *tags, char *s)
         /* Font name */
         case 'F':
             tag.persistent = MICRODVD_PERSISTENT_ON;
-        case 'f': {
+        case 'f':
+        {
             int len = indexof(s, '}');
             if (len < 0)
                 break;
@@ -150,7 +156,8 @@ static char *microdvd_load_tags(struct microdvd_tag *tags, char *s)
             break;
 
         /* Charset */
-        case 'H': {
+        case 'H':
+        {
             //TODO: not yet handled, just parsed.
             int len = indexof(s, '}');
             if (len < 0)
@@ -200,10 +207,12 @@ static char *microdvd_load_tags(struct microdvd_tag *tags, char *s)
 static void microdvd_open_tags(AVBPrint *new_line, struct microdvd_tag *tags)
 {
     int i, sidx;
-    for (i = 0; i < sizeof(MICRODVD_TAGS) - 1; i++) {
+    for (i = 0; i < sizeof(MICRODVD_TAGS) - 1; i++)
+    {
         if (tags[i].persistent == MICRODVD_PERSISTENT_OPENED)
             continue;
-        switch (tags[i].key) {
+        switch (tags[i].key)
+        {
         case 'Y':
         case 'y':
             for (sidx = 0; sidx < sizeof(MICRODVD_STYLES) - 1; sidx++)
@@ -240,14 +249,16 @@ static void microdvd_open_tags(AVBPrint *new_line, struct microdvd_tag *tags)
 }
 
 static void microdvd_close_no_persistent_tags(AVBPrint *new_line,
-                                              struct microdvd_tag *tags)
+        struct microdvd_tag *tags)
 {
     int i, sidx;
 
-    for (i = sizeof(MICRODVD_TAGS) - 2; i >= 0; i--) {
+    for (i = sizeof(MICRODVD_TAGS) - 2; i >= 0; i--)
+    {
         if (tags[i].persistent != MICRODVD_PERSISTENT_OFF)
             continue;
-        switch (tags[i].key) {
+        switch (tags[i].key)
+        {
 
         case 'y':
             for (sidx = sizeof(MICRODVD_STYLES) - 2; sidx >= 0; sidx--)
@@ -286,44 +297,54 @@ static int microdvd_decode_frame(AVCodecContext *avctx,
     av_bprint_init(&new_line, 0, 2048);
 
     // subtitle content
-    while (line < end && *line) {
+    while (line < end && *line)
+    {
 
         // parse MicroDVD tags, and open them in ASS
         line = microdvd_load_tags(tags, line);
         microdvd_open_tags(&new_line, tags);
 
         // simple copy until EOL or forced carriage return
-        while (line < end && *line && *line != '|') {
+        while (line < end && *line && *line != '|')
+        {
             av_bprint_chars(&new_line, *line, 1);
             line++;
         }
 
         // line split
-        if (line < end && *line == '|') {
+        if (line < end && *line == '|')
+        {
             microdvd_close_no_persistent_tags(&new_line, tags);
             av_bprintf(&new_line, "\\N");
             line++;
         }
     }
-    if (new_line.len) {
+    if (new_line.len)
+    {
         int ret;
-            int64_t start    = avpkt->pts;
-            int64_t duration = avpkt->duration;
-            int ts_start     = av_rescale_q(start,    avctx->time_base, (AVRational){1,100});
-            int ts_duration  = duration != -1 ?
-                av_rescale_q(duration, avctx->time_base, (AVRational){1,100}) : -1;
+        int64_t start    = avpkt->pts;
+        int64_t duration = avpkt->duration;
+        int ts_start     = av_rescale_q(start,    avctx->time_base, (AVRational)
+        {
+            1,100
+        });
+        int ts_duration  = duration != -1 ?
+                           av_rescale_q(duration, avctx->time_base, (AVRational)
+        {
+            1,100
+        }) : -1;
 
-        ret = ff_ass_add_rect_bprint(sub, &new_line, ts_start, ts_duration);
-        av_bprint_finalize(&new_line, NULL);
-        if (ret < 0)
-            return ret;
+            ret = ff_ass_add_rect_bprint(sub, &new_line, ts_start, ts_duration);
+            av_bprint_finalize(&new_line, NULL);
+            if (ret < 0)
+                return ret;
+        }
+
+        *got_sub_ptr = sub->num_rects > 0;
+        return avpkt->size;
     }
 
-    *got_sub_ptr = sub->num_rects > 0;
-    return avpkt->size;
-}
-
-static int microdvd_init(AVCodecContext *avctx)
+    static int microdvd_init(AVCodecContext *avctx)
 {
     int i, sidx;
     AVBPrint font_buf;
@@ -338,25 +359,43 @@ static int microdvd_init(AVCodecContext *avctx)
     av_bprint_init(&font_buf, 0, AV_BPRINT_SIZE_AUTOMATIC);
     av_bprintf(&font_buf, "%s", ASS_DEFAULT_FONT);
 
-    if (avctx->extradata) {
+    if (avctx->extradata)
+    {
         microdvd_load_tags(tags, avctx->extradata);
-        for (i = 0; i < sizeof(MICRODVD_TAGS) - 1; i++) {
-            switch (av_tolower(tags[i].key)) {
+        for (i = 0; i < sizeof(MICRODVD_TAGS) - 1; i++)
+        {
+            switch (av_tolower(tags[i].key))
+            {
             case 'y':
-                for (sidx = 0; sidx < sizeof(MICRODVD_STYLES) - 1; sidx++) {
-                    if (tags[i].data1 & (1 << sidx)) {
-                        switch (MICRODVD_STYLES[sidx]) {
-                        case 'i': italic    = 1; break;
-                        case 'b': bold      = 1; break;
-                        case 'u': underline = 1; break;
+                for (sidx = 0; sidx < sizeof(MICRODVD_STYLES) - 1; sidx++)
+                {
+                    if (tags[i].data1 & (1 << sidx))
+                    {
+                        switch (MICRODVD_STYLES[sidx])
+                        {
+                        case 'i':
+                            italic    = 1;
+                            break;
+                        case 'b':
+                            bold      = 1;
+                            break;
+                        case 'u':
+                            underline = 1;
+                            break;
                         }
                     }
                 }
                 break;
 
-            case 'c': color     = tags[i].data1; break;
-            case 's': font_size = tags[i].data1; break;
-            case 'p': alignment =             8; break;
+            case 'c':
+                color     = tags[i].data1;
+                break;
+            case 's':
+                font_size = tags[i].data1;
+                break;
+            case 'p':
+                alignment =             8;
+                break;
 
             case 'f':
                 av_bprint_clear(&font_buf);
@@ -371,7 +410,8 @@ static int microdvd_init(AVCodecContext *avctx)
                                   underline, alignment);
 }
 
-AVCodec ff_microdvd_decoder = {
+AVCodec ff_microdvd_decoder =
+{
     .name         = "microdvd",
     .long_name    = NULL_IF_CONFIG_SMALL("MicroDVD subtitle"),
     .type         = AVMEDIA_TYPE_SUBTITLE,

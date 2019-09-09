@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -39,23 +39,27 @@
 #include "nal_prefix.h"
 #include "bit_stream.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 ///////////////////////////////////NAL UNIT level///////////////////////////////////
 
 /* NAL Unit Structure */
-typedef struct TagNalUnit {
+typedef struct TagNalUnit
+{
 SNalUnitHeaderExt       sNalHeaderExt;
 
-union {
-  struct SVclNal {
-    SSliceHeaderExt     sSliceHeaderExt;
-    SBitStringAux       sSliceBitsRead;
-    uint8_t*            pNalPos;         // save the address of slice nal for GPU function
-    int32_t             iNalLength;   // save the nal length for GPU function
-    bool                bSliceHeaderExtFlag;
-  } sVclNal;
-  SPrefixNalUnit        sPrefixNal;
+union
+{
+    struct SVclNal
+    {
+        SSliceHeaderExt     sSliceHeaderExt;
+        SBitStringAux       sSliceBitsRead;
+        uint8_t*            pNalPos;         // save the address of slice nal for GPU function
+        int32_t             iNalLength;   // save the nal length for GPU function
+        bool                bSliceHeaderExtFlag;
+    } sVclNal;
+    SPrefixNalUnit        sPrefixNal;
 } sNalData;
 unsigned long long uiTimeStamp;
 } SNalUnit, *PNalUnit;
@@ -63,7 +67,8 @@ unsigned long long uiTimeStamp;
 ///////////////////////////////////ACCESS Unit level///////////////////////////////////
 
 /* Access Unit structure */
-typedef struct TagAccessUnits {
+typedef struct TagAccessUnits
+{
 PNalUnit*               pNalUnitsList;  // list of NAL Units pointer in this AU
 uint32_t                uiAvailUnitsNum;        // Number of NAL Units available in each AU list based current bitstream,
 uint32_t                uiActualUnitsNum;       // actual number of NAL units belong to current au

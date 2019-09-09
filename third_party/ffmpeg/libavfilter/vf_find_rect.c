@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014-2015 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 
 #define MAX_MIPMAPS 5
 
-typedef struct FOCContext {
+typedef struct FOCContext
+{
     AVClass *class;
     float threshold;
     int mipmaps;
@@ -45,7 +46,8 @@ typedef struct FOCContext {
 
 #define OFFSET(x) offsetof(FOCContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption find_rect_options[] = {
+static const AVOption find_rect_options[] =
+{
     { "object", "object bitmap filename", OFFSET(obj_filename), AV_OPT_TYPE_STRING, {.str = NULL}, .flags = FLAGS },
     { "threshold", "set threshold", OFFSET(threshold), AV_OPT_TYPE_FLOAT, {.dbl = 0.5}, 0, 1.0, FLAGS },
     { "mipmaps", "set mipmaps", OFFSET(mipmaps), AV_OPT_TYPE_INT, {.i64 = 3}, 1, MAX_MIPMAPS, FLAGS },
@@ -60,7 +62,8 @@ AVFILTER_DEFINE_CLASS(find_rect);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUVJ420P,
         AV_PIX_FMT_NONE
@@ -81,20 +84,23 @@ static AVFrame *downscale(AVFrame *in)
     frame->width  = (in->width + 1) / 2;
     frame->height = (in->height+ 1) / 2;
 
-    if (av_frame_get_buffer(frame, 32) < 0) {
+    if (av_frame_get_buffer(frame, 32) < 0)
+    {
         av_frame_free(&frame);
         return NULL;
     }
     src = in   ->data[0];
     dst = frame->data[0];
 
-    for(y = 0; y < frame->height; y++) {
-        for(x = 0; x < frame->width; x++) {
+    for(y = 0; y < frame->height; y++)
+    {
+        for(x = 0; x < frame->width; x++)
+        {
             dst[x] = (  src[2*x+0]
-                      + src[2*x+1]
-                      + src[2*x+0 + in->linesize[0]]
-                      + src[2*x+1 + in->linesize[0]]
-                      + 2) >> 2;
+                        + src[2*x+1]
+                        + src[2*x+0 + in->linesize[0]]
+                        + src[2*x+1 + in->linesize[0]]
+                        + 2) >> 2;
         }
         src += 2*in->linesize[0];
         dst += frame->linesize[0];
@@ -116,8 +122,10 @@ static float compare(const AVFrame *haystack, const AVFrame *obj, int offx, int 
     const uint8_t *hdat = haystack->data[0] + offx + offy * haystack->linesize[0];
     int64_t o_sigma, h_sigma;
 
-    for(y = 0; y < obj->height; y++) {
-        for(x = 0; x < obj->width; x++) {
+    for(y = 0; y < obj->height; y++)
+    {
+        for(x = 0; x < obj->width; x++)
+        {
             int o_v = odat[x];
             int h_v = hdat[x];
             o_sum_v += o_v;
@@ -157,7 +165,8 @@ static float search(FOCContext *foc, int pass, int maxpass, int xmin, int xmax, 
 {
     int x, y;
 
-    if (pass + 1 <= maxpass) {
+    if (pass + 1 <= maxpass)
+    {
         int sub_x, sub_y;
         search(foc, pass+1, maxpass, xmin>>1, (xmax+1)>>1, ymin>>1, (ymax+1)>>1, &sub_x, &sub_y, 1.0);
         xmin = FFMAX(xmin, 2*sub_x - 4);
@@ -166,11 +175,14 @@ static float search(FOCContext *foc, int pass, int maxpass, int xmin, int xmax, 
         ymax = FFMIN(ymax, 2*sub_y + 4);
     }
 
-    for (y = ymin; y <= ymax; y++) {
-        for (x = xmin; x <= xmax; x++) {
+    for (y = ymin; y <= ymax; y++)
+    {
+        for (x = xmin; x <= xmax; x++)
+        {
             float score = compare(foc->haystack_frame[pass], foc->needle_frame[pass], x, y);
             av_assert0(score != 0);
-            if (score < best_score) {
+            if (score < best_score)
+            {
                 best_score = score;
                 *best_x = x;
                 *best_y = y;
@@ -189,7 +201,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i;
 
     foc->haystack_frame[0] = av_frame_clone(in);
-    for (i=1; i<foc->mipmaps; i++) {
+    for (i=1; i<foc->mipmaps; i++)
+    {
         foc->haystack_frame[i] = downscale(foc->haystack_frame[i-1]);
     }
 
@@ -203,11 +216,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     best_score = search(foc, 0, foc->mipmaps - 1, foc->xmin, foc->xmax, foc->ymin, foc->ymax,
                         &best_x, &best_y, best_score);
 
-    for (i=0; i<MAX_MIPMAPS; i++) {
+    for (i=0; i<MAX_MIPMAPS; i++)
+    {
         av_frame_free(&foc->haystack_frame[i]);
     }
 
-    if (best_score > foc->threshold) {
+    if (best_score > foc->threshold)
+    {
         return ff_filter_frame(ctx->outputs[0], in);
     }
 
@@ -230,7 +245,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     FOCContext *foc = ctx->priv;
     int i;
 
-    for (i = 0; i < MAX_MIPMAPS; i++) {
+    for (i = 0; i < MAX_MIPMAPS; i++)
+    {
         av_frame_free(&foc->needle_frame[i]);
         av_frame_free(&foc->haystack_frame[i]);
     }
@@ -245,7 +261,8 @@ static av_cold int init(AVFilterContext *ctx)
     FOCContext *foc = ctx->priv;
     int ret, i;
 
-    if (!foc->obj_filename) {
+    if (!foc->obj_filename)
+    {
         av_log(ctx, AV_LOG_ERROR, "object filename not set\n");
         return AVERROR(EINVAL);
     }
@@ -259,13 +276,15 @@ static av_cold int init(AVFilterContext *ctx)
                              &foc->obj_frame->format, foc->obj_filename, ctx)) < 0)
         return ret;
 
-    if (foc->obj_frame->format != AV_PIX_FMT_GRAY8) {
+    if (foc->obj_frame->format != AV_PIX_FMT_GRAY8)
+    {
         av_log(ctx, AV_LOG_ERROR, "object image is not a grayscale image\n");
         return AVERROR(EINVAL);
     }
 
     foc->needle_frame[0] = av_frame_clone(foc->obj_frame);
-    for (i = 1; i < foc->mipmaps; i++) {
+    for (i = 1; i < foc->mipmaps; i++)
+    {
         foc->needle_frame[i] = downscale(foc->needle_frame[i-1]);
         if (!foc->needle_frame[i])
             return AVERROR(ENOMEM);
@@ -274,7 +293,8 @@ static av_cold int init(AVFilterContext *ctx)
     return 0;
 }
 
-static const AVFilterPad foc_inputs[] = {
+static const AVFilterPad foc_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -284,7 +304,8 @@ static const AVFilterPad foc_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad foc_outputs[] = {
+static const AVFilterPad foc_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -292,7 +313,8 @@ static const AVFilterPad foc_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_find_rect = {
+AVFilter ff_vf_find_rect =
+{
     .name            = "find_rect",
     .description     = NULL_IF_CONFIG_SMALL("Find a user specified object"),
     .priv_size       = sizeof(FOCContext),

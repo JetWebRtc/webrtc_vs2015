@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/modules/audio_processing/aec/aec_core.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 enum { kResamplingDelay = 1 };
 enum { kResamplerBufferSize = FRAME_LEN * 4 };

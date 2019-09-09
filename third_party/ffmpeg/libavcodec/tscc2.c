@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TechSmith Screen Codec 2 (aka Dora) decoder
  * Copyright (c) 2012 Konstantin Shishkov
  *
@@ -33,7 +33,8 @@
 #include "internal.h"
 #include "tscc2data.h"
 
-typedef struct TSCC2Context {
+typedef struct TSCC2Context
+{
     AVCodecContext *avctx;
     AVFrame       *pic;
     int            mb_width, mb_height;
@@ -51,7 +52,8 @@ static av_cold void free_vlcs(TSCC2Context *c)
     int i;
 
     ff_free_vlc(&c->dc_vlc);
-    for (i = 0; i < NUM_VLC_SETS; i++) {
+    for (i = 0; i < NUM_VLC_SETS; i++)
+    {
         ff_free_vlc(c->nc_vlc + i);
         ff_free_vlc(c->ac_vlc + i);
     }
@@ -68,12 +70,14 @@ static av_cold int init_vlcs(TSCC2Context *c)
     if (ret)
         return ret;
 
-    for (i = 0; i < NUM_VLC_SETS; i++) {
+    for (i = 0; i < NUM_VLC_SETS; i++)
+    {
         ret = ff_init_vlc_sparse(c->nc_vlc + i, 9, 16,
                                  tscc2_nc_vlc_bits[i],  1, 1,
                                  tscc2_nc_vlc_codes[i], 2, 2,
                                  tscc2_nc_vlc_syms,     1, 1, INIT_VLC_LE);
-        if (ret) {
+        if (ret)
+        {
             free_vlcs(c);
             return ret;
         }
@@ -81,7 +85,8 @@ static av_cold int init_vlcs(TSCC2Context *c)
                                  tscc2_ac_vlc_bits[i],  1, 1,
                                  tscc2_ac_vlc_codes[i], 2, 2,
                                  tscc2_ac_vlc_syms[i],  2, 2, INIT_VLC_LE);
-        if (ret) {
+        if (ret)
+        {
             free_vlcs(c);
             return ret;
         }
@@ -106,7 +111,8 @@ static void tscc2_idct4_put(int *in, int q[3], uint8_t *dst, int stride)
     int tblk[4 * 4];
     int t0, t1, t2, t3;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t0 = DEQUANT(q[0 + (i & 1)], in[0 * 4 + i]);
         t1 = DEQUANT(q[1 + (i & 1)], in[1 * 4 + i]);
         t2 = DEQUANT(q[0 + (i & 1)], in[2 * 4 + i]);
@@ -115,7 +121,8 @@ static void tscc2_idct4_put(int *in, int q[3], uint8_t *dst, int stride)
               tblk[2 * 4 + i], tblk[3 * 4 + i],
               t0, t1, t2, t3, COL_OP);
     }
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         DCT1D(dst[0], dst[1], dst[2], dst[3],
               tblk[i * 4 + 0], tblk[i * 4 + 1],
               tblk[i * 4 + 2], tblk[i * 4 + 3], ROW_OP);
@@ -130,15 +137,20 @@ static int tscc2_decode_mb(TSCC2Context *c, int *q, int vlc_set,
     int prev_dc, dc, nc, ac, bpos, val;
     int i, j, k, l;
 
-    if (get_bits1(gb)) {
-        if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
+        if (get_bits1(gb))
+        {
             val = get_bits(gb, 8);
             for (i = 0; i < 8; i++, dst += stride)
                 memset(dst, val, 16);
-        } else {
+        }
+        else
+        {
             if (get_bits_left(gb) < 16 * 8 * 8)
                 return AVERROR_INVALIDDATA;
-            for (i = 0; i < 8; i++) {
+            for (i = 0; i < 8; i++)
+            {
                 for (j = 0; j < 16; j++)
                     dst[j] = get_bits(gb, 8);
                 dst += stride;
@@ -148,11 +160,16 @@ static int tscc2_decode_mb(TSCC2Context *c, int *q, int vlc_set,
     }
 
     prev_dc = 0;
-    for (j = 0; j < 2; j++) {
-        for (k = 0; k < 4; k++) {
-            if (!(j | k)) {
+    for (j = 0; j < 2; j++)
+    {
+        for (k = 0; k < 4; k++)
+        {
+            if (!(j | k))
+            {
                 dc = get_bits(gb, 8);
-            } else {
+            }
+            else
+            {
                 dc = get_vlc2(gb, c->dc_vlc.table, 9, 2);
                 if (dc == -1)
                     return AVERROR_INVALIDDATA;
@@ -169,7 +186,8 @@ static int tscc2_decode_mb(TSCC2Context *c, int *q, int vlc_set,
 
             bpos = 1;
             memset(c->block + 1, 0, 15 * sizeof(*c->block));
-            for (l = 0; l < nc; l++) {
+            for (l = 0; l < nc; l++)
+            {
                 ac = get_vlc2(gb, c->ac_vlc[vlc_set].table, 9, 2);
                 if (ac == -1)
                     return AVERROR_INVALIDDATA;
@@ -197,12 +215,14 @@ static int tscc2_decode_slice(TSCC2Context *c, int mb_y,
     if ((ret = init_get_bits8(&c->gb, buf, buf_size)) < 0)
         return ret;
 
-    for (mb_x = 0; mb_x < c->mb_width; mb_x++) {
+    for (mb_x = 0; mb_x < c->mb_width; mb_x++)
+    {
         q = c->slice_quants[mb_x + c->mb_width * mb_y];
 
         if (q == 0 || q == 3) // skip block
             continue;
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++)
+        {
             off = mb_x * 16 + mb_y * 8 * c->pic->linesize[i];
             ret = tscc2_decode_mb(c, c->q[q - 1], c->quant[q - 1] - 2,
                                   c->pic->data[i] + off, c->pic->linesize[i], i);
@@ -228,17 +248,20 @@ static int tscc2_decode_frame(AVCodecContext *avctx, void *data,
 
     bytestream2_init(&gb, buf, buf_size);
     frame_type = bytestream2_get_byte(&gb);
-    if (frame_type > 1) {
+    if (frame_type > 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Incorrect frame type %"PRIu32"\n",
                frame_type);
         return AVERROR_INVALIDDATA;
     }
 
-    if ((ret = ff_reget_buffer(avctx, c->pic)) < 0) {
+    if ((ret = ff_reget_buffer(avctx, c->pic)) < 0)
+    {
         return ret;
     }
 
-    if (frame_type == 0) {
+    if (frame_type == 0)
+    {
         *got_frame      = 1;
         if ((ret = av_frame_ref(data, c->pic)) < 0)
             return ret;
@@ -246,7 +269,8 @@ static int tscc2_decode_frame(AVCodecContext *avctx, void *data,
         return buf_size;
     }
 
-    if (bytestream2_get_bytes_left(&gb) < 4) {
+    if (bytestream2_get_bytes_left(&gb) < 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too short\n");
         return AVERROR_INVALIDDATA;
     }
@@ -254,13 +278,15 @@ static int tscc2_decode_frame(AVCodecContext *avctx, void *data,
     c->quant[0] = bytestream2_get_byte(&gb);
     c->quant[1] = bytestream2_get_byte(&gb);
     if (c->quant[0] < 2 || c->quant[0] > NUM_VLC_SETS + 1 ||
-        c->quant[1] < 2 || c->quant[1] > NUM_VLC_SETS + 1) {
+            c->quant[1] < 2 || c->quant[1] > NUM_VLC_SETS + 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid quantisers %d / %d\n",
                c->quant[0], c->quant[1]);
         return AVERROR_INVALIDDATA;
     }
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         c->q[0][i] = tscc2_quants[c->quant[0] - 2][i];
         c->q[1][i] = tscc2_quants[c->quant[1] - 2][i];
     }
@@ -268,56 +294,70 @@ static int tscc2_decode_frame(AVCodecContext *avctx, void *data,
     bytestream2_skip(&gb, 1);
 
     size = bytestream2_get_le32(&gb);
-    if (size > bytestream2_get_bytes_left(&gb)) {
+    if (size > bytestream2_get_bytes_left(&gb))
+    {
         av_log(avctx, AV_LOG_ERROR, "Slice properties chunk is too large\n");
         return AVERROR_INVALIDDATA;
     }
 
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         val   = bytestream2_get_byte(&gb);
         len   = val & 0x3F;
         val >>= 6;
-        if (pos + len > num_mb) {
+        if (pos + len > num_mb)
+        {
             av_log(avctx, AV_LOG_ERROR, "Too many slice properties\n");
             return AVERROR_INVALIDDATA;
         }
         memset(c->slice_quants + pos, val, len);
         pos += len;
     }
-    if (pos < num_mb) {
+    if (pos < num_mb)
+    {
         av_log(avctx, AV_LOG_ERROR, "Too few slice properties (%d / %d)\n",
                pos, num_mb);
         return AVERROR_INVALIDDATA;
     }
 
-    for (i = 0; i < c->mb_height; i++) {
+    for (i = 0; i < c->mb_height; i++)
+    {
         size = bytestream2_peek_byte(&gb);
-        if (size & 1) {
+        if (size & 1)
+        {
             size = bytestream2_get_byte(&gb) - 1;
-        } else {
+        }
+        else
+        {
             size = bytestream2_get_le32(&gb) >> 1;
         }
-        if (!size) {
+        if (!size)
+        {
             int skip_row = 1, j, off = i * c->mb_width;
-            for (j = 0; j < c->mb_width; j++) {
+            for (j = 0; j < c->mb_width; j++)
+            {
                 if (c->slice_quants[off + j] == 1 ||
-                    c->slice_quants[off + j] == 2) {
+                        c->slice_quants[off + j] == 2)
+                {
                     skip_row = 0;
                     break;
                 }
             }
-            if (!skip_row) {
+            if (!skip_row)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Non-skip row with zero size\n");
                 return AVERROR_INVALIDDATA;
             }
         }
-        if (bytestream2_get_bytes_left(&gb) < size) {
+        if (bytestream2_get_bytes_left(&gb) < size)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid slice size (%"PRIu32"/%u)\n",
                    size, bytestream2_get_bytes_left(&gb));
             return AVERROR_INVALIDDATA;
         }
         ret = tscc2_decode_slice(c, i, buf + bytestream2_tell(&gb), size);
-        if (ret) {
+        if (ret)
+        {
             av_log(avctx, AV_LOG_ERROR, "Error decoding slice %d\n", i);
             return ret;
         }
@@ -352,7 +392,8 @@ static av_cold int tscc2_decode_init(AVCodecContext *avctx)
 
     avctx->pix_fmt = AV_PIX_FMT_YUV444P;
 
-    if ((ret = init_vlcs(c)) < 0) {
+    if ((ret = init_vlcs(c)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot initialise VLCs\n");
         return ret;
     }
@@ -360,14 +401,16 @@ static av_cold int tscc2_decode_init(AVCodecContext *avctx)
     c->mb_width     = FFALIGN(avctx->width,  16) >> 4;
     c->mb_height    = FFALIGN(avctx->height,  8) >> 3;
     c->slice_quants = av_malloc(c->mb_width * c->mb_height);
-    if (!c->slice_quants) {
+    if (!c->slice_quants)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot allocate slice information\n");
         free_vlcs(c);
         return AVERROR(ENOMEM);
     }
 
     c->pic = av_frame_alloc();
-    if (!c->pic) {
+    if (!c->pic)
+    {
         tscc2_decode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -375,7 +418,8 @@ static av_cold int tscc2_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_tscc2_decoder = {
+AVCodec ff_tscc2_decoder =
+{
     .name           = "tscc2",
     .long_name      = NULL_IF_CONFIG_SMALL("TechSmith Screen Codec 2"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * common code shared by all WMA variants
  *
  * This file is part of FFmpeg.

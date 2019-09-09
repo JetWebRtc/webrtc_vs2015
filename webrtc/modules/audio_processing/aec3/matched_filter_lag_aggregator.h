@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,29 +17,31 @@
 #include "webrtc/base/optional.h"
 #include "webrtc/modules/audio_processing/aec3/matched_filter.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
 // Aggregates lag estimates produced by the MatchedFilter class into a single
 // reliable combined lag estimate.
-class MatchedFilterLagAggregator {
- public:
-  MatchedFilterLagAggregator(ApmDataDumper* data_dumper,
-                             size_t num_lag_estimates);
-  ~MatchedFilterLagAggregator();
+class MatchedFilterLagAggregator
+{
+public:
+    MatchedFilterLagAggregator(ApmDataDumper* data_dumper,
+                               size_t num_lag_estimates);
+    ~MatchedFilterLagAggregator();
 
-  // Aggregates the provided lag estimates.
-  rtc::Optional<size_t> Aggregate(
-      rtc::ArrayView<const MatchedFilter::LagEstimate> lag_estimates);
+    // Aggregates the provided lag estimates.
+    rtc::Optional<size_t> Aggregate(
+        rtc::ArrayView<const MatchedFilter::LagEstimate> lag_estimates);
 
- private:
-  ApmDataDumper* const data_dumper_;
-  std::vector<size_t> lag_updates_in_a_row_;
-  size_t candidate_ = 0;
-  size_t candidate_counter_ = 0;
+private:
+    ApmDataDumper* const data_dumper_;
+    std::vector<size_t> lag_updates_in_a_row_;
+    size_t candidate_ = 0;
+    size_t candidate_counter_ = 0;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(MatchedFilterLagAggregator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(MatchedFilterLagAggregator);
 };
 }  // namespace webrtc
 

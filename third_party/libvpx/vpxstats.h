@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,12 +22,13 @@ extern "C" {
 /* This structure is used to abstract the different ways of handling
  * first pass statistics
  */
-typedef struct {
-  vpx_fixed_buf_t buf;
-  int pass;
-  FILE *file;
-  char *buf_ptr;
-  size_t buf_alloc_sz;
+typedef struct
+{
+    vpx_fixed_buf_t buf;
+    int pass;
+    FILE *file;
+    char *buf_ptr;
+    size_t buf_alloc_sz;
 } stats_io_t;
 
 int stats_open_file(stats_io_t *stats, const char *fpf, int pass);

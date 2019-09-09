@@ -1,4 +1,4 @@
-/*
+﻿/*
  * XWD image format
  *
  * Copyright (c) 2012 Paul B Mahol
@@ -45,20 +45,24 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     pixdepth = av_get_bits_per_pixel(desc);
     if (desc->flags & AV_PIX_FMT_FLAG_BE)
         be = 1;
-    switch (pix_fmt) {
+    switch (pix_fmt)
+    {
     case AV_PIX_FMT_ARGB:
     case AV_PIX_FMT_BGRA:
     case AV_PIX_FMT_RGBA:
     case AV_PIX_FMT_ABGR:
         if (pix_fmt == AV_PIX_FMT_ARGB ||
-            pix_fmt == AV_PIX_FMT_ABGR)
+                pix_fmt == AV_PIX_FMT_ABGR)
             be = 1;
         if (pix_fmt == AV_PIX_FMT_ABGR ||
-            pix_fmt == AV_PIX_FMT_RGBA) {
+                pix_fmt == AV_PIX_FMT_RGBA)
+        {
             rgb[0] = 0xFF;
             rgb[1] = 0xFF00;
             rgb[2] = 0xFF0000;
-        } else {
+        }
+        else
+        {
             rgb[0] = 0xFF0000;
             rgb[1] = 0xFF00;
             rgb[2] = 0xFF;
@@ -84,11 +88,14 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     case AV_PIX_FMT_BGR565LE:
     case AV_PIX_FMT_BGR565BE:
         if (pix_fmt == AV_PIX_FMT_BGR565LE ||
-            pix_fmt == AV_PIX_FMT_BGR565BE) {
+                pix_fmt == AV_PIX_FMT_BGR565BE)
+        {
             rgb[0] = 0x1F;
             rgb[1] = 0x7E0;
             rgb[2] = 0xF800;
-        } else {
+        }
+        else
+        {
             rgb[0] = 0xF800;
             rgb[1] = 0x7E0;
             rgb[2] = 0x1F;
@@ -102,11 +109,14 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     case AV_PIX_FMT_BGR555LE:
     case AV_PIX_FMT_BGR555BE:
         if (pix_fmt == AV_PIX_FMT_BGR555LE ||
-            pix_fmt == AV_PIX_FMT_BGR555BE) {
+                pix_fmt == AV_PIX_FMT_BGR555BE)
+        {
             rgb[0] = 0x1F;
             rgb[1] = 0x3E0;
             rgb[2] = 0x7C00;
-        } else {
+        }
+        else
+        {
             rgb[0] = 0x7C00;
             rgb[1] = 0x3E0;
             rgb[2] = 0x1F;
@@ -180,7 +190,8 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     bytestream_put_be32(&buf, 0);             // window border width
     bytestream_put_buffer(&buf, WINDOW_NAME, WINDOW_NAME_SIZE);
 
-    for (i = 0; i < ncolors; i++) {
+    for (i = 0; i < ncolors; i++)
+    {
         uint32_t val;
         uint8_t red, green, blue;
 
@@ -198,7 +209,8 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     }
 
     ptr = p->data[0];
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         bytestream_put_buffer(&buf, ptr, lsize);
         ptr += p->linesize[0];
     }
@@ -208,32 +220,35 @@ static int xwd_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     return 0;
 }
 
-AVCodec ff_xwd_encoder = {
+AVCodec ff_xwd_encoder =
+{
     .name         = "xwd",
     .long_name    = NULL_IF_CONFIG_SMALL("XWD (X Window Dump) image"),
     .type         = AVMEDIA_TYPE_VIDEO,
     .id           = AV_CODEC_ID_XWD,
     .encode2      = xwd_encode_frame,
-    .pix_fmts     = (const enum AVPixelFormat[]) { AV_PIX_FMT_BGRA,
-                                                 AV_PIX_FMT_RGBA,
-                                                 AV_PIX_FMT_ARGB,
-                                                 AV_PIX_FMT_ABGR,
-                                                 AV_PIX_FMT_RGB24,
-                                                 AV_PIX_FMT_BGR24,
-                                                 AV_PIX_FMT_RGB565BE,
-                                                 AV_PIX_FMT_RGB565LE,
-                                                 AV_PIX_FMT_BGR565BE,
-                                                 AV_PIX_FMT_BGR565LE,
-                                                 AV_PIX_FMT_RGB555BE,
-                                                 AV_PIX_FMT_RGB555LE,
-                                                 AV_PIX_FMT_BGR555BE,
-                                                 AV_PIX_FMT_BGR555LE,
-                                                 AV_PIX_FMT_RGB8,
-                                                 AV_PIX_FMT_BGR8,
-                                                 AV_PIX_FMT_RGB4_BYTE,
-                                                 AV_PIX_FMT_BGR4_BYTE,
-                                                 AV_PIX_FMT_PAL8,
-                                                 AV_PIX_FMT_GRAY8,
-                                                 AV_PIX_FMT_MONOWHITE,
-                                                 AV_PIX_FMT_NONE },
+    .pix_fmts     = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_BGRA,
+        AV_PIX_FMT_RGBA,
+        AV_PIX_FMT_ARGB,
+        AV_PIX_FMT_ABGR,
+        AV_PIX_FMT_RGB24,
+        AV_PIX_FMT_BGR24,
+        AV_PIX_FMT_RGB565BE,
+        AV_PIX_FMT_RGB565LE,
+        AV_PIX_FMT_BGR565BE,
+        AV_PIX_FMT_BGR565LE,
+        AV_PIX_FMT_RGB555BE,
+        AV_PIX_FMT_RGB555LE,
+        AV_PIX_FMT_BGR555BE,
+        AV_PIX_FMT_BGR555LE,
+        AV_PIX_FMT_RGB8,
+        AV_PIX_FMT_BGR8,
+        AV_PIX_FMT_RGB4_BYTE,
+        AV_PIX_FMT_BGR4_BYTE,
+        AV_PIX_FMT_PAL8,
+        AV_PIX_FMT_GRAY8,
+        AV_PIX_FMT_MONOWHITE,
+        AV_PIX_FMT_NONE
+    },
 };

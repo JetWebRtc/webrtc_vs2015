@@ -1,4 +1,4 @@
-/*
+﻿/*
  * xWMA demuxer
  * Copyright (c) 2011 Max Horn
  *
@@ -30,7 +30,8 @@
  * Demuxer for xWMA, a Microsoft audio container used by XAudio 2.
  */
 
-typedef struct XWMAContext {
+typedef struct XWMAContext
+{
     int64_t data_end;
 } XWMAContext;
 
@@ -85,10 +86,13 @@ static int xwma_read_header(AVFormatContext *s)
      * extradata for that. Thus, ask the user for feedback, but try to go on
      * anyway.
      */
-    if (st->codec->codec_id != AV_CODEC_ID_WMAV2) {
+    if (st->codec->codec_id != AV_CODEC_ID_WMAV2)
+    {
         avpriv_request_sample(s, "Unexpected codec (tag 0x04%x; id %d)",
                               st->codec->codec_tag, st->codec->codec_id);
-    } else {
+    }
+    else
+    {
         /* In all xWMA files I have seen, there is no extradata. But the WMA
          * codecs require extradata, so we provide our own fake extradata.
          *
@@ -96,14 +100,17 @@ static int xwma_read_header(AVFormatContext *s)
          * there was, then try to use it, after asking the user to provide a
          * sample of this unusual file.
          */
-        if (st->codec->extradata_size != 0) {
+        if (st->codec->extradata_size != 0)
+        {
             /* Surprise, surprise: We *did* get some extradata. No idea
              * if it will work, but just go on and try it, after asking
              * the user for a sample.
              */
             avpriv_request_sample(s, "Unexpected extradata (%d bytes)",
                                   st->codec->extradata_size);
-        } else {
+        }
+        else
+        {
             if (ff_alloc_extradata(st->codec, 6))
                 return AVERROR(ENOMEM);
 
@@ -113,12 +120,14 @@ static int xwma_read_header(AVFormatContext *s)
         }
     }
 
-    if (!st->codec->channels) {
+    if (!st->codec->channels)
+    {
         av_log(s, AV_LOG_WARNING, "Invalid channel count: %d\n",
                st->codec->channels);
         return AVERROR_INVALIDDATA;
     }
-    if (!st->codec->bits_per_coded_sample) {
+    if (!st->codec->bits_per_coded_sample)
+    {
         av_log(s, AV_LOG_WARNING, "Invalid bits_per_coded_sample: %d\n",
                st->codec->bits_per_coded_sample);
         return AVERROR_INVALIDDATA;
@@ -128,18 +137,23 @@ static int xwma_read_header(AVFormatContext *s)
     avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
 
     /* parse the remaining RIFF chunks */
-    for (;;) {
-        if (pb->eof_reached) {
+    for (;;)
+    {
+        if (pb->eof_reached)
+        {
             ret = AVERROR_EOF;
             goto fail;
         }
         /* read next chunk tag */
         tag = avio_rl32(pb);
         size = avio_rl32(pb);
-        if (tag == MKTAG('d', 'a', 't', 'a')) {
+        if (tag == MKTAG('d', 'a', 't', 'a'))
+        {
             /* We assume that the data chunk comes last. */
             break;
-        } else if (tag == MKTAG('d','p','d','s')) {
+        }
+        else if (tag == MKTAG('d','p','d','s'))
+        {
             /* Quoting the MSDN xWMA docs on the dpds chunk: "Contains the
              * decoded packet cumulative data size array, each element is the
              * number of bytes accumulated after the corresponding xWMA packet
@@ -151,19 +165,22 @@ static int xwma_read_header(AVFormatContext *s)
              */
 
             /* Error out if there is more than one dpds chunk. */
-            if (dpds_table) {
+            if (dpds_table)
+            {
                 av_log(s, AV_LOG_ERROR, "two dpds chunks present\n");
                 ret = AVERROR_INVALIDDATA;
                 goto fail;
             }
 
             /* Compute the number of entries in the dpds chunk. */
-            if (size & 3) {  /* Size should be divisible by four */
+            if (size & 3)    /* Size should be divisible by four */
+            {
                 av_log(s, AV_LOG_WARNING,
                        "dpds chunk size %"PRId64" not divisible by 4\n", size);
             }
             dpds_table_size = size / 4;
-            if (dpds_table_size == 0 || dpds_table_size >= INT_MAX / 4) {
+            if (dpds_table_size == 0 || dpds_table_size >= INT_MAX / 4)
+            {
                 av_log(s, AV_LOG_ERROR,
                        "dpds chunk size %"PRId64" invalid\n", size);
                 return AVERROR_INVALIDDATA;
@@ -173,11 +190,13 @@ static int xwma_read_header(AVFormatContext *s)
              * for processing later on.
              */
             dpds_table = av_malloc_array(dpds_table_size, sizeof(uint32_t));
-            if (!dpds_table) {
+            if (!dpds_table)
+            {
                 return AVERROR(ENOMEM);
             }
 
-            for (i = 0; i < dpds_table_size; ++i) {
+            for (i = 0; i < dpds_table_size; ++i)
+            {
                 dpds_table[i] = avio_rl32(pb);
                 size -= 4;
             }
@@ -186,25 +205,30 @@ static int xwma_read_header(AVFormatContext *s)
     }
 
     /* Determine overall data length */
-    if (size < 0) {
+    if (size < 0)
+    {
         ret = AVERROR_INVALIDDATA;
         goto fail;
     }
-    if (!size) {
+    if (!size)
+    {
         xwma->data_end = INT64_MAX;
-    } else
+    }
+    else
         xwma->data_end = avio_tell(pb) + size;
 
 
-    if (dpds_table && dpds_table_size) {
+    if (dpds_table && dpds_table_size)
+    {
         int64_t cur_pos;
         const uint32_t bytes_per_sample
-                = (st->codec->channels * st->codec->bits_per_coded_sample) >> 3;
+            = (st->codec->channels * st->codec->bits_per_coded_sample) >> 3;
 
         /* Estimate the duration from the total number of output bytes. */
         const uint64_t total_decoded_bytes = dpds_table[dpds_table_size - 1];
 
-        if (!bytes_per_sample) {
+        if (!bytes_per_sample)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Invalid bits_per_coded_sample %d for %d channels\n",
                    st->codec->bits_per_coded_sample, st->codec->channels);
@@ -224,7 +248,8 @@ static int xwma_read_header(AVFormatContext *s)
          * discovered.
          */
         cur_pos = avio_tell(pb);
-        for (i = 0; i < dpds_table_size; ++i) {
+        for (i = 0; i < dpds_table_size; ++i)
+        {
             /* From the number of output bytes that would accumulate in the
              * output buffer after decoding the first (i+1) packets, we compute
              * an offset / timestamp pair.
@@ -236,7 +261,9 @@ static int xwma_read_header(AVFormatContext *s)
                                0,                                        /* duration */
                                AVINDEX_KEYFRAME);
         }
-    } else if (st->codec->bit_rate) {
+    }
+    else if (st->codec->bit_rate)
+    {
         /* No dpds chunk was present (or only an empty one), so estimate
          * the total duration using the average bits per sample and the
          * total data length.
@@ -260,7 +287,8 @@ static int xwma_read_packet(AVFormatContext *s, AVPacket *pkt)
     st = s->streams[0];
 
     left = xwma->data_end - avio_tell(s->pb);
-    if (left <= 0) {
+    if (left <= 0)
+    {
         return AVERROR_EOF;
     }
 
@@ -276,7 +304,8 @@ static int xwma_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_xwma_demuxer = {
+AVInputFormat ff_xwma_demuxer =
+{
     .name           = "xwma",
     .long_name      = NULL_IF_CONFIG_SMALL("Microsoft xWMA"),
     .priv_data_size = sizeof(XWMAContext),

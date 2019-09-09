@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,18 +15,20 @@
 extern "C" {
 #endif
 
-enum {
-  VP9D_NOFILTERING = 0,
-  VP9D_DEBLOCK = 1 << 0,
-  VP9D_DEMACROBLOCK = 1 << 1,
-  VP9D_ADDNOISE = 1 << 2,
-  VP9D_MFQE = 1 << 3
+enum
+{
+    VP9D_NOFILTERING = 0,
+    VP9D_DEBLOCK = 1 << 0,
+    VP9D_DEMACROBLOCK = 1 << 1,
+    VP9D_ADDNOISE = 1 << 2,
+    VP9D_MFQE = 1 << 3
 };
 
-typedef struct {
-  int post_proc_flag;
-  int deblocking_level;
-  int noise_level;
+typedef struct
+{
+    int post_proc_flag;
+    int deblocking_level;
+    int noise_level;
 } vp9_ppflags_t;
 
 #ifdef __cplusplus

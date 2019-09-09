@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,48 +15,54 @@
 #include "webrtc/base/platform_thread.h"
 #include "webrtc/base/thread_annotations.h"
 
-namespace rtc {
+namespace rtc
+{
 
-namespace internal {
+namespace internal
+{
 class RaceCheckerScope;
 }  // namespace internal
 
 // Best-effort race-checking implementation. This primitive uses no
 // synchronization at all to be as-fast-as-possible in the non-racy case.
-class LOCKABLE RaceChecker {
- public:
-  friend class internal::RaceCheckerScope;
-  RaceChecker();
+class LOCKABLE RaceChecker
+{
+public:
+    friend class internal::RaceCheckerScope;
+    RaceChecker();
 
- private:
-  bool Acquire() const EXCLUSIVE_LOCK_FUNCTION();
-  void Release() const UNLOCK_FUNCTION();
+private:
+    bool Acquire() const EXCLUSIVE_LOCK_FUNCTION();
+    void Release() const UNLOCK_FUNCTION();
 
-  // Volatile to prevent code being optimized away in Acquire()/Release().
-  mutable volatile int access_count_ = 0;
-  mutable volatile PlatformThreadRef accessing_thread_;
+    // Volatile to prevent code being optimized away in Acquire()/Release().
+    mutable volatile int access_count_ = 0;
+    mutable volatile PlatformThreadRef accessing_thread_;
 };
 
-namespace internal {
-class SCOPED_LOCKABLE RaceCheckerScope {
- public:
-  explicit RaceCheckerScope(const RaceChecker* race_checker)
-      EXCLUSIVE_LOCK_FUNCTION(race_checker);
+namespace internal
+{
+class SCOPED_LOCKABLE RaceCheckerScope
+{
+public:
+    explicit RaceCheckerScope(const RaceChecker* race_checker)
+    EXCLUSIVE_LOCK_FUNCTION(race_checker);
 
-  bool RaceDetected() const;
-  ~RaceCheckerScope() UNLOCK_FUNCTION();
+    bool RaceDetected() const;
+    ~RaceCheckerScope() UNLOCK_FUNCTION();
 
- private:
-  const RaceChecker* const race_checker_;
-  const bool race_check_ok_;
+private:
+    const RaceChecker* const race_checker_;
+    const bool race_check_ok_;
 };
 
-class SCOPED_LOCKABLE RaceCheckerScopeDoNothing {
- public:
-  explicit RaceCheckerScopeDoNothing(const RaceChecker* race_checker)
-      EXCLUSIVE_LOCK_FUNCTION(race_checker) {}
+class SCOPED_LOCKABLE RaceCheckerScopeDoNothing
+{
+public:
+    explicit RaceCheckerScopeDoNothing(const RaceChecker* race_checker)
+    EXCLUSIVE_LOCK_FUNCTION(race_checker) {}
 
-  ~RaceCheckerScopeDoNothing() UNLOCK_FUNCTION() {}
+    ~RaceCheckerScopeDoNothing() UNLOCK_FUNCTION() {}
 };
 
 }  // namespace internal

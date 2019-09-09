@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TAK decoder/demuxer common code
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -97,12 +97,14 @@
 #define TAK_MAX_FRAME_HEADER_BYTES     ((TAK_MAX_FRAME_HEADER_BITS + 7) / 8)
 #define TAK_MIN_FRAME_HEADER_BYTES     ((TAK_MIN_FRAME_HEADER_BITS + 7) / 8)
 
-enum TAKCodecType {
+enum TAKCodecType
+{
     TAK_CODEC_MONO_STEREO  = 2,
     TAK_CODEC_MULTICHANNEL = 4,
 };
 
-enum TAKMetaDataType {
+enum TAKMetaDataType
+{
     TAK_METADATA_END = 0,
     TAK_METADATA_STREAMINFO,
     TAK_METADATA_SEEKTABLE,
@@ -113,7 +115,8 @@ enum TAKMetaDataType {
     TAK_METADATA_LAST_FRAME,
 };
 
-enum TAKFrameSizeType {
+enum TAKFrameSizeType
+{
     TAK_FST_94ms = 0,
     TAK_FST_125ms,
     TAK_FST_188ms,
@@ -126,7 +129,8 @@ enum TAKFrameSizeType {
     TAK_FST_2048,
 };
 
-typedef struct TAKStreamInfo {
+typedef struct TAKStreamInfo
+{
     int               flags;
     enum TAKCodecType codec;
     int               data_type;

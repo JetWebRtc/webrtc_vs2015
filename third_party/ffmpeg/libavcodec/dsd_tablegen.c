@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a header file for hardcoded DSD tables
  *
  * This file is part of FFmpeg.

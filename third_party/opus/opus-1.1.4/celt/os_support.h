@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 Jean-Marc Valin
+﻿/* Copyright (C) 2007 Jean-Marc Valin
 
    File: os_support.h
    This is the (tiny) OS abstraction layer. Aside from math.h, this is the
@@ -46,7 +46,7 @@
 #ifndef OVERRIDE_OPUS_ALLOC
 static OPUS_INLINE void *opus_alloc (size_t size)
 {
-   return malloc(size);
+    return malloc(size);
 }
 #endif
 
@@ -54,8 +54,8 @@ static OPUS_INLINE void *opus_alloc (size_t size)
 #ifndef OVERRIDE_OPUS_ALLOC_SCRATCH
 static OPUS_INLINE void *opus_alloc_scratch (size_t size)
 {
-   /* Scratch space doesn't need to be cleared */
-   return opus_alloc(size);
+    /* Scratch space doesn't need to be cleared */
+    return opus_alloc(size);
 }
 #endif
 
@@ -63,7 +63,7 @@ static OPUS_INLINE void *opus_alloc_scratch (size_t size)
 #ifndef OVERRIDE_OPUS_FREE
 static OPUS_INLINE void opus_free (void *ptr)
 {
-   free(ptr);
+    free(ptr);
 }
 #endif
 

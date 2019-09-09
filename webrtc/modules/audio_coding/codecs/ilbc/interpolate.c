@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,17 +30,18 @@ void WebRtcIlbcfix_Interpolate(
     int16_t coef, /* (i) weight coefficient in Q14 */
     int16_t length)  /* (i) number of sample is vectors */
 {
-  int i;
-  int16_t invcoef;
+    int i;
+    int16_t invcoef;
 
-  /*
-    Performs the operation out[i] = in[i]*coef + (1-coef)*in2[i] (with rounding)
-  */
+    /*
+      Performs the operation out[i] = in[i]*coef + (1-coef)*in2[i] (with rounding)
+    */
 
-  invcoef = 16384 - coef; /* 16384 = 1.0 (Q14)*/
-  for (i = 0; i < length; i++) {
-    out[i] = (int16_t)((coef * in1[i] + invcoef * in2[i] + 8192) >> 14);
-  }
+    invcoef = 16384 - coef; /* 16384 = 1.0 (Q14)*/
+    for (i = 0; i < length; i++)
+    {
+        out[i] = (int16_t)((coef * in1[i] + invcoef * in2[i] + 8192) >> 14);
+    }
 
-  return;
+    return;
 }

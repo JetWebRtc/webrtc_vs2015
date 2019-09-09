@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 parser
  * Copyright (c) 2006-2007 Konstantin Shishkov
  * Partly based on vc9.c (c) 2005 Anonymous, Alex Beregszaszi, Michael Niedermayer
@@ -41,14 +41,16 @@
  */
 #define UNESCAPED_LIMIT 144
 
-typedef enum {
+typedef enum
+{
     NO_MATCH,
     ONE_ZERO,
     TWO_ZEROS,
     ONE
 } VC1ParseSearchState;
 
-typedef struct VC1ParseContext {
+typedef struct VC1ParseContext
+{
     ParseContext pc;
     VC1Context v;
     uint8_t prev_start_code;
@@ -68,7 +70,8 @@ static void vc1_extract_header(AVCodecParserContext *s, AVCodecContext *avctx,
     vpc->v.s.avctx = avctx;
     vpc->v.parse_only = 1;
     init_get_bits(&gb, buf, buf_size * 8);
-    switch (vpc->prev_start_code) {
+    switch (vpc->prev_start_code)
+    {
     case VC1_CODE_SEQHDR & 0xFF:
         ff_vc1_decode_sequence_header(avctx, &vpc->v, &gb);
         break;
@@ -90,19 +93,25 @@ static void vc1_extract_header(AVCodecParserContext *s, AVCodecContext *avctx,
         else
             s->pict_type = vpc->v.s.pict_type;
 
-        if (avctx->ticks_per_frame > 1){
+        if (avctx->ticks_per_frame > 1)
+        {
             // process pulldown flags
             s->repeat_pict = 1;
             // Pulldown flags are only valid when 'broadcast' has been set.
             // So ticks_per_frame will be 2
-            if (vpc->v.rff){
+            if (vpc->v.rff)
+            {
                 // repeat field
                 s->repeat_pict = 2;
-            }else if (vpc->v.rptfrm){
+            }
+            else if (vpc->v.rptfrm)
+            {
                 // repeat frames
                 s->repeat_pict = vpc->v.rptfrm * 2 + 1;
             }
-        }else{
+        }
+        else
+        {
             s->repeat_pict = 0;
         }
 
@@ -114,13 +123,16 @@ static void vc1_extract_header(AVCodecParserContext *s, AVCodecContext *avctx,
         break;
     }
     if (avctx->framerate.num)
-        avctx->time_base = av_inv_q(av_mul_q(avctx->framerate, (AVRational){avctx->ticks_per_frame, 1}));
+        avctx->time_base = av_inv_q(av_mul_q(avctx->framerate, (AVRational)
+    {
+        avctx->ticks_per_frame, 1
+    }));
 }
 
 static int vc1_parse(AVCodecParserContext *s,
-                           AVCodecContext *avctx,
-                           const uint8_t **poutbuf, int *poutbuf_size,
-                           const uint8_t *buf, int buf_size)
+                     AVCodecContext *avctx,
+                     const uint8_t **poutbuf, int *poutbuf_size,
+                     const uint8_t *buf, int buf_size)
 {
     /* Here we do the searching for frame boundaries and headers at
      * the same time. Only a minimal amount at the start of each
@@ -134,30 +146,36 @@ static int vc1_parse(AVCodecParserContext *s,
     int next = END_NOT_FOUND;
     int i = vpc->bytes_to_skip;
 
-    if (pic_found && buf_size == 0) {
+    if (pic_found && buf_size == 0)
+    {
         /* EOF considered as end of frame */
         memset(unesc_buffer + unesc_index, 0, UNESCAPED_THRESHOLD - unesc_index);
         vc1_extract_header(s, avctx, unesc_buffer, unesc_index);
         next = 0;
     }
-    while (i < buf_size) {
+    while (i < buf_size)
+    {
         uint8_t b;
         start_code_found = 0;
-        while (i < buf_size && unesc_index < UNESCAPED_THRESHOLD) {
+        while (i < buf_size && unesc_index < UNESCAPED_THRESHOLD)
+        {
             b = buf[i++];
             unesc_buffer[unesc_index++] = b;
             if (search_state <= ONE_ZERO)
                 search_state = b ? NO_MATCH : search_state + 1;
-            else if (search_state == TWO_ZEROS) {
+            else if (search_state == TWO_ZEROS)
+            {
                 if (b == 1)
                     search_state = ONE;
-                else if (b > 1) {
+                else if (b > 1)
+                {
                     if (b == 3)
                         unesc_index--; // swallow emulation prevention byte
                     search_state = NO_MATCH;
                 }
             }
-            else { // search_state == ONE
+            else   // search_state == ONE
+            {
                 // Header unescaping terminates early due to detection of next start code
                 search_state = NO_MATCH;
                 start_code_found = 1;
@@ -174,23 +192,31 @@ static int vc1_parse(AVCodecParserContext *s,
             vc1_extract_header(s, avctx, unesc_buffer, unesc_index);
             break;
         }
-        if (unesc_index >= UNESCAPED_THRESHOLD && !start_code_found) {
-            while (i < buf_size) {
-                if (search_state == NO_MATCH) {
+        if (unesc_index >= UNESCAPED_THRESHOLD && !start_code_found)
+        {
+            while (i < buf_size)
+            {
+                if (search_state == NO_MATCH)
+                {
                     i += vpc->v.vc1dsp.startcode_find_candidate(buf + i, buf_size - i);
-                    if (i < buf_size) {
+                    if (i < buf_size)
+                    {
                         search_state = ONE_ZERO;
                     }
                     i++;
-                } else {
+                }
+                else
+                {
                     b = buf[i++];
                     if (search_state == ONE_ZERO)
                         search_state = b ? NO_MATCH : TWO_ZEROS;
-                    else if (search_state == TWO_ZEROS) {
+                    else if (search_state == TWO_ZEROS)
+                    {
                         if (b >= 1)
                             search_state = b == 1 ? ONE : NO_MATCH;
                     }
-                    else { // search_state == ONE
+                    else   // search_state == ONE
+                    {
                         search_state = NO_MATCH;
                         start_code_found = 1;
                         break;
@@ -198,17 +224,21 @@ static int vc1_parse(AVCodecParserContext *s,
                 }
             }
         }
-        if (start_code_found) {
+        if (start_code_found)
+        {
             vc1_extract_header(s, avctx, unesc_buffer, unesc_index);
 
             vpc->prev_start_code = b;
             unesc_index = 0;
 
-            if (!(s->flags & PARSER_FLAG_COMPLETE_FRAMES)) {
-                if (!pic_found && (b == (VC1_CODE_FRAME & 0xFF) || b == (VC1_CODE_FIELD & 0xFF))) {
+            if (!(s->flags & PARSER_FLAG_COMPLETE_FRAMES))
+            {
+                if (!pic_found && (b == (VC1_CODE_FRAME & 0xFF) || b == (VC1_CODE_FIELD & 0xFF)))
+                {
                     pic_found = 1;
                 }
-                else if (pic_found && b != (VC1_CODE_FIELD & 0xFF) && b != (VC1_CODE_SLICE & 0xFF)) {
+                else if (pic_found && b != (VC1_CODE_FIELD & 0xFF) && b != (VC1_CODE_SLICE & 0xFF))
+                {
                     next = i - 4;
                     pic_found = b == (VC1_CODE_FRAME & 0xFF);
                     break;
@@ -221,10 +251,14 @@ static int vc1_parse(AVCodecParserContext *s,
     vpc->unesc_index = unesc_index;
     vpc->search_state = search_state;
 
-    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES) {
+    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES)
+    {
         next = buf_size;
-    } else {
-        if (ff_combine_frame(&vpc->pc, next, &buf, &buf_size) < 0) {
+    }
+    else
+    {
+        if (ff_combine_frame(&vpc->pc, next, &buf, &buf_size) < 0)
+        {
             vpc->bytes_to_skip = 0;
             *poutbuf = NULL;
             *poutbuf_size = 0;
@@ -249,17 +283,20 @@ static int vc1_parse(AVCodecParserContext *s,
 }
 
 static int vc1_split(AVCodecContext *avctx,
-                           const uint8_t *buf, int buf_size)
+                     const uint8_t *buf, int buf_size)
 {
     uint32_t state = -1;
     int charged = 0;
     const uint8_t *ptr = buf, *end = buf + buf_size;
 
-    while (ptr < end) {
+    while (ptr < end)
+    {
         ptr = avpriv_find_start_code(ptr, end, &state);
-        if (state == VC1_CODE_SEQHDR || state == VC1_CODE_ENTRYPOINT) {
+        if (state == VC1_CODE_SEQHDR || state == VC1_CODE_ENTRYPOINT)
+        {
             charged = 1;
-        } else if (charged && IS_MARKER(state))
+        }
+        else if (charged && IS_MARKER(state))
             return ptr - 4 - buf;
     }
 
@@ -278,7 +315,8 @@ static av_cold int vc1_parse_init(AVCodecParserContext *s)
     return ff_vc1_init_common(&vpc->v);
 }
 
-AVCodecParser ff_vc1_parser = {
+AVCodecParser ff_vc1_parser =
+{
     .codec_ids      = { AV_CODEC_ID_VC1 },
     .priv_data_size = sizeof(VC1ParseContext),
     .parser_init    = vc1_parse_init,

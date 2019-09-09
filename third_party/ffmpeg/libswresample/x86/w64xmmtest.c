@@ -1,4 +1,4 @@
-/*
+﻿/*
  * check XMM registers for clobbers on Win64
  * Copyright (c) 2013 Martin Storsjo
  *

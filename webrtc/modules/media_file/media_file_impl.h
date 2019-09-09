@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,7 +18,8 @@
 #include "webrtc/modules/media_file/media_file_utility.h"
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class MediaFileImpl : public MediaFile
 {
 

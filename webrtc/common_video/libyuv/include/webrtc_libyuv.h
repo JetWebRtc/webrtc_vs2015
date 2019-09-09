@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,28 +22,30 @@
 #include "webrtc/common_types.h"  // RawVideoTypes.
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class I420Buffer;
 
 // Supported video types.
-enum VideoType {
-  kUnknown,
-  kI420,
-  kIYUV,
-  kRGB24,
-  kABGR,
-  kARGB,
-  kARGB4444,
-  kRGB565,
-  kARGB1555,
-  kYUY2,
-  kYV12,
-  kUYVY,
-  kMJPG,
-  kNV21,
-  kNV12,
-  kBGRA,
+enum VideoType
+{
+    kUnknown,
+    kI420,
+    kIYUV,
+    kRGB24,
+    kABGR,
+    kARGB,
+    kARGB4444,
+    kRGB565,
+    kARGB1555,
+    kYUY2,
+    kYV12,
+    kUYVY,
+    kMJPG,
+    kNV21,
+    kNV12,
+    kBGRA,
 };
 
 // This is the max PSNR value our algorithms can return.
@@ -148,17 +150,18 @@ void NV12Scale(std::vector<uint8_t>* tmp_buffer,
 // Helper class for directly converting and scaling NV12 to I420. The Y-plane
 // will be scaled directly to the I420 destination, which makes this faster
 // than separate NV12->I420 + I420->I420 scaling.
-class NV12ToI420Scaler {
- public:
-  void NV12ToI420Scale(const uint8_t* src_y, int src_stride_y,
-                       const uint8_t* src_uv, int src_stride_uv,
-                       int src_width, int src_height,
-                       uint8_t* dst_y, int dst_stride_y,
-                       uint8_t* dst_u, int dst_stride_u,
-                       uint8_t* dst_v, int dst_stride_v,
-                       int dst_width, int dst_height);
- private:
-  std::vector<uint8_t> tmp_uv_planes_;
+class NV12ToI420Scaler
+{
+public:
+    void NV12ToI420Scale(const uint8_t* src_y, int src_stride_y,
+                         const uint8_t* src_uv, int src_stride_uv,
+                         int src_width, int src_height,
+                         uint8_t* dst_y, int dst_stride_y,
+                         uint8_t* dst_u, int dst_stride_u,
+                         uint8_t* dst_v, int dst_stride_v,
+                         int dst_width, int dst_height);
+private:
+    std::vector<uint8_t> tmp_uv_planes_;
 };
 
 }  // namespace webrtc

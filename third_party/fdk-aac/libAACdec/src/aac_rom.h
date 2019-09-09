@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -113,27 +113,29 @@ extern const SCHAR ExponentTable [4][14] ;
 extern const FIXP_WTB LowDelaySynthesis512[1536];
 extern const FIXP_WTB LowDelaySynthesis480[1440];
 
-typedef struct {
-  const SHORT *sfbOffsetLong;
-  const SHORT *sfbOffsetShort;
-  UCHAR numberOfSfbLong;
-  UCHAR numberOfSfbShort;
+typedef struct
+{
+    const SHORT *sfbOffsetLong;
+    const SHORT *sfbOffsetShort;
+    UCHAR numberOfSfbLong;
+    UCHAR numberOfSfbShort;
 } SFB_INFO;
 
 extern const SFB_INFO sfbOffsetTables[5][16];
 
 /* Huffman tables */
-enum {
-  HuffmanBits = 2,
-  HuffmanEntries = (1 << HuffmanBits)
+enum
+{
+    HuffmanBits = 2,
+    HuffmanEntries = (1 << HuffmanBits)
 };
 
 typedef struct
 {
-  const USHORT (*CodeBook)[HuffmanEntries];
-  UCHAR Dimension;
-  UCHAR numBits;
-  UCHAR Offset;
+    const USHORT (*CodeBook)[HuffmanEntries];
+    UCHAR Dimension;
+    UCHAR numBits;
+    UCHAR Offset;
 } CodeBookDescription;
 
 extern const CodeBookDescription AACcodeBookDescriptionTable[13];

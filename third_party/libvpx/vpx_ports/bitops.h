@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,38 +33,43 @@ extern "C" {
 // use GNU builtins where available.
 #if defined(__GNUC__) && \
     ((__GNUC__ == 3 && __GNUC_MINOR__ >= 4) || __GNUC__ >= 4)
-static INLINE int get_msb(unsigned int n) {
-  assert(n != 0);
-  return 31 ^ __builtin_clz(n);
+static INLINE int get_msb(unsigned int n)
+{
+    assert(n != 0);
+    return 31 ^ __builtin_clz(n);
 }
 #elif defined(USE_MSC_INTRINSICS)
 #pragma intrinsic(_BitScanReverse)
 
-static INLINE int get_msb(unsigned int n) {
-  unsigned long first_set_bit;
-  assert(n != 0);
-  _BitScanReverse(&first_set_bit, n);
-  return first_set_bit;
+static INLINE int get_msb(unsigned int n)
+{
+    unsigned long first_set_bit;
+    assert(n != 0);
+    _BitScanReverse(&first_set_bit, n);
+    return first_set_bit;
 }
 #undef USE_MSC_INTRINSICS
 #else
 // Returns (int)floor(log2(n)). n must be > 0.
-static INLINE int get_msb(unsigned int n) {
-  int log = 0;
-  unsigned int value = n;
-  int i;
+static INLINE int get_msb(unsigned int n)
+{
+    int log = 0;
+    unsigned int value = n;
+    int i;
 
-  assert(n != 0);
+    assert(n != 0);
 
-  for (i = 4; i >= 0; --i) {
-    const int shift = (1 << i);
-    const unsigned int x = value >> shift;
-    if (x != 0) {
-      value = x;
-      log += shift;
+    for (i = 4; i >= 0; --i)
+    {
+        const int shift = (1 << i);
+        const unsigned int x = value >> shift;
+        if (x != 0)
+        {
+            value = x;
+            log += shift;
+        }
     }
-  }
-  return log;
+    return log;
 }
 #endif
 

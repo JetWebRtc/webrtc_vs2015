@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio resampling
  * Copyright (c) 2004-2012 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -27,7 +27,8 @@
 
 #include "swresample_internal.h"
 
-typedef struct ResampleContext {
+typedef struct ResampleContext
+{
     const AVClass *av_class;
     uint8_t *filter_bank;
     int filter_length;
@@ -50,7 +51,8 @@ typedef struct ResampleContext {
     int felem_size;
     int filter_shift;
 
-    struct {
+    struct
+    {
         void (*resample_one)(void *dst, const void *src,
                              int n, int64_t index, int64_t incr);
         int (*resample)(struct ResampleContext *c, void *dst,

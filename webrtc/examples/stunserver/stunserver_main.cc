@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,33 +19,37 @@
 
 using cricket::StunServer;
 
-int main(int argc, char* argv[]) {
-  if (argc != 2) {
-    std::cerr << "usage: stunserver address" << std::endl;
-    return 1;
-  }
+int main(int argc, char* argv[])
+{
+    if (argc != 2)
+    {
+        std::cerr << "usage: stunserver address" << std::endl;
+        return 1;
+    }
 
-  rtc::SocketAddress server_addr;
-  if (!server_addr.FromString(argv[1])) {
-    std::cerr << "Unable to parse IP address: " << argv[1];
-    return 1;
-  }
+    rtc::SocketAddress server_addr;
+    if (!server_addr.FromString(argv[1]))
+    {
+        std::cerr << "Unable to parse IP address: " << argv[1];
+        return 1;
+    }
 
-  rtc::Thread *pthMain = rtc::Thread::Current();
+    rtc::Thread *pthMain = rtc::Thread::Current();
 
-  rtc::AsyncUDPSocket* server_socket =
-      rtc::AsyncUDPSocket::Create(pthMain->socketserver(), server_addr);
-  if (!server_socket) {
-    std::cerr << "Failed to create a UDP socket" << std::endl;
-    return 1;
-  }
+    rtc::AsyncUDPSocket* server_socket =
+        rtc::AsyncUDPSocket::Create(pthMain->socketserver(), server_addr);
+    if (!server_socket)
+    {
+        std::cerr << "Failed to create a UDP socket" << std::endl;
+        return 1;
+    }
 
-  StunServer* server = new StunServer(server_socket);
+    StunServer* server = new StunServer(server_socket);
 
-  std::cout << "Listening at " << server_addr.ToString() << std::endl;
+    std::cout << "Listening at " << server_addr.ToString() << std::endl;
 
-  pthMain->Run();
+    pthMain->Run();
 
-  delete server;
-  return 0;
+    delete server;
+    return 0;
 }

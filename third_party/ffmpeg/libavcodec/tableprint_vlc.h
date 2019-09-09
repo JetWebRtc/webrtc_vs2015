@@ -43,7 +43,8 @@
 
 #define REPLACE_DEFINE2(type) write_##type##_array
 #define REPLACE_DEFINE(type) REPLACE_DEFINE2(type)
-static void write_VLC_TYPE_array(const VLC_TYPE *p, int s) {
+static void write_VLC_TYPE_array(const VLC_TYPE *p, int s)
+{
     REPLACE_DEFINE(VLC_TYPE)(p, s);
 }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Andrew D'Addesio
  * Copyright (c) 2013-2014 Mozilla Corporation
  *
@@ -31,7 +31,8 @@
 #include "opus.h"
 #include "vorbis.h"
 
-static const uint16_t opus_frame_duration[32] = {
+static const uint16_t opus_frame_duration[32] =
+{
     480, 960, 1920, 2880,
     480, 960, 1920, 2880,
     480, 960, 1920, 2880,
@@ -53,7 +54,8 @@ static inline int xiph_lacing_16bit(const uint8_t **ptr, const uint8_t *end)
     if (*ptr >= end)
         return AVERROR_INVALIDDATA;
     val = *(*ptr)++;
-    if (val >= 252) {
+    if (val >= 252)
+    {
         if (*ptr >= end)
             return AVERROR_INVALIDDATA;
         val += 4 * *(*ptr)++;
@@ -69,7 +71,8 @@ static inline int xiph_lacing_full(const uint8_t **ptr, const uint8_t *end)
     int val = 0;
     int next;
 
-    while (1) {
+    while (1)
+    {
         if (*ptr >= end || val > INT_MAX - 254)
             return AVERROR_INVALIDDATA;
         next = *(*ptr)++;
@@ -106,13 +109,15 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
     if (pkt->code >= 2 && buf_size < 2)
         goto fail;
 
-    switch (pkt->code) {
+    switch (pkt->code)
+    {
     case 0:
         /* 1 frame */
         pkt->frame_count = 1;
         pkt->vbr         = 0;
 
-        if (self_delimiting) {
+        if (self_delimiting)
+        {
             int len = xiph_lacing_16bit(&ptr, end);
             if (len < 0 || len > end - ptr)
                 goto fail;
@@ -131,7 +136,8 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
         pkt->frame_count = 2;
         pkt->vbr         = 0;
 
-        if (self_delimiting) {
+        if (self_delimiting)
+        {
             int len = xiph_lacing_16bit(&ptr, end);
             if (len < 0 || 2 * len > end - ptr)
                 goto fail;
@@ -157,7 +163,8 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
         if (frame_bytes < 0)
             goto fail;
 
-        if (self_delimiting) {
+        if (self_delimiting)
+        {
             int len = xiph_lacing_16bit(&ptr, end);
             if (len < 0 || len + frame_bytes > end - ptr)
                 goto fail;
@@ -186,18 +193,21 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
             goto fail;
 
         /* read padding size */
-        if (padding) {
+        if (padding)
+        {
             padding = xiph_lacing_full(&ptr, end);
             if (padding < 0)
                 goto fail;
         }
 
         /* read frame sizes */
-        if (pkt->vbr) {
+        if (pkt->vbr)
+        {
             /* for VBR, all frames except the final one have their size coded
                in the bitstream. the last frame size is implicit. */
             int total_bytes = 0;
-            for (i = 0; i < pkt->frame_count - 1; i++) {
+            for (i = 0; i < pkt->frame_count - 1; i++)
+            {
                 frame_bytes = xiph_lacing_16bit(&ptr, end);
                 if (frame_bytes < 0)
                     goto fail;
@@ -205,7 +215,8 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
                 total_bytes += frame_bytes;
             }
 
-            if (self_delimiting) {
+            if (self_delimiting)
+            {
                 int len = xiph_lacing_16bit(&ptr, end);
                 if (len < 0 || len + total_bytes + padding > end - ptr)
                     goto fail;
@@ -220,26 +231,32 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
             for (i = 1; i < pkt->frame_count; i++)
                 pkt->frame_offset[i] = pkt->frame_offset[i-1] + pkt->frame_size[i-1];
             pkt->frame_size[pkt->frame_count-1] = frame_bytes - total_bytes;
-        } else {
+        }
+        else
+        {
             /* for CBR, the remaining packet bytes are divided evenly between
                the frames */
-            if (self_delimiting) {
+            if (self_delimiting)
+            {
                 frame_bytes = xiph_lacing_16bit(&ptr, end);
                 if (frame_bytes < 0 || pkt->frame_count * frame_bytes + padding > end - ptr)
                     goto fail;
                 end      = ptr + pkt->frame_count * frame_bytes + padding;
                 buf_size = end - buf;
-            } else {
+            }
+            else
+            {
                 frame_bytes = end - ptr - padding;
                 if (frame_bytes % pkt->frame_count ||
-                    frame_bytes / pkt->frame_count > MAX_FRAME_SIZE)
+                        frame_bytes / pkt->frame_count > MAX_FRAME_SIZE)
                     goto fail;
                 frame_bytes /= pkt->frame_count;
             }
 
             pkt->frame_offset[0] = ptr - buf;
             pkt->frame_size[0]   = frame_bytes;
-            for (i = 1; i < pkt->frame_count; i++) {
+            for (i = 1; i < pkt->frame_count; i++)
+            {
                 pkt->frame_offset[i] = pkt->frame_offset[i-1] + pkt->frame_size[i-1];
                 pkt->frame_size[i]   = frame_bytes;
             }
@@ -255,13 +272,18 @@ int ff_opus_parse_packet(OpusPacket *pkt, const uint8_t *buf, int buf_size,
         goto fail;
 
     /* set mode and bandwidth */
-    if (pkt->config < 12) {
+    if (pkt->config < 12)
+    {
         pkt->mode = OPUS_MODE_SILK;
         pkt->bandwidth = pkt->config >> 2;
-    } else if (pkt->config < 16) {
+    }
+    else if (pkt->config < 16)
+    {
         pkt->mode = OPUS_MODE_HYBRID;
         pkt->bandwidth = OPUS_BANDWIDTH_SUPERWIDEBAND + (pkt->config >= 14);
-    } else {
+    }
+    else
+    {
         pkt->mode = OPUS_MODE_CELT;
         pkt->bandwidth = (pkt->config - 16) >> 2;
         /* skip mediumband */
@@ -298,27 +320,33 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
     int version, channels, map_type, streams, stereo_streams, i, j;
     uint64_t layout;
 
-    if (!avctx->extradata) {
-        if (avctx->channels > 2) {
+    if (!avctx->extradata)
+    {
+        if (avctx->channels > 2)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Multichannel configuration without extradata.\n");
             return AVERROR(EINVAL);
         }
         extradata      = opus_default_extradata;
         extradata_size = sizeof(opus_default_extradata);
-    } else {
+    }
+    else
+    {
         extradata = avctx->extradata;
         extradata_size = avctx->extradata_size;
     }
 
-    if (extradata_size < 19) {
+    if (extradata_size < 19)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid extradata size: %d\n",
                extradata_size);
         return AVERROR_INVALIDDATA;
     }
 
     version = extradata[8];
-    if (version > 15) {
+    if (version > 15)
+    {
         avpriv_request_sample(avctx, "Extradata version %d", version);
         return AVERROR_PATCHWELCOME;
     }
@@ -326,7 +354,8 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
     avctx->delay = AV_RL16(extradata + 10);
 
     channels = avctx->extradata ? extradata[9] : (avctx->channels == 1) ? 1 : 2;
-    if (!channels) {
+    if (!channels)
+    {
         av_log(avctx, AV_LOG_ERROR, "Zero channel count specified in the extadata\n");
         return AVERROR_INVALIDDATA;
     }
@@ -336,8 +365,10 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
         s->gain = pow(10, s->gain_i / (20.0 * 256));
 
     map_type = extradata[18];
-    if (!map_type) {
-        if (channels > 2) {
+    if (!map_type)
+    {
+        if (channels > 2)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Channel mapping 0 is only specified for up to 2 channels\n");
             return AVERROR_INVALIDDATA;
@@ -346,8 +377,11 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
         streams        = 1;
         stereo_streams = channels - 1;
         channel_map    = default_channel_map;
-    } else if (map_type == 1 || map_type == 255) {
-        if (extradata_size < 21 + channels) {
+    }
+    else if (map_type == 1 || map_type == 255)
+    {
+        if (extradata_size < 21 + channels)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid extradata size: %d\n",
                    extradata_size);
             return AVERROR_INVALIDDATA;
@@ -356,25 +390,31 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
         streams        = extradata[19];
         stereo_streams = extradata[20];
         if (!streams || stereo_streams > streams ||
-            streams + stereo_streams > 255) {
+                streams + stereo_streams > 255)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid stream/stereo stream count: %d/%d\n", streams, stereo_streams);
             return AVERROR_INVALIDDATA;
         }
 
-        if (map_type == 1) {
-            if (channels > 8) {
+        if (map_type == 1)
+        {
+            if (channels > 8)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Channel mapping 1 is only specified for up to 8 channels\n");
                 return AVERROR_INVALIDDATA;
             }
             layout = ff_vorbis_channel_layouts[channels - 1];
             channel_reorder = channel_reorder_vorbis;
-        } else
+        }
+        else
             layout = 0;
 
         channel_map = extradata + 21;
-    } else {
+    }
+    else
+    {
         avpriv_request_sample(avctx, "Mapping type %d", map_type);
         return AVERROR_PATCHWELCOME;
     }
@@ -383,14 +423,18 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
     if (!s->channel_maps)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < channels; i++) {
+    for (i = 0; i < channels; i++)
+    {
         ChannelMap *map = &s->channel_maps[i];
         uint8_t     idx = channel_map[channel_reorder(channels, i)];
 
-        if (idx == 255) {
+        if (idx == 255)
+        {
             map->silence = 1;
             continue;
-        } else if (idx >= streams + stereo_streams) {
+        }
+        else if (idx >= streams + stereo_streams)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid channel map for output channel %d: %d\n", i, idx);
             return AVERROR_INVALIDDATA;
@@ -399,16 +443,20 @@ av_cold int ff_opus_parse_extradata(AVCodecContext *avctx,
         /* check that we din't see this index yet */
         map->copy = 0;
         for (j = 0; j < i; j++)
-            if (channel_map[channel_reorder(channels, j)] == idx) {
+            if (channel_map[channel_reorder(channels, j)] == idx)
+            {
                 map->copy     = 1;
                 map->copy_idx = j;
                 break;
             }
 
-        if (idx < 2 * stereo_streams) {
+        if (idx < 2 * stereo_streams)
+        {
             map->stream_idx  = idx / 2;
             map->channel_idx = idx & 1;
-        } else {
+        }
+        else
+        {
             map->stream_idx  = idx - stereo_streams;
             map->channel_idx = 0;
         }

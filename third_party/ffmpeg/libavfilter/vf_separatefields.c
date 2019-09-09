@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -22,7 +22,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     int nb_planes;
     AVFrame *second;
 } SeparateFieldsContext;
@@ -35,7 +36,8 @@ static int config_props_output(AVFilterLink *outlink)
 
     s->nb_planes = av_pix_fmt_count_planes(inlink->format);
 
-    if (inlink->h & 1) {
+    if (inlink->h & 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "height must be even\n");
         return AVERROR_INVALIDDATA;
     }
@@ -54,7 +56,8 @@ static void extract_field(AVFrame *frame, int nb_planes, int type)
 {
     int i;
 
-    for (i = 0; i < nb_planes; i++) {
+    for (i = 0; i < nb_planes; i++)
+    {
         if (type)
             frame->data[i] = frame->data[i] + frame->linesize[i];
         frame->linesize[i] *= 2;
@@ -71,15 +74,18 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     inpicref->height = outlink->h;
     inpicref->interlaced_frame = 0;
 
-    if (!s->second) {
+    if (!s->second)
+    {
         goto clone;
-    } else {
+    }
+    else
+    {
         AVFrame *second = s->second;
 
         extract_field(second, s->nb_planes, second->top_field_first);
 
         if (second->pts != AV_NOPTS_VALUE &&
-            inpicref->pts != AV_NOPTS_VALUE)
+                inpicref->pts != AV_NOPTS_VALUE)
             second->pts += inpicref->pts;
         else
             second->pts = AV_NOPTS_VALUE;
@@ -108,7 +114,8 @@ static int request_frame(AVFilterLink *outlink)
     int ret;
 
     ret = ff_request_frame(ctx->inputs[0]);
-    if (ret == AVERROR_EOF && s->second) {
+    if (ret == AVERROR_EOF && s->second)
+    {
         s->second->pts *= 2;
         extract_field(s->second, s->nb_planes, s->second->top_field_first);
         ret = ff_filter_frame(outlink, s->second);
@@ -118,7 +125,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad separatefields_inputs[] = {
+static const AVFilterPad separatefields_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -127,7 +135,8 @@ static const AVFilterPad separatefields_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad separatefields_outputs[] = {
+static const AVFilterPad separatefields_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -137,7 +146,8 @@ static const AVFilterPad separatefields_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_separatefields = {
+AVFilter ff_vf_separatefields =
+{
     .name        = "separatefields",
     .description = NULL_IF_CONFIG_SMALL("Split input video frames into fields."),
     .priv_size   = sizeof(SeparateFieldsContext),

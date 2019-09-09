@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * This file is part of FFmpeg.
  *
@@ -36,7 +36,8 @@
 
 extern const AVClass ffurl_context_class;
 
-typedef struct URLContext {
+typedef struct URLContext
+{
     const AVClass *av_class;    /**< information for av_log(). Set by url_open(). */
     struct URLProtocol *prot;
     void *priv_data;
@@ -49,7 +50,8 @@ typedef struct URLContext {
     int64_t rw_timeout;         /**< maximum time to wait for (network) read/write operation completion, in mcs */
 } URLContext;
 
-typedef struct URLProtocol {
+typedef struct URLProtocol
+{
     const char *name;
     int     (*url_open)( URLContext *h, const char *url, int flags);
     /**

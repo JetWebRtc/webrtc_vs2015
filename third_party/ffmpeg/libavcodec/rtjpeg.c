@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTJpeg decoding functions
  * Copyright (c) 2006 Reimar Doeffinger
  *
@@ -44,14 +44,15 @@
  * in MPlayer libmpcodecs/native/rtjpegn.c.
  */
 static inline int get_block(GetBitContext *gb, int16_t *block, const uint8_t *scan,
-                            const uint32_t *quant) {
+                            const uint32_t *quant)
+{
     int coeff, i, n;
     int8_t ac;
     uint8_t dc = get_bits(gb, 8);
 
     // block not coded
     if (dc == 255)
-       return 0;
+        return 0;
 
     // number of non-zero coefficients
     coeff = get_bits(gb, 6);
@@ -63,7 +64,8 @@ static inline int get_block(GetBitContext *gb, int16_t *block, const uint8_t *sc
     memset(block, 0, 64 * sizeof(int16_t));
 
     // 2 bits per coefficient
-    while (coeff) {
+    while (coeff)
+    {
         ac = get_sbits(gb, 2);
         if (ac == -2)
             break; // continue with more bits
@@ -74,7 +76,8 @@ static inline int get_block(GetBitContext *gb, int16_t *block, const uint8_t *sc
     ALIGN(4);
     if (get_bits_left(gb) < (coeff << 2))
         return AVERROR_INVALIDDATA;
-    while (coeff) {
+    while (coeff)
+    {
         ac = get_sbits(gb, 4);
         if (ac == -8)
             break; // continue with more bits
@@ -85,7 +88,8 @@ static inline int get_block(GetBitContext *gb, int16_t *block, const uint8_t *sc
     ALIGN(8);
     if (get_bits_left(gb) < (coeff << 3))
         return AVERROR_INVALIDDATA;
-    while (coeff) {
+    while (coeff)
+    {
         ac = get_sbits(gb, 8);
         PUT_COEFF(ac);
     }
@@ -104,7 +108,8 @@ static inline int get_block(GetBitContext *gb, int16_t *block, const uint8_t *sc
  * @return number of bytes consumed from the input buffer
  */
 int ff_rtjpeg_decode_frame_yuv420(RTJpegContext *c, AVFrame *f,
-                                  const uint8_t *buf, int buf_size) {
+                                  const uint8_t *buf, int buf_size)
+{
     GetBitContext gb;
     int w = c->w / 16, h = c->h / 16;
     int x, y, ret;
@@ -114,8 +119,10 @@ int ff_rtjpeg_decode_frame_yuv420(RTJpegContext *c, AVFrame *f,
     if ((ret = init_get_bits8(&gb, buf, buf_size)) < 0)
         return ret;
 
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
 #define BLOCK(quant, dst, stride) do { \
     int res = get_block(&gb, block, c->scan, quant); \
     if (res < 0) \
@@ -156,9 +163,11 @@ int ff_rtjpeg_decode_frame_yuv420(RTJpegContext *c, AVFrame *f,
  * @param cquant chroma quantization table to use
  */
 void ff_rtjpeg_decode_init(RTJpegContext *c, int width, int height,
-                           const uint32_t *lquant, const uint32_t *cquant) {
+                           const uint32_t *lquant, const uint32_t *cquant)
+{
     int i;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int p = c->idsp.idct_permutation[i];
         c->lquant[p] = lquant[i];
         c->cquant[p] = cquant[i];
@@ -173,7 +182,8 @@ void ff_rtjpeg_init(RTJpegContext *c, AVCodecContext *avctx)
 
     ff_idctdsp_init(&c->idsp, avctx);
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int z = ff_zigzag_direct[i];
         z = ((z << 3) | (z >> 3)) & 63; // rtjpeg uses a transposed variant
 

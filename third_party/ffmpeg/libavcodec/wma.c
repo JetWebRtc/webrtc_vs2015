@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WMA compatible codec
  * Copyright (c) 2002-2007 The FFmpeg Project
  *
@@ -49,7 +49,8 @@ static av_cold int init_coef_vlc(VLC *vlc, uint16_t **prun_table,
     level_table  = av_malloc_array(n, sizeof(uint16_t));
     flevel_table = av_malloc_array(n, sizeof(*flevel_table));
     int_table    = av_malloc_array(n, sizeof(uint16_t));
-    if (!run_table || !level_table || !flevel_table || !int_table) {
+    if (!run_table || !level_table || !flevel_table || !int_table)
+    {
         av_freep(&run_table);
         av_freep(&level_table);
         av_freep(&flevel_table);
@@ -59,10 +60,12 @@ static av_cold int init_coef_vlc(VLC *vlc, uint16_t **prun_table,
     i            = 2;
     level        = 1;
     k            = 0;
-    while (i < n) {
+    while (i < n)
+    {
         int_table[k] = i;
         l            = levels_table[k++];
-        for (j = 0; j < l; j++) {
+        for (j = 0; j < l; j++)
+        {
             run_table[i]    = j;
             level_table[i]  = level;
             flevel_table[i] = level;
@@ -88,8 +91,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
     int coef_vlc_table;
 
     if (avctx->sample_rate <= 0 || avctx->sample_rate > 50000 ||
-        avctx->channels    <= 0 || avctx->channels    > 2     ||
-        avctx->bit_rate    <= 0)
+            avctx->channels    <= 0 || avctx->channels    > 2     ||
+            avctx->bit_rate    <= 0)
         return -1;
 
 
@@ -100,13 +103,14 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
 
     /* compute MDCT block size */
     s->frame_len_bits = ff_wma_get_frame_len_bits(avctx->sample_rate,
-                                                  s->version, 0);
+                        s->version, 0);
     s->next_block_len_bits = s->frame_len_bits;
     s->prev_block_len_bits = s->frame_len_bits;
     s->block_len_bits      = s->frame_len_bits;
 
     s->frame_len = 1 << s->frame_len_bits;
-    if (s->use_variable_block_len) {
+    if (s->use_variable_block_len)
+    {
         int nb_max, nb;
         nb = ((flags2 >> 3) & 3) + 1;
         if ((avctx->bit_rate / avctx->channels) >= 32000)
@@ -115,7 +119,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
         if (nb > nb_max)
             nb = nb_max;
         s->nb_block_sizes = nb + 1;
-    } else
+    }
+    else
         s->nb_block_sizes = 1;
 
     /* init rate dependent parameters */
@@ -124,7 +129,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
 
     /* if version 2, then the rates are normalized */
     sample_rate1 = avctx->sample_rate;
-    if (s->version == 2) {
+    if (s->version == 2)
+    {
         if (sample_rate1 >= 44100)
             sample_rate1 = 44100;
         else if (sample_rate1 >= 22050)
@@ -140,7 +146,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
     bps                 = (float) avctx->bit_rate /
                           (float) (avctx->channels * avctx->sample_rate);
     s->byte_offset_bits = av_log2((int) (bps * s->frame_len / 8.0 + 0.5)) + 2;
-    if (s->byte_offset_bits + 3 > MIN_CACHE_BITS) {
+    if (s->byte_offset_bits + 3 > MIN_CACHE_BITS)
+    {
         av_log(avctx, AV_LOG_ERROR, "byte_offset_bits %d is too large\n", s->byte_offset_bits);
         return AVERROR_PATCHWELCOME;
     }
@@ -150,33 +157,42 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
     bps1 = bps;
     if (avctx->channels == 2)
         bps1 = bps * 1.6;
-    if (sample_rate1 == 44100) {
+    if (sample_rate1 == 44100)
+    {
         if (bps1 >= 0.61)
             s->use_noise_coding = 0;
         else
             high_freq = high_freq * 0.4;
-    } else if (sample_rate1 == 22050) {
+    }
+    else if (sample_rate1 == 22050)
+    {
         if (bps1 >= 1.16)
             s->use_noise_coding = 0;
         else if (bps1 >= 0.72)
             high_freq = high_freq * 0.7;
         else
             high_freq = high_freq * 0.6;
-    } else if (sample_rate1 == 16000) {
+    }
+    else if (sample_rate1 == 16000)
+    {
         if (bps > 0.5)
             high_freq = high_freq * 0.5;
         else
             high_freq = high_freq * 0.3;
-    } else if (sample_rate1 == 11025)
+    }
+    else if (sample_rate1 == 11025)
         high_freq = high_freq * 0.7;
-    else if (sample_rate1 == 8000) {
+    else if (sample_rate1 == 8000)
+    {
         if (bps <= 0.625)
             high_freq = high_freq * 0.5;
         else if (bps > 0.75)
             s->use_noise_coding = 0;
         else
             high_freq = high_freq * 0.65;
-    } else {
+    }
+    else
+    {
         if (bps >= 0.8)
             high_freq = high_freq * 0.75;
         else if (bps >= 0.6)
@@ -202,30 +218,37 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
             s->coefs_start = 3;
         else
             s->coefs_start = 0;
-        for (k = 0; k < s->nb_block_sizes; k++) {
+        for (k = 0; k < s->nb_block_sizes; k++)
+        {
             block_len = s->frame_len >> k;
 
-            if (s->version == 1) {
+            if (s->version == 1)
+            {
                 lpos = 0;
-                for (i = 0; i < 25; i++) {
+                for (i = 0; i < 25; i++)
+                {
                     a   = ff_wma_critical_freqs[i];
                     b   = avctx->sample_rate;
                     pos = ((block_len * 2 * a) + (b >> 1)) / b;
                     if (pos > block_len)
                         pos = block_len;
                     s->exponent_bands[0][i] = pos - lpos;
-                    if (pos >= block_len) {
+                    if (pos >= block_len)
+                    {
                         i++;
                         break;
                     }
                     lpos = pos;
                 }
                 s->exponent_sizes[0] = i;
-            } else {
+            }
+            else
+            {
                 /* hardcoded tables */
                 table = NULL;
                 a     = s->frame_len_bits - BLOCK_MIN_BITS - k;
-                if (a < 3) {
+                if (a < 3)
+                {
                     if (avctx->sample_rate >= 44100)
                         table = exponent_band_44100[a];
                     else if (avctx->sample_rate >= 32000)
@@ -233,15 +256,19 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
                     else if (avctx->sample_rate >= 22050)
                         table = exponent_band_22050[a];
                 }
-                if (table) {
+                if (table)
+                {
                     n = *table++;
                     for (i = 0; i < n; i++)
                         s->exponent_bands[k][i] = table[i];
                     s->exponent_sizes[k] = n;
-                } else {
+                }
+                else
+                {
                     j    = 0;
                     lpos = 0;
-                    for (i = 0; i < 25; i++) {
+                    for (i = 0; i < 25; i++)
+                    {
                         a     = ff_wma_critical_freqs[i];
                         b     = avctx->sample_rate;
                         pos   = ((block_len * 2 * a) + (b << 1)) / (4 * b);
@@ -266,7 +293,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
             n   = s->exponent_sizes[k];
             j   = 0;
             pos = 0;
-            for (i = 0; i < n; i++) {
+            for (i = 0; i < n; i++)
+            {
                 int start, end;
                 start = pos;
                 pos  += s->exponent_bands[k][i];
@@ -295,7 +323,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
 #ifdef TRACE
     {
         int i, j;
-        for (i = 0; i < s->nb_block_sizes; i++) {
+        for (i = 0; i < s->nb_block_sizes; i++)
+        {
             ff_tlog(s->avctx, "%5d: n=%2d:",
                     s->frame_len >> i,
                     s->exponent_sizes[i]);
@@ -307,14 +336,16 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
 #endif /* TRACE */
 
     /* init MDCT windows : simple sine window */
-    for (i = 0; i < s->nb_block_sizes; i++) {
+    for (i = 0; i < s->nb_block_sizes; i++)
+    {
         ff_init_ff_sine_windows(s->frame_len_bits - i);
         s->windows[i] = ff_sine_windows[s->frame_len_bits - i];
     }
 
     s->reset_block_lengths = 1;
 
-    if (s->use_noise_coding) {
+    if (s->use_noise_coding)
+    {
         /* init the noise generator */
         if (s->use_exp_vlc)
             s->noise_mult = 0.02;
@@ -330,7 +361,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
             float norm;
             seed = 1;
             norm = (1.0 / (float) (1LL << 31)) * sqrt(3) * s->noise_mult;
-            for (i = 0; i < NOISE_TAB_SIZE; i++) {
+            for (i = 0; i < NOISE_TAB_SIZE; i++)
+            {
                 seed              = seed * 314159 + 1;
                 s->noise_table[i] = (float) ((int) seed) * norm;
             }
@@ -344,7 +376,8 @@ av_cold int ff_wma_init(AVCodecContext *avctx, int flags2)
 
     /* choose the VLC tables for the coefficients */
     coef_vlc_table = 2;
-    if (avctx->sample_rate >= 32000) {
+    if (avctx->sample_rate >= 32000)
+    {
         if (bps1 < 0.72)
             coef_vlc_table = 0;
         else if (bps1 < 1.16)
@@ -387,7 +420,8 @@ int ff_wma_end(AVCodecContext *avctx)
         ff_free_vlc(&s->exp_vlc);
     if (s->use_noise_coding)
         ff_free_vlc(&s->hgain_vlc);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         ff_free_vlc(&s->coef_vlc[i]);
         av_freep(&s->run_table[i]);
         av_freep(&s->level_table[i]);
@@ -408,9 +442,11 @@ unsigned int ff_wma_get_large_val(GetBitContext *gb)
     /** consumes up to 34 bits */
     int n_bits = 8;
     /** decode length */
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         n_bits += 8;
-        if (get_bits1(gb)) {
+        if (get_bits1(gb))
+        {
             n_bits += 8;
             if (get_bits1(gb))
                 n_bits += 7;
@@ -446,35 +482,49 @@ int ff_wma_run_level_decode(AVCodecContext *avctx, GetBitContext *gb,
     const uint32_t *ilvl = (const uint32_t *) level_table;
     uint32_t *iptr = (uint32_t *) ptr;
     const unsigned int coef_mask = block_len - 1;
-    for (; offset < num_coefs; offset++) {
+    for (; offset < num_coefs; offset++)
+    {
         code = get_vlc2(gb, vlc->table, VLCBITS, VLCMAX);
-        if (code > 1) {
+        if (code > 1)
+        {
             /** normal code */
             offset                  += run_table[code];
             sign                     = get_bits1(gb) - 1;
             iptr[offset & coef_mask] = ilvl[code] ^ (sign & 0x80000000);
-        } else if (code == 1) {
+        }
+        else if (code == 1)
+        {
             /** EOB */
             break;
-        } else {
+        }
+        else
+        {
             /** escape */
-            if (!version) {
+            if (!version)
+            {
                 level = get_bits(gb, coef_nb_bits);
                 /** NOTE: this is rather suboptimal. reading
                  *  block_len_bits would be better */
                 offset += get_bits(gb, frame_len_bits);
-            } else {
+            }
+            else
+            {
                 level = ff_wma_get_large_val(gb);
                 /** escape decode */
-                if (get_bits1(gb)) {
-                    if (get_bits1(gb)) {
-                        if (get_bits1(gb)) {
+                if (get_bits1(gb))
+                {
+                    if (get_bits1(gb))
+                    {
+                        if (get_bits1(gb))
+                        {
                             av_log(avctx, AV_LOG_ERROR,
                                    "broken escape sequence\n");
                             return -1;
-                        } else
+                        }
+                        else
                             offset += get_bits(gb, frame_len_bits) + 4;
-                    } else
+                    }
+                    else
                         offset += get_bits(gb, 2) + 1;
                 }
             }
@@ -483,7 +533,8 @@ int ff_wma_run_level_decode(AVCodecContext *avctx, GetBitContext *gb,
         }
     }
     /** NOTE: EOB can be omitted */
-    if (offset > num_coefs) {
+    if (offset > num_coefs)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "overflow (%d > %d) in spectral RLE, ignoring\n",
                offset,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Rich Felker
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@
 #define OFFSET(x) offsetof(PullupContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption pullup_options[] = {
+static const AVOption pullup_options[] =
+{
     { "jl", "set left junk size",  OFFSET(junk_left),  AV_OPT_TYPE_INT, {.i64=1}, 0, INT_MAX, FLAGS },
     { "jr", "set right junk size", OFFSET(junk_right), AV_OPT_TYPE_INT, {.i64=1}, 0, INT_MAX, FLAGS },
     { "jt", "set top junk size",   OFFSET(junk_top),   AV_OPT_TYPE_INT, {.i64=4}, 1, INT_MAX, FLAGS },
@@ -54,7 +55,8 @@ AVFILTER_DEFINE_CLASS(pullup);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P,
         AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ420P,
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV440P,
@@ -76,7 +78,8 @@ static int diff_c(const uint8_t *a, const uint8_t *b, ptrdiff_t s)
 {
     int i, j, diff = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         for (j = 0; j < 8; j++)
             diff += ABS(a[j] - b[j]);
         a += s;
@@ -90,7 +93,8 @@ static int comb_c(const uint8_t *a, const uint8_t *b, ptrdiff_t s)
 {
     int i, j, comb = 0;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         for (j = 0; j < 8; j++)
             comb += ABS((a[j] << 1) - b[j - s] - b[j    ]) +
                     ABS((b[j] << 1) - a[j    ] - a[j + s]);
@@ -105,7 +109,8 @@ static int var_c(const uint8_t *a, const uint8_t *b, ptrdiff_t s)
 {
     int i, j, var = 0;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         for (j = 0; j < 8; j++)
             var += ABS(a[j] - a[j + s]);
         a += s;
@@ -120,7 +125,8 @@ static int alloc_metrics(PullupContext *s, PullupField *f)
     f->combs = av_calloc(FFALIGN(s->metric_length, 16), sizeof(*f->combs));
     f->vars  = av_calloc(FFALIGN(s->metric_length, 16), sizeof(*f->vars));
 
-    if (!f->diffs || !f->combs || !f->vars) {
+    if (!f->diffs || !f->combs || !f->vars)
+    {
         av_freep(&f->diffs);
         av_freep(&f->combs);
         av_freep(&f->vars);
@@ -132,7 +138,8 @@ static int alloc_metrics(PullupContext *s, PullupField *f)
 static void free_field_queue(PullupField *head)
 {
     PullupField *f = head;
-    do {
+    do
+    {
         PullupField *next;
         if (!f)
             break;
@@ -143,7 +150,8 @@ static void free_field_queue(PullupField *head)
         memset(f, 0, sizeof(*f)); // clear all pointers to avoid stale ones
         av_free(f);
         f = next;
-    } while (f != head);
+    }
+    while (f != head);
 }
 
 static PullupField *make_field_queue(PullupContext *s, int len)
@@ -154,21 +162,25 @@ static PullupField *make_field_queue(PullupContext *s, int len)
     if (!f)
         return NULL;
 
-    if (alloc_metrics(s, f) < 0) {
+    if (alloc_metrics(s, f) < 0)
+    {
         av_free(f);
         return NULL;
     }
 
-    for (; len > 0; len--) {
+    for (; len > 0; len--)
+    {
         f->next = av_mallocz(sizeof(*f->next));
-        if (!f->next) {
+        if (!f->next)
+        {
             free_field_queue(head);
             return NULL;
         }
 
         f->next->prev = f;
         f = f->next;
-        if (alloc_metrics(s, f) < 0) {
+        if (alloc_metrics(s, f) < 0)
+        {
             free_field_queue(head);
             return NULL;
         }
@@ -189,7 +201,8 @@ static int config_input(AVFilterLink *inlink)
 
     s->nb_planes = av_pix_fmt_count_planes(inlink->format);
 
-    if (mp + 1 > s->nb_planes) {
+    if (mp + 1 > s->nb_planes)
+    {
         av_log(ctx, AV_LOG_ERROR, "input format does not have such plane\n");
         return AVERROR(EINVAL);
     }
@@ -256,7 +269,8 @@ static int alloc_buffer(PullupContext *s, PullupBuffer *b)
 
     if (b->planes[0])
         return 0;
-    for (i = 0; i < s->nb_planes; i++) {
+    for (i = 0; i < s->nb_planes; i++)
+    {
         b->planes[i] = av_malloc(s->planeheight[i] * s->planewidth[i]);
     }
     if (s->nb_planes == 1)
@@ -271,13 +285,15 @@ static PullupBuffer *pullup_get_buffer(PullupContext *s, int parity)
 
     /* Try first to get the sister buffer for the previous field */
     if (parity < 2 && s->last && parity != s->last->parity
-        && !s->last->buffer->lock[parity]) {
+            && !s->last->buffer->lock[parity])
+    {
         alloc_buffer(s, s->last->buffer);
         return pullup_lock_buffer(s->last->buffer, parity);
     }
 
     /* Prefer a buffer with both fields open */
-    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++)
+    {
         if (s->buffers[i].lock[0])
             continue;
         if (s->buffers[i].lock[1])
@@ -290,7 +306,8 @@ static PullupBuffer *pullup_get_buffer(PullupContext *s, int parity)
         return 0;
 
     /* Search for any half-free buffer */
-    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++)
+    {
         if (((parity + 1) & 1) && s->buffers[i].lock[0])
             continue;
         if (((parity + 1) & 2) && s->buffers[i].lock[1])
@@ -320,7 +337,8 @@ static int find_first_break(PullupField *f, int max)
 {
     int i;
 
-    for (i = 0; i < max; i++) {
+    for (i = 0; i < max; i++)
+    {
         if (f->breaks & BREAK_RIGHT || f->next->breaks & BREAK_LEFT)
             return i + 1;
         f = f->next;
@@ -342,17 +360,20 @@ static void compute_breaks(PullupContext *s, PullupField *f0)
     f0->flags |= F_HAVE_BREAKS;
 
     /* Special case when fields are 100% identical */
-    if (f0->buffer == f2->buffer && f1->buffer != f3->buffer) {
+    if (f0->buffer == f2->buffer && f1->buffer != f3->buffer)
+    {
         f2->breaks |= BREAK_RIGHT;
         return;
     }
 
-    if (f0->buffer != f2->buffer && f1->buffer == f3->buffer) {
+    if (f0->buffer != f2->buffer && f1->buffer == f3->buffer)
+    {
         f1->breaks |= BREAK_LEFT;
         return;
     }
 
-    for (i = 0; i < s->metric_length; i++) {
+    for (i = 0; i < s->metric_length; i++)
+    {
         l = f2->diffs[i] - f3->diffs[i];
 
         if ( l > max_l)
@@ -379,7 +400,8 @@ static void compute_affinity(PullupContext *s, PullupField *f)
 
     f->flags |= F_HAVE_AFFINITY;
 
-    if (f->buffer == f->next->next->buffer) {
+    if (f->buffer == f->next->next->buffer)
+    {
         f->affinity             =  1;
         f->next->affinity       =  0;
         f->next->next->affinity = -1;
@@ -388,7 +410,8 @@ static void compute_affinity(PullupContext *s, PullupField *f)
         return;
     }
 
-    for (i = 0; i < s->metric_length; i++) {
+    for (i = 0; i < s->metric_length; i++)
+    {
         int v  = f->vars[i];
         int lv = f->prev->vars[i];
         int rv = f->next->vars[i];
@@ -427,7 +450,8 @@ static int decide_frame_length(PullupContext *s)
 
     f = s->first;
     n = queue_length(f, s->last);
-    for (i = 0; i < n - 1; i++) {
+    for (i = 0; i < n - 1; i++)
+    {
         if (i < n - 3)
             compute_breaks(s, f);
 
@@ -444,14 +468,15 @@ static int decide_frame_length(PullupContext *s)
     if (l == 1 && s->strict_breaks < 0)
         l = 0;
 
-    switch (l) {
+    switch (l)
+    {
     case 1:
         return 1 + (s->strict_breaks < 1 && f0->affinity == 1 && f1->affinity == -1);
     case 2:
         /* FIXME: strictly speaking, f0->prev is no longer valid... :) */
         if (s->strict_pairs
-            && (f0->prev->breaks & BREAK_RIGHT) && (f2->breaks & BREAK_LEFT)
-            && (f0->affinity != 1 || f1->affinity != -1) )
+                && (f0->prev->breaks & BREAK_RIGHT) && (f2->breaks & BREAK_LEFT)
+                && (f0->affinity != 1 || f1->affinity != -1) )
             return 1;
         return 1 + (f1->affinity != 1);
     case 3:
@@ -462,9 +487,12 @@ static int decide_frame_length(PullupContext *s)
             return 1; /* covers 6 */
         else if (f1->affinity == -1)
             return 2; /* covers 6 */
-        else if (f2->affinity == -1) { /* covers 2 */
+        else if (f2->affinity == -1)   /* covers 2 */
+        {
             return (f0->affinity == 1) ? 3 : 1;
-        } else {
+        }
+        else
+        {
             return 2; /* the remaining 6 */
         }
     }
@@ -485,20 +513,26 @@ static PullupFrame *pullup_get_frame(PullupContext *s)
     fr->parity = s->first->parity;
     fr->buffer = 0;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         /* We cheat and steal the buffer without release+relock */
         fr->ifields[i]   = s->first->buffer;
         s->first->buffer = 0;
         s->first         = s->first->next;
     }
 
-    if (n == 1) {
+    if (n == 1)
+    {
         fr->ofields[fr->parity    ] = fr->ifields[0];
         fr->ofields[fr->parity ^ 1] = 0;
-    } else if (n == 2) {
+    }
+    else if (n == 2)
+    {
         fr->ofields[fr->parity    ] = fr->ifields[0];
         fr->ofields[fr->parity ^ 1] = fr->ifields[1];
-    } else if (n == 3) {
+    }
+    else if (n == 3)
+    {
         if (!aff)
             aff = (fr->ifields[0] == fr->ifields[1]) ? -1 : 1;
         fr->ofields[fr->parity    ] = fr->ifields[1 + aff];
@@ -508,7 +542,8 @@ static PullupFrame *pullup_get_frame(PullupContext *s)
     pullup_lock_buffer(fr->ofields[0], 0);
     pullup_lock_buffer(fr->ofields[1], 1);
 
-    if (fr->ofields[0] == fr->ofields[1]) {
+    if (fr->ofields[0] == fr->ofields[1])
+    {
         fr->buffer = fr->ofields[0];
         pullup_lock_buffer(fr->buffer, 2);
         return fr;
@@ -548,7 +583,8 @@ static void compute_metric(PullupContext *s, int *dest,
         return;
 
     /* Shortcut for duplicate fields (e.g. from RFF flag) */
-    if (fa->buffer == fb->buffer && pa == pb) {
+    if (fa->buffer == fb->buffer && pa == pb)
+    {
         memset(dest, 0, s->metric_length * sizeof(*dest));
         return;
     }
@@ -556,10 +592,12 @@ static void compute_metric(PullupContext *s, int *dest,
     a = fa->buffer->planes[mp] + pa * s->planewidth[mp] + s->metric_offset;
     b = fb->buffer->planes[mp] + pb * s->planewidth[mp] + s->metric_offset;
 
-    for (y = 0; y < s->metric_h; y++) {
+    for (y = 0; y < s->metric_h; y++)
+    {
         for (x = 0; x < w; x += xstep)
             *dest++ = func(a + x, b + x, stride);
-        a += ystep; b += ystep;
+        a += ystep;
+        b += ystep;
     }
 }
 
@@ -567,13 +605,15 @@ static int check_field_queue(PullupContext *s)
 {
     int ret;
 
-    if (s->head->next == s->first) {
+    if (s->head->next == s->first)
+    {
         PullupField *f = av_mallocz(sizeof(*f));
 
         if (!f)
             return AVERROR(ENOMEM);
 
-        if ((ret = alloc_metrics(s, f)) < 0) {
+        if ((ret = alloc_metrics(s, f)) < 0)
+        {
             av_free(f);
             return ret;
         }
@@ -625,7 +665,8 @@ static void copy_field(PullupContext *s,
     uint8_t *dd, *ss;
     int i;
 
-    for (i = 0; i < s->nb_planes; i++) {
+    for (i = 0; i < s->nb_planes; i++)
+    {
         ss = src->planes[i] + parity * s->planewidth[i];
         dd = dst->planes[i] + parity * s->planewidth[i];
 
@@ -645,7 +686,8 @@ static void pullup_pack_frame(PullupContext *s, PullupFrame *fr)
     if (fr->length < 2)
         return; /* FIXME: deal with this */
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         if (fr->ofields[i]->lock[i^1])
             continue;
 
@@ -672,7 +714,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int p, ret = 0;
 
     b = pullup_get_buffer(s, 2);
-    if (!b) {
+    if (!b)
+    {
         av_log(ctx, AV_LOG_WARNING, "Could not get buffer!\n");
         f = pullup_get_frame(s);
         pullup_release_frame(f);
@@ -696,19 +739,22 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     if (!f)
         goto end;
 
-    if (f->length < 2) {
+    if (f->length < 2)
+    {
         pullup_release_frame(f);
         f = pullup_get_frame(s);
         if (!f)
             goto end;
-        if (f->length < 2) {
+        if (f->length < 2)
+        {
             pullup_release_frame(f);
             if (!in->repeat_pict)
                 goto end;
             f = pullup_get_frame(s);
             if (!f)
                 goto end;
-            if (f->length < 2) {
+            if (f->length < 2)
+            {
                 pullup_release_frame(f);
                 goto end;
             }
@@ -720,7 +766,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         pullup_pack_frame(s, f);
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -745,14 +792,16 @@ static av_cold void uninit(AVFilterContext *ctx)
     free_field_queue(s->head);
     s->last = NULL;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(s->buffers); i++)
+    {
         av_freep(&s->buffers[i].planes[0]);
         av_freep(&s->buffers[i].planes[1]);
         av_freep(&s->buffers[i].planes[2]);
     }
 }
 
-static const AVFilterPad pullup_inputs[] = {
+static const AVFilterPad pullup_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -762,7 +811,8 @@ static const AVFilterPad pullup_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad pullup_outputs[] = {
+static const AVFilterPad pullup_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -771,7 +821,8 @@ static const AVFilterPad pullup_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_pullup = {
+AVFilter ff_vf_pullup =
+{
     .name          = "pullup",
     .description   = NULL_IF_CONFIG_SMALL("Pullup from field sequence to frames."),
     .priv_size     = sizeof(PullupContext),

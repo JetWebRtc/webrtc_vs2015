@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,44 +16,53 @@
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Implements a template version of a notifier.
 // TODO(deadbeef): This is an implementation detail; move out of api/.
 template <class T>
-class Notifier : public T {
- public:
-  Notifier() {
-  }
-
-  virtual void RegisterObserver(ObserverInterface* observer) {
-    RTC_DCHECK(observer != NULL);
-    observers_.push_back(observer);
-  }
-
-  virtual void UnregisterObserver(ObserverInterface* observer) {
-    for (std::list<ObserverInterface*>::iterator it = observers_.begin();
-         it != observers_.end(); it++) {
-      if (*it == observer) {
-        observers_.erase(it);
-        break;
-      }
+class Notifier : public T
+{
+public:
+    Notifier()
+    {
     }
-  }
 
-  void FireOnChanged() {
-    // Copy the list of observers to avoid a crash if the observer object
-    // unregisters as a result of the OnChanged() call. If the same list is used
-    // UnregisterObserver will affect the list make the iterator invalid.
-    std::list<ObserverInterface*> observers = observers_;
-    for (std::list<ObserverInterface*>::iterator it = observers.begin();
-         it != observers.end(); ++it) {
-      (*it)->OnChanged();
+    virtual void RegisterObserver(ObserverInterface* observer)
+    {
+        RTC_DCHECK(observer != NULL);
+        observers_.push_back(observer);
     }
-  }
 
- protected:
-  std::list<ObserverInterface*> observers_;
+    virtual void UnregisterObserver(ObserverInterface* observer)
+    {
+        for (std::list<ObserverInterface*>::iterator it = observers_.begin();
+                it != observers_.end(); it++)
+        {
+            if (*it == observer)
+            {
+                observers_.erase(it);
+                break;
+            }
+        }
+    }
+
+    void FireOnChanged()
+    {
+        // Copy the list of observers to avoid a crash if the observer object
+        // unregisters as a result of the OnChanged() call. If the same list is used
+        // UnregisterObserver will affect the list make the iterator invalid.
+        std::list<ObserverInterface*> observers = observers_;
+        for (std::list<ObserverInterface*>::iterator it = observers.begin();
+                it != observers.end(); ++it)
+        {
+            (*it)->OnChanged();
+        }
+    }
+
+protected:
+    std::list<ObserverInterface*> observers_;
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder wrapper
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -30,7 +30,8 @@
 #define FRAME_SIZE 1024
 #define ENC_DELAY  1600
 
-typedef struct AACContext {
+typedef struct AACContext
+{
     VO_AUDIO_CODECAPI codec_api;
     VO_HANDLE handle;
     VO_MEM_OPERATOR mem_operator;
@@ -66,7 +67,8 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     ff_af_queue_init(avctx, &s->afq);
 
     s->end_buffer = av_mallocz_array(avctx->channels, avctx->frame_size * 2);
-    if (!s->end_buffer) {
+    if (!s->end_buffer)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
@@ -87,7 +89,8 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     params.nChannels  = avctx->channels;
     params.adtsUsed   = !(avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER);
     if (s->codec_api.SetParam(s->handle, VO_PID_AAC_ENCPARAM, &params)
-        != VO_ERR_NONE) {
+            != VO_ERR_NONE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set encoding parameters\n");
         ret = AVERROR(EINVAL);
         goto error;
@@ -96,17 +99,20 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     for (index = 0; index < 16; index++)
         if (avctx->sample_rate == avpriv_mpeg4audio_sample_rates[index])
             break;
-    if (index == 16) {
+    if (index == 16)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported sample rate %d\n",
-                                    avctx->sample_rate);
+               avctx->sample_rate);
         ret = AVERROR(ENOSYS);
         goto error;
     }
-    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+    {
         avctx->extradata_size = 2;
         avctx->extradata      = av_mallocz(avctx->extradata_size +
                                            AV_INPUT_BUFFER_PADDING_SIZE);
-        if (!avctx->extradata) {
+        if (!avctx->extradata)
+        {
             ret = AVERROR(ENOMEM);
             goto error;
         }
@@ -130,22 +136,29 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     int ret;
 
     /* handle end-of-stream small frame and flushing */
-    if (!frame) {
+    if (!frame)
+    {
         if (s->last_frame <= 0)
             return 0;
-        if (s->last_samples > 0 && s->last_samples < ENC_DELAY - FRAME_SIZE) {
+        if (s->last_samples > 0 && s->last_samples < ENC_DELAY - FRAME_SIZE)
+        {
             s->last_samples = 0;
             s->last_frame--;
         }
         s->last_frame--;
         memset(s->end_buffer, 0, 2 * avctx->channels * avctx->frame_size);
         samples = s->end_buffer;
-    } else {
-        if (frame->nb_samples < avctx->frame_size) {
+    }
+    else
+    {
+        if (frame->nb_samples < avctx->frame_size)
+        {
             s->last_samples = frame->nb_samples;
             memcpy(s->end_buffer, frame->data[0], 2 * avctx->channels * frame->nb_samples);
             samples = s->end_buffer;
-        } else {
+        }
+        else
+        {
             samples = (VO_PBYTE)frame->data[0];
         }
         /* add current frame to the queue */
@@ -163,7 +176,8 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
     s->codec_api.SetInputData(s->handle, &input);
     if (s->codec_api.GetOutputData(s->handle, &output, &output_info)
-        != VO_ERR_NONE) {
+            != VO_ERR_NONE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to encode frame\n");
         return AVERROR(EINVAL);
     }
@@ -179,12 +193,14 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
 /* duplicated from avpriv_mpeg4audio_sample_rates to avoid shared build
  * failures */
-static const int mpeg4audio_sample_rates[16] = {
+static const int mpeg4audio_sample_rates[16] =
+{
     96000, 88200, 64000, 48000, 44100, 32000,
     24000, 22050, 16000, 12000, 11025, 8000, 7350
 };
 
-AVCodec ff_libvo_aacenc_encoder = {
+AVCodec ff_libvo_aacenc_encoder =
+{
     .name           = "libvo_aacenc",
     .long_name      = NULL_IF_CONFIG_SMALL("Android VisualOn AAC (Advanced Audio Coding)"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -195,6 +211,8 @@ AVCodec ff_libvo_aacenc_encoder = {
     .close          = aac_encode_close,
     .supported_samplerates = mpeg4audio_sample_rates,
     .capabilities   = AV_CODEC_CAP_SMALL_LAST_FRAME | AV_CODEC_CAP_DELAY,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
 };

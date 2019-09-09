@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -105,14 +105,14 @@ amm-info@iis.fraunhofer.de
 __asm FIXP_DBL FDK_get_maxval (FIXP_DBL maxVal, FIXP_DBL *reTmp, FIXP_DBL *imTmp, int width )
 {
 
-  /* Register map:
-     r0    maxVal
-     r1    reTmp
-     r2    imTmp
-     r3    width
-     r4    real
-     r5    imag
-  */
+    /* Register map:
+       r0    maxVal
+       r1    reTmp
+       r2    imTmp
+       r3    width
+       r4    real
+       r5    imag
+    */
     PUSH    {r4-r5}
 
     MOVS    r3, r3, ASR #1
@@ -120,7 +120,7 @@ __asm FIXP_DBL FDK_get_maxval (FIXP_DBL maxVal, FIXP_DBL *reTmp, FIXP_DBL *imTmp
     BCS     FDK_get_maxval_loop_2nd_part
     BEQ     FDK_get_maxval_loop_end
 
-FDK_get_maxval_loop
+    FDK_get_maxval_loop
     LDR     r4, [r1], #4
     LDR     r5, [r2], #4
     EOR     r4, r4, r4, ASR #31
@@ -128,7 +128,7 @@ FDK_get_maxval_loop
     ORR     r0, r0, r4
     ORR     r0, r0, r5
 
-FDK_get_maxval_loop_2nd_part
+    FDK_get_maxval_loop_2nd_part
     LDR     r4, [r1], #4
     LDR     r5, [r2], #4
     EOR     r4, r4, r4, ASR #31
@@ -139,7 +139,7 @@ FDK_get_maxval_loop_2nd_part
     SUBS    r3, r3, #1
     BNE     FDK_get_maxval_loop
 
-FDK_get_maxval_loop_end
+    FDK_get_maxval_loop_end
     POP     {r4-r5}
     BX      lr
 }

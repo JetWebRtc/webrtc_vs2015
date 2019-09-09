@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,30 +11,33 @@
 #ifndef WEBRTC_MODULES_AUDIO_PROCESSING_ECHO_DETECTOR_NORMALIZED_COVARIANCE_ESTIMATOR_H_
 #define WEBRTC_MODULES_AUDIO_PROCESSING_ECHO_DETECTOR_NORMALIZED_COVARIANCE_ESTIMATOR_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This class iteratively estimates the normalized covariance between two
 // signals.
-class NormalizedCovarianceEstimator {
- public:
-  void Update(float x,
-              float x_mean,
-              float x_var,
-              float y,
-              float y_mean,
-              float y_var);
-  // This function returns an estimate of the Pearson product-moment correlation
-  // coefficient of the two signals.
-  float normalized_cross_correlation() const {
-    return normalized_cross_correlation_;
-  }
-  // This function resets the estimated values to zero.
-  void Clear();
+class NormalizedCovarianceEstimator
+{
+public:
+    void Update(float x,
+                float x_mean,
+                float x_var,
+                float y,
+                float y_mean,
+                float y_var);
+    // This function returns an estimate of the Pearson product-moment correlation
+    // coefficient of the two signals.
+    float normalized_cross_correlation() const
+    {
+        return normalized_cross_correlation_;
+    }
+    // This function resets the estimated values to zero.
+    void Clear();
 
- private:
-  float normalized_cross_correlation_ = 0.f;
-  // Estimate of the covariance value.
-  float covariance_ = 0.f;
+private:
+    float normalized_cross_correlation_ = 0.f;
+    // Estimate of the covariance value.
+    float covariance_ = 0.f;
 };
 
 }  // namespace webrtc

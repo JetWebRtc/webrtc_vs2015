@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Maxis XA (.xa) File Demuxer
  * Copyright (c) 2008 Robert Marston
  *
@@ -35,7 +35,8 @@
 #define XAI0_TAG MKTAG('X', 'A', 'I', 0)
 #define XAJ0_TAG MKTAG('X', 'A', 'J', 0)
 
-typedef struct MaxisXADemuxContext {
+typedef struct MaxisXADemuxContext
+{
     uint32_t out_size;
     uint32_t sent_bytes;
 } MaxisXADemuxContext;
@@ -45,7 +46,8 @@ static int xa_probe(AVProbeData *p)
     int channels, srate, bits_per_sample;
     if (p->buf_size < 24)
         return 0;
-    switch(AV_RL32(p->buf)) {
+    switch(AV_RL32(p->buf))
+    {
     case XA00_TAG:
     case XAI0_TAG:
     case XAJ0_TAG:
@@ -57,7 +59,7 @@ static int xa_probe(AVProbeData *p)
     srate           = AV_RL32(p->buf + 12);
     bits_per_sample = AV_RL16(p->buf + 22);
     if (!channels || channels > 8 || !srate || srate > 192000 ||
-        bits_per_sample < 4 || bits_per_sample > 32)
+            bits_per_sample < 4 || bits_per_sample > 32)
         return 0;
     return AVPROBE_SCORE_EXTENSION;
 }
@@ -121,7 +123,8 @@ static int xa_read_packet(AVFormatContext *s,
     return ret;
 }
 
-AVInputFormat ff_xa_demuxer = {
+AVInputFormat ff_xa_demuxer =
+{
     .name           = "xa",
     .long_name      = NULL_IF_CONFIG_SMALL("Maxis XA"),
     .priv_data_size = sizeof(MaxisXADemuxContext),

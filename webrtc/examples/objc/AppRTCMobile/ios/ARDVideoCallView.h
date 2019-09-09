@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -36,7 +36,7 @@
 // display status, and also a hangup button.
 @interface ARDVideoCallView : UIView
 
-@property(nonatomic, readonly) UILabel *statusLabel;
+    @property(nonatomic, readonly) UILabel *statusLabel;
 @property(nonatomic, readonly) RTCCameraPreviewView *localVideoView;
 @property(nonatomic, readonly) RTCEAGLVideoView *remoteVideoView;
 @property(nonatomic, readonly) ARDStatsView *statsView;

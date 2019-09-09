@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -114,24 +114,26 @@ amm-info@iis.fraunhofer.de
 
 inline void scramble_sgl(FIXP_SGL *x, INT n)
 {
-  INT m,k,j;
+    INT m,k,j;
 
-  for (m=1,j=0; m<n-1; m++)
-  {
-    {for(k=n>>1; (!((j^=k)&k)); k>>=1);}
-
-    if (j>m)
+    for (m=1,j=0; m<n-1; m++)
     {
-      FIXP_SGL tmp;
-      tmp=x[2*m];
-      x[2*m]=x[2*j];
-      x[2*j]=tmp;
+        {
+            for(k=n>>1; (!((j^=k)&k)); k>>=1);
+        }
 
-      tmp=x[2*m+1];
-      x[2*m+1]=x[2*j+1];
-      x[2*j+1]=tmp;
+        if (j>m)
+        {
+            FIXP_SGL tmp;
+            tmp=x[2*m];
+            x[2*m]=x[2*j];
+            x[2*j]=tmp;
+
+            tmp=x[2*m+1];
+            x[2*m+1]=x[2*j+1];
+            x[2*j+1]=tmp;
+        }
     }
-  }
 }
 #endif
 
@@ -140,25 +142,27 @@ inline void scramble_sgl(FIXP_SGL *x, INT n)
 /* default scramble functionality */
 inline void scramble(FIXP_DBL *x, INT n)
 {
-  INT m,k,j;
-  FDK_ASSERT(!(((UINT64)x)&(ALIGNMENT_DEFAULT-1)));
+    INT m,k,j;
+    FDK_ASSERT(!(((UINT64)x)&(ALIGNMENT_DEFAULT-1)));
 
-  for (m=1,j=0; m<n-1; m++)
-  {
-    {for(k=n>>1; (!((j^=k)&k)); k>>=1);}
-
-    if (j>m)
+    for (m=1,j=0; m<n-1; m++)
     {
-      FIXP_DBL tmp;
-      tmp=x[2*m];
-      x[2*m]=x[2*j];
-      x[2*j]=tmp;
+        {
+            for(k=n>>1; (!((j^=k)&k)); k>>=1);
+        }
 
-      tmp=x[2*m+1];
-      x[2*m+1]=x[2*j+1];
-      x[2*j+1]=tmp;
+        if (j>m)
+        {
+            FIXP_DBL tmp;
+            tmp=x[2*m];
+            x[2*m]=x[2*j];
+            x[2*j]=tmp;
+
+            tmp=x[2*m+1];
+            x[2*m+1]=x[2*j+1];
+            x[2*j+1]=tmp;
+        }
     }
-  }
 }
 #endif /* !defined(FUNCTION_scramble) */
 

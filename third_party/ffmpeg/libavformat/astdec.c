@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AST demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -31,8 +31,8 @@ static int ast_probe(AVProbeData *p)
         return 0;
 
     if (!AV_RB16(p->buf + 10) ||
-        !AV_RB16(p->buf + 12) || AV_RB16(p->buf + 12) > 256 ||
-        !AV_RB32(p->buf + 16) || AV_RB32(p->buf + 16) > 8*48000)
+            !AV_RB16(p->buf + 12) || AV_RB16(p->buf + 12) > 256 ||
+            !AV_RB32(p->buf + 16) || AV_RB32(p->buf + 16) > 8*48000)
         return AVPROBE_SCORE_MAX / 8;
 
     return AVPROBE_SCORE_MAX / 3 * 2;
@@ -52,7 +52,8 @@ static int ast_read_header(AVFormatContext *s)
     st->codec->codec_id   = ff_codec_get_id(ff_codec_ast_tags, avio_rb16(s->pb));
 
     depth = avio_rb16(s->pb);
-    if (depth != 16) {
+    if (depth != 16)
+    {
         avpriv_request_sample(s, "depth %d", depth);
         return AVERROR_INVALIDDATA;
     }
@@ -97,11 +98,14 @@ static int ast_read_packet(AVFormatContext *s, AVPacket *pkt)
     if ((ret = avio_skip(s->pb, 24)) < 0) // padding
         return ret;
 
-    if (type == MKTAG('B','L','C','K')) {
+    if (type == MKTAG('B','L','C','K'))
+    {
         ret = av_get_packet(s->pb, pkt, size);
         pkt->stream_index = 0;
         pkt->pos = pos;
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "unknown chunk %x\n", type);
         avio_skip(s->pb, size);
         ret = AVERROR_INVALIDDATA;
@@ -110,7 +114,8 @@ static int ast_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_ast_demuxer = {
+AVInputFormat ff_ast_demuxer =
+{
     .name           = "ast",
     .long_name      = NULL_IF_CONFIG_SMALL("AST (Audio Stream)"),
     .read_probe     = ast_probe,

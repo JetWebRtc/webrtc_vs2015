@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VorbisComment writer
  * Copyright (c) 2009 James Darnley
  *
@@ -30,7 +30,8 @@
  * from Ogg Vorbis I format specification: comment field and header specification
  * http://xiph.org/vorbis/doc/v-comment.html
  */
-const AVMetadataConv ff_vorbiscomment_metadata_conv[] = {
+const AVMetadataConv ff_vorbiscomment_metadata_conv[] =
+{
     { "ALBUMARTIST", "album_artist"},
     { "TRACKNUMBER", "track"  },
     { "DISCNUMBER",  "disc"   },
@@ -42,9 +43,11 @@ int64_t ff_vorbiscomment_length(AVDictionary *m, const char *vendor_string)
 {
     int64_t len = 8;
     len += strlen(vendor_string);
-    if (m) {
+    if (m)
+    {
         AVDictionaryEntry *tag = NULL;
-        while ((tag = av_dict_get(m, "", tag, AV_DICT_IGNORE_SUFFIX))) {
+        while ((tag = av_dict_get(m, "", tag, AV_DICT_IGNORE_SUFFIX)))
+        {
             len += 4 +strlen(tag->key) + 1 + strlen(tag->value);
         }
     }
@@ -56,11 +59,13 @@ int ff_vorbiscomment_write(uint8_t **p, AVDictionary **m,
 {
     bytestream_put_le32(p, strlen(vendor_string));
     bytestream_put_buffer(p, vendor_string, strlen(vendor_string));
-    if (*m) {
+    if (*m)
+    {
         int count = av_dict_count(*m);
         AVDictionaryEntry *tag = NULL;
         bytestream_put_le32(p, count);
-        while ((tag = av_dict_get(*m, "", tag, AV_DICT_IGNORE_SUFFIX))) {
+        while ((tag = av_dict_get(*m, "", tag, AV_DICT_IGNORE_SUFFIX)))
+        {
             int64_t len1 = strlen(tag->key);
             int64_t len2 = strlen(tag->value);
             if (len1+1+len2 > UINT32_MAX)
@@ -70,7 +75,8 @@ int ff_vorbiscomment_write(uint8_t **p, AVDictionary **m,
             bytestream_put_byte(p, '=');
             bytestream_put_buffer(p, tag->value, len2);
         }
-    } else
+    }
+    else
         bytestream_put_le32(p, 0);
     return 0;
 }

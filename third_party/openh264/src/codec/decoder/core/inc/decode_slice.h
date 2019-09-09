@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -35,7 +35,8 @@
 
 #include "decoder_context.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 int32_t WelsActualDecodeMbCavlcISlice (PWelsDecoderContext pCtx);
 int32_t WelsDecodeMbCavlcISlice (PWelsDecoderContext pCtx, PNalUnit pNalCur, uint32_t& uiEosFlag);

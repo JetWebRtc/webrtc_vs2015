@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SoX native format common data
  * Copyright (c) 2009 Daniel Verkamp <daniel@drv.nu>
  *

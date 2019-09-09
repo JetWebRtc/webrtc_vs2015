@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Screen 2 (aka Windows Media Video V9 Screen) decoder
  *
  * This file is part of FFmpeg.
@@ -27,26 +27,32 @@
 #include "libavutil/common.h"
 
 static av_always_inline void mss2_blit_wmv9_template(uint8_t *dst,
-                                                     int dst_stride,
-                                                     int gray,
-                                                     int use_mask,
-                                                     int maskcolor,
-                                                     const uint8_t *mask,
-                                                     int mask_stride,
-                                                     const uint8_t *srcy,
-                                                     int srcy_stride,
-                                                     const uint8_t *srcu,
-                                                     const uint8_t *srcv,
-                                                     int srcuv_stride,
-                                                     int w, int h)
+        int dst_stride,
+        int gray,
+        int use_mask,
+        int maskcolor,
+        const uint8_t *mask,
+        int mask_stride,
+        const uint8_t *srcy,
+        int srcy_stride,
+        const uint8_t *srcu,
+        const uint8_t *srcv,
+        int srcuv_stride,
+        int w, int h)
 {
     int i, j, k, r = -1;
-    while (++r < h) {
-        for (i = 0, j = 0, k = 0; i < w; j += (i & 1), i++, k += 3) {
-            if (!use_mask || mask[i] == maskcolor) {
-                if (gray) {
+    while (++r < h)
+    {
+        for (i = 0, j = 0, k = 0; i < w; j += (i & 1), i++, k += 3)
+        {
+            if (!use_mask || mask[i] == maskcolor)
+            {
+                if (gray)
+                {
                     dst[k] = dst[k + 1] = dst[k + 2] = 0x80;
-                } else {
+                }
+                else
+                {
                     int y = srcy[i];
                     int u = srcu[j] - 128;
                     int v = srcv[j] - 128;
@@ -118,13 +124,15 @@ static void upsample_plane_c(uint8_t *plane, int plane_stride, int w, int h)
            plane + plane_stride * (j >> 1),
            w);
 
-    while ((j -= 2) > 0) {
+    while ((j -= 2) > 0)
+    {
         dst1 = plane + plane_stride *  (j + 1);
         dst2 = plane + plane_stride *   j;
         src1 = plane + plane_stride * ((j + 1) >> 1);
         src2 = plane + plane_stride * ( j      >> 1);
 
-        for (i = (w - 1) >> 1; i >= 0; i--) {
+        for (i = (w - 1) >> 1; i >= 0; i--)
+        {
             a = src1[i];
             b = src2[i];
             dst1[i] = (3 * a + b + 2) >> 2;
@@ -132,13 +140,15 @@ static void upsample_plane_c(uint8_t *plane, int plane_stride, int w, int h)
         }
     }
 
-    for (j = h - 1; j >= 0; j--) {
+    for (j = h - 1; j >= 0; j--)
+    {
         p = plane + plane_stride * j;
         i = w - 1;
 
         p[i] = p[i >> 1];
 
-        while ((i -= 2) > 0) {
+        while ((i -= 2) > 0)
+        {
             a = p[ i      >> 1];
             b = p[(i + 1) >> 1];
             p[i]     = (3 * a + b + 1) >> 2;

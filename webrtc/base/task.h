@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -88,86 +88,110 @@
 // yet in the STATE_DONE state.
 //
 
-namespace rtc {
+namespace rtc
+{
 
 // Executes a sequence of steps
-class Task : public TaskParent {
- public:
-  Task(TaskParent *parent);
-  ~Task() override;
+class Task : public TaskParent
+{
+public:
+    Task(TaskParent *parent);
+    ~Task() override;
 
-  int32_t unique_id() { return unique_id_; }
+    int32_t unique_id()
+    {
+        return unique_id_;
+    }
 
-  void Start();
-  void Step();
-  int GetState() const { return state_; }
-  bool HasError() const { return (GetState() == STATE_ERROR); }
-  bool Blocked() const { return blocked_; }
-  bool IsDone() const { return done_; }
-  int64_t ElapsedTime();
+    void Start();
+    void Step();
+    int GetState() const
+    {
+        return state_;
+    }
+    bool HasError() const
+    {
+        return (GetState() == STATE_ERROR);
+    }
+    bool Blocked() const
+    {
+        return blocked_;
+    }
+    bool IsDone() const
+    {
+        return done_;
+    }
+    int64_t ElapsedTime();
 
-  // Called from outside to stop task without any more callbacks
-  void Abort(bool nowake = false);
+    // Called from outside to stop task without any more callbacks
+    void Abort(bool nowake = false);
 
-  bool TimedOut();
+    bool TimedOut();
 
-  int64_t timeout_time() const { return timeout_time_; }
-  int timeout_seconds() const { return timeout_seconds_; }
-  void set_timeout_seconds(int timeout_seconds);
+    int64_t timeout_time() const
+    {
+        return timeout_time_;
+    }
+    int timeout_seconds() const
+    {
+        return timeout_seconds_;
+    }
+    void set_timeout_seconds(int timeout_seconds);
 
-  sigslot::signal0<> SignalTimeout;
+    sigslot::signal0<> SignalTimeout;
 
-  // Called inside the task to signal that the task may be unblocked
-  void Wake();
+    // Called inside the task to signal that the task may be unblocked
+    void Wake();
 
- protected:
+protected:
 
-  enum {
-    STATE_BLOCKED = -1,
-    STATE_INIT = 0,
-    STATE_START = 1,
-    STATE_DONE = 2,
-    STATE_ERROR = 3,
-    STATE_RESPONSE = 4,
-    STATE_NEXT = 5,  // Subclasses which need more states start here and higher
-  };
+    enum
+    {
+        STATE_BLOCKED = -1,
+        STATE_INIT = 0,
+        STATE_START = 1,
+        STATE_DONE = 2,
+        STATE_ERROR = 3,
+        STATE_RESPONSE = 4,
+        STATE_NEXT = 5,  // Subclasses which need more states start here and higher
+    };
 
-  // Called inside to advise that the task should wake and signal an error
-  void Error();
+    // Called inside to advise that the task should wake and signal an error
+    void Error();
 
-  int64_t CurrentTime();
+    int64_t CurrentTime();
 
-  virtual std::string GetStateName(int state) const;
-  virtual int Process(int state);
-  virtual void Stop();
-  virtual int ProcessStart() = 0;
-  virtual int ProcessResponse();
+    virtual std::string GetStateName(int state) const;
+    virtual int Process(int state);
+    virtual void Stop();
+    virtual int ProcessStart() = 0;
+    virtual int ProcessResponse();
 
-  void ResetTimeout();
-  void ClearTimeout();
+    void ResetTimeout();
+    void ClearTimeout();
 
-  void SuspendTimeout();
-  void ResumeTimeout();
+    void SuspendTimeout();
+    void ResumeTimeout();
 
- protected:
-  virtual int OnTimeout();
+protected:
+    virtual int OnTimeout();
 
- private:
-  void Done();
+private:
+    void Done();
 
-  int state_;
-  bool blocked_;
-  bool done_;
-  bool aborted_;
-  bool busy_;
-  bool error_;
-  int64_t start_time_;
-  int64_t timeout_time_;
-  int timeout_seconds_;
-  bool timeout_suspended_;
-  int32_t unique_id_;
+    int state_;
+    bool blocked_;
+    bool done_;
+    bool aborted_;
+    bool busy_;
+    bool error_;
+    int64_t start_time_;
+    int64_t timeout_time_;
+    int timeout_seconds_;
+    bool timeout_suspended_;
+    int32_t unique_id_;
 
-  static int32_t unique_id_seed_;
+    static int32_t unique_id_seed_;
 };
 
 }  // namespace rtc

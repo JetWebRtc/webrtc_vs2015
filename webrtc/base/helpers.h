@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include <string>
 #include "webrtc/base/basictypes.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // For testing, we can return predictable data.
 void SetRandomTestMode(bool test);

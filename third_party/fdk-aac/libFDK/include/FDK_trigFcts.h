@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -157,45 +157,51 @@ static inline FIXP_DBL fixp_sin_cos_residual_inline(FIXP_DBL x, int scale, FIXP_
     residual <<= scale;
 
     /* Sine sign symmetry */
-    if (s & ((1<<LD)<<1) ) {
-      ssign = -ssign;
+    if (s & ((1<<LD)<<1) )
+    {
+        ssign = -ssign;
     }
     /* Cosine sign symmetry */
-    if ( (s + (1<<LD)) & ((1<<LD)<<1) ) {
-      csign = -csign;
+    if ( (s + (1<<LD)) & ((1<<LD)<<1) )
+    {
+        csign = -csign;
     }
 
     s = fAbs(s);
 
     s &= (((1<<LD)<<1)-1); /* Modulo PI */
 
-    if (s > (1<<LD)) {
-      s = ((1<<LD)<<1) - s;
+    if (s > (1<<LD))
+    {
+        s = ((1<<LD)<<1) - s;
     }
 
     {
-      LONG sl, cl;
-      /* Because of packed table */
-      if (s > (1<<(LD-1))) {
-        FIXP_STP tmp;
-        /* Cosine/Sine simetry for angles greater than PI/4 */
-        s = (1<<LD)-s;
-        tmp = SINETAB[s];
-        sl = (LONG)tmp.v.re;
-        cl = (LONG)tmp.v.im;
-      } else {
-        FIXP_STP tmp;
-        tmp = SINETAB[s];
-        sl = (LONG)tmp.v.im;
-        cl = (LONG)tmp.v.re;
-      }
+        LONG sl, cl;
+        /* Because of packed table */
+        if (s > (1<<(LD-1)))
+        {
+            FIXP_STP tmp;
+            /* Cosine/Sine simetry for angles greater than PI/4 */
+            s = (1<<LD)-s;
+            tmp = SINETAB[s];
+            sl = (LONG)tmp.v.re;
+            cl = (LONG)tmp.v.im;
+        }
+        else
+        {
+            FIXP_STP tmp;
+            tmp = SINETAB[s];
+            sl = (LONG)tmp.v.im;
+            cl = (LONG)tmp.v.re;
+        }
 
 #ifdef SINETABLE_16BIT
-      *sine   = (FIXP_DBL)((sl * ssign) << (DFRACT_BITS-FRACT_BITS));
-      *cosine = (FIXP_DBL)((cl * csign) << (DFRACT_BITS-FRACT_BITS));
+        *sine   = (FIXP_DBL)((sl * ssign) << (DFRACT_BITS-FRACT_BITS));
+        *cosine = (FIXP_DBL)((cl * csign) << (DFRACT_BITS-FRACT_BITS));
 #else
-      *sine   = (FIXP_DBL)(sl * ssign);
-      *cosine = (FIXP_DBL)(cl * csign);
+        *sine   = (FIXP_DBL)(sl * ssign);
+        *cosine = (FIXP_DBL)(cl * csign);
 #endif
     }
 

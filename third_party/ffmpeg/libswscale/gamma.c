@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2015 Pedro Arthur <bygrandao@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -34,13 +34,15 @@ static int gamma_convert(SwsContext *c, SwsFilterDescriptor *desc, int sliceY, i
     int srcW = desc->src->width;
 
     int i;
-    for (i = 0; i < sliceH; ++i) {
+    for (i = 0; i < sliceH; ++i)
+    {
         uint8_t ** src = desc->src->plane[0].line;
         int src_pos = sliceY+i - desc->src->plane[0].sliceY;
 
         uint16_t *src1 = (uint16_t*)*(src+src_pos);
         int j;
-        for (j = 0; j < srcW; ++j) {
+        for (j = 0; j < srcW; ++j)
+        {
             uint16_t r = AV_RL16(src1 + j*4 + 0);
             uint16_t g = AV_RL16(src1 + j*4 + 1);
             uint16_t b = AV_RL16(src1 + j*4 + 2);

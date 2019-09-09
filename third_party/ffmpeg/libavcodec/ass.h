@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SSA/ASS common functions
  * Copyright (c) 2010  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -134,5 +134,5 @@ int ff_ass_bprint_dialog(AVBPrint *buf, const char *dialog,
  * @param keep_ass_markup braces and backslash will not be escaped if set
  */
 void ff_ass_bprint_text_event(AVBPrint *buf, const char *p, int size,
-                             const char *linebreaks, int keep_ass_markup);
+                              const char *linebreaks, int keep_ass_markup);
 #endif /* AVCODEC_ASS_H */

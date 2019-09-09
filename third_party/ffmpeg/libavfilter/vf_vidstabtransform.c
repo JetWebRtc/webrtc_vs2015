@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Georg Martius <georg dot martius at web dot de>
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 
 #include "vidstabutils.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
 
     VSTransformData td;
@@ -46,59 +47,106 @@ typedef struct {
 #define OFFSETC(x) (offsetof(TransformContext, conf)+offsetof(VSTransformConfig, x))
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption vidstabtransform_options[] = {
-    {"input",     "set path to the file storing the transforms", OFFSET(input),
-                   AV_OPT_TYPE_STRING, {.str = DEFAULT_INPUT_NAME}, .flags = FLAGS },
-    {"smoothing", "set number of frames*2 + 1 used for lowpass filtering", OFFSETC(smoothing),
-                   AV_OPT_TYPE_INT,    {.i64 = 15},       0, 1000, FLAGS},
+static const AVOption vidstabtransform_options[] =
+{
+    {
+        "input",     "set path to the file storing the transforms", OFFSET(input),
+        AV_OPT_TYPE_STRING, {.str = DEFAULT_INPUT_NAME}, .flags = FLAGS
+    },
+    {
+        "smoothing", "set number of frames*2 + 1 used for lowpass filtering", OFFSETC(smoothing),
+        AV_OPT_TYPE_INT,    {.i64 = 15},       0, 1000, FLAGS
+    },
 
-    {"optalgo",   "set camera path optimization algo", OFFSETC(camPathAlgo),
-                   AV_OPT_TYPE_INT,    {.i64 = VSOptimalL1}, VSOptimalL1, VSAvg, FLAGS, "optalgo"},
-    {  "opt",     "global optimization",                                            0, // from version 1.0 on
-                   AV_OPT_TYPE_CONST,  {.i64 = VSOptimalL1 }, 0, 0, FLAGS, "optalgo"},
-    {  "gauss",   "gaussian kernel",                                                0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VSGaussian }, 0, 0, FLAGS,  "optalgo"},
-    {  "avg",     "simple averaging on motion",                                     0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VSAvg },      0, 0, FLAGS,  "optalgo"},
+    {
+        "optalgo",   "set camera path optimization algo", OFFSETC(camPathAlgo),
+        AV_OPT_TYPE_INT,    {.i64 = VSOptimalL1}, VSOptimalL1, VSAvg, FLAGS, "optalgo"
+    },
+    {
+        "opt",     "global optimization",                                            0, // from version 1.0 on
+        AV_OPT_TYPE_CONST,  {.i64 = VSOptimalL1 }, 0, 0, FLAGS, "optalgo"
+    },
+    {
+        "gauss",   "gaussian kernel",                                                0,
+        AV_OPT_TYPE_CONST,  {.i64 = VSGaussian }, 0, 0, FLAGS,  "optalgo"
+    },
+    {
+        "avg",     "simple averaging on motion",                                     0,
+        AV_OPT_TYPE_CONST,  {.i64 = VSAvg },      0, 0, FLAGS,  "optalgo"
+    },
 
-    {"maxshift",  "set maximal number of pixels to translate image", OFFSETC(maxShift),
-                   AV_OPT_TYPE_INT,    {.i64 = -1},      -1, 500,  FLAGS},
-    {"maxangle",  "set maximal angle in rad to rotate image", OFFSETC(maxAngle),
-                   AV_OPT_TYPE_DOUBLE, {.dbl = -1.0},  -1.0, 3.14, FLAGS},
+    {
+        "maxshift",  "set maximal number of pixels to translate image", OFFSETC(maxShift),
+        AV_OPT_TYPE_INT,    {.i64 = -1},      -1, 500,  FLAGS
+    },
+    {
+        "maxangle",  "set maximal angle in rad to rotate image", OFFSETC(maxAngle),
+        AV_OPT_TYPE_DOUBLE, {.dbl = -1.0},  -1.0, 3.14, FLAGS
+    },
 
-    {"crop",      "set cropping mode", OFFSETC(crop),
-                   AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS, "crop"},
-    {  "keep",    "keep border",                                                    0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VSKeepBorder }, 0, 0, FLAGS, "crop"},
-    {  "black",   "black border",                                                   0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VSCropBorder }, 0, 0, FLAGS, "crop"},
+    {
+        "crop",      "set cropping mode", OFFSETC(crop),
+        AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS, "crop"
+    },
+    {
+        "keep",    "keep border",                                                    0,
+        AV_OPT_TYPE_CONST,  {.i64 = VSKeepBorder }, 0, 0, FLAGS, "crop"
+    },
+    {
+        "black",   "black border",                                                   0,
+        AV_OPT_TYPE_CONST,  {.i64 = VSCropBorder }, 0, 0, FLAGS, "crop"
+    },
 
-    {"invert",    "invert transforms", OFFSETC(invert),
-                   AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS},
-    {"relative",  "consider transforms as relative", OFFSETC(relative),
-                   AV_OPT_TYPE_INT,    {.i64 = 1},        0, 1,    FLAGS},
-    {"zoom",      "set percentage to zoom (>0: zoom in, <0: zoom out", OFFSETC(zoom),
-                   AV_OPT_TYPE_DOUBLE, {.dbl = 0},     -100, 100,  FLAGS},
-    {"optzoom",   "set optimal zoom (0: nothing, 1: optimal static zoom, 2: optimal dynamic zoom)", OFFSETC(optZoom),
-                   AV_OPT_TYPE_INT,    {.i64 = 1},        0, 2,    FLAGS},
-    {"zoomspeed", "for adative zoom: percent to zoom maximally each frame",         OFFSETC(zoomSpeed),
-                   AV_OPT_TYPE_DOUBLE, {.dbl = 0.25},     0, 5,    FLAGS},
+    {
+        "invert",    "invert transforms", OFFSETC(invert),
+        AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS
+    },
+    {
+        "relative",  "consider transforms as relative", OFFSETC(relative),
+        AV_OPT_TYPE_INT,    {.i64 = 1},        0, 1,    FLAGS
+    },
+    {
+        "zoom",      "set percentage to zoom (>0: zoom in, <0: zoom out", OFFSETC(zoom),
+        AV_OPT_TYPE_DOUBLE, {.dbl = 0},     -100, 100,  FLAGS
+    },
+    {
+        "optzoom",   "set optimal zoom (0: nothing, 1: optimal static zoom, 2: optimal dynamic zoom)", OFFSETC(optZoom),
+        AV_OPT_TYPE_INT,    {.i64 = 1},        0, 2,    FLAGS
+    },
+    {
+        "zoomspeed", "for adative zoom: percent to zoom maximally each frame",         OFFSETC(zoomSpeed),
+        AV_OPT_TYPE_DOUBLE, {.dbl = 0.25},     0, 5,    FLAGS
+    },
 
-    {"interpol",  "set type of interpolation", OFFSETC(interpolType),
-                   AV_OPT_TYPE_INT,    {.i64 = 2},        0, 3,    FLAGS, "interpol"},
-    {  "no",      "no interpolation",                                               0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VS_Zero  },  0, 0,  FLAGS, "interpol"},
-    {  "linear",  "linear (horizontal)",                                            0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VS_Linear }, 0, 0,  FLAGS, "interpol"},
-    {  "bilinear","bi-linear",                                                      0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VS_BiLinear},0, 0,  FLAGS, "interpol"},
-    {  "bicubic", "bi-cubic",                                                       0,
-                   AV_OPT_TYPE_CONST,  {.i64 = VS_BiCubic },0, 0,  FLAGS, "interpol"},
+    {
+        "interpol",  "set type of interpolation", OFFSETC(interpolType),
+        AV_OPT_TYPE_INT,    {.i64 = 2},        0, 3,    FLAGS, "interpol"
+    },
+    {
+        "no",      "no interpolation",                                               0,
+        AV_OPT_TYPE_CONST,  {.i64 = VS_Zero  },  0, 0,  FLAGS, "interpol"
+    },
+    {
+        "linear",  "linear (horizontal)",                                            0,
+        AV_OPT_TYPE_CONST,  {.i64 = VS_Linear }, 0, 0,  FLAGS, "interpol"
+    },
+    {
+        "bilinear","bi-linear",                                                      0,
+        AV_OPT_TYPE_CONST,  {.i64 = VS_BiLinear},0, 0,  FLAGS, "interpol"
+    },
+    {
+        "bicubic", "bi-cubic",                                                       0,
+        AV_OPT_TYPE_CONST,  {.i64 = VS_BiCubic },0, 0,  FLAGS, "interpol"
+    },
 
-    {"tripod",    "enable virtual tripod mode (same as relative=0:smoothing=0)", OFFSET(tripod),
-                   AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS},
-    {"debug",     "enable debug mode and writer global motions information to file", OFFSET(debug),
-                   AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS},
+    {
+        "tripod",    "enable virtual tripod mode (same as relative=0:smoothing=0)", OFFSET(tripod),
+        AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS
+    },
+    {
+        "debug",     "enable debug mode and writer global motions information to file", OFFSET(debug),
+        AV_OPT_TYPE_INT,    {.i64 = 0},        0, 1,    FLAGS
+    },
     {NULL}
 };
 
@@ -124,7 +172,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 static int query_formats(AVFilterContext *ctx)
 {
     // If you add something here also add it in vidstabutils.c
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_YUV440P,  AV_PIX_FMT_GRAY8,
@@ -154,16 +203,18 @@ static int config_input(AVFilterLink *inlink)
 
     if (!vsFrameInfoInit(&fi_src, inlink->w, inlink->h,
                          ff_av2vs_pixfmt(ctx, inlink->format)) ||
-        !vsFrameInfoInit(&fi_dest, inlink->w, inlink->h,
-                         ff_av2vs_pixfmt(ctx, inlink->format))) {
+            !vsFrameInfoInit(&fi_dest, inlink->w, inlink->h,
+                             ff_av2vs_pixfmt(ctx, inlink->format)))
+    {
         av_log(ctx, AV_LOG_ERROR, "unknown pixel format: %i (%s)",
                inlink->format, desc->name);
         return AVERROR(EINVAL);
     }
 
     if (fi_src.bytesPerPixel != av_get_bits_per_pixel(desc)/8 ||
-        fi_src.log2ChromaW != desc->log2_chroma_w ||
-        fi_src.log2ChromaH != desc->log2_chroma_h) {
+            fi_src.log2ChromaW != desc->log2_chroma_w ||
+            fi_src.log2ChromaH != desc->log2_chroma_h)
+    {
         av_log(ctx, AV_LOG_ERROR, "pixel-format error: bpp %i<>%i  ",
                fi_src.bytesPerPixel, av_get_bits_per_pixel(desc)/8);
         av_log(ctx, AV_LOG_ERROR, "chroma_subsampl: w: %i<>%i  h: %i<>%i\n",
@@ -175,7 +226,8 @@ static int config_input(AVFilterLink *inlink)
     // set values that are not initializes by the options
     tc->conf.modName = "vidstabtransform";
     tc->conf.verbose = 1 + tc->debug;
-    if (tc->tripod) {
+    if (tc->tripod)
+    {
         av_log(ctx, AV_LOG_INFO, "Virtual tripod mode: relative=0, smoothing=0\n");
         tc->conf.relative  = 0;
         tc->conf.smoothing = 0;
@@ -184,7 +236,8 @@ static int config_input(AVFilterLink *inlink)
     tc->conf.storeTransforms         = tc->debug;
     tc->conf.smoothZoom              = 0;
 
-    if (vsTransformDataInit(td, &tc->conf, &fi_src, &fi_dest) != VS_OK) {
+    if (vsTransformDataInit(td, &tc->conf, &fi_src, &fi_dest) != VS_OK)
+    {
         av_log(ctx, AV_LOG_ERROR, "initialization of vid.stab transform failed, please report a BUG\n");
         return AVERROR(EINVAL);
     }
@@ -209,20 +262,28 @@ static int config_input(AVFilterLink *inlink)
     av_log(ctx, AV_LOG_INFO, "    interpol  = %s\n", getInterpolationTypeName(tc->conf.interpolType));
 
     f = fopen(tc->input, "r");
-    if (!f) {
+    if (!f)
+    {
         int ret = AVERROR(errno);
         av_log(ctx, AV_LOG_ERROR, "cannot open input file %s\n", tc->input);
         return ret;
-    } else {
+    }
+    else
+    {
         VSManyLocalMotions mlms;
-        if (vsReadLocalMotionsFile(f, &mlms) == VS_OK) {
+        if (vsReadLocalMotionsFile(f, &mlms) == VS_OK)
+        {
             // calculate the actual transforms from the local motions
-            if (vsLocalmotions2Transforms(td, &mlms, &tc->trans) != VS_OK) {
+            if (vsLocalmotions2Transforms(td, &mlms, &tc->trans) != VS_OK)
+            {
                 av_log(ctx, AV_LOG_ERROR, "calculating transformations failed\n");
                 return AVERROR(EINVAL);
             }
-        } else { // try to read old format
-            if (!vsReadOldTransforms(td, f, &tc->trans)) { /* read input file */
+        }
+        else     // try to read old format
+        {
+            if (!vsReadOldTransforms(td, f, &tc->trans))   /* read input file */
+            {
                 av_log(ctx, AV_LOG_ERROR, "error parsing input file %s\n", tc->input);
                 return AVERROR(EINVAL);
             }
@@ -230,7 +291,8 @@ static int config_input(AVFilterLink *inlink)
     }
     fclose(f);
 
-    if (vsPreprocessTransforms(td, &tc->trans) != VS_OK) {
+    if (vsPreprocessTransforms(td, &tc->trans) != VS_OK)
+    {
         av_log(ctx, AV_LOG_ERROR, "error while preprocessing transforms\n");
         return AVERROR(EINVAL);
     }
@@ -252,27 +314,36 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     VSFrame inframe;
     int plane;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         direct = 1;
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
         av_frame_copy_props(out, in);
     }
 
-    for (plane = 0; plane < vsTransformGetSrcFrameInfo(td)->planes; plane++) {
+    for (plane = 0; plane < vsTransformGetSrcFrameInfo(td)->planes; plane++)
+    {
         inframe.data[plane] = in->data[plane];
         inframe.linesize[plane] = in->linesize[plane];
     }
-    if (direct) {
+    if (direct)
+    {
         vsTransformPrepare(td, &inframe, &inframe);
-    } else { // separate frames
+    }
+    else     // separate frames
+    {
         VSFrame outframe;
-        for (plane = 0; plane < vsTransformGetDestFrameInfo(td)->planes; plane++) {
+        for (plane = 0; plane < vsTransformGetDestFrameInfo(td)->planes; plane++)
+        {
             outframe.data[plane] = out->data[plane];
             outframe.linesize[plane] = out->linesize[plane];
         }
@@ -289,7 +360,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad avfilter_vf_vidstabtransform_inputs[] = {
+static const AVFilterPad avfilter_vf_vidstabtransform_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -299,7 +371,8 @@ static const AVFilterPad avfilter_vf_vidstabtransform_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_vidstabtransform_outputs[] = {
+static const AVFilterPad avfilter_vf_vidstabtransform_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -307,11 +380,12 @@ static const AVFilterPad avfilter_vf_vidstabtransform_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_vidstabtransform = {
+AVFilter ff_vf_vidstabtransform =
+{
     .name          = "vidstabtransform",
     .description   = NULL_IF_CONFIG_SMALL("Transform the frames, "
-                                          "pass 2 of 2 for stabilization "
-                                          "(see vidstabdetect for pass 1)."),
+    "pass 2 of 2 for stabilization "
+    "(see vidstabdetect for pass 1)."),
     .priv_size     = sizeof(TransformContext),
     .init          = init,
     .uninit        = uninit,

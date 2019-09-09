@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder utilities
  * Copyright (C) 2015 Rostislav Pehlivanov
  *
@@ -39,7 +39,8 @@
 static inline void abs_pow34_v(float *out, const float *in, const int size)
 {
     int i;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         float a = fabsf(in[i]);
         out[i] = sqrtf(a * sqrtf(a));
     }
@@ -62,10 +63,12 @@ static inline void quantize_bands(int *out, const float *in, const float *scaled
 {
     int i;
     double qc;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         qc = scaled[i] * Q34;
         out[i] = (int)FFMIN(qc + rounding, (double)maxval);
-        if (is_signed && in[i] < 0.0f) {
+        if (is_signed && in[i] < 0.0f)
+        {
             out[i] = -out[i];
         }
     }
@@ -75,8 +78,10 @@ static inline float find_max_val(int group_len, int swb_size, const float *scale
 {
     float maxval = 0.0f;
     int w2, i;
-    for (w2 = 0; w2 < group_len; w2++) {
-        for (i = 0; i < swb_size; i++) {
+    for (w2 = 0; w2 < group_len; w2++)
+    {
+        for (i = 0; i < swb_size; i++)
+        {
             maxval = FFMAX(maxval, scaled[w2*128+i]);
         }
     }
@@ -118,9 +123,11 @@ static inline int quant_array_idx(const float val, const float *arr, const int n
 {
     int i, index = 0;
     float quant_min_err = INFINITY;
-    for (i = 0; i < num; i++) {
+    for (i = 0; i < num; i++)
+    {
         float error = (val - arr[i])*(val - arr[i]);
-        if (error < quant_min_err) {
+        if (error < quant_min_err)
+        {
             quant_min_err = error;
             index = i;
         }

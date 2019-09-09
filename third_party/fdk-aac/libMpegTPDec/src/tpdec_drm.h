@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,10 +96,11 @@ amm-info@iis.fraunhofer.de
 
 #include "FDK_crc.h"
 
-typedef struct {
+typedef struct
+{
 
-  FDK_CRCINFO crcInfo;             /* CRC state info */
-  USHORT      crcReadValue;        /* CRC value read from bitstream data */
+    FDK_CRCINFO crcInfo;             /* CRC state info */
+    USHORT      crcReadValue;        /* CRC value read from bitstream data */
 
 } STRUCT_DRM;
 
@@ -129,10 +130,10 @@ void drmRead_CrcInit( HANDLE_DRM pDrm );
  * \return  ID for the created region, -1 in case of an error
  */
 int drmRead_CrcStartReg(
-        HANDLE_DRM pDrm,
-        HANDLE_FDK_BITSTREAM hBs,
-        int mBits
-        );
+    HANDLE_DRM pDrm,
+    HANDLE_FDK_BITSTREAM hBs,
+    int mBits
+);
 
 /**
  * \brief Ends CRC region identified by reg
@@ -144,10 +145,10 @@ int drmRead_CrcStartReg(
  * \return  none
  */
 void drmRead_CrcEndReg(
-        HANDLE_DRM pDrm,
-        HANDLE_FDK_BITSTREAM hBs,
-        int reg
-        );
+    HANDLE_DRM pDrm,
+    HANDLE_FDK_BITSTREAM hBs,
+    int reg
+);
 
 /**
  * \brief Check CRC
@@ -174,9 +175,9 @@ TRANSPORTDEC_ERROR drmRead_CrcCheck( HANDLE_DRM pDrm );
  * \return  error status
  */
 TRANSPORTDEC_ERROR drmRead_DecodeHeader(
-        HANDLE_DRM            pDrm,
-        HANDLE_FDK_BITSTREAM  bs
-        );
+    HANDLE_DRM            pDrm,
+    HANDLE_FDK_BITSTREAM  bs
+);
 
 /**
  * \brief   Parse a Drm specific SDC audio config from a given bitstream handle.
@@ -187,7 +188,7 @@ TRANSPORTDEC_ERROR drmRead_DecodeHeader(
  * \return  Total element count including all SCE, CPE and LFE.
  */
 TRANSPORTDEC_ERROR DrmRawSdcAudioConfig_Parse( CSAudioSpecificConfig *pAsc,
-                                               HANDLE_FDK_BITSTREAM hBs );
+        HANDLE_FDK_BITSTREAM hBs );
 
 
 

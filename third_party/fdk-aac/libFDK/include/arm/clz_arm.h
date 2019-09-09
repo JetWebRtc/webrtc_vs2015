@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -91,30 +91,32 @@ amm-info@iis.fraunhofer.de
 #if defined(__arm__)
 
 #if defined(__GNUC__) && defined(__ARM_ARCH_5TE__)	/* cppp replaced: elif */
-  /* ARM gcc*/
+/* ARM gcc*/
 
-  #define FUNCTION_fixnormz_D
-  #define FUNCTION_fixnorm_D
+#define FUNCTION_fixnormz_D
+#define FUNCTION_fixnorm_D
 
-  inline INT fixnormz_D(LONG value)
-  {
+inline INT fixnormz_D(LONG value)
+{
     INT result;
     asm("clz %0, %1 ": "=r"(result) : "r"(value) );
     return result;
-  }
+}
 
-  inline INT fixnorm_D(LONG value)
-  {
+inline INT fixnorm_D(LONG value)
+{
     INT result;
-    if (value == 0) {
-      return 0;
+    if (value == 0)
+    {
+        return 0;
     }
-    if (value < 0) {
-      value = ~value;
+    if (value < 0)
+    {
+        value = ~value;
     }
     result =  fixnormz_D(value);
     return result - 1;
-  }
+}
 
 #endif /* arm toolchain */
 

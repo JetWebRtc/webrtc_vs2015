@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,28 +21,31 @@
 #include "webrtc/typedefs.h"
 
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class GlRenderer : public VideoRenderer {
- public:
-  void OnFrame(const webrtc::VideoFrame& frame) override;
+class GlRenderer : public VideoRenderer
+{
+public:
+    void OnFrame(const webrtc::VideoFrame& frame) override;
 
- protected:
-  GlRenderer();
+protected:
+    GlRenderer();
 
-  void Init();
-  void Destroy();
+    void Init();
+    void Destroy();
 
-  void ResizeViewport(size_t width, size_t height);
+    void ResizeViewport(size_t width, size_t height);
 
- private:
-  bool is_init_;
-  uint8_t* buffer_;
-  GLuint texture_;
-  size_t width_, height_, buffer_size_;
+private:
+    bool is_init_;
+    uint8_t* buffer_;
+    GLuint texture_;
+    size_t width_, height_, buffer_size_;
 
-  void ResizeVideo(size_t width, size_t height);
+    void ResizeVideo(size_t width, size_t height);
 };
 }  // test
 }  // webrtc

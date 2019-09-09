@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Dieter Shirley
  *
  * dct_unquantize_h263_altivec:
@@ -37,7 +37,7 @@
 /* AltiVec version of dct_unquantize_h263
    this code assumes `block' is 16 bytes-aligned */
 static void dct_unquantize_h263_altivec(MpegEncContext *s,
-                                 int16_t *block, int n, int qscale)
+                                        int16_t *block, int n, int qscale)
 {
     int i, level, qmul, qadd;
     int nCoeffs;
@@ -45,17 +45,22 @@ static void dct_unquantize_h263_altivec(MpegEncContext *s,
     qadd = (qscale - 1) | 1;
     qmul = qscale << 1;
 
-    if (s->mb_intra) {
-        if (!s->h263_aic) {
+    if (s->mb_intra)
+    {
+        if (!s->h263_aic)
+        {
             if (n < 4)
                 block[0] = block[0] * s->y_dc_scale;
             else
                 block[0] = block[0] * s->c_dc_scale;
-        }else
+        }
+        else
             qadd = 0;
         i = 1;
         nCoeffs= 63; //does not always use zigzag table
-    } else {
+    }
+    else
+    {
         i = 0;
         av_assert2(s->block_last_index[n]>=0);
         nCoeffs= s->intra_scantable.raster_end[ s->block_last_index[n] ];
@@ -76,7 +81,8 @@ static void dct_unquantize_h263_altivec(MpegEncContext *s,
 
         // vectorize all the 16 bytes-aligned blocks
         // of 8 elements
-        for(; (j + 7) <= nCoeffs ; j+=8) {
+        for(; (j + 7) <= nCoeffs ; j+=8)
+        {
             blockv = vec_ld(j << 1, block);
             blockv_neg = vec_cmplt(blockv, vczero);
             blockv_null = vec_cmpeq(blockv, vczero);
@@ -93,19 +99,25 @@ static void dct_unquantize_h263_altivec(MpegEncContext *s,
         // using good old scalar units.
         // (we could do it using a truncated vector,
         // but I'm not sure it's worth the hassle)
-        for(; j <= nCoeffs ; j++) {
+        for(; j <= nCoeffs ; j++)
+        {
             level = block[j];
-            if (level) {
-                if (level < 0) {
+            if (level)
+            {
+                if (level < 0)
+                {
                     level = level * qmul - qadd;
-                } else {
+                }
+                else
+                {
                     level = level * qmul + qadd;
                 }
                 block[j] = level;
             }
         }
 
-        if (i == 1) {
+        if (i == 1)
+        {
             // cheat. this avoid special-casing the first iteration
             block[0] = backup_0;
         }
@@ -121,7 +133,8 @@ av_cold void ff_mpv_common_init_ppc(MpegEncContext *s)
         return;
 
     if ((s->avctx->dct_algo == FF_DCT_AUTO) ||
-        (s->avctx->dct_algo == FF_DCT_ALTIVEC)) {
+            (s->avctx->dct_algo == FF_DCT_ALTIVEC))
+    {
         s->dct_unquantize_h263_intra = dct_unquantize_h263_altivec;
         s->dct_unquantize_h263_inter = dct_unquantize_h263_altivec;
     }

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,50 +99,50 @@ amm-info@iis.fraunhofer.de
 
 
 void FDKaacEnc_peCalculation(
-        PE_DATA *peData,
-        PSY_OUT_CHANNEL* psyOutChannel[(2)],
-        QC_OUT_CHANNEL* qcOutChannel[(2)],
-        struct TOOLSINFO *toolsInfo,
-        ATS_ELEMENT* adjThrStateElement,
-        const INT nChannels
-        );
+    PE_DATA *peData,
+    PSY_OUT_CHANNEL* psyOutChannel[(2)],
+    QC_OUT_CHANNEL* qcOutChannel[(2)],
+    struct TOOLSINFO *toolsInfo,
+    ATS_ELEMENT* adjThrStateElement,
+    const INT nChannels
+);
 
 INT  FDKaacEnc_AdjThrNew(ADJ_THR_STATE** phAdjThr,
                          INT             nElements);
 
 void FDKaacEnc_AdjThrInit(ADJ_THR_STATE *hAdjThr,
-                const INT peMean,
-                ELEMENT_BITS* elBits[(8)],
-                INT invQuant,
-                INT nElements,
-                INT nChannelsEff,
-                INT sampleRate,
-                INT advancedBitsToPe,
-                FIXP_DBL vbrQualFactor,
-                const INT dZoneQuantEnable);
- 
+                          const INT peMean,
+                          ELEMENT_BITS* elBits[(8)],
+                          INT invQuant,
+                          INT nElements,
+                          INT nChannelsEff,
+                          INT sampleRate,
+                          INT advancedBitsToPe,
+                          FIXP_DBL vbrQualFactor,
+                          const INT dZoneQuantEnable);
+
 
 void FDKaacEnc_DistributeBits(ADJ_THR_STATE *adjThrState,
-    ATS_ELEMENT       *AdjThrStateElement,
-    PSY_OUT_CHANNEL   *psyOutChannel[(2)],
-    PE_DATA           *peData,
-    INT               *grantedPe,
-    INT               *grantedPeCorr,
-    const INT         nChannels,
-    const INT         commonWindow,
-    const INT         avgBits,
-    const INT         bitresBits,
-    const INT         maxBitresBits,
-    const FIXP_DBL    maxBitFac,
-    const INT         bitDistributionMode);
+                              ATS_ELEMENT       *AdjThrStateElement,
+                              PSY_OUT_CHANNEL   *psyOutChannel[(2)],
+                              PE_DATA           *peData,
+                              INT               *grantedPe,
+                              INT               *grantedPeCorr,
+                              const INT         nChannels,
+                              const INT         commonWindow,
+                              const INT         avgBits,
+                              const INT         bitresBits,
+                              const INT         maxBitresBits,
+                              const FIXP_DBL    maxBitFac,
+                              const INT         bitDistributionMode);
 
 void FDKaacEnc_AdjustThresholds(ATS_ELEMENT* AdjThrStateElement[(8)],
-    QC_OUT_ELEMENT*   qcElement[(8)],
-    QC_OUT*           qcOut,
-    PSY_OUT_ELEMENT*  psyOutElement[(8)],
-    INT               CBRbitrateMode,
-    INT               maxIter2ndGuess,
-    CHANNEL_MAPPING*  cm);
+                                QC_OUT_ELEMENT*   qcElement[(8)],
+                                QC_OUT*           qcOut,
+                                PSY_OUT_ELEMENT*  psyOutElement[(8)],
+                                INT               CBRbitrateMode,
+                                INT               maxIter2ndGuess,
+                                CHANNEL_MAPPING*  cm);
 
 void FDKaacEnc_AdjThrClose(ADJ_THR_STATE** hAdjThr);
 

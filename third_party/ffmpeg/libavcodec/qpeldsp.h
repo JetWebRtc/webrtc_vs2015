@@ -1,4 +1,4 @@
-/*
+﻿/*
  * quarterpel DSP functions
  *
  * This file is part of FFmpeg.
@@ -69,7 +69,8 @@ typedef void (*qpel_mc_func)(uint8_t *dst /* align width (8 or 16) */,
 /**
  * quarterpel DSP context
  */
-typedef struct QpelDSPContext {
+typedef struct QpelDSPContext
+{
     qpel_mc_func put_qpel_pixels_tab[2][16];
     qpel_mc_func avg_qpel_pixels_tab[2][16];
     qpel_mc_func put_no_rnd_qpel_pixels_tab[2][16];

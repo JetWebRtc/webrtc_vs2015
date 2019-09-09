@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -39,27 +39,27 @@ void WebRtcIsacfix_GetLpcCoef(int16_t *inLoQ0,
                               int16_t *hi_coeffQ15);
 
 typedef int32_t (*CalculateResidualEnergy)(int lpc_order,
-                                           int32_t q_val_corr,
-                                           int q_val_polynomial,
-                                           int16_t* a_polynomial,
-                                           int32_t* corr_coeffs,
-                                           int* q_val_residual_energy);
+        int32_t q_val_corr,
+        int q_val_polynomial,
+        int16_t* a_polynomial,
+        int32_t* corr_coeffs,
+        int* q_val_residual_energy);
 extern CalculateResidualEnergy WebRtcIsacfix_CalculateResidualEnergy;
 
 int32_t WebRtcIsacfix_CalculateResidualEnergyC(int lpc_order,
-                                               int32_t q_val_corr,
-                                               int q_val_polynomial,
-                                               int16_t* a_polynomial,
-                                               int32_t* corr_coeffs,
-                                               int* q_val_residual_energy);
+        int32_t q_val_corr,
+        int q_val_polynomial,
+        int16_t* a_polynomial,
+        int32_t* corr_coeffs,
+        int* q_val_residual_energy);
 
 #if defined(MIPS_DSP_R2_LE)
 int32_t WebRtcIsacfix_CalculateResidualEnergyMIPS(int lpc_order,
-                                                  int32_t q_val_corr,
-                                                  int q_val_polynomial,
-                                                  int16_t* a_polynomial,
-                                                  int32_t* corr_coeffs,
-                                                  int* q_val_residual_energy);
+        int32_t q_val_corr,
+        int q_val_polynomial,
+        int16_t* a_polynomial,
+        int32_t* corr_coeffs,
+        int* q_val_residual_energy);
 #endif
 
 #ifdef __cplusplus

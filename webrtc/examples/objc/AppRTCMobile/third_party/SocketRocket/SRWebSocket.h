@@ -1,4 +1,4 @@
-//
+﻿//
 //   Copyright 2012 Square Inc.
 //
 //   Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,16 @@
 #import <Foundation/Foundation.h>
 #import <Security/SecCertificate.h>
 
-typedef enum {
+typedef enum
+{
     SR_CONNECTING   = 0,
     SR_OPEN         = 1,
     SR_CLOSING      = 2,
     SR_CLOSED       = 3,
 } SRReadyState;
 
-typedef enum SRStatusCode : NSInteger {
+typedef enum SRStatusCode : NSInteger
+{
     SRStatusCodeNormal = 1000,
     SRStatusCodeGoingAway = 1001,
     SRStatusCodeProtocolError = 1002,
@@ -50,7 +52,7 @@ extern NSString *const SRHTTPResponseErrorKey;
 
 @interface SRWebSocket : NSObject <NSStreamDelegate>
 
-@property (nonatomic, weak) id <SRWebSocketDelegate> delegate;
+    @property (nonatomic, weak) id <SRWebSocketDelegate> delegate;
 
 @property (nonatomic, readonly) SRReadyState readyState;
 @property (nonatomic, readonly, retain) NSURL *url;
@@ -111,7 +113,7 @@ extern NSString *const SRHTTPResponseErrorKey;
 
 @interface NSURLRequest (CertificateAdditions)
 
-@property (nonatomic, retain, readonly) NSArray *SR_SSLPinnedCertificates;
+    @property (nonatomic, retain, readonly) NSArray *SR_SSLPinnedCertificates;
 
 @end
 
@@ -119,7 +121,7 @@ extern NSString *const SRHTTPResponseErrorKey;
 
 @interface NSMutableURLRequest (CertificateAdditions)
 
-@property (nonatomic, retain) NSArray *SR_SSLPinnedCertificates;
+    @property (nonatomic, retain) NSArray *SR_SSLPinnedCertificates;
 
 @end
 

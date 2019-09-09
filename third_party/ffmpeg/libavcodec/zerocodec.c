@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ZeroCodec Decoder
  *
  * Copyright (c) 2012, Derek Buitenhuis
@@ -22,7 +22,8 @@
 #include "internal.h"
 #include "libavutil/common.h"
 
-typedef struct ZeroCodecContext {
+typedef struct ZeroCodecContext
+{
     AVFrame  *previous_frame;
     z_stream zstream;
 } ZeroCodecContext;
@@ -38,11 +39,15 @@ static int zerocodec_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *dst;
     int i, j, zret, ret;
 
-    if (avpkt->flags & AV_PKT_FLAG_KEY) {
+    if (avpkt->flags & AV_PKT_FLAG_KEY)
+    {
         pic->key_frame = 1;
         pic->pict_type = AV_PICTURE_TYPE_I;
-    } else {
-        if (!prev) {
+    }
+    else
+    {
+        if (!prev)
+        {
             av_log(avctx, AV_LOG_ERROR, "Missing reference frame.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -54,7 +59,8 @@ static int zerocodec_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     zret = inflateReset(zstream);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not reset inflate: %d.\n", zret);
         return AVERROR_INVALIDDATA;
     }
@@ -72,12 +78,14 @@ static int zerocodec_decode_frame(AVCodecContext *avctx, void *data,
      * is the same as the previous frame, set it to 0.
      */
 
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         zstream->next_out  = dst;
         zstream->avail_out = avctx->width << 1;
 
         zret = inflate(zstream, Z_SYNC_FLUSH);
-        if (zret != Z_OK && zret != Z_STREAM_END) {
+        if (zret != Z_OK && zret != Z_STREAM_END)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Inflate failed with return code: %d.\n", zret);
             return AVERROR_INVALIDDATA;
@@ -125,13 +133,15 @@ static av_cold int zerocodec_decode_init(AVCodecContext *avctx)
     zstream->opaque = Z_NULL;
 
     zret = inflateInit(zstream);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not initialize inflate: %d.\n", zret);
         return AVERROR(ENOMEM);
     }
 
     zc->previous_frame = av_frame_alloc();
-    if (!zc->previous_frame) {
+    if (!zc->previous_frame)
+    {
         zerocodec_decode_close(avctx);
         return AVERROR(ENOMEM);
     }
@@ -139,7 +149,8 @@ static av_cold int zerocodec_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_zerocodec_decoder = {
+AVCodec ff_zerocodec_decoder =
+{
     .type           = AVMEDIA_TYPE_VIDEO,
     .name           = "zerocodec",
     .long_name      = NULL_IF_CONFIG_SMALL("ZeroCodec Lossless Video"),

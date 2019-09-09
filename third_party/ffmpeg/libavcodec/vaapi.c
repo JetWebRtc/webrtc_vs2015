@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Video Acceleration API (video decoding)
  * HW decode acceleration for MPEG-2, MPEG-4, H.264 and VC-1
  *
@@ -33,8 +33,10 @@
 static void destroy_buffers(VADisplay display, VABufferID *buffers, unsigned int n_buffers)
 {
     unsigned int i;
-    for (i = 0; i < n_buffers; i++) {
-        if (buffers[i] != VA_INVALID_ID) {
+    for (i = 0; i < n_buffers; i++)
+    {
+        if (buffers[i] != VA_INVALID_ID)
+        {
             vaDestroyBuffer(display, buffers[i]);
             buffers[i] = VA_INVALID_ID;
         }
@@ -46,7 +48,8 @@ int ff_vaapi_context_init(AVCodecContext *avctx)
     FFVAContext * const vactx = ff_vaapi_get_context(avctx);
     const struct vaapi_context * const user_vactx = avctx->hwaccel_context;
 
-    if (!user_vactx) {
+    if (!user_vactx)
+    {
         av_log(avctx, AV_LOG_ERROR, "Hardware acceleration context (hwaccel_context) does not exist.\n");
         return AVERROR(ENOSYS);
     }
@@ -78,12 +81,14 @@ int ff_vaapi_render_picture(FFVAContext *vactx, VASurfaceID surface)
     vaUnmapBuffer(vactx->display, vactx->pic_param_buf_id);
     va_buffers[n_va_buffers++] = vactx->pic_param_buf_id;
 
-    if (vactx->iq_matrix_buf_id != VA_INVALID_ID) {
+    if (vactx->iq_matrix_buf_id != VA_INVALID_ID)
+    {
         vaUnmapBuffer(vactx->display, vactx->iq_matrix_buf_id);
         va_buffers[n_va_buffers++] = vactx->iq_matrix_buf_id;
     }
 
-    if (vactx->bitplane_buf_id != VA_INVALID_ID) {
+    if (vactx->bitplane_buf_id != VA_INVALID_ID)
+    {
         vaUnmapBuffer(vactx->display, vactx->bitplane_buf_id);
         va_buffers[n_va_buffers++] = vactx->bitplane_buf_id;
     }
@@ -181,7 +186,8 @@ VASliceParameterBufferBase *ff_vaapi_alloc_slice(FFVAContext *vactx, const uint8
 
     if (!vactx->slice_data)
         vactx->slice_data = buffer;
-    if (vactx->slice_data + vactx->slice_data_size != buffer) {
+    if (vactx->slice_data + vactx->slice_data_size != buffer)
+    {
         if (ff_vaapi_commit_slices(vactx) < 0)
             return NULL;
         vactx->slice_data = buffer;

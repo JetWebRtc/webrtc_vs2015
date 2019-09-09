@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,9 +16,11 @@
 #include "webrtc/base/refcount.h"
 #include "webrtc/base/scoped_ref_ptr.h"
 
-namespace rtc {
+namespace rtc
+{
 
-namespace impl {
+namespace impl
+{
 template <class T>
 static inline void DoNothing(const scoped_refptr<T>& object) {}
 }  // namespace impl
@@ -27,14 +29,16 @@ static inline void DoNothing(const scoped_refptr<T>& object) {}
 // callback goes out of scope. If the returned callback is copied, the
 // reference will be released when the last callback goes out of scope.
 template <class ObjectT>
-static inline Callback0<void> KeepRefUntilDone(ObjectT* object) {
-  return rtc::Bind(&impl::DoNothing<ObjectT>, scoped_refptr<ObjectT>(object));
+static inline Callback0<void> KeepRefUntilDone(ObjectT* object)
+{
+    return rtc::Bind(&impl::DoNothing<ObjectT>, scoped_refptr<ObjectT>(object));
 }
 
 template <class ObjectT>
 static inline Callback0<void> KeepRefUntilDone(
-    const scoped_refptr<ObjectT>& object) {
-  return rtc::Bind(&impl::DoNothing<ObjectT>, object);
+    const scoped_refptr<ObjectT>& object)
+{
+    return rtc::Bind(&impl::DoNothing<ObjectT>, object);
 }
 
 }  // namespace rtc

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -98,55 +98,58 @@ amm-info@iis.fraunhofer.de
 
 #define MIN_LATM_HEADERLENGTH  9
 #define MIN_LOAS_HEADERLENGTH  MIN_LATM_HEADERLENGTH + 24   /* both in bits */
- #define MIN_TP_BUF_SIZE_LOAS   ( 8194 )
+#define MIN_TP_BUF_SIZE_LOAS   ( 8194 )
 
-enum {
-  LATM_MAX_PROG = 1,
-  LATM_MAX_LAYER = 2,
-  LATM_MAX_VAR_CHUNKS=16,
-  LATM_MAX_ID=16
+enum
+{
+    LATM_MAX_PROG = 1,
+    LATM_MAX_LAYER = 2,
+    LATM_MAX_VAR_CHUNKS=16,
+    LATM_MAX_ID=16
 };
 
-typedef struct {
-  UINT m_frameLengthType;
-  UINT m_bufferFullness;
-  UINT m_streamID;
-  UINT m_frameLengthInBits;
+typedef struct
+{
+    UINT m_frameLengthType;
+    UINT m_bufferFullness;
+    UINT m_streamID;
+    UINT m_frameLengthInBits;
 } LATM_LAYER_INFO;
 
-typedef struct {
-  LATM_LAYER_INFO m_linfo[LATM_MAX_PROG][LATM_MAX_LAYER];
-  UINT m_taraBufferFullness;
-  UINT m_otherDataLength;
-  UINT m_audioMuxLengthBytes;          /* Length of LOAS payload */
+typedef struct
+{
+    LATM_LAYER_INFO m_linfo[LATM_MAX_PROG][LATM_MAX_LAYER];
+    UINT m_taraBufferFullness;
+    UINT m_otherDataLength;
+    UINT m_audioMuxLengthBytes;          /* Length of LOAS payload */
 
-  UCHAR m_useSameStreamMux;
-  UCHAR m_AudioMuxVersion;
-  UCHAR m_AudioMuxVersionA;
-  UCHAR m_allStreamsSameTimeFraming;
-  UCHAR m_noSubFrames;
-  UCHAR m_numProgram;
-  UCHAR m_numLayer;
-  UCHAR m_useSameConfig;
+    UCHAR m_useSameStreamMux;
+    UCHAR m_AudioMuxVersion;
+    UCHAR m_AudioMuxVersionA;
+    UCHAR m_allStreamsSameTimeFraming;
+    UCHAR m_noSubFrames;
+    UCHAR m_numProgram;
+    UCHAR m_numLayer;
+    UCHAR m_useSameConfig;
 
-  UCHAR m_otherDataPresent;
-  UCHAR m_crcCheckPresent;
-  UCHAR m_crcCheckSum;
+    UCHAR m_otherDataPresent;
+    UCHAR m_crcCheckPresent;
+    UCHAR m_crcCheckSum;
 
-  SCHAR BufferFullnessAchieved;
+    SCHAR BufferFullnessAchieved;
 } CLatmDemux;
 
 int CLatmDemux_ReadAuChunkLengthInfo(HANDLE_FDK_BITSTREAM bs);
 
 TRANSPORTDEC_ERROR CLatmDemux_Read(
-        HANDLE_FDK_BITSTREAM bs,
-        CLatmDemux *pLatmDemux,
-        TRANSPORT_TYPE tt,
-        CSTpCallBacks *pTpDecCallbacks,
-        CSAudioSpecificConfig *pAsc,
-        int *pfConfigFound,
-        const INT ignoreBufferFullness
-        );
+    HANDLE_FDK_BITSTREAM bs,
+    CLatmDemux *pLatmDemux,
+    TRANSPORT_TYPE tt,
+    CSTpCallBacks *pTpDecCallbacks,
+    CSAudioSpecificConfig *pAsc,
+    int *pfConfigFound,
+    const INT ignoreBufferFullness
+);
 
 /**
  * \brief Read StreamMuxConfig
@@ -158,12 +161,12 @@ TRANSPORTDEC_ERROR CLatmDemux_Read(
  * \return error code
  */
 TRANSPORTDEC_ERROR CLatmDemux_ReadStreamMuxConfig(
-        HANDLE_FDK_BITSTREAM bs,
-        CLatmDemux *pLatmDemux,
-        CSTpCallBacks *pTpDecCallbacks,
-        CSAudioSpecificConfig *pAsc,
-        int * pfConfigFound
-        );
+    HANDLE_FDK_BITSTREAM bs,
+    CLatmDemux *pLatmDemux,
+    CSTpCallBacks *pTpDecCallbacks,
+    CSAudioSpecificConfig *pAsc,
+    int * pfConfigFound
+);
 
 TRANSPORTDEC_ERROR CLatmDemux_ReadPayloadLengthInfo(HANDLE_FDK_BITSTREAM bs, CLatmDemux *pLatmDemux);
 

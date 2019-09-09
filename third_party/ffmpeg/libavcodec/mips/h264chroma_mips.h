@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *
  * This file is part of FFmpeg.
@@ -36,12 +36,12 @@ void ff_avg_h264_chroma_mc2_msa(uint8_t *dst, uint8_t *src, int stride,
                                 int height, int x, int y);
 
 void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y);
+                                int h, int x, int y);
 void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y);
+                                int h, int x, int y);
 void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y);
+                                int h, int x, int y);
 void ff_avg_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y);
+                                int h, int x, int y);
 
 #endif /* H264_CHROMA_MIPS_H */

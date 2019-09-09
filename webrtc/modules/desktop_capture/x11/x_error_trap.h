@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,23 +15,25 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Helper class that registers X Window error handler. Caller can use
 // GetLastErrorAndDisable() to get the last error that was caught, if any.
-class XErrorTrap {
- public:
-  explicit XErrorTrap(Display* display);
-  ~XErrorTrap();
+class XErrorTrap
+{
+public:
+    explicit XErrorTrap(Display* display);
+    ~XErrorTrap();
 
-  // Returns last error and removes unregisters the error handler.
-  int GetLastErrorAndDisable();
+    // Returns last error and removes unregisters the error handler.
+    int GetLastErrorAndDisable();
 
- private:
-  XErrorHandler original_error_handler_;
-  bool enabled_;
+private:
+    XErrorHandler original_error_handler_;
+    bool enabled_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(XErrorTrap);
+    RTC_DISALLOW_COPY_AND_ASSIGN(XErrorTrap);
 };
 
 }  // namespace webrtc

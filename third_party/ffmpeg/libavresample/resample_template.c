@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -73,7 +73,8 @@ static void SET_TYPE(resample_linear)(ResampleContext *c, void *dst0, int dst_in
                     c->filter_length * (index & c->phase_mask);
     FELEM2 v2 = 0;
 
-    for (i = 0; i < c->filter_length; i++) {
+    for (i = 0; i < c->filter_length; i++)
+    {
         val += src[sample_index + i] * (FELEM2)filter[i];
         v2  += src[sample_index + i] * (FELEM2)filter[i + c->filter_length];
     }
@@ -105,7 +106,8 @@ static void SET_TYPE(set_filter)(void *filter0, double *tab, int phase,
 {
     int i;
     FELEM *filter = ((FELEM *)filter0) + phase * tap_count;
-    for (i = 0; i < tap_count; i++) {
+    for (i = 0; i < tap_count; i++)
+    {
         DBL_TO_FELEM(filter[i], tab[i]);
     }
 }

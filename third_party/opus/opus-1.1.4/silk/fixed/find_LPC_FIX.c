@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -62,7 +62,8 @@ void silk_find_LPC_FIX(
     /* Burg AR analysis for the full frame */
     silk_burg_modified( &res_nrg, &res_nrg_Q, a_Q16, x, minInvGain_Q30, subfr_length, psEncC->nb_subfr, psEncC->predictLPCOrder, psEncC->arch );
 
-    if( psEncC->useInterpolatedNLSFs && !psEncC->first_frame_after_reset && psEncC->nb_subfr == MAX_NB_SUBFR ) {
+    if( psEncC->useInterpolatedNLSFs && !psEncC->first_frame_after_reset && psEncC->nb_subfr == MAX_NB_SUBFR )
+    {
         VARDECL( opus_int16, LPC_res );
 
         /* Optimal solution for last 10 ms */
@@ -71,11 +72,15 @@ void silk_find_LPC_FIX(
         /* subtract residual energy here, as that's easier than adding it to the    */
         /* residual energy of the first 10 ms in each iteration of the search below */
         shift = res_tmp_nrg_Q - res_nrg_Q;
-        if( shift >= 0 ) {
-            if( shift < 32 ) {
+        if( shift >= 0 )
+        {
+            if( shift < 32 )
+            {
                 res_nrg = res_nrg - silk_RSHIFT( res_tmp_nrg, shift );
             }
-        } else {
+        }
+        else
+        {
             silk_assert( shift > -32 );
             res_nrg   = silk_RSHIFT( res_nrg, -shift ) - res_tmp_nrg;
             res_nrg_Q = res_tmp_nrg_Q;
@@ -87,7 +92,8 @@ void silk_find_LPC_FIX(
         ALLOC( LPC_res, 2 * subfr_length, opus_int16 );
 
         /* Search over interpolation indices to find the one with lowest residual energy */
-        for( k = 3; k >= 0; k-- ) {
+        for( k = 3; k >= 0; k-- )
+        {
             /* Interpolate NLSFs for first half */
             silk_interpolate( NLSF0_Q15, psEncC->prev_NLSFq_Q15, NLSF_Q15, k, psEncC->predictLPCOrder );
 
@@ -102,10 +108,13 @@ void silk_find_LPC_FIX(
 
             /* Add subframe energies from first half frame */
             shift = rshift0 - rshift1;
-            if( shift >= 0 ) {
+            if( shift >= 0 )
+            {
                 res_nrg1         = silk_RSHIFT( res_nrg1, shift );
                 res_nrg_interp_Q = -rshift0;
-            } else {
+            }
+            else
+            {
                 res_nrg0         = silk_RSHIFT( res_nrg0, -shift );
                 res_nrg_interp_Q = -rshift1;
             }
@@ -113,26 +122,39 @@ void silk_find_LPC_FIX(
 
             /* Compare with first half energy without NLSF interpolation, or best interpolated value so far */
             shift = res_nrg_interp_Q - res_nrg_Q;
-            if( shift >= 0 ) {
-                if( silk_RSHIFT( res_nrg_interp, shift ) < res_nrg ) {
+            if( shift >= 0 )
+            {
+                if( silk_RSHIFT( res_nrg_interp, shift ) < res_nrg )
+                {
                     isInterpLower = silk_TRUE;
-                } else {
+                }
+                else
+                {
                     isInterpLower = silk_FALSE;
                 }
-            } else {
-                if( -shift < 32 ) {
-                    if( res_nrg_interp < silk_RSHIFT( res_nrg, -shift ) ) {
+            }
+            else
+            {
+                if( -shift < 32 )
+                {
+                    if( res_nrg_interp < silk_RSHIFT( res_nrg, -shift ) )
+                    {
                         isInterpLower = silk_TRUE;
-                    } else {
+                    }
+                    else
+                    {
                         isInterpLower = silk_FALSE;
                     }
-                } else {
+                }
+                else
+                {
                     isInterpLower = silk_FALSE;
                 }
             }
 
             /* Determine whether current interpolated NLSFs are best so far */
-            if( isInterpLower == silk_TRUE ) {
+            if( isInterpLower == silk_TRUE )
+            {
                 /* Interpolation has lower residual energy */
                 res_nrg   = res_nrg_interp;
                 res_nrg_Q = res_nrg_interp_Q;
@@ -141,7 +163,8 @@ void silk_find_LPC_FIX(
         }
     }
 
-    if( psEncC->indices.NLSFInterpCoef_Q2 == 4 ) {
+    if( psEncC->indices.NLSFInterpCoef_Q2 == 4 )
+    {
         /* NLSF interpolation is currently inactive, calculate NLSFs from full frame AR coefficients */
         silk_A2NLSF( NLSF_Q15, a_Q16, psEncC->predictLPCOrder );
     }

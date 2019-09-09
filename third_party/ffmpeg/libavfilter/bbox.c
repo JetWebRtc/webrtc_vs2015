@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2005 Robert Edele <yartrebo@earthlink.net>
  *
  * This file is part of FFmpeg.
@@ -49,7 +49,8 @@ outr:
 
     /* top bound */
     line = data;
-    for (start_y = 0; start_y < h; start_y++) {
+    for (start_y = 0; start_y < h; start_y++)
+    {
         for (x = 0; x < w; x++)
             if (line[x] > min_val)
                 goto outt;
@@ -59,7 +60,8 @@ outt:
 
     /* bottom bound */
     line = data + (h-1)*linesize;
-    for (end_y = h - 1; end_y >= start_y; end_y--) {
+    for (end_y = h - 1; end_y >= start_y; end_y--)
+    {
         for (x = 0; x < w; x++)
             if (line[x] > min_val)
                 goto outb;

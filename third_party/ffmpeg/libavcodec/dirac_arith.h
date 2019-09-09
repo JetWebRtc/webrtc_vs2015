@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Marco Gerards <marco@gnu.org>
  * Copyright (C) 2009 David Conrad
  *
@@ -32,7 +32,8 @@
 #include "bytestream.h"
 #include "get_bits.h"
 
-enum dirac_arith_contexts {
+enum dirac_arith_contexts
+{
     CTX_ZPZN_F1,
     CTX_ZPNN_F1,
     CTX_NPZN_F1,
@@ -72,7 +73,8 @@ enum dirac_arith_contexts {
 #define CTX_DC_F1        CTX_ZP_F5
 #define CTX_DC_DATA      0
 
-typedef struct {
+typedef struct
+{
     unsigned low;
     uint16_t range;
     int16_t  counter;
@@ -96,7 +98,8 @@ static inline void renorm(DiracArith *c)
     c->range  <<= shift;
     c->counter += shift;
 #else
-    while (c->range <= 0x4000) {
+    while (c->range <= 0x4000)
+    {
         c->low   <<= 1;
         c->range <<= 1;
         c->counter++;
@@ -108,11 +111,13 @@ static inline void refill(DiracArith *c)
 {
     int counter = c->counter;
 
-    if (counter >= 0) {
+    if (counter >= 0)
+    {
         int new = bytestream_get_be16(&c->bytestream);
 
         // the spec defines overread bits to be 1, and streams rely on this
-        if (c->bytestream > c->bytestream_end) {
+        if (c->bytestream > c->bytestream_end)
+        {
             new |= 0xff;
             if (c->bytestream > c->bytestream_end+1)
                 new |= 0xff00;
@@ -146,14 +151,17 @@ static inline int dirac_get_arith_bit(DiracArith *c, int ctx)
         "cmovb  %5, %1 \n\t"
         : "+q"(bit), "+r"(range), "+r"(low)
         : "r"(c->low), "r"(c->low>>16),
-          "r"(range_times_prob)
+        "r"(range_times_prob)
     );
 #else
     bit = (low >> 16) >= range_times_prob;
-    if (bit) {
+    if (bit)
+    {
         low   -= range_times_prob << 16;
         range -= range_times_prob;
-    } else {
+    }
+    else
+    {
         range  = range_times_prob;
     }
 #endif
@@ -170,8 +178,10 @@ static inline int dirac_get_arith_bit(DiracArith *c, int ctx)
 static inline int dirac_get_arith_uint(DiracArith *c, int follow_ctx, int data_ctx)
 {
     int ret = 1;
-    while (!dirac_get_arith_bit(c, follow_ctx)) {
-        if (ret >= 0x40000000) {
+    while (!dirac_get_arith_bit(c, follow_ctx))
+    {
+        if (ret >= 0x40000000)
+        {
             av_log(NULL, AV_LOG_ERROR, "dirac_get_arith_uint overflow\n");
             return -1;
         }

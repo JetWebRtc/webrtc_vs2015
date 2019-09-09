@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sony OpenMG (OMA) demuxer
  *
  * Copyright (c) 2008, 2013 Maxim Poliakovski
@@ -53,13 +53,15 @@
 #include "id3v2.h"
 
 
-static const uint64_t leaf_table[] = {
+static const uint64_t leaf_table[] =
+{
     0xd79e8283acea4620, 0x7a9762f445afd0d8,
     0x354d60a60b8c79f1, 0x584e1cde00b07aee,
     0x1573cd93da7df623, 0x47f98d79620dd535
 };
 
-typedef struct OMAContext {
+typedef struct OMAContext
+{
     uint64_t content_start;
     int encrypted;
     uint16_t k_size;
@@ -100,15 +102,19 @@ static int kset(AVFormatContext *s, const uint8_t *r_val, const uint8_t *n_val,
     len = FFMIN(len, 16);
 
     /* use first 64 bits in the third round again */
-    if (r_val) {
-        if (r_val != oc->r_val) {
+    if (r_val)
+    {
+        if (r_val != oc->r_val)
+        {
             memset(oc->r_val, 0, 24);
             memcpy(oc->r_val, r_val, len);
         }
         memcpy(&oc->r_val[16], r_val, 8);
     }
-    if (n_val) {
-        if (n_val != oc->n_val) {
+    if (n_val)
+    {
+        if (n_val != oc->n_val)
+        {
             memset(oc->n_val, 0, 24);
             memcpy(oc->n_val, n_val, len);
         }
@@ -128,8 +134,8 @@ static int rprobe(AVFormatContext *s, uint8_t *enc_header, unsigned size,
     struct AVDES av_des;
 
     if (!enc_header || !r_val ||
-        size < OMA_ENC_HEADER_SIZE + oc->k_size + oc->e_size + oc->i_size ||
-        size < OMA_RPROBE_M_VAL)
+            size < OMA_ENC_HEADER_SIZE + oc->k_size + oc->e_size + oc->i_size ||
+            size < OMA_RPROBE_M_VAL)
         return -1;
 
     /* m_val */
@@ -159,7 +165,7 @@ static int nprobe(AVFormatContext *s, uint8_t *enc_header, unsigned size,
     struct AVDES av_des;
 
     if (!enc_header || !n_val ||
-        size < OMA_ENC_HEADER_SIZE + oc->k_size + 4)
+            size < OMA_ENC_HEADER_SIZE + oc->k_size + 4)
         return -1;
 
     pos = OMA_ENC_HEADER_SIZE + oc->k_size;
@@ -181,7 +187,8 @@ static int nprobe(AVFormatContext *s, uint8_t *enc_header, unsigned size,
         return -1;
 
     av_des_init(&av_des, n_val, 192, 1);
-    while (datalen-- > 0) {
+    while (datalen-- > 0)
+    {
         av_des_crypt(&av_des, oc->r_val, &enc_header[pos], 2, NULL, 1);
         kset(s, oc->r_val, NULL, 16);
         if (!rprobe(s, enc_header, size, oc->r_val))
@@ -202,21 +209,25 @@ static int decrypt_init(AVFormatContext *s, ID3v2ExtraMeta *em, uint8_t *header)
     av_log(s, AV_LOG_INFO, "File is encrypted\n");
 
     /* find GEOB metadata */
-    while (em) {
+    while (em)
+    {
         if (!strcmp(em->tag, "GEOB") &&
-            (geob = em->data) &&
-            (!strcmp(geob->description, "OMG_LSI") ||
-             !strcmp(geob->description, "OMG_BKLSI"))) {
+                (geob = em->data) &&
+                (!strcmp(geob->description, "OMG_LSI") ||
+                 !strcmp(geob->description, "OMG_BKLSI")))
+        {
             break;
         }
         em = em->next;
     }
-    if (!em) {
+    if (!em)
+    {
         av_log(s, AV_LOG_ERROR, "No encryption header found\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (geob->datasize < 64) {
+    if (geob->datasize < 64)
+    {
         av_log(s, AV_LOG_ERROR,
                "Invalid GEOB data size: %"PRIu32"\n", geob->datasize);
         return AVERROR_INVALIDDATA;
@@ -232,12 +243,14 @@ static int decrypt_init(AVFormatContext *s, ID3v2ExtraMeta *em, uint8_t *header)
     oc->i_size = AV_RB16(&gdata[6]);
     oc->s_size = AV_RB16(&gdata[8]);
 
-    if (memcmp(&gdata[OMA_ENC_HEADER_SIZE], "KEYRING     ", 12)) {
+    if (memcmp(&gdata[OMA_ENC_HEADER_SIZE], "KEYRING     ", 12))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid encryption header\n");
         return AVERROR_INVALIDDATA;
     }
     if (OMA_ENC_HEADER_SIZE + oc->k_size + oc->e_size + oc->i_size + 8 > geob->datasize ||
-        OMA_ENC_HEADER_SIZE + 48 > geob->datasize) {
+            OMA_ENC_HEADER_SIZE + 48 > geob->datasize)
+    {
         av_log(s, AV_LOG_ERROR, "Too little GEOB data\n");
         return AVERROR_INVALIDDATA;
     }
@@ -251,23 +264,30 @@ static int decrypt_init(AVFormatContext *s, ID3v2ExtraMeta *em, uint8_t *header)
             &gdata[OMA_ENC_HEADER_SIZE + oc->k_size + oc->e_size + oc->i_size],
             8);
 
-    if (s->keylen > 0) {
+    if (s->keylen > 0)
+    {
         kset(s, s->key, s->key, s->keylen);
     }
-    if (!memcmp(oc->r_val, (const uint8_t[8]){0}, 8) ||
-        rprobe(s, gdata, geob->datasize, oc->r_val) < 0 &&
-        nprobe(s, gdata, geob->datasize, oc->n_val) < 0) {
+    if (!memcmp(oc->r_val, (const uint8_t[8])
+{
+    0
+}, 8) ||
+rprobe(s, gdata, geob->datasize, oc->r_val) < 0 &&
+nprobe(s, gdata, geob->datasize, oc->n_val) < 0)
+    {
         int i;
-        for (i = 0; i < FF_ARRAY_ELEMS(leaf_table); i += 2) {
+        for (i = 0; i < FF_ARRAY_ELEMS(leaf_table); i += 2)
+        {
             uint8_t buf[16];
             AV_WL64(buf,     leaf_table[i]);
             AV_WL64(&buf[8], leaf_table[i + 1]);
             kset(s, buf, buf, 16);
             if (!rprobe(s, gdata, geob->datasize, oc->r_val) ||
-                !nprobe(s, gdata, geob->datasize, oc->n_val))
+                    !nprobe(s, gdata, geob->datasize, oc->n_val))
                 break;
         }
-        if (i >= FF_ARRAY_ELEMS(leaf_table)) {
+        if (i >= FF_ARRAY_ELEMS(leaf_table))
+        {
             av_log(s, AV_LOG_ERROR, "Invalid key\n");
             return AVERROR_INVALIDDATA;
         }
@@ -301,8 +321,11 @@ static int oma_read_header(AVFormatContext *s)
     if (ret < EA3_HEADER_SIZE)
         return -1;
 
-    if (memcmp(buf, ((const uint8_t[]){'E', 'A', '3'}), 3) ||
-        buf[4] != 0 || buf[5] != EA3_HEADER_SIZE) {
+    if (memcmp(buf, ((const uint8_t[])
+{'E', 'A', '3'
+}), 3) ||
+buf[4] != 0 || buf[5] != EA3_HEADER_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Couldn't find the EA3 header !\n");
         return AVERROR_INVALIDDATA;
     }
@@ -311,7 +334,8 @@ static int oma_read_header(AVFormatContext *s)
 
     /* encrypted file */
     eid = AV_RB16(&buf[6]);
-    if (eid != -1 && eid != -128 && decrypt_init(s, extra_meta, buf) < 0) {
+    if (eid != -1 && eid != -128 && decrypt_init(s, extra_meta, buf) < 0)
+    {
         ff_id3v2_free_extra_meta(&extra_meta);
         return -1;
     }
@@ -330,10 +354,12 @@ static int oma_read_header(AVFormatContext *s)
     st->codec->codec_id   = ff_codec_get_id(ff_oma_codec_tags,
                                             st->codec->codec_tag);
 
-    switch (buf[32]) {
+    switch (buf[32])
+    {
     case OMA_CODECID_ATRAC3:
         samplerate = ff_oma_srate_tab[(codec_params >> 13) & 7] * 100;
-        if (!samplerate) {
+        if (!samplerate)
+        {
             av_log(s, AV_LOG_ERROR, "Unsupported sample rate\n");
             return AVERROR_INVALIDDATA;
         }
@@ -367,7 +393,8 @@ static int oma_read_header(AVFormatContext *s)
         break;
     case OMA_CODECID_ATRAC3P:
         channel_id = (codec_params >> 10) & 7;
-        if (!channel_id) {
+        if (!channel_id)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Invalid ATRAC-X channel id: %"PRIu32"\n", channel_id);
             return AVERROR_INVALIDDATA;
@@ -376,7 +403,8 @@ static int oma_read_header(AVFormatContext *s)
         st->codec->channels       = ff_oma_chid_to_num_channels[channel_id - 1];
         framesize = ((codec_params & 0x3FF) * 8) + 8;
         samplerate = ff_oma_srate_tab[(codec_params >> 13) & 7] * 100;
-        if (!samplerate) {
+        if (!samplerate)
+        {
             av_log(s, AV_LOG_ERROR, "Unsupported sample rate\n");
             return AVERROR_INVALIDDATA;
         }
@@ -430,13 +458,15 @@ static int oma_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     pkt->stream_index = 0;
 
-    if (pos >= oc->content_start && byte_rate > 0) {
+    if (pos >= oc->content_start && byte_rate > 0)
+    {
         pkt->pts =
-        pkt->dts = av_rescale(pos - oc->content_start, st->time_base.den,
-                              byte_rate * (int64_t)st->time_base.num);
+            pkt->dts = av_rescale(pos - oc->content_start, st->time_base.den,
+                                  byte_rate * (int64_t)st->time_base.num);
     }
 
-    if (oc->encrypted) {
+    if (oc->encrypted)
+    {
         /* previous unencrypted block saved in IV for
          * the next packet (CBC mode) */
         if (ret == packet_size)
@@ -484,7 +514,8 @@ static int oma_read_seek(struct AVFormatContext *s,
         goto wipe;
     if ((err = avio_seek(s->pb, -8, SEEK_CUR)) < 0)
         goto wipe;
-    if ((err = avio_read(s->pb, oc->iv, 8)) < 8) {
+    if ((err = avio_read(s->pb, oc->iv, 8)) < 8)
+    {
         if (err >= 0)
             err = AVERROR_EOF;
         goto wipe;
@@ -496,7 +527,8 @@ wipe:
     return err;
 }
 
-AVInputFormat ff_oma_demuxer = {
+AVInputFormat ff_oma_demuxer =
+{
     .name           = "oma",
     .long_name      = NULL_IF_CONFIG_SMALL("Sony OpenMG audio"),
     .priv_data_size = sizeof(OMAContext),

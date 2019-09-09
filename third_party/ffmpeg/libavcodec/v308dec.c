@@ -1,4 +1,4 @@
-/*
+﻿/*
  * v308 decoder
  * Copyright (c) 2011 Carl Eugen Hoyos
  *
@@ -40,7 +40,8 @@ static int v308_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *y, *u, *v;
     int i, j, ret;
 
-    if (avpkt->size < 3 * avctx->height * avctx->width) {
+    if (avpkt->size < 3 * avctx->height * avctx->width)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -55,8 +56,10 @@ static int v308_decode_frame(AVCodecContext *avctx, void *data,
     u = pic->data[1];
     v = pic->data[2];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width; j++) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width; j++)
+        {
             v[j] = *src++;
             y[j] = *src++;
             u[j] = *src++;
@@ -72,7 +75,8 @@ static int v308_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_v308_decoder = {
+AVCodec ff_v308_decoder =
+{
     .name         = "v308",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed 4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,

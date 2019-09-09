@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012-2013 Oka Motofumi (chikuzen.mo at gmail dot com)
  * Copyright (c) 2015 Paul B Mahol
  *
@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct NContext {
+typedef struct NContext
+{
     const AVClass *class;
     int planeheight[4];
     int planewidth[4];
@@ -42,7 +43,8 @@ typedef struct NContext {
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ422P,AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ411P,
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV411P, AV_PIX_FMT_YUV410P,
@@ -66,7 +68,8 @@ static inline void line_copy8(uint8_t *line, const uint8_t *srcp, int width, int
 
     memcpy(line, srcp, width);
 
-    for (i = mergin; i > 0; i--) {
+    for (i = mergin; i > 0; i--)
+    {
         line[-i] = line[i];
         line[width - 1 + i] = line[width - 1 - i];
     }
@@ -77,12 +80,15 @@ static void erosion(uint8_t *dst, const uint8_t *p1, int width,
 {
     int x, i;
 
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         int min = p1[x];
         int limit = FFMAX(min - threshold, 0);
 
-        for (i = 0; i < 8; i++) {
-            if (coord & (1 << i)) {
+        for (i = 0; i < 8; i++)
+        {
+            if (coord & (1 << i))
+            {
                 min = FFMIN(min, *(coordinates[i] + x));
             }
             min = FFMAX(min, limit);
@@ -97,12 +103,15 @@ static void dilation(uint8_t *dst, const uint8_t *p1, int width,
 {
     int x, i;
 
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         int max = p1[x];
         int limit = FFMIN(max + threshold, 255);
 
-        for (i = 0; i < 8; i++) {
-            if (coord & (1 << i)) {
+        for (i = 0; i < 8; i++)
+        {
+            if (coord & (1 << i))
+            {
                 max = FFMAX(max, *(coordinates[i] + x));
             }
             max = FFMIN(max, limit);
@@ -117,7 +126,8 @@ static void deflate(uint8_t *dst, const uint8_t *p1, int width,
 {
     int x, i;
 
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         int sum = 0;
         int limit = FFMAX(p1[x] - threshold, 0);
 
@@ -132,7 +142,8 @@ static void inflate(uint8_t *dst, const uint8_t *p1, int width,
 {
     int x, i;
 
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         int sum = 0;
         int limit = FFMIN(p1[x] + threshold, 255);
 
@@ -181,16 +192,19 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int plane, y;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         const int threshold = s->threshold[plane];
 
-        if (threshold) {
+        if (threshold)
+        {
             const uint8_t *src = in->data[plane];
             uint8_t *dst = out->data[plane];
             int stride = in->linesize[plane];
@@ -204,10 +218,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
             line_copy8(p0, src + stride, width, 1);
             line_copy8(p1, src, width, 1);
 
-            for (y = 0; y < height; y++) {
+            for (y = 0; y < height; y++)
+            {
                 const uint8_t *coordinates[] = { p0 - 1, p0, p0 + 1,
                                                  p1 - 1,     p1 + 1,
-                                                 p2 - 1, p2, p2 + 1};
+                                                 p2 - 1, p2, p2 + 1
+                                               };
                 src += stride * (y < height - 1 ? 1 : -1);
                 line_copy8(p2, src, width, 1);
 
@@ -218,7 +234,9 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                 p2 = (p2 == end) ? orig: p2 + s->planewidth[0];
                 dst += out->linesize[plane];
             }
-        } else {
+        }
+        else
+        {
             av_image_copy_plane(out->data[plane], out->linesize[plane],
                                 in->data[plane], in->linesize[plane],
                                 s->planewidth[plane], s->planeheight[plane]);
@@ -229,7 +247,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad neighbor_inputs[] = {
+static const AVFilterPad neighbor_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -239,7 +258,8 @@ static const AVFilterPad neighbor_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad neighbor_outputs[] = {
+static const AVFilterPad neighbor_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -267,7 +287,8 @@ AVFilter ff_vf_##name_ = {                                   \
 
 #if CONFIG_EROSION_FILTER
 
-static const AVOption erosion_options[] = {
+static const AVOption erosion_options[] =
+{
     { "threshold0",  "set threshold for 1st plane",   OFFSET(threshold[0]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold1",  "set threshold for 2nd plane",   OFFSET(threshold[1]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold2",  "set threshold for 3rd plane",   OFFSET(threshold[2]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
@@ -282,7 +303,8 @@ DEFINE_NEIGHBOR_FILTER(erosion, "Apply erosion effect");
 
 #if CONFIG_DILATION_FILTER
 
-static const AVOption dilation_options[] = {
+static const AVOption dilation_options[] =
+{
     { "threshold0",  "set threshold for 1st plane",   OFFSET(threshold[0]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold1",  "set threshold for 2nd plane",   OFFSET(threshold[1]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold2",  "set threshold for 3rd plane",   OFFSET(threshold[2]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
@@ -297,7 +319,8 @@ DEFINE_NEIGHBOR_FILTER(dilation, "Apply dilation effect");
 
 #if CONFIG_DEFLATE_FILTER
 
-static const AVOption deflate_options[] = {
+static const AVOption deflate_options[] =
+{
     { "threshold0", "set threshold for 1st plane",   OFFSET(threshold[0]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold1", "set threshold for 2nd plane",   OFFSET(threshold[1]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold2", "set threshold for 3rd plane",   OFFSET(threshold[2]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
@@ -311,7 +334,8 @@ DEFINE_NEIGHBOR_FILTER(deflate, "Apply deflate effect");
 
 #if CONFIG_INFLATE_FILTER
 
-static const AVOption inflate_options[] = {
+static const AVOption inflate_options[] =
+{
     { "threshold0", "set threshold for 1st plane",   OFFSET(threshold[0]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold1", "set threshold for 2nd plane",   OFFSET(threshold[1]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },
     { "threshold2", "set threshold for 3rd plane",   OFFSET(threshold[2]),   AV_OPT_TYPE_INT, {.i64=65535}, 0, 65535, FLAGS },

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,18 +15,20 @@
 
 #include "webrtc/media/engine/webrtcvideodecoderfactory.h"
 
-namespace cricket {
+namespace cricket
+{
 
-class InternalDecoderFactory : public WebRtcVideoDecoderFactory {
- public:
-  InternalDecoderFactory();
-  virtual ~InternalDecoderFactory();
+class InternalDecoderFactory : public WebRtcVideoDecoderFactory
+{
+public:
+    InternalDecoderFactory();
+    virtual ~InternalDecoderFactory();
 
-  // WebRtcVideoDecoderFactory implementation.
-  webrtc::VideoDecoder* CreateVideoDecoder(
-      webrtc::VideoCodecType type) override;
+    // WebRtcVideoDecoderFactory implementation.
+    webrtc::VideoDecoder* CreateVideoDecoder(
+        webrtc::VideoCodecType type) override;
 
-  void DestroyVideoDecoder(webrtc::VideoDecoder* decoder) override;
+    void DestroyVideoDecoder(webrtc::VideoDecoder* decoder) override;
 };
 
 }  // namespace cricket

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,36 +17,38 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Desktop;
 
-class ScopedThreadDesktop {
- public:
-  ScopedThreadDesktop();
-  ~ScopedThreadDesktop();
+class ScopedThreadDesktop
+{
+public:
+    ScopedThreadDesktop();
+    ~ScopedThreadDesktop();
 
-  // Returns true if |desktop| has the same desktop name as the currently
-  // assigned desktop (if assigned) or as the initial desktop (if not assigned).
-  // Returns false in any other case including failing Win32 APIs and
-  // uninitialized desktop handles.
-  bool IsSame(const Desktop& desktop);
+    // Returns true if |desktop| has the same desktop name as the currently
+    // assigned desktop (if assigned) or as the initial desktop (if not assigned).
+    // Returns false in any other case including failing Win32 APIs and
+    // uninitialized desktop handles.
+    bool IsSame(const Desktop& desktop);
 
-  // Reverts the calling thread to use the initial desktop.
-  void Revert();
+    // Reverts the calling thread to use the initial desktop.
+    void Revert();
 
-  // Assigns |desktop| to be the calling thread. Returns true if the thread has
-  // been switched to |desktop| successfully. Takes ownership of |desktop|.
-  bool SetThreadDesktop(Desktop* desktop);
+    // Assigns |desktop| to be the calling thread. Returns true if the thread has
+    // been switched to |desktop| successfully. Takes ownership of |desktop|.
+    bool SetThreadDesktop(Desktop* desktop);
 
- private:
-  // The desktop handle assigned to the calling thread by Set
-  std::unique_ptr<Desktop> assigned_;
+private:
+    // The desktop handle assigned to the calling thread by Set
+    std::unique_ptr<Desktop> assigned_;
 
-  // The desktop handle assigned to the calling thread at creation.
-  std::unique_ptr<Desktop> initial_;
+    // The desktop handle assigned to the calling thread at creation.
+    std::unique_ptr<Desktop> initial_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(ScopedThreadDesktop);
+    RTC_DISALLOW_COPY_AND_ASSIGN(ScopedThreadDesktop);
 };
 
 }  // namespace webrtc

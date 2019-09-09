@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -47,7 +47,8 @@
 #include "libavutil/time.h"
 #include "libavutil/avstring.h"
 
-struct fmt_map {
+struct fmt_map
+{
     enum AVPixelFormat ff_fmt;
     enum AVCodecID codec_id;
     uint32_t v4l2_fmt;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 British Broadcasting Corporation, All Rights Reserved
  * Author of de-interlace algorithm: Jim Easterbrook for BBC R&D
  * Based on the process described by Martin Weston for BBC R&D
@@ -30,7 +30,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct W3FDIFContext {
+typedef struct W3FDIFContext
+{
     const AVClass *class;
     int filter;           ///< 0 is simple, 1 is more complex
     int deint;            ///< which frames to deinterlace
@@ -48,7 +49,8 @@ typedef struct W3FDIFContext {
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 #define CONST(name, help, val, unit) { name, help, 0, AV_OPT_TYPE_CONST, {.i64=val}, 0, 0, FLAGS, unit }
 
-static const AVOption w3fdif_options[] = {
+static const AVOption w3fdif_options[] =
+{
     { "filter", "specify the filter", OFFSET(filter), AV_OPT_TYPE_INT, {.i64=1}, 0, 1, FLAGS, "filter" },
     CONST("simple",  NULL, 0, "filter"),
     CONST("complex", NULL, 1, "filter"),
@@ -62,7 +64,8 @@ AVFILTER_DEFINE_CLASS(w3fdif);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV444P,
@@ -100,7 +103,8 @@ static int config_input(AVFilterLink *inlink)
     if (!s->work_line)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < s->nb_threads; i++) {
+    for (i = 0; i < s->nb_threads; i++)
+    {
         s->work_line[i] = av_calloc(s->linesize[0], sizeof(*s->work_line[0]));
         if (!s->work_line[i])
             return AVERROR(ENOMEM);
@@ -132,12 +136,15 @@ static int config_output(AVFilterLink *outlink)
  */
 static const int8_t   n_coef_lf[2] = { 2, 4 };
 static const int32_t coef_lf[2][4] = {{ 32768, 32768,     0,     0},
-                                      { -1704, 34472, 34472, -1704}};
+    { -1704, 34472, 34472, -1704}
+};
 static const int8_t   n_coef_hf[2] = { 3, 5 };
 static const int32_t coef_hf[2][5] = {{ -4096,  8192, -4096,     0,     0},
-                                      {  2032, -7602, 11140, -7602,  2032}};
+    {  2032, -7602, 11140, -7602,  2032}
+};
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *out, *cur, *adj;
     int plane;
 } ThreadData;
@@ -172,7 +179,8 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
     in_line  = cur_data + (y_out * cur_line_stride);
     out_line = dst_data + (y_out * dst_line_stride);
 
-    while (y_out < end) {
+    while (y_out < end)
+    {
         memcpy(out_line, in_line, linesize);
         y_out += 2;
         in_line  += cur_line_stride * 2;
@@ -184,12 +192,14 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
 
     out_line = dst_data + (y_out * dst_line_stride);
 
-    while (y_out < end) {
+    while (y_out < end)
+    {
         /* clear workspace */
         memset(s->work_line[jobnr], 0, sizeof(*s->work_line[jobnr]) * linesize);
 
         /* get low vertical frequencies from current field */
-        for (j = 0; j < n_coef_lf[filter]; j++) {
+        for (j = 0; j < n_coef_lf[filter]; j++)
+        {
             y_in = (y_out + 1) + (j * 2) - n_coef_lf[filter];
 
             while (y_in < 0)
@@ -201,15 +211,18 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
         }
 
         work_line = s->work_line[jobnr];
-        switch (n_coef_lf[filter]) {
+        switch (n_coef_lf[filter])
+        {
         case 2:
-            for (i = 0; i < linesize; i++) {
+            for (i = 0; i < linesize; i++)
+            {
                 *work_line   += *in_lines_cur[0]++ * coef_lf[filter][0];
                 *work_line++ += *in_lines_cur[1]++ * coef_lf[filter][1];
             }
             break;
         case 4:
-            for (i = 0; i < linesize; i++) {
+            for (i = 0; i < linesize; i++)
+            {
                 *work_line   += *in_lines_cur[0]++ * coef_lf[filter][0];
                 *work_line   += *in_lines_cur[1]++ * coef_lf[filter][1];
                 *work_line   += *in_lines_cur[2]++ * coef_lf[filter][2];
@@ -218,7 +231,8 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
         }
 
         /* get high vertical frequencies from adjacent fields */
-        for (j = 0; j < n_coef_hf[filter]; j++) {
+        for (j = 0; j < n_coef_hf[filter]; j++)
+        {
             y_in = (y_out + 1) + (j * 2) - n_coef_hf[filter];
 
             while (y_in < 0)
@@ -231,9 +245,11 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
         }
 
         work_line = s->work_line[jobnr];
-        switch (n_coef_hf[filter]) {
+        switch (n_coef_hf[filter])
+        {
         case 3:
-            for (i = 0; i < linesize; i++) {
+            for (i = 0; i < linesize; i++)
+            {
                 *work_line   += *in_lines_cur[0]++ * coef_hf[filter][0];
                 *work_line   += *in_lines_adj[0]++ * coef_hf[filter][0];
                 *work_line   += *in_lines_cur[1]++ * coef_hf[filter][1];
@@ -243,7 +259,8 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
             }
             break;
         case 5:
-            for (i = 0; i < linesize; i++) {
+            for (i = 0; i < linesize; i++)
+            {
                 *work_line   += *in_lines_cur[0]++ * coef_hf[filter][0];
                 *work_line   += *in_lines_adj[0]++ * coef_hf[filter][0];
                 *work_line   += *in_lines_cur[1]++ * coef_hf[filter][1];
@@ -262,7 +279,7 @@ static int deinterlace_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_
         out_pixel = out_line;
 
         for (j = 0; j < linesize; j++, out_pixel++, work_pixel++)
-             *out_pixel = av_clip(*work_pixel, 0, 255 * 256 * 256) >> 16;
+            *out_pixel = av_clip(*work_pixel, 0, 255 * 256 * 256) >> 16;
 
         /* move on to next line */
         y_out += 2;
@@ -286,23 +303,32 @@ static int filter(AVFilterContext *ctx, int is_second)
     av_frame_copy_props(out, s->cur);
     out->interlaced_frame = 0;
 
-    if (!is_second) {
+    if (!is_second)
+    {
         if (out->pts != AV_NOPTS_VALUE)
             out->pts *= 2;
-    } else {
+    }
+    else
+    {
         int64_t cur_pts  = s->cur->pts;
         int64_t next_pts = s->next->pts;
 
-        if (next_pts != AV_NOPTS_VALUE && cur_pts != AV_NOPTS_VALUE) {
+        if (next_pts != AV_NOPTS_VALUE && cur_pts != AV_NOPTS_VALUE)
+        {
             out->pts = cur_pts + next_pts;
-        } else {
+        }
+        else
+        {
             out->pts = AV_NOPTS_VALUE;
         }
     }
 
     adj = s->field ? s->next : s->prev;
-    td.out = out; td.cur = s->cur; td.adj = adj;
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    td.out = out;
+    td.cur = s->cur;
+    td.adj = adj;
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         td.plane = plane;
         ctx->internal->execute(ctx, deinterlace_slice, &td, NULL, FFMIN(s->planeheight[plane], s->nb_threads));
     }
@@ -323,13 +349,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     s->cur  = s->next;
     s->next = frame;
 
-    if (!s->cur) {
+    if (!s->cur)
+    {
         s->cur = av_frame_clone(s->next);
         if (!s->cur)
             return AVERROR(ENOMEM);
     }
 
-    if ((s->deint && !s->cur->interlaced_frame) || ctx->is_disabled) {
+    if ((s->deint && !s->cur->interlaced_frame) || ctx->is_disabled)
+    {
         AVFrame *out = av_frame_clone(s->cur);
         if (!out)
             return AVERROR(ENOMEM);
@@ -355,7 +383,8 @@ static int request_frame(AVFilterLink *outlink)
     AVFilterContext *ctx = outlink->src;
     W3FDIFContext *s = ctx->priv;
 
-    do {
+    do
+    {
         int ret;
 
         if (s->eof)
@@ -363,17 +392,21 @@ static int request_frame(AVFilterLink *outlink)
 
         ret = ff_request_frame(ctx->inputs[0]);
 
-        if (ret == AVERROR_EOF && s->cur) {
+        if (ret == AVERROR_EOF && s->cur)
+        {
             AVFrame *next = av_frame_clone(s->next);
             if (!next)
                 return AVERROR(ENOMEM);
             next->pts = s->next->pts * 2 - s->cur->pts;
             filter_frame(ctx->inputs[0], next);
             s->eof = 1;
-        } else if (ret < 0) {
+        }
+        else if (ret < 0)
+        {
             return ret;
         }
-    } while (!s->cur);
+    }
+    while (!s->cur);
 
     return 0;
 }
@@ -393,7 +426,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->work_line);
 }
 
-static const AVFilterPad w3fdif_inputs[] = {
+static const AVFilterPad w3fdif_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -403,7 +437,8 @@ static const AVFilterPad w3fdif_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad w3fdif_outputs[] = {
+static const AVFilterPad w3fdif_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -413,7 +448,8 @@ static const AVFilterPad w3fdif_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_w3fdif = {
+AVFilter ff_vf_w3fdif =
+{
     .name          = "w3fdif",
     .description   = NULL_IF_CONFIG_SMALL("Apply Martin Weston three field deinterlace."),
     .priv_size     = sizeof(W3FDIFContext),

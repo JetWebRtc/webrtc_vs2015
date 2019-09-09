@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Mans Rullgard
  *
  * This file is part of FFmpeg.
@@ -54,7 +54,8 @@ av_cold void ff_sbrdsp_init_arm(SBRDSPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->sum64x5 = ff_sbr_sum64x5_neon;
         s->sum_square = ff_sbr_sum_square_neon;
         s->neg_odd_64 = ff_sbr_neg_odd_64_neon;

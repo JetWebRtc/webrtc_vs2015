@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2008 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,26 +31,31 @@
 class NSAutoreleasePool;
 #endif
 
-namespace rtc {
+namespace rtc
+{
 
-class ScopedAutoreleasePool {
- public:
-  ScopedAutoreleasePool();
-  ~ScopedAutoreleasePool();
+class ScopedAutoreleasePool
+{
+public:
+    ScopedAutoreleasePool();
+    ~ScopedAutoreleasePool();
 
- private:
-  // Declaring private overrides of new and delete here enforces the "only use
-  // as a stack object" discipline.
-  //
-  // Note: new is declared as "throw()" to get around a gcc warning about new
-  // returning NULL, but this method will never get called and therefore will
-  // never actually throw any exception.
-  void* operator new(size_t size) throw() { return NULL; }
-  void operator delete (void* ptr) {}
+private:
+    // Declaring private overrides of new and delete here enforces the "only use
+    // as a stack object" discipline.
+    //
+    // Note: new is declared as "throw()" to get around a gcc warning about new
+    // returning NULL, but this method will never get called and therefore will
+    // never actually throw any exception.
+    void* operator new(size_t size) throw()
+    {
+        return NULL;
+    }
+    void operator delete (void* ptr) {}
 
-  NSAutoreleasePool* pool_;
+    NSAutoreleasePool* pool_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(ScopedAutoreleasePool);
+    RTC_DISALLOW_COPY_AND_ASSIGN(ScopedAutoreleasePool);
 };
 
 }  // namespace rtc

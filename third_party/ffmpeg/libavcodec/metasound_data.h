@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MetaSound decoder
  * Copyright (c) 2013 Konstantin Shishkov
  *

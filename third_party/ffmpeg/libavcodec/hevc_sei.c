@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC Supplementary Enhancement Information messages
  *
  * Copyright (C) 2012 - 2013 Guillaume Martres
@@ -25,7 +25,8 @@
 #include "golomb.h"
 #include "hevc.h"
 
-enum HEVC_SEI_TYPE {
+enum HEVC_SEI_TYPE
+{
     SEI_TYPE_BUFFERING_PERIOD                     = 0,
     SEI_TYPE_PICTURE_TIMING                       = 1,
     SEI_TYPE_PAN_SCAN_RECT                        = 2,
@@ -62,15 +63,21 @@ static int decode_nal_sei_decoded_picture_hash(HEVCContext *s)
     GetBitContext *gb = &s->HEVClc->gb;
     hash_type = get_bits(gb, 8);
 
-    for (cIdx = 0; cIdx < 3/*((s->sps->chroma_format_idc == 0) ? 1 : 3)*/; cIdx++) {
-        if (hash_type == 0) {
+    for (cIdx = 0; cIdx < 3/*((s->sps->chroma_format_idc == 0) ? 1 : 3)*/; cIdx++)
+    {
+        if (hash_type == 0)
+        {
             s->is_md5 = 1;
             for (i = 0; i < 16; i++)
                 s->md5[cIdx][i] = get_bits(gb, 8);
-        } else if (hash_type == 1) {
+        }
+        else if (hash_type == 1)
+        {
             // picture_crc = get_bits(gb, 16);
             skip_bits(gb, 16);
-        } else if (hash_type == 2) {
+        }
+        else if (hash_type == 2)
+        {
             // picture_checksum = get_bits_long(gb, 32);
             skip_bits(gb, 32);
         }
@@ -85,7 +92,8 @@ static int decode_nal_sei_frame_packing_arrangement(HEVCContext *s)
     get_ue_golomb(gb);                  // frame_packing_arrangement_id
     s->sei_frame_packing_present = !get_bits1(gb);
 
-    if (s->sei_frame_packing_present) {
+    if (s->sei_frame_packing_present)
+    {
         s->frame_packing_arrangement_type = get_bits(gb, 7);
         s->quincunx_subsampling           = get_bits1(gb);
         s->content_interpretation_type    = get_bits(gb, 6);
@@ -110,7 +118,8 @@ static int decode_nal_sei_display_orientation(HEVCContext *s)
 
     s->sei_display_orientation_present = !get_bits1(gb);
 
-    if (s->sei_display_orientation_present) {
+    if (s->sei_display_orientation_present)
+    {
         s->sei_hflip = get_bits1(gb);     // hor_flip
         s->sei_vflip = get_bits1(gb);     // ver_flip
 
@@ -130,13 +139,17 @@ static int decode_pic_timing(HEVCContext *s)
         return(AVERROR(ENOMEM));
     sps = (HEVCSPS*)s->ps.sps_list[s->active_seq_parameter_set_id]->data;
 
-    if (sps->vui.frame_field_info_present_flag) {
+    if (sps->vui.frame_field_info_present_flag)
+    {
         int pic_struct = get_bits(gb, 4);
         s->picture_struct = AV_PICTURE_STRUCTURE_UNKNOWN;
-        if (pic_struct == 2) {
+        if (pic_struct == 2)
+        {
             av_log(s->avctx, AV_LOG_DEBUG, "BOTTOM Field\n");
             s->picture_struct = AV_PICTURE_STRUCTURE_BOTTOM_FIELD;
-        } else if (pic_struct == 1) {
+        }
+        else if (pic_struct == 1)
+        {
             av_log(s->avctx, AV_LOG_DEBUG, "TOP Field\n");
             s->picture_struct = AV_PICTURE_STRUCTURE_TOP_FIELD;
         }
@@ -158,13 +171,15 @@ static int active_parameter_sets(HEVCContext *s)
     get_bits(gb, 1); // num_sps_ids_minus1
     num_sps_ids_minus1 = get_ue_golomb_long(gb); // num_sps_ids_minus1
 
-    if (num_sps_ids_minus1 < 0 || num_sps_ids_minus1 > 15) {
+    if (num_sps_ids_minus1 < 0 || num_sps_ids_minus1 > 15)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "num_sps_ids_minus1 %d invalid\n", num_sps_ids_minus1);
         return AVERROR_INVALIDDATA;
     }
 
     active_seq_parameter_set_id = get_ue_golomb_long(gb);
-    if (active_seq_parameter_set_id >= MAX_SPS_COUNT) {
+    if (active_seq_parameter_set_id >= MAX_SPS_COUNT)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "active_parameter_set_id %d invalid\n", active_seq_parameter_set_id);
         return AVERROR_INVALIDDATA;
     }
@@ -180,7 +195,8 @@ static int decode_nal_sei_prefix(HEVCContext *s, int type, int size)
 {
     GetBitContext *gb = &s->HEVClc->gb;
 
-    switch (type) {
+    switch (type)
+    {
     case 256:  // Mismatched value from HM 8.1
         return decode_nal_sei_decoded_picture_hash(s);
     case SEI_TYPE_FRAME_PACKING:
@@ -188,12 +204,12 @@ static int decode_nal_sei_prefix(HEVCContext *s, int type, int size)
     case SEI_TYPE_DISPLAY_ORIENTATION:
         return decode_nal_sei_display_orientation(s);
     case SEI_TYPE_PICTURE_TIMING:
-        {
-            int ret = decode_pic_timing(s);
-            av_log(s->avctx, AV_LOG_DEBUG, "Skipped PREFIX SEI %d\n", type);
-            skip_bits(gb, 8 * size);
-            return ret;
-        }
+    {
+        int ret = decode_pic_timing(s);
+        av_log(s->avctx, AV_LOG_DEBUG, "Skipped PREFIX SEI %d\n", type);
+        skip_bits(gb, 8 * size);
+        return ret;
+    }
     case SEI_TYPE_ACTIVE_PARAMETER_SETS:
         active_parameter_sets(s);
         av_log(s->avctx, AV_LOG_DEBUG, "Skipped PREFIX SEI %d\n", type);
@@ -209,7 +225,8 @@ static int decode_nal_sei_suffix(HEVCContext *s, int type, int size)
 {
     GetBitContext *gb = &s->HEVClc->gb;
 
-    switch (type) {
+    switch (type)
+    {
     case SEI_TYPE_DECODED_PICTURE_HASH:
         return decode_nal_sei_decoded_picture_hash(s);
     default:
@@ -228,18 +245,23 @@ static int decode_nal_sei_message(HEVCContext *s)
     int byte = 0xFF;
     av_log(s->avctx, AV_LOG_DEBUG, "Decoding SEI\n");
 
-    while (byte == 0xFF) {
+    while (byte == 0xFF)
+    {
         byte          = get_bits(gb, 8);
         payload_type += byte;
     }
     byte = 0xFF;
-    while (byte == 0xFF) {
+    while (byte == 0xFF)
+    {
         byte          = get_bits(gb, 8);
         payload_size += byte;
     }
-    if (s->nal_unit_type == NAL_SEI_PREFIX) {
+    if (s->nal_unit_type == NAL_SEI_PREFIX)
+    {
         return decode_nal_sei_prefix(s, payload_type, payload_size);
-    } else { /* nal_unit_type == NAL_SEI_SUFFIX */
+    }
+    else     /* nal_unit_type == NAL_SEI_SUFFIX */
+    {
         return decode_nal_sei_suffix(s, payload_type, payload_size);
     }
     return 1;
@@ -254,10 +276,12 @@ int ff_hevc_decode_nal_sei(HEVCContext *s)
 {
     int ret;
 
-    do {
+    do
+    {
         ret = decode_nal_sei_message(s);
         if (ret < 0)
             return(AVERROR(ENOMEM));
-    } while (more_rbsp_data(&s->HEVClc->gb));
+    }
+    while (more_rbsp_data(&s->HEVClc->gb));
     return 1;
 }

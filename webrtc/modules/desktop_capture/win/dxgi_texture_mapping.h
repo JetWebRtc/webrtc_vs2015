@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,28 +18,30 @@
 #include "webrtc/modules/desktop_capture/desktop_region.h"
 #include "webrtc/modules/desktop_capture/win/dxgi_texture.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // A DxgiTexture which directly maps bitmap from IDXGIResource. This class is
 // used when DXGI_OUTDUPL_DESC.DesktopImageInSystemMemory is true. (This usually
 // means the video card shares main memory with CPU, instead of having its own
 // individual memory.)
-class DxgiTextureMapping : public DxgiTexture {
- public:
-  // Creates a DxgiTextureMapping instance. Caller must maintain the lifetime
-  // of input |duplication| to make sure it outlives this instance.
-  explicit DxgiTextureMapping(IDXGIOutputDuplication* duplication);
+class DxgiTextureMapping : public DxgiTexture
+{
+public:
+    // Creates a DxgiTextureMapping instance. Caller must maintain the lifetime
+    // of input |duplication| to make sure it outlives this instance.
+    explicit DxgiTextureMapping(IDXGIOutputDuplication* duplication);
 
-  ~DxgiTextureMapping() override;
+    ~DxgiTextureMapping() override;
 
- protected:
-  bool CopyFromTexture(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
-                       ID3D11Texture2D* texture) override;
+protected:
+    bool CopyFromTexture(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
+                         ID3D11Texture2D* texture) override;
 
-  bool DoRelease() override;
+    bool DoRelease() override;
 
- private:
-  IDXGIOutputDuplication* const duplication_;
+private:
+    IDXGIOutputDuplication* const duplication_;
 };
 
 }  // namespace webrtc

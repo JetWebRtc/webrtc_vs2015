@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MMX/SSE constants used across x86 dsp optimizations.
  *
  * This file is part of FFmpeg.

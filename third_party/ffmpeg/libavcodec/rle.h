@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RLE encoder
  *
  * This file is part of FFmpeg.

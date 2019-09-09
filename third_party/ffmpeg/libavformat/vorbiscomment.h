@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VorbisComment writer
  * Copyright (c) 2009 James Darnley
  *

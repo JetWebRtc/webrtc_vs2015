@@ -1,8 +1,8 @@
-
+﻿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-?Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur F�rderung der angewandten Forschung e.V.
+?Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -355,67 +355,68 @@ Where N equals to CStreamInfo::frameSize .
 /**
  * \brief  AAC decoder error codes.
  */
-typedef enum {
-  AAC_DEC_OK                             = 0x0000,  /*!< No error occured. Output buffer is valid and error free. */
-  AAC_DEC_OUT_OF_MEMORY                  = 0x0002,  /*!< Heap returned NULL pointer. Output buffer is invalid. */
-  AAC_DEC_UNKNOWN                        = 0x0005,  /*!< Error condition is of unknown reason, or from a another module. Output buffer is invalid. */
+typedef enum
+{
+    AAC_DEC_OK                             = 0x0000,  /*!< No error occured. Output buffer is valid and error free. */
+    AAC_DEC_OUT_OF_MEMORY                  = 0x0002,  /*!< Heap returned NULL pointer. Output buffer is invalid. */
+    AAC_DEC_UNKNOWN                        = 0x0005,  /*!< Error condition is of unknown reason, or from a another module. Output buffer is invalid. */
 
-  /* Synchronization errors. Output buffer is invalid. */
-  aac_dec_sync_error_start               = 0x1000,
-  AAC_DEC_TRANSPORT_SYNC_ERROR           = 0x1001,  /*!< The transport decoder had syncronisation problems. Do not exit decoding. Just feed new
+    /* Synchronization errors. Output buffer is invalid. */
+    aac_dec_sync_error_start               = 0x1000,
+    AAC_DEC_TRANSPORT_SYNC_ERROR           = 0x1001,  /*!< The transport decoder had syncronisation problems. Do not exit decoding. Just feed new
                                                          bitstream data. */
-  AAC_DEC_NOT_ENOUGH_BITS                = 0x1002,  /*!< The input buffer ran out of bits. */
-  aac_dec_sync_error_end                 = 0x1FFF,
+    AAC_DEC_NOT_ENOUGH_BITS                = 0x1002,  /*!< The input buffer ran out of bits. */
+    aac_dec_sync_error_end                 = 0x1FFF,
 
-  /* Initialization errors. Output buffer is invalid. */
-  aac_dec_init_error_start               = 0x2000,
-  AAC_DEC_INVALID_HANDLE                 = 0x2001,  /*!< The handle passed to the function call was invalid (NULL). */
-  AAC_DEC_UNSUPPORTED_AOT                = 0x2002,  /*!< The AOT found in the configuration is not supported. */
-  AAC_DEC_UNSUPPORTED_FORMAT             = 0x2003,  /*!< The bitstream format is not supported.  */
-  AAC_DEC_UNSUPPORTED_ER_FORMAT          = 0x2004,  /*!< The error resilience tool format is not supported. */
-  AAC_DEC_UNSUPPORTED_EPCONFIG           = 0x2005,  /*!< The error protection format is not supported. */
-  AAC_DEC_UNSUPPORTED_MULTILAYER         = 0x2006,  /*!< More than one layer for AAC scalable is not supported. */
-  AAC_DEC_UNSUPPORTED_CHANNELCONFIG      = 0x2007,  /*!< The channel configuration (either number or arrangement) is not supported. */
-  AAC_DEC_UNSUPPORTED_SAMPLINGRATE       = 0x2008,  /*!< The sample rate specified in the configuration is not supported. */
-  AAC_DEC_INVALID_SBR_CONFIG             = 0x2009,  /*!< The SBR configuration is not supported. */
-  AAC_DEC_SET_PARAM_FAIL                 = 0x200A,  /*!< The parameter could not be set. Either the value was out of range or the parameter does
+    /* Initialization errors. Output buffer is invalid. */
+    aac_dec_init_error_start               = 0x2000,
+    AAC_DEC_INVALID_HANDLE                 = 0x2001,  /*!< The handle passed to the function call was invalid (NULL). */
+    AAC_DEC_UNSUPPORTED_AOT                = 0x2002,  /*!< The AOT found in the configuration is not supported. */
+    AAC_DEC_UNSUPPORTED_FORMAT             = 0x2003,  /*!< The bitstream format is not supported.  */
+    AAC_DEC_UNSUPPORTED_ER_FORMAT          = 0x2004,  /*!< The error resilience tool format is not supported. */
+    AAC_DEC_UNSUPPORTED_EPCONFIG           = 0x2005,  /*!< The error protection format is not supported. */
+    AAC_DEC_UNSUPPORTED_MULTILAYER         = 0x2006,  /*!< More than one layer for AAC scalable is not supported. */
+    AAC_DEC_UNSUPPORTED_CHANNELCONFIG      = 0x2007,  /*!< The channel configuration (either number or arrangement) is not supported. */
+    AAC_DEC_UNSUPPORTED_SAMPLINGRATE       = 0x2008,  /*!< The sample rate specified in the configuration is not supported. */
+    AAC_DEC_INVALID_SBR_CONFIG             = 0x2009,  /*!< The SBR configuration is not supported. */
+    AAC_DEC_SET_PARAM_FAIL                 = 0x200A,  /*!< The parameter could not be set. Either the value was out of range or the parameter does
                                                          not exist. */
-  AAC_DEC_NEED_TO_RESTART                = 0x200B,  /*!< The decoder needs to be restarted, since the requiered configuration change cannot be
+    AAC_DEC_NEED_TO_RESTART                = 0x200B,  /*!< The decoder needs to be restarted, since the requiered configuration change cannot be
                                                          performed. */
-  AAC_DEC_OUTPUT_BUFFER_TOO_SMALL        = 0x200C,  /*!< The provided output buffer is too small. */
-  aac_dec_init_error_end                 = 0x2FFF,
+    AAC_DEC_OUTPUT_BUFFER_TOO_SMALL        = 0x200C,  /*!< The provided output buffer is too small. */
+    aac_dec_init_error_end                 = 0x2FFF,
 
-  /* Decode errors. Output buffer is valid but concealed. */
-  aac_dec_decode_error_start             = 0x4000,
-  AAC_DEC_TRANSPORT_ERROR                = 0x4001,  /*!< The transport decoder encountered an unexpected error. */
-  AAC_DEC_PARSE_ERROR                    = 0x4002,  /*!< Error while parsing the bitstream. Most probably it is corrupted, or the system crashed. */
-  AAC_DEC_UNSUPPORTED_EXTENSION_PAYLOAD  = 0x4003,  /*!< Error while parsing the extension payload of the bitstream. The extension payload type
+    /* Decode errors. Output buffer is valid but concealed. */
+    aac_dec_decode_error_start             = 0x4000,
+    AAC_DEC_TRANSPORT_ERROR                = 0x4001,  /*!< The transport decoder encountered an unexpected error. */
+    AAC_DEC_PARSE_ERROR                    = 0x4002,  /*!< Error while parsing the bitstream. Most probably it is corrupted, or the system crashed. */
+    AAC_DEC_UNSUPPORTED_EXTENSION_PAYLOAD  = 0x4003,  /*!< Error while parsing the extension payload of the bitstream. The extension payload type
                                                          found is not supported. */
-  AAC_DEC_DECODE_FRAME_ERROR             = 0x4004,  /*!< The parsed bitstream value is out of range. Most probably the bitstream is corrupt, or
+    AAC_DEC_DECODE_FRAME_ERROR             = 0x4004,  /*!< The parsed bitstream value is out of range. Most probably the bitstream is corrupt, or
                                                          the system crashed. */
-  AAC_DEC_CRC_ERROR                      = 0x4005,  /*!< The embedded CRC did not match. */
-  AAC_DEC_INVALID_CODE_BOOK              = 0x4006,  /*!< An invalid codebook was signalled. Most probably the bitstream is corrupt, or the system
+    AAC_DEC_CRC_ERROR                      = 0x4005,  /*!< The embedded CRC did not match. */
+    AAC_DEC_INVALID_CODE_BOOK              = 0x4006,  /*!< An invalid codebook was signalled. Most probably the bitstream is corrupt, or the system
                                                          crashed. */
-  AAC_DEC_UNSUPPORTED_PREDICTION         = 0x4007,  /*!< Predictor found, but not supported in the AAC Low Complexity profile. Most probably the
+    AAC_DEC_UNSUPPORTED_PREDICTION         = 0x4007,  /*!< Predictor found, but not supported in the AAC Low Complexity profile. Most probably the
                                                          bitstream is corrupt, or has a wrong format. */
-  AAC_DEC_UNSUPPORTED_CCE                = 0x4008,  /*!< A CCE element was found which is not supported. Most probably the bitstream is corrupt, or
+    AAC_DEC_UNSUPPORTED_CCE                = 0x4008,  /*!< A CCE element was found which is not supported. Most probably the bitstream is corrupt, or
                                                          has a wrong format. */
-  AAC_DEC_UNSUPPORTED_LFE                = 0x4009,  /*!< A LFE element was found which is not supported. Most probably the bitstream is corrupt, or
+    AAC_DEC_UNSUPPORTED_LFE                = 0x4009,  /*!< A LFE element was found which is not supported. Most probably the bitstream is corrupt, or
                                                          has a wrong format. */
-  AAC_DEC_UNSUPPORTED_GAIN_CONTROL_DATA  = 0x400A,  /*!< Gain control data found but not supported. Most probably the bitstream is corrupt, or has
+    AAC_DEC_UNSUPPORTED_GAIN_CONTROL_DATA  = 0x400A,  /*!< Gain control data found but not supported. Most probably the bitstream is corrupt, or has
                                                          a wrong format. */
-  AAC_DEC_UNSUPPORTED_SBA                = 0x400B,  /*!< SBA found, but currently not supported in the BSAC profile. */
-  AAC_DEC_TNS_READ_ERROR                 = 0x400C,  /*!< Error while reading TNS data. Most probably the bitstream is corrupt or the system
+    AAC_DEC_UNSUPPORTED_SBA                = 0x400B,  /*!< SBA found, but currently not supported in the BSAC profile. */
+    AAC_DEC_TNS_READ_ERROR                 = 0x400C,  /*!< Error while reading TNS data. Most probably the bitstream is corrupt or the system
                                                          crashed. */
-  AAC_DEC_RVLC_ERROR                     = 0x400D,  /*!< Error while decoding error resillient data. */
-  aac_dec_decode_error_end               = 0x4FFF,
+    AAC_DEC_RVLC_ERROR                     = 0x400D,  /*!< Error while decoding error resillient data. */
+    aac_dec_decode_error_end               = 0x4FFF,
 
-  /* Ancillary data errors. Output buffer is valid. */
-  aac_dec_anc_data_error_start           = 0x8000,
-  AAC_DEC_ANC_DATA_ERROR                 = 0x8001,  /*!< Non severe error concerning the ancillary data handling. */
-  AAC_DEC_TOO_SMALL_ANC_BUFFER           = 0x8002,  /*!< The registered ancillary data buffer is too small to receive the parsed data. */
-  AAC_DEC_TOO_MANY_ANC_ELEMENTS          = 0x8003,  /*!< More than the allowed number of ancillary data elements should be written to buffer. */
-  aac_dec_anc_data_error_end             = 0x8FFF
+    /* Ancillary data errors. Output buffer is valid. */
+    aac_dec_anc_data_error_start           = 0x8000,
+    AAC_DEC_ANC_DATA_ERROR                 = 0x8001,  /*!< Non severe error concerning the ancillary data handling. */
+    AAC_DEC_TOO_SMALL_ANC_BUFFER           = 0x8002,  /*!< The registered ancillary data buffer is too small to receive the parsed data. */
+    AAC_DEC_TOO_MANY_ANC_ELEMENTS          = 0x8003,  /*!< More than the allowed number of ancillary data elements should be written to buffer. */
+    aac_dec_anc_data_error_end             = 0x8FFF
 
 
 } AAC_DECODER_ERROR;
@@ -433,24 +434,24 @@ typedef enum {
  */
 typedef enum
 {
-  AAC_PCM_OUTPUT_INTERLEAVED              = 0x0000,  /*!< PCM output mode (1: interleaved (default); 0: not interleaved). */
-  AAC_PCM_DUAL_CHANNEL_OUTPUT_MODE        = 0x0002,  /*!< Defines how the decoder processes two channel signals: \n
+    AAC_PCM_OUTPUT_INTERLEAVED              = 0x0000,  /*!< PCM output mode (1: interleaved (default); 0: not interleaved). */
+    AAC_PCM_DUAL_CHANNEL_OUTPUT_MODE        = 0x0002,  /*!< Defines how the decoder processes two channel signals: \n
                                                           0: Leave both signals as they are (default). \n
                                                           1: Create a dual mono output signal from channel 1. \n
                                                           2: Create a dual mono output signal from channel 2. \n
                                                           3: Create a dual mono output signal by mixing both channels (L' = R' = 0.5*Ch1 + 0.5*Ch2). */
-  AAC_PCM_OUTPUT_CHANNEL_MAPPING          = 0x0003,  /*!< Output buffer channel ordering. 0: MPEG PCE style order, 1: WAV file channel order (default). */
-  AAC_PCM_LIMITER_ENABLE                  = 0x0004,  /*!< Enable signal level limiting. \n
+    AAC_PCM_OUTPUT_CHANNEL_MAPPING          = 0x0003,  /*!< Output buffer channel ordering. 0: MPEG PCE style order, 1: WAV file channel order (default). */
+    AAC_PCM_LIMITER_ENABLE                  = 0x0004,  /*!< Enable signal level limiting. \n
                                                           -1: Auto-config. Enable limiter for all non-lowdelay configurations by default. \n
                                                            0: Disable limiter in general. \n
                                                            1: Enable limiter always.
                                                           It is recommended to call the decoder with a AACDEC_CLRHIST flag to reset all states when
                                                           the limiter switch is changed explicitly. */
-  AAC_PCM_LIMITER_ATTACK_TIME             = 0x0005,  /*!< Signal level limiting attack time in ms.
+    AAC_PCM_LIMITER_ATTACK_TIME             = 0x0005,  /*!< Signal level limiting attack time in ms.
                                                           Default confguration is 15 ms. Adjustable range from 1 ms to 15 ms. */
-  AAC_PCM_LIMITER_RELEAS_TIME             = 0x0006,  /*!< Signal level limiting release time in ms.
+    AAC_PCM_LIMITER_RELEAS_TIME             = 0x0006,  /*!< Signal level limiting release time in ms.
                                                           Default configuration is 50 ms. Adjustable time must be larger than 0 ms. */
-  AAC_PCM_MIN_OUTPUT_CHANNELS             = 0x0011,  /*!< Minimum number of PCM output channels. If higher than the number of encoded audio channels,
+    AAC_PCM_MIN_OUTPUT_CHANNELS             = 0x0011,  /*!< Minimum number of PCM output channels. If higher than the number of encoded audio channels,
                                                           a simple channel extension is applied. \n
                                                           -1, 0: Disable channel extenstion feature. The decoder output contains the same number of
                                                                  channels as the encoded bitstream. \n
@@ -473,7 +474,7 @@ typedef enum
                                                             2. If the parameter value is greater than that of ::AAC_PCM_MAX_OUTPUT_CHANNELS both will
                                                                be set to the same value. \n
                                                             3. This parameter does not affect MPEG Surround processing. */
-  AAC_PCM_MAX_OUTPUT_CHANNELS             = 0x0012,  /*!< Maximum number of PCM output channels. If lower than the number of encoded audio channels,
+    AAC_PCM_MAX_OUTPUT_CHANNELS             = 0x0012,  /*!< Maximum number of PCM output channels. If lower than the number of encoded audio channels,
                                                           downmixing is applied accordingly. If dedicated metadata is available in the stream it
                                                           will be used to achieve better mixing results. \n
                                                           -1, 0: Disable downmixing feature. The decoder output contains the same number of channels
@@ -497,35 +498,35 @@ typedef enum
                                                             4. Setting this param with any value will disable the binaural processing of the MPEG
                                                                Surround module (::AAC_MPEGS_BINAURAL_ENABLE=0). */
 
-  AAC_CONCEAL_METHOD                      = 0x0100,  /*!< Error concealment: Processing method. \n
+    AAC_CONCEAL_METHOD                      = 0x0100,  /*!< Error concealment: Processing method. \n
                                                           0: Spectral muting. \n
                                                           1: Noise substitution (see ::CONCEAL_NOISE). \n
                                                           2: Energy interpolation (adds additional signal delay of one frame, see ::CONCEAL_INTER). \n */
 
-  AAC_DRC_BOOST_FACTOR                    = 0x0200,  /*!< Dynamic Range Control: Scaling factor for boosting gain values.
+    AAC_DRC_BOOST_FACTOR                    = 0x0200,  /*!< Dynamic Range Control: Scaling factor for boosting gain values.
                                                           Defines how the boosting DRC factors (conveyed in the bitstream) will be applied to the
                                                           decoded signal. The valid values range from 0 (don't apply boost factors) to 127 (fully
                                                           apply all boosting factors). */
-  AAC_DRC_ATTENUATION_FACTOR              = 0x0201,  /*!< Dynamic Range Control: Scaling factor for attenuating gain values. Same as
+    AAC_DRC_ATTENUATION_FACTOR              = 0x0201,  /*!< Dynamic Range Control: Scaling factor for attenuating gain values. Same as
                                                           AAC_DRC_BOOST_FACTOR but for attenuating DRC factors. */
-  AAC_DRC_REFERENCE_LEVEL                 = 0x0202,  /*!< Dynamic Range Control: Target reference level. Defines the level below full-scale
+    AAC_DRC_REFERENCE_LEVEL                 = 0x0202,  /*!< Dynamic Range Control: Target reference level. Defines the level below full-scale
                                                           (quantized in steps of 0.25dB) to which the output audio signal will be normalized to by
                                                           the DRC module. The valid values range from 0 (full-scale) to 127 (31.75 dB below
                                                           full-scale). The value smaller than 0 switches off normalization. */
-  AAC_DRC_HEAVY_COMPRESSION               = 0x0203,  /*!< Dynamic Range Control: En-/Disable DVB specific heavy compression (aka RF mode).
+    AAC_DRC_HEAVY_COMPRESSION               = 0x0203,  /*!< Dynamic Range Control: En-/Disable DVB specific heavy compression (aka RF mode).
                                                           If set to 1, the decoder will apply the compression values from the DVB specific ancillary
                                                           data field. At the same time the MPEG-4 Dynamic Range Control tool will be disabled. By
                                                           default heavy compression is disabled. */
 
-  AAC_QMF_LOWPOWER                        = 0x0300,  /*!< Quadrature Mirror Filter (QMF) Bank processing mode. \n
+    AAC_QMF_LOWPOWER                        = 0x0300,  /*!< Quadrature Mirror Filter (QMF) Bank processing mode. \n
                                                           -1: Use internal default. Implies MPEG Surround partially complex accordingly. \n
                                                            0: Use complex QMF data mode. \n
                                                            1: Use real (low power) QMF data mode. \n */
 
-  AAC_MPEGS_ENABLE                        = 0x0500,  /*!< MPEG Surround: Allow/Disable decoding of MPS content. Available only for decoders with MPEG
+    AAC_MPEGS_ENABLE                        = 0x0500,  /*!< MPEG Surround: Allow/Disable decoding of MPS content. Available only for decoders with MPEG
                                                           Surround support. */
 
-  AAC_TPDEC_CLEAR_BUFFER                  = 0x0603   /*!< Clear internal bit stream buffer of transport layers. The decoder will start decoding
+    AAC_TPDEC_CLEAR_BUFFER                  = 0x0603   /*!< Clear internal bit stream buffer of transport layers. The decoder will start decoding
                                                           at new data passed after this event and any previous data is discarded. */
 
 } AACDEC_PARAM;
@@ -536,51 +537,51 @@ typedef enum
  */
 typedef struct
 {
-  /* These five members are the only really relevant ones for the user.                                                            */
-  INT               sampleRate;          /*!< The samplerate in Hz of the fully decoded PCM audio signal (after SBR processing).   */
-  INT               frameSize;           /*!< The frame size of the decoded PCM audio signal. \n
+    /* These five members are the only really relevant ones for the user.                                                            */
+    INT               sampleRate;          /*!< The samplerate in Hz of the fully decoded PCM audio signal (after SBR processing).   */
+    INT               frameSize;           /*!< The frame size of the decoded PCM audio signal. \n
                                               1024 or 960 for AAC-LC \n
                                               2048 or 1920 for HE-AAC (v2) \n
                                               512 or 480 for AAC-LD and AAC-ELD                                                    */
-  INT               numChannels;         /*!< The number of output audio channels in the decoded and interleaved PCM audio signal. */
-  AUDIO_CHANNEL_TYPE *pChannelType;      /*!< Audio channel type of each output audio channel.                                     */
-  UCHAR             *pChannelIndices;    /*!< Audio channel index for each output audio channel.
+    INT               numChannels;         /*!< The number of output audio channels in the decoded and interleaved PCM audio signal. */
+    AUDIO_CHANNEL_TYPE *pChannelType;      /*!< Audio channel type of each output audio channel.                                     */
+    UCHAR             *pChannelIndices;    /*!< Audio channel index for each output audio channel.
                                                See ISO/IEC 13818-7:2005(E), 8.5.3.2 Explicit channel mapping using a program_config_element() */
-  /* Decoder internal members. */
-  INT               aacSampleRate;       /*!< Sampling rate in Hz without SBR (from configuration info).                           */
-  INT               profile;             /*!< MPEG-2 profile (from file header) (-1: not applicable (e. g. MPEG-4)).               */
-  AUDIO_OBJECT_TYPE aot;                 /*!< Audio Object Type (from ASC): is set to the appropriate value for MPEG-2 bitstreams (e. g. 2 for AAC-LC). */
-  INT               channelConfig;       /*!< Channel configuration (0: PCE defined, 1: mono, 2: stereo, ...                       */
-  INT               bitRate;             /*!< Instantaneous bit rate.                   */
-  INT               aacSamplesPerFrame;  /*!< Samples per frame for the AAC core (from ASC). \n
+    /* Decoder internal members. */
+    INT               aacSampleRate;       /*!< Sampling rate in Hz without SBR (from configuration info).                           */
+    INT               profile;             /*!< MPEG-2 profile (from file header) (-1: not applicable (e. g. MPEG-4)).               */
+    AUDIO_OBJECT_TYPE aot;                 /*!< Audio Object Type (from ASC): is set to the appropriate value for MPEG-2 bitstreams (e. g. 2 for AAC-LC). */
+    INT               channelConfig;       /*!< Channel configuration (0: PCE defined, 1: mono, 2: stereo, ...                       */
+    INT               bitRate;             /*!< Instantaneous bit rate.                   */
+    INT               aacSamplesPerFrame;  /*!< Samples per frame for the AAC core (from ASC). \n
                                               1024 or 960 for AAC-LC \n
                                               512 or 480 for AAC-LD and AAC-ELD         */
-  INT               aacNumChannels;      /*!< The number of audio channels after AAC core processing (before PS or MPS processing).
+    INT               aacNumChannels;      /*!< The number of audio channels after AAC core processing (before PS or MPS processing).
                                               CAUTION: This are not the final number of output channels! */
-  AUDIO_OBJECT_TYPE extAot;              /*!< Extension Audio Object Type (from ASC)   */
-  INT               extSamplingRate;     /*!< Extension sampling rate in Hz (from ASC) */
+    AUDIO_OBJECT_TYPE extAot;              /*!< Extension Audio Object Type (from ASC)   */
+    INT               extSamplingRate;     /*!< Extension sampling rate in Hz (from ASC) */
 
-  UINT              outputDelay;         /*!< The number of samples the output is additionally delayed by the decoder. */
+    UINT              outputDelay;         /*!< The number of samples the output is additionally delayed by the decoder. */
 
-  UINT              flags;               /*!< Copy of internal flags. Only to be written by the decoder, and only to be read externally. */
+    UINT              flags;               /*!< Copy of internal flags. Only to be written by the decoder, and only to be read externally. */
 
-  SCHAR             epConfig;            /*!< epConfig level (from ASC): only level 0 supported, -1 means no ER (e. g. AOT=2, MPEG-2 AAC, etc.)  */
+    SCHAR             epConfig;            /*!< epConfig level (from ASC): only level 0 supported, -1 means no ER (e. g. AOT=2, MPEG-2 AAC, etc.)  */
 
-  /* Statistics */
-  INT               numLostAccessUnits;  /*!< This integer will reflect the estimated amount of lost access units in case aacDecoder_DecodeFrame()
+    /* Statistics */
+    INT               numLostAccessUnits;  /*!< This integer will reflect the estimated amount of lost access units in case aacDecoder_DecodeFrame()
                                               returns AAC_DEC_TRANSPORT_SYNC_ERROR. It will be < 0 if the estimation failed. */
 
-  UINT              numTotalBytes;       /*!< This is the number of total bytes that have passed through the decoder. */
-  UINT              numBadBytes;         /*!< This is the number of total bytes that were considered with errors from numTotalBytes. */
-  UINT              numTotalAccessUnits; /*!< This is the number of total access units that have passed through the decoder. */
-  UINT              numBadAccessUnits;   /*!< This is the number of total access units that were considered with errors from numTotalBytes. */
+    UINT              numTotalBytes;       /*!< This is the number of total bytes that have passed through the decoder. */
+    UINT              numBadBytes;         /*!< This is the number of total bytes that were considered with errors from numTotalBytes. */
+    UINT              numTotalAccessUnits; /*!< This is the number of total access units that have passed through the decoder. */
+    UINT              numBadAccessUnits;   /*!< This is the number of total access units that were considered with errors from numTotalBytes. */
 
-  /* Metadata */
-  SCHAR             drcProgRefLev;       /*!< DRC program reference level. Defines the reference level below full-scale.
+    /* Metadata */
+    SCHAR             drcProgRefLev;       /*!< DRC program reference level. Defines the reference level below full-scale.
                                               It is quantized in steps of 0.25dB. The valid values range from 0 (0 dBFS) to 127 (-31.75 dBFS).
                                               It is used to reflect the average loudness of the audio in LKFS accoring to ITU-R BS 1770.
                                               If no level has been found in the bitstream the value is -1. */
-  SCHAR             drcPresMode;         /*!< DRC presentation mode. According to ETSI TS 101 154, this field indicates whether
+    SCHAR             drcPresMode;         /*!< DRC presentation mode. According to ETSI TS 101 154, this field indicates whether
                                               light (MPEG-4 Dynamic Range Control tool) or heavy compression (DVB heavy compression)
                                               dynamic range control shall take priority on the outputs.
                                               For details, see ETSI TS 101 154, table C.33. Possible values are: \n
@@ -650,7 +651,7 @@ aacDecoder_SetParam ( const HANDLE_AACDECODER  self,
  */
 LINKSPEC_H AAC_DECODER_ERROR
 aacDecoder_GetFreeBytes ( const HANDLE_AACDECODER  self,
-                                            UINT *pFreeBytes);
+                          UINT *pFreeBytes);
 
 /**
  * \brief               Open an AAC decoder instance

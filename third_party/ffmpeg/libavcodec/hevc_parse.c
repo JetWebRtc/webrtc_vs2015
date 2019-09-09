@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC common code
  *
  * This file is part of FFmpeg.
@@ -52,20 +52,22 @@ int ff_hevc_extract_rbsp(HEVCContext *s, const uint8_t *src, int length,
         while (src[i])                                                  \
             i++
 #if HAVE_FAST_64BIT
-    for (i = 0; i + 1 < length; i += 9) {
+    for (i = 0; i + 1 < length; i += 9)
+    {
         if (!((~AV_RN64A(src + i) &
-               (AV_RN64A(src + i) - 0x0100010001000101ULL)) &
-              0x8000800080008080ULL))
+                (AV_RN64A(src + i) - 0x0100010001000101ULL)) &
+                0x8000800080008080ULL))
             continue;
         FIND_FIRST_ZERO;
         STARTCODE_TEST;
         i -= 7;
     }
 #else
-    for (i = 0; i + 1 < length; i += 5) {
+    for (i = 0; i + 1 < length; i += 5)
+    {
         if (!((~AV_RN32A(src + i) &
-               (AV_RN32A(src + i) - 0x01000101U)) &
-              0x80008080U))
+                (AV_RN32A(src + i) - 0x01000101U)) &
+                0x80008080U))
             continue;
         FIND_FIRST_ZERO;
         STARTCODE_TEST;
@@ -73,7 +75,8 @@ int ff_hevc_extract_rbsp(HEVCContext *s, const uint8_t *src, int length,
     }
 #endif /* HAVE_FAST_64BIT */
 #else
-    for (i = 0; i + 1 < length; i += 2) {
+    for (i = 0; i + 1 < length; i += 2)
+    {
         if (src[i])
             continue;
         if (i > 0 && src[i - 1] == 0)
@@ -82,11 +85,12 @@ int ff_hevc_extract_rbsp(HEVCContext *s, const uint8_t *src, int length,
     }
 #endif /* HAVE_FAST_UNALIGNED */
 
-    if (i >= length - 1) { // no escaped 0
+    if (i >= length - 1)   // no escaped 0
+    {
         nal->data     =
-        nal->raw_data = src;
+            nal->raw_data = src;
         nal->size     =
-        nal->raw_size = length;
+            nal->raw_size = length;
         return length;
     }
 
@@ -99,26 +103,34 @@ int ff_hevc_extract_rbsp(HEVCContext *s, const uint8_t *src, int length,
 
     memcpy(dst, src, i);
     si = di = i;
-    while (si + 2 < length) {
+    while (si + 2 < length)
+    {
         // remove escapes (very rare 1:2^22)
-        if (src[si + 2] > 3) {
+        if (src[si + 2] > 3)
+        {
             dst[di++] = src[si++];
             dst[di++] = src[si++];
-        } else if (src[si] == 0 && src[si + 1] == 0) {
-            if (src[si + 2] == 3) { // escape
+        }
+        else if (src[si] == 0 && src[si + 1] == 0)
+        {
+            if (src[si + 2] == 3)   // escape
+            {
                 dst[di++] = 0;
                 dst[di++] = 0;
                 si       += 3;
 
-                if (s && nal->skipped_bytes_pos) {
+                if (s && nal->skipped_bytes_pos)
+                {
                     nal->skipped_bytes++;
-                    if (nal->skipped_bytes_pos_size < nal->skipped_bytes) {
+                    if (nal->skipped_bytes_pos_size < nal->skipped_bytes)
+                    {
                         nal->skipped_bytes_pos_size *= 2;
                         av_assert0(nal->skipped_bytes_pos_size >= nal->skipped_bytes);
                         av_reallocp_array(&nal->skipped_bytes_pos,
-                                nal->skipped_bytes_pos_size,
-                                sizeof(*nal->skipped_bytes_pos));
-                        if (!nal->skipped_bytes_pos) {
+                                          nal->skipped_bytes_pos_size,
+                                          sizeof(*nal->skipped_bytes_pos));
+                        if (!nal->skipped_bytes_pos)
+                        {
                             nal->skipped_bytes_pos_size = 0;
                             return AVERROR(ENOMEM);
                         }
@@ -127,7 +139,8 @@ int ff_hevc_extract_rbsp(HEVCContext *s, const uint8_t *src, int length,
                         nal->skipped_bytes_pos[nal->skipped_bytes-1] = di - 1;
                 }
                 continue;
-            } else // next start code
+            }
+            else   // next start code
                 goto nsc;
         }
 
@@ -148,33 +161,60 @@ nsc:
 
 static const char *nal_unit_name(int nal_type)
 {
-    switch(nal_type) {
-    case NAL_TRAIL_N    : return "TRAIL_N";
-    case NAL_TRAIL_R    : return "TRAIL_R";
-    case NAL_TSA_N      : return "TSA_N";
-    case NAL_TSA_R      : return "TSA_R";
-    case NAL_STSA_N     : return "STSA_N";
-    case NAL_STSA_R     : return "STSA_R";
-    case NAL_RADL_N     : return "RADL_N";
-    case NAL_RADL_R     : return "RADL_R";
-    case NAL_RASL_N     : return "RASL_N";
-    case NAL_RASL_R     : return "RASL_R";
-    case NAL_BLA_W_LP   : return "BLA_W_LP";
-    case NAL_BLA_W_RADL : return "BLA_W_RADL";
-    case NAL_BLA_N_LP   : return "BLA_N_LP";
-    case NAL_IDR_W_RADL : return "IDR_W_RADL";
-    case NAL_IDR_N_LP   : return "IDR_N_LP";
-    case NAL_CRA_NUT    : return "CRA_NUT";
-    case NAL_VPS        : return "VPS";
-    case NAL_SPS        : return "SPS";
-    case NAL_PPS        : return "PPS";
-    case NAL_AUD        : return "AUD";
-    case NAL_EOS_NUT    : return "EOS_NUT";
-    case NAL_EOB_NUT    : return "EOB_NUT";
-    case NAL_FD_NUT     : return "FD_NUT";
-    case NAL_SEI_PREFIX : return "SEI_PREFIX";
-    case NAL_SEI_SUFFIX : return "SEI_SUFFIX";
-    default : return "?";
+    switch(nal_type)
+    {
+    case NAL_TRAIL_N    :
+        return "TRAIL_N";
+    case NAL_TRAIL_R    :
+        return "TRAIL_R";
+    case NAL_TSA_N      :
+        return "TSA_N";
+    case NAL_TSA_R      :
+        return "TSA_R";
+    case NAL_STSA_N     :
+        return "STSA_N";
+    case NAL_STSA_R     :
+        return "STSA_R";
+    case NAL_RADL_N     :
+        return "RADL_N";
+    case NAL_RADL_R     :
+        return "RADL_R";
+    case NAL_RASL_N     :
+        return "RASL_N";
+    case NAL_RASL_R     :
+        return "RASL_R";
+    case NAL_BLA_W_LP   :
+        return "BLA_W_LP";
+    case NAL_BLA_W_RADL :
+        return "BLA_W_RADL";
+    case NAL_BLA_N_LP   :
+        return "BLA_N_LP";
+    case NAL_IDR_W_RADL :
+        return "IDR_W_RADL";
+    case NAL_IDR_N_LP   :
+        return "IDR_N_LP";
+    case NAL_CRA_NUT    :
+        return "CRA_NUT";
+    case NAL_VPS        :
+        return "VPS";
+    case NAL_SPS        :
+        return "SPS";
+    case NAL_PPS        :
+        return "PPS";
+    case NAL_AUD        :
+        return "AUD";
+    case NAL_EOS_NUT    :
+        return "EOS_NUT";
+    case NAL_EOB_NUT    :
+        return "EOB_NUT";
+    case NAL_FD_NUT     :
+        return "FD_NUT";
+    case NAL_SEI_PREFIX :
+        return "SEI_PREFIX";
+    case NAL_SEI_SUFFIX :
+        return "SEI_SUFFIX";
+    default :
+        return "?";
     }
 }
 
@@ -211,27 +251,34 @@ int ff_hevc_split_packet(HEVCContext *s, HEVCPacket *pkt, const uint8_t *buf, in
     int consumed, ret = 0;
 
     pkt->nb_nals = 0;
-    while (length >= 4) {
+    while (length >= 4)
+    {
         HEVCNAL *nal;
         int extract_length = 0;
 
-        if (is_nalff) {
+        if (is_nalff)
+        {
             int i;
             for (i = 0; i < nal_length_size; i++)
                 extract_length = (extract_length << 8) | buf[i];
             buf    += nal_length_size;
             length -= nal_length_size;
 
-            if (extract_length > length) {
+            if (extract_length > length)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Invalid NAL unit size.\n");
                 return AVERROR_INVALIDDATA;
             }
-        } else {
+        }
+        else
+        {
             /* search start code */
-            while (buf[0] != 0 || buf[1] != 0 || buf[2] != 1) {
+            while (buf[0] != 0 || buf[1] != 0 || buf[2] != 1)
+            {
                 ++buf;
                 --length;
-                if (length < 4) {
+                if (length < 4)
+                {
                     av_log(avctx, AV_LOG_ERROR, "No start code is found.\n");
                     return AVERROR_INVALIDDATA;
                 }
@@ -242,7 +289,8 @@ int ff_hevc_split_packet(HEVCContext *s, HEVCPacket *pkt, const uint8_t *buf, in
             extract_length = length;
         }
 
-        if (pkt->nals_allocated < pkt->nb_nals + 1) {
+        if (pkt->nals_allocated < pkt->nb_nals + 1)
+        {
             int new_size = pkt->nals_allocated + 1;
             void *tmp = av_realloc_array(pkt->nals, new_size, sizeof(*pkt->nals));
 
@@ -274,8 +322,10 @@ int ff_hevc_split_packet(HEVCContext *s, HEVCPacket *pkt, const uint8_t *buf, in
             return ret;
 
         ret = hls_nal_unit(nal, avctx);
-        if (ret <= 0) {
-            if (ret < 0) {
+        if (ret <= 0)
+        {
+            if (ret < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Invalid NAL unit %d, skipping.\n",
                        nal->type);
             }

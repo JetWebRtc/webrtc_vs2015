@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Vitor Sessak <vitor1001@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -39,8 +39,8 @@
  * @return < 0 in case of error, 0 otherwise
  */
 int avpriv_do_elbg(int *points, int dim, int numpoints, int *codebook,
-               int numCB, int num_steps, int *closest_cb,
-               AVLFG *rand_state);
+                   int numCB, int num_steps, int *closest_cb,
+                   AVLFG *rand_state);
 
 /**
  * Initialize the **codebook vector for the elbg algorithm. If you have already
@@ -51,7 +51,7 @@ int avpriv_do_elbg(int *points, int dim, int numpoints, int *codebook,
  * @return < 0 in case of error, 0 otherwise
  */
 int avpriv_init_elbg(int *points, int dim, int numpoints, int *codebook,
-                 int numCB, int num_steps, int *closest_cb,
-                 AVLFG *rand_state);
+                     int numCB, int num_steps, int *closest_cb,
+                     AVLFG *rand_state);
 
 #endif /* AVCODEC_ELBG_H */

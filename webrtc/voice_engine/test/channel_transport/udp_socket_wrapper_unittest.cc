@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,39 +28,44 @@
 using ::testing::_;
 using ::testing::Return;
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockSocketManager : public UdpSocketManager {
- public:
-  MockSocketManager() {}
-  // Access to protected destructor.
-  void Destroy() {
-    delete this;
-  }
-  MOCK_METHOD2(Init, bool(int32_t, uint8_t&));
-  MOCK_METHOD0(Start, bool());
-  MOCK_METHOD0(Stop, bool());
-  MOCK_METHOD1(AddSocket, bool(UdpSocketWrapper*));
-  MOCK_METHOD1(RemoveSocket, bool(UdpSocketWrapper*));
+class MockSocketManager : public UdpSocketManager
+{
+public:
+    MockSocketManager() {}
+    // Access to protected destructor.
+    void Destroy()
+    {
+        delete this;
+    }
+    MOCK_METHOD2(Init, bool(int32_t, uint8_t&));
+    MOCK_METHOD0(Start, bool());
+    MOCK_METHOD0(Stop, bool());
+    MOCK_METHOD1(AddSocket, bool(UdpSocketWrapper*));
+    MOCK_METHOD1(RemoveSocket, bool(UdpSocketWrapper*));
 };
 
 // Creates a socket using the static constructor method and verifies that
 // it's added to the socket manager.
-TEST(UdpSocketWrapper, CreateSocket) {
-  int32_t id = 42;
-  // We can't test deletion of sockets without a socket manager.
-  uint8_t threads = 1;
-  UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
-  UdpSocketWrapper* socket =
-      UdpSocketWrapper::CreateSocket(id,
-                                     mgr,
-                                     NULL,  // CallbackObj
-                                     NULL,  // IncomingSocketCallback
-                                     false,  // ipV6Enable
-                                     false);  // disableGQOS
-  socket->CloseBlocking();
-  UdpSocketManager::Return();
+TEST(UdpSocketWrapper, CreateSocket)
+{
+    int32_t id = 42;
+    // We can't test deletion of sockets without a socket manager.
+    uint8_t threads = 1;
+    UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
+    UdpSocketWrapper* socket =
+        UdpSocketWrapper::CreateSocket(id,
+                                       mgr,
+                                       NULL,  // CallbackObj
+                                       NULL,  // IncomingSocketCallback
+                                       false,  // ipV6Enable
+                                       false);  // disableGQOS
+    socket->CloseBlocking();
+    UdpSocketManager::Return();
 }
 
 }  // namespace test

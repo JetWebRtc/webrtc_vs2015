@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,20 +15,23 @@
 
 #include "webrtc/modules/video_coding/include/video_codec_interface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VP8Encoder : public VideoEncoder {
- public:
-  static VP8Encoder* Create();
+class VP8Encoder : public VideoEncoder
+{
+public:
+    static VP8Encoder* Create();
 
-  virtual ~VP8Encoder() {}
+    virtual ~VP8Encoder() {}
 };  // end of VP8Encoder class
 
-class VP8Decoder : public VideoDecoder {
- public:
-  static VP8Decoder* Create();
+class VP8Decoder : public VideoDecoder
+{
+public:
+    static VP8Decoder* Create();
 
-  virtual ~VP8Decoder() {}
+    virtual ~VP8Decoder() {}
 };  // end of VP8Decoder class
 }  // namespace webrtc
 

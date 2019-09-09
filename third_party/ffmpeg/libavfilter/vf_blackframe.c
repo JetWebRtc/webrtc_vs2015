@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Stefano Sabatini
  * Copyright (c) 2006 Ivo van Poorten
  * Copyright (c) 2006 Julian Hall
@@ -37,7 +37,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct BlackFrameContext {
+typedef struct BlackFrameContext
+{
     const AVClass *class;
     int bamount;          ///< black amount
     int bthresh;          ///< black threshold
@@ -48,7 +49,8 @@ typedef struct BlackFrameContext {
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_GRAY8, AV_PIX_FMT_NV12,
         AV_PIX_FMT_NV21, AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_NONE
@@ -74,7 +76,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AVDictionary **metadata;
     char buf[32];
 
-    for (i = 0; i < frame->height; i++) {
+    for (i = 0; i < frame->height; i++)
+    {
         for (x = 0; x < inlink->w; x++)
             s->nblack += p[x] < s->bthresh;
         p += frame->linesize[0];
@@ -84,7 +87,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
         s->last_keyframe = s->frame;
 
     pblack = s->nblack * 100 / (inlink->w * inlink->h);
-    if (pblack >= s->bamount) {
+    if (pblack >= s->bamount)
+    {
         metadata = avpriv_frame_get_metadatap(frame);
 
         av_log(ctx, AV_LOG_INFO, "frame:%u pblack:%u pts:%"PRId64" t:%f "
@@ -103,19 +107,27 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
 
 #define OFFSET(x) offsetof(BlackFrameContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption blackframe_options[] = {
-    { "amount", "Percentage of the pixels that have to be below the threshold "
-        "for the frame to be considered black.", OFFSET(bamount), AV_OPT_TYPE_INT, { .i64 = 98 }, 0, 100,     FLAGS },
-    { "threshold", "threshold below which a pixel value is considered black",
-                                                 OFFSET(bthresh), AV_OPT_TYPE_INT, { .i64 = 32 }, 0, 255,     FLAGS },
-    { "thresh", "threshold below which a pixel value is considered black",
-                                                 OFFSET(bthresh), AV_OPT_TYPE_INT, { .i64 = 32 }, 0, 255,     FLAGS },
+static const AVOption blackframe_options[] =
+{
+    {
+        "amount", "Percentage of the pixels that have to be below the threshold "
+        "for the frame to be considered black.", OFFSET(bamount), AV_OPT_TYPE_INT, { .i64 = 98 }, 0, 100,     FLAGS
+    },
+    {
+        "threshold", "threshold below which a pixel value is considered black",
+        OFFSET(bthresh), AV_OPT_TYPE_INT, { .i64 = 32 }, 0, 255,     FLAGS
+    },
+    {
+        "thresh", "threshold below which a pixel value is considered black",
+        OFFSET(bthresh), AV_OPT_TYPE_INT, { .i64 = 32 }, 0, 255,     FLAGS
+    },
     { NULL }
 };
 
 AVFILTER_DEFINE_CLASS(blackframe);
 
-static const AVFilterPad avfilter_vf_blackframe_inputs[] = {
+static const AVFilterPad avfilter_vf_blackframe_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -124,7 +136,8 @@ static const AVFilterPad avfilter_vf_blackframe_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_blackframe_outputs[] = {
+static const AVFilterPad avfilter_vf_blackframe_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO
@@ -132,7 +145,8 @@ static const AVFilterPad avfilter_vf_blackframe_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_blackframe = {
+AVFilter ff_vf_blackframe =
+{
     .name          = "blackframe",
     .description   = NULL_IF_CONFIG_SMALL("Detect frames that are (almost) black."),
     .priv_size     = sizeof(BlackFrameContext),

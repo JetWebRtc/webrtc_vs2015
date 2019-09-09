@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNM image format
  * Copyright (c) 2002, 2003 Fabrice Bellard
  *
@@ -24,7 +24,8 @@
 
 #include "avcodec.h"
 
-typedef struct PNMContext {
+typedef struct PNMContext
+{
     uint8_t *bytestream;
     uint8_t *bytestream_start;
     uint8_t *bytestream_end;

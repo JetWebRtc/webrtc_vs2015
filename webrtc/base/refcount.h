@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,16 +12,18 @@
 
 #include "webrtc/base/refcountedobject.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Reference count interface.
-class RefCountInterface {
- public:
-  virtual int AddRef() const = 0;
-  virtual int Release() const = 0;
+class RefCountInterface
+{
+public:
+    virtual int AddRef() const = 0;
+    virtual int Release() const = 0;
 
- protected:
-  virtual ~RefCountInterface() {}
+protected:
+    virtual ~RefCountInterface() {}
 };
 
 }  // namespace rtc

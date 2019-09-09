@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,19 +20,26 @@
 
 void WebRtcIlbcfix_IndexConvDec(
     int16_t *index   /* (i/o) Codebook indexes */
-                                ){
-  int k;
+)
+{
+    int k;
 
-  for (k=4;k<6;k++) {
-    /* Readjust the second and third codebook index for the first 40 sample
-       so that they look the same as the first (in terms of lag)
-    */
-    if ((index[k]>=44)&&(index[k]<108)) {
-      index[k]+=64;
-    } else if ((index[k]>=108)&&(index[k]<128)) {
-      index[k]+=128;
-    } else {
-      /* ERROR */
+    for (k=4; k<6; k++)
+    {
+        /* Readjust the second and third codebook index for the first 40 sample
+           so that they look the same as the first (in terms of lag)
+        */
+        if ((index[k]>=44)&&(index[k]<108))
+        {
+            index[k]+=64;
+        }
+        else if ((index[k]>=108)&&(index[k]<128))
+        {
+            index[k]+=128;
+        }
+        else
+        {
+            /* ERROR */
+        }
     }
-  }
 }

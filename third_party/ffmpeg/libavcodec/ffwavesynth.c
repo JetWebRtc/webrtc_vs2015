@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wavesynth pseudo-codec
  * Copyright (c) 2011 Nicolas George
  *
@@ -74,12 +74,14 @@
 
 */
 
-enum ws_interval_type {
+enum ws_interval_type
+{
     WS_SINE  = MKTAG('S','I','N','E'),
     WS_NOISE = MKTAG('N','O','I','S'),
 };
 
-struct ws_interval {
+struct ws_interval
+{
     int64_t ts_start, ts_end;
     uint64_t phi0, dphi0, ddphi;
     uint64_t amp0, damp;
@@ -89,7 +91,8 @@ struct ws_interval {
     int next;
 };
 
-struct wavesynth_context {
+struct wavesynth_context
+{
     int64_t cur_ts;
     int64_t next_ts;
     int32_t *sin;
@@ -117,15 +120,19 @@ static void lcg_seek(uint32_t *s, int64_t dt)
 {
     uint32_t a, c, t = *s;
 
-    if (dt >= 0) {
+    if (dt >= 0)
+    {
         a = LCG_A;
         c = LCG_C;
-    } else { /* coefficients for a step backward */
+    }
+    else     /* coefficients for a step backward */
+    {
         a = LCG_AI;
         c = (uint32_t)(LCG_AI * LCG_C);
         dt = -dt;
     }
-    while (dt) {
+    while (dt)
+    {
         if (dt & 1)
             t = a * t + c;
         c *= a + 1; /* coefficients for a double step */
@@ -148,8 +155,10 @@ static void pink_fill(struct wavesynth_context *ws)
     ws->pink_pos = 0;
     if (!ws->pink_need)
         return;
-    for (i = 0; i < PINK_UNIT; i++) {
-        for (j = 0; j < 7; j++) {
+    for (i = 0; i < PINK_UNIT; i++)
+    {
+        for (j = 0; j < 7; j++)
+        {
             if ((i >> j) & 1)
                 break;
             v -= vt[j];
@@ -169,23 +178,30 @@ static uint64_t frac64(uint64_t a, uint64_t b)
     uint64_t r = 0;
     int i;
 
-    if (b < (uint64_t)1 << 32) { /* b small, use two 32-bits steps */
+    if (b < (uint64_t)1 << 32)   /* b small, use two 32-bits steps */
+    {
         a <<= 32;
         return ((a / b) << 32) | ((a % b) << 32) / b;
     }
-    if (b < (uint64_t)1 << 48) { /* b medium, use four 16-bits steps */
-        for (i = 0; i < 4; i++) {
+    if (b < (uint64_t)1 << 48)   /* b medium, use four 16-bits steps */
+    {
+        for (i = 0; i < 4; i++)
+        {
             a <<= 16;
             r = (r << 16) | (a / b);
             a %= b;
         }
         return r;
     }
-    for (i = 63; i >= 0; i--) {
-        if (a >= (uint64_t)1 << 63 || a << 1 >= b) {
+    for (i = 63; i >= 0; i--)
+    {
+        if (a >= (uint64_t)1 << 63 || a << 1 >= b)
+        {
             r |= (uint64_t)1 << i;
             a = (a << 1) - b;
-        } else {
+        }
+        else
+        {
             a <<= 1;
         }
     }
@@ -206,7 +222,8 @@ static void wavesynth_seek(struct wavesynth_context *ws, int64_t ts)
     struct ws_interval *in;
 
     last = &ws->cur_inter;
-    for (i = 0; i < ws->nb_inter; i++) {
+    for (i = 0; i < ws->nb_inter; i++)
+    {
         in = &ws->inter[i];
         if (ts < in->ts_start)
             break;
@@ -222,15 +239,19 @@ static void wavesynth_seek(struct wavesynth_context *ws, int64_t ts)
     ws->next_ts = i < ws->nb_inter ? ws->inter[i].ts_start : INF_TS;
     *last = -1;
     lcg_seek(&ws->dither_state, ts - ws->cur_ts);
-    if (ws->pink_need) {
+    if (ws->pink_need)
+    {
         int64_t pink_ts_cur  = (ws->cur_ts + PINK_UNIT - 1) & ~(PINK_UNIT - 1);
         int64_t pink_ts_next = ts & ~(PINK_UNIT - 1);
         int pos = ts & (PINK_UNIT - 1);
         lcg_seek(&ws->pink_state, (pink_ts_next - pink_ts_cur) << 1);
-        if (pos) {
+        if (pos)
+        {
             pink_fill(ws);
             ws->pink_pos = pos;
-        } else {
+        }
+        else
+        {
             ws->pink_pos = PINK_UNIT;
         }
     }
@@ -258,7 +279,8 @@ static int wavesynth_parse_extradata(AVCodecContext *avc)
     ws->inter = av_calloc(ws->nb_inter, sizeof(*ws->inter));
     if (!ws->inter)
         return AVERROR(ENOMEM);
-    for (i = 0; i < ws->nb_inter; i++) {
+    for (i = 0; i < ws->nb_inter; i++)
+    {
         in = &ws->inter[i];
         if (edata_end - edata < 24)
             return AVERROR(EINVAL);
@@ -271,38 +293,42 @@ static int wavesynth_parse_extradata(AVCodecContext *avc)
             return AVERROR(EINVAL);
         cur_ts = in->ts_start;
         dt = in->ts_end - in->ts_start;
-        switch (in->type) {
-            case WS_SINE:
-                if (edata_end - edata < 20)
-                    return AVERROR(EINVAL);
-                f1  = AV_RL32(edata +  0);
-                f2  = AV_RL32(edata +  4);
-                a1  = AV_RL32(edata +  8);
-                a2  = AV_RL32(edata + 12);
-                phi = AV_RL32(edata + 16);
-                edata += 20;
-                dphi1 = frac64(f1, (int64_t)avc->sample_rate << 16);
-                dphi2 = frac64(f2, (int64_t)avc->sample_rate << 16);
-                in->dphi0 = dphi1;
-                in->ddphi = (dphi2 - dphi1) / dt;
-                if (phi & 0x80000000) {
-                    phi &= ~0x80000000;
-                    if (phi >= i)
-                        return AVERROR(EINVAL);
-                    in->phi0 = phi_at(&ws->inter[phi], in->ts_start);
-                } else {
-                    in->phi0 = (uint64_t)phi << 33;
-                }
-                break;
-            case WS_NOISE:
-                if (edata_end - edata < 8)
-                    return AVERROR(EINVAL);
-                a1  = AV_RL32(edata +  0);
-                a2  = AV_RL32(edata +  4);
-                edata += 8;
-                break;
-            default:
+        switch (in->type)
+        {
+        case WS_SINE:
+            if (edata_end - edata < 20)
                 return AVERROR(EINVAL);
+            f1  = AV_RL32(edata +  0);
+            f2  = AV_RL32(edata +  4);
+            a1  = AV_RL32(edata +  8);
+            a2  = AV_RL32(edata + 12);
+            phi = AV_RL32(edata + 16);
+            edata += 20;
+            dphi1 = frac64(f1, (int64_t)avc->sample_rate << 16);
+            dphi2 = frac64(f2, (int64_t)avc->sample_rate << 16);
+            in->dphi0 = dphi1;
+            in->ddphi = (dphi2 - dphi1) / dt;
+            if (phi & 0x80000000)
+            {
+                phi &= ~0x80000000;
+                if (phi >= i)
+                    return AVERROR(EINVAL);
+                in->phi0 = phi_at(&ws->inter[phi], in->ts_start);
+            }
+            else
+            {
+                in->phi0 = (uint64_t)phi << 33;
+            }
+            break;
+        case WS_NOISE:
+            if (edata_end - edata < 8)
+                return AVERROR(EINVAL);
+            a1  = AV_RL32(edata +  0);
+            a2  = AV_RL32(edata +  4);
+            edata += 8;
+            break;
+        default:
+            return AVERROR(EINVAL);
         }
         in->amp0 = (int64_t)a1 << 32;
         in->damp = (((int64_t)a2 << 32) - ((int64_t)a1 << 32)) / dt;
@@ -317,19 +343,22 @@ static av_cold int wavesynth_init(AVCodecContext *avc)
     struct wavesynth_context *ws = avc->priv_data;
     int i, r;
 
-    if (avc->channels > WS_MAX_CHANNELS) {
+    if (avc->channels > WS_MAX_CHANNELS)
+    {
         av_log(avc, AV_LOG_ERROR,
                "This implementation is limited to %d channels.\n",
                WS_MAX_CHANNELS);
         return AVERROR(EINVAL);
     }
     r = wavesynth_parse_extradata(avc);
-    if (r < 0) {
+    if (r < 0)
+    {
         av_log(avc, AV_LOG_ERROR, "Invalid intervals definitions.\n");
         goto fail;
     }
     ws->sin = av_malloc(sizeof(*ws->sin) << SIN_BITS);
-    if (!ws->sin) {
+    if (!ws->sin)
+    {
         r = AVERROR(ENOMEM);
         goto fail;
     }
@@ -363,27 +392,30 @@ static void wavesynth_synth_sample(struct wavesynth_context *ws, int64_t ts,
     if (ws->pink_pos == PINK_UNIT)
         pink_fill(ws);
     pink = ws->pink_pool[ws->pink_pos++] >> 16;
-    while (i >= 0) {
+    while (i >= 0)
+    {
         in = &ws->inter[i];
         i = in->next;
-        if (ts >= in->ts_end) {
+        if (ts >= in->ts_end)
+        {
             *last = i;
             continue;
         }
         last = &in->next;
         amp = in->amp >> 32;
         in->amp  += in->damp;
-        switch (in->type) {
-            case WS_SINE:
-                val = amp * ws->sin[in->phi >> (64 - SIN_BITS)];
-                in->phi  += in->dphi;
-                in->dphi += in->ddphi;
-                break;
-            case WS_NOISE:
-                val = amp * pink;
-                break;
-            default:
-                val = 0;
+        switch (in->type)
+        {
+        case WS_SINE:
+            val = amp * ws->sin[in->phi >> (64 - SIN_BITS)];
+            in->phi  += in->dphi;
+            in->dphi += in->ddphi;
+            break;
+        case WS_NOISE:
+            val = amp * pink;
+            break;
+        default:
+            val = 0;
         }
         all_ch |= in->channels;
         for (c = in->channels, cv = channels; c; c >>= 1, cv++)
@@ -404,7 +436,8 @@ static void wavesynth_enter_intervals(struct wavesynth_context *ws, int64_t ts)
     last = &ws->cur_inter;
     for (i = ws->cur_inter; i >= 0; i = ws->inter[i].next)
         last = &ws->inter[i].next;
-    for (i = ws->next_inter; i < ws->nb_inter; i++) {
+    for (i = ws->next_inter; i < ws->nb_inter; i++)
+    {
         in = &ws->inter[i];
         if (ts < in->ts_start)
             break;
@@ -446,7 +479,8 @@ static int wavesynth_decode(AVCodecContext *avc, void *rframe, int *rgot_frame,
     if (r < 0)
         return r;
     pcm = (int16_t *)frame->data[0];
-    for (s = 0; s < duration; s++, ts++) {
+    for (s = 0; s < duration; s++, ts++)
+    {
         memset(channels, 0, avc->channels * sizeof(*channels));
         if (ts >= ws->next_ts)
             wavesynth_enter_intervals(ws, ts);
@@ -468,7 +502,8 @@ static av_cold int wavesynth_close(AVCodecContext *avc)
     return 0;
 }
 
-AVCodec ff_ffwavesynth_decoder = {
+AVCodec ff_ffwavesynth_decoder =
+{
     .name           = "wavesynth",
     .long_name      = NULL_IF_CONFIG_SMALL("Wave synthesis pseudo-codec"),
     .type           = AVMEDIA_TYPE_AUDIO,

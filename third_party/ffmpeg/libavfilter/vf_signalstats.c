@@ -24,7 +24,8 @@
 #include "libavutil/pixdesc.h"
 #include "internal.h"
 
-enum FilterMode {
+enum FilterMode
+{
     FILTER_NONE = -1,
     FILTER_TOUT,
     FILTER_VREP,
@@ -32,7 +33,8 @@ enum FilterMode {
     FILT_NUMB
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int chromah;    // height of chroma plane
     int chromaw;    // width of chroma plane
@@ -52,12 +54,14 @@ typedef struct {
     AVFrame *frame_hue;
 } SignalstatsContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     const AVFrame *in;
     AVFrame *out;
 } ThreadData;
 
-typedef struct ThreadDataHueSatMetrics {
+typedef struct ThreadDataHueSatMetrics
+{
     const AVFrame *src;
     AVFrame *dst_sat, *dst_hue;
 } ThreadDataHueSatMetrics;
@@ -65,15 +69,16 @@ typedef struct ThreadDataHueSatMetrics {
 #define OFFSET(x) offsetof(SignalstatsContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption signalstats_options[] = {
+static const AVOption signalstats_options[] =
+{
     {"stat", "set statistics filters", OFFSET(filters), AV_OPT_TYPE_FLAGS, {.i64=0}, 0, INT_MAX, FLAGS, "filters"},
-        {"tout", "analyze pixels for temporal outliers",                0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_TOUT}, 0, 0, FLAGS, "filters"},
-        {"vrep", "analyze video lines for vertical line repetition",    0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_VREP}, 0, 0, FLAGS, "filters"},
-        {"brng", "analyze for pixels outside of broadcast range",       0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_BRNG}, 0, 0, FLAGS, "filters"},
+    {"tout", "analyze pixels for temporal outliers",                0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_TOUT}, 0, 0, FLAGS, "filters"},
+    {"vrep", "analyze video lines for vertical line repetition",    0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_VREP}, 0, 0, FLAGS, "filters"},
+    {"brng", "analyze for pixels outside of broadcast range",       0, AV_OPT_TYPE_CONST, {.i64=1<<FILTER_BRNG}, 0, 0, FLAGS, "filters"},
     {"out", "set video filter", OFFSET(outfilter), AV_OPT_TYPE_INT, {.i64=FILTER_NONE}, -1, FILT_NUMB-1, FLAGS, "out"},
-        {"tout", "highlight pixels that depict temporal outliers",              0, AV_OPT_TYPE_CONST, {.i64=FILTER_TOUT}, 0, 0, FLAGS, "out"},
-        {"vrep", "highlight video lines that depict vertical line repetition",  0, AV_OPT_TYPE_CONST, {.i64=FILTER_VREP}, 0, 0, FLAGS, "out"},
-        {"brng", "highlight pixels that are outside of broadcast range",        0, AV_OPT_TYPE_CONST, {.i64=FILTER_BRNG}, 0, 0, FLAGS, "out"},
+    {"tout", "highlight pixels that depict temporal outliers",              0, AV_OPT_TYPE_CONST, {.i64=FILTER_TOUT}, 0, 0, FLAGS, "out"},
+    {"vrep", "highlight video lines that depict vertical line repetition",  0, AV_OPT_TYPE_CONST, {.i64=FILTER_VREP}, 0, 0, FLAGS, "out"},
+    {"brng", "highlight pixels that are outside of broadcast range",        0, AV_OPT_TYPE_CONST, {.i64=FILTER_BRNG}, 0, 0, FLAGS, "out"},
     {"c",     "set highlight color", OFFSET(rgba_color), AV_OPT_TYPE_COLOR, {.str="yellow"}, .flags=FLAGS},
     {"color", "set highlight color", OFFSET(rgba_color), AV_OPT_TYPE_COLOR, {.str="yellow"}, .flags=FLAGS},
     {NULL}
@@ -110,7 +115,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 static int query_formats(AVFilterContext *ctx)
 {
     // TODO: add more
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV440P,
         AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ411P,
@@ -134,7 +140,8 @@ static AVFrame *alloc_frame(enum AVPixelFormat pixfmt, int w, int h)
     frame->width  = w;
     frame->height = h;
 
-    if (av_frame_get_buffer(frame, 32) < 0) {
+    if (av_frame_get_buffer(frame, 32) < 0)
+    {
         av_frame_free(&frame);
         return NULL;
     }
@@ -194,20 +201,22 @@ static int filter_brng(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     const int slice_end   = (h * (jobnr+1)) / nb_jobs;
     int x, y, score = 0;
 
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
         const int yc = y >> s->vsub;
         const uint8_t *pluma    = &in->data[0][y  * in->linesize[0]];
         const uint8_t *pchromau = &in->data[1][yc * in->linesize[1]];
         const uint8_t *pchromav = &in->data[2][yc * in->linesize[2]];
 
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             const int xc = x >> s->hsub;
             const int luma    = pluma[x];
             const int chromau = pchromau[xc];
             const int chromav = pchromav[xc];
             const int filt = luma    < 16 || luma    > 235 ||
-                chromau < 16 || chromau > 240 ||
-                chromav < 16 || chromav > 240;
+                             chromau < 16 || chromau > 240 ||
+                             chromav < 16 || chromav > 240;
             score += filt;
             if (out && filt)
                 burn_frame(s, out, x, y);
@@ -235,7 +244,8 @@ static int filter_tout(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     int lw = in->linesize[0];
     int x, y, score = 0, filt;
 
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
 
         if (y - 1 < 0 || y + 1 >= h)
             continue;
@@ -250,15 +260,20 @@ static int filter_tout(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
 
 #define FILTER3(j) (FILTER(-1, j) && FILTER(0, j) && FILTER(1, j))
 
-        if (y - 2 >= 0 && y + 2 < h) {
-            for (x = 1; x < w - 1; x++) {
+        if (y - 2 >= 0 && y + 2 < h)
+        {
+            for (x = 1; x < w - 1; x++)
+            {
                 filt = FILTER3(2) && FILTER3(1);
                 score += filt;
                 if (filt && out)
                     burn_frame(s, out, x, y);
             }
-        } else {
-            for (x = 1; x < w - 1; x++) {
+        }
+        else
+        {
+            for (x = 1; x < w - 1; x++)
+            {
                 filt = FILTER3(1);
                 score += filt;
                 if (filt && out)
@@ -285,7 +300,8 @@ static int filter_vrep(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     const int lw = in->linesize[0];
     int x, y, score = 0;
 
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
         const int y2lw = (y - VREP_START) * lw;
         const int ylw  =  y               * lw;
         int filt, totdiff = 0;
@@ -305,10 +321,12 @@ static int filter_vrep(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     return score * w;
 }
 
-static const struct {
+static const struct
+{
     const char *name;
     int (*process)(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs);
-} filters_def[] = {
+} filters_def[] =
+{
     {"TOUT", filter_tout},
     {"VREP", filter_vrep},
     {"BRNG", filter_brng},
@@ -339,8 +357,10 @@ static int compute_sat_hue_metrics(AVFilterContext *ctx, void *arg, int jobnr, i
     uint8_t *p_sat = dst_sat->data[0] + slice_start * lsz_sat;
     uint8_t *p_hue = dst_hue->data[0] + slice_start * lsz_hue;
 
-    for (j = slice_start; j < slice_end; j++) {
-        for (i = 0; i < s->chromaw; i++) {
+    for (j = slice_start; j < slice_end; j++)
+    {
+        for (i = 0; i < s->chromaw; i++)
+        {
             const int yuvu = p_u[i];
             const int yuvv = p_v[i];
             p_sat[i] = hypot(yuvu - 128, yuvv - 128); // int or round?
@@ -363,14 +383,14 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     AVFrame *out = in;
     int i, j;
     int  w = 0,  cw = 0, // in
-        pw = 0, cpw = 0; // prev
+         pw = 0, cpw = 0; // prev
     int fil;
     char metabuf[128];
     unsigned int histy[DEPTH] = {0},
-                 histu[DEPTH] = {0},
-                 histv[DEPTH] = {0},
-                 histhue[360] = {0},
-                 histsat[DEPTH] = {0}; // limited to 8 bit data.
+                                histu[DEPTH] = {0},
+                                        histv[DEPTH] = {0},
+                                                histhue[360] = {0},
+                                                        histsat[DEPTH] = {0}; // limited to 8 bit data.
     int miny  = -1, minu  = -1, minv  = -1;
     int maxy  = -1, maxu  = -1, maxv  = -1;
     int lowy  = -1, lowu  = -1, lowv  = -1;
@@ -393,7 +413,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     const uint8_t *p_hue = hue->data[0];
     const int lsz_sat = sat->linesize[0];
     const int lsz_hue = hue->linesize[0];
-    ThreadDataHueSatMetrics td_huesat = {
+    ThreadDataHueSatMetrics td_huesat =
+    {
         .src     = in,
         .dst_sat = sat,
         .dst_hue = hue,
@@ -404,7 +425,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
 
     prev = s->frame_prev;
 
-    if (s->outfilter != FILTER_NONE) {
+    if (s->outfilter != FILTER_NONE)
+    {
         out = av_frame_clone(in);
         av_frame_make_writable(out);
     }
@@ -413,8 +435,10 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
                            NULL, FFMIN(s->chromah, ctx->graph->nb_threads));
 
     // Calculate luma histogram and difference with previous frame or field.
-    for (j = 0; j < link->h; j++) {
-        for (i = 0; i < link->w; i++) {
+    for (j = 0; j < link->h; j++)
+    {
+        for (i = 0; i < link->w; i++)
+        {
             const int yuv = in->data[0][w + i];
             histy[yuv]++;
             dify += abs(yuv - prev->data[0][pw + i]);
@@ -424,8 +448,10 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     }
 
     // Calculate chroma histogram and difference with previous frame or field.
-    for (j = 0; j < s->chromah; j++) {
-        for (i = 0; i < s->chromaw; i++) {
+    for (j = 0; j < s->chromah; j++)
+    {
+        for (i = 0; i < s->chromaw; i++)
+        {
             const int yuvu = in->data[1][cw+i];
             const int yuvv = in->data[2][cw+i];
             histu[yuvu]++;
@@ -442,9 +468,12 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
         p_hue += lsz_hue;
     }
 
-    for (fil = 0; fil < FILT_NUMB; fil ++) {
-        if (s->filters & 1<<fil) {
-            ThreadData td = {
+    for (fil = 0; fil < FILT_NUMB; fil ++)
+    {
+        if (s->filters & 1<<fil)
+        {
+            ThreadData td =
+            {
                 .in = in,
                 .out = out != in && s->outfilter == fil ? out : NULL,
             };
@@ -465,7 +494,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     chighp = lrint(s->cfs * 90 / 100.);
 
     accy = accu = accv = accsat = 0;
-    for (fil = 0; fil < DEPTH; fil++) {
+    for (fil = 0; fil < DEPTH; fil++)
+    {
         if (miny   < 0 && histy[fil])   miny = fil;
         if (minu   < 0 && histu[fil])   minu = fil;
         if (minv   < 0 && histv[fil])   minv = fil;
@@ -499,13 +529,15 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
 
     maxhue = histhue[0];
     medhue = -1;
-    for (fil = 0; fil < 360; fil++) {
+    for (fil = 0; fil < 360; fil++)
+    {
         tothue += histhue[fil] * fil;
         acchue += histhue[fil];
 
         if (medhue == -1 && acchue > s->cfs / 2)
             medhue = fil;
-        if (histhue[fil] > maxhue) {
+        if (histhue[fil] > maxhue)
+        {
             maxhue = histhue[fil];
         }
     }
@@ -549,8 +581,10 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     SET_META("UDIF",    "%g", 1.0 * difu / s->cfs);
     SET_META("VDIF",    "%g", 1.0 * difv / s->cfs);
 
-    for (fil = 0; fil < FILT_NUMB; fil ++) {
-        if (s->filters & 1<<fil) {
+    for (fil = 0; fil < FILT_NUMB; fil ++)
+    {
+        if (s->filters & 1<<fil)
+        {
             char metaname[128];
             snprintf(metabuf,  sizeof(metabuf),  "%g", 1.0 * filtot[fil] / s->fs);
             snprintf(metaname, sizeof(metaname), "lavfi.signalstats.%s", filters_def[fil].name);
@@ -563,7 +597,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad signalstats_inputs[] = {
+static const AVFilterPad signalstats_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_VIDEO,
@@ -572,7 +607,8 @@ static const AVFilterPad signalstats_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad signalstats_outputs[] = {
+static const AVFilterPad signalstats_outputs[] =
+{
     {
         .name           = "default",
         .config_props   = config_props,
@@ -581,7 +617,8 @@ static const AVFilterPad signalstats_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_signalstats = {
+AVFilter ff_vf_signalstats =
+{
     .name          = "signalstats",
     .description   = "Generate statistics from video analysis.",
     .init          = init,

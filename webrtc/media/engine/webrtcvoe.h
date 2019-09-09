@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,92 +24,137 @@
 #include "webrtc/voice_engine/include/voe_hardware.h"
 #include "webrtc/voice_engine/include/voe_volume_control.h"
 
-namespace cricket {
+namespace cricket
+{
 // automatically handles lifetime of WebRtc VoiceEngine
-class scoped_voe_engine {
- public:
-  explicit scoped_voe_engine(webrtc::VoiceEngine* e) : ptr(e) {}
-  // RTC_DCHECK, to ensure that there are no leaks at shutdown
-  ~scoped_voe_engine() {
-    if (ptr) {
-      const bool success = webrtc::VoiceEngine::Delete(ptr);
-      RTC_DCHECK(success);
+class scoped_voe_engine
+{
+public:
+    explicit scoped_voe_engine(webrtc::VoiceEngine* e) : ptr(e) {}
+    // RTC_DCHECK, to ensure that there are no leaks at shutdown
+    ~scoped_voe_engine()
+    {
+        if (ptr)
+        {
+            const bool success = webrtc::VoiceEngine::Delete(ptr);
+            RTC_DCHECK(success);
+        }
     }
-  }
-  // Releases the current pointer.
-  void reset() {
-    if (ptr) {
-      const bool success = webrtc::VoiceEngine::Delete(ptr);
-      RTC_DCHECK(success);
-      ptr = NULL;
+    // Releases the current pointer.
+    void reset()
+    {
+        if (ptr)
+        {
+            const bool success = webrtc::VoiceEngine::Delete(ptr);
+            RTC_DCHECK(success);
+            ptr = NULL;
+        }
     }
-  }
-  webrtc::VoiceEngine* get() const { return ptr; }
- private:
-  webrtc::VoiceEngine* ptr;
+    webrtc::VoiceEngine* get() const
+    {
+        return ptr;
+    }
+private:
+    webrtc::VoiceEngine* ptr;
 };
 
 // unique_ptr-like class to handle obtaining and releasing WebRTC interface
 // pointers.
 template<class T>
-class scoped_voe_ptr {
- public:
-  explicit scoped_voe_ptr(const scoped_voe_engine& e)
-      : ptr(T::GetInterface(e.get())) {}
-  explicit scoped_voe_ptr(T* p) : ptr(p) {}
-  ~scoped_voe_ptr() { if (ptr) ptr->Release(); }
-  T* operator->() const { return ptr; }
-  T* get() const { return ptr; }
-
-  // Releases the current pointer.
-  void reset() {
-    if (ptr) {
-      ptr->Release();
-      ptr = NULL;
+class scoped_voe_ptr
+{
+public:
+    explicit scoped_voe_ptr(const scoped_voe_engine& e)
+        : ptr(T::GetInterface(e.get())) {}
+    explicit scoped_voe_ptr(T* p) : ptr(p) {}
+    ~scoped_voe_ptr()
+    {
+        if (ptr) ptr->Release();
     }
-  }
+    T* operator->() const
+    {
+        return ptr;
+    }
+    T* get() const
+    {
+        return ptr;
+    }
 
- private:
-  T* ptr;
+    // Releases the current pointer.
+    void reset()
+    {
+        if (ptr)
+        {
+            ptr->Release();
+            ptr = NULL;
+        }
+    }
+
+private:
+    T* ptr;
 };
 
 // Utility class for aggregating the various WebRTC interface.
 // Fake implementations can also be injected for testing.
-class VoEWrapper {
- public:
-  VoEWrapper()
-      : engine_(webrtc::VoiceEngine::Create()), processing_(engine_),
-        base_(engine_), codec_(engine_), hw_(engine_),
-        volume_(engine_) {
-  }
-  VoEWrapper(webrtc::VoEAudioProcessing* processing,
-             webrtc::VoEBase* base,
-             webrtc::VoECodec* codec,
-             webrtc::VoEHardware* hw,
-             webrtc::VoEVolumeControl* volume)
-      : engine_(NULL),
-        processing_(processing),
-        base_(base),
-        codec_(codec),
-        hw_(hw),
-        volume_(volume) {
-  }
-  ~VoEWrapper() {}
-  webrtc::VoiceEngine* engine() const { return engine_.get(); }
-  webrtc::VoEAudioProcessing* processing() const { return processing_.get(); }
-  webrtc::VoEBase* base() const { return base_.get(); }
-  webrtc::VoECodec* codec() const { return codec_.get(); }
-  webrtc::VoEHardware* hw() const { return hw_.get(); }
-  webrtc::VoEVolumeControl* volume() const { return volume_.get(); }
-  int error() { return base_->LastError(); }
+class VoEWrapper
+{
+public:
+    VoEWrapper()
+        : engine_(webrtc::VoiceEngine::Create()), processing_(engine_),
+          base_(engine_), codec_(engine_), hw_(engine_),
+          volume_(engine_)
+    {
+    }
+    VoEWrapper(webrtc::VoEAudioProcessing* processing,
+               webrtc::VoEBase* base,
+               webrtc::VoECodec* codec,
+               webrtc::VoEHardware* hw,
+               webrtc::VoEVolumeControl* volume)
+        : engine_(NULL),
+          processing_(processing),
+          base_(base),
+          codec_(codec),
+          hw_(hw),
+          volume_(volume)
+    {
+    }
+    ~VoEWrapper() {}
+    webrtc::VoiceEngine* engine() const
+    {
+        return engine_.get();
+    }
+    webrtc::VoEAudioProcessing* processing() const
+    {
+        return processing_.get();
+    }
+    webrtc::VoEBase* base() const
+    {
+        return base_.get();
+    }
+    webrtc::VoECodec* codec() const
+    {
+        return codec_.get();
+    }
+    webrtc::VoEHardware* hw() const
+    {
+        return hw_.get();
+    }
+    webrtc::VoEVolumeControl* volume() const
+    {
+        return volume_.get();
+    }
+    int error()
+    {
+        return base_->LastError();
+    }
 
- private:
-  scoped_voe_engine engine_;
-  scoped_voe_ptr<webrtc::VoEAudioProcessing> processing_;
-  scoped_voe_ptr<webrtc::VoEBase> base_;
-  scoped_voe_ptr<webrtc::VoECodec> codec_;
-  scoped_voe_ptr<webrtc::VoEHardware> hw_;
-  scoped_voe_ptr<webrtc::VoEVolumeControl> volume_;
+private:
+    scoped_voe_engine engine_;
+    scoped_voe_ptr<webrtc::VoEAudioProcessing> processing_;
+    scoped_voe_ptr<webrtc::VoEBase> base_;
+    scoped_voe_ptr<webrtc::VoECodec> codec_;
+    scoped_voe_ptr<webrtc::VoEHardware> hw_;
+    scoped_voe_ptr<webrtc::VoEVolumeControl> volume_;
 };
 }  // namespace cricket
 

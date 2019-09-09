@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -32,7 +32,8 @@ av_cold void ff_v210enc_init_x86(V210EncContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSSE3(cpu_flags)) {
+    if (EXTERNAL_SSSE3(cpu_flags))
+    {
         s->pack_line_8 = ff_v210_planar_pack_8_ssse3;
         s->pack_line_10 = ff_v210_planar_pack_10_ssse3;
     }

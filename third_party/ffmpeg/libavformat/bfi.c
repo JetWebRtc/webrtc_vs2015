@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Brute Force & Ignorance (BFI) demuxer
  * Copyright (c) 2008 Sisir Koppaka
  *
@@ -31,7 +31,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct BFIContext {
+typedef struct BFIContext
+{
     int nframes;
     int audio_frame;
     int video_frame;
@@ -85,7 +86,7 @@ static int bfi_read_header(AVFormatContext * s)
         return AVERROR(ENOMEM);
     vstream->codec->extradata_size = 768;
     avio_read(pb, vstream->codec->extradata,
-               vstream->codec->extradata_size);
+              vstream->codec->extradata_size);
 
     astream->codec->sample_rate = avio_rl32(pb);
 
@@ -95,7 +96,7 @@ static int bfi_read_header(AVFormatContext * s)
     vstream->codec->codec_id   = AV_CODEC_ID_BFI;
     vstream->codec->pix_fmt    = AV_PIX_FMT_PAL8;
     vstream->nb_frames         =
-    vstream->duration          = bfi->nframes;
+        vstream->duration          = bfi->nframes;
 
     /* Set up the audio codec now... */
     astream->codec->codec_type      = AVMEDIA_TYPE_AUDIO;
@@ -116,14 +117,17 @@ static int bfi_read_packet(AVFormatContext * s, AVPacket * pkt)
     BFIContext *bfi = s->priv_data;
     AVIOContext *pb = s->pb;
     int ret, audio_offset, video_offset, chunk_size, audio_size = 0;
-    if (bfi->nframes == 0 || avio_feof(pb)) {
+    if (bfi->nframes == 0 || avio_feof(pb))
+    {
         return AVERROR_EOF;
     }
 
     /* If all previous chunks were completely read, then find a new one... */
-    if (!bfi->avflag) {
+    if (!bfi->avflag)
+    {
         uint32_t state = 0;
-        while(state != MKTAG('S','A','V','I')){
+        while(state != MKTAG('S','A','V','I'))
+        {
             if (avio_feof(pb))
                 return AVERROR(EIO);
             state = 256*state + avio_r8(pb);
@@ -136,7 +140,8 @@ static int bfi_read_packet(AVFormatContext * s, AVPacket * pkt)
         video_offset    = avio_rl32(pb);
         audio_size      = video_offset - audio_offset;
         bfi->video_size = chunk_size - video_offset;
-        if (audio_size < 0 || bfi->video_size < 0) {
+        if (audio_size < 0 || bfi->video_size < 0)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid audio/video offsets or chunk size\n");
             return AVERROR_INVALIDDATA;
         }
@@ -148,7 +153,9 @@ static int bfi_read_packet(AVFormatContext * s, AVPacket * pkt)
 
         pkt->pts          = bfi->audio_frame;
         bfi->audio_frame += ret;
-    } else if (bfi->video_size > 0) {
+    }
+    else if (bfi->video_size > 0)
+    {
 
         //Tossing a video packet at the video decoder.
         ret = av_get_packet(pb, pkt, bfi->video_size);
@@ -160,7 +167,9 @@ static int bfi_read_packet(AVFormatContext * s, AVPacket * pkt)
 
         /* One less frame to read. A cursory decrement. */
         bfi->nframes--;
-    } else {
+    }
+    else
+    {
         /* Empty video packet */
         ret = AVERROR(EAGAIN);
     }
@@ -170,7 +179,8 @@ static int bfi_read_packet(AVFormatContext * s, AVPacket * pkt)
     return ret;
 }
 
-AVInputFormat ff_bfi_demuxer = {
+AVInputFormat ff_bfi_demuxer =
+{
     .name           = "bfi",
     .long_name      = NULL_IF_CONFIG_SMALL("Brute Force & Ignorance"),
     .priv_data_size = sizeof(BFIContext),

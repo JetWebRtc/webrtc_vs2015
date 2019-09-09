@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW MPEG-4 video demuxer
  * Copyright (c) 2006  Thijs Vermeir <thijs.vermeir@barco.com>
  *
@@ -31,7 +31,8 @@ static int mpeg4video_probe(AVProbeData *probe_packet)
     int VO = 0, VOL = 0, VOP = 0, VISO = 0, res = 0;
     int i;
 
-    for (i = 0; i < probe_packet->buf_size; i++) {
+    for (i = 0; i < probe_packet->buf_size; i++)
+    {
         temp_buffer = (temp_buffer << 8) + probe_packet->buf[i];
         if (temp_buffer & 0xfffffe00)
             continue;

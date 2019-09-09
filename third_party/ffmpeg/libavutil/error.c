@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,7 +22,8 @@
 #include "avstring.h"
 #include "common.h"
 
-struct error_entry {
+struct error_entry
+{
     int num;
     const char *tag;
     const char *str;
@@ -31,7 +32,8 @@ struct error_entry {
 #define ERROR_TAG(tag) AVERROR_##tag, #tag
 #define EERROR_TAG(tag) AVERROR(tag), #tag
 #define AVERROR_INPUT_AND_OUTPUT_CHANGED (AVERROR_INPUT_CHANGED | AVERROR_OUTPUT_CHANGED)
-static const struct error_entry error_entries[] = {
+static const struct error_entry error_entries[] =
+{
     { ERROR_TAG(BSF_NOT_FOUND),      "Bitstream filter not found"                     },
     { ERROR_TAG(BUG),                "Internal bug, should not have happened"         },
     { ERROR_TAG(BUG2),               "Internal bug, should not have happened"         },
@@ -70,15 +72,20 @@ int av_strerror(int errnum, char *errbuf, size_t errbuf_size)
     int ret = 0, i;
     const struct error_entry *entry = NULL;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(error_entries); i++) {
-        if (errnum == error_entries[i].num) {
+    for (i = 0; i < FF_ARRAY_ELEMS(error_entries); i++)
+    {
+        if (errnum == error_entries[i].num)
+        {
             entry = &error_entries[i];
             break;
         }
     }
-    if (entry) {
+    if (entry)
+    {
         av_strlcpy(errbuf, entry->str, errbuf_size);
-    } else {
+    }
+    else
+    {
 #if HAVE_STRERROR_R
         ret = AVERROR(strerror_r(AVUNERROR(errnum), errbuf, errbuf_size));
 #else
@@ -99,12 +106,14 @@ int main(void)
 {
     int i;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(error_entries); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(error_entries); i++)
+    {
         const struct error_entry *entry = &error_entries[i];
         printf("%d: %s [%s]\n", entry->num, av_err2str(entry->num), entry->tag);
     }
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         printf("%d: %s\n", -i, av_err2str(-i));
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -68,10 +68,10 @@ static inline int decode_blockcodes(int code1, int code2, int levels,
              "str     %2,  [%11, #12]         \n"
              "str     %5,  [%11, #28]         \n"
              : "=&r"(v0), "=&r"(v1), "=&r"(v2),
-               "=&r"(v3), "=&r"(v4), "=&r"(v5),
-               "+&r"(code1), "+&r"(code2)
+             "=&r"(v3), "=&r"(v4), "=&r"(v5),
+             "+&r"(code1), "+&r"(code2)
              : "r"(levels - 1), "r"(-levels),
-               "r"(ff_inverse[levels]), "r"(values)
+             "r"(ff_inverse[levels]), "r"(values)
              : "memory");
 
     return code1 | code2;

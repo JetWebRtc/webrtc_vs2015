@@ -1,4 +1,4 @@
-/* Copyright (c) 2008 Xiph.Org Foundation
+﻿/* Copyright (c) 2008 Xiph.Org Foundation
    Written by Jean-Marc Valin */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -73,13 +73,15 @@ void check(kiss_fft_cpx  * in,kiss_fft_cpx  * out,int nfft,int isinverse)
     int bin,k;
     double errpow=0,sigpow=0, snr;
 
-    for (bin=0;bin<nfft;++bin) {
+    for (bin=0; bin<nfft; ++bin)
+    {
         double ansr = 0;
         double ansi = 0;
         double difr;
         double difi;
 
-        for (k=0;k<nfft;++k) {
+        for (k=0; k<nfft; ++k)
+        {
             double phase = -2*M_PI*bin*k/nfft;
             double re = cos(phase);
             double im = sin(phase);
@@ -88,8 +90,8 @@ void check(kiss_fft_cpx  * in,kiss_fft_cpx  * out,int nfft,int isinverse)
 
             if (!isinverse)
             {
-               re /= nfft;
-               im /= nfft;
+                re /= nfft;
+                im /= nfft;
             }
 
             ansr += in[k].r * re - in[k].i * im;
@@ -103,9 +105,10 @@ void check(kiss_fft_cpx  * in,kiss_fft_cpx  * out,int nfft,int isinverse)
     }
     snr = 10*log10(sigpow/errpow);
     printf("nfft=%d inverse=%d,snr = %f\n",nfft,isinverse,snr );
-    if (snr<60) {
-       printf( "** poor snr: %f ** \n", snr);
-       ret = 1;
+    if (snr<60)
+    {
+        printf( "** poor snr: %f ** \n", snr);
+        ret = 1;
     }
 }
 
@@ -118,30 +121,33 @@ void test1d(int nfft,int isinverse,int arch)
     kiss_fft_state *cfg = opus_fft_alloc(nfft,0,0,arch);
     int k;
 
-    for (k=0;k<nfft;++k) {
+    for (k=0; k<nfft; ++k)
+    {
         in[k].r = (rand() % 32767) - 16384;
         in[k].i = (rand() % 32767) - 16384;
     }
 
-    for (k=0;k<nfft;++k) {
-       in[k].r *= 32768;
-       in[k].i *= 32768;
+    for (k=0; k<nfft; ++k)
+    {
+        in[k].r *= 32768;
+        in[k].i *= 32768;
     }
 
     if (isinverse)
     {
-       for (k=0;k<nfft;++k) {
-          in[k].r /= nfft;
-          in[k].i /= nfft;
-       }
+        for (k=0; k<nfft; ++k)
+        {
+            in[k].r /= nfft;
+            in[k].i /= nfft;
+        }
     }
 
     /*for (k=0;k<nfft;++k) printf("%d %d ", in[k].r, in[k].i);printf("\n");*/
 
     if (isinverse)
-       opus_ifft(cfg,in,out, arch);
+        opus_ifft(cfg,in,out, arch);
     else
-       opus_fft(cfg,in,out, arch);
+        opus_fft(cfg,in,out, arch);
 
     /*for (k=0;k<nfft;++k) printf("%d %d ", out[k].r, out[k].i);printf("\n");*/
 
@@ -157,13 +163,17 @@ int main(int argc,char ** argv)
     ALLOC_STACK;
     int arch = opus_select_arch();
 
-    if (argc>1) {
+    if (argc>1)
+    {
         int k;
-        for (k=1;k<argc;++k) {
+        for (k=1; k<argc; ++k)
+        {
             test1d(atoi(argv[k]),0,arch);
             test1d(atoi(argv[k]),1,arch);
         }
-    }else{
+    }
+    else
+    {
         test1d(32,0,arch);
         test1d(32,1,arch);
         test1d(128,0,arch);

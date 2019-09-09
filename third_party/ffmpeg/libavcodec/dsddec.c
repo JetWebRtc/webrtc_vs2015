@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Direct Stream Digital (DSD) decoder
  * based on BSD licensed dsd2pcm by Sebastian Gesemann
  * Copyright (c) 2009, 2011 Sebastian Gesemann. All rights reserved.
@@ -41,7 +41,8 @@
 /**
  * Per-channel buffer
  */
-typedef struct {
+typedef struct
+{
     unsigned char buf[FIFOSIZE];
     unsigned pos;
 } DSDContext;
@@ -56,7 +57,8 @@ static void dsd2pcm_translate(DSDContext* s, size_t samples, int lsbf,
 
     pos = s->pos;
 
-    while (samples-- > 0) {
+    while (samples-- > 0)
+    {
         s->buf[pos] = lsbf ? ff_reverse[*src] : *src;
         src += src_stride;
 
@@ -64,7 +66,8 @@ static void dsd2pcm_translate(DSDContext* s, size_t samples, int lsbf,
         *p = ff_reverse[*p];
 
         sum = 0.0;
-        for (i = 0; i < CTABLES; i++) {
+        for (i = 0; i < CTABLES; i++)
+        {
             unsigned char a = s->buf[(pos                   - i) & FIFOMASK];
             unsigned char b = s->buf[(pos - (CTABLES*2 - 1) + i) & FIFOMASK];
             sum += ctables[i][a] + ctables[i][b];
@@ -99,7 +102,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     if (!s)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < avctx->channels; i++) {
+    for (i = 0; i < avctx->channels; i++)
+    {
         s[i].pos = 0;
         memset(s[i].buf, 0x69, sizeof(s[i].buf));
 
@@ -127,10 +131,13 @@ static int decode_frame(AVCodecContext *avctx, void *data,
 
     frame->nb_samples = avpkt->size / avctx->channels;
 
-    if (avctx->codec_id == AV_CODEC_ID_DSD_LSBF_PLANAR || avctx->codec_id == AV_CODEC_ID_DSD_MSBF_PLANAR) {
+    if (avctx->codec_id == AV_CODEC_ID_DSD_LSBF_PLANAR || avctx->codec_id == AV_CODEC_ID_DSD_MSBF_PLANAR)
+    {
         src_next   = frame->nb_samples;
         src_stride = 1;
-    } else {
+    }
+    else
+    {
         src_next   = 1;
         src_stride = avctx->channels;
     }
@@ -138,11 +145,12 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    for (i = 0; i < avctx->channels; i++) {
+    for (i = 0; i < avctx->channels; i++)
+    {
         float * dst = ((float **)frame->extended_data)[i];
         dsd2pcm_translate(&s[i], frame->nb_samples, lsbf,
-            avpkt->data + i * src_next, src_stride,
-            dst, 1);
+                          avpkt->data + i * src_next, src_stride,
+                          dst, 1);
     }
 
     *got_frame_ptr = 1;

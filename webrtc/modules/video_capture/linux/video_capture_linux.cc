@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -27,10 +27,13 @@
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 #include "webrtc/system_wrappers/include/trace.h"
 
-namespace webrtc {
-namespace videocapturemodule {
+namespace webrtc
+{
+namespace videocapturemodule
+{
 rtc::scoped_refptr<VideoCaptureModule> VideoCaptureImpl::Create(
-    const char* deviceUniqueId) {
+    const char* deviceUniqueId)
+{
     rtc::scoped_refptr<VideoCaptureModuleV4L2> implementation(
         new rtc::RefCountedObject<VideoCaptureModuleV4L2>());
 
@@ -112,7 +115,7 @@ VideoCaptureModuleV4L2::~VideoCaptureModuleV4L2()
         delete _captureCritSect;
     }
     if (_deviceFd != -1)
-      close(_deviceFd);
+        close(_deviceFd);
 }
 
 int32_t VideoCaptureModuleV4L2::StartCapture(
@@ -121,8 +124,8 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     if (_captureStarted)
     {
         if (capability.width == _currentWidth &&
-            capability.height == _currentHeight &&
-            _captureVideoType == capability.rawType)
+                capability.height == _currentHeight &&
+                _captureVideoType == capability.rawType)
         {
             return 0;
         }
@@ -140,7 +143,7 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     if ((_deviceFd = open(device, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "error in opening %s errono = %d", device, errno);
+                     "error in opening %s errono = %d", device, errno);
         return -1;
     }
 
@@ -149,13 +152,16 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     // I420 otherwise.
     const int nFormats = 5;
     unsigned int fmts[nFormats];
-    if (capability.width > 640 || capability.height > 480) {
+    if (capability.width > 640 || capability.height > 480)
+    {
         fmts[0] = V4L2_PIX_FMT_MJPEG;
         fmts[1] = V4L2_PIX_FMT_YUV420;
         fmts[2] = V4L2_PIX_FMT_YUYV;
         fmts[3] = V4L2_PIX_FMT_UYVY;
         fmts[4] = V4L2_PIX_FMT_JPEG;
-    } else {
+    }
+    else
+    {
         fmts[0] = V4L2_PIX_FMT_YUV420;
         fmts[1] = V4L2_PIX_FMT_YUYV;
         fmts[2] = V4L2_PIX_FMT_UYVY;
@@ -171,14 +177,16 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
                  "Video Capture enumerats supported image formats:");
-    while (ioctl(_deviceFd, VIDIOC_ENUM_FMT, &fmt) == 0) {
+    while (ioctl(_deviceFd, VIDIOC_ENUM_FMT, &fmt) == 0)
+    {
         WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
                      "  { pixelformat = %c%c%c%c, description = '%s' }",
                      fmt.pixelformat & 0xFF, (fmt.pixelformat>>8) & 0xFF,
                      (fmt.pixelformat>>16) & 0xFF, (fmt.pixelformat>>24) & 0xFF,
                      fmt.description);
         // Match the preferred order.
-        for (int i = 0; i < nFormats; i++) {
+        for (int i = 0; i < nFormats; i++)
+        {
             if (fmt.pixelformat == fmts[i] && i < fmtsIdx)
                 fmtsIdx = i;
         }
@@ -191,7 +199,9 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
                      "no supporting video formats found");
         return -1;
-    } else {
+    }
+    else
+    {
         WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
                      "We prefer format %c%c%c%c",
                      fmts[fmtsIdx] & 0xFF, (fmts[fmtsIdx]>>8) & 0xFF,
@@ -220,7 +230,7 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     if (ioctl(_deviceFd, VIDIOC_S_FMT, &video_fmt) < 0)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "error in VIDIOC_S_FMT, errno = %d", errno);
+                     "error in VIDIOC_S_FMT, errno = %d", errno);
         return -1;
     }
 
@@ -234,42 +244,53 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     struct v4l2_streamparm streamparms;
     memset(&streamparms, 0, sizeof(streamparms));
     streamparms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    if (ioctl(_deviceFd, VIDIOC_G_PARM, &streamparms) < 0) {
+    if (ioctl(_deviceFd, VIDIOC_G_PARM, &streamparms) < 0)
+    {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "error in VIDIOC_G_PARM errno = %d", errno);
+                     "error in VIDIOC_G_PARM errno = %d", errno);
         driver_framerate_support = false;
-      // continue
-    } else {
-      // check the capability flag is set to V4L2_CAP_TIMEPERFRAME.
-      if (streamparms.parm.capture.capability & V4L2_CAP_TIMEPERFRAME) {
-        // driver supports the feature. Set required framerate.
-        memset(&streamparms, 0, sizeof(streamparms));
-        streamparms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-        streamparms.parm.capture.timeperframe.numerator = 1;
-        streamparms.parm.capture.timeperframe.denominator = capability.maxFPS;
-        if (ioctl(_deviceFd, VIDIOC_S_PARM, &streamparms) < 0) {
-          WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "Failed to set the framerate. errno=%d", errno);
-          driver_framerate_support = false;
-        } else {
-          _currentFrameRate = capability.maxFPS;
+        // continue
+    }
+    else
+    {
+        // check the capability flag is set to V4L2_CAP_TIMEPERFRAME.
+        if (streamparms.parm.capture.capability & V4L2_CAP_TIMEPERFRAME)
+        {
+            // driver supports the feature. Set required framerate.
+            memset(&streamparms, 0, sizeof(streamparms));
+            streamparms.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+            streamparms.parm.capture.timeperframe.numerator = 1;
+            streamparms.parm.capture.timeperframe.denominator = capability.maxFPS;
+            if (ioctl(_deviceFd, VIDIOC_S_PARM, &streamparms) < 0)
+            {
+                WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
+                             "Failed to set the framerate. errno=%d", errno);
+                driver_framerate_support = false;
+            }
+            else
+            {
+                _currentFrameRate = capability.maxFPS;
+            }
         }
-      }
     }
     // If driver doesn't support framerate control, need to hardcode.
     // Hardcoding the value based on the frame size.
-    if (!driver_framerate_support) {
-      if(_currentWidth >= 800 && _captureVideoType != kVideoMJPEG) {
-        _currentFrameRate = 15;
-      } else {
-        _currentFrameRate = 30;
-      }
+    if (!driver_framerate_support)
+    {
+        if(_currentWidth >= 800 && _captureVideoType != kVideoMJPEG)
+        {
+            _currentFrameRate = 15;
+        }
+        else
+        {
+            _currentFrameRate = 30;
+        }
     }
 
     if (!AllocateVideoBuffers())
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "failed to allocate video capture buffers");
+                     "failed to allocate video capture buffers");
         return -1;
     }
 
@@ -277,7 +298,7 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
     if (!_captureThread)
     {
         _captureThread.reset(new rtc::PlatformThread(
-            VideoCaptureModuleV4L2::CaptureThread, this, "CaptureThread"));
+                                 VideoCaptureModuleV4L2::CaptureThread, this, "CaptureThread"));
         _captureThread->Start();
         _captureThread->SetPriority(rtc::kHighPriority);
     }
@@ -298,7 +319,8 @@ int32_t VideoCaptureModuleV4L2::StartCapture(
 
 int32_t VideoCaptureModuleV4L2::StopCapture()
 {
-    if (_captureThread) {
+    if (_captureThread)
+    {
         // Make sure the capture thread stop stop using the critsect.
         _captureThread->Stop();
         _captureThread.reset();
@@ -331,7 +353,7 @@ bool VideoCaptureModuleV4L2::AllocateVideoBuffers()
     if (ioctl(_deviceFd, VIDIOC_REQBUFS, &rbuffer) < 0)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "Could not get buffers from device. errno = %d", errno);
+                     "Could not get buffers from device. errno = %d", errno);
         return false;
     }
 
@@ -390,7 +412,7 @@ bool VideoCaptureModuleV4L2::DeAllocateVideoBuffers()
     if (ioctl(_deviceFd, VIDIOC_STREAMOFF, &type) < 0)
     {
         WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                   "VIDIOC_STREAMOFF error. errno: %d", errno);
+                     "VIDIOC_STREAMOFF error. errno: %d", errno);
     }
 
     return true;
@@ -450,7 +472,7 @@ bool VideoCaptureModuleV4L2::CaptureProcess()
             if (errno != EINTR)
             {
                 WEBRTC_TRACE(webrtc::kTraceError, webrtc::kTraceVideoCapture, 0,
-                           "could not sync on a buffer on device %s", strerror(errno));
+                             "could not sync on a buffer on device %s", strerror(errno));
                 _captureCritSect->Leave();
                 return true;
             }
@@ -467,7 +489,7 @@ bool VideoCaptureModuleV4L2::CaptureProcess()
         if (ioctl(_deviceFd, VIDIOC_QBUF, &buf) == -1)
         {
             WEBRTC_TRACE(webrtc::kTraceWarning, webrtc::kTraceVideoCapture, 0,
-                       "Failed to enqueue capture buffer");
+                         "Failed to enqueue capture buffer");
         }
     }
     _captureCritSect->Leave();

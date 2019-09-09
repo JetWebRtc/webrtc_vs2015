@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,54 +25,57 @@
 #define MAX_FILE_NAME_LENGTH_BYTE 500
 #define NO_OF_CLIENTS             15
 
-namespace webrtc {
+namespace webrtc
+{
 
-struct ACMTestISACConfig {
-  int32_t currentRateBitPerSec;
-  int16_t currentFrameSizeMsec;
-  int16_t encodingMode;
-  uint32_t initRateBitPerSec;
-  int16_t initFrameSizeInMsec;
-  bool enforceFrameSize;
+struct ACMTestISACConfig
+{
+    int32_t currentRateBitPerSec;
+    int16_t currentFrameSizeMsec;
+    int16_t encodingMode;
+    uint32_t initRateBitPerSec;
+    int16_t initFrameSizeInMsec;
+    bool enforceFrameSize;
 };
 
-class ISACTest : public ACMTest {
- public:
-  explicit ISACTest(int testMode);
-  ~ISACTest();
+class ISACTest : public ACMTest
+{
+public:
+    explicit ISACTest(int testMode);
+    ~ISACTest();
 
-  void Perform();
- private:
-  void Setup();
+    void Perform();
+private:
+    void Setup();
 
-  void Run10ms();
+    void Run10ms();
 
-  void EncodeDecode(int testNr, ACMTestISACConfig& wbISACConfig,
-                    ACMTestISACConfig& swbISACConfig);
+    void EncodeDecode(int testNr, ACMTestISACConfig& wbISACConfig,
+                      ACMTestISACConfig& swbISACConfig);
 
-  void SwitchingSamplingRate(int testNr, int maxSampRateChange);
+    void SwitchingSamplingRate(int testNr, int maxSampRateChange);
 
-  std::unique_ptr<AudioCodingModule> _acmA;
-  std::unique_ptr<AudioCodingModule> _acmB;
+    std::unique_ptr<AudioCodingModule> _acmA;
+    std::unique_ptr<AudioCodingModule> _acmB;
 
-  std::unique_ptr<Channel> _channel_A2B;
-  std::unique_ptr<Channel> _channel_B2A;
+    std::unique_ptr<Channel> _channel_A2B;
+    std::unique_ptr<Channel> _channel_B2A;
 
-  PCMFile _inFileA;
-  PCMFile _inFileB;
+    PCMFile _inFileA;
+    PCMFile _inFileB;
 
-  PCMFile _outFileA;
-  PCMFile _outFileB;
+    PCMFile _outFileA;
+    PCMFile _outFileB;
 
-  uint8_t _idISAC16kHz;
-  uint8_t _idISAC32kHz;
-  CodecInst _paramISAC16kHz;
-  CodecInst _paramISAC32kHz;
+    uint8_t _idISAC16kHz;
+    uint8_t _idISAC32kHz;
+    CodecInst _paramISAC16kHz;
+    CodecInst _paramISAC32kHz;
 
-  std::string file_name_swb_;
+    std::string file_name_swb_;
 
-  ACMTestTimer _myTimer;
-  int _testMode;
+    ACMTestTimer _myTimer;
+    int _testMode;
 };
 
 }  // namespace webrtc

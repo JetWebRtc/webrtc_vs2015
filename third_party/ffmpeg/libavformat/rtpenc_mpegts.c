@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP/mpegts muxer
  * Copyright (c) 2011 Martin Storsjo
  *
@@ -23,7 +23,8 @@
 #include "avformat.h"
 #include "avio_internal.h"
 
-struct MuxChain {
+struct MuxChain
+{
     AVFormatContext *mpegts_ctx;
     AVFormatContext *rtp_ctx;
 };
@@ -32,12 +33,14 @@ static int rtp_mpegts_write_close(AVFormatContext *s)
 {
     struct MuxChain *chain = s->priv_data;
 
-    if (chain->mpegts_ctx) {
+    if (chain->mpegts_ctx)
+    {
         av_write_trailer(chain->mpegts_ctx);
         ffio_free_dyn_buf(&chain->mpegts_ctx->pb);
         avformat_free_context(chain->mpegts_ctx);
     }
-    if (chain->rtp_ctx) {
+    if (chain->rtp_ctx)
+    {
         av_write_trailer(chain->rtp_ctx);
         avformat_free_context(chain->rtp_ctx);
     }
@@ -60,7 +63,8 @@ static int rtp_mpegts_write_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
     mpegts_ctx->oformat   = mpegts_format;
     mpegts_ctx->max_delay = s->max_delay;
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream* st = avformat_new_stream(mpegts_ctx, NULL);
         if (!st)
             goto fail;
@@ -79,7 +83,8 @@ static int rtp_mpegts_write_header(AVFormatContext *s)
     mpegts_ctx = NULL;
 
     rtp_ctx = avformat_alloc_context();
-    if (!rtp_ctx) {
+    if (!rtp_ctx)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -96,7 +101,8 @@ static int rtp_mpegts_write_header(AVFormatContext *s)
     return 0;
 
 fail:
-    if (mpegts_ctx) {
+    if (mpegts_ctx)
+    {
         ffio_free_dyn_buf(&mpegts_ctx->pb);
         avformat_free_context(mpegts_ctx);
     }
@@ -113,7 +119,8 @@ static int rtp_mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
     uint8_t *buf;
     AVPacket local_pkt;
 
-    if (!chain->mpegts_ctx->pb) {
+    if (!chain->mpegts_ctx->pb)
+    {
         if ((ret = avio_open_dyn_buf(&chain->mpegts_ctx->pb)) < 0)
             return ret;
     }
@@ -121,7 +128,8 @@ static int rtp_mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
         return ret;
     size = avio_close_dyn_buf(chain->mpegts_ctx->pb, &buf);
     chain->mpegts_ctx->pb = NULL;
-    if (size == 0) {
+    if (size == 0)
+    {
         av_free(buf);
         return 0;
     }
@@ -143,7 +151,8 @@ static int rtp_mpegts_write_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVOutputFormat ff_rtp_mpegts_muxer = {
+AVOutputFormat ff_rtp_mpegts_muxer =
+{
     .name              = "rtp_mpegts",
     .long_name         = NULL_IF_CONFIG_SMALL("RTP/mpegts output format"),
     .priv_data_size    = sizeof(struct MuxChain),

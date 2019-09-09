@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Guillaume Poirier <gpoirier@mplayerhq.hu>
  *
  * This file is part of FFmpeg.

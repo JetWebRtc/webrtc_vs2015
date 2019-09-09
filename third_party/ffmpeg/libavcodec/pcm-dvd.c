@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LPCM codecs for PCM formats found in Video DVD streams
  * Copyright (c) 2013 Christian Schmidt
  *
@@ -28,7 +28,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-typedef struct PCMDVDContext {
+typedef struct PCMDVDContext
+{
     uint32_t last_header;    // Cached header to see if parsing is needed
     int block_size;          // Size of a block of samples in bytes
     int last_block_size;     // Size of the last block of samples in bytes
@@ -74,7 +75,7 @@ static int pcm_dvd_parse_header(AVCodecContext *avctx, const uint8_t *header)
 
     if (avctx->debug & FF_DEBUG_PICT_INFO)
         av_log(avctx, AV_LOG_DEBUG, "pcm_dvd_parse_header: header = %02x%02x%02x\n",
-                header[0], header[1], header[2]);
+               header[0], header[1], header[2]);
     /*
      * header[0] emphasis (1), muse(1), reserved(1), frame number(5)
      * header[1] quant (2), freq(2), reserved(1), channels(3)
@@ -86,14 +87,15 @@ static int pcm_dvd_parse_header(AVCodecContext *avctx, const uint8_t *header)
 
     /* get the sample depth and derive the sample format from it */
     avctx->bits_per_coded_sample = 16 + (header[1] >> 6 & 3) * 4;
-    if (avctx->bits_per_coded_sample == 28) {
+    if (avctx->bits_per_coded_sample == 28)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "PCM DVD unsupported sample depth %i\n",
                avctx->bits_per_coded_sample);
         return AVERROR_INVALIDDATA;
     }
     avctx->sample_fmt = avctx->bits_per_coded_sample == 16 ? AV_SAMPLE_FMT_S16
-                                                           : AV_SAMPLE_FMT_S32;
+                        : AV_SAMPLE_FMT_S32;
     avctx->bits_per_raw_sample = avctx->bits_per_coded_sample;
 
     /* get the sample rate */
@@ -109,11 +111,15 @@ static int pcm_dvd_parse_header(AVCodecContext *avctx, const uint8_t *header)
     /* 4 samples form a group in 20/24bit PCM on DVD Video.
      * A block is formed by the number of groups that are
      * needed to complete a set of samples for each channel. */
-    if (avctx->bits_per_coded_sample == 16) {
+    if (avctx->bits_per_coded_sample == 16)
+    {
         s->samples_per_block = 1;
         s->block_size        = avctx->channels * 2;
-    } else {
-        switch (avctx->channels) {
+    }
+    else
+    {
+        switch (avctx->channels)
+        {
         case 1:
         case 2:
         case 4:
@@ -160,70 +166,92 @@ static void *pcm_dvd_decode_samples(AVCodecContext *avctx, const uint8_t *src,
     uint8_t t;
 
     bytestream2_init(&gb, src, blocks * s->block_size);
-    switch (avctx->bits_per_coded_sample) {
-    case 16: {
+    switch (avctx->bits_per_coded_sample)
+    {
+    case 16:
+    {
 #if HAVE_BIGENDIAN
         bytestream2_get_buffer(&gb, dst16, blocks * s->block_size);
         dst16 += blocks * s->block_size / 2;
 #else
         int samples = blocks * avctx->channels;
-        do {
+        do
+        {
             *dst16++ = bytestream2_get_be16u(&gb);
-        } while (--samples);
+        }
+        while (--samples);
 #endif
         return dst16;
     }
     case 20:
-        if (avctx->channels == 1) {
-            do {
-                for (i = 2; i; i--) {
+        if (avctx->channels == 1)
+        {
+            do
+            {
+                for (i = 2; i; i--)
+                {
                     dst32[0] = bytestream2_get_be16u(&gb) << 16;
                     dst32[1] = bytestream2_get_be16u(&gb) << 16;
                     t = bytestream2_get_byteu(&gb);
                     *dst32++ += (t & 0xf0) << 8;
                     *dst32++ += (t & 0x0f) << 12;
                 }
-            } while (--blocks);
-        } else {
-        do {
-            for (i = s->groups_per_block; i; i--) {
-                dst32[0] = bytestream2_get_be16u(&gb) << 16;
-                dst32[1] = bytestream2_get_be16u(&gb) << 16;
-                dst32[2] = bytestream2_get_be16u(&gb) << 16;
-                dst32[3] = bytestream2_get_be16u(&gb) << 16;
-                t = bytestream2_get_byteu(&gb);
-                *dst32++ += (t & 0xf0) << 8;
-                *dst32++ += (t & 0x0f) << 12;
-                t = bytestream2_get_byteu(&gb);
-                *dst32++ += (t & 0xf0) << 8;
-                *dst32++ += (t & 0x0f) << 12;
             }
-        } while (--blocks);
+            while (--blocks);
+        }
+        else
+        {
+            do
+            {
+                for (i = s->groups_per_block; i; i--)
+                {
+                    dst32[0] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[1] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[2] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[3] = bytestream2_get_be16u(&gb) << 16;
+                    t = bytestream2_get_byteu(&gb);
+                    *dst32++ += (t & 0xf0) << 8;
+                    *dst32++ += (t & 0x0f) << 12;
+                    t = bytestream2_get_byteu(&gb);
+                    *dst32++ += (t & 0xf0) << 8;
+                    *dst32++ += (t & 0x0f) << 12;
+                }
+            }
+            while (--blocks);
         }
         return dst32;
     case 24:
-        if (avctx->channels == 1) {
-            do {
-                for (i = 2; i; i--) {
+        if (avctx->channels == 1)
+        {
+            do
+            {
+                for (i = 2; i; i--)
+                {
                     dst32[0] = bytestream2_get_be16u(&gb) << 16;
                     dst32[1] = bytestream2_get_be16u(&gb) << 16;
                     *dst32++ += bytestream2_get_byteu(&gb) << 8;
                     *dst32++ += bytestream2_get_byteu(&gb) << 8;
                 }
-            } while (--blocks);
-        } else {
-        do {
-            for (i = s->groups_per_block; i; i--) {
-                dst32[0] = bytestream2_get_be16u(&gb) << 16;
-                dst32[1] = bytestream2_get_be16u(&gb) << 16;
-                dst32[2] = bytestream2_get_be16u(&gb) << 16;
-                dst32[3] = bytestream2_get_be16u(&gb) << 16;
-                *dst32++ += bytestream2_get_byteu(&gb) << 8;
-                *dst32++ += bytestream2_get_byteu(&gb) << 8;
-                *dst32++ += bytestream2_get_byteu(&gb) << 8;
-                *dst32++ += bytestream2_get_byteu(&gb) << 8;
             }
-        } while (--blocks);
+            while (--blocks);
+        }
+        else
+        {
+            do
+            {
+                for (i = s->groups_per_block; i; i--)
+                {
+                    dst32[0] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[1] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[2] = bytestream2_get_be16u(&gb) << 16;
+                    dst32[3] = bytestream2_get_be16u(&gb) << 16;
+                    *dst32++ += bytestream2_get_byteu(&gb) << 8;
+                    *dst32++ += bytestream2_get_byteu(&gb) << 8;
+                    *dst32++ += bytestream2_get_byteu(&gb) << 8;
+                    *dst32++ += bytestream2_get_byteu(&gb) << 8;
+                }
+            }
+            while (--blocks);
         }
         return dst32;
     default:
@@ -242,14 +270,16 @@ static int pcm_dvd_decode_frame(AVCodecContext *avctx, void *data,
     int blocks;
     void *dst;
 
-    if (buf_size < 3) {
+    if (buf_size < 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "PCM packet too small\n");
         return AVERROR_INVALIDDATA;
     }
 
     if ((retval = pcm_dvd_parse_header(avctx, src)))
         return retval;
-    if (s->last_block_size && s->last_block_size != s->block_size) {
+    if (s->last_block_size && s->last_block_size != s->block_size)
+    {
         av_log(avctx, AV_LOG_WARNING, "block_size has changed %d != %d\n", s->last_block_size, s->block_size);
         s->extra_sample_count = 0;
     }
@@ -266,9 +296,11 @@ static int pcm_dvd_decode_frame(AVCodecContext *avctx, void *data,
     dst = frame->data[0];
 
     /* consume leftover samples from last packet */
-    if (s->extra_sample_count) {
+    if (s->extra_sample_count)
+    {
         int missing_samples = s->block_size - s->extra_sample_count;
-        if (buf_size >= missing_samples) {
+        if (buf_size >= missing_samples)
+        {
             memcpy(s->extra_samples + s->extra_sample_count, src,
                    missing_samples);
             dst = pcm_dvd_decode_samples(avctx, s->extra_samples, dst, 1);
@@ -276,7 +308,9 @@ static int pcm_dvd_decode_frame(AVCodecContext *avctx, void *data,
             buf_size -= missing_samples;
             s->extra_sample_count = 0;
             blocks--;
-        } else {
+        }
+        else
+        {
             /* new packet still doesn't have enough samples */
             memcpy(s->extra_samples + s->extra_sample_count, src, buf_size);
             s->extra_sample_count += buf_size;
@@ -285,13 +319,15 @@ static int pcm_dvd_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     /* decode remaining complete samples */
-    if (blocks) {
+    if (blocks)
+    {
         pcm_dvd_decode_samples(avctx, src, dst, blocks);
         buf_size -= blocks * s->block_size;
     }
 
     /* store leftover samples */
-    if (buf_size) {
+    if (buf_size)
+    {
         src += blocks * s->block_size;
         memcpy(s->extra_samples, src, buf_size);
         s->extra_sample_count = buf_size;
@@ -302,7 +338,8 @@ static int pcm_dvd_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_pcm_dvd_decoder = {
+AVCodec ff_pcm_dvd_decoder =
+{
     .name           = "pcm_dvd",
     .long_name      = NULL_IF_CONFIG_SMALL("PCM signed 16|20|24-bit big-endian for DVD media"),
     .type           = AVMEDIA_TYPE_AUDIO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TED Talks captions format decoder
  * Copyright (c) 2012 Nicolas George
  *
@@ -26,21 +26,26 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     int64_t start_time;
     FFDemuxSubtitlesQueue subs;
 } TEDCaptionsDemuxer;
 
-static const AVOption tedcaptions_options[] = {
-    { "start_time", "set the start time (offset) of the subtitles, in ms",
-      offsetof(TEDCaptionsDemuxer, start_time), AV_OPT_TYPE_INT64,
-      { .i64 = 15000 }, INT64_MIN, INT64_MAX,
-      AV_OPT_FLAG_SUBTITLE_PARAM | AV_OPT_FLAG_DECODING_PARAM },
+static const AVOption tedcaptions_options[] =
+{
+    {
+        "start_time", "set the start time (offset) of the subtitles, in ms",
+        offsetof(TEDCaptionsDemuxer, start_time), AV_OPT_TYPE_INT64,
+        { .i64 = 15000 }, INT64_MIN, INT64_MAX,
+        AV_OPT_FLAG_SUBTITLE_PARAM | AV_OPT_FLAG_DECODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass tedcaptions_demuxer_class = {
+static const AVClass tedcaptions_demuxer_class =
+{
     .class_name = "tedcaptions_demuxer",
     .item_name  = av_default_item_name,
     .option     = tedcaptions_options,
@@ -57,7 +62,8 @@ static void av_bprint_utf8(AVBPrint *bp, unsigned c)
 {
     int bytes, i;
 
-    if (c <= 0x7F) {
+    if (c <= 0x7F)
+    {
         av_bprint_chars(bp, c, 1);
         return;
     }
@@ -77,7 +83,7 @@ static void next_byte(AVIOContext *pb, int *cur_byte)
 static void skip_spaces(AVIOContext *pb, int *cur_byte)
 {
     while (*cur_byte == ' '  || *cur_byte == '\t' ||
-           *cur_byte == '\n' || *cur_byte == '\r')
+            *cur_byte == '\n' || *cur_byte == '\r')
         next_byte(pb, cur_byte);
 }
 
@@ -98,28 +104,38 @@ static int parse_string(AVIOContext *pb, int *cur_byte, AVBPrint *bp, int full)
     ret = expect_byte(pb, cur_byte, '"');
     if (ret < 0)
         goto fail;
-    while (*cur_byte > 0 && *cur_byte != '"') {
-        if (*cur_byte == '\\') {
+    while (*cur_byte > 0 && *cur_byte != '"')
+    {
+        if (*cur_byte == '\\')
+        {
             next_byte(pb, cur_byte);
-            if (*cur_byte < 0) {
+            if (*cur_byte < 0)
+            {
                 ret = AVERROR_INVALIDDATA;
                 goto fail;
             }
-            if ((*cur_byte | 32) == 'u') {
+            if ((*cur_byte | 32) == 'u')
+            {
                 unsigned chr = 0, i;
-                for (i = 0; i < 4; i++) {
+                for (i = 0; i < 4; i++)
+                {
                     next_byte(pb, cur_byte);
-                    if (!HEX_DIGIT_TEST(*cur_byte)) {
+                    if (!HEX_DIGIT_TEST(*cur_byte))
+                    {
                         ret = ERR_CODE(*cur_byte);
                         goto fail;
                     }
                     chr = chr * 16 + HEX_DIGIT_VAL(*cur_byte);
                 }
                 av_bprint_utf8(bp, chr);
-            } else {
+            }
+            else
+            {
                 av_bprint_chars(bp, *cur_byte, 1);
             }
-        } else {
+        }
+        else
+        {
             av_bprint_chars(bp, *cur_byte, 1);
         }
         next_byte(pb, cur_byte);
@@ -127,7 +143,8 @@ static int parse_string(AVIOContext *pb, int *cur_byte, AVBPrint *bp, int full)
     ret = expect_byte(pb, cur_byte, '"');
     if (ret < 0)
         goto fail;
-    if (full && !av_bprint_is_complete(bp)) {
+    if (full && !av_bprint_is_complete(bp))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -158,7 +175,8 @@ static int parse_boolean(AVIOContext *pb, int *cur_byte, int *result)
     int i;
 
     skip_spaces(pb, cur_byte);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         p = text[i];
         if (*cur_byte != *p)
             continue;
@@ -180,7 +198,8 @@ static int parse_int(AVIOContext *pb, int *cur_byte, int64_t *result)
     skip_spaces(pb, cur_byte);
     if ((unsigned)*cur_byte - '0' > 9)
         return AVERROR_INVALIDDATA;
-    while (BETWEEN(*cur_byte, '0', '9')) {
+    while (BETWEEN(*cur_byte, '0', '9'))
+    {
         val = val * 10 + (*cur_byte - '0');
         next_byte(pb, cur_byte);
     }
@@ -205,34 +224,45 @@ static int parse_file(AVIOContext *pb, FFDemuxSubtitlesQueue *subs)
     ret = expect_byte(pb, &cur_byte, '[');
     if (ret < 0)
         return AVERROR_INVALIDDATA;
-    while (1) {
+    while (1)
+    {
         content.size = 0;
         start = duration = AV_NOPTS_VALUE;
         ret = expect_byte(pb, &cur_byte, '{');
         if (ret < 0)
             return ret;
         pos = avio_tell(pb) - 1;
-        while (1) {
+        while (1)
+        {
             ret = parse_label(pb, &cur_byte, &label);
             if (ret < 0)
                 return ret;
-            if (!strcmp(label.str, "startOfParagraph")) {
+            if (!strcmp(label.str, "startOfParagraph"))
+            {
                 ret = parse_boolean(pb, &cur_byte, &start_of_par);
                 if (ret < 0)
                     return ret;
-            } else if (!strcmp(label.str, "content")) {
+            }
+            else if (!strcmp(label.str, "content"))
+            {
                 ret = parse_string(pb, &cur_byte, &content, 1);
                 if (ret < 0)
                     return ret;
-            } else if (!strcmp(label.str, "startTime")) {
+            }
+            else if (!strcmp(label.str, "startTime"))
+            {
                 ret = parse_int(pb, &cur_byte, &start);
                 if (ret < 0)
                     return ret;
-            } else if (!strcmp(label.str, "duration")) {
+            }
+            else if (!strcmp(label.str, "duration"))
+            {
                 ret = parse_int(pb, &cur_byte, &duration);
                 if (ret < 0)
                     return ret;
-            } else {
+            }
+            else
+            {
                 return AVERROR_INVALIDDATA;
             }
             skip_spaces(pb, &cur_byte);
@@ -245,7 +275,7 @@ static int parse_file(AVIOContext *pb, FFDemuxSubtitlesQueue *subs)
             return ret;
 
         if (!content.size || start == AV_NOPTS_VALUE ||
-            duration == AV_NOPTS_VALUE)
+                duration == AV_NOPTS_VALUE)
             return AVERROR_INVALIDDATA;
         pkt = ff_subtitles_queue_insert(subs, content.str, content.len, 0);
         if (!pkt)
@@ -280,7 +310,8 @@ static av_cold int tedcaptions_read_header(AVFormatContext *avf)
     AVPacket *last;
 
     ret = parse_file(avf->pb, &tc->subs);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         if (ret == AVERROR_INVALIDDATA)
             av_log(avf, AV_LOG_ERROR, "Syntax error near offset %"PRId64".\n",
                    avio_tell(avf->pb));
@@ -323,7 +354,8 @@ static int tedcaptions_read_close(AVFormatContext *avf)
 
 static av_cold int tedcaptions_read_probe(AVProbeData *p)
 {
-    static const char *const tags[] = {
+    static const char *const tags[] =
+    {
         "\"captions\"", "\"duration\"", "\"content\"",
         "\"startOfParagraph\"", "\"startTime\"",
     };
@@ -332,7 +364,8 @@ static av_cold int tedcaptions_read_probe(AVProbeData *p)
 
     if (p->buf[strspn(p->buf, " \t\r\n")] != '{')
         return 0;
-    for (i = 0; i < FF_ARRAY_ELEMS(tags); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(tags); i++)
+    {
         if (!(t = strstr(p->buf, tags[i])))
             continue;
         t += strlen(tags[i]);
@@ -353,7 +386,8 @@ static int tedcaptions_read_seek(AVFormatContext *avf, int stream_index,
                                    min_ts, ts, max_ts, flags);
 }
 
-AVInputFormat ff_tedcaptions_demuxer = {
+AVInputFormat ff_tedcaptions_demuxer =
+{
     .name           = "tedcaptions",
     .long_name      = NULL_IF_CONFIG_SMALL("TED Talks captions"),
     .priv_data_size = sizeof(TEDCaptionsDemuxer),

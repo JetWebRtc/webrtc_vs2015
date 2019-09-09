@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -173,7 +173,8 @@ static OPUS_INLINE void silk_float2short_array(
 )
 {
     opus_int32 k;
-    for( k = length - 1; k >= 0; k-- ) {
+    for( k = length - 1; k >= 0; k-- )
+    {
         out[k] = silk_SAT16( (opus_int32)float2int( in[k] ) );
     }
 }
@@ -186,7 +187,8 @@ static OPUS_INLINE void silk_short2float_array(
 )
 {
     opus_int32 k;
-    for( k = length - 1; k >= 0; k-- ) {
+    for( k = length - 1; k >= 0; k-- )
+    {
         out[k] = (silk_float)in[k];
     }
 }

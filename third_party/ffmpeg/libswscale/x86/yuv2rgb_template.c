@@ -208,18 +208,18 @@ static inline int RENAME(yuv420_rgb15)(SwsContext *c, const uint8_t *src[],
     YUV2RGB_LOOP(2)
 
 #ifdef DITHER1XBPP
-        c->blueDither  = ff_dither8[y       & 1];
-        c->greenDither = ff_dither8[y       & 1];
-        c->redDither   = ff_dither8[(y + 1) & 1];
+    c->blueDither  = ff_dither8[y       & 1];
+    c->greenDither = ff_dither8[y       & 1];
+    c->redDither   = ff_dither8[(y + 1) & 1];
 #endif
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
 #ifdef DITHER1XBPP
-        DITHER_RGB
+    DITHER_RGB
 #endif
-        RGB_PACK16(pb_03, 1)
+    RGB_PACK16(pb_03, 1)
 
     YUV2RGB_ENDLOOP(2)
     YUV2RGB_OPERANDS
@@ -236,18 +236,18 @@ static inline int RENAME(yuv420_rgb16)(SwsContext *c, const uint8_t *src[],
     YUV2RGB_LOOP(2)
 
 #ifdef DITHER1XBPP
-        c->blueDither  = ff_dither8[y       & 1];
-        c->greenDither = ff_dither4[y       & 1];
-        c->redDither   = ff_dither8[(y + 1) & 1];
+    c->blueDither  = ff_dither8[y       & 1];
+    c->greenDither = ff_dither4[y       & 1];
+    c->redDither   = ff_dither8[(y + 1) & 1];
 #endif
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
 #ifdef DITHER1XBPP
-        DITHER_RGB
+    DITHER_RGB
 #endif
-        RGB_PACK16(pb_07, 0)
+    RGB_PACK16(pb_07, 0)
 
     YUV2RGB_ENDLOOP(2)
     YUV2RGB_OPERANDS
@@ -325,9 +325,9 @@ static inline int RENAME(yuv420_rgb24)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(3)
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK24(REG_BLUE, REG_RED)
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK24(REG_BLUE, REG_RED)
 
     YUV2RGB_ENDLOOP(3)
     YUV2RGB_OPERANDS
@@ -343,9 +343,9 @@ static inline int RENAME(yuv420_bgr24)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(3)
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK24(REG_RED, REG_BLUE)
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK24(REG_RED, REG_BLUE)
 
     YUV2RGB_ENDLOOP(3)
     YUV2RGB_OPERANDS
@@ -387,11 +387,11 @@ static inline int RENAME(yuv420_rgb32)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(4)
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
-        SET_EMPTY_ALPHA
-        RGB_PACK32(REG_RED, REG_GREEN, REG_BLUE, REG_ALPHA)
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
+    SET_EMPTY_ALPHA
+    RGB_PACK32(REG_RED, REG_GREEN, REG_BLUE, REG_ALPHA)
 
     YUV2RGB_ENDLOOP(4)
     YUV2RGB_OPERANDS
@@ -408,12 +408,12 @@ static inline int RENAME(yuva420_rgb32)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(4)
 
-        const uint8_t *pa = src[3] + y * srcStride[3];
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
-        LOAD_ALPHA
-        RGB_PACK32(REG_RED, REG_GREEN, REG_BLUE, REG_ALPHA)
+    const uint8_t *pa = src[3] + y * srcStride[3];
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
+    LOAD_ALPHA
+    RGB_PACK32(REG_RED, REG_GREEN, REG_BLUE, REG_ALPHA)
 
     YUV2RGB_ENDLOOP(4)
     YUV2RGB_OPERANDS_ALPHA
@@ -430,11 +430,11 @@ static inline int RENAME(yuv420_bgr32)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(4)
 
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
-        SET_EMPTY_ALPHA
-        RGB_PACK32(REG_BLUE, REG_GREEN, REG_RED, REG_ALPHA)
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
+    SET_EMPTY_ALPHA
+    RGB_PACK32(REG_BLUE, REG_GREEN, REG_RED, REG_ALPHA)
 
     YUV2RGB_ENDLOOP(4)
     YUV2RGB_OPERANDS
@@ -451,12 +451,12 @@ static inline int RENAME(yuva420_bgr32)(SwsContext *c, const uint8_t *src[],
 
     YUV2RGB_LOOP(4)
 
-        const uint8_t *pa = src[3] + y * srcStride[3];
-        YUV2RGB_INITIAL_LOAD
-        YUV2RGB
-        RGB_PACK_INTERLEAVE
-        LOAD_ALPHA
-        RGB_PACK32(REG_BLUE, REG_GREEN, REG_RED, REG_ALPHA)
+    const uint8_t *pa = src[3] + y * srcStride[3];
+    YUV2RGB_INITIAL_LOAD
+    YUV2RGB
+    RGB_PACK_INTERLEAVE
+    LOAD_ALPHA
+    RGB_PACK32(REG_BLUE, REG_GREEN, REG_RED, REG_ALPHA)
 
     YUV2RGB_ENDLOOP(4)
     YUV2RGB_OPERANDS_ALPHA

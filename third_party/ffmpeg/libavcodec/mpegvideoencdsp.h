@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -29,7 +29,8 @@
 #define EDGE_TOP    1
 #define EDGE_BOTTOM 2
 
-typedef struct MpegvideoEncDSPContext {
+typedef struct MpegvideoEncDSPContext
+{
     int (*try_8x8basis)(int16_t rem[64], int16_t weight[64],
                         int16_t basis[64], int scale);
     void (*add_8x8basis)(int16_t rem[64], int16_t basis[64], int scale);

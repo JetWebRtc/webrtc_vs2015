@@ -1,4 +1,4 @@
-/*
+﻿/*
  * raw ADTS AAC demuxer
  * Copyright (c) 2008 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2009 Robert Swain ( rob opendot cl )
@@ -38,13 +38,17 @@ static int adts_aac_probe(AVProbeData *p)
 
     buf = buf0;
 
-    for (; buf < end; buf = buf2 + 1) {
+    for (; buf < end; buf = buf2 + 1)
+    {
         buf2 = buf;
 
-        for (frames = 0; buf2 < end; frames++) {
+        for (frames = 0; buf2 < end; frames++)
+        {
             uint32_t header = AV_RB16(buf2);
-            if ((header & 0xFFF6) != 0xFFF0) {
-                if (buf != buf0) {
+            if ((header & 0xFFF6) != 0xFFF0)
+            {
+                if (buf != buf0)
+                {
                     // Found something that isn't an ADTS header, starting
                     // from a position other than the start of the buffer.
                     // Discard the count we've accumulated so far since it
@@ -90,7 +94,8 @@ static int adts_aac_read_header(AVFormatContext *s)
 
     ff_id3v1_read(s);
     if (s->pb->seekable &&
-        !av_dict_get(s->metadata, "", NULL, AV_DICT_IGNORE_SUFFIX)) {
+            !av_dict_get(s->metadata, "", NULL, AV_DICT_IGNORE_SUFFIX))
+    {
         int64_t cur = avio_tell(s->pb);
         ff_ape_parse_tag(s);
         avio_seek(s->pb, cur, SEEK_SET);
@@ -102,7 +107,8 @@ static int adts_aac_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_aac_demuxer = {
+AVInputFormat ff_aac_demuxer =
+{
     .name         = "aac",
     .long_name    = NULL_IF_CONFIG_SMALL("raw ADTS AAC (Advanced Audio Coding)"),
     .read_probe   = adts_aac_probe,

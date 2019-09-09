@@ -1,4 +1,4 @@
-#ifndef TEST_STDINT_H
+﻿#ifndef TEST_STDINT_H
 #define TEST_STDINT_H
 
 #ifndef _MSC_VER

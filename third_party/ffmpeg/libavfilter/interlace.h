@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or modify
@@ -34,17 +34,20 @@
 #include "internal.h"
 #include "video.h"
 
-enum ScanMode {
+enum ScanMode
+{
     MODE_TFF = 0,
     MODE_BFF = 1,
 };
 
-enum FieldType {
+enum FieldType
+{
     FIELD_UPPER = 0,
     FIELD_LOWER = 1,
 };
 
-typedef struct InterlaceContext {
+typedef struct InterlaceContext
+{
     const AVClass *class;
     enum ScanMode scan;    // top or bottom field first scanning
     int lowpass;           // enable or disable low pass filterning

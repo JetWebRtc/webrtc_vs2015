@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,25 +18,27 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/base/random.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Randomizes the elements in a vector with values -32767.f:32767.f.
 void RandomizeSampleVector(Random* random_generator, rtc::ArrayView<float> v);
 
 // Class for delaying a signal a fixed number of samples.
 template <typename T>
-class DelayBuffer {
- public:
-  explicit DelayBuffer(size_t delay) : buffer_(delay) {}
-  ~DelayBuffer() = default;
+class DelayBuffer
+{
+public:
+    explicit DelayBuffer(size_t delay) : buffer_(delay) {}
+    ~DelayBuffer() = default;
 
-  // Produces a delayed signal copy of x.
-  void Delay(rtc::ArrayView<const T> x, rtc::ArrayView<T> x_delayed);
+    // Produces a delayed signal copy of x.
+    void Delay(rtc::ArrayView<const T> x, rtc::ArrayView<T> x_delayed);
 
- private:
-  std::vector<T> buffer_;
-  size_t next_insert_index_ = 0;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(DelayBuffer);
+private:
+    std::vector<T> buffer_;
+    size_t next_insert_index_ = 0;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(DelayBuffer);
 };
 
 }  // namespace webrtc

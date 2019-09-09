@@ -1,4 +1,4 @@
-/*
+﻿/*
 
  	dls2.h
 
@@ -82,24 +82,24 @@
 
 
 /*	Conditional chunk operators */
- #define DLS_CDL_AND			0x0001	/* X = X & Y */
- #define DLS_CDL_OR			0x0002	/* X = X | Y */
- #define DLS_CDL_XOR			0x0003	/* X = X ^ Y */
- #define DLS_CDL_ADD			0x0004	/* X = X + Y */
- #define DLS_CDL_SUBTRACT		0x0005	/* X = X - Y */
- #define DLS_CDL_MULTIPLY		0x0006	/* X = X * Y */
- #define DLS_CDL_DIVIDE		0x0007	/* X = X / Y */
- #define DLS_CDL_LOGICAL_AND	0x0008	/* X = X && Y */
- #define DLS_CDL_LOGICAL_OR		0x0009	/* X = X || Y */
- #define DLS_CDL_LT			0x000A	/* X = (X < Y) */
- #define DLS_CDL_LE			0x000B	/* X = (X <= Y) */
- #define DLS_CDL_GT			0x000C	/* X = (X > Y) */
- #define DLS_CDL_GE			0x000D	/* X = (X >= Y) */
- #define DLS_CDL_EQ			0x000E	/* X = (X == Y) */
- #define DLS_CDL_NOT			0x000F	/* X = !X */
- #define DLS_CDL_CONST		0x0010	/* 32-bit constant */
- #define DLS_CDL_QUERY		0x0011	/* 32-bit value returned from query */
- #define DLS_CDL_QUERYSUPPORTED	0x0012	/* Test to see if query is supported by synth */
+#define DLS_CDL_AND			0x0001	/* X = X & Y */
+#define DLS_CDL_OR			0x0002	/* X = X | Y */
+#define DLS_CDL_XOR			0x0003	/* X = X ^ Y */
+#define DLS_CDL_ADD			0x0004	/* X = X + Y */
+#define DLS_CDL_SUBTRACT		0x0005	/* X = X - Y */
+#define DLS_CDL_MULTIPLY		0x0006	/* X = X * Y */
+#define DLS_CDL_DIVIDE		0x0007	/* X = X / Y */
+#define DLS_CDL_LOGICAL_AND	0x0008	/* X = X && Y */
+#define DLS_CDL_LOGICAL_OR		0x0009	/* X = X || Y */
+#define DLS_CDL_LT			0x000A	/* X = (X < Y) */
+#define DLS_CDL_LE			0x000B	/* X = (X <= Y) */
+#define DLS_CDL_GT			0x000C	/* X = (X > Y) */
+#define DLS_CDL_GE			0x000D	/* X = (X >= Y) */
+#define DLS_CDL_EQ			0x000E	/* X = (X == Y) */
+#define DLS_CDL_NOT			0x000F	/* X = !X */
+#define DLS_CDL_CONST		0x0010	/* 32-bit constant */
+#define DLS_CDL_QUERY		0x0011	/* 32-bit value returned from query */
+#define DLS_CDL_QUERYSUPPORTED	0x0012	/* Test to see if query is supported by synth */
 
 /*
   Loop and release

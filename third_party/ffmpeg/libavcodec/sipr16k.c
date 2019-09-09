@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIPR decoder for the 16k mode
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -68,10 +68,11 @@ static void lsf_decode_fp_16k(float* lsf_history, float* isp_new,
 
     dequant(isp_q, parm, lsf_codebooks_16k);
 
-    for (i = 0; i < LP_FILTER_ORDER_16k; i++) {
+    for (i = 0; i < LP_FILTER_ORDER_16k; i++)
+    {
         isp_new[i] = (1 - qu[ma_pred]) * isp_q[i]
-                    +     qu[ma_pred]  * lsf_history[i]
-                    + mean_lsf_16k[i];
+                     +     qu[ma_pred]  * lsf_history[i]
+                     + mean_lsf_16k[i];
     }
 
     memcpy(lsf_history, isp_q, LP_FILTER_ORDER_16k * sizeof(float));
@@ -79,20 +80,24 @@ static void lsf_decode_fp_16k(float* lsf_history, float* isp_new,
 
 static int dec_delay3_1st(int index)
 {
-    if (index < 390) {
+    if (index < 390)
+    {
         return index + 88;
-    } else
+    }
+    else
         return 3 * index - 690;
 }
 
 static int dec_delay3_2nd(int index, int pit_min, int pit_max,
                           int pitch_lag_prev)
 {
-    if (index < 62) {
+    if (index < 62)
+    {
         int pitch_delay_min = av_clip(pitch_lag_prev - 10,
                                       pit_min, pit_max - 19);
         return 3 * pitch_delay_min + index - 2;
-    } else
+    }
+    else
         return 3 * pitch_lag_prev;
 }
 
@@ -164,10 +169,10 @@ static float acelp_decode_gain_codef(float gain_corr_factor, const float *fc_v,
                                      int subframe_size, int ma_pred_order)
 {
     mr_energy += avpriv_scalarproduct_float_c(quant_energy, ma_prediction_coeff,
-                                              ma_pred_order);
+                 ma_pred_order);
 
     mr_energy = gain_corr_factor * exp(M_LN10 / 20. * mr_energy) /
-        sqrt((0.01 + avpriv_scalarproduct_float_c(fc_v, fc_v, subframe_size)));
+                sqrt((0.01 + avpriv_scalarproduct_float_c(fc_v, fc_v, subframe_size)));
     return mr_energy;
 }
 
@@ -203,16 +208,19 @@ void ff_sipr_decode_frame_16k(SiprContext *ctx, SiprParameters *params,
     memcpy(synth - LP_FILTER_ORDER_16k, ctx->synth,
            LP_FILTER_ORDER_16k * sizeof(*synth));
 
-    for (i = 0; i < SUBFRAME_COUNT_16k; i++) {
+    for (i = 0; i < SUBFRAME_COUNT_16k; i++)
+    {
         int i_subfr = i * L_SUBFR_16k;
         AMRFixed f;
         float gain_corr_factor;
         int pitch_delay_int;
         int pitch_delay_frac;
 
-        if (!i) {
+        if (!i)
+        {
             pitch_delay_3x = dec_delay3_1st(params->pitch_delay[i]);
-        } else
+        }
+        else
             pitch_delay_3x = dec_delay3_2nd(params->pitch_delay[i],
                                             PITCH_MIN, PITCH_MAX,
                                             ctx->pitch_lag_prev);
@@ -240,10 +248,10 @@ void ff_sipr_decode_frame_16k(SiprContext *ctx, SiprParameters *params,
 
         gain_corr_factor = gain_cb_16k[params->gc_index[i]];
         gain_code = gain_corr_factor *
-            acelp_decode_gain_codef(sqrt(L_SUBFR_16k), fixed_vector,
-                                    19.0 - 15.0/(0.05*M_LN10/M_LN2),
-                                    pred_16k, ctx->energy_history,
-                                    L_SUBFR_16k, 2);
+                    acelp_decode_gain_codef(sqrt(L_SUBFR_16k), fixed_vector,
+                                            19.0 - 15.0/(0.05*M_LN10/M_LN2),
+                                            pred_16k, ctx->energy_history,
+                                            L_SUBFR_16k, 2);
 
         ctx->energy_history[1] = ctx->energy_history[0];
         ctx->energy_history[0] = 20.0 * log10f(gain_corr_factor);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,61 +14,72 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace plotting {
+namespace webrtc
+{
+namespace plotting
+{
 
 void Plot::SetXAxis(float min_value,
                     float max_value,
                     std::string label,
                     float left_margin,
-                    float right_margin) {
-  RTC_DCHECK_LE(min_value, max_value);
-  xaxis_min_ = min_value - left_margin * (max_value - min_value);
-  xaxis_max_ = max_value + right_margin * (max_value - min_value);
-  xaxis_label_ = label;
+                    float right_margin)
+{
+    RTC_DCHECK_LE(min_value, max_value);
+    xaxis_min_ = min_value - left_margin * (max_value - min_value);
+    xaxis_max_ = max_value + right_margin * (max_value - min_value);
+    xaxis_label_ = label;
 }
 
 void Plot::SetSuggestedXAxis(float min_value,
                              float max_value,
                              std::string label,
                              float left_margin,
-                             float right_margin) {
-  for (const auto& series : series_list_) {
-    for (const auto& point : series.points) {
-      min_value = std::min(min_value, point.x);
-      max_value = std::max(max_value, point.x);
+                             float right_margin)
+{
+    for (const auto& series : series_list_)
+    {
+        for (const auto& point : series.points)
+        {
+            min_value = std::min(min_value, point.x);
+            max_value = std::max(max_value, point.x);
+        }
     }
-  }
-  SetXAxis(min_value, max_value, label, left_margin, right_margin);
+    SetXAxis(min_value, max_value, label, left_margin, right_margin);
 }
 
 void Plot::SetYAxis(float min_value,
                     float max_value,
                     std::string label,
                     float bottom_margin,
-                    float top_margin) {
-  RTC_DCHECK_LE(min_value, max_value);
-  yaxis_min_ = min_value - bottom_margin * (max_value - min_value);
-  yaxis_max_ = max_value + top_margin * (max_value - min_value);
-  yaxis_label_ = label;
+                    float top_margin)
+{
+    RTC_DCHECK_LE(min_value, max_value);
+    yaxis_min_ = min_value - bottom_margin * (max_value - min_value);
+    yaxis_max_ = max_value + top_margin * (max_value - min_value);
+    yaxis_label_ = label;
 }
 
 void Plot::SetSuggestedYAxis(float min_value,
                              float max_value,
                              std::string label,
                              float bottom_margin,
-                             float top_margin) {
-  for (const auto& series : series_list_) {
-    for (const auto& point : series.points) {
-      min_value = std::min(min_value, point.y);
-      max_value = std::max(max_value, point.y);
+                             float top_margin)
+{
+    for (const auto& series : series_list_)
+    {
+        for (const auto& point : series.points)
+        {
+            min_value = std::min(min_value, point.y);
+            max_value = std::max(max_value, point.y);
+        }
     }
-  }
-  SetYAxis(min_value, max_value, label, bottom_margin, top_margin);
+    SetYAxis(min_value, max_value, label, bottom_margin, top_margin);
 }
 
-void Plot::SetTitle(std::string title) {
-  title_ = title;
+void Plot::SetTitle(std::string title)
+{
+    title_ = title;
 }
 
 }  // namespace plotting

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GIF demuxer
  * Copyright (c) 2012 Vitaliy E Sugrobov
  *
@@ -30,7 +30,8 @@
 #include "internal.h"
 #include "libavcodec/gif.h"
 
-typedef struct GIFDemuxContext {
+typedef struct GIFDemuxContext
+{
     const AVClass *class;
     /**
      * Time span in hundredths of second before
@@ -84,7 +85,8 @@ static int gif_probe(AVProbeData *p)
 static int resync(AVIOContext *pb)
 {
     int i;
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++)
+    {
         int b = avio_r8(pb);
         if (b != gif87a_sig[i] && b != gif89a_sig[i])
             i = -(b != 'G');
@@ -134,7 +136,8 @@ static int gif_skip_subblocks(AVIOContext *pb)
 {
     int sb_size, ret = 0;
 
-    while (0x00 != (sb_size = avio_r8(pb))) {
+    while (0x00 != (sb_size = avio_r8(pb)))
+    {
         if ((ret = avio_skip(pb, sb_size)) < 0)
             return ret;
     }
@@ -149,8 +152,10 @@ static int gif_read_ext(AVFormatContext *s)
     int sb_size, ext_label = avio_r8(pb);
     int ret;
 
-    if (ext_label == GIF_GCE_EXT_LABEL) {
-        if ((sb_size = avio_r8(pb)) < 4) {
+    if (ext_label == GIF_GCE_EXT_LABEL)
+    {
+        if ((sb_size = avio_r8(pb)) < 4)
+        {
             av_log(s, AV_LOG_FATAL, "Graphic Control Extension block's size less than 4.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -168,7 +173,9 @@ static int gif_read_ext(AVFormatContext *s)
         /* skip the rest of the Graphic Control Extension block */
         if ((ret = avio_skip(pb, sb_size - 3)) < 0 )
             return ret;
-    } else if (ext_label == GIF_APP_EXT_LABEL) {
+    }
+    else if (ext_label == GIF_APP_EXT_LABEL)
+    {
         uint8_t data[256];
 
         sb_size = avio_r8(pb);
@@ -176,13 +183,15 @@ static int gif_read_ext(AVFormatContext *s)
         if (ret < 0 || !sb_size)
             return ret;
 
-        if (sb_size == strlen(NETSCAPE_EXT_STR)) {
+        if (sb_size == strlen(NETSCAPE_EXT_STR))
+        {
             sb_size = avio_r8(pb);
             ret = avio_read(pb, data, sb_size);
             if (ret < 0 || !sb_size)
                 return ret;
 
-            if (sb_size == 3 && data[0] == 1) {
+            if (sb_size == 3 && data[0] == 1)
+            {
                 gdc->total_iter = AV_RL16(data+1);
 
                 if (gdc->total_iter == 0)
@@ -206,16 +215,22 @@ static int gif_read_packet(AVFormatContext *s, AVPacket *pkt)
     int64_t frame_start = avio_tell(pb), frame_end;
     unsigned char buf[6];
 
-    if ((ret = avio_read(pb, buf, 6)) == 6) {
+    if ((ret = avio_read(pb, buf, 6)) == 6)
+    {
         keyframe = memcmp(buf, gif87a_sig, 6) == 0 ||
                    memcmp(buf, gif89a_sig, 6) == 0;
-    } else if (ret < 0) {
+    }
+    else if (ret < 0)
+    {
         return ret;
-    } else {
+    }
+    else
+    {
         keyframe = 0;
     }
 
-    if (keyframe) {
+    if (keyframe)
+    {
 parse_keyframe:
         /* skip 2 bytes of width and 2 of height */
         if ((ret = avio_skip(pb, 4)) < 0)
@@ -228,22 +243,29 @@ parse_keyframe:
             return ret;
 
         /* global color table presence */
-        if (packed_fields & 0x80) {
+        if (packed_fields & 0x80)
+        {
             ct_size = 3 * (1 << ((packed_fields & 0x07) + 1));
 
             if ((ret = avio_skip(pb, ct_size)) < 0)
                 return ret;
         }
-    } else {
+    }
+    else
+    {
         avio_seek(pb, -ret, SEEK_CUR);
         ret = AVERROR_EOF;
     }
 
-    while (GIF_TRAILER != (block_label = avio_r8(pb)) && !avio_feof(pb)) {
-        if (block_label == GIF_EXTENSION_INTRODUCER) {
+    while (GIF_TRAILER != (block_label = avio_r8(pb)) && !avio_feof(pb))
+    {
+        if (block_label == GIF_EXTENSION_INTRODUCER)
+        {
             if ((ret = gif_read_ext (s)) < 0 )
                 goto resync;
-        } else if (block_label == GIF_IMAGE_SEPARATOR) {
+        }
+        else if (block_label == GIF_IMAGE_SEPARATOR)
+        {
             /* skip to last byte of Image Descriptor header */
             if ((ret = avio_skip(pb, 8)) < 0)
                 return ret;
@@ -251,7 +273,8 @@ parse_keyframe:
             packed_fields = avio_r8(pb);
 
             /* local color table presence */
-            if (packed_fields & 0x80) {
+            if (packed_fields & 0x80)
+            {
                 ct_size = 3 * (1 << ((packed_fields & 0x07) + 1));
 
                 if ((ret = avio_skip(pb, ct_size)) < 0)
@@ -259,7 +282,8 @@ parse_keyframe:
             }
 
             /* read LZW Minimum Code Size */
-            if (avio_r8(pb) < 1) {
+            if (avio_r8(pb) < 1)
+            {
                 av_log(s, AV_LOG_ERROR, "lzw minimum code size must be >= 1\n");
                 goto resync;
             }
@@ -291,7 +315,9 @@ parse_keyframe:
             frame_parsed = 1;
 
             break;
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR, "invalid block label\n");
 resync:
             if (!keyframe)
@@ -304,21 +330,28 @@ resync:
         }
     }
 
-    if ((ret >= 0 && !frame_parsed) || ret == AVERROR_EOF) {
-        if (gdc->nb_frames == 1) {
-            s->streams[0]->r_frame_rate = (AVRational) {100, gdc->last_duration};
+    if ((ret >= 0 && !frame_parsed) || ret == AVERROR_EOF)
+    {
+        if (gdc->nb_frames == 1)
+        {
+            s->streams[0]->r_frame_rate = (AVRational)
+            {
+                100, gdc->last_duration
+            };
         }
         /* This might happen when there is no image block
          * between extension blocks and GIF_TRAILER or EOF */
         if (!gdc->ignore_loop && (block_label == GIF_TRAILER || avio_feof(pb))
-            && (gdc->total_iter < 0 || ++gdc->iter_count < gdc->total_iter))
+                && (gdc->total_iter < 0 || ++gdc->iter_count < gdc->total_iter))
             return avio_seek(pb, 0, SEEK_SET);
         return AVERROR_EOF;
-    } else
+    }
+    else
         return ret;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "min_delay"    , "minimum valid delay between frames (in hundredths of second)", offsetof(GIFDemuxContext, min_delay)    , AV_OPT_TYPE_INT, {.i64 = GIF_MIN_DELAY}    , 0, 100 * 60, AV_OPT_FLAG_DECODING_PARAM },
     { "max_gif_delay", "maximum valid delay between frames (in hundredths of seconds)", offsetof(GIFDemuxContext, max_delay)   , AV_OPT_TYPE_INT, {.i64 = 65535}            , 0, 65535   , AV_OPT_FLAG_DECODING_PARAM },
     { "default_delay", "default delay between frames (in hundredths of second)"      , offsetof(GIFDemuxContext, default_delay), AV_OPT_TYPE_INT, {.i64 = GIF_DEFAULT_DELAY}, 0, 100 * 60, AV_OPT_FLAG_DECODING_PARAM },
@@ -326,7 +359,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass demuxer_class = {
+static const AVClass demuxer_class =
+{
     .class_name = "GIF demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -334,7 +368,8 @@ static const AVClass demuxer_class = {
     .category   = AV_CLASS_CATEGORY_DEMUXER,
 };
 
-AVInputFormat ff_gif_demuxer = {
+AVInputFormat ff_gif_demuxer =
+{
     .name           = "gif",
     .long_name      = NULL_IF_CONFIG_SMALL("CompuServe Graphics Interchange Format (GIF)"),
     .priv_data_size = sizeof(GIFDemuxContext),

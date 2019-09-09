@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include "avformat.h"
 #include "url.h"
 
-typedef struct SubfileContext {
+typedef struct SubfileContext
+{
     const AVClass *class;
     URLContext *h;
     int64_t start;
@@ -35,7 +36,8 @@ typedef struct SubfileContext {
 #define OFFSET(field) offsetof(SubfileContext, field)
 #define D AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption subfile_options[] = {
+static const AVOption subfile_options[] =
+{
     { "start", "start offset", OFFSET(start), AV_OPT_TYPE_INT64, {.i64 = 0}, 0, INT64_MAX, D },
     { "end",   "end offset",   OFFSET(end),   AV_OPT_TYPE_INT64, {.i64 = 0}, 0, INT64_MAX, D },
     { NULL }
@@ -44,7 +46,8 @@ static const AVOption subfile_options[] = {
 #undef OFFSET
 #undef D
 
-static const AVClass subfile_class = {
+static const AVClass subfile_class =
+{
     .class_name = "subfile",
     .item_name  = av_default_item_name,
     .option     = subfile_options,
@@ -56,7 +59,8 @@ static int slave_seek(URLContext *h)
     SubfileContext *c = h->priv_data;
     int64_t ret;
 
-    if ((ret = ffurl_seek(c->h, c->pos, SEEK_SET)) != c->pos) {
+    if ((ret = ffurl_seek(c->h, c->pos, SEEK_SET)) != c->pos)
+    {
         if (ret >= 0)
             ret = AVERROR_BUG;
         av_log(h, AV_LOG_ERROR, "Impossible to seek in file: %s\n",
@@ -72,7 +76,8 @@ static int subfile_open(URLContext *h, const char *filename, int flags,
     SubfileContext *c = h->priv_data;
     int ret;
 
-    if (c->end <= c->start) {
+    if (c->end <= c->start)
+    {
         av_log(h, AV_LOG_ERROR, "end before start\n");
         return AVERROR(EINVAL);
     }
@@ -81,7 +86,8 @@ static int subfile_open(URLContext *h, const char *filename, int flags,
     if (ret < 0)
         return ret;
     c->pos = c->start;
-    if ((ret = slave_seek(h)) < 0) {
+    if ((ret = slave_seek(h)) < 0)
+    {
         ffurl_close(c->h);
         return ret;
     }
@@ -117,7 +123,8 @@ static int64_t subfile_seek(URLContext *h, int64_t pos, int whence)
 
     if (whence == AVSEEK_SIZE)
         return c->end - c->start;
-    switch (whence) {
+    switch (whence)
+    {
     case SEEK_SET:
         new_pos = c->start + pos;
         break;
@@ -136,7 +143,8 @@ static int64_t subfile_seek(URLContext *h, int64_t pos, int whence)
     return c->pos - c->start;
 }
 
-URLProtocol ff_subfile_protocol = {
+URLProtocol ff_subfile_protocol =
+{
     .name                = "subfile",
     .url_open2           = subfile_open,
     .url_read            = subfile_read,

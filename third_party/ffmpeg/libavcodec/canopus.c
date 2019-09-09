@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus common routines
  * Copyright (c) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -53,10 +53,17 @@ int ff_canopus_parse_info_tag(AVCodecContext *avctx,
     /* Parse FIEL tag. */
     bytestream2_skip(&gbc, 8); // 'FIEL' and 4 bytes 0
     field_order = bytestream2_get_le32(&gbc);
-    switch (field_order) {
-    case 0: avctx->field_order = AV_FIELD_TT; break;
-    case 1: avctx->field_order = AV_FIELD_BB; break;
-    case 2: avctx->field_order = AV_FIELD_PROGRESSIVE; break;
+    switch (field_order)
+    {
+    case 0:
+        avctx->field_order = AV_FIELD_TT;
+        break;
+    case 1:
+        avctx->field_order = AV_FIELD_BB;
+        break;
+    case 2:
+        avctx->field_order = AV_FIELD_PROGRESSIVE;
+        break;
     }
 
     return 0;

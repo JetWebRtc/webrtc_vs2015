@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -27,34 +27,37 @@
 // if different APIs are called from different threads.
 //
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace acm2 {
+namespace acm2
+{
 
-class CallStatistics {
- public:
-  CallStatistics() {}
-  ~CallStatistics() {}
+class CallStatistics
+{
+public:
+    CallStatistics() {}
+    ~CallStatistics() {}
 
-  // Call this method to indicate that NetEq engaged in decoding. |speech_type|
-  // is the audio-type according to NetEq, and |muted| indicates if the decoded
-  // frame was produced in muted state.
-  void DecodedByNetEq(AudioFrame::SpeechType speech_type, bool muted);
+    // Call this method to indicate that NetEq engaged in decoding. |speech_type|
+    // is the audio-type according to NetEq, and |muted| indicates if the decoded
+    // frame was produced in muted state.
+    void DecodedByNetEq(AudioFrame::SpeechType speech_type, bool muted);
 
-  // Call this method to indicate that a decoding call resulted in generating
-  // silence, i.e. call to NetEq is bypassed and the output audio is zero.
-  void DecodedBySilenceGenerator();
+    // Call this method to indicate that a decoding call resulted in generating
+    // silence, i.e. call to NetEq is bypassed and the output audio is zero.
+    void DecodedBySilenceGenerator();
 
-  // Get statistics for decoding. The statistics include the number of calls to
-  // NetEq and silence generator, as well as the type of speech pulled of off
-  // NetEq, c.f. declaration of AudioDecodingCallStats for detailed description.
-  const AudioDecodingCallStats& GetDecodingStatistics() const;
+    // Get statistics for decoding. The statistics include the number of calls to
+    // NetEq and silence generator, as well as the type of speech pulled of off
+    // NetEq, c.f. declaration of AudioDecodingCallStats for detailed description.
+    const AudioDecodingCallStats& GetDecodingStatistics() const;
 
- private:
-  // Reset the decoding statistics.
-  void ResetDecodingStatistics();
+private:
+    // Reset the decoding statistics.
+    void ResetDecodingStatistics();
 
-  AudioDecodingCallStats decoding_stat_;
+    AudioDecodingCallStats decoding_stat_;
 };
 
 }  // namespace acm2

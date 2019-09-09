@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,87 +29,98 @@
                                     SS_ALIGNSIZE))
 
 // BSD requires use of HAVE_STRUCT_SOCKADDR_SA_LEN
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-struct SocketAddressIn {
-  // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
+struct SocketAddressIn
+{
+    // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  int8_t      sin_length;
-  int8_t      sin_family;
+    int8_t      sin_length;
+    int8_t      sin_family;
 #else
-  int16_t     sin_family;
+    int16_t     sin_family;
 #endif
-  uint16_t    sin_port;
-  uint32_t    sin_addr;
-  int8_t      sin_zero[8];
+    uint16_t    sin_port;
+    uint32_t    sin_addr;
+    int8_t      sin_zero[8];
 };
 
-struct Version6InAddress {
-  union {
-    uint8_t     _s6_u8[16];
-    uint32_t    _s6_u32[4];
-    uint64_t    _s6_u64[2];
-  } Version6AddressUnion;
+struct Version6InAddress
+{
+    union
+    {
+        uint8_t     _s6_u8[16];
+        uint32_t    _s6_u32[4];
+        uint64_t    _s6_u64[2];
+    } Version6AddressUnion;
 };
 
-struct SocketAddressInVersion6 {
-  // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
+struct SocketAddressInVersion6
+{
+    // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  int8_t      sin_length;
-  int8_t      sin_family;
+    int8_t      sin_length;
+    int8_t      sin_family;
 #else
-  int16_t     sin_family;
+    int16_t     sin_family;
 #endif
-  // Transport layer port number.
-  uint16_t sin6_port;
-  // IPv6 traffic class and flow info or ip4 address.
-  uint32_t sin6_flowinfo;
-  // IPv6 address
-  struct Version6InAddress sin6_addr;
-  // Set of interfaces for a scope.
-  uint32_t sin6_scope_id;
+    // Transport layer port number.
+    uint16_t sin6_port;
+    // IPv6 traffic class and flow info or ip4 address.
+    uint32_t sin6_flowinfo;
+    // IPv6 address
+    struct Version6InAddress sin6_addr;
+    // Set of interfaces for a scope.
+    uint32_t sin6_scope_id;
 };
 
-struct SocketAddressStorage {
-  // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
+struct SocketAddressStorage
+{
+    // sin_family should be either AF_INET (IPv4) or AF_INET6 (IPv6)
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
-  int8_t   sin_length;
-  int8_t   sin_family;
+    int8_t   sin_length;
+    int8_t   sin_family;
 #else
-  int16_t  sin_family;
+    int16_t  sin_family;
 #endif
-  int8_t   __ss_pad1[SS_PAD1SIZE];
-  uint64_t __ss_align;
-  int8_t   __ss_pad2[SS_PAD2SIZE];
+    int8_t   __ss_pad1[SS_PAD1SIZE];
+    uint64_t __ss_align;
+    int8_t   __ss_pad2[SS_PAD2SIZE];
 };
 
-struct SocketAddress {
-  union {
-    struct SocketAddressIn _sockaddr_in;
-    struct SocketAddressInVersion6 _sockaddr_in6;
-    struct SocketAddressStorage _sockaddr_storage;
-  };
+struct SocketAddress
+{
+    union
+    {
+        struct SocketAddressIn _sockaddr_in;
+        struct SocketAddressInVersion6 _sockaddr_in6;
+        struct SocketAddressStorage _sockaddr_storage;
+    };
 };
 
 // Callback class that receives packets from UdpTransport.
-class UdpTransportData {
- public:
-  virtual ~UdpTransportData()  {};
+class UdpTransportData
+{
+public:
+    virtual ~UdpTransportData()  {};
 
-  virtual void IncomingRTPPacket(const int8_t* incomingRtpPacket,
-                                 const size_t rtpPacketLength,
-                                 const char* fromIP,
-                                 const uint16_t fromPort) = 0;
+    virtual void IncomingRTPPacket(const int8_t* incomingRtpPacket,
+                                   const size_t rtpPacketLength,
+                                   const char* fromIP,
+                                   const uint16_t fromPort) = 0;
 
-  virtual void IncomingRTCPPacket(const int8_t* incomingRtcpPacket,
-                                  const size_t rtcpPacketLength,
-                                  const char* fromIP,
-                                  const uint16_t fromPort) = 0;
+    virtual void IncomingRTCPPacket(const int8_t* incomingRtcpPacket,
+                                    const size_t rtcpPacketLength,
+                                    const char* fromIP,
+                                    const uint16_t fromPort) = 0;
 };
 
-class UdpTransport : public Transport {
- public:
+class UdpTransport : public Transport
+{
+public:
     enum
     {
         kIpAddressVersion6Length = 64,
@@ -345,8 +356,8 @@ class UdpTransport : public Transport {
     // the af address family and put it in dst.
     // Note: same functionality as inet_pton(..)
     static int32_t InetPresentationToNumeric(int32_t af,
-                                             const char* src,
-                                             void* dst);
+            const char* src,
+            void* dst);
 
     // Set ip and sourcePort according to address. As input parameter ipSize
     // is the length of ip. As output parameter it's the number of characters

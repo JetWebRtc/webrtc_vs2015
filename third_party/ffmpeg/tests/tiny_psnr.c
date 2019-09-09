@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -33,37 +33,40 @@
 #define F 100
 #define SIZE 2048
 
-uint64_t exp16_table[21] = {
-           65537,
-           65538,
-           65540,
-           65544,
-           65552,
-           65568,
-           65600,
-           65664,
-           65793,
-           66050,
-           66568,
-           67616,
-           69763,
-           74262,
-           84150,
-          108051,
-          178145,
-          484249,
-         3578144,
-       195360063,
+uint64_t exp16_table[21] =
+{
+    65537,
+    65538,
+    65540,
+    65544,
+    65552,
+    65568,
+    65600,
+    65664,
+    65793,
+    66050,
+    66568,
+    67616,
+    69763,
+    74262,
+    84150,
+    108051,
+    178145,
+    484249,
+    3578144,
+    195360063,
     582360139072LL,
 };
 
 #if 0
 // 16.16 fixpoint exp()
-static unsigned int exp16(unsigned int a){
+static unsigned int exp16(unsigned int a)
+{
     int i;
     int out= 1<<16;
 
-    for(i=19;i>=0;i--){
+    for(i=19; i>=0; i--)
+    {
         if(a&(1<<i))
             out= (out*exp16_table[i] + (1<<15))>>16;
     }
@@ -82,7 +85,8 @@ static int64_t log16(uint64_t a)
         return -log16((1LL << 32) / a);
     a <<= 16;
 
-    for (i = 20; i >= 0; i--) {
+    for (i = 20; i >= 0; i--)
+    {
         int64_t b = exp16_table[i];
         if (a < (b << 16))
             continue;
@@ -98,9 +102,11 @@ static uint64_t int_sqrt(uint64_t a)
     uint64_t ret_sq = 0;
     int s;
 
-    for (s = 31; s >= 0; s--) {
+    for (s = 31; s >= 0; s--)
+    {
         uint64_t b = ret_sq + (1ULL << (s * 2)) + (ret << s) * 2;
-        if (b <= a) {
+        if (b <= a)
+        {
             ret_sq = b;
             ret   += 1ULL << s;
         }
@@ -110,7 +116,8 @@ static uint64_t int_sqrt(uint64_t a)
 
 static int16_t get_s16l(uint8_t *p)
 {
-    union {
+    union
+    {
         uint16_t u;
         int16_t  s;
     } v;
@@ -146,22 +153,28 @@ static int run_psnr(FILE *f[2], int len, int shift, int skip_bytes)
     noseek = fseek(f[0], 0, SEEK_SET) ||
              fseek(f[1], 0, SEEK_SET);
 
-    if (!noseek) {
-        for (i = 0; i < 2; i++) {
+    if (!noseek)
+    {
+        for (i = 0; i < 2; i++)
+        {
             uint8_t *p = buf[i];
             if (fread(p, 1, 12, f[i]) != 12)
                 return -1;
             if (!memcmp(p, "RIFF", 4) &&
-                !memcmp(p + 8, "WAVE", 4)) {
+                    !memcmp(p + 8, "WAVE", 4))
+            {
                 if (fread(p, 1, 8, f[i]) != 8)
                     return -1;
-                while (memcmp(p, "data", 4)) {
+                while (memcmp(p, "data", 4))
+                {
                     int s = p[4] | p[5] << 8 | p[6] << 16 | p[7] << 24;
                     fseek(f[i], s, SEEK_CUR);
                     if (fread(p, 1, 8, f[i]) != 8)
                         return -1;
                 }
-            } else {
+            }
+            else
+            {
                 fseek(f[i], -12, SEEK_CUR);
             }
         }
@@ -172,20 +185,27 @@ static int run_psnr(FILE *f[2], int len, int shift, int skip_bytes)
         fseek(f[1], skip_bytes, SEEK_CUR);
     }
 
-    for (;;) {
+    for (;;)
+    {
         int s0 = fread(buf[0], 1, SIZE, f[0]);
         int s1 = fread(buf[1], 1, SIZE, f[1]);
 
-        for (j = 0; j < FFMIN(s0, s1); j += len) {
-            switch (len) {
+        for (j = 0; j < FFMIN(s0, s1); j += len)
+        {
+            switch (len)
+            {
             case 1:
-            case 2: {
+            case 2:
+            {
                 int64_t a, b;
                 int dist;
-                if (len == 2) {
+                if (len == 2)
+                {
                     a = get_s16l(buf[0] + j);
                     b = get_s16l(buf[1] + j);
-                } else {
+                }
+                else
+                {
                     a = buf[0][j];
                     b = buf[1][j];
                 }
@@ -196,12 +216,16 @@ static int run_psnr(FILE *f[2], int len, int shift, int skip_bytes)
                 break;
             }
             case 4:
-            case 8: {
+            case 8:
+            {
                 double dist, a, b;
-                if (len == 8) {
+                if (len == 8)
+                {
                     a = get_f64l(buf[0] + j);
                     b = get_f64l(buf[1] + j);
-                } else {
+                }
+                else
+                {
                     a = get_f32l(buf[0] + j);
                     b = get_f32l(buf[1] + j);
                 }
@@ -222,9 +246,11 @@ static int run_psnr(FILE *f[2], int len, int shift, int skip_bytes)
     i = FFMIN(size0, size1) / len;
     if (!i)
         i = 1;
-    switch (len) {
+    switch (len)
+    {
     case 1:
-    case 2: {
+    case 2:
+    {
         uint64_t psnr;
         uint64_t dev = int_sqrt(((sse / i) * F * F) + (((sse % i) * F * F) + i / 2) / i);
         if (sse)
@@ -238,18 +264,21 @@ static int run_psnr(FILE *f[2], int len, int shift, int skip_bytes)
                (int)(psnr / F), (int)(psnr % F),
                maxdist, size0, size1);
         return psnr;
-        }
+    }
     case 4:
-    case 8: {
+    case 8:
+    {
         char psnr_str[64];
         double psnr = INT_MAX;
         double dev = sqrt(sse_d / i);
         uint64_t scale = (len == 4) ? (1ULL << 24) : (1ULL << 32);
 
-        if (sse_d) {
+        if (sse_d)
+        {
             psnr = 2 * log(DBL_MAX) - log(i / sse_d);
             snprintf(psnr_str, sizeof(psnr_str), "%5.02f", psnr);
-        } else
+        }
+        else
             snprintf(psnr_str, sizeof(psnr_str), "inf");
 
         maxdist = maxdist_d * scale;
@@ -276,26 +305,38 @@ int main(int argc, char *argv[])
     if (shift_last > shift_first)
         shift_first -= shift_last - shift_first;
 
-    if (argc > 3) {
-        if (!strcmp(argv[3], "u8")) {
+    if (argc > 3)
+    {
+        if (!strcmp(argv[3], "u8"))
+        {
             len = 1;
-        } else if (!strcmp(argv[3], "s16")) {
+        }
+        else if (!strcmp(argv[3], "s16"))
+        {
             len = 2;
-        } else if (!strcmp(argv[3], "f32")) {
+        }
+        else if (!strcmp(argv[3], "f32"))
+        {
             len = 4;
-        } else if (!strcmp(argv[3], "f64")) {
+        }
+        else if (!strcmp(argv[3], "f64"))
+        {
             len = 8;
-        } else {
+        }
+        else
+        {
             char *end;
             len = strtol(argv[3], &end, 0);
-            if (*end || len < 1 || len > 2) {
+            if (*end || len < 1 || len > 2)
+            {
                 fprintf(stderr, "Unsupported sample format: %s\nSupported: u8, s16, f32, f64\n", argv[3]);
                 return 1;
             }
         }
     }
 
-    if (argc < 3) {
+    if (argc < 3)
+    {
         printf("tiny_psnr <file1> <file2> [<elem size>|u8|s16|f32|f64 [<shift> [<skip bytes> [<shift search range>]]]]\n");
         printf("WAV headers are skipped automatically.\n");
         return 1;
@@ -303,14 +344,17 @@ int main(int argc, char *argv[])
 
     f[0] = fopen(argv[1], "rb");
     f[1] = fopen(argv[2], "rb");
-    if (!f[0] || !f[1]) {
+    if (!f[0] || !f[1])
+    {
         fprintf(stderr, "Could not open input files.\n");
         return 1;
     }
 
-    for (shift = shift_first; shift <= shift_last; shift++) {
+    for (shift = shift_first; shift <= shift_last; shift++)
+    {
         int psnr = run_psnr(f, len, shift, skip_bytes);
-        if (psnr > max_psnr || (shift < 0 && psnr == max_psnr)) {
+        if (psnr > max_psnr || (shift < 0 && psnr == max_psnr))
+        {
             max_psnr = psnr;
             max_psnr_shift = shift;
         }

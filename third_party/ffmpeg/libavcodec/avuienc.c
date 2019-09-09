@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVID Meridien encoder
  *
  * Copyright (c) 2012 Carl Eugen Hoyos
@@ -26,7 +26,8 @@
 
 static av_cold int avui_encode_init(AVCodecContext *avctx)
 {
-    if (avctx->width != 720 || avctx->height != 486 && avctx->height != 576) {
+    if (avctx->width != 720 || avctx->height != 486 && avctx->height != 576)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only 720x486 and 720x576 are supported.\n");
         return AVERROR(EINVAL);
     }
@@ -34,9 +35,12 @@ static av_cold int avui_encode_init(AVCodecContext *avctx)
         return AVERROR(ENOMEM);
     avctx->extradata_size = 144;
     memcpy(avctx->extradata, "\0\0\0\x18""APRGAPRG0001", 16);
-    if (avctx->field_order > AV_FIELD_PROGRESSIVE) {
+    if (avctx->field_order > AV_FIELD_PROGRESSIVE)
+    {
         avctx->extradata[19] = 2;
-    } else {
+    }
+    else
+    {
         avctx->extradata[19] = 1;
     }
     memcpy(avctx->extradata + 24, "\0\0\0\x78""ARESARES0001""\0\0\0\x98", 20);
@@ -56,30 +60,39 @@ static int avui_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     interlaced = avctx->field_order > AV_FIELD_PROGRESSIVE;
 
-    if (avctx->height == 486) {
+    if (avctx->height == 486)
+    {
         skip = 10;
-    } else {
+    }
+    else
+    {
         skip = 16;
     }
     size = 2 * avctx->width * (avctx->height + skip) + 8 * interlaced;
     if ((ret = ff_alloc_packet2(avctx, pkt, size, size)) < 0)
         return ret;
     dst = pkt->data;
-    if (!interlaced) {
+    if (!interlaced)
+    {
         memset(dst, 0, avctx->width * skip);
         dst += avctx->width * skip;
     }
 
-    for (i = 0; i <= interlaced; i++) {
+    for (i = 0; i <= interlaced; i++)
+    {
         uint8_t *src;
-        if (interlaced && avctx->height == 486) {
+        if (interlaced && avctx->height == 486)
+        {
             src = pic->data[0] + (1 - i) * pic->linesize[0];
-        } else {
+        }
+        else
+        {
             src = pic->data[0] + i * pic->linesize[0];
         }
         memset(dst, 0, avctx->width * skip + 4 * i);
         dst += avctx->width * skip + 4 * i;
-        for (j = 0; j < avctx->height; j += interlaced + 1) {
+        for (j = 0; j < avctx->height; j += interlaced + 1)
+        {
             memcpy(dst, src, avctx->width * 2);
             src += (interlaced + 1) * pic->linesize[0];
             dst += avctx->width * 2;
@@ -91,7 +104,8 @@ static int avui_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     return 0;
 }
 
-AVCodec ff_avui_encoder = {
+AVCodec ff_avui_encoder =
+{
     .name         = "avui",
     .long_name    = NULL_IF_CONFIG_SMALL("Avid Meridien Uncompressed"),
     .type         = AVMEDIA_TYPE_VIDEO,

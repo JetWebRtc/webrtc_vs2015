@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,14 +14,16 @@
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 #include "webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Represents the rotation of a DesktopFrame.
-enum class Rotation {
-  CLOCK_WISE_0,
-  CLOCK_WISE_90,
-  CLOCK_WISE_180,
-  CLOCK_WISE_270,
+enum class Rotation
+{
+    CLOCK_WISE_0,
+    CLOCK_WISE_90,
+    CLOCK_WISE_180,
+    CLOCK_WISE_270,
 };
 
 // Rotates input DesktopFrame |source|, copies pixel in an unrotated rectangle

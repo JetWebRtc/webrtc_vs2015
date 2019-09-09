@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,52 +99,52 @@ amm-info@iis.fraunhofer.de
 
 
 AAC_ENCODER_ERROR FDKaacEnc_InitPnsConfiguration(PNS_CONFIG *pnsConf,
-                                                 INT        bitRate,
-                                                 INT        sampleRate,
-                                                 INT        usePns,
-                                                 INT        sfbCnt,
-                                                 const INT  *sfbOffset,
-                                                 const INT  numChan,
-                                                 const INT  isLC );
+        INT        bitRate,
+        INT        sampleRate,
+        INT        usePns,
+        INT        sfbCnt,
+        const INT  *sfbOffset,
+        const INT  numChan,
+        const INT  isLC );
 
 void FDKaacEnc_PnsDetect( PNS_CONFIG  *pnsConf,
-                PNS_DATA    *pnsData,
-                const INT   lastWindowSequence,
-                const INT   sfbActive,
-                const INT   maxSfbPerGroup,
-                FIXP_DBL    *sfbThresholdLdData,
-                const INT   *sfbOffset,
-                FIXP_DBL    *mdctSpectrum,
-                INT         *sfbMaxScaleSpec,
-                FIXP_SGL    *sfbtonality,
-                int         tnsOrder,
-                INT         tnsPredictionGain,
-                INT         tnsActive,
-                FIXP_DBL    *sfbEnergyLdData,
-                INT         *noiseNrg );
+                          PNS_DATA    *pnsData,
+                          const INT   lastWindowSequence,
+                          const INT   sfbActive,
+                          const INT   maxSfbPerGroup,
+                          FIXP_DBL    *sfbThresholdLdData,
+                          const INT   *sfbOffset,
+                          FIXP_DBL    *mdctSpectrum,
+                          INT         *sfbMaxScaleSpec,
+                          FIXP_SGL    *sfbtonality,
+                          int         tnsOrder,
+                          INT         tnsPredictionGain,
+                          INT         tnsActive,
+                          FIXP_DBL    *sfbEnergyLdData,
+                          INT         *noiseNrg );
 
 void FDKaacEnc_CodePnsChannel( const INT     sfbActive,
-                     PNS_CONFIG    *pnsConf,
-                     INT           *pnsFlag,
-                     FIXP_DBL      *sfbEnergy,
-                     INT           *noiseNrg,
-                     FIXP_DBL      *sfbThreshold );
+                               PNS_CONFIG    *pnsConf,
+                               INT           *pnsFlag,
+                               FIXP_DBL      *sfbEnergy,
+                               INT           *noiseNrg,
+                               FIXP_DBL      *sfbThreshold );
 
 void FDKaacEnc_PreProcessPnsChannelPair( const INT  sfbActive,
-                               FIXP_DBL   *sfbEnergyLeft,
-                               FIXP_DBL   *sfbEnergyRight,
-                               FIXP_DBL   *sfbEnergyLeftLD,
-                               FIXP_DBL   *sfbEnergyRightLD,
-                               FIXP_DBL   *sfbEnergyMid,
-                               PNS_CONFIG *pnsConfLeft,
-                               PNS_DATA   *pnsDataLeft,
-                               PNS_DATA   *pnsDataRight );
+        FIXP_DBL   *sfbEnergyLeft,
+        FIXP_DBL   *sfbEnergyRight,
+        FIXP_DBL   *sfbEnergyLeftLD,
+        FIXP_DBL   *sfbEnergyRightLD,
+        FIXP_DBL   *sfbEnergyMid,
+        PNS_CONFIG *pnsConfLeft,
+        PNS_DATA   *pnsDataLeft,
+        PNS_DATA   *pnsDataRight );
 
 void FDKaacEnc_PostProcessPnsChannelPair( const INT   sfbActive,
-                                PNS_CONFIG  *pnsConf,
-                                PNS_DATA    *pnsDataLeft,
-                                PNS_DATA    *pnsDataRight,
-                                INT         *msMask,
-                                INT         *msDigest );
+        PNS_CONFIG  *pnsConf,
+        PNS_DATA    *pnsDataLeft,
+        PNS_DATA    *pnsDataRight,
+        INT         *msMask,
+        INT         *msDigest );
 
 #endif /* _PNS_FUNC_H */

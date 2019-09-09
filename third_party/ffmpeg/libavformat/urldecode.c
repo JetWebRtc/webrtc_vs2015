@@ -47,13 +47,16 @@ char *ff_urldecode(const char *url)
     if (!dest)
         return NULL;
 
-    while (s < url_len) {
+    while (s < url_len)
+    {
         c = url[s++];
 
-        if (c == '%' && s + 2 < url_len) {
+        if (c == '%' && s + 2 < url_len)
+        {
             char c2 = url[s++];
             char c3 = url[s++];
-            if (av_isxdigit(c2) && av_isxdigit(c3)) {
+            if (av_isxdigit(c2) && av_isxdigit(c3))
+            {
                 c2 = av_tolower(c2);
                 c3 = av_tolower(c3);
 
@@ -69,14 +72,20 @@ char *ff_urldecode(const char *url)
 
                 dest[d++] = 16 * c2 + c3;
 
-            } else { /* %zz or something other invalid */
+            }
+            else     /* %zz or something other invalid */
+            {
                 dest[d++] = c;
                 dest[d++] = c2;
                 dest[d++] = c3;
             }
-        } else if (c == '+') {
+        }
+        else if (c == '+')
+        {
             dest[d++] = ' ';
-        } else {
+        }
+        else
+        {
             dest[d++] = c;
         }
 

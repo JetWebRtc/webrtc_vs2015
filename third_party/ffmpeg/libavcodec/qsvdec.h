@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV utility functions
  *
  * copyright (c) 2013 Luca Barbato
@@ -35,7 +35,8 @@
 #include "avcodec.h"
 #include "qsv_internal.h"
 
-typedef struct QSVContext {
+typedef struct QSVContext
+{
     // the session used for decoding
     mfxSession session;
 

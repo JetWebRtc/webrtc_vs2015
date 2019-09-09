@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVS video decoder.
  * Copyright (c) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -23,18 +23,21 @@
 #include "get_bits.h"
 #include "internal.h"
 
-typedef struct AvsContext {
+typedef struct AvsContext
+{
     AVFrame *frame;
 } AvsContext;
 
-typedef enum {
+typedef enum
+{
     AVS_VIDEO     = 0x01,
     AVS_AUDIO     = 0x02,
     AVS_PALETTE   = 0x03,
     AVS_GAME_DATA = 0x04,
 } AvsBlockType;
 
-typedef enum {
+typedef enum
+{
     AVS_I_FRAME     = 0x00,
     AVS_P_FRAME_3X3 = 0x01,
     AVS_P_FRAME_2X2 = 0x02,
@@ -73,7 +76,8 @@ avs_decode_frame(AVCodecContext * avctx,
     type = buf[1];
     buf += 4;
 
-    if (type == AVS_PALETTE) {
+    if (type == AVS_PALETTE)
+    {
         int first, last;
         uint32_t *pal = (uint32_t *) p->data[1];
 
@@ -82,7 +86,8 @@ avs_decode_frame(AVCodecContext * avctx,
         if (first >= 256 || last > 256 || buf_end - buf < 4 + 4 + 3 * (last - first))
             return AVERROR_INVALIDDATA;
         buf += 4;
-        for (i=first; i<last; i++, buf+=3) {
+        for (i=first; i<last; i++, buf+=3)
+        {
             pal[i] = (buf[0] << 18) | (buf[1] << 10) | (buf[2] << 2);
             pal[i] |= 0xFFU << 24 | (pal[i] >> 6) & 0x30303;
         }
@@ -95,7 +100,8 @@ avs_decode_frame(AVCodecContext * avctx,
     if (type != AVS_VIDEO)
         return AVERROR_INVALIDDATA;
 
-    switch (sub_type) {
+    switch (sub_type)
+    {
     case AVS_I_FRAME:
         p->pict_type = AV_PICTURE_TYPE_I;
         p->key_frame = 1;
@@ -115,13 +121,14 @@ avs_decode_frame(AVCodecContext * avctx,
         break;
 
     default:
-      return AVERROR_INVALIDDATA;
+        return AVERROR_INVALIDDATA;
     }
 
     if (buf_end - buf < 256 * vect_w * vect_h)
         return AVERROR_INVALIDDATA;
     table = buf + (256 * vect_w * vect_h);
-    if (sub_type != AVS_I_FRAME) {
+    if (sub_type != AVS_I_FRAME)
+    {
         int map_size = ((318 / vect_w + 7) / 8) * (198 / vect_h);
         if (buf_end - table < map_size)
             return AVERROR_INVALIDDATA;
@@ -129,13 +136,17 @@ avs_decode_frame(AVCodecContext * avctx,
         table += map_size;
     }
 
-    for (y=0; y<198; y+=vect_h) {
-        for (x=0; x<318; x+=vect_w) {
-            if (sub_type == AVS_I_FRAME || get_bits1(&change_map)) {
+    for (y=0; y<198; y+=vect_h)
+    {
+        for (x=0; x<318; x+=vect_w)
+        {
+            if (sub_type == AVS_I_FRAME || get_bits1(&change_map))
+            {
                 if (buf_end - table < 1)
                     return AVERROR_INVALIDDATA;
                 vect = &buf[*table++ * (vect_w * vect_h)];
-                for (j=0; j<vect_w; j++) {
+                for (j=0; j<vect_w; j++)
+                {
                     out[(y + 0) * stride + x + j] = vect[(0 * vect_w) + j];
                     out[(y + 1) * stride + x + j] = vect[(1 * vect_w) + j];
                     if (vect_h == 3)
@@ -176,7 +187,8 @@ static av_cold int avs_decode_end(AVCodecContext *avctx)
 }
 
 
-AVCodec ff_avs_decoder = {
+AVCodec ff_avs_decoder =
+{
     .name           = "avs",
     .long_name      = NULL_IF_CONFIG_SMALL("AVS (Audio Video Standard) video"),
     .type           = AVMEDIA_TYPE_VIDEO,

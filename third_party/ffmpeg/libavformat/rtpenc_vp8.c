@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP VP8 Packetizer
  * Copyright (c) 2010 Josh Allmann
  *
@@ -40,7 +40,8 @@ void ff_rtp_send_vp8(AVFormatContext *s1, const uint8_t *buf, int size)
     header_size     = s->buf_ptr - s->buf;
     max_packet_size = s->max_payload_size - header_size;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         len = FFMIN(size, max_packet_size);
 
         memcpy(s->buf_ptr, buf, len);

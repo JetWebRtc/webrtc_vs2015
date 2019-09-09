@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,39 +16,42 @@
 #include <string>
 #include <utility>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // SDP specification for a single audio codec.
 // NOTE: This class is still under development and may change without notice.
-struct SdpAudioFormat {
-  using Parameters = std::map<std::string, std::string>;
+struct SdpAudioFormat
+{
+    using Parameters = std::map<std::string, std::string>;
 
-  SdpAudioFormat(const SdpAudioFormat&);
-  SdpAudioFormat(SdpAudioFormat&&);
-  SdpAudioFormat(const char* name, int clockrate_hz, int num_channels);
-  SdpAudioFormat(const std::string& name, int clockrate_hz, int num_channels);
-  SdpAudioFormat(const char* name,
-                 int clockrate_hz,
-                 int num_channels,
-                 const Parameters& param);
-  SdpAudioFormat(const std::string& name,
-                 int clockrate_hz,
-                 int num_channels,
-                 const Parameters& param);
-  ~SdpAudioFormat();
+    SdpAudioFormat(const SdpAudioFormat&);
+    SdpAudioFormat(SdpAudioFormat&&);
+    SdpAudioFormat(const char* name, int clockrate_hz, int num_channels);
+    SdpAudioFormat(const std::string& name, int clockrate_hz, int num_channels);
+    SdpAudioFormat(const char* name,
+                   int clockrate_hz,
+                   int num_channels,
+                   const Parameters& param);
+    SdpAudioFormat(const std::string& name,
+                   int clockrate_hz,
+                   int num_channels,
+                   const Parameters& param);
+    ~SdpAudioFormat();
 
-  SdpAudioFormat& operator=(const SdpAudioFormat&);
-  SdpAudioFormat& operator=(SdpAudioFormat&&);
+    SdpAudioFormat& operator=(const SdpAudioFormat&);
+    SdpAudioFormat& operator=(SdpAudioFormat&&);
 
-  friend bool operator==(const SdpAudioFormat& a, const SdpAudioFormat& b);
-  friend bool operator!=(const SdpAudioFormat& a, const SdpAudioFormat& b) {
-    return !(a == b);
-  }
+    friend bool operator==(const SdpAudioFormat& a, const SdpAudioFormat& b);
+    friend bool operator!=(const SdpAudioFormat& a, const SdpAudioFormat& b)
+    {
+        return !(a == b);
+    }
 
-  std::string name;
-  int clockrate_hz;
-  int num_channels;
-  Parameters parameters;
+    std::string name;
+    int clockrate_hz;
+    int num_channels;
+    Parameters parameters;
 };
 
 void swap(SdpAudioFormat& a, SdpAudioFormat& b);
@@ -64,16 +67,17 @@ std::ostream& operator<<(std::ostream& os, const SdpAudioFormat& saf);
 //   spec.allow_comfort_noise = true;
 //   spec.future_flag_b = true;
 //   spec.future_flag_c = true;
-struct AudioCodecSpec {
-  explicit AudioCodecSpec(const SdpAudioFormat& format);
-  explicit AudioCodecSpec(SdpAudioFormat&& format);
-  ~AudioCodecSpec() = default;
+struct AudioCodecSpec
+{
+    explicit AudioCodecSpec(const SdpAudioFormat& format);
+    explicit AudioCodecSpec(SdpAudioFormat&& format);
+    ~AudioCodecSpec() = default;
 
-  SdpAudioFormat format;
-  bool allow_comfort_noise = true;  // This codec can be used with an external
-                                    // comfort noise generator.
-  bool supports_network_adaption = false;  // This codec can adapt to varying
-                                           // network conditions.
+    SdpAudioFormat format;
+    bool allow_comfort_noise = true;  // This codec can be used with an external
+    // comfort noise generator.
+    bool supports_network_adaption = false;  // This codec can adapt to varying
+    // network conditions.
 };
 
 }  // namespace webrtc

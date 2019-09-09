@@ -65,7 +65,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     c->frame_info_size = 4;
     c->slice_stride    = FFALIGN(avctx->width, 32);
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_RGB24:
         c->planes        = 3;
         avctx->codec_tag = MKTAG('U', 'L', 'R', 'G');
@@ -77,7 +78,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
         original_format  = UTVIDEO_RGBA;
         break;
     case AV_PIX_FMT_YUV420P:
-        if (avctx->width & 1 || avctx->height & 1) {
+        if (avctx->width & 1 || avctx->height & 1)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "4:2:0 video requires even width and height.\n");
             return AVERROR_INVALIDDATA;
@@ -90,7 +92,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
         original_format  = UTVIDEO_420;
         break;
     case AV_PIX_FMT_YUV422P:
-        if (avctx->width & 1) {
+        if (avctx->width & 1)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "4:2:2 video requires even width.\n");
             return AVERROR_INVALIDDATA;
@@ -112,14 +115,16 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     ff_huffyuvencdsp_init(&c->hdsp);
 
     /* Check the prediction method, and error out if unsupported */
-    if (avctx->prediction_method < 0 || avctx->prediction_method > 4) {
+    if (avctx->prediction_method < 0 || avctx->prediction_method > 4)
+    {
         av_log(avctx, AV_LOG_WARNING,
                "Prediction method %d is not supported in Ut Video.\n",
                avctx->prediction_method);
         return AVERROR_OPTION_NOT_FOUND;
     }
 
-    if (avctx->prediction_method == FF_PRED_PLANE) {
+    if (avctx->prediction_method == FF_PRED_PLANE)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Plane prediction is not supported in Ut Video.\n");
         return AVERROR_OPTION_NOT_FOUND;
@@ -128,7 +133,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     /* Convert from libavcodec prediction type to Ut Video's */
     c->frame_pred = ff_ut_pred_order[avctx->prediction_method];
 
-    if (c->frame_pred == PRED_GRADIENT) {
+    if (c->frame_pred == PRED_GRADIENT)
+    {
         av_log(avctx, AV_LOG_ERROR, "Gradient prediction is not supported.\n");
         return AVERROR_OPTION_NOT_FOUND;
     }
@@ -137,7 +143,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
      * Check the asked slice count for obviously invalid
      * values (> 256 or negative).
      */
-    if (avctx->slices > 256 || avctx->slices < 0) {
+    if (avctx->slices > 256 || avctx->slices < 0)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Slice count %d is not supported in Ut Video (theoretical range is 0-256).\n",
                avctx->slices);
@@ -146,7 +153,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
 
     /* Check that the slice count is not larger than the subsampled height */
     subsampled_height = avctx->height >> av_pix_fmt_desc_get(avctx->pix_fmt)->log2_chroma_h;
-    if (avctx->slices > subsampled_height) {
+    if (avctx->slices > subsampled_height)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Slice count %d is larger than the subsampling-applied height %d.\n",
                avctx->slices, subsampled_height);
@@ -159,16 +167,19 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     avctx->extradata = av_mallocz(avctx->extradata_size +
                                   AV_INPUT_BUFFER_PADDING_SIZE);
 
-    if (!avctx->extradata) {
+    if (!avctx->extradata)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not allocate extradata.\n");
         utvideo_encode_close(avctx);
         return AVERROR(ENOMEM);
     }
 
-    for (i = 0; i < c->planes; i++) {
+    for (i = 0; i < c->planes; i++)
+    {
         c->slice_buffer[i] = av_malloc(c->slice_stride * (avctx->height + 2) +
                                        AV_INPUT_BUFFER_PADDING_SIZE);
-        if (!c->slice_buffer[i]) {
+        if (!c->slice_buffer[i])
+        {
             av_log(avctx, AV_LOG_ERROR, "Cannot allocate temporary buffer 1.\n");
             utvideo_encode_close(avctx);
             return AVERROR(ENOMEM);
@@ -197,14 +208,17 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
      * By default uses multiple slices depending on the subsampled height.
      * This enables multithreading in the official decoder.
      */
-    if (!avctx->slices) {
+    if (!avctx->slices)
+    {
         c->slices = subsampled_height / 120;
 
         if (!c->slices)
             c->slices = 1;
         else if (c->slices > 256)
             c->slices = 256;
-    } else {
+    }
+    else
+    {
         c->slices = avctx->slices;
     }
 
@@ -234,9 +248,12 @@ static void mangle_rgb_planes(uint8_t *dst[4], int dst_stride, uint8_t *src,
     int k = 2 * dst_stride;
     unsigned int g;
 
-    for (j = 0; j < height; j++) {
-        if (step == 3) {
-            for (i = 0; i < width * step; i += step) {
+    for (j = 0; j < height; j++)
+    {
+        if (step == 3)
+        {
+            for (i = 0; i < width * step; i += step)
+            {
                 g         = src[i + 1];
                 dst[0][k] = g;
                 g        += 0x80;
@@ -244,8 +261,11 @@ static void mangle_rgb_planes(uint8_t *dst[4], int dst_stride, uint8_t *src,
                 dst[2][k] = src[i + 0] - g;
                 k++;
             }
-        } else {
-            for (i = 0; i < width * step; i += step) {
+        }
+        else
+        {
+            for (i = 0; i < width * step; i += step)
+            {
                 g         = src[i + 1];
                 dst[0][k] = g;
                 g        += 0x80;
@@ -268,8 +288,10 @@ static void left_predict(uint8_t *src, uint8_t *dst, int stride,
     uint8_t prev;
 
     prev = 0x80; /* Set the initial value */
-    for (j = 0; j < height; j++) {
-        for (i = 0; i < width; i++) {
+    for (j = 0; j < height; j++)
+    {
+        for (i = 0; i < width; i++)
+        {
             *dst++ = src[i] - prev;
             prev   = src[i];
         }
@@ -287,7 +309,8 @@ static void median_predict(UtvideoContext *c, uint8_t *src, uint8_t *dst, int st
 
     /* First line uses left neighbour prediction */
     prev = 0x80; /* Set the initial value */
-    for (i = 0; i < width; i++) {
+    for (i = 0; i < width; i++)
+    {
         *dst++ = src[i] - prev;
         prev   = src[i];
     }
@@ -304,7 +327,8 @@ static void median_predict(UtvideoContext *c, uint8_t *src, uint8_t *dst, int st
     A = B = 0;
 
     /* Rest of the coded part uses median prediction */
-    for (j = 1; j < height; j++) {
+    for (j = 1; j < height; j++)
+    {
         c->hdsp.sub_hfyu_median_pred(dst, src - stride, src, width, &A, &B);
         dst += width;
         src += stride;
@@ -317,8 +341,10 @@ static void count_usage(uint8_t *src, int width,
 {
     int i, j;
 
-    for (j = 0; j < height; j++) {
-        for (i = 0; i < width; i++) {
+    for (j = 0; j < height; j++)
+    {
+        for (i = 0; i < width; i++)
+        {
             counts[src[i]]++;
         }
         src += width;
@@ -338,7 +364,8 @@ static void calculate_codes(HuffEntry *he)
         last--;
 
     code = 1;
-    for (i = last; i >= 0; i--) {
+    for (i = last; i >= 0; i--)
+    {
         he[i].code  = code >> (32 - he[i].len);
         code       += 0x80000000u >> (he[i].len - 1);
     }
@@ -357,7 +384,8 @@ static int write_huff_codes(uint8_t *src, uint8_t *dst, int dst_size,
     init_put_bits(&pb, dst, dst_size);
 
     /* Write the codes */
-    for (j = 0; j < height; j++) {
+    for (j = 0; j < height; j++)
+    {
         for (i = 0; i < width; i++)
             put_bits(&pb, he[src[i]].len, he[src[i]].code);
 
@@ -396,9 +424,11 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
     int      ret;
 
     /* Do prediction / make planes */
-    switch (c->frame_pred) {
+    switch (c->frame_pred)
+    {
     case PRED_NONE:
-        for (i = 0; i < c->slices; i++) {
+        for (i = 0; i < c->slices; i++)
+        {
             sstart = send;
             send   = height * (i + 1) / c->slices & cmask;
             av_image_copy_plane(dst + sstart * width, width,
@@ -407,7 +437,8 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
         }
         break;
     case PRED_LEFT:
-        for (i = 0; i < c->slices; i++) {
+        for (i = 0; i < c->slices; i++)
+        {
             sstart = send;
             send   = height * (i + 1) / c->slices & cmask;
             left_predict(src + sstart * stride, dst + sstart * width,
@@ -415,7 +446,8 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
         }
         break;
     case PRED_MEDIAN:
-        for (i = 0; i < c->slices; i++) {
+        for (i = 0; i < c->slices; i++)
+        {
             sstart = send;
             send   = height * (i + 1) / c->slices & cmask;
             median_predict(c, src + sstart * stride, dst + sstart * width,
@@ -432,16 +464,20 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
     count_usage(dst, width, height, counts);
 
     /* Check for a special case where only one symbol was used */
-    for (symbol = 0; symbol < 256; symbol++) {
+    for (symbol = 0; symbol < 256; symbol++)
+    {
         /* If non-zero count is found, see if it matches width * height */
-        if (counts[symbol]) {
+        if (counts[symbol])
+        {
             /* Special case if only one symbol was used */
-            if (counts[symbol] == width * (int64_t)height) {
+            if (counts[symbol] == width * (int64_t)height)
+            {
                 /*
                  * Write a zero for the single symbol
                  * used in the plane, else 0xFF.
                  */
-                for (i = 0; i < 256; i++) {
+                for (i = 0; i < 256; i++)
+                {
                     if (i == symbol)
                         bytestream2_put_byte(pb, 0);
                     else
@@ -468,7 +504,8 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
      * - huffman code lengths (256 bytes)
      * - slice end offsets (gotten from the slice lengths)
      */
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         bytestream2_put_byte(pb, lengths[i]);
 
         he[i].len = lengths[i];
@@ -479,7 +516,8 @@ static int encode_plane(AVCodecContext *avctx, uint8_t *src,
     calculate_codes(he);
 
     send = 0;
-    for (i = 0; i < c->slices; i++) {
+    for (i = 0; i < c->slices; i++)
+    {
         sstart  = send;
         send    = height * (i + 1) / c->slices & cmask;
 
@@ -547,7 +585,8 @@ static int utvideo_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     av_fast_padded_malloc(&c->slice_bits, &c->slice_bits_size, width * height + 4);
 
-    if (!c->slice_bits) {
+    if (!c->slice_bits)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot allocate temporary buffer 2.\n");
         return AVERROR(ENOMEM);
     }
@@ -558,38 +597,45 @@ static int utvideo_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
                           c->planes, pic->linesize[0], width, height);
 
     /* Deal with the planes */
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_RGB24:
     case AV_PIX_FMT_RGBA:
-        for (i = 0; i < c->planes; i++) {
+        for (i = 0; i < c->planes; i++)
+        {
             ret = encode_plane(avctx, c->slice_buffer[i] + 2 * c->slice_stride,
                                c->slice_buffer[i], c->slice_stride, i,
                                width, height, &pb);
 
-            if (ret) {
+            if (ret)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Error encoding plane %d.\n", i);
                 return ret;
             }
         }
         break;
     case AV_PIX_FMT_YUV422P:
-        for (i = 0; i < c->planes; i++) {
+        for (i = 0; i < c->planes; i++)
+        {
             ret = encode_plane(avctx, pic->data[i], c->slice_buffer[0],
                                pic->linesize[i], i, width >> !!i, height, &pb);
 
-            if (ret) {
+            if (ret)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Error encoding plane %d.\n", i);
                 return ret;
             }
         }
         break;
     case AV_PIX_FMT_YUV420P:
-        for (i = 0; i < c->planes; i++) {
+        for (i = 0; i < c->planes; i++)
+        {
             ret = encode_plane(avctx, pic->data[i], c->slice_buffer[0],
                                pic->linesize[i], i, width >> !!i, height >> !!i,
                                &pb);
 
-            if (ret) {
+            if (ret)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Error encoding plane %d.\n", i);
                 return ret;
             }
@@ -614,10 +660,10 @@ static int utvideo_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
      * Set flags accordingly.
      */
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->key_frame = 1;
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     pkt->size   = bytestream2_tell_p(&pb);
@@ -629,7 +675,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     return 0;
 }
 
-AVCodec ff_utvideo_encoder = {
+AVCodec ff_utvideo_encoder =
+{
     .name           = "utvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("Ut Video"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -640,7 +687,7 @@ AVCodec ff_utvideo_encoder = {
     .close          = utvideo_encode_close,
     .capabilities   = AV_CODEC_CAP_FRAME_THREADS | AV_CODEC_CAP_INTRA_ONLY,
     .pix_fmts       = (const enum AVPixelFormat[]) {
-                          AV_PIX_FMT_RGB24, AV_PIX_FMT_RGBA, AV_PIX_FMT_YUV422P,
-                          AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE
-                      },
+        AV_PIX_FMT_RGB24, AV_PIX_FMT_RGBA, AV_PIX_FMT_YUV422P,
+        AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE
+    },
 };

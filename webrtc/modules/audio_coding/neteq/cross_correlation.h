@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // The function calculates the cross-correlation between two sequences
 // |sequence_1| and |sequence_2|. |sequence_1| is taken as reference, with

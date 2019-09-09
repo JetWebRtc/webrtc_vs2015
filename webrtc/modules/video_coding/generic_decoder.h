@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,22 +17,25 @@
 #include "webrtc/modules/video_coding/timestamp_map.h"
 #include "webrtc/modules/video_coding/timing.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VCMReceiveCallback;
 
 enum { kDecoderFrameMemoryLength = 10 };
 
-struct VCMFrameInformation {
-  int64_t renderTimeMs;
-  int64_t decodeStartTimeMs;
-  void* userData;
-  VideoRotation rotation;
+struct VCMFrameInformation
+{
+    int64_t renderTimeMs;
+    int64_t decodeStartTimeMs;
+    void* userData;
+    VideoRotation rotation;
 };
 
-class VCMDecodedFrameCallback : public DecodedImageCallback {
- public:
-  VCMDecodedFrameCallback(VCMTiming* timing, Clock* clock);
+class VCMDecodedFrameCallback : public DecodedImageCallback
+{
+public:
+    VCMDecodedFrameCallback(VCMTiming* timing, Clock* clock);
     virtual ~VCMDecodedFrameCallback();
     void SetUserReceiveCallback(VCMReceiveCallback* receiveCallback);
     VCMReceiveCallback* UserReceiveCallback();
@@ -51,7 +54,7 @@ class VCMDecodedFrameCallback : public DecodedImageCallback {
     void Map(uint32_t timestamp, VCMFrameInformation* frameInfo);
     int32_t Pop(uint32_t timestamp);
 
- private:
+private:
     // Protect |_receiveCallback| and |_timestampMap|.
     CriticalSectionWrapper* _critSect;
     Clock* _clock;
@@ -61,46 +64,47 @@ class VCMDecodedFrameCallback : public DecodedImageCallback {
     uint64_t _lastReceivedPictureID;
 };
 
-class VCMGenericDecoder {
-  friend class VCMCodecDataBase;
+class VCMGenericDecoder
+{
+    friend class VCMCodecDataBase;
 
- public:
-  explicit VCMGenericDecoder(VideoDecoder* decoder, bool isExternal = false);
-  ~VCMGenericDecoder();
+public:
+    explicit VCMGenericDecoder(VideoDecoder* decoder, bool isExternal = false);
+    ~VCMGenericDecoder();
 
-  /**
-  * Initialize the decoder with the information from the VideoCodec
-  */
-  int32_t InitDecode(const VideoCodec* settings, int32_t numberOfCores);
+    /**
+    * Initialize the decoder with the information from the VideoCodec
+    */
+    int32_t InitDecode(const VideoCodec* settings, int32_t numberOfCores);
 
-  /**
-  * Decode to a raw I420 frame,
-  *
-  * inputVideoBuffer reference to encoded video frame
-  */
-  int32_t Decode(const VCMEncodedFrame& inputFrame, int64_t nowMs);
+    /**
+    * Decode to a raw I420 frame,
+    *
+    * inputVideoBuffer reference to encoded video frame
+    */
+    int32_t Decode(const VCMEncodedFrame& inputFrame, int64_t nowMs);
 
-  /**
-  * Free the decoder memory
-  */
-  int32_t Release();
+    /**
+    * Free the decoder memory
+    */
+    int32_t Release();
 
-  /**
-  * Set decode callback. Deregistering while decoding is illegal.
-  */
-  int32_t RegisterDecodeCompleteCallback(VCMDecodedFrameCallback* callback);
+    /**
+    * Set decode callback. Deregistering while decoding is illegal.
+    */
+    int32_t RegisterDecodeCompleteCallback(VCMDecodedFrameCallback* callback);
 
-  bool External() const;
-  bool PrefersLateDecoding() const;
+    bool External() const;
+    bool PrefersLateDecoding() const;
 
- private:
-  VCMDecodedFrameCallback* _callback;
-  VCMFrameInformation _frameInfos[kDecoderFrameMemoryLength];
-  uint32_t _nextFrameInfoIdx;
-  VideoDecoder* const _decoder;
-  VideoCodecType _codecType;
-  bool _isExternal;
-  bool _keyFrameDecoded;
+private:
+    VCMDecodedFrameCallback* _callback;
+    VCMFrameInformation _frameInfos[kDecoderFrameMemoryLength];
+    uint32_t _nextFrameInfoIdx;
+    VideoDecoder* const _decoder;
+    VideoCodecType _codecType;
+    bool _isExternal;
+    bool _keyFrameDecoded;
 };
 
 }  // namespace webrtc

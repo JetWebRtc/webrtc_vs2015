@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Vidvox Hap
  * Copyright (C) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  * Copyright (C) 2015 Tom Butterworth <bangnoise@gmail.com>
@@ -30,26 +30,30 @@
 #include "bytestream.h"
 #include "texturedsp.h"
 
-enum HapTextureFormat {
+enum HapTextureFormat
+{
     HAP_FMT_RGBDXT1   = 0x0B,
     HAP_FMT_RGBADXT5  = 0x0E,
     HAP_FMT_YCOCGDXT5 = 0x0F,
 };
 
-enum HapCompressor {
+enum HapCompressor
+{
     HAP_COMP_NONE    = 0xA0,
     HAP_COMP_SNAPPY  = 0xB0,
     HAP_COMP_COMPLEX = 0xC0,
 };
 
-enum HapSectionType {
+enum HapSectionType
+{
     HAP_ST_DECODE_INSTRUCTIONS = 0x01,
     HAP_ST_COMPRESSOR_TABLE    = 0x02,
     HAP_ST_SIZE_TABLE          = 0x03,
     HAP_ST_OFFSET_TABLE        = 0x04,
 };
 
-typedef struct HapChunk {
+typedef struct HapChunk
+{
     enum HapCompressor compressor;
     int compressed_offset;
     size_t compressed_size;
@@ -57,7 +61,8 @@ typedef struct HapChunk {
     size_t uncompressed_size;
 } HapChunk;
 
-typedef struct HapContext {
+typedef struct HapContext
+{
     AVClass *class;
 
     TextureDSPContext dxtc;

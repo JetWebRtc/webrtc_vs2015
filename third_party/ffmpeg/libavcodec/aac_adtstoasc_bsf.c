@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-2/4 AAC ADTS to MPEG-4 Audio Specific Configuration bitstream filter
  * Copyright (c) 2009 Alex Converse <alex.converse@gmail.com>
  *
@@ -26,7 +26,8 @@
 #include "mpeg4audio.h"
 #include "internal.h"
 
-typedef struct AACBSFContext {
+typedef struct AACBSFContext
+{
     int first_frame_done;
 } AACBSFContext;
 
@@ -55,12 +56,14 @@ static int aac_adtstoasc_filter(AVBitStreamFilterContext *bsfc,
         if (show_bits(&gb, 12) != 0xfff)
             return 0;
 
-    if (avpriv_aac_parse_header(&gb, &hdr) < 0) {
+    if (avpriv_aac_parse_header(&gb, &hdr) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error parsing ADTS frame header!\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (!hdr.crc_absent && hdr.num_aac_frames > 1) {
+    if (!hdr.crc_absent && hdr.num_aac_frames > 1)
+    {
         avpriv_report_missing_feature(avctx,
                                       "Multiple RDBs per frame with CRC");
         return AVERROR_PATCHWELCOME;
@@ -69,12 +72,15 @@ static int aac_adtstoasc_filter(AVBitStreamFilterContext *bsfc,
     buf      += AAC_ADTS_HEADER_SIZE + 2*!hdr.crc_absent;
     buf_size -= AAC_ADTS_HEADER_SIZE + 2*!hdr.crc_absent;
 
-    if (!ctx->first_frame_done) {
+    if (!ctx->first_frame_done)
+    {
         int            pce_size = 0;
         uint8_t        pce_data[MAX_PCE_SIZE];
-        if (!hdr.chan_config) {
+        if (!hdr.chan_config)
+        {
             init_get_bits(&gb, buf, buf_size * 8);
-            if (get_bits(&gb, 3) != 5) {
+            if (get_bits(&gb, 3) != 5)
+            {
                 avpriv_report_missing_feature(avctx,
                                               "PCE-based channel configuration "
                                               "without PCE as first syntax "
@@ -90,7 +96,8 @@ static int aac_adtstoasc_filter(AVBitStreamFilterContext *bsfc,
         av_free(avctx->extradata);
         avctx->extradata_size = 2 + pce_size;
         avctx->extradata = av_mallocz(avctx->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
-        if (!avctx->extradata) {
+        if (!avctx->extradata)
+        {
             avctx->extradata_size = 0;
             return AVERROR(ENOMEM);
         }
@@ -103,7 +110,8 @@ static int aac_adtstoasc_filter(AVBitStreamFilterContext *bsfc,
         put_bits(&pb, 1, 0); //does not depend on core coder
         put_bits(&pb, 1, 0); //is not extension
         flush_put_bits(&pb);
-        if (pce_size) {
+        if (pce_size)
+        {
             memcpy(avctx->extradata + 2, pce_data, pce_size);
         }
 
@@ -116,7 +124,8 @@ static int aac_adtstoasc_filter(AVBitStreamFilterContext *bsfc,
     return 0;
 }
 
-AVBitStreamFilter ff_aac_adtstoasc_bsf = {
+AVBitStreamFilter ff_aac_adtstoasc_bsf =
+{
     .name           = "aac_adtstoasc",
     .priv_data_size = sizeof(AACBSFContext),
     .filter         = aac_adtstoasc_filter,

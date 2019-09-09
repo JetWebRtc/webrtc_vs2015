@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 KO Myung-Hun <komh@chollian.net>
  *
  * This file is part of FFmpeg.
@@ -40,14 +40,16 @@ typedef void pthread_attr_t;
 typedef HMTX pthread_mutex_t;
 typedef void pthread_mutexattr_t;
 
-typedef struct {
+typedef struct
+{
     HEV  event_sem;
     int  wait_count;
 } pthread_cond_t;
 
 typedef void pthread_condattr_t;
 
-struct thread_arg {
+struct thread_arg
+{
     void *(*start_routine)(void *);
     void *arg;
 };
@@ -130,7 +132,8 @@ static av_always_inline int pthread_cond_destroy(pthread_cond_t *cond)
 
 static av_always_inline int pthread_cond_signal(pthread_cond_t *cond)
 {
-    if (cond->wait_count > 0) {
+    if (cond->wait_count > 0)
+    {
         DosPostEventSem(cond->event_sem);
 
         cond->wait_count--;
@@ -141,7 +144,8 @@ static av_always_inline int pthread_cond_signal(pthread_cond_t *cond)
 
 static av_always_inline int pthread_cond_broadcast(pthread_cond_t *cond)
 {
-    while (cond->wait_count > 0) {
+    while (cond->wait_count > 0)
+    {
         DosPostEventSem(cond->event_sem);
 
         cond->wait_count--;

@@ -27,7 +27,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     double frequency;
     double beep_factor;
@@ -61,7 +62,8 @@ typedef struct {
 #define OPT_DUR(name, field, def, min, max, descr, ...) \
     OPT_GENERIC(name, field, def, min, max, descr, DURATION, str, __VA_ARGS__)
 
-static const AVOption sine_options[] = {
+static const AVOption sine_options[] =
+{
     OPT_DBL("frequency",         frequency,            440, 0, DBL_MAX,   "set the sine frequency"),
     OPT_DBL("f",                 frequency,            440, 0, DBL_MAX,   "set the sine frequency"),
     OPT_DBL("beep_factor",       beep_factor,            0, 0, DBL_MAX,   "set the beep fequency factor"),
@@ -91,16 +93,19 @@ static void make_sin_table(int16_t *sin)
        exp(i*(a1+a2)/2) = (u+v) / length(u+v) */
     sin[0] = 0;
     sin[half_pi] = ampls;
-    for (step = half_pi; step > 1; step /= 2) {
+    for (step = half_pi; step > 1; step /= 2)
+    {
         /* k = (1 << 16) * amplitude / length(u+v)
            In exact values, k is constant at a given step */
         k = 0x10000;
-        for (i = 0; i < half_pi / 2; i += step) {
+        for (i = 0; i < half_pi / 2; i += step)
+        {
             s = sin[i] + sin[i + step];
             c = sin[half_pi - i] + sin[half_pi - i - step];
             n2 = s * s + c * c;
             /* Newton's method to solve n² * k² = unit² */
-            while (1) {
+            while (1)
+            {
                 new_k = (k + unit2 / ((uint64_t)k * n2) + 1) >> 1;
                 if (k == new_k)
                     break;
@@ -129,7 +134,8 @@ static av_cold int init(AVFilterContext *ctx)
     sine->dphi = ldexp(sine->frequency, 32) / sine->sample_rate + 0.5;
     make_sin_table(sine->sin);
 
-    if (sine->beep_factor) {
+    if (sine->beep_factor)
+    {
         sine->beep_period = sine->sample_rate;
         sine->beep_length = sine->beep_period / 25;
         sine->dphi_beep = ldexp(sine->beep_factor * sine->frequency, 32) /
@@ -152,7 +158,8 @@ static av_cold int query_formats(AVFilterContext *ctx)
     static const int64_t chlayouts[] = { AV_CH_LAYOUT_MONO, -1 };
     int sample_rates[] = { sine->sample_rate, -1 };
     static const enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_S16,
-                                                       AV_SAMPLE_FMT_NONE };
+                                                       AV_SAMPLE_FMT_NONE
+                                                     };
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
     int ret;
@@ -191,7 +198,8 @@ static int request_frame(AVFilterLink *outlink)
     int i, nb_samples = sine->samples_per_frame;
     int16_t *samples;
 
-    if (sine->duration) {
+    if (sine->duration)
+    {
         nb_samples = FFMIN(nb_samples, sine->duration - sine->pts);
         av_assert1(nb_samples >= 0);
         if (!nb_samples)
@@ -201,10 +209,12 @@ static int request_frame(AVFilterLink *outlink)
         return AVERROR(ENOMEM);
     samples = (int16_t *)frame->data[0];
 
-    for (i = 0; i < nb_samples; i++) {
+    for (i = 0; i < nb_samples; i++)
+    {
         samples[i] = sine->sin[sine->phi >> (32 - LOG_PERIOD)];
         sine->phi += sine->dphi;
-        if (sine->beep_index < sine->beep_length) {
+        if (sine->beep_index < sine->beep_length)
+        {
             samples[i] += sine->sin[sine->phi_beep >> (32 - LOG_PERIOD)] << 1;
             sine->phi_beep += sine->dphi_beep;
         }
@@ -217,7 +227,8 @@ static int request_frame(AVFilterLink *outlink)
     return ff_filter_frame(outlink, frame);
 }
 
-static const AVFilterPad sine_outputs[] = {
+static const AVFilterPad sine_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -227,7 +238,8 @@ static const AVFilterPad sine_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_asrc_sine = {
+AVFilter ff_asrc_sine =
+{
     .name          = "sine",
     .description   = NULL_IF_CONFIG_SMALL("Generate sine wave audio signal."),
     .query_formats = query_formats,

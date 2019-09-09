@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -40,9 +40,12 @@
 
 av_cold void ff_h264chroma_init(H264ChromaContext *c, int bit_depth)
 {
-    if (bit_depth > 8 && bit_depth <= 16) {
+    if (bit_depth > 8 && bit_depth <= 16)
+    {
         SET_CHROMA(16);
-    } else {
+    }
+    else
+    {
         SET_CHROMA(8);
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,38 +17,40 @@
 #include "webrtc/base/criticalsection.h"
 #include "webrtc/base/rate_statistics.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Clock;
 
 // Class used to limit a bitrate, making sure the average does not exceed a
 // maximum as measured over a sliding window. This class is thread safe; all
 // methods will acquire (the same) lock befeore executing.
-class RateLimiter {
- public:
-  RateLimiter(Clock* clock, int64_t max_window_ms);
-  ~RateLimiter();
+class RateLimiter
+{
+public:
+    RateLimiter(Clock* clock, int64_t max_window_ms);
+    ~RateLimiter();
 
-  // Try to use rate to send bytes. Returns true on success and if so updates
-  // current rate.
-  bool TryUseRate(size_t packet_size_bytes);
+    // Try to use rate to send bytes. Returns true on success and if so updates
+    // current rate.
+    bool TryUseRate(size_t packet_size_bytes);
 
-  // Set the maximum bitrate, in bps, that this limiter allows to send.
-  void SetMaxRate(uint32_t max_rate_bps);
+    // Set the maximum bitrate, in bps, that this limiter allows to send.
+    void SetMaxRate(uint32_t max_rate_bps);
 
-  // Set the window size over which to measure the current bitrate.
-  // For example, irt retransmissions, this is typically the RTT.
-  // Returns true on success and false if window_size_ms is out of range.
-  bool SetWindowSize(int64_t window_size_ms);
+    // Set the window size over which to measure the current bitrate.
+    // For example, irt retransmissions, this is typically the RTT.
+    // Returns true on success and false if window_size_ms is out of range.
+    bool SetWindowSize(int64_t window_size_ms);
 
- private:
-  Clock* const clock_;
-  rtc::CriticalSection lock_;
-  RateStatistics current_rate_ GUARDED_BY(lock_);
-  int64_t window_size_ms_ GUARDED_BY(lock_);
-  uint32_t max_rate_bps_ GUARDED_BY(lock_);
+private:
+    Clock* const clock_;
+    rtc::CriticalSection lock_;
+    RateStatistics current_rate_ GUARDED_BY(lock_);
+    int64_t window_size_ms_ GUARDED_BY(lock_);
+    uint32_t max_rate_bps_ GUARDED_BY(lock_);
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(RateLimiter);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(RateLimiter);
 };
 
 }  // namespace webrtc

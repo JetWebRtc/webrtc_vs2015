@@ -33,19 +33,24 @@ static int rt_event_to_ass(AVBPrint *buf, const char *p)
 {
     int prev_chr_is_space = 1;
 
-    while (*p) {
-        if (*p != '<') {
+    while (*p)
+    {
+        if (*p != '<')
+        {
             if (!av_isspace(*p))
                 av_bprint_chars(buf, *p, 1);
             else if (!prev_chr_is_space)
                 av_bprint_chars(buf, ' ', 1);
             prev_chr_is_space = av_isspace(*p);
-        } else {
+        }
+        else
+        {
             const char *end = strchr(p, '>');
             if (!end)
                 break;
             if (!av_strncasecmp(p, "<br/>", 5) ||
-                !av_strncasecmp(p, "<br>",  4)) {
+                    !av_strncasecmp(p, "<br>",  4))
+            {
                 av_bprintf(buf, "\\N");
             }
             p = end;
@@ -75,7 +80,8 @@ static int realtext_decode_frame(AVCodecContext *avctx,
     return avpkt->size;
 }
 
-AVCodec ff_realtext_decoder = {
+AVCodec ff_realtext_decoder =
+{
     .name           = "realtext",
     .long_name      = NULL_IF_CONFIG_SMALL("RealText subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

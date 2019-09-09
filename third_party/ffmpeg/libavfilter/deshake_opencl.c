@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  * Copyright (C) 2013 Lenny Wang
  *
@@ -53,47 +53,49 @@ int ff_opencl_transform(AVFilterContext *ctx,
     param_lu.kernel = deshake->opencl_ctx.kernel_luma;
     param_ch.kernel = deshake->opencl_ctx.kernel_chroma;
 
-    if ((unsigned int)interpolate > INTERPOLATE_BIQUADRATIC) {
+    if ((unsigned int)interpolate > INTERPOLATE_BIQUADRATIC)
+    {
         av_log(ctx, AV_LOG_ERROR, "Selected interpolate method is invalid\n");
         return AVERROR(EINVAL);
     }
     ret = avpriv_opencl_set_parameter(&param_lu,
-                                  FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_inbuf),
-                                  FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_outbuf),
-                                  FF_OPENCL_PARAM_INFO(packed_matrix_lu),
-                                  FF_OPENCL_PARAM_INFO(interpolate),
-                                  FF_OPENCL_PARAM_INFO(fill),
-                                  FF_OPENCL_PARAM_INFO(in->linesize[0]),
-                                  FF_OPENCL_PARAM_INFO(out->linesize[0]),
-                                  FF_OPENCL_PARAM_INFO(height),
-                                  FF_OPENCL_PARAM_INFO(width),
-                                  NULL);
+                                      FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_inbuf),
+                                      FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_outbuf),
+                                      FF_OPENCL_PARAM_INFO(packed_matrix_lu),
+                                      FF_OPENCL_PARAM_INFO(interpolate),
+                                      FF_OPENCL_PARAM_INFO(fill),
+                                      FF_OPENCL_PARAM_INFO(in->linesize[0]),
+                                      FF_OPENCL_PARAM_INFO(out->linesize[0]),
+                                      FF_OPENCL_PARAM_INFO(height),
+                                      FF_OPENCL_PARAM_INFO(width),
+                                      NULL);
     if (ret < 0)
         return ret;
     ret = avpriv_opencl_set_parameter(&param_ch,
-                                  FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_inbuf),
-                                  FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_outbuf),
-                                  FF_OPENCL_PARAM_INFO(packed_matrix_ch),
-                                  FF_OPENCL_PARAM_INFO(interpolate),
-                                  FF_OPENCL_PARAM_INFO(fill),
-                                  FF_OPENCL_PARAM_INFO(in->linesize[0]),
-                                  FF_OPENCL_PARAM_INFO(out->linesize[0]),
-                                  FF_OPENCL_PARAM_INFO(in->linesize[1]),
-                                  FF_OPENCL_PARAM_INFO(out->linesize[1]),
-                                  FF_OPENCL_PARAM_INFO(height),
-                                  FF_OPENCL_PARAM_INFO(width),
-                                  FF_OPENCL_PARAM_INFO(ch),
-                                  FF_OPENCL_PARAM_INFO(cw),
-                                  NULL);
+                                      FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_inbuf),
+                                      FF_OPENCL_PARAM_INFO(deshake->opencl_ctx.cl_outbuf),
+                                      FF_OPENCL_PARAM_INFO(packed_matrix_ch),
+                                      FF_OPENCL_PARAM_INFO(interpolate),
+                                      FF_OPENCL_PARAM_INFO(fill),
+                                      FF_OPENCL_PARAM_INFO(in->linesize[0]),
+                                      FF_OPENCL_PARAM_INFO(out->linesize[0]),
+                                      FF_OPENCL_PARAM_INFO(in->linesize[1]),
+                                      FF_OPENCL_PARAM_INFO(out->linesize[1]),
+                                      FF_OPENCL_PARAM_INFO(height),
+                                      FF_OPENCL_PARAM_INFO(width),
+                                      FF_OPENCL_PARAM_INFO(ch),
+                                      FF_OPENCL_PARAM_INFO(cw),
+                                      NULL);
     if (ret < 0)
         return ret;
     status = clEnqueueNDRangeKernel(deshake->opencl_ctx.command_queue,
                                     deshake->opencl_ctx.kernel_luma, 2, NULL,
                                     global_worksize_lu, local_worksize, 0, NULL, NULL);
     status |= clEnqueueNDRangeKernel(deshake->opencl_ctx.command_queue,
-                                    deshake->opencl_ctx.kernel_chroma, 2, NULL,
-                                    global_worksize_ch, local_worksize, 0, NULL, NULL);
-    if (status != CL_SUCCESS) {
+                                     deshake->opencl_ctx.kernel_chroma, 2, NULL,
+                                     global_worksize_ch, local_worksize, 0, NULL, NULL);
+    if (status != CL_SUCCESS)
+    {
         av_log(ctx, AV_LOG_ERROR, "OpenCL run kernel error occurred: %s\n", av_opencl_errstr(status));
         return AVERROR_EXTERNAL;
     }
@@ -114,27 +116,33 @@ int ff_opencl_deshake_init(AVFilterContext *ctx)
         return ret;
     deshake->opencl_ctx.plane_num = PLANE_NUM;
     deshake->opencl_ctx.command_queue = av_opencl_get_command_queue();
-    if (!deshake->opencl_ctx.command_queue) {
+    if (!deshake->opencl_ctx.command_queue)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unable to get OpenCL command queue in filter 'deshake'\n");
         return AVERROR(EINVAL);
     }
     deshake->opencl_ctx.program = av_opencl_compile("avfilter_transform", NULL);
-    if (!deshake->opencl_ctx.program) {
+    if (!deshake->opencl_ctx.program)
+    {
         av_log(ctx, AV_LOG_ERROR, "OpenCL failed to compile program 'avfilter_transform'\n");
         return AVERROR(EINVAL);
     }
-    if (!deshake->opencl_ctx.kernel_luma) {
+    if (!deshake->opencl_ctx.kernel_luma)
+    {
         deshake->opencl_ctx.kernel_luma = clCreateKernel(deshake->opencl_ctx.program,
-                                                         "avfilter_transform_luma", &ret);
-        if (ret != CL_SUCCESS) {
+                                          "avfilter_transform_luma", &ret);
+        if (ret != CL_SUCCESS)
+        {
             av_log(ctx, AV_LOG_ERROR, "OpenCL failed to create kernel 'avfilter_transform_luma'\n");
             return AVERROR(EINVAL);
         }
     }
-    if (!deshake->opencl_ctx.kernel_chroma) {
+    if (!deshake->opencl_ctx.kernel_chroma)
+    {
         deshake->opencl_ctx.kernel_chroma = clCreateKernel(deshake->opencl_ctx.program,
-                                                           "avfilter_transform_chroma", &ret);
-        if (ret != CL_SUCCESS) {
+                                            "avfilter_transform_chroma", &ret);
+        if (ret != CL_SUCCESS)
+        {
             av_log(ctx, AV_LOG_ERROR, "OpenCL failed to create kernel 'avfilter_transform_chroma'\n");
             return AVERROR(EINVAL);
         }
@@ -162,7 +170,8 @@ int ff_opencl_deshake_process_inout_buf(AVFilterContext *ctx, AVFrame *in, AVFra
     const int hshift = av_pix_fmt_desc_get(link->format)->log2_chroma_h;
     int chroma_height = FF_CEIL_RSHIFT(link->h, hshift);
 
-    if ((!deshake->opencl_ctx.cl_inbuf) || (!deshake->opencl_ctx.cl_outbuf)) {
+    if ((!deshake->opencl_ctx.cl_inbuf) || (!deshake->opencl_ctx.cl_outbuf))
+    {
         deshake->opencl_ctx.in_plane_size[0]  = (in->linesize[0] * in->height);
         deshake->opencl_ctx.in_plane_size[1]  = (in->linesize[1] * chroma_height);
         deshake->opencl_ctx.in_plane_size[2]  = (in->linesize[2] * chroma_height);
@@ -175,25 +184,27 @@ int ff_opencl_deshake_process_inout_buf(AVFilterContext *ctx, AVFrame *in, AVFra
         deshake->opencl_ctx.cl_outbuf_size = deshake->opencl_ctx.out_plane_size[0] +
                                              deshake->opencl_ctx.out_plane_size[1] +
                                              deshake->opencl_ctx.out_plane_size[2];
-        if (!deshake->opencl_ctx.cl_inbuf) {
+        if (!deshake->opencl_ctx.cl_inbuf)
+        {
             ret = av_opencl_buffer_create(&deshake->opencl_ctx.cl_inbuf,
-                                            deshake->opencl_ctx.cl_inbuf_size,
-                                            CL_MEM_READ_ONLY, NULL);
+                                          deshake->opencl_ctx.cl_inbuf_size,
+                                          CL_MEM_READ_ONLY, NULL);
             if (ret < 0)
                 return ret;
         }
-        if (!deshake->opencl_ctx.cl_outbuf) {
+        if (!deshake->opencl_ctx.cl_outbuf)
+        {
             ret = av_opencl_buffer_create(&deshake->opencl_ctx.cl_outbuf,
-                                            deshake->opencl_ctx.cl_outbuf_size,
-                                            CL_MEM_READ_WRITE, NULL);
+                                          deshake->opencl_ctx.cl_outbuf_size,
+                                          CL_MEM_READ_WRITE, NULL);
             if (ret < 0)
                 return ret;
         }
     }
     ret = av_opencl_buffer_write_image(deshake->opencl_ctx.cl_inbuf,
-                                 deshake->opencl_ctx.cl_inbuf_size,
-                                 0, in->data,deshake->opencl_ctx.in_plane_size,
-                                 deshake->opencl_ctx.plane_num);
+                                       deshake->opencl_ctx.cl_inbuf_size,
+                                       0, in->data,deshake->opencl_ctx.in_plane_size,
+                                       deshake->opencl_ctx.plane_num);
     if(ret < 0)
         return ret;
     return ret;

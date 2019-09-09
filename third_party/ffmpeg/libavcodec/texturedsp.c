@@ -34,9 +34,9 @@
 #define RGBA(r, g, b, a) ((r) | ((g) << 8) | ((b) << 16) | ((a) << 24))
 
 static av_always_inline void extract_color(uint32_t colors[4],
-                                           uint16_t color0,
-                                           uint16_t color1,
-                                           int dxtn, int alpha)
+        uint16_t color0,
+        uint16_t color1,
+        int dxtn, int alpha)
 {
     int tmp;
     uint8_t r0, g0, b0, r1, g1, b1;
@@ -56,7 +56,8 @@ static av_always_inline void extract_color(uint32_t colors[4],
     tmp = (color1 & 0x001F) * 255 + 16;
     b1  = (uint8_t) ((tmp / 32 + tmp) / 32);
 
-    if (dxtn || color0 > color1) {
+    if (dxtn || color0 > color1)
+    {
         colors[0] = RGBA(r0, g0, b0, a);
         colors[1] = RGBA(r1, g1, b1, a);
         colors[2] = RGBA((2 * r0 + r1) / 3,
@@ -67,7 +68,9 @@ static av_always_inline void extract_color(uint32_t colors[4],
                          (2 * g1 + g0) / 3,
                          (2 * b1 + b0) / 3,
                          a);
-    } else {
+    }
+    else
+    {
         colors[0] = RGBA(r0, g0, b0, a);
         colors[1] = RGBA(r1, g1, b1, a);
         colors[2] = RGBA((r0 + r1) / 2,
@@ -89,8 +92,10 @@ static inline void dxt1_block_internal(uint8_t *dst, ptrdiff_t stride,
 
     extract_color(colors, color0, color1, 0, alpha);
 
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             uint32_t pixel = colors[code & 3];
             code >>= 2;
             AV_WL32(dst + x * 4, pixel);
@@ -143,7 +148,8 @@ static inline void dxt3_block_internal(uint8_t *dst, ptrdiff_t stride,
 
     extract_color(colors, color0, color1, 1, 0);
 
-    for (y = 0; y < 4; y++) {
+    for (y = 0; y < 4; y++)
+    {
         const uint16_t alpha_code = AV_RL16(block + 2 * y);
         uint8_t alpha_values[4];
 
@@ -152,7 +158,8 @@ static inline void dxt3_block_internal(uint8_t *dst, ptrdiff_t stride,
         alpha_values[2] = ((alpha_code >>  8) & 0x0F) * 17;
         alpha_values[3] = ((alpha_code >> 12) & 0x0F) * 17;
 
-        for (x = 0; x < 4; x++) {
+        for (x = 0; x < 4; x++)
+        {
             uint8_t alpha = alpha_values[x];
             uint32_t pixel = colors[code & 3] | (alpha << 24);
             code >>= 2;
@@ -234,7 +241,8 @@ static void decompress_indices(uint8_t *dst, const uint8_t *src)
 {
     int block, i;
 
-    for (block = 0; block < 2; block++) {
+    for (block = 0; block < 2; block++)
+    {
         int tmp = AV_RL24(src);
 
         /* Unpack 8x3 bit from last 3 byte block */
@@ -262,26 +270,41 @@ static inline void dxt5_block_internal(uint8_t *dst, ptrdiff_t stride,
 
     extract_color(colors, color0, color1, 1, 0);
 
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int alpha_code = alpha_indices[x + y * 4];
             uint32_t pixel;
             uint8_t alpha;
 
-            if (alpha_code == 0) {
+            if (alpha_code == 0)
+            {
                 alpha = alpha0;
-            } else if (alpha_code == 1) {
+            }
+            else if (alpha_code == 1)
+            {
                 alpha = alpha1;
-            } else {
-                if (alpha0 > alpha1) {
+            }
+            else
+            {
+                if (alpha0 > alpha1)
+                {
                     alpha = (uint8_t) (((8 - alpha_code) * alpha0 +
                                         (alpha_code - 1) * alpha1) / 7);
-                } else {
-                    if (alpha_code == 6) {
+                }
+                else
+                {
+                    if (alpha_code == 6)
+                    {
                         alpha = 0;
-                    } else if (alpha_code == 7) {
+                    }
+                    else if (alpha_code == 7)
+                    {
                         alpha = 255;
-                    } else {
+                    }
+                    else
+                    {
                         alpha = (uint8_t) (((6 - alpha_code) * alpha0 +
                                             (alpha_code - 1) * alpha1) / 5);
                     }
@@ -420,8 +443,10 @@ static inline void rgtc_block_internal(uint8_t *dst, ptrdiff_t stride,
      * compress specular (black and white) or normal (red and green) maps.
      * Although the standard says to zero out unused components, many
      * implementations fill all of them with the same value. */
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int i = indices[x + y * 4];
             /* Interval expansion from [-1 1] or [0 1] to [0 255]. */
             int c = color_tab[i];
@@ -437,12 +462,15 @@ static inline void rgtc1_block_internal(uint8_t *dst, ptrdiff_t stride,
     int color_table[8];
     int r0, r1;
 
-    if (sign) {
+    if (sign)
+    {
         /* signed data is in [-128 127] so just offset it to unsigned
          * and it can be treated exactly the same */
         r0 = ((int8_t) block[0]) + 128;
         r1 = ((int8_t) block[1]) + 128;
-    } else {
+    }
+    else
+    {
         r0 = block[0];
         r1 = block[1];
     }
@@ -450,7 +478,8 @@ static inline void rgtc1_block_internal(uint8_t *dst, ptrdiff_t stride,
     color_table[0] = r0;
     color_table[1] = r1;
 
-    if (r0 > r1) {
+    if (r0 > r1)
+    {
         /* 6 interpolated color values */
         color_table[2] = (6 * r0 + 1 * r1) / 7; // bit code 010
         color_table[3] = (5 * r0 + 2 * r1) / 7; // bit code 011
@@ -458,7 +487,9 @@ static inline void rgtc1_block_internal(uint8_t *dst, ptrdiff_t stride,
         color_table[5] = (3 * r0 + 4 * r1) / 7; // bit code 101
         color_table[6] = (2 * r0 + 5 * r1) / 7; // bit code 110
         color_table[7] = (1 * r0 + 6 * r1) / 7; // bit code 111
-    } else {
+    }
+    else
+    {
         /* 4 interpolated color values */
         color_table[2] = (4 * r0 + 1 * r1) / 5; // bit code 010
         color_table[3] = (3 * r0 + 2 * r1) / 5; // bit code 011
@@ -516,8 +547,10 @@ static inline void rgtc2_block_internal(uint8_t *dst, ptrdiff_t stride,
     rgtc1_block_internal(c1, 16, block + 8, sign);
 
     /* B is rebuilt exactly like a normal map. */
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             uint8_t *p = dst + x * 4 + y * stride;
             int r = c0[x * 4 + y * 16];
             int g = c1[x * 4 + y * 16];
@@ -582,8 +615,10 @@ static int dxn3dc_block(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
     rgtc2_block_internal(dst, stride, block, 0);
 
     /* This is the 3Dc variant of RGTC2, with swapped R and G. */
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             uint8_t *p = dst + x * 4 + y * stride;
             FFSWAP(uint8_t, p[0], p[1]);
         }

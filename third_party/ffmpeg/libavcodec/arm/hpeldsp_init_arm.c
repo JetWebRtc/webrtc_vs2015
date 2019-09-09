@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM-optimized halfpel functions
  * Copyright (c) 2001 Lionel Ulmer
  *

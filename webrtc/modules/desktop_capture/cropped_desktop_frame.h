@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Returns nullptr frame if |rect| is not contained by the bounds of |frame|.
 std::unique_ptr<DesktopFrame> CreateCroppedDesktopFrame(

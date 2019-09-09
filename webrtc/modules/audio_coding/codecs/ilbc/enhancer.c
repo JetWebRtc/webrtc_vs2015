@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,18 +34,19 @@ void WebRtcIlbcfix_Enhancer(
     size_t *period,   /* (i) pitch period array (pitch bward-in time) */
     const size_t *plocs,   /* (i) locations where period array values valid */
     size_t periodl   /* (i) dimension of period and plocs */
-                            ){
-  /* Stack based */
-  int16_t surround[ENH_BLOCKL];
+)
+{
+    /* Stack based */
+    int16_t surround[ENH_BLOCKL];
 
-  WebRtcSpl_MemSetW16(surround, 0, ENH_BLOCKL);
+    WebRtcSpl_MemSetW16(surround, 0, ENH_BLOCKL);
 
-  /* get said second sequence of segments */
+    /* get said second sequence of segments */
 
-  WebRtcIlbcfix_GetSyncSeq(idata, idatal, centerStartPos, period, plocs,
-                           periodl, ENH_HL, surround);
+    WebRtcIlbcfix_GetSyncSeq(idata, idatal, centerStartPos, period, plocs,
+                             periodl, ENH_HL, surround);
 
-  /* compute the smoothed output from said second sequence */
+    /* compute the smoothed output from said second sequence */
 
-  WebRtcIlbcfix_Smooth(odata, idata + centerStartPos, surround);
+    WebRtcIlbcfix_Smooth(odata, idata + centerStartPos, surround);
 }

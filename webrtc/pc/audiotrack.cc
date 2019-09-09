@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,60 +14,73 @@
 
 using rtc::scoped_refptr;
 
-namespace webrtc {
+namespace webrtc
+{
 
 // static
 scoped_refptr<AudioTrack> AudioTrack::Create(
     const std::string& id,
-    const scoped_refptr<AudioSourceInterface>& source) {
-  return new rtc::RefCountedObject<AudioTrack>(id, source);
+    const scoped_refptr<AudioSourceInterface>& source)
+{
+    return new rtc::RefCountedObject<AudioTrack>(id, source);
 }
 
 AudioTrack::AudioTrack(const std::string& label,
                        const scoped_refptr<AudioSourceInterface>& source)
-    : MediaStreamTrack<AudioTrackInterface>(label), audio_source_(source) {
-  if (audio_source_) {
-    audio_source_->RegisterObserver(this);
-    OnChanged();
-  }
+    : MediaStreamTrack<AudioTrackInterface>(label), audio_source_(source)
+{
+    if (audio_source_)
+    {
+        audio_source_->RegisterObserver(this);
+        OnChanged();
+    }
 }
 
-AudioTrack::~AudioTrack() {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  set_state(MediaStreamTrackInterface::kEnded);
-  if (audio_source_)
-    audio_source_->UnregisterObserver(this);
+AudioTrack::~AudioTrack()
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    set_state(MediaStreamTrackInterface::kEnded);
+    if (audio_source_)
+        audio_source_->UnregisterObserver(this);
 }
 
-std::string AudioTrack::kind() const {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  return kAudioKind;
+std::string AudioTrack::kind() const
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    return kAudioKind;
 }
 
-AudioSourceInterface* AudioTrack::GetSource() const {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  return audio_source_.get();
+AudioSourceInterface* AudioTrack::GetSource() const
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    return audio_source_.get();
 }
 
-void AudioTrack::AddSink(AudioTrackSinkInterface* sink) {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  if (audio_source_)
-    audio_source_->AddSink(sink);
+void AudioTrack::AddSink(AudioTrackSinkInterface* sink)
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    if (audio_source_)
+        audio_source_->AddSink(sink);
 }
 
-void AudioTrack::RemoveSink(AudioTrackSinkInterface* sink) {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  if (audio_source_)
-    audio_source_->RemoveSink(sink);
+void AudioTrack::RemoveSink(AudioTrackSinkInterface* sink)
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    if (audio_source_)
+        audio_source_->RemoveSink(sink);
 }
 
-void AudioTrack::OnChanged() {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  if (audio_source_->state() == MediaSourceInterface::kEnded) {
-    set_state(kEnded);
-  } else {
-    set_state(kLive);
-  }
+void AudioTrack::OnChanged()
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    if (audio_source_->state() == MediaSourceInterface::kEnded)
+    {
+        set_state(kEnded);
+    }
+    else
+    {
+        set_state(kLive);
+    }
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Packed Animation File audio decoder
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -28,7 +28,8 @@
 
 static av_cold int paf_audio_init(AVCodecContext *avctx)
 {
-    if (avctx->channels != 2) {
+    if (avctx->channels != 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid number of channels\n");
         return AVERROR_INVALIDDATA;
     }
@@ -58,7 +59,8 @@ static int paf_audio_decode(AVCodecContext *avctx, void *data,
 
     output_samples = (int16_t *)frame->data[0];
     // codebook of 256 16-bit samples and 8-bit indices to it
-    for (j = 0; j < frames; j++) {
+    for (j = 0; j < frames; j++)
+    {
         for (i = 0; i < 256; i++)
             cb[i] = sign_extend(AV_RL16(src + i * 2), 16);
         src += 256 * 2;
@@ -71,7 +73,8 @@ static int paf_audio_decode(AVCodecContext *avctx, void *data,
     return pkt->size;
 }
 
-AVCodec ff_paf_audio_decoder = {
+AVCodec ff_paf_audio_decoder =
+{
     .name         = "paf_audio",
     .long_name    = NULL_IF_CONFIG_SMALL("Amazing Studio Packed Animation File Audio"),
     .type         = AVMEDIA_TYPE_AUDIO,

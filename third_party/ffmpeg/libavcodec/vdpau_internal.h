@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Video Decode and Presentation API for UNIX (VDPAU) is used for
  * HW decode acceleration for MPEG-1/2, H.264 and VC-1.
  *
@@ -42,7 +42,8 @@ static inline uintptr_t ff_vdpau_get_surface_id(AVFrame *pic)
 
 struct vdpau_picture_context;
 #if CONFIG_VDPAU
-union VDPAUPictureInfo {
+union VDPAUPictureInfo
+{
     VdpPictureInfoH264        h264;
     VdpPictureInfoMPEG1Or2    mpeg;
     VdpPictureInfoVC1          vc1;
@@ -57,7 +58,8 @@ union VDPAUPictureInfo {
 
 #include "vdpau.h"
 
-typedef struct VDPAUHWContext {
+typedef struct VDPAUHWContext
+{
     AVVDPAUContext context;
     VdpDevice device;
     VdpGetProcAddress *get_proc_address;
@@ -65,7 +67,8 @@ typedef struct VDPAUHWContext {
     unsigned char flags;
 } VDPAUHWContext;
 
-typedef struct VDPAUContext {
+typedef struct VDPAUContext
+{
     /**
      * VDPAU device handle
      */
@@ -90,7 +93,8 @@ typedef struct VDPAUContext {
     uint32_t height;
 } VDPAUContext;
 
-struct vdpau_picture_context {
+struct vdpau_picture_context
+{
     /**
      * VDPAU picture information.
      */
@@ -106,9 +110,9 @@ struct vdpau_picture_context {
      */
     int bitstream_buffers_used;
 
-   /**
-     * Table of bitstream buffers.
-     */
+    /**
+      * Table of bitstream buffers.
+      */
     VdpBitstreamBuffer *bitstream_buffers;
 };
 

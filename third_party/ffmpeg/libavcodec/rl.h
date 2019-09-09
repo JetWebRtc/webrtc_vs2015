@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2000-2002 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer
  *
@@ -35,7 +35,8 @@
 #define MAX_LEVEL  64
 
 /** RLTable. */
-typedef struct RLTable {
+typedef struct RLTable
+{
     int n;                         ///< number of entries of table_vlc minus 1
     int last;                      ///< number of values for last = 0
     const uint16_t (*table_vlc)[2];

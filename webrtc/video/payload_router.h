@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,7 +21,8 @@
 #include "webrtc/video_encoder.h"
 #include "webrtc/system_wrappers/include/atomic32.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class RTPFragmentationHeader;
 class RtpRtcp;
@@ -29,38 +30,39 @@ struct RTPVideoHeader;
 
 // PayloadRouter routes outgoing data to the correct sending RTP module, based
 // on the simulcast layer in RTPVideoHeader.
-class PayloadRouter : public EncodedImageCallback {
- public:
-  // Rtp modules are assumed to be sorted in simulcast index order.
-  PayloadRouter(const std::vector<RtpRtcp*>& rtp_modules,
-                int payload_type);
-  ~PayloadRouter();
+class PayloadRouter : public EncodedImageCallback
+{
+public:
+    // Rtp modules are assumed to be sorted in simulcast index order.
+    PayloadRouter(const std::vector<RtpRtcp*>& rtp_modules,
+                  int payload_type);
+    ~PayloadRouter();
 
-  // PayloadRouter will only route packets if being active, all packets will be
-  // dropped otherwise.
-  void SetActive(bool active);
-  bool IsActive();
+    // PayloadRouter will only route packets if being active, all packets will be
+    // dropped otherwise.
+    void SetActive(bool active);
+    bool IsActive();
 
-  // Implements EncodedImageCallback.
-  // Returns 0 if the packet was routed / sent, -1 otherwise.
-  EncodedImageCallback::Result OnEncodedImage(
-      const EncodedImage& encoded_image,
-      const CodecSpecificInfo* codec_specific_info,
-      const RTPFragmentationHeader* fragmentation) override;
+    // Implements EncodedImageCallback.
+    // Returns 0 if the packet was routed / sent, -1 otherwise.
+    EncodedImageCallback::Result OnEncodedImage(
+        const EncodedImage& encoded_image,
+        const CodecSpecificInfo* codec_specific_info,
+        const RTPFragmentationHeader* fragmentation) override;
 
-  void OnBitrateAllocationUpdated(const BitrateAllocation& bitrate);
+    void OnBitrateAllocationUpdated(const BitrateAllocation& bitrate);
 
- private:
-  void UpdateModuleSendingState() EXCLUSIVE_LOCKS_REQUIRED(crit_);
+private:
+    void UpdateModuleSendingState() EXCLUSIVE_LOCKS_REQUIRED(crit_);
 
-  rtc::CriticalSection crit_;
-  bool active_ GUARDED_BY(crit_);
+    rtc::CriticalSection crit_;
+    bool active_ GUARDED_BY(crit_);
 
-  // Rtp modules are assumed to be sorted in simulcast index order. Not owned.
-  const std::vector<RtpRtcp*> rtp_modules_;
-  const int payload_type_;
+    // Rtp modules are assumed to be sorted in simulcast index order. Not owned.
+    const std::vector<RtpRtcp*> rtp_modules_;
+    const int payload_type_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(PayloadRouter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(PayloadRouter);
 };
 
 }  // namespace webrtc

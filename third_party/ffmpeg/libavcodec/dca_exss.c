@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA ExSS extension
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #define DCA_CORE_EXTS (DCA_EXT_XCH | DCA_EXT_XXCH | DCA_EXT_X96)
 
 /* these are unconfirmed but should be mostly correct */
-enum DCAExSSSpeakerMask {
+enum DCAExSSSpeakerMask
+{
     DCA_EXSS_FRONT_CENTER          = 0x0001,
     DCA_EXSS_FRONT_LEFT_RIGHT      = 0x0002,
     DCA_EXSS_SIDE_REAR_LEFT_RIGHT  = 0x0004,
@@ -73,7 +74,8 @@ static void dca_exss_skip_mix_coeffs(GetBitContext *gb, int channels, int out_ch
 {
     int i;
 
-    for (i = 0; i < channels; i++) {
+    for (i = 0; i < channels; i++)
+    {
         int mix_map_mask = get_bits(gb, out_ch);
         int num_coeffs = av_popcount(mix_map_mask);
         skip_bits_long(gb, num_coeffs * 6);
@@ -103,13 +105,15 @@ static int dca_exss_parse_asset_header(DCAContext *s)
     header_size = get_bits(&s->gb, 9) + 1;
     skip_bits(&s->gb, 3); // asset index
 
-    if (s->static_fields) {
+    if (s->static_fields)
+    {
         if (get_bits1(&s->gb))
             skip_bits(&s->gb, 4); // asset type descriptor
         if (get_bits1(&s->gb))
             skip_bits_long(&s->gb, 24); // language descriptor
 
-        if (get_bits1(&s->gb)) {
+        if (get_bits1(&s->gb))
+        {
             /* How can one fit 1024 bytes of text here if the maximum value
              * for the asset header size field above was 512 bytes? */
             int text_length = get_bits(&s->gb, 10) + 1;
@@ -123,7 +127,8 @@ static int dca_exss_parse_asset_header(DCAContext *s)
         channels = get_bits(&s->gb, 8) + 1;
 
         s->one2one_map_chtospkr = get_bits1(&s->gb);
-        if (s->one2one_map_chtospkr) {
+        if (s->one2one_map_chtospkr)
+        {
             int spkr_remap_sets;
             int spkr_mask_size = 16;
             int num_spkrs[7];
@@ -133,30 +138,36 @@ static int dca_exss_parse_asset_header(DCAContext *s)
             if (channels > 6)
                 embedded_6ch = get_bits1(&s->gb);
 
-            if (get_bits1(&s->gb)) {
+            if (get_bits1(&s->gb))
+            {
                 spkr_mask_size = (get_bits(&s->gb, 2) + 1) << 2;
                 skip_bits(&s->gb, spkr_mask_size); // spkr activity mask
             }
 
             spkr_remap_sets = get_bits(&s->gb, 3);
 
-            for (i = 0; i < spkr_remap_sets; i++) {
+            for (i = 0; i < spkr_remap_sets; i++)
+            {
                 /* std layout mask for each remap set */
                 num_spkrs[i] = dca_exss_mask2count(get_bits(&s->gb, spkr_mask_size));
             }
 
-            for (i = 0; i < spkr_remap_sets; i++) {
+            for (i = 0; i < spkr_remap_sets; i++)
+            {
                 int num_dec_ch_remaps = get_bits(&s->gb, 5) + 1;
                 if (get_bits_left(&s->gb) < 0)
                     return AVERROR_INVALIDDATA;
 
-                for (j = 0; j < num_spkrs[i]; j++) {
+                for (j = 0; j < num_spkrs[i]; j++)
+                {
                     int remap_dec_ch_mask = get_bits_long(&s->gb, num_dec_ch_remaps);
                     int num_dec_ch = av_popcount(remap_dec_ch_mask);
                     skip_bits_long(&s->gb, num_dec_ch * 5); // remap codes
                 }
             }
-        } else {
+        }
+        else
+        {
             skip_bits(&s->gb, 3); // representation type
         }
     }
@@ -171,7 +182,8 @@ static int dca_exss_parse_asset_header(DCAContext *s)
     if (drc_code_present && embedded_stereo)
         get_bits(&s->gb, 8); // drc stereo code
 
-    if (s->mix_metadata && get_bits1(&s->gb)) {
+    if (s->mix_metadata && get_bits1(&s->gb))
+    {
         skip_bits(&s->gb, 1); // external mix
         skip_bits(&s->gb, 6); // post mix gain code
 
@@ -186,7 +198,8 @@ static int dca_exss_parse_asset_header(DCAContext *s)
         else
             skip_bits_long(&s->gb, s->num_mix_configs * 6); // scale codes
 
-        for (i = 0; i < s->num_mix_configs; i++) {
+        for (i = 0; i < s->num_mix_configs; i++)
+        {
             if (get_bits_left(&s->gb) < 0)
                 return AVERROR_INVALIDDATA;
             dca_exss_skip_mix_coeffs(&s->gb, channels, s->mix_config_num_ch[i]);
@@ -197,7 +210,8 @@ static int dca_exss_parse_asset_header(DCAContext *s)
         }
     }
 
-    switch (get_bits(&s->gb, 2)) {
+    switch (get_bits(&s->gb, 2))
+    {
     case 0:
         extensions_mask = get_bits(&s->gb, 12);
         break;
@@ -217,7 +231,8 @@ static int dca_exss_parse_asset_header(DCAContext *s)
     if (get_bits_left(&s->gb) < 0)
         return AVERROR_INVALIDDATA;
 
-    if (get_bits_count(&s->gb) - header_pos > header_size * 8) {
+    if (get_bits_count(&s->gb) - header_pos > header_size * 8)
+    {
         av_log(s->avctx, AV_LOG_WARNING, "Asset header size mismatch.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -268,7 +283,8 @@ void ff_dca_exss_parse_header(DCAContext *s)
     skip_bits(&s->gb, 16 + 4 * blownup); // hd_size
 
     s->static_fields = get_bits1(&s->gb);
-    if (s->static_fields) {
+    if (s->static_fields)
+    {
         skip_bits(&s->gb, 2); // reference clock code
         skip_bits(&s->gb, 3); // frame duration code
 
@@ -279,7 +295,8 @@ void ff_dca_exss_parse_header(DCAContext *s)
          * combined to form multiple audio presentations */
 
         num_audiop = get_bits(&s->gb, 3) + 1;
-        if (num_audiop > 1) {
+        if (num_audiop > 1)
+        {
             avpriv_request_sample(s->avctx,
                                   "Multiple DTS-HD audio presentations");
             /* ignore such streams for now */
@@ -287,7 +304,8 @@ void ff_dca_exss_parse_header(DCAContext *s)
         }
 
         num_assets = get_bits(&s->gb, 3) + 1;
-        if (num_assets > 1) {
+        if (num_assets > 1)
+        {
             avpriv_request_sample(s->avctx, "Multiple DTS-HD audio assets");
             /* ignore such streams for now */
             return;
@@ -302,14 +320,16 @@ void ff_dca_exss_parse_header(DCAContext *s)
                     skip_bits(&s->gb, 8); // active asset mask
 
         s->mix_metadata = get_bits1(&s->gb);
-        if (s->mix_metadata) {
+        if (s->mix_metadata)
+        {
             int mix_out_mask_size;
 
             skip_bits(&s->gb, 2); // adjustment level
             mix_out_mask_size  = (get_bits(&s->gb, 2) + 1) << 2;
             s->num_mix_configs =  get_bits(&s->gb, 2) + 1;
 
-            for (i = 0; i < s->num_mix_configs; i++) {
+            for (i = 0; i < s->num_mix_configs; i++)
+            {
                 int mix_out_mask        = get_bits(&s->gb, mix_out_mask_size);
                 s->mix_config_num_ch[i] = dca_exss_mask2count(mix_out_mask);
             }
@@ -321,53 +341,57 @@ void ff_dca_exss_parse_header(DCAContext *s)
     for (i = 0; i < num_assets; i++)
         asset_size[i] = get_bits_long(&s->gb, 16 + 4 * blownup) + 1;
 
-    for (i = 0; i < num_assets; i++) {
+    for (i = 0; i < num_assets; i++)
+    {
         if (dca_exss_parse_asset_header(s))
             return;
     }
 
-        j = get_bits_count(&s->gb);
-        if (start_pos + hdrsize * 8 > j)
-            skip_bits_long(&s->gb, start_pos + hdrsize * 8 - j);
+    j = get_bits_count(&s->gb);
+    if (start_pos + hdrsize * 8 > j)
+        skip_bits_long(&s->gb, start_pos + hdrsize * 8 - j);
 
-        for (i = 0; i < num_assets; i++) {
-            int end_pos;
-            start_pos = get_bits_count(&s->gb);
-            end_pos   = start_pos + asset_size[i] * 8;
-            mkr       = get_bits_long(&s->gb, 32);
+    for (i = 0; i < num_assets; i++)
+    {
+        int end_pos;
+        start_pos = get_bits_count(&s->gb);
+        end_pos   = start_pos + asset_size[i] * 8;
+        mkr       = get_bits_long(&s->gb, 32);
 
-            /* parse extensions that we know about */
-            switch (mkr) {
-            case DCA_SYNCWORD_XBR:
-                ff_dca_xbr_parse_frame(s);
-                break;
-            case DCA_SYNCWORD_XXCH:
-                ff_dca_xxch_decode_frame(s);
-                s->core_ext_mask |= DCA_EXT_XXCH; /* xxx use for chan reordering */
-                break;
-            case DCA_SYNCWORD_XLL:
-                if (s->xll_disable) {
-                    av_log(s->avctx, AV_LOG_DEBUG,
-                           "DTS-XLL: ignoring XLL extension\n");
-                    break;
-                }
+        /* parse extensions that we know about */
+        switch (mkr)
+        {
+        case DCA_SYNCWORD_XBR:
+            ff_dca_xbr_parse_frame(s);
+            break;
+        case DCA_SYNCWORD_XXCH:
+            ff_dca_xxch_decode_frame(s);
+            s->core_ext_mask |= DCA_EXT_XXCH; /* xxx use for chan reordering */
+            break;
+        case DCA_SYNCWORD_XLL:
+            if (s->xll_disable)
+            {
                 av_log(s->avctx, AV_LOG_DEBUG,
-                       "DTS-XLL: decoding XLL extension\n");
-                if (ff_dca_xll_decode_header(s)        == 0 &&
-                    ff_dca_xll_decode_navi(s, end_pos) == 0)
-                    s->exss_ext_mask |= DCA_EXT_EXSS_XLL;
+                       "DTS-XLL: ignoring XLL extension\n");
                 break;
-            default:
-                av_log(s->avctx, AV_LOG_DEBUG,
-                       "DTS-ExSS: unknown marker = 0x%08x\n", mkr);
             }
-
-            /* skip to end of block */
-            j = get_bits_count(&s->gb);
-            if (j > end_pos)
-                av_log(s->avctx, AV_LOG_ERROR,
-                       "DTS-ExSS: Processed asset too long.\n");
-            if (j < end_pos)
-                skip_bits_long(&s->gb, end_pos - j);
+            av_log(s->avctx, AV_LOG_DEBUG,
+                   "DTS-XLL: decoding XLL extension\n");
+            if (ff_dca_xll_decode_header(s)        == 0 &&
+                    ff_dca_xll_decode_navi(s, end_pos) == 0)
+                s->exss_ext_mask |= DCA_EXT_EXSS_XLL;
+            break;
+        default:
+            av_log(s->avctx, AV_LOG_DEBUG,
+                   "DTS-ExSS: unknown marker = 0x%08x\n", mkr);
         }
+
+        /* skip to end of block */
+        j = get_bits_count(&s->gb);
+        if (j > end_pos)
+            av_log(s->avctx, AV_LOG_ERROR,
+                   "DTS-ExSS: Processed asset too long.\n");
+        if (j < end_pos)
+            skip_bits_long(&s->gb, end_pos - j);
+    }
 }

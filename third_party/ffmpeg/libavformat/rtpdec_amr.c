@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP AMR Depacketizer, RFC 3267
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -24,14 +24,17 @@
 #include "rtpdec_formats.h"
 #include "libavutil/avstring.h"
 
-static const uint8_t frame_sizes_nb[16] = {
+static const uint8_t frame_sizes_nb[16] =
+{
     12, 13, 15, 17, 19, 20, 26, 31, 5, 0, 0, 0, 0, 0, 0, 0
 };
-static const uint8_t frame_sizes_wb[16] = {
+static const uint8_t frame_sizes_wb[16] =
+{
     17, 23, 32, 36, 40, 46, 50, 58, 60, 5, 5, 0, 0, 0, 0, 0
 };
 
-struct PayloadContext {
+struct PayloadContext
+{
     int octet_align;
     int crc;
     int interleaving;
@@ -55,16 +58,22 @@ static int amr_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     const uint8_t *speech_data;
     uint8_t *ptr;
 
-    if (st->codec->codec_id == AV_CODEC_ID_AMR_NB) {
+    if (st->codec->codec_id == AV_CODEC_ID_AMR_NB)
+    {
         frame_sizes = frame_sizes_nb;
-    } else if (st->codec->codec_id == AV_CODEC_ID_AMR_WB) {
+    }
+    else if (st->codec->codec_id == AV_CODEC_ID_AMR_WB)
+    {
         frame_sizes = frame_sizes_wb;
-    } else {
+    }
+    else
+    {
         av_log(ctx, AV_LOG_ERROR, "Bad codec ID\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (st->codec->channels != 1) {
+    if (st->codec->channels != 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Only mono AMR is supported\n");
         return AVERROR_INVALIDDATA;
     }
@@ -84,7 +93,8 @@ static int amr_handle_packet(AVFormatContext *ctx, PayloadContext *data,
      */
     for (frames = 1; frames < len && (buf[frames] & 0x80); frames++) ;
 
-    if (1 + frames >= len) {
+    if (1 + frames >= len)
+    {
         /* We hit the end of the packet while counting frames. */
         av_log(ctx, AV_LOG_ERROR, "No speech data found\n");
         return AVERROR_INVALIDDATA;
@@ -93,18 +103,21 @@ static int amr_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     speech_data = buf + 1 + frames;
 
     /* Everything except the codec mode request byte should be output. */
-    if (av_new_packet(pkt, len - 1)) {
+    if (av_new_packet(pkt, len - 1))
+    {
         av_log(ctx, AV_LOG_ERROR, "Out of memory\n");
         return AVERROR(ENOMEM);
     }
     pkt->stream_index = st->index;
     ptr = pkt->data;
 
-    for (i = 0; i < frames; i++) {
+    for (i = 0; i < frames; i++)
+    {
         uint8_t toc = buf[1 + i];
         int frame_size = frame_sizes[(toc >> 3) & 0x0f];
 
-        if (speech_data + frame_size > buf + len) {
+        if (speech_data + frame_size > buf + len)
+        {
             /* Too little speech data */
             av_log(ctx, AV_LOG_WARNING, "Too little speech data in the RTP packet\n");
             /* Set the unwritten part of the packet to zero. */
@@ -122,7 +135,8 @@ static int amr_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         ptr += frame_size;
     }
 
-    if (speech_data < buf + len) {
+    if (speech_data < buf + len)
+    {
         av_log(ctx, AV_LOG_WARNING, "Too much speech data in the RTP packet?\n");
         /* Set the unwritten part of the packet to zero. */
         memset(ptr, 0, pkt->data + pkt->size - ptr);
@@ -140,9 +154,10 @@ static int amr_parse_fmtp(AVFormatContext *s,
      * the trailing =1. Therefore, if the value is empty,
      * interpret it as "1".
      */
-    if (!strcmp(value, "")) {
+    if (!strcmp(value, ""))
+    {
         av_log(s, AV_LOG_WARNING, "AMR fmtp attribute %s had "
-                                  "nonstandard empty value\n", attr);
+               "nonstandard empty value\n", attr);
         value = "1";
     }
     if (!strcmp(attr, "octet-align"))
@@ -170,10 +185,12 @@ static int amr_parse_sdp_line(AVFormatContext *s, int st_index,
      * That is, a normal fmtp: line followed by semicolon & space
      * separated key/value pairs.
      */
-    if (av_strstart(line, "fmtp:", &p)) {
+    if (av_strstart(line, "fmtp:", &p))
+    {
         ret = ff_parse_fmtp(s, s->streams[st_index], data, p, amr_parse_fmtp);
         if (!data->octet_align || data->crc ||
-            data->interleaving || data->channels != 1) {
+                data->interleaving || data->channels != 1)
+        {
             av_log(s, AV_LOG_ERROR, "Unsupported RTP/AMR configuration!\n");
             return -1;
         }
@@ -182,7 +199,8 @@ static int amr_parse_sdp_line(AVFormatContext *s, int st_index,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_amr_nb_dynamic_handler = {
+RTPDynamicProtocolHandler ff_amr_nb_dynamic_handler =
+{
     .enc_name         = "AMR",
     .codec_type       = AVMEDIA_TYPE_AUDIO,
     .codec_id         = AV_CODEC_ID_AMR_NB,
@@ -192,7 +210,8 @@ RTPDynamicProtocolHandler ff_amr_nb_dynamic_handler = {
     .parse_packet     = amr_handle_packet,
 };
 
-RTPDynamicProtocolHandler ff_amr_wb_dynamic_handler = {
+RTPDynamicProtocolHandler ff_amr_wb_dynamic_handler =
+{
     .enc_name         = "AMR-WB",
     .codec_type       = AVMEDIA_TYPE_AUDIO,
     .codec_id         = AV_CODEC_ID_AMR_WB,

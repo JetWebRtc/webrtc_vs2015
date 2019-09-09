@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -95,20 +95,20 @@ amm-info@iis.fraunhofer.de
 
 
 void FDKaacEnc_InitPreEchoControl(FIXP_DBL    *pbThresholdnm1,
-						INT         *calcPreEcho,
-                        INT         numPb,
-                        FIXP_DBL    *sfbPcmQuantThreshold,
-                        INT         *mdctScalenm1);
+                                  INT         *calcPreEcho,
+                                  INT         numPb,
+                                  FIXP_DBL    *sfbPcmQuantThreshold,
+                                  INT         *mdctScalenm1);
 
 
 void FDKaacEnc_PreEchoControl(FIXP_DBL    *pbThresholdNm1,
-					INT         calcPreEcho,
-                    INT         numPb,
-                    INT         maxAllowedIncreaseFactor,
-                    FIXP_SGL    minRemainingThresholdFactor,
-                    FIXP_DBL    *pbThreshold,
-                    INT         mdctScale,
-                    INT         *mdctScalenm1);
+                              INT         calcPreEcho,
+                              INT         numPb,
+                              INT         maxAllowedIncreaseFactor,
+                              FIXP_SGL    minRemainingThresholdFactor,
+                              FIXP_DBL    *pbThreshold,
+                              INT         mdctScale,
+                              INT         *mdctScalenm1);
 
 #endif
 

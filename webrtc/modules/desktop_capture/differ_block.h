@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include <stdint.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Size (in pixels) of each square block used for diffing. This must be a
 // multiple of sizeof(uint64)/8.

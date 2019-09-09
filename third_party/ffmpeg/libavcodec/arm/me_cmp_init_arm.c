@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -42,7 +42,8 @@ av_cold void ff_me_cmp_init_arm(MECmpContext *c, AVCodecContext *avctx)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_armv6(cpu_flags)) {
+    if (have_armv6(cpu_flags))
+    {
         c->pix_abs[0][0] = ff_pix_abs16_armv6;
         c->pix_abs[0][1] = ff_pix_abs16_x2_armv6;
         c->pix_abs[0][2] = ff_pix_abs16_y2_armv6;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC3/DNxHD decoder.
  * Copyright (c) 2007 SmartJog S.A., Baptiste Coudurier <baptiste dot coudurier at smartjog dot com>
  *
@@ -26,7 +26,8 @@
 #include "avcodec.h"
 #include "libavutil/internal.h"
 
-typedef struct CIDEntry {
+typedef struct CIDEntry
+{
     int cid;
     unsigned int width, height;
     int interlaced;

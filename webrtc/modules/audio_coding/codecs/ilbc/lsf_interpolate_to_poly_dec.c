@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,12 +31,13 @@ void WebRtcIlbcfix_LspInterpolate2PolyDec(
     int16_t coef,  /* (i) weighting coefficient to use between
                                    lsf1 and lsf2 Q14 */
     int16_t length  /* (i) length of coefficient vectors */
-                                          ){
-  int16_t lsftmp[LPC_FILTERORDER];
+)
+{
+    int16_t lsftmp[LPC_FILTERORDER];
 
-  /* interpolate LSF */
-  WebRtcIlbcfix_Interpolate(lsftmp, lsf1, lsf2, coef, length);
+    /* interpolate LSF */
+    WebRtcIlbcfix_Interpolate(lsftmp, lsf1, lsf2, coef, length);
 
-  /* Compute the filter coefficients from the LSF */
-  WebRtcIlbcfix_Lsf2Poly(a, lsftmp);
+    /* Compute the filter coefficients from the LSF */
+    WebRtcIlbcfix_Lsf2Poly(a, lsftmp);
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFM (ffserver live feed) muxer
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -65,13 +65,15 @@ static void ffm_write_data(AVFormatContext *s,
     FFMContext *ffm = s->priv_data;
     int len;
 
-    if (header && ffm->frame_offset == 0) {
+    if (header && ffm->frame_offset == 0)
+    {
         ffm->frame_offset = ffm->packet_ptr - ffm->packet + FFM_HEADER_SIZE;
         ffm->dts = dts;
     }
 
     /* write as many packets as needed */
-    while (size > 0) {
+    while (size > 0)
+    {
         len = ffm->packet_end - ffm->packet_ptr;
         if (len > size)
             len = size;
@@ -103,16 +105,20 @@ static int ffm_write_header_codec_private_ctx(AVFormatContext *s, AVCodecContext
     int ret;
     const AVCodec *enc = ctx->codec ? ctx->codec : avcodec_find_encoder(ctx->codec_id);
 
-    if (!enc) {
+    if (!enc)
+    {
         av_log(s, AV_LOG_WARNING, "Stream codec is not found. Codec private options are not stored.\n");
         return 0;
     }
-    if (ctx->priv_data && enc->priv_class && enc->priv_data_size) {
+    if (ctx->priv_data && enc->priv_class && enc->priv_data_size)
+    {
         if ((ret = av_opt_serialize(ctx->priv_data, AV_OPT_FLAG_ENCODING_PARAM | type,
                                     AV_OPT_SERIALIZE_SKIP_DEFAULTS, &buf, '=', ',')) < 0)
             return ret;
-        if (buf && strlen(buf)) {
-            if (avio_open_dyn_buf(&tmp) < 0) {
+        if (buf && strlen(buf))
+        {
+            if (avio_open_dyn_buf(&tmp) < 0)
+            {
                 av_free(buf);
                 return AVERROR(ENOMEM);
             }
@@ -138,14 +144,16 @@ static int ffm_write_header_codec_ctx(AVIOContext *pb, AVCodecContext *ctx, unsi
         return AVERROR(ENOMEM);
     if ((ret = av_opt_serialize(ctx, ENC | type, SKIP_DEFAULTS, &buf, '=', ',')) < 0)
         goto fail;
-    if (buf && strlen(buf)) {
+    if (buf && strlen(buf))
+    {
         avio_write(tmp, buf, strlen(buf));
         av_freep(&buf);
         need_coma = 1;
     }
     if ((ret = av_opt_serialize(ctx, 0, SKIP_DEFAULTS | OPT_FLAGS_EXACT, &buf, '=', ',')) < 0)
         goto fail;
-    if (buf && strlen(buf)) {
+    if (buf && strlen(buf))
+    {
         if (need_coma)
             avio_w8(tmp, ',');
         avio_write(tmp, buf, strlen(buf));
@@ -154,7 +162,7 @@ static int ffm_write_header_codec_ctx(AVIOContext *pb, AVCodecContext *ctx, unsi
     avio_w8(tmp, 0);
     write_header_chunk(pb, tmp, tag);
     return 0;
-  fail:
+fail:
     av_free(buf);
     ffio_free_dyn_buf(&tmp);
     return ret;
@@ -174,7 +182,8 @@ static int ffm_write_recommended_config(AVIOContext *pb, AVCodecContext *ctx, un
     AVDictionary *all = NULL, *comm = NULL, *prv = NULL;
     char *buf = NULL;
 
-    if (!enc || !enc->priv_class || !enc->priv_data_size) {
+    if (!enc || !enc->priv_class || !enc->priv_data_size)
+    {
         /* codec is not known/has no private options, so save everything as common options */
         if (avio_open_dyn_buf(&tmp) < 0)
             return AVERROR(ENOMEM);
@@ -186,31 +195,36 @@ static int ffm_write_recommended_config(AVIOContext *pb, AVCodecContext *ctx, un
     if ((ret = av_dict_parse_string(&all, configuration, "=", ",", 0)) < 0)
         return ret;
 
-    while ((t = av_dict_get(all, "", t, AV_DICT_IGNORE_SUFFIX))) {
-        if (av_opt_find((void *)&enc->priv_class, t->key, NULL, 0, AV_OPT_SEARCH_FAKE_OBJ)) {
+    while ((t = av_dict_get(all, "", t, AV_DICT_IGNORE_SUFFIX)))
+    {
+        if (av_opt_find((void *)&enc->priv_class, t->key, NULL, 0, AV_OPT_SEARCH_FAKE_OBJ))
+        {
             if ((ret = av_dict_set(&prv, t->key, t->value, 0)) < 0)
                 goto fail;
-        } else if ((ret = av_dict_set(&comm, t->key, t->value, 0)) < 0)
+        }
+        else if ((ret = av_dict_set(&comm, t->key, t->value, 0)) < 0)
             goto fail;
     }
 
-    if (comm) {
+    if (comm)
+    {
         if ((ret = av_dict_get_string(comm, &buf, '=', ',')) < 0 ||
-            (ret = avio_open_dyn_buf(&tmp)) < 0)
+                (ret = avio_open_dyn_buf(&tmp)) < 0)
             goto fail;
         avio_put_str(tmp, buf);
         av_freep(&buf);
         write_header_chunk(pb, tmp, tag);
     }
-    if (prv) {
+    if (prv)
+    {
         if ((ret = av_dict_get_string(prv, &buf, '=', ',')) < 0 ||
-            (ret = avio_open_dyn_buf(&tmp)) < 0)
+                (ret = avio_open_dyn_buf(&tmp)) < 0)
             goto fail;
         avio_put_str(tmp, buf);
         write_header_chunk(pb, tmp, MKBETAG('C', 'P', 'R', 'V'));
     }
 
-  fail:
+fail:
     av_free(buf);
     av_dict_free(&all);
     av_dict_free(&comm);
@@ -227,7 +241,8 @@ static int ffm_write_header(AVFormatContext *s)
     AVCodecContext *codec;
     int bit_rate, i, ret;
 
-    if (t = av_dict_get(s->metadata, "creation_time", NULL, 0)) {
+    if (t = av_dict_get(s->metadata, "creation_time", NULL, 0))
+    {
         ret = av_parse_time(&ffm->start_time, t->value, 0);
         if (ret < 0)
             return ret;
@@ -245,7 +260,8 @@ static int ffm_write_header(AVFormatContext *s)
 
     avio_wb32(pb, s->nb_streams);
     bit_rate = 0;
-    for(i=0;i<s->nb_streams;i++) {
+    for(i=0; i<s->nb_streams; i++)
+    {
         st = s->streams[i];
         bit_rate += st->codec->bit_rate;
     }
@@ -254,7 +270,8 @@ static int ffm_write_header(AVFormatContext *s)
     write_header_chunk(s->pb, pb, MKBETAG('M', 'A', 'I', 'N'));
 
     /* list of streams */
-    for(i=0;i<s->nb_streams;i++) {
+    for(i=0; i<s->nb_streams; i++)
+    {
         st = s->streams[i];
         avpriv_set_pts_info(st, 64, 1, 1000000);
         if(avio_open_dyn_buf(&pb) < 0)
@@ -268,32 +285,38 @@ static int ffm_write_header(AVFormatContext *s)
         avio_wb32(pb, codec->flags);
         avio_wb32(pb, codec->flags2);
         avio_wb32(pb, codec->debug);
-        if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+        if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+        {
             avio_wb32(pb, codec->extradata_size);
             avio_write(pb, codec->extradata, codec->extradata_size);
         }
         write_header_chunk(s->pb, pb, MKBETAG('C', 'O', 'M', 'M'));
         /* specific info */
-        switch(codec->codec_type) {
+        switch(codec->codec_type)
+        {
         case AVMEDIA_TYPE_VIDEO:
-            if (st->recommended_encoder_configuration) {
+            if (st->recommended_encoder_configuration)
+            {
                 av_log(NULL, AV_LOG_DEBUG, "writing recommended configuration: %s\n",
                        st->recommended_encoder_configuration);
                 if ((ret = ffm_write_recommended_config(s->pb, codec, MKBETAG('S', '2', 'V', 'I'),
                                                         st->recommended_encoder_configuration)) < 0)
-                return ret;
-            } else if ((ret = ffm_write_header_codec_ctx(s->pb, codec, MKBETAG('S', '2', 'V', 'I'), AV_OPT_FLAG_VIDEO_PARAM)) < 0 ||
-                       (ret = ffm_write_header_codec_private_ctx(s, codec, AV_OPT_FLAG_VIDEO_PARAM)) < 0)
+                    return ret;
+            }
+            else if ((ret = ffm_write_header_codec_ctx(s->pb, codec, MKBETAG('S', '2', 'V', 'I'), AV_OPT_FLAG_VIDEO_PARAM)) < 0 ||
+                     (ret = ffm_write_header_codec_private_ctx(s, codec, AV_OPT_FLAG_VIDEO_PARAM)) < 0)
                 return ret;
             break;
         case AVMEDIA_TYPE_AUDIO:
-            if (st->recommended_encoder_configuration) {
+            if (st->recommended_encoder_configuration)
+            {
                 av_log(NULL, AV_LOG_DEBUG, "writing recommended configuration: %s\n",
                        st->recommended_encoder_configuration);
                 if ((ret = ffm_write_recommended_config(s->pb, codec, MKBETAG('S', '2', 'A', 'U'),
                                                         st->recommended_encoder_configuration)) < 0)
-                return ret;
-            } else if ((ret = ffm_write_header_codec_ctx(s->pb, codec, MKBETAG('S', '2', 'A', 'U'), AV_OPT_FLAG_AUDIO_PARAM)) < 0 ||
+                    return ret;
+            }
+            else if ((ret = ffm_write_header_codec_ctx(s->pb, codec, MKBETAG('S', '2', 'A', 'U'), AV_OPT_FLAG_AUDIO_PARAM)) < 0 ||
                      (ret = ffm_write_header_codec_private_ctx(s, codec, AV_OPT_FLAG_AUDIO_PARAM)) < 0)
                 return ret;
             break;
@@ -338,7 +361,8 @@ static int ffm_write_packet(AVFormatContext *s, AVPacket *pkt)
     AV_WB24(header+2, pkt->size);
     AV_WB24(header+5, pkt->duration);
     AV_WB64(header+8, ffm->start_time + pkt->pts);
-    if (pkt->pts != pkt->dts) {
+    if (pkt->pts != pkt->dts)
+    {
         header[1] |= FLAG_DTS;
         AV_WB32(header+16, pkt->pts - pkt->dts);
         header_size += 4;
@@ -360,7 +384,8 @@ static int ffm_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_ffm_muxer = {
+AVOutputFormat ff_ffm_muxer =
+{
     .name              = "ffm",
     .long_name         = NULL_IF_CONFIG_SMALL("FFM (FFserver live feed)"),
     .extensions        = "ffm",

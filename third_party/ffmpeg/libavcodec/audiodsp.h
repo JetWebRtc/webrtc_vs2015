@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-typedef struct AudioDSPContext {
+typedef struct AudioDSPContext
+{
     /**
      * Calculate scalar product of two vectors.
      * @param len length of vectors, should be multiple of 16

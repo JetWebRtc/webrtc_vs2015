@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VBLE Decoder
  * Copyright (c) 2011 Derek Buitenhuis
  *
@@ -32,7 +32,8 @@
 #include "internal.h"
 #include "mathops.h"
 
-typedef struct VBLEContext {
+typedef struct VBLEContext
+{
     AVCodecContext *avctx;
     HuffYUVDSPContext hdsp;
 
@@ -44,7 +45,8 @@ static int vble_unpack(VBLEContext *ctx, GetBitContext *gb)
 {
     int i;
     int allbits = 0;
-    static const uint8_t LUT[256] = {
+    static const uint8_t LUT[256] =
+    {
         8,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,
         5,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,
         6,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,4,0,1,0,2,0,1,0,3,0,1,0,2,0,1,0,
@@ -56,16 +58,20 @@ static int vble_unpack(VBLEContext *ctx, GetBitContext *gb)
     };
 
     /* Read all the lengths in first */
-    for (i = 0; i < ctx->size; i++) {
+    for (i = 0; i < ctx->size; i++)
+    {
         /* At most we need to read 9 bits total to get indices up to 8 */
         int val = show_bits(gb, 8);
 
         // read reverse unary
-        if (val) {
+        if (val)
+        {
             val = LUT[val];
             skip_bits(gb, val + 1);
             ctx->val[i] = val;
-        } else {
+        }
+        else
+        {
             skip_bits(gb, 8);
             if (!get_bits1(gb))
                 return -1;
@@ -89,20 +95,26 @@ static void vble_restore_plane(VBLEContext *ctx, AVFrame *pic,
     int stride = pic->linesize[plane];
     int i, j, left, left_top;
 
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++) {
+    for (i = 0; i < height; i++)
+    {
+        for (j = 0; j < width; j++)
+        {
             /* get_bits can't take a length of 0 */
-            if (val[j]) {
+            if (val[j])
+            {
                 int v = (1 << val[j]) + get_bits(gb, val[j]) - 1;
                 val[j] = (v >> 1) ^ -(v & 1);
             }
         }
-        if (i) {
+        if (i)
+        {
             left = 0;
             left_top = dst[-stride];
             ctx->hdsp.add_hfyu_median_pred(dst, dst - stride, val,
                                            width, &left, &left_top);
-        } else {
+        }
+        else
+        {
             dst[0] = val[0];
             for (j = 1; j < width; j++)
                 dst[j] = val[j] + dst[j - 1];
@@ -124,7 +136,8 @@ static int vble_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     int width_uv = avctx->width / 2, height_uv = avctx->height / 2;
     int ret;
 
-    if (avpkt->size < 4 || avpkt->size - 4 > INT_MAX/8) {
+    if (avpkt->size < 4 || avpkt->size - 4 > INT_MAX/8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid packet size\n");
         return AVERROR_INVALIDDATA;
     }
@@ -146,7 +159,8 @@ static int vble_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     init_get_bits(&gb, src + 4, (avpkt->size - 4) * 8);
 
     /* Unpack */
-    if (vble_unpack(ctx, &gb) < 0) {
+    if (vble_unpack(ctx, &gb) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid Code\n");
         return AVERROR_INVALIDDATA;
     }
@@ -155,7 +169,8 @@ static int vble_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     vble_restore_plane(ctx, pic, &gb, 0, offset, avctx->width, avctx->height);
 
     /* Chroma */
-    if (!(ctx->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(ctx->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         offset += avctx->width * avctx->height;
         vble_restore_plane(ctx, pic, &gb, 1, offset, width_uv, height_uv);
 
@@ -192,7 +207,8 @@ static av_cold int vble_decode_init(AVCodecContext *avctx)
 
     ctx->val = av_malloc_array(ctx->size, sizeof(*ctx->val));
 
-    if (!ctx->val) {
+    if (!ctx->val)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not allocate values buffer.\n");
         vble_decode_close(avctx);
         return AVERROR(ENOMEM);
@@ -201,7 +217,8 @@ static av_cold int vble_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_vble_decoder = {
+AVCodec ff_vble_decoder =
+{
     .name           = "vble",
     .long_name      = NULL_IF_CONFIG_SMALL("VBLE Lossless Codec"),
     .type           = AVMEDIA_TYPE_VIDEO,

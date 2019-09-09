@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2001 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -39,12 +39,14 @@
 #    define hex_dump_debug(class, buf, size) do { if (0) av_hex_dump_log(class, AV_LOG_DEBUG, buf, size); } while(0)
 #endif
 
-typedef struct AVCodecTag {
+typedef struct AVCodecTag
+{
     enum AVCodecID id;
     unsigned int tag;
 } AVCodecTag;
 
-typedef struct CodecMime{
+typedef struct CodecMime
+{
     char str[32];
     enum AVCodecID id;
 } CodecMime;
@@ -56,12 +58,14 @@ typedef struct CodecMime{
  * The exact value of the fractional number is: 'val + num / den'.
  * num is assumed to be 0 <= num < den.
  */
-typedef struct FFFrac {
+typedef struct FFFrac
+{
     int64_t val, num, den;
 } FFFrac;
 
 
-struct AVFormatInternal {
+struct AVFormatInternal
+{
     /**
      * Number of streams relevant for interleaving.
      * Muxing only.
@@ -447,7 +451,8 @@ int ff_generate_avci_extradata(AVStream *st);
 static inline int ff_rename(const char *oldpath, const char *newpath, void *logctx)
 {
     int ret = 0;
-    if (rename(oldpath, newpath) == -1) {
+    if (rename(oldpath, newpath) == -1)
+    {
         ret = AVERROR(errno);
         if (logctx)
             av_log(logctx, AV_LOG_ERROR, "failed to rename file %s to %s\n", oldpath, newpath);
@@ -493,7 +498,8 @@ void ff_rfps_calculate(AVFormatContext *ic);
 /**
  * Flags for AVFormatContext.write_uncoded_frame()
  */
-enum AVWriteUncodedFrameFlags {
+enum AVWriteUncodedFrameFlags
+{
 
     /**
      * Query whether the feature is possible on this stream.

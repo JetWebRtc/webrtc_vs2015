@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,8 +21,10 @@
 
 #pragma warning(disable : 4311)
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 typedef struct _QOS_DESTADDR
 {
@@ -90,24 +92,26 @@ UdpSocket2Windows::UdpSocket2Windows(const int32_t id,
         if (ipV6Enable)
         {
             _iProtocol=AF_INET6;
-        } else {
+        }
+        else
+        {
             _iProtocol=AF_INET;
         }
 
         for (int32_t i=0; i<nRet; i++)
         {
             if (_iProtocol == lpProtocolBuf[i].iAddressFamily &&
-                IPPROTO_UDP == lpProtocolBuf[i].iProtocol)
+                    IPPROTO_UDP == lpProtocolBuf[i].iProtocol)
             {
                 if ((XP1_QOS_SUPPORTED ==
-                     (XP1_QOS_SUPPORTED & lpProtocolBuf[i].dwServiceFlags1)))
+                        (XP1_QOS_SUPPORTED & lpProtocolBuf[i].dwServiceFlags1)))
                 {
                     pProtocolInfo = lpProtocolBuf[i];
                     bProtocolFound = TRUE;
                     break;
                 }
             }
-         }
+        }
     }
 
     if(!bProtocolFound)
@@ -120,7 +124,9 @@ UdpSocket2Windows::UdpSocket2Windows(const int32_t id,
             _id,
             "UdpSocket2Windows::UdpSocket2Windows(), SOCKET_ERROR_NO_QOS,\
  !bProtocolFound");
-    } else {
+    }
+    else
+    {
 
         _socket = WSASocket(FROM_PROTOCOL_INFO, FROM_PROTOCOL_INFO,
                             FROM_PROTOCOL_INFO,&pProtocolInfo, 0,
@@ -130,7 +136,9 @@ UdpSocket2Windows::UdpSocket2Windows(const int32_t id,
         if (_socket != INVALID_SOCKET)
         {
             return;
-        } else {
+        }
+        else
+        {
             _qos = false;
             WEBRTC_TRACE(
                 kTraceError,
@@ -144,7 +152,8 @@ UdpSocket2Windows::UdpSocket2Windows(const int32_t id,
     {
         _socket = WSASocket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, 0 , 0,
                             WSA_FLAG_OVERLAPPED);
-    }else
+    }
+    else
     {
         _socket = WSASocket(AF_INET, SOCK_DGRAM, IPPROTO_UDP, 0 , 0,
                             WSA_FLAG_OVERLAPPED);
@@ -278,12 +287,12 @@ bool UdpSocket2Windows::StartReceiving(uint32_t receiveBuffers)
     int32_t numberOfReceiveBuffersToCreate =
         receiveBuffers - _receiveBuffers.Value();
     numberOfReceiveBuffersToCreate = (numberOfReceiveBuffersToCreate < 0) ?
-        0 : numberOfReceiveBuffersToCreate;
+                                     0 : numberOfReceiveBuffersToCreate;
 
     int32_t error = 0;
     for(int32_t i = 0;
-        i < numberOfReceiveBuffersToCreate;
-        i++)
+            i < numberOfReceiveBuffersToCreate;
+            i++)
     {
         if(PostRecv())
         {
@@ -316,7 +325,7 @@ bool UdpSocket2Windows::StopReceiving()
 bool UdpSocket2Windows::Bind(const SocketAddress& name)
 {
     const struct sockaddr* addr =
-        reinterpret_cast<const struct sockaddr*>(&name);
+            reinterpret_cast<const struct sockaddr*>(&name);
     bool returnValue = true;
     if(!AquireSocket())
     {
@@ -425,10 +434,10 @@ void UdpSocket2Windows::IOCompleted(PerIoContext* pIOContext,
     if(pIOContext == NULL || error == ERROR_OPERATION_ABORTED)
     {
         if ((pIOContext != NULL) &&
-            !pIOContext->ioInitiatedByPlatformThread &&
-            (error == ERROR_OPERATION_ABORTED) &&
-            (pIOContext->ioOperation == OP_READ) &&
-            _outstandingCallsDisabled)
+                !pIOContext->ioInitiatedByPlatformThread &&
+                (error == ERROR_OPERATION_ABORTED) &&
+                (pIOContext->ioOperation == OP_READ) &&
+                _outstandingCallsDisabled)
         {
             // !pIOContext->initiatedIOByPlatformThread indicate that the I/O
             // was not initiated by a PlatformThread thread.
@@ -445,7 +454,9 @@ void UdpSocket2Windows::IOCompleted(PerIoContext* pIOContext,
             //         that the socket isn't being shut down.
             // Note 4: This should only happen buffers set to receive packets
             //         (OP_READ).
-        } else {
+        }
+        else
+        {
             if(pIOContext == NULL)
             {
                 WEBRTC_TRACE(
@@ -457,7 +468,9 @@ void UdpSocket2Windows::IOCompleted(PerIoContext* pIOContext,
                     ioSize,
                     error,
                     pIOContext ? (int32_t)pIOContext->ioOperation : -1);
-            } else {
+            }
+            else
+            {
                 WEBRTC_TRACE(
                     kTraceDebug,
                     kTraceTransport,
@@ -516,7 +529,9 @@ void UdpSocket2Windows::IOCompleted(PerIoContext* pIOContext,
         }
         OutstandingCallCompleted();
         return;
-    } else {
+    }
+    else
+    {
         // Unknown operation. Should not happen. Return pIOContext to avoid
         // memory leak.
         assert(false);
@@ -580,15 +595,15 @@ int32_t UdpSocket2Windows::PostRecv(PerIoContext* pIoContext)
     for(int32_t tries = 0; tries < 10; tries++)
     {
         nRet = WSARecvFrom(
-            _socket,
-            &(pIoContext->wsabuf),
-            1,
-            &numOfRecivedBytes,
-            &flags,
-            reinterpret_cast<struct sockaddr*>(&(pIoContext->from)),
-            &(pIoContext->fromLen),
-            &(pIoContext->overlapped),
-            0);
+                   _socket,
+                   &(pIoContext->wsabuf),
+                   1,
+                   &numOfRecivedBytes,
+                   &flags,
+                   reinterpret_cast<struct sockaddr*>(&(pIoContext->from)),
+                   &(pIoContext->fromLen),
+                   &(pIoContext->overlapped),
+                   0);
 
         if( nRet == SOCKET_ERROR)
         {
@@ -691,7 +706,7 @@ bool UdpSocket2Windows::SetQos(int32_t serviceType,
 
         SocketAddress socketName;
         struct sockaddr_in* name =
-            reinterpret_cast<struct sockaddr_in*>(&socketName);
+                reinterpret_cast<struct sockaddr_in*>(&socketName);
         int nameLength = sizeof(SocketAddress);
         if(AquireSocket())
         {
@@ -759,7 +774,9 @@ bool UdpSocket2Windows::SetQos(int32_t serviceType,
         Qos.SendingFlowspec.MinimumPolicedSize = QOS_NOT_SPECIFIED;
         Qos.ReceivingFlowspec.ServiceType = serviceType;
 
-    } else {
+    }
+    else
+    {
         Qos.SendingFlowspec.MinimumPolicedSize =
             QOS_NOT_SPECIFIED | SERVICE_NO_QOS_SIGNALING;
         Qos.ReceivingFlowspec.ServiceType =
@@ -771,7 +788,9 @@ bool UdpSocket2Windows::SetQos(int32_t serviceType,
         if (AF_INET6 == _iProtocol)
         {
             QosDestaddr.SocketAddressLength = sizeof(SocketAddressInVersion6);
-        } else {
+        }
+        else
+        {
             QosDestaddr.SocketAddressLength = sizeof(SocketAddressIn);
         }
 
@@ -779,13 +798,14 @@ bool UdpSocket2Windows::SetQos(int32_t serviceType,
         Qos.ProviderSpecific.buf = (char*)&QosDestaddr;
     }
 
-    if(!AquireSocket()) {
+    if(!AquireSocket())
+    {
         return false;
     }
     // To set QoS with SIO_SET_QOS the socket must be locally bound first
     // or the call will fail with error code 10022.
     int32_t result = WSAIoctl(GetFd(), SIO_SET_QOS, &Qos, sizeof(QOS),
-                                    NULL, 0, &BytesRet, NULL,NULL);
+                              NULL, 0, &BytesRet, NULL,NULL);
     ReleaseSocket();
     if (result == SOCKET_ERROR)
     {
@@ -802,7 +822,7 @@ int32_t UdpSocket2Windows::SetTOS(int32_t serviceType)
     SocketAddress socketName;
 
     struct sockaddr_in* name =
-        reinterpret_cast<struct sockaddr_in*>(&socketName);
+            reinterpret_cast<struct sockaddr_in*>(&socketName);
     int nameLength = sizeof(SocketAddress);
     if(AquireSocket())
     {
@@ -833,7 +853,7 @@ int32_t UdpSocket2Windows::SetPCP(int32_t pcp)
 {
     SocketAddress socketName;
     struct sockaddr_in* name =
-        reinterpret_cast<struct sockaddr_in*>(&socketName);
+            reinterpret_cast<struct sockaddr_in*>(&socketName);
     int nameLength = sizeof(SocketAddress);
     if(AquireSocket())
     {
@@ -902,8 +922,8 @@ int32_t UdpSocket2Windows::SetTrafficControl(
     {
         // This is likely caused by the application not being run as
         // administrator.
-      WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
-                   "TcRegisterClient returned %d", result);
+        WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
+                     "TcRegisterClient returned %d", result);
         return result;
     }
 
@@ -962,10 +982,10 @@ int32_t UdpSocket2Windows::SetTrafficControl(
 
     // Find the interface corresponding to the local address.
     for(oneinterface = pInterfaceBuffer;
-        oneinterface != (PTC_IFC_DESCRIPTOR)
+            oneinterface != (PTC_IFC_DESCRIPTOR)
             (((int8_t*)pInterfaceBuffer) + BufferSize);
-        oneinterface = (PTC_IFC_DESCRIPTOR)
-            ((int8_t *)oneinterface + oneinterface->Length))
+            oneinterface = (PTC_IFC_DESCRIPTOR)
+                           ((int8_t *)oneinterface + oneinterface->Length))
     {
 
         char interfaceName[500];
@@ -995,7 +1015,8 @@ int32_t UdpSocket2Windows::SetTrafficControl(
         if(!addrFound)
         {
             continue;
-        } else
+        }
+        else
         {
             break;
         }
@@ -1024,7 +1045,7 @@ int32_t UdpSocket2Windows::SetTrafficControl(
     {
         bool addPCP = ((pcp >= 0) || ((-1 == pcp) && (_pcp >= 0)));
         int allocSize = sizeof(TC_GEN_FLOW) + sizeof(QOS_DS_CLASS) +
-            (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
+                        (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
         _flow = (PTC_GEN_FLOW)malloc(allocSize);
 
         _flow->SendingFlowspec.DelayVariation = QOS_NOT_SPECIFIED;
@@ -1059,13 +1080,15 @@ int32_t UdpSocket2Windows::SetTrafficControl(
         }
 
         _flow->TcObjectsLength = sizeof(QOS_DS_CLASS) +
-            (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
-    } else if (-1 != pcp) {
+                                 (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
+    }
+    else if (-1 != pcp)
+    {
         // Reallocate memory since pcp has changed.
         PTC_GEN_FLOW oldFlow = _flow;
         bool addPCP = (pcp >= 0);
         int allocSize = sizeof(TC_GEN_FLOW) + sizeof(QOS_DS_CLASS) +
-            (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
+                        (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
         _flow = (PTC_GEN_FLOW)malloc(allocSize);
 
         // Copy old flow.
@@ -1087,7 +1110,7 @@ int32_t UdpSocket2Windows::SetTrafficControl(
         }
 
         _flow->TcObjectsLength = sizeof(QOS_DS_CLASS) +
-            (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
+                                 (addPCP ? sizeof(QOS_TRAFFIC_CLASS) : 0);
         free(oldFlow);
     }
 
@@ -1138,7 +1161,9 @@ int32_t UdpSocket2Windows::SetTrafficControl(
                 _flow->SendingFlowspec.TokenBucketSize;
             _flow->ReceivingFlowspec.TokenRate =
                 _flow->SendingFlowspec.TokenRate;
-        } else {
+        }
+        else
+        {
             _flow->ReceivingFlowspec.DelayVariation = recv->DelayVariation;
             _flow->ReceivingFlowspec.Latency = recv->Latency;
             _flow->ReceivingFlowspec.MaxSduSize = recv->MaxSduSize;
@@ -1223,12 +1248,12 @@ int32_t UdpSocket2Windows::SetTrafficControl(
 }
 
 int32_t UdpSocket2Windows::CreateFlowSpec(int32_t serviceType,
-                                          int32_t tokenRate,
-                                          int32_t bucketSize,
-                                          int32_t peekBandwith,
-                                          int32_t minPolicedSize,
-                                          int32_t maxSduSize,
-                                          FLOWSPEC* f)
+        int32_t tokenRate,
+        int32_t bucketSize,
+        int32_t peekBandwith,
+        int32_t minPolicedSize,
+        int32_t maxSduSize,
+        FLOWSPEC* f)
 {
     if (!f)
     {
@@ -1267,7 +1292,7 @@ void UdpSocket2Windows::OutstandingCallCompleted()
     _ptrDestRWLock->ReleaseLockShared();
 
     if((--_outstandingCallComplete == 0) &&
-        (_terminate))
+            (_terminate))
     {
         // Only one thread will enter here. The thread with the last outstanding
         // call.

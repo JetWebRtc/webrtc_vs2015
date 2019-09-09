@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Escape 130 video decoder
  * Copyright (C) 2008 Eli Friedman (eli.friedman <at> gmail.com)
  *
@@ -26,7 +26,8 @@
 #include "get_bits.h"
 #include "internal.h"
 
-typedef struct Escape130Context {
+typedef struct Escape130Context
+{
     uint8_t *old_y_avg;
 
     uint8_t *new_y, *old_y;
@@ -38,7 +39,8 @@ typedef struct Escape130Context {
 } Escape130Context;
 
 static const uint8_t offset_table[] = { 2, 4, 10, 20 };
-static const int8_t sign_table[64][4] = {
+static const int8_t sign_table[64][4] =
+{
     {  0,  0,  0,  0 },
     { -1,  1,  0,  0 },
     {  1, -1,  0,  0 },
@@ -100,14 +102,16 @@ static const int8_t sign_table[64][4] = {
 
 static const int8_t luma_adjust[] = { -4, -3, -2, -1, 1, 2, 3, 4 };
 
-static const int8_t chroma_adjust[2][8] = {
+static const int8_t chroma_adjust[2][8] =
+{
     { 1, 1, 0, -1, -1, -1,  0,  1 },
     { 0, 1, 1,  1,  0, -1, -1, -1 }
 };
 
-static const uint8_t chroma_vals[] = {
-     20,  28,  36,  44,  52,  60,  68,  76,
-     84,  92, 100, 106, 112, 116, 120, 124,
+static const uint8_t chroma_vals[] =
+{
+    20,  28,  36,  44,  52,  60,  68,  76,
+    84,  92, 100, 106, 112, 116, 120, 124,
     128, 132, 136, 140, 144, 150, 156, 164,
     172, 180, 188, 196, 204, 212, 220, 228
 };
@@ -117,7 +121,8 @@ static av_cold int escape130_decode_init(AVCodecContext *avctx)
     Escape130Context *s = avctx->priv_data;
     avctx->pix_fmt = AV_PIX_FMT_YUV420P;
 
-    if ((avctx->width & 1) || (avctx->height & 1)) {
+    if ((avctx->width & 1) || (avctx->height & 1))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Dimensions should be a multiple of two.\n");
         return AVERROR_INVALIDDATA;
@@ -126,7 +131,8 @@ static av_cold int escape130_decode_init(AVCodecContext *avctx)
     s->old_y_avg = av_malloc(avctx->width * avctx->height / 4);
     s->buf1      = av_malloc(avctx->width * avctx->height * 3 / 2);
     s->buf2      = av_malloc(avctx->width * avctx->height * 3 / 2);
-    if (!s->old_y_avg || !s->buf1 || !s->buf2) {
+    if (!s->old_y_avg || !s->buf1 || !s->buf2)
+    {
         av_freep(&s->old_y_avg);
         av_freep(&s->buf1);
         av_freep(&s->buf2);
@@ -136,7 +142,7 @@ static av_cold int escape130_decode_init(AVCodecContext *avctx)
 
     s->linesize[0] = avctx->width;
     s->linesize[1] =
-    s->linesize[2] = avctx->width / 2;
+        s->linesize[2] = avctx->width / 2;
 
     s->new_y = s->buf1;
     s->new_u = s->new_y + avctx->width * avctx->height;
@@ -209,7 +215,8 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *ya = s->old_y_avg;
 
     // first 16 bytes are header; no useful information in here
-    if (buf_size <= 16) {
+    if (buf_size <= 16)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient frame data\n");
         return AVERROR_INVALIDDATA;
     }
@@ -234,17 +241,20 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
     old_cb_stride = s->linesize[1];
     old_cr_stride = s->linesize[2];
 
-    for (block_index = 0; block_index < total_blocks; block_index++) {
+    for (block_index = 0; block_index < total_blocks; block_index++)
+    {
         // Note that this call will make us skip the rest of the blocks
         // if the frame ends prematurely.
         if (skip == -1)
             skip = decode_skip_count(&gb);
-        if (skip == -1) {
+        if (skip == -1)
+        {
             av_log(avctx, AV_LOG_ERROR, "Error decoding skip value\n");
             return AVERROR_INVALIDDATA;
         }
 
-        if (skip) {
+        if (skip)
+        {
             y[0] = old_y[0];
             y[1] = old_y[1];
             y[2] = old_y[old_y_stride];
@@ -252,19 +262,28 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
             y_avg = ya[0];
             cb = old_cb[0];
             cr = old_cr[0];
-        } else {
-            if (get_bits1(&gb)) {
+        }
+        else
+        {
+            if (get_bits1(&gb))
+            {
                 unsigned sign_selector       = get_bits(&gb, 6);
                 unsigned difference_selector = get_bits(&gb, 2);
                 y_avg = 2 * get_bits(&gb, 5);
-                for (i = 0; i < 4; i++) {
+                for (i = 0; i < 4; i++)
+                {
                     y[i] = av_clip(y_avg + offset_table[difference_selector] *
                                    sign_table[sign_selector][i], 0, 63);
                 }
-            } else if (get_bits1(&gb)) {
-                if (get_bits1(&gb)) {
+            }
+            else if (get_bits1(&gb))
+            {
+                if (get_bits1(&gb))
+                {
                     y_avg = get_bits(&gb, 6);
-                } else {
+                }
+                else
+                {
                     unsigned adjust_index = get_bits(&gb, 3);
                     y_avg = (y_avg + luma_adjust[adjust_index]) & 63;
                 }
@@ -272,11 +291,15 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
                     y[i] = y_avg;
             }
 
-            if (get_bits1(&gb)) {
-                if (get_bits1(&gb)) {
+            if (get_bits1(&gb))
+            {
+                if (get_bits1(&gb))
+                {
                     cb = get_bits(&gb, 5);
                     cr = get_bits(&gb, 5);
-                } else {
+                }
+                else
+                {
                     unsigned adjust_index = get_bits(&gb, 3);
                     cb = (cb + chroma_adjust[0][adjust_index]) & 31;
                     cr = (cr + chroma_adjust[1][adjust_index]) & 31;
@@ -299,7 +322,8 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
         new_cb++;
         new_cr++;
         block_x++;
-        if (block_x * 2 == avctx->width) {
+        if (block_x * 2 == avctx->width)
+        {
             block_x = 0;
             old_y  += old_y_stride * 2  - avctx->width;
             old_cb += old_cb_stride     - avctx->width / 2;
@@ -318,14 +342,17 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
     dstY   = pic->data[0];
     dstU   = pic->data[1];
     dstV   = pic->data[2];
-    for (j = 0; j < avctx->height; j++) {
+    for (j = 0; j < avctx->height; j++)
+    {
         for (i = 0; i < avctx->width; i++)
             dstY[i] = new_y[i] << 2;
         dstY  += pic->linesize[0];
         new_y += new_y_stride;
     }
-    for (j = 0; j < avctx->height / 2; j++) {
-        for (i = 0; i < avctx->width / 2; i++) {
+    for (j = 0; j < avctx->height / 2; j++)
+    {
+        for (i = 0; i < avctx->width / 2; i++)
+        {
             dstU[i] = chroma_vals[new_cb[i]];
             dstV[i] = chroma_vals[new_cr[i]];
         }
@@ -347,7 +374,8 @@ static int escape130_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_escape130_decoder = {
+AVCodec ff_escape130_decoder =
+{
     .name           = "escape130",
     .long_name      = NULL_IF_CONFIG_SMALL("Escape 130"),
     .type           = AVMEDIA_TYPE_VIDEO,

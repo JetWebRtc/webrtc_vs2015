@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PVF demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -63,7 +63,8 @@ static int pvf_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_pvf_demuxer = {
+AVInputFormat ff_pvf_demuxer =
+{
     .name           = "pvf",
     .long_name      = NULL_IF_CONFIG_SMALL("PVF (Portable Voice Format)"),
     .read_probe     = pvf_probe,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * common functions for Indeo Video Interactive codecs (Indeo4 and Indeo5)
  *
  * Copyright (c) 2009 Maxim Poliakovski
@@ -36,7 +36,8 @@
 /**
  *  Indeo 4 frame types.
  */
-enum {
+enum
+{
     IVI4_FRAMETYPE_INTRA       = 0,
     IVI4_FRAMETYPE_INTRA1      = 1,  ///< intra frame with slightly different bitstream coding
     IVI4_FRAMETYPE_INTER       = 2,  ///< non-droppable P-frame
@@ -53,7 +54,8 @@ enum {
 /**
  *  huffman codebook descriptor
  */
-typedef struct IVIHuffDesc {
+typedef struct IVIHuffDesc
+{
     int32_t     num_rows;
     uint8_t     xbits[16];
 } IVIHuffDesc;
@@ -61,9 +63,10 @@ typedef struct IVIHuffDesc {
 /**
  *  macroblock/block huffman table descriptor
  */
-typedef struct IVIHuffTab {
+typedef struct IVIHuffTab
+{
     int32_t     tab_sel;    /// index of one of the predefined tables
-                            /// or "7" for custom one
+    /// or "7" for custom one
     VLC         *tab;       /// pointer to the table associated with tab_sel
 
     /// the following are used only when tab_sel == 7
@@ -71,7 +74,8 @@ typedef struct IVIHuffTab {
     VLC         cust_tab;   /// vlc table for custom codebook
 } IVIHuffTab;
 
-enum {
+enum
+{
     IVI_MB_HUFF   = 0,      /// Huffman table is used for coding macroblocks
     IVI_BLK_HUFF  = 1       /// Huffman table is used for coding blocks
 };
@@ -95,7 +99,8 @@ typedef void (DCTransformPtr) (const int32_t *in, int16_t *out, uint32_t pitch, 
 /**
  *  run-value (RLE) table descriptor
  */
-typedef struct RVMapDesc {
+typedef struct RVMapDesc
+{
     uint8_t     eob_sym; ///< end of block symbol
     uint8_t     esc_sym; ///< escape symbol
     uint8_t     runtab[256];
@@ -108,7 +113,8 @@ extern const RVMapDesc ff_ivi_rvmap_tabs[9];
 /**
  *  information for Indeo macroblock (16x16, 8x8 or 4x4)
  */
-typedef struct IVIMbInfo {
+typedef struct IVIMbInfo
+{
     int16_t     xpos;
     int16_t     ypos;
     uint32_t    buf_offs; ///< address in the output buffer for this mb
@@ -125,7 +131,8 @@ typedef struct IVIMbInfo {
 /**
  *  information for Indeo tile
  */
-typedef struct IVITile {
+typedef struct IVITile
+{
     int         xpos;
     int         ypos;
     int         width;
@@ -142,7 +149,8 @@ typedef struct IVITile {
 /**
  *  information for Indeo wavelet band
  */
-typedef struct IVIBandDesc {
+typedef struct IVIBandDesc
+{
     int             plane;          ///< plane number this band belongs to
     int             band_num;       ///< band number
     int             width;
@@ -192,7 +200,8 @@ typedef struct IVIBandDesc {
 /**
  *  color plane (luma or chroma) information
  */
-typedef struct IVIPlaneDesc {
+typedef struct IVIPlaneDesc
+{
     uint16_t    width;
     uint16_t    height;
     uint8_t     num_bands;  ///< number of bands this plane subdivided into
@@ -200,7 +209,8 @@ typedef struct IVIPlaneDesc {
 } IVIPlaneDesc;
 
 
-typedef struct IVIPicConfig {
+typedef struct IVIPicConfig
+{
     uint16_t    pic_width;
     uint16_t    pic_height;
     uint16_t    chroma_width;
@@ -211,7 +221,8 @@ typedef struct IVIPicConfig {
     uint8_t     chroma_bands;
 } IVIPicConfig;
 
-typedef struct IVI45DecContext {
+typedef struct IVI45DecContext
+{
     GetBitContext   gb;
     RVMapDesc       rvmap_tabs[9];   ///< local corrected copy of the static rvmap tables
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,69 +21,78 @@
 #include "webrtc/modules/desktop_capture/win/d3d_device.h"
 #include "webrtc/modules/desktop_capture/win/dxgi_output_duplicator.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // A container of DxgiOutputDuplicators to duplicate monitors attached to a
 // single video card.
-class DxgiAdapterDuplicator {
- public:
-  struct Context {
-    Context();
-    Context(const Context& other);
-    ~Context();
+class DxgiAdapterDuplicator
+{
+public:
+    struct Context
+    {
+        Context();
+        Context(const Context& other);
+        ~Context();
 
-    // Child DxgiOutputDuplicator::Context belongs to this
-    // DxgiAdapterDuplicator::Context.
-    std::vector<DxgiOutputDuplicator::Context> contexts;
-  };
+        // Child DxgiOutputDuplicator::Context belongs to this
+        // DxgiAdapterDuplicator::Context.
+        std::vector<DxgiOutputDuplicator::Context> contexts;
+    };
 
-  // Creates an instance of DxgiAdapterDuplicator from a D3dDevice. Only
-  // DxgiDuplicatorController can create an instance.
-  explicit DxgiAdapterDuplicator(const D3dDevice& device);
+    // Creates an instance of DxgiAdapterDuplicator from a D3dDevice. Only
+    // DxgiDuplicatorController can create an instance.
+    explicit DxgiAdapterDuplicator(const D3dDevice& device);
 
-  // Move constructor, to make it possible to store instances of
-  // DxgiAdapterDuplicator in std::vector<>.
-  DxgiAdapterDuplicator(DxgiAdapterDuplicator&& other);
+    // Move constructor, to make it possible to store instances of
+    // DxgiAdapterDuplicator in std::vector<>.
+    DxgiAdapterDuplicator(DxgiAdapterDuplicator&& other);
 
-  ~DxgiAdapterDuplicator();
+    ~DxgiAdapterDuplicator();
 
-  // Initializes the DxgiAdapterDuplicator from a D3dDevice.
-  bool Initialize();
+    // Initializes the DxgiAdapterDuplicator from a D3dDevice.
+    bool Initialize();
 
-  // Sequentially calls Duplicate function of all the DxgiOutputDuplicator
-  // instances owned by this instance, and writes into |target|.
-  bool Duplicate(Context* context, SharedDesktopFrame* target);
+    // Sequentially calls Duplicate function of all the DxgiOutputDuplicator
+    // instances owned by this instance, and writes into |target|.
+    bool Duplicate(Context* context, SharedDesktopFrame* target);
 
-  // Captures one monitor and writes into |target|. |monitor_id| should be
-  // between [0, screen_count()).
-  bool DuplicateMonitor(Context* context,
-                        int monitor_id,
-                        SharedDesktopFrame* target);
+    // Captures one monitor and writes into |target|. |monitor_id| should be
+    // between [0, screen_count()).
+    bool DuplicateMonitor(Context* context,
+                          int monitor_id,
+                          SharedDesktopFrame* target);
 
-  // Returns desktop rect covered by this DxgiAdapterDuplicator.
-  DesktopRect desktop_rect() const { return desktop_rect_; }
+    // Returns desktop rect covered by this DxgiAdapterDuplicator.
+    DesktopRect desktop_rect() const
+    {
+        return desktop_rect_;
+    }
 
-  // Returns the size of one screen owned by this DxgiAdapterDuplicator. |id|
-  // should be between [0, screen_count()).
-  DesktopRect ScreenRect(int id) const;
+    // Returns the size of one screen owned by this DxgiAdapterDuplicator. |id|
+    // should be between [0, screen_count()).
+    DesktopRect ScreenRect(int id) const;
 
-  // Returns the count of screens owned by this DxgiAdapterDuplicator. These
-  // screens can be retrieved by an interger in the range of
-  // [0, screen_count()).
-  int screen_count() const { return static_cast<int>(duplicators_.size()); }
+    // Returns the count of screens owned by this DxgiAdapterDuplicator. These
+    // screens can be retrieved by an interger in the range of
+    // [0, screen_count()).
+    int screen_count() const
+    {
+        return static_cast<int>(duplicators_.size());
+    }
 
- private:
-  friend class DxgiDuplicatorController;
+private:
+    friend class DxgiDuplicatorController;
 
-  bool DoInitialize();
+    bool DoInitialize();
 
-  void Setup(Context* context);
+    void Setup(Context* context);
 
-  void Unregister(const Context* const context);
+    void Unregister(const Context* const context);
 
-  const D3dDevice device_;
-  std::vector<DxgiOutputDuplicator> duplicators_;
-  DesktopRect desktop_rect_;
+    const D3dDevice device_;
+    std::vector<DxgiOutputDuplicator> duplicators_;
+    DesktopRect desktop_rect_;
 };
 
 }  // namespace webrtc

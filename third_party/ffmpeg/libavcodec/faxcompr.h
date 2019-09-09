@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CCITT Fax Group 3 and 4 decompression
  * Copyright (c) 2008 Konstantin Shishkov
  *

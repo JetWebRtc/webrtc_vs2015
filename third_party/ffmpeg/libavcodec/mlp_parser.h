@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MLP parser prototypes
  * Copyright (c) 2007 Ian Caulfield
  *

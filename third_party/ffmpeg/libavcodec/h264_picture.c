@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -57,7 +57,8 @@ void ff_h264_unref_picture(H264Context *h, H264Picture *pic)
 
     av_buffer_unref(&pic->qscale_table_buf);
     av_buffer_unref(&pic->mb_type_buf);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_buffer_unref(&pic->motion_val_buf[i]);
         av_buffer_unref(&pic->ref_index_buf[i]);
     }
@@ -85,7 +86,8 @@ int ff_h264_ref_picture(H264Context *h, H264Picture *dst, H264Picture *src)
     dst->qscale_table = src->qscale_table;
     dst->mb_type      = src->mb_type;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         dst->motion_val_buf[i] = av_buffer_ref(src->motion_val_buf[i]);
         dst->ref_index_buf[i]  = av_buffer_ref(src->ref_index_buf[i]);
         if (!dst->motion_val_buf[i] || !dst->ref_index_buf[i])
@@ -94,7 +96,8 @@ int ff_h264_ref_picture(H264Context *h, H264Picture *dst, H264Picture *src)
         dst->ref_index[i]  = src->ref_index[i];
     }
 
-    if (src->hwaccel_picture_private) {
+    if (src->hwaccel_picture_private)
+    {
         dst->hwaccel_priv_buf = av_buffer_ref(src->hwaccel_priv_buf);
         if (!dst->hwaccel_priv_buf)
             goto fail;
@@ -141,7 +144,8 @@ void ff_h264_set_erpic(ERPicture *dst, H264Picture *src)
     dst->f = src->f;
     dst->tf = &src->tf;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         dst->motion_val[i] = src->motion_val[i];
         dst->ref_index[i] = src->ref_index[i];
     }
@@ -159,12 +163,14 @@ int ff_h264_field_end(H264Context *h, H264SliceContext *sl, int in_setup)
 
 #if FF_API_CAP_VDPAU
     if (CONFIG_H264_VDPAU_DECODER &&
-        h->avctx->codec->capabilities & AV_CODEC_CAP_HWACCEL_VDPAU)
+            h->avctx->codec->capabilities & AV_CODEC_CAP_HWACCEL_VDPAU)
         ff_vdpau_h264_set_reference_frames(h);
 #endif
 
-    if (in_setup || !(avctx->active_thread_type & FF_THREAD_FRAME)) {
-        if (!h->droppable) {
+    if (in_setup || !(avctx->active_thread_type & FF_THREAD_FRAME))
+    {
+        if (!h->droppable)
+        {
             err = ff_h264_execute_ref_pic_marking(h, h->mmco, h->mmco_index);
             h->prev_poc_msb = h->poc_msb;
             h->prev_poc_lsb = h->poc_lsb;
@@ -173,7 +179,8 @@ int ff_h264_field_end(H264Context *h, H264SliceContext *sl, int in_setup)
         h->prev_frame_num        = h->frame_num;
     }
 
-    if (avctx->hwaccel) {
+    if (avctx->hwaccel)
+    {
         err = avctx->hwaccel->end_frame(avctx);
         if (err < 0)
             av_log(avctx, AV_LOG_ERROR,
@@ -182,7 +189,7 @@ int ff_h264_field_end(H264Context *h, H264SliceContext *sl, int in_setup)
 
 #if FF_API_CAP_VDPAU
     if (CONFIG_H264_VDPAU_DECODER &&
-        h->avctx->codec->capabilities & AV_CODEC_CAP_HWACCEL_VDPAU)
+            h->avctx->codec->capabilities & AV_CODEC_CAP_HWACCEL_VDPAU)
         ff_vdpau_h264_picture_complete(h);
 #endif
 
@@ -200,20 +207,25 @@ int ff_h264_field_end(H264Context *h, H264SliceContext *sl, int in_setup)
      * past end by one (callers fault) and resync_mb_y != 0
      * causes problems for the first MB line, too.
      */
-    if (!FIELD_PICTURE(h) && h->current_slice && !h->sps.new && h->enable_er) {
+    if (!FIELD_PICTURE(h) && h->current_slice && !h->sps.new && h->enable_er)
+    {
         int use_last_pic = h->last_pic_for_ec.f->buf[0] && !sl->ref_count[0];
 
         ff_h264_set_erpic(&sl->er.cur_pic, h->cur_pic_ptr);
 
-        if (use_last_pic) {
+        if (use_last_pic)
+        {
             ff_h264_set_erpic(&sl->er.last_pic, &h->last_pic_for_ec);
             sl->ref_list[0][0].parent = &h->last_pic_for_ec;
             memcpy(sl->ref_list[0][0].data, h->last_pic_for_ec.f->data, sizeof(sl->ref_list[0][0].data));
             memcpy(sl->ref_list[0][0].linesize, h->last_pic_for_ec.f->linesize, sizeof(sl->ref_list[0][0].linesize));
             sl->ref_list[0][0].reference = h->last_pic_for_ec.reference;
-        } else if (sl->ref_count[0]) {
+        }
+        else if (sl->ref_count[0])
+        {
             ff_h264_set_erpic(&sl->er.last_pic, sl->ref_list[0][0].parent);
-        } else
+        }
+        else
             ff_h264_set_erpic(&sl->er.last_pic, NULL);
 
         if (sl->ref_count[1])

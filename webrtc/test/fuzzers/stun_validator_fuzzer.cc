@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,11 +13,13 @@
 
 #include "webrtc/p2p/base/stun.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  const char* message = reinterpret_cast<const char*>(data);
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    const char* message = reinterpret_cast<const char*>(data);
 
-  cricket::StunMessage::ValidateFingerprint(message, size);
-  cricket::StunMessage::ValidateMessageIntegrity(message, size, "");
+    cricket::StunMessage::ValidateFingerprint(message, size);
+    cricket::StunMessage::ValidateMessageIntegrity(message, size, "");
 }
 }  // namespace webrtc

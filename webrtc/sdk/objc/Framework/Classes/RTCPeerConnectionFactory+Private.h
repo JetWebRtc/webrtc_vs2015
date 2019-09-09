@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,12 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCPeerConnectionFactory ()
 
-/**
- * PeerConnectionFactoryInterface created and held by this
- * RTCPeerConnectionFactory object. This is needed to pass to the underlying
- * C++ APIs.
- */
-@property(nonatomic, readonly)
+    /**
+     * PeerConnectionFactoryInterface created and held by this
+     * RTCPeerConnectionFactory object. This is needed to pass to the underlying
+     * C++ APIs.
+     */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> nativeFactory;
 
 @end

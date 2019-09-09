@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised Float DSP functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *

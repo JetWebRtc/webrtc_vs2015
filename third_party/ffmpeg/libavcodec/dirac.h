@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Marco Gerards <marco@gnu.org>
  * Copyright (C) 2009 David Conrad
  * Copyright (C) 2011 Jordi Ortiz
@@ -34,7 +34,8 @@
 #include "avcodec.h"
 #include "get_bits.h"
 
-typedef struct dirac_source_params {
+typedef struct dirac_source_params
+{
     unsigned width;
     unsigned height;
     uint8_t chroma_format;          ///< 0: 444  1: 422  2: 420

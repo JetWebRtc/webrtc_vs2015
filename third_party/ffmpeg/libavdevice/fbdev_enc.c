@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Lukasz Marek
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 #include "fbdev_common.h"
 #include "avdevice.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;                   ///< class for private options
     int xoffset;                      ///< x coordinate of top left corner
     int yoffset;                      ///< y coordinate of top left corner
@@ -48,7 +49,8 @@ static av_cold int fbdev_write_header(AVFormatContext *h)
     int ret, flags = O_RDWR;
     const char* device;
 
-    if (h->nb_streams != 1 || h->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO) {
+    if (h->nb_streams != 1 || h->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO)
+    {
         av_log(fbdev, AV_LOG_ERROR, "Only a single video stream is supported.\n");
         return AVERROR(EINVAL);
     }
@@ -58,7 +60,8 @@ static av_cold int fbdev_write_header(AVFormatContext *h)
     else
         device = ff_fbdev_default_device();
 
-    if ((fbdev->fd = avpriv_open(device, flags)) == -1) {
+    if ((fbdev->fd = avpriv_open(device, flags)) == -1)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR,
                "Could not open framebuffer device '%s': %s\n",
@@ -66,34 +69,38 @@ static av_cold int fbdev_write_header(AVFormatContext *h)
         return ret;
     }
 
-    if (ioctl(fbdev->fd, FBIOGET_VSCREENINFO, &fbdev->varinfo) < 0) {
+    if (ioctl(fbdev->fd, FBIOGET_VSCREENINFO, &fbdev->varinfo) < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "FBIOGET_VSCREENINFO: %s\n", av_err2str(ret));
         goto fail;
     }
 
-    if (ioctl(fbdev->fd, FBIOGET_FSCREENINFO, &fbdev->fixinfo) < 0) {
+    if (ioctl(fbdev->fd, FBIOGET_FSCREENINFO, &fbdev->fixinfo) < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "FBIOGET_FSCREENINFO: %s\n", av_err2str(ret));
         goto fail;
     }
 
     pix_fmt = ff_get_pixfmt_from_fb_varinfo(&fbdev->varinfo);
-    if (pix_fmt == AV_PIX_FMT_NONE) {
+    if (pix_fmt == AV_PIX_FMT_NONE)
+    {
         ret = AVERROR(EINVAL);
         av_log(h, AV_LOG_ERROR, "Framebuffer pixel format not supported.\n");
         goto fail;
     }
 
     fbdev->data = mmap(NULL, fbdev->fixinfo.smem_len, PROT_WRITE, MAP_SHARED, fbdev->fd, 0);
-    if (fbdev->data == MAP_FAILED) {
+    if (fbdev->data == MAP_FAILED)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "Error in mmap(): %s\n", av_err2str(ret));
         goto fail;
     }
 
     return 0;
-  fail:
+fail:
     close(fbdev->fd);
     return ret;
 }
@@ -119,7 +126,8 @@ static int fbdev_write_packet(AVFormatContext *h, AVPacket *pkt)
 
     fb_pix_fmt = ff_get_pixfmt_from_fb_varinfo(&fbdev->varinfo);
 
-    if (fb_pix_fmt != video_pix_fmt) {
+    if (fb_pix_fmt != video_pix_fmt)
+    {
         av_log(h, AV_LOG_ERROR, "Pixel format %s is not supported, use %s\n",
                av_get_pix_fmt_name(video_pix_fmt), av_get_pix_fmt_name(fb_pix_fmt));
         return AVERROR(EINVAL);
@@ -133,15 +141,20 @@ static int fbdev_write_packet(AVFormatContext *h, AVPacket *pkt)
            bytes_per_pixel * fbdev->varinfo.xoffset +
            fbdev->varinfo.yoffset * fbdev->fixinfo.line_length;
 
-    if (fbdev->xoffset) {
-        if (fbdev->xoffset < 0) {
+    if (fbdev->xoffset)
+    {
+        if (fbdev->xoffset < 0)
+        {
             if (-fbdev->xoffset >= video_width) //nothing to display
                 return 0;
             bytes_to_copy += fbdev->xoffset * bytes_per_pixel;
             pin -= fbdev->xoffset * bytes_per_pixel;
-        } else {
+        }
+        else
+        {
             int diff = (video_width + fbdev->xoffset) - fbdev->varinfo.xres;
-            if (diff > 0) {
+            if (diff > 0)
+            {
                 if (diff >= video_width) //nothing to display
                     return 0;
                 bytes_to_copy -= diff * bytes_per_pixel;
@@ -150,15 +163,20 @@ static int fbdev_write_packet(AVFormatContext *h, AVPacket *pkt)
         }
     }
 
-    if (fbdev->yoffset) {
-        if (fbdev->yoffset < 0) {
+    if (fbdev->yoffset)
+    {
+        if (fbdev->yoffset < 0)
+        {
             if (-fbdev->yoffset >= video_height) //nothing to display
                 return 0;
             disp_height += fbdev->yoffset;
             pin -= fbdev->yoffset * src_line_size;
-        } else {
+        }
+        else
+        {
             int diff = (video_height + fbdev->yoffset) - fbdev->varinfo.yres;
-            if (diff > 0) {
+            if (diff > 0)
+            {
                 if (diff >= video_height) //nothing to display
                     return 0;
                 disp_height -= diff;
@@ -167,7 +185,8 @@ static int fbdev_write_packet(AVFormatContext *h, AVPacket *pkt)
         }
     }
 
-    for (i = 0; i < disp_height; i++) {
+    for (i = 0; i < disp_height; i++)
+    {
         memcpy(pout, pin, bytes_to_copy);
         pout += fbdev->fixinfo.line_length;
         pin  += src_line_size;
@@ -191,13 +210,15 @@ static int fbdev_get_device_list(AVFormatContext *s, AVDeviceInfoList *device_li
 
 #define OFFSET(x) offsetof(FBDevContext, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "xoffset", "set x coordinate of top left corner", OFFSET(xoffset), AV_OPT_TYPE_INT, {.i64 = 0}, INT_MIN, INT_MAX, ENC },
     { "yoffset", "set y coordinate of top left corner", OFFSET(yoffset), AV_OPT_TYPE_INT, {.i64 = 0}, INT_MIN, INT_MAX, ENC },
     { NULL }
 };
 
-static const AVClass fbdev_class = {
+static const AVClass fbdev_class =
+{
     .class_name = "fbdev outdev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -205,7 +226,8 @@ static const AVClass fbdev_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT,
 };
 
-AVOutputFormat ff_fbdev_muxer = {
+AVOutputFormat ff_fbdev_muxer =
+{
     .name           = "fbdev",
     .long_name      = NULL_IF_CONFIG_SMALL("Linux framebuffer"),
     .priv_data_size = sizeof(FBDevContext),

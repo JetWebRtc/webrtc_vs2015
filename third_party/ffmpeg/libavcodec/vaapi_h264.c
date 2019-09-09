@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.264 HW decode acceleration through VA API
  *
  * Copyright (C) 2008-2009 Splitted-Desktop Systems
@@ -78,7 +78,8 @@ static void fill_vaapi_pic(VAPictureH264 *va_pic,
 }
 
 /** Decoded Picture Buffer (DPB). */
-typedef struct DPB {
+typedef struct DPB
+{
     int            size;        ///< Current number of reference frames in the DPB
     int            max_size;    ///< Max number of reference frames. This is FF_ARRAY_ELEMS(VAPictureParameterBufferH264.ReferenceFrames)
     VAPictureH264 *va_pics;     ///< Pointer to VAPictureParameterBufferH264.ReferenceFrames array
@@ -97,18 +98,24 @@ static int dpb_add(DPB *dpb, H264Picture *pic)
     if (dpb->size >= dpb->max_size)
         return -1;
 
-    for (i = 0; i < dpb->size; i++) {
+    for (i = 0; i < dpb->size; i++)
+    {
         VAPictureH264 * const va_pic = &dpb->va_pics[i];
-        if (va_pic->picture_id == ff_vaapi_get_surface_id(pic->f)) {
+        if (va_pic->picture_id == ff_vaapi_get_surface_id(pic->f))
+        {
             VAPictureH264 temp_va_pic;
             fill_vaapi_pic(&temp_va_pic, pic, 0);
 
-            if ((temp_va_pic.flags ^ va_pic->flags) & (VA_PICTURE_H264_TOP_FIELD | VA_PICTURE_H264_BOTTOM_FIELD)) {
+            if ((temp_va_pic.flags ^ va_pic->flags) & (VA_PICTURE_H264_TOP_FIELD | VA_PICTURE_H264_BOTTOM_FIELD))
+            {
                 va_pic->flags |= temp_va_pic.flags & (VA_PICTURE_H264_TOP_FIELD | VA_PICTURE_H264_BOTTOM_FIELD);
                 /* Merge second field */
-                if (temp_va_pic.flags & VA_PICTURE_H264_TOP_FIELD) {
+                if (temp_va_pic.flags & VA_PICTURE_H264_TOP_FIELD)
+                {
                     va_pic->TopFieldOrderCnt    = temp_va_pic.TopFieldOrderCnt;
-                } else {
+                }
+                else
+                {
                     va_pic->BottomFieldOrderCnt = temp_va_pic.BottomFieldOrderCnt;
                 }
             }
@@ -133,13 +140,15 @@ static int fill_vaapi_ReferenceFrames(VAPictureParameterBufferH264 *pic_param,
     for (i = 0; i < dpb.max_size; i++)
         init_vaapi_pic(&dpb.va_pics[i]);
 
-    for (i = 0; i < h->short_ref_count; i++) {
+    for (i = 0; i < h->short_ref_count; i++)
+    {
         H264Picture * const pic = h->short_ref[i];
         if (pic && pic->reference && dpb_add(&dpb, pic) < 0)
             return -1;
     }
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         H264Picture * const pic = h->long_ref[i];
         if (pic && pic->reference && dpb_add(&dpb, pic) < 0)
             return -1;
@@ -185,13 +194,13 @@ static void fill_vaapi_RefPicList(VAPictureH264 RefPicList[32],
  * @param[out] chroma_offset       VA API plain chroma offset table
  */
 static void fill_vaapi_plain_pred_weight_table(H264Context   *h,
-                                               int            list,
-                                               unsigned char *luma_weight_flag,
-                                               short          luma_weight[32],
-                                               short          luma_offset[32],
-                                               unsigned char *chroma_weight_flag,
-                                               short          chroma_weight[32][2],
-                                               short          chroma_offset[32][2])
+        int            list,
+        unsigned char *luma_weight_flag,
+        short          luma_weight[32],
+        short          luma_offset[32],
+        unsigned char *chroma_weight_flag,
+        short          chroma_weight[32][2],
+        short          chroma_offset[32][2])
 {
     H264SliceContext *sl = &h->slice_ctx[0];
     unsigned int i, j;
@@ -199,21 +208,29 @@ static void fill_vaapi_plain_pred_weight_table(H264Context   *h,
     *luma_weight_flag    = sl->luma_weight_flag[list];
     *chroma_weight_flag  = sl->chroma_weight_flag[list];
 
-    for (i = 0; i < sl->ref_count[list]; i++) {
+    for (i = 0; i < sl->ref_count[list]; i++)
+    {
         /* VA API also wants the inferred (default) values, not
            only what is available in the bitstream (7.4.3.2). */
-        if (sl->luma_weight_flag[list]) {
+        if (sl->luma_weight_flag[list])
+        {
             luma_weight[i] = sl->luma_weight[i][list][0];
             luma_offset[i] = sl->luma_weight[i][list][1];
-        } else {
+        }
+        else
+        {
             luma_weight[i] = 1 << sl->luma_log2_weight_denom;
             luma_offset[i] = 0;
         }
-        for (j = 0; j < 2; j++) {
-            if (sl->chroma_weight_flag[list]) {
+        for (j = 0; j < 2; j++)
+        {
+            if (sl->chroma_weight_flag[list])
+            {
                 chroma_weight[i][j] = sl->chroma_weight[i][list][j][0];
                 chroma_offset[i][j] = sl->chroma_weight[i][list][j][1];
-            } else {
+            }
+            else
+            {
                 chroma_weight[i][j] = 1 << sl->chroma_log2_weight_denom;
                 chroma_offset[i][j] = 0;
             }
@@ -356,7 +373,8 @@ static int vaapi_h264_decode_slice(AVCodecContext *avctx,
     return 0;
 }
 
-AVHWAccel ff_h264_vaapi_hwaccel = {
+AVHWAccel ff_h264_vaapi_hwaccel =
+{
     .name           = "h264_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_H264,

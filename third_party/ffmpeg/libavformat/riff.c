@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RIFF common functions and data
  * Copyright (c) 2000 Fabrice Bellard
  *
@@ -29,7 +29,8 @@
  * Note also that this list is used for more than just riff, other
  * files use it as well.
  */
-const AVCodecTag ff_codec_bmp_tags[] = {
+const AVCodecTag ff_codec_bmp_tags[] =
+{
     { AV_CODEC_ID_H264,         MKTAG('H', '2', '6', '4') },
     { AV_CODEC_ID_H264,         MKTAG('h', '2', '6', '4') },
     { AV_CODEC_ID_H264,         MKTAG('X', '2', '6', '4') },
@@ -375,7 +376,8 @@ const AVCodecTag ff_codec_bmp_tags[] = {
     { AV_CODEC_ID_NONE,         0 }
 };
 
-const AVCodecTag ff_codec_wav_tags[] = {
+const AVCodecTag ff_codec_wav_tags[] =
+{
     { AV_CODEC_ID_PCM_S16LE,       0x0001 },
     /* must come after s16le in this list */
     { AV_CODEC_ID_PCM_U8,          0x0001 },
@@ -452,7 +454,8 @@ const AVCodecTag ff_codec_wav_tags[] = {
     { AV_CODEC_ID_NONE,      0 },
 };
 
-const AVMetadataConv ff_riff_info_conv[] = {
+const AVMetadataConv ff_riff_info_conv[] =
+{
     { "IART", "artist"     },
     { "ICMT", "comment"    },
     { "ICOP", "copyright"  },
@@ -479,7 +482,8 @@ const struct AVCodecTag *avformat_get_riff_audio_tags(void)
     return ff_codec_wav_tags;
 }
 
-const AVCodecGuid ff_codec_wav_guids[] = {
+const AVCodecGuid ff_codec_wav_guids[] =
+{
     { AV_CODEC_ID_AC3,      { 0x2C, 0x80, 0x6D, 0xE0, 0x46, 0xDB, 0xCF, 0x11, 0xB4, 0xD1, 0x00, 0x80, 0x5F, 0x6C, 0xBB, 0xEA } },
     { AV_CODEC_ID_ATRAC3P,  { 0xBF, 0xAA, 0x23, 0xE9, 0x58, 0xCB, 0x71, 0x44, 0xA1, 0x19, 0xFF, 0xFA, 0x01, 0xE4, 0xCE, 0x62 } },
     { AV_CODEC_ID_EAC3,     { 0xAF, 0x87, 0xFB, 0xA7, 0x02, 0x2D, 0xFB, 0x42, 0xA4, 0xD4, 0x05, 0xCD, 0x93, 0x84, 0x3B, 0xDD } },

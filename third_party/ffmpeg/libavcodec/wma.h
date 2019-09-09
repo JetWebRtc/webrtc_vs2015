@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WMA compatible codec
  * Copyright (c) 2002-2007 The FFmpeg Project
  *
@@ -56,7 +56,8 @@
 
 typedef float WMACoef;          ///< type for decoded coefficients, int16_t would be enough for wma 1/2
 
-typedef struct CoefVLCTable {
+typedef struct CoefVLCTable
+{
     int n;                      ///< total number of codes
     int max_level;
     const uint32_t *huffcodes;  ///< VLC bit values
@@ -64,7 +65,8 @@ typedef struct CoefVLCTable {
     const uint16_t *levels;     ///< table to build run/level tables
 } CoefVLCTable;
 
-typedef struct WMACodecContext {
+typedef struct WMACodecContext
+{
     AVCodecContext *avctx;
     GetBitContext gb;
     PutBitContext pb;

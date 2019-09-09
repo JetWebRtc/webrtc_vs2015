@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -107,9 +107,9 @@ amm-info@iis.fraunhofer.de
 /* ----------- basic HCR configuration ------------ */
 
 
- #define  MAX_SFB_HCR                 (((1024/8) / LINES_PER_UNIT) * 8)  /* (8 * 16) is not enough because sfbs are split in units for blocktype short */
- #define  NUMBER_OF_UNIT_GROUPS       (LINES_PER_UNIT * 8)
- #define  LINES_PER_UNIT_GROUP        (1024 / NUMBER_OF_UNIT_GROUPS)     /* 15 16 30 32 */
+#define  MAX_SFB_HCR                 (((1024/8) / LINES_PER_UNIT) * 8)  /* (8 * 16) is not enough because sfbs are split in units for blocktype short */
+#define  NUMBER_OF_UNIT_GROUPS       (LINES_PER_UNIT * 8)
+#define  LINES_PER_UNIT_GROUP        (1024 / NUMBER_OF_UNIT_GROUPS)     /* 15 16 30 32 */
 
 
 /* ------------------------------------------------ */
@@ -163,21 +163,21 @@ amm-info@iis.fraunhofer.de
 /* -    insert HCR errors       - */
 /* ------------------------------ */
 
-  /* modify input lengths -- high protected */
+/* modify input lengths -- high protected */
 #define ERROR_LORSD                       0  /* offset: error if different from zero */
 #define ERROR_LOLC                        0  /* offset: error if different from zero */
 
-  /* segments are earlier empty as expected when decoding PCWs */
+/* segments are earlier empty as expected when decoding PCWs */
 #define ERROR_PCW_BODY                    0  /* set a positive values to trigger the error (make segments earlyer appear to be empty) */
 #define ERROR_PCW_BODY_SIGN               0  /* set a positive values to trigger the error (make segments earlyer appear to be empty) */
 #define ERROR_PCW_BODY_SIGN_ESC           0  /* set a positive values to trigger the error (make segments earlyer appear to be empty) */
 
-  /* pretend there are too many bits decoded (enlarge length of codeword) at PCWs -- use a positive value */
+/* pretend there are too many bits decoded (enlarge length of codeword) at PCWs -- use a positive value */
 #define ERROR_PCW_BODY_ONLY_TOO_LONG      0  /* set a positive values to trigger the error */
 #define ERROR_PCW_BODY_SIGN_TOO_LONG      0  /* set a positive values to trigger the error */
 #define ERROR_PCW_BODY_SIGN_ESC_TOO_LONG  0  /* set a positive values to trigger the error */
 
-  /* modify HCR bitstream block */
+/* modify HCR bitstream block */
 #define ERROR_GENERATOR_BIT_STREAM_HCR    0  /* modify every <MODULO_DIVISOR_HCR>-bit when reading from bitstream */ /* !!! BEWARE!!! if RVLC is active, also RVLC data at ESC2 will be modified !!! */
 #define MODULO_DIVISOR_HCR               30
 
@@ -185,10 +185,10 @@ amm-info@iis.fraunhofer.de
 /* ------------------------------ */
 /* -    detect HCR errors       - */
 /* ------------------------------ */
-  /* check input data */
+/* check input data */
 #define CHECK_VALID_HCR_INPUT             1  /* it is highly recommended to check input data */
 
-  /* during decoding */
+/* during decoding */
 #define CHECK_SEGMENTATION_IMMEDIATELY    1  /* the 2 or 4 lines of a detected PCW-decoding-error is marked */
 
 #define CHECK_SEGMENTATION_FINAL          1  /* all the segments are checked -- therefore -- if this check passes, its a kind of evidence that the
@@ -202,7 +202,7 @@ amm-info@iis.fraunhofer.de
 
 #define STATE_MACHINE_ERROR_CHECK         1  /* test if the number of remaining bits in a segment is _below_ zero. If there are no errors the lowest
                                                 allowed value for remainingBitsInSegment is zero. This check also could be set to zero (save runtime) */
-  /* other */
+/* other */
 #define VALID_LAV_ERROR_TRIGGER           1  /* when set to '1', avoid setting the LAV-Flag in errorLog due to a previous-line-marking (at PCW decoder). A little
                                                 more runtime is needed then when writing values out into output-buffer. */
 
@@ -219,28 +219,28 @@ amm-info@iis.fraunhofer.de
 //                                         errorLog: A word of 32 bits used for logging possible errors within HCR
 //                                                   in case of distorted bitstreams. Table of all known errors:
 // ------------------------------------------------------------------------------------------------------------------------
-                                                           // bit  fatal  location    meaning
-                                                           // ----+-----+-----------+--------------------------------------
+// bit  fatal  location    meaning
+// ----+-----+-----------+--------------------------------------
 #define SEGMENT_OVERRIDE_ERR_PCW_BODY           0x80000000 //  31   no    PCW-Dec     During PCW decoding it is checked after every PCW if there are too many bits decoded (immediate check).
 #define SEGMENT_OVERRIDE_ERR_PCW_BODY_SIGN      0x40000000 //  30   no    PCW-Dec     During PCW decoding it is checked after every PCW if there are too many bits decoded (immediate check).
 #define SEGMENT_OVERRIDE_ERR_PCW_BODY_SIGN_ESC  0x20000000 //  29   no    PCW-Dec     During PCW decoding it is checked after every PCW if there are too many bits decoded (immediate check).
 #define EXTENDED_SORTED_COUNTER_OVERFLOW        0x10000000 //  28   yes   Init-Dec    Error during extending sideinfo (neither a PCW nor a nonPCW was decoded so far)
-                                             // 0x08000000 //  27                     reserved
-                                             // 0x04000000 //  26                     reserved
-                                             // 0x02000000 //  25                     reserved
-                                             // 0x01000000 //  24                     reserved
-                                             // 0x00800000 //  23                     reserved
-                                             // 0x00400000 //  22                     reserved
-                                             // 0x00200000 //  21                     reserved
-                                             // 0x00100000 //  20                     reserved
+// 0x08000000 //  27                     reserved
+// 0x04000000 //  26                     reserved
+// 0x02000000 //  25                     reserved
+// 0x01000000 //  24                     reserved
+// 0x00800000 //  23                     reserved
+// 0x00400000 //  22                     reserved
+// 0x00200000 //  21                     reserved
+// 0x00100000 //  20                     reserved
 
-                                           /* special errors */
+/* special errors */
 #define TOO_MANY_PCW_BODY_BITS_DECODED          0x00080000 //  19   yes   PCW-Dec     During PCW-body-decoding too many bits have been read from bitstream -- advice: skip non-PCW decoding
 #define TOO_MANY_PCW_BODY_SIGN_BITS_DECODED     0x00040000 //  18   yes   PCW-Dec     During PCW-body-sign-decoding too many bits have been read from bitstream -- advice: skip non-PCW decoding
 #define TOO_MANY_PCW_BODY_SIGN_ESC_BITS_DECODED 0x00020000 //  17   yes   PCW-Dec     During PCW-body-sign-esc-decoding too many bits have been read from bitstream -- advice: skip non-PCW decoding
 
 
-                                             // 0x00010000 //  16                     reserved
+// 0x00010000 //  16                     reserved
 #define STATE_ERROR_BODY_ONLY                   0x00008000 //  15   no    NonPCW-Dec  State machine returned with error
 #define STATE_ERROR_BODY_SIGN__BODY             0x00004000 //  14   no    NonPCW-Dec  State machine returned with error
 #define STATE_ERROR_BODY_SIGN__SIGN             0x00002000 //  13   no    NonPCW-Dec  State machine returned with error
@@ -258,105 +258,113 @@ amm-info@iis.fraunhofer.de
 #define LAV_VIOLATION                           0x00000002 //   1   no    Final       The absolute value of at least one decoded line was too high for the according codebook.
 #define BIT_IN_SEGMENTATION_ERROR               0x00000001 //   0   no    Final       After PCW and non-PWC-decoding at least one segment is not zero (global check).
 
-                                              /*----------*/
+/*----------*/
 #define HCR_FATAL_PCW_ERROR_MASK                0x100E01FC
 
 
-typedef enum {
-  PCW_BODY,
-  PCW_BODY_SIGN,
-  PCW_BODY_SIGN_ESC
+typedef enum
+{
+    PCW_BODY,
+    PCW_BODY_SIGN,
+    PCW_BODY_SIGN_ESC
 } PCW_TYPE;
 
 
 /* interface Decoder <---> HCR */
-typedef struct {
-  UINT          errorLog;
-  SPECTRAL_PTR  pQuantizedSpectralCoefficientsBase;
-  int           quantizedSpectralCoefficientsIdx;
-  SHORT         lengthOfReorderedSpectralData;
-  SHORT         numSection;
-  SHORT        *pNumLineInSect;
-  USHORT        bitstreamIndex;
-  SCHAR         lengthOfLongestCodeword;
-  UCHAR        *pCodebook;
+typedef struct
+{
+    UINT          errorLog;
+    SPECTRAL_PTR  pQuantizedSpectralCoefficientsBase;
+    int           quantizedSpectralCoefficientsIdx;
+    SHORT         lengthOfReorderedSpectralData;
+    SHORT         numSection;
+    SHORT        *pNumLineInSect;
+    USHORT        bitstreamIndex;
+    SCHAR         lengthOfLongestCodeword;
+    UCHAR        *pCodebook;
 } HCR_INPUT_OUTPUT;
 
-typedef struct {
-  const UCHAR *pMinOfCbPair;
-  const UCHAR *pMaxOfCbPair;
+typedef struct
+{
+    const UCHAR *pMinOfCbPair;
+    const UCHAR *pMaxOfCbPair;
 } HCR_CB_PAIRS;
 
-typedef struct{
-  const USHORT *pLargestAbsVal;
-  const UCHAR  *pMaxCwLength;
-  const UCHAR  *pCbDimension;
-  const UCHAR  *pCbDimShift;
-  const UCHAR  *pCbSign;
-  const UCHAR  *pCbPriority;
+typedef struct
+{
+    const USHORT *pLargestAbsVal;
+    const UCHAR  *pMaxCwLength;
+    const UCHAR  *pCbDimension;
+    const UCHAR  *pCbDimShift;
+    const UCHAR  *pCbSign;
+    const UCHAR  *pCbPriority;
 } HCR_TABLE_INFO;
 
-typedef struct{
-  UINT      numSegment;
-  UINT      pSegmentBitfield[((1024>>1)/NUMBER_OF_BIT_IN_WORD+1)];
-  UINT      pCodewordBitfield[((1024>>1)/NUMBER_OF_BIT_IN_WORD+1)];
-  UINT      segmentOffset;
-  FIXP_DBL  pTempValues[1024];
-  USHORT    pLeftStartOfSegment[1024>>1];
-  USHORT    pRightStartOfSegment[1024>>1];
-  SCHAR     pRemainingBitsInSegment[1024>>1];
-  UCHAR     readDirection;
-  UCHAR     numWordForBitfield;
-  USHORT    pNumBitValidInLastWord;
+typedef struct
+{
+    UINT      numSegment;
+    UINT      pSegmentBitfield[((1024>>1)/NUMBER_OF_BIT_IN_WORD+1)];
+    UINT      pCodewordBitfield[((1024>>1)/NUMBER_OF_BIT_IN_WORD+1)];
+    UINT      segmentOffset;
+    FIXP_DBL  pTempValues[1024];
+    USHORT    pLeftStartOfSegment[1024>>1];
+    USHORT    pRightStartOfSegment[1024>>1];
+    SCHAR     pRemainingBitsInSegment[1024>>1];
+    UCHAR     readDirection;
+    UCHAR     numWordForBitfield;
+    USHORT    pNumBitValidInLastWord;
 } HCR_SEGMENT_INFO;
 
-typedef struct{
+typedef struct
+{
 
-  UINT    numCodeword;
-  UINT    numSortedSection;
-  USHORT  pNumCodewordInSection[MAX_SFB_HCR];
-  USHORT  pNumSortedCodewordInSection[MAX_SFB_HCR];
-  USHORT  pNumExtendedSortedCodewordInSection[MAX_SFB_HCR+MAX_HCR_SETS];
-  int     numExtendedSortedCodewordInSectionIdx;
-  USHORT  pNumExtendedSortedSectionsInSets[MAX_HCR_SETS];
-  int     numExtendedSortedSectionsInSetsIdx;
-  USHORT  pReorderOffset[MAX_SFB_HCR];
-  UCHAR   pSortedCodebook[MAX_SFB_HCR];
+    UINT    numCodeword;
+    UINT    numSortedSection;
+    USHORT  pNumCodewordInSection[MAX_SFB_HCR];
+    USHORT  pNumSortedCodewordInSection[MAX_SFB_HCR];
+    USHORT  pNumExtendedSortedCodewordInSection[MAX_SFB_HCR+MAX_HCR_SETS];
+    int     numExtendedSortedCodewordInSectionIdx;
+    USHORT  pNumExtendedSortedSectionsInSets[MAX_HCR_SETS];
+    int     numExtendedSortedSectionsInSetsIdx;
+    USHORT  pReorderOffset[MAX_SFB_HCR];
+    UCHAR   pSortedCodebook[MAX_SFB_HCR];
 
-  UCHAR   pExtendedSortedCodebook[MAX_SFB_HCR+MAX_HCR_SETS];
-  int     extendedSortedCodebookIdx;
+    UCHAR   pExtendedSortedCodebook[MAX_SFB_HCR+MAX_HCR_SETS];
+    int     extendedSortedCodebookIdx;
 #if DETECT_TOO_LONG_CW_READS
-  UCHAR   pMaxLenOfCbInExtSrtSec[MAX_SFB_HCR+MAX_HCR_SETS];
-  int     maxLenOfCbInExtSrtSecIdx;
+    UCHAR   pMaxLenOfCbInExtSrtSec[MAX_SFB_HCR+MAX_HCR_SETS];
+    int     maxLenOfCbInExtSrtSecIdx;
 #endif
-  UCHAR   pCodebookSwitch[MAX_SFB_HCR];
+    UCHAR   pCodebookSwitch[MAX_SFB_HCR];
 } HCR_SECTION_INFO;
 
 typedef UINT (*STATEFUNC)(HANDLE_FDK_BITSTREAM, void*);
 
-typedef struct{
-  /* worst-case and 1024/4 non-PCWs exist in worst-case */
-  FIXP_DBL  *pResultBase;                           /* Base address for spectral data output target buffer */
-  UINT       iNode[1024>>2];           /* Helper indices for code books */
-  USHORT     iResultPointer[1024>>2];  /* Helper indices for accessing pResultBase */
-  UINT       pEscapeSequenceInfo[1024>>2];
-  UINT       codewordOffset;
-  STATEFUNC  pState;
-  UCHAR      pCodebook[1024>>2];
-  UCHAR      pCntSign[1024>>2];
-  /* this array holds the states coded as integer values within the range [0,1,..,7] */
-  SCHAR      pSta[1024>>2];
+typedef struct
+{
+    /* worst-case and 1024/4 non-PCWs exist in worst-case */
+    FIXP_DBL  *pResultBase;                           /* Base address for spectral data output target buffer */
+    UINT       iNode[1024>>2];           /* Helper indices for code books */
+    USHORT     iResultPointer[1024>>2];  /* Helper indices for accessing pResultBase */
+    UINT       pEscapeSequenceInfo[1024>>2];
+    UINT       codewordOffset;
+    STATEFUNC  pState;
+    UCHAR      pCodebook[1024>>2];
+    UCHAR      pCntSign[1024>>2];
+    /* this array holds the states coded as integer values within the range [0,1,..,7] */
+    SCHAR      pSta[1024>>2];
 } HCR_NON_PCW_SIDEINFO;
 
-typedef struct{
-  HCR_INPUT_OUTPUT      decInOut;
-  HCR_CB_PAIRS          cbPairs;
-  HCR_TABLE_INFO        tableInfo;
-  HCR_SEGMENT_INFO      segmentInfo;
-  HCR_SECTION_INFO      sectionInfo;
-  HCR_NON_PCW_SIDEINFO  nonPcwSideinfo;
+typedef struct
+{
+    HCR_INPUT_OUTPUT      decInOut;
+    HCR_CB_PAIRS          cbPairs;
+    HCR_TABLE_INFO        tableInfo;
+    HCR_SEGMENT_INFO      segmentInfo;
+    HCR_SECTION_INFO      sectionInfo;
+    HCR_NON_PCW_SIDEINFO  nonPcwSideinfo;
 
-  INT                   globalHcrType;
+    INT                   globalHcrType;
 } CErHcrInfo;
 
 

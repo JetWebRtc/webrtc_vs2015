@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Delphine Software International CIN video decoder
  * Copyright (c) 2006 Gregory Montoir (cyx@users.sourceforge.net)
  *
@@ -28,13 +28,15 @@
 #include "bytestream.h"
 #include "internal.h"
 
-typedef enum CinVideoBitmapIndex {
+typedef enum CinVideoBitmapIndex
+{
     CIN_CUR_BMP = 0, /* current */
     CIN_PRE_BMP = 1, /* previous */
     CIN_INT_BMP = 2  /* intermediate */
 } CinVideoBitmapIndex;
 
-typedef struct CinVideoContext {
+typedef struct CinVideoContext
+{
     AVCodecContext *avctx;
     AVFrame *frame;
     unsigned int bitmap_size;
@@ -54,9 +56,11 @@ static av_cold int allocate_buffers(CinVideoContext *cin)
 {
     int i;
 
-    for (i = 0; i < 3; ++i) {
+    for (i = 0; i < 3; ++i)
+    {
         cin->bitmap_table[i] = av_mallocz(cin->bitmap_size);
-        if (!cin->bitmap_table[i]) {
+        if (!cin->bitmap_table[i])
+        {
             av_log(cin->avctx, AV_LOG_ERROR, "Can't allocate bitmap buffers.\n");
             destroy_buffers(cin);
             return AVERROR(ENOMEM);
@@ -103,21 +107,26 @@ static int cin_decode_huffman(const unsigned char *src, int src_size,
     memcpy(huff_code_table, src, 15);
     src += 15;
 
-    while (src < src_end) {
+    while (src < src_end)
+    {
         huff_code = *src++;
-        if ((huff_code >> 4) == 15) {
+        if ((huff_code >> 4) == 15)
+        {
             b          = huff_code << 4;
             huff_code  = *src++;
             *dst_cur++ = b | (huff_code >> 4);
-        } else
+        }
+        else
             *dst_cur++ = huff_code_table[huff_code >> 4];
         if (dst_cur >= dst_end)
             break;
 
         huff_code &= 15;
-        if (huff_code == 15) {
+        if (huff_code == 15)
+        {
             *dst_cur++ = *src++;
-        } else
+        }
+        else
             *dst_cur++ = huff_code_table[huff_code];
         if (dst_cur >= dst_end)
             break;
@@ -134,12 +143,17 @@ static int cin_decode_lzss(const unsigned char *src, int src_size,
     unsigned char *dst_end       = dst + dst_size, *dst_start = dst;
     const unsigned char *src_end = src + src_size;
 
-    while (src < src_end && dst < dst_end) {
+    while (src < src_end && dst < dst_end)
+    {
         code = *src++;
-        for (i = 0; i < 8 && src < src_end && dst < dst_end; ++i) {
-            if (code & (1 << i)) {
+        for (i = 0; i < 8 && src < src_end && dst < dst_end; ++i)
+        {
+            if (code & (1 << i))
+            {
                 *dst++ = *src++;
-            } else {
+            }
+            else
+            {
                 cmd    = AV_RL16(src);
                 src   += 2;
                 offset = cmd >> 4;
@@ -150,7 +164,8 @@ static int cin_decode_lzss(const unsigned char *src, int src_size,
                  * (ab)uses buffer overlappings to repeat bytes in the
                  * destination */
                 sz = FFMIN(sz, dst_end - dst);
-                while (sz--) {
+                while (sz--)
+                {
                     *dst = *(dst - offset - 1);
                     ++dst;
                 }
@@ -162,20 +177,25 @@ static int cin_decode_lzss(const unsigned char *src, int src_size,
 }
 
 static int cin_decode_rle(const unsigned char *src, int src_size,
-                           unsigned char *dst, int dst_size)
+                          unsigned char *dst, int dst_size)
 {
     int len, code;
     unsigned char *dst_end       = dst + dst_size;
     const unsigned char *src_end = src + src_size;
 
-    while (src + 1 < src_end && dst < dst_end) {
+    while (src + 1 < src_end && dst < dst_end)
+    {
         code = *src++;
-        if (code & 0x80) {
+        if (code & 0x80)
+        {
             len = code - 0x7F;
             memset(dst, *src++, FFMIN(len, dst_end - dst));
-        } else {
+        }
+        else
+        {
             len = code + 1;
-            if (len > src_end-src) {
+            if (len > src_end-src)
+            {
                 av_log(NULL, AV_LOG_ERROR, "RLE overread\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -207,15 +227,20 @@ static int cinvideo_decode_frame(AVCodecContext *avctx,
     /* handle palette */
     if (bitmap_frame_size < palette_colors_count * (3 + (palette_type != 0)))
         return AVERROR_INVALIDDATA;
-    if (palette_type == 0) {
+    if (palette_type == 0)
+    {
         if (palette_colors_count > 256)
             return AVERROR_INVALIDDATA;
-        for (i = 0; i < palette_colors_count; ++i) {
+        for (i = 0; i < palette_colors_count; ++i)
+        {
             cin->palette[i]    = 0xFFU << 24 | bytestream_get_le24(&buf);
             bitmap_frame_size -= 3;
         }
-    } else {
-        for (i = 0; i < palette_colors_count; ++i) {
+    }
+    else
+    {
+        for (i = 0; i < palette_colors_count; ++i)
+        {
             cin->palette[buf[0]] = 0xFFU << 24 | AV_RL24(buf + 1);
             buf                 += 4;
             bitmap_frame_size   -= 4;
@@ -224,7 +249,8 @@ static int cinvideo_decode_frame(AVCodecContext *avctx,
 
     /* note: the decoding routines below assumes that
      * surface.width = surface.pitch */
-    switch (bitmap_frame_type) {
+    switch (bitmap_frame_type)
+    {
     case 9:
         cin_decode_rle(buf, bitmap_frame_size,
                        cin->bitmap_table[CIN_CUR_BMP], cin->bitmap_size);
@@ -237,7 +263,7 @@ static int cinvideo_decode_frame(AVCodecContext *avctx,
         break;
     case 35:
         bitmap_frame_size = cin_decode_huffman(buf, bitmap_frame_size,
-                           cin->bitmap_table[CIN_INT_BMP], cin->bitmap_size);
+                                               cin->bitmap_table[CIN_INT_BMP], cin->bitmap_size);
         cin_decode_rle(cin->bitmap_table[CIN_INT_BMP], bitmap_frame_size,
                        cin->bitmap_table[CIN_CUR_BMP], cin->bitmap_size);
         break;
@@ -283,7 +309,7 @@ static int cinvideo_decode_frame(AVCodecContext *avctx,
                cin->avctx->width);
 
     FFSWAP(uint8_t *, cin->bitmap_table[CIN_CUR_BMP],
-                      cin->bitmap_table[CIN_PRE_BMP]);
+           cin->bitmap_table[CIN_PRE_BMP]);
 
     if ((res = av_frame_ref(data, cin->frame)) < 0)
         return res;
@@ -304,7 +330,8 @@ static av_cold int cinvideo_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_dsicinvideo_decoder = {
+AVCodec ff_dsicinvideo_decoder =
+{
     .name           = "dsicinvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("Delphine Software International CIN video"),
     .type           = AVMEDIA_TYPE_VIDEO,

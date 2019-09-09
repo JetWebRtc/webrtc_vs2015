@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015  Ganesh Ajjanagadde
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "parser.h"
 #include "g729.h"
 
-typedef struct G729ParseContext {
+typedef struct G729ParseContext
+{
     ParseContext pc;
     int block_size;
     int duration;
@@ -37,14 +38,15 @@ typedef struct G729ParseContext {
 } G729ParseContext;
 
 static int g729_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
-                     const uint8_t **poutbuf, int *poutbuf_size,
-                     const uint8_t *buf, int buf_size)
+                      const uint8_t **poutbuf, int *poutbuf_size,
+                      const uint8_t *buf, int buf_size)
 {
     G729ParseContext *s = s1->priv_data;
     ParseContext *pc = &s->pc;
     int next;
 
-    if (!s->block_size) {
+    if (!s->block_size)
+    {
         av_assert1(avctx->codec_id == AV_CODEC_ID_G729);
         /* FIXME: replace this heuristic block_size with more precise estimate */
         s->block_size = (avctx->bit_rate < 8000) ? G729D_6K4_BLOCK_SIZE : G729_8K_BLOCK_SIZE;
@@ -53,15 +55,19 @@ static int g729_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
 
     if (!s->remaining)
         s->remaining = s->block_size;
-    if (s->remaining <= buf_size) {
+    if (s->remaining <= buf_size)
+    {
         next = s->remaining;
         s->remaining = 0;
-    } else {
+    }
+    else
+    {
         next = END_NOT_FOUND;
         s->remaining -= buf_size;
     }
 
-    if (ff_combine_frame(pc, next, &buf, &buf_size) < 0 || !buf_size) {
+    if (ff_combine_frame(pc, next, &buf, &buf_size) < 0 || !buf_size)
+    {
         *poutbuf      = NULL;
         *poutbuf_size = 0;
         return buf_size;
@@ -74,7 +80,8 @@ static int g729_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
     return next;
 }
 
-AVCodecParser ff_g729_parser = {
+AVCodecParser ff_g729_parser =
+{
     .codec_ids      = { AV_CODEC_ID_G729 },
     .priv_data_size = sizeof(G729ParseContext),
     .parser_parse   = g729_parse,

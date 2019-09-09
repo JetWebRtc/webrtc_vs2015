@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2000 Chris Ausbrooks <weed@bucket.pp.ualr.edu>
  * Copyright (c) 2000 Fabien COELHO <fabien@coelho.net>
  *
@@ -25,7 +25,8 @@
 #include "audio.h"
 #include "internal.h"
 
-typedef struct DCShiftContext {
+typedef struct DCShiftContext
+{
     const AVClass *class;
     double dcshift;
     double limiterthreshhold;
@@ -35,7 +36,8 @@ typedef struct DCShiftContext {
 #define OFFSET(x) offsetof(DCShiftContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption dcshift_options[] = {
+static const AVOption dcshift_options[] =
+{
     { "shift",       "set DC shift",     OFFSET(dcshift),       AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, A },
     { "limitergain", "set limiter gain", OFFSET(limitergain), AV_OPT_TYPE_DOUBLE, {.dbl=0}, 0, 1, A },
     { NULL }
@@ -56,7 +58,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterChannelLayouts *layouts;
     AVFilterFormats *formats;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_S32P, AV_SAMPLE_FMT_NONE
     };
     int ret;
@@ -90,43 +93,56 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i, j;
     double dcshift = s->dcshift;
 
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    if (s->limitergain > 0) {
-        for (i = 0; i < inlink->channels; i++) {
+    if (s->limitergain > 0)
+    {
+        for (i = 0; i < inlink->channels; i++)
+        {
             const int32_t *src = (int32_t *)in->extended_data[i];
             int32_t *dst = (int32_t *)out->extended_data[i];
 
-            for (j = 0; j < in->nb_samples; j++) {
+            for (j = 0; j < in->nb_samples; j++)
+            {
                 double d;
 
                 d = src[j];
 
-                if (d > s->limiterthreshhold && dcshift > 0) {
+                if (d > s->limiterthreshhold && dcshift > 0)
+                {
                     d = (d - s->limiterthreshhold) * s->limitergain /
-                             (INT32_MAX - s->limiterthreshhold) +
-                             s->limiterthreshhold + dcshift;
-                } else if (d < -s->limiterthreshhold && dcshift < 0) {
+                        (INT32_MAX - s->limiterthreshhold) +
+                        s->limiterthreshhold + dcshift;
+                }
+                else if (d < -s->limiterthreshhold && dcshift < 0)
+                {
                     d = (d + s->limiterthreshhold) * s->limitergain /
-                             (INT32_MAX - s->limiterthreshhold) -
-                             s->limiterthreshhold + dcshift;
-                } else {
+                        (INT32_MAX - s->limiterthreshhold) -
+                        s->limiterthreshhold + dcshift;
+                }
+                else
+                {
                     d = dcshift * INT32_MAX + d;
                 }
 
                 dst[j] = av_clipl_int32(d);
             }
         }
-    } else {
-        for (i = 0; i < inlink->channels; i++) {
+    }
+    else
+    {
+        for (i = 0; i < inlink->channels; i++)
+        {
             const int32_t *src = (int32_t *)in->extended_data[i];
             int32_t *dst = (int32_t *)out->extended_data[i];
 
-            for (j = 0; j < in->nb_samples; j++) {
+            for (j = 0; j < in->nb_samples; j++)
+            {
                 double d = dcshift * (INT32_MAX + 1.) + src[j];
 
                 dst[j] = av_clipl_int32(d);
@@ -137,7 +153,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     av_frame_free(&in);
     return ff_filter_frame(outlink, out);
 }
-static const AVFilterPad dcshift_inputs[] = {
+static const AVFilterPad dcshift_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -146,7 +163,8 @@ static const AVFilterPad dcshift_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad dcshift_outputs[] = {
+static const AVFilterPad dcshift_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -154,7 +172,8 @@ static const AVFilterPad dcshift_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_dcshift = {
+AVFilter ff_af_dcshift =
+{
     .name           = "dcshift",
     .description    = NULL_IF_CONFIG_SMALL("Apply a DC shift to the audio."),
     .query_formats  = query_formats,

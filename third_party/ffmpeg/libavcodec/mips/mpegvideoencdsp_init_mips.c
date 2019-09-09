@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,7 @@
 
 #if HAVE_MSA
 static av_cold void mpegvideoencdsp_init_msa(MpegvideoEncDSPContext *c,
-                                             AVCodecContext *avctx)
+        AVCodecContext *avctx)
 {
 #if BIT_DEPTH == 8
     c->pix_sum = ff_pix_sum_msa;
@@ -32,7 +32,7 @@ static av_cold void mpegvideoencdsp_init_msa(MpegvideoEncDSPContext *c,
 #endif  // #if HAVE_MSA
 
 av_cold void ff_mpegvideoencdsp_init_mips(MpegvideoEncDSPContext *c,
-                                          AVCodecContext *avctx)
+        AVCodecContext *avctx)
 {
 #if HAVE_MSA
     mpegvideoencdsp_init_msa(c, avctx);

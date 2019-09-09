@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,8 +16,10 @@
 #include "webrtc/system_wrappers/include/aligned_malloc.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket2_win.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 uint32_t UdpSocket2ManagerWindows::_numOfActiveManagers = 0;
 bool UdpSocket2ManagerWindows::_wsaInit = false;
@@ -66,8 +68,9 @@ UdpSocket2ManagerWindows::~UdpSocket2ManagerWindows()
         StopWorkerThreads();
 
         for (WorkerList::iterator iter = _workerThreadsList.begin();
-             iter != _workerThreadsList.end(); ++iter) {
-          delete *iter;
+                iter != _workerThreadsList.end(); ++iter)
+        {
+            delete *iter;
         }
         _workerThreadsList.clear();
         _ioContextPool.Free();
@@ -96,16 +99,18 @@ UdpSocket2ManagerWindows::~UdpSocket2ManagerWindows()
 }
 
 bool UdpSocket2ManagerWindows::Init(int32_t id,
-                                    uint8_t& numOfWorkThreads) {
-  CriticalSectionScoped cs(_pCrit);
-  if ((_id != -1) || (_numOfWorkThreads != 0)) {
-      assert(_id != -1);
-      assert(_numOfWorkThreads != 0);
-      return false;
-  }
-  _id = id;
-  _numOfWorkThreads = numOfWorkThreads;
-  return true;
+                                    uint8_t& numOfWorkThreads)
+{
+    CriticalSectionScoped cs(_pCrit);
+    if ((_id != -1) || (_numOfWorkThreads != 0))
+    {
+        assert(_id != -1);
+        assert(_numOfWorkThreads != 0);
+        return false;
+    }
+    _id = id;
+    _numOfWorkThreads = numOfWorkThreads;
+    return true;
 }
 
 bool UdpSocket2ManagerWindows::Start()
@@ -126,9 +131,10 @@ bool UdpSocket2ManagerWindows::Start()
     _stopped = false;
     int32_t error = 0;
     for (WorkerList::iterator iter = _workerThreadsList.begin();
-         iter != _workerThreadsList.end() && !error; ++iter) {
-      if(!(*iter)->Start())
-        error = 1;
+            iter != _workerThreadsList.end() && !error; ++iter)
+    {
+        if(!(*iter)->Start())
+            error = 1;
     }
     if(error)
     {
@@ -153,7 +159,7 @@ bool UdpSocket2ManagerWindows::StartWorkerThreads()
         _pCrit->Enter();
 
         _ioCompletionHandle = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL,
-                                                     0, 0);
+                              0, 0);
         if(_ioCompletionHandle == NULL)
         {
             int32_t error = GetLastError();
@@ -195,8 +201,9 @@ bool UdpSocket2ManagerWindows::StartWorkerThreads()
                 _managerNumber);
             // Delete worker threads.
             for (WorkerList::iterator iter = _workerThreadsList.begin();
-                 iter != _workerThreadsList.end(); ++iter) {
-              delete *iter;
+                    iter != _workerThreadsList.end(); ++iter)
+            {
+                delete *iter;
             }
             _workerThreadsList.clear();
             _pCrit->Leave();
@@ -278,7 +285,8 @@ bool UdpSocket2ManagerWindows::StopWorkerThreads()
         }
     }
     for (WorkerList::iterator iter = _workerThreadsList.begin();
-         iter != _workerThreadsList.end(); ++iter) {
+            iter != _workerThreadsList.end(); ++iter)
+    {
         if((*iter)->Stop() == false)
         {
             error = -1;
@@ -343,8 +351,8 @@ bool UdpSocket2ManagerWindows::AddSocketPrv(UdpSocket2Windows* s)
 
     }
     _ioCompletionHandle = CreateIoCompletionPort((HANDLE)s->GetFd(),
-                                                 _ioCompletionHandle,
-                                                 (ULONG_PTR)(s), 0);
+                          _ioCompletionHandle,
+                          (ULONG_PTR)(s), 0);
     if(_ioCompletionHandle == NULL)
     {
         int32_t error = GetLastError();
@@ -390,7 +398,8 @@ PerIoContext* UdpSocket2ManagerWindows::PopIoContext()
     if(!_stopped)
     {
         pIoC = _ioContextPool.PopIoContext();
-    }else
+    }
+    else
     {
         WEBRTC_TRACE(
             kTraceError,
@@ -430,7 +439,7 @@ int32_t IoContextPool::Init(uint32_t /*increaseSize*/)
     }
 
     _pListHead = (PSLIST_HEADER)AlignedMalloc(sizeof(SLIST_HEADER),
-                                              MEMORY_ALLOCATION_ALIGNMENT);
+                 MEMORY_ALLOCATION_ALIGNMENT);
     if(_pListHead == NULL)
     {
         return -1;
@@ -451,9 +460,9 @@ PerIoContext* IoContextPool::PopIoContext()
     if(pListEntry == NULL)
     {
         IoContextPoolItem* item = (IoContextPoolItem*)
-            AlignedMalloc(
-                sizeof(IoContextPoolItem),
-                MEMORY_ALLOCATION_ALIGNMENT);
+                                  AlignedMalloc(
+                                      sizeof(IoContextPoolItem),
+                                      MEMORY_ALLOCATION_ALIGNMENT);
         if(item == NULL)
         {
             return NULL;
@@ -472,7 +481,7 @@ int32_t IoContextPool::PushIoContext(PerIoContext* pIoContext)
     // TODO (hellner): Overlapped IO should be completed at this point. Perhaps
     //                 add an assert?
     const bool overlappedIOCompleted = HasOverlappedIoCompleted(
-        (LPOVERLAPPED)pIoContext);
+                                           (LPOVERLAPPED)pIoContext);
 
     IoContextPoolItem* item = ((IoContextPoolItemPayload*)pIoContext)->base;
 
@@ -486,7 +495,7 @@ int32_t IoContextPool::PushIoContext(PerIoContext* pIoContext)
         return -1;
     }
     if((freeItems >= totalItems>>1) &&
-        overlappedIOCompleted)
+            overlappedIOCompleted)
     {
         AlignedFree(item);
         --_size;
@@ -521,7 +530,8 @@ int32_t UdpSocket2WorkerWindows::_numOfWorkers = 0;
 UdpSocket2WorkerWindows::UdpSocket2WorkerWindows(HANDLE ioCompletionHandle)
     : _ioCompletionHandle(ioCompletionHandle),
       _pThread(Run, this, "UdpSocket2ManagerWindows_thread"),
-      _init(false) {
+      _init(false)
+{
     _workerNumber = _numOfWorkers++;
     WEBRTC_TRACE(kTraceMemory,  kTraceTransport, -1,
                  "UdpSocket2WorkerWindows created");
@@ -553,8 +563,8 @@ bool UdpSocket2WorkerWindows::Stop()
 
 int32_t UdpSocket2WorkerWindows::Init()
 {
-  _init = true;
-  return 0;
+    _init = true;
+    return 0;
 }
 
 bool UdpSocket2WorkerWindows::Run(void* obj)
@@ -575,7 +585,7 @@ bool UdpSocket2WorkerWindows::Process()
     OVERLAPPED* pOverlapped = 0;
     success = GetQueuedCompletionStatus(_ioCompletionHandle,
                                         &ioSize,
-                                       (ULONG_PTR*)&pSocket, &pOverlapped, 200);
+                                        (ULONG_PTR*)&pSocket, &pOverlapped, 200);
 
     uint32_t error = 0;
     if(!success)

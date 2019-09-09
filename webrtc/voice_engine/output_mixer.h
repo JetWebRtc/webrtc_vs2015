@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,17 +22,19 @@
 #include "webrtc/voice_engine/level_indicator.h"
 #include "webrtc/voice_engine/voice_engine_defines.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioProcessing;
 class FileWrapper;
 
-namespace voe {
+namespace voe
+{
 
 class Statistics;
 
 class OutputMixer : public AudioMixerOutputReceiver,
-                    public FileCallback
+    public FileCallback
 {
 public:
     static int32_t Create(OutputMixer*& mixer, uint32_t instanceId);

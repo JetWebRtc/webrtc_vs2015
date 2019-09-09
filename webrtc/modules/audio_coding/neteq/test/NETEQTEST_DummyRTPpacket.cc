@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -32,7 +32,8 @@ int NETEQTEST_DummyRTPpacket::readFromFile(FILE *fp)
     int packetLen = 0;
 
     bool readNextPacket = true;
-    while (readNextPacket) {
+    while (readNextPacket)
+    {
         readNextPacket = false;
         if (fread(&length, 2, 1, fp) == 0)
         {
@@ -82,7 +83,7 @@ int NETEQTEST_DummyRTPpacket::readFromFile(FILE *fp)
 
         // Read basic header
         if (fread((unsigned short *) _datagram, 1, _kBasicHeaderLen, fp)
-            != (size_t)_kBasicHeaderLen)
+                != (size_t)_kBasicHeaderLen)
         {
             reset();
             return -1;
@@ -187,7 +188,7 @@ int NETEQTEST_DummyRTPpacket::writeToFile(FILE *fp)
 
     // write RTP header
     if (fwrite((unsigned short *) _datagram, 1, headerLen, fp) !=
-        static_cast<size_t>(headerLen))
+            static_cast<size_t>(headerLen))
     {
         return -1;
     }
@@ -196,9 +197,10 @@ int NETEQTEST_DummyRTPpacket::writeToFile(FILE *fp)
 
 }
 
-void NETEQTEST_DummyRTPpacket::parseHeader() {
-  NETEQTEST_RTPpacket::parseHeader();
-  // Change _payloadLen to 1 byte. The memory should always be big enough.
-  assert(_memSize > _datagramLen);
-  _payloadLen = 1;
+void NETEQTEST_DummyRTPpacket::parseHeader()
+{
+    NETEQTEST_RTPpacket::parseHeader();
+    // Change _payloadLen to 1 byte. The memory should always be big enough.
+    assert(_memSize > _datagramLen);
+    _payloadLen = 1;
 }

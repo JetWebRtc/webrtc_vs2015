@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -98,14 +98,14 @@ amm-info@iis.fraunhofer.de
 
 enum
 {
-  JointStereoMaximumGroups = 8,
-  JointStereoMaximumBands = 64
+    JointStereoMaximumGroups = 8,
+    JointStereoMaximumBands = 64
 };
 
 typedef struct
 {
-  UCHAR MsMaskPresent;
-  UCHAR MsUsed[JointStereoMaximumBands]; /*!< every arry element contains flags for up to 8 groups */
+    UCHAR MsMaskPresent;
+    UCHAR MsUsed[JointStereoMaximumBands]; /*!< every arry element contains flags for up to 8 groups */
 } CJointStereoData;
 
 
@@ -123,12 +123,12 @@ typedef struct
   \return  0 on success, -1 on error.
 */
 int CJointStereo_Read(
-        HANDLE_FDK_BITSTREAM bs,
-        CJointStereoData *pJointStereoData,
-        int windowGroups,
-        int scaleFactorBandsTransmitted,
-        UINT flags
-        );
+    HANDLE_FDK_BITSTREAM bs,
+    CJointStereoData *pJointStereoData,
+    int windowGroups,
+    int scaleFactorBandsTransmitted,
+    UINT flags
+);
 
 
 #endif /* #ifndef STEREO_H */

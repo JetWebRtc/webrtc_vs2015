@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LSP routines for ACELP-based codecs
  *
  * Copyright (c) 2007 Reynaldo H. Verdejo Pinochet (QCELP decoder)
@@ -60,14 +60,14 @@ void ff_set_min_dist_lsf(float *lsf, double min_spacing, int size)
 /* Cosine table: base_cos[i] = (1 << 15) * cos(i * PI / 64) */
 static const int16_t tab_cos[65] =
 {
-  32767,  32738,  32617,  32421,  32145,  31793,  31364,  30860,
-  30280,  29629,  28905,  28113,  27252,  26326,  25336,  24285,
-  23176,  22011,  20793,  19525,  18210,  16851,  15451,  14014,
-  12543,  11043,   9515,   7965,   6395,   4810,   3214,   1609,
-      1,  -1607,  -3211,  -4808,  -6393,  -7962,  -9513, -11040,
- -12541, -14012, -15449, -16848, -18207, -19523, -20791, -22009,
- -23174, -24283, -25334, -26324, -27250, -28111, -28904, -29627,
- -30279, -30858, -31363, -31792, -32144, -32419, -32616, -32736, -32768,
+    32767,  32738,  32617,  32421,  32145,  31793,  31364,  30860,
+    30280,  29629,  28905,  28113,  27252,  26326,  25336,  24285,
+    23176,  22011,  20793,  19525,  18210,  16851,  15451,  14014,
+    12543,  11043,   9515,   7965,   6395,   4810,   3214,   1609,
+    1,  -1607,  -3211,  -4808,  -6393,  -7962,  -9513, -11040,
+    -12541, -14012, -15449, -16848, -18207, -19523, -20791, -22009,
+    -23174, -24283, -25334, -26324, -27250, -28111, -28904, -29627,
+    -30279, -30858, -31363, -31792, -32144, -32419, -32616, -32736, -32768,
 };
 
 static int16_t ff_cos(uint16_t arg)
@@ -155,7 +155,8 @@ void ff_amrwb_lsp2lpc(const double *lsp, float *lp, int lp_order)
     ff_lsp2polyf(lsp    , pa, lp_half_order    );
     ff_lsp2polyf(lsp + 1, qa, lp_half_order - 1);
 
-    for (i = 1, j = lp_order - 1; i < lp_half_order; i++, j--) {
+    for (i = 1, j = lp_order - 1; i < lp_half_order; i++, j--)
+    {
         double paf =  pa[i]            * (1 + lsp[lp_order - 1]);
         double qaf = (qa[i] - qa[i-2]) * (1 - lsp[lp_order - 1]);
         lp[i-1]  = (paf + qaf) * 0.5;
@@ -163,7 +164,7 @@ void ff_amrwb_lsp2lpc(const double *lsp, float *lp, int lp_order)
     }
 
     lp[lp_half_order - 1] = (1.0 + lsp[lp_order - 1]) *
-        pa[lp_half_order] * 0.5;
+                            pa[lp_half_order] * 0.5;
 
     lp[lp_order - 1] = lsp[lp_order - 1];
 }
@@ -216,7 +217,8 @@ void ff_acelp_lspd2lpc(const double *lsp, float *lpc, int lp_half_order)
     ff_lsp2polyf(lsp,     pa, lp_half_order);
     ff_lsp2polyf(lsp + 1, qa, lp_half_order);
 
-    while (lp_half_order--) {
+    while (lp_half_order--)
+    {
         double paf = pa[lp_half_order+1] + pa[lp_half_order];
         double qaf = qa[lp_half_order+1] - qa[lp_half_order];
 

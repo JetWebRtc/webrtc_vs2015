@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,42 +24,46 @@ RTC_PUSH_IGNORING_WUNDEF()
 #endif
 RTC_POP_IGNORING_WUNDEF()
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Used to perform an audio processing simulation from an aec dump.
-class AecDumpBasedSimulator final : public AudioProcessingSimulator {
- public:
-  explicit AecDumpBasedSimulator(const SimulationSettings& settings);
-  ~AecDumpBasedSimulator() override;
+class AecDumpBasedSimulator final : public AudioProcessingSimulator
+{
+public:
+    explicit AecDumpBasedSimulator(const SimulationSettings& settings);
+    ~AecDumpBasedSimulator() override;
 
-  // Processes the messages in the aecdump file.
-  void Process() override;
+    // Processes the messages in the aecdump file.
+    void Process() override;
 
- private:
-  void HandleMessage(const webrtc::audioproc::Init& msg);
-  void HandleMessage(const webrtc::audioproc::Stream& msg);
-  void HandleMessage(const webrtc::audioproc::ReverseStream& msg);
-  void HandleMessage(const webrtc::audioproc::Config& msg);
-  void PrepareProcessStreamCall(const webrtc::audioproc::Stream& msg,
-                                bool* set_stream_analog_level_called);
-  void PrepareReverseProcessStreamCall(
-      const webrtc::audioproc::ReverseStream& msg);
-  void VerifyProcessStreamBitExactness(const webrtc::audioproc::Stream& msg);
+private:
+    void HandleMessage(const webrtc::audioproc::Init& msg);
+    void HandleMessage(const webrtc::audioproc::Stream& msg);
+    void HandleMessage(const webrtc::audioproc::ReverseStream& msg);
+    void HandleMessage(const webrtc::audioproc::Config& msg);
+    void PrepareProcessStreamCall(const webrtc::audioproc::Stream& msg,
+                                  bool* set_stream_analog_level_called);
+    void PrepareReverseProcessStreamCall(
+        const webrtc::audioproc::ReverseStream& msg);
+    void VerifyProcessStreamBitExactness(const webrtc::audioproc::Stream& msg);
 
-  enum InterfaceType {
-    kFixedInterface,
-    kFloatInterface,
-    kNotSpecified,
-  };
+    enum InterfaceType
+    {
+        kFixedInterface,
+        kFloatInterface,
+        kNotSpecified,
+    };
 
-  FILE* dump_input_file_;
-  std::unique_ptr<ChannelBuffer<float>> artificial_nearend_buf_;
-  std::unique_ptr<ChannelBufferWavReader> artificial_nearend_buffer_reader_;
-  bool artificial_nearend_eof_reported_ = false;
-  InterfaceType interface_used_ = InterfaceType::kNotSpecified;
+    FILE* dump_input_file_;
+    std::unique_ptr<ChannelBuffer<float>> artificial_nearend_buf_;
+    std::unique_ptr<ChannelBufferWavReader> artificial_nearend_buffer_reader_;
+    bool artificial_nearend_eof_reported_ = false;
+    InterfaceType interface_used_ = InterfaceType::kNotSpecified;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AecDumpBasedSimulator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AecDumpBasedSimulator);
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Stefano Sabatini
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,7 +34,8 @@
 #include <libavformat/avio.h>
 #include <libavutil/file.h>
 
-struct buffer_data {
+struct buffer_data
+{
     uint8_t *ptr;
     size_t size; ///< size left in the buffer
 };
@@ -64,7 +65,8 @@ int main(int argc, char *argv[])
     int ret = 0;
     struct buffer_data bd = { 0 };
 
-    if (argc != 2) {
+    if (argc != 2)
+    {
         fprintf(stderr, "usage: %s input_file\n"
                 "API example program to show how to read from a custom buffer "
                 "accessed through AVIOContext.\n", argv[0]);
@@ -84,32 +86,37 @@ int main(int argc, char *argv[])
     bd.ptr  = buffer;
     bd.size = buffer_size;
 
-    if (!(fmt_ctx = avformat_alloc_context())) {
+    if (!(fmt_ctx = avformat_alloc_context()))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
     avio_ctx_buffer = av_malloc(avio_ctx_buffer_size);
-    if (!avio_ctx_buffer) {
+    if (!avio_ctx_buffer)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
     avio_ctx = avio_alloc_context(avio_ctx_buffer, avio_ctx_buffer_size,
                                   0, &bd, &read_packet, NULL, NULL);
-    if (!avio_ctx) {
+    if (!avio_ctx)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
     fmt_ctx->pb = avio_ctx;
 
     ret = avformat_open_input(&fmt_ctx, NULL, NULL, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Could not open input\n");
         goto end;
     }
 
     ret = avformat_find_stream_info(fmt_ctx, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Could not find stream information\n");
         goto end;
     }
@@ -119,13 +126,15 @@ int main(int argc, char *argv[])
 end:
     avformat_close_input(&fmt_ctx);
     /* note: the internal buffer could have changed, and be != avio_ctx_buffer */
-    if (avio_ctx) {
+    if (avio_ctx)
+    {
         av_freep(&avio_ctx->buffer);
         av_freep(&avio_ctx);
     }
     av_file_unmap(buffer, buffer_size);
 
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
         return 1;
     }

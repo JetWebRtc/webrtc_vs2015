@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -162,49 +162,54 @@ int32_t AudioDeviceLinuxPulse::ActiveAudioLayer(
     return 0;
 }
 
-AudioDeviceGeneric::InitStatus AudioDeviceLinuxPulse::Init() {
-  RTC_DCHECK(thread_checker_.CalledOnValidThread());
-  if (_initialized) {
-    return InitStatus::OK;
-  }
-
-  // Initialize PulseAudio
-  if (InitPulseAudio() < 0) {
-    LOG(LS_ERROR) << "failed to initialize PulseAudio";
-    if (TerminatePulseAudio() < 0) {
-      LOG(LS_ERROR) << "failed to terminate PulseAudio";
+AudioDeviceGeneric::InitStatus AudioDeviceLinuxPulse::Init()
+{
+    RTC_DCHECK(thread_checker_.CalledOnValidThread());
+    if (_initialized)
+    {
+        return InitStatus::OK;
     }
-    return InitStatus::OTHER_ERROR;
-  }
 
-  _playWarning = 0;
-  _playError = 0;
-  _recWarning = 0;
-  _recError = 0;
+    // Initialize PulseAudio
+    if (InitPulseAudio() < 0)
+    {
+        LOG(LS_ERROR) << "failed to initialize PulseAudio";
+        if (TerminatePulseAudio() < 0)
+        {
+            LOG(LS_ERROR) << "failed to terminate PulseAudio";
+        }
+        return InitStatus::OTHER_ERROR;
+    }
 
-  // Get X display handle for typing detection
-  _XDisplay = XOpenDisplay(NULL);
-  if (!_XDisplay) {
-    LOG(LS_WARNING)
-        << "failed to open X display, typing detection will not work";
-  }
+    _playWarning = 0;
+    _playError = 0;
+    _recWarning = 0;
+    _recError = 0;
 
-  // RECORDING
-  _ptrThreadRec.reset(new rtc::PlatformThread(
-      RecThreadFunc, this, "webrtc_audio_module_rec_thread"));
+    // Get X display handle for typing detection
+    _XDisplay = XOpenDisplay(NULL);
+    if (!_XDisplay)
+    {
+        LOG(LS_WARNING)
+                << "failed to open X display, typing detection will not work";
+    }
 
-  _ptrThreadRec->Start();
-  _ptrThreadRec->SetPriority(rtc::kRealtimePriority);
+    // RECORDING
+    _ptrThreadRec.reset(new rtc::PlatformThread(
+                            RecThreadFunc, this, "webrtc_audio_module_rec_thread"));
 
-  // PLAYOUT
-  _ptrThreadPlay.reset(new rtc::PlatformThread(
-      PlayThreadFunc, this, "webrtc_audio_module_play_thread"));
-  _ptrThreadPlay->Start();
-  _ptrThreadPlay->SetPriority(rtc::kRealtimePriority);
+    _ptrThreadRec->Start();
+    _ptrThreadRec->SetPriority(rtc::kRealtimePriority);
 
-  _initialized = true;
+    // PLAYOUT
+    _ptrThreadPlay.reset(new rtc::PlatformThread(
+                             PlayThreadFunc, this, "webrtc_audio_module_play_thread"));
+    _ptrThreadPlay->Start();
+    _ptrThreadPlay->SetPriority(rtc::kRealtimePriority);
 
-  return InitStatus::OK;
+    _initialized = true;
+
+    return InitStatus::OK;
 }
 
 int32_t AudioDeviceLinuxPulse::Terminate()
@@ -247,8 +252,8 @@ int32_t AudioDeviceLinuxPulse::Terminate()
 
     if (_XDisplay)
     {
-      XCloseDisplay(_XDisplay);
-      _XDisplay = NULL;
+        XCloseDisplay(_XDisplay);
+        _XDisplay = NULL;
     }
 
     _initialized = false;
@@ -284,7 +289,8 @@ int32_t AudioDeviceLinuxPulse::InitSpeaker()
         uint16_t deviceIndex = 0;
         GetDefaultDeviceInfo(false, NULL, deviceIndex);
         _paDeviceIndex = deviceIndex;
-    } else
+    }
+    else
     {
         // get the PA device index from
         // the callback
@@ -327,7 +333,8 @@ int32_t AudioDeviceLinuxPulse::InitMicrophone()
         uint16_t deviceIndex = 0;
         GetDefaultDeviceInfo(true, NULL, deviceIndex);
         _paDeviceIndex = deviceIndex;
-    } else
+    }
+    else
     {
         // Get the PA device index from
         // the callback
@@ -393,9 +400,10 @@ int32_t AudioDeviceLinuxPulse::SpeakerVolumeIsAvailable(bool& available)
 int32_t AudioDeviceLinuxPulse::SetSpeakerVolume(uint32_t volume)
 {
     RTC_DCHECK(thread_checker_.CalledOnValidThread());
-    if (!_playing) {
-      // Only update the volume if it's been set while we weren't playing.
-      update_speaker_volume_at_startup_ = true;
+    if (!_playing)
+    {
+        // Only update the volume if it's been set while we weren't playing.
+        update_speaker_volume_at_startup_ = true;
     }
     return (_mixerManager.SetSpeakerVolume(volume));
 }
@@ -641,9 +649,10 @@ int32_t AudioDeviceLinuxPulse::MicrophoneBoost(bool& enabled) const
 int32_t AudioDeviceLinuxPulse::StereoRecordingIsAvailable(bool& available)
 {
     RTC_DCHECK(thread_checker_.CalledOnValidThread());
-    if (_recChannels == 2 && _recording) {
-      available = true;
-      return 0;
+    if (_recChannels == 2 && _recording)
+    {
+        available = true;
+        return 0;
     }
 
     available = false;
@@ -661,7 +670,7 @@ int32_t AudioDeviceLinuxPulse::StereoRecordingIsAvailable(bool& available)
     bool isAvailable(false);
     error = _mixerManager.StereoRecordingIsAvailable(isAvailable);
     if (!error)
-      available = isAvailable;
+        available = isAvailable;
 
     // Close the initialized input mixer
     if (!wasInitialized)
@@ -697,9 +706,10 @@ int32_t AudioDeviceLinuxPulse::StereoRecording(bool& enabled) const
 int32_t AudioDeviceLinuxPulse::StereoPlayoutIsAvailable(bool& available)
 {
     RTC_DCHECK(thread_checker_.CalledOnValidThread());
-    if (_playChannels == 2 && _playing) {
-      available = true;
-      return 0;
+    if (_playChannels == 2 && _playing)
+    {
+        available = true;
+        return 0;
     }
 
     available = false;
@@ -716,7 +726,7 @@ int32_t AudioDeviceLinuxPulse::StereoPlayoutIsAvailable(bool& available)
     bool isAvailable(false);
     error = _mixerManager.StereoPlayoutIsAvailable(isAvailable);
     if (!error)
-      available = isAvailable;
+        available = isAvailable;
 
     // Close the initialized input mixer
     if (!wasInitialized)
@@ -872,8 +882,8 @@ int16_t AudioDeviceLinuxPulse::PlayoutDevices()
 
     // get the whole list of devices and update _numPlayDevices
     paOperation = LATE(pa_context_get_sink_info_list)(_paContext,
-                                                      PaSinkInfoCallback,
-                                                      this);
+                  PaSinkInfoCallback,
+                  this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -1009,8 +1019,8 @@ int16_t AudioDeviceLinuxPulse::RecordingDevices()
 
     // Get the whole list of devices and update _numRecDevices
     paOperation = LATE(pa_context_get_source_info_list)(_paContext,
-                                                        PaSourceInfoCallback,
-                                                        this);
+                  PaSourceInfoCallback,
+                  this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -1151,7 +1161,7 @@ int32_t AudioDeviceLinuxPulse::InitPlayout()
 
     // Set stream flags
     _playStreamFlags = (pa_stream_flags_t) (PA_STREAM_AUTO_TIMING_UPDATE
-        | PA_STREAM_INTERPOLATE_TIMING);
+                                            | PA_STREAM_INTERPOLATE_TIMING);
 
     if (_configuredLatencyPlay != WEBRTC_PA_NO_LATENCY_REQUIREMENTS)
     {
@@ -1161,7 +1171,7 @@ int32_t AudioDeviceLinuxPulse::InitPlayout()
         // doesn't exist in Ubuntu 8.04 and many people still use that,
         // so we have to check the protocol version of libpulse.
         if (LATE(pa_context_get_protocol_version)(_paContext)
-            >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
+                >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
         {
             _playStreamFlags |= PA_STREAM_ADJUST_LATENCY;
         }
@@ -1269,7 +1279,7 @@ int32_t AudioDeviceLinuxPulse::InitRecording()
     if (_configuredLatencyRec != WEBRTC_PA_NO_LATENCY_REQUIREMENTS)
     {
         _recStreamFlags = (pa_stream_flags_t) (PA_STREAM_AUTO_TIMING_UPDATE
-            | PA_STREAM_INTERPOLATE_TIMING);
+                                               | PA_STREAM_INTERPOLATE_TIMING);
 
         // If configuring a specific latency then we want to specify
         // PA_STREAM_ADJUST_LATENCY to make the server adjust parameters
@@ -1277,7 +1287,7 @@ int32_t AudioDeviceLinuxPulse::InitRecording()
         // doesn't exist in Ubuntu 8.04 and many people still use that,
         //  so we have to check the protocol version of libpulse.
         if (LATE(pa_context_get_protocol_version)(_paContext)
-            >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
+                >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
         {
             _recStreamFlags |= PA_STREAM_ADJUST_LATENCY;
         }
@@ -1293,14 +1303,14 @@ int32_t AudioDeviceLinuxPulse::InitRecording()
 
         size_t bytesPerSec = LATE(pa_bytes_per_second)(spec);
         uint32_t latency = bytesPerSec
-            * WEBRTC_PA_LOW_CAPTURE_LATENCY_MSECS / WEBRTC_PA_MSECS_PER_SEC;
+                           * WEBRTC_PA_LOW_CAPTURE_LATENCY_MSECS / WEBRTC_PA_MSECS_PER_SEC;
 
         // Set the rec buffer attributes
         // Note: fragsize specifies a maximum transfer size, not a minimum, so
         // it is not possible to force a high latency setting, only a low one.
         _recBufferAttr.fragsize = latency; // size of fragment
         _recBufferAttr.maxlength = latency + bytesPerSec
-            * WEBRTC_PA_CAPTURE_BUFFER_EXTRA_MSECS / WEBRTC_PA_MSECS_PER_SEC;
+                                   * WEBRTC_PA_CAPTURE_BUFFER_EXTRA_MSECS / WEBRTC_PA_MSECS_PER_SEC;
 
         _configuredLatencyRec = latency;
     }
@@ -1361,7 +1371,8 @@ int32_t AudioDeviceLinuxPulse::StartRecording()
         {
             // The recording state is set by the audio thread after recording
             // has started.
-        } else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  failed to activate recording");
@@ -1496,7 +1507,8 @@ int32_t AudioDeviceLinuxPulse::StartPlayout()
         {
             // The playing state is set by the audio thread after playout
             // has started.
-        } else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  failed to activate playing");
@@ -1631,50 +1643,50 @@ int32_t AudioDeviceLinuxPulse::CPULoad(uint16_t& /*load*/) const
 
 bool AudioDeviceLinuxPulse::PlayoutWarning() const
 {
-  CriticalSectionScoped lock(&_critSect);
-  return (_playWarning > 0);
+    CriticalSectionScoped lock(&_critSect);
+    return (_playWarning > 0);
 }
 
 bool AudioDeviceLinuxPulse::PlayoutError() const
 {
-  CriticalSectionScoped lock(&_critSect);
-  return (_playError > 0);
+    CriticalSectionScoped lock(&_critSect);
+    return (_playError > 0);
 }
 
 bool AudioDeviceLinuxPulse::RecordingWarning() const
 {
-  CriticalSectionScoped lock(&_critSect);
-  return (_recWarning > 0);
+    CriticalSectionScoped lock(&_critSect);
+    return (_recWarning > 0);
 }
 
 bool AudioDeviceLinuxPulse::RecordingError() const
 {
-  CriticalSectionScoped lock(&_critSect);
-  return (_recError > 0);
+    CriticalSectionScoped lock(&_critSect);
+    return (_recError > 0);
 }
 
 void AudioDeviceLinuxPulse::ClearPlayoutWarning()
 {
-  CriticalSectionScoped lock(&_critSect);
-  _playWarning = 0;
+    CriticalSectionScoped lock(&_critSect);
+    _playWarning = 0;
 }
 
 void AudioDeviceLinuxPulse::ClearPlayoutError()
 {
-  CriticalSectionScoped lock(&_critSect);
-  _playError = 0;
+    CriticalSectionScoped lock(&_critSect);
+    _playError = 0;
 }
 
 void AudioDeviceLinuxPulse::ClearRecordingWarning()
 {
-  CriticalSectionScoped lock(&_critSect);
-  _recWarning = 0;
+    CriticalSectionScoped lock(&_critSect);
+    _recWarning = 0;
 }
 
 void AudioDeviceLinuxPulse::ClearRecordingError()
 {
-  CriticalSectionScoped lock(&_critSect);
-  _recError = 0;
+    CriticalSectionScoped lock(&_critSect);
+    _recError = 0;
 }
 
 // ============================================================================
@@ -1684,7 +1696,7 @@ void AudioDeviceLinuxPulse::ClearRecordingError()
 void AudioDeviceLinuxPulse::PaContextStateCallback(pa_context *c, void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaContextStateCallbackHandler(c);
+    PaContextStateCallbackHandler(c);
 }
 
 // ----------------------------------------------------------------------------
@@ -1692,33 +1704,33 @@ void AudioDeviceLinuxPulse::PaContextStateCallback(pa_context *c, void *pThis)
 // ----------------------------------------------------------------------------
 
 void AudioDeviceLinuxPulse::PaSinkInfoCallback(pa_context */*c*/,
-                                               const pa_sink_info *i, int eol,
-                                               void *pThis)
+        const pa_sink_info *i, int eol,
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->PaSinkInfoCallbackHandler(
         i, eol);
 }
 
 void AudioDeviceLinuxPulse::PaSourceInfoCallback(pa_context */*c*/,
-                                                 const pa_source_info *i,
-                                                 int eol, void *pThis)
+        const pa_source_info *i,
+        int eol, void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->PaSourceInfoCallbackHandler(
         i, eol);
 }
 
 void AudioDeviceLinuxPulse::PaServerInfoCallback(pa_context */*c*/,
-                                                 const pa_server_info *i,
-                                                 void *pThis)
+        const pa_server_info *i,
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaServerInfoCallbackHandler(i);
+    PaServerInfoCallbackHandler(i);
 }
 
 void AudioDeviceLinuxPulse::PaStreamStateCallback(pa_stream *p, void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaStreamStateCallbackHandler(p);
+    PaStreamStateCallbackHandler(p);
 }
 
 void AudioDeviceLinuxPulse::PaContextStateCallbackHandler(pa_context *c)
@@ -1729,34 +1741,34 @@ void AudioDeviceLinuxPulse::PaContextStateCallbackHandler(pa_context *c)
     pa_context_state_t state = LATE(pa_context_get_state)(c);
     switch (state)
     {
-        case PA_CONTEXT_UNCONNECTED:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  unconnected");
-            break;
-        case PA_CONTEXT_CONNECTING:
-        case PA_CONTEXT_AUTHORIZING:
-        case PA_CONTEXT_SETTING_NAME:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  no state");
-            break;
-        case PA_CONTEXT_FAILED:
-        case PA_CONTEXT_TERMINATED:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  failed");
-            _paStateChanged = true;
-            LATE(pa_threaded_mainloop_signal)(_paMainloop, 0);
-            break;
-        case PA_CONTEXT_READY:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  ready");
-            _paStateChanged = true;
-            LATE(pa_threaded_mainloop_signal)(_paMainloop, 0);
-            break;
+    case PA_CONTEXT_UNCONNECTED:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  unconnected");
+        break;
+    case PA_CONTEXT_CONNECTING:
+    case PA_CONTEXT_AUTHORIZING:
+    case PA_CONTEXT_SETTING_NAME:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  no state");
+        break;
+    case PA_CONTEXT_FAILED:
+    case PA_CONTEXT_TERMINATED:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  failed");
+        _paStateChanged = true;
+        LATE(pa_threaded_mainloop_signal)(_paMainloop, 0);
+        break;
+    case PA_CONTEXT_READY:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  ready");
+        _paStateChanged = true;
+        LATE(pa_threaded_mainloop_signal)(_paMainloop, 0);
+        break;
     }
 }
 
 void AudioDeviceLinuxPulse::PaSinkInfoCallbackHandler(const pa_sink_info *i,
-                                                      int eol)
+        int eol)
 {
     if (eol)
     {
@@ -1800,7 +1812,7 @@ void AudioDeviceLinuxPulse::PaSourceInfoCallbackHandler(
     }
 
     // We don't want to list output devices
-     if (i->monitor_of_sink == PA_INVALID_INDEX)
+    if (i->monitor_of_sink == PA_INVALID_INDEX)
     {
         if (_numRecDevices == _deviceIndex)
         {
@@ -1863,23 +1875,23 @@ void AudioDeviceLinuxPulse::PaStreamStateCallbackHandler(pa_stream *p)
     pa_stream_state_t state = LATE(pa_stream_get_state)(p);
     switch (state)
     {
-        case PA_STREAM_UNCONNECTED:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  unconnected");
-            break;
-        case PA_STREAM_CREATING:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  creating");
-            break;
-        case PA_STREAM_FAILED:
-        case PA_STREAM_TERMINATED:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  failed");
-            break;
-        case PA_STREAM_READY:
-            WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
-                         "  ready");
-            break;
+    case PA_STREAM_UNCONNECTED:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  unconnected");
+        break;
+    case PA_STREAM_CREATING:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  creating");
+        break;
+    case PA_STREAM_FAILED:
+    case PA_STREAM_TERMINATED:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  failed");
+        break;
+    case PA_STREAM_READY:
+        WEBRTC_TRACE(kTraceDebug, kTraceAudioDevice, _id,
+                     "  ready");
+        break;
     }
 
     LATE(pa_threaded_mainloop_signal)(_paMainloop, 0);
@@ -1893,8 +1905,8 @@ int32_t AudioDeviceLinuxPulse::CheckPulseAudioVersion()
 
     // get the server info and update deviceName
     paOperation = LATE(pa_context_get_server_info)(_paContext,
-                                                   PaServerInfoCallback,
-                                                   this);
+                  PaServerInfoCallback,
+                  this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -1914,8 +1926,8 @@ int32_t AudioDeviceLinuxPulse::InitSamplingFrequency()
 
     // Get the server info and update sample_rate_hz_
     paOperation = LATE(pa_context_get_server_info)(_paContext,
-                                                   PaServerInfoCallback,
-                                                   this);
+                  PaServerInfoCallback,
+                  this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -1925,8 +1937,8 @@ int32_t AudioDeviceLinuxPulse::InitSamplingFrequency()
 }
 
 int32_t AudioDeviceLinuxPulse::GetDefaultDeviceInfo(bool recDevice,
-                                                    char* name,
-                                                    uint16_t& index)
+        char* name,
+        uint16_t& index)
 {
     char tmpName[kAdmMaxDeviceNameSize] = {0};
     // subtract length of "default: "
@@ -1945,7 +1957,8 @@ int32_t AudioDeviceLinuxPulse::GetDefaultDeviceInfo(bool recDevice,
     if (recDevice)
     {
         _recDisplayDeviceName = tmpName;
-    } else
+    }
+    else
     {
         _playDisplayDeviceName = tmpName;
     }
@@ -1962,8 +1975,8 @@ int32_t AudioDeviceLinuxPulse::GetDefaultDeviceInfo(bool recDevice,
 
     // Get the server info and update deviceName
     paOperation = LATE(pa_context_get_server_info)(_paContext,
-                                                   PaServerInfoCallback,
-                                                   this);
+                  PaServerInfoCallback,
+                  this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -1972,16 +1985,17 @@ int32_t AudioDeviceLinuxPulse::GetDefaultDeviceInfo(bool recDevice,
     {
         paOperation
             = LATE(pa_context_get_source_info_by_name)(_paContext,
-                                                       (char *) tmpName,
-                                                       PaSourceInfoCallback,
-                                                       this);
-    } else
+                    (char *) tmpName,
+                    PaSourceInfoCallback,
+                    this);
+    }
+    else
     {
         paOperation
             = LATE(pa_context_get_sink_info_by_name)(_paContext,
-                                                     (char *) tmpName,
-                                                     PaSinkInfoCallback,
-                                                     this);
+                    (char *) tmpName,
+                    PaSinkInfoCallback,
+                    this);
     }
 
     WaitForOperationCompletion(paOperation);
@@ -2024,7 +2038,8 @@ int32_t AudioDeviceLinuxPulse::InitPulseAudio()
 
     // Create a mainloop API and connection to the default server
     // the mainloop is the internal asynchronous API event loop
-    if (_paMainloop) {
+    if (_paMainloop)
+    {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                      "  PA mainloop has already existed");
         return -1;
@@ -2061,7 +2076,8 @@ int32_t AudioDeviceLinuxPulse::InitPulseAudio()
     }
 
     // Create a new PulseAudio context
-    if (_paContext){
+    if (_paContext)
+    {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                      "  PA context has already existed");
         PaUnLock();
@@ -2111,11 +2127,13 @@ int32_t AudioDeviceLinuxPulse::InitPulseAudio()
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  failed to connect to PulseAudio sound server");
-        } else if (state == PA_CONTEXT_TERMINATED)
+        }
+        else if (state == PA_CONTEXT_TERMINATED)
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  PulseAudio connection terminated early");
-        } else
+        }
+        else
         {
             // Shouldn't happen, because we only signal on one of those three
             // states
@@ -2157,7 +2175,8 @@ int32_t AudioDeviceLinuxPulse::TerminatePulseAudio()
 {
     // Do nothing if the instance doesn't exist
     // likely PaSymbolTable.Load() fails
-    if (!_paMainloop) {
+    if (!_paMainloop)
+    {
         return 0;
     }
 
@@ -2256,8 +2275,8 @@ void AudioDeviceLinuxPulse::DisableWriteCallback()
 }
 
 void AudioDeviceLinuxPulse::PaStreamWriteCallback(pa_stream */*unused*/,
-                                                  size_t buffer_space,
-                                                  void *pThis)
+        size_t buffer_space,
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->PaStreamWriteCallbackHandler(
         buffer_space);
@@ -2275,10 +2294,10 @@ void AudioDeviceLinuxPulse::PaStreamWriteCallbackHandler(size_t bufferSpace)
 }
 
 void AudioDeviceLinuxPulse::PaStreamUnderflowCallback(pa_stream */*unused*/,
-                                                      void *pThis)
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaStreamUnderflowCallbackHandler();
+    PaStreamUnderflowCallbackHandler();
 }
 
 void AudioDeviceLinuxPulse::PaStreamUnderflowCallbackHandler()
@@ -2315,8 +2334,8 @@ void AudioDeviceLinuxPulse::PaStreamUnderflowCallbackHandler()
     _playBufferAttr.prebuf = _playBufferAttr.tlength - _playBufferAttr.minreq;
 
     pa_operation *op = LATE(pa_stream_set_buffer_attr)(_playStream,
-                                                       &_playBufferAttr, NULL,
-                                                       NULL);
+                       &_playBufferAttr, NULL,
+                       NULL);
     if (!op)
     {
         WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
@@ -2344,11 +2363,11 @@ void AudioDeviceLinuxPulse::DisableReadCallback()
 }
 
 void AudioDeviceLinuxPulse::PaStreamReadCallback(pa_stream */*unused1*/,
-                                                 size_t /*unused2*/,
-                                                 void *pThis)
+        size_t /*unused2*/,
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaStreamReadCallbackHandler();
+    PaStreamReadCallbackHandler();
 }
 
 void AudioDeviceLinuxPulse::PaStreamReadCallbackHandler()
@@ -2372,10 +2391,10 @@ void AudioDeviceLinuxPulse::PaStreamReadCallbackHandler()
 }
 
 void AudioDeviceLinuxPulse::PaStreamOverflowCallback(pa_stream */*unused*/,
-                                                     void *pThis)
+        void *pThis)
 {
     static_cast<AudioDeviceLinuxPulse*> (pThis)->
-        PaStreamOverflowCallbackHandler();
+    PaStreamOverflowCallbackHandler();
 }
 
 void AudioDeviceLinuxPulse::PaStreamOverflowCallbackHandler()
@@ -2424,7 +2443,8 @@ int32_t AudioDeviceLinuxPulse::LatencyUsecs(pa_stream *stream)
         }
 
         return tmpLatency;
-    } else
+    }
+    else
     {
         return (int32_t) latency;
     }
@@ -2439,7 +2459,7 @@ int32_t AudioDeviceLinuxPulse::ReadRecordedData(
 
     // Account for the peeked data and the used data.
     uint32_t recDelay = (uint32_t) ((LatencyUsecs(_recStream)
-        / 1000) + 10 * ((size + _recordBufferUsed) / _recordBufferSize));
+                                     / 1000) + 10 * ((size + _recordBufferUsed) / _recordBufferSize));
 
     _sndCardRecDelay = recDelay;
 
@@ -2484,8 +2504,8 @@ int32_t AudioDeviceLinuxPulse::ReadRecordedData(
     {
         // Provide data to VoiceEngine.
         if (ProcessRecordedData(
-            static_cast<int8_t *> (const_cast<void *> (bufferData)),
-            numRecSamples, recDelay) == -1)
+                    static_cast<int8_t *> (const_cast<void *> (bufferData)),
+                    numRecSamples, recDelay) == -1)
         {
             // We have stopped recording.
             return -1;
@@ -2592,14 +2612,14 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
 {
     switch (_timeEventPlay.Wait(1000))
     {
-        case kEventSignaled:
-            break;
-        case kEventError:
-            WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id,
-                         "EventWrapper::Wait() failed");
-            return true;
-        case kEventTimeout:
-            return true;
+    case kEventSignaled:
+        break;
+    case kEventError:
+        WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id,
+                     "EventWrapper::Wait() failed");
+        return true;
+    case kEventTimeout:
+        return true;
     }
 
     CriticalSectionScoped lock(&_critSect);
@@ -2623,7 +2643,7 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
 
         // Start muted only supported on 0.9.11 and up
         if (LATE(pa_context_get_protocol_version)(_paContext)
-            >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
+                >= WEBRTC_PA_ADJUST_LATENCY_PROTOCOL_VERSION)
         {
             // Get the currently saved speaker mute status
             // and set the initial mute status accordingly
@@ -2638,30 +2658,31 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
         // Get the currently saved speaker volume
         uint32_t volume = 0;
         if (update_speaker_volume_at_startup_)
-          _mixerManager.SpeakerVolume(volume);
+            _mixerManager.SpeakerVolume(volume);
 
         PaLock();
 
         // NULL gives PA the choice of startup volume.
         pa_cvolume* ptr_cvolume = NULL;
-        if (update_speaker_volume_at_startup_) {
-          pa_cvolume cVolumes;
-          ptr_cvolume = &cVolumes;
+        if (update_speaker_volume_at_startup_)
+        {
+            pa_cvolume cVolumes;
+            ptr_cvolume = &cVolumes;
 
-          // Set the same volume for all channels
-          const pa_sample_spec *spec =
-              LATE(pa_stream_get_sample_spec)(_playStream);
-          LATE(pa_cvolume_set)(&cVolumes, spec->channels, volume);
-          update_speaker_volume_at_startup_ = false;
+            // Set the same volume for all channels
+            const pa_sample_spec *spec =
+                LATE(pa_stream_get_sample_spec)(_playStream);
+            LATE(pa_cvolume_set)(&cVolumes, spec->channels, volume);
+            update_speaker_volume_at_startup_ = false;
         }
 
         // Connect the stream to a sink
         if (LATE(pa_stream_connect_playback)(
-            _playStream,
-            _playDeviceName,
-            &_playBufferAttr,
-            (pa_stream_flags_t) _playStreamFlags,
-            ptr_cvolume, NULL) != PA_OK)
+                    _playStream,
+                    _playDeviceName,
+                    &_playBufferAttr,
+                    (pa_stream_flags_t) _playStreamFlags,
+                    ptr_cvolume, NULL) != PA_OK)
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  failed to connect play stream, err=%d",
@@ -2704,7 +2725,7 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
         {
             // Update the playout delay
             _sndCardPlayDelay = (uint32_t) (LatencyUsecs(_playStream)
-                / 1000);
+                                            / 1000);
         }
 
         if (_playbackBufferUnused < _playbackBufferSize)
@@ -2718,10 +2739,10 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
 
             PaLock();
             if (LATE(pa_stream_write)(
-                _playStream,
-                (void *) &_playBuffer[_playbackBufferUnused],
-                write, NULL, (int64_t) 0,
-                PA_SEEK_RELATIVE) != PA_OK)
+                        _playStream,
+                        (void *) &_playBuffer[_playbackBufferUnused],
+                        write, NULL, (int64_t) 0,
+                        PA_SEEK_RELATIVE) != PA_OK)
             {
                 _writeErrors++;
                 if (_writeErrors > 10)
@@ -2735,13 +2756,13 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
                     // Triggers callback from module process thread.
                     _playError = 1;
                     WEBRTC_TRACE(
-                                 kTraceError,
-                                 kTraceUtility,
-                                 _id,
-                                 "  kPlayoutError message posted: "
-                                 "_writeErrors=%u, error=%d",
-                                 _writeErrors,
-                                 LATE(pa_context_errno)(_paContext));
+                        kTraceError,
+                        kTraceUtility,
+                        _id,
+                        "  kPlayoutError message posted: "
+                        "_writeErrors=%u, error=%d",
+                        _writeErrors,
+                        LATE(pa_context_errno)(_paContext));
                     _writeErrors = 0;
                 }
             }
@@ -2801,16 +2822,16 @@ bool AudioDeviceLinuxPulse::PlayThreadProcess()
                                      kTraceUtility, _id,
                                      "  pending playout error exists");
                     }
-                     // Triggers callback from module process thread.
+                    // Triggers callback from module process thread.
                     _playError = 1;
                     WEBRTC_TRACE(
-                                 kTraceError,
-                                 kTraceUtility,
-                                 _id,
-                                 "  kPlayoutError message posted: "
-                                 "_writeErrors=%u, error=%d",
-                                 _writeErrors,
-                                 LATE(pa_context_errno)(_paContext));
+                        kTraceError,
+                        kTraceUtility,
+                        _id,
+                        "  kPlayoutError message posted: "
+                        "_writeErrors=%u, error=%d",
+                        _writeErrors,
+                        LATE(pa_context_errno)(_paContext));
                     _writeErrors = 0;
                 }
             }
@@ -2833,14 +2854,14 @@ bool AudioDeviceLinuxPulse::RecThreadProcess()
 {
     switch (_timeEventRec.Wait(1000))
     {
-        case kEventSignaled:
-            break;
-        case kEventError:
-            WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id,
-                         "EventWrapper::Wait() failed");
-            return true;
-        case kEventTimeout:
-            return true;
+    case kEventSignaled:
+        break;
+    case kEventError:
+        WEBRTC_TRACE(kTraceWarning, kTraceAudioDevice, _id,
+                     "EventWrapper::Wait() failed");
+        return true;
+    case kEventTimeout:
+        return true;
     }
 
     CriticalSectionScoped lock(&_critSect);
@@ -2868,9 +2889,9 @@ bool AudioDeviceLinuxPulse::RecThreadProcess()
 
         // Connect the stream to a source
         if (LATE(pa_stream_connect_record)(_recStream,
-            _recDeviceName,
-            &_recBufferAttr,
-            (pa_stream_flags_t) _recStreamFlags) != PA_OK)
+                                           _recDeviceName,
+                                           &_recBufferAttr,
+                                           (pa_stream_flags_t) _recStreamFlags) != PA_OK)
         {
             WEBRTC_TRACE(kTraceError, kTraceAudioDevice, _id,
                          "  failed to connect rec stream, err=%d",
@@ -2941,7 +2962,7 @@ bool AudioDeviceLinuxPulse::RecThreadProcess()
             size_t sampleDataSize;
 
             if (LATE(pa_stream_peek)(_recStream, &sampleData, &sampleDataSize)
-                != 0)
+                    != 0)
             {
                 _recError = 1; // triggers callback from module process thread
                 WEBRTC_TRACE(kTraceError, kTraceAudioDevice,
@@ -2951,7 +2972,7 @@ bool AudioDeviceLinuxPulse::RecThreadProcess()
             }
 
             _sndCardRecDelay = (uint32_t) (LatencyUsecs(_recStream)
-                / 1000);
+                                           / 1000);
 
             // Drop lock for sigslot dispatch, which could take a while.
             PaUnLock();
@@ -2973,24 +2994,25 @@ bool AudioDeviceLinuxPulse::RecThreadProcess()
     return true;
 }
 
-bool AudioDeviceLinuxPulse::KeyPressed() const{
+bool AudioDeviceLinuxPulse::KeyPressed() const
+{
 
-  char szKey[32];
-  unsigned int i = 0;
-  char state = 0;
+    char szKey[32];
+    unsigned int i = 0;
+    char state = 0;
 
-  if (!_XDisplay)
-    return false;
+    if (!_XDisplay)
+        return false;
 
-  // Check key map status
-  XQueryKeymap(_XDisplay, szKey);
+    // Check key map status
+    XQueryKeymap(_XDisplay, szKey);
 
-  // A bit change in keymap means a key is pressed
-  for (i = 0; i < sizeof(szKey); i++)
-    state |= (szKey[i] ^ _oldKeyState[i]) & szKey[i];
+    // A bit change in keymap means a key is pressed
+    for (i = 0; i < sizeof(szKey); i++)
+        state |= (szKey[i] ^ _oldKeyState[i]) & szKey[i];
 
-  // Save old state
-  memcpy((char*)_oldKeyState, (char*)szKey, sizeof(_oldKeyState));
-  return (state != 0);
+    // Save old state
+    memcpy((char*)_oldKeyState, (char*)szKey, sizeof(_oldKeyState));
+    return (state != 0);
 }
 }

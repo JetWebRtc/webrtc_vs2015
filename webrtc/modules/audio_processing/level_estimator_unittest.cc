@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,8 +16,10 @@
 #include "webrtc/modules/audio_processing/test/bitexactness_tools.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 const int kNumFramesToProcess = 1000;
 
@@ -25,69 +27,76 @@ const int kNumFramesToProcess = 1000;
 // any errors.
 void RunBitexactnessTest(int sample_rate_hz,
                          size_t num_channels,
-                         int rms_reference) {
-  rtc::CriticalSection crit_capture;
-  LevelEstimatorImpl level_estimator(&crit_capture);
-  level_estimator.Initialize();
-  level_estimator.Enable(true);
+                         int rms_reference)
+{
+    rtc::CriticalSection crit_capture;
+    LevelEstimatorImpl level_estimator(&crit_capture);
+    level_estimator.Initialize();
+    level_estimator.Enable(true);
 
-  int samples_per_channel = rtc::CheckedDivExact(sample_rate_hz, 100);
-  StreamConfig capture_config(sample_rate_hz, num_channels, false);
-  AudioBuffer capture_buffer(
-      capture_config.num_frames(), capture_config.num_channels(),
-      capture_config.num_frames(), capture_config.num_channels(),
-      capture_config.num_frames());
+    int samples_per_channel = rtc::CheckedDivExact(sample_rate_hz, 100);
+    StreamConfig capture_config(sample_rate_hz, num_channels, false);
+    AudioBuffer capture_buffer(
+        capture_config.num_frames(), capture_config.num_channels(),
+        capture_config.num_frames(), capture_config.num_channels(),
+        capture_config.num_frames());
 
-  test::InputAudioFile capture_file(
-      test::GetApmCaptureTestVectorFileName(sample_rate_hz));
-  std::vector<float> capture_input(samples_per_channel * num_channels);
-  for (size_t frame_no = 0; frame_no < kNumFramesToProcess; ++frame_no) {
-    ReadFloatSamplesFromStereoFile(samples_per_channel, num_channels,
-                                   &capture_file, capture_input);
+    test::InputAudioFile capture_file(
+        test::GetApmCaptureTestVectorFileName(sample_rate_hz));
+    std::vector<float> capture_input(samples_per_channel * num_channels);
+    for (size_t frame_no = 0; frame_no < kNumFramesToProcess; ++frame_no)
+    {
+        ReadFloatSamplesFromStereoFile(samples_per_channel, num_channels,
+                                       &capture_file, capture_input);
 
-    test::CopyVectorToAudioBuffer(capture_config, capture_input,
-                                  &capture_buffer);
+        test::CopyVectorToAudioBuffer(capture_config, capture_input,
+                                      &capture_buffer);
 
-    level_estimator.ProcessStream(&capture_buffer);
-  }
+        level_estimator.ProcessStream(&capture_buffer);
+    }
 
-  // Extract test results.
-  int rms = level_estimator.RMS();
+    // Extract test results.
+    int rms = level_estimator.RMS();
 
-  // Compare the output to the reference.
-  EXPECT_EQ(rms_reference, rms);
+    // Compare the output to the reference.
+    EXPECT_EQ(rms_reference, rms);
 }
 
 }  // namespace
 
-TEST(LevelEstimatorBitExactnessTest, Mono8kHz) {
-  const int kRmsReference = 31;
+TEST(LevelEstimatorBitExactnessTest, Mono8kHz)
+{
+    const int kRmsReference = 31;
 
-  RunBitexactnessTest(8000, 1, kRmsReference);
+    RunBitexactnessTest(8000, 1, kRmsReference);
 }
 
-TEST(LevelEstimatorBitExactnessTest, Mono16kHz) {
-  const int kRmsReference = 31;
+TEST(LevelEstimatorBitExactnessTest, Mono16kHz)
+{
+    const int kRmsReference = 31;
 
-  RunBitexactnessTest(16000, 1, kRmsReference);
+    RunBitexactnessTest(16000, 1, kRmsReference);
 }
 
-TEST(LevelEstimatorBitExactnessTest, Mono32kHz) {
-  const int kRmsReference = 31;
+TEST(LevelEstimatorBitExactnessTest, Mono32kHz)
+{
+    const int kRmsReference = 31;
 
-  RunBitexactnessTest(32000, 1, kRmsReference);
+    RunBitexactnessTest(32000, 1, kRmsReference);
 }
 
-TEST(LevelEstimatorBitExactnessTest, Mono48kHz) {
-  const int kRmsReference = 31;
+TEST(LevelEstimatorBitExactnessTest, Mono48kHz)
+{
+    const int kRmsReference = 31;
 
-  RunBitexactnessTest(48000, 1, kRmsReference);
+    RunBitexactnessTest(48000, 1, kRmsReference);
 }
 
-TEST(LevelEstimatorBitExactnessTest, Stereo16kHz) {
-  const int kRmsReference = 30;
+TEST(LevelEstimatorBitExactnessTest, Stereo16kHz)
+{
+    const int kRmsReference = 30;
 
-  RunBitexactnessTest(16000, 2, kRmsReference);
+    RunBitexactnessTest(16000, 2, kRmsReference);
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -119,8 +119,8 @@ DECLARE_ALIGNED(16, MPA_INT, RENAME(ff_mpa_synth_window))[512+256];
 }
 
 void RENAME(ff_mpadsp_apply_window)(MPA_INT *synth_buf, MPA_INT *window,
-                                  int *dither_state, OUT_INT *samples,
-                                  int incr)
+                                    int *dither_state, OUT_INT *samples,
+                                    int incr)
 {
     register const MPA_INT *w, *w2, *p;
     int j;
@@ -149,7 +149,8 @@ void RENAME(ff_mpadsp_apply_window)(MPA_INT *synth_buf, MPA_INT *window,
 
     /* we calculate two samples at the same time to avoid one memory
        access per two sample */
-    for(j=1;j<16;j++) {
+    for(j=1; j<16; j++)
+    {
         sum2 = 0;
         p = synth_buf + 16 + j;
         SUM8P2(sum, MACS, sum2, MLSS, w, w2, p);
@@ -197,7 +198,8 @@ av_cold void RENAME(ff_mpa_synth_init)(MPA_INT *window)
     int i, j;
 
     /* max = 18760, max sum over all 16 coefs : 44736 */
-    for(i=0;i<257;i++) {
+    for(i=0; i<257; i++)
+    {
         INTFLOAT v;
         v = ff_mpa_enwindow[i];
 #if USE_FLOATS
@@ -225,19 +227,24 @@ av_cold void RENAME(ff_init_mpadsp_tabs)(void)
 {
     int i, j;
     /* compute mdct windows */
-    for (i = 0; i < 36; i++) {
-        for (j = 0; j < 4; j++) {
+    for (i = 0; i < 36; i++)
+    {
+        for (j = 0; j < 4; j++)
+        {
             double d;
 
             if (j == 2 && i % 3 != 1)
                 continue;
 
             d = sin(M_PI * (i + 0.5) / 36.0);
-            if (j == 1) {
+            if (j == 1)
+            {
                 if      (i >= 30) d = 0;
                 else if (i >= 24) d = sin(M_PI * (i - 18 + 0.5) / 12.0);
                 else if (i >= 18) d = 1;
-            } else if (j == 3) {
+            }
+            else if (j == 3)
+            {
                 if      (i <   6) d = 0;
                 else if (i <  12) d = sin(M_PI * (i -  6 + 0.5) / 12.0);
                 else if (i <  18) d = 1;
@@ -247,7 +254,8 @@ av_cold void RENAME(ff_init_mpadsp_tabs)(void)
 
             if (j == 2)
                 RENAME(ff_mdct_win)[j][i/3] = FIXHR((d / (1<<5)));
-            else {
+            else
+            {
                 int idx = i < 18 ? i : i + (MDCT_BUF_SIZE/2 - 18);
                 RENAME(ff_mdct_win)[j][idx] = FIXHR((d / (1<<5)));
             }
@@ -256,8 +264,10 @@ av_cold void RENAME(ff_init_mpadsp_tabs)(void)
 
     /* NOTE: we do frequency inversion adter the MDCT by changing
         the sign of the right window coefs */
-    for (j = 0; j < 4; j++) {
-        for (i = 0; i < MDCT_BUF_SIZE; i += 2) {
+    for (j = 0; j < 4; j++)
+    {
+        for (i = 0; i < MDCT_BUF_SIZE; i += 2)
+        {
             RENAME(ff_mdct_win)[j + 4][i    ] =  RENAME(ff_mdct_win)[j][i    ];
             RENAME(ff_mdct_win)[j + 4][i + 1] = -RENAME(ff_mdct_win)[j][i + 1];
         }
@@ -274,7 +284,8 @@ av_cold void RENAME(ff_init_mpadsp_tabs)(void)
 #define C8 FIXHR(0.17364817766693034885/2)
 
 /* 0.5 / cos(pi*(2*i+1)/36) */
-static const INTFLOAT icos36[9] = {
+static const INTFLOAT icos36[9] =
+{
     FIXR(0.50190991877167369479),
     FIXR(0.51763809020504152469), //0
     FIXR(0.55168895948124587824),
@@ -287,7 +298,8 @@ static const INTFLOAT icos36[9] = {
 };
 
 /* 0.5 / cos(pi*(2*i+1)/36) */
-static const INTFLOAT icos36h[9] = {
+static const INTFLOAT icos36h[9] =
+{
     FIXHR(0.50190991877167369479/2),
     FIXHR(0.51763809020504152469/2), //0
     FIXHR(0.55168895948124587824/2),
@@ -311,7 +323,8 @@ static void imdct36(INTFLOAT *out, INTFLOAT *buf, INTFLOAT *in, INTFLOAT *win)
     for (i = 17; i >= 3; i -= 2)
         in[i] += in[i-2];
 
-    for (j = 0; j < 2; j++) {
+    for (j = 0; j < 2; j++)
+    {
         tmp1 = tmp + j;
         in1 = in + j;
 
@@ -343,7 +356,8 @@ static void imdct36(INTFLOAT *out, INTFLOAT *buf, INTFLOAT *in, INTFLOAT *win)
     }
 
     i = 0;
-    for (j = 0; j < 4; j++) {
+    for (j = 0; j < 4; j++)
+    {
         t0 = tmp[i];
         t1 = tmp[i + 2];
         s0 = t1 + t0;
@@ -384,7 +398,8 @@ void RENAME(ff_imdct36_blocks)(INTFLOAT *out, INTFLOAT *buf, INTFLOAT *in,
                                int count, int switch_point, int block_type)
 {
     int j;
-    for (j=0 ; j < count; j++) {
+    for (j=0 ; j < count; j++)
+    {
         /* apply window & overlap with previous buffer */
 
         /* select window */

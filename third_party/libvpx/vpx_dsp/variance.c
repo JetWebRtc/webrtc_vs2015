@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,56 +16,65 @@
 
 #include "vpx_dsp/variance.h"
 
-static const uint8_t bilinear_filters[8][2] = {
-  { 128, 0 }, { 112, 16 }, { 96, 32 }, { 80, 48 },
-  { 64, 64 }, { 48, 80 },  { 32, 96 }, { 16, 112 },
+static const uint8_t bilinear_filters[8][2] =
+{
+    { 128, 0 }, { 112, 16 }, { 96, 32 }, { 80, 48 },
+    { 64, 64 }, { 48, 80 },  { 32, 96 }, { 16, 112 },
 };
 
 uint32_t vpx_get4x4sse_cs_c(const uint8_t *a, int a_stride, const uint8_t *b,
-                            int b_stride) {
-  int distortion = 0;
-  int r, c;
+                            int b_stride)
+{
+    int distortion = 0;
+    int r, c;
 
-  for (r = 0; r < 4; ++r) {
-    for (c = 0; c < 4; ++c) {
-      int diff = a[c] - b[c];
-      distortion += diff * diff;
+    for (r = 0; r < 4; ++r)
+    {
+        for (c = 0; c < 4; ++c)
+        {
+            int diff = a[c] - b[c];
+            distortion += diff * diff;
+        }
+
+        a += a_stride;
+        b += b_stride;
     }
 
-    a += a_stride;
-    b += b_stride;
-  }
-
-  return distortion;
+    return distortion;
 }
 
-uint32_t vpx_get_mb_ss_c(const int16_t *a) {
-  unsigned int i, sum = 0;
+uint32_t vpx_get_mb_ss_c(const int16_t *a)
+{
+    unsigned int i, sum = 0;
 
-  for (i = 0; i < 256; ++i) {
-    sum += a[i] * a[i];
-  }
+    for (i = 0; i < 256; ++i)
+    {
+        sum += a[i] * a[i];
+    }
 
-  return sum;
+    return sum;
 }
 
 static void variance(const uint8_t *a, int a_stride, const uint8_t *b,
-                     int b_stride, int w, int h, uint32_t *sse, int *sum) {
-  int i, j;
+                     int b_stride, int w, int h, uint32_t *sse, int *sum)
+{
+    int i, j;
 
-  *sum = 0;
-  *sse = 0;
+    *sum = 0;
+    *sse = 0;
 
-  for (i = 0; i < h; ++i) {
-    for (j = 0; j < w; ++j) {
-      const int diff = a[j] - b[j];
-      *sum += diff;
-      *sse += diff * diff;
+    for (i = 0; i < h; ++i)
+    {
+        for (j = 0; j < w; ++j)
+        {
+            const int diff = a[j] - b[j];
+            *sum += diff;
+            *sse += diff * diff;
+        }
+
+        a += a_stride;
+        b += b_stride;
     }
-
-    a += a_stride;
-    b += b_stride;
-  }
 }
 
 // Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
@@ -77,24 +86,27 @@ static void variance(const uint8_t *a, int a_stride, const uint8_t *b,
 // applied horizontally (pixel_step = 1) or vertically (pixel_step = stride).
 // It defines the offset required to move from one input to the next.
 static void var_filter_block2d_bil_first_pass(const uint8_t *a, uint16_t *b,
-                                              unsigned int src_pixels_per_line,
-                                              int pixel_step,
-                                              unsigned int output_height,
-                                              unsigned int output_width,
-                                              const uint8_t *filter) {
-  unsigned int i, j;
+        unsigned int src_pixels_per_line,
+        int pixel_step,
+        unsigned int output_height,
+        unsigned int output_width,
+        const uint8_t *filter)
+{
+    unsigned int i, j;
 
-  for (i = 0; i < output_height; ++i) {
-    for (j = 0; j < output_width; ++j) {
-      b[j] = ROUND_POWER_OF_TWO(
-          (int)a[0] * filter[0] + (int)a[pixel_step] * filter[1], FILTER_BITS);
+    for (i = 0; i < output_height; ++i)
+    {
+        for (j = 0; j < output_width; ++j)
+        {
+            b[j] = ROUND_POWER_OF_TWO(
+                       (int)a[0] * filter[0] + (int)a[pixel_step] * filter[1], FILTER_BITS);
 
-      ++a;
+            ++a;
+        }
+
+        a += src_pixels_per_line - output_width;
+        b += output_width;
     }
-
-    a += src_pixels_per_line - output_width;
-    b += output_width;
-  }
 }
 
 // Applies a 1-D 2-tap bilinear filter to the source block in either horizontal
@@ -107,23 +119,26 @@ static void var_filter_block2d_bil_first_pass(const uint8_t *a, uint16_t *b,
 // (pixel_step = stride). It defines the offset required to move from one input
 // to the next. Output is 8-bit.
 static void var_filter_block2d_bil_second_pass(const uint16_t *a, uint8_t *b,
-                                               unsigned int src_pixels_per_line,
-                                               unsigned int pixel_step,
-                                               unsigned int output_height,
-                                               unsigned int output_width,
-                                               const uint8_t *filter) {
-  unsigned int i, j;
+        unsigned int src_pixels_per_line,
+        unsigned int pixel_step,
+        unsigned int output_height,
+        unsigned int output_width,
+        const uint8_t *filter)
+{
+    unsigned int i, j;
 
-  for (i = 0; i < output_height; ++i) {
-    for (j = 0; j < output_width; ++j) {
-      b[j] = ROUND_POWER_OF_TWO(
-          (int)a[0] * filter[0] + (int)a[pixel_step] * filter[1], FILTER_BITS);
-      ++a;
+    for (i = 0; i < output_height; ++i)
+    {
+        for (j = 0; j < output_width; ++j)
+        {
+            b[j] = ROUND_POWER_OF_TWO(
+                       (int)a[0] * filter[0] + (int)a[pixel_step] * filter[1], FILTER_BITS);
+            ++a;
+        }
+
+        a += src_pixels_per_line - output_width;
+        b += output_width;
     }
-
-    a += src_pixels_per_line - output_width;
-    b += output_width;
-  }
 }
 
 #define VAR(W, H)                                                    \
@@ -222,70 +237,79 @@ MSE(8, 16)
 MSE(8, 8)
 
 void vpx_comp_avg_pred_c(uint8_t *comp_pred, const uint8_t *pred, int width,
-                         int height, const uint8_t *ref, int ref_stride) {
-  int i, j;
+                         int height, const uint8_t *ref, int ref_stride)
+{
+    int i, j;
 
-  for (i = 0; i < height; ++i) {
-    for (j = 0; j < width; ++j) {
-      const int tmp = pred[j] + ref[j];
-      comp_pred[j] = ROUND_POWER_OF_TWO(tmp, 1);
+    for (i = 0; i < height; ++i)
+    {
+        for (j = 0; j < width; ++j)
+        {
+            const int tmp = pred[j] + ref[j];
+            comp_pred[j] = ROUND_POWER_OF_TWO(tmp, 1);
+        }
+        comp_pred += width;
+        pred += width;
+        ref += ref_stride;
     }
-    comp_pred += width;
-    pred += width;
-    ref += ref_stride;
-  }
 }
 
 #if CONFIG_VP9_HIGHBITDEPTH
 static void highbd_variance64(const uint8_t *a8, int a_stride,
                               const uint8_t *b8, int b_stride, int w, int h,
-                              uint64_t *sse, int64_t *sum) {
-  int i, j;
+                              uint64_t *sse, int64_t *sum)
+{
+    int i, j;
 
-  uint16_t *a = CONVERT_TO_SHORTPTR(a8);
-  uint16_t *b = CONVERT_TO_SHORTPTR(b8);
-  *sum = 0;
-  *sse = 0;
+    uint16_t *a = CONVERT_TO_SHORTPTR(a8);
+    uint16_t *b = CONVERT_TO_SHORTPTR(b8);
+    *sum = 0;
+    *sse = 0;
 
-  for (i = 0; i < h; ++i) {
-    for (j = 0; j < w; ++j) {
-      const int diff = a[j] - b[j];
-      *sum += diff;
-      *sse += diff * diff;
+    for (i = 0; i < h; ++i)
+    {
+        for (j = 0; j < w; ++j)
+        {
+            const int diff = a[j] - b[j];
+            *sum += diff;
+            *sse += diff * diff;
+        }
+        a += a_stride;
+        b += b_stride;
     }
-    a += a_stride;
-    b += b_stride;
-  }
 }
 
 static void highbd_8_variance(const uint8_t *a8, int a_stride,
                               const uint8_t *b8, int b_stride, int w, int h,
-                              uint32_t *sse, int *sum) {
-  uint64_t sse_long = 0;
-  int64_t sum_long = 0;
-  highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
-  *sse = (uint32_t)sse_long;
-  *sum = (int)sum_long;
+                              uint32_t *sse, int *sum)
+{
+    uint64_t sse_long = 0;
+    int64_t sum_long = 0;
+    highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
+    *sse = (uint32_t)sse_long;
+    *sum = (int)sum_long;
 }
 
 static void highbd_10_variance(const uint8_t *a8, int a_stride,
                                const uint8_t *b8, int b_stride, int w, int h,
-                               uint32_t *sse, int *sum) {
-  uint64_t sse_long = 0;
-  int64_t sum_long = 0;
-  highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
-  *sse = (uint32_t)ROUND_POWER_OF_TWO(sse_long, 4);
-  *sum = (int)ROUND_POWER_OF_TWO(sum_long, 2);
+                               uint32_t *sse, int *sum)
+{
+    uint64_t sse_long = 0;
+    int64_t sum_long = 0;
+    highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
+    *sse = (uint32_t)ROUND_POWER_OF_TWO(sse_long, 4);
+    *sum = (int)ROUND_POWER_OF_TWO(sum_long, 2);
 }
 
 static void highbd_12_variance(const uint8_t *a8, int a_stride,
                                const uint8_t *b8, int b_stride, int w, int h,
-                               uint32_t *sse, int *sum) {
-  uint64_t sse_long = 0;
-  int64_t sum_long = 0;
-  highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
-  *sse = (uint32_t)ROUND_POWER_OF_TWO(sse_long, 8);
-  *sum = (int)ROUND_POWER_OF_TWO(sum_long, 4);
+                               uint32_t *sse, int *sum)
+{
+    uint64_t sse_long = 0;
+    int64_t sum_long = 0;
+    highbd_variance64(a8, a_stride, b8, b_stride, w, h, &sse_long, &sum_long);
+    *sse = (uint32_t)ROUND_POWER_OF_TWO(sse_long, 8);
+    *sum = (int)ROUND_POWER_OF_TWO(sum_long, 4);
 }
 
 #define HIGHBD_VAR(W, H)                                                       \
@@ -365,42 +389,48 @@ static void highbd_var_filter_block2d_bil_first_pass(
     const uint8_t *src_ptr8, uint16_t *output_ptr,
     unsigned int src_pixels_per_line, int pixel_step,
     unsigned int output_height, unsigned int output_width,
-    const uint8_t *filter) {
-  unsigned int i, j;
-  uint16_t *src_ptr = CONVERT_TO_SHORTPTR(src_ptr8);
-  for (i = 0; i < output_height; ++i) {
-    for (j = 0; j < output_width; ++j) {
-      output_ptr[j] = ROUND_POWER_OF_TWO(
-          (int)src_ptr[0] * filter[0] + (int)src_ptr[pixel_step] * filter[1],
-          FILTER_BITS);
+    const uint8_t *filter)
+{
+    unsigned int i, j;
+    uint16_t *src_ptr = CONVERT_TO_SHORTPTR(src_ptr8);
+    for (i = 0; i < output_height; ++i)
+    {
+        for (j = 0; j < output_width; ++j)
+        {
+            output_ptr[j] = ROUND_POWER_OF_TWO(
+                                (int)src_ptr[0] * filter[0] + (int)src_ptr[pixel_step] * filter[1],
+                                FILTER_BITS);
 
-      ++src_ptr;
+            ++src_ptr;
+        }
+
+        // Next row...
+        src_ptr += src_pixels_per_line - output_width;
+        output_ptr += output_width;
     }
-
-    // Next row...
-    src_ptr += src_pixels_per_line - output_width;
-    output_ptr += output_width;
-  }
 }
 
 static void highbd_var_filter_block2d_bil_second_pass(
     const uint16_t *src_ptr, uint16_t *output_ptr,
     unsigned int src_pixels_per_line, unsigned int pixel_step,
     unsigned int output_height, unsigned int output_width,
-    const uint8_t *filter) {
-  unsigned int i, j;
+    const uint8_t *filter)
+{
+    unsigned int i, j;
 
-  for (i = 0; i < output_height; ++i) {
-    for (j = 0; j < output_width; ++j) {
-      output_ptr[j] = ROUND_POWER_OF_TWO(
-          (int)src_ptr[0] * filter[0] + (int)src_ptr[pixel_step] * filter[1],
-          FILTER_BITS);
-      ++src_ptr;
+    for (i = 0; i < output_height; ++i)
+    {
+        for (j = 0; j < output_width; ++j)
+        {
+            output_ptr[j] = ROUND_POWER_OF_TWO(
+                                (int)src_ptr[0] * filter[0] + (int)src_ptr[pixel_step] * filter[1],
+                                FILTER_BITS);
+            ++src_ptr;
+        }
+
+        src_ptr += src_pixels_per_line - output_width;
+        output_ptr += output_width;
     }
-
-    src_ptr += src_pixels_per_line - output_width;
-    output_ptr += output_width;
-  }
 }
 
 #define HIGHBD_SUBPIX_VAR(W, H)                                              \
@@ -540,18 +570,21 @@ HIGHBD_MSE(8, 8)
 
 void vpx_highbd_comp_avg_pred(uint16_t *comp_pred, const uint8_t *pred8,
                               int width, int height, const uint8_t *ref8,
-                              int ref_stride) {
-  int i, j;
-  uint16_t *pred = CONVERT_TO_SHORTPTR(pred8);
-  uint16_t *ref = CONVERT_TO_SHORTPTR(ref8);
-  for (i = 0; i < height; ++i) {
-    for (j = 0; j < width; ++j) {
-      const int tmp = pred[j] + ref[j];
-      comp_pred[j] = ROUND_POWER_OF_TWO(tmp, 1);
+                              int ref_stride)
+{
+    int i, j;
+    uint16_t *pred = CONVERT_TO_SHORTPTR(pred8);
+    uint16_t *ref = CONVERT_TO_SHORTPTR(ref8);
+    for (i = 0; i < height; ++i)
+    {
+        for (j = 0; j < width; ++j)
+        {
+            const int tmp = pred[j] + ref[j];
+            comp_pred[j] = ROUND_POWER_OF_TWO(tmp, 1);
+        }
+        comp_pred += width;
+        pred += width;
+        ref += ref_stride;
     }
-    comp_pred += width;
-    pred += width;
-    ref += ref_stride;
-  }
 }
 #endif  // CONFIG_VP9_HIGHBITDEPTH

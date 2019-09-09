@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Yamaha SMAF format
  * Copyright (c) 2005 Vidar Madsen
  *
@@ -27,7 +27,8 @@
 #include "rawenc.h"
 #include "riff.h"
 
-typedef struct MMFContext {
+typedef struct MMFContext
+{
     int64_t atrpos, atsqpos, awapos;
     int64_t data_end;
     int stereo;
@@ -74,7 +75,8 @@ static int mmf_write_header(AVFormatContext *s)
                           "VN:"LIBAVFORMAT_IDENT",";
 
     rate = mmf_rate_code(s->streams[0]->codec->sample_rate);
-    if (rate < 0) {
+    if (rate < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported sample rate %d, supported are 4000, 8000, 11025, 22050 and 44100\n",
                s->streams[0]->codec->sample_rate);
         return AVERROR(EINVAL);
@@ -82,7 +84,8 @@ static int mmf_write_header(AVFormatContext *s)
 
     mmf->stereo = s->streams[0]->codec->channels > 1;
     if (mmf->stereo &&
-        s->strict_std_compliance > FF_COMPLIANCE_EXPERIMENTAL) {
+            s->strict_std_compliance > FF_COMPLIANCE_EXPERIMENTAL)
+    {
         av_log(s, AV_LOG_ERROR, "Yamaha SMAF stereo is experimental, "
                "add '-strict %d' if you want to use it.\n",
                FF_COMPLIANCE_EXPERIMENTAL);
@@ -133,7 +136,8 @@ static void put_varlength(AVIOContext *pb, int val)
 {
     if (val < 128)
         avio_w8(pb, val);
-    else {
+    else
+    {
         val -= 128;
         avio_w8(pb, 0x80 | val >> 7);
         avio_w8(pb, 0x7f & val);
@@ -147,7 +151,8 @@ static int mmf_write_trailer(AVFormatContext *s)
     int64_t pos, size;
     int gatetime;
 
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         /* Fill in length fields */
         end_tag_be(pb, mmf->awapos);
         end_tag_be(pb, mmf->atrpos);
@@ -184,9 +189,9 @@ static int mmf_probe(AVProbeData *p)
 {
     /* check file header */
     if (p->buf[0] == 'M' && p->buf[1] == 'M' &&
-        p->buf[2] == 'M' && p->buf[3] == 'D' &&
-        p->buf[8] == 'C' && p->buf[9] == 'N' &&
-        p->buf[10] == 'T' && p->buf[11] == 'I')
+            p->buf[2] == 'M' && p->buf[3] == 'D' &&
+            p->buf[8] == 'C' && p->buf[9] == 'N' &&
+            p->buf[10] == 'T' && p->buf[11] == 'I')
         return AVPROBE_SCORE_MAX;
     else
         return 0;
@@ -208,7 +213,8 @@ static int mmf_read_header(AVFormatContext *s)
     avio_skip(pb, 4); /* file_size */
 
     /* Skip some unused chunks that may or may not be present */
-    for (;; avio_skip(pb, size)) {
+    for (;; avio_skip(pb, size))
+    {
         tag  = avio_rl32(pb);
         size = avio_rb32(pb);
         if (tag == MKTAG('C', 'N', 'T', 'I'))
@@ -219,11 +225,13 @@ static int mmf_read_header(AVFormatContext *s)
     }
 
     /* Tag = "ATRx", where "x" = track number */
-    if ((tag & 0xffffff) == MKTAG('M', 'T', 'R', 0)) {
+    if ((tag & 0xffffff) == MKTAG('M', 'T', 'R', 0))
+    {
         av_log(s, AV_LOG_ERROR, "MIDI like format found, unsupported\n");
         return AVERROR_PATCHWELCOME;
     }
-    if ((tag & 0xffffff) != MKTAG('A', 'T', 'R', 0)) {
+    if ((tag & 0xffffff) != MKTAG('A', 'T', 'R', 0))
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported SMAF chunk %08x\n", tag);
         return AVERROR_PATCHWELCOME;
     }
@@ -232,7 +240,8 @@ static int mmf_read_header(AVFormatContext *s)
     avio_r8(pb); /* sequence type */
     params = avio_r8(pb); /* (channel << 7) | (format << 4) | rate */
     rate   = mmf_rate(params & 0x0f);
-    if (rate < 0) {
+    if (rate < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid sample rate\n");
         return AVERROR_INVALIDDATA;
     }
@@ -241,7 +250,8 @@ static int mmf_read_header(AVFormatContext *s)
     avio_r8(pb); /* time base g */
 
     /* Skip some unused chunks that may or may not be present */
-    for (;; avio_skip(pb, size)) {
+    for (;; avio_skip(pb, size))
+    {
         tag  = avio_rl32(pb);
         size = avio_rb32(pb);
         if (tag == MKTAG('A', 't', 's', 'q'))
@@ -252,7 +262,8 @@ static int mmf_read_header(AVFormatContext *s)
     }
 
     /* Make sure it's followed by an Awa chunk, aka wave data */
-    if ((tag & 0xffffff) != MKTAG('A', 'w', 'a', 0)) {
+    if ((tag & 0xffffff) != MKTAG('A', 'w', 'a', 0))
+    {
         av_log(s, AV_LOG_ERROR, "Unexpected SMAF chunk %08x\n", tag);
         return AVERROR_INVALIDDATA;
     }
@@ -299,7 +310,8 @@ static int mmf_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 #if CONFIG_MMF_DEMUXER
-AVInputFormat ff_mmf_demuxer = {
+AVInputFormat ff_mmf_demuxer =
+{
     .name           = "mmf",
     .long_name      = NULL_IF_CONFIG_SMALL("Yamaha SMAF"),
     .priv_data_size = sizeof(MMFContext),
@@ -311,7 +323,8 @@ AVInputFormat ff_mmf_demuxer = {
 #endif
 
 #if CONFIG_MMF_MUXER
-AVOutputFormat ff_mmf_muxer = {
+AVOutputFormat ff_mmf_muxer =
+{
     .name           = "mmf",
     .long_name      = NULL_IF_CONFIG_SMALL("Yamaha SMAF"),
     .mime_type      = "application/vnd.smaf",

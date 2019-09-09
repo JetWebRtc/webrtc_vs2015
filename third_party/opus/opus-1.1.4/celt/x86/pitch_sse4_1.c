@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@
 #include "x86cpu.h"
 
 opus_val32 celt_inner_prod_sse4_1(const opus_val16 *x, const opus_val16 *y,
-      int N)
+                                  int N)
 {
     opus_int  i, dataSize16;
     opus_int32 sum;
@@ -57,7 +57,8 @@ opus_val32 celt_inner_prod_sse4_1(const opus_val16 *x, const opus_val16 *y,
     acc1 = _mm_setzero_si128();
     acc2 = _mm_setzero_si128();
 
-    for (i=0;i<dataSize16;i+=16) {
+    for (i=0; i<dataSize16; i+=16)
+    {
         inVec1_76543210 = _mm_loadu_si128((__m128i *)(&x[i + 0]));
         inVec2_76543210 = _mm_loadu_si128((__m128i *)(&y[i + 0]));
 
@@ -100,7 +101,7 @@ opus_val32 celt_inner_prod_sse4_1(const opus_val16 *x, const opus_val16 *y,
 
     sum += _mm_cvtsi128_si32(acc1);
 
-    for (;i<N;i++)
+    for (; i<N; i++)
     {
         sum = silk_SMLABB(sum, x[i], y[i]);
     }
@@ -124,7 +125,7 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
     sum2 = _mm_setzero_si128();
     sum3 = _mm_setzero_si128();
 
-    for (j=0;j<(len-7);j+=8)
+    for (j=0; j<(len-7); j+=8)
     {
         vecX = _mm_loadu_si128((__m128i *)(&x[j + 0]));
         vecY0 = _mm_loadu_si128((__m128i *)(&y[j + 0]));
@@ -151,9 +152,9 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
     sum3 = _mm_add_epi32(sum3, _mm_shufflelo_epi16( sum3, 0x0E));
 
     vecSum = _mm_unpacklo_epi64(_mm_unpacklo_epi32(sum0, sum1),
-          _mm_unpacklo_epi32(sum2, sum3));
+                                _mm_unpacklo_epi32(sum2, sum3));
 
-    for (;j<(len-3);j+=4)
+    for (; j<(len-3); j+=4)
     {
         vecX = OP_CVTEPI16_EPI32_M64(&x[j + 0]);
         vecX0 = _mm_shuffle_epi32(vecX, 0x00);
@@ -177,7 +178,7 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
         vecSum = _mm_add_epi32(vecSum, sum2);
     }
 
-    for (;j<len;j++)
+    for (; j<len; j++)
     {
         vecX = OP_CVTEPI16_EPI32_M64(&x[j + 0]);
         vecX0 = _mm_shuffle_epi32(vecX, 0x00);

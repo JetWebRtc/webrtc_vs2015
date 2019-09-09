@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,20 +15,22 @@
 
 #include "webrtc/base/optional.h"
 
-namespace webrtc {
-class MovingAverage {
- public:
-  explicit MovingAverage(size_t s);
-  void AddSample(int sample);
-  rtc::Optional<int> GetAverage() const;
-  rtc::Optional<int> GetAverage(size_t num_samples) const;
-  void Reset();
-  size_t size() const;
+namespace webrtc
+{
+class MovingAverage
+{
+public:
+    explicit MovingAverage(size_t s);
+    void AddSample(int sample);
+    rtc::Optional<int> GetAverage() const;
+    rtc::Optional<int> GetAverage(size_t num_samples) const;
+    void Reset();
+    size_t size() const;
 
- private:
-  size_t count_ = 0;
-  int sum_ = 0;
-  std::vector<int> sum_history_;
+private:
+    size_t count_ = 0;
+    int sum_ = 0;
+    std::vector<int> sum_history_;
 };
 }  // namespace webrtc
 

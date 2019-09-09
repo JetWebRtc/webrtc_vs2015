@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2008 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -35,7 +35,8 @@ static int parse(AVCodecParserContext *s,
     return buf_size;
 }
 
-AVCodecParser ff_vp3_parser = {
+AVCodecParser ff_vp3_parser =
+{
     .codec_ids    = {
         AV_CODEC_ID_THEORA, AV_CODEC_ID_VP3,
         AV_CODEC_ID_VP6, AV_CODEC_ID_VP6F, AV_CODEC_ID_VP6A

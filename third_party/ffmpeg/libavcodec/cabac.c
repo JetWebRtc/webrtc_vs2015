@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -38,7 +38,8 @@
  *
  * @param buf_size size of buf in bits
  */
-void ff_init_cabac_encoder(CABACContext *c, uint8_t *buf, int buf_size){
+void ff_init_cabac_encoder(CABACContext *c, uint8_t *buf, int buf_size)
+{
     init_put_bits(&c->pb, buf, buf_size);
 
     c->low= 0;
@@ -51,9 +52,10 @@ void ff_init_cabac_encoder(CABACContext *c, uint8_t *buf, int buf_size){
  *
  * @param buf_size size of buf in bits
  */
-void ff_init_cabac_decoder(CABACContext *c, const uint8_t *buf, int buf_size){
+void ff_init_cabac_decoder(CABACContext *c, const uint8_t *buf, int buf_size)
+{
     c->bytestream_start=
-    c->bytestream= buf;
+        c->bytestream= buf;
     c->bytestream_end= buf + buf_size;
 
 #if CABAC_BITS == 16
@@ -84,22 +86,31 @@ void ff_init_cabac_states(void)
 #include "libavutil/lfg.h"
 #include "avcodec.h"
 
-static inline void put_cabac_bit(CABACContext *c, int b){
+static inline void put_cabac_bit(CABACContext *c, int b)
+{
     put_bits(&c->pb, 1, b);
-    for(;c->outstanding_count; c->outstanding_count--){
+    for(; c->outstanding_count; c->outstanding_count--)
+    {
         put_bits(&c->pb, 1, 1-b);
     }
 }
 
-static inline void renorm_cabac_encoder(CABACContext *c){
-    while(c->range < 0x100){
+static inline void renorm_cabac_encoder(CABACContext *c)
+{
+    while(c->range < 0x100)
+    {
         //FIXME optimize
-        if(c->low<0x100){
+        if(c->low<0x100)
+        {
             put_cabac_bit(c, 0);
-        }else if(c->low<0x200){
+        }
+        else if(c->low<0x200)
+        {
             c->outstanding_count++;
             c->low -= 0x100;
-        }else{
+        }
+        else
+        {
             put_cabac_bit(c, 1);
             c->low -= 0x200;
         }
@@ -109,13 +120,17 @@ static inline void renorm_cabac_encoder(CABACContext *c){
     }
 }
 
-static void put_cabac(CABACContext *c, uint8_t * const state, int bit){
+static void put_cabac(CABACContext *c, uint8_t * const state, int bit)
+{
     int RangeLPS= ff_h264_lps_range[2*(c->range&0xC0) + *state];
 
-    if(bit == ((*state)&1)){
+    if(bit == ((*state)&1))
+    {
         c->range -= RangeLPS;
         *state    = ff_h264_mlps_state[128 + *state];
-    }else{
+    }
+    else
+    {
         c->low += c->range - RangeLPS;
         c->range = RangeLPS;
         *state= ff_h264_mlps_state[127 - *state];
@@ -127,19 +142,26 @@ static void put_cabac(CABACContext *c, uint8_t * const state, int bit){
 /**
  * @param bit 0 -> write zero bit, !=0 write one bit
  */
-static void put_cabac_bypass(CABACContext *c, int bit){
+static void put_cabac_bypass(CABACContext *c, int bit)
+{
     c->low += c->low;
 
-    if(bit){
+    if(bit)
+    {
         c->low += c->range;
     }
 //FIXME optimize
-    if(c->low<0x200){
+    if(c->low<0x200)
+    {
         put_cabac_bit(c, 0);
-    }else if(c->low<0x400){
+    }
+    else if(c->low<0x400)
+    {
         c->outstanding_count++;
         c->low -= 0x200;
-    }else{
+    }
+    else
+    {
         put_cabac_bit(c, 1);
         c->low -= 0x400;
     }
@@ -149,12 +171,16 @@ static void put_cabac_bypass(CABACContext *c, int bit){
  *
  * @return the number of bytes written
  */
-static int put_cabac_terminate(CABACContext *c, int bit){
+static int put_cabac_terminate(CABACContext *c, int bit)
+{
     c->range -= 2;
 
-    if(!bit){
+    if(!bit)
+    {
         renorm_cabac_encoder(c);
-    }else{
+    }
+    else
+    {
         c->low += c->range;
         c->range= 2;
 
@@ -170,7 +196,8 @@ static int put_cabac_terminate(CABACContext *c, int bit){
     return (put_bits_count(&c->pb)+7)>>3;
 }
 
-int main(void){
+int main(void)
+{
     CABACContext c;
     uint8_t b[9*SIZE];
     uint8_t r[9*SIZE];
@@ -182,16 +209,19 @@ int main(void){
     ff_init_cabac_encoder(&c, b, SIZE);
     ff_init_cabac_states();
 
-    for(i=0; i<SIZE; i++){
+    for(i=0; i<SIZE; i++)
+    {
         if(2*i<SIZE) r[i] = av_lfg_get(&prng) % 7;
         else         r[i] = (i>>8)&1;
     }
 
-    for(i=0; i<SIZE; i++){
+    for(i=0; i<SIZE; i++)
+    {
         put_cabac_bypass(&c, r[i]&1);
     }
 
-    for(i=0; i<SIZE; i++){
+    for(i=0; i<SIZE; i++)
+    {
         put_cabac(&c, state, r[i]&1);
     }
 
@@ -201,20 +231,25 @@ int main(void){
 
     memset(state, 0, sizeof(state));
 
-    for(i=0; i<SIZE; i++){
-        if( (r[i]&1) != get_cabac_bypass(&c) ) {
+    for(i=0; i<SIZE; i++)
+    {
+        if( (r[i]&1) != get_cabac_bypass(&c) )
+        {
             av_log(NULL, AV_LOG_ERROR, "CABAC bypass failure at %d\n", i);
             ret = 1;
         }
     }
 
-    for(i=0; i<SIZE; i++){
-        if( (r[i]&1) != get_cabac_noinline(&c, state) ) {
+    for(i=0; i<SIZE; i++)
+    {
+        if( (r[i]&1) != get_cabac_noinline(&c, state) )
+        {
             av_log(NULL, AV_LOG_ERROR, "CABAC failure at %d\n", i);
             ret = 1;
         }
     }
-    if(!get_cabac_terminate(&c)) {
+    if(!get_cabac_terminate(&c))
+    {
         av_log(NULL, AV_LOG_ERROR, "where's the Terminator?\n");
         ret = 1;
     }

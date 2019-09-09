@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Cryo Interactive Entertainment HNM4 demuxer
  *
  * Copyright (c) 2012 David Kment
@@ -36,7 +36,8 @@
 #define HNM4_CHUNK_ID_IU 21833
 #define HNM4_CHUNK_ID_SD 17491
 
-typedef struct Hnm4DemuxContext {
+typedef struct Hnm4DemuxContext
+{
     uint8_t version;
     uint16_t width;
     uint16_t height;
@@ -93,7 +94,8 @@ static int hnm_read_header(AVFormatContext *s)
     hnm->currentframe = 0;
 
     if (hnm->width  < 256 || hnm->width  > 640 ||
-        hnm->height < 150 || hnm->height > 480) {
+            hnm->height < 150 || hnm->height > 480)
+    {
         av_log(s, AV_LOG_ERROR,
                "invalid resolution: %ux%u\n", hnm->width, hnm->height);
         return AVERROR_INVALIDDATA;
@@ -137,7 +139,8 @@ static int hnm_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (hnm->currentframe == hnm->frames || pb->eof_reached)
         return AVERROR_EOF;
 
-    if (hnm->superchunk_remaining == 0) {
+    if (hnm->superchunk_remaining == 0)
+    {
         /* parse next superchunk */
         superchunk_size = avio_rl24(pb);
         avio_skip(pb, 1);
@@ -150,7 +153,8 @@ static int hnm_read_packet(AVFormatContext *s, AVPacket *pkt)
     chunk_id = avio_rl16(pb);
     avio_skip(pb, 2);
 
-    if (chunk_size > hnm->superchunk_remaining || !chunk_size) {
+    if (chunk_size > hnm->superchunk_remaining || !chunk_size)
+    {
         av_log(s, AV_LOG_ERROR,
                "invalid chunk size: %"PRIu32", offset: %"PRId64"\n",
                chunk_size, avio_tell(pb));
@@ -158,7 +162,8 @@ static int hnm_read_packet(AVFormatContext *s, AVPacket *pkt)
         hnm->superchunk_remaining = 0;
     }
 
-    switch (chunk_id) {
+    switch (chunk_id)
+    {
     case HNM4_CHUNK_ID_PL:
     case HNM4_CHUNK_ID_IZ:
     case HNM4_CHUNK_ID_IU:
@@ -195,7 +200,8 @@ static int hnm_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_hnm_demuxer = {
+AVInputFormat ff_hnm_demuxer =
+{
     .name           = "hnm",
     .long_name      = NULL_IF_CONFIG_SMALL("Cryo HNM v4"),
     .priv_data_size = sizeof(Hnm4DemuxContext),

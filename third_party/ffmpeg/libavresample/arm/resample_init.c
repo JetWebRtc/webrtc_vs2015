@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Peter Meerwald <pmeerw@pmeerw.net>
  *
  * This file is part of FFmpeg.
@@ -53,8 +53,10 @@ av_cold void ff_audio_resample_init_arm(ResampleContext *c,
                                         enum AVSampleFormat sample_fmt)
 {
     int cpu_flags = av_get_cpu_flags();
-    if (have_neon(cpu_flags)) {
-        switch (sample_fmt) {
+    if (have_neon(cpu_flags))
+    {
+        switch (sample_fmt)
+        {
         case AV_SAMPLE_FMT_FLTP:
             if (c->linear)
                 c->resample_one = ff_resample_linear_flt_neon;

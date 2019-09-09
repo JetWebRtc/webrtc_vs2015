@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface RTCAVFoundationVideoCapturerInternal
     : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property(nonatomic, readonly) AVCaptureSession *captureSession;
+      @property(nonatomic, readonly) AVCaptureSession *captureSession;
 @property(nonatomic, readonly) dispatch_queue_t frameQueue;
 @property(nonatomic, readonly) BOOL canUseBackCamera;
 @property(nonatomic, assign) BOOL useBackCamera;  // Defaults to NO.

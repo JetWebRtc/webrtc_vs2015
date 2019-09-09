@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,25 +14,30 @@
 
 #include "webrtc/base/platform_thread.h"
 
-namespace rtc {
+namespace rtc
+{
 
-ThreadCheckerImpl::ThreadCheckerImpl() : valid_thread_(CurrentThreadRef()) {
+ThreadCheckerImpl::ThreadCheckerImpl() : valid_thread_(CurrentThreadRef())
+{
 }
 
-ThreadCheckerImpl::~ThreadCheckerImpl() {
+ThreadCheckerImpl::~ThreadCheckerImpl()
+{
 }
 
-bool ThreadCheckerImpl::CalledOnValidThread() const {
-  const PlatformThreadRef current_thread = CurrentThreadRef();
-  CritScope scoped_lock(&lock_);
-  if (!valid_thread_)  // Set if previously detached.
-    valid_thread_ = current_thread;
-  return IsThreadRefEqual(valid_thread_, current_thread);
+bool ThreadCheckerImpl::CalledOnValidThread() const
+{
+    const PlatformThreadRef current_thread = CurrentThreadRef();
+    CritScope scoped_lock(&lock_);
+    if (!valid_thread_)  // Set if previously detached.
+        valid_thread_ = current_thread;
+    return IsThreadRefEqual(valid_thread_, current_thread);
 }
 
-void ThreadCheckerImpl::DetachFromThread() {
-  CritScope scoped_lock(&lock_);
-  valid_thread_ = 0;
+void ThreadCheckerImpl::DetachFromThread()
+{
+    CritScope scoped_lock(&lock_);
+    valid_thread_ = 0;
 }
 
 }  // namespace rtc

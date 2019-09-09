@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Motion Pixels MVI Demuxer
  * Copyright (c) 2008 Gregory Montoir (cyx@users.sourceforge.net)
  *
@@ -30,7 +30,8 @@
 #define MVI_AUDIO_STREAM_INDEX 0
 #define MVI_VIDEO_STREAM_INDEX 1
 
-typedef struct MviDemuxContext {
+typedef struct MviDemuxContext
+{
     unsigned int (*get_int)(AVIOContext *);
     uint32_t audio_data_size;
     uint64_t audio_size_counter;
@@ -75,7 +76,8 @@ static int read_header(AVFormatContext *s)
     if (frames_count == 0 || mvi->audio_data_size == 0)
         return AVERROR_INVALIDDATA;
 
-    if (version != 7 || player_version > 213) {
+    if (version != 7 || player_version > 213)
+    {
         av_log(s, AV_LOG_ERROR, "unhandled version (%d,%d)\n", version, player_version);
         return AVERROR_INVALIDDATA;
     }
@@ -96,7 +98,8 @@ static int read_header(AVFormatContext *s)
     mvi->get_int = (vst->codec->width * vst->codec->height < (1 << 16)) ? avio_rl16 : avio_rl24;
 
     mvi->audio_frame_size   = ((uint64_t)mvi->audio_data_size << MVI_FRAC_BITS) / frames_count;
-    if (mvi->audio_frame_size <= 1 << MVI_FRAC_BITS - 1) {
+    if (mvi->audio_frame_size <= 1 << MVI_FRAC_BITS - 1)
+    {
         av_log(s, AV_LOG_ERROR,
                "Invalid audio_data_size (%"PRIu32") or frames_count (%u)\n",
                mvi->audio_data_size, frames_count);
@@ -115,7 +118,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     MviDemuxContext *mvi = s->priv_data;
     AVIOContext *pb = s->pb;
 
-    if (mvi->video_frame_size == 0) {
+    if (mvi->video_frame_size == 0)
+    {
         mvi->video_frame_size = (mvi->get_int)(pb);
         if (mvi->audio_size_left == 0)
             return AVERROR(EIO);
@@ -127,7 +131,9 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
         pkt->stream_index = MVI_AUDIO_STREAM_INDEX;
         mvi->audio_size_left -= count;
         mvi->audio_size_counter += mvi->audio_frame_size - (count << MVI_FRAC_BITS);
-    } else {
+    }
+    else
+    {
         if ((ret = av_get_packet(pb, pkt, mvi->video_frame_size)) < 0)
             return ret;
         pkt->stream_index = MVI_VIDEO_STREAM_INDEX;
@@ -136,7 +142,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_mvi_demuxer = {
+AVInputFormat ff_mvi_demuxer =
+{
     .name           = "mvi",
     .long_name      = NULL_IF_CONFIG_SMALL("Motion Pixels MVI"),
     .priv_data_size = sizeof(MviDemuxContext),

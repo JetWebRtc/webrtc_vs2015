@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -51,262 +51,290 @@ const int32_t kAudioPlayedOut = 0x00000001;
 const int32_t kPacketPushedIn = 0x00000001 << 1;
 const int kPlayoutPeriodMs = 10;
 
-namespace webrtc {
+namespace webrtc
+{
 
-class InsertPacketWithTiming {
- public:
-  InsertPacketWithTiming()
-      : sender_clock_(new SimulatedClock(0)),
-        receiver_clock_(new SimulatedClock(0)),
-        send_acm_(AudioCodingModule::Create(0, sender_clock_)),
-        receive_acm_(AudioCodingModule::Create(0, receiver_clock_)),
-        channel_(new Channel),
-        seq_num_fid_(fopen(FLAGS_seq_num.c_str(), "rt")),
-        send_ts_fid_(fopen(FLAGS_send_ts.c_str(), "rt")),
-        receive_ts_fid_(fopen(FLAGS_receive_ts.c_str(), "rt")),
-        pcm_out_fid_(fopen(FLAGS_output.c_str(), "wb")),
-        samples_in_1ms_(48),
-        num_10ms_in_codec_frame_(2),  // Typical 20 ms frames.
-        time_to_insert_packet_ms_(3),  // An arbitrary offset on pushing packet.
-        next_receive_ts_(0),
-        time_to_playout_audio_ms_(kPlayoutPeriodMs),
-        loss_threshold_(0),
-        playout_timing_fid_(fopen("playout_timing.txt", "wt")) {}
+class InsertPacketWithTiming
+{
+public:
+    InsertPacketWithTiming()
+        : sender_clock_(new SimulatedClock(0)),
+          receiver_clock_(new SimulatedClock(0)),
+          send_acm_(AudioCodingModule::Create(0, sender_clock_)),
+          receive_acm_(AudioCodingModule::Create(0, receiver_clock_)),
+          channel_(new Channel),
+          seq_num_fid_(fopen(FLAGS_seq_num.c_str(), "rt")),
+          send_ts_fid_(fopen(FLAGS_send_ts.c_str(), "rt")),
+          receive_ts_fid_(fopen(FLAGS_receive_ts.c_str(), "rt")),
+          pcm_out_fid_(fopen(FLAGS_output.c_str(), "wb")),
+          samples_in_1ms_(48),
+          num_10ms_in_codec_frame_(2),  // Typical 20 ms frames.
+          time_to_insert_packet_ms_(3),  // An arbitrary offset on pushing packet.
+          next_receive_ts_(0),
+          time_to_playout_audio_ms_(kPlayoutPeriodMs),
+          loss_threshold_(0),
+          playout_timing_fid_(fopen("playout_timing.txt", "wt")) {}
 
-  void SetUp() {
-    ASSERT_TRUE(sender_clock_ != NULL);
-    ASSERT_TRUE(receiver_clock_ != NULL);
+    void SetUp()
+    {
+        ASSERT_TRUE(sender_clock_ != NULL);
+        ASSERT_TRUE(receiver_clock_ != NULL);
 
-    ASSERT_TRUE(send_acm_.get() != NULL);
-    ASSERT_TRUE(receive_acm_.get() != NULL);
-    ASSERT_TRUE(channel_ != NULL);
+        ASSERT_TRUE(send_acm_.get() != NULL);
+        ASSERT_TRUE(receive_acm_.get() != NULL);
+        ASSERT_TRUE(channel_ != NULL);
 
-    ASSERT_TRUE(seq_num_fid_ != NULL);
-    ASSERT_TRUE(send_ts_fid_ != NULL);
-    ASSERT_TRUE(receive_ts_fid_ != NULL);
+        ASSERT_TRUE(seq_num_fid_ != NULL);
+        ASSERT_TRUE(send_ts_fid_ != NULL);
+        ASSERT_TRUE(receive_ts_fid_ != NULL);
 
-    ASSERT_TRUE(playout_timing_fid_ != NULL);
+        ASSERT_TRUE(playout_timing_fid_ != NULL);
 
-    next_receive_ts_ = ReceiveTimestamp();
+        next_receive_ts_ = ReceiveTimestamp();
 
-    CodecInst codec;
-    ASSERT_EQ(0, AudioCodingModule::Codec(FLAGS_codec.c_str(), &codec,
-                             FLAGS_codec_sample_rate_hz,
-                             FLAGS_codec_channels));
-    ASSERT_EQ(0, receive_acm_->InitializeReceiver());
-    ASSERT_EQ(0, send_acm_->RegisterSendCodec(codec));
-    ASSERT_EQ(true, receive_acm_->RegisterReceiveCodec(codec.pltype,
-                                                       CodecInstToSdp(codec)));
+        CodecInst codec;
+        ASSERT_EQ(0, AudioCodingModule::Codec(FLAGS_codec.c_str(), &codec,
+                                              FLAGS_codec_sample_rate_hz,
+                                              FLAGS_codec_channels));
+        ASSERT_EQ(0, receive_acm_->InitializeReceiver());
+        ASSERT_EQ(0, send_acm_->RegisterSendCodec(codec));
+        ASSERT_EQ(true, receive_acm_->RegisterReceiveCodec(codec.pltype,
+                  CodecInstToSdp(codec)));
 
-    // Set codec-dependent parameters.
-    samples_in_1ms_ = codec.plfreq / 1000;
-    num_10ms_in_codec_frame_ = codec.pacsize / (codec.plfreq / 100);
+        // Set codec-dependent parameters.
+        samples_in_1ms_ = codec.plfreq / 1000;
+        num_10ms_in_codec_frame_ = codec.pacsize / (codec.plfreq / 100);
 
-    channel_->RegisterReceiverACM(receive_acm_.get());
-    send_acm_->RegisterTransportCallback(channel_);
+        channel_->RegisterReceiverACM(receive_acm_.get());
+        send_acm_->RegisterTransportCallback(channel_);
 
-    if (FLAGS_input.size() == 0) {
-      std::string file_name = test::ResourcePath("audio_coding/testfile32kHz",
-                                                 "pcm");
-      pcm_in_fid_.Open(file_name, 32000, "r", true);  // auto-rewind
-      std::cout << "Input file " << file_name << " 32 kHz mono." << std::endl;
-    } else {
-      pcm_in_fid_.Open(FLAGS_input, static_cast<uint16_t>(FLAGS_input_fs_hz),
-                    "r", true);  // auto-rewind
-      std::cout << "Input file " << FLAGS_input << "at " << FLAGS_input_fs_hz
-          << " Hz in " << ((FLAGS_input_stereo) ? "stereo." : "mono.")
-          << std::endl;
-      pcm_in_fid_.ReadStereo(FLAGS_input_stereo);
-    }
-
-    ASSERT_TRUE(pcm_out_fid_ != NULL);
-    std::cout << "Output file " << FLAGS_output << " at " << FLAGS_output_fs_hz
-        << " Hz." << std::endl;
-
-    // Other setups
-    if (FLAGS_loss_rate > 0)
-      loss_threshold_ = RAND_MAX * FLAGS_loss_rate;
-    else
-      loss_threshold_ = 0;
-  }
-
-  void TickOneMillisecond(uint32_t* action) {
-    // One millisecond passed.
-    time_to_insert_packet_ms_--;
-    time_to_playout_audio_ms_--;
-    sender_clock_->AdvanceTimeMilliseconds(1);
-    receiver_clock_->AdvanceTimeMilliseconds(1);
-
-    // Reset action.
-    *action = 0;
-
-    // Is it time to pull audio?
-    if (time_to_playout_audio_ms_ == 0) {
-      time_to_playout_audio_ms_ = kPlayoutPeriodMs;
-      bool muted;
-      receive_acm_->PlayoutData10Ms(static_cast<int>(FLAGS_output_fs_hz),
-                                    &frame_, &muted);
-      ASSERT_FALSE(muted);
-      fwrite(frame_.data_, sizeof(frame_.data_[0]),
-             frame_.samples_per_channel_ * frame_.num_channels_, pcm_out_fid_);
-      *action |= kAudioPlayedOut;
-    }
-
-    // Is it time to push in next packet?
-    if (time_to_insert_packet_ms_ <= .5) {
-      *action |= kPacketPushedIn;
-
-      // Update time-to-insert packet.
-      uint32_t t = next_receive_ts_;
-      next_receive_ts_ = ReceiveTimestamp();
-      time_to_insert_packet_ms_ += static_cast<float>(next_receive_ts_ - t) /
-          samples_in_1ms_;
-
-      // Push in just enough audio.
-      for (int n = 0; n < num_10ms_in_codec_frame_; n++) {
-        pcm_in_fid_.Read10MsData(frame_);
-        EXPECT_GE(send_acm_->Add10MsData(frame_), 0);
-      }
-
-      // Set the parameters for the packet to be pushed in receiver ACM right
-      // now.
-      uint32_t ts = SendTimestamp();
-      int seq_num = SequenceNumber();
-      bool lost = false;
-      channel_->set_send_timestamp(ts);
-      channel_->set_sequence_number(seq_num);
-      if (loss_threshold_ > 0 && rand() < loss_threshold_) {
-        channel_->set_num_packets_to_drop(1);
-        lost = true;
-      }
-
-      if (FLAGS_verbose) {
-        if (!lost) {
-          std::cout << "\nInserting packet number " << seq_num
-              << " timestamp " << ts << std::endl;
-        } else {
-          std::cout << "\nLost packet number " << seq_num
-              << " timestamp " << ts << std::endl;
+        if (FLAGS_input.size() == 0)
+        {
+            std::string file_name = test::ResourcePath("audio_coding/testfile32kHz",
+                                    "pcm");
+            pcm_in_fid_.Open(file_name, 32000, "r", true);  // auto-rewind
+            std::cout << "Input file " << file_name << " 32 kHz mono." << std::endl;
         }
-      }
+        else
+        {
+            pcm_in_fid_.Open(FLAGS_input, static_cast<uint16_t>(FLAGS_input_fs_hz),
+                             "r", true);  // auto-rewind
+            std::cout << "Input file " << FLAGS_input << "at " << FLAGS_input_fs_hz
+                      << " Hz in " << ((FLAGS_input_stereo) ? "stereo." : "mono.")
+                      << std::endl;
+            pcm_in_fid_.ReadStereo(FLAGS_input_stereo);
+        }
+
+        ASSERT_TRUE(pcm_out_fid_ != NULL);
+        std::cout << "Output file " << FLAGS_output << " at " << FLAGS_output_fs_hz
+                  << " Hz." << std::endl;
+
+        // Other setups
+        if (FLAGS_loss_rate > 0)
+            loss_threshold_ = RAND_MAX * FLAGS_loss_rate;
+        else
+            loss_threshold_ = 0;
     }
-  }
 
-  void TearDown() {
-    delete channel_;
+    void TickOneMillisecond(uint32_t* action)
+    {
+        // One millisecond passed.
+        time_to_insert_packet_ms_--;
+        time_to_playout_audio_ms_--;
+        sender_clock_->AdvanceTimeMilliseconds(1);
+        receiver_clock_->AdvanceTimeMilliseconds(1);
 
-    fclose(seq_num_fid_);
-    fclose(send_ts_fid_);
-    fclose(receive_ts_fid_);
-    fclose(pcm_out_fid_);
-    pcm_in_fid_.Close();
-  }
+        // Reset action.
+        *action = 0;
 
-  ~InsertPacketWithTiming() {
-    delete sender_clock_;
-    delete receiver_clock_;
-  }
+        // Is it time to pull audio?
+        if (time_to_playout_audio_ms_ == 0)
+        {
+            time_to_playout_audio_ms_ = kPlayoutPeriodMs;
+            bool muted;
+            receive_acm_->PlayoutData10Ms(static_cast<int>(FLAGS_output_fs_hz),
+                                          &frame_, &muted);
+            ASSERT_FALSE(muted);
+            fwrite(frame_.data_, sizeof(frame_.data_[0]),
+                   frame_.samples_per_channel_ * frame_.num_channels_, pcm_out_fid_);
+            *action |= kAudioPlayedOut;
+        }
 
-  // Are there more info to simulate.
-  bool HasPackets() {
-    if (feof(seq_num_fid_) || feof(send_ts_fid_) || feof(receive_ts_fid_))
-      return false;
-    return true;
-  }
+        // Is it time to push in next packet?
+        if (time_to_insert_packet_ms_ <= .5)
+        {
+            *action |= kPacketPushedIn;
 
-  // Jitter buffer delay.
-  void Delay(int* optimal_delay, int* current_delay) {
-    NetworkStatistics statistics;
-    receive_acm_->GetNetworkStatistics(&statistics);
-    *optimal_delay = statistics.preferredBufferSize;
-    *current_delay = statistics.currentBufferSize;
-  }
+            // Update time-to-insert packet.
+            uint32_t t = next_receive_ts_;
+            next_receive_ts_ = ReceiveTimestamp();
+            time_to_insert_packet_ms_ += static_cast<float>(next_receive_ts_ - t) /
+                                         samples_in_1ms_;
 
- private:
-  uint32_t SendTimestamp() {
-    uint32_t t;
-    EXPECT_EQ(1, fscanf(send_ts_fid_, "%u\n", &t));
-    return t;
-  }
+            // Push in just enough audio.
+            for (int n = 0; n < num_10ms_in_codec_frame_; n++)
+            {
+                pcm_in_fid_.Read10MsData(frame_);
+                EXPECT_GE(send_acm_->Add10MsData(frame_), 0);
+            }
 
-  uint32_t ReceiveTimestamp() {
-    uint32_t t;
-    EXPECT_EQ(1, fscanf(receive_ts_fid_, "%u\n", &t));
-    return t;
-  }
+            // Set the parameters for the packet to be pushed in receiver ACM right
+            // now.
+            uint32_t ts = SendTimestamp();
+            int seq_num = SequenceNumber();
+            bool lost = false;
+            channel_->set_send_timestamp(ts);
+            channel_->set_sequence_number(seq_num);
+            if (loss_threshold_ > 0 && rand() < loss_threshold_)
+            {
+                channel_->set_num_packets_to_drop(1);
+                lost = true;
+            }
 
-  int SequenceNumber() {
-    int n;
-    EXPECT_EQ(1, fscanf(seq_num_fid_, "%d\n", &n));
-    return n;
-  }
+            if (FLAGS_verbose)
+            {
+                if (!lost)
+                {
+                    std::cout << "\nInserting packet number " << seq_num
+                              << " timestamp " << ts << std::endl;
+                }
+                else
+                {
+                    std::cout << "\nLost packet number " << seq_num
+                              << " timestamp " << ts << std::endl;
+                }
+            }
+        }
+    }
 
-  // This class just creates these pointers, not deleting them. They are deleted
-  // by the associated ACM.
-  SimulatedClock* sender_clock_;
-  SimulatedClock* receiver_clock_;
+    void TearDown()
+    {
+        delete channel_;
 
-  std::unique_ptr<AudioCodingModule> send_acm_;
-  std::unique_ptr<AudioCodingModule> receive_acm_;
-  Channel* channel_;
+        fclose(seq_num_fid_);
+        fclose(send_ts_fid_);
+        fclose(receive_ts_fid_);
+        fclose(pcm_out_fid_);
+        pcm_in_fid_.Close();
+    }
 
-  FILE* seq_num_fid_;  // Input (text), one sequence number per line.
-  FILE* send_ts_fid_;  // Input (text), one send timestamp per line.
-  FILE* receive_ts_fid_;  // Input (text), one receive timestamp per line.
-  FILE* pcm_out_fid_;  // Output PCM16.
+    ~InsertPacketWithTiming()
+    {
+        delete sender_clock_;
+        delete receiver_clock_;
+    }
 
-  PCMFile pcm_in_fid_;  // Input PCM16.
+    // Are there more info to simulate.
+    bool HasPackets()
+    {
+        if (feof(seq_num_fid_) || feof(send_ts_fid_) || feof(receive_ts_fid_))
+            return false;
+        return true;
+    }
 
-  int samples_in_1ms_;
+    // Jitter buffer delay.
+    void Delay(int* optimal_delay, int* current_delay)
+    {
+        NetworkStatistics statistics;
+        receive_acm_->GetNetworkStatistics(&statistics);
+        *optimal_delay = statistics.preferredBufferSize;
+        *current_delay = statistics.currentBufferSize;
+    }
 
-  // TODO(turajs): this can be computed from the send timestamp, but there is
-  // some complication to account for lost and reordered packets.
-  int num_10ms_in_codec_frame_;
+private:
+    uint32_t SendTimestamp()
+    {
+        uint32_t t;
+        EXPECT_EQ(1, fscanf(send_ts_fid_, "%u\n", &t));
+        return t;
+    }
 
-  float time_to_insert_packet_ms_;
-  uint32_t next_receive_ts_;
-  uint32_t time_to_playout_audio_ms_;
+    uint32_t ReceiveTimestamp()
+    {
+        uint32_t t;
+        EXPECT_EQ(1, fscanf(receive_ts_fid_, "%u\n", &t));
+        return t;
+    }
 
-  AudioFrame frame_;
+    int SequenceNumber()
+    {
+        int n;
+        EXPECT_EQ(1, fscanf(seq_num_fid_, "%d\n", &n));
+        return n;
+    }
 
-  double loss_threshold_;
+    // This class just creates these pointers, not deleting them. They are deleted
+    // by the associated ACM.
+    SimulatedClock* sender_clock_;
+    SimulatedClock* receiver_clock_;
 
-  // Output (text), sequence number, playout timestamp, time (ms) of playout,
-  // per line.
-  FILE* playout_timing_fid_;
+    std::unique_ptr<AudioCodingModule> send_acm_;
+    std::unique_ptr<AudioCodingModule> receive_acm_;
+    Channel* channel_;
+
+    FILE* seq_num_fid_;  // Input (text), one sequence number per line.
+    FILE* send_ts_fid_;  // Input (text), one send timestamp per line.
+    FILE* receive_ts_fid_;  // Input (text), one receive timestamp per line.
+    FILE* pcm_out_fid_;  // Output PCM16.
+
+    PCMFile pcm_in_fid_;  // Input PCM16.
+
+    int samples_in_1ms_;
+
+    // TODO(turajs): this can be computed from the send timestamp, but there is
+    // some complication to account for lost and reordered packets.
+    int num_10ms_in_codec_frame_;
+
+    float time_to_insert_packet_ms_;
+    uint32_t next_receive_ts_;
+    uint32_t time_to_playout_audio_ms_;
+
+    AudioFrame frame_;
+
+    double loss_threshold_;
+
+    // Output (text), sequence number, playout timestamp, time (ms) of playout,
+    // per line.
+    FILE* playout_timing_fid_;
 };
 
 }  // webrtc
 
-int main(int argc, char* argv[]) {
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  webrtc::InsertPacketWithTiming test;
-  test.SetUp();
+int main(int argc, char* argv[])
+{
+    google::ParseCommandLineFlags(&argc, &argv, true);
+    webrtc::InsertPacketWithTiming test;
+    test.SetUp();
 
-  FILE* delay_log = NULL;
-  if (FLAGS_delay.size() > 0) {
-    delay_log = fopen(FLAGS_delay.c_str(), "wt");
-    if (delay_log == NULL) {
-      std::cout << "Cannot open the file to log delay values." << std::endl;
-      exit(1);
+    FILE* delay_log = NULL;
+    if (FLAGS_delay.size() > 0)
+    {
+        delay_log = fopen(FLAGS_delay.c_str(), "wt");
+        if (delay_log == NULL)
+        {
+            std::cout << "Cannot open the file to log delay values." << std::endl;
+            exit(1);
+        }
     }
-  }
 
-  uint32_t action_taken;
-  int optimal_delay_ms;
-  int current_delay_ms;
-  while (test.HasPackets()) {
-    test.TickOneMillisecond(&action_taken);
+    uint32_t action_taken;
+    int optimal_delay_ms;
+    int current_delay_ms;
+    while (test.HasPackets())
+    {
+        test.TickOneMillisecond(&action_taken);
 
-    if (action_taken != 0) {
-      test.Delay(&optimal_delay_ms, &current_delay_ms);
-      if (delay_log != NULL) {
-        fprintf(delay_log, "%3d %3d\n", optimal_delay_ms, current_delay_ms);
-      }
+        if (action_taken != 0)
+        {
+            test.Delay(&optimal_delay_ms, &current_delay_ms);
+            if (delay_log != NULL)
+            {
+                fprintf(delay_log, "%3d %3d\n", optimal_delay_ms, current_delay_ms);
+            }
+        }
     }
-  }
-  std::cout << std::endl;
-  test.TearDown();
-  if (delay_log != NULL)
-    fclose(delay_log);
+    std::cout << std::endl;
+    test.TearDown();
+    if (delay_log != NULL)
+        fclose(delay_log);
 }

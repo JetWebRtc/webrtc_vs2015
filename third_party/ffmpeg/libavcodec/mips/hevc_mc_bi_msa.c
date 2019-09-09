@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,8 @@ static void hevc_bi_copy_4w_msa(uint8_t *src0_ptr,
 {
     v16i8 zero = { 0 };
 
-    if (2 == height) {
+    if (2 == height)
+    {
         v16i8 src0, src1;
         v8i16 dst0, in0, in1;
 
@@ -65,7 +66,9 @@ static void hevc_bi_copy_4w_msa(uint8_t *src0_ptr,
 
         dst0 = (v8i16) __msa_pckev_b((v16i8) dst0, (v16i8) dst0);
         ST4x2_UB(dst0, dst, dst_stride);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         v16i8 src0, src1, src2, src3;
         v8i16 dst0, dst1;
         v8i16 in0, in1, in2, in3;
@@ -82,13 +85,16 @@ static void hevc_bi_copy_4w_msa(uint8_t *src0_ptr,
 
         dst0 = (v8i16) __msa_pckev_b((v16i8) dst1, (v16i8) dst0);
         ST4x4_UB(dst0, dst0, 0, 1, 2, 3, dst, dst_stride);
-    } else if (0 == height % 8) {
+    }
+    else if (0 == height % 8)
+    {
         uint32_t loop_cnt;
         v16i8 src0, src1, src2, src3, src4, src5, src6, src7;
         v8i16 dst0, dst1, dst2, dst3;
         v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
-        for (loop_cnt = (height >> 3); loop_cnt--;) {
+        for (loop_cnt = (height >> 3); loop_cnt--;)
+        {
             LD_SB8(src0_ptr, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src0_ptr += (8 * src_stride);
@@ -131,7 +137,8 @@ static void hevc_bi_copy_6w_msa(uint8_t *src0_ptr,
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
     v8i16 dst0, dst1, dst2, dst3, dst4, dst5, dst6, dst7;
 
-    for (loop_cnt = (height >> 3); loop_cnt--;) {
+    for (loop_cnt = (height >> 3); loop_cnt--;)
+    {
         LD_SB8(src0_ptr, src_stride,
                src0, src1, src2, src3, src4, src5, src6, src7);
         src0_ptr += (8 * src_stride);
@@ -170,7 +177,8 @@ static void hevc_bi_copy_8w_msa(uint8_t *src0_ptr,
 {
     v16i8 zero = { 0 };
 
-    if (2 == height) {
+    if (2 == height)
+    {
         v16i8 src0, src1;
         v8i16 in0, in1;
         v8i16 dst0, dst1;
@@ -185,7 +193,9 @@ static void hevc_bi_copy_8w_msa(uint8_t *src0_ptr,
 
         dst0 = (v8i16) __msa_pckev_b((v16i8) dst1, (v16i8) dst0);
         ST8x2_UB(dst0, dst, dst_stride);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         v16i8 src0, src1, src2, src3;
         v8i16 in0, in1, in2, in3;
         v8i16 dst0, dst1, dst2, dst3;
@@ -201,7 +211,9 @@ static void hevc_bi_copy_8w_msa(uint8_t *src0_ptr,
 
         PCKEV_B2_SH(dst1, dst0, dst3, dst2, dst0, dst1);
         ST8x4_UB(dst0, dst1, dst, dst_stride);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         v16i8 src0, src1, src2, src3, src4, src5;
         v8i16 in0, in1, in2, in3, in4, in5;
         v8i16 dst0, dst1, dst2, dst3, dst4, dst5;
@@ -224,13 +236,16 @@ static void hevc_bi_copy_8w_msa(uint8_t *src0_ptr,
         ST8x4_UB(dst0, dst1, dst, dst_stride);
         dst += (4 * dst_stride);
         ST8x2_UB(dst2, dst, dst_stride);
-    } else if (0 == height % 8) {
+    }
+    else if (0 == height % 8)
+    {
         v16i8 src0, src1, src2, src3;
         v8i16 in0, in1, in2, in3;
         v8i16 dst0, dst1, dst2, dst3;
         uint32_t loop_cnt;
 
-        for (loop_cnt = (height >> 3); loop_cnt--;) {
+        for (loop_cnt = (height >> 3); loop_cnt--;)
+        {
             LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
             src0_ptr += (4 * src_stride);
             LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -280,7 +295,8 @@ static void hevc_bi_copy_12w_msa(uint8_t *src0_ptr,
     v8i16 dst0, dst1, dst2, dst3, dst4, dst5;
     v16i8 zero = { 0 };
 
-    for (loop_cnt = (16 >> 2); loop_cnt--;) {
+    for (loop_cnt = (16 >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
         src0_ptr += (4 * src_stride);
 
@@ -308,13 +324,13 @@ static void hevc_bi_copy_12w_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_bi_copy_16multx4mult_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          int32_t height,
-                                          int32_t width)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height,
+        int32_t width)
 {
     uint32_t loop_cnt;
     uint32_t cnt;
@@ -323,12 +339,14 @@ static void hevc_bi_copy_16multx4mult_msa(uint8_t *src0_ptr,
     uint8_t *dst_tmp;
     v16i8 zero = { 0 };
 
-    for (cnt = (width >> 4); cnt--;) {
+    for (cnt = (width >> 4); cnt--;)
+    {
         src0_ptr_tmp = src0_ptr;
         src1_ptr_tmp = src1_ptr;
         dst_tmp = dst;
 
-        for (loop_cnt = (height >> 2); loop_cnt--;) {
+        for (loop_cnt = (height >> 2); loop_cnt--;)
+        {
             v16i8 src0, src1, src2, src3;
             v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
             v8i16 dst0_r, dst1_r, dst2_r, dst3_r;
@@ -465,7 +483,8 @@ static void hevc_hz_bi_8t_4w_msa(uint8_t *src0_ptr,
     const_vec = __msa_ldi_h(128);
     const_vec <<= 6;
 
-    for (loop_cnt = (height >> 3); loop_cnt--;) {
+    for (loop_cnt = (height >> 3); loop_cnt--;)
+    {
         LD_SB8(src0_ptr, src_stride, src0, src1, src2, src3,
                src4, src5, src6, src7);
         src0_ptr += (8 * src_stride);
@@ -537,7 +556,8 @@ static void hevc_hz_bi_8t_8w_msa(uint8_t *src0_ptr,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -619,7 +639,8 @@ static void hevc_hz_bi_8t_16w_msa(uint8_t *src0_ptr,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, 8, src0, src1);
         src0_ptr += src_stride;
         LD_SB2(src0_ptr, 8, src2, src3);
@@ -695,7 +716,8 @@ static void hevc_hz_bi_8t_24w_msa(uint8_t *src0_ptr,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         LD_SB2(src0_ptr, 16, src0, src1);
         src0_ptr += src_stride;
         LD_SH2(src1_ptr, 8, in0, in1);
@@ -766,7 +788,8 @@ static void hevc_hz_bi_8t_32w_msa(uint8_t *src0_ptr,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         LD_SB2(src0_ptr, 16, src0, src1);
         src2 = LD_SB(src0_ptr + 24);
         src0_ptr += src_stride;
@@ -840,7 +863,8 @@ static void hevc_hz_bi_8t_48w_msa(uint8_t *src0_ptr,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         LD_SB2(src0_ptr, 16, src0, src1);
         XORI_B2_128_SB(src0, src1);
         LD_SH2(src1_ptr, 8, in0, in1);
@@ -944,12 +968,14 @@ static void hevc_hz_bi_8t_64w_msa(uint8_t *src0_ptr,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         src0_ptr_tmp = src0_ptr;
         dst_tmp = dst;
         src1_ptr_tmp = src1_ptr;
 
-        for (cnt = 2; cnt--;) {
+        for (cnt = 2; cnt--;)
+        {
             LD_SB2(src0_ptr_tmp, 16, src0, src1);
             src2 = LD_SB(src0_ptr_tmp + 24);
             src0_ptr_tmp += 32;
@@ -1033,7 +1059,8 @@ static void hevc_vt_bi_8t_4w_msa(uint8_t *src0_ptr,
                src2110, src4332, src6554);
     XORI_B3_128_SB(src2110, src4332, src6554);
 
-    for (loop_cnt = (height >> 3); loop_cnt--;) {
+    for (loop_cnt = (height >> 3); loop_cnt--;)
+    {
         LD_SB8(src0_ptr, src_stride,
                src7, src8, src9, src10, src11, src12, src13, src14);
         src0_ptr += (8 * src_stride);
@@ -1112,7 +1139,8 @@ static void hevc_vt_bi_8t_8w_msa(uint8_t *src0_ptr,
                src10_r, src32_r, src54_r, src21_r);
     ILVR_B2_SB(src4, src3, src6, src5, src43_r, src65_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src7, src8, src9, src10);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -1199,7 +1227,8 @@ static void hevc_vt_bi_8t_12w_msa(uint8_t *src0_ptr,
     ILVR_D3_SB(src21_l, src10_l, src43_l, src32_l, src65_l, src54_l,
                src2110, src4332, src6554);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src7, src8, src9, src10);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -1264,13 +1293,13 @@ static void hevc_vt_bi_8t_12w_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_vt_bi_8t_16multx2mult_msa(uint8_t *src0_ptr,
-                                           int32_t src_stride,
-                                           int16_t *src1_ptr,
-                                           int32_t src2_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride,
-                                           const int8_t *filter,
-                                           int32_t height, int32_t width)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter,
+        int32_t height, int32_t width)
 {
     uint8_t *src0_ptr_tmp;
     int16_t *src1_ptr_tmp;
@@ -1295,7 +1324,8 @@ static void hevc_vt_bi_8t_16multx2mult_msa(uint8_t *src0_ptr,
     filter_vec = LD_SH(filter);
     SPLATI_H4_SH(filter_vec, 0, 1, 2, 3, filt0, filt1, filt2, filt3);
 
-    for (cnt = (width >> 4); cnt--;) {
+    for (cnt = (width >> 4); cnt--;)
+    {
         src0_ptr_tmp = src0_ptr;
         src1_ptr_tmp = src1_ptr;
         dst_tmp = dst;
@@ -1312,7 +1342,8 @@ static void hevc_vt_bi_8t_16multx2mult_msa(uint8_t *src0_ptr,
                    src10_l, src32_l, src54_l, src21_l);
         ILVL_B2_SB(src4, src3, src6, src5, src43_l, src65_l);
 
-        for (loop_cnt = (height >> 1); loop_cnt--;) {
+        for (loop_cnt = (height >> 1); loop_cnt--;)
+        {
             LD_SB2(src0_ptr_tmp, src_stride, src7, src8);
             src0_ptr_tmp += (2 * src_stride);
             LD_SH2(src1_ptr_tmp, src2_stride, in0, in1);
@@ -1511,7 +1542,8 @@ static void hevc_hv_bi_8t_4w_msa(uint8_t *src0_ptr,
     dst65_r = __msa_ilvl_h(dst63, dst52);
     dst66 = (v8i16) __msa_splati_d((v2i64) dst63, 1);
 
-    for (loop_cnt = height >> 1; loop_cnt--;) {
+    for (loop_cnt = height >> 1; loop_cnt--;)
+    {
         LD_SB2(src0_ptr, src_stride, src7, src8);
         src0_ptr += (2 * src_stride);
         LD_SH2(src1_ptr, src2_stride, in0, in1);
@@ -1556,14 +1588,14 @@ static void hevc_hv_bi_8t_4w_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_hv_bi_8t_8multx2mult_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter_x,
-                                          const int8_t *filter_y,
-                                          int32_t height, int32_t width)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter_x,
+        const int8_t *filter_y,
+        int32_t height, int32_t width)
 {
     uint32_t loop_cnt;
     uint32_t cnt;
@@ -1603,7 +1635,8 @@ static void hevc_hv_bi_8t_8multx2mult_msa(uint8_t *src0_ptr,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (cnt = width >> 3; cnt--;) {
+    for (cnt = width >> 3; cnt--;)
+    {
         src0_ptr_tmp = src0_ptr;
         dst_tmp = dst;
         src1_ptr_tmp = src1_ptr;
@@ -1658,7 +1691,8 @@ static void hevc_hv_bi_8t_8multx2mult_msa(uint8_t *src0_ptr,
                    dst10_l, dst32_l, dst54_l, dst21_l);
         ILVL_H2_SH(dst4, dst3, dst6, dst5, dst43_l, dst65_l);
 
-        for (loop_cnt = height >> 1; loop_cnt--;) {
+        for (loop_cnt = height >> 1; loop_cnt--;)
+        {
             /* row 7 */
             LD_SB2(src0_ptr_tmp, src_stride, src7, src8);
             XORI_B2_128_SB(src7, src8);
@@ -1929,13 +1963,13 @@ static void hevc_hz_bi_4t_4x4_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_hz_bi_4t_4x8multiple_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter,
-                                          int32_t height)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter,
+        int32_t height)
 {
     uint32_t loop_cnt;
     v8i16 filt0, filt1;
@@ -1957,7 +1991,8 @@ static void hevc_hz_bi_4t_4x8multiple_msa(uint8_t *src0_ptr,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 3); loop_cnt--;) {
+    for (loop_cnt = (height >> 3); loop_cnt--;)
+    {
         LD_SB8(src0_ptr, src_stride,
                src0, src1, src2, src3, src4, src5, src6, src7);
         src0_ptr += (8 * src_stride);
@@ -2000,13 +2035,18 @@ static void hevc_hz_bi_4t_4w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hz_bi_4t_4x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         hevc_hz_bi_4t_4x4_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (8 == height || 16 == height) {
+    }
+    else if (8 == height || 16 == height)
+    {
         hevc_hz_bi_4t_4x8multiple_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride, filter, height);
@@ -2042,7 +2082,8 @@ static void hevc_hz_bi_4t_6w_msa(uint8_t *src0_ptr,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -2179,13 +2220,13 @@ static void hevc_hz_bi_4t_8x6_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_hz_bi_4t_8x4multiple_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter,
-                                          int32_t height)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter,
+        int32_t height)
 {
     uint32_t loop_cnt;
     v8i16 filt0, filt1;
@@ -2207,7 +2248,8 @@ static void hevc_hz_bi_4t_8x4multiple_msa(uint8_t *src0_ptr,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -2245,13 +2287,18 @@ static void hevc_hz_bi_4t_8w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hz_bi_4t_8x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         hevc_hz_bi_4t_8x6_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (0 == (height % 4)) {
+    }
+    else if (0 == (height % 4))
+    {
         hevc_hz_bi_4t_8x4multiple_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride, filter, height);
@@ -2272,7 +2319,8 @@ static void hevc_hz_bi_4t_12w_msa(uint8_t *src0_ptr,
     v16i8 src0, src1, src2, src3;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
     v16i8 mask0 = { 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8 };
-    v16i8 mask2 = {
+    v16i8 mask2 =
+    {
         8, 9, 9, 10, 10, 11, 11, 12, 24, 25, 25, 26, 26, 27, 27, 28
     };
     v16i8 mask1, mask3;
@@ -2291,7 +2339,8 @@ static void hevc_hz_bi_4t_12w_msa(uint8_t *src0_ptr,
     mask1 = mask0 + 2;
     mask3 = mask2 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src1, src2, src3);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -2360,7 +2409,8 @@ static void hevc_hz_bi_4t_16w_msa(uint8_t *src0_ptr,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src2, src4, src6);
         LD_SB4(src0_ptr + 8, src_stride, src1, src3, src5, src7);
         src0_ptr += (4 * src_stride);
@@ -2442,7 +2492,8 @@ static void hevc_hz_bi_4t_24w_msa(uint8_t *src0_ptr,
     dst_tmp = dst + 16;
     src1_ptr_tmp = src1_ptr + 16;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src0, src2, src4, src6);
         LD_SB4(src0_ptr + 16, src_stride, src1, src3, src5, src7);
         src0_ptr += (4 * src_stride);
@@ -2542,7 +2593,8 @@ static void hevc_hz_bi_4t_32w_msa(uint8_t *src0_ptr,
     mask2 = mask0 + 8;
     mask3 = mask0 + 10;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, 16, src0, src1);
         src2 = LD_SB(src0_ptr + 24);
         src0_ptr += src_stride;
@@ -2697,13 +2749,13 @@ static void hevc_vt_bi_4t_4x4_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_vt_bi_4t_4x8multiple_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter,
-                                          int32_t height)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter,
+        int32_t height)
 {
     int32_t loop_cnt;
     v16i8 src0, src1, src2, src3, src4, src5;
@@ -2730,7 +2782,8 @@ static void hevc_vt_bi_4t_4x8multiple_msa(uint8_t *src0_ptr,
     src2110 = (v16i8) __msa_ilvr_d((v2i64) src21_r, (v2i64) src10_r);
     src2110 = (v16i8) __msa_xori_b((v16u8) src2110, 128);
 
-    for (loop_cnt = (height >> 3); loop_cnt--;) {
+    for (loop_cnt = (height >> 3); loop_cnt--;)
+    {
         LD_SB6(src0_ptr, src_stride, src3, src4, src5, src6, src7, src8);
         src0_ptr += (6 * src_stride);
         LD_SH8(src1_ptr, src2_stride, in0, in1, in2, in3, in4, in5, in6, in7);
@@ -2778,13 +2831,18 @@ static void hevc_vt_bi_4t_4w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_vt_bi_4t_4x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         hevc_vt_bi_4t_4x4_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else {
+    }
+    else
+    {
         hevc_vt_bi_4t_4x8multiple_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride, filter, height);
@@ -2821,7 +2879,8 @@ static void hevc_vt_bi_4t_6w_msa(uint8_t *src0_ptr,
     XORI_B3_128_SB(src0, src1, src2);
     ILVR_B2_SB(src1, src0, src2, src1, src10_r, src21_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, src_stride, src3, src4);
         src0_ptr += (2 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -2960,13 +3019,13 @@ static void hevc_vt_bi_4t_8x6_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_vt_bi_4t_8x4multiple_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter,
-                                          int32_t height)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter,
+        int32_t height)
 {
     int32_t loop_cnt;
     v16i8 src0, src1, src2, src3, src4, src5;
@@ -2989,7 +3048,8 @@ static void hevc_vt_bi_4t_8x4multiple_msa(uint8_t *src0_ptr,
     XORI_B3_128_SB(src0, src1, src2);
     ILVR_B2_SB(src1, src0, src2, src1, src10_r, src21_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, src_stride, src3, src4);
         src0_ptr += (2 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -3030,13 +3090,18 @@ static void hevc_vt_bi_4t_8w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_vt_bi_4t_8x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         hevc_vt_bi_4t_8x6_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter, height);
-    } else {
+    }
+    else
+    {
         hevc_vt_bi_4t_8x4multiple_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride, filter, height);
@@ -3077,7 +3142,8 @@ static void hevc_vt_bi_4t_12w_msa(uint8_t *src0_ptr,
     ILVL_B2_SB(src1, src0, src2, src1, src10_l, src21_l);
     src2110 = (v16i8) __msa_ilvr_d((v2i64) src21_l, (v2i64) src10_l);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, src_stride, src3, src4);
         src0_ptr += (2 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -3155,7 +3221,8 @@ static void hevc_vt_bi_4t_16w_msa(uint8_t *src0_ptr,
     ILVR_B2_SB(src1, src0, src2, src1, src10_r, src21_r);
     ILVL_B2_SB(src1, src0, src2, src1, src10_l, src21_l);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB2(src0_ptr, src_stride, src3, src4);
         src0_ptr += (2 * src_stride);
         LD_SH2(src1_ptr, src2_stride, in0, in1);
@@ -3248,7 +3315,8 @@ static void hevc_vt_bi_4t_24w_msa(uint8_t *src0_ptr,
     XORI_B3_128_SB(src6, src7, src8);
     ILVR_B2_SB(src7, src6, src8, src7, src76_r, src87_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         /* 16width */
         LD_SB2(src0_ptr, src_stride, src3, src4);
         LD_SH2(src1_ptr, src2_stride, in0, in1);
@@ -3375,7 +3443,8 @@ static void hevc_vt_bi_4t_32w_msa(uint8_t *src0_ptr,
     ILVR_B2_SB(src7, src6, src8, src7, src76_r, src87_r);
     ILVL_B2_SB(src7, src6, src8, src7, src76_l, src87_l);
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         /* 16width */
         LD_SB2(src0_ptr, src_stride, src3, src4);
         LD_SH2(src1_ptr, src2_stride, in0, in1);
@@ -3617,14 +3686,14 @@ static void hevc_hv_bi_4t_4x4_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_hv_bi_4t_4multx8mult_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter_x,
-                                          const int8_t *filter_y,
-                                          int32_t height)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter_x,
+        const int8_t *filter_y,
+        int32_t height)
 {
     uint32_t loop_cnt;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
@@ -3672,7 +3741,8 @@ static void hevc_hv_bi_4t_4multx8mult_msa(uint8_t *src0_ptr,
     DPADD_SB2_SH(vec4, vec5, filt0, filt1, dst2, dst2);
     ILVR_H2_SH(dst1, dst0, dst2, dst1, dst10_r, dst21_r);
 
-    for (loop_cnt = height >> 3; loop_cnt--;) {
+    for (loop_cnt = height >> 3; loop_cnt--;)
+    {
         LD_SB8(src0_ptr, src_stride,
                src3, src4, src5, src6, src7, src8, src9, src10);
         src0_ptr += (8 * src_stride);
@@ -3758,13 +3828,18 @@ static void hevc_hv_bi_4t_4w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter_y,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hv_bi_4t_4x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter_x, filter_y, height);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         hevc_hv_bi_4t_4x4_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter_x, filter_y, height);
-    } else if (0 == (height % 8)) {
+    }
+    else if (0 == (height % 8))
+    {
         hevc_hv_bi_4t_4multx8mult_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride,
@@ -3830,7 +3905,8 @@ static void hevc_hv_bi_4t_6w_msa(uint8_t *src0_ptr,
     ILVRL_H2_SH(dst1, dst0, dst10_r, dst10_l);
     ILVRL_H2_SH(dst2, dst1, dst21_r, dst21_l);
 
-    for (loop_cnt = height >> 2; loop_cnt--;) {
+    for (loop_cnt = height >> 2; loop_cnt--;)
+    {
         LD_SB4(src0_ptr, src_stride, src3, src4, src5, src6);
         src0_ptr += (4 * src_stride);
         LD_SH4(src1_ptr, src2_stride, in0, in1, in2, in3);
@@ -4125,15 +4201,15 @@ static void hevc_hv_bi_4t_8x6_msa(uint8_t *src0_ptr,
 }
 
 static void hevc_hv_bi_4t_8multx4mult_msa(uint8_t *src0_ptr,
-                                          int32_t src_stride,
-                                          int16_t *src1_ptr,
-                                          int32_t src2_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride,
-                                          const int8_t *filter_x,
-                                          const int8_t *filter_y,
-                                          int32_t height,
-                                          int32_t width)
+        int32_t src_stride,
+        int16_t *src1_ptr,
+        int32_t src2_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter_x,
+        const int8_t *filter_y,
+        int32_t height,
+        int32_t width)
 {
     uint32_t loop_cnt, cnt;
     uint8_t *src0_ptr_tmp;
@@ -4169,7 +4245,8 @@ static void hevc_hv_bi_4t_8multx4mult_msa(uint8_t *src0_ptr,
     const_vec = __msa_ldi_h(128);
     const_vec <<= 6;
 
-    for (cnt = width >> 3; cnt--;) {
+    for (cnt = width >> 3; cnt--;)
+    {
         src0_ptr_tmp = src0_ptr;
         dst_tmp = dst;
         src1_ptr_tmp = src1_ptr;
@@ -4191,7 +4268,8 @@ static void hevc_hv_bi_4t_8multx4mult_msa(uint8_t *src0_ptr,
         ILVRL_H2_SH(dst1, dst0, dst10_r, dst10_l);
         ILVRL_H2_SH(dst2, dst1, dst21_r, dst21_l);
 
-        for (loop_cnt = height >> 2; loop_cnt--;) {
+        for (loop_cnt = height >> 2; loop_cnt--;)
+        {
             LD_SB4(src0_ptr_tmp, src_stride, src3, src4, src5, src6);
             src0_ptr_tmp += (4 * src_stride);
             LD_SH4(src1_ptr_tmp, src2_stride, in0, in1, in2, in3);
@@ -4265,13 +4343,18 @@ static void hevc_hv_bi_4t_8w_msa(uint8_t *src0_ptr,
                                  const int8_t *filter_y,
                                  int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hv_bi_4t_8x2_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter_x, filter_y, height);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         hevc_hv_bi_4t_8x6_msa(src0_ptr, src_stride, src1_ptr, src2_stride,
                               dst, dst_stride, filter_x, filter_y, height);
-    } else {
+    }
+    else
+    {
         hevc_hv_bi_4t_8multx4mult_msa(src0_ptr, src_stride,
                                       src1_ptr, src2_stride,
                                       dst, dst_stride,

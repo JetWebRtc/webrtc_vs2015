@@ -1,4 +1,4 @@
-/*
+﻿/*
  * sndio play and grab interface
  * Copyright (c) 2010 Jacob Meuser
  *
@@ -41,7 +41,8 @@ av_cold int ff_sndio_open(AVFormatContext *s1, int is_output,
     struct sio_par par;
 
     hdl = sio_open(audio_device, is_output ? SIO_PLAY : SIO_REC, 0);
-    if (!hdl) {
+    if (!hdl)
+    {
         av_log(s1, AV_LOG_ERROR, "Could not open sndio device\n");
         return AVERROR(EIO);
     }
@@ -58,16 +59,18 @@ av_cold int ff_sndio_open(AVFormatContext *s1, int is_output,
         par.rchan = s->channels;
     par.rate = s->sample_rate;
 
-    if (!sio_setpar(hdl, &par) || !sio_getpar(hdl, &par)) {
+    if (!sio_setpar(hdl, &par) || !sio_getpar(hdl, &par))
+    {
         av_log(s1, AV_LOG_ERROR, "Impossible to set sndio parameters, "
                "channels: %d sample rate: %d\n", s->channels, s->sample_rate);
         goto fail;
     }
 
     if (par.bits != 16 || par.sig != 1 ||
-        (is_output  && (par.pchan != s->channels)) ||
-        (!is_output && (par.rchan != s->channels)) ||
-        (par.rate != s->sample_rate)) {
+            (is_output  && (par.pchan != s->channels)) ||
+            (!is_output && (par.rchan != s->channels)) ||
+            (par.rate != s->sample_rate))
+    {
         av_log(s1, AV_LOG_ERROR, "Could not set appropriate sndio parameters, "
                "channels: %d sample rate: %d\n", s->channels, s->sample_rate);
         goto fail;
@@ -76,9 +79,11 @@ av_cold int ff_sndio_open(AVFormatContext *s1, int is_output,
     s->buffer_size = par.round * par.bps *
                      (is_output ? par.pchan : par.rchan);
 
-    if (is_output) {
+    if (is_output)
+    {
         s->buffer = av_malloc(s->buffer_size);
-        if (!s->buffer) {
+        if (!s->buffer)
+        {
             av_log(s1, AV_LOG_ERROR, "Could not allocate buffer\n");
             goto fail;
         }
@@ -91,7 +96,8 @@ av_cold int ff_sndio_open(AVFormatContext *s1, int is_output,
 
     sio_onmove(hdl, movecb, s);
 
-    if (!sio_start(hdl)) {
+    if (!sio_start(hdl))
+    {
         av_log(s1, AV_LOG_ERROR, "Could not start sndio\n");
         goto fail;
     }

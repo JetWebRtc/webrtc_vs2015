@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,38 +19,49 @@
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/api/notifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MediaStream : public Notifier<MediaStreamInterface> {
- public:
-  static rtc::scoped_refptr<MediaStream> Create(const std::string& label);
+class MediaStream : public Notifier<MediaStreamInterface>
+{
+public:
+    static rtc::scoped_refptr<MediaStream> Create(const std::string& label);
 
-  std::string label() const override { return label_; }
+    std::string label() const override
+    {
+        return label_;
+    }
 
-  bool AddTrack(AudioTrackInterface* track) override;
-  bool AddTrack(VideoTrackInterface* track) override;
-  bool RemoveTrack(AudioTrackInterface* track) override;
-  bool RemoveTrack(VideoTrackInterface* track) override;
-  rtc::scoped_refptr<AudioTrackInterface>
-      FindAudioTrack(const std::string& track_id) override;
-  rtc::scoped_refptr<VideoTrackInterface>
-      FindVideoTrack(const std::string& track_id) override;
+    bool AddTrack(AudioTrackInterface* track) override;
+    bool AddTrack(VideoTrackInterface* track) override;
+    bool RemoveTrack(AudioTrackInterface* track) override;
+    bool RemoveTrack(VideoTrackInterface* track) override;
+    rtc::scoped_refptr<AudioTrackInterface>
+    FindAudioTrack(const std::string& track_id) override;
+    rtc::scoped_refptr<VideoTrackInterface>
+    FindVideoTrack(const std::string& track_id) override;
 
-  AudioTrackVector GetAudioTracks() override { return audio_tracks_; }
-  VideoTrackVector GetVideoTracks() override { return video_tracks_; }
+    AudioTrackVector GetAudioTracks() override
+    {
+        return audio_tracks_;
+    }
+    VideoTrackVector GetVideoTracks() override
+    {
+        return video_tracks_;
+    }
 
- protected:
-  explicit MediaStream(const std::string& label);
+protected:
+    explicit MediaStream(const std::string& label);
 
- private:
-  template <typename TrackVector, typename Track>
-  bool AddTrack(TrackVector* Tracks, Track* track);
-  template <typename TrackVector>
-  bool RemoveTrack(TrackVector* Tracks, MediaStreamTrackInterface* track);
+private:
+    template <typename TrackVector, typename Track>
+    bool AddTrack(TrackVector* Tracks, Track* track);
+    template <typename TrackVector>
+    bool RemoveTrack(TrackVector* Tracks, MediaStreamTrackInterface* track);
 
-  std::string label_;
-  AudioTrackVector audio_tracks_;
-  VideoTrackVector video_tracks_;
+    std::string label_;
+    AudioTrackVector audio_tracks_;
+    VideoTrackVector video_tracks_;
 };
 
 }  // namespace webrtc

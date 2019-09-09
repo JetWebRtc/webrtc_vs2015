@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -38,25 +38,26 @@
 // this relieves our subclasses from calling SetUp in the superclass if they
 // choose to override SetUp() themselves. This is fine as googletest will
 // construct new test objects for each method.
-class BeforeInitializationFixture : public testing::Test {
- public:
-  BeforeInitializationFixture();
-  virtual ~BeforeInitializationFixture();
+class BeforeInitializationFixture : public testing::Test
+{
+public:
+    BeforeInitializationFixture();
+    virtual ~BeforeInitializationFixture();
 
- protected:
-  // Use this sleep function to sleep in tests.
-  void Sleep(long milliseconds);
+protected:
+    // Use this sleep function to sleep in tests.
+    void Sleep(long milliseconds);
 
-  webrtc::VoiceEngine*        voice_engine_;
-  webrtc::VoEBase*            voe_base_;
-  webrtc::VoECodec*           voe_codec_;
-  webrtc::VoEVolumeControl*   voe_volume_control_;
-  webrtc::VoERTP_RTCP*        voe_rtp_rtcp_;
-  webrtc::VoEAudioProcessing* voe_apm_;
-  webrtc::VoENetwork*         voe_network_;
-  webrtc::VoEFile*            voe_file_;
-  webrtc::VoEHardware*        voe_hardware_;
-  webrtc::VoENetEqStats*      voe_neteq_stats_;
+    webrtc::VoiceEngine*        voice_engine_;
+    webrtc::VoEBase*            voe_base_;
+    webrtc::VoECodec*           voe_codec_;
+    webrtc::VoEVolumeControl*   voe_volume_control_;
+    webrtc::VoERTP_RTCP*        voe_rtp_rtcp_;
+    webrtc::VoEAudioProcessing* voe_apm_;
+    webrtc::VoENetwork*         voe_network_;
+    webrtc::VoEFile*            voe_file_;
+    webrtc::VoEHardware*        voe_hardware_;
+    webrtc::VoENetEqStats*      voe_neteq_stats_;
 };
 
 #endif  // SRC_VOICE_ENGINE_MAIN_TEST_AUTO_TEST_STANDARD_TEST_BASE_H_

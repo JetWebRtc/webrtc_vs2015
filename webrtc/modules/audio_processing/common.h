@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,19 +14,22 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-static inline size_t ChannelsFromLayout(AudioProcessing::ChannelLayout layout) {
-  switch (layout) {
+static inline size_t ChannelsFromLayout(AudioProcessing::ChannelLayout layout)
+{
+    switch (layout)
+    {
     case AudioProcessing::kMono:
     case AudioProcessing::kMonoAndKeyboard:
-      return 1;
+        return 1;
     case AudioProcessing::kStereo:
     case AudioProcessing::kStereoAndKeyboard:
-      return 2;
-  }
-  RTC_NOTREACHED();
-  return 0;
+        return 2;
+    }
+    RTC_NOTREACHED();
+    return 0;
 }
 
 }  // namespace webrtc

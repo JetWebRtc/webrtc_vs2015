@@ -1,4 +1,4 @@
-/*
+﻿/*
  * v408 decoder
  * Copyright (c) 2012 Carl Eugen Hoyos
  *
@@ -37,7 +37,8 @@ static int v408_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *y, *u, *v, *a;
     int i, j, ret;
 
-    if (avpkt->size < 4 * avctx->height * avctx->width) {
+    if (avpkt->size < 4 * avctx->height * avctx->width)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -53,14 +54,19 @@ static int v408_decode_frame(AVCodecContext *avctx, void *data,
     v = pic->data[2];
     a = pic->data[3];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width; j++) {
-            if (avctx->codec_id==AV_CODEC_ID_AYUV) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width; j++)
+        {
+            if (avctx->codec_id==AV_CODEC_ID_AYUV)
+            {
                 v[j] = *src++;
                 u[j] = *src++;
                 y[j] = *src++;
                 a[j] = *src++;
-            } else {
+            }
+            else
+            {
                 u[j] = *src++;
                 y[j] = *src++;
                 v[j] = *src++;
@@ -80,7 +86,8 @@ static int v408_decode_frame(AVCodecContext *avctx, void *data,
 }
 
 #if CONFIG_AYUV_DECODER
-AVCodec ff_ayuv_decoder = {
+AVCodec ff_ayuv_decoder =
+{
     .name         = "ayuv",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed MS 4:4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,
@@ -91,7 +98,8 @@ AVCodec ff_ayuv_decoder = {
 };
 #endif
 #if CONFIG_V408_DECODER
-AVCodec ff_v408_decoder = {
+AVCodec ff_v408_decoder =
+{
     .name         = "v408",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed QT 4:4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,

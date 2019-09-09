@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/common_types.h"
 #include "webrtc/modules/media_file/media_file_defines.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class InStream;
 class OutStream;
 
@@ -155,7 +156,7 @@ public:
     // Write one audio frame, i.e. the bufferLength first bytes of audioBuffer,
     // to stream. The audio frame size is determined by the codecInst.pacsize
     // parameter of the last sucessfull InitPreEncodedWriting(..) call.
-   // The return value is the number of bytes written to stream.
+    // The return value is the number of bytes written to stream.
     // Note: bufferLength must be exactly one frame.
     int32_t WritePreEncodedData(OutStream& stream,
                                 const int8_t* inData,

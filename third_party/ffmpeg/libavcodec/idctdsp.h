@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,13 +26,15 @@
 /**
  * Scantable.
  */
-typedef struct ScanTable {
+typedef struct ScanTable
+{
     const uint8_t *scantable;
     uint8_t permutated[64];
     uint8_t raster_end[64];
 } ScanTable;
 
-enum idct_permutation_type {
+enum idct_permutation_type
+{
     FF_IDCT_PERM_NONE,
     FF_IDCT_PERM_LIBMPEG2,
     FF_IDCT_PERM_SIMPLE,
@@ -48,7 +50,8 @@ void ff_init_scantable_permutation(uint8_t *idct_permutation,
 int ff_init_scantable_permutation_x86(uint8_t *idct_permutation,
                                       enum idct_permutation_type perm_type);
 
-typedef struct IDCTDSPContext {
+typedef struct IDCTDSPContext
+{
     /* pixel ops : interface with DCT */
     void (*put_pixels_clamped)(const int16_t *block /* align 16 */,
                                uint8_t *pixels /* align 8 */,

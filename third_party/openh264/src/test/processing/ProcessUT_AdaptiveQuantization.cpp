@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include <math.h>
 #include <string.h>
 #include "cpu.h"
@@ -11,35 +11,40 @@
 
 using namespace WelsVP;
 
-static void FillWithRandomData (uint8_t* p, int32_t Len) {
-  for (int32_t i = 0; i < Len; i++) {
-    p[i] = rand() % 256;
-  }
+static void FillWithRandomData (uint8_t* p, int32_t Len)
+{
+    for (int32_t i = 0; i < Len; i++)
+    {
+        p[i] = rand() % 256;
+    }
 }
 
 void SampleVariance16x16_ref (uint8_t* pRefY, int32_t iRefStride, uint8_t* pSrcY, int32_t iSrcStride,
-                              SMotionTextureUnit* pMotionTexture) {
-  uint32_t uiCurSquare = 0,  uiSquare = 0;
-  uint16_t uiCurSum = 0,  uiSum = 0;
+                              SMotionTextureUnit* pMotionTexture)
+{
+    uint32_t uiCurSquare = 0,  uiSquare = 0;
+    uint16_t uiCurSum = 0,  uiSum = 0;
 
-  for (int32_t y = 0; y < MB_WIDTH_LUMA; y++) {
-    for (int32_t x = 0; x < MB_WIDTH_LUMA; x++) {
-      uint32_t uiDiff = WELS_ABS (pRefY[x] - pSrcY[x]);
-      uiSum += uiDiff;
-      uiSquare += uiDiff * uiDiff;
+    for (int32_t y = 0; y < MB_WIDTH_LUMA; y++)
+    {
+        for (int32_t x = 0; x < MB_WIDTH_LUMA; x++)
+        {
+            uint32_t uiDiff = WELS_ABS (pRefY[x] - pSrcY[x]);
+            uiSum += uiDiff;
+            uiSquare += uiDiff * uiDiff;
 
-      uiCurSum += pSrcY[x];
-      uiCurSquare += pSrcY[x] * pSrcY[x];
+            uiCurSum += pSrcY[x];
+            uiCurSquare += pSrcY[x] * pSrcY[x];
+        }
+        pRefY += iRefStride;
+        pSrcY += iSrcStride;
     }
-    pRefY += iRefStride;
-    pSrcY += iSrcStride;
-  }
 
-  uiSum = uiSum >> 8;
-  pMotionTexture->uiMotionIndex = (uiSquare >> 8) - (uiSum * uiSum);
+    uiSum = uiSum >> 8;
+    pMotionTexture->uiMotionIndex = (uiSquare >> 8) - (uiSum * uiSum);
 
-  uiCurSum = uiCurSum >> 8;
-  pMotionTexture->uiTextureIndex = (uiCurSquare >> 8) - (uiCurSum * uiCurSum);
+    uiCurSum = uiCurSum >> 8;
+    pMotionTexture->uiTextureIndex = (uiCurSquare >> 8) - (uiCurSum * uiCurSum);
 }
 
 #define GENERATE_AQTEST(method, flag) \

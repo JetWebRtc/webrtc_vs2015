@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MLP codec common header file
  * Copyright (c) 2007-2008 Ian Caulfield
  *
@@ -71,7 +71,8 @@
 #define IIR 1
 
 /** filter data */
-typedef struct FilterParams {
+typedef struct FilterParams
+{
     uint8_t     order; ///< number of taps in filter
     uint8_t     shift; ///< Right shift to apply to output of filter.
 
@@ -79,7 +80,8 @@ typedef struct FilterParams {
 } FilterParams;
 
 /** sample data coding information */
-typedef struct ChannelParams {
+typedef struct ChannelParams
+{
     FilterParams filter_params[NUM_FILTERS];
     int32_t     coeff[NUM_FILTERS][MAX_FIR_ORDER];
 
@@ -124,7 +126,8 @@ static inline uint8_t xor_32_to_8(uint32_t value)
     return value;
 }
 
-typedef enum THDChannelModifier {
+typedef enum THDChannelModifier
+{
     THD_CH_MODIFIER_NOTINDICATED  = 0x0,
     THD_CH_MODIFIER_STEREO        = 0x0, // Stereo (not Dolby Surround)
     THD_CH_MODIFIER_LTRT          = 0x1, // Dolby Surround

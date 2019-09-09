@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -45,7 +45,8 @@ void silk_interpolate(
     silk_assert( ifact_Q2 >= 0 );
     silk_assert( ifact_Q2 <= 4 );
 
-    for( i = 0; i < d; i++ ) {
+    for( i = 0; i < d; i++ )
+    {
         xi[ i ] = (opus_int16)silk_ADD_RSHIFT( x0[ i ], silk_SMULBB( x1[ i ] - x0[ i ], ifact_Q2 ), 2 );
     }
 }

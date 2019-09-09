@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DivX (XSUB) subtitle encoder
  * Copyright (c) 2005 DivX, Inc.
  * Copyright (c) 2009 Bjorn Axelsson
@@ -58,9 +58,11 @@ static int xsub_encode_rle(PutBitContext *pb, const uint8_t *bitmap,
 {
     int x0, x1, y, len, color = PADDING_COLOR;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         x0 = 0;
-        while (x0 < w) {
+        while (x0 < w)
+        {
             // Make sure we have enough room for at least one run and padding
             if (pb->size_in_bits - put_bits_count(pb) < 7*8)
                 return -1;
@@ -70,18 +72,23 @@ static int xsub_encode_rle(PutBitContext *pb, const uint8_t *bitmap,
             while (x1 < w && (bitmap[x1] & 3) == color)
                 x1++;
             len = x1 - x0;
-            if (PADDING && x0 == 0) {
-                if (color == PADDING_COLOR) {
+            if (PADDING && x0 == 0)
+            {
+                if (color == PADDING_COLOR)
+                {
                     len += PADDING;
                     x0  -= PADDING;
-                } else
+                }
+                else
                     put_xsub_rle(pb, PADDING, PADDING_COLOR);
             }
 
             // Run can't be longer than 255, unless it is the rest of a row
-            if (x1 == w && color == PADDING_COLOR) {
+            if (x1 == w && color == PADDING_COLOR)
+            {
                 len += PADDING + (w&1);
-            } else
+            }
+            else
                 len = FFMIN(len, 255);
             put_xsub_rle(pb, len, color);
 
@@ -102,7 +109,8 @@ static int make_tc(uint64_t ms, int *tc)
 {
     static const int tc_divs[3] = { 1000, 60, 60 };
     int i;
-    for (i=0; i<3; i++) {
+    for (i=0; i<3; i++)
+    {
         tc[i] = ms % tc_divs[i];
         ms /= tc_divs[i];
     }
@@ -122,7 +130,8 @@ static int xsub_encode(AVCodecContext *avctx, unsigned char *buf,
     int i;
     PutBitContext pb;
 
-    if (bufsize < 27 + 7*2 + 4*3) {
+    if (bufsize < 27 + 7*2 + 4*3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Buffer too small for XSUB header.\n");
         return -1;
     }
@@ -132,7 +141,8 @@ static int xsub_encode(AVCodecContext *avctx, unsigned char *buf,
         av_log(avctx, AV_LOG_WARNING, "Only single rects supported (%d in subtitle.)\n", h->num_rects);
 
     // TODO: render text-based subtitles into bitmaps
-    if (!h->rects[0]->pict.data[0] || !h->rects[0]->pict.data[1]) {
+    if (!h->rects[0]->pict.data[0] || !h->rects[0]->pict.data[1])
+    {
         av_log(avctx, AV_LOG_WARNING, "No subtitle bitmap available.\n");
         return -1;
     }
@@ -145,15 +155,16 @@ static int xsub_encode(AVCodecContext *avctx, unsigned char *buf,
     if (((uint32_t *)h->rects[0]->pict.data[1])[0] & 0xff000000)
         av_log(avctx, AV_LOG_WARNING, "Color index 0 is not transparent. Transparency will be messed up.\n");
 
-    if (make_tc(startTime, start_tc) || make_tc(endTime, end_tc)) {
+    if (make_tc(startTime, start_tc) || make_tc(endTime, end_tc))
+    {
         av_log(avctx, AV_LOG_WARNING, "Time code >= 100 hours.\n");
         return -1;
     }
 
     snprintf(buf, 28,
-        "[%02d:%02d:%02d.%03d-%02d:%02d:%02d.%03d]",
-        start_tc[3], start_tc[2], start_tc[1], start_tc[0],
-        end_tc[3],   end_tc[2],   end_tc[1],   end_tc[0]);
+             "[%02d:%02d:%02d.%03d-%02d:%02d:%02d.%03d]",
+             start_tc[3], start_tc[2], start_tc[1], start_tc[0],
+             end_tc[3],   end_tc[2],   end_tc[1],   end_tc[0]);
 
     // Width and height must probably be multiples of 2.
     // 2 pixels required on either side of subtitle.
@@ -191,7 +202,8 @@ static int xsub_encode(AVCodecContext *avctx, unsigned char *buf,
         return -1;
 
     // Enforce total height to be a multiple of 2
-    if (h->rects[0]->h & 1) {
+    if (h->rects[0]->h & 1)
+    {
         put_xsub_rle(&pb, h->rects[0]->w, PADDING_COLOR);
         avpriv_align_put_bits(&pb);
     }
@@ -211,7 +223,8 @@ static av_cold int xsub_encoder_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_xsub_encoder = {
+AVCodec ff_xsub_encoder =
+{
     .name       = "xsub",
     .long_name  = NULL_IF_CONFIG_SMALL("DivX subtitles (XSUB)"),
     .type       = AVMEDIA_TYPE_SUBTITLE,

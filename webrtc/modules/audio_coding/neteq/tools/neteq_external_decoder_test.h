@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,44 +18,50 @@
 #include "webrtc/modules/audio_coding/neteq/include/neteq.h"
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 // This test class provides a way run NetEQ with an external decoder.
-class NetEqExternalDecoderTest {
- protected:
-  static const uint8_t kPayloadType = 95;
-  static const int kOutputLengthMs = 10;
+class NetEqExternalDecoderTest
+{
+protected:
+    static const uint8_t kPayloadType = 95;
+    static const int kOutputLengthMs = 10;
 
-  // The external decoder |decoder| is suppose to be of type |codec|.
-  NetEqExternalDecoderTest(NetEqDecoder codec,
-                           int sample_rate_hz,
-                           AudioDecoder* decoder);
+    // The external decoder |decoder| is suppose to be of type |codec|.
+    NetEqExternalDecoderTest(NetEqDecoder codec,
+                             int sample_rate_hz,
+                             AudioDecoder* decoder);
 
-  virtual ~NetEqExternalDecoderTest() { }
+    virtual ~NetEqExternalDecoderTest() { }
 
-  // In Init(), we register the external decoder.
-  void Init();
+    // In Init(), we register the external decoder.
+    void Init();
 
-  // Inserts a new packet with |rtp_header| and |payload| of
-  // |payload_size_bytes| bytes. The |receive_timestamp| is an indication
-  // of the time when the packet was received, and should be measured with
-  // the same tick rate as the RTP timestamp of the current payload.
-  virtual void InsertPacket(WebRtcRTPHeader rtp_header,
-                            rtc::ArrayView<const uint8_t> payload,
-                            uint32_t receive_timestamp);
+    // Inserts a new packet with |rtp_header| and |payload| of
+    // |payload_size_bytes| bytes. The |receive_timestamp| is an indication
+    // of the time when the packet was received, and should be measured with
+    // the same tick rate as the RTP timestamp of the current payload.
+    virtual void InsertPacket(WebRtcRTPHeader rtp_header,
+                              rtc::ArrayView<const uint8_t> payload,
+                              uint32_t receive_timestamp);
 
-  // Get 10 ms of audio data.
-  void GetOutputAudio(AudioFrame* output);
+    // Get 10 ms of audio data.
+    void GetOutputAudio(AudioFrame* output);
 
-  NetEq* neteq() { return neteq_.get(); }
+    NetEq* neteq()
+    {
+        return neteq_.get();
+    }
 
- private:
-  NetEqDecoder codec_;
-  std::string name_ = "dummy name";
-  AudioDecoder* decoder_;
-  int sample_rate_hz_;
-  size_t channels_;
-  std::unique_ptr<NetEq> neteq_;
+private:
+    NetEqDecoder codec_;
+    std::string name_ = "dummy name";
+    AudioDecoder* decoder_;
+    int sample_rate_hz_;
+    size_t channels_;
+    std::unique_ptr<NetEq> neteq_;
 };
 
 }  // namespace test

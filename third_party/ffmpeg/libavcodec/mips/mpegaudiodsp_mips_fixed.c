@@ -1,51 +1,51 @@
-    /*
- * Copyright (c) 2012
- *      MIPS Technologies, Inc., California.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the MIPS Technologies, Inc., nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE MIPS TECHNOLOGIES, INC. ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE MIPS TECHNOLOGIES, INC. BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- *
- * Author:  Bojan Zivkovic (bojan@mips.com)
- *
- * MPEG Audio decoder optimized for MIPS fixed-point architecture
- *
- * This file is part of FFmpeg.
- *
- * FFmpeg is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; either
- * version 2.1 of the License, or (at your option) any later version.
- *
- * FFmpeg is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public
- * License along with FFmpeg; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
- */
+﻿/*
+* Copyright (c) 2012
+*      MIPS Technologies, Inc., California.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+* 1. Redistributions of source code must retain the above copyright
+*    notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright
+*    notice, this list of conditions and the following disclaimer in the
+*    documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the MIPS Technologies, Inc., nor the names of its
+*    contributors may be used to endorse or promote products derived from
+*    this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE MIPS TECHNOLOGIES, INC. ``AS IS'' AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED.  IN NO EVENT SHALL THE MIPS TECHNOLOGIES, INC. BE LIABLE
+* FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+* DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+* OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+* OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+* SUCH DAMAGE.
+*
+* Author:  Bojan Zivkovic (bojan@mips.com)
+*
+* MPEG Audio decoder optimized for MIPS fixed-point architecture
+*
+* This file is part of FFmpeg.
+*
+* FFmpeg is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* FFmpeg is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with FFmpeg; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+*/
 
 /**
  * @file
@@ -58,7 +58,7 @@
 #include "libavcodec/mpegaudiodsp.h"
 
 static void ff_mpadsp_apply_window_mips_fixed(int32_t *synth_buf, int32_t *window,
-                               int *dither_state, int16_t *samples, int incr)
+        int *dither_state, int16_t *samples, int incr)
 {
     register const int32_t *w, *w2, *p;
     int j;
@@ -86,210 +86,211 @@ static void ff_mpadsp_apply_window_mips_fixed(int32_t *synth_buf, int32_t *windo
     * changed with appropriate assembly instructions.
     */
     __asm__ volatile (
-         "mthi   $zero                                                    \n\t"
-         "mtlo   %[temp1]                                                 \n\t"
-         "lw     %[w_asm],  0(%[w])                                       \n\t"
-         "lw     %[p_asm],  0(%[p])                                       \n\t"
-         "lw     %[w_asm1], 64*4(%[w])                                    \n\t"
-         "lw     %[p_asm1], 64*4(%[p])                                    \n\t"
-         "lw     %[w_asm2], 128*4(%[w])                                   \n\t"
-         "lw     %[p_asm2], 128*4(%[p])                                   \n\t"
-         "madd   %[w_asm],  %[p_asm]                                      \n\t"
-         "madd   %[w_asm1], %[p_asm1]                                     \n\t"
-         "madd   %[w_asm2], %[p_asm2]                                     \n\t"
-         "lw     %[w_asm],  192*4(%[w])                                   \n\t"
-         "lw     %[p_asm],  192*4(%[p])                                   \n\t"
-         "lw     %[w_asm1], 256*4(%[w])                                   \n\t"
-         "lw     %[p_asm1], 256*4(%[p])                                   \n\t"
-         "lw     %[w_asm2], 320*4(%[w])                                   \n\t"
-         "lw     %[p_asm2], 320*4(%[p])                                   \n\t"
-         "madd   %[w_asm],  %[p_asm]                                      \n\t"
-         "madd   %[w_asm1], %[p_asm1]                                     \n\t"
-         "madd   %[w_asm2], %[p_asm2]                                     \n\t"
-         "lw     %[w_asm],  384*4(%[w])                                   \n\t"
-         "lw     %[p_asm],  384*4(%[p])                                   \n\t"
-         "lw     %[w_asm1], 448*4(%[w])                                   \n\t"
-         "lw     %[p_asm1], 448*4(%[p])                                   \n\t"
-         "lw     %[w_asm2], 32*4(%[w])                                    \n\t"
-         "lw     %[p_asm2], 32*4(%[p])                                    \n\t"
-         "madd   %[w_asm],  %[p_asm]                                      \n\t"
-         "madd   %[w_asm1], %[p_asm1]                                     \n\t"
-         "msub   %[w_asm2], %[p_asm2]                                     \n\t"
-         "lw     %[w_asm],  96*4(%[w])                                    \n\t"
-         "lw     %[p_asm],  96*4(%[p])                                    \n\t"
-         "lw     %[w_asm1], 160*4(%[w])                                   \n\t"
-         "lw     %[p_asm1], 160*4(%[p])                                   \n\t"
-         "lw     %[w_asm2], 224*4(%[w])                                   \n\t"
-         "lw     %[p_asm2], 224*4(%[p])                                   \n\t"
-         "msub   %[w_asm],  %[p_asm]                                      \n\t"
-         "msub   %[w_asm1], %[p_asm1]                                     \n\t"
-         "msub   %[w_asm2], %[p_asm2]                                     \n\t"
-         "lw     %[w_asm],  288*4(%[w])                                   \n\t"
-         "lw     %[p_asm],  288*4(%[p])                                   \n\t"
-         "lw     %[w_asm1], 352*4(%[w])                                   \n\t"
-         "lw     %[p_asm1], 352*4(%[p])                                   \n\t"
-         "msub   %[w_asm],  %[p_asm]                                      \n\t"
-         "lw     %[w_asm],  480*4(%[w])                                   \n\t"
-         "lw     %[p_asm],  480*4(%[p])                                   \n\t"
-         "lw     %[w_asm2], 416*4(%[w])                                   \n\t"
-         "lw     %[p_asm2], 416*4(%[p])                                   \n\t"
-         "msub   %[w_asm],  %[p_asm]                                      \n\t"
-         "msub   %[w_asm1], %[p_asm1]                                     \n\t"
-         "msub   %[w_asm2], %[p_asm2]                                     \n\t"
+        "mthi   $zero                                                    \n\t"
+        "mtlo   %[temp1]                                                 \n\t"
+        "lw     %[w_asm],  0(%[w])                                       \n\t"
+        "lw     %[p_asm],  0(%[p])                                       \n\t"
+        "lw     %[w_asm1], 64*4(%[w])                                    \n\t"
+        "lw     %[p_asm1], 64*4(%[p])                                    \n\t"
+        "lw     %[w_asm2], 128*4(%[w])                                   \n\t"
+        "lw     %[p_asm2], 128*4(%[p])                                   \n\t"
+        "madd   %[w_asm],  %[p_asm]                                      \n\t"
+        "madd   %[w_asm1], %[p_asm1]                                     \n\t"
+        "madd   %[w_asm2], %[p_asm2]                                     \n\t"
+        "lw     %[w_asm],  192*4(%[w])                                   \n\t"
+        "lw     %[p_asm],  192*4(%[p])                                   \n\t"
+        "lw     %[w_asm1], 256*4(%[w])                                   \n\t"
+        "lw     %[p_asm1], 256*4(%[p])                                   \n\t"
+        "lw     %[w_asm2], 320*4(%[w])                                   \n\t"
+        "lw     %[p_asm2], 320*4(%[p])                                   \n\t"
+        "madd   %[w_asm],  %[p_asm]                                      \n\t"
+        "madd   %[w_asm1], %[p_asm1]                                     \n\t"
+        "madd   %[w_asm2], %[p_asm2]                                     \n\t"
+        "lw     %[w_asm],  384*4(%[w])                                   \n\t"
+        "lw     %[p_asm],  384*4(%[p])                                   \n\t"
+        "lw     %[w_asm1], 448*4(%[w])                                   \n\t"
+        "lw     %[p_asm1], 448*4(%[p])                                   \n\t"
+        "lw     %[w_asm2], 32*4(%[w])                                    \n\t"
+        "lw     %[p_asm2], 32*4(%[p])                                    \n\t"
+        "madd   %[w_asm],  %[p_asm]                                      \n\t"
+        "madd   %[w_asm1], %[p_asm1]                                     \n\t"
+        "msub   %[w_asm2], %[p_asm2]                                     \n\t"
+        "lw     %[w_asm],  96*4(%[w])                                    \n\t"
+        "lw     %[p_asm],  96*4(%[p])                                    \n\t"
+        "lw     %[w_asm1], 160*4(%[w])                                   \n\t"
+        "lw     %[p_asm1], 160*4(%[p])                                   \n\t"
+        "lw     %[w_asm2], 224*4(%[w])                                   \n\t"
+        "lw     %[p_asm2], 224*4(%[p])                                   \n\t"
+        "msub   %[w_asm],  %[p_asm]                                      \n\t"
+        "msub   %[w_asm1], %[p_asm1]                                     \n\t"
+        "msub   %[w_asm2], %[p_asm2]                                     \n\t"
+        "lw     %[w_asm],  288*4(%[w])                                   \n\t"
+        "lw     %[p_asm],  288*4(%[p])                                   \n\t"
+        "lw     %[w_asm1], 352*4(%[w])                                   \n\t"
+        "lw     %[p_asm1], 352*4(%[p])                                   \n\t"
+        "msub   %[w_asm],  %[p_asm]                                      \n\t"
+        "lw     %[w_asm],  480*4(%[w])                                   \n\t"
+        "lw     %[p_asm],  480*4(%[p])                                   \n\t"
+        "lw     %[w_asm2], 416*4(%[w])                                   \n\t"
+        "lw     %[p_asm2], 416*4(%[p])                                   \n\t"
+        "msub   %[w_asm],  %[p_asm]                                      \n\t"
+        "msub   %[w_asm1], %[p_asm1]                                     \n\t"
+        "msub   %[w_asm2], %[p_asm2]                                     \n\t"
 
-         /*round_sample function from the original code is eliminated,
-          * changed with appropriate assembly instructions
-          * code example:
+        /*round_sample function from the original code is eliminated,
+         * changed with appropriate assembly instructions
+         * code example:
 
-         "extr.w  %[sum1],$ac0,24                                       \n\t"
-         "mflo %[temp3],  $ac0                                          \n\t"
-         "and  %[temp1],  %[temp3],  0x00ffffff                         \n\t"
-         "slt  %[temp2],  %[sum1],   %[min_asm]                         \n\t"
-         "movn %[sum1],   %[min_asm],%[temp2]                           \n\t"
-         "slt  %[temp2],  %[max_asm],%[sum1]                            \n\t"
-         "movn %[sum1],   %[max_asm],%[temp2]                           \n\t"
-         "sh   %[sum1],   0(%[samples])                                 \n\t"
-         */
+        "extr.w  %[sum1],$ac0,24                                       \n\t"
+        "mflo %[temp3],  $ac0                                          \n\t"
+        "and  %[temp1],  %[temp3],  0x00ffffff                         \n\t"
+        "slt  %[temp2],  %[sum1],   %[min_asm]                         \n\t"
+        "movn %[sum1],   %[min_asm],%[temp2]                           \n\t"
+        "slt  %[temp2],  %[max_asm],%[sum1]                            \n\t"
+        "movn %[sum1],   %[max_asm],%[temp2]                           \n\t"
+        "sh   %[sum1],   0(%[samples])                                 \n\t"
+        */
 
-         "extr.w %[sum1],   $ac0,       24                                \n\t"
-         "mflo   %[temp3]                                                 \n\t"
-         PTR_ADDIU "%[w],   %[w],       4                                 \n\t"
-         "and    %[temp1],  %[temp3],   0x00ffffff                        \n\t"
-         "slt    %[temp2],  %[sum1],    %[min_asm]                        \n\t"
-         "movn   %[sum1],   %[min_asm], %[temp2]                          \n\t"
-         "slt    %[temp2],  %[max_asm], %[sum1]                           \n\t"
-         "movn   %[sum1],   %[max_asm], %[temp2]                          \n\t"
-         "sh     %[sum1],   0(%[samples])                                 \n\t"
+        "extr.w %[sum1],   $ac0,       24                                \n\t"
+        "mflo   %[temp3]                                                 \n\t"
+        PTR_ADDIU "%[w],   %[w],       4                                 \n\t"
+        "and    %[temp1],  %[temp3],   0x00ffffff                        \n\t"
+        "slt    %[temp2],  %[sum1],    %[min_asm]                        \n\t"
+        "movn   %[sum1],   %[min_asm], %[temp2]                          \n\t"
+        "slt    %[temp2],  %[max_asm], %[sum1]                           \n\t"
+        "movn   %[sum1],   %[max_asm], %[temp2]                          \n\t"
+        "sh     %[sum1],   0(%[samples])                                 \n\t"
 
         : [w_asm] "=&r" (w_asm), [p_asm] "=&r" (p_asm), [w_asm1] "=&r" (w_asm1),
-          [p_asm1] "=&r" (p_asm1), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
-          [w_asm2] "=&r" (w_asm2), [p_asm2] "=&r" (p_asm2),
-          [sum1] "+r" (sum1), [w] "+r" (w), [temp3] "+r" (temp3)
+        [p_asm1] "=&r" (p_asm1), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
+        [w_asm2] "=&r" (w_asm2), [p_asm2] "=&r" (p_asm2),
+        [sum1] "+r" (sum1), [w] "+r" (w), [temp3] "+r" (temp3)
         : [p] "r" (p), [samples] "r" (samples), [min_asm] "r" (min_asm),
-          [max_asm] "r" (max_asm)
+        [max_asm] "r" (max_asm)
         : "memory", "hi","lo"
-     );
+    );
 
-     samples += incr;
+    samples += incr;
 
     /* we calculate two samples at the same time to avoid one memory
        access per two sample */
 
-    for(j = 1; j < 16; j++) {
+    for(j = 1; j < 16; j++)
+    {
         __asm__ volatile (
-             "mthi   $0,         $ac1                                      \n\t"
-             "mtlo   $0,         $ac1                                      \n\t"
-             "mthi   $0                                                    \n\t"
-             "mtlo   %[temp1]                                              \n\t"
-             PTR_ADDIU "%[p_temp1], %[p_temp1],    4                       \n\t"
-             "lw     %[w_asm],   0(%[w])                                   \n\t"
-             "lw     %[p_asm],   0(%[p_temp1])                             \n\t"
-             "lw     %[w2_asm],  0(%[w2])                                  \n\t"
-             "lw     %[w_asm1],  64*4(%[w])                                \n\t"
-             "lw     %[p_asm1],  64*4(%[p_temp1])                          \n\t"
-             "lw     %[w2_asm1], 64*4(%[w2])                               \n\t"
-             "madd   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   128*4(%[w])                               \n\t"
-             "lw     %[p_asm],   128*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm],  128*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  192*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  192*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm1], 192*4(%[w2])                              \n\t"
-             "madd   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   256*4(%[w])                               \n\t"
-             "lw     %[p_asm],   256*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm],  256*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  320*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  320*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm1], 320*4(%[w2])                              \n\t"
-             "madd   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   384*4(%[w])                               \n\t"
-             "lw     %[p_asm],   384*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm],  384*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  448*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  448*4(%[p_temp1])                         \n\t"
-             "lw     %[w2_asm1], 448*4(%[w2])                              \n\t"
-             "madd   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             PTR_ADDIU "%[p_temp2], %[p_temp2],   -4                      \n\t"
-             "lw     %[w_asm],   32*4(%[w])                                \n\t"
-             "lw     %[p_asm],   0(%[p_temp2])                             \n\t"
-             "lw     %[w2_asm],  32*4(%[w2])                               \n\t"
-             "lw     %[w_asm1],  96*4(%[w])                                \n\t"
-             "lw     %[p_asm1],  64*4(%[p_temp2])                          \n\t"
-             "lw     %[w2_asm1], 96*4(%[w2])                               \n\t"
-             "msub   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   160*4(%[w])                               \n\t"
-             "lw     %[p_asm],   128*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm],  160*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  224*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  192*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm1], 224*4(%[w2])                              \n\t"
-             "msub   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   288*4(%[w])                               \n\t"
-             "lw     %[p_asm],   256*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm],  288*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  352*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  320*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm1], 352*4(%[w2])                              \n\t"
-             "msub   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             "lw     %[w_asm],   416*4(%[w])                               \n\t"
-             "lw     %[p_asm],   384*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm],  416*4(%[w2])                              \n\t"
-             "lw     %[w_asm1],  480*4(%[w])                               \n\t"
-             "lw     %[p_asm1],  448*4(%[p_temp2])                         \n\t"
-             "lw     %[w2_asm1], 480*4(%[w2])                              \n\t"
-             "msub   %[w_asm],   %[p_asm]                                  \n\t"
-             "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
-             "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
-             "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
-             PTR_ADDIU "%[w],    %[w],             4                       \n\t"
-             PTR_ADDIU "%[w2],   %[w2],            -4                      \n\t"
-             "mflo   %[temp2]                                              \n\t"
-             "extr.w %[sum1],    $ac0,             24                      \n\t"
-             "li     %[temp3],   1                                         \n\t"
-             "and    %[temp1],   %[temp2],         0x00ffffff              \n\t"
-             "madd   $ac1,       %[temp1],         %[temp3]                \n\t"
-             "slt    %[temp2],   %[sum1],          %[min_asm]              \n\t"
-             "movn   %[sum1],    %[min_asm],       %[temp2]                \n\t"
-             "slt    %[temp2],   %[max_asm],       %[sum1]                 \n\t"
-             "movn   %[sum1],    %[max_asm],       %[temp2]                \n\t"
-             "sh     %[sum1],    0(%[samples])                             \n\t"
-             "mflo   %[temp3],   $ac1                                      \n\t"
-             "extr.w %[sum1],    $ac1,             24                      \n\t"
-             "and    %[temp1],   %[temp3],         0x00ffffff              \n\t"
-             "slt    %[temp2],   %[sum1],          %[min_asm]              \n\t"
-             "movn   %[sum1],    %[min_asm],       %[temp2]                \n\t"
-             "slt    %[temp2],   %[max_asm],       %[sum1]                 \n\t"
-             "movn   %[sum1],    %[max_asm],       %[temp2]                \n\t"
-             "sh     %[sum1],    0(%[samples2])                            \n\t"
+            "mthi   $0,         $ac1                                      \n\t"
+            "mtlo   $0,         $ac1                                      \n\t"
+            "mthi   $0                                                    \n\t"
+            "mtlo   %[temp1]                                              \n\t"
+            PTR_ADDIU "%[p_temp1], %[p_temp1],    4                       \n\t"
+            "lw     %[w_asm],   0(%[w])                                   \n\t"
+            "lw     %[p_asm],   0(%[p_temp1])                             \n\t"
+            "lw     %[w2_asm],  0(%[w2])                                  \n\t"
+            "lw     %[w_asm1],  64*4(%[w])                                \n\t"
+            "lw     %[p_asm1],  64*4(%[p_temp1])                          \n\t"
+            "lw     %[w2_asm1], 64*4(%[w2])                               \n\t"
+            "madd   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   128*4(%[w])                               \n\t"
+            "lw     %[p_asm],   128*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm],  128*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  192*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  192*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm1], 192*4(%[w2])                              \n\t"
+            "madd   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   256*4(%[w])                               \n\t"
+            "lw     %[p_asm],   256*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm],  256*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  320*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  320*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm1], 320*4(%[w2])                              \n\t"
+            "madd   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   384*4(%[w])                               \n\t"
+            "lw     %[p_asm],   384*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm],  384*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  448*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  448*4(%[p_temp1])                         \n\t"
+            "lw     %[w2_asm1], 448*4(%[w2])                              \n\t"
+            "madd   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "madd   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            PTR_ADDIU "%[p_temp2], %[p_temp2],   -4                      \n\t"
+            "lw     %[w_asm],   32*4(%[w])                                \n\t"
+            "lw     %[p_asm],   0(%[p_temp2])                             \n\t"
+            "lw     %[w2_asm],  32*4(%[w2])                               \n\t"
+            "lw     %[w_asm1],  96*4(%[w])                                \n\t"
+            "lw     %[p_asm1],  64*4(%[p_temp2])                          \n\t"
+            "lw     %[w2_asm1], 96*4(%[w2])                               \n\t"
+            "msub   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   160*4(%[w])                               \n\t"
+            "lw     %[p_asm],   128*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm],  160*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  224*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  192*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm1], 224*4(%[w2])                              \n\t"
+            "msub   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   288*4(%[w])                               \n\t"
+            "lw     %[p_asm],   256*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm],  288*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  352*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  320*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm1], 352*4(%[w2])                              \n\t"
+            "msub   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            "lw     %[w_asm],   416*4(%[w])                               \n\t"
+            "lw     %[p_asm],   384*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm],  416*4(%[w2])                              \n\t"
+            "lw     %[w_asm1],  480*4(%[w])                               \n\t"
+            "lw     %[p_asm1],  448*4(%[p_temp2])                         \n\t"
+            "lw     %[w2_asm1], 480*4(%[w2])                              \n\t"
+            "msub   %[w_asm],   %[p_asm]                                  \n\t"
+            "msub   %[w_asm1],  %[p_asm1]                                 \n\t"
+            "msub   $ac1,       %[w2_asm],        %[p_asm]                \n\t"
+            "msub   $ac1,       %[w2_asm1],       %[p_asm1]               \n\t"
+            PTR_ADDIU "%[w],    %[w],             4                       \n\t"
+            PTR_ADDIU "%[w2],   %[w2],            -4                      \n\t"
+            "mflo   %[temp2]                                              \n\t"
+            "extr.w %[sum1],    $ac0,             24                      \n\t"
+            "li     %[temp3],   1                                         \n\t"
+            "and    %[temp1],   %[temp2],         0x00ffffff              \n\t"
+            "madd   $ac1,       %[temp1],         %[temp3]                \n\t"
+            "slt    %[temp2],   %[sum1],          %[min_asm]              \n\t"
+            "movn   %[sum1],    %[min_asm],       %[temp2]                \n\t"
+            "slt    %[temp2],   %[max_asm],       %[sum1]                 \n\t"
+            "movn   %[sum1],    %[max_asm],       %[temp2]                \n\t"
+            "sh     %[sum1],    0(%[samples])                             \n\t"
+            "mflo   %[temp3],   $ac1                                      \n\t"
+            "extr.w %[sum1],    $ac1,             24                      \n\t"
+            "and    %[temp1],   %[temp3],         0x00ffffff              \n\t"
+            "slt    %[temp2],   %[sum1],          %[min_asm]              \n\t"
+            "movn   %[sum1],    %[min_asm],       %[temp2]                \n\t"
+            "slt    %[temp2],   %[max_asm],       %[sum1]                 \n\t"
+            "movn   %[sum1],    %[max_asm],       %[temp2]                \n\t"
+            "sh     %[sum1],    0(%[samples2])                            \n\t"
 
             : [w_asm] "=&r" (w_asm), [p_asm] "=&r" (p_asm), [w_asm1] "=&r" (w_asm1),
-              [p_asm1] "=&r" (p_asm1), [w2_asm1] "=&r" (w2_asm1),
-              [w2_asm] "=&r" (w2_asm), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
-              [p_temp1] "+r" (p_temp1), [p_temp2] "+r" (p_temp2), [sum1] "+r" (sum1),
-              [w] "+r" (w), [w2] "+r" (w2), [samples] "+r" (samples),
-              [samples2] "+r" (samples2), [temp3] "+r" (temp3)
+            [p_asm1] "=&r" (p_asm1), [w2_asm1] "=&r" (w2_asm1),
+            [w2_asm] "=&r" (w2_asm), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
+            [p_temp1] "+r" (p_temp1), [p_temp2] "+r" (p_temp2), [sum1] "+r" (sum1),
+            [w] "+r" (w), [w2] "+r" (w2), [samples] "+r" (samples),
+            [samples2] "+r" (samples2), [temp3] "+r" (temp3)
             : [min_asm] "r" (min_asm), [max_asm] "r" (max_asm)
             : "memory", "hi", "lo", "$ac1hi", "$ac1lo"
         );
@@ -337,12 +338,12 @@ static void ff_mpadsp_apply_window_mips_fixed(int32_t *synth_buf, int32_t *windo
         "sh     %[sum1],   0(%[samples])                                  \n\t"
 
         : [w_asm] "=&r" (w_asm), [p_asm] "=&r" (p_asm), [w_asm1] "=&r" (w_asm1),
-          [p_asm1] "=&r" (p_asm1), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
-          [w_asm2] "=&r" (w_asm2), [p_asm2] "=&r" (p_asm2), [sum1] "+r" (sum1)
+        [p_asm1] "=&r" (p_asm1), [temp1] "+r" (temp1), [temp2] "+r" (temp2),
+        [w_asm2] "=&r" (w_asm2), [p_asm2] "=&r" (p_asm2), [sum1] "+r" (sum1)
         : [w] "r" (w), [p] "r" (p), [samples] "r" (samples), [min_asm] "r" (min_asm),
-          [max_asm] "r" (max_asm)
+        [max_asm] "r" (max_asm)
         : "memory", "hi", "lo", "$ac1hi", "$ac1lo"
-     );
+    );
 
     *dither_state= temp1;
 }
@@ -356,9 +357,9 @@ static void imdct36_mips_fixed(int *out, int *buf, int *in, int *win)
     int temp_reg1, temp_reg2, temp_reg3, temp_reg4, temp_reg5, temp_reg6;
     int t4, t5, t6, t8, t7;
 
-   /* values defined in macros and tables are
-    * eliminated - they are directly loaded in appropriate variables
-    */
+    /* values defined in macros and tables are
+     * eliminated - they are directly loaded in appropriate variables
+     */
     int const C_1  =  4229717092; /* cos(pi*1/18)*2  */
     int const C_2  =  4035949074; /* cos(pi*2/18)*2  */
     int const C_3  =  575416510;  /* -cos(pi*3/18)*2 */
@@ -368,10 +369,10 @@ static void imdct36_mips_fixed(int *out, int *buf, int *in, int *win)
     int const C_7  = -1468965330; /* -cos(pi*7/18)*2 */
     int const C_8  = -745813244;  /* -cos(pi*8/18)*2 */
 
-   /*
-    * instructions of the first two loops are reorganized and loops are unrolled,
-    * in order to eliminate unnecessary readings and writings in array
-    */
+    /*
+     * instructions of the first two loops are reorganized and loops are unrolled,
+     * in order to eliminate unnecessary readings and writings in array
+     */
 
     __asm__ volatile (
         "lw   %[t1], 17*4(%[in])                                         \n\t"
@@ -436,41 +437,42 @@ static void imdct36_mips_fixed(int *out, int *buf, int *in, int *win)
         "sw   %[t1], 1*4(%[in])                                          \n\t"
 
         : [in] "+r" (in), [t1] "=&r" (t1), [t2] "=&r" (t2), [t3] "=&r" (t3),
-          [t4] "=&r" (t4), [t5] "=&r" (t5), [t6] "=&r" (t6),
-          [t7] "=&r" (t7), [t8] "=&r" (t8)
+        [t4] "=&r" (t4), [t5] "=&r" (t5), [t6] "=&r" (t6),
+        [t7] "=&r" (t7), [t8] "=&r" (t8)
         :
         : "memory"
     );
 
-    for(j = 0; j < 2; j++) {
+    for(j = 0; j < 2; j++)
+    {
 
         tmp1 = tmp + j;
         in1 = in + j;
 
-         /**
-         *  Original constants are multiplied by two in advanced
-         *  for assembly optimization (e.g. C_2 = 2 * C2).
-         *  That can lead to overflow in operations where they are used.
-         *
-         *  Example of the solution:
-         *
-         *  in original code:
-         *  t0 = ((int64_t)(in1[2*2] + in1[2*4]) * (int64_t)(2*C2))>>32
-         *
-         *  in assembly:
-         *  C_2 = 2 * C2;
-         *   .
-         *   .
-         *  "lw   %[t7],       4*4(%[in1])                               \n\t"
-         *  "lw   %[t8],       8*4(%[in1])                               \n\t"
-         *  "addu %[temp_reg2],%[t7],       %[t8]                        \n\t"
-         *  "multu %[C_2],     %[temp_reg2]                              \n\t"
-         *  "mfhi %[temp_reg1]                                           \n\t"
-         *  "sra  %[temp_reg2],%[temp_reg2],31                           \n\t"
-         *  "move %[t0],       $0                                        \n\t"
-         *  "movn %[t0],       %[C_2],      %[temp_reg2]                 \n\t"
-         *  "sub  %[t0],       %[temp_reg1],%[t0]                        \n\t"
-         */
+        /**
+        *  Original constants are multiplied by two in advanced
+        *  for assembly optimization (e.g. C_2 = 2 * C2).
+        *  That can lead to overflow in operations where they are used.
+        *
+        *  Example of the solution:
+        *
+        *  in original code:
+        *  t0 = ((int64_t)(in1[2*2] + in1[2*4]) * (int64_t)(2*C2))>>32
+        *
+        *  in assembly:
+        *  C_2 = 2 * C2;
+        *   .
+        *   .
+        *  "lw   %[t7],       4*4(%[in1])                               \n\t"
+        *  "lw   %[t8],       8*4(%[in1])                               \n\t"
+        *  "addu %[temp_reg2],%[t7],       %[t8]                        \n\t"
+        *  "multu %[C_2],     %[temp_reg2]                              \n\t"
+        *  "mfhi %[temp_reg1]                                           \n\t"
+        *  "sra  %[temp_reg2],%[temp_reg2],31                           \n\t"
+        *  "move %[t0],       $0                                        \n\t"
+        *  "movn %[t0],       %[C_2],      %[temp_reg2]                 \n\t"
+        *  "sub  %[t0],       %[temp_reg1],%[t0]                        \n\t"
+        */
 
         __asm__ volatile (
             "lw    %[t7],        4*4(%[in1])                               \n\t"
@@ -569,16 +571,16 @@ static void imdct36_mips_fixed(int *out, int *buf, int *in, int *win)
             "sw    %[temp_reg2], 8*4(%[tmp1])                              \n\t"
 
             : [t7] "=&r" (t7), [temp_reg1] "=&r" (temp_reg1),
-              [temp_reg2] "=&r" (temp_reg2), [temp_reg4] "=&r" (temp_reg4),
-              [temp_reg3] "=&r" (temp_reg3), [t8] "=&r" (t8), [t0] "=&r" (t0),
-              [t4] "=&r" (t4), [t5] "=&r" (t5), [t6] "=&r"(t6), [t2] "=&r" (t2),
-              [t3] "=&r" (t3), [t1] "=&r" (t1)
+            [temp_reg2] "=&r" (temp_reg2), [temp_reg4] "=&r" (temp_reg4),
+            [temp_reg3] "=&r" (temp_reg3), [t8] "=&r" (t8), [t0] "=&r" (t0),
+            [t4] "=&r" (t4), [t5] "=&r" (t5), [t6] "=&r"(t6), [t2] "=&r" (t2),
+            [t3] "=&r" (t3), [t1] "=&r" (t1)
             : [C_2] "r" (C_2), [in1] "r" (in1), [tmp1] "r" (tmp1), [C_8] "r" (C_8),
-              [C_4] "r" (C_4), [C_3] "r" (C_3), [C_1] "r" (C_1), [C_7] "r" (C_7),
-              [C_3A] "r" (C_3A), [C_5] "r" (C_5)
+            [C_4] "r" (C_4), [C_3] "r" (C_3), [C_1] "r" (C_1), [C_7] "r" (C_7),
+            [C_3A] "r" (C_3A), [C_5] "r" (C_5)
             : "memory", "hi", "lo", "$ac1hi", "$ac1lo", "$ac2hi", "$ac2lo",
-              "$ac3hi", "$ac3lo"
-         );
+            "$ac3hi", "$ac3lo"
+        );
     }
 
     /**
@@ -871,22 +873,23 @@ static void imdct36_mips_fixed(int *out, int *buf, int *in, int *win)
         "sw     %[temp_reg6], 4*4*4(%[buf])                                \n\t"
 
         : [t0] "=&r" (t0), [t1] "=&r" (t1), [t2] "=&r" (t2), [t3] "=&r" (t3),
-          [s0] "=&r" (s0), [s2] "=&r" (s2), [temp_reg1] "=&r" (temp_reg1),
-          [temp_reg2] "=&r" (temp_reg2), [s1] "=&r" (s1), [s3] "=&r" (s3),
-          [temp_reg3] "=&r" (temp_reg3), [temp_reg4] "=&r" (temp_reg4),
-          [temp_reg5] "=&r" (temp_reg5), [temp_reg6] "=&r" (temp_reg6),
-          [out] "+r" (out)
+        [s0] "=&r" (s0), [s2] "=&r" (s2), [temp_reg1] "=&r" (temp_reg1),
+        [temp_reg2] "=&r" (temp_reg2), [s1] "=&r" (s1), [s3] "=&r" (s3),
+        [temp_reg3] "=&r" (temp_reg3), [temp_reg4] "=&r" (temp_reg4),
+        [temp_reg5] "=&r" (temp_reg5), [temp_reg6] "=&r" (temp_reg6),
+        [out] "+r" (out)
         : [tmp] "r" (tmp), [win] "r" (win), [buf] "r" (buf)
         : "memory", "hi", "lo", "$ac1hi", "$ac1lo", "$ac2hi", "$ac2lo",
-          "$ac3hi", "$ac3lo"
+        "$ac3hi", "$ac3lo"
     );
 }
 
 static void ff_imdct36_blocks_mips_fixed(int *out, int *buf, int *in,
-                               int count, int switch_point, int block_type)
+        int count, int switch_point, int block_type)
 {
     int j;
-    for (j=0 ; j < count; j++) {
+    for (j=0 ; j < count; j++)
+    {
         /* apply window & overlap with previous buffer */
 
         /* select window */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Multipart JPEG format
  * Copyright (c) 2000, 2001, 2002, 2003 Fabrice Bellard
  *
@@ -25,7 +25,8 @@
 
 #define BOUNDARY_TAG "ffserver"
 
-typedef struct MPJPEGContext {
+typedef struct MPJPEGContext
+{
     AVClass *class;
     char *boundary_tag;
 } MPJPEGContext;
@@ -55,19 +56,22 @@ static int mpjpeg_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "boundary_tag",    "Boundary tag", offsetof(MPJPEGContext, boundary_tag),   AV_OPT_TYPE_STRING, {.str = BOUNDARY_TAG}, .flags = AV_OPT_FLAG_ENCODING_PARAM },
     { NULL },
 };
 
-static const AVClass mpjpeg_muxer_class = {
+static const AVClass mpjpeg_muxer_class =
+{
     .class_name = "mpjpeg_muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_mpjpeg_muxer = {
+AVOutputFormat ff_mpjpeg_muxer =
+{
     .name              = "mpjpeg",
     .long_name         = NULL_IF_CONFIG_SMALL("MIME multipart JPEG"),
     .mime_type         = "multipart/x-mixed-replace;boundary=" BOUNDARY_TAG,

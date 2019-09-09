@@ -1,4 +1,4 @@
-/* crypto/bio/bio.h */
+﻿/* crypto/bio/bio.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -309,7 +309,8 @@ int BIO_method_type(const BIO *b);
 typedef void bio_info_cb (struct bio_st *, int, const char *, int, long,
                           long);
 
-typedef struct bio_method_st {
+typedef struct bio_method_st
+{
     int type;
     const char *name;
     int (*bwrite) (BIO *, const char *, int);
@@ -322,7 +323,8 @@ typedef struct bio_method_st {
     long (*callback_ctrl) (BIO *, int, bio_info_cb *);
 } BIO_METHOD;
 
-struct bio_st {
+struct bio_st
+{
     BIO_METHOD *method;
     /* bio, mode, argp, argi, argl, ret */
     long (*callback) (struct bio_st *, int, const char *, int, long, long);
@@ -343,7 +345,8 @@ struct bio_st {
 
 DECLARE_STACK_OF(BIO)
 
-typedef struct bio_f_buffer_ctx_struct {
+typedef struct bio_f_buffer_ctx_struct
+{
     /*-
      * Buffers are setup like this:
      *
@@ -372,14 +375,16 @@ typedef int asn1_ps_func (BIO *b, unsigned char **pbuf, int *plen,
 
 # ifndef OPENSSL_NO_SCTP
 /* SCTP parameter structs */
-struct bio_dgram_sctp_sndinfo {
+struct bio_dgram_sctp_sndinfo
+{
     uint16_t snd_sid;
     uint16_t snd_flags;
     uint32_t snd_ppid;
     uint32_t snd_context;
 };
 
-struct bio_dgram_sctp_rcvinfo {
+struct bio_dgram_sctp_rcvinfo
+{
     uint16_t rcv_sid;
     uint16_t rcv_ssn;
     uint16_t rcv_flags;
@@ -389,7 +394,8 @@ struct bio_dgram_sctp_rcvinfo {
     uint32_t rcv_context;
 };
 
-struct bio_dgram_sctp_prinfo {
+struct bio_dgram_sctp_prinfo
+{
     uint16_t pr_policy;
     uint32_t pr_value;
 };
@@ -761,9 +767,9 @@ BIO *BIO_new_dgram_sctp(int fd, int close_flag);
 int BIO_dgram_is_sctp(BIO *bio);
 int BIO_dgram_sctp_notification_cb(BIO *b,
                                    void (*handle_notifications) (BIO *bio,
-                                                                 void
-                                                                 *context,
-                                                                 void *buf),
+                                           void
+                                           *context,
+                                           void *buf),
                                    void *context);
 int BIO_dgram_sctp_wait_for_dry(BIO *b);
 int BIO_dgram_sctp_msg_waiting(BIO *b);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,27 +12,31 @@
 
 #include "webrtc/modules/video_capture/video_capture_impl.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 rtc::scoped_refptr<VideoCaptureModule> VideoCaptureFactory::Create(
-    const char* deviceUniqueIdUTF8) {
+    const char* deviceUniqueIdUTF8)
+{
 #if defined(ANDROID)
-  return nullptr;
+    return nullptr;
 #else
-  return videocapturemodule::VideoCaptureImpl::Create(deviceUniqueIdUTF8);
+    return videocapturemodule::VideoCaptureImpl::Create(deviceUniqueIdUTF8);
 #endif
 }
 
 rtc::scoped_refptr<VideoCaptureModule> VideoCaptureFactory::Create(
-    VideoCaptureExternal*& externalCapture) {
-  return videocapturemodule::VideoCaptureImpl::Create(externalCapture);
+    VideoCaptureExternal*& externalCapture)
+{
+    return videocapturemodule::VideoCaptureImpl::Create(externalCapture);
 }
 
-VideoCaptureModule::DeviceInfo* VideoCaptureFactory::CreateDeviceInfo() {
+VideoCaptureModule::DeviceInfo* VideoCaptureFactory::CreateDeviceInfo()
+{
 #if defined(ANDROID)
-  return nullptr;
+    return nullptr;
 #else
-  return videocapturemodule::VideoCaptureImpl::CreateDeviceInfo();
+    return videocapturemodule::VideoCaptureImpl::CreateDeviceInfo();
 #endif
 }
 

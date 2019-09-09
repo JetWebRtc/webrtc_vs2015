@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Opus decoder using libopus
  * Copyright (c) 2012 Nicolas George
  *
@@ -30,11 +30,16 @@
 #include "mathops.h"
 #include "libopus.h"
 
-struct libopus_context {
+struct libopus_context
+{
     OpusMSDecoder *dec;
     int pre_skip;
 #ifndef OPUS_SET_GAIN
-    union { int i; double d; } gain;
+    union
+    {
+        int i;
+        double d;
+    } gain;
 #endif
 };
 
@@ -52,19 +57,24 @@ static av_cold int libopus_decode_init(AVCodecContext *avc)
     avc->channel_layout = avc->channels > 8 ? 0 :
                           ff_vorbis_channel_layouts[avc->channels - 1];
 
-    if (avc->extradata_size >= OPUS_HEAD_SIZE) {
+    if (avc->extradata_size >= OPUS_HEAD_SIZE)
+    {
         opus->pre_skip = AV_RL16(avc->extradata + 10);
         gain_db     = sign_extend(AV_RL16(avc->extradata + 16), 16);
         channel_map = AV_RL8 (avc->extradata + 18);
     }
-    if (avc->extradata_size >= OPUS_HEAD_SIZE + 2 + avc->channels) {
+    if (avc->extradata_size >= OPUS_HEAD_SIZE + 2 + avc->channels)
+    {
         nb_streams = avc->extradata[OPUS_HEAD_SIZE + 0];
         nb_coupled = avc->extradata[OPUS_HEAD_SIZE + 1];
         if (nb_streams + nb_coupled != avc->channels)
             av_log(avc, AV_LOG_WARNING, "Inconsistent channel mapping.\n");
         mapping = avc->extradata + OPUS_HEAD_SIZE + 2;
-    } else {
-        if (avc->channels > 2 || channel_map) {
+    }
+    else
+    {
+        if (avc->channels > 2 || channel_map)
+        {
             av_log(avc, AV_LOG_ERROR,
                    "No channel mapping for %d channels.\n", avc->channels);
             return AVERROR(EINVAL);
@@ -74,7 +84,8 @@ static av_cold int libopus_decode_init(AVCodecContext *avc)
         mapping    = mapping_arr;
     }
 
-    if (avc->channels > 2 && avc->channels <= 8) {
+    if (avc->channels > 2 && avc->channels <= 8)
+    {
         const uint8_t *vorbis_offset = ff_vorbis_channel_layout_offsets[avc->channels - 1];
         int ch;
 
@@ -85,9 +96,10 @@ static av_cold int libopus_decode_init(AVCodecContext *avc)
     }
 
     opus->dec = opus_multistream_decoder_create(avc->sample_rate, avc->channels,
-                                                nb_streams, nb_coupled,
-                                                mapping, &ret);
-    if (!opus->dec) {
+                nb_streams, nb_coupled,
+                mapping, &ret);
+    if (!opus->dec)
+    {
         av_log(avc, AV_LOG_ERROR, "Unable to create decoder: %s\n",
                opus_strerror(ret));
         return ff_opus_error_to_averror(ret);
@@ -141,10 +153,11 @@ static int libopus_decode(AVCodecContext *avc, void *data,
                                              frame->nb_samples, 0);
     else
         nb_samples = opus_multistream_decode_float(opus->dec, pkt->data, pkt->size,
-                                                   (float *)frame->data[0],
-                                                   frame->nb_samples, 0);
+                     (float *)frame->data[0],
+                     frame->nb_samples, 0);
 
-    if (nb_samples < 0) {
+    if (nb_samples < 0)
+    {
         av_log(avc, AV_LOG_ERROR, "Decoding error: %s\n",
                opus_strerror(nb_samples));
         return ff_opus_error_to_averror(nb_samples);
@@ -153,11 +166,14 @@ static int libopus_decode(AVCodecContext *avc, void *data,
 #ifndef OPUS_SET_GAIN
     {
         int i = avc->channels * nb_samples;
-        if (avc->sample_fmt == AV_SAMPLE_FMT_FLT) {
+        if (avc->sample_fmt == AV_SAMPLE_FMT_FLT)
+        {
             float *pcm = (float *)frame->data[0];
             for (; i > 0; i--, pcm++)
                 *pcm = av_clipf(*pcm * opus->gain.d, -1, 1);
-        } else {
+        }
+        else
+        {
             int16_t *pcm = (int16_t *)frame->data[0];
             for (; i > 0; i--, pcm++)
                 *pcm = av_clip_int16(((int64_t)opus->gain.i * *pcm) >> 16);
@@ -181,7 +197,8 @@ static void libopus_flush(AVCodecContext *avc)
     avc->internal->skip_samples = opus->pre_skip;
 }
 
-AVCodec ff_libopus_decoder = {
+AVCodec ff_libopus_decoder =
+{
     .name           = "libopus",
     .long_name      = NULL_IF_CONFIG_SMALL("libopus Opus"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -192,7 +209,9 @@ AVCodec ff_libopus_decoder = {
     .decode         = libopus_decode,
     .flush          = libopus_flush,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_FLT,
-                                                     AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_FLT,
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
 };

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -41,7 +41,8 @@
 
 #include "decoder_context.h"
 #include "cabac_decoder.h"
-namespace WelsDec {
+namespace WelsDec
+{
 int32_t ParseEndOfSliceCabac (PWelsDecoderContext pCtx, uint32_t& uiBinVal);
 int32_t ParseSkipFlagCabac (PWelsDecoderContext pCtx, PWelsNeighAvail pNeighAvail, uint32_t& uiSkip);
 int32_t ParseMBTypeISliceCabac (PWelsDecoderContext pCtx, PWelsNeighAvail pNeighAvail, uint32_t& uiBinVal);
@@ -68,8 +69,8 @@ int32_t ParseResidualBlockCabac (PWelsNeighAvail pNeighAvail, uint8_t* pNonZeroC
                                  int32_t index, int32_t iMaxNumCoeff, const uint8_t* pScanTable, int32_t iResProperty, int16_t* sTCoeff, uint8_t uiQp,
                                  PWelsDecoderContext pCtx);
 int32_t ParseResidualBlockCabac8x8 (PWelsNeighAvail pNeighAvail, uint8_t* pNonZeroCountCache, SBitStringAux* pBsAux,
-                                 int32_t index, int32_t iMaxNumCoeff, const uint8_t* pScanTable, int32_t iResProperty, int16_t* sTCoeff, uint8_t uiQp,
-                                 PWelsDecoderContext pCtx);
+                                    int32_t index, int32_t iMaxNumCoeff, const uint8_t* pScanTable, int32_t iResProperty, int16_t* sTCoeff, uint8_t uiQp,
+                                    PWelsDecoderContext pCtx);
 int32_t ParseIPCMInfoCabac (PWelsDecoderContext pCtx);
 }
 //#pragma pack()

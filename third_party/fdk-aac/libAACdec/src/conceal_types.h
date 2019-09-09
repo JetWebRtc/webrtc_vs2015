@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,46 +101,46 @@ amm-info@iis.fraunhofer.de
 
 #define CONCEAL_MAX_NUM_FADE_FACTORS      ( 16 )
 
- #define FIXP_CNCL        FIXP_DBL
- #define FL2FXCONST_CNCL  FL2FXCONST_DBL
- #define FX_DBL2FX_CNCL
- #define FX_CNCL2FX_DBL
- #define CNCL_FRACT_BITS  DFRACT_BITS
+#define FIXP_CNCL        FIXP_DBL
+#define FL2FXCONST_CNCL  FL2FXCONST_DBL
+#define FX_DBL2FX_CNCL
+#define FX_CNCL2FX_DBL
+#define CNCL_FRACT_BITS  DFRACT_BITS
 
 /* Warning: Do not ever change these values. */
 typedef enum
 {
-  ConcealMethodNone  = -1,
-  ConcealMethodMute  =  0,
-  ConcealMethodNoise =  1,
-  ConcealMethodInter =  2,
-  ConcealMethodTonal =  3
+    ConcealMethodNone  = -1,
+    ConcealMethodMute  =  0,
+    ConcealMethodNoise =  1,
+    ConcealMethodInter =  2,
+    ConcealMethodTonal =  3
 
 } CConcealmentMethod;
 
 
 typedef enum
 {
-  ConcealState_Ok,
-  ConcealState_Single,
-  ConcealState_FadeIn,
-  ConcealState_Mute,
-  ConcealState_FadeOut
+    ConcealState_Ok,
+    ConcealState_Single,
+    ConcealState_FadeIn,
+    ConcealState_Mute,
+    ConcealState_FadeOut
 
 } CConcealmentState;
 
 
 typedef struct
 {
-  FIXP_SGL  fadeOutFactor[CONCEAL_MAX_NUM_FADE_FACTORS];
-  FIXP_SGL  fadeInFactor [CONCEAL_MAX_NUM_FADE_FACTORS];
+    FIXP_SGL  fadeOutFactor[CONCEAL_MAX_NUM_FADE_FACTORS];
+    FIXP_SGL  fadeInFactor [CONCEAL_MAX_NUM_FADE_FACTORS];
 
-  CConcealmentMethod  method;
+    CConcealmentMethod  method;
 
-  int  numFadeOutFrames;
-  int  numFadeInFrames;
-  int  numMuteReleaseFrames;
-  int  comfortNoiseLevel;
+    int  numFadeOutFrames;
+    int  numFadeInFrames;
+    int  numMuteReleaseFrames;
+    int  comfortNoiseLevel;
 
 } CConcealParams;
 
@@ -148,29 +148,29 @@ typedef struct
 
 typedef struct
 {
-  CConcealParams *pConcealParams;
+    CConcealParams *pConcealParams;
 
-  FIXP_CNCL spectralCoefficient[1024];
-  SHORT     specScale[8];
+    FIXP_CNCL spectralCoefficient[1024];
+    SHORT     specScale[8];
 
-  INT    iRandomPhase;
-  INT    prevFrameOk[2];
-  INT    cntFadeFrames;
-  INT    cntValidFrames;
+    INT    iRandomPhase;
+    INT    prevFrameOk[2];
+    INT    cntFadeFrames;
+    INT    cntValidFrames;
 
-  SHORT aRvlcPreviousScaleFactor[RVLC_MAX_SFB];  /* needed once per channel */
-  UCHAR aRvlcPreviousCodebook[RVLC_MAX_SFB];     /* needed once per channel */
-  SCHAR rvlcPreviousScaleFactorOK;
-  SCHAR rvlcPreviousBlockType;
+    SHORT aRvlcPreviousScaleFactor[RVLC_MAX_SFB];  /* needed once per channel */
+    UCHAR aRvlcPreviousCodebook[RVLC_MAX_SFB];     /* needed once per channel */
+    SCHAR rvlcPreviousScaleFactorOK;
+    SCHAR rvlcPreviousBlockType;
 
 
-  SCHAR  lastRenderMode;
+    SCHAR  lastRenderMode;
 
-  UCHAR  windowShape;
-  UCHAR  windowSequence;
-  UCHAR  lastWinGrpLen;
+    UCHAR  windowShape;
+    UCHAR  windowSequence;
+    UCHAR  lastWinGrpLen;
 
-  CConcealmentState concealState;
+    CConcealmentState concealState;
 
 } CConcealmentInfo;
 

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 #include "encode_mb_aux.h"
 #include "wels_func_ptr_def.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 #define ME_REFINE_BUF_STRIDE       32
 #define ME_REFINE_BUF_WIDTH_BLK4   8
 #define ME_REFINE_BUF_WIDTH_BLK8   16
@@ -83,7 +84,8 @@ extern const int8_t g_kiMapModeIntraChroma[7];
 /////////////////////////////
 
 // if we want keep total sizeof(SWelsMD) <= 256, we maybe need to seperate three member of SWelsME.
-typedef struct TagWelsMD {
+typedef struct TagWelsMD
+{
 int32_t         iLambda;
 uint16_t*       pMvdCost;
 
@@ -104,20 +106,22 @@ int32_t         iBlock8x8StaticIdc[4];
 
 //NO B frame in our Wels, we can ignore list1
 
-struct {
-  SWelsME       sMe16x16;               //adjust each SWelsME for 8 D-word!
-  SWelsME       sMe8x8[4];
-  SWelsME       sMe16x8[2];
-  SWelsME       sMe8x16[2];
-  SWelsME       sMe4x4[4][4];
-  SWelsME       sMe8x4[4][2];
-  SWelsME       sMe4x8[4][2];
+struct
+{
+    SWelsME       sMe16x16;               //adjust each SWelsME for 8 D-word!
+    SWelsME       sMe8x8[4];
+    SWelsME       sMe16x8[2];
+    SWelsME       sMe8x16[2];
+    SWelsME       sMe4x4[4][4];
+    SWelsME       sMe8x4[4][2];
+    SWelsME       sMe4x8[4][2];
 //  SMVUnitXY     i_mvbs[MB_BLOCK8x8_NUM];        //scaled MVB
 } sMe;
 
 } SWelsMD;
 
-typedef struct TagMeRefinePointer {
+typedef struct TagMeRefinePointer
+{
 uint8_t* pHalfPixH;
 uint8_t* pHalfPixV;
 uint8_t* pHalfPixHV;

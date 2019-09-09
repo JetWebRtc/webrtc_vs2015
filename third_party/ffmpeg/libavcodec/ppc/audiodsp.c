@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -38,7 +38,7 @@
 #if HAVE_ALTIVEC
 
 static int32_t scalarproduct_int16_altivec(const int16_t *v1, const int16_t *v2,
-                                           int order)
+        int order)
 {
     int i;
     LOAD_ZERO;
@@ -46,7 +46,8 @@ static int32_t scalarproduct_int16_altivec(const int16_t *v1, const int16_t *v2,
     register vec_s32 res = vec_splat_s32(0), t;
     int32_t ires;
 
-    for (i = 0; i < order; i += 8) {
+    for (i = 0; i < order; i += 8)
+    {
         vec1 = vec_unaligned_load(v1);
         t    = vec_msum(vec1, vec_ld(0, v2), zero_s32v);
         res  = vec_sums(t, res);

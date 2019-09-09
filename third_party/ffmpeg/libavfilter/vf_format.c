@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Bobby Bingham
  *
  * This file is part of FFmpeg.
@@ -35,7 +35,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct FormatContext {
+typedef struct FormatContext
+{
     const AVClass *class;
     char *pix_fmts;
 
@@ -60,14 +61,16 @@ static av_cold int init(AVFilterContext *ctx)
     int i;
     int ret;
 
-    if (!s->pix_fmts) {
+    if (!s->pix_fmts)
+    {
         av_log(ctx, AV_LOG_ERROR, "Empty output format string.\n");
         return AVERROR(EINVAL);
     }
 
     /* count the formats */
     cur = s->pix_fmts;
-    while ((cur = strchr(cur, '|'))) {
+    while ((cur = strchr(cur, '|')))
+    {
         nb_formats++;
         if (*cur)
             cur++;
@@ -79,7 +82,8 @@ static av_cold int init(AVFilterContext *ctx)
 
     /* parse the list of formats */
     cur = s->pix_fmts;
-    for (i = 0; i < nb_formats; i++) {
+    for (i = 0; i < nb_formats; i++)
+    {
         sep = strchr(cur, '|');
         if (sep)
             *sep++ = 0;
@@ -91,7 +95,8 @@ static av_cold int init(AVFilterContext *ctx)
     }
     s->formats[nb_formats] = AV_PIX_FMT_NONE;
 
-    if (!strcmp(ctx->filter->name, "noformat")) {
+    if (!strcmp(ctx->filter->name, "noformat"))
+    {
         const AVPixFmtDescriptor *desc = NULL;
         enum AVPixelFormat *formats_allowed;
         int nb_formats_lavu = 0, nb_formats_allowed = 0;
@@ -106,10 +111,12 @@ static av_cold int init(AVFilterContext *ctx)
 
         /* for each format known to lavu, check if it's in the list of
          * forbidden formats */
-        while ((desc = av_pix_fmt_desc_next(desc))) {
+        while ((desc = av_pix_fmt_desc_next(desc)))
+        {
             enum AVPixelFormat pix_fmt = av_pix_fmt_desc_get_id(desc);
 
-            for (i = 0; i < nb_formats; i++) {
+            for (i = 0; i < nb_formats; i++)
+            {
                 if (s->formats[i] == pix_fmt)
                     break;
             }
@@ -139,7 +146,8 @@ static int query_formats(AVFilterContext *ctx)
 
 
 #define OFFSET(x) offsetof(FormatContext, x)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "pix_fmts", "A '|'-separated list of pixel formats", OFFSET(pix_fmts), AV_OPT_TYPE_STRING, .flags = AV_OPT_FLAG_VIDEO_PARAM },
     { NULL }
 };
@@ -149,7 +157,8 @@ static const AVOption options[] = {
 #define format_options options
 AVFILTER_DEFINE_CLASS(format);
 
-static const AVFilterPad avfilter_vf_format_inputs[] = {
+static const AVFilterPad avfilter_vf_format_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -158,7 +167,8 @@ static const AVFilterPad avfilter_vf_format_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_format_outputs[] = {
+static const AVFilterPad avfilter_vf_format_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO
@@ -166,7 +176,8 @@ static const AVFilterPad avfilter_vf_format_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_format = {
+AVFilter ff_vf_format =
+{
     .name          = "format",
     .description   = NULL_IF_CONFIG_SMALL("Convert the input video to one of the specified pixel formats."),
 
@@ -188,7 +199,8 @@ AVFilter ff_vf_format = {
 #define noformat_options options
 AVFILTER_DEFINE_CLASS(noformat);
 
-static const AVFilterPad avfilter_vf_noformat_inputs[] = {
+static const AVFilterPad avfilter_vf_noformat_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -197,7 +209,8 @@ static const AVFilterPad avfilter_vf_noformat_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_noformat_outputs[] = {
+static const AVFilterPad avfilter_vf_noformat_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO
@@ -205,7 +218,8 @@ static const AVFilterPad avfilter_vf_noformat_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_noformat = {
+AVFilter ff_vf_noformat =
+{
     .name          = "noformat",
     .description   = NULL_IF_CONFIG_SMALL("Force libavfilter not to use any of the specified pixel formats for the input to the next filter."),
 

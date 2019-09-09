@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Vidvox Hap utility functions
  * Copyright (C) 2015 Tom Butterworth <bangnoise@gmail.com>
  *
@@ -28,16 +28,22 @@
 int ff_hap_set_chunk_count(HapContext *ctx, int count, int first_in_frame)
 {
     int ret = 0;
-    if (first_in_frame == 1 && ctx->chunk_count != count) {
+    if (first_in_frame == 1 && ctx->chunk_count != count)
+    {
         int ret = av_reallocp_array(&ctx->chunks, count, sizeof(HapChunk));
         if (ret == 0)
             ret = av_reallocp_array(&ctx->chunk_results, count, sizeof(int));
-        if (ret < 0) {
+        if (ret < 0)
+        {
             ctx->chunk_count = 0;
-        } else {
+        }
+        else
+        {
             ctx->chunk_count = count;
         }
-    } else if (ctx->chunk_count != count) {
+    }
+    else if (ctx->chunk_count != count)
+    {
         /* If this is not the first chunk count calculated for a frame and a
          * different count has already been encountered, then reject the frame:
          * each table in the Decode Instructions Container must describe the

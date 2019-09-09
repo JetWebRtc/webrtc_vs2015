@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,7 +21,8 @@
 #include "webrtc/modules/audio_conference_mixer/source/memory_pool_posix.h"
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 template<class MemoryType>
 class MemoryPool
@@ -60,7 +61,7 @@ MemoryPool<MemoryType>::~MemoryPool()
 
 template<class MemoryType> int32_t
 MemoryPool<MemoryType>::CreateMemoryPool(MemoryPool*&   memoryPool,
-                                         uint32_t initialPoolSize)
+        uint32_t initialPoolSize)
 {
     memoryPool = new MemoryPool(initialPoolSize);
     if(memoryPool == NULL)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVID Meridien decoder
  *
  * Copyright (c) 2012 Carl Eugen Hoyos
@@ -41,26 +41,35 @@ static int avui_decode_frame(AVCodecContext *avctx, void *data,
     int transparent, interlaced = 1, skip, opaque_length, i, j, k;
     uint32_t extradata_size = avctx->extradata_size;
 
-    while (extradata_size >= 24) {
+    while (extradata_size >= 24)
+    {
         uint32_t atom_size = AV_RB32(extradata);
-        if (!memcmp(&extradata[4], "APRGAPRG0001", 12)) {
+        if (!memcmp(&extradata[4], "APRGAPRG0001", 12))
+        {
             interlaced = extradata[19] != 1;
             break;
         }
-        if (atom_size && atom_size <= extradata_size) {
+        if (atom_size && atom_size <= extradata_size)
+        {
             extradata      += atom_size;
             extradata_size -= atom_size;
-        } else {
+        }
+        else
+        {
             break;
         }
     }
-    if (avctx->height == 486) {
+    if (avctx->height == 486)
+    {
         skip = 10;
-    } else {
+    }
+    else
+    {
         skip = 16;
     }
     opaque_length = 2 * avctx->width * (avctx->height + skip) + 4 * interlaced;
-    if (avpkt->size < opaque_length) {
+    if (avpkt->size < opaque_length)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -74,28 +83,35 @@ static int avui_decode_frame(AVCodecContext *avctx, void *data,
     pic->key_frame = 1;
     pic->pict_type = AV_PICTURE_TYPE_I;
 
-    if (!interlaced) {
+    if (!interlaced)
+    {
         src  += avctx->width * skip;
         srca += avctx->width * skip;
     }
 
-    for (i = 0; i < interlaced + 1; i++) {
+    for (i = 0; i < interlaced + 1; i++)
+    {
         src  += avctx->width * skip;
         srca += avctx->width * skip;
-        if (interlaced && avctx->height == 486) {
+        if (interlaced && avctx->height == 486)
+        {
             y = pic->data[0] + (1 - i) * pic->linesize[0];
             u = pic->data[1] + (1 - i) * pic->linesize[1];
             v = pic->data[2] + (1 - i) * pic->linesize[2];
             a = pic->data[3] + (1 - i) * pic->linesize[3];
-        } else {
+        }
+        else
+        {
             y = pic->data[0] + i * pic->linesize[0];
             u = pic->data[1] + i * pic->linesize[1];
             v = pic->data[2] + i * pic->linesize[2];
             a = pic->data[3] + i * pic->linesize[3];
         }
 
-        for (j = 0; j < avctx->height >> interlaced; j++) {
-            for (k = 0; k < avctx->width >> 1; k++) {
+        for (j = 0; j < avctx->height >> interlaced; j++)
+        {
+            for (k = 0; k < avctx->width >> 1; k++)
+            {
                 u[    k    ] = *src++;
                 y[2 * k    ] = *src++;
                 a[2 * k    ] = 0xFF - (transparent ? *srca++ : 0);
@@ -119,7 +135,8 @@ static int avui_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_avui_decoder = {
+AVCodec ff_avui_decoder =
+{
     .name         = "avui",
     .long_name    = NULL_IF_CONFIG_SMALL("Avid Meridien Uncompressed"),
     .type         = AVMEDIA_TYPE_VIDEO,

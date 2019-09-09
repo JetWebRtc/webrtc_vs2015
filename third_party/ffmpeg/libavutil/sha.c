@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2009 Konstantin Shishkov
  * based on public domain SHA-1 code by Steve Reid <steve@edmweb.com>
@@ -31,7 +31,8 @@
 #include "mem.h"
 
 /** hash context */
-typedef struct AVSHA {
+typedef struct AVSHA
+{
     uint8_t  digest_len;  ///< digest length in 32-bit words
     uint64_t count;       ///< number of bytes in buffer
     uint8_t  buffer[64];  ///< 512-bit buffer of input values used in hash updating
@@ -72,7 +73,8 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     d = state[3];
     e = state[4];
 #if CONFIG_SMALL
-    for (i = 0; i < 80; i++) {
+    for (i = 0; i < 80; i++)
+    {
         int t;
         if (i < 16)
             t = AV_RB32(buffer + 4 * i);
@@ -80,12 +82,15 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
             t = rol(block[i-3] ^ block[i-8] ^ block[i-14] ^ block[i-16], 1);
         block[i] = t;
         t += e + rol(a, 5);
-        if (i < 40) {
+        if (i < 40)
+        {
             if (i < 20)
                 t += ((b&(c^d))^d)     + 0x5A827999;
             else
                 t += ( b^c     ^d)     + 0x6ED9EBA1;
-        } else {
+        }
+        else
+        {
             if (i < 60)
                 t += (((b|c)&d)|(b&c)) + 0x8F1BBCDC;
             else
@@ -108,7 +113,9 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     i += 5
 
     i = 0;
-    R1_0; R1_0; R1_0;
+    R1_0;
+    R1_0;
+    R1_0;
     R0(a, b, c, d, e, 15);
     R1(e, a, b, c, d, 16);
     R1(d, e, a, b, c, 17);
@@ -124,7 +131,10 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     i += 5
 
     i = 20;
-    R1_20; R1_20; R1_20; R1_20;
+    R1_20;
+    R1_20;
+    R1_20;
+    R1_20;
 
 #define R1_40 \
     R3(a, b, c, d, e, 0 + i); \
@@ -134,7 +144,10 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     R3(b, c, d, e, a, 4 + i); \
     i += 5
 
-    R1_40; R1_40; R1_40; R1_40;
+    R1_40;
+    R1_40;
+    R1_40;
+    R1_40;
 
 #define R1_60 \
     R4(a, b, c, d, e, 0 + i); \
@@ -144,7 +157,10 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     R4(b, c, d, e, a, 4 + i); \
     i += 5
 
-    R1_60; R1_60; R1_60; R1_60;
+    R1_60;
+    R1_60;
+    R1_60;
+    R1_60;
 #endif
     state[0] += a;
     state[1] += b;
@@ -153,7 +169,8 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
     state[4] += e;
 }
 
-static const uint32_t K256[64] = {
+static const uint32_t K256[64] =
+{
     0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
     0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
     0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
@@ -214,7 +231,8 @@ static void sha256_transform(uint32_t *state, const uint8_t buffer[64])
     g = state[6];
     h = state[7];
 #if CONFIG_SMALL
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         uint32_t T2;
         if (i < 16)
             T1 = blk0(i);
@@ -244,7 +262,8 @@ static void sha256_transform(uint32_t *state, const uint8_t buffer[64])
     ROUND256_0_TO_15(c, d, e, f, g, h, a, b); \
     ROUND256_0_TO_15(b, c, d, e, f, g, h, a)
 
-    R256_0; R256_0;
+    R256_0;
+    R256_0;
 
 #define R256_16 \
     ROUND256_16_TO_63(a, b, c, d, e, f, g, h); \
@@ -256,8 +275,12 @@ static void sha256_transform(uint32_t *state, const uint8_t buffer[64])
     ROUND256_16_TO_63(c, d, e, f, g, h, a, b); \
     ROUND256_16_TO_63(b, c, d, e, f, g, h, a)
 
-    R256_16; R256_16; R256_16;
-    R256_16; R256_16; R256_16;
+    R256_16;
+    R256_16;
+    R256_16;
+    R256_16;
+    R256_16;
+    R256_16;
 #endif
     state[0] += a;
     state[1] += b;
@@ -273,7 +296,8 @@ static void sha256_transform(uint32_t *state, const uint8_t buffer[64])
 av_cold int av_sha_init(AVSHA *ctx, int bits)
 {
     ctx->digest_len = bits >> 5;
-    switch (bits) {
+    switch (bits)
+    {
     case 160: // SHA-1
         ctx->state[0] = 0x67452301;
         ctx->state[1] = 0xEFCDAB89;
@@ -318,21 +342,25 @@ void av_sha_update(AVSHA* ctx, const uint8_t* data, unsigned int len)
     j = ctx->count & 63;
     ctx->count += len;
 #if CONFIG_SMALL
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         ctx->buffer[j++] = data[i];
-        if (64 == j) {
+        if (64 == j)
+        {
             ctx->transform(ctx->state, ctx->buffer);
             j = 0;
         }
     }
 #else
-    if ((j + len) > 63) {
+    if ((j + len) > 63)
+    {
         memcpy(&ctx->buffer[j], data, (i = 64 - j));
         ctx->transform(ctx->state, ctx->buffer);
         for (; i + 63 < len; i += 64)
             ctx->transform(ctx->state, &data[i]);
         j = 0;
-    } else
+    }
+    else
         i = 0;
     memcpy(&ctx->buffer[j], &data[i], len - i);
 #endif
@@ -361,9 +389,11 @@ int main(void)
     unsigned char digest[32];
     static const int lengths[3] = { 160, 224, 256 };
 
-    for (j = 0; j < 3; j++) {
+    for (j = 0; j < 3; j++)
+    {
         printf("Testing SHA-%d\n", lengths[j]);
-        for (k = 0; k < 3; k++) {
+        for (k = 0; k < 3; k++)
+        {
             av_sha_init(&ctx, lengths[j]);
             if (k == 0)
                 av_sha_update(&ctx, "abc", 3);
@@ -377,7 +407,8 @@ int main(void)
                 printf("%02X", digest[i]);
             putchar('\n');
         }
-        switch (j) {
+        switch (j)
+        {
         case 0:
             //test vectors (from FIPS PUB 180-1)
             printf("A9993E36 4706816A BA3E2571 7850C26C 9CD0D89D\n"

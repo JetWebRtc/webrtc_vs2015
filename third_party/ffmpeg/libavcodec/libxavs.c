@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVS encoding using the xavs library
  * Copyright (C) 2010 Amanda, Y.N. Wu <amanda11192003@gmail.com>
  *
@@ -38,7 +38,8 @@
 #define XAVS_PART_P8X8 0x010 /* Analyze p16x8, p8x16 and p8x8 */
 #define XAVS_PART_B8X8 0x100 /* Analyze b16x8, b*/
 
-typedef struct XavsContext {
+typedef struct XavsContext
+{
     AVClass        *class;
     xavs_param_t    params;
     xavs_t         *enc;
@@ -63,7 +64,8 @@ typedef struct XavsContext {
 
 static void XAVS_log(void *p, int level, const char *fmt, va_list args)
 {
-    static const int level_map[] = {
+    static const int level_map[] =
+    {
         [XAVS_LOG_ERROR]   = AV_LOG_ERROR,
         [XAVS_LOG_WARNING] = AV_LOG_WARNING,
         [XAVS_LOG_INFO]    = AV_LOG_INFO,
@@ -94,13 +96,15 @@ static int encode_nals(AVCodecContext *ctx, AVPacket *pkt,
     p = pkt->data;
 
     /* Write the SEI as part of the first frame. */
-    if (x4->sei_size > 0 && nnal > 0) {
+    if (x4->sei_size > 0 && nnal > 0)
+    {
         memcpy(p, x4->sei, x4->sei_size);
         p += x4->sei_size;
         x4->sei_size = 0;
     }
 
-    for (i = 0; i < nnal; i++) {
+    for (i = 0; i < nnal; i++)
+    {
         s = xavs_nal_encode(p, &size, 1, nals + i);
         if (s < 0)
             return -1;
@@ -123,11 +127,13 @@ static int XAVS_frame(AVCodecContext *avctx, AVPacket *pkt,
     x4->pic.img.i_csp   = XAVS_CSP_I420;
     x4->pic.img.i_plane = 3;
 
-    if (frame) {
-       for (i = 0; i < 3; i++) {
+    if (frame)
+    {
+        for (i = 0; i < 3; i++)
+        {
             x4->pic.img.plane[i] = frame->data[i];
             x4->pic.img.i_stride[i] = frame->linesize[i];
-       }
+        }
 
         x4->pic.i_pts  = frame->pts;
         x4->pic.i_type = XAVS_TYPE_AUTO;
@@ -136,15 +142,17 @@ static int XAVS_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     if (xavs_encoder_encode(x4->enc, &nal, &nnal,
                             frame? &x4->pic: NULL, &pic_out) < 0)
-    return -1;
+        return -1;
 
     ret = encode_nals(avctx, pkt, nal, nnal);
 
     if (ret < 0)
         return -1;
 
-    if (!ret) {
-        if (!frame && !(x4->end_of_stream)) {
+    if (!ret)
+    {
+        if (!frame && !(x4->end_of_stream))
+        {
             if ((ret = ff_alloc_packet2(avctx, pkt, 4, 0)) < 0)
                 return ret;
 
@@ -153,7 +161,7 @@ static int XAVS_frame(AVCodecContext *avctx, AVPacket *pkt,
             pkt->data[2] = 0x01;
             pkt->data[3] = 0xb1;
             pkt->dts = 2*x4->pts_buffer[(x4->out_frame_count-1)%(avctx->max_b_frames+1)] -
-                         x4->pts_buffer[(x4->out_frame_count-2)%(avctx->max_b_frames+1)];
+                       x4->pts_buffer[(x4->out_frame_count-2)%(avctx->max_b_frames+1)];
             x4->end_of_stream = END_OF_STREAM;
             *got_packet = 1;
         }
@@ -161,20 +169,23 @@ static int XAVS_frame(AVCodecContext *avctx, AVPacket *pkt,
     }
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pts = pic_out.i_pts;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     pkt->pts = pic_out.i_pts;
-    if (avctx->has_b_frames) {
+    if (avctx->has_b_frames)
+    {
         if (!x4->out_frame_count)
             pkt->dts = pkt->pts - (x4->pts_buffer[1] - x4->pts_buffer[0]);
         else
             pkt->dts = x4->pts_buffer[(x4->out_frame_count-1)%(avctx->max_b_frames+1)];
-    } else
+    }
+    else
         pkt->dts = pkt->pts;
 
-    switch (pic_out.i_type) {
+    switch (pic_out.i_type)
+    {
     case XAVS_TYPE_IDR:
     case XAVS_TYPE_I:
         pict_type = AV_PICTURE_TYPE_I;
@@ -190,26 +201,27 @@ FF_ENABLE_DEPRECATION_WARNINGS
         pict_type = AV_PICTURE_TYPE_NONE;
     }
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = pict_type;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     /* There is no IDR frame in AVS JiZhun */
     /* Sequence header is used as a flag */
-    if (pic_out.i_type == XAVS_TYPE_I) {
+    if (pic_out.i_type == XAVS_TYPE_I)
+    {
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+        FF_DISABLE_DEPRECATION_WARNINGS
         avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+        FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         pkt->flags |= AV_PKT_FLAG_KEY;
     }
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->quality = (pic_out.i_qpplus1 - 1) * FF_QP2LAMBDA;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     ff_side_data_set_encoder_stats(pkt, (pic_out.i_qpplus1 - 1) * FF_QP2LAMBDA, NULL, 0, pict_type);
@@ -243,20 +255,27 @@ static av_cold int XAVS_init(AVCodecContext *avctx)
     x4->params.pf_log               = XAVS_log;
     x4->params.p_log_private        = avctx;
     x4->params.i_keyint_max         = avctx->gop_size;
-    if (avctx->bit_rate) {
+    if (avctx->bit_rate)
+    {
         x4->params.rc.i_bitrate   = avctx->bit_rate / 1000;
         x4->params.rc.i_rc_method = XAVS_RC_ABR;
     }
     x4->params.rc.i_vbv_buffer_size = avctx->rc_buffer_size / 1000;
     x4->params.rc.i_vbv_max_bitrate = avctx->rc_max_rate    / 1000;
     x4->params.rc.b_stat_write      = avctx->flags & AV_CODEC_FLAG_PASS1;
-    if (avctx->flags & AV_CODEC_FLAG_PASS2) {
+    if (avctx->flags & AV_CODEC_FLAG_PASS2)
+    {
         x4->params.rc.b_stat_read = 1;
-    } else {
-        if (x4->crf >= 0) {
+    }
+    else
+    {
+        if (x4->crf >= 0)
+        {
             x4->params.rc.i_rc_method   = XAVS_RC_CRF;
             x4->params.rc.f_rf_constant = x4->crf;
-        } else if (x4->cqp >= 0) {
+        }
+        else if (x4->cqp >= 0)
+        {
             x4->params.rc.i_rc_method   = XAVS_RC_CQP;
             x4->params.rc.i_qp_constant = x4->cqp;
         }
@@ -280,9 +299,11 @@ static av_cold int XAVS_init(AVCodecContext *avctx)
         x4->params.rc.f_complexity_blur = x4->cplxblur;
 
 #if FF_API_MOTION_EST
-FF_DISABLE_DEPRECATION_WARNINGS
-    if (x4->motion_est < 0) {
-        switch (avctx->me_method) {
+    FF_DISABLE_DEPRECATION_WARNINGS
+    if (x4->motion_est < 0)
+    {
+        switch (avctx->me_method)
+        {
         case  ME_EPZS:
             x4->params.analyse.i_me_method = XAVS_ME_DIA;
             break;
@@ -302,7 +323,7 @@ FF_DISABLE_DEPRECATION_WARNINGS
             x4->params.analyse.i_me_method = XAVS_ME_HEX;
         }
     }
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     x4->params.i_bframe          = avctx->max_b_frames;
@@ -321,7 +342,7 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
     x4->params.i_scenecut_threshold        = avctx->scenechange_threshold;
 
-   // x4->params.b_deblocking_filter       = avctx->flags & AV_CODEC_FLAG_LOOP_FILTER;
+    // x4->params.b_deblocking_filter       = avctx->flags & AV_CODEC_FLAG_LOOP_FILTER;
 
     x4->params.rc.i_qp_min                 = avctx->qmin;
     x4->params.rc.i_qp_max                 = avctx->qmax;
@@ -359,10 +380,12 @@ FF_ENABLE_DEPRECATION_WARNINGS
             (float)avctx->bit_rate_tolerance / avctx->bit_rate;
 
     if ((avctx->rc_buffer_size) &&
-        (avctx->rc_initial_buffer_occupancy <= avctx->rc_buffer_size)) {
+            (avctx->rc_initial_buffer_occupancy <= avctx->rc_buffer_size))
+    {
         x4->params.rc.f_vbv_buffer_init =
             (float)avctx->rc_initial_buffer_occupancy / avctx->rc_buffer_size;
-    } else
+    }
+    else
         x4->params.rc.f_vbv_buffer_init = 0.9;
 
     /* TAG:do we have MB tree RC method */
@@ -388,7 +411,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
     /* TAG: Do we have GLOBAL HEADER in AVS */
     /* We Have PPS and SPS in AVS */
-    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER && 0) {
+    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER && 0)
+    {
         xavs_nal_t *nal;
         int nnal, s, i, size;
         uint8_t *p;
@@ -396,9 +420,11 @@ FF_ENABLE_DEPRECATION_WARNINGS
         s = xavs_encoder_headers(x4->enc, &nal, &nnal);
 
         avctx->extradata = p = av_malloc(s);
-        for (i = 0; i < nnal; i++) {
+        for (i = 0; i < nnal; i++)
+        {
             /* Don't put the SEI in extradata. */
-            if (nal[i].i_type == NAL_SEI) {
+            if (nal[i].i_type == NAL_SEI)
+            {
                 x4->sei = av_malloc( 5 + nal[i].i_payload * 4 / 3 );
                 if (xavs_nal_encode(x4->sei, &x4->sei_size, 1, nal + i) < 0)
                     return -1;
@@ -417,7 +443,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
 #define OFFSET(x) offsetof(XavsContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "crf",           "Select the quality for constant quality mode",    OFFSET(crf),           AV_OPT_TYPE_FLOAT,  {.dbl = -1 }, -1, FLT_MAX, VE },
     { "qp",            "Constant quantization parameter rate control method",OFFSET(cqp),        AV_OPT_TYPE_INT,    {.i64 = -1 }, -1, INT_MAX, VE },
     { "b-bias",        "Influences how often B-frames are used",          OFFSET(b_bias),        AV_OPT_TYPE_INT,    {.i64 = INT_MIN}, INT_MIN, INT_MAX, VE },
@@ -441,19 +468,22 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass xavs_class = {
+static const AVClass xavs_class =
+{
     .class_name = "libxavs",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-static const AVCodecDefault xavs_defaults[] = {
+static const AVCodecDefault xavs_defaults[] =
+{
     { "b",                "0" },
     { NULL },
 };
 
-AVCodec ff_libxavs_encoder = {
+AVCodec ff_libxavs_encoder =
+{
     .name           = "libxavs",
     .long_name      = NULL_IF_CONFIG_SMALL("libxavs Chinese AVS (Audio Video Standard)"),
     .type           = AVMEDIA_TYPE_VIDEO,

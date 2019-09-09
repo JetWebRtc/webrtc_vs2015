@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 KISA(Korea Information Security Agency). All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -107,7 +107,8 @@
 extern "C" {
 #endif
 
-typedef struct seed_key_st {
+typedef struct seed_key_st
+{
 # ifdef SEED_LONG
     unsigned long data[32];
 # else

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Various fixed-point math operations
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -25,7 +25,8 @@
 
 #include <stdint.h>
 
-typedef struct CELPMContext {
+typedef struct CELPMContext
+{
     /**
      * Return the dot product.
      * @param a input data array
@@ -36,7 +37,7 @@ typedef struct CELPMContext {
      */
     float (*dot_productf)(const float* a, const float* b, int length);
 
-}CELPMContext;
+} CELPMContext;
 
 /**
  * Initialize CELPMContext.

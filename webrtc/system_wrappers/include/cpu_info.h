@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,14 +13,16 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class CpuInfo {
- public:
-  static uint32_t DetectNumberOfCores();
+class CpuInfo
+{
+public:
+    static uint32_t DetectNumberOfCores();
 
- private:
-  CpuInfo() {}
+private:
+    CpuInfo() {}
 };
 
 }  // namespace webrtc

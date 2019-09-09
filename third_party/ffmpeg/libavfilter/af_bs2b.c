@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -32,7 +32,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct Bs2bContext {
+typedef struct Bs2bContext
+{
     const AVClass *class;
 
     int profile;
@@ -47,16 +48,23 @@ typedef struct Bs2bContext {
 #define OFFSET(x) offsetof(Bs2bContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM
 
-static const AVOption bs2b_options[] = {
-    { "profile", "Apply a pre-defined crossfeed level",
-            OFFSET(profile), AV_OPT_TYPE_INT, { .i64 = BS2B_DEFAULT_CLEVEL }, 0, INT_MAX, A, "profile" },
-        { "default", "default profile", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_DEFAULT_CLEVEL }, 0, 0, A, "profile" },
-        { "cmoy",    "Chu Moy circuit", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_CMOY_CLEVEL    }, 0, 0, A, "profile" },
-        { "jmeier",  "Jan Meier circuit", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_JMEIER_CLEVEL  }, 0, 0, A, "profile" },
-    { "fcut", "Set cut frequency (in Hz)",
-            OFFSET(fcut), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, BS2B_MAXFCUT, A },
-    { "feed", "Set feed level (in Hz)",
-            OFFSET(feed), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, BS2B_MAXFEED, A },
+static const AVOption bs2b_options[] =
+{
+    {
+        "profile", "Apply a pre-defined crossfeed level",
+        OFFSET(profile), AV_OPT_TYPE_INT, { .i64 = BS2B_DEFAULT_CLEVEL }, 0, INT_MAX, A, "profile"
+    },
+    { "default", "default profile", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_DEFAULT_CLEVEL }, 0, 0, A, "profile" },
+    { "cmoy",    "Chu Moy circuit", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_CMOY_CLEVEL    }, 0, 0, A, "profile" },
+    { "jmeier",  "Jan Meier circuit", 0, AV_OPT_TYPE_CONST, { .i64 = BS2B_JMEIER_CLEVEL  }, 0, 0, A, "profile" },
+    {
+        "fcut", "Set cut frequency (in Hz)",
+        OFFSET(fcut), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, BS2B_MAXFCUT, A
+    },
+    {
+        "feed", "Set feed level (in Hz)",
+        OFFSET(feed), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, BS2B_MAXFEED, A
+    },
     { NULL },
 };
 
@@ -93,7 +101,8 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     AVFilterChannelLayouts *layouts = NULL;
 
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_U8,
         AV_SAMPLE_FMT_S16,
         AV_SAMPLE_FMT_S32,
@@ -130,15 +139,19 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     Bs2bContext     *bs2b = inlink->dst->priv;
     AVFilterLink *outlink = inlink->dst->outputs[0];
 
-    if (av_frame_is_writable(frame)) {
+    if (av_frame_is_writable(frame))
+    {
         out_frame = frame;
-    } else {
+    }
+    else
+    {
         out_frame = ff_get_audio_buffer(inlink, frame->nb_samples);
         if (!out_frame)
             return AVERROR(ENOMEM);
         av_frame_copy(out_frame, frame);
         ret = av_frame_copy_props(out_frame, frame);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_frame_free(&out_frame);
             av_frame_free(&frame);
             return ret;
@@ -161,7 +174,8 @@ static int config_output(AVFilterLink *outlink)
 
     int srate = inlink->sample_rate;
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_SAMPLE_FMT_U8:
         bs2b->filter = bs2b_cross_feed_u8;
         break;
@@ -189,7 +203,8 @@ static int config_output(AVFilterLink *outlink)
     return 0;
 }
 
-static const AVFilterPad bs2b_inputs[] = {
+static const AVFilterPad bs2b_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -198,7 +213,8 @@ static const AVFilterPad bs2b_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad bs2b_outputs[] = {
+static const AVFilterPad bs2b_outputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -207,7 +223,8 @@ static const AVFilterPad bs2b_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_bs2b = {
+AVFilter ff_af_bs2b =
+{
     .name           = "bs2b",
     .description    = NULL_IF_CONFIG_SMALL("Bauer stereo-to-binaural filter."),
     .query_formats  = query_formats,

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,14 +96,16 @@ amm-info@iis.fraunhofer.de
 
 #include "FDK_trigFcts.h"
 
-typedef struct{
+typedef struct
+{
     LONG  sampleRate;
     const SFB_PARAM_LONG  *paramLong;
     const SFB_PARAM_SHORT *paramShort;
-}SFB_INFO_TAB;
+} SFB_INFO_TAB;
 
 
-static const SFB_INFO_TAB sfbInfoTab[] = {
+static const SFB_INFO_TAB sfbInfoTab[] =
+{
     {8000,  &p_FDKaacEnc_8000_long_1024,  &p_FDKaacEnc_8000_short_128},
     {11025, &p_FDKaacEnc_11025_long_1024, &p_FDKaacEnc_11025_short_128},
     {12000, &p_FDKaacEnc_12000_long_1024, &p_FDKaacEnc_12000_short_128},
@@ -120,33 +122,43 @@ static const SFB_INFO_TAB sfbInfoTab[] = {
 };
 
 /* 22050 and 24000 Hz */
-static const SFB_PARAM_LONG p_22050_long_512 = {
+static const SFB_PARAM_LONG p_22050_long_512 =
+{
     31,
-    {  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-       4,  8,  8,  8, 12, 12, 12, 16, 20, 24,
-      28, 32, 32, 32, 32, 32, 32, 32, 32, 32,
-      32}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  8,  8,  8, 12, 12, 12, 16, 20, 24,
+        28, 32, 32, 32, 32, 32, 32, 32, 32, 32,
+        32
+    }
 };
 
 /* 32000 Hz */
-static const SFB_PARAM_LONG p_32000_long_512 = {
+static const SFB_PARAM_LONG p_32000_long_512 =
+{
     37,
-    {  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-       4,  4,  4,  4,  8,  8,  8,  8,  8, 12,
-      12, 12, 12, 16, 16, 16, 20, 24, 24, 28,
-      32, 32, 32, 32, 32, 32, 32}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  8,  8,  8,  8,  8, 12,
+        12, 12, 12, 16, 16, 16, 20, 24, 24, 28,
+        32, 32, 32, 32, 32, 32, 32
+    }
 };
 
 /* 44100 Hz */
-static const SFB_PARAM_LONG p_44100_long_512 = {
+static const SFB_PARAM_LONG p_44100_long_512 =
+{
     36,
-    {4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-     4,  4,  4,  4,  4,  8,  8,  8,  8,  8,
-    12, 12, 12, 12, 16, 20, 24, 28, 32, 32,
-    32, 32, 32, 32, 32, 52}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  8,  8,  8,  8,  8,
+        12, 12, 12, 12, 16, 20, 24, 28, 32, 32,
+        32, 32, 32, 32, 32, 52
+    }
 };
 
-static const SFB_INFO_TAB sfbInfoTabLD512[] = {
+static const SFB_INFO_TAB sfbInfoTabLD512[] =
+{
     { 8000, &p_22050_long_512, NULL},
     {11025, &p_22050_long_512, NULL},
     {12000, &p_22050_long_512, NULL},
@@ -164,32 +176,42 @@ static const SFB_INFO_TAB sfbInfoTabLD512[] = {
 
 
 /* 22050 and 24000 Hz */
-static const SFB_PARAM_LONG p_22050_long_480 = {
+static const SFB_PARAM_LONG p_22050_long_480 =
+{
     30,
-    { 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-      4,  8,  8,  8, 12, 12, 12, 16, 20, 24,
-     28, 32, 32, 32, 32, 32, 32, 32, 32, 32}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  8,  8,  8, 12, 12, 12, 16, 20, 24,
+        28, 32, 32, 32, 32, 32, 32, 32, 32, 32
+    }
 };
 
 /* 32000 Hz */
-static const SFB_PARAM_LONG p_32000_long_480 = {
+static const SFB_PARAM_LONG p_32000_long_480 =
+{
     37,
-    { 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-      4,  4,  4,  4,  4,  4,  8,  8,  8,  8,
-      8,  8, 12, 12, 12, 16, 16, 20, 24, 32,
-     32, 32, 32, 32, 32, 32, 32}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  8,  8,  8,  8,
+        8,  8, 12, 12, 12, 16, 16, 20, 24, 32,
+        32, 32, 32, 32, 32, 32, 32
+    }
 };
 
 /* 44100 Hz */
-static const SFB_PARAM_LONG p_44100_long_480 = {
+static const SFB_PARAM_LONG p_44100_long_480 =
+{
     35,
-    { 4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-      4,  4,  4,  4,  8,  8,  8,  8,  8, 12,
-     12, 12, 12, 12, 16, 16, 24, 28, 32, 32,
-     32, 32, 32, 32, 48}
+    {
+        4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  8,  8,  8,  8,  8, 12,
+        12, 12, 12, 12, 16, 16, 24, 28, 32, 32,
+        32, 32, 32, 32, 48
+    }
 };
 
-static const SFB_INFO_TAB sfbInfoTabLD480[] = {
+static const SFB_INFO_TAB sfbInfoTabLD480[] =
+{
     { 8000, &p_22050_long_480, NULL},
     {11025, &p_22050_long_480, NULL},
     {12000, &p_22050_long_480, NULL},
@@ -210,69 +232,76 @@ static const SFB_INFO_TAB sfbInfoTabLD480[] = {
 
 static AAC_ENCODER_ERROR FDKaacEnc_initSfbTable(LONG sampleRate, INT blockType, INT granuleLength, INT *sfbOffset, INT *sfbCnt)
 {
-  INT  i, specStartOffset = 0;
-  const UCHAR* sfbWidth = NULL;
-  const SFB_INFO_TAB *sfbInfo = NULL;
-  int size;
+    INT  i, specStartOffset = 0;
+    const UCHAR* sfbWidth = NULL;
+    const SFB_INFO_TAB *sfbInfo = NULL;
+    int size;
 
-  /*
-    select table
-  */
-  switch(granuleLength) {
+    /*
+      select table
+    */
+    switch(granuleLength)
+    {
     case 1024:
     case  960:
-      sfbInfo = sfbInfoTab;
-      size = (INT)(sizeof(sfbInfoTab)/sizeof(SFB_INFO_TAB));
-      break;
+        sfbInfo = sfbInfoTab;
+        size = (INT)(sizeof(sfbInfoTab)/sizeof(SFB_INFO_TAB));
+        break;
     case 512:
-      sfbInfo = sfbInfoTabLD512;
-      size = sizeof(sfbInfoTabLD512);
-      break;
+        sfbInfo = sfbInfoTabLD512;
+        size = sizeof(sfbInfoTabLD512);
+        break;
     case 480:
-      sfbInfo = sfbInfoTabLD480;
-      size = sizeof(sfbInfoTabLD480);
-      break;
+        sfbInfo = sfbInfoTabLD480;
+        size = sizeof(sfbInfoTabLD480);
+        break;
     default:
-      return AAC_ENC_INVALID_FRAME_LENGTH;
-  }
-
-  for(i = 0; i < size; i++){
-    if(sfbInfo[i].sampleRate == sampleRate){
-      switch(blockType){
-      case LONG_WINDOW:
-      case START_WINDOW:
-      case STOP_WINDOW:
-        sfbWidth = sfbInfo[i].paramLong->sfbWidth;
-        *sfbCnt  = sfbInfo[i].paramLong->sfbCnt;
-        break;
-      case SHORT_WINDOW:
-        sfbWidth = sfbInfo[i].paramShort->sfbWidth;
-        *sfbCnt  = sfbInfo[i].paramShort->sfbCnt;
-        granuleLength /= TRANS_FAC;
-        break;
-      }
-      break;
+        return AAC_ENC_INVALID_FRAME_LENGTH;
     }
-  }
-  if (i == size) {
-    return AAC_ENC_UNSUPPORTED_SAMPLINGRATE;
-  }
 
-  /*
-    calc sfb offsets
-  */
-  for(i = 0; i < *sfbCnt; i++){
-      sfbOffset[i] = specStartOffset;
-      specStartOffset += sfbWidth[i];
-      if (specStartOffset >= granuleLength) {
-          i++;
-          break;
-      }
-  }
-  *sfbCnt = fixMin(i,*sfbCnt);
-  sfbOffset[*sfbCnt] = fixMin(specStartOffset,granuleLength);
+    for(i = 0; i < size; i++)
+    {
+        if(sfbInfo[i].sampleRate == sampleRate)
+        {
+            switch(blockType)
+            {
+            case LONG_WINDOW:
+            case START_WINDOW:
+            case STOP_WINDOW:
+                sfbWidth = sfbInfo[i].paramLong->sfbWidth;
+                *sfbCnt  = sfbInfo[i].paramLong->sfbCnt;
+                break;
+            case SHORT_WINDOW:
+                sfbWidth = sfbInfo[i].paramShort->sfbWidth;
+                *sfbCnt  = sfbInfo[i].paramShort->sfbCnt;
+                granuleLength /= TRANS_FAC;
+                break;
+            }
+            break;
+        }
+    }
+    if (i == size)
+    {
+        return AAC_ENC_UNSUPPORTED_SAMPLINGRATE;
+    }
 
-  return AAC_ENC_OK;
+    /*
+      calc sfb offsets
+    */
+    for(i = 0; i < *sfbCnt; i++)
+    {
+        sfbOffset[i] = specStartOffset;
+        specStartOffset += sfbWidth[i];
+        if (specStartOffset >= granuleLength)
+        {
+            i++;
+            break;
+        }
+    }
+    *sfbCnt = fixMin(i,*sfbCnt);
+    sfbOffset[*sfbCnt] = fixMin(specStartOffset,granuleLength);
+
+    return AAC_ENC_OK;
 }
 
 
@@ -303,20 +332,21 @@ static FIXP_DBL FDKaacEnc_BarcLineValue(INT noOfLines, INT fftLine, LONG samplin
 
     center_freq = fftLine * samplingFreq;       /* q11 or q8 */
 
-    switch (noOfLines) {
-      case 1024:
+    switch (noOfLines)
+    {
+    case 1024:
         center_freq = center_freq << 2; /* q13 */
         break;
-      case 128:
+    case 128:
         center_freq = center_freq << 5; /* q13 */
         break;
-      case 512:
+    case 512:
         center_freq = (fftLine * samplingFreq) << 3;   // q13
         break;
-      case 480:
+    case 480:
         center_freq = fMult(center_freq, INV480) << 4; // q13
         break;
-      default:
+    default:
         center_freq = (FIXP_DBL)0;
     }
 
@@ -339,23 +369,24 @@ static FIXP_DBL FDKaacEnc_BarcLineValue(INT noOfLines, INT fftLine, LONG samplin
    resolution for low bit rates
 */
 static void FDKaacEnc_InitMinPCMResolution(int   numPb,
-                                 int   *pbOffset,
-                                 FIXP_DBL *sfbPCMquantThreshold)
+        int   *pbOffset,
+        FIXP_DBL *sfbPCMquantThreshold)
 {
-  /* PCM_QUANT_NOISE = FDKpow(10.0f, - 20.f / 10.0f) * ABS_LOW * NORM_PCM_ENERGY * FDKpow(2,PCM_QUANT_THR_SCALE) */
-  #define PCM_QUANT_NOISE  ((FIXP_DBL)0x00547062)
+    /* PCM_QUANT_NOISE = FDKpow(10.0f, - 20.f / 10.0f) * ABS_LOW * NORM_PCM_ENERGY * FDKpow(2,PCM_QUANT_THR_SCALE) */
+#define PCM_QUANT_NOISE  ((FIXP_DBL)0x00547062)
 
-  for( int i = 0; i < numPb; i++ ) {
-    sfbPCMquantThreshold[i] = (pbOffset[i+1] - pbOffset[i]) * PCM_QUANT_NOISE;
-  }
+    for( int i = 0; i < numPb; i++ )
+    {
+        sfbPCMquantThreshold[i] = (pbOffset[i+1] - pbOffset[i]) * PCM_QUANT_NOISE;
+    }
 }
 
 static FIXP_DBL getMaskFactor(
-        const FIXP_DBL dbVal_fix,
-        const INT      dbVal_e,
-        const FIXP_DBL ten_fix,
-        const INT      ten_e
-        )
+    const FIXP_DBL dbVal_fix,
+    const INT      dbVal_e,
+    const FIXP_DBL ten_fix,
+    const INT      ten_e
+)
 {
     INT q_msk;
     FIXP_DBL mask_factor;
@@ -363,24 +394,26 @@ static FIXP_DBL getMaskFactor(
     mask_factor = fPow(ten_fix, DFRACT_BITS-1-ten_e, -dbVal_fix, DFRACT_BITS-1-dbVal_e, &q_msk);
     q_msk = fixMin(DFRACT_BITS-1,fixMax(-(DFRACT_BITS-1),q_msk));
 
-    if ( (q_msk>0) && (mask_factor>(FIXP_DBL)MAXVAL_DBL>>q_msk) ) {
-      mask_factor = (FIXP_DBL)MAXVAL_DBL;
+    if ( (q_msk>0) && (mask_factor>(FIXP_DBL)MAXVAL_DBL>>q_msk) )
+    {
+        mask_factor = (FIXP_DBL)MAXVAL_DBL;
     }
-    else {
-      mask_factor = scaleValue(mask_factor, q_msk);
+    else
+    {
+        mask_factor = scaleValue(mask_factor, q_msk);
     }
 
     return (mask_factor);
 }
 
 static void FDKaacEnc_initSpreading(INT numPb,
-                          FIXP_DBL *pbBarcValue,
-                          FIXP_DBL *pbMaskLoFactor,
-                          FIXP_DBL *pbMaskHiFactor,
-                          FIXP_DBL *pbMaskLoFactorSprEn,
-                          FIXP_DBL *pbMaskHiFactorSprEn,
-                          const LONG bitrate,
-                          const INT blockType)
+                                    FIXP_DBL *pbBarcValue,
+                                    FIXP_DBL *pbMaskLoFactor,
+                                    FIXP_DBL *pbMaskHiFactor,
+                                    FIXP_DBL *pbMaskLoFactorSprEn,
+                                    FIXP_DBL *pbMaskHiFactorSprEn,
+                                    const LONG bitrate,
+                                    const INT blockType)
 
 {
     INT i;
@@ -411,20 +444,20 @@ static void FDKaacEnc_initSpreading(INT numPb,
         if (i > 0)
         {
             pbMaskHiFactor[i] = getMaskFactor(
-                    fMult(MASKHIGH, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
-                    TEN, 27);
+                                    fMult(MASKHIGH, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
+                                    TEN, 27);
 
             pbMaskLoFactor[i-1] = getMaskFactor(
-                    fMult(MASKLOW, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
-                    TEN, 27);
+                                      fMult(MASKLOW, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
+                                      TEN, 27);
 
             pbMaskHiFactorSprEn[i] = getMaskFactor(
-                    fMult(MASKHIGHSPREN, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
-                    TEN, 27);
+                                         fMult(MASKHIGHSPREN, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
+                                         TEN, 27);
 
             pbMaskLoFactorSprEn[i-1] = getMaskFactor(
-                    fMult(MASKLOWSPREN, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
-                    TEN, 27);
+                                           fMult(MASKLOWSPREN, (pbBarcValue[i] - pbBarcValue[i-1])), 23,
+                                           TEN, 27);
         }
         else
         {
@@ -437,10 +470,10 @@ static void FDKaacEnc_initSpreading(INT numPb,
 }
 
 static void FDKaacEnc_initBarcValues(INT numPb,
-                           INT *pbOffset,
-                           INT numLines,
-                           INT samplingFrequency,
-                           FIXP_DBL *pbBval)
+                                     INT *pbOffset,
+                                     INT numLines,
+                                     INT samplingFrequency,
+                                     FIXP_DBL *pbBval)
 {
     INT i;
     FIXP_DBL MAX_BARC = (FIXP_DBL)0x30000000; /* 24.0 in q25 */
@@ -456,12 +489,12 @@ static void FDKaacEnc_initBarcValues(INT numPb,
 }
 
 static void FDKaacEnc_initMinSnr(const LONG   bitrate,
-                      const LONG   samplerate,
-                      const INT    numLines,
-                      const INT   *sfbOffset,
-                      const INT    sfbActive,
-                      const INT    blockType,
-                      FIXP_DBL    *sfbMinSnrLdData)
+                                 const LONG   samplerate,
+                                 const INT    numLines,
+                                 const INT   *sfbOffset,
+                                 const INT    sfbActive,
+                                 const INT    blockType,
+                                 FIXP_DBL    *sfbMinSnrLdData)
 {
     INT sfb;
 
@@ -482,26 +515,29 @@ static void FDKaacEnc_initMinSnr(const LONG   bitrate,
 
     /* relative number of active barks */
     barcFactor = fDivNorm(fixMin(FDKaacEnc_BarcLineValue(numLines, sfbOffset[sfbActive], samplerate), MAX_BARC),
-        MAX_BARCP1, &qbfac);
+                          MAX_BARCP1, &qbfac);
 
     qbfac = DFRACT_BITS-1-qbfac;
 
     pePerWindow = fDivNorm(bitrate, samplerate, &qperwin);
     qperwin = DFRACT_BITS-1-qperwin;
-    pePerWindow = fMult(pePerWindow, BITS2PEFAC);                   qperwin = qperwin + 30 - (DFRACT_BITS-1);
-    pePerWindow = fMult(pePerWindow, PERS2P4);                      qperwin = qperwin + 36 - (DFRACT_BITS-1);
+    pePerWindow = fMult(pePerWindow, BITS2PEFAC);
+    qperwin = qperwin + 30 - (DFRACT_BITS-1);
+    pePerWindow = fMult(pePerWindow, PERS2P4);
+    qperwin = qperwin + 36 - (DFRACT_BITS-1);
 
-    switch (numLines) {
-      case 1024:
+    switch (numLines)
+    {
+    case 1024:
         qperwin = qperwin - 10;
         break;
-      case 128:
+    case 128:
         qperwin = qperwin - 7;
         break;
-      case 512:
+    case 512:
         qperwin = qperwin - 9;
         break;
-      case 480:
+    case 480:
         qperwin = qperwin - 9;
         pePerWindow = fMult(pePerWindow, FL2FXCONST_DBL(480.f/512.f));
         break;
@@ -513,19 +549,22 @@ static void FDKaacEnc_initMinSnr(const LONG   bitrate,
         pePerWindow = fMult(pePerWindow, ONEP5);
         qperwin = qperwin + 30 - (DFRACT_BITS-1);
     }
-    pePart_const = fDivNorm(pePerWindow, barcFactor, &qdiv);      qpeprt_const = qperwin - qbfac + DFRACT_BITS-1-qdiv;
+    pePart_const = fDivNorm(pePerWindow, barcFactor, &qdiv);
+    qpeprt_const = qperwin - qbfac + DFRACT_BITS-1-qdiv;
 
     for (sfb = 0; sfb < sfbActive; sfb++)
     {
         barcWidth = FDKaacEnc_BarcLineValue(numLines, sfbOffset[sfb+1], samplerate) -
-            FDKaacEnc_BarcLineValue(numLines, sfbOffset[sfb], samplerate);
+                    FDKaacEnc_BarcLineValue(numLines, sfbOffset[sfb], samplerate);
 
         /* adapt to sfb bands */
-        pePart = fMult(pePart_const, barcWidth); qpeprt = qpeprt_const + 25 - (DFRACT_BITS-1);
+        pePart = fMult(pePart_const, barcWidth);
+        qpeprt = qpeprt_const + 25 - (DFRACT_BITS-1);
 
         /* pe -> snr calculation */
         sfbWidth = (sfbOffset[sfb+1] - sfbOffset[sfb]);
-        pePart = fDivNorm(pePart, sfbWidth, &qdiv); qpeprt += DFRACT_BITS-1-qdiv;
+        pePart = fDivNorm(pePart, sfbWidth, &qdiv);
+        qpeprt += DFRACT_BITS-1-qdiv;
 
         tmp = f2Pow(pePart, DFRACT_BITS-1-qpeprt, &qtmp);
         qtmp = DFRACT_BITS-1-qtmp;
@@ -539,7 +578,8 @@ static void FDKaacEnc_initMinSnr(const LONG   bitrate,
         else
             one_point5 = (FIXP_DBL)(ONEP5 >> (30+1-qsnr));
 
-        snr = (tmp>>1) - (one_point5); qsnr -= 1;
+        snr = (tmp>>1) - (one_point5);
+        qsnr -= 1;
 
         /* max(snr, 1.0) */
         if(qsnr > 0)
@@ -566,13 +606,13 @@ static void FDKaacEnc_initMinSnr(const LONG   bitrate,
 }
 
 AAC_ENCODER_ERROR FDKaacEnc_InitPsyConfiguration(INT   bitrate,
-                                                 INT   samplerate,
-                                                 INT   bandwidth,
-                                                 INT   blocktype,
-                                                 INT   granuleLength,
-                                                 INT   useIS,
-                                                 PSY_CONFIGURATION *psyConf,
-                                                 FB_TYPE filterbank)
+        INT   samplerate,
+        INT   bandwidth,
+        INT   blocktype,
+        INT   granuleLength,
+        INT   useIS,
+        PSY_CONFIGURATION *psyConf,
+        FB_TYPE filterbank)
 {
     AAC_ENCODER_ERROR ErrorStatus;
     INT      sfb;
@@ -589,28 +629,28 @@ AAC_ENCODER_ERROR FDKaacEnc_InitPsyConfiguration(INT   bitrate,
     /* init sfb table */
     ErrorStatus = FDKaacEnc_initSfbTable(samplerate,blocktype,granuleLength,psyConf->sfbOffset,&psyConf->sfbCnt);
     if (ErrorStatus != AAC_ENC_OK)
-      return ErrorStatus;
+        return ErrorStatus;
 
     /* calculate barc values for each pb */
     FDKaacEnc_initBarcValues(psyConf->sfbCnt,
-                   psyConf->sfbOffset,
-                   psyConf->sfbOffset[psyConf->sfbCnt],
-                   samplerate,
-                   sfbBarcVal);
+                             psyConf->sfbOffset,
+                             psyConf->sfbOffset[psyConf->sfbCnt],
+                             samplerate,
+                             sfbBarcVal);
 
     FDKaacEnc_InitMinPCMResolution(psyConf->sfbCnt,
-                         psyConf->sfbOffset,
-                         psyConf->sfbPcmQuantThreshold);
+                                   psyConf->sfbOffset,
+                                   psyConf->sfbPcmQuantThreshold);
 
     /* calculate spreading function */
     FDKaacEnc_initSpreading(psyConf->sfbCnt,
-                  sfbBarcVal,
-                  psyConf->sfbMaskLowFactor,
-                  psyConf->sfbMaskHighFactor,
-                  psyConf->sfbMaskLowFactorSprEn,
-                  psyConf->sfbMaskHighFactorSprEn,
-                  bitrate,
-                  blocktype);
+                            sfbBarcVal,
+                            psyConf->sfbMaskLowFactor,
+                            psyConf->sfbMaskHighFactor,
+                            psyConf->sfbMaskLowFactorSprEn,
+                            psyConf->sfbMaskHighFactorSprEn,
+                            bitrate,
+                            blocktype);
 
     /* init ratio */
 
@@ -619,24 +659,28 @@ AAC_ENCODER_ERROR FDKaacEnc_InitPsyConfiguration(INT   bitrate,
 
     psyConf->clipEnergy = (FIXP_DBL)0x773593ff; /* FL2FXCONST_DBL(1.0e9*NORM_PCM_ENERGY); */
 
-    if (blocktype!=SHORT_WINDOW) {
+    if (blocktype!=SHORT_WINDOW)
+    {
         psyConf->lowpassLine = (INT)((2*bandwidth*frameLengthLong)/samplerate);
         psyConf->lowpassLineLFE = LFE_LOWPASS_LINE;
     }
-    else {
+    else
+    {
         psyConf->lowpassLine = (INT)((2*bandwidth*frameLengthShort)/samplerate);
         psyConf->lowpassLineLFE = 0; /* LFE only in lonf blocks */
         /* psyConf->clipEnergy /= (TRANS_FAC * TRANS_FAC); */
         psyConf->clipEnergy >>= 6;
     }
 
-    for (sfb = 0; sfb < psyConf->sfbCnt; sfb++){
+    for (sfb = 0; sfb < psyConf->sfbCnt; sfb++)
+    {
         if (psyConf->sfbOffset[sfb] >= psyConf->lowpassLine)
             break;
     }
     psyConf->sfbActive = FDKmax(sfb, 1);
 
-    for (sfb = 0; sfb < psyConf->sfbCnt; sfb++){
+    for (sfb = 0; sfb < psyConf->sfbCnt; sfb++)
+    {
         if (psyConf->sfbOffset[sfb] >= psyConf->lowpassLineLFE)
             break;
     }
@@ -645,12 +689,12 @@ AAC_ENCODER_ERROR FDKaacEnc_InitPsyConfiguration(INT   bitrate,
 
     /* calculate minSnr */
     FDKaacEnc_initMinSnr(bitrate,
-               samplerate,
-               psyConf->sfbOffset[psyConf->sfbCnt],
-               psyConf->sfbOffset,
-               psyConf->sfbActive,
-               blocktype,
-               psyConf->sfbMinSnrLdData);
+                         samplerate,
+                         psyConf->sfbOffset[psyConf->sfbCnt],
+                         psyConf->sfbOffset,
+                         psyConf->sfbActive,
+                         blocktype,
+                         psyConf->sfbMinSnrLdData);
 
     return AAC_ENC_OK;
 }

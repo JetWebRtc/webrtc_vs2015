@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -55,7 +55,7 @@
 
 #if HAVE_INLINE_ASM
 void hb_fir_filter_mips(float *out, const float fir_coef[HB_FIR_SIZE + 1],
-                          float mem[HB_FIR_SIZE], const float *in)
+                        float mem[HB_FIR_SIZE], const float *in)
 {
     int i;
     float data[AMRWB_SFR_SIZE_16k + HB_FIR_SIZE]; // past and current samples
@@ -63,7 +63,8 @@ void hb_fir_filter_mips(float *out, const float fir_coef[HB_FIR_SIZE + 1],
     memcpy(data, mem, HB_FIR_SIZE * sizeof(float));
     memcpy(data + HB_FIR_SIZE, in, AMRWB_SFR_SIZE_16k * sizeof(float));
 
-    for (i = 0; i < AMRWB_SFR_SIZE_16k; i++) {
+    for (i = 0; i < AMRWB_SFR_SIZE_16k; i++)
+    {
         float output;
         float * p_data = (data+i);
 

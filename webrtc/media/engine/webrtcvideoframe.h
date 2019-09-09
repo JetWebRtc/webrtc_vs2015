@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,7 +24,8 @@
 #include "webrtc/common_video/include/video_frame_buffer.h"
 #include "webrtc/media/base/videoframe.h"
 
-namespace cricket {
+namespace cricket
+{
 
 using WebRtcVideoFrame = webrtc::VideoFrame;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/modules/audio_coding/include/audio_coding_module.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 //-----------------------------
 #define CHECK_ERROR(f)                                                         \
@@ -60,56 +61,59 @@ namespace webrtc {
     }                                                                          \
   } while(0)
 
-class ACMTestTimer {
- public:
-  ACMTestTimer();
-  ~ACMTestTimer();
+class ACMTestTimer
+{
+public:
+    ACMTestTimer();
+    ~ACMTestTimer();
 
-  void Reset();
-  void Tick10ms();
-  void Tick1ms();
-  void Tick100ms();
-  void Tick1sec();
-  void CurrentTimeHMS(char* currTime);
-  void CurrentTime(unsigned long& h, unsigned char& m, unsigned char& s,
-                   unsigned short& ms);
+    void Reset();
+    void Tick10ms();
+    void Tick1ms();
+    void Tick100ms();
+    void Tick1sec();
+    void CurrentTimeHMS(char* currTime);
+    void CurrentTime(unsigned long& h, unsigned char& m, unsigned char& s,
+                     unsigned short& ms);
 
- private:
-  void Adjust();
+private:
+    void Adjust();
 
-  unsigned short _msec;
-  unsigned char _sec;
-  unsigned char _min;
-  unsigned long _hour;
+    unsigned short _msec;
+    unsigned char _sec;
+    unsigned char _min;
+    unsigned long _hour;
 };
 
 // To avoid clashes with CircularBuffer in APM.
-namespace test {
+namespace test
+{
 
-class CircularBuffer {
- public:
-  CircularBuffer(uint32_t len);
-  ~CircularBuffer();
+class CircularBuffer
+{
+public:
+    CircularBuffer(uint32_t len);
+    ~CircularBuffer();
 
-  void SetArithMean(bool enable);
-  void SetVariance(bool enable);
+    void SetArithMean(bool enable);
+    void SetVariance(bool enable);
 
-  void Update(const double newVal);
-  void IsBufferFull();
+    void Update(const double newVal);
+    void IsBufferFull();
 
-  int16_t Variance(double& var);
-  int16_t ArithMean(double& mean);
+    int16_t Variance(double& var);
+    int16_t ArithMean(double& mean);
 
- protected:
-  double* _buff;
-  uint32_t _idx;
-  uint32_t _buffLen;
+protected:
+    double* _buff;
+    uint32_t _idx;
+    uint32_t _buffLen;
 
-  bool _buffIsFull;
-  bool _calcAvg;
-  bool _calcVar;
-  double _sum;
-  double _sumSqr;
+    bool _buffIsFull;
+    bool _calcAvg;
+    bool _calcVar;
+    double _sum;
+    double _sumSqr;
 };
 
 }  // namespace test
@@ -120,17 +124,18 @@ void PrintCodecs();
 
 bool FixedPayloadTypeCodec(const char* payloadName);
 
-class VADCallback : public ACMVADCallback {
- public:
-  VADCallback();
+class VADCallback : public ACMVADCallback
+{
+public:
+    VADCallback();
 
-  int32_t InFrameType(FrameType frame_type) override;
+    int32_t InFrameType(FrameType frame_type) override;
 
-  void PrintFrameTypes();
-  void Reset();
+    void PrintFrameTypes();
+    void Reset();
 
- private:
-  uint32_t _numFrameTypes[5];
+private:
+    uint32_t _numFrameTypes[5];
 };
 
 }  // namespace webrtc

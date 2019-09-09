@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chinese AVS video (AVS1-P2, JiZhun profile) decoder.
  * Copyright (c) 2006  Stefan Gehrer <stefan.gehrer@gmx.de>
  *
@@ -58,109 +58,121 @@
 #define MV_BWD_OFFS                     12
 #define MV_STRIDE                        4
 
-enum cavs_mb {
-  I_8X8 = 0,
-  P_SKIP,
-  P_16X16,
-  P_16X8,
-  P_8X16,
-  P_8X8,
-  B_SKIP,
-  B_DIRECT,
-  B_FWD_16X16,
-  B_BWD_16X16,
-  B_SYM_16X16,
-  B_8X8 = 29
+enum cavs_mb
+{
+    I_8X8 = 0,
+    P_SKIP,
+    P_16X16,
+    P_16X8,
+    P_8X16,
+    P_8X8,
+    B_SKIP,
+    B_DIRECT,
+    B_FWD_16X16,
+    B_BWD_16X16,
+    B_SYM_16X16,
+    B_8X8 = 29
 };
 
-enum cavs_sub_mb {
-  B_SUB_DIRECT,
-  B_SUB_FWD,
-  B_SUB_BWD,
-  B_SUB_SYM
+enum cavs_sub_mb
+{
+    B_SUB_DIRECT,
+    B_SUB_FWD,
+    B_SUB_BWD,
+    B_SUB_SYM
 };
 
-enum cavs_intra_luma {
-  INTRA_L_VERT,
-  INTRA_L_HORIZ,
-  INTRA_L_LP,
-  INTRA_L_DOWN_LEFT,
-  INTRA_L_DOWN_RIGHT,
-  INTRA_L_LP_LEFT,
-  INTRA_L_LP_TOP,
-  INTRA_L_DC_128
+enum cavs_intra_luma
+{
+    INTRA_L_VERT,
+    INTRA_L_HORIZ,
+    INTRA_L_LP,
+    INTRA_L_DOWN_LEFT,
+    INTRA_L_DOWN_RIGHT,
+    INTRA_L_LP_LEFT,
+    INTRA_L_LP_TOP,
+    INTRA_L_DC_128
 };
 
-enum cavs_intra_chroma {
-  INTRA_C_LP,
-  INTRA_C_HORIZ,
-  INTRA_C_VERT,
-  INTRA_C_PLANE,
-  INTRA_C_LP_LEFT,
-  INTRA_C_LP_TOP,
-  INTRA_C_DC_128,
+enum cavs_intra_chroma
+{
+    INTRA_C_LP,
+    INTRA_C_HORIZ,
+    INTRA_C_VERT,
+    INTRA_C_PLANE,
+    INTRA_C_LP_LEFT,
+    INTRA_C_LP_TOP,
+    INTRA_C_DC_128,
 };
 
-enum cavs_mv_pred {
-  MV_PRED_MEDIAN,
-  MV_PRED_LEFT,
-  MV_PRED_TOP,
-  MV_PRED_TOPRIGHT,
-  MV_PRED_PSKIP,
-  MV_PRED_BSKIP
+enum cavs_mv_pred
+{
+    MV_PRED_MEDIAN,
+    MV_PRED_LEFT,
+    MV_PRED_TOP,
+    MV_PRED_TOPRIGHT,
+    MV_PRED_PSKIP,
+    MV_PRED_BSKIP
 };
 
-enum cavs_block {
-  BLK_16X16,
-  BLK_16X8,
-  BLK_8X16,
-  BLK_8X8
+enum cavs_block
+{
+    BLK_16X16,
+    BLK_16X8,
+    BLK_8X16,
+    BLK_8X8
 };
 
-enum cavs_mv_loc {
-  MV_FWD_D3 = 0,
-  MV_FWD_B2,
-  MV_FWD_B3,
-  MV_FWD_C2,
-  MV_FWD_A1,
-  MV_FWD_X0,
-  MV_FWD_X1,
-  MV_FWD_A3 = 8,
-  MV_FWD_X2,
-  MV_FWD_X3,
-  MV_BWD_D3 = MV_BWD_OFFS,
-  MV_BWD_B2,
-  MV_BWD_B3,
-  MV_BWD_C2,
-  MV_BWD_A1,
-  MV_BWD_X0,
-  MV_BWD_X1,
-  MV_BWD_A3 = MV_BWD_OFFS+8,
-  MV_BWD_X2,
-  MV_BWD_X3
+enum cavs_mv_loc
+{
+    MV_FWD_D3 = 0,
+    MV_FWD_B2,
+    MV_FWD_B3,
+    MV_FWD_C2,
+    MV_FWD_A1,
+    MV_FWD_X0,
+    MV_FWD_X1,
+    MV_FWD_A3 = 8,
+    MV_FWD_X2,
+    MV_FWD_X3,
+    MV_BWD_D3 = MV_BWD_OFFS,
+    MV_BWD_B2,
+    MV_BWD_B3,
+    MV_BWD_C2,
+    MV_BWD_A1,
+    MV_BWD_X0,
+    MV_BWD_X1,
+    MV_BWD_A3 = MV_BWD_OFFS+8,
+    MV_BWD_X2,
+    MV_BWD_X3
 };
 
-DECLARE_ALIGNED(8, typedef, struct) {
+DECLARE_ALIGNED(8, typedef, struct)
+{
     int16_t x;
     int16_t y;
     int16_t dist;
     int16_t ref;
-} cavs_vector;
+}
+cavs_vector;
 
-struct dec_2dvlc {
-  int8_t rltab[59][3];
-  int8_t level_add[27];
-  int8_t golomb_order;
-  int inc_limit;
-  int8_t max_run;
+struct dec_2dvlc
+{
+    int8_t rltab[59][3];
+    int8_t level_add[27];
+    int8_t golomb_order;
+    int inc_limit;
+    int8_t max_run;
 };
 
-typedef struct AVSFrame {
+typedef struct AVSFrame
+{
     AVFrame *f;
     int poc;
 } AVSFrame;
 
-typedef struct AVSContext {
+typedef struct AVSContext
+{
     AVCodecContext *avctx;
     BlockDSPContext bdsp;
     H264ChromaContext h264chroma;
@@ -247,8 +259,10 @@ extern const uint8_t     ff_cavs_partition_flags[30];
 extern const cavs_vector ff_cavs_intra_mv;
 extern const cavs_vector ff_cavs_dir_mv;
 
-static inline void set_mvs(cavs_vector *mv, enum cavs_block size) {
-    switch(size) {
+static inline void set_mvs(cavs_vector *mv, enum cavs_block size)
+{
+    switch(size)
+    {
     case BLK_16X16:
         mv[MV_STRIDE  ] = mv[0];
         mv[MV_STRIDE+1] = mv[0];

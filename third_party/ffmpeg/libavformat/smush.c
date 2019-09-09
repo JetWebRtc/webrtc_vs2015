@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LucasArts Smush demuxer
  * Copyright (c) 2006 Cyril Zorin
  *
@@ -25,7 +25,8 @@
 #include "avio.h"
 #include "internal.h"
 
-typedef struct SMUSHContext {
+typedef struct SMUSHContext
+{
     int version;
     int audio_stream_index;
     int video_stream_index;
@@ -34,9 +35,10 @@ typedef struct SMUSHContext {
 static int smush_read_probe(AVProbeData *p)
 {
     if (((AV_RL32(p->buf)     == MKTAG('S', 'A', 'N', 'M') &&
-          AV_RL32(p->buf + 8) == MKTAG('S', 'H', 'D', 'R')) ||
-         (AV_RL32(p->buf)     == MKTAG('A', 'N', 'I', 'M') &&
-          AV_RL32(p->buf + 8) == MKTAG('A', 'H', 'D', 'R')))) {
+            AV_RL32(p->buf + 8) == MKTAG('S', 'H', 'D', 'R')) ||
+            (AV_RL32(p->buf)     == MKTAG('A', 'N', 'I', 'M') &&
+             AV_RL32(p->buf + 8) == MKTAG('A', 'H', 'D', 'R'))))
+    {
         return AVPROBE_SCORE_MAX;
     }
 
@@ -55,7 +57,8 @@ static int smush_read_header(AVFormatContext *ctx)
     magic = avio_rb32(pb);
     avio_skip(pb, 4); // skip movie size
 
-    if (magic == MKBETAG('A', 'N', 'I', 'M')) {
+    if (magic == MKBETAG('A', 'N', 'I', 'M'))
+    {
         if (avio_rb32(pb) != MKBETAG('A', 'H', 'D', 'R'))
             return AVERROR_INVALIDDATA;
 
@@ -75,7 +78,9 @@ static int smush_read_header(AVFormatContext *ctx)
             palette[i] = avio_rb24(pb);
 
         avio_skip(pb, size - (3 * 256 + 6));
-    } else if (magic == MKBETAG('S', 'A', 'N', 'M')) {
+    }
+    else if (magic == MKBETAG('S', 'A', 'N', 'M'))
+    {
         if (avio_rb32(pb) != MKBETAG('S', 'H', 'D', 'R'))
             return AVERROR_INVALIDDATA;
 
@@ -99,7 +104,8 @@ static int smush_read_header(AVFormatContext *ctx)
             return AVERROR_INVALIDDATA;
 
         size = avio_rb32(pb);
-        while (!got_audio && ((read + 8) < size)) {
+        while (!got_audio && ((read + 8) < size))
+        {
             uint32_t sig, chunk_size;
 
             if (avio_feof(pb))
@@ -108,7 +114,8 @@ static int smush_read_header(AVFormatContext *ctx)
             sig        = avio_rb32(pb);
             chunk_size = avio_rb32(pb);
             read      += 8;
-            switch (sig) {
+            switch (sig)
+            {
             case MKBETAG('W', 'a', 'v', 'e'):
                 got_audio = 1;
                 sample_rate = avio_rl32(pb);
@@ -134,7 +141,9 @@ static int smush_read_header(AVFormatContext *ctx)
         }
 
         avio_skip(pb, size - read);
-    } else {
+    }
+    else
+    {
         av_log(ctx, AV_LOG_ERROR, "Wrong magic\n");
         return AVERROR_INVALIDDATA;
     }
@@ -149,7 +158,7 @@ static int smush_read_header(AVFormatContext *ctx)
 
     vst->start_time        = 0;
     vst->duration          =
-    vst->nb_frames         = nframes;
+        vst->nb_frames         = nframes;
     vst->avg_frame_rate    = av_inv_q(vst->time_base);
     vst->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     vst->codec->codec_id   = AV_CODEC_ID_SANM;
@@ -157,7 +166,8 @@ static int smush_read_header(AVFormatContext *ctx)
     vst->codec->width      = width;
     vst->codec->height     = height;
 
-    if (!smush->version) {
+    if (!smush->version)
+    {
         if (ff_alloc_extradata(vst->codec, 1024 + 2))
             return AVERROR(ENOMEM);
 
@@ -166,7 +176,8 @@ static int smush_read_header(AVFormatContext *ctx)
             AV_WL32(vst->codec->extradata + 2 + i * 4, palette[i]);
     }
 
-    if (got_audio) {
+    if (got_audio)
+    {
         ast = avformat_new_stream(ctx, 0);
         if (!ast)
             return AVERROR(ENOMEM);
@@ -193,7 +204,8 @@ static int smush_read_packet(AVFormatContext *ctx, AVPacket *pkt)
     int done = 0;
     int ret;
 
-    while (!done) {
+    while (!done)
+    {
         uint32_t sig, size;
 
         if (avio_feof(pb))
@@ -202,7 +214,8 @@ static int smush_read_packet(AVFormatContext *ctx, AVPacket *pkt)
         sig  = avio_rb32(pb);
         size = avio_rb32(pb);
 
-        switch (sig) {
+        switch (sig)
+        {
         case MKBETAG('F', 'R', 'M', 'E'):
             if (smush->version)
                 break;
@@ -242,7 +255,8 @@ static int smush_read_packet(AVFormatContext *ctx, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_smush_demuxer = {
+AVInputFormat ff_smush_demuxer =
+{
     .name           = "smush",
     .long_name      = NULL_IF_CONFIG_SMALL("LucasArts Smush"),
     .priv_data_size = sizeof(SMUSHContext),

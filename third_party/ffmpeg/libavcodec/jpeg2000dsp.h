@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG 2000 DSP functions
  * Copyright (c) 2007 Kamil Nowosad
  * Copyright (c) 2013 Nicolas Bertrand <nicoinattendu@gmail.com>
@@ -26,7 +26,8 @@
 #include <stdint.h>
 #include "jpeg2000dwt.h"
 
-typedef struct Jpeg2000DSPContext {
+typedef struct Jpeg2000DSPContext
+{
     void (*mct_decode[FF_DWT_NB])(void *src0, void *src1, void *src2, int csize);
 } Jpeg2000DSPContext;
 

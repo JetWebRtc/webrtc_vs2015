@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VP8 compatible video decoder
  *
  * Copyright (C) 2010 David Conrad
@@ -126,14 +126,18 @@ void put_vp8_epel_h_altivec_core(uint8_t *dst, ptrdiff_t dst_stride,
     perm_6tap8 = vec_perm(align_vec8, align_vec8, perm_outer);
 #endif
 
-    while (h --> 0) {
+    while (h --> 0)
+    {
         FILTER_H(f16h, 0);
 
-        if (w == 16) {
+        if (w == 16)
+        {
             FILTER_H(f16l, 8);
             filt = vec_packsu(f16h, f16l);
             vec_st(filt, 0, dst);
-        } else {
+        }
+        else
+        {
             filt = vec_packsu(f16h, f16h);
             vec_ste((vec_u32)filt, 0, (uint32_t*)dst);
             if (w == 8)
@@ -220,7 +224,8 @@ void put_vp8_epel_v_altivec_core(uint8_t *dst, ptrdiff_t dst_stride,
 
     src += (2+is6tap)*src_stride;
 
-    while (h --> 0) {
+    while (h --> 0)
+    {
         if (is6tap)
             s5 = LOAD_HL(0, src, perm_vec);
         else
@@ -228,11 +233,14 @@ void put_vp8_epel_v_altivec_core(uint8_t *dst, ptrdiff_t dst_stride,
 
         FILTER_V(f16h, vec_mule);
 
-        if (w == 16) {
+        if (w == 16)
+        {
             FILTER_V(f16l, vec_mulo);
             filt = vec_packsu(f16h, f16l);
             vec_st(filt, 0, dst);
-        } else {
+        }
+        else
+        {
             filt = vec_packsu(f16h, f16h);
             if (w == 4)
                 filt = (vec_u8)vec_splat((vec_u32)filt, 0);
@@ -312,7 +320,8 @@ static void put_vp8_pixels16_altivec(uint8_t *dst, ptrdiff_t dstride, uint8_t *s
 // it's faster than -funroll-loops, but using
 // -funroll-loops w/ this is bad - 74 cycles again.
 // all this is on a 7450, tuning for the 7450
-    for (i = 0; i < h; i += 4) {
+    for (i = 0; i < h; i += 4)
+    {
         vec_st(load_with_perm_vec(0, src, perm), 0, dst);
         vec_st(load_with_perm_vec(sstride, src, perm), dstride, dst);
         vec_st(load_with_perm_vec(sstride2, src, perm), dstride2, dst);

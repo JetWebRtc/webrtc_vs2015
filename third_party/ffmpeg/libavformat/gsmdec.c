@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW GSM demuxer
  * Copyright (c) 2011 Justin Ruggles
  *
@@ -29,7 +29,8 @@
 #define GSM_BLOCK_SAMPLES 160
 #define GSM_SAMPLE_RATE   8000
 
-typedef struct GSMDemuxerContext {
+typedef struct GSMDemuxerContext
+{
     AVClass *class;
     int sample_rate;
 } GSMDemuxerContext;
@@ -44,7 +45,8 @@ static int gsm_read_packet(AVFormatContext *s, AVPacket *pkt)
     pkt->stream_index = 0;
 
     ret = av_get_packet(s->pb, pkt, size);
-    if (ret < GSM_BLOCK_SIZE) {
+    if (ret < GSM_BLOCK_SIZE)
+    {
         av_free_packet(pkt);
         return ret < 0 ? ret : AVERROR(EIO);
     }
@@ -73,21 +75,26 @@ static int gsm_read_header(AVFormatContext *s)
     return 0;
 }
 
-static const AVOption options[] = {
-    { "sample_rate", "", offsetof(GSMDemuxerContext, sample_rate),
-       AV_OPT_TYPE_INT, {.i64 = GSM_SAMPLE_RATE}, 1, INT_MAX / GSM_BLOCK_SIZE,
-       AV_OPT_FLAG_DECODING_PARAM },
+static const AVOption options[] =
+{
+    {
+        "sample_rate", "", offsetof(GSMDemuxerContext, sample_rate),
+        AV_OPT_TYPE_INT, {.i64 = GSM_SAMPLE_RATE}, 1, INT_MAX / GSM_BLOCK_SIZE,
+        AV_OPT_FLAG_DECODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass gsm_class = {
+static const AVClass gsm_class =
+{
     .class_name = "gsm demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_gsm_demuxer = {
+AVInputFormat ff_gsm_demuxer =
+{
     .name           = "gsm",
     .long_name      = NULL_IF_CONFIG_SMALL("raw GSM"),
     .priv_data_size = sizeof(GSMDemuxerContext),

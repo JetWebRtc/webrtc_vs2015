@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AST common code
  * Copyright (c) 2012 James Almer
  *
@@ -22,7 +22,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-const AVCodecTag ff_codec_ast_tags[] = {
+const AVCodecTag ff_codec_ast_tags[] =
+{
     { AV_CODEC_ID_ADPCM_AFC,          0 },
     { AV_CODEC_ID_PCM_S16BE_PLANAR,   1 },
     { AV_CODEC_ID_NONE,               0 },

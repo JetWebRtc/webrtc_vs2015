@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD-optimized motion estimation
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -72,11 +72,11 @@ int ff_vsad_intra16_mmxext(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
 int ff_vsad_intra16_sse2(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
                          ptrdiff_t stride, int h);
 int ff_vsad8_approx_mmxext(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
-                    ptrdiff_t stride, int h);
+                           ptrdiff_t stride, int h);
 int ff_vsad16_approx_mmxext(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
-                     ptrdiff_t stride, int h);
+                            ptrdiff_t stride, int h);
 int ff_vsad16_approx_sse2(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
-                   ptrdiff_t stride, int h);
+                          ptrdiff_t stride, int h);
 
 #define hadamard_func(cpu)                                                    \
     int ff_hadamard8_diff_ ## cpu(MpegEncContext *s, uint8_t *src1,           \
@@ -100,7 +100,7 @@ static int nsse16_mmx(MpegEncContext *c, uint8_t *pix1, uint8_t *pix2,
     else
         score1 = ff_sse16_mmx(c, pix1, pix2, stride, h);
     score2 = ff_hf_noise16_mmx(pix1, stride, h) + ff_hf_noise8_mmx(pix1+8, stride, h)
-           - ff_hf_noise16_mmx(pix2, stride, h) - ff_hf_noise8_mmx(pix2+8, stride, h);
+             - ff_hf_noise16_mmx(pix2, stride, h) - ff_hf_noise8_mmx(pix2+8, stride, h);
 
     if (c)
         return score1 + FFABS(score2) * c->avctx->nsse_weight;
@@ -270,7 +270,8 @@ static int vsad16_mmx(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
 }
 #undef SUM
 
-DECLARE_ASM_CONST(8, uint64_t, round_tab)[3] = {
+DECLARE_ASM_CONST(8, uint64_t, round_tab)[3] =
+{
     0x0000000000000000ULL,
     0x0001000100010001ULL,
     0x0002000200020002ULL,
@@ -348,7 +349,7 @@ static inline void sad8_2_mmx(uint8_t *blk1a, uint8_t *blk1b, uint8_t *blk2,
         " js 1b                         \n\t"
         : "+a" (len)
         : "r" (blk1a - len), "r" (blk1b - len), "r" (blk2 - len),
-          "r" (stride));
+        "r" (stride));
 }
 
 static inline void sad8_4_mmx(uint8_t *blk1, uint8_t *blk2,
@@ -402,7 +403,7 @@ static inline void sad8_4_mmx(uint8_t *blk1, uint8_t *blk2,
         " js 1b                         \n\t"
         : "+a" (len)
         : "r" (blk1 - len), "r" (blk1 - len + stride), "r" (blk2 - len),
-          "r" (stride), "m" (round_tab[2]));
+        "r" (stride), "m" (round_tab[2]));
 }
 
 static inline int sum_mmx(void)
@@ -558,7 +559,8 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
     int cpu_flags = av_get_cpu_flags();
 
 #if HAVE_INLINE_ASM
-    if (INLINE_MMX(cpu_flags)) {
+    if (INLINE_MMX(cpu_flags))
+    {
         c->pix_abs[0][0] = sad16_mmx;
         c->pix_abs[0][1] = sad16_x2_mmx;
         c->pix_abs[0][2] = sad16_y2_mmx;
@@ -573,14 +575,16 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
 
         c->vsad[4] = vsad_intra16_mmx;
 
-        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->vsad[0] = vsad16_mmx;
         }
     }
 
 #endif /* HAVE_INLINE_ASM */
 
-    if (EXTERNAL_MMX(cpu_flags)) {
+    if (EXTERNAL_MMX(cpu_flags))
+    {
         c->hadamard8_diff[0] = ff_hadamard8_diff16_mmx;
         c->hadamard8_diff[1] = ff_hadamard8_diff_mmx;
         c->sum_abs_dctelem   = ff_sum_abs_dctelem_mmx;
@@ -592,7 +596,8 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
 #endif
     }
 
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
         c->hadamard8_diff[0] = ff_hadamard8_diff16_mmxext;
         c->hadamard8_diff[1] = ff_hadamard8_diff_mmxext;
         c->sum_abs_dctelem   = ff_sum_abs_dctelem_mmxext;
@@ -610,7 +615,8 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
         c->vsad[4] = ff_vsad_intra16_mmxext;
         c->vsad[5] = ff_vsad_intra8_mmxext;
 
-        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->pix_abs[0][3] = ff_sad16_approx_xy2_mmxext;
             c->pix_abs[1][3] = ff_sad8_approx_xy2_mmxext;
 
@@ -619,7 +625,8 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
         }
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->sse[0] = ff_sse16_sse2;
         c->sum_abs_dctelem   = ff_sum_abs_dctelem_sse2;
 
@@ -627,21 +634,24 @@ av_cold void ff_me_cmp_init_x86(MECmpContext *c, AVCodecContext *avctx)
         c->hadamard8_diff[0] = ff_hadamard8_diff16_sse2;
         c->hadamard8_diff[1] = ff_hadamard8_diff_sse2;
 #endif
-        if (!(cpu_flags & AV_CPU_FLAG_SSE2SLOW) && avctx->codec_id != AV_CODEC_ID_SNOW) {
+        if (!(cpu_flags & AV_CPU_FLAG_SSE2SLOW) && avctx->codec_id != AV_CODEC_ID_SNOW)
+        {
             c->sad[0]        = ff_sad16_sse2;
             c->pix_abs[0][0] = ff_sad16_sse2;
             c->pix_abs[0][1] = ff_sad16_x2_sse2;
             c->pix_abs[0][2] = ff_sad16_y2_sse2;
 
             c->vsad[4]       = ff_vsad_intra16_sse2;
-            if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+            if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+            {
                 c->pix_abs[0][3] = ff_sad16_approx_xy2_sse2;
                 c->vsad[0]       = ff_vsad16_approx_sse2;
             }
         }
     }
 
-    if (EXTERNAL_SSSE3(cpu_flags)) {
+    if (EXTERNAL_SSSE3(cpu_flags))
+    {
         c->sum_abs_dctelem   = ff_sum_abs_dctelem_ssse3;
 #if HAVE_ALIGNED_STACK
         c->hadamard8_diff[0] = ff_hadamard8_diff16_ssse3;

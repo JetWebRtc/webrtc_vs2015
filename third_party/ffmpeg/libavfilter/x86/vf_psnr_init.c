@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -29,10 +29,14 @@ void ff_psnr_init_x86(PSNRDSPContext *dsp, int bpp)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
-        if (bpp <= 8) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
+        if (bpp <= 8)
+        {
             dsp->sse_line = ff_sse_line_8bit_sse2;
-        } else if (bpp <= 15) {
+        }
+        else if (bpp <= 15)
+        {
             dsp->sse_line = ff_sse_line_16bit_sse2;
         }
     }

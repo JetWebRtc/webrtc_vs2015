@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 
 // This file contains constants related to media.
 
-namespace cricket {
+namespace cricket
+{
 
 extern const int kVideoCodecClockrate;
 extern const int kDataCodecClockrate;

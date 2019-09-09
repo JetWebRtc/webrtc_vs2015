@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,7 +30,8 @@ static void gmc1_c(uint8_t *dst, uint8_t *src, int stride, int h,
     const int D = (x16)      * (y16);
     int i;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = (A * src[0] + B * src[1] + C * src[stride + 0] + D * src[stride + 1] + rounder) >> 8;
         dst[1] = (A * src[1] + B * src[2] + C * src[stride + 1] + D * src[stride + 2] + rounder) >> 8;
         dst[2] = (A * src[2] + B * src[3] + C * src[stride + 2] + D * src[stride + 3] + rounder) >> 8;
@@ -54,12 +55,14 @@ void ff_gmc_c(uint8_t *dst, uint8_t *src, int stride, int h, int ox, int oy,
     width--;
     height--;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         int x;
 
         vx = ox;
         vy = oy;
-        for (x = 0; x < 8; x++) { // FIXME: optimize
+        for (x = 0; x < 8; x++)   // FIXME: optimize
+        {
             int index;
             int src_x  = vx >> 16;
             int src_y  = vy >> 16;
@@ -69,8 +72,10 @@ void ff_gmc_c(uint8_t *dst, uint8_t *src, int stride, int h, int ox, int oy,
             src_x >>= shift;
             src_y >>= shift;
 
-            if ((unsigned) src_x < width) {
-                if ((unsigned) src_y < height) {
+            if ((unsigned) src_x < width)
+            {
+                if ((unsigned) src_y < height)
+                {
                     index = src_x + src_y * stride;
                     dst[y * stride + x] =
                         ((src[index]                        * (s - frac_x) +
@@ -78,21 +83,28 @@ void ff_gmc_c(uint8_t *dst, uint8_t *src, int stride, int h, int ox, int oy,
                          (src[index + stride]               * (s - frac_x) +
                           src[index + stride + 1] * frac_x) *      frac_y  +
                          r) >> (shift * 2);
-                } else {
+                }
+                else
+                {
                     index = src_x + av_clip(src_y, 0, height) * stride;
                     dst[y * stride + x] =
                         ((src[index]               * (s - frac_x) +
                           src[index + 1] * frac_x) *  s           +
                          r) >> (shift * 2);
                 }
-            } else {
-                if ((unsigned) src_y < height) {
+            }
+            else
+            {
+                if ((unsigned) src_y < height)
+                {
                     index = av_clip(src_x, 0, width) + src_y * stride;
                     dst[y * stride + x] =
                         ((src[index]                    * (s - frac_y) +
                           src[index + stride] * frac_y) *  s           +
                          r) >> (shift * 2);
-                } else {
+                }
+                else
+                {
                     index = av_clip(src_x, 0, width) +
                             av_clip(src_y, 0, height) * stride;
                     dst[y * stride + x] = src[index];

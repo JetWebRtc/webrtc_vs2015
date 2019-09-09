@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,8 +15,10 @@
 
 #include <string>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Writes a |length| bytes array |buffer| to |filename| in isolated output
 // directory defined by swarming. If the file is existing, content will be

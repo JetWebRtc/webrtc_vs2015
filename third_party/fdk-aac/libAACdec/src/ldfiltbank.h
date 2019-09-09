@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,13 +97,13 @@ amm-info@iis.fraunhofer.de
 
 
 int InvMdctTransformLowDelay_fdk (
-        FIXP_DBL *mdctdata_m,
-        const int mdctdata_e,
-        INT_PCM *mdctOut,
-        FIXP_DBL *fs_buffer,
-        const int stride,
-        const int frameLength
-        );
+    FIXP_DBL *mdctdata_m,
+    const int mdctdata_e,
+    INT_PCM *mdctOut,
+    FIXP_DBL *fs_buffer,
+    const int stride,
+    const int frameLength
+);
 
 
 #endif

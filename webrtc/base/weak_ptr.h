@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -83,79 +83,88 @@
 // the correct thread to enforce that other WeakPtr objects will enforce they
 // are used on the desired thread.
 
-namespace rtc {
+namespace rtc
+{
 
-namespace internal {
+namespace internal
+{
 
-class WeakReference {
- public:
-  // Although Flag is bound to a specific sequence, it may be
-  // deleted from another via base::WeakPtr::~WeakPtr().
-  class Flag : public RefCountInterface {
-   public:
-    Flag();
+class WeakReference
+{
+public:
+    // Although Flag is bound to a specific sequence, it may be
+    // deleted from another via base::WeakPtr::~WeakPtr().
+    class Flag : public RefCountInterface
+    {
+    public:
+        Flag();
 
-    void Invalidate();
-    bool IsValid() const;
+        void Invalidate();
+        bool IsValid() const;
 
-   private:
-    friend class RefCountedObject<Flag>;
+    private:
+        friend class RefCountedObject<Flag>;
 
-    ~Flag() override;
+        ~Flag() override;
 
-    SequencedTaskChecker checker_;
-    bool is_valid_;
-  };
+        SequencedTaskChecker checker_;
+        bool is_valid_;
+    };
 
-  WeakReference();
-  explicit WeakReference(const Flag* flag);
-  ~WeakReference();
+    WeakReference();
+    explicit WeakReference(const Flag* flag);
+    ~WeakReference();
 
-  WeakReference(WeakReference&& other);
-  WeakReference(const WeakReference& other);
-  WeakReference& operator=(WeakReference&& other) = default;
-  WeakReference& operator=(const WeakReference& other) = default;
+    WeakReference(WeakReference&& other);
+    WeakReference(const WeakReference& other);
+    WeakReference& operator=(WeakReference&& other) = default;
+    WeakReference& operator=(const WeakReference& other) = default;
 
-  bool is_valid() const;
+    bool is_valid() const;
 
- private:
-  scoped_refptr<const Flag> flag_;
+private:
+    scoped_refptr<const Flag> flag_;
 };
 
-class WeakReferenceOwner {
- public:
-  WeakReferenceOwner();
-  ~WeakReferenceOwner();
+class WeakReferenceOwner
+{
+public:
+    WeakReferenceOwner();
+    ~WeakReferenceOwner();
 
-  WeakReference GetRef() const;
+    WeakReference GetRef() const;
 
-  bool HasRefs() const { return flag_.get() && !flag_->HasOneRef(); }
+    bool HasRefs() const
+    {
+        return flag_.get() && !flag_->HasOneRef();
+    }
 
-  void Invalidate();
+    void Invalidate();
 
- private:
-  SequencedTaskChecker checker_;
-  mutable scoped_refptr<RefCountedObject<WeakReference::Flag>> flag_;
+private:
+    SequencedTaskChecker checker_;
+    mutable scoped_refptr<RefCountedObject<WeakReference::Flag>> flag_;
 };
 
 // This class simplifies the implementation of WeakPtr's type conversion
 // constructor by avoiding the need for a public accessor for ref_.  A
 // WeakPtr<T> cannot access the private members of WeakPtr<U>, so this
 // base class gives us a way to access ref_ in a protected fashion.
-class WeakPtrBase {
- public:
-  WeakPtrBase();
-  ~WeakPtrBase();
+class WeakPtrBase
+{
+public:
+    WeakPtrBase();
+    ~WeakPtrBase();
 
-  WeakPtrBase(const WeakPtrBase& other) = default;
-  WeakPtrBase(WeakPtrBase&& other) = default;
-  WeakPtrBase& operator=(const WeakPtrBase& other) = default;
-  WeakPtrBase& operator=(WeakPtrBase&& other) = default;
+    WeakPtrBase(const WeakPtrBase& other) = default;
+    WeakPtrBase(WeakPtrBase&& other) = default;
+    WeakPtrBase& operator=(const WeakPtrBase& other) = default;
+    WeakPtrBase& operator=(WeakPtrBase&& other) = default;
 
- protected:
-  explicit WeakPtrBase(const WeakReference& ref);
+protected:
+    explicit WeakPtrBase(const WeakReference& ref);
 
-  WeakReference ref_;
+    WeakReference ref_;
 };
 
 }  // namespace internal
@@ -164,67 +173,81 @@ template <typename T>
 class WeakPtrFactory;
 
 template <typename T>
-class WeakPtr : public internal::WeakPtrBase {
- public:
-  WeakPtr() : ptr_(nullptr) {}
+class WeakPtr : public internal::WeakPtrBase
+{
+public:
+    WeakPtr() : ptr_(nullptr) {}
 
-  // Allow conversion from U to T provided U "is a" T. Note that this
-  // is separate from the (implicit) copy and move constructors.
-  template <typename U>
-  WeakPtr(const WeakPtr<U>& other)
-      : internal::WeakPtrBase(other), ptr_(other.ptr_) {}
-  template <typename U>
-  WeakPtr(WeakPtr<U>&& other)
-      : internal::WeakPtrBase(std::move(other)), ptr_(other.ptr_) {}
+    // Allow conversion from U to T provided U "is a" T. Note that this
+    // is separate from the (implicit) copy and move constructors.
+    template <typename U>
+    WeakPtr(const WeakPtr<U>& other)
+        : internal::WeakPtrBase(other), ptr_(other.ptr_) {}
+    template <typename U>
+    WeakPtr(WeakPtr<U>&& other)
+        : internal::WeakPtrBase(std::move(other)), ptr_(other.ptr_) {}
 
-  T* get() const { return ref_.is_valid() ? ptr_ : nullptr; }
+    T* get() const
+    {
+        return ref_.is_valid() ? ptr_ : nullptr;
+    }
 
-  T& operator*() const {
-    RTC_DCHECK(get() != nullptr);
-    return *get();
-  }
-  T* operator->() const {
-    RTC_DCHECK(get() != nullptr);
-    return get();
-  }
+    T& operator*() const
+    {
+        RTC_DCHECK(get() != nullptr);
+        return *get();
+    }
+    T* operator->() const
+    {
+        RTC_DCHECK(get() != nullptr);
+        return get();
+    }
 
-  void reset() {
-    ref_ = internal::WeakReference();
-    ptr_ = nullptr;
-  }
+    void reset()
+    {
+        ref_ = internal::WeakReference();
+        ptr_ = nullptr;
+    }
 
-  // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
-  explicit operator bool() const { return get() != nullptr; }
+    // Allow conditionals to test validity, e.g. if (weak_ptr) {...};
+    explicit operator bool() const
+    {
+        return get() != nullptr;
+    }
 
- private:
-  template <typename U>
-  friend class WeakPtr;
-  friend class WeakPtrFactory<T>;
+private:
+    template <typename U>
+    friend class WeakPtr;
+    friend class WeakPtrFactory<T>;
 
-  WeakPtr(const internal::WeakReference& ref, T* ptr)
-      : internal::WeakPtrBase(ref), ptr_(ptr) {}
+    WeakPtr(const internal::WeakReference& ref, T* ptr)
+        : internal::WeakPtrBase(ref), ptr_(ptr) {}
 
-  // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
-  // value is undefined (as opposed to nullptr).
-  T* ptr_;
+    // This pointer is only valid when ref_.is_valid() is true.  Otherwise, its
+    // value is undefined (as opposed to nullptr).
+    T* ptr_;
 };
 
 // Allow callers to compare WeakPtrs against nullptr to test validity.
 template <class T>
-bool operator!=(const WeakPtr<T>& weak_ptr, std::nullptr_t) {
-  return !(weak_ptr == nullptr);
+bool operator!=(const WeakPtr<T>& weak_ptr, std::nullptr_t)
+{
+    return !(weak_ptr == nullptr);
 }
 template <class T>
-bool operator!=(std::nullptr_t, const WeakPtr<T>& weak_ptr) {
-  return weak_ptr != nullptr;
+bool operator!=(std::nullptr_t, const WeakPtr<T>& weak_ptr)
+{
+    return weak_ptr != nullptr;
 }
 template <class T>
-bool operator==(const WeakPtr<T>& weak_ptr, std::nullptr_t) {
-  return weak_ptr.get() == nullptr;
+bool operator==(const WeakPtr<T>& weak_ptr, std::nullptr_t)
+{
+    return weak_ptr.get() == nullptr;
 }
 template <class T>
-bool operator==(std::nullptr_t, const WeakPtr<T>& weak_ptr) {
-  return weak_ptr == nullptr;
+bool operator==(std::nullptr_t, const WeakPtr<T>& weak_ptr)
+{
+    return weak_ptr == nullptr;
 }
 
 // A class may be composed of a WeakPtrFactory and thereby
@@ -238,33 +261,40 @@ bool operator==(std::nullptr_t, const WeakPtr<T>& weak_ptr) {
 // TaskQueue/thread. A WeakPtr instance can be copied and posted to other
 // sequences though as long as it is not dereferenced (WeakPtr<T>::get()).
 template <class T>
-class WeakPtrFactory {
- public:
-  explicit WeakPtrFactory(T* ptr) : ptr_(ptr) {}
+class WeakPtrFactory
+{
+public:
+    explicit WeakPtrFactory(T* ptr) : ptr_(ptr) {}
 
-  ~WeakPtrFactory() { ptr_ = nullptr; }
+    ~WeakPtrFactory()
+    {
+        ptr_ = nullptr;
+    }
 
-  WeakPtr<T> GetWeakPtr() {
-    RTC_DCHECK(ptr_);
-    return WeakPtr<T>(weak_reference_owner_.GetRef(), ptr_);
-  }
+    WeakPtr<T> GetWeakPtr()
+    {
+        RTC_DCHECK(ptr_);
+        return WeakPtr<T>(weak_reference_owner_.GetRef(), ptr_);
+    }
 
-  // Call this method to invalidate all existing weak pointers.
-  void InvalidateWeakPtrs() {
-    RTC_DCHECK(ptr_);
-    weak_reference_owner_.Invalidate();
-  }
+    // Call this method to invalidate all existing weak pointers.
+    void InvalidateWeakPtrs()
+    {
+        RTC_DCHECK(ptr_);
+        weak_reference_owner_.Invalidate();
+    }
 
-  // Call this method to determine if any weak pointers exist.
-  bool HasWeakPtrs() const {
-    RTC_DCHECK(ptr_);
-    return weak_reference_owner_.HasRefs();
-  }
+    // Call this method to determine if any weak pointers exist.
+    bool HasWeakPtrs() const
+    {
+        RTC_DCHECK(ptr_);
+        return weak_reference_owner_.HasRefs();
+    }
 
- private:
-  internal::WeakReferenceOwner weak_reference_owner_;
-  T* ptr_;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WeakPtrFactory);
+private:
+    internal::WeakReferenceOwner weak_reference_owner_;
+    T* ptr_;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WeakPtrFactory);
 };
 
 }  // namespace rtc

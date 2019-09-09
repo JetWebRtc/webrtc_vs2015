@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,14 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCVideoTrack ()
 
-/** VideoTrackInterface created or passed in at construction. */
-@property(nonatomic, readonly)
+    /** VideoTrackInterface created or passed in at construction. */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::VideoTrackInterface> nativeVideoTrack;
 
 /** Initialize an RTCVideoTrack with its source and an id. */
 - (instancetype)initWithFactory:(RTCPeerConnectionFactory *)factory
-                         source:(RTCVideoSource *)source
-                        trackId:(NSString *)trackId;
+    source:(RTCVideoSource *)source
+    trackId:(NSString *)trackId;
 
 @end
 

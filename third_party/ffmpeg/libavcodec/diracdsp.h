@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 David Conrad
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 typedef void (*dirac_weight_func)(uint8_t *block, int stride, int log2_denom, int weight, int h);
 typedef void (*dirac_biweight_func)(uint8_t *dst, const uint8_t *src, int stride, int log2_denom, int weightd, int weights, int h);
 
-typedef struct {
+typedef struct
+{
     void (*dirac_hpel_filter)(uint8_t *dsth, uint8_t *dstv, uint8_t *dstc, const uint8_t *src, int stride, int width, int height);
     /**
      * dirac_pixels_tab[width][subpel]

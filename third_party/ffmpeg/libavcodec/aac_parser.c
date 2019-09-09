@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Audio and Video frame extraction
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2003 Michael Niedermayer
@@ -27,12 +27,13 @@
 #include "mpeg4audio.h"
 
 static int aac_sync(uint64_t state, AACAC3ParseContext *hdr_info,
-        int *need_next_header, int *new_frame_start)
+                    int *need_next_header, int *new_frame_start)
 {
     GetBitContext bits;
     AACADTSHeaderInfo hdr;
     int size;
-    union {
+    union
+    {
         uint64_t u64;
         uint8_t  u8[8 + AV_INPUT_BUFFER_PADDING_SIZE];
     } tmp;
@@ -60,7 +61,8 @@ static av_cold int aac_parse_init(AVCodecParserContext *s1)
 }
 
 
-AVCodecParser ff_aac_parser = {
+AVCodecParser ff_aac_parser =
+{
     .codec_ids      = { AV_CODEC_ID_AAC },
     .priv_data_size = sizeof(AACAC3ParseContext),
     .parser_init    = aac_parse_init,

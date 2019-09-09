@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -102,23 +102,24 @@ amm-info@iis.fraunhofer.de
   code book number table
 */
 
-enum codeBookNo{
- CODE_BOOK_ZERO_NO=               0,
- CODE_BOOK_1_NO=                  1,
- CODE_BOOK_2_NO=                  2,
- CODE_BOOK_3_NO=                  3,
- CODE_BOOK_4_NO=                  4,
- CODE_BOOK_5_NO=                  5,
- CODE_BOOK_6_NO=                  6,
- CODE_BOOK_7_NO=                  7,
- CODE_BOOK_8_NO=                  8,
- CODE_BOOK_9_NO=                  9,
- CODE_BOOK_10_NO=                10,
- CODE_BOOK_ESC_NO=               11,
- CODE_BOOK_RES_NO=               12,
- CODE_BOOK_PNS_NO=               13,
- CODE_BOOK_IS_OUT_OF_PHASE_NO=   14,
- CODE_BOOK_IS_IN_PHASE_NO=       15
+enum codeBookNo
+{
+    CODE_BOOK_ZERO_NO=               0,
+    CODE_BOOK_1_NO=                  1,
+    CODE_BOOK_2_NO=                  2,
+    CODE_BOOK_3_NO=                  3,
+    CODE_BOOK_4_NO=                  4,
+    CODE_BOOK_5_NO=                  5,
+    CODE_BOOK_6_NO=                  6,
+    CODE_BOOK_7_NO=                  7,
+    CODE_BOOK_8_NO=                  8,
+    CODE_BOOK_9_NO=                  9,
+    CODE_BOOK_10_NO=                10,
+    CODE_BOOK_ESC_NO=               11,
+    CODE_BOOK_RES_NO=               12,
+    CODE_BOOK_PNS_NO=               13,
+    CODE_BOOK_IS_OUT_OF_PHASE_NO=   14,
+    CODE_BOOK_IS_IN_PHASE_NO=       15
 
 };
 
@@ -126,46 +127,48 @@ enum codeBookNo{
   code book index table
 */
 
-enum codeBookNdx{
- CODE_BOOK_ZERO_NDX,
- CODE_BOOK_1_NDX,
- CODE_BOOK_2_NDX,
- CODE_BOOK_3_NDX,
- CODE_BOOK_4_NDX,
- CODE_BOOK_5_NDX,
- CODE_BOOK_6_NDX,
- CODE_BOOK_7_NDX,
- CODE_BOOK_8_NDX,
- CODE_BOOK_9_NDX,
- CODE_BOOK_10_NDX,
- CODE_BOOK_ESC_NDX,
- CODE_BOOK_RES_NDX,
- CODE_BOOK_PNS_NDX,
- CODE_BOOK_IS_OUT_OF_PHASE_NDX,
- CODE_BOOK_IS_IN_PHASE_NDX,
- NUMBER_OF_CODE_BOOKS
+enum codeBookNdx
+{
+    CODE_BOOK_ZERO_NDX,
+    CODE_BOOK_1_NDX,
+    CODE_BOOK_2_NDX,
+    CODE_BOOK_3_NDX,
+    CODE_BOOK_4_NDX,
+    CODE_BOOK_5_NDX,
+    CODE_BOOK_6_NDX,
+    CODE_BOOK_7_NDX,
+    CODE_BOOK_8_NDX,
+    CODE_BOOK_9_NDX,
+    CODE_BOOK_10_NDX,
+    CODE_BOOK_ESC_NDX,
+    CODE_BOOK_RES_NDX,
+    CODE_BOOK_PNS_NDX,
+    CODE_BOOK_IS_OUT_OF_PHASE_NDX,
+    CODE_BOOK_IS_IN_PHASE_NDX,
+    NUMBER_OF_CODE_BOOKS
 };
 
 /*
   code book lav table
 */
 
-enum codeBookLav{
- CODE_BOOK_ZERO_LAV=0,
- CODE_BOOK_1_LAV=1,
- CODE_BOOK_2_LAV=1,
- CODE_BOOK_3_LAV=2,
- CODE_BOOK_4_LAV=2,
- CODE_BOOK_5_LAV=4,
- CODE_BOOK_6_LAV=4,
- CODE_BOOK_7_LAV=7,
- CODE_BOOK_8_LAV=7,
- CODE_BOOK_9_LAV=12,
- CODE_BOOK_10_LAV=12,
- CODE_BOOK_ESC_LAV=16,
- CODE_BOOK_SCF_LAV=60,
- CODE_BOOK_PNS_LAV=60
- };
+enum codeBookLav
+{
+    CODE_BOOK_ZERO_LAV=0,
+    CODE_BOOK_1_LAV=1,
+    CODE_BOOK_2_LAV=1,
+    CODE_BOOK_3_LAV=2,
+    CODE_BOOK_4_LAV=2,
+    CODE_BOOK_5_LAV=4,
+    CODE_BOOK_6_LAV=4,
+    CODE_BOOK_7_LAV=7,
+    CODE_BOOK_8_LAV=7,
+    CODE_BOOK_9_LAV=12,
+    CODE_BOOK_10_LAV=12,
+    CODE_BOOK_ESC_LAV=16,
+    CODE_BOOK_SCF_LAV=60,
+    CODE_BOOK_PNS_LAV=60
+};
 
 INT    FDKaacEnc_bitCount(const SHORT *aQuantSpectrum,
                           const INT   noOfSpecLines,
@@ -180,8 +183,8 @@ INT    FDKaacEnc_codeScalefactorDelta(INT scalefactor, HANDLE_FDK_BITSTREAM hBit
 
 inline INT FDKaacEnc_bitCountScalefactorDelta(const INT delta)
 {
-  FDK_ASSERT( (0 <= (delta+CODE_BOOK_SCF_LAV)) &&  ((delta+CODE_BOOK_SCF_LAV)<(int)(sizeof(FDKaacEnc_huff_ltabscf)/sizeof((FDKaacEnc_huff_ltabscf[0])))) );
-  return((INT)FDKaacEnc_huff_ltabscf[delta+CODE_BOOK_SCF_LAV]);
+    FDK_ASSERT( (0 <= (delta+CODE_BOOK_SCF_LAV)) &&  ((delta+CODE_BOOK_SCF_LAV)<(int)(sizeof(FDKaacEnc_huff_ltabscf)/sizeof((FDKaacEnc_huff_ltabscf[0])))) );
+    return((INT)FDKaacEnc_huff_ltabscf[delta+CODE_BOOK_SCF_LAV]);
 }
 
 #endif

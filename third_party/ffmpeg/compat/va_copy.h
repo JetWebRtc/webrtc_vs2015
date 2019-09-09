@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MSVC Compatible va_copy macro
  * Copyright (c) 2012 Derek Buitenhuis
  *

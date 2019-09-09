@@ -1,4 +1,4 @@
-/*
+﻿/*
  * iLBC storage file format
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -30,22 +30,29 @@ static int ilbc_write_header(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     AVCodecContext *enc;
 
-    if (s->nb_streams != 1) {
+    if (s->nb_streams != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported number of streams\n");
         return AVERROR(EINVAL);
     }
     enc = s->streams[0]->codec;
 
-    if (enc->codec_id != AV_CODEC_ID_ILBC) {
+    if (enc->codec_id != AV_CODEC_ID_ILBC)
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported codec\n");
         return AVERROR(EINVAL);
     }
 
-    if (enc->block_align == 50) {
+    if (enc->block_align == 50)
+    {
         avio_write(pb, mode30_header, sizeof(mode30_header) - 1);
-    } else if (enc->block_align == 38) {
+    }
+    else if (enc->block_align == 38)
+    {
         avio_write(pb, mode20_header, sizeof(mode20_header) - 1);
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported mode\n");
         return AVERROR(EINVAL);
     }
@@ -85,13 +92,18 @@ static int ilbc_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
     st->start_time = 0;
     avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
-    if (!memcmp(header, mode20_header, sizeof(mode20_header) - 1)) {
+    if (!memcmp(header, mode20_header, sizeof(mode20_header) - 1))
+    {
         st->codec->block_align = 38;
         st->codec->bit_rate = 15200;
-    } else if (!memcmp(header, mode30_header, sizeof(mode30_header) - 1)) {
+    }
+    else if (!memcmp(header, mode30_header, sizeof(mode30_header) - 1))
+    {
         st->codec->block_align = 50;
         st->codec->bit_rate = 13333;
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "Unrecognized iLBC file header\n");
         return AVERROR_INVALIDDATA;
     }
@@ -100,7 +112,7 @@ static int ilbc_read_header(AVFormatContext *s)
 }
 
 static int ilbc_read_packet(AVFormatContext *s,
-                          AVPacket *pkt)
+                            AVPacket *pkt)
 {
     AVCodecContext *enc = s->streams[0]->codec;
     int ret;
@@ -111,7 +123,8 @@ static int ilbc_read_packet(AVFormatContext *s,
     pkt->stream_index = 0;
     pkt->pos = avio_tell(s->pb);
     pkt->duration = enc->block_align == 38 ? 160 : 240;
-    if ((ret = avio_read(s->pb, pkt->data, enc->block_align)) != enc->block_align) {
+    if ((ret = avio_read(s->pb, pkt->data, enc->block_align)) != enc->block_align)
+    {
         av_free_packet(pkt);
         return ret < 0 ? ret : AVERROR(EIO);
     }
@@ -119,7 +132,8 @@ static int ilbc_read_packet(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_ilbc_demuxer = {
+AVInputFormat ff_ilbc_demuxer =
+{
     .name         = "ilbc",
     .long_name    = NULL_IF_CONFIG_SMALL("iLBC storage"),
     .read_probe   = ilbc_probe,
@@ -128,7 +142,8 @@ AVInputFormat ff_ilbc_demuxer = {
     .flags        = AVFMT_GENERIC_INDEX,
 };
 
-AVOutputFormat ff_ilbc_muxer = {
+AVOutputFormat ff_ilbc_muxer =
+{
     .name         = "ilbc",
     .long_name    = NULL_IF_CONFIG_SMALL("iLBC storage"),
     .mime_type    = "audio/iLBC",

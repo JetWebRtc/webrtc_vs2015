@@ -1,4 +1,4 @@
-/*
+﻿/*
  * crypto_kernel.c
  *
  * header for the cryptographic kernel
@@ -44,7 +44,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "alloc.h"
@@ -53,7 +53,8 @@
 
 /* the debug module for the crypto_kernel */
 
-srtp_debug_module_t srtp_mod_crypto_kernel = {
+srtp_debug_module_t srtp_mod_crypto_kernel =
+{
     0,                /* debugging is off by default */
     "crypto kernel"   /* printable name for module   */
 };
@@ -98,7 +99,8 @@ extern srtp_debug_module_t srtp_mod_hmac;
 
 /* crypto_kernel is a global variable, the only one of its datatype */
 
-srtp_crypto_kernel_t crypto_kernel = {
+srtp_crypto_kernel_t crypto_kernel =
+{
     srtp_crypto_kernel_state_insecure, /* start off in insecure state */
     NULL,                              /* no cipher types yet         */
     NULL,                              /* no auth types yet           */
@@ -112,7 +114,8 @@ srtp_err_status_t srtp_crypto_kernel_init ()
     srtp_err_status_t status;
 
     /* check the security state */
-    if (crypto_kernel.state == srtp_crypto_kernel_state_secure) {
+    if (crypto_kernel.state == srtp_crypto_kernel_state_secure)
+    {
 
         /*
          * we're already in the secure state, but we've been asked to
@@ -123,79 +126,96 @@ srtp_err_status_t srtp_crypto_kernel_init ()
 
     /* initialize error reporting system */
     status = srtp_err_reporting_init("crypto");
-    if (status) {
+    if (status)
+    {
         return status;
     }
 
     /* load debug modules */
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_crypto_kernel);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_auth);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_cipher);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&mod_stat);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&mod_alloc);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 
     /* load cipher types */
     status = srtp_crypto_kernel_load_cipher_type(&srtp_null_cipher, SRTP_NULL_CIPHER);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_cipher_type(&srtp_aes_icm, SRTP_AES_ICM);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_aes_icm);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 #ifdef OPENSSL
     status = srtp_crypto_kernel_load_cipher_type(&srtp_aes_icm_192, SRTP_AES_192_ICM);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_cipher_type(&srtp_aes_icm_256, SRTP_AES_256_ICM);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_cipher_type(&srtp_aes_gcm_128_openssl, SRTP_AES_128_GCM);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_cipher_type(&srtp_aes_gcm_256_openssl, SRTP_AES_256_GCM);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_aes_gcm);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 #endif
 
     /* load auth func types */
     status = srtp_crypto_kernel_load_auth_type(&srtp_null_auth, SRTP_NULL_AUTH);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_auth_type(&srtp_hmac, SRTP_HMAC_SHA1);
-    if (status) {
+    if (status)
+    {
         return status;
     }
     status = srtp_crypto_kernel_load_debug_module(&srtp_mod_hmac);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 
@@ -213,11 +233,13 @@ srtp_err_status_t srtp_crypto_kernel_status ()
     srtp_kernel_debug_module_t *dm    = crypto_kernel.debug_module_list;
 
     /* for each cipher type, describe and test */
-    while (ctype != NULL) {
+    while (ctype != NULL)
+    {
         printf("cipher: %s\n", ctype->cipher_type->description);
         printf("  self-test: ");
         status = srtp_cipher_type_self_test(ctype->cipher_type);
-        if (status) {
+        if (status)
+        {
             printf("failed with error code %d\n", status);
             exit(status);
         }
@@ -226,11 +248,13 @@ srtp_err_status_t srtp_crypto_kernel_status ()
     }
 
     /* for each auth type, describe and test */
-    while (atype != NULL) {
+    while (atype != NULL)
+    {
         printf("auth func: %s\n", atype->auth_type->description);
         printf("  self-test: ");
         status = srtp_auth_type_self_test(atype->auth_type);
-        if (status) {
+        if (status)
+        {
             printf("failed with error code %d\n", status);
             exit(status);
         }
@@ -240,11 +264,15 @@ srtp_err_status_t srtp_crypto_kernel_status ()
 
     /* describe each debug module */
     printf("debug modules loaded:\n");
-    while (dm != NULL) {
+    while (dm != NULL)
+    {
         printf("  %s ", dm->mod->name);
-        if (dm->mod->on) {
+        if (dm->mod->on)
+        {
             printf("(on)\n");
-        } else{
+        }
+        else
+        {
             printf("(off)\n");
         }
         dm = dm->next;
@@ -259,11 +287,15 @@ srtp_err_status_t srtp_crypto_kernel_list_debug_modules ()
 
     /* describe each debug module */
     printf("debug modules loaded:\n");
-    while (dm != NULL) {
+    while (dm != NULL)
+    {
         printf("  %s ", dm->mod->name);
-        if (dm->mod->on) {
+        if (dm->mod->on)
+        {
             printf("(on)\n");
-        } else{
+        }
+        else
+        {
             printf("(off)\n");
         }
         dm = dm->next;
@@ -279,7 +311,8 @@ srtp_err_status_t srtp_crypto_kernel_shutdown ()
      */
 
     /* walk down cipher type list, freeing memory */
-    while (crypto_kernel.cipher_type_list != NULL) {
+    while (crypto_kernel.cipher_type_list != NULL)
+    {
         srtp_kernel_cipher_type_t *ctype = crypto_kernel.cipher_type_list;
         crypto_kernel.cipher_type_list = ctype->next;
         debug_print(srtp_mod_crypto_kernel,
@@ -289,7 +322,8 @@ srtp_err_status_t srtp_crypto_kernel_shutdown ()
     }
 
     /* walk down authetication module list, freeing memory */
-    while (crypto_kernel.auth_type_list != NULL) {
+    while (crypto_kernel.auth_type_list != NULL)
+    {
         srtp_kernel_auth_type_t *atype = crypto_kernel.auth_type_list;
         crypto_kernel.auth_type_list = atype->next;
         debug_print(srtp_mod_crypto_kernel,
@@ -299,7 +333,8 @@ srtp_err_status_t srtp_crypto_kernel_shutdown ()
     }
 
     /* walk down debug module list, freeing memory */
-    while (crypto_kernel.debug_module_list != NULL) {
+    while (crypto_kernel.debug_module_list != NULL)
+    {
         srtp_kernel_debug_module_t *kdm = crypto_kernel.debug_module_list;
         crypto_kernel.debug_module_list = kdm->next;
         debug_print(srtp_mod_crypto_kernel,
@@ -320,44 +355,55 @@ static inline srtp_err_status_t srtp_crypto_kernel_do_load_cipher_type (const sr
     srtp_err_status_t status;
 
     /* defensive coding */
-    if (new_ct == NULL) {
+    if (new_ct == NULL)
+    {
         return srtp_err_status_bad_param;
     }
 
-    if (new_ct->id != id) {
+    if (new_ct->id != id)
+    {
         return srtp_err_status_bad_param;
     }
 
     /* check cipher type by running self-test */
     status = srtp_cipher_type_self_test(new_ct);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 
     /* walk down list, checking if this type is in the list already  */
     ctype = crypto_kernel.cipher_type_list;
-    while (ctype != NULL) {
-        if (id == ctype->id) {
-            if (!replace) {
+    while (ctype != NULL)
+    {
+        if (id == ctype->id)
+        {
+            if (!replace)
+            {
                 return srtp_err_status_bad_param;
             }
             status = srtp_cipher_type_test(new_ct, ctype->cipher_type->test_data);
-            if (status) {
+            if (status)
+            {
                 return status;
             }
             new_ctype = ctype;
             break;
-        }else if (new_ct == ctype->cipher_type) {
+        }
+        else if (new_ct == ctype->cipher_type)
+        {
             return srtp_err_status_bad_param;
         }
         ctype = ctype->next;
     }
 
     /* if not found, put new_ct at the head of the list */
-    if (ctype == NULL) {
+    if (ctype == NULL)
+    {
         /* allocate memory */
         new_ctype = (srtp_kernel_cipher_type_t*)srtp_crypto_alloc(sizeof(srtp_kernel_cipher_type_t));
-        if (new_ctype == NULL) {
+        if (new_ctype == NULL)
+        {
             return srtp_err_status_alloc_fail;
         }
         new_ctype->next = crypto_kernel.cipher_type_list;
@@ -389,44 +435,55 @@ srtp_err_status_t srtp_crypto_kernel_do_load_auth_type (const srtp_auth_type_t *
     srtp_err_status_t status;
 
     /* defensive coding */
-    if (new_at == NULL) {
+    if (new_at == NULL)
+    {
         return srtp_err_status_bad_param;
     }
 
-    if (new_at->id != id) {
+    if (new_at->id != id)
+    {
         return srtp_err_status_bad_param;
     }
 
     /* check auth type by running self-test */
     status = srtp_auth_type_self_test(new_at);
-    if (status) {
+    if (status)
+    {
         return status;
     }
 
     /* walk down list, checking if this type is in the list already  */
     atype = crypto_kernel.auth_type_list;
-    while (atype != NULL) {
-        if (id == atype->id) {
-            if (!replace) {
+    while (atype != NULL)
+    {
+        if (id == atype->id)
+        {
+            if (!replace)
+            {
                 return srtp_err_status_bad_param;
             }
             status = srtp_auth_type_test(new_at, atype->auth_type->test_data);
-            if (status) {
+            if (status)
+            {
                 return status;
             }
             new_atype = atype;
             break;
-        }else if (new_at == atype->auth_type) {
+        }
+        else if (new_at == atype->auth_type)
+        {
             return srtp_err_status_bad_param;
         }
         atype = atype->next;
     }
 
     /* if not found, put new_at at the head of the list */
-    if (atype == NULL) {
+    if (atype == NULL)
+    {
         /* allocate memory */
         new_atype = (srtp_kernel_auth_type_t*)srtp_crypto_alloc(sizeof(srtp_kernel_auth_type_t));
-        if (new_atype == NULL) {
+        if (new_atype == NULL)
+        {
             return srtp_err_status_alloc_fail;
         }
 
@@ -460,8 +517,10 @@ const srtp_cipher_type_t * srtp_crypto_kernel_get_cipher_type (srtp_cipher_type_
 
     /* walk down list, looking for id  */
     ctype = crypto_kernel.cipher_type_list;
-    while (ctype != NULL) {
-        if (id == ctype->id) {
+    while (ctype != NULL)
+    {
+        if (id == ctype->id)
+        {
             return ctype->cipher_type;
         }
         ctype = ctype->next;
@@ -480,12 +539,14 @@ srtp_err_status_t srtp_crypto_kernel_alloc_cipher (srtp_cipher_type_id_t id, srt
      * if the crypto_kernel is not yet initialized, we refuse to allocate
      * any ciphers - this is a bit extra-paranoid
      */
-    if (crypto_kernel.state != srtp_crypto_kernel_state_secure) {
+    if (crypto_kernel.state != srtp_crypto_kernel_state_secure)
+    {
         return srtp_err_status_init_fail;
     }
 
     ct = srtp_crypto_kernel_get_cipher_type(id);
-    if (!ct) {
+    if (!ct)
+    {
         return srtp_err_status_fail;
     }
 
@@ -500,8 +561,10 @@ const srtp_auth_type_t * srtp_crypto_kernel_get_auth_type (srtp_auth_type_id_t i
 
     /* walk down list, looking for id  */
     atype = crypto_kernel.auth_type_list;
-    while (atype != NULL) {
-        if (id == atype->id) {
+    while (atype != NULL)
+    {
+        if (id == atype->id)
+        {
             return atype->auth_type;
         }
         atype = atype->next;
@@ -519,12 +582,14 @@ srtp_err_status_t srtp_crypto_kernel_alloc_auth (srtp_auth_type_id_t id, srtp_au
      * if the crypto_kernel is not yet initialized, we refuse to allocate
      * any auth functions - this is a bit extra-paranoid
      */
-    if (crypto_kernel.state != srtp_crypto_kernel_state_secure) {
+    if (crypto_kernel.state != srtp_crypto_kernel_state_secure)
+    {
         return srtp_err_status_init_fail;
     }
 
     at = srtp_crypto_kernel_get_auth_type(id);
-    if (!at) {
+    if (!at)
+    {
         return srtp_err_status_fail;
     }
 
@@ -536,14 +601,17 @@ srtp_err_status_t srtp_crypto_kernel_load_debug_module (srtp_debug_module_t *new
     srtp_kernel_debug_module_t *kdm, *new;
 
     /* defensive coding */
-    if (new_dm == NULL) {
+    if (new_dm == NULL)
+    {
         return srtp_err_status_bad_param;
     }
 
     /* walk down list, checking if this type is in the list already  */
     kdm = crypto_kernel.debug_module_list;
-    while (kdm != NULL) {
-        if (strncmp(new_dm->name, kdm->mod->name, 64) == 0) {
+    while (kdm != NULL)
+    {
+        if (strncmp(new_dm->name, kdm->mod->name, 64) == 0)
+        {
             return srtp_err_status_bad_param;
         }
         kdm = kdm->next;
@@ -552,7 +620,8 @@ srtp_err_status_t srtp_crypto_kernel_load_debug_module (srtp_debug_module_t *new
     /* put new_dm at the head of the list */
     /* allocate memory */
     new = (srtp_kernel_debug_module_t*)srtp_crypto_alloc(sizeof(srtp_kernel_debug_module_t));
-    if (new == NULL) {
+    if (new == NULL)
+    {
         return srtp_err_status_alloc_fail;
     }
 
@@ -572,8 +641,10 @@ srtp_err_status_t srtp_crypto_kernel_set_debug_module (char *name, int on)
 
     /* walk down list, checking if this type is in the list already  */
     kdm = crypto_kernel.debug_module_list;
-    while (kdm != NULL) {
-        if (strncmp(name, kdm->mod->name, 64) == 0) {
+    while (kdm != NULL)
+    {
+        if (strncmp(name, kdm->mod->name, 64) == 0)
+        {
             kdm->mod->on = on;
             return srtp_err_status_ok;
         }

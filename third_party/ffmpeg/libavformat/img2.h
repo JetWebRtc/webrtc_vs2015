@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Image format
  * Copyright (c) 2014 Michael Niedermayer
  *
@@ -30,14 +30,16 @@
 #include <glob.h>
 #endif
 
-enum PatternType {
+enum PatternType
+{
     PT_GLOB_SEQUENCE,
     PT_GLOB,
     PT_SEQUENCE,
     PT_NONE
 };
 
-typedef struct VideoDemuxData {
+typedef struct VideoDemuxData
+{
     const AVClass *class;  /**< Class for private options. */
     int img_first;
     int img_last;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,8 +25,10 @@
 
 #include "webrtc/system_wrappers/include/trace.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 void MyClNotifyHandler(HANDLE ClRegCtx, HANDLE ClIfcCtx, ULONG Event,
                        HANDLE SubCode, ULONG BufSize, PVOID Buffer);
 
@@ -44,7 +46,7 @@ typedef ULONG (WINAPI *filterDeleteFn)(HANDLE);
 
 class TrafficControlWindows
 {
- public:
+public:
     // Factory method. Constructor disabled.
     static TrafficControlWindows* GetInstance(const int32_t id);
     static void Release(TrafficControlWindows* gtc);

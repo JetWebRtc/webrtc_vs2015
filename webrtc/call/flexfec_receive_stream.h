@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,71 +19,76 @@
 #include "webrtc/api/call/transport.h"
 #include "webrtc/config.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FlexfecReceiveStream {
- public:
-  struct Stats {
-    std::string ToString(int64_t time_ms) const;
+class FlexfecReceiveStream
+{
+public:
+    struct Stats
+    {
+        std::string ToString(int64_t time_ms) const;
 
-    // TODO(brandtr): Add appropriate stats here.
-    int flexfec_bitrate_bps;
-  };
+        // TODO(brandtr): Add appropriate stats here.
+        int flexfec_bitrate_bps;
+    };
 
-  struct Config {
-    explicit Config(Transport* rtcp_send_transport)
-        : rtcp_send_transport(rtcp_send_transport) {
-      RTC_DCHECK(rtcp_send_transport);
-    }
+    struct Config
+    {
+        explicit Config(Transport* rtcp_send_transport)
+            : rtcp_send_transport(rtcp_send_transport)
+        {
+            RTC_DCHECK(rtcp_send_transport);
+        }
 
-    std::string ToString() const;
+        std::string ToString() const;
 
-    // Returns true if all RTP information is available in order to
-    // enable receiving FlexFEC.
-    bool IsCompleteAndEnabled() const;
+        // Returns true if all RTP information is available in order to
+        // enable receiving FlexFEC.
+        bool IsCompleteAndEnabled() const;
 
-    // Payload type for FlexFEC.
-    int payload_type = -1;
+        // Payload type for FlexFEC.
+        int payload_type = -1;
 
-    // SSRC for FlexFEC stream to be received.
-    uint32_t remote_ssrc = 0;
+        // SSRC for FlexFEC stream to be received.
+        uint32_t remote_ssrc = 0;
 
-    // Vector containing a single element, corresponding to the SSRC of the
-    // media stream being protected by this FlexFEC stream. The vector MUST have
-    // size 1.
-    //
-    // TODO(brandtr): Update comment above when we support multistream
-    // protection.
-    std::vector<uint32_t> protected_media_ssrcs;
+        // Vector containing a single element, corresponding to the SSRC of the
+        // media stream being protected by this FlexFEC stream. The vector MUST have
+        // size 1.
+        //
+        // TODO(brandtr): Update comment above when we support multistream
+        // protection.
+        std::vector<uint32_t> protected_media_ssrcs;
 
-    // SSRC for RTCP reports to be sent.
-    uint32_t local_ssrc = 0;
+        // SSRC for RTCP reports to be sent.
+        uint32_t local_ssrc = 0;
 
-    // What RTCP mode to use in the reports.
-    RtcpMode rtcp_mode = RtcpMode::kCompound;
+        // What RTCP mode to use in the reports.
+        RtcpMode rtcp_mode = RtcpMode::kCompound;
 
-    // Transport for outgoing RTCP packets.
-    Transport* rtcp_send_transport = nullptr;
+        // Transport for outgoing RTCP packets.
+        Transport* rtcp_send_transport = nullptr;
 
-    // |transport_cc| is true whenever the send-side BWE RTCP feedback message
-    // has been negotiated. This is a prerequisite for enabling send-side BWE.
-    bool transport_cc = false;
+        // |transport_cc| is true whenever the send-side BWE RTCP feedback message
+        // has been negotiated. This is a prerequisite for enabling send-side BWE.
+        bool transport_cc = false;
 
-    // RTP header extensions that have been negotiated for this track.
-    std::vector<RtpExtension> rtp_header_extensions;
-  };
+        // RTP header extensions that have been negotiated for this track.
+        std::vector<RtpExtension> rtp_header_extensions;
+    };
 
-  // Starts stream activity.
-  // When a stream is active, it can receive and process packets.
-  virtual void Start() = 0;
-  // Stops stream activity.
-  // When a stream is stopped, it can't receive nor process packets.
-  virtual void Stop() = 0;
+    // Starts stream activity.
+    // When a stream is active, it can receive and process packets.
+    virtual void Start() = 0;
+    // Stops stream activity.
+    // When a stream is stopped, it can't receive nor process packets.
+    virtual void Stop() = 0;
 
-  virtual Stats GetStats() const = 0;
+    virtual Stats GetStats() const = 0;
 
- protected:
-  virtual ~FlexfecReceiveStream() = default;
+protected:
+    virtual ~FlexfecReceiveStream() = default;
 };
 
 }  // namespace webrtc

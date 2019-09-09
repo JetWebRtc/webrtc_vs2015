@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Optimization of some functions from mpegvideo.c for armv5te
  * Copyright (c) 2007 Siarhei Siamashka <ssvb@users.sourceforge.net>
  *
@@ -36,12 +36,17 @@ void ff_dct_unquantize_h263_armv5te(int16_t *block, int qmul, int qadd, int coun
 static inline void dct_unquantize_h263_helper_c(int16_t *block, int qmul, int qadd, int count)
 {
     int i, level;
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
         level = block[i];
-        if (level) {
-            if (level < 0) {
+        if (level)
+        {
+            if (level < 0)
+            {
                 level = level * qmul - qadd;
-            } else {
+            }
+            else
+            {
                 level = level * qmul + qadd;
             }
             block[i] = level;
@@ -51,7 +56,7 @@ static inline void dct_unquantize_h263_helper_c(int16_t *block, int qmul, int qa
 #endif
 
 static void dct_unquantize_h263_intra_armv5te(MpegEncContext *s,
-                                  int16_t *block, int n, int qscale)
+        int16_t *block, int n, int qscale)
 {
     int level, qmul, qadd;
     int nCoeffs;
@@ -60,13 +65,16 @@ static void dct_unquantize_h263_intra_armv5te(MpegEncContext *s,
 
     qmul = qscale << 1;
 
-    if (!s->h263_aic) {
+    if (!s->h263_aic)
+    {
         if (n < 4)
             level = block[0] * s->y_dc_scale;
         else
             level = block[0] * s->c_dc_scale;
         qadd = (qscale - 1) | 1;
-    }else{
+    }
+    else
+    {
         qadd = 0;
         level = block[0];
     }
@@ -80,7 +88,7 @@ static void dct_unquantize_h263_intra_armv5te(MpegEncContext *s,
 }
 
 static void dct_unquantize_h263_inter_armv5te(MpegEncContext *s,
-                                  int16_t *block, int n, int qscale)
+        int16_t *block, int n, int qscale)
 {
     int qmul, qadd;
     int nCoeffs;

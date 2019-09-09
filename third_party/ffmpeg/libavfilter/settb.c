@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -37,21 +37,24 @@
 #include "internal.h"
 #include "video.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "AVTB",   /* default timebase 1/AV_TIME_BASE */
     "intb",   /* input timebase */
     "sr",     /* sample rate */
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_AVTB,
     VAR_INTB,
     VAR_SR,
     VAR_VARS_NB
 };
 
-typedef struct SetTBContext {
+typedef struct SetTBContext
+{
     const AVClass *class;
     char *tb_expr;
     double var_values[VAR_VARS_NB];
@@ -84,12 +87,14 @@ static int config_output_props(AVFilterLink *outlink)
     outlink->h = inlink->h;
 
     if ((ret = av_expr_parse_and_eval(&res, settb->tb_expr, var_names, settb->var_values,
-                                      NULL, NULL, NULL, NULL, NULL, 0, NULL)) < 0) {
+                                      NULL, NULL, NULL, NULL, NULL, 0, NULL)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid expression '%s' for timebase.\n", settb->tb_expr);
         return ret;
     }
     time_base = av_d2q(res, INT_MAX);
-    if (time_base.num <= 0 || time_base.den <= 0) {
+    if (time_base.num <= 0 || time_base.den <= 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid non-positive values for the timebase num:%d or den:%d.\n",
                time_base.num, time_base.den);
@@ -109,7 +114,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AVFilterContext *ctx = inlink->dst;
     AVFilterLink *outlink = ctx->outputs[0];
 
-    if (av_cmp_q(inlink->time_base, outlink->time_base)) {
+    if (av_cmp_q(inlink->time_base, outlink->time_base))
+    {
         int64_t orig_pts = frame->pts;
         frame->pts = av_rescale_q(frame->pts, inlink->time_base, outlink->time_base);
         av_log(ctx, AV_LOG_DEBUG, "tb:%d/%d pts:%"PRId64" -> tb:%d/%d pts:%"PRId64"\n",
@@ -125,7 +131,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
 DEFINE_OPTIONS(settb, VIDEO);
 AVFILTER_DEFINE_CLASS(settb);
 
-static const AVFilterPad avfilter_vf_settb_inputs[] = {
+static const AVFilterPad avfilter_vf_settb_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -134,7 +141,8 @@ static const AVFilterPad avfilter_vf_settb_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_settb_outputs[] = {
+static const AVFilterPad avfilter_vf_settb_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -143,7 +151,8 @@ static const AVFilterPad avfilter_vf_settb_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_settb = {
+AVFilter ff_vf_settb =
+{
     .name        = "settb",
     .description = NULL_IF_CONFIG_SMALL("Set timebase for the video output link."),
     .priv_size   = sizeof(SetTBContext),
@@ -158,7 +167,8 @@ AVFilter ff_vf_settb = {
 DEFINE_OPTIONS(asettb, AUDIO);
 AVFILTER_DEFINE_CLASS(asettb);
 
-static const AVFilterPad avfilter_af_asettb_inputs[] = {
+static const AVFilterPad avfilter_af_asettb_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -167,7 +177,8 @@ static const AVFilterPad avfilter_af_asettb_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_asettb_outputs[] = {
+static const AVFilterPad avfilter_af_asettb_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -176,7 +187,8 @@ static const AVFilterPad avfilter_af_asettb_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_asettb = {
+AVFilter ff_af_asettb =
+{
     .name        = "asettb",
     .description = NULL_IF_CONFIG_SMALL("Set timebase for the audio output link."),
     .priv_size   = sizeof(SetTBContext),

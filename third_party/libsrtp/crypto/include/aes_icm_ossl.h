@@ -1,4 +1,4 @@
-/*
+﻿/*
  * aes_icm.h
  *
  * Header for AES Integer Counter Mode.
@@ -59,7 +59,8 @@
 #define     SRTP_AES_192_KEYSIZE         AES_BLOCK_SIZE + AES_BLOCK_SIZE / 2
 #define     SRTP_AES_192_KEYSIZE_WSALT   SRTP_AES_192_KEYSIZE + SRTP_SALT_SIZE
 
-typedef struct {
+typedef struct
+{
     v128_t counter;                /* holds the counter value          */
     v128_t offset;                 /* initial offset value             */
     int key_size;

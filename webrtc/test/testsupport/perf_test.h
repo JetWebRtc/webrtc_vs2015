@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,8 +18,10 @@
 #include <sstream>
 #include <string>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Prints numerical information to stdout in a controlled format, for
 // post-processing. |measurement| is a description of the quantity being
@@ -119,19 +121,21 @@ std::string SystemCommitChargeToString(const std::string& test_name,
 
 // Converts list of values into comma-separated string for PrintResultList.
 template <typename Container>
-std::string ValuesToString(const Container& container) {
-  if (container.empty())
-    return "";
+std::string ValuesToString(const Container& container)
+{
+    if (container.empty())
+        return "";
 
-  std::stringstream ss;
-  auto it = container.begin();
-  while (true) {
-    ss << *it;
-    if (++it == container.end())
-      break;
-    ss << ',';
-  }
-  return ss.str();
+    std::stringstream ss;
+    auto it = container.begin();
+    while (true)
+    {
+        ss << *it;
+        if (++it == container.end())
+            break;
+        ss << ',';
+    }
+    return ss.str();
 }
 
 }  // namespace test

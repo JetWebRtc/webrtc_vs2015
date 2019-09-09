@@ -1,4 +1,4 @@
-/*
+﻿/*
  * THP Demuxer
  * Copyright (c) 2007 Marco Gerards
  *
@@ -24,7 +24,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct ThpDemuxContext {
+typedef struct ThpDemuxContext
+{
     int              version;
     unsigned         first_frame;
     unsigned         first_framesz;
@@ -68,11 +69,11 @@ static int thp_read_header(AVFormatContext *s)
     int i;
 
     /* Read the file header.  */
-                           avio_rb32(pb); /* Skip Magic.  */
+    avio_rb32(pb); /* Skip Magic.  */
     thp->version         = avio_rb32(pb);
 
-                           avio_rb32(pb); /* Max buf size.  */
-                           avio_rb32(pb); /* Max samples.  */
+    avio_rb32(pb); /* Max buf size.  */
+    avio_rb32(pb); /* Max samples.  */
 
     thp->fps             = av_d2q(av_int2float(avio_rb32(pb)), INT_MAX);
     thp->framecnt        = avio_rb32(pb);
@@ -82,7 +83,7 @@ static int thp_read_header(AVFormatContext *s)
         pb->maxsize= fsize;
 
     thp->compoff         = avio_rb32(pb);
-                           avio_rb32(pb); /* offsetDataOffset.  */
+    avio_rb32(pb); /* offsetDataOffset.  */
     thp->first_frame     = avio_rb32(pb);
     thp->last_frame      = avio_rb32(pb);
 
@@ -96,8 +97,10 @@ static int thp_read_header(AVFormatContext *s)
     /* Read the list of component types.  */
     avio_read(pb, thp->components, 16);
 
-    for (i = 0; i < thp->compcount; i++) {
-        if (thp->components[i] == 0) {
+    for (i = 0; i < thp->compcount; i++)
+    {
+        if (thp->components[i] == 0)
+        {
             if (thp->vst)
                 break;
 
@@ -115,13 +118,15 @@ static int thp_read_header(AVFormatContext *s)
             st->codec->width = avio_rb32(pb);
             st->codec->height = avio_rb32(pb);
             st->nb_frames =
-            st->duration = thp->framecnt;
+                st->duration = thp->framecnt;
             thp->vst = st;
             thp->video_stream_index = st->index;
 
             if (thp->version == 0x11000)
                 avio_rb32(pb); /* Unknown.  */
-        } else if (thp->components[i] == 1) {
+        }
+        else if (thp->components[i] == 1)
+        {
             if (thp->has_audio != 0)
                 break;
 
@@ -147,14 +152,15 @@ static int thp_read_header(AVFormatContext *s)
 }
 
 static int thp_read_packet(AVFormatContext *s,
-                            AVPacket *pkt)
+                           AVPacket *pkt)
 {
     ThpDemuxContext *thp = s->priv_data;
     AVIOContext *pb = s->pb;
     unsigned int size;
     int ret;
 
-    if (thp->audiosize == 0) {
+    if (thp->audiosize == 0)
+    {
         /* Terminate when last frame is reached.  */
         if (thp->frame >= thp->framecnt)
             return AVERROR_EOF;
@@ -165,7 +171,7 @@ static int thp_read_packet(AVFormatContext *s,
         thp->next_frame += FFMAX(thp->next_framesz, 1);
         thp->next_framesz = avio_rb32(pb);
 
-                        avio_rb32(pb); /* Previous total size.  */
+        avio_rb32(pb); /* Previous total size.  */
         size          = avio_rb32(pb); /* Total size of this frame.  */
 
         /* Store the audiosize so the next time this function is called,
@@ -178,17 +184,21 @@ static int thp_read_packet(AVFormatContext *s,
         ret = av_get_packet(pb, pkt, size);
         if (ret < 0)
             return ret;
-        if (ret != size) {
+        if (ret != size)
+        {
             av_free_packet(pkt);
             return AVERROR(EIO);
         }
 
         pkt->stream_index = thp->video_stream_index;
-    } else {
+    }
+    else
+    {
         ret = av_get_packet(pb, pkt, thp->audiosize);
         if (ret < 0)
             return ret;
-        if (ret != thp->audiosize) {
+        if (ret != thp->audiosize)
+        {
             av_free_packet(pkt);
             return AVERROR(EIO);
         }
@@ -204,7 +214,8 @@ static int thp_read_packet(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_thp_demuxer = {
+AVInputFormat ff_thp_demuxer =
+{
     .name           = "thp",
     .long_name      = NULL_IF_CONFIG_SMALL("THP"),
     .priv_data_size = sizeof(ThpDemuxContext),

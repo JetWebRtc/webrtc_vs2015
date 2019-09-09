@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RealVideo 4 decoder
  * copyright (c) 2007 Konstantin Shishkov
  *
@@ -32,14 +32,16 @@
 /**
  * number of ones in nibble minus one
  */
-static const uint8_t rv34_count_ones[16] = {
+static const uint8_t rv34_count_ones[16] =
+{
     0, 0, 0, 1, 0, 1, 1, 2, 0, 1, 1, 2, 1, 2, 2, 3
 };
 
 /**
  * values used to reconstruct coded block pattern
  */
-static const uint8_t rv34_cbp_code[16] = {
+static const uint8_t rv34_cbp_code[16] =
+{
     0x00, 0x20, 0x10, 0x30, 0x02, 0x22, 0x12, 0x32,
     0x01, 0x21, 0x11, 0x31, 0x03, 0x23, 0x13, 0x33
 };
@@ -50,7 +52,8 @@ static const uint8_t rv34_cbp_code[16] = {
  * A lot of four-tuples in RV40 are represented as c0*27+c1*9+c2*3+c3.
  * This table allows conversion from a value back to a vector.
  */
-static const uint8_t modulo_three_table[108] = {
+static const uint8_t modulo_three_table[108] =
+{
     0x00, 0x01, 0x02, 0x04, 0x05, 0x06, 0x08, 0x09, 0x0A,
     0x10, 0x11, 0x12, 0x14, 0x15, 0x16, 0x18, 0x19, 0x1A,
     0x20, 0x21, 0x22, 0x24, 0x25, 0x26, 0x28, 0x29, 0x2A,
@@ -71,45 +74,57 @@ static const uint8_t modulo_three_table[108] = {
 /**
  * quantizer values used for AC and DC coefficients in chroma blocks
  */
-static const uint8_t rv34_chroma_quant[2][32] = {
- {  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
-   16, 17, 17, 18, 19, 20, 20, 21, 22, 22, 23, 23, 24, 24, 25, 25 },
- {  0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13,
-   14, 15, 15, 16, 17, 18, 18, 19, 20, 20, 21, 21, 22, 22, 23, 23 }
+static const uint8_t rv34_chroma_quant[2][32] =
+{
+    {
+        0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
+        16, 17, 17, 18, 19, 20, 20, 21, 22, 22, 23, 23, 24, 24, 25, 25
+    },
+    {
+        0,  0,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13,
+        14, 15, 15, 16, 17, 18, 18, 19, 20, 20, 21, 21, 22, 22, 23, 23
+    }
 };
 
 /**
  * This table is used for dequantizing.
  */
-static const uint16_t rv34_qscale_tab[32] = {
-  60,   67,   76,   85,   96,  108,  121,  136,
- 152,  171,  192,  216,  242,  272,  305,  341,
- 383,  432,  481,  544,  606,  683,  767,  854,
- 963, 1074, 1212, 1392, 1566, 1708, 1978, 2211
+static const uint16_t rv34_qscale_tab[32] =
+{
+    60,   67,   76,   85,   96,  108,  121,  136,
+    152,  171,  192,  216,  242,  272,  305,  341,
+    383,  432,  481,  544,  606,  683,  767,  854,
+    963, 1074, 1212, 1392, 1566, 1708, 1978, 2211
 };
 
 /**
  * tables used to translate a quantizer value into a VLC set for decoding
  * The first table is used for intraframes.
  */
-static const uint8_t rv34_quant_to_vlc_set[2][31] = {
- { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
-   2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 0 },
- { 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3,
-   3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6 },
+static const uint8_t rv34_quant_to_vlc_set[2][31] =
+{
+    {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1,
+        2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 0
+    },
+    {
+        0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3,
+        3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6
+    },
 };
 
 /**
  * table for obtaining the quantizer difference
  * @todo Use with ff_modified_quant_tab from h263data.h.
  */
-static const uint8_t rv34_dquant_tab[2][32]={
-//  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+static const uint8_t rv34_dquant_tab[2][32]=
 {
-    0, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9,10,11,12,13,14,15,16,17,18,18,19,20,21,22,23,24,25,26,27,28
-},{
-    0, 2, 3, 4, 5, 6, 7, 8, 9,10,11,13,14,15,16,17,18,19,20,21,22,24,25,26,27,28,29,30,31,31,31,26
-}
+//  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
+    {
+        0, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9,10,11,12,13,14,15,16,17,18,18,19,20,21,22,23,24,25,26,27,28
+    },{
+        0, 2, 3, 4, 5, 6, 7, 8, 9,10,11,13,14,15,16,17,18,19,20,21,22,24,25,26,27,28,29,30,31,31,31,26
+    }
 };
 
 /**

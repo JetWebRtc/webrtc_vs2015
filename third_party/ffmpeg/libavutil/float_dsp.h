@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include "config.h"
 
-typedef struct AVFloatDSPContext {
+typedef struct AVFloatDSPContext
+{
     /**
      * Calculate the entry wise product of two vectors of floats and store the result in
      * a vector of floats.

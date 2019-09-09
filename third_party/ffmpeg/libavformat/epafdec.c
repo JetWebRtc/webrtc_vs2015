@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ensoniq Paris Audio File demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -27,11 +27,11 @@
 static int epaf_probe(AVProbeData *p)
 {
     if (((AV_RL32(p->buf) == MKTAG('f','a','p',' ') &&
-          AV_RL32(p->buf + 8) == 1) ||
-         (AV_RL32(p->buf) == MKTAG(' ','p','a','f') &&
-          AV_RN32(p->buf + 8) == 0)) &&
-       !AV_RN32(p->buf +  4) && AV_RN32(p->buf + 12) &&
-        AV_RN32(p->buf + 20))
+            AV_RL32(p->buf + 8) == 1) ||
+            (AV_RL32(p->buf) == MKTAG(' ','p','a','f') &&
+             AV_RN32(p->buf + 8) == 0)) &&
+            !AV_RN32(p->buf +  4) && AV_RN32(p->buf + 12) &&
+            AV_RN32(p->buf + 20))
         return AVPROBE_SCORE_MAX / 4 * 3;
     return 0;
 }
@@ -49,11 +49,14 @@ static int epaf_read_header(AVFormatContext *s)
     if (le && le != 1)
         return AVERROR_INVALIDDATA;
 
-    if (le) {
+    if (le)
+    {
         sample_rate = avio_rl32(s->pb);
         codec       = avio_rl32(s->pb);
         channels    = avio_rl32(s->pb);
-    } else {
+    }
+    else
+    {
         sample_rate = avio_rb32(s->pb);
         codec       = avio_rb32(s->pb);
         channels    = avio_rb32(s->pb);
@@ -69,7 +72,8 @@ static int epaf_read_header(AVFormatContext *s)
     st->codec->codec_type  = AVMEDIA_TYPE_AUDIO;
     st->codec->channels    = channels;
     st->codec->sample_rate = sample_rate;
-    switch (codec) {
+    switch (codec)
+    {
     case 0:
         st->codec->codec_id = le ? AV_CODEC_ID_PCM_S16LE : AV_CODEC_ID_PCM_S16BE;
         break;
@@ -92,7 +96,8 @@ static int epaf_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_epaf_demuxer = {
+AVInputFormat ff_epaf_demuxer =
+{
     .name           = "epaf",
     .long_name      = NULL_IF_CONFIG_SMALL("Ensoniq Paris Audio File"),
     .read_probe     = epaf_probe,

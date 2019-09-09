@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,8 +20,10 @@ using testing::make_tuple;
 using webrtc::rtcp::ReceiverReport;
 using webrtc::rtcp::ReportBlock;
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 const uint32_t kSenderSsrc = 0x12345678;
 const uint32_t kRemoteSsrc = 0x23456789;
 const uint8_t kFractionLost = 55;
@@ -36,95 +38,103 @@ const uint32_t kDelayLastSr = 0x55565758;
 const uint8_t kPacket[] = {0x81, 201,  0x00, 0x07, 0x12, 0x34, 0x56, 0x78,
                            0x23, 0x45, 0x67, 0x89, 55,   0x11, 0x12, 0x13,
                            0x22, 0x23, 0x24, 0x25, 0x33, 0x34, 0x35, 0x36,
-                           0x44, 0x45, 0x46, 0x47, 0x55, 0x56, 0x57, 0x58};
+                           0x44, 0x45, 0x46, 0x47, 0x55, 0x56, 0x57, 0x58
+                          };
 }  // namespace
 
-TEST(RtcpPacketReceiverReportTest, ParseWithOneReportBlock) {
-  ReceiverReport rr;
-  EXPECT_TRUE(test::ParseSinglePacket(kPacket, &rr));
-  const ReceiverReport& parsed = rr;
+TEST(RtcpPacketReceiverReportTest, ParseWithOneReportBlock)
+{
+    ReceiverReport rr;
+    EXPECT_TRUE(test::ParseSinglePacket(kPacket, &rr));
+    const ReceiverReport& parsed = rr;
 
-  EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
-  EXPECT_EQ(1u, parsed.report_blocks().size());
-  const ReportBlock& rb = parsed.report_blocks().front();
-  EXPECT_EQ(kRemoteSsrc, rb.source_ssrc());
-  EXPECT_EQ(kFractionLost, rb.fraction_lost());
-  EXPECT_EQ(kCumulativeLost, rb.cumulative_lost());
-  EXPECT_EQ(kExtHighestSeqNum, rb.extended_high_seq_num());
-  EXPECT_EQ(kJitter, rb.jitter());
-  EXPECT_EQ(kLastSr, rb.last_sr());
-  EXPECT_EQ(kDelayLastSr, rb.delay_since_last_sr());
+    EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
+    EXPECT_EQ(1u, parsed.report_blocks().size());
+    const ReportBlock& rb = parsed.report_blocks().front();
+    EXPECT_EQ(kRemoteSsrc, rb.source_ssrc());
+    EXPECT_EQ(kFractionLost, rb.fraction_lost());
+    EXPECT_EQ(kCumulativeLost, rb.cumulative_lost());
+    EXPECT_EQ(kExtHighestSeqNum, rb.extended_high_seq_num());
+    EXPECT_EQ(kJitter, rb.jitter());
+    EXPECT_EQ(kLastSr, rb.last_sr());
+    EXPECT_EQ(kDelayLastSr, rb.delay_since_last_sr());
 }
 
-TEST(RtcpPacketReceiverReportTest, ParseFailsOnIncorrectSize) {
-  rtc::Buffer damaged_packet(kPacket);
-  damaged_packet[0]++;  // Damage the packet: increase count field.
-  ReceiverReport rr;
-  EXPECT_FALSE(test::ParseSinglePacket(damaged_packet, &rr));
+TEST(RtcpPacketReceiverReportTest, ParseFailsOnIncorrectSize)
+{
+    rtc::Buffer damaged_packet(kPacket);
+    damaged_packet[0]++;  // Damage the packet: increase count field.
+    ReceiverReport rr;
+    EXPECT_FALSE(test::ParseSinglePacket(damaged_packet, &rr));
 }
 
-TEST(RtcpPacketReceiverReportTest, CreateWithOneReportBlock) {
-  ReceiverReport rr;
-  rr.SetSenderSsrc(kSenderSsrc);
-  ReportBlock rb;
-  rb.SetMediaSsrc(kRemoteSsrc);
-  rb.SetFractionLost(kFractionLost);
-  rb.SetCumulativeLost(kCumulativeLost);
-  rb.SetExtHighestSeqNum(kExtHighestSeqNum);
-  rb.SetJitter(kJitter);
-  rb.SetLastSr(kLastSr);
-  rb.SetDelayLastSr(kDelayLastSr);
-  rr.AddReportBlock(rb);
+TEST(RtcpPacketReceiverReportTest, CreateWithOneReportBlock)
+{
+    ReceiverReport rr;
+    rr.SetSenderSsrc(kSenderSsrc);
+    ReportBlock rb;
+    rb.SetMediaSsrc(kRemoteSsrc);
+    rb.SetFractionLost(kFractionLost);
+    rb.SetCumulativeLost(kCumulativeLost);
+    rb.SetExtHighestSeqNum(kExtHighestSeqNum);
+    rb.SetJitter(kJitter);
+    rb.SetLastSr(kLastSr);
+    rb.SetDelayLastSr(kDelayLastSr);
+    rr.AddReportBlock(rb);
 
-  rtc::Buffer raw = rr.Build();
+    rtc::Buffer raw = rr.Build();
 
-  EXPECT_THAT(make_tuple(raw.data(), raw.size()), ElementsAreArray(kPacket));
+    EXPECT_THAT(make_tuple(raw.data(), raw.size()), ElementsAreArray(kPacket));
 }
 
-TEST(RtcpPacketReceiverReportTest, CreateAndParseWithoutReportBlocks) {
-  ReceiverReport rr;
-  rr.SetSenderSsrc(kSenderSsrc);
+TEST(RtcpPacketReceiverReportTest, CreateAndParseWithoutReportBlocks)
+{
+    ReceiverReport rr;
+    rr.SetSenderSsrc(kSenderSsrc);
 
-  rtc::Buffer raw = rr.Build();
-  ReceiverReport parsed;
-  EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed));
+    rtc::Buffer raw = rr.Build();
+    ReceiverReport parsed;
+    EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed));
 
-  EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
-  EXPECT_THAT(parsed.report_blocks(), IsEmpty());
+    EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
+    EXPECT_THAT(parsed.report_blocks(), IsEmpty());
 }
 
-TEST(RtcpPacketReceiverReportTest, CreateAndParseWithTwoReportBlocks) {
-  ReceiverReport rr;
-  ReportBlock rb1;
-  rb1.SetMediaSsrc(kRemoteSsrc);
-  ReportBlock rb2;
-  rb2.SetMediaSsrc(kRemoteSsrc + 1);
+TEST(RtcpPacketReceiverReportTest, CreateAndParseWithTwoReportBlocks)
+{
+    ReceiverReport rr;
+    ReportBlock rb1;
+    rb1.SetMediaSsrc(kRemoteSsrc);
+    ReportBlock rb2;
+    rb2.SetMediaSsrc(kRemoteSsrc + 1);
 
-  rr.SetSenderSsrc(kSenderSsrc);
-  EXPECT_TRUE(rr.AddReportBlock(rb1));
-  EXPECT_TRUE(rr.AddReportBlock(rb2));
+    rr.SetSenderSsrc(kSenderSsrc);
+    EXPECT_TRUE(rr.AddReportBlock(rb1));
+    EXPECT_TRUE(rr.AddReportBlock(rb2));
 
-  rtc::Buffer raw = rr.Build();
-  ReceiverReport parsed;
-  EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed));
+    rtc::Buffer raw = rr.Build();
+    ReceiverReport parsed;
+    EXPECT_TRUE(test::ParseSinglePacket(raw, &parsed));
 
-  EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
-  EXPECT_EQ(2u, parsed.report_blocks().size());
-  EXPECT_EQ(kRemoteSsrc, parsed.report_blocks()[0].source_ssrc());
-  EXPECT_EQ(kRemoteSsrc + 1, parsed.report_blocks()[1].source_ssrc());
+    EXPECT_EQ(kSenderSsrc, parsed.sender_ssrc());
+    EXPECT_EQ(2u, parsed.report_blocks().size());
+    EXPECT_EQ(kRemoteSsrc, parsed.report_blocks()[0].source_ssrc());
+    EXPECT_EQ(kRemoteSsrc + 1, parsed.report_blocks()[1].source_ssrc());
 }
 
-TEST(RtcpPacketReceiverReportTest, CreateWithTooManyReportBlocks) {
-  ReceiverReport rr;
-  rr.SetSenderSsrc(kSenderSsrc);
-  const size_t kMaxReportBlocks = (1 << 5) - 1;
-  ReportBlock rb;
-  for (size_t i = 0; i < kMaxReportBlocks; ++i) {
-    rb.SetMediaSsrc(kRemoteSsrc + i);
-    EXPECT_TRUE(rr.AddReportBlock(rb));
-  }
-  rb.SetMediaSsrc(kRemoteSsrc + kMaxReportBlocks);
-  EXPECT_FALSE(rr.AddReportBlock(rb));
+TEST(RtcpPacketReceiverReportTest, CreateWithTooManyReportBlocks)
+{
+    ReceiverReport rr;
+    rr.SetSenderSsrc(kSenderSsrc);
+    const size_t kMaxReportBlocks = (1 << 5) - 1;
+    ReportBlock rb;
+    for (size_t i = 0; i < kMaxReportBlocks; ++i)
+    {
+        rb.SetMediaSsrc(kRemoteSsrc + i);
+        EXPECT_TRUE(rr.AddReportBlock(rb));
+    }
+    rb.SetMediaSsrc(kRemoteSsrc + kMaxReportBlocks);
+    EXPECT_FALSE(rr.AddReportBlock(rb));
 }
 
 }  // namespace webrtc

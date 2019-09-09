@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,20 +16,22 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioBuffer;
 
-class LowCutFilter {
- public:
-  LowCutFilter(size_t channels, int sample_rate_hz);
-  ~LowCutFilter();
-  void Process(AudioBuffer* audio);
+class LowCutFilter
+{
+public:
+    LowCutFilter(size_t channels, int sample_rate_hz);
+    ~LowCutFilter();
+    void Process(AudioBuffer* audio);
 
- private:
-  class BiquadFilter;
-  std::vector<std::unique_ptr<BiquadFilter>> filters_;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(LowCutFilter);
+private:
+    class BiquadFilter;
+    std::vector<std::unique_ptr<BiquadFilter>> filters_;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(LowCutFilter);
 };
 }  // namespace webrtc
 

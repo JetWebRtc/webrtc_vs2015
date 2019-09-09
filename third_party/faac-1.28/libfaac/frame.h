@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -51,25 +51,27 @@ extern "C" {
 #include "fft.h"
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-  #ifndef FAACAPI
-    #define FAACAPI __stdcall
-  #endif
+#ifndef FAACAPI
+#define FAACAPI __stdcall
+#endif
 #else
-  #ifndef FAACAPI
-    #define FAACAPI
-  #endif
+#ifndef FAACAPI
+#define FAACAPI
+#endif
 #endif
 
 #pragma pack(push, 1)
 
-typedef struct {
-  psymodel_t *model;
-  char *name;
+typedef struct
+{
+    psymodel_t *model;
+    char *name;
 } psymodellist_t;
 
 #include <faaccfg.h>
 
-typedef struct {
+typedef struct
+{
     /* number of channels in AAC file */
     unsigned int numChannels;
 
@@ -119,19 +121,19 @@ typedef struct {
     /* quantizer specific config */
     AACQuantCfg aacquantCfg;
 
-	/* FFT Tables */
-	FFT_Tables	fft_tables;
+    /* FFT Tables */
+    FFT_Tables	fft_tables;
 
     /* output bits difference in average bitrate mode */
     int bitDiff;
 } faacEncStruct, *faacEncHandle;
 
 int FAACAPI faacEncGetVersion(char **faac_id_string,
-			      char **faac_copyright_string);
+                              char **faac_copyright_string);
 
 int FAACAPI faacEncGetDecoderSpecificInfo(faacEncHandle hEncoder,
-                                          unsigned char** ppBuffer,
-                                          unsigned long* pSizeOfDecoderSpecificInfo);
+        unsigned char** ppBuffer,
+        unsigned long* pSizeOfDecoderSpecificInfo);
 
 faacEncConfigurationPtr FAACAPI faacEncGetCurrentConfiguration(faacEncHandle hEncoder);
 int FAACAPI faacEncSetConfiguration (faacEncHandle hEncoder, faacEncConfigurationPtr config);
@@ -146,7 +148,7 @@ int FAACAPI faacEncEncode(faacEncHandle hEncoder,
                           unsigned int samplesInput,
                           unsigned char *outputBuffer,
                           unsigned int bufferSize
-                          );
+                         );
 
 int FAACAPI faacEncClose(faacEncHandle hEncoder);
 

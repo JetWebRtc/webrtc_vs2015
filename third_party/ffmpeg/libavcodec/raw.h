@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Raw Video Codec
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -30,7 +30,8 @@
 #include "avcodec.h"
 #include "libavutil/internal.h"
 
-typedef struct PixelFormatTag {
+typedef struct PixelFormatTag
+{
     enum AVPixelFormat pix_fmt;
     unsigned int fourcc;
 } PixelFormatTag;

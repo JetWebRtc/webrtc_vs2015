@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -34,6 +34,6 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
-  @property (strong, nonatomic) UIWindow* window;
+    @property (strong, nonatomic) UIWindow* window;
 
 @end

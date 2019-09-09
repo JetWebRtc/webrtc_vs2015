@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,36 +15,38 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class PoleZeroFilter {
- public:
-  ~PoleZeroFilter() {}
+class PoleZeroFilter
+{
+public:
+    ~PoleZeroFilter() {}
 
-  static PoleZeroFilter* Create(const float* numerator_coefficients,
-                                size_t order_numerator,
-                                const float* denominator_coefficients,
-                                size_t order_denominator);
+    static PoleZeroFilter* Create(const float* numerator_coefficients,
+                                  size_t order_numerator,
+                                  const float* denominator_coefficients,
+                                  size_t order_denominator);
 
-  int Filter(const int16_t* in, size_t num_input_samples, float* output);
+    int Filter(const int16_t* in, size_t num_input_samples, float* output);
 
- private:
-  PoleZeroFilter(const float* numerator_coefficients,
-                 size_t order_numerator,
-                 const float* denominator_coefficients,
-                 size_t order_denominator);
+private:
+    PoleZeroFilter(const float* numerator_coefficients,
+                   size_t order_numerator,
+                   const float* denominator_coefficients,
+                   size_t order_denominator);
 
-  static const int kMaxFilterOrder = 24;
+    static const int kMaxFilterOrder = 24;
 
-  int16_t past_input_[kMaxFilterOrder * 2];
-  float past_output_[kMaxFilterOrder * 2];
+    int16_t past_input_[kMaxFilterOrder * 2];
+    float past_output_[kMaxFilterOrder * 2];
 
-  float numerator_coefficients_[kMaxFilterOrder + 1];
-  float denominator_coefficients_[kMaxFilterOrder + 1];
+    float numerator_coefficients_[kMaxFilterOrder + 1];
+    float denominator_coefficients_[kMaxFilterOrder + 1];
 
-  size_t order_numerator_;
-  size_t order_denominator_;
-  size_t highest_order_;
+    size_t order_numerator_;
+    size_t order_denominator_;
+    size_t highest_order_;
 };
 
 }  // namespace webrtc

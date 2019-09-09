@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -38,12 +38,14 @@
 #include "wels_common_basis.h"
 #include "slice.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 ///////////////////////////////////NAL Unit prefix/headers///////////////////////////////////
 
 /* Prefix NAL Unix syntax, refer to Page 392 in JVT X201wcm */
-typedef struct TagPrefixNalUnit {
+typedef struct TagPrefixNalUnit
+{
 SRefBasePicMarking sRefPicBaseMarking;
 bool               bStoreRefBasePicFlag;
 bool               bPrefixNalUnitAdditionalExtFlag;

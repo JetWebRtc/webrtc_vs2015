@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Creative Voice File demuxer.
  * Copyright (c) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -47,7 +47,8 @@ static int voc_read_header(AVFormatContext *s)
 
     avio_skip(pb, 20);
     header_size = avio_rl16(pb) - 22;
-    if (header_size != 4) {
+    if (header_size != 4)
+    {
         av_log(s, AV_LOG_ERROR, "unknown header size: %d\n", header_size);
         return AVERROR(ENOSYS);
     }
@@ -81,28 +82,33 @@ ff_voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
                        0,
                        AVINDEX_KEYFRAME);
 
-    while (!voc->remaining_size) {
+    while (!voc->remaining_size)
+    {
         type = avio_r8(pb);
         if (type == VOC_TYPE_EOF)
             return AVERROR_EOF;
         voc->remaining_size = avio_rl24(pb);
-        if (!voc->remaining_size) {
+        if (!voc->remaining_size)
+        {
             if (!s->pb->seekable)
                 return AVERROR(EIO);
             voc->remaining_size = avio_size(pb) - avio_tell(pb);
         }
         max_size -= 4;
 
-        switch (type) {
+        switch (type)
+        {
         case VOC_TYPE_VOICE_DATA:
-            if (!dec->sample_rate) {
+            if (!dec->sample_rate)
+            {
                 dec->sample_rate = 1000000 / (256 - avio_r8(pb));
                 if (sample_rate)
                     dec->sample_rate = sample_rate;
                 avpriv_set_pts_info(st, 64, 1, dec->sample_rate);
                 dec->channels = channels;
                 dec->bits_per_coded_sample = av_get_bits_per_sample(dec->codec_id);
-            } else
+            }
+            else
                 avio_skip(pb, 1);
             tmp_codec = avio_r8(pb);
             voc->remaining_size -= 2;
@@ -123,12 +129,14 @@ ff_voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
             break;
 
         case VOC_TYPE_NEW_VOICE_DATA:
-            if (!dec->sample_rate) {
+            if (!dec->sample_rate)
+            {
                 dec->sample_rate = avio_rl32(pb);
                 avpriv_set_pts_info(st, 64, 1, dec->sample_rate);
                 dec->bits_per_coded_sample = avio_r8(pb);
                 dec->channels = avio_r8(pb);
-            } else
+            }
+            else
                 avio_skip(pb, 6);
             tmp_codec = avio_rl16(pb);
             avio_skip(pb, 4);
@@ -144,14 +152,17 @@ ff_voc_get_packet(AVFormatContext *s, AVPacket *pkt, AVStream *st, int max_size)
         }
     }
 
-    if (tmp_codec >= 0) {
+    if (tmp_codec >= 0)
+    {
         tmp_codec = ff_codec_get_id(ff_voc_codec_tags, tmp_codec);
         if (dec->codec_id == AV_CODEC_ID_NONE)
             dec->codec_id = tmp_codec;
         else if (dec->codec_id != tmp_codec)
             av_log(s, AV_LOG_WARNING, "Ignoring mid-stream change in audio codec\n");
-        if (dec->codec_id == AV_CODEC_ID_NONE) {
-            if (s->audio_codec_id == AV_CODEC_ID_NONE) {
+        if (dec->codec_id == AV_CODEC_ID_NONE)
+        {
+            if (s->audio_codec_id == AV_CODEC_ID_NONE)
+            {
                 av_log(s, AV_LOG_ERROR, "unknown codec tag\n");
                 return AVERROR(EINVAL);
             }
@@ -190,13 +201,16 @@ static int voc_read_seek(AVFormatContext *s, int stream_index,
     AVStream *st = s->streams[stream_index];
     int index = av_index_search_timestamp(st, timestamp, flags);
 
-    if (index >= 0 && index < st->nb_index_entries - 1) {
+    if (index >= 0 && index < st->nb_index_entries - 1)
+    {
         AVIndexEntry *e = &st->index_entries[index];
         avio_seek(s->pb, e->pos, SEEK_SET);
         voc->pts = e->timestamp;
         voc->remaining_size = e->size;
         return 0;
-    } else if (st->nb_index_entries && st->index_entries[0].timestamp <= timestamp) {
+    }
+    else if (st->nb_index_entries && st->index_entries[0].timestamp <= timestamp)
+    {
         AVIndexEntry *e = &st->index_entries[st->nb_index_entries - 1];
         // prepare context for seek_frame_generic()
         voc->pts = e->timestamp;
@@ -205,7 +219,8 @@ static int voc_read_seek(AVFormatContext *s, int stream_index,
     return -1;
 }
 
-AVInputFormat ff_voc_demuxer = {
+AVInputFormat ff_voc_demuxer =
+{
     .name           = "voc",
     .long_name      = NULL_IF_CONFIG_SMALL("Creative Voice"),
     .priv_data_size = sizeof(VocDecContext),

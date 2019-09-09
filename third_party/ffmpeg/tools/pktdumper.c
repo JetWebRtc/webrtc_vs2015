@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2005 Francois Revol
  *
  * This file is part of FFmpeg.
@@ -61,7 +61,8 @@ int main(int argc, char **argv)
     int nowrite     = 0;
     int err;
 
-    if ((argc > 1) && !strncmp(argv[1], "-", 1)) {
+    if ((argc > 1) && !strncmp(argv[1], "-", 1))
+    {
         if (strchr(argv[1], 'w'))
             donotquit = 1;
         if (strchr(argv[1], 'n'))
@@ -78,11 +79,13 @@ int main(int argc, char **argv)
         av_strlcpy(fntemplate, strrchr(argv[1], '/') + 1, sizeof(fntemplate));
     if (strrchr(fntemplate, '.'))
         *strrchr(fntemplate, '.') = '\0';
-    if (strchr(fntemplate, '%')) {
+    if (strchr(fntemplate, '%'))
+    {
         fprintf(stderr, "cannot use filenames containing '%%'\n");
         return usage(1);
     }
-    if (strlen(fntemplate) + sizeof(PKTFILESUFF) >= sizeof(fntemplate) - 1) {
+    if (strlen(fntemplate) + sizeof(PKTFILESUFF) >= sizeof(fntemplate) - 1)
+    {
         fprintf(stderr, "filename too long\n");
         return usage(1);
     }
@@ -93,30 +96,35 @@ int main(int argc, char **argv)
     av_register_all();
 
     err = avformat_open_input(&fctx, argv[1], NULL, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "cannot open input: error %d\n", err);
         return 1;
     }
 
     err = avformat_find_stream_info(fctx, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "avformat_find_stream_info: error %d\n", err);
         return 1;
     }
 
     av_init_packet(&pkt);
 
-    while ((err = av_read_frame(fctx, &pkt)) >= 0) {
+    while ((err = av_read_frame(fctx, &pkt)) >= 0)
+    {
         int fd;
         snprintf(pktfilename, sizeof(pktfilename), fntemplate, pktnum,
                  pkt.stream_index, pkt.pts, pkt.size,
                  (pkt.flags & AV_PKT_FLAG_KEY) ? 'K' : '_');
         printf(PKTFILESUFF "\n", pktnum, pkt.stream_index, pkt.pts, pkt.size,
                (pkt.flags & AV_PKT_FLAG_KEY) ? 'K' : '_');
-        if (!nowrite) {
+        if (!nowrite)
+        {
             fd  = open(pktfilename, O_WRONLY | O_CREAT, 0644);
             err = write(fd, pkt.data, pkt.size);
-            if (err < 0) {
+            if (err < 0)
+            {
                 fprintf(stderr, "write: error %d\n", err);
                 return 1;
             }

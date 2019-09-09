@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -46,7 +46,8 @@
 
 static int flags, checked;
 
-void av_force_cpu_flags(int arg){
+void av_force_cpu_flags(int arg)
+{
     if (   (arg & ( AV_CPU_FLAG_3DNOW    |
                     AV_CPU_FLAG_3DNOWEXT |
                     AV_CPU_FLAG_MMXEXT   |
@@ -64,7 +65,8 @@ void av_force_cpu_flags(int arg){
                     AV_CPU_FLAG_FMA3     |
                     AV_CPU_FLAG_FMA4     |
                     AV_CPU_FLAG_AVX2     ))
-        && !(arg & AV_CPU_FLAG_MMX)) {
+            && !(arg & AV_CPU_FLAG_MMX))
+    {
         av_log(NULL, AV_LOG_WARNING, "MMX implied by specified flags\n");
         arg |= AV_CPU_FLAG_MMX;
     }
@@ -118,7 +120,8 @@ int av_parse_cpu_flags(const char *s)
 #define CPUFLAG_FMA4     (AV_CPU_FLAG_FMA4     | CPUFLAG_AVX)
 #define CPUFLAG_AVX2     (AV_CPU_FLAG_AVX2     | CPUFLAG_AVX)
 #define CPUFLAG_BMI2     (AV_CPU_FLAG_BMI2     | AV_CPU_FLAG_BMI1)
-    static const AVOption cpuflags_opts[] = {
+    static const AVOption cpuflags_opts[] =
+    {
         { "flags"   , NULL, 0, AV_OPT_TYPE_FLAGS, { .i64 = 0 }, INT64_MIN, INT64_MAX, .unit = "flags" },
 #if   ARCH_PPC
         { "altivec" , NULL, 0, AV_OPT_TYPE_CONST, { .i64 = AV_CPU_FLAG_ALTIVEC  },    .unit = "flags" },
@@ -159,7 +162,8 @@ int av_parse_cpu_flags(const char *s)
 #endif
         { NULL },
     };
-    static const AVClass class = {
+    static const AVClass class =
+    {
         .class_name = "cpuflags",
         .item_name  = av_default_item_name,
         .option     = cpuflags_opts,
@@ -177,7 +181,8 @@ int av_parse_cpu_flags(const char *s)
 
 int av_parse_cpu_caps(unsigned *flags, const char *s)
 {
-        static const AVOption cpuflags_opts[] = {
+    static const AVOption cpuflags_opts[] =
+    {
         { "flags"   , NULL, 0, AV_OPT_TYPE_FLAGS, { .i64 = 0 }, INT64_MIN, INT64_MAX, .unit = "flags" },
 #if   ARCH_PPC
         { "altivec" , NULL, 0, AV_OPT_TYPE_CONST, { .i64 = AV_CPU_FLAG_ALTIVEC  },    .unit = "flags" },
@@ -237,7 +242,8 @@ int av_parse_cpu_caps(unsigned *flags, const char *s)
 #endif
         { NULL },
     };
-    static const AVClass class = {
+    static const AVClass class =
+    {
         .class_name = "cpuflags",
         .item_name  = av_default_item_name,
         .option     = cpuflags_opts,
@@ -276,7 +282,8 @@ int av_cpu_count(void)
     nb_cpus = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 
-    if (!printed) {
+    if (!printed)
+    {
         av_log(NULL, AV_LOG_DEBUG, "detected %d logical cores\n", nb_cpus);
         printed = 1;
     }
@@ -293,10 +300,12 @@ int av_cpu_count(void)
 #include "compat/getopt.c"
 #endif
 
-static const struct {
+static const struct
+{
     int flag;
     const char *name;
-} cpu_flag_tab[] = {
+} cpu_flag_tab[] =
+{
 #if   ARCH_AARCH64
     { AV_CPU_FLAG_ARMV8,     "armv8"      },
     { AV_CPU_FLAG_NEON,      "neon"       },
@@ -359,9 +368,11 @@ int main(int argc, char **argv)
     char threads[5] = "auto";
     int i;
 
-    for(i = 0; cpu_flag_tab[i].flag; i++) {
+    for(i = 0; cpu_flag_tab[i].flag; i++)
+    {
         unsigned tmp = 0;
-        if (av_parse_cpu_caps(&tmp, cpu_flag_tab[i].name) < 0) {
+        if (av_parse_cpu_caps(&tmp, cpu_flag_tab[i].name) < 0)
+        {
             fprintf(stderr, "Table missing %s\n", cpu_flag_tab[i].name);
             return 4;
         }
@@ -370,11 +381,13 @@ int main(int argc, char **argv)
     if (cpu_flags_raw < 0)
         return 1;
 
-    for (;;) {
+    for (;;)
+    {
         int c = getopt(argc, argv, "c:t:");
         if (c == -1)
             break;
-        switch (c) {
+        switch (c)
+        {
         case 'c':
         {
             unsigned flags = av_get_cpu_flags();
@@ -387,7 +400,8 @@ int main(int argc, char **argv)
         case 't':
         {
             int len = av_strlcpy(threads, optarg, sizeof(threads));
-            if (len >= sizeof(threads)) {
+            if (len >= sizeof(threads))
+            {
                 fprintf(stderr, "Invalid thread count '%s'\n", optarg);
                 return 2;
             }

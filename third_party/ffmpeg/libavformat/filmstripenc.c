@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Adobe Filmstrip muxer
  * Copyright (c) 2010 Peter Ross
  *
@@ -29,13 +29,15 @@
 
 #define RAND_TAG MKBETAG('R','a','n','d')
 
-typedef struct FilmstripMuxContext {
+typedef struct FilmstripMuxContext
+{
     int nb_frames;
 } FilmstripMuxContext;
 
 static int write_header(AVFormatContext *s)
 {
-    if (s->streams[0]->codec->pix_fmt != AV_PIX_FMT_RGBA) {
+    if (s->streams[0]->codec->pix_fmt != AV_PIX_FMT_RGBA)
+    {
         av_log(s, AV_LOG_ERROR, "only AV_PIX_FMT_RGBA is supported\n");
         return AVERROR_INVALIDDATA;
     }
@@ -72,7 +74,8 @@ static int write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_filmstrip_muxer = {
+AVOutputFormat ff_filmstrip_muxer =
+{
     .name              = "filmstrip",
     .long_name         = NULL_IF_CONFIG_SMALL("Adobe Filmstrip"),
     .extensions        = "flm",

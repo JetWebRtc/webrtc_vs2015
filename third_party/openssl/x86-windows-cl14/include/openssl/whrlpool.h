@@ -1,4 +1,4 @@
-#ifndef HEADER_WHRLPOOL_H
+﻿#ifndef HEADER_WHRLPOOL_H
 # define HEADER_WHRLPOOL_H
 
 # include <openssl/e_os2.h>
@@ -12,8 +12,10 @@ extern "C" {
 # define WHIRLPOOL_BBLOCK        512
 # define WHIRLPOOL_COUNTER       (256/8)
 
-typedef struct {
-    union {
+typedef struct
+{
+    union
+    {
         unsigned char c[WHIRLPOOL_DIGEST_LENGTH];
         /* double q is here to ensure 64-bit alignment */
         double q[WHIRLPOOL_DIGEST_LENGTH / sizeof(double)];

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP packetization for H.261 video (RFC 4587)
  * Copyright (c) 2014 Thomas Volkert <thomas@homer-conferencing.com>
  *
@@ -25,11 +25,12 @@
 #define RTP_H261_HEADER_SIZE 4
 
 static const uint8_t *find_resync_marker_reverse(const uint8_t *av_restrict start,
-                                                 const uint8_t *av_restrict end)
+        const uint8_t *av_restrict end)
 {
     const uint8_t *p = end - 1;
     start += 1; /* Make sure we never return the original start. */
-    for (; p > start; p--) {
+    for (; p > start; p--)
+    {
         if (p[0] == 0 && p[1] == 1)
             return p;
     }
@@ -46,7 +47,8 @@ void ff_rtp_send_h261(AVFormatContext *ctx, const uint8_t *frame_buf, int frame_
     rtp_ctx->timestamp = rtp_ctx->cur_timestamp;
 
     /* continue as long as not all frame data is processed */
-    while (frame_size > 0) {
+    while (frame_size > 0)
+    {
         /*
          * encode the H.261 payload header according to section 4.1 of RFC 4587:
          * (uses 4 bytes between RTP header and H.261 stream per packet)
@@ -71,7 +73,8 @@ void ff_rtp_send_h261(AVFormatContext *ctx, const uint8_t *frame_buf, int frame_
         rtp_ctx->buf[1] = 0; /* gobn=0, mbap=0 */
         rtp_ctx->buf[2] = 0; /* quant=0, hmvd=5 */
         rtp_ctx->buf[3] = 0; /* vmvd=0 */
-        if (frame_size < 2 || frame_buf[0] != 0 || frame_buf[1] != 1) {
+        if (frame_size < 2 || frame_buf[0] != 0 || frame_buf[1] != 1)
+        {
             /* A full, correct fix for this would be to make the H261 encoder
              * support inserting extra GOB headers (triggered by setting e.g.
              * "-ps 1"), and including information about macroblock boundaries
@@ -83,9 +86,10 @@ void ff_rtp_send_h261(AVFormatContext *ctx, const uint8_t *frame_buf, int frame_
         cur_frame_size = FFMIN(rtp_ctx->max_payload_size - RTP_H261_HEADER_SIZE, frame_size);
 
         /* look for a better place to split the frame into packets */
-        if (cur_frame_size < frame_size) {
+        if (cur_frame_size < frame_size)
+        {
             const uint8_t *packet_end = find_resync_marker_reverse(frame_buf,
-                                                                   frame_buf + cur_frame_size);
+                                        frame_buf + cur_frame_size);
             cur_frame_size = packet_end - frame_buf;
         }
 

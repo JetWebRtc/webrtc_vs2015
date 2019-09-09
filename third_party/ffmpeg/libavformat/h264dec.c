@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW H.264 video demuxer
  * Copyright (c) 2008 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -29,16 +29,19 @@ static int h264_probe(AVProbeData *p)
     int sps = 0, pps = 0, idr = 0, res = 0, sli = 0;
     int i;
 
-    for (i = 0; i < p->buf_size; i++) {
+    for (i = 0; i < p->buf_size; i++)
+    {
         code = (code << 8) + p->buf[i];
-        if ((code & 0xffffff00) == 0x100) {
+        if ((code & 0xffffff00) == 0x100)
+        {
             int ref_idc = (code >> 5) & 3;
             int type    = code & 0x1F;
-            static const int8_t ref_zero[] = {
-                 2,  0,  0,  0,  0, -1,  1, -1,
+            static const int8_t ref_zero[] =
+            {
+                2,  0,  0,  0,  0, -1,  1, -1,
                 -1,  1,  1,  1,  1, -1,  2,  2,
-                 2,  2,  2,  0,  2,  2,  2,  2,
-                 2,  2,  2,  2,  2,  2,  2,  2
+                2,  2,  2,  0,  2,  2,  2,  2,
+                2,  2,  2,  2,  2,  2,  2,  2
             };
 
             if (code & 0x80) // forbidden_bit
@@ -48,12 +51,14 @@ static int h264_probe(AVProbeData *p)
                 return 0;
             if (ref_zero[type] == -1 && !ref_idc)
                 return 0;
-            if (ref_zero[type] == 2) {
+            if (ref_zero[type] == 2)
+            {
                 if (!(code == 0x100 && !p->buf[i + 1] && !p->buf[i + 2]))
                     res++;
             }
 
-            switch (type) {
+            switch (type)
+            {
             case 1:
                 sli++;
                 break;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Direct3D11 HW acceleration
  *
  * copyright (c) 2009 Laurent Aimar
@@ -54,7 +54,8 @@
  *
  * The application must make it available as AVCodecContext.hwaccel_context.
  */
-struct AVD3D11VAContext {
+struct AVD3D11VAContext
+{
     /**
      * D3D11 decoder object
      */

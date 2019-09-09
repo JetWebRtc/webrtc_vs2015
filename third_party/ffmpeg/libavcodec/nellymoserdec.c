@@ -1,4 +1,4 @@
-/*
+﻿/*
  * NellyMoser audio decoder
  * Copyright (c) 2007 a840bda5870ba11f19698ff6eb9581dfb0f95fa5,
  *                    539459aeb7d425140b62a3ec7dbf6dc8e408a306, and
@@ -45,7 +45,8 @@
 #include "get_bits.h"
 
 
-typedef struct NellyMoserDecodeContext {
+typedef struct NellyMoserDecodeContext
+{
     AVCodecContext* avctx;
     AVLFG           random_state;
     GetBitContext   gb;
@@ -72,11 +73,13 @@ static void nelly_decode_block(NellyMoserDecodeContext *s,
     bptr = buf;
     pptr = pows;
     val = ff_nelly_init_table[get_bits(&s->gb, 6)];
-    for (i=0 ; i<NELLY_BANDS ; i++) {
+    for (i=0 ; i<NELLY_BANDS ; i++)
+    {
         if (i > 0)
             val += ff_nelly_delta_table[get_bits(&s->gb, 5)];
         pval = -pow(2, val/2048) * s->scale_bias;
-        for (j = 0; j < ff_nelly_band_sizes_table[i]; j++) {
+        for (j = 0; j < ff_nelly_band_sizes_table[i]; j++)
+        {
             *bptr++ = val;
             *pptr++ = pval;
         }
@@ -85,18 +88,23 @@ static void nelly_decode_block(NellyMoserDecodeContext *s,
 
     ff_nelly_get_sample_bits(buf, bits);
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         aptr = audio + i * NELLY_BUF_LEN;
 
         init_get_bits(&s->gb, block, NELLY_BLOCK_LEN * 8);
         skip_bits_long(&s->gb, NELLY_HEADER_BITS + i*NELLY_DETAIL_BITS);
 
-        for (j = 0; j < NELLY_FILL_LEN; j++) {
-            if (bits[j] <= 0) {
+        for (j = 0; j < NELLY_FILL_LEN; j++)
+        {
+            if (bits[j] <= 0)
+            {
                 aptr[j] = M_SQRT1_2*pows[j];
                 if (av_lfg_get(&s->random_state) & 1)
                     aptr[j] *= -1.0;
-            } else {
+            }
+            else
+            {
                 v = get_bits(&s->gb, bits[j]);
                 aptr[j] = ff_nelly_dequantization_table[(1<<bits[j])-1+v]*pows[j];
             }
@@ -106,13 +114,14 @@ static void nelly_decode_block(NellyMoserDecodeContext *s,
 
         s->imdct_ctx.imdct_half(&s->imdct_ctx, s->imdct_out, aptr);
         s->fdsp->vector_fmul_window(aptr, s->imdct_prev + NELLY_BUF_LEN / 2,
-                                   s->imdct_out, ff_sine_128,
-                                   NELLY_BUF_LEN / 2);
+                                    s->imdct_out, ff_sine_128,
+                                    NELLY_BUF_LEN / 2);
         FFSWAP(float *, s->imdct_out, s->imdct_prev);
     }
 }
 
-static av_cold int decode_init(AVCodecContext * avctx) {
+static av_cold int decode_init(AVCodecContext * avctx)
+{
     NellyMoserDecodeContext *s = avctx->priv_data;
 
     s->avctx = avctx;
@@ -151,12 +160,14 @@ static int decode_tag(AVCodecContext *avctx, void *data,
 
     blocks     = buf_size / NELLY_BLOCK_LEN;
 
-    if (blocks <= 0) {
+    if (blocks <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet is too small\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (buf_size % NELLY_BLOCK_LEN) {
+    if (buf_size % NELLY_BLOCK_LEN)
+    {
         av_log(avctx, AV_LOG_WARNING, "Leftover bytes: %d.\n",
                buf_size % NELLY_BLOCK_LEN);
     }
@@ -176,7 +187,8 @@ static int decode_tag(AVCodecContext *avctx, void *data,
         return ret;
     samples_flt = (float *)frame->data[0];
 
-    for (i=0 ; i<blocks ; i++) {
+    for (i=0 ; i<blocks ; i++)
+    {
         nelly_decode_block(s, buf, samples_flt);
         samples_flt += NELLY_SAMPLES;
         buf += NELLY_BLOCK_LEN;
@@ -187,7 +199,8 @@ static int decode_tag(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-static av_cold int decode_end(AVCodecContext * avctx) {
+static av_cold int decode_end(AVCodecContext * avctx)
+{
     NellyMoserDecodeContext *s = avctx->priv_data;
 
     ff_mdct_end(&s->imdct_ctx);
@@ -196,7 +209,8 @@ static av_cold int decode_end(AVCodecContext * avctx) {
     return 0;
 }
 
-AVCodec ff_nellymoser_decoder = {
+AVCodec ff_nellymoser_decoder =
+{
     .name           = "nellymoser",
     .long_name      = NULL_IF_CONFIG_SMALL("Nellymoser Asao"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -206,6 +220,8 @@ AVCodec ff_nellymoser_decoder = {
     .close          = decode_end,
     .decode         = decode_tag,
     .capabilities   = AV_CODEC_CAP_DR1 | AV_CODEC_CAP_PARAM_CHANGE,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLT,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLT,
+        AV_SAMPLE_FMT_NONE
+    },
 };

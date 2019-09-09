@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -104,7 +104,8 @@ void silk_find_pitch_lags_FLP(
     /*****************************************/
     silk_LPC_analysis_filter_FLP( res, A, x_buf, buf_len, psEnc->sCmn.pitchEstimationLPCOrder );
 
-    if( psEnc->sCmn.indices.signalType != TYPE_NO_VOICE_ACTIVITY && psEnc->sCmn.first_frame_after_reset == 0 ) {
+    if( psEnc->sCmn.indices.signalType != TYPE_NO_VOICE_ACTIVITY && psEnc->sCmn.first_frame_after_reset == 0 )
+    {
         /* Threshold for pitch estimator */
         thrhld  = 0.6f;
         thrhld -= 0.004f * psEnc->sCmn.pitchEstimationLPCOrder;
@@ -116,14 +117,18 @@ void silk_find_pitch_lags_FLP(
         /* Call Pitch estimator                  */
         /*****************************************/
         if( silk_pitch_analysis_core_FLP( res, psEncCtrl->pitchL, &psEnc->sCmn.indices.lagIndex,
-            &psEnc->sCmn.indices.contourIndex, &psEnc->LTPCorr, psEnc->sCmn.prevLag, psEnc->sCmn.pitchEstimationThreshold_Q16 / 65536.0f,
-            thrhld, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity, psEnc->sCmn.nb_subfr, arch ) == 0 )
+                                          &psEnc->sCmn.indices.contourIndex, &psEnc->LTPCorr, psEnc->sCmn.prevLag, psEnc->sCmn.pitchEstimationThreshold_Q16 / 65536.0f,
+                                          thrhld, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity, psEnc->sCmn.nb_subfr, arch ) == 0 )
         {
             psEnc->sCmn.indices.signalType = TYPE_VOICED;
-        } else {
+        }
+        else
+        {
             psEnc->sCmn.indices.signalType = TYPE_UNVOICED;
         }
-    } else {
+    }
+    else
+    {
         silk_memset( psEncCtrl->pitchL, 0, sizeof( psEncCtrl->pitchL ) );
         psEnc->sCmn.indices.lagIndex = 0;
         psEnc->sCmn.indices.contourIndex = 0;

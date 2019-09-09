@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2002 Michael Niedermayer (michaelni@gmx.at)
  *
  * This file is part of FFmpeg.
@@ -80,7 +80,8 @@
 /**
  * Postprocessing filter.
  */
-struct PPFilter{
+struct PPFilter
+{
     const char *shortName;
     const char *longName;
     int chromDefault;       ///< is chrominance filtering on by default if this filter is manually activated
@@ -92,7 +93,8 @@ struct PPFilter{
 /**
  * Postprocessing mode.
  */
-typedef struct PPMode{
+typedef struct PPMode
+{
     int lumMode;                    ///< activates filters for luminance
     int chromMode;                  ///< activates filters for chrominance
     int error;                      ///< non zero on error
@@ -112,7 +114,8 @@ typedef struct PPMode{
 /**
  * postprocess context.
  */
-typedef struct PPContext{
+typedef struct PPContext
+{
     /**
      * info on struct for av_log
      */
@@ -173,10 +176,14 @@ typedef struct PPContext{
 } PPContext;
 
 
-static inline void linecpy(void *dest, const void *src, int lines, int stride) {
-    if (stride > 0) {
+static inline void linecpy(void *dest, const void *src, int lines, int stride)
+{
+    if (stride > 0)
+    {
         memcpy(dest, src, lines*stride);
-    } else {
+    }
+    else
+    {
         memcpy((uint8_t*)dest+(lines-1)*stride, (const uint8_t*)src+(lines-1)*stride, -lines*stride);
     }
 }

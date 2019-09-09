@@ -32,7 +32,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } SAMIContext;
 
@@ -65,7 +66,8 @@ static int sami_read_header(AVFormatContext *s)
     av_bprint_init(&buf,     0, AV_BPRINT_SIZE_UNLIMITED);
     av_bprint_init(&hdr_buf, 0, AV_BPRINT_SIZE_UNLIMITED);
 
-    while (!ff_text_eof(&tr)) {
+    while (!ff_text_eof(&tr))
+    {
         AVPacket *sub;
         const int64_t pos = ff_text_pos(&tr) - (c != 0);
         int is_sync, n = ff_smil_extract_next_text_chunk(&tr, &buf, &c);
@@ -77,15 +79,20 @@ static int sami_read_header(AVFormatContext *s)
         if (is_sync)
             got_first_sync_point = 1;
 
-        if (!got_first_sync_point) {
+        if (!got_first_sync_point)
+        {
             av_bprintf(&hdr_buf, "%s", buf.str);
-        } else {
+        }
+        else
+        {
             sub = ff_subtitles_queue_insert(&sami->q, buf.str, buf.len, !is_sync);
-            if (!sub) {
+            if (!sub)
+            {
                 res = AVERROR(ENOMEM);
                 goto end;
             }
-            if (is_sync) {
+            if (is_sync)
+            {
                 const char *p = ff_smil_get_attr_ptr(buf.str, "Start");
                 sub->pos      = pos;
                 sub->pts      = p ? strtol(p, NULL, 10) : 0;
@@ -127,7 +134,8 @@ static int sami_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_sami_demuxer = {
+AVInputFormat ff_sami_demuxer =
+{
     .name           = "sami",
     .long_name      = NULL_IF_CONFIG_SMALL("SAMI subtitle format"),
     .priv_data_size = sizeof(SAMIContext),

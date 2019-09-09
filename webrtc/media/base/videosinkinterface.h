@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,14 +14,16 @@
 // TODO(nisse): Consider moving this interface (and possibly
 // VideoSourceInterface too) from media/base to common_video, to
 // reduce dependency cycles.
-namespace rtc {
+namespace rtc
+{
 
 template <typename VideoFrameT>
-class VideoSinkInterface {
- public:
-  virtual ~VideoSinkInterface() {}
+class VideoSinkInterface
+{
+public:
+    virtual ~VideoSinkInterface() {}
 
-  virtual void OnFrame(const VideoFrameT& frame) = 0;
+    virtual void OnFrame(const VideoFrameT& frame) = 0;
 };
 
 }  // namespace rtc

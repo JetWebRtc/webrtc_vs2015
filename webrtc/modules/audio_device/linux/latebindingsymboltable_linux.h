@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,7 +23,8 @@
 // supports Linux and pure C symbols.
 // See talk/sound/pulseaudiosymboltable.(h|cc) for an example.
 
-namespace webrtc_adm_linux {
+namespace webrtc_adm_linux
+{
 
 #ifdef WEBRTC_LINUX
 typedef void *DllHandle;
@@ -46,80 +47,94 @@ bool InternalLoadSymbols(DllHandle handle,
 template <int SYMBOL_TABLE_SIZE,
           const char kDllName[],
           const char *const kSymbolNames[]>
-class LateBindingSymbolTable {
- public:
-  LateBindingSymbolTable()
-      : handle_(kInvalidDllHandle),
-        undefined_symbols_(false) {
-    memset(symbols_, 0, sizeof(symbols_));
-  }
-
-  ~LateBindingSymbolTable() {
-    Unload();
-  }
-
-  static int NumSymbols() {
-    return SYMBOL_TABLE_SIZE;
-  }
-
-  // We do not use this, but we offer it for theoretical convenience.
-  static const char *GetSymbolName(int index) {
-    assert(index < NumSymbols());
-    return kSymbolNames[index];
-  }
-
-  bool IsLoaded() const {
-    return handle_ != kInvalidDllHandle;
-  }
-
-  // Loads the DLL and the symbol table. Returns true iff the DLL and symbol
-  // table loaded successfully.
-  bool Load() {
-    if (IsLoaded()) {
-      return true;
+class LateBindingSymbolTable
+{
+public:
+    LateBindingSymbolTable()
+        : handle_(kInvalidDllHandle),
+          undefined_symbols_(false)
+    {
+        memset(symbols_, 0, sizeof(symbols_));
     }
-    if (undefined_symbols_) {
-      // We do not attempt to load again because repeated attempts are not
-      // likely to succeed and DLL loading is costly.
-      //WEBRTC_TRACE(kTraceError, kTraceAudioDevice, -1,
-      //           "We know there are undefined symbols");
-      return false;
-    }
-    handle_ = InternalLoadDll(kDllName);
-    if (!IsLoaded()) {
-      return false;
-    }
-    if (!InternalLoadSymbols(handle_, NumSymbols(), kSymbolNames, symbols_)) {
-      undefined_symbols_ = true;
-      Unload();
-      return false;
-    }
-    return true;
-  }
 
-  void Unload() {
-    if (!IsLoaded()) {
-      return;
+    ~LateBindingSymbolTable()
+    {
+        Unload();
     }
-    InternalUnloadDll(handle_);
-    handle_ = kInvalidDllHandle;
-    memset(symbols_, 0, sizeof(symbols_));
-  }
 
-  // Retrieves the given symbol. NOTE: Recommended to use LATESYM_GET below
-  // instead of this.
-  void *GetSymbol(int index) const {
-    assert(IsLoaded());
-    assert(index < NumSymbols());
-    return symbols_[index];
-  }
+    static int NumSymbols()
+    {
+        return SYMBOL_TABLE_SIZE;
+    }
 
- private:
-  DllHandle handle_;
-  bool undefined_symbols_;
-  void *symbols_[SYMBOL_TABLE_SIZE];
+    // We do not use this, but we offer it for theoretical convenience.
+    static const char *GetSymbolName(int index)
+    {
+        assert(index < NumSymbols());
+        return kSymbolNames[index];
+    }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(LateBindingSymbolTable);
+    bool IsLoaded() const
+    {
+        return handle_ != kInvalidDllHandle;
+    }
+
+    // Loads the DLL and the symbol table. Returns true iff the DLL and symbol
+    // table loaded successfully.
+    bool Load()
+    {
+        if (IsLoaded())
+        {
+            return true;
+        }
+        if (undefined_symbols_)
+        {
+            // We do not attempt to load again because repeated attempts are not
+            // likely to succeed and DLL loading is costly.
+            //WEBRTC_TRACE(kTraceError, kTraceAudioDevice, -1,
+            //           "We know there are undefined symbols");
+            return false;
+        }
+        handle_ = InternalLoadDll(kDllName);
+        if (!IsLoaded())
+        {
+            return false;
+        }
+        if (!InternalLoadSymbols(handle_, NumSymbols(), kSymbolNames, symbols_))
+        {
+            undefined_symbols_ = true;
+            Unload();
+            return false;
+        }
+        return true;
+    }
+
+    void Unload()
+    {
+        if (!IsLoaded())
+        {
+            return;
+        }
+        InternalUnloadDll(handle_);
+        handle_ = kInvalidDllHandle;
+        memset(symbols_, 0, sizeof(symbols_));
+    }
+
+    // Retrieves the given symbol. NOTE: Recommended to use LATESYM_GET below
+    // instead of this.
+    void *GetSymbol(int index) const
+    {
+        assert(IsLoaded());
+        assert(index < NumSymbols());
+        return symbols_[index];
+    }
+
+private:
+    DllHandle handle_;
+    bool undefined_symbols_;
+    void *symbols_[SYMBOL_TABLE_SIZE];
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(LateBindingSymbolTable);
 };
 
 // This macro must be invoked in a header to declare a symbol table class.

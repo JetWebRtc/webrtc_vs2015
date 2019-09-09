@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,14 +15,16 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockRedPayloadSplitter : public RedPayloadSplitter {
- public:
-  MOCK_METHOD1(SplitRed, bool(PacketList* packet_list));
-  MOCK_METHOD2(CheckRedPayloads,
-               int(PacketList* packet_list,
-                   const DecoderDatabase& decoder_database));
+class MockRedPayloadSplitter : public RedPayloadSplitter
+{
+public:
+    MOCK_METHOD1(SplitRed, bool(PacketList* packet_list));
+    MOCK_METHOD2(CheckRedPayloads,
+                 int(PacketList* packet_list,
+                     const DecoderDatabase& decoder_database));
 };
 
 }  // namespace webrtc

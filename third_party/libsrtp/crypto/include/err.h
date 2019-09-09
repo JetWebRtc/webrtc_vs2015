@@ -1,4 +1,4 @@
-/*
+﻿/*
  * err.h
  *
  * error status codes
@@ -67,7 +67,8 @@ extern "C" {
  * @}
  */
 
-typedef enum {
+typedef enum
+{
     srtp_err_level_emergency = 0,
     srtp_err_level_alert,
     srtp_err_level_critical,
@@ -107,7 +108,8 @@ srtp_err_report(int priority, const char *format, ...);
  * debug_module_t defines a debug module
  */
 
-typedef struct {
+typedef struct
+{
     int on;           /* 1 if debugging is on, 0 if it is off */
     const char *name; /* printable name for debug module      */
 } srtp_debug_module_t;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2008 David Conrad
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct LibSpeexContext {
+typedef struct LibSpeexContext
+{
     SpeexBits bits;
     SpeexStereoState stereo;
     void *dec_state;
@@ -44,49 +45,68 @@ static av_cold int libspeex_decode_init(AVCodecContext *avctx)
     SpeexHeader *header = NULL;
     int spx_mode;
 
-    if (avctx->extradata && avctx->extradata_size >= 80) {
+    if (avctx->extradata && avctx->extradata_size >= 80)
+    {
         header = speex_packet_to_header(avctx->extradata,
                                         avctx->extradata_size);
         if (!header)
             av_log(avctx, AV_LOG_WARNING, "Invalid Speex header\n");
     }
-    if (avctx->codec_tag == MKTAG('S', 'P', 'X', 'N')) {
+    if (avctx->codec_tag == MKTAG('S', 'P', 'X', 'N'))
+    {
         int quality;
-        if (!avctx->extradata || avctx->extradata && avctx->extradata_size < 47) {
+        if (!avctx->extradata || avctx->extradata && avctx->extradata_size < 47)
+        {
             av_log(avctx, AV_LOG_ERROR, "Missing or invalid extradata.\n");
             return AVERROR_INVALIDDATA;
         }
 
         quality = avctx->extradata[37];
-        if (quality > 10) {
+        if (quality > 10)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unsupported quality mode %d.\n", quality);
             return AVERROR_PATCHWELCOME;
         }
 
-        s->pktsize = ((const int[]){5,10,15,20,20,28,28,38,38,46,62})[quality];
+        s->pktsize = ((const int[])
+        {
+            5,10,15,20,20,28,28,38,38,46,62
+        })[quality];
 
         spx_mode           = 0;
-    } else if (header) {
+    }
+    else if (header)
+    {
         avctx->sample_rate = header->rate;
         avctx->channels    = header->nb_channels;
         spx_mode           = header->mode;
         speex_header_free(header);
-    } else {
-        switch (avctx->sample_rate) {
-        case 8000:  spx_mode = 0; break;
-        case 16000: spx_mode = 1; break;
-        case 32000: spx_mode = 2; break;
+    }
+    else
+    {
+        switch (avctx->sample_rate)
+        {
+        case 8000:
+            spx_mode = 0;
+            break;
+        case 16000:
+            spx_mode = 1;
+            break;
+        case 32000:
+            spx_mode = 2;
+            break;
         default:
             /* libspeex can handle any mode if initialized as ultra-wideband */
             av_log(avctx, AV_LOG_WARNING, "Invalid sample rate: %d\n"
-                                          "Decoding as 32kHz ultra-wideband\n",
-                                          avctx->sample_rate);
+                   "Decoding as 32kHz ultra-wideband\n",
+                   avctx->sample_rate);
             spx_mode = 2;
         }
     }
 
     mode = speex_lib_get_mode(spx_mode);
-    if (!mode) {
+    if (!mode)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unknown Speex mode %d", spx_mode);
         return AVERROR_INVALIDDATA;
     }
@@ -94,23 +114,26 @@ static av_cold int libspeex_decode_init(AVCodecContext *avctx)
     if (!avctx->sample_rate)
         avctx->sample_rate = 8000 << spx_mode;
 
-    if (avctx->channels < 1 || avctx->channels > 2) {
+    if (avctx->channels < 1 || avctx->channels > 2)
+    {
         /* libspeex can handle mono or stereo if initialized as stereo */
         av_log(avctx, AV_LOG_ERROR, "Invalid channel count: %d.\n"
-                                    "Decoding as stereo.\n", avctx->channels);
+               "Decoding as stereo.\n", avctx->channels);
         avctx->channels = 2;
     }
     avctx->channel_layout = avctx->channels == 2 ? AV_CH_LAYOUT_STEREO :
-                                                   AV_CH_LAYOUT_MONO;
+                            AV_CH_LAYOUT_MONO;
 
     speex_bits_init(&s->bits);
     s->dec_state = speex_decoder_init(mode);
-    if (!s->dec_state) {
+    if (!s->dec_state)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error initializing libspeex decoder.\n");
         return -1;
     }
 
-    if (avctx->channels == 2) {
+    if (avctx->channels == 2)
+    {
         SpeexCallback callback;
         callback.callback_id = SPEEX_INBAND_STEREO;
         callback.func = speex_std_stereo_request_handler;
@@ -144,9 +167,11 @@ static int libspeex_decode_frame(AVCodecContext *avctx, void *data,
        current packet, otherwise ignore the current packet and keep decoding
        frames from the libspeex buffer. */
     if (speex_bits_remaining(&s->bits) < 5 ||
-        speex_bits_peek_unsigned(&s->bits, 5) == 0xF) {
+            speex_bits_peek_unsigned(&s->bits, 5) == 0xF)
+    {
         /* check for flush packet */
-        if (!buf || !buf_size) {
+        if (!buf || !buf_size)
+        {
             *got_frame_ptr = 0;
             return buf_size;
         }
@@ -159,7 +184,8 @@ static int libspeex_decode_frame(AVCodecContext *avctx, void *data,
 
     /* decode a single frame */
     ret = speex_decode_int(s->dec_state, &s->bits, output);
-    if (ret <= -2) {
+    if (ret <= -2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error decoding Speex frame.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -189,7 +215,8 @@ static av_cold void libspeex_decode_flush(AVCodecContext *avctx)
     speex_bits_reset(&s->bits);
 }
 
-AVCodec ff_libspeex_decoder = {
+AVCodec ff_libspeex_decoder =
+{
     .name           = "libspeex",
     .long_name      = NULL_IF_CONFIG_SMALL("libspeex Speex"),
     .type           = AVMEDIA_TYPE_AUDIO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,21 +22,22 @@ struct VP9Common;
 struct FRAME_COUNTS;
 
 // Loopfilter row synchronization
-typedef struct VP9LfSyncData {
+typedef struct VP9LfSyncData
+{
 #if CONFIG_MULTITHREAD
-  pthread_mutex_t *mutex_;
-  pthread_cond_t *cond_;
+    pthread_mutex_t *mutex_;
+    pthread_cond_t *cond_;
 #endif
-  // Allocate memory to store the loop-filtered superblock index in each row.
-  int *cur_sb_col;
-  // The optimal sync_range for different resolution and platform should be
-  // determined by testing. Currently, it is chosen to be a power-of-2 number.
-  int sync_range;
-  int rows;
+    // Allocate memory to store the loop-filtered superblock index in each row.
+    int *cur_sb_col;
+    // The optimal sync_range for different resolution and platform should be
+    // determined by testing. Currently, it is chosen to be a power-of-2 number.
+    int sync_range;
+    int rows;
 
-  // Row-based parallel loopfilter data
-  LFWorkerData *lfdata;
-  int num_workers;
+    // Row-based parallel loopfilter data
+    LFWorkerData *lfdata;
+    int num_workers;
 } VP9LfSync;
 
 // Allocate memory for loopfilter row synchronization.

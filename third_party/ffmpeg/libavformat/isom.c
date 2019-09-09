@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ISO Media common code
  * Copyright (c) 2001 Fabrice Bellard
  * Copyright (c) 2002 Francois Revol <revol@free.fr>
@@ -31,7 +31,8 @@
 
 /* http://www.mp4ra.org */
 /* ordered by muxing preference */
-const AVCodecTag ff_mp4_obj_type[] = {
+const AVCodecTag ff_mp4_obj_type[] =
+{
     { AV_CODEC_ID_MOV_TEXT    , 0x08 },
     { AV_CODEC_ID_MPEG4       , 0x20 },
     { AV_CODEC_ID_H264        , 0x21 },
@@ -68,8 +69,9 @@ const AVCodecTag ff_mp4_obj_type[] = {
     { AV_CODEC_ID_NONE        ,    0 },
 };
 
-const AVCodecTag ff_codec_movvideo_tags[] = {
-/*  { AV_CODEC_ID_, MKTAG('I', 'V', '5', '0') }, *//* Indeo 5.0 */
+const AVCodecTag ff_codec_movvideo_tags[] =
+{
+    /*  { AV_CODEC_ID_, MKTAG('I', 'V', '5', '0') }, *//* Indeo 5.0 */
 
     { AV_CODEC_ID_RAWVIDEO, MKTAG('r', 'a', 'w', ' ') }, /* Uncompressed RGB */
     { AV_CODEC_ID_RAWVIDEO, MKTAG('y', 'u', 'v', '2') }, /* Uncompressed YUV422 */
@@ -111,7 +113,7 @@ const AVCodecTag ff_codec_movvideo_tags[] = {
     { AV_CODEC_ID_MJPEG,  MKTAG('j', 'p', 'e', 'g') }, /* PhotoJPEG */
     { AV_CODEC_ID_MJPEG,  MKTAG('m', 'j', 'p', 'a') }, /* Motion-JPEG (format A) */
     { AV_CODEC_ID_AVRN ,  MKTAG('A', 'V', 'D', 'J') }, /* MJPEG with alpha-channel (AVID JFIF meridien compressed) */
-/*  { AV_CODEC_ID_MJPEG,  MKTAG('A', 'V', 'R', 'n') }, *//* MJPEG with alpha-channel (AVID ABVB/Truevision NuVista) */
+    /*  { AV_CODEC_ID_MJPEG,  MKTAG('A', 'V', 'R', 'n') }, *//* MJPEG with alpha-channel (AVID ABVB/Truevision NuVista) */
     { AV_CODEC_ID_MJPEG,  MKTAG('d', 'm', 'b', '1') }, /* Motion JPEG OpenDML */
     { AV_CODEC_ID_MJPEGB, MKTAG('m', 'j', 'p', 'b') }, /* Motion-JPEG (format B) */
 
@@ -265,7 +267,8 @@ const AVCodecTag ff_codec_movvideo_tags[] = {
     { AV_CODEC_ID_NONE, 0 },
 };
 
-const AVCodecTag ff_codec_movaudio_tags[] = {
+const AVCodecTag ff_codec_movaudio_tags[] =
+{
     { AV_CODEC_ID_AAC,             MKTAG('m', 'p', '4', 'a') },
     { AV_CODEC_ID_AC3,             MKTAG('a', 'c', '-', '3') }, /* ETSI TS 102 366 Annex F */
     { AV_CODEC_ID_AC3,             MKTAG('s', 'a', 'c', '3') }, /* Nero Recode */
@@ -319,7 +322,8 @@ const AVCodecTag ff_codec_movaudio_tags[] = {
     { AV_CODEC_ID_NONE, 0 },
 };
 
-const AVCodecTag ff_codec_movsubtitle_tags[] = {
+const AVCodecTag ff_codec_movsubtitle_tags[] =
+{
     { AV_CODEC_ID_MOV_TEXT, MKTAG('t', 'e', 'x', 't') },
     { AV_CODEC_ID_MOV_TEXT, MKTAG('t', 'x', '3', 'g') },
     { AV_CODEC_ID_EIA_608,  MKTAG('c', '6', '0', '8') },
@@ -330,7 +334,8 @@ const AVCodecTag ff_codec_movsubtitle_tags[] = {
 /* cf. QTFileFormat.pdf p253, qtff.pdf p205 */
 /* http://developer.apple.com/documentation/mac/Text/Text-368.html */
 /* deprecated by putting the code as 3*5bit ascii */
-static const char mov_mdhd_language_map[][4] = {
+static const char mov_mdhd_language_map[][4] =
+{
     /* 0-9 */
     "eng", "fra", "ger", "ita", "dut", "sve", "spa", "dan", "por", "nor",
     "heb", "jpn", "ara", "fin", "gre", "ice", "mlt", "tur", "hr "/*scr*/, "chi"/*ace?*/,
@@ -344,11 +349,11 @@ static const char mov_mdhd_language_map[][4] = {
     /*                   roman? arabic? */
     "vie", "ind", "tgl", "may", "may", "amh", "tir", "orm", "som", "swa",
     /*==rundi?*/
-       "", "run",    "", "mlg", "epo",    "",    "",    "",    "",    "",
+    "", "run",    "", "mlg", "epo",    "",    "",    "",    "",    "",
     /* 100 */
-       "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
-       "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
-       "",    "",    "",    "",    "",    "",    "",    "", "wel", "baq",
+    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+    "",    "",    "",    "",    "",    "",    "",    "",    "",    "",
+    "",    "",    "",    "",    "",    "",    "",    "", "wel", "baq",
     "cat", "lat", "que", "grn", "aym", "tat", "uig", "dzo", "jav"
 };
 
@@ -357,7 +362,8 @@ int ff_mov_iso639_to_lang(const char lang[4], int mp4)
     int i, code = 0;
 
     /* old way, only for QT? */
-    for (i = 0; lang[0] && !mp4 && i < FF_ARRAY_ELEMS(mov_mdhd_language_map); i++) {
+    for (i = 0; lang[0] && !mp4 && i < FF_ARRAY_ELEMS(mov_mdhd_language_map); i++)
+    {
         if (!strcmp(lang, mov_mdhd_language_map[i]))
             return i;
     }
@@ -368,7 +374,8 @@ int ff_mov_iso639_to_lang(const char lang[4], int mp4)
     if (lang[0] == '\0')
         lang = "und";
     /* 5bit ascii */
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         uint8_t c = lang[i];
         c -= 0x60;
         if (c > 0x1f)
@@ -385,8 +392,10 @@ int ff_mov_lang_to_iso639(unsigned code, char to[4])
     memset(to, 0, 4);
     /* is it the mangled iso code? */
     /* see http://www.geocities.com/xhelmboyx/quicktime/formats/mp4-layout.txt */
-    if (code >= 0x400 && code != 0x7fff) {
-        for (i = 2; i >= 0; i--) {
+    if (code >= 0x400 && code != 0x7fff)
+    {
+        for (i = 2; i >= 0; i--)
+        {
             to[i] = 0x60 + (code & 0x1f);
             code >>= 5;
         }
@@ -405,7 +414,8 @@ int ff_mp4_read_descr_len(AVIOContext *pb)
 {
     int len = 0;
     int count = 4;
-    while (count--) {
+    while (count--)
+    {
         int c = avio_r8(pb);
         len = (len << 7) | (c & 0x7f);
         if (!(c & 0x80))
@@ -425,21 +435,23 @@ int ff_mp4_read_descr(AVFormatContext *fc, AVIOContext *pb, int *tag)
 
 void ff_mp4_parse_es_descr(AVIOContext *pb, int *es_id)
 {
-     int flags;
-     if (es_id) *es_id = avio_rb16(pb);
-     else                avio_rb16(pb);
-     flags = avio_r8(pb);
-     if (flags & 0x80) //streamDependenceFlag
-         avio_rb16(pb);
-     if (flags & 0x40) { //URL_Flag
-         int len = avio_r8(pb);
-         avio_skip(pb, len);
-     }
-     if (flags & 0x20) //OCRstreamFlag
-         avio_rb16(pb);
+    int flags;
+    if (es_id) *es_id = avio_rb16(pb);
+    else                avio_rb16(pb);
+    flags = avio_r8(pb);
+    if (flags & 0x80) //streamDependenceFlag
+        avio_rb16(pb);
+    if (flags & 0x40)   //URL_Flag
+    {
+        int len = avio_r8(pb);
+        avio_skip(pb, len);
+    }
+    if (flags & 0x20) //OCRstreamFlag
+        avio_rb16(pb);
 }
 
-static const AVCodecTag mp4_audio_types[] = {
+static const AVCodecTag mp4_audio_types[] =
+{
     { AV_CODEC_ID_MP3ON4, AOT_PS   }, /* old mp3on4 draft */
     { AV_CODEC_ID_MP3ON4, AOT_L1   }, /* layer 1 */
     { AV_CODEC_ID_MP3ON4, AOT_L2   }, /* layer 2 */
@@ -458,7 +470,8 @@ int ff_mp4_read_dec_config_descr(AVFormatContext *fc, AVStream *st, AVIOContext 
     avio_r8(pb); /* stream type */
     avio_rb24(pb); /* buffer size db */
 
-    if(avcodec_is_open(st->codec)) {
+    if(avcodec_is_open(st->codec))
+    {
         av_log(fc, AV_LOG_DEBUG, "codec open in read_dec_config_descr\n");
         return -1;
     }
@@ -474,14 +487,16 @@ int ff_mp4_read_dec_config_descr(AVFormatContext *fc, AVStream *st, AVIOContext 
         st->codec->codec_id= codec_id;
     av_log(fc, AV_LOG_TRACE, "esds object type id 0x%02x\n", object_type_id);
     len = ff_mp4_read_descr(fc, pb, &tag);
-    if (tag == MP4DecSpecificDescrTag) {
+    if (tag == MP4DecSpecificDescrTag)
+    {
         av_log(fc, AV_LOG_TRACE, "Specific MPEG4 header len=%d\n", len);
         if (!len || (uint64_t)len > (1<<30))
             return -1;
         av_free(st->codec->extradata);
         if ((ret = ff_get_extradata(st->codec, pb, len)) < 0)
             return ret;
-        if (st->codec->codec_id == AV_CODEC_ID_AAC) {
+        if (st->codec->codec_id == AV_CODEC_ID_AAC)
+        {
             MPEG4AudioConfig cfg = {0};
             avpriv_mpeg4audio_get_config(&cfg, st->codec->extradata,
                                          st->codec->extradata_size * 8, 1);
@@ -493,23 +508,25 @@ int ff_mp4_read_dec_config_descr(AVFormatContext *fc, AVStream *st, AVIOContext 
             else
                 st->codec->sample_rate = cfg.sample_rate;
             av_log(fc, AV_LOG_TRACE, "mp4a config channels %d obj %d ext obj %d "
-                    "sample rate %d ext sample rate %d\n", st->codec->channels,
-                    cfg.object_type, cfg.ext_object_type,
-                    cfg.sample_rate, cfg.ext_sample_rate);
+                   "sample rate %d ext sample rate %d\n", st->codec->channels,
+                   cfg.object_type, cfg.ext_object_type,
+                   cfg.sample_rate, cfg.ext_sample_rate);
             if (!(st->codec->codec_id = ff_codec_get_id(mp4_audio_types,
-                                                        cfg.object_type)))
+                                        cfg.object_type)))
                 st->codec->codec_id = AV_CODEC_ID_AAC;
         }
     }
     return 0;
 }
 
-typedef struct MovChannelLayout {
+typedef struct MovChannelLayout
+{
     int64_t  channel_layout;
     uint32_t layout_tag;
 } MovChannelLayout;
 
-static const MovChannelLayout mov_channel_layout[] = {
+static const MovChannelLayout mov_channel_layout[] =
+{
     { AV_CH_LAYOUT_MONO,                         (100<<16) | 1}, // kCAFChannelLayoutTag_Mono
     { AV_CH_LAYOUT_STEREO,                       (101<<16) | 2}, // kCAFChannelLayoutTag_Stereo
     { AV_CH_LAYOUT_STEREO,                       (102<<16) | 2}, // kCAFChannelLayoutTag_StereoHeadphones
@@ -547,20 +564,24 @@ int ff_mov_read_chan(AVFormatContext *s, AVStream *st, int64_t size)
 
     layout_tag = avio_rb32(pb);
     size -= 4;
-    if (layout_tag == 0) { // kCAFChannelLayoutTag_UseChannelDescriptions
+    if (layout_tag == 0)   // kCAFChannelLayoutTag_UseChannelDescriptions
+    {
         // Channel descriptions not implemented
         av_log_ask_for_sample(s, "Unimplemented container channel layout.\n");
         avio_skip(pb, size);
         return 0;
     }
-    if (layout_tag == 0x10000) { // kCAFChannelLayoutTag_UseChannelBitmap
+    if (layout_tag == 0x10000)   // kCAFChannelLayoutTag_UseChannelBitmap
+    {
         codec->channel_layout = avio_rb32(pb);
         size -= 4;
         avio_skip(pb, size);
         return 0;
     }
-    while (layouts->channel_layout) {
-        if (layout_tag == layouts->layout_tag) {
+    while (layouts->channel_layout)
+    {
+        if (layout_tag == layouts->layout_tag)
+        {
             codec->channel_layout = layouts->channel_layout;
             break;
         }
@@ -580,15 +601,19 @@ void ff_mov_write_chan(AVIOContext *pb, int64_t channel_layout)
     uint32_t layout_tag = 0;
 
     for (layouts = mov_channel_layout; layouts->channel_layout; layouts++)
-        if (channel_layout == layouts->channel_layout) {
+        if (channel_layout == layouts->channel_layout)
+        {
             layout_tag = layouts->layout_tag;
             break;
         }
 
-    if (layout_tag) {
+    if (layout_tag)
+    {
         avio_wb32(pb, layout_tag); // mChannelLayoutTag
         avio_wb32(pb, 0);          // mChannelBitmap
-    } else {
+    }
+    else
+    {
         avio_wb32(pb, 0x10000);    // kCAFChannelLayoutTag_UseChannelBitmap
         avio_wb32(pb, channel_layout);
     }

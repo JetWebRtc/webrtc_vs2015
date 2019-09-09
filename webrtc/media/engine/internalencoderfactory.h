@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,25 +15,27 @@
 
 #include "webrtc/media/engine/webrtcvideoencoderfactory.h"
 
-namespace cricket {
+namespace cricket
+{
 
-class InternalEncoderFactory : public WebRtcVideoEncoderFactory {
- public:
-  InternalEncoderFactory();
-  virtual ~InternalEncoderFactory();
+class InternalEncoderFactory : public WebRtcVideoEncoderFactory
+{
+public:
+    InternalEncoderFactory();
+    virtual ~InternalEncoderFactory();
 
-  // WebRtcVideoEncoderFactory implementation.
-  webrtc::VideoEncoder* CreateVideoEncoder(
-      const cricket::VideoCodec& codec) override;
-  const std::vector<cricket::VideoCodec>& supported_codecs() const override;
-  void DestroyVideoEncoder(webrtc::VideoEncoder* encoder) override;
+    // WebRtcVideoEncoderFactory implementation.
+    webrtc::VideoEncoder* CreateVideoEncoder(
+        const cricket::VideoCodec& codec) override;
+    const std::vector<cricket::VideoCodec>& supported_codecs() const override;
+    void DestroyVideoEncoder(webrtc::VideoEncoder* encoder) override;
 
- private:
-  // Disable overloaded virtual function warning. TODO(magjed): Remove once
-  // http://crbug/webrtc/6402 is fixed.
-  using WebRtcVideoEncoderFactory::CreateVideoEncoder;
+private:
+    // Disable overloaded virtual function warning. TODO(magjed): Remove once
+    // http://crbug/webrtc/6402 is fixed.
+    using WebRtcVideoEncoderFactory::CreateVideoEncoder;
 
-  std::vector<cricket::VideoCodec> supported_codecs_;
+    std::vector<cricket::VideoCodec> supported_codecs_;
 };
 
 }  // namespace cricket

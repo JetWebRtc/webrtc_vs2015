@@ -1,4 +1,4 @@
-/*
+﻿/*
  * simple math operations
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at> et al
  *

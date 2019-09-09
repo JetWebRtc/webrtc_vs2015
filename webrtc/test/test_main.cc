@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,31 +20,32 @@
 DEFINE_bool(logs, false, "print logs to stderr");
 
 DEFINE_string(force_fieldtrials, "",
-    "Field trials control experimental feature code which can be forced. "
-    "E.g. running with --force_fieldtrials=WebRTC-FooFeature/Enable/"
-    " will assign the group Enable to field trial WebRTC-FooFeature.");
+              "Field trials control experimental feature code which can be forced. "
+              "E.g. running with --force_fieldtrials=WebRTC-FooFeature/Enable/"
+              " will assign the group Enable to field trial WebRTC-FooFeature.");
 
-int main(int argc, char* argv[]) {
-  ::testing::InitGoogleMock(&argc, argv);
+int main(int argc, char* argv[])
+{
+    ::testing::InitGoogleMock(&argc, argv);
 
-  // Default to LS_INFO, even for release builds to provide better test logging.
-  // TODO(pbos): Consider adding a command-line override.
-  if (rtc::LogMessage::GetLogToDebug() > rtc::LS_INFO)
-    rtc::LogMessage::LogToDebug(rtc::LS_INFO);
+    // Default to LS_INFO, even for release builds to provide better test logging.
+    // TODO(pbos): Consider adding a command-line override.
+    if (rtc::LogMessage::GetLogToDebug() > rtc::LS_INFO)
+        rtc::LogMessage::LogToDebug(rtc::LS_INFO);
 
-  // AllowCommandLineParsing allows us to ignore flags passed on to us by
-  // Chromium build bots without having to explicitly disable them.
-  google::AllowCommandLineReparsing();
-  google::ParseCommandLineFlags(&argc, &argv, false);
+    // AllowCommandLineParsing allows us to ignore flags passed on to us by
+    // Chromium build bots without having to explicitly disable them.
+    google::AllowCommandLineReparsing();
+    google::ParseCommandLineFlags(&argc, &argv, false);
 
-  webrtc::test::SetExecutablePath(argv[0]);
-  webrtc::test::InitFieldTrialsFromString(FLAGS_force_fieldtrials);
-  webrtc::metrics::Enable();
+    webrtc::test::SetExecutablePath(argv[0]);
+    webrtc::test::InitFieldTrialsFromString(FLAGS_force_fieldtrials);
+    webrtc::metrics::Enable();
 
-  rtc::LogMessage::SetLogToStderr(FLAGS_logs);
-  std::unique_ptr<webrtc::test::TraceToStderr> trace_to_stderr;
-  if (FLAGS_logs)
-      trace_to_stderr.reset(new webrtc::test::TraceToStderr);
+    rtc::LogMessage::SetLogToStderr(FLAGS_logs);
+    std::unique_ptr<webrtc::test::TraceToStderr> trace_to_stderr;
+    if (FLAGS_logs)
+        trace_to_stderr.reset(new webrtc::test::TraceToStderr);
 
-  return RUN_ALL_TESTS();
+    return RUN_ALL_TESTS();
 }

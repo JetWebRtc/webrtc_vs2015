@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,9 +16,11 @@
 #include <gdk/gdk.h>
 #endif  // !defined(TOOLKIT_GTK)
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
 #if !defined(TOOLKIT_GTK)
 
@@ -26,10 +28,11 @@ namespace {
 static bool g_xserver_error_trap_enabled = false;
 static int g_last_xserver_error_code = 0;
 
-int XServerErrorHandler(Display* display, XErrorEvent* error_event) {
-  assert(g_xserver_error_trap_enabled);
-  g_last_xserver_error_code = error_event->error_code;
-  return 0;
+int XServerErrorHandler(Display* display, XErrorEvent* error_event)
+{
+    assert(g_xserver_error_trap_enabled);
+    g_last_xserver_error_code = error_event->error_code;
+    return 0;
 }
 
 #endif  // !defined(TOOLKIT_GTK)
@@ -38,32 +41,35 @@ int XServerErrorHandler(Display* display, XErrorEvent* error_event) {
 
 XErrorTrap::XErrorTrap(Display* display)
     : original_error_handler_(NULL),
-      enabled_(true) {
+      enabled_(true)
+{
 #if defined(TOOLKIT_GTK)
-  gdk_error_trap_push();
+    gdk_error_trap_push();
 #else  // !defined(TOOLKIT_GTK)
-  assert(!g_xserver_error_trap_enabled);
-  original_error_handler_ = XSetErrorHandler(&XServerErrorHandler);
-  g_xserver_error_trap_enabled = true;
-  g_last_xserver_error_code = 0;
+    assert(!g_xserver_error_trap_enabled);
+    original_error_handler_ = XSetErrorHandler(&XServerErrorHandler);
+    g_xserver_error_trap_enabled = true;
+    g_last_xserver_error_code = 0;
 #endif  // !defined(TOOLKIT_GTK)
 }
 
-int XErrorTrap::GetLastErrorAndDisable() {
-  enabled_ = false;
+int XErrorTrap::GetLastErrorAndDisable()
+{
+    enabled_ = false;
 #if defined(TOOLKIT_GTK)
-  return gdk_error_trap_push();
+    return gdk_error_trap_push();
 #else  // !defined(TOOLKIT_GTK)
-  assert(g_xserver_error_trap_enabled);
-  XSetErrorHandler(original_error_handler_);
-  g_xserver_error_trap_enabled = false;
-  return g_last_xserver_error_code;
+    assert(g_xserver_error_trap_enabled);
+    XSetErrorHandler(original_error_handler_);
+    g_xserver_error_trap_enabled = false;
+    return g_last_xserver_error_code;
 #endif  // !defined(TOOLKIT_GTK)
 }
 
-XErrorTrap::~XErrorTrap() {
-  if (enabled_)
-    GetLastErrorAndDisable();
+XErrorTrap::~XErrorTrap()
+{
+    if (enabled_)
+        GetLastErrorAndDisable();
 }
 
 }  // namespace webrtc

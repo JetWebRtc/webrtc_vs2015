@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Feeble Files/ScummVM DXA decoder
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -38,7 +38,8 @@
 /*
  * Decoder context
  */
-typedef struct DxaDecContext {
+typedef struct DxaDecContext
+{
     AVFrame *prev;
 
     int dsize;
@@ -67,26 +68,33 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
     mv   = data + AV_RB32(src + 0);
     msk  = mv   + AV_RB32(src + 4);
 
-    for(j = 0; j < avctx->height; j += 4){
-        for(i = 0; i < avctx->width; i += 4){
+    for(j = 0; j < avctx->height; j += 4)
+    {
+        for(i = 0; i < avctx->width; i += 4)
+        {
             if (data > src_end || mv > src_end || msk > src_end)
                 return AVERROR_INVALIDDATA;
             tmp  = dst + i;
             tmp2 = ref + i;
             type = *code++;
-            switch(type){
+            switch(type)
+            {
             case 4: // motion compensation
-                x = (*mv) >> 4;    if(x & 8) x = 8 - x;
-                y = (*mv++) & 0xF; if(y & 8) y = 8 - y;
+                x = (*mv) >> 4;
+                if(x & 8) x = 8 - x;
+                y = (*mv++) & 0xF;
+                if(y & 8) y = 8 - y;
                 if (i < -x || avctx->width  - i - 4 < x ||
-                    j < -y || avctx->height - j - 4 < y) {
+                        j < -y || avctx->height - j - 4 < y)
+                {
                     av_log(avctx, AV_LOG_ERROR, "MV %d %d out of bounds\n", x,y);
                     return AVERROR_INVALIDDATA;
                 }
                 tmp2 += x + y*stride;
             case 0: // skip
             case 5: // skip in method 12
-                for(y = 0; y < 4; y++){
+                for(y = 0; y < 4; y++)
+                {
                     memcpy(tmp, tmp2, 4);
                     tmp  += stride;
                     tmp2 += stride;
@@ -99,16 +107,21 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
             case 13:
             case 14:
             case 15:
-                if(type == 1){
+                if(type == 1)
+                {
                     mask = AV_RB16(msk);
                     msk += 2;
-                }else{
+                }
+                else
+                {
                     type -= 10;
                     mask = ((msk[0] & 0xF0) << shift1[type]) | ((msk[0] & 0xF) << shift2[type]);
                     msk++;
                 }
-                for(y = 0; y < 4; y++){
-                    for(x = 0; x < 4; x++){
+                for(y = 0; y < 4; y++)
+                {
+                    for(x = 0; x < 4; x++)
+                    {
                         tmp[x] = (mask & 0x8000) ? *data++ : tmp2[x];
                         mask <<= 1;
                     }
@@ -117,14 +130,16 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
                 }
                 break;
             case 2: // fill block
-                for(y = 0; y < 4; y++){
+                for(y = 0; y < 4; y++)
+                {
                     memset(tmp, data[0], 4);
                     tmp += stride;
                 }
                 data++;
                 break;
             case 3: // raw block
-                for(y = 0; y < 4; y++){
+                for(y = 0; y < 4; y++)
+                {
                     memcpy(tmp, data, 4);
                     data += 4;
                     tmp  += stride;
@@ -132,16 +147,21 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
                 break;
             case 8: // subblocks - method 13 only
                 mask = *msk++;
-                for(k = 0; k < 4; k++){
+                for(k = 0; k < 4; k++)
+                {
                     d  = ((k & 1) << 1) + ((k & 2) * stride);
                     d2 = ((k & 1) << 1) + ((k & 2) * stride);
                     tmp2 = ref + i + d2;
-                    switch(mask & 0xC0){
+                    switch(mask & 0xC0)
+                    {
                     case 0x80: // motion compensation
-                        x = (*mv) >> 4;    if(x & 8) x = 8 - x;
-                        y = (*mv++) & 0xF; if(y & 8) y = 8 - y;
+                        x = (*mv) >> 4;
+                        if(x & 8) x = 8 - x;
+                        y = (*mv++) & 0xF;
+                        if(y & 8) y = 8 - y;
                         if (i + 2*(k & 1) < -x || avctx->width  - i - 2*(k & 1) - 2 < x ||
-                            j +   (k & 2) < -y || avctx->height - j -   (k & 2) - 2 < y) {
+                                j +   (k & 2) < -y || avctx->height - j -   (k & 2) - 2 < y)
+                        {
                             av_log(avctx, AV_LOG_ERROR, "MV %d %d out of bounds\n", x,y);
                             return AVERROR_INVALIDDATA;
                         }
@@ -172,8 +192,10 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
             case 32: // vector quantization - 2 colors
                 mask = AV_RB16(msk);
                 msk += 2;
-                for(y = 0; y < 4; y++){
-                    for(x = 0; x < 4; x++){
+                for(y = 0; y < 4; y++)
+                {
+                    for(x = 0; x < 4; x++)
+                    {
                         tmp[x] = data[mask & 1];
                         mask >>= 1;
                     }
@@ -186,8 +208,10 @@ static int decode_13(AVCodecContext *avctx, DxaDecContext *c, uint8_t* dst,
             case 34:
                 mask = AV_RB32(msk);
                 msk += 4;
-                for(y = 0; y < 4; y++){
-                    for(x = 0; x < 4; x++){
+                for(y = 0; y < 4; y++)
+                {
+                    for(x = 0; x < 4; x++)
+                    {
                         tmp[x] = data[mask & 3];
                         mask >>= 2;
                     }
@@ -221,9 +245,11 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     bytestream2_init(&gb, avpkt->data, avpkt->size);
 
     /* make the palette available on the way out */
-    if (bytestream2_peek_le32(&gb) == MKTAG('C','M','A','P')) {
+    if (bytestream2_peek_le32(&gb) == MKTAG('C','M','A','P'))
+    {
         bytestream2_skip(&gb, 4);
-        for(i = 0; i < 256; i++){
+        for(i = 0; i < 256; i++)
+        {
             c->pal[i] = 0xFFU << 24 | bytestream2_get_be24(&gb);
         }
         pc = 1;
@@ -245,10 +271,12 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
         compr = bytestream2_get_byte(&gb);
 
     dsize = c->dsize;
-    if (compr != 4 && compr != -1) {
+    if (compr != 4 && compr != -1)
+    {
         bytestream2_skip(&gb, 4);
         if (uncompress(c->decomp_buf, &dsize, avpkt->data + bytestream2_tell(&gb),
-                       bytestream2_get_bytes_left(&gb)) != Z_OK) {
+                       bytestream2_get_bytes_left(&gb)) != Z_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Uncompress failed!\n");
             return AVERROR_UNKNOWN;
         }
@@ -258,13 +286,15 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     if (avctx->debug & FF_DEBUG_PICT_INFO)
         av_log(avctx, AV_LOG_DEBUG, "compr:%2d, dsize:%d\n", compr, (int)dsize);
 
-    switch(compr){
+    switch(compr)
+    {
     case -1:
         frame->key_frame = 0;
         frame->pict_type = AV_PICTURE_TYPE_P;
         if (c->prev->data[0])
             memcpy(frame->data[0], c->prev->data[0], frame->linesize[0] * avctx->height);
-        else{ // Should happen only when first frame is 'NULL'
+        else  // Should happen only when first frame is 'NULL'
+        {
             memset(frame->data[0], 0, frame->linesize[0] * avctx->height);
             frame->key_frame = 1;
             frame->pict_type = AV_PICTURE_TYPE_I;
@@ -274,27 +304,32 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     case 4:
         frame->key_frame = 1;
         frame->pict_type = AV_PICTURE_TYPE_I;
-        for (j = 0; j < avctx->height; j++) {
-                memcpy(outptr, srcptr, avctx->width);
+        for (j = 0; j < avctx->height; j++)
+        {
+            memcpy(outptr, srcptr, avctx->width);
             outptr += stride;
             srcptr += avctx->width;
         }
         break;
     case 3:
     case 5:
-        if (!tmpptr) {
+        if (!tmpptr)
+        {
             av_log(avctx, AV_LOG_ERROR, "Missing reference frame.\n");
             if (!(avctx->flags2 & AV_CODEC_FLAG2_SHOW_ALL))
                 return AVERROR_INVALIDDATA;
         }
         frame->key_frame = 0;
         frame->pict_type = AV_PICTURE_TYPE_P;
-        for (j = 0; j < avctx->height; j++) {
-            if(tmpptr){
+        for (j = 0; j < avctx->height; j++)
+        {
+            if(tmpptr)
+            {
                 for(i = 0; i < avctx->width; i++)
                     outptr[i] = srcptr[i] ^ tmpptr[i];
                 tmpptr += stride;
-            }else
+            }
+            else
                 memcpy(outptr, srcptr, avctx->width);
             outptr += stride;
             srcptr += avctx->width;
@@ -304,7 +339,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     case 13:
         frame->key_frame = 0;
         frame->pict_type = AV_PICTURE_TYPE_P;
-        if (!c->prev->data[0]) {
+        if (!c->prev->data[0])
+        {
             av_log(avctx, AV_LOG_ERROR, "Missing reference frame\n");
             return AVERROR_INVALIDDATA;
         }
@@ -329,7 +365,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
 {
     DxaDecContext * const c = avctx->priv_data;
 
-    if (avctx->width%4 || avctx->height%4) {
+    if (avctx->width%4 || avctx->height%4)
+    {
         avpriv_request_sample(avctx, "dimensions are not a multiple of 4");
         return AVERROR_INVALIDDATA;
     }
@@ -342,7 +379,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     c->dsize = avctx->width * avctx->height * 2;
     c->decomp_buf = av_malloc(c->dsize + DECOMP_BUF_PADDING);
-    if (!c->decomp_buf) {
+    if (!c->decomp_buf)
+    {
         av_frame_free(&c->prev);
         av_log(avctx, AV_LOG_ERROR, "Can't allocate decompression buffer.\n");
         return AVERROR(ENOMEM);
@@ -361,7 +399,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_dxa_decoder = {
+AVCodec ff_dxa_decoder =
+{
     .name           = "dxa",
     .long_name      = NULL_IF_CONFIG_SMALL("Feeble Files/ScummVM DXA"),
     .type           = AVMEDIA_TYPE_VIDEO,

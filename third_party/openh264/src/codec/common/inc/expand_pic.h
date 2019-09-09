@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -75,9 +75,10 @@ void ExpandPictureChroma_AArch64_neon (uint8_t* pDst, const int32_t kiStride, co
 
 typedef void (*PExpandPictureFunc) (uint8_t* pDst, const int32_t kiStride, const int32_t kiPicW, const int32_t kiPicH);
 
-typedef struct TagExpandPicFunc {
-  PExpandPictureFunc pfExpandLumaPicture;
-  PExpandPictureFunc pfExpandChromaPicture[2];
+typedef struct TagExpandPicFunc
+{
+    PExpandPictureFunc pfExpandLumaPicture;
+    PExpandPictureFunc pfExpandChromaPicture[2];
 } SExpandPicFunc;
 
 

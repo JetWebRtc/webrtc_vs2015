@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,118 +19,132 @@
 #include "webrtc/modules/audio_coding/neteq/include/neteq.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Forward declarations.
 class PostDecodeVad;
 
 // This class handles estimation of background noise parameters.
-class BackgroundNoise {
- public:
-  // TODO(hlundin): For 48 kHz support, increase kMaxLpcOrder to 10.
-  // Will work anyway, but probably sound a little worse.
-  static const size_t kMaxLpcOrder = 8;  // 32000 / 8000 + 4.
+class BackgroundNoise
+{
+public:
+    // TODO(hlundin): For 48 kHz support, increase kMaxLpcOrder to 10.
+    // Will work anyway, but probably sound a little worse.
+    static const size_t kMaxLpcOrder = 8;  // 32000 / 8000 + 4.
 
-  explicit BackgroundNoise(size_t num_channels);
-  virtual ~BackgroundNoise();
+    explicit BackgroundNoise(size_t num_channels);
+    virtual ~BackgroundNoise();
 
-  void Reset();
+    void Reset();
 
-  // Updates the parameter estimates based on the signal currently in the
-  // |sync_buffer|, and on the latest decision in |vad| if it is running.
-  void Update(const AudioMultiVector& sync_buffer,
-              const PostDecodeVad& vad);
+    // Updates the parameter estimates based on the signal currently in the
+    // |sync_buffer|, and on the latest decision in |vad| if it is running.
+    void Update(const AudioMultiVector& sync_buffer,
+                const PostDecodeVad& vad);
 
-  // Returns |energy_| for |channel|.
-  int32_t Energy(size_t channel) const;
+    // Returns |energy_| for |channel|.
+    int32_t Energy(size_t channel) const;
 
-  // Sets the value of |mute_factor_| for |channel| to |value|.
-  void SetMuteFactor(size_t channel, int16_t value);
+    // Sets the value of |mute_factor_| for |channel| to |value|.
+    void SetMuteFactor(size_t channel, int16_t value);
 
-  // Returns |mute_factor_| for |channel|.
-  int16_t MuteFactor(size_t channel) const;
+    // Returns |mute_factor_| for |channel|.
+    int16_t MuteFactor(size_t channel) const;
 
-  // Returns a pointer to |filter_| for |channel|.
-  const int16_t* Filter(size_t channel) const;
+    // Returns a pointer to |filter_| for |channel|.
+    const int16_t* Filter(size_t channel) const;
 
-  // Returns a pointer to |filter_state_| for |channel|.
-  const int16_t* FilterState(size_t channel) const;
+    // Returns a pointer to |filter_state_| for |channel|.
+    const int16_t* FilterState(size_t channel) const;
 
-  // Copies |length| elements from |input| to the filter state. Will not copy
-  // more than |kMaxLpcOrder| elements.
-  void SetFilterState(size_t channel, const int16_t* input, size_t length);
+    // Copies |length| elements from |input| to the filter state. Will not copy
+    // more than |kMaxLpcOrder| elements.
+    void SetFilterState(size_t channel, const int16_t* input, size_t length);
 
-  // Returns |scale_| for |channel|.
-  int16_t Scale(size_t channel) const;
+    // Returns |scale_| for |channel|.
+    int16_t Scale(size_t channel) const;
 
-  // Returns |scale_shift_| for |channel|.
-  int16_t ScaleShift(size_t channel) const;
+    // Returns |scale_shift_| for |channel|.
+    int16_t ScaleShift(size_t channel) const;
 
-  // Accessors.
-  bool initialized() const { return initialized_; }
-  NetEq::BackgroundNoiseMode mode() const { return mode_; }
-
-  // Sets the mode of the background noise playout for cases when there is long
-  // duration of packet loss.
-  void set_mode(NetEq::BackgroundNoiseMode mode) { mode_ = mode; }
-
- private:
-  static const int kThresholdIncrement = 229;  // 0.0035 in Q16.
-  static const size_t kVecLen = 256;
-  static const int kLogVecLen = 8;  // log2(kVecLen).
-  static const size_t kResidualLength = 64;
-  static const int16_t kLogResidualLength = 6;  // log2(kResidualLength)
-
-  struct ChannelParameters {
-    // Constructor.
-    ChannelParameters() {
-      Reset();
+    // Accessors.
+    bool initialized() const
+    {
+        return initialized_;
+    }
+    NetEq::BackgroundNoiseMode mode() const
+    {
+        return mode_;
     }
 
-    void Reset() {
-      energy = 2500;
-      max_energy = 0;
-      energy_update_threshold = 500000;
-      low_energy_update_threshold = 0;
-      memset(filter_state, 0, sizeof(filter_state));
-      memset(filter, 0, sizeof(filter));
-      filter[0] = 4096;
-      mute_factor = 0,
-      scale = 20000;
-      scale_shift = 24;
+    // Sets the mode of the background noise playout for cases when there is long
+    // duration of packet loss.
+    void set_mode(NetEq::BackgroundNoiseMode mode)
+    {
+        mode_ = mode;
     }
 
-    int32_t energy;
-    int32_t max_energy;
-    int32_t energy_update_threshold;
-    int32_t low_energy_update_threshold;
-    int16_t filter_state[kMaxLpcOrder];
-    int16_t filter[kMaxLpcOrder + 1];
-    int16_t mute_factor;
-    int16_t scale;
-    int16_t scale_shift;
-  };
+private:
+    static const int kThresholdIncrement = 229;  // 0.0035 in Q16.
+    static const size_t kVecLen = 256;
+    static const int kLogVecLen = 8;  // log2(kVecLen).
+    static const size_t kResidualLength = 64;
+    static const int16_t kLogResidualLength = 6;  // log2(kResidualLength)
 
-  int32_t CalculateAutoCorrelation(const int16_t* signal,
-                                   size_t length,
-                                   int32_t* auto_correlation) const;
+    struct ChannelParameters
+    {
+        // Constructor.
+        ChannelParameters()
+        {
+            Reset();
+        }
 
-  // Increments the energy threshold by a factor 1 + |kThresholdIncrement|.
-  void IncrementEnergyThreshold(size_t channel, int32_t sample_energy);
+        void Reset()
+        {
+            energy = 2500;
+            max_energy = 0;
+            energy_update_threshold = 500000;
+            low_energy_update_threshold = 0;
+            memset(filter_state, 0, sizeof(filter_state));
+            memset(filter, 0, sizeof(filter));
+            filter[0] = 4096;
+            mute_factor = 0,
+            scale = 20000;
+            scale_shift = 24;
+        }
 
-  // Updates the filter parameters.
-  void SaveParameters(size_t channel,
-                      const int16_t* lpc_coefficients,
-                      const int16_t* filter_state,
-                      int32_t sample_energy,
-                      int32_t residual_energy);
+        int32_t energy;
+        int32_t max_energy;
+        int32_t energy_update_threshold;
+        int32_t low_energy_update_threshold;
+        int16_t filter_state[kMaxLpcOrder];
+        int16_t filter[kMaxLpcOrder + 1];
+        int16_t mute_factor;
+        int16_t scale;
+        int16_t scale_shift;
+    };
 
-  size_t num_channels_;
-  std::unique_ptr<ChannelParameters[]> channel_parameters_;
-  bool initialized_;
-  NetEq::BackgroundNoiseMode mode_;
+    int32_t CalculateAutoCorrelation(const int16_t* signal,
+                                     size_t length,
+                                     int32_t* auto_correlation) const;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(BackgroundNoise);
+    // Increments the energy threshold by a factor 1 + |kThresholdIncrement|.
+    void IncrementEnergyThreshold(size_t channel, int32_t sample_energy);
+
+    // Updates the filter parameters.
+    void SaveParameters(size_t channel,
+                        const int16_t* lpc_coefficients,
+                        const int16_t* filter_state,
+                        int32_t sample_energy,
+                        int32_t residual_energy);
+
+    size_t num_channels_;
+    std::unique_ptr<ChannelParameters[]> channel_parameters_;
+    bool initialized_;
+    NetEq::BackgroundNoiseMode mode_;
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(BackgroundNoise);
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder - X86 DSP init functions
  *
  * This file is part of FFmpeg.

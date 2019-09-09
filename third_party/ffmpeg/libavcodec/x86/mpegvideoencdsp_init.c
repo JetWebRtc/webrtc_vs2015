@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -109,7 +109,8 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
     last_line = buf + (height - 1) * wrap;
     /* left and right */
     ptr = buf;
-    if (w == 8) {
+    if (w == 8)
+    {
         __asm__ volatile (
             "1:                             \n\t"
             "movd            (%0), %%mm0    \n\t"
@@ -127,8 +128,10 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
             "jb                1b           \n\t"
             : "+r" (ptr)
             : "r" ((x86_reg) wrap), "r" ((x86_reg) width),
-              "r" (ptr + wrap * height));
-    } else if (w == 16) {
+            "r" (ptr + wrap * height));
+    }
+    else if (w == 16)
+    {
         __asm__ volatile (
             "1:                                 \n\t"
             "movd            (%0), %%mm0        \n\t"
@@ -148,8 +151,10 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
             "jb                1b               \n\t"
             : "+r"(ptr)
             : "r"((x86_reg)wrap), "r"((x86_reg)width), "r"(ptr + wrap * height)
-            );
-    } else {
+        );
+    }
+    else
+    {
         av_assert1(w == 4);
         __asm__ volatile (
             "1:                             \n\t"
@@ -167,12 +172,14 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
             "jb                1b           \n\t"
             : "+r" (ptr)
             : "r" ((x86_reg) wrap), "r" ((x86_reg) width),
-              "r" (ptr + wrap * height));
+            "r" (ptr + wrap * height));
     }
 
     /* top and bottom (and hopefully also the corners) */
-    if (sides & EDGE_TOP) {
-        for (i = 0; i < h; i += 4) {
+    if (sides & EDGE_TOP)
+    {
+        for (i = 0; i < h; i += 4)
+        {
             ptr = buf - (i + 1) * wrap - w;
             __asm__ volatile (
                 "1:                             \n\t"
@@ -186,13 +193,15 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
                 "jb         1b                  \n\t"
                 : "+r" (ptr)
                 : "r" ((x86_reg) buf - (x86_reg) ptr - w),
-                  "r" ((x86_reg) - wrap), "r" ((x86_reg) - wrap * 3),
-                  "r" (ptr + width + 2 * w));
+                "r" ((x86_reg) - wrap), "r" ((x86_reg) - wrap * 3),
+                "r" (ptr + width + 2 * w));
         }
     }
 
-    if (sides & EDGE_BOTTOM) {
-        for (i = 0; i < h; i += 4) {
+    if (sides & EDGE_BOTTOM)
+    {
+        for (i = 0; i < h; i += 4)
+        {
             ptr = last_line + (i + 1) * wrap - w;
             __asm__ volatile (
                 "1:                             \n\t"
@@ -206,8 +215,8 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
                 "jb         1b                  \n\t"
                 : "+r" (ptr)
                 : "r" ((x86_reg) last_line - (x86_reg) ptr - w),
-                  "r" ((x86_reg) wrap), "r" ((x86_reg) wrap * 3),
-                  "r" (ptr + width + 2 * w));
+                "r" ((x86_reg) wrap), "r" ((x86_reg) wrap * 3),
+                "r" (ptr + width + 2 * w));
         }
     }
 }
@@ -215,53 +224,64 @@ static void draw_edges_mmx(uint8_t *buf, int wrap, int width, int height,
 #endif /* HAVE_INLINE_ASM */
 
 av_cold void ff_mpegvideoencdsp_init_x86(MpegvideoEncDSPContext *c,
-                                         AVCodecContext *avctx)
+        AVCodecContext *avctx)
 {
     int cpu_flags = av_get_cpu_flags();
 
 #if ARCH_X86_32
-    if (EXTERNAL_MMX(cpu_flags)) {
+    if (EXTERNAL_MMX(cpu_flags))
+    {
         c->pix_sum   = ff_pix_sum16_mmx;
         c->pix_norm1 = ff_pix_norm1_mmx;
     }
 
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
         c->pix_sum     = ff_pix_sum16_mmxext;
     }
 #endif
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->pix_sum     = ff_pix_sum16_sse2;
         c->pix_norm1   = ff_pix_norm1_sse2;
     }
 
-    if (EXTERNAL_XOP(cpu_flags)) {
+    if (EXTERNAL_XOP(cpu_flags))
+    {
         c->pix_sum     = ff_pix_sum16_xop;
     }
 
 #if HAVE_INLINE_ASM
 
-    if (INLINE_MMX(cpu_flags)) {
-        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+    if (INLINE_MMX(cpu_flags))
+    {
+        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->try_8x8basis = try_8x8basis_mmx;
         }
         c->add_8x8basis = add_8x8basis_mmx;
 
-        if (avctx->bits_per_raw_sample <= 8) {
+        if (avctx->bits_per_raw_sample <= 8)
+        {
             c->draw_edges = draw_edges_mmx;
         }
     }
 
-    if (INLINE_AMD3DNOW(cpu_flags)) {
-        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+    if (INLINE_AMD3DNOW(cpu_flags))
+    {
+        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->try_8x8basis = try_8x8basis_3dnow;
         }
         c->add_8x8basis = add_8x8basis_3dnow;
     }
 
 #if HAVE_SSSE3_INLINE
-    if (INLINE_SSSE3(cpu_flags)) {
-        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT)) {
+    if (INLINE_SSSE3(cpu_flags))
+    {
+        if (!(avctx->flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->try_8x8basis = try_8x8basis_ssse3;
         }
         c->add_8x8basis = add_8x8basis_ssse3;

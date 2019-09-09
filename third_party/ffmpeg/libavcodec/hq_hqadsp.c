@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQ/HQA decoder
  *
  * This file is part of FFmpeg.
@@ -117,7 +117,8 @@ static void hq_idct_put(uint8_t *dst, int stride, int16_t *block)
     for (i = 0; i < 8; i++)
         idct_col(block + i);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         for (j = 0; j < 8; j++)
             dst[j] = av_clip_uint8(block[j + i * 8]);
         dst += stride;

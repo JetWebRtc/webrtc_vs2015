@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.

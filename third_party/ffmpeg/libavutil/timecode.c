@@ -37,13 +37,17 @@ int av_timecode_adjust_ntsc_framenum2(int framenum, int fps)
     int drop_frames = 0;
     int d, m, frames_per_10mins;
 
-    if (fps == 30) {
+    if (fps == 30)
+    {
         drop_frames = 2;
         frames_per_10mins = 17982;
-    } else if (fps == 60) {
+    }
+    else if (fps == 60)
+    {
         drop_frames = 4;
         frames_per_10mins = 35964;
-    } else
+    }
+    else
         return framenum;
 
     d = framenum / frames_per_10mins;
@@ -90,7 +94,8 @@ char *av_timecode_make_string(const AVTimecode *tc, char *buf, int framenum)
     framenum += tc->start;
     if (drop)
         framenum = av_timecode_adjust_ntsc_framenum2(framenum, fps);
-    if (framenum < 0) {
+    if (framenum < 0)
+    {
         framenum = -framenum;
         neg = tc->flags & AV_TIMECODE_FLAG_ALLOWNEGATIVE;
     }
@@ -108,11 +113,11 @@ char *av_timecode_make_string(const AVTimecode *tc, char *buf, int framenum)
 
 static unsigned bcd2uint(uint8_t bcd)
 {
-   unsigned low  = bcd & 0xf;
-   unsigned high = bcd >> 4;
-   if (low > 9 || high > 9)
-       return 0;
-   return low + 10*high;
+    unsigned low  = bcd & 0xf;
+    unsigned high = bcd >> 4;
+    if (low > 9 || high > 9)
+        return 0;
+    return low + 10*high;
 }
 
 char *av_timecode_make_smpte_tc_string(char *buf, uint32_t tcsmpte, int prevent_df)
@@ -151,15 +156,18 @@ static int check_fps(int fps)
 
 static int check_timecode(void *log_ctx, AVTimecode *tc)
 {
-    if (tc->fps <= 0) {
+    if (tc->fps <= 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Timecode frame rate must be specified\n");
         return AVERROR(EINVAL);
     }
-    if ((tc->flags & AV_TIMECODE_FLAG_DROPFRAME) && tc->fps != 30 && tc->fps != 60) {
+    if ((tc->flags & AV_TIMECODE_FLAG_DROPFRAME) && tc->fps != 30 && tc->fps != 60)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Drop frame is only allowed with 30000/1001 or 60000/1001 FPS\n");
         return AVERROR(EINVAL);
     }
-    if (check_fps(tc->fps) < 0) {
+    if (check_fps(tc->fps) < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Timecode frame rate %d/%d not supported\n",
                tc->rate.num, tc->rate.den);
         return AVERROR_PATCHWELCOME;
@@ -194,9 +202,10 @@ int av_timecode_init_from_string(AVTimecode *tc, AVRational rate, const char *st
     char c;
     int hh, mm, ss, ff, ret;
 
-    if (sscanf(str, "%d:%d:%d%c%d", &hh, &mm, &ss, &c, &ff) != 5) {
+    if (sscanf(str, "%d:%d:%d%c%d", &hh, &mm, &ss, &c, &ff) != 5)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Unable to parse timecode, "
-                                      "syntax: hh:mm:ss[:;.]ff\n");
+               "syntax: hh:mm:ss[:;.]ff\n");
         return AVERROR_INVALIDDATA;
     }
 
@@ -210,7 +219,8 @@ int av_timecode_init_from_string(AVTimecode *tc, AVRational rate, const char *st
         return ret;
 
     tc->start = (hh*3600 + mm*60 + ss) * tc->fps + ff;
-    if (tc->flags & AV_TIMECODE_FLAG_DROPFRAME) { /* adjust frame number */
+    if (tc->flags & AV_TIMECODE_FLAG_DROPFRAME)   /* adjust frame number */
+    {
         int tmins = 60*hh + mm;
         tc->start -= 2 * (tmins - tmins/10);
     }

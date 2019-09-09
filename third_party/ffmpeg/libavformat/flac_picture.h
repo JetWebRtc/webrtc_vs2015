@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Raw FLAC picture parser
  * Copyright (c) 2001 Fabrice Bellard
  *

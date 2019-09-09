@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -38,7 +38,8 @@ void ff_mdct_calcw_c(FFTContext *s, FFTDouble *out, const FFTSample *input)
     n3 = 3 * n4;
 
     /* pre rotation */
-    for(i=0;i<n8;i++) {
+    for(i=0; i<n8; i++)
+    {
         re = RSCALE(-input[2*i+n3] - input[n3-1-2*i]);
         im = RSCALE(-input[n4+2*i] + input[n4-1-2*i]);
         j = revtab[i];
@@ -53,7 +54,8 @@ void ff_mdct_calcw_c(FFTContext *s, FFTDouble *out, const FFTSample *input)
     s->fft_calc(s, x);
 
     /* post rotation */
-    for(i=0;i<n8;i++) {
+    for(i=0; i<n8; i++)
+    {
         FFTDouble r0, i0, r1, i1;
         CMULL(i1, r0, x[n8-i-1].re, x[n8-i-1].im, -tsin[n8-i-1], -tcos[n8-i-1]);
         CMULL(i0, r1, x[n8+i  ].re, x[n8+i  ].im, -tsin[n8+i  ], -tcos[n8+i  ]);

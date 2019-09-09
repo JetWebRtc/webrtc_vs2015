@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Output the window rect, with the left/right/bottom frame border cropped if
 // the window is maximized. |cropped_rect| is the cropped rect relative to the
@@ -24,18 +25,19 @@ bool GetCroppedWindowRect(HWND window,
                           DesktopRect* original_rect);
 
 typedef HRESULT (WINAPI *DwmIsCompositionEnabledFunc)(BOOL* enabled);
-class AeroChecker {
- public:
-  AeroChecker();
-  ~AeroChecker();
+class AeroChecker
+{
+public:
+    AeroChecker();
+    ~AeroChecker();
 
-  bool IsAeroEnabled();
+    bool IsAeroEnabled();
 
- private:
-  HMODULE dwmapi_library_;
-  DwmIsCompositionEnabledFunc func_;
+private:
+    HMODULE dwmapi_library_;
+    DwmIsCompositionEnabledFunc func_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(AeroChecker);
+    RTC_DISALLOW_COPY_AND_ASSIGN(AeroChecker);
 };
 
 }  // namespace webrtc

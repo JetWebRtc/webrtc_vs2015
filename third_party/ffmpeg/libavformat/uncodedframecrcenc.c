@@ -1,4 +1,4 @@
-/*
+﻿/*
 * Copyright (c) 2013 Nicolas George
 *
 * This file is part of FFmpeg.
@@ -53,20 +53,23 @@ static void video_frame_cksum(AVBPrint *bp, AVFrame *frame)
     int linesize[5] = { 0 };
 
     av_bprintf(bp, ", %d x %d", frame->width, frame->height);
-    if (!desc) {
+    if (!desc)
+    {
         av_bprintf(bp, ", unknown");
         return;
     }
     if (av_image_fill_linesizes(linesize, frame->format, frame->width) < 0)
         return;
     av_bprintf(bp, ", %s", desc->name);
-    for (i = 0; linesize[i]; i++) {
+    for (i = 0; linesize[i]; i++)
+    {
         unsigned cksum = 0;
         int h = frame->height;
         if ((i == 1 || i == 2) && desc->nb_components >= 3)
             h = -((-h) >> desc->log2_chroma_h);
         data = frame->data[i];
-        for (y = 0; y < h; y++) {
+        for (y = 0; y < h; y++)
+        {
             cksum = av_adler32_update(cksum, data, linesize[i]);
             data += frame->linesize[i];
         }
@@ -81,17 +84,20 @@ static void audio_frame_cksum(AVBPrint *bp, AVFrame *frame)
 
     nb_planes  = av_frame_get_channels(frame);
     nb_samples = frame->nb_samples;
-    if (!av_sample_fmt_is_planar(frame->format)) {
+    if (!av_sample_fmt_is_planar(frame->format))
+    {
         nb_samples *= nb_planes;
         nb_planes = 1;
     }
     name = av_get_sample_fmt_name(frame->format);
     av_bprintf(bp, ", %d samples", frame->nb_samples);
     av_bprintf(bp, ", %s", name ? name : "unknown");
-    for (p = 0; p < nb_planes; p++) {
+    for (p = 0; p < nb_planes; p++)
+    {
         uint32_t cksum = 0;
         void *d = frame->extended_data[p];
-        switch (frame->format) {
+        switch (frame->format)
+        {
         case AV_SAMPLE_FMT_U8:
         case AV_SAMPLE_FMT_U8P:
             cksum_line_u8(&cksum, d, nb_samples);
@@ -136,13 +142,14 @@ static int write_frame(struct AVFormatContext *s, int stream_index,
     type = s->streams[stream_index]->codec->codec_type;
     type_name = av_get_media_type_string(type);
     av_bprintf(&bp, ", %s", type_name ? type_name : "unknown");
-    switch (type) {
-        case AVMEDIA_TYPE_VIDEO:
-            video_frame_cksum(&bp, *frame);
-            break;
-        case AVMEDIA_TYPE_AUDIO:
-            audio_frame_cksum(&bp, *frame);
-            break;
+    switch (type)
+    {
+    case AVMEDIA_TYPE_VIDEO:
+        video_frame_cksum(&bp, *frame);
+        break;
+    case AVMEDIA_TYPE_AUDIO:
+        audio_frame_cksum(&bp, *frame);
+        break;
     }
 
     av_bprint_chars(&bp, '\n', 1);
@@ -159,7 +166,8 @@ static int write_packet(struct AVFormatContext *s, AVPacket *pkt)
     return AVERROR(ENOSYS);
 }
 
-AVOutputFormat ff_uncodedframecrc_muxer = {
+AVOutputFormat ff_uncodedframecrc_muxer =
+{
     .name              = "uncodedframecrc",
     .long_name         = NULL_IF_CONFIG_SMALL("uncoded framecrc testing"),
     .audio_codec       = AV_CODEC_ID_PCM_S16LE,
@@ -168,5 +176,5 @@ AVOutputFormat ff_uncodedframecrc_muxer = {
     .write_packet      = write_packet,
     .write_uncoded_frame = write_frame,
     .flags             = AVFMT_VARIABLE_FPS | AVFMT_TS_NONSTRICT |
-                         AVFMT_TS_NEGATIVE,
+    AVFMT_TS_NEGATIVE,
 };

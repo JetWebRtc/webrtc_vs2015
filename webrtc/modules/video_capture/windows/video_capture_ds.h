@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -37,7 +37,7 @@ public:
      *
      *************************************************************************/
     virtual int32_t
-        StartCapture(const VideoCaptureCapability& capability);
+    StartCapture(const VideoCaptureCapability& capability);
     virtual int32_t StopCapture();
 
     /**************************************************************************
@@ -55,7 +55,7 @@ protected:
     // Help functions
 
     int32_t
-        SetCameraOutput(const VideoCaptureCapability& requestedCapability);
+    SetCameraOutput(const VideoCaptureCapability& requestedCapability);
     int32_t DisconnectGraph();
     HRESULT VideoCaptureDS::ConnectDVCamera();
 

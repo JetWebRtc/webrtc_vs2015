@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 #include "webrtc/base/logging.h"
 #include "webrtc/modules/rtp_rtcp/source/byte_io.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 
 // From RFC 3550, RTP: A Transport Protocol for Real-Time Applications.
 //
@@ -45,44 +47,49 @@ ReportBlock::ReportBlock()
       last_sr_(0),
       delay_since_last_sr_(0) {}
 
-bool ReportBlock::Parse(const uint8_t* buffer, size_t length) {
-  RTC_DCHECK(buffer != nullptr);
-  if (length < ReportBlock::kLength) {
-    LOG(LS_ERROR) << "Report Block should be 24 bytes long";
-    return false;
-  }
+bool ReportBlock::Parse(const uint8_t* buffer, size_t length)
+{
+    RTC_DCHECK(buffer != nullptr);
+    if (length < ReportBlock::kLength)
+    {
+        LOG(LS_ERROR) << "Report Block should be 24 bytes long";
+        return false;
+    }
 
-  source_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[0]);
-  fraction_lost_ = buffer[4];
-  cumulative_lost_ = ByteReader<uint32_t, 3>::ReadBigEndian(&buffer[5]);
-  extended_high_seq_num_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[8]);
-  jitter_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[12]);
-  last_sr_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[16]);
-  delay_since_last_sr_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[20]);
+    source_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[0]);
+    fraction_lost_ = buffer[4];
+    cumulative_lost_ = ByteReader<uint32_t, 3>::ReadBigEndian(&buffer[5]);
+    extended_high_seq_num_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[8]);
+    jitter_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[12]);
+    last_sr_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[16]);
+    delay_since_last_sr_ = ByteReader<uint32_t>::ReadBigEndian(&buffer[20]);
 
-  return true;
+    return true;
 }
 
-void ReportBlock::Create(uint8_t* buffer) const {
-  // Runtime check should be done while setting cumulative_lost.
-  RTC_DCHECK_LT(cumulative_lost(), (1 << 24));  // Have only 3 bytes for it.
+void ReportBlock::Create(uint8_t* buffer) const
+{
+    // Runtime check should be done while setting cumulative_lost.
+    RTC_DCHECK_LT(cumulative_lost(), (1 << 24));  // Have only 3 bytes for it.
 
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[0], source_ssrc());
-  ByteWriter<uint8_t>::WriteBigEndian(&buffer[4], fraction_lost());
-  ByteWriter<uint32_t, 3>::WriteBigEndian(&buffer[5], cumulative_lost());
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[8], extended_high_seq_num());
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[12], jitter());
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[16], last_sr());
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[20], delay_since_last_sr());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[0], source_ssrc());
+    ByteWriter<uint8_t>::WriteBigEndian(&buffer[4], fraction_lost());
+    ByteWriter<uint32_t, 3>::WriteBigEndian(&buffer[5], cumulative_lost());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[8], extended_high_seq_num());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[12], jitter());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[16], last_sr());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[20], delay_since_last_sr());
 }
 
-bool ReportBlock::SetCumulativeLost(uint32_t cumulative_lost) {
-  if (cumulative_lost >= (1u << 24)) {  // Have only 3 bytes to store it.
-    LOG(LS_WARNING) << "Cumulative lost is too big to fit into Report Block";
-    return false;
-  }
-  cumulative_lost_ = cumulative_lost;
-  return true;
+bool ReportBlock::SetCumulativeLost(uint32_t cumulative_lost)
+{
+    if (cumulative_lost >= (1u << 24))    // Have only 3 bytes to store it.
+    {
+        LOG(LS_WARNING) << "Cumulative lost is too big to fit into Report Block";
+        return false;
+    }
+    cumulative_lost_ = cumulative_lost;
+    return true;
 }
 
 }  // namespace rtcp

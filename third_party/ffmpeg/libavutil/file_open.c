@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -80,7 +80,8 @@ int avpriv_open(const char *filename, int flags, ...)
 
     fd = open(filename, flags, mode);
 #if HAVE_FCNTL
-    if (fd != -1) {
+    if (fd != -1)
+    {
         if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
             av_log(NULL, AV_LOG_DEBUG, "Failed to set close on exec\n");
     }
@@ -95,23 +96,36 @@ FILE *av_fopen_utf8(const char *path, const char *mode)
     int access;
     const char *m = mode;
 
-    switch (*m++) {
-    case 'r': access = O_RDONLY; break;
-    case 'w': access = O_CREAT|O_WRONLY|O_TRUNC; break;
-    case 'a': access = O_CREAT|O_WRONLY|O_APPEND; break;
+    switch (*m++)
+    {
+    case 'r':
+        access = O_RDONLY;
+        break;
+    case 'w':
+        access = O_CREAT|O_WRONLY|O_TRUNC;
+        break;
+    case 'a':
+        access = O_CREAT|O_WRONLY|O_APPEND;
+        break;
     default :
         errno = EINVAL;
         return NULL;
     }
-    while (*m) {
-        if (*m == '+') {
+    while (*m)
+    {
+        if (*m == '+')
+        {
             access &= ~(O_RDONLY | O_WRONLY);
             access |= O_RDWR;
-        } else if (*m == 'b') {
+        }
+        else if (*m == 'b')
+        {
 #ifdef O_BINARY
             access |= O_BINARY;
 #endif
-        } else if (*m) {
+        }
+        else if (*m)
+        {
             errno = EINVAL;
             return NULL;
         }

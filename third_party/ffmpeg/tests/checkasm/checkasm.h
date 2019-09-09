@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Assembly testing and benchmarking tool
  * Copyright (c) 2015 Henrik Gramner
  * Copyright (c) 2008 Loren Merritt

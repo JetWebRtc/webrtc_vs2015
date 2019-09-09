@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -47,22 +47,29 @@ int main(int argc, char **argv)
 
     p = file_buf;
     endp = file_buf + file_buf_size;
-    while (p < endp) {
+    while (p < endp)
+    {
         int l, r;
         const uint8_t *p0 = p;
         code = UINT32_MAX;
         r = av_utf8_decode(&code, &p, endp, 0);
         l = (int)(p-p0);
         print_sequence(p0, l, 20);
-        if (code != UINT32_MAX) {
+        if (code != UINT32_MAX)
+        {
             printf("%-10d 0x%-10X %-5d ", code, code, l);
-            if (r >= 0) {
+            if (r >= 0)
+            {
                 if (*p0 == '\n') printf("\\n\n");
                 else             printf ("%.*s\n", l, p0);
-            } else {
+            }
+            else
+            {
                 printf("invalid code range\n");
             }
-        } else {
+        }
+        else
+        {
             printf("invalid sequence\n");
         }
     }

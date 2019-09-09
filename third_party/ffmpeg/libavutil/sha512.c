@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2009 Konstantin Shishkov
  * Copyright (C) 2013 James Almer
@@ -31,7 +31,8 @@
 #include "mem.h"
 
 /** hash context */
-typedef struct AVSHA512 {
+typedef struct AVSHA512
+{
     uint8_t  digest_len;  ///< digest length in 64-bit words
     uint64_t count;       ///< number of bytes in buffer
     uint8_t  buffer[128]; ///< 1024-bit buffer of input values used in hash updating
@@ -45,7 +46,8 @@ struct AVSHA512 *av_sha512_alloc(void)
     return av_mallocz(sizeof(struct AVSHA512));
 }
 
-static const uint64_t K512[80] = {
+static const uint64_t K512[80] =
+{
     UINT64_C(0x428a2f98d728ae22),  UINT64_C(0x7137449123ef65cd),
     UINT64_C(0xb5c0fbcfec4d3b2f),  UINT64_C(0xe9b5dba58189dbbc),
     UINT64_C(0x3956c25bf348b538),  UINT64_C(0x59f111f1b605d019),
@@ -132,7 +134,8 @@ static void sha512_transform(uint64_t *state, const uint8_t buffer[128])
     g = state[6];
     h = state[7];
 #if CONFIG_SMALL
-    for (i = 0; i < 80; i++) {
+    for (i = 0; i < 80; i++)
+    {
         uint64_t T2;
         if (i < 16)
             T1 = blk0(i);
@@ -162,7 +165,8 @@ static void sha512_transform(uint64_t *state, const uint8_t buffer[128])
     ROUND512_0_TO_15(b, c, d, e, f, g, h, a)
 
     i = 0;
-    R512_0; R512_0;
+    R512_0;
+    R512_0;
 
 #define R512_16 \
     ROUND512_16_TO_80(a, b, c, d, e, f, g, h); \
@@ -174,8 +178,14 @@ static void sha512_transform(uint64_t *state, const uint8_t buffer[128])
     ROUND512_16_TO_80(c, d, e, f, g, h, a, b); \
     ROUND512_16_TO_80(b, c, d, e, f, g, h, a)
 
-    R512_16; R512_16; R512_16; R512_16;
-    R512_16; R512_16; R512_16; R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
+    R512_16;
 #endif
     state[0] += a;
     state[1] += b;
@@ -191,7 +201,8 @@ static void sha512_transform(uint64_t *state, const uint8_t buffer[128])
 av_cold int av_sha512_init(AVSHA512 *ctx, int bits)
 {
     ctx->digest_len = bits >> 6;
-    switch (bits) {
+    switch (bits)
+    {
     case 224: // SHA-512/224
         ctx->state[0] = UINT64_C(0x8C3D37C819544DA2);
         ctx->state[1] = UINT64_C(0x73E1996689DCD4D6);
@@ -246,21 +257,25 @@ void av_sha512_update(AVSHA512* ctx, const uint8_t* data, unsigned int len)
     j = ctx->count & 127;
     ctx->count += len;
 #if CONFIG_SMALL
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         ctx->buffer[j++] = data[i];
-        if (128 == j) {
+        if (128 == j)
+        {
             sha512_transform(ctx->state, ctx->buffer);
             j = 0;
         }
     }
 #else
-    if ((j + len) > 127) {
+    if ((j + len) > 127)
+    {
         memcpy(&ctx->buffer[j], data, (i = 128 - j));
         sha512_transform(ctx->state, ctx->buffer);
         for (; i + 127 < len; i += 128)
             sha512_transform(ctx->state, &data[i]);
         j = 0;
-    } else
+    }
+    else
         i = 0;
     memcpy(&ctx->buffer[j], &data[i], len - i);
 #endif
@@ -292,16 +307,18 @@ int main(void)
     unsigned char digest[64];
     static const int lengths[4] = { 224, 256, 384, 512 };
 
-    for (j = 0; j < 4; j++) {
+    for (j = 0; j < 4; j++)
+    {
         if (j < 2) printf("Testing SHA-512/%d\n", lengths[j]);
         else       printf("Testing SHA-%d\n", lengths[j]);
-        for (k = 0; k < 3; k++) {
+        for (k = 0; k < 3; k++)
+        {
             av_sha512_init(&ctx, lengths[j]);
             if (k == 0)
                 av_sha512_update(&ctx, "abc", 3);
             else if (k == 1)
                 av_sha512_update(&ctx, "abcdefghbcdefghicdefghijdefghijkefghijklfghijklmghijklmn"
-                                       "hijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", 112);
+                                 "hijklmnoijklmnopjklmnopqklmnopqrlmnopqrsmnopqrstnopqrstu", 112);
             else
                 for (i = 0; i < 1000*1000; i++)
                     av_sha512_update(&ctx, "a", 1);
@@ -310,7 +327,8 @@ int main(void)
                 printf("%02X", digest[i]);
             putchar('\n');
         }
-        switch (j) { //test vectors (from FIPS PUB 180-4 Apendix A)
+        switch (j)   //test vectors (from FIPS PUB 180-4 Apendix A)
+        {
         case 0:
             printf("4634270f 707b6a54 daae7530 460842e2 0e37ed26 5ceee9a4 3e8924aa\n"
                    "23fec5bb 94d60b23 30819264 0b0c4533 35d66473 4fe40e72 68674af9\n"

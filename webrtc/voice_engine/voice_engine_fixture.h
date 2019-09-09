@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,19 +15,21 @@
 #include "webrtc/voice_engine/include/voe_network.h"
 #include "webrtc/voice_engine/mock/mock_voe_observer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VoiceEngineFixture : public ::testing::Test {
- protected:
-  VoiceEngineFixture();
-  ~VoiceEngineFixture();
+class VoiceEngineFixture : public ::testing::Test
+{
+protected:
+    VoiceEngineFixture();
+    ~VoiceEngineFixture();
 
-  VoiceEngine* voe_;
-  VoEBase* base_;
-  VoENetwork* network_;
-  MockVoEObserver observer_;
-  FakeAudioDeviceModule adm_;
-  MockTransport transport_;
+    VoiceEngine* voe_;
+    VoEBase* base_;
+    VoENetwork* network_;
+    MockVoEObserver observer_;
+    FakeAudioDeviceModule adm_;
+    MockTransport transport_;
 };
 
 }  // namespace webrtc

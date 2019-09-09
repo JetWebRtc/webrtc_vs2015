@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,12 +23,12 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ARDSettingsModel : NSObject
 
-/**
- * Returns array of available capture resoultions.
- *
- * The capture resolutions are represented as strings in the following format
- * [width]x[height]
- */
+    /**
+     * Returns array of available capture resoultions.
+     *
+     * The capture resolutions are represented as strings in the following format
+     * [width]x[height]
+     */
 - (NSArray<NSString *> *)availableVideoResoultionsMediaConstraints;
 
 /**

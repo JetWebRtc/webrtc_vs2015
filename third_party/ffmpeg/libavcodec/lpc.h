@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LPC utility code
  * Copyright (c) 2006  Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -40,7 +40,8 @@
 /**
  * LPC analysis type
  */
-enum FFLPCType {
+enum FFLPCType
+{
     FF_LPC_TYPE_DEFAULT     = -1, ///< use the codec default LPC type
     FF_LPC_TYPE_NONE        =  0, ///< do not use LPC prediction or use all zero coefficients
     FF_LPC_TYPE_FIXED       =  1, ///< fixed LPC coefficients
@@ -49,7 +50,8 @@ enum FFLPCType {
     FF_LPC_TYPE_NB              , ///< Not part of ABI
 };
 
-typedef struct LPCContext {
+typedef struct LPCContext
+{
     int blocksize;
     int max_order;
     enum FFLPCType lpc_type;
@@ -144,8 +146,10 @@ static inline void compute_ref_coefs(const LPC_TYPE *autoc, int max_order,
     err   +=  gen1[0] * ref[0];
     if (error)
         error[0] = err;
-    for (i = 1; i < max_order; i++) {
-        for (j = 0; j < max_order - i; j++) {
+    for (i = 1; i < max_order; i++)
+    {
+        for (j = 0; j < max_order - i; j++)
+        {
             gen1[j] = gen1[j + 1] + ref[i - 1] * gen0[j];
             gen0[j] = gen1[j + 1] * ref[i - 1] + gen0[j];
         }
@@ -161,8 +165,8 @@ static inline void compute_ref_coefs(const LPC_TYPE *autoc, int max_order,
  * Produce LPC coefficients from autocorrelation data.
  */
 static inline int AAC_RENAME(compute_lpc_coefs)(const LPC_TYPE *autoc, int max_order,
-                                    LPC_TYPE *lpc, int lpc_stride, int fail,
-                                    int normalize)
+        LPC_TYPE *lpc, int lpc_stride, int fail,
+        int normalize)
 {
     int i, j;
     LPC_TYPE err = 0;
@@ -176,10 +180,12 @@ static inline int AAC_RENAME(compute_lpc_coefs)(const LPC_TYPE *autoc, int max_o
     if (fail && (autoc[max_order - 1] == 0 || err <= 0))
         return -1;
 
-    for(i=0; i<max_order; i++) {
+    for(i=0; i<max_order; i++)
+    {
         LPC_TYPE r = AAC_SRA_R(-autoc[i], 5);
 
-        if (normalize) {
+        if (normalize)
+        {
             for(j=0; j<i; j++)
                 r -= lpc_last[j] * autoc[i-j-1];
 
@@ -189,7 +195,8 @@ static inline int AAC_RENAME(compute_lpc_coefs)(const LPC_TYPE *autoc, int max_o
 
         lpc[i] = r;
 
-        for(j=0; j < (i+1)>>1; j++) {
+        for(j=0; j < (i+1)>>1; j++)
+        {
             LPC_TYPE f = lpc_last[    j];
             LPC_TYPE b = lpc_last[i-1-j];
             lpc[    j] = f + AAC_MUL26(r, b);

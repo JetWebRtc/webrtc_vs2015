@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,34 +29,39 @@ void WebRtcIlbcfix_Vq4(
     int16_t *CB, /* codebook in Q13 */
     int16_t *X,  /* vector to quantize (Q13) */
     int16_t n_cb
-                       ){
-  int16_t i, j;
-  int16_t pos, minindex=0;
-  int16_t tmp;
-  int32_t dist, mindist;
+)
+{
+    int16_t i, j;
+    int16_t pos, minindex=0;
+    int16_t tmp;
+    int32_t dist, mindist;
 
-  pos = 0;
-  mindist = WEBRTC_SPL_WORD32_MAX; /* start value */
+    pos = 0;
+    mindist = WEBRTC_SPL_WORD32_MAX; /* start value */
 
-  /* Find the codebook with the lowest square distance */
-  for (j = 0; j < n_cb; j++) {
-    tmp = X[0] - CB[pos];
-    dist = tmp * tmp;
-    for (i = 1; i < 4; i++) {
-      tmp = X[i] - CB[pos + i];
-      dist += tmp * tmp;
+    /* Find the codebook with the lowest square distance */
+    for (j = 0; j < n_cb; j++)
+    {
+        tmp = X[0] - CB[pos];
+        dist = tmp * tmp;
+        for (i = 1; i < 4; i++)
+        {
+            tmp = X[i] - CB[pos + i];
+            dist += tmp * tmp;
+        }
+
+        if (dist < mindist)
+        {
+            mindist = dist;
+            minindex = j;
+        }
+        pos += 4;
     }
 
-    if (dist < mindist) {
-      mindist = dist;
-      minindex = j;
+    /* Store the quantized codebook and the index */
+    for (i = 0; i < 4; i++)
+    {
+        Xq[i] = CB[minindex*4 + i];
     }
-    pos += 4;
-  }
-
-  /* Store the quantized codebook and the index */
-  for (i = 0; i < 4; i++) {
-    Xq[i] = CB[minindex*4 + i];
-  }
-  *index = minindex;
+    *index = minindex;
 }

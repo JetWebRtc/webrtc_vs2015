@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -39,9 +39,11 @@ enum AmplitudeScale { AS_LINEAR, AS_SQRT, AS_CBRT, AS_LOG, NB_ASCALES };
 enum WindowFunc     { WFUNC_RECT, WFUNC_HANNING, WFUNC_HAMMING, WFUNC_BLACKMAN,
                       WFUNC_BARTLETT, WFUNC_WELCH, WFUNC_FLATTOP,
                       WFUNC_BHARRIS, WFUNC_BNUTTALL, WFUNC_SINE, WFUNC_NUTTALL,
-                      WFUNC_BHANN, NB_WFUNC };
+                      WFUNC_BHANN, NB_WFUNC
+                    };
 
-typedef struct ShowFreqsContext {
+typedef struct ShowFreqsContext
+{
     const AVClass *class;
     int w, h;
     int mode;
@@ -67,49 +69,50 @@ typedef struct ShowFreqsContext {
 #define OFFSET(x) offsetof(ShowFreqsContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption showfreqs_options[] = {
+static const AVOption showfreqs_options[] =
+{
     { "size", "set video size", OFFSET(w), AV_OPT_TYPE_IMAGE_SIZE, {.str = "1024x512"}, 0, 0, FLAGS },
     { "s",    "set video size", OFFSET(w), AV_OPT_TYPE_IMAGE_SIZE, {.str = "1024x512"}, 0, 0, FLAGS },
     { "mode", "set display mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=BAR}, 0, NB_MODES-1, FLAGS, "mode" },
-        { "line", "show lines",  0, AV_OPT_TYPE_CONST, {.i64=LINE},   0, 0, FLAGS, "mode" },
-        { "bar",  "show bars",   0, AV_OPT_TYPE_CONST, {.i64=BAR},    0, 0, FLAGS, "mode" },
-        { "dot",  "show dots",   0, AV_OPT_TYPE_CONST, {.i64=DOT},    0, 0, FLAGS, "mode" },
+    { "line", "show lines",  0, AV_OPT_TYPE_CONST, {.i64=LINE},   0, 0, FLAGS, "mode" },
+    { "bar",  "show bars",   0, AV_OPT_TYPE_CONST, {.i64=BAR},    0, 0, FLAGS, "mode" },
+    { "dot",  "show dots",   0, AV_OPT_TYPE_CONST, {.i64=DOT},    0, 0, FLAGS, "mode" },
     { "ascale", "set amplitude scale", OFFSET(ascale), AV_OPT_TYPE_INT, {.i64=AS_LOG}, 0, NB_ASCALES-1, FLAGS, "ascale" },
-        { "lin",  "linear",      0, AV_OPT_TYPE_CONST, {.i64=AS_LINEAR}, 0, 0, FLAGS, "ascale" },
-        { "sqrt", "square root", 0, AV_OPT_TYPE_CONST, {.i64=AS_SQRT},   0, 0, FLAGS, "ascale" },
-        { "cbrt", "cubic root",  0, AV_OPT_TYPE_CONST, {.i64=AS_CBRT},   0, 0, FLAGS, "ascale" },
-        { "log",  "logarithmic", 0, AV_OPT_TYPE_CONST, {.i64=AS_LOG},    0, 0, FLAGS, "ascale" },
+    { "lin",  "linear",      0, AV_OPT_TYPE_CONST, {.i64=AS_LINEAR}, 0, 0, FLAGS, "ascale" },
+    { "sqrt", "square root", 0, AV_OPT_TYPE_CONST, {.i64=AS_SQRT},   0, 0, FLAGS, "ascale" },
+    { "cbrt", "cubic root",  0, AV_OPT_TYPE_CONST, {.i64=AS_CBRT},   0, 0, FLAGS, "ascale" },
+    { "log",  "logarithmic", 0, AV_OPT_TYPE_CONST, {.i64=AS_LOG},    0, 0, FLAGS, "ascale" },
     { "fscale", "set frequency scale", OFFSET(fscale), AV_OPT_TYPE_INT, {.i64=FS_LINEAR}, 0, NB_FSCALES-1, FLAGS, "fscale" },
-        { "lin",  "linear",              0, AV_OPT_TYPE_CONST, {.i64=FS_LINEAR}, 0, 0, FLAGS, "fscale" },
-        { "log",  "logarithmic",         0, AV_OPT_TYPE_CONST, {.i64=FS_LOG},    0, 0, FLAGS, "fscale" },
-        { "rlog", "reverse logarithmic", 0, AV_OPT_TYPE_CONST, {.i64=FS_RLOG},   0, 0, FLAGS, "fscale" },
+    { "lin",  "linear",              0, AV_OPT_TYPE_CONST, {.i64=FS_LINEAR}, 0, 0, FLAGS, "fscale" },
+    { "log",  "logarithmic",         0, AV_OPT_TYPE_CONST, {.i64=FS_LOG},    0, 0, FLAGS, "fscale" },
+    { "rlog", "reverse logarithmic", 0, AV_OPT_TYPE_CONST, {.i64=FS_RLOG},   0, 0, FLAGS, "fscale" },
     { "win_size", "set window size", OFFSET(fft_bits), AV_OPT_TYPE_INT, {.i64=11}, 4, 16, FLAGS, "fft" },
-        { "w16",    0, 0, AV_OPT_TYPE_CONST, {.i64=4},  0, 0, FLAGS, "fft" },
-        { "w32",    0, 0, AV_OPT_TYPE_CONST, {.i64=5},  0, 0, FLAGS, "fft" },
-        { "w64",    0, 0, AV_OPT_TYPE_CONST, {.i64=6},  0, 0, FLAGS, "fft" },
-        { "w128",   0, 0, AV_OPT_TYPE_CONST, {.i64=7},  0, 0, FLAGS, "fft" },
-        { "w256",   0, 0, AV_OPT_TYPE_CONST, {.i64=8},  0, 0, FLAGS, "fft" },
-        { "w512",   0, 0, AV_OPT_TYPE_CONST, {.i64=9},  0, 0, FLAGS, "fft" },
-        { "w1024",  0, 0, AV_OPT_TYPE_CONST, {.i64=10}, 0, 0, FLAGS, "fft" },
-        { "w2048",  0, 0, AV_OPT_TYPE_CONST, {.i64=11}, 0, 0, FLAGS, "fft" },
-        { "w4096",  0, 0, AV_OPT_TYPE_CONST, {.i64=12}, 0, 0, FLAGS, "fft" },
-        { "w8192",  0, 0, AV_OPT_TYPE_CONST, {.i64=13}, 0, 0, FLAGS, "fft" },
-        { "w16384", 0, 0, AV_OPT_TYPE_CONST, {.i64=14}, 0, 0, FLAGS, "fft" },
-        { "w32768", 0, 0, AV_OPT_TYPE_CONST, {.i64=15}, 0, 0, FLAGS, "fft" },
-        { "w65536", 0, 0, AV_OPT_TYPE_CONST, {.i64=16}, 0, 0, FLAGS, "fft" },
+    { "w16",    0, 0, AV_OPT_TYPE_CONST, {.i64=4},  0, 0, FLAGS, "fft" },
+    { "w32",    0, 0, AV_OPT_TYPE_CONST, {.i64=5},  0, 0, FLAGS, "fft" },
+    { "w64",    0, 0, AV_OPT_TYPE_CONST, {.i64=6},  0, 0, FLAGS, "fft" },
+    { "w128",   0, 0, AV_OPT_TYPE_CONST, {.i64=7},  0, 0, FLAGS, "fft" },
+    { "w256",   0, 0, AV_OPT_TYPE_CONST, {.i64=8},  0, 0, FLAGS, "fft" },
+    { "w512",   0, 0, AV_OPT_TYPE_CONST, {.i64=9},  0, 0, FLAGS, "fft" },
+    { "w1024",  0, 0, AV_OPT_TYPE_CONST, {.i64=10}, 0, 0, FLAGS, "fft" },
+    { "w2048",  0, 0, AV_OPT_TYPE_CONST, {.i64=11}, 0, 0, FLAGS, "fft" },
+    { "w4096",  0, 0, AV_OPT_TYPE_CONST, {.i64=12}, 0, 0, FLAGS, "fft" },
+    { "w8192",  0, 0, AV_OPT_TYPE_CONST, {.i64=13}, 0, 0, FLAGS, "fft" },
+    { "w16384", 0, 0, AV_OPT_TYPE_CONST, {.i64=14}, 0, 0, FLAGS, "fft" },
+    { "w32768", 0, 0, AV_OPT_TYPE_CONST, {.i64=15}, 0, 0, FLAGS, "fft" },
+    { "w65536", 0, 0, AV_OPT_TYPE_CONST, {.i64=16}, 0, 0, FLAGS, "fft" },
     { "win_func", "set window function", OFFSET(win_func), AV_OPT_TYPE_INT, {.i64=WFUNC_HANNING}, 0, NB_WFUNC-1, FLAGS, "win_func" },
-        { "rect",     "Rectangular",      0, AV_OPT_TYPE_CONST, {.i64=WFUNC_RECT},     0, 0, FLAGS, "win_func" },
-        { "bartlett", "Bartlett",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BARTLETT}, 0, 0, FLAGS, "win_func" },
-        { "hanning",  "Hanning",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_HANNING},  0, 0, FLAGS, "win_func" },
-        { "hamming",  "Hamming",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_HAMMING},  0, 0, FLAGS, "win_func" },
-        { "blackman", "Blackman",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BLACKMAN}, 0, 0, FLAGS, "win_func" },
-        { "welch",    "Welch",            0, AV_OPT_TYPE_CONST, {.i64=WFUNC_WELCH},    0, 0, FLAGS, "win_func" },
-        { "flattop",  "Flat-top",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_FLATTOP},  0, 0, FLAGS, "win_func" },
-        { "bharris",  "Blackman-Harris",  0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BHARRIS},  0, 0, FLAGS, "win_func" },
-        { "bnuttall", "Blackman-Nuttall", 0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BNUTTALL}, 0, 0, FLAGS, "win_func" },
-        { "bhann",    "Bartlett-Hann",    0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BHANN},    0, 0, FLAGS, "win_func" },
-        { "sine",     "Sine",             0, AV_OPT_TYPE_CONST, {.i64=WFUNC_SINE},     0, 0, FLAGS, "win_func" },
-        { "nuttall",  "Nuttall",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_NUTTALL},  0, 0, FLAGS, "win_func" },
+    { "rect",     "Rectangular",      0, AV_OPT_TYPE_CONST, {.i64=WFUNC_RECT},     0, 0, FLAGS, "win_func" },
+    { "bartlett", "Bartlett",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BARTLETT}, 0, 0, FLAGS, "win_func" },
+    { "hanning",  "Hanning",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_HANNING},  0, 0, FLAGS, "win_func" },
+    { "hamming",  "Hamming",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_HAMMING},  0, 0, FLAGS, "win_func" },
+    { "blackman", "Blackman",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BLACKMAN}, 0, 0, FLAGS, "win_func" },
+    { "welch",    "Welch",            0, AV_OPT_TYPE_CONST, {.i64=WFUNC_WELCH},    0, 0, FLAGS, "win_func" },
+    { "flattop",  "Flat-top",         0, AV_OPT_TYPE_CONST, {.i64=WFUNC_FLATTOP},  0, 0, FLAGS, "win_func" },
+    { "bharris",  "Blackman-Harris",  0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BHARRIS},  0, 0, FLAGS, "win_func" },
+    { "bnuttall", "Blackman-Nuttall", 0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BNUTTALL}, 0, 0, FLAGS, "win_func" },
+    { "bhann",    "Bartlett-Hann",    0, AV_OPT_TYPE_CONST, {.i64=WFUNC_BHANN},    0, 0, FLAGS, "win_func" },
+    { "sine",     "Sine",             0, AV_OPT_TYPE_CONST, {.i64=WFUNC_SINE},     0, 0, FLAGS, "win_func" },
+    { "nuttall",  "Nuttall",          0, AV_OPT_TYPE_CONST, {.i64=WFUNC_NUTTALL},  0, 0, FLAGS, "win_func" },
     { "overlap",  "set window overlap", OFFSET(overlap), AV_OPT_TYPE_FLOAT, {.dbl=1.}, 0., 1., FLAGS },
     { "averaging", "set time averaging", OFFSET(avg), AV_OPT_TYPE_INT, {.i64=1}, 0, INT32_MAX, FLAGS },
     { "colors", "set channels colors", OFFSET(colors), AV_OPT_TYPE_STRING, {.str = "red|green|blue|yellow|orange|lime|pink|magenta|brown" }, 0, 0, FLAGS },
@@ -156,7 +159,8 @@ static void generate_window_func(float *lut, int N, int win_func, float *overlap
 {
     int n;
 
-    switch (win_func) {
+    switch (win_func)
+    {
     case WFUNC_RECT:
         for (n = 0; n < N; n++)
             lut[n] = 1.;
@@ -190,10 +194,10 @@ static void generate_window_func(float *lut, int N, int win_func, float *overlap
     case WFUNC_FLATTOP:
         for (n = 0; n < N; n++)
             lut[n] = 1.-1.985844164102*cos( 2*M_PI*n/(N-1))+1.791176438506*cos( 4*M_PI*n/(N-1))-
-                        1.282075284005*cos( 6*M_PI*n/(N-1))+0.667777530266*cos( 8*M_PI*n/(N-1))-
-                        0.240160796576*cos(10*M_PI*n/(N-1))+0.056656381764*cos(12*M_PI*n/(N-1))-
-                        0.008134974479*cos(14*M_PI*n/(N-1))+0.000624544650*cos(16*M_PI*n/(N-1))-
-                        0.000019808998*cos(18*M_PI*n/(N-1))+0.000000132974*cos(20*M_PI*n/(N-1));
+                     1.282075284005*cos( 6*M_PI*n/(N-1))+0.667777530266*cos( 8*M_PI*n/(N-1))-
+                     0.240160796576*cos(10*M_PI*n/(N-1))+0.056656381764*cos(12*M_PI*n/(N-1))-
+                     0.008134974479*cos(14*M_PI*n/(N-1))+0.000624544650*cos(16*M_PI*n/(N-1))-
+                     0.000019808998*cos(18*M_PI*n/(N-1))+0.000000132974*cos(20*M_PI*n/(N-1));
         *overlap = 0.841;
         break;
     case WFUNC_BHARRIS:
@@ -239,7 +243,8 @@ static int config_output(AVFilterLink *outlink)
     av_audio_fifo_free(s->fifo);
     av_fft_end(s->fft);
     s->fft = av_fft_init(s->fft_bits, 0);
-    if (!s->fft) {
+    if (!s->fft)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unable to create FFT context. "
                "The window size might be too high.\n");
         return AVERROR(ENOMEM);
@@ -248,7 +253,8 @@ static int config_output(AVFilterLink *outlink)
     /* FFT buffers: x2 for each (display) channel buffer.
      * Note: we use free and malloc instead of a realloc-like function to
      * make sure the buffer is aligned in memory for the FFT functions. */
-    for (i = 0; i < s->nb_channels; i++) {
+    for (i = 0; i < s->nb_channels; i++)
+    {
         av_freep(&s->fft_data[i]);
         av_freep(&s->avg_data[i]);
     }
@@ -262,7 +268,8 @@ static int config_output(AVFilterLink *outlink)
     s->avg_data = av_calloc(s->nb_channels, sizeof(*s->avg_data));
     if (!s->fft_data)
         return AVERROR(ENOMEM);
-    for (i = 0; i < s->nb_channels; i++) {
+    for (i = 0; i < s->nb_channels; i++)
+    {
         s->fft_data[i] = av_calloc(s->win_size, sizeof(**s->fft_data));
         s->avg_data[i] = av_calloc(s->nb_freq, sizeof(**s->avg_data));
         if (!s->fft_data[i] || !s->avg_data[i])
@@ -278,18 +285,23 @@ static int config_output(AVFilterLink *outlink)
     if (s->overlap == 1.)
         s->overlap = overlap;
     s->skip_samples = (1. - s->overlap) * s->win_size;
-    if (s->skip_samples < 1) {
+    if (s->skip_samples < 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "overlap %f too big\n", s->overlap);
         return AVERROR(EINVAL);
     }
 
-    for (s->scale = 0, i = 0; i < s->win_size; i++) {
+    for (s->scale = 0, i = 0; i < s->win_size; i++)
+    {
         s->scale += s->window_func_lut[i] * s->window_func_lut[i];
     }
 
     outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
     outlink->frame_rate = av_make_q(inlink->sample_rate, s->win_size * (1.-s->overlap));
-    outlink->sample_aspect_ratio = (AVRational){1,1};
+    outlink->sample_aspect_ratio = (AVRational)
+    {
+        1,1
+    };
     outlink->w = s->w;
     outlink->h = s->h;
 
@@ -312,7 +324,8 @@ static inline void draw_dot(AVFrame *out, int x, int y, uint8_t fg[4])
 
 static int get_sx(ShowFreqsContext *s, int f)
 {
-    switch (s->fscale) {
+    switch (s->fscale)
+    {
     case FS_LINEAR:
         return (s->w/(float)s->nb_freq)*f;
     case FS_LOG:
@@ -326,7 +339,8 @@ static int get_sx(ShowFreqsContext *s, int f)
 
 static float get_bsize(ShowFreqsContext *s, int f)
 {
-    switch (s->fscale) {
+    switch (s->fscale)
+    {
     case FS_LINEAR:
         return s->w/(float)s->nb_freq;
     case FS_LOG:
@@ -350,7 +364,8 @@ static inline void plot_freq(ShowFreqsContext *s, int ch,
     const int sx = get_sx(s, f);
     int x, y, i;
 
-    switch(s->ascale) {
+    switch(s->ascale)
+    {
     case AS_SQRT:
         a = 1.0 - sqrt(a);
         break;
@@ -368,7 +383,8 @@ static inline void plot_freq(ShowFreqsContext *s, int ch,
     if (y < 0)
         return;
 
-    switch (s->avg) {
+    switch (s->avg)
+    {
     case 0:
         y = s->avg_data[ch][f] = !outlink->frame_count ? y : FFMIN(avg, y);
         break;
@@ -380,17 +396,22 @@ static inline void plot_freq(ShowFreqsContext *s, int ch,
         break;
     }
 
-    switch(s->mode) {
+    switch(s->mode)
+    {
     case LINE:
-        if (*prev_y == -1) {
+        if (*prev_y == -1)
+        {
             *prev_y = y;
         }
-        if (y <= *prev_y) {
+        if (y <= *prev_y)
+        {
             for (x = sx + 1; x < sx + bsize && x < w; x++)
                 draw_dot(out, x, y, fg);
             for (i = y; i <= *prev_y; i++)
                 draw_dot(out, sx, i, fg);
-        } else {
+        }
+        else
+        {
             for (i = *prev_y; i <= y; i++)
                 draw_dot(out, sx, i, fg);
             for (x = sx + 1; x < sx + bsize && x < w; x++)
@@ -428,21 +449,25 @@ static int plot_freqs(AVFilterLink *inlink, AVFrame *in)
         memset(out->data[0] + out->linesize[0] * n, 0, outlink->w * 4);
 
     /* fill FFT input with the number of samples available */
-    for (ch = 0; ch < s->nb_channels; ch++) {
+    for (ch = 0; ch < s->nb_channels; ch++)
+    {
         const float *p = (float *)in->extended_data[ch];
 
-        for (n = 0; n < in->nb_samples; n++) {
+        for (n = 0; n < in->nb_samples; n++)
+        {
             s->fft_data[ch][n].re = p[n] * s->window_func_lut[n];
             s->fft_data[ch][n].im = 0;
         }
-        for (; n < win_size; n++) {
+        for (; n < win_size; n++)
+        {
             s->fft_data[ch][n].re = 0;
             s->fft_data[ch][n].im = 0;
         }
     }
 
     /* run FFT on each samples set */
-    for (ch = 0; ch < s->nb_channels; ch++) {
+    for (ch = 0; ch < s->nb_channels; ch++)
+    {
         av_fft_permute(s->fft, s->fft_data[ch]);
         av_fft_calc(s->fft, s->fft_data[ch]);
     }
@@ -452,12 +477,14 @@ static int plot_freqs(AVFilterLink *inlink, AVFrame *in)
 #define M(a, b) (sqrt((a) * (a) + (b) * (b)))
 
     colors = av_strdup(s->colors);
-    if (!colors) {
+    if (!colors)
+    {
         av_frame_free(&out);
         return AVERROR(ENOMEM);
     }
 
-    for (ch = 0; ch < s->nb_channels; ch++) {
+    for (ch = 0; ch < s->nb_channels; ch++)
+    {
         uint8_t fg[4] = { 0xff, 0xff, 0xff, 0xff };
         int prev_y = -1, f;
         double a;
@@ -469,7 +496,8 @@ static int plot_freqs(AVFilterLink *inlink, AVFrame *in)
         a = av_clipd(M(RE(0, ch), 0) / s->scale, 0, 1);
         plot_freq(s, ch, a, 0, fg, &prev_y, out, outlink);
 
-        for (f = 1; f < s->nb_freq; f++) {
+        for (f = 1; f < s->nb_freq; f++)
+        {
             a = av_clipd(M(RE(f, ch), IM(f, ch)) / s->scale, 0, 1);
 
             plot_freq(s, ch, a, f, fg, &prev_y, out, outlink);
@@ -489,9 +517,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int ret = 0;
 
     av_audio_fifo_write(s->fifo, (void **)in->extended_data, in->nb_samples);
-    while (av_audio_fifo_size(s->fifo) >= s->win_size) {
+    while (av_audio_fifo_size(s->fifo) >= s->win_size)
+    {
         fin = ff_get_audio_buffer(inlink, s->win_size);
-        if (!fin) {
+        if (!fin)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -521,7 +551,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     int i;
 
     av_fft_end(s->fft);
-    for (i = 0; i < s->nb_channels; i++) {
+    for (i = 0; i < s->nb_channels; i++)
+    {
         av_freep(&s->fft_data[i]);
         av_freep(&s->avg_data[i]);
     }
@@ -531,7 +562,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_audio_fifo_free(s->fifo);
 }
 
-static const AVFilterPad showfreqs_inputs[] = {
+static const AVFilterPad showfreqs_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -540,7 +572,8 @@ static const AVFilterPad showfreqs_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad showfreqs_outputs[] = {
+static const AVFilterPad showfreqs_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -549,7 +582,8 @@ static const AVFilterPad showfreqs_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_avf_showfreqs = {
+AVFilter ff_avf_showfreqs =
+{
     .name          = "showfreqs",
     .description   = NULL_IF_CONFIG_SMALL("Convert input audio to a frequencies video output."),
     .uninit        = uninit,

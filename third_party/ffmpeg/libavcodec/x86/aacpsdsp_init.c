@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD optimized MPEG-4 Parametric Stereo decoding functions
  *
  * This file is part of FFmpeg.
@@ -42,12 +42,14 @@ av_cold void ff_psdsp_init_x86(PSDSPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         s->add_squares            = ff_ps_add_squares_sse;
         s->mul_pair_single        = ff_ps_mul_pair_single_sse;
         s->hybrid_analysis        = ff_ps_hybrid_analysis_sse;
     }
-    if (EXTERNAL_SSE3(cpu_flags)) {
+    if (EXTERNAL_SSE3(cpu_flags))
+    {
         s->add_squares            = ff_ps_add_squares_sse3;
         s->stereo_interpolate[0]  = ff_ps_stereo_interpolate_sse3;
         s->hybrid_analysis        = ff_ps_hybrid_analysis_sse3;

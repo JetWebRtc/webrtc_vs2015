@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -50,18 +50,22 @@ void silk_LTP_analysis_filter_FLP(
 
     x_ptr = x;
     LTP_res_ptr = LTP_res;
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         x_lag_ptr = x_ptr - pitchL[ k ];
         inv_gain = invGains[ k ];
-        for( i = 0; i < LTP_ORDER; i++ ) {
+        for( i = 0; i < LTP_ORDER; i++ )
+        {
             Btmp[ i ] = B[ k * LTP_ORDER + i ];
         }
 
         /* LTP analysis FIR filter */
-        for( i = 0; i < subfr_length + pre_length; i++ ) {
+        for( i = 0; i < subfr_length + pre_length; i++ )
+        {
             LTP_res_ptr[ i ] = x_ptr[ i ];
             /* Subtract long-term prediction */
-            for( j = 0; j < LTP_ORDER; j++ ) {
+            for( j = 0; j < LTP_ORDER; j++ )
+            {
                 LTP_res_ptr[ i ] -= Btmp[ j ] * x_lag_ptr[ LTP_ORDER / 2 - j ];
             }
             LTP_res_ptr[ i ] *= inv_gain;

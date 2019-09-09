@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ID3v2 header parser
  * Copyright (c) 2003 Fabrice Bellard
  *
@@ -39,26 +39,30 @@
 #define ID3v2_FLAG_ENCRYPTION  0x0004
 #define ID3v2_FLAG_COMPRESSION 0x0008
 
-enum ID3v2Encoding {
+enum ID3v2Encoding
+{
     ID3v2_ENCODING_ISO8859  = 0,
     ID3v2_ENCODING_UTF16BOM = 1,
     ID3v2_ENCODING_UTF16BE  = 2,
     ID3v2_ENCODING_UTF8     = 3,
 };
 
-typedef struct ID3v2EncContext {
+typedef struct ID3v2EncContext
+{
     int      version;       ///< ID3v2 minor version, either 3 or 4
     int64_t size_pos;       ///< offset of the tag total size
     int          len;       ///< size of the tag written so far
 } ID3v2EncContext;
 
-typedef struct ID3v2ExtraMeta {
+typedef struct ID3v2ExtraMeta
+{
     const char *tag;
     void *data;
     struct ID3v2ExtraMeta *next;
 } ID3v2ExtraMeta;
 
-typedef struct ID3v2ExtraMetaGEOB {
+typedef struct ID3v2ExtraMetaGEOB
+{
     uint32_t datasize;
     uint8_t *mime_type;
     uint8_t *file_name;
@@ -66,14 +70,16 @@ typedef struct ID3v2ExtraMetaGEOB {
     uint8_t *data;
 } ID3v2ExtraMetaGEOB;
 
-typedef struct ID3v2ExtraMetaAPIC {
+typedef struct ID3v2ExtraMetaAPIC
+{
     AVBufferRef *buf;
     const char  *type;
     uint8_t     *description;
     enum AVCodecID id;
 } ID3v2ExtraMetaAPIC;
 
-typedef struct ID3v2ExtraMetaPRIV {
+typedef struct ID3v2ExtraMetaPRIV
+{
     uint8_t *owner;
     uint8_t *data;
     uint32_t datasize;

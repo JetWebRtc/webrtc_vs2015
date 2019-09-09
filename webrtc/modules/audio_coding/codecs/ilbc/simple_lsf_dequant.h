@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,6 +29,6 @@ void WebRtcIlbcfix_SimpleLsfDeQ(
     int16_t *lsfdeq,  /* (o) dequantized lsf coefficients */
     int16_t *index,  /* (i) quantization index */
     int16_t lpc_n  /* (i) number of LPCs */
-                                );
+);
 
 #endif

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 
 #include "avfft.h"
 
-typedef struct IMDCT15Context {
+typedef struct IMDCT15Context
+{
     int fft_n;
     int len2;
     int len4;

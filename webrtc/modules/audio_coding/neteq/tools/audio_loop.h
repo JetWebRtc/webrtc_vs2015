@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,40 +18,44 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Class serving as an infinite source of audio, realized by looping an audio
 // clip.
-class AudioLoop {
- public:
-  AudioLoop()
-      : next_index_(0),
-        loop_length_samples_(0),
-        block_length_samples_(0) {
-  }
+class AudioLoop
+{
+public:
+    AudioLoop()
+        : next_index_(0),
+          loop_length_samples_(0),
+          block_length_samples_(0)
+    {
+    }
 
-  virtual ~AudioLoop() {}
+    virtual ~AudioLoop() {}
 
-  // Initializes the AudioLoop by reading from |file_name|. The loop will be no
-  // longer than |max_loop_length_samples|, if the length of the file is
-  // greater. Otherwise, the loop length is the same as the file length.
-  // The audio will be delivered in blocks of |block_length_samples|.
-  // Returns false if the initialization failed, otherwise true.
-  bool Init(const std::string file_name, size_t max_loop_length_samples,
-            size_t block_length_samples);
+    // Initializes the AudioLoop by reading from |file_name|. The loop will be no
+    // longer than |max_loop_length_samples|, if the length of the file is
+    // greater. Otherwise, the loop length is the same as the file length.
+    // The audio will be delivered in blocks of |block_length_samples|.
+    // Returns false if the initialization failed, otherwise true.
+    bool Init(const std::string file_name, size_t max_loop_length_samples,
+              size_t block_length_samples);
 
-  // Returns a (pointer,size) pair for the next block of audio. The size is
-  // equal to the |block_length_samples| Init() argument.
-  rtc::ArrayView<const int16_t> GetNextBlock();
+    // Returns a (pointer,size) pair for the next block of audio. The size is
+    // equal to the |block_length_samples| Init() argument.
+    rtc::ArrayView<const int16_t> GetNextBlock();
 
- private:
-  size_t next_index_;
-  size_t loop_length_samples_;
-  size_t block_length_samples_;
-  std::unique_ptr<int16_t[]> audio_array_;
+private:
+    size_t next_index_;
+    size_t loop_length_samples_;
+    size_t block_length_samples_;
+    std::unique_ptr<int16_t[]> audio_array_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioLoop);
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioLoop);
 };
 
 }  // namespace test

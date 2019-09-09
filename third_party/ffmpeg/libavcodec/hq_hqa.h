@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQ/HQA decoder
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #define NUM_HQ_PROFILES   22
 #define NUM_HQ_QUANTS     16
 
-typedef struct HQContext {
+typedef struct HQContext
+{
     AVCodecContext *avctx;
     HQDSPContext hqhqadsp;
     GetByteContext gbc;
@@ -42,7 +43,8 @@ typedef struct HQContext {
     DECLARE_ALIGNED(16, int16_t, block)[12][64];
 } HQContext;
 
-typedef struct HQProfile {
+typedef struct HQProfile
+{
     const uint8_t *perm_tab;
     int width, height;
     int num_slices;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,26 +12,30 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/voice_engine/level_indicator.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace voe {
+namespace voe
+{
 
 // Number of bars on the indicator.
 // Note that the number of elements is specified because we are indexing it
 // in the range of 0-32
 const int8_t permutation[33] =
-    {0,1,2,3,4,4,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,9,9,9,9,9,9,9,9,9};
+{0,1,2,3,4,4,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,9,9,9,9,9,9,9,9,9,9,9};
 
 
 AudioLevel::AudioLevel() :
     _absMax(0),
     _count(0),
     _currentLevel(0),
-    _currentLevelFullRange(0) {
-  WebRtcSpl_Init();
+    _currentLevelFullRange(0)
+{
+    WebRtcSpl_Init();
 }
 
-AudioLevel::~AudioLevel() {
+AudioLevel::~AudioLevel()
+{
 }
 
 void AudioLevel::Clear()
@@ -49,15 +53,15 @@ void AudioLevel::ComputeLevel(const AudioFrame& audioFrame)
 
     // Check speech level (works for 2 channels as well)
     absValue = WebRtcSpl_MaxAbsValueW16(
-        audioFrame.data_,
-        audioFrame.samples_per_channel_*audioFrame.num_channels_);
+                   audioFrame.data_,
+                   audioFrame.samples_per_channel_*audioFrame.num_channels_);
 
     // Protect member access using a lock since this method is called on a
     // dedicated audio thread in the RecordedDataIsAvailable() callback.
     rtc::CritScope cs(&_critSect);
 
     if (absValue > _absMax)
-    _absMax = absValue;
+        _absMax = absValue;
 
     // Update level approximately 10 times per second
     if (_count++ == kUpdateFrequency)

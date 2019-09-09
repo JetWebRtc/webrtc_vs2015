@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCDataBuffer ()
 
-/**
- * The native DataBuffer representation of this RTCDatabuffer object. This is
- * needed to pass to the underlying C++ APIs.
- */
-@property(nonatomic, readonly) const webrtc::DataBuffer *nativeDataBuffer;
+    /**
+     * The native DataBuffer representation of this RTCDatabuffer object. This is
+     * needed to pass to the underlying C++ APIs.
+     */
+    @property(nonatomic, readonly) const webrtc::DataBuffer *nativeDataBuffer;
 
 /** Initialize an RTCDataBuffer from a native DataBuffer. */
 - (instancetype)initWithNativeBuffer:(const webrtc::DataBuffer&)nativeBuffer;
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCDataChannel ()
 
-/** Initialize an RTCDataChannel from a native DataChannelInterface. */
+    /** Initialize an RTCDataChannel from a native DataChannelInterface. */
 - (instancetype)initWithNativeDataChannel:
     (rtc::scoped_refptr<webrtc::DataChannelInterface>)nativeDataChannel
     NS_DESIGNATED_INITIALIZER;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Pinnacle TARGA CineWave YUV16 decoder
  * Copyright (c) 2012 Carl Eugen Hoyos
  *
@@ -38,7 +38,8 @@ static int y216_decode_frame(AVCodecContext *avctx, void *data,
     uint16_t *y, *u, *v, aligned_width = FFALIGN(avctx->width, 4);
     int i, j, ret;
 
-    if (avpkt->size < 4 * avctx->height * aligned_width) {
+    if (avpkt->size < 4 * avctx->height * aligned_width)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -53,8 +54,10 @@ static int y216_decode_frame(AVCodecContext *avctx, void *data,
     u = (uint16_t *)pic->data[1];
     v = (uint16_t *)pic->data[2];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width >> 1; j++) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width >> 1; j++)
+        {
             u[    j    ] = src[4 * j    ] << 2 | src[4 * j    ] >> 14;
             y[2 * j    ] = src[4 * j + 1] << 2 | src[4 * j + 1] >> 14;
             v[    j    ] = src[4 * j + 2] << 2 | src[4 * j + 2] >> 14;
@@ -72,7 +75,8 @@ static int y216_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_targa_y216_decoder = {
+AVCodec ff_targa_y216_decoder =
+{
     .name         = "targa_y216",
     .long_name    = NULL_IF_CONFIG_SMALL("Pinnacle TARGA CineWave YUV16"),
     .type         = AVMEDIA_TYPE_VIDEO,

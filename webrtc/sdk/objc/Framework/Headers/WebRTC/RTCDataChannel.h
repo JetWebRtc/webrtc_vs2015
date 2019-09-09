@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCDataBuffer : NSObject
 
-/** NSData representation of the underlying buffer. */
-@property(nonatomic, readonly) NSData *data;
+    /** NSData representation of the underlying buffer. */
+    @property(nonatomic, readonly) NSData *data;
 
 /** Indicates whether |data| contains UTF-8 or binary data. */
 @property(nonatomic, readonly) BOOL isBinary;
@@ -55,21 +55,22 @@ RTC_EXPORT
 
 
 /** Represents the state of the data channel. */
-typedef NS_ENUM(NSInteger, RTCDataChannelState) {
-  RTCDataChannelStateConnecting,
-  RTCDataChannelStateOpen,
-  RTCDataChannelStateClosing,
-  RTCDataChannelStateClosed,
+typedef NS_ENUM(NSInteger, RTCDataChannelState)
+{
+    RTCDataChannelStateConnecting,
+    RTCDataChannelStateOpen,
+    RTCDataChannelStateClosing,
+    RTCDataChannelStateClosed,
 };
 
 RTC_EXPORT
 @interface RTCDataChannel : NSObject
 
-/**
- * A label that can be used to distinguish this data channel from other data
- * channel objects.
- */
-@property(nonatomic, readonly) NSString *label;
+    /**
+     * A label that can be used to distinguish this data channel from other data
+     * channel objects.
+     */
+    @property(nonatomic, readonly) NSString *label;
 
 /** Whether the data channel can send messages in unreliable mode. */
 @property(nonatomic, readonly) BOOL isReliable DEPRECATED_ATTRIBUTE;
@@ -79,7 +80,7 @@ RTC_EXPORT
 
 /** Deprecated. Use maxPacketLifeTime. */
 @property(nonatomic, readonly) NSUInteger maxRetransmitTime
-    DEPRECATED_ATTRIBUTE;
+DEPRECATED_ATTRIBUTE;
 
 /**
  * The length of the time window (in milliseconds) during which transmissions

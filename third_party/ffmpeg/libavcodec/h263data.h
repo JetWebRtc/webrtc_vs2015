@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2000,2001 Fabrice Bellard
  * H263+ support
  * copyright (c) 2001 Juan J. Sierralta P

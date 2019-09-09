@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 
 #include "qpeldsp.h"
 
-typedef struct WMV2DSPContext {
+typedef struct WMV2DSPContext
+{
     void (*idct_add)(uint8_t *dest, int line_size, int16_t *block);
     void (*idct_put)(uint8_t *dest, int line_size, int16_t *block);
 

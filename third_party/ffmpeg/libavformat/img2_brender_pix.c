@@ -1,4 +1,4 @@
-/*
+﻿/*
  * BRender PIX image demuxer
  * Copyright (c) 2014 Michael Niedermayer
  *
@@ -24,7 +24,8 @@
 
 static int brender_read_probe(AVProbeData *p)
 {
-    static const uint8_t brender_magic[16] = {
+    static const uint8_t brender_magic[16] =
+    {
         0,0,0,0x12,0,0,0,8,0,0,0,2,0,0,0,2
     };
 
@@ -32,20 +33,22 @@ static int brender_read_probe(AVProbeData *p)
         return 0;
 
     if (AV_RB32(p->buf+16) != 0x03 &&
-        AV_RB32(p->buf+16) != 0x3D)
+            AV_RB32(p->buf+16) != 0x3D)
         return 0;
 
     return AVPROBE_SCORE_MAX-10;
 }
 
-static const AVClass image2_brender_pix_class = {
+static const AVClass image2_brender_pix_class =
+{
     .class_name = "brender_pix demuxer",
     .item_name  = av_default_item_name,
     .option     = ff_img_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_image2_brender_pix_demuxer = {
+AVInputFormat ff_image2_brender_pix_demuxer =
+{
     .name           = "brender_pix",
     .long_name      = NULL_IF_CONFIG_SMALL("BRender PIX image"),
     .priv_data_size = sizeof(VideoDemuxData),

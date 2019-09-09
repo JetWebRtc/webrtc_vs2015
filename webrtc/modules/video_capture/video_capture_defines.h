@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,7 @@ namespace webrtc
 {
 // Defines
 #ifndef NULL
-    #define NULL    0
+#define NULL    0
 #endif
 
 enum {kVideoCaptureUniqueNameLength =1024}; //Max unique capture device name lenght

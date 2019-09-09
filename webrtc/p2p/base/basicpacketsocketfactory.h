@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,44 +13,46 @@
 
 #include "webrtc/p2p/base/packetsocketfactory.h"
 
-namespace rtc {
+namespace rtc
+{
 
 class AsyncSocket;
 class SocketFactory;
 class Thread;
 
-class BasicPacketSocketFactory : public PacketSocketFactory {
- public:
-  BasicPacketSocketFactory();
-  explicit BasicPacketSocketFactory(Thread* thread);
-  explicit BasicPacketSocketFactory(SocketFactory* socket_factory);
-  ~BasicPacketSocketFactory() override;
+class BasicPacketSocketFactory : public PacketSocketFactory
+{
+public:
+    BasicPacketSocketFactory();
+    explicit BasicPacketSocketFactory(Thread* thread);
+    explicit BasicPacketSocketFactory(SocketFactory* socket_factory);
+    ~BasicPacketSocketFactory() override;
 
-  AsyncPacketSocket* CreateUdpSocket(const SocketAddress& local_address,
-                                     uint16_t min_port,
-                                     uint16_t max_port) override;
-  AsyncPacketSocket* CreateServerTcpSocket(const SocketAddress& local_address,
-                                           uint16_t min_port,
-                                           uint16_t max_port,
-                                           int opts) override;
-  AsyncPacketSocket* CreateClientTcpSocket(const SocketAddress& local_address,
-                                           const SocketAddress& remote_address,
-                                           const ProxyInfo& proxy_info,
-                                           const std::string& user_agent,
-                                           int opts) override;
+    AsyncPacketSocket* CreateUdpSocket(const SocketAddress& local_address,
+                                       uint16_t min_port,
+                                       uint16_t max_port) override;
+    AsyncPacketSocket* CreateServerTcpSocket(const SocketAddress& local_address,
+            uint16_t min_port,
+            uint16_t max_port,
+            int opts) override;
+    AsyncPacketSocket* CreateClientTcpSocket(const SocketAddress& local_address,
+            const SocketAddress& remote_address,
+            const ProxyInfo& proxy_info,
+            const std::string& user_agent,
+            int opts) override;
 
-  AsyncResolverInterface* CreateAsyncResolver() override;
+    AsyncResolverInterface* CreateAsyncResolver() override;
 
- private:
-  int BindSocket(AsyncSocket* socket,
-                 const SocketAddress& local_address,
-                 uint16_t min_port,
-                 uint16_t max_port);
+private:
+    int BindSocket(AsyncSocket* socket,
+                   const SocketAddress& local_address,
+                   uint16_t min_port,
+                   uint16_t max_port);
 
-  SocketFactory* socket_factory();
+    SocketFactory* socket_factory();
 
-  Thread* thread_;
-  SocketFactory* socket_factory_;
+    Thread* thread_;
+    SocketFactory* socket_factory_;
 };
 
 }  // namespace rtc

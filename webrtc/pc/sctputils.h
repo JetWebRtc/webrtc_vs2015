@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,11 +15,13 @@
 
 #include "webrtc/api/datachannelinterface.h"
 
-namespace rtc {
+namespace rtc
+{
 class CopyOnWriteBuffer;
 }  // namespace rtc
 
-namespace webrtc {
+namespace webrtc
+{
 struct DataChannelInit;
 
 // Read the message type and return true if it's an OPEN message.

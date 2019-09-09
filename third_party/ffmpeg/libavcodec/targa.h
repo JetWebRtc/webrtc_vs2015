@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,7 +30,8 @@
  * http://en.wikipedia.org/wiki/Truevision_TGA
  */
 
-enum TargaCompr {
+enum TargaCompr
+{
     TGA_NODATA = 0, // no image data
     TGA_PAL    = 1, // palettized
     TGA_RGB    = 2, // true-color
@@ -38,7 +39,8 @@ enum TargaCompr {
     TGA_RLE    = 8, // flag pointing that data is RLE-coded
 };
 
-enum TargaFlags {
+enum TargaFlags
+{
     TGA_RIGHTTOLEFT = 0x10, // right-to-left (flipped horizontally)
     TGA_TOPTOBOTTOM = 0x20, // top-to-bottom (NOT flipped vertically)
     TGA_INTERLEAVE2 = 0x40, // 2-way interleave, odd then even lines

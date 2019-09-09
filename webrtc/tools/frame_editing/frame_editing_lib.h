@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include <string>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Frame numbering starts at 1. The set of frames to be processed includes the
 // frame with the number: first_frame_to_process and last_frame_to_process.
@@ -32,8 +33,8 @@ namespace webrtc {
 // No interpolation is done when up-sampling.
 
 int EditFrames(const std::string& in_path, int width, int height,
-                int first_frame_to_process, int interval,
-                int last_frame_to_process, const std::string& out_path);
+               int first_frame_to_process, int interval,
+               int last_frame_to_process, const std::string& out_path);
 }  // namespace webrtc
 
 #endif  // WEBRTC_TOOLS_FRAME_EDITING_FRAME_EDITING_LIB_H_

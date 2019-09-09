@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2014 Vidyo.
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,8 @@ static OPUS_INLINE opus_int32 silk_NSQ_noise_shape_feedback_loop_c(const opus_in
     out = silk_RSHIFT(order, 1);
     out = silk_SMLAWB(out, tmp2, coef[0]);
 
-    for (j = 2; j < order; j += 2) {
+    for (j = 2; j < order; j += 2)
+    {
         tmp2 = data1[j - 1];
         data1[j - 1] = tmp1;
         out = silk_SMLAWB(out, tmp1, coef[j - 1]);

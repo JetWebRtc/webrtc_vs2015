@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common data for metadata muxer/demuxer
  * Copyright (c) 2010 Anton Khirnov
  *

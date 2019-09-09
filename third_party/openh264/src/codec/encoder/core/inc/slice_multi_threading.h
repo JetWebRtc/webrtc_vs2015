@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2010-2013, Cisco Systems
  *     All rights reserved.
@@ -50,7 +50,8 @@
 #include "svc_enc_slice_segment.h"
 #include "WelsThreadLib.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 void UpdateMbListNeighborParallel (SDqLayer* pCurDq,
                                    SMB* pMbList,
                                    const int32_t kiSliceIdc);

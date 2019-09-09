@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC3/DNxHD encoder structure definitions and prototypes
  * Copyright (c) 2007 Baptiste Coudurier <baptiste dot coudurier at smartjog dot com>
  *
@@ -29,17 +29,20 @@
 #include "mpegvideo.h"
 #include "dnxhddata.h"
 
-typedef struct RCCMPEntry {
+typedef struct RCCMPEntry
+{
     uint16_t mb;
     int value;
 } RCCMPEntry;
 
-typedef struct RCEntry {
+typedef struct RCEntry
+{
     int ssd;
     int bits;
 } RCEntry;
 
-typedef struct DNXHDEncContext {
+typedef struct DNXHDEncContext
+{
     AVClass *class;
     BlockDSPContext bdsp;
     MpegEncContext m; ///< Used for quantization dsp functions

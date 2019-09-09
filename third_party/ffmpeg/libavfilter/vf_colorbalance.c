@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -31,13 +31,15 @@
 #define B 2
 #define A 3
 
-typedef struct {
+typedef struct
+{
     double shadows;
     double midtones;
     double highlights;
 } Range;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     Range cyan_red;
     Range magenta_green;
@@ -51,7 +53,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(ColorBalanceContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption colorbalance_options[] = {
+static const AVOption colorbalance_options[] =
+{
     { "rs", "set red shadows",      OFFSET(cyan_red.shadows),         AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
     { "gs", "set green shadows",    OFFSET(magenta_green.shadows),    AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
     { "bs", "set blue shadows",     OFFSET(yellow_blue.shadows),      AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
@@ -68,7 +71,8 @@ AVFILTER_DEFINE_CLASS(colorbalance);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
         AV_PIX_FMT_RGBA,  AV_PIX_FMT_BGRA,
         AV_PIX_FMT_ABGR,  AV_PIX_FMT_ARGB,
@@ -98,7 +102,8 @@ static int config_output(AVFilterLink *outlink)
     midtones   = buffer + 256 * 1;
     highlights = buffer + 256 * 2;
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         double low = av_clipd((i - 85.0) / -64.0 + 0.5, 0, 1) * 178.5;
         double mid = av_clipd((i - 85.0) /  64.0 + 0.5, 0, 1) *
                      av_clipd((i + 85.0 - 255.0) / -64.0 + 0.5, 0, 1) * 178.5;
@@ -108,7 +113,8 @@ static int config_output(AVFilterLink *outlink)
         highlights[255 - i] = low;
     }
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         r = g = b = i;
 
         r = av_clip_uint8(r + s->cyan_red.shadows         * shadows[r]);
@@ -151,11 +157,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int i, j;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -163,11 +173,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
 
     dstrow = out->data[0];
-    for (i = 0; i < outlink->h; i++) {
+    for (i = 0; i < outlink->h; i++)
+    {
         const uint8_t *src = srcrow;
         uint8_t *dst = dstrow;
 
-        for (j = 0; j < outlink->w * step; j += step) {
+        for (j = 0; j < outlink->w * step; j += step)
+        {
             dst[j + roffset] = s->lut[R][src[j + roffset]];
             dst[j + goffset] = s->lut[G][src[j + goffset]];
             dst[j + boffset] = s->lut[B][src[j + boffset]];
@@ -184,7 +196,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(ctx->outputs[0], out);
 }
 
-static const AVFilterPad colorbalance_inputs[] = {
+static const AVFilterPad colorbalance_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -193,7 +206,8 @@ static const AVFilterPad colorbalance_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad colorbalance_outputs[] = {
+static const AVFilterPad colorbalance_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -202,7 +216,8 @@ static const AVFilterPad colorbalance_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_colorbalance = {
+AVFilter ff_vf_colorbalance =
+{
     .name          = "colorbalance",
     .description   = NULL_IF_CONFIG_SMALL("Adjust the color balance."),
     .priv_size     = sizeof(ColorBalanceContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DXVA2 WMV3/VC-1 HW acceleration.
  *
  * copyright (c) 2010 Laurent Aimar
@@ -25,7 +25,8 @@
 #include "vc1.h"
 #include "vc1data.h"
 
-struct dxva2_picture_context {
+struct dxva2_picture_context
+{
     DXVA_PictureParameters pp;
     DXVA_SliceInfo         si;
 
@@ -42,16 +43,18 @@ static void fill_picture_parameters(AVCodecContext *avctx,
     int intcomp = 0;
 
     // determine if intensity compensation is needed
-    if (s->pict_type == AV_PICTURE_TYPE_P) {
-      if ((v->fcm == ILACE_FRAME && v->intcomp) || (v->fcm != ILACE_FRAME && v->mv_mode == MV_PMODE_INTENSITY_COMP)) {
-        if (v->lumscale != 32 || v->lumshift != 0 || (s->picture_structure != PICT_FRAME && (v->lumscale2 != 32 || v->lumshift2 != 0)))
-          intcomp = 1;
-      }
+    if (s->pict_type == AV_PICTURE_TYPE_P)
+    {
+        if ((v->fcm == ILACE_FRAME && v->intcomp) || (v->fcm != ILACE_FRAME && v->mv_mode == MV_PMODE_INTENSITY_COMP))
+        {
+            if (v->lumscale != 32 || v->lumshift != 0 || (s->picture_structure != PICT_FRAME && (v->lumscale2 != 32 || v->lumshift2 != 0)))
+                intcomp = 1;
+        }
     }
 
     memset(pp, 0, sizeof(*pp));
     pp->wDecodedPictureIndex    =
-    pp->wDeblockedPictureIndex  = ff_dxva2_get_surface_index(avctx, ctx, current_picture->f);
+        pp->wDeblockedPictureIndex  = ff_dxva2_get_surface_index(avctx, ctx, current_picture->f);
     if (s->pict_type != AV_PICTURE_TYPE_I && !v->bi_type)
         pp->wForwardRefPictureIndex = ff_dxva2_get_surface_index(avctx, ctx, s->last_picture.f);
     else
@@ -60,11 +63,14 @@ static void fill_picture_parameters(AVCodecContext *avctx,
         pp->wBackwardRefPictureIndex = ff_dxva2_get_surface_index(avctx, ctx, s->next_picture.f);
     else
         pp->wBackwardRefPictureIndex = 0xffff;
-    if (v->profile == PROFILE_ADVANCED) {
+    if (v->profile == PROFILE_ADVANCED)
+    {
         /* It is the cropped width/height -1 of the frame */
         pp->wPicWidthInMBminus1 = avctx->width  - 1;
         pp->wPicHeightInMBminus1= avctx->height - 1;
-    } else {
+    }
+    else
+    {
         /* It is the coded width/height in macroblock -1 of the frame */
         pp->wPicWidthInMBminus1 = s->mb_width  - 1;
         pp->wPicHeightInMBminus1= s->mb_height - 1;
@@ -134,20 +140,29 @@ static void fill_picture_parameters(AVCodecContext *avctx,
     pp->bPicBinPB               = 0;
     pp->bMV_RPS                 = (v->fcm == ILACE_FIELD && pp->bPicBackwardPrediction) ? v->refdist + 9 : 0;
     pp->bReservedBits           = v->pq;
-    if (s->picture_structure == PICT_FRAME) {
-        if (intcomp) {
+    if (s->picture_structure == PICT_FRAME)
+    {
+        if (intcomp)
+        {
             pp->wBitstreamFcodes      = v->lumscale;
             pp->wBitstreamPCEelements = v->lumshift;
-        } else {
+        }
+        else
+        {
             pp->wBitstreamFcodes      = 32;
             pp->wBitstreamPCEelements = 0;
         }
-    } else {
+    }
+    else
+    {
         /* Syntax: (top_field_param << 8) | bottom_field_param */
-        if (intcomp) {
+        if (intcomp)
+        {
             pp->wBitstreamFcodes      = (v->lumscale << 8) | v->lumscale2;
             pp->wBitstreamPCEelements = (v->lumshift << 8) | v->lumshift2;
-        } else {
+        }
+        else
+        {
             pp->wBitstreamFcodes      = (32 << 8) | 32;
             pp->wBitstreamPCEelements = 0;
         }
@@ -176,8 +191,8 @@ static void fill_slice(AVCodecContext *avctx, DXVA_SliceInfo *slice,
 }
 
 static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
-                                             DECODER_BUFFER_DESC *bs,
-                                             DECODER_BUFFER_DESC *sc)
+        DECODER_BUFFER_DESC *bs,
+        DECODER_BUFFER_DESC *sc)
 {
     const VC1Context *v = avctx->priv_data;
     AVDXVAContext *ctx = avctx->hwaccel_context;
@@ -199,29 +214,33 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     unsigned type;
 
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         type = D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
         if (FAILED(ID3D11VideoContext_GetDecoderBuffer(D3D11VA_CONTEXT(ctx)->video_context,
-                                                       D3D11VA_CONTEXT(ctx)->decoder,
-                                                       type,
-                                                       &dxva_size, &dxva_data_ptr)))
+                   D3D11VA_CONTEXT(ctx)->decoder,
+                   type,
+                   &dxva_size, &dxva_data_ptr)))
             return -1;
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         type = DXVA2_BitStreamDateBufferType;
         if (FAILED(IDirectXVideoDecoder_GetBuffer(DXVA2_CONTEXT(ctx)->decoder,
-                                                  type,
-                                                  &dxva_data_ptr, &dxva_size)))
+                   type,
+                   &dxva_data_ptr, &dxva_size)))
             return -1;
     }
 #endif
 
     dxva_data = dxva_data_ptr;
     result = data_size <= dxva_size ? 0 : -1;
-    if (!result) {
-        if (start_code_size > 0) {
+    if (!result)
+    {
+        if (start_code_size > 0)
+        {
             memcpy(dxva_data, start_code, start_code_size);
             if (v->second_field)
                 dxva_data[3] = 0x0c;
@@ -246,7 +265,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
         return result;
 
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         D3D11_VIDEO_DECODER_BUFFER_DESC *dsc11 = bs;
         memset(dsc11, 0, sizeof(*dsc11));
         dsc11->BufferType           = type;
@@ -257,7 +277,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         DXVA2_DecodeBufferDesc *dsc2 = bs;
         memset(dsc2, 0, sizeof(*dsc2));
         dsc2->CompressedBufferType = type;
@@ -283,8 +304,8 @@ static int dxva2_vc1_start_frame(AVCodecContext *avctx,
     struct dxva2_picture_context *ctx_pic = v->s.current_picture_ptr->hwaccel_picture_private;
 
     if (DXVA_CONTEXT_DECODER(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
+            DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
+            DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
         return -1;
     assert(ctx_pic);
 
@@ -307,7 +328,8 @@ static int dxva2_vc1_decode_slice(AVCodecContext *avctx,
         return -1;
 
     if (avctx->codec_id == AV_CODEC_ID_VC1 &&
-        size >= 4 && IS_MARKER(AV_RB32(buffer))) {
+            size >= 4 && IS_MARKER(AV_RB32(buffer)))
+    {
         buffer += 4;
         size   -= 4;
     }
@@ -338,7 +360,8 @@ static int dxva2_vc1_end_frame(AVCodecContext *avctx)
 }
 
 #if CONFIG_WMV3_DXVA2_HWACCEL
-AVHWAccel ff_wmv3_dxva2_hwaccel = {
+AVHWAccel ff_wmv3_dxva2_hwaccel =
+{
     .name           = "wmv3_dxva2",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_WMV3,
@@ -351,7 +374,8 @@ AVHWAccel ff_wmv3_dxva2_hwaccel = {
 #endif
 
 #if CONFIG_VC1_DXVA2_HWACCEL
-AVHWAccel ff_vc1_dxva2_hwaccel = {
+AVHWAccel ff_vc1_dxva2_hwaccel =
+{
     .name           = "vc1_dxva2",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_VC1,
@@ -364,7 +388,8 @@ AVHWAccel ff_vc1_dxva2_hwaccel = {
 #endif
 
 #if CONFIG_WMV3_D3D11VA_HWACCEL
-AVHWAccel ff_wmv3_d3d11va_hwaccel = {
+AVHWAccel ff_wmv3_d3d11va_hwaccel =
+{
     .name           = "wmv3_d3d11va",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_WMV3,
@@ -377,7 +402,8 @@ AVHWAccel ff_wmv3_d3d11va_hwaccel = {
 #endif
 
 #if CONFIG_VC1_D3D11VA_HWACCEL
-AVHWAccel ff_vc1_d3d11va_hwaccel = {
+AVHWAccel ff_vc1_d3d11va_hwaccel =
+{
     .name           = "vc1_d3d11va",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_VC1,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -71,7 +71,8 @@
 #   define STRIDE_ALIGN 8
 #endif
 
-typedef struct FramePool {
+typedef struct FramePool
+{
     /**
      * Pools for each data plane. For audio all the planes have the same size,
      * so only pools[0] is used.
@@ -90,7 +91,8 @@ typedef struct FramePool {
     int samples;
 } FramePool;
 
-typedef struct AVCodecInternal {
+typedef struct AVCodecInternal
+{
     /**
      * Whether the parent AVCodecContext is a copy of the context which had
      * init() called on it.
@@ -159,7 +161,8 @@ typedef struct AVCodecInternal {
     void *hwaccel_priv_data;
 } AVCodecInternal;
 
-struct AVCodecDefault {
+struct AVCodecDefault
+{
     const uint8_t *key;
     const uint8_t *value;
 };
@@ -230,12 +233,15 @@ attribute_deprecated int ff_alloc_packet(AVPacket *avpkt, int size);
  * Rescale from sample rate to AVCodecContext.time_base.
  */
 static av_always_inline int64_t ff_samples_to_time_base(AVCodecContext *avctx,
-                                                        int64_t samples)
+        int64_t samples)
 {
     if(samples == AV_NOPTS_VALUE)
         return AV_NOPTS_VALUE;
-    return av_rescale_q(samples, (AVRational){ 1, avctx->sample_rate },
-                        avctx->time_base);
+    return av_rescale_q(samples, (AVRational)
+    {
+        1, avctx->sample_rate
+    },
+    avctx->time_base);
 }
 
 /**

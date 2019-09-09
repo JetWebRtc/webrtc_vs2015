@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002-2012 Michael Niedermayer
  * Copyright (C) 2012 Ronald S. Bultje
  *
@@ -34,19 +34,25 @@ void FUNC(ff_emulated_edge_mc)(uint8_t *buf, const uint8_t *src,
 
     av_assert2(block_w * sizeof(pixel) <= FFABS(buf_linesize));
 
-    if (src_y >= h) {
+    if (src_y >= h)
+    {
         src -= src_y * src_linesize;
         src += (h - 1) * src_linesize;
         src_y = h - 1;
-    } else if (src_y <= -block_h) {
+    }
+    else if (src_y <= -block_h)
+    {
         src -= src_y * src_linesize;
         src += (1 - block_h) * src_linesize;
         src_y = 1 - block_h;
     }
-    if (src_x >= w) {
+    if (src_x >= w)
+    {
         src  += (w - 1 - src_x) * sizeof(pixel);
         src_x = w - 1;
-    } else if (src_x <= -block_w) {
+    }
+    else if (src_x <= -block_w)
+    {
         src  += (1 - block_w - src_x) * sizeof(pixel);
         src_x = 1 - block_w;
     }
@@ -63,13 +69,15 @@ void FUNC(ff_emulated_edge_mc)(uint8_t *buf, const uint8_t *src,
     buf += start_x * sizeof(pixel);
 
     // top
-    for (y = 0; y < start_y; y++) {
+    for (y = 0; y < start_y; y++)
+    {
         memcpy(buf, src, w * sizeof(pixel));
         buf += buf_linesize;
     }
 
     // copy existing part
-    for (; y < end_y; y++) {
+    for (; y < end_y; y++)
+    {
         memcpy(buf, src, w * sizeof(pixel));
         src += src_linesize;
         buf += buf_linesize;
@@ -77,22 +85,26 @@ void FUNC(ff_emulated_edge_mc)(uint8_t *buf, const uint8_t *src,
 
     // bottom
     src -= src_linesize;
-    for (; y < block_h; y++) {
+    for (; y < block_h; y++)
+    {
         memcpy(buf, src, w * sizeof(pixel));
         buf += buf_linesize;
     }
 
     buf -= block_h * buf_linesize + start_x * sizeof(pixel);
-    while (block_h--) {
+    while (block_h--)
+    {
         pixel *bufp = (pixel *) buf;
 
         // left
-        for(x = 0; x < start_x; x++) {
+        for(x = 0; x < start_x; x++)
+        {
             bufp[x] = bufp[start_x];
         }
 
         // right
-        for (x = end_x; x < block_w; x++) {
+        for (x = end_x; x < block_w; x++)
+        {
             bufp[x] = bufp[end_x - 1];
         }
         buf += buf_linesize;

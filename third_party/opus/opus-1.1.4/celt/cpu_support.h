@@ -1,4 +1,4 @@
-/* Copyright (c) 2010 Xiph.Org Foundation
+﻿/* Copyright (c) 2010 Xiph.Org Foundation
  * Copyright (c) 2013 Parrot */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -64,7 +64,7 @@ int opus_select_arch(void);
 
 static OPUS_INLINE int opus_select_arch(void)
 {
-  return 0;
+    return 0;
 }
 #endif
 #endif

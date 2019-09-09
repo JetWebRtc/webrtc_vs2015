@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -39,7 +39,7 @@ RTC_EXPORT
 /** Initialize with mandatory and/or optional constraints. */
 - (instancetype)initWithMandatoryConstraints:
     (nullable NSDictionary<NSString *, NSString *> *)mandatory
-                         optionalConstraints:
+    optionalConstraints:
     (nullable NSDictionary<NSString *, NSString *> *)optional
     NS_DESIGNATED_INITIALIZER;
 

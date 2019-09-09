@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,10 +19,10 @@
 @class RTCPeerConnectionFactory;
 
 @interface ARDAppClient () <ARDSignalingChannelDelegate,
-  RTCPeerConnectionDelegate>
+    RTCPeerConnectionDelegate>
 
 // All properties should only be mutated from the main queue.
-@property(nonatomic, strong) id<ARDRoomServerClient> roomServerClient;
+    @property(nonatomic, strong) id<ARDRoomServerClient> roomServerClient;
 @property(nonatomic, strong) id<ARDSignalingChannel> channel;
 @property(nonatomic, strong) id<ARDSignalingChannel> loopbackChannel;
 @property(nonatomic, strong) id<ARDTURNClient> turnClient;
@@ -47,11 +47,11 @@
 @property(nonatomic, readonly) BOOL shouldUseLevelControl;
 
 @property(nonatomic, strong)
-    RTCMediaConstraints *defaultPeerConnectionConstraints;
+RTCMediaConstraints *defaultPeerConnectionConstraints;
 
 - (instancetype)initWithRoomServerClient:(id<ARDRoomServerClient>)rsClient
-                        signalingChannel:(id<ARDSignalingChannel>)channel
-                              turnClient:(id<ARDTURNClient>)turnClient
-                                delegate:(id<ARDAppClientDelegate>)delegate;
+    signalingChannel:(id<ARDSignalingChannel>)channel
+    turnClient:(id<ARDTURNClient>)turnClient
+    delegate:(id<ARDAppClientDelegate>)delegate;
 
 @end

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,8 +24,10 @@
 
 class ProcessThread;
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 
 class TransmitMixer;
 class OutputMixer;
@@ -34,23 +36,52 @@ class SharedData
 {
 public:
     // Public accessors.
-    uint32_t instance_id() const { return _instanceId; }
-    Statistics& statistics() { return _engineStatistics; }
-    ChannelManager& channel_manager() { return _channelManager; }
-    AudioDeviceModule* audio_device() { return _audioDevicePtr.get(); }
+    uint32_t instance_id() const
+    {
+        return _instanceId;
+    }
+    Statistics& statistics()
+    {
+        return _engineStatistics;
+    }
+    ChannelManager& channel_manager()
+    {
+        return _channelManager;
+    }
+    AudioDeviceModule* audio_device()
+    {
+        return _audioDevicePtr.get();
+    }
     void set_audio_device(
         const rtc::scoped_refptr<AudioDeviceModule>& audio_device);
-    AudioProcessing* audio_processing() { return audioproc_.get(); }
-    void set_audio_processing(AudioProcessing* audio_processing);
-    TransmitMixer* transmit_mixer() { return _transmitMixerPtr; }
-    OutputMixer* output_mixer() { return _outputMixerPtr; }
-    rtc::CriticalSection* crit_sec() { return &_apiCritPtr; }
-    ProcessThread* process_thread() { return _moduleProcessThreadPtr.get(); }
-    AudioDeviceModule::AudioLayer audio_device_layer() const {
-      return _audioDeviceLayer;
+    AudioProcessing* audio_processing()
+    {
+        return audioproc_.get();
     }
-    void set_audio_device_layer(AudioDeviceModule::AudioLayer layer) {
-      _audioDeviceLayer = layer;
+    void set_audio_processing(AudioProcessing* audio_processing);
+    TransmitMixer* transmit_mixer()
+    {
+        return _transmitMixerPtr;
+    }
+    OutputMixer* output_mixer()
+    {
+        return _outputMixerPtr;
+    }
+    rtc::CriticalSection* crit_sec()
+    {
+        return &_apiCritPtr;
+    }
+    ProcessThread* process_thread()
+    {
+        return _moduleProcessThreadPtr.get();
+    }
+    AudioDeviceModule::AudioLayer audio_device_layer() const
+    {
+        return _audioDeviceLayer;
+    }
+    void set_audio_device_layer(AudioDeviceModule::AudioLayer layer)
+    {
+        _audioDeviceLayer = layer;
     }
 
     int NumOfSendingChannels();

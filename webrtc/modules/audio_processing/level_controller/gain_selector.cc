@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,16 +17,19 @@
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 #include "webrtc/modules/audio_processing/level_controller/level_controller_constants.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-GainSelector::GainSelector() {
-  Initialize(AudioProcessing::kSampleRate48kHz);
+GainSelector::GainSelector()
+{
+    Initialize(AudioProcessing::kSampleRate48kHz);
 }
 
-void GainSelector::Initialize(int sample_rate_hz) {
-  gain_ = 1.f;
-  frame_length_ = rtc::CheckedDivExact(sample_rate_hz, 100);
-  highly_nonstationary_signal_hold_counter_ = 0;
+void GainSelector::Initialize(int sample_rate_hz)
+{
+    gain_ = 1.f;
+    frame_length_ = rtc::CheckedDivExact(sample_rate_hz, 100);
+    highly_nonstationary_signal_hold_counter_ = 0;
 }
 
 // Chooses the gain to apply by the level controller such that
@@ -43,45 +46,53 @@ float GainSelector::GetNewGain(float peak_level,
                                float noise_energy,
                                float saturating_gain,
                                bool gain_jumpstart,
-                               SignalClassifier::SignalType signal_type) {
-  RTC_DCHECK_LT(0.f, peak_level);
+                               SignalClassifier::SignalType signal_type)
+{
+    RTC_DCHECK_LT(0.f, peak_level);
 
-  if (signal_type == SignalClassifier::SignalType::kHighlyNonStationary ||
-      gain_jumpstart) {
-    highly_nonstationary_signal_hold_counter_ = 100;
-  } else {
-    highly_nonstationary_signal_hold_counter_ =
-        std::max(0, highly_nonstationary_signal_hold_counter_ - 1);
-  }
-
-  float desired_gain;
-  if (highly_nonstationary_signal_hold_counter_ > 0) {
-    // Compute a desired gain that ensures that the peak level is amplified to
-    // the target level.
-    desired_gain = kTargetLcPeakLevel / peak_level;
-
-    // Limit the desired gain so that it does not amplify the noise too much.
-    float max_noise_energy = kMaxLcNoisePower * frame_length_;
-    if (noise_energy * desired_gain * desired_gain > max_noise_energy) {
-      RTC_DCHECK_LE(0.f, noise_energy);
-      desired_gain = sqrtf(max_noise_energy / noise_energy);
+    if (signal_type == SignalClassifier::SignalType::kHighlyNonStationary ||
+            gain_jumpstart)
+    {
+        highly_nonstationary_signal_hold_counter_ = 100;
     }
-  } else {
-    // If the signal has been stationary for a long while, apply a gain of 1 to
-    // avoid amplifying pure noise.
-    desired_gain = 1.0f;
-  }
+    else
+    {
+        highly_nonstationary_signal_hold_counter_ =
+            std::max(0, highly_nonstationary_signal_hold_counter_ - 1);
+    }
 
-  // Smootly update the gain towards the desired gain.
-  gain_ += 0.2f * (desired_gain - gain_);
+    float desired_gain;
+    if (highly_nonstationary_signal_hold_counter_ > 0)
+    {
+        // Compute a desired gain that ensures that the peak level is amplified to
+        // the target level.
+        desired_gain = kTargetLcPeakLevel / peak_level;
 
-  // Limit the gain to not exceed the maximum and the saturating gains, and to
-  // ensure that the lowest possible gain is 1.
-  gain_ = std::min(gain_, saturating_gain);
-  gain_ = std::min(gain_, kMaxLcGain);
-  gain_ = std::max(gain_, 1.f);
+        // Limit the desired gain so that it does not amplify the noise too much.
+        float max_noise_energy = kMaxLcNoisePower * frame_length_;
+        if (noise_energy * desired_gain * desired_gain > max_noise_energy)
+        {
+            RTC_DCHECK_LE(0.f, noise_energy);
+            desired_gain = sqrtf(max_noise_energy / noise_energy);
+        }
+    }
+    else
+    {
+        // If the signal has been stationary for a long while, apply a gain of 1 to
+        // avoid amplifying pure noise.
+        desired_gain = 1.0f;
+    }
 
-  return gain_;
+    // Smootly update the gain towards the desired gain.
+    gain_ += 0.2f * (desired_gain - gain_);
+
+    // Limit the gain to not exceed the maximum and the saturating gains, and to
+    // ensure that the lowest possible gain is 1.
+    gain_ = std::min(gain_, saturating_gain);
+    gain_ = std::min(gain_, kMaxLcGain);
+    gain_ = std::max(gain_, 1.f);
+
+    return gain_;
 }
 
 }  // namespace webrtc

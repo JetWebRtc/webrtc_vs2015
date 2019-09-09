@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft RLE decoder
  * Copyright (C) 2008 Konstantin Shishkov
  *
@@ -40,43 +40,55 @@ static int msrle_decode_pal4(AVCodecContext *avctx, AVPicture *pic,
     int line = avctx->height - 1;
     int i;
 
-    while (line >= 0 && pixel_ptr <= avctx->width) {
-        if (bytestream2_get_bytes_left(gb) <= 0) {
+    while (line >= 0 && pixel_ptr <= avctx->width)
+    {
+        if (bytestream2_get_bytes_left(gb) <= 0)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "MS RLE: bytestream overrun, %dx%d left\n",
                    avctx->width - pixel_ptr, line);
             return AVERROR_INVALIDDATA;
         }
         rle_code = stream_byte = bytestream2_get_byteu(gb);
-        if (rle_code == 0) {
+        if (rle_code == 0)
+        {
             /* fetch the next byte to see how to handle escape code */
             stream_byte = bytestream2_get_byte(gb);
-            if (stream_byte == 0) {
+            if (stream_byte == 0)
+            {
                 /* line is done, goto the next one */
                 line--;
                 pixel_ptr = 0;
-            } else if (stream_byte == 1) {
+            }
+            else if (stream_byte == 1)
+            {
                 /* decode is done */
                 return 0;
-            } else if (stream_byte == 2) {
+            }
+            else if (stream_byte == 2)
+            {
                 /* reposition frame decode coordinates */
                 stream_byte = bytestream2_get_byte(gb);
                 pixel_ptr += stream_byte;
                 stream_byte = bytestream2_get_byte(gb);
                 avpriv_request_sample(avctx, "Unused stream byte %X", stream_byte);
-            } else {
+            }
+            else
+            {
                 // copy pixels from encoded stream
                 odd_pixel =  stream_byte & 1;
                 rle_code = (stream_byte + 1) / 2;
                 extra_byte = rle_code & 0x01;
                 if (pixel_ptr + 2*rle_code - odd_pixel > avctx->width ||
-                    bytestream2_get_bytes_left(gb) < rle_code) {
+                        bytestream2_get_bytes_left(gb) < rle_code)
+                {
                     av_log(avctx, AV_LOG_ERROR,
                            "MS RLE: frame/stream ptr just went out of bounds (copy)\n");
                     return AVERROR_INVALIDDATA;
                 }
 
-                for (i = 0; i < rle_code; i++) {
+                for (i = 0; i < rle_code; i++)
+                {
                     if (pixel_ptr >= avctx->width)
                         break;
                     stream_byte = bytestream2_get_byteu(gb);
@@ -94,15 +106,19 @@ static int msrle_decode_pal4(AVCodecContext *avctx, AVPicture *pic,
                 if (extra_byte)
                     bytestream2_skip(gb, 1);
             }
-        } else {
+        }
+        else
+        {
             // decode a run of data
-            if (pixel_ptr + rle_code > avctx->width + 1) {
+            if (pixel_ptr + rle_code > avctx->width + 1)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "MS RLE: frame ptr just went out of bounds (run) %d %d %d\n", pixel_ptr, rle_code, avctx->width);
                 return AVERROR_INVALIDDATA;
             }
             stream_byte = bytestream2_get_byte(gb);
-            for (i = 0; i < rle_code; i++) {
+            for (i = 0; i < rle_code; i++)
+            {
                 if (pixel_ptr >= avctx->width)
                     break;
                 if ((i & 1) == 0)
@@ -115,7 +131,8 @@ static int msrle_decode_pal4(AVCodecContext *avctx, AVPicture *pic,
     }
 
     /* one last sanity check on the way out */
-    if (bytestream2_get_bytes_left(gb)) {
+    if (bytestream2_get_bytes_left(gb))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "MS RLE: ended frame decode with %d bytes left over\n",
                bytestream2_get_bytes_left(gb));
@@ -138,15 +155,22 @@ static int msrle_decode_8_16_24_32(AVCodecContext *avctx, AVPicture *pic,
     output     = pic->data[0] + (avctx->height - 1) * pic->linesize[0];
     output_end = output + FFABS(pic->linesize[0]);
 
-    while (bytestream2_get_bytes_left(gb) > 0) {
+    while (bytestream2_get_bytes_left(gb) > 0)
+    {
         p1 = bytestream2_get_byteu(gb);
-        if(p1 == 0) { //Escape code
+        if(p1 == 0)   //Escape code
+        {
             p2 = bytestream2_get_byte(gb);
-            if(p2 == 0) { //End-of-line
-                if (--line < 0) {
-                    if (bytestream2_get_be16(gb) == 1) { // end-of-picture
+            if(p2 == 0)   //End-of-line
+            {
+                if (--line < 0)
+                {
+                    if (bytestream2_get_be16(gb) == 1)   // end-of-picture
+                    {
                         return 0;
-                    } else {
+                    }
+                    else
+                    {
                         av_log(avctx, AV_LOG_ERROR,
                                "Next line is beyond picture bounds (%d bytes left)\n",
                                bytestream2_get_bytes_left(gb));
@@ -157,14 +181,19 @@ static int msrle_decode_8_16_24_32(AVCodecContext *avctx, AVPicture *pic,
                 output_end = output + FFABS(pic->linesize[0]);
                 pos = 0;
                 continue;
-            } else if(p2 == 1) { //End-of-picture
+            }
+            else if(p2 == 1)     //End-of-picture
+            {
                 return 0;
-            } else if(p2 == 2) { //Skip
+            }
+            else if(p2 == 2)     //Skip
+            {
                 p1 = bytestream2_get_byte(gb);
                 p2 = bytestream2_get_byte(gb);
                 line -= p2;
                 pos += p1;
-                if (line < 0 || pos >= width){
+                if (line < 0 || pos >= width)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Skip beyond picture bounds\n");
                     return -1;
                 }
@@ -173,40 +202,54 @@ static int msrle_decode_8_16_24_32(AVCodecContext *avctx, AVPicture *pic,
                 continue;
             }
             // Copy data
-            if (output + p2 * (depth >> 3) > output_end) {
+            if (output + p2 * (depth >> 3) > output_end)
+            {
                 bytestream2_skip(gb, 2 * (depth >> 3));
                 continue;
-            } else if (bytestream2_get_bytes_left(gb) < p2 * (depth >> 3)) {
+            }
+            else if (bytestream2_get_bytes_left(gb) < p2 * (depth >> 3))
+            {
                 av_log(avctx, AV_LOG_ERROR, "bytestream overrun\n");
                 return AVERROR_INVALIDDATA;
             }
 
-            if ((depth == 8) || (depth == 24)) {
+            if ((depth == 8) || (depth == 24))
+            {
                 bytestream2_get_bufferu(gb, output, p2 * (depth >> 3));
                 output += p2 * (depth >> 3);
 
                 // RLE8 copy is actually padded - and runs are not!
-                if(depth == 8 && (p2 & 1)) {
+                if(depth == 8 && (p2 & 1))
+                {
                     bytestream2_skip(gb, 1);
                 }
-            } else if (depth == 16) {
-                for(i = 0; i < p2; i++) {
+            }
+            else if (depth == 16)
+            {
+                for(i = 0; i < p2; i++)
+                {
                     *(uint16_t*)output = bytestream2_get_le16u(gb);
                     output += 2;
                 }
-            } else if (depth == 32) {
-                for(i = 0; i < p2; i++) {
+            }
+            else if (depth == 32)
+            {
+                for(i = 0; i < p2; i++)
+                {
                     *(uint32_t*)output = bytestream2_get_le32u(gb);
                     output += 4;
                 }
             }
             pos += p2;
-        } else { //run of pixels
+        }
+        else     //run of pixels
+        {
             uint8_t pix[3]; //original pixel
             if (output + p1 * (depth >> 3) > output_end)
                 continue;
 
-            switch(depth){
+            switch(depth)
+            {
             case  8:
                 pix[0] = bytestream2_get_byte(gb);
                 memset(output, pix[0], p1);
@@ -214,26 +257,29 @@ static int msrle_decode_8_16_24_32(AVCodecContext *avctx, AVPicture *pic,
                 break;
             case 16:
                 pix16  = bytestream2_get_le16(gb);
-                for(i = 0; i < p1; i++) {
-                        *(uint16_t*)output = pix16;
-                        output += 2;
+                for(i = 0; i < p1; i++)
+                {
+                    *(uint16_t*)output = pix16;
+                    output += 2;
                 }
                 break;
             case 24:
                 pix[0] = bytestream2_get_byte(gb);
                 pix[1] = bytestream2_get_byte(gb);
                 pix[2] = bytestream2_get_byte(gb);
-                for(i = 0; i < p1; i++) {
-                        *output++ = pix[0];
-                        *output++ = pix[1];
-                        *output++ = pix[2];
+                for(i = 0; i < p1; i++)
+                {
+                    *output++ = pix[0];
+                    *output++ = pix[1];
+                    *output++ = pix[2];
                 }
                 break;
             case 32:
                 pix32  = bytestream2_get_le32(gb);
-                for(i = 0; i < p1; i++) {
-                        *(uint32_t*)output = pix32;
-                        output += 4;
+                for(i = 0; i < p1; i++)
+                {
+                    *(uint32_t*)output = pix32;
+                    output += 4;
                 }
                 break;
             }
@@ -249,7 +295,8 @@ static int msrle_decode_8_16_24_32(AVCodecContext *avctx, AVPicture *pic,
 int ff_msrle_decode(AVCodecContext *avctx, AVPicture *pic,
                     int depth, GetByteContext *gb)
 {
-    switch(depth){
+    switch(depth)
+    {
     case  4:
         return msrle_decode_pal4(avctx, pic, gb);
     case  8:

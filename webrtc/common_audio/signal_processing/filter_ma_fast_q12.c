@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -37,7 +37,7 @@ void WebRtcSpl_FilterMAFastQ12(const int16_t* in_ptr,
 
         for (j = 0; j < B_length; j++)
         {
-          o += B[j] * in_ptr[i - j];
+            o += B[j] * in_ptr[i - j];
         }
 
         // If output is higher than 32768, saturate it. Same with negative side

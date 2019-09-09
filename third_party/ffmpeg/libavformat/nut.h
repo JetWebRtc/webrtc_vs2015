@@ -1,4 +1,4 @@
-/*
+﻿/*
  * "NUT" Container Format (de)muxer
  * Copyright (c) 2006 Michael Niedermayer
  *
@@ -40,7 +40,8 @@
 #define NUT_STABLE_VERSION 3
 #define NUT_MIN_VERSION 2
 
-typedef enum{
+typedef enum
+{
     FLAG_KEY        =   1, // if set, frame is keyframe
     FLAG_EOR        =   2, // if set, stream has no relevance on presentation. (EOR)
     FLAG_CODED_PTS  =   8, // if set, coded_pts is in the frame header
@@ -55,14 +56,16 @@ typedef enum{
     FLAG_INVALID    =8192, // if set, frame_code is invalid
 } Flag;
 
-typedef struct Syncpoint {
+typedef struct Syncpoint
+{
     uint64_t pos;
     uint64_t back_ptr;
 //    uint64_t global_key_pts;
     int64_t ts;
 } Syncpoint;
 
-typedef struct FrameCode {
+typedef struct FrameCode
+{
     uint16_t flags;
     uint8_t  stream_id;
     uint16_t size_mul;
@@ -72,7 +75,8 @@ typedef struct FrameCode {
     uint8_t  header_idx;
 } FrameCode;
 
-typedef struct StreamContext {
+typedef struct StreamContext
+{
     int last_flags;
     int skip_until_key_frame;
     int64_t last_pts;
@@ -84,11 +88,13 @@ typedef struct StreamContext {
     int64_t *keyframe_pts;
 } StreamContext;
 
-typedef struct ChapterContext {
+typedef struct ChapterContext
+{
     AVRational *time_base;
 } ChapterContext;
 
-typedef struct NUTContext {
+typedef struct NUTContext
+{
     const AVClass *av_class;
     AVFormatContext *avf;
 //    int written_packet_size;
@@ -125,7 +131,8 @@ extern const AVCodecTag ff_nut_data_tags[];
 
 extern const AVCodecTag * const ff_nut_codec_tags[];
 
-typedef struct Dispositions {
+typedef struct Dispositions
+{
     char str[9];
     int flag;
 } Dispositions;

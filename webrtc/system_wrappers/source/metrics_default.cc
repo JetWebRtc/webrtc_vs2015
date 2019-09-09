@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
+﻿// Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file in the root of the source
@@ -18,156 +18,181 @@
 // Default implementation of histogram methods for WebRTC clients that do not
 // want to provide their own implementation.
 
-namespace webrtc {
-namespace metrics {
+namespace webrtc
+{
+namespace metrics
+{
 class Histogram;
 
-namespace {
+namespace
+{
 // Limit for the maximum number of sample values that can be stored.
 // TODO(asapersson): Consider using bucket count (and set up
 // linearly/exponentially spaced buckets) if samples are logged more frequently.
 const int kMaxSampleMapSize = 300;
 
-class RtcHistogram {
- public:
-  RtcHistogram(const std::string& name, int min, int max, int bucket_count)
-      : min_(min), max_(max), info_(name, min, max, bucket_count) {
-    RTC_DCHECK_GT(bucket_count, 0);
-  }
-
-  void Add(int sample) {
-    sample = std::min(sample, max_);
-    sample = std::max(sample, min_ - 1);  // Underflow bucket.
-
-    rtc::CritScope cs(&crit_);
-    if (info_.samples.size() == kMaxSampleMapSize &&
-        info_.samples.find(sample) == info_.samples.end()) {
-      return;
+class RtcHistogram
+{
+public:
+    RtcHistogram(const std::string& name, int min, int max, int bucket_count)
+        : min_(min), max_(max), info_(name, min, max, bucket_count)
+    {
+        RTC_DCHECK_GT(bucket_count, 0);
     }
-    ++info_.samples[sample];
-  }
 
-  // Returns a copy (or nullptr if there are no samples) and clears samples.
-  std::unique_ptr<SampleInfo> GetAndReset() {
-    rtc::CritScope cs(&crit_);
-    if (info_.samples.empty())
-      return nullptr;
+    void Add(int sample)
+    {
+        sample = std::min(sample, max_);
+        sample = std::max(sample, min_ - 1);  // Underflow bucket.
 
-    SampleInfo* copy =
-        new SampleInfo(info_.name, info_.min, info_.max, info_.bucket_count);
-
-    std::swap(info_.samples, copy->samples);
-
-    return std::unique_ptr<SampleInfo>(copy);
-  }
-
-  const std::string& name() const { return info_.name; }
-
-  // Functions only for testing.
-  void Reset() {
-    rtc::CritScope cs(&crit_);
-    info_.samples.clear();
-  }
-
-  int NumEvents(int sample) const {
-    rtc::CritScope cs(&crit_);
-    const auto it = info_.samples.find(sample);
-    return (it == info_.samples.end()) ? 0 : it->second;
-  }
-
-  int NumSamples() const {
-    int num_samples = 0;
-    rtc::CritScope cs(&crit_);
-    for (const auto& sample : info_.samples) {
-      num_samples += sample.second;
+        rtc::CritScope cs(&crit_);
+        if (info_.samples.size() == kMaxSampleMapSize &&
+                info_.samples.find(sample) == info_.samples.end())
+        {
+            return;
+        }
+        ++info_.samples[sample];
     }
-    return num_samples;
-  }
 
-  int MinSample() const {
-    rtc::CritScope cs(&crit_);
-    return (info_.samples.empty()) ? -1 : info_.samples.begin()->first;
-  }
+    // Returns a copy (or nullptr if there are no samples) and clears samples.
+    std::unique_ptr<SampleInfo> GetAndReset()
+    {
+        rtc::CritScope cs(&crit_);
+        if (info_.samples.empty())
+            return nullptr;
 
- private:
-  rtc::CriticalSection crit_;
-  const int min_;
-  const int max_;
-  SampleInfo info_ GUARDED_BY(crit_);
+        SampleInfo* copy =
+            new SampleInfo(info_.name, info_.min, info_.max, info_.bucket_count);
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RtcHistogram);
+        std::swap(info_.samples, copy->samples);
+
+        return std::unique_ptr<SampleInfo>(copy);
+    }
+
+    const std::string& name() const
+    {
+        return info_.name;
+    }
+
+    // Functions only for testing.
+    void Reset()
+    {
+        rtc::CritScope cs(&crit_);
+        info_.samples.clear();
+    }
+
+    int NumEvents(int sample) const
+    {
+        rtc::CritScope cs(&crit_);
+        const auto it = info_.samples.find(sample);
+        return (it == info_.samples.end()) ? 0 : it->second;
+    }
+
+    int NumSamples() const
+    {
+        int num_samples = 0;
+        rtc::CritScope cs(&crit_);
+        for (const auto& sample : info_.samples)
+        {
+            num_samples += sample.second;
+        }
+        return num_samples;
+    }
+
+    int MinSample() const
+    {
+        rtc::CritScope cs(&crit_);
+        return (info_.samples.empty()) ? -1 : info_.samples.begin()->first;
+    }
+
+private:
+    rtc::CriticalSection crit_;
+    const int min_;
+    const int max_;
+    SampleInfo info_ GUARDED_BY(crit_);
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(RtcHistogram);
 };
 
-class RtcHistogramMap {
- public:
-  RtcHistogramMap() {}
-  ~RtcHistogramMap() {}
+class RtcHistogramMap
+{
+public:
+    RtcHistogramMap() {}
+    ~RtcHistogramMap() {}
 
-  Histogram* GetCountsHistogram(const std::string& name,
-                                int min,
-                                int max,
-                                int bucket_count) {
-    rtc::CritScope cs(&crit_);
-    const auto& it = map_.find(name);
-    if (it != map_.end())
-      return reinterpret_cast<Histogram*>(it->second.get());
+    Histogram* GetCountsHistogram(const std::string& name,
+                                  int min,
+                                  int max,
+                                  int bucket_count)
+    {
+        rtc::CritScope cs(&crit_);
+        const auto& it = map_.find(name);
+        if (it != map_.end())
+            return reinterpret_cast<Histogram*>(it->second.get());
 
-    RtcHistogram* hist = new RtcHistogram(name, min, max, bucket_count);
-    map_[name].reset(hist);
-    return reinterpret_cast<Histogram*>(hist);
-  }
-
-  Histogram* GetEnumerationHistogram(const std::string& name, int boundary) {
-    rtc::CritScope cs(&crit_);
-    const auto& it = map_.find(name);
-    if (it != map_.end())
-      return reinterpret_cast<Histogram*>(it->second.get());
-
-    RtcHistogram* hist = new RtcHistogram(name, 1, boundary, boundary + 1);
-    map_[name].reset(hist);
-    return reinterpret_cast<Histogram*>(hist);
-  }
-
-  void GetAndReset(
-      std::map<std::string, std::unique_ptr<SampleInfo>>* histograms) {
-    rtc::CritScope cs(&crit_);
-    for (const auto& kv : map_) {
-      std::unique_ptr<SampleInfo> info = kv.second->GetAndReset();
-      if (info)
-        histograms->insert(std::make_pair(kv.first, std::move(info)));
+        RtcHistogram* hist = new RtcHistogram(name, min, max, bucket_count);
+        map_[name].reset(hist);
+        return reinterpret_cast<Histogram*>(hist);
     }
-  }
 
-  // Functions only for testing.
-  void Reset() {
-    rtc::CritScope cs(&crit_);
-    for (const auto& kv : map_)
-      kv.second->Reset();
-  }
+    Histogram* GetEnumerationHistogram(const std::string& name, int boundary)
+    {
+        rtc::CritScope cs(&crit_);
+        const auto& it = map_.find(name);
+        if (it != map_.end())
+            return reinterpret_cast<Histogram*>(it->second.get());
 
-  int NumEvents(const std::string& name, int sample) const {
-    rtc::CritScope cs(&crit_);
-    const auto& it = map_.find(name);
-    return (it == map_.end()) ? 0 : it->second->NumEvents(sample);
-  }
+        RtcHistogram* hist = new RtcHistogram(name, 1, boundary, boundary + 1);
+        map_[name].reset(hist);
+        return reinterpret_cast<Histogram*>(hist);
+    }
 
-  int NumSamples(const std::string& name) const {
-    rtc::CritScope cs(&crit_);
-    const auto& it = map_.find(name);
-    return (it == map_.end()) ? 0 : it->second->NumSamples();
-  }
+    void GetAndReset(
+        std::map<std::string, std::unique_ptr<SampleInfo>>* histograms)
+    {
+        rtc::CritScope cs(&crit_);
+        for (const auto& kv : map_)
+        {
+            std::unique_ptr<SampleInfo> info = kv.second->GetAndReset();
+            if (info)
+                histograms->insert(std::make_pair(kv.first, std::move(info)));
+        }
+    }
 
-  int MinSample(const std::string& name) const {
-    rtc::CritScope cs(&crit_);
-    const auto& it = map_.find(name);
-    return (it == map_.end()) ? -1 : it->second->MinSample();
-  }
+    // Functions only for testing.
+    void Reset()
+    {
+        rtc::CritScope cs(&crit_);
+        for (const auto& kv : map_)
+            kv.second->Reset();
+    }
 
- private:
-  rtc::CriticalSection crit_;
-  std::map<std::string, std::unique_ptr<RtcHistogram>> map_ GUARDED_BY(crit_);
+    int NumEvents(const std::string& name, int sample) const
+    {
+        rtc::CritScope cs(&crit_);
+        const auto& it = map_.find(name);
+        return (it == map_.end()) ? 0 : it->second->NumEvents(sample);
+    }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RtcHistogramMap);
+    int NumSamples(const std::string& name) const
+    {
+        rtc::CritScope cs(&crit_);
+        const auto& it = map_.find(name);
+        return (it == map_.end()) ? 0 : it->second->NumSamples();
+    }
+
+    int MinSample(const std::string& name) const
+    {
+        rtc::CritScope cs(&crit_);
+        const auto& it = map_.find(name);
+        return (it == map_.end()) ? -1 : it->second->MinSample();
+    }
+
+private:
+    rtc::CriticalSection crit_;
+    std::map<std::string, std::unique_ptr<RtcHistogram>> map_ GUARDED_BY(crit_);
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(RtcHistogramMap);
 };
 
 // RtcHistogramMap is allocated upon call to Enable().
@@ -176,15 +201,17 @@ class RtcHistogramMap {
 // application (the memory will be reclaimed by the OS).
 static RtcHistogramMap* volatile g_rtc_histogram_map = nullptr;
 
-void CreateMap() {
-  RtcHistogramMap* map = rtc::AtomicOps::AcquireLoadPtr(&g_rtc_histogram_map);
-  if (map == nullptr) {
-    RtcHistogramMap* new_map = new RtcHistogramMap();
-    RtcHistogramMap* old_map = rtc::AtomicOps::CompareAndSwapPtr(
-        &g_rtc_histogram_map, static_cast<RtcHistogramMap*>(nullptr), new_map);
-    if (old_map != nullptr)
-      delete new_map;
-  }
+void CreateMap()
+{
+    RtcHistogramMap* map = rtc::AtomicOps::AcquireLoadPtr(&g_rtc_histogram_map);
+    if (map == nullptr)
+    {
+        RtcHistogramMap* new_map = new RtcHistogramMap();
+        RtcHistogramMap* old_map = rtc::AtomicOps::CompareAndSwapPtr(
+                                       &g_rtc_histogram_map, static_cast<RtcHistogramMap*>(nullptr), new_map);
+        if (old_map != nullptr)
+            delete new_map;
+    }
 }
 
 // Set the first time we start using histograms. Used to make sure Enable() is
@@ -194,11 +221,12 @@ static volatile int g_rtc_histogram_called = 0;
 #endif
 
 // Gets the map (or nullptr).
-RtcHistogramMap* GetMap() {
+RtcHistogramMap* GetMap()
+{
 #if RTC_DCHECK_IS_ON
-  rtc::AtomicOps::ReleaseStore(&g_rtc_histogram_called, 1);
+    rtc::AtomicOps::ReleaseStore(&g_rtc_histogram_called, 1);
 #endif
-  return g_rtc_histogram_map;
+    return g_rtc_histogram_map;
 }
 }  // namespace
 
@@ -212,10 +240,11 @@ RtcHistogramMap* GetMap() {
 Histogram* HistogramFactoryGetCounts(const std::string& name,
                                      int min,
                                      int max,
-                                     int bucket_count) {
-  // TODO(asapersson): Alternative implementation will be needed if this
-  // histogram type should be truly exponential.
-  return HistogramFactoryGetCountsLinear(name, min, max, bucket_count);
+                                     int bucket_count)
+{
+    // TODO(asapersson): Alternative implementation will be needed if this
+    // histogram type should be truly exponential.
+    return HistogramFactoryGetCountsLinear(name, min, max, bucket_count);
 }
 
 // Histogram with linearly spaced buckets.
@@ -223,14 +252,15 @@ Histogram* HistogramFactoryGetCounts(const std::string& name,
 // The returned histogram pointer is cached (and used for adding samples in
 // subsequent calls).
 Histogram* HistogramFactoryGetCountsLinear(const std::string& name,
-                                           int min,
-                                           int max,
-                                           int bucket_count) {
-  RtcHistogramMap* map = GetMap();
-  if (!map)
-    return nullptr;
+        int min,
+        int max,
+        int bucket_count)
+{
+    RtcHistogramMap* map = GetMap();
+    if (!map)
+        return nullptr;
 
-  return map->GetCountsHistogram(name, min, max, bucket_count);
+    return map->GetCountsHistogram(name, min, max, bucket_count);
 }
 
 // Histogram with linearly spaced buckets.
@@ -238,23 +268,26 @@ Histogram* HistogramFactoryGetCountsLinear(const std::string& name,
 // The returned histogram pointer is cached (and used for adding samples in
 // subsequent calls).
 Histogram* HistogramFactoryGetEnumeration(const std::string& name,
-                                          int boundary) {
-  RtcHistogramMap* map = GetMap();
-  if (!map)
-    return nullptr;
+        int boundary)
+{
+    RtcHistogramMap* map = GetMap();
+    if (!map)
+        return nullptr;
 
-  return map->GetEnumerationHistogram(name, boundary);
+    return map->GetEnumerationHistogram(name, boundary);
 }
 
-const std::string& GetHistogramName(Histogram* histogram_pointer) {
-  RtcHistogram* ptr = reinterpret_cast<RtcHistogram*>(histogram_pointer);
-  return ptr->name();
+const std::string& GetHistogramName(Histogram* histogram_pointer)
+{
+    RtcHistogram* ptr = reinterpret_cast<RtcHistogram*>(histogram_pointer);
+    return ptr->name();
 }
 
 // Fast path. Adds |sample| to cached |histogram_pointer|.
-void HistogramAdd(Histogram* histogram_pointer, int sample) {
-  RtcHistogram* ptr = reinterpret_cast<RtcHistogram*>(histogram_pointer);
-  ptr->Add(sample);
+void HistogramAdd(Histogram* histogram_pointer, int sample)
+{
+    RtcHistogram* ptr = reinterpret_cast<RtcHistogram*>(histogram_pointer);
+    ptr->Add(sample);
 }
 
 SampleInfo::SampleInfo(const std::string& name,
@@ -266,41 +299,47 @@ SampleInfo::SampleInfo(const std::string& name,
 SampleInfo::~SampleInfo() {}
 
 // Implementation of global functions in metrics_default.h.
-void Enable() {
-  RTC_DCHECK(g_rtc_histogram_map == nullptr);
+void Enable()
+{
+    RTC_DCHECK(g_rtc_histogram_map == nullptr);
 #if RTC_DCHECK_IS_ON
-  RTC_DCHECK_EQ(0, rtc::AtomicOps::AcquireLoad(&g_rtc_histogram_called));
+    RTC_DCHECK_EQ(0, rtc::AtomicOps::AcquireLoad(&g_rtc_histogram_called));
 #endif
-  CreateMap();
+    CreateMap();
 }
 
 void GetAndReset(
-    std::map<std::string, std::unique_ptr<SampleInfo>>* histograms) {
-  histograms->clear();
-  RtcHistogramMap* map = GetMap();
-  if (map)
-    map->GetAndReset(histograms);
+    std::map<std::string, std::unique_ptr<SampleInfo>>* histograms)
+{
+    histograms->clear();
+    RtcHistogramMap* map = GetMap();
+    if (map)
+        map->GetAndReset(histograms);
 }
 
-void Reset() {
-  RtcHistogramMap* map = GetMap();
-  if (map)
-    map->Reset();
+void Reset()
+{
+    RtcHistogramMap* map = GetMap();
+    if (map)
+        map->Reset();
 }
 
-int NumEvents(const std::string& name, int sample) {
-  RtcHistogramMap* map = GetMap();
-  return map ? map->NumEvents(name, sample) : 0;
+int NumEvents(const std::string& name, int sample)
+{
+    RtcHistogramMap* map = GetMap();
+    return map ? map->NumEvents(name, sample) : 0;
 }
 
-int NumSamples(const std::string& name) {
-  RtcHistogramMap* map = GetMap();
-  return map ? map->NumSamples(name) : 0;
+int NumSamples(const std::string& name)
+{
+    RtcHistogramMap* map = GetMap();
+    return map ? map->NumSamples(name) : 0;
 }
 
-int MinSample(const std::string& name) {
-  RtcHistogramMap* map = GetMap();
-  return map ? map->MinSample(name) : -1;
+int MinSample(const std::string& name)
+{
+    RtcHistogramMap* map = GetMap();
+    return map ? map->MinSample(name) : -1;
 }
 
 }  // namespace metrics

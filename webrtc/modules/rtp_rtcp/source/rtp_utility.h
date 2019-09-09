@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include "webrtc/modules/rtp_rtcp/source/rtp_rtcp_config.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 const uint8_t kRtpMarkerBitMask = 0x80;
 
@@ -28,12 +29,14 @@ RtpData* NullObjectRtpData();
 RtpFeedback* NullObjectRtpFeedback();
 ReceiveStatistics* NullObjectReceiveStatistics();
 
-namespace RtpUtility {
+namespace RtpUtility
+{
 
-struct Payload {
-  char name[RTP_PAYLOAD_NAME_SIZE];
-  bool audio;
-  PayloadUnion typeSpecific;
+struct Payload
+{
+    char name[RTP_PAYLOAD_NAME_SIZE];
+    bool audio;
+    PayloadUnion typeSpecific;
 };
 
 bool StringCompare(const char* str1, const char* str2, const uint32_t length);
@@ -41,24 +44,25 @@ bool StringCompare(const char* str1, const char* str2, const uint32_t length);
 // Round up to the nearest size that is a multiple of 4.
 size_t Word32Align(size_t size);
 
-class RtpHeaderParser {
- public:
-  RtpHeaderParser(const uint8_t* rtpData, size_t rtpDataLength);
-  ~RtpHeaderParser();
+class RtpHeaderParser
+{
+public:
+    RtpHeaderParser(const uint8_t* rtpData, size_t rtpDataLength);
+    ~RtpHeaderParser();
 
-  bool RTCP() const;
-  bool ParseRtcp(RTPHeader* header) const;
-  bool Parse(RTPHeader* parsedPacket,
-             RtpHeaderExtensionMap* ptrExtensionMap = nullptr) const;
+    bool RTCP() const;
+    bool ParseRtcp(RTPHeader* header) const;
+    bool Parse(RTPHeader* parsedPacket,
+               RtpHeaderExtensionMap* ptrExtensionMap = nullptr) const;
 
- private:
-  void ParseOneByteExtensionHeader(RTPHeader* parsedPacket,
-                                   const RtpHeaderExtensionMap* ptrExtensionMap,
-                                   const uint8_t* ptrRTPDataExtensionEnd,
-                                   const uint8_t* ptr) const;
+private:
+    void ParseOneByteExtensionHeader(RTPHeader* parsedPacket,
+                                     const RtpHeaderExtensionMap* ptrExtensionMap,
+                                     const uint8_t* ptrRTPDataExtensionEnd,
+                                     const uint8_t* ptr) const;
 
-  const uint8_t* const _ptrRTPDataBegin;
-  const uint8_t* const _ptrRTPDataEnd;
+    const uint8_t* const _ptrRTPDataBegin;
+    const uint8_t* const _ptrRTPDataEnd;
 };
 }  // namespace RtpUtility
 }  // namespace webrtc

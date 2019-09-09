@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,10 +14,12 @@
 
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(RandomVector, CreateAndDestroy) {
-  RandomVector random_vector;
+TEST(RandomVector, CreateAndDestroy)
+{
+    RandomVector random_vector;
 }
 
 // TODO(hlundin): Write more tests.

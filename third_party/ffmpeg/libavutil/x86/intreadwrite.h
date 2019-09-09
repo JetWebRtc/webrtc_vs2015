@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Alexander Strange <astrange@ithinksw.com>
  *
  * This file is part of FFmpeg.
@@ -66,7 +66,10 @@ static av_always_inline void AV_ZERO64(void *d)
 #define AV_COPY128 AV_COPY128
 static av_always_inline void AV_COPY128(void *d, const void *s)
 {
-    struct v {uint64_t v[2];};
+    struct v
+    {
+        uint64_t v[2];
+    };
 
     __asm__("movaps   %1, %%xmm0  \n\t"
             "movaps   %%xmm0, %0  \n\t"
@@ -82,7 +85,10 @@ static av_always_inline void AV_COPY128(void *d, const void *s)
 #define AV_ZERO128 AV_ZERO128
 static av_always_inline void AV_ZERO128(void *d)
 {
-    struct v {uint64_t v[2];};
+    struct v
+    {
+        uint64_t v[2];
+    };
 
     __asm__("pxor %%xmm0, %%xmm0  \n\t"
             "movdqa   %%xmm0, %0  \n\t"

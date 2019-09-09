@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,13 +12,14 @@
 #define VP8_COMMON_POSTPROC_H_
 
 #include "vpx_ports/mem.h"
-struct postproc_state {
-  int last_q;
-  int last_noise;
-  int last_base_qindex;
-  int last_frame_valid;
-  int clamp;
-  int8_t *generated_noise;
+struct postproc_state
+{
+    int last_q;
+    int last_noise;
+    int last_base_qindex;
+    int last_frame_valid;
+    int clamp;
+    int8_t *generated_noise;
 };
 #include "onyxc_int.h"
 #include "ppflags.h"

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -40,84 +40,98 @@
 
 #include "WelsThread.h"
 
-namespace WelsCommon {
+namespace WelsCommon
+{
 
 CWelsThread::CWelsThread() :
-  m_hThread (0),
-  m_bRunning (false),
-  m_bEndFlag (false) {
+    m_hThread (0),
+    m_bRunning (false),
+    m_bEndFlag (false)
+{
 
-  WelsEventOpen (&m_hEvent);
-  WelsMutexInit(&m_hMutex);
+    WelsEventOpen (&m_hEvent);
+    WelsMutexInit(&m_hMutex);
 
 }
 
-CWelsThread::~CWelsThread() {
-  Kill();
-  WelsEventClose (&m_hEvent);
-  WelsMutexDestroy(&m_hMutex);
+CWelsThread::~CWelsThread()
+{
+    Kill();
+    WelsEventClose (&m_hEvent);
+    WelsMutexDestroy(&m_hMutex);
 }
 
-void CWelsThread::Thread() {
-  while (true) {
-    WelsEventWait (&m_hEvent,&m_hMutex);
+void CWelsThread::Thread()
+{
+    while (true)
+    {
+        WelsEventWait (&m_hEvent,&m_hMutex);
 
-    if (GetEndFlag()) {
-      break;
+        if (GetEndFlag())
+        {
+            break;
+        }
+
+        ExecuteTask();
     }
 
-    ExecuteTask();
-  }
-
-  SetRunning (false);
+    SetRunning (false);
 }
 
-WELS_THREAD_ERROR_CODE CWelsThread::Start() {
+WELS_THREAD_ERROR_CODE CWelsThread::Start()
+{
 #ifndef __APPLE__
-  if (NULL == m_hEvent) {
-    return WELS_THREAD_ERROR_GENERAL;
-  }
+    if (NULL == m_hEvent)
+    {
+        return WELS_THREAD_ERROR_GENERAL;
+    }
 #endif
-  if (GetRunning()) {
+    if (GetRunning())
+    {
+        return WELS_THREAD_ERROR_OK;
+    }
+
+    SetEndFlag (false);
+
+    WELS_THREAD_ERROR_CODE rc = WelsThreadCreate (&m_hThread,
+                                (LPWELS_THREAD_ROUTINE)TheThread, this, 0);
+
+    if (WELS_THREAD_ERROR_OK != rc)
+    {
+        return rc;
+    }
+
+    while (!GetRunning())
+    {
+        WelsSleep (1);
+    }
+
     return WELS_THREAD_ERROR_OK;
-  }
-
-  SetEndFlag (false);
-
-  WELS_THREAD_ERROR_CODE rc = WelsThreadCreate (&m_hThread,
-                              (LPWELS_THREAD_ROUTINE)TheThread, this, 0);
-
-  if (WELS_THREAD_ERROR_OK != rc) {
-    return rc;
-  }
-
-  while (!GetRunning()) {
-    WelsSleep (1);
-  }
-
-  return WELS_THREAD_ERROR_OK;
 }
 
-void CWelsThread::Kill() {
-  if (!GetRunning()) {
+void CWelsThread::Kill()
+{
+    if (!GetRunning())
+    {
+        return;
+    }
+
+    SetEndFlag (true);
+
+    WelsEventSignal (&m_hEvent);
+    WelsThreadJoin (m_hThread);
     return;
-  }
-
-  SetEndFlag (true);
-
-  WelsEventSignal (&m_hEvent);
-  WelsThreadJoin (m_hThread);
-  return;
 }
 
-WELS_THREAD_ROUTINE_TYPE  CWelsThread::TheThread (void* pParam) {
-  CWelsThread* pThis = static_cast<CWelsThread*> (pParam);
+WELS_THREAD_ROUTINE_TYPE  CWelsThread::TheThread (void* pParam)
+{
+    CWelsThread* pThis = static_cast<CWelsThread*> (pParam);
 
-  pThis->SetRunning (true);
+    pThis->SetRunning (true);
 
-  pThis->Thread();
+    pThis->Thread();
 
-  WELS_THREAD_ROUTINE_RETURN (NULL);
+    WELS_THREAD_ROUTINE_RETURN (NULL);
 }
 
 }

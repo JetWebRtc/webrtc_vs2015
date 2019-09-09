@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2012 Stefano Sabatini <stefasab gmail com>
  *
  * This file is part of FFmpeg.
@@ -39,45 +39,52 @@ int ff_load_image(uint8_t *data[4], int linesize[4],
     av_register_all();
 
     iformat = av_find_input_format("image2");
-    if ((ret = avformat_open_input(&format_ctx, filename, iformat, NULL)) < 0) {
+    if ((ret = avformat_open_input(&format_ctx, filename, iformat, NULL)) < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR,
-               "Failed to open input file '%s'\n", filename);
+        "Failed to open input file '%s'\n", filename);
         return ret;
     }
 
-    if ((ret = avformat_find_stream_info(format_ctx, NULL)) < 0) {
+    if ((ret = avformat_find_stream_info(format_ctx, NULL)) < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Find stream info failed\n");
         return ret;
     }
 
     codec_ctx = format_ctx->streams[0]->codec;
     codec = avcodec_find_decoder(codec_ctx->codec_id);
-    if (!codec) {
+    if (!codec)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Failed to find codec\n");
         ret = AVERROR(EINVAL);
         goto end;
     }
 
     av_dict_set(&opt, "thread_type", "slice", 0);
-    if ((ret = avcodec_open2(codec_ctx, codec, &opt)) < 0) {
+    if ((ret = avcodec_open2(codec_ctx, codec, &opt)) < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Failed to open codec\n");
         goto end;
     }
 
-    if (!(frame = av_frame_alloc()) ) {
+    if (!(frame = av_frame_alloc()) )
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Failed to alloc frame\n");
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
     ret = av_read_frame(format_ctx, &pkt);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Failed to read frame from file\n");
         goto end;
     }
 
     ret = avcodec_decode_video2(codec_ctx, frame, &frame_decoded, &pkt);
-    if (ret < 0 || !frame_decoded) {
+    if (ret < 0 || !frame_decoded)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Failed to decode image from file\n");
         if (ret >= 0)
             ret = -1;

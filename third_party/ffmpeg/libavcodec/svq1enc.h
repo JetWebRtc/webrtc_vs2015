@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SVQ1 encoder
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 #include "mpegvideo.h"
 #include "put_bits.h"
 
-typedef struct SVQ1EncContext {
+typedef struct SVQ1EncContext
+{
     /* FIXME: Needed for motion estimation, should not be used for anything
      * else, the idea is to make the motion estimation eventually independent
      * of MpegEncContext, so this will be removed then. */

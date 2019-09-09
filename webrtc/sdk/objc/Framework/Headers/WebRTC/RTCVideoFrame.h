@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,8 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCVideoFrame : NSObject
 
-/** Width without rotation applied. */
-@property(nonatomic, readonly) size_t width;
+    /** Width without rotation applied. */
+    @property(nonatomic, readonly) size_t width;
 
 /** Height without rotation applied. */
 @property(nonatomic, readonly) size_t height;

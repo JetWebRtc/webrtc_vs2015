@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 
 #define MAX_FRAMES 512
 
-typedef struct RandomContext {
+typedef struct RandomContext
+{
     const AVClass *class;
 
     AVLFG lfg;
@@ -43,7 +44,8 @@ typedef struct RandomContext {
 #define OFFSET(x) offsetof(RandomContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption random_options[] = {
+static const AVOption random_options[] =
+{
     { "frames", "set number of frames in cache", OFFSET(nb_frames),   AV_OPT_TYPE_INT,   {.i64=30},  2, MAX_FRAMES, FLAGS },
     { "seed",   "set the seed",                  OFFSET(random_seed), AV_OPT_TYPE_INT64, {.i64=-1}, -1, UINT32_MAX, FLAGS },
     { NULL }
@@ -78,7 +80,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int idx;
 
-    if (s->nb_frames_filled < s->nb_frames) {
+    if (s->nb_frames_filled < s->nb_frames)
+    {
         s->frames[s->nb_frames_filled] = in;
         s->pts[s->nb_frames_filled++] = in->pts;
         return 0;
@@ -103,7 +106,8 @@ static int request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && !ctx->is_disabled && s->nb_frames > 0) {
+    if (ret == AVERROR_EOF && !ctx->is_disabled && s->nb_frames > 0)
+    {
         AVFrame *out = s->frames[s->nb_frames - 1];
         out->pts = s->pts[s->flush_idx++];
         ret = ff_filter_frame(outlink, out);
@@ -114,7 +118,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad random_inputs[] = {
+static const AVFilterPad random_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -123,7 +128,8 @@ static const AVFilterPad random_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad random_outputs[] = {
+static const AVFilterPad random_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -133,7 +139,8 @@ static const AVFilterPad random_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_random = {
+AVFilter ff_vf_random =
+{
     .name        = "random",
     .description = NULL_IF_CONFIG_SMALL("Return random frames."),
     .priv_size   = sizeof(RandomContext),

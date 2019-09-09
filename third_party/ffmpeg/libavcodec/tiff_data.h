@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TIFF data tables
  * Copyright (c) 2011 Thomas Kuehnel
  *

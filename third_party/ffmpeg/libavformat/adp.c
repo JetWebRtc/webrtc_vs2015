@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADP demuxer
  * Copyright (c) 2013 James Almer
  *
@@ -32,7 +32,8 @@ static int adp_probe(AVProbeData *p)
     if (p->buf_size < 32)
         return 0;
 
-    for (i = 0; i < p->buf_size - 3; i+=32) {
+    for (i = 0; i < p->buf_size - 3; i+=32)
+    {
         if (p->buf[i] != p->buf[i+2] || p->buf[i+1] != p->buf[i+3])
             return 0;
         if (p->buf[i] != last)
@@ -76,8 +77,10 @@ static int adp_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     ret = av_get_packet(s->pb, pkt, size);
 
-    if (ret != size) {
-        if (ret < 0) {
+    if (ret != size)
+    {
+        if (ret < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
@@ -88,7 +91,8 @@ static int adp_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_adp_demuxer = {
+AVInputFormat ff_adp_demuxer =
+{
     .name           = "adp",
     .long_name      = NULL_IF_CONFIG_SMALL("ADP"),
     .read_probe     = adp_probe,

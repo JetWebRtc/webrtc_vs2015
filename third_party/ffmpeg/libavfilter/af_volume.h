@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,19 +30,22 @@
 #include "libavutil/opt.h"
 #include "libavutil/samplefmt.h"
 
-enum PrecisionType {
+enum PrecisionType
+{
     PRECISION_FIXED = 0,
     PRECISION_FLOAT,
     PRECISION_DOUBLE,
 };
 
-enum EvalMode {
+enum EvalMode
+{
     EVAL_MODE_ONCE,
     EVAL_MODE_FRAME,
     EVAL_MODE_NB
 };
 
-enum VolumeVarName {
+enum VolumeVarName
+{
     VAR_N,
     VAR_NB_CHANNELS,
     VAR_NB_CONSUMED_SAMPLES,
@@ -58,14 +61,16 @@ enum VolumeVarName {
     VAR_VARS_NB
 };
 
-enum ReplayGainType {
+enum ReplayGainType
+{
     REPLAYGAIN_DROP,
     REPLAYGAIN_IGNORE,
     REPLAYGAIN_TRACK,
     REPLAYGAIN_ALBUM,
 };
 
-typedef struct VolumeContext {
+typedef struct VolumeContext
+{
     const AVClass *class;
     AVFloatDSPContext *fdsp;
     int precision;

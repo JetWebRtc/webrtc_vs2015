@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -33,13 +33,15 @@ av_cold void ff_init_scantable(uint8_t *permutation, ScanTable *st,
 
     st->scantable = src_scantable;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int j = src_scantable[i];
         st->permutated[i] = permutation[j];
     }
 
     end = -1;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int j = st->permutated[i];
         if (j > end)
             end = j;
@@ -48,16 +50,17 @@ av_cold void ff_init_scantable(uint8_t *permutation, ScanTable *st,
 }
 
 av_cold void ff_init_scantable_permutation(uint8_t *idct_permutation,
-                                           enum idct_permutation_type perm_type)
+        enum idct_permutation_type perm_type)
 {
     int i;
 
     if (ARCH_X86)
         if (ff_init_scantable_permutation_x86(idct_permutation,
-                                              perm_type))
+        perm_type))
             return;
 
-    switch (perm_type) {
+    switch (perm_type)
+    {
     case FF_IDCT_PERM_NONE:
         for (i = 0; i < 64; i++)
             idct_permutation[i] = i;
@@ -76,7 +79,7 @@ av_cold void ff_init_scantable_permutation(uint8_t *idct_permutation,
         break;
     default:
         av_log(NULL, AV_LOG_ERROR,
-               "Internal error, IDCT permutation not set\n");
+        "Internal error, IDCT permutation not set\n");
     }
 }
 
@@ -89,7 +92,8 @@ static void put_pixels_clamped_c(const int16_t *block, uint8_t *av_restrict pixe
     int i;
 
     /* read the pixels */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         pixels[0] = av_clip_uint8(block[0]);
         pixels[1] = av_clip_uint8(block[1]);
         pixels[2] = av_clip_uint8(block[2]);
@@ -105,12 +109,13 @@ static void put_pixels_clamped_c(const int16_t *block, uint8_t *av_restrict pixe
 }
 
 static void put_pixels_clamped4_c(const int16_t *block, uint8_t *av_restrict pixels,
-                                 int line_size)
+                                  int line_size)
 {
     int i;
 
     /* read the pixels */
-    for(i=0;i<4;i++) {
+    for(i=0; i<4; i++)
+    {
         pixels[0] = av_clip_uint8(block[0]);
         pixels[1] = av_clip_uint8(block[1]);
         pixels[2] = av_clip_uint8(block[2]);
@@ -122,12 +127,13 @@ static void put_pixels_clamped4_c(const int16_t *block, uint8_t *av_restrict pix
 }
 
 static void put_pixels_clamped2_c(const int16_t *block, uint8_t *av_restrict pixels,
-                                 int line_size)
+                                  int line_size)
 {
     int i;
 
     /* read the pixels */
-    for(i=0;i<2;i++) {
+    for(i=0; i<2; i++)
+    {
         pixels[0] = av_clip_uint8(block[0]);
         pixels[1] = av_clip_uint8(block[1]);
 
@@ -142,8 +148,10 @@ static void put_signed_pixels_clamped_c(const int16_t *block,
 {
     int i, j;
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             if (*block < -128)
                 *pixels = 0;
             else if (*block > 127)
@@ -163,7 +171,8 @@ static void add_pixels_clamped_c(const int16_t *block, uint8_t *av_restrict pixe
     int i;
 
     /* read the pixels */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         pixels[0] = av_clip_uint8(pixels[0] + block[0]);
         pixels[1] = av_clip_uint8(pixels[1] + block[1]);
         pixels[2] = av_clip_uint8(pixels[2] + block[2]);
@@ -178,12 +187,13 @@ static void add_pixels_clamped_c(const int16_t *block, uint8_t *av_restrict pixe
 }
 
 static void add_pixels_clamped4_c(const int16_t *block, uint8_t *av_restrict pixels,
-                          int line_size)
+                                  int line_size)
 {
     int i;
 
     /* read the pixels */
-    for(i=0;i<4;i++) {
+    for(i=0; i<4; i++)
+    {
         pixels[0] = av_clip_uint8(pixels[0] + block[0]);
         pixels[1] = av_clip_uint8(pixels[1] + block[1]);
         pixels[2] = av_clip_uint8(pixels[2] + block[2]);
@@ -194,12 +204,13 @@ static void add_pixels_clamped4_c(const int16_t *block, uint8_t *av_restrict pix
 }
 
 static void add_pixels_clamped2_c(const int16_t *block, uint8_t *av_restrict pixels,
-                          int line_size)
+                                  int line_size)
 {
     int i;
 
     /* read the pixels */
-    for(i=0;i<2;i++) {
+    for(i=0; i<2; i++)
+    {
         pixels[0] = av_clip_uint8(pixels[0] + block[0]);
         pixels[1] = av_clip_uint8(pixels[1] + block[1]);
         pixels += line_size;
@@ -242,46 +253,63 @@ av_cold void ff_idctdsp_init(IDCTDSPContext *c, AVCodecContext *avctx)
 {
     const unsigned high_bit_depth = avctx->bits_per_raw_sample > 8;
 
-    if (avctx->lowres==1) {
+    if (avctx->lowres==1)
+    {
         c->idct_put  = ff_jref_idct4_put;
         c->idct_add  = ff_jref_idct4_add;
         c->idct      = ff_j_rev_dct4;
         c->perm_type = FF_IDCT_PERM_NONE;
-    } else if (avctx->lowres==2) {
+    }
+    else if (avctx->lowres==2)
+    {
         c->idct_put  = ff_jref_idct2_put;
         c->idct_add  = ff_jref_idct2_add;
         c->idct      = ff_j_rev_dct2;
         c->perm_type = FF_IDCT_PERM_NONE;
-    } else if (avctx->lowres==3) {
+    }
+    else if (avctx->lowres==3)
+    {
         c->idct_put  = ff_jref_idct1_put;
         c->idct_add  = ff_jref_idct1_add;
         c->idct      = ff_j_rev_dct1;
         c->perm_type = FF_IDCT_PERM_NONE;
-    } else {
-        if (avctx->bits_per_raw_sample == 10 || avctx->bits_per_raw_sample == 9) {
+    }
+    else
+    {
+        if (avctx->bits_per_raw_sample == 10 || avctx->bits_per_raw_sample == 9)
+        {
             c->idct_put              = ff_simple_idct_put_10;
             c->idct_add              = ff_simple_idct_add_10;
             c->idct                  = ff_simple_idct_10;
             c->perm_type             = FF_IDCT_PERM_NONE;
-        } else if (avctx->bits_per_raw_sample == 12) {
+        }
+        else if (avctx->bits_per_raw_sample == 12)
+        {
             c->idct_put              = ff_simple_idct_put_12;
             c->idct_add              = ff_simple_idct_add_12;
             c->idct                  = ff_simple_idct_12;
             c->perm_type             = FF_IDCT_PERM_NONE;
-        } else {
-            if (avctx->idct_algo == FF_IDCT_INT) {
+        }
+        else
+        {
+            if (avctx->idct_algo == FF_IDCT_INT)
+            {
                 c->idct_put  = ff_jref_idct_put;
                 c->idct_add  = ff_jref_idct_add;
                 c->idct      = ff_j_rev_dct;
                 c->perm_type = FF_IDCT_PERM_LIBMPEG2;
 #if CONFIG_FAANIDCT
-            } else if (avctx->idct_algo == FF_IDCT_FAAN) {
+            }
+            else if (avctx->idct_algo == FF_IDCT_FAAN)
+            {
                 c->idct_put  = ff_faanidct_put;
                 c->idct_add  = ff_faanidct_add;
                 c->idct      = ff_faanidct;
                 c->perm_type = FF_IDCT_PERM_NONE;
 #endif /* CONFIG_FAANIDCT */
-            } else { // accurate/default
+            }
+            else     // accurate/default
+            {
                 c->idct_put  = ff_simple_idct_put_8;
                 c->idct_add  = ff_simple_idct_add_8;
                 c->idct      = ff_simple_idct_8;

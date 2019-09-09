@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ void WebRtcIlbcfix_SimpleLpcAnalysis(
     int16_t *data,   /* (i) new block of speech */
     IlbcEncoder *iLBCenc_inst
     /* (i/o) the encoder state structure */
-                                     );
+);
 
 #endif

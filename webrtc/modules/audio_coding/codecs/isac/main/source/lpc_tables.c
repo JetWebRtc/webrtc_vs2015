@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,22 +14,29 @@
 #include "settings.h"
 
 /* cdf array for model indicator */
-const uint16_t WebRtcIsac_kQKltModelCdf[4] = {
-    0,  15434,  37548,  65535 };
+const uint16_t WebRtcIsac_kQKltModelCdf[4] =
+{
+    0,  15434,  37548,  65535
+};
 
 /* pointer to cdf array for model indicator */
-const uint16_t *WebRtcIsac_kQKltModelCdfPtr[1] = {
-    WebRtcIsac_kQKltModelCdf };
+const uint16_t *WebRtcIsac_kQKltModelCdfPtr[1] =
+{
+    WebRtcIsac_kQKltModelCdf
+};
 
 /* initial cdf index for decoder of model indicator */
 const uint16_t WebRtcIsac_kQKltModelInitIndex[1] = { 1 };
 
 /* offset to go from rounded value to quantization index */
-const short WebRtcIsac_kQKltQuantMinGain[12] = {
-    3,  6,  4,  6,  6,  9,  5,  16,  11,  34, 32,  47 };
+const short WebRtcIsac_kQKltQuantMinGain[12] =
+{
+    3,  6,  4,  6,  6,  9,  5,  16,  11,  34, 32,  47
+};
 
 
-const short WebRtcIsac_kQKltQuantMinShape[108] = {
+const short WebRtcIsac_kQKltQuantMinShape[108] =
+{
     0,  0,  0,  0,  0,  0,  0,  0,  0,  1,
     1,  1,  1,  1,  2,  2,  2,  3,  0,  0,
     0,  0,  1,  0,  0,  0,  0,  1,  1,  1,
@@ -40,13 +47,17 @@ const short WebRtcIsac_kQKltQuantMinShape[108] = {
     4,  7,  0,  0,  1,  1,  1,  1,  1,  1,
     1,  2,  3,  2,  3,  4,  4,  5,  7,  13,
     0,  1,  1,  2,  3,  2,  2,  2,  4,  4,
-    5,  6,  7,  11,  9,  13,  12,  26 };
+    5,  6,  7,  11,  9,  13,  12,  26
+};
 
 /* maximum quantization index */
-const uint16_t WebRtcIsac_kQKltMaxIndGain[12] = {
-    6,  12,  8,  14,  10,  19,  12,  31,  22,  56, 52,  138 };
+const uint16_t WebRtcIsac_kQKltMaxIndGain[12] =
+{
+    6,  12,  8,  14,  10,  19,  12,  31,  22,  56, 52,  138
+};
 
-const uint16_t WebRtcIsac_kQKltMaxIndShape[108] = {
+const uint16_t WebRtcIsac_kQKltMaxIndShape[108] =
+{
     0,  0,  0,  0,  0,  0,  0,  0,  0,  1,
     2,  2,  2,  2,  4,  4,  5,  6,  0,  0,
     0,  0,  1,  0,  0,  0,  0,  1,  2,  2,
@@ -57,13 +68,17 @@ const uint16_t WebRtcIsac_kQKltMaxIndShape[108] = {
     9,  13,  0,  0,  2,  2,  2,  2,  2,  2,
     3,  4,  5,  4,  6,  8,  8,  10,  16,  25,
     0,  2,  2,  4,  5,  4,  4,  4,  7,  8,
-    9,  10,  13,  19,  17,  23,  25,  49 };
+    9,  10,  13,  19,  17,  23,  25,  49
+};
 
 /* index offset */
-const uint16_t WebRtcIsac_kQKltOffsetGain[12] = {
-    0,  7,  20,  29,  44,  55,  75,  88,  120,  143,  200,  253 };
+const uint16_t WebRtcIsac_kQKltOffsetGain[12] =
+{
+    0,  7,  20,  29,  44,  55,  75,  88,  120,  143,  200,  253
+};
 
-const uint16_t WebRtcIsac_kQKltOffsetShape[108] = {
+const uint16_t WebRtcIsac_kQKltOffsetShape[108] =
+{
     0,  1,  2,  3,  4,  5,  6,  7,  8,  9,
     11,  14,  17,  20,  23,  28,  33,  39,  46,  47,
     48,  49,  50,  52,  53,  54,  55,  56,  58,  61,
@@ -74,13 +89,17 @@ const uint16_t WebRtcIsac_kQKltOffsetShape[108] = {
     212,  222,  236,  237,  238,  241,  244,  247,  250,  253,
     256,  260,  265,  271,  276,  283,  292,  301,  312,  329,
     355,  356,  359,  362,  367,  373,  378,  383,  388,  396,
-    405,  415,  426,  440,  460,  478,  502,  528 };
+    405,  415,  426,  440,  460,  478,  502,  528
+};
 
 /* initial cdf index for KLT coefficients */
-const uint16_t WebRtcIsac_kQKltInitIndexGain[12] = {
-    3,  6,  4,  7,  5,  10,  6,  16,  11,  28, 26,  69};
+const uint16_t WebRtcIsac_kQKltInitIndexGain[12] =
+{
+    3,  6,  4,  7,  5,  10,  6,  16,  11,  28, 26,  69
+};
 
-const uint16_t WebRtcIsac_kQKltInitIndexShape[108] = {
+const uint16_t WebRtcIsac_kQKltInitIndexShape[108] =
+{
     0,  0,  0,  0,  0,  0,  0,  0,  0,  1,
     1,  1,  1,  1,  2,  2,  3,  3,  0,  0,
     0,  0,  1,  0,  0,  0,  0,  1,  1,  1,
@@ -91,11 +110,13 @@ const uint16_t WebRtcIsac_kQKltInitIndexShape[108] = {
     5,  7,  0,  0,  1,  1,  1,  1,  1,  1,
     2,  2,  3,  2,  3,  4,  4,  5,  8,  13,
     0,  1,  1,  2,  3,  2,  2,  2,  4,  4,
-    5,  5,  7,  10,  9,  12,  13,  25 };
+    5,  5,  7,  10,  9,  12,  13,  25
+};
 
 
 /* quantizer representation levels */
-const double WebRtcIsac_kQKltLevelsGain[392] = {
+const double WebRtcIsac_kQKltLevelsGain[392] =
+{
     -2.78127126, -1.76745590, -0.77913790, -0.00437329,  0.79961206,
     1.81775776, 2.81389782, -5.78753143, -4.88384084, -3.89320940,
     -2.88133610, -1.92859977, -0.86347396,  0.02003888,  0.86140400,
@@ -174,9 +195,11 @@ const double WebRtcIsac_kQKltLevelsGain[392] = {
     75.02696330,  75.89837673,  76.93459997,  78.16266309,  78.83317543,
     80.00000000,  80.87251574,  82.09803524,  83.10671664,  84.00000000,
     84.77023523,  86.00000000,  87.00000000,  87.92946897,  88.69159118,
-    90.00000000,  90.90535270 };
+    90.00000000,  90.90535270
+};
 
-const double WebRtcIsac_kQKltLevelsShape[578] = {
+const double WebRtcIsac_kQKltLevelsShape[578] =
+{
     0.00032397,  0.00008053, -0.00061202, -0.00012620,  0.00030437,
     0.00054764, -0.00027902,  0.00069360,  0.00029449, -0.80219239,
     0.00091089, -0.74514927, -0.00094283,  0.64030631, -0.60509119,
@@ -292,11 +315,13 @@ const double WebRtcIsac_kQKltLevelsShape[578] = {
     5.98115528,  7.00018958,  8.00338125,  8.98981046,  9.98990318,
     10.96341479, 11.96866930, 12.99175139, 13.94580443, 14.95745083,
     15.98992869, 16.97484646, 17.99630043, 18.93396897, 19.88347741,
-    20.96532482, 21.92191032, 23.22314702 };
+    20.96532482, 21.92191032, 23.22314702
+};
 
 
 /* cdf tables for quantizer indices */
-const uint16_t WebRtcIsac_kQKltCdfGain[404] = {
+const uint16_t WebRtcIsac_kQKltCdfGain[404] =
+{
     0,  13,  301,  3730,  61784,  65167,  65489,  65535,  0,  17,
     142,  314,  929,  2466,  7678,  56450,  63463,  64740,  65204,  65426,
     65527,  65535,  0,  8,  100,  724,  6301,  60105,  65125,  65510,
@@ -337,10 +362,12 @@ const uint16_t WebRtcIsac_kQKltCdfGain[404] = {
     62985,  63207,  63408,  63546,  63739,  63906,  64070,  64237,  64371,
     64551,  64677,  64836,  64999,  65095,  65213,  65284,  65338,  65380,
     65426,  65447,  65472,  65485,  65487,  65489,  65502,  65510,  65512,
-    65514,  65516,  65518,  65522,  65531,  65533,  65535 };
+    65514,  65516,  65518,  65522,  65531,  65533,  65535
+};
 
 
-const uint16_t WebRtcIsac_kQKltCdfShape[686] = {
+const uint16_t WebRtcIsac_kQKltCdfShape[686] =
+{
     0,  65535,  0,  65535,  0,  65535,  0,  65535,  0,  65535,
     0,  65535,  0,  65535,  0,  65535,  0,  65535,  0,  4,
     65535,  0,  8,  65514,  65535,  0,  29,  65481,  65535,  0,
@@ -409,19 +436,23 @@ const uint16_t WebRtcIsac_kQKltCdfShape[686] = {
     1185,  1591,  1976,  2600,  3676,  5317,  7398,  9914,  12941,  16169,
     19477,  22885,  26464,  29851,  33360,  37228,  41139,  44802,  48654,
     52058, 55181,  57676,  59581,  61022,  62190,  63107,  63676,  64199,
-    64547,  64924, 65158,  65313,  65430,  65481,  65518,  65535 };
+    64547,  64924, 65158,  65313,  65430,  65481,  65518,  65535
+};
 
 
 /* pointers to cdf tables for quantizer indices */
-const uint16_t *WebRtcIsac_kQKltCdfPtrGain[12] = {
+const uint16_t *WebRtcIsac_kQKltCdfPtrGain[12] =
+{
     WebRtcIsac_kQKltCdfGain +0 +0, WebRtcIsac_kQKltCdfGain +0 +8,
     WebRtcIsac_kQKltCdfGain +0 +22, WebRtcIsac_kQKltCdfGain +0 +32,
     WebRtcIsac_kQKltCdfGain +0 +48, WebRtcIsac_kQKltCdfGain +0 +60,
     WebRtcIsac_kQKltCdfGain +0 +81, WebRtcIsac_kQKltCdfGain +0 +95,
     WebRtcIsac_kQKltCdfGain +0 +128, WebRtcIsac_kQKltCdfGain +0 +152,
-    WebRtcIsac_kQKltCdfGain +0 +210, WebRtcIsac_kQKltCdfGain +0 +264 };
+    WebRtcIsac_kQKltCdfGain +0 +210, WebRtcIsac_kQKltCdfGain +0 +264
+};
 
-const uint16_t *WebRtcIsac_kQKltCdfPtrShape[108] = {
+const uint16_t *WebRtcIsac_kQKltCdfPtrShape[108] =
+{
     WebRtcIsac_kQKltCdfShape +0 +0, WebRtcIsac_kQKltCdfShape +0 +2,
     WebRtcIsac_kQKltCdfShape +0 +4, WebRtcIsac_kQKltCdfShape +0 +6,
     WebRtcIsac_kQKltCdfShape +0 +8, WebRtcIsac_kQKltCdfShape +0 +10,
@@ -475,14 +506,18 @@ const uint16_t *WebRtcIsac_kQKltCdfPtrShape[108] = {
     WebRtcIsac_kQKltCdfShape +0 +505, WebRtcIsac_kQKltCdfShape +0 +516,
     WebRtcIsac_kQKltCdfShape +0 +528, WebRtcIsac_kQKltCdfShape +0 +543,
     WebRtcIsac_kQKltCdfShape +0 +564, WebRtcIsac_kQKltCdfShape +0 +583,
-    WebRtcIsac_kQKltCdfShape +0 +608, WebRtcIsac_kQKltCdfShape +0 +635 };
+    WebRtcIsac_kQKltCdfShape +0 +608, WebRtcIsac_kQKltCdfShape +0 +635
+};
 
 
 /* left KLT transforms */
-const double WebRtcIsac_kKltT1Gain[4] = {
-    -0.79742827,  0.60341375,  0.60341375,  0.79742827 };
+const double WebRtcIsac_kKltT1Gain[4] =
+{
+    -0.79742827,  0.60341375,  0.60341375,  0.79742827
+};
 
-const double WebRtcIsac_kKltT1Shape[324] = {
+const double WebRtcIsac_kKltT1Shape[324] =
+{
     0.00159597,  0.00049320,  0.00513821,  0.00021066,  0.01338581,
     -0.00422367, -0.00272072,  0.00935107,  0.02047622,  0.02691189,
     0.00478236,  0.03969702,  0.00886698,  0.04877604, -0.10898362,
@@ -547,10 +582,12 @@ const double WebRtcIsac_kKltT1Shape[324] = {
     0.00353237,  0.91803104, -0.39503305, -0.02048964,  0.00060125,
     0.01980634,  0.00300109,  0.00313880,  0.00657337,  0.00715163,
     0.00000261,  0.00854276, -0.00154825, -0.00516128,  0.00909527,
-    0.00095609,  0.00701196, -0.00221867, -0.00156741 };
+    0.00095609,  0.00701196, -0.00221867, -0.00156741
+};
 
 /* right KLT transforms */
-const double WebRtcIsac_kKltT2Gain[36] = {
+const double WebRtcIsac_kKltT2Gain[36] =
+{
     0.14572837, -0.45446306,  0.61990621, -0.52197033,  0.32145074,
     -0.11026900, -0.20698282,  0.48962182, -0.27127933, -0.33627476,
     0.65094037, -0.32715751,  0.40262573, -0.47844405, -0.33876075,
@@ -558,9 +595,11 @@ const double WebRtcIsac_kKltT2Gain[36] = {
     0.49030187,  0.47512886, -0.02141226, -0.51129451, -0.58578569,
     -0.39132064, -0.13187771,  0.15649421,  0.40735596,  0.54396897,
     0.40381276,  0.40904942,  0.41179766,  0.41167576,  0.40840251,
-    0.40468132 };
+    0.40468132
+};
 
-const double WebRtcIsac_kKltT2Shape[36] = {
+const double WebRtcIsac_kKltT2Shape[36] =
+{
     0.13427386, -0.35132558,  0.52506528, -0.59419077,  0.45075085,
     -0.16312057,  0.29857439, -0.58660147,  0.34265431,  0.20879510,
     -0.56063262,  0.30238345,  0.43308283, -0.41186999, -0.35288681,
@@ -568,15 +607,19 @@ const double WebRtcIsac_kKltT2Shape[36] = {
     0.54326135,  0.45249040, -0.06264420, -0.52283830,  0.57137758,
     0.44298139,  0.12617554, -0.20819946, -0.42324603, -0.48876443,
     0.39597050,  0.40713935,  0.41389880,  0.41512486,  0.41130400,
-    0.40575001 };
+    0.40575001
+};
 
 /* means of log gains and LAR coefficients*/
-const double WebRtcIsac_kLpcMeansGain[12] = {
+const double WebRtcIsac_kLpcMeansGain[12] =
+{
     -6.86881911, -5.35075273, -6.86792680, -5.36200897, -6.86401538,
     -5.36921533, -6.86802969, -5.36893966, -6.86538097, -5.36315063,
-    -6.85535304, -5.35155315 };
+    -6.85535304, -5.35155315
+};
 
-const double WebRtcIsac_kLpcMeansShape[108] = {
+const double WebRtcIsac_kLpcMeansShape[108] =
+{
     -0.91232981,  0.26258634, -0.33716701,  0.08477430, -0.03378426,
     0.14423909,  0.07036185,  0.06155019,  0.01490385,  0.04138740,
     0.01427317,  0.01288970,  0.83872106,  0.25750199,  0.07988929,
@@ -598,4 +641,5 @@ const double WebRtcIsac_kLpcMeansShape[108] = {
     -0.90132307,  0.25174308, -0.33838268,  0.07883863, -0.02877906,
     0.14105407,  0.07220290,  0.06000352,  0.01684879,  0.04226844,
     0.01331331,  0.01269244,  0.83832138,  0.25467485,  0.08118028,
-    -0.02120528,  0.00747832,  0.01567212 };
+    -0.02120528,  0.00747832,  0.01567212
+};

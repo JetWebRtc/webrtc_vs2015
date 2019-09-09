@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,13 +19,15 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_manager_posix.h"
 #endif
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 UdpSocketManager* UdpSocketManager::CreateInstance()
 {
 #if defined(_WIN32)
-  return static_cast<UdpSocketManager*>(new UdpSocket2ManagerWindows());
+    return static_cast<UdpSocketManager*>(new UdpSocket2ManagerWindows());
 #else
     return new UdpSocketManagerPosix();
 #endif
@@ -38,8 +40,10 @@ UdpSocketManager* UdpSocketManager::StaticInstance(
 {
     UdpSocketManager* impl =
         GetStaticInstance<UdpSocketManager>(count_operation);
-    if (count_operation == kAddRef && impl != NULL) {
-        if (impl->Init(id, numOfWorkThreads)) {
+    if (count_operation == kAddRef && impl != NULL)
+    {
+        if (impl->Init(id, numOfWorkThreads))
+        {
             impl->Start();
         }
     }
@@ -47,7 +51,7 @@ UdpSocketManager* UdpSocketManager::StaticInstance(
 }
 
 UdpSocketManager* UdpSocketManager::Create(const int32_t id,
-                                           uint8_t& numOfWorkThreads)
+        uint8_t& numOfWorkThreads)
 {
     return UdpSocketManager::StaticInstance(kAddRef, id, numOfWorkThreads);
 }

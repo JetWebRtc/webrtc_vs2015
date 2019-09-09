@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,11 +16,12 @@
 extern "C" {
 #endif
 
-struct lookahead_entry {
-  YV12_BUFFER_CONFIG img;
-  int64_t ts_start;
-  int64_t ts_end;
-  unsigned int flags;
+struct lookahead_entry
+{
+    YV12_BUFFER_CONFIG img;
+    int64_t ts_start;
+    int64_t ts_end;
+    unsigned int flags;
 };
 
 struct lookahead_ctx;
@@ -33,8 +34,8 @@ struct lookahead_ctx;
  *
  */
 struct lookahead_ctx *vp8_lookahead_init(unsigned int width,
-                                         unsigned int height,
-                                         unsigned int depth);
+        unsigned int height,
+        unsigned int depth);
 
 /**\brief Destroys the lookahead stage
  *
@@ -84,7 +85,7 @@ struct lookahead_entry *vp8_lookahead_pop(struct lookahead_ctx *ctx, int drain);
  *
  */
 struct lookahead_entry *vp8_lookahead_peek(struct lookahead_ctx *ctx,
-                                           unsigned int index, int direction);
+        unsigned int index, int direction);
 
 /**\brief Get the number of frames currently in the lookahead queue
  *

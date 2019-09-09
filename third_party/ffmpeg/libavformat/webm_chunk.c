@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015, Vignesh Venkatasubramanian
  *
  * This file is part of FFmpeg.
@@ -43,7 +43,8 @@
 
 #define MAX_FILENAME_SIZE 1024
 
-typedef struct WebMChunkContext {
+typedef struct WebMChunkContext
+{
     const AVClass *class;
     int chunk_start_index;
     char *header_filename;
@@ -86,17 +87,23 @@ static int get_chunk_filename(AVFormatContext *s, int is_header, char *filename)
 {
     WebMChunkContext *wc = s->priv_data;
     AVFormatContext *oc = wc->avf;
-    if (!filename) {
+    if (!filename)
+    {
         return AVERROR(EINVAL);
     }
-    if (is_header) {
-        if (!wc->header_filename) {
+    if (is_header)
+    {
+        if (!wc->header_filename)
+        {
             return AVERROR(EINVAL);
         }
         av_strlcpy(filename, wc->header_filename, strlen(wc->header_filename) + 1);
-    } else {
+    }
+    else
+    {
         if (av_get_frame_filename(filename, MAX_FILENAME_SIZE,
-                                  s->filename, wc->chunk_index - 1) < 0) {
+                                  s->filename, wc->chunk_index - 1) < 0)
+        {
             av_log(oc, AV_LOG_ERROR, "Invalid chunk filename template '%s'\n", s->filename);
             return AVERROR(EINVAL);
         }
@@ -111,7 +118,10 @@ static int webm_chunk_write_header(AVFormatContext *s)
     int ret;
 
     // DASH Streams can only have either one track per file.
-    if (s->nb_streams != 1) { return AVERROR_INVALIDDATA; }
+    if (s->nb_streams != 1)
+    {
+        return AVERROR_INVALIDDATA;
+    }
 
     wc->chunk_index = wc->chunk_start_index;
     wc->oformat = av_guess_format("webm", s->filename, "video/webm");
@@ -189,21 +199,27 @@ static int webm_chunk_write_packet(AVFormatContext *s, AVPacket *pkt)
     AVStream *st = s->streams[pkt->stream_index];
     int ret;
 
-    if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+    if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+    {
         wc->duration_written += av_rescale_q(pkt->pts - wc->prev_pts,
                                              st->time_base,
-                                             (AVRational) {1, 1000});
+                                             (AVRational)
+        {
+            1, 1000
+        });
         wc->prev_pts = pkt->pts;
     }
 
     // For video, a new chunk is started only on key frames. For audio, a new
     // chunk is started based on chunk_duration.
     if ((st->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
-         (pkt->flags & AV_PKT_FLAG_KEY)) ||
-        (st->codec->codec_type == AVMEDIA_TYPE_AUDIO &&
-         (pkt->pts == 0 || wc->duration_written >= wc->chunk_duration))) {
+            (pkt->flags & AV_PKT_FLAG_KEY)) ||
+            (st->codec->codec_type == AVMEDIA_TYPE_AUDIO &&
+             (pkt->pts == 0 || wc->duration_written >= wc->chunk_duration)))
+    {
         wc->duration_written = 0;
-        if ((ret = chunk_end(s)) < 0 || (ret = chunk_start(s)) < 0) {
+        if ((ret = chunk_end(s)) < 0 || (ret = chunk_start(s)) < 0)
+        {
             goto fail;
         }
     }
@@ -213,7 +229,8 @@ static int webm_chunk_write_packet(AVFormatContext *s, AVPacket *pkt)
         goto fail;
 
 fail:
-    if (ret < 0) {
+    if (ret < 0)
+    {
         oc->streams = NULL;
         oc->nb_streams = 0;
         avformat_free_context(oc);
@@ -235,7 +252,8 @@ static int webm_chunk_write_trailer(AVFormatContext *s)
 }
 
 #define OFFSET(x) offsetof(WebMChunkContext, x)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "chunk_start_index",  "start index of the chunk", OFFSET(chunk_start_index), AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, AV_OPT_FLAG_ENCODING_PARAM },
     { "header", "filename of the header where the initialization data will be written", OFFSET(header_filename), AV_OPT_TYPE_STRING, { 0 }, 0, 0, AV_OPT_FLAG_ENCODING_PARAM },
     { "audio_chunk_duration", "duration of each chunk in milliseconds", OFFSET(chunk_duration), AV_OPT_TYPE_INT, {.i64 = 5000}, 0, INT_MAX, AV_OPT_FLAG_ENCODING_PARAM },
@@ -243,20 +261,22 @@ static const AVOption options[] = {
 };
 
 #if CONFIG_WEBM_CHUNK_MUXER
-static const AVClass webm_chunk_class = {
+static const AVClass webm_chunk_class =
+{
     .class_name = "WebM Chunk Muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_webm_chunk_muxer = {
+AVOutputFormat ff_webm_chunk_muxer =
+{
     .name           = "webm_chunk",
     .long_name      = NULL_IF_CONFIG_SMALL("WebM Chunk Muxer"),
     .mime_type      = "video/webm",
     .extensions     = "chk",
     .flags          = AVFMT_NOFILE | AVFMT_GLOBALHEADER | AVFMT_NEEDNUMBER |
-                      AVFMT_TS_NONSTRICT,
+    AVFMT_TS_NONSTRICT,
     .priv_data_size = sizeof(WebMChunkContext),
     .write_header   = webm_chunk_write_header,
     .write_packet   = webm_chunk_write_packet,

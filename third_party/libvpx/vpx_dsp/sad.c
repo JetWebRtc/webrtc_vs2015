@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,17 +18,19 @@
 
 /* Sum the difference between every corresponding element of the buffers. */
 static INLINE unsigned int sad(const uint8_t *a, int a_stride, const uint8_t *b,
-                               int b_stride, int width, int height) {
-  int y, x;
-  unsigned int sad = 0;
+                               int b_stride, int width, int height)
+{
+    int y, x;
+    unsigned int sad = 0;
 
-  for (y = 0; y < height; y++) {
-    for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
 
-    a += a_stride;
-    b += b_stride;
-  }
-  return sad;
+        a += a_stride;
+        b += b_stride;
+    }
+    return sad;
 }
 
 #define sadMxN(m, n)                                                        \
@@ -138,35 +140,39 @@ sadMxNx4D(4, 4)
 /* clang-format on */
 
 #if CONFIG_VP9_HIGHBITDEPTH
-        static INLINE
-    unsigned int highbd_sad(const uint8_t *a8, int a_stride, const uint8_t *b8,
-                            int b_stride, int width, int height) {
-  int y, x;
-  unsigned int sad = 0;
-  const uint16_t *a = CONVERT_TO_SHORTPTR(a8);
-  const uint16_t *b = CONVERT_TO_SHORTPTR(b8);
-  for (y = 0; y < height; y++) {
-    for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
+static INLINE
+unsigned int highbd_sad(const uint8_t *a8, int a_stride, const uint8_t *b8,
+                        int b_stride, int width, int height)
+{
+    int y, x;
+    unsigned int sad = 0;
+    const uint16_t *a = CONVERT_TO_SHORTPTR(a8);
+    const uint16_t *b = CONVERT_TO_SHORTPTR(b8);
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
 
-    a += a_stride;
-    b += b_stride;
-  }
-  return sad;
+        a += a_stride;
+        b += b_stride;
+    }
+    return sad;
 }
 
 static INLINE unsigned int highbd_sadb(const uint8_t *a8, int a_stride,
                                        const uint16_t *b, int b_stride,
-                                       int width, int height) {
-  int y, x;
-  unsigned int sad = 0;
-  const uint16_t *a = CONVERT_TO_SHORTPTR(a8);
-  for (y = 0; y < height; y++) {
-    for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
+                                       int width, int height)
+{
+    int y, x;
+    unsigned int sad = 0;
+    const uint16_t *a = CONVERT_TO_SHORTPTR(a8);
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++) sad += abs(a[x] - b[x]);
 
-    a += a_stride;
-    b += b_stride;
-  }
-  return sad;
+        a += a_stride;
+        b += b_stride;
+    }
+    return sad;
 }
 
 #define highbd_sadMxN(m, n)                                                    \

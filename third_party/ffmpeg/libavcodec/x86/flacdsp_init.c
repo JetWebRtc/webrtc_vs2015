@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 James Almer
  *
  * This file is part of FFmpeg.
@@ -57,8 +57,10 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
     int cpu_flags = av_get_cpu_flags();
 
 #if CONFIG_FLAC_DECODER
-    if (EXTERNAL_SSE2(cpu_flags)) {
-        if (fmt == AV_SAMPLE_FMT_S16) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
+        if (fmt == AV_SAMPLE_FMT_S16)
+        {
             if (channels == 2)
                 c->decorrelate[0] = ff_flac_decorrelate_indep2_16_sse2;
             else if (channels == 4)
@@ -70,7 +72,9 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
             c->decorrelate[1] = ff_flac_decorrelate_ls_16_sse2;
             c->decorrelate[2] = ff_flac_decorrelate_rs_16_sse2;
             c->decorrelate[3] = ff_flac_decorrelate_ms_16_sse2;
-        } else if (fmt == AV_SAMPLE_FMT_S32) {
+        }
+        else if (fmt == AV_SAMPLE_FMT_S32)
+        {
             if (channels == 2)
                 c->decorrelate[0] = ff_flac_decorrelate_indep2_32_sse2;
             else if (channels == 4)
@@ -84,14 +88,19 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
             c->decorrelate[3] = ff_flac_decorrelate_ms_32_sse2;
         }
     }
-    if (EXTERNAL_SSE4(cpu_flags)) {
+    if (EXTERNAL_SSE4(cpu_flags))
+    {
         c->lpc32 = ff_flac_lpc_32_sse4;
     }
-    if (EXTERNAL_AVX(cpu_flags)) {
-        if (fmt == AV_SAMPLE_FMT_S16) {
+    if (EXTERNAL_AVX(cpu_flags))
+    {
+        if (fmt == AV_SAMPLE_FMT_S16)
+        {
             if (ARCH_X86_64 && channels == 8)
                 c->decorrelate[0] = ff_flac_decorrelate_indep8_16_avx;
-        } else if (fmt == AV_SAMPLE_FMT_S32) {
+        }
+        else if (fmt == AV_SAMPLE_FMT_S32)
+        {
             if (channels == 4)
                 c->decorrelate[0] = ff_flac_decorrelate_indep4_32_avx;
             else if (channels == 6)
@@ -100,13 +109,15 @@ av_cold void ff_flacdsp_init_x86(FLACDSPContext *c, enum AVSampleFormat fmt, int
                 c->decorrelate[0] = ff_flac_decorrelate_indep8_32_avx;
         }
     }
-    if (EXTERNAL_XOP(cpu_flags)) {
+    if (EXTERNAL_XOP(cpu_flags))
+    {
         c->lpc32 = ff_flac_lpc_32_xop;
     }
 #endif
 
 #if CONFIG_FLAC_ENCODER
-    if (EXTERNAL_SSE4(cpu_flags)) {
+    if (EXTERNAL_SSE4(cpu_flags))
+    {
         if (CONFIG_GPL)
             c->lpc16_encode = ff_flac_enc_lpc_16_sse4;
     }

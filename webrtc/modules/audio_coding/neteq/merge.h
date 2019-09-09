@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/modules/audio_coding/neteq/audio_multi_vector.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Forward declarations.
 class Expand;
@@ -31,71 +32,72 @@ class SyncBuffer;
 // if a later packet arrives instead, the loss is a fact, and the new data must
 // be stitched together with the end of the expanded data. This stitching is
 // what the Merge class does.
-class Merge {
- public:
-  Merge(int fs_hz,
-        size_t num_channels,
-        Expand* expand,
-        SyncBuffer* sync_buffer);
-  virtual ~Merge();
+class Merge
+{
+public:
+    Merge(int fs_hz,
+          size_t num_channels,
+          Expand* expand,
+          SyncBuffer* sync_buffer);
+    virtual ~Merge();
 
-  // The main method to produce the audio data. The decoded data is supplied in
-  // |input|, having |input_length| samples in total for all channels
-  // (interleaved). The result is written to |output|. The number of channels
-  // allocated in |output| defines the number of channels that will be used when
-  // de-interleaving |input|. The values in |external_mute_factor_array| (Q14)
-  // will be used to scale the audio, and is updated in the process. The array
-  // must have |num_channels_| elements.
-  virtual size_t Process(int16_t* input, size_t input_length,
-                         int16_t* external_mute_factor_array,
-                         AudioMultiVector* output);
+    // The main method to produce the audio data. The decoded data is supplied in
+    // |input|, having |input_length| samples in total for all channels
+    // (interleaved). The result is written to |output|. The number of channels
+    // allocated in |output| defines the number of channels that will be used when
+    // de-interleaving |input|. The values in |external_mute_factor_array| (Q14)
+    // will be used to scale the audio, and is updated in the process. The array
+    // must have |num_channels_| elements.
+    virtual size_t Process(int16_t* input, size_t input_length,
+                           int16_t* external_mute_factor_array,
+                           AudioMultiVector* output);
 
-  virtual size_t RequiredFutureSamples();
+    virtual size_t RequiredFutureSamples();
 
- protected:
-  const int fs_hz_;
-  const size_t num_channels_;
+protected:
+    const int fs_hz_;
+    const size_t num_channels_;
 
- private:
-  static const int kMaxSampleRate = 48000;
-  static const size_t kExpandDownsampLength = 100;
-  static const size_t kInputDownsampLength = 40;
-  static const size_t kMaxCorrelationLength = 60;
+private:
+    static const int kMaxSampleRate = 48000;
+    static const size_t kExpandDownsampLength = 100;
+    static const size_t kInputDownsampLength = 40;
+    static const size_t kMaxCorrelationLength = 60;
 
-  // Calls |expand_| to get more expansion data to merge with. The data is
-  // written to |expanded_signal_|. Returns the length of the expanded data,
-  // while |expand_period| will be the number of samples in one expansion period
-  // (typically one pitch period). The value of |old_length| will be the number
-  // of samples that were taken from the |sync_buffer_|.
-  size_t GetExpandedSignal(size_t* old_length, size_t* expand_period);
+    // Calls |expand_| to get more expansion data to merge with. The data is
+    // written to |expanded_signal_|. Returns the length of the expanded data,
+    // while |expand_period| will be the number of samples in one expansion period
+    // (typically one pitch period). The value of |old_length| will be the number
+    // of samples that were taken from the |sync_buffer_|.
+    size_t GetExpandedSignal(size_t* old_length, size_t* expand_period);
 
-  // Analyzes |input| and |expanded_signal| and returns muting factor (Q14) to
-  // be used on the new data.
-  int16_t SignalScaling(const int16_t* input, size_t input_length,
-                        const int16_t* expanded_signal) const;
+    // Analyzes |input| and |expanded_signal| and returns muting factor (Q14) to
+    // be used on the new data.
+    int16_t SignalScaling(const int16_t* input, size_t input_length,
+                          const int16_t* expanded_signal) const;
 
-  // Downsamples |input| (|input_length| samples) and |expanded_signal| to
-  // 4 kHz sample rate. The downsampled signals are written to
-  // |input_downsampled_| and |expanded_downsampled_|, respectively.
-  void Downsample(const int16_t* input, size_t input_length,
-                  const int16_t* expanded_signal, size_t expanded_length);
+    // Downsamples |input| (|input_length| samples) and |expanded_signal| to
+    // 4 kHz sample rate. The downsampled signals are written to
+    // |input_downsampled_| and |expanded_downsampled_|, respectively.
+    void Downsample(const int16_t* input, size_t input_length,
+                    const int16_t* expanded_signal, size_t expanded_length);
 
-  // Calculates cross-correlation between |input_downsampled_| and
-  // |expanded_downsampled_|, and finds the correlation maximum. The maximizing
-  // lag is returned.
-  size_t CorrelateAndPeakSearch(size_t start_position, size_t input_length,
-                                size_t expand_period) const;
+    // Calculates cross-correlation between |input_downsampled_| and
+    // |expanded_downsampled_|, and finds the correlation maximum. The maximizing
+    // lag is returned.
+    size_t CorrelateAndPeakSearch(size_t start_position, size_t input_length,
+                                  size_t expand_period) const;
 
-  const int fs_mult_;  // fs_hz_ / 8000.
-  const size_t timestamps_per_call_;
-  Expand* expand_;
-  SyncBuffer* sync_buffer_;
-  int16_t expanded_downsampled_[kExpandDownsampLength];
-  int16_t input_downsampled_[kInputDownsampLength];
-  AudioMultiVector expanded_;
-  std::vector<int16_t> temp_data_;
+    const int fs_mult_;  // fs_hz_ / 8000.
+    const size_t timestamps_per_call_;
+    Expand* expand_;
+    SyncBuffer* sync_buffer_;
+    int16_t expanded_downsampled_[kExpandDownsampLength];
+    int16_t input_downsampled_[kInputDownsampLength];
+    AudioMultiVector expanded_;
+    std::vector<int16_t> temp_data_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(Merge);
+    RTC_DISALLOW_COPY_AND_ASSIGN(Merge);
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * log functions
  * Copyright (c) 2003 Michel Bardiaux
  *
@@ -59,7 +59,8 @@ static int flags;
 #define NB_LEVELS 8
 #if defined(_WIN32) && !defined(__MINGW32CE__) && HAVE_SETCONSOLETEXTATTRIBUTE
 #include <windows.h>
-static const uint8_t color[16 + AV_CLASS_CATEGORY_NB] = {
+static const uint8_t color[16 + AV_CLASS_CATEGORY_NB] =
+{
     [AV_LOG_PANIC  /8] = 12,
     [AV_LOG_FATAL  /8] = 12,
     [AV_LOG_ERROR  /8] = 12,
@@ -91,7 +92,8 @@ static int16_t background, attr_orig;
 static HANDLE con;
 #else
 
-static const uint32_t color[16 + AV_CLASS_CATEGORY_NB] = {
+static const uint32_t color[16 + AV_CLASS_CATEGORY_NB] =
+{
     [AV_LOG_PANIC  /8] =  52 << 16 | 196 << 8 | 0x41,
     [AV_LOG_FATAL  /8] = 208 <<  8 | 0x41,
     [AV_LOG_ERROR  /8] = 196 <<  8 | 0x11,
@@ -129,7 +131,8 @@ static void check_color_terminal(void)
     con = GetStdHandle(STD_ERROR_HANDLE);
     use_color = (con != INVALID_HANDLE_VALUE) && !getenv("NO_COLOR") &&
                 !getenv("AV_LOG_FORCE_NOCOLOR");
-    if (use_color) {
+    if (use_color)
+    {
         GetConsoleScreenBufferInfo(con, &con_info);
         attr_orig  = con_info.wAttributes;
         background = attr_orig & 0xF0;
@@ -139,11 +142,11 @@ static void check_color_terminal(void)
     use_color = !getenv("NO_COLOR") && !getenv("AV_LOG_FORCE_NOCOLOR") &&
                 (getenv("TERM") && isatty(2) || getenv("AV_LOG_FORCE_COLOR"));
     if (   getenv("AV_LOG_FORCE_256COLOR")
-        || (term && strstr(term, "256color")))
+            || (term && strstr(term, "256color")))
         use_color *= 256;
 #else
     use_color = getenv("AV_LOG_FORCE_COLOR") && !getenv("NO_COLOR") &&
-               !getenv("AV_LOG_FORCE_NOCOLOR");
+                !getenv("AV_LOG_FORCE_NOCOLOR");
 #endif
 }
 
@@ -166,25 +169,31 @@ static void colored_fputs(int level, int tint, const char *str)
     if (local_use_color)
         SetConsoleTextAttribute(con, attr_orig);
 #else
-    if (local_use_color == 1) {
+    if (local_use_color == 1)
+    {
         fprintf(stderr,
                 "\033[%d;3%dm%s\033[0m",
                 (color[level] >> 4) & 15,
                 color[level] & 15,
                 str);
-    } else if (tint && use_color == 256) {
+    }
+    else if (tint && use_color == 256)
+    {
         fprintf(stderr,
                 "\033[48;5;%dm\033[38;5;%dm%s\033[0m",
                 (color[level] >> 16) & 0xff,
                 tint,
                 str);
-    } else if (local_use_color == 256) {
+    }
+    else if (local_use_color == 256)
+    {
         fprintf(stderr,
                 "\033[48;5;%dm\033[38;5;%dm%s\033[0m",
                 (color[level] >> 16) & 0xff,
                 (color[level] >> 8) & 0xff,
                 str);
-    } else
+    }
+    else
         fputs(str, stderr);
 #endif
 
@@ -200,20 +209,23 @@ AVClassCategory av_default_get_category(void *ptr)
     return (*(AVClass **) ptr)->category;
 }
 
-static void sanitize(uint8_t *line){
-    while(*line){
+static void sanitize(uint8_t *line)
+{
+    while(*line)
+    {
         if(*line < 0x08 || (*line > 0x0D && *line < 0x20))
             *line='?';
         line++;
     }
 }
 
-static int get_category(void *ptr){
+static int get_category(void *ptr)
+{
     AVClass *avc = *(AVClass **) ptr;
     if(    !avc
-        || (avc->version&0xFF)<100
-        ||  avc->version < (51 << 16 | 59 << 8)
-        ||  avc->category >= AV_CLASS_CATEGORY_NB) return AV_CLASS_CATEGORY_NA + 16;
+            || (avc->version&0xFF)<100
+            ||  avc->version < (51 << 16 | 59 << 8)
+            ||  avc->category >= AV_CLASS_CATEGORY_NB) return AV_CLASS_CATEGORY_NA + 16;
 
     if(avc->get_category)
         return avc->get_category(ptr) + 16;
@@ -223,7 +235,8 @@ static int get_category(void *ptr){
 
 static const char *get_level_str(int level)
 {
-    switch (level) {
+    switch (level)
+    {
     case AV_LOG_QUIET:
         return "quiet";
     case AV_LOG_DEBUG:
@@ -255,18 +268,21 @@ static void format_line(void *avcl, int level, const char *fmt, va_list vl,
     av_bprint_init(part+3, 0, 65536);
 
     if(type) type[0] = type[1] = AV_CLASS_CATEGORY_NA + 16;
-    if (*print_prefix && avc) {
-        if (avc->parent_log_context_offset) {
+    if (*print_prefix && avc)
+    {
+        if (avc->parent_log_context_offset)
+        {
             AVClass** parent = *(AVClass ***) (((uint8_t *) avcl) +
-                                   avc->parent_log_context_offset);
-            if (parent && *parent) {
+                                               avc->parent_log_context_offset);
+            if (parent && *parent)
+            {
                 av_bprintf(part+0, "[%s @ %p] ",
-                         (*parent)->item_name(parent), parent);
+                           (*parent)->item_name(parent), parent);
                 if(type) type[0] = get_category(parent);
             }
         }
         av_bprintf(part+1, "[%s @ %p] ",
-                 avc->item_name(avcl), avcl);
+                   avc->item_name(avcl), avcl);
         if(type) type[1] = get_category(avcl);
 
         if (flags & AV_LOG_PRINT_LEVEL)
@@ -275,7 +291,8 @@ static void format_line(void *avcl, int level, const char *fmt, va_list vl,
 
     av_vbprintf(part+3, fmt, vl);
 
-    if(*part[0].str || *part[1].str || *part[2].str || *part[3].str) {
+    if(*part[0].str || *part[1].str || *part[2].str || *part[3].str)
+    {
         char lastc = part[3].len && part[3].len <= part[3].size ? part[3].str[part[3].len - 1] : 0;
         *print_prefix = lastc == '\n' || lastc == '\r';
     }
@@ -301,7 +318,8 @@ void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
     int type[2];
     unsigned tint = 0;
 
-    if (level >= 0) {
+    if (level >= 0)
+    {
         tint = level & 0xff00;
         level &= 0xff;
     }
@@ -321,13 +339,15 @@ void av_log_default_callback(void* ptr, int level, const char* fmt, va_list vl)
 #endif
 
     if (print_prefix && (flags & AV_LOG_SKIP_REPEATED) && !strcmp(line, prev) &&
-        *line && line[strlen(line) - 1] != '\r'){
+            *line && line[strlen(line) - 1] != '\r')
+    {
         count++;
         if (is_atty == 1)
             fprintf(stderr, "    Last message repeated %d times\r", count);
         goto end;
     }
-    if (count > 0) {
+    if (count > 0)
+    {
         fprintf(stderr, "    Last message repeated %d times\n", count);
         count = 0;
     }
@@ -361,7 +381,7 @@ void av_log(void* avcl, int level, const char *fmt, ...)
     va_list vl;
     va_start(vl, fmt);
     if (avc && avc->version >= (50 << 16 | 15 << 8 | 2) &&
-        avc->log_level_offset_offset && level >= AV_LOG_FATAL)
+            avc->log_level_offset_offset && level >= AV_LOG_FATAL)
         level += *(int *) (((uint8_t *) avcl) + avc->log_level_offset_offset);
     av_vlog(avcl, level, fmt, vl);
     va_end(vl);
@@ -439,9 +459,11 @@ int main(int argc, char **argv)
 {
     int i;
     av_log_set_level(AV_LOG_DEBUG);
-    for (use_color=0; use_color<=256; use_color = 255*use_color+1) {
+    for (use_color=0; use_color<=256; use_color = 255*use_color+1)
+    {
         av_log(NULL, AV_LOG_FATAL, "use_color: %d\n", use_color);
-        for (i = AV_LOG_DEBUG; i>=AV_LOG_QUIET; i-=8) {
+        for (i = AV_LOG_DEBUG; i>=AV_LOG_QUIET; i-=8)
+        {
             av_log(NULL, i, " %d", i);
             av_log(NULL, AV_LOG_INFO, "e ");
             av_log(NULL, i + 256*123, "C%d", i);

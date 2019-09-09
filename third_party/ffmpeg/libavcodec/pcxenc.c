@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PC Paintbrush PCX (.pcx) image encoder
  * Copyright (c) 2009 Daniel Verkamp <daniel at drv.nu>
  *
@@ -36,10 +36,10 @@ static const uint32_t monoblack_pal[16] = { 0x000000, 0xFFFFFF };
 static av_cold int pcx_encode_init(AVCodecContext *avctx)
 {
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     return 0;
@@ -56,7 +56,7 @@ FF_ENABLE_DEPRECATION_WARNINGS
  * @bug will not work for nplanes != 1 && bpp != 8
  */
 static int pcx_rle_encode(      uint8_t *dst, int dst_size,
-                          const uint8_t *src, int src_plane_size, int nplanes)
+                                const uint8_t *src, int src_plane_size, int nplanes)
 {
     int p;
     const uint8_t *dst_start = dst;
@@ -65,18 +65,23 @@ static int pcx_rle_encode(      uint8_t *dst, int dst_size,
     if (dst_size < 2LL * src_plane_size * nplanes || src_plane_size <= 0)
         return AVERROR(EINVAL);
 
-    for (p = 0; p < nplanes; p++) {
+    for (p = 0; p < nplanes; p++)
+    {
         int count = 1;
         const uint8_t *src_plane = src + p;
         const uint8_t *src_plane_end = src_plane + src_plane_size * nplanes;
         uint8_t prev = *src_plane;
         src_plane += nplanes;
 
-        for (; ; src_plane += nplanes) {
-            if (src_plane < src_plane_end && *src_plane == prev && count < 0x3F) {
+        for (; ; src_plane += nplanes)
+        {
+            if (src_plane < src_plane_end && *src_plane == prev && count < 0x3F)
+            {
                 // current byte is same as prev
                 ++count;
-            } else {
+            }
+            else
+            {
                 // output prev * count
                 if (count != 1 || prev >= 0xC0)
                     *dst++ = 0xC0 | count;
@@ -106,12 +111,14 @@ static int pcx_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint32_t palette256[256];
     const uint8_t *src;
 
-    if (avctx->width > 65535 || avctx->height > 65535) {
+    if (avctx->width > 65535 || avctx->height > 65535)
+    {
         av_log(avctx, AV_LOG_ERROR, "image dimensions do not fit in 16 bits\n");
         return AVERROR(EINVAL);
     }
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_RGB24:
         bpp = 8;
         nplanes = 3;
@@ -176,9 +183,11 @@ static int pcx_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     src = frame->data[0];
 
-    for (y = 0; y < avctx->height; y++) {
+    for (y = 0; y < avctx->height; y++)
+    {
         if ((written = pcx_rle_encode(buf, buf_end - buf,
-                                      src, line_bytes, nplanes)) < 0) {
+                                      src, line_bytes, nplanes)) < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "buffer too small\n");
             return AVERROR_BUG;
         }
@@ -186,13 +195,16 @@ static int pcx_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         src += frame->linesize[0];
     }
 
-    if (nplanes == 1 && bpp == 8) {
-        if (buf_end - buf < 257) {
+    if (nplanes == 1 && bpp == 8)
+    {
+        if (buf_end - buf < 257)
+        {
             av_log(avctx, AV_LOG_ERROR, "buffer too small\n");
             return AVERROR_BUG;
         }
         bytestream_put_byte(&buf, 12);
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             bytestream_put_be24(&buf, pal[i]);
         }
     }
@@ -204,7 +216,8 @@ static int pcx_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     return 0;
 }
 
-AVCodec ff_pcx_encoder = {
+AVCodec ff_pcx_encoder =
+{
     .name           = "pcx",
     .long_name      = NULL_IF_CONFIG_SMALL("PC Paintbrush PCX image"),
     .type           = AVMEDIA_TYPE_VIDEO,

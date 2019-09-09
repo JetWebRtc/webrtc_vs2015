@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TwinVQ decoder
  * Copyright (c) 2009 Vitor Sessak
  *
@@ -29,7 +29,8 @@
 #include "twinvq.h"
 #include "twinvq_data.h"
 
-static const TwinVQModeTab mode_08_08 = {
+static const TwinVQModeTab mode_08_08 =
+{
     {
         { 8, bark_tab_s08_64,  10, tab.fcb08s, 1, 5, tab.cb0808s0, tab.cb0808s1, 18 },
         { 2, bark_tab_m08_256, 20, tab.fcb08m, 2, 5, tab.cb0808m0, tab.cb0808m1, 16 },
@@ -38,7 +39,8 @@ static const TwinVQModeTab mode_08_08 = {
     512, 12, tab.lsp08, 1, 5, 3, 3, tab.shape08, 8, 28, 20, 6, 40
 };
 
-static const TwinVQModeTab mode_11_08 = {
+static const TwinVQModeTab mode_11_08 =
+{
     {
         { 8, bark_tab_s11_64,  10, tab.fcb11s, 1, 5, tab.cb1108s0, tab.cb1108s1, 29 },
         { 2, bark_tab_m11_256, 20, tab.fcb11m, 2, 5, tab.cb1108m0, tab.cb1108m1, 24 },
@@ -47,7 +49,8 @@ static const TwinVQModeTab mode_11_08 = {
     512, 16, tab.lsp11, 1, 6, 4, 3, tab.shape11, 9, 36, 30, 7, 90
 };
 
-static const TwinVQModeTab mode_11_10 = {
+static const TwinVQModeTab mode_11_10 =
+{
     {
         { 8, bark_tab_s11_64,  10, tab.fcb11s, 1, 5, tab.cb1110s0, tab.cb1110s1, 21 },
         { 2, bark_tab_m11_256, 20, tab.fcb11m, 2, 5, tab.cb1110m0, tab.cb1110m1, 18 },
@@ -56,7 +59,8 @@ static const TwinVQModeTab mode_11_10 = {
     512, 16, tab.lsp11, 1, 6, 4, 3, tab.shape11, 9, 36, 30, 7, 90
 };
 
-static const TwinVQModeTab mode_16_16 = {
+static const TwinVQModeTab mode_16_16 =
+{
     {
         { 8, bark_tab_s16_128,  10, tab.fcb16s, 1, 5, tab.cb1616s0, tab.cb1616s1, 16 },
         { 2, bark_tab_m16_512,  20, tab.fcb16m, 2, 5, tab.cb1616m0, tab.cb1616m1, 15 },
@@ -65,7 +69,8 @@ static const TwinVQModeTab mode_16_16 = {
     1024, 16, tab.lsp16, 1, 6, 4, 3, tab.shape16, 9, 56, 60, 7, 180
 };
 
-static const TwinVQModeTab mode_22_20 = {
+static const TwinVQModeTab mode_22_20 =
+{
     {
         { 8, bark_tab_s22_128,  10, tab.fcb22s_1, 1, 6, tab.cb2220s0, tab.cb2220s1, 18 },
         { 2, bark_tab_m22_512,  20, tab.fcb22m_1, 2, 6, tab.cb2220m0, tab.cb2220m1, 17 },
@@ -74,7 +79,8 @@ static const TwinVQModeTab mode_22_20 = {
     1024, 16, tab.lsp22_1, 1, 6, 4, 3, tab.shape22_1, 9, 56, 36, 7, 144
 };
 
-static const TwinVQModeTab mode_22_24 = {
+static const TwinVQModeTab mode_22_24 =
+{
     {
         { 8, bark_tab_s22_128,  10, tab.fcb22s_1, 1, 6, tab.cb2224s0, tab.cb2224s1, 15 },
         { 2, bark_tab_m22_512,  20, tab.fcb22m_1, 2, 6, tab.cb2224m0, tab.cb2224m1, 14 },
@@ -83,7 +89,8 @@ static const TwinVQModeTab mode_22_24 = {
     1024, 16, tab.lsp22_1, 1, 6, 4, 3, tab.shape22_1, 9, 56, 36, 7, 144
 };
 
-static const TwinVQModeTab mode_22_32 = {
+static const TwinVQModeTab mode_22_32 =
+{
     {
         { 4, bark_tab_s22_128, 10, tab.fcb22s_2, 1, 6, tab.cb2232s0, tab.cb2232s1, 11 },
         { 2, bark_tab_m22_256, 20, tab.fcb22m_2, 2, 6, tab.cb2232m0, tab.cb2232m1, 11 },
@@ -92,7 +99,8 @@ static const TwinVQModeTab mode_22_32 = {
     512, 16, tab.lsp22_2, 1, 6, 4, 4, tab.shape22_2, 9, 56, 36, 7, 72
 };
 
-static const TwinVQModeTab mode_44_40 = {
+static const TwinVQModeTab mode_44_40 =
+{
     {
         { 16, bark_tab_s44_128,  10, tab.fcb44s, 1, 6, tab.cb4440s0, tab.cb4440s1, 18 },
         { 4,  bark_tab_m44_512,  20, tab.fcb44m, 2, 6, tab.cb4440m0, tab.cb4440m1, 17 },
@@ -101,7 +109,8 @@ static const TwinVQModeTab mode_44_40 = {
     2048, 20, tab.lsp44, 1, 6, 4, 4, tab.shape44, 9, 84, 54, 7, 432
 };
 
-static const TwinVQModeTab mode_44_48 = {
+static const TwinVQModeTab mode_44_48 =
+{
     {
         { 16, bark_tab_s44_128,  10, tab.fcb44s, 1, 6, tab.cb4448s0, tab.cb4448s1, 15 },
         { 4,  bark_tab_m44_512,  20, tab.fcb44m, 2, 6, tab.cb4448m0, tab.cb4448m1, 14 },
@@ -163,7 +172,8 @@ static void add_peak(int period, int width, const float *shape,
     for (i = 0; i < width / 2; i++)
         speech[i] += ppc_gain * *shape++;
 
-    for (i = 1; i < ROUNDED_DIV(len, width); i++) {
+    for (i = 1; i < ROUNDED_DIV(len, width); i++)
+    {
         center = very_broken_op(period, i);
         for (j = -width / 2; j < (width + 1) / 2; j++)
             speech[j + center] += ppc_gain * *shape++;
@@ -187,7 +197,7 @@ static void decode_ppc(TwinVQContext *tctx, int period_coef, int g_coef,
     float pgain_step = 25000.0 / ((1 << mtab->pgain_bit) - 1);
     float ppc_gain   = 1.0 / 8192 *
                        twinvq_mulawinv(pgain_step * g_coef +
-                                           pgain_step / 2,
+                                       pgain_step / 2,
                                        25000.0, TWINVQ_PGAIN_MU);
 
     // This is actually the period multiplied by 400. It is just linearly coded
@@ -197,11 +207,13 @@ static void decode_ppc(TwinVQContext *tctx, int period_coef, int g_coef,
                              (1 << mtab->ppc_period_bit) - 1);
     int width;
 
-    if (isampf == 22 && ibps == 32) {
+    if (isampf == 22 && ibps == 32)
+    {
         // For some unknown reason, NTT decided to code this case differently...
         width = ROUNDED_DIV((period + 800) * mtab->peak_per2wid,
                             400 * mtab->size);
-    } else
+    }
+    else
         width = period * mtab->peak_per2wid / (400 * mtab->size);
 
     add_peak(period, width, shape, ppc_gain, speech, mtab->ppc_shape_len);
@@ -214,17 +226,21 @@ static void dec_bark_env(TwinVQContext *tctx, const uint8_t *in, int use_hist,
     const TwinVQModeTab *mtab = tctx->mtab;
     int i, j;
     float *hist     = tctx->bark_hist[ftype][ch];
-    float val       = ((const float []) { 0.4, 0.35, 0.28 })[ftype];
+    float val       = ((const float [])
+    {
+        0.4, 0.35, 0.28
+    })[ftype];
     int bark_n_coef = mtab->fmode[ftype].bark_n_coef;
     int fw_cb_len   = mtab->fmode[ftype].bark_env_size / bark_n_coef;
     int idx         = 0;
 
     for (i = 0; i < fw_cb_len; i++)
-        for (j = 0; j < bark_n_coef; j++, idx++) {
+        for (j = 0; j < bark_n_coef; j++, idx++)
+        {
             float tmp2 = mtab->fmode[ftype].bark_cb[fw_cb_len * in[j] + i] *
-                         (1.0 / 4096);
+            (1.0 / 4096);
             float st   = use_hist ? (1.0 - val) * tmp2 + val * hist[idx] + 1.0
-                                  : tmp2 + 1.0;
+            : tmp2 + 1.0;
 
             hist[idx] = tmp2;
             if (st < -1.0)
@@ -240,7 +256,8 @@ static void read_cb_data(TwinVQContext *tctx, GetBitContext *gb,
 {
     int i;
 
-    for (i = 0; i < tctx->n_div[ftype]; i++) {
+    for (i = 0; i < tctx->n_div[ftype]; i++)
+    {
         int bs_second_part = (i >= tctx->bits_main_spec_change[ftype]);
 
         *dst++ = get_bits(gb, tctx->bits_main_spec[0][ftype][bs_second_part]);
@@ -264,7 +281,8 @@ static int twinvq_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
 
     bits->window_type = get_bits(&gb, TWINVQ_WINDOW_TYPE_BITS);
 
-    if (bits->window_type > 8) {
+    if (bits->window_type > 8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid window type, broken sample?\n");
         return AVERROR_INVALIDDATA;
     }
@@ -285,19 +303,24 @@ static int twinvq_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
         for (j = 0; j < sub; j++)
             bits->bark_use_hist[i][j] = get_bits1(&gb);
 
-    if (bits->ftype == TWINVQ_FT_LONG) {
+    if (bits->ftype == TWINVQ_FT_LONG)
+    {
         for (i = 0; i < channels; i++)
             bits->gain_bits[i] = get_bits(&gb, TWINVQ_GAIN_BITS);
-    } else {
-        for (i = 0; i < channels; i++) {
+    }
+    else
+    {
+        for (i = 0; i < channels; i++)
+        {
             bits->gain_bits[i] = get_bits(&gb, TWINVQ_GAIN_BITS);
             for (j = 0; j < sub; j++)
                 bits->sub_gain_bits[i * sub + j] = get_bits(&gb,
-                                                       TWINVQ_SUB_GAIN_BITS);
+                                                   TWINVQ_SUB_GAIN_BITS);
         }
     }
 
-    for (i = 0; i < channels; i++) {
+    for (i = 0; i < channels; i++)
+    {
         bits->lpc_hist_idx[i] = get_bits(&gb, mtab->lsp_bit0);
         bits->lpc_idx1[i]     = get_bits(&gb, mtab->lsp_bit1);
 
@@ -305,9 +328,11 @@ static int twinvq_read_bitstream(AVCodecContext *avctx, TwinVQContext *tctx,
             bits->lpc_idx2[i][j] = get_bits(&gb, mtab->lsp_bit2);
     }
 
-    if (bits->ftype == TWINVQ_FT_LONG) {
+    if (bits->ftype == TWINVQ_FT_LONG)
+    {
         read_cb_data(tctx, &gb, bits->ppc_coeffs, 3);
-        for (i = 0; i < channels; i++) {
+        for (i = 0; i < channels; i++)
+        {
             bits->p_coef[i] = get_bits(&gb, mtab->ppc_period_bit);
             bits->g_coef[i] = get_bits(&gb, mtab->pgain_bit);
         }
@@ -321,7 +346,8 @@ static av_cold int twinvq_decode_init(AVCodecContext *avctx)
     int isampf, ibps;
     TwinVQContext *tctx = avctx->priv_data;
 
-    if (!avctx->extradata || avctx->extradata_size < 12) {
+    if (!avctx->extradata || avctx->extradata_size < 12)
+    {
         av_log(avctx, AV_LOG_ERROR, "Missing or incomplete extradata\n");
         return AVERROR_INVALIDDATA;
     }
@@ -329,11 +355,13 @@ static av_cold int twinvq_decode_init(AVCodecContext *avctx)
     avctx->bit_rate = AV_RB32(avctx->extradata + 4) * 1000;
     isampf          = AV_RB32(avctx->extradata + 8);
 
-    if (isampf < 8 || isampf > 44) {
+    if (isampf < 8 || isampf > 44)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported sample rate\n");
         return AVERROR_INVALIDDATA;
     }
-    switch (isampf) {
+    switch (isampf)
+    {
     case 44:
         avctx->sample_rate = 44100;
         break;
@@ -348,21 +376,24 @@ static av_cold int twinvq_decode_init(AVCodecContext *avctx)
         break;
     }
 
-    if (avctx->channels <= 0 || avctx->channels > TWINVQ_CHANNELS_MAX) {
+    if (avctx->channels <= 0 || avctx->channels > TWINVQ_CHANNELS_MAX)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported number of channels: %i\n",
                avctx->channels);
         return -1;
     }
     avctx->channel_layout = avctx->channels == 1 ? AV_CH_LAYOUT_MONO
-                                                 : AV_CH_LAYOUT_STEREO;
+                            : AV_CH_LAYOUT_STEREO;
 
     ibps = avctx->bit_rate / (1000 * avctx->channels);
-    if (ibps < 8 || ibps > 48) {
+    if (ibps < 8 || ibps > 48)
+    {
         av_log(avctx, AV_LOG_ERROR, "Bad bitrate per channel value %d\n", ibps);
         return AVERROR_INVALIDDATA;
     }
 
-    switch ((isampf << 8) + ibps) {
+    switch ((isampf << 8) + ibps)
+    {
     case (8 << 8) + 8:
         tctx->mtab = &mode_08_08;
         break;
@@ -402,9 +433,10 @@ static av_cold int twinvq_decode_init(AVCodecContext *avctx)
     tctx->dec_bark_env   = dec_bark_env;
     tctx->decode_ppc     = decode_ppc;
     tctx->frame_size     = avctx->bit_rate * tctx->mtab->size
-                                           / avctx->sample_rate + 8;
+                           / avctx->sample_rate + 8;
     tctx->is_6kbps       = 0;
-    if (avctx->block_align && avctx->block_align * 8 / tctx->frame_size > 1) {
+    if (avctx->block_align && avctx->block_align * 8 / tctx->frame_size > 1)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "VQF TwinVQ should have only one frame per packet\n");
         return AVERROR_INVALIDDATA;
@@ -413,7 +445,8 @@ static av_cold int twinvq_decode_init(AVCodecContext *avctx)
     return ff_twinvq_decode_init(avctx);
 }
 
-AVCodec ff_twinvq_decoder = {
+AVCodec ff_twinvq_decoder =
+{
     .name           = "twinvq",
     .long_name      = NULL_IF_CONFIG_SMALL("VQF TwinVQ"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -423,6 +456,8 @@ AVCodec ff_twinvq_decoder = {
     .close          = ff_twinvq_decode_close,
     .decode         = ff_twinvq_decode_frame,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLTP,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
 };

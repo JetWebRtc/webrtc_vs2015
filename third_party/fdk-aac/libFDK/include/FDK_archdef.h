@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -92,7 +92,7 @@ amm-info@iis.fraunhofer.de
 #define __ARCH_H__
 
 /* Performance / Quality profile selector */
-  #define FDK_HIGH_PERFORMANCE
+#define FDK_HIGH_PERFORMANCE
 
 /* Unify some few toolchain specific defines to avoid having large "or" macro contraptions all over the source code. */
 
@@ -222,7 +222,7 @@ amm-info@iis.fraunhofer.de
 
 #else
 
-  #warning  >>>> Please set architecture characterization defines for your platform (FDK_HIGH_PERFORMANCE)! <<<<
+#warning  >>>> Please set architecture characterization defines for your platform (FDK_HIGH_PERFORMANCE)! <<<<
 
 #endif /* Architecture switches */
 
@@ -236,26 +236,26 @@ amm-info@iis.fraunhofer.de
 
 
 #ifdef SINETABLE_16BIT
-  #define FIXP_STB FIXP_SGL     /* STB sinus Tab used in transformation */
-  #define FIXP_STP FIXP_SPK
-  #define STC(a) (FX_DBL2FXCONST_SGL(a))
+#define FIXP_STB FIXP_SGL     /* STB sinus Tab used in transformation */
+#define FIXP_STP FIXP_SPK
+#define STC(a) (FX_DBL2FXCONST_SGL(a))
 #else
-  #define FIXP_STB FIXP_DBL
-  #define FIXP_STP FIXP_DPK
-  #define STC(a) ((FIXP_DBL)(LONG)(a))
+#define FIXP_STB FIXP_DBL
+#define FIXP_STP FIXP_DPK
+#define STC(a) ((FIXP_DBL)(LONG)(a))
 #endif /* defined(SINETABLE_16BIT) */
 
 #define STCP(cos,sin) { { STC(cos), STC(sin) } }
 
 
 #ifdef WINDOWTABLE_16BIT
-  #define FIXP_WTB FIXP_SGL /* single FIXP_SGL values */
-  #define FIXP_WTP FIXP_SPK /* packed FIXP_SGL values */
-  #define WTC(a) FX_DBL2FXCONST_SGL(a)
+#define FIXP_WTB FIXP_SGL /* single FIXP_SGL values */
+#define FIXP_WTP FIXP_SPK /* packed FIXP_SGL values */
+#define WTC(a) FX_DBL2FXCONST_SGL(a)
 #else /* SINETABLE_16BIT */
-  #define FIXP_WTB FIXP_DBL
-  #define FIXP_WTP FIXP_DPK
-  #define WTC(a) (FIXP_DBL)(a)
+#define FIXP_WTB FIXP_DBL
+#define FIXP_WTP FIXP_DPK
+#define WTC(a) (FIXP_DBL)(a)
 #endif /* SINETABLE_16BIT */
 
 #define WTCP(a,b) { { WTC(a), WTC(b) } }

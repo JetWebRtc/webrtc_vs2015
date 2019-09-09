@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,11 +11,12 @@
 #ifndef WEBRTC_MODULES_AUDIO_CODING_TEST_ACMTEST_H_
 #define WEBRTC_MODULES_AUDIO_CODING_TEST_ACMTEST_H_
 
-class ACMTest {
- public:
-  ACMTest() {}
-  virtual ~ACMTest() {}
-  virtual void Perform() = 0;
+class ACMTest
+{
+public:
+    ACMTest() {}
+    virtual ~ACMTest() {}
+    virtual void Perform() = 0;
 };
 
 #endif  // WEBRTC_MODULES_AUDIO_CODING_TEST_ACMTEST_H_

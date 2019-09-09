@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -35,6 +35,6 @@ bool WebRtcIlbcfix_DecodeResidual(
     int16_t* decresidual,      /* (o) decoded residual frame */
     int16_t* syntdenum         /* (i) the decoded synthesis filter
                                                          coefficients */
-    ) WARN_UNUSED_RESULT;
+) WARN_UNUSED_RESULT;
 
 #endif

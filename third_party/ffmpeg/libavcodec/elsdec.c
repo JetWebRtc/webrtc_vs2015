@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ELS (Entropy Logarithmic-Scale) decoder
  *
  * Copyright (c) 2013 Maxim Poliakovski
@@ -40,12 +40,14 @@
 #define RUNG_SPACE          (64 * sizeof(ElsRungNode))
 
 /* ELS coder tables. */
-static const struct Ladder {
+static const struct Ladder
+{
     int8_t  AMps;
     int8_t  ALps;
     uint8_t next0;
     uint8_t next1;
-} Ladder[174] = {
+} Ladder[174] =
+{
     { -6,   -5,   2,   1 },
     { -2,  -12,   3,   6 },
     { -2,  -12,   4,   6 },
@@ -222,25 +224,26 @@ static const struct Ladder {
     { -6,   -5, 173, 173 },
 };
 
-static const uint32_t els_exp_tab[ELS_JOTS_PER_BYTE * 4 + 1] = {
-           0,        0,       0,       0,       0,       0,         0,        0,
-           0,        0,       0,       0,       0,       0,         0,        0,
-           0,        0,       0,       0,       0,       0,         0,        0,
-           0,        0,       0,       0,       0,       0,         0,        0,
-           0,        0,       0,       0,       1,       1,         1,        1,
-           1,        2,       2,       2,       3,       4,         4,        5,
-           6,        7,       8,      10,      11,      13,        16,       18,
-          21,       25,      29,      34,      40,      47,        54,       64,
-          74,       87,     101,     118,     138,      161,      188,      219,
-         256,      298,     348,     406,     474,      552,      645,      752,
-         877,     1024,    1194,    1393,    1625,     1896,     2211,     2580,
-        3010,     3511,    4096,    4778,    5573,     6501,     7584,     8847,
-       10321,    12040,   14045,   16384,   19112,    22295,    26007,    30339,
-       35391,    41285,   48160,   56180,   65536,    76288,    89088,   103936,
-      121344,   141312,  165120,  192512,  224512,   262144,   305664,   356608,
-      416000,   485376,  566016,  660480,  770560,   898816,  1048576,  1223168,
-     1426688,  1664256, 1941504, 2264832, 2642176,  3082240,  3595520,  4194304,
-     4892672,  5707520, 6657792, 7766784, 9060096, 10568960, 12328960, 14382080,
+static const uint32_t els_exp_tab[ELS_JOTS_PER_BYTE * 4 + 1] =
+{
+    0,        0,       0,       0,       0,       0,         0,        0,
+    0,        0,       0,       0,       0,       0,         0,        0,
+    0,        0,       0,       0,       0,       0,         0,        0,
+    0,        0,       0,       0,       0,       0,         0,        0,
+    0,        0,       0,       0,       1,       1,         1,        1,
+    1,        2,       2,       2,       3,       4,         4,        5,
+    6,        7,       8,      10,      11,      13,        16,       18,
+    21,       25,      29,      34,      40,      47,        54,       64,
+    74,       87,     101,     118,     138,      161,      188,      219,
+    256,      298,     348,     406,     474,      552,      645,      752,
+    877,     1024,    1194,    1393,    1625,     1896,     2211,     2580,
+    3010,     3511,    4096,    4778,    5573,     6501,     7584,     8847,
+    10321,    12040,   14045,   16384,   19112,    22295,    26007,    30339,
+    35391,    41285,   48160,   56180,   65536,    76288,    89088,   103936,
+    121344,   141312,  165120,  192512,  224512,   262144,   305664,   356608,
+    416000,   485376,  566016,  660480,  770560,   898816,  1048576,  1223168,
+    1426688,  1664256, 1941504, 2264832, 2642176,  3082240,  3595520,  4194304,
+    4892672,  5707520, 6657792, 7766784, 9060096, 10568960, 12328960, 14382080,
     16777216,
 };
 
@@ -249,13 +252,18 @@ void ff_els_decoder_init(ElsDecCtx *ctx, const uint8_t *in, size_t data_size)
     int nbytes;
 
     /* consume up to 3 bytes from the input data */
-    if (data_size >= 3) {
+    if (data_size >= 3)
+    {
         ctx->x = AV_RB24(in);
         nbytes = 3;
-    } else if (data_size == 2) {
+    }
+    else if (data_size == 2)
+    {
         ctx->x = AV_RB16(in);
         nbytes = 2;
-    } else {
+    }
+    else
+    {
         ctx->x = *in;
         nbytes = 1;
     }
@@ -276,7 +284,8 @@ void ff_els_decoder_uninit(ElsUnsignedRung *rung)
 
 static int els_import_byte(ElsDecCtx *ctx)
 {
-    if (!ctx->data_size) {
+    if (!ctx->data_size)
+    {
         ctx->err = AVERROR_EOF;
         return AVERROR_EOF;
     }
@@ -302,12 +311,14 @@ int ff_els_decode_bit(ElsDecCtx *ctx, uint8_t *rung)
     if (ctx->diff > 0)
         return *rung & 1;   /* shortcut for x < t > pAllowable[j - 1] */
 
-    if (ctx->t > ctx->x) {  /* decode most probable symbol (MPS) */
+    if (ctx->t > ctx->x)    /* decode most probable symbol (MPS) */
+    {
         ctx->j += Ladder[*rung].AMps;
         while (ctx->t > pAllowable[ctx->j])
             ctx->j++;
 
-        if (ctx->j <= 0) { /* MPS: import one byte from bytestream. */
+        if (ctx->j <= 0)   /* MPS: import one byte from bytestream. */
+        {
             ret = els_import_byte(ctx);
             if (ret < 0)
                 return ret;
@@ -316,18 +327,22 @@ int ff_els_decode_bit(ElsDecCtx *ctx, uint8_t *rung)
         z     = ctx->t;
         bit   = *rung & 1;
         *rung = Ladder[*rung].next0;
-    } else { /* decode less probable symbol (LPS) */
+    }
+    else     /* decode less probable symbol (LPS) */
+    {
         ctx->x -= ctx->t;
         ctx->t  = z;
 
         ctx->j += Ladder[*rung].ALps;
-        if (ctx->j <= 0) {
+        if (ctx->j <= 0)
+        {
             /* LPS: import one byte from bytestream. */
             z <<= 8;
             ret = els_import_byte(ctx);
             if (ret < 0)
                 return ret;
-            if (ctx->j <= 0) {
+            if (ctx->j <= 0)
+            {
                 /* LPS: import second byte from bytestream. */
                 z <<= 8;
                 ret = els_import_byte(ctx);
@@ -361,7 +376,8 @@ unsigned ff_els_decode_unsigned(ElsDecCtx *ctx, ElsUnsignedRung *ur)
             break;
 
     /* handle the error/overflow case */
-    if (ctx->err || n >= ELS_EXPGOLOMB_LEN) {
+    if (ctx->err || n >= ELS_EXPGOLOMB_LEN)
+    {
         ctx->err = AVERROR_INVALIDDATA;
         return 0;
     }
@@ -371,9 +387,11 @@ unsigned ff_els_decode_unsigned(ElsDecCtx *ctx, ElsUnsignedRung *ur)
         return 0;
 
     /* initialize probability tree */
-    if (!ur->rem_rung_list) {
+    if (!ur->rem_rung_list)
+    {
         ur->rem_rung_list = av_realloc(NULL, RUNG_SPACE);
-        if (!ur->rem_rung_list) {
+        if (!ur->rem_rung_list)
+        {
             ctx->err = AVERROR(ENOMEM);
             return 0;
         }
@@ -383,18 +401,23 @@ unsigned ff_els_decode_unsigned(ElsDecCtx *ctx, ElsUnsignedRung *ur)
     }
 
     /* decode the remainder */
-    for (i = 0, r = 0, bit = 0; i < n; i++) {
+    for (i = 0, r = 0, bit = 0; i < n; i++)
+    {
         if (!i)
             rung_node = &ur->rem_rung_list[n];
-        else {
-            if (!rung_node->next_index) {
-                if (ur->rung_list_size <= (ur->avail_index + 2) * sizeof(ElsRungNode)) {
+        else
+        {
+            if (!rung_node->next_index)
+            {
+                if (ur->rung_list_size <= (ur->avail_index + 2) * sizeof(ElsRungNode))
+                {
                     // remember rung_node position
                     ptrdiff_t pos     = rung_node - ur->rem_rung_list;
                     ur->rem_rung_list = av_realloc(ur->rem_rung_list,
                                                    ur->rung_list_size +
                                                    RUNG_SPACE);
-                    if (!ur->rem_rung_list) {
+                    if (!ur->rem_rung_list)
+                    {
                         av_free(ur->rem_rung_list);
                         ctx->err = AVERROR(ENOMEM);
                         return 0;

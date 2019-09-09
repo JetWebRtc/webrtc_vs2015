@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -70,7 +70,7 @@ static void sbr_qmf_pre_shuffle_mips(float *z)
     /* loop unrolled 5 times */
     __asm__ volatile (
         "lui    %[Temp6],   0x8000                  \n\t"
-    "1:                                             \n\t"
+        "1:                                             \n\t"
         "lw     %[Temp1],   0(%[z2])                \n\t"
         "lw     %[Temp2],   4(%[z2])                \n\t"
         "lw     %[Temp3],   8(%[z2])                \n\t"
@@ -111,9 +111,9 @@ static void sbr_qmf_pre_shuffle_mips(float *z)
         "sw     %[Temp4],   260(%[z])               \n\t"
 
         : [Temp1]"=&r"(Temp1), [Temp2]"=&r"(Temp2),
-          [Temp3]"=&r"(Temp3), [Temp4]"=&r"(Temp4),
-          [Temp5]"=&r"(Temp5), [Temp6]"=&r"(Temp6),
-          [z1]"+r"(z1), [z2]"+r"(z2), [z3]"+r"(z3)
+        [Temp3]"=&r"(Temp3), [Temp4]"=&r"(Temp4),
+        [Temp5]"=&r"(Temp5), [Temp6]"=&r"(Temp6),
+        [z1]"+r"(z1), [z2]"+r"(z2), [z3]"+r"(z3)
         : [z4]"r"(z4), [z]"r"(z)
         : "memory"
     );
@@ -127,10 +127,10 @@ static void sbr_qmf_post_shuffle_mips(float W[32][2], const float *z)
     float *z2    = (float *)&z[60];
     float *z_end = z1 + 32;
 
-     /* loop unrolled 4 times */
+    /* loop unrolled 4 times */
     __asm__ volatile (
         "lui    %[Temp5],   0x8000                  \n\t"
-    "1:                                             \n\t"
+        "1:                                             \n\t"
         "lw     %[Temp1],   0(%[z2])                \n\t"
         "lw     %[Temp2],   4(%[z2])                \n\t"
         "lw     %[Temp3],   8(%[z2])                \n\t"
@@ -157,9 +157,9 @@ static void sbr_qmf_post_shuffle_mips(float W[32][2], const float *z)
         "bne    %[z1],      %[z_end],   1b          \n\t"
 
         : [Temp1]"=&r"(Temp1), [Temp2]"=&r"(Temp2),
-          [Temp3]"=&r"(Temp3), [Temp4]"=&r"(Temp4),
-          [Temp5]"=&r"(Temp5), [z1]"+r"(z1),
-          [z2]"+r"(z2), [W_ptr]"+r"(W_ptr)
+        [Temp3]"=&r"(Temp3), [Temp4]"=&r"(Temp4),
+        [Temp5]"=&r"(Temp5), [z1]"+r"(z1),
+        [z2]"+r"(z2), [W_ptr]"+r"(W_ptr)
         : [z_end]"r"(z_end)
         : "memory"
     );
@@ -171,11 +171,12 @@ static void sbr_sum64x5_mips(float *z)
     int k;
     float *z1;
     float f1, f2, f3, f4, f5, f6, f7, f8;
-    for (k = 0; k < 64; k += 8) {
+    for (k = 0; k < 64; k += 8)
+    {
 
         z1 = &z[k];
 
-         /* loop unrolled 8 times */
+        /* loop unrolled 8 times */
         __asm__ volatile (
             "lwc1   $f0,    0(%[z1])        \n\t"
             "lwc1   $f1,    256(%[z1])      \n\t"
@@ -259,13 +260,13 @@ static void sbr_sum64x5_mips(float *z)
             "swc1   %[f8],  28(%[z1])       \n\t"
 
             : [f1]"=&f"(f1), [f2]"=&f"(f2), [f3]"=&f"(f3),
-              [f4]"=&f"(f4), [f5]"=&f"(f5), [f6]"=&f"(f6),
-              [f7]"=&f"(f7), [f8]"=&f"(f8)
+            [f4]"=&f"(f4), [f5]"=&f"(f5), [f6]"=&f"(f6),
+            [f7]"=&f"(f7), [f8]"=&f"(f8)
             : [z1]"r"(z1)
             : "$f0", "$f1", "$f2", "$f3", "$f4", "$f5",
-              "$f6", "$f7", "$f8", "$f9", "$f10", "$f11",
-              "$f12", "$f13", "$f14", "$f15",
-              "memory"
+            "$f6", "$f7", "$f8", "$f9", "$f10", "$f11",
+            "$f12", "$f13", "$f14", "$f15",
+            "memory"
         );
     }
 }
@@ -286,7 +287,7 @@ static float sbr_sum_square_mips(float (*x)[2], int n)
         "lwc1      %[temp1],   4(%[p_x])                            \n\t"
         "lwc1      %[temp2],   8(%[p_x])                            \n\t"
         "lwc1      %[temp3],   12(%[p_x])                           \n\t"
-    "1:                                                             \n\t"
+        "1:                                                             \n\t"
         PTR_ADDIU "%[p_x],     %[p_x],       16                     \n\t"
         "madd.s    %[sum0],    %[sum0],      %[temp0],   %[temp0]   \n\t"
         "lwc1      %[temp0],   0(%[p_x])                            \n\t"
@@ -304,8 +305,8 @@ static float sbr_sum_square_mips(float (*x)[2], int n)
         ".set      pop                                              \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-          [temp3]"=&f"(temp3), [sum0]"+f"(sum0), [sum1]"+f"(sum1),
-          [p_x]"+r"(p_x)
+        [temp3]"=&f"(temp3), [sum0]"+f"(sum0), [sum1]"+f"(sum1),
+        [p_x]"+r"(p_x)
         : [loop_end]"r"(loop_end)
         : "memory"
     );
@@ -322,9 +323,10 @@ static void sbr_qmf_deint_bfly_mips(float *v, const float *src0, const float *sr
     float *psrc0 = (float*)src0;
     float *psrc1 = (float*)&src1[63];
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
 
-         /* loop unrolled 16 times */
+        /* loop unrolled 16 times */
         __asm__ volatile(
             "lwc1       %[temp0],   0(%[src0])             \n\t"
             "lwc1       %[temp1],   0(%[src1])             \n\t"
@@ -428,10 +430,10 @@ static void sbr_qmf_deint_bfly_mips(float *v, const float *src0, const float *sr
             PTR_ADDIU " %[v1],      %[v1],      -64        \n\t"
 
             : [v0]"+r"(v0), [v1]"+r"(v1), [src0]"+r"(psrc0), [src1]"+r"(psrc1),
-              [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-              [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11)
+            [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+            [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11)
             :
             :"memory"
         );
@@ -477,17 +479,18 @@ static void sbr_autocorrelate_mips(const float x[40][2], float phi[3][2][2])
         PTR_ADDIU "%[p_x],      %[p_x],        8                    \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-          [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-          [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
-          [imag_sum_1]"+f"(imag_sum_1), [real_sum_2]"+f"(real_sum_2),
-          [temp_r]"=&f"(temp_r), [temp_r1]"=&f"(temp_r1), [temp_r2]"=&f"(temp_r2),
-          [temp_r3]"=&f"(temp_r3), [temp_r4]"=&f"(temp_r4),
-          [p_x]"+r"(p_x), [imag_sum_2]"+f"(imag_sum_2)
+        [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+        [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
+        [imag_sum_1]"+f"(imag_sum_1), [real_sum_2]"+f"(real_sum_2),
+        [temp_r]"=&f"(temp_r), [temp_r1]"=&f"(temp_r1), [temp_r2]"=&f"(temp_r2),
+        [temp_r3]"=&f"(temp_r3), [temp_r4]"=&f"(temp_r4),
+        [p_x]"+r"(p_x), [imag_sum_2]"+f"(imag_sum_2)
         :
         : "memory"
     );
 
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < 12; i++)
+    {
         __asm__ volatile (
             "lwc1    %[temp0],      8(%[p_x])                           \n\t"
             "lwc1    %[temp1],      12(%[p_x])                          \n\t"
@@ -547,13 +550,13 @@ static void sbr_autocorrelate_mips(const float x[40][2], float phi[3][2][2])
             PTR_ADDIU "%[p_x],      %[p_x],        24                   \n\t"
 
             : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
-              [imag_sum_1]"+f"(imag_sum_1), [real_sum_2]"+f"(real_sum_2),
-              [temp_r]"=&f"(temp_r), [temp_r1]"=&f"(temp_r1),
-              [temp_r2]"=&f"(temp_r2), [temp_r3]"=&f"(temp_r3),
-              [temp_r4]"=&f"(temp_r4), [p_x]"+r"(p_x),
-              [imag_sum_2]"+f"(imag_sum_2)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
+            [imag_sum_1]"+f"(imag_sum_1), [real_sum_2]"+f"(real_sum_2),
+            [temp_r]"=&f"(temp_r), [temp_r1]"=&f"(temp_r1),
+            [temp_r2]"=&f"(temp_r2), [temp_r3]"=&f"(temp_r3),
+            [temp_r4]"=&f"(temp_r4), [p_x]"+r"(p_x),
+            [imag_sum_2]"+f"(imag_sum_2)
             :
             : "memory"
         );
@@ -595,21 +598,21 @@ static void sbr_autocorrelate_mips(const float x[40][2], float phi[3][2][2])
         "swc1    %[temp_r3],  12(%[p_phi])                        \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-          [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-          [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp_r]"=&f"(temp_r),
-          [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
-          [real_sum_2]"+f"(real_sum_2), [imag_sum_1]"+f"(imag_sum_1),
-          [temp_r2]"=&f"(temp_r2), [temp_r3]"=&f"(temp_r3),
-          [temp_r1]"=&f"(temp_r1), [p_phi]"+r"(p_phi),
-          [imag_sum_2]"+f"(imag_sum_2)
+        [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+        [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp_r]"=&f"(temp_r),
+        [real_sum_0]"+f"(real_sum_0), [real_sum_1]"+f"(real_sum_1),
+        [real_sum_2]"+f"(real_sum_2), [imag_sum_1]"+f"(imag_sum_1),
+        [temp_r2]"=&f"(temp_r2), [temp_r3]"=&f"(temp_r3),
+        [temp_r1]"=&f"(temp_r1), [p_phi]"+r"(p_phi),
+        [imag_sum_2]"+f"(imag_sum_2)
         : [p_x]"r"(p_x)
         : "memory"
     );
 }
 
 static void sbr_hf_gen_mips(float (*X_high)[2], const float (*X_low)[2],
-                         const float alpha0[2], const float alpha1[2],
-                         float bw, int start, int end)
+                            const float alpha0[2], const float alpha1[2],
+                            float bw, int start, int end)
 {
     float alpha[4];
     int i;
@@ -623,7 +626,8 @@ static void sbr_hf_gen_mips(float (*X_high)[2], const float (*X_low)[2],
     alpha[2] = alpha0[0] * bw;
     alpha[3] = alpha0[1] * bw;
 
-    for (i = start; i < end; i++) {
+    for (i = start; i < end; i++)
+    {
         __asm__ volatile (
             "lwc1    %[temp0],    -16(%[p_x_low])                        \n\t"
             "lwc1    %[temp1],    -12(%[p_x_low])                        \n\t"
@@ -651,11 +655,11 @@ static void sbr_hf_gen_mips(float (*X_high)[2], const float (*X_low)[2],
             "swc1    %[temp12],   -4(%[p_x_high])                        \n\t"
 
             : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-              [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11),
-              [temp12]"=&f"(temp12), [p_x_high]"+r"(p_x_high),
-              [p_x_low]"+r"(p_x_low)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+            [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11),
+            [temp12]"=&f"(temp12), [p_x_high]"+r"(p_x_high),
+            [p_x_low]"+r"(p_x_low)
             : [alpha]"r"(alpha)
             : "memory"
         );
@@ -663,7 +667,7 @@ static void sbr_hf_gen_mips(float (*X_high)[2], const float (*X_low)[2],
 }
 
 static void sbr_hf_g_filt_mips(float (*Y)[2], const float (*X_high)[40][2],
-                            const float *g_filt, int m_max, intptr_t ixh)
+                               const float *g_filt, int m_max, intptr_t ixh)
 {
     const float *p_x, *p_g, *loop_end;
     float *p_y;
@@ -677,7 +681,7 @@ static void sbr_hf_g_filt_mips(float (*Y)[2], const float (*X_high)[40][2],
     __asm__ volatile(
         ".set    push                                \n\t"
         ".set    noreorder                           \n\t"
-    "1:                                              \n\t"
+        "1:                                              \n\t"
         "lwc1    %[temp0],   0(%[p_g])               \n\t"
         "lwc1    %[temp1],   0(%[p_x])               \n\t"
         "lwc1    %[temp2],   4(%[p_x])               \n\t"
@@ -692,20 +696,21 @@ static void sbr_hf_g_filt_mips(float (*Y)[2], const float (*X_high)[40][2],
         ".set    pop                                 \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),
-          [temp2]"=&f"(temp2), [p_x]"+r"(p_x),
-          [p_y]"+r"(p_y), [p_g]"+r"(p_g)
+        [temp2]"=&f"(temp2), [p_x]"+r"(p_x),
+        [p_y]"+r"(p_y), [p_g]"+r"(p_g)
         : [loop_end]"r"(loop_end)
         : "memory"
     );
 }
 
 static void sbr_hf_apply_noise_0_mips(float (*Y)[2], const float *s_m,
-                                 const float *q_filt, int noise,
-                                 int kx, int m_max)
+                                      const float *q_filt, int noise,
+                                      int kx, int m_max)
 {
     int m;
 
-    for (m = 0; m < m_max; m++){
+    for (m = 0; m < m_max; m++)
+    {
 
         float *Y1=&Y[m][0];
         float *ff_table;
@@ -731,28 +736,29 @@ static void sbr_hf_apply_noise_0_mips(float (*Y)[2], const float *s_m,
             "madd.s  %[y0],       %[y0],                 %[temp2],  %[temp4]  \n\t"
             "madd.s  %[y1],       %[y1],                 %[temp2],  %[temp5]  \n\t"
             "swc1    %[y1],       4(%[Y1])                                    \n\t"
-        "1:                                                                   \n\t"
+            "1:                                                                   \n\t"
             "swc1    %[y0],       0(%[Y1])                                    \n\t"
 
             : [ff_table]"=&r"(ff_table), [y0]"=&f"(y0), [y1]"=&f"(y1),
-              [temp0]"=&r"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
+            [temp0]"=&r"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+            [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
             : [ff_sbr_noise_table]"r"(ff_sbr_noise_table), [noise]"r"(noise),
-              [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1)
+            [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1)
             : "memory"
         );
     }
 }
 
 static void sbr_hf_apply_noise_1_mips(float (*Y)[2], const float *s_m,
-                                 const float *q_filt, int noise,
-                                 int kx, int m_max)
+                                      const float *q_filt, int noise,
+                                      int kx, int m_max)
 {
     float y0,y1,temp1, temp2, temp4, temp5;
     int temp0, temp3, m;
     float phi_sign = 1 - 2 * (kx & 1);
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
 
         float *ff_table;
         float *Y1=&Y[m][0];
@@ -776,15 +782,15 @@ static void sbr_hf_apply_noise_1_mips(float (*Y)[2], const float *s_m,
             "madd.s %[y0],       %[y0],                 %[temp2], %[temp4]    \n\t"
             "madd.s %[y1],       %[y1],                 %[temp2], %[temp5]    \n\t"
             "swc1   %[y0],       0(%[Y1])                                     \n\t"
-        "1:                                                                   \n\t"
+            "1:                                                                   \n\t"
             "swc1   %[y1],       4(%[Y1])                                     \n\t"
 
             : [ff_table] "=&r" (ff_table), [y0] "=&f" (y0), [y1] "=&f" (y1),
-              [temp0] "=&r" (temp0), [temp1] "=&f" (temp1), [temp2] "=&f" (temp2),
-              [temp3] "=&r" (temp3), [temp4] "=&f" (temp4), [temp5] "=&f" (temp5)
+            [temp0] "=&r" (temp0), [temp1] "=&f" (temp1), [temp2] "=&f" (temp2),
+            [temp3] "=&r" (temp3), [temp4] "=&f" (temp4), [temp5] "=&f" (temp5)
             : [ff_sbr_noise_table] "r" (ff_sbr_noise_table), [noise] "r" (noise),
-              [Y1] "r" (Y1), [s_m1] "r" (s_m1), [q_filt1] "r" (q_filt1),
-              [phi_sign] "f" (phi_sign)
+            [Y1] "r" (Y1), [s_m1] "r" (s_m1), [q_filt1] "r" (q_filt1),
+            [phi_sign] "f" (phi_sign)
             : "memory"
         );
         phi_sign = -phi_sign;
@@ -792,14 +798,15 @@ static void sbr_hf_apply_noise_1_mips(float (*Y)[2], const float *s_m,
 }
 
 static void sbr_hf_apply_noise_2_mips(float (*Y)[2], const float *s_m,
-                                 const float *q_filt, int noise,
-                                 int kx, int m_max)
+                                      const float *q_filt, int noise,
+                                      int kx, int m_max)
 {
     int m;
     float *ff_table;
     float y0,y1, temp0, temp1, temp2, temp3, temp4, temp5;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
 
         float *Y1=&Y[m][0];
         const float *s_m1=&s_m[m];
@@ -822,27 +829,28 @@ static void sbr_hf_apply_noise_2_mips(float (*Y)[2], const float *s_m,
             "madd.s %[y0],       %[y0],                 %[temp2], %[temp4] \n\t"
             "madd.s %[y1],       %[y1],                 %[temp2], %[temp5] \n\t"
             "swc1   %[y1],       4(%[Y1])                                  \n\t"
-        "1:                                                                \n\t"
+            "1:                                                                \n\t"
             "swc1   %[y0],       0(%[Y1])                                  \n\t"
 
             : [temp0]"=&r"(temp0), [ff_table]"=&r"(ff_table), [y0]"=&f"(y0),
-              [y1]"=&f"(y1), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
+            [y1]"=&f"(y1), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+            [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
             : [ff_sbr_noise_table]"r"(ff_sbr_noise_table), [noise]"r"(noise),
-              [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1)
+            [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1)
             : "memory"
         );
     }
 }
 
 static void sbr_hf_apply_noise_3_mips(float (*Y)[2], const float *s_m,
-                                 const float *q_filt, int noise,
-                                 int kx, int m_max)
+                                      const float *q_filt, int noise,
+                                      int kx, int m_max)
 {
     float phi_sign = 1 - 2 * (kx & 1);
     int m;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
 
         float *Y1=&Y[m][0];
         float *ff_table;
@@ -872,14 +880,14 @@ static void sbr_hf_apply_noise_3_mips(float (*Y)[2], const float *s_m,
             "swc1    %[y1],       4(%[Y1])                                     \n\t"
 
             : [ff_table]"=&r"(ff_table), [y0]"=&f"(y0), [y1]"=&f"(y1),
-              [temp0]"=&r"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
+            [temp0]"=&r"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+            [temp3]"=&r"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5)
             : [ff_sbr_noise_table]"r"(ff_sbr_noise_table), [noise]"r"(noise),
-              [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1),
-              [phi_sign]"f"(phi_sign)
+            [Y1]"r"(Y1), [s_m1]"r"(s_m1), [q_filt1]"r"(q_filt1),
+            [phi_sign]"f"(phi_sign)
             : "memory"
         );
-       phi_sign = -phi_sign;
+        phi_sign = -phi_sign;
     }
 }
 #endif /* HAVE_MIPSFPU */

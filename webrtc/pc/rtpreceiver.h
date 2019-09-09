@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,129 +28,145 @@
 #include "webrtc/pc/remoteaudiosource.h"
 #include "webrtc/pc/videotracksource.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Internal class used by PeerConnection.
-class RtpReceiverInternal : public RtpReceiverInterface {
- public:
-  virtual void Stop() = 0;
+class RtpReceiverInternal : public RtpReceiverInterface
+{
+public:
+    virtual void Stop() = 0;
 };
 
 class AudioRtpReceiver : public ObserverInterface,
-                         public AudioSourceInterface::AudioObserver,
-                         public rtc::RefCountedObject<RtpReceiverInternal>,
-                         public sigslot::has_slots<> {
- public:
-  AudioRtpReceiver(MediaStreamInterface* stream,
-                   const std::string& track_id,
-                   uint32_t ssrc,
-                   cricket::VoiceChannel* channel);
+    public AudioSourceInterface::AudioObserver,
+    public rtc::RefCountedObject<RtpReceiverInternal>,
+    public sigslot::has_slots<>
+{
+public:
+    AudioRtpReceiver(MediaStreamInterface* stream,
+                     const std::string& track_id,
+                     uint32_t ssrc,
+                     cricket::VoiceChannel* channel);
 
-  virtual ~AudioRtpReceiver();
+    virtual ~AudioRtpReceiver();
 
-  // ObserverInterface implementation
-  void OnChanged() override;
+    // ObserverInterface implementation
+    void OnChanged() override;
 
-  // AudioSourceInterface::AudioObserver implementation
-  void OnSetVolume(double volume) override;
+    // AudioSourceInterface::AudioObserver implementation
+    void OnSetVolume(double volume) override;
 
-  rtc::scoped_refptr<AudioTrackInterface> audio_track() const {
-    return track_.get();
-  }
+    rtc::scoped_refptr<AudioTrackInterface> audio_track() const
+    {
+        return track_.get();
+    }
 
-  // RtpReceiverInterface implementation
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
-    return track_.get();
-  }
+    // RtpReceiverInterface implementation
+    rtc::scoped_refptr<MediaStreamTrackInterface> track() const override
+    {
+        return track_.get();
+    }
 
-  cricket::MediaType media_type() const override {
-    return cricket::MEDIA_TYPE_AUDIO;
-  }
+    cricket::MediaType media_type() const override
+    {
+        return cricket::MEDIA_TYPE_AUDIO;
+    }
 
-  std::string id() const override { return id_; }
+    std::string id() const override
+    {
+        return id_;
+    }
 
-  RtpParameters GetParameters() const override;
-  bool SetParameters(const RtpParameters& parameters) override;
+    RtpParameters GetParameters() const override;
+    bool SetParameters(const RtpParameters& parameters) override;
 
-  // RtpReceiverInternal implementation.
-  void Stop() override;
+    // RtpReceiverInternal implementation.
+    void Stop() override;
 
-  void SetObserver(RtpReceiverObserverInterface* observer) override;
+    void SetObserver(RtpReceiverObserverInterface* observer) override;
 
-  // Does not take ownership.
-  // Should call SetChannel(nullptr) before |channel| is destroyed.
-  void SetChannel(cricket::VoiceChannel* channel);
+    // Does not take ownership.
+    // Should call SetChannel(nullptr) before |channel| is destroyed.
+    void SetChannel(cricket::VoiceChannel* channel);
 
- private:
-  void Reconfigure();
-  void OnFirstPacketReceived(cricket::BaseChannel* channel);
+private:
+    void Reconfigure();
+    void OnFirstPacketReceived(cricket::BaseChannel* channel);
 
-  const std::string id_;
-  const uint32_t ssrc_;
-  cricket::VoiceChannel* channel_;
-  const rtc::scoped_refptr<AudioTrackInterface> track_;
-  bool cached_track_enabled_;
-  double cached_volume_ = 1;
-  bool stopped_ = false;
-  RtpReceiverObserverInterface* observer_ = nullptr;
-  bool received_first_packet_ = false;
+    const std::string id_;
+    const uint32_t ssrc_;
+    cricket::VoiceChannel* channel_;
+    const rtc::scoped_refptr<AudioTrackInterface> track_;
+    bool cached_track_enabled_;
+    double cached_volume_ = 1;
+    bool stopped_ = false;
+    RtpReceiverObserverInterface* observer_ = nullptr;
+    bool received_first_packet_ = false;
 };
 
 class VideoRtpReceiver : public rtc::RefCountedObject<RtpReceiverInternal>,
-                         public sigslot::has_slots<> {
- public:
-  VideoRtpReceiver(MediaStreamInterface* stream,
-                   const std::string& track_id,
-                   rtc::Thread* worker_thread,
-                   uint32_t ssrc,
-                   cricket::VideoChannel* channel);
+    public sigslot::has_slots<>
+{
+public:
+    VideoRtpReceiver(MediaStreamInterface* stream,
+                     const std::string& track_id,
+                     rtc::Thread* worker_thread,
+                     uint32_t ssrc,
+                     cricket::VideoChannel* channel);
 
-  virtual ~VideoRtpReceiver();
+    virtual ~VideoRtpReceiver();
 
-  rtc::scoped_refptr<VideoTrackInterface> video_track() const {
-    return track_.get();
-  }
+    rtc::scoped_refptr<VideoTrackInterface> video_track() const
+    {
+        return track_.get();
+    }
 
-  // RtpReceiverInterface implementation
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
-    return track_.get();
-  }
+    // RtpReceiverInterface implementation
+    rtc::scoped_refptr<MediaStreamTrackInterface> track() const override
+    {
+        return track_.get();
+    }
 
-  cricket::MediaType media_type() const override {
-    return cricket::MEDIA_TYPE_VIDEO;
-  }
+    cricket::MediaType media_type() const override
+    {
+        return cricket::MEDIA_TYPE_VIDEO;
+    }
 
-  std::string id() const override { return id_; }
+    std::string id() const override
+    {
+        return id_;
+    }
 
-  RtpParameters GetParameters() const override;
-  bool SetParameters(const RtpParameters& parameters) override;
+    RtpParameters GetParameters() const override;
+    bool SetParameters(const RtpParameters& parameters) override;
 
-  // RtpReceiverInternal implementation.
-  void Stop() override;
+    // RtpReceiverInternal implementation.
+    void Stop() override;
 
-  void SetObserver(RtpReceiverObserverInterface* observer) override;
+    void SetObserver(RtpReceiverObserverInterface* observer) override;
 
-  // Does not take ownership.
-  // Should call SetChannel(nullptr) before |channel| is destroyed.
-  void SetChannel(cricket::VideoChannel* channel);
+    // Does not take ownership.
+    // Should call SetChannel(nullptr) before |channel| is destroyed.
+    void SetChannel(cricket::VideoChannel* channel);
 
- private:
-  void OnFirstPacketReceived(cricket::BaseChannel* channel);
+private:
+    void OnFirstPacketReceived(cricket::BaseChannel* channel);
 
-  std::string id_;
-  uint32_t ssrc_;
-  cricket::VideoChannel* channel_;
-  // |broadcaster_| is needed since the decoder can only handle one sink.
-  // It might be better if the decoder can handle multiple sinks and consider
-  // the VideoSinkWants.
-  rtc::VideoBroadcaster broadcaster_;
-  // |source_| is held here to be able to change the state of the source when
-  // the VideoRtpReceiver is stopped.
-  rtc::scoped_refptr<VideoTrackSource> source_;
-  rtc::scoped_refptr<VideoTrackInterface> track_;
-  bool stopped_ = false;
-  RtpReceiverObserverInterface* observer_ = nullptr;
-  bool received_first_packet_ = false;
+    std::string id_;
+    uint32_t ssrc_;
+    cricket::VideoChannel* channel_;
+    // |broadcaster_| is needed since the decoder can only handle one sink.
+    // It might be better if the decoder can handle multiple sinks and consider
+    // the VideoSinkWants.
+    rtc::VideoBroadcaster broadcaster_;
+    // |source_| is held here to be able to change the state of the source when
+    // the VideoRtpReceiver is stopped.
+    rtc::scoped_refptr<VideoTrackSource> source_;
+    rtc::scoped_refptr<VideoTrackInterface> track_;
+    bool stopped_ = false;
+    RtpReceiverObserverInterface* observer_ = nullptr;
+    bool received_first_packet_ = false;
 };
 
 }  // namespace webrtc

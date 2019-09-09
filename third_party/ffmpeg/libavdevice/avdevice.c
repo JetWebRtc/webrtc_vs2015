@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -33,25 +33,44 @@ const char av_device_ffversion[] = "FFmpeg version " FFMPEG_VERSION;
 #define V AV_OPT_FLAG_VIDEO_PARAM
 #define OFFSET(x) offsetof(AVDeviceCapabilitiesQuery, x)
 
-const AVOption av_device_capabilities[] = {
-    { "codec", "codec", OFFSET(codec), AV_OPT_TYPE_INT,
-        {.i64 = AV_CODEC_ID_NONE}, AV_CODEC_ID_NONE, INT_MAX, E|D|A|V },
-    { "sample_format", "sample format", OFFSET(sample_format), AV_OPT_TYPE_SAMPLE_FMT,
-        {.i64 = AV_SAMPLE_FMT_NONE}, AV_SAMPLE_FMT_NONE, INT_MAX, E|D|A },
-    { "sample_rate", "sample rate", OFFSET(sample_rate), AV_OPT_TYPE_INT,
-        {.i64 = -1}, -1, INT_MAX, E|D|A },
-    { "channels", "channels", OFFSET(channels), AV_OPT_TYPE_INT,
-        {.i64 = -1}, -1, INT_MAX, E|D|A },
-    { "channel_layout", "channel layout", OFFSET(channel_layout), AV_OPT_TYPE_CHANNEL_LAYOUT,
-        {.i64 = -1}, -1, INT_MAX, E|D|A },
-    { "pixel_format", "pixel format", OFFSET(pixel_format), AV_OPT_TYPE_PIXEL_FMT,
-        {.i64 = AV_PIX_FMT_NONE}, AV_PIX_FMT_NONE, INT_MAX, E|D|V },
-    { "window_size", "window size", OFFSET(window_width), AV_OPT_TYPE_IMAGE_SIZE,
-        {.str = NULL}, -1, INT_MAX, E|D|V },
-    { "frame_size", "frame size", OFFSET(frame_width), AV_OPT_TYPE_IMAGE_SIZE,
-        {.str = NULL}, -1, INT_MAX, E|D|V },
-    { "fps", "fps", OFFSET(fps), AV_OPT_TYPE_RATIONAL,
-        {.dbl = -1}, -1, INT_MAX, E|D|V },
+const AVOption av_device_capabilities[] =
+{
+    {
+        "codec", "codec", OFFSET(codec), AV_OPT_TYPE_INT,
+        {.i64 = AV_CODEC_ID_NONE}, AV_CODEC_ID_NONE, INT_MAX, E|D|A|V
+    },
+    {
+        "sample_format", "sample format", OFFSET(sample_format), AV_OPT_TYPE_SAMPLE_FMT,
+        {.i64 = AV_SAMPLE_FMT_NONE}, AV_SAMPLE_FMT_NONE, INT_MAX, E|D|A
+    },
+    {
+        "sample_rate", "sample rate", OFFSET(sample_rate), AV_OPT_TYPE_INT,
+        {.i64 = -1}, -1, INT_MAX, E|D|A
+    },
+    {
+        "channels", "channels", OFFSET(channels), AV_OPT_TYPE_INT,
+        {.i64 = -1}, -1, INT_MAX, E|D|A
+    },
+    {
+        "channel_layout", "channel layout", OFFSET(channel_layout), AV_OPT_TYPE_CHANNEL_LAYOUT,
+        {.i64 = -1}, -1, INT_MAX, E|D|A
+    },
+    {
+        "pixel_format", "pixel format", OFFSET(pixel_format), AV_OPT_TYPE_PIXEL_FMT,
+        {.i64 = AV_PIX_FMT_NONE}, AV_PIX_FMT_NONE, INT_MAX, E|D|V
+    },
+    {
+        "window_size", "window size", OFFSET(window_width), AV_OPT_TYPE_IMAGE_SIZE,
+        {.str = NULL}, -1, INT_MAX, E|D|V
+    },
+    {
+        "frame_size", "frame size", OFFSET(frame_width), AV_OPT_TYPE_IMAGE_SIZE,
+        {.str = NULL}, -1, INT_MAX, E|D|V
+    },
+    {
+        "fps", "fps", OFFSET(fps), AV_OPT_TYPE_RATIONAL,
+        {.dbl = -1}, -1, INT_MAX, E|D|V
+    },
     { NULL }
 };
 
@@ -83,12 +102,16 @@ static void *device_next(void *prev, int output,
 {
     const AVClass *pc;
     AVClassCategory category = AV_CLASS_CATEGORY_NA;
-    do {
-        if (output) {
+    do
+    {
+        if (output)
+        {
             if (!(prev = av_oformat_next(prev)))
                 break;
             pc = ((AVOutputFormat *)prev)->priv_class;
-        } else {
+        }
+        else
+        {
             if (!(prev = av_iformat_next(prev)))
                 break;
             pc = ((AVInputFormat *)prev)->priv_class;
@@ -96,7 +119,8 @@ static void *device_next(void *prev, int output,
         if (!pc)
             continue;
         category = pc->category;
-    } while (category != c1 && category != c2);
+    }
+    while (category != c1 && category != c2);
     return prev;
 }
 
@@ -147,7 +171,7 @@ int avdevice_capabilities_create(AVDeviceCapabilitiesQuery **caps, AVFormatConte
     av_assert0(s && caps);
     av_assert0(s->iformat || s->oformat);
     if ((s->oformat && !s->oformat->create_device_capabilities) ||
-        (s->iformat && !s->iformat->create_device_capabilities))
+            (s->iformat && !s->iformat->create_device_capabilities))
         return AVERROR(ENOSYS);
     *caps = av_mallocz(sizeof(**caps));
     if (!(*caps))
@@ -155,16 +179,19 @@ int avdevice_capabilities_create(AVDeviceCapabilitiesQuery **caps, AVFormatConte
     (*caps)->device_context = s;
     if (((ret = av_opt_set_dict(s->priv_data, device_options)) < 0))
         goto fail;
-    if (s->iformat) {
+    if (s->iformat)
+    {
         if ((ret = s->iformat->create_device_capabilities(s, *caps)) < 0)
             goto fail;
-    } else {
+    }
+    else
+    {
         if ((ret = s->oformat->create_device_capabilities(s, *caps)) < 0)
             goto fail;
     }
     av_opt_set_defaults(*caps);
     return 0;
-  fail:
+fail:
     av_freep(caps);
     return ret;
 }
@@ -174,10 +201,13 @@ void avdevice_capabilities_free(AVDeviceCapabilitiesQuery **caps, AVFormatContex
     if (!s || !caps || !(*caps))
         return;
     av_assert0(s->iformat || s->oformat);
-    if (s->iformat) {
+    if (s->iformat)
+    {
         if (s->iformat->free_device_capabilities)
             s->iformat->free_device_capabilities(s, *caps);
-    } else {
+    }
+    else
+    {
         if (s->oformat->free_device_capabilities)
             s->oformat->free_device_capabilities(s, *caps);
     }
@@ -191,7 +221,8 @@ int avdevice_list_devices(AVFormatContext *s, AVDeviceInfoList **device_list)
     av_assert0(device_list);
     av_assert0(s->oformat || s->iformat);
     if ((s->oformat && !s->oformat->get_device_list) ||
-        (s->iformat && !s->iformat->get_device_list)) {
+            (s->iformat && !s->iformat->get_device_list))
+    {
         *device_list = NULL;
         return AVERROR(ENOSYS);
     }
@@ -219,7 +250,7 @@ static int list_devices_for_context(AVFormatContext *s, AVDictionary *options,
     if ((ret = av_opt_set_dict2(s, &tmp, AV_OPT_SEARCH_CHILDREN)) < 0)
         goto fail;
     ret = avdevice_list_devices(s, device_list);
-  fail:
+fail:
     av_dict_free(&tmp);
     avformat_free_context(s);
     return ret;
@@ -258,9 +289,11 @@ void avdevice_free_list_devices(AVDeviceInfoList **device_list)
     if (!list)
         return;
 
-    for (i = 0; i < list->nb_devices; i++) {
+    for (i = 0; i < list->nb_devices; i++)
+    {
         dev = list->devices[i];
-        if (dev) {
+        if (dev)
+        {
             av_freep(&dev->device_name);
             av_freep(&dev->device_description);
             av_free(dev);

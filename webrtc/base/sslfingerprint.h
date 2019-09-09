@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,38 +18,40 @@
 #include "webrtc/base/rtccertificate.h"
 #include "webrtc/base/sslidentity.h"
 
-namespace rtc {
+namespace rtc
+{
 
 class SSLCertificate;
 
-struct SSLFingerprint {
-  static SSLFingerprint* Create(const std::string& algorithm,
-                                const rtc::SSLIdentity* identity);
+struct SSLFingerprint
+{
+    static SSLFingerprint* Create(const std::string& algorithm,
+                                  const rtc::SSLIdentity* identity);
 
-  static SSLFingerprint* Create(const std::string& algorithm,
-                                const rtc::SSLCertificate* cert);
+    static SSLFingerprint* Create(const std::string& algorithm,
+                                  const rtc::SSLCertificate* cert);
 
-  static SSLFingerprint* CreateFromRfc4572(const std::string& algorithm,
-                                           const std::string& fingerprint);
+    static SSLFingerprint* CreateFromRfc4572(const std::string& algorithm,
+            const std::string& fingerprint);
 
-  // Creates a fingerprint from a certificate, using the same digest algorithm
-  // as the certificate's signature.
-  static SSLFingerprint* CreateFromCertificate(const RTCCertificate* cert);
+    // Creates a fingerprint from a certificate, using the same digest algorithm
+    // as the certificate's signature.
+    static SSLFingerprint* CreateFromCertificate(const RTCCertificate* cert);
 
-  SSLFingerprint(const std::string& algorithm,
-                 const uint8_t* digest_in,
-                 size_t digest_len);
+    SSLFingerprint(const std::string& algorithm,
+                   const uint8_t* digest_in,
+                   size_t digest_len);
 
-  SSLFingerprint(const SSLFingerprint& from);
+    SSLFingerprint(const SSLFingerprint& from);
 
-  bool operator==(const SSLFingerprint& other) const;
+    bool operator==(const SSLFingerprint& other) const;
 
-  std::string GetRfc4572Fingerprint() const;
+    std::string GetRfc4572Fingerprint() const;
 
-  std::string ToString() const;
+    std::string ToString() const;
 
-  std::string algorithm;
-  rtc::CopyOnWriteBuffer digest;
+    std::string algorithm;
+    rtc::CopyOnWriteBuffer digest;
 };
 
 }  // namespace rtc

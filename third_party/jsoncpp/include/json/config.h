@@ -1,4 +1,4 @@
-// Copyright 2007-2010 Baptiste Lepilleur
+﻿// Copyright 2007-2010 Baptiste Lepilleur
 // Distributed under MIT license, or public domain if desired and
 // recognized in your jurisdiction.
 // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
@@ -61,18 +61,18 @@
 
 #if defined(_MSC_VER) // MSVC
 #  if _MSC_VER <= 1200 // MSVC 6
-    // Microsoft Visual Studio 6 only support conversion from __int64 to double
-    // (no conversion from unsigned __int64).
+// Microsoft Visual Studio 6 only support conversion from __int64 to double
+// (no conversion from unsigned __int64).
 #    define JSON_USE_INT64_DOUBLE_CONVERSION 1
-    // Disable warning 4786 for VS6 caused by STL (identifier was truncated to '255'
-    // characters in the debug information)
-    // All projects I've ever seen with VS6 were using this globally (not bothering
-    // with pragma push/pop).
+// Disable warning 4786 for VS6 caused by STL (identifier was truncated to '255'
+// characters in the debug information)
+// All projects I've ever seen with VS6 were using this globally (not bothering
+// with pragma push/pop).
 #    pragma warning(disable : 4786)
 #  endif // MSVC 6
 
 #  if _MSC_VER >= 1500 // MSVC 2008
-    /// Indicates that the following function is deprecated.
+/// Indicates that the following function is deprecated.
 #    define JSONCPP_DEPRECATED(message) __declspec(deprecated(message))
 #  endif
 
@@ -146,7 +146,8 @@
 
 #endif // if !defined(JSON_IS_AMALGAMATION)
 
-namespace Json {
+namespace Json
+{
 typedef int Int;
 typedef unsigned int UInt;
 #if defined(JSON_NO_INT64)

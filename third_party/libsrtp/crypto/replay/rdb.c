@@ -1,4 +1,4 @@
-/*
+﻿/*
  * rdb.c
  *
  * Implements a replay database for packet security
@@ -45,7 +45,7 @@
 
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "rdb.h"
@@ -75,17 +75,20 @@ srtp_err_status_t srtp_rdb_check (const srtp_rdb_t *rdb, uint32_t p_index)
 {
 
     /* if the index appears after (or at very end of) the window, its good */
-    if (p_index >= rdb->window_start + rdb_bits_in_bitmask) {
+    if (p_index >= rdb->window_start + rdb_bits_in_bitmask)
+    {
         return srtp_err_status_ok;
     }
 
     /* if the index appears before the window, its bad */
-    if (p_index < rdb->window_start) {
+    if (p_index < rdb->window_start)
+    {
         return srtp_err_status_replay_old;
     }
 
     /* otherwise, the index appears within the window, so check the bitmask */
-    if (v128_get_bit(&rdb->bitmask, (p_index - rdb->window_start)) == 1) {
+    if (v128_get_bit(&rdb->bitmask, (p_index - rdb->window_start)) == 1)
+    {
         return srtp_err_status_replay_fail;
     }
 
@@ -108,12 +111,15 @@ srtp_err_status_t srtp_rdb_add_index (srtp_rdb_t *rdb, uint32_t p_index)
     /* here we *assume* that p_index > rdb->window_start */
 
     delta = (p_index - rdb->window_start);
-    if (delta < rdb_bits_in_bitmask) {
+    if (delta < rdb_bits_in_bitmask)
+    {
 
         /* if the p_index is within the window, set the appropriate bit */
         v128_set_bit(&rdb->bitmask, delta);
 
-    } else {
+    }
+    else
+    {
 
         delta -= rdb_bits_in_bitmask - 1;
 
@@ -130,7 +136,8 @@ srtp_err_status_t srtp_rdb_add_index (srtp_rdb_t *rdb, uint32_t p_index)
 srtp_err_status_t srtp_rdb_increment (srtp_rdb_t *rdb)
 {
 
-    if (rdb->window_start++ > 0x7fffffff) {
+    if (rdb->window_start++ > 0x7fffffff)
+    {
         return srtp_err_status_key_expired;
     }
     return srtp_err_status_ok;

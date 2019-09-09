@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,28 +13,33 @@
 #include "webrtc/modules/video_capture/windows/video_capture_ds.h"
 #include "webrtc/modules/video_capture/windows/video_capture_mf.h"
 
-namespace webrtc {
-namespace videocapturemodule {
+namespace webrtc
+{
+namespace videocapturemodule
+{
 
 // static
-VideoCaptureModule::DeviceInfo* VideoCaptureImpl::CreateDeviceInfo() {
-  // TODO(tommi): Use the Media Foundation version on Vista and up.
-  return DeviceInfoDS::Create();
+VideoCaptureModule::DeviceInfo* VideoCaptureImpl::CreateDeviceInfo()
+{
+    // TODO(tommi): Use the Media Foundation version on Vista and up.
+    return DeviceInfoDS::Create();
 }
 
 rtc::scoped_refptr<VideoCaptureModule> VideoCaptureImpl::Create(
-    const char* device_id) {
-  if (device_id == nullptr)
-    return nullptr;
+    const char* device_id)
+{
+    if (device_id == nullptr)
+        return nullptr;
 
-  // TODO(tommi): Use Media Foundation implementation for Vista and up.
-  rtc::scoped_refptr<VideoCaptureDS> capture(
-      new rtc::RefCountedObject<VideoCaptureDS>());
-  if (capture->Init(device_id) != 0) {
-    return nullptr;
-  }
+    // TODO(tommi): Use Media Foundation implementation for Vista and up.
+    rtc::scoped_refptr<VideoCaptureDS> capture(
+        new rtc::RefCountedObject<VideoCaptureDS>());
+    if (capture->Init(device_id) != 0)
+    {
+        return nullptr;
+    }
 
-  return capture;
+    return capture;
 }
 
 }  // namespace videocapturemodule

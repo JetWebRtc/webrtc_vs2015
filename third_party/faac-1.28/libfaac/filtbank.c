@@ -1,4 +1,4 @@
-/************************* MPEG-2 NBC Audio Decoder **************************
+﻿/************************* MPEG-2 NBC Audio Decoder **************************
  *                                                                           *
 "This software module was originally developed by
 AT&T, Dolby Laboratories, Fraunhofer Gesellschaft IIS in the course of
@@ -55,7 +55,8 @@ void FilterBankInit(faacEncHandle hEncoder)
 {
     unsigned int i, channel;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         hEncoder->freqBuff[channel] = (double*)AllocMemory(2*FRAME_LEN*sizeof(double));
         hEncoder->overlapBuff[channel] = (double*)AllocMemory(FRAME_LEN*sizeof(double));
         SetMemory(hEncoder->overlapBuff[channel], 0, FRAME_LEN*sizeof(double));
@@ -79,7 +80,8 @@ void FilterBankEnd(faacEncHandle hEncoder)
 {
     unsigned int channel;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         if (hEncoder->freqBuff[channel]) FreeMemory(hEncoder->freqBuff[channel]);
         if (hEncoder->overlapBuff[channel]) FreeMemory(hEncoder->overlapBuff[channel]);
     }
@@ -106,17 +108,22 @@ void FilterBank(faacEncHandle hEncoder,
 
     /* create / shift old values */
     /* We use p_overlap here as buffer holding the last frame time signal*/
-    if(overlap_select != MNON_OVERLAPPED) {
+    if(overlap_select != MNON_OVERLAPPED)
+    {
         memcpy(transf_buf, p_overlap, FRAME_LEN*sizeof(double));
         memcpy(transf_buf+BLOCK_LEN_LONG, p_in_data, FRAME_LEN*sizeof(double));
         memcpy(p_overlap, p_in_data, FRAME_LEN*sizeof(double));
-    } else {
+    }
+    else
+    {
         memcpy(transf_buf, p_in_data, 2*FRAME_LEN*sizeof(double));
     }
 
     /*  Window shape processing */
-    if(overlap_select != MNON_OVERLAPPED) {
-        switch (coderInfo->prev_window_shape) {
+    if(overlap_select != MNON_OVERLAPPED)
+    {
+        switch (coderInfo->prev_window_shape)
+        {
         case SINE_WINDOW:
             if ( (block_type == ONLY_LONG_WINDOW) || (block_type == LONG_SHORT_WINDOW))
                 first_window = hEncoder->sin_window_long;
@@ -131,7 +138,8 @@ void FilterBank(faacEncHandle hEncoder,
             break;
         }
 
-        switch (coderInfo->window_shape){
+        switch (coderInfo->window_shape)
+        {
         case SINE_WINDOW:
             if ( (block_type == ONLY_LONG_WINDOW) || (block_type == SHORT_LONG_WINDOW))
                 second_window = hEncoder->sin_window_long;
@@ -145,7 +153,9 @@ void FilterBank(faacEncHandle hEncoder,
                 second_window = hEncoder->kbd_window_short;
             break;
         }
-    } else {
+    }
+    else
+    {
         /* Always long block and sine window for LTP */
         first_window = hEncoder->sin_window_long;
         second_window = hEncoder->sin_window_long;
@@ -155,9 +165,11 @@ void FilterBank(faacEncHandle hEncoder,
     p_o_buf = transf_buf;
 
     /* Separate action for each Block Type */
-    switch (block_type) {
+    switch (block_type)
+    {
     case ONLY_LONG_WINDOW :
-        for ( i = 0 ; i < BLOCK_LEN_LONG ; i++){
+        for ( i = 0 ; i < BLOCK_LEN_LONG ; i++)
+        {
             p_out_mdct[i] = p_o_buf[i] * first_window[i];
             p_out_mdct[i+BLOCK_LEN_LONG] = p_o_buf[i+BLOCK_LEN_LONG] * second_window[BLOCK_LEN_LONG-i-1];
         }
@@ -186,8 +198,10 @@ void FilterBank(faacEncHandle hEncoder,
 
     case ONLY_SHORT_WINDOW :
         p_o_buf += NFLAT_LS;
-        for ( k=0; k < MAX_SHORT_WINDOWS; k++ ) {
-            for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++ ){
+        for ( k=0; k < MAX_SHORT_WINDOWS; k++ )
+        {
+            for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++ )
+            {
                 p_out_mdct[i] = p_o_buf[i] * first_window[i];
                 p_out_mdct[i+BLOCK_LEN_SHORT] = p_o_buf[i+BLOCK_LEN_SHORT] * second_window[BLOCK_LEN_SHORT-i-1];
             }
@@ -220,13 +234,14 @@ void IFilterBank(faacEncHandle hEncoder,
     overlap_buf = (double*)AllocMemory(2*BLOCK_LEN_LONG*sizeof(double));
 
     /*  Window shape processing */
-    if (overlap_select != MNON_OVERLAPPED) {
+    if (overlap_select != MNON_OVERLAPPED)
+    {
 //      switch (coderInfo->prev_window_shape){
 //      case SINE_WINDOW:
-            if ( (block_type == ONLY_LONG_WINDOW) || (block_type == LONG_SHORT_WINDOW))
-                first_window = hEncoder->sin_window_long;
-            else
-                first_window = hEncoder->sin_window_short;
+        if ( (block_type == ONLY_LONG_WINDOW) || (block_type == LONG_SHORT_WINDOW))
+            first_window = hEncoder->sin_window_long;
+        else
+            first_window = hEncoder->sin_window_short;
 //          break;
 //      case KBD_WINDOW:
 //          if ( (block_type == ONLY_LONG_WINDOW) || (block_type == LONG_SHORT_WINDOW))
@@ -238,10 +253,10 @@ void IFilterBank(faacEncHandle hEncoder,
 
 //      switch (coderInfo->window_shape){
 //      case SINE_WINDOW:
-            if ( (block_type == ONLY_LONG_WINDOW) || (block_type == SHORT_LONG_WINDOW))
-                second_window = hEncoder->sin_window_long;
-            else
-                second_window = hEncoder->sin_window_short;
+        if ( (block_type == ONLY_LONG_WINDOW) || (block_type == SHORT_LONG_WINDOW))
+            second_window = hEncoder->sin_window_long;
+        else
+            second_window = hEncoder->sin_window_short;
 //          break;
 //      case KBD_WINDOW:
 //          if ( (block_type == ONLY_LONG_WINDOW) || (block_type == SHORT_LONG_WINDOW))
@@ -250,7 +265,9 @@ void IFilterBank(faacEncHandle hEncoder,
 //              second_window = hEncoder->kbd_window_short;
 //          break;
 //      }
-    } else {
+    }
+    else
+    {
         /* Always long block and sine window for LTP */
         first_window  = hEncoder->sin_window_long;
         second_window = hEncoder->sin_window_long;
@@ -261,18 +278,23 @@ void IFilterBank(faacEncHandle hEncoder,
     o_buf = overlap_buf;
 
     /* Separate action for each Block Type */
-    switch( block_type ) {
+    switch( block_type )
+    {
     case ONLY_LONG_WINDOW :
         memcpy(transf_buf, p_in_data,BLOCK_LEN_LONG*sizeof(double));
         IMDCT( &hEncoder->fft_tables, transf_buf, 2*BLOCK_LEN_LONG );
         for ( i = 0 ; i < BLOCK_LEN_LONG ; i++)
             transf_buf[i] *= first_window[i];
-        if (overlap_select != MNON_OVERLAPPED) {
-            for ( i = 0 ; i < BLOCK_LEN_LONG; i++ ){
+        if (overlap_select != MNON_OVERLAPPED)
+        {
+            for ( i = 0 ; i < BLOCK_LEN_LONG; i++ )
+            {
                 o_buf[i] += transf_buf[i];
                 o_buf[i+BLOCK_LEN_LONG] = transf_buf[i+BLOCK_LEN_LONG] * second_window[BLOCK_LEN_LONG-i-1];
             }
-        } else { /* overlap_select == NON_OVERLAPPED */
+        }
+        else     /* overlap_select == NON_OVERLAPPED */
+        {
             for ( i = 0 ; i < BLOCK_LEN_LONG; i++ )
                 transf_buf[i+BLOCK_LEN_LONG] *= second_window[BLOCK_LEN_LONG-i-1];
         }
@@ -283,14 +305,17 @@ void IFilterBank(faacEncHandle hEncoder,
         IMDCT( &hEncoder->fft_tables, transf_buf, 2*BLOCK_LEN_LONG );
         for ( i = 0 ; i < BLOCK_LEN_LONG ; i++)
             transf_buf[i] *= first_window[i];
-        if (overlap_select != MNON_OVERLAPPED) {
+        if (overlap_select != MNON_OVERLAPPED)
+        {
             for ( i = 0 ; i < BLOCK_LEN_LONG; i++ )
                 o_buf[i] += transf_buf[i];
             memcpy(o_buf+BLOCK_LEN_LONG,transf_buf+BLOCK_LEN_LONG,NFLAT_LS*sizeof(double));
             for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++)
                 o_buf[i+BLOCK_LEN_LONG+NFLAT_LS] = transf_buf[i+BLOCK_LEN_LONG+NFLAT_LS] * second_window[BLOCK_LEN_SHORT-i-1];
             SetMemory(o_buf+BLOCK_LEN_LONG+NFLAT_LS+BLOCK_LEN_SHORT,0,NFLAT_LS*sizeof(double));
-        } else { /* overlap_select == NON_OVERLAPPED */
+        }
+        else     /* overlap_select == NON_OVERLAPPED */
+        {
             for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++)
                 transf_buf[i+BLOCK_LEN_LONG+NFLAT_LS] *= second_window[BLOCK_LEN_SHORT-i-1];
             SetMemory(transf_buf+BLOCK_LEN_LONG+NFLAT_LS+BLOCK_LEN_SHORT,0,NFLAT_LS*sizeof(double));
@@ -302,13 +327,16 @@ void IFilterBank(faacEncHandle hEncoder,
         IMDCT( &hEncoder->fft_tables, transf_buf, 2*BLOCK_LEN_LONG );
         for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++)
             transf_buf[i+NFLAT_LS] *= first_window[i];
-        if (overlap_select != MNON_OVERLAPPED) {
+        if (overlap_select != MNON_OVERLAPPED)
+        {
             for ( i = 0 ; i < BLOCK_LEN_SHORT; i++ )
                 o_buf[i+NFLAT_LS] += transf_buf[i+NFLAT_LS];
             memcpy(o_buf+BLOCK_LEN_SHORT+NFLAT_LS,transf_buf+BLOCK_LEN_SHORT+NFLAT_LS,NFLAT_LS*sizeof(double));
             for ( i = 0 ; i < BLOCK_LEN_LONG ; i++)
                 o_buf[i+BLOCK_LEN_LONG] = transf_buf[i+BLOCK_LEN_LONG] * second_window[BLOCK_LEN_LONG-i-1];
-        } else { /* overlap_select == NON_OVERLAPPED */
+        }
+        else     /* overlap_select == NON_OVERLAPPED */
+        {
             SetMemory(transf_buf,0,NFLAT_LS*sizeof(double));
             for ( i = 0 ; i < BLOCK_LEN_LONG ; i++)
                 transf_buf[i+BLOCK_LEN_LONG] *= second_window[BLOCK_LEN_LONG-i-1];
@@ -316,24 +344,33 @@ void IFilterBank(faacEncHandle hEncoder,
         break;
 
     case ONLY_SHORT_WINDOW :
-        if (overlap_select != MNON_OVERLAPPED) {
+        if (overlap_select != MNON_OVERLAPPED)
+        {
             fp = o_buf + NFLAT_LS;
-        } else { /* overlap_select == NON_OVERLAPPED */
+        }
+        else     /* overlap_select == NON_OVERLAPPED */
+        {
             fp = transf_buf;
         }
-        for ( k=0; k < MAX_SHORT_WINDOWS; k++ ) {
+        for ( k=0; k < MAX_SHORT_WINDOWS; k++ )
+        {
             memcpy(transf_buf,p_in_data,BLOCK_LEN_SHORT*sizeof(double));
             IMDCT( &hEncoder->fft_tables, transf_buf, 2*BLOCK_LEN_SHORT );
             p_in_data += BLOCK_LEN_SHORT;
-            if (overlap_select != MNON_OVERLAPPED) {
-                for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++){
+            if (overlap_select != MNON_OVERLAPPED)
+            {
+                for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++)
+                {
                     transf_buf[i] *= first_window[i];
                     fp[i] += transf_buf[i];
                     fp[i+BLOCK_LEN_SHORT] = transf_buf[i+BLOCK_LEN_SHORT] * second_window[BLOCK_LEN_SHORT-i-1];
                 }
                 fp += BLOCK_LEN_SHORT;
-            } else { /* overlap_select == NON_OVERLAPPED */
-                for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++){
+            }
+            else     /* overlap_select == NON_OVERLAPPED */
+            {
+                for ( i = 0 ; i < BLOCK_LEN_SHORT ; i++)
+                {
                     fp[i] *= first_window[i];
                     fp[i+BLOCK_LEN_SHORT] *= second_window[BLOCK_LEN_SHORT-i-1];
                 }
@@ -361,7 +398,7 @@ void specFilter(double *freqBuff,
                 int sampleRate,
                 int lowpassFreq,
                 int specLen
-                )
+               )
 {
     int lowpass,xlowpass;
 
@@ -380,13 +417,15 @@ static double Izero(double x)
 
     sum = u = n = 1;
     halfx = x/2.0;
-    do {
+    do
+    {
         temp = halfx/(double)n;
         n += 1;
         temp *= temp;
         u *= temp;
         sum += u;
-    } while (u >= IzeroEPSILON*sum);
+    }
+    while (u >= IzeroEPSILON*sum);
 
     return(sum);
 }
@@ -402,7 +441,8 @@ static void CalculateKBDWindow(double* win, double alpha, int length)
     IBeta = 1.0/Izero(alpha);
 
     /* calculate lower half of Kaiser Bessel window */
-    for(i=0; i<(length>>1); i++) {
+    for(i=0; i<(length>>1); i++)
+    {
         tmp = 4.0*(double)i/(double)length - 1.0;
         win[i] = Izero(alpha*sqrt(1.0-tmp*tmp))*IBeta;
         sum += win[i];
@@ -412,7 +452,8 @@ static void CalculateKBDWindow(double* win, double alpha, int length)
     tmp = 0.0;
 
     /* calculate lower half of window */
-    for(i=0; i<(length>>1); i++) {
+    for(i=0; i<(length>>1); i++)
+    {
         tmp += win[i];
         win[i] = sqrt(tmp*sum);
     }
@@ -437,7 +478,8 @@ static void MDCT( FFT_Tables *fft_tables, double *data, int N )
     c = cosfreq8;
     s = sinfreq8;
 
-    for (i = 0; i < (N >> 2); i++) {
+    for (i = 0; i < (N >> 2); i++)
+    {
         /* calculate real and imaginary parts of g(n) or G(p) */
         n = (N >> 1) - 1 - 2 * i;
 
@@ -463,7 +505,8 @@ static void MDCT( FFT_Tables *fft_tables, double *data, int N )
     }
 
     /* Perform in-place complex FFT of length N/4 */
-    switch (N) {
+    switch (N)
+    {
     case BLOCK_LEN_SHORT * 2:
         fft( fft_tables, xr, xi, 6);
         break;
@@ -476,7 +519,8 @@ static void MDCT( FFT_Tables *fft_tables, double *data, int N )
     s = sinfreq8;
 
     /* post-twiddle FFT output and then get output data */
-    for (i = 0; i < (N >> 2); i++) {
+    for (i = 0; i < (N >> 2); i++)
+    {
         /* get post-twiddled FFT output  */
         tempr = 2. * (xr[i] * c + xi[i] * s);
         tempi = 2. * (xi[i] * c - xr[i] * s);
@@ -519,7 +563,8 @@ static void IMDCT( FFT_Tables *fft_tables, double *data, int N)
     c = cosfreq8;
     s = sinfreq8;
 
-    for (i = 0; i < (N >> 2); i++) {
+    for (i = 0; i < (N >> 2); i++)
+    {
         /* calculate real and imaginary parts of g(n) or G(p) */
         tempr = -data[2 * i];
         tempi = data[(N >> 1) - 1 - 2 * i];
@@ -535,7 +580,8 @@ static void IMDCT( FFT_Tables *fft_tables, double *data, int N)
     }
 
     /* Perform in-place complex IFFT of length N/4 */
-    switch (N) {
+    switch (N)
+    {
     case BLOCK_LEN_SHORT * 2:
         ffti( fft_tables, xr, xi, 6);
         break;
@@ -548,7 +594,8 @@ static void IMDCT( FFT_Tables *fft_tables, double *data, int N)
     s = sinfreq8;
 
     /* post-twiddle FFT output and then get output data */
-    for (i = 0; i < (N >> 2); i++) {
+    for (i = 0; i < (N >> 2); i++)
+    {
 
         /* get post-twiddled FFT output  */
         tempr = fac * (xr[i] * c - xi[i] * s);

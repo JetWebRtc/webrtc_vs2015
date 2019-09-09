@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,23 +16,26 @@
 
 @class CocoaWindow;
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MacRenderer : public GlRenderer {
- public:
-  MacRenderer();
-  virtual ~MacRenderer();
+class MacRenderer : public GlRenderer
+{
+public:
+    MacRenderer();
+    virtual ~MacRenderer();
 
-  bool Init(const char* window_title, int width, int height);
+    bool Init(const char* window_title, int width, int height);
 
-  // Implements GlRenderer.
-  void OnFrame(const VideoFrame& frame) override;
+    // Implements GlRenderer.
+    void OnFrame(const VideoFrame& frame) override;
 
- private:
-  CocoaWindow* window_;
+private:
+    CocoaWindow* window_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(MacRenderer);
+    RTC_DISALLOW_COPY_AND_ASSIGN(MacRenderer);
 };
 }  // test
 }  // webrtc

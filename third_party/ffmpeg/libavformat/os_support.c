@@ -1,4 +1,4 @@
-/*
+﻿/*
  * various OS-feature replacement utilities
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * copyright (c) 2002 Francois Revol
@@ -91,20 +91,26 @@ int ff_getaddrinfo(const char *node, const char *service,
         return EAI_FAIL;
     sin->sin_family = AF_INET;
 
-    if (node) {
-        if (!ff_inet_aton(node, &sin->sin_addr)) {
-            if (hints && (hints->ai_flags & AI_NUMERICHOST)) {
+    if (node)
+    {
+        if (!ff_inet_aton(node, &sin->sin_addr))
+        {
+            if (hints && (hints->ai_flags & AI_NUMERICHOST))
+            {
                 av_free(sin);
                 return EAI_FAIL;
             }
             h = gethostbyname(node);
-            if (!h) {
+            if (!h)
+            {
                 av_free(sin);
                 return EAI_FAIL;
             }
             memcpy(&sin->sin_addr, h->h_addr_list[0], sizeof(struct in_addr));
         }
-    } else {
+    }
+    else
+    {
         if (hints && (hints->ai_flags & AI_PASSIVE))
             sin->sin_addr.s_addr = INADDR_ANY;
         else
@@ -117,7 +123,8 @@ int ff_getaddrinfo(const char *node, const char *service,
         sin->sin_port = htons(atoi(service));
 
     ai = av_mallocz(sizeof(struct addrinfo));
-    if (!ai) {
+    if (!ai)
+    {
         av_free(sin);
         return EAI_FAIL;
     }
@@ -125,7 +132,8 @@ int ff_getaddrinfo(const char *node, const char *service,
     *res            = ai;
     ai->ai_family   = AF_INET;
     ai->ai_socktype = hints ? hints->ai_socktype : 0;
-    switch (ai->ai_socktype) {
+    switch (ai->ai_socktype)
+    {
     case SOCK_STREAM:
         ai->ai_protocol = IPPROTO_TCP;
         break;
@@ -153,7 +161,8 @@ void ff_freeaddrinfo(struct addrinfo *res)
     HMODULE ws2mod = GetModuleHandle("ws2_32.dll");
     win_freeaddrinfo = (void (WSAAPI *)(struct addrinfo *res))
                        GetProcAddress(ws2mod, "freeaddrinfo");
-    if (win_freeaddrinfo) {
+    if (win_freeaddrinfo)
+    {
         win_freeaddrinfo(res);
         return;
     }
@@ -185,18 +194,24 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
     if (!host && !serv)
         return EAI_NONAME;
 
-    if (host && hostlen > 0) {
+    if (host && hostlen > 0)
+    {
         struct hostent *ent = NULL;
         uint32_t a;
         if (!(flags & NI_NUMERICHOST))
             ent = gethostbyaddr((const char *)&sin->sin_addr,
                                 sizeof(sin->sin_addr), AF_INET);
 
-        if (ent) {
+        if (ent)
+        {
             snprintf(host, hostlen, "%s", ent->h_name);
-        } else if (flags & NI_NAMERQD) {
+        }
+        else if (flags & NI_NAMERQD)
+        {
             return EAI_NONAME;
-        } else {
+        }
+        else
+        {
             a = ntohl(sin->sin_addr.s_addr);
             snprintf(host, hostlen, "%d.%d.%d.%d",
                      ((a >> 24) & 0xff), ((a >> 16) & 0xff),
@@ -204,7 +219,8 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
         }
     }
 
-    if (serv && servlen > 0) {
+    if (serv && servlen > 0)
+    {
         struct servent *ent = NULL;
 #if HAVE_GETSERVBYPORT
         if (!(flags & NI_NUMERICSERV))
@@ -224,7 +240,8 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
 #if !HAVE_GETADDRINFO || HAVE_WINSOCK2_H
 const char *ff_gai_strerror(int ecode)
 {
-    switch (ecode) {
+    switch (ecode)
+    {
     case EAI_AGAIN:
         return "Temporary failure in name resolution";
     case EAI_BADFLAGS:
@@ -276,7 +293,8 @@ int ff_poll(struct pollfd *fds, nfds_t numfds, int timeout)
     int rc;
 
 #if HAVE_WINSOCK2_H
-    if (numfds >= FD_SETSIZE) {
+    if (numfds >= FD_SETSIZE)
+    {
         errno = EINVAL;
         return -1;
     }
@@ -287,11 +305,13 @@ int ff_poll(struct pollfd *fds, nfds_t numfds, int timeout)
     FD_ZERO(&exception_set);
 
     n = 0;
-    for (i = 0; i < numfds; i++) {
+    for (i = 0; i < numfds; i++)
+    {
         if (fds[i].fd < 0)
             continue;
 #if !HAVE_WINSOCK2_H
-        if (fds[i].fd >= FD_SETSIZE) {
+        if (fds[i].fd >= FD_SETSIZE)
+        {
             errno = EINVAL;
             return -1;
         }
@@ -312,9 +332,12 @@ int ff_poll(struct pollfd *fds, nfds_t numfds, int timeout)
         /* Hey!? Nothing to poll, in fact!!! */
         return 0;
 
-    if (timeout < 0) {
+    if (timeout < 0)
+    {
         rc = select(n, &read_set, &write_set, &exception_set, NULL);
-    } else {
+    }
+    else
+    {
         struct timeval tv;
         tv.tv_sec  = timeout / 1000;
         tv.tv_usec = 1000 * (timeout % 1000);
@@ -324,7 +347,8 @@ int ff_poll(struct pollfd *fds, nfds_t numfds, int timeout)
     if (rc < 0)
         return rc;
 
-    for (i = 0; i < numfds; i++) {
+    for (i = 0; i < numfds; i++)
+    {
         fds[i].revents = 0;
 
         if (FD_ISSET(fds[i].fd, &read_set))

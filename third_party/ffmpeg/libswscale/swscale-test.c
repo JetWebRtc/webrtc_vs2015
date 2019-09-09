@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2003-2011 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -59,8 +59,10 @@ static uint64_t getSSD(const uint8_t *src1, const uint8_t *src2, int stride1,
     int x, y;
     uint64_t ssd = 0;
 
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
             int d = src1[x + y * stride1] - src2[x + y * stride2];
             ssd += d * d;
         }
@@ -68,7 +70,8 @@ static uint64_t getSSD(const uint8_t *src1, const uint8_t *src2, int stride1,
     return ssd;
 }
 
-struct Results {
+struct Results
+{
     uint64_t ssdY;
     uint64_t ssdU;
     uint64_t ssdV;
@@ -99,7 +102,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
     uint32_t crc = 0;
     int res      = 0;
 
-    if (cur_srcFormat != srcFormat || cur_srcW != srcW || cur_srcH != srcH) {
+    if (cur_srcFormat != srcFormat || cur_srcW != srcW || cur_srcH != srcH)
+    {
         struct SwsContext *srcContext = NULL;
         int p;
 
@@ -107,11 +111,13 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
             av_freep(&src[p]);
 
         av_image_fill_linesizes(srcStride, srcFormat, srcW);
-        for (p = 0; p < 4; p++) {
+        for (p = 0; p < 4; p++)
+        {
             srcStride[p] = FFALIGN(srcStride[p], 16);
             if (srcStride[p])
                 src[p] = av_mallocz(srcStride[p] * srcH + 16);
-            if (srcStride[p] && !src[p]) {
+            if (srcStride[p] && !src[p])
+            {
                 perror("Malloc");
                 res = -1;
                 goto end;
@@ -119,7 +125,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
         }
         srcContext = sws_getContext(w, h, AV_PIX_FMT_YUVA420P, srcW, srcH,
                                     srcFormat, SWS_BILINEAR, NULL, NULL, NULL);
-        if (!srcContext) {
+        if (!srcContext)
+        {
             fprintf(stderr, "Failed to get %s ---> %s\n",
                     desc_yuva420p->name,
                     desc_src->name);
@@ -135,7 +142,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
     }
 
     av_image_fill_linesizes(dstStride, dstFormat, dstW);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         /* Image buffers passed into libswscale can be allocated any way you
          * prefer, as long as they're aligned enough for the architecture, and
          * they're freed appropriately (such as using av_free for buffers
@@ -145,7 +153,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
         dstStride[i] = FFALIGN(dstStride[i], 16);
         if (dstStride[i])
             dst[i] = av_mallocz(dstStride[i] * dstH + 16);
-        if (dstStride[i] && !dst[i]) {
+        if (dstStride[i] && !dst[i])
+        {
             perror("Malloc");
             res = -1;
 
@@ -155,7 +164,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
 
     dstContext = sws_getContext(srcW, srcH, srcFormat, dstW, dstH, dstFormat,
                                 flags, NULL, NULL, NULL);
-    if (!dstContext) {
+    if (!dstContext)
+    {
         fprintf(stderr, "Failed to get %s ---> %s\n",
                 desc_src->name, desc_dst->name);
         res = -1;
@@ -174,17 +184,21 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
         crc = av_crc(av_crc_get_table(AV_CRC_32_IEEE), crc, dst[i],
                      dstStride[i] * dstH);
 
-    if (r && crc == r->crc) {
+    if (r && crc == r->crc)
+    {
         ssdY = r->ssdY;
         ssdU = r->ssdU;
         ssdV = r->ssdV;
         ssdA = r->ssdA;
-    } else {
-        for (i = 0; i < 4; i++) {
+    }
+    else {
+        for (i = 0; i < 4; i++)
+        {
             refStride[i] = FFALIGN(refStride[i], 16);
             if (refStride[i])
                 out[i] = av_mallocz(refStride[i] * h);
-            if (refStride[i] && !out[i]) {
+            if (refStride[i] && !out[i])
+            {
                 perror("Malloc");
                 res = -1;
                 goto end;
@@ -193,7 +207,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
         outContext = sws_getContext(dstW, dstH, dstFormat, w, h,
                                     AV_PIX_FMT_YUVA420P, SWS_BILINEAR,
                                     NULL, NULL, NULL);
-        if (!outContext) {
+        if (!outContext)
+        {
             fprintf(stderr, "Failed to get %s ---> %s\n",
                     desc_dst->name,
                     desc_yuva420p->name);
@@ -203,7 +218,8 @@ static int doTest(uint8_t *ref[4], int refStride[4], int w, int h,
         sws_scale(outContext, (const uint8_t * const*)dst, dstStride, 0, dstH, out, refStride);
 
         ssdY = getSSD(ref[0], out[0], refStride[0], refStride[0], w, h);
-        if (hasChroma(srcFormat) && hasChroma(dstFormat)) {
+        if (hasChroma(srcFormat) && hasChroma(dstFormat))
+        {
             //FIXME check that output is really gray
             ssdU = getSSD(ref[1], out[1], refStride[1], refStride[1],
                           (w + 1) >> 1, (h + 1) >> 1);
@@ -242,8 +258,10 @@ static void selfTest(uint8_t *ref[4], int refStride[4], int w, int h,
                      enum AVPixelFormat srcFormat_in,
                      enum AVPixelFormat dstFormat_in)
 {
-    const int flags[] = { SWS_FAST_BILINEAR, SWS_BILINEAR, SWS_BICUBIC,
-                          SWS_X, SWS_POINT, SWS_AREA, 0 };
+    const int flags[] = {
+        SWS_FAST_BILINEAR, SWS_BILINEAR, SWS_BICUBIC,
+        SWS_X, SWS_POINT, SWS_AREA, 0
+    };
     const int srcW   = w;
     const int srcH   = h;
     const int dstW[] = { srcW - srcW / 3, srcW, srcW + srcW / 3, 0 };
@@ -252,20 +270,22 @@ static void selfTest(uint8_t *ref[4], int refStride[4], int w, int h,
     const AVPixFmtDescriptor *desc_src, *desc_dst;
 
     for (srcFormat = srcFormat_in != AV_PIX_FMT_NONE ? srcFormat_in : 0;
-         srcFormat < AV_PIX_FMT_NB; srcFormat++) {
+            srcFormat < AV_PIX_FMT_NB; srcFormat++)
+    {
         if (!sws_isSupportedInput(srcFormat) ||
-            !sws_isSupportedOutput(srcFormat))
+                !sws_isSupportedOutput(srcFormat))
             continue;
 
         desc_src = av_pix_fmt_desc_get(srcFormat);
 
         for (dstFormat = dstFormat_in != AV_PIX_FMT_NONE ? dstFormat_in : 0;
-             dstFormat < AV_PIX_FMT_NB; dstFormat++) {
+                dstFormat < AV_PIX_FMT_NB; dstFormat++)
+        {
             int i, j, k;
             int res = 0;
 
             if (!sws_isSupportedInput(dstFormat) ||
-                !sws_isSupportedOutput(dstFormat))
+                    !sws_isSupportedOutput(dstFormat))
                 continue;
 
             desc_dst = av_pix_fmt_desc_get(dstFormat);
@@ -294,7 +314,8 @@ static int fileTest(uint8_t *ref[4], int refStride[4], int w, int h, FILE *fp,
 {
     char buf[256];
 
-    while (fgets(buf, sizeof(buf), fp)) {
+    while (fgets(buf, sizeof(buf), fp))
+    {
         struct Results r;
         enum AVPixelFormat srcFormat;
         char srcStr[12];
@@ -306,11 +327,12 @@ static int fileTest(uint8_t *ref[4], int refStride[4], int w, int h, FILE *fp,
         int ret;
 
         ret = sscanf(buf,
-                     " %12s %dx%d -> %12s %dx%d flags=%d CRC=%x"
-                     " SSD=%"SCNd64 ", %"SCNd64 ", %"SCNd64 ", %"SCNd64 "\n",
-                     srcStr, &srcW, &srcH, dstStr, &dstW, &dstH,
-                     &flags, &r.crc, &r.ssdY, &r.ssdU, &r.ssdV, &r.ssdA);
-        if (ret != 12) {
+        " %12s %dx%d -> %12s %dx%d flags=%d CRC=%x"
+        " SSD=%"SCNd64 ", %"SCNd64 ", %"SCNd64 ", %"SCNd64 "\n",
+        srcStr, &srcW, &srcH, dstStr, &dstW, &dstH,
+        &flags, &r.crc, &r.ssdY, &r.ssdU, &r.ssdV, &r.ssdA);
+        if (ret != 12)
+        {
             srcStr[0] = dstStr[0] = 0;
             ret       = sscanf(buf, "%12s -> %12s\n", srcStr, dstStr);
         }
@@ -319,14 +341,16 @@ static int fileTest(uint8_t *ref[4], int refStride[4], int w, int h, FILE *fp,
         dstFormat = av_get_pix_fmt(dstStr);
 
         if (srcFormat == AV_PIX_FMT_NONE || dstFormat == AV_PIX_FMT_NONE ||
-            srcW > 8192U || srcH > 8192U || dstW > 8192U || dstH > 8192U) {
+                srcW > 8192U || srcH > 8192U || dstW > 8192U || dstH > 8192U)
+        {
             fprintf(stderr, "malformed input file\n");
             return -1;
         }
         if ((srcFormat_in != AV_PIX_FMT_NONE && srcFormat_in != srcFormat) ||
-            (dstFormat_in != AV_PIX_FMT_NONE && dstFormat_in != dstFormat))
+                (dstFormat_in != AV_PIX_FMT_NONE && dstFormat_in != dstFormat))
             continue;
-        if (ret != 12) {
+        if (ret != 12)
+        {
             printf("%s", buf);
             continue;
         }
@@ -363,28 +387,39 @@ int main(int argc, char **argv)
     if (!rgb_data || !data)
         return -1;
 
-    for (i = 1; i < argc; i += 2) {
+    for (i = 1; i < argc; i += 2)
+    {
         if (argv[i][0] != '-' || i + 1 == argc)
             goto bad_option;
-        if (!strcmp(argv[i], "-ref")) {
+        if (!strcmp(argv[i], "-ref"))
+        {
             fp = fopen(argv[i + 1], "r");
-            if (!fp) {
+            if (!fp)
+            {
                 fprintf(stderr, "could not open '%s'\n", argv[i + 1]);
                 goto error;
             }
-        } else if (!strcmp(argv[i], "-src")) {
+        }
+        else if (!strcmp(argv[i], "-src"))
+        {
             srcFormat = av_get_pix_fmt(argv[i + 1]);
-            if (srcFormat == AV_PIX_FMT_NONE) {
+            if (srcFormat == AV_PIX_FMT_NONE)
+            {
                 fprintf(stderr, "invalid pixel format %s\n", argv[i + 1]);
                 return -1;
             }
-        } else if (!strcmp(argv[i], "-dst")) {
+        }
+        else if (!strcmp(argv[i], "-dst"))
+        {
             dstFormat = av_get_pix_fmt(argv[i + 1]);
-            if (dstFormat == AV_PIX_FMT_NONE) {
+            if (dstFormat == AV_PIX_FMT_NONE)
+            {
                 fprintf(stderr, "invalid pixel format %s\n", argv[i + 1]);
                 return -1;
             }
-        } else {
+        }
+        else
+        {
 bad_option:
             fprintf(stderr, "bad option or argument missing (%s)\n", argv[i]);
             goto error;
@@ -403,10 +438,13 @@ bad_option:
     sws_freeContext(sws);
     av_free(rgb_data);
 
-    if(fp) {
+    if(fp)
+    {
         res = fileTest(src, stride, W, H, fp, srcFormat, dstFormat);
         fclose(fp);
-    } else {
+    }
+    else
+    {
         selfTest(src, stride, W, H, srcFormat, dstFormat);
         res = 0;
     }

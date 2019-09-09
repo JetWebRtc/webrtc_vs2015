@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,33 +14,37 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/audio_network_adaptor/controller.h"
 
-namespace webrtc {
-namespace audio_network_adaptor {
+namespace webrtc
+{
+namespace audio_network_adaptor
+{
 
-class BitrateController final : public Controller {
- public:
-  struct Config {
-    Config(int initial_bitrate_bps, int initial_frame_length_ms);
-    ~Config();
-    int initial_bitrate_bps;
-    int initial_frame_length_ms;
-  };
+class BitrateController final : public Controller
+{
+public:
+    struct Config
+    {
+        Config(int initial_bitrate_bps, int initial_frame_length_ms);
+        ~Config();
+        int initial_bitrate_bps;
+        int initial_frame_length_ms;
+    };
 
-  explicit BitrateController(const Config& config);
+    explicit BitrateController(const Config& config);
 
-  ~BitrateController() override;
+    ~BitrateController() override;
 
-  void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
+    void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
 
-  void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
+    void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
 
- private:
-  const Config config_;
-  int bitrate_bps_;
-  int frame_length_ms_;
-  rtc::Optional<int> target_audio_bitrate_bps_;
-  rtc::Optional<size_t> overhead_bytes_per_packet_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(BitrateController);
+private:
+    const Config config_;
+    int bitrate_bps_;
+    int frame_length_ms_;
+    rtc::Optional<int> target_audio_bitrate_bps_;
+    rtc::Optional<size_t> overhead_bytes_per_packet_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(BitrateController);
 };
 
 }  // namespace audio_network_adaptor

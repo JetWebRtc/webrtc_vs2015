@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW AC-3 and E-AC-3 demuxer
  * Copyright (c) 2007 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -36,32 +36,39 @@ static int ac3_eac3_probe(AVProbeData *p, enum AVCodecID expected_codec_id)
     buf = p->buf;
     end = buf + p->buf_size;
 
-    for(; buf < end; buf++) {
+    for(; buf < end; buf++)
+    {
         if(buf > p->buf && !(buf[0] == 0x0B && buf[1] == 0x77)
-                        && !(buf[0] == 0x77 && buf[1] == 0x0B) )
+        && !(buf[0] == 0x77 && buf[1] == 0x0B) )
             continue;
         buf2 = buf;
 
-        for(frames = 0; buf2 < end; frames++) {
+        for(frames = 0; buf2 < end; frames++)
+        {
             uint8_t buf3[4096];
             int i;
             if(!memcmp(buf2, "\x1\x10\0\0\0\0\0\0", 8))
                 buf2+=16;
-            if (buf[0] == 0x77 && buf[1] == 0x0B) {
-                for(i=0; i<8; i+=2) {
+            if (buf[0] == 0x77 && buf[1] == 0x0B)
+            {
+                for(i=0; i<8; i+=2)
+                {
                     buf3[i  ] = buf[i+1];
                     buf3[i+1] = buf[i  ];
                 }
                 init_get_bits(&gbc, buf3, 54);
-            }else
+            }
+            else
                 init_get_bits(&gbc, buf2, 54);
             if(avpriv_ac3_parse_header2(&gbc, &phdr) < 0)
                 break;
             if(buf2 + phdr->frame_size > end)
                 break;
-            if (buf[0] == 0x77 && buf[1] == 0x0B) {
+            if (buf[0] == 0x77 && buf[1] == 0x0B)
+            {
                 av_assert0(phdr->frame_size <= sizeof(buf3));
-                for(i=8; i<phdr->frame_size; i+=2) {
+                for(i=8; i<phdr->frame_size; i+=2)
+                {
                     buf3[i  ] = buf[i+1];
                     buf3[i+1] = buf[i  ];
                 }
@@ -93,7 +100,8 @@ static int ac3_probe(AVProbeData *p)
     return ac3_eac3_probe(p, AV_CODEC_ID_AC3);
 }
 
-AVInputFormat ff_ac3_demuxer = {
+AVInputFormat ff_ac3_demuxer =
+{
     .name           = "ac3",
     .long_name      = NULL_IF_CONFIG_SMALL("raw AC-3"),
     .read_probe     = ac3_probe,
@@ -111,7 +119,8 @@ static int eac3_probe(AVProbeData *p)
     return ac3_eac3_probe(p, AV_CODEC_ID_EAC3);
 }
 
-AVInputFormat ff_eac3_demuxer = {
+AVInputFormat ff_eac3_demuxer =
+{
     .name           = "eac3",
     .long_name      = NULL_IF_CONFIG_SMALL("raw E-AC-3"),
     .read_probe     = eac3_probe,

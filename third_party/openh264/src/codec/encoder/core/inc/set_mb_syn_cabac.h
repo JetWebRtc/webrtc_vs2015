@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -46,30 +46,42 @@
 
 using namespace WelsCommon;
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 #define  WELS_QP_MAX    51
 
 typedef uint64_t cabac_low_t;
 enum { CABAC_LOW_WIDTH = sizeof (cabac_low_t) / sizeof (uint8_t) * 8 };
 
-typedef struct TagStateCtx {
-  // Packed representation of state and MPS as state << 1 | MPS.
-  uint8_t   m_uiStateMps;
+typedef struct TagStateCtx
+{
+// Packed representation of state and MPS as state << 1 | MPS.
+uint8_t   m_uiStateMps;
 
-  uint8_t Mps()   const { return m_uiStateMps  & 1; }
-  uint8_t State() const { return m_uiStateMps >> 1; }
-  void Set (uint8_t uiState, uint8_t uiMps) { m_uiStateMps = uiState * 2 + uiMps; }
+uint8_t Mps()   const
+{
+    return m_uiStateMps  & 1;
+}
+uint8_t State() const
+{
+    return m_uiStateMps >> 1;
+}
+void Set (uint8_t uiState, uint8_t uiMps)
+{
+    m_uiStateMps = uiState * 2 + uiMps;
+}
 } SStateCtx;
-typedef struct TagCabacCtx {
-  cabac_low_t m_uiLow;
-  int32_t   m_iLowBitCnt;
-  int32_t   m_iRenormCnt;
-  uint32_t  m_uiRange;
-  SStateCtx   m_sStateCtx[WELS_CONTEXT_COUNT];
-  uint8_t*   m_pBufStart;
-  uint8_t*   m_pBufEnd;
-  uint8_t*   m_pBufCur;
+typedef struct TagCabacCtx
+{
+cabac_low_t m_uiLow;
+int32_t   m_iLowBitCnt;
+int32_t   m_iRenormCnt;
+uint32_t  m_uiRange;
+SStateCtx   m_sStateCtx[WELS_CONTEXT_COUNT];
+uint8_t*   m_pBufStart;
+uint8_t*   m_pBufEnd;
+uint8_t*   m_pBufCur;
 } SCabacCtx;
 
 
@@ -89,19 +101,25 @@ int32_t  WriteBlockResidualCabac (void* pEncCtx,  int16_t* pCoffLevel, int32_t i
 // private functions used by public inline functions.
 void WelsCabacEncodeDecisionLps_ (SCabacCtx* pCbCtx, int32_t iCtx);
 void WelsCabacEncodeUpdateLowNontrivial_ (SCabacCtx* pCbCtx);
-inline void WelsCabacEncodeUpdateLow_ (SCabacCtx* pCbCtx) {
-  if (pCbCtx->m_iLowBitCnt + pCbCtx->m_iRenormCnt < CABAC_LOW_WIDTH) {
+inline void WelsCabacEncodeUpdateLow_ (SCabacCtx* pCbCtx)
+{
+if (pCbCtx->m_iLowBitCnt + pCbCtx->m_iRenormCnt < CABAC_LOW_WIDTH)
+{
     pCbCtx->m_iLowBitCnt  += pCbCtx->m_iRenormCnt;
     pCbCtx->m_uiLow      <<= pCbCtx->m_iRenormCnt;
-  } else {
+}
+else
+{
     WelsCabacEncodeUpdateLowNontrivial_ (pCbCtx);
-  }
-  pCbCtx->m_iRenormCnt = 0;
+}
+pCbCtx->m_iRenormCnt = 0;
 }
 
 // inline function definitions.
-void WelsCabacEncodeDecision (SCabacCtx* pCbCtx, int32_t iCtx, uint32_t uiBin) {
-  if (uiBin == pCbCtx->m_sStateCtx[iCtx].Mps()) {
+void WelsCabacEncodeDecision (SCabacCtx* pCbCtx, int32_t iCtx, uint32_t uiBin)
+{
+if (uiBin == pCbCtx->m_sStateCtx[iCtx].Mps())
+{
     const int32_t kiState = pCbCtx->m_sStateCtx[iCtx].State();
     uint32_t uiRange = pCbCtx->m_uiRange;
     uint32_t uiRangeLps = g_kuiCabacRangeLps[kiState][(uiRange & 0xff) >> 6];
@@ -111,16 +129,19 @@ void WelsCabacEncodeDecision (SCabacCtx* pCbCtx, int32_t iCtx, uint32_t uiBin) {
     pCbCtx->m_uiRange = uiRange << kiRenormAmount;
     pCbCtx->m_iRenormCnt += kiRenormAmount;
     pCbCtx->m_sStateCtx[iCtx].Set (g_kuiStateTransTable[kiState][1], uiBin);
-  } else {
+}
+else
+{
     WelsCabacEncodeDecisionLps_ (pCbCtx, iCtx);
-  }
+}
 }
 
-void WelsCabacEncodeBypassOne (SCabacCtx* pCbCtx, int32_t uiBin) {
-  const uint32_t kuiBinBitmask = -uiBin;
-  pCbCtx->m_iRenormCnt++;
-  WelsCabacEncodeUpdateLow_ (pCbCtx);
-  pCbCtx->m_uiLow += kuiBinBitmask & pCbCtx->m_uiRange;
+void WelsCabacEncodeBypassOne (SCabacCtx* pCbCtx, int32_t uiBin)
+{
+const uint32_t kuiBinBitmask = -uiBin;
+pCbCtx->m_iRenormCnt++;
+WelsCabacEncodeUpdateLow_ (pCbCtx);
+pCbCtx->m_uiLow += kuiBinBitmask & pCbCtx->m_uiRange;
 }
 
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,31 +13,38 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VoiceEngine;
 
-namespace internal {
+namespace internal
+{
 
 // Utility template for obtaining and holding a reference to a VoiceEngine
 // interface and making sure it is released when this object goes out of scope.
-template<class T> class ScopedVoEInterface {
- public:
-  explicit ScopedVoEInterface(webrtc::VoiceEngine* e)
-      : ptr_(T::GetInterface(e)) {
-    RTC_DCHECK(ptr_);
-  }
-  ~ScopedVoEInterface() {
-    if (ptr_) {
-      ptr_->Release();
+template<class T> class ScopedVoEInterface
+{
+public:
+    explicit ScopedVoEInterface(webrtc::VoiceEngine* e)
+        : ptr_(T::GetInterface(e))
+    {
+        RTC_DCHECK(ptr_);
     }
-  }
-  T* operator->() {
-    RTC_DCHECK(ptr_);
-    return ptr_;
-  }
- private:
-  T* ptr_;
+    ~ScopedVoEInterface()
+    {
+        if (ptr_)
+        {
+            ptr_->Release();
+        }
+    }
+    T* operator->()
+    {
+        RTC_DCHECK(ptr_);
+        return ptr_;
+    }
+private:
+    T* ptr_;
 };
 }  // namespace internal
 }  // namespace webrtc

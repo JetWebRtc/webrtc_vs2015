@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AIFF/AIFF-C muxer/demuxer common header
  * Copyright (c) 2006  Patrick Guimond
  *
@@ -30,7 +30,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-static const AVCodecTag ff_codec_aiff_tags[] = {
+static const AVCodecTag ff_codec_aiff_tags[] =
+{
     { AV_CODEC_ID_PCM_S16BE,    MKTAG('N','O','N','E') },
     { AV_CODEC_ID_PCM_S8,       MKTAG('N','O','N','E') },
     { AV_CODEC_ID_PCM_U8,       MKTAG('r','a','w',' ') },

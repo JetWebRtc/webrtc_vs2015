@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Autodesk RLE Decoder
  * Copyright (c) 2005 The FFmpeg Project
  *
@@ -32,7 +32,8 @@
 #include "internal.h"
 #include "msrledec.h"
 
-typedef struct AascContext {
+typedef struct AascContext
+{
     AVCodecContext *avctx;
     GetByteContext gb;
     AVFrame *frame;
@@ -48,13 +49,15 @@ static av_cold int aasc_decode_init(AVCodecContext *avctx)
     int i;
 
     s->avctx = avctx;
-    switch (avctx->bits_per_coded_sample) {
+    switch (avctx->bits_per_coded_sample)
+    {
     case 8:
         avctx->pix_fmt = AV_PIX_FMT_PAL8;
 
         ptr = avctx->extradata;
         s->palette_size = FFMIN(avctx->extradata_size, AVPALETTE_SIZE);
-        for (i = 0; i < s->palette_size / 4; i++) {
+        for (i = 0; i < s->palette_size / 4; i++)
+        {
             s->palette[i] = 0xFFU << 24 | AV_RL32(ptr);
             ptr += 4;
         }
@@ -78,15 +81,16 @@ static av_cold int aasc_decode_init(AVCodecContext *avctx)
 }
 
 static int aasc_decode_frame(AVCodecContext *avctx,
-                              void *data, int *got_frame,
-                              AVPacket *avpkt)
+                             void *data, int *got_frame,
+                             AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size       = avpkt->size;
     AascContext *s     = avctx->priv_data;
     int compr, i, stride, psize, ret;
 
-    if (buf_size < 4) {
+    if (buf_size < 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "frame too short\n");
         return AVERROR_INVALIDDATA;
     }
@@ -98,31 +102,34 @@ static int aasc_decode_frame(AVCodecContext *avctx,
     buf      += 4;
     buf_size -= 4;
     psize = avctx->bits_per_coded_sample / 8;
-    switch (avctx->codec_tag) {
+    switch (avctx->codec_tag)
+    {
     case MKTAG('A', 'A', 'S', '4'):
         bytestream2_init(&s->gb, buf - 4, buf_size + 4);
         ff_msrle_decode(avctx, (AVPicture*)s->frame, 8, &s->gb);
         break;
     case MKTAG('A', 'A', 'S', 'C'):
-    switch (compr) {
-    case 0:
-        stride = (avctx->width * psize + psize) & ~psize;
-        if (buf_size < stride * avctx->height)
+        switch (compr)
+        {
+        case 0:
+            stride = (avctx->width * psize + psize) & ~psize;
+            if (buf_size < stride * avctx->height)
+                return AVERROR_INVALIDDATA;
+            for (i = avctx->height - 1; i >= 0; i--)
+            {
+                memcpy(s->frame->data[0] + i * s->frame->linesize[0], buf, avctx->width * psize);
+                buf += stride;
+                buf_size -= stride;
+            }
+            break;
+        case 1:
+            bytestream2_init(&s->gb, buf, buf_size);
+            ff_msrle_decode(avctx, (AVPicture*)s->frame, 8, &s->gb);
+            break;
+        default:
+            av_log(avctx, AV_LOG_ERROR, "Unknown compression type %d\n", compr);
             return AVERROR_INVALIDDATA;
-        for (i = avctx->height - 1; i >= 0; i--) {
-            memcpy(s->frame->data[0] + i * s->frame->linesize[0], buf, avctx->width * psize);
-            buf += stride;
-            buf_size -= stride;
         }
-        break;
-    case 1:
-        bytestream2_init(&s->gb, buf, buf_size);
-        ff_msrle_decode(avctx, (AVPicture*)s->frame, 8, &s->gb);
-        break;
-    default:
-        av_log(avctx, AV_LOG_ERROR, "Unknown compression type %d\n", compr);
-        return AVERROR_INVALIDDATA;
-    }
         break;
     default:
         av_log(avctx, AV_LOG_ERROR, "Unknown FourCC: %X\n", avctx->codec_tag);
@@ -149,7 +156,8 @@ static av_cold int aasc_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_aasc_decoder = {
+AVCodec ff_aasc_decoder =
+{
     .name           = "aasc",
     .long_name      = NULL_IF_CONFIG_SMALL("Autodesk RLE"),
     .type           = AVMEDIA_TYPE_VIDEO,

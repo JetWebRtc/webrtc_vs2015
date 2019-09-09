@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,13 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 // Callback class for the MediaFile class.
 class FileCallback
 {
 public:
-    virtual ~FileCallback(){}
+    virtual ~FileCallback() {}
 
     // This function is called by MediaFile when a file has been playing for
     // durationMs ms. id is the identifier for the MediaFile instance calling

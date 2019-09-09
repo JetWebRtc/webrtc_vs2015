@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -86,57 +86,58 @@ extern "C" {
 #define VPX_CODEC_ABI_VERSION (3 + VPX_IMAGE_ABI_VERSION) /**<\hideinitializer*/
 
 /*!\brief Algorithm return codes */
-typedef enum {
-  /*!\brief Operation completed without error */
-  VPX_CODEC_OK,
+typedef enum
+{
+    /*!\brief Operation completed without error */
+    VPX_CODEC_OK,
 
-  /*!\brief Unspecified error */
-  VPX_CODEC_ERROR,
+    /*!\brief Unspecified error */
+    VPX_CODEC_ERROR,
 
-  /*!\brief Memory operation failed */
-  VPX_CODEC_MEM_ERROR,
+    /*!\brief Memory operation failed */
+    VPX_CODEC_MEM_ERROR,
 
-  /*!\brief ABI version mismatch */
-  VPX_CODEC_ABI_MISMATCH,
+    /*!\brief ABI version mismatch */
+    VPX_CODEC_ABI_MISMATCH,
 
-  /*!\brief Algorithm does not have required capability */
-  VPX_CODEC_INCAPABLE,
+    /*!\brief Algorithm does not have required capability */
+    VPX_CODEC_INCAPABLE,
 
-  /*!\brief The given bitstream is not supported.
-   *
-   * The bitstream was unable to be parsed at the highest level. The decoder
-   * is unable to proceed. This error \ref SHOULD be treated as fatal to the
-   * stream. */
-  VPX_CODEC_UNSUP_BITSTREAM,
+    /*!\brief The given bitstream is not supported.
+     *
+     * The bitstream was unable to be parsed at the highest level. The decoder
+     * is unable to proceed. This error \ref SHOULD be treated as fatal to the
+     * stream. */
+    VPX_CODEC_UNSUP_BITSTREAM,
 
-  /*!\brief Encoded bitstream uses an unsupported feature
-   *
-   * The decoder does not implement a feature required by the encoder. This
-   * return code should only be used for features that prevent future
-   * pictures from being properly decoded. This error \ref MAY be treated as
-   * fatal to the stream or \ref MAY be treated as fatal to the current GOP.
-   */
-  VPX_CODEC_UNSUP_FEATURE,
+    /*!\brief Encoded bitstream uses an unsupported feature
+     *
+     * The decoder does not implement a feature required by the encoder. This
+     * return code should only be used for features that prevent future
+     * pictures from being properly decoded. This error \ref MAY be treated as
+     * fatal to the stream or \ref MAY be treated as fatal to the current GOP.
+     */
+    VPX_CODEC_UNSUP_FEATURE,
 
-  /*!\brief The coded data for this stream is corrupt or incomplete
-   *
-   * There was a problem decoding the current frame.  This return code
-   * should only be used for failures that prevent future pictures from
-   * being properly decoded. This error \ref MAY be treated as fatal to the
-   * stream or \ref MAY be treated as fatal to the current GOP. If decoding
-   * is continued for the current GOP, artifacts may be present.
-   */
-  VPX_CODEC_CORRUPT_FRAME,
+    /*!\brief The coded data for this stream is corrupt or incomplete
+     *
+     * There was a problem decoding the current frame.  This return code
+     * should only be used for failures that prevent future pictures from
+     * being properly decoded. This error \ref MAY be treated as fatal to the
+     * stream or \ref MAY be treated as fatal to the current GOP. If decoding
+     * is continued for the current GOP, artifacts may be present.
+     */
+    VPX_CODEC_CORRUPT_FRAME,
 
-  /*!\brief An application-supplied parameter is not valid.
-   *
-   */
-  VPX_CODEC_INVALID_PARAM,
+    /*!\brief An application-supplied parameter is not valid.
+     *
+     */
+    VPX_CODEC_INVALID_PARAM,
 
-  /*!\brief An iterator reached the end of list.
-   *
-   */
-  VPX_CODEC_LIST_END
+    /*!\brief An iterator reached the end of list.
+     *
+     */
+    VPX_CODEC_LIST_END
 
 } vpx_codec_err_t;
 
@@ -189,30 +190,33 @@ typedef const void *vpx_codec_iter_t;
  * may reference the 'name' member to get a printable description of the
  * algorithm.
  */
-typedef struct vpx_codec_ctx {
-  const char *name;             /**< Printable interface name */
-  vpx_codec_iface_t *iface;     /**< Interface pointers */
-  vpx_codec_err_t err;          /**< Last returned error */
-  const char *err_detail;       /**< Detailed info, if available */
-  vpx_codec_flags_t init_flags; /**< Flags passed at init time */
-  union {
-    /**< Decoder Configuration Pointer */
-    const struct vpx_codec_dec_cfg *dec;
-    /**< Encoder Configuration Pointer */
-    const struct vpx_codec_enc_cfg *enc;
-    const void *raw;
-  } config;               /**< Configuration pointer aliasing union */
-  vpx_codec_priv_t *priv; /**< Algorithm private storage */
+typedef struct vpx_codec_ctx
+{
+    const char *name;             /**< Printable interface name */
+    vpx_codec_iface_t *iface;     /**< Interface pointers */
+    vpx_codec_err_t err;          /**< Last returned error */
+    const char *err_detail;       /**< Detailed info, if available */
+    vpx_codec_flags_t init_flags; /**< Flags passed at init time */
+    union
+    {
+        /**< Decoder Configuration Pointer */
+        const struct vpx_codec_dec_cfg *dec;
+        /**< Encoder Configuration Pointer */
+        const struct vpx_codec_enc_cfg *enc;
+        const void *raw;
+    } config;               /**< Configuration pointer aliasing union */
+    vpx_codec_priv_t *priv; /**< Algorithm private storage */
 } vpx_codec_ctx_t;
 
 /*!\brief Bit depth for codec
  * *
  * This enumeration determines the bit depth of the codec.
  */
-typedef enum vpx_bit_depth {
-  VPX_BITS_8 = 8,   /**<  8 bits */
-  VPX_BITS_10 = 10, /**< 10 bits */
-  VPX_BITS_12 = 12, /**< 12 bits */
+typedef enum vpx_bit_depth
+{
+    VPX_BITS_8 = 8,   /**<  8 bits */
+    VPX_BITS_10 = 10, /**< 10 bits */
+    VPX_BITS_12 = 12, /**< 12 bits */
 } vpx_bit_depth_t;
 
 /*

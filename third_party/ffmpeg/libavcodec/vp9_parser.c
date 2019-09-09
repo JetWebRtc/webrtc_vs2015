@@ -25,7 +25,8 @@
 #include "libavcodec/get_bits.h"
 #include "parser.h"
 
-typedef struct VP9ParseContext {
+typedef struct VP9ParseContext
+{
     int n_frames; // 1-8
     int size[8];
     int64_t pts;
@@ -44,27 +45,36 @@ static int parse_frame(AVCodecParserContext *ctx, const uint8_t *buf, int size)
     profile |= get_bits1(&gb) << 1;
     if (profile == 3) profile += get_bits1(&gb);
 
-    if (get_bits1(&gb)) {
+    if (get_bits1(&gb))
+    {
         keyframe = 0;
         invisible = 0;
-    } else {
+    }
+    else
+    {
         keyframe  = !get_bits1(&gb);
         invisible = !get_bits1(&gb);
     }
 
-    if (!keyframe) {
+    if (!keyframe)
+    {
         ctx->pict_type = AV_PICTURE_TYPE_P;
         ctx->key_frame = 0;
-    } else {
+    }
+    else
+    {
         ctx->pict_type = AV_PICTURE_TYPE_I;
         ctx->key_frame = 1;
     }
 
-    if (!invisible) {
+    if (!invisible)
+    {
         if (ctx->pts == AV_NOPTS_VALUE)
             ctx->pts = s->pts;
         s->pts = AV_NOPTS_VALUE;
-    } else {
+    }
+    else
+    {
         s->pts = ctx->pts;
         ctx->pts = AV_NOPTS_VALUE;
     }
@@ -81,14 +91,16 @@ static int parse(AVCodecParserContext *ctx,
     int full_size = size;
     int marker;
 
-    if (size <= 0) {
+    if (size <= 0)
+    {
         *out_size = 0;
         *out_data = data;
 
         return 0;
     }
 
-    if (s->n_frames > 0) {
+    if (s->n_frames > 0)
+    {
         *out_data = data;
         *out_size = s->size[--s->n_frames];
         parse_frame(ctx, *out_data, *out_size);
@@ -97,15 +109,18 @@ static int parse(AVCodecParserContext *ctx,
     }
 
     marker = data[size - 1];
-    if ((marker & 0xe0) == 0xc0) {
+    if ((marker & 0xe0) == 0xc0)
+    {
         int nbytes = 1 + ((marker >> 3) & 0x3);
         int n_frames = 1 + (marker & 0x7), idx_sz = 2 + n_frames * nbytes;
 
-        if (size >= idx_sz && data[size - idx_sz] == marker) {
+        if (size >= idx_sz && data[size - idx_sz] == marker)
+        {
             const uint8_t *idx = data + size + 1 - idx_sz;
             int first = 1;
 
-            switch (nbytes) {
+            switch (nbytes)
+            {
 #define case_n(a, rd) \
             case a: \
                 while (n_frames--) { \
@@ -149,7 +164,8 @@ static int parse(AVCodecParserContext *ctx,
     return size;
 }
 
-AVCodecParser ff_vp9_parser = {
+AVCodecParser ff_vp9_parser =
+{
     .codec_ids      = { AV_CODEC_ID_VP9 },
     .priv_data_size = sizeof(VP9ParseContext),
     .parser_parse   = parse,

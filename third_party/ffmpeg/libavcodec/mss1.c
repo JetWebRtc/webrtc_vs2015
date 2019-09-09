@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Screen 1 (aka Windows Media Video V7 Screen) decoder
  * Copyright (c) 2012 Konstantin Shishkov
  *
@@ -28,7 +28,8 @@
 #include "internal.h"
 #include "mss12.h"
 
-typedef struct MSS1Context {
+typedef struct MSS1Context
+{
     MSS12Context   ctx;
     AVFrame       *pic;
     SliceContext   sc;
@@ -36,17 +37,25 @@ typedef struct MSS1Context {
 
 static void arith_normalise(ArithCoder *c)
 {
-    for (;;) {
-        if (c->high >= 0x8000) {
-            if (c->low < 0x8000) {
-                if (c->low >= 0x4000 && c->high < 0xC000) {
+    for (;;)
+    {
+        if (c->high >= 0x8000)
+        {
+            if (c->low < 0x8000)
+            {
+                if (c->low >= 0x4000 && c->high < 0xC000)
+                {
                     c->value -= 0x4000;
                     c->low   -= 0x4000;
                     c->high  -= 0x4000;
-                } else {
+                }
+                else
+                {
                     return;
                 }
-            } else {
+            }
+            else
+            {
                 c->value -= 0x8000;
                 c->low   -= 0x8000;
                 c->high  -= 0x8000;
@@ -126,7 +135,8 @@ static int decode_pal(MSS12Context *ctx, ArithCoder *acoder)
         return 0;
 
     ncol = arith_get_number(acoder, ctx->free_colours + 1);
-    for (i = 0; i < ncol; i++) {
+    for (i = 0; i < ncol; i++)
+    {
         r = arith_get_bits(acoder, 8);
         g = arith_get_bits(acoder, 8);
         b = arith_get_bits(acoder, 8);
@@ -157,13 +167,16 @@ static int mss1_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     c->pal_pic    =  ctx->pic->data[0] + ctx->pic->linesize[0] * (avctx->height - 1);
     c->pal_stride = -ctx->pic->linesize[0];
     c->keyframe   = !arith_get_bit(&acoder);
-    if (c->keyframe) {
+    if (c->keyframe)
+    {
         c->corrupted = 0;
         ff_mss12_slicecontext_reset(&ctx->sc);
         pal_changed        = decode_pal(c, &acoder);
         ctx->pic->key_frame = 1;
         ctx->pic->pict_type = AV_PICTURE_TYPE_I;
-    } else {
+    }
+    else
+    {
         if (c->corrupted)
             return AVERROR_INVALIDDATA;
         ctx->pic->key_frame = 0;
@@ -215,7 +228,8 @@ static av_cold int mss1_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_mss1_decoder = {
+AVCodec ff_mss1_decoder =
+{
     .name           = "mss1",
     .long_name      = NULL_IF_CONFIG_SMALL("MS Screen 1"),
     .type           = AVMEDIA_TYPE_VIDEO,

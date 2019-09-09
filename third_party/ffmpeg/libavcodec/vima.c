@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LucasArts VIMA decoder
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -35,7 +35,8 @@
 static int predict_table_init = 0;
 static uint16_t predict_table[5786 * 2];
 
-static const uint8_t size_table[] = {
+static const uint8_t size_table[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -44,42 +45,49 @@ static const uint8_t size_table[] = {
     7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7
 };
 
-static const int8_t index_table1[] = {
+static const int8_t index_table1[] =
+{
     -1, 4, -1, 4
 };
 
-static const int8_t index_table2[] = {
+static const int8_t index_table2[] =
+{
     -1, -1, 2, 6, -1, -1, 2, 6
 };
 
-static const int8_t index_table3[] = {
+static const int8_t index_table3[] =
+{
     -1, -1, -1, -1, 1, 2, 4, 6, -1, -1, -1, -1, 1, 2, 4, 6
 };
 
-static const int8_t index_table4[] = {
+static const int8_t index_table4[] =
+{
     -1, -1, -1, -1, -1, -1, -1, -1, 1,  1,  1,  2,  2,  4,  5,  6,
     -1, -1, -1, -1, -1, -1, -1, -1, 1,  1,  1,  2,  2,  4,  5,  6
 };
 
-static const int8_t index_table5[] = {
+static const int8_t index_table5[] =
+{
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-     1,  1,  1,  1,  1,  2,  2,  2,  2,  4,  4,  4,  5,  5,  6,  6,
+    1,  1,  1,  1,  1,  2,  2,  2,  2,  4,  4,  4,  5,  5,  6,  6,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-     1,  1,  1,  1,  1,  2,  2,  2,  2,  4,  4,  4,  5,  5,  6,  6
+    1,  1,  1,  1,  1,  2,  2,  2,  2,  4,  4,  4,  5,  5,  6,  6
 };
 
-static const int8_t index_table6[] = {
+static const int8_t index_table6[] =
+{
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-     1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,
-     2,  2,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  6,  6,  6,  6,
+    1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,
+    2,  2,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  6,  6,  6,  6,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-     1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,
-     2,  2,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  6,  6,  6,  6
+    1,  1,  1,  1,  1,  1,  1,  1,  1,  1,  2,  2,  2,  2,  2,  2,
+    2,  2,  4,  4,  4,  4,  4,  4,  5,  5,  5,  5,  6,  6,  6,  6
 };
 
-static const int8_t *const step_index_tables[] = {
+static const int8_t *const step_index_tables[] =
+{
     index_table1, index_table2, index_table3,
     index_table4, index_table5, index_table6
 };
@@ -93,16 +101,19 @@ static av_cold int decode_init(AVCodecContext *avctx)
     if (predict_table_init)
         return 0;
 
-    for (start_pos = 0; start_pos < 64; start_pos++) {
+    for (start_pos = 0; start_pos < 64; start_pos++)
+    {
         unsigned int dest_pos, table_pos;
 
         for (table_pos = 0, dest_pos = start_pos;
-             table_pos < FF_ARRAY_ELEMS(ff_adpcm_step_table);
-             table_pos++, dest_pos += 64) {
+                table_pos < FF_ARRAY_ELEMS(ff_adpcm_step_table);
+                table_pos++, dest_pos += 64)
+        {
             int put = 0, count, table_value;
 
             table_value = ff_adpcm_step_table[table_pos];
-            for (count = 32; count != 0; count >>= 1) {
+            for (count = 32; count != 0; count >>= 1)
+            {
                 if (start_pos & count)
                     put += table_value;
                 table_value >>= 1;
@@ -133,7 +144,8 @@ static int decode_frame(AVCodecContext *avctx, void *data,
         return ret;
 
     samples = get_bits_long(&gb, 32);
-    if (samples == 0xffffffff) {
+    if (samples == 0xffffffff)
+    {
         skip_bits_long(&gb, 32);
         samples = get_bits_long(&gb, 32);
     }
@@ -142,15 +154,17 @@ static int decode_frame(AVCodecContext *avctx, void *data,
         return AVERROR_INVALIDDATA;
 
     channel_hint[0] = get_sbits(&gb, 8);
-    if (channel_hint[0] & 0x80) {
+    if (channel_hint[0] & 0x80)
+    {
         channel_hint[0] = ~channel_hint[0];
         channels = 2;
     }
     avctx->channels = channels;
     avctx->channel_layout = (channels == 2) ? AV_CH_LAYOUT_STEREO
-                                            : AV_CH_LAYOUT_MONO;
+                            : AV_CH_LAYOUT_MONO;
     pcm_data[0] = get_sbits(&gb, 16);
-    if (channels > 1) {
+    if (channels > 1)
+    {
         channel_hint[1] = get_sbits(&gb, 8);
         pcm_data[1]     = get_sbits(&gb, 16);
     }
@@ -159,13 +173,15 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    for (chan = 0; chan < channels; chan++) {
+    for (chan = 0; chan < channels; chan++)
+    {
         uint16_t *dest = (uint16_t *)frame->data[0] + chan;
         int step_index = channel_hint[chan];
         int output = pcm_data[chan];
         int sample;
 
-        for (sample = 0; sample < samples; sample++) {
+        for (sample = 0; sample < samples; sample++)
+        {
             int lookup_size, lookup, highbit, lowbits;
 
             step_index  = av_clip(step_index, 0, 88);
@@ -179,9 +195,12 @@ static int decode_frame(AVCodecContext *avctx, void *data,
             else
                 highbit = 0;
 
-            if (lookup == lowbits) {
+            if (lookup == lowbits)
+            {
                 output = get_sbits(&gb, 16);
-            } else {
+            }
+            else
+            {
                 int predict_index, diff;
 
                 predict_index = (lookup << (7 - lookup_size)) | (step_index << 6);
@@ -207,7 +226,8 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     return pkt->size;
 }
 
-AVCodec ff_adpcm_vima_decoder = {
+AVCodec ff_adpcm_vima_decoder =
+{
     .name         = "adpcm_vima",
     .long_name    = NULL_IF_CONFIG_SMALL("LucasArts VIMA audio"),
     .type         = AVMEDIA_TYPE_AUDIO,
@@ -218,7 +238,8 @@ AVCodec ff_adpcm_vima_decoder = {
 };
 
 #if FF_API_VIMA_DECODER
-AVCodec ff_vima_decoder = {
+AVCodec ff_vima_decoder =
+{
     .name         = "vima",
     .long_name    = NULL_IF_CONFIG_SMALL("LucasArts VIMA audio"),
     .type         = AVMEDIA_TYPE_AUDIO,

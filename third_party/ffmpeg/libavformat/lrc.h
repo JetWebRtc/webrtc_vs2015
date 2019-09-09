@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LRC lyrics file format decoder
  * Copyright (c) 2014 StarBrilliant <m13253@hotmail.com>
  *

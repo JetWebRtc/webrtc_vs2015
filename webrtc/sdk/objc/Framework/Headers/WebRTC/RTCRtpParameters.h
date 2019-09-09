@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,8 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCRtpParameters : NSObject
 
-/** The currently active encodings in the order of preference. */
-@property(nonatomic, copy) NSArray<RTCRtpEncodingParameters *> *encodings;
+    /** The currently active encodings in the order of preference. */
+    @property(nonatomic, copy) NSArray<RTCRtpEncodingParameters *> *encodings;
 
 /** The negotiated set of send codecs in order of preference. */
 @property(nonatomic, copy) NSArray<RTCRtpCodecParameters *> *codecs;

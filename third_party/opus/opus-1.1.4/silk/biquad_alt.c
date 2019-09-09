@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -59,7 +59,8 @@ void silk_biquad_alt(
     A1_L_Q28 = ( -A_Q28[ 1 ] ) & 0x00003FFF;        /* lower part */
     A1_U_Q28 = silk_RSHIFT( -A_Q28[ 1 ], 14 );      /* upper part */
 
-    for( k = 0; k < len; k++ ) {
+    for( k = 0; k < len; k++ )
+    {
         /* S[ 0 ], S[ 1 ]: Q12 */
         inval = in[ k * stride ];
         out32_Q14 = silk_LSHIFT( silk_SMLAWB( S[ 0 ], B_Q28[ 0 ], inval ), 2 );

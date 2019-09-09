@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNG image format
  * Copyright (c) 2003 Fabrice Bellard
  *

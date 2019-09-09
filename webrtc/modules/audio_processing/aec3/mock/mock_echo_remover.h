@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,21 +18,24 @@
 #include "webrtc/modules/audio_processing/aec3/echo_remover.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockEchoRemover : public EchoRemover {
- public:
-  virtual ~MockEchoRemover() = default;
+class MockEchoRemover : public EchoRemover
+{
+public:
+    virtual ~MockEchoRemover() = default;
 
-  MOCK_METHOD5(ProcessBlock,
-               void(const rtc::Optional<size_t>& echo_path_delay_samples,
-                    const EchoPathVariability& echo_path_variability,
-                    bool capture_signal_saturation,
-                    const std::vector<std::vector<float>>& render,
-                    std::vector<std::vector<float>>* capture));
+    MOCK_METHOD5(ProcessBlock,
+                 void(const rtc::Optional<size_t>& echo_path_delay_samples,
+                      const EchoPathVariability& echo_path_variability,
+                      bool capture_signal_saturation,
+                      const std::vector<std::vector<float>>& render,
+                      std::vector<std::vector<float>>* capture));
 
-  MOCK_METHOD1(UpdateEchoLeakageStatus, void(bool leakage_detected));
+    MOCK_METHOD1(UpdateEchoLeakageStatus, void(bool leakage_detected));
 };
 
 }  // namespace test

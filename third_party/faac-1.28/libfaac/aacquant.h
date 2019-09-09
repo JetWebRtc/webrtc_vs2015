@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -39,17 +39,17 @@ extern "C" {
 
 #pragma pack(push, 1)
 typedef struct
-  {
+{
     double *pow43;
     double *adj43;
     double quality;
-  } AACQuantCfg;
+} AACQuantCfg;
 #pragma pack(pop)
 
 void AACQuantizeInit(CoderInfo *coderInfo, unsigned int numChannels,
-		     AACQuantCfg *aacquantCfg);
+                     AACQuantCfg *aacquantCfg);
 void AACQuantizeEnd(CoderInfo *coderInfo, unsigned int numChannels,
-		    AACQuantCfg *aacquantCfg);
+                    AACQuantCfg *aacquantCfg);
 
 int AACQuantize(CoderInfo *coderInfo,
                 PsyInfo *psyInfo,
@@ -57,15 +57,15 @@ int AACQuantize(CoderInfo *coderInfo,
                 int *cb_width,
                 int num_cb,
                 double *xr,
-		AACQuantCfg *aacquantcfg);
+                AACQuantCfg *aacquantcfg);
 
 int SortForGrouping(CoderInfo* coderInfo,
-		    PsyInfo *psyInfo,
-		    ChannelInfo *channelInfo,
-		    int *sfb_width_table,
-		    double *xr);
+                    PsyInfo *psyInfo,
+                    ChannelInfo *channelInfo,
+                    int *sfb_width_table,
+                    double *xr);
 void CalcAvgEnrg(CoderInfo *coderInfo,
-		 const double *xr);
+                 const double *xr);
 
 #ifdef __cplusplus
 }

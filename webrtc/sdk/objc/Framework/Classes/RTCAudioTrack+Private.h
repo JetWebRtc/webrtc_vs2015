@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,14 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @class RTCPeerConnectionFactory;
 @interface RTCAudioTrack ()
 
-/** AudioTrackInterface created or passed in at construction. */
-@property(nonatomic, readonly)
+    /** AudioTrackInterface created or passed in at construction. */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::AudioTrackInterface> nativeAudioTrack;
 
 /** Initialize an RTCAudioTrack with an id. */
 - (instancetype)initWithFactory:(RTCPeerConnectionFactory *)factory
-                         source:(RTCAudioSource *)source
-                        trackId:(NSString *)trackId;
+    source:(RTCAudioSource *)source
+    trackId:(NSString *)trackId;
 
 @end
 

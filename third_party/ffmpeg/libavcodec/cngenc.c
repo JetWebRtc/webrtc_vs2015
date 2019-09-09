@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RFC 3389 comfort noise generator
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -26,7 +26,8 @@
 #include "internal.h"
 #include "lpc.h"
 
-typedef struct CNGContext {
+typedef struct CNGContext
+{
     LPCContext lpc;
     int order;
     int32_t *samples32;
@@ -47,7 +48,8 @@ static av_cold int cng_encode_init(AVCodecContext *avctx)
     CNGContext *p = avctx->priv_data;
     int ret;
 
-    if (avctx->channels != 1) {
+    if (avctx->channels != 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only mono supported\n");
         return AVERROR(EINVAL);
     }
@@ -58,7 +60,8 @@ static av_cold int cng_encode_init(AVCodecContext *avctx)
         return ret;
     p->samples32 = av_malloc_array(avctx->frame_size, sizeof(*p->samples32));
     p->ref_coef = av_malloc_array(p->order, sizeof(*p->ref_coef));
-    if (!p->samples32 || !p->ref_coef) {
+    if (!p->samples32 || !p->ref_coef)
+    {
         cng_encode_close(avctx);
         return AVERROR(ENOMEM);
     }
@@ -75,20 +78,25 @@ static int cng_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     int qdbov;
     int16_t *samples = (int16_t*) frame->data[0];
 
-    if ((ret = ff_alloc_packet2(avctx, avpkt, 1 + p->order, 1 + p->order))) {
+    if ((ret = ff_alloc_packet2(avctx, avpkt, 1 + p->order, 1 + p->order)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Error getting output packet\n");
         return ret;
     }
 
-    for (i = 0; i < frame->nb_samples; i++) {
+    for (i = 0; i < frame->nb_samples; i++)
+    {
         p->samples32[i] = samples[i];
         energy += samples[i] * samples[i];
     }
     energy /= frame->nb_samples;
-    if (energy > 0) {
+    if (energy > 0)
+    {
         double dbov = 10 * log10(energy / 1081109975);
         qdbov = av_clip_uintp2(-floor(dbov), 7);
-    } else {
+    }
+    else
+    {
         qdbov = 127;
     }
     ret = ff_lpc_calc_ref_coefs(&p->lpc, p->samples32, p->order, p->ref_coef);
@@ -102,7 +110,8 @@ static int cng_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-AVCodec ff_comfortnoise_encoder = {
+AVCodec ff_comfortnoise_encoder =
+{
     .name           = "comfortnoise",
     .long_name      = NULL_IF_CONFIG_SMALL("RFC 3389 comfort noise generator"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -111,6 +120,8 @@ AVCodec ff_comfortnoise_encoder = {
     .init           = cng_encode_init,
     .encode2        = cng_encode_frame,
     .close          = cng_encode_close,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
 };

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,12 +16,14 @@
 #include "webrtc/modules/remote_bitrate_estimator/include/remote_bitrate_estimator.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockRemoteBitrateObserver : public RemoteBitrateObserver {
- public:
-  MOCK_METHOD2(OnReceiveBitrateChanged,
-      void(const std::vector<unsigned int>& ssrcs, unsigned int bitrate));
+class MockRemoteBitrateObserver : public RemoteBitrateObserver
+{
+public:
+    MOCK_METHOD2(OnReceiveBitrateChanged,
+                 void(const std::vector<unsigned int>& ssrcs, unsigned int bitrate));
 };
 
 }  // namespace webrtc

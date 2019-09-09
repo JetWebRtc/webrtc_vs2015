@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -66,8 +66,8 @@ __attribute__((noreturn))
 #endif
 static OPUS_INLINE void _silk_fatal(const char *str, const char *file, int line)
 {
-   fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
-   abort();
+    fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
+    abort();
 }
 #  define silk_assert(COND) {if (!(COND)) {silk_fatal("assertion failed: " #COND);}}
 # else

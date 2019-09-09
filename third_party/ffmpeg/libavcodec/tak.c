@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TAK common code
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -23,7 +23,8 @@
 #include "libavutil/intreadwrite.h"
 #include "tak.h"
 
-static const int64_t tak_channel_layouts[] = {
+static const int64_t tak_channel_layouts[] =
+{
     0,
     AV_CH_FRONT_LEFT,
     AV_CH_FRONT_RIGHT,
@@ -45,7 +46,8 @@ static const int64_t tak_channel_layouts[] = {
     AV_CH_TOP_BACK_RIGHT,
 };
 
-static const uint16_t frame_duration_type_quants[] = {
+static const uint16_t frame_duration_type_quants[] =
+{
     3, 4, 6, 8, 4096, 8192, 16384, 512, 1024, 2048,
 };
 
@@ -53,16 +55,20 @@ static int tak_get_nb_samples(int sample_rate, enum TAKFrameSizeType type)
 {
     int nb_samples, max_nb_samples;
 
-    if (type <= TAK_FST_250ms) {
+    if (type <= TAK_FST_250ms)
+    {
         nb_samples     = sample_rate * frame_duration_type_quants[type] >>
-                         TAK_FRAME_DURATION_QUANT_SHIFT;
+        TAK_FRAME_DURATION_QUANT_SHIFT;
         max_nb_samples = 16384;
-    } else if (type < FF_ARRAY_ELEMS(frame_duration_type_quants)) {
+    }
+    else if (type < FF_ARRAY_ELEMS(frame_duration_type_quants))
+    {
         nb_samples     = frame_duration_type_quants[type];
         max_nb_samples = sample_rate *
-                         frame_duration_type_quants[TAK_FST_250ms] >>
-                         TAK_FRAME_DURATION_QUANT_SHIFT;
-    } else {
+        frame_duration_type_quants[TAK_FST_250ms] >>
+        TAK_FRAME_DURATION_QUANT_SHIFT;
+    }
+    else {
         return AVERROR_INVALIDDATA;
     }
 
@@ -107,10 +113,13 @@ void avpriv_tak_parse_streaminfo(GetBitContext *gb, TAKStreamInfo *s)
     s->channels    = get_bits(gb, TAK_FORMAT_CHANNEL_BITS) +
                      TAK_CHANNELS_MIN;
 
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         skip_bits(gb, TAK_FORMAT_VALID_BITS);
-        if (get_bits1(gb)) {
-            for (i = 0; i < s->channels; i++) {
+        if (get_bits1(gb))
+        {
+            for (i = 0; i < s->channels; i++)
+            {
                 int value = get_bits(gb, TAK_FORMAT_CH_LAYOUT_BITS);
 
                 if (value < FF_ARRAY_ELEMS(tak_channel_layouts))
@@ -126,7 +135,8 @@ void avpriv_tak_parse_streaminfo(GetBitContext *gb, TAKStreamInfo *s)
 int ff_tak_decode_frame_header(AVCodecContext *avctx, GetBitContext *gb,
                                TAKStreamInfo *ti, int log_level_offset)
 {
-    if (get_bits(gb, TAK_FRAME_HEADER_SYNC_ID_BITS) != TAK_FRAME_HEADER_SYNC_ID) {
+    if (get_bits(gb, TAK_FRAME_HEADER_SYNC_ID_BITS) != TAK_FRAME_HEADER_SYNC_ID)
+    {
         av_log(avctx, AV_LOG_ERROR + log_level_offset, "missing sync id\n");
         return AVERROR_INVALIDDATA;
     }
@@ -134,14 +144,18 @@ int ff_tak_decode_frame_header(AVCodecContext *avctx, GetBitContext *gb,
     ti->flags     = get_bits(gb, TAK_FRAME_HEADER_FLAGS_BITS);
     ti->frame_num = get_bits(gb, TAK_FRAME_HEADER_NO_BITS);
 
-    if (ti->flags & TAK_FRAME_FLAG_IS_LAST) {
+    if (ti->flags & TAK_FRAME_FLAG_IS_LAST)
+    {
         ti->last_frame_samples = get_bits(gb, TAK_FRAME_HEADER_SAMPLE_COUNT_BITS) + 1;
         skip_bits(gb, 2);
-    } else {
+    }
+    else
+    {
         ti->last_frame_samples = 0;
     }
 
-    if (ti->flags & TAK_FRAME_FLAG_HAS_INFO) {
+    if (ti->flags & TAK_FRAME_FLAG_HAS_INFO)
+    {
         avpriv_tak_parse_streaminfo(gb, ti);
 
         if (get_bits(gb, 6))

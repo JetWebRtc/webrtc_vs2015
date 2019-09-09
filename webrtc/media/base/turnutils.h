@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include <cstddef>
 #include <cstdint>
 
-namespace cricket {
+namespace cricket
+{
 
 struct PacketOptions;
 

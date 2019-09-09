@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -38,47 +38,59 @@
 #include <windows.h>
 #include <winnt.h>
 
-inline bool operator==(const M128A &lhs, const M128A &rhs) {
-  return (lhs.Low == rhs.Low && lhs.High == rhs.High);
+inline bool operator==(const M128A &lhs, const M128A &rhs)
+{
+    return (lhs.Low == rhs.Low && lhs.High == rhs.High);
 }
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 // Compares the state of xmm[6-15] at construction with their state at
 // destruction. These registers should be preserved by the callee on
 // Windows x64.
-class RegisterStateCheck {
- public:
-  RegisterStateCheck() { initialized_ = StoreRegisters(&pre_context_); }
-  ~RegisterStateCheck() { Check(); }
-
- private:
-  static bool StoreRegisters(CONTEXT *const context) {
-    const HANDLE this_thread = GetCurrentThread();
-    EXPECT_TRUE(this_thread != NULL);
-    context->ContextFlags = CONTEXT_FLOATING_POINT;
-    const bool context_saved = GetThreadContext(this_thread, context) == TRUE;
-    EXPECT_TRUE(context_saved) << "GetLastError: " << GetLastError();
-    return context_saved;
-  }
-
-  // Compares the register state. Returns true if the states match.
-  void Check() const {
-    ASSERT_TRUE(initialized_);
-    CONTEXT post_context;
-    ASSERT_TRUE(StoreRegisters(&post_context));
-
-    const M128A *xmm_pre = &pre_context_.Xmm6;
-    const M128A *xmm_post = &post_context.Xmm6;
-    for (int i = 6; i <= 15; ++i) {
-      EXPECT_EQ(*xmm_pre, *xmm_post) << "xmm" << i << " has been modified!";
-      ++xmm_pre;
-      ++xmm_post;
+class RegisterStateCheck
+{
+public:
+    RegisterStateCheck()
+    {
+        initialized_ = StoreRegisters(&pre_context_);
     }
-  }
+    ~RegisterStateCheck()
+    {
+        Check();
+    }
 
-  bool initialized_;
-  CONTEXT pre_context_;
+private:
+    static bool StoreRegisters(CONTEXT *const context)
+    {
+        const HANDLE this_thread = GetCurrentThread();
+        EXPECT_TRUE(this_thread != NULL);
+        context->ContextFlags = CONTEXT_FLOATING_POINT;
+        const bool context_saved = GetThreadContext(this_thread, context) == TRUE;
+        EXPECT_TRUE(context_saved) << "GetLastError: " << GetLastError();
+        return context_saved;
+    }
+
+    // Compares the register state. Returns true if the states match.
+    void Check() const
+    {
+        ASSERT_TRUE(initialized_);
+        CONTEXT post_context;
+        ASSERT_TRUE(StoreRegisters(&post_context));
+
+        const M128A *xmm_pre = &pre_context_.Xmm6;
+        const M128A *xmm_post = &post_context.Xmm6;
+        for (int i = 6; i <= 15; ++i)
+        {
+            EXPECT_EQ(*xmm_pre, *xmm_post) << "xmm" << i << " has been modified!";
+            ++xmm_pre;
+            ++xmm_post;
+        }
+    }
+
+    bool initialized_;
+    CONTEXT pre_context_;
 };
 
 #define ASM_REGISTER_STATE_CHECK(statement)    \
@@ -94,31 +106,41 @@ class RegisterStateCheck {
 
 extern "C" {
 // Save the d8-d15 registers into store.
-void vpx_push_neon(int64_t *store);
+    void vpx_push_neon(int64_t *store);
 }
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 // Compares the state of d8-d15 at construction with their state at
 // destruction. These registers should be preserved by the callee on
 // arm platform.
-class RegisterStateCheck {
- public:
-  RegisterStateCheck() { vpx_push_neon(pre_store_); }
-  ~RegisterStateCheck() { Check(); }
-
- private:
-  // Compares the register state. Returns true if the states match.
-  void Check() const {
-    int64_t post_store[8];
-    vpx_push_neon(post_store);
-    for (int i = 0; i < 8; ++i) {
-      EXPECT_EQ(pre_store_[i], post_store[i]) << "d" << i + 8
-                                              << " has been modified";
+class RegisterStateCheck
+{
+public:
+    RegisterStateCheck()
+    {
+        vpx_push_neon(pre_store_);
     }
-  }
+    ~RegisterStateCheck()
+    {
+        Check();
+    }
 
-  int64_t pre_store_[8];
+private:
+    // Compares the register state. Returns true if the states match.
+    void Check() const
+    {
+        int64_t post_store[8];
+        vpx_push_neon(post_store);
+        for (int i = 0; i < 8; ++i)
+        {
+            EXPECT_EQ(pre_store_[i], post_store[i]) << "d" << i + 8
+                                                    << " has been modified";
+        }
+    }
+
+    int64_t pre_store_[8];
 };
 
 #define ASM_REGISTER_STATE_CHECK(statement)    \
@@ -131,7 +153,8 @@ class RegisterStateCheck {
 
 #else
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 class RegisterStateCheck {};
 #define ASM_REGISTER_STATE_CHECK(statement) statement
@@ -143,30 +166,37 @@ class RegisterStateCheck {};
 #if ARCH_X86 || ARCH_X86_64
 #if defined(__GNUC__)
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 // Checks the FPU tag word pre/post execution to ensure emms has been called.
-class RegisterStateCheckMMX {
- public:
-  RegisterStateCheckMMX() {
-    __asm__ volatile("fstenv %0" : "=rm"(pre_fpu_env_));
-  }
-  ~RegisterStateCheckMMX() { Check(); }
+class RegisterStateCheckMMX
+{
+public:
+    RegisterStateCheckMMX()
+    {
+        __asm__ volatile("fstenv %0" : "=rm"(pre_fpu_env_));
+    }
+    ~RegisterStateCheckMMX()
+    {
+        Check();
+    }
 
- private:
-  // Checks the FPU tag word pre/post execution, returning false if not cleared
-  // to 0xffff.
-  void Check() const {
-    EXPECT_EQ(0xffff, pre_fpu_env_[4])
-        << "FPU was in an inconsistent state prior to call";
+private:
+    // Checks the FPU tag word pre/post execution, returning false if not cleared
+    // to 0xffff.
+    void Check() const
+    {
+        EXPECT_EQ(0xffff, pre_fpu_env_[4])
+                << "FPU was in an inconsistent state prior to call";
 
-    uint16_t post_fpu_env[14];
-    __asm__ volatile("fstenv %0" : "=rm"(post_fpu_env));
-    EXPECT_EQ(0xffff, post_fpu_env[4])
-        << "FPU was left in an inconsistent state after call";
-  }
+        uint16_t post_fpu_env[14];
+        __asm__ volatile("fstenv %0" : "=rm"(post_fpu_env));
+        EXPECT_EQ(0xffff, post_fpu_env[4])
+                << "FPU was left in an inconsistent state after call";
+    }
 
-  uint16_t pre_fpu_env_[14];
+    uint16_t pre_fpu_env_[14];
 };
 
 #define API_REGISTER_STATE_CHECK(statement)       \

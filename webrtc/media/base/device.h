@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,20 +13,23 @@
 
 #include "webrtc/base/stringencode.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // Used to represent an audio or video capture or render device.
-struct Device {
-  Device() {}
-  Device(const std::string& name, int id)
-      : name(name),
-        id(rtc::ToString(id)) {
-  }
-  Device(const std::string& name, const std::string& id)
-      : name(name), id(id) {}
+struct Device
+{
+    Device() {}
+    Device(const std::string& name, int id)
+        : name(name),
+          id(rtc::ToString(id))
+    {
+    }
+    Device(const std::string& name, const std::string& id)
+        : name(name), id(id) {}
 
-  std::string name;
-  std::string id;
+    std::string name;
+    std::string id;
 };
 
 }  // namespace cricket

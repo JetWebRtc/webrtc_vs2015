@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -29,8 +29,10 @@ av_cold void ff_fdctdsp_init_x86(FDCTDSPContext *c, AVCodecContext *avctx,
     int cpu_flags = av_get_cpu_flags();
     const int dct_algo = avctx->dct_algo;
 
-    if (!high_bit_depth) {
-        if ((dct_algo == FF_DCT_AUTO || dct_algo == FF_DCT_MMX)) {
+    if (!high_bit_depth)
+    {
+        if ((dct_algo == FF_DCT_AUTO || dct_algo == FF_DCT_MMX))
+        {
             if (INLINE_MMX(cpu_flags))
                 c->fdct = ff_fdct_mmx;
 

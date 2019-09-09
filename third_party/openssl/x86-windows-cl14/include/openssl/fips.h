@@ -1,4 +1,4 @@
-/* ====================================================================
+﻿/* ====================================================================
  * Copyright (c) 2011 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -6,7 +6,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -115,17 +115,17 @@ int fips_check_dsa_prng(struct dsa_st *dsa, size_t L, size_t N);
 int fips_check_ec_prng(struct ec_key_st *ec);
 
 void FIPS_set_locking_callbacks(void (*func)(int mode, int type,
-				const char *file,int line),
-				int (*add_cb)(int *pointer, int amount,
-					int type, const char *file, int line));
+                                const char *file,int line),
+                                int (*add_cb)(int *pointer, int amount,
+                                        int type, const char *file, int line));
 
 void FIPS_set_error_callbacks(
-	void (*put_cb)(int lib, int func,int reason,const char *file,int line),
-	void (*add_cb)(int num, va_list args) );
+    void (*put_cb)(int lib, int func,int reason,const char *file,int line),
+    void (*add_cb)(int num, va_list args) );
 
 void FIPS_set_malloc_callbacks(
-		void *(*malloc_cb)(int num, const char *file, int line),
-		void (*free_cb)(void *));
+    void *(*malloc_cb)(int num, const char *file, int line),
+    void (*free_cb)(void *));
 
 void FIPS_get_timevec(unsigned char *buf, unsigned long *pctr);
 
@@ -177,24 +177,24 @@ void FIPS_get_timevec(unsigned char *buf, unsigned long *pctr);
 #define FIPS_AUTH_MIN_LEN	16
 
 void FIPS_post_set_callback(
-	int (*post_cb)(int op, int id, int subid, void *ex));
+    int (*post_cb)(int op, int id, int subid, void *ex));
 
 #define FIPS_ERROR_IGNORED(alg) OpenSSLDie(__FILE__, __LINE__, \
 		alg " previous FIPS forbidden algorithm error ignored");
 
 int fips_pkey_signature_test(int id, struct evp_pkey_st *pkey,
-			const unsigned char *tbs, size_t tbslen,
-			const unsigned char *kat, size_t katlen,
-			const struct env_md_st *digest, int pad_mode,
-			const char *fail_str);
+                             const unsigned char *tbs, size_t tbslen,
+                             const unsigned char *kat, size_t katlen,
+                             const struct env_md_st *digest, int pad_mode,
+                             const char *fail_str);
 
 int fips_cipher_test(int id, struct evp_cipher_ctx_st *ctx,
-			const struct evp_cipher_st *cipher,
-			const unsigned char *key,
-			const unsigned char *iv,
-			const unsigned char *plaintext,
-			const unsigned char *ciphertext,
-			int len);
+                     const struct evp_cipher_st *cipher,
+                     const unsigned char *key,
+                     const unsigned char *iv,
+                     const unsigned char *plaintext,
+                     const unsigned char *ciphertext,
+                     int len);
 
 const struct env_md_st *FIPS_get_digestbynid(int nid);
 
@@ -203,35 +203,35 @@ const struct evp_cipher_st *FIPS_get_cipherbynid(int nid);
 struct rsa_st *FIPS_rsa_new(void);
 void FIPS_rsa_free(struct rsa_st *r);
 int FIPS_rsa_sign_ctx(struct rsa_st *rsa, struct env_md_ctx_st *ctx,
-			int rsa_pad_mode, int saltlen,
-			const struct env_md_st *mgf1Hash,
-			unsigned char *sigret, unsigned int *siglen);
+                      int rsa_pad_mode, int saltlen,
+                      const struct env_md_st *mgf1Hash,
+                      unsigned char *sigret, unsigned int *siglen);
 int FIPS_rsa_sign_digest(struct rsa_st *rsa,
-			const unsigned char *md, int md_len,
-			const struct env_md_st *mhash,
-			int rsa_pad_mode, int saltlen,
-			const struct env_md_st *mgf1Hash,
-			unsigned char *sigret, unsigned int *siglen);
+                         const unsigned char *md, int md_len,
+                         const struct env_md_st *mhash,
+                         int rsa_pad_mode, int saltlen,
+                         const struct env_md_st *mgf1Hash,
+                         unsigned char *sigret, unsigned int *siglen);
 int FIPS_rsa_verify_ctx(struct rsa_st *rsa, struct env_md_ctx_st *ctx,
-			int rsa_pad_mode, int saltlen,
-			const struct env_md_st *mgf1Hash,
-			const unsigned char *sigbuf, unsigned int siglen);
+                        int rsa_pad_mode, int saltlen,
+                        const struct env_md_st *mgf1Hash,
+                        const unsigned char *sigbuf, unsigned int siglen);
 int FIPS_rsa_verify_digest(struct rsa_st *rsa,
-			const unsigned char *dig, int diglen,
-			const struct env_md_st *mhash,
-			int rsa_pad_mode, int saltlen,
-			const struct env_md_st *mgf1Hash,
-			const unsigned char *sigbuf, unsigned int siglen);
+                           const unsigned char *dig, int diglen,
+                           const struct env_md_st *mhash,
+                           int rsa_pad_mode, int saltlen,
+                           const struct env_md_st *mgf1Hash,
+                           const unsigned char *sigbuf, unsigned int siglen);
 
 int FIPS_rsa_sign(struct rsa_st *rsa, const unsigned char *msg, int msglen,
-			const struct env_md_st *mhash, int rsa_pad_mode,
-			int saltlen, const struct env_md_st *mgf1Hash,
-			unsigned char *sigret, unsigned int *siglen);
+                  const struct env_md_st *mhash, int rsa_pad_mode,
+                  int saltlen, const struct env_md_st *mgf1Hash,
+                  unsigned char *sigret, unsigned int *siglen);
 
 int FIPS_rsa_verify(struct rsa_st *rsa, const unsigned char *msg, int msglen,
-			const struct env_md_st *mhash, int rsa_pad_mode,
-			int saltlen, const struct env_md_st *mgf1Hash,
-			const unsigned char *sigbuf, unsigned int siglen);
+                    const struct env_md_st *mhash, int rsa_pad_mode,
+                    int saltlen, const struct env_md_st *mgf1Hash,
+                    const unsigned char *sigbuf, unsigned int siglen);
 
 #ifdef OPENSSL_FIPSCAPABLE
 
@@ -241,9 +241,9 @@ int FIPS_digestfinal(EVP_MD_CTX *ctx, unsigned char *md, unsigned int *size);
 int FIPS_md_ctx_cleanup(EVP_MD_CTX *ctx);
 
 int FIPS_cipherinit(EVP_CIPHER_CTX *ctx, const EVP_CIPHER *cipher,
-	     const unsigned char *key, const unsigned char *iv, int enc);
+                    const unsigned char *key, const unsigned char *iv, int enc);
 int FIPS_cipher(EVP_CIPHER_CTX *ctx, unsigned char *out,
-			const unsigned char *in, unsigned int inl);
+                const unsigned char *in, unsigned int inl);
 int FIPS_cipher_ctx_cleanup(EVP_CIPHER_CTX *c);
 
 const EVP_CIPHER *FIPS_evp_aes_128_cbc(void);
@@ -303,13 +303,13 @@ int FIPS_rsa_generate_key_ex(RSA *rsa, int bits, BIGNUM *e, BN_GENCB *cb);
 const struct dsa_method *FIPS_dsa_openssl(void);
 int	FIPS_dsa_generate_key(DSA *dsa);
 int	FIPS_dsa_generate_parameters_ex(DSA *dsa, int bits,
-		const unsigned char *seed,int seed_len,
-		int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
+                                    const unsigned char *seed,int seed_len,
+                                    int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
 
 int fips_dsa_builtin_paramgen2(DSA *ret, size_t L, size_t N,
-	const EVP_MD *evpmd, const unsigned char *seed_in, size_t seed_len,
-	unsigned char *seed_out,
-	int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
+                               const EVP_MD *evpmd, const unsigned char *seed_in, size_t seed_len,
+                               unsigned char *seed_out,
+                               int *counter_ret, unsigned long *h_ret, BN_GENCB *cb);
 
 const struct ec_method_st *fips_ec_gf2m_simple_method(void);
 const struct ec_method_st *fips_ec_gfp_simple_method(void);
@@ -323,22 +323,22 @@ int FIPS_ec_key_generate_key(struct ec_key_st *key);
 
 const struct dh_method *FIPS_dh_openssl(void);
 int FIPS_dh_generate_parameters_ex(DH *dh, int prime_len,
-						int generator, BN_GENCB *cb);
+                                   int generator, BN_GENCB *cb);
 
-int FIPS_cmac_init(struct CMAC_CTX_st *ctx, const void *key, size_t keylen, 
-			const EVP_CIPHER *cipher, ENGINE *impl);
+int FIPS_cmac_init(struct CMAC_CTX_st *ctx, const void *key, size_t keylen,
+                   const EVP_CIPHER *cipher, ENGINE *impl);
 int FIPS_cmac_update(struct CMAC_CTX_st *ctx, const void *in, size_t dlen);
 int FIPS_cmac_final(struct CMAC_CTX_st *ctx, unsigned char *out,
-							size_t *poutlen);
+                    size_t *poutlen);
 void FIPS_cmac_ctx_cleanup(struct CMAC_CTX_st *ctx);
 
 void FIPS_hmac_ctx_cleanup(struct hmac_ctx_st *ctx);
 int FIPS_hmac_init_ex(struct hmac_ctx_st *ctx, const void *key, int len,
-		  const EVP_MD *md, ENGINE *impl);
+                      const EVP_MD *md, ENGINE *impl);
 int FIPS_hmac_update(struct hmac_ctx_st *ctx,
-			const unsigned char *data, size_t len);
+                     const unsigned char *data, size_t len);
 int FIPS_hmac_final(struct hmac_ctx_st *ctx,
-			unsigned char *md, unsigned int *len);
+                    unsigned char *md, unsigned int *len);
 
 #endif
 

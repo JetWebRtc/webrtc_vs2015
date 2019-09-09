@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,106 +19,117 @@
 #include "webrtc/system_wrappers/include/rw_lock_wrapper.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RTPStream {
- public:
-  virtual ~RTPStream() {
-  }
+class RTPStream
+{
+public:
+    virtual ~RTPStream()
+    {
+    }
 
-  virtual void Write(const uint8_t payloadType, const uint32_t timeStamp,
-                     const int16_t seqNo, const uint8_t* payloadData,
-                     const size_t payloadSize, uint32_t frequency) = 0;
+    virtual void Write(const uint8_t payloadType, const uint32_t timeStamp,
+                       const int16_t seqNo, const uint8_t* payloadData,
+                       const size_t payloadSize, uint32_t frequency) = 0;
 
-  // Returns the packet's payload size. Zero should be treated as an
-  // end-of-stream (in the case that EndOfFile() is true) or an error.
-  virtual size_t Read(WebRtcRTPHeader* rtpInfo, uint8_t* payloadData,
-                      size_t payloadSize, uint32_t* offset) = 0;
-  virtual bool EndOfFile() const = 0;
+    // Returns the packet's payload size. Zero should be treated as an
+    // end-of-stream (in the case that EndOfFile() is true) or an error.
+    virtual size_t Read(WebRtcRTPHeader* rtpInfo, uint8_t* payloadData,
+                        size_t payloadSize, uint32_t* offset) = 0;
+    virtual bool EndOfFile() const = 0;
 
- protected:
-  void MakeRTPheader(uint8_t* rtpHeader, uint8_t payloadType, int16_t seqNo,
-                     uint32_t timeStamp, uint32_t ssrc);
+protected:
+    void MakeRTPheader(uint8_t* rtpHeader, uint8_t payloadType, int16_t seqNo,
+                       uint32_t timeStamp, uint32_t ssrc);
 
-  void ParseRTPHeader(WebRtcRTPHeader* rtpInfo, const uint8_t* rtpHeader);
+    void ParseRTPHeader(WebRtcRTPHeader* rtpInfo, const uint8_t* rtpHeader);
 };
 
-class RTPPacket {
- public:
-  RTPPacket(uint8_t payloadType, uint32_t timeStamp, int16_t seqNo,
-            const uint8_t* payloadData, size_t payloadSize,
-            uint32_t frequency);
+class RTPPacket
+{
+public:
+    RTPPacket(uint8_t payloadType, uint32_t timeStamp, int16_t seqNo,
+              const uint8_t* payloadData, size_t payloadSize,
+              uint32_t frequency);
 
-  ~RTPPacket();
+    ~RTPPacket();
 
-  uint8_t payloadType;
-  uint32_t timeStamp;
-  int16_t seqNo;
-  uint8_t* payloadData;
-  size_t payloadSize;
-  uint32_t frequency;
+    uint8_t payloadType;
+    uint32_t timeStamp;
+    int16_t seqNo;
+    uint8_t* payloadData;
+    size_t payloadSize;
+    uint32_t frequency;
 };
 
-class RTPBuffer : public RTPStream {
- public:
-  RTPBuffer();
+class RTPBuffer : public RTPStream
+{
+public:
+    RTPBuffer();
 
-  ~RTPBuffer();
+    ~RTPBuffer();
 
-  void Write(const uint8_t payloadType,
-             const uint32_t timeStamp,
-             const int16_t seqNo,
-             const uint8_t* payloadData,
-             const size_t payloadSize,
-             uint32_t frequency) override;
+    void Write(const uint8_t payloadType,
+               const uint32_t timeStamp,
+               const int16_t seqNo,
+               const uint8_t* payloadData,
+               const size_t payloadSize,
+               uint32_t frequency) override;
 
-  size_t Read(WebRtcRTPHeader* rtpInfo,
-              uint8_t* payloadData,
-              size_t payloadSize,
-              uint32_t* offset) override;
+    size_t Read(WebRtcRTPHeader* rtpInfo,
+                uint8_t* payloadData,
+                size_t payloadSize,
+                uint32_t* offset) override;
 
-  bool EndOfFile() const override;
+    bool EndOfFile() const override;
 
- private:
-  RWLockWrapper* _queueRWLock;
-  std::queue<RTPPacket *> _rtpQueue;
+private:
+    RWLockWrapper* _queueRWLock;
+    std::queue<RTPPacket *> _rtpQueue;
 };
 
-class RTPFile : public RTPStream {
- public:
-  ~RTPFile() {
-  }
+class RTPFile : public RTPStream
+{
+public:
+    ~RTPFile()
+    {
+    }
 
-  RTPFile()
-      : _rtpFile(NULL),
-        _rtpEOF(false) {
-  }
+    RTPFile()
+        : _rtpFile(NULL),
+          _rtpEOF(false)
+    {
+    }
 
-  void Open(const char *outFilename, const char *mode);
+    void Open(const char *outFilename, const char *mode);
 
-  void Close();
+    void Close();
 
-  void WriteHeader();
+    void WriteHeader();
 
-  void ReadHeader();
+    void ReadHeader();
 
-  void Write(const uint8_t payloadType,
-             const uint32_t timeStamp,
-             const int16_t seqNo,
-             const uint8_t* payloadData,
-             const size_t payloadSize,
-             uint32_t frequency) override;
+    void Write(const uint8_t payloadType,
+               const uint32_t timeStamp,
+               const int16_t seqNo,
+               const uint8_t* payloadData,
+               const size_t payloadSize,
+               uint32_t frequency) override;
 
-  size_t Read(WebRtcRTPHeader* rtpInfo,
-              uint8_t* payloadData,
-              size_t payloadSize,
-              uint32_t* offset) override;
+    size_t Read(WebRtcRTPHeader* rtpInfo,
+                uint8_t* payloadData,
+                size_t payloadSize,
+                uint32_t* offset) override;
 
-  bool EndOfFile() const override { return _rtpEOF; }
+    bool EndOfFile() const override
+    {
+        return _rtpEOF;
+    }
 
- private:
-  FILE* _rtpFile;
-  bool _rtpEOF;
+private:
+    FILE* _rtpFile;
+    bool _rtpEOF;
 };
 
 }  // namespace webrtc

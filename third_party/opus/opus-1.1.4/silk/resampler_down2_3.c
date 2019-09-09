@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -54,17 +54,19 @@ void silk_resampler_down2_3(
     silk_memcpy( buf, S, ORDER_FIR * sizeof( opus_int32 ) );
 
     /* Iterate over blocks of frameSizeIn input samples */
-    while( 1 ) {
+    while( 1 )
+    {
         nSamplesIn = silk_min( inLen, RESAMPLER_MAX_BATCH_SIZE_IN );
 
         /* Second-order AR filter (output in Q8) */
         silk_resampler_private_AR2( &S[ ORDER_FIR ], &buf[ ORDER_FIR ], in,
-            silk_Resampler_2_3_COEFS_LQ, nSamplesIn );
+                                    silk_Resampler_2_3_COEFS_LQ, nSamplesIn );
 
         /* Interpolate filtered signal */
         buf_ptr = buf;
         counter = nSamplesIn;
-        while( counter > 2 ) {
+        while( counter > 2 )
+        {
             /* Inner product */
             res_Q6 = silk_SMULWB(         buf_ptr[ 0 ], silk_Resampler_2_3_COEFS_LQ[ 2 ] );
             res_Q6 = silk_SMLAWB( res_Q6, buf_ptr[ 1 ], silk_Resampler_2_3_COEFS_LQ[ 3 ] );
@@ -89,10 +91,13 @@ void silk_resampler_down2_3(
         in += nSamplesIn;
         inLen -= nSamplesIn;
 
-        if( inLen > 0 ) {
+        if( inLen > 0 )
+        {
             /* More iterations to do; copy last part of filtered signal to beginning of buffer */
             silk_memcpy( buf, &buf[ nSamplesIn ], ORDER_FIR * sizeof( opus_int32 ) );
-        } else {
+        }
+        else
+        {
             break;
         }
     }

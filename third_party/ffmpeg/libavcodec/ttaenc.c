@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TTA (The Lossless True Audio) encoder
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "internal.h"
 #include "libavutil/crc.h"
 
-typedef struct TTAEncContext {
+typedef struct TTAEncContext
+{
     const AVCRC *crc_table;
     int bps;
     TTAChannel *ch_ctx;
@@ -37,7 +38,8 @@ static av_cold int tta_encode_init(AVCodecContext *avctx)
 
     s->crc_table = av_crc_get_table(AV_CRC_32_IEEE_LE);
 
-    switch (avctx->sample_fmt) {
+    switch (avctx->sample_fmt)
+    {
     case AV_SAMPLE_FMT_U8:
         avctx->bits_per_raw_sample = 8;
         break;
@@ -64,28 +66,52 @@ static inline void ttafilter_process(TTAFilter *c, int32_t *in)
 {
     register int32_t *dl = c->dl, *qm = c->qm, *dx = c->dx, sum = c->round;
 
-    if (c->error < 0) {
-        qm[0] -= dx[0]; qm[1] -= dx[1]; qm[2] -= dx[2]; qm[3] -= dx[3];
-        qm[4] -= dx[4]; qm[5] -= dx[5]; qm[6] -= dx[6]; qm[7] -= dx[7];
-    } else if (c->error > 0) {
-        qm[0] += dx[0]; qm[1] += dx[1]; qm[2] += dx[2]; qm[3] += dx[3];
-        qm[4] += dx[4]; qm[5] += dx[5]; qm[6] += dx[6]; qm[7] += dx[7];
+    if (c->error < 0)
+    {
+        qm[0] -= dx[0];
+        qm[1] -= dx[1];
+        qm[2] -= dx[2];
+        qm[3] -= dx[3];
+        qm[4] -= dx[4];
+        qm[5] -= dx[5];
+        qm[6] -= dx[6];
+        qm[7] -= dx[7];
+    }
+    else if (c->error > 0)
+    {
+        qm[0] += dx[0];
+        qm[1] += dx[1];
+        qm[2] += dx[2];
+        qm[3] += dx[3];
+        qm[4] += dx[4];
+        qm[5] += dx[5];
+        qm[6] += dx[6];
+        qm[7] += dx[7];
     }
 
     sum += dl[0] * qm[0] + dl[1] * qm[1] + dl[2] * qm[2] + dl[3] * qm[3] +
            dl[4] * qm[4] + dl[5] * qm[5] + dl[6] * qm[6] + dl[7] * qm[7];
 
-    dx[0] = dx[1]; dx[1] = dx[2]; dx[2] = dx[3]; dx[3] = dx[4];
-    dl[0] = dl[1]; dl[1] = dl[2]; dl[2] = dl[3]; dl[3] = dl[4];
+    dx[0] = dx[1];
+    dx[1] = dx[2];
+    dx[2] = dx[3];
+    dx[3] = dx[4];
+    dl[0] = dl[1];
+    dl[1] = dl[2];
+    dl[2] = dl[3];
+    dl[3] = dl[4];
 
     dx[4] = ((dl[4] >> 30) | 1);
     dx[5] = ((dl[5] >> 30) | 2) & ~1;
     dx[6] = ((dl[6] >> 30) | 2) & ~1;
     dx[7] = ((dl[7] >> 30) | 4) & ~3;
 
-    dl[4] = -dl[5]; dl[5] = -dl[6];
-    dl[6] = *in - dl[7]; dl[7] = *in;
-    dl[5] += dl[6]; dl[4] += dl[5];
+    dl[4] = -dl[5];
+    dl[5] = -dl[6];
+    dl[6] = *in - dl[7];
+    dl[7] = *in;
+    dl[5] += dl[6];
+    dl[4] += dl[5];
 
     *in -= (sum >> c->shift);
     c->error = *in;
@@ -96,12 +122,16 @@ static int32_t get_sample(const AVFrame *frame, int sample,
 {
     int32_t ret;
 
-    if (format == AV_SAMPLE_FMT_U8) {
+    if (format == AV_SAMPLE_FMT_U8)
+    {
         ret = frame->data[0][sample] - 0x80;
-    } else if (format == AV_SAMPLE_FMT_S16) {
+    }
+    else if (format == AV_SAMPLE_FMT_S16)
+    {
         const int16_t *ptr = (const int16_t *)frame->data[0];
         ret = ptr[sample];
-    } else {
+    }
+    else {
         const int32_t *ptr = (const int32_t *)frame->data[0];
         ret = ptr[sample] >> 8;
     }
@@ -121,13 +151,15 @@ static int tta_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     init_put_bits(&pb, avpkt->data, avpkt->size);
 
     // init per channel states
-    for (i = 0; i < avctx->channels; i++) {
+    for (i = 0; i < avctx->channels; i++)
+    {
         s->ch_ctx[i].predictor = 0;
         ff_tta_filter_init(&s->ch_ctx[i].filter, ff_tta_filter_configs[s->bps - 1]);
         ff_tta_rice_init(&s->ch_ctx[i].rice, 10, 10);
     }
 
-    for (i = 0; i < frame->nb_samples * avctx->channels; i++) {
+    for (i = 0; i < frame->nb_samples * avctx->channels; i++)
+    {
         TTAChannel *c = &s->ch_ctx[cur_chan];
         TTAFilter *filter = &c->filter;
         TTARice *rice = &c->rice;
@@ -136,7 +168,8 @@ static int tta_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
         value = get_sample(frame, samples++, avctx->sample_fmt);
 
-        if (avctx->channels > 1) {
+        if (avctx->channels > 1)
+        {
             if (cur_chan < avctx->channels - 1)
                 value  = res = get_sample(frame, samples, avctx->sample_fmt) - value;
             else
@@ -145,10 +178,15 @@ static int tta_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
         temp = value;
 #define PRED(x, k) (int32_t)((((uint64_t)(x) << (k)) - (x)) >> (k))
-        switch (s->bps) {
-        case 1: value -= PRED(c->predictor, 4); break;
+        switch (s->bps)
+        {
+        case 1:
+            value -= PRED(c->predictor, 4);
+            break;
         case 2:
-        case 3: value -= PRED(c->predictor, 5); break;
+        case 3:
+            value -= PRED(c->predictor, 5);
+            break;
         }
         c->predictor = temp;
 
@@ -163,7 +201,8 @@ static int tta_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
         else if (rice->sum0 > ff_tta_shift_16[rice->k0 + 1])
             rice->k0++;
 
-        if (outval >= ff_tta_shift_1[k]) {
+        if (outval >= ff_tta_shift_1[k])
+        {
             outval -= ff_tta_shift_1[k];
             k = rice->k1;
 
@@ -174,15 +213,20 @@ static int tta_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
                 rice->k1++;
 
             unary = 1 + (outval >> k);
-            do {
-                if (unary > 31) {
+            do
+            {
+                if (unary > 31)
+                {
                     put_bits(&pb, 31, 0x7FFFFFFF);
                     unary -= 31;
-                } else {
+                }
+                else
+                {
                     put_bits(&pb, unary, (1 << unary) - 1);
                     unary = 0;
                 }
-            } while (unary);
+            }
+            while (unary);
         }
 
         put_bits(&pb, 1, 0);
@@ -215,7 +259,8 @@ static av_cold int tta_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_tta_encoder = {
+AVCodec ff_tta_encoder =
+{
     .name           = "tta",
     .long_name      = NULL_IF_CONFIG_SMALL("TTA (True Audio)"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -225,8 +270,10 @@ AVCodec ff_tta_encoder = {
     .close          = tta_encode_close,
     .encode2        = tta_encode_frame,
     .capabilities   = AV_CODEC_CAP_SMALL_LAST_FRAME | AV_CODEC_CAP_LOSSLESS,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_U8,
-                                                     AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_S32,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_U8,
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_S32,
+        AV_SAMPLE_FMT_NONE
+    },
 };

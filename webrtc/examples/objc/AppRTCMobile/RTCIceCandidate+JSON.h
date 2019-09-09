@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@
 + (NSArray<RTCIceCandidate *> *)candidatesFromJSONDictionary:
     (NSDictionary *)dictionary;
 + (NSData *)JSONDataForIceCandidates:(NSArray<RTCIceCandidate *> *)candidates
-                            withType:(NSString *)typeValue;
+    withType:(NSString *)typeValue;
 - (NSData *)JSONData;
 
 @end

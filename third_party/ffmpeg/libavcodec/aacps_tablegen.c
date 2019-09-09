@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a header file for hardcoded Parametric Stereo tables
  *
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>

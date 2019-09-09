@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,11 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCAVFoundationVideoSource ()
 
-@property(nonatomic, readonly) webrtc::AVFoundationVideoCapturer *capturer;
+    @property(nonatomic, readonly) webrtc::AVFoundationVideoCapturer *capturer;
 
 /** Initialize an RTCAVFoundationVideoSource with constraints. */
 - (instancetype)initWithFactory:(RTCPeerConnectionFactory *)factory
-                    constraints:(nullable RTCMediaConstraints *)constraints;
+    constraints:(nullable RTCMediaConstraints *)constraints;
 
 @end
 

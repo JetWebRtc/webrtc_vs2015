@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Laurent de Soras
  * Copyright (c) 2013 Fredrik Mellbin
  * Copyright (c) 2015 Paul B Mahol
@@ -33,7 +33,8 @@
 #define OFFSET(x) offsetof(RemoveGrainContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption removegrain_options[] = {
+static const AVOption removegrain_options[] =
+{
     { "m0", "set mode for 1st plane", OFFSET(mode[0]), AV_OPT_TYPE_INT, {.i64=0}, 0, 24, FLAGS },
     { "m1", "set mode for 2nd plane", OFFSET(mode[1]), AV_OPT_TYPE_INT, {.i64=0}, 0, 24, FLAGS },
     { "m2", "set mode for 3rd plane", OFFSET(mode[2]), AV_OPT_TYPE_INT, {.i64=0}, 0, 24, FLAGS },
@@ -45,7 +46,8 @@ AVFILTER_DEFINE_CLASS(removegrain);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_YUVA420P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA444P,
@@ -127,11 +129,16 @@ static int mode05(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
     const int mindiff = FFMIN(FFMIN(c1, c2), FFMIN(c3, c4));
 
     /* When adding SIMD notice the return order here: 4, 2, 3, 1. */
-    if (mindiff == c4) {
+    if (mindiff == c4)
+    {
         return av_clip(c, mi4, ma4);
-    } else if (mindiff == c2) {
+    }
+    else if (mindiff == c2)
+    {
         return av_clip(c, mi2, ma2);
-    } else if (mindiff == c3) {
+    }
+    else if (mindiff == c3)
+    {
         return av_clip(c, mi3, ma3);
     }
 
@@ -159,11 +166,16 @@ static int mode06(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 
     const int mindiff = FFMIN(FFMIN(c1, c2), FFMIN(c3, c4));
 
-    if (mindiff == c4) {
+    if (mindiff == c4)
+    {
         return cli4;
-    } else if (mindiff == c2) {
+    }
+    else if (mindiff == c2)
+    {
         return cli2;
-    } else if (mindiff == c3) {
+    }
+    else if (mindiff == c3)
+    {
         return cli3;
     }
 
@@ -191,11 +203,16 @@ static int mode07(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 
     const int mindiff = FFMIN(FFMIN(c1, c2), FFMIN(c3, c4));
 
-    if (mindiff == c4) {
+    if (mindiff == c4)
+    {
         return cli4;
-    } else if (mindiff == c2) {
+    }
+    else if (mindiff == c2)
+    {
         return cli2;
-    } else if (mindiff == c3) {
+    }
+    else if (mindiff == c3)
+    {
         return cli3;
     }
 
@@ -223,11 +240,16 @@ static int mode08(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 
     const int mindiff = FFMIN(FFMIN(c1, c2), FFMIN(c3, c4));
 
-    if (mindiff == c4) {
+    if (mindiff == c4)
+    {
         return cli4;
-    } else if (mindiff == c2) {
+    }
+    else if (mindiff == c2)
+    {
         return cli2;
-    } else if (mindiff == c3) {
+    }
+    else if (mindiff == c3)
+    {
         return cli3;
     }
 
@@ -245,11 +267,16 @@ static int mode09(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 
     const int mindiff = FFMIN(FFMIN(d1, d2), FFMIN(d3, d4));
 
-    if (mindiff == d4) {
+    if (mindiff == d4)
+    {
         return av_clip(c, mi4, ma4);
-    } else if (mindiff == d2) {
+    }
+    else if (mindiff == d2)
+    {
         return av_clip(c, mi2, ma2);
-    } else if (mindiff == d3) {
+    }
+    else if (mindiff == d3)
+    {
         return av_clip(c, mi3, ma3);
     }
 
@@ -297,10 +324,12 @@ static int mode1314(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a
 
     const int mindiff = FFMIN(FFMIN(d1, d2), d3);
 
-    if (mindiff == d2) {
+    if (mindiff == d2)
+    {
         return (a2 + a7 + 1) >> 1;
     }
-    if (mindiff == d3) {
+    if (mindiff == d3)
+    {
         return (a3 + a6 + 1) >> 1;
     }
 
@@ -316,10 +345,12 @@ static int mode1516(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a
     const int mindiff = FFMIN(FFMIN(d1, d2), d3);
     const int average = (2 * (a2 + a7) + a1 + a3 + a6 + a8 + 4) >> 3;
 
-    if (mindiff == d2) {
+    if (mindiff == d2)
+    {
         return av_clip(average, FFMIN(a2, a7), FFMAX(a2, a7));
     }
-    if (mindiff == d3) {
+    if (mindiff == d3)
+    {
         return av_clip(average, FFMIN(a3, a6), FFMAX(a3, a6));
     }
 
@@ -345,13 +376,16 @@ static int mode18(int c, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
 
     const int mindiff = FFMIN(FFMIN(d1, d2), FFMIN(d3, d4));
 
-    if (mindiff == d4) {
+    if (mindiff == d4)
+    {
         return av_clip(c, FFMIN(a4, a5), FFMAX(a4, a5));
     }
-    if (mindiff == d2) {
+    if (mindiff == d2)
+    {
         return av_clip(c, FFMIN(a2, a7), FFMAX(a2, a7));
     }
-    if (mindiff == d3) {
+    if (mindiff == d3)
+    {
         return av_clip(c, FFMIN(a3, a6), FFMAX(a3, a6));
     }
 
@@ -476,36 +510,86 @@ static int config_input(AVFilterLink *inlink)
     s->planewidth[1]  = s->planewidth[2]  = FF_CEIL_RSHIFT(inlink->w, desc->log2_chroma_w);
     s->planewidth[0]  = s->planewidth[3]  = inlink->w;
 
-    for (i = 0; i < s->nb_planes; i++) {
-        switch (s->mode[i]) {
-        case 1:  s->rg[i] = mode01;   break;
-        case 2:  s->rg[i] = mode02;   break;
-        case 3:  s->rg[i] = mode03;   break;
-        case 4:  s->rg[i] = mode04;   break;
-        case 5:  s->rg[i] = mode05;   break;
-        case 6:  s->rg[i] = mode06;   break;
-        case 7:  s->rg[i] = mode07;   break;
-        case 8:  s->rg[i] = mode08;   break;
-        case 9:  s->rg[i] = mode09;   break;
-        case 10: s->rg[i] = mode10;   break;
-        case 11: s->rg[i] = mode1112; break;
-        case 12: s->rg[i] = mode1112; break;
-        case 13: s->skip_odd = 1;
-                 s->rg[i] = mode1314; break;
-        case 14: s->skip_even = 1;
-                 s->rg[i] = mode1314; break;
-        case 15: s->skip_odd = 1;
-                 s->rg[i] = mode1516; break;
-        case 16: s->skip_even = 1;
-                 s->rg[i] = mode1516; break;
-        case 17: s->rg[i] = mode17;   break;
-        case 18: s->rg[i] = mode18;   break;
-        case 19: s->rg[i] = mode19;   break;
-        case 20: s->rg[i] = mode20;   break;
-        case 21: s->rg[i] = mode21;   break;
-        case 22: s->rg[i] = mode22;   break;
-        case 23: s->rg[i] = mode23;   break;
-        case 24: s->rg[i] = mode24;   break;
+    for (i = 0; i < s->nb_planes; i++)
+    {
+        switch (s->mode[i])
+        {
+        case 1:
+            s->rg[i] = mode01;
+            break;
+        case 2:
+            s->rg[i] = mode02;
+            break;
+        case 3:
+            s->rg[i] = mode03;
+            break;
+        case 4:
+            s->rg[i] = mode04;
+            break;
+        case 5:
+            s->rg[i] = mode05;
+            break;
+        case 6:
+            s->rg[i] = mode06;
+            break;
+        case 7:
+            s->rg[i] = mode07;
+            break;
+        case 8:
+            s->rg[i] = mode08;
+            break;
+        case 9:
+            s->rg[i] = mode09;
+            break;
+        case 10:
+            s->rg[i] = mode10;
+            break;
+        case 11:
+            s->rg[i] = mode1112;
+            break;
+        case 12:
+            s->rg[i] = mode1112;
+            break;
+        case 13:
+            s->skip_odd = 1;
+            s->rg[i] = mode1314;
+            break;
+        case 14:
+            s->skip_even = 1;
+            s->rg[i] = mode1314;
+            break;
+        case 15:
+            s->skip_odd = 1;
+            s->rg[i] = mode1516;
+            break;
+        case 16:
+            s->skip_even = 1;
+            s->rg[i] = mode1516;
+            break;
+        case 17:
+            s->rg[i] = mode17;
+            break;
+        case 18:
+            s->rg[i] = mode18;
+            break;
+        case 19:
+            s->rg[i] = mode19;
+            break;
+        case 20:
+            s->rg[i] = mode20;
+            break;
+        case 21:
+            s->rg[i] = mode21;
+            break;
+        case 22:
+            s->rg[i] = mode22;
+            break;
+        case 23:
+            s->rg[i] = mode23;
+            break;
+        case 24:
+            s->rg[i] = mode24;
+            break;
         }
     }
 
@@ -515,7 +599,8 @@ static int config_input(AVFilterLink *inlink)
     return 0;
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
     int plane;
 } ThreadData;
@@ -537,25 +622,29 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
 
     start = FFMAX(1, start);
     end   = FFMIN(height-1, end);
-    for (y = start; y < end; y++) {
+    for (y = start; y < end; y++)
+    {
         uint8_t *dst = out->data[i];
         uint8_t *src = in->data[i];
 
         src = in->data[i] + y * in->linesize[i];
         dst = out->data[i] + y * out->linesize[i];
 
-        if (s->skip_even && !(y & 1)) {
+        if (s->skip_even && !(y & 1))
+        {
             memcpy(dst, src, s->planewidth[i]);
             continue;
         }
-        if (s->skip_odd && y & 1) {
+        if (s->skip_odd && y & 1)
+        {
             memcpy(dst, src, s->planewidth[i]);
             continue;
         }
 
         *dst++ = *src++;
 
-        if (s->fl[i]) {
+        if (s->fl[i])
+        {
             int w_asm = (s->planewidth[i] - 2) & ~15;
 
             s->fl[i](dst, src, in->linesize[i], w_asm);
@@ -563,10 +652,12 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
             x = 1 + w_asm;
             dst += w_asm;
             src += w_asm;
-        } else
+        }
+        else
             x = 1;
 
-        for (; x < s->planewidth[i] - 1; x++) {
+        for (; x < s->planewidth[i] - 1; x++)
+        {
             const int a1 = src[-op];
             const int a2 = src[-o0];
             const int a3 = src[-om];
@@ -598,17 +689,20 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    for (i = 0; i < s->nb_planes; i++) {
+    for (i = 0; i < s->nb_planes; i++)
+    {
         uint8_t *dst = out->data[i];
         uint8_t *src = in->data[i];
 
-        if (s->mode[i] == 0) {
+        if (s->mode[i] == 0)
+        {
             av_image_copy_plane(dst, out->linesize[i],
                                 src, in->linesize[i],
                                 s->planewidth[i], s->planeheight[i]);
@@ -617,7 +711,9 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
         memcpy(dst, src, s->planewidth[i]);
 
-        td.in = in; td.out = out; td.plane = i;
+        td.in = in;
+        td.out = out;
+        td.plane = i;
         ctx->internal->execute(ctx, filter_slice, &td, NULL,
                                FFMIN(s->planeheight[i], ctx->graph->nb_threads));
 
@@ -630,7 +726,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad removegrain_inputs[] = {
+static const AVFilterPad removegrain_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -640,7 +737,8 @@ static const AVFilterPad removegrain_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad removegrain_outputs[] = {
+static const AVFilterPad removegrain_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -648,7 +746,8 @@ static const AVFilterPad removegrain_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_removegrain = {
+AVFilter ff_vf_removegrain =
+{
     .name          = "removegrain",
     .description   = NULL_IF_CONFIG_SMALL("Remove grain."),
     .priv_size     = sizeof(RemoveGrainContext),

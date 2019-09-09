@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,17 +11,21 @@
 
 #include "webrtc/test/linux/glx_renderer.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 VideoRenderer* VideoRenderer::CreatePlatformRenderer(const char* window_title,
-                                                     size_t width,
-                                                     size_t height) {
-  GlxRenderer* glx_renderer = GlxRenderer::Create(window_title, width, height);
-  if (glx_renderer != NULL) {
-    return glx_renderer;
-  }
-  return NULL;
+        size_t width,
+        size_t height)
+{
+    GlxRenderer* glx_renderer = GlxRenderer::Create(window_title, width, height);
+    if (glx_renderer != NULL)
+    {
+        return glx_renderer;
+    }
+    return NULL;
 }
 }  // test
 }  // webrtc

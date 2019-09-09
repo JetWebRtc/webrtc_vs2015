@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,18 +12,21 @@
 
 #include <stddef.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 MouseCursorMonitor* MouseCursorMonitor::CreateForWindow(
     const DesktopCaptureOptions& options,
-    WindowId window) {
-  return NULL;
+    WindowId window)
+{
+    return NULL;
 }
 
 MouseCursorMonitor* MouseCursorMonitor::CreateForScreen(
     const DesktopCaptureOptions& options,
-    ScreenId screen) {
-  return NULL;
+    ScreenId screen)
+{
+    return NULL;
 }
 
 }  // namespace webrtc

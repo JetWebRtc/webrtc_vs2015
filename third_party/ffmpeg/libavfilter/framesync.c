@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@ static const char *framesync_name(void *ptr)
     return "framesync";
 }
 
-static const AVClass framesync_class = {
+static const AVClass framesync_class =
+{
     .version                   = LIBAVUTIL_VERSION_INT,
     .class_name                = "framesync",
     .item_name                 = framesync_name,
@@ -40,7 +41,8 @@ static const AVClass framesync_class = {
     .parent_log_context_offset = OFFSET(parent),
 };
 
-enum {
+enum
+{
     STATE_BOF,
     STATE_RUN,
     STATE_EOF,
@@ -79,27 +81,37 @@ int ff_framesync_configure(FFFrameSync *fs)
     unsigned i;
     int64_t gcd, lcm;
 
-    if (!fs->time_base.num) {
-        for (i = 0; i < fs->nb_in; i++) {
-            if (fs->in[i].sync) {
-                if (fs->time_base.num) {
+    if (!fs->time_base.num)
+    {
+        for (i = 0; i < fs->nb_in; i++)
+        {
+            if (fs->in[i].sync)
+            {
+                if (fs->time_base.num)
+                {
                     gcd = av_gcd(fs->time_base.den, fs->in[i].time_base.den);
                     lcm = (fs->time_base.den / gcd) * fs->in[i].time_base.den;
-                    if (lcm < AV_TIME_BASE / 2) {
+                    if (lcm < AV_TIME_BASE / 2)
+                    {
                         fs->time_base.den = lcm;
                         fs->time_base.num = av_gcd(fs->time_base.num,
                                                    fs->in[i].time_base.num);
-                    } else {
+                    }
+                    else
+                    {
                         fs->time_base.num = 1;
                         fs->time_base.den = AV_TIME_BASE;
                         break;
                     }
-                } else {
+                }
+                else
+                {
                     fs->time_base = fs->in[i].time_base;
                 }
             }
         }
-        if (!fs->time_base.num) {
+        if (!fs->time_base.num)
+        {
             av_log(fs, AV_LOG_ERROR, "Impossible to set time base\n");
             return AVERROR(EINVAL);
         }
@@ -123,15 +135,19 @@ static void framesync_advance(FFFrameSync *fs)
 
     if (fs->eof)
         return;
-    while (!fs->frame_ready) {
+    while (!fs->frame_ready)
+    {
         latest = -1;
-        for (i = 0; i < fs->nb_in; i++) {
-            if (!fs->in[i].have_next) {
+        for (i = 0; i < fs->nb_in; i++)
+        {
+            if (!fs->in[i].have_next)
+            {
                 if (latest < 0 || fs->in[i].pts < fs->in[latest].pts)
                     latest = i;
             }
         }
-        if (latest >= 0) {
+        if (latest >= 0)
+        {
             fs->in_request = latest;
             break;
         }
@@ -140,14 +156,17 @@ static void framesync_advance(FFFrameSync *fs)
         for (i = 1; i < fs->nb_in; i++)
             if (fs->in[i].pts_next < pts)
                 pts = fs->in[i].pts_next;
-        if (pts == INT64_MAX) {
+        if (pts == INT64_MAX)
+        {
             fs->eof = 1;
             break;
         }
-        for (i = 0; i < fs->nb_in; i++) {
+        for (i = 0; i < fs->nb_in; i++)
+        {
             if (fs->in[i].pts_next == pts ||
-                (fs->in[i].before == EXT_INFINITY &&
-                 fs->in[i].state == STATE_BOF)) {
+                    (fs->in[i].before == EXT_INFINITY &&
+                     fs->in[i].state == STATE_BOF))
+            {
                 av_frame_free(&fs->in[i].frame);
                 fs->in[i].frame      = fs->in[i].frame_next;
                 fs->in[i].pts        = fs->in[i].pts_next;
@@ -158,7 +177,7 @@ static void framesync_advance(FFFrameSync *fs)
                 if (fs->in[i].sync == fs->sync_level && fs->in[i].frame)
                     fs->frame_ready = 1;
                 if (fs->in[i].state == STATE_EOF &&
-                    fs->in[i].after == EXT_STOP)
+                        fs->in[i].after == EXT_STOP)
                     fs->eof = 1;
             }
         }
@@ -167,14 +186,14 @@ static void framesync_advance(FFFrameSync *fs)
         if (fs->frame_ready)
             for (i = 0; i < fs->nb_in; i++)
                 if ((fs->in[i].state == STATE_BOF &&
-                     fs->in[i].before == EXT_STOP))
+                        fs->in[i].before == EXT_STOP))
                     fs->frame_ready = 0;
         fs->pts = pts;
     }
 }
 
 static int64_t framesync_pts_extrapolate(FFFrameSync *fs, unsigned in,
-                                         int64_t pts)
+        int64_t pts)
 {
     /* Possible enhancement: use the link's frame rate */
     return pts + 1;
@@ -185,12 +204,15 @@ static void framesync_inject_frame(FFFrameSync *fs, unsigned in, AVFrame *frame)
     int64_t pts;
 
     av_assert0(!fs->in[in].have_next);
-    if (frame) {
+    if (frame)
+    {
         pts = av_rescale_q(frame->pts, fs->in[in].time_base, fs->time_base);
         frame->pts = pts;
-    } else {
+    }
+    else
+    {
         pts = fs->in[in].state != STATE_RUN || fs->in[in].after == EXT_INFINITY
-            ? INT64_MAX : framesync_pts_extrapolate(fs, in, fs->in[in].pts);
+              ? INT64_MAX : framesync_pts_extrapolate(fs, in, fs->in[in].pts);
         fs->in[in].sync = 0;
         framesync_sync_level_update(fs);
     }
@@ -234,27 +256,33 @@ int ff_framesync_get_frame(FFFrameSync *fs, unsigned in, AVFrame **rframe,
     int64_t pts_next;
     int ret;
 
-    if (!fs->in[in].frame) {
+    if (!fs->in[in].frame)
+    {
         *rframe = NULL;
         return 0;
     }
     frame = fs->in[in].frame;
-    if (get) {
+    if (get)
+    {
         /* Find out if we need to copy the frame: is there another sync
            stream, and do we know if its current frame will outlast this one? */
         pts_next = fs->in[in].have_next ? fs->in[in].pts_next : INT64_MAX;
         for (i = 0; i < fs->nb_in && !need_copy; i++)
             if (i != in && fs->in[i].sync &&
-                (!fs->in[i].have_next || fs->in[i].pts_next < pts_next))
+                    (!fs->in[i].have_next || fs->in[i].pts_next < pts_next))
                 need_copy = 1;
-        if (need_copy) {
+        if (need_copy)
+        {
             if (!(frame = av_frame_clone(frame)))
                 return AVERROR(ENOMEM);
-            if ((ret = av_frame_make_writable(frame)) < 0) {
+            if ((ret = av_frame_make_writable(frame)) < 0)
+            {
                 av_frame_free(&frame);
                 return ret;
             }
-        } else {
+        }
+        else
+        {
             fs->in[in].frame = NULL;
         }
         fs->frame_ready = 0;
@@ -267,7 +295,8 @@ void ff_framesync_uninit(FFFrameSync *fs)
 {
     unsigned i;
 
-    for (i = 0; i < fs->nb_in; i++) {
+    for (i = 0; i < fs->nb_in; i++)
+    {
         av_frame_free(&fs->in[i].frame);
         av_frame_free(&fs->in[i].frame_next);
         ff_bufqueue_discard_all(&fs->in[i].queue);
@@ -281,7 +310,8 @@ int ff_framesync_process_frame(FFFrameSync *fs, unsigned all)
     int ret, count = 0;
 
     av_assert0(fs->on_event);
-    while (1) {
+    while (1)
+    {
         ff_framesync_next(fs);
         if (fs->eof || !fs->frame_ready)
             break;
@@ -325,7 +355,8 @@ int ff_framesync_request_frame(FFFrameSync *fs, AVFilterLink *outlink)
     outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
     input = fs->in_request;
     ret = ff_request_frame(ctx->inputs[input]);
-    if (ret == AVERROR_EOF) {
+    if (ret == AVERROR_EOF)
+    {
         if ((ret = ff_framesync_add_frame(fs, input, NULL)) < 0)
             return ret;
         if ((ret = ff_framesync_process_frame(fs, 0)) < 0)

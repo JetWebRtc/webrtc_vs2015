@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Simple IDCT
  *
  * Copyright (c) 2001 Michael Niedermayer <michaelni@gmx.at>
@@ -96,7 +96,8 @@ void ff_simple_idct248_put(uint8_t *dest, int line_size, int16_t *block)
 
     /* butterfly */
     ptr = block;
-    for(i=0;i<4;i++) {
+    for(i=0; i<4; i++)
+    {
         BF(0);
         BF(1);
         BF(2);
@@ -109,12 +110,14 @@ void ff_simple_idct248_put(uint8_t *dest, int line_size, int16_t *block)
     }
 
     /* IDCT8 on each line */
-    for(i=0; i<8; i++) {
+    for(i=0; i<8; i++)
+    {
         idctRowCondDC_8(block + i*8, 0);
     }
 
     /* IDCT4 and store */
-    for(i=0;i<8;i++) {
+    for(i=0; i<8; i++)
+    {
         idct4col_put(dest + i, 2 * line_size, block + i);
         idct4col_put(dest + line_size + i, 2 * line_size, block + 8 + i);
     }
@@ -182,12 +185,14 @@ void ff_simple_idct84_add(uint8_t *dest, int line_size, int16_t *block)
     int i;
 
     /* IDCT8 on each line */
-    for(i=0; i<4; i++) {
+    for(i=0; i<4; i++)
+    {
         idctRowCondDC_8(block + i*8, 0);
     }
 
     /* IDCT4 and store */
-    for(i=0;i<8;i++) {
+    for(i=0; i<8; i++)
+    {
         idct4col_add(dest + i, line_size, block + i);
     }
 }
@@ -197,12 +202,14 @@ void ff_simple_idct48_add(uint8_t *dest, int line_size, int16_t *block)
     int i;
 
     /* IDCT4 on each line */
-    for(i=0; i<8; i++) {
+    for(i=0; i<8; i++)
+    {
         idct4row(block + i*8);
     }
 
     /* IDCT8 and store */
-    for(i=0; i<4; i++){
+    for(i=0; i<4; i++)
+    {
         idctSparseColAdd_8(dest + i, line_size, block + i);
     }
 }
@@ -212,12 +219,14 @@ void ff_simple_idct44_add(uint8_t *dest, int line_size, int16_t *block)
     int i;
 
     /* IDCT4 on each line */
-    for(i=0; i<4; i++) {
+    for(i=0; i<4; i++)
+    {
         idct4row(block + i*8);
     }
 
     /* IDCT4 and store */
-    for(i=0; i<4; i++){
+    for(i=0; i<4; i++)
+    {
         idct4col_add(dest + i, line_size, block + i);
     }
 }
@@ -232,7 +241,8 @@ void ff_prores_idct(int16_t *block, const int16_t *qmat)
     for (i = 0; i < 8; i++)
         idctRowCondDC_10(block + i*8, 2);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         block[i] += 8192;
         idctSparseCol_10(block + i);
     }

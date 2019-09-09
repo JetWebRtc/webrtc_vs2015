@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct SampleFmtInfo {
+typedef struct SampleFmtInfo
+{
     char name[8];
     int bits;
     int planar;
@@ -31,7 +32,8 @@ typedef struct SampleFmtInfo {
 } SampleFmtInfo;
 
 /** this table gives more information about formats */
-static const SampleFmtInfo sample_fmt_info[AV_SAMPLE_FMT_NB] = {
+static const SampleFmtInfo sample_fmt_info[AV_SAMPLE_FMT_NB] =
+{
     [AV_SAMPLE_FMT_U8]   = { .name =   "u8", .bits =  8, .planar = 0, .altform = AV_SAMPLE_FMT_U8P  },
     [AV_SAMPLE_FMT_S16]  = { .name =  "s16", .bits = 16, .planar = 0, .altform = AV_SAMPLE_FMT_S16P },
     [AV_SAMPLE_FMT_S32]  = { .name =  "s32", .bits = 32, .planar = 0, .altform = AV_SAMPLE_FMT_S32P },
@@ -93,7 +95,8 @@ char *av_get_sample_fmt_string (char *buf, int buf_size, enum AVSampleFormat sam
     /* print header */
     if (sample_fmt < 0)
         snprintf(buf, buf_size, "name  " " depth");
-    else if (sample_fmt < AV_SAMPLE_FMT_NB) {
+    else if (sample_fmt < AV_SAMPLE_FMT_NB)
+    {
         SampleFmtInfo info = sample_fmt_info[sample_fmt];
         snprintf (buf, buf_size, "%-6s" "   %2d ", info.name, info.bits);
     }
@@ -103,15 +106,15 @@ char *av_get_sample_fmt_string (char *buf, int buf_size, enum AVSampleFormat sam
 
 int av_get_bytes_per_sample(enum AVSampleFormat sample_fmt)
 {
-     return sample_fmt < 0 || sample_fmt >= AV_SAMPLE_FMT_NB ?
-        0 : sample_fmt_info[sample_fmt].bits >> 3;
+    return sample_fmt < 0 || sample_fmt >= AV_SAMPLE_FMT_NB ?
+    0 : sample_fmt_info[sample_fmt].bits >> 3;
 }
 
 int av_sample_fmt_is_planar(enum AVSampleFormat sample_fmt)
 {
-     if (sample_fmt < 0 || sample_fmt >= AV_SAMPLE_FMT_NB)
-         return 0;
-     return sample_fmt_info[sample_fmt].planar;
+    if (sample_fmt < 0 || sample_fmt >= AV_SAMPLE_FMT_NB)
+        return 0;
+    return sample_fmt_info[sample_fmt].planar;
 }
 
 int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
@@ -126,7 +129,8 @@ int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
         return AVERROR(EINVAL);
 
     /* auto-select alignment if not specified */
-    if (!align) {
+    if (!align)
+    {
         if (nb_samples > INT_MAX - 31)
             return AVERROR(EINVAL);
         align = 1;
@@ -135,11 +139,11 @@ int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
 
     /* check for integer overflow */
     if (nb_channels > INT_MAX / align ||
-        (int64_t)nb_channels * nb_samples > (INT_MAX - (align * nb_channels)) / sample_size)
+    (int64_t)nb_channels * nb_samples > (INT_MAX - (align * nb_channels)) / sample_size)
         return AVERROR(EINVAL);
 
     line_size = planar ? FFALIGN(nb_samples * sample_size,               align) :
-                         FFALIGN(nb_samples * sample_size * nb_channels, align);
+    FFALIGN(nb_samples * sample_size * nb_channels, align);
     if (linesize)
         *linesize = line_size;
 
@@ -154,7 +158,7 @@ int av_samples_fill_arrays(uint8_t **audio_data, int *linesize,
 
     planar   = av_sample_fmt_is_planar(sample_fmt);
     buf_size = av_samples_get_buffer_size(&line_size, nb_channels, nb_samples,
-                                          sample_fmt, align);
+    sample_fmt, align);
     if (buf_size < 0)
         return buf_size;
 
@@ -173,7 +177,7 @@ int av_samples_alloc(uint8_t **audio_data, int *linesize, int nb_channels,
 {
     uint8_t *buf;
     int size = av_samples_get_buffer_size(NULL, nb_channels, nb_samples,
-                                          sample_fmt, align);
+    sample_fmt, align);
     if (size < 0)
         return size;
 
@@ -182,8 +186,9 @@ int av_samples_alloc(uint8_t **audio_data, int *linesize, int nb_channels,
         return AVERROR(ENOMEM);
 
     size = av_samples_fill_arrays(audio_data, linesize, buf, nb_channels,
-                                  nb_samples, sample_fmt, align);
-    if (size < 0) {
+    nb_samples, sample_fmt, align);
+    if (size < 0)
+    {
         av_free(buf);
         return size;
     }
@@ -202,7 +207,7 @@ int av_samples_alloc_array_and_samples(uint8_t ***audio_data, int *linesize, int
     if (!*audio_data)
         return AVERROR(ENOMEM);
     ret = av_samples_alloc(*audio_data, linesize, nb_channels,
-                           nb_samples, sample_fmt, align);
+    nb_samples, sample_fmt, align);
     if (ret < 0)
         av_freep(audio_data);
     return ret;
@@ -221,10 +226,12 @@ int av_samples_copy(uint8_t **dst, uint8_t * const *src, int dst_offset,
     dst_offset *= block_align;
     src_offset *= block_align;
 
-    if((dst[0] < src[0] ? src[0] - dst[0] : dst[0] - src[0]) >= data_size) {
+    if((dst[0] < src[0] ? src[0] - dst[0] : dst[0] - src[0]) >= data_size)
+    {
         for (i = 0; i < planes; i++)
             memcpy(dst[i] + dst_offset, src[i] + src_offset, data_size);
-    } else {
+    }
+    else {
         for (i = 0; i < planes; i++)
             memmove(dst[i] + dst_offset, src[i] + src_offset, data_size);
     }
@@ -240,7 +247,7 @@ int av_samples_set_silence(uint8_t **audio_data, int offset, int nb_samples,
     int block_align = av_get_bytes_per_sample(sample_fmt) * (planar ? 1 : nb_channels);
     int data_size   = nb_samples * block_align;
     int fill_char   = (sample_fmt == AV_SAMPLE_FMT_U8 ||
-                     sample_fmt == AV_SAMPLE_FMT_U8P) ? 0x80 : 0x00;
+    sample_fmt == AV_SAMPLE_FMT_U8P) ? 0x80 : 0x00;
     int i;
 
     offset *= block_align;

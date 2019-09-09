@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple ProRes compatible decoder
  *
  * Copyright (c) 2010-2011 Maxim Poliakovski
@@ -40,8 +40,10 @@ static void put_pixels(uint16_t *dst, int stride, const int16_t *in)
 {
     int x, y, src_offset, dst_offset;
 
-    for (y = 0, dst_offset = 0; y < 8; y++, dst_offset += stride) {
-        for (x = 0; x < 8; x++) {
+    for (y = 0, dst_offset = 0; y < 8; y++, dst_offset += stride)
+    {
+        for (x = 0; x < 8; x++)
+        {
             src_offset = (y << 3) + x;
 
             dst[dst_offset + x] = CLIP(in[src_offset]);

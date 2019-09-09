@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -41,20 +41,20 @@ unsigned long GetHighResolutionTime(void); /* O  time in usec*/
 
 /* make SILK_DEBUG dependent on compiler's _DEBUG */
 #if defined _WIN32
-    #ifdef _DEBUG
-        #define SILK_DEBUG  1
-    #else
-        #define SILK_DEBUG  0
-    #endif
-
-    /* overrule the above */
-    #if 0
-    /*  #define NO_ASSERTS*/
-    #undef  SILK_DEBUG
-    #define SILK_DEBUG  1
-    #endif
+#ifdef _DEBUG
+#define SILK_DEBUG  1
 #else
-    #define SILK_DEBUG  0
+#define SILK_DEBUG  0
+#endif
+
+/* overrule the above */
+#if 0
+/*  #define NO_ASSERTS*/
+#undef  SILK_DEBUG
+#define SILK_DEBUG  1
+#endif
+#else
+#define SILK_DEBUG  0
 #endif
 
 /* Flag for using timers */

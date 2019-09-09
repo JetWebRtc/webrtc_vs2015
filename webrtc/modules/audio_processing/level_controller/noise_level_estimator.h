@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,22 +14,24 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_processing/level_controller/signal_classifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class NoiseLevelEstimator {
- public:
-  NoiseLevelEstimator();
-  ~NoiseLevelEstimator();
-  void Initialize(int sample_rate_hz);
-  float Analyze(SignalClassifier::SignalType signal_type, float frame_energy);
+class NoiseLevelEstimator
+{
+public:
+    NoiseLevelEstimator();
+    ~NoiseLevelEstimator();
+    void Initialize(int sample_rate_hz);
+    float Analyze(SignalClassifier::SignalType signal_type, float frame_energy);
 
- private:
-  float min_noise_energy_ = 0.f;
-  bool first_update_;
-  float noise_energy_;
-  int noise_energy_hold_counter_;
+private:
+    float min_noise_energy_ = 0.f;
+    bool first_update_;
+    float noise_energy_;
+    int noise_energy_hold_counter_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(NoiseLevelEstimator);
+    RTC_DISALLOW_COPY_AND_ASSIGN(NoiseLevelEstimator);
 };
 
 }  // namespace webrtc

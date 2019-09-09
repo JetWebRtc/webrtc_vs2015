@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -36,13 +36,15 @@
 
 #include "typedefs.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*
  *  Reconstructed Picture definition
  *  It is used to express reference picture, also consequent reconstruction picture for output
  */
-typedef struct TagPicture {
+typedef struct TagPicture
+{
 /************************************payload data*********************************/
 uint8_t*        pBuffer[4];             // pointer to the first allocated byte, basical offset of buffer, dimension:
 uint8_t*        pData[4];               // pointer to picture planes respectively

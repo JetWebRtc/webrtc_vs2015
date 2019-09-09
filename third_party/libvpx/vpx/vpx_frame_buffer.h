@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -36,10 +36,11 @@ extern "C" {
  *
  * This structure holds allocated frame buffers used by the decoder.
  */
-typedef struct vpx_codec_frame_buffer {
-  uint8_t *data; /**< Pointer to the data buffer */
-  size_t size;   /**< Size of data in bytes */
-  void *priv;    /**< Frame's private data */
+typedef struct vpx_codec_frame_buffer
+{
+    uint8_t *data; /**< Pointer to the data buffer */
+    size_t size;   /**< Size of data in bytes */
+    void *priv;    /**< Frame's private data */
 } vpx_codec_frame_buffer_t;
 
 /*!\brief get frame buffer callback prototype
@@ -61,7 +62,7 @@ typedef struct vpx_codec_frame_buffer {
  * \param[in,out] fb       Pointer to vpx_codec_frame_buffer_t
  */
 typedef int (*vpx_get_frame_buffer_cb_fn_t)(void *priv, size_t min_size,
-                                            vpx_codec_frame_buffer_t *fb);
+        vpx_codec_frame_buffer_t *fb);
 
 /*!\brief release frame buffer callback prototype
  *
@@ -74,7 +75,7 @@ typedef int (*vpx_get_frame_buffer_cb_fn_t)(void *priv, size_t min_size,
  * \param[in] fb           Pointer to vpx_codec_frame_buffer_t
  */
 typedef int (*vpx_release_frame_buffer_cb_fn_t)(void *priv,
-                                                vpx_codec_frame_buffer_t *fb);
+        vpx_codec_frame_buffer_t *fb);
 
 #ifdef __cplusplus
 }  // extern "C"

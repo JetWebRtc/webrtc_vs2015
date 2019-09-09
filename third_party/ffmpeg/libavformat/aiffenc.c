@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AIFF/AIFF-C muxer
  * Copyright (c) 2006  Patrick Guimond
  *
@@ -30,7 +30,8 @@
 #include "isom.h"
 #include "id3v2.h"
 
-typedef struct AIFFOutputContext {
+typedef struct AIFFOutputContext
+{
     const AVClass *class;
     int64_t form;
     int64_t frames;
@@ -61,7 +62,8 @@ static int put_id3v2_tags(AVFormatContext *s, AIFFOutputContext *aiff)
 
     ff_id3v2_start(&id3v2, pb, aiff->id3v2_version, ID3v2_DEFAULT_MAGIC);
     ff_id3v2_write_metadata(s, &id3v2);
-    while (pict_list) {
+    while (pict_list)
+    {
         if ((ret = ff_id3v2_write_apic(s, &id3v2, &pict_list->pkt)) < 0)
             return ret;
         pict_list = pict_list->next;
@@ -87,7 +89,8 @@ static void put_meta(AVFormatContext *s, const char *key, uint32_t id)
     AVDictionaryEntry *tag;
     AVIOContext *pb = s->pb;
 
-    if (tag = av_dict_get(s->metadata, key, NULL, 0)) {
+    if (tag = av_dict_get(s->metadata, key, NULL, 0))
+    {
         int size = strlen(tag->value);
 
         avio_wl32(pb, id);
@@ -107,16 +110,21 @@ static int aiff_write_header(AVFormatContext *s)
     int i, aifc = 0;
 
     aiff->audio_stream_idx = -1;
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *st = s->streams[i];
-        if (aiff->audio_stream_idx < 0 && st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (aiff->audio_stream_idx < 0 && st->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             aiff->audio_stream_idx = i;
-        } else if (st->codec->codec_type != AVMEDIA_TYPE_VIDEO) {
+        }
+        else if (st->codec->codec_type != AVMEDIA_TYPE_VIDEO)
+        {
             av_log(s, AV_LOG_ERROR, "AIFF allows only one audio stream and a picture.\n");
             return AVERROR(EINVAL);
         }
     }
-    if (aiff->audio_stream_idx < 0) {
+    if (aiff->audio_stream_idx < 0)
+    {
         av_log(s, AV_LOG_ERROR, "No audio stream present.\n");
         return AVERROR(EINVAL);
     }
@@ -135,8 +143,10 @@ static int aiff_write_header(AVFormatContext *s)
     avio_wb32(pb, 0);                    /* file length */
     ffio_wfourcc(pb, aifc ? "AIFC" : "AIFF");
 
-    if (aifc) { // compressed audio
-        if (!enc->block_align) {
+    if (aifc)   // compressed audio
+    {
+        if (!enc->block_align)
+        {
             av_log(s, AV_LOG_ERROR, "block align not set\n");
             return -1;
         }
@@ -146,7 +156,8 @@ static int aiff_write_header(AVFormatContext *s)
         avio_wb32(pb, 0xA2805140);
     }
 
-    if (enc->channels > 2 && enc->channel_layout) {
+    if (enc->channels > 2 && enc->channel_layout)
+    {
         ffio_wfourcc(pb, "CHAN");
         avio_wb32(pb, 12);
         ff_mov_write_chan(pb, enc->channel_layout);
@@ -167,7 +178,8 @@ static int aiff_write_header(AVFormatContext *s)
 
     if (!enc->bits_per_coded_sample)
         enc->bits_per_coded_sample = av_get_bits_per_sample(enc->codec_id);
-    if (!enc->bits_per_coded_sample) {
+    if (!enc->bits_per_coded_sample)
+    {
         av_log(s, AV_LOG_ERROR, "could not compute bits per sample\n");
         return -1;
     }
@@ -180,12 +192,14 @@ static int aiff_write_header(AVFormatContext *s)
     avio_wb16(pb, (sample_rate >> 52) + (16383 - 1023));
     avio_wb64(pb, UINT64_C(1) << 63 | sample_rate << 11);
 
-    if (aifc) {
+    if (aifc)
+    {
         avio_wl32(pb, enc->codec_tag);
         avio_wb16(pb, 0);
     }
 
-    if (enc->codec_tag == MKTAG('Q','D','M','2') && enc->extradata_size) {
+    if (enc->codec_tag == MKTAG('Q','D','M','2') && enc->extradata_size)
+    {
         ffio_wfourcc(pb, "wave");
         avio_wb32(pb, enc->extradata_size);
         avio_write(pb, enc->extradata, enc->extradata_size);
@@ -213,7 +227,8 @@ static int aiff_write_packet(AVFormatContext *s, AVPacket *pkt)
     AVIOContext *pb = s->pb;
     if (pkt->stream_index == aiff->audio_stream_idx)
         avio_write(pb, pkt->data, pkt->size);
-    else {
+    else
+    {
         int ret;
         AVPacketList *pict_list, *last;
 
@@ -221,7 +236,8 @@ static int aiff_write_packet(AVFormatContext *s, AVPacket *pkt)
             return 0;
 
         /* warn only once for each stream */
-        if (s->streams[pkt->stream_index]->nb_frames == 1) {
+        if (s->streams[pkt->stream_index]->nb_frames == 1)
+        {
             av_log(s, AV_LOG_WARNING, "Got more than one picture in stream %d,"
                    " ignoring.\n", pkt->stream_index);
         }
@@ -232,14 +248,16 @@ static int aiff_write_packet(AVFormatContext *s, AVPacket *pkt)
         if (!pict_list)
             return AVERROR(ENOMEM);
 
-        if ((ret = av_copy_packet(&pict_list->pkt, pkt)) < 0) {
+        if ((ret = av_copy_packet(&pict_list->pkt, pkt)) < 0)
+        {
             av_freep(&pict_list);
             return ret;
         }
 
         if (!aiff->pict_list)
             aiff->pict_list = pict_list;
-        else {
+        else
+        {
             last = aiff->pict_list;
             while (last->next)
                 last = last->next;
@@ -261,12 +279,14 @@ static int aiff_write_trailer(AVFormatContext *s)
     /* Chunks sizes must be even */
     int64_t file_size, end_size;
     end_size = file_size = avio_tell(pb);
-    if (file_size & 1) {
+    if (file_size & 1)
+    {
         avio_w8(pb, 0);
         end_size++;
     }
 
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         /* Number of sample frames */
         avio_seek(pb, aiff->frames, SEEK_SET);
         avio_wb32(pb, (file_size-aiff->ssnd-12)/enc->block_align);
@@ -291,7 +311,8 @@ static int aiff_write_trailer(AVFormatContext *s)
         avio_flush(pb);
     }
 
-    while (pict_list) {
+    while (pict_list)
+    {
         AVPacketList *next = pict_list->next;
         av_free_packet(&pict_list->pkt);
         av_freep(&pict_list);
@@ -303,22 +324,29 @@ static int aiff_write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(AIFFOutputContext, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
-    { "write_id3v2", "Enable ID3 tags writing.",
-      OFFSET(write_id3v2), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, ENC },
-    { "id3v2_version", "Select ID3v2 version to write. Currently 3 and 4 are supported.",
-      OFFSET(id3v2_version), AV_OPT_TYPE_INT, {.i64 = 4}, 3, 4, ENC },
+static const AVOption options[] =
+{
+    {
+        "write_id3v2", "Enable ID3 tags writing.",
+        OFFSET(write_id3v2), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, ENC
+    },
+    {
+        "id3v2_version", "Select ID3v2 version to write. Currently 3 and 4 are supported.",
+        OFFSET(id3v2_version), AV_OPT_TYPE_INT, {.i64 = 4}, 3, 4, ENC
+    },
     { NULL },
 };
 
-static const AVClass aiff_muxer_class = {
+static const AVClass aiff_muxer_class =
+{
     .class_name     = "AIFF muxer",
     .item_name      = av_default_item_name,
     .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_aiff_muxer = {
+AVOutputFormat ff_aiff_muxer =
+{
     .name              = "aiff",
     .long_name         = NULL_IF_CONFIG_SMALL("Audio IFF"),
     .mime_type         = "audio/aiff",

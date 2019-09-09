@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 S.N. Hemanth Meenakshisundaram <smeenaks@ucsd.edu>
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@ static int null_filter_frame(AVFilterLink *link, AVFrame *frame)
     return 0;
 }
 
-static const AVFilterPad avfilter_asink_anullsink_inputs[] = {
+static const AVFilterPad avfilter_asink_anullsink_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -37,7 +38,8 @@ static const AVFilterPad avfilter_asink_anullsink_inputs[] = {
     { NULL },
 };
 
-AVFilter ff_asink_anullsink = {
+AVFilter ff_asink_anullsink =
+{
     .name        = "anullsink",
     .description = NULL_IF_CONFIG_SMALL("Do absolutely nothing with the input audio."),
 

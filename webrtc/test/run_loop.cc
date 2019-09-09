@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,12 +11,15 @@
 
 #include <stdio.h>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-void PressEnterToContinue() {
-  puts(">> Press ENTER to continue...");
-  while (getc(stdin) != '\n' && !feof(stdin));
+void PressEnterToContinue()
+{
+    puts(">> Press ENTER to continue...");
+    while (getc(stdin) != '\n' && !feof(stdin));
 }
 }  // namespace test
 }  // namespace webrtc

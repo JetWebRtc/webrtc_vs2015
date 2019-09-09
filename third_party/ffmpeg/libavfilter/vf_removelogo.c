@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2005 Robert Edele <yartrebo@earthlink.net>
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -79,7 +79,8 @@
 #include "lavfutils.h"
 #include "lswsutils.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     char *filename;
     /* Stores our collection of masks. The first is for an array of
@@ -96,7 +97,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(RemovelogoContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption removelogo_options[] = {
+static const AVOption removelogo_options[] =
+{
     { "filename", "set bitmap filename", OFFSET(filename), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
     { "f",        "set bitmap filename", OFFSET(filename), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
     { NULL }
@@ -131,8 +133,8 @@ AVFILTER_DEFINE_CLASS(removelogo);
  * into a distance image.
  */
 static void convert_mask_to_strength_mask(uint8_t *data, int linesize,
-                                          int w, int h, int min_val,
-                                          int *max_mask_size)
+        int w, int h, int min_val,
+        int *max_mask_size)
 {
     int x, y;
 
@@ -151,15 +153,18 @@ static void convert_mask_to_strength_mask(uint8_t *data, int linesize,
        pass, then we go again. Edge pixels are counted as always
        excluded (this should be true anyway for any sane mask, but if
        it isn't this will ensure that we eventually exit). */
-    while (1) {
+    while (1)
+    {
         /* If this doesn't get set by the end of this pass, then we're done. */
         int has_anything_changed = 0;
         uint8_t *current_pixel0 = data + 1 + linesize, *current_pixel;
         current_pass++;
 
-        for (y = 1; y < h-1; y++) {
+        for (y = 1; y < h-1; y++)
+        {
             current_pixel = current_pixel0;
-            for (x = 1; x < w-1; x++) {
+            for (x = 1; x < w-1; x++)
+            {
                 /* Apply the in-place erosion transform. It is based
                    on the following two premises:
                    1 - Any pixel that fails 1 erosion will fail all
@@ -172,10 +177,11 @@ static void convert_mask_to_strength_mask(uint8_t *data, int linesize,
                    instead of ==, we allow the algorithm to work in
                    place. */
                 if ( *current_pixel      >= current_pass &&
-                    *(current_pixel + 1) >= current_pass &&
-                    *(current_pixel - 1) >= current_pass &&
-                    *(current_pixel + linesize) >= current_pass &&
-                    *(current_pixel - linesize) >= current_pass) {
+                        *(current_pixel + 1) >= current_pass &&
+                        *(current_pixel - 1) >= current_pass &&
+                        *(current_pixel + linesize) >= current_pass &&
+                        *(current_pixel - linesize) >= current_pass)
+                {
                     /* Increment the value since it still has not been
                      * eroded, as evidenced by the if statement that
                      * just evaluated to true. */
@@ -262,8 +268,10 @@ static void generate_half_size_image(const uint8_t *src_data, int src_linesize,
 
     /* Copy over the image data, using the average of 4 pixels for to
      * calculate each downsampled pixel. */
-    for (y = 0; y < src_h/2; y++) {
-        for (x = 0; x < src_w/2; x++) {
+    for (y = 0; y < src_h/2; y++)
+    {
+        for (x = 0; x < src_w/2; x++)
+        {
             /* Set the pixel if there exists a non-zero value in the
              * source pixels, else clear it. */
             dst_data[(y * dst_linesize) + x] =
@@ -287,7 +295,8 @@ static av_cold int init(AVFilterContext *ctx)
     int a, b, c, w, h;
     int full_max_mask_size, half_max_mask_size;
 
-    if (!s->filename) {
+    if (!s->filename)
+    {
         av_log(ctx, AV_LOG_ERROR, "The bitmap file name is mandatory\n");
         return AVERROR(EINVAL);
     }
@@ -318,19 +327,24 @@ static av_cold int init(AVFilterContext *ctx)
     if (!mask)
         return AVERROR(ENOMEM);
 
-    for (a = 0; a <= s->max_mask_size; a++) {
+    for (a = 0; a <= s->max_mask_size; a++)
+    {
         mask[a] = (int **)av_malloc_array((a * 2) + 1, sizeof(int *));
-        if (!mask[a]) {
+        if (!mask[a])
+        {
             av_free(mask);
             return AVERROR(ENOMEM);
         }
-        for (b = -a; b <= a; b++) {
+        for (b = -a; b <= a; b++)
+        {
             mask[a][b + a] = (int *)av_malloc_array((a * 2) + 1, sizeof(int));
-            if (!mask[a][b + a]) {
+            if (!mask[a][b + a])
+            {
                 av_free(mask);
                 return AVERROR(ENOMEM);
             }
-            for (c = -a; c <= a; c++) {
+            for (c = -a; c <= a; c++)
+            {
                 if ((b * b) + (c * c) <= (a * a)) /* Circular 0/1 mask. */
                     mask[a][b + a][c + a] = 1;
                 else
@@ -361,7 +375,8 @@ static int config_props_input(AVFilterLink *inlink)
     AVFilterContext *ctx = inlink->dst;
     RemovelogoContext *s = ctx->priv;
 
-    if (inlink->w != s->mask_w || inlink->h != s->mask_h) {
+    if (inlink->w != s->mask_w || inlink->h != s->mask_h)
+    {
         av_log(ctx, AV_LOG_INFO,
                "Mask image size %dx%d does not match with the input video size %dx%d\n",
                s->mask_w, s->mask_h, inlink->w, inlink->h);
@@ -411,11 +426,14 @@ static unsigned int blur_pixel(int ***mask,
     image_read_position = image_data + image_linesize * start_posy + start_posx;
     mask_read_position  = mask_data  + mask_linesize  * start_posy + start_posx;
 
-    for (j = start_posy; j <= end_posy; j++) {
-        for (i = start_posx; i <= end_posx; i++) {
+    for (j = start_posy; j <= end_posy; j++)
+    {
+        for (i = start_posx; i <= end_posx; i++)
+        {
             /* Check if this pixel is in the mask or not. Only use the
              * pixel if it is not. */
-            if (!(*mask_read_position) && mask[mask_size][i - start_posx][j - start_posy]) {
+            if (!(*mask_read_position) && mask[mask_size][i - start_posx][j - start_posy])
+            {
                 accumulator += *image_read_position;
                 divisor++;
             }
@@ -432,7 +450,7 @@ static unsigned int blur_pixel(int ***mask,
        the logo, so we have no data.  Else we need to normalise the
        data using the divisor. */
     return divisor == 0 ? 255:
-        (accumulator + (divisor / 2)) / divisor;  /* divide, taking into account average rounding error */
+           (accumulator + (divisor / 2)) / divisor;  /* divide, taking into account average rounding error */
 }
 
 /**
@@ -460,7 +478,7 @@ static unsigned int blur_pixel(int ***mask,
  */
 static void blur_image(int ***mask,
                        const uint8_t *src_data,  int src_linesize,
-                             uint8_t *dst_data,  int dst_linesize,
+                       uint8_t *dst_data,  int dst_linesize,
                        const uint8_t *mask_data, int mask_linesize,
                        int w, int h, int direct,
                        FFBoundingBox *bbox)
@@ -472,18 +490,23 @@ static void blur_image(int ***mask,
     if (!direct)
         av_image_copy_plane(dst_data, dst_linesize, src_data, src_linesize, w, h);
 
-    for (y = bbox->y1; y <= bbox->y2; y++) {
+    for (y = bbox->y1; y <= bbox->y2; y++)
+    {
         src_line = src_data + src_linesize * y;
         dst_line = dst_data + dst_linesize * y;
 
-        for (x = bbox->x1; x <= bbox->x2; x++) {
-             if (mask_data[y * mask_linesize + x]) {
+        for (x = bbox->x1; x <= bbox->x2; x++)
+        {
+            if (mask_data[y * mask_linesize + x])
+            {
                 /* Only process if we are in the mask. */
-                 dst_line[x] = blur_pixel(mask,
-                                          mask_data, mask_linesize,
-                                          dst_data, dst_linesize,
-                                          w, h, x, y);
-            } else {
+                dst_line[x] = blur_pixel(mask,
+                                         mask_data, mask_linesize,
+                                         dst_data, dst_linesize,
+                                         w, h, x, y);
+            }
+            else
+            {
                 /* Else just copy the data. */
                 if (!direct)
                     dst_line[x] = src_line[x];
@@ -499,12 +522,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     AVFrame *outpicref;
     int direct = 0;
 
-    if (av_frame_is_writable(inpicref)) {
+    if (av_frame_is_writable(inpicref))
+    {
         direct = 1;
         outpicref = inpicref;
-    } else {
+    }
+    else
+    {
         outpicref = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!outpicref) {
+        if (!outpicref)
+        {
             av_frame_free(&inpicref);
             return AVERROR(ENOMEM);
         }
@@ -541,11 +568,14 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->full_mask_data);
     av_freep(&s->half_mask_data);
 
-    if (s->mask) {
+    if (s->mask)
+    {
         /* Loop through each mask. */
-        for (a = 0; a <= s->max_mask_size; a++) {
+        for (a = 0; a <= s->max_mask_size; a++)
+        {
             /* Loop through each scanline in a mask. */
-            for (b = -a; b <= a; b++) {
+            for (b = -a; b <= a; b++)
+            {
                 av_freep(&s->mask[a][b + a]); /* Free a scanline. */
             }
             av_freep(&s->mask[a]);
@@ -555,7 +585,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     }
 }
 
-static const AVFilterPad removelogo_inputs[] = {
+static const AVFilterPad removelogo_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -565,7 +596,8 @@ static const AVFilterPad removelogo_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad removelogo_outputs[] = {
+static const AVFilterPad removelogo_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -573,7 +605,8 @@ static const AVFilterPad removelogo_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_removelogo = {
+AVFilter ff_vf_removelogo =
+{
     .name          = "removelogo",
     .description   = NULL_IF_CONFIG_SMALL("Remove a TV logo based on a mask image."),
     .priv_size     = sizeof(RemovelogoContext),

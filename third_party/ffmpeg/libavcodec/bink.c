@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bink video decoder
  * Copyright (c) 2009 Konstantin Shishkov
  * Copyright (C) 2011 Peter Ross <pross@xvid.org>
@@ -42,7 +42,8 @@ static VLC bink_trees[16];
 /**
  * IDs for different data types used in old version of Bink video codec
  */
-enum OldSources {
+enum OldSources
+{
     BINKB_SRC_BLOCK_TYPES = 0, ///< 8x8 block types
     BINKB_SRC_COLORS,          ///< pixel values used for different block types
     BINKB_SRC_PATTERN,         ///< 8-bit values for 2-colour pattern fill
@@ -57,11 +58,13 @@ enum OldSources {
     BINKB_NB_SRC
 };
 
-static const int binkb_bundle_sizes[BINKB_NB_SRC] = {
+static const int binkb_bundle_sizes[BINKB_NB_SRC] =
+{
     4, 8, 8, 5, 5, 11, 11, 4, 4, 7
 };
 
-static const int binkb_bundle_signed[BINKB_NB_SRC] = {
+static const int binkb_bundle_signed[BINKB_NB_SRC] =
+{
     0, 0, 0, 1, 1, 0, 1, 0, 0, 0
 };
 
@@ -71,7 +74,8 @@ static int32_t binkb_inter_quant[16][64];
 /**
  * IDs for different data types used in Bink video codec
  */
-enum Sources {
+enum Sources
+{
     BINK_SRC_BLOCK_TYPES = 0, ///< 8x8 block types
     BINK_SRC_SUB_BLOCK_TYPES, ///< 16x16 block types (a subset of 8x8 block types)
     BINK_SRC_COLORS,          ///< pixel values used for different block types
@@ -88,7 +92,8 @@ enum Sources {
 /**
  * data needed to decode 4-bit Huffman-coded value
  */
-typedef struct Tree {
+typedef struct Tree
+{
     int     vlc_num;  ///< tree number (in bink_trees[])
     uint8_t syms[16]; ///< leaf value to symbol mapping
 } Tree;
@@ -99,7 +104,8 @@ typedef struct Tree {
 /**
  * data structure used for decoding single Bink data type
  */
-typedef struct Bundle {
+typedef struct Bundle
+{
     int     len;       ///< length of number of entries to decode (in bits)
     Tree    tree;      ///< Huffman tree-related data
     uint8_t *data;     ///< buffer for decoded symbols
@@ -111,7 +117,8 @@ typedef struct Bundle {
 /*
  * Decoder context
  */
-typedef struct BinkContext {
+typedef struct BinkContext
+{
     AVCodecContext *avctx;
     BlockDSPContext bdsp;
     HpelDSPContext hdsp;
@@ -130,7 +137,8 @@ typedef struct BinkContext {
 /**
  * Bink video block types
  */
-enum BlockTypes {
+enum BlockTypes
+{
     SKIP_BLOCK = 0, ///< skipped block
     SCALED_BLOCK,   ///< block has size 16x16
     MOTION_BLOCK,   ///< block is copied from previous frame with some offset
@@ -161,9 +169,9 @@ static void init_lengths(BinkContext *c, int width, int bw)
     c->bundle[BINK_SRC_COLORS].len = av_log2(bw*64 + 511) + 1;
 
     c->bundle[BINK_SRC_INTRA_DC].len =
-    c->bundle[BINK_SRC_INTER_DC].len =
-    c->bundle[BINK_SRC_X_OFF].len =
-    c->bundle[BINK_SRC_Y_OFF].len = av_log2((width >> 3) + 511) + 1;
+        c->bundle[BINK_SRC_INTER_DC].len =
+            c->bundle[BINK_SRC_X_OFF].len =
+                c->bundle[BINK_SRC_Y_OFF].len = av_log2((width >> 3) + 511) + 1;
 
     c->bundle[BINK_SRC_PATTERN].len = av_log2((bw << 3) + 511) + 1;
 
@@ -184,7 +192,8 @@ static av_cold int init_bundles(BinkContext *c)
     bh = (c->avctx->height + 7) >> 3;
     blocks = bw * bh;
 
-    for (i = 0; i < BINKB_NB_SRC; i++) {
+    for (i = 0; i < BINKB_NB_SRC; i++)
+    {
         c->bundle[i].data = av_mallocz(blocks * 64);
         if (!c->bundle[i].data)
             return AVERROR(ENOMEM);
@@ -219,15 +228,20 @@ static void merge(GetBitContext *gb, uint8_t *dst, uint8_t *src, int size)
     uint8_t *src2 = src + size;
     int size2 = size;
 
-    do {
-        if (!get_bits1(gb)) {
+    do
+    {
+        if (!get_bits1(gb))
+        {
             *dst++ = *src++;
             size--;
-        } else {
+        }
+        else
+        {
             *dst++ = *src2++;
             size2--;
         }
-    } while (size && size2);
+    }
+    while (size && size2);
 
     while (size--)
         *dst++ = *src++;
@@ -247,25 +261,31 @@ static void read_tree(GetBitContext *gb, Tree *tree)
     int i, t, len;
 
     tree->vlc_num = get_bits(gb, 4);
-    if (!tree->vlc_num) {
+    if (!tree->vlc_num)
+    {
         for (i = 0; i < 16; i++)
             tree->syms[i] = i;
         return;
     }
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         len = get_bits(gb, 3);
-        for (i = 0; i <= len; i++) {
+        for (i = 0; i <= len; i++)
+        {
             tree->syms[i] = get_bits(gb, 4);
             tmp1[tree->syms[i]] = 1;
         }
         for (i = 0; i < 16 && len < 16 - 1; i++)
             if (!tmp1[i])
                 tree->syms[++len] = i;
-    } else {
+    }
+    else
+    {
         len = get_bits(gb, 2);
         for (i = 0; i < 16; i++)
             in[i] = i;
-        for (i = 0; i <= len; i++) {
+        for (i = 0; i <= len; i++)
+        {
             int size = 1 << i;
             for (t = 0; t < 16; t += size << 1)
                 merge(gb, out + t, in + t, size);
@@ -286,7 +306,8 @@ static void read_bundle(GetBitContext *gb, BinkContext *c, int bundle_num)
 {
     int i;
 
-    if (bundle_num == BINK_SRC_COLORS) {
+    if (bundle_num == BINK_SRC_COLORS)
+    {
         for (i = 0; i < 16; i++)
             read_tree(gb, &c->col_high[i]);
         c->col_lastval = 0;
@@ -294,7 +315,7 @@ static void read_bundle(GetBitContext *gb, BinkContext *c, int bundle_num)
     if (bundle_num != BINK_SRC_INTRA_DC && bundle_num != BINK_SRC_INTER_DC)
         read_tree(gb, &c->bundle[bundle_num].tree);
     c->bundle[bundle_num].cur_dec =
-    c->bundle[bundle_num].cur_ptr = c->bundle[bundle_num].data;
+        c->bundle[bundle_num].cur_ptr = c->bundle[bundle_num].data;
 }
 
 /**
@@ -320,15 +341,19 @@ static int read_runs(AVCodecContext *avctx, GetBitContext *gb, Bundle *b)
 
     CHECK_READ_VAL(gb, b, t);
     dec_end = b->cur_dec + t;
-    if (dec_end > b->data_end) {
+    if (dec_end > b->data_end)
+    {
         av_log(avctx, AV_LOG_ERROR, "Run value went out of bounds\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         v = get_bits(gb, 4);
         memset(b->cur_dec, v, t);
         b->cur_dec += t;
-    } else {
+    }
+    else
+    {
         while (b->cur_dec < dec_end)
             *b->cur_dec++ = GET_HUFF(gb, b->tree);
     }
@@ -342,22 +367,29 @@ static int read_motion_values(AVCodecContext *avctx, GetBitContext *gb, Bundle *
 
     CHECK_READ_VAL(gb, b, t);
     dec_end = b->cur_dec + t;
-    if (dec_end > b->data_end) {
+    if (dec_end > b->data_end)
+    {
         av_log(avctx, AV_LOG_ERROR, "Too many motion values\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         v = get_bits(gb, 4);
-        if (v) {
+        if (v)
+        {
             sign = -get_bits1(gb);
             v = (v ^ sign) - sign;
         }
         memset(b->cur_dec, v, t);
         b->cur_dec += t;
-    } else {
-        while (b->cur_dec < dec_end) {
+    }
+    else
+    {
+        while (b->cur_dec < dec_end)
+        {
             v = GET_HUFF(gb, b->tree);
-            if (v) {
+            if (v)
+            {
                 sign = -get_bits1(gb);
                 v = (v ^ sign) - sign;
             }
@@ -377,21 +409,29 @@ static int read_block_types(AVCodecContext *avctx, GetBitContext *gb, Bundle *b)
 
     CHECK_READ_VAL(gb, b, t);
     dec_end = b->cur_dec + t;
-    if (dec_end > b->data_end) {
+    if (dec_end > b->data_end)
+    {
         av_log(avctx, AV_LOG_ERROR, "Too many block type values\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         v = get_bits(gb, 4);
         memset(b->cur_dec, v, t);
         b->cur_dec += t;
-    } else {
-        while (b->cur_dec < dec_end) {
+    }
+    else
+    {
+        while (b->cur_dec < dec_end)
+        {
             v = GET_HUFF(gb, b->tree);
-            if (v < 12) {
+            if (v < 12)
+            {
                 last = v;
                 *b->cur_dec++ = v;
-            } else {
+            }
+            else
+            {
                 int run = bink_rlelens[v - 12];
 
                 if (dec_end - b->cur_dec < run)
@@ -411,11 +451,13 @@ static int read_patterns(AVCodecContext *avctx, GetBitContext *gb, Bundle *b)
 
     CHECK_READ_VAL(gb, b, t);
     dec_end = b->cur_dec + t;
-    if (dec_end > b->data_end) {
+    if (dec_end > b->data_end)
+    {
         av_log(avctx, AV_LOG_ERROR, "Too many pattern values\n");
         return AVERROR_INVALIDDATA;
     }
-    while (b->cur_dec < dec_end) {
+    while (b->cur_dec < dec_end)
+    {
         v  = GET_HUFF(gb, b->tree);
         v |= GET_HUFF(gb, b->tree) << 4;
         *b->cur_dec++ = v;
@@ -431,27 +473,34 @@ static int read_colors(GetBitContext *gb, Bundle *b, BinkContext *c)
 
     CHECK_READ_VAL(gb, b, t);
     dec_end = b->cur_dec + t;
-    if (dec_end > b->data_end) {
+    if (dec_end > b->data_end)
+    {
         av_log(c->avctx, AV_LOG_ERROR, "Too many color values\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         c->col_lastval = GET_HUFF(gb, c->col_high[c->col_lastval]);
         v = GET_HUFF(gb, b->tree);
         v = (c->col_lastval << 4) | v;
-        if (c->version < 'i') {
+        if (c->version < 'i')
+        {
             sign = ((int8_t) v) >> 7;
             v = ((v & 0x7F) ^ sign) - sign;
             v += 0x80;
         }
         memset(b->cur_dec, v, t);
         b->cur_dec += t;
-    } else {
-        while (b->cur_dec < dec_end) {
+    }
+    else
+    {
+        while (b->cur_dec < dec_end)
+        {
             c->col_lastval = GET_HUFF(gb, c->col_high[c->col_lastval]);
             v = GET_HUFF(gb, b->tree);
             v = (c->col_lastval << 4) | v;
-            if (c->version < 'i') {
+            if (c->version < 'i')
+            {
                 sign = ((int8_t) v) >> 7;
                 v = ((v & 0x7F) ^ sign) - sign;
                 v += 0x80;
@@ -474,7 +523,8 @@ static int read_dcs(AVCodecContext *avctx, GetBitContext *gb, Bundle *b,
 
     CHECK_READ_VAL(gb, b, len);
     v = get_bits(gb, start_bits - has_sign);
-    if (v && has_sign) {
+    if (v && has_sign)
+    {
         sign = -get_bits1(gb);
         v = (v ^ sign) - sign;
     }
@@ -482,26 +532,33 @@ static int read_dcs(AVCodecContext *avctx, GetBitContext *gb, Bundle *b,
         return AVERROR_INVALIDDATA;
     *dst++ = v;
     len--;
-    for (i = 0; i < len; i += 8) {
+    for (i = 0; i < len; i += 8)
+    {
         len2 = FFMIN(len - i, 8);
         if (dst_end - dst < len2)
             return AVERROR_INVALIDDATA;
         bsize = get_bits(gb, 4);
-        if (bsize) {
-            for (j = 0; j < len2; j++) {
+        if (bsize)
+        {
+            for (j = 0; j < len2; j++)
+            {
                 v2 = get_bits(gb, bsize);
-                if (v2) {
+                if (v2)
+                {
                     sign = -get_bits1(gb);
                     v2 = (v2 ^ sign) - sign;
                 }
                 v += v2;
                 *dst++ = v;
-                if (v < -32768 || v > 32767) {
+                if (v < -32768 || v > 32767)
+                {
                     av_log(avctx, AV_LOG_ERROR, "DC value went out of bounds: %d\n", v);
                     return AVERROR_INVALIDDATA;
                 }
             }
-        } else {
+        }
+        else
+        {
             for (j = 0; j < len2; j++)
                 *dst++ = v;
         }
@@ -533,7 +590,7 @@ static inline int get_value(BinkContext *c, int bundle)
 static av_cold void binkb_init_bundle(BinkContext *c, int bundle_num)
 {
     c->bundle[bundle_num].cur_dec =
-    c->bundle[bundle_num].cur_ptr = c->bundle[bundle_num].data;
+        c->bundle[bundle_num].cur_ptr = c->bundle[bundle_num].data;
     c->bundle[bundle_num].len = 13;
 }
 
@@ -555,21 +612,30 @@ static int binkb_read_bundle(BinkContext *c, GetBitContext *gb, int bundle_num)
     CHECK_READ_VAL(gb, b, len);
     if (b->data_end - b->cur_dec < len * (1 + (bits > 8)))
         return AVERROR_INVALIDDATA;
-    if (bits <= 8) {
-        if (!issigned) {
+    if (bits <= 8)
+    {
+        if (!issigned)
+        {
             for (i = 0; i < len; i++)
                 *b->cur_dec++ = get_bits(gb, bits);
-        } else {
+        }
+        else
+        {
             for (i = 0; i < len; i++)
                 *b->cur_dec++ = get_bits(gb, bits) - mask;
         }
-    } else {
+    }
+    else
+    {
         int16_t *dst = (int16_t*)b->cur_dec;
 
-        if (!issigned) {
+        if (!issigned)
+        {
             for (i = 0; i < len; i++)
                 *dst++ = get_bits(gb, bits);
-        } else {
+        }
+        else
+        {
             for (i = 0; i < len; i++)
                 *dst++ = get_bits(gb, bits) - mask;
         }
@@ -583,7 +649,8 @@ static inline int binkb_get_value(BinkContext *c, int bundle_num)
     int16_t ret;
     const int bits = binkb_bundle_sizes[bundle_num];
 
-    if (bits <= 8) {
+    if (bits <= 8)
+    {
         int val = *c->bundle[bundle_num].cur_ptr++;
         return binkb_bundle_signed[bundle_num] ? (int8_t)val : val;
     }
@@ -613,39 +680,57 @@ static int read_dct_coeffs(GetBitContext *gb, int32_t block[64], const uint8_t *
     int quant_idx;
     const int32_t *quant;
 
-    coef_list[list_end] = 4;  mode_list[list_end++] = 0;
-    coef_list[list_end] = 24; mode_list[list_end++] = 0;
-    coef_list[list_end] = 44; mode_list[list_end++] = 0;
-    coef_list[list_end] = 1;  mode_list[list_end++] = 3;
-    coef_list[list_end] = 2;  mode_list[list_end++] = 3;
-    coef_list[list_end] = 3;  mode_list[list_end++] = 3;
+    coef_list[list_end] = 4;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] = 24;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] = 44;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] = 1;
+    mode_list[list_end++] = 3;
+    coef_list[list_end] = 2;
+    mode_list[list_end++] = 3;
+    coef_list[list_end] = 3;
+    mode_list[list_end++] = 3;
 
-    for (bits = get_bits(gb, 4) - 1; bits >= 0; bits--) {
+    for (bits = get_bits(gb, 4) - 1; bits >= 0; bits--)
+    {
         list_pos = list_start;
-        while (list_pos < list_end) {
-            if (!(mode_list[list_pos] | coef_list[list_pos]) || !get_bits1(gb)) {
+        while (list_pos < list_end)
+        {
+            if (!(mode_list[list_pos] | coef_list[list_pos]) || !get_bits1(gb))
+            {
                 list_pos++;
                 continue;
             }
             ccoef = coef_list[list_pos];
             mode  = mode_list[list_pos];
-            switch (mode) {
+            switch (mode)
+            {
             case 0:
                 coef_list[list_pos] = ccoef + 4;
                 mode_list[list_pos] = 1;
             case 2:
-                if (mode == 2) {
+                if (mode == 2)
+                {
                     coef_list[list_pos]   = 0;
                     mode_list[list_pos++] = 0;
                 }
-                for (i = 0; i < 4; i++, ccoef++) {
-                    if (get_bits1(gb)) {
+                for (i = 0; i < 4; i++, ccoef++)
+                {
+                    if (get_bits1(gb))
+                    {
                         coef_list[--list_start] = ccoef;
                         mode_list[  list_start] = 3;
-                    } else {
-                        if (!bits) {
+                    }
+                    else
+                    {
+                        if (!bits)
+                        {
                             t = 1 - (get_bits1(gb) << 1);
-                        } else {
+                        }
+                        else
+                        {
                             t = get_bits(gb, bits) | 1 << bits;
                             sign = -get_bits1(gb);
                             t = (t ^ sign) - sign;
@@ -657,16 +742,20 @@ static int read_dct_coeffs(GetBitContext *gb, int32_t block[64], const uint8_t *
                 break;
             case 1:
                 mode_list[list_pos] = 2;
-                for (i = 0; i < 3; i++) {
+                for (i = 0; i < 3; i++)
+                {
                     ccoef += 4;
                     coef_list[list_end]   = ccoef;
                     mode_list[list_end++] = 2;
                 }
                 break;
             case 3:
-                if (!bits) {
+                if (!bits)
+                {
                     t = 1 - (get_bits1(gb) << 1);
-                } else {
+                }
+                else
+                {
                     t = get_bits(gb, bits) | 1 << bits;
                     sign = -get_bits1(gb);
                     t = (t ^ sign) - sign;
@@ -680,11 +769,15 @@ static int read_dct_coeffs(GetBitContext *gb, int32_t block[64], const uint8_t *
         }
     }
 
-    if (q == -1) {
+    if (q == -1)
+    {
         quant_idx = get_bits(gb, 4);
-    } else {
+    }
+    else
+    {
         quant_idx = q;
-        if (quant_idx > 15U) {
+        if (quant_idx > 15U)
+        {
             av_log(NULL, AV_LOG_ERROR, "quant_index %d out of range\n", quant_idx);
             return AVERROR_INVALIDDATA;
         }
@@ -693,7 +786,8 @@ static int read_dct_coeffs(GetBitContext *gb, int32_t block[64], const uint8_t *
     quant = quant_matrices[quant_idx];
 
     block[0] = (block[0] * quant[0]) >> 11;
-    for (i = 0; i < coef_count; i++) {
+    for (i = 0; i < coef_count; i++)
+    {
         int idx = coef_idx[i];
         block[scan[idx]] = (block[scan[idx]] * quant[idx]) >> 11;
     }
@@ -718,13 +812,19 @@ static int read_residue(GetBitContext *gb, int16_t block[64], int masks_count)
     int nz_coeff[64];
     int nz_coeff_count = 0;
 
-    coef_list[list_end] =  4; mode_list[list_end++] = 0;
-    coef_list[list_end] = 24; mode_list[list_end++] = 0;
-    coef_list[list_end] = 44; mode_list[list_end++] = 0;
-    coef_list[list_end] =  0; mode_list[list_end++] = 2;
+    coef_list[list_end] =  4;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] = 24;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] = 44;
+    mode_list[list_end++] = 0;
+    coef_list[list_end] =  0;
+    mode_list[list_end++] = 2;
 
-    for (mask = 1 << get_bits(gb, 3); mask; mask >>= 1) {
-        for (i = 0; i < nz_coeff_count; i++) {
+    for (mask = 1 << get_bits(gb, 3); mask; mask >>= 1)
+    {
+        for (i = 0; i < nz_coeff_count; i++)
+        {
             if (!get_bits1(gb))
                 continue;
             if (block[nz_coeff[i]] < 0)
@@ -736,27 +836,35 @@ static int read_residue(GetBitContext *gb, int16_t block[64], int masks_count)
                 return 0;
         }
         list_pos = list_start;
-        while (list_pos < list_end) {
-            if (!(coef_list[list_pos] | mode_list[list_pos]) || !get_bits1(gb)) {
+        while (list_pos < list_end)
+        {
+            if (!(coef_list[list_pos] | mode_list[list_pos]) || !get_bits1(gb))
+            {
                 list_pos++;
                 continue;
             }
             ccoef = coef_list[list_pos];
             mode  = mode_list[list_pos];
-            switch (mode) {
+            switch (mode)
+            {
             case 0:
                 coef_list[list_pos] = ccoef + 4;
                 mode_list[list_pos] = 1;
             case 2:
-                if (mode == 2) {
+                if (mode == 2)
+                {
                     coef_list[list_pos]   = 0;
                     mode_list[list_pos++] = 0;
                 }
-                for (i = 0; i < 4; i++, ccoef++) {
-                    if (get_bits1(gb)) {
+                for (i = 0; i < 4; i++, ccoef++)
+                {
+                    if (get_bits1(gb))
+                    {
                         coef_list[--list_start] = ccoef;
                         mode_list[  list_start] = 3;
-                    } else {
+                    }
+                    else
+                    {
                         nz_coeff[nz_coeff_count++] = bink_scan[ccoef];
                         sign = -get_bits1(gb);
                         block[bink_scan[ccoef]] = (mask ^ sign) - sign;
@@ -768,7 +876,8 @@ static int read_residue(GetBitContext *gb, int16_t block[64], int masks_count)
                 break;
             case 1:
                 mode_list[list_pos] = 2;
-                for (i = 0; i < 3; i++) {
+                for (i = 0; i < 3; i++)
+                {
                     ccoef += 4;
                     coef_list[list_end]   = ccoef;
                     mode_list[list_end++] = 2;
@@ -830,41 +939,51 @@ static int binkb_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
     for (i = 0; i < 64; i++)
         coordmap[i] = (i & 7) + (i >> 3) * stride;
 
-    for (by = 0; by < bh; by++) {
-        for (i = 0; i < BINKB_NB_SRC; i++) {
+    for (by = 0; by < bh; by++)
+    {
+        for (i = 0; i < BINKB_NB_SRC; i++)
+        {
             if ((ret = binkb_read_bundle(c, gb, i)) < 0)
                 return ret;
         }
 
         dst  = frame->data[plane_idx]  + 8*by*stride;
-        for (bx = 0; bx < bw; bx++, dst += 8) {
+        for (bx = 0; bx < bw; bx++, dst += 8)
+        {
             blk = binkb_get_value(c, BINKB_SRC_BLOCK_TYPES);
-            switch (blk) {
+            switch (blk)
+            {
             case 0:
                 break;
             case 1:
                 scan = bink_patterns[get_bits(gb, 4)];
                 i = 0;
-                do {
+                do
+                {
                     int mode, run;
 
                     mode = get_bits1(gb);
                     run = get_bits(gb, binkb_runbits[i]) + 1;
 
                     i += run;
-                    if (i > 64) {
+                    if (i > 64)
+                    {
                         av_log(c->avctx, AV_LOG_ERROR, "Run went out of bounds\n");
                         return AVERROR_INVALIDDATA;
                     }
-                    if (mode) {
+                    if (mode)
+                    {
                         v = binkb_get_value(c, BINKB_SRC_COLORS);
                         for (j = 0; j < run; j++)
                             dst[coordmap[*scan++]] = v;
-                    } else {
+                    }
+                    else
+                    {
                         for (j = 0; j < run; j++)
                             dst[coordmap[*scan++]] = binkb_get_value(c, BINKB_SRC_COLORS);
                     }
-                } while (i < 63);
+                }
+                while (i < 63);
                 if (i == 63)
                     dst[coordmap[*scan++]] = binkb_get_value(c, BINKB_SRC_COLORS);
                 break;
@@ -879,11 +998,16 @@ static int binkb_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
                 xoff = binkb_get_value(c, BINKB_SRC_X_OFF);
                 yoff = binkb_get_value(c, BINKB_SRC_Y_OFF) + ybias;
                 ref = dst + xoff + yoff * stride;
-                if (ref < ref_start || ref + 8*stride > ref_end) {
+                if (ref < ref_start || ref + 8*stride > ref_end)
+                {
                     av_log(c->avctx, AV_LOG_WARNING, "Reference block is out of bounds\n");
-                } else if (ref + 8*stride < dst || ref >= dst + 8*stride) {
+                }
+                else if (ref + 8*stride < dst || ref >= dst + 8*stride)
+                {
                     c->hdsp.put_pixels_tab[1][0](dst, ref, stride, 8);
-                } else {
+                }
+                else
+                {
                     put_pixels8x8_overlapped(dst, ref, stride);
                 }
                 c->bdsp.clear_block(block);
@@ -895,11 +1019,16 @@ static int binkb_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
                 xoff = binkb_get_value(c, BINKB_SRC_X_OFF);
                 yoff = binkb_get_value(c, BINKB_SRC_Y_OFF) + ybias;
                 ref = dst + xoff + yoff * stride;
-                if (ref < ref_start || ref + 8 * stride > ref_end) {
+                if (ref < ref_start || ref + 8 * stride > ref_end)
+                {
                     av_log(c->avctx, AV_LOG_WARNING, "Reference block is out of bounds\n");
-                } else if (ref + 8*stride < dst || ref >= dst + 8*stride) {
+                }
+                else if (ref + 8*stride < dst || ref >= dst + 8*stride)
+                {
                     c->hdsp.put_pixels_tab[1][0](dst, ref, stride, 8);
-                } else {
+                }
+                else
+                {
                     put_pixels8x8_overlapped(dst, ref, stride);
                 }
                 memset(dctblock, 0, sizeof(*dctblock) * 64);
@@ -915,7 +1044,8 @@ static int binkb_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
             case 6:
                 for (i = 0; i < 2; i++)
                     col[i] = binkb_get_value(c, BINKB_SRC_COLORS);
-                for (i = 0; i < 8; i++) {
+                for (i = 0; i < 8; i++)
+                {
                     v = binkb_get_value(c, BINKB_SRC_PATTERN);
                     for (j = 0; j < 8; j++, v >>= 1)
                         dst[i*stride + j] = col[v & 1];
@@ -925,11 +1055,16 @@ static int binkb_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
                 xoff = binkb_get_value(c, BINKB_SRC_X_OFF);
                 yoff = binkb_get_value(c, BINKB_SRC_Y_OFF) + ybias;
                 ref = dst + xoff + yoff * stride;
-                if (ref < ref_start || ref + 8 * stride > ref_end) {
+                if (ref < ref_start || ref + 8 * stride > ref_end)
+                {
                     av_log(c->avctx, AV_LOG_WARNING, "Reference block is out of bounds\n");
-                } else if (ref + 8*stride < dst || ref >= dst + 8*stride) {
+                }
+                else if (ref + 8*stride < dst || ref >= dst + 8*stride)
+                {
                     c->hdsp.put_pixels_tab[1][0](dst, ref, stride, 8);
-                } else {
+                }
+                else
+                {
                     put_pixels8x8_overlapped(dst, ref, stride);
                 }
                 break;
@@ -958,7 +1093,8 @@ static int bink_put_pixels(BinkContext *c,
     int xoff     = get_value(c, BINK_SRC_X_OFF);
     int yoff     = get_value(c, BINK_SRC_Y_OFF);
     uint8_t *ref = prev + xoff + yoff * stride;
-    if (ref < ref_start || ref > ref_end) {
+    if (ref < ref_start || ref > ref_end)
+    {
         av_log(c->avctx, AV_LOG_ERROR, "Copy out of bounds @%d, %d\n",
                xoff, yoff);
         return AVERROR_INVALIDDATA;
@@ -991,14 +1127,15 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
         read_bundle(gb, c, i);
 
     ref_start = c->last->data[plane_idx] ? c->last->data[plane_idx]
-                                         : frame->data[plane_idx];
+                : frame->data[plane_idx];
     ref_end   = ref_start
                 + (bw - 1 + c->last->linesize[plane_idx] * (bh - 1)) * 8;
 
     for (i = 0; i < 64; i++)
         coordmap[i] = (i & 7) + (i >> 3) * stride;
 
-    for (by = 0; by < bh; by++) {
+    for (by = 0; by < bh; by++)
+    {
         if ((ret = read_block_types(c->avctx, gb, &c->bundle[BINK_SRC_BLOCK_TYPES])) < 0)
             return ret;
         if ((ret = read_block_types(c->avctx, gb, &c->bundle[BINK_SRC_SUB_BLOCK_TYPES])) < 0)
@@ -1022,43 +1159,53 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
             break;
         dst  = frame->data[plane_idx]  + 8*by*stride;
         prev = (c->last->data[plane_idx] ? c->last->data[plane_idx]
-                                         : frame->data[plane_idx]) + 8*by*stride;
-        for (bx = 0; bx < bw; bx++, dst += 8, prev += 8) {
+                : frame->data[plane_idx]) + 8*by*stride;
+        for (bx = 0; bx < bw; bx++, dst += 8, prev += 8)
+        {
             blk = get_value(c, BINK_SRC_BLOCK_TYPES);
             // 16x16 block type on odd line means part of the already decoded block, so skip it
-            if ((by & 1) && blk == SCALED_BLOCK) {
+            if ((by & 1) && blk == SCALED_BLOCK)
+            {
                 bx++;
                 dst  += 8;
                 prev += 8;
                 continue;
             }
-            switch (blk) {
+            switch (blk)
+            {
             case SKIP_BLOCK:
                 c->hdsp.put_pixels_tab[1][0](dst, prev, stride, 8);
                 break;
             case SCALED_BLOCK:
                 blk = get_value(c, BINK_SRC_SUB_BLOCK_TYPES);
-                switch (blk) {
+                switch (blk)
+                {
                 case RUN_BLOCK:
                     scan = bink_patterns[get_bits(gb, 4)];
                     i = 0;
-                    do {
+                    do
+                    {
                         int run = get_value(c, BINK_SRC_RUN) + 1;
 
                         i += run;
-                        if (i > 64) {
+                        if (i > 64)
+                        {
                             av_log(c->avctx, AV_LOG_ERROR, "Run went out of bounds\n");
                             return AVERROR_INVALIDDATA;
                         }
-                        if (get_bits1(gb)) {
+                        if (get_bits1(gb))
+                        {
                             v = get_value(c, BINK_SRC_COLORS);
                             for (j = 0; j < run; j++)
                                 ublock[*scan++] = v;
-                        } else {
+                        }
+                        else
+                        {
                             for (j = 0; j < run; j++)
                                 ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
                         }
-                    } while (i < 63);
+                    }
+                    while (i < 63);
                     if (i == 63)
                         ublock[*scan++] = get_value(c, BINK_SRC_COLORS);
                     break;
@@ -1075,7 +1222,8 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
                 case PATTERN_BLOCK:
                     for (i = 0; i < 2; i++)
                         col[i] = get_value(c, BINK_SRC_COLORS);
-                    for (j = 0; j < 8; j++) {
+                    for (j = 0; j < 8; j++)
+                    {
                         v = get_value(c, BINK_SRC_PATTERN);
                         for (i = 0; i < 8; i++, v >>= 1)
                             ublock[i + j*8] = col[v & 1];
@@ -1091,7 +1239,7 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
                     return AVERROR_INVALIDDATA;
                 }
                 if (blk != FILL_BLOCK)
-                c->binkdsp.scale_block(ublock, dst, stride);
+                    c->binkdsp.scale_block(ublock, dst, stride);
                 bx++;
                 dst  += 8;
                 prev += 8;
@@ -1105,23 +1253,29 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
             case RUN_BLOCK:
                 scan = bink_patterns[get_bits(gb, 4)];
                 i = 0;
-                do {
+                do
+                {
                     int run = get_value(c, BINK_SRC_RUN) + 1;
 
                     i += run;
-                    if (i > 64) {
+                    if (i > 64)
+                    {
                         av_log(c->avctx, AV_LOG_ERROR, "Run went out of bounds\n");
                         return AVERROR_INVALIDDATA;
                     }
-                    if (get_bits1(gb)) {
+                    if (get_bits1(gb))
+                    {
                         v = get_value(c, BINK_SRC_COLORS);
                         for (j = 0; j < run; j++)
                             dst[coordmap[*scan++]] = v;
-                    } else {
+                    }
+                    else
+                    {
                         for (j = 0; j < run; j++)
                             dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
                     }
-                } while (i < 63);
+                }
+                while (i < 63);
                 if (i == 63)
                     dst[coordmap[*scan++]] = get_value(c, BINK_SRC_COLORS);
                 break;
@@ -1158,7 +1312,8 @@ static int bink_decode_plane(BinkContext *c, AVFrame *frame, GetBitContext *gb,
             case PATTERN_BLOCK:
                 for (i = 0; i < 2; i++)
                     col[i] = get_value(c, BINK_SRC_COLORS);
-                for (i = 0; i < 8; i++) {
+                for (i = 0; i < 8; i++)
+                {
                     v = get_value(c, BINK_SRC_PATTERN);
                     for (j = 0; j < 8; j++, v >>= 1)
                         dst[i*stride + j] = col[v & 1];
@@ -1189,10 +1344,13 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     int plane, plane_idx, ret;
     int bits_count = pkt->size << 3;
 
-    if (c->version > 'b') {
+    if (c->version > 'b')
+    {
         if ((ret = ff_get_buffer(avctx, frame, AV_GET_BUFFER_FLAG_REF)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         if ((ret = ff_reget_buffer(avctx, c->last)) < 0)
             return ret;
         if ((ret = av_frame_ref(frame, c->last)) < 0)
@@ -1200,7 +1358,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     }
 
     init_get_bits(&gb, pkt->data, bits_count);
-    if (c->has_alpha) {
+    if (c->has_alpha)
+    {
         if (c->version >= 'i')
             skip_bits_long(&gb, 32);
         if ((ret = bink_decode_plane(c, frame, &gb, 3, 0)) < 0)
@@ -1211,13 +1370,17 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
 
     c->frame_num++;
 
-    for (plane = 0; plane < 3; plane++) {
+    for (plane = 0; plane < 3; plane++)
+    {
         plane_idx = (!plane || !c->swap_planes) ? plane : (plane ^ 3);
 
-        if (c->version > 'b') {
+        if (c->version > 'b')
+        {
             if ((ret = bink_decode_plane(c, frame, &gb, plane_idx, !!plane)) < 0)
                 return ret;
-        } else {
+        }
+        else
+        {
             if ((ret = binkb_decode_plane(c, frame, &gb, plane_idx,
                                           c->frame_num == 1, !!plane)) < 0)
                 return ret;
@@ -1227,7 +1390,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
     }
     emms_c();
 
-    if (c->version > 'b') {
+    if (c->version > 'b')
+    {
         av_frame_unref(c->last);
         if ((ret = av_frame_ref(c->last, frame)) < 0)
             return ret;
@@ -1245,28 +1409,31 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame, AVPac
 static av_cold void binkb_calc_quant(void)
 {
     uint8_t inv_bink_scan[64];
-    static const int s[64]={
+    static const int s[64]=
+    {
         1073741824,1489322693,1402911301,1262586814,1073741824, 843633538, 581104888, 296244703,
         1489322693,2065749918,1945893874,1751258219,1489322693,1170153332, 806015634, 410903207,
         1402911301,1945893874,1832991949,1649649171,1402911301,1102260336, 759250125, 387062357,
         1262586814,1751258219,1649649171,1484645031,1262586814, 992008094, 683307060, 348346918,
         1073741824,1489322693,1402911301,1262586814,1073741824, 843633538, 581104888, 296244703,
-         843633538,1170153332,1102260336, 992008094, 843633538, 662838617, 456571181, 232757969,
-         581104888, 806015634, 759250125, 683307060, 581104888, 456571181, 314491699, 160326478,
-         296244703, 410903207, 387062357, 348346918, 296244703, 232757969, 160326478,  81733730,
+        843633538,1170153332,1102260336, 992008094, 843633538, 662838617, 456571181, 232757969,
+        581104888, 806015634, 759250125, 683307060, 581104888, 456571181, 314491699, 160326478,
+        296244703, 410903207, 387062357, 348346918, 296244703, 232757969, 160326478,  81733730,
     };
     int i, j;
 #define C (1LL<<30)
     for (i = 0; i < 64; i++)
         inv_bink_scan[bink_scan[i]] = i;
 
-    for (j = 0; j < 16; j++) {
-        for (i = 0; i < 64; i++) {
+    for (j = 0; j < 16; j++)
+    {
+        for (i = 0; i < 64; i++)
+        {
             int k = inv_bink_scan[i];
             binkb_intra_quant[j][k] = binkb_intra_seed[i] * (int64_t)s[i] *
-                                        binkb_num[j]/(binkb_den[j] * (C>>12));
+                                      binkb_num[j]/(binkb_den[j] * (C>>12));
             binkb_inter_quant[j][k] = binkb_inter_seed[i] * (int64_t)s[i] *
-                                        binkb_num[j]/(binkb_den[j] * (C>>12));
+                                      binkb_num[j]/(binkb_den[j] * (C>>12));
         }
     }
 }
@@ -1280,15 +1447,18 @@ static av_cold int decode_init(AVCodecContext *avctx)
     int flags;
 
     c->version = avctx->codec_tag >> 24;
-    if (avctx->extradata_size < 4) {
+    if (avctx->extradata_size < 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata missing or too short\n");
         return AVERROR_INVALIDDATA;
     }
     flags = AV_RL32(avctx->extradata);
     c->has_alpha = flags & BINK_FLAG_ALPHA;
     c->swap_planes = c->version >= 'h';
-    if (!bink_trees[15].table) {
-        for (i = 0; i < 16; i++) {
+    if (!bink_trees[15].table)
+    {
+        for (i = 0; i < 16; i++)
+        {
             const int maxbits = bink_tree_lens[i][15];
             bink_trees[i].table = table + i*128;
             bink_trees[i].table_allocated = 1 << maxbits;
@@ -1312,13 +1482,16 @@ static av_cold int decode_init(AVCodecContext *avctx)
     ff_hpeldsp_init(&c->hdsp, avctx->flags);
     ff_binkdsp_init(&c->binkdsp);
 
-    if ((ret = init_bundles(c)) < 0) {
+    if ((ret = init_bundles(c)) < 0)
+    {
         free_bundles(c);
         return ret;
     }
 
-    if (c->version == 'b') {
-        if (!binkb_initialised) {
+    if (c->version == 'b')
+    {
+        if (!binkb_initialised)
+        {
             binkb_calc_quant();
             binkb_initialised = 1;
         }
@@ -1344,7 +1517,8 @@ static void flush(AVCodecContext *avctx)
     c->frame_num = 0;
 }
 
-AVCodec ff_bink_decoder = {
+AVCodec ff_bink_decoder =
+{
     .name           = "binkvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("Bink video"),
     .type           = AVMEDIA_TYPE_VIDEO,

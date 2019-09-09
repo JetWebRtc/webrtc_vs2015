@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ void WebRtcIlbcfix_BwExpand(
                                    expansion */
     int16_t *coef, /* (i) the bandwidth expansion factor Q15 */
     int16_t length /* (i) the length of lpc coefficient vectors */
-                            );
+);
 
 #endif

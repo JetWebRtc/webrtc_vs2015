@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,37 +14,40 @@
 #include "webrtc/media/engine/webrtcvideoencoderfactory.h"
 #include "webrtc/media/engine/webrtcvideodecoderfactory.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VideoToolboxVideoEncoderFactory
-    : public cricket::WebRtcVideoEncoderFactory {
- public:
-  VideoToolboxVideoEncoderFactory();
-  ~VideoToolboxVideoEncoderFactory();
+    : public cricket::WebRtcVideoEncoderFactory
+{
+public:
+    VideoToolboxVideoEncoderFactory();
+    ~VideoToolboxVideoEncoderFactory();
 
-  // WebRtcVideoEncoderFactory implementation.
-  VideoEncoder* CreateVideoEncoder(const cricket::VideoCodec& codec) override;
-  void DestroyVideoEncoder(VideoEncoder* encoder) override;
-  const std::vector<cricket::VideoCodec>& supported_codecs() const override;
+    // WebRtcVideoEncoderFactory implementation.
+    VideoEncoder* CreateVideoEncoder(const cricket::VideoCodec& codec) override;
+    void DestroyVideoEncoder(VideoEncoder* encoder) override;
+    const std::vector<cricket::VideoCodec>& supported_codecs() const override;
 
- private:
-  // TODO(magjed): Mutable because it depends on a field trial and it is
-  // recalculated every call to supported_codecs().
-  mutable std::vector<cricket::VideoCodec> supported_codecs_;
+private:
+    // TODO(magjed): Mutable because it depends on a field trial and it is
+    // recalculated every call to supported_codecs().
+    mutable std::vector<cricket::VideoCodec> supported_codecs_;
 };
 
 class VideoToolboxVideoDecoderFactory
-    : public cricket::WebRtcVideoDecoderFactory {
- public:
-  VideoToolboxVideoDecoderFactory();
-  ~VideoToolboxVideoDecoderFactory();
+    : public cricket::WebRtcVideoDecoderFactory
+{
+public:
+    VideoToolboxVideoDecoderFactory();
+    ~VideoToolboxVideoDecoderFactory();
 
-  // WebRtcVideoDecoderFactory implementation.
-  VideoDecoder* CreateVideoDecoder(VideoCodecType type) override;
-  void DestroyVideoDecoder(VideoDecoder* decoder) override;
+    // WebRtcVideoDecoderFactory implementation.
+    VideoDecoder* CreateVideoDecoder(VideoCodecType type) override;
+    void DestroyVideoDecoder(VideoDecoder* decoder) override;
 
- private:
-  std::vector<cricket::VideoCodec> supported_codecs_;
+private:
+    std::vector<cricket::VideoCodec> supported_codecs_;
 };
 
 }  // namespace webrtc

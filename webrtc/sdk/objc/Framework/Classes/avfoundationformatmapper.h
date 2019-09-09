@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 
 #include "webrtc/media/base/videocapturer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 // Mapping from AVCaptureDeviceFormat to cricket::VideoFormat for given input
 // device.
 std::set<cricket::VideoFormat> GetSupportedVideoFormatsForDevice(

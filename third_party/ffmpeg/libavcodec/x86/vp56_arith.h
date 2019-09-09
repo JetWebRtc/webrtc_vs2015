@@ -1,4 +1,4 @@
-/**
+﻿/**
  * VP5 and VP6 compatible video decoder (arith decoder)
  *
  * Copyright (C) 2006  Aurelien Jacobs <aurel@gnuage.org>

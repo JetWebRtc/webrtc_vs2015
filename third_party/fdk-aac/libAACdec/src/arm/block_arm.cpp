@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -106,35 +106,36 @@ FDK_INLINE static void CBlock_ScaleSpectralData_func1(
     const SHORT * RESTRICT pSfbScale,
     int window)
 {
-  int band_offset = 0;
-  for (int band=0; band < max_band; band++)
-  {
-    int runs = band_offset;
-    band_offset = BandOffsets[band+1];
-    runs = band_offset - runs;    /* is always a multiple of 4 */
-    int scale = SpecScale_window-pSfbScale[window*16+band];
-    if (scale)
+    int band_offset = 0;
+    for (int band=0; band < max_band; band++)
     {
-      do
-      {
-        FIXP_DBL tmp0, tmp1, tmp2, tmp3;
-        tmp0 = pSpectrum[0];
-        tmp1 = pSpectrum[1];
-        tmp2 = pSpectrum[2];
-        tmp3 = pSpectrum[3];
-        tmp0 >>= scale;
-        tmp1 >>= scale;
-        tmp2 >>= scale;
-        tmp3 >>= scale;
-        *pSpectrum++ = tmp0;
-        *pSpectrum++ = tmp1;
-        *pSpectrum++ = tmp2;
-        *pSpectrum++ = tmp3;
-      } while ((runs = runs-4) != 0);
+        int runs = band_offset;
+        band_offset = BandOffsets[band+1];
+        runs = band_offset - runs;    /* is always a multiple of 4 */
+        int scale = SpecScale_window-pSfbScale[window*16+band];
+        if (scale)
+        {
+            do
+            {
+                FIXP_DBL tmp0, tmp1, tmp2, tmp3;
+                tmp0 = pSpectrum[0];
+                tmp1 = pSpectrum[1];
+                tmp2 = pSpectrum[2];
+                tmp3 = pSpectrum[3];
+                tmp0 >>= scale;
+                tmp1 >>= scale;
+                tmp2 >>= scale;
+                tmp3 >>= scale;
+                *pSpectrum++ = tmp0;
+                *pSpectrum++ = tmp1;
+                *pSpectrum++ = tmp2;
+                *pSpectrum++ = tmp3;
+            }
+            while ((runs = runs-4) != 0);
+        }
+        else
+        {
+            pSpectrum+= runs;
+        }
     }
-    else
-    {
-      pSpectrum+= runs;
-    }
-  }
 }

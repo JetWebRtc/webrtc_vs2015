@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@
 
 #define OSS_AUDIO_BLOCK_SIZE 4096
 
-typedef struct OSSAudioData {
+typedef struct OSSAudioData
+{
     AVClass *class;
     int fd;
     int sample_rate;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,38 +22,40 @@
 #include "webrtc/modules/audio_coding/test/PCMFile.h"
 #include "webrtc/modules/audio_coding/test/TestStereo.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class OpusTest : public ACMTest {
- public:
-  OpusTest();
-  ~OpusTest();
+class OpusTest : public ACMTest
+{
+public:
+    OpusTest();
+    ~OpusTest();
 
-  void Perform();
+    void Perform();
 
- private:
-  void Run(TestPackStereo* channel,
-           size_t channels,
-           int bitrate,
-           size_t frame_length,
-           int percent_loss = 0);
+private:
+    void Run(TestPackStereo* channel,
+             size_t channels,
+             int bitrate,
+             size_t frame_length,
+             int percent_loss = 0);
 
-  void OpenOutFile(int test_number);
+    void OpenOutFile(int test_number);
 
-  std::unique_ptr<AudioCodingModule> acm_receiver_;
-  TestPackStereo* channel_a2b_;
-  PCMFile in_file_stereo_;
-  PCMFile in_file_mono_;
-  PCMFile out_file_;
-  PCMFile out_file_standalone_;
-  int counter_;
-  uint8_t payload_type_;
-  uint32_t rtp_timestamp_;
-  acm2::ACMResampler resampler_;
-  WebRtcOpusEncInst* opus_mono_encoder_;
-  WebRtcOpusEncInst* opus_stereo_encoder_;
-  WebRtcOpusDecInst* opus_mono_decoder_;
-  WebRtcOpusDecInst* opus_stereo_decoder_;
+    std::unique_ptr<AudioCodingModule> acm_receiver_;
+    TestPackStereo* channel_a2b_;
+    PCMFile in_file_stereo_;
+    PCMFile in_file_mono_;
+    PCMFile out_file_;
+    PCMFile out_file_standalone_;
+    int counter_;
+    uint8_t payload_type_;
+    uint32_t rtp_timestamp_;
+    acm2::ACMResampler resampler_;
+    WebRtcOpusEncInst* opus_mono_encoder_;
+    WebRtcOpusEncInst* opus_stereo_encoder_;
+    WebRtcOpusDecInst* opus_mono_decoder_;
+    WebRtcOpusDecInst* opus_stereo_decoder_;
 };
 
 }  // namespace webrtc

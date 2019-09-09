@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,15 +13,17 @@
 
 #include <vector>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Decides the sample rate of a mixing iteration given the preferred
 // sample rates of the sources.
-class OutputRateCalculator {
- public:
-  virtual int CalculateOutputRate(
-      const std::vector<int>& preferred_sample_rates) = 0;
-  virtual ~OutputRateCalculator() {}
+class OutputRateCalculator
+{
+public:
+    virtual int CalculateOutputRate(
+        const std::vector<int>& preferred_sample_rates) = 0;
+    virtual ~OutputRateCalculator() {}
 };
 
 }  // namespace webrtc

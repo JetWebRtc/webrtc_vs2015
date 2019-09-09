@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,16 +11,19 @@
 #ifndef WEBRTC_AUDIO_CONVERSION_H_
 #define WEBRTC_AUDIO_CONVERSION_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Convert fixed point number with 8 bit fractional part, to floating point.
-inline float Q8ToFloat(uint32_t v) {
-  return static_cast<float>(v) / (1 << 8);
+inline float Q8ToFloat(uint32_t v)
+{
+    return static_cast<float>(v) / (1 << 8);
 }
 
 // Convert fixed point number with 14 bit fractional part, to floating point.
-inline float Q14ToFloat(uint32_t v) {
-  return static_cast<float>(v) / (1 << 14);
+inline float Q14ToFloat(uint32_t v)
+{
+    return static_cast<float>(v) / (1 << 14);
 }
 }  // namespace webrtc
 

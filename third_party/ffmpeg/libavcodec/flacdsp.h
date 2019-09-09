@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,7 +22,8 @@
 #include <stdint.h>
 #include "libavutil/samplefmt.h"
 
-typedef struct FLACDSPContext {
+typedef struct FLACDSPContext
+{
     void (*decorrelate[4])(uint8_t **out, int32_t **in, int channels,
                            int len, int shift);
     void (*lpc16)(int32_t *samples, const int coeffs[32], int order,

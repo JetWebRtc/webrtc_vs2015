@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (parag.salasakar@imgtec.com)
  *                    Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *

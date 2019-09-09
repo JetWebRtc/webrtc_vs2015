@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 vmrsss
  * Copyright (c) 2009 Stefano Sabatini
  *
@@ -41,7 +41,8 @@
 
 #include "drawutils.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "in_w",   "iw",
     "in_h",   "ih",
     "out_w",  "ow",
@@ -56,7 +57,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_IN_W,   VAR_IW,
     VAR_IN_H,   VAR_IH,
     VAR_OUT_W,  VAR_OW,
@@ -76,7 +78,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, ff_draw_supported_pixel_formats(0));
 }
 
-typedef struct PadContext {
+typedef struct PadContext
+{
     const AVClass *class;
     int w, h;               ///< output dimensions, a value of 0 will result in the input size
     int x, y;               ///< offsets of the input area with respect to the padded area
@@ -108,7 +111,7 @@ static int config_input(AVFilterLink *inlink)
     var_values[VAR_OUT_H] = var_values[VAR_OH] = NAN;
     var_values[VAR_A]     = (double) inlink->w / inlink->h;
     var_values[VAR_SAR]   = inlink->sample_aspect_ratio.num ?
-        (double) inlink->sample_aspect_ratio.num / inlink->sample_aspect_ratio.den : 1;
+                            (double) inlink->sample_aspect_ratio.num / inlink->sample_aspect_ratio.den : 1;
     var_values[VAR_DAR]   = var_values[VAR_A] * var_values[VAR_SAR];
     var_values[VAR_HSUB]  = 1 << s->draw.hsub_max;
     var_values[VAR_VSUB]  = 1 << s->draw.vsub_max;
@@ -148,7 +151,8 @@ static int config_input(AVFilterLink *inlink)
     s->x = var_values[VAR_X] = res;
 
     /* sanity check params */
-    if (s->w < 0 || s->h < 0 || s->x < 0 || s->y < 0) {
+    if (s->w < 0 || s->h < 0 || s->x < 0 || s->y < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Negative values are not acceptable.\n");
         return AVERROR(EINVAL);
     }
@@ -170,9 +174,10 @@ static int config_input(AVFilterLink *inlink)
            s->rgba_color[0], s->rgba_color[1], s->rgba_color[2], s->rgba_color[3]);
 
     if (s->x <  0 || s->y <  0                      ||
-        s->w <= 0 || s->h <= 0                      ||
-        (unsigned)s->x + (unsigned)inlink->w > s->w ||
-        (unsigned)s->y + (unsigned)inlink->h > s->h) {
+            s->w <= 0 || s->h <= 0                      ||
+            (unsigned)s->x + (unsigned)inlink->w > s->w ||
+            (unsigned)s->y + (unsigned)inlink->h > s->h)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Input area %d:%d:%d:%d not within the padded area 0:0:%d:%d or zero-sized\n",
                s->x, s->y, s->x + inlink->w, s->y + inlink->h, s->w, s->h);
@@ -212,7 +217,8 @@ static AVFrame *get_video_buffer(AVFilterLink *inlink, int w, int h)
     frame->width  = w;
     frame->height = h;
 
-    for (plane = 0; plane < 4 && frame->data[plane] && frame->linesize[plane]; plane++) {
+    for (plane = 0; plane < 4 && frame->data[plane] && frame->linesize[plane]; plane++)
+    {
         int hsub = s->draw.hsub[plane];
         int vsub = s->draw.vsub[plane];
         frame->data[plane] += (s->x >> hsub) * s->draw.pixelstep[plane] +
@@ -229,20 +235,22 @@ static int buffer_needs_copy(PadContext *s, AVFrame *frame, AVBufferRef *buf)
     int i, j;
 
     /* get all planes in this buffer */
-    for (i = 0; i < FF_ARRAY_ELEMS(planes) && frame->data[i]; i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(planes) && frame->data[i]; i++)
+    {
         if (av_frame_get_plane_buffer(frame, i) == buf)
             *p++ = i;
     }
 
     /* for each plane in this buffer, check that it can be padded without
      * going over buffer bounds or other planes */
-    for (i = 0; i < FF_ARRAY_ELEMS(planes) && planes[i] >= 0; i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(planes) && planes[i] >= 0; i++)
+    {
         int hsub = s->draw.hsub[planes[i]];
         int vsub = s->draw.vsub[planes[i]];
 
         uint8_t *start = frame->data[planes[i]];
         uint8_t *end   = start + (frame->height >> vsub) *
-                                 frame->linesize[planes[i]];
+                         frame->linesize[planes[i]];
 
         /* amount of free space needed before the start and after the end
          * of the plane */
@@ -255,19 +263,20 @@ static int buffer_needs_copy(PadContext *s, AVFrame *frame, AVBufferRef *buf)
         if (frame->linesize[planes[i]] < (s->w >> hsub) * s->draw.pixelstep[planes[i]])
             return 1;
         if (start - buf->data < req_start ||
-            (buf->data + buf->size) - end < req_end)
+                (buf->data + buf->size) - end < req_end)
             return 1;
 
-        for (j = 0; j < FF_ARRAY_ELEMS(planes) && planes[j] >= 0; j++) {
+        for (j = 0; j < FF_ARRAY_ELEMS(planes) && planes[j] >= 0; j++)
+        {
             int vsub1 = s->draw.vsub[planes[j]];
             uint8_t *start1 = frame->data[planes[j]];
             uint8_t *end1   = start1 + (frame->height >> vsub1) *
-                                       frame->linesize[planes[j]];
+                              frame->linesize[planes[j]];
             if (i == j)
                 continue;
 
             if (FFSIGN(start - end1) != FFSIGN(start - end1 - req_start) ||
-                FFSIGN(end - start1) != FFSIGN(end - start1 + req_end))
+                    FFSIGN(end - start1) != FFSIGN(end - start1 + req_end))
                 return 1;
         }
     }
@@ -294,22 +303,27 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int needs_copy = frame_needs_copy(s, in);
 
-    if (needs_copy) {
+    if (needs_copy)
+    {
         av_log(inlink->dst, AV_LOG_DEBUG, "Direct padding impossible allocating new frame\n");
         out = ff_get_video_buffer(inlink->dst->outputs[0],
                                   FFMAX(inlink->w, s->w),
                                   FFMAX(inlink->h, s->h));
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
 
         av_frame_copy_props(out, in);
-    } else {
+    }
+    else
+    {
         int i;
 
         out = in;
-        for (i = 0; i < 4 && out->data[i] && out->linesize[i]; i++) {
+        for (i = 0; i < 4 && out->data[i] && out->linesize[i]; i++)
+        {
             int hsub = s->draw.hsub[i];
             int vsub = s->draw.vsub[i];
             out->data[i] -= (s->x >> hsub) * s->draw.pixelstep[i] +
@@ -318,14 +332,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
 
     /* top bar */
-    if (s->y) {
+    if (s->y)
+    {
         ff_fill_rectangle(&s->draw, &s->color,
                           out->data, out->linesize,
                           0, 0, s->w, s->y);
     }
 
     /* bottom bar */
-    if (s->h > s->y + s->in_h) {
+    if (s->h > s->y + s->in_h)
+    {
         ff_fill_rectangle(&s->draw, &s->color,
                           out->data, out->linesize,
                           0, s->y + s->in_h, s->w, s->h - s->y - s->in_h);
@@ -335,10 +351,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     ff_fill_rectangle(&s->draw, &s->color, out->data, out->linesize,
                       0, s->y, s->x, in->height);
 
-    if (needs_copy) {
+    if (needs_copy)
+    {
         ff_copy_rectangle2(&s->draw,
-                          out->data, out->linesize, in->data, in->linesize,
-                          s->x, s->y, 0, 0, in->width, in->height);
+                           out->data, out->linesize, in->data, in->linesize,
+                           s->x, s->y, 0, 0, in->width, in->height);
     }
 
     /* right border */
@@ -357,7 +374,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 #define OFFSET(x) offsetof(PadContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption pad_options[] = {
+static const AVOption pad_options[] =
+{
     { "width",  "set the pad area width expression",       OFFSET(w_expr), AV_OPT_TYPE_STRING, {.str = "iw"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "w",      "set the pad area width expression",       OFFSET(w_expr), AV_OPT_TYPE_STRING, {.str = "iw"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "height", "set the pad area height expression",      OFFSET(h_expr), AV_OPT_TYPE_STRING, {.str = "ih"}, CHAR_MIN, CHAR_MAX, FLAGS },
@@ -370,7 +388,8 @@ static const AVOption pad_options[] = {
 
 AVFILTER_DEFINE_CLASS(pad);
 
-static const AVFilterPad avfilter_vf_pad_inputs[] = {
+static const AVFilterPad avfilter_vf_pad_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -381,7 +400,8 @@ static const AVFilterPad avfilter_vf_pad_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_pad_outputs[] = {
+static const AVFilterPad avfilter_vf_pad_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -390,7 +410,8 @@ static const AVFilterPad avfilter_vf_pad_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_pad = {
+AVFilter ff_vf_pad =
+{
     .name          = "pad",
     .description   = NULL_IF_CONFIG_SMALL("Pad the input video."),
     .priv_size     = sizeof(PadContext),

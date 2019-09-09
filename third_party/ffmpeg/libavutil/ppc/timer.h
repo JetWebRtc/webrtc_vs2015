@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2005 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -31,18 +31,18 @@ static inline uint64_t read_time(void)
 {
     uint32_t tbu, tbl, temp;
 
-     /* from section 2.2.1 of the 32-bit PowerPC PEM */
-     __asm__ volatile(
-         "mftbu  %2\n"
-         "mftb   %0\n"
-         "mftbu  %1\n"
-         "cmpw   %2,%1\n"
-         "bne    $-0x10\n"
-     : "=r"(tbl), "=r"(tbu), "=r"(temp)
-     :
-     : "cc");
+    /* from section 2.2.1 of the 32-bit PowerPC PEM */
+    __asm__ volatile(
+        "mftbu  %2\n"
+        "mftb   %0\n"
+        "mftbu  %1\n"
+        "cmpw   %2,%1\n"
+        "bne    $-0x10\n"
+        : "=r"(tbl), "=r"(tbu), "=r"(temp)
+        :
+        : "cc");
 
-     return (((uint64_t)tbu)<<32) | (uint64_t)tbl;
+    return (((uint64_t)tbu)<<32) | (uint64_t)tbl;
 }
 
 #endif /* AVUTIL_PPC_TIMER_H */

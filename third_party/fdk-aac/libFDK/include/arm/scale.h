@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -94,33 +94,33 @@ amm-info@iis.fraunhofer.de
 
 inline static INT shiftRightSat(INT src, int scale)
 {
-  INT result;
-  asm(
-      "ssat %0,%2,%0;\n"
+    INT result;
+    asm(
+        "ssat %0,%2,%0;\n"
 
-      : "=&r"(result)
-      : "r"(src>>scale), "M"(SAMPLE_BITS)
-      );
+        : "=&r"(result)
+        : "r"(src>>scale), "M"(SAMPLE_BITS)
+    );
 
-  return result;
+    return result;
 }
 
-  #define SATURATE_INT_PCM_RIGHT_SHIFT(src, scale) shiftRightSat(src, scale)
+#define SATURATE_INT_PCM_RIGHT_SHIFT(src, scale) shiftRightSat(src, scale)
 
 inline static INT shiftLeftSat(INT src, int scale)
 {
-  INT result;
-  asm(
-      "ssat %0,%2,%0;\n"
+    INT result;
+    asm(
+        "ssat %0,%2,%0;\n"
 
-      : "=&r"(result)
-      : "r"(src<<scale), "M"(SAMPLE_BITS)
-      );
+        : "=&r"(result)
+        : "r"(src<<scale), "M"(SAMPLE_BITS)
+    );
 
-  return result;
+    return result;
 }
 
-  #define SATURATE_INT_PCM_LEFT_SHIFT(src, scale)  shiftLeftSat(src, scale)
+#define SATURATE_INT_PCM_LEFT_SHIFT(src, scale)  shiftLeftSat(src, scale)
 
 #endif /* __ARM_ARCH_6__ */
 
@@ -130,22 +130,22 @@ inline static INT shiftLeftSat(INT src, int scale)
 inline
 void scaleValueInPlace(FIXP_DBL *value, /*!< Value */
                        INT scalefactor   /*!< Scalefactor */
-                       )
+                      )
 {
-  INT newscale;
-  if ((newscale = scalefactor) >= 0)
-    *value <<= newscale;
-  else
-    *value >>= -newscale;
+    INT newscale;
+    if ((newscale = scalefactor) >= 0)
+        *value <<= newscale;
+    else
+        *value >>= -newscale;
 }
 
 
-  #define SATURATE_RIGHT_SHIFT(src, scale, dBits)                                                        \
+#define SATURATE_RIGHT_SHIFT(src, scale, dBits)                                                        \
       ( (((LONG)(src) ^ ((LONG)(src) >> (DFRACT_BITS-1)))>>(scale)) > (LONG)(((1U)<<((dBits)-1))-1))     \
           ? ((LONG)(src) >> (DFRACT_BITS-1)) ^ (LONG)(((1U)<<((dBits)-1))-1)                             \
           : ((LONG)(src) >> (scale))
 
-  #define SATURATE_LEFT_SHIFT(src, scale, dBits)                                                         \
+#define SATURATE_LEFT_SHIFT(src, scale, dBits)                                                         \
       ( ((LONG)(src) ^ ((LONG)(src) >> (DFRACT_BITS-1))) > ((LONG)(((1U)<<((dBits)-1))-1) >> (scale)) )  \
           ? ((LONG)(src) >> (DFRACT_BITS-1)) ^ (LONG)(((1U)<<((dBits)-1))-1)                             \
           : ((LONG)(src) << (scale))

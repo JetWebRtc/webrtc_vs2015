@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013-2014 Mozilla Corporation
  *
  * This file is part of FFmpeg.
@@ -113,18 +113,21 @@ av_cold int ff_imdct15_init(IMDCT15Context **ps, int N)
     if (!s->twiddle_exptab)
         goto fail;
 
-    for (i = 0; i < s->len4; i++) {
+    for (i = 0; i < s->len4; i++)
+    {
         s->twiddle_exptab[i].re = cos(2 * M_PI * (i + 0.125 + s->len4) / len);
         s->twiddle_exptab[i].im = sin(2 * M_PI * (i + 0.125 + s->len4) / len);
     }
 
-    for (i = 0; i < FF_ARRAY_ELEMS(s->exptab); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(s->exptab); i++)
+    {
         int N = 15 * (1 << i);
         s->exptab[i] = av_malloc(sizeof(*s->exptab[i]) * FFMAX(N, 19));
         if (!s->exptab[i])
             goto fail;
 
-        for (j = 0; j < N; j++) {
+        for (j = 0; j < N; j++)
+        {
             s->exptab[i][j].re = cos(2 * M_PI * j / N);
             s->exptab[i][j].im = sin(2 * M_PI * j / N);
         }
@@ -152,7 +155,8 @@ static void fft5(FFTComplex *out, const FFTComplex *in, ptrdiff_t stride)
 {
     // [0] = exp(2 * i * pi / 5), [1] = exp(2 * i * pi * 2 / 5)
     static const FFTComplex fact[] = { { 0.30901699437494745,  0.95105651629515353 },
-                                       { -0.80901699437494734, 0.58778525229247325 } };
+        { -0.80901699437494734, 0.58778525229247325 }
+    };
 
     FFTComplex z[4][4];
 
@@ -194,7 +198,8 @@ static void fft15(IMDCT15Context *s, FFTComplex *out, const FFTComplex *in,
     fft5(tmp1, in +     stride, stride * 3);
     fft5(tmp2, in + 2 * stride, stride * 3);
 
-    for (k = 0; k < 5; k++) {
+    for (k = 0; k < 5; k++)
+    {
         FFTComplex t1, t2;
 
         CMUL(t1, tmp1[k], exptab[k]);
@@ -220,7 +225,8 @@ static void fft15(IMDCT15Context *s, FFTComplex *out, const FFTComplex *in,
 static void fft_calc(IMDCT15Context *s, FFTComplex *out, const FFTComplex *in,
                      int N, ptrdiff_t stride)
 {
-    if (N) {
+    if (N)
+    {
         const FFTComplex *exptab = s->exptab[N];
         const int len2 = 15 * (1 << (N - 1));
         int k;
@@ -228,7 +234,8 @@ static void fft_calc(IMDCT15Context *s, FFTComplex *out, const FFTComplex *in,
         fft_calc(s, out,        in,          N - 1, stride * 2);
         fft_calc(s, out + len2, in + stride, N - 1, stride * 2);
 
-        for (k = 0; k < len2; k++) {
+        for (k = 0; k < len2; k++)
+        {
             FFTComplex t;
 
             CMUL(t, out[len2 + k], exptab[k]);
@@ -239,7 +246,8 @@ static void fft_calc(IMDCT15Context *s, FFTComplex *out, const FFTComplex *in,
             out[k].re += t.re;
             out[k].im += t.im;
         }
-    } else
+    }
+    else
         fft15(s, out, in, stride);
 }
 
@@ -252,7 +260,8 @@ static void imdct15_half(IMDCT15Context *s, float *dst, const float *src,
     const float *in2 = src + (s->len2 - 1) * stride;
     int i;
 
-    for (i = 0; i < s->len4; i++) {
+    for (i = 0; i < s->len4; i++)
+    {
         FFTComplex tmp = { *in2, *in1 };
         CMUL(s->tmp[i], tmp, s->twiddle_exptab[i]);
         in1 += 2 * stride;
@@ -261,7 +270,8 @@ static void imdct15_half(IMDCT15Context *s, float *dst, const float *src,
 
     fft_calc(s, z, s->tmp, s->fft_n, 1);
 
-    for (i = 0; i < len8; i++) {
+    for (i = 0; i < len8; i++)
+    {
         float r0, i0, r1, i1;
 
         CMUL3(r0, i1, z[len8 - i - 1].im, z[len8 - i - 1].re,  s->twiddle_exptab[len8 - i - 1].im, s->twiddle_exptab[len8 - i - 1].re);

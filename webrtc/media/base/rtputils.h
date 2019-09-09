@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,31 +13,35 @@
 
 #include "webrtc/base/byteorder.h"
 
-namespace rtc {
+namespace rtc
+{
 struct PacketTimeUpdateParams;
 }  // namespace rtc
 
-namespace cricket {
+namespace cricket
+{
 
 const size_t kMinRtpPacketLen = 12;
 const size_t kMaxRtpPacketLen = 2048;
 const size_t kMinRtcpPacketLen = 4;
 
-struct RtpHeader {
-  int payload_type;
-  int seq_num;
-  uint32_t timestamp;
-  uint32_t ssrc;
+struct RtpHeader
+{
+    int payload_type;
+    int seq_num;
+    uint32_t timestamp;
+    uint32_t ssrc;
 };
 
-enum RtcpTypes {
-  kRtcpTypeSR = 200,      // Sender report payload type.
-  kRtcpTypeRR = 201,      // Receiver report payload type.
-  kRtcpTypeSDES = 202,    // SDES payload type.
-  kRtcpTypeBye = 203,     // BYE payload type.
-  kRtcpTypeApp = 204,     // APP payload type.
-  kRtcpTypeRTPFB = 205,   // Transport layer Feedback message payload type.
-  kRtcpTypePSFB = 206,    // Payload-specific Feedback message payload type.
+enum RtcpTypes
+{
+    kRtcpTypeSR = 200,      // Sender report payload type.
+    kRtcpTypeRR = 201,      // Receiver report payload type.
+    kRtcpTypeSDES = 202,    // SDES payload type.
+    kRtcpTypeBye = 203,     // BYE payload type.
+    kRtcpTypeApp = 204,     // APP payload type.
+    kRtcpTypeRTPFB = 205,   // Transport layer Feedback message payload type.
+    kRtcpTypePSFB = 206,    // Payload-specific Feedback message payload type.
 };
 
 bool GetRtpPayloadType(const void* data, size_t len, int* value);

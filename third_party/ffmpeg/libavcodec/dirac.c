@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Marco Gerards <marco@gnu.org>
  * Copyright (C) 2009 David Conrad
  * Copyright (C) 2011 Jordi Ortiz
@@ -35,7 +35,8 @@
 #include "mpeg12data.h"
 
 /* defaults for source parameters */
-static const dirac_source_params dirac_source_parameters_defaults[] = {
+static const dirac_source_params dirac_source_parameters_defaults[] =
+{
     {  640,  480, 2, 0, 0,  1, 1,  640,  480, 0, 0, 1, 0 },
     {  176,  120, 2, 0, 0,  9, 2,  176,  120, 0, 0, 1, 1 },
     {  176,  144, 2, 0, 1, 10, 3,  176,  144, 0, 0, 1, 2 },
@@ -62,7 +63,8 @@ static const dirac_source_params dirac_source_parameters_defaults[] = {
 };
 
 /* [DIRAC_STD] Table 10.4 - Available preset pixel aspect ratio values */
-static const AVRational dirac_preset_aspect_ratios[] = {
+static const AVRational dirac_preset_aspect_ratios[] =
+{
     {  1,  1 },
     { 10, 11 },
     { 12, 11 },
@@ -74,34 +76,40 @@ static const AVRational dirac_preset_aspect_ratios[] = {
 /* [DIRAC_STD] Values 9,10 of 10.3.5 Frame Rate.
  * Table 10.3 Available preset frame rate values
  */
-static const AVRational dirac_frame_rate[] = {
+static const AVRational dirac_frame_rate[] =
+{
     { 15000, 1001 },
     {    25,    2 },
 };
 
 /* [DIRAC_STD] This should be equivalent to Table 10.5 Available signal
  * range presets */
-static const struct {
+static const struct
+{
     uint8_t             bitdepth;
     enum AVColorRange   color_range;
-} pixel_range_presets[] = {
+} pixel_range_presets[] =
+{
     {  8, AVCOL_RANGE_JPEG },
     {  8, AVCOL_RANGE_MPEG },
     { 10, AVCOL_RANGE_MPEG },
     { 12, AVCOL_RANGE_MPEG },
 };
 
-static const enum AVColorPrimaries dirac_primaries[] = {
+static const enum AVColorPrimaries dirac_primaries[] =
+{
     AVCOL_PRI_BT709,
     AVCOL_PRI_SMPTE170M,
     AVCOL_PRI_BT470BG,
 };
 
-static const struct {
+static const struct
+{
     enum AVColorPrimaries color_primaries;
     enum AVColorSpace colorspace;
     enum AVColorTransferCharacteristic color_trc;
-} dirac_color_presets[] = {
+} dirac_color_presets[] =
+{
     { AVCOL_PRI_BT709,     AVCOL_SPC_BT709,   AVCOL_TRC_BT709 },
     { AVCOL_PRI_SMPTE170M, AVCOL_SPC_BT470BG, AVCOL_TRC_BT709 },
     { AVCOL_PRI_BT470BG,   AVCOL_SPC_BT470BG, AVCOL_TRC_BT709 },
@@ -110,7 +118,8 @@ static const struct {
 };
 
 /* [DIRAC_STD] Table 10.2 Supported chroma sampling formats + luma Offset */
-static const enum AVPixelFormat dirac_pix_fmt[2][3] = {
+static const enum AVPixelFormat dirac_pix_fmt[2][3] =
+{
     { AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P  },
     { AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ420P },
 };
@@ -127,7 +136,8 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
 
     /* [DIRAC_STD] 10.3.2 Frame size. frame_size(video_params) */
     /* [DIRAC_STD] custom_dimensions_flag */
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         source->width  = svq3_get_ue_golomb(gb); /* [DIRAC_STD] FRAME_WIDTH  */
         source->height = svq3_get_ue_golomb(gb); /* [DIRAC_STD] FRAME_HEIGHT */
     }
@@ -138,7 +148,8 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
     if (get_bits1(gb))
         /* [DIRAC_STD] CHROMA_FORMAT_INDEX */
         source->chroma_format = svq3_get_ue_golomb(gb);
-    if (source->chroma_format > 2U) {
+    if (source->chroma_format > 2U)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unknown chroma format %d\n",
                source->chroma_format);
         return AVERROR_INVALIDDATA;
@@ -153,13 +164,15 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
         return AVERROR_INVALIDDATA;
 
     /* [DIRAC_STD] 10.3.5 Frame Rate. frame_rate(video_params) */
-    if (get_bits1(gb)) { /* [DIRAC_STD] custom_frame_rate_flag */
+    if (get_bits1(gb))   /* [DIRAC_STD] custom_frame_rate_flag */
+    {
         source->frame_rate_index = svq3_get_ue_golomb(gb);
 
         if (source->frame_rate_index > 10U)
             return AVERROR_INVALIDDATA;
 
-        if (!source->frame_rate_index) {
+        if (!source->frame_rate_index)
+        {
             /* [DIRAC_STD] FRAME_RATE_NUMER */
             frame_rate.num = svq3_get_ue_golomb(gb);
             /* [DIRAC_STD] FRAME_RATE_DENOM */
@@ -167,7 +180,8 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
         }
     }
     /* [DIRAC_STD] preset_frame_rate(video_params, index) */
-    if (source->frame_rate_index > 0) {
+    if (source->frame_rate_index > 0)
+    {
         if (source->frame_rate_index <= 8)
             frame_rate = ff_mpeg12_frame_rate_tab[source->frame_rate_index];
         else
@@ -178,14 +192,16 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
 
     /* [DIRAC_STD] 10.3.6 Pixel Aspect Ratio.
      * pixel_aspect_ratio(video_params) */
-    if (get_bits1(gb)) { /* [DIRAC_STD] custom_pixel_aspect_ratio_flag */
+    if (get_bits1(gb))   /* [DIRAC_STD] custom_pixel_aspect_ratio_flag */
+    {
         /* [DIRAC_STD] index */
         source->aspect_ratio_index = svq3_get_ue_golomb(gb);
 
         if (source->aspect_ratio_index > 6U)
             return AVERROR_INVALIDDATA;
 
-        if (!source->aspect_ratio_index) {
+        if (!source->aspect_ratio_index)
+        {
             avctx->sample_aspect_ratio.num = svq3_get_ue_golomb(gb);
             avctx->sample_aspect_ratio.den = svq3_get_ue_golomb(gb);
         }
@@ -197,7 +213,8 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
             dirac_preset_aspect_ratios[source->aspect_ratio_index - 1];
 
     /* [DIRAC_STD] 10.3.7 Clean area. clean_area(video_params) */
-    if (get_bits1(gb)) { /* [DIRAC_STD] custom_clean_area_flag */
+    if (get_bits1(gb))   /* [DIRAC_STD] custom_clean_area_flag */
+    {
         /* [DIRAC_STD] CLEAN_WIDTH */
         source->clean_width = svq3_get_ue_golomb(gb);
         /* [DIRAC_STD] CLEAN_HEIGHT */
@@ -211,7 +228,8 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
     /* [DIRAC_STD] 10.3.8 Signal range. signal_range(video_params)
      * WARNING: Some adaptation seems to be done using the
      * AVCOL_RANGE_MPEG/JPEG values */
-    if (get_bits1(gb)) { /* [DIRAC_STD] custom_signal_range_flag */
+    if (get_bits1(gb))   /* [DIRAC_STD] custom_signal_range_flag */
+    {
         /* [DIRAC_STD] index */
         source->pixel_range_index = svq3_get_ue_golomb(gb);
 
@@ -219,18 +237,20 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
             return AVERROR_INVALIDDATA;
 
         /* This assumes either fullrange or MPEG levels only */
-        if (!source->pixel_range_index) {
+        if (!source->pixel_range_index)
+        {
             luma_offset = svq3_get_ue_golomb(gb);
             luma_depth  = av_log2(svq3_get_ue_golomb(gb)) + 1;
             svq3_get_ue_golomb(gb); /* chroma offset    */
             svq3_get_ue_golomb(gb); /* chroma excursion */
             avctx->color_range = luma_offset ? AVCOL_RANGE_MPEG
-                                             : AVCOL_RANGE_JPEG;
+                                 : AVCOL_RANGE_JPEG;
         }
     }
     /* [DIRAC_STD] Table 10.5
      * Available signal range presets <--> pixel_range_presets */
-    if (source->pixel_range_index > 0) {
+    if (source->pixel_range_index > 0)
+    {
         idx                = source->pixel_range_index - 1;
         luma_depth         = pixel_range_presets[idx].bitdepth;
         avctx->color_range = pixel_range_presets[idx].color_range;
@@ -241,14 +261,16 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
 
     avctx->pix_fmt = dirac_pix_fmt[!luma_offset][source->chroma_format];
     avcodec_get_chroma_sub_sample(avctx->pix_fmt, &chroma_x_shift, &chroma_y_shift);
-    if ((source->width % (1<<chroma_x_shift)) || (source->height % (1<<chroma_y_shift))) {
+    if ((source->width % (1<<chroma_x_shift)) || (source->height % (1<<chroma_y_shift)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Dimensions must be an integer multiple of the chroma subsampling\n");
         return AVERROR_INVALIDDATA;
     }
 
 
     /* [DIRAC_STD] 10.3.9 Colour specification. colour_spec(video_params) */
-    if (get_bits1(gb)) { /* [DIRAC_STD] custom_colour_spec_flag */
+    if (get_bits1(gb))   /* [DIRAC_STD] custom_colour_spec_flag */
+    {
         /* [DIRAC_STD] index */
         idx = source->color_spec_index = svq3_get_ue_golomb(gb);
 
@@ -259,15 +281,18 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
         avctx->colorspace      = dirac_color_presets[idx].colorspace;
         avctx->color_trc       = dirac_color_presets[idx].color_trc;
 
-        if (!source->color_spec_index) {
+        if (!source->color_spec_index)
+        {
             /* [DIRAC_STD] 10.3.9.1 Colour primaries */
-            if (get_bits1(gb)) {
+            if (get_bits1(gb))
+            {
                 idx = svq3_get_ue_golomb(gb);
                 if (idx < 3U)
                     avctx->color_primaries = dirac_primaries[idx];
             }
             /* [DIRAC_STD] 10.3.9.2 Colour matrix */
-            if (get_bits1(gb)) {
+            if (get_bits1(gb))
+            {
                 idx = svq3_get_ue_golomb(gb);
                 if (!idx)
                     avctx->colorspace = AVCOL_SPC_BT709;
@@ -278,7 +303,9 @@ static int parse_source_parameters(AVCodecContext *avctx, GetBitContext *gb,
             if (get_bits1(gb) && !svq3_get_ue_golomb(gb))
                 avctx->color_trc = AVCOL_TRC_BT709;
         }
-    } else {
+    }
+    else
+    {
         idx                    = source->color_spec_index;
         avctx->color_primaries = dirac_color_presets[idx].color_primaries;
         avctx->colorspace      = dirac_color_presets[idx].colorspace;
@@ -330,7 +357,8 @@ int avpriv_dirac_parse_sequence_header(AVCodecContext *avctx, GetBitContext *gb,
     /* [DIRAC_STD] picture_coding_mode shall be 0 for fields and 1 for frames
      * currently only used to signal field coding */
     picture_coding_mode = svq3_get_ue_golomb(gb);
-    if (picture_coding_mode != 0) {
+    if (picture_coding_mode != 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported picture coding mode %d\n",
                picture_coding_mode);
         return AVERROR_INVALIDDATA;

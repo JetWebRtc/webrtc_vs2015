@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,7 +22,8 @@
 #include "vp9/common/vp9_pred_common.h"
 #include "vpx_mem/vpx_mem.h"
 
-namespace {
+namespace
+{
 
 using libvpx_test::ACMRandom;
 
@@ -31,103 +32,123 @@ const int count_test_block = 100000;
 typedef void (*IntraPredFunc)(uint8_t *dst, ptrdiff_t stride,
                               const uint8_t *above, const uint8_t *left);
 
-struct IntraPredParam {
-  IntraPredParam(IntraPredFunc pred = NULL, IntraPredFunc ref = NULL,
-                 int block_size_value = 0, int bit_depth_value = 0)
-      : pred_fn(pred), ref_fn(ref), block_size(block_size_value),
-        bit_depth(bit_depth_value) {}
+struct IntraPredParam
+{
+    IntraPredParam(IntraPredFunc pred = NULL, IntraPredFunc ref = NULL,
+                   int block_size_value = 0, int bit_depth_value = 0)
+        : pred_fn(pred), ref_fn(ref), block_size(block_size_value),
+          bit_depth(bit_depth_value) {}
 
-  IntraPredFunc pred_fn;
-  IntraPredFunc ref_fn;
-  int block_size;
-  int bit_depth;
+    IntraPredFunc pred_fn;
+    IntraPredFunc ref_fn;
+    int block_size;
+    int bit_depth;
 };
 
 template <typename Pixel, typename PredParam>
-class IntraPredTest : public ::testing::TestWithParam<PredParam> {
- public:
-  void RunTest(Pixel *left_col, Pixel *above_data, Pixel *dst, Pixel *ref_dst) {
-    ACMRandom rnd(ACMRandom::DeterministicSeed());
-    const int block_size = params_.block_size;
-    above_row_ = above_data + 16;
-    left_col_ = left_col;
-    dst_ = dst;
-    ref_dst_ = ref_dst;
-    int error_count = 0;
-    for (int i = 0; i < count_test_block; ++i) {
-      // Fill edges with random data, try first with saturated values.
-      for (int x = -1; x < block_size; x++) {
-        if (i == 0) {
-          above_row_[x] = mask_;
-        } else {
-          above_row_[x] = rnd.Rand16() & mask_;
+class IntraPredTest : public ::testing::TestWithParam<PredParam>
+{
+public:
+    void RunTest(Pixel *left_col, Pixel *above_data, Pixel *dst, Pixel *ref_dst)
+    {
+        ACMRandom rnd(ACMRandom::DeterministicSeed());
+        const int block_size = params_.block_size;
+        above_row_ = above_data + 16;
+        left_col_ = left_col;
+        dst_ = dst;
+        ref_dst_ = ref_dst;
+        int error_count = 0;
+        for (int i = 0; i < count_test_block; ++i)
+        {
+            // Fill edges with random data, try first with saturated values.
+            for (int x = -1; x < block_size; x++)
+            {
+                if (i == 0)
+                {
+                    above_row_[x] = mask_;
+                }
+                else
+                {
+                    above_row_[x] = rnd.Rand16() & mask_;
+                }
+            }
+            for (int x = block_size; x < 2 * block_size; x++)
+            {
+                above_row_[x] = above_row_[block_size - 1];
+            }
+            for (int y = 0; y < block_size; y++)
+            {
+                if (i == 0)
+                {
+                    left_col_[y] = mask_;
+                }
+                else
+                {
+                    left_col_[y] = rnd.Rand16() & mask_;
+                }
+            }
+            Predict();
+            CheckPrediction(i, &error_count);
         }
-      }
-      for (int x = block_size; x < 2 * block_size; x++) {
-        above_row_[x] = above_row_[block_size - 1];
-      }
-      for (int y = 0; y < block_size; y++) {
-        if (i == 0) {
-          left_col_[y] = mask_;
-        } else {
-          left_col_[y] = rnd.Rand16() & mask_;
-        }
-      }
-      Predict();
-      CheckPrediction(i, &error_count);
+        ASSERT_EQ(0, error_count);
     }
-    ASSERT_EQ(0, error_count);
-  }
 
- protected:
-  virtual void SetUp() {
-    params_ = this->GetParam();
-    stride_ = params_.block_size * 3;
-    mask_ = (1 << params_.bit_depth) - 1;
-  }
-
-  void Predict();
-
-  void CheckPrediction(int test_case_number, int *error_count) const {
-    // For each pixel ensure that the calculated value is the same as reference.
-    const int block_size = params_.block_size;
-    for (int y = 0; y < block_size; y++) {
-      for (int x = 0; x < block_size; x++) {
-        *error_count += ref_dst_[x + y * stride_] != dst_[x + y * stride_];
-        if (*error_count == 1) {
-          ASSERT_EQ(ref_dst_[x + y * stride_], dst_[x + y * stride_])
-              << " Failed on Test Case Number " << test_case_number;
-        }
-      }
+protected:
+    virtual void SetUp()
+    {
+        params_ = this->GetParam();
+        stride_ = params_.block_size * 3;
+        mask_ = (1 << params_.bit_depth) - 1;
     }
-  }
 
-  Pixel *above_row_;
-  Pixel *left_col_;
-  Pixel *dst_;
-  Pixel *ref_dst_;
-  ptrdiff_t stride_;
-  int mask_;
+    void Predict();
 
-  PredParam params_;
+    void CheckPrediction(int test_case_number, int *error_count) const
+    {
+        // For each pixel ensure that the calculated value is the same as reference.
+        const int block_size = params_.block_size;
+        for (int y = 0; y < block_size; y++)
+        {
+            for (int x = 0; x < block_size; x++)
+            {
+                *error_count += ref_dst_[x + y * stride_] != dst_[x + y * stride_];
+                if (*error_count == 1)
+                {
+                    ASSERT_EQ(ref_dst_[x + y * stride_], dst_[x + y * stride_])
+                            << " Failed on Test Case Number " << test_case_number;
+                }
+            }
+        }
+    }
+
+    Pixel *above_row_;
+    Pixel *left_col_;
+    Pixel *dst_;
+    Pixel *ref_dst_;
+    ptrdiff_t stride_;
+    int mask_;
+
+    PredParam params_;
 };
 
 template <>
-void IntraPredTest<uint8_t, IntraPredParam>::Predict() {
-  params_.ref_fn(ref_dst_, stride_, above_row_, left_col_);
-  ASM_REGISTER_STATE_CHECK(
-      params_.pred_fn(dst_, stride_, above_row_, left_col_));
+void IntraPredTest<uint8_t, IntraPredParam>::Predict()
+{
+    params_.ref_fn(ref_dst_, stride_, above_row_, left_col_);
+    ASM_REGISTER_STATE_CHECK(
+        params_.pred_fn(dst_, stride_, above_row_, left_col_));
 }
 
 typedef IntraPredTest<uint8_t, IntraPredParam> VP9IntraPredTest;
 
-TEST_P(VP9IntraPredTest, IntraPredTests) {
-  // max block size is 32
-  DECLARE_ALIGNED(16, uint8_t, left_col[2 * 32]);
-  DECLARE_ALIGNED(16, uint8_t, above_data[2 * 32 + 32]);
-  DECLARE_ALIGNED(16, uint8_t, dst[3 * 32 * 32]);
-  DECLARE_ALIGNED(16, uint8_t, ref_dst[3 * 32 * 32]);
-  RunTest(left_col, above_data, dst, ref_dst);
+TEST_P(VP9IntraPredTest, IntraPredTests)
+{
+    // max block size is 32
+    DECLARE_ALIGNED(16, uint8_t, left_col[2 * 32]);
+    DECLARE_ALIGNED(16, uint8_t, above_data[2 * 32 + 32]);
+    DECLARE_ALIGNED(16, uint8_t, dst[3 * 32 * 32]);
+    DECLARE_ALIGNED(16, uint8_t, ref_dst[3 * 32 * 32]);
+    RunTest(left_col, above_data, dst, ref_dst);
 }
 
 #if HAVE_SSE2
@@ -382,35 +403,38 @@ INSTANTIATE_TEST_CASE_P(
 typedef void (*HighbdIntraPred)(uint16_t *dst, ptrdiff_t stride,
                                 const uint16_t *above, const uint16_t *left,
                                 int bps);
-struct HighbdIntraPredParam {
-  HighbdIntraPredParam(HighbdIntraPred pred = NULL, HighbdIntraPred ref = NULL,
-                       int block_size_value = 0, int bit_depth_value = 0)
-      : pred_fn(pred), ref_fn(ref), block_size(block_size_value),
-        bit_depth(bit_depth_value) {}
+struct HighbdIntraPredParam
+{
+    HighbdIntraPredParam(HighbdIntraPred pred = NULL, HighbdIntraPred ref = NULL,
+                         int block_size_value = 0, int bit_depth_value = 0)
+        : pred_fn(pred), ref_fn(ref), block_size(block_size_value),
+          bit_depth(bit_depth_value) {}
 
-  HighbdIntraPred pred_fn;
-  HighbdIntraPred ref_fn;
-  int block_size;
-  int bit_depth;
+    HighbdIntraPred pred_fn;
+    HighbdIntraPred ref_fn;
+    int block_size;
+    int bit_depth;
 };
 
 template <>
-void IntraPredTest<uint16_t, HighbdIntraPredParam>::Predict() {
-  const int bit_depth = params_.bit_depth;
-  params_.ref_fn(ref_dst_, stride_, above_row_, left_col_, bit_depth);
-  ASM_REGISTER_STATE_CHECK(
-      params_.pred_fn(dst_, stride_, above_row_, left_col_, bit_depth));
+void IntraPredTest<uint16_t, HighbdIntraPredParam>::Predict()
+{
+    const int bit_depth = params_.bit_depth;
+    params_.ref_fn(ref_dst_, stride_, above_row_, left_col_, bit_depth);
+    ASM_REGISTER_STATE_CHECK(
+        params_.pred_fn(dst_, stride_, above_row_, left_col_, bit_depth));
 }
 
 typedef IntraPredTest<uint16_t, HighbdIntraPredParam> VP9HighbdIntraPredTest;
 
-TEST_P(VP9HighbdIntraPredTest, HighbdIntraPredTests) {
-  // max block size is 32
-  DECLARE_ALIGNED(16, uint16_t, left_col[2 * 32]);
-  DECLARE_ALIGNED(16, uint16_t, above_data[2 * 32 + 32]);
-  DECLARE_ALIGNED(16, uint16_t, dst[3 * 32 * 32]);
-  DECLARE_ALIGNED(16, uint16_t, ref_dst[3 * 32 * 32]);
-  RunTest(left_col, above_data, dst, ref_dst);
+TEST_P(VP9HighbdIntraPredTest, HighbdIntraPredTests)
+{
+    // max block size is 32
+    DECLARE_ALIGNED(16, uint16_t, left_col[2 * 32]);
+    DECLARE_ALIGNED(16, uint16_t, above_data[2 * 32 + 32]);
+    DECLARE_ALIGNED(16, uint16_t, dst[3 * 32 * 32]);
+    DECLARE_ALIGNED(16, uint16_t, ref_dst[3 * 32 * 32]);
+    RunTest(left_col, above_data, dst, ref_dst);
 }
 
 #if HAVE_SSE2

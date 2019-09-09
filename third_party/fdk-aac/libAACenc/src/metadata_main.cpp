@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -104,78 +104,81 @@ amm-info@iis.fraunhofer.de
 
 typedef struct AAC_METADATA
 {
-  /* MPEG: Dynamic Range Control */
-  struct {
-    UCHAR                         prog_ref_level_present;
-    SCHAR                         prog_ref_level;
+    /* MPEG: Dynamic Range Control */
+    struct
+    {
+        UCHAR                         prog_ref_level_present;
+        SCHAR                         prog_ref_level;
 
-    UCHAR                         dyn_rng_sgn[MAX_DRC_BANDS];
-    UCHAR                         dyn_rng_ctl[MAX_DRC_BANDS];
+        UCHAR                         dyn_rng_sgn[MAX_DRC_BANDS];
+        UCHAR                         dyn_rng_ctl[MAX_DRC_BANDS];
 
-    UCHAR                         drc_bands_present;
-    UCHAR                         drc_band_incr;
-    UCHAR                         drc_band_top[MAX_DRC_BANDS];
-    UCHAR                         drc_interpolation_scheme;
-    AACENC_METADATA_DRC_PROFILE   drc_profile;
-    INT                           drc_TargetRefLevel;    /* used for Limiter */
+        UCHAR                         drc_bands_present;
+        UCHAR                         drc_band_incr;
+        UCHAR                         drc_band_top[MAX_DRC_BANDS];
+        UCHAR                         drc_interpolation_scheme;
+        AACENC_METADATA_DRC_PROFILE   drc_profile;
+        INT                           drc_TargetRefLevel;    /* used for Limiter */
 
-    /* excluded channels */
-    UCHAR                         excluded_chns_present;
-    UCHAR                         exclude_mask[2];       /* MAX_NUMBER_CHANNELS/8 */
-  } mpegDrc;
+        /* excluded channels */
+        UCHAR                         excluded_chns_present;
+        UCHAR                         exclude_mask[2];       /* MAX_NUMBER_CHANNELS/8 */
+    } mpegDrc;
 
-  /* ETSI: addtl ancillary data */
-  struct {
-    /* Heavy Compression */
-    UCHAR                         compression_on;        /* flag, if compression value should be written */
-    UCHAR                         compression_value;     /* compression value */
-    AACENC_METADATA_DRC_PROFILE   comp_profile;
-    INT                           comp_TargetRefLevel;   /* used for Limiter */
-    INT                           timecode_coarse_status;
-    INT                           timecode_fine_status;
-  } etsiAncData;
+    /* ETSI: addtl ancillary data */
+    struct
+    {
+        /* Heavy Compression */
+        UCHAR                         compression_on;        /* flag, if compression value should be written */
+        UCHAR                         compression_value;     /* compression value */
+        AACENC_METADATA_DRC_PROFILE   comp_profile;
+        INT                           comp_TargetRefLevel;   /* used for Limiter */
+        INT                           timecode_coarse_status;
+        INT                           timecode_fine_status;
+    } etsiAncData;
 
-  SCHAR                         centerMixLevel;          /* center downmix level (0...7, according to table) */
-  SCHAR                         surroundMixLevel;        /* surround downmix level (0...7, according to table) */
-  UCHAR                         WritePCEMixDwnIdx;       /* flag */
-  UCHAR                         DmxLvl_On;               /* flag */
+    SCHAR                         centerMixLevel;          /* center downmix level (0...7, according to table) */
+    SCHAR                         surroundMixLevel;        /* surround downmix level (0...7, according to table) */
+    UCHAR                         WritePCEMixDwnIdx;       /* flag */
+    UCHAR                         DmxLvl_On;               /* flag */
 
-  UCHAR                         dolbySurroundMode;
+    UCHAR                         dolbySurroundMode;
 
-  UCHAR                         metadataMode;            /* indicate meta data mode in current frame (delay line) */
+    UCHAR                         metadataMode;            /* indicate meta data mode in current frame (delay line) */
 
 } AAC_METADATA;
 
 struct FDK_METADATA_ENCODER
 {
-  INT                metadataMode;
-  HDRC_COMP          hDrcComp;
-  AACENC_MetaData    submittedMetaData;
+    INT                metadataMode;
+    HDRC_COMP          hDrcComp;
+    AACENC_MetaData    submittedMetaData;
 
-  INT                nAudioDataDelay;
-  INT                nMetaDataDelay;
-  INT                nChannels;
+    INT                nAudioDataDelay;
+    INT                nMetaDataDelay;
+    INT                nChannels;
 
-  INT_PCM            audioDelayBuffer[MAX_DRC_CHANNELS*MAX_DRC_FRAMELEN];
-  int                audioDelayIdx;
+    INT_PCM            audioDelayBuffer[MAX_DRC_CHANNELS*MAX_DRC_FRAMELEN];
+    int                audioDelayIdx;
 
-  AAC_METADATA       metaDataBuffer[3];
-  int                metaDataDelayIdx;
+    AAC_METADATA       metaDataBuffer[3];
+    int                metaDataDelayIdx;
 
-  UCHAR              drcInfoPayload[12];
-  UCHAR              drcDsePayload[8];
+    UCHAR              drcInfoPayload[12];
+    UCHAR              drcDsePayload[8];
 
-  INT                matrix_mixdown_idx;
-  AACENC_EXT_PAYLOAD exPayload[2];
-  INT                nExtensions;
+    INT                matrix_mixdown_idx;
+    AACENC_EXT_PAYLOAD exPayload[2];
+    INT                nExtensions;
 
-  INT                finalizeMetaData;                   /* Delay switch off by one frame and write default configuration to
+    INT                finalizeMetaData;                   /* Delay switch off by one frame and write default configuration to
                                                             finalize the metadata setup. */
 };
 
 
 /*---------------- constants -----------------------*/
-static const AACENC_MetaData defaultMetaDataSetup = {
+static const AACENC_MetaData defaultMetaDataSetup =
+{
     AACENC_METADATA_DRC_NONE,
     AACENC_METADATA_DRC_NONE,
     -(31<<16),
@@ -189,51 +192,53 @@ static const AACENC_MetaData defaultMetaDataSetup = {
     0
 };
 
-static const FIXP_DBL dmxTable[8] = {
+static const FIXP_DBL dmxTable[8] =
+{
     ((FIXP_DBL)MAXVAL_DBL), FL2FXCONST_DBL(0.841f), FL2FXCONST_DBL(0.707f), FL2FXCONST_DBL(0.596f),
     FL2FXCONST_DBL(0.500f), FL2FXCONST_DBL(0.422f), FL2FXCONST_DBL(0.355f), FL2FXCONST_DBL(0.000f)
 };
 
-static const UCHAR surmix2matrix_mixdown_idx[8] = {
+static const UCHAR surmix2matrix_mixdown_idx[8] =
+{
     0, 0, 0, 1, 1, 2, 2, 3
 };
 
 
 /*--------------- function declarations --------------------*/
 static FDK_METADATA_ERROR WriteMetadataPayload(
-        const HANDLE_FDK_METADATA_ENCODER hMetaData,
-        const AAC_METADATA * const  pMetadata
-        );
+    const HANDLE_FDK_METADATA_ENCODER hMetaData,
+    const AAC_METADATA * const  pMetadata
+);
 
 static INT WriteDynamicRangeInfoPayload(
-        const AAC_METADATA* const pMetadata,
-        UCHAR* const              pExtensionPayload
-        );
+    const AAC_METADATA* const pMetadata,
+    UCHAR* const              pExtensionPayload
+);
 
 static INT WriteEtsiAncillaryDataPayload(
-        const AAC_METADATA* const pMetadata,
-        UCHAR* const              pExtensionPayload
-        );
+    const AAC_METADATA* const pMetadata,
+    UCHAR* const              pExtensionPayload
+);
 
 static FDK_METADATA_ERROR CompensateAudioDelay(
-        HANDLE_FDK_METADATA_ENCODER hMetaDataEnc,
-        INT_PCM * const             pAudioSamples,
-        const INT                   nAudioSamples
-        );
+    HANDLE_FDK_METADATA_ENCODER hMetaDataEnc,
+    INT_PCM * const             pAudioSamples,
+    const INT                   nAudioSamples
+);
 
 static FDK_METADATA_ERROR LoadSubmittedMetadata(
-        const AACENC_MetaData *   const hMetadata,
-        const INT                       nChannels,
-        const INT                       metadataMode,
-        AAC_METADATA * const            pAacMetaData
-        );
+    const AACENC_MetaData *   const hMetadata,
+    const INT                       nChannels,
+    const INT                       metadataMode,
+    AAC_METADATA * const            pAacMetaData
+);
 
 static FDK_METADATA_ERROR ProcessCompressor(
-        AAC_METADATA                    *pMetadata,
-        HDRC_COMP                        hDrcComp,
-        const INT_PCM * const            pSamples,
-        const INT                        nSamples
-        );
+    AAC_METADATA                    *pMetadata,
+    HDRC_COMP                        hDrcComp,
+    const INT_PCM * const            pSamples,
+    const INT                        nSamples
+);
 
 /*------------- function definitions ----------------*/
 
@@ -241,14 +246,29 @@ static DRC_PROFILE convertProfile(AACENC_METADATA_DRC_PROFILE aacProfile)
 {
     DRC_PROFILE drcProfile = DRC_NONE;
 
-    switch(aacProfile) {
-      case AACENC_METADATA_DRC_NONE:          drcProfile = DRC_NONE;          break;
-      case AACENC_METADATA_DRC_FILMSTANDARD:  drcProfile = DRC_FILMSTANDARD;  break;
-      case AACENC_METADATA_DRC_FILMLIGHT:     drcProfile = DRC_FILMLIGHT;     break;
-      case AACENC_METADATA_DRC_MUSICSTANDARD: drcProfile = DRC_MUSICSTANDARD; break;
-      case AACENC_METADATA_DRC_MUSICLIGHT:    drcProfile = DRC_MUSICLIGHT;    break;
-      case AACENC_METADATA_DRC_SPEECH:        drcProfile = DRC_SPEECH;        break;
-      default:                                drcProfile = DRC_NONE;          break;
+    switch(aacProfile)
+    {
+    case AACENC_METADATA_DRC_NONE:
+        drcProfile = DRC_NONE;
+        break;
+    case AACENC_METADATA_DRC_FILMSTANDARD:
+        drcProfile = DRC_FILMSTANDARD;
+        break;
+    case AACENC_METADATA_DRC_FILMLIGHT:
+        drcProfile = DRC_FILMLIGHT;
+        break;
+    case AACENC_METADATA_DRC_MUSICSTANDARD:
+        drcProfile = DRC_MUSICSTANDARD;
+        break;
+    case AACENC_METADATA_DRC_MUSICLIGHT:
+        drcProfile = DRC_MUSICLIGHT;
+        break;
+    case AACENC_METADATA_DRC_SPEECH:
+        drcProfile = DRC_SPEECH;
+        break;
+    default:
+        drcProfile = DRC_NONE;
+        break;
     }
     return drcProfile;
 }
@@ -282,12 +302,12 @@ static void encodeDynrng(INT gain, UCHAR* const dyn_rng_ctl, UCHAR* const dyn_rn
 {
     if(gain < 0)
     {
-      *dyn_rng_sgn = 1;
-      gain = -gain;
+        *dyn_rng_sgn = 1;
+        gain = -gain;
     }
     else
     {
-      *dyn_rng_sgn = 0;
+        *dyn_rng_sgn = 0;
     }
     gain = FDKmin(gain,(127<<14));
 
@@ -312,13 +332,16 @@ static UCHAR encodeCompr(INT gain)
     /* tmp = (int)((48.164f - gain) / 6.0206f * 15 + 0.5f); */
     tmp = ((3156476 - gain) * 15 + 197283) / 394566;
 
-    if (tmp >= 240) {
+    if (tmp >= 240)
+    {
         return 0xFF;
     }
-    else if (tmp < 0) {
+    else if (tmp < 0)
+    {
         return 0;
     }
-    else {
+    else
+    {
         x = tmp / 15;
         y = tmp % 15;
     }
@@ -341,31 +364,34 @@ static INT decodeCompr(const UCHAR compr)
 
 
 FDK_METADATA_ERROR FDK_MetadataEnc_Open(
-        HANDLE_FDK_METADATA_ENCODER *phMetaData
-        )
+    HANDLE_FDK_METADATA_ENCODER *phMetaData
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
     HANDLE_FDK_METADATA_ENCODER hMetaData = NULL;
 
-    if (phMetaData == NULL) {
-      err = METADATA_INVALID_HANDLE;
-      goto bail;
+    if (phMetaData == NULL)
+    {
+        err = METADATA_INVALID_HANDLE;
+        goto bail;
     }
 
     /* allocate memory */
     hMetaData = (HANDLE_FDK_METADATA_ENCODER) FDKcalloc(1, sizeof(FDK_METADATA_ENCODER) );
 
-    if (hMetaData == NULL) {
-      err = METADATA_MEMORY_ERROR;
-      goto bail;
+    if (hMetaData == NULL)
+    {
+        err = METADATA_MEMORY_ERROR;
+        goto bail;
     }
 
     FDKmemclear(hMetaData, sizeof(FDK_METADATA_ENCODER));
 
     /* Allocate DRC Compressor. */
-    if (FDK_DRC_Generator_Open(&hMetaData->hDrcComp)!=0) {
-      err = METADATA_MEMORY_ERROR;
-      goto bail;
+    if (FDK_DRC_Generator_Open(&hMetaData->hDrcComp)!=0)
+    {
+        err = METADATA_MEMORY_ERROR;
+        goto bail;
     }
 
     /* Return metadata instance */
@@ -379,51 +405,55 @@ bail:
 }
 
 FDK_METADATA_ERROR FDK_MetadataEnc_Close(
-        HANDLE_FDK_METADATA_ENCODER *phMetaData
-        )
+    HANDLE_FDK_METADATA_ENCODER *phMetaData
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
 
-    if (phMetaData == NULL) {
-      err = METADATA_INVALID_HANDLE;
-      goto bail;
+    if (phMetaData == NULL)
+    {
+        err = METADATA_INVALID_HANDLE;
+        goto bail;
     }
 
-    if (*phMetaData != NULL) {
-      FDK_DRC_Generator_Close(&(*phMetaData)->hDrcComp);
-      FDKfree(*phMetaData);
-      *phMetaData = NULL;
+    if (*phMetaData != NULL)
+    {
+        FDK_DRC_Generator_Close(&(*phMetaData)->hDrcComp);
+        FDKfree(*phMetaData);
+        *phMetaData = NULL;
     }
 bail:
     return err;
 }
 
 FDK_METADATA_ERROR FDK_MetadataEnc_Init(
-        HANDLE_FDK_METADATA_ENCODER hMetaData,
-        const INT                   resetStates,
-        const INT                   metadataMode,
-        const INT                   audioDelay,
-        const UINT                  frameLength,
-        const UINT                  sampleRate,
-        const UINT                  nChannels,
-        const CHANNEL_MODE          channelMode,
-        const CHANNEL_ORDER         channelOrder
-        )
+    HANDLE_FDK_METADATA_ENCODER hMetaData,
+    const INT                   resetStates,
+    const INT                   metadataMode,
+    const INT                   audioDelay,
+    const UINT                  frameLength,
+    const UINT                  sampleRate,
+    const UINT                  nChannels,
+    const CHANNEL_MODE          channelMode,
+    const CHANNEL_ORDER         channelOrder
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
     int i, nFrames, delay;
 
-    if (hMetaData==NULL) {
-      err = METADATA_INVALID_HANDLE;
-      goto bail;
+    if (hMetaData==NULL)
+    {
+        err = METADATA_INVALID_HANDLE;
+        goto bail;
     }
 
     /* Determine values for delay compensation. */
     for (nFrames=0, delay=audioDelay-frameLength; delay>0; delay-=frameLength, nFrames++);
 
-    if ( (hMetaData->nChannels>MAX_DRC_CHANNELS) || ((-delay)>MAX_DRC_FRAMELEN) ) {
-      err = METADATA_INIT_ERROR;
-      goto bail;
+    if ( (hMetaData->nChannels>MAX_DRC_CHANNELS) || ((-delay)>MAX_DRC_FRAMELEN) )
+    {
+        err = METADATA_INIT_ERROR;
+        goto bail;
     }
 
     /* Initialize with default setup. */
@@ -434,24 +464,28 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Init(
     /* Reset delay lines. */
     if ( resetStates || (hMetaData->nAudioDataDelay!=-delay) || (hMetaData->nChannels!=(INT)nChannels) )
     {
-      FDKmemclear(hMetaData->audioDelayBuffer, sizeof(hMetaData->audioDelayBuffer));
-      FDKmemclear(hMetaData->metaDataBuffer, sizeof(hMetaData->metaDataBuffer));
-      hMetaData->audioDelayIdx = 0;
-      hMetaData->metaDataDelayIdx = 0;
+        FDKmemclear(hMetaData->audioDelayBuffer, sizeof(hMetaData->audioDelayBuffer));
+        FDKmemclear(hMetaData->metaDataBuffer, sizeof(hMetaData->metaDataBuffer));
+        hMetaData->audioDelayIdx = 0;
+        hMetaData->metaDataDelayIdx = 0;
     }
-    else {
-      /* Enable meta data. */
-      if ( (hMetaData->metadataMode==0) && (metadataMode!=0) ) {
-        /* disable meta data in all delay lines */
-        for (i=0; i<(int)(sizeof(hMetaData->metaDataBuffer)/sizeof(AAC_METADATA)); i++) {
-          LoadSubmittedMetadata(&hMetaData->submittedMetaData, nChannels, 0, &hMetaData->metaDataBuffer[i]);
+    else
+    {
+        /* Enable meta data. */
+        if ( (hMetaData->metadataMode==0) && (metadataMode!=0) )
+        {
+            /* disable meta data in all delay lines */
+            for (i=0; i<(int)(sizeof(hMetaData->metaDataBuffer)/sizeof(AAC_METADATA)); i++)
+            {
+                LoadSubmittedMetadata(&hMetaData->submittedMetaData, nChannels, 0, &hMetaData->metaDataBuffer[i]);
+            }
         }
-      }
 
-      /* Disable meta data.*/
-      if ( (hMetaData->metadataMode!=0) && (metadataMode==0) ) {
-        hMetaData->finalizeMetaData = hMetaData->metadataMode;
-      }
+        /* Disable meta data.*/
+        if ( (hMetaData->metadataMode!=0) && (metadataMode==0) )
+        {
+            hMetaData->finalizeMetaData = hMetaData->metadataMode;
+        }
     }
 
     /* Initialize delay. */
@@ -461,18 +495,19 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Init(
     hMetaData->metadataMode    = metadataMode;
 
     /* Initialize compressor. */
-    if (metadataMode != 0) {
+    if (metadataMode != 0)
+    {
         if ( FDK_DRC_Generator_Initialize(
-                         hMetaData->hDrcComp,
-                         DRC_NONE,
-                         DRC_NONE,
-                         frameLength,
-                         sampleRate,
-                         channelMode,
-                         channelOrder,
-                         1) != 0)
+                    hMetaData->hDrcComp,
+                    DRC_NONE,
+                    DRC_NONE,
+                    frameLength,
+                    sampleRate,
+                    channelMode,
+                    channelOrder,
+                    1) != 0)
         {
-          err = METADATA_INIT_ERROR;
+            err = METADATA_INIT_ERROR;
         }
     }
 bail:
@@ -480,17 +515,18 @@ bail:
 }
 
 static FDK_METADATA_ERROR ProcessCompressor(
-        AAC_METADATA                    *pMetadata,
-        HDRC_COMP                        hDrcComp,
-        const INT_PCM * const            pSamples,
-        const INT                        nSamples
-        )
+    AAC_METADATA                    *pMetadata,
+    HDRC_COMP                        hDrcComp,
+    const INT_PCM * const            pSamples,
+    const INT                        nSamples
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
 
-    if ( (pMetadata==NULL) || (hDrcComp==NULL) ) {
-      err = METADATA_INVALID_HANDLE;
-      return err;
+    if ( (pMetadata==NULL) || (hDrcComp==NULL) )
+    {
+        err = METADATA_INVALID_HANDLE;
+        return err;
     }
     DRC_PROFILE profileDrc  = convertProfile(pMetadata->mpegDrc.drc_profile);
     DRC_PROFILE profileComp = convertProfile(pMetadata->etsiAncData.comp_profile);
@@ -498,14 +534,15 @@ static FDK_METADATA_ERROR ProcessCompressor(
     /* first, check if profile is same as last frame
      * otherwise, update setup */
     if ( (profileDrc != FDK_DRC_Generator_getDrcProfile(hDrcComp))
-      || (profileComp != FDK_DRC_Generator_getCompProfile(hDrcComp)) )
+            || (profileComp != FDK_DRC_Generator_getCompProfile(hDrcComp)) )
     {
-      FDK_DRC_Generator_setDrcProfile(hDrcComp, profileDrc, profileComp);
+        FDK_DRC_Generator_setDrcProfile(hDrcComp, profileDrc, profileComp);
     }
 
     /* Sanity check */
-    if (profileComp == DRC_NONE) {
-      pMetadata->etsiAncData.compression_value = 0x80;  /* to ensure no external values will be written if not configured */
+    if (profileComp == DRC_NONE)
+    {
+        pMetadata->etsiAncData.compression_value = 0x80;  /* to ensure no external values will be written if not configured */
     }
 
     /* in case of embedding external values, copy this now (limiter may overwrite them) */
@@ -514,17 +551,17 @@ static FDK_METADATA_ERROR ProcessCompressor(
 
     /* Call compressor */
     if (FDK_DRC_Generator_Calc(hDrcComp,
-                           pSamples,
-                           progreflvl2dialnorm(pMetadata->mpegDrc.prog_ref_level),
-                           pMetadata->mpegDrc.drc_TargetRefLevel,
-                           pMetadata->etsiAncData.comp_TargetRefLevel,
-                           dmxTable[pMetadata->centerMixLevel],
-                           dmxTable[pMetadata->surroundMixLevel],
-                           &dynrng,
-                           &compr) != 0)
+                               pSamples,
+                               progreflvl2dialnorm(pMetadata->mpegDrc.prog_ref_level),
+                               pMetadata->mpegDrc.drc_TargetRefLevel,
+                               pMetadata->etsiAncData.comp_TargetRefLevel,
+                               dmxTable[pMetadata->centerMixLevel],
+                               dmxTable[pMetadata->surroundMixLevel],
+                               &dynrng,
+                               &compr) != 0)
     {
-      err = METADATA_ENCODE_ERROR;
-      goto bail;
+        err = METADATA_ENCODE_ERROR;
+        goto bail;
     }
 
     /* Write DRC values */
@@ -537,14 +574,14 @@ bail:
 }
 
 FDK_METADATA_ERROR FDK_MetadataEnc_Process(
-        HANDLE_FDK_METADATA_ENCODER      hMetaDataEnc,
-        INT_PCM * const                  pAudioSamples,
-        const INT                        nAudioSamples,
-        const AACENC_MetaData * const    pMetadata,
-        AACENC_EXT_PAYLOAD **            ppMetaDataExtPayload,
-        UINT *                           nMetaDataExtensions,
-        INT *                            matrix_mixdown_idx
-        )
+    HANDLE_FDK_METADATA_ENCODER      hMetaDataEnc,
+    INT_PCM * const                  pAudioSamples,
+    const INT                        nAudioSamples,
+    const AACENC_MetaData * const    pMetadata,
+    AACENC_EXT_PAYLOAD **            ppMetaDataExtPayload,
+    UINT *                           nMetaDataExtensions,
+    INT *                            matrix_mixdown_idx
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
     int metaDataDelayWriteIdx, metaDataDelayReadIdx, metadataMode;
@@ -563,47 +600,51 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Process(
     metaDataDelayReadIdx = hMetaDataEnc->metaDataDelayIdx;
 
     /* Submit new data if available. */
-    if (pMetadata!=NULL) {
+    if (pMetadata!=NULL)
+    {
         FDKmemcpy(&hMetaDataEnc->submittedMetaData, pMetadata, sizeof(AACENC_MetaData));
     }
 
     /* Write one additional frame with default configuration of meta data. Ensure defined behaviour on decoder side. */
-    if ( (hMetaDataEnc->finalizeMetaData!=0) && (hMetaDataEnc->metadataMode==0)) {
-      FDKmemcpy(&hMetaDataEnc->submittedMetaData, &defaultMetaDataSetup,  sizeof(AACENC_MetaData));
-      metadataMode = hMetaDataEnc->finalizeMetaData;
-      hMetaDataEnc->finalizeMetaData = 0;
+    if ( (hMetaDataEnc->finalizeMetaData!=0) && (hMetaDataEnc->metadataMode==0))
+    {
+        FDKmemcpy(&hMetaDataEnc->submittedMetaData, &defaultMetaDataSetup,  sizeof(AACENC_MetaData));
+        metadataMode = hMetaDataEnc->finalizeMetaData;
+        hMetaDataEnc->finalizeMetaData = 0;
     }
 
     /* Get last submitted data. */
     if ( (err = LoadSubmittedMetadata(
-                        &hMetaDataEnc->submittedMetaData,
-                         hMetaDataEnc->nChannels,
-                         metadataMode,
-                        &hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx])) != METADATA_OK )
+                    &hMetaDataEnc->submittedMetaData,
+                    hMetaDataEnc->nChannels,
+                    metadataMode,
+                    &hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx])) != METADATA_OK )
     {
         goto bail;
     }
 
     /* Calculate compressor if necessary and updata meta data info */
-    if (hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx].metadataMode != 0) {
-      if ( (err = ProcessCompressor(
+    if (hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx].metadataMode != 0)
+    {
+        if ( (err = ProcessCompressor(
                         &hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx],
-                         hMetaDataEnc->hDrcComp,
-                         pAudioSamples,
-                         nAudioSamples)) != METADATA_OK)
-      {
-        /* Get last submitted data again. */
-        LoadSubmittedMetadata(
-                        &hMetaDataEnc->submittedMetaData,
-                         hMetaDataEnc->nChannels,
-                         metadataMode,
-                        &hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx]);
-      }
+                        hMetaDataEnc->hDrcComp,
+                        pAudioSamples,
+                        nAudioSamples)) != METADATA_OK)
+        {
+            /* Get last submitted data again. */
+            LoadSubmittedMetadata(
+                &hMetaDataEnc->submittedMetaData,
+                hMetaDataEnc->nChannels,
+                metadataMode,
+                &hMetaDataEnc->metaDataBuffer[metaDataDelayWriteIdx]);
+        }
     }
 
     /* Convert Meta Data side info to bitstream data. */
-    if ( (err = WriteMetadataPayload(hMetaDataEnc, &hMetaDataEnc->metaDataBuffer[metaDataDelayReadIdx])) != METADATA_OK ) {
-      goto bail;
+    if ( (err = WriteMetadataPayload(hMetaDataEnc, &hMetaDataEnc->metaDataBuffer[metaDataDelayReadIdx])) != METADATA_OK )
+    {
+        goto bail;
     }
 
     /* Assign meta data to output */
@@ -620,24 +661,26 @@ bail:
 
 
 static FDK_METADATA_ERROR CompensateAudioDelay(
-        HANDLE_FDK_METADATA_ENCODER hMetaDataEnc,
-        INT_PCM * const             pAudioSamples,
-        const INT                   nAudioSamples
-        )
+    HANDLE_FDK_METADATA_ENCODER hMetaDataEnc,
+    INT_PCM * const             pAudioSamples,
+    const INT                   nAudioSamples
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
 
-    if (hMetaDataEnc->nAudioDataDelay) {
-      int i, delaySamples = hMetaDataEnc->nAudioDataDelay*hMetaDataEnc->nChannels;
+    if (hMetaDataEnc->nAudioDataDelay)
+    {
+        int i, delaySamples = hMetaDataEnc->nAudioDataDelay*hMetaDataEnc->nChannels;
 
-      for (i = 0; i < nAudioSamples; i++) {
-        INT_PCM tmp = pAudioSamples[i];
-        pAudioSamples[i] = hMetaDataEnc->audioDelayBuffer[hMetaDataEnc->audioDelayIdx];
-        hMetaDataEnc->audioDelayBuffer[hMetaDataEnc->audioDelayIdx] = tmp;
+        for (i = 0; i < nAudioSamples; i++)
+        {
+            INT_PCM tmp = pAudioSamples[i];
+            pAudioSamples[i] = hMetaDataEnc->audioDelayBuffer[hMetaDataEnc->audioDelayIdx];
+            hMetaDataEnc->audioDelayBuffer[hMetaDataEnc->audioDelayIdx] = tmp;
 
-        hMetaDataEnc->audioDelayIdx++;
-        if (hMetaDataEnc->audioDelayIdx >= delaySamples) hMetaDataEnc->audioDelayIdx = 0;
-      }
+            hMetaDataEnc->audioDelayIdx++;
+            if (hMetaDataEnc->audioDelayIdx >= delaySamples) hMetaDataEnc->audioDelayIdx = 0;
+        }
     }
 
     return err;
@@ -651,13 +694,14 @@ static FDK_METADATA_ERROR CompensateAudioDelay(
 
  ------------------------------------------------------------------------------*/
 static FDK_METADATA_ERROR WriteMetadataPayload(
-        const HANDLE_FDK_METADATA_ENCODER hMetaData,
-        const AAC_METADATA * const        pMetadata
-        )
+    const HANDLE_FDK_METADATA_ENCODER hMetaData,
+    const AAC_METADATA * const        pMetadata
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
 
-    if ( (hMetaData==NULL) || (pMetadata==NULL) ) {
+    if ( (hMetaData==NULL) || (pMetadata==NULL) )
+    {
         err = METADATA_INVALID_HANDLE;
         goto bail;
     }
@@ -673,12 +717,13 @@ static FDK_METADATA_ERROR WriteMetadataPayload(
         hMetaData->exPayload[hMetaData->nExtensions].associatedChElement = -1;
 
         hMetaData->exPayload[hMetaData->nExtensions].dataSize =
-              WriteDynamicRangeInfoPayload(pMetadata, hMetaData->exPayload[hMetaData->nExtensions].pData);
+            WriteDynamicRangeInfoPayload(pMetadata, hMetaData->exPayload[hMetaData->nExtensions].pData);
 
         hMetaData->nExtensions++;
 
         /* Matrix Mixdown Coefficient in PCE */
-        if (pMetadata->WritePCEMixDwnIdx) {
+        if (pMetadata->WritePCEMixDwnIdx)
+        {
             hMetaData->matrix_mixdown_idx = surmix2matrix_mixdown_idx[pMetadata->surroundMixLevel];
         }
 
@@ -690,7 +735,7 @@ static FDK_METADATA_ERROR WriteMetadataPayload(
             hMetaData->exPayload[hMetaData->nExtensions].associatedChElement = -1;
 
             hMetaData->exPayload[hMetaData->nExtensions].dataSize =
-                 WriteEtsiAncillaryDataPayload(pMetadata,hMetaData->exPayload[hMetaData->nExtensions].pData);
+                WriteEtsiAncillaryDataPayload(pMetadata,hMetaData->exPayload[hMetaData->nExtensions].pData);
 
             hMetaData->nExtensions++;
         } /* metadataMode == 2 */
@@ -702,9 +747,9 @@ bail:
 }
 
 static INT WriteDynamicRangeInfoPayload(
-        const AAC_METADATA* const pMetadata,
-        UCHAR* const              pExtensionPayload
-        )
+    const AAC_METADATA* const pMetadata,
+    UCHAR* const              pExtensionPayload
+)
 {
     const INT pce_tag_present = 0;        /* yet fixed setting! */
     const INT prog_ref_lev_res_bits = 0;
@@ -715,10 +760,11 @@ static INT WriteDynamicRangeInfoPayload(
 
     /* dynamic_range_info() */
     FDKwriteBits(&bsWriter, pce_tag_present, 1);                                         /* pce_tag_present */
-    if (pce_tag_present) {
-      FDKwriteBits(&bsWriter, 0x0, 4);                                                   /* pce_instance_tag */
-      FDKwriteBits(&bsWriter, 0x0, 4);                                                   /* drc_tag_reserved_bits */
-   }
+    if (pce_tag_present)
+    {
+        FDKwriteBits(&bsWriter, 0x0, 4);                                                   /* pce_instance_tag */
+        FDKwriteBits(&bsWriter, 0x0, 4);                                                   /* drc_tag_reserved_bits */
+    }
 
     /* Exclude channels */
     FDKwriteBits(&bsWriter, (pMetadata->mpegDrc.excluded_chns_present) ? 1 : 0, 1);      /* excluded_chns_present*/
@@ -727,26 +773,28 @@ static INT WriteDynamicRangeInfoPayload(
     FDKwriteBits(&bsWriter, (pMetadata->mpegDrc.drc_bands_present) ? 1 : 0, 1);          /* drc_bands_present */
     if (pMetadata->mpegDrc.drc_bands_present)
     {
-      FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_band_incr, 4);                      /* drc_band_incr */
-      FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_interpolation_scheme, 4);           /* drc_interpolation_scheme */
-      drc_num_bands += pMetadata->mpegDrc.drc_band_incr;
-      for (i=0; i<drc_num_bands; i++) {
-        FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_band_top[i], 8);                  /* drc_band_top */
-      }
+        FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_band_incr, 4);                      /* drc_band_incr */
+        FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_interpolation_scheme, 4);           /* drc_interpolation_scheme */
+        drc_num_bands += pMetadata->mpegDrc.drc_band_incr;
+        for (i=0; i<drc_num_bands; i++)
+        {
+            FDKwriteBits(&bsWriter, pMetadata->mpegDrc.drc_band_top[i], 8);                  /* drc_band_top */
+        }
     }
 
     /* Program Reference Level */
     FDKwriteBits(&bsWriter, pMetadata->mpegDrc.prog_ref_level_present, 1);               /* prog_ref_level_present */
     if (pMetadata->mpegDrc.prog_ref_level_present)
     {
-      FDKwriteBits(&bsWriter, pMetadata->mpegDrc.prog_ref_level, 7);                     /* prog_ref_level */
-      FDKwriteBits(&bsWriter, prog_ref_lev_res_bits, 1);                                 /* prog_ref_level_reserved_bits */
+        FDKwriteBits(&bsWriter, pMetadata->mpegDrc.prog_ref_level, 7);                     /* prog_ref_level */
+        FDKwriteBits(&bsWriter, prog_ref_lev_res_bits, 1);                                 /* prog_ref_level_reserved_bits */
     }
 
     /* DRC Values */
-    for (i=0; i<drc_num_bands; i++) {
-      FDKwriteBits(&bsWriter, (pMetadata->mpegDrc.dyn_rng_sgn[i]) ? 1 : 0, 1);           /* dyn_rng_sgn[ */
-      FDKwriteBits(&bsWriter, pMetadata->mpegDrc.dyn_rng_ctl[i], 7);                     /* dyn_rng_ctl */
+    for (i=0; i<drc_num_bands; i++)
+    {
+        FDKwriteBits(&bsWriter, (pMetadata->mpegDrc.dyn_rng_sgn[i]) ? 1 : 0, 1);           /* dyn_rng_sgn[ */
+        FDKwriteBits(&bsWriter, pMetadata->mpegDrc.dyn_rng_ctl[i], 7);                     /* dyn_rng_ctl */
     }
 
     /* return number of valid bits in extension payload. */
@@ -754,9 +802,9 @@ static INT WriteDynamicRangeInfoPayload(
 }
 
 static INT WriteEtsiAncillaryDataPayload(
-        const AAC_METADATA* const pMetadata,
-        UCHAR* const              pExtensionPayload
-        )
+    const AAC_METADATA* const pMetadata,
+    UCHAR* const              pExtensionPayload
+)
 {
     FDK_BITSTREAM bsWriter;
     FDKinitBitStream(&bsWriter, pExtensionPayload, 16, 0, BS_WRITER);
@@ -778,23 +826,27 @@ static INT WriteEtsiAncillaryDataPayload(
     FDKwriteBits(&bsWriter, (pMetadata->etsiAncData.timecode_fine_status) ? 1 : 0, 1);   /* fine_grain_timecode_status */
 
     /* downmixing_levels_MPEG4_status */
-    if (pMetadata->DmxLvl_On) {
-      FDKwriteBits(&bsWriter, encodeDmxLvls(pMetadata->centerMixLevel, pMetadata->surroundMixLevel), 8);
+    if (pMetadata->DmxLvl_On)
+    {
+        FDKwriteBits(&bsWriter, encodeDmxLvls(pMetadata->centerMixLevel, pMetadata->surroundMixLevel), 8);
     }
 
     /* audio_coding_mode_and_compression_status */
-    if (pMetadata->etsiAncData.compression_on) {
-      FDKwriteBits(&bsWriter, 0x01, 8);                                                  /* audio coding mode */
-      FDKwriteBits(&bsWriter, pMetadata->etsiAncData.compression_value, 8);              /* compression value */
+    if (pMetadata->etsiAncData.compression_on)
+    {
+        FDKwriteBits(&bsWriter, 0x01, 8);                                                  /* audio coding mode */
+        FDKwriteBits(&bsWriter, pMetadata->etsiAncData.compression_value, 8);              /* compression value */
     }
 
     /* grain-timecode coarse/fine */
-    if (pMetadata->etsiAncData.timecode_coarse_status) {
-      FDKwriteBits(&bsWriter, 0x0, 16);                                                  /* not yet supported */
+    if (pMetadata->etsiAncData.timecode_coarse_status)
+    {
+        FDKwriteBits(&bsWriter, 0x0, 16);                                                  /* not yet supported */
     }
 
-    if (pMetadata->etsiAncData.timecode_fine_status) {
-      FDKwriteBits(&bsWriter, 0x0, 16);                                                  /* not yet supported */
+    if (pMetadata->etsiAncData.timecode_fine_status)
+    {
+        FDKwriteBits(&bsWriter, 0x0, 16);                                                  /* not yet supported */
     }
 
     return FDKgetValidBits(&bsWriter);
@@ -802,64 +854,72 @@ static INT WriteEtsiAncillaryDataPayload(
 
 
 static FDK_METADATA_ERROR LoadSubmittedMetadata(
-        const AACENC_MetaData * const   hMetadata,
-        const INT                       nChannels,
-        const INT                       metadataMode,
-        AAC_METADATA * const            pAacMetaData
-        )
+    const AACENC_MetaData * const   hMetadata,
+    const INT                       nChannels,
+    const INT                       metadataMode,
+    AAC_METADATA * const            pAacMetaData
+)
 {
     FDK_METADATA_ERROR err = METADATA_OK;
 
-    if (pAacMetaData==NULL) {
-      err = METADATA_INVALID_HANDLE;
+    if (pAacMetaData==NULL)
+    {
+        err = METADATA_INVALID_HANDLE;
     }
-    else {
-      /* init struct */
-      FDKmemclear(pAacMetaData, sizeof(AAC_METADATA));
+    else
+    {
+        /* init struct */
+        FDKmemclear(pAacMetaData, sizeof(AAC_METADATA));
 
-      if (hMetadata!=NULL) {
-        /* convert data */
-        pAacMetaData->mpegDrc.drc_profile            = hMetadata->drc_profile;
-        pAacMetaData->etsiAncData.comp_profile       = hMetadata->comp_profile;
-        pAacMetaData->mpegDrc.drc_TargetRefLevel     = hMetadata->drc_TargetRefLevel;
-        pAacMetaData->etsiAncData.comp_TargetRefLevel= hMetadata->comp_TargetRefLevel;
-        pAacMetaData->mpegDrc.prog_ref_level_present = hMetadata->prog_ref_level_present;
-        pAacMetaData->mpegDrc.prog_ref_level         = dialnorm2progreflvl(hMetadata->prog_ref_level);
+        if (hMetadata!=NULL)
+        {
+            /* convert data */
+            pAacMetaData->mpegDrc.drc_profile            = hMetadata->drc_profile;
+            pAacMetaData->etsiAncData.comp_profile       = hMetadata->comp_profile;
+            pAacMetaData->mpegDrc.drc_TargetRefLevel     = hMetadata->drc_TargetRefLevel;
+            pAacMetaData->etsiAncData.comp_TargetRefLevel= hMetadata->comp_TargetRefLevel;
+            pAacMetaData->mpegDrc.prog_ref_level_present = hMetadata->prog_ref_level_present;
+            pAacMetaData->mpegDrc.prog_ref_level         = dialnorm2progreflvl(hMetadata->prog_ref_level);
 
-        pAacMetaData->centerMixLevel                 = hMetadata->centerMixLevel;
-        pAacMetaData->surroundMixLevel               = hMetadata->surroundMixLevel;
-        pAacMetaData->WritePCEMixDwnIdx              = hMetadata->PCE_mixdown_idx_present;
-        pAacMetaData->DmxLvl_On                      = hMetadata->ETSI_DmxLvl_present;
+            pAacMetaData->centerMixLevel                 = hMetadata->centerMixLevel;
+            pAacMetaData->surroundMixLevel               = hMetadata->surroundMixLevel;
+            pAacMetaData->WritePCEMixDwnIdx              = hMetadata->PCE_mixdown_idx_present;
+            pAacMetaData->DmxLvl_On                      = hMetadata->ETSI_DmxLvl_present;
 
-        pAacMetaData->etsiAncData.compression_on = 1;
+            pAacMetaData->etsiAncData.compression_on = 1;
 
 
-        if (nChannels == 2) {
-          pAacMetaData->dolbySurroundMode = hMetadata->dolbySurroundMode;     /* dolby_surround_mode */
-        } else {
-          pAacMetaData->dolbySurroundMode = 0;
+            if (nChannels == 2)
+            {
+                pAacMetaData->dolbySurroundMode = hMetadata->dolbySurroundMode;     /* dolby_surround_mode */
+            }
+            else
+            {
+                pAacMetaData->dolbySurroundMode = 0;
+            }
+
+            pAacMetaData->etsiAncData.timecode_coarse_status = 0; /* not yet supported - attention: Update GetEstMetadataBytesPerFrame() if enable this! */
+            pAacMetaData->etsiAncData.timecode_fine_status   = 0; /* not yet supported - attention: Update GetEstMetadataBytesPerFrame() if enable this! */
+
+            pAacMetaData->metadataMode = metadataMode;
         }
-
-        pAacMetaData->etsiAncData.timecode_coarse_status = 0; /* not yet supported - attention: Update GetEstMetadataBytesPerFrame() if enable this! */
-        pAacMetaData->etsiAncData.timecode_fine_status   = 0; /* not yet supported - attention: Update GetEstMetadataBytesPerFrame() if enable this! */
-
-        pAacMetaData->metadataMode = metadataMode;
-      }
-      else {
-        pAacMetaData->metadataMode = 0;                      /* there is no configuration available */
-      }
+        else
+        {
+            pAacMetaData->metadataMode = 0;                      /* there is no configuration available */
+        }
     }
 
     return err;
 }
 
 INT FDK_MetadataEnc_GetDelay(
-        HANDLE_FDK_METADATA_ENCODER hMetadataEnc
-        )
+    HANDLE_FDK_METADATA_ENCODER hMetadataEnc
+)
 {
     INT delay = 0;
 
-    if (hMetadataEnc!=NULL) {
+    if (hMetadataEnc!=NULL)
+    {
         delay = hMetadataEnc->nAudioDataDelay;
     }
 

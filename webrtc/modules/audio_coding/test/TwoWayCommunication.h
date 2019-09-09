@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,41 +19,43 @@
 #include "webrtc/modules/audio_coding/test/PCMFile.h"
 #include "webrtc/modules/audio_coding/test/utility.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class TwoWayCommunication : public ACMTest {
- public:
-  explicit TwoWayCommunication(int testMode);
-  ~TwoWayCommunication();
+class TwoWayCommunication : public ACMTest
+{
+public:
+    explicit TwoWayCommunication(int testMode);
+    ~TwoWayCommunication();
 
-  void Perform();
- private:
-  void ChooseCodec(uint8_t* codecID_A, uint8_t* codecID_B);
-  void SetUp();
-  void SetUpAutotest();
+    void Perform();
+private:
+    void ChooseCodec(uint8_t* codecID_A, uint8_t* codecID_B);
+    void SetUp();
+    void SetUpAutotest();
 
-  std::unique_ptr<AudioCodingModule> _acmA;
-  std::unique_ptr<AudioCodingModule> _acmB;
+    std::unique_ptr<AudioCodingModule> _acmA;
+    std::unique_ptr<AudioCodingModule> _acmB;
 
-  std::unique_ptr<AudioCodingModule> _acmRefA;
-  std::unique_ptr<AudioCodingModule> _acmRefB;
+    std::unique_ptr<AudioCodingModule> _acmRefA;
+    std::unique_ptr<AudioCodingModule> _acmRefB;
 
-  Channel* _channel_A2B;
-  Channel* _channel_B2A;
+    Channel* _channel_A2B;
+    Channel* _channel_B2A;
 
-  Channel* _channelRef_A2B;
-  Channel* _channelRef_B2A;
+    Channel* _channelRef_A2B;
+    Channel* _channelRef_B2A;
 
-  PCMFile _inFileA;
-  PCMFile _inFileB;
+    PCMFile _inFileA;
+    PCMFile _inFileB;
 
-  PCMFile _outFileA;
-  PCMFile _outFileB;
+    PCMFile _outFileA;
+    PCMFile _outFileB;
 
-  PCMFile _outFileRefA;
-  PCMFile _outFileRefB;
+    PCMFile _outFileRefA;
+    PCMFile _outFileRefB;
 
-  int _testMode;
+    int _testMode;
 };
 
 }  // namespace webrtc

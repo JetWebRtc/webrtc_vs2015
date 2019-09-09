@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Oded Shimon <ods15@ods15.dyndns.org>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@ extern const uint8_t ff_vorbis_channel_layout_offsets[8][8];
 extern const uint8_t ff_vorbis_encoding_channel_layout_offsets[8][8];
 extern const uint64_t ff_vorbis_channel_layouts[9];
 
-typedef struct vorbis_floor1_entry {
+typedef struct vorbis_floor1_entry
+{
     uint16_t x;
     uint16_t sort;
     uint16_t low;

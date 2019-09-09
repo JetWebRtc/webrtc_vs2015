@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -45,10 +45,11 @@ typedef BOOL_CODER vp8_writer;
 /* Both of these return bits, not scaled bits. */
 
 static INLINE unsigned int vp8_cost_branch(const unsigned int ct[2],
-                                           vp8_prob p) {
-  /* Imitate existing calculation */
+        vp8_prob p)
+{
+    /* Imitate existing calculation */
 
-  return ((ct[0] * vp8_cost_zero(p)) + (ct[1] * vp8_cost_one(p))) >> 8;
+    return ((ct[0] * vp8_cost_zero(p)) + (ct[1] * vp8_cost_one(p))) >> 8;
 }
 
 /* Small functions to write explicit values and tokens, as well as
@@ -57,38 +58,46 @@ static INLINE unsigned int vp8_cost_branch(const unsigned int ct[2],
 static void vp8_treed_write(vp8_writer *const w, vp8_tree t,
                             const vp8_prob *const p, int v,
                             int n /* number of bits in v, assumed nonzero */
-                            ) {
-  vp8_tree_index i = 0;
+                           )
+{
+    vp8_tree_index i = 0;
 
-  do {
-    const int b = (v >> --n) & 1;
-    vp8_write(w, b, p[i >> 1]);
-    i = t[i + b];
-  } while (n);
+    do
+    {
+        const int b = (v >> --n) & 1;
+        vp8_write(w, b, p[i >> 1]);
+        i = t[i + b];
+    }
+    while (n);
 }
 static INLINE void vp8_write_token(vp8_writer *const w, vp8_tree t,
                                    const vp8_prob *const p,
-                                   vp8_token *const x) {
-  vp8_treed_write(w, t, p, x->value, x->Len);
+                                   vp8_token *const x)
+{
+    vp8_treed_write(w, t, p, x->value, x->Len);
 }
 
 static int vp8_treed_cost(vp8_tree t, const vp8_prob *const p, int v,
                           int n /* number of bits in v, assumed nonzero */
-                          ) {
-  int c = 0;
-  vp8_tree_index i = 0;
+                         )
+{
+    int c = 0;
+    vp8_tree_index i = 0;
 
-  do {
-    const int b = (v >> --n) & 1;
-    c += vp8_cost_bit(p[i >> 1], b);
-    i = t[i + b];
-  } while (n);
+    do
+    {
+        const int b = (v >> --n) & 1;
+        c += vp8_cost_bit(p[i >> 1], b);
+        i = t[i + b];
+    }
+    while (n);
 
-  return c;
+    return c;
 }
 static INLINE int vp8_cost_token(vp8_tree t, const vp8_prob *const p,
-                                 vp8_token *const x) {
-  return vp8_treed_cost(t, p, x->value, x->Len);
+                                 vp8_token *const x)
+{
+    return vp8_treed_cost(t, p, x->value, x->Len);
 }
 
 /* Fill array of costs for all possible token values. */

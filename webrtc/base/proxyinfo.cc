@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,14 +10,17 @@
 
 #include "webrtc/base/proxyinfo.h"
 
-namespace rtc {
+namespace rtc
+{
 
-const char * ProxyToString(ProxyType proxy) {
-  const char * const PROXY_NAMES[] = { "none", "https", "socks5", "unknown" };
-  return PROXY_NAMES[proxy];
+const char * ProxyToString(ProxyType proxy)
+{
+    const char * const PROXY_NAMES[] = { "none", "https", "socks5", "unknown" };
+    return PROXY_NAMES[proxy];
 }
 
-ProxyInfo::ProxyInfo() : type(PROXY_NONE), autodetect(false) {
+ProxyInfo::ProxyInfo() : type(PROXY_NONE), autodetect(false)
+{
 }
 ProxyInfo::~ProxyInfo() = default;
 

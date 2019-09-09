@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV based MPEG-2 encoder
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@
 #include "qsv_internal.h"
 #include "qsvenc.h"
 
-typedef struct QSVMpeg2EncContext {
+typedef struct QSVMpeg2EncContext
+{
     AVClass *class;
     QSVEncContext qsv;
 } QSVMpeg2EncContext;
@@ -62,7 +63,8 @@ static av_cold int qsv_enc_close(AVCodecContext *avctx)
 
 #define OFFSET(x) offsetof(QSVMpeg2EncContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "async_depth", "Maximum processing parallelism", OFFSET(qsv.async_depth), AV_OPT_TYPE_INT, { .i64 = ASYNC_DEPTH_DEFAULT }, 0, INT_MAX, VE },
     { "avbr_accuracy",    "Accuracy of the AVBR ratecontrol",    OFFSET(qsv.avbr_accuracy),    AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, VE },
     { "avbr_convergence", "Convergence of the AVBR ratecontrol", OFFSET(qsv.avbr_convergence), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, VE },
@@ -81,14 +83,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "mpeg2_qsv encoder",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-static const AVCodecDefault qsv_enc_defaults[] = {
+static const AVCodecDefault qsv_enc_defaults[] =
+{
     { "b",         "1M"    },
     { "refs",      "0"     },
     // same as the x264 default
@@ -99,7 +103,8 @@ static const AVCodecDefault qsv_enc_defaults[] = {
     { NULL },
 };
 
-AVCodec ff_mpeg2_qsv_encoder = {
+AVCodec ff_mpeg2_qsv_encoder =
+{
     .name           = "mpeg2_qsv",
     .long_name      = NULL_IF_CONFIG_SMALL("MPEG-2 video (Intel Quick Sync Video acceleration)"),
     .priv_data_size = sizeof(QSVMpeg2EncContext),
@@ -109,9 +114,11 @@ AVCodec ff_mpeg2_qsv_encoder = {
     .encode2        = qsv_enc_frame,
     .close          = qsv_enc_close,
     .capabilities   = AV_CODEC_CAP_DELAY,
-    .pix_fmts       = (const enum AVPixelFormat[]){ AV_PIX_FMT_NV12,
-                                                    AV_PIX_FMT_QSV,
-                                                    AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]){
+        AV_PIX_FMT_NV12,
+        AV_PIX_FMT_QSV,
+        AV_PIX_FMT_NONE
+    },
     .priv_class     = &class,
     .defaults       = qsv_enc_defaults,
 };

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MJPEG encoder
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
@@ -46,12 +46,14 @@ static av_cold void init_uni_ac_vlc(const uint8_t huff_size_ac[256], uint8_t *un
 {
     int i;
 
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < 128; i++)
+    {
         int level = i - 64;
         int run;
         if (!level)
             continue;
-        for (run = 0; run < 64; run++) {
+        for (run = 0; run < 64; run++)
+        {
             int len, code, nbits;
             int alevel = FFABS(level);
 
@@ -72,7 +74,8 @@ av_cold int ff_mjpeg_encode_init(MpegEncContext *s)
 {
     MJpegContext *m;
 
-    if (s->width > 65500 || s->height > 65500) {
+    if (s->width > 65500 || s->height > 65500)
+    {
         av_log(s, AV_LOG_ERROR, "JPEG does not support resolutions above 65500x65500\n");
         return AVERROR(EINVAL);
     }
@@ -105,9 +108,9 @@ av_cold int ff_mjpeg_encode_init(MpegEncContext *s)
     init_uni_ac_vlc(m->huff_size_ac_luminance,   uni_ac_vlc_len);
     init_uni_ac_vlc(m->huff_size_ac_chrominance, uni_chroma_ac_vlc_len);
     s->intra_ac_vlc_length      =
-    s->intra_ac_vlc_last_length = uni_ac_vlc_len;
+        s->intra_ac_vlc_last_length = uni_ac_vlc_len;
     s->intra_chroma_ac_vlc_length      =
-    s->intra_chroma_ac_vlc_last_length = uni_chroma_ac_vlc_len;
+        s->intra_chroma_ac_vlc_last_length = uni_chroma_ac_vlc_len;
 
     s->mjpeg_ctx = m;
     return 0;
@@ -130,11 +133,14 @@ static void encode_block(MpegEncContext *s, int16_t *block, int n)
     component = (n <= 3 ? 0 : (n&1) + 1);
     dc = block[0]; /* overflow is impossible */
     val = dc - s->last_dc[component];
-    if (n < 4) {
+    if (n < 4)
+    {
         ff_mjpeg_encode_dc(&s->pb, val, m->huff_size_dc_luminance, m->huff_code_dc_luminance);
         huff_size_ac = m->huff_size_ac_luminance;
         huff_code_ac = m->huff_code_ac_luminance;
-    } else {
+    }
+    else
+    {
         ff_mjpeg_encode_dc(&s->pb, val, m->huff_size_dc_chrominance, m->huff_code_dc_chrominance);
         huff_size_ac = m->huff_size_ac_chrominance;
         huff_code_ac = m->huff_code_ac_chrominance;
@@ -145,18 +151,24 @@ static void encode_block(MpegEncContext *s, int16_t *block, int n)
 
     run = 0;
     last_index = s->block_last_index[n];
-    for(i=1;i<=last_index;i++) {
+    for(i=1; i<=last_index; i++)
+    {
         j = s->intra_scantable.permutated[i];
         val = block[j];
-        if (val == 0) {
+        if (val == 0)
+        {
             run++;
-        } else {
-            while (run >= 16) {
+        }
+        else
+        {
+            while (run >= 16)
+            {
                 put_bits(&s->pb, huff_size_ac[0xf0], huff_code_ac[0xf0]);
                 run -= 16;
             }
             mant = val;
-            if (val < 0) {
+            if (val < 0)
+            {
                 val = -val;
                 mant--;
             }
@@ -179,7 +191,8 @@ static void encode_block(MpegEncContext *s, int16_t *block, int n)
 void ff_mjpeg_encode_mb(MpegEncContext *s, int16_t block[12][64])
 {
     int i;
-    if (s->chroma_format == CHROMA_444) {
+    if (s->chroma_format == CHROMA_444)
+    {
         encode_block(s, block[0], 0);
         encode_block(s, block[2], 2);
         encode_block(s, block[4], 4);
@@ -187,7 +200,8 @@ void ff_mjpeg_encode_mb(MpegEncContext *s, int16_t block[12][64])
         encode_block(s, block[5], 5);
         encode_block(s, block[9], 9);
 
-        if (16*s->mb_x+8 < s->width) {
+        if (16*s->mb_x+8 < s->width)
+        {
             encode_block(s, block[1], 1);
             encode_block(s, block[3], 3);
             encode_block(s, block[6], 6);
@@ -195,13 +209,19 @@ void ff_mjpeg_encode_mb(MpegEncContext *s, int16_t block[12][64])
             encode_block(s, block[7], 7);
             encode_block(s, block[11], 11);
         }
-    } else {
-        for(i=0;i<5;i++) {
+    }
+    else
+    {
+        for(i=0; i<5; i++)
+        {
             encode_block(s, block[i], i);
         }
-        if (s->chroma_format == CHROMA_420) {
+        if (s->chroma_format == CHROMA_420)
+        {
             encode_block(s, block[5], 5);
-        } else {
+        }
+        else
+        {
             encode_block(s, block[6], 6);
             encode_block(s, block[5], 5);
             encode_block(s, block[7], 7);
@@ -230,7 +250,8 @@ static int amv_encode_picture(AVCodecContext *avctx, AVPacket *pkt,
         return AVERROR(EINVAL);
 #endif
 
-    if ((avctx->height & 15) && avctx->strict_std_compliance > FF_COMPLIANCE_UNOFFICIAL) {
+    if ((avctx->height & 15) && avctx->strict_std_compliance > FF_COMPLIANCE_UNOFFICIAL)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Heights which are not a multiple of 16 might fail with some decoders, "
                "use vstrict=-1 / -strict -1 to use %d anyway.\n", avctx->height);
@@ -243,7 +264,8 @@ static int amv_encode_picture(AVCodecContext *avctx, AVPacket *pkt,
     if (!pic)
         return AVERROR(ENOMEM);
     //picture should be flipped upside-down
-    for(i=0; i < 3; i++) {
+    for(i=0; i < 3; i++)
+    {
         int vsample = i ? 2 >> chroma_v_shift : 2;
         pic->data[i] += pic->linesize[i] * (vsample * s->height / V_MAX - 1);
         pic->linesize[i] *= -1;
@@ -255,14 +277,16 @@ static int amv_encode_picture(AVCodecContext *avctx, AVPacket *pkt,
 
 #if CONFIG_MJPEG_ENCODER
 
-static const AVClass mjpeg_class = {
+static const AVClass mjpeg_class =
+{
     .class_name = "mjpeg encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_mjpeg_encoder = {
+AVCodec ff_mjpeg_encoder =
+{
     .name           = "mjpeg",
     .long_name      = NULL_IF_CONFIG_SMALL("MJPEG (Motion JPEG)"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -279,14 +303,16 @@ AVCodec ff_mjpeg_encoder = {
 };
 #endif
 #if CONFIG_AMV_ENCODER
-static const AVClass amv_class = {
+static const AVClass amv_class =
+{
     .class_name = "amv encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_amv_encoder = {
+AVCodec ff_amv_encoder =
+{
     .name           = "amv",
     .long_name      = NULL_IF_CONFIG_SMALL("AMV Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

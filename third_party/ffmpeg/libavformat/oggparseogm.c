@@ -47,21 +47,27 @@ ogm_header(AVFormatContext *s, int idx)
     if (!(bytestream2_peek_byte(&p) & 1))
         return 0;
 
-    if (bytestream2_peek_byte(&p) == 1) {
+    if (bytestream2_peek_byte(&p) == 1)
+    {
         bytestream2_skip(&p, 1);
 
-        if (bytestream2_peek_byte(&p) == 'v'){
+        if (bytestream2_peek_byte(&p) == 'v')
+        {
             int tag;
             st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
             bytestream2_skip(&p, 8);
             tag = bytestream2_get_le32(&p);
             st->codec->codec_id = ff_codec_get_id(ff_codec_bmp_tags, tag);
             st->codec->codec_tag = tag;
-        } else if (bytestream2_peek_byte(&p) == 't') {
+        }
+        else if (bytestream2_peek_byte(&p) == 't')
+        {
             st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
             st->codec->codec_id = AV_CODEC_ID_TEXT;
             bytestream2_skip(&p, 12);
-        } else {
+        }
+        else
+        {
             uint8_t acid[5] = { 0 };
             int cid;
             st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
@@ -79,7 +85,8 @@ ogm_header(AVFormatContext *s, int idx)
         size        = FFMIN(size, os->psize);
         time_unit   = bytestream2_get_le64(&p);
         spu         = bytestream2_get_le64(&p);
-        if (!time_unit || !spu) {
+        if (!time_unit || !spu)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid timing values.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -87,28 +94,35 @@ ogm_header(AVFormatContext *s, int idx)
         bytestream2_skip(&p, 4);    /* default_len */
         bytestream2_skip(&p, 8);    /* buffersize + bits_per_sample */
 
-        if(st->codec->codec_type == AVMEDIA_TYPE_VIDEO){
+        if(st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
             st->codec->width = bytestream2_get_le32(&p);
             st->codec->height = bytestream2_get_le32(&p);
             avpriv_set_pts_info(st, 64, time_unit, spu * 10000000);
-        } else {
+        }
+        else
+        {
             st->codec->channels = bytestream2_get_le16(&p);
             bytestream2_skip(&p, 2); /* block_align */
             st->codec->bit_rate = bytestream2_get_le32(&p) * 8;
             st->codec->sample_rate = spu * 10000000 / time_unit;
             avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
-            if (size >= 56 && st->codec->codec_id == AV_CODEC_ID_AAC) {
+            if (size >= 56 && st->codec->codec_id == AV_CODEC_ID_AAC)
+            {
                 bytestream2_skip(&p, 4);
                 size -= 4;
             }
-            if (size > 52) {
+            if (size > 52)
+            {
                 av_assert0(AV_INPUT_BUFFER_PADDING_SIZE <= 52);
                 size -= 52;
                 ff_alloc_extradata(st->codec, size);
                 bytestream2_get_buffer(&p, st->codec->extradata, st->codec->extradata_size);
             }
         }
-    } else if (bytestream2_peek_byte(&p) == 3) {
+    }
+    else if (bytestream2_peek_byte(&p) == 3)
+    {
         bytestream2_skip(&p, 7);
         if (bytestream2_get_bytes_left(&p) > 1)
             ff_vorbis_stream_comment(s, st, p.buffer, bytestream2_get_bytes_left(&p) - 1);
@@ -135,7 +149,8 @@ ogm_dshow_header(AVFormatContext *s, int idx)
         return AVERROR_INVALIDDATA;
     t = AV_RL32(p + 96);
 
-    if(t == 0x05589f80){
+    if(t == 0x05589f80)
+    {
         if (os->psize < 184)
             return AVERROR_INVALIDDATA;
 
@@ -144,7 +159,9 @@ ogm_dshow_header(AVFormatContext *s, int idx)
         avpriv_set_pts_info(st, 64, AV_RL64(p + 164), 10000000);
         st->codec->width = AV_RL32(p + 176);
         st->codec->height = AV_RL32(p + 180);
-    } else if(t == 0x05589f81){
+    }
+    else if(t == 0x05589f81)
+    {
         if (os->psize < 136)
             return AVERROR_INVALIDDATA;
 
@@ -179,7 +196,8 @@ ogm_packet(AVFormatContext *s, int idx)
     return 0;
 }
 
-const struct ogg_codec ff_ogm_video_codec = {
+const struct ogg_codec ff_ogm_video_codec =
+{
     .magic = "\001video",
     .magicsize = 6,
     .header = ogm_header,
@@ -188,7 +206,8 @@ const struct ogg_codec ff_ogm_video_codec = {
     .nb_header = 2,
 };
 
-const struct ogg_codec ff_ogm_audio_codec = {
+const struct ogg_codec ff_ogm_audio_codec =
+{
     .magic = "\001audio",
     .magicsize = 6,
     .header = ogm_header,
@@ -197,7 +216,8 @@ const struct ogg_codec ff_ogm_audio_codec = {
     .nb_header = 2,
 };
 
-const struct ogg_codec ff_ogm_text_codec = {
+const struct ogg_codec ff_ogm_text_codec =
+{
     .magic = "\001text",
     .magicsize = 5,
     .header = ogm_header,
@@ -206,7 +226,8 @@ const struct ogg_codec ff_ogm_text_codec = {
     .nb_header = 2,
 };
 
-const struct ogg_codec ff_ogm_old_codec = {
+const struct ogg_codec ff_ogm_old_codec =
+{
     .magic = "\001Direct Show Samples embedded in Ogg",
     .magicsize = 35,
     .header = ogm_dshow_header,

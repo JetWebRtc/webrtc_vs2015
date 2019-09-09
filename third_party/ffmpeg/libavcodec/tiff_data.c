@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TIFF data tables
  * Copyright (c) 2011 Thomas Kuehnel
  *
@@ -29,13 +29,15 @@
 
 #include "tiff_data.h"
 
-const TiffGeoTagNameType ff_tiff_conf_name_type_map[] = {
+const TiffGeoTagNameType ff_tiff_conf_name_type_map[] =
+{
     {"GTModelTypeGeoKey",              GEOTIFF_SHORT },
     {"GTRasterTypeGeoKey",             GEOTIFF_SHORT },
     {"GTCitationGeoKey",               GEOTIFF_STRING}
 };
 
-const TiffGeoTagNameType ff_tiff_geog_name_type_map[] = {
+const TiffGeoTagNameType ff_tiff_geog_name_type_map[] =
+{
     {"GeographicTypeGeoKey",           GEOTIFF_SHORT },
     {"GeogCitationGeoKey",             GEOTIFF_STRING},
     {"GeogGeodeticDatumGeoKey",        GEOTIFF_SHORT },
@@ -52,7 +54,8 @@ const TiffGeoTagNameType ff_tiff_geog_name_type_map[] = {
     {"GeogPrimeMeridianLongGeoKey",    GEOTIFF_DOUBLE}
 };
 
-const TiffGeoTagNameType ff_tiff_proj_name_type_map[] = {
+const TiffGeoTagNameType ff_tiff_proj_name_type_map[] =
+{
     {"ProjectedCSTypeGeoKey",          GEOTIFF_SHORT },
     {"PCSCitationGeoKey",              GEOTIFF_STRING},
     {"ProjectionGeoKey",               GEOTIFF_SHORT },
@@ -79,25 +82,29 @@ const TiffGeoTagNameType ff_tiff_proj_name_type_map[] = {
     {"ProjStraightVertPoleLongGeoKey", GEOTIFF_DOUBLE}
 };
 
-const TiffGeoTagNameType ff_tiff_vert_name_type_map[] = {
+const TiffGeoTagNameType ff_tiff_vert_name_type_map[] =
+{
     {"VerticalCSTypeGeoKey",           GEOTIFF_SHORT },
     {"VerticalCitationGeoKey",         GEOTIFF_STRING},
     {"VerticalDatumGeoKey",            GEOTIFF_SHORT },
     {"VerticalUnitsGeoKey",            GEOTIFF_SHORT }
 };
 
-const char *const ff_tiff_gt_model_type_codes[] = {
+const char *const ff_tiff_gt_model_type_codes[] =
+{
     "ModelTypeProjected",
     "ModelTypeGeographic",
     "ModelTypeGeocentric"
 };
 
-const char *const ff_tiff_gt_raster_type_codes[] = {
+const char *const ff_tiff_gt_raster_type_codes[] =
+{
     "RasterPixelIsArea",
     "RasterPixelIsPoint"
 };
 
-const char *const ff_tiff_linear_unit_codes[] = {
+const char *const ff_tiff_linear_unit_codes[] =
+{
     "Linear_Meter",
     "Linear_Foot",
     "Linear_Foot_US_Survey",
@@ -115,7 +122,8 @@ const char *const ff_tiff_linear_unit_codes[] = {
     "Linear_Mile_International_Nautical"
 };
 
-const char *const ff_tiff_angular_unit_codes[] = {
+const char *const ff_tiff_angular_unit_codes[] =
+{
     "Angular_Radian",
     "Angular_Degree",
     "Angular_Arc_Minute",
@@ -126,7 +134,8 @@ const char *const ff_tiff_angular_unit_codes[] = {
     "Angular_DMS_Hemisphere"
 };
 
-const char *const ff_tiff_gcs_type_codes[] = {
+const char *const ff_tiff_gcs_type_codes[] =
+{
     "GCS_Adindan",
     "GCS_AGD66",
     "GCS_AGD84",
@@ -262,7 +271,8 @@ const char *const ff_tiff_gcs_type_codes[] = {
     "GCS_NDG_Paris"
 };
 
-const char *const ff_tiff_gcse_type_codes[] = {
+const char *const ff_tiff_gcse_type_codes[] =
+{
     "GCSE_Airy1830",
     "GCSE_AiryModified1849",
     "GCSE_AustralianNationalSpheroid",
@@ -300,7 +310,8 @@ const char *const ff_tiff_gcse_type_codes[] = {
     "GCSE_Sphere"
 };
 
-const char *const ff_tiff_geodetic_datum_codes[] = {
+const char *const ff_tiff_geodetic_datum_codes[] =
+{
     "Datum_Adindan",
     "Datum_Australian_Geodetic_Datum_1966",
     "Datum_Australian_Geodetic_Datum_1984",
@@ -423,7 +434,8 @@ const char *const ff_tiff_geodetic_datum_codes[] = {
     "Datum_Nord_de_Guerre"
 };
 
-const char *const ff_tiff_geodetic_datum_e_codes[] = {
+const char *const ff_tiff_geodetic_datum_e_codes[] =
+{
     "DatumE_Airy1830",
     "DatumE_AiryModified1849",
     "DatumE_AustralianNationalSpheroid",
@@ -461,7 +473,8 @@ const char *const ff_tiff_geodetic_datum_e_codes[] = {
     "DatumE_Sphere"
 };
 
-const char *const ff_tiff_ellipsoid_codes[] = {
+const char *const ff_tiff_ellipsoid_codes[] =
+{
     "Ellipse_Airy_1830",
     "Ellipse_Airy_Modified_1849",
     "Ellipse_Australian_National_Spheroid",
@@ -499,7 +512,8 @@ const char *const ff_tiff_ellipsoid_codes[] = {
     "Ellipse_Sphere"
 };
 
-const char *const ff_tiff_prime_meridian_codes[] = {
+const char *const ff_tiff_prime_meridian_codes[] =
+{
     "PM_Greenwich",
     "PM_Lisbon",
     "PM_Paris",
@@ -513,7 +527,8 @@ const char *const ff_tiff_prime_meridian_codes[] = {
     "PM_Stockholm"
 };
 
-const TiffGeoTagKeyName ff_tiff_proj_cs_type_codes[] = {
+const TiffGeoTagKeyName ff_tiff_proj_cs_type_codes[] =
+{
     {20137, "PCS_Adindan_UTM_zone_37N"},
     {20138, "PCS_Adindan_UTM_zone_38N"},
     {20248, "PCS_AGD66_AMG_zone_48"},
@@ -1494,7 +1509,8 @@ const TiffGeoTagKeyName ff_tiff_proj_cs_type_codes[] = {
     {32760, "PCS_WGS84_UTM_zone_60S"}
 };
 
-const TiffGeoTagKeyName ff_tiff_projection_codes[] = {
+const TiffGeoTagKeyName ff_tiff_projection_codes[] =
+{
     {10101, "Proj_Alabama_CS27_East"},
     {10102, "Proj_Alabama_CS27_West"},
     {10131, "Proj_Alabama_CS83_East"},
@@ -1795,7 +1811,8 @@ const TiffGeoTagKeyName ff_tiff_projection_codes[] = {
     {19912, "Proj_RSO_Borneo"}
 };
 
-const char *const ff_tiff_coord_trans_codes[] = {
+const char *const ff_tiff_coord_trans_codes[] =
+{
     "CT_TransverseMercator",
     "CT_TransvMercator_Modified_Alaska",
     "CT_ObliqueMercator",
@@ -1825,7 +1842,8 @@ const char *const ff_tiff_coord_trans_codes[] = {
     "CT_TransvMercator_SouthOriented"
 };
 
-const char *const ff_tiff_vert_cs_codes[] = {
+const char *const ff_tiff_vert_cs_codes[] =
+{
     "VertCS_Airy_1830_ellipsoid",
     "VertCS_Airy_Modified_1849_ellipsoid",
     "VertCS_ANS_ellipsoid",
@@ -1860,7 +1878,8 @@ const char *const ff_tiff_vert_cs_codes[] = {
     "VertCS_OSU91A_ellipsoid"
 };
 
-const char *const ff_tiff_ortho_vert_cs_codes[] = {
+const char *const ff_tiff_ortho_vert_cs_codes[] =
+{
     "VertCS_Newlyn",
     "VertCS_North_American_Vertical_Datum_1929",
     "VertCS_North_American_Vertical_Datum_1988",

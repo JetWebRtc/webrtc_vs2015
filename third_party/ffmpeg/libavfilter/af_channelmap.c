@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Google, Inc.
  *
  * This file is part of FFmpeg.
@@ -37,14 +37,16 @@
 #include "formats.h"
 #include "internal.h"
 
-struct ChannelMap {
+struct ChannelMap
+{
     uint64_t in_channel;
     uint64_t out_channel;
     int in_channel_idx;
     int out_channel_idx;
 };
 
-enum MappingMode {
+enum MappingMode
+{
     MAP_NONE,
     MAP_ONE_INT,
     MAP_ONE_STR,
@@ -55,7 +57,8 @@ enum MappingMode {
 };
 
 #define MAX_CH 64
-typedef struct ChannelMapContext {
+typedef struct ChannelMapContext
+{
     const AVClass *class;
     char *mapping_str;
     char *channel_layout_str;
@@ -68,20 +71,26 @@ typedef struct ChannelMapContext {
 #define OFFSET(x) offsetof(ChannelMapContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM
 #define F AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption channelmap_options[] = {
-    { "map", "A comma-separated list of input channel numbers in output order.",
-          OFFSET(mapping_str),        AV_OPT_TYPE_STRING, .flags = A|F },
-    { "channel_layout", "Output channel layout.",
-          OFFSET(channel_layout_str), AV_OPT_TYPE_STRING, .flags = A|F },
+static const AVOption channelmap_options[] =
+{
+    {
+        "map", "A comma-separated list of input channel numbers in output order.",
+        OFFSET(mapping_str),        AV_OPT_TYPE_STRING, .flags = A|F
+    },
+    {
+        "channel_layout", "Output channel layout.",
+        OFFSET(channel_layout_str), AV_OPT_TYPE_STRING, .flags = A|F
+    },
     { NULL }
 };
 
 AVFILTER_DEFINE_CLASS(channelmap);
 
-static char* split(char *message, char delim) {
+static char* split(char *message, char delim)
+{
     char *next = strchr(message, delim);
     if (next)
-      *next++ = '\0';
+        *next++ = '\0';
     return next;
 }
 
@@ -129,28 +138,37 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
 
     mapping = s->mapping_str;
 
-    if (!mapping) {
+    if (!mapping)
+    {
         mode = MAP_NONE;
-    } else {
+    }
+    else
+    {
         char *dash = strchr(mapping, '-');
-        if (!dash) {  // short mapping
+        if (!dash)    // short mapping
+        {
             if (av_isdigit(*mapping))
                 mode = MAP_ONE_INT;
             else
                 mode = MAP_ONE_STR;
-        } else if (av_isdigit(*mapping)) {
+        }
+        else if (av_isdigit(*mapping))
+        {
             if (av_isdigit(*(dash+1)))
                 mode = MAP_PAIR_INT_INT;
             else
                 mode = MAP_PAIR_INT_STR;
-        } else {
+        }
+        else
+        {
             if (av_isdigit(*(dash+1)))
                 mode = MAP_PAIR_STR_INT;
             else
                 mode = MAP_PAIR_STR_STR;
         }
 #if FF_API_OLD_FILTER_OPTS
-        if (strchr(mapping, ',')) {
+        if (strchr(mapping, ','))
+        {
             av_log(ctx, AV_LOG_WARNING, "This syntax is deprecated, use "
                    "'|' to separate the mappings.\n");
             separator = ',';
@@ -158,27 +176,33 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
 #endif
     }
 
-    if (mode != MAP_NONE) {
+    if (mode != MAP_NONE)
+    {
         char *sep = mapping;
         map_entries = 1;
-        while ((sep = strchr(sep, separator))) {
+        while ((sep = strchr(sep, separator)))
+        {
             if (*++sep)  // Allow trailing comma
                 map_entries++;
         }
     }
 
-    if (map_entries > MAX_CH) {
+    if (map_entries > MAX_CH)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too many channels mapped: '%d'.\n", map_entries);
         return AVERROR(EINVAL);
     }
 
-    for (i = 0; i < map_entries; i++) {
+    for (i = 0; i < map_entries; i++)
+    {
         int in_ch_idx = -1, out_ch_idx = -1;
         uint64_t in_ch = 0, out_ch = 0;
         static const char err[] = "Failed to parse channel map\n";
-        switch (mode) {
+        switch (mode)
+        {
         case MAP_ONE_INT:
-            if (get_channel_idx(&mapping, &in_ch_idx, separator, MAX_CH) < 0) {
+            if (get_channel_idx(&mapping, &in_ch_idx, separator, MAX_CH) < 0)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -186,7 +210,8 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
             s->map[i].out_channel_idx = i;
             break;
         case MAP_ONE_STR:
-            if (get_channel(&mapping, &in_ch, separator) < 0) {
+            if (get_channel(&mapping, &in_ch, separator) < 0)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -195,7 +220,8 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
             break;
         case MAP_PAIR_INT_INT:
             if (get_channel_idx(&mapping, &in_ch_idx, '-', MAX_CH) < 0 ||
-                get_channel_idx(&mapping, &out_ch_idx, separator, MAX_CH) < 0) {
+                    get_channel_idx(&mapping, &out_ch_idx, separator, MAX_CH) < 0)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -204,8 +230,9 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
             break;
         case MAP_PAIR_INT_STR:
             if (get_channel_idx(&mapping, &in_ch_idx, '-', MAX_CH) < 0 ||
-                get_channel(&mapping, &out_ch, separator) < 0 ||
-                out_ch & out_ch_mask) {
+                    get_channel(&mapping, &out_ch, separator) < 0 ||
+                    out_ch & out_ch_mask)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -215,7 +242,8 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
             break;
         case MAP_PAIR_STR_INT:
             if (get_channel(&mapping, &in_ch, '-') < 0 ||
-                get_channel_idx(&mapping, &out_ch_idx, separator, MAX_CH) < 0) {
+                    get_channel_idx(&mapping, &out_ch_idx, separator, MAX_CH) < 0)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -224,8 +252,9 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
             break;
         case MAP_PAIR_STR_STR:
             if (get_channel(&mapping, &in_ch, '-') < 0 ||
-                get_channel(&mapping, &out_ch, separator) < 0 ||
-                out_ch & out_ch_mask) {
+                    get_channel(&mapping, &out_ch, separator) < 0 ||
+                    out_ch & out_ch_mask)
+            {
                 av_log(ctx, AV_LOG_ERROR, err);
                 return AVERROR(EINVAL);
             }
@@ -240,27 +269,35 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
     s->output_layout = out_ch_mask ? out_ch_mask :
                        av_get_default_channel_layout(map_entries);
 
-    if (s->channel_layout_str) {
+    if (s->channel_layout_str)
+    {
         uint64_t fmt;
-        if ((fmt = av_get_channel_layout(s->channel_layout_str)) == 0) {
+        if ((fmt = av_get_channel_layout(s->channel_layout_str)) == 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "Error parsing channel layout: '%s'.\n",
                    s->channel_layout_str);
             return AVERROR(EINVAL);
         }
-        if (mode == MAP_NONE) {
+        if (mode == MAP_NONE)
+        {
             int i;
             s->nch = av_get_channel_layout_nb_channels(fmt);
-            for (i = 0; i < s->nch; i++) {
+            for (i = 0; i < s->nch; i++)
+            {
                 s->map[i].in_channel_idx  = i;
                 s->map[i].out_channel_idx = i;
             }
-        } else if (out_ch_mask && out_ch_mask != fmt) {
+        }
+        else if (out_ch_mask && out_ch_mask != fmt)
+        {
             av_get_channel_layout_string(buf, sizeof(buf), 0, out_ch_mask);
             av_log(ctx, AV_LOG_ERROR,
                    "Output channel layout '%s' does not match the list of channel mapped: '%s'.\n",
                    s->channel_layout_str, buf);
             return AVERROR(EINVAL);
-        } else if (s->nch != av_get_channel_layout_nb_channels(fmt)) {
+        }
+        else if (s->nch != av_get_channel_layout_nb_channels(fmt))
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Output channel layout %s does not match the number of channels mapped %d.\n",
                    s->channel_layout_str, s->nch);
@@ -268,16 +305,19 @@ static av_cold int channelmap_init(AVFilterContext *ctx)
         }
         s->output_layout = fmt;
     }
-    if (!s->output_layout) {
+    if (!s->output_layout)
+    {
         av_log(ctx, AV_LOG_ERROR, "Output channel layout is not set and "
                "cannot be guessed from the maps.\n");
         return AVERROR(EINVAL);
     }
 
-    if (mode == MAP_PAIR_INT_STR || mode == MAP_PAIR_STR_STR) {
-        for (i = 0; i < s->nch; i++) {
+    if (mode == MAP_PAIR_INT_STR || mode == MAP_PAIR_STR_STR)
+    {
+        for (i = 0; i < s->nch; i++)
+        {
             s->map[i].out_channel_idx = av_get_channel_layout_channel_index(
-                s->output_layout, s->map[i].out_channel);
+                                            s->output_layout, s->map[i].out_channel);
         }
     }
 
@@ -318,34 +358,43 @@ static int channelmap_filter_frame(AVFilterLink *inlink, AVFrame *buf)
     memcpy(source_planes, buf->extended_data,
            nch_in * sizeof(source_planes[0]));
 
-    if (nch_out > nch_in) {
-        if (nch_out > FF_ARRAY_ELEMS(buf->data)) {
+    if (nch_out > nch_in)
+    {
+        if (nch_out > FF_ARRAY_ELEMS(buf->data))
+        {
             uint8_t **new_extended_data =
                 av_mallocz_array(nch_out, sizeof(*buf->extended_data));
-            if (!new_extended_data) {
+            if (!new_extended_data)
+            {
                 av_frame_free(&buf);
                 return AVERROR(ENOMEM);
             }
-            if (buf->extended_data == buf->data) {
+            if (buf->extended_data == buf->data)
+            {
                 buf->extended_data = new_extended_data;
-            } else {
+            }
+            else
+            {
                 av_free(buf->extended_data);
                 buf->extended_data = new_extended_data;
             }
-        } else if (buf->extended_data != buf->data) {
+        }
+        else if (buf->extended_data != buf->data)
+        {
             av_free(buf->extended_data);
             buf->extended_data = buf->data;
         }
     }
 
-    for (ch = 0; ch < nch_out; ch++) {
+    for (ch = 0; ch < nch_out; ch++)
+    {
         buf->extended_data[s->map[ch].out_channel_idx] =
             source_planes[s->map[ch].in_channel_idx];
     }
 
     if (buf->data != buf->extended_data)
         memcpy(buf->data, buf->extended_data,
-           FFMIN(FF_ARRAY_ELEMS(buf->data), nch_out) * sizeof(buf->data[0]));
+               FFMIN(FF_ARRAY_ELEMS(buf->data), nch_out) * sizeof(buf->data[0]));
 
     buf->channel_layout = outlink->channel_layout;
     av_frame_set_channels(buf, outlink->channels);
@@ -362,23 +411,29 @@ static int channelmap_config_input(AVFilterLink *inlink)
     const char *channel_name;
     char layout_name[256];
 
-    for (i = 0; i < s->nch; i++) {
+    for (i = 0; i < s->nch; i++)
+    {
         struct ChannelMap *m = &s->map[i];
 
-        if (s->mode == MAP_PAIR_STR_INT || s->mode == MAP_PAIR_STR_STR) {
+        if (s->mode == MAP_PAIR_STR_INT || s->mode == MAP_PAIR_STR_STR)
+        {
             m->in_channel_idx = av_get_channel_layout_channel_index(
-                inlink->channel_layout, m->in_channel);
+                                    inlink->channel_layout, m->in_channel);
         }
 
-        if (m->in_channel_idx < 0 || m->in_channel_idx >= nb_channels) {
+        if (m->in_channel_idx < 0 || m->in_channel_idx >= nb_channels)
+        {
             av_get_channel_layout_string(layout_name, sizeof(layout_name),
                                          0, inlink->channel_layout);
-            if (m->in_channel) {
+            if (m->in_channel)
+            {
                 channel_name = av_get_channel_name(m->in_channel);
                 av_log(ctx, AV_LOG_ERROR,
                        "input channel '%s' not available from input layout '%s'\n",
                        channel_name, layout_name);
-            } else {
+            }
+            else
+            {
                 av_log(ctx, AV_LOG_ERROR,
                        "input channel #%d not available from input layout '%s'\n",
                        m->in_channel_idx, layout_name);
@@ -390,7 +445,8 @@ static int channelmap_config_input(AVFilterLink *inlink)
     return err;
 }
 
-static const AVFilterPad avfilter_af_channelmap_inputs[] = {
+static const AVFilterPad avfilter_af_channelmap_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -401,7 +457,8 @@ static const AVFilterPad avfilter_af_channelmap_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_channelmap_outputs[] = {
+static const AVFilterPad avfilter_af_channelmap_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO
@@ -409,7 +466,8 @@ static const AVFilterPad avfilter_af_channelmap_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_channelmap = {
+AVFilter ff_af_channelmap =
+{
     .name          = "channelmap",
     .description   = NULL_IF_CONFIG_SMALL("Remap audio channels."),
     .init          = channelmap_init,

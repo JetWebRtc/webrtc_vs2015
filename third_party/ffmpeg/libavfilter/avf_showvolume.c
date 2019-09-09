@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "video.h"
 #include "internal.h"
 
-typedef struct ShowVolumeContext {
+typedef struct ShowVolumeContext
+{
     const AVClass *class;
     int w, h;
     int f, b;
@@ -45,7 +46,8 @@ typedef struct ShowVolumeContext {
 #define OFFSET(x) offsetof(ShowVolumeContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption showvolume_options[] = {
+static const AVOption showvolume_options[] =
+{
     { "rate", "set video rate",  OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str="25"}, 0, 0, FLAGS },
     { "r",    "set video rate",  OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str="25"}, 0, 0, FLAGS },
     { "b", "set border width",   OFFSET(b), AV_OPT_TYPE_INT, {.i64=1}, 0, 5, FLAGS },
@@ -67,7 +69,8 @@ static av_cold int init(AVFilterContext *ctx)
     ShowVolumeContext *s = ctx->priv;
     int ret;
 
-    if (s->color) {
+    if (s->color)
+    {
         ret = av_expr_parse(&s->c_expr, s->color, var_names,
                             NULL, NULL, NULL, NULL, 0, ctx);
         if (ret < 0)
@@ -117,8 +120,8 @@ static int config_input(AVFilterLink *inlink)
 
     nb_samples = FFMAX(1024, ((double)inlink->sample_rate / av_q2d(s->frame_rate)) + 0.5);
     inlink->partial_buf_size =
-    inlink->min_samples =
-    inlink->max_samples = nb_samples;
+        inlink->min_samples =
+            inlink->max_samples = nb_samples;
 
     return 0;
 }
@@ -130,7 +133,10 @@ static int config_output(AVFilterLink *outlink)
 
     outlink->w = s->w;
     outlink->h = s->h * inlink->channels + (inlink->channels - 1) * s->b;
-    outlink->sample_aspect_ratio = (AVRational){1,1};
+    outlink->sample_aspect_ratio = (AVRational)
+    {
+        1,1
+    };
     outlink->frame_rate = s->frame_rate;
 
     return 0;
@@ -144,12 +150,15 @@ static void drawtext(AVFrame *pic, int x, int y, const char *txt)
 
     font = avpriv_cga_font,   font_height =  8;
 
-    for (i = 0; txt[i]; i++) {
+    for (i = 0; txt[i]; i++)
+    {
         int char_y, mask;
         uint8_t *p = pic->data[0] + y*pic->linesize[0] + (x + i*8)*4;
 
-        for (char_y = 0; char_y < font_height; char_y++) {
-            for (mask = 0x80; mask; mask >>= 1) {
+        for (char_y = 0; char_y < font_height; char_y++)
+        {
+            for (mask = 0x80; mask; mask >>= 1)
+            {
                 if (font[txt[i] * font_height + char_y] & mask)
                     AV_WN32(p, ~AV_RN32(p));
                 p += 4;
@@ -168,10 +177,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     double values[VAR_VARS_NB];
 
     if (!s->out || s->out->width  != outlink->w ||
-                   s->out->height != outlink->h) {
+            s->out->height != outlink->h)
+    {
         av_frame_free(&s->out);
         s->out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!s->out) {
+        if (!s->out)
+        {
             av_frame_free(&insamples);
             return AVERROR(ENOMEM);
         }
@@ -181,9 +192,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     }
     s->out->pts = insamples->pts;
 
-    for (j = 0; j < outlink->h; j++) {
+    for (j = 0; j < outlink->h; j++)
+    {
         uint8_t *dst = s->out->data[0] + j * s->out->linesize[0];
-        for (k = 0; k < s->w; k++) {
+        for (k = 0; k < s->w; k++)
+        {
             dst[k * 4 + 0] = FFMAX(dst[k * 4 + 0] - s->f, 0);
             dst[k * 4 + 1] = FFMAX(dst[k * 4 + 1] - s->f, 0);
             dst[k * 4 + 2] = FFMAX(dst[k * 4 + 2] - s->f, 0);
@@ -191,7 +204,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
         }
     }
 
-    for (c = 0; c < inlink->channels; c++) {
+    for (c = 0; c < inlink->channels; c++)
+    {
         float *src = (float *)insamples->extended_data[c];
         float max = 0;
         uint32_t color;
@@ -204,7 +218,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
         values[VAR_CHANNEL] = c;
         color = av_expr_eval(s->c_expr, values, NULL);
 
-        for (j = 0; j < s->h; j++) {
+        for (j = 0; j < s->h; j++)
+        {
             uint8_t *dst = s->out->data[0] + (c * s->h + c * s->b + j) * s->out->linesize[0];
 
             for (k = 0; k < s->w * max; k++)
@@ -229,7 +244,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_expr_free(s->c_expr);
 }
 
-static const AVFilterPad showvolume_inputs[] = {
+static const AVFilterPad showvolume_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -239,7 +255,8 @@ static const AVFilterPad showvolume_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad showvolume_outputs[] = {
+static const AVFilterPad showvolume_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -248,7 +265,8 @@ static const AVFilterPad showvolume_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_avf_showvolume = {
+AVFilter ff_avf_showvolume =
+{
     .name          = "showvolume",
     .description   = NULL_IF_CONFIG_SMALL("Convert input audio volume to video output."),
     .init          = init,

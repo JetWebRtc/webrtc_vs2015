@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,13 +14,15 @@
 #include "webrtc/modules/rtp_rtcp/source/rtp_rtcp_config.h"
 #include "webrtc/modules/rtp_rtcp/source/rtp_utility.h"
 
-namespace webrtc {
-class VideoCodecInformation {
- public:
-  virtual void Reset() = 0;
+namespace webrtc
+{
+class VideoCodecInformation
+{
+public:
+    virtual void Reset() = 0;
 
-  virtual RtpVideoCodecTypes Type() = 0;
-  virtual ~VideoCodecInformation() {}
+    virtual RtpVideoCodecTypes Type() = 0;
+    virtual ~VideoCodecInformation() {}
 };
 }  // namespace webrtc
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Peter Meerwald <pmeerw@pmeerw.net>
  *
  * This file is part of FFmpeg.

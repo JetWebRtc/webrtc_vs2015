@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 1990 James Ashton - Sydney University
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -39,7 +39,8 @@ static int pop_integer(BigInt *b, const ProbRange *pranges)
     ff_big_div(b, 0, &r);
 
     i = 0;
-    while (r < pranges->offset || r >= pranges->range + pranges->offset) {
+    while (r < pranges->offset || r >= pranges->range + pranges->offset)
+    {
         pranges++;
         i++;
     }
@@ -50,14 +51,17 @@ static int pop_integer(BigInt *b, const ProbRange *pranges)
 
 static void pop_greys(BigInt *b, char *bitmap, int w, int h)
 {
-    if (w > 3) {
+    if (w > 3)
+    {
         w /= 2;
         h /= 2;
         pop_greys(b, bitmap,                       w, h);
         pop_greys(b, bitmap + w,                   w, h);
         pop_greys(b, bitmap + XFACE_WIDTH * h,     w, h);
         pop_greys(b, bitmap + XFACE_WIDTH * h + w, w, h);
-    } else {
+    }
+    else
+    {
         w = pop_integer(b, ff_xface_probranges_2x2);
         if (w & 1) bitmap[0]               = 1;
         if (w & 2) bitmap[1]               = 1;
@@ -68,7 +72,8 @@ static void pop_greys(BigInt *b, char *bitmap, int w, int h)
 
 static void decode_block(BigInt *b, char *bitmap, int w, int h, int level)
 {
-    switch (pop_integer(b, &ff_xface_probranges_per_level[level][0])) {
+    switch (pop_integer(b, &ff_xface_probranges_per_level[level][0]))
+    {
     case XFACE_COLOR_WHITE:
         return;
     case XFACE_COLOR_BLACK:
@@ -86,14 +91,17 @@ static void decode_block(BigInt *b, char *bitmap, int w, int h, int level)
     }
 }
 
-typedef struct XFaceContext {
+typedef struct XFaceContext
+{
     uint8_t bitmap[XFACE_PIXELS]; ///< image used internally for decoding
 } XFaceContext;
 
 static av_cold int xface_decode_init(AVCodecContext *avctx)
 {
-    if (avctx->width || avctx->height) {
-        if (avctx->width != XFACE_WIDTH || avctx->height != XFACE_HEIGHT) {
+    if (avctx->width || avctx->height)
+    {
+        if (avctx->width != XFACE_WIDTH || avctx->height != XFACE_HEIGHT)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Size value %dx%d not supported, only accepts a size of %dx%d\n",
                    avctx->width, avctx->height, XFACE_WIDTH, XFACE_HEIGHT);
@@ -123,14 +131,16 @@ static int xface_decode_frame(AVCodecContext *avctx,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    for (i = 0, k = 0; avpkt->data[i] && i < avpkt->size; i++) {
+    for (i = 0, k = 0; avpkt->data[i] && i < avpkt->size; i++)
+    {
         c = avpkt->data[i];
 
         /* ignore invalid digits */
         if (c < XFACE_FIRST_PRINT || c > XFACE_LAST_PRINT)
             continue;
 
-        if (++k > XFACE_MAX_DIGITS) {
+        if (++k > XFACE_MAX_DIGITS)
+        {
             av_log(avctx, AV_LOG_WARNING,
                    "Buffer is longer than expected, truncating at byte %d\n", i);
             break;
@@ -156,16 +166,21 @@ static int xface_decode_frame(AVCodecContext *avctx,
 
     /* convert image from 1=black 0=white bitmap to MONOWHITE */
     buf = frame->data[0];
-    for (i = 0, j = 0, k = 0, byte = 0; i < XFACE_PIXELS; i++) {
+    for (i = 0, j = 0, k = 0, byte = 0; i < XFACE_PIXELS; i++)
+    {
         byte += xface->bitmap[i];
-        if (k == 7) {
+        if (k == 7)
+        {
             buf[j++] = byte;
             byte = k = 0;
-        } else {
+        }
+        else
+        {
             k++;
             byte <<= 1;
         }
-        if (j == XFACE_WIDTH/8) {
+        if (j == XFACE_WIDTH/8)
+        {
             j = 0;
             buf += frame->linesize[0];
         }
@@ -176,7 +191,8 @@ static int xface_decode_frame(AVCodecContext *avctx,
     return avpkt->size;
 }
 
-AVCodec ff_xface_decoder = {
+AVCodec ff_xface_decoder =
+{
     .name           = "xface",
     .long_name      = NULL_IF_CONFIG_SMALL("X-face image"),
     .type           = AVMEDIA_TYPE_VIDEO,

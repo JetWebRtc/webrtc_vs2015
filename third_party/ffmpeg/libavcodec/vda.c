@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ AVVDAContext *av_vda_alloc_context(void)
 {
     AVVDAContext *ret = av_mallocz(sizeof(*ret));
 
-    if (ret) {
+    if (ret)
+    {
         ret->output_callback = ff_vda_output_callback;
         ret->cv_pix_fmt_type = kCVPixelFormatType_422YpCbCr8;
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -53,8 +53,10 @@ static int32_t parse_value(const char *value, int32_t min)
         sign = -1;
 
     db = strtol(value, &fraction, 0);
-    if (*fraction++ == '.') {
-        while (av_isdigit(*fraction) && scale) {
+    if (*fraction++ == '.')
+    {
+        while (av_isdigit(*fraction) && scale)
+        {
             mb += scale * (*fraction - '0');
             scale /= 10;
             fraction++;
@@ -76,7 +78,7 @@ int ff_replaygain_export_raw(AVStream *st, int32_t tg, uint32_t tp,
         return 0;
 
     replaygain = (AVReplayGain*)ff_stream_new_side_data(st, AV_PKT_DATA_REPLAYGAIN,
-                                                        sizeof(*replaygain));
+                 sizeof(*replaygain));
     if (!replaygain)
         return AVERROR(ENOMEM);
 
@@ -98,8 +100,8 @@ int ff_replaygain_export(AVStream *st, AVDictionary *metadata)
     ap = av_dict_get(metadata, "REPLAYGAIN_ALBUM_PEAK", NULL, 0);
 
     return ff_replaygain_export_raw(st,
-                             parse_value(tg ? tg->value : NULL, INT32_MIN),
-                             parse_value(tp ? tp->value : NULL, 0),
-                             parse_value(ag ? ag->value : NULL, INT32_MIN),
-                             parse_value(ap ? ap->value : NULL, 0));
+                                    parse_value(tg ? tg->value : NULL, INT32_MIN),
+                                    parse_value(tp ? tp->value : NULL, 0),
+                                    parse_value(ag ? ag->value : NULL, INT32_MIN),
+                                    parse_value(ap ? ap->value : NULL, 0));
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,29 +16,33 @@
 #include "webrtc/media/engine/webrtcmediaengine.h"
 #endif  // HAVE_WEBRTC_VOICE && HAVE_WEBRTC_VIDEO
 
-namespace cricket {
+namespace cricket
+{
 
 MediaEngineFactory::MediaEngineCreateFunction
-    MediaEngineFactory::create_function_ = NULL;
+MediaEngineFactory::create_function_ = NULL;
 
 MediaEngineFactory::MediaEngineCreateFunction
-    MediaEngineFactory::SetCreateFunction(MediaEngineCreateFunction function) {
-  MediaEngineCreateFunction old_function = create_function_;
-  create_function_ = function;
-  return old_function;
+MediaEngineFactory::SetCreateFunction(MediaEngineCreateFunction function)
+{
+    MediaEngineCreateFunction old_function = create_function_;
+    create_function_ = function;
+    return old_function;
 }
 
 };  // namespace cricket
 
 #endif  // DISABLE_MEDIA_ENGINE_FACTORY
 
-namespace cricket {
+namespace cricket
+{
 
-webrtc::RtpParameters CreateRtpParametersWithOneEncoding() {
-  webrtc::RtpParameters parameters;
-  webrtc::RtpEncodingParameters encoding;
-  parameters.encodings.push_back(encoding);
-  return parameters;
+webrtc::RtpParameters CreateRtpParametersWithOneEncoding()
+{
+    webrtc::RtpParameters parameters;
+    webrtc::RtpEncodingParameters encoding;
+    parameters.encodings.push_back(encoding);
+    return parameters;
 }
 
 };  // namespace cricket

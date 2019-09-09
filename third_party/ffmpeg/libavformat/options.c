@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -45,8 +45,8 @@ static void *format_child_next(void *obj, void *prev)
 {
     AVFormatContext *s = obj;
     if (!prev && s->priv_data &&
-        ((s->iformat && s->iformat->priv_class) ||
-          s->oformat && s->oformat->priv_class))
+            ((s->iformat && s->iformat->priv_class) ||
+             s->oformat && s->oformat->priv_class))
         return s->priv_data;
     if (s->pb && s->pb->av_class && prev != s->pb)
         return s->pb;
@@ -88,7 +88,8 @@ static AVClassCategory get_category(void *ptr)
     else           return AV_CLASS_CATEGORY_MUXER;
 }
 
-static const AVClass av_format_context_class = {
+static const AVClass av_format_context_class =
+{
     .class_name     = "AVFormatContext",
     .item_name      = format_to_name,
     .option         = avformat_options,
@@ -116,7 +117,8 @@ AVFormatContext *avformat_alloc_context(void)
     avformat_get_context_defaults(ic);
 
     ic->internal = av_mallocz(sizeof(*ic->internal));
-    if (!ic->internal) {
+    if (!ic->internal)
+    {
         avformat_free_context(ic);
         return NULL;
     }

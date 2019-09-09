@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -36,7 +36,8 @@ void ff_vert_16x16_msa(uint8_t *dst, ptrdiff_t dst_stride, const uint8_t *left,
 
     src0 = LD_UB(src);
 
-    for (row = 16; row--;) {
+    for (row = 16; row--;)
+    {
         ST_UB(src0, dst);
         dst += dst_stride;
     }
@@ -51,7 +52,8 @@ void ff_vert_32x32_msa(uint8_t *dst, ptrdiff_t dst_stride, const uint8_t *left,
     src1 = LD_UB(src);
     src2 = LD_UB(src + 16);
 
-    for (row = 32; row--;) {
+    for (row = 32; row--;)
+    {
         ST_UB2(src1, src2, dst, 16);
         dst += dst_stride;
     }
@@ -64,7 +66,8 @@ void ff_hor_16x16_msa(uint8_t *dst, ptrdiff_t dst_stride, const uint8_t *src,
     v16u8 src0, src1, src2, src3;
 
     src += 12;
-    for (row = 4; row--;) {
+    for (row = 4; row--;)
+    {
         inp = LW(src);
         src -= 4;
 
@@ -85,7 +88,8 @@ void ff_hor_32x32_msa(uint8_t *dst, ptrdiff_t dst_stride, const uint8_t *src,
     v16u8 src0, src1, src2, src3;
 
     src += 28;
-    for (row = 8; row--;) {
+    for (row = 8; row--;)
+    {
         inp = LW(src);
         src -= 4;
 
@@ -394,7 +398,8 @@ void ff_tm_8x8_msa(uint8_t *dst, ptrdiff_t dst_stride,
     src_top_left = (v8u16) __msa_fill_h(top_left);
 
     src_left += 4;
-    for (loop_cnt = 2; loop_cnt--;) {
+    for (loop_cnt = 2; loop_cnt--;)
+    {
         left = LW(src_left);
         src_left0 = __msa_fill_b(left >> 24);
         src_left1 = __msa_fill_b(left >> 16);
@@ -426,7 +431,8 @@ void ff_tm_16x16_msa(uint8_t *dst, ptrdiff_t dst_stride,
     src_top_left = (v8u16) __msa_fill_h(top_left);
 
     src_left += 12;
-    for (loop_cnt = 4; loop_cnt--;) {
+    for (loop_cnt = 4; loop_cnt--;)
+    {
         left = LW(src_left);
         src_left0 = __msa_fill_b(left >> 24);
         src_left1 = __msa_fill_b(left >> 16);
@@ -478,7 +484,8 @@ void ff_tm_32x32_msa(uint8_t *dst, ptrdiff_t dst_stride,
     src_top_left = (v8u16) __msa_fill_h(top_left);
 
     src_left += 28;
-    for (loop_cnt = 8; loop_cnt--;) {
+    for (loop_cnt = 8; loop_cnt--;)
+    {
         left = LW(src_left);
         src_left0 = __msa_fill_b(left >> 24);
         src_left1 = __msa_fill_b(left >> 16);

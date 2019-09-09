@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP parser for VP9 payload format (draft version 0) - experimental
  * Copyright (c) 2015 Thomas Volkert <thomas@homer-conferencing.com>
  *
@@ -26,7 +26,8 @@
 
 #define RTP_VP9_DESC_REQUIRED_SIZE 1
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *buf;
     uint32_t     timestamp;
 };
@@ -58,7 +59,8 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
         ffio_free_dyn_buf(&rtp_vp9_ctx->buf);
 
     /* sanity check for size of input packet: 1 byte payload at least */
-    if (len < RTP_VP9_DESC_REQUIRED_SIZE + 1) {
+    if (len < RTP_VP9_DESC_REQUIRED_SIZE + 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet, got %d bytes\n", len);
         return AVERROR_INVALIDDATA;
     }
@@ -90,7 +92,8 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
     rtp_m = !!(flags & RTP_FLAG_MARKER);
 
     /* sanity check for markers: B should always be equal to the RTP M marker */
-    if (last_fragment != rtp_m) {
+    if (last_fragment != rtp_m)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid combination of B and M marker (%d != %d)\n", last_fragment, rtp_m);
         return AVERROR_INVALIDDATA;
     }
@@ -112,17 +115,22 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
      *   M: The most significant bit of the first octet is an extension flag.
      *   PictureID:  8 or 16 bits including the M bit.
      */
-    if (has_pic_id) {
+    if (has_pic_id)
+    {
         /* check for 1-byte or 2-byte picture index */
-        if (buf[0] & 0x80) {
-            if (len < 2) {
+        if (buf[0] & 0x80)
+        {
+            if (len < 2)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet\n");
                 return AVERROR_INVALIDDATA;
             }
             pic_id = AV_RB16(buf) & 0x7fff;
             buf += 2;
             len -= 2;
-        } else {
+        }
+        else
+        {
             pic_id = buf[0] & 0x7f;
             buf++;
             len--;
@@ -141,15 +149,18 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
      *   If "F" is set in the initial octet, R is 2 bits representing the number
      *   of reference fields this frame refers to.
      */
-    if (has_layer_idc) {
-        if (len < 1) {
+    if (has_layer_idc)
+    {
+        if (len < 1)
+        {
             av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet\n");
             return AVERROR_INVALIDDATA;
         }
         layer_temporal = buf[0] & 0xC0;
         layer_spatial  = buf[0] & 0x30;
         layer_quality  = buf[0] & 0x0C;
-        if (has_ref_idc) {
+        if (has_ref_idc)
+        {
             ref_fields = buf[0] & 0x03;
             if (ref_fields)
                 non_key_frame = 1;
@@ -172,9 +183,12 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
      *   RS and RQ:  The spatial and quality layer IDs.
      *   X: 1 if this layer index has an extended relative Picture ID.
      */
-    if (has_ref_idc) {
-        while (ref_fields) {
-            if (len < 1) {
+    if (has_ref_idc)
+    {
+        while (ref_fields)
+        {
+            if (len < 1)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -182,8 +196,10 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
             has_ref_field_ext_pic_id = buf[0] & 0x10;
 
             /* pass ref. field */
-            if (has_ref_field_ext_pic_id) {
-                if (len < 2) {
+            if (has_ref_field_ext_pic_id)
+            {
+                if (len < 2)
+                {
                     av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet\n");
                     return AVERROR_INVALIDDATA;
                 }
@@ -192,7 +208,9 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
 
                 buf += 2;
                 len -= 2;
-            } else {
+            }
+            else
+            {
 
                 /* ignore ref. data */
 
@@ -221,7 +239,8 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
      *   RS and RQ:  The spatial and quality layer IDs.
      *   X: 1 if this layer index has an extended relative Picture ID.
      */
-    if (has_ss_data) {
+    if (has_ss_data)
+    {
         avpriv_report_missing_feature(ctx, "VP9 scalability structure data");
         return AVERROR(ENOSYS);
     }
@@ -231,7 +250,8 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
      *
      *  spec. is tbd
      */
-    if (has_su_data) {
+    if (has_su_data)
+    {
         avpriv_report_missing_feature(ctx, "VP9 scalability update structure data");
         return AVERROR(ENOSYS);
     }
@@ -244,21 +264,26 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
     //XXX: implement when specified
 
     /* sanity check: 1 byte payload as minimum */
-    if (len < 1) {
+    if (len < 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short RTP/VP9 packet\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* start frame buffering with new dynamic buffer */
-    if (!rtp_vp9_ctx->buf) {
+    if (!rtp_vp9_ctx->buf)
+    {
         /* sanity check: a new frame should have started */
-        if (first_fragment) {
+        if (first_fragment)
+        {
             res = avio_open_dyn_buf(&rtp_vp9_ctx->buf);
             if (res < 0)
                 return res;
             /* update the timestamp in the frame packet with the one from the RTP packet */
             rtp_vp9_ctx->timestamp = *timestamp;
-        } else {
+        }
+        else
+        {
             /* frame not started yet, need more packets */
             return AVERROR(EAGAIN);
         }
@@ -279,7 +304,8 @@ static int vp9_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_vp9_ctx,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_vp9_dynamic_handler = {
+RTPDynamicProtocolHandler ff_vp9_dynamic_handler =
+{
     .enc_name         = "VP9",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_VP9,

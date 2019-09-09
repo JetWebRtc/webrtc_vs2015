@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -36,9 +36,11 @@
 #include "bit_stream.h"
 #include "dec_golomb.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
-typedef struct TagVlcTable {
+typedef struct TagVlcTable
+{
 const uint8_t (*kpCoeffTokenVlcTable[4][8])[2];
 const uint8_t (*kpChromaCoeffTokenVlcTable)[2];
 const uint8_t (*kpZeroTable[7])[2];
@@ -116,7 +118,8 @@ extern const uint8_t g_kuiZeroLeftBitNumMap[16];
 #define WELS_GET_PREFIX_BITS(inval, outval) outval = GetPrefixBits(inval)
 #endif
 
-static inline void InitVlcTable (SVlcTable* pVlcTable) {
+static inline void InitVlcTable (SVlcTable* pVlcTable)
+{
 pVlcTable->kpChromaCoeffTokenVlcTable = g_kuiVlcChromaTable;
 
 pVlcTable->kpCoeffTokenVlcTable[0][0] = g_kuiVlcTable_0;

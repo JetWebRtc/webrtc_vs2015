@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,13 +15,15 @@
 
 /* Copy 2 macroblocks to a buffer */
 void vp8_copy32xn_c(const unsigned char *src_ptr, int src_stride,
-                    unsigned char *dst_ptr, int dst_stride, int height) {
-  int r;
+                    unsigned char *dst_ptr, int dst_stride, int height)
+{
+    int r;
 
-  for (r = 0; r < height; ++r) {
-    memcpy(dst_ptr, src_ptr, 32);
+    for (r = 0; r < height; ++r)
+    {
+        memcpy(dst_ptr, src_ptr, 32);
 
-    src_ptr += src_stride;
-    dst_ptr += dst_stride;
-  }
+        src_ptr += src_stride;
+        dst_ptr += dst_stride;
+    }
 }

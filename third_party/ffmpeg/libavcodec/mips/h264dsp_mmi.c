@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized h264dsp
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -26,7 +26,7 @@
 #include "h264dsp_mips.h"
 
 void ff_h264_weight_pixels16_8_mmi(uint8_t *block, int stride,
-        int height, int log2_denom, int weight, int offset)
+                                   int height, int log2_denom, int weight, int offset)
 {
     int y;
 
@@ -35,7 +35,8 @@ void ff_h264_weight_pixels16_8_mmi(uint8_t *block, int stride,
     if (log2_denom)
         offset += 1 << (log2_denom - 1);
 
-    for (y=0; y<height; y++, block+=stride) {
+    for (y=0; y<height; y++, block+=stride)
+    {
         __asm__ volatile (
             "ldc1 $f2, %0                   \r\n"
             "ldc1 $f4, %1                   \r\n"
@@ -72,14 +73,15 @@ void ff_h264_weight_pixels16_8_mmi(uint8_t *block, int stride,
 }
 
 void ff_h264_biweight_pixels16_8_mmi(uint8_t *dst, uint8_t *src,
-        int stride, int height, int log2_denom, int weightd, int weights,
-        int offset)
+                                     int stride, int height, int log2_denom, int weightd, int weights,
+                                     int offset)
 {
     int y;
 
     offset = ((offset + 1) | 1) << log2_denom;
 
-    for (y=0; y<height; y++, dst+=stride, src+=stride) {
+    for (y=0; y<height; y++, dst+=stride, src+=stride)
+    {
         __asm__ volatile (
             "ldc1 $f2, %2                   \r\n"
             "ldc1 $f4, %3                   \r\n"
@@ -127,13 +129,13 @@ void ff_h264_biweight_pixels16_8_mmi(uint8_t *dst, uint8_t *src,
             "sdc1 $f2, %1                   \r\n"
             : "=m"(*dst),"=m"(*(dst+8))
             : "m"(*src),"m"(*dst),"m"(*(src+8)),"m"(*(dst+8)),
-              "r"(weights),"r"(weightd),"r"(offset),"r"(log2_denom+1)
+            "r"(weights),"r"(weightd),"r"(offset),"r"(log2_denom+1)
         );
     }
 }
 
 void ff_h264_weight_pixels8_8_mmi(uint8_t *block, int stride, int height,
-        int log2_denom, int weight, int offset)
+                                  int log2_denom, int weight, int offset)
 {
     int y;
 
@@ -142,7 +144,8 @@ void ff_h264_weight_pixels8_8_mmi(uint8_t *block, int stride, int height,
     if (log2_denom)
         offset += 1 << (log2_denom - 1);
 
-    for (y=0; y<height; y++, block+=stride) {
+    for (y=0; y<height; y++, block+=stride)
+    {
         __asm__ volatile (
             "ldc1 $f2, %0                   \r\n"
             "mtc1 %1, $f6                   \r\n"
@@ -168,14 +171,15 @@ void ff_h264_weight_pixels8_8_mmi(uint8_t *block, int stride, int height,
 }
 
 void ff_h264_biweight_pixels8_8_mmi(uint8_t *dst, uint8_t *src,
-        int stride, int height, int log2_denom, int weightd, int weights,
-        int offset)
+                                    int stride, int height, int log2_denom, int weightd, int weights,
+                                    int offset)
 {
     int y;
 
     offset = ((offset + 1) | 1) << log2_denom;
 
-    for (y=0; y<height; y++, dst+=stride, src+=stride) {
+    for (y=0; y<height; y++, dst+=stride, src+=stride)
+    {
         __asm__ volatile (
             "ldc1 $f2, %1                   \r\n"
             "ldc1 $f4, %2                   \r\n"
@@ -205,13 +209,13 @@ void ff_h264_biweight_pixels8_8_mmi(uint8_t *dst, uint8_t *src,
             "sdc1 $f2, %0                   \r\n"
             : "=m"(*dst)
             : "m"(*src),"m"(*dst),"r"(weights),
-              "r"(weightd),"r"(offset),"r"(log2_denom+1)
+            "r"(weightd),"r"(offset),"r"(log2_denom+1)
         );
     }
 }
 
 void ff_h264_weight_pixels4_8_mmi(uint8_t *block, int stride, int height,
-        int log2_denom, int weight, int offset)
+                                  int log2_denom, int weight, int offset)
 {
     int y;
 
@@ -220,7 +224,8 @@ void ff_h264_weight_pixels4_8_mmi(uint8_t *block, int stride, int height,
     if (log2_denom)
         offset += 1 << (log2_denom - 1);
 
-    for (y=0; y<height; y++, block+=stride) {
+    for (y=0; y<height; y++, block+=stride)
+    {
         __asm__ volatile (
             "lwc1 $f2, %0                   \r\n"
             "mtc1 %1, $f6                   \r\n"
@@ -242,14 +247,15 @@ void ff_h264_weight_pixels4_8_mmi(uint8_t *block, int stride, int height,
 }
 
 void ff_h264_biweight_pixels4_8_mmi(uint8_t *dst, uint8_t *src,
-        int stride, int height, int log2_denom, int weightd, int weights,
-        int offset)
+                                    int stride, int height, int log2_denom, int weightd, int weights,
+                                    int offset)
 {
     int y;
 
     offset = ((offset + 1) | 1) << log2_denom;
 
-    for (y=0; y<height; y++, dst+=stride, src+=stride) {
+    for (y=0; y<height; y++, dst+=stride, src+=stride)
+    {
         __asm__ volatile (
             "lwc1 $f2, %1                   \r\n"
             "lwc1 $f4, %2                   \r\n"
@@ -272,7 +278,7 @@ void ff_h264_biweight_pixels4_8_mmi(uint8_t *dst, uint8_t *src,
             "swc1 $f2, %0                   \r\n"
             : "=m"(*dst)
             : "m"(*src),"m"(*dst),"r"(weights),
-              "r"(weightd),"r"(offset),"r"(log2_denom+1)
+            "r"(weightd),"r"(offset),"r"(log2_denom+1)
         );
     }
 }

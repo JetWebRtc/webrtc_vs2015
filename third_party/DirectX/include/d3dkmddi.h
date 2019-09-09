@@ -1,4 +1,4 @@
-/******************************Module*Header**********************************\
+﻿/******************************Module*Header**********************************\
 *
 * Module Name: d3dkmddi.h
 *
@@ -109,13 +109,13 @@ typedef struct _DXGKARG_RENDER
 typedef __inout DXGKARG_RENDER*     INOUT_PDXGKARG_RENDER;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_RENDER(
     IN_CONST_HANDLE         hContext,
     INOUT_PDXGKARG_RENDER   pRender
-    );
+);
 
 #define DXGK_PRESENT_SOURCE_INDEX       1
 #define DXGK_PRESENT_DESTINATION_INDEX  2
@@ -159,19 +159,19 @@ typedef struct _DXGKARG_PRESENT
     D3DDDI_FLIPINTERVAL_TYPE    FlipInterval;
     DXGK_PRESENTFLAGS           Flags;
     UINT                        DmaBufferSegmentId;
-    PHYSICAL_ADDRESS            DmaBufferPhysicalAddress;    
+    PHYSICAL_ADDRESS            DmaBufferPhysicalAddress;
 } DXGKARG_PRESENT;
 
 typedef __inout DXGKARG_PRESENT*    INOUT_PDXGKARG_PRESENT;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_PRESENT(
     IN_CONST_HANDLE         hContext,
     INOUT_PDXGKARG_PRESENT  pPresent
-    );
+);
 
 typedef struct _DXGKARG_STOPCAPTURE
 {
@@ -181,13 +181,13 @@ typedef struct _DXGKARG_STOPCAPTURE
 typedef __in CONST DXGKARG_STOPCAPTURE*     IN_CONST_PDXGKARG_STOPCAPTURE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_STOPCAPTURE(
     IN_CONST_HANDLE                 hAdapter,
     IN_CONST_PDXGKARG_STOPCAPTURE   pStopCapture
-    );
+);
 
 // Definition for Scheduler Interrupt Event Type.
 //
@@ -242,7 +242,7 @@ typedef struct _DXGKARGCB_NOTIFY_INTERRUPT_DATA
             D3DDDI_VIDEO_PRESENT_TARGET_ID VidPnTargetId;       // in: VidPnTarget id (where vsync occurs).
             PHYSICAL_ADDRESS               PhysicalAddress;     // in: Physical Address of displaying buffer.
             UINT                           PhysicalAdapterMask; // in: Physical adapter mask (where vsync occurs).
-                                                                //     (Must set Flags.ValidPhysicalAdapterMask as well)
+            //     (Must set Flags.ValidPhysicalAdapterMask as well)
         } CrtcVsync;
         struct
         {
@@ -293,13 +293,13 @@ typedef struct _DXGKARG_OPENALLOCATION
 typedef __inout CONST DXGKARG_OPENALLOCATION*   INOUT_CONST_PDXGKARG_OPENALLOCATION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_OPENALLOCATIONINFO(
     IN_CONST_HANDLE                         hDevice,
     INOUT_CONST_PDXGKARG_OPENALLOCATION     pOpenAllocation
-    );
+);
 
 typedef struct _DXGKARG_CLOSEALLOCATION
 {
@@ -310,29 +310,29 @@ typedef struct _DXGKARG_CLOSEALLOCATION
 typedef __in    CONST DXGKARG_CLOSEALLOCATION*  IN_CONST_PDXGKARG_CLOSEALLOCATION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CLOSEALLOCATION(
     IN_CONST_HANDLE                     hDevice,
     IN_CONST_PDXGKARG_CLOSEALLOCATION   pCloseAllocation
-    );
+);
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_DESTROYDEVICE(
     IN_CONST_HANDLE     hDevice
-    );
+);
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_DESTROYCONTEXT(
     IN_CONST_HANDLE     hContext
-    );
+);
 
 typedef D3DKMT_HANDLE (APIENTRY CALLBACK *DXGKCB_GETHANDLEPARENT)(D3DKMT_HANDLE hAllocation);
 
@@ -389,7 +389,7 @@ typedef struct _DXGK_DEVICEINFOFLAGS
         };
         UINT Value;
     };
- } DXGK_DEVICEINFOFLAGS;
+} DXGK_DEVICEINFOFLAGS;
 
 typedef struct _DXGK_DEVICEINFO
 {
@@ -428,13 +428,13 @@ typedef struct _DXGKARG_CREATEDEVICE
 typedef __inout DXGKARG_CREATEDEVICE*   INOUT_PDXGKARG_CREATEDEVICE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CREATEDEVICE(
     IN_CONST_HANDLE                 hAdapter,
     INOUT_PDXGKARG_CREATEDEVICE     pCreateDevice
-    );
+);
 
 typedef struct _DXGK_CREATECONTEXTFLAGS
 {
@@ -472,24 +472,24 @@ typedef struct _DXGKARG_CREATECONTEXT
 typedef __inout DXGKARG_CREATECONTEXT*   INOUT_PDXGKARG_CREATECONTEXT;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CREATECONTEXT(
     IN_CONST_HANDLE                 hDevice,
     INOUT_PDXGKARG_CREATECONTEXT    pCreateContext
-    );
+);
 
 typedef __in CONST DXGKARG_SETPALETTE*      IN_CONST_PDXGKARG_SETPALETTE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETPALETTE(
     IN_CONST_HANDLE                 hAdapter,
     IN_CONST_PDXGKARG_SETPALETTE    pSetPalette
-    );
+);
 
 typedef struct _DXGK_POINTERFLAGS
 {
@@ -542,13 +542,13 @@ typedef struct _DXGKARG_SETPOINTERSHAPE
 typedef __in CONST DXGKARG_SETPOINTERSHAPE*     IN_CONST_PDXGKARG_SETPOINTERSHAPE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETPOINTERSHAPE(
     IN_CONST_HANDLE                     hAdapter,
     IN_CONST_PDXGKARG_SETPOINTERSHAPE   pSetPointerShape
-    );
+);
 
 typedef struct _DXGK_SETPOINTERPOSITIONFLAGS
 {
@@ -587,13 +587,13 @@ typedef struct _DXGKARG_SETPOINTERPOSITION
 typedef __in CONST DXGKARG_SETPOINTERPOSITION*      IN_CONST_PDXGKARG_SETPOINTERPOSITION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETPOINTERPOSITION(
     IN_CONST_HANDLE                         hAdapter,
     IN_CONST_PDXGKARG_SETPOINTERPOSITION    pSetPointerPosition
-    );
+);
 
 typedef enum _DXGK_QUERYADAPTERINFOTYPE
 {
@@ -638,7 +638,7 @@ typedef struct _DXGK_FLIPCAPS
             UINT    FlipOnVSyncWithNoWait : 1; // Support Flip on vsync via command buffer without wait.
             UINT    FlipOnVSyncMmIo       : 1; // Support Flip as mmio at vsync interrupt.
             UINT    FlipInterval          : 1; // Support FLIPINTERVAL_TWO, _THREE, _FOUR.
-            UINT    FlipImmediateMmIo     : 1; // Support Flip as mmio immediate. 
+            UINT    FlipImmediateMmIo     : 1; // Support Flip as mmio immediate.
             UINT    Reserved              :28;
         };
         UINT        Value;
@@ -723,15 +723,15 @@ typedef struct _DXGK_SEGMENTFLAGS
 typedef struct _DXGK_SEGMENTDESCRIPTOR
 {
     PHYSICAL_ADDRESS        BaseAddress;            // GPU logical base address for
-                                                    // the segment.
+    // the segment.
     PHYSICAL_ADDRESS        CpuTranslatedAddress;   // CPU translated base address
-                                                    // for the segment if CPU visible.
+    // for the segment if CPU visible.
     SIZE_T                  Size;                   // Size of the segment.
     UINT                    NbOfBanks;              // Number of bank in the segment.
     SIZE_T*                 pBankRangeTable;        // Range delimiting each bank.
     SIZE_T                  CommitLimit;            // Maximum number of bytes that can be
-                                                    // commited to this segment, apply to
-                                                    // aperture segment only.
+    // commited to this segment, apply to
+    // aperture segment only.
     DXGK_SEGMENTFLAGS   Flags;                  // Segment bit field flags
 } DXGK_SEGMENTDESCRIPTOR;
 
@@ -747,7 +747,7 @@ typedef struct _DXGK_QUERYSEGMENTOUT
     UINT                        NbSegment;              // Number of segment described.
     DXGK_SEGMENTDESCRIPTOR* pSegmentDescriptor;     // Buffer describing the segment.
     UINT                        PagingBufferSegmentId;  // SegmentId the paging buffer
-                                                        // should be allocated from.
+    // should be allocated from.
     UINT                        PagingBufferSize;       // Paging buffer size.
     UINT                        PagingBufferPrivateDataSize;
 } DXGK_QUERYSEGMENTOUT;
@@ -764,13 +764,13 @@ typedef struct _DXGKARG_QUERYADAPTERINFO
 typedef __inout CONST DXGKARG_QUERYADAPTERINFO*   INOUT_CONST_PDXGKARG_QUERYADAPTERINFO;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_QUERYADAPTERINFO(
     IN_CONST_HANDLE                         hAdapter,
     INOUT_CONST_PDXGKARG_QUERYADAPTERINFO   pQueryAdapterInfo
-    );
+);
 
 typedef struct _DXGKARG_ACQUIRESWIZZLINGRANGE
 {
@@ -785,13 +785,13 @@ typedef struct _DXGKARG_ACQUIRESWIZZLINGRANGE
 typedef __inout DXGKARG_ACQUIRESWIZZLINGRANGE*      INOUT_PDXGKARG_ACQUIRESWIZZLINGRANGE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_ACQUIRESWIZZLINGRANGE(
     IN_CONST_HANDLE                         hAdapter,
     INOUT_PDXGKARG_ACQUIRESWIZZLINGRANGE    pAcquireSwizzlingRange
-    );
+);
 
 typedef struct _DXGKARG_RELEASESWIZZLINGRANGE
 {
@@ -803,13 +803,13 @@ typedef struct _DXGKARG_RELEASESWIZZLINGRANGE
 typedef __in CONST DXGKARG_RELEASESWIZZLINGRANGE*   IN_CONST_PDXGKARG_RELEASESWIZZLINGRANGE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_RELEASESWIZZLINGRANGE(
     IN_CONST_HANDLE                             hAdapter,
     IN_CONST_PDXGKARG_RELEASESWIZZLINGRANGE     pReleaseSwizzlingRange
-    );
+);
 
 typedef struct _DXGK_ALLOCATIONINFOFLAGS
 {
@@ -921,13 +921,13 @@ typedef struct _DXGKARG_CREATEALLOCATION
 typedef __inout DXGKARG_CREATEALLOCATION*     INOUT_PDXGKARG_CREATEALLOCATION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CREATEALLOCATION(
     IN_CONST_HANDLE                     hAdapter,
     INOUT_PDXGKARG_CREATEALLOCATION     pCreateAllocation
-    );
+);
 
 typedef struct _DXGKARG_DESCRIBEALLOCATION
 {
@@ -943,13 +943,13 @@ typedef struct _DXGKARG_DESCRIBEALLOCATION
 typedef __inout DXGKARG_DESCRIBEALLOCATION*     INOUT_PDXGKARG_DESCRIBEALLOCATION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_DESCRIBEALLOCATION(
     IN_CONST_HANDLE                         hAdapter,
     INOUT_PDXGKARG_DESCRIBEALLOCATION       pDescribeAllocation
-    );
+);
 
 typedef struct _DXGKARG_GETSTANDARDALLOCATIONDRIVERDATA
 {
@@ -969,13 +969,13 @@ typedef struct _DXGKARG_GETSTANDARDALLOCATIONDRIVERDATA
 typedef __inout DXGKARG_GETSTANDARDALLOCATIONDRIVERDATA*    INOUT_PDXGKARG_GETSTANDARDALLOCATIONDRIVERDATA;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_GETSTANDARDALLOCATIONDRIVERDATA(
     IN_CONST_HANDLE                                 hAdapter,
     INOUT_PDXGKARG_GETSTANDARDALLOCATIONDRIVERDATA  pGetStandardAllocationDriverData
-    );
+);
 
 typedef struct _DXGK_DESTROYALLOCATIONFLAGS
 {
@@ -1001,13 +1001,13 @@ typedef struct _DXGKARG_DESTROYALLOCATION
 typedef __in CONST DXGKARG_DESTROYALLOCATION*   IN_CONST_PDXGKARG_DESTROYALLOCATION;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_DESTROYALLOCATION(
     IN_CONST_HANDLE                         hAdapter,
     IN_CONST_PDXGKARG_DESTROYALLOCATION     pDestroyAllocation
-    );
+);
 
 typedef struct _DXGK_PATCHFLAGS
 {
@@ -1035,28 +1035,28 @@ typedef struct _DXGKARG_PATCH
     UINT                            DmaBufferSegmentId;                         // in: segment id of DMA buffer
     PHYSICAL_ADDRESS                DmaBufferPhysicalAddress;                   // in: physical address of DMA buffer
     VOID*                           pDmaBuffer;                                 // in: Virtual address to beginning of
-                                                                                //     the DMA buffer.
+    //     the DMA buffer.
     UINT                            DmaBufferSize;                              // in: lenght of the DMA buffer..
     UINT                            DmaBufferSubmissionStartOffset;             // in: Byte offset from the beginning
-                                                                                //     of the DMA buffer to the start
-                                                                                //     of this submission.
+    //     of the DMA buffer to the start
+    //     of this submission.
     UINT                            DmaBufferSubmissionEndOffset;               // in: Byte offset from the beginning
-                                                                                //     of the DMA buffer to the end of
-                                                                                //     this submission.
+    //     of the DMA buffer to the end of
+    //     this submission.
     VOID*                           pDmaBufferPrivateData;                      // in: Virtual address to the private
-                                                                                //     data associated with this DMA buffer.
+    //     data associated with this DMA buffer.
     UINT                            DmaBufferPrivateDataSize;                   // in: Size of the private data.
     UINT                            DmaBufferPrivateDataSubmissionStartOffset;  // in: Byte offset from the beginning of the
-                                                                                //     private data to the start of this
-                                                                                //     submission.
+    //     private data to the start of this
+    //     submission.
     UINT                            DmaBufferPrivateDataSubmissionEndOffset;    // in: Byte offset from the beginning of the
-                                                                                //     private data to the end of this
-                                                                                //     submission.
+    //     private data to the end of this
+    //     submission.
     CONST DXGK_ALLOCATIONLIST*      pAllocationList;                            // in: Pointer to the allocation list
-                                                                                //     associated with this DMA buffer.
+    //     associated with this DMA buffer.
     UINT                            AllocationListSize;                         // in: Size of the allocation list.
     CONST D3DDDI_PATCHLOCATIONLIST* pPatchLocationList;                         // in: Pointer to the patch location list associated
-                                                                                //     with this DMA buffer.
+    //     with this DMA buffer.
     UINT                            PatchLocationListSize;                      // in: Size of the patch location list.
     UINT                            PatchLocationListSubmissionStart;           // in: First element for this submission.
     UINT                            PatchLocationListSubmissionLength;          // in: Number of element in this submission.
@@ -1068,13 +1068,13 @@ typedef struct _DXGKARG_PATCH
 typedef __in CONST DXGKARG_PATCH*   IN_CONST_PDXGKARG_PATCH;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_PATCH(
     IN_CONST_HANDLE             hAdapter,
     IN_CONST_PDXGKARG_PATCH     pPatch
-    );
+);
 
 typedef struct _DXGK_SUBMITCOMMANDFLAGS
 {
@@ -1107,20 +1107,20 @@ typedef struct _DXGKARG_SUBMITCOMMAND
     PHYSICAL_ADDRESS    DmaBufferPhysicalAddress;                   // in: physical address of DMA buffer
     UINT                DmaBufferSize;                              // in: lenght of the DMA buffer..
     UINT                DmaBufferSubmissionStartOffset;             // in: Byte offset from the beginning
-                                                                    //     of the DMA buffer to the start
-                                                                    //     of this submission.
+    //     of the DMA buffer to the start
+    //     of this submission.
     UINT                DmaBufferSubmissionEndOffset;               // in: Byte offset from the beginning
-                                                                    //     of the DMA buffer to the end of
-                                                                    //     this submission.
+    //     of the DMA buffer to the end of
+    //     this submission.
     VOID*               pDmaBufferPrivateData;                      // in: Virtual address to the private
-                                                                    //     data associated with this DMA buffer.
+    //     data associated with this DMA buffer.
     UINT                DmaBufferPrivateDataSize;                   // in: Size of the private data.
     UINT                DmaBufferPrivateDataSubmissionStartOffset;  // in: Byte offset from the beginning of the
-                                                                    //     private data to the start of this
-                                                                    //     submission.
+    //     private data to the start of this
+    //     submission.
     UINT                DmaBufferPrivateDataSubmissionEndOffset;    // in: Byte offset from the beginning of the
-                                                                    //     private data to the end of this
-                                                                    //     submission.
+    //     private data to the end of this
+    //     submission.
     UINT                SubmissionFenceId;                          // in: Submission fence id.
     D3DDDI_VIDEO_PRESENT_SOURCE_ID VidPnSourceId;                   // in: VidPnSourceId (flip only)
     D3DDDI_FLIPINTERVAL_TYPE       FlipInterval;                    // in: Flip Interval (flip only)
@@ -1133,13 +1133,13 @@ typedef struct _DXGKARG_SUBMITCOMMAND
 typedef __in CONST DXGKARG_SUBMITCOMMAND*   IN_CONST_PDXGKARG_SUBMITCOMMAND;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SUBMITCOMMAND(
     IN_CONST_HANDLE                     hAdapter,
     IN_CONST_PDXGKARG_SUBMITCOMMAND     pSubmitCommand
-    );
+);
 
 typedef struct _DXGK_PREEMPTCOMMANDFLAGS
 {
@@ -1168,13 +1168,13 @@ typedef struct _DXGKARG_PREEMPTCOMMAND
 typedef __in CONST DXGKARG_PREEMPTCOMMAND*      IN_CONST_PDXGKARG_PREEMPTCOMMAND;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_PREEMPTCOMMAND(
     IN_CONST_HANDLE                     hAdapter,
     IN_CONST_PDXGKARG_PREEMPTCOMMAND    pPreemptCommand
-    );
+);
 
 // Definition for DXGKARG_QUERYCURRENTFENCE
 //
@@ -1190,27 +1190,27 @@ typedef struct _DXGKARG_QUERYCURRENTFENCE
 typedef __inout DXGKARG_QUERYCURRENTFENCE* INOUT_PDXGKARG_QUERYCURRENTFENCE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_QUERYCURRENTFENCE(
     IN_CONST_HANDLE                    hAdapter,
     INOUT_PDXGKARG_QUERYCURRENTFENCE   pCurrentFence
-    );
+);
 
 // Device Driver Interface to control vertical sync interrupt.
 //
 typedef __in CONST DXGK_INTERRUPT_TYPE      IN_CONST_DXGK_INTERRUPT_TYPE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CONTROLINTERRUPT(
     IN_CONST_HANDLE                 hAdapter,
     IN_CONST_DXGK_INTERRUPT_TYPE    InterruptType,
     IN_BOOLEAN                      EnableInterrupt
-    );
+);
 
 typedef enum _DXGK_BUILDPAGINGBUFFER_OPERATION
 {
@@ -1399,13 +1399,13 @@ typedef struct _DXGKARG_BUILDPAGINGBUFFER
 typedef __in DXGKARG_BUILDPAGINGBUFFER*     IN_PDXGKARG_BUILDPAGINGBUFFER;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_BUILDPAGINGBUFFER(
     IN_CONST_HANDLE                 hAdapter,
     IN_PDXGKARG_BUILDPAGINGBUFFER   pBuildPagingBuffer
-    );
+);
 
 // DXGK_TRANSFERFLAGS.Swizzle
 //
@@ -1439,13 +1439,13 @@ typedef struct _DXGKARG_ESCAPE
 typedef __inout CONST DXGKARG_ESCAPE*   INOUT_CONST_PDXGKARG_ESCAPE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_ESCAPE(
     IN_CONST_HANDLE                 hAdapter,
     INOUT_CONST_PDXGKARG_ESCAPE     pEscape
-    );
+);
 
 #define DXGK_SECONDARY_BUCKETING_TAG ((DWORD)'bSsM')
 
@@ -1472,13 +1472,13 @@ typedef struct _DXGKARG_COLLECTDBGINFO
 typedef __inout CONST DXGKARG_COLLECTDBGINFO*   INOUT_CONST_PDXGKARG_COLLECTDBGINFO;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_COLLECTDBGINFO(
     IN_CONST_HANDLE                         hAdapter,
     INOUT_CONST_PDXGKARG_COLLECTDBGINFO     pCollectDbgInfo
-    );
+);
 
 typedef struct _DXGK_OVERLAYINFO
 {
@@ -1501,13 +1501,13 @@ typedef struct _DXGKARG_CREATEOVERLAY
 typedef __inout DXGKARG_CREATEOVERLAY*      INOUT_PDXGKARG_CREATEOVERLAY;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_CREATEOVERLAY(
     IN_CONST_HANDLE                 hAdapter,
     INOUT_PDXGKARG_CREATEOVERLAY    pCreateOverlay
-    );
+);
 
 typedef struct _DXGKARG_UPDATEOVERLAY
 {
@@ -1517,13 +1517,13 @@ typedef struct _DXGKARG_UPDATEOVERLAY
 typedef __in CONST DXGKARG_UPDATEOVERLAY*   IN_CONST_PDXGKARG_UPDATEOVERLAY;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_UPDATEOVERLAY(
     IN_CONST_HANDLE                     hOverlay,
     IN_CONST_PDXGKARG_UPDATEOVERLAY     pUpdateOverlay
-    );
+);
 
 typedef struct _DXGKARG_FLIPOVERLAY
 {
@@ -1537,21 +1537,21 @@ typedef struct _DXGKARG_FLIPOVERLAY
 typedef __in CONST DXGKARG_FLIPOVERLAY*     IN_CONST_PDXGKARG_FLIPOVERLAY;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_FLIPOVERLAY(
     IN_CONST_HANDLE                 hOverlay,
     IN_CONST_PDXGKARG_FLIPOVERLAY   pFlipOverlay
-    );
+);
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_DESTROYOVERLAY(
     IN_CONST_HANDLE     hOverlay
-    );
+);
 
 typedef struct _DXGKARG_GETSCANLINE
 {
@@ -1563,13 +1563,13 @@ typedef struct _DXGKARG_GETSCANLINE
 typedef __inout DXGKARG_GETSCANLINE*    INOUT_PDXGKARG_GETSCANLINE;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_GETSCANLINE(
     IN_CONST_HANDLE             hAdapter,
     INOUT_PDXGKARG_GETSCANLINE  pGetScanLine
-    );
+);
 
 ///////////////////////// LDDM display miniport VidPN management DDI /////////////////////////////
 
@@ -1620,13 +1620,13 @@ typedef struct _DXGKARG_ISSUPPORTEDVIDPN
 typedef __inout DXGKARG_ISSUPPORTEDVIDPN*     INOUT_PDXGKARG_ISSUPPORTEDVIDPN;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_ISSUPPORTEDVIDPN(
     IN_CONST_HANDLE                     hAdapter,
     INOUT_PDXGKARG_ISSUPPORTEDVIDPN     pIsSupportedVidPn
-    );
+);
 
 
 /*++
@@ -1696,13 +1696,13 @@ typedef struct _DXGKARG_ENUMVIDPNCOFUNCMODALITY
 typedef __in CONST DXGKARG_ENUMVIDPNCOFUNCMODALITY* CONST       IN_CONST_PDXGKARG_ENUMVIDPNCOFUNCMODALITY_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_ENUMVIDPNCOFUNCMODALITY(
     IN_CONST_HANDLE                                     hAdapter,
     IN_CONST_PDXGKARG_ENUMVIDPNCOFUNCMODALITY_CONST     pEnumCofuncModality
-    );
+);
 
 
 /*++
@@ -1782,13 +1782,13 @@ typedef struct _DXGKARG_RECOMMENDFUNCTIONALVIDPN
 typedef __in CONST DXGKARG_RECOMMENDFUNCTIONALVIDPN* CONST      IN_CONST_PDXGKARG_RECOMMENDFUNCTIONALVIDPN_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_RECOMMENDFUNCTIONALVIDPN(
     IN_CONST_HANDLE                                     hAdapter,
     IN_CONST_PDXGKARG_RECOMMENDFUNCTIONALVIDPN_CONST    pRecommendFunctionalVidPn
-    );
+);
 
 /*++
 Routine Description:
@@ -1848,13 +1848,13 @@ typedef struct _DXGKARG_SETVIDPNSOURCEADDRESS
 typedef __in CONST DXGKARG_SETVIDPNSOURCEADDRESS*   IN_CONST_PDXGKARG_SETVIDPNSOURCEADDRESS;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETVIDPNSOURCEADDRESS(
     IN_CONST_HANDLE                             hAdapter,
     IN_CONST_PDXGKARG_SETVIDPNSOURCEADDRESS     pSetVidPnSourceAddress
-    );
+);
 
 /*++
 Routine Description:
@@ -1894,13 +1894,13 @@ typedef struct _DXGKARG_SETVIDPNSOURCEVISIBILITY
 typedef __in CONST DXGKARG_SETVIDPNSOURCEVISIBILITY*    IN_CONST_PDXGKARG_SETVIDPNSOURCEVISIBILITY;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETVIDPNSOURCEVISIBILITY(
     IN_CONST_HANDLE                             hAdapter,
     IN_CONST_PDXGKARG_SETVIDPNSOURCEVISIBILITY  pSetVidPnSourceVisibility
-    );
+);
 
 /*++
 Routine Description:
@@ -1954,13 +1954,13 @@ typedef struct _DXGKARG_COMMITVIDPN
 typedef __in CONST DXGKARG_COMMITVIDPN* CONST       IN_CONST_PDXGKARG_COMMITVIDPN_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_COMMITVIDPN(
     IN_CONST_HANDLE                         hAdapter,
     IN_CONST_PDXGKARG_COMMITVIDPN_CONST     pCommitVidPn
-    );
+);
 
 
 /*++
@@ -2000,13 +2000,13 @@ typedef struct _DXGKARG_UPDATEACTIVEVIDPNPRESENTPATH
 typedef __in CONST DXGKARG_UPDATEACTIVEVIDPNPRESENTPATH* CONST      IN_CONST_PDXGKARG_UPDATEACTIVEVIDPNPRESENTPATH_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_UPDATEACTIVEVIDPNPRESENTPATH(
     IN_CONST_HANDLE                                         hAdapter,
     IN_CONST_PDXGKARG_UPDATEACTIVEVIDPNPRESENTPATH_CONST    pUpdateActiveVidPnPresentPath
-    );
+);
 
 
 /*++
@@ -2077,13 +2077,13 @@ typedef struct _DXGKARG_RECOMMENDVIDPNTOPOLOGY
 typedef __in CONST DXGKARG_RECOMMENDVIDPNTOPOLOGY* CONST    IN_CONST_PDXGKARG_RECOMMENDVIDPNTOPOLOGY_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_RECOMMENDVIDPNTOPOLOGY(
     IN_CONST_HANDLE                                 hAdapter,
     IN_CONST_PDXGKARG_RECOMMENDVIDPNTOPOLOGY_CONST  pRecommendVidPnTopology
-    );
+);
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2091,78 +2091,78 @@ DXGKDDI_RECOMMENDVIDPNTOPOLOGY(
 // NOTE: Exposed by OS to miniport via DXGK_VIDPN_INTERFACE::pfnGetTopology
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETNUMPATHS)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY  hVidPnTopology,
-         __out SIZE_T*                 pNumPaths);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETNUMPATHS)
+(CONST D3DKMDT_HVIDPNTOPOLOGY  hVidPnTopology,
+ __out SIZE_T*                 pNumPaths);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETNUMPATHSFROMSOURCE)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY          hVidPnTopology,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
-         __out SIZE_T*                         pNumPathsFromSource);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETNUMPATHSFROMSOURCE)
+(CONST D3DKMDT_HVIDPNTOPOLOGY          hVidPnTopology,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
+ __out SIZE_T*                         pNumPathsFromSource);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ENUMPATHTARGETSFROMSOURCE)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY            hVidPnTopology,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID    VidPnSourceId,
-         CONST D3DKMDT_VIDPN_PRESENT_PATH_INDEX  VidPnPresentPathIndex,
-         __out D3DDDI_VIDEO_PRESENT_TARGET_ID*   pVidPnTargetId);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ENUMPATHTARGETSFROMSOURCE)
+(CONST D3DKMDT_HVIDPNTOPOLOGY            hVidPnTopology,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID    VidPnSourceId,
+ CONST D3DKMDT_VIDPN_PRESENT_PATH_INDEX  VidPnPresentPathIndex,
+ __out D3DDDI_VIDEO_PRESENT_TARGET_ID*   pVidPnTargetId);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETPATHSOURCEFROMTARGET)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY           hVidTopology,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID   VidPnTargetId,
-         __out D3DDDI_VIDEO_PRESENT_SOURCE_ID*  pVidPnSourceId);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_GETPATHSOURCEFROMTARGET)
+(CONST D3DKMDT_HVIDPNTOPOLOGY           hVidTopology,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID   VidPnTargetId,
+ __out D3DDDI_VIDEO_PRESENT_SOURCE_ID*  pVidPnSourceId);
 
 // NOTE: To dispose of use DXGDMM_VIDPNTOPOLOGY_INTERFACE::pfnReleasePathInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIREPATHINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID      VidPnSourceId,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID      VidPnTargetId,
-         __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  pVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIREPATHINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID      VidPnSourceId,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID      VidPnTargetId,
+ __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  pVidPnPresentPathInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIREFIRSTPATHINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
-         __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  ppFirstVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIREFIRSTPATHINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
+ __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  ppFirstVidPnPresentPathInfo);
 
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIRENEXTPATHINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
-         CONST D3DKMDT_VIDPN_PRESENT_PATH* CONST   pVidPnPresentPathInfo,
-         __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  ppNextVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ACQUIRENEXTPATHINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY              hVidPnTopology,
+ CONST D3DKMDT_VIDPN_PRESENT_PATH* CONST   pVidPnPresentPathInfo,
+ __out CONST D3DKMDT_VIDPN_PRESENT_PATH**  ppNextVidPnPresentPathInfo);
 
 // NOTE: This updates what the path supports for transformations.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_UPDATEPATHSUPPORTINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY              i_hVidPnTopology,
-         CONST D3DKMDT_VIDPN_PRESENT_PATH*         i_pVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_UPDATEPATHSUPPORTINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY              i_hVidPnTopology,
+ CONST D3DKMDT_VIDPN_PRESENT_PATH*         i_pVidPnPresentPathInfo);
 
 // NOTE: To dispose of use DXGDMM_VIDPNTOPOLOGY_INTERFACE::pfnReleasePathInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_RELEASEPATHINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY             hVidPnTopology,
-         CONST D3DKMDT_VIDPN_PRESENT_PATH* CONST  pVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_RELEASEPATHINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY             hVidPnTopology,
+ CONST D3DKMDT_VIDPN_PRESENT_PATH* CONST  pVidPnPresentPathInfo);
 
 // NOTE: To dispose of use DXGDMM_VIDPNTOPOLOGY_INTERFACE::pfnReleasePathInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_CREATENEWPATHINFO)
-        (CONST D3DKMDT_HVIDPNTOPOLOGY        hVidPnTopology,
-         __out D3DKMDT_VIDPN_PRESENT_PATH**  ppNewVidPnPresentPathInfo);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_CREATENEWPATHINFO)
+(CONST D3DKMDT_HVIDPNTOPOLOGY        hVidPnTopology,
+ __out D3DKMDT_VIDPN_PRESENT_PATH**  ppNewVidPnPresentPathInfo);
 
 // NOTE: Releases the new path info, rendering it inaccessible.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ADDPATH)
-        (D3DKMDT_HVIDPNTOPOLOGY             hVidPnTopology,
-         D3DKMDT_VIDPN_PRESENT_PATH* CONST  pVidPnPresentPath);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_ADDPATH)
+(D3DKMDT_HVIDPNTOPOLOGY             hVidPnTopology,
+ D3DKMDT_VIDPN_PRESENT_PATH* CONST  pVidPnPresentPath);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTOPOLOGY_REMOVEPATH)
-        (D3DKMDT_HVIDPNTOPOLOGY                hVidPnTopology,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID  VidPnTargetId);
+(APIENTRY *DXGKDDI_VIDPNTOPOLOGY_REMOVEPATH)
+(D3DKMDT_HVIDPNTOPOLOGY                hVidPnTopology,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID  VidPnTargetId);
 
 typedef struct _DXGK_VIDPNTOPOLOGY_INTERFACE
 {
@@ -2186,52 +2186,52 @@ typedef struct _DXGK_VIDPNTOPOLOGY_INTERFACE
 // NOTE: Exposed by OS to miniport via DXGK_VIDPN_INTERFACE::pfnAcquireSourceModeSet.
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_GETNUMMODES)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet,
-         __out SIZE_T* CONST                pNumSourceModes);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_GETNUMMODES)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet,
+ __out SIZE_T* CONST                pNumSourceModes);
 
 // NOTE: To dispose of use DXGK_VIDPNSOURCEMODESET_INTERFACE::pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIREFIRSTMODEINFO)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
-         __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppFirstVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIREFIRSTMODEINFO)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
+ __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppFirstVidPnSourceModeInfo);
 
 // NOTE: To dispose of use DXGK_VIDPNSOURCEMODESET_INTERFACE::pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIRENEXTMODEINFO)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
-         CONST D3DKMDT_VIDPN_SOURCE_MODE* CONST   pVidPnSourceModeInfo,
-         __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppNextVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIRENEXTMODEINFO)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
+ CONST D3DKMDT_VIDPN_SOURCE_MODE* CONST   pVidPnSourceModeInfo,
+ __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppNextVidPnSourceModeInfo);
 
 // NOTE: To dispose of use DXGK_VIDPNSOURCEMODESET_INTERFACE::pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIREPINNEDMODEINFO)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
-         __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppPinnedVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ACQUIREPINNEDMODEINFO)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
+ __out CONST D3DKMDT_VIDPN_SOURCE_MODE**  ppPinnedVidPnSourceModeInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_RELEASEMODEINFO)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET       hVidPnSourceModeSet,
-         CONST D3DKMDT_VIDPN_SOURCE_MODE* CONST  pVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_RELEASEMODEINFO)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET       hVidPnSourceModeSet,
+ CONST D3DKMDT_VIDPN_SOURCE_MODE* CONST  pVidPnSourceModeInfo);
 
 // NOTE: To dispose of use DXGK_VIDPNSOURCEMODESET_INTERFACE::pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_CREATENEWMODEINFO)
-        (CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet,
-         __out D3DKMDT_VIDPN_SOURCE_MODE**  ppNewVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_CREATENEWMODEINFO)
+(CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet,
+ __out D3DKMDT_VIDPN_SOURCE_MODE**  ppNewVidPnSourceModeInfo);
 
 // NOTE: On success, releases the new mode info, rendering it inaccessible.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ADDMODE)
-        (D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
-         D3DKMDT_VIDPN_SOURCE_MODE* CONST   pVidPnSourceModeInfo);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_ADDMODE)
+(D3DKMDT_HVIDPNSOURCEMODESET        hVidPnSourceModeSet,
+ D3DKMDT_VIDPN_SOURCE_MODE* CONST   pVidPnSourceModeInfo);
 
 // NOTE: Mode ID is assigned to the mode by Windows Graphics Kernel at creation time
 //       using DXGK_VIDPNSOURCEMODESET_INTERFACE::pfnCreateNewModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_PINMODE)
-        (D3DKMDT_HVIDPNSOURCEMODESET                 hVidPnSourceModeSet,
-         CONST D3DKMDT_VIDEO_PRESENT_SOURCE_MODE_ID  VidPnSourceModeId);
+(APIENTRY *DXGKDDI_VIDPNSOURCEMODESET_PINMODE)
+(D3DKMDT_HVIDPNSOURCEMODESET                 hVidPnSourceModeSet,
+ CONST D3DKMDT_VIDEO_PRESENT_SOURCE_MODE_ID  VidPnSourceModeId);
 
 typedef struct _DXGK_VIDPNSOURCEMODESET_INTERFACE
 {
@@ -2251,52 +2251,52 @@ typedef struct _DXGK_VIDPNSOURCEMODESET_INTERFACE
 // NOTE: Exposed by OS to miniport via DXGK_VIDPN_INTERFACE::pfnAcquireTargetModeSet.
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_GETNUMMODES)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet,
-         __out SIZE_T* CONST                pNumTargetModes);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_GETNUMMODES)
+(CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet,
+ __out SIZE_T* CONST                pNumTargetModes);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIREFIRSTMODEINFO)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
-         __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppFirstVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIREFIRSTMODEINFO)
+(CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
+ __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppFirstVidPnTargetModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIRENEXTMODEINFO)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
-         CONST D3DKMDT_VIDPN_TARGET_MODE* CONST   pVidPnTargetModeInfo,
-         __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppNextVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIRENEXTMODEINFO)
+(CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
+ CONST D3DKMDT_VIDPN_TARGET_MODE* CONST   pVidPnTargetModeInfo,
+ __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppNextVidPnTargetModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIREPINNEDMODEINFO)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
-         __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppPinnedVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ACQUIREPINNEDMODEINFO)
+(CONST D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
+ __out CONST D3DKMDT_VIDPN_TARGET_MODE**  ppPinnedVidPnTargetModeInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_RELEASEMODEINFO)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET       hVidPnTargetModeSet,
-         CONST D3DKMDT_VIDPN_TARGET_MODE* CONST  pVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_RELEASEMODEINFO)
+(CONST D3DKMDT_HVIDPNTARGETMODESET       hVidPnTargetModeSet,
+ CONST D3DKMDT_VIDPN_TARGET_MODE* CONST  pVidPnTargetModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_CREATENEWMODEINFO)
-        (CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet,
-         __out D3DKMDT_VIDPN_TARGET_MODE**  ppNewVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_CREATENEWMODEINFO)
+(CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet,
+ __out D3DKMDT_VIDPN_TARGET_MODE**  ppNewVidPnTargetModeInfo);
 
 // NOTE: On success, releases the new mode info, rendering it inaccessible.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ADDMODE)
-        (D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
-         D3DKMDT_VIDPN_TARGET_MODE* CONST   pVidPnTargetModeInfo);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_ADDMODE)
+(D3DKMDT_HVIDPNTARGETMODESET        hVidPnTargetModeSet,
+ D3DKMDT_VIDPN_TARGET_MODE* CONST   pVidPnTargetModeInfo);
 
 // NOTE: Mode ID is assigned to the mode by Windows Graphics Kernel at creation time
 //       using DXGKTARGETMODESET_INTERFACE::pfnCreateNewModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPNTARGETMODESET_PINMODE)
-        (D3DKMDT_HVIDPNTARGETMODESET                 hVidPnTargetModeSet,
-         CONST D3DKMDT_VIDEO_PRESENT_TARGET_MODE_ID  VidPnTargetModeId);
+(APIENTRY *DXGKDDI_VIDPNTARGETMODESET_PINMODE)
+(D3DKMDT_HVIDPNTARGETMODESET                 hVidPnTargetModeSet,
+ CONST D3DKMDT_VIDEO_PRESENT_TARGET_MODE_ID  VidPnTargetModeId);
 
 typedef struct _DXGK_VIDPNTARGETMODESET_INTERFACE
 {
@@ -2320,10 +2320,10 @@ typedef struct _DXGK_VIDPNTARGETMODESET_INTERFACE
 //////////////
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_GETTOPOLOGY)
-        (CONST D3DKMDT_HVIDPN                         hVidPn,
-         __out D3DKMDT_HVIDPNTOPOLOGY*                phVidPnTopology,
-         __out CONST DXGK_VIDPNTOPOLOGY_INTERFACE**   ppVidPnTopologyInterface);
+(APIENTRY *DXGKDDI_VIDPN_GETTOPOLOGY)
+(CONST D3DKMDT_HVIDPN                         hVidPn,
+ __out D3DKMDT_HVIDPNTOPOLOGY*                phVidPnTopology,
+ __out CONST DXGK_VIDPNTOPOLOGY_INTERFACE**   ppVidPnTopologyInterface);
 
 
 /////////////////////
@@ -2331,36 +2331,36 @@ typedef NTSTATUS
 /////////////////////
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_ACQUIRESOURCEMODESET)
-        (CONST D3DKMDT_HVIDPN                              hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID              VidPnSourceId,
-         __out D3DKMDT_HVIDPNSOURCEMODESET*                phVidPnSourceModeSet,
-         __out CONST DXGK_VIDPNSOURCEMODESET_INTERFACE**   ppVidPnSourceModeSetInterface);
+(APIENTRY *DXGKDDI_VIDPN_ACQUIRESOURCEMODESET)
+(CONST D3DKMDT_HVIDPN                              hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID              VidPnSourceId,
+ __out D3DKMDT_HVIDPNSOURCEMODESET*                phVidPnSourceModeSet,
+ __out CONST DXGK_VIDPNSOURCEMODESET_INTERFACE**   ppVidPnSourceModeSetInterface);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_RELEASESOURCEMODESET)
-        (CONST D3DKMDT_HVIDPN               hVidPn,
-         CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet);
+(APIENTRY *DXGKDDI_VIDPN_RELEASESOURCEMODESET)
+(CONST D3DKMDT_HVIDPN               hVidPn,
+ CONST D3DKMDT_HVIDPNSOURCEMODESET  hVidPnSourceModeSet);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_CREATENEWSOURCEMODESET)
-        (CONST D3DKMDT_HVIDPN                             hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID             VidPnSourceId,
-         __out D3DKMDT_HVIDPNSOURCEMODESET*               phNewVidPnSourceModeSet,
-         __out CONST DXGK_VIDPNSOURCEMODESET_INTERFACE**  ppVidPnSourceModeSetInterface);
+(APIENTRY *DXGKDDI_VIDPN_CREATENEWSOURCEMODESET)
+(CONST D3DKMDT_HVIDPN                             hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID             VidPnSourceId,
+ __out D3DKMDT_HVIDPNSOURCEMODESET*               phNewVidPnSourceModeSet,
+ __out CONST DXGK_VIDPNSOURCEMODESET_INTERFACE**  ppVidPnSourceModeSetInterface);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_ASSIGNSOURCEMODESET)
-        (D3DKMDT_HVIDPN                        hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
-         CONST D3DKMDT_HVIDPNSOURCEMODESET     hVidPnSourceModeSet);
+(APIENTRY *DXGKDDI_VIDPN_ASSIGNSOURCEMODESET)
+(D3DKMDT_HVIDPN                        hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
+ CONST D3DKMDT_HVIDPNSOURCEMODESET     hVidPnSourceModeSet);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_ASSIGNMULTISAMPLINGMETHODSET)
-        (D3DKMDT_HVIDPN                        hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
-         CONST SIZE_T                          NumMethods,
-         CONST D3DDDI_MULTISAMPLINGMETHOD*     pSupportedMethodSet);
+(APIENTRY *DXGKDDI_VIDPN_ASSIGNMULTISAMPLINGMETHODSET)
+(D3DKMDT_HVIDPN                        hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId,
+ CONST SIZE_T                          NumMethods,
+ CONST D3DDDI_MULTISAMPLINGMETHOD*     pSupportedMethodSet);
 
 
 /////////////////////
@@ -2368,29 +2368,29 @@ typedef NTSTATUS
 /////////////////////
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_ACQUIRETARGETMODESET)
-        (CONST D3DKMDT_HVIDPN                              hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID              VidPnTargetId,
-         __out D3DKMDT_HVIDPNTARGETMODESET*                phVidPnTargetModeSet,
-         __out CONST DXGK_VIDPNTARGETMODESET_INTERFACE**   ppVidPnTargetModeSetInterface);
+(APIENTRY *DXGKDDI_VIDPN_ACQUIRETARGETMODESET)
+(CONST D3DKMDT_HVIDPN                              hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID              VidPnTargetId,
+ __out D3DKMDT_HVIDPNTARGETMODESET*                phVidPnTargetModeSet,
+ __out CONST DXGK_VIDPNTARGETMODESET_INTERFACE**   ppVidPnTargetModeSetInterface);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_RELEASETARGETMODESET)
-        (CONST D3DKMDT_HVIDPN               hVidPn,
-         CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet);
+(APIENTRY *DXGKDDI_VIDPN_RELEASETARGETMODESET)
+(CONST D3DKMDT_HVIDPN               hVidPn,
+ CONST D3DKMDT_HVIDPNTARGETMODESET  hVidPnTargetModeSet);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_CREATENEWTARGETMODESET)
-        (CONST D3DKMDT_HVIDPN                              hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID              VidPnTargetId,
-         __out D3DKMDT_HVIDPNTARGETMODESET*                phNewVidPnTargetModeSet,
-         __out CONST DXGK_VIDPNTARGETMODESET_INTERFACE**   ppVidPnTargetModeSetInterace);
+(APIENTRY *DXGKDDI_VIDPN_CREATENEWTARGETMODESET)
+(CONST D3DKMDT_HVIDPN                              hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID              VidPnTargetId,
+ __out D3DKMDT_HVIDPNTARGETMODESET*                phNewVidPnTargetModeSet,
+ __out CONST DXGK_VIDPNTARGETMODESET_INTERFACE**   ppVidPnTargetModeSetInterace);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_VIDPN_ASSIGNTARGETMODESET)
-        (D3DKMDT_HVIDPN                        hVidPn,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID  VidPnTargetId,
-         CONST D3DKMDT_HVIDPNTARGETMODESET     hVidPnTargetModeSet);
+(APIENTRY *DXGKDDI_VIDPN_ASSIGNTARGETMODESET)
+(D3DKMDT_HVIDPN                        hVidPn,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID  VidPnTargetId,
+ CONST D3DKMDT_HVIDPNTARGETMODESET     hVidPnTargetModeSet);
 
 
 // DXGK_VIDPN_INTERFACE interface versions.
@@ -2428,10 +2428,10 @@ DXGK_VIDPN_INTERFACE;
 
 // Callback miniport uses to query DXGK_VIDPN_INTERFACE.
 typedef NTSTATUS
-        (APIENTRY CALLBACK *DXGKCB_QUERYVIDPNINTERFACE)
-        (CONST D3DKMDT_HVIDPN                hVidPn,
-         CONST DXGK_VIDPN_INTERFACE_VERSION  VidPnInterfaceVersion,
-         __out CONST DXGK_VIDPN_INTERFACE**  ppVidPnInterface);
+(APIENTRY CALLBACK *DXGKCB_QUERYVIDPNINTERFACE)
+(CONST D3DKMDT_HVIDPN                hVidPn,
+ CONST DXGK_VIDPN_INTERFACE_VERSION  VidPnInterfaceVersion,
+ __out CONST DXGK_VIDPN_INTERFACE**  ppVidPnInterface);
 
 
 /////////////////////////////
@@ -2444,45 +2444,45 @@ typedef NTSTATUS
 // NOTE: Exposed by OS to miniport via DXGK_MONITOR_INTERFACE::pfnAcquireMonitorSourceModeSet.
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_GETNUMMODES)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet,
-         __out SIZE_T* CONST                  pNumMonitorSourceModes);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_GETNUMMODES)
+(CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet,
+ __out SIZE_T* CONST                  pNumMonitorSourceModes);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIREPREFERREDMODEINFO)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
-         __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppFirstMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIREPREFERREDMODEINFO)
+(CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
+ __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppFirstMonitorSourceModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIREFIRSTMODEINFO)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
-         __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppFirstMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIREFIRSTMODEINFO)
+(CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
+ __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppFirstMonitorSourceModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIRENEXTMODEINFO)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
-         CONST D3DKMDT_MONITOR_SOURCE_MODE* CONST   pMonitorSourceModeInfo,
-         __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppNextMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ACQUIRENEXTMODEINFO)
+(CONST D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
+ CONST D3DKMDT_MONITOR_SOURCE_MODE* CONST   pMonitorSourceModeInfo,
+ __out CONST D3DKMDT_MONITOR_SOURCE_MODE**  ppNextMonitorSourceModeInfo);
 
 // NOTE: To dispose of use pfnReleaseModeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_CREATENEWMODEINFO)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet,
-         __out D3DKMDT_MONITOR_SOURCE_MODE**  ppNewMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_CREATENEWMODEINFO)
+(CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet,
+ __out D3DKMDT_MONITOR_SOURCE_MODE**  ppNewMonitorSourceModeInfo);
 
 // NOTE: On success, releases the new mode info, rendering it inaccessible.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ADDMODE)
-        (D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
-         D3DKMDT_MONITOR_SOURCE_MODE* CONST   pMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_ADDMODE)
+(D3DKMDT_HMONITORSOURCEMODESET        hMonitorSourceModeSet,
+ D3DKMDT_MONITOR_SOURCE_MODE* CONST   pMonitorSourceModeInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORSOURCEMODESET_RELEASEMODEINFO)
-        (CONST D3DKMDT_HMONITORSOURCEMODESET       hMonitorSourceModeSet,
-         CONST D3DKMDT_MONITOR_SOURCE_MODE* CONST  pMonitorSourceModeInfo);
+(APIENTRY *DXGKDDI_MONITORSOURCEMODESET_RELEASEMODEINFO)
+(CONST D3DKMDT_HMONITORSOURCEMODESET       hMonitorSourceModeSet,
+ CONST D3DKMDT_MONITOR_SOURCE_MODE* CONST  pMonitorSourceModeInfo);
 
 
 typedef struct _DXGK_MONITORSOURCEMODESET_INTERFACE
@@ -2501,27 +2501,27 @@ typedef struct _DXGK_MONITORSOURCEMODESET_INTERFACE
 // NOTE: Exposed by OS to miniport via DXGK_MONITOR_INTERFACE::pfnAcquireMonitorFrequencyRangeSet.
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_GETNUMFREQUENCYRANGES)
-        (CONST D3DKMDT_HMONITORFREQUENCYRANGESET  hMonitorFrequencyRangeSet,
-         __out SIZE_T* CONST                      pNumMonitorFrequencyRanges);
+(APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_GETNUMFREQUENCYRANGES)
+(CONST D3DKMDT_HMONITORFREQUENCYRANGESET  hMonitorFrequencyRangeSet,
+ __out SIZE_T* CONST                      pNumMonitorFrequencyRanges);
 
 // NOTE: To dispose of use pfnReleaseFrequencyRangeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_ACQUIREFIRSTFREQUENCYRANGEINFO)
-        (CONST D3DKMDT_HMONITORFREQUENCYRANGESET        hMonitorFrequencyRangeSet,
-         __out CONST D3DKMDT_MONITOR_FREQUENCY_RANGE**  ppFirstMonitorFrequencyRangeInfo);
+(APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_ACQUIREFIRSTFREQUENCYRANGEINFO)
+(CONST D3DKMDT_HMONITORFREQUENCYRANGESET        hMonitorFrequencyRangeSet,
+ __out CONST D3DKMDT_MONITOR_FREQUENCY_RANGE**  ppFirstMonitorFrequencyRangeInfo);
 
 // NOTE: To dispose of use pfnReleaseFrequencyRangeInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_ACQUIRENEXTFREQUENCYRANGEINFO)
-        (CONST D3DKMDT_HMONITORFREQUENCYRANGESET        hMonitorFrequencyRangeSet,
-         CONST D3DKMDT_MONITOR_FREQUENCY_RANGE* CONST   pMonitorFrequencyRangeInfo,
-         __out CONST D3DKMDT_MONITOR_FREQUENCY_RANGE**  ppNextMonitorFrequencyRangeInfo);
+(APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_ACQUIRENEXTFREQUENCYRANGEINFO)
+(CONST D3DKMDT_HMONITORFREQUENCYRANGESET        hMonitorFrequencyRangeSet,
+ CONST D3DKMDT_MONITOR_FREQUENCY_RANGE* CONST   pMonitorFrequencyRangeInfo,
+ __out CONST D3DKMDT_MONITOR_FREQUENCY_RANGE**  ppNextMonitorFrequencyRangeInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_RELEASEFREQUENCYRANGEINFO)
-        (CONST D3DKMDT_HMONITORFREQUENCYRANGESET       hMonitorFrequencyRangeSet,
-         CONST D3DKMDT_MONITOR_FREQUENCY_RANGE* CONST  pMonitorFrequencyRangeInfo);
+(APIENTRY *DXGKDDI_MONITORFREQUENCYRANGESET_RELEASEFREQUENCYRANGEINFO)
+(CONST D3DKMDT_HMONITORFREQUENCYRANGESET       hMonitorFrequencyRangeSet,
+ CONST D3DKMDT_MONITOR_FREQUENCY_RANGE* CONST  pMonitorFrequencyRangeInfo);
 
 typedef struct _DXGK_MONITORFREQUENCYRANGESET_INTERFACE
 {
@@ -2537,27 +2537,27 @@ typedef struct _DXGK_MONITORFREQUENCYRANGESET_INTERFACE
 // NOTE: Exposed by OS to miniport via DXGK_MONITOR_INTERFACE::pfnAcquireMonitorDescriptorSet.
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_GETNUMDESCRIPTORS)
-        (CONST D3DKMDT_HMONITORDESCRIPTORSET  hMonitorDescriptorSet,
-         __out SIZE_T* CONST                  pNumMonitorDescriptors);
+(APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_GETNUMDESCRIPTORS)
+(CONST D3DKMDT_HMONITORDESCRIPTORSET  hMonitorDescriptorSet,
+ __out SIZE_T* CONST                  pNumMonitorDescriptors);
 
 // NOTE: To dispose of use pfnReleaseDescriptorInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_ACQUIREFIRSTDESCRIPTORINFO)
-        (CONST D3DKMDT_HMONITORDESCRIPTORSET       hMonitorDescriptorSet,
-         __out CONST D3DKMDT_MONITOR_DESCRIPTOR**  ppFirstMonitorDescriptorInfo);
+(APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_ACQUIREFIRSTDESCRIPTORINFO)
+(CONST D3DKMDT_HMONITORDESCRIPTORSET       hMonitorDescriptorSet,
+ __out CONST D3DKMDT_MONITOR_DESCRIPTOR**  ppFirstMonitorDescriptorInfo);
 
 // NOTE: To dispose of use pfnReleaseDescriptorInfo.
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_ACQUIRENEXTDESCRIPTORINFO)
-        (CONST D3DKMDT_HMONITORDESCRIPTORSET       hMonitorDescriptorSet,
-         CONST D3DKMDT_MONITOR_DESCRIPTOR* CONST   pMonitorDescriptorInfo,
-         __out CONST D3DKMDT_MONITOR_DESCRIPTOR**  ppNextMonitorDescriptorInfo);
+(APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_ACQUIRENEXTDESCRIPTORINFO)
+(CONST D3DKMDT_HMONITORDESCRIPTORSET       hMonitorDescriptorSet,
+ CONST D3DKMDT_MONITOR_DESCRIPTOR* CONST   pMonitorDescriptorInfo,
+ __out CONST D3DKMDT_MONITOR_DESCRIPTOR**  ppNextMonitorDescriptorInfo);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_RELEASEDESCRIPTORINFO)
-        (CONST D3DKMDT_HMONITORDESCRIPTORSET      hMonitorDescriptorSet,
-         CONST D3DKMDT_MONITOR_DESCRIPTOR* CONST  pMonitorDescriptorInfo);
+(APIENTRY *DXGKDDI_MONITORDESCRIPTORSET_RELEASEDESCRIPTORINFO)
+(CONST D3DKMDT_HMONITORDESCRIPTORSET      hMonitorDescriptorSet,
+ CONST D3DKMDT_MONITOR_DESCRIPTOR* CONST  pMonitorDescriptorInfo);
 
 typedef struct _DXGK_MONITORDESCRIPTORSET_INTERFACE
 {
@@ -2570,30 +2570,30 @@ typedef struct _DXGK_MONITORDESCRIPTORSET_INTERFACE
 
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITOR_ACQUIREMONITORSOURCEMODESET)
-        (CONST D3DKMDT_ADAPTER                              hAdapter,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID               VideoPresentTargetId,
-         __out D3DKMDT_HMONITORSOURCEMODESET*               phMonitorSourceModeSet,
-         __out CONST DXGK_MONITORSOURCEMODESET_INTERFACE**  ppMonitorSourceModeSetInterface);
+(APIENTRY *DXGKDDI_MONITOR_ACQUIREMONITORSOURCEMODESET)
+(CONST D3DKMDT_ADAPTER                              hAdapter,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID               VideoPresentTargetId,
+ __out D3DKMDT_HMONITORSOURCEMODESET*               phMonitorSourceModeSet,
+ __out CONST DXGK_MONITORSOURCEMODESET_INTERFACE**  ppMonitorSourceModeSetInterface);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITOR_RELEASEMONITORSOURCEMODESET)
-        (CONST D3DKMDT_ADAPTER                hAdapter,
-         CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet);
+(APIENTRY *DXGKDDI_MONITOR_RELEASEMONITORSOURCEMODESET)
+(CONST D3DKMDT_ADAPTER                hAdapter,
+ CONST D3DKMDT_HMONITORSOURCEMODESET  hMonitorSourceModeSet);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITOR_GETMONITORFREQUENCYRANGESET)
-        (CONST D3DKMDT_ADAPTER                                  hAdapter,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID                   VideoPresentTargetId,
-         __out D3DKMDT_HMONITORFREQUENCYRANGESET*               phMonitorFrequencyRangeSet,
-         __out CONST DXGK_MONITORFREQUENCYRANGESET_INTERFACE**  ppMonitorFrequencyRangeSetInterface);
+(APIENTRY *DXGKDDI_MONITOR_GETMONITORFREQUENCYRANGESET)
+(CONST D3DKMDT_ADAPTER                                  hAdapter,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID                   VideoPresentTargetId,
+ __out D3DKMDT_HMONITORFREQUENCYRANGESET*               phMonitorFrequencyRangeSet,
+ __out CONST DXGK_MONITORFREQUENCYRANGESET_INTERFACE**  ppMonitorFrequencyRangeSetInterface);
 
 typedef NTSTATUS
-        (APIENTRY *DXGKDDI_MONITOR_GETMONITORDESCRIPTORSET)
-        (CONST D3DKMDT_ADAPTER                              hAdapter,
-         CONST D3DDDI_VIDEO_PRESENT_TARGET_ID               VideoPresentTargetId,
-         __out D3DKMDT_HMONITORDESCRIPTORSET*               phMonitorDescriptorSet,
-         __out CONST DXGK_MONITORDESCRIPTORSET_INTERFACE**  ppMonitorDescriptorSetInterface);
+(APIENTRY *DXGKDDI_MONITOR_GETMONITORDESCRIPTORSET)
+(CONST D3DKMDT_ADAPTER                              hAdapter,
+ CONST D3DDDI_VIDEO_PRESENT_TARGET_ID               VideoPresentTargetId,
+ __out D3DKMDT_HMONITORDESCRIPTORSET*               phMonitorDescriptorSet,
+ __out CONST DXGK_MONITORDESCRIPTORSET_INTERFACE**  ppMonitorDescriptorSetInterface);
 
 
 // DXGK_MONITOR_INTERFACE interface versions.
@@ -2619,29 +2619,29 @@ DXGK_MONITOR_INTERFACE;
 
 // Callback miniport uses to query DXGK_MONITOR_INTERFACE.
 typedef NTSTATUS
-        (APIENTRY CALLBACK *DXGKCB_QUERYMONITORINTERFACE)
-        (CONST HANDLE                          hAdapter,
-         CONST DXGK_MONITOR_INTERFACE_VERSION  MonitorInterfaceVersion,
-         __out CONST DXGK_MONITOR_INTERFACE**  ppMonitorInterface);
+(APIENTRY CALLBACK *DXGKCB_QUERYMONITORINTERFACE)
+(CONST HANDLE                          hAdapter,
+ CONST DXGK_MONITOR_INTERFACE_VERSION  MonitorInterfaceVersion,
+ __out CONST DXGK_MONITOR_INTERFACE**  ppMonitorInterface);
 
 
 
 //////////////////// Timeout Detection and Recovery /////////////////////////////////////////////////////////
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY CALLBACK
 DXGKDDI_RESETFROMTIMEOUT(
     IN_CONST_HANDLE     hAdapter
-    );
+);
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY CALLBACK
 DXGKDDI_RESTARTFROMTIMEOUT(
     IN_CONST_HANDLE     hAdapter
-    );
+);
 
 typedef enum _DXGK_ACTIVE_VIDPN_INVALIDATION_REASON
 {
@@ -2671,20 +2671,20 @@ typedef struct _DXGK_INTERFACESPECIFICDATA
 typedef struct _DXGKARG_SETDISPLAYPRIVATEDRIVERFORMAT
 {
     D3DDDI_VIDEO_PRESENT_SOURCE_ID  VidPnSourceId;                  // in: Identifies which VidPn we are changing the private driver format attribute of
-    HANDLE                          PrimaryAllocation;              // in: If non zero specifies the current primary allocation for the given VidPn    
+    HANDLE                          PrimaryAllocation;              // in: If non zero specifies the current primary allocation for the given VidPn
     UINT                            PrivateDriverFormatAttribute;   // in: PrivateFormatAttribute to set for the given VidPn
 } DXGKARG_SETDISPLAYPRIVATEDRIVERFORMAT;
 
 typedef __in DXGKARG_SETDISPLAYPRIVATEDRIVERFORMAT*    IN_CONST_PDXGKARG_SETDISPLAYPRIVATEDRIVERFORMAT;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_SETDISPLAYPRIVATEDRIVERFORMAT(
     IN_CONST_HANDLE                                 hAdapter,
     IN_CONST_PDXGKARG_SETDISPLAYPRIVATEDRIVERFORMAT pSetDisplayPrivateDriverFormat
-    );
+);
 
 
 /*++
@@ -2730,13 +2730,13 @@ typedef struct _DXGKARG_RECOMMENDMONITORMODES
 typedef __in CONST DXGKARG_RECOMMENDMONITORMODES* CONST     IN_CONST_PDXGKARG_RECOMMENDMONITORMODES_CONST;
 
 typedef
-    __checkReturn
+__checkReturn
 NTSTATUS
 APIENTRY
 DXGKDDI_RECOMMENDMONITORMODES(
     IN_CONST_HANDLE                                 hAdapter,
     IN_CONST_PDXGKARG_RECOMMENDMONITORMODES_CONST   pRecommendMonitorModes
-    );
+);
 
 //
 //     Function pointer typedefs

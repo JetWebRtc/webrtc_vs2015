@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DVD subtitle decoding
  * Copyright (c) 2005 Fabrice Bellard
  *
@@ -26,7 +26,8 @@
 #include "avcodec.h"
 
 /* parser definition */
-typedef struct DVDSubParseContext {
+typedef struct DVDSubParseContext
+{
     uint8_t *packet;
     int packet_len;
     int packet_index;
@@ -44,8 +45,10 @@ static int dvdsub_parse(AVCodecParserContext *s,
 {
     DVDSubParseContext *pc = s->priv_data;
 
-    if (pc->packet_index == 0) {
-        if (buf_size < 2 || AV_RB16(buf) && buf_size < 6) {
+    if (pc->packet_index == 0)
+    {
+        if (buf_size < 2 || AV_RB16(buf) && buf_size < 6)
+        {
             if (buf_size)
                 av_log(avctx, AV_LOG_DEBUG, "Parser input %d too small\n", buf_size);
             return buf_size;
@@ -56,17 +59,22 @@ static int dvdsub_parse(AVCodecParserContext *s,
         av_freep(&pc->packet);
         pc->packet = av_malloc(pc->packet_len);
     }
-    if (pc->packet) {
-        if (pc->packet_index + buf_size <= pc->packet_len) {
+    if (pc->packet)
+    {
+        if (pc->packet_index + buf_size <= pc->packet_len)
+        {
             memcpy(pc->packet + pc->packet_index, buf, buf_size);
             pc->packet_index += buf_size;
-            if (pc->packet_index >= pc->packet_len) {
+            if (pc->packet_index >= pc->packet_len)
+            {
                 *poutbuf = pc->packet;
                 *poutbuf_size = pc->packet_len;
                 pc->packet_index = 0;
                 return buf_size;
             }
-        } else {
+        }
+        else
+        {
             /* erroneous size */
             pc->packet_index = 0;
         }
@@ -82,7 +90,8 @@ static av_cold void dvdsub_parse_close(AVCodecParserContext *s)
     av_freep(&pc->packet);
 }
 
-AVCodecParser ff_dvdsub_parser = {
+AVCodecParser ff_dvdsub_parser =
+{
     .codec_ids      = { AV_CODEC_ID_DVD_SUBTITLE },
     .priv_data_size = sizeof(DVDSubParseContext),
     .parser_init    = dvdsub_parse_init,

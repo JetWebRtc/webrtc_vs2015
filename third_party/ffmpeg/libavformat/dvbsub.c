@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW dvbsub demuxer
  * Copyright (c) 2015 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -32,28 +32,36 @@ static int dvbsub_probe(AVProbeData *p)
     int type, len;
     int max_score = 0;
 
-    for(i=0; i<p->buf_size; i++){
-        if (p->buf[i] == 0x0f) {
+    for(i=0; i<p->buf_size; i++)
+    {
+        if (p->buf[i] == 0x0f)
+        {
             const uint8_t *ptr = p->buf + i;
             uint8_t histogram[6] = {0};
             int min = 255;
-            for(j=0; 6 < end - ptr; j++) {
+            for(j=0; 6 < end - ptr; j++)
+            {
                 if (*ptr != 0x0f)
                     break;
                 type    = ptr[1];
                 //page_id = AV_RB16(ptr + 2);
                 len     = AV_RB16(ptr + 4);
-                if (type == 0x80) {
+                if (type == 0x80)
+                {
                     ;
-                } else if (type >= 0x10 && type <= 0x14) {
+                }
+                else if (type >= 0x10 && type <= 0x14)
+                {
                     histogram[type - 0x10] ++;
-                } else
+                }
+                else
                     break;
                 if (6 + len > end - ptr)
                     break;
                 ptr += 6 + len;
             }
-            for (k=0; k < 4; k++) {
+            for (k=0; k < 4; k++)
+            {
                 min = FFMIN(min, histogram[k]);
             }
             if (min && j > max_score)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTMP HTTP network protocol
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -36,7 +36,8 @@
 #define RTMPTS_DEFAULT_PORT RTMPS_DEFAULT_PORT
 
 /* protocol handler context */
-typedef struct RTMP_HTTPContext {
+typedef struct RTMP_HTTPContext
+{
     const AVClass *class;
     URLContext   *stream;           ///< HTTP stream
     char         host[256];         ///< hostname of the server
@@ -86,10 +87,12 @@ static int rtmp_http_write(URLContext *h, const uint8_t *buf, int size)
 {
     RTMP_HTTPContext *rt = h->priv_data;
 
-    if (rt->out_size + size > rt->out_capacity) {
+    if (rt->out_size + size > rt->out_capacity)
+    {
         int err;
         rt->out_capacity = (rt->out_size + size) * 2;
-        if ((err = av_reallocp(&rt->out_data, rt->out_capacity)) < 0) {
+        if ((err = av_reallocp(&rt->out_data, rt->out_capacity)) < 0)
+        {
             rt->out_size = 0;
             rt->out_capacity = 0;
             return err;
@@ -108,13 +111,16 @@ static int rtmp_http_read(URLContext *h, uint8_t *buf, int size)
     int ret, off = 0;
 
     /* try to read at least 1 byte of data */
-    do {
+    do
+    {
         ret = ffurl_read(rt->stream, buf + off, size);
         if (ret < 0 && ret != AVERROR_EOF)
             return ret;
 
-        if (!ret || ret == AVERROR_EOF) {
-            if (rt->finishing) {
+        if (!ret || ret == AVERROR_EOF)
+        {
+            if (rt->finishing)
+            {
                 /* Do not send new requests when the client wants to
                  * close the connection. */
                 return AVERROR(EAGAIN);
@@ -123,11 +129,15 @@ static int rtmp_http_read(URLContext *h, uint8_t *buf, int size)
             /* When the client has reached end of file for the last request,
              * we have to send a new request if we have buffered data.
              * Otherwise, we have to send an idle POST. */
-            if (rt->out_size > 0) {
+            if (rt->out_size > 0)
+            {
                 if ((ret = rtmp_http_send_cmd(h, "send")) < 0)
                     return ret;
-            } else {
-                if (rt->nb_bytes_read == 0) {
+            }
+            else
+            {
+                if (rt->nb_bytes_read == 0)
+                {
                     /* Wait 50ms before retrying to read a server reply in
                      * order to reduce the number of idle requets. */
                     av_usleep(50000);
@@ -140,16 +150,20 @@ static int rtmp_http_read(URLContext *h, uint8_t *buf, int size)
                     return ret;
             }
 
-            if (h->flags & AVIO_FLAG_NONBLOCK) {
+            if (h->flags & AVIO_FLAG_NONBLOCK)
+            {
                 /* no incoming data to handle in nonblocking mode */
                 return AVERROR(EAGAIN);
             }
-        } else {
+        }
+        else
+        {
             off  += ret;
             size -= ret;
             rt->nb_bytes_read += ret;
         }
-    } while (off <= 0);
+    }
+    while (off <= 0);
 
     return off;
 }
@@ -160,13 +174,16 @@ static int rtmp_http_close(URLContext *h)
     uint8_t tmp_buf[2048];
     int ret = 0;
 
-    if (rt->initialized) {
+    if (rt->initialized)
+    {
         /* client wants to close the connection */
         rt->finishing = 1;
 
-        do {
+        do
+        {
             ret = rtmp_http_read(h, tmp_buf, sizeof(tmp_buf));
-        } while (ret > 0);
+        }
+        while (ret > 0);
 
         /* re-init output buffer before sending the close command */
         rt->out_size = 0;
@@ -197,11 +214,14 @@ static int rtmp_http_open(URLContext *h, const char *uri, int flags)
      * Note: the reply doesn't contain a value for the polling interval.
      * A successful connect resets the consecutive index that is used
      * in the URLs. */
-    if (rt->tls) {
+    if (rt->tls)
+    {
         if (rt->port < 0)
             rt->port = RTMPTS_DEFAULT_PORT;
         ff_url_join(url, sizeof(url), "https", NULL, rt->host, rt->port, "/open/1");
-    } else {
+    }
+    else
+    {
         if (rt->port < 0)
             rt->port = RTMPT_DEFAULT_PORT;
         ff_url_join(url, sizeof(url), "http", NULL, rt->host, rt->port, "/open/1");
@@ -225,14 +245,16 @@ static int rtmp_http_open(URLContext *h, const char *uri, int flags)
         goto fail;
 
     /* read the server reply which contains a unique ID */
-    for (;;) {
+    for (;;)
+    {
         ret = ffurl_read(rt->stream, rt->client_id + off, sizeof(rt->client_id) - off);
         if (!ret || ret == AVERROR_EOF)
             break;
         if (ret < 0)
             goto fail;
         off += ret;
-        if (off == sizeof(rt->client_id)) {
+        if (off == sizeof(rt->client_id))
+        {
             ret = AVERROR(EIO);
             goto fail;
         }
@@ -253,19 +275,22 @@ fail:
 #define OFFSET(x) offsetof(RTMP_HTTPContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption ffrtmphttp_options[] = {
+static const AVOption ffrtmphttp_options[] =
+{
     {"ffrtmphttp_tls", "Use a HTTPS tunneling connection (RTMPTS).", OFFSET(tls), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, DEC},
     { NULL },
 };
 
-static const AVClass ffrtmphttp_class = {
+static const AVClass ffrtmphttp_class =
+{
     .class_name = "ffrtmphttp",
     .item_name  = av_default_item_name,
     .option     = ffrtmphttp_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_ffrtmphttp_protocol = {
+URLProtocol ff_ffrtmphttp_protocol =
+{
     .name           = "ffrtmphttp",
     .url_open       = rtmp_http_open,
     .url_read       = rtmp_http_read,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Mark Hills <mark@pogo.org.uk>
  *
  * This file is part of FFmpeg.
@@ -39,7 +39,8 @@
 
 #define BUFFER_SIZE (1024 * 64)
 
-typedef struct LibvorbisEncContext {
+typedef struct LibvorbisEncContext
+{
     AVClass *av_class;                  /**< class for AVOptions            */
     vorbis_info vi;                     /**< vorbis_info used during init   */
     vorbis_dsp_state vd;                /**< DSP state used for analysis    */
@@ -53,17 +54,20 @@ typedef struct LibvorbisEncContext {
     AudioFrameQueue afq;                /**< frame queue for timestamps     */
 } LibvorbisEncContext;
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "iblock", "Sets the impulse block bias", offsetof(LibvorbisEncContext, iblock), AV_OPT_TYPE_DOUBLE, { .dbl = 0 }, -15, 0, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
     { NULL }
 };
 
-static const AVCodecDefault defaults[] = {
+static const AVCodecDefault defaults[] =
+{
     { "b",  "0" },
     { NULL },
 };
 
-static const AVClass vorbis_class = {
+static const AVClass vorbis_class =
+{
     .class_name = "libvorbis",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -72,11 +76,16 @@ static const AVClass vorbis_class = {
 
 static int vorbis_error_to_averror(int ov_err)
 {
-    switch (ov_err) {
-    case OV_EFAULT: return AVERROR_BUG;
-    case OV_EINVAL: return AVERROR(EINVAL);
-    case OV_EIMPL:  return AVERROR(EINVAL);
-    default:        return AVERROR_UNKNOWN;
+    switch (ov_err)
+    {
+    case OV_EFAULT:
+        return AVERROR_BUG;
+    case OV_EINVAL:
+        return AVERROR(EINVAL);
+    case OV_EIMPL:
+        return AVERROR(EINVAL);
+    default:
+        return AVERROR_UNKNOWN;
     }
 }
 
@@ -86,7 +95,8 @@ static av_cold int libvorbis_setup(vorbis_info *vi, AVCodecContext *avctx)
     double cfreq;
     int ret;
 
-    if (avctx->flags & AV_CODEC_FLAG_QSCALE || !avctx->bit_rate) {
+    if (avctx->flags & AV_CODEC_FLAG_QSCALE || !avctx->bit_rate)
+    {
         /* variable bitrate
          * NOTE: we use the oggenc range of -1 to 10 for global_quality for
          *       user convenience, but libvorbis uses -0.1 to 1.0.
@@ -99,7 +109,9 @@ static av_cold int libvorbis_setup(vorbis_info *vi, AVCodecContext *avctx)
                                            avctx->sample_rate,
                                            q / 10.0)))
             goto error;
-    } else {
+    }
+    else
+    {
         int minrate = avctx->rc_min_rate > 0 ? avctx->rc_min_rate : -1;
         int maxrate = avctx->rc_max_rate > 0 ? avctx->rc_max_rate : -1;
 
@@ -116,44 +128,50 @@ static av_cold int libvorbis_setup(vorbis_info *vi, AVCodecContext *avctx)
     }
 
     /* cutoff frequency */
-    if (avctx->cutoff > 0) {
+    if (avctx->cutoff > 0)
+    {
         cfreq = avctx->cutoff / 1000.0;
         if ((ret = vorbis_encode_ctl(vi, OV_ECTL_LOWPASS_SET, &cfreq)))
             goto error; /* should not happen */
     }
 
     /* impulse block bias */
-    if (s->iblock) {
+    if (s->iblock)
+    {
         if ((ret = vorbis_encode_ctl(vi, OV_ECTL_IBLOCK_SET, &s->iblock)))
             goto error;
     }
 
     if (avctx->channels == 3 &&
             avctx->channel_layout != (AV_CH_LAYOUT_STEREO|AV_CH_FRONT_CENTER) ||
-        avctx->channels == 4 &&
+            avctx->channels == 4 &&
             avctx->channel_layout != AV_CH_LAYOUT_2_2 &&
             avctx->channel_layout != AV_CH_LAYOUT_QUAD ||
-        avctx->channels == 5 &&
+            avctx->channels == 5 &&
             avctx->channel_layout != AV_CH_LAYOUT_5POINT0 &&
             avctx->channel_layout != AV_CH_LAYOUT_5POINT0_BACK ||
-        avctx->channels == 6 &&
+            avctx->channels == 6 &&
             avctx->channel_layout != AV_CH_LAYOUT_5POINT1 &&
             avctx->channel_layout != AV_CH_LAYOUT_5POINT1_BACK ||
-        avctx->channels == 7 &&
+            avctx->channels == 7 &&
             avctx->channel_layout != (AV_CH_LAYOUT_5POINT1|AV_CH_BACK_CENTER) ||
-        avctx->channels == 8 &&
-            avctx->channel_layout != AV_CH_LAYOUT_7POINT1) {
-        if (avctx->channel_layout) {
+            avctx->channels == 8 &&
+            avctx->channel_layout != AV_CH_LAYOUT_7POINT1)
+    {
+        if (avctx->channel_layout)
+        {
             char name[32];
             av_get_channel_layout_string(name, sizeof(name), avctx->channels,
                                          avctx->channel_layout);
             av_log(avctx, AV_LOG_ERROR, "%s not supported by Vorbis: "
-                                             "output stream will have incorrect "
-                                             "channel layout.\n", name);
-        } else {
+                   "output stream will have incorrect "
+                   "channel layout.\n", name);
+        }
+        else
+        {
             av_log(avctx, AV_LOG_WARNING, "No channel layout specified. The encoder "
-                                               "will use Vorbis channel layout for "
-                                               "%d channels.\n", avctx->channels);
+                   "will use Vorbis channel layout for "
+                   "%d channels.\n", avctx->channels);
         }
     }
 
@@ -201,17 +219,20 @@ static av_cold int libvorbis_encode_init(AVCodecContext *avctx)
     int ret;
 
     vorbis_info_init(&s->vi);
-    if ((ret = libvorbis_setup(&s->vi, avctx))) {
+    if ((ret = libvorbis_setup(&s->vi, avctx)))
+    {
         av_log(avctx, AV_LOG_ERROR, "encoder setup failed\n");
         goto error;
     }
-    if ((ret = vorbis_analysis_init(&s->vd, &s->vi))) {
+    if ((ret = vorbis_analysis_init(&s->vd, &s->vi)))
+    {
         av_log(avctx, AV_LOG_ERROR, "analysis init failed\n");
         ret = vorbis_error_to_averror(ret);
         goto error;
     }
     s->dsp_initialized = 1;
-    if ((ret = vorbis_block_init(&s->vd, &s->vb))) {
+    if ((ret = vorbis_block_init(&s->vd, &s->vb)))
+    {
         av_log(avctx, AV_LOG_ERROR, "dsp init failed\n");
         ret = vorbis_error_to_averror(ret);
         goto error;
@@ -222,17 +243,19 @@ static av_cold int libvorbis_encode_init(AVCodecContext *avctx)
         vorbis_comment_add_tag(&s->vc, "encoder", LIBAVCODEC_IDENT);
 
     if ((ret = vorbis_analysis_headerout(&s->vd, &s->vc, &header, &header_comm,
-                                         &header_code))) {
+                                         &header_code)))
+    {
         ret = vorbis_error_to_averror(ret);
         goto error;
     }
 
     avctx->extradata_size = 1 + xiph_len(header.bytes)      +
-                                xiph_len(header_comm.bytes) +
-                                header_code.bytes;
+                            xiph_len(header_comm.bytes) +
+                            header_code.bytes;
     p = avctx->extradata = av_malloc(avctx->extradata_size +
                                      AV_INPUT_BUFFER_PADDING_SIZE);
-    if (!p) {
+    if (!p)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
@@ -249,7 +272,8 @@ static av_cold int libvorbis_encode_init(AVCodecContext *avctx)
     av_assert0(offset == avctx->extradata_size);
 
     s->vp = av_vorbis_parse_init(avctx->extradata, avctx->extradata_size);
-    if (!s->vp) {
+    if (!s->vp)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid extradata\n");
         return ret;
     }
@@ -260,7 +284,8 @@ static av_cold int libvorbis_encode_init(AVCodecContext *avctx)
     ff_af_queue_init(avctx, &s->afq);
 
     s->pkt_fifo = av_fifo_alloc(BUFFER_SIZE);
-    if (!s->pkt_fifo) {
+    if (!s->pkt_fifo)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
@@ -279,27 +304,33 @@ static int libvorbis_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     int ret, duration;
 
     /* send samples to libvorbis */
-    if (frame) {
+    if (frame)
+    {
         const int samples = frame->nb_samples;
         float **buffer;
         int c, channels = s->vi.channels;
 
         buffer = vorbis_analysis_buffer(&s->vd, samples);
-        for (c = 0; c < channels; c++) {
+        for (c = 0; c < channels; c++)
+        {
             int co = (channels > 8) ? c :
                      ff_vorbis_encoding_channel_layout_offsets[channels - 1][c];
             memcpy(buffer[c], frame->extended_data[co],
                    samples * sizeof(*buffer[c]));
         }
-        if ((ret = vorbis_analysis_wrote(&s->vd, samples)) < 0) {
+        if ((ret = vorbis_analysis_wrote(&s->vd, samples)) < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "error in vorbis_analysis_wrote()\n");
             return vorbis_error_to_averror(ret);
         }
         if ((ret = ff_af_queue_add(&s->afq, frame)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         if (!s->eof && s->afq.frame_alloc)
-            if ((ret = vorbis_analysis_wrote(&s->vd, 0)) < 0) {
+            if ((ret = vorbis_analysis_wrote(&s->vd, 0)) < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "error in vorbis_analysis_wrote()\n");
                 return vorbis_error_to_averror(ret);
             }
@@ -307,27 +338,32 @@ static int libvorbis_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     }
 
     /* retrieve available packets from libvorbis */
-    while ((ret = vorbis_analysis_blockout(&s->vd, &s->vb)) == 1) {
+    while ((ret = vorbis_analysis_blockout(&s->vd, &s->vb)) == 1)
+    {
         if ((ret = vorbis_analysis(&s->vb, NULL)) < 0)
             break;
         if ((ret = vorbis_bitrate_addblock(&s->vb)) < 0)
             break;
 
         /* add any available packets to the output packet buffer */
-        while ((ret = vorbis_bitrate_flushpacket(&s->vd, &op)) == 1) {
-            if (av_fifo_space(s->pkt_fifo) < sizeof(ogg_packet) + op.bytes) {
+        while ((ret = vorbis_bitrate_flushpacket(&s->vd, &op)) == 1)
+        {
+            if (av_fifo_space(s->pkt_fifo) < sizeof(ogg_packet) + op.bytes)
+            {
                 av_log(avctx, AV_LOG_ERROR, "packet buffer is too small\n");
                 return AVERROR_BUG;
             }
             av_fifo_generic_write(s->pkt_fifo, &op, sizeof(ogg_packet), NULL);
             av_fifo_generic_write(s->pkt_fifo, op.packet, op.bytes, NULL);
         }
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "error getting available packets\n");
             break;
         }
     }
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "error getting available packets\n");
         return vorbis_error_to_averror(ret);
     }
@@ -345,10 +381,12 @@ static int libvorbis_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     avpkt->pts = ff_samples_to_time_base(avctx, op.granulepos);
 
     duration = av_vorbis_parse_frame(s->vp, avpkt->data, avpkt->size);
-    if (duration > 0) {
+    if (duration > 0)
+    {
         /* we do not know encoder delay until we get the first packet from
          * libvorbis, so we have to update the AudioFrameQueue counts */
-        if (!avctx->initial_padding && s->afq.frames) {
+        if (!avctx->initial_padding && s->afq.frames)
+        {
             avctx->initial_padding    = duration;
             av_assert0(!s->afq.remaining_delay);
             s->afq.frames->duration  += duration;
@@ -363,7 +401,8 @@ static int libvorbis_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-AVCodec ff_libvorbis_encoder = {
+AVCodec ff_libvorbis_encoder =
+{
     .name           = "libvorbis",
     .long_name      = NULL_IF_CONFIG_SMALL("libvorbis"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -373,8 +412,10 @@ AVCodec ff_libvorbis_encoder = {
     .encode2        = libvorbis_encode_frame,
     .close          = libvorbis_encode_close,
     .capabilities   = AV_CODEC_CAP_DELAY | AV_CODEC_CAP_SMALL_LAST_FRAME,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLTP,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class     = &vorbis_class,
     .defaults       = defaults,
 };

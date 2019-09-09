@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -61,7 +61,8 @@ static void gmc_mmx(uint8_t *dst, uint8_t *src,
          (oy ^ (oy + dyw)) | (oy ^ (oy + dyh)) | (oy ^ (oy + dyw + dyh))) >> (16 + shift) ||
         // uses more than 16 bits of subpel mv (only at huge resolution)
         (dxx | dxy | dyx | dyy) & 15 ||
-        (need_emu && (h > MAX_H || stride > MAX_STRIDE))) {
+        (need_emu && (h > MAX_H || stride > MAX_STRIDE)))
+    {
         // FIXME could still use mmx for some of the rows
         ff_gmc_c(dst, src, stride, h, ox, oy, dxx, dxy, dyx, dyy,
                  shift, r, width, height);
@@ -69,7 +70,8 @@ static void gmc_mmx(uint8_t *dst, uint8_t *src,
     }
 
     src += ix + iy * stride;
-    if (need_emu) {
+    if (need_emu)
+    {
         ff_emulated_edge_mc_8(edge_buf, src, stride, stride, w + 1, h + 1, ix, iy, width, height);
         src = edge_buf;
     }
@@ -81,17 +83,21 @@ static void gmc_mmx(uint8_t *dst, uint8_t *src,
         "punpcklwd %%mm6, %%mm6         \n\t"
         :: "r" (1 << shift));
 
-    for (x = 0; x < w; x += 4) {
+    for (x = 0; x < w; x += 4)
+    {
         uint16_t dx4[4] = { oxs - dxys + dxxs * (x + 0),
                             oxs - dxys + dxxs * (x + 1),
                             oxs - dxys + dxxs * (x + 2),
-                            oxs - dxys + dxxs * (x + 3) };
+                            oxs - dxys + dxxs * (x + 3)
+                          };
         uint16_t dy4[4] = { oys - dyys + dyxs * (x + 0),
                             oys - dyys + dyxs * (x + 1),
                             oys - dyys + dyxs * (x + 2),
-                            oys - dyys + dyxs * (x + 3) };
+                            oys - dyys + dyxs * (x + 3)
+                          };
 
-        for (y = 0; y < h; y++) {
+        for (y = 0; y < h; y++)
+        {
             __asm__ volatile (
                 "movq      %0, %%mm4    \n\t"
                 "movq      %1, %%mm5    \n\t"
@@ -140,8 +146,8 @@ static void gmc_mmx(uint8_t *dst, uint8_t *src,
 
                 : "=m" (dst[x + y * stride])
                 : "m" (src[0]), "m" (src[1]),
-                  "m" (src[stride]), "m" (src[stride + 1]),
-                  "m" (*r4), "m" (shift2));
+                "m" (src[stride]), "m" (src[stride + 1]),
+                "m" (*r4), "m" (shift2));
             src += stride;
         }
         src += 4 - h * stride;

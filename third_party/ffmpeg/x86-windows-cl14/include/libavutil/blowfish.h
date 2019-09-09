@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Blowfish algorithm
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -33,7 +33,8 @@
 
 #define AV_BF_ROUNDS 16
 
-typedef struct AVBlowfish {
+typedef struct AVBlowfish
+{
     uint32_t p[AV_BF_ROUNDS + 2];
     uint32_t s[4][256];
 } AVBlowfish;

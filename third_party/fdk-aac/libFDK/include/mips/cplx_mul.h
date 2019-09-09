@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -107,8 +107,8 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           FIXP_DBL  b_Re,
                           FIXP_DBL  b_Im)
 {
-  *c_Re = (((long long)a_Re * (long long)b_Re) - ((long long)a_Im * (long long)b_Im))>>32;
-  *c_Im = (((long long)a_Re * (long long)b_Im) + ((long long)a_Im * (long long)b_Re))>>32;
+    *c_Re = (((long long)a_Re * (long long)b_Re) - ((long long)a_Im * (long long)b_Im))>>32;
+    *c_Im = (((long long)a_Re * (long long)b_Im) + ((long long)a_Im * (long long)b_Re))>>32;
 }
 #endif
 
@@ -120,8 +120,8 @@ inline void cplxMult( FIXP_DBL *c_Re,
                       FIXP_DBL  b_Re,
                       FIXP_DBL  b_Im)
 {
-  *c_Re = ((((long long)a_Re * (long long)b_Re) - ((long long)a_Im * (long long)b_Im))>>32)<<1;
-  *c_Im = ((((long long)a_Re * (long long)b_Im) + ((long long)a_Im * (long long)b_Re))>>32)<<1;
+    *c_Re = ((((long long)a_Re * (long long)b_Re) - ((long long)a_Im * (long long)b_Im))>>32)<<1;
+    *c_Im = ((((long long)a_Re * (long long)b_Im) + ((long long)a_Im * (long long)b_Re))>>32)<<1;
 }
 #endif
 

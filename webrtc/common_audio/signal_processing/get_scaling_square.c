@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -39,7 +39,8 @@ int16_t WebRtcSpl_GetScalingSquare(int16_t* in_vector,
     if (smax == 0)
     {
         return 0; // Since norm(0) returns 0
-    } else
+    }
+    else
     {
         return (t > nbits) ? 0 : nbits - t;
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -22,8 +22,8 @@
 #include "libavcodec/mips/hevcdsp_mips.h"
 
 static void hevc_loopfilter_luma_hor_msa(uint8_t *src, int32_t stride,
-                                         int32_t beta, int32_t *tc,
-                                         uint8_t *p_is_pcm, uint8_t *q_is_pcm)
+        int32_t beta, int32_t *tc,
+        uint8_t *p_is_pcm, uint8_t *q_is_pcm)
 {
     uint8_t *p3 = src - (stride << 2);
     uint8_t *p2 = src - ((stride << 1) + stride);
@@ -65,8 +65,10 @@ static void hevc_loopfilter_luma_hor_msa(uint8_t *src, int32_t stride,
     p_is_pcm4 = p_is_pcm[1];
     q_is_pcm4 = q_is_pcm[1];
 
-    if (!p_is_pcm0 || !p_is_pcm4 || !q_is_pcm0 || !q_is_pcm4) {
-        if (!(d00 + d30 >= beta) || !(d04 + d34 >= beta)) {
+    if (!p_is_pcm0 || !p_is_pcm4 || !q_is_pcm0 || !q_is_pcm4)
+    {
+        if (!(d00 + d30 >= beta) || !(d04 + d34 >= beta))
+        {
             p3_src = LD_UH(p3);
             p2_src = LD_UH(p2);
             p1_src = LD_UH(p1);
@@ -271,8 +273,8 @@ static void hevc_loopfilter_luma_hor_msa(uint8_t *src, int32_t stride,
 }
 
 static void hevc_loopfilter_luma_ver_msa(uint8_t *src, int32_t stride,
-                                         int32_t beta, int32_t *tc,
-                                         uint8_t *p_is_pcm, uint8_t *q_is_pcm)
+        int32_t beta, int32_t *tc,
+        uint8_t *p_is_pcm, uint8_t *q_is_pcm)
 {
     uint8_t *p3 = src;
     uint8_t *p2 = src + 3 * stride;
@@ -312,8 +314,10 @@ static void hevc_loopfilter_luma_ver_msa(uint8_t *src, int32_t stride,
     p_is_pcm4 = p_is_pcm[1];
     q_is_pcm4 = q_is_pcm[1];
 
-    if (!p_is_pcm0 || !p_is_pcm4 || !q_is_pcm0 || !q_is_pcm4) {
-        if (!(d00 + d30 >= beta) || !(d04 + d34 >= beta)) {
+    if (!p_is_pcm0 || !p_is_pcm4 || !q_is_pcm0 || !q_is_pcm4)
+    {
+        if (!(d00 + d30 >= beta) || !(d04 + d34 >= beta))
+        {
             src -= 4;
             LD_UH8(src, stride,
                    p3_src, p2_src, p1_src, p0_src, q0_src, q1_src, q2_src,
@@ -556,8 +560,8 @@ static void hevc_loopfilter_luma_ver_msa(uint8_t *src, int32_t stride,
 }
 
 static void hevc_loopfilter_chroma_hor_msa(uint8_t *src, int32_t stride,
-                                           int32_t *tc, uint8_t *p_is_pcm,
-                                           uint8_t *q_is_pcm)
+        int32_t *tc, uint8_t *p_is_pcm,
+        uint8_t *q_is_pcm)
 {
     uint8_t *p1_ptr = src - (stride << 1);
     uint8_t *p0_ptr = src - stride;
@@ -569,7 +573,8 @@ static void hevc_loopfilter_chroma_hor_msa(uint8_t *src, int32_t stride,
     v16i8 zero = { 0 };
     v8i16 temp0, temp1, delta;
 
-    if (!(tc[0] <= 0) || !(tc[1] <= 0)) {
+    if (!(tc[0] <= 0) || !(tc[1] <= 0))
+    {
         cmp0 = (v2i64) __msa_fill_h(tc[0]);
         cmp1 = (v2i64) __msa_fill_h(tc[1]);
         tc_pos = (v8i16) __msa_ilvev_d(cmp1, cmp0);
@@ -619,8 +624,8 @@ static void hevc_loopfilter_chroma_hor_msa(uint8_t *src, int32_t stride,
 }
 
 static void hevc_loopfilter_chroma_ver_msa(uint8_t *src, int32_t stride,
-                                           int32_t *tc, uint8_t *p_is_pcm,
-                                           uint8_t *q_is_pcm)
+        int32_t *tc, uint8_t *p_is_pcm,
+        uint8_t *q_is_pcm)
 {
     v2i64 cmp0, cmp1, p_is_pcm_vec, q_is_pcm_vec;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
@@ -629,7 +634,8 @@ static void hevc_loopfilter_chroma_ver_msa(uint8_t *src, int32_t stride,
     v16i8 zero = { 0 };
     v8i16 temp0, temp1, delta;
 
-    if (!(tc[0] <= 0) || !(tc[1] <= 0)) {
+    if (!(tc[0] <= 0) || !(tc[1] <= 0))
+    {
         cmp0 = (v2i64) __msa_fill_h(tc[0]);
         cmp1 = (v2i64) __msa_fill_h(tc[1]);
         tc_pos = (v8i16) __msa_ilvev_d(cmp1, cmp0);
@@ -682,10 +688,10 @@ static void hevc_loopfilter_chroma_ver_msa(uint8_t *src, int32_t stride,
 }
 
 static void hevc_sao_band_filter_4width_msa(uint8_t *dst, int32_t dst_stride,
-                                            uint8_t *src, int32_t src_stride,
-                                            int32_t sao_left_class,
-                                            int16_t *sao_offset_val,
-                                            int32_t height)
+        uint8_t *src, int32_t src_stride,
+        int32_t sao_left_class,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     int32_t h_cnt;
     v16u8 src0, src1, src2, src3;
@@ -704,11 +710,13 @@ static void hevc_sao_band_filter_4width_msa(uint8_t *dst, int32_t dst_stride,
     offset0 = __msa_sld_b(offset1, offset0, 28 - ((sao_left_class) & 31));
     offset1 = __msa_sld_b(zero, offset1, 28 - ((sao_left_class) & 31));
 
-    if (!((sao_left_class > 12) & (sao_left_class < 29))) {
+    if (!((sao_left_class > 12) & (sao_left_class < 29)))
+    {
         SWAP(offset0, offset1);
     }
 
-    for (h_cnt = height >> 2; h_cnt--;) {
+    for (h_cnt = height >> 2; h_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -729,10 +737,10 @@ static void hevc_sao_band_filter_4width_msa(uint8_t *dst, int32_t dst_stride,
 }
 
 static void hevc_sao_band_filter_8width_msa(uint8_t *dst, int32_t dst_stride,
-                                            uint8_t *src, int32_t src_stride,
-                                            int32_t sao_left_class,
-                                            int16_t *sao_offset_val,
-                                            int32_t height)
+        uint8_t *src, int32_t src_stride,
+        int32_t sao_left_class,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     int32_t h_cnt;
     v16u8 src0, src1, src2, src3;
@@ -751,11 +759,13 @@ static void hevc_sao_band_filter_8width_msa(uint8_t *dst, int32_t dst_stride,
     offset0 = __msa_sld_b(offset1, offset0, 28 - ((sao_left_class) & 31));
     offset1 = __msa_sld_b(zero, offset1, 28 - ((sao_left_class) & 31));
 
-    if (!((sao_left_class > 12) & (sao_left_class < 29))) {
+    if (!((sao_left_class > 12) & (sao_left_class < 29)))
+    {
         SWAP(offset0, offset1);
     }
 
-    for (h_cnt = height >> 2; h_cnt--;) {
+    for (h_cnt = height >> 2; h_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -782,12 +792,12 @@ static void hevc_sao_band_filter_8width_msa(uint8_t *dst, int32_t dst_stride,
 }
 
 static void hevc_sao_band_filter_16multiple_msa(uint8_t *dst,
-                                                int32_t dst_stride,
-                                                uint8_t *src,
-                                                int32_t src_stride,
-                                                int32_t sao_left_class,
-                                                int16_t *sao_offset_val,
-                                                int32_t width, int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int32_t sao_left_class,
+        int16_t *sao_offset_val,
+        int32_t width, int32_t height)
 {
     int32_t h_cnt, w_cnt;
     v16u8 src0, src1, src2, src3;
@@ -807,12 +817,15 @@ static void hevc_sao_band_filter_16multiple_msa(uint8_t *dst,
     offset0 = __msa_sld_b(offset1, offset0, 28 - ((sao_left_class) & 31));
     offset1 = __msa_sld_b(zero, offset1, 28 - ((sao_left_class) & 31));
 
-    if (!((sao_left_class > 12) & (sao_left_class < 29))) {
+    if (!((sao_left_class > 12) & (sao_left_class < 29)))
+    {
         SWAP(offset0, offset1);
     }
 
-    for (h_cnt = height >> 2; h_cnt--;) {
-        for (w_cnt = 0; w_cnt < (width >> 4); w_cnt++) {
+    for (h_cnt = height >> 2; h_cnt--;)
+    {
+        for (w_cnt = 0; w_cnt < (width >> 4); w_cnt++)
+        {
             LD_UB4(src + w_cnt * 16, src_stride, src0, src1, src2, src3);
 
             mask0 = __msa_srli_b((v16i8) src0, 3);
@@ -849,11 +862,11 @@ static void hevc_sao_band_filter_16multiple_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_0degree_4width_msa(uint8_t *dst,
-                                                    int32_t dst_stride,
-                                                    uint8_t *src,
-                                                    int32_t src_stride,
-                                                    int16_t *sao_offset_val,
-                                                    int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     int32_t h_cnt;
     uint32_t dst_val0, dst_val1;
@@ -869,7 +882,8 @@ static void hevc_sao_edge_filter_0degree_4width_msa(uint8_t *dst,
     sao_offset = LD_SH(sao_offset_val);
     src -= 1;
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src, src_stride, src_minus10, src_minus11);
         src += (2 * src_stride);
 
@@ -913,11 +927,11 @@ static void hevc_sao_edge_filter_0degree_4width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_0degree_8width_msa(uint8_t *dst,
-                                                    int32_t dst_stride,
-                                                    uint8_t *src,
-                                                    int32_t src_stride,
-                                                    int16_t *sao_offset_val,
-                                                    int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     uint8_t *src_minus1;
     int32_t h_cnt;
@@ -933,7 +947,8 @@ static void hevc_sao_edge_filter_0degree_8width_msa(uint8_t *dst,
 
     sao_offset = LD_SH(sao_offset_val);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         src_minus1 = src - 1;
         LD_UB2(src_minus1, src_stride, src_minus10, src_minus11);
 
@@ -980,12 +995,12 @@ static void hevc_sao_edge_filter_0degree_8width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_0degree_16multiple_msa(uint8_t *dst,
-                                                        int32_t dst_stride,
-                                                        uint8_t *src,
-                                                        int32_t src_stride,
-                                                        int16_t *sao_offset_val,
-                                                        int32_t width,
-                                                        int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t width,
+        int32_t height)
 {
     uint8_t *dst_ptr, *src_minus1;
     int32_t h_cnt, v_cnt;
@@ -1007,12 +1022,14 @@ static void hevc_sao_edge_filter_0degree_16multiple_msa(uint8_t *dst,
     sao_offset = LD_SB(sao_offset_val);
     sao_offset = __msa_pckev_b(sao_offset, sao_offset);
 
-    for (h_cnt = (height >> 2); h_cnt--;) {
+    for (h_cnt = (height >> 2); h_cnt--;)
+    {
         src_minus1 = src - 1;
         LD_UB4(src_minus1, src_stride,
                src_minus10, src_minus11, src_minus12, src_minus13);
 
-        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++) {
+        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++)
+        {
             src_minus1 += 16;
             dst_ptr = dst + (v_cnt << 4);
             LD_UB4(src_minus1, src_stride, src10, src11, src12, src13);
@@ -1108,11 +1125,11 @@ static void hevc_sao_edge_filter_0degree_16multiple_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_90degree_4width_msa(uint8_t *dst,
-                                                     int32_t dst_stride,
-                                                     uint8_t *src,
-                                                     int32_t src_stride,
-                                                     int16_t *sao_offset_val,
-                                                     int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     int32_t h_cnt;
     uint32_t dst_val0, dst_val1;
@@ -1129,7 +1146,8 @@ static void hevc_sao_edge_filter_90degree_4width_msa(uint8_t *dst,
 
     LD_UB2(src - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src + src_stride, src_stride, src10, src11);
 
         src_minus10 = (v16u8) __msa_ilvr_b((v16i8) src10, (v16i8) src_minus10);
@@ -1175,11 +1193,11 @@ static void hevc_sao_edge_filter_90degree_4width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_90degree_8width_msa(uint8_t *dst,
-                                                     int32_t dst_stride,
-                                                     uint8_t *src,
-                                                     int32_t src_stride,
-                                                     int16_t *sao_offset_val,
-                                                     int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     int32_t h_cnt;
     uint64_t dst_val0, dst_val1;
@@ -1195,7 +1213,8 @@ static void hevc_sao_edge_filter_90degree_8width_msa(uint8_t *dst,
 
     LD_UB2(src - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src + src_stride, src_stride, src10, src11);
 
         src_minus10 = (v16u8) __msa_ilvr_b((v16i8) src10, (v16i8) src_minus10);
@@ -1241,13 +1260,13 @@ static void hevc_sao_edge_filter_90degree_8width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_90degree_16multiple_msa(uint8_t *dst,
-                                                         int32_t dst_stride,
-                                                         uint8_t *src,
-                                                         int32_t src_stride,
-                                                         int16_t *
-                                                         sao_offset_val,
-                                                         int32_t width,
-                                                         int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *
+        sao_offset_val,
+        int32_t width,
+        int32_t height)
 {
     uint8_t *src_orig = src;
     uint8_t *dst_orig = dst;
@@ -1267,13 +1286,15 @@ static void hevc_sao_edge_filter_90degree_16multiple_msa(uint8_t *dst,
     sao_offset = LD_SB(sao_offset_val);
     sao_offset = __msa_pckev_b(sao_offset, sao_offset);
 
-    for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++) {
+    for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++)
+    {
         src = src_orig + (v_cnt << 4);
         dst = dst_orig + (v_cnt << 4);
 
         LD_UB2(src - src_stride, src_stride, src_minus10, src_minus11);
 
-        for (h_cnt = (height >> 2); h_cnt--;) {
+        for (h_cnt = (height >> 2); h_cnt--;)
+        {
             LD_UB4(src + src_stride, src_stride, src10, src11, src12, src13);
 
             cmp_minus10 = (src_minus11 == src_minus10);
@@ -1354,11 +1375,11 @@ static void hevc_sao_edge_filter_90degree_16multiple_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_45degree_4width_msa(uint8_t *dst,
-                                                     int32_t dst_stride,
-                                                     uint8_t *src,
-                                                     int32_t src_stride,
-                                                     int16_t *sao_offset_val,
-                                                     int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     uint8_t *src_orig;
     int32_t h_cnt;
@@ -1376,7 +1397,8 @@ static void hevc_sao_edge_filter_45degree_4width_msa(uint8_t *dst,
     src_orig = src - 1;
     LD_UB2(src_orig - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src_orig + src_stride, src_stride, src10, src11);
 
         SLDI_B2_0_SB(src_minus11, src10, src_zero0, src_zero1, 1);
@@ -1426,11 +1448,11 @@ static void hevc_sao_edge_filter_45degree_4width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_45degree_8width_msa(uint8_t *dst,
-                                                     int32_t dst_stride,
-                                                     uint8_t *src,
-                                                     int32_t src_stride,
-                                                     int16_t *sao_offset_val,
-                                                     int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     uint8_t *src_orig;
     int32_t h_cnt;
@@ -1448,7 +1470,8 @@ static void hevc_sao_edge_filter_45degree_8width_msa(uint8_t *dst,
 
     LD_UB2(src_orig - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src_orig + src_stride, src_stride, src10, src11);
 
         SLDI_B2_0_SB(src_minus11, src10, src_zero0, src_zero1, 1);
@@ -1498,13 +1521,13 @@ static void hevc_sao_edge_filter_45degree_8width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_45degree_16multiple_msa(uint8_t *dst,
-                                                         int32_t dst_stride,
-                                                         uint8_t *src,
-                                                         int32_t src_stride,
-                                                         int16_t *
-                                                         sao_offset_val,
-                                                         int32_t width,
-                                                         int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *
+        sao_offset_val,
+        int32_t width,
+        int32_t height)
 {
     uint8_t *src_orig = src;
     uint8_t *dst_orig = dst;
@@ -1526,13 +1549,15 @@ static void hevc_sao_edge_filter_45degree_16multiple_msa(uint8_t *dst,
     sao_offset = LD_SB(sao_offset_val);
     sao_offset = __msa_pckev_b(sao_offset, sao_offset);
 
-    for (h_cnt = (height >> 2); h_cnt--;) {
+    for (h_cnt = (height >> 2); h_cnt--;)
+    {
         src_orig = src - 1;
         dst_orig = dst;
         LD_UB4(src_orig, src_stride,
                src_minus11, src_minus12, src_minus13, src_minus14);
 
-        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++) {
+        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++)
+        {
             src_minus10 = LD_UB(src_orig - src_stride);
             LD_UB4(src_orig + 16, src_stride, src10, src11, src12, src13);
             src_plus13 = LD_UB(src + 1 + (v_cnt << 4) + (src_stride << 2));
@@ -1629,11 +1654,11 @@ static void hevc_sao_edge_filter_45degree_16multiple_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_135degree_4width_msa(uint8_t *dst,
-                                                      int32_t dst_stride,
-                                                      uint8_t *src,
-                                                      int32_t src_stride,
-                                                      int16_t *sao_offset_val,
-                                                      int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     uint8_t *src_orig;
     int32_t h_cnt;
@@ -1651,7 +1676,8 @@ static void hevc_sao_edge_filter_135degree_4width_msa(uint8_t *dst,
 
     LD_UB2(src_orig - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src_orig + src_stride, src_stride, src10, src11);
 
         SLDI_B2_0_SB(src_minus11, src10, src_zero0, src_zero1, 1);
@@ -1701,11 +1727,11 @@ static void hevc_sao_edge_filter_135degree_4width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_135degree_8width_msa(uint8_t *dst,
-                                                      int32_t dst_stride,
-                                                      uint8_t *src,
-                                                      int32_t src_stride,
-                                                      int16_t *sao_offset_val,
-                                                      int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *sao_offset_val,
+        int32_t height)
 {
     uint8_t *src_orig;
     int32_t h_cnt;
@@ -1723,7 +1749,8 @@ static void hevc_sao_edge_filter_135degree_8width_msa(uint8_t *dst,
 
     LD_UB2(src_orig - src_stride, src_stride, src_minus10, src_minus11);
 
-    for (h_cnt = (height >> 1); h_cnt--;) {
+    for (h_cnt = (height >> 1); h_cnt--;)
+    {
         LD_UB2(src_orig + src_stride, src_stride, src10, src11);
 
         SLDI_B2_0_SB(src_minus11, src10, src_zero0, src_zero1, 1);
@@ -1773,13 +1800,13 @@ static void hevc_sao_edge_filter_135degree_8width_msa(uint8_t *dst,
 }
 
 static void hevc_sao_edge_filter_135degree_16multiple_msa(uint8_t *dst,
-                                                          int32_t dst_stride,
-                                                          uint8_t *src,
-                                                          int32_t src_stride,
-                                                          int16_t *
-                                                          sao_offset_val,
-                                                          int32_t width,
-                                                          int32_t height)
+        int32_t dst_stride,
+        uint8_t *src,
+        int32_t src_stride,
+        int16_t *
+        sao_offset_val,
+        int32_t width,
+        int32_t height)
 {
     uint8_t *src_orig, *dst_orig;
     int32_t h_cnt, v_cnt;
@@ -1799,14 +1826,16 @@ static void hevc_sao_edge_filter_135degree_16multiple_msa(uint8_t *dst,
     sao_offset = LD_SB(sao_offset_val);
     sao_offset = __msa_pckev_b(sao_offset, sao_offset);
 
-    for (h_cnt = (height >> 2); h_cnt--;) {
+    for (h_cnt = (height >> 2); h_cnt--;)
+    {
         src_orig = src - 1;
         dst_orig = dst;
 
         LD_UB4(src_orig, src_stride,
                src_minus11, src_plus10, src_plus11, src_plus12);
 
-        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++) {
+        for (v_cnt = 0; v_cnt < (width >> 4); v_cnt++)
+        {
             src_minus10 = LD_UB(src_orig + 2 - src_stride);
             LD_UB4(src_orig + 16, src_stride, src10, src11, src12, src13);
             src_plus13 = LD_UB(src_orig + (src_stride << 2));
@@ -1942,7 +1971,8 @@ void ff_hevc_sao_band_filter_0_8_msa(uint8_t *dst, uint8_t *src,
                                      int16_t *sao_offset_val, int sao_left_class,
                                      int width, int height)
 {
-    if (width >> 4) {
+    if (width >> 4)
+    {
         hevc_sao_band_filter_16multiple_msa(dst, stride_dst, src, stride_src,
                                             sao_left_class, sao_offset_val,
                                             width - (width % 16), height);
@@ -1951,7 +1981,8 @@ void ff_hevc_sao_band_filter_0_8_msa(uint8_t *dst, uint8_t *src,
         width %= 16;
     }
 
-    if (width >> 3) {
+    if (width >> 3)
+    {
         hevc_sao_band_filter_8width_msa(dst, stride_dst, src, stride_src,
                                         sao_left_class, sao_offset_val, height);
         dst += 8;
@@ -1959,7 +1990,8 @@ void ff_hevc_sao_band_filter_0_8_msa(uint8_t *dst, uint8_t *src,
         width %= 8;
     }
 
-    if (width) {
+    if (width)
+    {
         hevc_sao_band_filter_4width_msa(dst, stride_dst, src, stride_src,
                                         sao_left_class, sao_offset_val, height);
     }
@@ -1972,20 +2004,23 @@ void ff_hevc_sao_edge_filter_8_msa(uint8_t *dst, uint8_t *src,
 {
     ptrdiff_t stride_src = (2 * 64 + 32) / sizeof(uint8_t);
 
-    switch (eo) {
+    switch (eo)
+    {
     case 0:
-        if (width >> 4) {
+        if (width >> 4)
+        {
             hevc_sao_edge_filter_0degree_16multiple_msa(dst, stride_dst,
-                                                        src, stride_src,
-                                                        sao_offset_val,
-                                                        width - (width % 16),
-                                                        height);
+                    src, stride_src,
+                    sao_offset_val,
+                    width - (width % 16),
+                    height);
             dst += width - (width % 16);
             src += width - (width % 16);
             width %= 16;
         }
 
-        if (width >> 3) {
+        if (width >> 3)
+        {
             hevc_sao_edge_filter_0degree_8width_msa(dst, stride_dst,
                                                     src, stride_src,
                                                     sao_offset_val, height);
@@ -1994,7 +2029,8 @@ void ff_hevc_sao_edge_filter_8_msa(uint8_t *dst, uint8_t *src,
             width %= 8;
         }
 
-        if (width) {
+        if (width)
+        {
             hevc_sao_edge_filter_0degree_4width_msa(dst, stride_dst,
                                                     src, stride_src,
                                                     sao_offset_val, height);
@@ -2002,86 +2038,95 @@ void ff_hevc_sao_edge_filter_8_msa(uint8_t *dst, uint8_t *src,
         break;
 
     case 1:
-        if (width >> 4) {
+        if (width >> 4)
+        {
             hevc_sao_edge_filter_90degree_16multiple_msa(dst, stride_dst,
-                                                         src, stride_src,
-                                                         sao_offset_val,
-                                                         width - (width % 16),
-                                                         height);
+                    src, stride_src,
+                    sao_offset_val,
+                    width - (width % 16),
+                    height);
             dst += width - (width % 16);
             src += width - (width % 16);
             width %= 16;
         }
 
-        if (width >> 3) {
+        if (width >> 3)
+        {
             hevc_sao_edge_filter_90degree_8width_msa(dst, stride_dst,
-                                                     src, stride_src,
-                                                     sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
             dst += 8;
             src += 8;
             width %= 8;
         }
 
-        if (width) {
+        if (width)
+        {
             hevc_sao_edge_filter_90degree_4width_msa(dst, stride_dst,
-                                                     src, stride_src,
-                                                     sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
         }
         break;
 
     case 2:
-        if (width >> 4) {
+        if (width >> 4)
+        {
             hevc_sao_edge_filter_45degree_16multiple_msa(dst, stride_dst,
-                                                         src, stride_src,
-                                                         sao_offset_val,
-                                                         width - (width % 16),
-                                                         height);
+                    src, stride_src,
+                    sao_offset_val,
+                    width - (width % 16),
+                    height);
             dst += width - (width % 16);
             src += width - (width % 16);
             width %= 16;
         }
 
-        if (width >> 3) {
+        if (width >> 3)
+        {
             hevc_sao_edge_filter_45degree_8width_msa(dst, stride_dst,
-                                                     src, stride_src,
-                                                     sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
             dst += 8;
             src += 8;
             width %= 8;
         }
 
-        if (width) {
+        if (width)
+        {
             hevc_sao_edge_filter_45degree_4width_msa(dst, stride_dst,
-                                                     src, stride_src,
-                                                     sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
         }
         break;
 
     case 3:
-        if (width >> 4) {
+        if (width >> 4)
+        {
             hevc_sao_edge_filter_135degree_16multiple_msa(dst, stride_dst,
-                                                          src, stride_src,
-                                                          sao_offset_val,
-                                                          width - (width % 16),
-                                                          height);
+                    src, stride_src,
+                    sao_offset_val,
+                    width - (width % 16),
+                    height);
             dst += width - (width % 16);
             src += width - (width % 16);
             width %= 16;
         }
 
-        if (width >> 3) {
+        if (width >> 3)
+        {
             hevc_sao_edge_filter_135degree_8width_msa(dst, stride_dst,
-                                                      src, stride_src,
-                                                      sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
             dst += 8;
             src += 8;
             width %= 8;
         }
 
-        if (width) {
+        if (width)
+        {
             hevc_sao_edge_filter_135degree_4width_msa(dst, stride_dst,
-                                                      src, stride_src,
-                                                      sao_offset_val, height);
+                    src, stride_src,
+                    sao_offset_val, height);
         }
         break;
     }

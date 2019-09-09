@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Discrete wavelet transform
  * Copyright (c) 2007 Kamil Nowosad
  *
@@ -33,14 +33,16 @@
 #define F_LFTG_K      1.230174104914001f
 #define F_LFTG_X      0.812893066115961f
 
-enum DWTType {
+enum DWTType
+{
     FF_DWT97,
     FF_DWT53,
     FF_DWT97_INT,
     FF_DWT_NB
 };
 
-typedef struct DWTContext {
+typedef struct DWTContext
+{
     /// line lengths { horizontal, vertical } in consecutive decomposition levels
     uint16_t linelen[FF_DWT_MAX_DECLVLS][2];
     uint8_t mod[FF_DWT_MAX_DECLVLS][2];  ///< coordinates (x0, y0) of decomp. levels mod 2

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -39,11 +39,14 @@ void silk_LTP_scale_ctrl_FLP(
 {
     opus_int   round_loss;
 
-    if( condCoding == CODE_INDEPENDENTLY ) {
+    if( condCoding == CODE_INDEPENDENTLY )
+    {
         /* Only scale if first frame in packet */
         round_loss = psEnc->sCmn.PacketLoss_perc + psEnc->sCmn.nFramesPerPacket;
         psEnc->sCmn.indices.LTP_scaleIndex = (opus_int8)silk_LIMIT( round_loss * psEncCtrl->LTPredCodGain * 0.1f, 0.0f, 2.0f );
-    } else {
+    }
+    else
+    {
         /* Default is minimum scaling */
         psEnc->sCmn.indices.LTP_scaleIndex = 0;
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC ADTS header decoding prototypes and structures
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2003 Michael Niedermayer
@@ -28,7 +28,8 @@
 
 #define AAC_ADTS_HEADER_SIZE 7
 
-typedef struct AACADTSHeaderInfo {
+typedef struct AACADTSHeaderInfo
+{
     uint32_t sample_rate;
     uint32_t samples;
     uint32_t bit_rate;

@@ -43,7 +43,8 @@ extern "C" {
 
 using namespace android;
 
-struct Frame {
+struct Frame
+{
     status_t status;
     size_t size;
     int64_t time;
@@ -52,14 +53,16 @@ struct Frame {
     AVFrame *vframe;
 };
 
-struct TimeStamp {
+struct TimeStamp
+{
     int64_t pts;
     int64_t reordered_opaque;
 };
 
 class CustomSource;
 
-struct StagefrightContext {
+struct StagefrightContext
+{
     AVCodecContext *avctx;
     AVBitStreamFilterContext *bsfc;
     uint8_t* orig_extradata;
@@ -86,29 +89,35 @@ struct StagefrightContext {
     const char *decoder_component;
 };
 
-class CustomSource : public MediaSource {
+class CustomSource : public MediaSource
+{
 public:
-    CustomSource(AVCodecContext *avctx, sp<MetaData> meta) {
+    CustomSource(AVCodecContext *avctx, sp<MetaData> meta)
+    {
         s = (StagefrightContext*)avctx->priv_data;
         source_meta = meta;
         frame_size  = (avctx->width * avctx->height * 3) / 2;
         buf_group.add_buffer(new MediaBuffer(frame_size));
     }
 
-    virtual sp<MetaData> getFormat() {
+    virtual sp<MetaData> getFormat()
+    {
         return source_meta;
     }
 
-    virtual status_t start(MetaData *params) {
+    virtual status_t start(MetaData *params)
+    {
         return OK;
     }
 
-    virtual status_t stop() {
+    virtual status_t stop()
+    {
         return OK;
     }
 
     virtual status_t read(MediaBuffer **buffer,
-                          const MediaSource::ReadOptions *options) {
+                          const MediaSource::ReadOptions *options)
+    {
         Frame *frame;
         status_t ret;
 
@@ -122,15 +131,19 @@ public:
         frame = *s->in_queue->begin();
         ret = frame->status;
 
-        if (ret == OK) {
+        if (ret == OK)
+        {
             ret = buf_group.acquire_buffer(buffer);
-            if (ret == OK) {
+            if (ret == OK)
+            {
                 memcpy((*buffer)->data(), frame->buffer, frame->size);
                 (*buffer)->set_range(0, frame->size);
                 (*buffer)->meta_data()->clear();
                 (*buffer)->meta_data()->setInt32(kKeyIsSyncFrame,frame->key);
                 (*buffer)->meta_data()->setInt64(kKeyTime, frame->time);
-            } else {
+            }
+            else
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "Failed to acquire MediaBuffer\n");
             }
             av_freep(&frame->buffer);
@@ -164,10 +177,12 @@ void* decode_thread(void *arg)
     const uint8_t *src_data[3];
     int64_t out_frame_index = 0;
 
-    do {
+    do
+    {
         buffer = NULL;
         frame = (Frame*)av_mallocz(sizeof(Frame));
-        if (!frame) {
+        if (!frame)
+        {
             frame         = s->end_frame;
             frame->status = AVERROR(ENOMEM);
             decode_done   = 1;
@@ -175,19 +190,22 @@ void* decode_thread(void *arg)
             goto push_frame;
         }
         frame->status = (*s->decoder)->read(&buffer);
-        if (frame->status == OK) {
+        if (frame->status == OK)
+        {
             sp<MetaData> outFormat = (*s->decoder)->getFormat();
             outFormat->findInt32(kKeyWidth , &w);
             outFormat->findInt32(kKeyHeight, &h);
             frame->vframe = av_frame_alloc();
-            if (!frame->vframe) {
+            if (!frame->vframe)
+            {
                 frame->status = AVERROR(ENOMEM);
                 decode_done   = 1;
                 buffer->release();
                 goto push_frame;
             }
             ret = ff_get_buffer(avctx, frame->vframe, AV_GET_BUFFER_FLAG_REF);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 frame->status = ret;
                 decode_done   = 1;
                 buffer->release();
@@ -196,14 +214,17 @@ void* decode_thread(void *arg)
 
             // The OMX.SEC decoder doesn't signal the modified width/height
             if (s->decoder_component && !strncmp(s->decoder_component, "OMX.SEC", 7) &&
-                (w & 15 || h & 15)) {
-                if (((w + 15)&~15) * ((h + 15)&~15) * 3/2 == buffer->range_length()) {
+                    (w & 15 || h & 15))
+            {
+                if (((w + 15)&~15) * ((h + 15)&~15) * 3/2 == buffer->range_length())
+                {
                     w = (w + 15)&~15;
                     h = (h + 15)&~15;
                 }
             }
 
-            if (!avctx->width || !avctx->height || avctx->width > w || avctx->height > h) {
+            if (!avctx->width || !avctx->height || avctx->width > w || avctx->height > h)
+            {
                 avctx->width  = w;
                 avctx->height = h;
             }
@@ -220,24 +241,31 @@ void* decode_thread(void *arg)
                           avctx->pix_fmt, avctx->width, avctx->height);
 
             buffer->meta_data()->findInt64(kKeyTime, &out_frame_index);
-            if (out_frame_index && s->ts_map->count(out_frame_index) > 0) {
+            if (out_frame_index && s->ts_map->count(out_frame_index) > 0)
+            {
                 frame->vframe->pts = (*s->ts_map)[out_frame_index].pts;
                 frame->vframe->reordered_opaque = (*s->ts_map)[out_frame_index].reordered_opaque;
                 s->ts_map->erase(out_frame_index);
             }
             buffer->release();
-            } else if (frame->status == INFO_FORMAT_CHANGED) {
-                if (buffer)
-                    buffer->release();
-                av_free(frame);
-                continue;
-            } else {
-                decode_done = 1;
-            }
+        }
+        else if (frame->status == INFO_FORMAT_CHANGED)
+        {
+            if (buffer)
+                buffer->release();
+            av_free(frame);
+            continue;
+        }
+        else
+        {
+            decode_done = 1;
+        }
 push_frame:
-        while (true) {
+        while (true)
+        {
             pthread_mutex_lock(&s->out_mutex);
-            if (s->out_queue->size() >= 10) {
+            if (s->out_queue->size() >= 10)
+            {
                 pthread_mutex_unlock(&s->out_mutex);
                 usleep(10000);
                 continue;
@@ -246,7 +274,8 @@ push_frame:
         }
         s->out_queue->push_back(frame);
         pthread_mutex_unlock(&s->out_mutex);
-    } while (!decode_done && !s->stop_decode);
+    }
+    while (!decode_done && !s->stop_decode);
 
     s->thread_exited = true;
 
@@ -265,22 +294,25 @@ static av_cold int Stagefright_init(AVCodecContext *avctx)
 
     s->avctx = avctx;
     s->bsfc  = av_bitstream_filter_init("h264_mp4toannexb");
-    if (!s->bsfc) {
+    if (!s->bsfc)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot open the h264_mp4toannexb BSF!\n");
         return -1;
     }
 
     s->orig_extradata_size = avctx->extradata_size;
     s->orig_extradata = (uint8_t*) av_mallocz(avctx->extradata_size +
-                                              AV_INPUT_BUFFER_PADDING_SIZE);
-    if (!s->orig_extradata) {
+                        AV_INPUT_BUFFER_PADDING_SIZE);
+    if (!s->orig_extradata)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
     memcpy(s->orig_extradata, avctx->extradata, avctx->extradata_size);
 
     meta = new MetaData;
-    if (!meta) {
+    if (!meta)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -299,12 +331,14 @@ static av_cold int Stagefright_init(AVCodecContext *avctx)
     s->client    = new OMXClient;
     s->end_frame = (Frame*)av_mallocz(sizeof(Frame));
     if (s->source == NULL || !s->in_queue || !s->out_queue || !s->client ||
-        !s->ts_map || !s->end_frame) {
+            !s->ts_map || !s->end_frame)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    if (s->client->connect() !=  OK) {
+    if (s->client->connect() !=  OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot connect OMX client\n");
         ret = -1;
         goto fail;
@@ -312,9 +346,10 @@ static av_cold int Stagefright_init(AVCodecContext *avctx)
 
     s->decoder  = new sp<MediaSource>();
     *s->decoder = OMXCodec::Create(s->client->interface(), meta,
-                                  false, *s->source, NULL,
-                                  OMXCodec::kClientNeedsFramebuffer);
-    if ((*s->decoder)->start() !=  OK) {
+                                   false, *s->source, NULL,
+                                   OMXCodec::kClientNeedsFramebuffer);
+    if ((*s->decoder)->start() !=  OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot start decoder\n");
         ret = -1;
         s->client->disconnect();
@@ -324,7 +359,7 @@ static av_cold int Stagefright_init(AVCodecContext *avctx)
     outFormat = (*s->decoder)->getFormat();
     outFormat->findInt32(kKeyColorFormat, &colorFormat);
     if (colorFormat == OMX_QCOM_COLOR_FormatYVU420SemiPlanar ||
-        colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
+            colorFormat == OMX_COLOR_FormatYUV420SemiPlanar)
         avctx->pix_fmt = AV_PIX_FMT_NV21;
     else if (colorFormat == OMX_COLOR_FormatYCbYCr)
         avctx->pix_fmt = AV_PIX_FMT_YUYV422;
@@ -363,20 +398,24 @@ static int Stagefright_decode_frame(AVCodecContext *avctx, void *data,
     AVPacket pkt = *avpkt;
     AVFrame *ret_frame;
 
-    if (!s->thread_started) {
+    if (!s->thread_started)
+    {
         if(pthread_create(&s->decode_thread_id, NULL, &decode_thread, avctx))
             return AVERROR(ENOMEM);
         s->thread_started = true;
     }
 
-    if (avpkt && avpkt->data) {
+    if (avpkt && avpkt->data)
+    {
         av_bitstream_filter_filter(s->bsfc, avctx, NULL, &pkt.data, &pkt.size,
                                    avpkt->data, avpkt->size, avpkt->flags & AV_PKT_FLAG_KEY);
         avpkt = &pkt;
     }
 
-    if (!s->source_done) {
-        if(!s->dummy_buf) {
+    if (!s->source_done)
+    {
+        if(!s->dummy_buf)
+        {
             s->dummy_buf = (uint8_t*)av_malloc(avpkt->size);
             if (!s->dummy_buf)
                 return AVERROR(ENOMEM);
@@ -385,18 +424,21 @@ static int Stagefright_decode_frame(AVCodecContext *avctx, void *data,
         }
 
         frame = (Frame*)av_mallocz(sizeof(Frame));
-        if (avpkt->data) {
+        if (avpkt->data)
+        {
             frame->status  = OK;
             frame->size    = avpkt->size;
             frame->key     = avpkt->flags & AV_PKT_FLAG_KEY ? 1 : 0;
             frame->buffer  = (uint8_t*)av_malloc(avpkt->size);
-            if (!frame->buffer) {
+            if (!frame->buffer)
+            {
                 av_freep(&frame);
                 return AVERROR(ENOMEM);
             }
             uint8_t *ptr = avpkt->data;
             // The OMX.SEC decoder fails without this.
-            if (avpkt->size == orig_size + avctx->extradata_size) {
+            if (avpkt->size == orig_size + avctx->extradata_size)
+            {
                 ptr += avctx->extradata_size;
                 frame->size = orig_size;
             }
@@ -407,18 +449,23 @@ static int Stagefright_decode_frame(AVCodecContext *avctx, void *data,
             frame->time = ++s->frame_index;
             (*s->ts_map)[s->frame_index].pts = avpkt->pts;
             (*s->ts_map)[s->frame_index].reordered_opaque = avctx->reordered_opaque;
-        } else {
+        }
+        else
+        {
             frame->status  = ERROR_END_OF_STREAM;
             s->source_done = true;
         }
 
-        while (true) {
-            if (s->thread_exited) {
+        while (true)
+        {
+            if (s->thread_exited)
+            {
                 s->source_done = true;
                 break;
             }
             pthread_mutex_lock(&s->in_mutex);
-            if (s->in_queue->size() >= 10) {
+            if (s->in_queue->size() >= 10)
+            {
                 pthread_mutex_unlock(&s->in_mutex);
                 usleep(10000);
                 continue;
@@ -429,14 +476,18 @@ static int Stagefright_decode_frame(AVCodecContext *avctx, void *data,
             break;
         }
     }
-    while (true) {
+    while (true)
+    {
         pthread_mutex_lock(&s->out_mutex);
         if (!s->out_queue->empty()) break;
         pthread_mutex_unlock(&s->out_mutex);
-        if (s->source_done) {
+        if (s->source_done)
+        {
             usleep(10000);
             continue;
-        } else {
+        }
+        else
+        {
             return orig_size;
         }
     }
@@ -451,7 +502,8 @@ static int Stagefright_decode_frame(AVCodecContext *avctx, void *data,
 
     if (status == ERROR_END_OF_STREAM)
         return 0;
-    if (status != OK) {
+    if (status != OK)
+    {
         if (status == AVERROR(ENOMEM))
             return status;
         av_log(avctx, AV_LOG_ERROR, "Decode failed: %x\n", status);
@@ -472,13 +524,16 @@ static av_cold int Stagefright_close(AVCodecContext *avctx)
     StagefrightContext *s = (StagefrightContext*)avctx->priv_data;
     Frame *frame;
 
-    if (s->thread_started) {
-        if (!s->thread_exited) {
+    if (s->thread_started)
+    {
+        if (!s->thread_exited)
+        {
             s->stop_decode = 1;
 
             // Make sure decode_thread() doesn't get stuck
             pthread_mutex_lock(&s->out_mutex);
-            while (!s->out_queue->empty()) {
+            while (!s->out_queue->empty())
+            {
                 frame = *s->out_queue->begin();
                 s->out_queue->erase(s->out_queue->begin());
                 if (frame->vframe)
@@ -490,7 +545,8 @@ static av_cold int Stagefright_close(AVCodecContext *avctx)
             // Feed a dummy frame prior to signalling EOF.
             // This is required to terminate the decoder(OMX.SEC)
             // when only one frame is read during stream info detection.
-            if (s->dummy_buf && (frame = (Frame*)av_mallocz(sizeof(Frame)))) {
+            if (s->dummy_buf && (frame = (Frame*)av_mallocz(sizeof(Frame))))
+            {
                 frame->status = OK;
                 frame->size   = s->dummy_bufsize;
                 frame->key    = 1;
@@ -518,7 +574,8 @@ static av_cold int Stagefright_close(AVCodecContext *avctx)
         s->thread_started = false;
     }
 
-    while (!s->in_queue->empty()) {
+    while (!s->in_queue->empty())
+    {
         frame = *s->in_queue->begin();
         s->in_queue->erase(s->in_queue->begin());
         if (frame->size)
@@ -526,7 +583,8 @@ static av_cold int Stagefright_close(AVCodecContext *avctx)
         av_freep(&frame);
     }
 
-    while (!s->out_queue->empty()) {
+    while (!s->out_queue->empty())
+    {
         frame = *s->out_queue->begin();
         s->out_queue->erase(s->out_queue->begin());
         if (frame->vframe)
@@ -563,7 +621,8 @@ static av_cold int Stagefright_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_libstagefright_h264_decoder = {
+AVCodec ff_libstagefright_h264_decoder =
+{
     "libstagefright_h264",
     NULL_IF_CONFIG_SMALL("libstagefright H.264"),
     AVMEDIA_TYPE_VIDEO,

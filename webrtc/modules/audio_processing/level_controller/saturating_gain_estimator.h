@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,23 +13,28 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
-class SaturatingGainEstimator {
- public:
-  SaturatingGainEstimator();
-  ~SaturatingGainEstimator();
-  void Initialize();
-  void Update(float gain, int num_saturations);
-  float GetGain() const { return saturating_gain_; }
+class SaturatingGainEstimator
+{
+public:
+    SaturatingGainEstimator();
+    ~SaturatingGainEstimator();
+    void Initialize();
+    void Update(float gain, int num_saturations);
+    float GetGain() const
+    {
+        return saturating_gain_;
+    }
 
- private:
-  float saturating_gain_;
-  int saturating_gain_hold_counter_;
+private:
+    float saturating_gain_;
+    int saturating_gain_hold_counter_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(SaturatingGainEstimator);
+    RTC_DISALLOW_COPY_AND_ASSIGN(SaturatingGainEstimator);
 };
 
 }  // namespace webrtc

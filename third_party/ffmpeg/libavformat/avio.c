@@ -1,4 +1,4 @@
-/*
+﻿/*
  * unbuffered I/O
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -74,7 +74,8 @@ static const AVClass *urlcontext_child_class_next(const AVClass *prev)
 }
 
 static const AVOption options[] = { { NULL } };
-const AVClass ffurl_context_class = {
+const AVClass ffurl_context_class =
+{
     .class_name       = "URLContext",
     .item_name        = urlcontext_to_name,
     .option           = options,
@@ -117,18 +118,21 @@ static int url_alloc_for_protocol(URLContext **puc, struct URLProtocol *up,
     if (up->flags & URL_PROTOCOL_FLAG_NETWORK && !ff_network_init())
         return AVERROR(EIO);
 #endif
-    if ((flags & AVIO_FLAG_READ) && !up->url_read) {
+    if ((flags & AVIO_FLAG_READ) && !up->url_read)
+    {
         av_log(NULL, AV_LOG_ERROR,
                "Impossible to open the '%s' protocol for reading\n", up->name);
         return AVERROR(EIO);
     }
-    if ((flags & AVIO_FLAG_WRITE) && !up->url_write) {
+    if ((flags & AVIO_FLAG_WRITE) && !up->url_write)
+    {
         av_log(NULL, AV_LOG_ERROR,
                "Impossible to open the '%s' protocol for writing\n", up->name);
         return AVERROR(EIO);
     }
     uc = av_mallocz(sizeof(URLContext) + strlen(filename) + 1);
-    if (!uc) {
+    if (!uc)
+    {
         err = AVERROR(ENOMEM);
         goto fail;
     }
@@ -139,24 +143,29 @@ static int url_alloc_for_protocol(URLContext **puc, struct URLProtocol *up,
     uc->flags           = flags;
     uc->is_streamed     = 0; /* default = not streamed */
     uc->max_packet_size = 0; /* default: stream file */
-    if (up->priv_data_size) {
+    if (up->priv_data_size)
+    {
         uc->priv_data = av_mallocz(up->priv_data_size);
-        if (!uc->priv_data) {
+        if (!uc->priv_data)
+        {
             err = AVERROR(ENOMEM);
             goto fail;
         }
-        if (up->priv_data_class) {
+        if (up->priv_data_class)
+        {
             int proto_len= strlen(up->name);
             char *start = strchr(uc->filename, ',');
             *(const AVClass **)uc->priv_data = up->priv_data_class;
             av_opt_set_defaults(uc->priv_data);
-            if(!strncmp(up->name, uc->filename, proto_len) && uc->filename + proto_len == start){
+            if(!strncmp(up->name, uc->filename, proto_len) && uc->filename + proto_len == start)
+            {
                 int ret= 0;
                 char *p= start;
                 char sep= *++p;
                 char *key, *val;
                 p++;
-                while(ret >= 0 && (key= strchr(p, sep)) && p<key && (val = strchr(key+1, sep))){
+                while(ret >= 0 && (key= strchr(p, sep)) && p<key && (val = strchr(key+1, sep)))
+                {
                     *val= *key= 0;
                     ret= av_opt_set(uc->priv_data, p, key+1, 0);
                     if (ret == AVERROR_OPTION_NOT_FOUND)
@@ -164,7 +173,8 @@ static int url_alloc_for_protocol(URLContext **puc, struct URLProtocol *up,
                     *val= *key= sep;
                     p= val+1;
                 }
-                if(ret<0 || p!=key){
+                if(ret<0 || p!=key)
+                {
                     av_log(uc, AV_LOG_ERROR, "Error parsing options string %s\n", start);
                     av_freep(&uc->priv_data);
                     av_freep(&uc);
@@ -196,9 +206,9 @@ int ffurl_connect(URLContext *uc, AVDictionary **options)
 {
     int err =
         uc->prot->url_open2 ? uc->prot->url_open2(uc,
-                                                  uc->filename,
-                                                  uc->flags,
-                                                  options) :
+                uc->filename,
+                uc->flags,
+                options) :
         uc->prot->url_open(uc, uc->filename, uc->flags);
     if (err)
         return err;
@@ -222,7 +232,8 @@ int ffurl_accept(URLContext *s, URLContext **c)
 int ffurl_handshake(URLContext *c)
 {
     int ret;
-    if (c->prot->url_handshake) {
+    if (c->prot->url_handshake)
+    {
         ret = c->prot->url_handshake(c);
         if (ret)
             return ret;
@@ -243,8 +254,8 @@ static struct URLProtocol *url_find_protocol(const char *filename)
     size_t proto_len = strspn(filename, URL_SCHEME_CHARS);
 
     if (filename[proto_len] != ':' &&
-        (filename[proto_len] != ',' || !strchr(filename + proto_len + 1, ':')) ||
-        is_dos_path(filename))
+            (filename[proto_len] != ',' || !strchr(filename + proto_len + 1, ':')) ||
+            is_dos_path(filename))
         strcpy(proto_str, "file");
     else
         av_strlcpy(proto_str, filename,
@@ -256,11 +267,12 @@ static struct URLProtocol *url_find_protocol(const char *filename)
     if ((ptr = strchr(proto_nested, '+')))
         *ptr = '\0';
 
-    while (up = ffurl_protocol_next(up)) {
+    while (up = ffurl_protocol_next(up))
+    {
         if (!strcmp(proto_str, up->name))
             break;
         if (up->flags & URL_PROTOCOL_FLAG_NESTED_SCHEME &&
-            !strcmp(proto_nested, up->name))
+                !strcmp(proto_nested, up->name))
             break;
     }
 
@@ -272,20 +284,21 @@ int ffurl_alloc(URLContext **puc, const char *filename, int flags,
 {
     URLProtocol *p = NULL;
 
-    if (!first_protocol) {
+    if (!first_protocol)
+    {
         av_log(NULL, AV_LOG_WARNING, "No URL Protocols are registered. "
-                                     "Missing call to av_register_all()?\n");
+               "Missing call to av_register_all()?\n");
     }
 
     p = url_find_protocol(filename);
     if (p)
-       return url_alloc_for_protocol(puc, p, filename, flags, int_cb);
+        return url_alloc_for_protocol(puc, p, filename, flags, int_cb);
 
     *puc = NULL;
     if (av_strstart(filename, "https:", NULL))
         av_log(NULL, AV_LOG_WARNING, "https protocol not found, recompile FFmpeg with "
-                                     "openssl, gnutls,\n"
-                                     "or securetransport enabled.\n");
+               "openssl, gnutls,\n"
+               "or securetransport enabled.\n");
     return AVERROR_PROTOCOL_NOT_FOUND;
 }
 
@@ -296,7 +309,7 @@ int ffurl_open(URLContext **puc, const char *filename, int flags,
     if (ret < 0)
         return ret;
     if (options && (*puc)->prot->priv_data_class &&
-        (ret = av_opt_set_dict((*puc)->priv_data, options)) < 0)
+            (ret = av_opt_set_dict((*puc)->priv_data, options)) < 0)
         goto fail;
     if ((ret = av_opt_set_dict(*puc, options)) < 0)
         goto fail;
@@ -310,17 +323,18 @@ fail:
 }
 
 static inline int retry_transfer_wrapper(URLContext *h, uint8_t *buf,
-                                         int size, int size_min,
-                                         int (*transfer_func)(URLContext *h,
-                                                              uint8_t *buf,
-                                                              int size))
+        int size, int size_min,
+        int (*transfer_func)(URLContext *h,
+                             uint8_t *buf,
+                             int size))
 {
     int ret, len;
     int fast_retries = 5;
     int64_t wait_since = 0;
 
     len = 0;
-    while (len < size_min) {
+    while (len < size_min)
+    {
         if (ff_check_interrupt(&h->interrupt_callback))
             return AVERROR_EXIT;
         ret = transfer_func(h, buf + len, size - len);
@@ -328,12 +342,17 @@ static inline int retry_transfer_wrapper(URLContext *h, uint8_t *buf,
             continue;
         if (h->flags & AVIO_FLAG_NONBLOCK)
             return ret;
-        if (ret == AVERROR(EAGAIN)) {
+        if (ret == AVERROR(EAGAIN))
+        {
             ret = 0;
-            if (fast_retries) {
+            if (fast_retries)
+            {
                 fast_retries--;
-            } else {
-                if (h->rw_timeout) {
+            }
+            else
+            {
+                if (h->rw_timeout)
+                {
                     if (!wait_since)
                         wait_since = av_gettime_relative();
                     else if (av_gettime_relative() > wait_since + h->rw_timeout)
@@ -341,7 +360,8 @@ static inline int retry_transfer_wrapper(URLContext *h, uint8_t *buf,
                 }
                 av_usleep(1000);
             }
-        } else if (ret < 1)
+        }
+        else if (ret < 1)
             return (ret < 0 && ret != AVERROR_EOF) ? ret : len;
         if (ret)
             fast_retries = FFMAX(fast_retries, 2);
@@ -400,7 +420,8 @@ int ffurl_closep(URLContext **hh)
     if (h->prot->flags & URL_PROTOCOL_FLAG_NETWORK)
         ff_network_close();
 #endif
-    if (h->prot->priv_data_size) {
+    if (h->prot->priv_data_size)
+    {
         if (h->prot->priv_data_class)
             av_opt_free(h->priv_data);
         av_freep(&h->priv_data);
@@ -429,9 +450,12 @@ int avio_check(const char *url, int flags)
     if (ret < 0)
         return ret;
 
-    if (h->prot->url_check) {
+    if (h->prot->url_check)
+    {
         ret = h->prot->url_check(h, flags);
-    } else {
+    }
+    else
+    {
         ret = ffurl_connect(h, NULL);
         if (ret >= 0)
             ret = flags;
@@ -448,7 +472,8 @@ int avpriv_io_move(const char *url_src, const char *url_dst)
     if (ret < 0)
         return ret;
     ret = ffurl_alloc(&h_dst, url_dst, AVIO_FLAG_WRITE, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         ffurl_close(h_src);
         return ret;
     }
@@ -487,7 +512,8 @@ int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options)
     av_assert0(s);
 
     ctx = av_mallocz(sizeof(*ctx));
-    if (!ctx) {
+    if (!ctx)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -495,12 +521,14 @@ int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options)
     if ((ret = ffurl_alloc(&h, url, AVIO_FLAG_READ, NULL)) < 0)
         goto fail;
 
-    if (h->prot->url_open_dir && h->prot->url_read_dir && h->prot->url_close_dir) {
+    if (h->prot->url_open_dir && h->prot->url_read_dir && h->prot->url_close_dir)
+    {
         if (options && h->prot->priv_data_class &&
-            (ret = av_opt_set_dict(h->priv_data, options)) < 0)
+                (ret = av_opt_set_dict(h->priv_data, options)) < 0)
             goto fail;
         ret = h->prot->url_open_dir(h);
-    } else
+    }
+    else
         ret = AVERROR(ENOSYS);
     if (ret < 0)
         goto fail;
@@ -510,7 +538,7 @@ int avio_open_dir(AVIODirContext **s, const char *url, AVDictionary **options)
     *s = ctx;
     return 0;
 
-  fail:
+fail:
     av_free(ctx);
     *s = NULL;
     ffurl_close(h);
@@ -558,7 +586,8 @@ int64_t ffurl_size(URLContext *h)
     int64_t pos, size;
 
     size = ffurl_seek(h, 0, AVSEEK_SIZE);
-    if (size < 0) {
+    if (size < 0)
+    {
         pos = ffurl_seek(h, 0, SEEK_CUR);
         if ((size = ffurl_seek(h, -1, SEEK_END)) < 0)
             return size;
@@ -577,7 +606,8 @@ int ffurl_get_file_handle(URLContext *h)
 
 int ffurl_get_multi_file_handle(URLContext *h, int **handles, int *numhandles)
 {
-    if (!h->prot->url_get_multi_file_handle) {
+    if (!h->prot->url_get_multi_file_handle)
+    {
         if (!h->prot->url_get_file_handle)
             return AVERROR(ENOSYS);
         *handles = av_malloc(sizeof(**handles));

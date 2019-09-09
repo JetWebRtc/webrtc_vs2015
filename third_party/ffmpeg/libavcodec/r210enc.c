@@ -1,4 +1,4 @@
-/*
+﻿/*
  * R210 encoder
  *
  * Copyright (c) 2012 Paul B Mahol
@@ -40,9 +40,11 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     src_line = pic->data[0];
     dst = pkt->data;
 
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         uint16_t *src = (uint16_t *)src_line;
-        for (j = 0; j < avctx->width; j++) {
+        for (j = 0; j < avctx->width; j++)
+        {
             uint32_t pixel;
             uint16_t r = *src++ >> 6;
             uint16_t g = *src++ >> 6;
@@ -68,7 +70,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
 
 #if CONFIG_R210_ENCODER
-AVCodec ff_r210_encoder = {
+AVCodec ff_r210_encoder =
+{
     .name           = "r210",
     .long_name      = NULL_IF_CONFIG_SMALL("Uncompressed RGB 10-bit"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -79,7 +82,8 @@ AVCodec ff_r210_encoder = {
 };
 #endif
 #if CONFIG_R10K_ENCODER
-AVCodec ff_r10k_encoder = {
+AVCodec ff_r10k_encoder =
+{
     .name           = "r10k",
     .long_name      = NULL_IF_CONFIG_SMALL("AJA Kona 10-bit RGB Codec"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -90,7 +94,8 @@ AVCodec ff_r10k_encoder = {
 };
 #endif
 #if CONFIG_AVRP_ENCODER
-AVCodec ff_avrp_encoder = {
+AVCodec ff_avrp_encoder =
+{
     .name           = "avrp",
     .long_name      = NULL_IF_CONFIG_SMALL("Avid 1:1 10-bit RGB Packer"),
     .type           = AVMEDIA_TYPE_VIDEO,

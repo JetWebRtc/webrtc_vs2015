@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -59,9 +59,9 @@
 
 #if HAVE_INLINE_ASM
 static void ff_celp_lp_synthesis_filterf_mips(float *out,
-                                  const float *filter_coeffs,
-                                  const float* in, int buffer_length,
-                                  int filter_length)
+        const float *filter_coeffs,
+        const float* in, int buffer_length,
+        int filter_length)
 {
     int i,n;
 
@@ -82,7 +82,8 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
     old_out1 = out[-3];
     old_out2 = out[-2];
     old_out3 = out[-1];
-    for (n = 0; n <= buffer_length - 4; n+=4) {
+    for (n = 0; n <= buffer_length - 4; n+=4)
+    {
         p_filter_coeffs = filter_coeffs;
         p_out = out;
 
@@ -108,14 +109,15 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
             "nmsub.s    %[out0], %[out0],             $f3, %[old_out0]      \n\t"
 
             : [out0]"+f"(out0), [out1]"+f"(out1),
-              [out2]"+f"(out2), [out3]"+f"(out3)
+            [out2]"+f"(out2), [out3]"+f"(out3)
             : [old_out0]"f"(old_out0), [old_out1]"f"(old_out1),
-              [old_out2]"f"(old_out2), [old_out3]"f"(old_out3),
-              [filter_coeffs]"r"(filter_coeffs)
+            [old_out2]"f"(old_out2), [old_out3]"f"(old_out3),
+            [filter_coeffs]"r"(filter_coeffs)
             : "$f0", "$f1", "$f2", "$f3", "$f4", "memory"
         );
 
-        for (i = 5; i <= filter_length; i += 2) {
+        for (i = 5; i <= filter_length; i += 2)
+        {
             __asm__ volatile(
                 "lwc1    %[old_out3], -20(%[p_out])                         \n\t"
                 "lwc1    $f5,         16(%[p_filter_coeffs])                \n\t"
@@ -134,10 +136,10 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
                 "nmsub.s %[out2],     %[out2],      $f4, %[old_out0]        \n\t"
 
                 : [out0]"+f"(out0), [out1]"+f"(out1),
-                  [out2]"+f"(out2), [out3]"+f"(out3), [old_out0]"+f"(old_out0),
-                  [old_out1]"+f"(old_out1), [old_out2]"+f"(old_out2),
-                  [old_out3]"+f"(old_out3),[p_filter_coeffs]"+r"(p_filter_coeffs),
-                  [p_out]"+r"(p_out)
+                [out2]"+f"(out2), [out3]"+f"(out3), [old_out0]"+f"(old_out0),
+                [old_out1]"+f"(old_out1), [old_out2]"+f"(old_out2),
+                [old_out3]"+f"(old_out3),[p_filter_coeffs]"+r"(p_filter_coeffs),
+                [p_out]"+r"(p_out)
                 :
                 : "$f4", "$f5", "memory"
             );
@@ -153,7 +155,7 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
             "nmsub.s    %[out3], %[out3], %[c], %[out0]                     \n\t"
 
             : [out0]"+f"(out0), [out1]"+f"(out1),
-              [out2]"+f"(out2), [out3]"+f"(out3)
+            [out2]"+f"(out2), [out3]"+f"(out3)
             : [a]"f"(a), [b]"f"(b), [c]"f"(c)
         );
 
@@ -173,12 +175,14 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
 
     out -= n;
     in -= n;
-    for (; n < buffer_length; n++) {
+    for (; n < buffer_length; n++)
+    {
         float out_val, out_val_i, fc_val;
         p_filter_coeffs = filter_coeffs;
         p_out = &out[n];
         out_val = in[n];
-        for (i = 1; i <= filter_length; i++) {
+        for (i = 1; i <= filter_length; i++)
+        {
             __asm__ volatile(
                 "lwc1    %[fc_val],          0(%[p_filter_coeffs])                        \n\t"
                 "lwc1    %[out_val_i],       -4(%[p_out])                                 \n\t"
@@ -187,8 +191,8 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
                 "nmsub.s %[out_val],         %[out_val],          %[fc_val], %[out_val_i] \n\t"
 
                 : [fc_val]"=&f"(fc_val), [out_val]"+f"(out_val),
-                  [out_val_i]"=&f"(out_val_i), [p_out]"+r"(p_out),
-                  [p_filter_coeffs]"+r"(p_filter_coeffs)
+                [out_val_i]"=&f"(out_val_i), [p_out]"+r"(p_out),
+                [p_filter_coeffs]"+r"(p_filter_coeffs)
                 :
                 : "memory"
             );
@@ -198,16 +202,17 @@ static void ff_celp_lp_synthesis_filterf_mips(float *out,
 }
 
 static void ff_celp_lp_zero_synthesis_filterf_mips(float *out,
-                                       const float *filter_coeffs,
-                                       const float *in, int buffer_length,
-                                       int filter_length)
+        const float *filter_coeffs,
+        const float *in, int buffer_length,
+        int filter_length)
 {
     int i,n;
     float sum_out8, sum_out7, sum_out6, sum_out5, sum_out4, fc_val;
     float sum_out3, sum_out2, sum_out1;
     const float *p_filter_coeffs, *p_in;
 
-    for (n = 0; n < buffer_length; n+=8) {
+    for (n = 0; n < buffer_length; n+=8)
+    {
         p_in = &in[n];
         p_filter_coeffs = filter_coeffs;
         sum_out8 = in[n+7];
@@ -259,11 +264,11 @@ static void ff_celp_lp_zero_synthesis_filterf_mips(float *out,
             "bgtz   %[i],        filt_lp_inner%=                            \n\t"
 
             : [sum_out8]"+f"(sum_out8), [sum_out7]"+f"(sum_out7),
-              [sum_out6]"+f"(sum_out6), [sum_out5]"+f"(sum_out5),
-              [sum_out4]"+f"(sum_out4), [sum_out3]"+f"(sum_out3),
-              [sum_out2]"+f"(sum_out2), [sum_out1]"+f"(sum_out1),
-              [fc_val]"=&f"(fc_val), [p_filter_coeffs]"+r"(p_filter_coeffs),
-              [p_in]"+r"(p_in), [i]"+r"(i)
+            [sum_out6]"+f"(sum_out6), [sum_out5]"+f"(sum_out5),
+            [sum_out4]"+f"(sum_out4), [sum_out3]"+f"(sum_out3),
+            [sum_out2]"+f"(sum_out2), [sum_out1]"+f"(sum_out1),
+            [fc_val]"=&f"(fc_val), [p_filter_coeffs]"+r"(p_filter_coeffs),
+            [p_in]"+r"(p_in), [i]"+r"(i)
             :
             : "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6", "$f7", "memory"
         );

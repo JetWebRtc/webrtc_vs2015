@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } SubViewer1Context;
 
@@ -53,7 +54,8 @@ static int subviewer1_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_SUBVIEWER1;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         int len = ff_get_line(s->pb, line, sizeof(line));
         int hh, mm, ss;
@@ -61,21 +63,26 @@ static int subviewer1_read_header(AVFormatContext *s)
         if (!len)
             break;
 
-        if (!strncmp(line, "[DELAY]", 7)) {
+        if (!strncmp(line, "[DELAY]", 7))
+        {
             ff_get_line(s->pb, line, sizeof(line));
             sscanf(line, "%d", &delay);
         }
 
-        if (sscanf(line, "[%d:%d:%d]", &hh, &mm, &ss) == 3) {
+        if (sscanf(line, "[%d:%d:%d]", &hh, &mm, &ss) == 3)
+        {
             const int64_t pos = avio_tell(s->pb);
             int64_t pts_start = hh*3600LL + mm*60LL + ss + delay;
 
             len = ff_get_line(s->pb, line, sizeof(line));
             line[strcspn(line, "\r\n")] = 0;
-            if (!*line) {
+            if (!*line)
+            {
                 if (sub)
                     sub->duration = pts_start - sub->pts;
-            } else {
+            }
+            else
+            {
                 sub = ff_subtitles_queue_insert(&subviewer1->q, line, len, 0);
                 if (!sub)
                     return AVERROR(ENOMEM);
@@ -97,7 +104,7 @@ static int subviewer1_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 static int subviewer1_read_seek(AVFormatContext *s, int stream_index,
-                               int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
+                                int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
 {
     SubViewer1Context *subviewer1 = s->priv_data;
     return ff_subtitles_queue_seek(&subviewer1->q, s, stream_index,
@@ -111,7 +118,8 @@ static int subviewer1_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_subviewer1_demuxer = {
+AVInputFormat ff_subviewer1_demuxer =
+{
     .name           = "subviewer1",
     .long_name      = NULL_IF_CONFIG_SMALL("SubViewer v1 subtitle format"),
     .priv_data_size = sizeof(SubViewer1Context),

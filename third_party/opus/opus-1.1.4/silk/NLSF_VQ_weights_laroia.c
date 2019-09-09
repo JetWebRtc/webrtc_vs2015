@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -60,7 +60,8 @@ void silk_NLSF_VQ_weights_laroia(
     silk_assert( pNLSFW_Q_OUT[ 0 ] > 0 );
 
     /* Main loop */
-    for( k = 1; k < D - 1; k += 2 ) {
+    for( k = 1; k < D - 1; k += 2 )
+    {
         tmp1_int = silk_max_int( pNLSF_Q15[ k + 1 ] - pNLSF_Q15[ k ], 1 );
         tmp1_int = silk_DIV32_16( (opus_int32)1 << ( 15 + NLSF_W_Q ), tmp1_int );
         pNLSFW_Q_OUT[ k ] = (opus_int16)silk_min_int( tmp1_int + tmp2_int, silk_int16_MAX );

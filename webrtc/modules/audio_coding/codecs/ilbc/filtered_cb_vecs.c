@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,18 +31,19 @@ void WebRtcIlbcfix_FilteredCbVecs(
                                            second CB section */
     size_t lMem,  /* (i) Length of codebook memory */
     size_t samples    /* (i) Number of samples to filter */
-                                  ) {
+)
+{
 
-  /* Set up the memory, start with zero state */
-  WebRtcSpl_MemSetW16(CBmem+lMem, 0, CB_HALFFILTERLEN);
-  WebRtcSpl_MemSetW16(CBmem-CB_HALFFILTERLEN, 0, CB_HALFFILTERLEN);
-  WebRtcSpl_MemSetW16(cbvectors, 0, lMem-samples);
+    /* Set up the memory, start with zero state */
+    WebRtcSpl_MemSetW16(CBmem+lMem, 0, CB_HALFFILTERLEN);
+    WebRtcSpl_MemSetW16(CBmem-CB_HALFFILTERLEN, 0, CB_HALFFILTERLEN);
+    WebRtcSpl_MemSetW16(cbvectors, 0, lMem-samples);
 
-  /* Filter to obtain the filtered CB memory */
+    /* Filter to obtain the filtered CB memory */
 
-  WebRtcSpl_FilterMAFastQ12(
-      CBmem+CB_HALFFILTERLEN+lMem-samples, cbvectors+lMem-samples,
-      (int16_t*)WebRtcIlbcfix_kCbFiltersRev, CB_FILTERLEN, samples);
+    WebRtcSpl_FilterMAFastQ12(
+        CBmem+CB_HALFFILTERLEN+lMem-samples, cbvectors+lMem-samples,
+        (int16_t*)WebRtcIlbcfix_kCbFiltersRev, CB_FILTERLEN, samples);
 
-  return;
+    return;
 }

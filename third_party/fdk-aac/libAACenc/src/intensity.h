@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /******************************** MPEG Audio Encoder **************************
 
-   Initial author:       A. Horndasch (code originally from lwr and rtb) / Josef Höpfl (FDK)
+   Initial author:       A. Horndasch (code originally from lwr and rtb) / Josef HÃ¶pfl (FDK)
    contents/description: intensity stereo prototype
 
 ******************************************************************************/
@@ -95,28 +95,28 @@ amm-info@iis.fraunhofer.de
 
 
 void FDKaacEnc_IntensityStereoProcessing(
-        FIXP_DBL                  *sfbEnergyLeft,
-        FIXP_DBL                  *sfbEnergyRight,
-        FIXP_DBL                  *mdctSpectrumLeft,
-        FIXP_DBL                  *mdctSpectrumRight,
-        FIXP_DBL                  *sfbThresholdLeft,
-        FIXP_DBL                  *sfbThresholdRight,
-        FIXP_DBL                  *sfbThresholdLdDataRight,
-        FIXP_DBL                  *sfbSpreadEnLeft,
-        FIXP_DBL                  *sfbSpreadEnRight,
-        FIXP_DBL                  *sfbEnergyLdDataLeft,
-        FIXP_DBL                  *sfbEnergyLdDataRight,
-        INT                       *msDigest,
-        INT                       *msMask,
-        const INT                  sfbCnt,
-        const INT                  sfbPerGroup,
-        const INT                  maxSfbPerGroup,
-        const INT                 *sfbOffset,
-        const INT                  allowIS,
-        INT                       *isBook,
-        INT                       *isScale,
-        PNS_DATA         *RESTRICT pnsData[2]
-        );
+    FIXP_DBL                  *sfbEnergyLeft,
+    FIXP_DBL                  *sfbEnergyRight,
+    FIXP_DBL                  *mdctSpectrumLeft,
+    FIXP_DBL                  *mdctSpectrumRight,
+    FIXP_DBL                  *sfbThresholdLeft,
+    FIXP_DBL                  *sfbThresholdRight,
+    FIXP_DBL                  *sfbThresholdLdDataRight,
+    FIXP_DBL                  *sfbSpreadEnLeft,
+    FIXP_DBL                  *sfbSpreadEnRight,
+    FIXP_DBL                  *sfbEnergyLdDataLeft,
+    FIXP_DBL                  *sfbEnergyLdDataRight,
+    INT                       *msDigest,
+    INT                       *msMask,
+    const INT                  sfbCnt,
+    const INT                  sfbPerGroup,
+    const INT                  maxSfbPerGroup,
+    const INT                 *sfbOffset,
+    const INT                  allowIS,
+    INT                       *isBook,
+    INT                       *isScale,
+    PNS_DATA         *RESTRICT pnsData[2]
+);
 
 #endif /* _INTENSITY_H */
 

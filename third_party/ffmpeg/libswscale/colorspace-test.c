@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2002 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -47,13 +47,16 @@ int main(int argc, char **argv)
     av_log(NULL, AV_LOG_INFO, "memory corruption test ...\n");
     sws_rgb2rgb_init();
 
-    for (funcNum = 0; ; funcNum++) {
-        struct func_info_s {
+    for (funcNum = 0; ; funcNum++)
+    {
+        struct func_info_s
+        {
             int src_bpp;
             int dst_bpp;
             const char *name;
             void (*func)(const uint8_t *src, uint8_t *dst, int src_size);
-        } func_info[] = {
+        } func_info[] =
+        {
             FUNC(2, 2, rgb12to15),
             FUNC(2, 2, rgb15to16),
             FUNC(2, 3, rgb15to24),
@@ -103,13 +106,16 @@ int main(int argc, char **argv)
         av_log(NULL, AV_LOG_INFO, ".");
         memset(srcBuffer, srcByte, SIZE);
 
-        for (width = 63; width > 0; width--) {
+        for (width = 63; width > 0; width--)
+        {
             int dstOffset;
-            for (dstOffset = 128; dstOffset < 196; dstOffset += 4) {
+            for (dstOffset = 128; dstOffset < 196; dstOffset += 4)
+            {
                 int srcOffset;
                 memset(dstBuffer, dstByte, SIZE);
 
-                for (srcOffset = 128; srcOffset < 196; srcOffset += 4) {
+                for (srcOffset = 128; srcOffset < 196; srcOffset += 4)
+                {
                     uint8_t *src     = srcBuffer + srcOffset;
                     uint8_t *dst     = dstBuffer + dstOffset;
                     const char *name = NULL;
@@ -127,8 +133,10 @@ int main(int argc, char **argv)
                     if (!srcBpp)
                         break;
 
-                    for (i = 0; i < SIZE; i++) {
-                        if (srcBuffer[i] != srcByte) {
+                    for (i = 0; i < SIZE; i++)
+                    {
+                        if (srcBuffer[i] != srcByte)
+                        {
                             av_log(NULL, AV_LOG_INFO,
                                    "src damaged at %d w:%d src:%d dst:%d %s\n",
                                    i, width, srcOffset, dstOffset, name);
@@ -136,8 +144,10 @@ int main(int argc, char **argv)
                             break;
                         }
                     }
-                    for (i = 0; i < dstOffset; i++) {
-                        if (dstBuffer[i] != dstByte) {
+                    for (i = 0; i < dstOffset; i++)
+                    {
+                        if (dstBuffer[i] != dstByte)
+                        {
                             av_log(NULL, AV_LOG_INFO,
                                    "dst damaged at %d w:%d src:%d dst:%d %s\n",
                                    i, width, srcOffset, dstOffset, name);
@@ -145,8 +155,10 @@ int main(int argc, char **argv)
                             break;
                         }
                     }
-                    for (i = dstOffset + width * dstBpp; i < SIZE; i++) {
-                        if (dstBuffer[i] != dstByte) {
+                    for (i = dstOffset + width * dstBpp; i < SIZE; i++)
+                    {
+                        if (dstBuffer[i] != dstByte)
+                        {
                             av_log(NULL, AV_LOG_INFO,
                                    "dst damaged at %d w:%d src:%d dst:%d %s\n",
                                    i, width, srcOffset, dstOffset, name);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Romain Dolbeau <romain@dolbeau.org>
  *
  * This file is part of FFmpeg.
@@ -208,8 +208,8 @@ static void OPNAME ## h264_qpel ## SIZE ## _mc32_ ## CODETYPE(uint8_t *dst, cons
 #endif /* HAVE_BIGENDIAN */
 
 static inline void put_pixels16_l2_altivec( uint8_t * dst, const uint8_t * src1,
-                                    const uint8_t * src2, int dst_stride,
-                                    int src_stride1, int h)
+        const uint8_t * src2, int dst_stride,
+        int src_stride1, int h)
 {
     int i;
     vec_u8 a, b, d, mask_;
@@ -218,7 +218,8 @@ static inline void put_pixels16_l2_altivec( uint8_t * dst, const uint8_t * src1,
     mask_ = vec_lvsl(0, src2);
 #endif
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         a = unaligned_load(i * src_stride1, src1);
         b = load_with_perm_vec(i * 16, src2, mask_);
         d = vec_avg(a, b);
@@ -248,8 +249,8 @@ static inline void put_pixels16_l2_altivec( uint8_t * dst, const uint8_t * src1,
 #endif /* HAVE_BIGENDIAN */
 
 static inline void avg_pixels16_l2_altivec( uint8_t * dst, const uint8_t * src1,
-                                    const uint8_t * src2, int dst_stride,
-                                    int src_stride1, int h)
+        const uint8_t * src2, int dst_stride,
+        int src_stride1, int h)
 {
     int i;
     vec_u8 a, b, d, mask_;
@@ -259,7 +260,8 @@ static inline void avg_pixels16_l2_altivec( uint8_t * dst, const uint8_t * src1,
     mask_ = vec_lvsl(0, src2);
 #endif
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         a = unaligned_load(i * src_stride1, src1);
         b = load_with_perm_vec(i * 16, src2, mask_);
         d = vec_avg(a, b);
@@ -285,7 +287,8 @@ av_cold void ff_h264qpel_init_ppc(H264QpelContext *c, int bit_depth)
     if (!PPC_ALTIVEC(av_get_cpu_flags()))
         return;
 
-    if (!high_bit_depth) {
+    if (!high_bit_depth)
+    {
 #define dspfunc(PFX, IDX, NUM) \
         c->PFX ## _pixels_tab[IDX][ 0] = PFX ## NUM ## _mc00_altivec; \
         c->PFX ## _pixels_tab[IDX][ 1] = PFX ## NUM ## _mc10_altivec; \

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -38,7 +38,7 @@ DeviceInfoImpl::~DeviceInfoImpl(void)
     delete &_apiLock;
 }
 int32_t DeviceInfoImpl::NumberOfCapabilities(
-                                        const char* deviceUniqueIdUTF8)
+    const char* deviceUniqueIdUTF8)
 {
 
     if (!deviceUniqueIdUTF8)
@@ -82,13 +82,13 @@ int32_t DeviceInfoImpl::GetCapability(const char* deviceUniqueIdUTF8,
 
     if ((_lastUsedDeviceNameLength != strlen((char*) deviceUniqueIdUTF8))
 #if defined(WEBRTC_MAC) || defined(WEBRTC_LINUX)
-        || (strncasecmp((char*)_lastUsedDeviceName,
-                        (char*) deviceUniqueIdUTF8,
-                        _lastUsedDeviceNameLength)!=0))
+            || (strncasecmp((char*)_lastUsedDeviceName,
+                            (char*) deviceUniqueIdUTF8,
+                            _lastUsedDeviceNameLength)!=0))
 #else
-        || (_strnicmp((char*) _lastUsedDeviceName,
-                      (char*) deviceUniqueIdUTF8,
-                      _lastUsedDeviceNameLength) != 0))
+            || (_strnicmp((char*) _lastUsedDeviceName,
+                          (char*) deviceUniqueIdUTF8,
+                          _lastUsedDeviceNameLength) != 0))
 #endif
 
     {
@@ -118,9 +118,9 @@ int32_t DeviceInfoImpl::GetCapability(const char* deviceUniqueIdUTF8,
 }
 
 int32_t DeviceInfoImpl::GetBestMatchedCapability(
-                                        const char*deviceUniqueIdUTF8,
-                                        const VideoCaptureCapability& requested,
-                                        VideoCaptureCapability& resulting)
+    const char*deviceUniqueIdUTF8,
+    const VideoCaptureCapability& requested,
+    VideoCaptureCapability& resulting)
 {
 
 
@@ -130,13 +130,13 @@ int32_t DeviceInfoImpl::GetBestMatchedCapability(
     ReadLockScoped cs(_apiLock);
     if ((_lastUsedDeviceNameLength != strlen((char*) deviceUniqueIdUTF8))
 #if defined(WEBRTC_MAC) || defined(WEBRTC_LINUX)
-        || (strncasecmp((char*)_lastUsedDeviceName,
-                        (char*) deviceUniqueIdUTF8,
-                        _lastUsedDeviceNameLength)!=0))
+            || (strncasecmp((char*)_lastUsedDeviceName,
+                            (char*) deviceUniqueIdUTF8,
+                            _lastUsedDeviceNameLength)!=0))
 #else
-        || (_strnicmp((char*) _lastUsedDeviceName,
-                      (char*) deviceUniqueIdUTF8,
-                      _lastUsedDeviceNameLength) != 0))
+            || (_strnicmp((char*) _lastUsedDeviceName,
+                          (char*) deviceUniqueIdUTF8,
+                          _lastUsedDeviceNameLength) != 0))
 #endif
     {
         _apiLock.ReleaseLockShared();
@@ -172,34 +172,34 @@ int32_t DeviceInfoImpl::GetBestMatchedCapability(
         const int32_t currentbestDiffFrameRate = bestFrameRate - requested.maxFPS;
 
         if ((diffHeight >= 0 && diffHeight <= abs(currentbestDiffHeight)) // Height better or equalt that previouse.
-            || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
+                || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
         {
 
             if (diffHeight == currentbestDiffHeight) // Found best height. Care about the width)
             {
                 if ((diffWidth >= 0 && diffWidth <= abs(currentbestDiffWith)) // Width better or equal
-                    || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
+                        || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
                 {
                     if (diffWidth == currentbestDiffWith && diffHeight
-                        == currentbestDiffHeight) // Same size as previously
+                            == currentbestDiffHeight) // Same size as previously
                     {
                         //Also check the best frame rate if the diff is the same as previouse
                         if (((diffFrameRate >= 0 &&
-                              diffFrameRate <= currentbestDiffFrameRate) // Frame rate to high but better match than previouse and we have not selected IUV
-                            ||
-                            (currentbestDiffFrameRate < 0 &&
-                             diffFrameRate >= currentbestDiffFrameRate)) // Current frame rate is lower than requested. This is better.
-                        )
+                                diffFrameRate <= currentbestDiffFrameRate) // Frame rate to high but better match than previouse and we have not selected IUV
+                                ||
+                                (currentbestDiffFrameRate < 0 &&
+                                 diffFrameRate >= currentbestDiffFrameRate)) // Current frame rate is lower than requested. This is better.
+                           )
                         {
                             if ((currentbestDiffFrameRate == diffFrameRate) // Same frame rate as previous  or frame rate allready good enough
-                                || (currentbestDiffFrameRate >= 0))
+                                    || (currentbestDiffFrameRate >= 0))
                             {
                                 if (bestRawType != requested.rawType
-                                    && requested.rawType != kVideoUnknown
-                                    && (capability.rawType == requested.rawType
-                                        || capability.rawType == kVideoI420
-                                        || capability.rawType == kVideoYUY2
-                                        || capability.rawType == kVideoYV12))
+                                        && requested.rawType != kVideoUnknown
+                                        && (capability.rawType == requested.rawType
+                                            || capability.rawType == kVideoI420
+                                            || capability.rawType == kVideoYUY2
+                                            || capability.rawType == kVideoYV12))
                                 {
                                     bestCodecType = capability.codecType;
                                     bestRawType = capability.rawType;
@@ -207,11 +207,11 @@ int32_t DeviceInfoImpl::GetBestMatchedCapability(
                                 }
                                 // If width height and frame rate is full filled we can use the camera for encoding if it is supported.
                                 if (capability.height == requested.height
-                                    && capability.width == requested.width
-                                    && capability.maxFPS >= requested.maxFPS)
+                                        && capability.width == requested.width
+                                        && capability.maxFPS >= requested.maxFPS)
                                 {
                                     if (capability.codecType == requested.codecType
-                                        && bestCodecType != requested.codecType)
+                                            && bestCodecType != requested.codecType)
                                     {
                                         bestCodecType = capability.codecType;
                                         bestformatIndex = tmp;
@@ -275,19 +275,19 @@ int32_t DeviceInfoImpl::GetBestMatchedCapability(
 
 /* Returns the expected Capture delay*/
 int32_t DeviceInfoImpl::GetExpectedCaptureDelay(
-                                          const DelayValues delayValues[],
-                                          const uint32_t sizeOfDelayValues,
-                                          const char* productId,
-                                          const uint32_t width,
-                                          const uint32_t height)
+    const DelayValues delayValues[],
+    const uint32_t sizeOfDelayValues,
+    const char* productId,
+    const uint32_t width,
+    const uint32_t height)
 {
     int32_t bestDelay = kDefaultCaptureDelay;
 
     for (uint32_t device = 0; device < sizeOfDelayValues; ++device)
     {
         if (delayValues[device].productId && strncmp((char*) productId,
-                                                     (char*) delayValues[device].productId,
-                                                     kVideoCaptureProductIdLength) == 0)
+                (char*) delayValues[device].productId,
+                kVideoCaptureProductIdLength) == 0)
         {
             // We have found the camera
 
@@ -306,16 +306,16 @@ int32_t DeviceInfoImpl::GetExpectedCaptureDelay(
                 const int32_t currentbestDiffHeight = bestHeight - height;
 
                 if ((diffHeight >= 0 && diffHeight <= abs(currentbestDiffHeight)) // Height better or equal than previous.
-                    || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
+                        || (currentbestDiffHeight < 0 && diffHeight >= currentbestDiffHeight))
                 {
 
                     if (diffHeight == currentbestDiffHeight) // Found best height. Care about the width)
                     {
                         if ((diffWidth >= 0 && diffWidth <= abs(currentbestDiffWith)) // Width better or equal
-                            || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
+                                || (currentbestDiffWith < 0 && diffWidth >= currentbestDiffWith))
                         {
                             if (diffWidth == currentbestDiffWith && diffHeight
-                                == currentbestDiffHeight) // Same size as previous
+                                    == currentbestDiffHeight) // Same size as previous
                             {
                             }
                             else // Better width than previously
@@ -351,8 +351,9 @@ int32_t DeviceInfoImpl::GetExpectedCaptureDelay(
 
 //Default implementation. This should be overridden by Mobile implementations.
 int32_t DeviceInfoImpl::GetOrientation(const char* deviceUniqueIdUTF8,
-                                       VideoRotation& orientation) {
-  orientation = kVideoRotation_0;
+                                       VideoRotation& orientation)
+{
+    orientation = kVideoRotation_0;
     return -1;
 }
 }  // namespace videocapturemodule

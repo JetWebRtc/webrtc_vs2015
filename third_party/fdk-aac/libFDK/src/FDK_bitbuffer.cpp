@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,15 +99,15 @@ amm-info@iis.fraunhofer.de
 
 const UINT BitMask [32+1] =
 {
-         0x0,        0x1,        0x3,        0x7,
-         0xf,       0x1f,       0x3f,       0x7f,
-        0xff,      0x1ff,      0x3ff,      0x7ff,
-       0xfff,     0x1fff,     0x3fff,     0x7fff,
-      0xffff,    0x1ffff,    0x3ffff,    0x7ffff,
-     0xfffff,   0x1fffff,   0x3fffff,   0x7fffff,
+    0x0,        0x1,        0x3,        0x7,
+    0xf,       0x1f,       0x3f,       0x7f,
+    0xff,      0x1ff,      0x3ff,      0x7ff,
+    0xfff,     0x1fff,     0x3fff,     0x7fff,
+    0xffff,    0x1ffff,    0x3ffff,    0x7ffff,
+    0xfffff,   0x1fffff,   0x3fffff,   0x7fffff,
     0xffffff,  0x1ffffff,  0x3ffffff,  0x7ffffff,
-   0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff,
-  0xffffffff
+    0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff,
+    0xffffffff
 };
 
 const UINT *const RESTRICT pBitMask = BitMask;
@@ -115,230 +115,238 @@ const UINT *const RESTRICT pBitMask = BitMask;
 void FDK_CreateBitBuffer (HANDLE_FDK_BITBUF *hBitBuf, UCHAR *pBuffer,
                           UINT bufSize)
 {
-   FDK_InitBitBuffer (*hBitBuf, pBuffer, bufSize, 0);
+    FDK_InitBitBuffer (*hBitBuf, pBuffer, bufSize, 0);
 
-   FDKmemclear((*hBitBuf)->Buffer, bufSize*sizeof(UCHAR));
+    FDKmemclear((*hBitBuf)->Buffer, bufSize*sizeof(UCHAR));
 }
 
-void FDK_DeleteBitBuffer (HANDLE_FDK_BITBUF hBitBuf) { ; }
+void FDK_DeleteBitBuffer (HANDLE_FDK_BITBUF hBitBuf)
+{
+    ;
+}
 
 void FDK_InitBitBuffer (HANDLE_FDK_BITBUF hBitBuf, UCHAR *pBuffer,
                         UINT bufSize, UINT validBits)
 {
-   hBitBuf->ValidBits   = validBits ;
-   hBitBuf->ReadOffset  = 0 ;
-   hBitBuf->WriteOffset = 0 ;
-   hBitBuf->BitCnt      = 0 ;
-   hBitBuf->BitNdx      = 0 ;
+    hBitBuf->ValidBits   = validBits ;
+    hBitBuf->ReadOffset  = 0 ;
+    hBitBuf->WriteOffset = 0 ;
+    hBitBuf->BitCnt      = 0 ;
+    hBitBuf->BitNdx      = 0 ;
 
-   hBitBuf->Buffer      = pBuffer ;
-   hBitBuf->bufSize     = bufSize ;
-   hBitBuf->bufBits     = (bufSize << 3) ;
+    hBitBuf->Buffer      = pBuffer ;
+    hBitBuf->bufSize     = bufSize ;
+    hBitBuf->bufBits     = (bufSize << 3) ;
 #if defined(FDK_DEBUG) || defined(DEBUG)
-   /*assure bufsize (2^n) */
-   if (bufSize!=0) {
-     UINT x = 0, n=bufSize;
-     for (x=0; n>0; x++,n>>=1) {}
-     if ( bufSize != (1<<(x-1)) ) {
-       FDKprintfErr("Error: bufSizein FDK_InitBitBuffer() != (2^n), %d\n", bufSize);
-     }
-   }
+    /*assure bufsize (2^n) */
+    if (bufSize!=0)
+    {
+        UINT x = 0, n=bufSize;
+        for (x=0; n>0; x++,n>>=1) {}
+        if ( bufSize != (1<<(x-1)) )
+        {
+            FDKprintfErr("Error: bufSizein FDK_InitBitBuffer() != (2^n), %d\n", bufSize);
+        }
+    }
 #endif
 }
 
 void FDK_ResetBitBuffer ( HANDLE_FDK_BITBUF hBitBuf )
 {
-   hBitBuf->ValidBits   = 0 ;
-   hBitBuf->ReadOffset  = 0 ;
-   hBitBuf->WriteOffset = 0 ;
-   hBitBuf->BitCnt      = 0 ;
-   hBitBuf->BitNdx      = 0 ;
+    hBitBuf->ValidBits   = 0 ;
+    hBitBuf->ReadOffset  = 0 ;
+    hBitBuf->WriteOffset = 0 ;
+    hBitBuf->BitCnt      = 0 ;
+    hBitBuf->BitNdx      = 0 ;
 }
 
 INT  FDK_get (HANDLE_FDK_BITBUF hBitBuf, const UINT numberOfBits)
 {
-  UINT byteOffset = hBitBuf->BitNdx >> 3 ;
-  UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
+    UINT byteOffset = hBitBuf->BitNdx >> 3 ;
+    UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
 
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
-  hBitBuf->BitCnt    +=  numberOfBits ;
-  hBitBuf->ValidBits -=  numberOfBits ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    +=  numberOfBits ;
+    hBitBuf->ValidBits -=  numberOfBits ;
 
-  UINT byteMask = hBitBuf->bufSize - 1 ;
+    UINT byteMask = hBitBuf->bufSize - 1 ;
 
-  UINT tx = (hBitBuf->Buffer [ byteOffset    & byteMask] << 24) |
-            (hBitBuf->Buffer [(byteOffset+1) & byteMask] << 16) |
-            (hBitBuf->Buffer [(byteOffset+2) & byteMask] <<  8) |
-             hBitBuf->Buffer [(byteOffset+3) & byteMask];
+    UINT tx = (hBitBuf->Buffer [ byteOffset    & byteMask] << 24) |
+              (hBitBuf->Buffer [(byteOffset+1) & byteMask] << 16) |
+              (hBitBuf->Buffer [(byteOffset+2) & byteMask] <<  8) |
+              hBitBuf->Buffer [(byteOffset+3) & byteMask];
 
-  if (bitOffset)
-  {
-    tx <<= bitOffset;
-    tx |= hBitBuf->Buffer [(byteOffset+4) & byteMask] >> (8-bitOffset);
-  }
+    if (bitOffset)
+    {
+        tx <<= bitOffset;
+        tx |= hBitBuf->Buffer [(byteOffset+4) & byteMask] >> (8-bitOffset);
+    }
 
-  return (tx >> (32 - numberOfBits)) ;
+    return (tx >> (32 - numberOfBits)) ;
 }
 
 INT FDK_get32 (HANDLE_FDK_BITBUF hBitBuf)
 {
-  UINT BitNdx = hBitBuf->BitNdx + 32;
-  if (BitNdx <= hBitBuf->bufBits)
-  {
-    hBitBuf->BitNdx = BitNdx;
-    hBitBuf->BitCnt +=  32;
-    hBitBuf->ValidBits -= 32;
+    UINT BitNdx = hBitBuf->BitNdx + 32;
+    if (BitNdx <= hBitBuf->bufBits)
+    {
+        hBitBuf->BitNdx = BitNdx;
+        hBitBuf->BitCnt +=  32;
+        hBitBuf->ValidBits -= 32;
 
-    UINT byteOffset = (BitNdx-1) >> 3;
-    UINT cache = (hBitBuf->Buffer[(byteOffset-3)] << 24) |
-                 (hBitBuf->Buffer[(byteOffset-2)] << 16) |
-                 (hBitBuf->Buffer[(byteOffset-1)] <<  8) |
-                  hBitBuf->Buffer[(byteOffset-0)];
+        UINT byteOffset = (BitNdx-1) >> 3;
+        UINT cache = (hBitBuf->Buffer[(byteOffset-3)] << 24) |
+                     (hBitBuf->Buffer[(byteOffset-2)] << 16) |
+                     (hBitBuf->Buffer[(byteOffset-1)] <<  8) |
+                     hBitBuf->Buffer[(byteOffset-0)];
 
-    if ( (BitNdx = (BitNdx&7)) != 0 ) {
-      cache = (cache >> (8-BitNdx)) | ((UINT)hBitBuf->Buffer [byteOffset-4] << (24+BitNdx));
+        if ( (BitNdx = (BitNdx&7)) != 0 )
+        {
+            cache = (cache >> (8-BitNdx)) | ((UINT)hBitBuf->Buffer [byteOffset-4] << (24+BitNdx));
+        }
+        return (cache) ;
     }
-    return (cache) ;
-  }
-  else
-  {
-    /* exotic path, used only at the end of the buffer, when wrapping around */
-    int nBits = (INT)hBitBuf->bufBits-(INT)hBitBuf->BitNdx;
+    else
+    {
+        /* exotic path, used only at the end of the buffer, when wrapping around */
+        int nBits = (INT)hBitBuf->bufBits-(INT)hBitBuf->BitNdx;
 
-    UINT cache = FDK_get (hBitBuf,nBits)<< (32-nBits);
-    cache |= (FDK_get (hBitBuf,32-nBits));
-    return (cache);
-  }
+        UINT cache = FDK_get (hBitBuf,nBits)<< (32-nBits);
+        cache |= (FDK_get (hBitBuf,32-nBits));
+        return (cache);
+    }
 }
 
 INT FDK_getBwd (HANDLE_FDK_BITBUF hBitBuf, const UINT numberOfBits)
 {
-  UINT byteOffset = hBitBuf->BitNdx >> 3 ;
-  UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
-  UINT byteMask   = hBitBuf->bufSize - 1 ;
-  int i;
+    UINT byteOffset = hBitBuf->BitNdx >> 3 ;
+    UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
+    UINT byteMask   = hBitBuf->bufSize - 1 ;
+    int i;
 
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
-  hBitBuf->BitCnt    -=  numberOfBits ;
-  hBitBuf->ValidBits +=  numberOfBits ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    -=  numberOfBits ;
+    hBitBuf->ValidBits +=  numberOfBits ;
 
-  UINT tx = hBitBuf->Buffer [(byteOffset-3) & byteMask] << 24 |
-            hBitBuf->Buffer [(byteOffset-2) & byteMask] << 16 |
-            hBitBuf->Buffer [(byteOffset-1) & byteMask] <<  8 |
-            hBitBuf->Buffer [ byteOffset    & byteMask] ;
-  UINT txa = 0x0;
+    UINT tx = hBitBuf->Buffer [(byteOffset-3) & byteMask] << 24 |
+              hBitBuf->Buffer [(byteOffset-2) & byteMask] << 16 |
+              hBitBuf->Buffer [(byteOffset-1) & byteMask] <<  8 |
+              hBitBuf->Buffer [ byteOffset    & byteMask] ;
+    UINT txa = 0x0;
 
-  tx >>= (8 - bitOffset) ;
+    tx >>= (8 - bitOffset) ;
 
-  if (bitOffset && numberOfBits > 24)
-  {
-    tx |= hBitBuf->Buffer [(byteOffset-4) & byteMask] << (24 + bitOffset) ;
-  }
+    if (bitOffset && numberOfBits > 24)
+    {
+        tx |= hBitBuf->Buffer [(byteOffset-4) & byteMask] << (24 + bitOffset) ;
+    }
 
-  /* in place turn around */
-  for (i = 0; i < 16; i++) {
-    UINT bitMaskR = 0x00000001 << i;
-    UINT bitMaskL = 0x80000000 >> i;
+    /* in place turn around */
+    for (i = 0; i < 16; i++)
+    {
+        UINT bitMaskR = 0x00000001 << i;
+        UINT bitMaskL = 0x80000000 >> i;
 
-    txa |= (tx & bitMaskR) << (31 - (i<<1));
-    txa |= (tx & bitMaskL) >> (31 - (i<<1));
-  }
+        txa |= (tx & bitMaskR) << (31 - (i<<1));
+        txa |= (tx & bitMaskL) >> (31 - (i<<1));
+    }
 
-  return (txa >> (32 - numberOfBits)) ;
+    return (txa >> (32 - numberOfBits)) ;
 }
 
 void FDK_put (HANDLE_FDK_BITBUF hBitBuf, UINT value, const UINT numberOfBits)
 {
-  UINT byteOffset = hBitBuf->BitNdx >> 3 ;
-  UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
+    UINT byteOffset = hBitBuf->BitNdx >> 3 ;
+    UINT bitOffset  = hBitBuf->BitNdx & 0x07 ;
 
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
-  hBitBuf->BitCnt    +=  numberOfBits ;
-  hBitBuf->ValidBits +=  numberOfBits ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    +=  numberOfBits ;
+    hBitBuf->ValidBits +=  numberOfBits ;
 
-  UINT byteMask = hBitBuf->bufSize - 1 ;
+    UINT byteMask = hBitBuf->bufSize - 1 ;
 
-  UINT tmp  = value<<(32-numberOfBits)>>bitOffset;
-  UINT mask = ~BitMask[(32-bitOffset)] | (BitMask [(32-numberOfBits)] >> bitOffset) ;
+    UINT tmp  = value<<(32-numberOfBits)>>bitOffset;
+    UINT mask = ~BitMask[(32-bitOffset)] | (BitMask [(32-numberOfBits)] >> bitOffset) ;
 
-  hBitBuf->Buffer [ byteOffset    & byteMask]  = (hBitBuf->Buffer [ byteOffset    & byteMask]&(mask>>24)) | (UCHAR)(tmp>>24);
-  hBitBuf->Buffer [(byteOffset+1) & byteMask]  = (hBitBuf->Buffer [(byteOffset+1) & byteMask]&(mask>>16)) | (UCHAR)(tmp>>16);
-  hBitBuf->Buffer [(byteOffset+2) & byteMask]  = (hBitBuf->Buffer [(byteOffset+2) & byteMask]&(mask>>8))  | (UCHAR)(tmp>>8);
-  hBitBuf->Buffer [(byteOffset+3) & byteMask]  = (hBitBuf->Buffer [(byteOffset+3) & byteMask]&(mask))     | (UCHAR)(tmp);
+    hBitBuf->Buffer [ byteOffset    & byteMask]  = (hBitBuf->Buffer [ byteOffset    & byteMask]&(mask>>24)) | (UCHAR)(tmp>>24);
+    hBitBuf->Buffer [(byteOffset+1) & byteMask]  = (hBitBuf->Buffer [(byteOffset+1) & byteMask]&(mask>>16)) | (UCHAR)(tmp>>16);
+    hBitBuf->Buffer [(byteOffset+2) & byteMask]  = (hBitBuf->Buffer [(byteOffset+2) & byteMask]&(mask>>8))  | (UCHAR)(tmp>>8);
+    hBitBuf->Buffer [(byteOffset+3) & byteMask]  = (hBitBuf->Buffer [(byteOffset+3) & byteMask]&(mask))     | (UCHAR)(tmp);
 
-  if (bitOffset && numberOfBits > 24)
-  {
-    hBitBuf->Buffer [(byteOffset+4) & byteMask]  = (UCHAR)(value<<(40-numberOfBits)>>bitOffset) |
-               ( hBitBuf->Buffer [(byteOffset+4) & byteMask] & BitMask[(40-numberOfBits-bitOffset)] ) ;
-  }
+    if (bitOffset && numberOfBits > 24)
+    {
+        hBitBuf->Buffer [(byteOffset+4) & byteMask]  = (UCHAR)(value<<(40-numberOfBits)>>bitOffset) |
+                ( hBitBuf->Buffer [(byteOffset+4) & byteMask] & BitMask[(40-numberOfBits-bitOffset)] ) ;
+    }
 }
 
 void FDK_putBwd (HANDLE_FDK_BITBUF hBitBuf, UINT value, const UINT numberOfBits)
 {
-  UINT byteOffset = hBitBuf->BitNdx >> 3 ;
-  UINT bitOffset  = 7 - (hBitBuf->BitNdx & 0x07) ;
-  UINT byteMask   = hBitBuf->bufSize - 1 ;
+    UINT byteOffset = hBitBuf->BitNdx >> 3 ;
+    UINT bitOffset  = 7 - (hBitBuf->BitNdx & 0x07) ;
+    UINT byteMask   = hBitBuf->bufSize - 1 ;
 
-  UINT mask = ~(BitMask[numberOfBits] << bitOffset) ;
-  UINT tmp = 0x0000;
-  int  i;
+    UINT mask = ~(BitMask[numberOfBits] << bitOffset) ;
+    UINT tmp = 0x0000;
+    int  i;
 
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
-  hBitBuf->BitCnt    -=  numberOfBits ;
-  hBitBuf->ValidBits -=  numberOfBits ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    -=  numberOfBits ;
+    hBitBuf->ValidBits -=  numberOfBits ;
 
-  /* in place turn around */
-  for (i = 0; i < 16; i++) {
-    UINT bitMaskR = 0x00000001 << i;
-    UINT bitMaskL = 0x80000000 >> i;
+    /* in place turn around */
+    for (i = 0; i < 16; i++)
+    {
+        UINT bitMaskR = 0x00000001 << i;
+        UINT bitMaskL = 0x80000000 >> i;
 
-    tmp |= (value & bitMaskR) << (31 - (i<<1));
-    tmp |= (value & bitMaskL) >> (31 - (i<<1));
-  }
-  value = tmp;
-  tmp   = value>>(32-numberOfBits)<<bitOffset;
+        tmp |= (value & bitMaskR) << (31 - (i<<1));
+        tmp |= (value & bitMaskL) >> (31 - (i<<1));
+    }
+    value = tmp;
+    tmp   = value>>(32-numberOfBits)<<bitOffset;
 
-  hBitBuf->Buffer [ byteOffset    & byteMask]  = (hBitBuf->Buffer [ byteOffset    & byteMask]&(mask))     | (UCHAR)(tmp);
-  hBitBuf->Buffer [(byteOffset-1) & byteMask]  = (hBitBuf->Buffer [(byteOffset-1) & byteMask]&(mask>>8))  | (UCHAR)(tmp>>8);
-  hBitBuf->Buffer [(byteOffset-2) & byteMask]  = (hBitBuf->Buffer [(byteOffset-2) & byteMask]&(mask>>16)) | (UCHAR)(tmp>>16);
-  hBitBuf->Buffer [(byteOffset-3) & byteMask]  = (hBitBuf->Buffer [(byteOffset-3) & byteMask]&(mask>>24)) | (UCHAR)(tmp>>24);
+    hBitBuf->Buffer [ byteOffset    & byteMask]  = (hBitBuf->Buffer [ byteOffset    & byteMask]&(mask))     | (UCHAR)(tmp);
+    hBitBuf->Buffer [(byteOffset-1) & byteMask]  = (hBitBuf->Buffer [(byteOffset-1) & byteMask]&(mask>>8))  | (UCHAR)(tmp>>8);
+    hBitBuf->Buffer [(byteOffset-2) & byteMask]  = (hBitBuf->Buffer [(byteOffset-2) & byteMask]&(mask>>16)) | (UCHAR)(tmp>>16);
+    hBitBuf->Buffer [(byteOffset-3) & byteMask]  = (hBitBuf->Buffer [(byteOffset-3) & byteMask]&(mask>>24)) | (UCHAR)(tmp>>24);
 
-  if ((bitOffset + numberOfBits) > 32)
-  {
-    hBitBuf->Buffer [(byteOffset-4) & byteMask]  = (UCHAR)(value>>(64-numberOfBits-bitOffset)) |
-               ( hBitBuf->Buffer [(byteOffset-4) & byteMask] & ~(BitMask[bitOffset] >> (32-numberOfBits)) ) ;
-  }
+    if ((bitOffset + numberOfBits) > 32)
+    {
+        hBitBuf->Buffer [(byteOffset-4) & byteMask]  = (UCHAR)(value>>(64-numberOfBits-bitOffset)) |
+                ( hBitBuf->Buffer [(byteOffset-4) & byteMask] & ~(BitMask[bitOffset] >> (32-numberOfBits)) ) ;
+    }
 }
 
 
 void FDK_pushBack (HANDLE_FDK_BITBUF hBitBuf, const UINT numberOfBits, UCHAR config)
 {
-  hBitBuf->BitCnt    -= numberOfBits ;
-  hBitBuf->ValidBits += (config==0) ? numberOfBits : (-(INT)numberOfBits) ;
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    -= numberOfBits ;
+    hBitBuf->ValidBits += (config==0) ? numberOfBits : (-(INT)numberOfBits) ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx - numberOfBits) & (hBitBuf->bufBits - 1) ;
 }
 
 void FDK_pushForward (HANDLE_FDK_BITBUF hBitBuf, const UINT numberOfBits, UCHAR config)
 {
-  hBitBuf->BitCnt    += numberOfBits ;
-  hBitBuf->ValidBits -= (config==0) ? numberOfBits : (-(INT)numberOfBits) ;
-  hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
+    hBitBuf->BitCnt    += numberOfBits ;
+    hBitBuf->ValidBits -= (config==0) ? numberOfBits : (-(INT)numberOfBits) ;
+    hBitBuf->BitNdx     = (hBitBuf->BitNdx + numberOfBits) & (hBitBuf->bufBits - 1) ;
 }
 
 
 void FDK_byteAlign (HANDLE_FDK_BITBUF hBitBuf, UCHAR config)
 {
-  INT alignment = hBitBuf->BitCnt & 0x07 ;
+    INT alignment = hBitBuf->BitCnt & 0x07 ;
 
-  if (alignment)
-  {
-    if (config==0)
-      FDK_pushForward (hBitBuf, 8 - alignment, config) ; /* BS_READER */
-    else
-      FDK_put (hBitBuf,0 , 8 - alignment) ;              /* BS_WRITER */
-  }
+    if (alignment)
+    {
+        if (config==0)
+            FDK_pushForward (hBitBuf, 8 - alignment, config) ; /* BS_READER */
+        else
+            FDK_put (hBitBuf,0 , 8 - alignment) ;              /* BS_WRITER */
+    }
 
-  hBitBuf->BitCnt = 0 ;
+    hBitBuf->BitCnt = 0 ;
 }
 
 UINT FDK_getValidBits (HANDLE_FDK_BITBUF hBitBuf)
@@ -353,12 +361,12 @@ INT FDK_getFreeBits (HANDLE_FDK_BITBUF hBitBuf)
 
 void FDK_setBitCnt (HANDLE_FDK_BITBUF hBitBuf, const UINT value)
 {
-  hBitBuf->BitCnt = value ;
+    hBitBuf->BitCnt = value ;
 }
 
 INT FDK_getBitCnt (HANDLE_FDK_BITBUF hBitBuf)
 {
-  return hBitBuf->BitCnt ;
+    return hBitBuf->BitCnt ;
 }
 
 void FDK_Feed(HANDLE_FDK_BITBUF hBitBuf,
@@ -366,115 +374,118 @@ void FDK_Feed(HANDLE_FDK_BITBUF hBitBuf,
               const UINT        bufferSize,
               UINT             *bytesValid)
 {
-  inputBuffer = &inputBuffer [bufferSize - *bytesValid] ;
+    inputBuffer = &inputBuffer [bufferSize - *bytesValid] ;
 
-  UINT bTotal = 0 ;
+    UINT bTotal = 0 ;
 
-  UINT bToRead   = (hBitBuf->bufBits - hBitBuf->ValidBits) >> 3 ;
-  UINT noOfBytes = fMin(bToRead, *bytesValid); //(bToRead < *bytesValid) ? bToRead : *bytesValid ;
+    UINT bToRead   = (hBitBuf->bufBits - hBitBuf->ValidBits) >> 3 ;
+    UINT noOfBytes = fMin(bToRead, *bytesValid); //(bToRead < *bytesValid) ? bToRead : *bytesValid ;
 
-  while (noOfBytes > 0)
-  {
-    /* split read to buffer size */
-    bToRead = hBitBuf->bufSize - hBitBuf->ReadOffset ;
-    bToRead = fMin(bToRead, noOfBytes); //(bToRead < noOfBytes) ? bToRead : noOfBytes ;
+    while (noOfBytes > 0)
+    {
+        /* split read to buffer size */
+        bToRead = hBitBuf->bufSize - hBitBuf->ReadOffset ;
+        bToRead = fMin(bToRead, noOfBytes); //(bToRead < noOfBytes) ? bToRead : noOfBytes ;
 
-    /* copy 'bToRead' bytes from 'ptr' to inputbuffer */
-    FDKmemcpy(&hBitBuf->Buffer[hBitBuf->ReadOffset], inputBuffer, bToRead*sizeof(UCHAR));
+        /* copy 'bToRead' bytes from 'ptr' to inputbuffer */
+        FDKmemcpy(&hBitBuf->Buffer[hBitBuf->ReadOffset], inputBuffer, bToRead*sizeof(UCHAR));
 
-    /* add noOfBits to number of valid bits in buffer */
-    hBitBuf->ValidBits  += bToRead << 3 ;
-    bTotal       += bToRead ;
-    inputBuffer  += bToRead ;
+        /* add noOfBits to number of valid bits in buffer */
+        hBitBuf->ValidBits  += bToRead << 3 ;
+        bTotal       += bToRead ;
+        inputBuffer  += bToRead ;
 
-    hBitBuf->ReadOffset  = (hBitBuf->ReadOffset + bToRead) & (hBitBuf->bufSize - 1) ;
-    noOfBytes    -= bToRead ;
-  }
+        hBitBuf->ReadOffset  = (hBitBuf->ReadOffset + bToRead) & (hBitBuf->bufSize - 1) ;
+        noOfBytes    -= bToRead ;
+    }
 
-  *bytesValid -= bTotal ;
+    *bytesValid -= bTotal ;
 }
 
 void CopyAlignedBlock (HANDLE_FDK_BITBUF h_BitBufSrc, UCHAR *RESTRICT dstBuffer, UINT bToRead)
 {
-  UINT byteOffset = h_BitBufSrc->BitNdx >> 3 ;
-  const UINT byteMask = h_BitBufSrc->bufSize - 1 ;
+    UINT byteOffset = h_BitBufSrc->BitNdx >> 3 ;
+    const UINT byteMask = h_BitBufSrc->bufSize - 1 ;
 
-  UCHAR *RESTRICT pBBB = h_BitBufSrc->Buffer;
-  for (UINT i = 0 ; i < bToRead ; i++)
-  {
-    dstBuffer[i] = pBBB[(byteOffset+i) & byteMask] ;
-  }
+    UCHAR *RESTRICT pBBB = h_BitBufSrc->Buffer;
+    for (UINT i = 0 ; i < bToRead ; i++)
+    {
+        dstBuffer[i] = pBBB[(byteOffset+i) & byteMask] ;
+    }
 
-  bToRead <<= 3 ;
+    bToRead <<= 3 ;
 
-  h_BitBufSrc->BitNdx = (h_BitBufSrc->BitNdx + bToRead) & (h_BitBufSrc->bufBits - 1) ;
-  h_BitBufSrc->BitCnt += bToRead ;
-  h_BitBufSrc->ValidBits -= bToRead ;
+    h_BitBufSrc->BitNdx = (h_BitBufSrc->BitNdx + bToRead) & (h_BitBufSrc->bufBits - 1) ;
+    h_BitBufSrc->BitCnt += bToRead ;
+    h_BitBufSrc->ValidBits -= bToRead ;
 }
 
 void FDK_Copy (HANDLE_FDK_BITBUF h_BitBufDst, HANDLE_FDK_BITBUF h_BitBufSrc, UINT *bytesValid)
 {
-  INT bTotal = 0;
+    INT bTotal = 0;
 
-  /* limit noOfBytes to valid bytes in src buffer and available bytes in dst buffer */
-  UINT bToRead   = h_BitBufSrc->ValidBits >> 3 ;
-  UINT noOfBytes = fMin(bToRead, *bytesValid); //(*bytesValid < bToRead) ? *bytesValid : bToRead ;
-  bToRead   = FDK_getFreeBits(h_BitBufDst);
-  noOfBytes = fMin(bToRead, noOfBytes); //(bToRead < noOfBytes) ? bToRead : noOfBytes;
+    /* limit noOfBytes to valid bytes in src buffer and available bytes in dst buffer */
+    UINT bToRead   = h_BitBufSrc->ValidBits >> 3 ;
+    UINT noOfBytes = fMin(bToRead, *bytesValid); //(*bytesValid < bToRead) ? *bytesValid : bToRead ;
+    bToRead   = FDK_getFreeBits(h_BitBufDst);
+    noOfBytes = fMin(bToRead, noOfBytes); //(bToRead < noOfBytes) ? bToRead : noOfBytes;
 
-  while (noOfBytes > 0)
-  {
-    /* Split Read to buffer size */
-    bToRead = h_BitBufDst->bufSize - h_BitBufDst->ReadOffset ;
-    bToRead = fMin(noOfBytes, bToRead); //(noOfBytes < bToRead) ? noOfBytes : bToRead ;
+    while (noOfBytes > 0)
+    {
+        /* Split Read to buffer size */
+        bToRead = h_BitBufDst->bufSize - h_BitBufDst->ReadOffset ;
+        bToRead = fMin(noOfBytes, bToRead); //(noOfBytes < bToRead) ? noOfBytes : bToRead ;
 
-    /* copy 'bToRead' bytes from buffer to buffer */
-    if (!(h_BitBufSrc->BitNdx & 0x07)) {
-      CopyAlignedBlock (h_BitBufSrc, h_BitBufDst->Buffer + h_BitBufDst->ReadOffset, bToRead) ;
-    } else {
-      for (UINT i = 0; i < bToRead; i++)
-      {
-        h_BitBufDst->Buffer [h_BitBufDst->ReadOffset + i] = (UCHAR)FDK_get(h_BitBufSrc,8);
-      }
+        /* copy 'bToRead' bytes from buffer to buffer */
+        if (!(h_BitBufSrc->BitNdx & 0x07))
+        {
+            CopyAlignedBlock (h_BitBufSrc, h_BitBufDst->Buffer + h_BitBufDst->ReadOffset, bToRead) ;
+        }
+        else
+        {
+            for (UINT i = 0; i < bToRead; i++)
+            {
+                h_BitBufDst->Buffer [h_BitBufDst->ReadOffset + i] = (UCHAR)FDK_get(h_BitBufSrc,8);
+            }
+        }
+
+        /* add noOfBits to number of valid bits in buffer */
+        h_BitBufDst->ValidBits  += bToRead << 3 ;
+        bTotal       += bToRead;
+
+        h_BitBufDst->ReadOffset  = (h_BitBufDst->ReadOffset + bToRead) & (h_BitBufDst->bufSize-1);
+        noOfBytes    -= bToRead;
     }
 
-    /* add noOfBits to number of valid bits in buffer */
-    h_BitBufDst->ValidBits  += bToRead << 3 ;
-    bTotal       += bToRead;
-
-    h_BitBufDst->ReadOffset  = (h_BitBufDst->ReadOffset + bToRead) & (h_BitBufDst->bufSize-1);
-    noOfBytes    -= bToRead;
-  }
-
-  *bytesValid -=bTotal;
+    *bytesValid -=bTotal;
 }
 
 void FDK_Fetch (HANDLE_FDK_BITBUF hBitBuf, UCHAR *outBuf, UINT *writeBytes)
 {
-  UCHAR *RESTRICT outputBuffer = outBuf;
-  UINT bTotal = 0 ;
+    UCHAR *RESTRICT outputBuffer = outBuf;
+    UINT bTotal = 0 ;
 
-  UINT bToWrite  = (hBitBuf->ValidBits) >> 3 ;
-  UINT noOfBytes = fMin(bToWrite, *writeBytes); //(bToWrite < *writeBytes) ? bToWrite : *writeBytes ;
+    UINT bToWrite  = (hBitBuf->ValidBits) >> 3 ;
+    UINT noOfBytes = fMin(bToWrite, *writeBytes); //(bToWrite < *writeBytes) ? bToWrite : *writeBytes ;
 
-  while (noOfBytes > 0)
-  {
-    /* split write to buffer size */
-    bToWrite = hBitBuf->bufSize - hBitBuf->WriteOffset ;
-    bToWrite = fMin(bToWrite, noOfBytes); //(bToWrite < noOfBytes) ? bToWrite : noOfBytes ;
+    while (noOfBytes > 0)
+    {
+        /* split write to buffer size */
+        bToWrite = hBitBuf->bufSize - hBitBuf->WriteOffset ;
+        bToWrite = fMin(bToWrite, noOfBytes); //(bToWrite < noOfBytes) ? bToWrite : noOfBytes ;
 
-    /* copy 'bToWrite' bytes from bitbuffer to outputbuffer */
-    FDKmemcpy(outputBuffer, &hBitBuf->Buffer[hBitBuf->WriteOffset], bToWrite*sizeof(UCHAR));
+        /* copy 'bToWrite' bytes from bitbuffer to outputbuffer */
+        FDKmemcpy(outputBuffer, &hBitBuf->Buffer[hBitBuf->WriteOffset], bToWrite*sizeof(UCHAR));
 
-    /* sub noOfBits from number of valid bits in buffer */
-    hBitBuf->ValidBits  -= bToWrite << 3 ;
-    bTotal       += bToWrite ;
-    outputBuffer += bToWrite ;
+        /* sub noOfBits from number of valid bits in buffer */
+        hBitBuf->ValidBits  -= bToWrite << 3 ;
+        bTotal       += bToWrite ;
+        outputBuffer += bToWrite ;
 
-    hBitBuf->WriteOffset  = (hBitBuf->WriteOffset + bToWrite) & (hBitBuf->bufSize - 1) ;
-    noOfBytes    -= bToWrite ;
-  }
+        hBitBuf->WriteOffset  = (hBitBuf->WriteOffset + bToWrite) & (hBitBuf->bufSize - 1) ;
+        noOfBytes    -= bToWrite ;
+    }
 
-  *writeBytes = bTotal ;
+    *writeBytes = bTotal ;
 }
 

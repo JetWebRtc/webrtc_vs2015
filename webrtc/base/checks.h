@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2006 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -78,7 +78,8 @@ NO_RETURN void rtc_FatalMessage(const char* file, int line, const char* msg);
 // TODO(ajm): Ideally, checks.h would be combined with logging.h, but
 // consolidation with system_wrappers/logging.h should happen first.
 
-namespace rtc {
+namespace rtc
+{
 
 // Helper macro which avoids evaluating the arguments to a stream if
 // the condition doesn't hold.
@@ -127,11 +128,12 @@ namespace rtc {
 // be out of line, while the "Impl" code should be inline.  Caller
 // takes ownership of the returned string.
 template<class t1, class t2>
-std::string* MakeCheckOpString(const t1& v1, const t2& v2, const char* names) {
-  std::ostringstream ss;
-  ss << names << " (" << v1 << " vs. " << v2 << ")";
-  std::string* msg = new std::string(ss.str());
-  return msg;
+std::string* MakeCheckOpString(const t1& v1, const t2& v2, const char* names)
+{
+    std::ostringstream ss;
+    ss << names << " (" << v1 << " vs. " << v2 << ")";
+    std::string* msg = new std::string(ss.str());
+    return msg;
 }
 
 // MSVC doesn't like complex extern templates and DLLs.
@@ -210,12 +212,13 @@ DEFINE_RTC_CHECK_OP_IMPL(Gt)
 #endif
 
 // This is identical to LogMessageVoidify but in name.
-class FatalMessageVoidify {
- public:
-  FatalMessageVoidify() { }
-  // This has to be an operator with a precedence lower than << but
-  // higher than ?:
-  void operator&(std::ostream&) { }
+class FatalMessageVoidify
+{
+public:
+    FatalMessageVoidify() { }
+    // This has to be an operator with a precedence lower than << but
+    // higher than ?:
+    void operator&(std::ostream&) { }
 };
 
 #define RTC_UNREACHABLE_CODE_HIT false
@@ -227,27 +230,32 @@ class FatalMessageVoidify {
 // can match the Chromium behavior.
 
 // Like a stripped-down LogMessage from logging.h, except that it aborts.
-class FatalMessage {
- public:
-  FatalMessage(const char* file, int line);
-  // Used for RTC_CHECK_EQ(), etc. Takes ownership of the given string.
-  FatalMessage(const char* file, int line, std::string* result);
-  NO_RETURN ~FatalMessage();
+class FatalMessage
+{
+public:
+    FatalMessage(const char* file, int line);
+    // Used for RTC_CHECK_EQ(), etc. Takes ownership of the given string.
+    FatalMessage(const char* file, int line, std::string* result);
+    NO_RETURN ~FatalMessage();
 
-  std::ostream& stream() { return stream_; }
+    std::ostream& stream()
+    {
+        return stream_;
+    }
 
- private:
-  void Init(const char* file, int line);
+private:
+    void Init(const char* file, int line);
 
-  std::ostringstream stream_;
+    std::ostringstream stream_;
 };
 
 // Performs the integer division a/b and returns the result. CHECKs that the
 // remainder is zero.
 template <typename T>
-inline T CheckedDivExact(T a, T b) {
-  RTC_CHECK_EQ(a % b, 0) << a << " is not evenly divisible by " << b;
-  return a / b;
+inline T CheckedDivExact(T a, T b)
+{
+    RTC_CHECK_EQ(a % b, 0) << a << " is not evenly divisible by " << b;
+    return a / b;
 }
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,14 +30,16 @@ av_cold void ff_v210_x86_init(V210DecContext *s)
 #if HAVE_YASM
     int cpu_flags = av_get_cpu_flags();
 
-    if (s->aligned_input) {
+    if (s->aligned_input)
+    {
         if (cpu_flags & AV_CPU_FLAG_SSSE3)
             s->unpack_frame = ff_v210_planar_unpack_aligned_ssse3;
 
         if (HAVE_AVX_EXTERNAL && cpu_flags & AV_CPU_FLAG_AVX)
             s->unpack_frame = ff_v210_planar_unpack_aligned_avx;
     }
-    else {
+    else
+    {
         if (cpu_flags & AV_CPU_FLAG_SSSE3)
             s->unpack_frame = ff_v210_planar_unpack_unaligned_ssse3;
 

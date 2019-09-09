@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Tele-typewriter demuxer
  * Copyright (c) 2010 Peter Ross <pross@xvid.org>
  *
@@ -34,7 +34,8 @@
 #include "internal.h"
 #include "sauce.h"
 
-typedef struct TtyDemuxContext {
+typedef struct TtyDemuxContext
+{
     AVClass *class;
     int chars_per_frame;
     uint64_t fsize;  /**< file size less metadata buffer */
@@ -78,7 +79,8 @@ static int read_header(AVFormatContext *avctx)
     int ret = 0;
     AVStream *st = avformat_new_stream(avctx, NULL);
 
-    if (!st) {
+    if (!st)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -94,7 +96,8 @@ static int read_header(AVFormatContext *avctx)
     /* simulate tty display speed */
     s->chars_per_frame = FFMAX(av_q2d(st->time_base)*s->chars_per_frame, 1);
 
-    if (avctx->pb->seekable) {
+    if (avctx->pb->seekable)
+    {
         s->fsize = avio_size(avctx->pb);
         st->duration = (s->fsize + s->chars_per_frame - 1) / s->chars_per_frame;
 
@@ -117,7 +120,8 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
         return AVERROR_EOF;
 
     n = s->chars_per_frame;
-    if (s->fsize) {
+    if (s->fsize)
+    {
         // ignore metadata buffer
         uint64_t p = avio_tell(avctx->pb);
         if (p == s->fsize)
@@ -135,21 +139,24 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
 #define OFFSET(x) offsetof(TtyDemuxContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "chars_per_frame", "", offsetof(TtyDemuxContext, chars_per_frame), AV_OPT_TYPE_INT, {.i64 = 6000}, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM},
     { "video_size", "A string describing frame size, such as 640x480 or hd720.", OFFSET(width), AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL}, 0, 0, DEC },
     { "framerate", "", OFFSET(framerate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, DEC },
     { NULL },
 };
 
-static const AVClass tty_demuxer_class = {
+static const AVClass tty_demuxer_class =
+{
     .class_name     = "TTY demuxer",
     .item_name      = av_default_item_name,
     .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_tty_demuxer = {
+AVInputFormat ff_tty_demuxer =
+{
     .name           = "tty",
     .long_name      = NULL_IF_CONFIG_SMALL("Tele-typewriter"),
     .priv_data_size = sizeof(TtyDemuxContext),

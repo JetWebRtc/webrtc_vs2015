@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,38 +17,44 @@
 #include "webrtc/system_wrappers/include/logging.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class WindowCapturerTest : public testing::Test,
-                           public DesktopCapturer::Callback {
- public:
-  void SetUp() override {
-    capturer_ = DesktopCapturer::CreateWindowCapturer(
-        DesktopCaptureOptions::CreateDefault());
-  }
+    public DesktopCapturer::Callback
+{
+public:
+    void SetUp() override
+    {
+        capturer_ = DesktopCapturer::CreateWindowCapturer(
+                        DesktopCaptureOptions::CreateDefault());
+    }
 
-  void TearDown() override {}
+    void TearDown() override {}
 
-  // DesktopCapturer::Callback interface
-  void OnCaptureResult(DesktopCapturer::Result result,
-                       std::unique_ptr<DesktopFrame> frame) override {
-    frame_ = std::move(frame);
-  }
+    // DesktopCapturer::Callback interface
+    void OnCaptureResult(DesktopCapturer::Result result,
+                         std::unique_ptr<DesktopFrame> frame) override
+    {
+        frame_ = std::move(frame);
+    }
 
- protected:
-  std::unique_ptr<DesktopCapturer> capturer_;
-  std::unique_ptr<DesktopFrame> frame_;
+protected:
+    std::unique_ptr<DesktopCapturer> capturer_;
+    std::unique_ptr<DesktopFrame> frame_;
 };
 
 // Verify that we can enumerate windows.
-TEST_F(WindowCapturerTest, Enumerate) {
-  DesktopCapturer::SourceList sources;
-  EXPECT_TRUE(capturer_->GetSourceList(&sources));
+TEST_F(WindowCapturerTest, Enumerate)
+{
+    DesktopCapturer::SourceList sources;
+    EXPECT_TRUE(capturer_->GetSourceList(&sources));
 
-  // Verify that window titles are set.
-  for (auto it = sources.begin(); it != sources.end(); ++it) {
-    EXPECT_FALSE(it->title.empty());
-  }
+    // Verify that window titles are set.
+    for (auto it = sources.begin(); it != sources.end(); ++it)
+    {
+        EXPECT_FALSE(it->title.empty());
+    }
 }
 
 // Verify we can capture a window.
@@ -58,32 +64,37 @@ TEST_F(WindowCapturerTest, Enumerate) {
 // is no easy cross-platform way to create new windows (potentially we could
 // have a python script showing Tk dialog, but launching code will differ
 // between platforms).
-TEST_F(WindowCapturerTest, Capture) {
-  DesktopCapturer::SourceList sources;
-  capturer_->Start(this);
-  EXPECT_TRUE(capturer_->GetSourceList(&sources));
+TEST_F(WindowCapturerTest, Capture)
+{
+    DesktopCapturer::SourceList sources;
+    capturer_->Start(this);
+    EXPECT_TRUE(capturer_->GetSourceList(&sources));
 
-  // Verify that we can select and capture each window.
-  for (auto it = sources.begin(); it != sources.end(); ++it) {
-    frame_.reset();
-    if (capturer_->SelectSource(it->id)) {
-      capturer_->CaptureFrame();
+    // Verify that we can select and capture each window.
+    for (auto it = sources.begin(); it != sources.end(); ++it)
+    {
+        frame_.reset();
+        if (capturer_->SelectSource(it->id))
+        {
+            capturer_->CaptureFrame();
+        }
+
+        // If we failed to capture a window make sure it no longer exists.
+        if (!frame_.get())
+        {
+            DesktopCapturer::SourceList new_list;
+            EXPECT_TRUE(capturer_->GetSourceList(&new_list));
+            for (auto new_list_it = new_list.begin(); new_list_it != new_list.end();
+                    ++new_list_it)
+            {
+                EXPECT_FALSE(it->id == new_list_it->id);
+            }
+            continue;
+        }
+
+        EXPECT_GT(frame_->size().width(), 0);
+        EXPECT_GT(frame_->size().height(), 0);
     }
-
-    // If we failed to capture a window make sure it no longer exists.
-    if (!frame_.get()) {
-      DesktopCapturer::SourceList new_list;
-      EXPECT_TRUE(capturer_->GetSourceList(&new_list));
-      for (auto new_list_it = new_list.begin(); new_list_it != new_list.end();
-           ++new_list_it) {
-        EXPECT_FALSE(it->id == new_list_it->id);
-      }
-      continue;
-    }
-
-    EXPECT_GT(frame_->size().width(), 0);
-    EXPECT_GT(frame_->size().height(), 0);
-  }
 }
 
 }  // namespace webrtc

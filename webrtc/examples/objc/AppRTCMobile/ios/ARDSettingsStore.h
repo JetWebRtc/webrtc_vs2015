@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,9 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ARDSettingsStore : NSObject
 
-/**
- * Returns current video resolution media constraint string stored in the store.
- */
+    /**
+     * Returns current video resolution media constraint string stored in the store.
+     */
 - (nullable NSString *)videoResolutionConstraints;
 
 /**

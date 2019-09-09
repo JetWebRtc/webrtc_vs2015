@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ALSA input and output
  * Copyright (c) 2007 Luca Abeni ( lucabe72 email it )
  * Copyright (c) 2007 Benoit Fouet ( benoit fouet free fr )
@@ -65,7 +65,8 @@ static av_cold int audio_read_header(AVFormatContext *s1)
     enum AVCodecID codec_id;
 
     st = avformat_new_stream(s1, NULL);
-    if (!st) {
+    if (!st)
+    {
         av_log(s1, AV_LOG_ERROR, "Cannot add stream\n");
 
         return AVERROR(ENOMEM);
@@ -73,8 +74,9 @@ static av_cold int audio_read_header(AVFormatContext *s1)
     codec_id    = s1->audio_codec_id;
 
     ret = ff_alsa_open(s1, SND_PCM_STREAM_CAPTURE, &s->sample_rate, s->channels,
-        &codec_id);
-    if (ret < 0) {
+                       &codec_id);
+    if (ret < 0)
+    {
         return AVERROR(EIO);
     }
 
@@ -105,17 +107,21 @@ static int audio_read_packet(AVFormatContext *s1, AVPacket *pkt)
     int64_t dts;
     snd_pcm_sframes_t delay = 0;
 
-    if (av_new_packet(pkt, s->period_size * s->frame_size) < 0) {
+    if (av_new_packet(pkt, s->period_size * s->frame_size) < 0)
+    {
         return AVERROR(EIO);
     }
 
-    while ((res = snd_pcm_readi(s->h, pkt->data, s->period_size)) < 0) {
-        if (res == -EAGAIN) {
+    while ((res = snd_pcm_readi(s->h, pkt->data, s->period_size)) < 0)
+    {
+        if (res == -EAGAIN)
+        {
             av_free_packet(pkt);
 
             return AVERROR(EAGAIN);
         }
-        if (ff_alsa_xrun_recover(s1, res) < 0) {
+        if (ff_alsa_xrun_recover(s1, res) < 0)
+        {
             av_log(s1, AV_LOG_ERROR, "ALSA read error: %s\n",
                    snd_strerror(res));
             av_free_packet(pkt);
@@ -141,13 +147,15 @@ static int audio_get_device_list(AVFormatContext *h, AVDeviceInfoList *device_li
     return ff_alsa_get_device_list(device_list, SND_PCM_STREAM_CAPTURE);
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "sample_rate", "", offsetof(AlsaData, sample_rate), AV_OPT_TYPE_INT, {.i64 = 48000}, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { "channels",    "", offsetof(AlsaData, channels),    AV_OPT_TYPE_INT, {.i64 = 2},     1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass alsa_demuxer_class = {
+static const AVClass alsa_demuxer_class =
+{
     .class_name     = "ALSA demuxer",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -155,7 +163,8 @@ static const AVClass alsa_demuxer_class = {
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_alsa_demuxer = {
+AVInputFormat ff_alsa_demuxer =
+{
     .name           = "alsa",
     .long_name      = NULL_IF_CONFIG_SMALL("ALSA audio input"),
     .priv_data_size = sizeof(AlsaData),

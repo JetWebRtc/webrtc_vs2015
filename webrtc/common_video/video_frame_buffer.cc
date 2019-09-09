@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,53 +19,64 @@
 #include "libyuv/planar_functions.h"
 #include "libyuv/scale.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 NativeHandleBuffer::NativeHandleBuffer(void* native_handle,
                                        int width,
                                        int height)
-    : native_handle_(native_handle), width_(width), height_(height) {
-  RTC_DCHECK(native_handle != nullptr);
-  RTC_DCHECK_GT(width, 0);
-  RTC_DCHECK_GT(height, 0);
+    : native_handle_(native_handle), width_(width), height_(height)
+{
+    RTC_DCHECK(native_handle != nullptr);
+    RTC_DCHECK_GT(width, 0);
+    RTC_DCHECK_GT(height, 0);
 }
 
-int NativeHandleBuffer::width() const {
-  return width_;
+int NativeHandleBuffer::width() const
+{
+    return width_;
 }
 
-int NativeHandleBuffer::height() const {
-  return height_;
+int NativeHandleBuffer::height() const
+{
+    return height_;
 }
 
-const uint8_t* NativeHandleBuffer::DataY() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return nullptr;
+const uint8_t* NativeHandleBuffer::DataY() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return nullptr;
 }
-const uint8_t* NativeHandleBuffer::DataU() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return nullptr;
+const uint8_t* NativeHandleBuffer::DataU() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return nullptr;
 }
-const uint8_t* NativeHandleBuffer::DataV() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return nullptr;
-}
-
-int NativeHandleBuffer::StrideY() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return 0;
-}
-int NativeHandleBuffer::StrideU() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return 0;
-}
-int NativeHandleBuffer::StrideV() const {
-  RTC_NOTREACHED();  // Should not be called.
-  return 0;
+const uint8_t* NativeHandleBuffer::DataV() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return nullptr;
 }
 
-void* NativeHandleBuffer::native_handle() const {
-  return native_handle_;
+int NativeHandleBuffer::StrideY() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return 0;
+}
+int NativeHandleBuffer::StrideU() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return 0;
+}
+int NativeHandleBuffer::StrideV() const
+{
+    RTC_NOTREACHED();  // Should not be called.
+    return 0;
+}
+
+void* NativeHandleBuffer::native_handle() const
+{
+    return native_handle_;
 }
 
 WrappedI420Buffer::WrappedI420Buffer(int width,
@@ -85,48 +96,60 @@ WrappedI420Buffer::WrappedI420Buffer(int width,
       y_stride_(y_stride),
       u_stride_(u_stride),
       v_stride_(v_stride),
-      no_longer_used_cb_(no_longer_used) {
+      no_longer_used_cb_(no_longer_used)
+{
 }
 
-WrappedI420Buffer::~WrappedI420Buffer() {
-  no_longer_used_cb_();
+WrappedI420Buffer::~WrappedI420Buffer()
+{
+    no_longer_used_cb_();
 }
 
-int WrappedI420Buffer::width() const {
-  return width_;
+int WrappedI420Buffer::width() const
+{
+    return width_;
 }
 
-int WrappedI420Buffer::height() const {
-  return height_;
+int WrappedI420Buffer::height() const
+{
+    return height_;
 }
 
-const uint8_t* WrappedI420Buffer::DataY() const {
-  return y_plane_;
+const uint8_t* WrappedI420Buffer::DataY() const
+{
+    return y_plane_;
 }
-const uint8_t* WrappedI420Buffer::DataU() const {
-  return u_plane_;
+const uint8_t* WrappedI420Buffer::DataU() const
+{
+    return u_plane_;
 }
-const uint8_t* WrappedI420Buffer::DataV() const {
-  return v_plane_;
-}
-
-int WrappedI420Buffer::StrideY() const {
-  return y_stride_;
-}
-int WrappedI420Buffer::StrideU() const {
-  return u_stride_;
-}
-int WrappedI420Buffer::StrideV() const {
-  return v_stride_;
+const uint8_t* WrappedI420Buffer::DataV() const
+{
+    return v_plane_;
 }
 
-void* WrappedI420Buffer::native_handle() const {
-  return nullptr;
+int WrappedI420Buffer::StrideY() const
+{
+    return y_stride_;
+}
+int WrappedI420Buffer::StrideU() const
+{
+    return u_stride_;
+}
+int WrappedI420Buffer::StrideV() const
+{
+    return v_stride_;
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> WrappedI420Buffer::NativeToI420Buffer() {
-  RTC_NOTREACHED();
-  return nullptr;
+void* WrappedI420Buffer::native_handle() const
+{
+    return nullptr;
+}
+
+rtc::scoped_refptr<VideoFrameBuffer> WrappedI420Buffer::NativeToI420Buffer()
+{
+    RTC_NOTREACHED();
+    return nullptr;
 }
 
 }  // namespace webrtc

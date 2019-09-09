@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Ryan Martell. (rdm4@martellventures.com)
  *
  * This file is part of FFmpeg.
@@ -50,7 +50,7 @@ static const uint8_t map2[256] =
     0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
     0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33,
 
-                      0xff, 0xff, 0xff, 0xff, 0xff,
+    0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -85,7 +85,8 @@ int av_base64_decode(uint8_t *out, const char *in_str, int out_size)
     unsigned bits = 0xff;
     unsigned v;
 
-    while (end - dst > 3) {
+    while (end - dst > 3)
+    {
         BASE64_DEC_STEP(0);
         BASE64_DEC_STEP(1);
         BASE64_DEC_STEP(2);
@@ -96,7 +97,8 @@ int av_base64_decode(uint8_t *out, const char *in_str, int out_size)
         dst += 3;
         in += 4;
     }
-    if (end - dst) {
+    if (end - dst)
+    {
         BASE64_DEC_STEP(0);
         BASE64_DEC_STEP(1);
         BASE64_DEC_STEP(2);
@@ -108,7 +110,8 @@ int av_base64_decode(uint8_t *out, const char *in_str, int out_size)
             *dst++ = v;
         in += 4;
     }
-    while (1) {
+    while (1)
+    {
         BASE64_DEC_STEP(0);
         in++;
         BASE64_DEC_STEP(0);
@@ -145,24 +148,28 @@ char *av_base64_encode(char *out, int out_size, const uint8_t *in, int in_size)
     int bytes_remaining = in_size;
 
     if (in_size >= UINT_MAX / 4 ||
-        out_size < AV_BASE64_SIZE(in_size))
+            out_size < AV_BASE64_SIZE(in_size))
         return NULL;
     ret = dst = out;
-    while (bytes_remaining > 3) {
+    while (bytes_remaining > 3)
+    {
         i_bits = AV_RB32(in);
-        in += 3; bytes_remaining -= 3;
+        in += 3;
+        bytes_remaining -= 3;
         *dst++ = b64[ i_bits>>26        ];
         *dst++ = b64[(i_bits>>20) & 0x3F];
         *dst++ = b64[(i_bits>>14) & 0x3F];
         *dst++ = b64[(i_bits>>8 ) & 0x3F];
     }
     i_bits = 0;
-    while (bytes_remaining) {
+    while (bytes_remaining)
+    {
         i_bits = (i_bits << 8) + *in++;
         bytes_remaining--;
         i_shift += 8;
     }
-    while (i_shift > 0) {
+    while (i_shift > 0)
+    {
         *dst++ = b64[(i_bits << 6 >> i_shift) & 0x3f];
         i_shift -= 6;
     }
@@ -186,40 +193,48 @@ static int test_encode_decode(const uint8_t *data, unsigned int data_size,
     uint8_t data2[MAX_DATA_SIZE];
     int data2_size, max_data2_size = MAX_DATA_SIZE;
 
-    if (!av_base64_encode(encoded, MAX_ENCODED_SIZE, data, data_size)) {
+    if (!av_base64_encode(encoded, MAX_ENCODED_SIZE, data, data_size))
+    {
         printf("Failed: cannot encode the input data\n");
         return 1;
     }
-    if (encoded_ref && strcmp(encoded, encoded_ref)) {
+    if (encoded_ref && strcmp(encoded, encoded_ref))
+    {
         printf("Failed: encoded string differs from reference\n"
                "Encoded:\n%s\nReference:\n%s\n", encoded, encoded_ref);
         return 1;
     }
 
-    if ((data2_size = av_base64_decode(data2, encoded, max_data2_size)) != data_size) {
+    if ((data2_size = av_base64_decode(data2, encoded, max_data2_size)) != data_size)
+    {
         printf("Failed: cannot decode the encoded string\n"
                "Encoded:\n%s\n", encoded);
         return 1;
     }
-    if ((data2_size = av_base64_decode(data2, encoded, data_size)) != data_size) {
+    if ((data2_size = av_base64_decode(data2, encoded, data_size)) != data_size)
+    {
         printf("Failed: cannot decode with minimal buffer\n"
                "Encoded:\n%s\n", encoded);
         return 1;
     }
-    if (memcmp(data2, data, data_size)) {
+    if (memcmp(data2, data, data_size))
+    {
         printf("Failed: encoded/decoded data differs from original data\n");
         return 1;
     }
-    if (av_base64_decode(NULL, encoded, 0) != 0) {
+    if (av_base64_decode(NULL, encoded, 0) != 0)
+    {
         printf("Failed: decode to NULL buffer\n");
         return 1;
     }
-    if (strlen(encoded)) {
+    if (strlen(encoded))
+    {
         char *end = strchr(encoded, '=');
         if (!end)
             end = encoded + strlen(encoded) - 1;
         *end = '%';
-        if (av_base64_decode(NULL, encoded, 0) >= 0) {
+        if (av_base64_decode(NULL, encoded, 0) >= 0)
+        {
             printf("Failed: error detection\n");
             return 1;
         }
@@ -232,10 +247,12 @@ static int test_encode_decode(const uint8_t *data, unsigned int data_size,
 int main(int argc, char ** argv)
 {
     int i, error_count = 0;
-    struct test {
+    struct test
+    {
         const uint8_t *data;
         const char *encoded_ref;
-    } tests[] = {
+    } tests[] =
+    {
         { "",        ""},
         { "1",       "MQ=="},
         { "22",      "MjI="},
@@ -251,20 +268,24 @@ int main(int argc, char ** argv)
     for (i = 0; i < FF_ARRAY_ELEMS(tests); i++)
         error_count += test_encode_decode(tests[i].data, strlen(tests[i].data), tests[i].encoded_ref);
 
-    if (argc>1 && !strcmp(argv[1], "-t")) {
+    if (argc>1 && !strcmp(argv[1], "-t"))
+    {
         memset(in, 123, sizeof(in));
-        for(i=0; i<10000; i++){
+        for(i=0; i<10000; i++)
+        {
             START_TIMER
             av_base64_encode(out, sizeof(out), in, sizeof(in));
             STOP_TIMER("encode")
         }
-        for(i=0; i<10000; i++){
+        for(i=0; i<10000; i++)
+        {
             START_TIMER
             av_base64_decode(in, out, sizeof(in));
             STOP_TIMER("decode")
         }
 
-        for(i=0; i<10000; i++){
+        for(i=0; i<10000; i++)
+        {
             START_TIMER
             av_base64_decode(NULL, out, 0);
             STOP_TIMER("syntax check")

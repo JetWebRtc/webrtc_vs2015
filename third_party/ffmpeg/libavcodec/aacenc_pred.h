@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder main-type prediction
  * Copyright (C) 2015 Rostislav Pehlivanov
  *

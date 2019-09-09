@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,8 +22,10 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_manager_wrapper.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class UdpSocketPosix;
 class UdpSocketManagerPosixImpl;

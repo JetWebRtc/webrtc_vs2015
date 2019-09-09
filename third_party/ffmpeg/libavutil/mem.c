@@ -1,4 +1,4 @@
-/*
+﻿/*
  * default memory allocator for libavutil
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -70,7 +70,8 @@ void  free(void *ptr);
 
 static size_t max_alloc_size= INT_MAX;
 
-void av_max_alloc(size_t max){
+void av_max_alloc(size_t max)
+{
     max_alloc_size = max;
 }
 
@@ -94,8 +95,8 @@ void *av_malloc(size_t size)
     ((char *)ptr)[-1] = diff;
 #elif HAVE_POSIX_MEMALIGN
     if (size) //OS X on SDK 10.6 has a broken posix_memalign implementation
-    if (posix_memalign(&ptr, ALIGN, size))
-        ptr = NULL;
+        if (posix_memalign(&ptr, ALIGN, size))
+            ptr = NULL;
 #elif HAVE_ALIGNED_MALLOC
     ptr = _aligned_malloc(size, ALIGN);
 #elif HAVE_MEMALIGN
@@ -131,7 +132,8 @@ void *av_malloc(size_t size)
 #else
     ptr = malloc(size);
 #endif
-    if(!ptr && !size) {
+    if(!ptr && !size)
+    {
         size = 1;
         ptr= av_malloc(1);
     }
@@ -174,7 +176,8 @@ void *av_realloc_f(void *ptr, size_t nelem, size_t elsize)
     size_t size;
     void *r;
 
-    if (av_size_mult(elsize, nelem, &size)) {
+    if (av_size_mult(elsize, nelem, &size))
+    {
         av_free(ptr);
         return NULL;
     }
@@ -188,7 +191,8 @@ int av_reallocp(void *ptr, size_t size)
 {
     void *val;
 
-    if (!size) {
+    if (!size)
+    {
         av_freep(ptr);
         return 0;
     }
@@ -196,7 +200,8 @@ int av_reallocp(void *ptr, size_t size)
     memcpy(&val, ptr, sizeof(val));
     val = av_realloc(val, size);
 
-    if (!val) {
+    if (!val)
+    {
         av_freep(ptr);
         return AVERROR(ENOMEM);
     }
@@ -228,7 +233,8 @@ int av_reallocp_array(void *ptr, size_t nmemb, size_t size)
 void av_free(void *ptr)
 {
 #if CONFIG_MEMALIGN_HACK
-    if (ptr) {
+    if (ptr)
+    {
         int v= ((char *)ptr)[-1];
         av_assert0(v>0 && v<=ALIGN);
         free((char *)ptr - v);
@@ -245,7 +251,10 @@ void av_freep(void *arg)
     void *val;
 
     memcpy(&val, arg, sizeof(val));
-    memcpy(arg, &(void *){ NULL }, sizeof(val));
+    memcpy(arg, &(void *)
+    {
+        NULL
+    }, sizeof(val));
     av_free(val);
 }
 
@@ -267,7 +276,8 @@ void *av_calloc(size_t nmemb, size_t size)
 char *av_strdup(const char *s)
 {
     char *ptr = NULL;
-    if (s) {
+    if (s)
+    {
         size_t len = strlen(s) + 1;
         ptr = av_realloc(NULL, len);
         if (ptr)
@@ -299,7 +309,8 @@ char *av_strndup(const char *s, size_t len)
 void *av_memdup(const void *p, size_t size)
 {
     void *ptr = NULL;
-    if (p) {
+    if (p)
+    {
         ptr = av_malloc(size);
         if (ptr)
             memcpy(ptr, p, size);
@@ -312,10 +323,12 @@ int av_dynarray_add_nofree(void *tab_ptr, int *nb_ptr, void *elem)
     void **tab;
     memcpy(&tab, tab_ptr, sizeof(tab));
 
-    AV_DYNARRAY_ADD(INT_MAX, sizeof(*tab), tab, *nb_ptr, {
+    AV_DYNARRAY_ADD(INT_MAX, sizeof(*tab), tab, *nb_ptr,
+    {
         tab[*nb_ptr] = elem;
         memcpy(tab_ptr, &tab, sizeof(tab));
-    }, {
+    },
+    {
         return AVERROR(ENOMEM);
     });
     return 0;
@@ -326,10 +339,12 @@ void av_dynarray_add(void *tab_ptr, int *nb_ptr, void *elem)
     void **tab;
     memcpy(&tab, tab_ptr, sizeof(tab));
 
-    AV_DYNARRAY_ADD(INT_MAX, sizeof(*tab), tab, *nb_ptr, {
+    AV_DYNARRAY_ADD(INT_MAX, sizeof(*tab), tab, *nb_ptr,
+    {
         tab[*nb_ptr] = elem;
         memcpy(tab_ptr, &tab, sizeof(tab));
-    }, {
+    },
+    {
         *nb_ptr = 0;
         av_freep(tab_ptr);
     });
@@ -340,13 +355,15 @@ void *av_dynarray2_add(void **tab_ptr, int *nb_ptr, size_t elem_size,
 {
     uint8_t *tab_elem_data = NULL;
 
-    AV_DYNARRAY_ADD(INT_MAX, elem_size, *tab_ptr, *nb_ptr, {
+    AV_DYNARRAY_ADD(INT_MAX, elem_size, *tab_ptr, *nb_ptr,
+    {
         tab_elem_data = (uint8_t *)*tab_ptr + (*nb_ptr) * elem_size;
         if (elem_data)
             memcpy(tab_elem_data, elem_data, elem_size);
         else if (CONFIG_MEMORY_POISONING)
             memset(tab_elem_data, FF_MEMORY_POISON, elem_size);
-    }, {
+    },
+    {
         av_freep(tab_ptr);
         *nb_ptr = 0;
     });
@@ -359,13 +376,15 @@ static void fill16(uint8_t *dst, int len)
 
     v |= v << 16;
 
-    while (len >= 4) {
+    while (len >= 4)
+    {
         AV_WN32(dst, v);
         dst += 4;
         len -= 4;
     }
 
-    while (len--) {
+    while (len--)
+    {
         *dst = dst[-2];
         dst++;
     }
@@ -385,7 +404,8 @@ static void fill24(uint8_t *dst, int len)
     uint32_t c = v >> 16 | v << 8;
 #endif
 
-    while (len >= 12) {
+    while (len >= 12)
+    {
         AV_WN32(dst,     a);
         AV_WN32(dst + 4, b);
         AV_WN32(dst + 8, c);
@@ -393,19 +413,22 @@ static void fill24(uint8_t *dst, int len)
         len -= 12;
     }
 
-    if (len >= 4) {
+    if (len >= 4)
+    {
         AV_WN32(dst, a);
         dst += 4;
         len -= 4;
     }
 
-    if (len >= 4) {
+    if (len >= 4)
+    {
         AV_WN32(dst, b);
         dst += 4;
         len -= 4;
     }
 
-    while (len--) {
+    while (len--)
+    {
         *dst = dst[-3];
         dst++;
     }
@@ -415,13 +438,15 @@ static void fill32(uint8_t *dst, int len)
 {
     uint32_t v = AV_RN32(dst - 4);
 
-    while (len >= 4) {
+    while (len >= 4)
+    {
         AV_WN32(dst, v);
         dst += 4;
         len -= 4;
     }
 
-    while (len--) {
+    while (len--)
+    {
         *dst = dst[-4];
         dst++;
     }
@@ -433,18 +458,29 @@ void av_memcpy_backptr(uint8_t *dst, int back, int cnt)
     if (!back)
         return;
 
-    if (back == 1) {
+    if (back == 1)
+    {
         memset(dst, *src, cnt);
-    } else if (back == 2) {
+    }
+    else if (back == 2)
+    {
         fill16(dst, cnt);
-    } else if (back == 3) {
+    }
+    else if (back == 3)
+    {
         fill24(dst, cnt);
-    } else if (back == 4) {
+    }
+    else if (back == 4)
+    {
         fill32(dst, cnt);
-    } else {
-        if (cnt >= 16) {
+    }
+    else
+    {
+        if (cnt >= 16)
+        {
             int blocklen = back;
-            while (cnt > blocklen) {
+            while (cnt > blocklen)
+            {
                 memcpy(dst, src, blocklen);
                 dst       += blocklen;
                 cnt       -= blocklen;
@@ -453,20 +489,23 @@ void av_memcpy_backptr(uint8_t *dst, int back, int cnt)
             memcpy(dst, src, cnt);
             return;
         }
-        if (cnt >= 8) {
+        if (cnt >= 8)
+        {
             AV_COPY32U(dst,     src);
             AV_COPY32U(dst + 4, src + 4);
             src += 8;
             dst += 8;
             cnt -= 8;
         }
-        if (cnt >= 4) {
+        if (cnt >= 4)
+        {
             AV_COPY32U(dst, src);
             src += 4;
             dst += 4;
             cnt -= 4;
         }
-        if (cnt >= 2) {
+        if (cnt >= 2)
+        {
             AV_COPY16U(dst, src);
             src += 2;
             dst += 2;

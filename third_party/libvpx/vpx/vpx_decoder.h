@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -86,11 +86,12 @@ extern "C" {
  * stream. Algorithms may extend this structure with data specific
  * to their bitstream by setting the sz member appropriately.
  */
-typedef struct vpx_codec_stream_info {
-  unsigned int sz;    /**< Size of this structure */
-  unsigned int w;     /**< Width (or 0 for unknown/default) */
-  unsigned int h;     /**< Height (or 0 for unknown/default) */
-  unsigned int is_kf; /**< Current frame is a keyframe */
+typedef struct vpx_codec_stream_info
+{
+    unsigned int sz;    /**< Size of this structure */
+    unsigned int w;     /**< Width (or 0 for unknown/default) */
+    unsigned int h;     /**< Height (or 0 for unknown/default) */
+    unsigned int is_kf; /**< Current frame is a keyframe */
 } vpx_codec_stream_info_t;
 
 /* REQUIRED FUNCTIONS
@@ -104,10 +105,11 @@ typedef struct vpx_codec_stream_info {
  * This structure is used to pass init time configuration options to the
  * decoder.
  */
-typedef struct vpx_codec_dec_cfg {
-  unsigned int threads; /**< Maximum number of threads to use, default 1 */
-  unsigned int w;       /**< Width */
-  unsigned int h;       /**< Height */
+typedef struct vpx_codec_dec_cfg
+{
+    unsigned int threads; /**< Maximum number of threads to use, default 1 */
+    unsigned int w;       /**< Width */
+    unsigned int h;       /**< Height */
 } vpx_codec_dec_cfg_t;  /**< alias for struct vpx_codec_dec_cfg */
 
 /*!\brief Initialize a decoder instance
@@ -162,9 +164,9 @@ vpx_codec_err_t vpx_codec_dec_init_ver(vpx_codec_ctx_t *ctx,
  *     Bitstream is parsable and stream information updated
  */
 vpx_codec_err_t vpx_codec_peek_stream_info(vpx_codec_iface_t *iface,
-                                           const uint8_t *data,
-                                           unsigned int data_sz,
-                                           vpx_codec_stream_info_t *si);
+        const uint8_t *data,
+        unsigned int data_sz,
+        vpx_codec_stream_info_t *si);
 
 /*!\brief Return information about the current stream.
  *
@@ -180,7 +182,7 @@ vpx_codec_err_t vpx_codec_peek_stream_info(vpx_codec_iface_t *iface,
  *     Bitstream is parsable and stream information updated
  */
 vpx_codec_err_t vpx_codec_get_stream_info(vpx_codec_ctx_t *ctx,
-                                          vpx_codec_stream_info_t *si);
+        vpx_codec_stream_info_t *si);
 
 /*!\brief Decode data
  *
@@ -250,7 +252,7 @@ vpx_image_t *vpx_codec_get_frame(vpx_codec_ctx_t *ctx, vpx_codec_iter_t *iter);
  * the availability of decoded image data.
  */
 typedef void (*vpx_codec_put_frame_cb_fn_t)(void *user_priv,
-                                            const vpx_image_t *img);
+        const vpx_image_t *img);
 
 /*!\brief Register for notification of frame completion.
  *
@@ -268,8 +270,8 @@ typedef void (*vpx_codec_put_frame_cb_fn_t)(void *user_priv,
  *     posting slice completion.
  */
 vpx_codec_err_t vpx_codec_register_put_frame_cb(vpx_codec_ctx_t *ctx,
-                                                vpx_codec_put_frame_cb_fn_t cb,
-                                                void *user_priv);
+        vpx_codec_put_frame_cb_fn_t cb,
+        void *user_priv);
 
 /*!@} - end defgroup cap_put_frame */
 
@@ -289,9 +291,9 @@ vpx_codec_err_t vpx_codec_register_put_frame_cb(vpx_codec_ctx_t *ctx,
  * the availability of partially decoded image data. The
  */
 typedef void (*vpx_codec_put_slice_cb_fn_t)(void *user_priv,
-                                            const vpx_image_t *img,
-                                            const vpx_image_rect_t *valid,
-                                            const vpx_image_rect_t *update);
+        const vpx_image_t *img,
+        const vpx_image_rect_t *valid,
+        const vpx_image_rect_t *update);
 
 /*!\brief Register for notification of slice completion.
  *
@@ -309,8 +311,8 @@ typedef void (*vpx_codec_put_slice_cb_fn_t)(void *user_priv,
  *     posting slice completion.
  */
 vpx_codec_err_t vpx_codec_register_put_slice_cb(vpx_codec_ctx_t *ctx,
-                                                vpx_codec_put_slice_cb_fn_t cb,
-                                                void *user_priv);
+        vpx_codec_put_slice_cb_fn_t cb,
+        void *user_priv);
 
 /*!@} - end defgroup cap_put_slice*/
 

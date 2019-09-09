@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RC4 encryption/decryption/pseudo-random number generator
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
  * @{
  */
 
-typedef struct AVRC4 {
+typedef struct AVRC4
+{
     uint8_t state[256];
     int x, y;
 } AVRC4;

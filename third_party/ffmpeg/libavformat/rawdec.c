@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW demuxers
  * Copyright (c) 2001 Fabrice Bellard
  * Copyright (c) 2005 Alex Beregszaszi
@@ -44,7 +44,8 @@ int ff_raw_read_partial_packet(AVFormatContext *s, AVPacket *pkt)
     pkt->pos= avio_tell(s->pb);
     pkt->stream_index = 0;
     ret = ffio_read_partial(s->pb, pkt->data, size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_free_packet(pkt);
         return ret;
     }
@@ -75,7 +76,8 @@ int ff_raw_video_read_header(AVFormatContext *s)
 
 
     st = avformat_new_stream(s, NULL);
-    if (!st) {
+    if (!st)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -107,13 +109,15 @@ int ff_raw_data_read_header(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(FFRawVideoDemuxerContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-const AVOption ff_rawvideo_options[] = {
+const AVOption ff_rawvideo_options[] =
+{
     { "framerate", "", OFFSET(framerate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, DEC},
     { NULL },
 };
 
 #if CONFIG_DATA_DEMUXER
-AVInputFormat ff_data_demuxer = {
+AVInputFormat ff_data_demuxer =
+{
     .name           = "data",
     .long_name      = NULL_IF_CONFIG_SMALL("raw data"),
     .read_header    = ff_raw_data_read_header,
@@ -125,7 +129,8 @@ AVInputFormat ff_data_demuxer = {
 
 #if CONFIG_LATM_DEMUXER
 
-AVInputFormat ff_latm_demuxer = {
+AVInputFormat ff_latm_demuxer =
+{
     .name           = "latm",
     .long_name      = NULL_IF_CONFIG_SMALL("raw LOAS/LATM"),
     .read_header    = ff_raw_audio_read_header,
@@ -144,12 +149,14 @@ static int mjpeg_probe(AVProbeData *p)
     int nb_invalid = 0;
     int nb_frames = 0;
 
-    for (i=0; i<p->buf_size-2; i++) {
+    for (i=0; i<p->buf_size-2; i++)
+    {
         int c;
         if (p->buf[i] != 0xFF)
             continue;
         c = p->buf[i+1];
-        switch (c) {
+        switch (c)
+        {
         case 0xD8:
             state = 0xD8;
             break;
@@ -161,33 +168,41 @@ static int mjpeg_probe(AVProbeData *p)
         case 0xC6:
         case 0xC7:
         case 0xF7:
-            if (state == 0xD8) {
+            if (state == 0xD8)
+            {
                 state = 0xC0;
-            } else
+            }
+            else
                 nb_invalid++;
             break;
         case 0xDA:
-            if (state == 0xC0) {
+            if (state == 0xC0)
+            {
                 state = 0xDA;
-            } else
+            }
+            else
                 nb_invalid++;
             break;
         case 0xD9:
-            if (state == 0xDA) {
+            if (state == 0xDA)
+            {
                 state = 0xD9;
                 nb_frames++;
-            } else
+            }
+            else
                 nb_invalid++;
             break;
         default:
             if (  (c >= 0x02 && c <= 0xBF)
-                || c == 0xC8) {
+                    || c == 0xC8)
+            {
                 nb_invalid++;
             }
         }
     }
 
-    if (nb_invalid*4 + 1 < nb_frames) {
+    if (nb_invalid*4 + 1 < nb_frames)
+    {
         static const char ct_jpeg[] = "\r\nContent-Type: image/jpeg\r\n";
         int i;
 
@@ -207,7 +222,8 @@ FF_DEF_RAWVIDEO_DEMUXER2(mjpeg, "raw MJPEG video", mjpeg_probe, "mjpg,mjpeg,mpo"
 #endif
 
 #if CONFIG_MLP_DEMUXER
-AVInputFormat ff_mlp_demuxer = {
+AVInputFormat ff_mlp_demuxer =
+{
     .name           = "mlp",
     .long_name      = NULL_IF_CONFIG_SMALL("raw MLP"),
     .read_header    = ff_raw_audio_read_header,
@@ -219,7 +235,8 @@ AVInputFormat ff_mlp_demuxer = {
 #endif
 
 #if CONFIG_TRUEHD_DEMUXER
-AVInputFormat ff_truehd_demuxer = {
+AVInputFormat ff_truehd_demuxer =
+{
     .name           = "truehd",
     .long_name      = NULL_IF_CONFIG_SMALL("raw TrueHD"),
     .read_header    = ff_raw_audio_read_header,
@@ -231,7 +248,8 @@ AVInputFormat ff_truehd_demuxer = {
 #endif
 
 #if CONFIG_SHORTEN_DEMUXER
-AVInputFormat ff_shorten_demuxer = {
+AVInputFormat ff_shorten_demuxer =
+{
     .name           = "shn",
     .long_name      = NULL_IF_CONFIG_SMALL("raw Shorten"),
     .read_header    = ff_raw_audio_read_header,

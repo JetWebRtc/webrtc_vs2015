@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -44,7 +44,8 @@
 
 
 #include "svc_enc_slice_segment.h"
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /*
  *  Frame level in SVC DQLayer instead.
@@ -56,7 +57,8 @@ namespace WelsEnc {
 typedef struct TagDqLayer   SDqLayer;
 typedef SDqLayer*           pDqLayer;
 
-typedef struct TagFeatureSearchPreparation {
+typedef struct TagFeatureSearchPreparation
+{
 SScreenBlockFeatureStorage*     pRefBlockFeature;//point the the ref frame storage
 
 uint16_t*       pFeatureOfBlock;                // Feature of every block (8x8), begin with the point
@@ -68,23 +70,26 @@ uint8_t uiFMEGoodFrameCount;
 int32_t iHighFreMbCount;
 } SFeatureSearchPreparation; //maintain only one
 
-typedef struct TagSliceThreadInfo {
+typedef struct TagSliceThreadInfo
+{
 SSlice*                 pSliceInThread[MAX_THREADS_NUM];// slice buffer for multi thread,
-                                                        // will not alloated when multi thread is off
+// will not alloated when multi thread is off
 int32_t                 iMaxSliceNumInThread[MAX_THREADS_NUM];
 int32_t                 iEncodedSliceNumInThread[MAX_THREADS_NUM];
-}SSliceThreadInfo;
+} SSliceThreadInfo;
 
-typedef struct TagLayerInfo {
+typedef struct TagLayerInfo
+{
 SNalUnitHeaderExt       sNalHeaderExt;
 SSlice*                 pSliceInLayer;  // Here SSlice identify to Frame on concept, [iSliceIndex],
-                                        // may need extend list size for sliceMode=SM_SIZELIMITED_SLICE
+// may need extend list size for sliceMode=SM_SIZELIMITED_SLICE
 SSubsetSps*             pSubsetSpsP;    // current pSubsetSps used, memory alloc in external
 SWelsSPS*               pSpsP;          // current pSps based avc used, memory alloc in external
 SWelsPPS*               pPpsP;          // current pPps used
 } SLayerInfo;
 /* Layer Representation */
-struct TagDqLayer {
+struct TagDqLayer
+{
 SLayerInfo              sLayerInfo;
 SSliceThreadInfo        sSliceThreadInfo;
 SSlice**                ppSliceInLayer;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DXA demuxer
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -28,14 +28,15 @@
 
 #define DXA_EXTRA_SIZE  9
 
-typedef struct DXAContext {
+typedef struct DXAContext
+{
     int frames;
     int has_sound;
     int bpc;
     uint32_t bytes_left;
     int64_t wavpos, vidpos;
     int readvid;
-}DXAContext;
+} DXAContext;
 
 static int dxa_probe(AVProbeData *p)
 {
@@ -46,8 +47,8 @@ static int dxa_probe(AVProbeData *p)
     h = AV_RB16(p->buf + 13);
     /* check file header */
     if (p->buf[0] == 'D' && p->buf[1] == 'E' &&
-        p->buf[2] == 'X' && p->buf[3] == 'A' &&
-        w && w <= 2048 && h && h <= 2048)
+            p->buf[2] == 'X' && p->buf[3] == 'A' &&
+            w && w <= 2048 && h && h <= 2048)
         return AVPROBE_SCORE_MAX;
     else
         return 0;
@@ -70,19 +71,25 @@ static int dxa_read_header(AVFormatContext *s)
         return AVERROR_INVALIDDATA;
     flags = avio_r8(pb);
     c->frames = avio_rb16(pb);
-    if(!c->frames){
+    if(!c->frames)
+    {
         av_log(s, AV_LOG_ERROR, "File contains no frames ???\n");
         return AVERROR_INVALIDDATA;
     }
 
     fps = avio_rb32(pb);
-    if(fps > 0){
+    if(fps > 0)
+    {
         den = 1000;
         num = fps;
-    }else if (fps < 0){
+    }
+    else if (fps < 0)
+    {
         den = 100000;
         num = -fps;
-    }else{
+    }
+    else
+    {
         den = 10;
         num = 1;
     }
@@ -95,7 +102,8 @@ static int dxa_read_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
 
     // Parse WAV data header
-    if(avio_rl32(pb) == MKTAG('W', 'A', 'V', 'E')){
+    if(avio_rl32(pb) == MKTAG('W', 'A', 'V', 'E'))
+    {
         uint32_t size, fsize;
         c->has_sound = 1;
         size = avio_rb32(pb);
@@ -112,7 +120,8 @@ static int dxa_read_header(AVFormatContext *s)
         if (ast->codec->sample_rate > 0)
             avpriv_set_pts_info(ast, 64, 1, ast->codec->sample_rate);
         // find 'data' chunk
-        while(avio_tell(pb) < c->vidpos && !avio_feof(pb)){
+        while(avio_tell(pb) < c->vidpos && !avio_feof(pb))
+        {
             tag = avio_rl32(pb);
             fsize = avio_rl32(pb);
             if(tag == MKTAG('d', 'a', 't', 'a')) break;
@@ -137,7 +146,8 @@ static int dxa_read_header(AVFormatContext *s)
      * flags & 0x40 means that image has double height
      * either way set true height
      */
-    if(flags & 0xC0){
+    if(flags & 0xC0)
+    {
         st->codec->height >>= 1;
     }
     c->readvid = !c->has_sound;
@@ -157,7 +167,8 @@ static int dxa_read_packet(AVFormatContext *s, AVPacket *pkt)
     uint8_t buf[DXA_EXTRA_SIZE], pal[768+4];
     int pal_size = 0;
 
-    if(!c->readvid && c->has_sound && c->bytes_left){
+    if(!c->readvid && c->has_sound && c->bytes_left)
+    {
         c->readvid = 1;
         avio_seek(s->pb, c->wavpos, SEEK_SET);
         size = FFMIN(c->bytes_left, c->bpc);
@@ -170,12 +181,15 @@ static int dxa_read_packet(AVFormatContext *s, AVPacket *pkt)
         return 0;
     }
     avio_seek(s->pb, c->vidpos, SEEK_SET);
-    while(!avio_feof(s->pb) && c->frames){
-        if ((ret = avio_read(s->pb, buf, 4)) != 4) {
+    while(!avio_feof(s->pb) && c->frames)
+    {
+        if ((ret = avio_read(s->pb, buf, 4)) != 4)
+        {
             av_log(s, AV_LOG_ERROR, "failed reading chunk type\n");
             return ret < 0 ? ret : AVERROR_INVALIDDATA;
         }
-        switch(AV_RL32(buf)){
+        switch(AV_RL32(buf))
+        {
         case MKTAG('N', 'U', 'L', 'L'):
             if(av_new_packet(pkt, 4 + pal_size) < 0)
                 return AVERROR(ENOMEM);
@@ -192,12 +206,14 @@ static int dxa_read_packet(AVFormatContext *s, AVPacket *pkt)
             avio_read(s->pb, pal + 4, 768);
             break;
         case MKTAG('F', 'R', 'A', 'M'):
-            if ((ret = avio_read(s->pb, buf + 4, DXA_EXTRA_SIZE - 4)) != DXA_EXTRA_SIZE - 4) {
+            if ((ret = avio_read(s->pb, buf + 4, DXA_EXTRA_SIZE - 4)) != DXA_EXTRA_SIZE - 4)
+            {
                 av_log(s, AV_LOG_ERROR, "failed reading dxa_extra\n");
                 return ret < 0 ? ret : AVERROR_INVALIDDATA;
             }
             size = AV_RB32(buf + 5);
-            if(size > 0xFFFFFF){
+            if(size > 0xFFFFFF)
+            {
                 av_log(s, AV_LOG_ERROR, "Frame size is too big: %"PRIu32"\n",
                        size);
                 return AVERROR_INVALIDDATA;
@@ -206,7 +222,8 @@ static int dxa_read_packet(AVFormatContext *s, AVPacket *pkt)
                 return AVERROR(ENOMEM);
             memcpy(pkt->data + pal_size, buf, DXA_EXTRA_SIZE);
             ret = avio_read(s->pb, pkt->data + DXA_EXTRA_SIZE + pal_size, size);
-            if(ret != size){
+            if(ret != size)
+            {
                 av_free_packet(pkt);
                 return AVERROR(EIO);
             }
@@ -224,7 +241,8 @@ static int dxa_read_packet(AVFormatContext *s, AVPacket *pkt)
     return AVERROR_EOF;
 }
 
-AVInputFormat ff_dxa_demuxer = {
+AVInputFormat ff_dxa_demuxer =
+{
     .name           = "dxa",
     .long_name      = NULL_IF_CONFIG_SMALL("DXA"),
     .priv_data_size = sizeof(DXAContext),

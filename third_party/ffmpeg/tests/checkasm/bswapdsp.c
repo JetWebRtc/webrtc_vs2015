@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Henrik Gramner
  *
  * This file is part of FFmpeg.

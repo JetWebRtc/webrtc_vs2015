@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,19 +16,27 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class H264SpropParameterSets {
- public:
-  H264SpropParameterSets() {}
-  bool DecodeSprop(const std::string& sprop);
-  const std::vector<uint8_t>& sps_nalu() { return sps_; }
-  const std::vector<uint8_t>& pps_nalu() { return pps_; }
+class H264SpropParameterSets
+{
+public:
+    H264SpropParameterSets() {}
+    bool DecodeSprop(const std::string& sprop);
+    const std::vector<uint8_t>& sps_nalu()
+    {
+        return sps_;
+    }
+    const std::vector<uint8_t>& pps_nalu()
+    {
+        return pps_;
+    }
 
- private:
-  std::vector<uint8_t> sps_;
-  std::vector<uint8_t> pps_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(H264SpropParameterSets);
+private:
+    std::vector<uint8_t> sps_;
+    std::vector<uint8_t> pps_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(H264SpropParameterSets);
 };
 
 }  // namespace webrtc

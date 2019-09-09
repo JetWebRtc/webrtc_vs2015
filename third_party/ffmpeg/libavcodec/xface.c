@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 1990 James Ashton - Sydney University
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -39,12 +39,14 @@ void ff_big_add(BigInt *b, uint8_t a)
         return;
     w = b->words;
     c = a;
-    for (i = 0; i < b->nb_words && c; i++) {
+    for (i = 0; i < b->nb_words && c; i++)
+    {
         c += *w;
         *w++ = c & XFACE_WORDMASK;
         c >>= XFACE_BITSPERWORD;
     }
-    if (i == b->nb_words && c) {
+    if (i == b->nb_words && c)
+    {
         av_assert0(b->nb_words < XFACE_MAX_WORDS);
         b->nb_words++;
         *w = c & XFACE_WORDMASK;
@@ -58,17 +60,20 @@ void ff_big_div(BigInt *b, uint8_t a, uint8_t *r)
     uint16_t c, d;
 
     a &= XFACE_WORDMASK;
-    if (a == 1 || b->nb_words == 0) {
+    if (a == 1 || b->nb_words == 0)
+    {
         *r = 0;
         return;
     }
 
     /* treat this as a == WORDCARRY and just shift everything right a WORD */
-    if (a == 0) {
+    if (a == 0)
+    {
         i = --b->nb_words;
         w = b->words;
         *r = *w;
-        while (i--) {
+        while (i--)
+        {
             *w = *(w + 1);
             w++;
         }
@@ -78,7 +83,8 @@ void ff_big_div(BigInt *b, uint8_t a, uint8_t *r)
     i = b->nb_words;
     w = b->words + i;
     c = 0;
-    while (i--) {
+    while (i--)
+    {
         c <<= XFACE_BITSPERWORD;
         c += *--w;
         d = c / (uint16_t)a;
@@ -99,12 +105,14 @@ void ff_big_mul(BigInt *b, uint8_t a)
     a &= XFACE_WORDMASK;
     if (a == 1 || b->nb_words == 0)
         return;
-    if (a == 0) {
+    if (a == 0)
+    {
         /* treat this as a == WORDCARRY and just shift everything left a WORD */
         av_assert0(b->nb_words < XFACE_MAX_WORDS);
         i = b->nb_words++;
         w = b->words + i;
-        while (i--) {
+        while (i--)
+        {
             *w = *(w - 1);
             w--;
         }
@@ -114,19 +122,22 @@ void ff_big_mul(BigInt *b, uint8_t a)
     i = b->nb_words;
     w = b->words;
     c = 0;
-    while (i--) {
+    while (i--)
+    {
         c += (uint16_t)*w * (uint16_t)a;
         *(w++) = c & XFACE_WORDMASK;
         c >>= XFACE_BITSPERWORD;
     }
-    if (c) {
+    if (c)
+    {
         av_assert0(b->nb_words < XFACE_MAX_WORDS);
         b->nb_words++;
         *w = c & XFACE_WORDMASK;
     }
 }
 
-const ProbRange ff_xface_probranges_per_level[4][3] = {
+const ProbRange ff_xface_probranges_per_level[4][3] =
+{
     //  black      grey       white
     { {  1, 255}, {251, 0}, {  4, 251} }, /* Top of tree almost always grey */
     { {  1, 255}, {200, 0}, { 55, 200} },
@@ -134,7 +145,8 @@ const ProbRange ff_xface_probranges_per_level[4][3] = {
     { {131,   0}, {  0, 0}, {125, 131} }, /* Grey disallowed at bottom */
 };
 
-const ProbRange ff_xface_probranges_2x2[16] = {
+const ProbRange ff_xface_probranges_2x2[16] =
+{
     { 0,   0},  {38,   0}, {38,  38},  {13, 152},
     {38,  76},  {13, 165}, {13, 178},  { 6, 230},
     {38, 114},  {13, 191}, {13, 204},  { 6, 236},
@@ -150,7 +162,8 @@ const ProbRange ff_xface_probranges_2x2[16] = {
  * the most significant bit.
  */
 
-static const uint8_t g_00[] = {
+static const uint8_t g_00[] =
+{
     0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0xe3, 0xdf, 0x05, 0x17,
     0x05, 0x0f, 0x00, 0x1b, 0x0f, 0xdf, 0x00, 0x04, 0x00, 0x00,
     0x0d, 0x0f, 0x03, 0x7f, 0x00, 0x00, 0x00, 0x01, 0x00, 0x1d,
@@ -205,16 +218,19 @@ static const uint8_t g_00[] = {
     0xff, 0xff,
 };
 
-static const uint8_t g_01[] = {
+static const uint8_t g_01[] =
+{
     0x37, 0x73, 0x00, 0x19, 0x57, 0x7f, 0xf5, 0xfb, 0x70, 0x33,
     0xf0, 0xf9, 0x7f, 0xff, 0xff, 0xff,
 };
 
-static const uint8_t g_02[] = {
+static const uint8_t g_02[] =
+{
     0x50,
 };
 
-static const uint8_t g_10[] = {
+static const uint8_t g_10[] =
+{
     0x00, 0x00, 0x00, 0x00, 0x50, 0x00, 0xf3, 0x5f, 0x84, 0x04,
     0x17, 0x9f, 0x04, 0x23, 0x05, 0xff, 0x00, 0x00, 0x00, 0x02,
     0x03, 0x03, 0x33, 0xd7, 0x05, 0x03, 0x5f, 0x3f, 0x17, 0x33,
@@ -224,18 +240,21 @@ static const uint8_t g_10[] = {
     0x1f, 0xff, 0xff, 0xff,
 };
 
-static const uint8_t g_20[] = {
+static const uint8_t g_20[] =
+{
     0x04, 0x00, 0x01, 0x01, 0x43, 0x2e, 0xff, 0x3f,
 };
 
-static const uint8_t g_30[] = {
+static const uint8_t g_30[] =
+{
     0x11, 0x11, 0x11, 0x11, 0x51, 0x11, 0x13, 0x11, 0x11, 0x11,
     0x13, 0x11, 0x11, 0x11, 0x33, 0x11, 0x13, 0x11, 0x13, 0x13,
     0x13, 0x13, 0x31, 0x31, 0x11, 0x01, 0x11, 0x11, 0x71, 0x11,
     0x11, 0x75,
 };
 
-static const uint8_t g_40[] = {
+static const uint8_t g_40[] =
+{
     0x00, 0x0f, 0x00, 0x09, 0x00, 0x0d, 0x00, 0x0d, 0x00, 0x0f,
     0x00, 0x4e, 0xe4, 0x0d, 0x10, 0x0f, 0x00, 0x0f, 0x44, 0x4f,
     0x00, 0x1e, 0x0f, 0x0f, 0xae, 0xaf, 0x45, 0x7f, 0xef, 0xff,
@@ -251,35 +270,43 @@ static const uint8_t g_40[] = {
     0x0d, 0x7f, 0x0f, 0xff, 0x4d, 0x7d, 0x0f, 0xff,
 };
 
-static const uint8_t g_11[] = {
+static const uint8_t g_11[] =
+{
     0x01, 0x13, 0x03, 0x7f,
 };
 
-static const uint8_t g_21[] = {
+static const uint8_t g_21[] =
+{
     0x17,
 };
 
-static const uint8_t g_31[] = {
+static const uint8_t g_31[] =
+{
     0x55, 0x57, 0x57, 0x7f,
 };
 
-static const uint8_t g_41[] = {
+static const uint8_t g_41[] =
+{
     0x01, 0x01, 0x01, 0x1f, 0x03, 0x1f, 0x3f, 0xff,
 };
 
-static const uint8_t g_12[] = {
+static const uint8_t g_12[] =
+{
     0x40,
 };
 
-static const uint8_t g_22[] = {
+static const uint8_t g_22[] =
+{
     0x00,
 };
 
-static const uint8_t g_32[] = {
+static const uint8_t g_32[] =
+{
     0x10,
 };
 
-static const uint8_t g_42[] = {
+static const uint8_t g_42[] =
+{
     0x10,
 };
 
@@ -287,8 +314,10 @@ void ff_xface_generate_face(uint8_t *dst, uint8_t * const src)
 {
     int h, i, j, k, l, m;
 
-    for (j = 0; j < XFACE_HEIGHT; j++) {
-        for (i = 0; i < XFACE_WIDTH; i++) {
+    for (j = 0; j < XFACE_HEIGHT; j++)
+    {
+        for (i = 0; i < XFACE_WIDTH; i++)
+        {
             h = i + j * XFACE_WIDTH;
             k = 0;
 
@@ -300,11 +329,11 @@ void ff_xface_generate_face(uint8_t *dst, uint8_t * const src)
                 |      |
                 v      v
                +--+--+--+--+--+
-          m -> | 1| 2| 3| 4| 5|
+            m -> | 1| 2| 3| 4| 5|
                +--+--+--+--+--+
                | 6| 7| 8| 9|10|
                +--+--+--+--+--+
-          j -> |11|12| *|  |  |
+            j -> |11|12| *|  |  |
                +--+--+--+--+--+
 
                the value k for the pixel marked as "*" will contain the bit encoding of
@@ -313,8 +342,10 @@ void ff_xface_generate_face(uint8_t *dst, uint8_t * const src)
                grid will be lesser than 12.
              */
 
-            for (l = i - 2; l <= i + 2; l++) {
-                for (m = j - 2; m <= j; m++) {
+            for (l = i - 2; l <= i + 2; l++)
+            {
+                for (m = j - 2; m <= j; m++)
+                {
                     if (l >= i && m == j)
                         continue;
                     if (l > 0 && l <= XFACE_WIDTH && m > 0)
@@ -331,53 +362,89 @@ void ff_xface_generate_face(uint8_t *dst, uint8_t * const src)
 
                  i=1  i=2  i=3       i=w-1 i=w
                +----+----+----+ ... +----+----+
-           j=1 |  0 |  1 |  2 |     |  2 |  2 |
+            j=1 |  0 |  1 |  2 |     |  2 |  2 |
                |g22 |g12 |g02 |     |g42 |g32 |
                +----+----+----+ ... +----+----+
-           j=2 |  3 |  5 |  7 |     |  6 |  5 |
+            j=2 |  3 |  5 |  7 |     |  6 |  5 |
                |g21 |g11 |g01 |     |g41 |g31 |
                +----+----+----+ ... +----+----+
-           j=3 |  5 |  9 | 12 |     | 10 |  8 |
+            j=3 |  5 |  9 | 12 |     | 10 |  8 |
                |g20 |g10 |g00 |     |g40 |g30 |
                +----+----+----+ ... +----+----+
             */
 
 #define GEN(table) dst[h] ^= (table[k>>3]>>(7-(k&7)))&1
 
-            switch (i) {
+            switch (i)
+            {
             case 1:
-                switch (j) {
-                case 1:  GEN(g_22); break;
-                case 2:  GEN(g_21); break;
-                default: GEN(g_20); break;
+                switch (j)
+                {
+                case 1:
+                    GEN(g_22);
+                    break;
+                case 2:
+                    GEN(g_21);
+                    break;
+                default:
+                    GEN(g_20);
+                    break;
                 }
                 break;
             case 2:
-                switch (j) {
-                case 1:  GEN(g_12); break;
-                case 2:  GEN(g_11); break;
-                default: GEN(g_10); break;
+                switch (j)
+                {
+                case 1:
+                    GEN(g_12);
+                    break;
+                case 2:
+                    GEN(g_11);
+                    break;
+                default:
+                    GEN(g_10);
+                    break;
                 }
                 break;
             case XFACE_WIDTH - 1:
-                switch (j) {
-                case 1:  GEN(g_42); break;
-                case 2:  GEN(g_41); break;
-                default: GEN(g_40); break;
+                switch (j)
+                {
+                case 1:
+                    GEN(g_42);
+                    break;
+                case 2:
+                    GEN(g_41);
+                    break;
+                default:
+                    GEN(g_40);
+                    break;
                 }
                 break;
             case XFACE_WIDTH:
-                switch (j) {
-                case 1:  GEN(g_32); break;
-                case 2:  GEN(g_31); break;
-                default: GEN(g_30); break;
+                switch (j)
+                {
+                case 1:
+                    GEN(g_32);
+                    break;
+                case 2:
+                    GEN(g_31);
+                    break;
+                default:
+                    GEN(g_30);
+                    break;
                 }
                 break;
             default:
-                switch (j) {
-                case 1:  GEN(g_02); break;
-                case 2:  GEN(g_01); break;
-                default: GEN(g_00); break;
+                switch (j)
+                {
+                case 1:
+                    GEN(g_02);
+                    break;
+                case 2:
+                    GEN(g_01);
+                    break;
+                default:
+                    GEN(g_00);
+                    break;
                 }
                 break;
             }

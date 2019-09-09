@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,13 +22,13 @@ extern const uint16_t kDefaultServerPort;  // From defaults.[h|cc]
 
 DEFINE_bool(help, false, "Prints this message");
 DEFINE_bool(autoconnect, false, "Connect to the server without user "
-                                "intervention.");
+            "intervention.");
 DEFINE_string(server, "localhost", "The server to connect to.");
 DEFINE_int(port, kDefaultServerPort,
            "The port on which the server is listening.");
 DEFINE_bool(autocall, false, "Call the first available other client on "
-  "the server without user intervention.  Note: this flag should only be set "
-  "to true on one of the two clients.");
+            "the server without user intervention.  Note: this flag should only be set "
+            "to true on one of the two clients.");
 DEFINE_bool(licode, false, "connect to licode BasicExample");
 DEFINE_bool(licode_client_offer, true, "create offer when publish");
 DEFINE_bool(licode_subscribe, true, "subscribe if there is a stream in the room when connect");

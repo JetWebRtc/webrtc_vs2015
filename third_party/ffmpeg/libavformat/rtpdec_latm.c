@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP Depacketization of MP4A-LATM, RFC 3016
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -25,7 +25,8 @@
 #include "libavutil/avstring.h"
 #include "libavcodec/get_bits.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *dyn_buf;
     uint8_t *buf;
     int pos, len;
@@ -45,8 +46,10 @@ static int latm_parse_packet(AVFormatContext *ctx, PayloadContext *data,
 {
     int ret, cur_len;
 
-    if (buf) {
-        if (!data->dyn_buf || data->timestamp != *timestamp) {
+    if (buf)
+    {
+        if (!data->dyn_buf || data->timestamp != *timestamp)
+        {
             av_freep(&data->buf);
             ffio_free_dyn_buf(&data->dyn_buf);
 
@@ -64,19 +67,22 @@ static int latm_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         data->pos = 0;
     }
 
-    if (!data->buf) {
+    if (!data->buf)
+    {
         av_log(ctx, AV_LOG_ERROR, "No data available yet\n");
         return AVERROR(EIO);
     }
 
     cur_len = 0;
-    while (data->pos < data->len) {
+    while (data->pos < data->len)
+    {
         uint8_t val = data->buf[data->pos++];
         cur_len += val;
         if (val != 0xff)
             break;
     }
-    if (data->pos + cur_len > data->len) {
+    if (data->pos + cur_len > data->len)
+    {
         av_log(ctx, AV_LOG_ERROR, "Malformed LATM packet\n");
         return AVERROR(EIO);
     }
@@ -108,15 +114,17 @@ static int parse_fmtp_config(AVStream *st, const char *value)
     num_programs      = get_bits(&gb, 4);
     num_layers        = get_bits(&gb, 3);
     if (audio_mux_version != 0 || same_time_framing != 1 || num_programs != 0 ||
-        num_layers != 0) {
+            num_layers != 0)
+    {
         av_log(NULL, AV_LOG_WARNING, "Unsupported LATM config (%d,%d,%d,%d)\n",
-                                     audio_mux_version, same_time_framing,
-                                     num_programs, num_layers);
+               audio_mux_version, same_time_framing,
+               num_programs, num_layers);
         ret = AVERROR_PATCHWELCOME;
         goto end;
     }
     av_freep(&st->codec->extradata);
-    if (ff_alloc_extradata(st->codec, (get_bits_left(&gb) + 7)/8)) {
+    if (ff_alloc_extradata(st->codec, (get_bits_left(&gb) + 7)/8))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -134,11 +142,14 @@ static int parse_fmtp(AVFormatContext *s,
 {
     int res;
 
-    if (!strcmp(attr, "config")) {
+    if (!strcmp(attr, "config"))
+    {
         res = parse_fmtp_config(stream, value);
         if (res < 0)
             return res;
-    } else if (!strcmp(attr, "cpresent")) {
+    }
+    else if (!strcmp(attr, "cpresent"))
+    {
         int cpresent = atoi(value);
         if (cpresent != 0)
             avpriv_request_sample(s,
@@ -162,7 +173,8 @@ static int latm_parse_sdp_line(AVFormatContext *s, int st_index,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_mp4a_latm_dynamic_handler = {
+RTPDynamicProtocolHandler ff_mp4a_latm_dynamic_handler =
+{
     .enc_name           = "MP4A-LATM",
     .codec_type         = AVMEDIA_TYPE_AUDIO,
     .codec_id           = AV_CODEC_ID_AAC,

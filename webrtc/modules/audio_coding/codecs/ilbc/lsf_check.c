@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,44 +28,53 @@ int WebRtcIlbcfix_LsfCheck(
     int dim, /* dimension of LSF */
     int NoAn)  /* No of analysis per frame */
 {
-  int k,n,m, Nit=2, change=0,pos;
-  const int16_t eps=319;  /* 0.039 in Q13 (50 Hz)*/
-  const int16_t eps2=160;  /* eps/2.0 in Q13;*/
-  const int16_t maxlsf=25723; /* 3.14; (4000 Hz)*/
-  const int16_t minlsf=82;  /* 0.01; (0 Hz)*/
+    int k,n,m, Nit=2, change=0,pos;
+    const int16_t eps=319;  /* 0.039 in Q13 (50 Hz)*/
+    const int16_t eps2=160;  /* eps/2.0 in Q13;*/
+    const int16_t maxlsf=25723; /* 3.14; (4000 Hz)*/
+    const int16_t minlsf=82;  /* 0.01; (0 Hz)*/
 
-  /* LSF separation check*/
-  for (n=0;n<Nit;n++) {  /* Run through a 2 times */
-    for (m=0;m<NoAn;m++) { /* Number of analyses per frame */
-      for (k=0;k<(dim-1);k++) {
-        pos=m*dim+k;
+    /* LSF separation check*/
+    for (n=0; n<Nit; n++)  /* Run through a 2 times */
+    {
+        for (m=0; m<NoAn; m++) /* Number of analyses per frame */
+        {
+            for (k=0; k<(dim-1); k++)
+            {
+                pos=m*dim+k;
 
-        /* Seperate coefficients with a safety margin of 50 Hz */
-        if ((lsf[pos+1]-lsf[pos])<eps) {
+                /* Seperate coefficients with a safety margin of 50 Hz */
+                if ((lsf[pos+1]-lsf[pos])<eps)
+                {
 
-          if (lsf[pos+1]<lsf[pos]) {
-            lsf[pos+1]= lsf[pos]+eps2;
-            lsf[pos]= lsf[pos+1]-eps2;
-          } else {
-            lsf[pos]-=eps2;
-            lsf[pos+1]+=eps2;
-          }
-          change=1;
+                    if (lsf[pos+1]<lsf[pos])
+                    {
+                        lsf[pos+1]= lsf[pos]+eps2;
+                        lsf[pos]= lsf[pos+1]-eps2;
+                    }
+                    else
+                    {
+                        lsf[pos]-=eps2;
+                        lsf[pos+1]+=eps2;
+                    }
+                    change=1;
+                }
+
+                /* Limit minimum and maximum LSF */
+                if (lsf[pos]<minlsf)
+                {
+                    lsf[pos]=minlsf;
+                    change=1;
+                }
+
+                if (lsf[pos]>maxlsf)
+                {
+                    lsf[pos]=maxlsf;
+                    change=1;
+                }
+            }
         }
-
-        /* Limit minimum and maximum LSF */
-        if (lsf[pos]<minlsf) {
-          lsf[pos]=minlsf;
-          change=1;
-        }
-
-        if (lsf[pos]>maxlsf) {
-          lsf[pos]=maxlsf;
-          change=1;
-        }
-      }
     }
-  }
 
-  return change;
+    return change;
 }

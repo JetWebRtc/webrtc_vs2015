@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD-optimized MP3 decoding functions
  * Copyright (c) 2010 Vitor Sessak
  *
@@ -84,26 +84,26 @@ static void apply_window(const float *buf, const float *win1,
     "subps         %%xmm2, %%xmm4           \n\t"  \
 
     __asm__ volatile(
-            "1:                                   \n\t"
-            "xorps       %%xmm0, %%xmm0           \n\t"
-            "xorps       %%xmm4, %%xmm4           \n\t"
+        "1:                                   \n\t"
+        "xorps       %%xmm0, %%xmm0           \n\t"
+        "xorps       %%xmm4, %%xmm4           \n\t"
 
-            MULT(   0,   0)
-            MULT( 256,  64)
-            MULT( 512, 128)
-            MULT( 768, 192)
-            MULT(1024, 256)
-            MULT(1280, 320)
-            MULT(1536, 384)
-            MULT(1792, 448)
+        MULT(   0,   0)
+        MULT( 256,  64)
+        MULT( 512, 128)
+        MULT( 768, 192)
+        MULT(1024, 256)
+        MULT(1280, 320)
+        MULT(1536, 384)
+        MULT(1792, 448)
 
-            "movaps      %%xmm0, (%4,%0)          \n\t"
-            "movaps      %%xmm4, (%5,%0)          \n\t"
-            "add            $16,  %0              \n\t"
-            "jl              1b                   \n\t"
-            :"+&r"(count)
-            :"r"(win1a), "r"(win2a), "r"(bufa), "r"(sum1a), "r"(sum2a)
-            );
+        "movaps      %%xmm0, (%4,%0)          \n\t"
+        "movaps      %%xmm4, (%5,%0)          \n\t"
+        "add            $16,  %0              \n\t"
+        "jl              1b                   \n\t"
+        :"+&r"(count)
+        :"r"(win1a), "r"(win2a), "r"(bufa), "r"(sum1a), "r"(sum2a)
+    );
 
 #undef MULT
 }
@@ -120,25 +120,25 @@ static void apply_window_mp3(float *in, float *win, int *unused, float *out,
 
     /* copy to avoid wrap */
     __asm__ volatile(
-            "movaps    0(%0), %%xmm0   \n\t" \
-            "movaps   16(%0), %%xmm1   \n\t" \
-            "movaps   32(%0), %%xmm2   \n\t" \
-            "movaps   48(%0), %%xmm3   \n\t" \
-            "movaps   %%xmm0,   0(%1) \n\t" \
-            "movaps   %%xmm1,  16(%1) \n\t" \
-            "movaps   %%xmm2,  32(%1) \n\t" \
-            "movaps   %%xmm3,  48(%1) \n\t" \
-            "movaps   64(%0), %%xmm0   \n\t" \
-            "movaps   80(%0), %%xmm1   \n\t" \
-            "movaps   96(%0), %%xmm2   \n\t" \
-            "movaps  112(%0), %%xmm3   \n\t" \
-            "movaps   %%xmm0,  64(%1) \n\t" \
-            "movaps   %%xmm1,  80(%1) \n\t" \
-            "movaps   %%xmm2,  96(%1) \n\t" \
-            "movaps   %%xmm3, 112(%1) \n\t"
-            ::"r"(in), "r"(in+512)
-            :"memory"
-            );
+        "movaps    0(%0), %%xmm0   \n\t" \
+        "movaps   16(%0), %%xmm1   \n\t" \
+        "movaps   32(%0), %%xmm2   \n\t" \
+        "movaps   48(%0), %%xmm3   \n\t" \
+        "movaps   %%xmm0,   0(%1) \n\t" \
+        "movaps   %%xmm1,  16(%1) \n\t" \
+        "movaps   %%xmm2,  32(%1) \n\t" \
+        "movaps   %%xmm3,  48(%1) \n\t" \
+        "movaps   64(%0), %%xmm0   \n\t" \
+        "movaps   80(%0), %%xmm1   \n\t" \
+        "movaps   96(%0), %%xmm2   \n\t" \
+        "movaps  112(%0), %%xmm3   \n\t" \
+        "movaps   %%xmm0,  64(%1) \n\t" \
+        "movaps   %%xmm1,  80(%1) \n\t" \
+        "movaps   %%xmm2,  96(%1) \n\t" \
+        "movaps   %%xmm3, 112(%1) \n\t"
+        ::"r"(in), "r"(in+512)
+        :"memory"
+    );
 
     apply_window(in + 16, win     , win + 512, suma, sumc, 16);
     apply_window(in + 32, win + 48, win + 640, sumb, sumd, 16);
@@ -160,7 +160,8 @@ static void apply_window_mp3(float *in, float *win, int *unused, float *out,
             "addps  " #sumb "(%2),       %%xmm0          \n\t" \
             "movaps        %%xmm0," #out2 "(%0)          \n\t"
 
-    if (incr == 1) {
+    if (incr == 1)
+    {
         __asm__ volatile(
             SUMS( 0, 48,  4, 52,  0, 112)
             SUMS(16, 32, 20, 36, 16,  96)
@@ -170,15 +171,18 @@ static void apply_window_mp3(float *in, float *win, int *unused, float *out,
             :"+&r"(out)
             :"r"(&suma[0]), "r"(&sumb[0]), "r"(&sumc[0]), "r"(&sumd[0])
             :"memory"
-            );
+        );
         out += 16*incr;
-    } else {
+    }
+    else
+    {
         int j;
         float *out2 = out + 32 * incr;
         out[0  ]  = -suma[   0];
         out += incr;
         out2 -= incr;
-        for(j=1;j<16;j++) {
+        for(j=1; j<16; j++)
+        {
             *out  = -suma[   j] + sumd[16-j];
             *out2 =  sumb[16-j] + sumc[   j];
             out  += incr;
@@ -244,8 +248,10 @@ av_cold void ff_mpadsp_init_x86(MPADSPContext *s)
     int cpu_flags = av_get_cpu_flags();
 
     int i, j;
-    for (j = 0; j < 4; j++) {
-        for (i = 0; i < 40; i ++) {
+    for (j = 0; j < 4; j++)
+    {
+        for (i = 0; i < 40; i ++)
+        {
             mdct_win_sse[0][j][4*i    ] = ff_mdct_win_float[j    ][i];
             mdct_win_sse[0][j][4*i + 1] = ff_mdct_win_float[j + 4][i];
             mdct_win_sse[0][j][4*i + 2] = ff_mdct_win_float[j    ][i];
@@ -258,7 +264,8 @@ av_cold void ff_mpadsp_init_x86(MPADSPContext *s)
     }
 
 #if HAVE_6REGS && HAVE_SSE_INLINE
-    if (INLINE_SSE(cpu_flags)) {
+    if (INLINE_SSE(cpu_flags))
+    {
         s->apply_window_float = apply_window_mp3;
     }
 #endif /* HAVE_SSE_INLINE */
@@ -266,22 +273,27 @@ av_cold void ff_mpadsp_init_x86(MPADSPContext *s)
 #if HAVE_YASM
 #if HAVE_SSE
 #if ARCH_X86_32
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         s->imdct36_blocks_float = imdct36_blocks_sse;
     }
 #endif
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         s->imdct36_blocks_float = imdct36_blocks_sse2;
     }
-    if (EXTERNAL_SSE3(cpu_flags)) {
+    if (EXTERNAL_SSE3(cpu_flags))
+    {
         s->imdct36_blocks_float = imdct36_blocks_sse3;
     }
-    if (EXTERNAL_SSSE3(cpu_flags)) {
+    if (EXTERNAL_SSSE3(cpu_flags))
+    {
         s->imdct36_blocks_float = imdct36_blocks_ssse3;
     }
 #endif
 #if HAVE_AVX_EXTERNAL
-    if (EXTERNAL_AVX(cpu_flags)) {
+    if (EXTERNAL_AVX(cpu_flags))
+    {
         s->imdct36_blocks_float = imdct36_blocks_avx;
     }
 #endif

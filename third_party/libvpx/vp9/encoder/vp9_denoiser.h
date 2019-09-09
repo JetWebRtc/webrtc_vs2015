@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,40 +21,44 @@ extern "C" {
 
 #define MOTION_MAGNITUDE_THRESHOLD (8 * 3)
 
-typedef enum vp9_denoiser_decision {
-  COPY_BLOCK,
-  FILTER_BLOCK,
-  FILTER_ZEROMV_BLOCK
+typedef enum vp9_denoiser_decision
+{
+    COPY_BLOCK,
+    FILTER_BLOCK,
+    FILTER_ZEROMV_BLOCK
 } VP9_DENOISER_DECISION;
 
-typedef enum vp9_denoiser_level {
-  kDenLowLow,
-  kDenLow,
-  kDenMedium,
-  kDenHigh
+typedef enum vp9_denoiser_level
+{
+    kDenLowLow,
+    kDenLow,
+    kDenMedium,
+    kDenHigh
 } VP9_DENOISER_LEVEL;
 
-typedef struct vp9_denoiser {
-  YV12_BUFFER_CONFIG running_avg_y[MAX_REF_FRAMES];
-  YV12_BUFFER_CONFIG mc_running_avg_y;
-  YV12_BUFFER_CONFIG last_source;
-  int increase_denoising;
-  int frame_buffer_initialized;
-  int reset;
-  VP9_DENOISER_LEVEL denoising_level;
-  VP9_DENOISER_LEVEL prev_denoising_level;
+typedef struct vp9_denoiser
+{
+    YV12_BUFFER_CONFIG running_avg_y[MAX_REF_FRAMES];
+    YV12_BUFFER_CONFIG mc_running_avg_y;
+    YV12_BUFFER_CONFIG last_source;
+    int increase_denoising;
+    int frame_buffer_initialized;
+    int reset;
+    VP9_DENOISER_LEVEL denoising_level;
+    VP9_DENOISER_LEVEL prev_denoising_level;
 } VP9_DENOISER;
 
-typedef struct {
-  int64_t zero_last_cost_orig;
-  int *ref_frame_cost;
-  int_mv (*frame_mv)[MAX_REF_FRAMES];
-  int reuse_inter_pred;
-  TX_SIZE best_tx_size;
-  PREDICTION_MODE best_mode;
-  MV_REFERENCE_FRAME best_ref_frame;
-  INTERP_FILTER best_pred_filter;
-  uint8_t best_mode_skip_txfm;
+typedef struct
+{
+    int64_t zero_last_cost_orig;
+    int *ref_frame_cost;
+    int_mv (*frame_mv)[MAX_REF_FRAMES];
+    int reuse_inter_pred;
+    TX_SIZE best_tx_size;
+    PREDICTION_MODE best_mode;
+    MV_REFERENCE_FRAME best_ref_frame;
+    INTERP_FILTER best_pred_filter;
+    uint8_t best_mode_skip_txfm;
 } VP9_PICKMODE_CTX_DEN;
 
 struct VP9_COMP;
@@ -88,8 +92,9 @@ int vp9_denoiser_alloc(VP9_DENOISER *denoiser, int width, int height, int ssx,
 // Define it as a static function within the scope where vp9_denoiser.h
 // is referenced.
 static INLINE int total_adj_strong_thresh(BLOCK_SIZE bs,
-                                          int increase_denoising) {
-  return (1 << num_pels_log2_lookup[bs]) * (increase_denoising ? 3 : 2);
+        int increase_denoising)
+{
+    return (1 << num_pels_log2_lookup[bs]) * (increase_denoising ? 3 : 2);
 }
 #endif
 

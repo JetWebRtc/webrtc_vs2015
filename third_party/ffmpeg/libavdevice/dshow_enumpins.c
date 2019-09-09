@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DirectShow capture interface
  * Copyright (c) 2010 Ramiro Polla
  *
@@ -22,7 +22,7 @@
 #include "dshow_capture.h"
 
 DECLARE_QUERYINTERFACE(libAVEnumPins,
-    { {&IID_IUnknown,0}, {&IID_IEnumPins,0} })
+{ {&IID_IUnknown,0}, {&IID_IEnumPins,0} })
 DECLARE_ADDREF(libAVEnumPins)
 DECLARE_RELEASE(libAVEnumPins)
 
@@ -34,7 +34,8 @@ libAVEnumPins_Next(libAVEnumPins *this, unsigned long n, IPin **pins,
     dshowdebug("libAVEnumPins_Next(%p)\n", this);
     if (!pins)
         return E_POINTER;
-    if (!this->pos && n == 1) {
+    if (!this->pos && n == 1)
+    {
         libAVPin_AddRef(this->pin);
         *pins = (IPin *) this->pin;
         count = 1;

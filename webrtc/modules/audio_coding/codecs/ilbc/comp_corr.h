@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,6 +34,6 @@ void WebRtcIlbcfix_CompCorr(
     size_t bLen, /* (i) length of buffer */
     size_t sRange, /* (i) correlation search length */
     int16_t scale /* (i) number of rightshifts to use */
-                            );
+);
 
 #endif

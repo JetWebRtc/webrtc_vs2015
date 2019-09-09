@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,45 +15,50 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Interface class for an object receiving raw output audio from test
 // applications.
-class AudioSink {
- public:
-  AudioSink() {}
-  virtual ~AudioSink() {}
+class AudioSink
+{
+public:
+    AudioSink() {}
+    virtual ~AudioSink() {}
 
-  // Writes |num_samples| from |audio| to the AudioSink. Returns true if
-  // successful, otherwise false.
-  virtual bool WriteArray(const int16_t* audio, size_t num_samples) = 0;
+    // Writes |num_samples| from |audio| to the AudioSink. Returns true if
+    // successful, otherwise false.
+    virtual bool WriteArray(const int16_t* audio, size_t num_samples) = 0;
 
-  // Writes |audio_frame| to the AudioSink. Returns true if successful,
-  // otherwise false.
-  bool WriteAudioFrame(const AudioFrame& audio_frame) {
-    return WriteArray(
-        audio_frame.data_,
-        audio_frame.samples_per_channel_ * audio_frame.num_channels_);
-  }
+    // Writes |audio_frame| to the AudioSink. Returns true if successful,
+    // otherwise false.
+    bool WriteAudioFrame(const AudioFrame& audio_frame)
+    {
+        return WriteArray(
+                   audio_frame.data_,
+                   audio_frame.samples_per_channel_ * audio_frame.num_channels_);
+    }
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioSink);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioSink);
 };
 
 // Forks the output audio to two AudioSink objects.
-class AudioSinkFork : public AudioSink {
- public:
-  AudioSinkFork(AudioSink* left, AudioSink* right)
-      : left_sink_(left), right_sink_(right) {}
+class AudioSinkFork : public AudioSink
+{
+public:
+    AudioSinkFork(AudioSink* left, AudioSink* right)
+        : left_sink_(left), right_sink_(right) {}
 
-  bool WriteArray(const int16_t* audio, size_t num_samples) override;
+    bool WriteArray(const int16_t* audio, size_t num_samples) override;
 
- private:
-  AudioSink* left_sink_;
-  AudioSink* right_sink_;
+private:
+    AudioSink* left_sink_;
+    AudioSink* right_sink_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioSinkFork);
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioSinkFork);
 };
 
 }  // namespace test

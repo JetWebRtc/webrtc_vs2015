@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (I)RDFT transforms
  * Copyright (c) 2009 Alex Converse <alex dot converse at gmail dot com>
  *
@@ -44,7 +44,8 @@ SINTABLE(16384);
 SINTABLE(32768);
 SINTABLE(65536);
 #endif
-static SINTABLE_CONST FFTSample * const ff_sin_tabs[] = {
+static SINTABLE_CONST FFTSample * const ff_sin_tabs[] =
+{
     NULL, NULL, NULL, NULL,
     ff_sin_16, ff_sin_32, ff_sin_64, ff_sin_128, ff_sin_256, ff_sin_512, ff_sin_1024,
     ff_sin_2048, ff_sin_4096, ff_sin_8192, ff_sin_16384, ff_sin_32768, ff_sin_65536,
@@ -64,7 +65,8 @@ static void rdft_calc_c(RDFTContext *s, FFTSample *data)
     const FFTSample *tcos = s->tcos;
     const FFTSample *tsin = s->tsin;
 
-    if (!s->inverse) {
+    if (!s->inverse)
+    {
         s->fft.fft_permute(&s->fft, (FFTComplex*)data);
         s->fft.fft_calc(&s->fft, (FFTComplex*)data);
     }
@@ -73,7 +75,8 @@ static void rdft_calc_c(RDFTContext *s, FFTSample *data)
     ev.re = data[0];
     data[0] = ev.re+data[1];
     data[1] = ev.re-data[1];
-    for (i = 1; i < (n>>2); i++) {
+    for (i = 1; i < (n>>2); i++)
+    {
         i1 = 2*i;
         i2 = n-i1;
         /* Separate even and odd FFTs */
@@ -88,7 +91,8 @@ static void rdft_calc_c(RDFTContext *s, FFTSample *data)
         data[i2+1] = -ev.im + od.im*tcos[i] + od.re*tsin[i];
     }
     data[2*i+1]=s->sign_convention*data[2*i+1];
-    if (s->inverse) {
+    if (s->inverse)
+    {
         data[0] *= k1;
         data[1] *= k1;
         s->fft.fft_permute(&s->fft, (FFTComplex*)data);

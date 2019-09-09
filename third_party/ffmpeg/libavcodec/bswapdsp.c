@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,7 +26,8 @@ static void bswap_buf(uint32_t *dst, const uint32_t *src, int w)
 {
     int i;
 
-    for (i = 0; i + 8 <= w; i += 8) {
+    for (i = 0; i + 8 <= w; i += 8)
+    {
         dst[i + 0] = av_bswap32(src[i + 0]);
         dst[i + 1] = av_bswap32(src[i + 1]);
         dst[i + 2] = av_bswap32(src[i + 2]);

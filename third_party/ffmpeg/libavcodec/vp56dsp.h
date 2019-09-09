@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include <stdint.h>
 #include "avcodec.h"
 
-typedef struct VP56DSPContext {
+typedef struct VP56DSPContext
+{
     void (*edge_filter_hor)(uint8_t *yuv, int stride, int t);
     void (*edge_filter_ver)(uint8_t *yuv, int stride, int t);
 

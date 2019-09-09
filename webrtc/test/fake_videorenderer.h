@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,15 @@
 #include "webrtc/api/video/video_frame.h"
 #include "webrtc/media/base/videosinkinterface.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class FakeVideoRenderer : public rtc::VideoSinkInterface<webrtc::VideoFrame> {
- public:
-  void OnFrame(const webrtc::VideoFrame& frame) override {}
+class FakeVideoRenderer : public rtc::VideoSinkInterface<webrtc::VideoFrame>
+{
+public:
+    void OnFrame(const webrtc::VideoFrame& frame) override {}
 };
 
 }  // namespace test

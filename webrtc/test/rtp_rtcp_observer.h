@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,115 +23,138 @@
 #include "webrtc/typedefs.h"
 #include "webrtc/video_send_stream.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class PacketTransport;
 
-class RtpRtcpObserver {
- public:
-  enum Action {
-    SEND_PACKET,
-    DROP_PACKET,
-  };
+class RtpRtcpObserver
+{
+public:
+    enum Action
+    {
+        SEND_PACKET,
+        DROP_PACKET,
+    };
 
-  virtual ~RtpRtcpObserver() {}
+    virtual ~RtpRtcpObserver() {}
 
-  virtual bool Wait() { return observation_complete_.Wait(timeout_ms_); }
+    virtual bool Wait()
+    {
+        return observation_complete_.Wait(timeout_ms_);
+    }
 
-  virtual Action OnSendRtp(const uint8_t* packet, size_t length) {
-    return SEND_PACKET;
-  }
+    virtual Action OnSendRtp(const uint8_t* packet, size_t length)
+    {
+        return SEND_PACKET;
+    }
 
-  virtual Action OnSendRtcp(const uint8_t* packet, size_t length) {
-    return SEND_PACKET;
-  }
+    virtual Action OnSendRtcp(const uint8_t* packet, size_t length)
+    {
+        return SEND_PACKET;
+    }
 
-  virtual Action OnReceiveRtp(const uint8_t* packet, size_t length) {
-    return SEND_PACKET;
-  }
+    virtual Action OnReceiveRtp(const uint8_t* packet, size_t length)
+    {
+        return SEND_PACKET;
+    }
 
-  virtual Action OnReceiveRtcp(const uint8_t* packet, size_t length) {
-    return SEND_PACKET;
-  }
+    virtual Action OnReceiveRtcp(const uint8_t* packet, size_t length)
+    {
+        return SEND_PACKET;
+    }
 
- protected:
-  explicit RtpRtcpObserver(int event_timeout_ms)
-      : observation_complete_(false, false),
-        parser_(RtpHeaderParser::Create()),
-        timeout_ms_(event_timeout_ms) {
-    parser_->RegisterRtpHeaderExtension(kRtpExtensionTransmissionTimeOffset,
-                                        kTOffsetExtensionId);
-    parser_->RegisterRtpHeaderExtension(kRtpExtensionAbsoluteSendTime,
-                                        kAbsSendTimeExtensionId);
-    parser_->RegisterRtpHeaderExtension(kRtpExtensionTransportSequenceNumber,
-                                        kTransportSequenceNumberExtensionId);
-  }
+protected:
+    explicit RtpRtcpObserver(int event_timeout_ms)
+        : observation_complete_(false, false),
+          parser_(RtpHeaderParser::Create()),
+          timeout_ms_(event_timeout_ms)
+    {
+        parser_->RegisterRtpHeaderExtension(kRtpExtensionTransmissionTimeOffset,
+                                            kTOffsetExtensionId);
+        parser_->RegisterRtpHeaderExtension(kRtpExtensionAbsoluteSendTime,
+                                            kAbsSendTimeExtensionId);
+        parser_->RegisterRtpHeaderExtension(kRtpExtensionTransportSequenceNumber,
+                                            kTransportSequenceNumberExtensionId);
+    }
 
-  rtc::Event observation_complete_;
-  const std::unique_ptr<RtpHeaderParser> parser_;
+    rtc::Event observation_complete_;
+    const std::unique_ptr<RtpHeaderParser> parser_;
 
- private:
-  const int timeout_ms_;
+private:
+    const int timeout_ms_;
 };
 
-class PacketTransport : public test::DirectTransport {
- public:
-  enum TransportType { kReceiver, kSender };
+class PacketTransport : public test::DirectTransport
+{
+public:
+    enum TransportType { kReceiver, kSender };
 
-  PacketTransport(Call* send_call,
-                  RtpRtcpObserver* observer,
-                  TransportType transport_type,
-                  const FakeNetworkPipe::Config& configuration)
-      : test::DirectTransport(configuration, send_call),
-        observer_(observer),
-        transport_type_(transport_type) {}
+    PacketTransport(Call* send_call,
+                    RtpRtcpObserver* observer,
+                    TransportType transport_type,
+                    const FakeNetworkPipe::Config& configuration)
+        : test::DirectTransport(configuration, send_call),
+          observer_(observer),
+          transport_type_(transport_type) {}
 
- private:
-  bool SendRtp(const uint8_t* packet,
-               size_t length,
-               const PacketOptions& options) override {
-    EXPECT_FALSE(RtpHeaderParser::IsRtcp(packet, length));
-    RtpRtcpObserver::Action action;
+private:
+    bool SendRtp(const uint8_t* packet,
+                 size_t length,
+                 const PacketOptions& options) override
     {
-      if (transport_type_ == kSender) {
-        action = observer_->OnSendRtp(packet, length);
-      } else {
-        action = observer_->OnReceiveRtp(packet, length);
-      }
+        EXPECT_FALSE(RtpHeaderParser::IsRtcp(packet, length));
+        RtpRtcpObserver::Action action;
+        {
+            if (transport_type_ == kSender)
+            {
+                action = observer_->OnSendRtp(packet, length);
+            }
+            else
+            {
+                action = observer_->OnReceiveRtp(packet, length);
+            }
+        }
+        switch (action)
+        {
+        case RtpRtcpObserver::DROP_PACKET:
+            // Drop packet silently.
+            return true;
+        case RtpRtcpObserver::SEND_PACKET:
+            return test::DirectTransport::SendRtp(packet, length, options);
+        }
+        return true;  // Will never happen, makes compiler happy.
     }
-    switch (action) {
-      case RtpRtcpObserver::DROP_PACKET:
-        // Drop packet silently.
-        return true;
-      case RtpRtcpObserver::SEND_PACKET:
-        return test::DirectTransport::SendRtp(packet, length, options);
-    }
-    return true;  // Will never happen, makes compiler happy.
-  }
 
-  bool SendRtcp(const uint8_t* packet, size_t length) override {
-    EXPECT_TRUE(RtpHeaderParser::IsRtcp(packet, length));
-    RtpRtcpObserver::Action action;
+    bool SendRtcp(const uint8_t* packet, size_t length) override
     {
-      if (transport_type_ == kSender) {
-        action = observer_->OnSendRtcp(packet, length);
-      } else {
-        action = observer_->OnReceiveRtcp(packet, length);
-      }
+        EXPECT_TRUE(RtpHeaderParser::IsRtcp(packet, length));
+        RtpRtcpObserver::Action action;
+        {
+            if (transport_type_ == kSender)
+            {
+                action = observer_->OnSendRtcp(packet, length);
+            }
+            else
+            {
+                action = observer_->OnReceiveRtcp(packet, length);
+            }
+        }
+        switch (action)
+        {
+        case RtpRtcpObserver::DROP_PACKET:
+            // Drop packet silently.
+            return true;
+        case RtpRtcpObserver::SEND_PACKET:
+            return test::DirectTransport::SendRtcp(packet, length);
+        }
+        return true;  // Will never happen, makes compiler happy.
     }
-    switch (action) {
-      case RtpRtcpObserver::DROP_PACKET:
-        // Drop packet silently.
-        return true;
-      case RtpRtcpObserver::SEND_PACKET:
-        return test::DirectTransport::SendRtcp(packet, length);
-    }
-    return true;  // Will never happen, makes compiler happy.
-  }
 
-  RtpRtcpObserver* const observer_;
-  TransportType transport_type_;
+    RtpRtcpObserver* const observer_;
+    TransportType transport_type_;
 };
 }  // namespace test
 }  // namespace webrtc

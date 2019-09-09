@@ -1,4 +1,4 @@
-/*
+﻿/*
  * http://www.kurims.kyoto-u.ac.jp/~ooura/fft.html
  * Copyright Takuya OOURA, 1996-2001
  *
@@ -309,18 +309,25 @@ static void dstsub(int n, float *a, int nc, float *c)
 #if 0  // Not used.
 void WebRtc_cdft(int n, int isgn, float *a, int *ip, float *w)
 {
-    if (n > (ip[0] << 2)) {
+    if (n > (ip[0] << 2))
+    {
         makewt(n >> 2, ip, w);
     }
-    if (n > 4) {
-        if (isgn >= 0) {
+    if (n > 4)
+    {
+        if (isgn >= 0)
+        {
             bitrv2(n, ip + 2, a);
             cftfsub(n, a, w);
-        } else {
+        }
+        else
+        {
             bitrv2conj(n, ip + 2, a);
             cftbsub(n, a, w);
         }
-    } else if (n == 4) {
+    }
+    else if (n == 4)
+    {
         cftfsub(n, a, w);
     }
 }
@@ -333,34 +340,45 @@ void WebRtc_rdft(size_t n, int isgn, float *a, size_t *ip, float *w)
     float xi;
 
     nw = ip[0];
-    if (n > (nw << 2)) {
+    if (n > (nw << 2))
+    {
         nw = n >> 2;
         makewt(nw, ip, w);
     }
     nc = ip[1];
-    if (n > (nc << 2)) {
+    if (n > (nc << 2))
+    {
         nc = n >> 2;
         makect(nc, ip, w + nw);
     }
-    if (isgn >= 0) {
-        if (n > 4) {
+    if (isgn >= 0)
+    {
+        if (n > 4)
+        {
             bitrv2(n, ip + 2, a);
             cftfsub(n, a, w);
             rftfsub(n, a, nc, w + nw);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
         xi = a[0] - a[1];
         a[0] += a[1];
         a[1] = xi;
-    } else {
+    }
+    else
+    {
         a[1] = 0.5f * (a[0] - a[1]);
         a[0] -= a[1];
-        if (n > 4) {
+        if (n > 4)
+        {
             rftbsub(n, a, nc, w + nw);
             bitrv2(n, ip + 2, a);
             cftbsub(n, a, w);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
     }
@@ -373,43 +391,55 @@ static void ddct(int n, int isgn, float *a, int *ip, float *w)
     float xr;
 
     nw = ip[0];
-    if (n > (nw << 2)) {
+    if (n > (nw << 2))
+    {
         nw = n >> 2;
         makewt(nw, ip, w);
     }
     nc = ip[1];
-    if (n > nc) {
+    if (n > nc)
+    {
         nc = n;
         makect(nc, ip, w + nw);
     }
-    if (isgn < 0) {
+    if (isgn < 0)
+    {
         xr = a[n - 1];
-        for (j = n - 2; j >= 2; j -= 2) {
+        for (j = n - 2; j >= 2; j -= 2)
+        {
             a[j + 1] = a[j] - a[j - 1];
             a[j] += a[j - 1];
         }
         a[1] = a[0] - xr;
         a[0] += xr;
-        if (n > 4) {
+        if (n > 4)
+        {
             rftbsub(n, a, nc, w + nw);
             bitrv2(n, ip + 2, a);
             cftbsub(n, a, w);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
     }
     dctsub(n, a, nc, w + nw);
-    if (isgn >= 0) {
-        if (n > 4) {
+    if (isgn >= 0)
+    {
+        if (n > 4)
+        {
             bitrv2(n, ip + 2, a);
             cftfsub(n, a, w);
             rftfsub(n, a, nc, w + nw);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
         xr = a[0] - a[1];
         a[0] += a[1];
-        for (j = 2; j < n; j += 2) {
+        for (j = 2; j < n; j += 2)
+        {
             a[j - 1] = a[j] - a[j + 1];
             a[j] += a[j + 1];
         }
@@ -424,43 +454,55 @@ static void ddst(int n, int isgn, float *a, int *ip, float *w)
     float xr;
 
     nw = ip[0];
-    if (n > (nw << 2)) {
+    if (n > (nw << 2))
+    {
         nw = n >> 2;
         makewt(nw, ip, w);
     }
     nc = ip[1];
-    if (n > nc) {
+    if (n > nc)
+    {
         nc = n;
         makect(nc, ip, w + nw);
     }
-    if (isgn < 0) {
+    if (isgn < 0)
+    {
         xr = a[n - 1];
-        for (j = n - 2; j >= 2; j -= 2) {
+        for (j = n - 2; j >= 2; j -= 2)
+        {
             a[j + 1] = -a[j] - a[j - 1];
             a[j] -= a[j - 1];
         }
         a[1] = a[0] + xr;
         a[0] -= xr;
-        if (n > 4) {
+        if (n > 4)
+        {
             rftbsub(n, a, nc, w + nw);
             bitrv2(n, ip + 2, a);
             cftbsub(n, a, w);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
     }
     dstsub(n, a, nc, w + nw);
-    if (isgn >= 0) {
-        if (n > 4) {
+    if (isgn >= 0)
+    {
+        if (n > 4)
+        {
             bitrv2(n, ip + 2, a);
             cftfsub(n, a, w);
             rftfsub(n, a, nc, w + nw);
-        } else if (n == 4) {
+        }
+        else if (n == 4)
+        {
             cftfsub(n, a, w);
         }
         xr = a[0] - a[1];
         a[0] += a[1];
-        for (j = 2; j < n; j += 2) {
+        for (j = 2; j < n; j += 2)
+        {
             a[j - 1] = -a[j] - a[j + 1];
             a[j] -= a[j + 1];
         }
@@ -475,12 +517,14 @@ static void dfct(int n, float *a, float *t, int *ip, float *w)
     float xr, xi, yr, yi;
 
     nw = ip[0];
-    if (n > (nw << 3)) {
+    if (n > (nw << 3))
+    {
         nw = n >> 3;
         makewt(nw, ip, w);
     }
     nc = ip[1];
-    if (n > (nc << 1)) {
+    if (n > (nc << 1))
+    {
         nc = n >> 1;
         makect(nc, ip, w + nw);
     }
@@ -490,9 +534,11 @@ static void dfct(int n, float *a, float *t, int *ip, float *w)
     a[0] -= a[n];
     t[0] = xi - yi;
     t[m] = xi + yi;
-    if (n > 2) {
+    if (n > 2)
+    {
         mh = m >> 1;
-        for (j = 1; j < mh; j++) {
+        for (j = 1; j < mh; j++)
+        {
             k = m - j;
             xr = a[j] - a[n - j];
             xi = a[j] + a[n - j];
@@ -506,41 +552,51 @@ static void dfct(int n, float *a, float *t, int *ip, float *w)
         t[mh] = a[mh] + a[n - mh];
         a[mh] -= a[n - mh];
         dctsub(m, a, nc, w + nw);
-        if (m > 4) {
+        if (m > 4)
+        {
             bitrv2(m, ip + 2, a);
             cftfsub(m, a, w);
             rftfsub(m, a, nc, w + nw);
-        } else if (m == 4) {
+        }
+        else if (m == 4)
+        {
             cftfsub(m, a, w);
         }
         a[n - 1] = a[0] - a[1];
         a[1] = a[0] + a[1];
-        for (j = m - 2; j >= 2; j -= 2) {
+        for (j = m - 2; j >= 2; j -= 2)
+        {
             a[2 * j + 1] = a[j] + a[j + 1];
             a[2 * j - 1] = a[j] - a[j + 1];
         }
         l = 2;
         m = mh;
-        while (m >= 2) {
+        while (m >= 2)
+        {
             dctsub(m, t, nc, w + nw);
-            if (m > 4) {
+            if (m > 4)
+            {
                 bitrv2(m, ip + 2, t);
                 cftfsub(m, t, w);
                 rftfsub(m, t, nc, w + nw);
-            } else if (m == 4) {
+            }
+            else if (m == 4)
+            {
                 cftfsub(m, t, w);
             }
             a[n - l] = t[0] - t[1];
             a[l] = t[0] + t[1];
             k = 0;
-            for (j = 2; j < m; j += 2) {
+            for (j = 2; j < m; j += 2)
+            {
                 k += l << 2;
                 a[k - l] = t[j] - t[j + 1];
                 a[k + l] = t[j] + t[j + 1];
             }
             l <<= 1;
             mh = m >> 1;
-            for (j = 0; j < mh; j++) {
+            for (j = 0; j < mh; j++)
+            {
                 k = m - j;
                 t[j] = t[m + k] - t[m + j];
                 t[k] = t[m + k] + t[m + j];
@@ -551,7 +607,9 @@ static void dfct(int n, float *a, float *t, int *ip, float *w)
         a[l] = t[0];
         a[n] = t[2] - t[1];
         a[0] = t[2] + t[1];
-    } else {
+    }
+    else
+    {
         a[1] = a[0];
         a[2] = t[0];
         a[0] = t[1];
@@ -564,19 +622,23 @@ static void dfst(int n, float *a, float *t, int *ip, float *w)
     float xr, xi, yr, yi;
 
     nw = ip[0];
-    if (n > (nw << 3)) {
+    if (n > (nw << 3))
+    {
         nw = n >> 3;
         makewt(nw, ip, w);
     }
     nc = ip[1];
-    if (n > (nc << 1)) {
+    if (n > (nc << 1))
+    {
         nc = n >> 1;
         makect(nc, ip, w + nw);
     }
-    if (n > 2) {
+    if (n > 2)
+    {
         m = n >> 1;
         mh = m >> 1;
-        for (j = 1; j < mh; j++) {
+        for (j = 1; j < mh; j++)
+        {
             k = m - j;
             xr = a[j] + a[n - j];
             xi = a[j] - a[n - j];
@@ -591,41 +653,51 @@ static void dfst(int n, float *a, float *t, int *ip, float *w)
         a[mh] += a[n - mh];
         a[0] = a[m];
         dstsub(m, a, nc, w + nw);
-        if (m > 4) {
+        if (m > 4)
+        {
             bitrv2(m, ip + 2, a);
             cftfsub(m, a, w);
             rftfsub(m, a, nc, w + nw);
-        } else if (m == 4) {
+        }
+        else if (m == 4)
+        {
             cftfsub(m, a, w);
         }
         a[n - 1] = a[1] - a[0];
         a[1] = a[0] + a[1];
-        for (j = m - 2; j >= 2; j -= 2) {
+        for (j = m - 2; j >= 2; j -= 2)
+        {
             a[2 * j + 1] = a[j] - a[j + 1];
             a[2 * j - 1] = -a[j] - a[j + 1];
         }
         l = 2;
         m = mh;
-        while (m >= 2) {
+        while (m >= 2)
+        {
             dstsub(m, t, nc, w + nw);
-            if (m > 4) {
+            if (m > 4)
+            {
                 bitrv2(m, ip + 2, t);
                 cftfsub(m, t, w);
                 rftfsub(m, t, nc, w + nw);
-            } else if (m == 4) {
+            }
+            else if (m == 4)
+            {
                 cftfsub(m, t, w);
             }
             a[n - l] = t[1] - t[0];
             a[l] = t[0] + t[1];
             k = 0;
-            for (j = 2; j < m; j += 2) {
+            for (j = 2; j < m; j += 2)
+            {
                 k += l << 2;
                 a[k - l] = -t[j] - t[j + 1];
                 a[k + l] = t[j] - t[j + 1];
             }
             l <<= 1;
             mh = m >> 1;
-            for (j = 1; j < mh; j++) {
+            for (j = 1; j < mh; j++)
+            {
                 k = m - j;
                 t[j] = t[m + k] + t[m + j];
                 t[k] = t[m + k] - t[m + j];
@@ -652,15 +724,18 @@ static void makewt(size_t nw, size_t *ip, float *w)
 
     ip[0] = nw;
     ip[1] = 1;
-    if (nw > 2) {
+    if (nw > 2)
+    {
         nwh = nw >> 1;
         delta = atanf(1.0f) / nwh;
         w[0] = 1;
         w[1] = 0;
         w[nwh] = (float)cos(delta * nwh);
         w[nwh + 1] = w[nwh];
-        if (nwh > 2) {
-            for (j = 2; j < nwh; j += 2) {
+        if (nwh > 2)
+        {
+            for (j = 2; j < nwh; j += 2)
+            {
                 x = (float)cos(delta * j);
                 y = (float)sin(delta * j);
                 w[j] = x;
@@ -680,12 +755,14 @@ static void makect(size_t nc, size_t *ip, float *c)
     float delta;
 
     ip[1] = nc;
-    if (nc > 1) {
+    if (nc > 1)
+    {
         nch = nc >> 1;
         delta = atanf(1.0f) / nch;
         c[0] = (float)cos(delta * nch);
         c[nch] = 0.5f * c[0];
-        for (j = 1; j < nch; j++) {
+        for (j = 1; j < nch; j++)
+        {
             c[j] = 0.5f * (float)cos(delta * j);
             c[nc - j] = 0.5f * (float)sin(delta * j);
         }
@@ -704,17 +781,22 @@ static void bitrv2(size_t n, size_t *ip, float *a)
     ip[0] = 0;
     l = n;
     m = 1;
-    while ((m << 3) < l) {
+    while ((m << 3) < l)
+    {
         l >>= 1;
-        for (j = 0; j < m; j++) {
+        for (j = 0; j < m; j++)
+        {
             ip[m + j] = ip[j] + l;
         }
         m <<= 1;
     }
     m2 = 2 * m;
-    if ((m << 3) == l) {
-        for (k = 0; k < m; k++) {
-            for (j = 0; j < k; j++) {
+    if ((m << 3) == l)
+    {
+        for (k = 0; k < m; k++)
+        {
+            for (j = 0; j < k; j++)
+            {
                 j1 = 2 * j + ip[k];
                 k1 = 2 * k + ip[j];
                 xr = a[j1];
@@ -767,9 +849,13 @@ static void bitrv2(size_t n, size_t *ip, float *a)
             a[k1] = xr;
             a[k1 + 1] = xi;
         }
-    } else {
-        for (k = 1; k < m; k++) {
-            for (j = 0; j < k; j++) {
+    }
+    else
+    {
+        for (k = 1; k < m; k++)
+        {
+            for (j = 0; j < k; j++)
+            {
                 j1 = 2 * j + ip[k];
                 k1 = 2 * k + ip[j];
                 xr = a[j1];
@@ -804,17 +890,22 @@ static void bitrv2conj(int n, int *ip, float *a)
     ip[0] = 0;
     l = n;
     m = 1;
-    while ((m << 3) < l) {
+    while ((m << 3) < l)
+    {
         l >>= 1;
-        for (j = 0; j < m; j++) {
+        for (j = 0; j < m; j++)
+        {
             ip[m + j] = ip[j] + l;
         }
         m <<= 1;
     }
     m2 = 2 * m;
-    if ((m << 3) == l) {
-        for (k = 0; k < m; k++) {
-            for (j = 0; j < k; j++) {
+    if ((m << 3) == l)
+    {
+        for (k = 0; k < m; k++)
+        {
+            for (j = 0; j < k; j++)
+            {
                 j1 = 2 * j + ip[k];
                 k1 = 2 * k + ip[j];
                 xr = a[j1];
@@ -871,11 +962,15 @@ static void bitrv2conj(int n, int *ip, float *a)
             k1 += m2;
             a[k1 + 1] = -a[k1 + 1];
         }
-    } else {
+    }
+    else
+    {
         a[1] = -a[1];
         a[m2 + 1] = -a[m2 + 1];
-        for (k = 1; k < m; k++) {
-            for (j = 0; j < k; j++) {
+        for (k = 1; k < m; k++)
+        {
+            for (j = 0; j < k; j++)
+            {
                 j1 = 2 * j + ip[k];
                 k1 = 2 * k + ip[j];
                 xr = a[j1];
@@ -911,16 +1006,20 @@ static void cftfsub(size_t n, float *a, float *w)
     float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
     l = 2;
-    if (n > 8) {
+    if (n > 8)
+    {
         cft1st(n, a, w);
         l = 8;
-        while ((l << 2) < n) {
+        while ((l << 2) < n)
+        {
             cftmdl(n, l, a, w);
             l <<= 2;
         }
     }
-    if ((l << 2) == n) {
-        for (j = 0; j < l; j += 2) {
+    if ((l << 2) == n)
+    {
+        for (j = 0; j < l; j += 2)
+        {
             j1 = j + l;
             j2 = j1 + l;
             j3 = j2 + l;
@@ -941,8 +1040,11 @@ static void cftfsub(size_t n, float *a, float *w)
             a[j3] = x1r + x3i;
             a[j3 + 1] = x1i - x3r;
         }
-    } else {
-        for (j = 0; j < l; j += 2) {
+    }
+    else
+    {
+        for (j = 0; j < l; j += 2)
+        {
             j1 = j + l;
             x0r = a[j] - a[j1];
             x0i = a[j + 1] - a[j1 + 1];
@@ -961,16 +1063,20 @@ static void cftbsub(size_t n, float *a, float *w)
     float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
     l = 2;
-    if (n > 8) {
+    if (n > 8)
+    {
         cft1st(n, a, w);
         l = 8;
-        while ((l << 2) < n) {
+        while ((l << 2) < n)
+        {
             cftmdl(n, l, a, w);
             l <<= 2;
         }
     }
-    if ((l << 2) == n) {
-        for (j = 0; j < l; j += 2) {
+    if ((l << 2) == n)
+    {
+        for (j = 0; j < l; j += 2)
+        {
             j1 = j + l;
             j2 = j1 + l;
             j3 = j2 + l;
@@ -991,8 +1097,11 @@ static void cftbsub(size_t n, float *a, float *w)
             a[j3] = x1r + x3i;
             a[j3 + 1] = x1i + x3r;
         }
-    } else {
-        for (j = 0; j < l; j += 2) {
+    }
+    else
+    {
+        for (j = 0; j < l; j += 2)
+        {
             j1 = j + l;
             x0r = a[j] - a[j1];
             x0i = -a[j + 1] + a[j1 + 1];
@@ -1049,7 +1158,8 @@ static void cft1st(size_t n, float *a, float *w)
     a[14] = wk1r * (x0i - x0r);
     a[15] = wk1r * (x0i + x0r);
     k1 = 0;
-    for (j = 16; j < n; j += 16) {
+    for (j = 16; j < n; j += 16)
+    {
         k1 += 2;
         k2 = 2 * k1;
         wk2r = w[k1];
@@ -1117,7 +1227,8 @@ static void cftmdl(size_t n, size_t l, float *a, float *w)
     float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
     m = l << 2;
-    for (j = 0; j < l; j += 2) {
+    for (j = 0; j < l; j += 2)
+    {
         j1 = j + l;
         j2 = j1 + l;
         j3 = j2 + l;
@@ -1139,7 +1250,8 @@ static void cftmdl(size_t n, size_t l, float *a, float *w)
         a[j3 + 1] = x1i - x3r;
     }
     wk1r = w[2];
-    for (j = m; j < l + m; j += 2) {
+    for (j = m; j < l + m; j += 2)
+    {
         j1 = j + l;
         j2 = j1 + l;
         j3 = j2 + l;
@@ -1166,7 +1278,8 @@ static void cftmdl(size_t n, size_t l, float *a, float *w)
     }
     k1 = 0;
     m2 = 2 * m;
-    for (k = m2; k < n; k += m2) {
+    for (k = m2; k < n; k += m2)
+    {
         k1 += 2;
         k2 = 2 * k1;
         wk2r = w[k1];
@@ -1175,7 +1288,8 @@ static void cftmdl(size_t n, size_t l, float *a, float *w)
         wk1i = w[k2 + 1];
         wk3r = wk1r - 2 * wk2i * wk1i;
         wk3i = 2 * wk2i * wk1r - wk1i;
-        for (j = k; j < l + k; j += 2) {
+        for (j = k; j < l + k; j += 2)
+        {
             j1 = j + l;
             j2 = j1 + l;
             j3 = j2 + l;
@@ -1206,7 +1320,8 @@ static void cftmdl(size_t n, size_t l, float *a, float *w)
         wk1i = w[k2 + 3];
         wk3r = wk1r - 2 * wk2r * wk1i;
         wk3i = 2 * wk2r * wk1r - wk1i;
-        for (j = k + m; j < l + (k + m); j += 2) {
+        for (j = k + m; j < l + (k + m); j += 2)
+        {
             j1 = j + l;
             j2 = j1 + l;
             j3 = j2 + l;
@@ -1245,7 +1360,8 @@ static void rftfsub(size_t n, float *a, size_t nc, float *c)
     m = n >> 1;
     ks = 2 * nc / m;
     kk = 0;
-    for (j = 2; j < m; j += 2) {
+    for (j = 2; j < m; j += 2)
+    {
         k = n - j;
         kk += ks;
         wkr = 0.5f - c[nc - kk];
@@ -1271,7 +1387,8 @@ static void rftbsub(size_t n, float *a, size_t nc, float *c)
     m = n >> 1;
     ks = 2 * nc / m;
     kk = 0;
-    for (j = 2; j < m; j += 2) {
+    for (j = 2; j < m; j += 2)
+    {
         k = n - j;
         kk += ks;
         wkr = 0.5f - c[nc - kk];
@@ -1297,7 +1414,8 @@ static void dctsub(int n, float *a, int nc, float *c)
     m = n >> 1;
     ks = nc / n;
     kk = 0;
-    for (j = 1; j < m; j++) {
+    for (j = 1; j < m; j++)
+    {
         k = n - j;
         kk += ks;
         wkr = c[kk] - c[nc - kk];
@@ -1318,7 +1436,8 @@ static void dstsub(int n, float *a, int nc, float *c)
     m = n >> 1;
     ks = nc / n;
     kk = 0;
-    for (j = 1; j < m; j++) {
+    for (j = 1; j < m; j++)
+    {
         k = n - j;
         kk += ks;
         wkr = c[kk] - c[nc - kk];

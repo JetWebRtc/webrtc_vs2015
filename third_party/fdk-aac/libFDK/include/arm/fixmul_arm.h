@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -109,18 +109,18 @@ amm-info@iis.fraunhofer.de
 #if defined(__ARM_ARCH_6__) || defined(__TARGET_ARCH_7E_M)
 inline INT fixmuldiv2_DD (const INT a, const INT b)
 {
-  INT result ;
-  __asm__ ("smmul %0, %1, %2" : "=r" (result)
-                              : "r" (a), "r" (b)) ;
-  return result ;
+    INT result ;
+    __asm__ ("smmul %0, %1, %2" : "=r" (result)
+             : "r" (a), "r" (b)) ;
+    return result ;
 }
 #else
 inline INT fixmuldiv2_DD (const INT a, const INT b)
 {
-  INT discard, result ;
-  __asm__ ("smull %0, %1, %2, %3" : "=&r" (discard), "=r" (result)
-                                  : "r" (a), "r" (b)) ;
-  return result ;
+    INT discard, result ;
+    __asm__ ("smull %0, %1, %2, %3" : "=&r" (discard), "=r" (result)
+             : "r" (a), "r" (b)) ;
+    return result ;
 }
 #endif
 
@@ -128,11 +128,11 @@ inline INT fixmuldiv2_DD (const INT a, const INT b)
 #define FUNCTION_fixmuldiv2_SD
 inline INT fixmuldiv2_SD (const SHORT a, const INT b)
 {
-  INT result ;
-  __asm__ ("smulwb %0, %1, %2"
-    : "=r" (result)
-    : "r" (b), "r" (a)) ;
-  return result ;
+    INT result ;
+    __asm__ ("smulwb %0, %1, %2"
+             : "=r" (result)
+             : "r" (b), "r" (a)) ;
+    return result ;
 }
 #endif
 

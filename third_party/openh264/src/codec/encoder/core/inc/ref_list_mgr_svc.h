@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2008-2013, Cisco Systems
  *     All rights reserved.
@@ -46,14 +46,17 @@
 #include "encoder_context.h"
 #include "codec_app_def.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
-typedef enum {
+typedef enum
+{
 LTR_DIRECT_MARK = 0,
 LTR_DELAY_MARK = 1
 } LTR_MARKING_PROCESS_MODE;
 
-typedef enum {
+typedef enum
+{
 FRAME_NUM_EQUAL    = 0x01,
 FRAME_NUM_BIGGER   = 0x02,
 FRAME_NUM_SMALLER  = 0x04,
@@ -97,52 +100,56 @@ void WelsMarkPic (sWelsEncCtx* pCtx);
 void DumpRef (sWelsEncCtx* ctx);
 #endif
 
-class IWelsReferenceStrategy {
- public:
-  IWelsReferenceStrategy() {};
-  virtual ~IWelsReferenceStrategy() { };
+class IWelsReferenceStrategy
+{
+public:
+IWelsReferenceStrategy() {};
+virtual ~IWelsReferenceStrategy() { };
 
-  static IWelsReferenceStrategy* CreateReferenceStrategy (sWelsEncCtx* pCtx, const EUsageType keUsageType,
-      const bool kbLtrEnabled);
-  virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx) = 0;
-  virtual void MarkPic() = 0;
-  virtual bool UpdateRefList() = 0;
-  virtual void EndofUpdateRefList() = 0;
-  virtual void AfterBuildRefList() = 0;
+static IWelsReferenceStrategy* CreateReferenceStrategy (sWelsEncCtx* pCtx, const EUsageType keUsageType,
+        const bool kbLtrEnabled);
+virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx) = 0;
+virtual void MarkPic() = 0;
+virtual bool UpdateRefList() = 0;
+virtual void EndofUpdateRefList() = 0;
+virtual void AfterBuildRefList() = 0;
 
- protected:
-  virtual void Init (sWelsEncCtx* pCtx) = 0;
+protected:
+virtual void Init (sWelsEncCtx* pCtx) = 0;
 };
 
-class  CWelsReference_TemporalLayer : public IWelsReferenceStrategy {
- public:
-  virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
-  virtual void MarkPic();
-  virtual bool UpdateRefList();
-  virtual void EndofUpdateRefList();
-  virtual void AfterBuildRefList();
+class  CWelsReference_TemporalLayer : public IWelsReferenceStrategy
+{
+public:
+virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
+virtual void MarkPic();
+virtual bool UpdateRefList();
+virtual void EndofUpdateRefList();
+virtual void AfterBuildRefList();
 
-  void Init (sWelsEncCtx* pCtx);
- protected:
-  sWelsEncCtx* m_pEncoderCtx;
+void Init (sWelsEncCtx* pCtx);
+protected:
+sWelsEncCtx* m_pEncoderCtx;
 
 };
 
-class  CWelsReference_Screen : public CWelsReference_TemporalLayer {
- public:
-  virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
-  virtual void MarkPic();
-  virtual bool UpdateRefList();
-  virtual void EndofUpdateRefList();
-  virtual void AfterBuildRefList();
+class  CWelsReference_Screen : public CWelsReference_TemporalLayer
+{
+public:
+virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
+virtual void MarkPic();
+virtual bool UpdateRefList();
+virtual void EndofUpdateRefList();
+virtual void AfterBuildRefList();
 };
 
-class  CWelsReference_LosslessWithLtr : public CWelsReference_Screen {
- public:
-  virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
-  virtual void MarkPic();
-  virtual bool UpdateRefList();
-  virtual void EndofUpdateRefList();
+class  CWelsReference_LosslessWithLtr : public CWelsReference_Screen
+{
+public:
+virtual bool BuildRefList (const int32_t iPOC, int32_t iBestLtrRefIdx);
+virtual void MarkPic();
+virtual bool UpdateRefList();
+virtual void EndofUpdateRefList();
 };
 }
 #endif//REFERENCE_PICTURE_LIST_MANAGEMENT_SVC_H__

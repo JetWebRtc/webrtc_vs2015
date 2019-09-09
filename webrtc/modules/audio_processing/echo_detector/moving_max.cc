@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,8 +12,10 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 // Parameter for controlling how fast the estimated maximum decays after the
 // previous maximum is no longer valid. With a value of 0.99, the maximum will
@@ -22,31 +24,39 @@ constexpr float kDecayFactor = 0.99f;
 
 }  // namespace
 
-MovingMax::MovingMax(size_t window_size) : window_size_(window_size) {
-  RTC_DCHECK_GT(window_size, 0);
+MovingMax::MovingMax(size_t window_size) : window_size_(window_size)
+{
+    RTC_DCHECK_GT(window_size, 0);
 }
 
 MovingMax::~MovingMax() {}
 
-void MovingMax::Update(float value) {
-  if (counter_ >= window_size_ - 1) {
-    max_value_ *= kDecayFactor;
-  } else {
-    ++counter_;
-  }
-  if (value > max_value_) {
-    max_value_ = value;
+void MovingMax::Update(float value)
+{
+    if (counter_ >= window_size_ - 1)
+    {
+        max_value_ *= kDecayFactor;
+    }
+    else
+    {
+        ++counter_;
+    }
+    if (value > max_value_)
+    {
+        max_value_ = value;
+        counter_ = 0;
+    }
+}
+
+float MovingMax::max() const
+{
+    return max_value_;
+}
+
+void MovingMax::Clear()
+{
+    max_value_ = 0.f;
     counter_ = 0;
-  }
-}
-
-float MovingMax::max() const {
-  return max_value_;
-}
-
-void MovingMax::Clear() {
-  max_value_ = 0.f;
-  counter_ = 0;
 }
 
 }  // namespace webrtc

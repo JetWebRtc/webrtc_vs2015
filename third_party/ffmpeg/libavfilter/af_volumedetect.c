@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     /**
      * Number of samples at each PCM value.
      * histogram[0x8000 + i] is the number of samples at value i.
@@ -35,7 +36,8 @@ typedef struct {
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_S16,
         AV_SAMPLE_FMT_S16P,
         AV_SAMPLE_FMT_NONE
@@ -58,11 +60,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *samples)
     int plane, i;
     int16_t *pcm;
 
-    if (!av_sample_fmt_is_planar(samples->format)) {
+    if (!av_sample_fmt_is_planar(samples->format))
+    {
         nb_samples *= nb_channels;
         nb_planes = 1;
     }
-    for (plane = 0; plane < nb_planes; plane++) {
+    for (plane = 0; plane < nb_planes; plane++)
+    {
         pcm = (int16_t *)samples->extended_data[plane];
         for (i = 0; i < nb_samples; i++)
             vd->histogram[pcm[i] + 0x8000]++;
@@ -99,7 +103,8 @@ static void print_stats(AVFilterContext *ctx)
        The total number of samples must be recomputed to avoid rounding
        errors. */
     shift = av_log2(nb_samples >> 33);
-    for (i = 0; i < 0x10000; i++) {
+    for (i = 0; i < 0x10000; i++)
+    {
         nb_samples_shift += vd->histogram[i] >> shift;
         power += (i - 0x8000) * (i - 0x8000) * (vd->histogram[i] >> shift);
     }
@@ -111,14 +116,15 @@ static void print_stats(AVFilterContext *ctx)
 
     max_volume = 0x8000;
     while (max_volume > 0 && !vd->histogram[0x8000 + max_volume] &&
-                             !vd->histogram[0x8000 - max_volume])
+            !vd->histogram[0x8000 - max_volume])
         max_volume--;
     av_log(ctx, AV_LOG_INFO, "max_volume: %.1f dB\n", -logdb(max_volume * max_volume));
 
     for (i = 0; i < 0x10000; i++)
         histdb[(int)logdb((i - 0x8000) * (i - 0x8000))] += vd->histogram[i];
     for (i = 0; i <= MAX_DB && !histdb[i]; i++);
-    for (; i <= MAX_DB && sum < nb_samples / 1000; i++) {
+    for (; i <= MAX_DB && sum < nb_samples / 1000; i++)
+    {
         av_log(ctx, AV_LOG_INFO, "histogram_%ddb: %"PRId64"\n", i, histdb[i]);
         sum += histdb[i];
     }
@@ -129,7 +135,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     print_stats(ctx);
 }
 
-static const AVFilterPad volumedetect_inputs[] = {
+static const AVFilterPad volumedetect_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -138,7 +145,8 @@ static const AVFilterPad volumedetect_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad volumedetect_outputs[] = {
+static const AVFilterPad volumedetect_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -146,7 +154,8 @@ static const AVFilterPad volumedetect_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_volumedetect = {
+AVFilter ff_af_volumedetect =
+{
     .name          = "volumedetect",
     .description   = NULL_IF_CONFIG_SMALL("Detect audio volume."),
     .priv_size     = sizeof(VolDetectContext),

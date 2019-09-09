@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP MPEG2TS depacketizer
  * Copyright (c) 2003 Fabrice Bellard
  *
@@ -23,7 +23,8 @@
 #include "mpegts.h"
 #include "rtpdec_formats.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     struct MpegTSContext *ts;
     int read_buf_index;
     int read_buf_size;
@@ -60,7 +61,8 @@ static int mpegts_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     // different ranges.
     *timestamp = RTP_NOTS_VALUE;
 
-    if (!buf) {
+    if (!buf)
+    {
         if (data->read_buf_index >= data->read_buf_size)
             return AVERROR(EAGAIN);
         ret = avpriv_mpegts_parse_packet(data->ts, pkt, data->buf + data->read_buf_index,
@@ -80,7 +82,8 @@ static int mpegts_handle_packet(AVFormatContext *ctx, PayloadContext *data,
      * AVERROR(EAGAIN) for all errors */
     if (ret < 0)
         return AVERROR(EAGAIN);
-    if (ret < len) {
+    if (ret < len)
+    {
         data->read_buf_size = FFMIN(len - ret, sizeof(data->buf));
         memcpy(data->buf, buf + ret, data->read_buf_size);
         data->read_buf_index = 0;
@@ -89,7 +92,8 @@ static int mpegts_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_mpegts_dynamic_handler = {
+RTPDynamicProtocolHandler ff_mpegts_dynamic_handler =
+{
     .codec_type        = AVMEDIA_TYPE_DATA,
     .priv_data_size    = sizeof(PayloadContext),
     .parse_packet      = mpegts_handle_packet,

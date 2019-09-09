@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,31 +13,34 @@
 
 #include "webrtc/base/thread.h"
 
-namespace cricket {
+namespace cricket
+{
 class ChannelManager;
 struct MediaConfig;
 }  // namespace cricket
 
-namespace webrtc {
+namespace webrtc
+{
 class Call;
 class VoiceEngine;
 class RtcEventLog;
 
 // The MediaController currently owns shared state between media channels, but
 // in the future will create and own RtpSenders and RtpReceivers.
-class MediaControllerInterface {
- public:
-  static MediaControllerInterface* Create(
-      const cricket::MediaConfig& config,
-      rtc::Thread* worker_thread,
-      cricket::ChannelManager* channel_manager,
-      webrtc::RtcEventLog* event_log);
+class MediaControllerInterface
+{
+public:
+    static MediaControllerInterface* Create(
+        const cricket::MediaConfig& config,
+        rtc::Thread* worker_thread,
+        cricket::ChannelManager* channel_manager,
+        webrtc::RtcEventLog* event_log);
 
-  virtual ~MediaControllerInterface() {}
-  virtual void Close() = 0;
-  virtual webrtc::Call* call_w() = 0;
-  virtual cricket::ChannelManager* channel_manager() const = 0;
-  virtual const cricket::MediaConfig& config() const = 0;
+    virtual ~MediaControllerInterface() {}
+    virtual void Close() = 0;
+    virtual webrtc::Call* call_w() = 0;
+    virtual cricket::ChannelManager* channel_manager() const = 0;
+    virtual const cricket::MediaConfig& config() const = 0;
 };
 }  // namespace webrtc
 

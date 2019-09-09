@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Kevin Wheatley <kevin.j.wheatley@gmail.com>
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/base/thread_checker.h"
 
-namespace rtc {
+namespace rtc
+{
 
 class TaskQueue;
 // Real implementation of SequencedTaskChecker, for use in debug mode, or
@@ -21,24 +22,25 @@ class TaskQueue;
 //
 // Note: You should almost always use the SequencedTaskChecker class to get the
 // right version for your build configuration.
-class SequencedTaskCheckerImpl {
- public:
-  SequencedTaskCheckerImpl();
-  ~SequencedTaskCheckerImpl();
+class SequencedTaskCheckerImpl
+{
+public:
+    SequencedTaskCheckerImpl();
+    ~SequencedTaskCheckerImpl();
 
-  bool CalledSequentially() const;
+    bool CalledSequentially() const;
 
-  // Changes the task queue or thread that is checked for in IsCurrent.  This
-  // may be useful when an object may be created on one task queue / thread and
-  // then used exclusively on another thread.
-  void Detach();
+    // Changes the task queue or thread that is checked for in IsCurrent.  This
+    // may be useful when an object may be created on one task queue / thread and
+    // then used exclusively on another thread.
+    void Detach();
 
- private:
-  typedef const void* QueueId;
-  CriticalSection lock_;
-  ThreadChecker thread_checker_;
-  mutable bool attached_;
-  mutable QueueId valid_queue_;
+private:
+    typedef const void* QueueId;
+    CriticalSection lock_;
+    ThreadChecker thread_checker_;
+    mutable bool attached_;
+    mutable QueueId valid_queue_;
 };
 
 }  // namespace rtc

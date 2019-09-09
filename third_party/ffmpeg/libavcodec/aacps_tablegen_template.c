@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a header file for hardcoded Parametric Stereo tables
  *
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
@@ -43,7 +43,8 @@ void ARRAY_RENAME(3d_array) (const void *p, int b, int c, int d)
 {
     int i;
     const INT32FLOAT *f = p;
-    for (i = 0; i < b; i++) {
+    for (i = 0; i < b; i++)
+    {
         printf("{\n");
         ARRAY_URENAME(2d_array)(f, c, d);
         printf("},\n");
@@ -55,7 +56,8 @@ void ARRAY_RENAME(4d_array) (const void *p, int a, int b, int c, int d)
 {
     int i;
     const INT32FLOAT *f = p;
-    for (i = 0; i < a; i++) {
+    for (i = 0; i < a; i++)
+    {
         printf("{\n");
         ARRAY_RENAME(3d_array)(f, b, c, d);
         printf("},\n");

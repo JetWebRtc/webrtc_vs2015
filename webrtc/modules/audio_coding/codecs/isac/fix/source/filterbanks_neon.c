@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,48 +24,82 @@ void WebRtcIsacfix_AllpassFilter2FixDec16Neon(
     const int16_t* factor_ch2,  // Scaling factor for channel 2, in Q15
     const int length,  // Length of the data buffers
     int32_t* filter_state_ch1,  // Filter state for channel 1, in Q16
-    int32_t* filter_state_ch2) {  // Filter state for channel 2, in Q16
-  RTC_DCHECK_EQ(0, length % 2);
-  int n = 0;
-  int16x4_t factorv;
-  int16x4_t datav;
-  int32x4_t statev;
+    int32_t* filter_state_ch2)    // Filter state for channel 2, in Q16
+{
+    RTC_DCHECK_EQ(0, length % 2);
+    int n = 0;
+    int16x4_t factorv;
+    int16x4_t datav;
+    int32x4_t statev;
 
-  // Load factor_ch1 and factor_ch2.
-  factorv = vld1_dup_s16(factor_ch1);
-  factorv = vld1_lane_s16(factor_ch1 + 1, factorv, 1);
-  factorv = vld1_lane_s16(factor_ch2, factorv, 2);
-  factorv = vld1_lane_s16(factor_ch2 + 1, factorv, 3);
+    // Load factor_ch1 and factor_ch2.
+    factorv = vld1_dup_s16(factor_ch1);
+    factorv = vld1_lane_s16(factor_ch1 + 1, factorv, 1);
+    factorv = vld1_lane_s16(factor_ch2, factorv, 2);
+    factorv = vld1_lane_s16(factor_ch2 + 1, factorv, 3);
 
-  // Load filter_state_ch1[0] and filter_state_ch2[0].
-  statev = vld1q_dup_s32(filter_state_ch1);
-  statev = vld1q_lane_s32(filter_state_ch2, statev, 2);
+    // Load filter_state_ch1[0] and filter_state_ch2[0].
+    statev = vld1q_dup_s32(filter_state_ch1);
+    statev = vld1q_lane_s32(filter_state_ch2, statev, 2);
 
-  // Loop unrolling preprocessing.
-  int32x4_t a;
-  int16x4_t tmp1, tmp2;
+    // Loop unrolling preprocessing.
+    int32x4_t a;
+    int16x4_t tmp1, tmp2;
 
-  // Load data_ch1[0] and data_ch2[0].
-  datav = vld1_dup_s16(data_ch1);
-  datav = vld1_lane_s16(data_ch2, datav, 2);
+    // Load data_ch1[0] and data_ch2[0].
+    datav = vld1_dup_s16(data_ch1);
+    datav = vld1_lane_s16(data_ch2, datav, 2);
 
-  a = vqdmlal_s16(statev, datav, factorv);
-  tmp1 = vshrn_n_s32(a, 16);
+    a = vqdmlal_s16(statev, datav, factorv);
+    tmp1 = vshrn_n_s32(a, 16);
 
-  // Update filter_state_ch1[0] and filter_state_ch2[0].
-  statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp1, factorv);
+    // Update filter_state_ch1[0] and filter_state_ch2[0].
+    statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp1, factorv);
 
-  // Load filter_state_ch1[1] and filter_state_ch2[1].
-  statev = vld1q_lane_s32(filter_state_ch1 + 1, statev, 1);
-  statev = vld1q_lane_s32(filter_state_ch2 + 1, statev, 3);
+    // Load filter_state_ch1[1] and filter_state_ch2[1].
+    statev = vld1q_lane_s32(filter_state_ch1 + 1, statev, 1);
+    statev = vld1q_lane_s32(filter_state_ch2 + 1, statev, 3);
 
-  // Load data_ch1[1] and data_ch2[1].
-  tmp1 = vld1_lane_s16(data_ch1 + 1, tmp1, 1);
-  tmp1 = vld1_lane_s16(data_ch2 + 1, tmp1, 3);
-  datav = vrev32_s16(tmp1);
+    // Load data_ch1[1] and data_ch2[1].
+    tmp1 = vld1_lane_s16(data_ch1 + 1, tmp1, 1);
+    tmp1 = vld1_lane_s16(data_ch2 + 1, tmp1, 3);
+    datav = vrev32_s16(tmp1);
 
-  // Loop unrolling processing.
-  for (n = 0; n < length - 2; n += 2) {
+    // Loop unrolling processing.
+    for (n = 0; n < length - 2; n += 2)
+    {
+        a = vqdmlal_s16(statev, datav, factorv);
+        tmp1 = vshrn_n_s32(a, 16);
+        // Store data_ch1[n] and data_ch2[n].
+        vst1_lane_s16(data_ch1 + n, tmp1, 1);
+        vst1_lane_s16(data_ch2 + n, tmp1, 3);
+
+        // Update filter_state_ch1[0], filter_state_ch1[1]
+        // and filter_state_ch2[0], filter_state_ch2[1].
+        statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp1, factorv);
+
+        // Load data_ch1[n + 2] and data_ch2[n + 2].
+        tmp1 = vld1_lane_s16(data_ch1 + n + 2, tmp1, 1);
+        tmp1 = vld1_lane_s16(data_ch2 + n + 2, tmp1, 3);
+        datav = vrev32_s16(tmp1);
+
+        a = vqdmlal_s16(statev, datav, factorv);
+        tmp2 = vshrn_n_s32(a, 16);
+        // Store data_ch1[n + 1] and data_ch2[n + 1].
+        vst1_lane_s16(data_ch1 + n + 1, tmp2, 1);
+        vst1_lane_s16(data_ch2 + n + 1, tmp2, 3);
+
+        // Update filter_state_ch1[0], filter_state_ch1[1]
+        // and filter_state_ch2[0], filter_state_ch2[1].
+        statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp2, factorv);
+
+        // Load data_ch1[n + 3] and data_ch2[n + 3].
+        tmp2 = vld1_lane_s16(data_ch1 + n + 3, tmp2, 1);
+        tmp2 = vld1_lane_s16(data_ch2 + n + 3, tmp2, 3);
+        datav = vrev32_s16(tmp2);
+    }
+
+    // Loop unrolling post-processing.
     a = vqdmlal_s16(statev, datav, factorv);
     tmp1 = vshrn_n_s32(a, 16);
     // Store data_ch1[n] and data_ch2[n].
@@ -75,54 +109,22 @@ void WebRtcIsacfix_AllpassFilter2FixDec16Neon(
     // Update filter_state_ch1[0], filter_state_ch1[1]
     // and filter_state_ch2[0], filter_state_ch2[1].
     statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp1, factorv);
+    // Store filter_state_ch1[0] and filter_state_ch2[0].
+    vst1q_lane_s32(filter_state_ch1, statev, 0);
+    vst1q_lane_s32(filter_state_ch2, statev, 2);
 
-    // Load data_ch1[n + 2] and data_ch2[n + 2].
-    tmp1 = vld1_lane_s16(data_ch1 + n + 2, tmp1, 1);
-    tmp1 = vld1_lane_s16(data_ch2 + n + 2, tmp1, 3);
     datav = vrev32_s16(tmp1);
-
     a = vqdmlal_s16(statev, datav, factorv);
     tmp2 = vshrn_n_s32(a, 16);
     // Store data_ch1[n + 1] and data_ch2[n + 1].
     vst1_lane_s16(data_ch1 + n + 1, tmp2, 1);
     vst1_lane_s16(data_ch2 + n + 1, tmp2, 3);
 
-    // Update filter_state_ch1[0], filter_state_ch1[1]
-    // and filter_state_ch2[0], filter_state_ch2[1].
+    // Update filter_state_ch1[1] and filter_state_ch2[1].
     statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp2, factorv);
-
-    // Load data_ch1[n + 3] and data_ch2[n + 3].
-    tmp2 = vld1_lane_s16(data_ch1 + n + 3, tmp2, 1);
-    tmp2 = vld1_lane_s16(data_ch2 + n + 3, tmp2, 3);
-    datav = vrev32_s16(tmp2);
-  }
-
-  // Loop unrolling post-processing.
-  a = vqdmlal_s16(statev, datav, factorv);
-  tmp1 = vshrn_n_s32(a, 16);
-  // Store data_ch1[n] and data_ch2[n].
-  vst1_lane_s16(data_ch1 + n, tmp1, 1);
-  vst1_lane_s16(data_ch2 + n, tmp1, 3);
-
-  // Update filter_state_ch1[0], filter_state_ch1[1]
-  // and filter_state_ch2[0], filter_state_ch2[1].
-  statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp1, factorv);
-  // Store filter_state_ch1[0] and filter_state_ch2[0].
-  vst1q_lane_s32(filter_state_ch1, statev, 0);
-  vst1q_lane_s32(filter_state_ch2, statev, 2);
-
-  datav = vrev32_s16(tmp1);
-  a = vqdmlal_s16(statev, datav, factorv);
-  tmp2 = vshrn_n_s32(a, 16);
-  // Store data_ch1[n + 1] and data_ch2[n + 1].
-  vst1_lane_s16(data_ch1 + n + 1, tmp2, 1);
-  vst1_lane_s16(data_ch2 + n + 1, tmp2, 3);
-
-  // Update filter_state_ch1[1] and filter_state_ch2[1].
-  statev = vqdmlsl_s16(vshll_n_s16(datav, 16), tmp2, factorv);
-  // Store filter_state_ch1[1] and filter_state_ch2[1].
-  vst1q_lane_s32(filter_state_ch1 + 1, statev, 1);
-  vst1q_lane_s32(filter_state_ch2 + 1, statev, 3);
+    // Store filter_state_ch1[1] and filter_state_ch2[1].
+    vst1q_lane_s32(filter_state_ch1 + 1, statev, 1);
+    vst1q_lane_s32(filter_state_ch2 + 1, statev, 3);
 }
 
 // This function is the prototype for above neon optimized function.

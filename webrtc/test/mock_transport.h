@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,15 +14,17 @@
 #include "webrtc/api/call/transport.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockTransport : public Transport {
- public:
-  MOCK_METHOD3(SendRtp,
-               bool(const uint8_t* data,
-                    size_t len,
-                    const PacketOptions& options));
-  MOCK_METHOD2(SendRtcp, bool(const uint8_t* data, size_t len));
+class MockTransport : public Transport
+{
+public:
+    MOCK_METHOD3(SendRtp,
+                 bool(const uint8_t* data,
+                      size_t len,
+                      const PacketOptions& options));
+    MOCK_METHOD2(SendRtcp, bool(const uint8_t* data, size_t len));
 };
 }  // namespace webrtc
 #endif  // WEBRTC_TEST_MOCK_TRANSPORT_H_

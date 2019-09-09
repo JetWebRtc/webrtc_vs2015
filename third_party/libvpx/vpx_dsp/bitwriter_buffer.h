@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,9 +17,10 @@
 extern "C" {
 #endif
 
-struct vpx_write_bit_buffer {
-  uint8_t *bit_buffer;
-  size_t bit_offset;
+struct vpx_write_bit_buffer
+{
+    uint8_t *bit_buffer;
+    size_t bit_offset;
 };
 
 size_t vpx_wb_bytes_written(const struct vpx_write_bit_buffer *wb);

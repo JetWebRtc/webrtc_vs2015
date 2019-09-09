@@ -1,4 +1,4 @@
-/* crypto/md4/md4.h */
+﻿/* crypto/md4/md4.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -97,7 +97,8 @@ extern "C" {
 # define MD4_LBLOCK      (MD4_CBLOCK/4)
 # define MD4_DIGEST_LENGTH 16
 
-typedef struct MD4state_st {
+typedef struct MD4state_st
+{
     MD4_LONG A, B, C, D;
     MD4_LONG Nl, Nh;
     MD4_LONG data[MD4_LBLOCK];

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Andrey Utkin
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -33,7 +33,8 @@
 #include "internal.h"
 #include "formats.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int nb_out_samples;  ///< how many samples to output
     AVAudioFifo *fifo;   ///< samples are queued here
@@ -44,7 +45,8 @@ typedef struct {
 #define OFFSET(x) offsetof(ASNSContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption asetnsamples_options[] = {
+static const AVOption asetnsamples_options[] =
+{
     { "nb_out_samples", "set the number of per-frame output samples", OFFSET(nb_out_samples), AV_OPT_TYPE_INT, {.i64=1024}, 1, INT_MAX, FLAGS },
     { "n",              "set the number of per-frame output samples", OFFSET(nb_out_samples), AV_OPT_TYPE_INT, {.i64=1024}, 1, INT_MAX, FLAGS },
     { "pad", "pad last frame with zeros", OFFSET(pad), AV_OPT_TYPE_INT, {.i64=1}, 0, 1, FLAGS },
@@ -88,10 +90,13 @@ static int push_samples(AVFilterLink *outlink)
     AVFrame *outsamples = NULL;
     int ret, nb_out_samples, nb_pad_samples;
 
-    if (asns->pad) {
+    if (asns->pad)
+    {
         nb_out_samples = av_audio_fifo_size(asns->fifo) ? asns->nb_out_samples : 0;
         nb_pad_samples = nb_out_samples - FFMIN(nb_out_samples, av_audio_fifo_size(asns->fifo));
-    } else {
+    }
+    else
+    {
         nb_out_samples = FFMIN(asns->nb_out_samples, av_audio_fifo_size(asns->fifo));
         nb_pad_samples = 0;
     }
@@ -116,7 +121,10 @@ static int push_samples(AVFilterLink *outlink)
     outsamples->pts = asns->next_out_pts;
 
     if (asns->next_out_pts != AV_NOPTS_VALUE)
-        asns->next_out_pts += av_rescale_q(nb_out_samples, (AVRational){1, outlink->sample_rate}, outlink->time_base);
+        asns->next_out_pts += av_rescale_q(nb_out_samples, (AVRational)
+    {
+        1, outlink->sample_rate
+    }, outlink->time_base);
 
     ret = ff_filter_frame(outlink, outsamples);
     if (ret < 0)
@@ -132,10 +140,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     int ret;
     int nb_samples = insamples->nb_samples;
 
-    if (av_audio_fifo_space(asns->fifo) < nb_samples) {
+    if (av_audio_fifo_space(asns->fifo) < nb_samples)
+    {
         av_log(ctx, AV_LOG_DEBUG, "No space for %d samples, stretching audio fifo\n", nb_samples);
         ret = av_audio_fifo_realloc(asns->fifo, av_audio_fifo_size(asns->fifo) + nb_samples);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Stretching audio fifo failed, discarded %d samples\n", nb_samples);
             return -1;
@@ -157,7 +167,8 @@ static int request_frame(AVFilterLink *outlink)
     int ret;
 
     ret = ff_request_frame(inlink);
-    if (ret == AVERROR_EOF) {
+    if (ret == AVERROR_EOF)
+    {
         ret = push_samples(outlink);
         return ret < 0 ? ret : ret > 0 ? 0 : AVERROR_EOF;
     }
@@ -165,7 +176,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad asetnsamples_inputs[] = {
+static const AVFilterPad asetnsamples_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -174,7 +186,8 @@ static const AVFilterPad asetnsamples_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad asetnsamples_outputs[] = {
+static const AVFilterPad asetnsamples_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -184,7 +197,8 @@ static const AVFilterPad asetnsamples_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_asetnsamples = {
+AVFilter ff_af_asetnsamples =
+{
     .name        = "asetnsamples",
     .description = NULL_IF_CONFIG_SMALL("Set the number of samples for each output audio frames."),
     .priv_size   = sizeof(ASNSContext),

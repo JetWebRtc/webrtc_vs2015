@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP H.263 Depacketizer, RFC 4629
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -32,7 +32,8 @@ int ff_h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     uint16_t header;
     int startcode, vrc, picture_header;
 
-    if (len < 2) {
+    if (len < 2)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short H.263 RTP packet\n");
         return AVERROR_INVALIDDATA;
     }
@@ -57,30 +58,35 @@ int ff_h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     buf += 2;
     len -= 2;
 
-    if (vrc) {
+    if (vrc)
+    {
         /* Skip VRC header if present, not used at the moment. */
         buf += 1;
         len -= 1;
     }
-    if (picture_header) {
+    if (picture_header)
+    {
         /* Skip extra picture header if present, not used at the moment. */
         buf += picture_header;
         len -= picture_header;
     }
 
-    if (len < 0) {
+    if (len < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short H.263 RTP packet\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (av_new_packet(pkt, len + startcode)) {
+    if (av_new_packet(pkt, len + startcode))
+    {
         av_log(ctx, AV_LOG_ERROR, "Out of memory\n");
         return AVERROR(ENOMEM);
     }
     pkt->stream_index = st->index;
     ptr = pkt->data;
 
-    if (startcode) {
+    if (startcode)
+    {
         *ptr++ = 0;
         *ptr++ = 0;
     }
@@ -89,7 +95,8 @@ int ff_h263_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_h263_1998_dynamic_handler = {
+RTPDynamicProtocolHandler ff_h263_1998_dynamic_handler =
+{
     .enc_name         = "H263-1998",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_H263,
@@ -97,7 +104,8 @@ RTPDynamicProtocolHandler ff_h263_1998_dynamic_handler = {
     .parse_packet     = ff_h263_handle_packet,
 };
 
-RTPDynamicProtocolHandler ff_h263_2000_dynamic_handler = {
+RTPDynamicProtocolHandler ff_h263_2000_dynamic_handler =
+{
     .enc_name         = "H263-2000",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_H263,

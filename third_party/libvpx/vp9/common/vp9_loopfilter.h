@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,23 +29,26 @@ extern "C" {
 #define MAX_REF_LF_DELTAS 4
 #define MAX_MODE_LF_DELTAS 2
 
-enum lf_path {
-  LF_PATH_420,
-  LF_PATH_444,
-  LF_PATH_SLOW,
+enum lf_path
+{
+    LF_PATH_420,
+    LF_PATH_444,
+    LF_PATH_SLOW,
 };
 
 // Need to align this structure so when it is declared and
 // passed it can be loaded into vector registers.
-typedef struct {
-  DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, mblim[SIMD_WIDTH]);
-  DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, lim[SIMD_WIDTH]);
-  DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, hev_thr[SIMD_WIDTH]);
+typedef struct
+{
+    DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, mblim[SIMD_WIDTH]);
+    DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, lim[SIMD_WIDTH]);
+    DECLARE_ALIGNED(SIMD_WIDTH, uint8_t, hev_thr[SIMD_WIDTH]);
 } loop_filter_thresh;
 
-typedef struct {
-  loop_filter_thresh lfthr[MAX_LOOP_FILTER + 1];
-  uint8_t lvl[MAX_SEGMENTS][MAX_REF_FRAMES][MAX_MODE_LF_DELTAS];
+typedef struct
+{
+    loop_filter_thresh lfthr[MAX_LOOP_FILTER + 1];
+    uint8_t lvl[MAX_SEGMENTS][MAX_REF_FRAMES][MAX_MODE_LF_DELTAS];
 } loop_filter_info_n;
 
 // This structure holds bit masks for all 8x8 blocks in a 64x64 region.
@@ -57,36 +60,38 @@ typedef struct {
 // represents.
 // Since each transform is accompanied by a potentially different type of
 // loop filter there is a different entry in the array for each transform size.
-typedef struct {
-  uint64_t left_y[TX_SIZES];
-  uint64_t above_y[TX_SIZES];
-  uint64_t int_4x4_y;
-  uint16_t left_uv[TX_SIZES];
-  uint16_t above_uv[TX_SIZES];
-  uint16_t int_4x4_uv;
-  uint8_t lfl_y[64];
+typedef struct
+{
+    uint64_t left_y[TX_SIZES];
+    uint64_t above_y[TX_SIZES];
+    uint64_t int_4x4_y;
+    uint16_t left_uv[TX_SIZES];
+    uint16_t above_uv[TX_SIZES];
+    uint16_t int_4x4_uv;
+    uint8_t lfl_y[64];
 } LOOP_FILTER_MASK;
 
-struct loopfilter {
-  int filter_level;
-  int last_filt_level;
+struct loopfilter
+{
+    int filter_level;
+    int last_filt_level;
 
-  int sharpness_level;
-  int last_sharpness_level;
+    int sharpness_level;
+    int last_sharpness_level;
 
-  uint8_t mode_ref_delta_enabled;
-  uint8_t mode_ref_delta_update;
+    uint8_t mode_ref_delta_enabled;
+    uint8_t mode_ref_delta_update;
 
-  // 0 = Intra, Last, GF, ARF
-  signed char ref_deltas[MAX_REF_LF_DELTAS];
-  signed char last_ref_deltas[MAX_REF_LF_DELTAS];
+    // 0 = Intra, Last, GF, ARF
+    signed char ref_deltas[MAX_REF_LF_DELTAS];
+    signed char last_ref_deltas[MAX_REF_LF_DELTAS];
 
-  // 0 = ZERO_MV, MV
-  signed char mode_deltas[MAX_MODE_LF_DELTAS];
-  signed char last_mode_deltas[MAX_MODE_LF_DELTAS];
+    // 0 = ZERO_MV, MV
+    signed char mode_deltas[MAX_MODE_LF_DELTAS];
+    signed char last_mode_deltas[MAX_MODE_LF_DELTAS];
 
-  LOOP_FILTER_MASK *lfm;
-  int lfm_stride;
+    LOOP_FILTER_MASK *lfm;
+    int lfm_stride;
 };
 
 /* assorted loopfilter functions which get used elsewhere */
@@ -125,8 +130,9 @@ void vp9_loop_filter_frame(YV12_BUFFER_CONFIG *frame, struct VP9Common *cm,
 
 // Get the superblock lfm for a given mi_row, mi_col.
 static INLINE LOOP_FILTER_MASK *get_lfm(const struct loopfilter *lf,
-                                        const int mi_row, const int mi_col) {
-  return &lf->lfm[(mi_col >> 3) + ((mi_row >> 3) * lf->lfm_stride)];
+                                        const int mi_row, const int mi_col)
+{
+    return &lf->lfm[(mi_col >> 3) + ((mi_row >> 3) * lf->lfm_stride)];
 }
 
 void vp9_build_mask(struct VP9Common *cm, const MODE_INFO *mi, int mi_row,
@@ -137,14 +143,15 @@ void vp9_build_mask_frame(struct VP9Common *cm, int frame_filter_level,
                           int partial_frame);
 void vp9_reset_lfm(struct VP9Common *const cm);
 
-typedef struct LoopFilterWorkerData {
-  YV12_BUFFER_CONFIG *frame_buffer;
-  struct VP9Common *cm;
-  struct macroblockd_plane planes[MAX_MB_PLANE];
+typedef struct LoopFilterWorkerData
+{
+    YV12_BUFFER_CONFIG *frame_buffer;
+    struct VP9Common *cm;
+    struct macroblockd_plane planes[MAX_MB_PLANE];
 
-  int start;
-  int stop;
-  int y_only;
+    int start;
+    int stop;
+    int y_only;
 } LFWorkerData;
 
 void vp9_loop_filter_data_reset(

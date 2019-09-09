@@ -1,4 +1,4 @@
-/*
+﻿/*
  * YUV4MPEG common definitions
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,8 +42,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef OVERRIDE_silk_warped_autocorrelation_FIX
 /* Autocorrelations for a warped frequency axis */
 void silk_warped_autocorrelation_FIX(
-          opus_int32                *corr,                                  /* O    Result [order + 1]                                                          */
-          opus_int                  *scale,                                 /* O    Scaling of the correlation vector                                           */
+    opus_int32                *corr,                                  /* O    Result [order + 1]                                                          */
+    opus_int                  *scale,                                 /* O    Scaling of the correlation vector                                           */
     const opus_int16                *input,                                 /* I    Input data to correlate                                                     */
     const opus_int                  warping_Q16,                            /* I    Warping coefficient                                                         */
     const opus_int                  length,                                 /* I    Length of input                                                             */
@@ -60,10 +60,12 @@ void silk_warped_autocorrelation_FIX(
     silk_assert( 2 * QS - QC >= 0 );
 
     /* Loop over samples */
-    for( n = 0; n < length; n++ ) {
+    for( n = 0; n < length; n++ )
+    {
         tmp1_QS = silk_LSHIFT32( (opus_int32)input[ n ], QS );
         /* Loop over allpass sections */
-        for( i = 0; i < order; i += 2 ) {
+        for( i = 0; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2_QS = silk_SMLAWB( state_QS[ i ], state_QS[ i + 1 ] - tmp1_QS, warping_Q16 );
             state_QS[ i ]  = tmp1_QS;
@@ -81,12 +83,17 @@ void silk_warped_autocorrelation_FIX(
     lsh = silk_LIMIT( lsh, -12 - QC, 30 - QC );
     *scale = -( QC + lsh );
     silk_assert( *scale >= -30 && *scale <= 12 );
-    if( lsh >= 0 ) {
-        for( i = 0; i < order + 1; i++ ) {
+    if( lsh >= 0 )
+    {
+        for( i = 0; i < order + 1; i++ )
+        {
             corr[ i ] = (opus_int32)silk_CHECK_FIT32( silk_LSHIFT64( corr_QC[ i ], lsh ) );
         }
-    } else {
-        for( i = 0; i < order + 1; i++ ) {
+    }
+    else
+    {
+        for( i = 0; i < order + 1; i++ )
+        {
             corr[ i ] = (opus_int32)silk_CHECK_FIT32( silk_RSHIFT64( corr_QC[ i ], -lsh ) );
         }
     }

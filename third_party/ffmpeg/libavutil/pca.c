@@ -1,4 +1,4 @@
-/*
+﻿/*
  * principal component analysis (PCA)
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -27,15 +27,17 @@
 #include "common.h"
 #include "pca.h"
 
-typedef struct PCA{
+typedef struct PCA
+{
     int count;
     int n;
     double *covariance;
     double *mean;
     double *z;
-}PCA;
+} PCA;
 
-PCA *ff_pca_init(int n){
+PCA *ff_pca_init(int n)
+{
     PCA *pca;
     if(n<=0)
         return NULL;
@@ -50,7 +52,8 @@ PCA *ff_pca_init(int n){
     pca->covariance= av_calloc(n*n, sizeof(double));
     pca->mean= av_calloc(n, sizeof(double));
 
-    if (!pca->z || !pca->covariance || !pca->mean) {
+    if (!pca->z || !pca->covariance || !pca->mean)
+    {
         ff_pca_free(pca);
         return NULL;
     }
@@ -58,18 +61,21 @@ PCA *ff_pca_init(int n){
     return pca;
 }
 
-void ff_pca_free(PCA *pca){
+void ff_pca_free(PCA *pca)
+{
     av_freep(&pca->covariance);
     av_freep(&pca->mean);
     av_freep(&pca->z);
     av_free(pca);
 }
 
-void ff_pca_add(PCA *pca, const double *v){
+void ff_pca_add(PCA *pca, const double *v)
+{
     int i, j;
     const int n= pca->n;
 
-    for(i=0; i<n; i++){
+    for(i=0; i<n; i++)
+    {
         pca->mean[i] += v[i];
         for(j=i; j<n; j++)
             pca->covariance[j + i*n] += v[i]*v[j];
@@ -77,7 +83,8 @@ void ff_pca_add(PCA *pca, const double *v){
     pca->count++;
 }
 
-int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
+int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue)
+{
     int i, j, pass;
     int k=0;
     const int n= pca->n;
@@ -85,10 +92,12 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
 
     memset(eigenvector, 0, sizeof(double)*n*n);
 
-    for(j=0; j<n; j++){
+    for(j=0; j<n; j++)
+    {
         pca->mean[j] /= pca->count;
         eigenvector[j + j*n] = 1.0;
-        for(i=0; i<=j; i++){
+        for(i=0; i<=j; i++)
+        {
             pca->covariance[j + i*n] /= pca->count;
             pca->covariance[j + i*n] -= pca->mean[i] * pca->mean[j];
             pca->covariance[i + j*n] = pca->covariance[j + i*n];
@@ -97,25 +106,31 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
         z[j]= 0;
     }
 
-    for(pass=0; pass < 50; pass++){
+    for(pass=0; pass < 50; pass++)
+    {
         double sum=0;
 
         for(i=0; i<n; i++)
             for(j=i+1; j<n; j++)
                 sum += fabs(pca->covariance[j + i*n]);
 
-        if(sum == 0){
-            for(i=0; i<n; i++){
+        if(sum == 0)
+        {
+            for(i=0; i<n; i++)
+            {
                 double maxvalue= -1;
-                for(j=i; j<n; j++){
-                    if(eigenvalue[j] > maxvalue){
+                for(j=i; j<n; j++)
+                {
+                    if(eigenvalue[j] > maxvalue)
+                    {
                         maxvalue= eigenvalue[j];
                         k= j;
                     }
                 }
                 eigenvalue[k]= eigenvalue[i];
                 eigenvalue[i]= maxvalue;
-                for(j=0; j<n; j++){
+                for(j=0; j<n; j++)
+                {
                     double tmp= eigenvector[k + j*n];
                     eigenvector[k + j*n]= eigenvector[i + j*n];
                     eigenvector[i + j*n]= tmp;
@@ -124,8 +139,10 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
             return pass;
         }
 
-        for(i=0; i<n; i++){
-            for(j=i+1; j<n; j++){
+        for(i=0; i<n; i++)
+        {
+            for(j=i+1; j<n; j++)
+            {
                 double covar= pca->covariance[j + i*n];
                 double t,c,s,tau,theta, h;
 
@@ -133,7 +150,8 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
                     continue;
                 if(fabs(covar) == 0.0) //FIXME should not be needed
                     continue;
-                if(pass >=3 && fabs((eigenvalue[j]+z[j])/covar) > (1LL<<32) && fabs((eigenvalue[i]+z[i])/covar) > (1LL<<32)){
+                if(pass >=3 && fabs((eigenvalue[j]+z[j])/covar) > (1LL<<32) && fabs((eigenvalue[i]+z[i])/covar) > (1LL<<32))
+                {
                     pca->covariance[j + i*n]=0.0;
                     continue;
                 }
@@ -154,8 +172,10 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
     double h=a[l + k*n];\
     a[j + i*n]=g-s*(h+g*tau);\
     a[l + k*n]=h+s*(g-h*tau); }
-                for(k=0; k<n; k++) {
-                    if(k!=i && k!=j){
+                for(k=0; k<n; k++)
+                {
+                    if(k!=i && k!=j)
+                    {
                         ROTATE(pca->covariance,FFMIN(k,i),FFMAX(k,i),FFMIN(k,j),FFMAX(k,j))
                     }
                     ROTATE(eigenvector,k,i,k,j)
@@ -163,7 +183,8 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
                 pca->covariance[j + i*n]=0.0;
             }
         }
-        for (i=0; i<n; i++) {
+        for (i=0; i<n; i++)
+        {
             eigenvalue[i] += z[i];
             z[i]=0.0;
         }
@@ -179,7 +200,8 @@ int ff_pca(PCA *pca, double *eigenvector, double *eigenvalue){
 #include <stdlib.h>
 #include "lfg.h"
 
-int main(void){
+int main(void)
+{
     PCA *pca;
     int i, j, k;
 #define LEN 8
@@ -191,31 +213,34 @@ int main(void){
 
     pca= ff_pca_init(LEN);
 
-    for(i=0; i<9000000; i++){
+    for(i=0; i<9000000; i++)
+    {
         double v[2*LEN+100];
         double sum=0;
         int pos = av_lfg_get(&prng) % LEN;
         int v2  = av_lfg_get(&prng) % 101 - 50;
         v[0]    = av_lfg_get(&prng) % 101 - 50;
-        for(j=1; j<8; j++){
+        for(j=1; j<8; j++)
+        {
             if(j<=pos) v[j]= v[0];
             else       v[j]= v2;
             sum += v[j];
         }
-/*        for(j=0; j<LEN; j++){
-            v[j] -= v[pos];
-        }*/
+        /*        for(j=0; j<LEN; j++){
+                    v[j] -= v[pos];
+                }*/
 //        sum += av_lfg_get(&prng) % 10;
-/*        for(j=0; j<LEN; j++){
-            v[j] -= sum/LEN;
-        }*/
+        /*        for(j=0; j<LEN; j++){
+                    v[j] -= sum/LEN;
+                }*/
 //        lbt1(v+100,v+100,LEN);
         ff_pca_add(pca, v);
     }
 
 
     ff_pca(pca, eigenvector, eigenvalue);
-    for(i=0; i<LEN; i++){
+    for(i=0; i<LEN; i++)
+    {
         pca->count= 1;
         pca->mean[i]= 0;
 
@@ -223,18 +248,22 @@ int main(void){
 
 
 //        pca.covariance[i + i*LEN]= pow(0.5, fabs
-        for(j=i; j<LEN; j++){
+        for(j=i; j<LEN; j++)
+        {
             printf("%f ", pca->covariance[i + j*LEN]);
         }
         printf("\n");
     }
 
-    for(i=0; i<LEN; i++){
+    for(i=0; i<LEN; i++)
+    {
         double v[LEN];
         double error=0;
         memset(v, 0, sizeof(v));
-        for(j=0; j<LEN; j++){
-            for(k=0; k<LEN; k++){
+        for(j=0; j<LEN; j++)
+        {
+            for(k=0; k<LEN; k++)
+            {
                 v[j] += pca->covariance[FFMIN(k,j) + FFMAX(k,j)*LEN] * eigenvector[i + k*LEN];
             }
             v[j] /= eigenvalue[i];
@@ -244,8 +273,10 @@ int main(void){
     }
     printf("\n");
 
-    for(i=0; i<LEN; i++){
-        for(j=0; j<LEN; j++){
+    for(i=0; i<LEN; i++)
+    {
+        for(j=0; j<LEN; j++)
+        {
             printf("%9.6f ", eigenvector[i + j*LEN]);
         }
         printf("  %9.1f %f\n", eigenvalue[i], eigenvalue[i]/eigenvalue[0]);

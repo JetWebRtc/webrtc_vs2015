@@ -1,4 +1,4 @@
-/*
+﻿/*
  * C99-compatible snprintf() and vsnprintf() implementations
  * Copyright (c) 2012 Ronald S. Bultje <rsbultje@gmail.com>
  *

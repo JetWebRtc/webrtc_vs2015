@@ -1,4 +1,4 @@
-/*
+﻿/*
  * URL utility functions
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
@@ -50,23 +50,29 @@ int ff_url_join(char *str, int size, const char *proto,
     /* Determine if hostname is a numerical IPv6 address,
      * properly escape it within [] in that case. */
     hints.ai_flags = AI_NUMERICHOST;
-    if (!getaddrinfo(hostname, NULL, &hints, &ai)) {
-        if (ai->ai_family == AF_INET6) {
+    if (!getaddrinfo(hostname, NULL, &hints, &ai))
+    {
+        if (ai->ai_family == AF_INET6)
+        {
             av_strlcat(str, "[", size);
             av_strlcat(str, hostname, size);
             av_strlcat(str, "]", size);
-        } else {
+        }
+        else
+        {
             av_strlcat(str, hostname, size);
         }
         freeaddrinfo(ai);
-    } else
+    }
+    else
 #endif
         /* Not an IPv6 address, just output the plain string. */
         av_strlcat(str, hostname, size);
 
     if (port >= 0)
         av_strlcatf(str, size, ":%d", port);
-    if (fmt) {
+    if (fmt)
+    {
         va_list vl;
         size_t len = strlen(str);
 
@@ -82,15 +88,20 @@ void ff_make_absolute_url(char *buf, int size, const char *base,
 {
     char *sep, *path_query;
     /* Absolute path, relative to the current server */
-    if (base && strstr(base, "://") && rel[0] == '/') {
+    if (base && strstr(base, "://") && rel[0] == '/')
+    {
         if (base != buf)
             av_strlcpy(buf, base, size);
         sep = strstr(buf, "://");
-        if (sep) {
+        if (sep)
+        {
             /* Take scheme from base url */
-            if (rel[1] == '/') {
+            if (rel[1] == '/')
+            {
                 sep[1] = '\0';
-            } else {
+            }
+            else
+            {
                 /* Take scheme and host from base url */
                 sep += 3;
                 sep = strchr(sep, '/');
@@ -102,7 +113,8 @@ void ff_make_absolute_url(char *buf, int size, const char *base,
         return;
     }
     /* If rel actually is an absolute url, just copy it */
-    if (!base || strstr(rel, "://") || rel[0] == '/') {
+    if (!base || strstr(rel, "://") || rel[0] == '/')
+    {
         av_strlcpy(buf, rel, size);
         return;
     }
@@ -115,7 +127,8 @@ void ff_make_absolute_url(char *buf, int size, const char *base,
         *path_query = '\0';
 
     /* Is relative path just a new query part? */
-    if (rel[0] == '?') {
+    if (rel[0] == '?')
+    {
         av_strlcat(buf, rel, size);
         return;
     }
@@ -126,12 +139,14 @@ void ff_make_absolute_url(char *buf, int size, const char *base,
         sep[1] = '\0';
     else
         buf[0] = '\0';
-    while (av_strstart(rel, "../", NULL) && sep) {
+    while (av_strstart(rel, "../", NULL) && sep)
+    {
         /* Remove the path delimiter at the end */
         sep[0] = '\0';
         sep = strrchr(buf, '/');
         /* If the next directory name to pop off is "..", break here */
-        if (!strcmp(sep ? &sep[1] : buf, "..")) {
+        if (!strcmp(sep ? &sep[1] : buf, ".."))
+        {
             /* Readd the slash we just removed */
             av_strlcat(buf, "/", size);
             break;
@@ -149,7 +164,8 @@ void ff_make_absolute_url(char *buf, int size, const char *base,
 AVIODirEntry *ff_alloc_dir_entry(void)
 {
     AVIODirEntry *entry = av_mallocz(sizeof(AVIODirEntry));
-    if (entry) {
+    if (entry)
+    {
         entry->type = AVIO_ENTRY_UNKNOWN;
         entry->size = -1;
         entry->modification_timestamp = -1;

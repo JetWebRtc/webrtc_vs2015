@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ int WebRtcIlbcfix_InitDecode(  /* (o) Number of decoded samples */
     int16_t mode,     /* (i) frame size mode */
     int use_enhancer           /* (i) 1 to use enhancer
                                   0 to run without enhancer */
-                                         );
+);
 
 #endif

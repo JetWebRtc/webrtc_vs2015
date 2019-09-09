@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MJPEG encoder and decoder
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
@@ -34,7 +34,8 @@
 #define AVCODEC_MJPEG_H
 
 /* JPEG marker codes */
-enum JpegMarker {
+enum JpegMarker
+{
     /* start of frame */
     SOF0  = 0xc0,       /* baseline */
     SOF1  = 0xc1,       /* extended sequential, huffman */

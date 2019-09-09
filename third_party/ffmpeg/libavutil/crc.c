@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include "crc.h"
 
 #if CONFIG_HARDCODED_TABLES
-static const AVCRC av_crc_table[AV_CRC_MAX][257] = {
+static const AVCRC av_crc_table[AV_CRC_MAX][257] =
+{
     [AV_CRC_8_ATM] = {
         0x00, 0x07, 0x0E, 0x09, 0x1C, 0x1B, 0x12, 0x15, 0x38, 0x3F, 0x36, 0x31,
         0x24, 0x23, 0x2A, 0x2D, 0x70, 0x77, 0x7E, 0x79, 0x6C, 0x6B, 0x62, 0x65,
@@ -290,11 +291,13 @@ static const AVCRC av_crc_table[AV_CRC_MAX][257] = {
 #else
 #define CRC_TABLE_SIZE 1024
 #endif
-static struct {
+static struct
+{
     uint8_t  le;
     uint8_t  bits;
     uint32_t poly;
-} av_crc_table_params[AV_CRC_MAX] = {
+} av_crc_table_params[AV_CRC_MAX] =
+{
     [AV_CRC_8_ATM]      = { 0,  8,       0x07 },
     [AV_CRC_16_ANSI]    = { 0, 16,     0x8005 },
     [AV_CRC_16_CCITT]   = { 0, 16,     0x1021 },
@@ -316,12 +319,16 @@ int av_crc_init(AVCRC *ctx, int le, int bits, uint32_t poly, int ctx_size)
     if (ctx_size != sizeof(AVCRC) * 257 && ctx_size != sizeof(AVCRC) * 1024)
         return -1;
 
-    for (i = 0; i < 256; i++) {
-        if (le) {
+    for (i = 0; i < 256; i++)
+    {
+        if (le)
+        {
             for (c = i, j = 0; j < 8; j++)
                 c = (c >> 1) ^ (poly & (-(c & 1)));
             ctx[i] = c;
-        } else {
+        }
+        else
+        {
             for (c = i << 24, j = 0; j < 8; j++)
                 c = (c << 1) ^ ((poly << (32 - bits)) & (((int32_t) c) >> 31));
             ctx[i] = av_bswap32(c);
@@ -359,12 +366,15 @@ uint32_t av_crc(const AVCRC *ctx, uint32_t crc,
     const uint8_t *end = buffer + length;
 
 #if !CONFIG_SMALL
-    if (!ctx[256]) {
+    if (!ctx[256])
+    {
         while (((intptr_t) buffer & 3) && buffer < end)
             crc = ctx[((uint8_t) crc) ^ *buffer++] ^ (crc >> 8);
 
-        while (buffer < end - 3) {
-            crc ^= av_le2ne32(*(const uint32_t *) buffer); buffer += 4;
+        while (buffer < end - 3)
+        {
+            crc ^= av_le2ne32(*(const uint32_t *) buffer);
+            buffer += 4;
             crc = ctx[3 * 256 + ( crc        & 0xFF)] ^
                   ctx[2 * 256 + ((crc >> 8 ) & 0xFF)] ^
                   ctx[1 * 256 + ((crc >> 16) & 0xFF)] ^
@@ -384,19 +394,20 @@ int main(void)
     uint8_t buf[1999];
     int i;
     unsigned
-        p[6][3] = { { AV_CRC_32_IEEE_LE, 0xEDB88320, 0x3D5CDD04 },
-                    { AV_CRC_32_IEEE   , 0x04C11DB7, 0xC0F5BAE0 },
-                    { AV_CRC_24_IEEE   , 0x864CFB  , 0xB704CE   },
-                    { AV_CRC_16_ANSI_LE, 0xA001    , 0xBFD8     },
-                    { AV_CRC_16_ANSI   , 0x8005    , 0x1FBB     },
-                    { AV_CRC_8_ATM     , 0x07      , 0xE3       }
+    p[6][3] = { { AV_CRC_32_IEEE_LE, 0xEDB88320, 0x3D5CDD04 },
+        { AV_CRC_32_IEEE   , 0x04C11DB7, 0xC0F5BAE0 },
+        { AV_CRC_24_IEEE   , 0x864CFB  , 0xB704CE   },
+        { AV_CRC_16_ANSI_LE, 0xA001    , 0xBFD8     },
+        { AV_CRC_16_ANSI   , 0x8005    , 0x1FBB     },
+        { AV_CRC_8_ATM     , 0x07      , 0xE3       }
     };
     const AVCRC *ctx;
 
     for (i = 0; i < sizeof(buf); i++)
         buf[i] = i + i * i;
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++)
+    {
         ctx = av_crc_get_table(p[i][0]);
         printf("crc %08X = %X\n", p[i][1], av_crc(ctx, 0, buf, sizeof(buf)));
     }

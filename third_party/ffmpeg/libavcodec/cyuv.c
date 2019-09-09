@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Creative YUV (CYUV) Video Decoder
  *   by Mike Melanson (melanson@pcisys.net)
  * based on "Creative YUV (CYUV) stream format for AVI":
@@ -37,7 +37,8 @@
 #include "libavutil/internal.h"
 
 
-typedef struct CyuvDecodeContext {
+typedef struct CyuvDecodeContext
+{
     AVCodecContext *avctx;
     int width, height;
 } CyuvDecodeContext;
@@ -84,7 +85,8 @@ static int cyuv_decode_frame(AVCodecContext *avctx,
     int rawsize = s->height * FFALIGN(s->width,2) * 2;
     int ret;
 
-    if (avctx->codec_id == AV_CODEC_ID_AURA) {
+    if (avctx->codec_id == AV_CODEC_ID_AURA)
+    {
         y_table = u_table;
         u_table = v_table;
     }
@@ -92,11 +94,16 @@ static int cyuv_decode_frame(AVCodecContext *avctx,
      * followed by (height) lines each with 3 bytes to represent groups
      * of 4 pixels. Thus, the total size of the buffer ought to be:
      *    (3 * 16) + height * (width * 3 / 4) */
-    if (buf_size == 48 + s->height * (s->width * 3 / 4)) {
+    if (buf_size == 48 + s->height * (s->width * 3 / 4))
+    {
         avctx->pix_fmt = AV_PIX_FMT_YUV411P;
-    } else if(buf_size == rawsize ) {
+    }
+    else if(buf_size == rawsize )
+    {
         avctx->pix_fmt = AV_PIX_FMT_UYVY422;
-    } else {
+    }
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "got a buffer with %d bytes when %d were expected\n",
                buf_size, 48 + s->height * (s->width * 3 / 4));
         return AVERROR_INVALIDDATA;
@@ -112,51 +119,34 @@ static int cyuv_decode_frame(AVCodecContext *avctx,
     u_plane = frame->data[1];
     v_plane = frame->data[2];
 
-    if (buf_size == rawsize) {
+    if (buf_size == rawsize)
+    {
         int linesize = FFALIGN(s->width,2) * 2;
         y_plane += frame->linesize[0] * s->height;
-        for (stream_ptr = 0; stream_ptr < rawsize; stream_ptr += linesize) {
+        for (stream_ptr = 0; stream_ptr < rawsize; stream_ptr += linesize)
+        {
             y_plane -= frame->linesize[0];
             memcpy(y_plane, buf+stream_ptr, linesize);
         }
-    } else {
+    }
+    else
+    {
 
-    /* iterate through each line in the height */
-    for (y_ptr = 0, u_ptr = 0, v_ptr = 0;
-         y_ptr < (s->height * frame->linesize[0]);
-         y_ptr += frame->linesize[0] - s->width,
-         u_ptr += frame->linesize[1] - s->width / 4,
-         v_ptr += frame->linesize[2] - s->width / 4) {
+        /* iterate through each line in the height */
+        for (y_ptr = 0, u_ptr = 0, v_ptr = 0;
+                y_ptr < (s->height * frame->linesize[0]);
+                y_ptr += frame->linesize[0] - s->width,
+                u_ptr += frame->linesize[1] - s->width / 4,
+                v_ptr += frame->linesize[2] - s->width / 4)
+        {
 
-        /* reset predictors */
-        cur_byte = buf[stream_ptr++];
-        u_plane[u_ptr++] = u_pred = cur_byte & 0xF0;
-        y_plane[y_ptr++] = y_pred = (cur_byte & 0x0F) << 4;
-
-        cur_byte = buf[stream_ptr++];
-        v_plane[v_ptr++] = v_pred = cur_byte & 0xF0;
-        y_pred += y_table[cur_byte & 0x0F];
-        y_plane[y_ptr++] = y_pred;
-
-        cur_byte = buf[stream_ptr++];
-        y_pred += y_table[cur_byte & 0x0F];
-        y_plane[y_ptr++] = y_pred;
-        y_pred += y_table[(cur_byte & 0xF0) >> 4];
-        y_plane[y_ptr++] = y_pred;
-
-        /* iterate through the remaining pixel groups (4 pixels/group) */
-        pixel_groups = s->width / 4 - 1;
-        while (pixel_groups--) {
+            /* reset predictors */
+            cur_byte = buf[stream_ptr++];
+            u_plane[u_ptr++] = u_pred = cur_byte & 0xF0;
+            y_plane[y_ptr++] = y_pred = (cur_byte & 0x0F) << 4;
 
             cur_byte = buf[stream_ptr++];
-            u_pred += u_table[(cur_byte & 0xF0) >> 4];
-            u_plane[u_ptr++] = u_pred;
-            y_pred += y_table[cur_byte & 0x0F];
-            y_plane[y_ptr++] = y_pred;
-
-            cur_byte = buf[stream_ptr++];
-            v_pred += v_table[(cur_byte & 0xF0) >> 4];
-            v_plane[v_ptr++] = v_pred;
+            v_plane[v_ptr++] = v_pred = cur_byte & 0xF0;
             y_pred += y_table[cur_byte & 0x0F];
             y_plane[y_ptr++] = y_pred;
 
@@ -166,8 +156,31 @@ static int cyuv_decode_frame(AVCodecContext *avctx,
             y_pred += y_table[(cur_byte & 0xF0) >> 4];
             y_plane[y_ptr++] = y_pred;
 
+            /* iterate through the remaining pixel groups (4 pixels/group) */
+            pixel_groups = s->width / 4 - 1;
+            while (pixel_groups--)
+            {
+
+                cur_byte = buf[stream_ptr++];
+                u_pred += u_table[(cur_byte & 0xF0) >> 4];
+                u_plane[u_ptr++] = u_pred;
+                y_pred += y_table[cur_byte & 0x0F];
+                y_plane[y_ptr++] = y_pred;
+
+                cur_byte = buf[stream_ptr++];
+                v_pred += v_table[(cur_byte & 0xF0) >> 4];
+                v_plane[v_ptr++] = v_pred;
+                y_pred += y_table[cur_byte & 0x0F];
+                y_plane[y_ptr++] = y_pred;
+
+                cur_byte = buf[stream_ptr++];
+                y_pred += y_table[cur_byte & 0x0F];
+                y_plane[y_ptr++] = y_pred;
+                y_pred += y_table[(cur_byte & 0xF0) >> 4];
+                y_plane[y_ptr++] = y_pred;
+
+            }
         }
-    }
     }
 
     *got_frame = 1;
@@ -176,7 +189,8 @@ static int cyuv_decode_frame(AVCodecContext *avctx,
 }
 
 #if CONFIG_AURA_DECODER
-AVCodec ff_aura_decoder = {
+AVCodec ff_aura_decoder =
+{
     .name           = "aura",
     .long_name      = NULL_IF_CONFIG_SMALL("Auravision AURA"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -189,7 +203,8 @@ AVCodec ff_aura_decoder = {
 #endif
 
 #if CONFIG_CYUV_DECODER
-AVCodec ff_cyuv_decoder = {
+AVCodec ff_cyuv_decoder =
+{
     .name           = "cyuv",
     .long_name      = NULL_IF_CONFIG_SMALL("Creative YUV (CYUV)"),
     .type           = AVMEDIA_TYPE_VIDEO,

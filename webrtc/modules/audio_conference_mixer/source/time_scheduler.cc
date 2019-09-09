@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 #include "webrtc/modules/audio_conference_mixer/source/time_scheduler.h"
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 TimeScheduler::TimeScheduler(const int64_t periodicityInMs)
     : _crit(CriticalSectionWrapper::CreateCriticalSection()),
       _isStarted(false),
@@ -20,8 +21,8 @@ TimeScheduler::TimeScheduler(const int64_t periodicityInMs)
       _periodicityInMs(periodicityInMs),
       _periodicityInTicks(periodicityInMs * rtc::kNumNanosecsPerMillisec),
       _missedPeriods(0)
- {
- }
+{
+}
 
 TimeScheduler::~TimeScheduler()
 {
@@ -93,7 +94,7 @@ int32_t TimeScheduler::TimeToNextUpdate(
     int64_t tickNow = rtc::TimeNanos();
     int64_t ticksSinceLastUpdate = tickNow - _lastPeriodMark;
     const int64_t millisecondsSinceLastUpdate =
-      ticksSinceLastUpdate / rtc::kNumNanosecsPerMillisec;
+        ticksSinceLastUpdate / rtc::kNumNanosecsPerMillisec;
 
     updateTimeInMS = _periodicityInMs - millisecondsSinceLastUpdate;
     updateTimeInMS =  (updateTimeInMS < 0) ? 0 : updateTimeInMS;

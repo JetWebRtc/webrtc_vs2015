@@ -1,4 +1,4 @@
-/*
+﻿/*
  * v410 decoder
  *
  * Copyright (c) 2011 Derek Buitenhuis
@@ -30,11 +30,15 @@ static av_cold int v410_decode_init(AVCodecContext *avctx)
     avctx->pix_fmt             = AV_PIX_FMT_YUV444P10;
     avctx->bits_per_raw_sample = 10;
 
-    if (avctx->width & 1) {
-        if (avctx->err_recognition & AV_EF_EXPLODE) {
+    if (avctx->width & 1)
+    {
+        if (avctx->err_recognition & AV_EF_EXPLODE)
+        {
             av_log(avctx, AV_LOG_ERROR, "v410 requires width to be even.\n");
             return AVERROR_INVALIDDATA;
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_WARNING, "v410 requires width to be even, continuing anyway.\n");
         }
     }
@@ -51,7 +55,8 @@ static int v410_decode_frame(AVCodecContext *avctx, void *data,
     uint32_t val;
     int i, j, ret;
 
-    if (avpkt->size < 4 * avctx->height * avctx->width) {
+    if (avpkt->size < 4 * avctx->height * avctx->width)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -66,8 +71,10 @@ static int v410_decode_frame(AVCodecContext *avctx, void *data,
     u = (uint16_t *)pic->data[1];
     v = (uint16_t *)pic->data[2];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width; j++) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width; j++)
+        {
             val = AV_RL32(src);
 
             u[j] = (val >>  2) & 0x3FF;
@@ -87,7 +94,8 @@ static int v410_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_v410_decoder = {
+AVCodec ff_v410_decoder =
+{
     .name         = "v410",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed 4:4:4 10-bit"),
     .type         = AVMEDIA_TYPE_VIDEO,

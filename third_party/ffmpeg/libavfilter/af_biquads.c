@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  * Copyright (c) 2006-2008 Rob Sykes <robs@users.sourceforge.net>
  *
@@ -68,7 +68,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-enum FilterType {
+enum FilterType
+{
     biquad,
     equalizer,
     bass,
@@ -81,7 +82,8 @@ enum FilterType {
     lowpass,
 };
 
-enum WidthType {
+enum WidthType
+{
     NONE,
     HERTZ,
     OCTAVE,
@@ -89,12 +91,14 @@ enum WidthType {
     SLOPE,
 };
 
-typedef struct ChanCache {
+typedef struct ChanCache
+{
     double i1, i2;
     double o1, o2;
 } ChanCache;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
 
     enum FilterType filter_type;
@@ -120,8 +124,10 @@ static av_cold int init(AVFilterContext *ctx)
 {
     BiquadsContext *s = ctx->priv;
 
-    if (s->filter_type != biquad) {
-        if (s->frequency <= 0 || s->width <= 0) {
+    if (s->filter_type != biquad)
+    {
+        if (s->frequency <= 0 || s->width <= 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid frequency %f and/or width %f <= 0\n",
                    s->frequency, s->width);
             return AVERROR(EINVAL);
@@ -135,7 +141,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_S16P,
         AV_SAMPLE_FMT_S32P,
         AV_SAMPLE_FMT_FLTP,
@@ -242,14 +249,16 @@ static int config_output(AVFilterLink *outlink)
     double w0 = 2 * M_PI * s->frequency / inlink->sample_rate;
     double alpha;
 
-    if (w0 > M_PI) {
+    if (w0 > M_PI)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid frequency %f. Frequency must be less than half the sample-rate %d.\n",
                s->frequency, inlink->sample_rate);
         return AVERROR(EINVAL);
     }
 
-    switch (s->width_type) {
+    switch (s->width_type)
+    {
     case NONE:
         alpha = 0.0;
         break;
@@ -269,7 +278,8 @@ static int config_output(AVFilterLink *outlink)
         av_assert0(0);
     }
 
-    switch (s->filter_type) {
+    switch (s->filter_type)
+    {
     case biquad:
         break;
     case equalizer:
@@ -297,14 +307,17 @@ static int config_output(AVFilterLink *outlink)
         s->b2 =     A * ((A + 1) + (A - 1) * cos(w0) - 2 * sqrt(A) * alpha);
         break;
     case bandpass:
-        if (s->csg) {
+        if (s->csg)
+        {
             s->a0 =  1 + alpha;
             s->a1 = -2 * cos(w0);
             s->a2 =  1 - alpha;
             s->b0 =  sin(w0) / 2;
             s->b1 =  0;
             s->b2 = -sin(w0) / 2;
-        } else {
+        }
+        else
+        {
             s->a0 =  1 + alpha;
             s->a1 = -2 * cos(w0);
             s->a2 =  1 - alpha;
@@ -322,14 +335,17 @@ static int config_output(AVFilterLink *outlink)
         s->b2 =  1;
         break;
     case lowpass:
-        if (s->poles == 1) {
+        if (s->poles == 1)
+        {
             s->a0 = 1;
             s->a1 = -exp(-w0);
             s->a2 = 0;
             s->b0 = 1 + s->a1;
             s->b1 = 0;
             s->b2 = 0;
-        } else {
+        }
+        else
+        {
             s->a0 =  1 + alpha;
             s->a1 = -2 * cos(w0);
             s->a2 =  1 - alpha;
@@ -339,14 +355,17 @@ static int config_output(AVFilterLink *outlink)
         }
         break;
     case highpass:
-        if (s->poles == 1) {
+        if (s->poles == 1)
+        {
             s->a0 = 1;
             s->a1 = -exp(-w0);
             s->a2 = 0;
             s->b0 = (1 - s->a1) / 2;
             s->b1 = -s->b0;
             s->b2 = 0;
-        } else {
+        }
+        else
+        {
             s->a0 =   1 + alpha;
             s->a1 =  -2 * cos(w0);
             s->a2 =   1 - alpha;
@@ -378,12 +397,22 @@ static int config_output(AVFilterLink *outlink)
         return AVERROR(ENOMEM);
     memset(s->cache, 0, sizeof(ChanCache) * inlink->channels);
 
-    switch (inlink->format) {
-    case AV_SAMPLE_FMT_S16P: s->filter = biquad_s16; break;
-    case AV_SAMPLE_FMT_S32P: s->filter = biquad_s32; break;
-    case AV_SAMPLE_FMT_FLTP: s->filter = biquad_flt; break;
-    case AV_SAMPLE_FMT_DBLP: s->filter = biquad_dbl; break;
-    default: av_assert0(0);
+    switch (inlink->format)
+    {
+    case AV_SAMPLE_FMT_S16P:
+        s->filter = biquad_s16;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->filter = biquad_s32;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->filter = biquad_flt;
+        break;
+    case AV_SAMPLE_FMT_DBLP:
+        s->filter = biquad_dbl;
+        break;
+    default:
+        av_assert0(0);
     }
 
     return 0;
@@ -397,9 +426,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     int nb_samples = buf->nb_samples;
     int ch;
 
-    if (av_frame_is_writable(buf)) {
+    if (av_frame_is_writable(buf))
+    {
         out_buf = buf;
-    } else {
+    }
+    else
+    {
         out_buf = ff_get_audio_buffer(inlink, nb_samples);
         if (!out_buf)
             return AVERROR(ENOMEM);
@@ -426,7 +458,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->cache);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -435,7 +468,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -470,7 +504,8 @@ AVFilter ff_af_##name_ = {                         \
 }
 
 #if CONFIG_EQUALIZER_FILTER
-static const AVOption equalizer_options[] = {
+static const AVOption equalizer_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=0}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=0}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -488,7 +523,8 @@ static const AVOption equalizer_options[] = {
 DEFINE_BIQUAD_FILTER(equalizer, "Apply two-pole peaking equalization (EQ) filter.");
 #endif  /* CONFIG_EQUALIZER_FILTER */
 #if CONFIG_BASS_FILTER
-static const AVOption bass_options[] = {
+static const AVOption bass_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=100}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=100}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -506,7 +542,8 @@ static const AVOption bass_options[] = {
 DEFINE_BIQUAD_FILTER(bass, "Boost or cut lower frequencies.");
 #endif  /* CONFIG_BASS_FILTER */
 #if CONFIG_TREBLE_FILTER
-static const AVOption treble_options[] = {
+static const AVOption treble_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -524,7 +561,8 @@ static const AVOption treble_options[] = {
 DEFINE_BIQUAD_FILTER(treble, "Boost or cut upper frequencies.");
 #endif  /* CONFIG_TREBLE_FILTER */
 #if CONFIG_BANDPASS_FILTER
-static const AVOption bandpass_options[] = {
+static const AVOption bandpass_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -541,7 +579,8 @@ static const AVOption bandpass_options[] = {
 DEFINE_BIQUAD_FILTER(bandpass, "Apply a two-pole Butterworth band-pass filter.");
 #endif  /* CONFIG_BANDPASS_FILTER */
 #if CONFIG_BANDREJECT_FILTER
-static const AVOption bandreject_options[] = {
+static const AVOption bandreject_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -557,7 +596,8 @@ static const AVOption bandreject_options[] = {
 DEFINE_BIQUAD_FILTER(bandreject, "Apply a two-pole Butterworth band-reject filter.");
 #endif  /* CONFIG_BANDREJECT_FILTER */
 #if CONFIG_LOWPASS_FILTER
-static const AVOption lowpass_options[] = {
+static const AVOption lowpass_options[] =
+{
     {"frequency", "set frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=500}, 0, 999999, FLAGS},
     {"f",         "set frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=500}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -575,7 +615,8 @@ static const AVOption lowpass_options[] = {
 DEFINE_BIQUAD_FILTER(lowpass, "Apply a low-pass filter with 3dB point frequency.");
 #endif  /* CONFIG_LOWPASS_FILTER */
 #if CONFIG_HIGHPASS_FILTER
-static const AVOption highpass_options[] = {
+static const AVOption highpass_options[] =
+{
     {"frequency", "set frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"f",         "set frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=QFACTOR}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -593,7 +634,8 @@ static const AVOption highpass_options[] = {
 DEFINE_BIQUAD_FILTER(highpass, "Apply a high-pass filter with 3dB point frequency.");
 #endif  /* CONFIG_HIGHPASS_FILTER */
 #if CONFIG_ALLPASS_FILTER
-static const AVOption allpass_options[] = {
+static const AVOption allpass_options[] =
+{
     {"frequency", "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"f",         "set central frequency", OFFSET(frequency), AV_OPT_TYPE_DOUBLE, {.dbl=3000}, 0, 999999, FLAGS},
     {"width_type", "set filter-width type", OFFSET(width_type), AV_OPT_TYPE_INT, {.i64=HERTZ}, HERTZ, SLOPE, FLAGS, "width_type"},
@@ -609,7 +651,8 @@ static const AVOption allpass_options[] = {
 DEFINE_BIQUAD_FILTER(allpass, "Apply a two-pole all-pass filter.");
 #endif  /* CONFIG_ALLPASS_FILTER */
 #if CONFIG_BIQUAD_FILTER
-static const AVOption biquad_options[] = {
+static const AVOption biquad_options[] =
+{
     {"a0", NULL, OFFSET(a0), AV_OPT_TYPE_DOUBLE, {.dbl=1}, INT16_MIN, INT16_MAX, FLAGS},
     {"a1", NULL, OFFSET(a1), AV_OPT_TYPE_DOUBLE, {.dbl=1}, INT16_MIN, INT16_MAX, FLAGS},
     {"a2", NULL, OFFSET(a2), AV_OPT_TYPE_DOUBLE, {.dbl=1}, INT16_MIN, INT16_MAX, FLAGS},

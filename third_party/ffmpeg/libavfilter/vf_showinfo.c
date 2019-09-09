@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Stefano Sabatini
  * This file is part of FFmpeg.
  *
@@ -41,7 +41,8 @@ static void dump_stereo3d(AVFilterContext *ctx, AVFrameSideData *sd)
     AVStereo3D *stereo;
 
     av_log(ctx, AV_LOG_INFO, "stereoscopic information: ");
-    if (sd->size < sizeof(*stereo)) {
+    if (sd->size < sizeof(*stereo))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
@@ -49,17 +50,36 @@ static void dump_stereo3d(AVFilterContext *ctx, AVFrameSideData *sd)
     stereo = (AVStereo3D *)sd->data;
 
     av_log(ctx, AV_LOG_INFO, "type - ");
-    switch (stereo->type) {
-    case AV_STEREO3D_2D:                  av_log(ctx, AV_LOG_INFO, "2D");                     break;
-    case AV_STEREO3D_SIDEBYSIDE:          av_log(ctx, AV_LOG_INFO, "side by side");           break;
-    case AV_STEREO3D_TOPBOTTOM:           av_log(ctx, AV_LOG_INFO, "top and bottom");         break;
-    case AV_STEREO3D_FRAMESEQUENCE:       av_log(ctx, AV_LOG_INFO, "frame alternate");        break;
-    case AV_STEREO3D_CHECKERBOARD:        av_log(ctx, AV_LOG_INFO, "checkerboard");           break;
-    case AV_STEREO3D_LINES:               av_log(ctx, AV_LOG_INFO, "interleaved lines");      break;
-    case AV_STEREO3D_COLUMNS:             av_log(ctx, AV_LOG_INFO, "interleaved columns");    break;
-    case AV_STEREO3D_SIDEBYSIDE_QUINCUNX: av_log(ctx, AV_LOG_INFO, "side by side "
-                                                                   "(quincunx subsampling)"); break;
-    default:                              av_log(ctx, AV_LOG_WARNING, "unknown");             break;
+    switch (stereo->type)
+    {
+    case AV_STEREO3D_2D:
+        av_log(ctx, AV_LOG_INFO, "2D");
+        break;
+    case AV_STEREO3D_SIDEBYSIDE:
+        av_log(ctx, AV_LOG_INFO, "side by side");
+        break;
+    case AV_STEREO3D_TOPBOTTOM:
+        av_log(ctx, AV_LOG_INFO, "top and bottom");
+        break;
+    case AV_STEREO3D_FRAMESEQUENCE:
+        av_log(ctx, AV_LOG_INFO, "frame alternate");
+        break;
+    case AV_STEREO3D_CHECKERBOARD:
+        av_log(ctx, AV_LOG_INFO, "checkerboard");
+        break;
+    case AV_STEREO3D_LINES:
+        av_log(ctx, AV_LOG_INFO, "interleaved lines");
+        break;
+    case AV_STEREO3D_COLUMNS:
+        av_log(ctx, AV_LOG_INFO, "interleaved columns");
+        break;
+    case AV_STEREO3D_SIDEBYSIDE_QUINCUNX:
+        av_log(ctx, AV_LOG_INFO, "side by side "
+               "(quincunx subsampling)");
+        break;
+    default:
+        av_log(ctx, AV_LOG_WARNING, "unknown");
+        break;
     }
 
     if (stereo->flags & AV_STEREO3D_FLAG_INVERT)
@@ -70,7 +90,8 @@ static void update_sample_stats(const uint8_t *src, int len, int64_t *sum, int64
 {
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         *sum += src[i];
         *sum2 += src[i] * src[i];
     }
@@ -85,7 +106,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int32_t pixelcount[4] = {0};
     int i, plane, vsub = desc->log2_chroma_h;
 
-    for (plane = 0; plane < 4 && frame->data[plane] && frame->linesize[plane]; plane++) {
+    for (plane = 0; plane < 4 && frame->data[plane] && frame->linesize[plane]; plane++)
+    {
         uint8_t *data = frame->data[plane];
         int h = plane == 1 || plane == 2 ? FF_CEIL_RSHIFT(inlink->h, vsub) : inlink->h;
         int linesize = av_image_get_linesize(frame->format, frame->width, plane);
@@ -93,7 +115,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
         if (linesize < 0)
             return linesize;
 
-        for (i = 0; i < h; i++) {
+        for (i = 0; i < h; i++)
+        {
             plane_checksum[plane] = av_adler32_update(plane_checksum[plane], data, linesize);
             checksum = av_adler32_update(checksum, data, linesize);
 
@@ -129,11 +152,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
                sqrt((sum2[plane] - sum[plane]*(double)sum[plane]/pixelcount[plane])/pixelcount[plane]));
     av_log(ctx, AV_LOG_INFO, "\b]\n");
 
-    for (i = 0; i < frame->nb_side_data; i++) {
+    for (i = 0; i < frame->nb_side_data; i++)
+    {
         AVFrameSideData *sd = frame->side_data[i];
 
         av_log(ctx, AV_LOG_INFO, "  side data - ");
-        switch (sd->type) {
+        switch (sd->type)
+        {
         case AV_FRAME_DATA_PANSCAN:
             av_log(ctx, AV_LOG_INFO, "pan/scan");
             break;
@@ -169,7 +194,7 @@ static int config_props(AVFilterContext *ctx, AVFilterLink *link, int is_out)
            is_out ? "out" :"in",
            link->time_base.num, link->time_base.den,
            link->frame_rate.num, link->frame_rate.den
-    );
+          );
 
     return 0;
 }
@@ -186,7 +211,8 @@ static int config_props_out(AVFilterLink *link)
     return config_props(ctx, link, 1);
 }
 
-static const AVFilterPad avfilter_vf_showinfo_inputs[] = {
+static const AVFilterPad avfilter_vf_showinfo_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -196,7 +222,8 @@ static const AVFilterPad avfilter_vf_showinfo_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_showinfo_outputs[] = {
+static const AVFilterPad avfilter_vf_showinfo_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -205,7 +232,8 @@ static const AVFilterPad avfilter_vf_showinfo_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_showinfo = {
+AVFilter ff_vf_showinfo =
+{
     .name        = "showinfo",
     .description = NULL_IF_CONFIG_SMALL("Show textual information for each video frame."),
     .inputs      = avfilter_vf_showinfo_inputs,

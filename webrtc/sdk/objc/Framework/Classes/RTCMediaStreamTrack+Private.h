@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,20 +12,21 @@
 
 #include "webrtc/api/mediastreaminterface.h"
 
-typedef NS_ENUM(NSInteger, RTCMediaStreamTrackType) {
-  RTCMediaStreamTrackTypeAudio,
-  RTCMediaStreamTrackTypeVideo,
+typedef NS_ENUM(NSInteger, RTCMediaStreamTrackType)
+{
+    RTCMediaStreamTrackTypeAudio,
+    RTCMediaStreamTrackTypeVideo,
 };
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCMediaStreamTrack ()
 
-/**
- * The native MediaStreamTrackInterface passed in or created during
- * construction.
- */
-@property(nonatomic, readonly)
+    /**
+     * The native MediaStreamTrackInterface passed in or created during
+     * construction.
+     */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::MediaStreamTrackInterface> nativeTrack;
 
 /**
@@ -33,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithNativeTrack:
     (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>)nativeTrack
-                               type:(RTCMediaStreamTrackType)type
+    type:(RTCMediaStreamTrackType)type
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNativeTrack:

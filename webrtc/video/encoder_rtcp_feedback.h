@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,29 +17,31 @@
 #include "webrtc/system_wrappers/include/clock.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ViEEncoder;
 
-class EncoderRtcpFeedback : public RtcpIntraFrameObserver {
- public:
-  EncoderRtcpFeedback(Clock* clock,
-                       const std::vector<uint32_t>& ssrcs,
-                       ViEEncoder* encoder);
-  void OnReceivedIntraFrameRequest(uint32_t ssrc) override;
-  void OnReceivedSLI(uint32_t ssrc, uint8_t picture_id) override;
-  void OnReceivedRPSI(uint32_t ssrc, uint64_t picture_id) override;
+class EncoderRtcpFeedback : public RtcpIntraFrameObserver
+{
+public:
+    EncoderRtcpFeedback(Clock* clock,
+                        const std::vector<uint32_t>& ssrcs,
+                        ViEEncoder* encoder);
+    void OnReceivedIntraFrameRequest(uint32_t ssrc) override;
+    void OnReceivedSLI(uint32_t ssrc, uint8_t picture_id) override;
+    void OnReceivedRPSI(uint32_t ssrc, uint64_t picture_id) override;
 
- private:
-  bool HasSsrc(uint32_t ssrc);
-  size_t GetStreamIndex(uint32_t ssrc);
+private:
+    bool HasSsrc(uint32_t ssrc);
+    size_t GetStreamIndex(uint32_t ssrc);
 
-  Clock* const clock_;
-  const std::vector<uint32_t> ssrcs_;
-  ViEEncoder* const vie_encoder_;
+    Clock* const clock_;
+    const std::vector<uint32_t> ssrcs_;
+    ViEEncoder* const vie_encoder_;
 
-  rtc::CriticalSection crit_;
-  std::vector<int64_t> time_last_intra_request_ms_ GUARDED_BY(crit_);
+    rtc::CriticalSection crit_;
+    std::vector<int64_t> time_last_intra_request_ms_ GUARDED_BY(crit_);
 };
 
 }  // namespace webrtc

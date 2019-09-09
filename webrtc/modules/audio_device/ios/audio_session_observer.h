@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,25 +14,27 @@
 #include "webrtc/base/asyncinvoker.h"
 #include "webrtc/base/thread.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Observer interface for listening to AVAudioSession events.
-class AudioSessionObserver {
- public:
-  // Called when audio session interruption begins.
-  virtual void OnInterruptionBegin() = 0;
+class AudioSessionObserver
+{
+public:
+    // Called when audio session interruption begins.
+    virtual void OnInterruptionBegin() = 0;
 
-  // Called when audio session interruption ends.
-  virtual void OnInterruptionEnd() = 0;
+    // Called when audio session interruption ends.
+    virtual void OnInterruptionEnd() = 0;
 
-  // Called when audio route changes.
-  virtual void OnValidRouteChange() = 0;
+    // Called when audio route changes.
+    virtual void OnValidRouteChange() = 0;
 
-  // Called when the ability to play or record changes.
-  virtual void OnCanPlayOrRecordChange(bool can_play_or_record) = 0;
+    // Called when the ability to play or record changes.
+    virtual void OnCanPlayOrRecordChange(bool can_play_or_record) = 0;
 
- protected:
-  virtual ~AudioSessionObserver() {}
+protected:
+    virtual ~AudioSessionObserver() {}
 };
 
 }  // namespace webrtc

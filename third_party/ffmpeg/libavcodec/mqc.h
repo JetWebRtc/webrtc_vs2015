@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MQ-coder: structures, common and decoder functions
  * Copyright (c) 2007 Kamil Nowosad
  *
@@ -37,7 +37,8 @@ extern uint16_t ff_mqc_qe[2 * 47];
 extern uint8_t  ff_mqc_nlps[2 * 47];
 extern uint8_t  ff_mqc_nmps[2 * 47];
 
-typedef struct MqcState {
+typedef struct MqcState
+{
     uint8_t *bp, *bpstart;
     unsigned int a;
     unsigned int c;

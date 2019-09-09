@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libopus encoder/decoder common code
  * Copyright (c) 2012 Nicolas George
  *

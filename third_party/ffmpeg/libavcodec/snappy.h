@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Snappy module
  * Copyright (c) Luca Barbato
  *
@@ -44,7 +44,7 @@
  * @param gb    input GetByteContext.
  * @return      A positive length on success, AVERROR otherwise.
  */
- int64_t ff_snappy_peek_uncompressed_length(GetByteContext *gb);
+int64_t ff_snappy_peek_uncompressed_length(GetByteContext *gb);
 
 /**
  * Decompress an input buffer using Snappy algorithm.

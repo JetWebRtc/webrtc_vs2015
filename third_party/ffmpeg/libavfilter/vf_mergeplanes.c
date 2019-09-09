@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -27,14 +27,16 @@
 #include "internal.h"
 #include "framesync.h"
 
-typedef struct InputParam {
+typedef struct InputParam
+{
     int depth[4];
     int nb_planes;
     int planewidth[4];
     int planeheight[4];
 } InputParam;
 
-typedef struct MergePlanesContext {
+typedef struct MergePlanesContext
+{
     const AVClass *class;
     int64_t mapping;
     const enum AVPixelFormat out_fmt;
@@ -50,7 +52,8 @@ typedef struct MergePlanesContext {
 
 #define OFFSET(x) offsetof(MergePlanesContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption mergeplanes_options[] = {
+static const AVOption mergeplanes_options[] =
+{
     { "mapping", "set input to output plane mapping", OFFSET(mapping), AV_OPT_TYPE_INT, {.i64=0}, 0, 0x33333333, FLAGS },
     { "format", "set output pixel format", OFFSET(out_fmt), AV_OPT_TYPE_PIXEL_FMT, {.i64=AV_PIX_FMT_YUVA444P}, 0, INT_MAX, .flags=FLAGS },
     { NULL }
@@ -72,19 +75,22 @@ static av_cold int init(AVFilterContext *ctx)
 
     s->outdesc = av_pix_fmt_desc_get(s->out_fmt);
     if (!(s->outdesc->flags & AV_PIX_FMT_FLAG_PLANAR) ||
-        s->outdesc->nb_components < 2) {
+            s->outdesc->nb_components < 2)
+    {
         av_log(ctx, AV_LOG_ERROR, "Only planar formats with more than one component are supported.\n");
         return AVERROR(EINVAL);
     }
     s->nb_planes = av_pix_fmt_count_planes(s->out_fmt);
 
-    for (i = s->nb_planes - 1; i >= 0; i--) {
+    for (i = s->nb_planes - 1; i >= 0; i--)
+    {
         s->map[i][0] = m & 0xf;
         m >>= 4;
         s->map[i][1] = m & 0xf;
         m >>= 4;
 
-        if (s->map[i][0] > 3 || s->map[i][1] > 3) {
+        if (s->map[i][0] > 3 || s->map[i][1] > 3)
+        {
             av_log(ctx, AV_LOG_ERROR, "Mapping with out of range input and/or plane number.\n");
             return AVERROR(EINVAL);
         }
@@ -94,7 +100,8 @@ static av_cold int init(AVFilterContext *ctx)
 
     av_assert0(s->nb_inputs && s->nb_inputs <= 4);
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         AVFilterPad pad = { 0 };
 
         pad.type = AVMEDIA_TYPE_VIDEO;
@@ -103,7 +110,8 @@ static av_cold int init(AVFilterContext *ctx)
             return AVERROR(ENOMEM);
         pad.filter_frame = filter_frame;
 
-        if ((ret = ff_insert_inpad(ctx, i, &pad)) < 0){
+        if ((ret = ff_insert_inpad(ctx, i, &pad)) < 0)
+        {
             av_freep(&pad.name);
             return ret;
         }
@@ -119,10 +127,11 @@ static int query_formats(AVFilterContext *ctx)
     int i;
 
     s->outdesc = av_pix_fmt_desc_get(s->out_fmt);
-    for (i = 0; av_pix_fmt_desc_get(i); i++) {
+    for (i = 0; av_pix_fmt_desc_get(i); i++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(i);
         if (desc->comp[0].depth_minus1 == s->outdesc->comp[0].depth_minus1 &&
-            av_pix_fmt_count_planes(i) == desc->nb_components)
+                av_pix_fmt_count_planes(i) == desc->nb_components)
             ff_add_format(&formats, i);
     }
 
@@ -145,7 +154,8 @@ static int process_frame(FFFrameSync *fs)
     AVFrame *out;
     int i, ret;
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         if ((ret = ff_framesync_get_frame(&s->fs, i, &in[i], 0)) < 0)
             return ret;
     }
@@ -155,7 +165,8 @@ static int process_frame(FFFrameSync *fs)
         return AVERROR(ENOMEM);
     out->pts = av_rescale_q(s->fs.pts, s->fs.time_base, outlink->time_base);
 
-    for (i = 0; i < s->nb_planes; i++) {
+    for (i = 0; i < s->nb_planes; i++)
+    {
         const int input = s->map[i][1];
         const int plane = s->map[i][0];
 
@@ -189,41 +200,43 @@ static int config_output(AVFilterLink *outlink)
     outlink->sample_aspect_ratio = ctx->inputs[0]->sample_aspect_ratio;
 
     s->planewidth[1]  =
-    s->planewidth[2]  = FF_CEIL_RSHIFT(outlink->w, s->outdesc->log2_chroma_w);
+        s->planewidth[2]  = FF_CEIL_RSHIFT(outlink->w, s->outdesc->log2_chroma_w);
     s->planewidth[0]  =
-    s->planewidth[3]  = outlink->w;
+        s->planewidth[3]  = outlink->w;
     s->planeheight[1] =
-    s->planeheight[2] = FF_CEIL_RSHIFT(outlink->h, s->outdesc->log2_chroma_h);
+        s->planeheight[2] = FF_CEIL_RSHIFT(outlink->h, s->outdesc->log2_chroma_h);
     s->planeheight[0] =
-    s->planeheight[3] = outlink->h;
+        s->planeheight[3] = outlink->h;
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         InputParam *inputp = &inputsp[i];
         AVFilterLink *inlink = ctx->inputs[i];
         const AVPixFmtDescriptor *indesc = av_pix_fmt_desc_get(inlink->format);
         int j;
 
         if (outlink->sample_aspect_ratio.num != inlink->sample_aspect_ratio.num ||
-            outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den) {
+                outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den)
+        {
             av_log(ctx, AV_LOG_ERROR, "input #%d link %s SAR %d:%d "
-                                      "does not match output link %s SAR %d:%d\n",
-                                      i, ctx->input_pads[i].name,
-                                      inlink->sample_aspect_ratio.num,
-                                      inlink->sample_aspect_ratio.den,
-                                      ctx->output_pads[0].name,
-                                      outlink->sample_aspect_ratio.num,
-                                      outlink->sample_aspect_ratio.den);
+                   "does not match output link %s SAR %d:%d\n",
+                   i, ctx->input_pads[i].name,
+                   inlink->sample_aspect_ratio.num,
+                   inlink->sample_aspect_ratio.den,
+                   ctx->output_pads[0].name,
+                   outlink->sample_aspect_ratio.num,
+                   outlink->sample_aspect_ratio.den);
             return AVERROR(EINVAL);
         }
 
         inputp->planewidth[1]  =
-        inputp->planewidth[2]  = FF_CEIL_RSHIFT(inlink->w, indesc->log2_chroma_w);
+            inputp->planewidth[2]  = FF_CEIL_RSHIFT(inlink->w, indesc->log2_chroma_w);
         inputp->planewidth[0]  =
-        inputp->planewidth[3]  = inlink->w;
+            inputp->planewidth[3]  = inlink->w;
         inputp->planeheight[1] =
-        inputp->planeheight[2] = FF_CEIL_RSHIFT(inlink->h, indesc->log2_chroma_h);
+            inputp->planeheight[2] = FF_CEIL_RSHIFT(inlink->h, indesc->log2_chroma_h);
         inputp->planeheight[0] =
-        inputp->planeheight[3] = inlink->h;
+            inputp->planeheight[3] = inlink->h;
         inputp->nb_planes = av_pix_fmt_count_planes(inlink->format);
 
         for (j = 0; j < inputp->nb_planes; j++)
@@ -235,35 +248,40 @@ static int config_output(AVFilterLink *outlink)
         in[i].after  = EXT_STOP;
     }
 
-    for (i = 0; i < s->nb_planes; i++) {
+    for (i = 0; i < s->nb_planes; i++)
+    {
         const int input = s->map[i][1];
         const int plane = s->map[i][0];
         InputParam *inputp = &inputsp[input];
 
-        if (plane + 1 > inputp->nb_planes) {
+        if (plane + 1 > inputp->nb_planes)
+        {
             av_log(ctx, AV_LOG_ERROR, "input %d does not have %d plane\n",
-                                      input, plane);
+                   input, plane);
             goto fail;
         }
-        if (s->outdesc->comp[i].depth_minus1 + 1 != inputp->depth[plane]) {
+        if (s->outdesc->comp[i].depth_minus1 + 1 != inputp->depth[plane])
+        {
             av_log(ctx, AV_LOG_ERROR, "output plane %d depth %d does not "
-                                      "match input %d plane %d depth %d\n",
-                                      i, s->outdesc->comp[i].depth_minus1 + 1,
-                                      input, plane, inputp->depth[plane]);
+                   "match input %d plane %d depth %d\n",
+                   i, s->outdesc->comp[i].depth_minus1 + 1,
+                   input, plane, inputp->depth[plane]);
             goto fail;
         }
-        if (s->planewidth[i] != inputp->planewidth[plane]) {
+        if (s->planewidth[i] != inputp->planewidth[plane])
+        {
             av_log(ctx, AV_LOG_ERROR, "output plane %d width %d does not "
-                                      "match input %d plane %d width %d\n",
-                                      i, s->planewidth[i],
-                                      input, plane, inputp->planewidth[plane]);
+                   "match input %d plane %d width %d\n",
+                   i, s->planewidth[i],
+                   input, plane, inputp->planewidth[plane]);
             goto fail;
         }
-        if (s->planeheight[i] != inputp->planeheight[plane]) {
+        if (s->planeheight[i] != inputp->planeheight[plane])
+        {
             av_log(ctx, AV_LOG_ERROR, "output plane %d height %d does not "
-                                      "match input %d plane %d height %d\n",
-                                      i, s->planeheight[i],
-                                      input, plane, inputp->planeheight[plane]);
+                   "match input %d plane %d height %d\n",
+                   i, s->planeheight[i],
+                   input, plane, inputp->planeheight[plane]);
             goto fail;
         }
     }
@@ -290,7 +308,8 @@ static av_cold void uninit(AVFilterContext *ctx)
         av_freep(&ctx->input_pads[i].name);
 }
 
-static const AVFilterPad mergeplanes_outputs[] = {
+static const AVFilterPad mergeplanes_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -300,7 +319,8 @@ static const AVFilterPad mergeplanes_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_mergeplanes = {
+AVFilter ff_vf_mergeplanes =
+{
     .name          = "mergeplanes",
     .description   = NULL_IF_CONFIG_SMALL("Merge planes."),
     .priv_size     = sizeof(MergePlanesContext),

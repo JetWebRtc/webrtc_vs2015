@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #error iSAC and iSACFX codecs cannot be enabled at the same time
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 // General codec specific defines
 const int kIsacWbDefaultRate = 32000;

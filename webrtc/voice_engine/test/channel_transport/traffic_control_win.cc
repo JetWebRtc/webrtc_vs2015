@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 
 #include "webrtc/system_wrappers/include/trace.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 TrafficControlWindows* TrafficControlWindows::instance = NULL;
 uint32_t TrafficControlWindows::refCounter = 0;
@@ -77,37 +79,37 @@ TrafficControlWindows* TrafficControlWindows::GetInstance(
     }
 
     instance->tcRegister = (registerFn)GetProcAddress(trafficLib,
-                                                      "TcRegisterClient");
+                           "TcRegisterClient");
     instance->tcDeregister = (deregisterFn)GetProcAddress(trafficLib,
-                                                          "TcDeregisterClient");
+                             "TcDeregisterClient");
     instance->tcEnumerate = (enumerateFn)GetProcAddress(
-        trafficLib,
-        "TcEnumerateInterfaces");
+                                trafficLib,
+                                "TcEnumerateInterfaces");
     instance->tcOpenInterface = (openInterfaceFn)GetProcAddress(
-        trafficLib,
-        "TcOpenInterfaceW");
+                                    trafficLib,
+                                    "TcOpenInterfaceW");
     instance->tcCloseInterface = (closeInterfaceFn)GetProcAddress(
-        trafficLib,
-        "TcCloseInterface");
+                                     trafficLib,
+                                     "TcCloseInterface");
     instance->tcAddFlow = (flowAddFn)GetProcAddress(trafficLib,
-                                                    "TcAddFlow");
+                          "TcAddFlow");
     instance->tcDeleteFlow = (flowDeleteFn)GetProcAddress(trafficLib,
-                                                          "TcDeleteFlow");
+                             "TcDeleteFlow");
 
     instance->tcAddFilter = (filterAddFn)GetProcAddress(trafficLib,
-                                                        "TcAddFilter");
+                            "TcAddFilter");
     instance->tcDeleteFilter = (filterDeleteFn)GetProcAddress(trafficLib,
-                                                              "TcDeleteFilter");
+                               "TcDeleteFilter");
 
     if(instance->tcRegister       == NULL ||
-       instance->tcDeregister     == NULL ||
-       instance->tcEnumerate      == NULL ||
-       instance->tcOpenInterface  == NULL ||
-       instance->tcCloseInterface == NULL ||
-       instance->tcAddFlow        == NULL ||
-       instance->tcAddFilter      == NULL ||
-       instance->tcDeleteFlow     == NULL ||
-       instance->tcDeleteFilter   == NULL)
+            instance->tcDeregister     == NULL ||
+            instance->tcEnumerate      == NULL ||
+            instance->tcOpenInterface  == NULL ||
+            instance->tcCloseInterface == NULL ||
+            instance->tcAddFlow        == NULL ||
+            instance->tcAddFilter      == NULL ||
+            instance->tcDeleteFlow     == NULL ||
+            instance->tcDeleteFilter   == NULL)
     {
         delete instance;
         instance = NULL;
@@ -197,9 +199,9 @@ ULONG TrafficControlWindows::TcEnumerateInterfaces(
 
 
 ULONG TrafficControlWindows::TcOpenInterfaceW(LPWSTR pInterfaceName,
-                                              HANDLE ClientHandle,
-                                              HANDLE ClIfcCtx,
-                                              PHANDLE pIfcHandle)
+        HANDLE ClientHandle,
+        HANDLE ClIfcCtx,
+        PHANDLE pIfcHandle)
 {
     assert(tcOpenInterface != NULL);
 
@@ -223,8 +225,8 @@ ULONG TrafficControlWindows::TcAddFlow(HANDLE IfcHandle, HANDLE ClFlowCtx,
 }
 
 ULONG TrafficControlWindows::TcAddFilter(HANDLE FlowHandle,
-                                         PTC_GEN_FILTER pGenericFilter,
-                                         PHANDLE pFilterHandle)
+        PTC_GEN_FILTER pGenericFilter,
+        PHANDLE pFilterHandle)
 {
     assert(tcAddFilter != NULL);
     return tcAddFilter(FlowHandle, pGenericFilter, pFilterHandle);

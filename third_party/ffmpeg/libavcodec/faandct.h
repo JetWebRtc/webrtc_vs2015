@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Floating point AAN DCT
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *

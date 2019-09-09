@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLV Encoding specific code.
  *
  * This file is part of FFmpeg.
@@ -51,10 +51,13 @@ void ff_flv_encode_picture_header(MpegEncContext *s, int picture_number)
     else
         format = 1;   /* use 2 bytes width & height */
     put_bits(&s->pb, 3, format);   /* PictureSize */
-    if (format == 0) {
+    if (format == 0)
+    {
         put_bits(&s->pb, 8, s->width);
         put_bits(&s->pb, 8, s->height);
-    } else if (format == 1) {
+    }
+    else if (format == 1)
+    {
         put_bits(&s->pb, 16, s->width);
         put_bits(&s->pb, 16, s->height);
     }
@@ -63,25 +66,31 @@ void ff_flv_encode_picture_header(MpegEncContext *s, int picture_number)
     put_bits(&s->pb, 5, s->qscale);   /* Quantizer */
     put_bits(&s->pb, 1, 0);   /* ExtraInformation */
 
-    if (s->h263_aic) {
+    if (s->h263_aic)
+    {
         s->y_dc_scale_table =
-        s->c_dc_scale_table = ff_aic_dc_scale_table;
-    } else {
+            s->c_dc_scale_table = ff_aic_dc_scale_table;
+    }
+    else
+    {
         s->y_dc_scale_table =
-        s->c_dc_scale_table = ff_mpeg1_dc_scale_table;
+            s->c_dc_scale_table = ff_mpeg1_dc_scale_table;
     }
 }
 
 void ff_flv2_encode_ac_esc(PutBitContext *pb, int slevel, int level,
                            int run, int last)
 {
-    if (level < 64) { // 7-bit level
+    if (level < 64)   // 7-bit level
+    {
         put_bits(pb, 1, 0);
         put_bits(pb, 1, last);
         put_bits(pb, 6, run);
 
         put_sbits(pb, 7, slevel);
-    } else {
+    }
+    else
+    {
         /* 11-bit level */
         put_bits(pb, 1, 1);
         put_bits(pb, 1, last);
@@ -91,14 +100,16 @@ void ff_flv2_encode_ac_esc(PutBitContext *pb, int slevel, int level,
     }
 }
 
-static const AVClass flv_class = {
+static const AVClass flv_class =
+{
     .class_name = "flv encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_flv_encoder = {
+AVCodec ff_flv_encoder =
+{
     .name           = "flv",
     .long_name      = NULL_IF_CONFIG_SMALL("FLV / Sorenson Spark / Sorenson H.263 (Flash Video)"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -107,7 +118,9 @@ AVCodec ff_flv_encoder = {
     .init           = ff_mpv_encode_init,
     .encode2        = ff_mpv_encode_picture,
     .close          = ff_mpv_encode_end,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE},
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
     .priv_class     = &flv_class,
 };

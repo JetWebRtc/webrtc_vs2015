@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Westwood SNDx codecs
  * Copyright (c) 2005 Konstantin Shishkov
  *
@@ -36,9 +36,10 @@
  * http://www.multimedia.cx
  */
 
-static const int8_t ws_adpcm_4bit[] = {
+static const int8_t ws_adpcm_4bit[] =
+{
     -9, -8, -6, -5, -4, -3, -2, -1,
-     0,  1,  2,  3,  4,  5,  6,  8
+    0,  1,  2,  3,  4,  5,  6,  8
 };
 
 static av_cold int ws_snd_decode_init(AVCodecContext *avctx)
@@ -65,7 +66,8 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
     if (!buf_size)
         return 0;
 
-    if (buf_size < 4) {
+    if (buf_size < 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "packet is too small\n");
         return AVERROR(EINVAL);
     }
@@ -74,7 +76,8 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
     in_size  = AV_RL16(&buf[2]);
     buf += 4;
 
-    if (in_size > buf_size) {
+    if (in_size > buf_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame data is larger than input buffer\n");
         return AVERROR_INVALIDDATA;
     }
@@ -86,13 +89,15 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
     samples     = frame->data[0];
     samples_end = samples + out_size;
 
-    if (in_size == out_size) {
+    if (in_size == out_size)
+    {
         memcpy(samples, buf, out_size);
         *got_frame_ptr = 1;
         return buf_size;
     }
 
-    while (samples < samples_end && buf - avpkt->data < buf_size) {
+    while (samples < samples_end && buf - avpkt->data < buf_size)
+    {
         int code, smp, size;
         uint8_t count;
         code  = *buf >> 6;
@@ -100,11 +105,20 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
         buf++;
 
         /* make sure we don't write past the output buffer */
-        switch (code) {
-        case 0:  smp = 4 * (count + 1);                break;
-        case 1:  smp = 2 * (count + 1);                break;
-        case 2:  smp = (count & 0x20) ? 1 : count + 1; break;
-        default: smp = count + 1;                      break;
+        switch (code)
+        {
+        case 0:
+            smp = 4 * (count + 1);
+            break;
+        case 1:
+            smp = 2 * (count + 1);
+            break;
+        case 2:
+            smp = (count & 0x20) ? 1 : count + 1;
+            break;
+        default:
+            smp = count + 1;
+            break;
         }
         if (samples_end - samples < smp)
             break;
@@ -114,9 +128,11 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
         if ((buf - avpkt->data) + size > buf_size)
             break;
 
-        switch (code) {
+        switch (code)
+        {
         case 0: /* ADPCM 2-bit */
-            for (count++; count > 0; count--) {
+            for (count++; count > 0; count--)
+            {
                 code = *buf++;
                 sample += ( code       & 0x3) - 2;
                 sample = av_clip_uint8(sample);
@@ -133,7 +149,8 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
             }
             break;
         case 1: /* ADPCM 4-bit */
-            for (count++; count > 0; count--) {
+            for (count++; count > 0; count--)
+            {
                 code = *buf++;
                 sample += ws_adpcm_4bit[code & 0xF];
                 sample = av_clip_uint8(sample);
@@ -144,14 +161,17 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
             }
             break;
         case 2: /* no compression */
-            if (count & 0x20) { /* big delta */
+            if (count & 0x20)   /* big delta */
+            {
                 int8_t t;
                 t = count;
                 t <<= 3;
                 sample += t >> 3;
                 sample = av_clip_uint8(sample);
                 *samples++ = sample;
-            } else { /* copy */
+            }
+            else     /* copy */
+            {
                 memcpy(samples, buf, smp);
                 samples += smp;
                 buf     += smp;
@@ -170,7 +190,8 @@ static int ws_snd_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_ws_snd1_decoder = {
+AVCodec ff_ws_snd1_decoder =
+{
     .name           = "ws_snd1",
     .long_name      = NULL_IF_CONFIG_SMALL("Westwood Audio (SND1)"),
     .type           = AVMEDIA_TYPE_AUDIO,

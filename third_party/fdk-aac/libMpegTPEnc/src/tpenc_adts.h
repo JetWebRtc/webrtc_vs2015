@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,27 +97,28 @@ amm-info@iis.fraunhofer.de
 
 #include "FDK_crc.h"
 
-typedef struct {
-  INT sample_freq;
-  CHANNEL_MODE channel_mode;
-  UCHAR decoderCanDoMpeg4;
-  UCHAR mpeg_id;
-  UCHAR layer;
-  UCHAR protection_absent;
-  UCHAR profile;
-  UCHAR sample_freq_index;
-  UCHAR private_bit;
-  UCHAR original;
-  UCHAR home;
-  UCHAR copyright_id;
-  UCHAR copyright_start;
-  USHORT frame_length;
-  UCHAR num_raw_blocks;
-  UCHAR BufferFullnesStartFlag;
-  int headerBits;                /*!< Header bit demand for the current raw data block */
-  int currentBlock;              /*!< Index of current raw data block */
-  int subFrameStartBit;          /*!< Bit position where the current raw data block begins */
-  FDK_CRCINFO crcInfo;
+typedef struct
+{
+    INT sample_freq;
+    CHANNEL_MODE channel_mode;
+    UCHAR decoderCanDoMpeg4;
+    UCHAR mpeg_id;
+    UCHAR layer;
+    UCHAR protection_absent;
+    UCHAR profile;
+    UCHAR sample_freq_index;
+    UCHAR private_bit;
+    UCHAR original;
+    UCHAR home;
+    UCHAR copyright_id;
+    UCHAR copyright_start;
+    USHORT frame_length;
+    UCHAR num_raw_blocks;
+    UCHAR BufferFullnesStartFlag;
+    int headerBits;                /*!< Header bit demand for the current raw data block */
+    int currentBlock;              /*!< Index of current raw data block */
+    int subFrameStartBit;          /*!< Bit position where the current raw data block begins */
+    FDK_CRCINFO crcInfo;
 } STRUCT_ADTS;
 
 typedef STRUCT_ADTS *HANDLE_ADTS;
@@ -132,9 +133,9 @@ typedef STRUCT_ADTS *HANDLE_ADTS;
  * \return 0 in case of success.
  */
 INT adtsWrite_Init(
-        HANDLE_ADTS   hAdts,
-        CODER_CONFIG *config
-        );
+    HANDLE_ADTS   hAdts,
+    CODER_CONFIG *config
+);
 
 /**
  * \brief Get the total bit overhead caused by ADTS
@@ -157,11 +158,11 @@ int adtsWrite_GetHeaderBits( HANDLE_ADTS hAdts );
  * \return 0 in case of success.
  */
 INT adtsWrite_EncodeHeader(
-        HANDLE_ADTS          hAdts,
-        HANDLE_FDK_BITSTREAM hBitStream,
-        int                  bufferFullness,
-        int                  frame_length
-        );
+    HANDLE_ADTS          hAdts,
+    HANDLE_FDK_BITSTREAM hBitStream,
+    int                  bufferFullness,
+    int                  frame_length
+);
 /**
  * \brief Finish a ADTS raw data block
  *
@@ -172,10 +173,10 @@ INT adtsWrite_EncodeHeader(
  *
  */
 void adtsWrite_EndRawDataBlock(
-        HANDLE_ADTS          hAdts,
-        HANDLE_FDK_BITSTREAM hBs,
-        int                 *bits
-        );
+    HANDLE_ADTS          hAdts,
+    HANDLE_FDK_BITSTREAM hBs,
+    int                 *bits
+);
 
 
 /**
@@ -193,10 +194,10 @@ void adtsWrite_EndRawDataBlock(
  * \return ID for the created region, -1 in case of an error
  */
 int adtsWrite_CrcStartReg(
-        HANDLE_ADTS          pAdts,
-        HANDLE_FDK_BITSTREAM hBs,
-        int                  mBits
-        );
+    HANDLE_ADTS          pAdts,
+    HANDLE_FDK_BITSTREAM hBs,
+    int                  mBits
+);
 
 /**
  * \brief Ends CRC region identified by reg
@@ -206,10 +207,10 @@ int adtsWrite_CrcStartReg(
  * \param reg a CRC region ID returned previously by adtsWrite_CrcStartReg()
  */
 void adtsWrite_CrcEndReg(
-        HANDLE_ADTS          pAdts,
-        HANDLE_FDK_BITSTREAM hBs,
-        int                  reg
-        );
+    HANDLE_ADTS          pAdts,
+    HANDLE_FDK_BITSTREAM hBs,
+    int                  reg
+);
 
 
 

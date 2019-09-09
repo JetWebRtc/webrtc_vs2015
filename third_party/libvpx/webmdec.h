@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,18 +18,19 @@ extern "C" {
 
 struct VpxInputContext;
 
-struct WebmInputContext {
-  void *reader;
-  void *segment;
-  uint8_t *buffer;
-  const void *cluster;
-  const void *block_entry;
-  const void *block;
-  int block_frame_index;
-  int video_track_index;
-  uint64_t timestamp_ns;
-  int is_key_frame;
-  int reached_eos;
+struct WebmInputContext
+{
+    void *reader;
+    void *segment;
+    uint8_t *buffer;
+    const void *cluster;
+    const void *block_entry;
+    const void *block;
+    int block_frame_index;
+    int video_track_index;
+    uint64_t timestamp_ns;
+    int is_key_frame;
+    int reached_eos;
 };
 
 // Checks if the input is a WebM file. If so, initializes WebMInputContext so

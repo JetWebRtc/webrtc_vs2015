@@ -1,4 +1,4 @@
-/* Coverity Scan model
+﻿/* Coverity Scan model
 *
 * Copyright (C) 2014 Red Hat, Inc.
 *
@@ -32,7 +32,8 @@
 #define NULL (void *)0
 
 // Based on https://scan.coverity.com/models
-void *av_malloc(size_t size) {
+void *av_malloc(size_t size)
+{
     int has_memory;
     __coverity_negative_sink__(size);
     if(has_memory)

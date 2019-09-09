@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Peter Meerwald <pmeerw@pmeerw.net>
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 
 #include <stdint.h>
 
-typedef struct G722DSPContext {
+typedef struct G722DSPContext
+{
     void (*apply_qmf)(const int16_t *prev_samples, int xout[2]);
 } G722DSPContext;
 

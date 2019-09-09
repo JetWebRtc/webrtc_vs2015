@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 #include <string>
 #include <map>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Parses enabled field trials from a string config, such as the one passed
 // to chrome's argument --force-fieldtrials and initializes webrtc::field_trial
@@ -34,13 +36,14 @@ void InitFieldTrialsFromString(const std::string& config);
 
 // This class is used to override field-trial configs within specific tests.
 // After this class goes out of scope previous field trials will be restored.
-class ScopedFieldTrials {
- public:
-  explicit ScopedFieldTrials(const std::string& config);
-  ~ScopedFieldTrials();
- private:
-  std::string current_field_trials_;
-  const char* previous_field_trials_;
+class ScopedFieldTrials
+{
+public:
+    explicit ScopedFieldTrials(const std::string& config);
+    ~ScopedFieldTrials();
+private:
+    std::string current_field_trials_;
+    const char* previous_field_trials_;
 };
 
 }  // namespace test

@@ -22,7 +22,8 @@
 #include "intreadwrite.h"
 #include "murmur3.h"
 
-typedef struct AVMurMur3 {
+typedef struct AVMurMur3
+{
     uint64_t h1, h2;
     uint8_t state[16];
     int state_pos;
@@ -96,8 +97,10 @@ void av_murmur3_update(AVMurMur3 *c, const uint8_t *src, int len)
     uint64_t k1, k2;
     if (len <= 0) return;
     c->len += len;
-    if (c->state_pos > 0) {
-        while (c->state_pos < 16) {
+    if (c->state_pos > 0)
+    {
+        while (c->state_pos < 16)
+        {
             c->state[c->state_pos++] = *src++;
             if (--len <= 0) return;
         }
@@ -109,7 +112,8 @@ void av_murmur3_update(AVMurMur3 *c, const uint8_t *src, int len)
     }
 
     end = src + (len & ~15);
-    while (src < end) {
+    while (src < end)
+    {
         // These could be done sequentially instead
         // of interleaved, but like this is over 10% faster
         k1 = get_k1(src);
@@ -122,7 +126,8 @@ void av_murmur3_update(AVMurMur3 *c, const uint8_t *src, int len)
     c->h2 = h2;
 
     len &= 15;
-    if (len > 0) {
+    if (len > 0)
+    {
         memcpy(c->state, src, len);
         c->state_pos = len;
     }

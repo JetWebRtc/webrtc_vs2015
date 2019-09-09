@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Guillaume Martres <smarter@ubuntu.com>
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder TNS
  * Copyright (C) 2015 Rostislav Pehlivanov
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/system_wrappers/include/file_wrapper.h"
 #include "webrtc/system_wrappers/include/trace.h"
 
-namespace webrtc {
+namespace webrtc
+{
 MediaFile* MediaFile::CreateMediaFile(const int32_t id)
 {
     return new MediaFileImpl(id);
@@ -104,7 +105,7 @@ int32_t MediaFileImpl::PlayoutAudioData(int8_t* buffer,
                                         size_t& dataLengthInBytes)
 {
     WEBRTC_TRACE(kTraceStream, kTraceFile, _id,
-               "MediaFileImpl::PlayoutData(buffer= 0x%x, bufLen= %" PRIuS ")",
+                 "MediaFileImpl::PlayoutData(buffer= 0x%x, bufLen= %" PRIuS ")",
                  buffer, dataLengthInBytes);
 
     const size_t bufferLengthInBytes = dataLengthInBytes;
@@ -138,44 +139,44 @@ int32_t MediaFileImpl::PlayoutAudioData(int8_t* buffer,
 
         switch(_fileFormat)
         {
-            case kFileFormatPcm32kHzFile:
-            case kFileFormatPcm16kHzFile:
-            case kFileFormatPcm8kHzFile:
-                bytesRead = _ptrFileUtilityObj->ReadPCMData(
-                    *_ptrInStream,
-                    buffer,
-                    bufferLengthInBytes);
-                break;
-            case kFileFormatCompressedFile:
-                bytesRead = _ptrFileUtilityObj->ReadCompressedData(
-                    *_ptrInStream,
-                    buffer,
-                    bufferLengthInBytes);
-                break;
-            case kFileFormatWavFile:
-                bytesRead = _ptrFileUtilityObj->ReadWavDataAsMono(
-                    *_ptrInStream,
-                    buffer,
-                    bufferLengthInBytes);
-                break;
-            case kFileFormatPreencodedFile:
-                bytesRead = _ptrFileUtilityObj->ReadPreEncodedData(
-                    *_ptrInStream,
-                    buffer,
-                    bufferLengthInBytes);
-                if(bytesRead > 0)
-                {
-                    dataLengthInBytes = static_cast<size_t>(bytesRead);
-                    return 0;
-                }
-                break;
-            default:
+        case kFileFormatPcm32kHzFile:
+        case kFileFormatPcm16kHzFile:
+        case kFileFormatPcm8kHzFile:
+            bytesRead = _ptrFileUtilityObj->ReadPCMData(
+                            *_ptrInStream,
+                            buffer,
+                            bufferLengthInBytes);
+            break;
+        case kFileFormatCompressedFile:
+            bytesRead = _ptrFileUtilityObj->ReadCompressedData(
+                            *_ptrInStream,
+                            buffer,
+                            bufferLengthInBytes);
+            break;
+        case kFileFormatWavFile:
+            bytesRead = _ptrFileUtilityObj->ReadWavDataAsMono(
+                            *_ptrInStream,
+                            buffer,
+                            bufferLengthInBytes);
+            break;
+        case kFileFormatPreencodedFile:
+            bytesRead = _ptrFileUtilityObj->ReadPreEncodedData(
+                            *_ptrInStream,
+                            buffer,
+                            bufferLengthInBytes);
+            if(bytesRead > 0)
             {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Invalid file format: %d", _fileFormat);
-                assert(false);
-                break;
+                dataLengthInBytes = static_cast<size_t>(bytesRead);
+                return 0;
             }
+            break;
+        default:
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Invalid file format: %d", _fileFormat);
+            assert(false);
+            break;
+        }
         }
 
         if( bytesRead > 0)
@@ -276,18 +277,18 @@ int32_t MediaFileImpl::PlayoutStereoData(
         int32_t bytesRead = 0;
         switch(_fileFormat)
         {
-            case kFileFormatWavFile:
-                    bytesRead = _ptrFileUtilityObj->ReadWavDataAsStereo(
-                        *_ptrInStream,
-                        bufferLeft,
-                        bufferRight,
-                        bufferLengthInBytes);
-                    break;
-            default:
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Trying to read non-WAV as stereo audio\
+        case kFileFormatWavFile:
+            bytesRead = _ptrFileUtilityObj->ReadWavDataAsStereo(
+                            *_ptrInStream,
+                            bufferLeft,
+                            bufferRight,
+                            bufferLengthInBytes);
+            break;
+        default:
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Trying to read non-WAV as stereo audio\
  (not supported)");
-                break;
+            break;
         }
 
         if(bytesRead > 0)
@@ -352,7 +353,7 @@ int32_t MediaFileImpl::StartPlayingAudioFile(
 
     // Check that the file will play longer than notificationTimeMs ms.
     if((startPointMs && stopPointMs && !loop) &&
-       (notificationTimeMs > (stopPointMs - startPointMs)))
+            (notificationTimeMs > (stopPointMs - startPointMs)))
     {
         WEBRTC_TRACE(
             kTraceError,
@@ -366,16 +367,17 @@ int32_t MediaFileImpl::StartPlayingAudioFile(
     FileWrapper* inputStream = FileWrapper::Create();
     if(inputStream == NULL)
     {
-       WEBRTC_TRACE(kTraceMemory, kTraceFile, _id,
-                    "Failed to allocate input stream for file %s", fileName);
+        WEBRTC_TRACE(kTraceMemory, kTraceFile, _id,
+                     "Failed to allocate input stream for file %s", fileName);
         return -1;
     }
 
-    if (!inputStream->OpenFile(fileName, true)) {
-      delete inputStream;
-      WEBRTC_TRACE(kTraceError, kTraceFile, _id, "Could not open input file %s",
-                   fileName);
-      return -1;
+    if (!inputStream->OpenFile(fileName, true))
+    {
+        delete inputStream;
+        WEBRTC_TRACE(kTraceError, kTraceFile, _id, "Could not open input file %s",
+                     fileName);
+        return -1;
     }
 
     if(StartPlayingStream(*inputStream, loop, notificationTimeMs,
@@ -456,77 +458,77 @@ int32_t MediaFileImpl::StartPlayingStream(
 
     switch(format)
     {
-        case kFileFormatWavFile:
-        {
-            if(_ptrFileUtilityObj->InitWavReading(stream, startPointMs,
-                                                  stopPointMs) == -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Not a valid WAV file!");
-                StopPlaying();
-                return -1;
-            }
-            _fileFormat = kFileFormatWavFile;
-            break;
-        }
-        case kFileFormatCompressedFile:
-        {
-            if(_ptrFileUtilityObj->InitCompressedReading(stream, startPointMs,
-                                                         stopPointMs) == -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Not a valid Compressed file!");
-                StopPlaying();
-                return -1;
-            }
-            _fileFormat = kFileFormatCompressedFile;
-            break;
-        }
-        case kFileFormatPcm8kHzFile:
-        case kFileFormatPcm16kHzFile:
-        case kFileFormatPcm32kHzFile:
-        {
-            // ValidFileFormat() called in the beginneing of this function
-            // prevents codecInst from being NULL here.
-            assert(codecInst != NULL);
-            if(!ValidFrequency(codecInst->plfreq) ||
-               _ptrFileUtilityObj->InitPCMReading(stream, startPointMs,
-                                                  stopPointMs,
-                                                  codecInst->plfreq) == -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Not a valid raw 8 or 16 KHz PCM file!");
-                StopPlaying();
-                return -1;
-            }
-
-            _fileFormat = format;
-            break;
-        }
-        case kFileFormatPreencodedFile:
-        {
-            // ValidFileFormat() called in the beginneing of this function
-            // prevents codecInst from being NULL here.
-            assert(codecInst != NULL);
-            if(_ptrFileUtilityObj->InitPreEncodedReading(stream, *codecInst) ==
-               -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Not a valid PreEncoded file!");
-                StopPlaying();
-                return -1;
-            }
-
-            _fileFormat = kFileFormatPreencodedFile;
-            break;
-        }
-        default:
+    case kFileFormatWavFile:
+    {
+        if(_ptrFileUtilityObj->InitWavReading(stream, startPointMs,
+                                              stopPointMs) == -1)
         {
             WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                         "Invalid file format: %d", format);
-            assert(false);
-            break;
+                         "Not a valid WAV file!");
+            StopPlaying();
+            return -1;
         }
+        _fileFormat = kFileFormatWavFile;
+        break;
+    }
+    case kFileFormatCompressedFile:
+    {
+        if(_ptrFileUtilityObj->InitCompressedReading(stream, startPointMs,
+                stopPointMs) == -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Not a valid Compressed file!");
+            StopPlaying();
+            return -1;
+        }
+        _fileFormat = kFileFormatCompressedFile;
+        break;
+    }
+    case kFileFormatPcm8kHzFile:
+    case kFileFormatPcm16kHzFile:
+    case kFileFormatPcm32kHzFile:
+    {
+        // ValidFileFormat() called in the beginneing of this function
+        // prevents codecInst from being NULL here.
+        assert(codecInst != NULL);
+        if(!ValidFrequency(codecInst->plfreq) ||
+                _ptrFileUtilityObj->InitPCMReading(stream, startPointMs,
+                        stopPointMs,
+                        codecInst->plfreq) == -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Not a valid raw 8 or 16 KHz PCM file!");
+            StopPlaying();
+            return -1;
+        }
+
+        _fileFormat = format;
+        break;
+    }
+    case kFileFormatPreencodedFile:
+    {
+        // ValidFileFormat() called in the beginneing of this function
+        // prevents codecInst from being NULL here.
+        assert(codecInst != NULL);
+        if(_ptrFileUtilityObj->InitPreEncodedReading(stream, *codecInst) ==
+                -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Not a valid PreEncoded file!");
+            StopPlaying();
+            return -1;
+        }
+
+        _fileFormat = kFileFormatPreencodedFile;
+        break;
+    }
+    default:
+    {
+        WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                     "Invalid file format: %d", format);
+        assert(false);
+        break;
+    }
     }
     if(_ptrFileUtilityObj->codec_info(codec_info_) == -1)
     {
@@ -634,47 +636,49 @@ int32_t MediaFileImpl::IncomingAudioData(
         {
             switch(_fileFormat)
             {
-                case kFileFormatPcm8kHzFile:
-                case kFileFormatPcm16kHzFile:
-                case kFileFormatPcm32kHzFile:
-                    bytesWritten = _ptrFileUtilityObj->WritePCMData(
-                        *_ptrOutStream,
-                        buffer,
-                        bufferLengthInBytes);
+            case kFileFormatPcm8kHzFile:
+            case kFileFormatPcm16kHzFile:
+            case kFileFormatPcm32kHzFile:
+                bytesWritten = _ptrFileUtilityObj->WritePCMData(
+                                   *_ptrOutStream,
+                                   buffer,
+                                   bufferLengthInBytes);
 
+                // Sample size is 2 bytes.
+                if(bytesWritten > 0)
+                {
+                    samplesWritten = bytesWritten/sizeof(int16_t);
+                }
+                break;
+            case kFileFormatCompressedFile:
+                bytesWritten = _ptrFileUtilityObj->WriteCompressedData(
+                                   *_ptrOutStream, buffer, bufferLengthInBytes);
+                break;
+            case kFileFormatWavFile:
+                bytesWritten = _ptrFileUtilityObj->WriteWavData(
+                                   *_ptrOutStream,
+                                   buffer,
+                                   bufferLengthInBytes);
+                if(bytesWritten > 0 && STR_NCASE_CMP(codec_info_.plname,
+                                                     "L16", 4) == 0)
+                {
                     // Sample size is 2 bytes.
-                    if(bytesWritten > 0)
-                    {
-                        samplesWritten = bytesWritten/sizeof(int16_t);
-                    }
-                    break;
-                case kFileFormatCompressedFile:
-                    bytesWritten = _ptrFileUtilityObj->WriteCompressedData(
-                        *_ptrOutStream, buffer, bufferLengthInBytes);
-                    break;
-                case kFileFormatWavFile:
-                    bytesWritten = _ptrFileUtilityObj->WriteWavData(
-                        *_ptrOutStream,
-                        buffer,
-                        bufferLengthInBytes);
-                    if(bytesWritten > 0 && STR_NCASE_CMP(codec_info_.plname,
-                                                         "L16", 4) == 0)
-                    {
-                        // Sample size is 2 bytes.
-                        samplesWritten = bytesWritten/sizeof(int16_t);
-                    }
-                    break;
-                case kFileFormatPreencodedFile:
-                    bytesWritten = _ptrFileUtilityObj->WritePreEncodedData(
-                        *_ptrOutStream, buffer, bufferLengthInBytes);
-                    break;
-                default:
-                    WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                                 "Invalid file format: %d", _fileFormat);
-                    assert(false);
-                    break;
+                    samplesWritten = bytesWritten/sizeof(int16_t);
+                }
+                break;
+            case kFileFormatPreencodedFile:
+                bytesWritten = _ptrFileUtilityObj->WritePreEncodedData(
+                                   *_ptrOutStream, buffer, bufferLengthInBytes);
+                break;
+            default:
+                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                             "Invalid file format: %d", _fileFormat);
+                assert(false);
+                break;
             }
-        } else {
+        }
+        else
+        {
             // TODO (hellner): quick look at the code makes me think that this
             //                 code is never executed. Remove?
             if(_ptrOutStream)
@@ -747,11 +751,12 @@ int32_t MediaFileImpl::StartRecordingAudioFile(
         return -1;
     }
 
-    if (!outputStream->OpenFile(fileName, false)) {
-      delete outputStream;
-      WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                   "Could not open output file '%s' for writing!", fileName);
-      return -1;
+    if (!outputStream->OpenFile(fileName, false))
+    {
+        delete outputStream;
+        WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                     "Could not open output file '%s' for writing!", fileName);
+        return -1;
     }
 
     if(maxSizeBytes)
@@ -794,7 +799,7 @@ int32_t MediaFileImpl::StartRecordingAudioStream(
             kTraceFile,
             _id,
             "StartRecording called, but already recording or playing file %s!",
-                   _fileName);
+            _fileName);
         return -1;
     }
 
@@ -821,73 +826,73 @@ int32_t MediaFileImpl::StartRecordingAudioStream(
     memcpy(&tmpAudioCodec, &codecInst, sizeof(CodecInst));
     switch(format)
     {
-        case kFileFormatWavFile:
-        {
-            if(_ptrFileUtilityObj->InitWavWriting(stream, codecInst) == -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Failed to initialize WAV file!");
-                delete _ptrFileUtilityObj;
-                _ptrFileUtilityObj = NULL;
-                return -1;
-            }
-            _fileFormat = kFileFormatWavFile;
-            break;
-        }
-        case kFileFormatCompressedFile:
-        {
-            // Write compression codec name at beginning of file
-            if(_ptrFileUtilityObj->InitCompressedWriting(stream, codecInst) ==
-               -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Failed to initialize Compressed file!");
-                delete _ptrFileUtilityObj;
-                _ptrFileUtilityObj = NULL;
-                return -1;
-            }
-            _fileFormat = kFileFormatCompressedFile;
-            break;
-        }
-        case kFileFormatPcm8kHzFile:
-        case kFileFormatPcm16kHzFile:
-        {
-            if(!ValidFrequency(codecInst.plfreq) ||
-               _ptrFileUtilityObj->InitPCMWriting(stream, codecInst.plfreq) ==
-               -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Failed to initialize 8 or 16KHz PCM file!");
-                delete _ptrFileUtilityObj;
-                _ptrFileUtilityObj = NULL;
-                return -1;
-            }
-            _fileFormat = format;
-            break;
-        }
-        case kFileFormatPreencodedFile:
-        {
-            if(_ptrFileUtilityObj->InitPreEncodedWriting(stream, codecInst) ==
-               -1)
-            {
-                WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                             "Failed to initialize Pre-Encoded file!");
-                delete _ptrFileUtilityObj;
-                _ptrFileUtilityObj = NULL;
-                return -1;
-            }
-
-            _fileFormat = kFileFormatPreencodedFile;
-            break;
-        }
-        default:
+    case kFileFormatWavFile:
+    {
+        if(_ptrFileUtilityObj->InitWavWriting(stream, codecInst) == -1)
         {
             WEBRTC_TRACE(kTraceError, kTraceFile, _id,
-                         "Invalid file format %d specified!", format);
+                         "Failed to initialize WAV file!");
             delete _ptrFileUtilityObj;
             _ptrFileUtilityObj = NULL;
             return -1;
         }
+        _fileFormat = kFileFormatWavFile;
+        break;
+    }
+    case kFileFormatCompressedFile:
+    {
+        // Write compression codec name at beginning of file
+        if(_ptrFileUtilityObj->InitCompressedWriting(stream, codecInst) ==
+                -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Failed to initialize Compressed file!");
+            delete _ptrFileUtilityObj;
+            _ptrFileUtilityObj = NULL;
+            return -1;
+        }
+        _fileFormat = kFileFormatCompressedFile;
+        break;
+    }
+    case kFileFormatPcm8kHzFile:
+    case kFileFormatPcm16kHzFile:
+    {
+        if(!ValidFrequency(codecInst.plfreq) ||
+                _ptrFileUtilityObj->InitPCMWriting(stream, codecInst.plfreq) ==
+                -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Failed to initialize 8 or 16KHz PCM file!");
+            delete _ptrFileUtilityObj;
+            _ptrFileUtilityObj = NULL;
+            return -1;
+        }
+        _fileFormat = format;
+        break;
+    }
+    case kFileFormatPreencodedFile:
+    {
+        if(_ptrFileUtilityObj->InitPreEncodedWriting(stream, codecInst) ==
+                -1)
+        {
+            WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                         "Failed to initialize Pre-Encoded file!");
+            delete _ptrFileUtilityObj;
+            _ptrFileUtilityObj = NULL;
+            return -1;
+        }
+
+        _fileFormat = kFileFormatPreencodedFile;
+        break;
+    }
+    default:
+    {
+        WEBRTC_TRACE(kTraceError, kTraceFile, _id,
+                     "Invalid file format %d specified!", format);
+        delete _ptrFileUtilityObj;
+        _ptrFileUtilityObj = NULL;
+        return -1;
+    }
     }
     _isStereo = (tmpAudioCodec.channels == 2);
     if(_isStereo)
@@ -900,8 +905,8 @@ int32_t MediaFileImpl::StartRecordingAudioStream(
             return -1;
         }
         if((STR_NCASE_CMP(tmpAudioCodec.plname, "L16", 4) != 0) &&
-           (STR_NCASE_CMP(tmpAudioCodec.plname, "PCMU", 5) != 0) &&
-           (STR_NCASE_CMP(tmpAudioCodec.plname, "PCMA", 5) != 0))
+                (STR_NCASE_CMP(tmpAudioCodec.plname, "PCMU", 5) != 0) &&
+                (STR_NCASE_CMP(tmpAudioCodec.plname, "PCMA", 5) != 0))
         {
             WEBRTC_TRACE(
                 kTraceWarning,
@@ -938,7 +943,7 @@ int32_t MediaFileImpl::StopRecording()
         // Both AVI and WAV header has to be updated before closing the stream
         // because they contain size information.
         if((_fileFormat == kFileFormatWavFile) &&
-            (_ptrOutStream != NULL))
+                (_ptrOutStream != NULL))
         {
             _ptrFileUtilityObj->UpdateWavHeader(*_ptrOutStream);
         }
@@ -1024,7 +1029,7 @@ int32_t MediaFileImpl::FileDurationMs(const char* fileName,
     }
 
     const int32_t duration = utilityObj->FileDurationMs(fileName, format,
-                                                        freqInHz);
+                             freqInHz);
     delete utilityObj;
     if(duration == -1)
     {
@@ -1061,7 +1066,7 @@ int32_t MediaFileImpl::codec_info(CodecInst& codecInst) const
     {
         WEBRTC_TRACE(kTraceError, kTraceFile, _id,
                      "The CodecInst for %s is unknown!",
-            _playingActive ? "Playback" : "Recording");
+                     _playingActive ? "Playback" : "Recording");
         return -1;
     }
     memcpy(&codecInst,&codec_info_,sizeof(CodecInst));
@@ -1074,9 +1079,9 @@ bool MediaFileImpl::ValidFileFormat(const FileFormats format,
     if(codecInst == NULL)
     {
         if(format == kFileFormatPreencodedFile ||
-           format == kFileFormatPcm8kHzFile    ||
-           format == kFileFormatPcm16kHzFile   ||
-           format == kFileFormatPcm32kHzFile)
+                format == kFileFormatPcm8kHzFile    ||
+                format == kFileFormatPcm16kHzFile   ||
+                format == kFileFormatPcm32kHzFile)
         {
             WEBRTC_TRACE(kTraceError, kTraceFile, -1,
                          "Codec info required for file format specified!");

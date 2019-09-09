@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -118,6 +118,6 @@ INT FDKaacEnc_Transform_Real (const INT_PCM *timeData,
                               const INT frameLength,
                               INT *mdctData_e,
                               INT filterType
-                             ,FIXP_DBL * RESTRICT overlapAddBuffer
+                              ,FIXP_DBL * RESTRICT overlapAddBuffer
                              );
 #endif

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -90,7 +90,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Memory layout   
+  \brief  Memory layout
   \author Markus Lohwasser
 */
 
@@ -107,7 +107,7 @@ amm-info@iis.fraunhofer.de
 #include "bit_cnt.h"
 #include "psy_const.h"
 
-  #define  OUTPUTBUFFER_SIZE    (8192)  /*!< Output buffer size has to be at least 6144 bits per channel (768 bytes). FDK bitbuffer implementation expects buffer of size 2^n. */
+#define  OUTPUTBUFFER_SIZE    (8192)  /*!< Output buffer size has to be at least 6144 bits per channel (768 bytes). FDK bitbuffer implementation expects buffer of size 2^n. */
 
 
 /*
@@ -120,36 +120,37 @@ amm-info@iis.fraunhofer.de
 /* define hBitstream size: max AAC framelength is 6144 bits/channel */
 /*#define BUFFER_BITSTR_SIZE ((6400*(8)/bbWordSize)    +((bbWordSize - 1) / bbWordSize))*/
 
-struct AAC_ENC {
+struct AAC_ENC
+{
 
-  AACENC_CONFIG    *config;
+    AACENC_CONFIG    *config;
 
-  INT               ancillaryBitsPerFrame;              /* ancillary bits per frame calculated from ancillary rate */
+    INT               ancillaryBitsPerFrame;              /* ancillary bits per frame calculated from ancillary rate */
 
-  CHANNEL_MAPPING   channelMapping;
+    CHANNEL_MAPPING   channelMapping;
 
-  QC_STATE         *qcKernel;
-  QC_OUT           *qcOut[(1)];
+    QC_STATE         *qcKernel;
+    QC_OUT           *qcOut[(1)];
 
-  PSY_OUT          *psyOut[(1)];
-  PSY_INTERNAL     *psyKernel;
+    PSY_OUT          *psyOut[(1)];
+    PSY_INTERNAL     *psyKernel;
 
-  /* lifetime vars */
+    /* lifetime vars */
 
-  CHANNEL_MODE encoderMode;
-  INT bandwidth90dB;
-  AACENC_BITRATE_MODE bitrateMode;
+    CHANNEL_MODE encoderMode;
+    INT bandwidth90dB;
+    AACENC_BITRATE_MODE bitrateMode;
 
-  INT    dontWriteAdif;      /* use: write ADIF header only before 1st frame */
+    INT    dontWriteAdif;      /* use: write ADIF header only before 1st frame */
 
-  FIXP_DBL  *dynamic_RAM;
+    FIXP_DBL  *dynamic_RAM;
 
 
-  INT maxChannels;           /* used while allocation */
-  INT maxElements;
-  INT maxFrames;
+    INT maxChannels;           /* used while allocation */
+    INT maxElements;
+    INT maxFrames;
 
-  AUDIO_OBJECT_TYPE aot;    /* AOT to be used while encoding.  */
+    AUDIO_OBJECT_TYPE aot;    /* AOT to be used while encoding.  */
 
 } ;
 
@@ -183,7 +184,7 @@ struct AAC_ENC {
 #define AAC_ENC_DYN_RAM_SIZE  ( BUF_SIZE_0 + BUF_SIZE_1 )
 
 
-  H_ALLOC_MEM (AACdynamic_RAM, FIXP_DBL)
+H_ALLOC_MEM (AACdynamic_RAM, FIXP_DBL)
 /*
  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 END - Dynamic RAM - Allocation */
@@ -191,35 +192,35 @@ END - Dynamic RAM - Allocation */
 /*
   See further Memory Allocation details in aacEnc_ram.cpp
 */
-  H_ALLOC_MEM (Ram_aacEnc_AacEncoder, AAC_ENC)
+H_ALLOC_MEM (Ram_aacEnc_AacEncoder, AAC_ENC)
 
-  H_ALLOC_MEM (Ram_aacEnc_PsyElement, PSY_ELEMENT)
+H_ALLOC_MEM (Ram_aacEnc_PsyElement, PSY_ELEMENT)
 
-  H_ALLOC_MEM (Ram_aacEnc_PsyInternal, PSY_INTERNAL)
-  H_ALLOC_MEM (Ram_aacEnc_PsyStatic, PSY_STATIC)
-  H_ALLOC_MEM (Ram_aacEnc_PsyInputBuffer, INT_PCM)
+H_ALLOC_MEM (Ram_aacEnc_PsyInternal, PSY_INTERNAL)
+H_ALLOC_MEM (Ram_aacEnc_PsyStatic, PSY_STATIC)
+H_ALLOC_MEM (Ram_aacEnc_PsyInputBuffer, INT_PCM)
 
-  PSY_DYNAMIC *GetRam_aacEnc_PsyDynamic (int n, UCHAR* dynamic_RAM);
-  H_ALLOC_MEM (Ram_bsOutbuffer, UCHAR)
+PSY_DYNAMIC *GetRam_aacEnc_PsyDynamic (int n, UCHAR* dynamic_RAM);
+H_ALLOC_MEM (Ram_bsOutbuffer, UCHAR)
 
-  H_ALLOC_MEM (Ram_aacEnc_PsyOutChannel, PSY_OUT_CHANNEL)
+H_ALLOC_MEM (Ram_aacEnc_PsyOutChannel, PSY_OUT_CHANNEL)
 
-  H_ALLOC_MEM (Ram_aacEnc_PsyOut, PSY_OUT)
-  H_ALLOC_MEM (Ram_aacEnc_PsyOutElements, PSY_OUT_ELEMENT)
+H_ALLOC_MEM (Ram_aacEnc_PsyOut, PSY_OUT)
+H_ALLOC_MEM (Ram_aacEnc_PsyOutElements, PSY_OUT_ELEMENT)
 
-  H_ALLOC_MEM (Ram_aacEnc_QCstate, QC_STATE)
-  H_ALLOC_MEM (Ram_aacEnc_AdjustThreshold, ADJ_THR_STATE)
+H_ALLOC_MEM (Ram_aacEnc_QCstate, QC_STATE)
+H_ALLOC_MEM (Ram_aacEnc_AdjustThreshold, ADJ_THR_STATE)
 
-  H_ALLOC_MEM (Ram_aacEnc_AdjThrStateElement, ATS_ELEMENT)
-  H_ALLOC_MEM (Ram_aacEnc_ElementBits, ELEMENT_BITS)
-  H_ALLOC_MEM (Ram_aacEnc_BitCntrState, BITCNTR_STATE)
+H_ALLOC_MEM (Ram_aacEnc_AdjThrStateElement, ATS_ELEMENT)
+H_ALLOC_MEM (Ram_aacEnc_ElementBits, ELEMENT_BITS)
+H_ALLOC_MEM (Ram_aacEnc_BitCntrState, BITCNTR_STATE)
 
-  INT *GetRam_aacEnc_BitLookUp(int n, UCHAR* dynamic_RAM);
-  INT *GetRam_aacEnc_MergeGainLookUp(int n, UCHAR* dynamic_RAM);
-  QC_OUT_CHANNEL *GetRam_aacEnc_QCchannel (int n, UCHAR* dynamic_RAM);
+INT *GetRam_aacEnc_BitLookUp(int n, UCHAR* dynamic_RAM);
+INT *GetRam_aacEnc_MergeGainLookUp(int n, UCHAR* dynamic_RAM);
+QC_OUT_CHANNEL *GetRam_aacEnc_QCchannel (int n, UCHAR* dynamic_RAM);
 
-  H_ALLOC_MEM (Ram_aacEnc_QCout, QC_OUT)
-  H_ALLOC_MEM (Ram_aacEnc_QCelement, QC_OUT_ELEMENT)
+H_ALLOC_MEM (Ram_aacEnc_QCout, QC_OUT)
+H_ALLOC_MEM (Ram_aacEnc_QCelement, QC_OUT_ELEMENT)
 
 
 #endif /* #ifndef AAC_ENC_RAM_H */

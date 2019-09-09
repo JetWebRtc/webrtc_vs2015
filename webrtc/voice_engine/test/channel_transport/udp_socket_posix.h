@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,8 +20,10 @@
 #include "webrtc/base/criticalsection.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 #define SOCKET_ERROR -1
 

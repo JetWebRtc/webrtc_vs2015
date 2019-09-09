@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MJPEG encoder
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
@@ -39,7 +39,8 @@
 #include "mpegvideo.h"
 #include "put_bits.h"
 
-typedef struct MJpegContext {
+typedef struct MJpegContext
+{
     uint8_t huff_size_dc_luminance[12]; //FIXME use array [3] instead of lumi / chrom, for easier addressing
     uint16_t huff_code_dc_luminance[12];
     uint8_t huff_size_dc_chrominance[12];

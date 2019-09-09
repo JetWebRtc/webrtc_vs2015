@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,25 +14,30 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 
-namespace rtc {
+namespace rtc
+{
 
 SSLAdapter*
-SSLAdapter::Create(AsyncSocket* socket) {
-  return new OpenSSLAdapter(socket);
+SSLAdapter::Create(AsyncSocket* socket)
+{
+    return new OpenSSLAdapter(socket);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
-bool InitializeSSL(VerificationCallback callback) {
-  return OpenSSLAdapter::InitializeSSL(callback);
+bool InitializeSSL(VerificationCallback callback)
+{
+    return OpenSSLAdapter::InitializeSSL(callback);
 }
 
-bool InitializeSSLThread() {
-  return OpenSSLAdapter::InitializeSSLThread();
+bool InitializeSSLThread()
+{
+    return OpenSSLAdapter::InitializeSSLThread();
 }
 
-bool CleanupSSL() {
-  return OpenSSLAdapter::CleanupSSL();
+bool CleanupSSL()
+{
+    return OpenSSLAdapter::CleanupSSL();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

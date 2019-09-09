@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,10 +34,11 @@ FUN_LOAD_THRESH(16, q_)  // load_thresh_16
 static INLINE void load_thresh_8_dual(
     const uint8_t *blimit0, const uint8_t *limit0, const uint8_t *thresh0,
     const uint8_t *blimit1, const uint8_t *limit1, const uint8_t *thresh1,
-    uint8x16_t *blimit_vec, uint8x16_t *limit_vec, uint8x16_t *thresh_vec) {
-  *blimit_vec = vcombine_u8(vld1_dup_u8(blimit0), vld1_dup_u8(blimit1));
-  *limit_vec = vcombine_u8(vld1_dup_u8(limit0), vld1_dup_u8(limit1));
-  *thresh_vec = vcombine_u8(vld1_dup_u8(thresh0), vld1_dup_u8(thresh1));
+    uint8x16_t *blimit_vec, uint8x16_t *limit_vec, uint8x16_t *thresh_vec)
+{
+    *blimit_vec = vcombine_u8(vld1_dup_u8(blimit0), vld1_dup_u8(blimit1));
+    *limit_vec = vcombine_u8(vld1_dup_u8(limit0), vld1_dup_u8(limit1));
+    *thresh_vec = vcombine_u8(vld1_dup_u8(thresh0), vld1_dup_u8(thresh1));
 }
 
 // Here flat is 64-bit long, with each 8-bit (or 4-bit) chunk being a mask of a
@@ -46,9 +47,10 @@ static INLINE void load_thresh_8_dual(
 // flat equals 0 if and only if flat_status equals 0.
 // flat equals -1 (all 1s) if and only if flat_status equals -2. (This is true
 // because each mask occupies more than 1 bit.)
-static INLINE uint32_t calc_flat_status_8(uint8x8_t flat) {
-  return vget_lane_u32(
-      vreinterpret_u32_u64(vpaddl_u32(vreinterpret_u32_u8(flat))), 0);
+static INLINE uint32_t calc_flat_status_8(uint8x8_t flat)
+{
+    return vget_lane_u32(
+               vreinterpret_u32_u64(vpaddl_u32(vreinterpret_u32_u8(flat))), 0);
 }
 
 // Here flat is 128-bit long, with each 8-bit chunk being a mask of a pixel.
@@ -59,10 +61,11 @@ static INLINE uint32_t calc_flat_status_8(uint8x8_t flat) {
 // flat equals 0 if and only if flat_status equals 0.
 // flat equals -1 (all 1s) if and only if flat_status equals -2. (This is true
 // because each mask occupies more than 1 bit.)
-static INLINE uint32_t calc_flat_status_16(uint8x16_t flat) {
-  const uint8x8_t flat_4bit =
-      vreinterpret_u8_s8(vshrn_n_s16(vreinterpretq_s16_u8(flat), 4));
-  return calc_flat_status_8(flat_4bit);
+static INLINE uint32_t calc_flat_status_16(uint8x16_t flat)
+{
+    const uint8x8_t flat_4bit =
+        vreinterpret_u8_s8(vshrn_n_s16(vreinterpretq_s16_u8(flat), 4));
+    return calc_flat_status_8(flat_4bit);
 }
 
 #define FUN_FILTER_HEV_MASK4(w, r)                                            \
@@ -172,60 +175,66 @@ FUN_FLIP_SIGN_BACK(16, q_)  // flip_sign_back_16
 
 static INLINE void filter_update_8(const uint8x8_t sub0, const uint8x8_t sub1,
                                    const uint8x8_t add0, const uint8x8_t add1,
-                                   uint16x8_t *sum) {
-  *sum = vsubw_u8(*sum, sub0);
-  *sum = vsubw_u8(*sum, sub1);
-  *sum = vaddw_u8(*sum, add0);
-  *sum = vaddw_u8(*sum, add1);
+                                   uint16x8_t *sum)
+{
+    *sum = vsubw_u8(*sum, sub0);
+    *sum = vsubw_u8(*sum, sub1);
+    *sum = vaddw_u8(*sum, add0);
+    *sum = vaddw_u8(*sum, add1);
 }
 
 static INLINE void filter_update_16(const uint8x16_t sub0,
                                     const uint8x16_t sub1,
                                     const uint8x16_t add0,
                                     const uint8x16_t add1, uint16x8_t *sum0,
-                                    uint16x8_t *sum1) {
-  *sum0 = vsubw_u8(*sum0, vget_low_u8(sub0));
-  *sum1 = vsubw_u8(*sum1, vget_high_u8(sub0));
-  *sum0 = vsubw_u8(*sum0, vget_low_u8(sub1));
-  *sum1 = vsubw_u8(*sum1, vget_high_u8(sub1));
-  *sum0 = vaddw_u8(*sum0, vget_low_u8(add0));
-  *sum1 = vaddw_u8(*sum1, vget_high_u8(add0));
-  *sum0 = vaddw_u8(*sum0, vget_low_u8(add1));
-  *sum1 = vaddw_u8(*sum1, vget_high_u8(add1));
+                                    uint16x8_t *sum1)
+{
+    *sum0 = vsubw_u8(*sum0, vget_low_u8(sub0));
+    *sum1 = vsubw_u8(*sum1, vget_high_u8(sub0));
+    *sum0 = vsubw_u8(*sum0, vget_low_u8(sub1));
+    *sum1 = vsubw_u8(*sum1, vget_high_u8(sub1));
+    *sum0 = vaddw_u8(*sum0, vget_low_u8(add0));
+    *sum1 = vaddw_u8(*sum1, vget_high_u8(add0));
+    *sum0 = vaddw_u8(*sum0, vget_low_u8(add1));
+    *sum1 = vaddw_u8(*sum1, vget_high_u8(add1));
 }
 
 static INLINE uint8x8_t calc_7_tap_filter_8_kernel(const uint8x8_t sub0,
-                                                   const uint8x8_t sub1,
-                                                   const uint8x8_t add0,
-                                                   const uint8x8_t add1,
-                                                   uint16x8_t *sum) {
-  filter_update_8(sub0, sub1, add0, add1, sum);
-  return vrshrn_n_u16(*sum, 3);
+        const uint8x8_t sub1,
+        const uint8x8_t add0,
+        const uint8x8_t add1,
+        uint16x8_t *sum)
+{
+    filter_update_8(sub0, sub1, add0, add1, sum);
+    return vrshrn_n_u16(*sum, 3);
 }
 
 static INLINE uint8x16_t calc_7_tap_filter_16_kernel(
     const uint8x16_t sub0, const uint8x16_t sub1, const uint8x16_t add0,
-    const uint8x16_t add1, uint16x8_t *sum0, uint16x8_t *sum1) {
-  filter_update_16(sub0, sub1, add0, add1, sum0, sum1);
-  return vcombine_u8(vrshrn_n_u16(*sum0, 3), vrshrn_n_u16(*sum1, 3));
+    const uint8x16_t add1, uint16x8_t *sum0, uint16x8_t *sum1)
+{
+    filter_update_16(sub0, sub1, add0, add1, sum0, sum1);
+    return vcombine_u8(vrshrn_n_u16(*sum0, 3), vrshrn_n_u16(*sum1, 3));
 }
 
 static INLINE uint8x8_t apply_15_tap_filter_8_kernel(
     const uint8x8_t flat, const uint8x8_t sub0, const uint8x8_t sub1,
     const uint8x8_t add0, const uint8x8_t add1, const uint8x8_t in,
-    uint16x8_t *sum) {
-  filter_update_8(sub0, sub1, add0, add1, sum);
-  return vbsl_u8(flat, vrshrn_n_u16(*sum, 4), in);
+    uint16x8_t *sum)
+{
+    filter_update_8(sub0, sub1, add0, add1, sum);
+    return vbsl_u8(flat, vrshrn_n_u16(*sum, 4), in);
 }
 
 static INLINE uint8x16_t apply_15_tap_filter_16_kernel(
     const uint8x16_t flat, const uint8x16_t sub0, const uint8x16_t sub1,
     const uint8x16_t add0, const uint8x16_t add1, const uint8x16_t in,
-    uint16x8_t *sum0, uint16x8_t *sum1) {
-  uint8x16_t t;
-  filter_update_16(sub0, sub1, add0, add1, sum0, sum1);
-  t = vcombine_u8(vrshrn_n_u16(*sum0, 4), vrshrn_n_u16(*sum1, 4));
-  return vbslq_u8(flat, t, in);
+    uint16x8_t *sum0, uint16x8_t *sum1)
+{
+    uint8x16_t t;
+    filter_update_16(sub0, sub1, add0, add1, sum0, sum1);
+    t = vcombine_u8(vrshrn_n_u16(*sum0, 4), vrshrn_n_u16(*sum1, 4));
+    return vbslq_u8(flat, t, in);
 }
 
 // 7-tap filter [1, 1, 1, 2, 1, 1, 1]
@@ -235,49 +244,51 @@ static INLINE void calc_7_tap_filter_8(const uint8x8_t p3, const uint8x8_t p2,
                                        const uint8x8_t q2, const uint8x8_t q3,
                                        uint8x8_t *op2, uint8x8_t *op1,
                                        uint8x8_t *op0, uint8x8_t *oq0,
-                                       uint8x8_t *oq1, uint8x8_t *oq2) {
-  uint16x8_t sum;
-  sum = vaddl_u8(p3, p3);   // 2*p3
-  sum = vaddw_u8(sum, p3);  // 3*p3
-  sum = vaddw_u8(sum, p2);  // 3*p3+p2
-  sum = vaddw_u8(sum, p2);  // 3*p3+2*p2
-  sum = vaddw_u8(sum, p1);  // 3*p3+2*p2+p1
-  sum = vaddw_u8(sum, p0);  // 3*p3+2*p2+p1+p0
-  sum = vaddw_u8(sum, q0);  // 3*p3+2*p2+p1+p0+q0
-  *op2 = vrshrn_n_u16(sum, 3);
-  *op1 = calc_7_tap_filter_8_kernel(p3, p2, p1, q1, &sum);
-  *op0 = calc_7_tap_filter_8_kernel(p3, p1, p0, q2, &sum);
-  *oq0 = calc_7_tap_filter_8_kernel(p3, p0, q0, q3, &sum);
-  *oq1 = calc_7_tap_filter_8_kernel(p2, q0, q1, q3, &sum);
-  *oq2 = calc_7_tap_filter_8_kernel(p1, q1, q2, q3, &sum);
+                                       uint8x8_t *oq1, uint8x8_t *oq2)
+{
+    uint16x8_t sum;
+    sum = vaddl_u8(p3, p3);   // 2*p3
+    sum = vaddw_u8(sum, p3);  // 3*p3
+    sum = vaddw_u8(sum, p2);  // 3*p3+p2
+    sum = vaddw_u8(sum, p2);  // 3*p3+2*p2
+    sum = vaddw_u8(sum, p1);  // 3*p3+2*p2+p1
+    sum = vaddw_u8(sum, p0);  // 3*p3+2*p2+p1+p0
+    sum = vaddw_u8(sum, q0);  // 3*p3+2*p2+p1+p0+q0
+    *op2 = vrshrn_n_u16(sum, 3);
+    *op1 = calc_7_tap_filter_8_kernel(p3, p2, p1, q1, &sum);
+    *op0 = calc_7_tap_filter_8_kernel(p3, p1, p0, q2, &sum);
+    *oq0 = calc_7_tap_filter_8_kernel(p3, p0, q0, q3, &sum);
+    *oq1 = calc_7_tap_filter_8_kernel(p2, q0, q1, q3, &sum);
+    *oq2 = calc_7_tap_filter_8_kernel(p1, q1, q2, q3, &sum);
 }
 
 static INLINE void calc_7_tap_filter_16(
     const uint8x16_t p3, const uint8x16_t p2, const uint8x16_t p1,
     const uint8x16_t p0, const uint8x16_t q0, const uint8x16_t q1,
     const uint8x16_t q2, const uint8x16_t q3, uint8x16_t *op2, uint8x16_t *op1,
-    uint8x16_t *op0, uint8x16_t *oq0, uint8x16_t *oq1, uint8x16_t *oq2) {
-  uint16x8_t sum0, sum1;
-  sum0 = vaddl_u8(vget_low_u8(p3), vget_low_u8(p3));    // 2*p3
-  sum1 = vaddl_u8(vget_high_u8(p3), vget_high_u8(p3));  // 2*p3
-  sum0 = vaddw_u8(sum0, vget_low_u8(p3));               // 3*p3
-  sum1 = vaddw_u8(sum1, vget_high_u8(p3));              // 3*p3
-  sum0 = vaddw_u8(sum0, vget_low_u8(p2));               // 3*p3+p2
-  sum1 = vaddw_u8(sum1, vget_high_u8(p2));              // 3*p3+p2
-  sum0 = vaddw_u8(sum0, vget_low_u8(p2));               // 3*p3+2*p2
-  sum1 = vaddw_u8(sum1, vget_high_u8(p2));              // 3*p3+2*p2
-  sum0 = vaddw_u8(sum0, vget_low_u8(p1));               // 3*p3+2*p2+p1
-  sum1 = vaddw_u8(sum1, vget_high_u8(p1));              // 3*p3+2*p2+p1
-  sum0 = vaddw_u8(sum0, vget_low_u8(p0));               // 3*p3+2*p2+p1+p0
-  sum1 = vaddw_u8(sum1, vget_high_u8(p0));              // 3*p3+2*p2+p1+p0
-  sum0 = vaddw_u8(sum0, vget_low_u8(q0));               // 3*p3+2*p2+p1+p0+q0
-  sum1 = vaddw_u8(sum1, vget_high_u8(q0));              // 3*p3+2*p2+p1+p0+q0
-  *op2 = vcombine_u8(vrshrn_n_u16(sum0, 3), vrshrn_n_u16(sum1, 3));
-  *op1 = calc_7_tap_filter_16_kernel(p3, p2, p1, q1, &sum0, &sum1);
-  *op0 = calc_7_tap_filter_16_kernel(p3, p1, p0, q2, &sum0, &sum1);
-  *oq0 = calc_7_tap_filter_16_kernel(p3, p0, q0, q3, &sum0, &sum1);
-  *oq1 = calc_7_tap_filter_16_kernel(p2, q0, q1, q3, &sum0, &sum1);
-  *oq2 = calc_7_tap_filter_16_kernel(p1, q1, q2, q3, &sum0, &sum1);
+    uint8x16_t *op0, uint8x16_t *oq0, uint8x16_t *oq1, uint8x16_t *oq2)
+{
+    uint16x8_t sum0, sum1;
+    sum0 = vaddl_u8(vget_low_u8(p3), vget_low_u8(p3));    // 2*p3
+    sum1 = vaddl_u8(vget_high_u8(p3), vget_high_u8(p3));  // 2*p3
+    sum0 = vaddw_u8(sum0, vget_low_u8(p3));               // 3*p3
+    sum1 = vaddw_u8(sum1, vget_high_u8(p3));              // 3*p3
+    sum0 = vaddw_u8(sum0, vget_low_u8(p2));               // 3*p3+p2
+    sum1 = vaddw_u8(sum1, vget_high_u8(p2));              // 3*p3+p2
+    sum0 = vaddw_u8(sum0, vget_low_u8(p2));               // 3*p3+2*p2
+    sum1 = vaddw_u8(sum1, vget_high_u8(p2));              // 3*p3+2*p2
+    sum0 = vaddw_u8(sum0, vget_low_u8(p1));               // 3*p3+2*p2+p1
+    sum1 = vaddw_u8(sum1, vget_high_u8(p1));              // 3*p3+2*p2+p1
+    sum0 = vaddw_u8(sum0, vget_low_u8(p0));               // 3*p3+2*p2+p1+p0
+    sum1 = vaddw_u8(sum1, vget_high_u8(p0));              // 3*p3+2*p2+p1+p0
+    sum0 = vaddw_u8(sum0, vget_low_u8(q0));               // 3*p3+2*p2+p1+p0+q0
+    sum1 = vaddw_u8(sum1, vget_high_u8(q0));              // 3*p3+2*p2+p1+p0+q0
+    *op2 = vcombine_u8(vrshrn_n_u16(sum0, 3), vrshrn_n_u16(sum1, 3));
+    *op1 = calc_7_tap_filter_16_kernel(p3, p2, p1, q1, &sum0, &sum1);
+    *op0 = calc_7_tap_filter_16_kernel(p3, p1, p0, q2, &sum0, &sum1);
+    *oq0 = calc_7_tap_filter_16_kernel(p3, p0, q0, q3, &sum0, &sum1);
+    *oq1 = calc_7_tap_filter_16_kernel(p2, q0, q1, q3, &sum0, &sum1);
+    *oq2 = calc_7_tap_filter_16_kernel(p1, q1, q2, q3, &sum0, &sum1);
 }
 
 #define FUN_APPLY_7_TAP_FILTER(w, r)                                          \
@@ -313,33 +324,34 @@ static INLINE void apply_15_tap_filter_8(
     const uint8x8_t q6, const uint8x8_t q7, uint8x8_t *op6, uint8x8_t *op5,
     uint8x8_t *op4, uint8x8_t *op3, uint8x8_t *op2, uint8x8_t *op1,
     uint8x8_t *op0, uint8x8_t *oq0, uint8x8_t *oq1, uint8x8_t *oq2,
-    uint8x8_t *oq3, uint8x8_t *oq4, uint8x8_t *oq5, uint8x8_t *oq6) {
-  uint16x8_t sum;
-  sum = vshll_n_u8(p7, 3);  // 8*p7
-  sum = vsubw_u8(sum, p7);  // 7*p7
-  sum = vaddw_u8(sum, p6);  // 7*p7+p6
-  sum = vaddw_u8(sum, p6);  // 7*p7+2*p6
-  sum = vaddw_u8(sum, p5);  // 7*p7+2*p6+p5
-  sum = vaddw_u8(sum, p4);  // 7*p7+2*p6+p5+p4
-  sum = vaddw_u8(sum, p3);  // 7*p7+2*p6+p5+p4+p3
-  sum = vaddw_u8(sum, p2);  // 7*p7+2*p6+p5+p4+p3+p2
-  sum = vaddw_u8(sum, p1);  // 7*p7+2*p6+p5+p4+p3+p2+p1
-  sum = vaddw_u8(sum, p0);  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
-  sum = vaddw_u8(sum, q0);  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
-  *op6 = vbsl_u8(flat2, vrshrn_n_u16(sum, 4), p6);
-  *op5 = apply_15_tap_filter_8_kernel(flat2, p7, p6, p5, q1, p5, &sum);
-  *op4 = apply_15_tap_filter_8_kernel(flat2, p7, p5, p4, q2, p4, &sum);
-  *op3 = apply_15_tap_filter_8_kernel(flat2, p7, p4, p3, q3, p3, &sum);
-  *op2 = apply_15_tap_filter_8_kernel(flat2, p7, p3, p2, q4, *op2, &sum);
-  *op1 = apply_15_tap_filter_8_kernel(flat2, p7, p2, p1, q5, *op1, &sum);
-  *op0 = apply_15_tap_filter_8_kernel(flat2, p7, p1, p0, q6, *op0, &sum);
-  *oq0 = apply_15_tap_filter_8_kernel(flat2, p7, p0, q0, q7, *oq0, &sum);
-  *oq1 = apply_15_tap_filter_8_kernel(flat2, p6, q0, q1, q7, *oq1, &sum);
-  *oq2 = apply_15_tap_filter_8_kernel(flat2, p5, q1, q2, q7, *oq2, &sum);
-  *oq3 = apply_15_tap_filter_8_kernel(flat2, p4, q2, q3, q7, q3, &sum);
-  *oq4 = apply_15_tap_filter_8_kernel(flat2, p3, q3, q4, q7, q4, &sum);
-  *oq5 = apply_15_tap_filter_8_kernel(flat2, p2, q4, q5, q7, q5, &sum);
-  *oq6 = apply_15_tap_filter_8_kernel(flat2, p1, q5, q6, q7, q6, &sum);
+    uint8x8_t *oq3, uint8x8_t *oq4, uint8x8_t *oq5, uint8x8_t *oq6)
+{
+    uint16x8_t sum;
+    sum = vshll_n_u8(p7, 3);  // 8*p7
+    sum = vsubw_u8(sum, p7);  // 7*p7
+    sum = vaddw_u8(sum, p6);  // 7*p7+p6
+    sum = vaddw_u8(sum, p6);  // 7*p7+2*p6
+    sum = vaddw_u8(sum, p5);  // 7*p7+2*p6+p5
+    sum = vaddw_u8(sum, p4);  // 7*p7+2*p6+p5+p4
+    sum = vaddw_u8(sum, p3);  // 7*p7+2*p6+p5+p4+p3
+    sum = vaddw_u8(sum, p2);  // 7*p7+2*p6+p5+p4+p3+p2
+    sum = vaddw_u8(sum, p1);  // 7*p7+2*p6+p5+p4+p3+p2+p1
+    sum = vaddw_u8(sum, p0);  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
+    sum = vaddw_u8(sum, q0);  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
+    *op6 = vbsl_u8(flat2, vrshrn_n_u16(sum, 4), p6);
+    *op5 = apply_15_tap_filter_8_kernel(flat2, p7, p6, p5, q1, p5, &sum);
+    *op4 = apply_15_tap_filter_8_kernel(flat2, p7, p5, p4, q2, p4, &sum);
+    *op3 = apply_15_tap_filter_8_kernel(flat2, p7, p4, p3, q3, p3, &sum);
+    *op2 = apply_15_tap_filter_8_kernel(flat2, p7, p3, p2, q4, *op2, &sum);
+    *op1 = apply_15_tap_filter_8_kernel(flat2, p7, p2, p1, q5, *op1, &sum);
+    *op0 = apply_15_tap_filter_8_kernel(flat2, p7, p1, p0, q6, *op0, &sum);
+    *oq0 = apply_15_tap_filter_8_kernel(flat2, p7, p0, q0, q7, *oq0, &sum);
+    *oq1 = apply_15_tap_filter_8_kernel(flat2, p6, q0, q1, q7, *oq1, &sum);
+    *oq2 = apply_15_tap_filter_8_kernel(flat2, p5, q1, q2, q7, *oq2, &sum);
+    *oq3 = apply_15_tap_filter_8_kernel(flat2, p4, q2, q3, q7, q3, &sum);
+    *oq4 = apply_15_tap_filter_8_kernel(flat2, p3, q3, q4, q7, q4, &sum);
+    *oq5 = apply_15_tap_filter_8_kernel(flat2, p2, q4, q5, q7, q5, &sum);
+    *oq6 = apply_15_tap_filter_8_kernel(flat2, p1, q5, q6, q7, q6, &sum);
 }
 
 static INLINE void apply_15_tap_filter_16(
@@ -351,52 +363,53 @@ static INLINE void apply_15_tap_filter_16(
     const uint8x16_t q6, const uint8x16_t q7, uint8x16_t *op6, uint8x16_t *op5,
     uint8x16_t *op4, uint8x16_t *op3, uint8x16_t *op2, uint8x16_t *op1,
     uint8x16_t *op0, uint8x16_t *oq0, uint8x16_t *oq1, uint8x16_t *oq2,
-    uint8x16_t *oq3, uint8x16_t *oq4, uint8x16_t *oq5, uint8x16_t *oq6) {
-  uint16x8_t sum0, sum1;
-  uint8x16_t t;
-  sum0 = vshll_n_u8(vget_low_u8(p7), 3);    // 8*p7
-  sum1 = vshll_n_u8(vget_high_u8(p7), 3);   // 8*p7
-  sum0 = vsubw_u8(sum0, vget_low_u8(p7));   // 7*p7
-  sum1 = vsubw_u8(sum1, vget_high_u8(p7));  // 7*p7
-  sum0 = vaddw_u8(sum0, vget_low_u8(p6));   // 7*p7+p6
-  sum1 = vaddw_u8(sum1, vget_high_u8(p6));  // 7*p7+p6
-  sum0 = vaddw_u8(sum0, vget_low_u8(p6));   // 7*p7+2*p6
-  sum1 = vaddw_u8(sum1, vget_high_u8(p6));  // 7*p7+2*p6
-  sum0 = vaddw_u8(sum0, vget_low_u8(p5));   // 7*p7+2*p6+p5
-  sum1 = vaddw_u8(sum1, vget_high_u8(p5));  // 7*p7+2*p6+p5
-  sum0 = vaddw_u8(sum0, vget_low_u8(p4));   // 7*p7+2*p6+p5+p4
-  sum1 = vaddw_u8(sum1, vget_high_u8(p4));  // 7*p7+2*p6+p5+p4
-  sum0 = vaddw_u8(sum0, vget_low_u8(p3));   // 7*p7+2*p6+p5+p4+p3
-  sum1 = vaddw_u8(sum1, vget_high_u8(p3));  // 7*p7+2*p6+p5+p4+p3
-  sum0 = vaddw_u8(sum0, vget_low_u8(p2));   // 7*p7+2*p6+p5+p4+p3+p2
-  sum1 = vaddw_u8(sum1, vget_high_u8(p2));  // 7*p7+2*p6+p5+p4+p3+p2
-  sum0 = vaddw_u8(sum0, vget_low_u8(p1));   // 7*p7+2*p6+p5+p4+p3+p2+p1
-  sum1 = vaddw_u8(sum1, vget_high_u8(p1));  // 7*p7+2*p6+p5+p4+p3+p2+p1
-  sum0 = vaddw_u8(sum0, vget_low_u8(p0));   // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
-  sum1 = vaddw_u8(sum1, vget_high_u8(p0));  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
-  sum0 = vaddw_u8(sum0, vget_low_u8(q0));   // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
-  sum1 = vaddw_u8(sum1, vget_high_u8(q0));  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
-  t = vcombine_u8(vrshrn_n_u16(sum0, 4), vrshrn_n_u16(sum1, 4));
-  *op6 = vbslq_u8(flat2, t, p6);
-  *op5 = apply_15_tap_filter_16_kernel(flat2, p7, p6, p5, q1, p5, &sum0, &sum1);
-  *op4 = apply_15_tap_filter_16_kernel(flat2, p7, p5, p4, q2, p4, &sum0, &sum1);
-  *op3 = apply_15_tap_filter_16_kernel(flat2, p7, p4, p3, q3, p3, &sum0, &sum1);
-  *op2 =
-      apply_15_tap_filter_16_kernel(flat2, p7, p3, p2, q4, *op2, &sum0, &sum1);
-  *op1 =
-      apply_15_tap_filter_16_kernel(flat2, p7, p2, p1, q5, *op1, &sum0, &sum1);
-  *op0 =
-      apply_15_tap_filter_16_kernel(flat2, p7, p1, p0, q6, *op0, &sum0, &sum1);
-  *oq0 =
-      apply_15_tap_filter_16_kernel(flat2, p7, p0, q0, q7, *oq0, &sum0, &sum1);
-  *oq1 =
-      apply_15_tap_filter_16_kernel(flat2, p6, q0, q1, q7, *oq1, &sum0, &sum1);
-  *oq2 =
-      apply_15_tap_filter_16_kernel(flat2, p5, q1, q2, q7, *oq2, &sum0, &sum1);
-  *oq3 = apply_15_tap_filter_16_kernel(flat2, p4, q2, q3, q7, q3, &sum0, &sum1);
-  *oq4 = apply_15_tap_filter_16_kernel(flat2, p3, q3, q4, q7, q4, &sum0, &sum1);
-  *oq5 = apply_15_tap_filter_16_kernel(flat2, p2, q4, q5, q7, q5, &sum0, &sum1);
-  *oq6 = apply_15_tap_filter_16_kernel(flat2, p1, q5, q6, q7, q6, &sum0, &sum1);
+    uint8x16_t *oq3, uint8x16_t *oq4, uint8x16_t *oq5, uint8x16_t *oq6)
+{
+    uint16x8_t sum0, sum1;
+    uint8x16_t t;
+    sum0 = vshll_n_u8(vget_low_u8(p7), 3);    // 8*p7
+    sum1 = vshll_n_u8(vget_high_u8(p7), 3);   // 8*p7
+    sum0 = vsubw_u8(sum0, vget_low_u8(p7));   // 7*p7
+    sum1 = vsubw_u8(sum1, vget_high_u8(p7));  // 7*p7
+    sum0 = vaddw_u8(sum0, vget_low_u8(p6));   // 7*p7+p6
+    sum1 = vaddw_u8(sum1, vget_high_u8(p6));  // 7*p7+p6
+    sum0 = vaddw_u8(sum0, vget_low_u8(p6));   // 7*p7+2*p6
+    sum1 = vaddw_u8(sum1, vget_high_u8(p6));  // 7*p7+2*p6
+    sum0 = vaddw_u8(sum0, vget_low_u8(p5));   // 7*p7+2*p6+p5
+    sum1 = vaddw_u8(sum1, vget_high_u8(p5));  // 7*p7+2*p6+p5
+    sum0 = vaddw_u8(sum0, vget_low_u8(p4));   // 7*p7+2*p6+p5+p4
+    sum1 = vaddw_u8(sum1, vget_high_u8(p4));  // 7*p7+2*p6+p5+p4
+    sum0 = vaddw_u8(sum0, vget_low_u8(p3));   // 7*p7+2*p6+p5+p4+p3
+    sum1 = vaddw_u8(sum1, vget_high_u8(p3));  // 7*p7+2*p6+p5+p4+p3
+    sum0 = vaddw_u8(sum0, vget_low_u8(p2));   // 7*p7+2*p6+p5+p4+p3+p2
+    sum1 = vaddw_u8(sum1, vget_high_u8(p2));  // 7*p7+2*p6+p5+p4+p3+p2
+    sum0 = vaddw_u8(sum0, vget_low_u8(p1));   // 7*p7+2*p6+p5+p4+p3+p2+p1
+    sum1 = vaddw_u8(sum1, vget_high_u8(p1));  // 7*p7+2*p6+p5+p4+p3+p2+p1
+    sum0 = vaddw_u8(sum0, vget_low_u8(p0));   // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
+    sum1 = vaddw_u8(sum1, vget_high_u8(p0));  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0
+    sum0 = vaddw_u8(sum0, vget_low_u8(q0));   // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
+    sum1 = vaddw_u8(sum1, vget_high_u8(q0));  // 7*p7+2*p6+p5+p4+p3+p2+p1+p0+q0
+    t = vcombine_u8(vrshrn_n_u16(sum0, 4), vrshrn_n_u16(sum1, 4));
+    *op6 = vbslq_u8(flat2, t, p6);
+    *op5 = apply_15_tap_filter_16_kernel(flat2, p7, p6, p5, q1, p5, &sum0, &sum1);
+    *op4 = apply_15_tap_filter_16_kernel(flat2, p7, p5, p4, q2, p4, &sum0, &sum1);
+    *op3 = apply_15_tap_filter_16_kernel(flat2, p7, p4, p3, q3, p3, &sum0, &sum1);
+    *op2 =
+        apply_15_tap_filter_16_kernel(flat2, p7, p3, p2, q4, *op2, &sum0, &sum1);
+    *op1 =
+        apply_15_tap_filter_16_kernel(flat2, p7, p2, p1, q5, *op1, &sum0, &sum1);
+    *op0 =
+        apply_15_tap_filter_16_kernel(flat2, p7, p1, p0, q6, *op0, &sum0, &sum1);
+    *oq0 =
+        apply_15_tap_filter_16_kernel(flat2, p7, p0, q0, q7, *oq0, &sum0, &sum1);
+    *oq1 =
+        apply_15_tap_filter_16_kernel(flat2, p6, q0, q1, q7, *oq1, &sum0, &sum1);
+    *oq2 =
+        apply_15_tap_filter_16_kernel(flat2, p5, q1, q2, q7, *oq2, &sum0, &sum1);
+    *oq3 = apply_15_tap_filter_16_kernel(flat2, p4, q2, q3, q7, q3, &sum0, &sum1);
+    *oq4 = apply_15_tap_filter_16_kernel(flat2, p3, q3, q4, q7, q4, &sum0, &sum1);
+    *oq5 = apply_15_tap_filter_16_kernel(flat2, p2, q4, q5, q7, q5, &sum0, &sum1);
+    *oq6 = apply_15_tap_filter_16_kernel(flat2, p1, q5, q6, q7, q6, &sum0, &sum1);
 }
 
 #define FUN_FILTER4(w, r)                                                     \
@@ -625,65 +638,67 @@ FUN_STORE6(16, q_)  // store_16x6
 
 static INLINE void store_4x8(uint8_t *s, const int p, const uint8x8_t p1,
                              const uint8x8_t p0, const uint8x8_t q0,
-                             const uint8x8_t q1) {
-  uint8x8x4_t o;
+                             const uint8x8_t q1)
+{
+    uint8x8x4_t o;
 
-  o.val[0] = p1;
-  o.val[1] = p0;
-  o.val[2] = q0;
-  o.val[3] = q1;
-  vst4_lane_u8(s, o, 0);
-  s += p;
-  vst4_lane_u8(s, o, 1);
-  s += p;
-  vst4_lane_u8(s, o, 2);
-  s += p;
-  vst4_lane_u8(s, o, 3);
-  s += p;
-  vst4_lane_u8(s, o, 4);
-  s += p;
-  vst4_lane_u8(s, o, 5);
-  s += p;
-  vst4_lane_u8(s, o, 6);
-  s += p;
-  vst4_lane_u8(s, o, 7);
+    o.val[0] = p1;
+    o.val[1] = p0;
+    o.val[2] = q0;
+    o.val[3] = q1;
+    vst4_lane_u8(s, o, 0);
+    s += p;
+    vst4_lane_u8(s, o, 1);
+    s += p;
+    vst4_lane_u8(s, o, 2);
+    s += p;
+    vst4_lane_u8(s, o, 3);
+    s += p;
+    vst4_lane_u8(s, o, 4);
+    s += p;
+    vst4_lane_u8(s, o, 5);
+    s += p;
+    vst4_lane_u8(s, o, 6);
+    s += p;
+    vst4_lane_u8(s, o, 7);
 }
 
 static INLINE void store_6x8(uint8_t *s, const int p, const uint8x8_t s0,
                              const uint8x8_t s1, const uint8x8_t s2,
                              const uint8x8_t s3, const uint8x8_t s4,
-                             const uint8x8_t s5) {
-  uint8x8x3_t o0, o1;
+                             const uint8x8_t s5)
+{
+    uint8x8x3_t o0, o1;
 
-  o0.val[0] = s0;
-  o0.val[1] = s1;
-  o0.val[2] = s2;
-  o1.val[0] = s3;
-  o1.val[1] = s4;
-  o1.val[2] = s5;
-  vst3_lane_u8(s - 3, o0, 0);
-  vst3_lane_u8(s + 0, o1, 0);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 1);
-  vst3_lane_u8(s + 0, o1, 1);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 2);
-  vst3_lane_u8(s + 0, o1, 2);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 3);
-  vst3_lane_u8(s + 0, o1, 3);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 4);
-  vst3_lane_u8(s + 0, o1, 4);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 5);
-  vst3_lane_u8(s + 0, o1, 5);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 6);
-  vst3_lane_u8(s + 0, o1, 6);
-  s += p;
-  vst3_lane_u8(s - 3, o0, 7);
-  vst3_lane_u8(s + 0, o1, 7);
+    o0.val[0] = s0;
+    o0.val[1] = s1;
+    o0.val[2] = s2;
+    o1.val[0] = s3;
+    o1.val[1] = s4;
+    o1.val[2] = s5;
+    vst3_lane_u8(s - 3, o0, 0);
+    vst3_lane_u8(s + 0, o1, 0);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 1);
+    vst3_lane_u8(s + 0, o1, 1);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 2);
+    vst3_lane_u8(s + 0, o1, 2);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 3);
+    vst3_lane_u8(s + 0, o1, 3);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 4);
+    vst3_lane_u8(s + 0, o1, 4);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 5);
+    vst3_lane_u8(s + 0, o1, 5);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 6);
+    vst3_lane_u8(s + 0, o1, 6);
+    s += p;
+    vst3_lane_u8(s - 3, o0, 7);
+    vst3_lane_u8(s + 0, o1, 7);
 }
 
 #define FUN_STORE8(w, r)                                                       \
@@ -753,38 +768,39 @@ static INLINE void store_16x16(uint8_t *s, const int p, const uint8x16_t s0,
                                const uint8x16_t s9, const uint8x16_t s10,
                                const uint8x16_t s11, const uint8x16_t s12,
                                const uint8x16_t s13, const uint8x16_t s14,
-                               const uint8x16_t s15) {
-  vst1q_u8(s, s0);
-  s += p;
-  vst1q_u8(s, s1);
-  s += p;
-  vst1q_u8(s, s2);
-  s += p;
-  vst1q_u8(s, s3);
-  s += p;
-  vst1q_u8(s, s4);
-  s += p;
-  vst1q_u8(s, s5);
-  s += p;
-  vst1q_u8(s, s6);
-  s += p;
-  vst1q_u8(s, s7);
-  s += p;
-  vst1q_u8(s, s8);
-  s += p;
-  vst1q_u8(s, s9);
-  s += p;
-  vst1q_u8(s, s10);
-  s += p;
-  vst1q_u8(s, s11);
-  s += p;
-  vst1q_u8(s, s12);
-  s += p;
-  vst1q_u8(s, s13);
-  s += p;
-  vst1q_u8(s, s14);
-  s += p;
-  vst1q_u8(s, s15);
+                               const uint8x16_t s15)
+{
+    vst1q_u8(s, s0);
+    s += p;
+    vst1q_u8(s, s1);
+    s += p;
+    vst1q_u8(s, s2);
+    s += p;
+    vst1q_u8(s, s3);
+    s += p;
+    vst1q_u8(s, s4);
+    s += p;
+    vst1q_u8(s, s5);
+    s += p;
+    vst1q_u8(s, s6);
+    s += p;
+    vst1q_u8(s, s7);
+    s += p;
+    vst1q_u8(s, s8);
+    s += p;
+    vst1q_u8(s, s9);
+    s += p;
+    vst1q_u8(s, s10);
+    s += p;
+    vst1q_u8(s, s11);
+    s += p;
+    vst1q_u8(s, s12);
+    s += p;
+    vst1q_u8(s, s13);
+    s += p;
+    vst1q_u8(s, s14);
+    s += p;
+    vst1q_u8(s, s15);
 }
 
 #define FUN_HOR_4_KERNEL(name, w)                                           \
@@ -805,10 +821,11 @@ FUN_HOR_4_KERNEL(_dual_, 16)  // lpf_horizontal_4_dual_kernel
 #undef FUN_HOR_4_KERNEL
 
 void vpx_lpf_horizontal_4_neon(uint8_t *s, int p, const uint8_t *blimit,
-                               const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t blimit_vec, limit_vec, thresh_vec;
-  load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
-  lpf_horizontal_4_kernel(s, p, blimit_vec, limit_vec, thresh_vec);
+                               const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t blimit_vec, limit_vec, thresh_vec;
+    load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
+    lpf_horizontal_4_kernel(s, p, blimit_vec, limit_vec, thresh_vec);
 }
 
 void vpx_lpf_horizontal_4_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
@@ -816,64 +833,68 @@ void vpx_lpf_horizontal_4_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
                                     const uint8_t *thresh0,
                                     const uint8_t *blimit1,
                                     const uint8_t *limit1,
-                                    const uint8_t *thresh1) {
-  uint8x16_t blimit_vec, limit_vec, thresh_vec;
-  load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
-                     &blimit_vec, &limit_vec, &thresh_vec);
-  lpf_horizontal_4_dual_kernel(s, p, blimit_vec, limit_vec, thresh_vec);
+                                    const uint8_t *thresh1)
+{
+    uint8x16_t blimit_vec, limit_vec, thresh_vec;
+    load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
+                       &blimit_vec, &limit_vec, &thresh_vec);
+    lpf_horizontal_4_dual_kernel(s, p, blimit_vec, limit_vec, thresh_vec);
 }
 
 void vpx_lpf_vertical_4_neon(uint8_t *s, int p, const uint8_t *blimit,
-                             const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      mask, hev;
-  load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
-  load_8x8(s - 4, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  transpose_u8_8x8(&p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  filter_hev_mask4_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1, p0, q0, q1,
-                     q2, q3, &hev, &mask);
-  filter4_8(mask, hev, p1, p0, q0, q1, &p1, &p0, &q0, &q1);
-  store_4x8(s - 2, p, p1, p0, q0, q1);
+                             const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+              mask, hev;
+    load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
+    load_8x8(s - 4, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    transpose_u8_8x8(&p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    filter_hev_mask4_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1, p0, q0, q1,
+                       q2, q3, &hev, &mask);
+    filter4_8(mask, hev, p1, p0, q0, q1, &p1, &p0, &q0, &q1);
+    store_4x8(s - 2, p, p1, p0, q0, q1);
 }
 
 void vpx_lpf_vertical_4_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
                                   const uint8_t *limit0, const uint8_t *thresh0,
                                   const uint8_t *blimit1, const uint8_t *limit1,
-                                  const uint8_t *thresh1) {
-  uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      mask, hev;
-  uint8x8_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
-      s15;
+                                  const uint8_t *thresh1)
+{
+    uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+               mask, hev;
+    uint8x8_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
+              s15;
 
-  load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
-                     &blimit_vec, &limit_vec, &thresh_vec);
-  load_8x16(s - 4, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10,
-            &s11, &s12, &s13, &s14, &s15);
-  transpose_u8_8x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
-                    s14, s15, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  filter_hev_mask4_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1, p0, q0, q1,
-                      q2, q3, &hev, &mask);
-  filter4_16(mask, hev, p1, p0, q0, q1, &p1, &p0, &q0, &q1);
-  s -= 2;
-  store_4x8(s, p, vget_low_u8(p1), vget_low_u8(p0), vget_low_u8(q0),
-            vget_low_u8(q1));
-  store_4x8(s + 8 * p, p, vget_high_u8(p1), vget_high_u8(p0), vget_high_u8(q0),
-            vget_high_u8(q1));
+    load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
+                       &blimit_vec, &limit_vec, &thresh_vec);
+    load_8x16(s - 4, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10,
+              &s11, &s12, &s13, &s14, &s15);
+    transpose_u8_8x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
+                      s14, s15, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    filter_hev_mask4_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1, p0, q0, q1,
+                        q2, q3, &hev, &mask);
+    filter4_16(mask, hev, p1, p0, q0, q1, &p1, &p0, &q0, &q1);
+    s -= 2;
+    store_4x8(s, p, vget_low_u8(p1), vget_low_u8(p0), vget_low_u8(q0),
+              vget_low_u8(q1));
+    store_4x8(s + 8 * p, p, vget_high_u8(p1), vget_high_u8(p0), vget_high_u8(q0),
+              vget_high_u8(q1));
 }
 
 void vpx_lpf_horizontal_8_neon(uint8_t *s, int p, const uint8_t *blimit,
-                               const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
-  uint32_t flat_status;
+                               const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+              op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
+    uint32_t flat_status;
 
-  load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
-  load_8x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  mask = filter_flat_hev_mask_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
-                                p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
-  filter8_8(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
-            &op1, &op0, &oq0, &oq1, &oq2);
-  store_8x6(s - 3 * p, p, op2, op1, op0, oq0, oq1, oq2);
+    load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
+    load_8x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    mask = filter_flat_hev_mask_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
+                                  p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
+    filter8_8(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
+              &op1, &op0, &oq0, &oq1, &oq2);
+    store_8x6(s - 3 * p, p, op2, op1, op0, oq0, oq1, oq2);
 }
 
 void vpx_lpf_horizontal_8_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
@@ -881,65 +902,68 @@ void vpx_lpf_horizontal_8_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
                                     const uint8_t *thresh0,
                                     const uint8_t *blimit1,
                                     const uint8_t *limit1,
-                                    const uint8_t *thresh1) {
-  uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
-  uint32_t flat_status;
+                                    const uint8_t *thresh1)
+{
+    uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+               op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
+    uint32_t flat_status;
 
-  load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
-                     &blimit_vec, &limit_vec, &thresh_vec);
-  load_16x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  mask = filter_flat_hev_mask_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
-                                 p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
-  filter8_16(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
-             &op1, &op0, &oq0, &oq1, &oq2);
-  store_16x6(s - 3 * p, p, op2, op1, op0, oq0, oq1, oq2);
+    load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
+                       &blimit_vec, &limit_vec, &thresh_vec);
+    load_16x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    mask = filter_flat_hev_mask_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
+                                   p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
+    filter8_16(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
+               &op1, &op0, &oq0, &oq1, &oq2);
+    store_16x6(s - 3 * p, p, op2, op1, op0, oq0, oq1, oq2);
 }
 
 void vpx_lpf_vertical_8_neon(uint8_t *s, int p, const uint8_t *blimit,
-                             const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
-  uint32_t flat_status;
+                             const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+              op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
+    uint32_t flat_status;
 
-  load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
-  load_8x8(s - 4, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  transpose_u8_8x8(&p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  mask = filter_flat_hev_mask_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
-                                p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
-  filter8_8(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
-            &op1, &op0, &oq0, &oq1, &oq2);
-  // Note: transpose + store_8x8() is faster than store_6x8().
-  transpose_u8_8x8(&p3, &op2, &op1, &op0, &oq0, &oq1, &oq2, &q3);
-  store_8x8(s - 4, p, p3, op2, op1, op0, oq0, oq1, oq2, q3);
+    load_thresh_8(blimit, limit, thresh, &blimit_vec, &limit_vec, &thresh_vec);
+    load_8x8(s - 4, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    transpose_u8_8x8(&p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    mask = filter_flat_hev_mask_8(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
+                                  p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
+    filter8_8(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
+              &op1, &op0, &oq0, &oq1, &oq2);
+    // Note: transpose + store_8x8() is faster than store_6x8().
+    transpose_u8_8x8(&p3, &op2, &op1, &op0, &oq0, &oq1, &oq2, &q3);
+    store_8x8(s - 4, p, p3, op2, op1, op0, oq0, oq1, oq2, q3);
 }
 
 void vpx_lpf_vertical_8_dual_neon(uint8_t *s, int p, const uint8_t *blimit0,
                                   const uint8_t *limit0, const uint8_t *thresh0,
                                   const uint8_t *blimit1, const uint8_t *limit1,
-                                  const uint8_t *thresh1) {
-  uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
-      op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
-  uint8x8_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
-      s15;
-  uint32_t flat_status;
+                                  const uint8_t *thresh1)
+{
+    uint8x16_t blimit_vec, limit_vec, thresh_vec, p3, p2, p1, p0, q0, q1, q2, q3,
+               op2, op1, op0, oq0, oq1, oq2, mask, flat, hev;
+    uint8x8_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
+              s15;
+    uint32_t flat_status;
 
-  load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
-                     &blimit_vec, &limit_vec, &thresh_vec);
-  load_8x16(s - 4, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10,
-            &s11, &s12, &s13, &s14, &s15);
-  transpose_u8_8x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
-                    s14, s15, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  mask = filter_flat_hev_mask_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
-                                 p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
-  filter8_16(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
-             &op1, &op0, &oq0, &oq1, &oq2);
-  // Note: store_6x8() twice is faster than transpose + store_8x16().
-  store_6x8(s, p, vget_low_u8(op2), vget_low_u8(op1), vget_low_u8(op0),
-            vget_low_u8(oq0), vget_low_u8(oq1), vget_low_u8(oq2));
-  store_6x8(s + 8 * p, p, vget_high_u8(op2), vget_high_u8(op1),
-            vget_high_u8(op0), vget_high_u8(oq0), vget_high_u8(oq1),
-            vget_high_u8(oq2));
+    load_thresh_8_dual(blimit0, limit0, thresh0, blimit1, limit1, thresh1,
+                       &blimit_vec, &limit_vec, &thresh_vec);
+    load_8x16(s - 4, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10,
+              &s11, &s12, &s13, &s14, &s15);
+    transpose_u8_8x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
+                      s14, s15, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    mask = filter_flat_hev_mask_16(limit_vec, blimit_vec, thresh_vec, p3, p2, p1,
+                                   p0, q0, q1, q2, q3, &flat, &flat_status, &hev);
+    filter8_16(mask, flat, flat_status, hev, p3, p2, p1, p0, q0, q1, q2, q3, &op2,
+               &op1, &op0, &oq0, &oq1, &oq2);
+    // Note: store_6x8() twice is faster than transpose + store_8x16().
+    store_6x8(s, p, vget_low_u8(op2), vget_low_u8(op1), vget_low_u8(op0),
+              vget_low_u8(oq0), vget_low_u8(oq1), vget_low_u8(oq2));
+    store_6x8(s + 8 * p, p, vget_high_u8(op2), vget_high_u8(op1),
+              vget_high_u8(op0), vget_high_u8(oq0), vget_high_u8(oq1),
+              vget_high_u8(oq2));
 }
 
 #define FUN_LPF_16_KERNEL(name, w)                                             \
@@ -976,117 +1000,133 @@ FUN_LPF_16_KERNEL(_dual_, 16)  // lpf_16_dual_kernel
 #undef FUN_LPF_16_KERNEL
 
 void vpx_lpf_horizontal_16_neon(uint8_t *s, int p, const uint8_t *blimit,
-                                const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7, op6,
-      op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
-  uint32_t flat_status, flat2_status;
+                                const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7, op6,
+              op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
+    uint32_t flat_status, flat2_status;
 
-  load_8x16(s - 8 * p, p, &p7, &p6, &p5, &p4, &p3, &p2, &p1, &p0, &q0, &q1, &q2,
-            &q3, &q4, &q5, &q6, &q7);
-  lpf_16_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0, q1,
-                q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2, &op1,
-                &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6, &flat_status,
-                &flat2_status);
-  store_8x14(s, p, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4,
-             oq5, oq6, flat_status, flat2_status);
+    load_8x16(s - 8 * p, p, &p7, &p6, &p5, &p4, &p3, &p2, &p1, &p0, &q0, &q1, &q2,
+              &q3, &q4, &q5, &q6, &q7);
+    lpf_16_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0, q1,
+                  q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2, &op1,
+                  &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6, &flat_status,
+                  &flat2_status);
+    store_8x14(s, p, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4,
+               oq5, oq6, flat_status, flat2_status);
 }
 
 void vpx_lpf_horizontal_16_dual_neon(uint8_t *s, int p, const uint8_t *blimit,
                                      const uint8_t *limit,
-                                     const uint8_t *thresh) {
-  uint8x16_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7,
-      op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
-  uint32_t flat_status, flat2_status;
+                                     const uint8_t *thresh)
+{
+    uint8x16_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7,
+               op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
+    uint32_t flat_status, flat2_status;
 
-  load_16x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
-  p7 = vld1q_u8(s - 8 * p);
-  p6 = vld1q_u8(s - 7 * p);
-  p5 = vld1q_u8(s - 6 * p);
-  p4 = vld1q_u8(s - 5 * p);
-  q4 = vld1q_u8(s + 4 * p);
-  q5 = vld1q_u8(s + 5 * p);
-  q6 = vld1q_u8(s + 6 * p);
-  q7 = vld1q_u8(s + 7 * p);
-  lpf_16_dual_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0,
-                     q1, q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2,
-                     &op1, &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6,
-                     &flat_status, &flat2_status);
-  store_16x14(s, p, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4,
-              oq5, oq6, flat_status, flat2_status);
+    load_16x8(s - 4 * p, p, &p3, &p2, &p1, &p0, &q0, &q1, &q2, &q3);
+    p7 = vld1q_u8(s - 8 * p);
+    p6 = vld1q_u8(s - 7 * p);
+    p5 = vld1q_u8(s - 6 * p);
+    p4 = vld1q_u8(s - 5 * p);
+    q4 = vld1q_u8(s + 4 * p);
+    q5 = vld1q_u8(s + 5 * p);
+    q6 = vld1q_u8(s + 6 * p);
+    q7 = vld1q_u8(s + 7 * p);
+    lpf_16_dual_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0,
+                       q1, q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2,
+                       &op1, &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6,
+                       &flat_status, &flat2_status);
+    store_16x14(s, p, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4,
+                oq5, oq6, flat_status, flat2_status);
 }
 
 void vpx_lpf_vertical_16_neon(uint8_t *s, int p, const uint8_t *blimit,
-                              const uint8_t *limit, const uint8_t *thresh) {
-  uint8x8_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7, op6,
-      op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
-  uint8x16_t s0, s1, s2, s3, s4, s5, s6, s7;
-  uint32_t flat_status, flat2_status;
+                              const uint8_t *limit, const uint8_t *thresh)
+{
+    uint8x8_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7, op6,
+              op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
+    uint8x16_t s0, s1, s2, s3, s4, s5, s6, s7;
+    uint32_t flat_status, flat2_status;
 
-  s -= 8;
-  load_16x8(s, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7);
-  transpose_u8_16x8(s0, s1, s2, s3, s4, s5, s6, s7, &p7, &p6, &p5, &p4, &p3,
-                    &p2, &p1, &p0, &q0, &q1, &q2, &q3, &q4, &q5, &q6, &q7);
-  lpf_16_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0, q1,
-                q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2, &op1,
-                &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6, &flat_status,
-                &flat2_status);
-  if (flat_status) {
-    if (flat2_status) {
-      transpose_u8_8x16(p7, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2,
-                        oq3, oq4, oq5, oq6, q7, &s0, &s1, &s2, &s3, &s4, &s5,
-                        &s6, &s7);
-      store_16x8(s, p, s0, s1, s2, s3, s4, s5, s6, s7);
-    } else {
-      // Note: transpose + store_8x8() is faster than store_6x8().
-      transpose_u8_8x8(&p3, &op2, &op1, &op0, &oq0, &oq1, &oq2, &q3);
-      store_8x8(s + 4, p, p3, op2, op1, op0, oq0, oq1, oq2, q3);
+    s -= 8;
+    load_16x8(s, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7);
+    transpose_u8_16x8(s0, s1, s2, s3, s4, s5, s6, s7, &p7, &p6, &p5, &p4, &p3,
+                      &p2, &p1, &p0, &q0, &q1, &q2, &q3, &q4, &q5, &q6, &q7);
+    lpf_16_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0, q1,
+                  q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2, &op1,
+                  &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6, &flat_status,
+                  &flat2_status);
+    if (flat_status)
+    {
+        if (flat2_status)
+        {
+            transpose_u8_8x16(p7, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2,
+                              oq3, oq4, oq5, oq6, q7, &s0, &s1, &s2, &s3, &s4, &s5,
+                              &s6, &s7);
+            store_16x8(s, p, s0, s1, s2, s3, s4, s5, s6, s7);
+        }
+        else
+        {
+            // Note: transpose + store_8x8() is faster than store_6x8().
+            transpose_u8_8x8(&p3, &op2, &op1, &op0, &oq0, &oq1, &oq2, &q3);
+            store_8x8(s + 4, p, p3, op2, op1, op0, oq0, oq1, oq2, q3);
+        }
     }
-  } else {
-    store_4x8(s + 6, p, op1, op0, oq0, oq1);
-  }
+    else
+    {
+        store_4x8(s + 6, p, op1, op0, oq0, oq1);
+    }
 }
 
 void vpx_lpf_vertical_16_dual_neon(uint8_t *s, int p, const uint8_t *blimit,
                                    const uint8_t *limit,
-                                   const uint8_t *thresh) {
-  uint8x16_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7,
-      op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
-  uint8x16_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
-      s15;
-  uint32_t flat_status, flat2_status;
+                                   const uint8_t *thresh)
+{
+    uint8x16_t p7, p6, p5, p4, p3, p2, p1, p0, q0, q1, q2, q3, q4, q5, q6, q7,
+               op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2, oq3, oq4, oq5, oq6;
+    uint8x16_t s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13, s14,
+               s15;
+    uint32_t flat_status, flat2_status;
 
-  s -= 8;
-  load_16x16(s, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10, &s11,
-             &s12, &s13, &s14, &s15);
-  transpose_u8_16x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
-                     s14, s15, &p7, &p6, &p5, &p4, &p3, &p2, &p1, &p0, &q0, &q1,
-                     &q2, &q3, &q4, &q5, &q6, &q7);
-  lpf_16_dual_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0,
-                     q1, q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2,
-                     &op1, &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6,
-                     &flat_status, &flat2_status);
-  if (flat_status) {
-    if (flat2_status) {
-      transpose_u8_16x16(p7, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2,
-                         oq3, oq4, oq5, oq6, q7, &s0, &s1, &s2, &s3, &s4, &s5,
-                         &s6, &s7, &s8, &s9, &s10, &s11, &s12, &s13, &s14,
-                         &s15);
-      store_16x16(s, p, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12,
-                  s13, s14, s15);
-    } else {
-      // Note: store_6x8() twice is faster than transpose + store_8x16().
-      s += 8;
-      store_6x8(s, p, vget_low_u8(op2), vget_low_u8(op1), vget_low_u8(op0),
-                vget_low_u8(oq0), vget_low_u8(oq1), vget_low_u8(oq2));
-      store_6x8(s + 8 * p, p, vget_high_u8(op2), vget_high_u8(op1),
-                vget_high_u8(op0), vget_high_u8(oq0), vget_high_u8(oq1),
-                vget_high_u8(oq2));
+    s -= 8;
+    load_16x16(s, p, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &s8, &s9, &s10, &s11,
+               &s12, &s13, &s14, &s15);
+    transpose_u8_16x16(s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12, s13,
+                       s14, s15, &p7, &p6, &p5, &p4, &p3, &p2, &p1, &p0, &q0, &q1,
+                       &q2, &q3, &q4, &q5, &q6, &q7);
+    lpf_16_dual_kernel(blimit, limit, thresh, p7, p6, p5, p4, p3, p2, p1, p0, q0,
+                       q1, q2, q3, q4, q5, q6, q7, &op6, &op5, &op4, &op3, &op2,
+                       &op1, &op0, &oq0, &oq1, &oq2, &oq3, &oq4, &oq5, &oq6,
+                       &flat_status, &flat2_status);
+    if (flat_status)
+    {
+        if (flat2_status)
+        {
+            transpose_u8_16x16(p7, op6, op5, op4, op3, op2, op1, op0, oq0, oq1, oq2,
+                               oq3, oq4, oq5, oq6, q7, &s0, &s1, &s2, &s3, &s4, &s5,
+                               &s6, &s7, &s8, &s9, &s10, &s11, &s12, &s13, &s14,
+                               &s15);
+            store_16x16(s, p, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11, s12,
+                        s13, s14, s15);
+        }
+        else
+        {
+            // Note: store_6x8() twice is faster than transpose + store_8x16().
+            s += 8;
+            store_6x8(s, p, vget_low_u8(op2), vget_low_u8(op1), vget_low_u8(op0),
+                      vget_low_u8(oq0), vget_low_u8(oq1), vget_low_u8(oq2));
+            store_6x8(s + 8 * p, p, vget_high_u8(op2), vget_high_u8(op1),
+                      vget_high_u8(op0), vget_high_u8(oq0), vget_high_u8(oq1),
+                      vget_high_u8(oq2));
+        }
     }
-  } else {
-    s += 6;
-    store_4x8(s, p, vget_low_u8(op1), vget_low_u8(op0), vget_low_u8(oq0),
-              vget_low_u8(oq1));
-    store_4x8(s + 8 * p, p, vget_high_u8(op1), vget_high_u8(op0),
-              vget_high_u8(oq0), vget_high_u8(oq1));
-  }
+    else
+    {
+        s += 6;
+        store_4x8(s, p, vget_low_u8(op1), vget_low_u8(op0), vget_low_u8(oq0),
+                  vget_low_u8(oq1));
+        store_4x8(s + 8 * p, p, vget_high_u8(op1), vget_high_u8(op0),
+                  vget_high_u8(oq0), vget_high_u8(oq1));
+    }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,51 +26,63 @@ typedef unsigned int CGWindowID;
 typedef unsigned int CGDirectDisplayID;
 #endif
 
-namespace rtc {
+namespace rtc
+{
 
-class WindowId {
- public:
-  // Define WindowT for each platform.
+class WindowId
+{
+public:
+    // Define WindowT for each platform.
 #if defined(WEBRTC_LINUX) && !defined(WEBRTC_ANDROID)
-  typedef Window WindowT;
+    typedef Window WindowT;
 #elif defined(WEBRTC_WIN)
-  typedef HWND WindowT;
+    typedef HWND WindowT;
 #elif defined(WEBRTC_MAC) && !defined(WEBRTC_IOS)
-  typedef CGWindowID WindowT;
+    typedef CGWindowID WindowT;
 #else
-  typedef unsigned int WindowT;
+    typedef unsigned int WindowT;
 #endif
 
-  static WindowId Cast(uint64_t id) {
+    static WindowId Cast(uint64_t id)
+    {
 #if defined(WEBRTC_WIN)
-    return WindowId(reinterpret_cast<WindowId::WindowT>(id));
+        return WindowId(reinterpret_cast<WindowId::WindowT>(id));
 #else
-    return WindowId(static_cast<WindowId::WindowT>(id));
+        return WindowId(static_cast<WindowId::WindowT>(id));
 #endif
-  }
+    }
 
-  static uint64_t Format(const WindowT& id) {
+    static uint64_t Format(const WindowT& id)
+    {
 #if defined(WEBRTC_WIN)
-    return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(id));
+        return static_cast<uint64_t>(reinterpret_cast<uintptr_t>(id));
 #else
-    return static_cast<uint64_t>(id);
+        return static_cast<uint64_t>(id);
 #endif
-  }
+    }
 
-  WindowId() : id_(0) {}
-  WindowId(const WindowT& id) : id_(id) {}  // NOLINT
-  const WindowT& id() const { return id_; }
-  bool IsValid() const { return id_ != 0; }
-  bool Equals(const WindowId& other) const {
-    return id_ == other.id();
-  }
+    WindowId() : id_(0) {}
+    WindowId(const WindowT& id) : id_(id) {}  // NOLINT
+    const WindowT& id() const
+    {
+        return id_;
+    }
+    bool IsValid() const
+    {
+        return id_ != 0;
+    }
+    bool Equals(const WindowId& other) const
+    {
+        return id_ == other.id();
+    }
 
- private:
-  WindowT id_;
+private:
+    WindowT id_;
 };
 
-inline std::string ToString(const WindowId& window) {
-  return ToString(window.id());
+inline std::string ToString(const WindowId& window)
+{
+    return ToString(window.id());
 }
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -46,7 +46,8 @@
 #include "parameter_sets.h"
 #include "decoder_context.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*!
  *************************************************************************************

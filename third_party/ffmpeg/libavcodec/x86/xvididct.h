@@ -1,4 +1,4 @@
-/*
+﻿/*
  * XVID MPEG-4 VIDEO CODEC
  *
  * This file is part of FFmpeg.

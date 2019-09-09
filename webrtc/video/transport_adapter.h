@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,24 +14,27 @@
 #include "webrtc/common_types.h"
 #include "webrtc/system_wrappers/include/atomic32.h"
 
-namespace webrtc {
-namespace internal {
+namespace webrtc
+{
+namespace internal
+{
 
-class TransportAdapter : public Transport {
- public:
-  explicit TransportAdapter(Transport* transport);
+class TransportAdapter : public Transport
+{
+public:
+    explicit TransportAdapter(Transport* transport);
 
-  bool SendRtp(const uint8_t* packet,
-               size_t length,
-               const PacketOptions& options) override;
-  bool SendRtcp(const uint8_t* packet, size_t length) override;
+    bool SendRtp(const uint8_t* packet,
+                 size_t length,
+                 const PacketOptions& options) override;
+    bool SendRtcp(const uint8_t* packet, size_t length) override;
 
-  void Enable();
-  void Disable();
+    void Enable();
+    void Disable();
 
- private:
-  Transport *transport_;
-  Atomic32 enabled_;
+private:
+    Transport *transport_;
+    Atomic32 enabled_;
 };
 }  // namespace internal
 }  // namespace webrtc

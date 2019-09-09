@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Anton Khirnov
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -48,7 +48,8 @@
 #include "libavutil/error.h"
 #include "libavutil/mem.h"
 
-typedef struct DecodeContext {
+typedef struct DecodeContext
+{
     mfxSession mfx_session;
     VADisplay va_dpy;
 
@@ -66,17 +67,20 @@ static mfxStatus frame_alloc(mfxHDL pthis, mfxFrameAllocRequest *req,
     DecodeContext *decode = pthis;
     int err, i;
 
-    if (decode->surfaces) {
+    if (decode->surfaces)
+    {
         fprintf(stderr, "Multiple allocation requests.\n");
         return MFX_ERR_MEMORY_ALLOC;
     }
-    if (!(req->Type & MFX_MEMTYPE_VIDEO_MEMORY_DECODER_TARGET)) {
+    if (!(req->Type & MFX_MEMTYPE_VIDEO_MEMORY_DECODER_TARGET))
+    {
         fprintf(stderr, "Unsupported surface type: %d\n", req->Type);
         return MFX_ERR_UNSUPPORTED;
     }
     if (req->Info.BitDepthLuma != 8 || req->Info.BitDepthChroma != 8 ||
-        req->Info.Shift || req->Info.FourCC != MFX_FOURCC_NV12 ||
-        req->Info.ChromaFormat != MFX_CHROMAFORMAT_YUV420) {
+            req->Info.Shift || req->Info.FourCC != MFX_FOURCC_NV12 ||
+            req->Info.ChromaFormat != MFX_CHROMAFORMAT_YUV420)
+    {
         fprintf(stderr, "Unsupported surface properties.\n");
         return MFX_ERR_UNSUPPORTED;
     }
@@ -91,7 +95,8 @@ static mfxStatus frame_alloc(mfxHDL pthis, mfxFrameAllocRequest *req,
                            req->Info.Width, req->Info.Height,
                            decode->surfaces, req->NumFrameSuggested,
                            NULL, 0);
-    if (err != VA_STATUS_SUCCESS) {
+    if (err != VA_STATUS_SUCCESS)
+    {
         fprintf(stderr, "Error allocating VA surfaces\n");
         goto fail;
     }
@@ -159,11 +164,13 @@ static int get_buffer(AVCodecContext *avctx, AVFrame *frame, int flags)
     AVBufferRef *surf_buf;
     int idx;
 
-    for (idx = 0; idx < decode->nb_surfaces; idx++) {
+    for (idx = 0; idx < decode->nb_surfaces; idx++)
+    {
         if (!decode->surface_used[idx])
             break;
     }
-    if (idx == decode->nb_surfaces) {
+    if (idx == decode->nb_surfaces)
+    {
         fprintf(stderr, "No free surfaces\n");
         return AVERROR(ENOMEM);
     }
@@ -173,7 +180,8 @@ static int get_buffer(AVCodecContext *avctx, AVFrame *frame, int flags)
         return AVERROR(ENOMEM);
     surf_buf = av_buffer_create((uint8_t*)surf, sizeof(*surf), free_buffer,
                                 &decode->surface_used[idx], AV_BUFFER_FLAG_READONLY);
-    if (!surf_buf) {
+    if (!surf_buf)
+    {
         av_freep(&surf);
         return AVERROR(ENOMEM);
     }
@@ -191,9 +199,12 @@ static int get_buffer(AVCodecContext *avctx, AVFrame *frame, int flags)
 
 static int get_format(AVCodecContext *avctx, const enum AVPixelFormat *pix_fmts)
 {
-    while (*pix_fmts != AV_PIX_FMT_NONE) {
-        if (*pix_fmts == AV_PIX_FMT_QSV) {
-            if (!avctx->hwaccel_context) {
+    while (*pix_fmts != AV_PIX_FMT_NONE)
+    {
+        if (*pix_fmts == AV_PIX_FMT_QSV)
+        {
+            if (!avctx->hwaccel_context)
+            {
                 DecodeContext *decode = avctx->opaque;
                 AVQSVContext *qsv = av_qsv_alloc_context();
                 if (!qsv)
@@ -223,9 +234,11 @@ static int decode_packet(DecodeContext *decode, AVCodecContext *decoder_ctx,
     int ret = 0;
     int got_frame = 1;
 
-    while (pkt->size > 0 || (!pkt->data && got_frame)) {
+    while (pkt->size > 0 || (!pkt->data && got_frame))
+    {
         ret = avcodec_decode_video2(decoder_ctx, frame, &got_frame, pkt);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             fprintf(stderr, "Error during decoding\n");
             return ret;
         }
@@ -236,11 +249,13 @@ static int decode_packet(DecodeContext *decode, AVCodecContext *decoder_ctx,
         /* A real program would do something useful with the decoded frame here.
          * We just retrieve the raw data and write it to a file, which is rather
          * useless but pedagogic. */
-        if (got_frame) {
+        if (got_frame)
+        {
             mfxFrameSurface1 *surf = (mfxFrameSurface1*)frame->data[3];
             VASurfaceID    surface = *(VASurfaceID*)surf->Data.MemId;
 
-            VAImageFormat img_fmt = {
+            VAImageFormat img_fmt =
+            {
                 .fourcc         = VA_FOURCC_NV12,
                 .byte_order     = VA_LSB_FIRST,
                 .bits_per_pixel = 8,
@@ -258,7 +273,8 @@ static int decode_packet(DecodeContext *decode, AVCodecContext *decoder_ctx,
 
             err = vaCreateImage(decode->va_dpy, &img_fmt,
                                 frame->width, frame->height, &img);
-            if (err != VA_STATUS_SUCCESS) {
+            if (err != VA_STATUS_SUCCESS)
+            {
                 fprintf(stderr, "Error creating an image: %s\n",
                         vaErrorStr(err));
                 ret = AVERROR_UNKNOWN;
@@ -268,7 +284,8 @@ static int decode_packet(DecodeContext *decode, AVCodecContext *decoder_ctx,
             err = vaGetImage(decode->va_dpy, surface, 0, 0,
                              frame->width, frame->height,
                              img.image_id);
-            if (err != VA_STATUS_SUCCESS) {
+            if (err != VA_STATUS_SUCCESS)
+            {
                 fprintf(stderr, "Error getting an image: %s\n",
                         vaErrorStr(err));
                 ret = AVERROR_UNKNOWN;
@@ -276,7 +293,8 @@ static int decode_packet(DecodeContext *decode, AVCodecContext *decoder_ctx,
             }
 
             err = vaMapBuffer(decode->va_dpy, img.buf, (void**)&data);
-            if (err != VA_STATUS_SUCCESS) {
+            if (err != VA_STATUS_SUCCESS)
+            {
                 fprintf(stderr, "Error mapping the image buffer: %s\n",
                         vaErrorStr(err));
                 ret = AVERROR_UNKNOWN;
@@ -320,7 +338,8 @@ int main(int argc, char **argv)
     mfxIMPL mfx_impl = MFX_IMPL_AUTO_ANY;
     mfxVersion mfx_ver = { { 1, 1 } };
 
-    mfxFrameAllocator frame_allocator = {
+    mfxFrameAllocator frame_allocator =
+    {
         .pthis = &decode,
         .Alloc = frame_alloc,
         .Lock  = frame_lock,
@@ -335,20 +354,23 @@ int main(int argc, char **argv)
 
     av_register_all();
 
-    if (argc < 3) {
+    if (argc < 3)
+    {
         fprintf(stderr, "Usage: %s <input file> <output file>\n", argv[0]);
         return 1;
     }
 
     /* open the input file */
     ret = avformat_open_input(&input_ctx, argv[1], NULL, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Cannot open input file '%s': ", argv[1]);
         goto finish;
     }
 
     /* find the first H.264 video stream */
-    for (i = 0; i < input_ctx->nb_streams; i++) {
+    for (i = 0; i < input_ctx->nb_streams; i++)
+    {
         AVStream *st = input_ctx->streams[i];
 
         if (st->codec->codec_id == AV_CODEC_ID_H264 && !video_st)
@@ -356,25 +378,29 @@ int main(int argc, char **argv)
         else
             st->discard = AVDISCARD_ALL;
     }
-    if (!video_st) {
+    if (!video_st)
+    {
         fprintf(stderr, "No H.264 video stream in the input file\n");
         goto finish;
     }
 
     /* initialize VA-API */
     dpy = XOpenDisplay(NULL);
-    if (!dpy) {
+    if (!dpy)
+    {
         fprintf(stderr, "Cannot open the X display\n");
         goto finish;
     }
     decode.va_dpy = vaGetDisplay(dpy);
-    if (!decode.va_dpy) {
+    if (!decode.va_dpy)
+    {
         fprintf(stderr, "Cannot open the VA display\n");
         goto finish;
     }
 
     err = vaInitialize(decode.va_dpy, &va_ver_major, &va_ver_minor);
-    if (err != VA_STATUS_SUCCESS) {
+    if (err != VA_STATUS_SUCCESS)
+    {
         fprintf(stderr, "Cannot initialize VA: %s\n", vaErrorStr(err));
         goto finish;
     }
@@ -382,7 +408,8 @@ int main(int argc, char **argv)
 
     /* initialize an MFX session */
     err = MFXInit(mfx_impl, &mfx_ver, &decode.mfx_session);
-    if (err != MFX_ERR_NONE) {
+    if (err != MFX_ERR_NONE)
+    {
         fprintf(stderr, "Error initializing an MFX session\n");
         goto finish;
     }
@@ -392,21 +419,25 @@ int main(int argc, char **argv)
 
     /* initialize the decoder */
     decoder = avcodec_find_decoder_by_name("h264_qsv");
-    if (!decoder) {
+    if (!decoder)
+    {
         fprintf(stderr, "The QSV decoder is not present in libavcodec\n");
         goto finish;
     }
 
     decoder_ctx = avcodec_alloc_context3(decoder);
-    if (!decoder_ctx) {
+    if (!decoder_ctx)
+    {
         ret = AVERROR(ENOMEM);
         goto finish;
     }
     decoder_ctx->codec_id = AV_CODEC_ID_H264;
-    if (video_st->codec->extradata_size) {
+    if (video_st->codec->extradata_size)
+    {
         decoder_ctx->extradata = av_mallocz(video_st->codec->extradata_size +
                                             AV_INPUT_BUFFER_PADDING_SIZE);
-        if (!decoder_ctx->extradata) {
+        if (!decoder_ctx->extradata)
+        {
             ret = AVERROR(ENOMEM);
             goto finish;
         }
@@ -421,26 +452,30 @@ int main(int argc, char **argv)
     decoder_ctx->get_format  = get_format;
 
     ret = avcodec_open2(decoder_ctx, NULL, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Error opening the decoder: ");
         goto finish;
     }
 
     /* open the output stream */
     ret = avio_open(&output_ctx, argv[2], AVIO_FLAG_WRITE);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         fprintf(stderr, "Error opening the output context: ");
         goto finish;
     }
 
     frame = av_frame_alloc();
-    if (!frame) {
+    if (!frame)
+    {
         ret = AVERROR(ENOMEM);
         goto finish;
     }
 
     /* actual decoding */
-    while (ret >= 0) {
+    while (ret >= 0)
+    {
         ret = av_read_frame(input_ctx, &pkt);
         if (ret < 0)
             break;
@@ -457,7 +492,8 @@ int main(int argc, char **argv)
     ret = decode_packet(&decode, decoder_ctx, frame, &pkt, output_ctx);
 
 finish:
-    if (ret < 0) {
+    if (ret < 0)
+    {
         char buf[1024];
         av_strerror(ret, buf, sizeof(buf));
         fprintf(stderr, "%s\n", buf);

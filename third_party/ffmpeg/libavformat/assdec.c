@@ -28,7 +28,8 @@
 #include "libavcodec/internal.h"
 #include "libavutil/bprint.h"
 
-typedef struct ASSContext {
+typedef struct ASSContext
+{
     FFDemuxSubtitlesQueue q;
     unsigned readorder;
 } ASSContext;
@@ -64,7 +65,8 @@ static int read_dialogue(ASSContext *ass, AVBPrint *dst, const uint8_t *p,
 
     if (sscanf(p, "Dialogue: %*[^,],%d:%d:%d%*c%d,%d:%d:%d%*c%d,%n",
                &hh1, &mm1, &ss1, &ms1,
-               &hh2, &mm2, &ss2, &ms2, &pos) >= 8 && pos > 0) {
+               &hh2, &mm2, &ss2, &ms2, &pos) >= 8 && pos > 0)
+    {
 
         /* This is not part of the sscanf itself in order to handle an actual
          * number (which would be the Layer) or the form "Marked=N" (which is
@@ -81,8 +83,8 @@ static int read_dialogue(ASSContext *ass, AVBPrint *dst, const uint8_t *p,
 
         /* right strip the buffer */
         while (dst->len > 0 &&
-               dst->str[dst->len - 1] == '\r' ||
-               dst->str[dst->len - 1] == '\n')
+                dst->str[dst->len - 1] == '\r' ||
+                dst->str[dst->len - 1] == '\n')
             dst->str[--dst->len] = 0;
         return 0;
     }
@@ -94,7 +96,8 @@ static int64_t get_line(AVBPrint *buf, FFTextReader *tr)
     int64_t pos = ff_text_pos(tr);
 
     av_bprint_clear(buf);
-    for (;;) {
+    for (;;)
+    {
         char c = ff_text_r8(tr);
         if (!c)
             break;
@@ -125,7 +128,8 @@ static int ass_read_header(AVFormatContext *s)
     av_bprint_init(&line,   0, AV_BPRINT_SIZE_UNLIMITED);
     av_bprint_init(&rline,  0, AV_BPRINT_SIZE_UNLIMITED);
 
-    for (;;) {
+    for (;;)
+    {
         int64_t pos = get_line(&line, &tr);
         int64_t ts_start = AV_NOPTS_VALUE;
         int duration = -1;
@@ -134,12 +138,14 @@ static int ass_read_header(AVFormatContext *s)
         if (!line.str[0]) // EOF
             break;
 
-        if (read_dialogue(ass, &rline, line.str, &ts_start, &duration) < 0) {
+        if (read_dialogue(ass, &rline, line.str, &ts_start, &duration) < 0)
+        {
             av_bprintf(&header, "%s", line.str);
             continue;
         }
         sub = ff_subtitles_queue_insert(&ass->q, rline.str, rline.len, 0);
-        if (!sub) {
+        if (!sub)
+        {
             res = AVERROR(ENOMEM);
             goto end;
         }
@@ -175,7 +181,8 @@ static int ass_read_seek(AVFormatContext *s, int stream_index,
                                    min_ts, ts, max_ts, flags);
 }
 
-AVInputFormat ff_ass_demuxer = {
+AVInputFormat ff_ass_demuxer =
+{
     .name           = "ass",
     .long_name      = NULL_IF_CONFIG_SMALL("SSA (SubStation Alpha) subtitle"),
     .priv_data_size = sizeof(ASSContext),

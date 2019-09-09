@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,21 +10,25 @@
 
 #include "webrtc/modules/desktop_capture/screen_drawer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 std::unique_ptr<ScreenDrawerLock> g_screen_drawer_lock;
 }  // namespace
 
 ScreenDrawerLock::ScreenDrawerLock() = default;
 ScreenDrawerLock::~ScreenDrawerLock() = default;
 
-ScreenDrawer::ScreenDrawer() {
-  g_screen_drawer_lock = ScreenDrawerLock::Create();
+ScreenDrawer::ScreenDrawer()
+{
+    g_screen_drawer_lock = ScreenDrawerLock::Create();
 }
 
-ScreenDrawer::~ScreenDrawer() {
-  g_screen_drawer_lock.reset();
+ScreenDrawer::~ScreenDrawer()
+{
+    g_screen_drawer_lock.reset();
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 3GPP TS 26.245 Timed Text decoder
  * Copyright (c) 2012  Philip Langdale <philipl@overt.org>
  *
@@ -48,7 +48,8 @@
 #define TOP_CENTER      8
 #define TOP_RIGHT       9
 
-typedef struct {
+typedef struct
+{
     char *font;
     int fontsize;
     int color;
@@ -59,12 +60,14 @@ typedef struct {
     int alignment;
 } MovTextDefault;
 
-typedef struct {
+typedef struct
+{
     uint16_t fontID;
     char *font;
 } FontRecord;
 
-typedef struct {
+typedef struct
+{
     uint16_t style_start;
     uint16_t style_end;
     uint8_t style_flag;
@@ -72,20 +75,24 @@ typedef struct {
     uint16_t style_fontID;
 } StyleBox;
 
-typedef struct {
+typedef struct
+{
     uint16_t hlit_start;
     uint16_t hlit_end;
 } HighlightBox;
 
-typedef struct {
-   uint8_t hlit_color[4];
+typedef struct
+{
+    uint8_t hlit_color[4];
 } HilightcolorBox;
 
-typedef struct {
+typedef struct
+{
     uint8_t wrap_flag;
 } TextWrapBox;
 
-typedef struct {
+typedef struct
+{
     StyleBox **s;
     StyleBox *s_temp;
     HighlightBox h;
@@ -101,7 +108,8 @@ typedef struct {
     int count_s, count_f;
 } MovTextContext;
 
-typedef struct {
+typedef struct
+{
     uint32_t type;
     size_t base_size;
     int (*decode)(const uint8_t *tsmb, MovTextContext *m, AVPacket *avpkt);
@@ -110,8 +118,10 @@ typedef struct {
 static void mov_text_cleanup(MovTextContext *m)
 {
     int i;
-    if (m->box_flags & STYL_BOX) {
-        for(i = 0; i < m->count_s; i++) {
+    if (m->box_flags & STYL_BOX)
+    {
+        for(i = 0; i < m->count_s; i++)
+        {
             av_freep(&m->s[i]);
         }
         av_freep(&m->s);
@@ -124,8 +134,10 @@ static void mov_text_cleanup_ftab(MovTextContext *m)
     if (m->ftab_temp)
         av_freep(&m->ftab_temp->font);
     av_freep(&m->ftab_temp);
-    if (m->ftab) {
-        for(i = 0; i < m->count_f; i++) {
+    if (m->ftab)
+    {
+        for(i = 0; i < m->count_f; i++)
+        {
             av_freep(&m->ftab[i]->font);
             av_freep(&m->ftab[i]);
         }
@@ -152,7 +164,8 @@ static int mov_text_tx3g(AVCodecContext *avctx, MovTextContext *m)
     // Alignment
     h_align = *tx3g_ptr++;
     v_align = *tx3g_ptr++;
-    if (h_align == 0) {
+    if (h_align == 0)
+    {
         if (v_align == 0)
             m->d.alignment = TOP_LEFT;
         if (v_align == 1)
@@ -160,7 +173,8 @@ static int mov_text_tx3g(AVCodecContext *avctx, MovTextContext *m)
         if (v_align == -1)
             m->d.alignment = BOTTOM_LEFT;
     }
-    if (h_align == 1) {
+    if (h_align == 1)
+    {
         if (v_align == 0)
             m->d.alignment = TOP_CENTER;
         if (v_align == 1)
@@ -168,7 +182,8 @@ static int mov_text_tx3g(AVCodecContext *avctx, MovTextContext *m)
         if (v_align == -1)
             m->d.alignment = BOTTOM_CENTER;
     }
-    if (h_align == -1) {
+    if (h_align == -1)
+    {
         if (v_align == 0)
             m->d.alignment = TOP_RIGHT;
         if (v_align == 1)
@@ -205,16 +220,19 @@ static int mov_text_tx3g(AVCodecContext *avctx, MovTextContext *m)
     m->ftab_entries = AV_RB16(tx3g_ptr);
     tx3g_ptr += 2;
 
-    for (i = 0; i < m->ftab_entries; i++) {
+    for (i = 0; i < m->ftab_entries; i++)
+    {
 
         box_size += 3;
-        if (avctx->extradata_size < box_size) {
+        if (avctx->extradata_size < box_size)
+        {
             mov_text_cleanup_ftab(m);
             m->ftab_entries = 0;
             return -1;
         }
         m->ftab_temp = av_mallocz(sizeof(*m->ftab_temp));
-        if (!m->ftab_temp) {
+        if (!m->ftab_temp)
+        {
             mov_text_cleanup_ftab(m);
             return AVERROR(ENOMEM);
         }
@@ -223,27 +241,31 @@ static int mov_text_tx3g(AVCodecContext *avctx, MovTextContext *m)
         font_length = *tx3g_ptr++;
 
         box_size = box_size + font_length;
-        if (avctx->extradata_size < box_size) {
+        if (avctx->extradata_size < box_size)
+        {
             mov_text_cleanup_ftab(m);
             m->ftab_entries = 0;
             return -1;
         }
         m->ftab_temp->font = av_malloc(font_length + 1);
-        if (!m->ftab_temp->font) {
+        if (!m->ftab_temp->font)
+        {
             mov_text_cleanup_ftab(m);
             return AVERROR(ENOMEM);
         }
         memcpy(m->ftab_temp->font, tx3g_ptr, font_length);
         m->ftab_temp->font[font_length] = '\0';
         av_dynarray_add(&m->ftab, &m->count_f, m->ftab_temp);
-        if (!m->ftab) {
+        if (!m->ftab)
+        {
             mov_text_cleanup_ftab(m);
             return AVERROR(ENOMEM);
         }
         m->ftab_temp = NULL;
         tx3g_ptr = tx3g_ptr + font_length;
     }
-    for (i = 0; i < m->ftab_entries; i++) {
+    for (i = 0; i < m->ftab_entries; i++)
+    {
         if (style_fontID == m->ftab[i]->fontID)
             m->d.font = m->ftab[i]->font;
     }
@@ -285,9 +307,11 @@ static int decode_styl(const uint8_t *tsmb, MovTextContext *m, AVPacket *avpkt)
         return -1;
 
     m->box_flags |= STYL_BOX;
-    for(i = 0; i < m->style_entries; i++) {
+    for(i = 0; i < m->style_entries; i++)
+    {
         m->s_temp = av_malloc(sizeof(*m->s_temp));
-        if (!m->s_temp) {
+        if (!m->s_temp)
+        {
             mov_text_cleanup(m);
             return AVERROR(ENOMEM);
         }
@@ -301,7 +325,8 @@ static int decode_styl(const uint8_t *tsmb, MovTextContext *m, AVPacket *avpkt)
         tsmb++;
         m->s_temp->fontsize = AV_RB8(tsmb);
         av_dynarray_add(&m->s, &m->count_s, m->s_temp);
-        if(!m->s) {
+        if(!m->s)
+        {
             mov_text_cleanup(m);
             return AVERROR(ENOMEM);
         }
@@ -312,7 +337,8 @@ static int decode_styl(const uint8_t *tsmb, MovTextContext *m, AVPacket *avpkt)
     return 0;
 }
 
-static const Box box_types[] = {
+static const Box box_types[] =
+{
     { MKBETAG('s','t','y','l'), 2, decode_styl },
     { MKBETAG('h','l','i','t'), 4, decode_hlit },
     { MKBETAG('h','c','l','r'), 4, decode_hclr },
@@ -322,29 +348,39 @@ static const Box box_types[] = {
 const static size_t box_count = FF_ARRAY_ELEMS(box_types);
 
 static int text_to_ass(AVBPrint *buf, const char *text, const char *text_end,
-                        MovTextContext *m)
+                       MovTextContext *m)
 {
     int i = 0;
     int j = 0;
     int text_pos = 0;
 
-    if (text < text_end && m->box_flags & TWRP_BOX) {
-        if (m->w.wrap_flag == 1) {
+    if (text < text_end && m->box_flags & TWRP_BOX)
+    {
+        if (m->w.wrap_flag == 1)
+        {
             av_bprintf(buf, "{\\q1}"); /* End of line wrap */
-        } else {
+        }
+        else
+        {
             av_bprintf(buf, "{\\q2}"); /* No wrap */
         }
     }
 
-    while (text < text_end) {
-        if (m->box_flags & STYL_BOX) {
-            for (i = 0; i < m->style_entries; i++) {
-                if (m->s[i]->style_flag && text_pos == m->s[i]->style_end) {
+    while (text < text_end)
+    {
+        if (m->box_flags & STYL_BOX)
+        {
+            for (i = 0; i < m->style_entries; i++)
+            {
+                if (m->s[i]->style_flag && text_pos == m->s[i]->style_end)
+                {
                     av_bprintf(buf, "{\\r}");
                 }
             }
-            for (i = 0; i < m->style_entries; i++) {
-                if (m->s[i]->style_flag && text_pos == m->s[i]->style_start) {
+            for (i = 0; i < m->style_entries; i++)
+            {
+                if (m->s[i]->style_flag && text_pos == m->s[i]->style_start)
+                {
                     if (m->s[i]->style_flag & STYLE_FLAG_BOLD)
                         av_bprintf(buf, "{\\b1}");
                     if (m->s[i]->style_flag & STYLE_FLAG_ITALIC)
@@ -352,38 +388,49 @@ static int text_to_ass(AVBPrint *buf, const char *text, const char *text_end,
                     if (m->s[i]->style_flag & STYLE_FLAG_UNDERLINE)
                         av_bprintf(buf, "{\\u1}");
                     av_bprintf(buf, "{\\fs%d}", m->s[i]->fontsize);
-                    for (j = 0; j < m->ftab_entries; j++) {
+                    for (j = 0; j < m->ftab_entries; j++)
+                    {
                         if (m->s[i]->style_fontID == m->ftab[j]->fontID)
                             av_bprintf(buf, "{\\fn%s}", m->ftab[j]->font);
                     }
                 }
             }
         }
-        if (m->box_flags & HLIT_BOX) {
-            if (text_pos == m->h.hlit_start) {
+        if (m->box_flags & HLIT_BOX)
+        {
+            if (text_pos == m->h.hlit_start)
+            {
                 /* If hclr box is present, set the secondary color to the color
                  * specified. Otherwise, set primary color to white and secondary
                  * color to black. These colors will come from TextSampleModifier
                  * boxes in future and inverse video technique for highlight will
                  * be implemented.
                  */
-                if (m->box_flags & HCLR_BOX) {
+                if (m->box_flags & HCLR_BOX)
+                {
                     av_bprintf(buf, "{\\2c&H%02x%02x%02x&}", m->c.hlit_color[2],
-                                m->c.hlit_color[1], m->c.hlit_color[0]);
-                } else {
+                               m->c.hlit_color[1], m->c.hlit_color[0]);
+                }
+                else
+                {
                     av_bprintf(buf, "{\\1c&H000000&}{\\2c&HFFFFFF&}");
                 }
             }
-            if (text_pos == m->h.hlit_end) {
-                if (m->box_flags & HCLR_BOX) {
+            if (text_pos == m->h.hlit_end)
+            {
+                if (m->box_flags & HCLR_BOX)
+                {
                     av_bprintf(buf, "{\\2c&H000000&}");
-                } else {
+                }
+                else
+                {
                     av_bprintf(buf, "{\\1c&HFFFFFF&}{\\2c&H000000&}");
                 }
             }
         }
 
-        switch (*text) {
+        switch (*text)
+        {
         case '\r':
             break;
         case '\n':
@@ -400,7 +447,8 @@ static int text_to_ass(AVBPrint *buf, const char *text, const char *text_end,
     return 0;
 }
 
-static int mov_text_init(AVCodecContext *avctx) {
+static int mov_text_init(AVCodecContext *avctx)
+{
     /*
      * TODO: Handle the default text style.
      * NB: Most players ignore styles completely, with the result that
@@ -410,16 +458,18 @@ static int mov_text_init(AVCodecContext *avctx) {
     int ret;
     MovTextContext *m = avctx->priv_data;
     ret = mov_text_tx3g(avctx, m);
-    if (ret == 0) {
+    if (ret == 0)
+    {
         return ff_ass_subtitle_header(avctx, m->d.font, m->d.fontsize, m->d.color,
-                                m->d.back_color, m->d.bold, m->d.italic,
-                                m->d.underline, m->d.alignment);
-    } else
+                                      m->d.back_color, m->d.bold, m->d.italic,
+                                      m->d.underline, m->d.alignment);
+    }
+    else
         return ff_ass_subtitle_header_default(avctx);
 }
 
 static int mov_text_decode_frame(AVCodecContext *avctx,
-                            void *data, int *got_sub_ptr, AVPacket *avpkt)
+                                 void *data, int *got_sub_ptr, AVPacket *avpkt)
 {
     AVSubtitle *sub = data;
     MovTextContext *m = avctx->priv_data;
@@ -455,10 +505,16 @@ static int mov_text_decode_frame(AVCodecContext *avctx,
 
     ts_start = av_rescale_q(avpkt->pts,
                             avctx->time_base,
-                            (AVRational){1,100});
+                            (AVRational)
+    {
+        1,100
+    });
     ts_end   = av_rescale_q(avpkt->pts + avpkt->duration,
                             avctx->time_base,
-                            (AVRational){1,100});
+                            (AVRational)
+    {
+        1,100
+    });
 
     tsmb_size = 0;
     m->tracksize = 2 + text_length;
@@ -467,8 +523,10 @@ static int mov_text_decode_frame(AVCodecContext *avctx,
     m->count_s = 0;
     // Note that the spec recommends lines be no longer than 2048 characters.
     av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
-    if (text_length + 2 != avpkt->size) {
-        while (m->tracksize + 8 <= avpkt->size) {
+    if (text_length + 2 != avpkt->size)
+    {
+        while (m->tracksize + 8 <= avpkt->size)
+        {
             // A box is a minimum of 8 bytes.
             tsmb = ptr + m->tracksize - 2;
             tsmb_size = AV_RB32(tsmb);
@@ -476,21 +534,25 @@ static int mov_text_decode_frame(AVCodecContext *avctx,
             tsmb_type = AV_RB32(tsmb);
             tsmb += 4;
 
-            if (tsmb_size == 1) {
+            if (tsmb_size == 1)
+            {
                 if (m->tracksize + 16 > avpkt->size)
                     break;
                 tsmb_size = AV_RB64(tsmb);
                 tsmb += 8;
                 m->size_var = 16;
-            } else
+            }
+            else
                 m->size_var = 8;
             //size_var is equal to 8 or 16 depending on the size of box
 
             if (m->tracksize + tsmb_size > avpkt->size)
                 break;
 
-            for (size_t i = 0; i < box_count; i++) {
-                if (tsmb_type == box_types[i].type) {
+            for (size_t i = 0; i < box_count; i++)
+            {
+                if (tsmb_type == box_types[i].type)
+                {
                     if (m->tracksize + m->size_var + box_types[i].base_size > avpkt->size)
                         break;
                     ret_tsmb = box_types[i].decode(tsmb, m, avpkt);
@@ -502,7 +564,8 @@ static int mov_text_decode_frame(AVCodecContext *avctx,
         }
         text_to_ass(&buf, ptr, end, m);
         mov_text_cleanup(m);
-    } else
+    }
+    else
         text_to_ass(&buf, ptr, end, m);
 
     ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_end - ts_start);
@@ -520,7 +583,8 @@ static int mov_text_decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_movtext_decoder = {
+AVCodec ff_movtext_decoder =
+{
     .name         = "mov_text",
     .long_name    = NULL_IF_CONFIG_SMALL("3GPP Timed Text subtitle"),
     .type         = AVMEDIA_TYPE_SUBTITLE,

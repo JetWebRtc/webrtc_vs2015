@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/common_types.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // Tracing helpers, for easy logging when WebRTC calls fail.
 // Example: "LOG_RTCERR1(StartSend, channel);" produces the trace

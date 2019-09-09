@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -36,7 +36,8 @@
 #include "typedefs.h"
 #include "macros.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 void IdctResAddPred_c (uint8_t* pPred, const int32_t kiStride, int16_t* pRs);
 void IdctResAddPred8x8_c (uint8_t* pPred, const int32_t kiStride, int16_t* pRs);

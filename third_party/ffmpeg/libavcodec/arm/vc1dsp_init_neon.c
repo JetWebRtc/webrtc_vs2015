@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -95,25 +95,26 @@ av_cold void ff_vc1dsp_init_neon(VC1DSPContext *dsp)
     dsp->vc1_inv_trans_4x4_dc = ff_vc1_inv_trans_4x4_dc_neon;
 
     dsp->put_vc1_mspel_pixels_tab[1][ 0] = ff_put_pixels8x8_neon;
-    if (HAVE_AS_DN_DIRECTIVE) {
-    FN_ASSIGN(1, 0);
-    FN_ASSIGN(2, 0);
-    FN_ASSIGN(3, 0);
+    if (HAVE_AS_DN_DIRECTIVE)
+    {
+        FN_ASSIGN(1, 0);
+        FN_ASSIGN(2, 0);
+        FN_ASSIGN(3, 0);
 
-    FN_ASSIGN(0, 1);
-    FN_ASSIGN(1, 1);
-    FN_ASSIGN(2, 1);
-    FN_ASSIGN(3, 1);
+        FN_ASSIGN(0, 1);
+        FN_ASSIGN(1, 1);
+        FN_ASSIGN(2, 1);
+        FN_ASSIGN(3, 1);
 
-    FN_ASSIGN(0, 2);
-    FN_ASSIGN(1, 2);
-    FN_ASSIGN(2, 2);
-    FN_ASSIGN(3, 2);
+        FN_ASSIGN(0, 2);
+        FN_ASSIGN(1, 2);
+        FN_ASSIGN(2, 2);
+        FN_ASSIGN(3, 2);
 
-    FN_ASSIGN(0, 3);
-    FN_ASSIGN(1, 3);
-    FN_ASSIGN(2, 3);
-    FN_ASSIGN(3, 3);
+        FN_ASSIGN(0, 3);
+        FN_ASSIGN(1, 3);
+        FN_ASSIGN(2, 3);
+        FN_ASSIGN(3, 3);
     }
 
     dsp->put_no_rnd_vc1_chroma_pixels_tab[0] = ff_put_vc1_chroma_mc8_neon;

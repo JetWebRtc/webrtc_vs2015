@@ -1,4 +1,4 @@
-/*
+﻿/*
  * crypto_kernel.h
  *
  * header for the cryptographic kernel
@@ -62,7 +62,8 @@ extern "C" {
  *    insecure - not yet initialized
  *    secure   - initialized and passed self-tests
  */
-typedef enum {
+typedef enum
+{
     srtp_crypto_kernel_state_insecure,
     srtp_crypto_kernel_state_secure
 } srtp_crypto_kernel_state_t;
@@ -70,7 +71,8 @@ typedef enum {
 /*
  * linked list of cipher types
  */
-typedef struct srtp_kernel_cipher_type {
+typedef struct srtp_kernel_cipher_type
+{
     srtp_cipher_type_id_t id;
     const srtp_cipher_type_t    *cipher_type;
     struct srtp_kernel_cipher_type *next;
@@ -79,7 +81,8 @@ typedef struct srtp_kernel_cipher_type {
 /*
  * linked list of auth types
  */
-typedef struct srtp_kernel_auth_type {
+typedef struct srtp_kernel_auth_type
+{
     srtp_auth_type_id_t id;
     const srtp_auth_type_t    *auth_type;
     struct srtp_kernel_auth_type *next;
@@ -88,7 +91,8 @@ typedef struct srtp_kernel_auth_type {
 /*
  * linked list of debug modules
  */
-typedef struct srtp_kernel_debug_module {
+typedef struct srtp_kernel_debug_module
+{
     srtp_debug_module_t *mod;
     struct srtp_kernel_debug_module *next;
 } srtp_kernel_debug_module_t;
@@ -100,7 +104,8 @@ typedef struct srtp_kernel_debug_module {
  * note that there is *exactly one* instance of this data type,
  * a global variable defined in crypto_kernel.c
  */
-typedef struct {
+typedef struct
+{
     srtp_crypto_kernel_state_t state;              /* current state of kernel     */
     srtp_kernel_cipher_type_t *cipher_type_list;   /* list of all cipher types    */
     srtp_kernel_auth_type_t   *auth_type_list;     /* list of all auth func types */

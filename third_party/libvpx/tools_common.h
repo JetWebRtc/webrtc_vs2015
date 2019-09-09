@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -66,40 +66,44 @@ typedef long FileOffset; /* NOLINT */
 #define VP8_FOURCC 0x30385056
 #define VP9_FOURCC 0x30395056
 
-enum VideoFileType {
-  FILE_TYPE_RAW,
-  FILE_TYPE_IVF,
-  FILE_TYPE_Y4M,
-  FILE_TYPE_WEBM
+enum VideoFileType
+{
+    FILE_TYPE_RAW,
+    FILE_TYPE_IVF,
+    FILE_TYPE_Y4M,
+    FILE_TYPE_WEBM
 };
 
-struct FileTypeDetectionBuffer {
-  char buf[4];
-  size_t buf_read;
-  size_t position;
+struct FileTypeDetectionBuffer
+{
+    char buf[4];
+    size_t buf_read;
+    size_t position;
 };
 
-struct VpxRational {
-  int numerator;
-  int denominator;
+struct VpxRational
+{
+    int numerator;
+    int denominator;
 };
 
-struct VpxInputContext {
-  const char *filename;
-  FILE *file;
-  int64_t length;
-  struct FileTypeDetectionBuffer detect;
-  enum VideoFileType file_type;
-  uint32_t width;
-  uint32_t height;
-  struct VpxRational pixel_aspect_ratio;
-  vpx_img_fmt_t fmt;
-  vpx_bit_depth_t bit_depth;
-  int only_i420;
-  uint32_t fourcc;
-  struct VpxRational framerate;
+struct VpxInputContext
+{
+    const char *filename;
+    FILE *file;
+    int64_t length;
+    struct FileTypeDetectionBuffer detect;
+    enum VideoFileType file_type;
+    uint32_t width;
+    uint32_t height;
+    struct VpxRational pixel_aspect_ratio;
+    vpx_img_fmt_t fmt;
+    vpx_bit_depth_t bit_depth;
+    int only_i420;
+    uint32_t fourcc;
+    struct VpxRational framerate;
 #if CONFIG_ENCODERS
-  y4m_input y4m;
+    y4m_input y4m;
 #endif
 };
 
@@ -129,10 +133,11 @@ void usage_exit(void) VPX_NO_RETURN;
 
 int read_yuv_frame(struct VpxInputContext *input_ctx, vpx_image_t *yuv_frame);
 
-typedef struct VpxInterface {
-  const char *const name;
-  const uint32_t fourcc;
-  vpx_codec_iface_t *(*const codec_interface)();
+typedef struct VpxInterface
+{
+    const char *const name;
+    const uint32_t fourcc;
+    vpx_codec_iface_t *(*const codec_interface)();
 } VpxInterface;
 
 int get_vpx_encoder_count(void);

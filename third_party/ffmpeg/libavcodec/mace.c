@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MACE decoder
  * Copyright (c) 2002 Laszlo Torok <torokl@alpha.dfmk.hu>
  *
@@ -38,7 +38,8 @@ static const int16_t MACEtab1[] = {-13, 8, 76, 222, 222, 76, 8, -13};
 
 static const int16_t MACEtab3[] = {-18, 140, 140, -18};
 
-static const int16_t MACEtab2[][4] = {
+static const int16_t MACEtab2[][4] =
+{
     {    37,    116,    206,    330}, {    39,    121,    216,    346},
     {    41,    127,    225,    361}, {    42,    132,    235,    377},
     {    44,    137,    245,    392}, {    46,    144,    256,    410},
@@ -105,7 +106,8 @@ static const int16_t MACEtab2[][4] = {
     {  9228,  28457,  32767,  32767}, {  9639,  29727,  32767,  32767}
 };
 
-static const int16_t MACEtab4[][2] = {
+static const int16_t MACEtab4[][2] =
+{
     {    64,    216}, {    67,    226}, {    70,    236}, {    74,    246},
     {    77,    257}, {    80,    268}, {    84,    280}, {    88,    294},
     {    92,    307}, {    96,    321}, {   100,    334}, {   104,    350},
@@ -140,9 +142,13 @@ static const int16_t MACEtab4[][2] = {
     { 14576,  32767}, { 15226,  32767}, { 15906,  32767}, { 16615,  32767}
 };
 
-static const struct {
-    const int16_t *tab1; const int16_t *tab2; int stride;
-} tabs[] = {
+static const struct
+{
+    const int16_t *tab1;
+    const int16_t *tab2;
+    int stride;
+} tabs[] =
+{
     {MACEtab1, &MACEtab2[0][0], 4},
     {MACEtab3, &MACEtab4[0][0], 2},
     {MACEtab1, &MACEtab2[0][0], 4}
@@ -150,11 +156,13 @@ static const struct {
 
 #define QT_8S_2_16S(x) (((x) & 0xFF00) | (((x) >> 8) & 0xFF))
 
-typedef struct ChannelData {
+typedef struct ChannelData
+{
     int16_t index, factor, prev2, previous, level;
 } ChannelData;
 
-typedef struct MACEContext {
+typedef struct MACEContext
+{
     ChannelData chd[2];
 } MACEContext;
 
@@ -182,7 +190,7 @@ static int16_t read_table(ChannelData *chd, uint8_t val, int tab_idx)
         current = - 1 - tabs[tab_idx].tab2[((chd->index & 0x7f0) >> 4)*tabs[tab_idx].stride + 2*tabs[tab_idx].stride-val-1];
 
     if (( chd->index += tabs[tab_idx].tab1[val]-(chd->index >> 5) ) < 0)
-      chd->index = 0;
+        chd->index = 0;
 
     return current;
 }
@@ -202,9 +210,12 @@ static void chomp6(ChannelData *chd, int16_t *output, uint8_t val, int tab_idx)
 {
     int16_t current = read_table(chd, val, tab_idx);
 
-    if ((chd->previous ^ current) >= 0) {
+    if ((chd->previous ^ current) >= 0)
+    {
         chd->factor = FFMIN(chd->factor + 506, 32767);
-    } else {
+    }
+    else
+    {
         if (chd->factor - 314 < -32768)
             chd->factor = -32767;
         else
@@ -244,7 +255,8 @@ static int mace_decode_frame(AVCodecContext *avctx, void *data,
     int i, j, k, l, ret;
     int is_mace3 = (avctx->codec_id == AV_CODEC_ID_MACE3);
 
-    if (buf_size % (avctx->channels << is_mace3)) {
+    if (buf_size % (avctx->channels << is_mace3))
+    {
         av_log(avctx, AV_LOG_ERROR, "buffer size %d is odd\n", buf_size);
         buf_size -= buf_size % (avctx->channels << is_mace3);
         if (!buf_size)
@@ -257,18 +269,22 @@ static int mace_decode_frame(AVCodecContext *avctx, void *data,
         return ret;
     samples = (int16_t **)frame->extended_data;
 
-    for(i = 0; i < avctx->channels; i++) {
+    for(i = 0; i < avctx->channels; i++)
+    {
         int16_t *output = samples[i];
 
         for (j=0; j < buf_size / (avctx->channels << is_mace3); j++)
-            for (k=0; k < (1 << is_mace3); k++) {
+            for (k=0; k < (1 << is_mace3); k++)
+            {
                 uint8_t pkt = buf[(i << is_mace3) +
                                   (j*avctx->channels << is_mace3) + k];
 
                 uint8_t val[2][3] = {{pkt >> 5, (pkt >> 3) & 3, pkt & 7 },
-                                     {pkt & 7 , (pkt >> 3) & 3, pkt >> 5}};
+                    {pkt & 7 , (pkt >> 3) & 3, pkt >> 5}
+                };
 
-                for (l=0; l < 3; l++) {
+                for (l=0; l < 3; l++)
+                {
                     if (is_mace3)
                         chomp3(&ctx->chd[i], output, val[1][l], l);
                     else
@@ -284,7 +300,8 @@ static int mace_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_mace3_decoder = {
+AVCodec ff_mace3_decoder =
+{
     .name           = "mace3",
     .long_name      = NULL_IF_CONFIG_SMALL("MACE (Macintosh Audio Compression/Expansion) 3:1"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -293,11 +310,14 @@ AVCodec ff_mace3_decoder = {
     .init           = mace_decode_init,
     .decode         = mace_decode_frame,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
 };
 
-AVCodec ff_mace6_decoder = {
+AVCodec ff_mace6_decoder =
+{
     .name           = "mace6",
     .long_name      = NULL_IF_CONFIG_SMALL("MACE (Macintosh Audio Compression/Expansion) 6:1"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -306,6 +326,8 @@ AVCodec ff_mace6_decoder = {
     .init           = mace_decode_init,
     .decode         = mace_decode_frame,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
 };

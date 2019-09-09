@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -44,7 +44,8 @@
 #include "encoder_context.h"
 #include "wels_func_ptr_def.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 #define CAMERA_STARTMV_RANGE (64)
 #define  ITERATIVE_TIMES  (16)
 #define CAMERA_MV_RANGE (CAMERA_STARTMV_RANGE+ITERATIVE_TIMES)
@@ -54,7 +55,8 @@ namespace WelsEnc {
 #define EXPANDED_MV_RANGE (504) //=512-8 rather than 511 to sacrifice same edge point but save complexity in assemblys
 #define EXPANDED_MVD_RANGE ((504+1)<<1)
 
-enum {
+enum
+{
 ME_DIA    = 0x01,  // LITTLE DIAMOND= 0x01
 ME_CROSS  = 0x02,  // CROSS=  0x02
 ME_FME    = 0x04,  // FME = 0x04
@@ -65,11 +67,13 @@ ME_DIA_CROSS    = (ME_DIA | ME_CROSS),   // DIA+CROSS
 ME_DIA_CROSS_FME  = (ME_DIA_CROSS | ME_FME)  // DIA+CROSS+FME
 };
 
-union SadPredISatdUnit {
+union SadPredISatdUnit
+{
 uint32_t  uiSadPred;
 uint32_t  uiSatd;    //reuse the sad_pred as a temp satd pData
 };
-typedef struct TagWelsME {
+typedef struct TagWelsME
+{
 /* input */
 uint16_t*          pMvdCost;
 union SadPredISatdUnit  uSadPredISatd; //reuse the sad_pred as a temp pData
@@ -96,7 +100,8 @@ SScreenBlockFeatureStorage* pRefFeatureStorage;
 SMVUnitXY          sMv;
 } SWelsME;
 
-typedef struct TagFeatureSearchIn {
+typedef struct TagFeatureSearchIn
+{
 PSampleSadSatdCostFunc pSad;
 
 uint32_t* pTimesOfFeature;
@@ -123,7 +128,8 @@ int32_t iMaxQpelX;
 int32_t iMaxQpelY;
 } SFeatureSearchIn;
 
-typedef struct TagFeatureSearchOut {
+typedef struct TagFeatureSearchOut
+{
 SMVUnitXY sBestMv;
 uint32_t uiBestSadCost;
 uint8_t* pBestRef;
@@ -253,19 +259,19 @@ void SumOf16x16BlockOfFrame_c (uint8_t* pRefPicture, const int32_t kiWidth, cons
 extern "C"
 {
 void InitializeHashforFeature_sse2 (uint32_t* pTimesOfFeatureValue, uint16_t* pBuf, const int32_t kiListSize,
-                                     uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList);
+                                    uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList);
 void FillQpelLocationByFeatureValue_sse2 (uint16_t* pFeatureOfBlock, const int32_t kiWidth, const int32_t kiHeight,
-                                           uint16_t** pFeatureValuePointerList);
+        uint16_t** pFeatureValuePointerList);
 int32_t SumOf8x8SingleBlock_sse2 (uint8_t* pRef, const int32_t kiRefStride);
 int32_t SumOf16x16SingleBlock_sse2 (uint8_t* pRef, const int32_t kiRefStride);
 void SumOf8x8BlockOfFrame_sse2 (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+                                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 void SumOf16x16BlockOfFrame_sse2 (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+                                  const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 void SumOf8x8BlockOfFrame_sse4 (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+                                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 void SumOf16x16BlockOfFrame_sse4 (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+                                  const int32_t kiRefStride, uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 }
 #endif
 #ifdef HAVE_NEON
@@ -274,7 +280,7 @@ extern "C"
 void InitializeHashforFeature_neon (uint32_t* pTimesOfFeatureValue, uint16_t* pBuf, const int32_t kiListSize,
                                     uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList);
 void FillQpelLocationByFeatureValue_neon (uint16_t* pFeatureOfBlock, const int32_t kiWidth, const int32_t kiHeight,
-                                          uint16_t** pFeatureValuePointerList);
+        uint16_t** pFeatureValuePointerList);
 int32_t SumOf8x8SingleBlock_neon (uint8_t* pRef, const int32_t kiRefStride);
 int32_t SumOf16x16SingleBlock_neon (uint8_t* pRef, const int32_t kiRefStride);
 void SumOf8x8BlockOfFrame_neon (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
@@ -290,26 +296,26 @@ void SumOf16x16BlockOfFrame_neon (uint8_t* pRefPicture, const int32_t kiWidth, c
 extern "C"
 {
 void InitializeHashforFeature_AArch64_neon (uint32_t* pTimesOfFeatureValue, uint16_t* pBuf, const int32_t kiListSize,
-                                    uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList);
+        uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList);
 void FillQpelLocationByFeatureValue_AArch64_neon (uint16_t* pFeatureOfBlock, const int32_t kiWidth, const int32_t kiHeight,
-                                          uint16_t** pFeatureValuePointerList);
+        uint16_t** pFeatureValuePointerList);
 int32_t SumOf8x8SingleBlock_AArch64_neon (uint8_t* pRef, const int32_t kiRefStride);
 int32_t SumOf16x16SingleBlock_AArch64_neon (uint8_t* pRef, const int32_t kiRefStride);
 void SumOf8x8BlockOfFrame_AArch64_neon (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                                const int32_t kiRefStride,
-                                uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+                                        const int32_t kiRefStride,
+                                        uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 void SumOf16x16BlockOfFrame_AArch64_neon (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
-                                  const int32_t kiRefStride,
-                                  uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
+        const int32_t kiRefStride,
+        uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]);
 }
 #endif
 int32_t RequestScreenBlockFeatureStorage (CMemoryAlign* pMa, const int32_t kiFrameWidth,  const int32_t kiFrameHeight,
-    const int32_t iNeedFeatureStorage,
-    SScreenBlockFeatureStorage* pScreenBlockFeatureStorage);
+        const int32_t iNeedFeatureStorage,
+        SScreenBlockFeatureStorage* pScreenBlockFeatureStorage);
 int32_t ReleaseScreenBlockFeatureStorage (CMemoryAlign* pMa, SScreenBlockFeatureStorage* pScreenBlockFeatureStorage);
 int32_t RequestFeatureSearchPreparation (CMemoryAlign* pMa, const int32_t kiFrameWidth,  const int32_t kiFrameHeight,
-    const int32_t iNeedFeatureStorage,
-    SFeatureSearchPreparation* pFeatureSearchPreparation);
+        const int32_t iNeedFeatureStorage,
+        SFeatureSearchPreparation* pFeatureSearchPreparation);
 int32_t ReleaseFeatureSearchPreparation (CMemoryAlign* pMa, uint16_t*& pFeatureOfBlock);
 
 #define FMESWITCH_DEFAULT_GOODFRAME_NUM (2)
@@ -335,20 +341,23 @@ void WelsDiamondCrossFeatureSearch (SWelsFuncPtrList* pFuncList, SWelsME* pMe, S
 inline void SetMvWithinIntegerMvRange (const int32_t kiMbWidth, const int32_t kiMbHeight, const int32_t kiMbX,
                                        const int32_t kiMbY,
                                        const int32_t kiMaxMvRange,
-                                       SMVUnitXY* pMvMin, SMVUnitXY* pMvMax) {
+                                       SMVUnitXY* pMvMin, SMVUnitXY* pMvMax)
+{
 pMvMin->iMvX = WELS_MAX (-1 * ((kiMbX + 1) * (1 << 4)) + INTPEL_NEEDED_MARGIN, -1 * kiMaxMvRange);
 pMvMin->iMvY = WELS_MAX (-1 * ((kiMbY + 1) * (1 << 4)) + INTPEL_NEEDED_MARGIN, -1 * kiMaxMvRange);
 pMvMax->iMvX = WELS_MIN (((kiMbWidth - kiMbX) * (1 << 4)) - INTPEL_NEEDED_MARGIN, kiMaxMvRange);
 pMvMax->iMvY = WELS_MIN (((kiMbHeight - kiMbY) * (1 << 4)) - INTPEL_NEEDED_MARGIN, kiMaxMvRange);
 }
 
-inline bool CheckMvInRange (const SMVUnitXY ksCurrentMv, const SMVUnitXY ksMinMv, const SMVUnitXY ksMaxMv) {
+inline bool CheckMvInRange (const SMVUnitXY ksCurrentMv, const SMVUnitXY ksMinMv, const SMVUnitXY ksMaxMv)
+{
 return (CheckInRangeCloseOpen (ksCurrentMv.iMvX, ksMinMv.iMvX, ksMaxMv.iMvX)
         && CheckInRangeCloseOpen (ksCurrentMv.iMvY, ksMinMv.iMvY, ksMaxMv.iMvY));
 }
 //FME switch related
 inline bool CalcFMESwitchFlag (const uint8_t uiFMEGoodFrameCount, const int32_t iHighFreMbPrecentage,
-                               const int32_t iAvgMbSAD, const bool bScrollingDetected) {
+                               const int32_t iAvgMbSAD, const bool bScrollingDetected)
+{
 return (bScrollingDetected || (uiFMEGoodFrameCount > 0 && iAvgMbSAD > FMESWITCH_MBSAD_THRESHOLD));
 //TODO: add the logic of iHighFreMbPrecentage
 //return ( iHighFreMbPrecentage > 2

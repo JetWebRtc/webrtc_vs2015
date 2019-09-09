@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -47,9 +47,10 @@
 // narrow the range to the nearest alignment boundaries.
 static inline void rtc_AsanPoison(const volatile void* ptr,
                                   size_t element_size,
-                                  size_t num_elements) {
+                                  size_t num_elements)
+{
 #if RTC_HAS_ASAN
-  ASAN_POISON_MEMORY_REGION(ptr, element_size * num_elements);
+    ASAN_POISON_MEMORY_REGION(ptr, element_size * num_elements);
 #endif
 }
 
@@ -58,19 +59,21 @@ static inline void rtc_AsanPoison(const volatile void* ptr,
 // the range to the nearest alignment boundaries.
 static inline void rtc_AsanUnpoison(const volatile void* ptr,
                                     size_t element_size,
-                                    size_t num_elements) {
+                                    size_t num_elements)
+{
 #if RTC_HAS_ASAN
-  ASAN_UNPOISON_MEMORY_REGION(ptr, element_size * num_elements);
+    ASAN_UNPOISON_MEMORY_REGION(ptr, element_size * num_elements);
 #endif
 }
 
 // Ask MSan to mark the memory range [ptr, ptr + element_size * num_elements)
 // as being uninitialized.
 static inline void rtc_MsanMarkUninitialized(const volatile void* ptr,
-                                             size_t element_size,
-                                             size_t num_elements) {
+        size_t element_size,
+        size_t num_elements)
+{
 #if RTC_HAS_MSAN
-  __msan_poison(ptr, element_size * num_elements);
+    __msan_poison(ptr, element_size * num_elements);
 #endif
 }
 
@@ -78,35 +81,41 @@ static inline void rtc_MsanMarkUninitialized(const volatile void* ptr,
 // element_size * num_elements) are uninitialized the call will crash with an
 // MSan report).
 static inline void rtc_MsanCheckInitialized(const volatile void* ptr,
-                                            size_t element_size,
-                                            size_t num_elements) {
+        size_t element_size,
+        size_t num_elements)
+{
 #if RTC_HAS_MSAN
-  __msan_check_mem_is_initialized(ptr, element_size * num_elements);
+    __msan_check_mem_is_initialized(ptr, element_size * num_elements);
 #endif
 }
 
 #ifdef __cplusplus
 
-namespace rtc {
+namespace rtc
+{
 
 template <typename T>
-inline void AsanPoison(const T& mem) {
-  rtc_AsanPoison(mem.data(), sizeof(mem.data()[0]), mem.size());
+inline void AsanPoison(const T& mem)
+{
+    rtc_AsanPoison(mem.data(), sizeof(mem.data()[0]), mem.size());
 }
 
 template <typename T>
-inline void AsanUnpoison(const T& mem) {
-  rtc_AsanUnpoison(mem.data(), sizeof(mem.data()[0]), mem.size());
+inline void AsanUnpoison(const T& mem)
+{
+    rtc_AsanUnpoison(mem.data(), sizeof(mem.data()[0]), mem.size());
 }
 
 template <typename T>
-inline void MsanMarkUninitialized(const T& mem) {
-  rtc_MsanMarkUninitialized(mem.data(), sizeof(mem.data()[0]), mem.size());
+inline void MsanMarkUninitialized(const T& mem)
+{
+    rtc_MsanMarkUninitialized(mem.data(), sizeof(mem.data()[0]), mem.size());
 }
 
 template <typename T>
-inline void MsanCheckInitialized(const T& mem) {
-  rtc_MsanCheckInitialized(mem.data(), sizeof(mem.data()[0]), mem.size());
+inline void MsanCheckInitialized(const T& mem)
+{
+    rtc_MsanCheckInitialized(mem.data(), sizeof(mem.data()[0]), mem.size());
 }
 
 }  // namespace rtc

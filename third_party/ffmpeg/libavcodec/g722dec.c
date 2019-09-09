@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) CMU 1993 Computer Science, Speech Group
  *                        Chengxiang Lu and Alex Hauptmann
  * Copyright (c) 2005 Steve Underwood <steveu at coppice.org>
@@ -43,12 +43,14 @@
 
 #define OFFSET(x) offsetof(G722Context, x)
 #define AD AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "bits_per_codeword", "Bits per G722 codeword", OFFSET(bits_per_codeword), AV_OPT_TYPE_INT, { .i64 = 8 }, 6, 8, AD },
     { NULL }
 };
 
-static const AVClass g722_decoder_class = {
+static const AVClass g722_decoder_class =
+{
     .class_name = "g722 decoder",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -72,16 +74,18 @@ static av_cold int g722_decode_init(AVCodecContext * avctx)
     return 0;
 }
 
-static const int16_t low_inv_quant5[32] = {
-     -35,   -35, -2919, -2195, -1765, -1458, -1219, -1023,
+static const int16_t low_inv_quant5[32] =
+{
+    -35,   -35, -2919, -2195, -1765, -1458, -1219, -1023,
     -858,  -714,  -587,  -473,  -370,  -276,  -190,  -110,
     2919,  2195,  1765,  1458,  1219,  1023,   858,   714,
-     587,   473,   370,   276,   190,   110,    35,   -35
+    587,   473,   370,   276,   190,   110,    35,   -35
 };
 
 static const int16_t * const low_inv_quants[3] = { ff_g722_low_inv_quant6,
-                                                    low_inv_quant5,
-                                            ff_g722_low_inv_quant4 };
+                                                   low_inv_quant5,
+                                                   ff_g722_low_inv_quant4
+                                                 };
 
 static int g722_decode_frame(AVCodecContext *avctx, void *data,
                              int *got_frame_ptr, AVPacket *avpkt)
@@ -102,7 +106,8 @@ static int g722_decode_frame(AVCodecContext *avctx, void *data,
 
     init_get_bits(&gb, avpkt->data, avpkt->size * 8);
 
-    for (j = 0; j < avpkt->size; j++) {
+    for (j = 0; j < avpkt->size; j++)
+    {
         int ilow, ihigh, rlow, rhigh, dhigh;
         int xout[2];
 
@@ -111,7 +116,7 @@ static int g722_decode_frame(AVCodecContext *avctx, void *data,
         skip_bits(&gb, skip);
 
         rlow = av_clip_intp2((c->band[0].scale_factor * quantizer_table[ilow] >> 10)
-                      + c->band[0].s_predictor, 14);
+                             + c->band[0].s_predictor, 14);
 
         ff_g722_update_low_predictor(&c->band[0], ilow >> (2 - skip));
 
@@ -125,7 +130,8 @@ static int g722_decode_frame(AVCodecContext *avctx, void *data,
         c->dsp.apply_qmf(c->prev_samples + c->prev_samples_pos - 24, xout);
         *out_buf++ = av_clip_int16(xout[0] >> 11);
         *out_buf++ = av_clip_int16(xout[1] >> 11);
-        if (c->prev_samples_pos >= PREV_SAMPLES_BUF_SIZE) {
+        if (c->prev_samples_pos >= PREV_SAMPLES_BUF_SIZE)
+        {
             memmove(c->prev_samples, c->prev_samples + c->prev_samples_pos - 22,
                     22 * sizeof(c->prev_samples[0]));
             c->prev_samples_pos = 22;
@@ -137,7 +143,8 @@ static int g722_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_adpcm_g722_decoder = {
+AVCodec ff_adpcm_g722_decoder =
+{
     .name           = "g722",
     .long_name      = NULL_IF_CONFIG_SMALL("G.722 ADPCM"),
     .type           = AVMEDIA_TYPE_AUDIO,

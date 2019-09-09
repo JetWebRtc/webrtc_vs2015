@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,10 +25,11 @@ DEFINE_string(input_filename,
               "Input file.");
 DEFINE_string(output_filename,
               webrtc::test::OutputPath() +
-                  "video_coding_test_output_352x288.yuv",
+              "video_coding_test_output_352x288.yuv",
               "Output file.");
 
-namespace webrtc {
+namespace webrtc
+{
 
 /*
  * Build with EVENT_DEBUG defined
@@ -38,41 +39,52 @@ namespace webrtc {
 int vcmMacrosTests = 0;
 int vcmMacrosErrors = 0;
 
-int ParseArguments(CmdArgs* args) {
-  args->width = FLAGS_width;
-  args->height = FLAGS_height;
-  if (args->width < 1 || args->height < 1) {
-    return -1;
-  }
-  args->codecName = FLAGS_codec;
-  if (args->codecName == "VP8") {
-    args->codecType = kVideoCodecVP8;
-  } else if (args->codecName == "VP9") {
-    args->codecType = kVideoCodecVP9;
-  } else if (args->codecName == "I420") {
-    args->codecType = kVideoCodecI420;
-  } else {
-    printf("Invalid codec: %s\n", args->codecName.c_str());
-    return -1;
-  }
-  args->inputFile = FLAGS_input_filename;
-  args->outputFile = FLAGS_output_filename;
-  args->rtt = FLAGS_rtt;
-  return 0;
+int ParseArguments(CmdArgs* args)
+{
+    args->width = FLAGS_width;
+    args->height = FLAGS_height;
+    if (args->width < 1 || args->height < 1)
+    {
+        return -1;
+    }
+    args->codecName = FLAGS_codec;
+    if (args->codecName == "VP8")
+    {
+        args->codecType = kVideoCodecVP8;
+    }
+    else if (args->codecName == "VP9")
+    {
+        args->codecType = kVideoCodecVP9;
+    }
+    else if (args->codecName == "I420")
+    {
+        args->codecType = kVideoCodecI420;
+    }
+    else
+    {
+        printf("Invalid codec: %s\n", args->codecName.c_str());
+        return -1;
+    }
+    args->inputFile = FLAGS_input_filename;
+    args->outputFile = FLAGS_output_filename;
+    args->rtt = FLAGS_rtt;
+    return 0;
 }
 }  // namespace webrtc
 
-int main(int argc, char** argv) {
-  // Initialize WebRTC fileutils.h so paths to resources can be resolved.
-  webrtc::test::SetExecutablePath(argv[0]);
-  google::ParseCommandLineFlags(&argc, &argv, true);
+int main(int argc, char** argv)
+{
+    // Initialize WebRTC fileutils.h so paths to resources can be resolved.
+    webrtc::test::SetExecutablePath(argv[0]);
+    google::ParseCommandLineFlags(&argc, &argv, true);
 
-  CmdArgs args;
-  if (webrtc::ParseArguments(&args) != 0) {
-    printf("Unable to parse input arguments\n");
-    return -1;
-  }
+    CmdArgs args;
+    if (webrtc::ParseArguments(&args) != 0)
+    {
+        printf("Unable to parse input arguments\n");
+        return -1;
+    }
 
-  printf("Running video coding tests...\n");
-  return RtpPlay(args);
+    printf("Running video coding tests...\n");
+    return RtpPlay(args);
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-4 / H.263 HW decode acceleration through VA API
  *
  * Copyright (C) 2008-2009 Splitted-Desktop Systems
@@ -28,15 +28,24 @@
 /** Reconstruct bitstream intra_dc_vlc_thr */
 static int mpeg4_get_intra_dc_vlc_thr(Mpeg4DecContext *s)
 {
-    switch (s->intra_dc_threshold) {
-    case 99: return 0;
-    case 13: return 1;
-    case 15: return 2;
-    case 17: return 3;
-    case 19: return 4;
-    case 21: return 5;
-    case 23: return 6;
-    case 0:  return 7;
+    switch (s->intra_dc_threshold)
+    {
+    case 99:
+        return 0;
+    case 13:
+        return 1;
+    case 15:
+        return 2;
+    case 17:
+        return 3;
+    case 19:
+        return 4;
+    case 21:
+        return 5;
+    case 23:
+        return 6;
+    case 0:
+        return 7;
     }
     return 0;
 }
@@ -75,7 +84,8 @@ static int vaapi_mpeg4_start_frame(AVCodecContext *avctx, av_unused const uint8_
     pic_param->vol_fields.bits.reversible_vlc           = ctx->rvlc;
     pic_param->vol_fields.bits.resync_marker_disable    = !ctx->resync_marker;
     pic_param->no_of_sprite_warping_points              = ctx->num_sprite_warping_points;
-    for (i = 0; i < ctx->num_sprite_warping_points && i < 3; i++) {
+    for (i = 0; i < ctx->num_sprite_warping_points && i < 3; i++)
+    {
         pic_param->sprite_trajectory_du[i]              = ctx->sprite_traj[i][0];
         pic_param->sprite_trajectory_dv[i]              = ctx->sprite_traj[i][1];
     }
@@ -102,14 +112,16 @@ static int vaapi_mpeg4_start_frame(AVCodecContext *avctx, av_unused const uint8_
 
     /* Fill in VAIQMatrixBufferMPEG4 */
     /* Only the first inverse quantisation method uses the weighting matrices */
-    if (pic_param->vol_fields.bits.quant_type) {
+    if (pic_param->vol_fields.bits.quant_type)
+    {
         iq_matrix = ff_vaapi_alloc_iq_matrix(vactx, sizeof(VAIQMatrixBufferMPEG4));
         if (!iq_matrix)
             return -1;
         iq_matrix->load_intra_quant_mat         = 1;
         iq_matrix->load_non_intra_quant_mat     = 1;
 
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < 64; i++)
+        {
             int n = s->idsp.idct_permutation[ff_zigzag_direct[i]];
             iq_matrix->intra_quant_mat[i]       = s->intra_matrix[n];
             iq_matrix->non_intra_quant_mat[i]   = s->inter_matrix[n];
@@ -138,7 +150,8 @@ static int vaapi_mpeg4_decode_slice(AVCodecContext *avctx, const uint8_t *buffer
 }
 
 #if CONFIG_MPEG4_VAAPI_HWACCEL
-AVHWAccel ff_mpeg4_vaapi_hwaccel = {
+AVHWAccel ff_mpeg4_vaapi_hwaccel =
+{
     .name           = "mpeg4_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG4,
@@ -153,7 +166,8 @@ AVHWAccel ff_mpeg4_vaapi_hwaccel = {
 #endif
 
 #if CONFIG_H263_VAAPI_HWACCEL
-AVHWAccel ff_h263_vaapi_hwaccel = {
+AVHWAccel ff_h263_vaapi_hwaccel =
+{
     .name           = "h263_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_H263,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,13 +21,14 @@ extern "C" {
 
 typedef void (*vpx_rb_error_handler)(void *data);
 
-struct vpx_read_bit_buffer {
-  const uint8_t *bit_buffer;
-  const uint8_t *bit_buffer_end;
-  size_t bit_offset;
+struct vpx_read_bit_buffer
+{
+    const uint8_t *bit_buffer;
+    const uint8_t *bit_buffer_end;
+    size_t bit_offset;
 
-  void *error_handler_data;
-  vpx_rb_error_handler error_handler;
+    void *error_handler_data;
+    vpx_rb_error_handler error_handler;
 };
 
 size_t vpx_rb_bytes_read(struct vpx_read_bit_buffer *rb);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,15 +26,17 @@ extern "C" {
 
 typedef void (*transform_1d)(const tran_low_t *, tran_low_t *);
 
-typedef struct {
-  transform_1d cols, rows;  // vertical and horizontal
+typedef struct
+{
+    transform_1d cols, rows;  // vertical and horizontal
 } transform_2d;
 
 #if CONFIG_VP9_HIGHBITDEPTH
 typedef void (*highbd_transform_1d)(const tran_low_t *, tran_low_t *, int bd);
 
-typedef struct {
-  highbd_transform_1d cols, rows;  // vertical and horizontal
+typedef struct
+{
+    highbd_transform_1d cols, rows;  // vertical and horizontal
 } highbd_transform_2d;
 #endif  // CONFIG_VP9_HIGHBITDEPTH
 

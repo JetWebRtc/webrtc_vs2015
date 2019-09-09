@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -31,7 +31,8 @@ static av_always_inline int sad_wxh(const uint8_t *src1, ptrdiff_t stride1,
 {
     int x, y, sum = 0;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         for (x = 0; x < w; x++)
             sum += abs(src1[x] - src2[x]);
         src1 += stride1;
@@ -52,7 +53,8 @@ DECLARE_BLOCK_FUNCTIONS(4)
 DECLARE_BLOCK_FUNCTIONS(8)
 DECLARE_BLOCK_FUNCTIONS(16)
 
-static const av_pixelutils_sad_fn sad_c[] = {
+static const av_pixelutils_sad_fn sad_c[] =
+{
     block_sad_2x2_c,
     block_sad_4x4_c,
     block_sad_8x8_c,
@@ -73,7 +75,7 @@ av_pixelutils_sad_fn av_pixelutils_get_sad_fn(int w_bits, int h_bits, int aligne
     memcpy(sad, sad_c, sizeof(sad));
 
     if (w_bits < 1 || w_bits > FF_ARRAY_ELEMS(sad) ||
-        h_bits < 1 || h_bits > FF_ARRAY_ELEMS(sad))
+            h_bits < 1 || h_bits > FF_ARRAY_ELEMS(sad))
         return NULL;
     if (w_bits != h_bits) // only squared sad for now
         return NULL;
@@ -101,10 +103,17 @@ static int run_single_test(const char *test,
     av_pixelutils_sad_fn f_ref = sad_c[n - 1];
     av_pixelutils_sad_fn f_out = av_pixelutils_get_sad_fn(n, n, align, NULL);
 
-    switch (align) {
-    case 0: block1++; block2++; break;
-    case 1:           block2++; break;
-    case 2:                     break;
+    switch (align)
+    {
+    case 0:
+        block1++;
+        block2++;
+        break;
+    case 1:
+        block2++;
+        break;
+    case 2:
+        break;
     }
 
     out = f_out(block1, stride1, block2, stride2);
@@ -121,16 +130,25 @@ static int run_test(const char *test,
 {
     int i, a, ret = 0;
 
-    for (a = 0; a < 3; a++) {
+    for (a = 0; a < 3; a++)
+    {
         const uint8_t *block1 = b1;
         const uint8_t *block2 = b2;
 
-        switch (a) {
-        case 0: block1++; block2++; break;
-        case 1:           block2++; break;
-        case 2:                     break;
+        switch (a)
+        {
+        case 0:
+            block1++;
+            block2++;
+            break;
+        case 1:
+            block2++;
+            break;
+        case 2:
+            break;
         }
-        for (i = 1; i <= FF_ARRAY_ELEMS(sad_c); i++) {
+        for (i = 1; i <= FF_ARRAY_ELEMS(sad_c); i++)
+        {
             int r = run_single_test(test, b1, W1, b2, W2, a, i);
             if (r)
                 ret = r;
@@ -146,7 +164,8 @@ int main(void)
     uint8_t *buf2 = av_malloc(W2*H2);
     uint32_t state = 0;
 
-    if (!buf1 || !buf2) {
+    if (!buf1 || !buf2)
+    {
         fprintf(stderr, "malloc failure\n");
         ret = 1;
         goto end;
@@ -184,8 +203,10 @@ int main(void)
         goto end;
 
     /* Exact buffer sizes, to check for overreads */
-    for (i = 1; i <= 4; i++) {
-        for (align = 0; align < 3; align++) {
+    for (i = 1; i <= 4; i++)
+    {
+        for (align = 0; align < 3; align++)
+        {
             int size1, size2;
 
             av_freep(&buf1);
@@ -193,15 +214,23 @@ int main(void)
 
             size1 = size2 = 1 << (i << 1);
 
-            switch (align) {
-            case 0: size1++; size2++; break;
-            case 1:          size2++; break;
-            case 2:                   break;
+            switch (align)
+            {
+            case 0:
+                size1++;
+                size2++;
+                break;
+            case 1:
+                size2++;
+                break;
+            case 2:
+                break;
             }
 
             buf1 = av_malloc(size1);
             buf2 = av_malloc(size2);
-            if (!buf1 || !buf2) {
+            if (!buf1 || !buf2)
+            {
                 fprintf(stderr, "malloc failure\n");
                 ret = 1;
                 goto end;

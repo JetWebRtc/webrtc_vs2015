@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TLS/SSL Protocol
  * Copyright (c) 2011 Martin Storsjo
  *
@@ -38,7 +38,8 @@
 
 static int openssl_init;
 
-typedef struct TLSContext {
+typedef struct TLSContext
+{
     const AVClass *class;
     TLSShared tls_shared;
     SSL_CTX *ctx;
@@ -66,14 +67,17 @@ static unsigned long openssl_thread_id(void)
 int ff_openssl_init(void)
 {
     avpriv_lock_avformat();
-    if (!openssl_init) {
+    if (!openssl_init)
+    {
         SSL_library_init();
         SSL_load_error_strings();
 #if HAVE_THREADS
-        if (!CRYPTO_get_locking_callback()) {
+        if (!CRYPTO_get_locking_callback())
+        {
             int i;
             openssl_mutexes = av_malloc_array(sizeof(pthread_mutex_t), CRYPTO_num_locks());
-            if (!openssl_mutexes) {
+            if (!openssl_mutexes)
+            {
                 avpriv_unlock_avformat();
                 return AVERROR(ENOMEM);
             }
@@ -97,9 +101,11 @@ void ff_openssl_deinit(void)
 {
     avpriv_lock_avformat();
     openssl_init--;
-    if (!openssl_init) {
+    if (!openssl_init)
+    {
 #if HAVE_THREADS
-        if (CRYPTO_get_locking_callback() == openssl_lock) {
+        if (CRYPTO_get_locking_callback() == openssl_lock)
+        {
             int i;
             CRYPTO_set_locking_callback(NULL);
             for (i = 0; i < CRYPTO_num_locks(); i++)
@@ -120,7 +126,8 @@ static int print_tls_error(URLContext *h, int ret)
 static int tls_close(URLContext *h)
 {
     TLSContext *c = h->priv_data;
-    if (c->ssl) {
+    if (c->ssl)
+    {
         SSL_shutdown(c->ssl);
         SSL_free(c->ssl);
     }
@@ -171,7 +178,8 @@ static int url_bio_bwrite(BIO *b, const char *buf, int len)
 
 static long url_bio_ctrl(BIO *b, int cmd, long num, void *ptr)
 {
-    if (cmd == BIO_CTRL_FLUSH) {
+    if (cmd == BIO_CTRL_FLUSH)
+    {
         BIO_clear_retry_flags(b);
         return 1;
     }
@@ -183,7 +191,8 @@ static int url_bio_bputs(BIO *b, const char *str)
     return url_bio_bwrite(b, str, strlen(str));
 }
 
-static BIO_METHOD url_bio_method = {
+static BIO_METHOD url_bio_method =
+{
     .type = BIO_TYPE_SOURCE_SINK,
     .name = "urlprotocol bio",
     .bwrite = url_bio_bwrite,
@@ -209,22 +218,26 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
         goto fail;
 
     p->ctx = SSL_CTX_new(c->listen ? TLSv1_server_method() : TLSv1_client_method());
-    if (!p->ctx) {
+    if (!p->ctx)
+    {
         av_log(h, AV_LOG_ERROR, "%s\n", ERR_error_string(ERR_get_error(), NULL));
         ret = AVERROR(EIO);
         goto fail;
     }
-    if (c->ca_file) {
+    if (c->ca_file)
+    {
         if (!SSL_CTX_load_verify_locations(p->ctx, c->ca_file, NULL))
             av_log(h, AV_LOG_ERROR, "SSL_CTX_load_verify_locations %s\n", ERR_error_string(ERR_get_error(), NULL));
     }
-    if (c->cert_file && !SSL_CTX_use_certificate_chain_file(p->ctx, c->cert_file)) {
+    if (c->cert_file && !SSL_CTX_use_certificate_chain_file(p->ctx, c->cert_file))
+    {
         av_log(h, AV_LOG_ERROR, "Unable to load cert file %s: %s\n",
                c->cert_file, ERR_error_string(ERR_get_error(), NULL));
         ret = AVERROR(EIO);
         goto fail;
     }
-    if (c->key_file && !SSL_CTX_use_PrivateKey_file(p->ctx, c->key_file, SSL_FILETYPE_PEM)) {
+    if (c->key_file && !SSL_CTX_use_PrivateKey_file(p->ctx, c->key_file, SSL_FILETYPE_PEM))
+    {
         av_log(h, AV_LOG_ERROR, "Unable to load key file %s: %s\n",
                c->key_file, ERR_error_string(ERR_get_error(), NULL));
         ret = AVERROR(EIO);
@@ -235,7 +248,8 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
     if (c->verify)
         SSL_CTX_set_verify(p->ctx, SSL_VERIFY_PEER|SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
     p->ssl = SSL_new(p->ctx);
-    if (!p->ssl) {
+    if (!p->ssl)
+    {
         av_log(h, AV_LOG_ERROR, "%s\n", ERR_error_string(ERR_get_error(), NULL));
         ret = AVERROR(EIO);
         goto fail;
@@ -246,11 +260,14 @@ static int tls_open(URLContext *h, const char *uri, int flags, AVDictionary **op
     if (!c->listen && !c->numerichost)
         SSL_set_tlsext_host_name(p->ssl, c->host);
     ret = c->listen ? SSL_accept(p->ssl) : SSL_connect(p->ssl);
-    if (ret == 0) {
+    if (ret == 0)
+    {
         av_log(h, AV_LOG_ERROR, "Unable to negotiate TLS/SSL session\n");
         ret = AVERROR(EIO);
         goto fail;
-    } else if (ret < 0) {
+    }
+    else if (ret < 0)
+    {
         ret = print_tls_error(h, ret);
         goto fail;
     }
@@ -283,19 +300,22 @@ static int tls_write(URLContext *h, const uint8_t *buf, int size)
     return print_tls_error(h, ret);
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     TLS_COMMON_OPTIONS(TLSContext, tls_shared),
     { NULL }
 };
 
-static const AVClass tls_class = {
+static const AVClass tls_class =
+{
     .class_name = "tls",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_tls_openssl_protocol = {
+URLProtocol ff_tls_openssl_protocol =
+{
     .name           = "tls",
     .url_open2      = tls_open,
     .url_read       = tls_read,

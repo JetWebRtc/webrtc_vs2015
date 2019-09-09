@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2005 Nikolaj Poroshin <porosh3@psu.ru>
  *
@@ -38,7 +38,8 @@ av_cold void ff_fspp_init_x86(FSPPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_MMX(cpu_flags)) {
+    if (EXTERNAL_MMX(cpu_flags))
+    {
         s->store_slice  = ff_store_slice_mmx;
         s->store_slice2 = ff_store_slice2_mmx;
         s->mul_thrmat   = ff_mul_thrmat_mmx;

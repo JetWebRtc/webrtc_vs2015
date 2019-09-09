@@ -1,4 +1,4 @@
-
+﻿
 #ifndef HEADER_COMP_H
 # define HEADER_COMP_H
 
@@ -14,7 +14,8 @@ extern "C" {
 
 typedef struct comp_ctx_st COMP_CTX;
 
-typedef struct comp_method_st {
+typedef struct comp_method_st
+{
     int type;                   /* NID for compression library */
     const char *name;           /* A text string to identify the library */
     int (*init) (COMP_CTX *ctx);
@@ -32,7 +33,8 @@ typedef struct comp_method_st {
     long (*callback_ctrl) (void);
 } COMP_METHOD;
 
-struct comp_ctx_st {
+struct comp_ctx_st
+{
     COMP_METHOD *meth;
     unsigned long compress_in;
     unsigned long compress_out;

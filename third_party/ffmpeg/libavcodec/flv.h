@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLV specific private header.
  *
  * This file is part of FFmpeg.

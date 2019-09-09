@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -49,10 +49,12 @@ void silk_warped_autocorrelation_FLP(
     silk_assert( ( order & 1 ) == 0 );
 
     /* Loop over samples */
-    for( n = 0; n < length; n++ ) {
+    for( n = 0; n < length; n++ )
+    {
         tmp1 = input[ n ];
         /* Loop over allpass sections */
-        for( i = 0; i < order; i += 2 ) {
+        for( i = 0; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2 = state[ i ] + warping * ( state[ i + 1 ] - tmp1 );
             state[ i ] = tmp1;
@@ -67,7 +69,8 @@ void silk_warped_autocorrelation_FLP(
     }
 
     /* Copy correlations in silk_float output format */
-    for( i = 0; i < order + 1; i++ ) {
+    for( i = 0; i < order + 1; i++ )
+    {
         corr[ i ] = ( silk_float )C[ i ];
     }
 }

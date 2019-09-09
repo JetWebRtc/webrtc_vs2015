@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,6 +34,6 @@ void WebRtcIlbcfix_Enhancer(
     size_t *period,   /* (i) pitch period array (pitch bward-in time) */
     const size_t *plocs,   /* (i) locations where period array values valid */
     size_t periodl   /* (i) dimension of period and plocs */
-                            );
+);
 
 #endif

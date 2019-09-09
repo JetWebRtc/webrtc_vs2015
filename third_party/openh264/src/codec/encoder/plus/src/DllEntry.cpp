@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -35,9 +35,11 @@
 /////////////////////////////////////////////////////////////////////////////
 // DLL Entry Point
 
-BOOL WINAPI DllEntryPoint (HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved) {
-  if (DLL_PROCESS_ATTACH == dwReason) {
-    DisableThreadLibraryCalls (hInstance);
-  }
-  return TRUE;
+BOOL WINAPI DllEntryPoint (HINSTANCE hInstance, DWORD dwReason, LPVOID lpReserved)
+{
+    if (DLL_PROCESS_ATTACH == dwReason)
+    {
+        DisableThreadLibraryCalls (hInstance);
+    }
+    return TRUE;
 }

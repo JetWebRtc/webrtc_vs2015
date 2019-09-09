@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 David Conrad
  *
  * This file is part of FFmpeg.
@@ -91,31 +91,37 @@ void ff_put_dirac_pixels16_sse2(uint8_t *dst, const uint8_t *src[5], int stride,
     if (h&3)
         ff_put_dirac_pixels16_c(dst, src, stride, h);
     else
-    ff_put_pixels16_sse2(dst, src[0], stride, h);
+        ff_put_pixels16_sse2(dst, src[0], stride, h);
 }
 void ff_avg_dirac_pixels16_sse2(uint8_t *dst, const uint8_t *src[5], int stride, int h)
 {
     if (h&3)
         ff_avg_dirac_pixels16_c(dst, src, stride, h);
     else
-    ff_avg_pixels16_sse2(dst, src[0], stride, h);
+        ff_avg_pixels16_sse2(dst, src[0], stride, h);
 }
 void ff_put_dirac_pixels32_sse2(uint8_t *dst, const uint8_t *src[5], int stride, int h)
 {
-    if (h&3) {
+    if (h&3)
+    {
         ff_put_dirac_pixels32_c(dst, src, stride, h);
-    } else {
-    ff_put_pixels16_sse2(dst   , src[0]   , stride, h);
-    ff_put_pixels16_sse2(dst+16, src[0]+16, stride, h);
+    }
+    else
+    {
+        ff_put_pixels16_sse2(dst   , src[0]   , stride, h);
+        ff_put_pixels16_sse2(dst+16, src[0]+16, stride, h);
     }
 }
 void ff_avg_dirac_pixels32_sse2(uint8_t *dst, const uint8_t *src[5], int stride, int h)
 {
-    if (h&3) {
+    if (h&3)
+    {
         ff_avg_dirac_pixels32_c(dst, src, stride, h);
-    } else {
-    ff_avg_pixels16_sse2(dst   , src[0]   , stride, h);
-    ff_avg_pixels16_sse2(dst+16, src[0]+16, stride, h);
+    }
+    else
+    {
+        ff_avg_pixels16_sse2(dst   , src[0]   , stride, h);
+        ff_avg_pixels16_sse2(dst+16, src[0]+16, stride, h);
     }
 }
 
@@ -123,24 +129,27 @@ void ff_diracdsp_init_mmx(DiracDSPContext* c)
 {
     int mm_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_MMX(mm_flags)) {
-    c->add_dirac_obmc[0] = ff_add_dirac_obmc8_mmx;
+    if (EXTERNAL_MMX(mm_flags))
+    {
+        c->add_dirac_obmc[0] = ff_add_dirac_obmc8_mmx;
 #if !ARCH_X86_64
-    c->add_dirac_obmc[1] = ff_add_dirac_obmc16_mmx;
-    c->add_dirac_obmc[2] = ff_add_dirac_obmc32_mmx;
-    c->dirac_hpel_filter = dirac_hpel_filter_mmx;
-    c->add_rect_clamped = ff_add_rect_clamped_mmx;
-    c->put_signed_rect_clamped = ff_put_signed_rect_clamped_mmx;
+        c->add_dirac_obmc[1] = ff_add_dirac_obmc16_mmx;
+        c->add_dirac_obmc[2] = ff_add_dirac_obmc32_mmx;
+        c->dirac_hpel_filter = dirac_hpel_filter_mmx;
+        c->add_rect_clamped = ff_add_rect_clamped_mmx;
+        c->put_signed_rect_clamped = ff_put_signed_rect_clamped_mmx;
 #endif
-    PIXFUNC(put, 0, mmx);
-    PIXFUNC(avg, 0, mmx);
+        PIXFUNC(put, 0, mmx);
+        PIXFUNC(avg, 0, mmx);
     }
 
-    if (EXTERNAL_MMXEXT(mm_flags)) {
+    if (EXTERNAL_MMXEXT(mm_flags))
+    {
         PIXFUNC(avg, 0, mmxext);
     }
 
-    if (EXTERNAL_SSE2(mm_flags)) {
+    if (EXTERNAL_SSE2(mm_flags))
+    {
         c->dirac_hpel_filter = dirac_hpel_filter_sse2;
         c->add_rect_clamped = ff_add_rect_clamped_sse2;
         c->put_signed_rect_clamped = ff_put_signed_rect_clamped_sse2;

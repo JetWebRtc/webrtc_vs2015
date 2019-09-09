@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (Parag.Salasakar@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -306,10 +306,10 @@
 } )
 
 static void horiz_mc_qpel_aver_src0_8width_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride,
-                                               int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -322,7 +322,8 @@ static void horiz_mc_qpel_aver_src0_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -340,10 +341,10 @@ static void horiz_mc_qpel_aver_src0_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_aver_src0_16width_msa(const uint8_t *src,
-                                                int32_t src_stride,
-                                                uint8_t *dst,
-                                                int32_t dst_stride,
-                                                int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -353,7 +354,8 @@ static void horiz_mc_qpel_aver_src0_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -400,7 +402,8 @@ static void horiz_mc_qpel_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -428,7 +431,8 @@ static void horiz_mc_qpel_16width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -455,10 +459,10 @@ static void horiz_mc_qpel_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_aver_src1_8width_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride,
-                                               int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -471,7 +475,8 @@ static void horiz_mc_qpel_aver_src1_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -491,10 +496,10 @@ static void horiz_mc_qpel_aver_src1_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_aver_src1_16width_msa(const uint8_t *src,
-                                                int32_t src_stride,
-                                                uint8_t *dst,
-                                                int32_t dst_stride,
-                                                int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -504,7 +509,8 @@ static void horiz_mc_qpel_aver_src1_16width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -535,10 +541,10 @@ static void horiz_mc_qpel_aver_src1_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_no_rnd_aver_src0_8width_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride,
-                                                      int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -551,15 +557,16 @@ static void horiz_mc_qpel_no_rnd_aver_src0_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
         inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
         res0 = __msa_ave_u_b(inp0, res0);
@@ -570,10 +577,10 @@ static void horiz_mc_qpel_no_rnd_aver_src0_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_no_rnd_aver_src0_16width_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride,
-                                                       int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -583,7 +590,8 @@ static void horiz_mc_qpel_no_rnd_aver_src0_16width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -614,10 +622,10 @@ static void horiz_mc_qpel_no_rnd_aver_src0_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_no_rnd_8width_msa(const uint8_t *src,
-                                            int32_t src_stride,
-                                            uint8_t *dst,
-                                            int32_t dst_stride,
-                                            int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -630,25 +638,26 @@ static void horiz_mc_qpel_no_rnd_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         ST8x4_UB(res0, res1, dst, dst_stride);
         dst += (4 * dst_stride);
     }
 }
 
 static void horiz_mc_qpel_no_rnd_16width_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride,
-                                             int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -658,7 +667,8 @@ static void horiz_mc_qpel_no_rnd_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -685,10 +695,10 @@ static void horiz_mc_qpel_no_rnd_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_no_rnd_aver_src1_8width_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride,
-                                                      int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -701,15 +711,16 @@ static void horiz_mc_qpel_no_rnd_aver_src1_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                      mask2, mask3, const20,
-                                                      const6, const3);
+                mask2, mask3, const20,
+                const6, const3);
         SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
         SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
         inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
@@ -722,10 +733,10 @@ static void horiz_mc_qpel_no_rnd_aver_src1_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_no_rnd_aver_src1_16width_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride,
-                                                       int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -735,7 +746,8 @@ static void horiz_mc_qpel_no_rnd_aver_src1_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -766,10 +778,10 @@ static void horiz_mc_qpel_no_rnd_aver_src1_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_aver_src0_8width_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride,
-                                                       int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -783,7 +795,8 @@ static void horiz_mc_qpel_avg_dst_aver_src0_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -805,10 +818,10 @@ static void horiz_mc_qpel_avg_dst_aver_src0_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_aver_src0_16width_msa(const uint8_t *src,
-                                                        int32_t src_stride,
-                                                        uint8_t *dst,
-                                                        int32_t dst_stride,
-                                                        int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -819,7 +832,8 @@ static void horiz_mc_qpel_avg_dst_aver_src0_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -846,10 +860,10 @@ static void horiz_mc_qpel_avg_dst_aver_src0_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_8width_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride,
-                                             int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -863,7 +877,8 @@ static void horiz_mc_qpel_avg_dst_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -882,10 +897,10 @@ static void horiz_mc_qpel_avg_dst_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_16width_msa(const uint8_t *src,
-                                              int32_t src_stride,
-                                              uint8_t *dst,
-                                              int32_t dst_stride,
-                                              int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -896,7 +911,8 @@ static void horiz_mc_qpel_avg_dst_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -921,10 +937,10 @@ static void horiz_mc_qpel_avg_dst_16width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_aver_src1_8width_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride,
-                                                       int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3;
@@ -938,7 +954,8 @@ static void horiz_mc_qpel_avg_dst_aver_src1_8width_msa(const uint8_t *src,
     v16u8 const6 = (v16u8) __msa_ldi_b(6);
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp1, inp2, inp3);
         src += (4 * src_stride);
         res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE(inp0, inp1,
@@ -962,10 +979,10 @@ static void horiz_mc_qpel_avg_dst_aver_src1_8width_msa(const uint8_t *src,
 }
 
 static void horiz_mc_qpel_avg_dst_aver_src1_16width_msa(const uint8_t *src,
-                                                        int32_t src_stride,
-                                                        uint8_t *dst,
-                                                        int32_t dst_stride,
-                                                        int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -975,7 +992,8 @@ static void horiz_mc_qpel_avg_dst_aver_src1_16width_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -1002,9 +1020,9 @@ static void horiz_mc_qpel_avg_dst_aver_src1_16width_msa(const uint8_t *src,
 
 
 static void vert_mc_qpel_aver_src0_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 tmp0, tmp1, res0, res1;
@@ -1053,9 +1071,9 @@ static void vert_mc_qpel_aver_src0_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_aver_src0_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -1375,9 +1393,9 @@ static void vert_mc_qpel_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_aver_src1_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 tmp0, tmp1, res0, res1;
@@ -1426,9 +1444,9 @@ static void vert_mc_qpel_aver_src1_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_aver_src1_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -1577,9 +1595,9 @@ static void vert_mc_qpel_aver_src1_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_no_rnd_aver_src0_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 tmp0, tmp1, res0, res1;
@@ -1592,17 +1610,17 @@ static void vert_mc_qpel_no_rnd_aver_src0_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp4, inp5);
     src += (2 * src_stride);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp0, inp1, inp2,
-                                                 inp1, inp2, inp3, inp4,
-                                                 inp1, inp0, inp0, inp1,
-                                                 inp2, inp3, inp4, inp5,
-                                                 const20, const6, const3);
+            inp1, inp2, inp3, inp4,
+            inp1, inp0, inp0, inp1,
+            inp2, inp3, inp4, inp5,
+            const20, const6, const3);
     LD_UB2(src, src_stride, inp6, inp7);
     src += (2 * src_stride);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp1, inp0, inp0,
-                                                 inp3, inp4, inp5, inp6,
-                                                 inp3, inp2, inp1, inp0,
-                                                 inp4, inp5, inp6, inp7,
-                                                 const20, const6, const3);
+            inp3, inp4, inp5, inp6,
+            inp3, inp2, inp1, inp0,
+            inp4, inp5, inp6, inp7,
+            const20, const6, const3);
     tmp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
     tmp1 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
     res0 = __msa_ave_u_b(res0, tmp0);
@@ -1612,15 +1630,15 @@ static void vert_mc_qpel_no_rnd_aver_src0_8x8_msa(const uint8_t *src,
 
     inp8 = LD_UB(src);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp4, inp3, inp2, inp1,
-                                                 inp5, inp6, inp7, inp8,
-                                                 inp5, inp4, inp3, inp2,
-                                                 inp6, inp7, inp8, inp8,
-                                                 const20, const6, const3);
+            inp5, inp6, inp7, inp8,
+            inp5, inp4, inp3, inp2,
+            inp6, inp7, inp8, inp8,
+            const20, const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp6, inp5, inp4, inp3,
-                                                 inp7, inp8, inp8, inp7,
-                                                 inp7, inp6, inp5, inp4,
-                                                 inp8, inp8, inp7, inp6,
-                                                 const20, const6, const3);
+            inp7, inp8, inp8, inp7,
+            inp7, inp6, inp5, inp4,
+            inp8, inp8, inp7, inp6,
+            const20, const6, const3);
     tmp0 = (v16u8) __msa_insve_d((v2i64) inp4, 1, (v2i64) inp5);
     tmp1 = (v16u8) __msa_insve_d((v2i64) inp6, 1, (v2i64) inp7);
     res0 = __msa_ave_u_b(res0, tmp0);
@@ -1630,9 +1648,9 @@ static void vert_mc_qpel_no_rnd_aver_src0_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_no_rnd_aver_src0_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -1795,39 +1813,39 @@ static void vert_mc_qpel_no_rnd_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp4, inp5);
     src += (2 * src_stride);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp0, inp1, inp2,
-                                                 inp1, inp2, inp3, inp4,
-                                                 inp1, inp0, inp0, inp1,
-                                                 inp2, inp3, inp4, inp5,
-                                                 const20, const6, const3);
+            inp1, inp2, inp3, inp4,
+            inp1, inp0, inp0, inp1,
+            inp2, inp3, inp4, inp5,
+            const20, const6, const3);
     LD_UB2(src, src_stride, inp6, inp7);
     src += (2 * src_stride);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp1, inp0, inp0,
-                                                 inp3, inp4, inp5, inp6,
-                                                 inp3, inp2, inp1, inp0,
-                                                 inp4, inp5, inp6, inp7,
-                                                 const20, const6, const3);
+            inp3, inp4, inp5, inp6,
+            inp3, inp2, inp1, inp0,
+            inp4, inp5, inp6, inp7,
+            const20, const6, const3);
     ST8x4_UB(res0, res1, dst, dst_stride);
     dst += (4 * dst_stride);
 
     inp8 = LD_UB(src);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp4, inp3, inp2, inp1,
-                                                 inp5, inp6, inp7, inp8,
-                                                 inp5, inp4, inp3, inp2,
-                                                 inp6, inp7, inp8, inp8,
-                                                 const20, const6, const3);
+            inp5, inp6, inp7, inp8,
+            inp5, inp4, inp3, inp2,
+            inp6, inp7, inp8, inp8,
+            const20, const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp6, inp5, inp4, inp3,
-                                                 inp7, inp8, inp8, inp7,
-                                                 inp7, inp6, inp5, inp4,
-                                                 inp8, inp8, inp7, inp6,
-                                                 const20, const6, const3);
+            inp7, inp8, inp8, inp7,
+            inp7, inp6, inp5, inp4,
+            inp8, inp8, inp7, inp6,
+            const20, const6, const3);
     ST8x4_UB(res0, res1, dst, dst_stride);
     dst += (4 * dst_stride);
 }
 
 static void vert_mc_qpel_no_rnd_16x16_msa(const uint8_t *src,
-                                          int32_t src_stride,
-                                          uint8_t *dst,
-                                          int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -1958,9 +1976,9 @@ static void vert_mc_qpel_no_rnd_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_no_rnd_aver_src1_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 tmp0, tmp1, res0, res1;
@@ -1973,17 +1991,17 @@ static void vert_mc_qpel_no_rnd_aver_src1_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp4, inp5);
     src += (2 * src_stride);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp0, inp1, inp2,
-                                                 inp1, inp2, inp3, inp4,
-                                                 inp1, inp0, inp0, inp1,
-                                                 inp2, inp3, inp4, inp5,
-                                                 const20, const6, const3);
+            inp1, inp2, inp3, inp4,
+            inp1, inp0, inp0, inp1,
+            inp2, inp3, inp4, inp5,
+            const20, const6, const3);
     LD_UB2(src, src_stride, inp6, inp7);
     src += (2 * src_stride);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp1, inp0, inp0,
-                                                 inp3, inp4, inp5, inp6,
-                                                 inp3, inp2, inp1, inp0,
-                                                 inp4, inp5, inp6, inp7,
-                                                 const20, const6, const3);
+            inp3, inp4, inp5, inp6,
+            inp3, inp2, inp1, inp0,
+            inp4, inp5, inp6, inp7,
+            const20, const6, const3);
     tmp0 = (v16u8) __msa_insve_d((v2i64) inp1, 1, (v2i64) inp2);
     tmp1 = (v16u8) __msa_insve_d((v2i64) inp3, 1, (v2i64) inp4);
     res0 = __msa_ave_u_b(res0, tmp0);
@@ -1993,15 +2011,15 @@ static void vert_mc_qpel_no_rnd_aver_src1_8x8_msa(const uint8_t *src,
 
     inp8 = LD_UB(src);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp4, inp3, inp2, inp1,
-                                                 inp5, inp6, inp7, inp8,
-                                                 inp5, inp4, inp3, inp2,
-                                                 inp6, inp7, inp8, inp8,
-                                                 const20, const6, const3);
+            inp5, inp6, inp7, inp8,
+            inp5, inp4, inp3, inp2,
+            inp6, inp7, inp8, inp8,
+            const20, const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(inp6, inp5, inp4, inp3,
-                                                 inp7, inp8, inp8, inp7,
-                                                 inp7, inp6, inp5, inp4,
-                                                 inp8, inp8, inp7, inp6,
-                                                 const20, const6, const3);
+            inp7, inp8, inp8, inp7,
+            inp7, inp6, inp5, inp4,
+            inp8, inp8, inp7, inp6,
+            const20, const6, const3);
     tmp0 = (v16u8) __msa_insve_d((v2i64) inp5, 1, (v2i64) inp6);
     tmp1 = (v16u8) __msa_insve_d((v2i64) inp7, 1, (v2i64) inp8);
     res0 = __msa_ave_u_b(res0, tmp0);
@@ -2010,9 +2028,9 @@ static void vert_mc_qpel_no_rnd_aver_src1_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_no_rnd_aver_src1_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -2159,9 +2177,9 @@ static void vert_mc_qpel_no_rnd_aver_src1_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_aver_src0_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 dst0, dst1, dst2, dst3;
@@ -2221,9 +2239,9 @@ static void vert_mc_qpel_avg_dst_aver_src0_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_aver_src0_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -2353,9 +2371,9 @@ static void vert_mc_qpel_avg_dst_aver_src0_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_8x8_msa(const uint8_t *src,
-                                         int32_t src_stride,
-                                         uint8_t *dst,
-                                         int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 dst0, dst1, dst2, dst3;
@@ -2407,9 +2425,9 @@ static void vert_mc_qpel_avg_dst_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_16x16_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -2532,9 +2550,9 @@ static void vert_mc_qpel_avg_dst_16x16_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_aver_src1_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 dst0, dst1, dst2, dst3;
@@ -2591,9 +2609,9 @@ static void vert_mc_qpel_avg_dst_aver_src1_8x8_msa(const uint8_t *src,
 }
 
 static void vert_mc_qpel_avg_dst_aver_src1_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7, inp8;
     v16u8 inp9, inp10, inp11, inp12, inp13, inp14, inp15, inp16;
@@ -2724,10 +2742,10 @@ static void vert_mc_qpel_avg_dst_aver_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_horiz_src0_16x16_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride,
-                                                   int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -2737,7 +2755,8 @@ static void hv_mc_qpel_no_rnd_horiz_src0_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -2774,9 +2793,9 @@ static void hv_mc_qpel_no_rnd_horiz_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src00_16x16_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -2785,9 +2804,9 @@ static void hv_mc_qpel_no_rnd_aver_hv_src00_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -2804,32 +2823,32 @@ static void hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz0 = __msa_ave_u_b(inp0, res0);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz2 = __msa_ave_u_b(inp2, res1);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz1, (v2i64) horiz0);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
@@ -2838,38 +2857,38 @@ static void hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz6 = __msa_ave_u_b(inp2, res1);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz3, (v2i64) horiz2);
     res1 = __msa_ave_u_b(avg1, res1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz5, (v2i64) horiz4);
     res0 = __msa_ave_u_b(avg0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -2879,10 +2898,10 @@ static void hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_horiz_16x16_msa(const uint8_t *src,
-                                              int32_t src_stride,
-                                              uint8_t *dst,
-                                              int32_t dst_stride,
-                                              int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -2892,7 +2911,8 @@ static void hv_mc_qpel_no_rnd_horiz_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -2924,9 +2944,9 @@ static void hv_mc_qpel_no_rnd_horiz_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_v_src0_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -2935,9 +2955,9 @@ static void hv_mc_qpel_no_rnd_aver_v_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -2954,27 +2974,27 @@ static void hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
 
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     horiz2 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz4 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz1, (v2i64) horiz0);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
@@ -2983,18 +3003,18 @@ static void hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     horiz6 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                         mask2, mask3, const20,
-                                                         const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz3, (v2i64) horiz2);
     res1 = __msa_ave_u_b(avg1, res1);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz1, (v2i64) horiz0);
@@ -3003,30 +3023,30 @@ static void hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(const uint8_t *src,
     dst += (2 * dst_stride);
 
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz5, (v2i64) horiz4);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
     dst += (2 * dst_stride);
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz7, (v2i64) horiz6);
     res1 = __msa_ave_u_b(avg1, res1);
     ST8x2_UB(res1, dst, dst_stride);
 }
 
 static void hv_mc_qpel_no_rnd_horiz_src1_16x16_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride,
-                                                   int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -3036,7 +3056,8 @@ static void hv_mc_qpel_no_rnd_horiz_src1_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -3073,9 +3094,9 @@ static void hv_mc_qpel_no_rnd_horiz_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src10_16x16_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3084,9 +3105,9 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -3103,8 +3124,8 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
 
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
@@ -3113,8 +3134,8 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
@@ -3123,18 +3144,18 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
 
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz1, (v2i64) horiz0);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
@@ -3143,8 +3164,8 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
@@ -3152,44 +3173,44 @@ static void hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(const uint8_t *src,
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz3, (v2i64) horiz2);
     res1 = __msa_ave_u_b(avg1, res1);
     ST8x2_UB(res1, dst, dst_stride);
     dst += (2 * dst_stride);
 
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz5, (v2i64) horiz4);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
     dst += (2 * dst_stride);
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz7, (v2i64) horiz6);
     res1 = __msa_ave_u_b(avg1, res1);
     ST8x2_UB(res1, dst, dst_stride);
 }
 
 static void hv_mc_qpel_no_rnd_aver_h_src0_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3198,9 +3219,9 @@ static void hv_mc_qpel_no_rnd_aver_h_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1;
@@ -3217,32 +3238,32 @@ static void hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz0 = __msa_ave_u_b(inp0, res0);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz2 = __msa_ave_u_b(inp2, res1);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
 
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
@@ -3250,26 +3271,26 @@ static void hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(const uint8_t *src,
     dst += 2 * dst_stride;
 
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz6 = __msa_ave_u_b(inp2, res1);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -3277,10 +3298,10 @@ static void hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(const uint8_t *src,
     dst += (2 * dst_stride);
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
 }
 
@@ -3315,67 +3336,67 @@ static void hv_mc_qpel_no_rnd_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     horiz2 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz4 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
 
     horiz6 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                         mask2, mask3, const20,
-                                                         const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
     ST8x2_UB(res1, dst, dst_stride);
 }
 
 static void hv_mc_qpel_no_rnd_aver_h_src1_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3384,9 +3405,9 @@ static void hv_mc_qpel_no_rnd_aver_h_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1;
@@ -3403,8 +3424,8 @@ static void hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
 
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
@@ -3413,8 +3434,8 @@ static void hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
@@ -3423,26 +3444,26 @@ static void hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
 
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
 
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
@@ -3450,37 +3471,37 @@ static void hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(const uint8_t *src,
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
     ST8x2_UB(res1, dst, dst_stride);
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src01_16x16_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3489,9 +3510,9 @@ static void hv_mc_qpel_no_rnd_aver_hv_src01_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -3508,32 +3529,32 @@ static void hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz0 = __msa_ave_u_b(inp0, res0);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz2 = __msa_ave_u_b(inp2, res1);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_ilvr_d((v2i64) inp1, (v2i64) inp0);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz2, (v2i64) horiz1);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
@@ -3542,28 +3563,28 @@ static void hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp2 = (v16u8) __msa_ilvr_d((v2i64) inp3, (v2i64) inp2);
     horiz6 = __msa_ave_u_b(inp2, res1);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz4, (v2i64) horiz3);
     res1 = __msa_ave_u_b(avg1, res1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -3571,10 +3592,10 @@ static void hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(const uint8_t *src,
     res0 = __msa_ave_u_b(avg0, res0);
 
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -3584,9 +3605,9 @@ static void hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_v_src1_16x16_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3595,9 +3616,9 @@ static void hv_mc_qpel_no_rnd_aver_v_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(const uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *dst,
-                                                  int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -3614,26 +3635,26 @@ static void hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz1 = (v16u8) __msa_splati_d((v2i64) horiz0, 1);
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     horiz2 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz3 = (v16u8) __msa_splati_d((v2i64) horiz2, 1);
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     horiz4 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz2, (v2i64) horiz1);
     res0 = __msa_ave_u_b(avg0, res0);
     LD_UB2(src, src_stride, inp2, inp3);
@@ -3642,35 +3663,35 @@ static void hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(const uint8_t *src,
     dst += 2 * dst_stride;
 
     horiz6 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                    mask2, mask3, const20,
-                                                    const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz4, (v2i64) horiz3);
     res1 = __msa_ave_u_b(avg1, res1);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                         mask2, mask3, const20,
-                                                         const6, const3);
+             mask2, mask3, const20,
+             const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz6, (v2i64) horiz5);
     res0 = __msa_ave_u_b(avg0, res0);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     ST8x2_UB(res0, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -3680,9 +3701,9 @@ static void hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src11_16x16_msa(const uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *dst,
-                                                      int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3691,9 +3712,9 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *dst,
-                                                    int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -3710,8 +3731,8 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
 
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
@@ -3720,8 +3741,8 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
@@ -3730,18 +3751,18 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp0, inp1);
     src += (2 * src_stride);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp0, inp1, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
 
     SLDI_B2_UB(inp0, inp1, inp0, inp1, inp0, inp1, 1);
     inp0 = (v16u8) __msa_insve_d((v2i64) inp0, 1, (v2i64) inp1);
     horiz4 = __msa_ave_u_b(inp0, res0);
     horiz5 = (v16u8) __msa_splati_d((v2i64) horiz4, 1);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
-                                                 horiz1, horiz2, horiz3, horiz4,
-                                                 horiz1, horiz0, horiz0, horiz1,
-                                                 horiz2, horiz3, horiz4, horiz5,
-                                                 const20, const6, const3);
+            horiz1, horiz2, horiz3, horiz4,
+            horiz1, horiz0, horiz0, horiz1,
+            horiz2, horiz3, horiz4, horiz5,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz2, (v2i64) horiz1);
     res0 = __msa_ave_u_b(avg0, res0);
     ST8x2_UB(res0, dst, dst_stride);
@@ -3750,18 +3771,18 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
     LD_UB2(src, src_stride, inp2, inp3);
     src += (2 * src_stride);
     res1 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE(inp2, inp3, mask0, mask1,
-                                                  mask2, mask3, const20,
-                                                  const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     SLDI_B2_UB(inp2, inp3, inp2, inp3, inp2, inp3, 1);
 
     inp2 = (v16u8) __msa_insve_d((v2i64) inp2, 1, (v2i64) inp3);
     horiz6 = __msa_ave_u_b(inp2, res1);
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
-                                                 horiz3, horiz4, horiz5, horiz6,
-                                                 horiz3, horiz2, horiz1, horiz0,
-                                                 horiz4, horiz5, horiz6, horiz7,
-                                                 const20, const6, const3);
+            horiz3, horiz4, horiz5, horiz6,
+            horiz3, horiz2, horiz1, horiz0,
+            horiz4, horiz5, horiz6, horiz7,
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz4, (v2i64) horiz3);
     res1 = __msa_ave_u_b(avg1, res1);
     ST8x2_UB(res1, dst, dst_stride);
@@ -3769,20 +3790,20 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_NO_ROUND_FILTER_8BYTE_1ROW(inp0, mask0, mask1,
-                                                       mask2, mask3, const20,
-                                                       const6, const3);
+            mask2, mask3, const20,
+            const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_ave_u_b(inp0, res0);
     res0 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
-                                                 horiz5, horiz6, horiz7, horiz8,
-                                                 horiz5, horiz4, horiz3, horiz2,
-                                                 horiz6, horiz7, horiz8, horiz8,
-                                                 const20, const6, const3);
+            horiz5, horiz6, horiz7, horiz8,
+            horiz5, horiz4, horiz3, horiz2,
+            horiz6, horiz7, horiz8, horiz8,
+            const20, const6, const3);
     res1 = APPLY_VERT_QPEL_NO_ROUND_FILTER_8BYTE(horiz6, horiz5, horiz4, horiz3,
-                                                 horiz7, horiz8, horiz8, horiz7,
-                                                 horiz7, horiz6, horiz5, horiz4,
-                                                 horiz8, horiz8, horiz7, horiz6,
-                                                 const20, const6, const3);
+            horiz7, horiz8, horiz8, horiz7,
+            horiz7, horiz6, horiz5, horiz4,
+            horiz8, horiz8, horiz7, horiz6,
+            const20, const6, const3);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz6, (v2i64) horiz5);
     res0 = __msa_ave_u_b(avg0, res0);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz8, (v2i64) horiz7);
@@ -3791,10 +3812,10 @@ static void hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_horiz_src0_16x16_msa(const uint8_t *src,
-                                                 int32_t src_stride,
-                                                 uint8_t *dst,
-                                                 int32_t dst_stride,
-                                                 int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -3804,7 +3825,8 @@ static void hv_mc_qpel_aver_horiz_src0_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -3840,9 +3862,9 @@ static void hv_mc_qpel_aver_horiz_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src00_16x16_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3851,9 +3873,9 @@ static void hv_mc_qpel_aver_hv_src00_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src00_8x8_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -3913,7 +3935,7 @@ static void hv_mc_qpel_aver_hv_src00_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
@@ -3938,10 +3960,10 @@ static void hv_mc_qpel_aver_hv_src00_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_horiz_16x16_msa(const uint8_t *src,
-                                            int32_t src_stride,
-                                            uint8_t *dst,
-                                            int32_t dst_stride,
-                                            int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -3951,7 +3973,8 @@ static void hv_mc_qpel_aver_horiz_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -3982,9 +4005,9 @@ static void hv_mc_qpel_aver_horiz_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_v_src0_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -3993,9 +4016,9 @@ static void hv_mc_qpel_aver_v_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_v_src0_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4050,8 +4073,8 @@ static void hv_mc_qpel_aver_v_src0_8x8_msa(const uint8_t *src,
                                         const20, const6, const3);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz3, (v2i64) horiz2);
     res1 = __msa_aver_u_b(avg1, res1);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
@@ -4077,10 +4100,10 @@ static void hv_mc_qpel_aver_v_src0_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_horiz_src1_16x16_msa(const uint8_t *src,
-                                                 int32_t src_stride,
-                                                 uint8_t *dst,
-                                                 int32_t dst_stride,
-                                                 int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        int32_t height)
 {
     uint8_t loop_count;
     v16u8 inp0, inp1, inp2, inp3, inp4, inp5, inp6, inp7;
@@ -4090,7 +4113,8 @@ static void hv_mc_qpel_aver_horiz_src1_16x16_msa(const uint8_t *src,
     v16u8 const3 = (v16u8) __msa_ldi_b(3);
     v8u16 const20 = (v8u16) __msa_ldi_h(20);
 
-    for (loop_count = (height >> 2); loop_count--;) {
+    for (loop_count = (height >> 2); loop_count--;)
+    {
         LD_UB4(src, src_stride, inp0, inp2, inp4, inp6);
         LD_UB4((src + 1), src_stride, inp1, inp3, inp5, inp7);
         src += (4 * src_stride);
@@ -4126,9 +4150,9 @@ static void hv_mc_qpel_aver_horiz_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src10_16x16_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4137,9 +4161,9 @@ static void hv_mc_qpel_aver_hv_src10_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src10_8x8_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4202,7 +4226,7 @@ static void hv_mc_qpel_aver_hv_src10_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     avg1 = (v16u8) __msa_ilvr_d((v2i64) horiz3, (v2i64) horiz2);
     res1 = __msa_aver_u_b(avg1, res1);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
@@ -4231,9 +4255,9 @@ static void hv_mc_qpel_aver_hv_src10_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_h_src0_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4242,9 +4266,9 @@ static void hv_mc_qpel_aver_h_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_h_src0_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1;
@@ -4302,7 +4326,7 @@ static void hv_mc_qpel_aver_h_src0_8x8_msa(const uint8_t *src,
                                         const20, const6, const3);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
                                         horiz5, horiz6, horiz7, horiz8,
@@ -4387,8 +4411,8 @@ static void hv_mc_qpel_8x8_msa(const uint8_t *src, int32_t src_stride,
                                         const20, const6, const3);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     ST8x2_UB(res1, dst, dst_stride);
     dst += 2 * dst_stride;
 
@@ -4408,9 +4432,9 @@ static void hv_mc_qpel_8x8_msa(const uint8_t *src, int32_t src_stride,
 }
 
 static void hv_mc_qpel_aver_h_src1_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4419,9 +4443,9 @@ static void hv_mc_qpel_aver_h_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_h_src1_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1;
@@ -4470,7 +4494,7 @@ static void hv_mc_qpel_aver_h_src1_8x8_msa(const uint8_t *src,
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_aver_u_b(inp0, res0);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
@@ -4506,9 +4530,9 @@ static void hv_mc_qpel_aver_h_src1_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src01_16x16_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4517,9 +4541,9 @@ static void hv_mc_qpel_aver_hv_src01_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src01_8x8_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4573,7 +4597,7 @@ static void hv_mc_qpel_aver_hv_src01_8x8_msa(const uint8_t *src,
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     res1 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz2, horiz1, horiz0, horiz0,
                                         horiz3, horiz4, horiz5, horiz6,
@@ -4607,9 +4631,9 @@ static void hv_mc_qpel_aver_hv_src01_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_v_src1_16x16_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4618,9 +4642,9 @@ static void hv_mc_qpel_aver_v_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_v_src1_8x8_msa(const uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4676,8 +4700,8 @@ static void hv_mc_qpel_aver_v_src1_8x8_msa(const uint8_t *src,
                                         const20, const6, const3);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     avg1 = (v16u8) __msa_insve_d((v2i64) horiz3, 1, (v2i64) horiz4);
     res1 = __msa_aver_u_b(avg1, res1);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
@@ -4703,9 +4727,9 @@ static void hv_mc_qpel_aver_v_src1_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src11_16x16_msa(const uint8_t *src,
-                                               int32_t src_stride,
-                                               uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4714,8 +4738,8 @@ static void hv_mc_qpel_aver_hv_src11_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_aver_hv_src11_8x8_msa(const uint8_t *src,
-                                             int32_t src_stride,
-                                             uint8_t *dst, int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst, int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4783,7 +4807,7 @@ static void hv_mc_qpel_aver_hv_src11_8x8_msa(const uint8_t *src,
     res1 = __msa_aver_u_b(avg1, res1);
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_aver_u_b(inp0, res0);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
@@ -4810,9 +4834,9 @@ static void hv_mc_qpel_aver_hv_src11_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src00_16x16_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4821,9 +4845,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src00_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src00_8x8_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -4894,7 +4918,7 @@ static void hv_mc_qpel_avg_dst_aver_hv_src00_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     LD_UB2(dst, dst_stride, dst0, dst1);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz5, (v2i64) horiz4);
@@ -4923,9 +4947,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src00_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_v_src0_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -4934,9 +4958,9 @@ static void hv_mc_qpel_avg_dst_aver_v_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_v_src0_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5003,8 +5027,8 @@ static void hv_mc_qpel_avg_dst_aver_v_src0_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     LD_UB2(dst, dst_stride, dst0, dst1);
     avg0 = (v16u8) __msa_ilvr_d((v2i64) horiz5, (v2i64) horiz4);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
@@ -5032,9 +5056,9 @@ static void hv_mc_qpel_avg_dst_aver_v_src0_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src10_16x16_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5043,9 +5067,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src10_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src10_8x8_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5127,7 +5151,7 @@ static void hv_mc_qpel_avg_dst_aver_hv_src10_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_aver_u_b(inp0, res0);
     LD_UB2(dst, dst_stride, dst0, dst1);
@@ -5157,9 +5181,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src10_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_h_src0_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5168,9 +5192,9 @@ static void hv_mc_qpel_avg_dst_aver_h_src0_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_h_src0_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5237,7 +5261,7 @@ static void hv_mc_qpel_avg_dst_aver_h_src0_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     LD_UB2(dst, dst_stride, dst0, dst1);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
@@ -5263,7 +5287,7 @@ static void hv_mc_qpel_avg_dst_aver_h_src0_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_16x16_msa(const uint8_t *src, int32_t src_stride,
-                                         uint8_t *dst, int32_t dst_stride)
+        uint8_t *dst, int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5314,8 +5338,8 @@ static void hv_mc_qpel_avg_dst_8x8_msa(const uint8_t *src, int32_t src_stride,
     horiz7 = (v16u8) __msa_splati_d((v2i64) horiz6, 1);
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     LD_UB2(dst, dst_stride, dst0, dst1);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz0, horiz0, horiz1, horiz2,
                                         horiz1, horiz2, horiz3, horiz4,
@@ -5361,9 +5385,9 @@ static void hv_mc_qpel_avg_dst_8x8_msa(const uint8_t *src, int32_t src_stride,
 }
 
 static void hv_mc_qpel_avg_dst_aver_h_src1_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5372,9 +5396,9 @@ static void hv_mc_qpel_avg_dst_aver_h_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_h_src1_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5451,7 +5475,7 @@ static void hv_mc_qpel_avg_dst_aver_h_src1_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_aver_u_b(inp0, res0);
     LD_UB2(dst, dst_stride, dst0, dst1);
@@ -5477,9 +5501,9 @@ static void hv_mc_qpel_avg_dst_aver_h_src1_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src01_16x16_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5488,9 +5512,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src01_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src01_8x8_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5562,7 +5586,7 @@ static void hv_mc_qpel_avg_dst_aver_hv_src01_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     horiz8 = __msa_aver_u_b(inp0, res0);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1,
                                         horiz5, horiz6, horiz7, horiz8,
@@ -5591,9 +5615,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src01_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_v_src1_16x16_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5602,9 +5626,9 @@ static void hv_mc_qpel_avg_dst_aver_v_src1_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_v_src1_8x8_msa(const uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *dst,
-                                                   int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5671,8 +5695,8 @@ static void hv_mc_qpel_avg_dst_aver_v_src1_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     horiz8 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0,
-                                                mask0, mask1, mask2, mask3,
-                                                const20, const6, const3);
+             mask0, mask1, mask2, mask3,
+             const20, const6, const3);
     res0 = APPLY_VERT_QPEL_FILTER_8BYTE(horiz4, horiz3, horiz2, horiz1, horiz5,
                                         horiz6, horiz7, horiz8, horiz5, horiz4,
                                         horiz3, horiz2, horiz6, horiz7, horiz8,
@@ -5698,9 +5722,9 @@ static void hv_mc_qpel_avg_dst_aver_v_src1_8x8_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src11_16x16_msa(const uint8_t *src,
-                                                       int32_t src_stride,
-                                                       uint8_t *dst,
-                                                       int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     uint8_t buff[272];
 
@@ -5709,9 +5733,9 @@ static void hv_mc_qpel_avg_dst_aver_hv_src11_16x16_msa(const uint8_t *src,
 }
 
 static void hv_mc_qpel_avg_dst_aver_hv_src11_8x8_msa(const uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *dst,
-                                                     int32_t dst_stride)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v16u8 inp0, inp1, inp2, inp3;
     v16u8 res0, res1, avg0, avg1;
@@ -5788,7 +5812,7 @@ static void hv_mc_qpel_avg_dst_aver_hv_src11_8x8_msa(const uint8_t *src,
 
     inp0 = LD_UB(src);
     res0 = APPLY_HORIZ_QPEL_FILTER_8BYTE_1ROW(inp0, mask0, mask1, mask2, mask3,
-                                              const20, const6, const3);
+            const20, const6, const3);
     inp0 = (v16u8) __msa_sldi_b((v16i8) inp0, (v16i8) inp0, 1);
     horiz8 = __msa_aver_u_b(inp0, res0);
     LD_UB2(dst, dst_stride, dst0, dst1);
@@ -5821,7 +5845,8 @@ static void copy_8x8_msa(const uint8_t *src, int32_t src_stride,
     uint64_t src0, src1;
     int32_t loop_cnt;
 
-    for (loop_cnt = 4; loop_cnt--;) {
+    for (loop_cnt = 4; loop_cnt--;)
+    {
         src0 = LD(src);
         src += src_stride;
         src1 = LD(src);
@@ -5860,7 +5885,8 @@ static void avg_width8_msa(const uint8_t *src, int32_t src_stride,
     v16u8 src0, src1, src2, src3;
     v16u8 dst0, dst1, dst2, dst3;
 
-    for (cnt = (height / 4); cnt--;) {
+    for (cnt = (height / 4); cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB4(dst, dst_stride, dst0, dst1, dst2, dst3);
@@ -5885,7 +5911,8 @@ static void avg_width16_msa(const uint8_t *src, int32_t src_stride,
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
     v16u8 dst0, dst1, dst2, dst3, dst4, dst5, dst6, dst7;
 
-    for (cnt = (height / 8); cnt--;) {
+    for (cnt = (height / 8); cnt--;)
+    {
         LD_UB8(src, src_stride, src0, src1, src2, src3, src4, src5, src6, src7);
         src += (8 * src_stride);
         LD_UB8(dst, dst_stride, dst0, dst1, dst2, dst3, dst4, dst5, dst6, dst7);
@@ -5910,15 +5937,15 @@ void ff_copy_8x8_msa(uint8_t *dest, const uint8_t *src, ptrdiff_t stride)
 }
 
 void ff_horiz_mc_qpel_aver_src0_8width_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_aver_src0_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_aver_src0_16width_msa(uint8_t *dest,
-                                            const uint8_t *src,
-                                            ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_aver_src0_16width_msa(src, stride, dest, stride, 16);
 }
@@ -5936,29 +5963,29 @@ void ff_horiz_mc_qpel_16width_msa(uint8_t *dest,
 }
 
 void ff_horiz_mc_qpel_aver_src1_8width_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_aver_src1_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_aver_src1_16width_msa(uint8_t *dest,
-                                            const uint8_t *src,
-                                            ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_aver_src1_16width_msa(src, stride, dest, stride, 16);
 }
 
 void ff_horiz_mc_qpel_no_rnd_aver_src0_8width_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_no_rnd_aver_src0_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_no_rnd_aver_src0_16width_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_no_rnd_aver_src0_16width_msa(src, stride, dest, stride, 16);
 }
@@ -5970,21 +5997,21 @@ void ff_horiz_mc_qpel_no_rnd_8width_msa(uint8_t *dest,
 }
 
 void ff_horiz_mc_qpel_no_rnd_16width_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     horiz_mc_qpel_no_rnd_16width_msa(src, stride, dest, stride, 16);
 }
 
 void ff_horiz_mc_qpel_no_rnd_aver_src1_8width_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_no_rnd_aver_src1_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_no_rnd_aver_src1_16width_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_no_rnd_aver_src1_16width_msa(src, stride, dest, stride, 16);
 }
@@ -6000,41 +6027,41 @@ void ff_avg_width16_msa(uint8_t *dest, const uint8_t *src, ptrdiff_t stride)
 }
 
 void ff_horiz_mc_qpel_avg_dst_aver_src0_8width_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_aver_src0_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_avg_dst_aver_src0_16width_msa(uint8_t *dest,
-                                                    const uint8_t *src,
-                                                    ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_aver_src0_16width_msa(src, stride, dest, stride, 16);
 }
 
 void ff_horiz_mc_qpel_avg_dst_8width_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_avg_dst_16width_msa(uint8_t *dest,
-                                          const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_16width_msa(src, stride, dest, stride, 16);
 }
 
 void ff_horiz_mc_qpel_avg_dst_aver_src1_8width_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_aver_src1_8width_msa(src, stride, dest, stride, 8);
 }
 
 void ff_horiz_mc_qpel_avg_dst_aver_src1_16width_msa(uint8_t *dest,
-                                                    const uint8_t *src,
-                                                    ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     horiz_mc_qpel_avg_dst_aver_src1_16width_msa(src, stride, dest, stride, 16);
 }
@@ -6047,7 +6074,7 @@ void ff_vert_mc_qpel_aver_src0_8x8_msa(uint8_t *dest,
 }
 
 void ff_vert_mc_qpel_aver_src0_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     vert_mc_qpel_aver_src0_16x16_msa(src, stride, dest, stride);
 }
@@ -6071,21 +6098,21 @@ void ff_vert_mc_qpel_aver_src1_8x8_msa(uint8_t *dest,
 }
 
 void ff_vert_mc_qpel_aver_src1_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     vert_mc_qpel_aver_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_no_rnd_aver_src0_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_no_rnd_aver_src0_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_no_rnd_aver_src0_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_no_rnd_aver_src0_16x16_msa(src, stride, dest, stride);
 }
@@ -6103,29 +6130,29 @@ void ff_vert_mc_qpel_no_rnd_16x16_msa(uint8_t *dest,
 }
 
 void ff_vert_mc_qpel_no_rnd_aver_src1_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_no_rnd_aver_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_no_rnd_aver_src1_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_no_rnd_aver_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_avg_dst_aver_src0_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_avg_dst_aver_src0_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_avg_dst_aver_src0_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_avg_dst_aver_src0_16x16_msa(src, stride, dest, stride);
 }
@@ -6143,35 +6170,35 @@ void ff_vert_mc_qpel_avg_dst_16x16_msa(uint8_t *dest,
 }
 
 void ff_vert_mc_qpel_avg_dst_aver_src1_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_avg_dst_aver_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_vert_mc_qpel_avg_dst_aver_src1_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     vert_mc_qpel_avg_dst_aver_src1_16x16_msa(src, stride, dest, stride);
 }
 
 /* HV cases */
 void ff_hv_mc_qpel_aver_hv_src00_16x16_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src00_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_hv_src00_8x8_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src00_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_v_src0_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_v_src0_16x16_msa(src, stride, dest, stride);
 }
@@ -6183,20 +6210,20 @@ void ff_hv_mc_qpel_aver_v_src0_8x8_msa(uint8_t *dest,
 }
 
 void ff_hv_mc_qpel_aver_hv_src10_16x16_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src10_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_hv_src10_8x8_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src10_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_h_src0_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_h_src0_16x16_msa(src, stride, dest, stride);
 }
@@ -6220,7 +6247,7 @@ void ff_hv_mc_qpel_8x8_msa(uint8_t *dest, const uint8_t *src,
 }
 
 void ff_hv_mc_qpel_aver_h_src1_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_h_src1_16x16_msa(src, stride, dest, stride);
 }
@@ -6232,20 +6259,20 @@ void ff_hv_mc_qpel_aver_h_src1_8x8_msa(uint8_t *dest,
 }
 
 void ff_hv_mc_qpel_aver_hv_src01_16x16_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src01_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_hv_src01_8x8_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src01_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_v_src1_16x16_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_v_src1_16x16_msa(src, stride, dest, stride);
 }
@@ -6257,70 +6284,70 @@ void ff_hv_mc_qpel_aver_v_src1_8x8_msa(uint8_t *dest,
 }
 
 void ff_hv_mc_qpel_aver_hv_src11_16x16_msa(uint8_t *dest,
-                                           const uint8_t *src,
-                                           ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src11_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_aver_hv_src11_8x8_msa(uint8_t *dest,
-                                         const uint8_t *src, ptrdiff_t stride)
+        const uint8_t *src, ptrdiff_t stride)
 {
     hv_mc_qpel_aver_hv_src11_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src00_16x16_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src00_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src00_8x8_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src00_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_v_src0_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_v_src0_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_v_src0_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_v_src0_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src10_16x16_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src10_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src10_8x8_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src10_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_h_src0_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_h_src0_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_h_src0_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_h_src0_8x8_msa(src, stride, dest, stride);
 }
@@ -6338,113 +6365,113 @@ void ff_hv_mc_qpel_avg_dst_8x8_msa(uint8_t *dest,
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_h_src1_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_h_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_h_src1_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_h_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src01_16x16_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src01_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src01_8x8_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src01_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_v_src1_16x16_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_v_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_v_src1_8x8_msa(uint8_t *dest,
-                                               const uint8_t *src,
-                                               ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_v_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src11_16x16_msa(uint8_t *dest,
-                                                   const uint8_t *src,
-                                                   ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src11_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_avg_dst_aver_hv_src11_8x8_msa(uint8_t *dest,
-                                                 const uint8_t *src,
-                                                 ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_avg_dst_aver_hv_src11_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src00_16x16_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src00_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src00_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_v_src0_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_v_src0_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_v_src0_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src10_16x16_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src10_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src10_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_h_src0_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_h_src0_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_h_src0_8x8_msa(src, stride, dest, stride);
 }
@@ -6462,57 +6489,57 @@ void ff_hv_mc_qpel_no_rnd_8x8_msa(uint8_t *dest,
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_h_src1_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_h_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_h_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src01_16x16_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src01_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src01_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_v_src1_16x16_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_v_src1_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(uint8_t *dest,
-                                              const uint8_t *src,
-                                              ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_v_src1_8x8_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src11_16x16_msa(uint8_t *dest,
-                                                  const uint8_t *src,
-                                                  ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src11_16x16_msa(src, stride, dest, stride);
 }
 
 void ff_hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(uint8_t *dest,
-                                                const uint8_t *src,
-                                                ptrdiff_t stride)
+        const uint8_t *src,
+        ptrdiff_t stride)
 {
     hv_mc_qpel_no_rnd_aver_hv_src11_8x8_msa(src, stride, dest, stride);
 }

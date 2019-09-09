@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,14 @@
 
 #include "webrtc/media/base/videocapturerfactory.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // Creates instances of cricket::WebRtcVideoCapturer.
-class WebRtcVideoDeviceCapturerFactory : public VideoDeviceCapturerFactory {
- public:
-  std::unique_ptr<VideoCapturer> Create(const Device& device) override;
+class WebRtcVideoDeviceCapturerFactory : public VideoDeviceCapturerFactory
+{
+public:
+    std::unique_ptr<VideoCapturer> Create(const Device& device) override;
 };
 
 }  // namespace cricket

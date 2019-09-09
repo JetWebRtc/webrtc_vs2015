@@ -1,4 +1,4 @@
-/*
+﻿/*
  * adaptive and fixed codebook vector operations for ACELP-based codecs
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -25,7 +25,8 @@
 
 #include <stdint.h>
 
-typedef struct ACELPVContext {
+typedef struct ACELPVContext
+{
     /**
      * float implementation of weighted sum of two vectors.
      * @param[out] out result of addition
@@ -41,7 +42,7 @@ typedef struct ACELPVContext {
                                  float weight_coeff_a, float weight_coeff_b,
                                  int length);
 
-}ACELPVContext;
+} ACELPVContext;
 
 /**
  * Initialize ACELPVContext.
@@ -50,7 +51,8 @@ void ff_acelp_vectors_init(ACELPVContext *c);
 void ff_acelp_vectors_init_mips(ACELPVContext *c);
 
 /** Sparse representation for the algebraic codebook (fixed) vector */
-typedef struct AMRFixed {
+typedef struct AMRFixed
+{
     int      n;
     int      x[10];
     float    y[10];
@@ -264,7 +266,7 @@ void ff_adaptive_gain_control(float *out, const float *in, float speech_energ,
  * 3GPP TS 26.090 6.1 (6)
  */
 void ff_scale_vector_to_given_sum_of_squares(float *out, const float *in,
-                                             float sum_of_squares, const int n);
+        float sum_of_squares, const int n);
 
 /**
  * Add fixed vector to an array from a sparse representation

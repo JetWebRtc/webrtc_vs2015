@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alias PIX image encoder
  * Copyright (C) 2014 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -34,22 +34,24 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint8_t *in_buf, *buf;
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     width  = avctx->width;
     height = avctx->height;
 
     if (width > 65535 || height > 65535 ||
-        width * height >= INT_MAX / 4 - ALIAS_HEADER_SIZE) {
+            width * height >= INT_MAX / 4 - ALIAS_HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid image size %dx%d.\n", width, height);
         return AVERROR_INVALIDDATA;
     }
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_GRAY8:
         bits_pixel = 8;
         break;
@@ -61,7 +63,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     }
 
     length = ALIAS_HEADER_SIZE + 4 * width * height; // max possible
-    if ((ret = ff_alloc_packet2(avctx, pkt, length, ALIAS_HEADER_SIZE + height*2)) < 0) {
+    if ((ret = ff_alloc_packet2(avctx, pkt, length, ALIAS_HEADER_SIZE + height*2)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error getting output packet of size %d.\n", length);
         return ret;
     }
@@ -74,24 +77,31 @@ FF_ENABLE_DEPRECATION_WARNINGS
     bytestream_put_be32(&buf, 0); /* X, Y offset */
     bytestream_put_be16(&buf, bits_pixel);
 
-    for (j = 0; j < height; j++) {
+    for (j = 0; j < height; j++)
+    {
         in_buf = frame->data[0] + frame->linesize[0] * j;
-        for (i = 0; i < width; ) {
+        for (i = 0; i < width; )
+        {
             int count = 0;
             int pixel;
 
-            if (avctx->pix_fmt == AV_PIX_FMT_GRAY8) {
+            if (avctx->pix_fmt == AV_PIX_FMT_GRAY8)
+            {
                 pixel = *in_buf;
-                while (count < 255 && count + i < width && pixel == *in_buf) {
+                while (count < 255 && count + i < width && pixel == *in_buf)
+                {
                     count++;
                     in_buf++;
                 }
                 bytestream_put_byte(&buf, count);
                 bytestream_put_byte(&buf, pixel);
-            } else { /* AV_PIX_FMT_BGR24 */
+            }
+            else     /* AV_PIX_FMT_BGR24 */
+            {
                 pixel = AV_RB24(in_buf);
                 while (count < 255 && count + i < width &&
-                       pixel == AV_RB24(in_buf)) {
+                        pixel == AV_RB24(in_buf))
+                {
                     count++;
                     in_buf += 3;
                 }
@@ -110,7 +120,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     return 0;
 }
 
-AVCodec ff_alias_pix_encoder = {
+AVCodec ff_alias_pix_encoder =
+{
     .name      = "alias_pix",
     .long_name = NULL_IF_CONFIG_SMALL("Alias/Wavefront PIX image"),
     .type      = AVMEDIA_TYPE_VIDEO,

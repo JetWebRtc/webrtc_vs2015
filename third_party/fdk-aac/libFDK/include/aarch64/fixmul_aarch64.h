@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -102,9 +102,9 @@ amm-info@iis.fraunhofer.de
 
 inline INT fixmuldiv2_DD (const INT a, const INT b)
 {
-  INT result ;
-  result = ((long long)a * b)>>32;
-  return result ;
+    INT result ;
+    result = ((long long)a * b)>>32;
+    return result ;
 }
 
 #endif /* defined(__GNUC__) */

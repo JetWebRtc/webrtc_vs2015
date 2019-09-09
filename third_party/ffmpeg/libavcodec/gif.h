@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GIF format definitions
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2006 Baptiste Coudurier

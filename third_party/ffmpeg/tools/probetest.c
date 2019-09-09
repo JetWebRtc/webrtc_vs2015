@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2009 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -40,17 +40,20 @@ static void probe(AVProbeData *pd, int type, int p, int size)
     int i = 0;
     AVInputFormat *fmt = NULL;
 
-    while ((fmt = av_iformat_next(fmt))) {
+    while ((fmt = av_iformat_next(fmt)))
+    {
         if (fmt->flags & AVFMT_NOFILE)
             continue;
         if (fmt->read_probe &&
-            (!single_format || !strcmp(single_format, fmt->name))
-        ) {
+                (!single_format || !strcmp(single_format, fmt->name))
+           )
+        {
             int score;
             int64_t start = AV_READ_TIME();
             score = fmt->read_probe(pd);
             time_array[i] += AV_READ_TIME() - start;
-            if (score > score_array[i] && score > AVPROBE_SCORE_MAX / 4) {
+            if (score > score_array[i] && score > AVPROBE_SCORE_MAX / 4)
+            {
                 score_array[i] = score;
                 fprintf(stderr,
                         "Failure of %s probing code with score=%d type=%d p=%X size=%d\n",
@@ -67,10 +70,12 @@ static void print_times(void)
     int i = 0;
     AVInputFormat *fmt = NULL;
 
-    while ((fmt = av_iformat_next(fmt))) {
+    while ((fmt = av_iformat_next(fmt)))
+    {
         if (fmt->flags & AVFMT_NOFILE)
             continue;
-        if (time_array[i] > 1000000) {
+        if (time_array[i] > 1000000)
+        {
             fprintf(stderr, "%12"PRIu64" cycles, %12s\n",
                     time_array[i], fmt->name);
         }
@@ -78,7 +83,8 @@ static void print_times(void)
     }
 }
 
-static int read_int(char *arg) {
+static int read_int(char *arg)
+{
     int ret;
 
     if (!arg || !*arg)
@@ -99,27 +105,37 @@ int main(int argc, char **argv)
     int max_size = 65537;
     int j;
 
-    for (j = i = 1; i<argc; i++) {
-        if (!strcmp(argv[i], "-f") && i+1<argc && !single_format) {
+    for (j = i = 1; i<argc; i++)
+    {
+        if (!strcmp(argv[i], "-f") && i+1<argc && !single_format)
+        {
             single_format = argv[++i];
-        } else if (read_int(argv[i])>0 && j == 1) {
+        }
+        else if (read_int(argv[i])>0 && j == 1)
+        {
             retry_count = read_int(argv[i]);
             j++;
-        } else if (read_int(argv[i])>0 && j == 2) {
+        }
+        else if (read_int(argv[i])>0 && j == 2)
+        {
             max_size = read_int(argv[i]);
             j++;
-        } else {
+        }
+        else
+        {
             fprintf(stderr, "probetest [-f <input format>] [<retry_count> [<max_size>]]\n");
             return 1;
         }
     }
 
-    if (max_size > 1000000000U/8) {
+    if (max_size > 1000000000U/8)
+    {
         fprintf(stderr, "max_size out of bounds\n");
         return 1;
     }
 
-    if (retry_count > 1000000000U) {
+    if (retry_count > 1000000000U)
+    {
         fprintf(stderr, "retry_count out of bounds\n");
         return 1;
     }
@@ -130,12 +146,14 @@ int main(int argc, char **argv)
     av_lfg_init(&state, 0xdeadbeef);
 
     pd.buf = NULL;
-    for (size = 1; size < max_size; size *= 2) {
+    for (size = 1; size < max_size; size *= 2)
+    {
         pd.buf_size = size;
         pd.buf      = av_realloc(pd.buf, size + AVPROBE_PADDING_SIZE);
         pd.filename = "";
 
-        if (!pd.buf) {
+        if (!pd.buf)
+        {
             fprintf(stderr, "out of memory\n");
             return 1;
         }
@@ -144,18 +162,23 @@ int main(int argc, char **argv)
 
         fprintf(stderr, "testing size=%d\n", size);
 
-        for (retry = 0; retry < retry_count; retry += FFMAX(size, 32)) {
-            for (type = 0; type < 4; type++) {
-                for (p = 0; p < 4096; p++) {
+        for (retry = 0; retry < retry_count; retry += FFMAX(size, 32))
+        {
+            for (type = 0; type < 4; type++)
+            {
+                for (p = 0; p < 4096; p++)
+                {
                     unsigned hist = 0;
                     init_put_bits(&pb, pd.buf, size);
-                    switch (type) {
+                    switch (type)
+                    {
                     case 0:
                         for (i = 0; i < size * 8; i++)
                             put_bits(&pb, 1, (av_lfg_get(&state) & 0xFFFFFFFF) > p << 20);
                         break;
                     case 1:
-                        for (i = 0; i < size * 8; i++) {
+                        for (i = 0; i < size * 8; i++)
+                        {
                             unsigned int p2 = hist ? p & 0x3F : (p >> 6);
                             unsigned int v  = (av_lfg_get(&state) & 0xFFFFFFFF) > p2 << 26;
                             put_bits(&pb, 1, v);
@@ -163,7 +186,8 @@ int main(int argc, char **argv)
                         }
                         break;
                     case 2:
-                        for (i = 0; i < size * 8; i++) {
+                        for (i = 0; i < size * 8; i++)
+                        {
                             unsigned int p2 = (p >> (hist * 3)) & 7;
                             unsigned int v  = (av_lfg_get(&state) & 0xFFFFFFFF) > p2 << 29;
                             put_bits(&pb, 1, v);
@@ -171,9 +195,11 @@ int main(int argc, char **argv)
                         }
                         break;
                     case 3:
-                        for (i = 0; i < size; i++) {
+                        for (i = 0; i < size; i++)
+                        {
                             int c = 0;
-                            while (p & 63) {
+                            while (p & 63)
+                            {
                                 c = (av_lfg_get(&state) & 0xFFFFFFFF) >> 24;
                                 if (c >= 'a' && c <= 'z' && (p & 1))
                                     break;

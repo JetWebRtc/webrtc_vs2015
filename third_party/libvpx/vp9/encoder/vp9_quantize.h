@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,23 +18,24 @@
 extern "C" {
 #endif
 
-typedef struct {
-  DECLARE_ALIGNED(16, int16_t, y_quant[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_quant_shift[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_zbin[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_round[QINDEX_RANGE][8]);
+typedef struct
+{
+    DECLARE_ALIGNED(16, int16_t, y_quant[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_quant_shift[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_zbin[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_round[QINDEX_RANGE][8]);
 
-  // TODO(jingning): in progress of re-working the quantization. will decide
-  // if we want to deprecate the current use of y_quant.
-  DECLARE_ALIGNED(16, int16_t, y_quant_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_quant_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, y_round_fp[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_round_fp[QINDEX_RANGE][8]);
+    // TODO(jingning): in progress of re-working the quantization. will decide
+    // if we want to deprecate the current use of y_quant.
+    DECLARE_ALIGNED(16, int16_t, y_quant_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, y_round_fp[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_round_fp[QINDEX_RANGE][8]);
 
-  DECLARE_ALIGNED(16, int16_t, uv_quant[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_quant_shift[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_zbin[QINDEX_RANGE][8]);
-  DECLARE_ALIGNED(16, int16_t, uv_round[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_quant_shift[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_zbin[QINDEX_RANGE][8]);
+    DECLARE_ALIGNED(16, int16_t, uv_round[QINDEX_RANGE][8]);
 } QUANTS;
 
 void vp9_regular_quantize_b_4x4(MACROBLOCK *x, int plane, int block,

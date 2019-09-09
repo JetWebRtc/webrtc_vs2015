@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,14 +16,16 @@
 #include "webrtc/modules/audio_coding/neteq/sync_buffer.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(ComfortNoise, CreateAndDestroy) {
-  int fs = 8000;
-  MockDecoderDatabase db;
-  SyncBuffer sync_buffer(1, 1000);
-  ComfortNoise cn(fs, &db, &sync_buffer);
-  EXPECT_CALL(db, Die());  // Called when |db| goes out of scope.
+TEST(ComfortNoise, CreateAndDestroy)
+{
+    int fs = 8000;
+    MockDecoderDatabase db;
+    SyncBuffer sync_buffer(1, 1000);
+    ComfortNoise cn(fs, &db, &sync_buffer);
+    EXPECT_CALL(db, Die());  // Called when |db| goes out of scope.
 }
 
 // TODO(hlundin): Write more tests.

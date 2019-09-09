@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -46,88 +46,95 @@
 #include "WelsThreadPool.h"
 #include "wels_task_base.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
-class IWelsTaskManage {
- public:
-  virtual ~IWelsTaskManage() { }
+class IWelsTaskManage
+{
+public:
+    virtual ~IWelsTaskManage() { }
 
-  virtual WelsErrorType   Init (sWelsEncCtx*   pEncCtx) = 0;
-  virtual void            Uninit() = 0;
+    virtual WelsErrorType   Init (sWelsEncCtx*   pEncCtx) = 0;
+    virtual void            Uninit() = 0;
 
-  virtual void            InitFrame (const int32_t kiCurDid) {}
-  virtual WelsErrorType   ExecuteTasks (const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING)
-    = 0;
+    virtual void            InitFrame (const int32_t kiCurDid) {}
+    virtual WelsErrorType   ExecuteTasks (const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING)
+        = 0;
 
-  static IWelsTaskManage* CreateTaskManage (sWelsEncCtx* pCtx, const int32_t iSpatialLayer, const bool bNeedLock);
+    static IWelsTaskManage* CreateTaskManage (sWelsEncCtx* pCtx, const int32_t iSpatialLayer, const bool bNeedLock);
 
-  virtual int32_t  GetThreadPoolThreadNum() = 0;
+    virtual int32_t  GetThreadPoolThreadNum() = 0;
 };
 
 
-class  CWelsTaskManageBase : public IWelsTaskManage, public WelsCommon::IWelsTaskSink {
- public:
-  typedef  CWelsCircleQueue<CWelsBaseTask>            TASKLIST_TYPE;
-  //typedef  std::pair<int, int>                  SLICE_BOUNDARY_PAIR;
-  //typedef  CWelsCircleQueue<SLICE_BOUNDARY_PAIR>       SLICE_PAIR_LIST;
+class  CWelsTaskManageBase : public IWelsTaskManage, public WelsCommon::IWelsTaskSink
+{
+public:
+    typedef  CWelsCircleQueue<CWelsBaseTask>            TASKLIST_TYPE;
+    //typedef  std::pair<int, int>                  SLICE_BOUNDARY_PAIR;
+    //typedef  CWelsCircleQueue<SLICE_BOUNDARY_PAIR>       SLICE_PAIR_LIST;
 
-  CWelsTaskManageBase();
-  virtual ~ CWelsTaskManageBase();
+    CWelsTaskManageBase();
+    virtual ~ CWelsTaskManageBase();
 
-  virtual WelsErrorType  Init (sWelsEncCtx*   pEncCtx);
-  virtual void           InitFrame (const int32_t kiCurDid = 0);
+    virtual WelsErrorType  Init (sWelsEncCtx*   pEncCtx);
+    virtual void           InitFrame (const int32_t kiCurDid = 0);
 
-  virtual WelsErrorType  ExecuteTasks (const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING);
+    virtual WelsErrorType  ExecuteTasks (const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING);
 
-  //IWelsTaskSink
-  virtual WelsErrorType OnTaskExecuted();
-  virtual WelsErrorType OnTaskCancelled();
+    //IWelsTaskSink
+    virtual WelsErrorType OnTaskExecuted();
+    virtual WelsErrorType OnTaskCancelled();
 
-  int32_t  GetThreadPoolThreadNum();
+    int32_t  GetThreadPoolThreadNum();
 
- protected:
-  virtual WelsErrorType  CreateTasks (sWelsEncCtx* pEncCtx, const int32_t kiTaskCount);
+protected:
+    virtual WelsErrorType  CreateTasks (sWelsEncCtx* pEncCtx, const int32_t kiTaskCount);
 
-  WelsErrorType          ExecuteTaskList(TASKLIST_TYPE** pTaskList);
+    WelsErrorType          ExecuteTaskList(TASKLIST_TYPE** pTaskList);
 
- protected:
-  sWelsEncCtx*    m_pEncCtx;
-  WelsCommon::CWelsThreadPool*   m_pThreadPool;
+protected:
+    sWelsEncCtx*    m_pEncCtx;
+    WelsCommon::CWelsThreadPool*   m_pThreadPool;
 
-  TASKLIST_TYPE*  m_pcAllTaskList[CWelsBaseTask::WELS_ENC_TASK_ALL][MAX_DEPENDENCY_LAYER];
-  TASKLIST_TYPE*  m_cEncodingTaskList[MAX_DEPENDENCY_LAYER];
-  TASKLIST_TYPE*  m_cPreEncodingTaskList[MAX_DEPENDENCY_LAYER];
-  int32_t         m_iTaskNum[MAX_DEPENDENCY_LAYER];
+    TASKLIST_TYPE*  m_pcAllTaskList[CWelsBaseTask::WELS_ENC_TASK_ALL][MAX_DEPENDENCY_LAYER];
+    TASKLIST_TYPE*  m_cEncodingTaskList[MAX_DEPENDENCY_LAYER];
+    TASKLIST_TYPE*  m_cPreEncodingTaskList[MAX_DEPENDENCY_LAYER];
+    int32_t         m_iTaskNum[MAX_DEPENDENCY_LAYER];
 
-  //SLICE_PAIR_LIST *m_cSliceList;
+    //SLICE_PAIR_LIST *m_cSliceList;
 
-  int32_t         m_iThreadNum;
+    int32_t         m_iThreadNum;
 
-  int32_t          m_iWaitTaskNum;
-  WELS_EVENT       m_hTaskEvent;
-  WELS_MUTEX       m_hEventMutex;
-  WelsCommon::CWelsLock  m_cWaitTaskNumLock;
+    int32_t          m_iWaitTaskNum;
+    WELS_EVENT       m_hTaskEvent;
+    WELS_MUTEX       m_hEventMutex;
+    WelsCommon::CWelsLock  m_cWaitTaskNumLock;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN (CWelsTaskManageBase);
-  void  OnTaskMinusOne();
+private:
+    DISALLOW_COPY_AND_ASSIGN (CWelsTaskManageBase);
+    void  OnTaskMinusOne();
 
-  void Uninit();
-  void DestroyTasks();
-  void DestroyTaskList(TASKLIST_TYPE* pTargetTaskList);
+    void Uninit();
+    void DestroyTasks();
+    void DestroyTaskList(TASKLIST_TYPE* pTargetTaskList);
 
-  int32_t        m_iCurDid;
+    int32_t        m_iCurDid;
 };
 
-class  CWelsTaskManageOne : public CWelsTaskManageBase {
- public:
-  CWelsTaskManageOne();
-  virtual ~CWelsTaskManageOne();
+class  CWelsTaskManageOne : public CWelsTaskManageBase
+{
+public:
+    CWelsTaskManageOne();
+    virtual ~CWelsTaskManageOne();
 
-  WelsErrorType   Init (sWelsEncCtx* pEncCtx);
-  virtual WelsErrorType  ExecuteTasks(const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING);
+    WelsErrorType   Init (sWelsEncCtx* pEncCtx);
+    virtual WelsErrorType  ExecuteTasks(const CWelsBaseTask::ETaskType iTaskType = CWelsBaseTask::WELS_ENC_TASK_ENCODING);
 
-  int32_t  GetThreadPoolThreadNum() {return 1;};
+    int32_t  GetThreadPoolThreadNum()
+    {
+        return 1;
+    };
 };
 
 }       //namespace

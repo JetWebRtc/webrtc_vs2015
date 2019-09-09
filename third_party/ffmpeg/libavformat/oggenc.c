@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ogg muxer
  * Copyright (c) 2007 Baptiste Coudurier <baptiste dot coudurier at free dot fr>
  *
@@ -35,7 +35,8 @@
 
 #define MAX_PAGE_SIZE 65025
 
-typedef struct OGGPage {
+typedef struct OGGPage
+{
     int64_t start_granule;
     int64_t granule;
     int stream_index;
@@ -46,7 +47,8 @@ typedef struct OGGPage {
     uint16_t size;
 } OGGPage;
 
-typedef struct OGGStreamContext {
+typedef struct OGGStreamContext
+{
     unsigned page_counter;
     uint8_t *header[3];
     int header_len[3];
@@ -61,12 +63,14 @@ typedef struct OGGStreamContext {
     int64_t last_granule; ///< last packet granule
 } OGGStreamContext;
 
-typedef struct OGGPageList {
+typedef struct OGGPageList
+{
     OGGPage page;
     struct OGGPageList *next;
 } OGGPageList;
 
-typedef struct OGGContext {
+typedef struct OGGContext
+{
     const AVClass *class;
     OGGPageList *page_list;
     int pref_size; ///< preferred page size (0 => fill all segments)
@@ -77,15 +81,24 @@ typedef struct OGGContext {
 #define OFFSET(x) offsetof(OGGContext, x)
 #define PARAM AV_OPT_FLAG_ENCODING_PARAM
 
-static const AVOption options[] = {
-    { "serial_offset", "serial number offset",
-        OFFSET(serial_offset), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, PARAM },
-    { "oggpagesize", "Set preferred Ogg page size.",
-      OFFSET(pref_size), AV_OPT_TYPE_INT, {.i64 = 0}, 0, MAX_PAGE_SIZE, PARAM},
-    { "pagesize", "preferred page size in bytes (deprecated)",
-        OFFSET(pref_size), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, MAX_PAGE_SIZE, PARAM },
-    { "page_duration", "preferred page duration, in microseconds",
-        OFFSET(pref_duration), AV_OPT_TYPE_INT64, { .i64 = 1000000 }, 0, INT64_MAX, PARAM },
+static const AVOption options[] =
+{
+    {
+        "serial_offset", "serial number offset",
+        OFFSET(serial_offset), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, PARAM
+    },
+    {
+        "oggpagesize", "Set preferred Ogg page size.",
+        OFFSET(pref_size), AV_OPT_TYPE_INT, {.i64 = 0}, 0, MAX_PAGE_SIZE, PARAM
+    },
+    {
+        "pagesize", "preferred page size in bytes (deprecated)",
+        OFFSET(pref_size), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, MAX_PAGE_SIZE, PARAM
+    },
+    {
+        "page_duration", "preferred page duration, in microseconds",
+        OFFSET(pref_duration), AV_OPT_TYPE_INT64, { .i64 = 1000000 }, 0, INT64_MAX, PARAM
+    },
     { NULL },
 };
 
@@ -153,7 +166,7 @@ static int64_t ogg_granule_to_timestamp(OGGStreamContext *oggstream, int64_t gra
 {
     if (oggstream->kfgshift)
         return (granule>>oggstream->kfgshift) +
-            (granule & ((1<<oggstream->kfgshift)-1));
+               (granule & ((1<<oggstream->kfgshift)-1));
     else
         return granule;
 }
@@ -197,7 +210,8 @@ static int ogg_buffer_page(AVFormatContext *s, OGGStreamContext *oggstream)
     oggstream->page_count++;
     ogg_reset_cur_page(oggstream);
 
-    while (*p) {
+    while (*p)
+    {
         if (ogg_compare_granule(s, &(*p)->page, &l->page))
             break;
         p = &(*p)->next;
@@ -224,9 +238,10 @@ static int ogg_buffer_data(AVFormatContext *s, AVStream *st,
     // least with old libogg versions.
     // Do not try to flush header packets though, that will create broken files.
     if (st->codec->codec_id == AV_CODEC_ID_THEORA && !header &&
-        (ogg_granule_to_timestamp(oggstream, granule) >
-         ogg_granule_to_timestamp(oggstream, oggstream->last_granule) + 1 ||
-         ogg_key_granule(oggstream, granule))) {
+            (ogg_granule_to_timestamp(oggstream, granule) >
+             ogg_granule_to_timestamp(oggstream, oggstream->last_granule) + 1 ||
+             ogg_key_granule(oggstream, granule)))
+    {
         if (oggstream->page.granule != -1)
             ogg_buffer_page(s, oggstream);
         flush = 1;
@@ -234,11 +249,13 @@ static int ogg_buffer_data(AVFormatContext *s, AVStream *st,
 
     // avoid a continued page
     if (!header && oggstream->page.size > 0 &&
-        MAX_PAGE_SIZE - oggstream->page.size < size) {
+            MAX_PAGE_SIZE - oggstream->page.size < size)
+    {
         ogg_buffer_page(s, oggstream);
     }
 
-    for (i = 0; i < total_segments; ) {
+    for (i = 0; i < total_segments; )
+    {
         OGGPage *page = &oggstream->page;
 
         segments = FFMIN(total_segments - i, 255 - page->segments_count);
@@ -268,11 +285,15 @@ static int ogg_buffer_data(AVFormatContext *s, AVStream *st,
             int64_t next  = av_rescale_q(page->granule, st->time_base,
                                          AV_TIME_BASE_Q);
 
-            if (page->segments_count == 255) {
+            if (page->segments_count == 255)
+            {
                 ogg_buffer_page(s, oggstream);
-            } else if (!header) {
+            }
+            else if (!header)
+            {
                 if ((ogg->pref_size     > 0 && page->size   >= ogg->pref_size) ||
-                    (ogg->pref_duration > 0 && next - start >= ogg->pref_duration)) {
+                        (ogg->pref_duration > 0 && next - start >= ogg->pref_duration))
+                {
                     ogg_buffer_page(s, oggstream);
                 }
             }
@@ -413,7 +434,8 @@ static void ogg_write_pages(AVFormatContext *s, int flush)
     if (!ogg->page_list)
         return;
 
-    for (p = ogg->page_list; p; ) {
+    for (p = ogg->page_list; p; )
+    {
         OGGStreamContext *oggstream =
             s->streams[p->page.stream_index]->priv_data;
         if (oggstream->page_count < 2 && !flush)
@@ -436,11 +458,13 @@ static int ogg_write_header(AVFormatContext *s)
     if (ogg->pref_size)
         av_log(s, AV_LOG_WARNING, "The pagesize option is deprecated\n");
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *st = s->streams[i];
         unsigned serial_num = i + ogg->serial_offset;
 
-        if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             if (st->codec->codec_id == AV_CODEC_ID_OPUS)
                 /* Opus requires a fixed 48kHz clock */
                 avpriv_set_pts_info(st, 64, 1, 48000);
@@ -449,15 +473,17 @@ static int ogg_write_header(AVFormatContext *s)
         }
 
         if (st->codec->codec_id != AV_CODEC_ID_VORBIS &&
-            st->codec->codec_id != AV_CODEC_ID_THEORA &&
-            st->codec->codec_id != AV_CODEC_ID_SPEEX  &&
-            st->codec->codec_id != AV_CODEC_ID_FLAC   &&
-            st->codec->codec_id != AV_CODEC_ID_OPUS) {
+                st->codec->codec_id != AV_CODEC_ID_THEORA &&
+                st->codec->codec_id != AV_CODEC_ID_SPEEX  &&
+                st->codec->codec_id != AV_CODEC_ID_FLAC   &&
+                st->codec->codec_id != AV_CODEC_ID_OPUS)
+        {
             av_log(s, AV_LOG_ERROR, "Unsupported codec id in stream %d\n", i);
             return AVERROR(EINVAL);
         }
 
-        if (!st->codec->extradata || !st->codec->extradata_size) {
+        if (!st->codec->extradata || !st->codec->extradata_size)
+        {
             av_log(s, AV_LOG_ERROR, "No extradata present\n");
             return AVERROR_INVALIDDATA;
         }
@@ -468,55 +494,69 @@ static int ogg_write_header(AVFormatContext *s)
         oggstream->page.stream_index = i;
 
         if (!(s->flags & AVFMT_FLAG_BITEXACT))
-            do {
+            do
+            {
                 serial_num = av_get_random_seed();
-                for (j = 0; j < i; j++) {
+                for (j = 0; j < i; j++)
+                {
                     OGGStreamContext *sc = s->streams[j]->priv_data;
                     if (serial_num == sc->serial_num)
                         break;
                 }
-            } while (j < i);
+            }
+            while (j < i);
         oggstream->serial_num = serial_num;
 
         av_dict_copy(&st->metadata, s->metadata, AV_DICT_DONT_OVERWRITE);
 
         st->priv_data = oggstream;
-        if (st->codec->codec_id == AV_CODEC_ID_FLAC) {
+        if (st->codec->codec_id == AV_CODEC_ID_FLAC)
+        {
             int err = ogg_build_flac_headers(st->codec, oggstream,
                                              s->flags & AVFMT_FLAG_BITEXACT,
                                              &st->metadata);
-            if (err) {
+            if (err)
+            {
                 av_log(s, AV_LOG_ERROR, "Error writing FLAC headers\n");
                 av_freep(&st->priv_data);
                 return err;
             }
-        } else if (st->codec->codec_id == AV_CODEC_ID_SPEEX) {
+        }
+        else if (st->codec->codec_id == AV_CODEC_ID_SPEEX)
+        {
             int err = ogg_build_speex_headers(st->codec, oggstream,
                                               s->flags & AVFMT_FLAG_BITEXACT,
                                               &st->metadata);
-            if (err) {
+            if (err)
+            {
                 av_log(s, AV_LOG_ERROR, "Error writing Speex headers\n");
                 av_freep(&st->priv_data);
                 return err;
             }
-        } else if (st->codec->codec_id == AV_CODEC_ID_OPUS) {
+        }
+        else if (st->codec->codec_id == AV_CODEC_ID_OPUS)
+        {
             int err = ogg_build_opus_headers(st->codec, oggstream,
                                              s->flags & AVFMT_FLAG_BITEXACT,
                                              &st->metadata);
-            if (err) {
+            if (err)
+            {
                 av_log(s, AV_LOG_ERROR, "Error writing Opus headers\n");
                 av_freep(&st->priv_data);
                 return err;
             }
-        } else {
+        }
+        else
+        {
             uint8_t *p;
             const char *cstr = st->codec->codec_id == AV_CODEC_ID_VORBIS ? "vorbis" : "theora";
             int header_type = st->codec->codec_id == AV_CODEC_ID_VORBIS ? 3 : 0x81;
             int framing_bit = st->codec->codec_id == AV_CODEC_ID_VORBIS ? 1 : 0;
 
             if (avpriv_split_xiph_headers(st->codec->extradata, st->codec->extradata_size,
-                                      st->codec->codec_id == AV_CODEC_ID_VORBIS ? 30 : 42,
-                                      (const uint8_t**)oggstream->header, oggstream->header_len) < 0) {
+                                          st->codec->codec_id == AV_CODEC_ID_VORBIS ? 30 : 42,
+                                          (const uint8_t**)oggstream->header, oggstream->header_len) < 0)
+            {
                 av_log(s, AV_LOG_ERROR, "Extradata corrupted\n");
                 av_freep(&st->priv_data);
                 return AVERROR_INVALIDDATA;
@@ -532,7 +572,8 @@ static int ogg_write_header(AVFormatContext *s)
             bytestream_put_byte(&p, header_type);
             bytestream_put_buffer(&p, cstr, 6);
 
-            if (st->codec->codec_id == AV_CODEC_ID_THEORA) {
+            if (st->codec->codec_id == AV_CODEC_ID_THEORA)
+            {
                 /** KFGSHIFT is the width of the less significant section of the granule position
                     The less significant section is the frame count since the last keyframe */
                 oggstream->kfgshift = ((oggstream->header[0][40]&3)<<3)|(oggstream->header[0][41]>>5);
@@ -543,17 +584,20 @@ static int ogg_write_header(AVFormatContext *s)
         }
     }
 
-    for (j = 0; j < s->nb_streams; j++) {
+    for (j = 0; j < s->nb_streams; j++)
+    {
         OGGStreamContext *oggstream = s->streams[j]->priv_data;
         ogg_buffer_data(s, s->streams[j], oggstream->header[0],
                         oggstream->header_len[0], 0, 1);
         oggstream->page.flags |= 2; // bos
         ogg_buffer_page(s, oggstream);
     }
-    for (j = 0; j < s->nb_streams; j++) {
+    for (j = 0; j < s->nb_streams; j++)
+    {
         AVStream *st = s->streams[j];
         OGGStreamContext *oggstream = st->priv_data;
-        for (i = 1; i < 3; i++) {
+        for (i = 1; i < 3; i++)
+        {
             if (oggstream->header_len[i])
                 ogg_buffer_data(s, st, oggstream->header[i],
                                 oggstream->header_len[i], 0, 1);
@@ -575,23 +619,29 @@ static int ogg_write_packet_internal(AVFormatContext *s, AVPacket *pkt)
     int ret;
     int64_t granule;
 
-    if (st->codec->codec_id == AV_CODEC_ID_THEORA) {
+    if (st->codec->codec_id == AV_CODEC_ID_THEORA)
+    {
         int64_t pts = oggstream->vrev < 1 ? pkt->pts : pkt->pts + pkt->duration;
         int pframe_count;
         if (pkt->flags & AV_PKT_FLAG_KEY)
             oggstream->last_kf_pts = pts;
         pframe_count = pts - oggstream->last_kf_pts;
         // prevent frame count from overflow if key frame flag is not set
-        if (pframe_count >= (1<<oggstream->kfgshift)) {
+        if (pframe_count >= (1<<oggstream->kfgshift))
+        {
             oggstream->last_kf_pts += pframe_count;
             pframe_count = 0;
         }
         granule = (oggstream->last_kf_pts<<oggstream->kfgshift) | pframe_count;
-    } else if (st->codec->codec_id == AV_CODEC_ID_OPUS)
+    }
+    else if (st->codec->codec_id == AV_CODEC_ID_OPUS)
         granule = pkt->pts + pkt->duration +
                   av_rescale_q(st->codec->initial_padding,
-                               (AVRational){ 1, st->codec->sample_rate },
-                               st->time_base);
+                               (AVRational)
+    {
+        1, st->codec->sample_rate
+    },
+    st->time_base);
     else
         granule = pkt->pts + pkt->duration;
 
@@ -616,7 +666,8 @@ static int ogg_write_packet(AVFormatContext *s, AVPacket *pkt)
     if (pkt)
         return ogg_write_packet_internal(s, pkt);
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OGGStreamContext *oggstream = s->streams[i]->priv_data;
         if (oggstream->page.segments_count)
             ogg_buffer_page(s, oggstream);
@@ -631,7 +682,8 @@ static int ogg_write_trailer(AVFormatContext *s)
     int i;
 
     /* flush current page if needed */
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OGGStreamContext *oggstream = s->streams[i]->priv_data;
 
         if (oggstream->page.size > 0)
@@ -640,12 +692,14 @@ static int ogg_write_trailer(AVFormatContext *s)
 
     ogg_write_pages(s, 1);
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *st = s->streams[i];
         OGGStreamContext *oggstream = st->priv_data;
         if (st->codec->codec_id == AV_CODEC_ID_FLAC ||
-            st->codec->codec_id == AV_CODEC_ID_SPEEX ||
-            st->codec->codec_id == AV_CODEC_ID_OPUS) {
+                st->codec->codec_id == AV_CODEC_ID_SPEEX ||
+                st->codec->codec_id == AV_CODEC_ID_OPUS)
+        {
             av_freep(&oggstream->header[0]);
         }
         av_freep(&oggstream->header[1]);
@@ -656,21 +710,22 @@ static int ogg_write_trailer(AVFormatContext *s)
 
 #if CONFIG_OGG_MUXER
 OGG_CLASS(ogg, Ogg)
-AVOutputFormat ff_ogg_muxer = {
+AVOutputFormat ff_ogg_muxer =
+{
     .name              = "ogg",
     .long_name         = NULL_IF_CONFIG_SMALL("Ogg"),
     .mime_type         = "application/ogg",
     .extensions        = "ogg,ogv"
 #if !CONFIG_SPX_MUXER
-                         ",spx"
+    ",spx"
 #endif
 #if !CONFIG_OPUS_MUXER
-                         ",opus"
+    ",opus"
 #endif
-                         ,
+    ,
     .priv_data_size    = sizeof(OGGContext),
     .audio_codec       = CONFIG_LIBVORBIS_ENCODER ?
-                         AV_CODEC_ID_VORBIS : AV_CODEC_ID_FLAC,
+    AV_CODEC_ID_VORBIS : AV_CODEC_ID_FLAC,
     .video_codec       = AV_CODEC_ID_THEORA,
     .write_header      = ogg_write_header,
     .write_packet      = ogg_write_packet,
@@ -682,14 +737,15 @@ AVOutputFormat ff_ogg_muxer = {
 
 #if CONFIG_OGA_MUXER
 OGG_CLASS(oga, Ogg audio)
-AVOutputFormat ff_oga_muxer = {
+AVOutputFormat ff_oga_muxer =
+{
     .name              = "oga",
     .long_name         = NULL_IF_CONFIG_SMALL("Ogg Audio"),
     .mime_type         = "audio/ogg",
     .extensions        = "oga",
     .priv_data_size    = sizeof(OGGContext),
     .audio_codec       = CONFIG_LIBVORBIS_ENCODER ?
-                         AV_CODEC_ID_VORBIS : AV_CODEC_ID_FLAC,
+    AV_CODEC_ID_VORBIS : AV_CODEC_ID_FLAC,
     .write_header      = ogg_write_header,
     .write_packet      = ogg_write_packet,
     .write_trailer     = ogg_write_trailer,
@@ -700,7 +756,8 @@ AVOutputFormat ff_oga_muxer = {
 
 #if CONFIG_SPX_MUXER
 OGG_CLASS(spx, Ogg Speex)
-AVOutputFormat ff_spx_muxer = {
+AVOutputFormat ff_spx_muxer =
+{
     .name              = "spx",
     .long_name         = NULL_IF_CONFIG_SMALL("Ogg Speex"),
     .mime_type         = "audio/ogg",
@@ -717,7 +774,8 @@ AVOutputFormat ff_spx_muxer = {
 
 #if CONFIG_OPUS_MUXER
 OGG_CLASS(opus, Ogg Opus)
-AVOutputFormat ff_opus_muxer = {
+AVOutputFormat ff_opus_muxer =
+{
     .name              = "opus",
     .long_name         = NULL_IF_CONFIG_SMALL("Ogg Opus"),
     .mime_type         = "audio/ogg",

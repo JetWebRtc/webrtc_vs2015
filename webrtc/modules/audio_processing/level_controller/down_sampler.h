@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,24 +15,26 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_processing/level_controller/biquad_filter.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
-class DownSampler {
- public:
-  explicit DownSampler(ApmDataDumper* data_dumper);
-  void Initialize(int sample_rate_hz);
+class DownSampler
+{
+public:
+    explicit DownSampler(ApmDataDumper* data_dumper);
+    void Initialize(int sample_rate_hz);
 
-  void DownSample(rtc::ArrayView<const float> in, rtc::ArrayView<float> out);
+    void DownSample(rtc::ArrayView<const float> in, rtc::ArrayView<float> out);
 
- private:
-  ApmDataDumper* data_dumper_;
-  int sample_rate_hz_;
-  int down_sampling_factor_;
-  BiQuadFilter low_pass_filter_;
+private:
+    ApmDataDumper* data_dumper_;
+    int sample_rate_hz_;
+    int down_sampling_factor_;
+    BiQuadFilter low_pass_filter_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(DownSampler);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(DownSampler);
 };
 
 }  // namespace webrtc

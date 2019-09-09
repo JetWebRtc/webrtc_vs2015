@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007  Aurelien Jacobs <aurel@gnuage.org>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "avcodec.h"
 #include "get_bits.h"
 
-typedef struct Node {
+typedef struct Node
+{
     int16_t  sym;
     int16_t  n0;
     uint32_t count;

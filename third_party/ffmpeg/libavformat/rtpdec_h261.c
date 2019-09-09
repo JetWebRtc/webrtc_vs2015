@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP parser for H.261 payload format (RFC 4587)
  * Copyright (c) 2014 Thomas Volkert <thomas@homer-conferencing.com>
  *
@@ -26,7 +26,8 @@
 
 #define RTP_H261_PAYLOAD_HEADER_SIZE 4
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *buf;
     uint8_t      endbyte;
     int          endbyte_bits;
@@ -52,13 +53,15 @@ static int h261_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_h261_ctx
     int res;
 
     /* drop data of previous packets in case of non-continuous (lossy) packet stream */
-    if (rtp_h261_ctx->buf && rtp_h261_ctx->timestamp != *timestamp) {
+    if (rtp_h261_ctx->buf && rtp_h261_ctx->timestamp != *timestamp)
+    {
         ffio_free_dyn_buf(&rtp_h261_ctx->buf);
         rtp_h261_ctx->endbyte_bits = 0;
     }
 
     /* sanity check for size of input packet: 1 byte payload at least */
-    if (len < RTP_H261_PAYLOAD_HEADER_SIZE + 1) {
+    if (len < RTP_H261_PAYLOAD_HEADER_SIZE + 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short RTP/H.261 packet, got %d bytes\n", len);
         return AVERROR_INVALIDDATA;
     }
@@ -94,34 +97,43 @@ static int h261_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_h261_ctx
     len -= RTP_H261_PAYLOAD_HEADER_SIZE;
 
     /* start frame buffering with new dynamic buffer */
-    if (!rtp_h261_ctx->buf) {
+    if (!rtp_h261_ctx->buf)
+    {
         /* sanity check: a new frame starts with gobn=0, sbit=0, mbap=0, quant=0 */
-        if (!gobn && !sbit && !mbap && !quant) {
+        if (!gobn && !sbit && !mbap && !quant)
+        {
             res = avio_open_dyn_buf(&rtp_h261_ctx->buf);
             if (res < 0)
                 return res;
             /* update the timestamp in the frame packet with the one from the RTP packet */
             rtp_h261_ctx->timestamp = *timestamp;
-        } else {
+        }
+        else
+        {
             /* frame not started yet, need more packets */
             return AVERROR(EAGAIN);
         }
     }
 
     /* do the "byte merging" at the boundaries of two consecutive frame fragments */
-    if (rtp_h261_ctx->endbyte_bits || sbit) {
-        if (rtp_h261_ctx->endbyte_bits == sbit) {
+    if (rtp_h261_ctx->endbyte_bits || sbit)
+    {
+        if (rtp_h261_ctx->endbyte_bits == sbit)
+        {
             rtp_h261_ctx->endbyte     |= buf[0] & (0xff >> sbit);
             rtp_h261_ctx->endbyte_bits = 0;
             buf++;
             len--;
             avio_w8(rtp_h261_ctx->buf, rtp_h261_ctx->endbyte);
-        } else {
+        }
+        else
+        {
             /* ebit/sbit values inconsistent, assuming packet loss */
             GetBitContext gb;
             init_get_bits(&gb, buf, len*8 - ebit);
             skip_bits(&gb, sbit);
-            if (rtp_h261_ctx->endbyte_bits) {
+            if (rtp_h261_ctx->endbyte_bits)
+            {
                 rtp_h261_ctx->endbyte |= get_bits(&gb, 8 - rtp_h261_ctx->endbyte_bits);
                 avio_w8(rtp_h261_ctx->buf, rtp_h261_ctx->endbyte);
             }
@@ -135,12 +147,15 @@ static int h261_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_h261_ctx
             len  = 0;
         }
     }
-    if (ebit) {
+    if (ebit)
+    {
         if (len > 0)
             avio_write(rtp_h261_ctx->buf, buf, len - 1);
         rtp_h261_ctx->endbyte_bits = 8 - ebit;
         rtp_h261_ctx->endbyte      = buf[len - 1] & (0xff << ebit);
-    } else {
+    }
+    else
+    {
         avio_write(rtp_h261_ctx->buf, buf, len);
     }
 
@@ -162,7 +177,8 @@ static int h261_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_h261_ctx
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_h261_dynamic_handler = {
+RTPDynamicProtocolHandler ff_h261_dynamic_handler =
+{
     .enc_name          = "H261",
     .codec_type        = AVMEDIA_TYPE_VIDEO,
     .codec_id          = AV_CODEC_ID_H261,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -72,7 +72,7 @@ static av_always_inline void float_copy(float *dst, const float *src, int count)
     __asm__ volatile (
         ".set push                               \n\t"
         ".set noreorder                          \n\t"
-    "1:                                          \n\t"
+        "1:                                          \n\t"
         "lw      %[temp0],    0(%[src])          \n\t"
         "lw      %[temp1],    4(%[src])          \n\t"
         "lw      %[temp2],    8(%[src])          \n\t"
@@ -95,10 +95,10 @@ static av_always_inline void float_copy(float *dst, const float *src, int count)
         ".set pop                                \n\t"
 
         : [temp0]"=&r"(temp[0]), [temp1]"=&r"(temp[1]),
-          [temp2]"=&r"(temp[2]), [temp3]"=&r"(temp[3]),
-          [temp4]"=&r"(temp[4]), [temp5]"=&r"(temp[5]),
-          [temp6]"=&r"(temp[6]), [temp7]"=&r"(temp[7]),
-          [src]"+r"(src), [dst]"+r"(dst)
+        [temp2]"=&r"(temp[2]), [temp3]"=&r"(temp[3]),
+        [temp4]"=&r"(temp[4]), [temp5]"=&r"(temp[5]),
+        [temp6]"=&r"(temp[6]), [temp7]"=&r"(temp[7]),
+        [src]"+r"(src), [dst]"+r"(dst)
         : [loop_end]"r"(loop_end)
         : "memory"
     );
@@ -106,7 +106,11 @@ static av_always_inline void float_copy(float *dst, const float *src, int count)
 
 static av_always_inline int lcg_random(unsigned previous_val)
 {
-    union { unsigned u; int s; } v = { previous_val * 1664525u + 1013904223 };
+    union
+    {
+        unsigned u;
+        int s;
+    } v = { previous_val * 1664525u + 1013904223 };
     return v.s;
 }
 
@@ -122,10 +126,12 @@ static void imdct_and_windowing_mips(AACContext *ac, SingleChannelElement *sce)
     float *buf  = ac->buf_mdct;
     int i;
 
-    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE) {
+    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE)
+    {
         for (i = 0; i < 1024; i += 128)
             ac->mdct_small.imdct_half(&ac->mdct_small, buf + i, in + i);
-    } else
+    }
+    else
         ac->mdct.imdct_half(&ac->mdct, buf, in);
 
     /* window overlapping
@@ -135,12 +141,16 @@ static void imdct_and_windowing_mips(AACContext *ac, SingleChannelElement *sce)
      * with a little special sauce for EIGHT_SHORT_SEQUENCE.
      */
     if ((ics->window_sequence[1] == ONLY_LONG_SEQUENCE || ics->window_sequence[1] == LONG_STOP_SEQUENCE) &&
-            (ics->window_sequence[0] == ONLY_LONG_SEQUENCE || ics->window_sequence[0] == LONG_START_SEQUENCE)) {
+            (ics->window_sequence[0] == ONLY_LONG_SEQUENCE || ics->window_sequence[0] == LONG_START_SEQUENCE))
+    {
         ac->fdsp->vector_fmul_window(    out,               saved,            buf,         lwindow_prev, 512);
-    } else {
+    }
+    else
+    {
         float_copy(out, saved, 448);
 
-        if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE) {
+        if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE)
+        {
             {
                 float wi;
                 float wj;
@@ -202,22 +212,29 @@ static void imdct_and_windowing_mips(AACContext *ac, SingleChannelElement *sce)
                     dst2--;
                 }
             }
-        } else {
+        }
+        else
+        {
             ac->fdsp->vector_fmul_window(out + 448,         saved + 448,      buf,         swindow_prev, 64);
             float_copy(out + 576, buf + 64, 448);
         }
     }
 
     // buffer update
-    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE) {
+    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE)
+    {
         ac->fdsp->vector_fmul_window(saved + 64,  buf + 4*128 + 64, buf + 5*128, swindow, 64);
         ac->fdsp->vector_fmul_window(saved + 192, buf + 5*128 + 64, buf + 6*128, swindow, 64);
         ac->fdsp->vector_fmul_window(saved + 320, buf + 6*128 + 64, buf + 7*128, swindow, 64);
         float_copy(saved + 448, buf + 7*128 + 64, 64);
-    } else if (ics->window_sequence[0] == LONG_START_SEQUENCE) {
+    }
+    else if (ics->window_sequence[0] == LONG_START_SEQUENCE)
+    {
         float_copy(saved, buf + 512, 448);
         float_copy(saved + 448, buf + 7*128 + 64, 64);
-    } else { // LONG_STOP or ONLY_LONG
+    }
+    else     // LONG_STOP or ONLY_LONG
+    {
         float_copy(saved, buf + 512, 512);
     }
 }
@@ -229,7 +246,8 @@ static void apply_ltp_mips(AACContext *ac, SingleChannelElement *sce)
     int i, sfb;
     int j, k;
 
-    if (sce->ics.window_sequence[0] != EIGHT_SHORT_SEQUENCE) {
+    if (sce->ics.window_sequence[0] != EIGHT_SHORT_SEQUENCE)
+    {
         float *predTime = sce->ret;
         float *predFreq = ac->buf_mdct;
         float *p_predTime;
@@ -237,13 +255,14 @@ static void apply_ltp_mips(AACContext *ac, SingleChannelElement *sce)
 
         if (ltp->lag < 1024)
             num_samples = ltp->lag + 1024;
-            j = (2048 - num_samples) >> 2;
-            k = (2048 - num_samples) & 3;
-            p_predTime = &predTime[num_samples];
+        j = (2048 - num_samples) >> 2;
+        k = (2048 - num_samples) & 3;
+        p_predTime = &predTime[num_samples];
 
         for (i = 0; i < num_samples; i++)
             predTime[i] = sce->ltp_state[i + 2048 - ltp->lag] * ltp->coef;
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < j; i++)
+        {
 
             /* loop unrolled 4 times */
             __asm__ volatile (
@@ -258,7 +277,8 @@ static void apply_ltp_mips(AACContext *ac, SingleChannelElement *sce)
                 : "memory"
             );
         }
-        for (i = 0; i < k; i++) {
+        for (i = 0; i < k; i++)
+        {
 
             __asm__ volatile (
                 "sw      $0,              0(%[p_predTime])        \n\t"
@@ -295,7 +315,8 @@ static av_always_inline void fmul_and_reverse(float *dst, const float *src0, con
     src0 += count - 1;
     src1 += count - 1;
 
-    for (; count > 0; count -= 4){
+    for (; count > 0; count -= 4)
+    {
         float temp[12];
 
         /* loop unrolled 4 times */
@@ -321,12 +342,12 @@ static av_always_inline void fmul_and_reverse(float *dst, const float *src0, con
             PTR_ADDIU "%[ptr3],   %[ptr3],      -16         \n\t"
 
             : [temp0]"=&f"(temp[0]), [temp1]"=&f"(temp[1]),
-              [temp2]"=&f"(temp[2]), [temp3]"=&f"(temp[3]),
-              [temp4]"=&f"(temp[4]), [temp5]"=&f"(temp[5]),
-              [temp6]"=&f"(temp[6]), [temp7]"=&f"(temp[7]),
-              [temp8]"=&f"(temp[8]), [temp9]"=&f"(temp[9]),
-              [temp10]"=&f"(temp[10]), [temp11]"=&f"(temp[11]),
-              [ptr1]"+r"(dst), [ptr2]"+r"(src0), [ptr3]"+r"(src1)
+            [temp2]"=&f"(temp[2]), [temp3]"=&f"(temp[3]),
+            [temp4]"=&f"(temp[4]), [temp5]"=&f"(temp[5]),
+            [temp6]"=&f"(temp[6]), [temp7]"=&f"(temp[7]),
+            [temp8]"=&f"(temp[8]), [temp9]"=&f"(temp[9]),
+            [temp10]"=&f"(temp[10]), [temp11]"=&f"(temp[11]),
+            [ptr1]"+r"(dst), [ptr2]"+r"(src0), [ptr3]"+r"(src1)
             :
             : "memory"
         );
@@ -342,7 +363,8 @@ static void update_ltp_mips(AACContext *ac, SingleChannelElement *sce)
     const float *swindow = ics->use_kb_window[0] ? ff_aac_kbd_short_128 : ff_sine_128;
     float temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
 
-    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE) {
+    if (ics->window_sequence[0] == EIGHT_SHORT_SEQUENCE)
+    {
         float *p_saved_ltp = saved_ltp + 576;
         float *loop_end1 = p_saved_ltp + 448;
 
@@ -350,7 +372,7 @@ static void update_ltp_mips(AACContext *ac, SingleChannelElement *sce)
 
         /* loop unrolled 8 times */
         __asm__ volatile (
-        "1:                                                   \n\t"
+            "1:                                                   \n\t"
             "sw     $0,              0(%[p_saved_ltp])        \n\t"
             "sw     $0,              4(%[p_saved_ltp])        \n\t"
             "sw     $0,              8(%[p_saved_ltp])        \n\t"
@@ -369,7 +391,9 @@ static void update_ltp_mips(AACContext *ac, SingleChannelElement *sce)
 
         ac->fdsp->vector_fmul_reverse(saved_ltp + 448, ac->buf_mdct + 960,     &swindow[64],      64);
         fmul_and_reverse(saved_ltp + 512, ac->buf_mdct + 960, swindow, 64);
-    } else if (ics->window_sequence[0] == LONG_START_SEQUENCE) {
+    }
+    else if (ics->window_sequence[0] == LONG_START_SEQUENCE)
+    {
         float *buff0 = saved;
         float *buff1 = saved_ltp;
         float *loop_end = saved + 448;
@@ -378,7 +402,7 @@ static void update_ltp_mips(AACContext *ac, SingleChannelElement *sce)
         __asm__ volatile (
             ".set push                                  \n\t"
             ".set noreorder                             \n\t"
-        "1:                                             \n\t"
+            "1:                                             \n\t"
             "lw      %[temp0],    0(%[src])             \n\t"
             "lw      %[temp1],    4(%[src])             \n\t"
             "lw      %[temp2],    8(%[src])             \n\t"
@@ -409,16 +433,18 @@ static void update_ltp_mips(AACContext *ac, SingleChannelElement *sce)
             ".set pop                                   \n\t"
 
             : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-              [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-              [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
-              [src]"+r"(buff0), [dst]"+r"(buff1)
+            [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+            [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+            [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
+            [src]"+r"(buff0), [dst]"+r"(buff1)
             : [loop_end]"r"(loop_end)
             : "memory"
         );
         ac->fdsp->vector_fmul_reverse(saved_ltp + 448, ac->buf_mdct + 960,     &swindow[64],      64);
         fmul_and_reverse(saved_ltp + 512, ac->buf_mdct + 960, swindow, 64);
-    } else { // LONG_STOP or ONLY_LONG
+    }
+    else     // LONG_STOP or ONLY_LONG
+    {
         ac->fdsp->vector_fmul_reverse(saved_ltp,       ac->buf_mdct + 512,     &lwindow[512],     512);
         fmul_and_reverse(saved_ltp + 512, ac->buf_mdct + 512, lwindow, 512);
     }

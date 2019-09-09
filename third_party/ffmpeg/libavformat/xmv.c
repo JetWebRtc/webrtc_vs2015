@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft XMV demuxer
  * Copyright (c) 2011 Sven Hesse <drmccoy@drmccoy.de>
  * Copyright (c) 2011 Matthew Hoops <clone2727@gmail.com>
@@ -52,7 +52,8 @@
 #define XMV_BLOCK_ALIGN_SIZE 36
 
 /** A video packet with an XMV file. */
-typedef struct XMVVideoPacket {
+typedef struct XMVVideoPacket
+{
     int stream_index; ///< The decoder stream index for this video packet.
 
     uint32_t data_size;   ///< The size of the remaining video data.
@@ -69,7 +70,8 @@ typedef struct XMVVideoPacket {
 } XMVVideoPacket;
 
 /** An audio packet with an XMV file. */
-typedef struct XMVAudioPacket {
+typedef struct XMVAudioPacket
+{
     int stream_index; ///< The decoder stream index for this audio packet.
 
     /* Stream format properties. */
@@ -93,7 +95,8 @@ typedef struct XMVAudioPacket {
 } XMVAudioPacket;
 
 /** Context for demuxing an XMV file. */
-typedef struct XMVDemuxContext {
+typedef struct XMVDemuxContext
+{
     uint16_t audio_track_count; ///< Number of audio track in this file.
 
     uint32_t this_packet_size; ///< Size of the current packet.
@@ -183,12 +186,14 @@ static int xmv_read_header(AVFormatContext *s)
     avio_skip(pb, 2); /* Unknown (padding?) */
 
     xmv->audio = av_malloc_array(xmv->audio_track_count, sizeof(XMVAudioPacket));
-    if (!xmv->audio) {
+    if (!xmv->audio)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++) {
+    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++)
+    {
         XMVAudioPacket *packet = &xmv->audio[audio_track];
         AVStream *ast = NULL;
 
@@ -204,7 +209,7 @@ static int xmv_read_header(AVFormatContext *s)
         packet->block_align   = XMV_BLOCK_ALIGN_SIZE * packet->channels;
         packet->block_samples = 64;
         packet->codec_id      = ff_wav_codec_get_id(packet->compression,
-                                                    packet->bits_per_sample);
+                                packet->bits_per_sample);
 
         packet->stream_index = -1;
 
@@ -215,10 +220,11 @@ static int xmv_read_header(AVFormatContext *s)
          *       Those need to be interleaved to a proper 5.1 stream. */
         if (packet->flags & XMV_AUDIO_ADPCM51)
             av_log(s, AV_LOG_WARNING, "Unsupported 5.1 ADPCM audio stream "
-                                      "(0x%04X)\n", packet->flags);
+                   "(0x%04X)\n", packet->flags);
 
         if (!packet->channels || !packet->sample_rate ||
-             packet->channels >= UINT16_MAX / XMV_BLOCK_ALIGN_SIZE) {
+                packet->channels >= UINT16_MAX / XMV_BLOCK_ALIGN_SIZE)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid parameters for audio track %"PRIu16".\n",
                    audio_track);
             ret = AVERROR_INVALIDDATA;
@@ -226,7 +232,8 @@ static int xmv_read_header(AVFormatContext *s)
         }
 
         ast = avformat_new_stream(s, NULL);
-        if (!ast) {
+        if (!ast)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -327,14 +334,16 @@ static int xmv_process_packet_header(AVFormatContext *s)
     xmv->video.data_size -= xmv->audio_track_count * 4;
 
     xmv->current_stream = 0;
-    if (!xmv->video.frame_count) {
+    if (!xmv->video.frame_count)
+    {
         xmv->video.frame_count = 1;
         xmv->current_stream    = xmv->stream_count > 1;
     }
 
     /* Packet audio header */
 
-    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++) {
+    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++)
+    {
         XMVAudioPacket *packet = &xmv->audio[audio_track];
 
         if (avio_read(pb, data, 4) != 4)
@@ -361,7 +370,8 @@ static int xmv_process_packet_header(AVFormatContext *s)
     xmv->video.data_offset = data_offset;
     data_offset += xmv->video.data_size;
 
-    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++) {
+    for (audio_track = 0; audio_track < xmv->audio_track_count; audio_track++)
+    {
         xmv->audio[audio_track].data_offset = data_offset;
         data_offset += xmv->audio[audio_track].data_size;
     }
@@ -369,19 +379,23 @@ static int xmv_process_packet_header(AVFormatContext *s)
     /* Video frames header */
 
     /* Read new video extra data */
-    if (xmv->video.data_size > 0) {
-        if (xmv->video.has_extradata) {
+    if (xmv->video.data_size > 0)
+    {
+        if (xmv->video.has_extradata)
+        {
             xmv_read_extradata(xmv->video.extradata, pb);
 
             xmv->video.data_size   -= 4;
             xmv->video.data_offset += 4;
 
-            if (xmv->video.stream_index >= 0) {
+            if (xmv->video.stream_index >= 0)
+            {
                 AVStream *vst = s->streams[xmv->video.stream_index];
 
                 av_assert0(xmv->video.stream_index < s->nb_streams);
 
-                if (vst->codec->extradata_size < 4) {
+                if (vst->codec->extradata_size < 4)
+                {
                     av_freep(&vst->codec->extradata);
 
                     if ((ret = ff_alloc_extradata(vst->codec, 4)) < 0)
@@ -537,7 +551,8 @@ static int xmv_read_packet(AVFormatContext *s,
     XMVDemuxContext *xmv = s->priv_data;
     int result;
 
-    if (xmv->video.current_frame == xmv->video.frame_count) {
+    if (xmv->video.current_frame == xmv->video.frame_count)
+    {
         /* No frames left in this packet, so we fetch a new one */
 
         result = xmv_fetch_new_packet(s);
@@ -545,14 +560,17 @@ static int xmv_read_packet(AVFormatContext *s,
             return result;
     }
 
-    if (xmv->current_stream == 0) {
+    if (xmv->current_stream == 0)
+    {
         /* Fetch a video frame */
 
         result = xmv_fetch_video_packet(s, pkt);
         if (result)
             return result;
 
-    } else {
+    }
+    else
+    {
         /* Fetch an audio frame */
 
         result = xmv_fetch_audio_packet(s, pkt, xmv->current_stream - 1);
@@ -561,7 +579,8 @@ static int xmv_read_packet(AVFormatContext *s,
     }
 
     /* Increase our counters */
-    if (++xmv->current_stream >= xmv->stream_count) {
+    if (++xmv->current_stream >= xmv->stream_count)
+    {
         xmv->current_stream       = 0;
         xmv->video.current_frame += 1;
     }
@@ -569,7 +588,8 @@ static int xmv_read_packet(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_xmv_demuxer = {
+AVInputFormat ff_xmv_demuxer =
+{
     .name           = "xmv",
     .long_name      = NULL_IF_CONFIG_SMALL("Microsoft XMV"),
     .priv_data_size = sizeof(XMVDemuxContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001-2003 The FFmpeg Project
  *
  * This file is part of FFmpeg.

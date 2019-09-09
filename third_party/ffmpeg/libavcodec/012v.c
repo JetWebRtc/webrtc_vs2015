@@ -1,4 +1,4 @@
-/*
+﻿/*
  * 012v decoder
  *
  * Copyright (C) 2012 Carl Eugen Hoyos
@@ -45,17 +45,19 @@ static int zero12v_decode_frame(AVCodecContext *avctx, void *data,
     const uint8_t *line_end, *src = avpkt->data;
     int stride = avctx->width * 8 / 3;
 
-    if (width <= 1 || avctx->height <= 0) {
+    if (width <= 1 || avctx->height <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Dimensions %dx%d not supported.\n", width, avctx->height);
         return AVERROR_INVALIDDATA;
     }
 
     if (   avctx->codec_tag == MKTAG('0', '1', '2', 'v')
-        && avpkt->size % avctx->height == 0
-        && avpkt->size / avctx->height * 3 >= width * 8)
+            && avpkt->size % avctx->height == 0
+            && avpkt->size / avctx->height * 3 >= width * 8)
         stride = avpkt->size / avctx->height;
 
-    if (avpkt->size < avctx->height * stride) {
+    if (avpkt->size < avctx->height * stride)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet too small: %d instead of %d\n",
                avpkt->size, avctx->height * stride);
         return AVERROR_INVALIDDATA;
@@ -68,7 +70,8 @@ static int zero12v_decode_frame(AVCodecContext *avctx, void *data,
     pic->key_frame = 1;
 
     line_end = avpkt->data + stride;
-    for (line = 0; line < avctx->height; line++) {
+    for (line = 0; line < avctx->height; line++)
+    {
         uint16_t y_temp[6] = {0x8000, 0x8000, 0x8000, 0x8000, 0x8000, 0x8000};
         uint16_t u_temp[3] = {0x8000, 0x8000, 0x8000};
         uint16_t v_temp[3] = {0x8000, 0x8000, 0x8000};
@@ -77,10 +80,12 @@ static int zero12v_decode_frame(AVCodecContext *avctx, void *data,
         u = (uint16_t *)(pic->data[1] + line * pic->linesize[1]);
         v = (uint16_t *)(pic->data[2] + line * pic->linesize[2]);
 
-        for (x = 0; x < width; x += 6) {
+        for (x = 0; x < width; x += 6)
+        {
             uint32_t t;
 
-            if (width - x < 6 || line_end - src < 16) {
+            if (width - x < 6 || line_end - src < 16)
+            {
                 y = y_temp;
                 u = u_temp;
                 v = v_temp;
@@ -126,7 +131,8 @@ static int zero12v_decode_frame(AVCodecContext *avctx, void *data,
                 break;
         }
 
-        if (x < width) {
+        if (x < width)
+        {
             y = x   + (uint16_t *)(pic->data[0] + line * pic->linesize[0]);
             u = x/2 + (uint16_t *)(pic->data[1] + line * pic->linesize[1]);
             v = x/2 + (uint16_t *)(pic->data[2] + line * pic->linesize[2]);
@@ -144,7 +150,8 @@ static int zero12v_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_zero12v_decoder = {
+AVCodec ff_zero12v_decoder =
+{
     .name           = "012v",
     .long_name      = NULL_IF_CONFIG_SMALL("Uncompressed 4:2:2 10-bit"),
     .type           = AVMEDIA_TYPE_VIDEO,

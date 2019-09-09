@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Sbr decoder  
+  \brief  Sbr decoder
 */
 #ifndef __SBR_DEC_H
 #define __SBR_DEC_H
@@ -102,38 +102,38 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  QMF_FILTER_BANK     AnalysiscQMF;
-  QMF_FILTER_BANK     SynthesisQMF;
+    QMF_FILTER_BANK     AnalysiscQMF;
+    QMF_FILTER_BANK     SynthesisQMF;
 
-  SBR_CALCULATE_ENVELOPE  SbrCalculateEnvelope;
-  SBR_LPP_TRANS           LppTrans;
+    SBR_CALCULATE_ENVELOPE  SbrCalculateEnvelope;
+    SBR_LPP_TRANS           LppTrans;
 
-  QMF_SCALE_FACTOR sbrScaleFactor;
-  QMF_SCALE_FACTOR sbrScaleFactorRight;
+    QMF_SCALE_FACTOR sbrScaleFactor;
+    QMF_SCALE_FACTOR sbrScaleFactorRight;
 
-  /*! Delayed spectral data needed for the dynamic framing of SBR. Not required in case of CLDFB */
-  FIXP_DBL * pSbrOverlapBuffer;
+    /*! Delayed spectral data needed for the dynamic framing of SBR. Not required in case of CLDFB */
+    FIXP_DBL * pSbrOverlapBuffer;
 
-  /* References to workbuffers */
-  FIXP_DBL * WorkBuffer1;
-  FIXP_DBL * WorkBuffer2;
+    /* References to workbuffers */
+    FIXP_DBL * WorkBuffer1;
+    FIXP_DBL * WorkBuffer2;
 
-  /* Delayed time input signal needed to align CLDFD with LD-MPS QMF. */
-  INT_PCM    coreDelayBuf[(96)];
+    /* Delayed time input signal needed to align CLDFD with LD-MPS QMF. */
+    INT_PCM    coreDelayBuf[(96)];
 
-  /* QMF filter states */
-  FIXP_QAS   anaQmfStates[(320)];
-  FIXP_QSS * pSynQmfStates;
+    /* QMF filter states */
+    FIXP_QAS   anaQmfStates[(320)];
+    FIXP_QSS * pSynQmfStates;
 
-  /* Reference pointer arrays for QMF time slots,
-     mixed among overlap and current slots. */
-  FIXP_DBL * QmfBufferReal[(((1024)/(32))+(6))];
-  FIXP_DBL * QmfBufferImag[(((1024)/(32))+(6))];
-  int useLP;
+    /* Reference pointer arrays for QMF time slots,
+       mixed among overlap and current slots. */
+    FIXP_DBL * QmfBufferReal[(((1024)/(32))+(6))];
+    FIXP_DBL * QmfBufferImag[(((1024)/(32))+(6))];
+    int useLP;
 
-  /* QMF domain extension time slot reference pointer array */
+    /* QMF domain extension time slot reference pointer array */
 
-  SBRDEC_DRC_CHANNEL  sbrDrcChannel;
+    SBRDEC_DRC_CHANNEL  sbrDrcChannel;
 
 } SBR_DEC;
 
@@ -142,9 +142,9 @@ typedef SBR_DEC *HANDLE_SBR_DEC;
 
 typedef struct
 {
-  SBR_FRAME_DATA      frameData[(1)+1];
-  SBR_PREV_FRAME_DATA prevFrameData;
-  SBR_DEC SbrDec;
+    SBR_FRAME_DATA      frameData[(1)+1];
+    SBR_PREV_FRAME_DATA prevFrameData;
+    SBR_DEC SbrDec;
 }
 SBR_CHANNEL;
 
@@ -159,7 +159,7 @@ SbrDecodeAndProcess (HANDLE_SBR_DEC hSbrDec,
                      int applyProcessing,
                      int channelNr
                      , UCHAR useLP
-                     );
+                    );
 
 
 void
@@ -168,8 +168,8 @@ SbrConstructTimeOutput (HANDLE_SBR_DEC hSbrDec,            /*!< handle to Decode
                         HANDLE_SBR_HEADER_DATA hHeaderData,/*!< Static control data */
                         HANDLE_SBR_PREV_FRAME_DATA hPrevFrameData,  /*!< Some control data of last frame */
                         int channelNr
-                       ,UCHAR useLP
-                        );
+                        ,UCHAR useLP
+                       );
 
 
 void

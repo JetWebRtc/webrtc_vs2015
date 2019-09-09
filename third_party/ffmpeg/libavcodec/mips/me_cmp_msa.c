@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (Parag.Salasakar@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@ static uint32_t sad_8width_msa(uint8_t *src, int32_t src_stride,
     v16u8 src0, src1, src2, src3, ref0, ref1, ref2, ref3;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB4(ref, ref_stride, ref0, ref1, ref2, ref3);
@@ -51,7 +52,8 @@ static uint32_t sad_16width_msa(uint8_t *src, int32_t src_stride,
     v16u8 src0, src1, ref0, ref1;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         LD_UB2(src, src_stride, src0, src1);
         src += (2 * src_stride);
         LD_UB2(ref, ref_stride, ref0, ref1);
@@ -69,17 +71,18 @@ static uint32_t sad_16width_msa(uint8_t *src, int32_t src_stride,
 }
 
 static uint32_t sad_horiz_bilinear_filter_8width_msa(uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *ref,
-                                                     int32_t ref_stride,
-                                                     int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, comp0, comp1;
     v16u8 ref0, ref1, ref2, ref3, ref4, ref5;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 3); ht_cnt--;) {
+    for (ht_cnt = (height >> 3); ht_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB4(ref, ref_stride, ref0, ref1, ref2, ref3);
@@ -111,17 +114,18 @@ static uint32_t sad_horiz_bilinear_filter_8width_msa(uint8_t *src,
 }
 
 static uint32_t sad_horiz_bilinear_filter_16width_msa(uint8_t *src,
-                                                      int32_t src_stride,
-                                                      uint8_t *ref,
-                                                      int32_t ref_stride,
-                                                      int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, comp0, comp1;
     v16u8 ref00, ref10, ref20, ref30, ref01, ref11, ref21, ref31;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 3); ht_cnt--;) {
+    for (ht_cnt = (height >> 3); ht_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB4(ref, ref_stride, ref00, ref10, ref20, ref30);
@@ -149,17 +153,18 @@ static uint32_t sad_horiz_bilinear_filter_16width_msa(uint8_t *src,
 }
 
 static uint32_t sad_vert_bilinear_filter_8width_msa(uint8_t *src,
-                                                    int32_t src_stride,
-                                                    uint8_t *ref,
-                                                    int32_t ref_stride,
-                                                    int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, comp0, comp1;
     v16u8 ref0, ref1, ref2, ref3, ref4;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 3); ht_cnt--;) {
+    for (ht_cnt = (height >> 3); ht_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB5(ref, ref_stride, ref0, ref1, ref2, ref3, ref4);
@@ -187,17 +192,18 @@ static uint32_t sad_vert_bilinear_filter_8width_msa(uint8_t *src,
 }
 
 static uint32_t sad_vert_bilinear_filter_16width_msa(uint8_t *src,
-                                                     int32_t src_stride,
-                                                     uint8_t *ref,
-                                                     int32_t ref_stride,
-                                                     int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, comp0, comp1;
     v16u8 ref0, ref1, ref2, ref3, ref4;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 3); ht_cnt--;) {
+    for (ht_cnt = (height >> 3); ht_cnt--;)
+    {
         LD_UB5(ref, ref_stride, ref4, ref0, ref1, ref2, ref3);
         ref += (5 * ref_stride);
         LD_UB4(src, src_stride, src0, src1, src2, src3);
@@ -225,10 +231,10 @@ static uint32_t sad_vert_bilinear_filter_16width_msa(uint8_t *src,
 }
 
 static uint32_t sad_hv_bilinear_filter_8width_msa(uint8_t *src,
-                                                  int32_t src_stride,
-                                                  uint8_t *ref,
-                                                  int32_t ref_stride,
-                                                  int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, temp0, temp1, diff;
@@ -237,7 +243,8 @@ static uint32_t sad_hv_bilinear_filter_8width_msa(uint8_t *src,
     v8u16 comp0, comp1, comp2, comp3;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         LD_UB5(ref, ref_stride, ref4, ref0, ref1, ref2, ref3);
         ref += (4 * ref_stride);
         LD_UB4(src, src_stride, src0, src1, src2, src3);
@@ -281,10 +288,10 @@ static uint32_t sad_hv_bilinear_filter_8width_msa(uint8_t *src,
 }
 
 static uint32_t sad_hv_bilinear_filter_16width_msa(uint8_t *src,
-                                                   int32_t src_stride,
-                                                   uint8_t *ref,
-                                                   int32_t ref_stride,
-                                                   int32_t height)
+        int32_t src_stride,
+        uint8_t *ref,
+        int32_t ref_stride,
+        int32_t height)
 {
     int32_t ht_cnt;
     v16u8 src0, src1, src2, src3, comp, diff;
@@ -293,7 +300,8 @@ static uint32_t sad_hv_bilinear_filter_16width_msa(uint8_t *src,
     v8u16 comp0, comp1, comp2, comp3;
     v8u16 sad = { 0 };
 
-    for (ht_cnt = (height >> 3); ht_cnt--;) {
+    for (ht_cnt = (height >> 3); ht_cnt--;)
+    {
         LD_UB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
         LD_UB5(ref, ref_stride, ref04, ref00, ref01, ref02, ref03);
@@ -415,7 +423,8 @@ static uint32_t sse_4width_msa(uint8_t *src_ptr, int32_t src_stride,
     v16u8 ref = { 0 };
     v4i32 var = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         LW4(src_ptr, src_stride, src0, src1, src2, src3);
         src_ptr += (4 * src_stride);
         LW4(ref_ptr, ref_stride, ref0, ref1, ref2, ref3);
@@ -441,7 +450,8 @@ static uint32_t sse_8width_msa(uint8_t *src_ptr, int32_t src_stride,
     v16u8 ref0, ref1, ref2, ref3;
     v4i32 var = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         LD_UB4(src_ptr, src_stride, src0, src1, src2, src3);
         src_ptr += (4 * src_stride);
         LD_UB4(ref_ptr, ref_stride, ref0, ref1, ref2, ref3);
@@ -467,7 +477,8 @@ static uint32_t sse_16width_msa(uint8_t *src_ptr, int32_t src_stride,
     v16u8 src, ref;
     v4i32 var = { 0 };
 
-    for (ht_cnt = (height >> 2); ht_cnt--;) {
+    for (ht_cnt = (height >> 2); ht_cnt--;)
+    {
         src = LD_UB(src_ptr);
         src_ptr += src_stride;
         ref = LD_UB(ref_ptr);

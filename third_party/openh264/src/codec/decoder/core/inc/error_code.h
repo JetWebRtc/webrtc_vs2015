@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -40,9 +40,11 @@
 #ifndef WELS_ERROR_CODE_H__
 #define WELS_ERROR_CODE_H__
 
-namespace WelsDec {
+namespace WelsDec
+{
 
-typedef enum TagWelsErr {
+typedef enum TagWelsErr
+{
 ERR_NONE                = 0,
 ERR_INVALID_PARAMETERS  = 1,
 ERR_MALLOC_FAILED       = 2,
@@ -61,7 +63,8 @@ ERR_BOUND               = 31
 
 /* ERR_LEVEL */
 //-----------------------------------------------------------------------------------------------------------
-enum {
+enum
+{
 ERR_LEVEL_ACCESS_UNIT = 1,
 ERR_LEVEL_NAL_UNIT_HEADER,
 ERR_LEVEL_PREFIX_NAL,
@@ -78,7 +81,8 @@ ERR_LEVEL_MB_DATA
 #define ERR_INFO_COMMON_BASE        1
 #define ERR_INFO_SYNTAX_BASE        1001
 #define ERR_INFO_LOGIC_BASE         10001
-enum {
+enum
+{
 /* Error from common system level: 1-1000 */
 ERR_INFO_OUT_OF_MEMORY      = ERR_INFO_COMMON_BASE,
 ERR_INFO_INVALID_ACCESS,

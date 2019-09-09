@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H263 internal header
  *
  * This file is part of FFmpeg.
@@ -54,8 +54,8 @@ int ff_h263_decode_motion(MpegEncContext * s, int pred, int f_code);
 av_const int ff_h263_aspect_to_info(AVRational aspect);
 int ff_h263_decode_init(AVCodecContext *avctx);
 int ff_h263_decode_frame(AVCodecContext *avctx,
-                             void *data, int *got_frame,
-                             AVPacket *avpkt);
+                         void *data, int *got_frame,
+                         AVPacket *avpkt);
 int ff_h263_decode_end(AVCodecContext *avctx);
 void ff_h263_encode_mb(MpegEncContext *s,
                        int16_t block[6][64],
@@ -98,12 +98,16 @@ int ff_h263_resync(MpegEncContext *s);
 void ff_h263_encode_motion(PutBitContext *pb, int val, int f_code);
 
 
-static inline int h263_get_motion_length(int val, int f_code){
+static inline int h263_get_motion_length(int val, int f_code)
+{
     int l, bit_size, code;
 
-    if (val == 0) {
+    if (val == 0)
+    {
         return ff_mvtab[0][1];
-    } else {
+    }
+    else
+    {
         bit_size = f_code - 1;
         /* modulo encoding */
         l= INT_BIT - 6 - bit_size;
@@ -115,67 +119,83 @@ static inline int h263_get_motion_length(int val, int f_code){
     }
 }
 
-static inline void ff_h263_encode_motion_vector(MpegEncContext * s, int x, int y, int f_code){
-    if (s->avctx->flags2 & AV_CODEC_FLAG2_NO_OUTPUT) {
+static inline void ff_h263_encode_motion_vector(MpegEncContext * s, int x, int y, int f_code)
+{
+    if (s->avctx->flags2 & AV_CODEC_FLAG2_NO_OUTPUT)
+    {
         skip_put_bits(&s->pb,
-            h263_get_motion_length(x, f_code)
-           +h263_get_motion_length(y, f_code));
-    }else{
+                      h263_get_motion_length(x, f_code)
+                      +h263_get_motion_length(y, f_code));
+    }
+    else
+    {
         ff_h263_encode_motion(&s->pb, x, f_code);
         ff_h263_encode_motion(&s->pb, y, f_code);
     }
 }
 
 static inline int get_p_cbp(MpegEncContext * s,
-                      int16_t block[6][64],
-                      int motion_x, int motion_y){
+                            int16_t block[6][64],
+                            int motion_x, int motion_y)
+{
     int cbp, i;
 
-    if (s->mpv_flags & FF_MPV_FLAG_CBP_RD) {
+    if (s->mpv_flags & FF_MPV_FLAG_CBP_RD)
+    {
         int best_cbpy_score= INT_MAX;
         int best_cbpc_score= INT_MAX;
         int cbpc = (-1), cbpy= (-1);
         const int offset= (s->mv_type==MV_TYPE_16X16 ? 0 : 16) + (s->dquant ? 8 : 0);
         const int lambda= s->lambda2 >> (FF_LAMBDA_SHIFT - 6);
 
-        for(i=0; i<4; i++){
+        for(i=0; i<4; i++)
+        {
             int score= ff_h263_inter_MCBPC_bits[i + offset] * lambda;
             if(i&1) score += s->coded_score[5];
             if(i&2) score += s->coded_score[4];
 
-            if(score < best_cbpc_score){
+            if(score < best_cbpc_score)
+            {
                 best_cbpc_score= score;
                 cbpc= i;
             }
         }
 
-        for(i=0; i<16; i++){
+        for(i=0; i<16; i++)
+        {
             int score= ff_h263_cbpy_tab[i ^ 0xF][1] * lambda;
             if(i&1) score += s->coded_score[3];
             if(i&2) score += s->coded_score[2];
             if(i&4) score += s->coded_score[1];
             if(i&8) score += s->coded_score[0];
 
-            if(score < best_cbpy_score){
+            if(score < best_cbpy_score)
+            {
                 best_cbpy_score= score;
                 cbpy= i;
             }
         }
         cbp= cbpc + 4*cbpy;
-        if ((motion_x | motion_y | s->dquant) == 0 && s->mv_type==MV_TYPE_16X16){
+        if ((motion_x | motion_y | s->dquant) == 0 && s->mv_type==MV_TYPE_16X16)
+        {
             if(best_cbpy_score + best_cbpc_score + 2*lambda >= 0)
                 cbp= 0;
         }
 
-        for (i = 0; i < 6; i++) {
-            if (s->block_last_index[i] >= 0 && ((cbp >> (5 - i))&1)==0 ){
+        for (i = 0; i < 6; i++)
+        {
+            if (s->block_last_index[i] >= 0 && ((cbp >> (5 - i))&1)==0 )
+            {
                 s->block_last_index[i]= -1;
                 s->bdsp.clear_block(s->block[i]);
             }
         }
-    }else{
+    }
+    else
+    {
         cbp= 0;
-        for (i = 0; i < 6; i++) {
+        for (i = 0; i < 6; i++)
+        {
             if (s->block_last_index[i] >= 0)
                 cbp |= 1 << (5 - i);
         }

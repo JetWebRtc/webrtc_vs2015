@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Linux audio grab interface
  * Copyright (c) 2000, 2001 Fabrice Bellard
  *
@@ -52,9 +52,12 @@ static int audio_write_header(AVFormatContext *s1)
     s->sample_rate = st->codec->sample_rate;
     s->channels = st->codec->channels;
     ret = ff_oss_audio_open(s1, 1, s1->filename);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         return AVERROR(EIO);
-    } else {
+    }
+    else
+    {
         return 0;
     }
 }
@@ -66,12 +69,15 @@ static int audio_write_packet(AVFormatContext *s1, AVPacket *pkt)
     int size= pkt->size;
     uint8_t *buf= pkt->data;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         len = FFMIN(OSS_AUDIO_BLOCK_SIZE - s->buffer_ptr, size);
         memcpy(s->buffer + s->buffer_ptr, buf, len);
         s->buffer_ptr += len;
-        if (s->buffer_ptr >= OSS_AUDIO_BLOCK_SIZE) {
-            for(;;) {
+        if (s->buffer_ptr >= OSS_AUDIO_BLOCK_SIZE)
+        {
+            for(;;)
+            {
                 ret = write(s->fd, s->buffer, OSS_AUDIO_BLOCK_SIZE);
                 if (ret > 0)
                     break;
@@ -94,14 +100,16 @@ static int audio_write_trailer(AVFormatContext *s1)
     return 0;
 }
 
-static const AVClass oss_muxer_class = {
+static const AVClass oss_muxer_class =
+{
     .class_name     = "OSS muxer",
     .item_name      = av_default_item_name,
     .version        = LIBAVUTIL_VERSION_INT,
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
 };
 
-AVOutputFormat ff_oss_muxer = {
+AVOutputFormat ff_oss_muxer =
+{
     .name           = "oss",
     .long_name      = NULL_IF_CONFIG_SMALL("OSS (Open Sound System) playback"),
     .priv_data_size = sizeof(OSSAudioData),

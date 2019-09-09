@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCMetricsSampleInfo ()
 
-/** Initialize an RTCMetricsSampleInfo object from native SampleInfo. */
+    /** Initialize an RTCMetricsSampleInfo object from native SampleInfo. */
 - (instancetype)initWithNativeSampleInfo:
     (const webrtc::metrics::SampleInfo &)info;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,8 +22,10 @@
 #include <inttypes.h>
 
 
-static const uint16_t x8_orient_lowquant_table[4][12][2]={
-    {//0
+static const uint16_t x8_orient_lowquant_table[4][12][2]=
+{
+    {
+        //0
         {0x0000,  1}, {0x0004,  3}, {0x0005,  3}, {0x000C,  4},
         {0x000D,  4}, {0x0038,  6}, {0x001D,  5}, {0x0039,  6},
         {0x003C,  6}, {0x003D,  6}, {0x003E,  6}, {0x003F,  6},
@@ -42,8 +44,10 @@ static const uint16_t x8_orient_lowquant_table[4][12][2]={
     }
 };
 
-static const uint16_t x8_orient_highquant_table[2][12][2]={
-    {//0
+static const uint16_t x8_orient_highquant_table[2][12][2]=
+{
+    {
+        //0
         {0x0000,  2}, {0x0001,  2}, {0x0004,  3}, {0x0005,  3},
         {0x0006,  3}, {0x0038,  6}, {0x001D,  5}, {0x0039,  6},
         {0x003C,  6}, {0x003D,  6}, {0x003E,  6}, {0x003F,  6},
@@ -56,8 +60,10 @@ static const uint16_t x8_orient_highquant_table[2][12][2]={
 #define MAX_OR_VLC_BITS 7
 
 
-static const uint16_t x8_dc_lowquant_table[8][34][2]={
-    {//0
+static const uint16_t x8_dc_lowquant_table[8][34][2]=
+{
+    {
+        //0
         {0x0000,  5}, {0x0001,  4}, {0x0001,  5}, {0x0004,  5},
         {0x0005,  5}, {0x0006,  5}, {0x000E,  6}, {0x000F,  6},
         {0x0040,  8}, {0x0041,  8}, {0x0840, 13}, {0x0841, 13},
@@ -140,8 +146,10 @@ static const uint16_t x8_dc_lowquant_table[8][34][2]={
     }
 };
 
-static const uint16_t x8_dc_highquant_table[8][34][2]={
-    {//0
+static const uint16_t x8_dc_highquant_table[8][34][2]=
+{
+    {
+        //0
         {0x0000,  5}, {0x0001,  4}, {0x0002,  4}, {0x0001,  5},
         {0x0006,  5}, {0x0004,  4}, {0x0007,  5}, {0x000A,  5},
         {0x002C,  7}, {0x002D,  7}, {0x05C0, 12}, {0x05C1, 12},
@@ -226,8 +234,10 @@ static const uint16_t x8_dc_highquant_table[8][34][2]={
 #define MAX_DC_VLC_BITS 14
 
 
-static const uint16_t x8_ac0_lowquant_table[8][77][2]={
-    {//0
+static const uint16_t x8_ac0_lowquant_table[8][77][2]=
+{
+    {
+        //0
         {0x0000,  2}, {0x0002,  3}, {0x0006,  4}, {0x000E,  5},
         {0x001E,  6}, {0x003E,  7}, {0x003F,  7}, {0x0040,  7},
         {0x0104,  9}, {0x0083,  8}, {0x0084,  8}, {0x0085,  8},
@@ -398,8 +408,10 @@ static const uint16_t x8_ac0_lowquant_table[8][77][2]={
     }
 };
 
-static const uint16_t x8_ac0_highquant_table[8][77][2]={
-    {//0
+static const uint16_t x8_ac0_highquant_table[8][77][2]=
+{
+    {
+        //0
         {0x0000,  3}, {0x0002,  4}, {0x000C,  6}, {0x000D,  6},
         {0x001C,  7}, {0x000F,  6}, {0x1D00, 15}, {0x003B,  8},
         {0x1D01, 15}, {0x0075,  9}, {0x1D02, 15}, {0x0080,  9},
@@ -570,8 +582,10 @@ static const uint16_t x8_ac0_highquant_table[8][77][2]={
     }
 };
 
-static const uint16_t x8_ac1_lowquant_table[8][77][2]={
-    {//0
+static const uint16_t x8_ac1_lowquant_table[8][77][2]=
+{
+    {
+        //0
         {0x0000,  3}, {0x0002,  4}, {0x0003,  4}, {0x0008,  5},
         {0x0012,  6}, {0x0026,  7}, {0x0014,  6}, {0x004E,  8},
         {0x004F,  8}, {0x00A8,  9}, {0x0152, 10}, {0x00AA,  9},
@@ -742,8 +756,10 @@ static const uint16_t x8_ac1_lowquant_table[8][77][2]={
     }
 };
 
-static const uint16_t x8_ac1_highquant_table[8][77][2]={
-    {//0
+static const uint16_t x8_ac1_highquant_table[8][77][2]=
+{
+    {
+        //0
         {0x0000,  3}, {0x0002,  4}, {0x0006,  5}, {0x0007,  5},
         {0x0008,  5}, {0x0009,  5}, {0x0014,  6}, {0x002A,  7},
         {0x0016,  6}, {0x002B,  7}, {0x005C,  8}, {0x002F,  7},

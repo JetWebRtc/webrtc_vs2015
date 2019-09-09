@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -102,7 +102,8 @@ static void wmv2_idct_add_c(uint8_t *dest, int line_size, int16_t *block)
     for (i = 0; i < 8; i++)
         wmv2_idct_col(block + i);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + block[0]);
         dest[1] = av_clip_uint8(dest[1] + block[1]);
         dest[2] = av_clip_uint8(dest[2] + block[2]);
@@ -125,7 +126,8 @@ static void wmv2_idct_put_c(uint8_t *dest, int line_size, int16_t *block)
     for (i = 0; i < 8; i++)
         wmv2_idct_col(block + i);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dest[0] = av_clip_uint8(block[0]);
         dest[1] = av_clip_uint8(block[1]);
         dest[2] = av_clip_uint8(block[2]);
@@ -145,7 +147,8 @@ static void wmv2_mspel8_h_lowpass(uint8_t *dst, const uint8_t *src,
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int i;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = cm[(9 * (src[0] + src[1]) - (src[-1] + src[2]) + 8) >> 4];
         dst[1] = cm[(9 * (src[1] + src[2]) - (src[0]  + src[3]) + 8) >> 4];
         dst[2] = cm[(9 * (src[2] + src[3]) - (src[1]  + src[4]) + 8) >> 4];
@@ -165,7 +168,8 @@ static void wmv2_mspel8_v_lowpass(uint8_t *dst, const uint8_t *src,
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int i;
 
-    for (i = 0; i < w; i++) {
+    for (i = 0; i < w; i++)
+    {
         const int src_1 = src[-srcStride];
         const int src0  = src[0];
         const int src1  = src[srcStride];

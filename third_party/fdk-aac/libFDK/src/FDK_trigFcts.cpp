@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -102,30 +102,30 @@ amm-info@iis.fraunhofer.de
 #if IMPROVE_ATAN2_ACCURACY
 static const FIXP_DBL f_atan_expand_range[MAXSFTAB-(MINSFTAB-1)]  =
 {
-  /*****************************************************************************
-   *
-   *  Table holds fixp_atan() output values which are outside of input range
-   *  of fixp_atan() to improve SNR of fixp_atan2().
-   *
-   *  This Table might also be used in fixp_atan() [todo] so there a wider input
-   *  range can be covered, too.
-   *
-   *  Matlab (generate table):
-   *    for scl = 7:25            % MINSFTAB .. MAXSFTAB
-   *      at=atan(0.5 *(2^scl));  % 0.5 because get in 'middle' area of current scale level 'scl'
-   *      at/2                    % div at by ATO_SCALE
-   *    end
-   *
-   *  Table divided by 2=ATO_SCALE  <--  SF=ATO_SF
-   *****************************************************************************/
-   FL2FXCONST_DBL(7.775862990872099e-001), FL2FXCONST_DBL(7.814919928673978e-001), FL2FXCONST_DBL(7.834450483314648e-001),
-   FL2FXCONST_DBL(7.844216021392089e-001), FL2FXCONST_DBL(7.849098823026687e-001), FL2FXCONST_DBL(7.851540227918509e-001),
-   FL2FXCONST_DBL(7.852760930873737e-001), FL2FXCONST_DBL(7.853371282415015e-001), FL2FXCONST_DBL(7.853676458193612e-001),
-   FL2FXCONST_DBL(7.853829046083906e-001), FL2FXCONST_DBL(7.853905340029177e-001), FL2FXCONST_DBL(7.853943487001828e-001),
-   FL2FXCONST_DBL(7.853962560488155e-001), FL2FXCONST_DBL(7.853972097231319e-001), FL2FXCONST_DBL(7.853976865602901e-001),
-   FL2FXCONST_DBL(7.853979249788692e-001), FL2FXCONST_DBL(7.853980441881587e-001), FL2FXCONST_DBL(7.853981037928035e-001),
-   FL2FXCONST_DBL(7.853981335951259e-001)
-   //     pi/4 = 0.785398163397448 = pi/2/ATO_SCALE
+    /*****************************************************************************
+     *
+     *  Table holds fixp_atan() output values which are outside of input range
+     *  of fixp_atan() to improve SNR of fixp_atan2().
+     *
+     *  This Table might also be used in fixp_atan() [todo] so there a wider input
+     *  range can be covered, too.
+     *
+     *  Matlab (generate table):
+     *    for scl = 7:25            % MINSFTAB .. MAXSFTAB
+     *      at=atan(0.5 *(2^scl));  % 0.5 because get in 'middle' area of current scale level 'scl'
+     *      at/2                    % div at by ATO_SCALE
+     *    end
+     *
+     *  Table divided by 2=ATO_SCALE  <--  SF=ATO_SF
+     *****************************************************************************/
+    FL2FXCONST_DBL(7.775862990872099e-001), FL2FXCONST_DBL(7.814919928673978e-001), FL2FXCONST_DBL(7.834450483314648e-001),
+    FL2FXCONST_DBL(7.844216021392089e-001), FL2FXCONST_DBL(7.849098823026687e-001), FL2FXCONST_DBL(7.851540227918509e-001),
+    FL2FXCONST_DBL(7.852760930873737e-001), FL2FXCONST_DBL(7.853371282415015e-001), FL2FXCONST_DBL(7.853676458193612e-001),
+    FL2FXCONST_DBL(7.853829046083906e-001), FL2FXCONST_DBL(7.853905340029177e-001), FL2FXCONST_DBL(7.853943487001828e-001),
+    FL2FXCONST_DBL(7.853962560488155e-001), FL2FXCONST_DBL(7.853972097231319e-001), FL2FXCONST_DBL(7.853976865602901e-001),
+    FL2FXCONST_DBL(7.853979249788692e-001), FL2FXCONST_DBL(7.853980441881587e-001), FL2FXCONST_DBL(7.853981037928035e-001),
+    FL2FXCONST_DBL(7.853981335951259e-001)
+    //     pi/4 = 0.785398163397448 = pi/2/ATO_SCALE
 };
 #endif
 
@@ -141,31 +141,38 @@ FIXP_DBL fixp_atan2(FIXP_DBL y, FIXP_DBL x)
 
     if      (y > FL2FXCONST_DBL(0.0f))
     {
-        if      (x > FL2FXCONST_DBL(0.0f)) {
-                                           q =  fDivNormHighPrec( y, x, &sf); // both pos.
+        if      (x > FL2FXCONST_DBL(0.0f))
+        {
+            q =  fDivNormHighPrec( y, x, &sf); // both pos.
         }
-        else if (x < FL2FXCONST_DBL(0.0f)) {
-                                           q = -fDivNormHighPrec( y,-x, &sf); // x neg.
+        else if (x < FL2FXCONST_DBL(0.0f))
+        {
+            q = -fDivNormHighPrec( y,-x, &sf); // x neg.
         }
-        else {//(x ==FL2FXCONST_DBL(0.0f))
-                                           q =  FL2FXCONST_DBL(+1.0f);  // y/x = pos/zero = +Inf
-                                           sf = 0;
+        else  //(x ==FL2FXCONST_DBL(0.0f))
+        {
+            q =  FL2FXCONST_DBL(+1.0f);  // y/x = pos/zero = +Inf
+            sf = 0;
         }
     }
     else if (y < FL2FXCONST_DBL(0.0f))
     {
-        if      (x > FL2FXCONST_DBL(0.0f)) {
-                                           q = -fDivNormHighPrec(-y, x, &sf); // y neg.
+        if      (x > FL2FXCONST_DBL(0.0f))
+        {
+            q = -fDivNormHighPrec(-y, x, &sf); // y neg.
         }
-        else if (x < FL2FXCONST_DBL(0.0f)) {
-                                           q =  fDivNormHighPrec(-y,-x, &sf); // both neg.
+        else if (x < FL2FXCONST_DBL(0.0f))
+        {
+            q =  fDivNormHighPrec(-y,-x, &sf); // both neg.
         }
-        else {//(x ==FL2FXCONST_DBL(0.0f))
-                                           q =  FL2FXCONST_DBL(-1.0f);  // y/x = neg/zero = -Inf
-                                           sf = 0;
+        else  //(x ==FL2FXCONST_DBL(0.0f))
+        {
+            q =  FL2FXCONST_DBL(-1.0f);  // y/x = neg/zero = -Inf
+            sf = 0;
         }
     }
-    else { // (y ==FL2FXCONST_DBL(0.0f))
+    else   // (y ==FL2FXCONST_DBL(0.0f))
+    {
         q = FL2FXCONST_DBL(0.0f);
         sf = 0;
     }
@@ -173,32 +180,38 @@ FIXP_DBL fixp_atan2(FIXP_DBL y, FIXP_DBL x)
 
     // --- atan()
 
-    if  ( sfo > ATI_SF ) {
+    if  ( sfo > ATI_SF )
+    {
         // --- could not calc fixp_atan() here bec of input data out of range
         //     ==> therefore give back boundary values
 
-        #if IMPROVE_ATAN2_ACCURACY
+#if IMPROVE_ATAN2_ACCURACY
         if (sfo > MAXSFTAB) sfo = MAXSFTAB;
-        #endif
+#endif
 
-        if      (  q > FL2FXCONST_DBL(0.0f) ) {
-           #if IMPROVE_ATAN2_ACCURACY
+        if      (  q > FL2FXCONST_DBL(0.0f) )
+        {
+#if IMPROVE_ATAN2_ACCURACY
             at = +f_atan_expand_range[sfo-ATI_SF-1];
-           #else
+#else
             at = FL2FXCONST_DBL( +M_PI/2 / ATO_SCALE);
-           #endif
+#endif
         }
-        else if (  q < FL2FXCONST_DBL(0.0f) ) {
-           #if IMPROVE_ATAN2_ACCURACY
+        else if (  q < FL2FXCONST_DBL(0.0f) )
+        {
+#if IMPROVE_ATAN2_ACCURACY
             at = -f_atan_expand_range[sfo-ATI_SF-1];
-           #else
+#else
             at = FL2FXCONST_DBL( -M_PI/2 / ATO_SCALE);
-           #endif
+#endif
         }
-        else {  // q== FL2FXCONST_DBL(0.0f)
+        else    // q== FL2FXCONST_DBL(0.0f)
+        {
             at = FL2FXCONST_DBL( 0.0f );
         }
-    }else{
+    }
+    else
+    {
         // --- calc of fixp_atan() is possible; input data within range
         //     ==> set q on fixed scale level as desired from fixp_atan()
         stf = sfo - ATI_SF;
@@ -210,25 +223,34 @@ FIXP_DBL fixp_atan2(FIXP_DBL y, FIXP_DBL x)
     // --- atan2()
 
     at2 = at >> (AT2O_SF - ATO_SF); // now AT2O_SF for atan2
-    if      (  x > FL2FXCONST_DBL(0.0f) ) {
+    if      (  x > FL2FXCONST_DBL(0.0f) )
+    {
         ret = at2;
     }
-    else if (  x < FL2FXCONST_DBL(0.0f) ) {
-        if (  y >= FL2FXCONST_DBL(0.0f) ) {
+    else if (  x < FL2FXCONST_DBL(0.0f) )
+    {
+        if (  y >= FL2FXCONST_DBL(0.0f) )
+        {
             ret = at2 + FL2FXCONST_DBL( M_PI / AT2O_SCALE);
-        } else {
+        }
+        else
+        {
             ret = at2 - FL2FXCONST_DBL( M_PI / AT2O_SCALE);
         }
     }
-    else {
+    else
+    {
         // x == 0
-        if      ( y >  FL2FXCONST_DBL(0.0f) ) {
+        if      ( y >  FL2FXCONST_DBL(0.0f) )
+        {
             ret = FL2FXCONST_DBL( +M_PI/2 / AT2O_SCALE);
         }
-        else if ( y <  FL2FXCONST_DBL(0.0f) ) {
+        else if ( y <  FL2FXCONST_DBL(0.0f) )
+        {
             ret = FL2FXCONST_DBL( -M_PI/2 / AT2O_SCALE);
         }
-        else if ( y == FL2FXCONST_DBL(0.0f) ) {
+        else if ( y == FL2FXCONST_DBL(0.0f) )
+        {
             ret = FL2FXCONST_DBL(0.0f);
         }
     }
@@ -246,11 +268,14 @@ FIXP_DBL fixp_atan(FIXP_DBL x)
     FIXP_DBL P281       = (FIXP_DBL)0x00013000; // 0.281 in q18
     FIXP_DBL ONEP571    = (FIXP_DBL)0x6487ef00; // 1.571 in q30
 
-    if (x < FIXP_DBL(0)) {
-      sign = 1;
-      x = - x ;
-    } else {
-      sign = 0;
+    if (x < FIXP_DBL(0))
+    {
+        sign = 1;
+        x = - x ;
+    }
+    else
+    {
+        sign = 0;
     }
 
     /* calc of arctan */
@@ -282,8 +307,9 @@ FIXP_DBL fixp_atan(FIXP_DBL x)
         result = scaleValue(result, (Q_ATANOUT-Q_ATANINP+18-DFRACT_BITS+1) + res_e );
         result = ONEP571 - result;          // q30 + q30 = q30
     }
-    if (sign) {
-      result = -result;
+    if (sign)
+    {
+        result = -result;
     }
 
     return(result);
@@ -296,7 +322,7 @@ FIXP_DBL fixp_atan(FIXP_DBL x)
 FIXP_DBL fixp_cos(FIXP_DBL x, int scale)
 {
     FIXP_DBL residual, error, sine, cosine;
-    
+
     residual = fixp_sin_cos_residual_inline(x, scale, &sine, &cosine);
     error = fMult(sine, residual);
 
@@ -306,7 +332,7 @@ FIXP_DBL fixp_cos(FIXP_DBL x, int scale)
 FIXP_DBL fixp_sin(FIXP_DBL x, int scale)
 {
     FIXP_DBL residual, error, sine, cosine;
-    
+
     residual = fixp_sin_cos_residual_inline(x, scale, &sine, &cosine);
     error = fMult(cosine, residual);
 
@@ -316,7 +342,7 @@ FIXP_DBL fixp_sin(FIXP_DBL x, int scale)
 void fixp_cos_sin (FIXP_DBL x, int scale, FIXP_DBL *cos, FIXP_DBL *sin)
 {
     FIXP_DBL residual, error0, error1, sine, cosine;
-    
+
     residual = fixp_sin_cos_residual_inline(x, scale, &sine, &cosine);
     error0 = fMult(sine, residual);
     error1 = fMult(cosine, residual);

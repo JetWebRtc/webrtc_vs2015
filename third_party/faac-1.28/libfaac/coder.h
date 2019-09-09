@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -55,7 +55,8 @@ extern "C" {
 #define MAX_SHORT_WINDOWS 8
 #define MAX_SCFAC_BANDS ((NSFB_SHORT+1)*MAX_SHORT_WINDOWS)
 
-enum WINDOW_TYPE {
+enum WINDOW_TYPE
+{
     ONLY_LONG_WINDOW,
     LONG_SHORT_WINDOW,
     ONLY_SHORT_WINDOW,
@@ -88,7 +89,8 @@ enum WINDOW_TYPE {
 #define SBMAX_L 49
 #define LPC 2
 
-typedef struct {
+typedef struct
+{
     int order;                           /* Filter order */
     int direction;                       /* Filtering direction */
     int coefCompress;                    /* Are coeffs compressed? */
@@ -98,13 +100,15 @@ typedef struct {
     int index[TNS_MAX_ORDER+1];          /* Coefficient indices */
 } TnsFilterData;
 
-typedef struct {
+typedef struct
+{
     int numFilters;                             /* Number of filters */
     int coefResolution;                         /* Coefficient resolution */
     TnsFilterData tnsFilter[1<<LEN_TNS_NFILTL]; /* TNS filters */
 } TnsWindowData;
 
-typedef struct {
+typedef struct
+{
     int tnsDataPresent;
     int tnsMinBandNumberLong;
     int tnsMinBandNumberShort;
@@ -143,7 +147,8 @@ typedef struct
 } BwpInfo;
 
 
-typedef struct {
+typedef struct
+{
     int window_shape;
     int prev_window_shape;
     int block_type;
@@ -195,12 +200,13 @@ typedef struct {
 
 } CoderInfo;
 
-typedef struct {
-  unsigned long sampling_rate;  /* the following entries are for this sampling rate */
-  int num_cb_long;
-  int num_cb_short;
-  int cb_width_long[NSFB_LONG];
-  int cb_width_short[NSFB_SHORT];
+typedef struct
+{
+    unsigned long sampling_rate;  /* the following entries are for this sampling rate */
+    int num_cb_long;
+    int num_cb_short;
+    int cb_width_long[NSFB_LONG];
+    int cb_width_short[NSFB_SHORT];
 } SR_INFO;
 
 #ifdef __cplusplus

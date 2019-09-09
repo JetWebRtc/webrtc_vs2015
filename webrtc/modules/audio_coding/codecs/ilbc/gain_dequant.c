@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,17 +29,18 @@ int16_t WebRtcIlbcfix_GainDequant(
     int16_t index, /* (i) quantization index */
     int16_t maxIn, /* (i) maximum of unquantized gain (Q14) */
     int16_t stage /* (i) The stage of the search */
-                                                ){
-  int16_t scale;
-  const int16_t *gain;
+)
+{
+    int16_t scale;
+    const int16_t *gain;
 
-  /* obtain correct scale factor */
+    /* obtain correct scale factor */
 
-  scale=WEBRTC_SPL_ABS_W16(maxIn);
-  scale = WEBRTC_SPL_MAX(1638, scale);  /* if lower than 0.1, set it to 0.1 */
+    scale=WEBRTC_SPL_ABS_W16(maxIn);
+    scale = WEBRTC_SPL_MAX(1638, scale);  /* if lower than 0.1, set it to 0.1 */
 
-  /* select the quantization table and return the decoded value */
-  gain = WebRtcIlbcfix_kGain[stage];
+    /* select the quantization table and return the decoded value */
+    gain = WebRtcIlbcfix_kGain[stage];
 
-  return (int16_t)((scale * gain[index] + 8192) >> 14);
+    return (int16_t)((scale * gain[index] + 8192) >> 14);
 }

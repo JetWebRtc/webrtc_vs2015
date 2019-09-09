@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 #include "typedefs.h"
 #include "decoder_context.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 #ifdef __cplusplus
 extern "C" {

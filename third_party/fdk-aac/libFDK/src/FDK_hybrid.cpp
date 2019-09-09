@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -115,15 +115,15 @@ amm-info@iis.fraunhofer.de
 /*--------------- structure definitions ---------------*/
 
 #if defined(ARCH_PREFER_MULT_32x16)
-  #define FIXP_HTB FIXP_SGL               /* SGL data type. */
-  #define FIXP_HTP FIXP_SPK               /* Packed SGL data type. */
-  #define HTC(a) (FX_DBL2FXCONST_SGL(a))  /* Cast to SGL */
-  #define FL2FXCONST_HTB FL2FXCONST_SGL
+#define FIXP_HTB FIXP_SGL               /* SGL data type. */
+#define FIXP_HTP FIXP_SPK               /* Packed SGL data type. */
+#define HTC(a) (FX_DBL2FXCONST_SGL(a))  /* Cast to SGL */
+#define FL2FXCONST_HTB FL2FXCONST_SGL
 #else
-  #define FIXP_HTB FIXP_DBL               /* SGL data type. */
-  #define FIXP_HTP FIXP_DPK               /* Packed DBL data type. */
-  #define HTC(a) ((FIXP_DBL)(LONG)(a))    /* Cast to DBL */
-  #define FL2FXCONST_HTB FL2FXCONST_DBL
+#define FIXP_HTB FIXP_DBL               /* SGL data type. */
+#define FIXP_HTP FIXP_DPK               /* Packed DBL data type. */
+#define HTC(a) ((FIXP_DBL)(LONG)(a))    /* Cast to DBL */
+#define FL2FXCONST_HTB FL2FXCONST_DBL
 #endif
 
 #define HTCP(real,imag) { { HTC(real), HTC(imag) } } /* How to arrange the packed values. */
@@ -148,76 +148,88 @@ static const FDK_HYBRID_SETUP setup_3_12 = { 3, { 8, 2, 2}, {  8,  2,  2}, 13, (
 static const FDK_HYBRID_SETUP setup_3_10 = { 3, { 6, 2, 2}, { -8, -2,  2}, 13, (13-1)/2, ringbuffIdxTab};
 
 
-static const FIXP_HTP HybFilterCoef8[] = {
-  HTCP(0x10000000, 0x00000000), HTCP(0x0df26407, 0xfa391882), HTCP(0xff532109, 0x00acdef7), HTCP(0x08f26d36, 0xf70d92ca),
-  HTCP(0xfee34b5f, 0x02af570f), HTCP(0x038f276e, 0xf7684793), HTCP(0x00000000, 0x05d1eac2), HTCP(0x00000000, 0x05d1eac2),
-  HTCP(0x038f276e, 0x0897b86d), HTCP(0xfee34b5f, 0xfd50a8f1), HTCP(0x08f26d36, 0x08f26d36), HTCP(0xff532109, 0xff532109),
-  HTCP(0x0df26407, 0x05c6e77e)
+static const FIXP_HTP HybFilterCoef8[] =
+{
+    HTCP(0x10000000, 0x00000000), HTCP(0x0df26407, 0xfa391882), HTCP(0xff532109, 0x00acdef7), HTCP(0x08f26d36, 0xf70d92ca),
+    HTCP(0xfee34b5f, 0x02af570f), HTCP(0x038f276e, 0xf7684793), HTCP(0x00000000, 0x05d1eac2), HTCP(0x00000000, 0x05d1eac2),
+    HTCP(0x038f276e, 0x0897b86d), HTCP(0xfee34b5f, 0xfd50a8f1), HTCP(0x08f26d36, 0x08f26d36), HTCP(0xff532109, 0xff532109),
+    HTCP(0x0df26407, 0x05c6e77e)
 };
 
-static const FIXP_HTB HybFilterCoef2[13] = {
-  FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.01899487526049f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB(-0.07293139167538f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.30596630545168f),
-  FL2FXCONST_HTB( 0.50000000000000f), FL2FXCONST_HTB( 0.30596630545168f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB(-0.07293139167538f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.01899487526049f),
-  FL2FXCONST_HTB( 0.00000000000000f)
+static const FIXP_HTB HybFilterCoef2[13] =
+{
+    FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.01899487526049f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB(-0.07293139167538f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.30596630545168f),
+    FL2FXCONST_HTB( 0.50000000000000f), FL2FXCONST_HTB( 0.30596630545168f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB(-0.07293139167538f), FL2FXCONST_HTB( 0.00000000000000f), FL2FXCONST_HTB( 0.01899487526049f),
+    FL2FXCONST_HTB( 0.00000000000000f)
 };
 
-static const FIXP_HTB HybFilterCoef4[13] = {
-  FL2FXCONST_HTB(-0.00305151927305f), FL2FXCONST_HTB(-0.00794862316203f), FL2FXCONST_HTB(              0.0f), FL2FXCONST_HTB( 0.04318924038756f), FL2FXCONST_HTB( 0.12542448210445f), FL2FXCONST_HTB( 0.21227807049160f),
-  FL2FXCONST_HTB(             0.25f), FL2FXCONST_HTB( 0.21227807049160f), FL2FXCONST_HTB( 0.12542448210445f), FL2FXCONST_HTB( 0.04318924038756f), FL2FXCONST_HTB(              0.0f), FL2FXCONST_HTB(-0.00794862316203f),
-  FL2FXCONST_HTB(-0.00305151927305f)
+static const FIXP_HTB HybFilterCoef4[13] =
+{
+    FL2FXCONST_HTB(-0.00305151927305f), FL2FXCONST_HTB(-0.00794862316203f), FL2FXCONST_HTB(              0.0f), FL2FXCONST_HTB( 0.04318924038756f), FL2FXCONST_HTB( 0.12542448210445f), FL2FXCONST_HTB( 0.21227807049160f),
+    FL2FXCONST_HTB(             0.25f), FL2FXCONST_HTB( 0.21227807049160f), FL2FXCONST_HTB( 0.12542448210445f), FL2FXCONST_HTB( 0.04318924038756f), FL2FXCONST_HTB(              0.0f), FL2FXCONST_HTB(-0.00794862316203f),
+    FL2FXCONST_HTB(-0.00305151927305f)
 };
 
 /*--------------- function declarations ---------------*/
 static INT kChannelFiltering(
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        const INT *const           pReadIdx,
-        FIXP_DBL *const            mHybridReal,
-        FIXP_DBL *const            mHybridImag,
-        const SCHAR                hybridConfig
-        );
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    const INT *const           pReadIdx,
+    FIXP_DBL *const            mHybridReal,
+    FIXP_DBL *const            mHybridImag,
+    const SCHAR                hybridConfig
+);
 
 
 /*--------------- function definitions ----------------*/
 
 INT FDKhybridAnalysisOpen(
-        HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
-        FIXP_DBL *const            pLFmemory,
-        const UINT                 LFmemorySize,
-        FIXP_DBL *const            pHFmemory,
-        const UINT                 HFmemorySize
-        )
+    HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
+    FIXP_DBL *const            pLFmemory,
+    const UINT                 LFmemorySize,
+    FIXP_DBL *const            pHFmemory,
+    const UINT                 HFmemorySize
+)
 {
-  INT err = 0;
+    INT err = 0;
 
-  /* Save pointer to extern memory. */
-  hAnalysisHybFilter->pLFmemory    = pLFmemory;
-  hAnalysisHybFilter->LFmemorySize = LFmemorySize;
+    /* Save pointer to extern memory. */
+    hAnalysisHybFilter->pLFmemory    = pLFmemory;
+    hAnalysisHybFilter->LFmemorySize = LFmemorySize;
 
-  hAnalysisHybFilter->pHFmemory    = pHFmemory;
-  hAnalysisHybFilter->HFmemorySize = HFmemorySize;
+    hAnalysisHybFilter->pHFmemory    = pHFmemory;
+    hAnalysisHybFilter->HFmemorySize = HFmemorySize;
 
-  return err;
+    return err;
 }
 
 INT FDKhybridAnalysisInit(
-        HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
-        const FDK_HYBRID_MODE      mode,
-        const INT                  qmfBands,
-        const INT                  cplxBands,
-        const INT                  initStatesFlag
-        )
+    HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
+    const FDK_HYBRID_MODE      mode,
+    const INT                  qmfBands,
+    const INT                  cplxBands,
+    const INT                  initStatesFlag
+)
 {
     int k;
     INT err = 0;
     FIXP_DBL *pMem = NULL;
     HANDLE_FDK_HYBRID_SETUP setup = NULL;
 
-    switch (mode) {
-      case THREE_TO_TEN:     setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_10; break;
-      case THREE_TO_TWELVE:  setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_12; break;
-      case THREE_TO_SIXTEEN: setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_16; break;
-      default:               err = -1; goto bail;
+    switch (mode)
+    {
+    case THREE_TO_TEN:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_10;
+        break;
+    case THREE_TO_TWELVE:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_12;
+        break;
+    case THREE_TO_SIXTEEN:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_16;
+        break;
+    default:
+        err = -1;
+        goto bail;
     }
 
     /* Initialize handle. */
@@ -230,40 +242,50 @@ INT FDKhybridAnalysisInit(
 
     /* Check available memory. */
     if ( ((2*setup->nrQmfBands*setup->protoLen*sizeof(FIXP_DBL)) > hAnalysisHybFilter->LFmemorySize)
-      || ((setup->filterDelay*((qmfBands-setup->nrQmfBands)+(cplxBands-setup->nrQmfBands))*sizeof(FIXP_DBL)) > hAnalysisHybFilter->HFmemorySize) )
+            || ((setup->filterDelay*((qmfBands-setup->nrQmfBands)+(cplxBands-setup->nrQmfBands))*sizeof(FIXP_DBL)) > hAnalysisHybFilter->HFmemorySize) )
     {
-      err = -2;
-      goto bail;
+        err = -2;
+        goto bail;
     }
 
     /* Distribut LF memory. */
     pMem = hAnalysisHybFilter->pLFmemory;
-    for (k=0; k<setup->nrQmfBands; k++) {
-      hAnalysisHybFilter->bufferLFReal[k] = pMem; pMem += setup->protoLen;
-      hAnalysisHybFilter->bufferLFImag[k] = pMem; pMem += setup->protoLen;
+    for (k=0; k<setup->nrQmfBands; k++)
+    {
+        hAnalysisHybFilter->bufferLFReal[k] = pMem;
+        pMem += setup->protoLen;
+        hAnalysisHybFilter->bufferLFImag[k] = pMem;
+        pMem += setup->protoLen;
     }
 
     /* Distribut HF memory. */
     pMem = hAnalysisHybFilter->pHFmemory;
-    for (k=0; k<setup->filterDelay; k++) {
-      hAnalysisHybFilter->bufferHFReal[k] = pMem; pMem += (qmfBands-setup->nrQmfBands);
-      hAnalysisHybFilter->bufferHFImag[k] = pMem; pMem += (cplxBands-setup->nrQmfBands);
+    for (k=0; k<setup->filterDelay; k++)
+    {
+        hAnalysisHybFilter->bufferHFReal[k] = pMem;
+        pMem += (qmfBands-setup->nrQmfBands);
+        hAnalysisHybFilter->bufferHFImag[k] = pMem;
+        pMem += (cplxBands-setup->nrQmfBands);
     }
 
-    if (initStatesFlag) {
-      /* Clear LF buffer */
-      for (k=0; k<setup->nrQmfBands; k++) {
-        FDKmemclear(hAnalysisHybFilter->bufferLFReal[k], setup->protoLen*sizeof(FIXP_DBL));
-        FDKmemclear(hAnalysisHybFilter->bufferLFImag[k], setup->protoLen*sizeof(FIXP_DBL));
-      }
+    if (initStatesFlag)
+    {
+        /* Clear LF buffer */
+        for (k=0; k<setup->nrQmfBands; k++)
+        {
+            FDKmemclear(hAnalysisHybFilter->bufferLFReal[k], setup->protoLen*sizeof(FIXP_DBL));
+            FDKmemclear(hAnalysisHybFilter->bufferLFImag[k], setup->protoLen*sizeof(FIXP_DBL));
+        }
 
-      if (qmfBands > setup->nrQmfBands) {
-      /* Clear HF buffer */
-      for (k=0; k<setup->filterDelay; k++) {
-        FDKmemclear(hAnalysisHybFilter->bufferHFReal[k], (qmfBands-setup->nrQmfBands)*sizeof(FIXP_DBL));
-        FDKmemclear(hAnalysisHybFilter->bufferHFImag[k], (cplxBands-setup->nrQmfBands)*sizeof(FIXP_DBL));
-      }
-    }
+        if (qmfBands > setup->nrQmfBands)
+        {
+            /* Clear HF buffer */
+            for (k=0; k<setup->filterDelay; k++)
+            {
+                FDKmemclear(hAnalysisHybFilter->bufferHFReal[k], (qmfBands-setup->nrQmfBands)*sizeof(FIXP_DBL));
+                FDKmemclear(hAnalysisHybFilter->bufferHFImag[k], (cplxBands-setup->nrQmfBands)*sizeof(FIXP_DBL));
+            }
+        }
     }
 
 bail:
@@ -271,41 +293,46 @@ bail:
 }
 
 INT FDKhybridAnalysisScaleStates(
-        HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
-        const INT                  scalingValue
-        )
+    HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
+    const INT                  scalingValue
+)
 {
     INT err = 0;
 
-    if (hAnalysisHybFilter==NULL) {
-      err = 1; /* invalid handle */
+    if (hAnalysisHybFilter==NULL)
+    {
+        err = 1; /* invalid handle */
     }
-    else {
-      int k;
-      HANDLE_FDK_HYBRID_SETUP setup = hAnalysisHybFilter->pSetup;
+    else
+    {
+        int k;
+        HANDLE_FDK_HYBRID_SETUP setup = hAnalysisHybFilter->pSetup;
 
-      /* Scale LF buffer */
-      for (k=0; k<setup->nrQmfBands; k++) {
-        scaleValues(hAnalysisHybFilter->bufferLFReal[k], setup->protoLen, scalingValue);
-        scaleValues(hAnalysisHybFilter->bufferLFImag[k], setup->protoLen, scalingValue);
-      }
-      if (hAnalysisHybFilter->nrBands > setup->nrQmfBands) {
-        /* Scale HF buffer */
-        for (k=0; k<setup->filterDelay; k++) {
-          scaleValues(hAnalysisHybFilter->bufferHFReal[k], (hAnalysisHybFilter->nrBands-setup->nrQmfBands), scalingValue);
-          scaleValues(hAnalysisHybFilter->bufferHFImag[k], (hAnalysisHybFilter->cplxBands-setup->nrQmfBands), scalingValue);
+        /* Scale LF buffer */
+        for (k=0; k<setup->nrQmfBands; k++)
+        {
+            scaleValues(hAnalysisHybFilter->bufferLFReal[k], setup->protoLen, scalingValue);
+            scaleValues(hAnalysisHybFilter->bufferLFImag[k], setup->protoLen, scalingValue);
         }
-      }
+        if (hAnalysisHybFilter->nrBands > setup->nrQmfBands)
+        {
+            /* Scale HF buffer */
+            for (k=0; k<setup->filterDelay; k++)
+            {
+                scaleValues(hAnalysisHybFilter->bufferHFReal[k], (hAnalysisHybFilter->nrBands-setup->nrQmfBands), scalingValue);
+                scaleValues(hAnalysisHybFilter->bufferHFImag[k], (hAnalysisHybFilter->cplxBands-setup->nrQmfBands), scalingValue);
+            }
+        }
     }
     return err;
 }
 
 INT FDKhybridAnalysisApply(
-        HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        FIXP_DBL *const            pHybridReal,
-        FIXP_DBL *const            pHybridImag)
+    HANDLE_FDK_ANA_HYB_FILTER  hAnalysisHybFilter,
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    FIXP_DBL *const            pHybridReal,
+    FIXP_DBL *const            pHybridImag)
 {
     int k, hybOffset = 0;
     INT err = 0;
@@ -320,80 +347,94 @@ INT FDKhybridAnalysisApply(
     /*
      * LF buffer.
      */
-    for (k=0; k<nrQmfBandsLF; k++) {
+    for (k=0; k<nrQmfBandsLF; k++)
+    {
         /* New input sample. */
         hAnalysisHybFilter->bufferLFReal[k][writIndex] = pQmfReal[k];
         hAnalysisHybFilter->bufferLFImag[k][writIndex] = pQmfImag[k];
 
-    /* Perform hybrid filtering. */
+        /* Perform hybrid filtering. */
         kChannelFiltering(
-                hAnalysisHybFilter->bufferLFReal[k],
-                hAnalysisHybFilter->bufferLFImag[k],
-                pBufferLFreadIdx,
-                pHybridReal+hybOffset,
-                pHybridImag+hybOffset,
-                hAnalysisHybFilter->pSetup->kHybrid[k]);
+            hAnalysisHybFilter->bufferLFReal[k],
+            hAnalysisHybFilter->bufferLFImag[k],
+            pBufferLFreadIdx,
+            pHybridReal+hybOffset,
+            pHybridImag+hybOffset,
+            hAnalysisHybFilter->pSetup->kHybrid[k]);
 
         hybOffset += hAnalysisHybFilter->pSetup->nHybBands[k];
     }
 
     hAnalysisHybFilter->bufferLFpos = readIndex; /* Index where to write next input sample. */
 
-    if (hAnalysisHybFilter->nrBands > nrQmfBandsLF) {
-    /*
-     * HF buffer.
-     */
-    if (hAnalysisHybFilter->hfMode!=0) {
-        /* HF delay compensation was applied outside. */
-        FDKmemcpy(pHybridReal+hybOffset, &pQmfReal[nrQmfBandsLF], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
-        FDKmemcpy(pHybridImag+hybOffset, &pQmfImag[nrQmfBandsLF], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
-    }
-    else {
-        /* HF delay compensation, filterlength/2. */
-    FDKmemcpy(pHybridReal+hybOffset, hAnalysisHybFilter->bufferHFReal[hAnalysisHybFilter->bufferHFpos], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
-    FDKmemcpy(pHybridImag+hybOffset, hAnalysisHybFilter->bufferHFImag[hAnalysisHybFilter->bufferHFpos], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+    if (hAnalysisHybFilter->nrBands > nrQmfBandsLF)
+    {
+        /*
+         * HF buffer.
+         */
+        if (hAnalysisHybFilter->hfMode!=0)
+        {
+            /* HF delay compensation was applied outside. */
+            FDKmemcpy(pHybridReal+hybOffset, &pQmfReal[nrQmfBandsLF], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+            FDKmemcpy(pHybridImag+hybOffset, &pQmfImag[nrQmfBandsLF], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+        }
+        else
+        {
+            /* HF delay compensation, filterlength/2. */
+            FDKmemcpy(pHybridReal+hybOffset, hAnalysisHybFilter->bufferHFReal[hAnalysisHybFilter->bufferHFpos], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+            FDKmemcpy(pHybridImag+hybOffset, hAnalysisHybFilter->bufferHFImag[hAnalysisHybFilter->bufferHFpos], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
 
-    FDKmemcpy(hAnalysisHybFilter->bufferHFReal[hAnalysisHybFilter->bufferHFpos], &pQmfReal[nrQmfBandsLF], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
-    FDKmemcpy(hAnalysisHybFilter->bufferHFImag[hAnalysisHybFilter->bufferHFpos], &pQmfImag[nrQmfBandsLF], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+            FDKmemcpy(hAnalysisHybFilter->bufferHFReal[hAnalysisHybFilter->bufferHFpos], &pQmfReal[nrQmfBandsLF], (hAnalysisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+            FDKmemcpy(hAnalysisHybFilter->bufferHFImag[hAnalysisHybFilter->bufferHFpos], &pQmfImag[nrQmfBandsLF], (hAnalysisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
 
-    if (++hAnalysisHybFilter->bufferHFpos>=hAnalysisHybFilter->pSetup->filterDelay) hAnalysisHybFilter->bufferHFpos = 0;
-    }
+            if (++hAnalysisHybFilter->bufferHFpos>=hAnalysisHybFilter->pSetup->filterDelay) hAnalysisHybFilter->bufferHFpos = 0;
+        }
     } /* process HF part*/
 
     return err;
 }
 
 INT FDKhybridAnalysisClose(
-        HANDLE_FDK_ANA_HYB_FILTER hAnalysisHybFilter
-        )
+    HANDLE_FDK_ANA_HYB_FILTER hAnalysisHybFilter
+)
 {
-  INT err = 0;
+    INT err = 0;
 
-  if (hAnalysisHybFilter != NULL) {
-    hAnalysisHybFilter->pLFmemory    = NULL;
-    hAnalysisHybFilter->pHFmemory    = NULL;
-    hAnalysisHybFilter->LFmemorySize = 0;
-    hAnalysisHybFilter->HFmemorySize = 0;
-  }
+    if (hAnalysisHybFilter != NULL)
+    {
+        hAnalysisHybFilter->pLFmemory    = NULL;
+        hAnalysisHybFilter->pHFmemory    = NULL;
+        hAnalysisHybFilter->LFmemorySize = 0;
+        hAnalysisHybFilter->HFmemorySize = 0;
+    }
 
-  return err;
+    return err;
 }
 
 INT FDKhybridSynthesisInit(
-        HANDLE_FDK_SYN_HYB_FILTER  hSynthesisHybFilter,
-        const FDK_HYBRID_MODE      mode,
-        const INT                  qmfBands,
-        const INT                  cplxBands
-        )
+    HANDLE_FDK_SYN_HYB_FILTER  hSynthesisHybFilter,
+    const FDK_HYBRID_MODE      mode,
+    const INT                  qmfBands,
+    const INT                  cplxBands
+)
 {
     INT err = 0;
     HANDLE_FDK_HYBRID_SETUP setup = NULL;
 
-    switch (mode) {
-      case THREE_TO_TEN:     setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_10; break;
-      case THREE_TO_TWELVE:  setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_12; break;
-      case THREE_TO_SIXTEEN: setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_16; break;
-      default:               err = -1; goto bail;
+    switch (mode)
+    {
+    case THREE_TO_TEN:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_10;
+        break;
+    case THREE_TO_TWELVE:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_12;
+        break;
+    case THREE_TO_SIXTEEN:
+        setup = (HANDLE_FDK_HYBRID_SETUP)&setup_3_16;
+        break;
+    default:
+        err = -1;
+        goto bail;
     }
 
     hSynthesisHybFilter->pSetup      = setup;
@@ -406,12 +447,12 @@ bail:
 
 
 INT FDKhybridSynthesisApply(
-        HANDLE_FDK_SYN_HYB_FILTER  hSynthesisHybFilter,
-        const FIXP_DBL *const      pHybridReal,
-        const FIXP_DBL *const      pHybridImag,
-        FIXP_DBL *const            pQmfReal,
-        FIXP_DBL *const            pQmfImag
-        )
+    HANDLE_FDK_SYN_HYB_FILTER  hSynthesisHybFilter,
+    const FIXP_DBL *const      pHybridReal,
+    const FIXP_DBL *const      pHybridImag,
+    FIXP_DBL *const            pQmfReal,
+    FIXP_DBL *const            pQmfImag
+)
 {
     int k, n, hybOffset=0;
     INT err = 0;
@@ -420,42 +461,45 @@ INT FDKhybridSynthesisApply(
     /*
      * LF buffer.
      */
-    for (k=0; k<nrQmfBandsLF; k++) {
-      const int nHybBands = hSynthesisHybFilter->pSetup->nHybBands[k];
+    for (k=0; k<nrQmfBandsLF; k++)
+    {
+        const int nHybBands = hSynthesisHybFilter->pSetup->nHybBands[k];
 
-      FIXP_DBL accu1 = FL2FXCONST_DBL(0.f);
-      FIXP_DBL accu2 = FL2FXCONST_DBL(0.f);
+        FIXP_DBL accu1 = FL2FXCONST_DBL(0.f);
+        FIXP_DBL accu2 = FL2FXCONST_DBL(0.f);
 
-      /* Perform hybrid filtering. */
-      for (n=0; n<nHybBands; n++) {
-          accu1 += pHybridReal[hybOffset+n];
-          accu2 += pHybridImag[hybOffset+n];
-      }
-      pQmfReal[k] = accu1;
-      pQmfImag[k] = accu2;
+        /* Perform hybrid filtering. */
+        for (n=0; n<nHybBands; n++)
+        {
+            accu1 += pHybridReal[hybOffset+n];
+            accu2 += pHybridImag[hybOffset+n];
+        }
+        pQmfReal[k] = accu1;
+        pQmfImag[k] = accu2;
 
-      hybOffset += nHybBands;
+        hybOffset += nHybBands;
     }
 
-    if (hSynthesisHybFilter->nrBands > nrQmfBandsLF) {
-      /*
-       * HF buffer.
-       */
-    FDKmemcpy(&pQmfReal[nrQmfBandsLF], &pHybridReal[hybOffset], (hSynthesisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
-    FDKmemcpy(&pQmfImag[nrQmfBandsLF], &pHybridImag[hybOffset], (hSynthesisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+    if (hSynthesisHybFilter->nrBands > nrQmfBandsLF)
+    {
+        /*
+         * HF buffer.
+         */
+        FDKmemcpy(&pQmfReal[nrQmfBandsLF], &pHybridReal[hybOffset], (hSynthesisHybFilter->nrBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
+        FDKmemcpy(&pQmfImag[nrQmfBandsLF], &pHybridImag[hybOffset], (hSynthesisHybFilter->cplxBands-nrQmfBandsLF)*sizeof(FIXP_DBL));
     }
 
     return err;
 }
 
 static void dualChannelFiltering(
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        const INT *const           pReadIdx,
-        FIXP_DBL *const            mHybridReal,
-        FIXP_DBL *const            mHybridImag,
-        const INT                  invert
-        )
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    const INT *const           pReadIdx,
+    FIXP_DBL *const            mHybridReal,
+    FIXP_DBL *const            mHybridImag,
+    const INT                  invert
+)
 {
     const FIXP_HTB *p = HybFilterCoef2;
 
@@ -472,48 +516,52 @@ static void dualChannelFiltering(
     r6  = fMultDiv2(p[6], pQmfReal[pReadIdx[6]]) ;
     i6  = fMultDiv2(p[6], pQmfImag[pReadIdx[6]]) ;
 
-    if (invert) {
-      mHybridReal[1] = (r1 + r6) << 1;
-      mHybridImag[1] = (i1 + i6) << 1;
+    if (invert)
+    {
+        mHybridReal[1] = (r1 + r6) << 1;
+        mHybridImag[1] = (i1 + i6) << 1;
 
-      mHybridReal[0] = (r6 - r1) << 1;
-      mHybridImag[0] = (i6 - i1) << 1;
+        mHybridReal[0] = (r6 - r1) << 1;
+        mHybridImag[0] = (i6 - i1) << 1;
     }
-    else {
-      mHybridReal[0] = (r1 + r6) << 1;
-      mHybridImag[0] = (i1 + i6) << 1;
+    else
+    {
+        mHybridReal[0] = (r1 + r6) << 1;
+        mHybridImag[0] = (i1 + i6) << 1;
 
-      mHybridReal[1] = (r6 - r1) << 1;
-      mHybridImag[1] = (i6 - i1) << 1;
+        mHybridReal[1] = (r6 - r1) << 1;
+        mHybridImag[1] = (i6 - i1) << 1;
     }
 }
 
 static void fourChannelFiltering(
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        const INT *const           pReadIdx,
-        FIXP_DBL *const            mHybridReal,
-        FIXP_DBL *const            mHybridImag,
-        const INT                  invert
-        )
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    const INT *const           pReadIdx,
+    FIXP_DBL *const            mHybridReal,
+    FIXP_DBL *const            mHybridImag,
+    const INT                  invert
+)
 {
     const FIXP_HTB *p = HybFilterCoef4;
 
     FIXP_DBL fft[8];
 
-    static const FIXP_DBL  cr[13] = {
-      FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(              -1.f),
-      FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL( 0.70710678118655f),
-      FL2FXCONST_DBL(               1.f),
-      FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL(-0.70710678118655f),
-      FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f)
+    static const FIXP_DBL  cr[13] =
+    {
+        FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(              -1.f),
+        FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL( 0.70710678118655f),
+        FL2FXCONST_DBL(               1.f),
+        FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL(-0.70710678118655f),
+        FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f)
     };
-    static const FIXP_DBL  ci[13] = {
-      FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f),
-      FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               1.f), FL2FXCONST_DBL( 0.70710678118655f),
-      FL2FXCONST_DBL(               0.f),
-      FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f),
-      FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               1.f)
+    static const FIXP_DBL  ci[13] =
+    {
+        FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(               0.f),
+        FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               1.f), FL2FXCONST_DBL( 0.70710678118655f),
+        FL2FXCONST_DBL(               0.f),
+        FL2FXCONST_DBL(-0.70710678118655f), FL2FXCONST_DBL(              -1.f), FL2FXCONST_DBL(-0.70710678118655f),
+        FL2FXCONST_DBL(               0.f), FL2FXCONST_DBL( 0.70710678118655f), FL2FXCONST_DBL(               1.f)
     };
 
 
@@ -590,13 +638,13 @@ static void fourChannelFiltering(
 
 
 static void eightChannelFiltering(
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        const INT *const           pReadIdx,
-        FIXP_DBL *const            mHybridReal,
-        FIXP_DBL *const            mHybridImag,
-        const INT                  invert
-        )
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    const INT *const           pReadIdx,
+    FIXP_DBL *const            mHybridReal,
+    FIXP_DBL *const            mHybridImag,
+    const INT                  invert
+)
 {
     const FIXP_HTP *p = HybFilterCoef8;
     INT k, sc;
@@ -645,60 +693,64 @@ static void eightChannelFiltering(
     fft_8 (pfft);
     sc = 1 + 2;
 
-    if (invert) {
-      mHybridReal[0]  = pfft[FFT_IDX_R(7)] << sc;
-      mHybridImag[0]  = pfft[FFT_IDX_I(7)] << sc;
-      mHybridReal[1]  = pfft[FFT_IDX_R(0)] << sc;
-      mHybridImag[1]  = pfft[FFT_IDX_I(0)] << sc;
+    if (invert)
+    {
+        mHybridReal[0]  = pfft[FFT_IDX_R(7)] << sc;
+        mHybridImag[0]  = pfft[FFT_IDX_I(7)] << sc;
+        mHybridReal[1]  = pfft[FFT_IDX_R(0)] << sc;
+        mHybridImag[1]  = pfft[FFT_IDX_I(0)] << sc;
 
-      mHybridReal[2]  = pfft[FFT_IDX_R(6)] << sc;
-      mHybridImag[2]  = pfft[FFT_IDX_I(6)] << sc;
-      mHybridReal[3]  = pfft[FFT_IDX_R(1)] << sc;
-      mHybridImag[3]  = pfft[FFT_IDX_I(1)] << sc;
+        mHybridReal[2]  = pfft[FFT_IDX_R(6)] << sc;
+        mHybridImag[2]  = pfft[FFT_IDX_I(6)] << sc;
+        mHybridReal[3]  = pfft[FFT_IDX_R(1)] << sc;
+        mHybridImag[3]  = pfft[FFT_IDX_I(1)] << sc;
 
-      mHybridReal[4]  = pfft[FFT_IDX_R(2)] << sc;
-      mHybridReal[4] += pfft[FFT_IDX_R(5)] << sc;
-      mHybridImag[4]  = pfft[FFT_IDX_I(2)] << sc;
-      mHybridImag[4] += pfft[FFT_IDX_I(5)] << sc;
+        mHybridReal[4]  = pfft[FFT_IDX_R(2)] << sc;
+        mHybridReal[4] += pfft[FFT_IDX_R(5)] << sc;
+        mHybridImag[4]  = pfft[FFT_IDX_I(2)] << sc;
+        mHybridImag[4] += pfft[FFT_IDX_I(5)] << sc;
 
-      mHybridReal[5]  = pfft[FFT_IDX_R(3)] << sc;
-      mHybridReal[5] += pfft[FFT_IDX_R(4)] << sc;
-      mHybridImag[5]  = pfft[FFT_IDX_I(3)] << sc;
-      mHybridImag[5] += pfft[FFT_IDX_I(4)] << sc;
+        mHybridReal[5]  = pfft[FFT_IDX_R(3)] << sc;
+        mHybridReal[5] += pfft[FFT_IDX_R(4)] << sc;
+        mHybridImag[5]  = pfft[FFT_IDX_I(3)] << sc;
+        mHybridImag[5] += pfft[FFT_IDX_I(4)] << sc;
     }
-    else {
-      for(k=0; k<8;k++ ) {
-        mHybridReal[k] = pfft[FFT_IDX_R(k)] << sc;
-        mHybridImag[k] = pfft[FFT_IDX_I(k)] << sc;
-      }
+    else
+    {
+        for(k=0; k<8; k++ )
+        {
+            mHybridReal[k] = pfft[FFT_IDX_R(k)] << sc;
+            mHybridImag[k] = pfft[FFT_IDX_I(k)] << sc;
+        }
     }
 }
 
 static INT kChannelFiltering(
-        const FIXP_DBL *const      pQmfReal,
-        const FIXP_DBL *const      pQmfImag,
-        const INT *const           pReadIdx,
-        FIXP_DBL *const            mHybridReal,
-        FIXP_DBL *const            mHybridImag,
-        const SCHAR                hybridConfig
-        )
+    const FIXP_DBL *const      pQmfReal,
+    const FIXP_DBL *const      pQmfImag,
+    const INT *const           pReadIdx,
+    FIXP_DBL *const            mHybridReal,
+    FIXP_DBL *const            mHybridImag,
+    const SCHAR                hybridConfig
+)
 {
     INT err = 0;
 
-    switch (hybridConfig) {
-      case  2:
-      case -2:
+    switch (hybridConfig)
+    {
+    case  2:
+    case -2:
         dualChannelFiltering(pQmfReal, pQmfImag, pReadIdx, mHybridReal, mHybridImag, (hybridConfig<0) ? 1 : 0 );
         break;
-      case  4:
-      case -4:
+    case  4:
+    case -4:
         fourChannelFiltering(pQmfReal, pQmfImag, pReadIdx, mHybridReal, mHybridImag, (hybridConfig<0) ? 1 : 0 );
         break;
-      case  8:
-      case -8:
+    case  8:
+    case -8:
         eightChannelFiltering(pQmfReal, pQmfImag, pReadIdx, mHybridReal, mHybridImag, (hybridConfig<0) ? 1 : 0 );
         break;
-      default:
+    default:
         err = -1;
     }
 

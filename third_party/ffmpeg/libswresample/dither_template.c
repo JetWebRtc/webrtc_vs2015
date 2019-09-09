@@ -1,4 +1,4 @@
-
+﻿
 #if defined(TEMPLATE_DITHER_DBL)
 #    define RENAME(N) N ## _double
 #    define DELEM  double
@@ -23,7 +23,8 @@
 ERROR
 #endif
 
-void RENAME(swri_noise_shaping)(SwrContext *s, AudioData *dsts, const AudioData *srcs, const AudioData *noises, int count){
+void RENAME(swri_noise_shaping)(SwrContext *s, AudioData *dsts, const AudioData *srcs, const AudioData *noises, int count)
+{
     int pos = s->dither.ns_pos;
     int i, j, ch;
     int taps  = s->dither.ns_taps;
@@ -33,20 +34,23 @@ void RENAME(swri_noise_shaping)(SwrContext *s, AudioData *dsts, const AudioData 
     av_assert2((taps&3) != 2);
     av_assert2((taps&3) != 3 || s->dither.ns_coeffs[taps] == 0);
 
-    for (ch=0; ch<srcs->ch_count; ch++) {
+    for (ch=0; ch<srcs->ch_count; ch++)
+    {
         const float *noise = ((const float *)noises->ch[ch]) + s->dither.noise_pos;
         const DELEM *src = (const DELEM*)srcs->ch[ch];
         DELEM *dst = (DELEM*)dsts->ch[ch];
         float *ns_errors = s->dither.ns_errors[ch];
         const float *ns_coeffs = s->dither.ns_coeffs;
         pos  = s->dither.ns_pos;
-        for (i=0; i<count; i++) {
+        for (i=0; i<count; i++)
+        {
             double d1, d = src[i]*S_1;
-            for(j=0; j<taps-2; j+=4) {
+            for(j=0; j<taps-2; j+=4)
+            {
                 d -= ns_coeffs[j    ] * ns_errors[pos + j    ]
-                    +ns_coeffs[j + 1] * ns_errors[pos + j + 1]
-                    +ns_coeffs[j + 2] * ns_errors[pos + j + 2]
-                    +ns_coeffs[j + 3] * ns_errors[pos + j + 3];
+                     +ns_coeffs[j + 1] * ns_errors[pos + j + 1]
+                     +ns_coeffs[j + 2] * ns_errors[pos + j + 2]
+                     +ns_coeffs[j + 3] * ns_errors[pos + j + 3];
             }
             if(j < taps)
                 d -= ns_coeffs[j] * ns_errors[pos + j];

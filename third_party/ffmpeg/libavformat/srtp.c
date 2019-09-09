@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SRTP encryption/decryption
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -42,7 +42,8 @@ static void encrypt_counter(struct AVAES *aes, uint8_t *iv, uint8_t *outbuf,
                             int outlen)
 {
     int i, j, outpos;
-    for (i = 0, outpos = 0; outpos < outlen; i++) {
+    for (i = 0, outpos = 0; outpos < outlen; i++)
+    {
         uint8_t keystream[16];
         AV_WB16(&iv[14], i);
         av_aes_crypt(aes, keystream, iv, 1, NULL, 0);
@@ -71,20 +72,28 @@ int ff_srtp_set_crypto(struct SRTPContext *s, const char *suite,
 
     // RFC 4568
     if (!strcmp(suite, "AES_CM_128_HMAC_SHA1_80") ||
-        !strcmp(suite, "SRTP_AES128_CM_HMAC_SHA1_80")) {
+            !strcmp(suite, "SRTP_AES128_CM_HMAC_SHA1_80"))
+    {
         s->rtp_hmac_size = s->rtcp_hmac_size = 10;
-    } else if (!strcmp(suite, "AES_CM_128_HMAC_SHA1_32")) {
+    }
+    else if (!strcmp(suite, "AES_CM_128_HMAC_SHA1_32"))
+    {
         s->rtp_hmac_size = s->rtcp_hmac_size = 4;
-    } else if (!strcmp(suite, "SRTP_AES128_CM_HMAC_SHA1_32")) {
+    }
+    else if (!strcmp(suite, "SRTP_AES128_CM_HMAC_SHA1_32"))
+    {
         // RFC 5764 section 4.1.2
         s->rtp_hmac_size  = 4;
         s->rtcp_hmac_size = 10;
-    } else {
+    }
+    else
+    {
         av_log(NULL, AV_LOG_WARNING, "SRTP Crypto suite %s not supported\n",
-                                     suite);
+               suite);
         return AVERROR(EINVAL);
     }
-    if (av_base64_decode(buf, params, sizeof(buf)) != sizeof(buf)) {
+    if (av_base64_decode(buf, params, sizeof(buf)) != sizeof(buf))
+    {
         av_log(NULL, AV_LOG_WARNING, "Incorrect amount of SRTP params\n");
         return AVERROR(EINVAL);
     }
@@ -148,7 +157,8 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
     // If MKI is used, this should exclude the MKI as well
     av_hmac_update(s->hmac, buf, len - hmac_size);
 
-    if (!rtcp) {
+    if (!rtcp)
+    {
         int seq = AV_RB16(buf + 2);
         uint32_t v;
         uint8_t rocbuf[4];
@@ -156,16 +166,22 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
         // RFC 3711 section 3.3.1, appendix A
         seq_largest = s->seq_initialized ? s->seq_largest : seq;
         v = roc = s->roc;
-        if (seq_largest < 32768) {
+        if (seq_largest < 32768)
+        {
             if (seq - seq_largest > 32768)
                 v = roc - 1;
-        } else {
+        }
+        else
+        {
             if (seq_largest - 32768 > seq)
                 v = roc + 1;
         }
-        if (v == roc) {
+        if (v == roc)
+        {
             seq_largest = FFMAX(seq_largest, seq);
-        } else if (v == roc + 1) {
+        }
+        else if (v == roc + 1)
+        {
             seq_largest = seq;
             roc = v;
         }
@@ -176,7 +192,8 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
     }
 
     av_hmac_final(s->hmac, hmac, sizeof(hmac));
-    if (memcmp(hmac, buf + len - hmac_size, hmac_size)) {
+    if (memcmp(hmac, buf + len - hmac_size, hmac_size))
+    {
         av_log(NULL, AV_LOG_WARNING, "HMAC mismatch\n");
         return AVERROR_INVALIDDATA;
     }
@@ -187,7 +204,8 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
     if (len < 12)
         return AVERROR_INVALIDDATA;
 
-    if (rtcp) {
+    if (rtcp)
+    {
         uint32_t srtcp_index = AV_RB32(buf + len - 4);
         len -= 4;
         *lenptr = len;
@@ -199,7 +217,9 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
         len -= 8;
         if (!(srtcp_index & 0x80000000))
             return 0;
-    } else {
+    }
+    else
+    {
         int ext, csrc;
         s->seq_initialized = 1;
         s->seq_largest     = seq_largest;
@@ -217,7 +237,8 @@ int ff_srtp_decrypt(struct SRTPContext *s, uint8_t *buf, int *lenptr)
         if (len < 0)
             return AVERROR_INVALIDDATA;
 
-        if (ext) {
+        if (ext)
+        {
             if (len < 4)
                 return AVERROR_INVALIDDATA;
             ext = (AV_RB16(buf + 2) + 1) * 4;
@@ -259,13 +280,16 @@ int ff_srtp_encrypt(struct SRTPContext *s, const uint8_t *in, int len,
     memcpy(out, in, len);
     buf = out;
 
-    if (rtcp) {
+    if (rtcp)
+    {
         ssrc = AV_RB32(buf + 4);
         index = s->rtcp_index++;
 
         buf += 8;
         len -= 8;
-    } else {
+    }
+    else
+    {
         int ext, csrc;
         int seq = AV_RB16(buf + 2);
 
@@ -290,7 +314,8 @@ int ff_srtp_encrypt(struct SRTPContext *s, const uint8_t *in, int len,
         if (len < 0)
             return AVERROR_INVALIDDATA;
 
-        if (ext) {
+        if (ext)
+        {
             if (len < 4)
                 return AVERROR_INVALIDDATA;
             ext = (AV_RB16(buf + 2) + 1) * 4;
@@ -305,14 +330,16 @@ int ff_srtp_encrypt(struct SRTPContext *s, const uint8_t *in, int len,
     av_aes_init(s->aes, rtcp ? s->rtcp_key : s->rtp_key, 128, 0);
     encrypt_counter(s->aes, iv, buf, len);
 
-    if (rtcp) {
+    if (rtcp)
+    {
         AV_WB32(buf + len, 0x80000000 | index);
         len += 4;
     }
 
     av_hmac_init(s->hmac, rtcp ? s->rtcp_auth : s->rtp_auth, sizeof(s->rtp_auth));
     av_hmac_update(s->hmac, out, buf + len - out);
-    if (!rtcp) {
+    if (!rtcp)
+    {
         uint8_t rocbuf[4];
         AV_WB32(rocbuf, s->roc);
         av_hmac_update(s->hmac, rocbuf, 4);
@@ -329,7 +356,8 @@ int ff_srtp_encrypt(struct SRTPContext *s, const uint8_t *in, int len,
 
 static const char *aes128_80_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn";
 
-static const uint8_t rtp_aes128_80[] = {
+static const uint8_t rtp_aes128_80[] =
+{
     // RTP header
     0x80, 0xe0, 0x12, 0x34, 0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -338,7 +366,8 @@ static const uint8_t rtp_aes128_80[] = {
     0xa1, 0xac, 0x1b, 0xb4, 0xa0, 0x1c, 0xd5, 0x49, 0x28, 0x99,
 };
 
-static const uint8_t rtcp_aes128_80[] = {
+static const uint8_t rtcp_aes128_80[] =
+{
     // RTCP header
     0x81, 0xc9, 0x00, 0x07, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -352,7 +381,8 @@ static const uint8_t rtcp_aes128_80[] = {
 
 static const char *aes128_32_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn";
 
-static const uint8_t rtp_aes128_32[] = {
+static const uint8_t rtp_aes128_32[] =
+{
     // RTP header
     0x80, 0xe0, 0x12, 0x34, 0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -361,7 +391,8 @@ static const uint8_t rtp_aes128_32[] = {
     0xa1, 0xac, 0x1b, 0xb4,
 };
 
-static const uint8_t rtcp_aes128_32[] = {
+static const uint8_t rtcp_aes128_32[] =
+{
     // RTCP header
     0x81, 0xc9, 0x00, 0x07, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -375,7 +406,8 @@ static const uint8_t rtcp_aes128_32[] = {
 
 static const char *aes128_80_32_key = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmn";
 
-static const uint8_t rtp_aes128_80_32[] = {
+static const uint8_t rtp_aes128_80_32[] =
+{
     // RTP header
     0x80, 0xe0, 0x12, 0x34, 0x12, 0x34, 0x56, 0x78, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -384,7 +416,8 @@ static const uint8_t rtp_aes128_80_32[] = {
     0xa1, 0xac, 0x1b, 0xb4,
 };
 
-static const uint8_t rtcp_aes128_80_32[] = {
+static const uint8_t rtcp_aes128_80_32[] =
+{
     // RTCP header
     0x81, 0xc9, 0x00, 0x07, 0x12, 0x34, 0x56, 0x78,
     // encrypted payload
@@ -408,10 +441,12 @@ static int test_decrypt(struct SRTPContext *srtp, const uint8_t *in, int len,
                         uint8_t *out)
 {
     memcpy(out, in, len);
-    if (!ff_srtp_decrypt(srtp, out, &len)) {
+    if (!ff_srtp_decrypt(srtp, out, &len))
+    {
         print_data(out, len);
         return len;
-    } else
+    }
+    else
         return -1;
 }
 
@@ -424,12 +459,15 @@ static void test_encrypt(const uint8_t *data, int in_len, const char *suite,
     ff_srtp_set_crypto(&enc, suite, key);
     ff_srtp_set_crypto(&dec, suite, key);
     len = ff_srtp_encrypt(&enc, data, in_len, buf, sizeof(buf));
-    if (!ff_srtp_decrypt(&dec, buf, &len)) {
+    if (!ff_srtp_decrypt(&dec, buf, &len))
+    {
         if (len == in_len && !memcmp(buf, data, len))
             printf("Decrypted content matches input\n");
         else
             printf("Decrypted content doesn't match input\n");
-    } else {
+    }
+    else
+    {
         printf("Decryption failed\n");
     }
     ff_srtp_free(&enc);

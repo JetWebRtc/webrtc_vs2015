@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA compatible decoder data
  * Copyright (C) 2004 Gildas Bazin
  * Copyright (C) 2004 Benjamin Zores
@@ -31,13 +31,14 @@
 #include "dca_syncwords.h"
 #include "put_bits.h"
 
-const uint32_t avpriv_dca_sample_rates[16] = {
+const uint32_t avpriv_dca_sample_rates[16] =
+{
     0, 8000, 16000, 32000, 0, 0, 11025, 22050, 44100, 0, 0,
     12000, 24000, 48000, 96000, 192000
 };
 
 int avpriv_dca_convert_bitstream(const uint8_t *src, int src_size, uint8_t *dst,
-                             int max_size)
+                                 int max_size)
 {
     uint32_t mrk;
     int i, tmp;
@@ -49,7 +50,8 @@ int avpriv_dca_convert_bitstream(const uint8_t *src, int src_size, uint8_t *dst,
         src_size = max_size;
 
     mrk = AV_RB32(src);
-    switch (mrk) {
+    switch (mrk)
+    {
     case DCA_SYNCWORD_CORE_BE:
         memcpy(dst, src, src_size);
         return src_size;
@@ -60,7 +62,8 @@ int avpriv_dca_convert_bitstream(const uint8_t *src, int src_size, uint8_t *dst,
     case DCA_SYNCWORD_CORE_14B_BE:
     case DCA_SYNCWORD_CORE_14B_LE:
         init_put_bits(&pb, dst, max_size);
-        for (i = 0; i < (src_size + 1) >> 1; i++, src += 2) {
+        for (i = 0; i < (src_size + 1) >> 1; i++, src += 2)
+        {
             tmp = ((mrk == DCA_SYNCWORD_CORE_14B_BE) ? AV_RB16(src) : AV_RL16(src)) & 0x3FFF;
             put_bits(&pb, 14, tmp);
         }

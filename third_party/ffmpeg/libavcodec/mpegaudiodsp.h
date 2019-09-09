@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,7 +22,8 @@
 #include <stdint.h>
 #include "libavutil/common.h"
 
-typedef struct MPADSPContext {
+typedef struct MPADSPContext
+{
     void (*apply_window_float)(float *synth_buf, float *window,
                                int *dither_state, float *samples, int incr);
     void (*apply_window_fixed)(int32_t *synth_buf, int32_t *window,

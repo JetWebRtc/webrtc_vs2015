@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized idctdsp
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -25,7 +25,7 @@
 #include "constants.h"
 
 void ff_put_pixels_clamped_mmi(const int16_t *block,
-        uint8_t *av_restrict pixels, ptrdiff_t line_size)
+                               uint8_t *av_restrict pixels, ptrdiff_t line_size)
 {
     const int16_t *p;
     uint8_t *pix;
@@ -52,7 +52,7 @@ void ff_put_pixels_clamped_mmi(const int16_t *block,
         "gssdxc1 $f8, 0($10, %1)        \r\n"
         "gssdxc1 $f12, 0(%0, %2)        \r\n"
         ::"r"(pix),"r"((int)line_size),
-          "r"((int)line_size*3),"m"(*p)
+        "r"((int)line_size*3),"m"(*p)
         : "$10","memory"
     );
 
@@ -78,13 +78,13 @@ void ff_put_pixels_clamped_mmi(const int16_t *block,
         "gssdxc1 $f8, 0($10, %1)        \r\n"
         "gssdxc1 $f12, 0(%0, %2)        \r\n"
         ::"r"(pix),"r"((int)line_size),
-          "r"((int)line_size*3),"m"(*p)
+        "r"((int)line_size*3),"m"(*p)
         : "$10","memory"
     );
 }
 
 void ff_put_signed_pixels_clamped_mmi(const int16_t *block,
-    uint8_t *av_restrict pixels, ptrdiff_t line_size)
+                                      uint8_t *av_restrict pixels, ptrdiff_t line_size)
 {
     int64_t line_skip = line_size;
     int64_t line_skip3;
@@ -143,7 +143,7 @@ void ff_put_signed_pixels_clamped_mmi(const int16_t *block,
 }
 
 void ff_add_pixels_clamped_mmi(const int16_t *block,
-        uint8_t *av_restrict pixels, ptrdiff_t line_size)
+                               uint8_t *av_restrict pixels, ptrdiff_t line_size)
 {
     const int16_t *p;
     uint8_t *pix;
@@ -157,7 +157,8 @@ void ff_add_pixels_clamped_mmi(const int16_t *block,
         ::
     );
 
-    do {
+    do
+    {
         __asm__ volatile (
             "ldc1 $f0, 0+%2             \r\n"
             "ldc1 $f2, 8+%2             \r\n"
@@ -186,5 +187,6 @@ void ff_add_pixels_clamped_mmi(const int16_t *block,
 
         pix += line_size*2;
         p += 16;
-    } while (--i);
+    }
+    while (--i);
 }

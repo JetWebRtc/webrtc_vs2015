@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,22 +13,25 @@
 
 #include <vector>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Functor to use when supplying a verifier function for the queue item
 // verifcation.
 template <typename T>
-class RenderQueueItemVerifier {
- public:
-  explicit RenderQueueItemVerifier(size_t minimum_capacity)
-      : minimum_capacity_(minimum_capacity) {}
+class RenderQueueItemVerifier
+{
+public:
+    explicit RenderQueueItemVerifier(size_t minimum_capacity)
+        : minimum_capacity_(minimum_capacity) {}
 
-  bool operator()(const std::vector<T>& v) const {
-    return v.capacity() >= minimum_capacity_;
-  }
+    bool operator()(const std::vector<T>& v) const
+    {
+        return v.capacity() >= minimum_capacity_;
+    }
 
- private:
-  size_t minimum_capacity_;
+private:
+    size_t minimum_capacity_;
 };
 
 }  // namespace webrtc

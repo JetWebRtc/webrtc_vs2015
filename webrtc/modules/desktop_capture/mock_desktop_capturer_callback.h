@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
+﻿/* Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -16,21 +16,23 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockDesktopCapturerCallback : public DesktopCapturer::Callback {
- public:
-  MockDesktopCapturerCallback();
-  ~MockDesktopCapturerCallback() override;
+class MockDesktopCapturerCallback : public DesktopCapturer::Callback
+{
+public:
+    MockDesktopCapturerCallback();
+    ~MockDesktopCapturerCallback() override;
 
-  MOCK_METHOD2(OnCaptureResultPtr,
-               void(DesktopCapturer::Result result,
-                    std::unique_ptr<DesktopFrame>* frame));
-  void OnCaptureResult(DesktopCapturer::Result result,
-                       std::unique_ptr<DesktopFrame> frame) final;
+    MOCK_METHOD2(OnCaptureResultPtr,
+                 void(DesktopCapturer::Result result,
+                      std::unique_ptr<DesktopFrame>* frame));
+    void OnCaptureResult(DesktopCapturer::Result result,
+                         std::unique_ptr<DesktopFrame> frame) final;
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(MockDesktopCapturerCallback);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(MockDesktopCapturerCallback);
 };
 
 }  // namespace webrtc

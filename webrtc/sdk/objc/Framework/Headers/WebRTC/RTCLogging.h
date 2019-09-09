@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,11 +13,12 @@
 #import <WebRTC/RTCMacros.h>
 
 // Subset of rtc::LoggingSeverity.
-typedef NS_ENUM(NSInteger, RTCLoggingSeverity) {
-  RTCLoggingSeverityVerbose,
-  RTCLoggingSeverityInfo,
-  RTCLoggingSeverityWarning,
-  RTCLoggingSeverityError,
+typedef NS_ENUM(NSInteger, RTCLoggingSeverity)
+{
+    RTCLoggingSeverityVerbose,
+    RTCLoggingSeverityInfo,
+    RTCLoggingSeverityWarning,
+    RTCLoggingSeverityError,
 };
 
 // Wrapper for C++ LOG(sev) macros.

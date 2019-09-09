@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class MixHistory;
 
 // A callback class that all mixer participants must inherit from/implement.
@@ -31,28 +32,31 @@ public:
     // time so that subclasses can override it without getting warnings.
     // TODO(henrik.lundin) Remove this function.
     virtual int32_t GetAudioFrame(int32_t id,
-                                  AudioFrame* audioFrame) {
-      RTC_CHECK(false);
-      return -1;
+                                  AudioFrame* audioFrame)
+    {
+        RTC_CHECK(false);
+        return -1;
     }
 
 
     // The implementation of GetAudioFrameWithMuted should update audio_frame
     // with new audio every time it's called. The return value will be
     // interpreted as follows.
-    enum class AudioFrameInfo {
-      kNormal,  // The samples in audio_frame are valid and should be used.
-      kMuted,   // The samples in audio_frame should not be used, but should be
-                // implicitly interpreted as zero. Other fields in audio_frame
-                // may be read and should contain meaningful values.
-      kError    // audio_frame will not be used.
+    enum class AudioFrameInfo
+    {
+        kNormal,  // The samples in audio_frame are valid and should be used.
+        kMuted,   // The samples in audio_frame should not be used, but should be
+        // implicitly interpreted as zero. Other fields in audio_frame
+        // may be read and should contain meaningful values.
+        kError    // audio_frame will not be used.
     };
 
     virtual AudioFrameInfo GetAudioFrameWithMuted(int32_t id,
-                                                  AudioFrame* audio_frame) {
-      return GetAudioFrame(id, audio_frame) == -1 ?
-          AudioFrameInfo::kError :
-          AudioFrameInfo::kNormal;
+            AudioFrame* audio_frame)
+    {
+        return GetAudioFrame(id, audio_frame) == -1 ?
+               AudioFrameInfo::kError :
+               AudioFrameInfo::kNormal;
     }
 
     // Returns true if the participant was mixed this mix iteration.

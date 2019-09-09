@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,21 +15,23 @@
 #include "webrtc/modules/rtp_rtcp/source/forward_error_correction.h"
 #include "webrtc/modules/rtp_rtcp/source/ulpfec_header_reader_writer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 using Packet = ForwardErrorCorrection::Packet;
 using ReceivedFecPacket = ForwardErrorCorrection::ReceivedFecPacket;
 
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  ReceivedFecPacket packet;
-  packet.pkt = rtc::scoped_refptr<Packet>(new Packet());
-  const size_t packet_size =
-      std::min(size, static_cast<size_t>(IP_PACKET_SIZE));
-  memcpy(packet.pkt->data, data, packet_size);
-  packet.pkt->length = packet_size;
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    ReceivedFecPacket packet;
+    packet.pkt = rtc::scoped_refptr<Packet>(new Packet());
+    const size_t packet_size =
+        std::min(size, static_cast<size_t>(IP_PACKET_SIZE));
+    memcpy(packet.pkt->data, data, packet_size);
+    packet.pkt->length = packet_size;
 
-  UlpfecHeaderReader ulpfec_reader;
-  ulpfec_reader.ReadFecHeader(&packet);
+    UlpfecHeaderReader ulpfec_reader;
+    ulpfec_reader.ReadFecHeader(&packet);
 }
 
 }  // namespace webrtc

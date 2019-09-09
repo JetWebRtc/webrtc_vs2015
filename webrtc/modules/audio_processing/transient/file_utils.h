@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,19 +16,21 @@
 #include "webrtc/system_wrappers/include/file_wrapper.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This is a copy of the cast included in the Chromium codebase here:
 // http://cs.chromium.org/src/third_party/cld/base/casts.h
 template <class Dest, class Source>
-inline Dest bit_cast(const Source& source) {
-  // A compile error here means your Dest and Source have different sizes.
-  static_assert(sizeof(Dest) == sizeof(Source),
-                "Dest and Source have different sizes");
+inline Dest bit_cast(const Source& source)
+{
+    // A compile error here means your Dest and Source have different sizes.
+    static_assert(sizeof(Dest) == sizeof(Source),
+                  "Dest and Source have different sizes");
 
-  Dest dest;
-  memcpy(&dest, &source, sizeof(dest));
-  return dest;
+    Dest dest;
+    memcpy(&dest, &source, sizeof(dest));
+    return dest;
 }
 
 // Converts the byte array with binary float representation to float.

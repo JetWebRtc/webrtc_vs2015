@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,67 +18,71 @@
 #include "webrtc/base/sslidentity.h"
 #include "webrtc/base/thread.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // See |RTCCertificateGeneratorInterface::GenerateCertificateAsync|.
-class RTCCertificateGeneratorCallback : public RefCountInterface {
- public:
-  virtual void OnSuccess(
-    const scoped_refptr<RTCCertificate>& certificate) = 0;
-  virtual void OnFailure() = 0;
+class RTCCertificateGeneratorCallback : public RefCountInterface
+{
+public:
+    virtual void OnSuccess(
+        const scoped_refptr<RTCCertificate>& certificate) = 0;
+    virtual void OnFailure() = 0;
 
- protected:
-  ~RTCCertificateGeneratorCallback() override {}
+protected:
+    ~RTCCertificateGeneratorCallback() override {}
 };
 
 // Generates |RTCCertificate|s.
 // See |RTCCertificateGenerator| for the WebRTC repo's implementation.
-class RTCCertificateGeneratorInterface {
- public:
-  virtual ~RTCCertificateGeneratorInterface() {}
+class RTCCertificateGeneratorInterface
+{
+public:
+    virtual ~RTCCertificateGeneratorInterface() {}
 
-  // Generates a certificate asynchronously on the worker thread.
-  // Must be called on the signaling thread. The |callback| is invoked with the
-  // result on the signaling thread. |exipres_ms| optionally specifies for how
-  // long we want the certificate to be valid, but the implementation may choose
-  // its own restrictions on the expiration time.
-  virtual void GenerateCertificateAsync(
-      const KeyParams& key_params,
-      const Optional<uint64_t>& expires_ms,
-      const scoped_refptr<RTCCertificateGeneratorCallback>& callback) = 0;
+    // Generates a certificate asynchronously on the worker thread.
+    // Must be called on the signaling thread. The |callback| is invoked with the
+    // result on the signaling thread. |exipres_ms| optionally specifies for how
+    // long we want the certificate to be valid, but the implementation may choose
+    // its own restrictions on the expiration time.
+    virtual void GenerateCertificateAsync(
+        const KeyParams& key_params,
+        const Optional<uint64_t>& expires_ms,
+        const scoped_refptr<RTCCertificateGeneratorCallback>& callback) = 0;
 };
 
 // Standard implementation of |RTCCertificateGeneratorInterface|.
 // The static function |GenerateCertificate| generates a certificate on the
 // current thread. The |RTCCertificateGenerator| instance generates certificates
 // asynchronously on the worker thread with |GenerateCertificateAsync|.
-class RTCCertificateGenerator : public RTCCertificateGeneratorInterface {
- public:
-  // Generates a certificate on the current thread. Returns null on failure.
-  // If |expires_ms| is specified, the certificate will expire in approximately
-  // that many milliseconds from now. |expires_ms| is limited to a year, a
-  // larger value than that is clamped down to a year. If |expires_ms| is not
-  // specified, a default expiration time is used.
-  static scoped_refptr<RTCCertificate> GenerateCertificate(
-      const KeyParams& key_params,
-      const Optional<uint64_t>& expires_ms);
+class RTCCertificateGenerator : public RTCCertificateGeneratorInterface
+{
+public:
+    // Generates a certificate on the current thread. Returns null on failure.
+    // If |expires_ms| is specified, the certificate will expire in approximately
+    // that many milliseconds from now. |expires_ms| is limited to a year, a
+    // larger value than that is clamped down to a year. If |expires_ms| is not
+    // specified, a default expiration time is used.
+    static scoped_refptr<RTCCertificate> GenerateCertificate(
+        const KeyParams& key_params,
+        const Optional<uint64_t>& expires_ms);
 
-  RTCCertificateGenerator(Thread* signaling_thread, Thread* worker_thread);
-  ~RTCCertificateGenerator() override {}
+    RTCCertificateGenerator(Thread* signaling_thread, Thread* worker_thread);
+    ~RTCCertificateGenerator() override {}
 
-  // |RTCCertificateGeneratorInterface| overrides.
-  // If |expires_ms| is specified, the certificate will expire in approximately
-  // that many milliseconds from now. |expires_ms| is limited to a year, a
-  // larger value than that is clamped down to a year. If |expires_ms| is not
-  // specified, a default expiration time is used.
-  void GenerateCertificateAsync(
-      const KeyParams& key_params,
-      const Optional<uint64_t>& expires_ms,
-      const scoped_refptr<RTCCertificateGeneratorCallback>& callback) override;
+    // |RTCCertificateGeneratorInterface| overrides.
+    // If |expires_ms| is specified, the certificate will expire in approximately
+    // that many milliseconds from now. |expires_ms| is limited to a year, a
+    // larger value than that is clamped down to a year. If |expires_ms| is not
+    // specified, a default expiration time is used.
+    void GenerateCertificateAsync(
+        const KeyParams& key_params,
+        const Optional<uint64_t>& expires_ms,
+        const scoped_refptr<RTCCertificateGeneratorCallback>& callback) override;
 
- private:
-  Thread* const signaling_thread_;
-  Thread* const worker_thread_;
+private:
+    Thread* const signaling_thread_;
+    Thread* const worker_thread_;
 };
 
 }  // namespace rtc

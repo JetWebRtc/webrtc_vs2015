@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Lossless video DSP utils
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "avcodec.h"
 #include "libavutil/cpu.h"
 
-typedef struct LLVidDSPContext {
+typedef struct LLVidDSPContext
+{
     void (*add_int16)(uint16_t *dst/*align 16*/, const uint16_t *src/*align 16*/, unsigned mask, int w);
     void (*diff_int16)(uint16_t *dst/*align 16*/, const uint16_t *src1/*align 16*/, const uint16_t *src2/*align 1*/, unsigned mask, int w);
 

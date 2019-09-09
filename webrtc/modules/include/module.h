@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,67 +13,70 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ProcessThread;
 
-class Module {
- public:
-  // Returns the number of milliseconds until the module wants a worker
-  // thread to call Process.
-  // This method is called on the same worker thread as Process will
-  // be called on.
-  // TODO(tommi): Almost all implementations of this function, need to know
-  // the current tick count.  Consider passing it as an argument.  It could
-  // also improve the accuracy of when the next callback occurs since the
-  // thread that calls Process() will also have it's tick count reference
-  // which might not match with what the implementations use.
-  virtual int64_t TimeUntilNextProcess() = 0;
+class Module
+{
+public:
+    // Returns the number of milliseconds until the module wants a worker
+    // thread to call Process.
+    // This method is called on the same worker thread as Process will
+    // be called on.
+    // TODO(tommi): Almost all implementations of this function, need to know
+    // the current tick count.  Consider passing it as an argument.  It could
+    // also improve the accuracy of when the next callback occurs since the
+    // thread that calls Process() will also have it's tick count reference
+    // which might not match with what the implementations use.
+    virtual int64_t TimeUntilNextProcess() = 0;
 
-  // Process any pending tasks such as timeouts.
-  // Called on a worker thread.
-  virtual void Process() = 0;
+    // Process any pending tasks such as timeouts.
+    // Called on a worker thread.
+    virtual void Process() = 0;
 
-  // This method is called when the module is attached to a *running* process
-  // thread or detached from one.  In the case of detaching, |process_thread|
-  // will be nullptr.
-  //
-  // This method will be called in the following cases:
-  //
-  // * Non-null process_thread:
-  //   * ProcessThread::RegisterModule() is called while the thread is running.
-  //   * ProcessThread::Start() is called and RegisterModule has previously
-  //     been called.  The thread will be started immediately after notifying
-  //     all modules.
-  //
-  // * Null process_thread:
-  //   * ProcessThread::DeRegisterModule() is called while the thread is
-  //     running.
-  //   * ProcessThread::Stop() was called and the thread has been stopped.
-  //
-  // NOTE: This method is not called from the worker thread itself, but from
-  //       the thread that registers/deregisters the module or calls Start/Stop.
-  virtual void ProcessThreadAttached(ProcessThread* process_thread) {}
+    // This method is called when the module is attached to a *running* process
+    // thread or detached from one.  In the case of detaching, |process_thread|
+    // will be nullptr.
+    //
+    // This method will be called in the following cases:
+    //
+    // * Non-null process_thread:
+    //   * ProcessThread::RegisterModule() is called while the thread is running.
+    //   * ProcessThread::Start() is called and RegisterModule has previously
+    //     been called.  The thread will be started immediately after notifying
+    //     all modules.
+    //
+    // * Null process_thread:
+    //   * ProcessThread::DeRegisterModule() is called while the thread is
+    //     running.
+    //   * ProcessThread::Stop() was called and the thread has been stopped.
+    //
+    // NOTE: This method is not called from the worker thread itself, but from
+    //       the thread that registers/deregisters the module or calls Start/Stop.
+    virtual void ProcessThreadAttached(ProcessThread* process_thread) {}
 
- protected:
-  virtual ~Module() {}
+protected:
+    virtual ~Module() {}
 };
 
 // Reference counted version of the Module interface.
-class RefCountedModule : public Module {
- public:
-  // Increase the reference count by one.
-  // Returns the incremented reference count.
-  virtual int32_t AddRef() const = 0;
+class RefCountedModule : public Module
+{
+public:
+    // Increase the reference count by one.
+    // Returns the incremented reference count.
+    virtual int32_t AddRef() const = 0;
 
-  // Decrease the reference count by one.
-  // Returns the decreased reference count.
-  // Returns 0 if the last reference was just released.
-  // When the reference count reaches 0 the object will self-destruct.
-  virtual int32_t Release() const = 0;
+    // Decrease the reference count by one.
+    // Returns the decreased reference count.
+    // Returns 0 if the last reference was just released.
+    // When the reference count reaches 0 the object will self-destruct.
+    virtual int32_t Release() const = 0;
 
- protected:
-  ~RefCountedModule() override = default;
+protected:
+    ~RefCountedModule() override = default;
 };
 
 }  // namespace webrtc

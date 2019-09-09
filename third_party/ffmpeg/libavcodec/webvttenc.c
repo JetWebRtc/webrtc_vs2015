@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WebVTT subtitle encoder
  * Copyright (c) 2010  Aurelien Jacobs <aurel@gnuage.org>
  * Copyright (c) 2014  Aman Gupta <ffmpeg@tmm1.net>
@@ -28,7 +28,8 @@
 #include "ass.h"
 
 #define WEBVTT_STACK_SIZE 64
-typedef struct {
+typedef struct
+{
     AVCodecContext *avctx;
     ASSSplitContext *ass_ctx;
     AVBPrint buffer;
@@ -80,29 +81,35 @@ static void webvtt_close_tag(WebVTTContext *s, char tag)
 
 static void webvtt_stack_push_pop(WebVTTContext *s, const char c, int close)
 {
-    if (close) {
+    if (close)
+    {
         int i = c ? webvtt_stack_find(s, c) : 0;
         if (i < 0)
             return;
         while (s->stack_ptr != i)
             webvtt_close_tag(s, webvtt_stack_pop(s));
-    } else if (webvtt_stack_push(s, c) < 0)
+    }
+    else if (webvtt_stack_push(s, c) < 0)
         av_log(s->avctx, AV_LOG_ERROR, "tag stack overflow\n");
 }
 
 static void webvtt_style_apply(WebVTTContext *s, const char *style)
 {
     ASSStyle *st = ff_ass_style_get(s->ass_ctx, style);
-    if (st) {
-        if (st->bold != ASS_DEFAULT_BOLD) {
+    if (st)
+    {
+        if (st->bold != ASS_DEFAULT_BOLD)
+        {
             webvtt_print(s, "<b>");
             webvtt_stack_push(s, 'b');
         }
-        if (st->italic != ASS_DEFAULT_ITALIC) {
+        if (st->italic != ASS_DEFAULT_ITALIC)
+        {
             webvtt_print(s, "<i>");
             webvtt_stack_push(s, 'i');
         }
-        if (st->underline != ASS_DEFAULT_UNDERLINE) {
+        if (st->underline != ASS_DEFAULT_UNDERLINE)
+        {
             webvtt_print(s, "<u>");
             webvtt_stack_push(s, 'u');
         }
@@ -141,7 +148,8 @@ static void webvtt_end_cb(void *priv)
     webvtt_stack_push_pop(priv, 0, 1);
 }
 
-static const ASSCodesCallbacks webvtt_callbacks = {
+static const ASSCodesCallbacks webvtt_callbacks =
+{
     .text             = webvtt_text_cb,
     .new_line         = webvtt_new_line_cb,
     .style            = webvtt_style_cb,
@@ -163,14 +171,17 @@ static int webvtt_encode_frame(AVCodecContext *avctx,
 
     av_bprint_clear(&s->buffer);
 
-    for (i=0; i<sub->num_rects; i++) {
-        if (sub->rects[i]->type != SUBTITLE_ASS) {
+    for (i=0; i<sub->num_rects; i++)
+    {
+        if (sub->rects[i]->type != SUBTITLE_ASS)
+        {
             av_log(avctx, AV_LOG_ERROR, "Only SUBTITLE_ASS type supported.\n");
             return AVERROR(ENOSYS);
         }
 
         dialog = ff_ass_split_dialog(s->ass_ctx, sub->rects[i]->ass, 0, &num);
-        for (; dialog && num--; dialog++) {
+        for (; dialog && num--; dialog++)
+        {
             webvtt_style_apply(s, dialog->style);
             ff_ass_split_override_codes(&webvtt_callbacks, s, dialog->text);
         }
@@ -181,7 +192,8 @@ static int webvtt_encode_frame(AVCodecContext *avctx,
     if (!s->buffer.len)
         return 0;
 
-    if (s->buffer.len > bufsize) {
+    if (s->buffer.len > bufsize)
+    {
         av_log(avctx, AV_LOG_ERROR, "Buffer too small for ASS event.\n");
         return -1;
     }
@@ -207,7 +219,8 @@ static av_cold int webvtt_encode_init(AVCodecContext *avctx)
     return s->ass_ctx ? 0 : AVERROR_INVALIDDATA;
 }
 
-AVCodec ff_webvtt_encoder = {
+AVCodec ff_webvtt_encoder =
+{
     .name           = "webvtt",
     .long_name      = NULL_IF_CONFIG_SMALL("WebVTT subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

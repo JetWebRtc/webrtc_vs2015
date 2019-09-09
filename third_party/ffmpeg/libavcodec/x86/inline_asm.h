@@ -1,4 +1,4 @@
-/*
+﻿/*
  * inline assembly helper macros
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 #include "typedefs.h"
 #include "decoder_context.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 void  WelsResetRefPic (PWelsDecoderContext pCtx);
 int32_t WelsInitRefList (PWelsDecoderContext pCtx, int32_t iPoc);

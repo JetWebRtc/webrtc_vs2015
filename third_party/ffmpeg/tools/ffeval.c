@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -68,8 +68,10 @@ int main(int argc, char **argv)
     } while (0)
 
     GROW_ARRAY();
-    while ((c = getopt(argc, argv, "ehi:o:p:")) != -1) {
-        switch (c) {
+    while ((c = getopt(argc, argv, "ehi:o:p:")) != -1)
+    {
+        switch (c)
+        {
         case 'e':
             echo = 1;
             break;
@@ -90,34 +92,45 @@ int main(int argc, char **argv)
         }
     }
 
-    if (!infilename || !strcmp(infilename, "-")) {
+    if (!infilename || !strcmp(infilename, "-"))
+    {
         infilename = "stdin";
         infile = stdin;
-    } else {
+    }
+    else
+    {
         infile = fopen(infilename, "r");
     }
-    if (!infile) {
+    if (!infile)
+    {
         fprintf(stderr, "Impossible to open input file '%s': %s\n", infilename, strerror(errno));
         return 1;
     }
 
-    if (!outfilename || !strcmp(outfilename, "-")) {
+    if (!outfilename || !strcmp(outfilename, "-"))
+    {
         outfilename = "stdout";
         outfile = stdout;
-    } else {
+    }
+    else
+    {
         outfile = fopen(outfilename, "w");
     }
-    if (!outfile) {
+    if (!outfile)
+    {
         fprintf(stderr, "Impossible to open output file '%s': %s\n", outfilename, strerror(errno));
         return 1;
     }
 
-    while ((c = fgetc(infile)) != EOF) {
-        if (c == '\n') {
+    while ((c = fgetc(infile)) != EOF)
+    {
+        if (c == '\n')
+        {
             double d;
 
             buf[count] = 0;
-            if (buf[0] != '#') {
+            if (buf[0] != '#')
+            {
                 int ret = av_expr_parse_and_eval(&d, buf,
                                                  NULL, NULL,
                                                  NULL, NULL, NULL, NULL, NULL, 0, NULL);
@@ -127,7 +140,9 @@ int main(int argc, char **argv)
                 else          fprintf(outfile, "%s%f (%s)\n", prompt, d, av_err2str(ret));
             }
             count = 0;
-        } else {
+        }
+        else
+        {
             if (count >= buf_size-1)
                 GROW_ARRAY();
             buf[count++] = c;

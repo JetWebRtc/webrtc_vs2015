@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,14 +23,16 @@ static int jacosub_write_header(AVFormatContext *s)
 {
     const AVCodecContext *avctx = s->streams[0]->codec;
 
-    if (avctx->extradata_size) {
+    if (avctx->extradata_size)
+    {
         avio_write(s->pb, avctx->extradata, avctx->extradata_size - 1);
         avio_flush(s->pb);
     }
     return 0;
 }
 
-AVOutputFormat ff_jacosub_muxer = {
+AVOutputFormat ff_jacosub_muxer =
+{
     .name           = "jacosub",
     .long_name      = NULL_IF_CONFIG_SMALL("JACOsub subtitle format"),
     .mime_type      = "text/x-jacosub",

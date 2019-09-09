@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Richard Spindler (author of frei0r plugin from which this was derived)
  * Copyright (C) 2014 Daniel Oberhoff
  *
@@ -34,7 +34,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct LenscorrectionCtx {
+typedef struct LenscorrectionCtx
+{
     const AVClass *av_class;
     unsigned int width;
     unsigned int height;
@@ -45,7 +46,8 @@ typedef struct LenscorrectionCtx {
 } LenscorrectionCtx;
 
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption lenscorrection_options[] = {
+static const AVOption lenscorrection_options[] =
+{
     { "cx",     "set relative center x", offsetof(LenscorrectionCtx, cx), AV_OPT_TYPE_DOUBLE, {.dbl=0.5}, 0, 1, .flags=FLAGS },
     { "cy",     "set relative center y", offsetof(LenscorrectionCtx, cy), AV_OPT_TYPE_DOUBLE, {.dbl=0.5}, 0, 1, .flags=FLAGS },
     { "k1",     "set quadratic distortion factor", offsetof(LenscorrectionCtx, k1), AV_OPT_TYPE_DOUBLE, {.dbl=0.0}, -1, 1, .flags=FLAGS },
@@ -55,7 +57,8 @@ static const AVOption lenscorrection_options[] = {
 
 AVFILTER_DEFINE_CLASS(lenscorrection);
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
     int w, h;
     int plane;
@@ -80,11 +83,13 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
     const uint8_t *indata = in->data[plane];
     uint8_t *outrow = out->data[plane] + start * outlinesize;
     int i;
-    for (i = start; i < end; i++, outrow += outlinesize) {
+    for (i = start; i < end; i++, outrow += outlinesize)
+    {
         const int off_y = i - ycenter;
         uint8_t *out = outrow;
         int j;
-        for (j = 0; j < w; j++) {
+        for (j = 0; j < w; j++)
+        {
             const int off_x = j - xcenter;
             const int64_t radius_mult = td->correction[j + i*w];
             const int x = xcenter + ((radius_mult * off_x + (1<<23))>>24);
@@ -98,7 +103,8 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV410P,
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUVJ444P,
         AV_PIX_FMT_YUV420P,  AV_PIX_FMT_YUVJ420P,
@@ -118,7 +124,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     LenscorrectionCtx *rect = ctx->priv;
     int i;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(rect->correction); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(rect->correction); i++)
+    {
         av_freep(&rect->correction[i]);
     }
 }
@@ -145,14 +152,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
     int plane;
 
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
 
     av_frame_copy_props(out, in);
 
-    for (plane = 0; plane < rect->nb_planes; ++plane) {
+    for (plane = 0; plane < rect->nb_planes; ++plane)
+    {
         int hsub = plane == 1 || plane == 2 ? rect->hsub : 0;
         int vsub = plane == 1 || plane == 2 ? rect->vsub : 0;
         int hdiv = 1 << hsub;
@@ -163,26 +172,31 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         int ycenter = rect->cy * h;
         int k1 = rect->k1 * (1<<24);
         int k2 = rect->k2 * (1<<24);
-        ThreadData td = {
+        ThreadData td =
+        {
             .in = in,
             .out  = out,
             .w  = w,
             .h  = h,
             .xcenter = xcenter,
             .ycenter = ycenter,
-            .plane = plane};
+            .plane = plane
+        };
 
-        if (!rect->correction[plane]) {
+        if (!rect->correction[plane])
+        {
             int i,j;
             const int64_t r2inv = (4LL<<60) / (w * w + h * h);
 
             rect->correction[plane] = av_malloc_array(w, h * sizeof(**rect->correction));
             if (!rect->correction[plane])
                 return AVERROR(ENOMEM);
-            for (j = 0; j < h; j++) {
+            for (j = 0; j < h; j++)
+            {
                 const int off_y = j - ycenter;
                 const int off_y2 = off_y * off_y;
-                for (i = 0; i < w; i++) {
+                for (i = 0; i < w; i++)
+                {
                     const int off_x = i - xcenter;
                     const int64_t r2 = ((off_x * off_x + off_y2) * r2inv + (1LL<<31)) >> 32;
                     const int64_t r4 = (r2 * r2 + (1<<27)) >> 28;
@@ -200,7 +214,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad lenscorrection_inputs[] = {
+static const AVFilterPad lenscorrection_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -209,7 +224,8 @@ static const AVFilterPad lenscorrection_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad lenscorrection_outputs[] = {
+static const AVFilterPad lenscorrection_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -218,7 +234,8 @@ static const AVFilterPad lenscorrection_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_lenscorrection = {
+AVFilter ff_vf_lenscorrection =
+{
     .name          = "lenscorrection",
     .description   = NULL_IF_CONFIG_SMALL("Rectify the image by correcting for lens distortion."),
     .priv_size     = sizeof(LenscorrectionCtx),

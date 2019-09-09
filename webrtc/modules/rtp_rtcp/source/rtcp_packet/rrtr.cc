@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,8 +13,10 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/modules/rtp_rtcp/source/byte_io.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 // Receiver Reference Time Report Block (RFC 3611).
 //
 //   0                   1                   2                   3
@@ -27,22 +29,24 @@ namespace rtcp {
 //  |             NTP timestamp, least significant word             |
 //  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
-void Rrtr::Parse(const uint8_t* buffer) {
-  RTC_DCHECK(buffer[0] == kBlockType);
-  // reserved = buffer[1];
-  RTC_DCHECK(ByteReader<uint16_t>::ReadBigEndian(&buffer[2]) == kBlockLength);
-  uint32_t seconds = ByteReader<uint32_t>::ReadBigEndian(&buffer[4]);
-  uint32_t fraction = ByteReader<uint32_t>::ReadBigEndian(&buffer[8]);
-  ntp_.Set(seconds, fraction);
+void Rrtr::Parse(const uint8_t* buffer)
+{
+    RTC_DCHECK(buffer[0] == kBlockType);
+    // reserved = buffer[1];
+    RTC_DCHECK(ByteReader<uint16_t>::ReadBigEndian(&buffer[2]) == kBlockLength);
+    uint32_t seconds = ByteReader<uint32_t>::ReadBigEndian(&buffer[4]);
+    uint32_t fraction = ByteReader<uint32_t>::ReadBigEndian(&buffer[8]);
+    ntp_.Set(seconds, fraction);
 }
 
-void Rrtr::Create(uint8_t* buffer) const {
-  const uint8_t kReserved = 0;
-  buffer[0] = kBlockType;
-  buffer[1] = kReserved;
-  ByteWriter<uint16_t>::WriteBigEndian(&buffer[2], kBlockLength);
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[4], ntp_.seconds());
-  ByteWriter<uint32_t>::WriteBigEndian(&buffer[8], ntp_.fractions());
+void Rrtr::Create(uint8_t* buffer) const
+{
+    const uint8_t kReserved = 0;
+    buffer[0] = kBlockType;
+    buffer[1] = kReserved;
+    ByteWriter<uint16_t>::WriteBigEndian(&buffer[2], kBlockLength);
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[4], ntp_.seconds());
+    ByteWriter<uint32_t>::WriteBigEndian(&buffer[8], ntp_.fractions());
 }
 
 }  // namespace rtcp

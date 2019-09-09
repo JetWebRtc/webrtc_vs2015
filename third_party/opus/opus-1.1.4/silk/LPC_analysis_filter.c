@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -64,19 +64,23 @@ void silk_LPC_analysis_filter(
 
 #ifdef FIXED_POINT
     silk_assert( d <= SILK_MAX_ORDER_LPC );
-    for ( j = 0; j < d; j++ ) {
+    for ( j = 0; j < d; j++ )
+    {
         num[ j ] = -B[ j ];
     }
-    for (j=0;j<d;j++) {
+    for (j=0; j<d; j++)
+    {
         mem[ j ] = in[ d - j - 1 ];
     }
     celt_fir( in + d, num, out + d, len - d, d, mem, arch );
-    for ( j = 0; j < d; j++ ) {
+    for ( j = 0; j < d; j++ )
+    {
         out[ j ] = 0;
     }
 #else
     (void)arch;
-    for( ix = d; ix < len; ix++ ) {
+    for( ix = d; ix < len; ix++ )
+    {
         in_ptr = &in[ ix - 1 ];
 
         out32_Q12 = silk_SMULBB( in_ptr[  0 ], B[ 0 ] );
@@ -87,7 +91,8 @@ void silk_LPC_analysis_filter(
         out32_Q12 = silk_SMLABB_ovflw( out32_Q12, in_ptr[ -3 ], B[ 3 ] );
         out32_Q12 = silk_SMLABB_ovflw( out32_Q12, in_ptr[ -4 ], B[ 4 ] );
         out32_Q12 = silk_SMLABB_ovflw( out32_Q12, in_ptr[ -5 ], B[ 5 ] );
-        for( j = 6; j < d; j += 2 ) {
+        for( j = 6; j < d; j += 2 )
+        {
             out32_Q12 = silk_SMLABB_ovflw( out32_Q12, in_ptr[ -j     ], B[ j     ] );
             out32_Q12 = silk_SMLABB_ovflw( out32_Q12, in_ptr[ -j - 1 ], B[ j + 1 ] );
         }

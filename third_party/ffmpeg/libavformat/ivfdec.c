@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 David Conrad
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,7 @@
 static int probe(AVProbeData *p)
 {
     if (AV_RL32(p->buf) == MKTAG('D','K','I','F')
-        && !AV_RL16(p->buf+4) && AV_RL16(p->buf+6) == 32)
+            && !AV_RL16(p->buf+4) && AV_RL16(p->buf+6) == 32)
         return AVPROBE_SCORE_MAX-2;
 
     return 0;
@@ -57,7 +57,8 @@ static int read_header(AVFormatContext *s)
 
     st->need_parsing      = AVSTREAM_PARSE_HEADERS;
 
-    if (!time_base.den || !time_base.num) {
+    if (!time_base.den || !time_base.num)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid frame rate\n");
         return AVERROR_INVALIDDATA;
     }
@@ -80,7 +81,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_ivf_demuxer = {
+AVInputFormat ff_ivf_demuxer =
+{
     .name           = "ivf",
     .long_name      = NULL_IF_CONFIG_SMALL("On2 IVF"),
     .read_probe     = probe,

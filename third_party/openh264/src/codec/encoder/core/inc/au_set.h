@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -46,7 +46,8 @@
 #include "paraset_strategy.h"
 #include "param_svc.h"
 #include "utils.h"
-namespace WelsEnc {
+namespace WelsEnc
+{
 /*!
  *************************************************************************************
  * \brief   to write Sequence Parameter Set (SPS)

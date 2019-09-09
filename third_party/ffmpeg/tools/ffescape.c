@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -66,8 +66,10 @@ int main(int argc, char **argv)
     char *special_chars = NULL;
     int c;
 
-    while ((c = getopt(argc, argv, "ef:hi:l:o:m:p:s:")) != -1) {
-        switch (c) {
+    while ((c = getopt(argc, argv, "ef:hi:l:o:m:p:s:")) != -1)
+    {
+        switch (c)
+        {
         case 'e':
             echo = 1;
             break;
@@ -80,7 +82,8 @@ int main(int argc, char **argv)
         case 'f':
             if      (!strcmp(optarg, "whitespace")) escape_flags |= AV_ESCAPE_FLAG_WHITESPACE;
             else if (!strcmp(optarg, "strict"))     escape_flags |= AV_ESCAPE_FLAG_STRICT;
-            else {
+            else
+            {
                 av_log(NULL, AV_LOG_ERROR,
                        "Invalid value '%s' for option -f, "
                        "valid arguments are 'whitespace', and 'strict'\n", optarg);
@@ -91,10 +94,11 @@ int main(int argc, char **argv)
         {
             char *tail;
             long int li = strtol(optarg, &tail, 10);
-            if (*tail || li > INT_MAX || li < 0) {
+            if (*tail || li > INT_MAX || li < 0)
+            {
                 av_log(NULL, AV_LOG_ERROR,
-                        "Invalid value '%s' for option -l, argument must be a non negative integer\n",
-                        optarg);
+                       "Invalid value '%s' for option -l, argument must be a non negative integer\n",
+                       optarg);
                 return 1;
             }
             level = li;
@@ -104,7 +108,8 @@ int main(int argc, char **argv)
             if      (!strcmp(optarg, "auto"))      escape_mode = AV_ESCAPE_MODE_AUTO;
             else if (!strcmp(optarg, "backslash")) escape_mode = AV_ESCAPE_MODE_BACKSLASH;
             else if (!strcmp(optarg, "quote"))     escape_mode = AV_ESCAPE_MODE_QUOTE;
-            else {
+            else
+            {
                 av_log(NULL, AV_LOG_ERROR,
                        "Invalid value '%s' for option -m, "
                        "valid arguments are 'backslash', and 'quote'\n", optarg);
@@ -125,24 +130,32 @@ int main(int argc, char **argv)
         }
     }
 
-    if (!infilename || !strcmp(infilename, "-")) {
+    if (!infilename || !strcmp(infilename, "-"))
+    {
         infilename = "stdin";
         infile = stdin;
-    } else {
+    }
+    else
+    {
         infile = fopen(infilename, "r");
     }
-    if (!infile) {
+    if (!infile)
+    {
         av_log(NULL, AV_LOG_ERROR, "Impossible to open input file '%s': %s\n", infilename, strerror(errno));
         return 1;
     }
 
-    if (!outfilename || !strcmp(outfilename, "-")) {
+    if (!outfilename || !strcmp(outfilename, "-"))
+    {
         outfilename = "stdout";
         outfile = stdout;
-    } else {
+    }
+    else
+    {
         outfile = fopen(outfilename, "w");
     }
-    if (!outfile) {
+    if (!outfile)
+    {
         av_log(NULL, AV_LOG_ERROR, "Impossible to open output file '%s': %s\n", outfilename, strerror(errno));
         return 1;
     }
@@ -153,7 +166,8 @@ int main(int argc, char **argv)
         av_bprint_chars(&src, c, 1);
     av_bprint_chars(&src, 0, 1);
 
-    if (!av_bprint_is_complete(&src)) {
+    if (!av_bprint_is_complete(&src))
+    {
         av_log(NULL, AV_LOG_ERROR, "Could not allocate a buffer for the source string\n");
         av_bprint_finalize(&src, NULL);
         return 1;
@@ -165,8 +179,10 @@ int main(int argc, char **argv)
 
     /* escape */
     dst_buf = src_buf;
-    while (level--) {
-        if (av_escape(&dst_buf, src_buf, special_chars, escape_mode, escape_flags) < 0) {
+    while (level--)
+    {
+        if (av_escape(&dst_buf, src_buf, special_chars, escape_mode, escape_flags) < 0)
+        {
             av_log(NULL, AV_LOG_ERROR, "Could not escape string\n");
             return 1;
         }

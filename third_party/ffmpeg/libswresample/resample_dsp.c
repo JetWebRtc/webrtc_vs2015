@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio resampling
  * Copyright (c) 2004-2012 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -45,7 +45,8 @@
 
 void swri_resample_dsp_init(ResampleContext *c)
 {
-    switch(c->format){
+    switch(c->format)
+    {
     case AV_SAMPLE_FMT_S16P:
         c->dsp.resample_one = resample_one_int16;
         c->dsp.resample     = c->linear ? resample_linear_int16 : resample_common_int16;

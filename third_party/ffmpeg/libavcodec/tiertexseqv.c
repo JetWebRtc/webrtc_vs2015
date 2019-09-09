@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Tiertex Limited SEQ Video Decoder
  * Copyright (c) 2006 Gregory Montoir (cyx@users.sourceforge.net)
  *
@@ -30,15 +30,16 @@
 #include "internal.h"
 
 
-typedef struct SeqVideoContext {
+typedef struct SeqVideoContext
+{
     AVCodecContext *avctx;
     AVFrame *frame;
 } SeqVideoContext;
 
 
 static const unsigned char *seq_unpack_rle_block(const unsigned char *src,
-                                                 const unsigned char *src_end,
-                                                 unsigned char *dst, int dst_size)
+        const unsigned char *src_end,
+        unsigned char *dst, int dst_size)
 {
     int i, len, sz;
     GetBitContext gb;
@@ -46,7 +47,8 @@ static const unsigned char *seq_unpack_rle_block(const unsigned char *src,
 
     /* get the rle codes */
     init_get_bits(&gb, src, (src_end - src) * 8);
-    for (i = 0, sz = 0; i < 64 && sz < dst_size; i++) {
+    for (i = 0, sz = 0; i < 64 && sz < dst_size; i++)
+    {
         if (get_bits_left(&gb) < 4)
             return NULL;
         code_table[i] = get_sbits(&gb, 4);
@@ -55,14 +57,18 @@ static const unsigned char *seq_unpack_rle_block(const unsigned char *src,
     src += (get_bits_count(&gb) + 7) / 8;
 
     /* do the rle unpacking */
-    for (i = 0; i < 64 && dst_size > 0; i++) {
+    for (i = 0; i < 64 && dst_size > 0; i++)
+    {
         len = code_table[i];
-        if (len < 0) {
+        if (len < 0)
+        {
             len = -len;
             if (src_end - src < 1)
                 return NULL;
             memset(dst, *src++, FFMIN(len, dst_size));
-        } else {
+        }
+        else
+        {
             if (src_end - src < len)
                 return NULL;
             memcpy(dst, src, FFMIN(len, dst_size));
@@ -75,9 +81,9 @@ static const unsigned char *seq_unpack_rle_block(const unsigned char *src,
 }
 
 static const unsigned char *seq_decode_op1(SeqVideoContext *seq,
-                                           const unsigned char *src,
-                                           const unsigned char *src_end,
-                                           unsigned char *dst)
+        const unsigned char *src,
+        const unsigned char *src_end,
+        unsigned char *dst)
 {
     const unsigned char *color_table;
     int b, i, len, bits;
@@ -87,25 +93,31 @@ static const unsigned char *seq_decode_op1(SeqVideoContext *seq,
     if (src_end - src < 1)
         return NULL;
     len = *src++;
-    if (len & 0x80) {
-        switch (len & 3) {
+    if (len & 0x80)
+    {
+        switch (len & 3)
+        {
         case 1:
             src = seq_unpack_rle_block(src, src_end, block, sizeof(block));
-            for (b = 0; b < 8; b++) {
+            for (b = 0; b < 8; b++)
+            {
                 memcpy(dst, &block[b * 8], 8);
                 dst += seq->frame->linesize[0];
             }
             break;
         case 2:
             src = seq_unpack_rle_block(src, src_end, block, sizeof(block));
-            for (i = 0; i < 8; i++) {
+            for (i = 0; i < 8; i++)
+            {
                 for (b = 0; b < 8; b++)
                     dst[b * seq->frame->linesize[0]] = block[i * 8 + b];
                 ++dst;
             }
             break;
         }
-    } else {
+    }
+    else
+    {
         if (len <= 0)
             return NULL;
         bits = ff_log2_tab[len - 1] + 1;
@@ -113,8 +125,10 @@ static const unsigned char *seq_decode_op1(SeqVideoContext *seq,
             return NULL;
         color_table = src;
         src += len;
-        init_get_bits(&gb, src, bits * 8 * 8); src += bits * 8;
-        for (b = 0; b < 8; b++) {
+        init_get_bits(&gb, src, bits * 8 * 8);
+        src += bits * 8;
+        for (b = 0; b < 8; b++)
+        {
             for (i = 0; i < 8; i++)
                 dst[i] = color_table[get_bits(&gb, bits)];
             dst += seq->frame->linesize[0];
@@ -125,16 +139,17 @@ static const unsigned char *seq_decode_op1(SeqVideoContext *seq,
 }
 
 static const unsigned char *seq_decode_op2(SeqVideoContext *seq,
-                                           const unsigned char *src,
-                                           const unsigned char *src_end,
-                                           unsigned char *dst)
+        const unsigned char *src,
+        const unsigned char *src_end,
+        unsigned char *dst)
 {
     int i;
 
     if (src_end - src < 8 * 8)
         return NULL;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         memcpy(dst, src, 8);
         src += 8;
         dst += seq->frame->linesize[0];
@@ -144,19 +159,21 @@ static const unsigned char *seq_decode_op2(SeqVideoContext *seq,
 }
 
 static const unsigned char *seq_decode_op3(SeqVideoContext *seq,
-                                           const unsigned char *src,
-                                           const unsigned char *src_end,
-                                           unsigned char *dst)
+        const unsigned char *src,
+        const unsigned char *src_end,
+        unsigned char *dst)
 {
     int pos, offset;
 
-    do {
+    do
+    {
         if (src_end - src < 2)
             return NULL;
         pos = *src++;
         offset = ((pos >> 3) & 7) * seq->frame->linesize[0] + (pos & 7);
         dst[offset] = *src++;
-    } while (!(pos & 0x80));
+    }
+    while (!(pos & 0x80));
 
     return src;
 }
@@ -172,11 +189,13 @@ static int seqvideo_decode(SeqVideoContext *seq, const unsigned char *data, int 
 
     flags = *data++;
 
-    if (flags & 1) {
+    if (flags & 1)
+    {
         palette = (uint32_t *)seq->frame->data[1];
         if (data_end - data < 256 * 3)
             return AVERROR_INVALIDDATA;
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             for (j = 0; j < 3; j++, data++)
                 c[j] = (*data << 2) | (*data >> 4);
             palette[i] = 0xFFU << 24 | AV_RB24(c);
@@ -184,15 +203,19 @@ static int seqvideo_decode(SeqVideoContext *seq, const unsigned char *data, int 
         seq->frame->palette_has_changed = 1;
     }
 
-    if (flags & 2) {
+    if (flags & 2)
+    {
         if (data_end - data < 128)
             return AVERROR_INVALIDDATA;
-        init_get_bits(&gb, data, 128 * 8); data += 128;
+        init_get_bits(&gb, data, 128 * 8);
+        data += 128;
         for (y = 0; y < 128; y += 8)
-            for (x = 0; x < 256; x += 8) {
+            for (x = 0; x < 256; x += 8)
+            {
                 dst = &seq->frame->data[0][y * seq->frame->linesize[0] + x];
                 op = get_bits(&gb, 2);
-                switch (op) {
+                switch (op)
+                {
                 case 1:
                     data = seq_decode_op1(seq, data, data_end, dst);
                     break;
@@ -256,7 +279,8 @@ static av_cold int seqvideo_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_tiertexseqvideo_decoder = {
+AVCodec ff_tiertexseqvideo_decoder =
+{
     .name           = "tiertexseqvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("Tiertex Limited SEQ video"),
     .type           = AVMEDIA_TYPE_VIDEO,

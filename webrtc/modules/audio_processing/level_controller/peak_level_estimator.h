@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,21 +15,23 @@
 #include "webrtc/modules/audio_processing/level_controller/level_controller_constants.h"
 #include "webrtc/modules/audio_processing/level_controller/signal_classifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class PeakLevelEstimator {
- public:
-  explicit PeakLevelEstimator(float initial_peak_level_dbfs);
-  ~PeakLevelEstimator();
-  void Initialize(float initial_peak_level_dbfs);
-  float Analyze(SignalClassifier::SignalType signal_type,
-                float frame_peak_level);
- private:
-  float peak_level_;
-  int hold_counter_;
-  bool initialization_phase_;
+class PeakLevelEstimator
+{
+public:
+    explicit PeakLevelEstimator(float initial_peak_level_dbfs);
+    ~PeakLevelEstimator();
+    void Initialize(float initial_peak_level_dbfs);
+    float Analyze(SignalClassifier::SignalType signal_type,
+                  float frame_peak_level);
+private:
+    float peak_level_;
+    int hold_counter_;
+    bool initialization_phase_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(PeakLevelEstimator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(PeakLevelEstimator);
 };
 
 }  // namespace webrtc

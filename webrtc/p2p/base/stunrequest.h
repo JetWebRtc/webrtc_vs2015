@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/base/sigslot.h"
 #include "webrtc/base/thread.h"
 
-namespace cricket {
+namespace cricket
+{
 
 class StunRequest;
 
@@ -30,113 +31,133 @@ const int STUN_TOTAL_TIMEOUT = 39750;  // milliseconds
 
 // Manages a set of STUN requests, sending and resending until we receive a
 // response or determine that the request has timed out.
-class StunRequestManager {
- public:
-  StunRequestManager(rtc::Thread* thread);
-  ~StunRequestManager();
+class StunRequestManager
+{
+public:
+    StunRequestManager(rtc::Thread* thread);
+    ~StunRequestManager();
 
-  // Starts sending the given request (perhaps after a delay).
-  void Send(StunRequest* request);
-  void SendDelayed(StunRequest* request, int delay);
+    // Starts sending the given request (perhaps after a delay).
+    void Send(StunRequest* request);
+    void SendDelayed(StunRequest* request, int delay);
 
-  // If |msg_type| is kAllRequests, sends all pending requests right away.
-  // Otherwise, sends those that have a matching type right away.
-  // Only for testing.
-  void Flush(int msg_type);
+    // If |msg_type| is kAllRequests, sends all pending requests right away.
+    // Otherwise, sends those that have a matching type right away.
+    // Only for testing.
+    void Flush(int msg_type);
 
-  // Returns true if at least one request with |msg_type| is scheduled for
-  // transmission. For testing only.
-  bool HasRequest(int msg_type);
+    // Returns true if at least one request with |msg_type| is scheduled for
+    // transmission. For testing only.
+    bool HasRequest(int msg_type);
 
-  // Removes a stun request that was added previously.  This will happen
-  // automatically when a request succeeds, fails, or times out.
-  void Remove(StunRequest* request);
+    // Removes a stun request that was added previously.  This will happen
+    // automatically when a request succeeds, fails, or times out.
+    void Remove(StunRequest* request);
 
-  // Removes all stun requests that were added previously.
-  void Clear();
+    // Removes all stun requests that were added previously.
+    void Clear();
 
-  // Determines whether the given message is a response to one of the
-  // outstanding requests, and if so, processes it appropriately.
-  bool CheckResponse(StunMessage* msg);
-  bool CheckResponse(const char* data, size_t size);
+    // Determines whether the given message is a response to one of the
+    // outstanding requests, and if so, processes it appropriately.
+    bool CheckResponse(StunMessage* msg);
+    bool CheckResponse(const char* data, size_t size);
 
-  bool empty() { return requests_.empty(); }
+    bool empty()
+    {
+        return requests_.empty();
+    }
 
-  // Set the Origin header for outgoing stun messages.
-  void set_origin(const std::string& origin) { origin_ = origin; }
+    // Set the Origin header for outgoing stun messages.
+    void set_origin(const std::string& origin)
+    {
+        origin_ = origin;
+    }
 
-  // Raised when there are bytes to be sent.
-  sigslot::signal3<const void*, size_t, StunRequest*> SignalSendPacket;
+    // Raised when there are bytes to be sent.
+    sigslot::signal3<const void*, size_t, StunRequest*> SignalSendPacket;
 
- private:
-  typedef std::map<std::string, StunRequest*> RequestMap;
+private:
+    typedef std::map<std::string, StunRequest*> RequestMap;
 
-  rtc::Thread* thread_;
-  RequestMap requests_;
-  std::string origin_;
+    rtc::Thread* thread_;
+    RequestMap requests_;
+    std::string origin_;
 
-  friend class StunRequest;
+    friend class StunRequest;
 };
 
 // Represents an individual request to be sent.  The STUN message can either be
 // constructed beforehand or built on demand.
-class StunRequest : public rtc::MessageHandler {
- public:
-  StunRequest();
-  StunRequest(StunMessage* request);
-  virtual ~StunRequest();
+class StunRequest : public rtc::MessageHandler
+{
+public:
+    StunRequest();
+    StunRequest(StunMessage* request);
+    virtual ~StunRequest();
 
-  // Causes our wrapped StunMessage to be Prepared
-  void Construct();
+    // Causes our wrapped StunMessage to be Prepared
+    void Construct();
 
-  // The manager handling this request (if it has been scheduled for sending).
-  StunRequestManager* manager() { return manager_; }
+    // The manager handling this request (if it has been scheduled for sending).
+    StunRequestManager* manager()
+    {
+        return manager_;
+    }
 
-  // Returns the transaction ID of this request.
-  const std::string& id() { return msg_->transaction_id(); }
+    // Returns the transaction ID of this request.
+    const std::string& id()
+    {
+        return msg_->transaction_id();
+    }
 
-  // the origin value
-  const std::string& origin() const { return origin_; }
-  void set_origin(const std::string& origin) { origin_ = origin; }
+    // the origin value
+    const std::string& origin() const
+    {
+        return origin_;
+    }
+    void set_origin(const std::string& origin)
+    {
+        origin_ = origin;
+    }
 
-  // Returns the STUN type of the request message.
-  int type();
+    // Returns the STUN type of the request message.
+    int type();
 
-  // Returns a const pointer to |msg_|.
-  const StunMessage* msg() const;
+    // Returns a const pointer to |msg_|.
+    const StunMessage* msg() const;
 
-  // Time elapsed since last send (in ms)
-  int Elapsed() const;
+    // Time elapsed since last send (in ms)
+    int Elapsed() const;
 
- protected:
-  int count_;
-  bool timeout_;
-  std::string origin_;
+protected:
+    int count_;
+    bool timeout_;
+    std::string origin_;
 
-  // Fills in a request object to be sent.  Note that request's transaction ID
-  // will already be set and cannot be changed.
-  virtual void Prepare(StunMessage* request) {}
+    // Fills in a request object to be sent.  Note that request's transaction ID
+    // will already be set and cannot be changed.
+    virtual void Prepare(StunMessage* request) {}
 
-  // Called when the message receives a response or times out.
-  virtual void OnResponse(StunMessage* response) {}
-  virtual void OnErrorResponse(StunMessage* response) {}
-  virtual void OnTimeout() {}
-  // Called when the message is sent.
-  virtual void OnSent();
-  // Returns the next delay for resends.
-  virtual int resend_delay();
+    // Called when the message receives a response or times out.
+    virtual void OnResponse(StunMessage* response) {}
+    virtual void OnErrorResponse(StunMessage* response) {}
+    virtual void OnTimeout() {}
+    // Called when the message is sent.
+    virtual void OnSent();
+    // Returns the next delay for resends.
+    virtual int resend_delay();
 
- private:
-  void set_manager(StunRequestManager* manager);
+private:
+    void set_manager(StunRequestManager* manager);
 
-  // Handles messages for sending and timeout.
-  void OnMessage(rtc::Message* pmsg);
+    // Handles messages for sending and timeout.
+    void OnMessage(rtc::Message* pmsg);
 
-  StunRequestManager* manager_;
-  StunMessage* msg_;
-  int64_t tstamp_;
+    StunRequestManager* manager_;
+    StunMessage* msg_;
+    int64_t tstamp_;
 
-  friend class StunRequestManager;
+    friend class StunRequestManager;
 };
 
 }  // namespace cricket

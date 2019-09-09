@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chronomaster DFA Format Demuxer
  * Copyright (c) 2011 Konstantin Shishkov
  *
@@ -44,7 +44,8 @@ static int dfa_read_header(AVFormatContext *s)
     int version;
     uint32_t mspf;
 
-    if (avio_rl32(pb) != MKTAG('D', 'F', 'I', 'A')) {
+    if (avio_rl32(pb) != MKTAG('D', 'F', 'I', 'A'))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid magic for DFA\n");
         return AVERROR_INVALIDDATA;
     }
@@ -61,7 +62,8 @@ static int dfa_read_header(AVFormatContext *s)
     st->codec->width      = avio_rl16(pb);
     st->codec->height     = avio_rl16(pb);
     mspf = avio_rl32(pb);
-    if (!mspf) {
+    if (!mspf)
+    {
         av_log(s, AV_LOG_WARNING, "Zero FPS reported, defaulting to 10\n");
         mspf = 100;
     }
@@ -73,7 +75,10 @@ static int dfa_read_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
     AV_WL16(st->codec->extradata, version);
     if (version == 0x100)
-        st->sample_aspect_ratio = (AVRational){2, 1};
+        st->sample_aspect_ratio = (AVRational)
+    {
+        2, 1
+    };
 
     return 0;
 }
@@ -89,22 +94,29 @@ static int dfa_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     if (av_get_packet(pb, pkt, 12) != 12)
         return AVERROR(EIO);
-    while (!avio_feof(pb)) {
-        if (!first) {
+    while (!avio_feof(pb))
+    {
+        if (!first)
+        {
             ret = av_append_packet(pb, pkt, 12);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_free_packet(pkt);
                 return ret;
             }
-        } else
+        }
+        else
             first = 0;
         frame_size = AV_RL32(pkt->data + pkt->size - 8);
-        if (frame_size > INT_MAX - 4) {
+        if (frame_size > INT_MAX - 4)
+        {
             av_log(s, AV_LOG_ERROR, "Too large chunk size: %"PRIu32"\n", frame_size);
             return AVERROR(EIO);
         }
-        if (AV_RL32(pkt->data + pkt->size - 12) == MKTAG('E', 'O', 'F', 'R')) {
-            if (frame_size) {
+        if (AV_RL32(pkt->data + pkt->size - 12) == MKTAG('E', 'O', 'F', 'R'))
+        {
+            if (frame_size)
+            {
                 av_log(s, AV_LOG_WARNING,
                        "skipping %"PRIu32" bytes of end-of-frame marker chunk\n",
                        frame_size);
@@ -113,7 +125,8 @@ static int dfa_read_packet(AVFormatContext *s, AVPacket *pkt)
             return 0;
         }
         ret = av_append_packet(pb, pkt, frame_size);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
@@ -122,7 +135,8 @@ static int dfa_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_dfa_demuxer = {
+AVInputFormat ff_dfa_demuxer =
+{
     .name           = "dfa",
     .long_name      = NULL_IF_CONFIG_SMALL("Chronomaster DFA"),
     .read_probe     = dfa_probe,

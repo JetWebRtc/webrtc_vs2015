@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WavPack lossless audio encoder
  *
  * This file is part of FFmpeg.
@@ -60,19 +60,22 @@
 #define EXTRA_BRANCHES       8
 #define EXTRA_SORT_LAST     16
 
-typedef struct WavPackExtraInfo {
+typedef struct WavPackExtraInfo
+{
     struct Decorr dps[MAX_TERMS];
     int nterms, log_limit, gt16bit;
     uint32_t best_bits;
 } WavPackExtraInfo;
 
-typedef struct WavPackWords {
+typedef struct WavPackWords
+{
     int pend_data, holding_one, zeros_acc;
     int holding_zero, pend_count;
     WvChannel c[2];
 } WavPackWords;
 
-typedef struct WavPackEncodeContext {
+typedef struct WavPackEncodeContext
+{
     AVClass *class;
     AVCodecContext *avctx;
     PutBitContext pb;
@@ -128,7 +131,8 @@ static av_cold int wavpack_encode_init(AVCodecContext *avctx)
 
     s->avctx = avctx;
 
-    if (!avctx->frame_size) {
+    if (!avctx->frame_size)
+    {
         int block_samples;
         if (!(avctx->sample_rate & 1))
             block_samples = avctx->sample_rate / 2;
@@ -141,39 +145,58 @@ static av_cold int wavpack_encode_init(AVCodecContext *avctx)
         while (block_samples * avctx->channels < 40000)
             block_samples *= 2;
         avctx->frame_size = block_samples;
-    } else if (avctx->frame_size && (avctx->frame_size < 128 ||
-                              avctx->frame_size > WV_MAX_SAMPLES)) {
+    }
+    else if (avctx->frame_size && (avctx->frame_size < 128 ||
+                                   avctx->frame_size > WV_MAX_SAMPLES))
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid block size: %d\n", avctx->frame_size);
         return AVERROR(EINVAL);
     }
 
-    if (avctx->compression_level != FF_COMPRESSION_DEFAULT) {
-        if (avctx->compression_level >= 3) {
+    if (avctx->compression_level != FF_COMPRESSION_DEFAULT)
+    {
+        if (avctx->compression_level >= 3)
+        {
             s->decorr_filter = 3;
             s->num_passes = 9;
-            if      (avctx->compression_level >= 8) {
+            if      (avctx->compression_level >= 8)
+            {
                 s->num_branches = 4;
                 s->extra_flags = EXTRA_TRY_DELTAS|EXTRA_ADJUST_DELTAS|EXTRA_SORT_FIRST|EXTRA_SORT_LAST|EXTRA_BRANCHES;
-            } else if (avctx->compression_level >= 7) {
+            }
+            else if (avctx->compression_level >= 7)
+            {
                 s->num_branches = 3;
                 s->extra_flags = EXTRA_TRY_DELTAS|EXTRA_ADJUST_DELTAS|EXTRA_SORT_FIRST|EXTRA_BRANCHES;
-            } else if (avctx->compression_level >= 6) {
+            }
+            else if (avctx->compression_level >= 6)
+            {
                 s->num_branches = 2;
                 s->extra_flags = EXTRA_TRY_DELTAS|EXTRA_ADJUST_DELTAS|EXTRA_SORT_FIRST|EXTRA_BRANCHES;
-            } else if (avctx->compression_level >= 5) {
+            }
+            else if (avctx->compression_level >= 5)
+            {
                 s->num_branches = 1;
                 s->extra_flags = EXTRA_TRY_DELTAS|EXTRA_ADJUST_DELTAS|EXTRA_SORT_FIRST|EXTRA_BRANCHES;
-            } else if (avctx->compression_level >= 4) {
+            }
+            else if (avctx->compression_level >= 4)
+            {
                 s->num_branches = 1;
                 s->extra_flags = EXTRA_TRY_DELTAS|EXTRA_ADJUST_DELTAS|EXTRA_BRANCHES;
             }
-        } else if (avctx->compression_level == 2) {
+        }
+        else if (avctx->compression_level == 2)
+        {
             s->decorr_filter = 2;
             s->num_passes = 4;
-        } else if (avctx->compression_level == 1) {
+        }
+        else if (avctx->compression_level == 1)
+        {
             s->decorr_filter = 1;
             s->num_passes = 2;
-        } else if (avctx->compression_level < 1) {
+        }
+        else if (avctx->compression_level < 1)
+        {
             s->decorr_filter = 0;
             s->num_passes = 0;
         }
@@ -198,7 +221,8 @@ static void shift_stereo(int32_t *left, int32_t *right,
                          int nb_samples, int shift)
 {
     int i;
-    for (i = 0; i < nb_samples; i++) {
+    for (i = 0; i < nb_samples; i++)
+    {
         left [i] >>= shift;
         right[i] >>= shift;
     }
@@ -219,14 +243,19 @@ static void process_float(WavPackEncodeContext *s, int32_t *sample)
 {
     int32_t shift_count, value, f = *sample;
 
-    if (get_exponent(f) == 255) {
+    if (get_exponent(f) == 255)
+    {
         s->float_flags |= FLOAT_EXCEPTIONS;
         value = 0x1000000;
         shift_count = 0;
-    } else if (get_exponent(f)) {
+    }
+    else if (get_exponent(f))
+    {
         shift_count = s->max_exp - get_exponent(f);
         value = 0x800000 + get_mantissa(f);
-    } else {
+    }
+    else
+    {
         shift_count = s->max_exp ? s->max_exp - 1 : 0;
         value = get_mantissa(f);
     }
@@ -236,12 +265,15 @@ static void process_float(WavPackEncodeContext *s, int32_t *sample)
     else
         value = 0;
 
-    if (!value) {
+    if (!value)
+    {
         if (get_exponent(f) || get_mantissa(f))
             s->false_zeros++;
         else if (get_sign(f))
             s->neg_zeros++;
-    } else if (shift_count) {
+    }
+    else if (shift_count)
+    {
         int32_t mask = (1 << shift_count) - 1;
 
         if (!(get_mantissa(f) & mask))
@@ -268,16 +300,21 @@ static int scan_float(WavPackEncodeContext *s,
     s->false_zeros = s->neg_zeros = 0;
     s->max_exp = 0;
 
-    if (s->flags & WV_MONO_DATA) {
-        for (i = 0; i < nb_samples; i++) {
+    if (s->flags & WV_MONO_DATA)
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t f = samples_l[i];
             crc = crc * 27 + get_mantissa(f) * 9 + get_exponent(f) * 3 + get_sign(f);
 
             if (get_exponent(f) > s->max_exp && get_exponent(f) < 255)
                 s->max_exp = get_exponent(f);
         }
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t f;
 
             f = samples_l[i];
@@ -295,11 +332,15 @@ static int scan_float(WavPackEncodeContext *s,
 
     s->crc_x = crc;
 
-    if (s->flags & WV_MONO_DATA) {
+    if (s->flags & WV_MONO_DATA)
+    {
         for (i = 0; i < nb_samples; i++)
             process_float(s, &samples_l[i]);
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             process_float(s, &samples_l[i]);
             process_float(s, &samples_r[i]);
         }
@@ -313,11 +354,14 @@ static int scan_float(WavPackEncodeContext *s,
         s->float_flags |= FLOAT_SHIFT_ONES;
     else if (s->shifted_ones && s->shifted_zeros)
         s->float_flags |= FLOAT_SHIFT_SAME;
-    else if (s->ordata && !(s->ordata & 1)) {
-        do {
+    else if (s->ordata && !(s->ordata & 1))
+    {
+        do
+        {
             s->float_shift++;
             s->ordata >>= 1;
-        } while (!(s->ordata & 1));
+        }
+        while (!(s->ordata & 1));
 
         if (s->flags & WV_MONO_DATA)
             shift_mono(samples_l, nb_samples, s->float_shift);
@@ -327,7 +371,8 @@ static int scan_float(WavPackEncodeContext *s,
 
     s->flags &= ~MAG_MASK;
 
-    while (s->ordata) {
+    while (s->ordata)
+    {
         s->flags += 1 << MAG_LSB;
         s->ordata >>= 1;
     }
@@ -351,8 +396,10 @@ static void scan_int23(WavPackEncodeContext *s,
 
     s->int32_sent_bits = s->int32_zeros = s->int32_ones = s->int32_dups = 0;
 
-    if (s->flags & WV_MONO_DATA) {
-        for (i = 0; i < nb_samples; i++) {
+    if (s->flags & WV_MONO_DATA)
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t M = samples_l[i];
 
             magdata |= (M < 0) ? ~M : M;
@@ -363,8 +410,11 @@ static void scan_int23(WavPackEncodeContext *s,
             if ((ordata & 1) && !(anddata & 1) && (xordata & 2))
                 return;
         }
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t L = samples_l[i];
             int32_t R = samples_r[i];
 
@@ -382,7 +432,8 @@ static void scan_int23(WavPackEncodeContext *s,
 
     s->flags &= ~MAG_MASK;
 
-    while (magdata) {
+    while (magdata)
+    {
         s->flags += 1 << MAG_LSB;
         magdata >>= 1;
     }
@@ -390,30 +441,42 @@ static void scan_int23(WavPackEncodeContext *s,
     if (!(s->flags & MAG_MASK))
         return;
 
-    if (!(ordata & 1)) {
-        do {
+    if (!(ordata & 1))
+    {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_zeros++;
             total_shift++;
             ordata >>= 1;
-        } while (!(ordata & 1));
-    } else if (anddata & 1) {
-        do {
+        }
+        while (!(ordata & 1));
+    }
+    else if (anddata & 1)
+    {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_ones++;
             total_shift++;
             anddata >>= 1;
-        } while (anddata & 1);
-    } else if (!(xordata & 2)) {
-        do {
+        }
+        while (anddata & 1);
+    }
+    else if (!(xordata & 2))
+    {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_dups++;
             total_shift++;
             xordata >>= 1;
-        } while (!(xordata & 2));
+        }
+        while (!(xordata & 2));
     }
 
-    if (total_shift) {
+    if (total_shift)
+    {
         s->flags |= WV_INT32_DATA;
 
         if (s->flags & WV_MONO_DATA)
@@ -433,8 +496,10 @@ static int scan_int32(WavPackEncodeContext *s,
 
     s->int32_sent_bits = s->int32_zeros = s->int32_ones = s->int32_dups = 0;
 
-    if (s->flags & WV_MONO_DATA) {
-        for (i = 0; i < nb_samples; i++) {
+    if (s->flags & WV_MONO_DATA)
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t M = samples_l[i];
 
             crc = crc * 9 + (M & 0xffff) * 3 + ((M >> 16) & 0xffff);
@@ -443,8 +508,11 @@ static int scan_int32(WavPackEncodeContext *s,
             anddata &= M;
             ordata  |= M;
         }
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t L = samples_l[i];
             int32_t R = samples_r[i];
 
@@ -462,46 +530,56 @@ static int scan_int32(WavPackEncodeContext *s,
     s->crc_x = crc;
     s->flags &= ~MAG_MASK;
 
-    while (magdata) {
+    while (magdata)
+    {
         s->flags += 1 << MAG_LSB;
         magdata >>= 1;
     }
 
-    if (!((s->flags & MAG_MASK) >> MAG_LSB)) {
+    if (!((s->flags & MAG_MASK) >> MAG_LSB))
+    {
         s->flags &= ~WV_INT32_DATA;
         return 0;
     }
 
     if (!(ordata & 1))
-        do {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_zeros++;
             total_shift++;
             ordata >>= 1;
-        } while (!(ordata & 1));
+        }
+        while (!(ordata & 1));
     else if (anddata & 1)
-        do {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_ones++;
             total_shift++;
             anddata >>= 1;
-        } while (anddata & 1);
+        }
+        while (anddata & 1);
     else if (!(xordata & 2))
-        do {
+        do
+        {
             s->flags -= 1 << MAG_LSB;
             s->int32_dups++;
             total_shift++;
             xordata >>= 1;
-        } while (!(xordata & 2));
+        }
+        while (!(xordata & 2));
 
-    if (((s->flags & MAG_MASK) >> MAG_LSB) > 23) {
+    if (((s->flags & MAG_MASK) >> MAG_LSB) > 23)
+    {
         s->int32_sent_bits = (uint8_t)(((s->flags & MAG_MASK) >> MAG_LSB) - 23);
         total_shift += s->int32_sent_bits;
         s->flags &= ~MAG_MASK;
         s->flags += 23 << MAG_LSB;
     }
 
-    if (total_shift) {
+    if (total_shift)
+    {
         s->flags |= WV_INT32_DATA;
 
         if (s->flags & WV_MONO_DATA)
@@ -544,7 +622,8 @@ static void decorr_mono(int32_t *in_samples, int32_t *out_samples,
 
     dpp->sumA = 0;
 
-    if (dir < 0) {
+    if (dir < 0)
+    {
         out_samples += (nb_samples - 1);
         in_samples  += (nb_samples - 1);
     }
@@ -554,8 +633,10 @@ static void decorr_mono(int32_t *in_samples, int32_t *out_samples,
     for (i = 0; i < MAX_TERM; i++)
         dpp->samplesA[i] = wp_exp2(log2s(dpp->samplesA[i]));
 
-    if (dpp->value > MAX_TERM) {
-        while (nb_samples--) {
+    if (dpp->value > MAX_TERM)
+    {
+        while (nb_samples--)
+        {
             int32_t left, sam_A;
 
             sam_A = ((3 - (dpp->value & 1)) * dpp->samplesA[0] - dpp->samplesA[1]) >> !(dpp->value & 1);
@@ -570,8 +651,11 @@ static void decorr_mono(int32_t *in_samples, int32_t *out_samples,
             in_samples += dir;
             out_samples += dir;
         }
-    } else if (dpp->value > 0) {
-        while (nb_samples--) {
+    }
+    else if (dpp->value > 0)
+    {
+        while (nb_samples--)
+        {
             int k = (m + dpp->value) & (MAX_TERM - 1);
             int32_t left, sam_A;
 
@@ -588,12 +672,14 @@ static void decorr_mono(int32_t *in_samples, int32_t *out_samples,
         }
     }
 
-    if (m && dpp->value > 0 && dpp->value <= MAX_TERM) {
+    if (m && dpp->value > 0 && dpp->value <= MAX_TERM)
+    {
         int32_t temp_A[MAX_TERM];
 
         memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
 
-        for (i = 0; i < MAX_TERM; i++) {
+        for (i = 0; i < MAX_TERM; i++)
+        {
             dpp->samplesA[i] = temp_A[m];
             m = (m + 1) & (MAX_TERM - 1);
         }
@@ -602,7 +688,8 @@ static void decorr_mono(int32_t *in_samples, int32_t *out_samples,
 
 static void reverse_mono_decorr(struct Decorr *dpp)
 {
-    if (dpp->value > MAX_TERM) {
+    if (dpp->value > MAX_TERM)
+    {
         int32_t sam_A;
 
         if (dpp->value & 1)
@@ -619,10 +706,13 @@ static void reverse_mono_decorr(struct Decorr *dpp)
             sam_A = (3 * dpp->samplesA[0] - dpp->samplesA[1]) >> 1;
 
         dpp->samplesA[1] = sam_A;
-    } else if (dpp->value > 1) {
+    }
+    else if (dpp->value > 1)
+    {
         int i, j, k;
 
-        for (i = 0, j = dpp->value - 1, k = 0; k < dpp->value / 2; i++, j--, k++) {
+        for (i = 0, j = dpp->value - 1, k = 0; k < dpp->value / 2; i++, j--, k++)
+        {
             i &= (MAX_TERM - 1);
             j &= (MAX_TERM - 1);
             dpp->samplesA[i] ^= dpp->samplesA[j];
@@ -636,10 +726,13 @@ static uint32_t log2sample(uint32_t v, int limit, uint32_t *result)
 {
     uint32_t dbits;
 
-    if ((v += v >> 9) < (1 << 8)) {
+    if ((v += v >> 9) < (1 << 8))
+    {
         dbits = nbits_table[v];
         *result += (dbits << 8) + wp_log2_table[(v << (9 - dbits)) & 0xff];
-    } else {
+    }
+    else
+    {
         if (v < (1 << 16))
             dbits = nbits_table[v >> 8] + 8;
         else if (v < (1 << 24))
@@ -659,7 +752,8 @@ static uint32_t log2sample(uint32_t v, int limit, uint32_t *result)
 static uint32_t log2mono(int32_t *samples, int nb_samples, int limit)
 {
     uint32_t result = 0;
-    while (nb_samples--) {
+    while (nb_samples--)
+    {
         if (log2sample(abs(*samples++), limit, &result))
             return UINT32_MAX;
     }
@@ -670,9 +764,10 @@ static uint32_t log2stereo(int32_t *samples_l, int32_t *samples_r,
                            int nb_samples, int limit)
 {
     uint32_t result = 0;
-    while (nb_samples--) {
+    while (nb_samples--)
+    {
         if (log2sample(abs(*samples_l++), limit, &result) ||
-            log2sample(abs(*samples_r++), limit, &result))
+                log2sample(abs(*samples_r++), limit, &result))
             return UINT32_MAX;
     }
     return result;
@@ -706,7 +801,8 @@ static void decorr_mono_buffer(int32_t *samples, int32_t *outsamples,
     memcpy(dppi->samplesA, dp.samplesA, sizeof(dp.samplesA));
     dppi->weightA = dp.weightA;
 
-    if (delta == 0) {
+    if (delta == 0)
+    {
         dp.delta = 1;
         decorr_mono(samples, outsamples, nb_samples, &dp, 1);
         dp.delta = 0;
@@ -731,7 +827,8 @@ static void recurse_mono(WavPackEncodeContext *s, WavPackExtraInfo *info,
     samples = s->sampleptrs[depth][0];
     outsamples = s->sampleptrs[depth + 1][0];
 
-    for (term = 1; term <= 18; term++) {
+    for (term = 1; term <= 18; term++)
+    {
         if (term == 17 && branches == 1 && depth + 1 < info->nterms)
             continue;
 
@@ -746,7 +843,8 @@ static void recurse_mono(WavPackEncodeContext *s, WavPackExtraInfo *info,
         decorr_mono_buffer(samples, outsamples, s->block_samples, info->dps, depth);
         bits = log2mono(outsamples, s->block_samples, info->log_limit);
 
-        if (bits < info->best_bits) {
+        if (bits < info->best_bits)
+        {
             info->best_bits = bits;
             CLEAR(s->decorr_passes);
             memcpy(s->decorr_passes, info->dps, sizeof(info->dps[0]) * (depth + 1));
@@ -757,12 +855,14 @@ static void recurse_mono(WavPackEncodeContext *s, WavPackExtraInfo *info,
         term_bits[term + 3] = bits;
     }
 
-    while (depth + 1 < info->nterms && branches--) {
+    while (depth + 1 < info->nterms && branches--)
+    {
         uint32_t local_best_bits = input_bits;
         int best_term = 0, i;
 
         for (i = 0; i < 22; i++)
-            if (term_bits[i] && term_bits[i] < local_best_bits) {
+            if (term_bits[i] && term_bits[i] < local_best_bits)
+            {
                 local_best_bits = term_bits[i];
                 best_term = i - 3;
             }
@@ -785,18 +885,21 @@ static void sort_mono(WavPackEncodeContext *s, WavPackExtraInfo *info)
     int reversed = 1;
     uint32_t bits;
 
-    while (reversed) {
+    while (reversed)
+    {
         int ri, i;
 
         memcpy(info->dps, s->decorr_passes, sizeof(s->decorr_passes));
         reversed = 0;
 
-        for (ri = 0; ri < info->nterms && s->decorr_passes[ri].value; ri++) {
+        for (ri = 0; ri < info->nterms && s->decorr_passes[ri].value; ri++)
+        {
 
             if (ri + 1 >= info->nterms || !s->decorr_passes[ri+1].value)
                 break;
 
-            if (s->decorr_passes[ri].value == s->decorr_passes[ri+1].value) {
+            if (s->decorr_passes[ri].value == s->decorr_passes[ri+1].value)
+            {
                 decorr_mono_buffer(s->sampleptrs[ri][0], s->sampleptrs[ri+1][0],
                                    s->block_samples, info->dps, ri);
                 continue;
@@ -810,14 +913,17 @@ static void sort_mono(WavPackEncodeContext *s, WavPackExtraInfo *info)
                                    s->block_samples, info->dps, i);
 
             bits = log2mono(s->sampleptrs[i][0], s->block_samples, info->log_limit);
-            if (bits < info->best_bits) {
+            if (bits < info->best_bits)
+            {
                 reversed = 1;
                 info->best_bits = bits;
                 CLEAR(s->decorr_passes);
                 memcpy(s->decorr_passes, info->dps, sizeof(info->dps[0]) * i);
                 memcpy(s->sampleptrs[info->nterms + 1][0], s->sampleptrs[i][0],
                        s->block_samples * 4);
-            } else {
+            }
+            else
+            {
                 info->dps[ri  ] = s->decorr_passes[ri];
                 info->dps[ri+1] = s->decorr_passes[ri+1];
                 decorr_mono_buffer(s->sampleptrs[ri][0], s->sampleptrs[ri+1][0],
@@ -836,10 +942,12 @@ static void delta_mono(WavPackEncodeContext *s, WavPackExtraInfo *info)
         return;
     delta = s->decorr_passes[0].delta;
 
-    for (d = delta - 1; d >= 0; d--) {
+    for (d = delta - 1; d >= 0; d--)
+    {
         int i;
 
-        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++) {
+        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++)
+        {
             info->dps[i].value = s->decorr_passes[i].value;
             info->dps[i].delta = d;
             decorr_mono_buffer(s->sampleptrs[i][0], s->sampleptrs[i+1][0],
@@ -858,10 +966,12 @@ static void delta_mono(WavPackEncodeContext *s, WavPackExtraInfo *info)
                s->block_samples * 4);
     }
 
-    for (d = delta + 1; !lower && d <= 7; d++) {
+    for (d = delta + 1; !lower && d <= 7; d++)
+    {
         int i;
 
-        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++) {
+        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++)
+        {
             info->dps[i].value = s->decorr_passes[i].value;
             info->dps[i].delta = d;
             decorr_mono_buffer(s->sampleptrs[i][0], s->sampleptrs[i+1][0],
@@ -884,12 +994,14 @@ static int allocate_buffers2(WavPackEncodeContext *s, int nterms)
 {
     int i;
 
-    for (i = 0; i < nterms + 2; i++) {
+    for (i = 0; i < nterms + 2; i++)
+    {
         av_fast_padded_malloc(&s->sampleptrs[i][0], &s->sampleptrs_size[i][0],
                               s->block_samples * 4);
         if (!s->sampleptrs[i][0])
             return AVERROR(ENOMEM);
-        if (!(s->flags & WV_MONO_DATA)) {
+        if (!(s->flags & WV_MONO_DATA))
+        {
             av_fast_padded_malloc(&s->sampleptrs[i][1], &s->sampleptrs_size[i][1],
                                   s->block_samples * 4);
             if (!s->sampleptrs[i][1])
@@ -904,7 +1016,8 @@ static int allocate_buffers(WavPackEncodeContext *s)
 {
     int i;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_fast_padded_malloc(&s->best_buffer[0], &s->best_buffer_size[0],
                               s->block_samples * 4);
         if (!s->best_buffer[0])
@@ -914,7 +1027,8 @@ static int allocate_buffers(WavPackEncodeContext *s)
                               s->block_samples * 4);
         if (!s->temp_buffer[i][0])
             return AVERROR(ENOMEM);
-        if (!(s->flags & WV_MONO_DATA)) {
+        if (!(s->flags & WV_MONO_DATA))
+        {
             av_fast_padded_malloc(&s->best_buffer[1], &s->best_buffer_size[1],
                                   s->block_samples * 4);
             if (!s->best_buffer[1])
@@ -960,7 +1074,8 @@ static void analyze_mono(WavPackEncodeContext *s, int32_t *samples, int do_sampl
     if (s->extra_flags & EXTRA_SORT_FIRST)
         sort_mono(s, &info);
 
-    if (s->extra_flags & EXTRA_TRY_DELTAS) {
+    if (s->extra_flags & EXTRA_TRY_DELTAS)
+    {
         delta_mono(s, &info);
 
         if ((s->extra_flags & EXTRA_ADJUST_DELTAS) && s->decorr_passes[0].value)
@@ -988,24 +1103,34 @@ static void scan_word(WavPackEncodeContext *s, WvChannel *c,
     if (dir < 0)
         samples += nb_samples - 1;
 
-    while (nb_samples--) {
+    while (nb_samples--)
+    {
         uint32_t low, value = labs(samples[0]);
 
-        if (value < GET_MED(0)) {
+        if (value < GET_MED(0))
+        {
             DEC_MED(0);
-        } else {
+        }
+        else
+        {
             low = GET_MED(0);
             INC_MED(0);
 
-            if (value - low < GET_MED(1)) {
+            if (value - low < GET_MED(1))
+            {
                 DEC_MED(1);
-            } else {
+            }
+            else
+            {
                 low += GET_MED(1);
                 INC_MED(1);
 
-                if (value - low < GET_MED(2)) {
+                if (value - low < GET_MED(2))
+                {
                     DEC_MED(2);
-                } else {
+                }
+                else
+                {
                     INC_MED(2);
                 }
             }
@@ -1027,7 +1152,8 @@ static int wv_mono(WavPackEncodeContext *s, int32_t *samples,
         if (samples[i])
             break;
 
-    if (i == nb_samples) {
+    if (i == nb_samples)
+    {
         CLEAR(s->decorr_passes);
         CLEAR(s->w);
         s->num_terms = 0;
@@ -1043,19 +1169,24 @@ static int wv_mono(WavPackEncodeContext *s, int32_t *samples,
     if (no_history || s->num_passes >= 7)
         s->best_decorr = s->mask_decorr = 0;
 
-    for (pi = 0; pi < s->num_passes;) {
+    for (pi = 0; pi < s->num_passes;)
+    {
         const WavPackDecorrSpec *wpds;
         int nterms, c, j;
 
-        if (!pi) {
+        if (!pi)
+        {
             c = s->best_decorr;
-        } else {
+        }
+        else
+        {
             if (s->mask_decorr == 0)
                 c = 0;
             else
                 c = (s->best_decorr & (s->mask_decorr - 1)) | s->mask_decorr;
 
-            if (c == s->best_decorr) {
+            if (c == s->best_decorr)
+            {
                 s->mask_decorr = s->mask_decorr ? ((s->mask_decorr << 1) & (s->num_decorrs - 1)) : 1;
                 continue;
             }
@@ -1064,39 +1195,45 @@ static int wv_mono(WavPackEncodeContext *s, int32_t *samples,
         wpds = &s->decorr_specs[c];
         nterms = decorr_filter_nterms[s->decorr_filter];
 
-        while (1) {
-        memcpy(s->temp_buffer[0][0], samples, buf_size);
-        CLEAR(save_decorr_passes);
+        while (1)
+        {
+            memcpy(s->temp_buffer[0][0], samples, buf_size);
+            CLEAR(save_decorr_passes);
 
-        for (j = 0; j < nterms; j++) {
-            CLEAR(temp_decorr_pass);
-            temp_decorr_pass.delta = wpds->delta;
-            temp_decorr_pass.value = wpds->terms[j];
+            for (j = 0; j < nterms; j++)
+            {
+                CLEAR(temp_decorr_pass);
+                temp_decorr_pass.delta = wpds->delta;
+                temp_decorr_pass.value = wpds->terms[j];
 
-            if (temp_decorr_pass.value < 0)
-                temp_decorr_pass.value = 1;
+                if (temp_decorr_pass.value < 0)
+                    temp_decorr_pass.value = 1;
 
-            decorr_mono(s->temp_buffer[j&1][0], s->temp_buffer[~j&1][0],
-                        FFMIN(nb_samples, 2048), &temp_decorr_pass, -1);
+                decorr_mono(s->temp_buffer[j&1][0], s->temp_buffer[~j&1][0],
+                            FFMIN(nb_samples, 2048), &temp_decorr_pass, -1);
 
-            if (j) {
-                CLEAR(temp_decorr_pass.samplesA);
-            } else {
-                reverse_mono_decorr(&temp_decorr_pass);
+                if (j)
+                {
+                    CLEAR(temp_decorr_pass.samplesA);
+                }
+                else
+                {
+                    reverse_mono_decorr(&temp_decorr_pass);
+                }
+
+                memcpy(save_decorr_passes + j, &temp_decorr_pass, sizeof(struct Decorr));
+                decorr_mono(s->temp_buffer[j&1][0], s->temp_buffer[~j&1][0],
+                            nb_samples, &temp_decorr_pass, 1);
             }
 
-            memcpy(save_decorr_passes + j, &temp_decorr_pass, sizeof(struct Decorr));
-            decorr_mono(s->temp_buffer[j&1][0], s->temp_buffer[~j&1][0],
-                        nb_samples, &temp_decorr_pass, 1);
+            size = log2mono(s->temp_buffer[j&1][0], nb_samples, log_limit);
+            if (size != UINT32_MAX || !nterms)
+                break;
+            nterms >>= 1;
         }
 
-        size = log2mono(s->temp_buffer[j&1][0], nb_samples, log_limit);
-        if (size != UINT32_MAX || !nterms)
-            break;
-        nterms >>= 1;
-        }
-
-        if (size < best_size) {
+        if (size < best_size)
+        {
             memcpy(s->best_buffer[0], s->temp_buffer[j&1][0], buf_size);
             memcpy(s->decorr_passes, save_decorr_passes, sizeof(struct Decorr) * MAX_TERMS);
             s->num_terms = nterms;
@@ -1113,7 +1250,8 @@ static int wv_mono(WavPackEncodeContext *s, int32_t *samples,
     else if (do_samples)
         memcpy(samples, s->best_buffer[0], buf_size);
 
-    if (no_history || s->extra_flags) {
+    if (no_history || s->extra_flags)
+    {
         CLEAR(s->w);
         scan_word(s, &s->w.c[0], s->best_buffer[0], nb_samples, -1);
     }
@@ -1128,7 +1266,8 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
 
     dpp->sumA = dpp->sumB = 0;
 
-    if (dir < 0) {
+    if (dir < 0)
+    {
         out_left  += nb_samples - 1;
         out_right += nb_samples - 1;
         in_left   += nb_samples - 1;
@@ -1138,14 +1277,17 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
     dpp->weightA = restore_weight(store_weight(dpp->weightA));
     dpp->weightB = restore_weight(store_weight(dpp->weightB));
 
-    for (i = 0; i < MAX_TERM; i++) {
+    for (i = 0; i < MAX_TERM; i++)
+    {
         dpp->samplesA[i] = wp_exp2(log2s(dpp->samplesA[i]));
         dpp->samplesB[i] = wp_exp2(log2s(dpp->samplesB[i]));
     }
 
-    switch (dpp->value) {
+    switch (dpp->value)
+    {
     case 2:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0];
@@ -1167,7 +1309,8 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
         }
         break;
     case 17:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam, tmp;
 
             sam = 2 * dpp->samplesA[0] - dpp->samplesA[1];
@@ -1189,7 +1332,8 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
         }
         break;
     case 18:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0] + ((dpp->samplesA[0] - dpp->samplesA[1]) >> 1);
@@ -1210,10 +1354,12 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
             out_right += dir;
         }
         break;
-    default: {
+    default:
+    {
         int k = dpp->value & (MAX_TERM - 1);
 
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[m];
@@ -1234,23 +1380,26 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
             k = (k + 1) & (MAX_TERM - 1);
         }
 
-        if (m) {
+        if (m)
+        {
             int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
             int k;
 
             memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
             memcpy(temp_B, dpp->samplesB, sizeof(dpp->samplesB));
 
-            for (k = 0; k < MAX_TERM; k++) {
+            for (k = 0; k < MAX_TERM; k++)
+            {
                 dpp->samplesA[k] = temp_A[m];
                 dpp->samplesB[k] = temp_B[m];
                 m = (m + 1) & (MAX_TERM - 1);
             }
         }
         break;
-        }
+    }
     case -1:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -1269,7 +1418,8 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
         }
         break;
     case -2:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_B = dpp->samplesB[0];
@@ -1288,7 +1438,8 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
         }
         break;
     case -3:
-        while (nb_samples--) {
+        while (nb_samples--)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -1315,13 +1466,17 @@ static void decorr_stereo(int32_t *in_left, int32_t *in_right,
 
 static void reverse_decorr(struct Decorr *dpp)
 {
-    if (dpp->value > MAX_TERM) {
+    if (dpp->value > MAX_TERM)
+    {
         int32_t sam_A, sam_B;
 
-        if (dpp->value & 1) {
+        if (dpp->value & 1)
+        {
             sam_A = 2 * dpp->samplesA[0] - dpp->samplesA[1];
             sam_B = 2 * dpp->samplesB[0] - dpp->samplesB[1];
-        } else {
+        }
+        else
+        {
             sam_A = (3 * dpp->samplesA[0] - dpp->samplesA[1]) >> 1;
             sam_B = (3 * dpp->samplesB[0] - dpp->samplesB[1]) >> 1;
         }
@@ -1331,20 +1486,26 @@ static void reverse_decorr(struct Decorr *dpp)
         dpp->samplesA[0] = sam_A;
         dpp->samplesB[0] = sam_B;
 
-        if (dpp->value & 1) {
+        if (dpp->value & 1)
+        {
             sam_A = 2 * dpp->samplesA[0] - dpp->samplesA[1];
             sam_B = 2 * dpp->samplesB[0] - dpp->samplesB[1];
-        } else {
+        }
+        else
+        {
             sam_A = (3 * dpp->samplesA[0] - dpp->samplesA[1]) >> 1;
             sam_B = (3 * dpp->samplesB[0] - dpp->samplesB[1]) >> 1;
         }
 
         dpp->samplesA[1] = sam_A;
         dpp->samplesB[1] = sam_B;
-    } else if (dpp->value > 1) {
+    }
+    else if (dpp->value > 1)
+    {
         int i, j, k;
 
-        for (i = 0, j = dpp->value - 1, k = 0; k < dpp->value / 2; i++, j--, k++) {
+        for (i = 0, j = dpp->value - 1, k = 0; k < dpp->value / 2; i++, j--, k++)
+        {
             i &= (MAX_TERM - 1);
             j &= (MAX_TERM - 1);
             dpp->samplesA[i] ^= dpp->samplesA[j];
@@ -1366,14 +1527,17 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
     dpp->weightA = restore_weight(store_weight(dpp->weightA));
     dpp->weightB = restore_weight(store_weight(dpp->weightB));
 
-    for (i = 0; i < MAX_TERM; i++) {
+    for (i = 0; i < MAX_TERM; i++)
+    {
         dpp->samplesA[i] = wp_exp2(log2s(dpp->samplesA[i]));
         dpp->samplesB[i] = wp_exp2(log2s(dpp->samplesB[i]));
     }
 
-    switch (dpp->value) {
+    switch (dpp->value)
+    {
     case 2:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0];
@@ -1388,7 +1552,8 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
         }
         break;
     case 17:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = 2 * dpp->samplesA[0] - dpp->samplesA[1];
@@ -1403,7 +1568,8 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
         }
         break;
     case 18:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0] + ((dpp->samplesA[0] - dpp->samplesA[1]) >> 1);
@@ -1417,10 +1583,12 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
             UPDATE_WEIGHT(dpp->weightB, dpp->delta, sam, tmp);
         }
         break;
-    default: {
+    default:
+    {
         int k = dpp->value & (MAX_TERM - 1);
 
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[m];
@@ -1435,14 +1603,16 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
             k = (k + 1) & (MAX_TERM - 1);
         }
 
-        if (m) {
+        if (m)
+        {
             int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
             int k;
 
             memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
             memcpy(temp_B, dpp->samplesB, sizeof(dpp->samplesB));
 
-            for (k = 0; k < MAX_TERM; k++) {
+            for (k = 0; k < MAX_TERM; k++)
+            {
                 dpp->samplesA[k] = temp_A[m];
                 dpp->samplesB[k] = temp_B[m];
                 m = (m + 1) & (MAX_TERM - 1);
@@ -1451,7 +1621,8 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
         break;
     }
     case -1:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -1463,7 +1634,8 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
         }
         break;
     case -2:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_B = dpp->samplesB[0];
@@ -1475,7 +1647,8 @@ static void decorr_stereo_quick(int32_t *in_left,  int32_t *in_right,
         }
         break;
     case -3:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -1515,9 +1688,12 @@ static void decorr_stereo_buffer(WavPackExtraInfo *info,
                   FFMIN(2048, nb_samples), &dp, -1);
     dp.delta = delta;
 
-    if (tindex == 0) {
+    if (tindex == 0)
+    {
         reverse_decorr(&dp);
-    } else {
+    }
+    else
+    {
         CLEAR(dp.samplesA);
         CLEAR(dp.samplesB);
     }
@@ -1527,7 +1703,8 @@ static void decorr_stereo_buffer(WavPackExtraInfo *info,
     dppi->weightA = dp.weightA;
     dppi->weightB = dp.weightB;
 
-    if (delta == 0) {
+    if (delta == 0)
+    {
         dp.delta = 1;
         decorr_stereo(in_left, in_right, out_left, out_right, nb_samples, &dp, 1);
         dp.delta = 0;
@@ -1539,7 +1716,7 @@ static void decorr_stereo_buffer(WavPackExtraInfo *info,
 
     if (info->gt16bit)
         decorr_stereo(in_left, in_right, out_left, out_right,
-                           nb_samples, &dp, 1);
+                      nb_samples, &dp, 1);
     else
         decorr_stereo_quick(in_left, in_right, out_left, out_right,
                             nb_samples, &dp);
@@ -1550,18 +1727,21 @@ static void sort_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
     int reversed = 1;
     uint32_t bits;
 
-    while (reversed) {
+    while (reversed)
+    {
         int ri, i;
 
         memcpy(info->dps, s->decorr_passes, sizeof(s->decorr_passes));
         reversed = 0;
 
-        for (ri = 0; ri < info->nterms && s->decorr_passes[ri].value; ri++) {
+        for (ri = 0; ri < info->nterms && s->decorr_passes[ri].value; ri++)
+        {
 
             if (ri + 1 >= info->nterms || !s->decorr_passes[ri+1].value)
                 break;
 
-            if (s->decorr_passes[ri].value == s->decorr_passes[ri+1].value) {
+            if (s->decorr_passes[ri].value == s->decorr_passes[ri+1].value)
+            {
                 decorr_stereo_buffer(info,
                                      s->sampleptrs[ri  ][0], s->sampleptrs[ri  ][1],
                                      s->sampleptrs[ri+1][0], s->sampleptrs[ri+1][1],
@@ -1581,7 +1761,8 @@ static void sort_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
             bits = log2stereo(s->sampleptrs[i][0], s->sampleptrs[i][1],
                               s->block_samples, info->log_limit);
 
-            if (bits < info->best_bits) {
+            if (bits < info->best_bits)
+            {
                 reversed = 1;
                 info->best_bits = bits;
                 CLEAR(s->decorr_passes);
@@ -1590,7 +1771,9 @@ static void sort_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
                        s->sampleptrs[i][0], s->block_samples * 4);
                 memcpy(s->sampleptrs[info->nterms + 1][1],
                        s->sampleptrs[i][1], s->block_samples * 4);
-            } else {
+            }
+            else
+            {
                 info->dps[ri  ] = s->decorr_passes[ri  ];
                 info->dps[ri+1] = s->decorr_passes[ri+1];
                 decorr_stereo_buffer(info,
@@ -1611,8 +1794,10 @@ static void delta_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
         return;
     delta = s->decorr_passes[0].delta;
 
-    for (d = delta - 1; d >= 0; d--) {
-        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++) {
+    for (d = delta - 1; d >= 0; d--)
+    {
+        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++)
+        {
             info->dps[i].value = s->decorr_passes[i].value;
             info->dps[i].delta = d;
             decorr_stereo_buffer(info,
@@ -1635,8 +1820,10 @@ static void delta_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
                s->block_samples * 4);
     }
 
-    for (d = delta + 1; !lower && d <= 7; d++) {
-        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++) {
+    for (d = delta + 1; !lower && d <= 7; d++)
+    {
+        for (i = 0; i < info->nterms && s->decorr_passes[i].value; i++)
+        {
             info->dps[i].value = s->decorr_passes[i].value;
             info->dps[i].delta = d;
             decorr_stereo_buffer(info,
@@ -1648,7 +1835,8 @@ static void delta_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info)
         bits = log2stereo(s->sampleptrs[i][0], s->sampleptrs[i][1],
                           s->block_samples, info->log_limit);
 
-        if (bits < info->best_bits) {
+        if (bits < info->best_bits)
+        {
             info->best_bits = bits;
             CLEAR(s->decorr_passes);
             memcpy(s->decorr_passes, info->dps, sizeof(info->dps[0]) * i);
@@ -1678,7 +1866,8 @@ static void recurse_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info,
     out_left  = s->sampleptrs[depth + 1][0];
     out_right = s->sampleptrs[depth + 1][1];
 
-    for (term = -3; term <= 18; term++) {
+    for (term = -3; term <= 18; term++)
+    {
         if (!term || (term > 8 && term < 17))
             continue;
 
@@ -1698,7 +1887,8 @@ static void recurse_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info,
                              s->block_samples, depth);
         bits = log2stereo(out_left, out_right, s->block_samples, info->log_limit);
 
-        if (bits < info->best_bits) {
+        if (bits < info->best_bits)
+        {
             info->best_bits = bits;
             CLEAR(s->decorr_passes);
             memcpy(s->decorr_passes, info->dps, sizeof(info->dps[0]) * (depth + 1));
@@ -1711,12 +1901,14 @@ static void recurse_stereo(WavPackEncodeContext *s, WavPackExtraInfo *info,
         term_bits[term + 3] = bits;
     }
 
-    while (depth + 1 < info->nterms && branches--) {
+    while (depth + 1 < info->nterms && branches--)
+    {
         uint32_t local_best_bits = input_bits;
         int best_term = 0, i;
 
         for (i = 0; i < 22; i++)
-            if (term_bits[i] && term_bits[i] < local_best_bits) {
+            if (term_bits[i] && term_bits[i] < local_best_bits)
+            {
                 local_best_bits = term_bits[i];
                 best_term = i - 3;
             }
@@ -1780,7 +1972,8 @@ static void analyze_stereo(WavPackEncodeContext *s,
     if (s->extra_flags & EXTRA_SORT_FIRST)
         sort_stereo(s, &info);
 
-    if (s->extra_flags & EXTRA_TRY_DELTAS) {
+    if (s->extra_flags & EXTRA_TRY_DELTAS)
+    {
         delta_stereo(s, &info);
 
         if ((s->extra_flags & EXTRA_ADJUST_DELTAS) && s->decorr_passes[0].value)
@@ -1792,7 +1985,8 @@ static void analyze_stereo(WavPackEncodeContext *s,
     if (s->extra_flags & EXTRA_SORT_LAST)
         sort_stereo(s, &info);
 
-    if (do_samples) {
+    if (do_samples)
+    {
         memcpy(in_left,  s->sampleptrs[info.nterms + 1][0], s->block_samples * 4);
         memcpy(in_right, s->sampleptrs[info.nterms + 1][1], s->block_samples * 4);
     }
@@ -1818,7 +2012,8 @@ static int wv_stereo(WavPackEncodeContext *s,
         if (samples_l[i] || samples_r[i])
             break;
 
-    if (i == nb_samples) {
+    if (i == nb_samples)
+    {
         s->flags &= ~((uint32_t) WV_JOINT_STEREO);
         CLEAR(s->decorr_passes);
         CLEAR(s->w);
@@ -1829,7 +2024,8 @@ static int wv_stereo(WavPackEncodeContext *s,
     log_limit = (((s->flags & MAG_MASK) >> MAG_LSB) + 4) * 256;
     log_limit = FFMIN(6912, log_limit);
 
-    if (s->joint) {
+    if (s->joint)
+    {
         force_js = s->joint > 0;
         force_ts = s->joint < 0;
     }
@@ -1840,19 +2036,22 @@ static int wv_stereo(WavPackEncodeContext *s,
     if (no_history || s->num_passes >= 7)
         s->best_decorr = s->mask_decorr = 0;
 
-    for (pi = 0; pi < s->num_passes;) {
+    for (pi = 0; pi < s->num_passes;)
+    {
         const WavPackDecorrSpec *wpds;
         int nterms, c, j;
 
         if (!pi)
             c = s->best_decorr;
-        else {
+        else
+        {
             if (s->mask_decorr == 0)
                 c = 0;
             else
                 c = (s->best_decorr & (s->mask_decorr - 1)) | s->mask_decorr;
 
-            if (c == s->best_decorr) {
+            if (c == s->best_decorr)
+            {
                 s->mask_decorr = s->mask_decorr ? ((s->mask_decorr << 1) & (s->num_decorrs - 1)) : 1;
                 continue;
             }
@@ -1861,9 +2060,12 @@ static int wv_stereo(WavPackEncodeContext *s,
         wpds = &s->decorr_specs[c];
         nterms = decorr_filter_nterms[s->decorr_filter];
 
-        while (1) {
-            if (force_js || (wpds->joint_stereo && !force_ts)) {
-                if (!got_js) {
+        while (1)
+        {
+            if (force_js || (wpds->joint_stereo && !force_ts))
+            {
+                if (!got_js)
+                {
                     av_fast_padded_malloc(&s->js_left,  &s->js_left_size,  buf_size);
                     av_fast_padded_malloc(&s->js_right, &s->js_right_size, buf_size);
                     memcpy(s->js_left,  samples_l, buf_size);
@@ -1876,14 +2078,17 @@ static int wv_stereo(WavPackEncodeContext *s,
 
                 memcpy(s->temp_buffer[0][0], s->js_left,  buf_size);
                 memcpy(s->temp_buffer[0][1], s->js_right, buf_size);
-            } else {
+            }
+            else
+            {
                 memcpy(s->temp_buffer[0][0], samples_l, buf_size);
                 memcpy(s->temp_buffer[0][1], samples_r, buf_size);
             }
 
             CLEAR(save_decorr_passes);
 
-            for (j = 0; j < nterms; j++) {
+            for (j = 0; j < nterms; j++)
+            {
                 CLEAR(temp_decorr_pass);
                 temp_decorr_pass.delta = wpds->delta;
                 temp_decorr_pass.value = wpds->terms[j];
@@ -1895,10 +2100,13 @@ static int wv_stereo(WavPackEncodeContext *s,
                               s->temp_buffer[~j&1][0], s->temp_buffer[~j&1][1],
                               FFMIN(2048, nb_samples), &temp_decorr_pass, -1);
 
-                if (j) {
+                if (j)
+                {
                     CLEAR(temp_decorr_pass.samplesA);
                     CLEAR(temp_decorr_pass.samplesB);
-                } else {
+                }
+                else
+                {
                     reverse_decorr(&temp_decorr_pass);
                 }
 
@@ -1921,7 +2129,8 @@ static int wv_stereo(WavPackEncodeContext *s,
             nterms >>= 1;
         }
 
-        if (size < best_size) {
+        if (size < best_size)
+        {
             memcpy(s->best_buffer[0], s->temp_buffer[j&1][0], buf_size);
             memcpy(s->best_buffer[1], s->temp_buffer[j&1][1], buf_size);
             memcpy(s->decorr_passes, save_decorr_passes, sizeof(struct Decorr) * MAX_TERMS);
@@ -1939,23 +2148,30 @@ static int wv_stereo(WavPackEncodeContext *s,
     else
         s->flags &= ~((uint32_t) WV_JOINT_STEREO);
 
-    if (s->extra_flags) {
-        if (s->flags & WV_JOINT_STEREO) {
+    if (s->extra_flags)
+    {
+        if (s->flags & WV_JOINT_STEREO)
+        {
             analyze_stereo(s, s->js_left, s->js_right, do_samples);
 
-            if (do_samples) {
+            if (do_samples)
+            {
                 memcpy(samples_l, s->js_left,  buf_size);
                 memcpy(samples_r, s->js_right, buf_size);
             }
-        } else
+        }
+        else
             analyze_stereo(s, samples_l, samples_r, do_samples);
-    } else if (do_samples) {
+    }
+    else if (do_samples)
+    {
         memcpy(samples_l, s->best_buffer[0], buf_size);
         memcpy(samples_r, s->best_buffer[1], buf_size);
     }
 
     if (s->extra_flags || no_history ||
-        s->joint_stereo != s->decorr_specs[s->best_decorr].joint_stereo) {
+            s->joint_stereo != s->decorr_specs[s->best_decorr].joint_stereo)
+    {
         s->joint_stereo = s->decorr_specs[s->best_decorr].joint_stereo;
         CLEAR(s->w);
         scan_word(s, &s->w.c[0], s->best_buffer[0], nb_samples, -1);
@@ -1977,22 +2193,29 @@ static void encode_flush(WavPackEncodeContext *s)
     WavPackWords *w = &s->w;
     PutBitContext *pb = &s->pb;
 
-    if (w->zeros_acc) {
+    if (w->zeros_acc)
+    {
         int cbits = count_bits(w->zeros_acc);
 
-        do {
-            if (cbits > 31) {
+        do
+        {
+            if (cbits > 31)
+            {
                 put_bits(pb, 31, 0x7FFFFFFF);
                 cbits -= 31;
-            } else {
+            }
+            else
+            {
                 put_bits(pb, cbits, (1 << cbits) - 1);
                 cbits = 0;
             }
-        } while (cbits);
+        }
+        while (cbits);
 
         put_bits(pb, 1, 0);
 
-        while (w->zeros_acc > 1) {
+        while (w->zeros_acc > 1)
+        {
             put_bits(pb, 1, w->zeros_acc & 1);
             w->zeros_acc >>= 1;
         }
@@ -2000,8 +2223,10 @@ static void encode_flush(WavPackEncodeContext *s)
         w->zeros_acc = 0;
     }
 
-    if (w->holding_one) {
-        if (w->holding_one >= 16) {
+    if (w->holding_one)
+    {
+        if (w->holding_one >= 16)
+        {
             int cbits;
 
             put_bits(pb, 16, (1 << 16) - 1);
@@ -2009,37 +2234,47 @@ static void encode_flush(WavPackEncodeContext *s)
             w->holding_one -= 16;
             cbits = count_bits(w->holding_one);
 
-            do {
-                if (cbits > 31) {
+            do
+            {
+                if (cbits > 31)
+                {
                     put_bits(pb, 31, 0x7FFFFFFF);
                     cbits -= 31;
-                } else {
+                }
+                else
+                {
                     put_bits(pb, cbits, (1 << cbits) - 1);
                     cbits = 0;
                 }
-            } while (cbits);
+            }
+            while (cbits);
 
             put_bits(pb, 1, 0);
 
-            while (w->holding_one > 1) {
+            while (w->holding_one > 1)
+            {
                 put_bits(pb, 1, w->holding_one & 1);
                 w->holding_one >>= 1;
             }
 
             w->holding_zero = 0;
-        } else {
+        }
+        else
+        {
             put_bits(pb, w->holding_one, (1 << w->holding_one) - 1);
         }
 
         w->holding_one = 0;
     }
 
-    if (w->holding_zero) {
+    if (w->holding_zero)
+    {
         put_bits(pb, 1, 0);
         w->holding_zero = 0;
     }
 
-    if (w->pend_count) {
+    if (w->pend_count)
+    {
         put_bits(pb, w->pend_count, w->pend_data);
         w->pend_data = w->pend_count = 0;
     }
@@ -2051,17 +2286,24 @@ static void wavpack_encode_sample(WavPackEncodeContext *s, WvChannel *c, int32_t
     uint32_t ones_count, low, high;
     int sign = sample < 0;
 
-    if (s->w.c[0].median[0] < 2 && !s->w.holding_zero && s->w.c[1].median[0] < 2) {
-        if (w->zeros_acc) {
+    if (s->w.c[0].median[0] < 2 && !s->w.holding_zero && s->w.c[1].median[0] < 2)
+    {
+        if (w->zeros_acc)
+        {
             if (sample)
                 encode_flush(s);
-            else {
+            else
+            {
                 w->zeros_acc++;
                 return;
             }
-        } else if (sample) {
+        }
+        else if (sample)
+        {
             put_bits(&s->pb, 1, 0);
-        } else {
+        }
+        else
+        {
             CLEAR(s->w.c[0].median);
             CLEAR(s->w.c[1].median);
             w->zeros_acc = 1;
@@ -2072,27 +2314,36 @@ static void wavpack_encode_sample(WavPackEncodeContext *s, WvChannel *c, int32_t
     if (sign)
         sample = ~sample;
 
-    if (sample < (int32_t) GET_MED(0)) {
+    if (sample < (int32_t) GET_MED(0))
+    {
         ones_count = low = 0;
         high = GET_MED(0) - 1;
         DEC_MED(0);
-    } else {
+    }
+    else
+    {
         low = GET_MED(0);
         INC_MED(0);
 
-        if (sample - low < GET_MED(1)) {
+        if (sample - low < GET_MED(1))
+        {
             ones_count = 1;
             high = low + GET_MED(1) - 1;
             DEC_MED(1);
-        } else {
+        }
+        else
+        {
             low += GET_MED(1);
             INC_MED(1);
 
-            if (sample - low < GET_MED(2)) {
+            if (sample - low < GET_MED(2))
+            {
                 ones_count = 2;
                 high = low + GET_MED(2) - 1;
                 DEC_MED(2);
-            } else {
+            }
+            else
+            {
                 ones_count = 2 + (sample - low) / GET_MED(2);
                 low += (ones_count - 2) * GET_MED(2);
                 high = low + GET_MED(2) - 1;
@@ -2101,31 +2352,39 @@ static void wavpack_encode_sample(WavPackEncodeContext *s, WvChannel *c, int32_t
         }
     }
 
-    if (w->holding_zero) {
+    if (w->holding_zero)
+    {
         if (ones_count)
             w->holding_one++;
 
         encode_flush(s);
 
-        if (ones_count) {
+        if (ones_count)
+        {
             w->holding_zero = 1;
             ones_count--;
-        } else
+        }
+        else
             w->holding_zero = 0;
-    } else
+    }
+    else
         w->holding_zero = 1;
 
     w->holding_one = ones_count * 2;
 
-    if (high != low) {
+    if (high != low)
+    {
         uint32_t maxcode = high - low, code = sample - low;
         int bitcount = count_bits(maxcode);
         uint32_t extras = (1 << bitcount) - maxcode - 1;
 
-        if (code < extras) {
+        if (code < extras)
+        {
             w->pend_data |= code << w->pend_count;
             w->pend_count += bitcount - 1;
-        } else {
+        }
+        else
+        {
             w->pend_data |= ((code + extras) >> 1) << w->pend_count;
             w->pend_count += bitcount - 1;
             w->pend_data |= ((code + extras) & 1) << w->pend_count++;
@@ -2151,12 +2410,17 @@ static void pack_int32(WavPackEncodeContext *s,
     if (!sent_bits)
         return;
 
-    if (s->flags & WV_MONO_DATA) {
-        for (i = 0; i < nb_samples; i++) {
+    if (s->flags & WV_MONO_DATA)
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             put_sbits(pb, sent_bits, samples_l[i] >> pre_shift);
         }
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             put_sbits(pb, sent_bits, samples_l[i] >> pre_shift);
             put_sbits(pb, sent_bits, samples_r[i] >> pre_shift);
         }
@@ -2169,20 +2433,28 @@ static void pack_float_sample(WavPackEncodeContext *s, int32_t *sample)
     PutBitContext *pb = &s->pb;
     int32_t value, shift_count;
 
-    if (get_exponent(*sample) == 255) {
-        if (get_mantissa(*sample)) {
+    if (get_exponent(*sample) == 255)
+    {
+        if (get_mantissa(*sample))
+        {
             put_bits(pb, 1, 1);
             put_bits(pb, 23, get_mantissa(*sample));
-        } else {
+        }
+        else
+        {
             put_bits(pb, 1, 0);
         }
 
         value = 0x1000000;
         shift_count = 0;
-    } else if (get_exponent(*sample)) {
+    }
+    else if (get_exponent(*sample))
+    {
         shift_count = max_exp - get_exponent(*sample);
         value = 0x800000 + get_mantissa(*sample);
-    } else {
+    }
+    else
+    {
         shift_count = max_exp ? max_exp - 1 : 0;
         value = get_mantissa(*sample);
     }
@@ -2192,9 +2464,12 @@ static void pack_float_sample(WavPackEncodeContext *s, int32_t *sample)
     else
         value = 0;
 
-    if (!value) {
-        if (s->float_flags & FLOAT_ZEROS_SENT) {
-            if (get_exponent(*sample) || get_mantissa(*sample)) {
+    if (!value)
+    {
+        if (s->float_flags & FLOAT_ZEROS_SENT)
+        {
+            if (get_exponent(*sample) || get_mantissa(*sample))
+            {
                 put_bits(pb, 1, 1);
                 put_bits(pb, 23, get_mantissa(*sample));
 
@@ -2202,18 +2477,25 @@ static void pack_float_sample(WavPackEncodeContext *s, int32_t *sample)
                     put_bits(pb, 8, get_exponent(*sample));
 
                 put_bits(pb, 1, get_sign(*sample));
-            } else {
+            }
+            else
+            {
                 put_bits(pb, 1, 0);
 
                 if (s->float_flags & FLOAT_NEG_ZEROS)
                     put_bits(pb, 1, get_sign(*sample));
             }
         }
-    } else if (shift_count) {
-        if (s->float_flags & FLOAT_SHIFT_SENT) {
+    }
+    else if (shift_count)
+    {
+        if (s->float_flags & FLOAT_SHIFT_SENT)
+        {
             int32_t data = get_mantissa(*sample) & ((1 << shift_count) - 1);
             put_bits(pb, shift_count, data);
-        } else if (s->float_flags & FLOAT_SHIFT_SAME) {
+        }
+        else if (s->float_flags & FLOAT_SHIFT_SAME)
+        {
             put_bits(pb, 1, get_mantissa(*sample) & 1);
         }
     }
@@ -2225,11 +2507,15 @@ static void pack_float(WavPackEncodeContext *s,
 {
     int i;
 
-    if (s->flags & WV_MONO_DATA) {
+    if (s->flags & WV_MONO_DATA)
+    {
         for (i = 0; i < nb_samples; i++)
             pack_float_sample(s, &samples_l[i]);
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             pack_float_sample(s, &samples_l[i]);
             pack_float_sample(s, &samples_r[i]);
         }
@@ -2242,9 +2528,11 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
 {
     int i, m, k;
 
-    switch (dpp->value) {
+    switch (dpp->value)
+    {
     case 17:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = 2 * dpp->samplesA[0] - dpp->samplesA[1];
@@ -2259,7 +2547,8 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
         }
         break;
     case 18:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0] + ((dpp->samplesA[0] - dpp->samplesA[1]) >> 1);
@@ -2274,7 +2563,8 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
         }
         break;
     default:
-        for (m = 0, k = dpp->value & (MAX_TERM - 1), i = 0; i < nb_samples; i++) {
+        for (m = 0, k = dpp->value & (MAX_TERM - 1), i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[m];
@@ -2288,13 +2578,15 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
             m = (m + 1) & (MAX_TERM - 1);
             k = (k + 1) & (MAX_TERM - 1);
         }
-        if (m) {
+        if (m)
+        {
             int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
 
             memcpy(temp_A, dpp->samplesA, sizeof (dpp->samplesA));
             memcpy(temp_B, dpp->samplesB, sizeof (dpp->samplesB));
 
-            for (k = 0; k < MAX_TERM; k++) {
+            for (k = 0; k < MAX_TERM; k++)
+            {
                 dpp->samplesA[k] = temp_A[m];
                 dpp->samplesB[k] = temp_B[m];
                 m = (m + 1) & (MAX_TERM - 1);
@@ -2302,7 +2594,8 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
         }
         break;
     case -1:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -2314,7 +2607,8 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
         }
         break;
     case -2:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_B = dpp->samplesB[0];
@@ -2326,7 +2620,8 @@ static void decorr_stereo_pass2(struct Decorr *dpp,
         }
         break;
     case -3:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -2361,9 +2656,11 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
 {
     int i, m, k;
 
-    switch (dpp->value) {
+    switch (dpp->value)
+    {
     case 17:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = 2 * dpp->samplesA[0] - dpp->samplesA[1];
@@ -2378,7 +2675,8 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
         }
         break;
     case 18:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[0] + ((dpp->samplesA[0] - dpp->samplesA[1]) >> 1);
@@ -2393,7 +2691,8 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
         }
         break;
     default:
-        for (m = 0, k = dpp->value & (MAX_TERM - 1), i = 0; i < nb_samples; i++) {
+        for (m = 0, k = dpp->value & (MAX_TERM - 1), i = 0; i < nb_samples; i++)
+        {
             int32_t sam, tmp;
 
             sam = dpp->samplesA[m];
@@ -2408,13 +2707,15 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
             k = (k + 1) & (MAX_TERM - 1);
         }
 
-        if (m) {
+        if (m)
+        {
             int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
 
             memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
             memcpy(temp_B, dpp->samplesB, sizeof(dpp->samplesB));
 
-            for (k = 0; k < MAX_TERM; k++) {
+            for (k = 0; k < MAX_TERM; k++)
+            {
                 dpp->samplesA[k] = temp_A[m];
                 dpp->samplesB[k] = temp_B[m];
                 m = (m + 1) & (MAX_TERM - 1);
@@ -2422,7 +2723,8 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
         }
         break;
     case -1:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -2434,7 +2736,8 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
         }
         break;
     case -2:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_B = dpp->samplesB[0];
@@ -2446,7 +2749,8 @@ static void decorr_stereo_pass_id2(struct Decorr *dpp,
         }
         break;
     case -3:
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t sam_A, sam_B, tmp;
 
             sam_A = dpp->samplesA[0];
@@ -2483,13 +2787,16 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     struct Decorr *dpp;
     PutByteContext pb;
 
-    if (s->flags & WV_MONO_DATA) {
+    if (s->flags & WV_MONO_DATA)
+    {
         CLEAR(s->w);
     }
-    if (!(s->flags & WV_MONO) && s->optimize_mono) {
+    if (!(s->flags & WV_MONO) && s->optimize_mono)
+    {
         int32_t lor = 0, diff = 0;
 
-        for (i = 0; i < nb_samples; i++) {
+        for (i = 0; i < nb_samples; i++)
+        {
             lor  |= samples_l[i] | samples_r[i];
             diff |= samples_l[i] - samples_r[i];
 
@@ -2497,23 +2804,28 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
                 break;
         }
 
-        if (i == nb_samples && lor && !diff) {
+        if (i == nb_samples && lor && !diff)
+        {
             s->flags &= ~(WV_JOINT_STEREO | WV_CROSS_DECORR);
             s->flags |= WV_FALSE_STEREO;
 
-            if (!s->false_stereo) {
+            if (!s->false_stereo)
+            {
                 s->false_stereo = 1;
                 s->num_terms = 0;
                 CLEAR(s->w);
             }
-        } else if (s->false_stereo) {
+        }
+        else if (s->false_stereo)
+        {
             s->false_stereo = 0;
             s->num_terms = 0;
             CLEAR(s->w);
         }
     }
 
-    if (s->flags & SHIFT_MASK) {
+    if (s->flags & SHIFT_MASK)
+    {
         int shift = (s->flags & SHIFT_MASK) >> SHIFT_LSB;
         int mag = (s->flags & MAG_MASK) >> MAG_LSB;
 
@@ -2528,10 +2840,12 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
             s->flags -= (1 << MAG_LSB) * shift;
     }
 
-    if ((s->flags & WV_FLOAT_DATA) || (s->flags & MAG_MASK) >> MAG_LSB >= 24) {
+    if ((s->flags & WV_FLOAT_DATA) || (s->flags & MAG_MASK) >> MAG_LSB >= 24)
+    {
         av_fast_padded_malloc(&s->orig_l, &s->orig_l_size, sizeof(int32_t) * nb_samples);
         memcpy(s->orig_l, samples_l, sizeof(int32_t) * nb_samples);
-        if (!(s->flags & WV_MONO_DATA)) {
+        if (!(s->flags & WV_MONO_DATA))
+        {
             av_fast_padded_malloc(&s->orig_r, &s->orig_r_size, sizeof(int32_t) * nb_samples);
             memcpy(s->orig_r, samples_r, sizeof(int32_t) * nb_samples);
         }
@@ -2541,15 +2855,19 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
         else
             got_extra = scan_int32(s, samples_l, samples_r, nb_samples);
         s->num_terms = 0;
-    } else {
+    }
+    else
+    {
         scan_int23(s, samples_l, samples_r, nb_samples);
-        if (s->shift != s->int32_zeros + s->int32_ones + s->int32_dups) {
+        if (s->shift != s->int32_zeros + s->int32_ones + s->int32_dups)
+        {
             s->shift = s->int32_zeros + s->int32_ones + s->int32_dups;
             s->num_terms = 0;
         }
     }
 
-    if (!s->num_passes && !s->num_terms) {
+    if (!s->num_passes && !s->num_terms)
+    {
         s->num_passes = 1;
 
         if (s->flags & WV_MONO_DATA)
@@ -2559,13 +2877,16 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
 
         s->num_passes = 0;
     }
-    if (s->flags & WV_MONO_DATA) {
+    if (s->flags & WV_MONO_DATA)
+    {
         for (i = 0; i < nb_samples; i++)
             crc += (crc << 1) + samples_l[i];
 
         if (s->num_passes)
             ret = wv_mono(s, samples_l, !s->num_terms, 1);
-    } else {
+    }
+    else
+    {
         for (i = 0; i < nb_samples; i++)
             crc += (crc << 3) + (samples_l[i] << 1) + samples_l[i] + samples_r[i];
 
@@ -2595,22 +2916,25 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     bytestream2_put_le32(&pb, crc);
 
     if (s->flags & WV_INITIAL_BLOCK &&
-        s->avctx->channel_layout != AV_CH_LAYOUT_MONO &&
-        s->avctx->channel_layout != AV_CH_LAYOUT_STEREO) {
+            s->avctx->channel_layout != AV_CH_LAYOUT_MONO &&
+            s->avctx->channel_layout != AV_CH_LAYOUT_STEREO)
+    {
         put_metadata_block(&pb, WP_ID_CHANINFO, 5);
         bytestream2_put_byte(&pb, s->avctx->channels);
         bytestream2_put_le32(&pb, s->avctx->channel_layout);
         bytestream2_put_byte(&pb, 0);
     }
 
-    if ((s->flags & SRATE_MASK) == SRATE_MASK) {
+    if ((s->flags & SRATE_MASK) == SRATE_MASK)
+    {
         put_metadata_block(&pb, WP_ID_SAMPLE_RATE, 3);
         bytestream2_put_le24(&pb, s->avctx->sample_rate);
         bytestream2_put_byte(&pb, 0);
     }
 
     put_metadata_block(&pb, WP_ID_DECTERMS, s->num_terms);
-    for (i = 0; i < s->num_terms; i++) {
+    for (i = 0; i < s->num_terms; i++)
+    {
         struct Decorr *dpp = &s->decorr_passes[i];
         bytestream2_put_byte(&pb, ((dpp->value + 5) & 0x1f) | ((dpp->delta << 5) & 0xe0));
     }
@@ -2626,21 +2950,26 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     bytestream2_put_byte(&pb, WP_ID_DECWEIGHTS);
     bytestream2_put_byte(&pb, 0);
     start = bytestream2_tell_p(&pb);
-    for (i = s->num_terms - 1; i >= 0; --i) {
+    for (i = s->num_terms - 1; i >= 0; --i)
+    {
         struct Decorr *dpp = &s->decorr_passes[i];
 
         if (store_weight(dpp->weightA) ||
-            (!(s->flags & WV_MONO_DATA) && store_weight(dpp->weightB)))
-                break;
+                (!(s->flags & WV_MONO_DATA) && store_weight(dpp->weightB)))
+            break;
     }
     tcount = i + 1;
-    for (i = 0; i < s->num_terms; i++) {
+    for (i = 0; i < s->num_terms; i++)
+    {
         struct Decorr *dpp = &s->decorr_passes[i];
-        if (i < tcount) {
+        if (i < tcount)
+        {
             WRITE_DECWEIGHT(dpp->weightA);
             if (!(s->flags & WV_MONO_DATA))
                 WRITE_DECWEIGHT(dpp->weightB);
-        } else {
+        }
+        else
+        {
             dpp->weightA = dpp->weightB = 0;
         }
     }
@@ -2659,27 +2988,38 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     bytestream2_put_byte(&pb, WP_ID_DECSAMPLES);
     bytestream2_put_byte(&pb, 0);
     start = bytestream2_tell_p(&pb);
-    for (i = 0; i < s->num_terms; i++) {
+    for (i = 0; i < s->num_terms; i++)
+    {
         struct Decorr *dpp = &s->decorr_passes[i];
-        if (i == 0) {
-            if (dpp->value > MAX_TERM) {
+        if (i == 0)
+        {
+            if (dpp->value > MAX_TERM)
+            {
                 WRITE_DECSAMPLE(dpp->samplesA[0]);
                 WRITE_DECSAMPLE(dpp->samplesA[1]);
-                if (!(s->flags & WV_MONO_DATA)) {
+                if (!(s->flags & WV_MONO_DATA))
+                {
                     WRITE_DECSAMPLE(dpp->samplesB[0]);
                     WRITE_DECSAMPLE(dpp->samplesB[1]);
                 }
-            } else if (dpp->value < 0) {
+            }
+            else if (dpp->value < 0)
+            {
                 WRITE_DECSAMPLE(dpp->samplesA[0]);
                 WRITE_DECSAMPLE(dpp->samplesB[0]);
-            } else {
-                for (j = 0; j < dpp->value; j++) {
+            }
+            else
+            {
+                for (j = 0; j < dpp->value; j++)
+                {
                     WRITE_DECSAMPLE(dpp->samplesA[j]);
                     if (!(s->flags & WV_MONO_DATA))
                         WRITE_DECSAMPLE(dpp->samplesB[j]);
                 }
             }
-        } else {
+        }
+        else
+        {
             CLEAR(dpp->samplesA);
             CLEAR(dpp->samplesB);
         }
@@ -2700,7 +3040,8 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     if (!(s->flags & WV_MONO_DATA))
         WRITE_CHAN_ENTROPY(1);
 
-    if (s->flags & WV_FLOAT_DATA) {
+    if (s->flags & WV_FLOAT_DATA)
+    {
         put_metadata_block(&pb, WP_ID_FLOATINFO, 4);
         bytestream2_put_byte(&pb, s->float_flags);
         bytestream2_put_byte(&pb, s->float_shift);
@@ -2708,7 +3049,8 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
         bytestream2_put_byte(&pb, 127);
     }
 
-    if (s->flags & WV_INT32_DATA) {
+    if (s->flags & WV_INT32_DATA)
+    {
         put_metadata_block(&pb, WP_ID_INT32INFO, 4);
         bytestream2_put_byte(&pb, s->int32_sent_bits);
         bytestream2_put_byte(&pb, s->int32_zeros);
@@ -2716,14 +3058,18 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
         bytestream2_put_byte(&pb, s->int32_dups);
     }
 
-    if (s->flags & WV_MONO_DATA && !s->num_passes) {
-        for (i = 0; i < nb_samples; i++) {
+    if (s->flags & WV_MONO_DATA && !s->num_passes)
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             int32_t code = samples_l[i];
 
-            for (tcount = s->num_terms, dpp = s->decorr_passes; tcount--; dpp++) {
+            for (tcount = s->num_terms, dpp = s->decorr_passes; tcount--; dpp++)
+            {
                 int32_t sam;
 
-                if (dpp->value > MAX_TERM) {
+                if (dpp->value > MAX_TERM)
+                {
                     if (dpp->value & 1)
                         sam = 2 * dpp->samplesA[0] - dpp->samplesA[1];
                     else
@@ -2731,7 +3077,9 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
 
                     dpp->samplesA[1] = dpp->samplesA[0];
                     dpp->samplesA[0] = code;
-                } else {
+                }
+                else
+                {
                     sam = dpp->samplesA[m];
                     dpp->samplesA[(m + dpp->value) & (MAX_TERM - 1)] = code;
                 }
@@ -2743,29 +3091,36 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
             m = (m + 1) & (MAX_TERM - 1);
             samples_l[i] = code;
         }
-        if (m) {
+        if (m)
+        {
             for (tcount = s->num_terms, dpp = s->decorr_passes; tcount--; dpp++)
-                if (dpp->value > 0 && dpp->value <= MAX_TERM) {
-                int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
-                int k;
+                if (dpp->value > 0 && dpp->value <= MAX_TERM)
+                {
+                    int32_t temp_A[MAX_TERM], temp_B[MAX_TERM];
+                    int k;
 
-                memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
-                memcpy(temp_B, dpp->samplesB, sizeof(dpp->samplesB));
+                    memcpy(temp_A, dpp->samplesA, sizeof(dpp->samplesA));
+                    memcpy(temp_B, dpp->samplesB, sizeof(dpp->samplesB));
 
-                for (k = 0; k < MAX_TERM; k++) {
-                    dpp->samplesA[k] = temp_A[m];
-                    dpp->samplesB[k] = temp_B[m];
-                    m = (m + 1) & (MAX_TERM - 1);
+                    for (k = 0; k < MAX_TERM; k++)
+                    {
+                        dpp->samplesA[k] = temp_A[m];
+                        dpp->samplesB[k] = temp_B[m];
+                        m = (m + 1) & (MAX_TERM - 1);
+                    }
                 }
-            }
         }
-    } else if (!s->num_passes) {
-        if (s->flags & WV_JOINT_STEREO) {
+    }
+    else if (!s->num_passes)
+    {
+        if (s->flags & WV_JOINT_STEREO)
+        {
             for (i = 0; i < nb_samples; i++)
                 samples_r[i] += ((samples_l[i] -= samples_r[i]) >> 1);
         }
 
-        for (i = 0; i < s->num_terms; i++) {
+        for (i = 0; i < s->num_terms; i++)
+        {
             struct Decorr *dpp = &s->decorr_passes[i];
             if (((s->flags & MAG_MASK) >> MAG_LSB) >= 16 || dpp->delta != 2)
                 decorr_stereo_pass2(dpp, samples_l, samples_r, nb_samples);
@@ -2776,11 +3131,15 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
 
     bytestream2_put_byte(&pb, WP_ID_DATA | WP_IDF_LONG);
     init_put_bits(&s->pb, pb.buffer + 3, bytestream2_get_bytes_left_p(&pb));
-    if (s->flags & WV_MONO_DATA) {
+    if (s->flags & WV_MONO_DATA)
+    {
         for (i = 0; i < nb_samples; i++)
             wavpack_encode_sample(s, &s->w.c[0], s->samples[0][i]);
-    } else {
-        for (i = 0; i < nb_samples; i++) {
+    }
+    else
+    {
+        for (i = 0; i < nb_samples; i++)
+        {
             wavpack_encode_sample(s, &s->w.c[0], s->samples[0][i]);
             wavpack_encode_sample(s, &s->w.c[1], s->samples[1][i]);
         }
@@ -2793,7 +3152,8 @@ static int wavpack_encode_block(WavPackEncodeContext *s,
     if (data_size & 1)
         bytestream2_put_byte(&pb, 0);
 
-    if (got_extra) {
+    if (got_extra)
+    {
         bytestream2_put_byte(&pb, WP_ID_EXTRABITS | WP_IDF_LONG);
         init_put_bits(&s->pb, pb.buffer + 7, bytestream2_get_bytes_left_p(&pb));
         if (s->flags & WV_FLOAT_DATA)
@@ -2829,7 +3189,8 @@ static void fill_buffer(WavPackEncodeContext *s,
             dst[i] = (sptr[i] - offset) >> shift;         \
     } while (0)
 
-    switch (s->avctx->sample_fmt) {
+    switch (s->avctx->sample_fmt)
+    {
     case AV_SAMPLE_FMT_U8P:
         COPY_SAMPLES(int8_t, 0x80, 0);
         break;
@@ -2837,7 +3198,8 @@ static void fill_buffer(WavPackEncodeContext *s,
         COPY_SAMPLES(int16_t, 0, 0);
         break;
     case AV_SAMPLE_FMT_S32P:
-        if (s->avctx->bits_per_raw_sample <= 24) {
+        if (s->avctx->bits_per_raw_sample <= 24)
+        {
             COPY_SAMPLES(int32_t, 0, 8);
             break;
         }
@@ -2850,7 +3212,8 @@ static void set_samplerate(WavPackEncodeContext *s)
 {
     int i;
 
-    for (i = 0; i < 15; i++) {
+    for (i = 0; i < 15; i++)
+    {
         if (wv_rates[i] == s->avctx->sample_rate)
             break;
     }
@@ -2870,7 +3233,8 @@ static int wavpack_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
                           sizeof(int32_t) * s->block_samples);
     if (!s->samples[0])
         return AVERROR(ENOMEM);
-    if (avctx->channels > 1) {
+    if (avctx->channels > 1)
+    {
         av_fast_padded_malloc(&s->samples[1], &s->samples_size[1],
                               sizeof(int32_t) * s->block_samples);
         if (!s->samples[1])
@@ -2878,24 +3242,34 @@ static int wavpack_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     }
 
     buf_size = s->block_samples * avctx->channels * 8
-             + 200 /* for headers */;
+               + 200 /* for headers */;
     if ((ret = ff_alloc_packet2(avctx, avpkt, buf_size, 0)) < 0)
         return ret;
     buf = avpkt->data;
 
-    for (s->ch_offset = 0; s->ch_offset < avctx->channels;) {
+    for (s->ch_offset = 0; s->ch_offset < avctx->channels;)
+    {
         set_samplerate(s);
 
-        switch (s->avctx->sample_fmt) {
-        case AV_SAMPLE_FMT_S16P: s->flags |= 1; break;
-        case AV_SAMPLE_FMT_S32P: s->flags |= 3 - (s->avctx->bits_per_raw_sample <= 24); break;
-        case AV_SAMPLE_FMT_FLTP: s->flags |= 3 | WV_FLOAT_DATA;
+        switch (s->avctx->sample_fmt)
+        {
+        case AV_SAMPLE_FMT_S16P:
+            s->flags |= 1;
+            break;
+        case AV_SAMPLE_FMT_S32P:
+            s->flags |= 3 - (s->avctx->bits_per_raw_sample <= 24);
+            break;
+        case AV_SAMPLE_FMT_FLTP:
+            s->flags |= 3 | WV_FLOAT_DATA;
         }
 
         fill_buffer(s, frame->extended_data[s->ch_offset], s->samples[0], s->block_samples);
-        if (avctx->channels - s->ch_offset == 1) {
+        if (avctx->channels - s->ch_offset == 1)
+        {
             s->flags |= WV_MONO;
-        } else {
+        }
+        else
+        {
             s->flags |= WV_CROSS_DECORR;
             fill_buffer(s, frame->extended_data[s->ch_offset + 1], s->samples[1], s->block_samples);
         }
@@ -2923,13 +3297,15 @@ static av_cold int wavpack_encode_close(AVCodecContext *avctx)
     WavPackEncodeContext *s = avctx->priv_data;
     int i;
 
-    for (i = 0; i < MAX_TERMS + 2; i++) {
+    for (i = 0; i < MAX_TERMS + 2; i++)
+    {
         av_freep(&s->sampleptrs[i][0]);
         av_freep(&s->sampleptrs[i][1]);
         s->sampleptrs_size[i][0] = s->sampleptrs_size[i][1] = 0;
     }
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_freep(&s->samples[i]);
         s->samples_size[i] = 0;
 
@@ -2954,7 +3330,8 @@ static av_cold int wavpack_encode_close(AVCodecContext *avctx)
 
 #define OFFSET(x) offsetof(WavPackEncodeContext, x)
 #define FLAGS AV_OPT_FLAG_ENCODING_PARAM | AV_OPT_FLAG_AUDIO_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "joint_stereo",  "", OFFSET(joint), AV_OPT_TYPE_INT, {.i64=0},-1, 1, FLAGS, "joint" },
     { "on",   "mid/side",   0, AV_OPT_TYPE_CONST, {.i64= 1}, 0, 0, FLAGS, "joint"},
     { "off",  "left/right", 0, AV_OPT_TYPE_CONST, {.i64=-1}, 0, 0, FLAGS, "joint"},
@@ -2965,14 +3342,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass wavpack_encoder_class = {
+static const AVClass wavpack_encoder_class =
+{
     .class_name = "WavPack encoder",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_wavpack_encoder = {
+AVCodec ff_wavpack_encoder =
+{
     .name           = "wavpack",
     .long_name      = NULL_IF_CONFIG_SMALL("WavPack"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -2983,9 +3362,11 @@ AVCodec ff_wavpack_encoder = {
     .encode2        = wavpack_encode_frame,
     .close          = wavpack_encode_close,
     .capabilities   = AV_CODEC_CAP_SMALL_LAST_FRAME,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_U8P,
-                                                     AV_SAMPLE_FMT_S16P,
-                                                     AV_SAMPLE_FMT_S32P,
-                                                     AV_SAMPLE_FMT_FLTP,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_U8P,
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_S32P,
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
 };

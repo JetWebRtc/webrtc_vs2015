@@ -1,4 +1,4 @@
-/*
+﻿/*
  * IEC 61937 demuxer
  * Copyright (c) 2010 Anssi Hannula <anssi.hannula at iki.fi>
  *
@@ -38,7 +38,8 @@ static int spdif_get_offset_and_codec(AVFormatContext *s,
     AACADTSHeaderInfo aac_hdr;
     GetBitContext gbc;
 
-    switch (data_type & 0xff) {
+    switch (data_type & 0xff)
+    {
     case IEC61937_AC3:
         *offset = AC3_FRAME_SIZE << 2;
         *codec = AV_CODEC_ID_AC3;
@@ -57,7 +58,8 @@ static int spdif_get_offset_and_codec(AVFormatContext *s,
         break;
     case IEC61937_MPEG2_AAC:
         init_get_bits(&gbc, buf, AAC_ADTS_HEADER_SIZE * 8);
-        if (avpriv_aac_parse_header(&gbc, &aac_hdr) < 0) {
+        if (avpriv_aac_parse_header(&gbc, &aac_hdr) < 0)
+        {
             if (s) /* be silent during a probe */
                 av_log(s, AV_LOG_ERROR, "Invalid AAC packet in IEC 61937\n");
             return AVERROR_INVALIDDATA;
@@ -90,7 +92,8 @@ static int spdif_get_offset_and_codec(AVFormatContext *s,
         *codec = AV_CODEC_ID_DTS;
         break;
     default:
-        if (s) { /* be silent during a probe */
+        if (s)   /* be silent during a probe */
+        {
             avpriv_request_sample(s, "Data type 0x%04x in IEC 61937",
                                   data_type);
         }
@@ -119,17 +122,21 @@ int ff_spdif_probe(const uint8_t *p_buf, int buf_size, enum AVCodecID *codec)
     int consecutive_codes = 0;
     int offset;
 
-    for (; buf < probe_end; buf++) {
+    for (; buf < probe_end; buf++)
+    {
         state = (state << 8) | *buf;
 
         if (state == (AV_BSWAP16C(SYNCWORD1) << 16 | AV_BSWAP16C(SYNCWORD2))
-                && buf[1] < 0x37) {
+        && buf[1] < 0x37)
+        {
             sync_codes++;
 
-            if (buf == expected_code) {
+            if (buf == expected_code)
+            {
                 if (++consecutive_codes >= 2)
                     return AVPROBE_SCORE_MAX;
-            } else
+            }
+            else
                 consecutive_codes = 0;
 
             if (buf + 4 + AAC_ADTS_HEADER_SIZE > p_buf + buf_size)
@@ -140,7 +147,8 @@ int ff_spdif_probe(const uint8_t *p_buf, int buf_size, enum AVCodecID *codec)
 
             /* skip directly to the next sync code */
             if (!spdif_get_offset_and_codec(NULL, (buf[2] << 8) | buf[1],
-                                            &buf[5], &offset, codec)) {
+                                            &buf[5], &offset, codec))
+            {
                 if (buf + offset >= p_buf + buf_size)
                     break;
                 expected_code = buf + offset;
@@ -174,7 +182,8 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
     uint32_t state = 0;
     int pkt_size_bits, offset, ret;
 
-    while (state != (AV_BSWAP16C(SYNCWORD1) << 16 | AV_BSWAP16C(SYNCWORD2))) {
+    while (state != (AV_BSWAP16C(SYNCWORD1) << 16 | AV_BSWAP16C(SYNCWORD2)))
+    {
         state = (state << 8) | avio_r8(pb);
         if (avio_feof(pb))
             return AVERROR_EOF;
@@ -192,7 +201,8 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     pkt->pos = avio_tell(pb) - BURST_HEADER_SIZE;
 
-    if (avio_read(pb, pkt->data, pkt->size) < pkt->size) {
+    if (avio_read(pb, pkt->data, pkt->size) < pkt->size)
+    {
         av_free_packet(pkt);
         return AVERROR_EOF;
     }
@@ -200,7 +210,8 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     ret = spdif_get_offset_and_codec(s, data_type, pkt->data,
                                      &offset, &codec_id);
-    if (ret) {
+    if (ret)
+    {
         av_free_packet(pkt);
         return ret;
     }
@@ -208,16 +219,20 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
     /* skip over the padding to the beginning of the next frame */
     avio_skip(pb, offset - pkt->size - BURST_HEADER_SIZE);
 
-    if (!s->nb_streams) {
+    if (!s->nb_streams)
+    {
         /* first packet, create a stream */
         AVStream *st = avformat_new_stream(s, NULL);
-        if (!st) {
+        if (!st)
+        {
             av_free_packet(pkt);
             return AVERROR(ENOMEM);
         }
         st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
         st->codec->codec_id = codec_id;
-    } else if (codec_id != s->streams[0]->codec->codec_id) {
+    }
+    else if (codec_id != s->streams[0]->codec->codec_id)
+    {
         avpriv_report_missing_feature(s, "Codec change in IEC 61937");
         return AVERROR_PATCHWELCOME;
     }
@@ -230,7 +245,8 @@ int ff_spdif_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_spdif_demuxer = {
+AVInputFormat ff_spdif_demuxer =
+{
     .name           = "spdif",
     .long_name      = NULL_IF_CONFIG_SMALL("IEC 61937 (compressed data in S/PDIF)"),
     .read_probe     = spdif_probe,

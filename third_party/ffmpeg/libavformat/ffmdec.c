@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFM (ffserver live feed) demuxer
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -42,19 +42,27 @@ static int ffm_is_avail_data(AVFormatContext *s, int size)
     if (size <= len)
         return 1;
     pos = avio_tell(s->pb);
-    if (!ffm->write_index) {
+    if (!ffm->write_index)
+    {
         if (pos == ffm->file_size)
             return AVERROR_EOF;
         avail_size = ffm->file_size - pos;
-    } else {
-    if (pos == ffm->write_index) {
-        /* exactly at the end of stream */
-        return AVERROR(EAGAIN);
-    } else if (pos < ffm->write_index) {
-        avail_size = ffm->write_index - pos;
-    } else {
-        avail_size = (ffm->file_size - pos) + (ffm->write_index - FFM_PACKET_SIZE);
     }
+    else
+    {
+        if (pos == ffm->write_index)
+        {
+            /* exactly at the end of stream */
+            return AVERROR(EAGAIN);
+        }
+        else if (pos < ffm->write_index)
+        {
+            avail_size = ffm->write_index - pos;
+        }
+        else
+        {
+            avail_size = (ffm->file_size - pos) + (ffm->write_index - FFM_PACKET_SIZE);
+        }
     }
     avail_size = (avail_size / ffm->packet_size) * (ffm->packet_size - FFM_HEADER_SIZE) + len;
     if (size <= avail_size)
@@ -66,8 +74,10 @@ static int ffm_is_avail_data(AVFormatContext *s, int size)
 static int ffm_resync(AVFormatContext *s, int state)
 {
     av_log(s, AV_LOG_ERROR, "resyncing\n");
-    while (state != PACKET_ID) {
-        if (avio_feof(s->pb)) {
+    while (state != PACKET_ID)
+    {
+        if (avio_feof(s->pb))
+        {
             av_log(s, AV_LOG_ERROR, "cannot find FFM syncword\n");
             return -1;
         }
@@ -86,18 +96,21 @@ static int ffm_read_data(AVFormatContext *s,
     int64_t last_pos = -1;
 
     size1 = size;
-    while (size > 0) {
-    redo:
+    while (size > 0)
+    {
+redo:
         len = ffm->packet_end - ffm->packet_ptr;
         if (len < 0)
             return -1;
         if (len > size)
             len = size;
-        if (len == 0) {
+        if (len == 0)
+        {
             if (avio_tell(pb) == ffm->file_size)
                 avio_seek(pb, ffm->packet_size, SEEK_SET);
-    retry_read:
-            if (pb->buffer_size != ffm->packet_size) {
+retry_read:
+            if (pb->buffer_size != ffm->packet_size)
+            {
                 int64_t tell = avio_tell(pb);
                 int ret = ffio_set_buf_size(pb, ffm->packet_size);
                 if (ret < 0)
@@ -105,7 +118,8 @@ static int ffm_read_data(AVFormatContext *s,
                 avio_seek(pb, tell, SEEK_SET);
             }
             id = avio_rb16(pb); /* PACKET_ID */
-            if (id != PACKET_ID) {
+            if (id != PACKET_ID)
+            {
                 if (ffm_resync(s, id) < 0)
                     return -1;
                 last_pos = avio_tell(pb);
@@ -119,10 +133,13 @@ static int ffm_read_data(AVFormatContext *s,
                 return -1;
             /* if first packet or resynchronization packet, we must
                handle it specifically */
-            if (ffm->first_packet || (frame_offset & 0x8000)) {
-                if (!frame_offset) {
+            if (ffm->first_packet || (frame_offset & 0x8000))
+            {
+                if (!frame_offset)
+                {
                     /* This packet has no frame headers in it */
-                    if (avio_tell(pb) >= ffm->packet_size * 3LL) {
+                    if (avio_tell(pb) >= ffm->packet_size * 3LL)
+                    {
                         int64_t seekback = FFMIN(ffm->packet_size * 2LL, avio_tell(pb) - last_pos);
                         seekback = FFMAX(seekback, 0);
                         avio_seek(pb, -seekback, SEEK_CUR);
@@ -137,7 +154,9 @@ static int ffm_read_data(AVFormatContext *s,
                 ffm->packet_ptr = ffm->packet + (frame_offset & 0x7fff) - FFM_HEADER_SIZE;
                 if (!header)
                     break;
-            } else {
+            }
+            else
+            {
                 ffm->packet_ptr = ffm->packet;
             }
             goto redo;
@@ -204,8 +223,10 @@ static void adjust_write_index(AVFormatContext *s)
 
     pts = get_dts(s, pos_max);
 
-    if (pts - 100000 <= pts_start) {
-        while (1) {
+    if (pts - 100000 <= pts_start)
+    {
+        while (1)
+        {
             int64_t newpos;
             int64_t newpts;
 
@@ -216,17 +237,20 @@ static void adjust_write_index(AVFormatContext *s)
 
             newpts = get_dts(s, newpos);
 
-            if (newpts - 100000 <= pts) {
+            if (newpts - 100000 <= pts)
+            {
                 pos_max = newpos;
                 pts = newpts;
-            } else {
+            }
+            else
+            {
                 pos_min = newpos;
             }
         }
         ffm->write_index += pos_max;
     }
 
- end:
+end:
     avio_seek(pb, ptr, SEEK_SET);
 }
 
@@ -248,7 +272,8 @@ static int ffm_append_recommended_configuration(AVStream *st, char **conf)
     av_assert0(conf && st);
     if (!*conf)
         return 0;
-    if (!st->recommended_encoder_configuration) {
+    if (!st->recommended_encoder_configuration)
+    {
         st->recommended_encoder_configuration = *conf;
         *conf = 0;
         return 0;
@@ -274,7 +299,8 @@ static int ffm2_read_header(AVFormatContext *s)
     char *buffer;
 
     ffm->packet_size = avio_rb32(pb);
-    if (ffm->packet_size != FFM_PACKET_SIZE) {
+    if (ffm->packet_size != FFM_PACKET_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid packet size %d, expected size was %d\n",
                ffm->packet_size, FFM_PACKET_SIZE);
         ret = AVERROR_INVALIDDATA;
@@ -283,15 +309,19 @@ static int ffm2_read_header(AVFormatContext *s)
 
     ffm->write_index = avio_rb64(pb);
     /* get also filesize */
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         ffm->file_size = avio_size(pb);
         if (ffm->write_index && 0)
             adjust_write_index(s);
-    } else {
+    }
+    else
+    {
         ffm->file_size = (UINT64_C(1) << 63) - 1;
     }
 
-    while(!avio_feof(pb)) {
+    while(!avio_feof(pb))
+    {
         unsigned id = avio_rb32(pb);
         unsigned size = avio_rb32(pb);
         int64_t next = avio_tell(pb) + size;
@@ -300,9 +330,11 @@ static int ffm2_read_header(AVFormatContext *s)
         if(!id)
             break;
 
-        switch(id) {
+        switch(id)
+        {
         case MKBETAG('M', 'A', 'I', 'N'):
-            if (f_main++) {
+            if (f_main++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
@@ -312,7 +344,8 @@ static int ffm2_read_header(AVFormatContext *s)
         case MKBETAG('C', 'O', 'M', 'M'):
             f_cprv = f_stvi = f_stau = 0;
             st = avformat_new_stream(s, NULL);
-            if (!st) {
+            if (!st)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -327,19 +360,22 @@ static int ffm2_read_header(AVFormatContext *s)
             codec->flags = avio_rb32(pb);
             codec->flags2 = avio_rb32(pb);
             codec->debug = avio_rb32(pb);
-            if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+            if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+            {
                 if (ff_get_extradata(codec, pb, avio_rb32(pb)) < 0)
                     return AVERROR(ENOMEM);
             }
             break;
         case MKBETAG('S', 'T', 'V', 'I'):
-            if (f_stvi++) {
+            if (f_stvi++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
             codec->time_base.num = avio_rb32(pb);
             codec->time_base.den = avio_rb32(pb);
-            if (codec->time_base.num <= 0 || codec->time_base.den <= 0) {
+            if (codec->time_base.num <= 0 || codec->time_base.den <= 0)
+            {
                 av_log(s, AV_LOG_ERROR, "Invalid time base %d/%d\n",
                        codec->time_base.num, codec->time_base.den);
                 ret = AVERROR_INVALIDDATA;
@@ -389,7 +425,8 @@ static int ffm2_read_header(AVFormatContext *s)
             codec->refs = avio_rb32(pb);
             break;
         case MKBETAG('S', 'T', 'A', 'U'):
-            if (f_stau++) {
+            if (f_stau++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
@@ -398,14 +435,17 @@ static int ffm2_read_header(AVFormatContext *s)
             codec->frame_size = avio_rl16(pb);
             break;
         case MKBETAG('C', 'P', 'R', 'V'):
-            if (f_cprv++) {
+            if (f_cprv++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
             enc = avcodec_find_encoder(codec->codec_id);
-            if (enc && enc->priv_data_size && enc->priv_class) {
+            if (enc && enc->priv_data_size && enc->priv_class)
+            {
                 buffer = av_malloc(size + 1);
-                if (!buffer) {
+                if (!buffer)
+                {
                     ret = AVERROR(ENOMEM);
                     goto fail;
                 }
@@ -415,12 +455,14 @@ static int ffm2_read_header(AVFormatContext *s)
             }
             break;
         case MKBETAG('S', '2', 'V', 'I'):
-            if (f_stvi++) {
+            if (f_stvi++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
             buffer = av_malloc(size);
-            if (!buffer) {
+            if (!buffer)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -430,12 +472,14 @@ static int ffm2_read_header(AVFormatContext *s)
                 goto fail;
             break;
         case MKBETAG('S', '2', 'A', 'U'):
-            if (f_stau++) {
+            if (f_stau++)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
             buffer = av_malloc(size);
-            if (!buffer) {
+            if (!buffer)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -460,7 +504,7 @@ static int ffm2_read_header(AVFormatContext *s)
     ffm->read_state = READ_HEADER;
     ffm->first_packet = 1;
     return 0;
- fail:
+fail:
     ffm_close(s);
     return ret;
 }
@@ -485,18 +529,22 @@ static int ffm_read_header(AVFormatContext *s)
         goto fail;
     ffm->write_index = avio_rb64(pb);
     /* get also filesize */
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         ffm->file_size = avio_size(pb);
         if (ffm->write_index && 0)
             adjust_write_index(s);
-    } else {
+    }
+    else
+    {
         ffm->file_size = (UINT64_C(1) << 63) - 1;
     }
 
     nb_streams = avio_rb32(pb);
     avio_rb32(pb); /* total bitrate */
     /* read each stream */
-    for(i=0;i<nb_streams;i++) {
+    for(i=0; i<nb_streams; i++)
+    {
         char rc_eq_buf[128];
 
         st = avformat_new_stream(s, NULL);
@@ -514,11 +562,13 @@ static int ffm_read_header(AVFormatContext *s)
         codec->flags2 = avio_rb32(pb);
         codec->debug = avio_rb32(pb);
         /* specific info */
-        switch(codec->codec_type) {
+        switch(codec->codec_type)
+        {
         case AVMEDIA_TYPE_VIDEO:
             codec->time_base.num = avio_rb32(pb);
             codec->time_base.den = avio_rb32(pb);
-            if (codec->time_base.num <= 0 || codec->time_base.den <= 0) {
+            if (codec->time_base.num <= 0 || codec->time_base.den <= 0)
+            {
                 av_log(s, AV_LOG_ERROR, "Invalid time base %d/%d\n",
                        codec->time_base.num, codec->time_base.den);
                 goto fail;
@@ -574,7 +624,8 @@ static int ffm_read_header(AVFormatContext *s)
         default:
             goto fail;
         }
-        if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+        if (codec->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+        {
             if (ff_get_extradata(codec, pb, avio_rb32(pb)) < 0)
                 return AVERROR(ENOMEM);
         }
@@ -592,7 +643,7 @@ static int ffm_read_header(AVFormatContext *s)
     ffm->read_state = READ_HEADER;
     ffm->first_packet = 1;
     return 0;
- fail:
+fail:
     ffm_close(s);
     return -1;
 }
@@ -604,21 +655,22 @@ static int ffm_read_packet(AVFormatContext *s, AVPacket *pkt)
     FFMContext *ffm = s->priv_data;
     int duration, ret;
 
-    switch(ffm->read_state) {
+    switch(ffm->read_state)
+    {
     case READ_HEADER:
         if ((ret = ffm_is_avail_data(s, FRAME_HEADER_SIZE+4)) < 0)
             return ret;
 
         ff_dlog(s, "pos=%08"PRIx64" spos=%"PRIx64", write_index=%"PRIx64" size=%"PRIx64"\n",
-               avio_tell(s->pb), s->pb->pos, ffm->write_index, ffm->file_size);
+                avio_tell(s->pb), s->pb->pos, ffm->write_index, ffm->file_size);
         if (ffm_read_data(s, ffm->header, FRAME_HEADER_SIZE, 1) !=
-            FRAME_HEADER_SIZE)
+                FRAME_HEADER_SIZE)
             return -1;
         if (ffm->header[1] & FLAG_DTS)
             if (ffm_read_data(s, ffm->header+16, 4, 1) != 4)
                 return -1;
         ffm->read_state = READ_DATA;
-        /* fall through */
+    /* fall through */
     case READ_DATA:
         size = AV_RB24(ffm->header + 2);
         if ((ret = ffm_is_avail_data(s, size)) < 0)
@@ -626,11 +678,13 @@ static int ffm_read_packet(AVFormatContext *s, AVPacket *pkt)
 
         duration = AV_RB24(ffm->header + 5);
 
-        if (av_new_packet(pkt, size) < 0) {
+        if (av_new_packet(pkt, size) < 0)
+        {
             return AVERROR(ENOMEM);
         }
         pkt->stream_index = ffm->header[0];
-        if ((unsigned)pkt->stream_index >= s->nb_streams) {
+        if ((unsigned)pkt->stream_index >= s->nb_streams)
+        {
             av_log(s, AV_LOG_ERROR, "invalid stream index %d\n", pkt->stream_index);
             av_free_packet(pkt);
             ffm->read_state = READ_HEADER;
@@ -641,7 +695,8 @@ static int ffm_read_packet(AVFormatContext *s, AVPacket *pkt)
             pkt->flags |= AV_PKT_FLAG_KEY;
 
         ffm->read_state = READ_HEADER;
-        if (ffm_read_data(s, pkt->data, size, 0) != size) {
+        if (ffm_read_data(s, pkt->data, size, 0) != size)
+        {
             /* bad case: desynchronized packet. we cancel all the packet loading */
             av_free_packet(pkt);
             return -1;
@@ -670,28 +725,36 @@ static int ffm_seek(AVFormatContext *s, int stream_index, int64_t wanted_pts, in
     ff_dlog(s, "wanted_pts=%0.6f\n", wanted_pts / 1000000.0);
     /* find the position using linear interpolation (better than
        dichotomy in typical cases) */
-    if (ffm->write_index && ffm->write_index < ffm->file_size) {
-        if (get_dts(s, FFM_PACKET_SIZE) < wanted_pts) {
+    if (ffm->write_index && ffm->write_index < ffm->file_size)
+    {
+        if (get_dts(s, FFM_PACKET_SIZE) < wanted_pts)
+        {
             pos_min = FFM_PACKET_SIZE;
             pos_max = ffm->write_index - FFM_PACKET_SIZE;
-        } else {
+        }
+        else
+        {
             pos_min = ffm->write_index;
             pos_max = ffm->file_size - FFM_PACKET_SIZE;
         }
-    } else {
+    }
+    else
+    {
         pos_min = FFM_PACKET_SIZE;
         pos_max = ffm->file_size - FFM_PACKET_SIZE;
     }
-    while (pos_min <= pos_max) {
+    while (pos_min <= pos_max)
+    {
         pts_min = get_dts(s, pos_min);
         pts_max = get_dts(s, pos_max);
-        if (pts_min > wanted_pts || pts_max <= wanted_pts) {
+        if (pts_min > wanted_pts || pts_max <= wanted_pts)
+        {
             pos = pts_min > wanted_pts ? pos_min : pos_max;
             goto found;
         }
         /* linear interpolation */
         pos1 = (double)(pos_max - pos_min) * (double)(wanted_pts - pts_min) /
-            (double)(pts_max - pts_min);
+               (double)(pts_max - pts_min);
         pos = (((int64_t)pos1) / FFM_PACKET_SIZE) * FFM_PACKET_SIZE;
         if (pos <= pos_min)
             pos = pos_min;
@@ -699,17 +762,22 @@ static int ffm_seek(AVFormatContext *s, int stream_index, int64_t wanted_pts, in
             pos = pos_max;
         pts = get_dts(s, pos);
         /* check if we are lucky */
-        if (pts == wanted_pts) {
+        if (pts == wanted_pts)
+        {
             goto found;
-        } else if (pts > wanted_pts) {
+        }
+        else if (pts > wanted_pts)
+        {
             pos_max = pos - FFM_PACKET_SIZE;
-        } else {
+        }
+        else
+        {
             pos_min = pos + FFM_PACKET_SIZE;
         }
     }
     pos = (flags & AVSEEK_FLAG_BACKWARD) ? pos_min : pos_max;
 
- found:
+found:
     if (ffm_seek1(s, pos) < 0)
         return -1;
 
@@ -731,7 +799,8 @@ static int ffm_probe(AVProbeData *p)
     return 0;
 }
 
-AVInputFormat ff_ffm_demuxer = {
+AVInputFormat ff_ffm_demuxer =
+{
     .name           = "ffm",
     .long_name      = NULL_IF_CONFIG_SMALL("FFM (FFserver live feed)"),
     .priv_data_size = sizeof(FFMContext),

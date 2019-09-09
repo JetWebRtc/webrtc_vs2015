@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -33,7 +33,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct ChannelSplitContext {
+typedef struct ChannelSplitContext
+{
     const AVClass *class;
 
     uint64_t channel_layout;
@@ -43,7 +44,8 @@ typedef struct ChannelSplitContext {
 #define OFFSET(x) offsetof(ChannelSplitContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM
 #define F AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption channelsplit_options[] = {
+static const AVOption channelsplit_options[] =
+{
     { "channel_layout", "Input channel layout.", OFFSET(channel_layout_str), AV_OPT_TYPE_STRING, { .str = "stereo" }, .flags = A|F },
     { NULL }
 };
@@ -56,7 +58,8 @@ static av_cold int init(AVFilterContext *ctx)
     int nb_channels;
     int ret = 0, i;
 
-    if (!(s->channel_layout = av_get_channel_layout(s->channel_layout_str))) {
+    if (!(s->channel_layout = av_get_channel_layout(s->channel_layout_str)))
+    {
         av_log(ctx, AV_LOG_ERROR, "Error parsing channel layout '%s'.\n",
                s->channel_layout_str);
         ret = AVERROR(EINVAL);
@@ -64,7 +67,8 @@ static av_cold int init(AVFilterContext *ctx)
     }
 
     nb_channels = av_get_channel_layout_nb_channels(s->channel_layout);
-    for (i = 0; i < nb_channels; i++) {
+    for (i = 0; i < nb_channels; i++)
+    {
         uint64_t channel = av_channel_layout_extract_channel(s->channel_layout, i);
         AVFilterPad pad  = { 0 };
 
@@ -90,7 +94,8 @@ static int query_formats(AVFilterContext *ctx)
     ff_add_channel_layout(&in_layouts, s->channel_layout);
     ff_channel_layouts_ref(in_layouts, &ctx->inputs[0]->out_channel_layouts);
 
-    for (i = 0; i < ctx->nb_outputs; i++) {
+    for (i = 0; i < ctx->nb_outputs; i++)
+    {
         AVFilterChannelLayouts *out_layouts = NULL;
         uint64_t channel = av_channel_layout_extract_channel(s->channel_layout, i);
 
@@ -106,10 +111,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     AVFilterContext *ctx = inlink->dst;
     int i, ret = 0;
 
-    for (i = 0; i < ctx->nb_outputs; i++) {
+    for (i = 0; i < ctx->nb_outputs; i++)
+    {
         AVFrame *buf_out = av_frame_clone(buf);
 
-        if (!buf_out) {
+        if (!buf_out)
+        {
             ret = AVERROR(ENOMEM);
             break;
         }
@@ -127,7 +134,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     return ret;
 }
 
-static const AVFilterPad avfilter_af_channelsplit_inputs[] = {
+static const AVFilterPad avfilter_af_channelsplit_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -136,7 +144,8 @@ static const AVFilterPad avfilter_af_channelsplit_inputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_channelsplit = {
+AVFilter ff_af_channelsplit =
+{
     .name           = "channelsplit",
     .description    = NULL_IF_CONFIG_SMALL("Split audio into per-channel streams."),
     .priv_size      = sizeof(ChannelSplitContext),

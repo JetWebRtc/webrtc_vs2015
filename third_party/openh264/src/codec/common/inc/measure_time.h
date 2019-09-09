@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -60,24 +60,26 @@ extern "C" {
  * \return  time elapsed since run (unit: microsecond)
  */
 
-static inline int64_t WelsTime (void) {
+static inline int64_t WelsTime (void)
+{
 #ifndef _WIN32
-  struct timeval tv_date;
+    struct timeval tv_date;
 
-  gettimeofday (&tv_date, NULL);
-  return ((int64_t) tv_date.tv_sec * 1000000 + (int64_t) tv_date.tv_usec);
+    gettimeofday (&tv_date, NULL);
+    return ((int64_t) tv_date.tv_sec * 1000000 + (int64_t) tv_date.tv_usec);
 #else
-  static int64_t iMtimeFreq = 0;
-  int64_t iMtimeCur = 0;
-  int64_t iResult = 0;
-  if (!iMtimeFreq) {
-    QueryPerformanceFrequency ((LARGE_INTEGER*)&iMtimeFreq);
+    static int64_t iMtimeFreq = 0;
+    int64_t iMtimeCur = 0;
+    int64_t iResult = 0;
     if (!iMtimeFreq)
-      iMtimeFreq = 1;
-  }
-  QueryPerformanceCounter ((LARGE_INTEGER*)&iMtimeCur);
-  iResult = (int64_t) ((double)iMtimeCur * 1e6 / (double)iMtimeFreq + 0.5);
-  return iResult;
+    {
+        QueryPerformanceFrequency ((LARGE_INTEGER*)&iMtimeFreq);
+        if (!iMtimeFreq)
+            iMtimeFreq = 1;
+    }
+    QueryPerformanceCounter ((LARGE_INTEGER*)&iMtimeCur);
+    iResult = (int64_t) ((double)iMtimeCur * 1e6 / (double)iMtimeFreq + 0.5);
+    return iResult;
 #endif//_WIN32
 }
 

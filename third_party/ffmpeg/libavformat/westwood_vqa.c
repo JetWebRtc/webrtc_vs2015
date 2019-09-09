@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Westwood Studios VQA Format Demuxer
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -53,7 +53,8 @@
 #define VQA_HEADER_SIZE 0x2A
 #define VQA_PREAMBLE_SIZE 8
 
-typedef struct WsVqaDemuxContext {
+typedef struct WsVqaDemuxContext
+{
     int version;
     int bps;
     int channels;
@@ -70,7 +71,7 @@ static int wsvqa_probe(AVProbeData *p)
 
     /* check for the VQA signatures */
     if ((AV_RB32(&p->buf[0]) != FORM_TAG) ||
-        (AV_RB32(&p->buf[8]) != WVQA_TAG))
+            (AV_RB32(&p->buf[8]) != WVQA_TAG))
         return 0;
 
     return AVPROBE_SCORE_MAX;
@@ -108,8 +109,9 @@ static int wsvqa_read_header(AVFormatContext *s)
     st->codec->height = AV_RL16(&header[8]);
     fps = header[12];
     st->nb_frames =
-    st->duration  = AV_RL16(&header[4]);
-    if (fps < 1 || fps > 30) {
+        st->duration  = AV_RL16(&header[4]);
+    if (fps < 1 || fps > 30)
+    {
         av_log(s, AV_LOG_ERROR, "invalid fps: %d\n", fps);
         return AVERROR_INVALIDDATA;
     }
@@ -125,14 +127,16 @@ static int wsvqa_read_header(AVFormatContext *s)
 
     /* there are 0 or more chunks before the FINF chunk; iterate until
      * FINF has been skipped and the file will be ready to be demuxed */
-    do {
+    do
+    {
         if (avio_read(pb, scratch, VQA_PREAMBLE_SIZE) != VQA_PREAMBLE_SIZE)
             return AVERROR(EIO);
         chunk_tag = AV_RB32(&scratch[0]);
         chunk_size = AV_RB32(&scratch[4]);
 
         /* catch any unknown header tags, for curiousity */
-        switch (chunk_tag) {
+        switch (chunk_tag)
+        {
         case CINF_TAG:
         case CINH_TAG:
         case CIND_TAG:
@@ -145,13 +149,14 @@ static int wsvqa_read_header(AVFormatContext *s)
 
         default:
             av_log (s, AV_LOG_ERROR, " note: unknown chunk seen (%c%c%c%c)\n",
-                scratch[0], scratch[1],
-                scratch[2], scratch[3]);
+                    scratch[0], scratch[1],
+                    scratch[2], scratch[3]);
             break;
         }
 
         avio_skip(pb, chunk_size);
-    } while (chunk_tag != FINF_TAG);
+    }
+    while (chunk_tag != FINF_TAG);
 
     return 0;
 }
@@ -167,24 +172,28 @@ static int wsvqa_read_packet(AVFormatContext *s,
     uint32_t chunk_size;
     int skip_byte;
 
-    while (avio_read(pb, preamble, VQA_PREAMBLE_SIZE) == VQA_PREAMBLE_SIZE) {
+    while (avio_read(pb, preamble, VQA_PREAMBLE_SIZE) == VQA_PREAMBLE_SIZE)
+    {
         chunk_type = AV_RB32(&preamble[0]);
         chunk_size = AV_RB32(&preamble[4]);
 
         skip_byte = chunk_size & 0x01;
 
         if ((chunk_type == SND0_TAG) || (chunk_type == SND1_TAG) ||
-            (chunk_type == SND2_TAG) || (chunk_type == VQFR_TAG)) {
+                (chunk_type == SND2_TAG) || (chunk_type == VQFR_TAG))
+        {
 
             ret= av_get_packet(pb, pkt, chunk_size);
             if (ret<0)
                 return AVERROR(EIO);
 
-            switch (chunk_type) {
+            switch (chunk_type)
+            {
             case SND0_TAG:
             case SND1_TAG:
             case SND2_TAG:
-                if (wsvqa->audio_stream_index == -1) {
+                if (wsvqa->audio_stream_index == -1)
+                {
                     AVStream *st = avformat_new_stream(s, NULL);
                     if (!st)
                         return AVERROR(ENOMEM);
@@ -203,7 +212,8 @@ static int wsvqa_read_packet(AVFormatContext *s,
 
                     avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
 
-                    switch (chunk_type) {
+                    switch (chunk_type)
+                    {
                     case SND0_TAG:
                         if (wsvqa->bps == 16)
                             st->codec->codec_id = AV_CODEC_ID_PCM_S16LE;
@@ -223,7 +233,8 @@ static int wsvqa_read_packet(AVFormatContext *s,
                 }
 
                 pkt->stream_index = wsvqa->audio_stream_index;
-                switch (chunk_type) {
+                switch (chunk_type)
+                {
                 case SND1_TAG:
                     /* unpacked size is stored in header */
                     if(pkt->data)
@@ -246,8 +257,11 @@ static int wsvqa_read_packet(AVFormatContext *s,
                 avio_skip(pb, 1);
 
             return ret;
-        } else {
-            switch(chunk_type){
+        }
+        else
+        {
+            switch(chunk_type)
+            {
             case CMDS_TAG:
                 break;
             default:
@@ -260,7 +274,8 @@ static int wsvqa_read_packet(AVFormatContext *s,
     return ret;
 }
 
-AVInputFormat ff_wsvqa_demuxer = {
+AVInputFormat ff_wsvqa_demuxer =
+{
     .name           = "wsvqa",
     .long_name      = NULL_IF_CONFIG_SMALL("Westwood Studios VQA"),
     .priv_data_size = sizeof(WsVqaDemuxContext),

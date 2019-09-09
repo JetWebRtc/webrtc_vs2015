@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,22 +13,24 @@
 
 #include <stddef.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MovingMax {
- public:
-  explicit MovingMax(size_t window_size);
-  ~MovingMax();
+class MovingMax
+{
+public:
+    explicit MovingMax(size_t window_size);
+    ~MovingMax();
 
-  void Update(float value);
-  float max() const;
-  // Reset all of the state in this class.
-  void Clear();
+    void Update(float value);
+    float max() const;
+    // Reset all of the state in this class.
+    void Clear();
 
- private:
-  float max_value_ = 0.f;
-  size_t counter_ = 0;
-  size_t window_size_ = 1;
+private:
+    float max_value_ = 0.f;
+    size_t counter_ = 0;
+    size_t window_size_ = 1;
 };
 
 }  // namespace webrtc

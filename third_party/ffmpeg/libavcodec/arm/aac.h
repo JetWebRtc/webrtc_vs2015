@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -63,7 +63,7 @@ static inline float *VMUL4(float *dst, const float *v, unsigned idx,
              "vmul.f32 q0,  q0,  q1          \n\t"
              "vst1.32  {q0},     [%4,:128]!  \n\t"
              : "=&r"(v0), "=&r"(v1), "=&r"(v2), "=&r"(v3), "+r"(dst),
-               "=m"(dst[0]), "=m"(dst[1]), "=m"(dst[2]), "=m"(dst[3])
+             "=m"(dst[0]), "=m"(dst[1]), "=m"(dst[2]), "=m"(dst[3])
              : "r"(v), "r"(idx), "r"(scale)
              : "d0", "d1", "d2", "d3");
     return dst;
@@ -88,7 +88,7 @@ static inline float *VMUL2S(float *dst, const float *v, unsigned idx,
              "vmul.f32 d0,  d0,  d1          \n\t"
              "vst1.32  {d0},     [%4,:64]!   \n\t"
              : "=&r"(v0), "=&r"(v1), "=&r"(v2), "=&r"(v3), "+r"(dst),
-               "=m"(dst[0]), "=m"(dst[1])
+             "=m"(dst[0]), "=m"(dst[1])
              : "r"(v), "r"(idx), "r"(scale), "r"(sign)
              : "d0", "d1", "d2");
     return dst;
@@ -131,8 +131,8 @@ static inline float *VMUL4S(float *dst, const float *v, unsigned idx,
              "vmul.f32 q0,  q0,  q1          \n\t"
              "vst1.32  {q0},     [%4,:128]!  \n\t"
              : "=&r"(v0), "=&r"(v1), "=&r"(v2), "=&r"(v3), "+r"(dst),
-               "+r"(sign), "=r"(nz),
-               "=m"(dst[0]), "=m"(dst[1]), "=m"(dst[2]), "=m"(dst[3])
+             "+r"(sign), "=r"(nz),
+             "=m"(dst[0]), "=m"(dst[1]), "=m"(dst[2]), "=m"(dst[3])
              : "r"(v), "r"(idx), "r"(scale)
              : "cc", "d0", "d1", "d2", "d3", "d4", "d5");
     return dst;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Register all the formats and protocols
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *

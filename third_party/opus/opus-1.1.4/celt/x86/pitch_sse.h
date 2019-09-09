@@ -1,4 +1,4 @@
-/* Copyright (c) 2013 Jean-Marc Valin and John Ridges
+﻿/* Copyright (c) 2013 Jean-Marc Valin and John Ridges
    Copyright (c) 2014, Cisco Systems, INC MingXiang WeiZhou MinPeng YanWang*/
 /**
    @file pitch_sse.h
@@ -39,18 +39,18 @@
 
 #if defined(OPUS_X86_MAY_HAVE_SSE4_1) && defined(FIXED_POINT)
 void xcorr_kernel_sse4_1(
-                    const opus_int16 *x,
-                    const opus_int16 *y,
-                    opus_val32       sum[4],
-                    int              len);
+    const opus_int16 *x,
+    const opus_int16 *y,
+    opus_val32       sum[4],
+    int              len);
 #endif
 
 #if defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT)
 void xcorr_kernel_sse(
-                    const opus_val16 *x,
-                    const opus_val16 *y,
-                    opus_val32       sum[4],
-                    int              len);
+    const opus_val16 *x,
+    const opus_val16 *y,
+    opus_val32       sum[4],
+    int              len);
 #endif
 
 #if defined(OPUS_X86_PRESUME_SSE4_1) && defined(FIXED_POINT)
@@ -66,10 +66,10 @@ void xcorr_kernel_sse(
 #elif (defined(OPUS_X86_MAY_HAVE_SSE4_1) && defined(FIXED_POINT)) || (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT))
 
 extern void (*const XCORR_KERNEL_IMPL[OPUS_ARCHMASK + 1])(
-                    const opus_val16 *x,
-                    const opus_val16 *y,
-                    opus_val32       sum[4],
-                    int              len);
+    const opus_val16 *x,
+    const opus_val16 *y,
+    opus_val32       sum[4],
+    int              len);
 
 #define OVERRIDE_XCORR_KERNEL
 #define xcorr_kernel(x, y, sum, len, arch) \
@@ -119,9 +119,9 @@ opus_val32 celt_inner_prod_sse(
     (defined(OPUS_X86_MAY_HAVE_SSE) && !defined(FIXED_POINT))
 
 extern opus_val32 (*const CELT_INNER_PROD_IMPL[OPUS_ARCHMASK + 1])(
-                    const opus_val16 *x,
-                    const opus_val16 *y,
-                    int               N);
+    const opus_val16 *x,
+    const opus_val16 *y,
+    int               N);
 
 #define OVERRIDE_CELT_INNER_PROD
 #define celt_inner_prod(x, y, N, arch) \
@@ -138,19 +138,19 @@ extern opus_val32 (*const CELT_INNER_PROD_IMPL[OPUS_ARCHMASK + 1])(
 #undef comb_filter_const
 
 void dual_inner_prod_sse(const opus_val16 *x,
-    const opus_val16 *y01,
-    const opus_val16 *y02,
-    int               N,
-    opus_val32       *xy1,
-    opus_val32       *xy2);
+                         const opus_val16 *y01,
+                         const opus_val16 *y02,
+                         int               N,
+                         opus_val32       *xy1,
+                         opus_val32       *xy2);
 
 void comb_filter_const_sse(opus_val32 *y,
-    opus_val32 *x,
-    int         T,
-    int         N,
-    opus_val16  g10,
-    opus_val16  g11,
-    opus_val16  g12);
+                           opus_val32 *x,
+                           int         T,
+                           int         N,
+                           opus_val16  g10,
+                           opus_val16  g11,
+                           opus_val16  g12);
 
 
 #if defined(OPUS_X86_PRESUME_SSE)
@@ -162,24 +162,24 @@ void comb_filter_const_sse(opus_val32 *y,
 #else
 
 extern void (*const DUAL_INNER_PROD_IMPL[OPUS_ARCHMASK + 1])(
-              const opus_val16 *x,
-              const opus_val16 *y01,
-              const opus_val16 *y02,
-              int               N,
-              opus_val32       *xy1,
-              opus_val32       *xy2);
+    const opus_val16 *x,
+    const opus_val16 *y01,
+    const opus_val16 *y02,
+    int               N,
+    opus_val32       *xy1,
+    opus_val32       *xy2);
 
 #define dual_inner_prod(x, y01, y02, N, xy1, xy2, arch) \
     ((*DUAL_INNER_PROD_IMPL[(arch) & OPUS_ARCHMASK])(x, y01, y02, N, xy1, xy2))
 
 extern void (*const COMB_FILTER_CONST_IMPL[OPUS_ARCHMASK + 1])(
-              opus_val32 *y,
-              opus_val32 *x,
-              int         T,
-              int         N,
-              opus_val16  g10,
-              opus_val16  g11,
-              opus_val16  g12);
+    opus_val32 *y,
+    opus_val32 *x,
+    int         T,
+    int         N,
+    opus_val16  g10,
+    opus_val16  g11,
+    opus_val16  g12);
 
 #define comb_filter_const(y, x, T, N, g10, g11, g12, arch) \
     ((*COMB_FILTER_CONST_IMPL[(arch) & OPUS_ARCHMASK])(y, x, T, N, g10, g11, g12))

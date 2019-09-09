@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -100,53 +100,59 @@ amm-info@iis.fraunhofer.de
  * The space required for this is MAX_GROUPED_SFB ( = MAX_NO_OF_GROUPS*MAX_SFB_SHORT ).
  * However, this is not important if unions are used (which is not possible with pfloat). */
 
-typedef shouldBeUnion{
-  FIXP_DBL  Long[MAX_GROUPED_SFB];
-  FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
-}SFB_THRESHOLD;
+typedef shouldBeUnion
+{
+    FIXP_DBL  Long[MAX_GROUPED_SFB];
+    FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
+} SFB_THRESHOLD;
 
-typedef shouldBeUnion{
-  FIXP_DBL  Long[MAX_GROUPED_SFB];
-  FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
-}SFB_ENERGY;
+typedef shouldBeUnion
+{
+    FIXP_DBL  Long[MAX_GROUPED_SFB];
+    FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
+} SFB_ENERGY;
 
-typedef shouldBeUnion{
-  FIXP_DBL  Long[MAX_GROUPED_SFB];
-  FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
-}SFB_LD_ENERGY;
+typedef shouldBeUnion
+{
+    FIXP_DBL  Long[MAX_GROUPED_SFB];
+    FIXP_DBL  Short[TRANS_FAC][MAX_SFB_SHORT];
+} SFB_LD_ENERGY;
 
-typedef shouldBeUnion{
-  INT  Long[MAX_GROUPED_SFB];
-  INT  Short[TRANS_FAC][MAX_SFB_SHORT];
-}SFB_MAX_SCALE;
-
-
-typedef struct{
-  INT_PCM*                  psyInputBuffer;
-  FIXP_DBL                  overlapAddBuffer[1024];
-
-  BLOCK_SWITCHING_CONTROL   blockSwitchingControl;              /* block switching */
-  FIXP_DBL                  sfbThresholdnm1[MAX_SFB];           /* FDKaacEnc_PreEchoControl */
-  INT                       mdctScalenm1;                       /* scale of last block's mdct (FDKaacEnc_PreEchoControl) */
-  INT                       calcPreEcho;
-  INT                       isLFE;
-}PSY_STATIC;
+typedef shouldBeUnion
+{
+    INT  Long[MAX_GROUPED_SFB];
+    INT  Short[TRANS_FAC][MAX_SFB_SHORT];
+} SFB_MAX_SCALE;
 
 
-typedef struct{
-  FIXP_DBL                 *mdctSpectrum;
-  SFB_THRESHOLD             sfbThreshold;                       /* adapt                                  */
-  SFB_ENERGY                sfbEnergy;                          /* sfb energies                           */
-  SFB_LD_ENERGY             sfbEnergyLdData;                    /* sfb energies in ldData format          */
-  SFB_MAX_SCALE             sfbMaxScaleSpec;
-  SFB_ENERGY                sfbEnergyMS;                        /* mid/side sfb energies                  */
-  FIXP_DBL                  sfbEnergyMSLdData[MAX_GROUPED_SFB]; /* mid/side sfb energies in ldData format */
-  SFB_ENERGY                sfbSpreadEnergy;
-  INT                       mdctScale;                          /* exponent of data in mdctSpectrum       */
-  INT                       groupedSfbOffset[MAX_GROUPED_SFB+1];
-  INT                       sfbActive;
-  INT                       lowpassLine;
-}PSY_DATA;
+typedef struct
+{
+    INT_PCM*                  psyInputBuffer;
+    FIXP_DBL                  overlapAddBuffer[1024];
+
+    BLOCK_SWITCHING_CONTROL   blockSwitchingControl;              /* block switching */
+    FIXP_DBL                  sfbThresholdnm1[MAX_SFB];           /* FDKaacEnc_PreEchoControl */
+    INT                       mdctScalenm1;                       /* scale of last block's mdct (FDKaacEnc_PreEchoControl) */
+    INT                       calcPreEcho;
+    INT                       isLFE;
+} PSY_STATIC;
+
+
+typedef struct
+{
+    FIXP_DBL                 *mdctSpectrum;
+    SFB_THRESHOLD             sfbThreshold;                       /* adapt                                  */
+    SFB_ENERGY                sfbEnergy;                          /* sfb energies                           */
+    SFB_LD_ENERGY             sfbEnergyLdData;                    /* sfb energies in ldData format          */
+    SFB_MAX_SCALE             sfbMaxScaleSpec;
+    SFB_ENERGY                sfbEnergyMS;                        /* mid/side sfb energies                  */
+    FIXP_DBL                  sfbEnergyMSLdData[MAX_GROUPED_SFB]; /* mid/side sfb energies in ldData format */
+    SFB_ENERGY                sfbSpreadEnergy;
+    INT                       mdctScale;                          /* exponent of data in mdctSpectrum       */
+    INT                       groupedSfbOffset[MAX_GROUPED_SFB+1];
+    INT                       sfbActive;
+    INT                       lowpassLine;
+} PSY_DATA;
 
 
 #endif /* _PSY_DATA_H */

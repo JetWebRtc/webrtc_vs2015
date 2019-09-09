@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #define BLOCK_SIZE    18
 #define BLOCK_SAMPLES 32
 
-typedef struct ADXDemuxerContext {
+typedef struct ADXDemuxerContext
+{
     int header_size;
 } ADXDemuxerContext;
 
@@ -40,7 +41,8 @@ static int adx_read_packet(AVFormatContext *s, AVPacket *pkt)
     AVCodecContext *avctx = s->streams[0]->codec;
     int ret, size;
 
-    if (avctx->channels <= 0) {
+    if (avctx->channels <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "invalid number of channels %d\n", avctx->channels);
         return AVERROR_INVALIDDATA;
     }
@@ -51,11 +53,13 @@ static int adx_read_packet(AVFormatContext *s, AVPacket *pkt)
     pkt->stream_index = 0;
 
     ret = av_get_packet(s->pb, pkt, size);
-    if (ret != size) {
+    if (ret != size)
+    {
         av_free_packet(pkt);
         return ret < 0 ? ret : AVERROR(EIO);
     }
-    if (AV_RB16(pkt->data) & 0x8000) {
+    if (AV_RB16(pkt->data) & 0x8000)
+    {
         av_free_packet(pkt);
         return AVERROR_EOF;
     }
@@ -84,14 +88,16 @@ static int adx_read_header(AVFormatContext *s)
     if (ff_get_extradata(avctx, s->pb, c->header_size) < 0)
         return AVERROR(ENOMEM);
 
-    if (avctx->extradata_size < 12) {
+    if (avctx->extradata_size < 12)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid extradata size.\n");
         return AVERROR_INVALIDDATA;
     }
     avctx->channels    = AV_RB8(avctx->extradata + 7);
     avctx->sample_rate = AV_RB32(avctx->extradata + 8);
 
-    if (avctx->channels <= 0) {
+    if (avctx->channels <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "invalid number of channels %d\n", avctx->channels);
         return AVERROR_INVALIDDATA;
     }
@@ -104,7 +110,8 @@ static int adx_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_adx_demuxer = {
+AVInputFormat ff_adx_demuxer =
+{
     .name           = "adx",
     .long_name      = NULL_IF_CONFIG_SMALL("CRI ADX"),
     .priv_data_size = sizeof(ADXDemuxerContext),

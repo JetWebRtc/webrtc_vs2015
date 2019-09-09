@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,9 +10,11 @@
 
 #include "webrtc/base/asyncresolverinterface.h"
 
-namespace rtc {
+namespace rtc
+{
 
-AsyncResolverInterface::AsyncResolverInterface() {
+AsyncResolverInterface::AsyncResolverInterface()
+{
 }
 
 AsyncResolverInterface::~AsyncResolverInterface() = default;

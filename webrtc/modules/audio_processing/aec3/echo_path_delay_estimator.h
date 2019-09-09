@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,28 +19,30 @@
 #include "webrtc/modules/audio_processing/aec3/matched_filter_lag_aggregator.h"
 #include "webrtc/modules/audio_processing/aec3/decimator_by_4.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
 // Estimates the delay of the echo path.
-class EchoPathDelayEstimator {
- public:
-  explicit EchoPathDelayEstimator(ApmDataDumper* data_dumper);
-  ~EchoPathDelayEstimator();
+class EchoPathDelayEstimator
+{
+public:
+    explicit EchoPathDelayEstimator(ApmDataDumper* data_dumper);
+    ~EchoPathDelayEstimator();
 
-  // Produce a delay estimate if such is avaliable.
-  rtc::Optional<size_t> EstimateDelay(rtc::ArrayView<const float> render,
-                                      rtc::ArrayView<const float> capture);
+    // Produce a delay estimate if such is avaliable.
+    rtc::Optional<size_t> EstimateDelay(rtc::ArrayView<const float> render,
+                                        rtc::ArrayView<const float> capture);
 
- private:
-  ApmDataDumper* const data_dumper_;
-  DecimatorBy4 render_decimator_;
-  DecimatorBy4 capture_decimator_;
-  MatchedFilter matched_filter_;
-  MatchedFilterLagAggregator matched_filter_lag_aggregator_;
+private:
+    ApmDataDumper* const data_dumper_;
+    DecimatorBy4 render_decimator_;
+    DecimatorBy4 capture_decimator_;
+    MatchedFilter matched_filter_;
+    MatchedFilterLagAggregator matched_filter_lag_aggregator_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(EchoPathDelayEstimator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(EchoPathDelayEstimator);
 };
 }  // namespace webrtc
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002-2014 Michael Niedermayer <michaelni@gmx.at>
  *
  * see http://www.pcisys.net/~melanson/codecs/huffyuv.txt for a description of
@@ -45,13 +45,15 @@
 #define MAX_N (1<<MAX_BITS)
 #define MAX_VLC_N 16384
 
-typedef enum Predictor {
+typedef enum Predictor
+{
     LEFT = 0,
     PLANE,
     MEDIAN,
 } Predictor;
 
-typedef struct HYuvContext {
+typedef struct HYuvContext
+{
     AVClass *class;
     AVCodecContext *avctx;
     Predictor predictor;

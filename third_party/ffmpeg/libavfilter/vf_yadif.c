@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2006-2011 Michael Niedermayer <michaelni@gmx.at>
  *               2010      James Darnley <james.darnley@gmail.com>
  *
@@ -29,7 +29,8 @@
 #include "video.h"
 #include "yadif.h"
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *frame;
     int plane;
     int w, h;
@@ -195,8 +196,10 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     /* filtering reads 3 pixels to the left/right; to avoid invalid reads,
      * we need to call the c variant which avoids this for border pixels
      */
-    for (y = slice_start; y < slice_end; y++) {
-        if ((y ^ td->parity) & 1) {
+    for (y = slice_start; y < slice_end; y++)
+    {
+        if ((y ^ td->parity) & 1)
+        {
             uint8_t *prev = &s->prev->data[td->plane][y * refs];
             uint8_t *cur  = &s->cur ->data[td->plane][y * refs];
             uint8_t *next = &s->next->data[td->plane][y * refs];
@@ -211,7 +214,9 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
                             y + 1 < td->h ? refs : -refs,
                             y ? -refs : refs,
                             td->parity ^ td->tff, mode);
-        } else {
+        }
+        else
+        {
             memcpy(&td->frame->data[td->plane][y * td->frame->linesize[td->plane]],
                    &s->cur->data[td->plane][y * refs], td->w * df);
         }
@@ -226,11 +231,13 @@ static void filter(AVFilterContext *ctx, AVFrame *dstpic,
     ThreadData td = { .frame = dstpic, .parity = parity, .tff = tff };
     int i;
 
-    for (i = 0; i < yadif->csp->nb_components; i++) {
+    for (i = 0; i < yadif->csp->nb_components; i++)
+    {
         int w = dstpic->width;
         int h = dstpic->height;
 
-        if (i == 1 || i == 2) {
+        if (i == 1 || i == 2)
+        {
             w = FF_CEIL_RSHIFT(w, yadif->csp->log2_chroma_w);
             h = FF_CEIL_RSHIFT(h, yadif->csp->log2_chroma_h);
         }
@@ -252,14 +259,18 @@ static int return_frame(AVFilterContext *ctx, int is_second)
     AVFilterLink *link  = ctx->outputs[0];
     int tff, ret;
 
-    if (yadif->parity == -1) {
+    if (yadif->parity == -1)
+    {
         tff = yadif->cur->interlaced_frame ?
               yadif->cur->top_field_first : 1;
-    } else {
+    }
+    else
+    {
         tff = yadif->parity ^ 1;
     }
 
-    if (is_second) {
+    if (is_second)
+    {
         yadif->out = ff_get_video_buffer(link, link->w, link->h);
         if (!yadif->out)
             return AVERROR(ENOMEM);
@@ -270,13 +281,17 @@ static int return_frame(AVFilterContext *ctx, int is_second)
 
     filter(ctx, yadif->out, tff ^ !is_second, tff);
 
-    if (is_second) {
+    if (is_second)
+    {
         int64_t cur_pts  = yadif->cur->pts;
         int64_t next_pts = yadif->next->pts;
 
-        if (next_pts != AV_NOPTS_VALUE && cur_pts != AV_NOPTS_VALUE) {
+        if (next_pts != AV_NOPTS_VALUE && cur_pts != AV_NOPTS_VALUE)
+        {
             yadif->out->pts = cur_pts + next_pts;
-        } else {
+        }
+        else
+        {
             yadif->out->pts = AV_NOPTS_VALUE;
         }
     }
@@ -326,10 +341,11 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
     yadif->next = frame;
 
     if (!yadif->cur &&
-        !(yadif->cur = av_frame_clone(yadif->next)))
+            !(yadif->cur = av_frame_clone(yadif->next)))
         return AVERROR(ENOMEM);
 
-    if (checkstride(yadif, yadif->next, yadif->cur)) {
+    if (checkstride(yadif, yadif->next, yadif->cur))
+    {
         av_log(ctx, AV_LOG_VERBOSE, "Reallocating frame due to differing stride\n");
         fixstride(link, yadif->next);
     }
@@ -337,7 +353,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
         fixstride(link, yadif->cur);
     if (yadif->prev && checkstride(yadif, yadif->next, yadif->prev))
         fixstride(link, yadif->prev);
-    if (checkstride(yadif, yadif->next, yadif->cur) || (yadif->prev && checkstride(yadif, yadif->next, yadif->prev))) {
+    if (checkstride(yadif, yadif->next, yadif->cur) || (yadif->prev && checkstride(yadif, yadif->next, yadif->prev)))
+    {
         av_log(ctx, AV_LOG_ERROR, "Failed to reallocate frame\n");
         return -1;
     }
@@ -346,10 +363,11 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
         return 0;
 
     if ((yadif->deint && !yadif->cur->interlaced_frame) ||
-        ctx->is_disabled ||
-        (yadif->deint && !yadif->prev->interlaced_frame && yadif->prev->repeat_pict) ||
-        (yadif->deint && !yadif->next->interlaced_frame && yadif->next->repeat_pict)
-    ) {
+            ctx->is_disabled ||
+            (yadif->deint && !yadif->prev->interlaced_frame && yadif->prev->repeat_pict) ||
+            (yadif->deint && !yadif->next->interlaced_frame && yadif->next->repeat_pict)
+       )
+    {
         yadif->out  = av_frame_clone(yadif->cur);
         if (!yadif->out)
             return AVERROR(ENOMEM);
@@ -378,12 +396,14 @@ static int request_frame(AVFilterLink *link)
     AVFilterContext *ctx = link->src;
     YADIFContext *yadif = ctx->priv;
 
-    if (yadif->frame_pending) {
+    if (yadif->frame_pending)
+    {
         return_frame(ctx, 1);
         return 0;
     }
 
-    do {
+    do
+    {
         int ret;
 
         if (yadif->eof)
@@ -391,7 +411,8 @@ static int request_frame(AVFilterLink *link)
 
         ret  = ff_request_frame(link->src->inputs[0]);
 
-        if (ret == AVERROR_EOF && yadif->cur) {
+        if (ret == AVERROR_EOF && yadif->cur)
+        {
             AVFrame *next = av_frame_clone(yadif->next);
 
             if (!next)
@@ -401,10 +422,13 @@ static int request_frame(AVFilterLink *link)
 
             filter_frame(link->src->inputs[0], next);
             yadif->eof = 1;
-        } else if (ret < 0) {
+        }
+        else if (ret < 0)
+        {
             return ret;
         }
-    } while (!yadif->prev);
+    }
+    while (!yadif->prev);
 
     return 0;
 }
@@ -420,7 +444,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV444P,
@@ -478,18 +503,25 @@ static int config_props(AVFilterLink *link)
     link->h             = link->src->inputs[0]->h;
 
     if(s->mode&1)
-        link->frame_rate = av_mul_q(link->src->inputs[0]->frame_rate, (AVRational){2,1});
+        link->frame_rate = av_mul_q(link->src->inputs[0]->frame_rate, (AVRational)
+    {
+        2,1
+    });
 
-    if (link->w < 3 || link->h < 3) {
+    if (link->w < 3 || link->h < 3)
+    {
         av_log(ctx, AV_LOG_ERROR, "Video of less than 3 columns or lines is not supported\n");
         return AVERROR(EINVAL);
     }
 
     s->csp = av_pix_fmt_desc_get(link->format);
-    if (s->csp->comp[0].depth_minus1 / 8 == 1) {
+    if (s->csp->comp[0].depth_minus1 / 8 == 1)
+    {
         s->filter_line  = filter_line_c_16bit;
         s->filter_edges = filter_edges_16bit;
-    } else {
+    }
+    else
+    {
         s->filter_line  = filter_line_c;
         s->filter_edges = filter_edges;
     }
@@ -506,7 +538,8 @@ static int config_props(AVFilterLink *link)
 
 #define CONST(name, help, val, unit) { name, help, 0, AV_OPT_TYPE_CONST, {.i64=val}, INT_MIN, INT_MAX, FLAGS, unit }
 
-static const AVOption yadif_options[] = {
+static const AVOption yadif_options[] =
+{
     { "mode",   "specify the interlacing mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=YADIF_MODE_SEND_FRAME}, 0, 3, FLAGS, "mode"},
     CONST("send_frame",           "send one frame for each frame",                                     YADIF_MODE_SEND_FRAME,           "mode"),
     CONST("send_field",           "send one frame for each field",                                     YADIF_MODE_SEND_FIELD,           "mode"),
@@ -527,7 +560,8 @@ static const AVOption yadif_options[] = {
 
 AVFILTER_DEFINE_CLASS(yadif);
 
-static const AVFilterPad avfilter_vf_yadif_inputs[] = {
+static const AVFilterPad avfilter_vf_yadif_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -536,7 +570,8 @@ static const AVFilterPad avfilter_vf_yadif_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_yadif_outputs[] = {
+static const AVFilterPad avfilter_vf_yadif_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -546,7 +581,8 @@ static const AVFilterPad avfilter_vf_yadif_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_yadif = {
+AVFilter ff_vf_yadif =
+{
     .name          = "yadif",
     .description   = NULL_IF_CONFIG_SMALL("Deinterlace the input image."),
     .priv_size     = sizeof(YADIFContext),

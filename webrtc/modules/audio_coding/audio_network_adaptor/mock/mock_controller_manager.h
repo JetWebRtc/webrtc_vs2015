@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,16 +16,21 @@
 #include "webrtc/modules/audio_coding/audio_network_adaptor/controller_manager.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockControllerManager : public ControllerManager {
- public:
-  virtual ~MockControllerManager() { Die(); }
-  MOCK_METHOD0(Die, void());
-  MOCK_METHOD1(
-      GetSortedControllers,
-      std::vector<Controller*>(const Controller::NetworkMetrics& metrics));
-  MOCK_CONST_METHOD0(GetControllers, std::vector<Controller*>());
+class MockControllerManager : public ControllerManager
+{
+public:
+    virtual ~MockControllerManager()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
+    MOCK_METHOD1(
+        GetSortedControllers,
+        std::vector<Controller*>(const Controller::NetworkMetrics& metrics));
+    MOCK_CONST_METHOD0(GetControllers, std::vector<Controller*>());
 };
 
 }  // namespace webrtc

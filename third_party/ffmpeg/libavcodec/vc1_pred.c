@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder
  * Copyright (c) 2011 Mashiat Sarker Shakkhar
  * Copyright (c) 2006-2007 Konstantin Shishkov
@@ -53,10 +53,12 @@ static av_always_inline int scaleforsame_x(VC1Context *v, int n /* MV */, int di
 
     if (FFABS(n) > 255)
         scaledvalue = n;
-    else {
+    else
+    {
         if (FFABS(n) < scalezone1_x)
             scaledvalue = (n * scalesame1) >> 8;
-        else {
+        else
+        {
             if (n < 0)
                 scaledvalue = ((n * scalesame2) >> 8) - zone1offset_x;
             else
@@ -86,10 +88,12 @@ static av_always_inline int scaleforsame_y(VC1Context *v, int i, int n /* MV */,
 
     if (FFABS(n) > 63)
         scaledvalue = n;
-    else {
+    else
+    {
         if (FFABS(n) < scalezone1_y)
             scaledvalue = (n * scalesame1) >> 8;
-        else {
+        else
+        {
             if (n < 0)
                 scaledvalue = ((n * scalesame2) >> 8) - zone1offset_y;
             else
@@ -117,10 +121,12 @@ static av_always_inline int scaleforopp_x(VC1Context *v, int n /* MV */)
 
     if (FFABS(n) > 255)
         scaledvalue = n;
-    else {
+    else
+    {
         if (FFABS(n) < scalezone1_x)
             scaledvalue = (n * scaleopp1) >> 8;
-        else {
+        else
+        {
             if (n < 0)
                 scaledvalue = ((n * scaleopp2) >> 8) - zone1offset_x;
             else
@@ -144,31 +150,37 @@ static av_always_inline int scaleforopp_y(VC1Context *v, int n /* MV */, int dir
 
     if (FFABS(n) > 63)
         scaledvalue = n;
-    else {
+    else
+    {
         if (FFABS(n) < scalezone1_y)
             scaledvalue = (n * scaleopp1) >> 8;
-        else {
+        else
+        {
             if (n < 0)
                 scaledvalue = ((n * scaleopp2) >> 8) - zone1offset_y;
             else
                 scaledvalue = ((n * scaleopp2) >> 8) + zone1offset_y;
         }
     }
-    if (v->cur_field_type && !v->ref_field_type[dir]) {
+    if (v->cur_field_type && !v->ref_field_type[dir])
+    {
         return av_clip(scaledvalue, -v->range_y / 2 + 1, v->range_y / 2);
-    } else {
+    }
+    else
+    {
         return av_clip(scaledvalue, -v->range_y / 2, v->range_y / 2 - 1);
     }
 }
 
 static av_always_inline int scaleforsame(VC1Context *v, int i, int n /* MV */,
-                                         int dim, int dir)
+        int dim, int dir)
 {
     int brfd, scalesame;
     int hpel = 1 - v->s.quarter_sample;
 
     n >>= hpel;
-    if (v->s.pict_type != AV_PICTURE_TYPE_B || v->second_field || !dir) {
+    if (v->s.pict_type != AV_PICTURE_TYPE_B || v->second_field || !dir)
+    {
         if (dim)
             n = scaleforsame_y(v, i, n, dir) * (1 << hpel);
         else
@@ -189,7 +201,8 @@ static av_always_inline int scaleforopp(VC1Context *v, int n /* MV */,
     int hpel = 1 - v->s.quarter_sample;
 
     n >>= hpel;
-    if (v->s.pict_type == AV_PICTURE_TYPE_B && !v->second_field && dir == 1) {
+    if (v->s.pict_type == AV_PICTURE_TYPE_B && !v->second_field && dir == 1)
+    {
         if (dim)
             n = scaleforopp_y(v, n, dir) << hpel;
         else
@@ -226,12 +239,13 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
     int hybridmv_thresh, y_bias = 0;
 
     if (v->mv_mode == MV_PMODE_MIXED_MV ||
-        ((v->mv_mode == MV_PMODE_INTENSITY_COMP) && (v->mv_mode2 == MV_PMODE_MIXED_MV)))
+            ((v->mv_mode == MV_PMODE_INTENSITY_COMP) && (v->mv_mode2 == MV_PMODE_MIXED_MV)))
         mixedmv_pic = 1;
     else
         mixedmv_pic = 0;
     /* scale MV difference to be quad-pel */
-    if (!s->quarter_sample) {
+    if (!s->quarter_sample)
+    {
         dmv_x *= 2;
         dmv_y *= 2;
     }
@@ -239,12 +253,14 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
     wrap = s->b8_stride;
     xy   = s->block_index[n];
 
-    if (s->mb_intra) {
+    if (s->mb_intra)
+    {
         s->mv[0][n][0] = s->current_picture.motion_val[0][xy + v->blocks_off][0] = 0;
         s->mv[0][n][1] = s->current_picture.motion_val[0][xy + v->blocks_off][1] = 0;
         s->current_picture.motion_val[1][xy + v->blocks_off][0] = 0;
         s->current_picture.motion_val[1][xy + v->blocks_off][1] = 0;
-        if (mv1) { /* duplicate motion data for 1-MV block */
+        if (mv1)   /* duplicate motion data for 1-MV block */
+        {
             s->current_picture.motion_val[0][xy + 1 + v->blocks_off][0]        = 0;
             s->current_picture.motion_val[0][xy + 1 + v->blocks_off][1]        = 0;
             s->current_picture.motion_val[0][xy + wrap + v->blocks_off][0]     = 0;
@@ -264,14 +280,18 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
 
     C = s->current_picture.motion_val[dir][xy -    1 + v->blocks_off];
     A = s->current_picture.motion_val[dir][xy - wrap + v->blocks_off];
-    if (mv1) {
+    if (mv1)
+    {
         if (v->field_mode && mixedmv_pic)
             off = (s->mb_x == (s->mb_width - 1)) ? -2 : 2;
         else
             off = (s->mb_x == (s->mb_width - 1)) ? -1 : 2;
-    } else {
+    }
+    else
+    {
         //in 4-MV mode different blocks have different B predictor position
-        switch (n) {
+        switch (n)
+        {
         case 0:
             off = (s->mb_x > 0) ? -1 : 1;
             break;
@@ -290,81 +310,103 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
     a_valid = !s->first_slice_line || (n == 2 || n == 3);
     b_valid = a_valid && (s->mb_width > 1);
     c_valid = s->mb_x || (n == 1 || n == 3);
-    if (v->field_mode) {
+    if (v->field_mode)
+    {
         a_valid = a_valid && !is_intra[xy - wrap];
         b_valid = b_valid && !is_intra[xy - wrap + off];
         c_valid = c_valid && !is_intra[xy - 1];
     }
 
-    if (a_valid) {
+    if (a_valid)
+    {
         a_f = v->mv_f[dir][xy - wrap + v->blocks_off];
         num_oppfield  += a_f;
         num_samefield += 1 - a_f;
         field_predA[0] = A[0];
         field_predA[1] = A[1];
-    } else {
+    }
+    else
+    {
         field_predA[0] = field_predA[1] = 0;
         a_f = 0;
     }
-    if (b_valid) {
+    if (b_valid)
+    {
         b_f = v->mv_f[dir][xy - wrap + off + v->blocks_off];
         num_oppfield  += b_f;
         num_samefield += 1 - b_f;
         field_predB[0] = B[0];
         field_predB[1] = B[1];
-    } else {
+    }
+    else
+    {
         field_predB[0] = field_predB[1] = 0;
         b_f = 0;
     }
-    if (c_valid) {
+    if (c_valid)
+    {
         c_f = v->mv_f[dir][xy - 1 + v->blocks_off];
         num_oppfield  += c_f;
         num_samefield += 1 - c_f;
         field_predC[0] = C[0];
         field_predC[1] = C[1];
-    } else {
+    }
+    else
+    {
         field_predC[0] = field_predC[1] = 0;
         c_f = 0;
     }
 
-    if (v->field_mode) {
+    if (v->field_mode)
+    {
         if (!v->numref)
             // REFFIELD determines if the last field or the second-last field is
             // to be used as reference
             opposite = 1 - v->reffield;
-        else {
+        else
+        {
             if (num_samefield <= num_oppfield)
                 opposite = 1 - pred_flag;
             else
                 opposite = pred_flag;
         }
-    } else
+    }
+    else
         opposite = 0;
-    if (opposite) {
-        if (a_valid && !a_f) {
+    if (opposite)
+    {
+        if (a_valid && !a_f)
+        {
             field_predA[0] = scaleforopp(v, field_predA[0], 0, dir);
             field_predA[1] = scaleforopp(v, field_predA[1], 1, dir);
         }
-        if (b_valid && !b_f) {
+        if (b_valid && !b_f)
+        {
             field_predB[0] = scaleforopp(v, field_predB[0], 0, dir);
             field_predB[1] = scaleforopp(v, field_predB[1], 1, dir);
         }
-        if (c_valid && !c_f) {
+        if (c_valid && !c_f)
+        {
             field_predC[0] = scaleforopp(v, field_predC[0], 0, dir);
             field_predC[1] = scaleforopp(v, field_predC[1], 1, dir);
         }
         v->mv_f[dir][xy + v->blocks_off] = 1;
         v->ref_field_type[dir] = !v->cur_field_type;
-    } else {
-        if (a_valid && a_f) {
+    }
+    else
+    {
+        if (a_valid && a_f)
+        {
             field_predA[0] = scaleforsame(v, n, field_predA[0], 0, dir);
             field_predA[1] = scaleforsame(v, n, field_predA[1], 1, dir);
         }
-        if (b_valid && b_f) {
+        if (b_valid && b_f)
+        {
             field_predB[0] = scaleforsame(v, n, field_predB[0], 0, dir);
             field_predB[1] = scaleforsame(v, n, field_predB[1], 1, dir);
         }
-        if (c_valid && c_f) {
+        if (c_valid && c_f)
+        {
             field_predC[0] = scaleforsame(v, n, field_predC[0], 0, dir);
             field_predC[1] = scaleforsame(v, n, field_predC[1], 1, dir);
         }
@@ -372,27 +414,36 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
         v->ref_field_type[dir] = v->cur_field_type;
     }
 
-    if (a_valid) {
+    if (a_valid)
+    {
         px = field_predA[0];
         py = field_predA[1];
-    } else if (c_valid) {
+    }
+    else if (c_valid)
+    {
         px = field_predC[0];
         py = field_predC[1];
-    } else if (b_valid) {
+    }
+    else if (b_valid)
+    {
         px = field_predB[0];
         py = field_predB[1];
-    } else {
+    }
+    else
+    {
         px = 0;
         py = 0;
     }
 
-    if (num_samefield + num_oppfield > 1) {
+    if (num_samefield + num_oppfield > 1)
+    {
         px = mid_pred(field_predA[0], field_predB[0], field_predC[0]);
         py = mid_pred(field_predA[1], field_predB[1], field_predC[1]);
     }
 
     /* Pullback MV as specified in 8.3.5.3.4 */
-    if (!v->field_mode) {
+    if (!v->field_mode)
+    {
         int qx, qy, X, Y;
         int MV = mv1 ? -60 : -28;
         qx = (s->mb_x << 6) + ((n == 1 || n == 3) ? 32 : 0);
@@ -405,32 +456,44 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
         if (qy + py > Y) py = Y - qy;
     }
 
-    if (!v->field_mode || s->pict_type != AV_PICTURE_TYPE_B) {
+    if (!v->field_mode || s->pict_type != AV_PICTURE_TYPE_B)
+    {
         /* Calculate hybrid prediction as specified in 8.3.5.3.5 (also 10.3.5.4.3.5) */
         hybridmv_thresh = 32;
-        if (a_valid && c_valid) {
+        if (a_valid && c_valid)
+        {
             if (is_intra[xy - wrap])
                 sum = FFABS(px) + FFABS(py);
             else
                 sum = FFABS(px - field_predA[0]) + FFABS(py - field_predA[1]);
-            if (sum > hybridmv_thresh) {
-                if (get_bits1(&s->gb)) {     // read HYBRIDPRED bit
+            if (sum > hybridmv_thresh)
+            {
+                if (get_bits1(&s->gb))       // read HYBRIDPRED bit
+                {
                     px = field_predA[0];
                     py = field_predA[1];
-                } else {
+                }
+                else
+                {
                     px = field_predC[0];
                     py = field_predC[1];
                 }
-            } else {
+            }
+            else
+            {
                 if (is_intra[xy - 1])
                     sum = FFABS(px) + FFABS(py);
                 else
                     sum = FFABS(px - field_predC[0]) + FFABS(py - field_predC[1]);
-                if (sum > hybridmv_thresh) {
-                    if (get_bits1(&s->gb)) {
+                if (sum > hybridmv_thresh)
+                {
+                    if (get_bits1(&s->gb))
+                    {
                         px = field_predA[0];
                         py = field_predA[1];
-                    } else {
+                    }
+                    else
+                    {
                         px = field_predC[0];
                         py = field_predC[1];
                     }
@@ -446,7 +509,8 @@ void ff_vc1_pred_mv(VC1Context *v, int n, int dmv_x, int dmv_y,
     /* store MV using signed modulus of MV range defined in 4.11 */
     s->mv[dir][n][0] = s->current_picture.motion_val[dir][xy + v->blocks_off][0] = ((px + dmv_x + r_x) & ((r_x << 1) - 1)) - r_x;
     s->mv[dir][n][1] = s->current_picture.motion_val[dir][xy + v->blocks_off][1] = ((py + dmv_y + r_y - y_bias) & ((r_y << 1) - 1)) - r_y + y_bias;
-    if (mv1) { /* duplicate motion data for 1-MV block */
+    if (mv1)   /* duplicate motion data for 1-MV block */
+    {
         s->current_picture.motion_val[dir][xy +    1 +     v->blocks_off][0] = s->current_picture.motion_val[dir][xy + v->blocks_off][0];
         s->current_picture.motion_val[dir][xy +    1 +     v->blocks_off][1] = s->current_picture.motion_val[dir][xy + v->blocks_off][1];
         s->current_picture.motion_val[dir][xy + wrap +     v->blocks_off][0] = s->current_picture.motion_val[dir][xy + v->blocks_off][0];
@@ -475,12 +539,14 @@ void ff_vc1_pred_mv_intfr(VC1Context *v, int n, int dmv_x, int dmv_y,
     wrap = s->b8_stride;
     xy = s->block_index[n];
 
-    if (s->mb_intra) {
+    if (s->mb_intra)
+    {
         s->mv[0][n][0] = s->current_picture.motion_val[0][xy][0] = 0;
         s->mv[0][n][1] = s->current_picture.motion_val[0][xy][1] = 0;
         s->current_picture.motion_val[1][xy][0] = 0;
         s->current_picture.motion_val[1][xy][1] = 0;
-        if (mvn == 1) { /* duplicate motion data for 1-MV block */
+        if (mvn == 1)   /* duplicate motion data for 1-MV block */
+        {
             s->current_picture.motion_val[0][xy + 1][0]        = 0;
             s->current_picture.motion_val[0][xy + 1][1]        = 0;
             s->current_picture.motion_val[0][xy + wrap][0]     = 0;
@@ -500,78 +566,100 @@ void ff_vc1_pred_mv_intfr(VC1Context *v, int n, int dmv_x, int dmv_y,
 
     off = ((n == 0) || (n == 1)) ? 1 : -1;
     /* predict A */
-    if (s->mb_x || (n == 1) || (n == 3)) {
+    if (s->mb_x || (n == 1) || (n == 3))
+    {
         if ((v->blk_mv_type[xy]) // current block (MB) has a field MV
-            || (!v->blk_mv_type[xy] && !v->blk_mv_type[xy - 1])) { // or both have frame MV
+                || (!v->blk_mv_type[xy] && !v->blk_mv_type[xy - 1]))   // or both have frame MV
+        {
             A[0] = s->current_picture.motion_val[dir][xy - 1][0];
             A[1] = s->current_picture.motion_val[dir][xy - 1][1];
             a_valid = 1;
-        } else { // current block has frame mv and cand. has field MV (so average)
+        }
+        else     // current block has frame mv and cand. has field MV (so average)
+        {
             A[0] = (s->current_picture.motion_val[dir][xy - 1][0]
                     + s->current_picture.motion_val[dir][xy - 1 + off * wrap][0] + 1) >> 1;
             A[1] = (s->current_picture.motion_val[dir][xy - 1][1]
                     + s->current_picture.motion_val[dir][xy - 1 + off * wrap][1] + 1) >> 1;
             a_valid = 1;
         }
-        if (!(n & 1) && v->is_intra[s->mb_x - 1]) {
+        if (!(n & 1) && v->is_intra[s->mb_x - 1])
+        {
             a_valid = 0;
             A[0] = A[1] = 0;
         }
-    } else
+    }
+    else
         A[0] = A[1] = 0;
     /* Predict B and C */
     B[0] = B[1] = C[0] = C[1] = 0;
-    if (n == 0 || n == 1 || v->blk_mv_type[xy]) {
-        if (!s->first_slice_line) {
-            if (!v->is_intra[s->mb_x - s->mb_stride]) {
+    if (n == 0 || n == 1 || v->blk_mv_type[xy])
+    {
+        if (!s->first_slice_line)
+        {
+            if (!v->is_intra[s->mb_x - s->mb_stride])
+            {
                 b_valid = 1;
                 n_adj   = n | 2;
                 pos_b   = s->block_index[n_adj] - 2 * wrap;
-                if (v->blk_mv_type[pos_b] && v->blk_mv_type[xy]) {
+                if (v->blk_mv_type[pos_b] && v->blk_mv_type[xy])
+                {
                     n_adj = (n & 2) | (n & 1);
                 }
                 B[0] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap][0];
                 B[1] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap][1];
-                if (v->blk_mv_type[pos_b] && !v->blk_mv_type[xy]) {
+                if (v->blk_mv_type[pos_b] && !v->blk_mv_type[xy])
+                {
                     B[0] = (B[0] + s->current_picture.motion_val[dir][s->block_index[n_adj ^ 2] - 2 * wrap][0] + 1) >> 1;
                     B[1] = (B[1] + s->current_picture.motion_val[dir][s->block_index[n_adj ^ 2] - 2 * wrap][1] + 1) >> 1;
                 }
             }
-            if (s->mb_width > 1) {
-                if (!v->is_intra[s->mb_x - s->mb_stride + 1]) {
+            if (s->mb_width > 1)
+            {
+                if (!v->is_intra[s->mb_x - s->mb_stride + 1])
+                {
                     c_valid = 1;
                     n_adj   = 2;
                     pos_c   = s->block_index[2] - 2 * wrap + 2;
-                    if (v->blk_mv_type[pos_c] && v->blk_mv_type[xy]) {
+                    if (v->blk_mv_type[pos_c] && v->blk_mv_type[xy])
+                    {
                         n_adj = n & 2;
                     }
                     C[0] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap + 2][0];
                     C[1] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap + 2][1];
-                    if (v->blk_mv_type[pos_c] && !v->blk_mv_type[xy]) {
+                    if (v->blk_mv_type[pos_c] && !v->blk_mv_type[xy])
+                    {
                         C[0] = (1 + C[0] + (s->current_picture.motion_val[dir][s->block_index[n_adj ^ 2] - 2 * wrap + 2][0])) >> 1;
                         C[1] = (1 + C[1] + (s->current_picture.motion_val[dir][s->block_index[n_adj ^ 2] - 2 * wrap + 2][1])) >> 1;
                     }
-                    if (s->mb_x == s->mb_width - 1) {
-                        if (!v->is_intra[s->mb_x - s->mb_stride - 1]) {
+                    if (s->mb_x == s->mb_width - 1)
+                    {
+                        if (!v->is_intra[s->mb_x - s->mb_stride - 1])
+                        {
                             c_valid = 1;
                             n_adj   = 3;
                             pos_c   = s->block_index[3] - 2 * wrap - 2;
-                            if (v->blk_mv_type[pos_c] && v->blk_mv_type[xy]) {
+                            if (v->blk_mv_type[pos_c] && v->blk_mv_type[xy])
+                            {
                                 n_adj = n | 1;
                             }
                             C[0] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap - 2][0];
                             C[1] = s->current_picture.motion_val[dir][s->block_index[n_adj] - 2 * wrap - 2][1];
-                            if (v->blk_mv_type[pos_c] && !v->blk_mv_type[xy]) {
+                            if (v->blk_mv_type[pos_c] && !v->blk_mv_type[xy])
+                            {
                                 C[0] = (1 + C[0] + s->current_picture.motion_val[dir][s->block_index[1] - 2 * wrap - 2][0]) >> 1;
                                 C[1] = (1 + C[1] + s->current_picture.motion_val[dir][s->block_index[1] - 2 * wrap - 2][1]) >> 1;
                             }
-                        } else
+                        }
+                        else
                             c_valid = 0;
                     }
                 }
             }
         }
-    } else {
+    }
+    else
+    {
         pos_b   = s->block_index[1];
         b_valid = 1;
         B[0]    = s->current_picture.motion_val[dir][pos_b][0];
@@ -584,28 +672,51 @@ void ff_vc1_pred_mv_intfr(VC1Context *v, int n, int dmv_x, int dmv_y,
 
     total_valid = a_valid + b_valid + c_valid;
     // check if predictor A is out of bounds
-    if (!s->mb_x && !(n == 1 || n == 3)) {
+    if (!s->mb_x && !(n == 1 || n == 3))
+    {
         A[0] = A[1] = 0;
     }
     // check if predictor B is out of bounds
-    if ((s->first_slice_line && v->blk_mv_type[xy]) || (s->first_slice_line && !(n & 2))) {
+    if ((s->first_slice_line && v->blk_mv_type[xy]) || (s->first_slice_line && !(n & 2)))
+    {
         B[0] = B[1] = C[0] = C[1] = 0;
     }
-    if (!v->blk_mv_type[xy]) {
-        if (s->mb_width == 1) {
+    if (!v->blk_mv_type[xy])
+    {
+        if (s->mb_width == 1)
+        {
             px = B[0];
             py = B[1];
-        } else {
-            if (total_valid >= 2) {
+        }
+        else
+        {
+            if (total_valid >= 2)
+            {
                 px = mid_pred(A[0], B[0], C[0]);
                 py = mid_pred(A[1], B[1], C[1]);
-            } else if (total_valid) {
-                if      (a_valid) { px = A[0]; py = A[1]; }
-                else if (b_valid) { px = B[0]; py = B[1]; }
-                else              { px = C[0]; py = C[1]; }
+            }
+            else if (total_valid)
+            {
+                if      (a_valid)
+                {
+                    px = A[0];
+                    py = A[1];
+                }
+                else if (b_valid)
+                {
+                    px = B[0];
+                    py = B[1];
+                }
+                else
+                {
+                    px = C[0];
+                    py = C[1];
+                }
             }
         }
-    } else {
+    }
+    else
+    {
         if (a_valid)
             field_a = (A[1] & 4) ? 1 : 0;
         else
@@ -621,43 +732,64 @@ void ff_vc1_pred_mv_intfr(VC1Context *v, int n, int dmv_x, int dmv_y,
 
         num_oppfield  = field_a + field_b + field_c;
         num_samefield = total_valid - num_oppfield;
-        if (total_valid == 3) {
-            if ((num_samefield == 3) || (num_oppfield == 3)) {
+        if (total_valid == 3)
+        {
+            if ((num_samefield == 3) || (num_oppfield == 3))
+            {
                 px = mid_pred(A[0], B[0], C[0]);
                 py = mid_pred(A[1], B[1], C[1]);
-            } else if (num_samefield >= num_oppfield) {
+            }
+            else if (num_samefield >= num_oppfield)
+            {
                 /* take one MV from same field set depending on priority
                 the check for B may not be necessary */
                 px = !field_a ? A[0] : B[0];
                 py = !field_a ? A[1] : B[1];
-            } else {
+            }
+            else
+            {
                 px =  field_a ? A[0] : B[0];
                 py =  field_a ? A[1] : B[1];
             }
-        } else if (total_valid == 2) {
-            if (num_samefield >= num_oppfield) {
-                if (!field_a && a_valid) {
+        }
+        else if (total_valid == 2)
+        {
+            if (num_samefield >= num_oppfield)
+            {
+                if (!field_a && a_valid)
+                {
                     px = A[0];
                     py = A[1];
-                } else if (!field_b && b_valid) {
+                }
+                else if (!field_b && b_valid)
+                {
                     px = B[0];
                     py = B[1];
-                } else /*if (c_valid)*/ {
+                }
+                else /*if (c_valid)*/
+                {
                     av_assert1(c_valid);
                     px = C[0];
                     py = C[1];
                 }
-            } else {
-                if (field_a && a_valid) {
+            }
+            else
+            {
+                if (field_a && a_valid)
+                {
                     px = A[0];
                     py = A[1];
-                } else /*if (field_b && b_valid)*/ {
+                }
+                else /*if (field_b && b_valid)*/
+                {
                     av_assert1(field_b && b_valid);
                     px = B[0];
                     py = B[1];
                 }
             }
-        } else if (total_valid == 1) {
+        }
+        else if (total_valid == 1)
+        {
             px = (a_valid) ? A[0] : ((b_valid) ? B[0] : C[0]);
             py = (a_valid) ? A[1] : ((b_valid) ? B[1] : C[1]);
         }
@@ -666,14 +798,17 @@ void ff_vc1_pred_mv_intfr(VC1Context *v, int n, int dmv_x, int dmv_y,
     /* store MV using signed modulus of MV range defined in 4.11 */
     s->mv[dir][n][0] = s->current_picture.motion_val[dir][xy][0] = ((px + dmv_x + r_x) & ((r_x << 1) - 1)) - r_x;
     s->mv[dir][n][1] = s->current_picture.motion_val[dir][xy][1] = ((py + dmv_y + r_y) & ((r_y << 1) - 1)) - r_y;
-    if (mvn == 1) { /* duplicate motion data for 1-MV block */
+    if (mvn == 1)   /* duplicate motion data for 1-MV block */
+    {
         s->current_picture.motion_val[dir][xy +    1    ][0] = s->current_picture.motion_val[dir][xy][0];
         s->current_picture.motion_val[dir][xy +    1    ][1] = s->current_picture.motion_val[dir][xy][1];
         s->current_picture.motion_val[dir][xy + wrap    ][0] = s->current_picture.motion_val[dir][xy][0];
         s->current_picture.motion_val[dir][xy + wrap    ][1] = s->current_picture.motion_val[dir][xy][1];
         s->current_picture.motion_val[dir][xy + wrap + 1][0] = s->current_picture.motion_val[dir][xy][0];
         s->current_picture.motion_val[dir][xy + wrap + 1][1] = s->current_picture.motion_val[dir][xy][1];
-    } else if (mvn == 2) { /* duplicate motion data for 2-Field MV block */
+    }
+    else if (mvn == 2)     /* duplicate motion data for 2-Field MV block */
+    {
         s->current_picture.motion_val[dir][xy + 1][0] = s->current_picture.motion_val[dir][xy][0];
         s->current_picture.motion_val[dir][xy + 1][1] = s->current_picture.motion_val[dir][xy][1];
         s->mv[dir][n + 1][0] = s->mv[dir][n][0];
@@ -697,7 +832,8 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
     r_x = v->range_x;
     r_y = v->range_y;
     /* scale MV difference to be quad-pel */
-    if (!s->quarter_sample) {
+    if (!s->quarter_sample)
+    {
         dmv_x[0] *= 2;
         dmv_y[0] *= 2;
         dmv_x[1] *= 2;
@@ -707,27 +843,29 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
     wrap = s->b8_stride;
     xy = s->block_index[0];
 
-    if (s->mb_intra) {
+    if (s->mb_intra)
+    {
         s->current_picture.motion_val[0][xy][0] =
-        s->current_picture.motion_val[0][xy][1] =
-        s->current_picture.motion_val[1][xy][0] =
-        s->current_picture.motion_val[1][xy][1] = 0;
+            s->current_picture.motion_val[0][xy][1] =
+                s->current_picture.motion_val[1][xy][0] =
+                    s->current_picture.motion_val[1][xy][1] = 0;
         return;
     }
-        if (direct && s->next_picture_ptr->field_picture)
-            av_log(s->avctx, AV_LOG_WARNING, "Mixed frame/field direct mode not supported\n");
+    if (direct && s->next_picture_ptr->field_picture)
+        av_log(s->avctx, AV_LOG_WARNING, "Mixed frame/field direct mode not supported\n");
 
-        s->mv[0][0][0] = scale_mv(s->next_picture.motion_val[1][xy][0], v->bfraction, 0, s->quarter_sample);
-        s->mv[0][0][1] = scale_mv(s->next_picture.motion_val[1][xy][1], v->bfraction, 0, s->quarter_sample);
-        s->mv[1][0][0] = scale_mv(s->next_picture.motion_val[1][xy][0], v->bfraction, 1, s->quarter_sample);
-        s->mv[1][0][1] = scale_mv(s->next_picture.motion_val[1][xy][1], v->bfraction, 1, s->quarter_sample);
+    s->mv[0][0][0] = scale_mv(s->next_picture.motion_val[1][xy][0], v->bfraction, 0, s->quarter_sample);
+    s->mv[0][0][1] = scale_mv(s->next_picture.motion_val[1][xy][1], v->bfraction, 0, s->quarter_sample);
+    s->mv[1][0][0] = scale_mv(s->next_picture.motion_val[1][xy][0], v->bfraction, 1, s->quarter_sample);
+    s->mv[1][0][1] = scale_mv(s->next_picture.motion_val[1][xy][1], v->bfraction, 1, s->quarter_sample);
 
-        /* Pullback predicted motion vectors as specified in 8.4.5.4 */
-        s->mv[0][0][0] = av_clip(s->mv[0][0][0], -60 - (s->mb_x << 6), (s->mb_width  << 6) - 4 - (s->mb_x << 6));
-        s->mv[0][0][1] = av_clip(s->mv[0][0][1], -60 - (s->mb_y << 6), (s->mb_height << 6) - 4 - (s->mb_y << 6));
-        s->mv[1][0][0] = av_clip(s->mv[1][0][0], -60 - (s->mb_x << 6), (s->mb_width  << 6) - 4 - (s->mb_x << 6));
-        s->mv[1][0][1] = av_clip(s->mv[1][0][1], -60 - (s->mb_y << 6), (s->mb_height << 6) - 4 - (s->mb_y << 6));
-    if (direct) {
+    /* Pullback predicted motion vectors as specified in 8.4.5.4 */
+    s->mv[0][0][0] = av_clip(s->mv[0][0][0], -60 - (s->mb_x << 6), (s->mb_width  << 6) - 4 - (s->mb_x << 6));
+    s->mv[0][0][1] = av_clip(s->mv[0][0][1], -60 - (s->mb_y << 6), (s->mb_height << 6) - 4 - (s->mb_y << 6));
+    s->mv[1][0][0] = av_clip(s->mv[1][0][0], -60 - (s->mb_x << 6), (s->mb_width  << 6) - 4 - (s->mb_x << 6));
+    s->mv[1][0][1] = av_clip(s->mv[1][0][1], -60 - (s->mb_y << 6), (s->mb_height << 6) - 4 - (s->mb_y << 6));
+    if (direct)
+    {
         s->current_picture.motion_val[0][xy][0] = s->mv[0][0][0];
         s->current_picture.motion_val[0][xy][1] = s->mv[0][0][1];
         s->current_picture.motion_val[1][xy][0] = s->mv[1][0][0];
@@ -735,25 +873,34 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
         return;
     }
 
-    if ((mvtype == BMV_TYPE_FORWARD) || (mvtype == BMV_TYPE_INTERPOLATED)) {
+    if ((mvtype == BMV_TYPE_FORWARD) || (mvtype == BMV_TYPE_INTERPOLATED))
+    {
         C   = s->current_picture.motion_val[0][xy - 2];
         A   = s->current_picture.motion_val[0][xy - wrap * 2];
         off = (s->mb_x == (s->mb_width - 1)) ? -2 : 2;
         B   = s->current_picture.motion_val[0][xy - wrap * 2 + off];
 
         if (!s->mb_x) C[0] = C[1] = 0;
-        if (!s->first_slice_line) { // predictor A is not out of bounds
-            if (s->mb_width == 1) {
+        if (!s->first_slice_line)   // predictor A is not out of bounds
+        {
+            if (s->mb_width == 1)
+            {
                 px = A[0];
                 py = A[1];
-            } else {
+            }
+            else
+            {
                 px = mid_pred(A[0], B[0], C[0]);
                 py = mid_pred(A[1], B[1], C[1]);
             }
-        } else if (s->mb_x) { // predictor C is not out of bounds
+        }
+        else if (s->mb_x)     // predictor C is not out of bounds
+        {
             px = C[0];
             py = C[1];
-        } else {
+        }
+        else
+        {
             px = py = 0;
         }
         /* Pullback MV as specified in 8.3.5.3.4 */
@@ -771,29 +918,40 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
             if (qy + py > Y) py = Y - qy;
         }
         /* Calculate hybrid prediction as specified in 8.3.5.3.5 */
-        if (0 && !s->first_slice_line && s->mb_x) {
+        if (0 && !s->first_slice_line && s->mb_x)
+        {
             if (is_intra[xy - wrap])
                 sum = FFABS(px) + FFABS(py);
             else
                 sum = FFABS(px - A[0]) + FFABS(py - A[1]);
-            if (sum > 32) {
-                if (get_bits1(&s->gb)) {
+            if (sum > 32)
+            {
+                if (get_bits1(&s->gb))
+                {
                     px = A[0];
                     py = A[1];
-                } else {
+                }
+                else
+                {
                     px = C[0];
                     py = C[1];
                 }
-            } else {
+            }
+            else
+            {
                 if (is_intra[xy - 2])
                     sum = FFABS(px) + FFABS(py);
                 else
                     sum = FFABS(px - C[0]) + FFABS(py - C[1]);
-                if (sum > 32) {
-                    if (get_bits1(&s->gb)) {
+                if (sum > 32)
+                {
+                    if (get_bits1(&s->gb))
+                    {
                         px = A[0];
                         py = A[1];
-                    } else {
+                    }
+                    else
+                    {
                         px = C[0];
                         py = C[1];
                     }
@@ -804,7 +962,8 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
         s->mv[0][0][0] = ((px + dmv_x[0] + r_x) & ((r_x << 1) - 1)) - r_x;
         s->mv[0][0][1] = ((py + dmv_y[0] + r_y) & ((r_y << 1) - 1)) - r_y;
     }
-    if ((mvtype == BMV_TYPE_BACKWARD) || (mvtype == BMV_TYPE_INTERPOLATED)) {
+    if ((mvtype == BMV_TYPE_BACKWARD) || (mvtype == BMV_TYPE_INTERPOLATED))
+    {
         C   = s->current_picture.motion_val[1][xy - 2];
         A   = s->current_picture.motion_val[1][xy - wrap * 2];
         off = (s->mb_x == (s->mb_width - 1)) ? -2 : 2;
@@ -812,18 +971,26 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
 
         if (!s->mb_x)
             C[0] = C[1] = 0;
-        if (!s->first_slice_line) { // predictor A is not out of bounds
-            if (s->mb_width == 1) {
+        if (!s->first_slice_line)   // predictor A is not out of bounds
+        {
+            if (s->mb_width == 1)
+            {
                 px = A[0];
                 py = A[1];
-            } else {
+            }
+            else
+            {
                 px = mid_pred(A[0], B[0], C[0]);
                 py = mid_pred(A[1], B[1], C[1]);
             }
-        } else if (s->mb_x) { // predictor C is not out of bounds
+        }
+        else if (s->mb_x)     // predictor C is not out of bounds
+        {
             px = C[0];
             py = C[1];
-        } else {
+        }
+        else
+        {
             px = py = 0;
         }
         /* Pullback MV as specified in 8.3.5.3.4 */
@@ -841,29 +1008,40 @@ void ff_vc1_pred_b_mv(VC1Context *v, int dmv_x[2], int dmv_y[2],
             if (qy + py > Y) py = Y - qy;
         }
         /* Calculate hybrid prediction as specified in 8.3.5.3.5 */
-        if (0 && !s->first_slice_line && s->mb_x) {
+        if (0 && !s->first_slice_line && s->mb_x)
+        {
             if (is_intra[xy - wrap])
                 sum = FFABS(px) + FFABS(py);
             else
                 sum = FFABS(px - A[0]) + FFABS(py - A[1]);
-            if (sum > 32) {
-                if (get_bits1(&s->gb)) {
+            if (sum > 32)
+            {
+                if (get_bits1(&s->gb))
+                {
                     px = A[0];
                     py = A[1];
-                } else {
+                }
+                else
+                {
                     px = C[0];
                     py = C[1];
                 }
-            } else {
+            }
+            else
+            {
                 if (is_intra[xy - 2])
                     sum = FFABS(px) + FFABS(py);
                 else
                     sum = FFABS(px - C[0]) + FFABS(py - C[1]);
-                if (sum > 32) {
-                    if (get_bits1(&s->gb)) {
+                if (sum > 32)
+                {
+                    if (get_bits1(&s->gb))
+                    {
                         px = A[0];
                         py = A[1];
-                    } else {
+                    }
+                    else
+                    {
                         px = C[0];
                         py = C[1];
                     }
@@ -888,9 +1066,11 @@ void ff_vc1_pred_b_mv_intfi(VC1Context *v, int n, int *dmv_x, int *dmv_y,
     MpegEncContext *s = &v->s;
     int mb_pos = s->mb_x + s->mb_y * s->mb_stride;
 
-    if (v->bmvtype == BMV_TYPE_DIRECT) {
+    if (v->bmvtype == BMV_TYPE_DIRECT)
+    {
         int total_opp, k, f;
-        if (s->next_picture.mb_type[mb_pos + v->mb_off] != MB_TYPE_INTRA) {
+        if (s->next_picture.mb_type[mb_pos + v->mb_off] != MB_TYPE_INTRA)
+        {
             s->mv[0][0][0] = scale_mv(s->next_picture.motion_val[1][s->block_index[0] + v->blocks_off][0],
                                       v->bfraction, 0, s->quarter_sample);
             s->mv[0][0][1] = scale_mv(s->next_picture.motion_val[1][s->block_index[0] + v->blocks_off][1],
@@ -901,17 +1081,20 @@ void ff_vc1_pred_b_mv_intfi(VC1Context *v, int n, int *dmv_x, int *dmv_y,
                                       v->bfraction, 1, s->quarter_sample);
 
             total_opp = v->mv_f_next[0][s->block_index[0] + v->blocks_off]
-                      + v->mv_f_next[0][s->block_index[1] + v->blocks_off]
-                      + v->mv_f_next[0][s->block_index[2] + v->blocks_off]
-                      + v->mv_f_next[0][s->block_index[3] + v->blocks_off];
+                        + v->mv_f_next[0][s->block_index[1] + v->blocks_off]
+                        + v->mv_f_next[0][s->block_index[2] + v->blocks_off]
+                        + v->mv_f_next[0][s->block_index[3] + v->blocks_off];
             f = (total_opp > 2) ? 1 : 0;
-        } else {
+        }
+        else
+        {
             s->mv[0][0][0] = s->mv[0][0][1] = 0;
             s->mv[1][0][0] = s->mv[1][0][1] = 0;
             f = 0;
         }
         v->ref_field_type[0] = v->ref_field_type[1] = v->cur_field_type ^ f;
-        for (k = 0; k < 4; k++) {
+        for (k = 0; k < 4; k++)
+        {
             s->current_picture.motion_val[0][s->block_index[k] + v->blocks_off][0] = s->mv[0][0][0];
             s->current_picture.motion_val[0][s->block_index[k] + v->blocks_off][1] = s->mv[0][0][1];
             s->current_picture.motion_val[1][s->block_index[k] + v->blocks_off][0] = s->mv[1][0][0];
@@ -921,19 +1104,25 @@ void ff_vc1_pred_b_mv_intfi(VC1Context *v, int n, int *dmv_x, int *dmv_y,
         }
         return;
     }
-    if (v->bmvtype == BMV_TYPE_INTERPOLATED) {
+    if (v->bmvtype == BMV_TYPE_INTERPOLATED)
+    {
         ff_vc1_pred_mv(v, 0, dmv_x[0], dmv_y[0],   1, v->range_x, v->range_y, v->mb_type[0], pred_flag[0], 0);
         ff_vc1_pred_mv(v, 0, dmv_x[1], dmv_y[1],   1, v->range_x, v->range_y, v->mb_type[0], pred_flag[1], 1);
         return;
     }
-    if (dir) { // backward
+    if (dir)   // backward
+    {
         ff_vc1_pred_mv(v, n, dmv_x[1], dmv_y[1], mv1, v->range_x, v->range_y, v->mb_type[0], pred_flag[1], 1);
-        if (n == 3 || mv1) {
+        if (n == 3 || mv1)
+        {
             ff_vc1_pred_mv(v, 0, dmv_x[0], dmv_y[0],   1, v->range_x, v->range_y, v->mb_type[0], 0, 0);
         }
-    } else { // forward
+    }
+    else     // forward
+    {
         ff_vc1_pred_mv(v, n, dmv_x[0], dmv_y[0], mv1, v->range_x, v->range_y, v->mb_type[0], pred_flag[0], 0);
-        if (n == 3 || mv1) {
+        if (n == 3 || mv1)
+        {
             ff_vc1_pred_mv(v, 0, dmv_x[1], dmv_y[1],   1, v->range_x, v->range_y, v->mb_type[0], 0, 1);
         }
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ASF decryption
  * Copyright (c) 2007 Reimar Doeffinger
  *

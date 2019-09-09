@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV30/40 decoder common dsp functions
  * Copyright (c) 2007 Mike Melanson, Konstantin Shishkov
  * Copyright (c) 2011 Janne Grunau
@@ -37,7 +37,8 @@ static av_always_inline void rv34_row_transform(int temp[16], int16_t *block)
 {
     int i;
 
-    for(i = 0; i < 4; i++){
+    for(i = 0; i < 4; i++)
+    {
         const int z0 = 13*(block[i+4*0] +    block[i+4*2]);
         const int z1 = 13*(block[i+4*0] -    block[i+4*2]);
         const int z2 =  7* block[i+4*1] - 17*block[i+4*3];
@@ -54,14 +55,16 @@ static av_always_inline void rv34_row_transform(int temp[16], int16_t *block)
  * Real Video 3.0/4.0 inverse transform + sample reconstruction
  * Code is almost the same as in SVQ3, only scaling is different.
  */
-static void rv34_idct_add_c(uint8_t *dst, ptrdiff_t stride, int16_t *block){
+static void rv34_idct_add_c(uint8_t *dst, ptrdiff_t stride, int16_t *block)
+{
     int      temp[16];
     int      i;
 
     rv34_row_transform(temp, block);
     memset(block, 0, 16*sizeof(int16_t));
 
-    for(i = 0; i < 4; i++){
+    for(i = 0; i < 4; i++)
+    {
         const int z0 = 13*(temp[4*0+i] +    temp[4*2+i]) + 0x200;
         const int z1 = 13*(temp[4*0+i] -    temp[4*2+i]) + 0x200;
         const int z2 =  7* temp[4*1+i] - 17*temp[4*3+i];
@@ -82,13 +85,15 @@ static void rv34_idct_add_c(uint8_t *dst, ptrdiff_t stride, int16_t *block){
  * Code is almost the same as rv34_inv_transform()
  * but final coefficients are multiplied by 1.5 and have no rounding.
  */
-static void rv34_inv_transform_noround_c(int16_t *block){
+static void rv34_inv_transform_noround_c(int16_t *block)
+{
     int temp[16];
     int i;
 
     rv34_row_transform(temp, block);
 
-    for(i = 0; i < 4; i++){
+    for(i = 0; i < 4; i++)
+    {
         const int z0 = 39*(temp[4*0+i] +    temp[4*2+i]);
         const int z1 = 39*(temp[4*0+i] -    temp[4*2+i]);
         const int z2 = 21* temp[4*1+i] - 51*temp[4*3+i];

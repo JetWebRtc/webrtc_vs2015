@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #define OFFSET(x) offsetof(IDETContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption idet_options[] = {
+static const AVOption idet_options[] =
+{
     { "intl_thres", "set interlacing threshold", OFFSET(interlace_threshold),   AV_OPT_TYPE_FLOAT, {.dbl = 1.04}, -1, FLT_MAX, FLAGS },
     { "prog_thres", "set progressive threshold", OFFSET(progressive_threshold), AV_OPT_TYPE_FLOAT, {.dbl = 1.5},  -1, FLT_MAX, FLAGS },
     { "rep_thres",  "set repeat threshold",      OFFSET(repeat_threshold),      AV_OPT_TYPE_FLOAT, {.dbl = 3.0},  -1, FLT_MAX, FLAGS },
@@ -42,11 +43,16 @@ AVFILTER_DEFINE_CLASS(idet);
 
 static const char *type2str(Type type)
 {
-    switch(type) {
-        case TFF          : return "tff";
-        case BFF          : return "bff";
-        case PROGRESSIVE  : return "progressive";
-        case UNDETERMINED : return "undetermined";
+    switch(type)
+    {
+    case TFF          :
+        return "tff";
+    case BFF          :
+        return "bff";
+    case PROGRESSIVE  :
+        return "progressive";
+    case UNDETERMINED :
+        return "undetermined";
     }
     return NULL;
 }
@@ -61,7 +67,7 @@ static uint64_t uintpow(uint64_t b,unsigned int e)
 }
 
 static int av_dict_set_fxp(AVDictionary **pm, const char *key, uint64_t value, unsigned int digits,
-                int flags)
+                           int flags)
 {
     char valuestr[44];
     uint64_t print_precision = uintpow(10, digits);
@@ -76,10 +82,14 @@ static int av_dict_set_fxp(AVDictionary **pm, const char *key, uint64_t value, u
 
 static const char *rep2str(RepeatedField repeated_field)
 {
-    switch(repeated_field) {
-        case REPEAT_NONE    : return "neither";
-        case REPEAT_TOP     : return "top";
-        case REPEAT_BOTTOM  : return "bottom";
+    switch(repeated_field)
+    {
+    case REPEAT_NONE    :
+        return "neither";
+    case REPEAT_TOP     :
+        return "top";
+    case REPEAT_BOTTOM  :
+        return "bottom";
     }
     return NULL;
 }
@@ -89,7 +99,8 @@ int ff_idet_filter_line_c(const uint8_t *a, const uint8_t *b, const uint8_t *c, 
     int x;
     int ret=0;
 
-    for(x=0; x<w; x++){
+    for(x=0; x<w; x++)
+    {
         int v = (*a++ + *c++) - 2 * *b++;
         ret += FFABS(v);
     }
@@ -102,7 +113,8 @@ int ff_idet_filter_line_c_16bit(const uint16_t *a, const uint16_t *b, const uint
     int x;
     int ret=0;
 
-    for(x=0; x<w; x++){
+    for(x=0; x<w; x++)
+    {
         int v = (*a++ + *c++) - 2 * *b++;
         ret += FFABS(v);
     }
@@ -114,25 +126,28 @@ static void filter(AVFilterContext *ctx)
 {
     IDETContext *idet = ctx->priv;
     int y, i;
-    int64_t alpha[2]={0};
+    int64_t alpha[2]= {0};
     int64_t delta=0;
-    int64_t gamma[2]={0};
+    int64_t gamma[2]= {0};
     Type type, best_type;
     RepeatedField repeat;
     int match = 0;
     AVDictionary **metadata = avpriv_frame_get_metadatap(idet->cur);
 
-    for (i = 0; i < idet->csp->nb_components; i++) {
+    for (i = 0; i < idet->csp->nb_components; i++)
+    {
         int w = idet->cur->width;
         int h = idet->cur->height;
         int refs = idet->cur->linesize[i];
 
-        if (i && i<3) {
+        if (i && i<3)
+        {
             w = FF_CEIL_RSHIFT(w, idet->csp->log2_chroma_w);
             h = FF_CEIL_RSHIFT(h, idet->csp->log2_chroma_h);
         }
 
-        for (y = 2; y < h - 2; y++) {
+        for (y = 2; y < h - 2; y++)
+        {
             uint8_t *prev = &idet->prev->data[i][y*refs];
             uint8_t *cur  = &idet->cur ->data[i][y*refs];
             uint8_t *next = &idet->next->data[i][y*refs];
@@ -143,60 +158,86 @@ static void filter(AVFilterContext *ctx)
         }
     }
 
-    if      (alpha[0] > idet->interlace_threshold * alpha[1]){
+    if      (alpha[0] > idet->interlace_threshold * alpha[1])
+    {
         type = TFF;
-    }else if(alpha[1] > idet->interlace_threshold * alpha[0]){
+    }
+    else if(alpha[1] > idet->interlace_threshold * alpha[0])
+    {
         type = BFF;
-    }else if(alpha[1] > idet->progressive_threshold * delta){
+    }
+    else if(alpha[1] > idet->progressive_threshold * delta)
+    {
         type = PROGRESSIVE;
-    }else{
+    }
+    else
+    {
         type = UNDETERMINED;
     }
 
-    if ( gamma[0] > idet->repeat_threshold * gamma[1] ){
+    if ( gamma[0] > idet->repeat_threshold * gamma[1] )
+    {
         repeat = REPEAT_TOP;
-    } else if ( gamma[1] > idet->repeat_threshold * gamma[0] ){
+    }
+    else if ( gamma[1] > idet->repeat_threshold * gamma[0] )
+    {
         repeat = REPEAT_BOTTOM;
-    } else {
+    }
+    else
+    {
         repeat = REPEAT_NONE;
     }
 
     memmove(idet->history+1, idet->history, HIST_SIZE-1);
     idet->history[0] = type;
     best_type = UNDETERMINED;
-    for(i=0; i<HIST_SIZE; i++){
-        if(idet->history[i] != UNDETERMINED){
+    for(i=0; i<HIST_SIZE; i++)
+    {
+        if(idet->history[i] != UNDETERMINED)
+        {
             if(best_type == UNDETERMINED)
                 best_type = idet->history[i];
 
-            if(idet->history[i] == best_type) {
+            if(idet->history[i] == best_type)
+            {
                 match++;
-            }else{
+            }
+            else
+            {
                 match=0;
                 break;
             }
         }
     }
-    if(idet->last_type == UNDETERMINED){
+    if(idet->last_type == UNDETERMINED)
+    {
         if(match  ) idet->last_type = best_type;
-    }else{
+    }
+    else
+    {
         if(match>2) idet->last_type = best_type;
     }
 
-    if      (idet->last_type == TFF){
+    if      (idet->last_type == TFF)
+    {
         idet->cur->top_field_first = 1;
         idet->cur->interlaced_frame = 1;
-    }else if(idet->last_type == BFF){
+    }
+    else if(idet->last_type == BFF)
+    {
         idet->cur->top_field_first = 0;
         idet->cur->interlaced_frame = 1;
-    }else if(idet->last_type == PROGRESSIVE){
+    }
+    else if(idet->last_type == PROGRESSIVE)
+    {
         idet->cur->interlaced_frame = 0;
     }
 
     for(i=0; i<3; i++)
         idet->repeats[i]  = av_rescale(idet->repeats [i], idet->decay_coefficient, PRECISION);
 
-    for(i=0; i<4; i++){
+    for(i=0; i<4; i++)
+    {
         idet->prestat [i] = av_rescale(idet->prestat [i], idet->decay_coefficient, PRECISION);
         idet->poststat[i] = av_rescale(idet->poststat[i], idet->decay_coefficient, PRECISION);
     }
@@ -239,11 +280,13 @@ static int filter_frame(AVFilterLink *link, AVFrame *picref)
     // initial frame(s) and not interlaced, just pass through for
     // the analyze_interlaced_flag mode
     if (idet->analyze_interlaced_flag &&
-        !picref->interlaced_frame &&
-        !idet->next) {
+            !picref->interlaced_frame &&
+            !idet->next)
+    {
         return ff_filter_frame(ctx->outputs[0], picref);
     }
-    if (idet->analyze_interlaced_flag_done) {
+    if (idet->analyze_interlaced_flag_done)
+    {
         if (picref->interlaced_frame && idet->interlaced_flag_accuracy < 0)
             picref->interlaced_frame = 0;
         return ff_filter_frame(ctx->outputs[0], picref);
@@ -252,8 +295,9 @@ static int filter_frame(AVFilterLink *link, AVFrame *picref)
     av_frame_free(&idet->prev);
 
     if(   picref->width  != link->w
-       || picref->height != link->h
-       || picref->format != link->format) {
+            || picref->height != link->h
+            || picref->format != link->format)
+    {
         link->dst->inputs[0]->format = picref->format;
         link->dst->inputs[0]->w      = picref->width;
         link->dst->inputs[0]->h      = picref->height;
@@ -267,7 +311,7 @@ static int filter_frame(AVFilterLink *link, AVFrame *picref)
     idet->next = picref;
 
     if (!idet->cur &&
-        !(idet->cur = av_frame_clone(idet->next)))
+            !(idet->cur = av_frame_clone(idet->next)))
         return AVERROR(ENOMEM);
 
     if (!idet->prev)
@@ -275,24 +319,31 @@ static int filter_frame(AVFilterLink *link, AVFrame *picref)
 
     if (!idet->csp)
         idet->csp = av_pix_fmt_desc_get(link->format);
-    if (idet->csp->comp[0].depth_minus1 / 8 == 1){
+    if (idet->csp->comp[0].depth_minus1 / 8 == 1)
+    {
         idet->filter_line = (ff_idet_filter_func)ff_idet_filter_line_c_16bit;
         if (ARCH_X86)
             ff_idet_init_x86(idet, 1);
     }
 
-    if (idet->analyze_interlaced_flag) {
-        if (idet->cur->interlaced_frame) {
+    if (idet->analyze_interlaced_flag)
+    {
+        if (idet->cur->interlaced_frame)
+        {
             idet->cur->interlaced_frame = 0;
             filter(ctx);
-            if (idet->last_type == PROGRESSIVE) {
+            if (idet->last_type == PROGRESSIVE)
+            {
                 idet->interlaced_flag_accuracy --;
                 idet->analyze_interlaced_flag --;
-            } else if (idet->last_type != UNDETERMINED) {
+            }
+            else if (idet->last_type != UNDETERMINED)
+            {
                 idet->interlaced_flag_accuracy ++;
                 idet->analyze_interlaced_flag --;
             }
-            if (idet->analyze_interlaced_flag == 1) {
+            if (idet->analyze_interlaced_flag == 1)
+            {
                 ff_filter_frame(ctx->outputs[0], av_frame_clone(idet->cur));
 
                 if (idet->next->interlaced_frame && idet->interlaced_flag_accuracy < 0)
@@ -302,7 +353,9 @@ static int filter_frame(AVFilterLink *link, AVFrame *picref)
                 return ff_filter_frame(ctx->outputs[0], av_frame_clone(idet->next));
             }
         }
-    } else {
+    }
+    else
+    {
         filter(ctx);
     }
 
@@ -314,7 +367,8 @@ static int request_frame(AVFilterLink *link)
     AVFilterContext *ctx = link->src;
     IDETContext *idet = ctx->priv;
 
-    do {
+    do
+    {
         int ret;
 
         if (idet->eof)
@@ -322,7 +376,8 @@ static int request_frame(AVFilterLink *link)
 
         ret = ff_request_frame(link->src->inputs[0]);
 
-        if (ret == AVERROR_EOF && idet->cur && !idet->analyze_interlaced_flag_done) {
+        if (ret == AVERROR_EOF && idet->cur && !idet->analyze_interlaced_flag_done)
+        {
             AVFrame *next = av_frame_clone(idet->next);
 
             if (!next)
@@ -330,10 +385,13 @@ static int request_frame(AVFilterLink *link)
 
             filter_frame(link->src->inputs[0], next);
             idet->eof = 1;
-        } else if (ret < 0) {
+        }
+        else if (ret < 0)
+        {
             return ret;
         }
-    } while (link->frame_requested);
+    }
+    while (link->frame_requested);
 
     return 0;
 }
@@ -347,19 +405,19 @@ static av_cold void uninit(AVFilterContext *ctx)
            idet->total_repeats[REPEAT_NONE],
            idet->total_repeats[REPEAT_TOP],
            idet->total_repeats[REPEAT_BOTTOM]
-        );
+          );
     av_log(ctx, level, "Single frame detection: TFF:%6"PRId64" BFF:%6"PRId64" Progressive:%6"PRId64" Undetermined:%6"PRId64"\n",
            idet->total_prestat[TFF],
            idet->total_prestat[BFF],
            idet->total_prestat[PROGRESSIVE],
            idet->total_prestat[UNDETERMINED]
-        );
+          );
     av_log(ctx, level, "Multi frame detection: TFF:%6"PRId64" BFF:%6"PRId64" Progressive:%6"PRId64" Undetermined:%6"PRId64"\n",
            idet->total_poststat[TFF],
            idet->total_poststat[BFF],
            idet->total_poststat[PROGRESSIVE],
            idet->total_poststat[UNDETERMINED]
-        );
+          );
 
     av_frame_free(&idet->prev);
     av_frame_free(&idet->cur );
@@ -368,7 +426,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV444P,
@@ -432,7 +491,8 @@ static av_cold int init(AVFilterContext *ctx)
     return 0;
 }
 
-static const AVFilterPad idet_inputs[] = {
+static const AVFilterPad idet_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -441,7 +501,8 @@ static const AVFilterPad idet_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad idet_outputs[] = {
+static const AVFilterPad idet_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -451,7 +512,8 @@ static const AVFilterPad idet_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_idet = {
+AVFilter ff_vf_idet =
+{
     .name          = "idet",
     .description   = NULL_IF_CONFIG_SMALL("Interlace detect Filter."),
     .priv_size     = sizeof(IDETContext),

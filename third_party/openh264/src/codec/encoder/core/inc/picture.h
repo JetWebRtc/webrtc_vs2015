@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -38,9 +38,11 @@
 #include "as264_common.h"
 #include "wels_common_basis.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 #define LIST_SIZE      0x10000    //(256*256)
-typedef struct TagScreenBlockFeatureStorage {
+typedef struct TagScreenBlockFeatureStorage
+{
 //Input
 uint16_t*  pFeatureOfBlockPointer;    // Pointer to pFeatureOfBlock
 int32_t    iIs16x16;      //Feature block size
@@ -61,7 +63,8 @@ uint16_t **pFeatureValuePointerList;//uint16_t* pFeatureValuePointerList[WELS_MA
  *  Reconstructed Picture definition
  *  It is used to express reference picture, also consequent reconstruction picture for output
  */
-typedef struct TagPicture {
+typedef struct TagPicture
+{
 /************************************payload pData*********************************/
 uint8_t*    pBuffer;    // pointer to the first allocated byte, basical offset of pBuffer, dimension:
 uint8_t*    pData[3];    // pointer to picture planes respectively
@@ -100,23 +103,24 @@ int32_t   iFrameAverageQp;
 /*******************************for screen reference frames****************************/
 SScreenBlockFeatureStorage* pScreenBlockFeatureStorage;
 
-  /*
-   *    set picture as unreferenced
-   */
-  void SetUnref () {
-      iFramePoc          = -1;
-      iFrameNum          = -1;
-      uiTemporalId       =
+/*
+ *    set picture as unreferenced
+ */
+void SetUnref ()
+{
+    iFramePoc          = -1;
+    iFrameNum          = -1;
+    uiTemporalId       =
         uiSpatialId      =
-        iLongTermPicNum  = -1;
-      bIsLongRef         = false;
-      uiRecieveConfirmed = RECIEVE_FAILED;
-      iMarkFrameNum      = -1;
-      bUsedAsRef         = false;
+            iLongTermPicNum  = -1;
+    bIsLongRef         = false;
+    uiRecieveConfirmed = RECIEVE_FAILED;
+    iMarkFrameNum      = -1;
+    bUsedAsRef         = false;
 
-      if (NULL != pScreenBlockFeatureStorage)
+    if (NULL != pScreenBlockFeatureStorage)
         pScreenBlockFeatureStorage->bRefBlockFeatureCalculated = false;
-  }
+}
 
 } SPicture;
 

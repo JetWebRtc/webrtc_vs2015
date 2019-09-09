@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,33 +26,36 @@ extern "C" {
 #define PREDICTION_PROBS 3
 
 // Segment level features.
-typedef enum {
-  SEG_LVL_ALT_Q = 0,      // Use alternate Quantizer ....
-  SEG_LVL_ALT_LF = 1,     // Use alternate loop filter value...
-  SEG_LVL_REF_FRAME = 2,  // Optional Segment reference frame
-  SEG_LVL_SKIP = 3,       // Optional Segment (0,0) + skip mode
-  SEG_LVL_MAX = 4         // Number of features supported
+typedef enum
+{
+    SEG_LVL_ALT_Q = 0,      // Use alternate Quantizer ....
+    SEG_LVL_ALT_LF = 1,     // Use alternate loop filter value...
+    SEG_LVL_REF_FRAME = 2,  // Optional Segment reference frame
+    SEG_LVL_SKIP = 3,       // Optional Segment (0,0) + skip mode
+    SEG_LVL_MAX = 4         // Number of features supported
 } SEG_LVL_FEATURES;
 
-struct segmentation {
-  uint8_t enabled;
-  uint8_t update_map;
-  uint8_t update_data;
-  uint8_t abs_delta;
-  uint8_t temporal_update;
+struct segmentation
+{
+    uint8_t enabled;
+    uint8_t update_map;
+    uint8_t update_data;
+    uint8_t abs_delta;
+    uint8_t temporal_update;
 
-  vpx_prob tree_probs[SEG_TREE_PROBS];
-  vpx_prob pred_probs[PREDICTION_PROBS];
+    vpx_prob tree_probs[SEG_TREE_PROBS];
+    vpx_prob pred_probs[PREDICTION_PROBS];
 
-  int16_t feature_data[MAX_SEGMENTS][SEG_LVL_MAX];
-  uint32_t feature_mask[MAX_SEGMENTS];
-  int aq_av_offset;
+    int16_t feature_data[MAX_SEGMENTS][SEG_LVL_MAX];
+    uint32_t feature_mask[MAX_SEGMENTS];
+    int aq_av_offset;
 };
 
 static INLINE int segfeature_active(const struct segmentation *seg,
                                     int segment_id,
-                                    SEG_LVL_FEATURES feature_id) {
-  return seg->enabled && (seg->feature_mask[segment_id] & (1 << feature_id));
+                                    SEG_LVL_FEATURES feature_id)
+{
+    return seg->enabled && (seg->feature_mask[segment_id] & (1 << feature_id));
 }
 
 void vp9_clearall_segfeatures(struct segmentation *seg);
@@ -68,8 +71,9 @@ void vp9_set_segdata(struct segmentation *seg, int segment_id,
                      SEG_LVL_FEATURES feature_id, int seg_data);
 
 static INLINE int get_segdata(const struct segmentation *seg, int segment_id,
-                              SEG_LVL_FEATURES feature_id) {
-  return seg->feature_data[segment_id][feature_id];
+                              SEG_LVL_FEATURES feature_id)
+{
+    return seg->feature_data[segment_id][feature_id];
 }
 
 extern const vpx_tree_index vp9_segment_tree[TREE_SIZE(MAX_SEGMENTS)];

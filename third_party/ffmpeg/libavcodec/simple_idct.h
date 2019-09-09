@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Simple IDCT
  *
  * Copyright (c) 2001 Michael Niedermayer <michaelni@gmx.at>

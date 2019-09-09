@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -27,12 +27,14 @@ static inline int utf8towchar(const char *filename_utf8, wchar_t **filename_w)
 {
     int num_chars;
     num_chars = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, filename_utf8, -1, NULL, 0);
-    if (num_chars <= 0) {
+    if (num_chars <= 0)
+    {
         *filename_w = NULL;
         return 0;
     }
     *filename_w = (wchar_t *)av_mallocz_array(num_chars, sizeof(wchar_t));
-    if (!*filename_w) {
+    if (!*filename_w)
+    {
         errno = ENOMEM;
         return -1;
     }

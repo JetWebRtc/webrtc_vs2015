@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2008-2013, Cisco Systems
  *     All rights reserved.
@@ -47,7 +47,8 @@
 
 #include "codec_def.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 /*
  * InitBsBuffer
  * Memory allocation for Bitstream Buffer

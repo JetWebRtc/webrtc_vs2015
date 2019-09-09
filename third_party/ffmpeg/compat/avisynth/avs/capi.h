@@ -1,4 +1,4 @@
-// Avisynth C Interface Version 0.20
+﻿// Avisynth C Interface Version 0.20
 // Copyright 2003 Kevin Atkinson
 
 // This program is free software; you can redistribute it and/or modify

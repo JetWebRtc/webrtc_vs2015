@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -111,9 +111,9 @@ __asm  void dct_IV_func1(
     */
     PUSH    {r4-r9}
 
-     /* 44 cycles for 2 iterations = 22 cycles/iteration */
-dct_IV_loop1_start
-/*  First iteration */
+    /* 44 cycles for 2 iterations = 22 cycles/iteration */
+    dct_IV_loop1_start
+    /*  First iteration */
     LDR     r8, [r1], #4    // val_tw = *twiddle++;
     LDR     r5, [r2, #0]    // accu2 = pDat_0[0]
     LDR     r4, [r3, #0]    // accu1 = pDat_1[0]
@@ -139,7 +139,7 @@ dct_IV_loop1_start
     STR     r6, [r3], #-4   // *pDat_1-- = accu3
     STR     r7, [r3], #-4   // *pDat_1-- = accu4
 
-/*  Second iteration */
+    /*  Second iteration */
     LDR     r8, [r1], #4    // val_tw = *twiddle++;
     LDR     r5, [r2, #0]    // accu2 = pDat_0[0]
     LDR     r4, [r3, #0]    // accu1 = pDat_1[0]
@@ -187,83 +187,83 @@ static void dct_IV_func2(
     FIXP_DBL *pDat_1,
     int inc)
 {
-  FIXP_DBL accu1, accu2, accu3, accu4, accuX;
-  LONG val_tw;
+    FIXP_DBL accu1, accu2, accu3, accu4, accuX;
+    LONG val_tw;
 
-  accu1 = pDat_1[-2];
-  accu2 = pDat_1[-1];
+    accu1 = pDat_1[-2];
+    accu2 = pDat_1[-1];
 
-  *--pDat_1 = -(pDat_0[1]>>1);
-  *pDat_0++ = (pDat_0[0]>>1);
+    *--pDat_1 = -(pDat_0[1]>>1);
+    *pDat_0++ = (pDat_0[0]>>1);
 
-  twiddle += inc;
+    twiddle += inc;
 
-__asm
-  {
-    LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
-    B       dct_IV_loop2_2nd_part
+    __asm
+    {
+        LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
+        B       dct_IV_loop2_2nd_part
 
-    /* 42 cycles for 2 iterations = 21 cycles/iteration */
-dct_IV_loop2:
-    SMULWT  accuX, accu2, val_tw
-    SMULWB  accu2, accu2, val_tw
-    RSB     accuX, accuX, #0
-    SMLAWB  accuX, accu1, val_tw, accuX
-    SMLAWT  accu2, accu1, val_tw, accu2
-    STR     accuX, [pDat_0], #4
-    STR     accu2, [pDat_1, #-4] !
+        /* 42 cycles for 2 iterations = 21 cycles/iteration */
+        dct_IV_loop2:
+        SMULWT  accuX, accu2, val_tw
+        SMULWB  accu2, accu2, val_tw
+        RSB     accuX, accuX, #0
+        SMLAWB  accuX, accu1, val_tw, accuX
+        SMLAWT  accu2, accu1, val_tw, accu2
+        STR     accuX, [pDat_0], #4
+        STR     accu2, [pDat_1, #-4] !
 
-    LDR     accu4, [pDat_0, #4]
-    LDR     accu3, [pDat_0]
-    SMULWB  accuX, accu4, val_tw
-    SMULWT  accu4, accu4, val_tw
-    RSB     accuX, accuX, #0
-    SMLAWT  accuX, accu3, val_tw, accuX
-    SMLAWB  accu4, accu3, val_tw, accu4
+        LDR     accu4, [pDat_0, #4]
+        LDR     accu3, [pDat_0]
+        SMULWB  accuX, accu4, val_tw
+        SMULWT  accu4, accu4, val_tw
+        RSB     accuX, accuX, #0
+        SMLAWT  accuX, accu3, val_tw, accuX
+        SMLAWB  accu4, accu3, val_tw, accu4
 
-    LDR     accu1, [pDat_1, #-8]
-    LDR     accu2, [pDat_1, #-4]
+        LDR     accu1, [pDat_1, #-8]
+        LDR     accu2, [pDat_1, #-4]
 
-    LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
+        LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
 
-    STR     accuX, [pDat_1, #-4] !
-    STR     accu4, [pDat_0], #4
+        STR     accuX, [pDat_1, #-4] !
+        STR     accu4, [pDat_0], #4
 
-dct_IV_loop2_2nd_part:
-    SMULWT  accuX, accu2, val_tw
-    SMULWB  accu2, accu2, val_tw
-    RSB     accuX, accuX, #0
-    SMLAWB  accuX, accu1, val_tw, accuX
-    SMLAWT  accu2, accu1, val_tw, accu2
-    STR     accuX, [pDat_0], #4
-    STR     accu2, [pDat_1, #-4] !
+        dct_IV_loop2_2nd_part:
+        SMULWT  accuX, accu2, val_tw
+        SMULWB  accu2, accu2, val_tw
+        RSB     accuX, accuX, #0
+        SMLAWB  accuX, accu1, val_tw, accuX
+        SMLAWT  accu2, accu1, val_tw, accu2
+        STR     accuX, [pDat_0], #4
+        STR     accu2, [pDat_1, #-4] !
 
-    LDR     accu4, [pDat_0, #4]
-    LDR     accu3, [pDat_0]
-    SMULWB  accuX, accu4, val_tw
-    SMULWT  accu4, accu4, val_tw
-    RSB     accuX, accuX, #0
-    SMLAWT  accuX, accu3, val_tw, accuX
-    SMLAWB  accu4, accu3, val_tw, accu4
+        LDR     accu4, [pDat_0, #4]
+        LDR     accu3, [pDat_0]
+        SMULWB  accuX, accu4, val_tw
+        SMULWT  accu4, accu4, val_tw
+        RSB     accuX, accuX, #0
+        SMLAWT  accuX, accu3, val_tw, accuX
+        SMLAWB  accu4, accu3, val_tw, accu4
 
-    LDR     accu1, [pDat_1, #-8]
-    LDR     accu2, [pDat_1, #-4]
+        LDR     accu1, [pDat_1, #-8]
+        LDR     accu2, [pDat_1, #-4]
 
-    STR     accuX, [pDat_1, #-4] !
-    STR     accu4, [pDat_0], #4
+        STR     accuX, [pDat_1, #-4] !
+        STR     accu4, [pDat_0], #4
 
-    LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
+        LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
 
-    SUBS    i, i, #1
-    BNE     dct_IV_loop2
-  }
+        SUBS    i, i, #1
+        BNE     dct_IV_loop2
+    }
 
-  /* Last Sin and Cos value pair are the same */
-  accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
-  accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
+    /* Last Sin and Cos value pair are the same */
+    accu1 = fMultDiv2(accu1, WTC(0x5a82799a));
+    accu2 = fMultDiv2(accu2, WTC(0x5a82799a));
 
-  *--pDat_1 = accu1 + accu2;
-  *pDat_0++ = accu1 - accu2;
+    *--pDat_1 = accu1 + accu2;
+    *pDat_0++ = accu1 - accu2;
 }
 #endif /* FUNCTION_dct_IV_func2 */
 
@@ -290,7 +290,7 @@ __asm void dst_IV_func1(
     */
     PUSH    {r4-r9}
 
-dst_IV_loop1
+    dst_IV_loop1
     LDR     r8, [r1], #4               // val_tw = *twiddle++
     LDR     r5, [r2]                   // accu2 = pDat_0[0]
     LDR     r6, [r2, #4]               // accu3 = pDat_0[1]
@@ -356,101 +356,101 @@ static void dst_IV_func2(
     FIXP_DBL *RESTRICT pDat_1,
     int inc)
 {
-  FIXP_DBL accu1,accu2,accu3,accu4;
-  LONG val_tw;
+    FIXP_DBL accu1,accu2,accu3,accu4;
+    LONG val_tw;
 
-  accu4 = pDat_0[0];
-  accu3 = pDat_0[1];
-  accu4 >>= 1;
-  accu3 >>= 1;
-  accu4 = -accu4;
+    accu4 = pDat_0[0];
+    accu3 = pDat_0[1];
+    accu4 >>= 1;
+    accu3 >>= 1;
+    accu4 = -accu4;
 
-  accu1 = pDat_1[-1];
-  accu2 = pDat_1[0];
+    accu1 = pDat_1[-1];
+    accu2 = pDat_1[0];
 
-  *pDat_0++ = accu3;
-  *pDat_1-- = accu4;
+    *pDat_0++ = accu3;
+    *pDat_1-- = accu4;
 
 
-  __asm
-  {
-    B       dst_IV_loop2_2nd_part
+    __asm
+    {
+        B       dst_IV_loop2_2nd_part
 
-    /* 50 cycles for 2 iterations = 25 cycles/iteration */
+        /* 50 cycles for 2 iterations = 25 cycles/iteration */
 
-dst_IV_loop2:
+        dst_IV_loop2:
 
-    LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
+        LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
 
-    RSB     accu2, accu2, #0                  // accu2 = -accu2
-    RSB     accu1, accu1, #0                  // accu1 = -accu1
-    SMULWT  accu3, accu2, val_tw              // accu3 = (-accu2)*val_tw.l
-    SMULWT  accu4, accu1, val_tw              // accu4 = (-accu1)*val_tw.l
-    RSB     accu3, accu3, #0                  // accu3 = -accu2*val_tw.l
-    SMLAWB  accu1, accu1, val_tw, accu3       // accu1 = -accu1*val_tw.h-(-accu2)*val_tw.l
-    SMLAWB  accu2, accu2, val_tw, accu4       // accu2 = (-accu1)*val_tw.l+(-accu2)*val_tw.h
-    STR     accu1, [pDat_1], #-4              // *pDat_1-- = accu1
-  	STR     accu2, [pDat_0], #4               // *pDat_0++ = accu2
+        RSB     accu2, accu2, #0                  // accu2 = -accu2
+        RSB     accu1, accu1, #0                  // accu1 = -accu1
+        SMULWT  accu3, accu2, val_tw              // accu3 = (-accu2)*val_tw.l
+        SMULWT  accu4, accu1, val_tw              // accu4 = (-accu1)*val_tw.l
+        RSB     accu3, accu3, #0                  // accu3 = -accu2*val_tw.l
+        SMLAWB  accu1, accu1, val_tw, accu3       // accu1 = -accu1*val_tw.h-(-accu2)*val_tw.l
+        SMLAWB  accu2, accu2, val_tw, accu4       // accu2 = (-accu1)*val_tw.l+(-accu2)*val_tw.h
+        STR     accu1, [pDat_1], #-4              // *pDat_1-- = accu1
+        STR     accu2, [pDat_0], #4               // *pDat_0++ = accu2
 
-  	LDR     accu4, [pDat_0]                   // accu4 = pDat_0[0]
-  	LDR     accu3, [pDat_0, #4]               // accu3 = pDat_0[1]
+        LDR     accu4, [pDat_0]                   // accu4 = pDat_0[0]
+        LDR     accu3, [pDat_0, #4]               // accu3 = pDat_0[1]
 
-    RSB     accu4, accu4, #0                  // accu4 = -accu4
-    RSB     accu3, accu3, #0                  // accu3 = -accu3
+        RSB     accu4, accu4, #0                  // accu4 = -accu4
+        RSB     accu3, accu3, #0                  // accu3 = -accu3
 
-    SMULWB  accu1, accu3, val_tw              // accu1 = (-accu3)*val_tw.h
-    SMULWT  accu2, accu3, val_tw              // accu2 = (-accu3)*val_tw.l
-    RSB     accu1, accu1, #0                  // accu1 = -(-accu3)*val_tw.h
-    SMLAWT  accu3, accu4, val_tw, accu1       // accu3 = (-accu4)*val_tw.l-(-accu3)*val_tw.h
-    SMLAWB  accu4, accu4, val_tw, accu2       // accu4 = (-accu3)*val_tw.l+(-accu4)*val_tw.h
+        SMULWB  accu1, accu3, val_tw              // accu1 = (-accu3)*val_tw.h
+        SMULWT  accu2, accu3, val_tw              // accu2 = (-accu3)*val_tw.l
+        RSB     accu1, accu1, #0                  // accu1 = -(-accu3)*val_tw.h
+        SMLAWT  accu3, accu4, val_tw, accu1       // accu3 = (-accu4)*val_tw.l-(-accu3)*val_tw.h
+        SMLAWB  accu4, accu4, val_tw, accu2       // accu4 = (-accu3)*val_tw.l+(-accu4)*val_tw.h
 
-    LDR     accu1, [pDat_1, #-4]              // accu1 = pDat_1[-1]
-    LDR     accu2, [pDat_1]                   // accu2 = pDat_1[0]
+        LDR     accu1, [pDat_1, #-4]              // accu1 = pDat_1[-1]
+        LDR     accu2, [pDat_1]                   // accu2 = pDat_1[0]
 
-    STR     accu3, [pDat_0], #4               // *pDat_0++ = accu3
-    STR     accu4, [pDat_1], #-4              // *pDat_1-- = accu4
+        STR     accu3, [pDat_0], #4               // *pDat_0++ = accu3
+        STR     accu4, [pDat_1], #-4              // *pDat_1-- = accu4
 
-dst_IV_loop2_2nd_part:
+        dst_IV_loop2_2nd_part:
 
-    LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
+        LDR     val_tw, [twiddle], inc, LSL #2    // val_tw = *twiddle; twiddle += inc
 
-    RSB     accu2, accu2, #0                  // accu2 = -accu2
-    RSB     accu1, accu1, #0                  // accu1 = -accu1
-    SMULWT  accu3, accu2, val_tw              // accu3 = (-accu2)*val_tw.l
-    SMULWT  accu4, accu1, val_tw              // accu4 = (-accu1)*val_tw.l
-    RSB     accu3, accu3, #0                  // accu3 = -accu2*val_tw.l
-    SMLAWB  accu1, accu1, val_tw, accu3       // accu1 = -accu1*val_tw.h-(-accu2)*val_tw.l
-    SMLAWB  accu2, accu2, val_tw, accu4       // accu2 = (-accu1)*val_tw.l+(-accu2)*val_tw.h
-    STR     accu1, [pDat_1], #-4              // *pDat_1-- = accu1
-  	STR     accu2, [pDat_0], #4               // *pDat_0++ = accu2
+        RSB     accu2, accu2, #0                  // accu2 = -accu2
+        RSB     accu1, accu1, #0                  // accu1 = -accu1
+        SMULWT  accu3, accu2, val_tw              // accu3 = (-accu2)*val_tw.l
+        SMULWT  accu4, accu1, val_tw              // accu4 = (-accu1)*val_tw.l
+        RSB     accu3, accu3, #0                  // accu3 = -accu2*val_tw.l
+        SMLAWB  accu1, accu1, val_tw, accu3       // accu1 = -accu1*val_tw.h-(-accu2)*val_tw.l
+        SMLAWB  accu2, accu2, val_tw, accu4       // accu2 = (-accu1)*val_tw.l+(-accu2)*val_tw.h
+        STR     accu1, [pDat_1], #-4              // *pDat_1-- = accu1
+        STR     accu2, [pDat_0], #4               // *pDat_0++ = accu2
 
-  	LDR     accu4, [pDat_0]                   // accu4 = pDat_0[0]
-  	LDR     accu3, [pDat_0, #4]               // accu3 = pDat_0[1]
+        LDR     accu4, [pDat_0]                   // accu4 = pDat_0[0]
+        LDR     accu3, [pDat_0, #4]               // accu3 = pDat_0[1]
 
-    RSB     accu4, accu4, #0                  // accu4 = -accu4
-    RSB     accu3, accu3, #0                  // accu3 = -accu3
+        RSB     accu4, accu4, #0                  // accu4 = -accu4
+        RSB     accu3, accu3, #0                  // accu3 = -accu3
 
-    SMULWB  accu1, accu3, val_tw              // accu1 = (-accu3)*val_tw.h
-    SMULWT  accu2, accu3, val_tw              // accu2 = (-accu3)*val_tw.l
-    RSB     accu1, accu1, #0                  // accu1 = -(-accu3)*val_tw.h
-    SMLAWT  accu3, accu4, val_tw, accu1       // accu3 = (-accu4)*val_tw.l-(-accu3)*val_tw.h
-    SMLAWB  accu4, accu4, val_tw, accu2       // accu4 = (-accu3)*val_tw.l+(-accu4)*val_tw.h
+        SMULWB  accu1, accu3, val_tw              // accu1 = (-accu3)*val_tw.h
+        SMULWT  accu2, accu3, val_tw              // accu2 = (-accu3)*val_tw.l
+        RSB     accu1, accu1, #0                  // accu1 = -(-accu3)*val_tw.h
+        SMLAWT  accu3, accu4, val_tw, accu1       // accu3 = (-accu4)*val_tw.l-(-accu3)*val_tw.h
+        SMLAWB  accu4, accu4, val_tw, accu2       // accu4 = (-accu3)*val_tw.l+(-accu4)*val_tw.h
 
-    LDR     accu1, [pDat_1, #-4]              // accu1 = pDat_1[-1]
-    LDR     accu2, [pDat_1]                   // accu2 = pDat_1[0]
+        LDR     accu1, [pDat_1, #-4]              // accu1 = pDat_1[-1]
+        LDR     accu2, [pDat_1]                   // accu2 = pDat_1[0]
 
-    STR     accu3, [pDat_0], #4               // *pDat_0++ = accu3
-    STR     accu4, [pDat_1], #-4              // *pDat_1-- = accu4
+        STR     accu3, [pDat_0], #4               // *pDat_0++ = accu3
+        STR     accu4, [pDat_1], #-4              // *pDat_1-- = accu4
 
-    SUBS    i, i, #1
-    BNE     dst_IV_loop2
-  }
+        SUBS    i, i, #1
+        BNE     dst_IV_loop2
+    }
 
-  /* Last Sin and Cos value pair are the same */
-  accu1 = fMultDiv2(-accu1, WTC(0x5a82799a));
-  accu2 = fMultDiv2(-accu2, WTC(0x5a82799a));
+    /* Last Sin and Cos value pair are the same */
+    accu1 = fMultDiv2(-accu1, WTC(0x5a82799a));
+    accu2 = fMultDiv2(-accu2, WTC(0x5a82799a));
 
-  *pDat_0 = accu1 + accu2;
-  *pDat_1 = accu1 - accu2;
+    *pDat_0 = accu1 + accu2;
+    *pDat_1 = accu1 - accu2;
 }
 #endif /* FUNCTION_dst_IV_func2 */

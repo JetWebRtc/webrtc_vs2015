@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Psygnosis YOP demuxer
  *
  * Copyright (C) 2010 Mohamed Naufal Basheer <naufal11@gmail.com>
@@ -27,7 +27,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct yop_dec_context {
+typedef struct yop_dec_context
+{
     AVPacket video_packet;
 
     int odd_frame;
@@ -39,15 +40,15 @@ typedef struct yop_dec_context {
 static int yop_probe(AVProbeData *probe_packet)
 {
     if (AV_RB16(probe_packet->buf) == AV_RB16("YO")  &&
-        probe_packet->buf[2]<10                      &&
-        probe_packet->buf[3]<10                      &&
-        probe_packet->buf[6]                         &&
-        probe_packet->buf[7]                         &&
-        !(probe_packet->buf[8] & 1)                  &&
-        !(probe_packet->buf[10] & 1)                 &&
-        AV_RL16(probe_packet->buf + 12 + 6) >= 920    &&
-        AV_RL16(probe_packet->buf + 12 + 6) < probe_packet->buf[12] * 3 + 4 + probe_packet->buf[7] * 2048
-    )
+            probe_packet->buf[2]<10                      &&
+            probe_packet->buf[3]<10                      &&
+            probe_packet->buf[6]                         &&
+            probe_packet->buf[7]                         &&
+            !(probe_packet->buf[8] & 1)                  &&
+            !(probe_packet->buf[10] & 1)                 &&
+            AV_RL16(probe_packet->buf + 12 + 6) >= 920    &&
+            AV_RL16(probe_packet->buf + 12 + 6) < probe_packet->buf[12] * 3 + 4 + probe_packet->buf[7] * 2048
+       )
         return AVPROBE_SCORE_MAX * 3 / 4;
 
     return 0;
@@ -92,7 +93,10 @@ static int yop_read_header(AVFormatContext *s)
     video_dec->width        = avio_rl16(pb);
     video_dec->height       = avio_rl16(pb);
 
-    video_stream->sample_aspect_ratio = (AVRational){1, 2};
+    video_stream->sample_aspect_ratio = (AVRational)
+    {
+        1, 2
+    };
 
     ret = avio_read(pb, video_dec->extradata, 8);
     if (ret < 8)
@@ -105,7 +109,8 @@ static int yop_read_header(AVFormatContext *s)
 
     // 1840 samples per frame, 1 nibble per sample; hence 1840/2 = 920
     if (yop->audio_block_length < 920 ||
-        yop->audio_block_length + yop->palette_size >= yop->frame_size) {
+            yop->audio_block_length + yop->palette_size >= yop->frame_size)
+    {
         av_log(s, AV_LOG_ERROR, "YOP has invalid header\n");
         return AVERROR_INVALIDDATA;
     }
@@ -128,14 +133,15 @@ static int yop_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     yop->video_packet.stream_index = 1;
 
-    if (yop->video_packet.data) {
+    if (yop->video_packet.data)
+    {
         *pkt                   =  yop->video_packet;
         yop->video_packet.data =  NULL;
         yop->video_packet.buf  =  NULL;
 #if FF_API_DESTRUCT_PACKET
-FF_DISABLE_DEPRECATION_WARNINGS
+        FF_DISABLE_DEPRECATION_WARNINGS
         yop->video_packet.destruct = NULL;
-FF_ENABLE_DEPRECATION_WARNINGS
+        FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         yop->video_packet.size =  0;
         pkt->data[0]           =  yop->odd_frame;
@@ -151,9 +157,12 @@ FF_ENABLE_DEPRECATION_WARNINGS
     yop->video_packet.pos = avio_tell(pb);
 
     ret = avio_read(pb, yop->video_packet.data, yop->palette_size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         goto err_out;
-    }else if (ret < yop->palette_size) {
+    }
+    else if (ret < yop->palette_size)
+    {
         ret = AVERROR_EOF;
         goto err_out;
     }
@@ -168,7 +177,7 @@ FF_ENABLE_DEPRECATION_WARNINGS
     avio_skip(pb, yop->audio_block_length - ret);
 
     ret = avio_read(pb, yop->video_packet.data + yop->palette_size,
-                     actual_video_data_size);
+                    actual_video_data_size);
     if (ret < 0)
         goto err_out;
     else if (ret < actual_video_data_size)
@@ -216,7 +225,8 @@ static int yop_read_seek(AVFormatContext *s, int stream_index,
     return 0;
 }
 
-AVInputFormat ff_yop_demuxer = {
+AVInputFormat ff_yop_demuxer =
+{
     .name           = "yop",
     .long_name      = NULL_IF_CONFIG_SMALL("Psygnosis YOP"),
     .priv_data_size = sizeof(YopDecContext),

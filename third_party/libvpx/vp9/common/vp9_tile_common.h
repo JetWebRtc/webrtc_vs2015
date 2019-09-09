@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,9 +17,10 @@ extern "C" {
 
 struct VP9Common;
 
-typedef struct TileInfo {
-  int mi_row_start, mi_row_end;
-  int mi_col_start, mi_col_end;
+typedef struct TileInfo
+{
+    int mi_row_start, mi_row_end;
+    int mi_col_start, mi_col_end;
 } TileInfo;
 
 // initializes 'tile->mi_(row|col)_(start|end)' for (row, col) based on

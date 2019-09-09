@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC Spectral Band Replication decoding functions
  * Copyright (c) 2008-2009 Robert Swain ( rob opendot cl )
  * Copyright (c) 2009-2010 Alex Converse <alex.converse@gmail.com>
@@ -23,7 +23,8 @@
 static void sbr_sum64x5_c(INTFLOAT *z)
 {
     int k;
-    for (k = 0; k < 64; k++) {
+    for (k = 0; k < 64; k++)
+    {
         INTFLOAT f = z[k] + z[k + 64] + z[k + 128] + z[k + 192] + z[k + 256];
         z[k] = f;
     }
@@ -32,7 +33,8 @@ static void sbr_sum64x5_c(INTFLOAT *z)
 static void sbr_qmf_deint_bfly_c(INTFLOAT *v, const INTFLOAT *src0, const INTFLOAT *src1)
 {
     int i;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         v[      i] = AAC_SRA_R((src0[i] - src1[63 - i]), 5);
         v[127 - i] = AAC_SRA_R((src0[i] + src1[63 - i]), 5);
     }

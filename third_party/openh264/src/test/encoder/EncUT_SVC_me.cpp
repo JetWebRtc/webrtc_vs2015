@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
@@ -11,99 +11,116 @@
 
 using namespace WelsEnc;
 #define SVC_ME_TEST_NUM 10
-static void FillWithRandomData (uint8_t* p, int32_t Len) {
-  for (int32_t i = 0; i < Len; i++) {
-    p[i] = rand() % 256;
-  }
+static void FillWithRandomData (uint8_t* p, int32_t Len)
+{
+    for (int32_t i = 0; i < Len; i++)
+    {
+        p[i] = rand() % 256;
+    }
 }
 
 //preprocess related
-int32_t SumOf8x8SingleBlock_ref (uint8_t* pRef, const int32_t kiRefStride) {
-  int32_t iSum = 0, i;
-  for (i = 0; i < 8; i++) {
-    iSum +=  pRef[0]    + pRef[1]  + pRef[2]  + pRef[3];
-    iSum +=  pRef[4]    + pRef[5]  + pRef[6]  + pRef[7];
-    pRef += kiRefStride;
-  }
-  return iSum;
+int32_t SumOf8x8SingleBlock_ref (uint8_t* pRef, const int32_t kiRefStride)
+{
+    int32_t iSum = 0, i;
+    for (i = 0; i < 8; i++)
+    {
+        iSum +=  pRef[0]    + pRef[1]  + pRef[2]  + pRef[3];
+        iSum +=  pRef[4]    + pRef[5]  + pRef[6]  + pRef[7];
+        pRef += kiRefStride;
+    }
+    return iSum;
 }
-int32_t SumOf16x16SingleBlock_ref (uint8_t* pRef, const int32_t kiRefStride) {
-  int32_t iSum = 0, i;
-  for (i = 0; i < 16; i++) {
-    iSum +=  pRef[0]    + pRef[1]  + pRef[2]  + pRef[3];
-    iSum +=  pRef[4]    + pRef[5]  + pRef[6]  + pRef[7];
-    iSum    +=  pRef[8]    + pRef[9]  + pRef[10]  + pRef[11];
-    iSum    +=  pRef[12]  + pRef[13]  + pRef[14]  + pRef[15];
-    pRef += kiRefStride;
-  }
-  return iSum;
+int32_t SumOf16x16SingleBlock_ref (uint8_t* pRef, const int32_t kiRefStride)
+{
+    int32_t iSum = 0, i;
+    for (i = 0; i < 16; i++)
+    {
+        iSum +=  pRef[0]    + pRef[1]  + pRef[2]  + pRef[3];
+        iSum +=  pRef[4]    + pRef[5]  + pRef[6]  + pRef[7];
+        iSum    +=  pRef[8]    + pRef[9]  + pRef[10]  + pRef[11];
+        iSum    +=  pRef[12]  + pRef[13]  + pRef[14]  + pRef[15];
+        pRef += kiRefStride;
+    }
+    return iSum;
 }
 
 void SumOf8x8BlockOfFrame_ref (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
                                const int32_t kiRefStride,
-                               uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]) {
-  int32_t x, y;
-  uint8_t* pRef;
-  uint16_t* pBuffer;
-  int32_t iSum;
-  for (y = 0; y < kiHeight; y++) {
-    pRef = pRefPicture  + kiRefStride * y;
-    pBuffer  = pFeatureOfBlock + kiWidth * y;
-    for (x = 0; x < kiWidth; x++) {
-      iSum = SumOf8x8SingleBlock_c (pRef + x, kiRefStride);
+                               uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[])
+{
+    int32_t x, y;
+    uint8_t* pRef;
+    uint16_t* pBuffer;
+    int32_t iSum;
+    for (y = 0; y < kiHeight; y++)
+    {
+        pRef = pRefPicture  + kiRefStride * y;
+        pBuffer  = pFeatureOfBlock + kiWidth * y;
+        for (x = 0; x < kiWidth; x++)
+        {
+            iSum = SumOf8x8SingleBlock_c (pRef + x, kiRefStride);
 
-      pBuffer[x] = iSum;
-      pTimesOfFeatureValue[iSum]++;
+            pBuffer[x] = iSum;
+            pTimesOfFeatureValue[iSum]++;
+        }
     }
-  }
 }
 
 void SumOf16x16BlockOfFrame_ref (uint8_t* pRefPicture, const int32_t kiWidth, const int32_t kiHeight,
                                  const int32_t kiRefStride,
-                                 uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[]) {
-  //TODO: this is similar to SumOf8x8BlockOfFrame_c expect the calling of single block func, refactor-able?
-  int32_t x, y;
-  uint8_t* pRef;
-  uint16_t* pBuffer;
-  int32_t iSum;
-  for (y = 0; y < kiHeight; y++) {
-    pRef = pRefPicture  + kiRefStride * y;
-    pBuffer  = pFeatureOfBlock + kiWidth * y;
-    for (x = 0; x < kiWidth; x++) {
-      iSum = SumOf16x16SingleBlock_c (pRef + x, kiRefStride);
+                                 uint16_t* pFeatureOfBlock, uint32_t pTimesOfFeatureValue[])
+{
+    //TODO: this is similar to SumOf8x8BlockOfFrame_c expect the calling of single block func, refactor-able?
+    int32_t x, y;
+    uint8_t* pRef;
+    uint16_t* pBuffer;
+    int32_t iSum;
+    for (y = 0; y < kiHeight; y++)
+    {
+        pRef = pRefPicture  + kiRefStride * y;
+        pBuffer  = pFeatureOfBlock + kiWidth * y;
+        for (x = 0; x < kiWidth; x++)
+        {
+            iSum = SumOf16x16SingleBlock_c (pRef + x, kiRefStride);
 
-      pBuffer[x] = iSum;
-      pTimesOfFeatureValue[iSum]++;
+            pBuffer[x] = iSum;
+            pTimesOfFeatureValue[iSum]++;
+        }
     }
-  }
 }
 
 
 void InitializeHashforFeature_ref (uint32_t* pTimesOfFeatureValue, uint16_t* pBuf, const int32_t kiListSize,
-                                   uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList) {
-  //assign location pointer
-  uint16_t* pBufPos  = pBuf;
-  for (int32_t i = 0 ; i < kiListSize; ++i) {
-    pLocationOfFeature[i] =
-      pFeatureValuePointerList[i] = pBufPos;
-    pBufPos      += (pTimesOfFeatureValue[i] << 1);
-  }
+                                   uint16_t** pLocationOfFeature, uint16_t** pFeatureValuePointerList)
+{
+    //assign location pointer
+    uint16_t* pBufPos  = pBuf;
+    for (int32_t i = 0 ; i < kiListSize; ++i)
+    {
+        pLocationOfFeature[i] =
+            pFeatureValuePointerList[i] = pBufPos;
+        pBufPos      += (pTimesOfFeatureValue[i] << 1);
+    }
 }
 void FillQpelLocationByFeatureValue_ref (uint16_t* pFeatureOfBlock, const int32_t kiWidth, const int32_t kiHeight,
-    uint16_t** pFeatureValuePointerList) {
-  //assign each pixel's position
-  uint16_t* pSrcPointer  =  pFeatureOfBlock;
-  int32_t iQpelY = 0;
-  for (int32_t y = 0; y < kiHeight; y++) {
-    for (int32_t x = 0; x < kiWidth; x++) {
-      uint16_t uiFeature = pSrcPointer[x];
-      pFeatureValuePointerList[uiFeature][0] = x << 2;
-      pFeatureValuePointerList[uiFeature][1] = iQpelY;
-      pFeatureValuePointerList[uiFeature] += 2;
+        uint16_t** pFeatureValuePointerList)
+{
+    //assign each pixel's position
+    uint16_t* pSrcPointer  =  pFeatureOfBlock;
+    int32_t iQpelY = 0;
+    for (int32_t y = 0; y < kiHeight; y++)
+    {
+        for (int32_t x = 0; x < kiWidth; x++)
+        {
+            uint16_t uiFeature = pSrcPointer[x];
+            pFeatureValuePointerList[uiFeature][0] = x << 2;
+            pFeatureValuePointerList[uiFeature][1] = iQpelY;
+            pFeatureValuePointerList[uiFeature] += 2;
+        }
+        iQpelY += 4;
+        pSrcPointer += kiWidth;
     }
-    iQpelY += 4;
-    pSrcPointer += kiWidth;
-  }
 }
 
 #define GENERATE_SumOfSingleBlock(anchor, method, flag) \
@@ -260,10 +277,10 @@ GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref, Fil
 #ifdef X86_ASM
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_sse2, 10, 10, WELS_CPU_SSE2)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref, FillQpelLocationByFeatureValue_sse2, 16,
-    16, WELS_CPU_SSE2)
+        16, WELS_CPU_SSE2)
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_sse2, 640, 320, WELS_CPU_SSE2)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref, FillQpelLocationByFeatureValue_sse2, 640,
-    320, WELS_CPU_SSE2)
+        320, WELS_CPU_SSE2)
 #endif
 
 GENERATE_SumOfFrame (SumOf8x8BlockOfFrame_ref, SumOf8x8BlockOfFrame_c, 1, 1, 0)
@@ -298,10 +315,10 @@ GENERATE_SumOfFrame (SumOf8x8BlockOfFrame_ref, SumOf8x8BlockOfFrame_neon, 640, 3
 GENERATE_SumOfFrame (SumOf16x16BlockOfFrame_ref, SumOf16x16BlockOfFrame_neon, 640, 320, WELS_CPU_NEON)
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_neon, 10, 10, WELS_CPU_NEON)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref, FillQpelLocationByFeatureValue_neon, 16,
-    16, WELS_CPU_NEON)
+        16, WELS_CPU_NEON)
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_neon, 640, 320, WELS_CPU_NEON)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref, FillQpelLocationByFeatureValue_neon, 640,
-    320, WELS_CPU_NEON)
+        320, WELS_CPU_NEON)
 #endif
 
 #ifdef HAVE_NEON_AARCH64
@@ -312,11 +329,11 @@ GENERATE_SumOfFrame (SumOf16x16BlockOfFrame_ref, SumOf16x16BlockOfFrame_AArch64_
 GENERATE_SumOfFrame (SumOf8x8BlockOfFrame_ref, SumOf8x8BlockOfFrame_AArch64_neon, 640, 320, WELS_CPU_NEON)
 GENERATE_SumOfFrame (SumOf16x16BlockOfFrame_ref, SumOf16x16BlockOfFrame_AArch64_neon, 640, 320, WELS_CPU_NEON)
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_AArch64_neon, 10, 10,
-    WELS_CPU_NEON)
+                                   WELS_CPU_NEON)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref,
-    FillQpelLocationByFeatureValue_AArch64_neon, 16, 16, WELS_CPU_NEON)
+        FillQpelLocationByFeatureValue_AArch64_neon, 16, 16, WELS_CPU_NEON)
 GENERATE_InitializeHashforFeature (InitializeHashforFeature_ref, InitializeHashforFeature_AArch64_neon, 640, 320,
-    WELS_CPU_NEON)
+                                   WELS_CPU_NEON)
 GENERATE_FillQpelLocationByFeatureValue (FillQpelLocationByFeatureValue_ref,
-    FillQpelLocationByFeatureValue_AArch64_neon, 640, 320, WELS_CPU_NEON)
+        FillQpelLocationByFeatureValue_AArch64_neon, 640, 320, WELS_CPU_NEON)
 #endif

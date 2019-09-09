@@ -41,53 +41,55 @@
 
 int test_overflow(void)
 {
-  OpusDecoder *decoder;
-  int result;
-  int error;
+    OpusDecoder *decoder;
+    int result;
+    int error;
 
-  unsigned char *in = malloc(PACKETSIZE);
-  opus_int16 *out = malloc(FRAMESIZE*CHANNELS*sizeof(*out));
+    unsigned char *in = malloc(PACKETSIZE);
+    opus_int16 *out = malloc(FRAMESIZE*CHANNELS*sizeof(*out));
 
-  fprintf(stderr, "  Checking for padding overflow... ");
-  if (!in || !out) {
-    fprintf(stderr, "FAIL (out of memory)\n");
-    return -1;
-  }
-  in[0] = 0xff;
-  in[1] = 0x41;
-  memset(in + 2, 0xff, PACKETSIZE - 3);
-  in[PACKETSIZE-1] = 0x0b;
+    fprintf(stderr, "  Checking for padding overflow... ");
+    if (!in || !out)
+    {
+        fprintf(stderr, "FAIL (out of memory)\n");
+        return -1;
+    }
+    in[0] = 0xff;
+    in[1] = 0x41;
+    memset(in + 2, 0xff, PACKETSIZE - 3);
+    in[PACKETSIZE-1] = 0x0b;
 
-  decoder = opus_decoder_create(48000, CHANNELS, &error);
-  result = opus_decode(decoder, in, PACKETSIZE, out, FRAMESIZE, 0);
-  opus_decoder_destroy(decoder);
+    decoder = opus_decoder_create(48000, CHANNELS, &error);
+    result = opus_decode(decoder, in, PACKETSIZE, out, FRAMESIZE, 0);
+    opus_decoder_destroy(decoder);
 
-  free(in);
-  free(out);
+    free(in);
+    free(out);
 
-  if (result != OPUS_INVALID_PACKET) {
-    fprintf(stderr, "FAIL!\n");
-    test_failed();
-  }
+    if (result != OPUS_INVALID_PACKET)
+    {
+        fprintf(stderr, "FAIL!\n");
+        test_failed();
+    }
 
-  fprintf(stderr, "OK.\n");
+    fprintf(stderr, "OK.\n");
 
-  return 1;
+    return 1;
 }
 
 int main(void)
 {
-  const char *oversion;
-  int tests = 0;;
+    const char *oversion;
+    int tests = 0;;
 
-  iseed = 0;
-  oversion = opus_get_version_string();
-  if (!oversion) test_failed();
-  fprintf(stderr, "Testing %s padding.\n", oversion);
+    iseed = 0;
+    oversion = opus_get_version_string();
+    if (!oversion) test_failed();
+    fprintf(stderr, "Testing %s padding.\n", oversion);
 
-  tests += test_overflow();
+    tests += test_overflow();
 
-  fprintf(stderr, "All padding tests passed.\n");
+    fprintf(stderr, "All padding tests passed.\n");
 
-  return 0;
+    return 0;
 }

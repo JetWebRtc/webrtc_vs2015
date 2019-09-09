@@ -33,7 +33,8 @@
 #include "libavutil/pixdesc.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     AVExpr *e[4];               ///< expressions for each plane
     char *expr_str[4+3];        ///< expression strings for each plane
@@ -48,7 +49,8 @@ enum { Y = 0, U, V, A, G, B, R };
 #define OFFSET(x) offsetof(GEQContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption geq_options[] = {
+static const AVOption geq_options[] =
+{
     { "lum_expr",   "set luminance expression",   OFFSET(expr_str[Y]), AV_OPT_TYPE_STRING, {.str=NULL}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "lum",        "set luminance expression",   OFFSET(expr_str[Y]), AV_OPT_TYPE_STRING, {.str=NULL}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "cb_expr",    "set chroma blue expression", OFFSET(expr_str[U]), AV_OPT_TYPE_STRING, {.str=NULL}, CHAR_MIN, CHAR_MAX, FLAGS },
@@ -88,15 +90,27 @@ static inline double getpix(void *priv, double x, double y, int plane)
     y -= yi;
 
     return (1-y)*((1-x)*src[xi +  yi    * linesize] + x*src[xi + 1 +  yi    * linesize])
-          +   y *((1-x)*src[xi + (yi+1) * linesize] + x*src[xi + 1 + (yi+1) * linesize]);
+           +   y *((1-x)*src[xi + (yi+1) * linesize] + x*src[xi + 1 + (yi+1) * linesize]);
 }
 
 //TODO: cubic interpolate
 //TODO: keep the last few frames
-static double lum(void *priv, double x, double y) { return getpix(priv, x, y, 0); }
-static double  cb(void *priv, double x, double y) { return getpix(priv, x, y, 1); }
-static double  cr(void *priv, double x, double y) { return getpix(priv, x, y, 2); }
-static double alpha(void *priv, double x, double y) { return getpix(priv, x, y, 3); }
+static double lum(void *priv, double x, double y)
+{
+    return getpix(priv, x, y, 0);
+}
+static double  cb(void *priv, double x, double y)
+{
+    return getpix(priv, x, y, 1);
+}
+static double  cr(void *priv, double x, double y)
+{
+    return getpix(priv, x, y, 2);
+}
+static double alpha(void *priv, double x, double y)
+{
+    return getpix(priv, x, y, 3);
+}
 
 static const char *const var_names[] = {   "X",   "Y",   "W",   "H",   "N",   "SW",   "SH",   "T",        NULL };
 enum                                   { VAR_X, VAR_Y, VAR_W, VAR_H, VAR_N, VAR_SW, VAR_SH, VAR_T, VAR_VARS_NB };
@@ -106,24 +120,29 @@ static av_cold int geq_init(AVFilterContext *ctx)
     GEQContext *geq = ctx->priv;
     int plane, ret = 0;
 
-    if (!geq->expr_str[Y] && !geq->expr_str[G] && !geq->expr_str[B] && !geq->expr_str[R]) {
+    if (!geq->expr_str[Y] && !geq->expr_str[G] && !geq->expr_str[B] && !geq->expr_str[R])
+    {
         av_log(ctx, AV_LOG_ERROR, "A luminance or RGB expression is mandatory\n");
         ret = AVERROR(EINVAL);
         goto end;
     }
     geq->is_rgb = !geq->expr_str[Y];
 
-    if ((geq->expr_str[Y] || geq->expr_str[U] || geq->expr_str[V]) && (geq->expr_str[G] || geq->expr_str[B] || geq->expr_str[R])) {
+    if ((geq->expr_str[Y] || geq->expr_str[U] || geq->expr_str[V]) && (geq->expr_str[G] || geq->expr_str[B] || geq->expr_str[R]))
+    {
         av_log(ctx, AV_LOG_ERROR, "Either YCbCr or RGB but not both must be specified\n");
         ret = AVERROR(EINVAL);
         goto end;
     }
 
-    if (!geq->expr_str[U] && !geq->expr_str[V]) {
+    if (!geq->expr_str[U] && !geq->expr_str[V])
+    {
         /* No chroma at all: fallback on luma */
         geq->expr_str[U] = av_strdup(geq->expr_str[Y]);
         geq->expr_str[V] = av_strdup(geq->expr_str[Y]);
-    } else {
+    }
+    else
+    {
         /* One chroma unspecified, fallback on the other */
         if (!geq->expr_str[U]) geq->expr_str[U] = av_strdup(geq->expr_str[V]);
         if (!geq->expr_str[V]) geq->expr_str[V] = av_strdup(geq->expr_str[U]);
@@ -140,13 +159,15 @@ static av_cold int geq_init(AVFilterContext *ctx)
 
     if (geq->is_rgb ?
             (!geq->expr_str[G] || !geq->expr_str[B] || !geq->expr_str[R])
-                    :
-            (!geq->expr_str[U] || !geq->expr_str[V] || !geq->expr_str[A])) {
+            :
+            (!geq->expr_str[U] || !geq->expr_str[V] || !geq->expr_str[A]))
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
-    for (plane = 0; plane < 4; plane++) {
+    for (plane = 0; plane < 4; plane++)
+    {
         static double (*p[])(void *, double, double) = { lum, cb, cr, alpha };
         static const char *const func2_yuv_names[]    = { "lum", "cb", "cr", "alpha", "p", NULL };
         static const char *const func2_rgb_names[]    = { "g", "b", "r", "alpha", "p", NULL };
@@ -166,22 +187,26 @@ end:
 static int geq_query_formats(AVFilterContext *ctx)
 {
     GEQContext *geq = ctx->priv;
-    static const enum AVPixelFormat yuv_pix_fmts[] = {
+    static const enum AVPixelFormat yuv_pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUV440P,
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_NONE
     };
-    static const enum AVPixelFormat rgb_pix_fmts[] = {
+    static const enum AVPixelFormat rgb_pix_fmts[] =
+    {
         AV_PIX_FMT_GBRP, AV_PIX_FMT_GBRAP,
         AV_PIX_FMT_NONE
     };
     AVFilterFormats *fmts_list;
 
-    if (geq->is_rgb) {
+    if (geq->is_rgb)
+    {
         fmts_list = ff_make_format_list(rgb_pix_fmts);
-    } else
+    }
+    else
         fmts_list = ff_make_format_list(yuv_pix_fmts);
     if (!fmts_list)
         return AVERROR(ENOMEM);
@@ -207,20 +232,23 @@ static int geq_filter_frame(AVFilterLink *inlink, AVFrame *in)
     GEQContext *geq = inlink->dst->priv;
     AVFilterLink *outlink = inlink->dst->outputs[0];
     AVFrame *out;
-    double values[VAR_VARS_NB] = {
+    double values[VAR_VARS_NB] =
+    {
         [VAR_N] = inlink->frame_count,
         [VAR_T] = in->pts == AV_NOPTS_VALUE ? NAN : in->pts * av_q2d(inlink->time_base),
     };
 
     geq->picref = in;
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    for (plane = 0; plane < geq->planes && out->data[plane]; plane++) {
+    for (plane = 0; plane < geq->planes && out->data[plane]; plane++)
+    {
         int x, y;
         uint8_t *dst = out->data[plane];
         const int linesize = out->linesize[plane];
@@ -232,9 +260,11 @@ static int geq_filter_frame(AVFilterLink *inlink, AVFrame *in)
         values[VAR_SW] = w / (double)inlink->w;
         values[VAR_SH] = h / (double)inlink->h;
 
-        for (y = 0; y < h; y++) {
+        for (y = 0; y < h; y++)
+        {
             values[VAR_Y] = y;
-            for (x = 0; x < w; x++) {
+            for (x = 0; x < w; x++)
+            {
                 values[VAR_X] = x;
                 dst[x] = av_expr_eval(geq->e[plane], values, geq);
             }
@@ -255,7 +285,8 @@ static av_cold void geq_uninit(AVFilterContext *ctx)
         av_expr_free(geq->e[i]);
 }
 
-static const AVFilterPad geq_inputs[] = {
+static const AVFilterPad geq_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -265,7 +296,8 @@ static const AVFilterPad geq_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad geq_outputs[] = {
+static const AVFilterPad geq_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -273,7 +305,8 @@ static const AVFilterPad geq_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_geq = {
+AVFilter ff_vf_geq =
+{
     .name          = "geq",
     .description   = NULL_IF_CONFIG_SMALL("Apply generic equation to each pixel."),
     .priv_size     = sizeof(GEQContext),

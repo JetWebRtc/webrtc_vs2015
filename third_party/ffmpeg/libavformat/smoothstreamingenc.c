@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Live smooth streaming fragmenter
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -38,7 +38,8 @@
 #include "libavutil/mathematics.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct Fragment {
+typedef struct Fragment
+{
     char file[1024];
     char infofile[1024];
     int64_t start_time, duration;
@@ -46,7 +47,8 @@ typedef struct Fragment {
     int64_t start_pos, size;
 } Fragment;
 
-typedef struct OutputStream {
+typedef struct OutputStream
+{
     AVFormatContext *ctx;
     int ctx_inited;
     char dirname[1024];
@@ -66,7 +68,8 @@ typedef struct OutputStream {
     int audio_tag;
 } OutputStream;
 
-typedef struct SmoothStreamingContext {
+typedef struct SmoothStreamingContext
+{
     const AVClass *class;  /* Class for private options. */
     int window_size;
     int extra_window_size;
@@ -97,33 +100,40 @@ static int64_t ism_seek(void *opaque, int64_t offset, int whence)
     int i;
     if (whence != SEEK_SET)
         return AVERROR(ENOSYS);
-    if (os->tail_out) {
-        if (os->out) {
+    if (os->tail_out)
+    {
+        if (os->out)
+        {
             ffurl_close(os->out);
         }
-        if (os->out2) {
+        if (os->out2)
+        {
             ffurl_close(os->out2);
         }
         os->out = os->tail_out;
         os->out2 = NULL;
         os->tail_out = NULL;
     }
-    if (offset >= os->cur_start_pos) {
+    if (offset >= os->cur_start_pos)
+    {
         if (os->out)
             ffurl_seek(os->out, offset - os->cur_start_pos, SEEK_SET);
         os->cur_pos = offset;
         return offset;
     }
-    for (i = os->nb_fragments - 1; i >= 0; i--) {
+    for (i = os->nb_fragments - 1; i >= 0; i--)
+    {
         Fragment *frag = os->fragments[i];
-        if (offset >= frag->start_pos && offset < frag->start_pos + frag->size) {
+        if (offset >= frag->start_pos && offset < frag->start_pos + frag->size)
+        {
             int ret;
             AVDictionary *opts = NULL;
             os->tail_out = os->out;
             av_dict_set(&opts, "truncate", "0", 0);
             ret = ffurl_open(&os->out, frag->file, AVIO_FLAG_READ_WRITE, &os->ctx->interrupt_callback, &opts);
             av_dict_free(&opts);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 os->out = os->tail_out;
                 os->tail_out = NULL;
                 return ret;
@@ -147,7 +157,8 @@ static void get_private_data(OutputStream *os)
     uint8_t *ptr = codec->extradata;
     int size = codec->extradata_size;
     int i;
-    if (codec->codec_id == AV_CODEC_ID_H264) {
+    if (codec->codec_id == AV_CODEC_ID_H264)
+    {
         ff_avc_write_annexb_extradata(ptr, &ptr, &size);
         if (!ptr)
             ptr = codec->extradata;
@@ -170,7 +181,8 @@ static void ism_free(AVFormatContext *s)
     int i, j;
     if (!c->streams)
         return;
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         ffurl_close(os->out);
         ffurl_close(os->out2);
@@ -201,7 +213,8 @@ static void output_chunk_list(OutputStream *os, AVIOContext *out, int final, int
         skip = 0;
     if (window_size)
         start = FFMAX(os->nb_fragments - skip - window_size, 0);
-    for (i = start; i < os->nb_fragments - skip; i++) {
+    for (i = start; i < os->nb_fragments - skip; i++)
+    {
         Fragment *frag = os->fragments[i];
         if (!final || removed)
             avio_printf(out, "<c t=\"%"PRIu64"\" d=\"%"PRIu64"\" />\n", frag->start_time, frag->duration);
@@ -221,30 +234,38 @@ static int write_manifest(AVFormatContext *s, int final)
     snprintf(filename, sizeof(filename), "%s/Manifest", s->filename);
     snprintf(temp_filename, sizeof(temp_filename), "%s/Manifest.tmp", s->filename);
     ret = avio_open2(&out, temp_filename, AVIO_FLAG_WRITE, &s->interrupt_callback, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Unable to open %s for writing\n", temp_filename);
         return ret;
     }
     avio_printf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
-        if (os->nb_fragments > 0) {
+        if (os->nb_fragments > 0)
+        {
             Fragment *last = os->fragments[os->nb_fragments - 1];
             duration = last->start_time + last->duration;
         }
-        if (s->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (s->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
             video_chunks = os->nb_fragments;
             video_streams++;
-        } else {
+        }
+        else
+        {
             audio_chunks = os->nb_fragments;
             audio_streams++;
         }
     }
-    if (!final) {
+    if (!final)
+    {
         duration = 0;
         video_chunks = audio_chunks = 0;
     }
-    if (c->window_size) {
+    if (c->window_size)
+    {
         video_chunks = FFMIN(video_chunks, c->window_size);
         audio_chunks = FFMIN(audio_chunks, c->window_size);
     }
@@ -252,10 +273,12 @@ static int write_manifest(AVFormatContext *s, int final)
     if (!final)
         avio_printf(out, " IsLive=\"true\" LookAheadFragmentCount=\"%d\" DVRWindowLength=\"0\"", c->lookahead_count);
     avio_printf(out, ">\n");
-    if (c->has_video) {
+    if (c->has_video)
+    {
         int last = -1, index = 0;
         avio_printf(out, "<StreamIndex Type=\"video\" QualityLevels=\"%d\" Chunks=\"%d\" Url=\"QualityLevels({bitrate})/Fragments(video={start time})\">\n", video_streams, video_chunks);
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             OutputStream *os = &c->streams[i];
             if (s->streams[i]->codec->codec_type != AVMEDIA_TYPE_VIDEO)
                 continue;
@@ -266,10 +289,12 @@ static int write_manifest(AVFormatContext *s, int final)
         output_chunk_list(&c->streams[last], out, final, c->lookahead_count, c->window_size);
         avio_printf(out, "</StreamIndex>\n");
     }
-    if (c->has_audio) {
+    if (c->has_audio)
+    {
         int last = -1, index = 0;
         avio_printf(out, "<StreamIndex Type=\"audio\" QualityLevels=\"%d\" Chunks=\"%d\" Url=\"QualityLevels({bitrate})/Fragments(audio={start time})\">\n", audio_streams, audio_chunks);
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             OutputStream *os = &c->streams[i];
             if (s->streams[i]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
                 continue;
@@ -292,44 +317,51 @@ static int ism_write_header(AVFormatContext *s)
     int ret = 0, i;
     AVOutputFormat *oformat;
 
-    if (mkdir(s->filename, 0777) == -1 && errno != EEXIST) {
+    if (mkdir(s->filename, 0777) == -1 && errno != EEXIST)
+    {
         ret = AVERROR(errno);
         av_log(s, AV_LOG_ERROR, "mkdir failed\n");
         goto fail;
     }
 
     oformat = av_guess_format("ismv", NULL, NULL);
-    if (!oformat) {
+    if (!oformat)
+    {
         ret = AVERROR_MUXER_NOT_FOUND;
         goto fail;
     }
 
     c->streams = av_mallocz_array(s->nb_streams, sizeof(*c->streams));
-    if (!c->streams) {
+    if (!c->streams)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         AVFormatContext *ctx;
         AVStream *st;
         AVDictionary *opts = NULL;
 
-        if (!s->streams[i]->codec->bit_rate) {
+        if (!s->streams[i]->codec->bit_rate)
+        {
             av_log(s, AV_LOG_ERROR, "No bit rate set for stream %d\n", i);
             ret = AVERROR(EINVAL);
             goto fail;
         }
         snprintf(os->dirname, sizeof(os->dirname), "%s/QualityLevels(%d)", s->filename, s->streams[i]->codec->bit_rate);
-        if (mkdir(os->dirname, 0777) == -1 && errno != EEXIST) {
+        if (mkdir(os->dirname, 0777) == -1 && errno != EEXIST)
+        {
             ret = AVERROR(errno);
             av_log(s, AV_LOG_ERROR, "mkdir failed\n");
             goto fail;
         }
 
         ctx = avformat_alloc_context();
-        if (!ctx) {
+        if (!ctx)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -337,7 +369,8 @@ static int ism_write_header(AVFormatContext *s)
         ctx->oformat = oformat;
         ctx->interrupt_callback = s->interrupt_callback;
 
-        if (!(st = avformat_new_stream(ctx, NULL))) {
+        if (!(st = avformat_new_stream(ctx, NULL)))
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -346,42 +379,57 @@ static int ism_write_header(AVFormatContext *s)
         st->time_base = s->streams[i]->time_base;
 
         ctx->pb = avio_alloc_context(os->iobuf, sizeof(os->iobuf), AVIO_FLAG_WRITE, os, NULL, ism_write, ism_seek);
-        if (!ctx->pb) {
+        if (!ctx->pb)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
 
         av_dict_set_int(&opts, "ism_lookahead", c->lookahead_count, 0);
         av_dict_set(&opts, "movflags", "frag_custom", 0);
-        if ((ret = avformat_write_header(ctx, &opts)) < 0) {
-             goto fail;
+        if ((ret = avformat_write_header(ctx, &opts)) < 0)
+        {
+            goto fail;
         }
         os->ctx_inited = 1;
         avio_flush(ctx->pb);
         av_dict_free(&opts);
         s->streams[i]->time_base = st->time_base;
-        if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
             c->has_video = 1;
             os->stream_type_tag = "video";
-            if (st->codec->codec_id == AV_CODEC_ID_H264) {
+            if (st->codec->codec_id == AV_CODEC_ID_H264)
+            {
                 os->fourcc = "H264";
-            } else if (st->codec->codec_id == AV_CODEC_ID_VC1) {
+            }
+            else if (st->codec->codec_id == AV_CODEC_ID_VC1)
+            {
                 os->fourcc = "WVC1";
-            } else {
+            }
+            else
+            {
                 av_log(s, AV_LOG_ERROR, "Unsupported video codec\n");
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
-        } else {
+        }
+        else
+        {
             c->has_audio = 1;
             os->stream_type_tag = "audio";
-            if (st->codec->codec_id == AV_CODEC_ID_AAC) {
+            if (st->codec->codec_id == AV_CODEC_ID_AAC)
+            {
                 os->fourcc = "AACL";
                 os->audio_tag = 0xff;
-            } else if (st->codec->codec_id == AV_CODEC_ID_WMAPRO) {
+            }
+            else if (st->codec->codec_id == AV_CODEC_ID_WMAPRO)
+            {
                 os->fourcc = "WMAP";
                 os->audio_tag = 0x0162;
-            } else {
+            }
+            else
+            {
                 av_log(s, AV_LOG_ERROR, "Unsupported audio codec\n");
                 ret = AVERROR(EINVAL);
                 goto fail;
@@ -391,7 +439,8 @@ static int ism_write_header(AVFormatContext *s)
         get_private_data(os);
     }
 
-    if (!c->has_video && c->min_frag_duration <= 0) {
+    if (!c->has_video && c->min_frag_duration <= 0)
+    {
         av_log(s, AV_LOG_WARNING, "no video stream and no min frag duration set\n");
         ret = AVERROR(EINVAL);
         goto fail;
@@ -426,20 +475,24 @@ static int parse_fragment(AVFormatContext *s, const char *filename, int64_t *sta
     avio_rb32(in); /* traf size */
     if (avio_rl32(in) != MKTAG('t','r','a','f'))
         goto fail;
-    while (avio_tell(in) < *moof_size) {
+    while (avio_tell(in) < *moof_size)
+    {
         uint32_t len = avio_rb32(in);
         uint32_t tag = avio_rl32(in);
         int64_t end = avio_tell(in) + len - 8;
         if (len < 8 || len >= *moof_size)
             goto fail;
-        if (tag == MKTAG('u','u','i','d')) {
-            static const uint8_t tfxd[] = {
+        if (tag == MKTAG('u','u','i','d'))
+        {
+            static const uint8_t tfxd[] =
+            {
                 0x6d, 0x1d, 0x9b, 0x05, 0x42, 0xd5, 0x44, 0xe6,
                 0x80, 0xe2, 0x14, 0x1d, 0xaf, 0xf7, 0x57, 0xb2
             };
             uint8_t uuid[16];
             avio_read(in, uuid, 16);
-            if (!memcmp(uuid, tfxd, 16) && len >= 8 + 16 + 4 + 16) {
+            if (!memcmp(uuid, tfxd, 16) && len >= 8 + 16 + 4 + 16)
+            {
                 avio_seek(in, 4, SEEK_CUR);
                 *start_ts = avio_rb64(in);
                 *duration = avio_rb64(in);
@@ -458,10 +511,12 @@ static int add_fragment(OutputStream *os, const char *file, const char *infofile
 {
     int err;
     Fragment *frag;
-    if (os->nb_fragments >= os->fragments_size) {
+    if (os->nb_fragments >= os->fragments_size)
+    {
         os->fragments_size = (os->fragments_size + 1) * 2;
         if ((err = av_reallocp(&os->fragments, sizeof(*os->fragments) *
-                               os->fragments_size)) < 0) {
+                               os->fragments_size)) < 0)
+        {
             os->fragments_size = 0;
             os->nb_fragments = 0;
             return err;
@@ -488,15 +543,18 @@ static int copy_moof(AVFormatContext *s, const char* infile, const char *outfile
     int ret = 0;
     if ((ret = avio_open2(&in, infile, AVIO_FLAG_READ, &s->interrupt_callback, NULL)) < 0)
         return ret;
-    if ((ret = avio_open2(&out, outfile, AVIO_FLAG_WRITE, &s->interrupt_callback, NULL)) < 0) {
+    if ((ret = avio_open2(&out, outfile, AVIO_FLAG_WRITE, &s->interrupt_callback, NULL)) < 0)
+    {
         avio_close(in);
         return ret;
     }
-    while (size > 0) {
+    while (size > 0)
+    {
         uint8_t buf[8192];
         int n = FFMIN(size, sizeof(buf));
         n = avio_read(in, buf, n);
-        if (n <= 0) {
+        if (n <= 0)
+        {
             ret = AVERROR(EIO);
             break;
         }
@@ -514,7 +572,8 @@ static int ism_flush(AVFormatContext *s, int final)
     SmoothStreamingContext *c = s->priv_data;
     int i, ret = 0;
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         char filename[1024], target_filename[1024], header_filename[1024];
         int64_t size;
@@ -548,15 +607,19 @@ static int ism_flush(AVFormatContext *s, int final)
                      os->cur_start_pos, size);
     }
 
-    if (c->window_size || (final && c->remove_at_exit)) {
-        for (i = 0; i < s->nb_streams; i++) {
+    if (c->window_size || (final && c->remove_at_exit))
+    {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             OutputStream *os = &c->streams[i];
             int j;
             int remove = os->nb_fragments - c->window_size - c->extra_window_size - c->lookahead_count;
             if (final && c->remove_at_exit)
                 remove = os->nb_fragments;
-            if (remove > 0) {
-                for (j = 0; j < remove; j++) {
+            if (remove > 0)
+            {
+                for (j = 0; j < remove; j++)
+                {
                     unlink(os->fragments[j]->file);
                     unlink(os->fragments[j]->infofile);
                     av_freep(&os->fragments[j]);
@@ -586,9 +649,10 @@ static int ism_write_packet(AVFormatContext *s, AVPacket *pkt)
         st->first_dts = pkt->dts;
 
     if ((!c->has_video || st->codec->codec_type == AVMEDIA_TYPE_VIDEO) &&
-        av_compare_ts(pkt->dts - st->first_dts, st->time_base,
-                      end_dts, AV_TIME_BASE_Q) >= 0 &&
-        pkt->flags & AV_PKT_FLAG_KEY && os->packets_written) {
+            av_compare_ts(pkt->dts - st->first_dts, st->time_base,
+                          end_dts, AV_TIME_BASE_Q) >= 0 &&
+            pkt->flags & AV_PKT_FLAG_KEY && os->packets_written)
+    {
 
         if ((ret = ism_flush(s, 0)) < 0)
             return ret;
@@ -604,7 +668,8 @@ static int ism_write_trailer(AVFormatContext *s)
     SmoothStreamingContext *c = s->priv_data;
     ism_flush(s, 1);
 
-    if (c->remove_at_exit) {
+    if (c->remove_at_exit)
+    {
         char filename[1024];
         snprintf(filename, sizeof(filename), "%s/Manifest", s->filename);
         unlink(filename);
@@ -617,7 +682,8 @@ static int ism_write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(SmoothStreamingContext, x)
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "window_size", "number of fragments kept in the manifest", OFFSET(window_size), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, E },
     { "extra_window_size", "number of fragments kept outside of the manifest before removing from disk", OFFSET(extra_window_size), AV_OPT_TYPE_INT, { .i64 = 5 }, 0, INT_MAX, E },
     { "lookahead_count", "number of lookahead fragments", OFFSET(lookahead_count), AV_OPT_TYPE_INT, { .i64 = 2 }, 0, INT_MAX, E },
@@ -626,7 +692,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass ism_class = {
+static const AVClass ism_class =
+{
     .class_name = "smooth streaming muxer",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -634,7 +701,8 @@ static const AVClass ism_class = {
 };
 
 
-AVOutputFormat ff_smoothstreaming_muxer = {
+AVOutputFormat ff_smoothstreaming_muxer =
+{
     .name           = "smoothstreaming",
     .long_name      = NULL_IF_CONFIG_SMALL("Smooth Streaming Muxer"),
     .priv_data_size = sizeof(SmoothStreamingContext),

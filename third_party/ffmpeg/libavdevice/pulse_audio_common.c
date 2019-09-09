@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Pulseaudio common
  * Copyright (c) 2014 Lukasz Marek
  * Copyright (c) 2011 Luca Barbato <lu_zero@gentoo.org>
@@ -28,29 +28,44 @@
 
 pa_sample_format_t av_cold ff_codec_id_to_pulse_format(enum AVCodecID codec_id)
 {
-    switch (codec_id) {
-    case AV_CODEC_ID_PCM_U8:    return PA_SAMPLE_U8;
-    case AV_CODEC_ID_PCM_ALAW:  return PA_SAMPLE_ALAW;
-    case AV_CODEC_ID_PCM_MULAW: return PA_SAMPLE_ULAW;
-    case AV_CODEC_ID_PCM_S16LE: return PA_SAMPLE_S16LE;
-    case AV_CODEC_ID_PCM_S16BE: return PA_SAMPLE_S16BE;
-    case AV_CODEC_ID_PCM_F32LE: return PA_SAMPLE_FLOAT32LE;
-    case AV_CODEC_ID_PCM_F32BE: return PA_SAMPLE_FLOAT32BE;
-    case AV_CODEC_ID_PCM_S32LE: return PA_SAMPLE_S32LE;
-    case AV_CODEC_ID_PCM_S32BE: return PA_SAMPLE_S32BE;
-    case AV_CODEC_ID_PCM_S24LE: return PA_SAMPLE_S24LE;
-    case AV_CODEC_ID_PCM_S24BE: return PA_SAMPLE_S24BE;
-    default:                    return PA_SAMPLE_INVALID;
+    switch (codec_id)
+    {
+    case AV_CODEC_ID_PCM_U8:
+        return PA_SAMPLE_U8;
+    case AV_CODEC_ID_PCM_ALAW:
+        return PA_SAMPLE_ALAW;
+    case AV_CODEC_ID_PCM_MULAW:
+        return PA_SAMPLE_ULAW;
+    case AV_CODEC_ID_PCM_S16LE:
+        return PA_SAMPLE_S16LE;
+    case AV_CODEC_ID_PCM_S16BE:
+        return PA_SAMPLE_S16BE;
+    case AV_CODEC_ID_PCM_F32LE:
+        return PA_SAMPLE_FLOAT32LE;
+    case AV_CODEC_ID_PCM_F32BE:
+        return PA_SAMPLE_FLOAT32BE;
+    case AV_CODEC_ID_PCM_S32LE:
+        return PA_SAMPLE_S32LE;
+    case AV_CODEC_ID_PCM_S32BE:
+        return PA_SAMPLE_S32BE;
+    case AV_CODEC_ID_PCM_S24LE:
+        return PA_SAMPLE_S24LE;
+    case AV_CODEC_ID_PCM_S24BE:
+        return PA_SAMPLE_S24BE;
+    default:
+        return PA_SAMPLE_INVALID;
     }
 }
 
-enum PulseAudioContextState {
+enum PulseAudioContextState
+{
     PULSE_CONTEXT_INITIALIZING,
     PULSE_CONTEXT_READY,
     PULSE_CONTEXT_FINISHED
 };
 
-typedef struct PulseAudioDeviceList {
+typedef struct PulseAudioDeviceList
+{
     AVDeviceInfoList *devices;
     int error_code;
     int output;
@@ -61,7 +76,8 @@ static void pa_state_cb(pa_context *c, void *userdata)
 {
     enum PulseAudioContextState *context_state = userdata;
 
-    switch  (pa_context_get_state(c)) {
+    switch  (pa_context_get_state(c))
+    {
     case PA_CONTEXT_FAILED:
     case PA_CONTEXT_TERMINATED:
         *context_state = PULSE_CONTEXT_FINISHED;
@@ -79,7 +95,8 @@ void ff_pulse_audio_disconnect_context(pa_mainloop **pa_ml, pa_context **pa_ctx)
     av_assert0(pa_ml);
     av_assert0(pa_ctx);
 
-    if (*pa_ctx) {
+    if (*pa_ctx)
+    {
         pa_context_set_state_callback(*pa_ctx, NULL, NULL);
         pa_context_disconnect(*pa_ctx);
         pa_context_unref(*pa_ctx);
@@ -105,29 +122,33 @@ int ff_pulse_audio_connect_context(pa_mainloop **pa_ml, pa_context **pa_ctx,
 
     if (!(*pa_ml = pa_mainloop_new()))
         return AVERROR(ENOMEM);
-    if (!(pa_mlapi = pa_mainloop_get_api(*pa_ml))) {
+    if (!(pa_mlapi = pa_mainloop_get_api(*pa_ml)))
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
-    if (!(*pa_ctx = pa_context_new(pa_mlapi, description))) {
+    if (!(*pa_ctx = pa_context_new(pa_mlapi, description)))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
     pa_context_set_state_callback(*pa_ctx, pa_state_cb, &context_state);
-    if (pa_context_connect(*pa_ctx, server, 0, NULL) < 0) {
+    if (pa_context_connect(*pa_ctx, server, 0, NULL) < 0)
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
 
     while (context_state == PULSE_CONTEXT_INITIALIZING)
         pa_mainloop_iterate(*pa_ml, 1, NULL);
-    if (context_state == PULSE_CONTEXT_FINISHED) {
+    if (context_state == PULSE_CONTEXT_FINISHED)
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
     return 0;
 
-  fail:
+fail:
     ff_pulse_audio_disconnect_context(pa_ml, pa_ctx);
     return ret;
 }
@@ -142,7 +163,8 @@ static void pulse_add_detected_device(PulseAudioDeviceList *info,
         return;
 
     new_device = av_mallocz(sizeof(AVDeviceInfo));
-    if (!new_device) {
+    if (!new_device)
+    {
         info->error_code = AVERROR(ENOMEM);
         return;
     }
@@ -150,19 +172,21 @@ static void pulse_add_detected_device(PulseAudioDeviceList *info,
     new_device->device_description = av_strdup(description);
     new_device->device_name = av_strdup(name);
 
-    if (!new_device->device_description || !new_device->device_name) {
+    if (!new_device->device_description || !new_device->device_name)
+    {
         info->error_code = AVERROR(ENOMEM);
         goto fail;
     }
 
     if ((ret = av_dynarray_add_nofree(&info->devices->devices,
-                                      &info->devices->nb_devices, new_device)) < 0) {
+                                      &info->devices->nb_devices, new_device)) < 0)
+    {
         info->error_code = ret;
         goto fail;
     }
     return;
 
-  fail:
+fail:
     av_freep(&new_device->device_description);
     av_freep(&new_device->device_name);
     av_free(new_device);
@@ -170,7 +194,7 @@ static void pulse_add_detected_device(PulseAudioDeviceList *info,
 }
 
 static void pulse_audio_source_device_cb(pa_context *c, const pa_source_info *dev,
-                                         int eol, void *userdata)
+        int eol, void *userdata)
 {
     if (!eol)
         pulse_add_detected_device(userdata, dev->name, dev->description);
@@ -235,14 +259,16 @@ int ff_pulse_audio_get_devices(AVDeviceInfoList *devices, const char *server, in
         goto fail;
 
     devices->default_device = -1;
-    for (i = 0; i < devices->nb_devices; i++) {
-        if (!strcmp(devices->devices[i]->device_name, dev_list.default_device)) {
+    for (i = 0; i < devices->nb_devices; i++)
+    {
+        if (!strcmp(devices->devices[i]->device_name, dev_list.default_device))
+        {
             devices->default_device = i;
             break;
         }
     }
 
-  fail:
+fail:
     av_free(dev_list.default_device);
     ff_pulse_audio_disconnect_context(&pa_ml, &pa_ctx);
     return dev_list.error_code;

@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2008 CSIRO
+﻿/* Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Written by Jean-Marc Valin */
 /**
@@ -52,11 +52,11 @@
  * @ret A mask indicating which blocks in the band received pulses
 */
 unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B,
-      ec_enc *enc
+                   ec_enc *enc
 #ifdef RESYNTH
-      , opus_val16 gain
+                   , opus_val16 gain
 #endif
-      );
+                  );
 
 /** Algebraic pulse decoder
  * @param X Decoded normalised spectrum (returned)
@@ -66,7 +66,7 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B,
  * @ret A mask indicating which blocks in the band received pulses
  */
 unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
-      ec_dec *dec, opus_val16 gain);
+                     ec_dec *dec, opus_val16 gain);
 
 void renormalise_vector(celt_norm *X, int N, opus_val16 gain, int arch);
 

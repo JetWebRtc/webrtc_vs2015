@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bethesda VID video decoder
  * Copyright (C) 2007 Nicholas Tung
  *

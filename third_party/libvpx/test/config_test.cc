@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,49 +13,56 @@
 #include "test/util.h"
 #include "test/video_source.h"
 
-namespace {
+namespace
+{
 
 class ConfigTest
     : public ::libvpx_test::EncoderTest,
-      public ::libvpx_test::CodecTestWithParam<libvpx_test::TestMode> {
- protected:
-  ConfigTest()
-      : EncoderTest(GET_PARAM(0)), frame_count_in_(0), frame_count_out_(0),
-        frame_count_max_(0) {}
-  virtual ~ConfigTest() {}
+      public ::libvpx_test::CodecTestWithParam<libvpx_test::TestMode>
+{
+protected:
+    ConfigTest()
+        : EncoderTest(GET_PARAM(0)), frame_count_in_(0), frame_count_out_(0),
+          frame_count_max_(0) {}
+    virtual ~ConfigTest() {}
 
-  virtual void SetUp() {
-    InitializeConfig();
-    SetMode(GET_PARAM(1));
-  }
+    virtual void SetUp()
+    {
+        InitializeConfig();
+        SetMode(GET_PARAM(1));
+    }
 
-  virtual void BeginPassHook(unsigned int /*pass*/) {
-    frame_count_in_ = 0;
-    frame_count_out_ = 0;
-  }
+    virtual void BeginPassHook(unsigned int /*pass*/)
+    {
+        frame_count_in_ = 0;
+        frame_count_out_ = 0;
+    }
 
-  virtual void PreEncodeFrameHook(libvpx_test::VideoSource * /*video*/) {
-    ++frame_count_in_;
-    abort_ |= (frame_count_in_ >= frame_count_max_);
-  }
+    virtual void PreEncodeFrameHook(libvpx_test::VideoSource * /*video*/)
+    {
+        ++frame_count_in_;
+        abort_ |= (frame_count_in_ >= frame_count_max_);
+    }
 
-  virtual void FramePktHook(const vpx_codec_cx_pkt_t * /*pkt*/) {
-    ++frame_count_out_;
-  }
+    virtual void FramePktHook(const vpx_codec_cx_pkt_t * /*pkt*/)
+    {
+        ++frame_count_out_;
+    }
 
-  unsigned int frame_count_in_;
-  unsigned int frame_count_out_;
-  unsigned int frame_count_max_;
+    unsigned int frame_count_in_;
+    unsigned int frame_count_out_;
+    unsigned int frame_count_max_;
 };
 
-TEST_P(ConfigTest, LagIsDisabled) {
-  frame_count_max_ = 2;
-  cfg_.g_lag_in_frames = 15;
+TEST_P(ConfigTest, LagIsDisabled)
+{
+    frame_count_max_ = 2;
+    cfg_.g_lag_in_frames = 15;
 
-  libvpx_test::DummyVideoSource video;
-  ASSERT_NO_FATAL_FAILURE(RunLoop(&video));
+    libvpx_test::DummyVideoSource video;
+    ASSERT_NO_FATAL_FAILURE(RunLoop(&video));
 
-  EXPECT_EQ(frame_count_in_, frame_count_out_);
+    EXPECT_EQ(frame_count_in_, frame_count_out_);
 }
 
 VP8_INSTANTIATE_TEST_CASE(ConfigTest, ONE_PASS_TEST_MODES);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,9 +10,12 @@
 
 #include "webrtc/modules/video_coding/codecs/test/videoprocessor_integrationtest.h"
 
-namespace webrtc {
-namespace test {
-namespace {
+namespace webrtc
+{
+namespace test
+{
+namespace
+{
 // Codec settings.
 const int kBitrates[] = {30, 50, 100, 200, 300, 500, 1000};
 const int kFps[] = {30};
@@ -32,52 +35,54 @@ const bool kVerboseLogging = true;
 class PlotVideoProcessorIntegrationTest
     : public VideoProcessorIntegrationTest,
       public ::testing::WithParamInterface<
-          ::testing::tuple<int, int, VideoCodecType>> {
- protected:
-  PlotVideoProcessorIntegrationTest()
-      : bitrate_(::testing::get<0>(GetParam())),
-        framerate_(::testing::get<1>(GetParam())),
-        codec_type_(::testing::get<2>(GetParam())) {}
+      ::testing::tuple<int, int, VideoCodecType>>
+{
+protected:
+    PlotVideoProcessorIntegrationTest()
+        : bitrate_(::testing::get<0>(GetParam())),
+          framerate_(::testing::get<1>(GetParam())),
+          codec_type_(::testing::get<2>(GetParam())) {}
 
-  virtual ~PlotVideoProcessorIntegrationTest() {}
+    virtual ~PlotVideoProcessorIntegrationTest() {}
 
-  void RunTest(int width, int height, const std::string& filename) {
-    // Bitrate and frame rate profile.
-    RateProfile rate_profile;
-    SetRateProfilePars(&rate_profile,
-                       0,  // update_index
-                       bitrate_, framerate_,
-                       0);  // frame_index_rate_update
-    rate_profile.frame_index_rate_update[1] = kNumFramesLong + 1;
-    rate_profile.num_frames = kNumFramesLong;
-    // Codec/network settings.
-    CodecConfigPars process_settings;
-    SetCodecParameters(&process_settings, codec_type_, kPacketLoss,
-                       -1,  // key_frame_interval
-                       1,   // num_temporal_layers
-                       kErrorConcealmentOn, kDenoisingOn, kFrameDropperOn,
-                       kSpatialResizeOn, width, height, filename,
-                       kVerboseLogging);
-    // Metrics for expected quality (PSNR avg, PSNR min, SSIM avg, SSIM min).
-    QualityMetrics quality_metrics;
-    SetQualityMetrics(&quality_metrics, 15.0, 10.0, 0.2, 0.1);
-    // Metrics for rate control.
-    RateControlMetrics rc_metrics[1];
-    SetRateControlMetrics(rc_metrics,
-                          0,    // update_index
-                          300,  // max_num_dropped_frames,
-                          400,  // max_key_frame_size_mismatch
-                          200,  // max_delta_frame_size_mismatch
-                          100,  // max_encoding_rate_mismatch
-                          300,  // max_time_hit_target
-                          0,    // num_spatial_resizes
-                          1);   // num_key_frames
-    ProcessFramesAndVerify(quality_metrics, rate_profile, process_settings,
-                           rc_metrics);
-  }
-  const int bitrate_;
-  const int framerate_;
-  const VideoCodecType codec_type_;
+    void RunTest(int width, int height, const std::string& filename)
+    {
+        // Bitrate and frame rate profile.
+        RateProfile rate_profile;
+        SetRateProfilePars(&rate_profile,
+                           0,  // update_index
+                           bitrate_, framerate_,
+                           0);  // frame_index_rate_update
+        rate_profile.frame_index_rate_update[1] = kNumFramesLong + 1;
+        rate_profile.num_frames = kNumFramesLong;
+        // Codec/network settings.
+        CodecConfigPars process_settings;
+        SetCodecParameters(&process_settings, codec_type_, kPacketLoss,
+                           -1,  // key_frame_interval
+                           1,   // num_temporal_layers
+                           kErrorConcealmentOn, kDenoisingOn, kFrameDropperOn,
+                           kSpatialResizeOn, width, height, filename,
+                           kVerboseLogging);
+        // Metrics for expected quality (PSNR avg, PSNR min, SSIM avg, SSIM min).
+        QualityMetrics quality_metrics;
+        SetQualityMetrics(&quality_metrics, 15.0, 10.0, 0.2, 0.1);
+        // Metrics for rate control.
+        RateControlMetrics rc_metrics[1];
+        SetRateControlMetrics(rc_metrics,
+                              0,    // update_index
+                              300,  // max_num_dropped_frames,
+                              400,  // max_key_frame_size_mismatch
+                              200,  // max_delta_frame_size_mismatch
+                              100,  // max_encoding_rate_mismatch
+                              300,  // max_time_hit_target
+                              0,    // num_spatial_resizes
+                              1);   // num_key_frames
+        ProcessFramesAndVerify(quality_metrics, rate_profile, process_settings,
+                               rc_metrics);
+    }
+    const int bitrate_;
+    const int framerate_;
+    const VideoCodecType codec_type_;
 };
 
 INSTANTIATE_TEST_CASE_P(
@@ -87,24 +92,29 @@ INSTANTIATE_TEST_CASE_P(
                        ::testing::ValuesIn(kFps),
                        ::testing::ValuesIn(kVideoCodecType)));
 
-TEST_P(PlotVideoProcessorIntegrationTest, ProcessSQCif) {
-  RunTest(128, 96, "foreman_128x96");
+TEST_P(PlotVideoProcessorIntegrationTest, ProcessSQCif)
+{
+    RunTest(128, 96, "foreman_128x96");
 }
 
-TEST_P(PlotVideoProcessorIntegrationTest, ProcessQQVga) {
-  RunTest(160, 120, "foreman_160x120");
+TEST_P(PlotVideoProcessorIntegrationTest, ProcessQQVga)
+{
+    RunTest(160, 120, "foreman_160x120");
 }
 
-TEST_P(PlotVideoProcessorIntegrationTest, ProcessQCif) {
-  RunTest(176, 144, "foreman_176x144");
+TEST_P(PlotVideoProcessorIntegrationTest, ProcessQCif)
+{
+    RunTest(176, 144, "foreman_176x144");
 }
 
-TEST_P(PlotVideoProcessorIntegrationTest, ProcessQVga) {
-  RunTest(320, 240, "foreman_320x240");
+TEST_P(PlotVideoProcessorIntegrationTest, ProcessQVga)
+{
+    RunTest(320, 240, "foreman_320x240");
 }
 
-TEST_P(PlotVideoProcessorIntegrationTest, ProcessCif) {
-  RunTest(352, 288, "foreman_cif");
+TEST_P(PlotVideoProcessorIntegrationTest, ProcessCif)
+{
+    RunTest(352, 288, "foreman_cif");
 }
 
 }  // namespace test

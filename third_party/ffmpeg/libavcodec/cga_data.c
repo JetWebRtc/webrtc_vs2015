@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CGA/EGA/VGA ROM data
  *
  * This file is part of FFmpeg.
@@ -27,12 +27,14 @@
 #include <stdint.h>
 #include "cga_data.h"
 
-const uint32_t ff_cga_palette[16] = {
+const uint32_t ff_cga_palette[16] =
+{
     0xFF000000, 0xFF0000AA, 0xFF00AA00, 0xFF00AAAA, 0xFFAA0000, 0xFFAA00AA, 0xFFAA5500, 0xFFAAAAAA,
     0xFF555555, 0xFF5555FF, 0xFF55FF55, 0xFF55FFFF, 0xFFFF5555, 0xFFFF55FF, 0xFFFFFF55, 0xFFFFFFFF,
 };
 
-const uint32_t ff_ega_palette[64] = {
+const uint32_t ff_ega_palette[64] =
+{
     0xFF000000, 0xFF0000AA, 0xFF00AA00, 0xFF00AAAA, 0xFFAA0000, 0xFFAA00AA, 0xFFAAAA00, 0xFFAAAAAA,
     0xFF000055, 0xFF0000FF, 0xFF00AA55, 0xFF00AAFF, 0xFFAA0055, 0xFFAA00FF, 0xFFAAAA55, 0xFFAAAAFF,
     0xFF005500, 0xFF0055AA, 0xFF00FF00, 0xFF00FFAA, 0xFFAA5500, 0xFFAA55AA, 0xFFAAFF00, 0xFFAAFFAA,
@@ -46,8 +48,10 @@ const uint32_t ff_ega_palette[64] = {
 void ff_draw_pc_font(uint8_t *dst, int linesize, const uint8_t *font, int font_height, int ch, int fg, int bg)
 {
     int char_y, mask;
-    for (char_y = 0; char_y < font_height; char_y++) {
-        for (mask = 0x80; mask; mask >>= 1) {
+    for (char_y = 0; char_y < font_height; char_y++)
+    {
+        for (mask = 0x80; mask; mask >>= 1)
+        {
             *dst++ = font[ch * font_height + char_y] & mask ? fg : bg;
         }
         dst += linesize - 8;

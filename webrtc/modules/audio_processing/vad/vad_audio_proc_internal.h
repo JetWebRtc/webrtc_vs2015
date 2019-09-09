@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_MODULES_AUDIO_PROCESSING_VAD_VAD_AUDIO_PROC_INTERNAL_H_
 #define WEBRTC_MODULES_AUDIO_PROCESSING_VAD_VAD_AUDIO_PROC_INTERNAL_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // These values should match MATLAB counterparts for unit-tests to pass.
 static const double kCorrWeight[] = {1.000000,
@@ -30,9 +31,11 @@ static const double kCorrWeight[] = {1.000000,
                                      0.821620,
                                      0.809296,
                                      0.797156,
-                                     0.785199};
+                                     0.785199
+                                    };
 
-static const double kLpcAnalWin[] = {
+static const double kLpcAnalWin[] =
+{
     0.00000000, 0.01314436, 0.02628645, 0.03942400, 0.05255473, 0.06567639,
     0.07878670, 0.09188339, 0.10496421, 0.11802689, 0.13106918, 0.14408883,
     0.15708358, 0.17005118, 0.18298941, 0.19589602, 0.20876878, 0.22160547,
@@ -72,21 +75,24 @@ static const double kLpcAnalWin[] = {
     0.29774438, 0.28517045, 0.27254725, 0.25987696, 0.24716177, 0.23440387,
     0.22160547, 0.20876878, 0.19589602, 0.18298941, 0.17005118, 0.15708358,
     0.14408883, 0.13106918, 0.11802689, 0.10496421, 0.09188339, 0.07878670,
-    0.06567639, 0.05255473, 0.03942400, 0.02628645, 0.01314436, 0.00000000};
+    0.06567639, 0.05255473, 0.03942400, 0.02628645, 0.01314436, 0.00000000
+};
 
 static const size_t kFilterOrder = 2;
 static const float kCoeffNumerator[kFilterOrder + 1] = {0.974827f,
                                                         -1.949650f,
-                                                        0.974827f};
+                                                        0.974827f
+                                                       };
 static const float kCoeffDenominator[kFilterOrder + 1] = {1.0f,
                                                           -1.971999f,
-                                                          0.972457f};
+                                                          0.972457f
+                                                         };
 
 static_assert(kFilterOrder + 1 ==
-                  sizeof(kCoeffNumerator) / sizeof(kCoeffNumerator[0]),
+              sizeof(kCoeffNumerator) / sizeof(kCoeffNumerator[0]),
               "numerator coefficients incorrect size");
 static_assert(kFilterOrder + 1 ==
-                  sizeof(kCoeffDenominator) / sizeof(kCoeffDenominator[0]),
+              sizeof(kCoeffDenominator) / sizeof(kCoeffDenominator[0]),
               "denominator coefficients incorrect size");
 
 }  // namespace webrtc

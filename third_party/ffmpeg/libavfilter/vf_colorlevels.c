@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -32,12 +32,14 @@
 #define B 2
 #define A 3
 
-typedef struct {
+typedef struct
+{
     double in_min, in_max;
     double out_min, out_max;
 } Range;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     Range range[4];
     int nb_comp;
@@ -49,7 +51,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(ColorLevelsContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption colorlevels_options[] = {
+static const AVOption colorlevels_options[] =
+{
     { "rimin", "set input red black point",    OFFSET(range[R].in_min),  AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
     { "gimin", "set input green black point",  OFFSET(range[G].in_min),  AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
     { "bimin", "set input blue black point",   OFFSET(range[B].in_min),  AV_OPT_TYPE_DOUBLE, {.dbl=0}, -1, 1, FLAGS },
@@ -73,7 +76,8 @@ AVFILTER_DEFINE_CLASS(colorlevels);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_0RGB,  AV_PIX_FMT_0BGR,
         AV_PIX_FMT_ARGB,  AV_PIX_FMT_ABGR,
         AV_PIX_FMT_RGB0,  AV_PIX_FMT_BGR0,
@@ -114,20 +118,26 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int x, y, i;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
         av_frame_copy_props(out, in);
     }
 
-    switch (s->bpp) {
+    switch (s->bpp)
+    {
     case 1:
-        for (i = 0; i < s->nb_comp; i++) {
+        for (i = 0; i < s->nb_comp; i++)
+        {
             Range *r = &s->range[i];
             const uint8_t offset = s->rgba_map[i];
             const uint8_t *srcrow = in->data[0];
@@ -138,9 +148,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
             int omax = round(r->out_max * UINT8_MAX);
             double coeff;
 
-            if (imin < 0) {
+            if (imin < 0)
+            {
                 imin = UINT8_MAX;
-                for (y = 0; y < inlink->h; y++) {
+                for (y = 0; y < inlink->h; y++)
+                {
                     const uint8_t *src = srcrow;
 
                     for (x = 0; x < s->linesize; x += step)
@@ -148,10 +160,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                     srcrow += in->linesize[0];
                 }
             }
-            if (imax < 0) {
+            if (imax < 0)
+            {
                 srcrow = in->data[0];
                 imax = 0;
-                for (y = 0; y < inlink->h; y++) {
+                for (y = 0; y < inlink->h; y++)
+                {
                     const uint8_t *src = srcrow;
 
                     for (x = 0; x < s->linesize; x += step)
@@ -162,7 +176,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
             srcrow = in->data[0];
             coeff = (omax - omin) / (double)(imax - imin);
-            for (y = 0; y < inlink->h; y++) {
+            for (y = 0; y < inlink->h; y++)
+            {
                 const uint8_t *src = srcrow;
                 uint8_t *dst = dstrow;
 
@@ -174,7 +189,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         }
         break;
     case 2:
-        for (i = 0; i < s->nb_comp; i++) {
+        for (i = 0; i < s->nb_comp; i++)
+        {
             Range *r = &s->range[i];
             const uint8_t offset = s->rgba_map[i];
             const uint8_t *srcrow = in->data[0];
@@ -185,9 +201,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
             int omax = round(r->out_max * UINT16_MAX);
             double coeff;
 
-            if (imin < 0) {
+            if (imin < 0)
+            {
                 imin = UINT16_MAX;
-                for (y = 0; y < inlink->h; y++) {
+                for (y = 0; y < inlink->h; y++)
+                {
                     const uint16_t *src = (const uint16_t *)srcrow;
 
                     for (x = 0; x < s->linesize; x += step)
@@ -195,10 +213,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                     srcrow += in->linesize[0];
                 }
             }
-            if (imax < 0) {
+            if (imax < 0)
+            {
                 srcrow = in->data[0];
                 imax = 0;
-                for (y = 0; y < inlink->h; y++) {
+                for (y = 0; y < inlink->h; y++)
+                {
                     const uint16_t *src = (const uint16_t *)srcrow;
 
                     for (x = 0; x < s->linesize; x += step)
@@ -209,7 +229,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
             srcrow = in->data[0];
             coeff = (omax - omin) / (double)(imax - imin);
-            for (y = 0; y < inlink->h; y++) {
+            for (y = 0; y < inlink->h; y++)
+            {
                 const uint16_t *src = (const uint16_t*)srcrow;
                 uint16_t *dst = (uint16_t *)dstrow;
 
@@ -226,7 +247,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad colorlevels_inputs[] = {
+static const AVFilterPad colorlevels_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -236,7 +258,8 @@ static const AVFilterPad colorlevels_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad colorlevels_outputs[] = {
+static const AVFilterPad colorlevels_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -244,7 +267,8 @@ static const AVFilterPad colorlevels_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_colorlevels = {
+AVFilter ff_vf_colorlevels =
+{
     .name          = "colorlevels",
     .description   = NULL_IF_CONFIG_SMALL("Adjust the color levels."),
     .priv_size     = sizeof(ColorLevelsContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AltiVec-enhanced yuv2yuvX
  *
  * Copyright (C) 2004 Romain Dolbeau <romain@dolbeau.org>

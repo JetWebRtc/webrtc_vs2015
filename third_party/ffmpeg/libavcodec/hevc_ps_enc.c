@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC Parameter Set encoding
  *
  * This file is part of FFmpeg.
@@ -46,7 +46,8 @@ static void write_ptl(PutBitContext *pb, PTL *ptl, int max_num_sub_layers)
     write_ptl_layer(pb, &ptl->general_ptl);
     put_bits(pb, 8, ptl->general_ptl.level_idc);
 
-    for (i = 0; i < max_num_sub_layers - 1; i++) {
+    for (i = 0; i < max_num_sub_layers - 1; i++)
+    {
         put_bits(pb, 1, ptl->sub_layer_profile_present_flag[i]);
         put_bits(pb, 1, ptl->sub_layer_level_present_flag[i]);
     }
@@ -55,7 +56,8 @@ static void write_ptl(PutBitContext *pb, PTL *ptl, int max_num_sub_layers)
         for (i = max_num_sub_layers - 1; i < 8; i++)
             put_bits(pb, 2, 0); // reserved
 
-    for (i = 0; i < max_num_sub_layers - 1; i++) {
+    for (i = 0; i < max_num_sub_layers - 1; i++)
+    {
         if (ptl->sub_layer_profile_present_flag[i])
             write_ptl_layer(pb, &ptl->sub_layer_ptl[i]);
         if (ptl->sub_layer_level_present_flag[i])
@@ -81,7 +83,8 @@ int ff_hevc_encode_nal_vps(HEVCVPS *vps, unsigned int id,
 
     put_bits(&pb, 1, vps->vps_sub_layer_ordering_info_present_flag);
     for (i = vps->vps_sub_layer_ordering_info_present_flag ? 0 : vps->vps_max_layers - 1;
-         i < vps->vps_max_sub_layers; i++) {
+            i < vps->vps_max_sub_layers; i++)
+    {
         set_ue_golomb(&pb, vps->vps_max_dec_pic_buffering[i] - 1);
         set_ue_golomb(&pb, vps->vps_num_reorder_pics[i]);
         set_ue_golomb(&pb, vps->vps_max_latency_increase[i] + 1);
@@ -95,7 +98,8 @@ int ff_hevc_encode_nal_vps(HEVCVPS *vps, unsigned int id,
         return AVERROR_PATCHWELCOME;
 
     put_bits(&pb, 1, vps->vps_timing_info_present_flag);
-    if (vps->vps_timing_info_present_flag) {
+    if (vps->vps_timing_info_present_flag)
+    {
         put_bits32(&pb, vps->vps_num_units_in_tick);
         put_bits32(&pb, vps->vps_time_scale);
         put_bits(&pb, 1, vps->vps_poc_proportional_to_timing_flag);

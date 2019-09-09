@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -35,8 +35,8 @@ RTC_EXTERN const NSString * const kRTCH264CodecName;
 RTC_EXPORT
 @interface RTCRtpCodecParameters : NSObject
 
-/** The RTP payload type. */
-@property(nonatomic, assign) int payloadType;
+    /** The RTP payload type. */
+    @property(nonatomic, assign) int payloadType;
 
 /**
  * The codec MIME subtype. Valid types are listed in:

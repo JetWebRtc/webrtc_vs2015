@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,20 +12,23 @@
 
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 RtcpNackStats::RtcpNackStats()
     : max_sequence_number_(0),
       requests_(0),
       unique_requests_(0) {}
 
-void RtcpNackStats::ReportRequest(uint16_t sequence_number) {
-  if (requests_ == 0 ||
-      IsNewerSequenceNumber(sequence_number, max_sequence_number_)) {
-    max_sequence_number_ =  sequence_number;
-    ++unique_requests_;
-  }
-  ++requests_;
+void RtcpNackStats::ReportRequest(uint16_t sequence_number)
+{
+    if (requests_ == 0 ||
+            IsNewerSequenceNumber(sequence_number, max_sequence_number_))
+    {
+        max_sequence_number_ =  sequence_number;
+        ++unique_requests_;
+    }
+    ++requests_;
 }
 
 }  // namespace webrtc

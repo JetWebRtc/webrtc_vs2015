@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,22 +17,24 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class EventTimerWin : public EventTimerWrapper {
- public:
-  EventTimerWin();
-  virtual ~EventTimerWin();
+class EventTimerWin : public EventTimerWrapper
+{
+public:
+    EventTimerWin();
+    virtual ~EventTimerWin();
 
-  virtual EventTypeWrapper Wait(unsigned long max_time);
-  virtual bool Set();
+    virtual EventTypeWrapper Wait(unsigned long max_time);
+    virtual bool Set();
 
-  virtual bool StartTimer(bool periodic, unsigned long time);
-  virtual bool StopTimer();
+    virtual bool StartTimer(bool periodic, unsigned long time);
+    virtual bool StopTimer();
 
- private:
-  HANDLE  event_;
-  uint32_t timerID_;
+private:
+    HANDLE  event_;
+    uint32_t timerID_;
 };
 
 }  // namespace webrtc

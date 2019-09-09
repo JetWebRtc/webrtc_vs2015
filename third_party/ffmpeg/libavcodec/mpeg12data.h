@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG1/2 tables
  * copyright (c) 2000,2001 Fabrice Bellard
  * copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>

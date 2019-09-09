@@ -54,7 +54,8 @@ static void vert_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, p4a);
         AV_WN4PA(dst + 4, p4b);
         dst += stride;
@@ -73,7 +74,8 @@ static void vert_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, p4a);
         AV_WN4PA(dst +  4, p4b);
         AV_WN4PA(dst +  8, p4c);
@@ -98,7 +100,8 @@ static void vert_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, p4a);
         AV_WN4PA(dst +  4, p4b);
         AV_WN4PA(dst +  8, p4c);
@@ -132,7 +135,8 @@ static void hor_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         pixel4 p4 = PIXEL_SPLAT_X4(left[7 - y]);
 
         AV_WN4PA(dst + 0, p4);
@@ -149,7 +153,8 @@ static void hor_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         pixel4 p4 = PIXEL_SPLAT_X4(left[15 - y]);
 
         AV_WN4PA(dst +  0, p4);
@@ -168,7 +173,8 @@ static void hor_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         pixel4 p4 = PIXEL_SPLAT_X4(left[31 - y]);
 
         AV_WN4PA(dst +  0, p4);
@@ -194,7 +200,8 @@ static void tm_4x4_c(uint8_t *_dst, ptrdiff_t stride,
     int y, tl = top[-1];
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 4; y++) {
+    for (y = 0; y < 4; y++)
+    {
         int l_m_tl = left[3 - y] - tl;
 
         dst[0] = av_clip_pixel(top[0] + l_m_tl);
@@ -214,7 +221,8 @@ static void tm_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y, tl = top[-1];
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         int l_m_tl = left[7 - y] - tl;
 
         dst[0] = av_clip_pixel(top[0] + l_m_tl);
@@ -238,7 +246,8 @@ static void tm_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y, tl = top[-1];
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         int l_m_tl = left[15 - y] - tl;
 
         dst[ 0] = av_clip_pixel(top[ 0] + l_m_tl);
@@ -270,7 +279,8 @@ static void tm_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y, tl = top[-1];
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         int l_m_tl = left[31 - y] - tl;
 
         dst[ 0] = av_clip_pixel(top[ 0] + l_m_tl);
@@ -334,13 +344,14 @@ static void dc_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     const pixel *left = (const pixel *) _left;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
-          left[6] + left[7] + top[0] + top[1] + top[2] + top[3] +
-          top[4] + top[5] + top[6] + top[7] + 8) >> 4);
+                ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
+                  left[6] + left[7] + top[0] + top[1] + top[2] + top[3] +
+                  top[4] + top[5] + top[6] + top[7] + 8) >> 4);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, dc);
         AV_WN4PA(dst + 4, dc);
         dst += stride;
@@ -354,15 +365,16 @@ static void dc_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     const pixel *left = (const pixel *) _left;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] + left[6] +
-          left[7] + left[8] + left[9] + left[10] + left[11] + left[12] +
-          left[13] + left[14] + left[15] + top[0] + top[1] + top[2] + top[3] +
-          top[4] + top[5] + top[6] + top[7] + top[8] + top[9] + top[10] +
-          top[11] + top[12] + top[13] + top[14] + top[15] + 16) >> 5);
+                ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] + left[6] +
+                  left[7] + left[8] + left[9] + left[10] + left[11] + left[12] +
+                  left[13] + left[14] + left[15] + top[0] + top[1] + top[2] + top[3] +
+                  top[4] + top[5] + top[6] + top[7] + top[8] + top[9] + top[10] +
+                  top[11] + top[12] + top[13] + top[14] + top[15] + 16) >> 5);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -378,20 +390,21 @@ static void dc_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     const pixel *left = (const pixel *) _left;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] + left[6] +
-          left[7] + left[8] + left[9] + left[10] + left[11] + left[12] +
-          left[13] + left[14] + left[15] + left[16] + left[17] + left[18] +
-          left[19] + left[20] + left[21] + left[22] + left[23] + left[24] +
-          left[25] + left[26] + left[27] + left[28] + left[29] + left[30] +
-          left[31] + top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
-          top[6] + top[7] + top[8] + top[9] + top[10] + top[11] + top[12] +
-          top[13] + top[14] + top[15] + top[16] + top[17] + top[18] + top[19] +
-          top[20] + top[21] + top[22] + top[23] + top[24] + top[25] + top[26] +
-          top[27] + top[28] + top[29] + top[30] + top[31] + 32) >> 6);
+                ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] + left[6] +
+                  left[7] + left[8] + left[9] + left[10] + left[11] + left[12] +
+                  left[13] + left[14] + left[15] + left[16] + left[17] + left[18] +
+                  left[19] + left[20] + left[21] + left[22] + left[23] + left[24] +
+                  left[25] + left[26] + left[27] + left[28] + left[29] + left[30] +
+                  left[31] + top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
+                  top[6] + top[7] + top[8] + top[9] + top[10] + top[11] + top[12] +
+                  top[13] + top[14] + top[15] + top[16] + top[17] + top[18] + top[19] +
+                  top[20] + top[21] + top[22] + top[23] + top[24] + top[25] + top[26] +
+                  top[27] + top[28] + top[29] + top[30] + top[31] + 32) >> 6);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -424,12 +437,13 @@ static void dc_left_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *left = (const pixel *) _left;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] +
-          left[4] + left[5] + left[6] + left[7] + 4) >> 3);
+                ((left[0] + left[1] + left[2] + left[3] +
+                  left[4] + left[5] + left[6] + left[7] + 4) >> 3);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, dc);
         AV_WN4PA(dst + 4, dc);
         dst += stride;
@@ -442,13 +456,14 @@ static void dc_left_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *left = (const pixel *) _left;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
-          left[6] + left[7] + left[8] + left[9] + left[10] + left[11] +
-          left[12] + left[13] + left[14] + left[15] + 8) >> 4);
+                ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
+                  left[6] + left[7] + left[8] + left[9] + left[10] + left[11] +
+                  left[12] + left[13] + left[14] + left[15] + 8) >> 4);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -463,16 +478,17 @@ static void dc_left_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *left = (const pixel *) _left;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
-          left[6] + left[7] + left[8] + left[9] + left[10] + left[11] +
-          left[12] + left[13] + left[14] + left[15] + left[16] + left[17] +
-          left[18] + left[19] + left[20] + left[21] + left[22] + left[23] +
-          left[24] + left[25] + left[26] + left[27] + left[28] + left[29] +
-          left[30] + left[31] + 16) >> 5);
+                ((left[0] + left[1] + left[2] + left[3] + left[4] + left[5] +
+                  left[6] + left[7] + left[8] + left[9] + left[10] + left[11] +
+                  left[12] + left[13] + left[14] + left[15] + left[16] + left[17] +
+                  left[18] + left[19] + left[20] + left[21] + left[22] + left[23] +
+                  left[24] + left[25] + left[26] + left[27] + left[28] + left[29] +
+                  left[30] + left[31] + 16) >> 5);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -505,12 +521,13 @@ static void dc_top_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((top[0] + top[1] + top[2] + top[3] +
-          top[4] + top[5] + top[6] + top[7] + 4) >> 3);
+                ((top[0] + top[1] + top[2] + top[3] +
+                  top[4] + top[5] + top[6] + top[7] + 4) >> 3);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, dc);
         AV_WN4PA(dst + 4, dc);
         dst += stride;
@@ -523,13 +540,14 @@ static void dc_top_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
-          top[6] + top[7] + top[8] + top[9] + top[10] + top[11] +
-          top[12] + top[13] + top[14] + top[15] + 8) >> 4);
+                ((top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
+                  top[6] + top[7] + top[8] + top[9] + top[10] + top[11] +
+                  top[12] + top[13] + top[14] + top[15] + 8) >> 4);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -544,16 +562,17 @@ static void dc_top_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     pixel *dst = (pixel *) _dst;
     const pixel *top = (const pixel *) _top;
     pixel4 dc = PIXEL_SPLAT_X4
-        ((top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
-          top[6] + top[7] + top[8] + top[9] + top[10] + top[11] +
-          top[12] + top[13] + top[14] + top[15] + top[16] + top[17] +
-          top[18] + top[19] + top[20] + top[21] + top[22] + top[23] +
-          top[24] + top[25] + top[26] + top[27] + top[28] + top[29] +
-          top[30] + top[31] + 16) >> 5);
+                ((top[0] + top[1] + top[2] + top[3] + top[4] + top[5] +
+                  top[6] + top[7] + top[8] + top[9] + top[10] + top[11] +
+                  top[12] + top[13] + top[14] + top[15] + top[16] + top[17] +
+                  top[18] + top[19] + top[20] + top[21] + top[22] + top[23] +
+                  top[24] + top[25] + top[26] + top[27] + top[28] + top[29] +
+                  top[30] + top[31] + 16) >> 5);
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, dc);
         AV_WN4PA(dst +  4, dc);
         AV_WN4PA(dst +  8, dc);
@@ -589,7 +608,8 @@ static void dc_128_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, val);
         AV_WN4PA(dst + 4, val);
         dst += stride;
@@ -604,7 +624,8 @@ static void dc_128_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -621,7 +642,8 @@ static void dc_128_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -644,7 +666,8 @@ static void dc_127_4x4_c(uint8_t *_dst, ptrdiff_t stride,
     AV_WN4PA(dst + stride * 0, val);
     AV_WN4PA(dst + stride * 1, val);
     AV_WN4PA(dst + stride * 2, val);
-    AV_WN4PA(dst + stride * 3, val);}
+    AV_WN4PA(dst + stride * 3, val);
+}
 
 static void dc_127_8x8_c(uint8_t *_dst, ptrdiff_t stride,
                          const uint8_t *left, const uint8_t *top)
@@ -654,7 +677,8 @@ static void dc_127_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, val);
         AV_WN4PA(dst + 4, val);
         dst += stride;
@@ -669,7 +693,8 @@ static void dc_127_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -686,7 +711,8 @@ static void dc_127_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -720,7 +746,8 @@ static void dc_129_8x8_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         AV_WN4PA(dst + 0, val);
         AV_WN4PA(dst + 4, val);
         dst += stride;
@@ -735,7 +762,8 @@ static void dc_129_16x16_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 16; y++) {
+    for (y = 0; y < 16; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -752,7 +780,8 @@ static void dc_129_32x32_c(uint8_t *_dst, ptrdiff_t stride,
     int y;
 
     stride /= sizeof(pixel);
-    for (y = 0; y < 32; y++) {
+    for (y = 0; y < 32; y++)
+    {
         AV_WN4PA(dst +  0, val);
         AV_WN4PA(dst +  4, val);
         AV_WN4PA(dst +  8, val);
@@ -770,9 +799,11 @@ static void dc_129_32x32_c(uint8_t *_dst, ptrdiff_t stride,
 #if BIT_DEPTH == 8
 #define memset_bpc memset
 #else
-static inline void memset_bpc(uint16_t *dst, int val, int len) {
+static inline void memset_bpc(uint16_t *dst, int val, int len)
+{
     int n;
-    for (n = 0; n < len; n++) {
+    for (n = 0; n < len; n++)
+    {
         dst[n] = val;
     }
 }
@@ -1096,7 +1127,7 @@ av_cold void FUNC(ff_vp9dsp_intrapred_init)(VP9DSPContext *dsp)
 #define init_intra_pred(tx, sz) \
     init_intra_pred_bd_aware(tx, sz)
 #else
-    #define init_intra_pred(tx, sz) \
+#define init_intra_pred(tx, sz) \
     dsp->intra_pred[tx][VERT_PRED]            = vert_##sz##_c; \
     dsp->intra_pred[tx][HOR_PRED]             = hor_##sz##_c; \
     dsp->intra_pred[tx][DC_PRED]              = dc_##sz##_c; \
@@ -1689,12 +1720,15 @@ static av_always_inline void iwht4_1d(const dctcoef *in, ptrdiff_t stride,
 {
     int t0, t1, t2, t3, t4;
 
-    if (pass == 0) {
+    if (pass == 0)
+    {
         t0 = IN(0) >> 2;
         t1 = IN(3) >> 2;
         t2 = IN(1) >> 2;
         t3 = IN(2) >> 2;
-    } else {
+    }
+    else
+    {
         t0 = IN(0);
         t1 = IN(3);
         t2 = IN(1);
@@ -1746,15 +1780,16 @@ static av_cold void vp9dsp_itxfm_init(VP9DSPContext *dsp)
 }
 
 static av_always_inline void loop_filter(pixel *dst, int E, int I, int H,
-                                         ptrdiff_t stridea, ptrdiff_t strideb,
-                                         int wd)
+        ptrdiff_t stridea, ptrdiff_t strideb,
+        int wd)
 {
     int i, F = 1 << (BIT_DEPTH - 8);
 
     E <<= (BIT_DEPTH - 8);
     I <<= (BIT_DEPTH - 8);
     H <<= (BIT_DEPTH - 8);
-    for (i = 0; i < 8; i++, dst += stridea) {
+    for (i = 0; i < 8; i++, dst += stridea)
+    {
         int p7, p6, p5, p4;
         int p3 = dst[strideb * -4], p2 = dst[strideb * -3];
         int p1 = dst[strideb * -2], p0 = dst[strideb * -1];
@@ -1770,7 +1805,8 @@ static av_always_inline void loop_filter(pixel *dst, int E, int I, int H,
         if (!fm)
             continue;
 
-        if (wd >= 16) {
+        if (wd >= 16)
+        {
             p7 = dst[strideb * -8];
             p6 = dst[strideb * -7];
             p5 = dst[strideb * -6];
@@ -1791,7 +1827,8 @@ static av_always_inline void loop_filter(pixel *dst, int E, int I, int H,
                       FFABS(p1 - p0) <= F && FFABS(q1 - q0) <= F &&
                       FFABS(q2 - q0) <= F && FFABS(q3 - q0) <= F;
 
-        if (wd >= 16 && flat8out && flat8in) {
+        if (wd >= 16 && flat8out && flat8in)
+        {
             dst[strideb * -7] = (p7 + p7 + p7 + p7 + p7 + p7 + p7 + p6 * 2 +
                                  p5 + p4 + p3 + p2 + p1 + p0 + q0 + 8) >> 4;
             dst[strideb * -6] = (p7 + p7 + p7 + p7 + p7 + p7 + p6 + p5 * 2 +
@@ -1820,17 +1857,22 @@ static av_always_inline void loop_filter(pixel *dst, int E, int I, int H,
                                  q6 + q7 + q7 + q7 + q7 + q7 + q7 + 8) >> 4;
             dst[strideb * +6] = (p0 + q0 + q1 + q2 + q3 + q4 + q5 + q6 * 2 +
                                  q7 + q7 + q7 + q7 + q7 + q7 + q7 + 8) >> 4;
-        } else if (wd >= 8 && flat8in) {
+        }
+        else if (wd >= 8 && flat8in)
+        {
             dst[strideb * -3] = (p3 + p3 + p3 + 2 * p2 + p1 + p0 + q0 + 4) >> 3;
             dst[strideb * -2] = (p3 + p3 + p2 + 2 * p1 + p0 + q0 + q1 + 4) >> 3;
             dst[strideb * -1] = (p3 + p2 + p1 + 2 * p0 + q0 + q1 + q2 + 4) >> 3;
             dst[strideb * +0] = (p2 + p1 + p0 + 2 * q0 + q1 + q2 + q3 + 4) >> 3;
             dst[strideb * +1] = (p1 + p0 + q0 + 2 * q1 + q2 + q3 + q3 + 4) >> 3;
             dst[strideb * +2] = (p0 + q0 + q1 + 2 * q2 + q3 + q3 + q3 + 4) >> 3;
-        } else {
+        }
+        else
+        {
             int hev = FFABS(p1 - p0) > H || FFABS(q1 - q0) > H;
 
-            if (hev) {
+            if (hev)
+            {
                 int f = av_clip_intp2(p1 - q1, BIT_DEPTH - 1), f1, f2;
                 f = av_clip_intp2(3 * (q0 - p0) + f, BIT_DEPTH - 1);
 
@@ -1839,7 +1881,9 @@ static av_always_inline void loop_filter(pixel *dst, int E, int I, int H,
 
                 dst[strideb * -1] = av_clip_pixel(p0 + f2);
                 dst[strideb * +0] = av_clip_pixel(q0 - f1);
-            } else {
+            }
+            else
+            {
                 int f = av_clip_intp2(3 * (q0 - p0), BIT_DEPTH - 1), f1, f2;
 
                 f1 = FFMIN(f + 4, (1 << (BIT_DEPTH - 1)) - 1) >> 3;
@@ -1940,12 +1984,14 @@ static av_always_inline void copy_c(uint8_t *dst, ptrdiff_t dst_stride,
                                     const uint8_t *src, ptrdiff_t src_stride,
                                     int w, int h)
 {
-    do {
+    do
+    {
         memcpy(dst, src, w * sizeof(pixel));
 
         dst += dst_stride;
         src += src_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 static av_always_inline void avg_c(uint8_t *_dst, ptrdiff_t dst_stride,
@@ -1957,7 +2003,8 @@ static av_always_inline void avg_c(uint8_t *_dst, ptrdiff_t dst_stride,
 
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x += 4)
@@ -1965,7 +2012,8 @@ static av_always_inline void avg_c(uint8_t *_dst, ptrdiff_t dst_stride,
 
         dst += dst_stride;
         src += src_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define fpel_fn(type, sz) \
@@ -1991,7 +2039,8 @@ copy_avg_fn(4)
 
 #endif /* BIT_DEPTH != 12 */
 
-static const int16_t vp9_subpel_filters[3][16][8] = {
+static const int16_t vp9_subpel_filters[3][16][8] =
+{
     [FILTER_8TAP_REGULAR] = {
         {  0,  0,   0, 128,   0,   0,  0,  0 },
         {  0,  1,  -5, 126,   8,  -3,  1,  0 },
@@ -2057,28 +2106,33 @@ static const int16_t vp9_subpel_filters[3][16][8] = {
                    F[7] * src[x + +4 * stride] + 64) >> 7)
 
 static av_always_inline void do_8tap_1d_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                          const uint8_t *_src, ptrdiff_t src_stride,
-                                          int w, int h, ptrdiff_t ds,
-                                          const int16_t *filter, int avg)
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, ptrdiff_t ds,
+        const int16_t *filter, int avg)
 {
     pixel *dst = (pixel *) _dst;
     const pixel *src = (const pixel *) _src;
 
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_8TAP(src, x, filter, ds) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_8TAP(src, x, filter, ds);
             }
 
         dst += dst_stride;
         src += src_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define filter_8tap_1d_fn(opn, opa, dir, ds) \
@@ -2097,9 +2151,9 @@ filter_8tap_1d_fn(avg, 1, h, 1)
 #undef filter_8tap_1d_fn
 
 static av_always_inline void do_8tap_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                          const uint8_t *_src, ptrdiff_t src_stride,
-                                          int w, int h, const int16_t *filterx,
-                                          const int16_t *filtery, int avg)
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, const int16_t *filterx,
+        const int16_t *filtery, int avg)
 {
     int tmp_h = h + 7;
     pixel tmp[64 * 71], *tmp_ptr = tmp;
@@ -2109,7 +2163,8 @@ static av_always_inline void do_8tap_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
     src -= src_stride * 3;
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
@@ -2117,22 +2172,28 @@ static av_always_inline void do_8tap_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
 
         tmp_ptr += 64;
         src += src_stride;
-    } while (--tmp_h);
+    }
+    while (--tmp_h);
 
     tmp_ptr = tmp + 64 * 3;
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_8TAP(tmp_ptr, x, filtery, 64) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_8TAP(tmp_ptr, x, filtery, 64);
             }
 
         tmp_ptr += 64;
         dst += dst_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define filter_8tap_2d_fn(opn, opa) \
@@ -2174,27 +2235,32 @@ static void avg##_8tap_##type##_##sz##hv_c(uint8_t *dst, ptrdiff_t dst_stride, \
     (src[x] + ((mxy * (src[x + stride] - src[x]) + 8) >> 4))
 
 static av_always_inline void do_bilin_1d_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                           const uint8_t *_src, ptrdiff_t src_stride,
-                                           int w, int h, ptrdiff_t ds, int mxy, int avg)
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, ptrdiff_t ds, int mxy, int avg)
 {
     pixel *dst = (pixel *) _dst;
     const pixel *src = (const pixel *) _src;
 
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_BILIN(src, x, mxy, ds) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_BILIN(src, x, mxy, ds);
             }
 
         dst += dst_stride;
         src += src_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define bilin_1d_fn(opn, opa, dir, ds) \
@@ -2213,8 +2279,8 @@ bilin_1d_fn(avg, 1, h, 1)
 #undef bilin_1d_fn
 
 static av_always_inline void do_bilin_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                           const uint8_t *_src, ptrdiff_t src_stride,
-                                           int w, int h, int mx, int my, int avg)
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, int mx, int my, int avg)
 {
     pixel tmp[64 * 65], *tmp_ptr = tmp;
     int tmp_h = h + 1;
@@ -2223,7 +2289,8 @@ static av_always_inline void do_bilin_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
 
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
@@ -2231,22 +2298,28 @@ static av_always_inline void do_bilin_2d_c(uint8_t *_dst, ptrdiff_t dst_stride,
 
         tmp_ptr += 64;
         src += src_stride;
-    } while (--tmp_h);
+    }
+    while (--tmp_h);
 
     tmp_ptr = tmp;
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_BILIN(tmp_ptr, x, my, 64) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_BILIN(tmp_ptr, x, my, 64);
             }
 
         tmp_ptr += 64;
         dst += dst_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define bilin_2d_fn(opn, opa) \
@@ -2384,10 +2457,10 @@ av_cold void FUNC(ff_vp9dsp_mc_init)(VP9DSPContext *dsp)
 }
 
 static av_always_inline void do_scaled_8tap_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                              const uint8_t *_src, ptrdiff_t src_stride,
-                                              int w, int h, int mx, int my,
-                                              int dx, int dy, int avg,
-                                              const int16_t (*filters)[8])
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, int mx, int my,
+        int dx, int dy, int avg,
+        const int16_t (*filters)[8])
 {
     int tmp_h = (((h - 1) * dy + my) >> 4) + 8;
     pixel tmp[64 * 135], *tmp_ptr = tmp;
@@ -2397,11 +2470,13 @@ static av_always_inline void do_scaled_8tap_c(uint8_t *_dst, ptrdiff_t dst_strid
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
     src -= src_stride * 3;
-    do {
+    do
+    {
         int x;
         int imx = mx, ioff = 0;
 
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             tmp_ptr[x] = FILTER_8TAP(src, ioff, filters[imx], 1);
             imx += dx;
             ioff += imx >> 4;
@@ -2410,17 +2485,22 @@ static av_always_inline void do_scaled_8tap_c(uint8_t *_dst, ptrdiff_t dst_strid
 
         tmp_ptr += 64;
         src += src_stride;
-    } while (--tmp_h);
+    }
+    while (--tmp_h);
 
     tmp_ptr = tmp + 64 * 3;
-    do {
+    do
+    {
         int x;
         const int16_t *filter = filters[my];
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_8TAP(tmp_ptr, x, filter, 64) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_8TAP(tmp_ptr, x, filter, 64);
             }
 
@@ -2428,7 +2508,8 @@ static av_always_inline void do_scaled_8tap_c(uint8_t *_dst, ptrdiff_t dst_strid
         tmp_ptr += (my >> 4) * 64;
         my &= 0xf;
         dst += dst_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define scaled_filter_8tap_fn(opn, opa) \
@@ -2460,9 +2541,9 @@ static void avg##_scaled_##type##_##sz##_c(uint8_t *dst, ptrdiff_t dst_stride, \
 #if BIT_DEPTH != 12
 
 static av_always_inline void do_scaled_bilin_c(uint8_t *_dst, ptrdiff_t dst_stride,
-                                               const uint8_t *_src, ptrdiff_t src_stride,
-                                               int w, int h, int mx, int my,
-                                               int dx, int dy, int avg)
+        const uint8_t *_src, ptrdiff_t src_stride,
+        int w, int h, int mx, int my,
+        int dx, int dy, int avg)
 {
     pixel tmp[64 * 129], *tmp_ptr = tmp;
     int tmp_h = (((h - 1) * dy + my) >> 4) + 2;
@@ -2471,11 +2552,13 @@ static av_always_inline void do_scaled_bilin_c(uint8_t *_dst, ptrdiff_t dst_stri
 
     dst_stride /= sizeof(pixel);
     src_stride /= sizeof(pixel);
-    do {
+    do
+    {
         int x;
         int imx = mx, ioff = 0;
 
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             tmp_ptr[x] = FILTER_BILIN(src, ioff, imx, 1);
             imx += dx;
             ioff += imx >> 4;
@@ -2484,16 +2567,21 @@ static av_always_inline void do_scaled_bilin_c(uint8_t *_dst, ptrdiff_t dst_stri
 
         tmp_ptr += 64;
         src += src_stride;
-    } while (--tmp_h);
+    }
+    while (--tmp_h);
 
     tmp_ptr = tmp;
-    do {
+    do
+    {
         int x;
 
         for (x = 0; x < w; x++)
-            if (avg) {
+            if (avg)
+            {
                 dst[x] = (dst[x] + FILTER_BILIN(tmp_ptr, x, my, 64) + 1) >> 1;
-            } else {
+            }
+            else
+            {
                 dst[x] = FILTER_BILIN(tmp_ptr, x, my, 64);
             }
 
@@ -2501,7 +2589,8 @@ static av_always_inline void do_scaled_bilin_c(uint8_t *_dst, ptrdiff_t dst_stri
         tmp_ptr += (my >> 4) * 64;
         my &= 0xf;
         dst += dst_stride;
-    } while (--h);
+    }
+    while (--h);
 }
 
 #define scaled_bilin_fn(opn, opa) \

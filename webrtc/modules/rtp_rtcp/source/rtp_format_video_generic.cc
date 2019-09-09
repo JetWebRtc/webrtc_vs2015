@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,104 +15,116 @@
 #include "webrtc/modules/rtp_rtcp/source/rtp_format_video_generic.h"
 #include "webrtc/modules/rtp_rtcp/source/rtp_packet_to_send.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 static const size_t kGenericHeaderLength = 1;
 
 RtpPacketizerGeneric::RtpPacketizerGeneric(FrameType frame_type,
-                                           size_t max_payload_len)
+        size_t max_payload_len)
     : payload_data_(NULL),
       payload_size_(0),
       max_payload_len_(max_payload_len - kGenericHeaderLength),
-      frame_type_(frame_type) {
+      frame_type_(frame_type)
+{
 }
 
-RtpPacketizerGeneric::~RtpPacketizerGeneric() {
+RtpPacketizerGeneric::~RtpPacketizerGeneric()
+{
 }
 
 void RtpPacketizerGeneric::SetPayloadData(
     const uint8_t* payload_data,
     size_t payload_size,
-    const RTPFragmentationHeader* fragmentation) {
-  payload_data_ = payload_data;
-  payload_size_ = payload_size;
+    const RTPFragmentationHeader* fragmentation)
+{
+    payload_data_ = payload_data;
+    payload_size_ = payload_size;
 
-  // Fragment packets more evenly by splitting the payload up evenly.
-  size_t num_packets =
-      (payload_size_ + max_payload_len_ - 1) / max_payload_len_;
-  payload_length_ = (payload_size_ + num_packets - 1) / num_packets;
-  assert(payload_length_ <= max_payload_len_);
+    // Fragment packets more evenly by splitting the payload up evenly.
+    size_t num_packets =
+        (payload_size_ + max_payload_len_ - 1) / max_payload_len_;
+    payload_length_ = (payload_size_ + num_packets - 1) / num_packets;
+    assert(payload_length_ <= max_payload_len_);
 
-  generic_header_ = RtpFormatVideoGeneric::kFirstPacketBit;
+    generic_header_ = RtpFormatVideoGeneric::kFirstPacketBit;
 }
 
 bool RtpPacketizerGeneric::NextPacket(RtpPacketToSend* packet,
-                                      bool* last_packet) {
-  RTC_DCHECK(packet);
-  RTC_DCHECK(last_packet);
-  if (payload_size_ < payload_length_) {
-    payload_length_ = payload_size_;
-  }
+                                      bool* last_packet)
+{
+    RTC_DCHECK(packet);
+    RTC_DCHECK(last_packet);
+    if (payload_size_ < payload_length_)
+    {
+        payload_length_ = payload_size_;
+    }
 
-  payload_size_ -= payload_length_;
-  RTC_DCHECK_LE(payload_length_, max_payload_len_);
+    payload_size_ -= payload_length_;
+    RTC_DCHECK_LE(payload_length_, max_payload_len_);
 
-  uint8_t* out_ptr =
-      packet->AllocatePayload(kGenericHeaderLength + payload_length_);
-  // Put generic header in packet
-  if (frame_type_ == kVideoFrameKey) {
-    generic_header_ |= RtpFormatVideoGeneric::kKeyFrameBit;
-  }
-  out_ptr[0] = generic_header_;
-  // Remove first-packet bit, following packets are intermediate
-  generic_header_ &= ~RtpFormatVideoGeneric::kFirstPacketBit;
+    uint8_t* out_ptr =
+        packet->AllocatePayload(kGenericHeaderLength + payload_length_);
+    // Put generic header in packet
+    if (frame_type_ == kVideoFrameKey)
+    {
+        generic_header_ |= RtpFormatVideoGeneric::kKeyFrameBit;
+    }
+    out_ptr[0] = generic_header_;
+    // Remove first-packet bit, following packets are intermediate
+    generic_header_ &= ~RtpFormatVideoGeneric::kFirstPacketBit;
 
-  // Put payload in packet
-  memcpy(out_ptr + kGenericHeaderLength, payload_data_, payload_length_);
-  payload_data_ += payload_length_;
+    // Put payload in packet
+    memcpy(out_ptr + kGenericHeaderLength, payload_data_, payload_length_);
+    payload_data_ += payload_length_;
 
-  *last_packet = payload_size_ <= 0;
-  packet->SetMarker(*last_packet);
-  return true;
+    *last_packet = payload_size_ <= 0;
+    packet->SetMarker(*last_packet);
+    return true;
 }
 
-ProtectionType RtpPacketizerGeneric::GetProtectionType() {
-  return kProtectedPacket;
+ProtectionType RtpPacketizerGeneric::GetProtectionType()
+{
+    return kProtectedPacket;
 }
 
 StorageType RtpPacketizerGeneric::GetStorageType(
-    uint32_t retransmission_settings) {
-  return kAllowRetransmission;
+    uint32_t retransmission_settings)
+{
+    return kAllowRetransmission;
 }
 
-std::string RtpPacketizerGeneric::ToString() {
-  return "RtpPacketizerGeneric";
+std::string RtpPacketizerGeneric::ToString()
+{
+    return "RtpPacketizerGeneric";
 }
 
 bool RtpDepacketizerGeneric::Parse(ParsedPayload* parsed_payload,
                                    const uint8_t* payload_data,
-                                   size_t payload_data_length) {
-  assert(parsed_payload != NULL);
-  if (payload_data_length == 0) {
-    LOG(LS_ERROR) << "Empty payload.";
-    return false;
-  }
+                                   size_t payload_data_length)
+{
+    assert(parsed_payload != NULL);
+    if (payload_data_length == 0)
+    {
+        LOG(LS_ERROR) << "Empty payload.";
+        return false;
+    }
 
-  uint8_t generic_header = *payload_data++;
-  --payload_data_length;
+    uint8_t generic_header = *payload_data++;
+    --payload_data_length;
 
-  parsed_payload->frame_type =
-      ((generic_header & RtpFormatVideoGeneric::kKeyFrameBit) != 0)
-          ? kVideoFrameKey
-          : kVideoFrameDelta;
-  parsed_payload->type.Video.is_first_packet_in_frame =
-      (generic_header & RtpFormatVideoGeneric::kFirstPacketBit) != 0;
-  parsed_payload->type.Video.codec = kRtpVideoGeneric;
-  parsed_payload->type.Video.width = 0;
-  parsed_payload->type.Video.height = 0;
+    parsed_payload->frame_type =
+        ((generic_header & RtpFormatVideoGeneric::kKeyFrameBit) != 0)
+        ? kVideoFrameKey
+        : kVideoFrameDelta;
+    parsed_payload->type.Video.is_first_packet_in_frame =
+        (generic_header & RtpFormatVideoGeneric::kFirstPacketBit) != 0;
+    parsed_payload->type.Video.codec = kRtpVideoGeneric;
+    parsed_payload->type.Video.width = 0;
+    parsed_payload->type.Video.height = 0;
 
-  parsed_payload->payload = payload_data;
-  parsed_payload->payload_length = payload_data_length;
-  return true;
+    parsed_payload->payload = payload_data;
+    parsed_payload->payload_length = payload_data_length;
+    return true;
 }
 }  // namespace webrtc

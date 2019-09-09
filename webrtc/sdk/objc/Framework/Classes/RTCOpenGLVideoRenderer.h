@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,7 +30,7 @@ RTC_EXPORT
 
 // The last successfully drawn frame. Used to avoid drawing frames unnecessarily
 // hence saving battery life by reducing load.
-@property(nonatomic, readonly) RTCVideoFrame *lastDrawnFrame;
+    @property(nonatomic, readonly) RTCVideoFrame *lastDrawnFrame;
 
 #if TARGET_OS_IPHONE
 - (instancetype)initWithContext:(EAGLContext *)context

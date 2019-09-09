@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
@@ -29,31 +29,31 @@
 
 #define AMR_VENDOR 0x6d346970
 
-MP4DamrAtom::MP4DamrAtom() 
-	: MP4Atom("damr") 
+MP4DamrAtom::MP4DamrAtom()
+    : MP4Atom("damr")
 {
-	AddProperty( /* 0 */
-		new MP4Integer32Property("vendor"));
+    AddProperty( /* 0 */
+        new MP4Integer32Property("vendor"));
 
-	AddProperty( /* 1 */
-		new MP4Integer8Property("decoderVersion"));
+    AddProperty( /* 1 */
+        new MP4Integer8Property("decoderVersion"));
 
-	AddProperty( /* 2 */
-		new MP4Integer16Property("modeSet"));
+    AddProperty( /* 2 */
+        new MP4Integer16Property("modeSet"));
 
-	AddProperty( /* 3 */
-		new MP4Integer8Property("modeChangePeriod"));
+    AddProperty( /* 3 */
+        new MP4Integer8Property("modeChangePeriod"));
 
-	AddProperty( /* 4 */
-		new MP4Integer8Property("framesPerSample"));
+    AddProperty( /* 4 */
+        new MP4Integer8Property("framesPerSample"));
 
 }
 
 void MP4DamrAtom::Generate()
 {
-	MP4Atom::Generate();
+    MP4Atom::Generate();
 
-       ((MP4Integer32Property*)m_pProperties[0])->SetValue(AMR_VENDOR);
-       ((MP4Integer8Property*)m_pProperties[1])->SetValue(1);
+    ((MP4Integer32Property*)m_pProperties[0])->SetValue(AMR_VENDOR);
+    ((MP4Integer8Property*)m_pProperties[1])->SetValue(1);
 
 }

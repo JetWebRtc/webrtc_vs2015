@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SGI image encoder
  * Todd Kirby <doubleshot@pacbell.net>
  *
@@ -30,7 +30,8 @@
 
 static av_cold int encode_init(AVCodecContext *avctx)
 {
-    if (avctx->width > 65535 || avctx->height > 65535) {
+    if (avctx->width > 65535 || avctx->height > 65535)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Unsupported resolution %dx%d.\n", avctx->width, avctx->height);
         av_log(avctx, AV_LOG_ERROR, "SGI does not support resolutions above 65535x65535\n");
@@ -51,10 +52,10 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     unsigned char *end_buf;
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     width  = avctx->width;
@@ -63,7 +64,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     pixmax = 0xFF;
     put_be = HAVE_BIGENDIAN;
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_GRAY8:
         dimension = SGI_SINGLE_CHAN;
         depth     = SGI_GRAYSCALE;
@@ -143,7 +145,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     buf += 404;
     offsettab = buf;
 
-    if (avctx->coder_type != FF_CODER_TYPE_RAW) {
+    if (avctx->coder_type != FF_CODER_TYPE_RAW)
+    {
         /* Skip RLE offset table. */
         buf += tablesize;
         lengthtab = buf;
@@ -155,16 +158,19 @@ FF_ENABLE_DEPRECATION_WARNINGS
         if (!(encode_buf = av_malloc(width)))
             return AVERROR(ENOMEM);
 
-        for (z = 0; z < depth; z++) {
+        for (z = 0; z < depth; z++)
+        {
             in_buf = p->data[0] + p->linesize[0] * (height - 1) + z;
 
-            for (y = 0; y < height; y++) {
+            for (y = 0; y < height; y++)
+            {
                 bytestream_put_be32(&offsettab, buf - pkt->data);
 
                 for (x = 0; x < width; x++)
                     encode_buf[x] = in_buf[depth * x];
 
-                if ((length = ff_rle_encode(buf, end_buf - buf - 1, encode_buf, 1, width, 0, 0, 0x80, 0)) < 1) {
+                if ((length = ff_rle_encode(buf, end_buf - buf - 1, encode_buf, 1, width, 0, 0, 0x80, 0)) < 1)
+                {
                     av_free(encode_buf);
                     return -1;
                 }
@@ -177,18 +183,28 @@ FF_ENABLE_DEPRECATION_WARNINGS
         }
 
         av_free(encode_buf);
-    } else {
-        for (z = 0; z < depth; z++) {
+    }
+    else
+    {
+        for (z = 0; z < depth; z++)
+        {
             in_buf = p->data[0] + p->linesize[0] * (height - 1) + z * bytes_per_channel;
 
-            for (y = 0; y < height; y++) {
+            for (y = 0; y < height; y++)
+            {
                 for (x = 0; x < width * depth; x += depth)
-                    if (bytes_per_channel == 1) {
+                    if (bytes_per_channel == 1)
+                    {
                         bytestream_put_byte(&buf, in_buf[x]);
-                    } else {
-                        if (put_be) {
+                    }
+                    else
+                    {
+                        if (put_be)
+                        {
                             bytestream_put_be16(&buf, ((uint16_t *)in_buf)[x]);
-                        } else {
+                        }
+                        else
+                        {
                             bytestream_put_le16(&buf, ((uint16_t *)in_buf)[x]);
                         }
                     }
@@ -206,7 +222,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     return 0;
 }
 
-AVCodec ff_sgi_encoder = {
+AVCodec ff_sgi_encoder =
+{
     .name      = "sgi",
     .long_name = NULL_IF_CONFIG_SMALL("SGI image"),
     .type      = AVMEDIA_TYPE_VIDEO,

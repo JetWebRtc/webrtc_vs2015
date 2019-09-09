@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,25 +15,28 @@
 #include "webrtc/video_receive_stream.h"
 #include "webrtc/video_send_stream.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class DefaultVideoStreamFactory
-    : public VideoEncoderConfig::VideoStreamFactoryInterface {
- public:
-  DefaultVideoStreamFactory();
+    : public VideoEncoderConfig::VideoStreamFactoryInterface
+{
+public:
+    DefaultVideoStreamFactory();
 
-  static const size_t kMaxNumberOfStreams = 3;
-  // Defined as {150000, 450000, 1500000};
-  static const int kMaxBitratePerStream[];
-  // Defined as {50000, 200000, 700000};
-  static const int kDefaultMinBitratePerStream[];
+    static const size_t kMaxNumberOfStreams = 3;
+    // Defined as {150000, 450000, 1500000};
+    static const int kMaxBitratePerStream[];
+    // Defined as {50000, 200000, 700000};
+    static const int kDefaultMinBitratePerStream[];
 
- private:
-  std::vector<VideoStream> CreateEncoderStreams(
-      int width,
-      int height,
-      const VideoEncoderConfig& encoder_config) override;
+private:
+    std::vector<VideoStream> CreateEncoderStreams(
+        int width,
+        int height,
+        const VideoEncoderConfig& encoder_config) override;
 };
 
 // Creates |encoder_config.number_of_streams| VideoStreams where index

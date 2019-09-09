@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,27 +19,30 @@
 #include "webrtc/modules/audio_processing/aec/aec_core.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(EchoCancellationTest, CreateAndFreeHasExpectedBehavior) {
-  void* handle = WebRtcAec_Create();
-  ASSERT_TRUE(handle);
-  WebRtcAec_Free(nullptr);
-  WebRtcAec_Free(handle);
+TEST(EchoCancellationTest, CreateAndFreeHasExpectedBehavior)
+{
+    void* handle = WebRtcAec_Create();
+    ASSERT_TRUE(handle);
+    WebRtcAec_Free(nullptr);
+    WebRtcAec_Free(handle);
 }
 
-TEST(EchoCancellationTest, ApplyAecCoreHandle) {
-  void* handle = WebRtcAec_Create();
-  ASSERT_TRUE(handle);
-  EXPECT_TRUE(WebRtcAec_aec_core(NULL) == NULL);
-  AecCore* aec_core = WebRtcAec_aec_core(handle);
-  EXPECT_TRUE(aec_core != NULL);
-  // A simple test to verify that we can set and get a value from the lower
-  // level |aec_core| handle.
-  int delay = 111;
-  WebRtcAec_SetSystemDelay(aec_core, delay);
-  EXPECT_EQ(delay, WebRtcAec_system_delay(aec_core));
-  WebRtcAec_Free(handle);
+TEST(EchoCancellationTest, ApplyAecCoreHandle)
+{
+    void* handle = WebRtcAec_Create();
+    ASSERT_TRUE(handle);
+    EXPECT_TRUE(WebRtcAec_aec_core(NULL) == NULL);
+    AecCore* aec_core = WebRtcAec_aec_core(handle);
+    EXPECT_TRUE(aec_core != NULL);
+    // A simple test to verify that we can set and get a value from the lower
+    // level |aec_core| handle.
+    int delay = 111;
+    WebRtcAec_SetSystemDelay(aec_core, delay);
+    EXPECT_EQ(delay, WebRtcAec_system_delay(aec_core));
+    WebRtcAec_Free(handle);
 }
 
 }  // namespace webrtc

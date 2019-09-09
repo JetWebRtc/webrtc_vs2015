@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MSMPEG4 backend for encoder and decoder
  * copyright (c) 2001 Fabrice Bellard
  * copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -35,7 +35,8 @@
 #include "rl.h"
 
 /* motion vector table */
-typedef struct MVTable {
+typedef struct MVTable
+{
     int n;
     const uint16_t *table_mv_code;
     const uint8_t *table_mv_bits;

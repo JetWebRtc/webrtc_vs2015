@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012-2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "internal.h"
 #include "video.h"
 
-enum HistogramMode {
+enum HistogramMode
+{
     MODE_LEVELS,
     MODE_WAVEFORM,
     MODE_COLOR,
@@ -37,7 +38,8 @@ enum HistogramMode {
     MODE_NB
 };
 
-typedef struct HistogramContext {
+typedef struct HistogramContext
+{
     const AVClass *class;               ///< AVClass context for log and options purpose
     int mode;                           ///< HistogramMode
     unsigned       histogram[256*256];
@@ -62,7 +64,8 @@ typedef struct HistogramContext {
 #define OFFSET(x) offsetof(HistogramContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption histogram_options[] = {
+static const AVOption histogram_options[] =
+{
     { "mode", "set histogram mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=MODE_LEVELS}, 0, MODE_NB-1, FLAGS, "mode"},
     { "levels", "standard histogram", 0, AV_OPT_TYPE_CONST, {.i64=MODE_LEVELS}, 0, 0, FLAGS, "mode" },
     { "waveform", "per row/column luminance graph", 0, AV_OPT_TYPE_CONST, {.i64=MODE_WAVEFORM}, 0, 0, FLAGS, "mode" },
@@ -87,12 +90,14 @@ static const AVOption histogram_options[] = {
 
 AVFILTER_DEFINE_CLASS(histogram);
 
-static const enum AVPixelFormat color_pix_fmts[] = {
+static const enum AVPixelFormat color_pix_fmts[] =
+{
     AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVJ444P,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_in_pix_fmts[] = {
+static const enum AVPixelFormat levels_in_pix_fmts[] =
+{
     AV_PIX_FMT_YUVA420P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUVJ420P,
     AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUVJ422P,
     AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUVJ411P,
@@ -108,46 +113,53 @@ static const enum AVPixelFormat levels_in_pix_fmts[] = {
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_yuv8_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_yuv8_pix_fmts[] =
+{
     AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUV444P,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_yuv9_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_yuv9_pix_fmts[] =
+{
     AV_PIX_FMT_YUVA444P9, AV_PIX_FMT_YUV444P9,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_yuv10_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_yuv10_pix_fmts[] =
+{
     AV_PIX_FMT_YUVA444P10, AV_PIX_FMT_YUV444P10,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_rgb8_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_rgb8_pix_fmts[] =
+{
     AV_PIX_FMT_GBRAP,    AV_PIX_FMT_GBRP,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_rgb9_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_rgb9_pix_fmts[] =
+{
     AV_PIX_FMT_GBRP9,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat levels_out_rgb10_pix_fmts[] = {
+static const enum AVPixelFormat levels_out_rgb10_pix_fmts[] =
+{
     AV_PIX_FMT_GBRP10,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat waveform_pix_fmts[] = {
-     AV_PIX_FMT_GBRP,     AV_PIX_FMT_GBRAP,
-     AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
-     AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV440P,
-     AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,
-     AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ411P, AV_PIX_FMT_YUVJ420P,
-     AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ444P,
-     AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
-     AV_PIX_FMT_GRAY8,
-     AV_PIX_FMT_NONE
+static const enum AVPixelFormat waveform_pix_fmts[] =
+{
+    AV_PIX_FMT_GBRP,     AV_PIX_FMT_GBRAP,
+    AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
+    AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV440P,
+    AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,
+    AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ411P, AV_PIX_FMT_YUVJ420P,
+    AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ444P,
+    AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
+    AV_PIX_FMT_GRAY8,
+    AV_PIX_FMT_NONE
 };
 
 static int query_formats(AVFilterContext *ctx)
@@ -156,7 +168,8 @@ static int query_formats(AVFilterContext *ctx)
     const enum AVPixelFormat *pix_fmts;
     AVFilterFormats *fmts_list;
 
-    switch (h->mode) {
+    switch (h->mode)
+    {
     case MODE_WAVEFORM:
         pix_fmts = waveform_pix_fmts;
         break;
@@ -168,7 +181,8 @@ static int query_formats(AVFilterContext *ctx)
         int rgb, i, bits;
 
         if (!ctx->inputs[0]->in_formats ||
-            !ctx->inputs[0]->in_formats->nb_formats) {
+                !ctx->inputs[0]->in_formats->nb_formats)
+        {
             return AVERROR(EAGAIN);
         }
 
@@ -178,10 +192,11 @@ static int query_formats(AVFilterContext *ctx)
         desc = av_pix_fmt_desc_get(avff->formats[0]);
         rgb = desc->flags & AV_PIX_FMT_FLAG_RGB;
         bits = desc->comp[0].depth_minus1;
-        for (i = 1; i < avff->nb_formats; i++) {
+        for (i = 1; i < avff->nb_formats; i++)
+        {
             desc = av_pix_fmt_desc_get(avff->formats[i]);
             if ((rgb != (desc->flags & AV_PIX_FMT_FLAG_RGB)) ||
-                (bits != desc->comp[0].depth_minus1))
+                    (bits != desc->comp[0].depth_minus1))
                 return AVERROR(EAGAIN);
         }
 
@@ -201,7 +216,7 @@ static int query_formats(AVFilterContext *ctx)
 
         return 0;
     }
-        break;
+    break;
     case MODE_COLOR:
     case MODE_COLOR2:
         pix_fmts = color_pix_fmts;
@@ -230,7 +245,8 @@ static int config_input(AVFilterLink *inlink)
     h->histogram_size = 1 << (h->desc->comp[0].depth_minus1 + 1);
     h->mult = h->histogram_size / 256;
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_PIX_FMT_GBRP10:
     case AV_PIX_FMT_GBRP9:
     case AV_PIX_FMT_GBRAP:
@@ -257,9 +273,11 @@ static int config_output(AVFilterLink *outlink)
     HistogramContext *h = ctx->priv;
     int ncomp = 0, i;
 
-    switch (h->mode) {
+    switch (h->mode)
+    {
     case MODE_LEVELS:
-        for (i = 0; i < h->ncomp; i++) {
+        for (i = 0; i < h->ncomp; i++)
+        {
             if ((1 << i) & h->components)
                 ncomp++;
         }
@@ -283,7 +301,10 @@ static int config_output(AVFilterLink *outlink)
     }
 
     h->odesc = av_pix_fmt_desc_get(outlink->format);
-    outlink->sample_aspect_ratio = (AVRational){1,1};
+    outlink->sample_aspect_ratio = (AVRational)
+    {
+        1,1
+    };
 
     return 0;
 }
@@ -311,14 +332,19 @@ static void gen_waveform(HistogramContext *h, AVFrame *inpicref, AVFrame *outpic
 
     if (!col_mode && mirror)
         dst_data += 256 >> shift_w;
-    for (y = 0; y < src_h; y++) {
+    for (y = 0; y < src_h; y++)
+    {
         const uint8_t *src_data_end = src_data + src_w;
         dst = dst_line;
-        for (p = src_data; p < src_data_end; p++) {
+        for (p = src_data; p < src_data_end; p++)
+        {
             uint8_t *target;
-            if (col_mode) {
+            if (col_mode)
+            {
                 target = dst++ + dst_signed_linesize * (*p >> shift_h);
-            } else {
+            }
+            else
+            {
                 if (mirror)
                     target = dst_data - (*p >> shift_w);
                 else
@@ -345,37 +371,44 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i, j, k, l, m;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
 
     out->pts = in->pts;
 
-    for (k = 0; k < 4 && out->data[k]; k++) {
+    for (k = 0; k < 4 && out->data[k]; k++)
+    {
         const int is_chroma = (k == 1 || k == 2);
         const int dst_h = FF_CEIL_RSHIFT(outlink->h, (is_chroma ? h->odesc->log2_chroma_h : 0));
         const int dst_w = FF_CEIL_RSHIFT(outlink->w, (is_chroma ? h->odesc->log2_chroma_w : 0));
 
-        if (h->histogram_size <= 256) {
+        if (h->histogram_size <= 256)
+        {
             for (i = 0; i < dst_h ; i++)
                 memset(out->data[h->odesc->comp[k].plane] +
                        i * out->linesize[h->odesc->comp[k].plane],
                        h->bg_color[k], dst_w);
-        } else {
+        }
+        else
+        {
             const int mult = h->mult;
 
             for (i = 0; i < dst_h ; i++)
                 for (j = 0; j < dst_w; j++)
                     AV_WN16(out->data[h->odesc->comp[k].plane] +
-                        i * out->linesize[h->odesc->comp[k].plane] + j * 2,
-                        h->bg_color[k] * mult);
+                            i * out->linesize[h->odesc->comp[k].plane] + j * 2,
+                            h->bg_color[k] * mult);
         }
     }
 
-    switch (h->mode) {
+    switch (h->mode)
+    {
     case MODE_LEVELS:
-        for (m = 0, k = 0; k < h->ncomp; k++) {
+        for (m = 0, k = 0; k < h->ncomp; k++)
+        {
             const int p = h->desc->comp[k].plane;
             const int height = h->planeheight[p];
             const int width = h->planewidth[p];
@@ -387,14 +420,19 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                 continue;
             start = m++ * (h->level_height + h->scale_height) * h->display_mode;
 
-            if (h->histogram_size <= 256) {
-                for (i = 0; i < height; i++) {
+            if (h->histogram_size <= 256)
+            {
+                for (i = 0; i < height; i++)
+                {
                     const uint8_t *src = in->data[p] + i * in->linesize[p];
                     for (j = 0; j < width; j++)
                         h->histogram[src[j]]++;
                 }
-            } else {
-                for (i = 0; i < height; i++) {
+            }
+            else
+            {
+                for (i = 0; i < height; i++)
+                {
                     const uint16_t *src = (const uint16_t *)(in->data[p] + i * in->linesize[p]);
                     for (j = 0; j < width; j++)
                         h->histogram[src[j]]++;
@@ -405,7 +443,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                 max_hval = FFMAX(max_hval, h->histogram[i]);
             max_hval_log = log2(max_hval + 1);
 
-            for (i = 0; i < outlink->w; i++) {
+            for (i = 0; i < outlink->w; i++)
+            {
                 int col_height;
 
                 if (h->levels_mode)
@@ -413,25 +452,36 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                 else
                     col_height = h->level_height - (h->histogram[i] * (int64_t)h->level_height + max_hval - 1) / max_hval;
 
-                if (h->histogram_size <= 256) {
-                    for (j = h->level_height - 1; j >= col_height; j--) {
-                        if (h->display_mode) {
+                if (h->histogram_size <= 256)
+                {
+                    for (j = h->level_height - 1; j >= col_height; j--)
+                    {
+                        if (h->display_mode)
+                        {
                             for (l = 0; l < h->ncomp; l++)
                                 out->data[l][(j + start) * out->linesize[l] + i] = h->fg_color[l];
-                        } else {
+                        }
+                        else
+                        {
                             out->data[p][(j + start) * out->linesize[p] + i] = 255;
                         }
                     }
                     for (j = h->level_height + h->scale_height - 1; j >= h->level_height; j--)
                         out->data[p][(j + start) * out->linesize[p] + i] = i;
-                } else {
+                }
+                else
+                {
                     const int mult = h->mult;
 
-                    for (j = h->level_height - 1; j >= col_height; j--) {
-                        if (h->display_mode) {
+                    for (j = h->level_height - 1; j >= col_height; j--)
+                    {
+                        if (h->display_mode)
+                        {
                             for (l = 0; l < h->ncomp; l++)
                                 AV_WN16(out->data[l] + (j + start) * out->linesize[l] + i * 2, h->fg_color[l] * mult);
-                        } else {
+                        }
+                        else
+                        {
                             AV_WN16(out->data[p] + (j + start) * out->linesize[p] + i * 2, 255 * mult);
                         }
                     }
@@ -444,25 +494,31 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         }
         break;
     case MODE_WAVEFORM:
-        for (k = 0; k < h->ncomp; k++) {
+        for (k = 0; k < h->ncomp; k++)
+        {
             const int offset = k * 256 * h->display_mode;
             gen_waveform(h, in, out, k, h->step, offset, h->waveform_mode);
         }
         break;
     case MODE_COLOR:
-        for (i = 0; i < inlink->h; i++) {
+        for (i = 0; i < inlink->h; i++)
+        {
             const int iw1 = i * in->linesize[1];
             const int iw2 = i * in->linesize[2];
-            for (j = 0; j < inlink->w; j++) {
+            for (j = 0; j < inlink->w; j++)
+            {
                 const int pos = in->data[1][iw1 + j] * out->linesize[0] + in->data[2][iw2 + j];
                 if (out->data[0][pos] < 255)
                     out->data[0][pos]++;
             }
         }
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             dst = out->data[0] + i * out->linesize[0];
-            for (j = 0; j < 256; j++) {
-                if (!dst[j]) {
+            for (j = 0; j < 256; j++)
+            {
+                if (!dst[j])
+                {
                     out->data[1][i * out->linesize[0] + j] = i;
                     out->data[2][i * out->linesize[0] + j] = j;
                 }
@@ -470,10 +526,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         }
         break;
     case MODE_COLOR2:
-        for (i = 0; i < inlink->h; i++) {
+        for (i = 0; i < inlink->h; i++)
+        {
             const int iw1 = i * in->linesize[1];
             const int iw2 = i * in->linesize[2];
-            for (j = 0; j < inlink->w; j++) {
+            for (j = 0; j < inlink->w; j++)
+            {
                 const int u = in->data[1][iw1 + j];
                 const int v = in->data[2][iw2 + j];
                 const int pos = u * out->linesize[0] + v;
@@ -492,7 +550,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -502,7 +561,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -511,7 +571,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_histogram = {
+AVFilter ff_vf_histogram =
+{
     .name          = "histogram",
     .description   = NULL_IF_CONFIG_SMALL("Compute and draw a histogram."),
     .priv_size     = sizeof(HistogramContext),

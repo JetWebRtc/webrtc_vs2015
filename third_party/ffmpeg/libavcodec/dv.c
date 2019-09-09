@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DV decoder
  * Copyright (c) 2002 Fabrice Bellard
  * Copyright (c) 2004 Roman Shaposhnik
@@ -53,7 +53,7 @@
 RL_VLC_ELEM ff_dv_rl_vlc[1664];
 
 static inline void dv_calc_mb_coordinates(const AVDVProfile *d, int chan,
-                                          int seq, int slot, uint16_t *tbl)
+        int seq, int slot, uint16_t *tbl)
 {
     static const uint8_t off[]   = {  2,  6,  8, 0,  4 };
     static const uint8_t shuf1[] = { 36, 18, 54, 0, 72 };
@@ -63,20 +63,23 @@ static inline void dv_calc_mb_coordinates(const AVDVProfile *d, int chan,
     static const uint8_t l_start[]          = { 0, 4, 9, 13, 18, 22, 27, 31, 36, 40 };
     static const uint8_t l_start_shuffled[] = { 9, 4, 13, 0, 18 };
 
-    static const uint8_t serpent1[] = {
+    static const uint8_t serpent1[] =
+    {
         0, 1, 2, 2, 1, 0,
         0, 1, 2, 2, 1, 0,
         0, 1, 2, 2, 1, 0,
         0, 1, 2, 2, 1, 0,
         0, 1, 2
     };
-    static const uint8_t serpent2[] = {
+    static const uint8_t serpent2[] =
+    {
         0, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 0,
         0, 1, 2, 3, 4, 5, 5, 4, 3, 2, 1, 0,
         0, 1, 2, 3, 4, 5
     };
 
-    static const uint8_t remap[][2] = {
+    static const uint8_t remap[][2] =
+    {
         {  0,  0 }, {  0,  0 }, {  0,  0 }, {  0,  0 }, /* dummy */
         {  0,  0 }, {  0,  1 }, {  0,  2 }, {  0,  3 }, { 10,  0 },
         { 10,  1 }, { 10,  2 }, { 10,  3 }, { 20,  0 }, { 20,  1 },
@@ -95,20 +98,28 @@ static inline void dv_calc_mb_coordinates(const AVDVProfile *d, int chan,
     int i, k, m;
     int x, y, blk;
 
-    for (m = 0; m < 5; m++) {
-        switch (d->width) {
+    for (m = 0; m < 5; m++)
+    {
+        switch (d->width)
+        {
         case 1440:
             blk = (chan * 11 + seq) * 27 + slot;
 
-            if (chan == 0 && seq == 11) {
+            if (chan == 0 && seq == 11)
+            {
                 x = m * 27 + slot;
-                if (x < 90) {
+                if (x < 90)
+                {
                     y = 0;
-                } else {
+                }
+                else
+                {
                     x = (x - 90) * 2;
                     y = 67;
                 }
-            } else {
+            }
+            else
+            {
                 i = (4 * chan + blk + off[m]) % 11;
                 k = (blk / 11) % 27;
 
@@ -126,7 +137,8 @@ static inline void dv_calc_mb_coordinates(const AVDVProfile *d, int chan,
             x = shuf1[m] + (chan & 1) * 9 + k % 9;
             y = (i * 3 + k / 9) * 2 + (chan >> 1) + 4;
 
-            if (x >= 80) {
+            if (x >= 80)
+            {
                 x = remap[y][0] + ((x - 80) << (y > 59));
                 y = remap[y][1];
             }
@@ -143,7 +155,8 @@ static inline void dv_calc_mb_coordinates(const AVDVProfile *d, int chan,
             tbl[m] = (x << 1) | (y << 9);
             break;
         case 720:
-            switch (d->pix_fmt) {
+            switch (d->pix_fmt)
+            {
             case AV_PIX_FMT_YUV422P:
                 x = shuf3[m] + slot / 3;
                 y = serpent1[slot] +
@@ -178,13 +191,17 @@ int ff_dv_init_dynamic_tables(DVVideoContext *ctx, const AVDVProfile *d)
     int j, i, c, s, p;
 
     p = i = 0;
-    for (c = 0; c < d->n_difchan; c++) {
-        for (s = 0; s < d->difseg_size; s++) {
+    for (c = 0; c < d->n_difchan; c++)
+    {
+        for (s = 0; s < d->difseg_size; s++)
+        {
             p += 6;
-            for (j = 0; j < 27; j++) {
+            for (j = 0; j < 27; j++)
+            {
                 p += !(j % 3);
                 if (!(DV_PROFILE_IS_1080i50(d) && c != 0 && s == 11) &&
-                    !(DV_PROFILE_IS_720p50(d) && s > 9)) {
+                        !(DV_PROFILE_IS_720p50(d) && s > 9))
+                {
                     dv_calc_mb_coordinates(d, c, s, j, &ctx->work_chunks[i].mb_coordinates[0]);
                     ctx->work_chunks[i++].buf_offset = p;
                 }
@@ -202,7 +219,8 @@ av_cold int ff_dvvideo_init(AVCodecContext *avctx)
     static int done = 0;
     int i, j;
 
-    if (!done) {
+    if (!done)
+    {
         VLC dv_vlc;
         uint16_t  new_dv_vlc_bits[NB_DV_VLC * 2];
         uint8_t    new_dv_vlc_len[NB_DV_VLC * 2];
@@ -212,13 +230,15 @@ av_cold int ff_dvvideo_init(AVCodecContext *avctx)
         done = 1;
 
         /* it's faster to include sign bit in a generic VLC parsing scheme */
-        for (i = 0, j = 0; i < NB_DV_VLC; i++, j++) {
+        for (i = 0, j = 0; i < NB_DV_VLC; i++, j++)
+        {
             new_dv_vlc_bits[j]  = ff_dv_vlc_bits[i];
             new_dv_vlc_len[j]   = ff_dv_vlc_len[i];
             new_dv_vlc_run[j]   = ff_dv_vlc_run[i];
             new_dv_vlc_level[j] = ff_dv_vlc_level[i];
 
-            if (ff_dv_vlc_level[i]) {
+            if (ff_dv_vlc_level[i])
+            {
                 new_dv_vlc_bits[j] <<= 1;
                 new_dv_vlc_len[j]++;
 
@@ -236,15 +256,19 @@ av_cold int ff_dvvideo_init(AVCodecContext *avctx)
                  1, 1, new_dv_vlc_bits, 2, 2, 0);
         av_assert1(dv_vlc.table_size == 1664);
 
-        for (i = 0; i < dv_vlc.table_size; i++) {
+        for (i = 0; i < dv_vlc.table_size; i++)
+        {
             int code = dv_vlc.table[i][0];
             int len  = dv_vlc.table[i][1];
             int level, run;
 
-            if (len < 0) { // more bits needed
+            if (len < 0)   // more bits needed
+            {
                 run   = 0;
                 level = code;
-            } else {
+            }
+            else
+            {
                 run   = new_dv_vlc_run[code] + 1;
                 level = new_dv_vlc_level[code];
             }

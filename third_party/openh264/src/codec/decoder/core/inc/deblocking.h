@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 
 #include "decoder_context.h"
 #include "deblocking_common.h"
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*!
  * \brief   deblocking module initialize

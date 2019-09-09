@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,43 +14,45 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace webrtc {
+namespace webrtc
+{
 
 /**
  * These objects are created by RTCPeerConnectionFactory to wrap an
  * id<RTCPeerConnectionDelegate> and call methods on that interface.
  */
-class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
+class PeerConnectionDelegateAdapter : public PeerConnectionObserver
+{
 
- public:
-  PeerConnectionDelegateAdapter(RTCPeerConnection *peerConnection);
-  virtual ~PeerConnectionDelegateAdapter();
+public:
+    PeerConnectionDelegateAdapter(RTCPeerConnection *peerConnection);
+    virtual ~PeerConnectionDelegateAdapter();
 
-  void OnSignalingChange(
-      PeerConnectionInterface::SignalingState new_state) override;
+    void OnSignalingChange(
+        PeerConnectionInterface::SignalingState new_state) override;
 
-  void OnAddStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
+    void OnAddStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
 
-  void OnRemoveStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
+    void OnRemoveStream(rtc::scoped_refptr<MediaStreamInterface> stream) override;
 
-  void OnDataChannel(
-      rtc::scoped_refptr<DataChannelInterface> data_channel) override;
+    void OnDataChannel(
+        rtc::scoped_refptr<DataChannelInterface> data_channel) override;
 
-  void OnRenegotiationNeeded() override;
+    void OnRenegotiationNeeded() override;
 
-  void OnIceConnectionChange(
-      PeerConnectionInterface::IceConnectionState new_state) override;
+    void OnIceConnectionChange(
+        PeerConnectionInterface::IceConnectionState new_state) override;
 
-  void OnIceGatheringChange(
-      PeerConnectionInterface::IceGatheringState new_state) override;
+    void OnIceGatheringChange(
+        PeerConnectionInterface::IceGatheringState new_state) override;
 
-  void OnIceCandidate(const IceCandidateInterface *candidate) override;
+    void OnIceCandidate(const IceCandidateInterface *candidate) override;
 
-  void OnIceCandidatesRemoved(
-      const std::vector<cricket::Candidate>& candidates) override;
+    void OnIceCandidatesRemoved(
+        const std::vector<cricket::Candidate>& candidates) override;
 
- private:
-  __weak RTCPeerConnection *peer_connection_;
+private:
+    __weak RTCPeerConnection *peer_connection_;
 };
 
 } // namespace webrtc
@@ -58,8 +60,8 @@ class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
 
 @interface RTCPeerConnection ()
 
-/** The native PeerConnectionInterface created during construction. */
-@property(nonatomic, readonly)
+    /** The native PeerConnectionInterface created during construction. */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::PeerConnectionInterface> nativePeerConnection;
 
 /** Initialize an RTCPeerConnection with a configuration, constraints, and
@@ -67,11 +69,11 @@ class PeerConnectionDelegateAdapter : public PeerConnectionObserver {
  */
 - (instancetype)initWithFactory:
     (RTCPeerConnectionFactory *)factory
-                  configuration:
+    configuration:
     (RTCConfiguration *)configuration
-                    constraints:
+    constraints:
     (RTCMediaConstraints *)constraints
-                       delegate:
+    delegate:
     (nullable id<RTCPeerConnectionDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 

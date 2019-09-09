@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -40,12 +40,14 @@
 #if !defined(WELS_ENCODER_STATISTICAL_DATA_H__)
 #define WELS_ENCODER_STATISTICAL_DATA_H__
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /*
  *  Stat quality
  */
-typedef struct TagStatQuality {
+typedef struct TagStatQuality
+{
 
 float   rYPsnr[5];
 float   rUPsnr[5];
@@ -56,7 +58,8 @@ float   rVPsnr[5];
 /*
  *  Stat complexity pData
  */
-typedef struct TagComplexityStat {
+typedef struct TagComplexityStat
+{
 
 #ifdef FME_TEST
 int32_t         cost_time;
@@ -72,7 +75,8 @@ int32_t         mvb_time;
 /*
  *  Stat slice details information
  */
-typedef struct TagStatSliceInfo {
+typedef struct TagStatSliceInfo
+{
 
 /* per slice info */
 int32_t         iSliceCount[5];
@@ -84,7 +88,8 @@ int32_t         iMbCount   [5][18];
 /*
  *  For overall statistical pData
  */
-typedef struct TagStatData {
+typedef struct TagStatData
+{
 
 // Quality
 SStatQuality    sQualityStat;

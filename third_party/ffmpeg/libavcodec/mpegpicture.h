@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Mpeg video formats-related defines and utility functions
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #define MAX_PICTURE_COUNT 36
 #define EDGE_WIDTH 16
 
-typedef struct ScratchpadContext {
+typedef struct ScratchpadContext
+{
     uint8_t *edge_emu_buffer;     ///< temporary buffer for if MVs point to out-of-frame data
     uint8_t *rd_scratchpad;       ///< scratchpad for rate distortion mb decision
     uint8_t *obmc_scratchpad;
@@ -42,7 +43,8 @@ typedef struct ScratchpadContext {
 /**
  * Picture.
  */
-typedef struct Picture {
+typedef struct Picture
+{
     struct AVFrame *f;
     ThreadFrame tf;
 

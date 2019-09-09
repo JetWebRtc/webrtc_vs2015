@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 #include "libavutil/pixdesc.h"
 #include "avdevice.h"
 
-typedef struct CACAContext {
+typedef struct CACAContext
+{
     AVClass         *class;
     AVFormatContext *ctx;
     char            *window_title;
@@ -47,15 +48,18 @@ static int caca_write_trailer(AVFormatContext *s)
 
     av_freep(&c->window_title);
 
-    if (c->display) {
+    if (c->display)
+    {
         caca_free_display(c->display);
         c->display = NULL;
     }
-    if (c->dither) {
+    if (c->dither)
+    {
         caca_free_dither(c->dither);
         c->dither = NULL;
     }
-    if (c->canvas) {
+    if (c->canvas)
+    {
         caca_free_canvas(c->canvas);
         c->canvas = NULL;
     }
@@ -96,20 +100,31 @@ static int caca_write_header(AVFormatContext *s)
     int ret, bpp;
 
     c->ctx = s;
-    if (c->list_drivers) {
+    if (c->list_drivers)
+    {
         list_drivers(c);
         return AVERROR_EXIT;
     }
-    if (c->list_dither) {
-        if (!strcmp(c->list_dither, "colors")) {
+    if (c->list_dither)
+    {
+        if (!strcmp(c->list_dither, "colors"))
+        {
             list_dither_color(c);
-        } else if (!strcmp(c->list_dither, "charsets")) {
+        }
+        else if (!strcmp(c->list_dither, "charsets"))
+        {
             list_dither_charset(c);
-        } else if (!strcmp(c->list_dither, "algorithms")) {
+        }
+        else if (!strcmp(c->list_dither, "algorithms"))
+        {
             list_dither_algorithm(c);
-        } else if (!strcmp(c->list_dither, "antialiases")) {
+        }
+        else if (!strcmp(c->list_dither, "antialiases"))
+        {
             list_dither_antialias(c);
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR,
                    "Invalid argument '%s', for 'list_dither' option\n"
                    "Argument must be one of 'algorithms, 'antialiases', 'charsets', 'colors'\n",
@@ -120,13 +135,15 @@ static int caca_write_header(AVFormatContext *s)
     }
 
     if (   s->nb_streams > 1
-        || encctx->codec_type != AVMEDIA_TYPE_VIDEO
-        || encctx->codec_id   != AV_CODEC_ID_RAWVIDEO) {
+            || encctx->codec_type != AVMEDIA_TYPE_VIDEO
+            || encctx->codec_id   != AV_CODEC_ID_RAWVIDEO)
+    {
         av_log(s, AV_LOG_ERROR, "Only supports one rawvideo stream\n");
         return AVERROR(EINVAL);
     }
 
-    if (encctx->pix_fmt != AV_PIX_FMT_RGB24) {
+    if (encctx->pix_fmt != AV_PIX_FMT_RGB24)
+    {
         av_log(s, AV_LOG_ERROR,
                "Unsupported pixel format '%s', choose rgb24\n",
                av_get_pix_fmt_name(encctx->pix_fmt));
@@ -134,7 +151,8 @@ static int caca_write_header(AVFormatContext *s)
     }
 
     c->canvas = caca_create_canvas(c->window_width, c->window_height);
-    if (!c->canvas) {
+    if (!c->canvas)
+    {
         ret = AVERROR(errno);
         av_log(s, AV_LOG_ERROR, "Failed to create canvas\n");
         goto fail;
@@ -144,7 +162,8 @@ static int caca_write_header(AVFormatContext *s)
     c->dither = caca_create_dither(bpp, encctx->width, encctx->height,
                                    bpp / 8 * encctx->width,
                                    0x0000ff, 0x00ff00, 0xff0000, 0);
-    if (!c->dither) {
+    if (!c->dither)
+    {
         ret =  AVERROR(errno);
         av_log(s, AV_LOG_ERROR, "Failed to create dither\n");
         goto fail;
@@ -163,14 +182,16 @@ static int caca_write_header(AVFormatContext *s)
     CHECK_DITHER_OPT(color);
 
     c->display = caca_create_display_with_driver(c->canvas, c->driver);
-    if (!c->display) {
+    if (!c->display)
+    {
         ret = AVERROR(errno);
         av_log(s, AV_LOG_ERROR, "Failed to create display\n");
         list_drivers(c);
         goto fail;
     }
 
-    if (!c->window_width || !c->window_height) {
+    if (!c->window_width || !c->window_height)
+    {
         c->window_width  = caca_get_canvas_width(c->canvas);
         c->window_height = caca_get_canvas_height(c->canvas);
     }
@@ -200,7 +221,8 @@ static int caca_write_packet(AVFormatContext *s, AVPacket *pkt)
 #define OFFSET(x) offsetof(CACAContext,x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "window_size",  "set window forced size",  OFFSET(window_width), AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL }, 0, 0, ENC},
     { "window_title", "set window title",        OFFSET(window_title), AV_OPT_TYPE_STRING,     {.str = NULL }, 0, 0, ENC },
     { "driver",       "set display driver",      OFFSET(driver),    AV_OPT_TYPE_STRING, {.str = NULL }, 0, 0, ENC },
@@ -219,7 +241,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass caca_class = {
+static const AVClass caca_class =
+{
     .class_name = "caca_outdev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -227,7 +250,8 @@ static const AVClass caca_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT,
 };
 
-AVOutputFormat ff_caca_muxer = {
+AVOutputFormat ff_caca_muxer =
+{
     .name           = "caca",
     .long_name      = NULL_IF_CONFIG_SMALL("caca (color ASCII art) output device"),
     .priv_data_size = sizeof(CACAContext),

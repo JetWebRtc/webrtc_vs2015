@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,11 +42,13 @@ void silk_autocorrelation_FLP(
 {
     opus_int i;
 
-    if( correlationCount > inputDataSize ) {
+    if( correlationCount > inputDataSize )
+    {
         correlationCount = inputDataSize;
     }
 
-    for( i = 0; i < correlationCount; i++ ) {
+    for( i = 0; i < correlationCount; i++ )
+    {
         results[ i ] =  (silk_float)silk_inner_product_FLP( inputData, inputData + i, inputDataSize - i );
     }
 }

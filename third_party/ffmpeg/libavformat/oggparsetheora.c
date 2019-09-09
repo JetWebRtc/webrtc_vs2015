@@ -1,4 +1,4 @@
-/**
+﻿/**
  *    Copyright (C) 2005  Matthieu CASTET, Alex Beregszaszi
  *
  *    Permission is hereby granted, free of charge, to any person
@@ -29,7 +29,8 @@
 #include "internal.h"
 #include "oggdec.h"
 
-typedef struct TheoraParams {
+typedef struct TheoraParams
+{
     int gpshift;
     int gpmask;
     unsigned version;
@@ -48,15 +49,18 @@ static int theora_header(AVFormatContext *s, int idx)
     if (!(os->buf[os->pstart] & 0x80))
         return 0;
 
-    if (!thp) {
+    if (!thp)
+    {
         thp = av_mallocz(sizeof(*thp));
         if (!thp)
             return AVERROR(ENOMEM);
         os->private = thp;
     }
 
-    switch (os->buf[os->pstart]) {
-    case 0x80: {
+    switch (os->buf[os->pstart])
+    {
+    case 0x80:
+    {
         GetBitContext gb;
         AVRational timebase;
 
@@ -66,7 +70,8 @@ static int theora_header(AVFormatContext *s, int idx)
         skip_bits_long(&gb, 7 * 8);
 
         thp->version = get_bits_long(&gb, 24);
-        if (thp->version < 0x030100) {
+        if (thp->version < 0x030100)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Too old or unsupported Theora (%x)\n", thp->version);
             return AVERROR(ENOSYS);
@@ -78,11 +83,13 @@ static int theora_header(AVFormatContext *s, int idx)
         if (thp->version >= 0x030400)
             skip_bits(&gb, 100);
 
-        if (thp->version >= 0x030200) {
+        if (thp->version >= 0x030200)
+        {
             int width  = get_bits_long(&gb, 24);
             int height = get_bits_long(&gb, 24);
             if (width  <= st->codec->width  && width  > st->codec->width  - 16 &&
-                height <= st->codec->height && height > st->codec->height - 16) {
+                    height <= st->codec->height && height > st->codec->height - 16)
+            {
                 st->codec->width  = width;
                 st->codec->height = height;
             }
@@ -92,7 +99,8 @@ static int theora_header(AVFormatContext *s, int idx)
 
         timebase.den = get_bits_long(&gb, 32);
         timebase.num = get_bits_long(&gb, 32);
-        if (!(timebase.num > 0 && timebase.den > 0)) {
+        if (!(timebase.num > 0 && timebase.den > 0))
+        {
             av_log(s, AV_LOG_WARNING, "Invalid time base in theora stream, assuming 25 FPS\n");
             timebase.num = 1;
             timebase.den = 25;
@@ -127,7 +135,8 @@ static int theora_header(AVFormatContext *s, int idx)
     }
 
     if ((err = av_reallocp(&st->codec->extradata,
-                           cds + AV_INPUT_BUFFER_PADDING_SIZE)) < 0) {
+                           cds + AV_INPUT_BUFFER_PADDING_SIZE)) < 0)
+    {
         st->codec->extradata_size = 0;
         return err;
     }
@@ -179,17 +188,20 @@ static int theora_packet(AVFormatContext *s, int idx)
        the total duration to the page granule to find the encoder delay and
        set the first timestamp */
 
-    if ((!os->lastpts || os->lastpts == AV_NOPTS_VALUE) && !(os->flags & OGG_FLAG_EOS)) {
+    if ((!os->lastpts || os->lastpts == AV_NOPTS_VALUE) && !(os->flags & OGG_FLAG_EOS))
+    {
         int seg;
 
         duration = 1;
-        for (seg = os->segp; seg < os->nsegs; seg++) {
+        for (seg = os->segp; seg < os->nsegs; seg++)
+        {
             if (os->segments[seg] < 255)
                 duration ++;
         }
 
         os->lastpts = os->lastdts   = theora_gptopts(s, idx, os->granule, NULL) - duration;
-        if(s->streams[idx]->start_time == AV_NOPTS_VALUE) {
+        if(s->streams[idx]->start_time == AV_NOPTS_VALUE)
+        {
             s->streams[idx]->start_time = os->lastpts;
             if (s->streams[idx]->duration)
                 s->streams[idx]->duration -= s->streams[idx]->start_time;
@@ -197,14 +209,16 @@ static int theora_packet(AVFormatContext *s, int idx)
     }
 
     /* parse packet duration */
-    if (os->psize > 0) {
+    if (os->psize > 0)
+    {
         os->pduration = 1;
     }
 
     return 0;
 }
 
-const struct ogg_codec ff_theora_codec = {
+const struct ogg_codec ff_theora_codec =
+{
     .magic     = "\200theora",
     .magicsize = 7,
     .header    = theora_header,

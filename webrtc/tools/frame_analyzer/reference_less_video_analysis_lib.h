@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,7 +22,7 @@ void get_height_width_fps(int *height, int *width, int *fps,
 // Returns true if the frame is frozen based on psnr and ssim freezing
 // threshold values.
 bool frozen_frame(std::vector<double> psnr_per_frame,
-                     std::vector<double> ssim_per_frame, size_t frame);
+                  std::vector<double> ssim_per_frame, size_t frame);
 
 // Returns the vector of identical cluster of frames that are frozen
 // and appears continuously.

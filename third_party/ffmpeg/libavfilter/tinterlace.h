@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Stefano Sabatini
  * Copyright (c) 2010 Baptiste Coudurier
  * Copyright (c) 2003 Michael Zucchi <notzed@ximian.com>
@@ -30,7 +30,8 @@
 #include "libavutil/opt.h"
 #include "avfilter.h"
 
-enum TInterlaceMode {
+enum TInterlaceMode
+{
     MODE_MERGE = 0,
     MODE_DROP_EVEN,
     MODE_DROP_ODD,
@@ -41,7 +42,8 @@ enum TInterlaceMode {
     MODE_NB,
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int mode;                   ///< TInterlaceMode, interlace mode selected
     AVRational preout_time_base;

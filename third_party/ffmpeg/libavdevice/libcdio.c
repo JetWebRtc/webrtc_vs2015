@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Anton Khirnov <anton@khirnov.net>
  *
  * This file is part of FFmpeg.
@@ -40,7 +40,8 @@
 #include "libavformat/avformat.h"
 #include "libavformat/internal.h"
 
-typedef struct CDIOContext {
+typedef struct CDIOContext
+{
     const AVClass       *class;
     cdrom_drive_t       *drive;
     cdrom_paranoia_t *paranoia;
@@ -61,15 +62,18 @@ static av_cold int read_header(AVFormatContext *ctx)
     if (!(st = avformat_new_stream(ctx, NULL)))
         return AVERROR(ENOMEM);
     s->drive = cdio_cddap_identify(ctx->filename, CDDA_MESSAGE_LOGIT, &err);
-    if (!s->drive) {
+    if (!s->drive)
+    {
         av_log(ctx, AV_LOG_ERROR, "Could not open drive %s.\n", ctx->filename);
         return AVERROR(EINVAL);
     }
-    if (err) {
+    if (err)
+    {
         av_log(ctx, AV_LOG_VERBOSE, "%s\n", err);
         free(err);
     }
-    if ((ret = cdio_cddap_open(s->drive)) < 0 || !s->drive->opened) {
+    if ((ret = cdio_cddap_open(s->drive)) < 0 || !s->drive->opened)
+    {
         av_log(ctx, AV_LOG_ERROR, "Could not open disk in drive %s.\n", ctx->filename);
         return AVERROR(EINVAL);
     }
@@ -79,7 +83,8 @@ static av_cold int read_header(AVFormatContext *ctx)
         cdio_cddap_speed_set(s->drive, s->speed);
 
     s->paranoia = cdio_paranoia_init(s->drive);
-    if (!s->paranoia) {
+    if (!s->paranoia)
+    {
         av_log(ctx, AV_LOG_ERROR, "Could not init paranoia.\n");
         return AVERROR(EINVAL);
     }
@@ -93,17 +98,18 @@ static av_cold int read_header(AVFormatContext *ctx)
     st->codec->sample_rate     = 44100;
     st->codec->channels        = 2;
     if (s->drive->audio_last_sector != CDIO_INVALID_LSN &&
-        s->drive->audio_first_sector != CDIO_INVALID_LSN)
+            s->drive->audio_first_sector != CDIO_INVALID_LSN)
         st->duration           = s->drive->audio_last_sector - s->drive->audio_first_sector;
     else if (s->drive->tracks)
         st->duration = s->drive->disc_toc[s->drive->tracks].dwStartSector;
     avpriv_set_pts_info(st, 64, CDIO_CD_FRAMESIZE_RAW, 2*st->codec->channels*st->codec->sample_rate);
 
-    for (i = 0; i < s->drive->tracks; i++) {
+    for (i = 0; i < s->drive->tracks; i++)
+    {
         char title[16];
         snprintf(title, sizeof(title), "track %02d", s->drive->disc_toc[i].bTrack);
         avpriv_new_chapter(ctx, i, st->time_base, s->drive->disc_toc[i].dwStartSector,
-                       s->drive->disc_toc[i+1].dwStartSector, title);
+                           s->drive->disc_toc[i+1].dwStartSector, title);
     }
 
     s->last_sector = cdio_cddap_disc_lastsector(s->drive);
@@ -125,12 +131,14 @@ static int read_packet(AVFormatContext *ctx, AVPacket *pkt)
     if (!buf)
         return AVERROR_EOF;
 
-    if (err = cdio_cddap_errors(s->drive)) {
+    if (err = cdio_cddap_errors(s->drive))
+    {
         av_log(ctx, AV_LOG_ERROR, "%s\n", err);
         free(err);
         err = NULL;
     }
-    if (err = cdio_cddap_messages(s->drive)) {
+    if (err = cdio_cddap_messages(s->drive))
+    {
         av_log(ctx, AV_LOG_VERBOSE, "%s\n", err);
         free(err);
         err = NULL;
@@ -163,18 +171,20 @@ static int read_seek(AVFormatContext *ctx, int stream_index, int64_t timestamp,
 
 #define OFFSET(x) offsetof(CDIOContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "speed",              "set drive reading speed", OFFSET(speed),         AV_OPT_TYPE_INT,   { .i64 = 0 }, 0,       INT_MAX, DEC },
     { "paranoia_mode",      "set error recovery mode", OFFSET(paranoia_mode), AV_OPT_TYPE_FLAGS, { .i64 = PARANOIA_MODE_DISABLE }, INT_MIN, INT_MAX, DEC, "paranoia_mode" },
-        { "disable",        "apply no fixups",                      0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_DISABLE },   0, 0, DEC, "paranoia_mode" },
-        { "verify",         "verify data integrity in overlap area", 0,   AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_VERIFY },    0, 0, DEC, "paranoia_mode" },
-        { "overlap",        "perform overlapped reads",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_OVERLAP },   0, 0, DEC, "paranoia_mode" },
-        { "neverskip",      "do not skip failed reads",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_NEVERSKIP }, 0, 0, DEC, "paranoia_mode" },
-        { "full",           "apply all recovery modes",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_FULL },      0, 0, DEC, "paranoia_mode" },
+    { "disable",        "apply no fixups",                      0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_DISABLE },   0, 0, DEC, "paranoia_mode" },
+    { "verify",         "verify data integrity in overlap area", 0,   AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_VERIFY },    0, 0, DEC, "paranoia_mode" },
+    { "overlap",        "perform overlapped reads",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_OVERLAP },   0, 0, DEC, "paranoia_mode" },
+    { "neverskip",      "do not skip failed reads",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_NEVERSKIP }, 0, 0, DEC, "paranoia_mode" },
+    { "full",           "apply all recovery modes",             0,    AV_OPT_TYPE_CONST, { .i64 = PARANOIA_MODE_FULL },      0, 0, DEC, "paranoia_mode" },
     { NULL },
 };
 
-static const AVClass libcdio_class = {
+static const AVClass libcdio_class =
+{
     .class_name = "libcdio indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -182,7 +192,8 @@ static const AVClass libcdio_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_libcdio_demuxer = {
+AVInputFormat ff_libcdio_demuxer =
+{
     .name           = "libcdio",
     .read_header    = read_header,
     .read_packet    = read_packet,

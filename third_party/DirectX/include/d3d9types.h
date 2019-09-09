@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  Copyright (C) Microsoft Corporation.  All Rights Reserved.
  *
@@ -48,7 +48,8 @@ typedef DWORD D3DCOLOR;
 
 
 #ifndef D3DVECTOR_DEFINED
-typedef struct _D3DVECTOR {
+typedef struct _D3DVECTOR
+{
     float x;
     float y;
     float z;
@@ -57,7 +58,8 @@ typedef struct _D3DVECTOR {
 #endif
 
 #ifndef D3DCOLORVALUE_DEFINED
-typedef struct _D3DCOLORVALUE {
+typedef struct _D3DCOLORVALUE
+{
     float r;
     float g;
     float b;
@@ -67,7 +69,8 @@ typedef struct _D3DCOLORVALUE {
 #endif
 
 #ifndef D3DRECT_DEFINED
-typedef struct _D3DRECT {
+typedef struct _D3DRECT
+{
     LONG x1;
     LONG y1;
     LONG x2;
@@ -77,9 +80,12 @@ typedef struct _D3DRECT {
 #endif
 
 #ifndef D3DMATRIX_DEFINED
-typedef struct _D3DMATRIX {
-    union {
-        struct {
+typedef struct _D3DMATRIX
+{
+    union
+    {
+        struct
+        {
             float        _11, _12, _13, _14;
             float        _21, _22, _23, _24;
             float        _31, _32, _33, _34;
@@ -92,7 +98,8 @@ typedef struct _D3DMATRIX {
 #define D3DMATRIX_DEFINED
 #endif
 
-typedef struct _D3DVIEWPORT9 {
+typedef struct _D3DVIEWPORT9
+{
     DWORD       X;
     DWORD       Y;            /* Viewport Top left */
     DWORD       Width;
@@ -147,12 +154,14 @@ typedef struct _D3DVIEWPORT9 {
                    D3DCS_PLANE4 | \
                    D3DCS_PLANE5)
 
-typedef struct _D3DCLIPSTATUS9 {
+typedef struct _D3DCLIPSTATUS9
+{
     DWORD ClipUnion;
     DWORD ClipIntersection;
 } D3DCLIPSTATUS9;
 
-typedef struct _D3DMATERIAL9 {
+typedef struct _D3DMATERIAL9
+{
     D3DCOLORVALUE   Diffuse;        /* Diffuse color RGBA */
     D3DCOLORVALUE   Ambient;        /* Ambient color RGB */
     D3DCOLORVALUE   Specular;       /* Specular 'shininess' */
@@ -160,14 +169,16 @@ typedef struct _D3DMATERIAL9 {
     float           Power;          /* Sharpness if specular highlight */
 } D3DMATERIAL9;
 
-typedef enum _D3DLIGHTTYPE {
+typedef enum _D3DLIGHTTYPE
+{
     D3DLIGHT_POINT          = 1,
     D3DLIGHT_SPOT           = 2,
     D3DLIGHT_DIRECTIONAL    = 3,
     D3DLIGHT_FORCE_DWORD    = 0x7fffffff, /* force 32-bit size enum */
 } D3DLIGHTTYPE;
 
-typedef struct _D3DLIGHT9 {
+typedef struct _D3DLIGHT9
+{
     D3DLIGHTTYPE    Type;            /* Type of light source */
     D3DCOLORVALUE   Diffuse;         /* Diffuse color of light */
     D3DCOLORVALUE   Specular;        /* Specular color of light */
@@ -194,21 +205,24 @@ typedef struct _D3DLIGHT9 {
  * The following defines the rendering states
  */
 
-typedef enum _D3DSHADEMODE {
+typedef enum _D3DSHADEMODE
+{
     D3DSHADE_FLAT               = 1,
     D3DSHADE_GOURAUD            = 2,
     D3DSHADE_PHONG              = 3,
     D3DSHADE_FORCE_DWORD        = 0x7fffffff, /* force 32-bit size enum */
 } D3DSHADEMODE;
 
-typedef enum _D3DFILLMODE {
+typedef enum _D3DFILLMODE
+{
     D3DFILL_POINT               = 1,
     D3DFILL_WIREFRAME           = 2,
     D3DFILL_SOLID               = 3,
     D3DFILL_FORCE_DWORD         = 0x7fffffff, /* force 32-bit size enum */
 } D3DFILLMODE;
 
-typedef enum _D3DBLEND {
+typedef enum _D3DBLEND
+{
     D3DBLEND_ZERO               = 1,
     D3DBLEND_ONE                = 2,
     D3DBLEND_SRCCOLOR           = 3,
@@ -229,7 +243,8 @@ typedef enum _D3DBLEND {
     D3DBLEND_FORCE_DWORD        = 0x7fffffff, /* force 32-bit size enum */
 } D3DBLEND;
 
-typedef enum _D3DBLENDOP {
+typedef enum _D3DBLENDOP
+{
     D3DBLENDOP_ADD              = 1,
     D3DBLENDOP_SUBTRACT         = 2,
     D3DBLENDOP_REVSUBTRACT      = 3,
@@ -238,7 +253,8 @@ typedef enum _D3DBLENDOP {
     D3DBLENDOP_FORCE_DWORD      = 0x7fffffff, /* force 32-bit size enum */
 } D3DBLENDOP;
 
-typedef enum _D3DTEXTUREADDRESS {
+typedef enum _D3DTEXTUREADDRESS
+{
     D3DTADDRESS_WRAP            = 1,
     D3DTADDRESS_MIRROR          = 2,
     D3DTADDRESS_CLAMP           = 3,
@@ -247,14 +263,16 @@ typedef enum _D3DTEXTUREADDRESS {
     D3DTADDRESS_FORCE_DWORD     = 0x7fffffff, /* force 32-bit size enum */
 } D3DTEXTUREADDRESS;
 
-typedef enum _D3DCULL {
+typedef enum _D3DCULL
+{
     D3DCULL_NONE                = 1,
     D3DCULL_CW                  = 2,
     D3DCULL_CCW                 = 3,
     D3DCULL_FORCE_DWORD         = 0x7fffffff, /* force 32-bit size enum */
 } D3DCULL;
 
-typedef enum _D3DCMPFUNC {
+typedef enum _D3DCMPFUNC
+{
     D3DCMP_NEVER                = 1,
     D3DCMP_LESS                 = 2,
     D3DCMP_EQUAL                = 3,
@@ -266,7 +284,8 @@ typedef enum _D3DCMPFUNC {
     D3DCMP_FORCE_DWORD          = 0x7fffffff, /* force 32-bit size enum */
 } D3DCMPFUNC;
 
-typedef enum _D3DSTENCILOP {
+typedef enum _D3DSTENCILOP
+{
     D3DSTENCILOP_KEEP           = 1,
     D3DSTENCILOP_ZERO           = 2,
     D3DSTENCILOP_REPLACE        = 3,
@@ -278,7 +297,8 @@ typedef enum _D3DSTENCILOP {
     D3DSTENCILOP_FORCE_DWORD    = 0x7fffffff, /* force 32-bit size enum */
 } D3DSTENCILOP;
 
-typedef enum _D3DFOGMODE {
+typedef enum _D3DFOGMODE
+{
     D3DFOG_NONE                 = 0,
     D3DFOG_EXP                  = 1,
     D3DFOG_EXP2                 = 2,
@@ -286,7 +306,8 @@ typedef enum _D3DFOGMODE {
     D3DFOG_FORCE_DWORD          = 0x7fffffff, /* force 32-bit size enum */
 } D3DFOGMODE;
 
-typedef enum _D3DZBUFFERTYPE {
+typedef enum _D3DZBUFFERTYPE
+{
     D3DZB_FALSE                 = 0,
     D3DZB_TRUE                  = 1, // Z buffering
     D3DZB_USEW                  = 2, // W buffering
@@ -294,7 +315,8 @@ typedef enum _D3DZBUFFERTYPE {
 } D3DZBUFFERTYPE;
 
 // Primitives supported by draw-primitive API
-typedef enum _D3DPRIMITIVETYPE {
+typedef enum _D3DPRIMITIVETYPE
+{
     D3DPT_POINTLIST             = 1,
     D3DPT_LINELIST              = 2,
     D3DPT_LINESTRIP             = 3,
@@ -304,7 +326,8 @@ typedef enum _D3DPRIMITIVETYPE {
     D3DPT_FORCE_DWORD           = 0x7fffffff, /* force 32-bit size enum */
 } D3DPRIMITIVETYPE;
 
-typedef enum _D3DTRANSFORMSTATETYPE {
+typedef enum _D3DTRANSFORMSTATETYPE
+{
     D3DTS_VIEW          = 2,
     D3DTS_PROJECTION    = 3,
     D3DTS_TEXTURE0      = 16,
@@ -324,7 +347,8 @@ typedef enum _D3DTRANSFORMSTATETYPE {
 #define D3DTS_WORLD2 D3DTS_WORLDMATRIX(2)
 #define D3DTS_WORLD3 D3DTS_WORLDMATRIX(3)
 
-typedef enum _D3DRENDERSTATETYPE {
+typedef enum _D3DRENDERSTATETYPE
+{
     D3DRS_ZENABLE                   = 7,    /* D3DZBUFFERTYPE (or TRUE/FALSE for legacy) */
     D3DRS_FILLMODE                  = 8,    /* D3DFILLMODE */
     D3DRS_SHADEMODE                 = 9,    /* D3DSHADEMODE */
@@ -560,8 +584,8 @@ typedef enum _D3DTEXTUREOP
     D3DTOP_ADDSIGNED2X          =  9,   // as above but left  1 bit
     D3DTOP_SUBTRACT             = 10,   // Arg1 - Arg2, with no saturation
     D3DTOP_ADDSMOOTH            = 11,   // add 2 args, subtract product
-                                        // Arg1 + Arg2 - Arg1*Arg2
-                                        // = Arg1 + (1-Arg1)*Arg2
+    // Arg1 + Arg2 - Arg1*Arg2
+    // = Arg1 + (1-Arg1)*Arg2
 
     // Linear alpha blend: Arg1*(Alpha) + Arg2*(1-Alpha)
     D3DTOP_BLENDDIFFUSEALPHA    = 12, // iterated alpha
@@ -575,13 +599,13 @@ typedef enum _D3DTEXTUREOP
     // Specular mapping
     D3DTOP_PREMODULATE            = 17,     // modulate with next texture before use
     D3DTOP_MODULATEALPHA_ADDCOLOR = 18,     // Arg1.RGB + Arg1.A*Arg2.RGB
-                                            // COLOROP only
+    // COLOROP only
     D3DTOP_MODULATECOLOR_ADDALPHA = 19,     // Arg1.RGB*Arg2.RGB + Arg1.A
-                                            // COLOROP only
+    // COLOROP only
     D3DTOP_MODULATEINVALPHA_ADDCOLOR = 20,  // (1-Arg1.A)*Arg2.RGB + Arg1.RGB
-                                            // COLOROP only
+    // COLOROP only
     D3DTOP_MODULATEINVCOLOR_ADDALPHA = 21,  // (1-Arg1.RGB)*Arg2.RGB + Arg1.A
-                                            // COLOROP only
+    // COLOROP only
 
     // Bump mapping
     D3DTOP_BUMPENVMAP           = 22, // per pixel env map perturbation
@@ -724,7 +748,7 @@ typedef enum _D3DDECLTYPE
     D3DDECLTYPE_FLOAT3    =  2,  // 3D float expanded to (value, value, value, 1.)
     D3DDECLTYPE_FLOAT4    =  3,  // 4D float
     D3DDECLTYPE_D3DCOLOR  =  4,  // 4D packed unsigned bytes mapped to 0. to 1. range
-                                 // Input is in D3DCOLOR format (ARGB) expanded to (R, G, B, A)
+    // Input is in D3DCOLOR format (ARGB) expanded to (R, G, B, A)
     D3DDECLTYPE_UBYTE4    =  5,  // 4D unsigned byte
     D3DDECLTYPE_SHORT2    =  6,  // 2D signed short expanded to (value, value, 0., 1.)
     D3DDECLTYPE_SHORT4    =  7,  // 4D signed short
@@ -906,7 +930,7 @@ typedef enum _D3DSHADER_INSTRUCTION_OPCODE_TYPE
 // Comparison for dynamic conditional instruction opcodes (i.e. if, breakc)
 typedef enum _D3DSHADER_COMPARISON
 {
-                         // < = >
+    // < = >
     D3DSPC_RESERVED0= 0, // 0 0 0
     D3DSPC_GT       = 1, // 0 0 1
     D3DSPC_EQ       = 2, // 0 1 0
@@ -969,13 +993,13 @@ typedef enum _D3DSAMPLER_TEXTURE_TYPE
 #define    D3DSPDM_SATURATE             (1<<D3DSP_DSTMOD_SHIFT) // clamp to 0. to 1. range
 #define    D3DSPDM_PARTIALPRECISION     (2<<D3DSP_DSTMOD_SHIFT) // Partial precision hint
 #define    D3DSPDM_MSAMPCENTROID        (4<<D3DSP_DSTMOD_SHIFT) // Relevant to multisampling only:
-                                                                //      When the pixel center is not covered, sample
-                                                                //      attribute or compute gradients/LOD
-                                                                //      using multisample "centroid" location.
-                                                                //      "Centroid" is some location within the covered
-                                                                //      region of the pixel.
+//      When the pixel center is not covered, sample
+//      attribute or compute gradients/LOD
+//      using multisample "centroid" location.
+//      "Centroid" is some location within the covered
+//      region of the pixel.
 
-// destination parameter 
+// destination parameter
 #define D3DSP_DSTSHIFT_SHIFT    24
 #define D3DSP_DSTSHIFT_MASK     0x0F000000
 
@@ -1179,26 +1203,26 @@ typedef enum _D3DSHADER_PARAM_SRCMOD_TYPE
 //
 typedef enum _D3DBASISTYPE
 {
-   D3DBASIS_BEZIER      = 0,
-   D3DBASIS_BSPLINE     = 1,
-   D3DBASIS_CATMULL_ROM = 2, /* In D3D8 this used to be D3DBASIS_INTERPOLATE */
-   D3DBASIS_FORCE_DWORD = 0x7fffffff,
+    D3DBASIS_BEZIER      = 0,
+    D3DBASIS_BSPLINE     = 1,
+    D3DBASIS_CATMULL_ROM = 2, /* In D3D8 this used to be D3DBASIS_INTERPOLATE */
+    D3DBASIS_FORCE_DWORD = 0x7fffffff,
 } D3DBASISTYPE;
 
 typedef enum _D3DDEGREETYPE
 {
-   D3DDEGREE_LINEAR      = 1,
-   D3DDEGREE_QUADRATIC   = 2,
-   D3DDEGREE_CUBIC       = 3,
-   D3DDEGREE_QUINTIC     = 5,
-   D3DDEGREE_FORCE_DWORD = 0x7fffffff,
+    D3DDEGREE_LINEAR      = 1,
+    D3DDEGREE_QUADRATIC   = 2,
+    D3DDEGREE_CUBIC       = 3,
+    D3DDEGREE_QUINTIC     = 5,
+    D3DDEGREE_FORCE_DWORD = 0x7fffffff,
 } D3DDEGREETYPE;
 
 typedef enum _D3DPATCHEDGESTYLE
 {
-   D3DPATCHEDGE_DISCRETE    = 0,
-   D3DPATCHEDGE_CONTINUOUS  = 1,
-   D3DPATCHEDGE_FORCE_DWORD = 0x7fffffff,
+    D3DPATCHEDGE_DISCRETE    = 0,
+    D3DPATCHEDGE_CONTINUOUS  = 1,
+    D3DPATCHEDGE_FORCE_DWORD = 0x7fffffff,
 } D3DPATCHEDGESTYLE;
 
 typedef enum _D3DSTATEBLOCKTYPE
@@ -1222,7 +1246,8 @@ typedef enum _D3DVERTEXBLENDFLAGS
     D3DVBF_FORCE_DWORD = 0x7fffffff, // force 32-bit size enum
 } D3DVERTEXBLENDFLAGS;
 
-typedef enum _D3DTEXTURETRANSFORMFLAGS {
+typedef enum _D3DTEXTURETRANSFORMFLAGS
+{
     D3DTTFF_DISABLE         = 0,    // texture coordinates are passed directly
     D3DTTFF_COUNT1          = 1,    // rasterizer should expect 1-D texture coords
     D3DTTFF_COUNT2          = 2,    // rasterizer should expect 2-D texture coords
@@ -1317,7 +1342,7 @@ typedef enum _D3DMULTISAMPLE_TYPE
  *            number of bits per Depth channel (but not Stencil channel).
  */
 #ifndef MAKEFOURCC
-    #define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
+#define MAKEFOURCC(ch0, ch1, ch2, ch3)                              \
                 ((DWORD)(BYTE)(ch0) | ((DWORD)(BYTE)(ch1) << 8) |       \
                 ((DWORD)(BYTE)(ch2) << 16) | ((DWORD)(BYTE)(ch3) << 24 ))
 #endif /* defined(MAKEFOURCC) */
@@ -1415,7 +1440,7 @@ typedef enum _D3DFORMAT
 
 
     // Binary format indicating that the data has no inherent type
-    D3DFMT_BINARYBUFFER            = 199,                                 
+    D3DFMT_BINARYBUFFER            = 199,
 
 
     D3DFMT_FORCE_DWORD          =0x7fffffff
@@ -1451,7 +1476,8 @@ typedef enum _D3DSWAPEFFECT
 } D3DSWAPEFFECT;
 
 /* Pool types */
-typedef enum _D3DPOOL {
+typedef enum _D3DPOOL
+{
     D3DPOOL_DEFAULT                 = 0,
     D3DPOOL_MANAGED                 = 1,
     D3DPOOL_SYSTEMMEM               = 2,
@@ -1519,7 +1545,8 @@ typedef enum _D3DBACKBUFFER_TYPE
 
 
 /* Types */
-typedef enum _D3DRESOURCETYPE {
+typedef enum _D3DRESOURCETYPE
+{
     D3DRTYPE_SURFACE                =  1,
     D3DRTYPE_VOLUME                 =  2,
     D3DRTYPE_TEXTURE                =  3,
@@ -1760,7 +1787,8 @@ typedef struct _D3DRASTER_STATUS
 
    Calling GetRenderState on D3DRS_DEBUGMONITORTOKEN is not of any use.
 */
-typedef enum _D3DDEBUGMONITORTOKENS {
+typedef enum _D3DDEBUGMONITORTOKENS
+{
     D3DDMT_ENABLE            = 0,    // enable debug monitor
     D3DDMT_DISABLE           = 1,    // disable debug monitor
     D3DDMT_FORCE_DWORD     = 0x7fffffff,
@@ -1768,7 +1796,8 @@ typedef enum _D3DDEBUGMONITORTOKENS {
 
 // Async feedback
 
-typedef enum _D3DQUERYTYPE {
+typedef enum _D3DQUERYTYPE
+{
     D3DQUERYTYPE_VCACHE                 = 4, /* D3DISSUE_END */
     D3DQUERYTYPE_RESOURCEMANAGER        = 5, /* D3DISSUE_END */
     D3DQUERYTYPE_VERTEXSTATS            = 6, /* D3DISSUE_END */
@@ -1829,7 +1858,8 @@ typedef struct _D3DDEVINFO_D3DVERTEXSTATS
 } D3DDEVINFO_D3DVERTEXSTATS, *LPD3DDEVINFO_D3DVERTEXSTATS;
 
 
-typedef struct _D3DDEVINFO_VCACHE {
+typedef struct _D3DDEVINFO_VCACHE
+{
     DWORD   Pattern;                    /* bit pattern, return value must be FOUR_CC('C', 'A', 'C', 'H') */
     DWORD   OptMethod;                  /* optimization method 0 means longest strips, 1 means vertex cache based */
     DWORD   CacheSize;                  /* cache size to optimize for  (only required if type is 1) */
@@ -1876,7 +1906,8 @@ typedef struct _D3DDEVINFO_D3D9CACHEUTILIZATION
 } D3DDEVINFO_D3D9CACHEUTILIZATION;
 
 
-typedef enum _D3DCOMPOSERECTSOP{
+typedef enum _D3DCOMPOSERECTSOP
+{
     D3DCOMPOSERECTS_COPY     = 1,
     D3DCOMPOSERECTS_OR       = 2,
     D3DCOMPOSERECTS_AND      = 3,
@@ -1904,7 +1935,8 @@ typedef struct _D3DCOMPOSERECTDESTINATION
 #define D3DFMT_A1_SURFACE_MAXHEIGHT 2048
 
 
-typedef struct _D3DPRESENTSTATS {
+typedef struct _D3DPRESENTSTATS
+{
     UINT PresentCount;
     UINT PresentRefreshCount;
     UINT SyncRefreshCount;
@@ -1914,7 +1946,7 @@ typedef struct _D3DPRESENTSTATS {
 
 typedef enum D3DSCANLINEORDERING
 {
-    D3DSCANLINEORDERING_UNKNOWN                    = 0, 
+    D3DSCANLINEORDERING_UNKNOWN                    = 0,
     D3DSCANLINEORDERING_PROGRESSIVE                = 1,
     D3DSCANLINEORDERING_INTERLACED                 = 2,
 } D3DSCANLINEORDERING;
@@ -1940,7 +1972,7 @@ typedef struct D3DDISPLAYMODEFILTER
 
 typedef enum D3DDISPLAYROTATION
 {
-    D3DDISPLAYROTATION_IDENTITY = 1, // No rotation.           
+    D3DDISPLAYROTATION_IDENTITY = 1, // No rotation.
     D3DDISPLAYROTATION_90       = 2, // Rotated 90 degrees.
     D3DDISPLAYROTATION_180      = 3, // Rotated 180 degrees.
     D3DDISPLAYROTATION_270      = 4  // Rotated 270 degrees.

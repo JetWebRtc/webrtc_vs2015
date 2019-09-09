@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,12 +11,14 @@
 #include "webrtc/test/gtest.h"
 #include "webrtc/test/testsupport/fileutils.h"
 
-void InitializeGoogleTest(int* argc, char** argv) {
-  // Initialize WebRTC testing framework so paths to resources can be resolved.
-  webrtc::test::SetExecutablePath(argv[0]);
-  testing::InitGoogleTest(argc, argv);
+void InitializeGoogleTest(int* argc, char** argv)
+{
+    // Initialize WebRTC testing framework so paths to resources can be resolved.
+    webrtc::test::SetExecutablePath(argv[0]);
+    testing::InitGoogleTest(argc, argv);
 }
 
-int RunInAutomatedMode() {
-  return RUN_ALL_TESTS();
+int RunInAutomatedMode()
+{
+    return RUN_ALL_TESTS();
 }

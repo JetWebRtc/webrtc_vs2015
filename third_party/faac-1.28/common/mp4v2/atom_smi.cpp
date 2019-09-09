@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
@@ -27,15 +27,15 @@ MP4SmiAtom::MP4SmiAtom()
     : MP4Atom("meta")
 {
 
-  AddProperty( new MP4BytesProperty("metadata"));
+    AddProperty( new MP4BytesProperty("metadata"));
 
 }
 
-void MP4SmiAtom::Read() 
+void MP4SmiAtom::Read()
 {
-	// calculate size of the metadata from the atom size
-	((MP4BytesProperty*)m_pProperties[0])->SetValueSize(m_size);
+    // calculate size of the metadata from the atom size
+    ((MP4BytesProperty*)m_pProperties[0])->SetValueSize(m_size);
 
-	MP4Atom::Read();
+    MP4Atom::Read();
 }
 

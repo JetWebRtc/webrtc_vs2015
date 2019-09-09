@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -28,14 +28,16 @@
 #include "internal.h"
 #include "video.h"
 
-enum SetFieldMode {
+enum SetFieldMode
+{
     MODE_AUTO = -1,
     MODE_BFF,
     MODE_TFF,
     MODE_PROG,
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int mode;                   ///< SetFieldMode
 } SetFieldContext;
@@ -43,7 +45,8 @@ typedef struct {
 #define OFFSET(x) offsetof(SetFieldContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption setfield_options[] = {
+static const AVOption setfield_options[] =
+{
     {"mode", "select interlace mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=MODE_AUTO}, -1, MODE_PROG, FLAGS, "mode"},
     {"auto", "keep the same input field",  0, AV_OPT_TYPE_CONST, {.i64=MODE_AUTO}, INT_MIN, INT_MAX, FLAGS, "mode"},
     {"bff",  "mark as bottom-field-first", 0, AV_OPT_TYPE_CONST, {.i64=MODE_BFF},  INT_MIN, INT_MAX, FLAGS, "mode"},
@@ -58,16 +61,20 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *picref)
 {
     SetFieldContext *setfield = inlink->dst->priv;
 
-    if (setfield->mode == MODE_PROG) {
+    if (setfield->mode == MODE_PROG)
+    {
         picref->interlaced_frame = 0;
-    } else if (setfield->mode != MODE_AUTO) {
+    }
+    else if (setfield->mode != MODE_AUTO)
+    {
         picref->interlaced_frame = 1;
         picref->top_field_first = setfield->mode;
     }
     return ff_filter_frame(inlink->dst->outputs[0], picref);
 }
 
-static const AVFilterPad setfield_inputs[] = {
+static const AVFilterPad setfield_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -76,7 +83,8 @@ static const AVFilterPad setfield_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad setfield_outputs[] = {
+static const AVFilterPad setfield_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -84,7 +92,8 @@ static const AVFilterPad setfield_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_setfield = {
+AVFilter ff_vf_setfield =
+{
     .name        = "setfield",
     .description = NULL_IF_CONFIG_SMALL("Force field for the output video frame."),
     .priv_size   = sizeof(SetFieldContext),

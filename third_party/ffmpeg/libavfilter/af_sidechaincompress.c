@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2010 Krzysztof Foltman, Markus Schmidt, Thor Harald Johansen and others
  * Copyright (c) 2015 Paul B Mahol
  *
@@ -34,7 +34,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct SidechainCompressContext {
+typedef struct SidechainCompressContext
+{
     const AVClass *class;
 
     double attack, attack_coeff;
@@ -59,7 +60,8 @@ typedef struct SidechainCompressContext {
 #define A AV_OPT_FLAG_AUDIO_PARAM
 #define F AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption sidechaincompress_options[] = {
+static const AVOption sidechaincompress_options[] =
+{
     { "threshold", "set threshold",    OFFSET(threshold), AV_OPT_TYPE_DOUBLE, {.dbl=0.125}, 0.000976563,    1, A|F },
     { "ratio",     "set ratio",        OFFSET(ratio),     AV_OPT_TYPE_DOUBLE, {.dbl=2},               1,   20, A|F },
     { "attack",    "set attack",       OFFSET(attack),    AV_OPT_TYPE_DOUBLE, {.dbl=20},           0.01, 2000, A|F },
@@ -91,8 +93,8 @@ static av_cold int init(AVFilterContext *ctx)
 }
 
 static inline float hermite_interpolation(float x, float x0, float x1,
-                                          float p0, float p1,
-                                          float m0, float m1)
+        float p0, float p1,
+        float m0, float m1)
 {
     float width = x1 - x0;
     float t = (x - x0) / width;
@@ -130,10 +132,13 @@ static double output_gain(double lin_slope, double ratio, double thres,
     if (detection)
         slope *= 0.5;
 
-    if (IS_FAKE_INFINITY(ratio)) {
+    if (IS_FAKE_INFINITY(ratio))
+    {
         gain = thres;
         delta = 0.0;
-    } else {
+    }
+    else
+    {
         gain = (slope - thres) / ratio + thres;
         delta = 1.0 / ratio;
     }
@@ -173,15 +178,19 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
     sample = (double *)s->input_frame[0]->data[0];
     scsrc = (const double *)s->input_frame[1]->data[0];
 
-    for (i = 0; i < nb_samples; i++) {
+    for (i = 0; i < nb_samples; i++)
+    {
         double abs_sample, gain = 1.0;
 
         abs_sample = FFABS(scsrc[0]);
 
-        if (s->link == 1) {
+        if (s->link == 1)
+        {
             for (c = 1; c < sclink->channels; c++)
                 abs_sample = FFMAX(FFABS(scsrc[c]), abs_sample);
-        } else {
+        }
+        else
+        {
             for (c = 1; c < sclink->channels; c++)
                 abs_sample += FFABS(scsrc[c]);
 
@@ -220,10 +229,11 @@ static int request_frame(AVFilterLink *outlink)
     int i, ret;
 
     /* get a frame on each input */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         AVFilterLink *inlink = ctx->inputs[i];
         if (!s->input_frame[i] &&
-            (ret = ff_request_frame(inlink)) < 0)
+                (ret = ff_request_frame(inlink)) < 0)
             return ret;
 
         /* request the same number of samples on all inputs */
@@ -238,17 +248,19 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts = NULL;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_DBL,
         AV_SAMPLE_FMT_NONE
     };
     int ret, i;
 
     if (!ctx->inputs[0]->in_channel_layouts ||
-        !ctx->inputs[0]->in_channel_layouts->nb_channel_layouts) {
+            !ctx->inputs[0]->in_channel_layouts->nb_channel_layouts)
+    {
         av_log(ctx, AV_LOG_WARNING,
                "No channel layout for input 1\n");
-            return AVERROR(EAGAIN);
+        return AVERROR(EAGAIN);
     }
 
     ff_add_channel_layout(&layouts, ctx->inputs[0]->in_channel_layouts->channel_layouts[0]);
@@ -256,7 +268,8 @@ static int query_formats(AVFilterContext *ctx)
         return AVERROR(ENOMEM);
     ff_channel_layouts_ref(layouts, &ctx->outputs[0]->in_channel_layouts);
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         layouts = ff_all_channel_layouts();
         if (!layouts)
             return AVERROR(ENOMEM);
@@ -281,7 +294,8 @@ static int config_output(AVFilterLink *outlink)
     AVFilterContext *ctx = outlink->src;
     SidechainCompressContext *s = ctx->priv;
 
-    if (ctx->inputs[0]->sample_rate != ctx->inputs[1]->sample_rate) {
+    if (ctx->inputs[0]->sample_rate != ctx->inputs[1]->sample_rate)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Inputs must have the same sample rate "
                "%d for in0 vs %d for in1\n",
@@ -300,7 +314,8 @@ static int config_output(AVFilterLink *outlink)
     return 0;
 }
 
-static const AVFilterPad sidechaincompress_inputs[] = {
+static const AVFilterPad sidechaincompress_inputs[] =
+{
     {
         .name           = "main",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -316,7 +331,8 @@ static const AVFilterPad sidechaincompress_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad sidechaincompress_outputs[] = {
+static const AVFilterPad sidechaincompress_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -326,7 +342,8 @@ static const AVFilterPad sidechaincompress_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_sidechaincompress = {
+AVFilter ff_af_sidechaincompress =
+{
     .name           = "sidechaincompress",
     .description    = NULL_IF_CONFIG_SMALL("Sidechain compressor."),
     .priv_size      = sizeof(SidechainCompressContext),

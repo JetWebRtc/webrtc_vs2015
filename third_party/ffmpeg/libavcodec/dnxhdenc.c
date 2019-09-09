@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC3/DNxHD encoder
  * Copyright (c) 2007 Baptiste Coudurier <baptiste dot coudurier at smartjog dot com>
  * Copyright (c) 2011 MirriAd Ltd
@@ -43,16 +43,22 @@
 #define LAMBDA_FRAC_BITS 10
 
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
-    { "nitris_compat", "encode with Avid Nitris compatibility",
-        offsetof(DNXHDEncContext, nitris_compat), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, VE },
-    { "ibias", "intra quant bias",
+static const AVOption options[] =
+{
+    {
+        "nitris_compat", "encode with Avid Nitris compatibility",
+        offsetof(DNXHDEncContext, nitris_compat), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, VE
+    },
+    {
+        "ibias", "intra quant bias",
         offsetof(DNXHDEncContext, intra_quant_bias), AV_OPT_TYPE_INT,
-        { .i64 = 0 }, INT_MIN, INT_MAX, VE },
+        { .i64 = 0 }, INT_MIN, INT_MAX, VE
+    },
     { NULL }
 };
 
-static const AVClass dnxhd_class = {
+static const AVClass dnxhd_class =
+{
     .class_name = "dnxhd",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -60,11 +66,12 @@ static const AVClass dnxhd_class = {
 };
 
 static void dnxhd_8bit_get_pixels_8x4_sym(int16_t *av_restrict block,
-                                          const uint8_t *pixels,
-                                          ptrdiff_t line_size)
+        const uint8_t *pixels,
+        ptrdiff_t line_size)
 {
     int i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         block[0] = pixels[0];
         block[1] = pixels[1];
         block[2] = pixels[2];
@@ -91,11 +98,16 @@ void dnxhd_10bit_get_pixels_8x4_sym(int16_t *av_restrict block,
     const uint16_t* pixels16 = (const uint16_t*)pixels;
     line_size >>= 1;
 
-    for (i = 0; i < 4; i++) {
-        block[0] = pixels16[0]; block[1] = pixels16[1];
-        block[2] = pixels16[2]; block[3] = pixels16[3];
-        block[4] = pixels16[4]; block[5] = pixels16[5];
-        block[6] = pixels16[6]; block[7] = pixels16[7];
+    for (i = 0; i < 4; i++)
+    {
+        block[0] = pixels16[0];
+        block[1] = pixels16[1];
+        block[2] = pixels16[2];
+        block[3] = pixels16[3];
+        block[4] = pixels16[4];
+        block[5] = pixels16[5];
+        block[6] = pixels16[6];
+        block[7] = pixels16[7];
         pixels16 += line_size;
         block += 8;
     }
@@ -118,7 +130,8 @@ static int dnxhd_10bit_dct_quantize(MpegEncContext *ctx, int16_t *block,
     // Divide by 4 with rounding, to compensate scaling of DCT coefficients
     block[0] = (block[0] + 2) >> 2;
 
-    for (i = 1; i < 64; ++i) {
+    for (i = 1; i < 64; ++i)
+    {
         int j = scantable[i];
         int sign = FF_SIGNBIT(block[j]);
         int level = (block[j] ^ sign) - sign;
@@ -137,9 +150,9 @@ static av_cold int dnxhd_init_vlc(DNXHDEncContext *ctx)
     int max_level = 1 << (ctx->cid_table->bit_depth + 2);
 
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->vlc_codes,
-                      max_level, 4 * sizeof(*ctx->vlc_codes), fail);
+                            max_level, 4 * sizeof(*ctx->vlc_codes), fail);
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->vlc_bits,
-                      max_level, 4 * sizeof(*ctx->vlc_bits), fail);
+                            max_level, 4 * sizeof(*ctx->vlc_bits), fail);
     FF_ALLOCZ_OR_GOTO(ctx->m.avctx, ctx->run_codes,
                       63 * 2, fail);
     FF_ALLOCZ_OR_GOTO(ctx->m.avctx, ctx->run_bits,
@@ -147,26 +160,34 @@ static av_cold int dnxhd_init_vlc(DNXHDEncContext *ctx)
 
     ctx->vlc_codes += max_level * 2;
     ctx->vlc_bits  += max_level * 2;
-    for (level = -max_level; level < max_level; level++) {
-        for (run = 0; run < 2; run++) {
+    for (level = -max_level; level < max_level; level++)
+    {
+        for (run = 0; run < 2; run++)
+        {
             int index = (level << 1) | run;
             int sign, offset = 0, alevel = level;
 
             MASK_ABS(sign, alevel);
-            if (alevel > 64) {
+            if (alevel > 64)
+            {
                 offset  = (alevel - 1) >> 6;
                 alevel -= offset << 6;
             }
-            for (j = 0; j < 257; j++) {
+            for (j = 0; j < 257; j++)
+            {
                 if (ctx->cid_table->ac_level[j] >> 1 == alevel &&
-                    (!offset || (ctx->cid_table->ac_flags[j] & 1) && offset) &&
-                    (!run    || (ctx->cid_table->ac_flags[j] & 2) && run)) {
+                        (!offset || (ctx->cid_table->ac_flags[j] & 1) && offset) &&
+                        (!run    || (ctx->cid_table->ac_flags[j] & 2) && run))
+                {
                     av_assert1(!ctx->vlc_codes[index]);
-                    if (alevel) {
+                    if (alevel)
+                    {
                         ctx->vlc_codes[index] =
                             (ctx->cid_table->ac_codes[j] << 1) | (sign & 1);
                         ctx->vlc_bits[index] = ctx->cid_table->ac_bits[j] + 1;
-                    } else {
+                    }
+                    else
+                    {
                         ctx->vlc_codes[index] = ctx->cid_table->ac_codes[j];
                         ctx->vlc_bits[index]  = ctx->cid_table->ac_bits[j];
                     }
@@ -174,14 +195,16 @@ static av_cold int dnxhd_init_vlc(DNXHDEncContext *ctx)
                 }
             }
             av_assert0(!alevel || j < 257);
-            if (offset) {
+            if (offset)
+            {
                 ctx->vlc_codes[index] =
                     (ctx->vlc_codes[index] << ctx->cid_table->index_bits) | offset;
                 ctx->vlc_bits[index] += ctx->cid_table->index_bits;
             }
         }
     }
-    for (i = 0; i < 62; i++) {
+    for (i = 0; i < 62; i++)
+    {
         int run = ctx->cid_table->run[i];
         av_assert0(run < 63);
         ctx->run_codes[run] = ctx->cid_table->run_codes[i];
@@ -201,25 +224,28 @@ static av_cold int dnxhd_init_qmat(DNXHDEncContext *ctx, int lbias, int cbias)
     const uint8_t *chroma_weight_table = ctx->cid_table->chroma_weight;
 
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->qmatrix_l,
-                      (ctx->m.avctx->qmax + 1), 64 * sizeof(int), fail);
+                            (ctx->m.avctx->qmax + 1), 64 * sizeof(int), fail);
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->qmatrix_c,
-                      (ctx->m.avctx->qmax + 1), 64 * sizeof(int), fail);
+                            (ctx->m.avctx->qmax + 1), 64 * sizeof(int), fail);
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->qmatrix_l16,
-                      (ctx->m.avctx->qmax + 1), 64 * 2 * sizeof(uint16_t),
-                      fail);
+                            (ctx->m.avctx->qmax + 1), 64 * 2 * sizeof(uint16_t),
+                            fail);
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->qmatrix_c16,
-                      (ctx->m.avctx->qmax + 1), 64 * 2 * sizeof(uint16_t),
-                      fail);
+                            (ctx->m.avctx->qmax + 1), 64 * 2 * sizeof(uint16_t),
+                            fail);
 
-    if (ctx->cid_table->bit_depth == 8) {
-        for (i = 1; i < 64; i++) {
+    if (ctx->cid_table->bit_depth == 8)
+    {
+        for (i = 1; i < 64; i++)
+        {
             int j = ctx->m.idsp.idct_permutation[ff_zigzag_direct[i]];
             weight_matrix[j] = ctx->cid_table->luma_weight[i];
         }
         ff_convert_matrix(&ctx->m, ctx->qmatrix_l, ctx->qmatrix_l16,
                           weight_matrix, ctx->intra_quant_bias, 1,
                           ctx->m.avctx->qmax, 1);
-        for (i = 1; i < 64; i++) {
+        for (i = 1; i < 64; i++)
+        {
             int j = ctx->m.idsp.idct_permutation[ff_zigzag_direct[i]];
             weight_matrix[j] = ctx->cid_table->chroma_weight[i];
         }
@@ -227,8 +253,10 @@ static av_cold int dnxhd_init_qmat(DNXHDEncContext *ctx, int lbias, int cbias)
                           weight_matrix, ctx->intra_quant_bias, 1,
                           ctx->m.avctx->qmax, 1);
 
-        for (qscale = 1; qscale <= ctx->m.avctx->qmax; qscale++) {
-            for (i = 0; i < 64; i++) {
+        for (qscale = 1; qscale <= ctx->m.avctx->qmax; qscale++)
+        {
+            for (i = 0; i < 64; i++)
+            {
                 ctx->qmatrix_l[qscale][i]      <<= 2;
                 ctx->qmatrix_c[qscale][i]      <<= 2;
                 ctx->qmatrix_l16[qscale][0][i] <<= 2;
@@ -237,10 +265,14 @@ static av_cold int dnxhd_init_qmat(DNXHDEncContext *ctx, int lbias, int cbias)
                 ctx->qmatrix_c16[qscale][1][i] <<= 2;
             }
         }
-    } else {
+    }
+    else
+    {
         // 10-bit
-        for (qscale = 1; qscale <= ctx->m.avctx->qmax; qscale++) {
-            for (i = 1; i < 64; i++) {
+        for (qscale = 1; qscale <= ctx->m.avctx->qmax; qscale++)
+        {
+            for (i = 1; i < 64; i++)
+            {
                 int j = ctx->m.idsp.idct_permutation[ff_zigzag_direct[i]];
 
                 /* The quantization formula from the VC-3 standard is:
@@ -277,7 +309,7 @@ static av_cold int dnxhd_init_rc(DNXHDEncContext *ctx)
     FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->mb_rc, (ctx->m.avctx->qmax + 1), 8160 * sizeof(RCEntry), fail);
     if (ctx->m.avctx->mb_decision != FF_MB_DECISION_RD)
         FF_ALLOCZ_ARRAY_OR_GOTO(ctx->m.avctx, ctx->mb_cmp,
-                          ctx->m.mb_num, sizeof(RCCMPEntry), fail);
+                                ctx->m.mb_num, sizeof(RCCMPEntry), fail);
 
     ctx->frame_bits = (ctx->cid_table->coding_unit_size -
                        640 - 4 - ctx->min_padding) * 8;
@@ -293,7 +325,8 @@ static av_cold int dnxhd_encode_init(AVCodecContext *avctx)
     DNXHDEncContext *ctx = avctx->priv_data;
     int i, index, bit_depth, ret;
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_YUV422P:
         bit_depth = 8;
         break;
@@ -307,7 +340,8 @@ static av_cold int dnxhd_encode_init(AVCodecContext *avctx)
     }
 
     ctx->cid = ff_dnxhd_find_cid(avctx, bit_depth);
-    if (!ctx->cid) {
+    if (!ctx->cid)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "video parameters incompatible with DNxHD. Valid DNxHD profiles:\n");
         ff_dnxhd_print_profiles(avctx, AV_LOG_ERROR);
@@ -336,11 +370,14 @@ static av_cold int dnxhd_encode_init(AVCodecContext *avctx)
     if (!ctx->m.dct_quantize)
         ctx->m.dct_quantize = ff_dct_quantize_c;
 
-    if (ctx->cid_table->bit_depth == 10) {
+    if (ctx->cid_table->bit_depth == 10)
+    {
         ctx->m.dct_quantize     = dnxhd_10bit_dct_quantize;
         ctx->get_pixels_8x4_sym = dnxhd_10bit_get_pixels_8x4_sym;
         ctx->block_width_l2     = 4;
-    } else {
+    }
+    else
+    {
         ctx->get_pixels_8x4_sym = dnxhd_8bit_get_pixels_8x4_sym;
         ctx->block_width_l2     = 3;
     }
@@ -351,7 +388,8 @@ static av_cold int dnxhd_encode_init(AVCodecContext *avctx)
     ctx->m.mb_height = (avctx->height + 15) / 16;
     ctx->m.mb_width  = (avctx->width  + 15) / 16;
 
-    if (avctx->flags & AV_CODEC_FLAG_INTERLACED_DCT) {
+    if (avctx->flags & AV_CODEC_FLAG_INTERLACED_DCT)
+    {
         ctx->interlaced   = 1;
         ctx->m.mb_height /= 2;
     }
@@ -359,11 +397,11 @@ static av_cold int dnxhd_encode_init(AVCodecContext *avctx)
     ctx->m.mb_num = ctx->m.mb_height * ctx->m.mb_width;
 
 #if FF_API_QUANT_BIAS
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     if (ctx->intra_quant_bias == FF_DEFAULT_QUANT_BIAS &&
-        avctx->intra_quant_bias != FF_DEFAULT_QUANT_BIAS)
+            avctx->intra_quant_bias != FF_DEFAULT_QUANT_BIAS)
         ctx->intra_quant_bias = avctx->intra_quant_bias;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     // XXX tune lbias/cbias
     if ((ret = dnxhd_init_qmat(ctx, ctx->intra_quant_bias, 0)) < 0)
@@ -389,24 +427,27 @@ FF_ENABLE_DEPRECATION_WARNINGS
                       ctx->m.mb_num * sizeof(uint8_t), fail);
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->key_frame = 1;
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
-    if (avctx->thread_count > MAX_THREADS) {
+    if (avctx->thread_count > MAX_THREADS)
+    {
         av_log(avctx, AV_LOG_ERROR, "too many threads\n");
         return AVERROR(EINVAL);
     }
 
-    if (avctx->qmax <= 1) {
+    if (avctx->qmax <= 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "qmax must be at least 2\n");
         return AVERROR(EINVAL);
     }
 
     ctx->thread[0] = ctx;
-    for (i = 1; i < avctx->thread_count; i++) {
+    for (i = 1; i < avctx->thread_count; i++)
+    {
         ctx->thread[i] = av_malloc(sizeof(DNXHDEncContext));
         memcpy(ctx->thread[i], ctx, sizeof(DNXHDEncContext));
     }
@@ -450,10 +491,13 @@ static int dnxhd_write_header(AVCodecContext *avctx, uint8_t *buf)
 static av_always_inline void dnxhd_encode_dc(DNXHDEncContext *ctx, int diff)
 {
     int nbits;
-    if (diff < 0) {
+    if (diff < 0)
+    {
         nbits = av_log2_16bit(-2 * diff);
         diff--;
-    } else {
+    }
+    else
+    {
         nbits = av_log2_16bit(2 * diff);
     }
     put_bits(&ctx->m.pb, ctx->cid_table->dc_bits[nbits] + nbits,
@@ -471,10 +515,12 @@ void dnxhd_encode_block(DNXHDEncContext *ctx, int16_t *block,
     dnxhd_encode_dc(ctx, block[0] - ctx->m.last_dc[n]);
     ctx->m.last_dc[n] = block[0];
 
-    for (i = 1; i <= last_index; i++) {
+    for (i = 1; i <= last_index; i++)
+    {
         j = ctx->m.intra_scantable.permutated[i];
         slevel = block[j];
-        if (slevel) {
+        if (slevel)
+        {
             int run_level = i - last_non_zero - 1;
             int rlevel = (slevel << 1) | !!run_level;
             put_bits(&ctx->m.pb, ctx->vlc_bits[rlevel], ctx->vlc_codes[rlevel]);
@@ -496,31 +542,42 @@ void dnxhd_unquantize_c(DNXHDEncContext *ctx, int16_t *block, int n,
     int i;
 
     weight_matrix = (n & 2) ? ctx->cid_table->chroma_weight
-                            : ctx->cid_table->luma_weight;
+                    : ctx->cid_table->luma_weight;
 
-    for (i = 1; i <= last_index; i++) {
+    for (i = 1; i <= last_index; i++)
+    {
         int j = ctx->m.intra_scantable.permutated[i];
         level = block[j];
-        if (level) {
-            if (level < 0) {
+        if (level)
+        {
+            if (level < 0)
+            {
                 level = (1 - 2 * level) * qscale * weight_matrix[i];
-                if (ctx->cid_table->bit_depth == 10) {
+                if (ctx->cid_table->bit_depth == 10)
+                {
                     if (weight_matrix[i] != 8)
                         level += 8;
                     level >>= 4;
-                } else {
+                }
+                else
+                {
                     if (weight_matrix[i] != 32)
                         level += 32;
                     level >>= 6;
                 }
                 level = -level;
-            } else {
+            }
+            else
+            {
                 level = (2 * level + 1) * qscale * weight_matrix[i];
-                if (ctx->cid_table->bit_depth == 10) {
+                if (ctx->cid_table->bit_depth == 10)
+                {
                     if (weight_matrix[i] != 8)
                         level += 8;
                     level >>= 4;
-                } else {
+                }
+                else
+                {
                     if (weight_matrix[i] != 32)
                         level += 32;
                     level >>= 6;
@@ -546,13 +603,15 @@ int dnxhd_calc_ac_bits(DNXHDEncContext *ctx, int16_t *block, int last_index)
     int last_non_zero = 0;
     int bits = 0;
     int i, j, level;
-    for (i = 1; i <= last_index; i++) {
+    for (i = 1; i <= last_index; i++)
+    {
         j = ctx->m.intra_scantable.permutated[i];
         level = block[j];
-        if (level) {
+        if (level)
+        {
             int run_level = i - last_non_zero - 1;
             bits += ctx->vlc_bits[(level << 1) |
-                    !!run_level] + ctx->run_bits[run_level];
+                                  !!run_level] + ctx->run_bits[run_level];
             last_non_zero = i;
         }
     }
@@ -577,8 +636,10 @@ void dnxhd_get_blocks(DNXHDEncContext *ctx, int mb_x, int mb_y)
     pdsp->get_pixels(ctx->blocks[2], ptr_u,      ctx->m.uvlinesize);
     pdsp->get_pixels(ctx->blocks[3], ptr_v,      ctx->m.uvlinesize);
 
-    if (mb_y + 1 == ctx->m.mb_height && ctx->m.avctx->height == 1080) {
-        if (ctx->interlaced) {
+    if (mb_y + 1 == ctx->m.mb_height && ctx->m.avctx->height == 1080)
+    {
+        if (ctx->interlaced)
+        {
             ctx->get_pixels_8x4_sym(ctx->blocks[4],
                                     ptr_y + ctx->dct_y_offset,
                                     ctx->m.linesize);
@@ -591,13 +652,17 @@ void dnxhd_get_blocks(DNXHDEncContext *ctx, int mb_x, int mb_y)
             ctx->get_pixels_8x4_sym(ctx->blocks[7],
                                     ptr_v + ctx->dct_uv_offset,
                                     ctx->m.uvlinesize);
-        } else {
+        }
+        else
+        {
             ctx->bdsp.clear_block(ctx->blocks[4]);
             ctx->bdsp.clear_block(ctx->blocks[5]);
             ctx->bdsp.clear_block(ctx->blocks[6]);
             ctx->bdsp.clear_block(ctx->blocks[7]);
         }
-    } else {
+    }
+    else
+    {
         pdsp->get_pixels(ctx->blocks[4],
                          ptr_y + ctx->dct_y_offset, ctx->m.linesize);
         pdsp->get_pixels(ctx->blocks[5],
@@ -612,7 +677,7 @@ void dnxhd_get_blocks(DNXHDEncContext *ctx, int mb_x, int mb_y)
 static av_always_inline
 int dnxhd_switch_matrix(DNXHDEncContext *ctx, int i)
 {
-    const static uint8_t component[8]={0,0,1,2,0,0,1,2};
+    const static uint8_t component[8]= {0,0,1,2,0,0,1,2};
     return component[i];
 }
 
@@ -626,10 +691,11 @@ static int dnxhd_calc_bits_thread(AVCodecContext *avctx, void *arg,
     ctx = ctx->thread[threadnr];
 
     ctx->m.last_dc[0] =
-    ctx->m.last_dc[1] =
-    ctx->m.last_dc[2] = 1 << (ctx->cid_table->bit_depth + 2);
+        ctx->m.last_dc[1] =
+            ctx->m.last_dc[2] = 1 << (ctx->cid_table->bit_depth + 2);
 
-    for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++) {
+    for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++)
+    {
         unsigned mb = mb_y * ctx->m.mb_width + mb_x;
         int ssd     = 0;
         int ac_bits = 0;
@@ -638,7 +704,8 @@ static int dnxhd_calc_bits_thread(AVCodecContext *avctx, void *arg,
 
         dnxhd_get_blocks(ctx, mb_x, mb_y);
 
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             int16_t *src_block = ctx->blocks[i];
             int overflow, nbits, diff, last_index;
             int n = dnxhd_switch_matrix(ctx, i);
@@ -659,7 +726,8 @@ static int dnxhd_calc_bits_thread(AVCodecContext *avctx, void *arg,
 
             ctx->m.last_dc[n] = block[0];
 
-            if (avctx->mb_decision == FF_MB_DECISION_RD || !RC_VARIANCE) {
+            if (avctx->mb_decision == FF_MB_DECISION_RD || !RC_VARIANCE)
+            {
                 dnxhd_unquantize_c(ctx, block, i, qscale, last_index);
                 ctx->m.idsp.idct(block);
                 ssd += dnxhd_ssd_block(block, src_block);
@@ -682,9 +750,10 @@ static int dnxhd_encode_thread(AVCodecContext *avctx, void *arg,
                   ctx->slice_size[jobnr]);
 
     ctx->m.last_dc[0] =
-    ctx->m.last_dc[1] =
-    ctx->m.last_dc[2] = 1 << (ctx->cid_table->bit_depth + 2);
-    for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++) {
+        ctx->m.last_dc[1] =
+            ctx->m.last_dc[2] = 1 << (ctx->cid_table->bit_depth + 2);
+    for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++)
+    {
         unsigned mb = mb_y * ctx->m.mb_width + mb_x;
         int qscale = ctx->mb_qscale[mb];
         int i;
@@ -693,7 +762,8 @@ static int dnxhd_encode_thread(AVCodecContext *avctx, void *arg,
 
         dnxhd_get_blocks(ctx, mb_x, mb_y);
 
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             int16_t *block = ctx->blocks[i];
             int overflow, n = dnxhd_switch_matrix(ctx, i);
             int last_index = ctx->m.dct_quantize(&ctx->m, block, 4 & (2*i),
@@ -713,11 +783,13 @@ static void dnxhd_setup_threads_slices(DNXHDEncContext *ctx)
 {
     int mb_y, mb_x;
     int offset = 0;
-    for (mb_y = 0; mb_y < ctx->m.mb_height; mb_y++) {
+    for (mb_y = 0; mb_y < ctx->m.mb_height; mb_y++)
+    {
         int thread_size;
         ctx->slice_offs[mb_y] = offset;
         ctx->slice_size[mb_y] = 0;
-        for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++) {
+        for (mb_x = 0; mb_x < ctx->m.mb_width; mb_x++)
+        {
             unsigned mb = mb_y * ctx->m.mb_width + mb_x;
             ctx->slice_size[mb_y] += ctx->mb_bits[mb];
         }
@@ -737,22 +809,29 @@ static int dnxhd_mb_var_thread(AVCodecContext *avctx, void *arg,
                            ((avctx->height >> ctx->interlaced) & 0xF);
 
     ctx = ctx->thread[threadnr];
-    if (ctx->cid_table->bit_depth == 8) {
+    if (ctx->cid_table->bit_depth == 8)
+    {
         uint8_t *pix = ctx->thread[0]->src[0] + ((mb_y << 4) * ctx->m.linesize);
-        for (mb_x = 0; mb_x < ctx->m.mb_width; ++mb_x, pix += 16) {
+        for (mb_x = 0; mb_x < ctx->m.mb_width; ++mb_x, pix += 16)
+        {
             unsigned mb = mb_y * ctx->m.mb_width + mb_x;
             int sum;
             int varc;
 
-            if (!partial_last_row && mb_x * 16 <= avctx->width - 16) {
+            if (!partial_last_row && mb_x * 16 <= avctx->width - 16)
+            {
                 sum  = ctx->m.mpvencdsp.pix_sum(pix, ctx->m.linesize);
                 varc = ctx->m.mpvencdsp.pix_norm1(pix, ctx->m.linesize);
-            } else {
+            }
+            else
+            {
                 int bw = FFMIN(avctx->width - 16 * mb_x, 16);
                 int bh = FFMIN((avctx->height >> ctx->interlaced) - 16 * mb_y, 16);
                 sum = varc = 0;
-                for (y = 0; y < bh; y++) {
-                    for (x = 0; x < bw; x++) {
+                for (y = 0; y < bh; y++)
+                {
+                    for (x = 0; x < bw; x++)
+                    {
                         uint8_t val = pix[x + y * ctx->m.linesize];
                         sum  += val;
                         varc += val * val;
@@ -764,9 +843,12 @@ static int dnxhd_mb_var_thread(AVCodecContext *avctx, void *arg,
             ctx->mb_cmp[mb].value = varc;
             ctx->mb_cmp[mb].mb    = mb;
         }
-    } else { // 10-bit
+    }
+    else     // 10-bit
+    {
         int const linesize = ctx->m.linesize >> 1;
-        for (mb_x = 0; mb_x < ctx->m.mb_width; ++mb_x) {
+        for (mb_x = 0; mb_x < ctx->m.mb_width; ++mb_x)
+        {
             uint16_t *pix = (uint16_t *)ctx->thread[0]->src[0] +
                             ((mb_y << 4) * linesize) + (mb_x << 4);
             unsigned mb  = mb_y * ctx->m.mb_width + mb_x;
@@ -775,8 +857,10 @@ static int dnxhd_mb_var_thread(AVCodecContext *avctx, void *arg,
             int mean, sqmean;
             int i, j;
             // Macroblocks are 16x16 pixels, unlike DCT blocks which are 8x8.
-            for (i = 0; i < 16; ++i) {
-                for (j = 0; j < 16; ++j) {
+            for (i = 0; i < 16; ++i)
+            {
+                for (j = 0; j < 16; ++j)
+                {
                     // Turn 16-bit pixels into 10-bit ones.
                     int const sample = (unsigned) pix[j] >> 6;
                     sum   += sample;
@@ -800,7 +884,8 @@ static int dnxhd_encode_rdo(AVCodecContext *avctx, DNXHDEncContext *ctx)
     int last_lower = INT_MAX, last_higher = 0;
     int x, y, q;
 
-    for (q = 1; q < avctx->qmax; q++) {
+    for (q = 1; q < avctx->qmax; q++)
+    {
         ctx->qscale = q;
         avctx->execute2(avctx, dnxhd_calc_bits_thread,
                         NULL, NULL, ctx->m.mb_height);
@@ -808,22 +893,28 @@ static int dnxhd_encode_rdo(AVCodecContext *avctx, DNXHDEncContext *ctx)
     up_step = down_step = 2 << LAMBDA_FRAC_BITS;
     lambda  = ctx->lambda;
 
-    for (;;) {
+    for (;;)
+    {
         int bits = 0;
         int end  = 0;
-        if (lambda == last_higher) {
+        if (lambda == last_higher)
+        {
             lambda++;
             end = 1; // need to set final qscales/bits
         }
-        for (y = 0; y < ctx->m.mb_height; y++) {
-            for (x = 0; x < ctx->m.mb_width; x++) {
+        for (y = 0; y < ctx->m.mb_height; y++)
+        {
+            for (x = 0; x < ctx->m.mb_width; x++)
+            {
                 unsigned min = UINT_MAX;
                 int qscale = 1;
                 int mb     = y * ctx->m.mb_width + x;
-                for (q = 1; q < avctx->qmax; q++) {
+                for (q = 1; q < avctx->qmax; q++)
+                {
                     unsigned score = ctx->mb_rc[q][mb].bits * lambda +
                                      ((unsigned) ctx->mb_rc[q][mb].ssd << LAMBDA_FRAC_BITS);
-                    if (score < min) {
+                    if (score < min)
+                    {
                         min    = score;
                         qscale = q;
                     }
@@ -839,12 +930,14 @@ static int dnxhd_encode_rdo(AVCodecContext *avctx, DNXHDEncContext *ctx)
         // ff_dlog(ctx->m.avctx,
         //         "lambda %d, up %u, down %u, bits %d, frame %d\n",
         //         lambda, last_higher, last_lower, bits, ctx->frame_bits);
-        if (end) {
+        if (end)
+        {
             if (bits > ctx->frame_bits)
                 return AVERROR(EINVAL);
             break;
         }
-        if (bits < ctx->frame_bits) {
+        if (bits < ctx->frame_bits)
+        {
             last_lower = FFMIN(lambda, last_lower);
             if (last_higher != 0)
                 lambda = (lambda+last_higher)>>1;
@@ -855,7 +948,9 @@ static int dnxhd_encode_rdo(AVCodecContext *avctx, DNXHDEncContext *ctx)
             lambda = FFMAX(1, lambda);
             if (lambda == last_lower)
                 break;
-        } else {
+        }
+        else
+        {
             last_higher = FFMAX(lambda, last_higher);
             if (last_lower != INT_MAX)
                 lambda = (lambda+last_lower)>>1;
@@ -883,13 +978,15 @@ static int dnxhd_find_qscale(DNXHDEncContext *ctx)
     int x, y;
 
     qscale = ctx->qscale;
-    for (;;) {
+    for (;;)
+    {
         bits = 0;
         ctx->qscale = qscale;
         // XXX avoid recalculating bits
         ctx->m.avctx->execute2(ctx->m.avctx, dnxhd_calc_bits_thread,
                                NULL, NULL, ctx->m.mb_height);
-        for (y = 0; y < ctx->m.mb_height; y++) {
+        for (y = 0; y < ctx->m.mb_height; y++)
+        {
             for (x = 0; x < ctx->m.mb_width; x++)
                 bits += ctx->mb_rc[qscale][y*ctx->m.mb_width+x].bits;
             bits = (bits+31)&~31; // padding
@@ -900,10 +997,12 @@ static int dnxhd_find_qscale(DNXHDEncContext *ctx)
         //         "%d, qscale %d, bits %d, frame %d, higher %d, lower %d\n",
         //         ctx->m.avctx->frame_number, qscale, bits, ctx->frame_bits,
         //         last_higher, last_lower);
-        if (bits < ctx->frame_bits) {
+        if (bits < ctx->frame_bits)
+        {
             if (qscale == 1)
                 return 1;
-            if (last_higher == qscale - 1) {
+            if (last_higher == qscale - 1)
+            {
                 qscale = last_higher;
                 break;
             }
@@ -915,7 +1014,9 @@ static int dnxhd_find_qscale(DNXHDEncContext *ctx)
             if (qscale < 1)
                 qscale = 1;
             up_step = 1;
-        } else {
+        }
+        else
+        {
             if (last_lower == qscale + 1)
                 break;
             last_higher = FFMAX(qscale, last_higher);
@@ -949,15 +1050,18 @@ static void radix_count(const RCCMPEntry *data, int size,
 {
     int i, j;
     memset(buckets, 0, sizeof(buckets[0][0]) * RADIX_PASSES * NBUCKETS);
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         int v = data[i].value;
-        for (j = 0; j < RADIX_PASSES; j++) {
+        for (j = 0; j < RADIX_PASSES; j++)
+        {
             buckets[j][get_bucket(v, 0)]++;
             v >>= BUCKET_BITS;
         }
         av_assert1(!v);
     }
-    for (j = 0; j < RADIX_PASSES; j++) {
+    for (j = 0; j < RADIX_PASSES; j++)
+    {
         int offset = size;
         for (i = NBUCKETS - 1; i >= 0; i--)
             buckets[j][i] = offset -= buckets[j][i];
@@ -970,7 +1074,8 @@ static void radix_sort_pass(RCCMPEntry *dst, const RCCMPEntry *data,
 {
     int shift = pass * BUCKET_BITS;
     int i;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         int v   = get_bucket(data[i].value, shift);
         int pos = buckets[v]++;
         dst[pos] = data[i];
@@ -984,7 +1089,8 @@ static void radix_sort(RCCMPEntry *data, int size)
     radix_count(data, size, buckets);
     radix_sort_pass(tmp, data, size, buckets[0], 0);
     radix_sort_pass(data, tmp, size, buckets[1], 1);
-    if (buckets[2][NBUCKETS - 1] || buckets[3][NBUCKETS - 1]) {
+    if (buckets[2][NBUCKETS - 1] || buckets[3][NBUCKETS - 1])
+    {
         radix_sort_pass(tmp, data, size, buckets[2], 2);
         radix_sort_pass(data, tmp, size, buckets[3], 3);
     }
@@ -997,32 +1103,37 @@ static int dnxhd_encode_fast(AVCodecContext *avctx, DNXHDEncContext *ctx)
     int ret, x, y;
     if ((ret = dnxhd_find_qscale(ctx)) < 0)
         return ret;
-    for (y = 0; y < ctx->m.mb_height; y++) {
-        for (x = 0; x < ctx->m.mb_width; x++) {
+    for (y = 0; y < ctx->m.mb_height; y++)
+    {
+        for (x = 0; x < ctx->m.mb_width; x++)
+        {
             int mb = y * ctx->m.mb_width + x;
             int delta_bits;
             ctx->mb_qscale[mb] = ctx->qscale;
             ctx->mb_bits[mb] = ctx->mb_rc[ctx->qscale][mb].bits;
             max_bits += ctx->mb_rc[ctx->qscale][mb].bits;
-            if (!RC_VARIANCE) {
+            if (!RC_VARIANCE)
+            {
                 delta_bits = ctx->mb_rc[ctx->qscale][mb].bits -
                              ctx->mb_rc[ctx->qscale + 1][mb].bits;
                 ctx->mb_cmp[mb].mb = mb;
                 ctx->mb_cmp[mb].value =
                     delta_bits ? ((ctx->mb_rc[ctx->qscale][mb].ssd -
                                    ctx->mb_rc[ctx->qscale + 1][mb].ssd) * 100) /
-                                  delta_bits
-                               : INT_MIN; // avoid increasing qscale
+                    delta_bits
+                    : INT_MIN; // avoid increasing qscale
             }
         }
         max_bits += 31; // worst padding
     }
-    if (!ret) {
+    if (!ret)
+    {
         if (RC_VARIANCE)
             avctx->execute2(avctx, dnxhd_mb_var_thread,
                             NULL, NULL, ctx->m.mb_height);
         radix_sort(ctx->mb_cmp, ctx->m.mb_num);
-        for (x = 0; x < ctx->m.mb_num && max_bits > ctx->frame_bits; x++) {
+        for (x = 0; x < ctx->m.mb_num && max_bits > ctx->frame_bits; x++)
+        {
             int mb = ctx->mb_cmp[x].mb;
             max_bits -= ctx->mb_rc[ctx->qscale][mb].bits -
                         ctx->mb_rc[ctx->qscale + 1][mb].bits;
@@ -1037,7 +1148,8 @@ static void dnxhd_load_picture(DNXHDEncContext *ctx, const AVFrame *frame)
 {
     int i;
 
-    for (i = 0; i < ctx->m.avctx->thread_count; i++) {
+    for (i = 0; i < ctx->m.avctx->thread_count; i++)
+    {
         ctx->thread[i]->m.linesize    = frame->linesize[0] << ctx->interlaced;
         ctx->thread[i]->m.uvlinesize  = frame->linesize[1] << ctx->interlaced;
         ctx->thread[i]->dct_y_offset  = ctx->m.linesize  *8;
@@ -1045,9 +1157,9 @@ static void dnxhd_load_picture(DNXHDEncContext *ctx, const AVFrame *frame)
     }
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     ctx->m.avctx->coded_frame->interlaced_frame = frame->interlaced_frame;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     ctx->cur_field = frame->interlaced_frame && !frame->top_field_first;
 }
@@ -1067,7 +1179,8 @@ static int dnxhd_encode_picture(AVCodecContext *avctx, AVPacket *pkt,
     dnxhd_load_picture(ctx, frame);
 
 encode_coding_unit:
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         ctx->src[i] = frame->data[i];
         if (ctx->interlaced && ctx->cur_field)
             ctx->src[i] += frame->linesize[i];
@@ -1079,7 +1192,8 @@ encode_coding_unit:
         ret = dnxhd_encode_rdo(avctx, ctx);
     else
         ret = dnxhd_encode_fast(avctx, ctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "picture could not fit ratecontrol constraints, increase qmax\n");
         return ret;
@@ -1088,7 +1202,8 @@ encode_coding_unit:
     dnxhd_setup_threads_slices(ctx);
 
     offset = 0;
-    for (i = 0; i < ctx->m.mb_height; i++) {
+    for (i = 0; i < ctx->m.mb_height; i++)
+    {
         AV_WB32(ctx->msip + i * 4, offset);
         offset += ctx->slice_size[i];
         av_assert1(!(ctx->slice_size[i] & 3));
@@ -1102,7 +1217,8 @@ encode_coding_unit:
 
     AV_WB32(buf + ctx->cid_table->coding_unit_size - 4, 0x600DC0DE); // EOF
 
-    if (ctx->interlaced && first_field) {
+    if (ctx->interlaced && first_field)
+    {
         first_field     = 0;
         ctx->cur_field ^= 1;
         buf            += ctx->cid_table->coding_unit_size;
@@ -1110,9 +1226,9 @@ encode_coding_unit:
     }
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->quality = ctx->qscale * FF_QP2LAMBDA;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     ff_side_data_set_encoder_stats(pkt, ctx->qscale * FF_QP2LAMBDA, NULL, 0, AV_PICTURE_TYPE_I);
@@ -1151,12 +1267,14 @@ static av_cold int dnxhd_encode_end(AVCodecContext *avctx)
     return 0;
 }
 
-static const AVCodecDefault dnxhd_defaults[] = {
+static const AVCodecDefault dnxhd_defaults[] =
+{
     { "qmax", "1024" }, /* Maximum quantization scale factor allowed for VC-3 */
     { NULL },
 };
 
-AVCodec ff_dnxhd_encoder = {
+AVCodec ff_dnxhd_encoder =
+{
     .name           = "dnxhd",
     .long_name      = NULL_IF_CONFIG_SMALL("VC3/DNxHD"),
     .type           = AVMEDIA_TYPE_VIDEO,

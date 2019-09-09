@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Aura 2 decoder
  *
  * This file is part of FFmpeg.
@@ -50,7 +50,8 @@ static int aura_decode_frame(AVCodecContext *avctx,
     /* prediction error tables (make it clear that they are signed values) */
     const int8_t *delta_table = (const int8_t*)buf + 16;
 
-    if (pkt->size != 48 + avctx->height * avctx->width) {
+    if (pkt->size != 48 + avctx->height * avctx->width)
+    {
         av_log(avctx, AV_LOG_ERROR, "got a buffer with %d bytes when %d were expected\n",
                pkt->size, 48 + avctx->height * avctx->width);
         return AVERROR_INVALIDDATA;
@@ -67,7 +68,8 @@ static int aura_decode_frame(AVCodecContext *avctx,
     V = frame->data[2];
 
     /* iterate through each line in the height */
-    for (y = 0; y < avctx->height; y++) {
+    for (y = 0; y < avctx->height; y++)
+    {
         /* reset predictors */
         val  = *buf++;
         U[0] = val & 0xF0;
@@ -75,17 +77,22 @@ static int aura_decode_frame(AVCodecContext *avctx,
         val  = *buf++;
         V[0] = val & 0xF0;
         Y[1] = Y[0] + delta_table[val & 0xF];
-        Y   += 2; U++; V++;
+        Y   += 2;
+        U++;
+        V++;
 
         /* iterate through the remaining pixel groups (4 pixels/group) */
-        for (x = 1; x < (avctx->width >> 1); x++) {
+        for (x = 1; x < (avctx->width >> 1); x++)
+        {
             val  = *buf++;
             U[0] = U[-1] + delta_table[val >> 4];
             Y[0] = Y[-1] + delta_table[val & 0xF];
             val  = *buf++;
             V[0] = V[-1] + delta_table[val >> 4];
             Y[1] = Y[ 0] + delta_table[val & 0xF];
-            Y   += 2; U++; V++;
+            Y   += 2;
+            U++;
+            V++;
         }
         Y += frame->linesize[0] -  avctx->width;
         U += frame->linesize[1] - (avctx->width >> 1);
@@ -97,7 +104,8 @@ static int aura_decode_frame(AVCodecContext *avctx,
     return pkt->size;
 }
 
-AVCodec ff_aura2_decoder = {
+AVCodec ff_aura2_decoder =
+{
     .name           = "aura2",
     .long_name      = NULL_IF_CONFIG_SMALL("Auravision Aura 2"),
     .type           = AVMEDIA_TYPE_VIDEO,

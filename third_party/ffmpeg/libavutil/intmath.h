@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -59,11 +59,13 @@ extern const uint8_t ff_log2_tab[256];
 static av_always_inline av_const int ff_log2_c(unsigned int v)
 {
     int n = 0;
-    if (v & 0xffff0000) {
+    if (v & 0xffff0000)
+    {
         v >>= 16;
         n += 16;
     }
-    if (v & 0xff00) {
+    if (v & 0xff00)
+    {
         v >>= 8;
         n += 8;
     }
@@ -87,7 +89,8 @@ static av_always_inline av_const int ff_log2_c(unsigned int v)
 static av_always_inline av_const int ff_log2_16bit_c(unsigned int v)
 {
     int n = 0;
-    if (v & 0xff00) {
+    if (v & 0xff00)
+    {
         v >>= 8;
         n += 8;
     }
@@ -128,19 +131,23 @@ static av_always_inline av_const int ff_ctz_c(int v)
         return 0;
 
     c = 1;
-    if (!(v & 0xffff)) {
+    if (!(v & 0xffff))
+    {
         v >>= 16;
         c += 16;
     }
-    if (!(v & 0xff)) {
+    if (!(v & 0xff))
+    {
         v >>= 8;
         c += 8;
     }
-    if (!(v & 0xf)) {
+    if (!(v & 0xf))
+    {
         v >>= 4;
         c += 4;
     }
-    if (!(v & 0x3)) {
+    if (!(v & 0x3))
+    {
         v >>= 2;
         c += 2;
     }

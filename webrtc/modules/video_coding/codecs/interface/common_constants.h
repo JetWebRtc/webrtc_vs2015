@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #ifndef WEBRTC_MODULES_VIDEO_CODING_CODECS_INTERFACE_COMMON_CONSTANTS_H_
 #define WEBRTC_MODULES_VIDEO_CODING_CODECS_INTERFACE_COMMON_CONSTANTS_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 const int16_t kNoPictureId = -1;
 const int16_t kNoTl0PicIdx = -1;

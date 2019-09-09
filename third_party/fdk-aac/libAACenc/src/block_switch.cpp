@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,15 +101,16 @@ amm-info@iis.fraunhofer.de
 static FIXP_DBL FDKaacEnc_GetWindowEnergy(const FIXP_DBL in[], const INT blSwWndIdx);
 
 static void FDKaacEnc_CalcWindowEnergy(
-        BLOCK_SWITCHING_CONTROL *RESTRICT blockSwitchingControl,
-        INT                      windowLen,
-        const INT_PCM           *pTimeSignal
-        );
+    BLOCK_SWITCHING_CONTROL *RESTRICT blockSwitchingControl,
+    INT                      windowLen,
+    const INT_PCM           *pTimeSignal
+);
 
 /****************** Constants *****************************/
 /*                                                LONG         START        SHORT         STOP         LOWOV                  */
 static const INT blockType2windowShape[2][5] = { {SINE_WINDOW, KBD_WINDOW,  WRONG_WINDOW, SINE_WINDOW, KBD_WINDOW},     /* LD */
-                                                 {KBD_WINDOW,  SINE_WINDOW, SINE_WINDOW,  KBD_WINDOW,  WRONG_WINDOW} }; /* LC */
+    {KBD_WINDOW,  SINE_WINDOW, SINE_WINDOW,  KBD_WINDOW,  WRONG_WINDOW}
+}; /* LC */
 
 /* IIR high pass coeffs */
 
@@ -117,7 +118,7 @@ static const INT blockType2windowShape[2][5] = { {SINE_WINDOW, KBD_WINDOW,  WRON
 
 static const FIXP_DBL hiPassCoeff[BLOCK_SWITCHING_IIR_LEN]=
 {
-  FL2FXCONST_DBL(-0.5095),FL2FXCONST_DBL(0.7548)
+    FL2FXCONST_DBL(-0.5095),FL2FXCONST_DBL(0.7548)
 };
 
 static const FIXP_DBL accWindowNrgFac = FL2FXCONST_DBL(0.3f);                   /* factor for accumulating filtered window energies */
@@ -133,7 +134,7 @@ static const FIXP_DBL minAttackNrg = (FL2FXCONST_DBL(1e+6f*NORM_PCM_ENERGY)>>BLO
 
 static const FIXP_SGL hiPassCoeff[BLOCK_SWITCHING_IIR_LEN]=
 {
-  FL2FXCONST_SGL(-0.5095),FL2FXCONST_SGL(0.7548)
+    FL2FXCONST_SGL(-0.5095),FL2FXCONST_SGL(0.7548)
 };
 
 static const FIXP_DBL accWindowNrgFac = FL2FXCONST_DBL(0.3f);                   /* factor for accumulating filtered window energies */
@@ -150,26 +151,26 @@ static const FIXP_DBL minAttackNrg = (FL2FXCONST_DBL(1e+6f*NORM_PCM_ENERGY)>>BLO
 /****************** Routines ****************************/
 void FDKaacEnc_InitBlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, INT isLowDelay)
 {
-  FDKmemclear (blockSwitchingControl, sizeof(BLOCK_SWITCHING_CONTROL));
+    FDKmemclear (blockSwitchingControl, sizeof(BLOCK_SWITCHING_CONTROL));
 
-  if (isLowDelay)
-  {
-    blockSwitchingControl->nBlockSwitchWindows = 4;
-    blockSwitchingControl->allowShortFrames    = 0;
-    blockSwitchingControl->allowLookAhead      = 0;
-  }
-  else
-  {
-    blockSwitchingControl->nBlockSwitchWindows = 8;
-    blockSwitchingControl->allowShortFrames    = 1;
-    blockSwitchingControl->allowLookAhead      = 1;
-  }
+    if (isLowDelay)
+    {
+        blockSwitchingControl->nBlockSwitchWindows = 4;
+        blockSwitchingControl->allowShortFrames    = 0;
+        blockSwitchingControl->allowLookAhead      = 0;
+    }
+    else
+    {
+        blockSwitchingControl->nBlockSwitchWindows = 8;
+        blockSwitchingControl->allowShortFrames    = 1;
+        blockSwitchingControl->allowLookAhead      = 1;
+    }
 
-  blockSwitchingControl->noOfGroups            = MAX_NO_OF_GROUPS;
+    blockSwitchingControl->noOfGroups            = MAX_NO_OF_GROUPS;
 
-  /* Initialize startvalue for blocktype */
-  blockSwitchingControl->lastWindowSequence    = LONG_WINDOW;
-  blockSwitchingControl->windowShape           = blockType2windowShape[blockSwitchingControl->allowShortFrames][blockSwitchingControl->lastWindowSequence];
+    /* Initialize startvalue for blocktype */
+    blockSwitchingControl->lastWindowSequence    = LONG_WINDOW;
+    blockSwitchingControl->windowShape           = blockType2windowShape[blockSwitchingControl->allowShortFrames][blockSwitchingControl->lastWindowSequence];
 
 }
 
@@ -189,20 +190,22 @@ static const INT suggestedGroupingTable[TRANS_FAC][MAX_NO_OF_GROUPS] =
 /* assume no look-ahead */
 static const INT chgWndSq[2][N_BLOCKTYPES] =
 {
-  /*             LONG WINDOW   START_WINDOW  SHORT_WINDOW  STOP_WINDOW,  LOWOV_WINDOW, WRONG_WINDOW */
-  /*no attack*/ {LONG_WINDOW,  STOP_WINDOW,  WRONG_WINDOW, LONG_WINDOW,  STOP_WINDOW , WRONG_WINDOW },
-  /*attack   */ {START_WINDOW, LOWOV_WINDOW, WRONG_WINDOW, START_WINDOW, LOWOV_WINDOW, WRONG_WINDOW }
+    /*             LONG WINDOW   START_WINDOW  SHORT_WINDOW  STOP_WINDOW,  LOWOV_WINDOW, WRONG_WINDOW */
+    /*no attack*/ {LONG_WINDOW,  STOP_WINDOW,  WRONG_WINDOW, LONG_WINDOW,  STOP_WINDOW , WRONG_WINDOW },
+    /*attack   */ {START_WINDOW, LOWOV_WINDOW, WRONG_WINDOW, START_WINDOW, LOWOV_WINDOW, WRONG_WINDOW }
 };
 
 /* change block type depending on current blocktype and whether there's an attack */
 /* assume look-ahead */
 static const INT chgWndSqLkAhd[2][2][N_BLOCKTYPES] =
 {
-  /*attack         LONG WINDOW    START_WINDOW   SHORT_WINDOW   STOP_WINDOW   LOWOV_WINDOW, WRONG_WINDOW */  /* last attack */
-  /*no attack*/ { {LONG_WINDOW,   SHORT_WINDOW,  STOP_WINDOW,   LONG_WINDOW,  WRONG_WINDOW, WRONG_WINDOW},   /* no attack   */
-  /*attack   */   {START_WINDOW,  SHORT_WINDOW,  SHORT_WINDOW,  START_WINDOW, WRONG_WINDOW, WRONG_WINDOW} }, /* no attack   */
-  /*no attack*/ { {LONG_WINDOW,   SHORT_WINDOW,  SHORT_WINDOW,  LONG_WINDOW,  WRONG_WINDOW, WRONG_WINDOW},   /* attack      */
-  /*attack   */   {START_WINDOW,  SHORT_WINDOW,  SHORT_WINDOW,  START_WINDOW, WRONG_WINDOW, WRONG_WINDOW} }  /* attack      */
+    /*attack         LONG WINDOW    START_WINDOW   SHORT_WINDOW   STOP_WINDOW   LOWOV_WINDOW, WRONG_WINDOW */  /* last attack */
+    /*no attack*/ { {LONG_WINDOW,   SHORT_WINDOW,  STOP_WINDOW,   LONG_WINDOW,  WRONG_WINDOW, WRONG_WINDOW},   /* no attack   */
+        /*attack   */   {START_WINDOW,  SHORT_WINDOW,  SHORT_WINDOW,  START_WINDOW, WRONG_WINDOW, WRONG_WINDOW}
+    }, /* no attack   */
+    /*no attack*/ { {LONG_WINDOW,   SHORT_WINDOW,  SHORT_WINDOW,  LONG_WINDOW,  WRONG_WINDOW, WRONG_WINDOW},   /* attack      */
+        /*attack   */   {START_WINDOW,  SHORT_WINDOW,  SHORT_WINDOW,  START_WINDOW, WRONG_WINDOW, WRONG_WINDOW}
+    }  /* attack      */
 };
 
 int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, const INT granuleLength, const int isLFE, const INT_PCM *pTimeSignal)
@@ -213,16 +216,17 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
     UINT nBlockSwitchWindows = blockSwitchingControl->nBlockSwitchWindows;
 
     /* for LFE : only LONG window allowed */
-    if (isLFE) {
+    if (isLFE)
+    {
 
-      /* case LFE: */
-      /* only long blocks, always use sine windows (MPEG2 AAC, MPEG4 AAC) */
-      blockSwitchingControl->lastWindowSequence = LONG_WINDOW;
-      blockSwitchingControl->windowShape    = SINE_WINDOW;
-      blockSwitchingControl->noOfGroups     = 1;
-      blockSwitchingControl->groupLen[0]    = 1;
+        /* case LFE: */
+        /* only long blocks, always use sine windows (MPEG2 AAC, MPEG4 AAC) */
+        blockSwitchingControl->lastWindowSequence = LONG_WINDOW;
+        blockSwitchingControl->windowShape    = SINE_WINDOW;
+        blockSwitchingControl->noOfGroups     = 1;
+        blockSwitchingControl->groupLen[0]    = 1;
 
-      return(0);
+        return(0);
     };
 
     /* Save current attack index as last attack index */
@@ -235,20 +239,20 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
 
     if (blockSwitchingControl->allowShortFrames)
     {
-      /* Calculate suggested grouping info for the last frame */
+        /* Calculate suggested grouping info for the last frame */
 
-      /* Reset grouping info */
-      FDKmemclear (blockSwitchingControl->groupLen, sizeof(blockSwitchingControl->groupLen));
+        /* Reset grouping info */
+        FDKmemclear (blockSwitchingControl->groupLen, sizeof(blockSwitchingControl->groupLen));
 
-      /* Set grouping info */
-      blockSwitchingControl->noOfGroups = MAX_NO_OF_GROUPS;
+        /* Set grouping info */
+        blockSwitchingControl->noOfGroups = MAX_NO_OF_GROUPS;
 
-      FDKmemcpy(blockSwitchingControl->groupLen, suggestedGroupingTable[blockSwitchingControl->lastAttackIndex], sizeof(blockSwitchingControl->groupLen));
+        FDKmemcpy(blockSwitchingControl->groupLen, suggestedGroupingTable[blockSwitchingControl->lastAttackIndex], sizeof(blockSwitchingControl->groupLen));
 
-      if (blockSwitchingControl->attack == TRUE)
-          blockSwitchingControl->maxWindowNrg = FDKaacEnc_GetWindowEnergy(blockSwitchingControl->windowNrg[0], blockSwitchingControl->lastAttackIndex);
-      else
-          blockSwitchingControl->maxWindowNrg = FL2FXCONST_DBL(0.0);
+        if (blockSwitchingControl->attack == TRUE)
+            blockSwitchingControl->maxWindowNrg = FDKaacEnc_GetWindowEnergy(blockSwitchingControl->windowNrg[0], blockSwitchingControl->lastAttackIndex);
+        else
+            blockSwitchingControl->maxWindowNrg = FL2FXCONST_DBL(0.0);
 
     }
 
@@ -265,11 +269,13 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
     enMax = FL2FXCONST_DBL(0.0f);
     enM1 = blockSwitchingControl->windowNrgF[0][nBlockSwitchWindows-1];
 
-    for (i=0; i<nBlockSwitchWindows; i++) {
+    for (i=0; i<nBlockSwitchWindows; i++)
+    {
         FIXP_DBL tmp = fMultDiv2(oneMinusAccWindowNrgFac, blockSwitchingControl->accWindowNrg);
         blockSwitchingControl->accWindowNrg = fMultAdd(tmp, accWindowNrgFac, enM1) ;
 
-        if (fMult(blockSwitchingControl->windowNrgF[1][i],invAttackRatio) > blockSwitchingControl->accWindowNrg ) {
+        if (fMult(blockSwitchingControl->windowNrgF[1][i],invAttackRatio) > blockSwitchingControl->accWindowNrg )
+        {
             blockSwitchingControl->attack = TRUE;
             blockSwitchingControl->attackIndex = i;
         }
@@ -281,11 +287,12 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
     if (enMax < minAttackNrg) blockSwitchingControl->attack = FALSE;
 
     /* Check if attack spreads over frame border */
-    if((blockSwitchingControl->attack == FALSE) && (blockSwitchingControl->lastattack == TRUE)) {
+    if((blockSwitchingControl->attack == FALSE) && (blockSwitchingControl->lastattack == TRUE))
+    {
         /* if attack is in last window repeat SHORT_WINDOW */
         if ( ((blockSwitchingControl->windowNrgF[0][nBlockSwitchWindows-1]>>4) > fMult((FIXP_DBL)(10<<(DFRACT_BITS-1-4)), blockSwitchingControl->windowNrgF[1][1]))
-           && (blockSwitchingControl->lastAttackIndex == (INT)nBlockSwitchWindows-1)
-        )
+                && (blockSwitchingControl->lastAttackIndex == (INT)nBlockSwitchWindows-1)
+           )
         {
             blockSwitchingControl->attack = TRUE;
             blockSwitchingControl->attackIndex = 0;
@@ -297,14 +304,14 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
     {
 
 
-      blockSwitchingControl->lastWindowSequence =
-        chgWndSqLkAhd[blockSwitchingControl->lastattack][blockSwitchingControl->attack][blockSwitchingControl->lastWindowSequence];
+        blockSwitchingControl->lastWindowSequence =
+            chgWndSqLkAhd[blockSwitchingControl->lastattack][blockSwitchingControl->attack][blockSwitchingControl->lastWindowSequence];
     }
     else
     {
-      /* Low Delay */
-      blockSwitchingControl->lastWindowSequence =
-        chgWndSq[blockSwitchingControl->attack][blockSwitchingControl->lastWindowSequence];
+        /* Low Delay */
+        blockSwitchingControl->lastWindowSequence =
+            chgWndSq[blockSwitchingControl->attack][blockSwitchingControl->lastWindowSequence];
     }
 
 
@@ -318,11 +325,11 @@ int FDKaacEnc_BlockSwitching(BLOCK_SWITCHING_CONTROL *blockSwitchingControl, con
 
 static FIXP_DBL FDKaacEnc_GetWindowEnergy(const FIXP_DBL in[], const INT blSwWndIdx)
 {
-/* For coherency, change FDKaacEnc_GetWindowEnergy() to calcluate the energy for a block switching analysis windows,
-   not for a short block. The same is done FDKaacEnc_CalcWindowEnergy(). The result of FDKaacEnc_GetWindowEnergy()
-   is used for a comparision of the max energy of left/right channel. */
+    /* For coherency, change FDKaacEnc_GetWindowEnergy() to calcluate the energy for a block switching analysis windows,
+       not for a short block. The same is done FDKaacEnc_CalcWindowEnergy(). The result of FDKaacEnc_GetWindowEnergy()
+       is used for a comparision of the max energy of left/right channel. */
 
-  return in[blSwWndIdx];
+    return in[blSwWndIdx];
 
 }
 
@@ -335,7 +342,8 @@ static void FDKaacEnc_CalcWindowEnergy(BLOCK_SWITCHING_CONTROL *RESTRICT blockSw
     FIXP_SGL hiPassCoeff1 = hiPassCoeff[1];
 
     /* sum up scalarproduct of timesignal as windowed Energies */
-    for (w=0; w < blockSwitchingControl->nBlockSwitchWindows; w++) {
+    for (w=0; w < blockSwitchingControl->nBlockSwitchWindows; w++)
+    {
 
         FIXP_DBL temp_windowNrg  = FL2FXCONST_DBL(0.0f);
         FIXP_DBL temp_windowNrgF = FL2FXCONST_DBL(0.0f);
@@ -343,7 +351,7 @@ static void FDKaacEnc_CalcWindowEnergy(BLOCK_SWITCHING_CONTROL *RESTRICT blockSw
         FIXP_DBL temp_iirState1  = blockSwitchingControl->iirStates[1];
 
         /* windowNrg = sum(timesample^2) */
-        for(i=0;i<windowLen;i++)
+        for(i=0; i<windowLen; i++)
         {
 
             FIXP_DBL tempUnfiltered, tempFiltred, t1, t2;
@@ -377,169 +385,188 @@ static void FDKaacEnc_CalcWindowEnergy(BLOCK_SWITCHING_CONTROL *RESTRICT blockSw
 
 static const UCHAR synchronizedBlockTypeTable[5][5] =
 {
-  /*                  LONG_WINDOW   START_WINDOW  SHORT_WINDOW  STOP_WINDOW   LOWOV_WINDOW*/
-  /* LONG_WINDOW  */ {LONG_WINDOW,  START_WINDOW, SHORT_WINDOW, STOP_WINDOW,  LOWOV_WINDOW},
-  /* START_WINDOW */ {START_WINDOW, START_WINDOW, SHORT_WINDOW, SHORT_WINDOW, LOWOV_WINDOW},
-  /* SHORT_WINDOW */ {SHORT_WINDOW, SHORT_WINDOW, SHORT_WINDOW, SHORT_WINDOW, WRONG_WINDOW},
-  /* STOP_WINDOW  */ {STOP_WINDOW,  SHORT_WINDOW, SHORT_WINDOW, STOP_WINDOW,  LOWOV_WINDOW},
-  /* LOWOV_WINDOW */ {LOWOV_WINDOW, LOWOV_WINDOW, WRONG_WINDOW, LOWOV_WINDOW, LOWOV_WINDOW},
+    /*                  LONG_WINDOW   START_WINDOW  SHORT_WINDOW  STOP_WINDOW   LOWOV_WINDOW*/
+    /* LONG_WINDOW  */ {LONG_WINDOW,  START_WINDOW, SHORT_WINDOW, STOP_WINDOW,  LOWOV_WINDOW},
+    /* START_WINDOW */ {START_WINDOW, START_WINDOW, SHORT_WINDOW, SHORT_WINDOW, LOWOV_WINDOW},
+    /* SHORT_WINDOW */ {SHORT_WINDOW, SHORT_WINDOW, SHORT_WINDOW, SHORT_WINDOW, WRONG_WINDOW},
+    /* STOP_WINDOW  */ {STOP_WINDOW,  SHORT_WINDOW, SHORT_WINDOW, STOP_WINDOW,  LOWOV_WINDOW},
+    /* LOWOV_WINDOW */ {LOWOV_WINDOW, LOWOV_WINDOW, WRONG_WINDOW, LOWOV_WINDOW, LOWOV_WINDOW},
 };
 
 int FDKaacEnc_SyncBlockSwitching (
-      BLOCK_SWITCHING_CONTROL *blockSwitchingControlLeft,
-      BLOCK_SWITCHING_CONTROL *blockSwitchingControlRight,
-      const INT nChannels,
-      const INT commonWindow )
+    BLOCK_SWITCHING_CONTROL *blockSwitchingControlLeft,
+    BLOCK_SWITCHING_CONTROL *blockSwitchingControlRight,
+    const INT nChannels,
+    const INT commonWindow )
 {
-  UCHAR patchType = LONG_WINDOW;
+    UCHAR patchType = LONG_WINDOW;
 
-  if( nChannels == 2 && commonWindow == TRUE)
-  {
-    /* could be better with a channel loop (need a handle to psy_data) */
-    /* get suggested Block Types and synchronize */
-    patchType = synchronizedBlockTypeTable[patchType][blockSwitchingControlLeft->lastWindowSequence];
-    patchType = synchronizedBlockTypeTable[patchType][blockSwitchingControlRight->lastWindowSequence];
-
-    /* sanity check (no change from low overlap window to short winow and vice versa) */
-    if (patchType == WRONG_WINDOW)
-      return -1; /* mixed up AAC-LC and AAC-LD */
-
-    /* Set synchronized Blocktype */
-    blockSwitchingControlLeft->lastWindowSequence  = patchType;
-    blockSwitchingControlRight->lastWindowSequence = patchType;
-
-    /* update window shape */
-    blockSwitchingControlLeft->windowShape  = blockType2windowShape[blockSwitchingControlLeft->allowShortFrames][blockSwitchingControlLeft->lastWindowSequence];
-    blockSwitchingControlRight->windowShape = blockType2windowShape[blockSwitchingControlLeft->allowShortFrames][blockSwitchingControlRight->lastWindowSequence];
-  }
-
-  if (blockSwitchingControlLeft->allowShortFrames)
-  {
-    int i;
-
-    if( nChannels == 2 )
+    if( nChannels == 2 && commonWindow == TRUE)
     {
-      if (commonWindow == TRUE)
-      {
-        /* Synchronize grouping info */
-        int windowSequenceLeftOld  = blockSwitchingControlLeft->lastWindowSequence;
-        int windowSequenceRightOld = blockSwitchingControlRight->lastWindowSequence;
+        /* could be better with a channel loop (need a handle to psy_data) */
+        /* get suggested Block Types and synchronize */
+        patchType = synchronizedBlockTypeTable[patchType][blockSwitchingControlLeft->lastWindowSequence];
+        patchType = synchronizedBlockTypeTable[patchType][blockSwitchingControlRight->lastWindowSequence];
 
-        /* Long Blocks */
-        if(patchType != SHORT_WINDOW) {
-          /* Set grouping info */
-          blockSwitchingControlLeft->noOfGroups   = 1;
-          blockSwitchingControlRight->noOfGroups  = 1;
-          blockSwitchingControlLeft->groupLen[0]  = 1;
-          blockSwitchingControlRight->groupLen[0] = 1;
+        /* sanity check (no change from low overlap window to short winow and vice versa) */
+        if (patchType == WRONG_WINDOW)
+            return -1; /* mixed up AAC-LC and AAC-LD */
 
-          for (i = 1; i < MAX_NO_OF_GROUPS; i++)
-          {
-            blockSwitchingControlLeft->groupLen[i]  = 0;
-            blockSwitchingControlRight->groupLen[i] = 0;
-          }
-        }
+        /* Set synchronized Blocktype */
+        blockSwitchingControlLeft->lastWindowSequence  = patchType;
+        blockSwitchingControlRight->lastWindowSequence = patchType;
 
-        /* Short Blocks */
-        else {
-          /* in case all two channels were detected as short-blocks before syncing, use the grouping of channel with higher maxWindowNrg */
-          if( (windowSequenceLeftOld  == SHORT_WINDOW) &&
-	            (windowSequenceRightOld == SHORT_WINDOW) )
-          {
-            if(blockSwitchingControlLeft->maxWindowNrg > blockSwitchingControlRight->maxWindowNrg) {
-	            /* Left Channel wins */
-	            blockSwitchingControlRight->noOfGroups = blockSwitchingControlLeft->noOfGroups;
-	            for (i = 0; i < MAX_NO_OF_GROUPS; i++){
-	              blockSwitchingControlRight->groupLen[i] = blockSwitchingControlLeft->groupLen[i];
-	            }
-            }
-            else {
-	            /* Right Channel wins */
-	            blockSwitchingControlLeft->noOfGroups = blockSwitchingControlRight->noOfGroups;
-	            for (i = 0; i < MAX_NO_OF_GROUPS; i++){
-	              blockSwitchingControlLeft->groupLen[i] = blockSwitchingControlRight->groupLen[i];
-	            }
-            }
-          }
-          else if ( (windowSequenceLeftOld  == SHORT_WINDOW) &&
-                    (windowSequenceRightOld != SHORT_WINDOW) )
-          {
-            /* else use grouping of short-block channel */
-            blockSwitchingControlRight->noOfGroups = blockSwitchingControlLeft->noOfGroups;
-            for (i = 0; i < MAX_NO_OF_GROUPS; i++){
-              blockSwitchingControlRight->groupLen[i] = blockSwitchingControlLeft->groupLen[i];
-            }
-          }
-          else if ( (windowSequenceRightOld == SHORT_WINDOW) &&
-		                (windowSequenceLeftOld  != SHORT_WINDOW) )
-          {
-            blockSwitchingControlLeft->noOfGroups = blockSwitchingControlRight->noOfGroups;
-            for (i = 0; i < MAX_NO_OF_GROUPS; i++){
-              blockSwitchingControlLeft->groupLen[i] = blockSwitchingControlRight->groupLen[i];
-            }
-          } else {
-            /* syncing a start and stop window ... */
-            blockSwitchingControlLeft->noOfGroups  = blockSwitchingControlRight->noOfGroups  = 2;
-            blockSwitchingControlLeft->groupLen[0] = blockSwitchingControlRight->groupLen[0] = 4;
-            blockSwitchingControlLeft->groupLen[1] = blockSwitchingControlRight->groupLen[1] = 4;
-          }
-        } /* Short Blocks */
-      }
-      else {
-        /* stereo, no common window */
-        if (blockSwitchingControlLeft->lastWindowSequence!=SHORT_WINDOW){
-          blockSwitchingControlLeft->noOfGroups  = 1;
-          blockSwitchingControlLeft->groupLen[0] = 1;
-          for (i = 1; i < MAX_NO_OF_GROUPS; i++)
-          {
-            blockSwitchingControlLeft->groupLen[i] = 0;
-          }
-        }
-        if (blockSwitchingControlRight->lastWindowSequence!=SHORT_WINDOW){
-          blockSwitchingControlRight->noOfGroups  = 1;
-          blockSwitchingControlRight->groupLen[0] = 1;
-          for (i = 1; i < MAX_NO_OF_GROUPS; i++)
-          {
-            blockSwitchingControlRight->groupLen[i] = 0;
-          }
-        }
-      } /* common window */
-    } else {
-      /* Mono */
-      if (blockSwitchingControlLeft->lastWindowSequence!=SHORT_WINDOW){
-        blockSwitchingControlLeft->noOfGroups  = 1;
-        blockSwitchingControlLeft->groupLen[0] = 1;
+        /* update window shape */
+        blockSwitchingControlLeft->windowShape  = blockType2windowShape[blockSwitchingControlLeft->allowShortFrames][blockSwitchingControlLeft->lastWindowSequence];
+        blockSwitchingControlRight->windowShape = blockType2windowShape[blockSwitchingControlLeft->allowShortFrames][blockSwitchingControlRight->lastWindowSequence];
+    }
 
-        for (i = 1; i < MAX_NO_OF_GROUPS; i++)
+    if (blockSwitchingControlLeft->allowShortFrames)
+    {
+        int i;
+
+        if( nChannels == 2 )
         {
-          blockSwitchingControlLeft->groupLen[i] = 0;
+            if (commonWindow == TRUE)
+            {
+                /* Synchronize grouping info */
+                int windowSequenceLeftOld  = blockSwitchingControlLeft->lastWindowSequence;
+                int windowSequenceRightOld = blockSwitchingControlRight->lastWindowSequence;
+
+                /* Long Blocks */
+                if(patchType != SHORT_WINDOW)
+                {
+                    /* Set grouping info */
+                    blockSwitchingControlLeft->noOfGroups   = 1;
+                    blockSwitchingControlRight->noOfGroups  = 1;
+                    blockSwitchingControlLeft->groupLen[0]  = 1;
+                    blockSwitchingControlRight->groupLen[0] = 1;
+
+                    for (i = 1; i < MAX_NO_OF_GROUPS; i++)
+                    {
+                        blockSwitchingControlLeft->groupLen[i]  = 0;
+                        blockSwitchingControlRight->groupLen[i] = 0;
+                    }
+                }
+
+                /* Short Blocks */
+                else
+                {
+                    /* in case all two channels were detected as short-blocks before syncing, use the grouping of channel with higher maxWindowNrg */
+                    if( (windowSequenceLeftOld  == SHORT_WINDOW) &&
+                            (windowSequenceRightOld == SHORT_WINDOW) )
+                    {
+                        if(blockSwitchingControlLeft->maxWindowNrg > blockSwitchingControlRight->maxWindowNrg)
+                        {
+                            /* Left Channel wins */
+                            blockSwitchingControlRight->noOfGroups = blockSwitchingControlLeft->noOfGroups;
+                            for (i = 0; i < MAX_NO_OF_GROUPS; i++)
+                            {
+                                blockSwitchingControlRight->groupLen[i] = blockSwitchingControlLeft->groupLen[i];
+                            }
+                        }
+                        else
+                        {
+                            /* Right Channel wins */
+                            blockSwitchingControlLeft->noOfGroups = blockSwitchingControlRight->noOfGroups;
+                            for (i = 0; i < MAX_NO_OF_GROUPS; i++)
+                            {
+                                blockSwitchingControlLeft->groupLen[i] = blockSwitchingControlRight->groupLen[i];
+                            }
+                        }
+                    }
+                    else if ( (windowSequenceLeftOld  == SHORT_WINDOW) &&
+                              (windowSequenceRightOld != SHORT_WINDOW) )
+                    {
+                        /* else use grouping of short-block channel */
+                        blockSwitchingControlRight->noOfGroups = blockSwitchingControlLeft->noOfGroups;
+                        for (i = 0; i < MAX_NO_OF_GROUPS; i++)
+                        {
+                            blockSwitchingControlRight->groupLen[i] = blockSwitchingControlLeft->groupLen[i];
+                        }
+                    }
+                    else if ( (windowSequenceRightOld == SHORT_WINDOW) &&
+                              (windowSequenceLeftOld  != SHORT_WINDOW) )
+                    {
+                        blockSwitchingControlLeft->noOfGroups = blockSwitchingControlRight->noOfGroups;
+                        for (i = 0; i < MAX_NO_OF_GROUPS; i++)
+                        {
+                            blockSwitchingControlLeft->groupLen[i] = blockSwitchingControlRight->groupLen[i];
+                        }
+                    }
+                    else
+                    {
+                        /* syncing a start and stop window ... */
+                        blockSwitchingControlLeft->noOfGroups  = blockSwitchingControlRight->noOfGroups  = 2;
+                        blockSwitchingControlLeft->groupLen[0] = blockSwitchingControlRight->groupLen[0] = 4;
+                        blockSwitchingControlLeft->groupLen[1] = blockSwitchingControlRight->groupLen[1] = 4;
+                    }
+                } /* Short Blocks */
+            }
+            else
+            {
+                /* stereo, no common window */
+                if (blockSwitchingControlLeft->lastWindowSequence!=SHORT_WINDOW)
+                {
+                    blockSwitchingControlLeft->noOfGroups  = 1;
+                    blockSwitchingControlLeft->groupLen[0] = 1;
+                    for (i = 1; i < MAX_NO_OF_GROUPS; i++)
+                    {
+                        blockSwitchingControlLeft->groupLen[i] = 0;
+                    }
+                }
+                if (blockSwitchingControlRight->lastWindowSequence!=SHORT_WINDOW)
+                {
+                    blockSwitchingControlRight->noOfGroups  = 1;
+                    blockSwitchingControlRight->groupLen[0] = 1;
+                    for (i = 1; i < MAX_NO_OF_GROUPS; i++)
+                    {
+                        blockSwitchingControlRight->groupLen[i] = 0;
+                    }
+                }
+            } /* common window */
         }
-      }
-    }
-  } /* allowShortFrames */
+        else
+        {
+            /* Mono */
+            if (blockSwitchingControlLeft->lastWindowSequence!=SHORT_WINDOW)
+            {
+                blockSwitchingControlLeft->noOfGroups  = 1;
+                blockSwitchingControlLeft->groupLen[0] = 1;
+
+                for (i = 1; i < MAX_NO_OF_GROUPS; i++)
+                {
+                    blockSwitchingControlLeft->groupLen[i] = 0;
+                }
+            }
+        }
+    } /* allowShortFrames */
 
 
-  /* Translate LOWOV_WINDOW block type to a meaningful window shape. */
-  if ( ! blockSwitchingControlLeft->allowShortFrames ) {
-    if ( blockSwitchingControlLeft->lastWindowSequence != LONG_WINDOW
-      && blockSwitchingControlLeft->lastWindowSequence != STOP_WINDOW )
+    /* Translate LOWOV_WINDOW block type to a meaningful window shape. */
+    if ( ! blockSwitchingControlLeft->allowShortFrames )
     {
-      blockSwitchingControlLeft->lastWindowSequence = LONG_WINDOW;
-      blockSwitchingControlLeft->windowShape = LOL_WINDOW;
+        if ( blockSwitchingControlLeft->lastWindowSequence != LONG_WINDOW
+                && blockSwitchingControlLeft->lastWindowSequence != STOP_WINDOW )
+        {
+            blockSwitchingControlLeft->lastWindowSequence = LONG_WINDOW;
+            blockSwitchingControlLeft->windowShape = LOL_WINDOW;
+        }
     }
-  }
-  if (nChannels == 2) {
-    if ( ! blockSwitchingControlRight->allowShortFrames ) {
-      if ( blockSwitchingControlRight->lastWindowSequence != LONG_WINDOW
-        && blockSwitchingControlRight->lastWindowSequence != STOP_WINDOW )
-      {
-        blockSwitchingControlRight->lastWindowSequence = LONG_WINDOW;
-        blockSwitchingControlRight->windowShape = LOL_WINDOW;
-      }
+    if (nChannels == 2)
+    {
+        if ( ! blockSwitchingControlRight->allowShortFrames )
+        {
+            if ( blockSwitchingControlRight->lastWindowSequence != LONG_WINDOW
+                    && blockSwitchingControlRight->lastWindowSequence != STOP_WINDOW )
+            {
+                blockSwitchingControlRight->lastWindowSequence = LONG_WINDOW;
+                blockSwitchingControlRight->windowShape = LOL_WINDOW;
+            }
+        }
     }
-  }
 
-  return 0;
+    return 0;
 }
 
 

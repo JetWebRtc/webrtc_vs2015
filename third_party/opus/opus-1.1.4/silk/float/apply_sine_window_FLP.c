@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -56,12 +56,15 @@ void silk_apply_sine_window_FLP(
     c = 2.0f - freq * freq;
 
     /* Initialize state */
-    if( win_type < 2 ) {
+    if( win_type < 2 )
+    {
         /* Start from 0 */
         S0 = 0.0f;
         /* Approximation of sin(f) */
         S1 = freq;
-    } else {
+    }
+    else
+    {
         /* Start from 1 */
         S0 = 1.0f;
         /* Approximation of cos(f) */
@@ -70,7 +73,8 @@ void silk_apply_sine_window_FLP(
 
     /* Uses the recursive equation:   sin(n*f) = 2 * cos(f) * sin((n-1)*f) - sin((n-2)*f)   */
     /* 4 samples at a time */
-    for( k = 0; k < length; k += 4 ) {
+    for( k = 0; k < length; k += 4 )
+    {
         px_win[ k + 0 ] = px[ k + 0 ] * 0.5f * ( S0 + S1 );
         px_win[ k + 1 ] = px[ k + 1 ] * S1;
         S0 = c * S1 - S0;

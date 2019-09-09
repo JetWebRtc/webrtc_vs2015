@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,6 +29,6 @@ int16_t WebRtcIlbcfix_UnpackBits( /* (o) "Empty" frame indicator */
     const uint16_t *bitstream,    /* (i) The packatized bitstream */
     iLBC_bits *enc_bits,  /* (o) Paramerers from bitstream */
     int16_t mode     /* (i) Codec mode (20 or 30) */
-                                        );
+);
 
 #endif

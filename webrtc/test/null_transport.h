@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,17 +12,20 @@
 
 #include "webrtc/api/call/transport.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class PacketReceiver;
 
-namespace test {
-class NullTransport : public Transport {
- public:
-  bool SendRtp(const uint8_t* packet,
-               size_t length,
-               const PacketOptions& options) override;
-  bool SendRtcp(const uint8_t* packet, size_t length) override;
+namespace test
+{
+class NullTransport : public Transport
+{
+public:
+    bool SendRtp(const uint8_t* packet,
+                 size_t length,
+                 const PacketOptions& options) override;
+    bool SendRtcp(const uint8_t* packet, size_t length) override;
 };
 }  // namespace test
 }  // namespace webrtc

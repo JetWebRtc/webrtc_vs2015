@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,7 +30,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct ModPlugContext {
+typedef struct ModPlugContext
+{
     const AVClass *class;
     ModPlugFile *f;
     uint8_t *buf; ///< input file content
@@ -60,7 +61,8 @@ typedef struct ModPlugContext {
     AVExpr *expr;         ///< parsed color eval expression
 } ModPlugContext;
 
-static const char * const var_names[] = {
+static const char * const var_names[] =
+{
     "x", "y",
     "w", "h",
     "t",
@@ -68,7 +70,8 @@ static const char * const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_X, VAR_Y,
     VAR_W, VAR_H,
     VAR_TIME,
@@ -81,7 +84,8 @@ enum var_name {
 
 #define OFFSET(x) offsetof(ModPlugContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"noise_reduction", "Enable noise reduction 0(off)-1(on)",  OFFSET(noise_reduction), AV_OPT_TYPE_INT, {.i64 = 0}, 0,       1, D},
     {"reverb_depth",    "Reverb level 0(quiet)-100(loud)",      OFFSET(reverb_depth),    AV_OPT_TYPE_INT, {.i64 = 0}, 0,     100, D},
     {"reverb_delay",    "Reverb delay in ms, usually 40-200ms", OFFSET(reverb_delay),    AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, D},
@@ -89,8 +93,10 @@ static const AVOption options[] = {
     {"bass_range",      "XBass cutoff in Hz 10-100",            OFFSET(bass_range),      AV_OPT_TYPE_INT, {.i64 = 0}, 0,     100, D},
     {"surround_depth",  "Surround level 0(quiet)-100(heavy)",   OFFSET(surround_depth),  AV_OPT_TYPE_INT, {.i64 = 0}, 0,     100, D},
     {"surround_delay",  "Surround delay in ms, usually 5-40ms", OFFSET(surround_delay),  AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, D},
-    {"max_size",        "Max file size supported (in bytes). Default is 5MB. Set to 0 for no limit (not recommended)",
-     OFFSET(max_size), AV_OPT_TYPE_INT, {.i64 = FF_MODPLUG_DEF_FILE_SIZE}, 0, FF_MODPLUG_MAX_FILE_SIZE, D},
+    {
+        "max_size",        "Max file size supported (in bytes). Default is 5MB. Set to 0 for no limit (not recommended)",
+        OFFSET(max_size), AV_OPT_TYPE_INT, {.i64 = FF_MODPLUG_DEF_FILE_SIZE}, 0, FF_MODPLUG_MAX_FILE_SIZE, D
+    },
     {"video_stream_expr", "Color formula",                                  OFFSET(color_eval),     AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, D},
     {"video_stream",      "Make demuxer output a video stream",             OFFSET(video_stream),   AV_OPT_TYPE_INT, {.i64 = 0},   0,   1, D},
     {"video_stream_w",    "Video stream width in char (one char = 8x8px)",  OFFSET(w),              AV_OPT_TYPE_INT, {.i64 = 30}, 20, 512, D},
@@ -169,17 +175,21 @@ static int modplug_read_header(AVFormatContext *s)
     ModPlugContext *modplug = s->priv_data;
     int64_t sz = avio_size(pb);
 
-    if (sz < 0) {
+    if (sz < 0)
+    {
         av_log(s, AV_LOG_WARNING, "Could not determine file size\n");
         sz = modplug->max_size;
-    } else if (modplug->max_size && sz > modplug->max_size) {
+    }
+    else if (modplug->max_size && sz > modplug->max_size)
+    {
         sz = modplug->max_size;
         av_log(s, AV_LOG_WARNING, "Max file size reach%s, allocating %"PRIi64"B "
                "but demuxing is likely to fail due to incomplete buffer\n",
                sz == FF_MODPLUG_DEF_FILE_SIZE ? " (see -max_size)" : "", sz);
     }
 
-    if (modplug->color_eval) {
+    if (modplug->color_eval)
+    {
         int r = av_expr_parse(&modplug->expr, modplug->color_eval, var_names,
                               NULL, NULL, NULL, NULL, 0, s);
         if (r < 0)
@@ -232,7 +242,8 @@ static int modplug_read_header(AVFormatContext *s)
     // timebase = 1/1000, 2ch 16bits 44.1kHz-> 2*2*44100
     modplug->ts_per_packet = 1000*AUDIO_PKT_SIZE / (4*44100.);
 
-    if (modplug->video_stream) {
+    if (modplug->video_stream)
+    {
         AVStream *vst = avformat_new_stream(s, NULL);
         if (!vst)
             return AVERROR(ENOMEM);
@@ -253,7 +264,8 @@ static void write_text(uint8_t *dst, const char *s, int linesize, int x, int y)
 {
     int i;
     dst += y*linesize + x*3;
-    for (i = 0; s[i]; i++, dst += 3) {
+    for (i = 0; s[i]; i++, dst += 3)
+    {
         dst[0] = 0x0;   // count - 1
         dst[1] = s[i];  // char
         dst[2] = 0x0f;  // background / foreground
@@ -270,9 +282,11 @@ static int modplug_read_packet(AVFormatContext *s, AVPacket *pkt)
 {
     ModPlugContext *modplug = s->priv_data;
 
-    if (modplug->video_stream) {
+    if (modplug->video_stream)
+    {
         modplug->video_switch ^= 1; // one video packet for one audio packet
-        if (modplug->video_switch) {
+        if (modplug->video_switch)
+        {
             double var_values[VAR_VARS_NB];
 
             var_values[VAR_W      ] = modplug->w;
@@ -289,7 +303,8 @@ static int modplug_read_packet(AVFormatContext *s, AVPacket *pkt)
             pkt->stream_index = 1;
             memset(pkt->data, 0, modplug->fsize);
 
-            if (modplug->print_textinfo) {
+            if (modplug->print_textinfo)
+            {
                 char intbuf[32];
                 PRINT_INFO(0, "speed",   VAR_SPEED);
                 PRINT_INFO(1, "tempo",   VAR_TEMPO);
@@ -299,10 +314,13 @@ static int modplug_read_packet(AVFormatContext *s, AVPacket *pkt)
                 PRINT_INFO(5, "ts",      VAR_TIME);
             }
 
-            if (modplug->expr) {
+            if (modplug->expr)
+            {
                 int x, y;
-                for (y = 0; y < modplug->h; y++) {
-                    for (x = 0; x < modplug->w; x++) {
+                for (y = 0; y < modplug->h; y++)
+                {
+                    for (x = 0; x < modplug->w; x++)
+                    {
                         double color;
                         var_values[VAR_X] = x;
                         var_values[VAR_Y] = y;
@@ -324,7 +342,8 @@ static int modplug_read_packet(AVFormatContext *s, AVPacket *pkt)
         pkt->pts = pkt->dts = modplug->packet_count++ * modplug->ts_per_packet;
 
     pkt->size = ModPlug_Read(modplug->f, pkt->data, AUDIO_PKT_SIZE);
-    if (pkt->size <= 0) {
+    if (pkt->size <= 0)
+    {
         av_free_packet(pkt);
         return pkt->size == 0 ? AVERROR_EOF : AVERROR(EIO);
     }
@@ -352,7 +371,8 @@ static const char modplug_extensions[] = "669,abc,amf,ams,dbm,dmf,dsm,far,it,mdl
 
 static int modplug_probe(AVProbeData *p)
 {
-    if (av_match_ext(p->filename, modplug_extensions)) {
+    if (av_match_ext(p->filename, modplug_extensions))
+    {
         if (p->buf_size < 16384)
             return AVPROBE_SCORE_EXTENSION/2-1;
         else
@@ -361,14 +381,16 @@ static int modplug_probe(AVProbeData *p)
     return 0;
 }
 
-static const AVClass modplug_class = {
+static const AVClass modplug_class =
+{
     .class_name = "ModPlug demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_libmodplug_demuxer = {
+AVInputFormat ff_libmodplug_demuxer =
+{
     .name           = "libmodplug",
     .long_name      = NULL_IF_CONFIG_SMALL("ModPlug demuxer"),
     .priv_data_size = sizeof(ModPlugContext),

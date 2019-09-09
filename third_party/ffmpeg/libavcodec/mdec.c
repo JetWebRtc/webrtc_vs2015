@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sony PlayStation MDEC (Motion DECoder)
  * Copyright (c) 2003 Michael Niedermayer
  *
@@ -35,7 +35,8 @@
 #include "mpeg12.h"
 #include "thread.h"
 
-typedef struct MDECContext {
+typedef struct MDECContext
+{
     AVCodecContext *avctx;
     BlockDSPContext bdsp;
     BswapDSPContext bbdsp;
@@ -66,9 +67,12 @@ static inline int mdec_decode_block_intra(MDECContext *a, int16_t *block, int n)
     const int qscale = a->qscale;
 
     /* DC coefficient */
-    if (a->version == 2) {
+    if (a->version == 2)
+    {
         block[0] = 2 * get_sbits(&a->gb, 10) + 1024;
-    } else {
+    }
+    else
+    {
         component = (n <= 3 ? 0 : n - 4 + 1);
         diff = decode_dc(&a->gb, component);
         if (diff >= 0xffff)
@@ -81,15 +85,20 @@ static inline int mdec_decode_block_intra(MDECContext *a, int16_t *block, int n)
     {
         OPEN_READER(re, &a->gb);
         /* now quantify & encode AC coefficients */
-        for (;;) {
+        for (;;)
+        {
             UPDATE_CACHE(re, &a->gb);
             GET_RL_VLC(level, run, re, &a->gb, rl->rl_vlc[0], TEX_VLC_BITS, 2, 0);
 
-            if (level == 127) {
+            if (level == 127)
+            {
                 break;
-            } else if (level != 0) {
+            }
+            else if (level != 0)
+            {
                 i += run;
-                if (i > 63) {
+                if (i > 63)
+                {
                     av_log(a->avctx, AV_LOG_ERROR,
                            "ac-tex damaged at %d %d\n", a->mb_x, a->mb_y);
                     return AVERROR_INVALIDDATA;
@@ -98,24 +107,32 @@ static inline int mdec_decode_block_intra(MDECContext *a, int16_t *block, int n)
                 level = (level * qscale * quant_matrix[j]) >> 3;
                 level = (level ^ SHOW_SBITS(re, &a->gb, 1)) - SHOW_SBITS(re, &a->gb, 1);
                 LAST_SKIP_BITS(re, &a->gb, 1);
-            } else {
+            }
+            else
+            {
                 /* escape */
-                run = SHOW_UBITS(re, &a->gb, 6)+1; LAST_SKIP_BITS(re, &a->gb, 6);
+                run = SHOW_UBITS(re, &a->gb, 6)+1;
+                LAST_SKIP_BITS(re, &a->gb, 6);
                 UPDATE_CACHE(re, &a->gb);
-                level = SHOW_SBITS(re, &a->gb, 10); SKIP_BITS(re, &a->gb, 10);
+                level = SHOW_SBITS(re, &a->gb, 10);
+                SKIP_BITS(re, &a->gb, 10);
                 i += run;
-                if (i > 63) {
+                if (i > 63)
+                {
                     av_log(a->avctx, AV_LOG_ERROR,
                            "ac-tex damaged at %d %d\n", a->mb_x, a->mb_y);
                     return AVERROR_INVALIDDATA;
                 }
                 j = scantable[i];
-                if (level < 0) {
+                if (level < 0)
+                {
                     level = -level;
                     level = (level * qscale * quant_matrix[j]) >> 3;
                     level = (level - 1) | 1;
                     level = -level;
-                } else {
+                }
+                else
+                {
                     level = (level * qscale * quant_matrix[j]) >> 3;
                     level = (level - 1) | 1;
                 }
@@ -136,7 +153,8 @@ static inline int decode_mb(MDECContext *a, int16_t block[6][64])
 
     a->bdsp.clear_blocks(block[0]);
 
-    for (i = 0; i < 6; i++) {
+    for (i = 0; i < 6; i++)
+    {
         if ((ret = mdec_decode_block_intra(a, block[block_index[i]],
                                            block_index[i])) < 0)
             return ret;
@@ -160,7 +178,8 @@ static inline void idct_put(MDECContext *a, AVFrame *frame, int mb_x, int mb_y)
     a->idsp.idct_put(dest_y + 8 * linesize,     linesize, block[2]);
     a->idsp.idct_put(dest_y + 8 * linesize + 8, linesize, block[3]);
 
-    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         a->idsp.idct_put(dest_cb, frame->linesize[1], block[4]);
         a->idsp.idct_put(dest_cr, frame->linesize[2], block[5]);
     }
@@ -196,8 +215,10 @@ static int decode_frame(AVCodecContext *avctx,
 
     a->last_dc[0] = a->last_dc[1] = a->last_dc[2] = 128;
 
-    for (a->mb_x = 0; a->mb_x < a->mb_width; a->mb_x++) {
-        for (a->mb_y = 0; a->mb_y < a->mb_height; a->mb_y++) {
+    for (a->mb_x = 0; a->mb_x < a->mb_width; a->mb_x++)
+    {
+        for (a->mb_y = 0; a->mb_y < a->mb_height; a->mb_y++)
+        {
             if ((ret = decode_mb(a, a->block)) < 0)
                 return ret;
 
@@ -253,7 +274,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_mdec_decoder = {
+AVCodec ff_mdec_decoder =
+{
     .name             = "mdec",
     .long_name        = NULL_IF_CONFIG_SMALL("Sony PlayStation MDEC (Motion DECoder)"),
     .type             = AVMEDIA_TYPE_VIDEO,

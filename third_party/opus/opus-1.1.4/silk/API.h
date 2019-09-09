@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,7 +42,8 @@ extern "C"
 #define SILK_MAX_FRAMES_PER_PACKET  3
 
 /* Struct for TOC (Table of Contents) */
-typedef struct {
+typedef struct
+{
     opus_int    VADFlag;                                /* Voice activity for packet                            */
     opus_int    VADFlags[ SILK_MAX_FRAMES_PER_PACKET ]; /* Voice activity for each frame in packet              */
     opus_int    inbandFECFlag;                          /* Flag indicating if packet contains in-band FEC       */

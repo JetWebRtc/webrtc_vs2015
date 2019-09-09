@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ bool WebRtcIlbcfix_GetCbVec(
     size_t index,   /* (i) Codebook index */
     size_t lMem,    /* (i) Length of codebook buffer */
     size_t cbveclen /* (i) Codebook vector length */
-    ) WARN_UNUSED_RESULT;
+) WARN_UNUSED_RESULT;
 
 #endif

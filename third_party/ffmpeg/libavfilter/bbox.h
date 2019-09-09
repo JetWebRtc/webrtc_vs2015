@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2005 Robert Edele <yartrebo@earthlink.net>
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct
+{
     int x1, x2, y1, y2;
 } FFBoundingBox;
 

@@ -41,14 +41,16 @@
 #define B 2
 #define A 3
 
-enum interp_mode {
+enum interp_mode
+{
     INTERPOLATE_NEAREST,
     INTERPOLATE_TRILINEAR,
     INTERPOLATE_TETRAHEDRAL,
     NB_INTERP_MODE
 };
 
-struct rgbvec {
+struct rgbvec
+{
     float r, g, b;
 };
 
@@ -56,7 +58,8 @@ struct rgbvec {
  * of 512x512 (64x64x64) */
 #define MAX_LEVEL 64
 
-typedef struct LUT3DContext {
+typedef struct LUT3DContext
+{
     const AVClass *class;
     int interpolation;          ///<interp_mode
     char *file;
@@ -74,7 +77,8 @@ typedef struct LUT3DContext {
 #endif
 } LUT3DContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
@@ -94,7 +98,8 @@ static inline float lerpf(float v0, float v1, float f)
 
 static inline struct rgbvec lerp(const struct rgbvec *v0, const struct rgbvec *v1, float f)
 {
-    struct rgbvec v = {
+    struct rgbvec v =
+    {
         lerpf(v0->r, v1->r, f), lerpf(v0->g, v1->g, f), lerpf(v0->b, v1->b, f)
     };
     return v;
@@ -108,7 +113,7 @@ static inline struct rgbvec lerp(const struct rgbvec *v0, const struct rgbvec *v
  * Get the nearest defined point
  */
 static inline struct rgbvec interp_nearest(const LUT3DContext *lut3d,
-                                           const struct rgbvec *s)
+        const struct rgbvec *s)
 {
     return lut3d->lut[NEAR(s->r)][NEAR(s->g)][NEAR(s->b)];
 }
@@ -118,7 +123,7 @@ static inline struct rgbvec interp_nearest(const LUT3DContext *lut3d,
  * @see https://en.wikipedia.org/wiki/Trilinear_interpolation
  */
 static inline struct rgbvec interp_trilinear(const LUT3DContext *lut3d,
-                                             const struct rgbvec *s)
+        const struct rgbvec *s)
 {
     const int prev[] = {PREV(s->r), PREV(s->g), PREV(s->b)};
     const int next[] = {NEXT(s->r), NEXT(s->g), NEXT(s->b)};
@@ -146,7 +151,7 @@ static inline struct rgbvec interp_trilinear(const LUT3DContext *lut3d,
  * @see http://www.filmlight.ltd.uk/pdf/whitepapers/FL-TL-TN-0057-SoftwareLib.pdf
  */
 static inline struct rgbvec interp_tetrahedral(const LUT3DContext *lut3d,
-                                               const struct rgbvec *s)
+        const struct rgbvec *s)
 {
     const int prev[] = {PREV(s->r), PREV(s->g), PREV(s->b)};
     const int next[] = {NEXT(s->r), NEXT(s->g), NEXT(s->b)};
@@ -154,40 +159,53 @@ static inline struct rgbvec interp_tetrahedral(const LUT3DContext *lut3d,
     const struct rgbvec c000 = lut3d->lut[prev[0]][prev[1]][prev[2]];
     const struct rgbvec c111 = lut3d->lut[next[0]][next[1]][next[2]];
     struct rgbvec c;
-    if (d.r > d.g) {
-        if (d.g > d.b) {
+    if (d.r > d.g)
+    {
+        if (d.g > d.b)
+        {
             const struct rgbvec c100 = lut3d->lut[next[0]][prev[1]][prev[2]];
             const struct rgbvec c110 = lut3d->lut[next[0]][next[1]][prev[2]];
             c.r = (1-d.r) * c000.r + (d.r-d.g) * c100.r + (d.g-d.b) * c110.r + (d.b) * c111.r;
             c.g = (1-d.r) * c000.g + (d.r-d.g) * c100.g + (d.g-d.b) * c110.g + (d.b) * c111.g;
             c.b = (1-d.r) * c000.b + (d.r-d.g) * c100.b + (d.g-d.b) * c110.b + (d.b) * c111.b;
-        } else if (d.r > d.b) {
+        }
+        else if (d.r > d.b)
+        {
             const struct rgbvec c100 = lut3d->lut[next[0]][prev[1]][prev[2]];
             const struct rgbvec c101 = lut3d->lut[next[0]][prev[1]][next[2]];
             c.r = (1-d.r) * c000.r + (d.r-d.b) * c100.r + (d.b-d.g) * c101.r + (d.g) * c111.r;
             c.g = (1-d.r) * c000.g + (d.r-d.b) * c100.g + (d.b-d.g) * c101.g + (d.g) * c111.g;
             c.b = (1-d.r) * c000.b + (d.r-d.b) * c100.b + (d.b-d.g) * c101.b + (d.g) * c111.b;
-        } else {
+        }
+        else
+        {
             const struct rgbvec c001 = lut3d->lut[prev[0]][prev[1]][next[2]];
             const struct rgbvec c101 = lut3d->lut[next[0]][prev[1]][next[2]];
             c.r = (1-d.b) * c000.r + (d.b-d.r) * c001.r + (d.r-d.g) * c101.r + (d.g) * c111.r;
             c.g = (1-d.b) * c000.g + (d.b-d.r) * c001.g + (d.r-d.g) * c101.g + (d.g) * c111.g;
             c.b = (1-d.b) * c000.b + (d.b-d.r) * c001.b + (d.r-d.g) * c101.b + (d.g) * c111.b;
         }
-    } else {
-        if (d.b > d.g) {
+    }
+    else
+    {
+        if (d.b > d.g)
+        {
             const struct rgbvec c001 = lut3d->lut[prev[0]][prev[1]][next[2]];
             const struct rgbvec c011 = lut3d->lut[prev[0]][next[1]][next[2]];
             c.r = (1-d.b) * c000.r + (d.b-d.g) * c001.r + (d.g-d.r) * c011.r + (d.r) * c111.r;
             c.g = (1-d.b) * c000.g + (d.b-d.g) * c001.g + (d.g-d.r) * c011.g + (d.r) * c111.g;
             c.b = (1-d.b) * c000.b + (d.b-d.g) * c001.b + (d.g-d.r) * c011.b + (d.r) * c111.b;
-        } else if (d.b > d.r) {
+        }
+        else if (d.b > d.r)
+        {
             const struct rgbvec c010 = lut3d->lut[prev[0]][next[1]][prev[2]];
             const struct rgbvec c011 = lut3d->lut[prev[0]][next[1]][next[2]];
             c.r = (1-d.g) * c000.r + (d.g-d.b) * c010.r + (d.b-d.r) * c011.r + (d.r) * c111.r;
             c.g = (1-d.g) * c000.g + (d.g-d.b) * c010.g + (d.b-d.r) * c011.g + (d.r) * c111.g;
             c.b = (1-d.g) * c000.b + (d.g-d.b) * c010.b + (d.b-d.r) * c011.b + (d.r) * c111.b;
-        } else {
+        }
+        else
+        {
             const struct rgbvec c010 = lut3d->lut[prev[0]][next[1]][prev[2]];
             const struct rgbvec c110 = lut3d->lut[next[0]][next[1]][prev[2]];
             c.r = (1-d.g) * c000.r + (d.g-d.r) * c010.r + (d.r-d.b) * c110.r + (d.b) * c111.r;
@@ -273,18 +291,23 @@ static int parse_dat(AVFilterContext *ctx, FILE *f)
     lut3d->lutsize = size = 33;
 
     NEXT_LINE(skip_line(line));
-    if (!strncmp(line, "3DLUTSIZE ", 10)) {
+    if (!strncmp(line, "3DLUTSIZE ", 10))
+    {
         size = strtol(line + 10, NULL, 0);
-        if (size < 2 || size > MAX_LEVEL) {
+        if (size < 2 || size > MAX_LEVEL)
+        {
             av_log(ctx, AV_LOG_ERROR, "Too large or invalid 3D LUT size\n");
             return AVERROR(EINVAL);
         }
         lut3d->lutsize = size;
         NEXT_LINE(skip_line(line));
     }
-    for (k = 0; k < size; k++) {
-        for (j = 0; j < size; j++) {
-            for (i = 0; i < size; i++) {
+    for (k = 0; k < size; k++)
+    {
+        for (j = 0; j < size; j++)
+        {
+            for (i = 0; i < size; i++)
+            {
                 struct rgbvec *vec = &lut3d->lut[k][j][i];
                 if (k != 0 || j != 0 || i != 0)
                     NEXT_LINE(skip_line(line));
@@ -304,24 +327,32 @@ static int parse_cube(AVFilterContext *ctx, FILE *f)
     float min[3] = {0.0, 0.0, 0.0};
     float max[3] = {1.0, 1.0, 1.0};
 
-    while (fgets(line, sizeof(line), f)) {
-        if (!strncmp(line, "LUT_3D_SIZE ", 12)) {
+    while (fgets(line, sizeof(line), f))
+    {
+        if (!strncmp(line, "LUT_3D_SIZE ", 12))
+        {
             int i, j, k;
             const int size = strtol(line + 12, NULL, 0);
 
-            if (size < 2 || size > MAX_LEVEL) {
+            if (size < 2 || size > MAX_LEVEL)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Too large or invalid 3D LUT size\n");
                 return AVERROR(EINVAL);
             }
             lut3d->lutsize = size;
-            for (k = 0; k < size; k++) {
-                for (j = 0; j < size; j++) {
-                    for (i = 0; i < size; i++) {
+            for (k = 0; k < size; k++)
+            {
+                for (j = 0; j < size; j++)
+                {
+                    for (i = 0; i < size; i++)
+                    {
                         struct rgbvec *vec = &lut3d->lut[i][j][k];
 
-                        do {
+                        do
+                        {
                             NEXT_LINE(0);
-                            if (!strncmp(line, "DOMAIN_", 7)) {
+                            if (!strncmp(line, "DOMAIN_", 7))
+                            {
                                 float *vals = NULL;
                                 if      (!strncmp(line + 7, "MIN ", 4)) vals = min;
                                 else if (!strncmp(line + 7, "MAX ", 4)) vals = max;
@@ -332,7 +363,8 @@ static int parse_cube(AVFilterContext *ctx, FILE *f)
                                        min[0], min[1], min[2], max[0], max[1], max[2]);
                                 continue;
                             }
-                        } while (skip_line(line));
+                        }
+                        while (skip_line(line));
                         if (sscanf(line, "%f %f %f", &vec->r, &vec->g, &vec->b) != 3)
                             return AVERROR_INVALIDDATA;
                         vec->r *= max[0] - min[0];
@@ -359,9 +391,12 @@ static int parse_3dl(AVFilterContext *ctx, FILE *f)
 
     lut3d->lutsize = size;
     NEXT_LINE(skip_line(line));
-    for (k = 0; k < size; k++) {
-        for (j = 0; j < size; j++) {
-            for (i = 0; i < size; i++) {
+    for (k = 0; k < size; k++)
+    {
+        for (j = 0; j < size; j++)
+        {
+            for (i = 0; i < size; i++)
+            {
                 int r, g, b;
                 struct rgbvec *vec = &lut3d->lut[k][j][i];
 
@@ -386,10 +421,12 @@ static int parse_m3d(AVFilterContext *ctx, FILE *f)
     char line[MAX_LINE_SIZE];
     uint8_t rgb_map[3] = {0, 1, 2};
 
-    while (fgets(line, sizeof(line), f)) {
+    while (fgets(line, sizeof(line), f))
+    {
         if      (!strncmp(line, "in",  2)) in  = strtol(line + 2, NULL, 0);
         else if (!strncmp(line, "out", 3)) out = strtol(line + 3, NULL, 0);
-        else if (!strncmp(line, "values", 6)) {
+        else if (!strncmp(line, "values", 6))
+        {
             const char *p = line + 6;
 #define SET_COLOR(id) do {                  \
     while (av_isspace(*p))                  \
@@ -409,13 +446,15 @@ static int parse_m3d(AVFilterContext *ctx, FILE *f)
         }
     }
 
-    if (in == -1 || out == -1) {
+    if (in == -1 || out == -1)
+    {
         av_log(ctx, AV_LOG_ERROR, "in and out must be defined\n");
         return AVERROR_INVALIDDATA;
     }
     if (in < 2 || out < 2 ||
-        in  > MAX_LEVEL*MAX_LEVEL*MAX_LEVEL ||
-        out > MAX_LEVEL*MAX_LEVEL*MAX_LEVEL) {
+            in  > MAX_LEVEL*MAX_LEVEL*MAX_LEVEL ||
+            out > MAX_LEVEL*MAX_LEVEL*MAX_LEVEL)
+    {
         av_log(ctx, AV_LOG_ERROR, "invalid in (%d) or out (%d)\n", in, out);
         return AVERROR_INVALIDDATA;
     }
@@ -423,9 +462,12 @@ static int parse_m3d(AVFilterContext *ctx, FILE *f)
     lut3d->lutsize = size;
     scale = 1. / (out - 1);
 
-    for (k = 0; k < size; k++) {
-        for (j = 0; j < size; j++) {
-            for (i = 0; i < size; i++) {
+    for (k = 0; k < size; k++)
+    {
+        for (j = 0; j < size; j++)
+        {
+            for (i = 0; i < size; i++)
+            {
                 struct rgbvec *vec = &lut3d->lut[k][j][i];
                 float val[3];
 
@@ -447,9 +489,12 @@ static void set_identity_matrix(LUT3DContext *lut3d, int size)
     const float c = 1. / (size - 1);
 
     lut3d->lutsize = size;
-    for (k = 0; k < size; k++) {
-        for (j = 0; j < size; j++) {
-            for (i = 0; i < size; i++) {
+    for (k = 0; k < size; k++)
+    {
+        for (j = 0; j < size; j++)
+        {
+            for (i = 0; i < size; i++)
+            {
                 struct rgbvec *vec = &lut3d->lut[k][j][i];
                 vec->r = k * c;
                 vec->g = j * c;
@@ -461,7 +506,8 @@ static void set_identity_matrix(LUT3DContext *lut3d, int size)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24,  AV_PIX_FMT_BGR24,
         AV_PIX_FMT_RGBA,   AV_PIX_FMT_BGRA,
         AV_PIX_FMT_ARGB,   AV_PIX_FMT_ABGR,
@@ -483,7 +529,8 @@ static int config_input(AVFilterLink *inlink)
     LUT3DContext *lut3d = inlink->dst->priv;
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(inlink->format);
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_PIX_FMT_RGB48:
     case AV_PIX_FMT_BGR48:
     case AV_PIX_FMT_RGBA64:
@@ -499,10 +546,17 @@ static int config_input(AVFilterLink *inlink)
     else         lut3d->interp = interp_8_##name;       \
 } while (0)
 
-    switch (lut3d->interpolation) {
-    case INTERPOLATE_NEAREST:     SET_FUNC(nearest);        break;
-    case INTERPOLATE_TRILINEAR:   SET_FUNC(trilinear);      break;
-    case INTERPOLATE_TETRAHEDRAL: SET_FUNC(tetrahedral);    break;
+    switch (lut3d->interpolation)
+    {
+    case INTERPOLATE_NEAREST:
+        SET_FUNC(nearest);
+        break;
+    case INTERPOLATE_TRILINEAR:
+        SET_FUNC(trilinear);
+        break;
+    case INTERPOLATE_TETRAHEDRAL:
+        SET_FUNC(tetrahedral);
+        break;
     default:
         av_assert0(0);
     }
@@ -518,11 +572,15 @@ static AVFrame *apply_lut(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     ThreadData td;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return NULL;
         }
@@ -549,7 +607,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 }
 
 #if CONFIG_LUT3D_FILTER
-static const AVOption lut3d_options[] = {
+static const AVOption lut3d_options[] =
+{
     { "file", "set 3D LUT file name", OFFSET(file), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
     COMMON_OPTIONS
 };
@@ -563,40 +622,53 @@ static av_cold int lut3d_init(AVFilterContext *ctx)
     const char *ext;
     LUT3DContext *lut3d = ctx->priv;
 
-    if (!lut3d->file) {
+    if (!lut3d->file)
+    {
         set_identity_matrix(lut3d, 32);
         return 0;
     }
 
     f = fopen(lut3d->file, "r");
-    if (!f) {
+    if (!f)
+    {
         ret = AVERROR(errno);
         av_log(ctx, AV_LOG_ERROR, "%s: %s\n", lut3d->file, av_err2str(ret));
         return ret;
     }
 
     ext = strrchr(lut3d->file, '.');
-    if (!ext) {
+    if (!ext)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unable to guess the format from the extension\n");
         ret = AVERROR_INVALIDDATA;
         goto end;
     }
     ext++;
 
-    if (!av_strcasecmp(ext, "dat")) {
+    if (!av_strcasecmp(ext, "dat"))
+    {
         ret = parse_dat(ctx, f);
-    } else if (!av_strcasecmp(ext, "3dl")) {
+    }
+    else if (!av_strcasecmp(ext, "3dl"))
+    {
         ret = parse_3dl(ctx, f);
-    } else if (!av_strcasecmp(ext, "cube")) {
+    }
+    else if (!av_strcasecmp(ext, "cube"))
+    {
         ret = parse_cube(ctx, f);
-    } else if (!av_strcasecmp(ext, "m3d")) {
+    }
+    else if (!av_strcasecmp(ext, "m3d"))
+    {
         ret = parse_m3d(ctx, f);
-    } else {
+    }
+    else
+    {
         av_log(ctx, AV_LOG_ERROR, "Unrecognized '.%s' file type\n", ext);
         ret = AVERROR(EINVAL);
     }
 
-    if (!ret && !lut3d->lutsize) {
+    if (!ret && !lut3d->lutsize)
+    {
         av_log(ctx, AV_LOG_ERROR, "3D LUT is empty\n");
         ret = AVERROR_INVALIDDATA;
     }
@@ -606,7 +678,8 @@ end:
     return ret;
 }
 
-static const AVFilterPad lut3d_inputs[] = {
+static const AVFilterPad lut3d_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -616,7 +689,8 @@ static const AVFilterPad lut3d_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad lut3d_outputs[] = {
+static const AVFilterPad lut3d_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -624,7 +698,8 @@ static const AVFilterPad lut3d_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_lut3d = {
+AVFilter ff_vf_lut3d =
+{
     .name          = "lut3d",
     .description   = NULL_IF_CONFIG_SMALL("Adjust colors using a 3D LUT."),
     .priv_size     = sizeof(LUT3DContext),
@@ -710,7 +785,8 @@ static int config_clut(AVFilterLink *inlink)
     av_assert0(desc);
 
     lut3d->clut_is16bit = 0;
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_PIX_FMT_RGB48:
     case AV_PIX_FMT_BGR48:
     case AV_PIX_FMT_RGBA64:
@@ -731,13 +807,15 @@ static int config_clut(AVFilterLink *inlink)
 
     for (level = 1; level*level*level < w; level++);
     size = level*level*level;
-    if (size != w) {
+    if (size != w)
+    {
         av_log(ctx, AV_LOG_WARNING, "The Hald CLUT width does not match the level\n");
         return AVERROR_INVALIDDATA;
     }
     av_assert0(w == h && w == size);
     level *= level;
-    if (level > MAX_LEVEL) {
+    if (level > MAX_LEVEL)
+    {
         const int max_clut_level = sqrt(MAX_LEVEL);
         const int max_clut_size  = max_clut_level*max_clut_level*max_clut_level;
         av_log(ctx, AV_LOG_ERROR, "Too large Hald CLUT "
@@ -771,7 +849,8 @@ static av_cold void haldclut_uninit(AVFilterContext *ctx)
     ff_dualinput_uninit(&lut3d->dinput);
 }
 
-static const AVOption haldclut_options[] = {
+static const AVOption haldclut_options[] =
+{
     { "shortest",   "force termination when the shortest input terminates", OFFSET(dinput.shortest),   AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, FLAGS },
     { "repeatlast", "continue applying the last clut after eos",            OFFSET(dinput.repeatlast), AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 1, FLAGS },
     COMMON_OPTIONS
@@ -779,7 +858,8 @@ static const AVOption haldclut_options[] = {
 
 AVFILTER_DEFINE_CLASS(haldclut);
 
-static const AVFilterPad haldclut_inputs[] = {
+static const AVFilterPad haldclut_inputs[] =
+{
     {
         .name         = "main",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -794,7 +874,8 @@ static const AVFilterPad haldclut_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad haldclut_outputs[] = {
+static const AVFilterPad haldclut_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -804,7 +885,8 @@ static const AVFilterPad haldclut_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_haldclut = {
+AVFilter ff_vf_haldclut =
+{
     .name          = "haldclut",
     .description   = NULL_IF_CONFIG_SMALL("Adjust colors using a Hald CLUT."),
     .priv_size     = sizeof(LUT3DContext),

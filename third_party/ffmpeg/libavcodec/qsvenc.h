@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV encoder utility functions
  *
  * copyright (c) 2013 Yukinori Yamazoe
@@ -34,7 +34,8 @@
 #include "avcodec.h"
 #include "qsv_internal.h"
 
-typedef struct QSVEncContext {
+typedef struct QSVEncContext
+{
     AVCodecContext *avctx;
 
     QSVFrame *work_frames;

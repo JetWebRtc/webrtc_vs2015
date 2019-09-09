@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2010 S.N. Hemanth Meenakshisundaram <smeenaks ucsd edu>
  * Copyright 2010 Stefano Sabatini <stefano.sabatini-lala poste it>
  *
@@ -34,7 +34,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     char   *channel_layout_str;
     uint64_t channel_layout;
@@ -47,7 +48,8 @@ typedef struct {
 #define OFFSET(x) offsetof(ANullContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption anullsrc_options[]= {
+static const AVOption anullsrc_options[]=
+{
     { "channel_layout", "set channel_layout", OFFSET(channel_layout_str), AV_OPT_TYPE_STRING, {.str = "stereo"}, 0, 0, FLAGS },
     { "cl",             "set channel_layout", OFFSET(channel_layout_str), AV_OPT_TYPE_STRING, {.str = "stereo"}, 0, 0, FLAGS },
     { "sample_rate",    "set sample rate",    OFFSET(sample_rate_str)   , AV_OPT_TYPE_STRING, {.str = "44100"}, 0, 0, FLAGS },
@@ -65,11 +67,11 @@ static av_cold int init(AVFilterContext *ctx)
     int ret;
 
     if ((ret = ff_parse_sample_rate(&null->sample_rate,
-                                     null->sample_rate_str, ctx)) < 0)
+                                    null->sample_rate_str, ctx)) < 0)
         return ret;
 
     if ((ret = ff_parse_channel_layout(&null->channel_layout, NULL,
-                                        null->channel_layout_str, ctx)) < 0)
+                                       null->channel_layout_str, ctx)) < 0)
         return ret;
 
     return 0;
@@ -124,7 +126,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad avfilter_asrc_anullsrc_outputs[] = {
+static const AVFilterPad avfilter_asrc_anullsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -134,7 +137,8 @@ static const AVFilterPad avfilter_asrc_anullsrc_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_asrc_anullsrc = {
+AVFilter ff_asrc_anullsrc =
+{
     .name          = "anullsrc",
     .description   = NULL_IF_CONFIG_SMALL("Null audio source, return empty audio frames."),
     .init          = init,

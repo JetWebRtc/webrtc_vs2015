@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,14 +12,15 @@
 
 #import <WebRTC/RTCMacros.h>
 
-typedef NS_ENUM(NSInteger, RTCDispatcherQueueType) {
-  // Main dispatcher queue.
-  RTCDispatcherTypeMain,
-  // Used for starting/stopping AVCaptureSession, and assigning
-  // capture session to AVCaptureVideoPreviewLayer.
-  RTCDispatcherTypeCaptureSession,
-  // Used for operations on AVAudioSession.
-  RTCDispatcherTypeAudioSession,
+typedef NS_ENUM(NSInteger, RTCDispatcherQueueType)
+{
+    // Main dispatcher queue.
+    RTCDispatcherTypeMain,
+    // Used for starting/stopping AVCaptureSession, and assigning
+    // capture session to AVCaptureVideoPreviewLayer.
+    RTCDispatcherTypeCaptureSession,
+    // Used for operations on AVAudioSession.
+    RTCDispatcherTypeAudioSession,
 };
 
 /** Dispatcher that asynchronously dispatches blocks to a specific
@@ -35,6 +36,6 @@ RTC_EXPORT
  *  @param block The block to dispatch asynchronously.
  */
 + (void)dispatchAsyncOnType:(RTCDispatcherQueueType)dispatchType
-                      block:(dispatch_block_t)block;
+    block:(dispatch_block_t)block;
 
 @end

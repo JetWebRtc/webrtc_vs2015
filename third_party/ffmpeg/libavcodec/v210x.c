@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2009 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 
 static av_cold int decode_init(AVCodecContext *avctx)
 {
-    if (avctx->width & 1) {
+    if (avctx->width & 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "v210x needs even width\n");
         return AVERROR(EINVAL);
     }
@@ -46,12 +47,14 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     uint16_t *ydst, *udst, *vdst, *yend;
     int ret;
 
-    if (avpkt->size < avctx->width * avctx->height * 8 / 3) {
+    if (avpkt->size < avctx->width * avctx->height * 8 / 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet too small\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (avpkt->size > avctx->width * avctx->height * 8 / 3) {
+    if (avpkt->size > avctx->width * avctx->height * 8 / 3)
+    {
         avpriv_request_sample(avctx, "(Probably) padded data");
     }
 
@@ -65,7 +68,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     pic->pict_type = AV_PICTURE_TYPE_I;
     pic->key_frame = 1;
 
-    for (;;) {
+    for (;;)
+    {
         uint32_t v = av_be2ne32(*src++);
         *udst++ = (v >> 16) & 0xFFC0;
         *ydst++ = (v >> 6 ) & 0xFFC0;
@@ -74,7 +78,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         v       = av_be2ne32(*src++);
         *ydst++ = (v >> 16) & 0xFFC0;
 
-        if (ydst >= yend) {
+        if (ydst >= yend)
+        {
             ydst += pic->linesize[0] / 2 - width;
             udst += pic->linesize[1] / 2 - width / 2;
             vdst += pic->linesize[2] / 2 - width / 2;
@@ -90,7 +95,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         *vdst++ = (v >> 16) & 0xFFC0;
         *ydst++ = (v >> 6 ) & 0xFFC0;
 
-        if (ydst >= yend) {
+        if (ydst >= yend)
+        {
             ydst += pic->linesize[0] / 2 - width;
             udst += pic->linesize[1] / 2 - width / 2;
             vdst += pic->linesize[2] / 2 - width / 2;
@@ -105,7 +111,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         *ydst++ = (v >> 16) & 0xFFC0;
         *vdst++ = (v >> 6 ) & 0xFFC0;
         *ydst++ = (v << 4 ) & 0xFFC0;
-        if (ydst >= yend) {
+        if (ydst >= yend)
+        {
             ydst += pic->linesize[0] / 2 - width;
             udst += pic->linesize[1] / 2 - width / 2;
             vdst += pic->linesize[2] / 2 - width / 2;
@@ -120,7 +127,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     return avpkt->size;
 }
 
-AVCodec ff_v210x_decoder = {
+AVCodec ff_v210x_decoder =
+{
     .name           = "v210x",
     .long_name      = NULL_IF_CONFIG_SMALL("Uncompressed 4:2:2 10-bit"),
     .type           = AVMEDIA_TYPE_VIDEO,

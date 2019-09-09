@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,16 +97,16 @@ amm-info@iis.fraunhofer.de
 void BidirectionalEstimation_UseLowerScfOfCurrentFrame(CAacDecoderChannelInfo *pAacDecoderChannelInfo);
 
 void BidirectionalEstimation_UseScfOfPrevFrameAsReference(
-        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-        CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo
-        );
+    CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo
+);
 
 void StatisticalEstimation (CAacDecoderChannelInfo *pAacDecoderChannelInfo);
 
 void PredictiveInterpolation (
-        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-        CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo
-        );
+    CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo
+);
 
 
 #endif /* RVLCCONCEAL_H */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (I)RDFT transforms
  * Copyright (c) 2009 Alex Converse <alex dot converse at gmail dot com>
  *
@@ -48,7 +48,8 @@ extern SINTABLE(16384);
 extern SINTABLE(32768);
 extern SINTABLE(65536);
 
-struct RDFTContext {
+struct RDFTContext
+{
     int nbits;
     int inverse;
     int sign_convention;

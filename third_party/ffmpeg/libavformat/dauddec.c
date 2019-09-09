@@ -22,7 +22,8 @@
 #include "libavutil/channel_layout.h"
 #include "avformat.h"
 
-static int daud_header(AVFormatContext *s) {
+static int daud_header(AVFormatContext *s)
+{
     AVStream *st = avformat_new_stream(s, NULL);
     if (!st)
         return AVERROR(ENOMEM);
@@ -38,7 +39,8 @@ static int daud_header(AVFormatContext *s) {
     return 0;
 }
 
-static int daud_packet(AVFormatContext *s, AVPacket *pkt) {
+static int daud_packet(AVFormatContext *s, AVPacket *pkt)
+{
     AVIOContext *pb = s->pb;
     int ret, size;
     if (avio_feof(pb))
@@ -50,7 +52,8 @@ static int daud_packet(AVFormatContext *s, AVPacket *pkt) {
     return ret;
 }
 
-AVInputFormat ff_daud_demuxer = {
+AVInputFormat ff_daud_demuxer =
+{
     .name           = "daud",
     .long_name      = NULL_IF_CONFIG_SMALL("D-Cinema audio"),
     .read_header    = daud_header,

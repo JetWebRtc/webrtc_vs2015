@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,17 +19,19 @@
 // Fills out a list of ifaddr structs (see below) which contain information
 // about every network interface available on the host.
 // See 'man getifaddrs' on Linux or OS X (nb: it is not a POSIX function).
-struct ifaddrs {
-  struct ifaddrs* ifa_next;
-  char* ifa_name;
-  unsigned int ifa_flags;
-  struct sockaddr* ifa_addr;
-  struct sockaddr* ifa_netmask;
-  // Real ifaddrs has broadcast, point to point and data members.
-  // We don't need them (yet?).
+struct ifaddrs
+{
+    struct ifaddrs* ifa_next;
+    char* ifa_name;
+    unsigned int ifa_flags;
+    struct sockaddr* ifa_addr;
+    struct sockaddr* ifa_netmask;
+    // Real ifaddrs has broadcast, point to point and data members.
+    // We don't need them (yet?).
 };
 
-namespace rtc {
+namespace rtc
+{
 
 int getifaddrs(struct ifaddrs** result);
 void freeifaddrs(struct ifaddrs* addrs);

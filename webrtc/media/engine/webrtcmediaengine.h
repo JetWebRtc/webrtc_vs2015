@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,44 +18,48 @@
 #include "webrtc/config.h"
 #include "webrtc/media/base/mediaengine.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class AudioDecoderFactory;
 class AudioDeviceModule;
 class AudioMixer;
 }
-namespace cricket {
+namespace cricket
+{
 class WebRtcVideoDecoderFactory;
 class WebRtcVideoEncoderFactory;
 }
 
-namespace cricket {
+namespace cricket
+{
 
-class WebRtcMediaEngineFactory {
- public:
-  // TODO(ossu): Backwards-compatible interface. Will be deprecated once the
-  // audio decoder factory is fully plumbed and used throughout WebRTC.
-  // See: crbug.com/webrtc/6000
-  static MediaEngineInterface* Create(
-      webrtc::AudioDeviceModule* adm,
-      WebRtcVideoEncoderFactory* video_encoder_factory,
-      WebRtcVideoDecoderFactory* video_decoder_factory);
+class WebRtcMediaEngineFactory
+{
+public:
+    // TODO(ossu): Backwards-compatible interface. Will be deprecated once the
+    // audio decoder factory is fully plumbed and used throughout WebRTC.
+    // See: crbug.com/webrtc/6000
+    static MediaEngineInterface* Create(
+        webrtc::AudioDeviceModule* adm,
+        WebRtcVideoEncoderFactory* video_encoder_factory,
+        WebRtcVideoDecoderFactory* video_decoder_factory);
 
-  // TODO(deadbeef): Change these to return an std::unique_ptr<>, to indicate
-  // that the caller owns the returned object.
-  static MediaEngineInterface* Create(
-      webrtc::AudioDeviceModule* adm,
-      const rtc::scoped_refptr<webrtc::AudioDecoderFactory>&
-          audio_decoder_factory,
-      WebRtcVideoEncoderFactory* video_encoder_factory,
-      WebRtcVideoDecoderFactory* video_decoder_factory);
+    // TODO(deadbeef): Change these to return an std::unique_ptr<>, to indicate
+    // that the caller owns the returned object.
+    static MediaEngineInterface* Create(
+        webrtc::AudioDeviceModule* adm,
+        const rtc::scoped_refptr<webrtc::AudioDecoderFactory>&
+        audio_decoder_factory,
+        WebRtcVideoEncoderFactory* video_encoder_factory,
+        WebRtcVideoDecoderFactory* video_decoder_factory);
 
-  static MediaEngineInterface* Create(
-      webrtc::AudioDeviceModule* adm,
-      const rtc::scoped_refptr<webrtc::AudioDecoderFactory>&
-          audio_decoder_factory,
-      WebRtcVideoEncoderFactory* video_encoder_factory,
-      WebRtcVideoDecoderFactory* video_decoder_factory,
-      rtc::scoped_refptr<webrtc::AudioMixer> audio_mixer);
+    static MediaEngineInterface* Create(
+        webrtc::AudioDeviceModule* adm,
+        const rtc::scoped_refptr<webrtc::AudioDecoderFactory>&
+        audio_decoder_factory,
+        WebRtcVideoEncoderFactory* video_encoder_factory,
+        WebRtcVideoDecoderFactory* video_decoder_factory,
+        rtc::scoped_refptr<webrtc::AudioMixer> audio_mixer);
 };
 
 // Verify that extension IDs are within 1-byte extension range and are not

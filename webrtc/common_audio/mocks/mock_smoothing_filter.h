@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,13 +14,15 @@
 #include "webrtc/common_audio/smoothing_filter.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockSmoothingFilter : public SmoothingFilter {
- public:
-  MOCK_METHOD1(AddSample, void(float));
-  MOCK_METHOD0(GetAverage, rtc::Optional<float>());
-  MOCK_METHOD1(SetTimeConstantMs, bool(int));
+class MockSmoothingFilter : public SmoothingFilter
+{
+public:
+    MOCK_METHOD1(AddSample, void(float));
+    MOCK_METHOD0(GetAverage, rtc::Optional<float>());
+    MOCK_METHOD1(SetTimeConstantMs, bool(int));
 };
 
 }  // namespace webrtc

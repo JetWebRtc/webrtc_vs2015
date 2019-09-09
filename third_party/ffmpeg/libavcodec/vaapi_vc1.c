@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 HW decode acceleration through VA API
  *
  * Copyright (C) 2008-2009 Splitted-Desktop Systems
@@ -28,12 +28,18 @@
 /** Translate FFmpeg MV modes to VA API */
 static int get_VAMvModeVC1(enum MVModes mv_mode)
 {
-    switch (mv_mode) {
-    case MV_PMODE_1MV_HPEL_BILIN: return VAMvMode1MvHalfPelBilinear;
-    case MV_PMODE_1MV:            return VAMvMode1Mv;
-    case MV_PMODE_1MV_HPEL:       return VAMvMode1MvHalfPel;
-    case MV_PMODE_MIXED_MV:       return VAMvModeMixedMv;
-    case MV_PMODE_INTENSITY_COMP: return VAMvModeIntensityCompensation;
+    switch (mv_mode)
+    {
+    case MV_PMODE_1MV_HPEL_BILIN:
+        return VAMvMode1MvHalfPelBilinear;
+    case MV_PMODE_1MV:
+        return VAMvMode1Mv;
+    case MV_PMODE_1MV_HPEL:
+        return VAMvMode1MvHalfPel;
+    case MV_PMODE_MIXED_MV:
+        return VAMvModeMixedMv;
+    case MV_PMODE_INTENSITY_COMP:
+        return VAMvModeIntensityCompensation;
     }
     return 0;
 }
@@ -92,10 +98,14 @@ static inline int vc1_has_OVERFLAGS_bitplane(VC1Context *v)
 static int vc1_get_PTYPE(VC1Context *v)
 {
     MpegEncContext * const s = &v->s;
-    switch (s->pict_type) {
-    case AV_PICTURE_TYPE_I: return 0;
-    case AV_PICTURE_TYPE_P: return v->p_frame_skipped ? 4 : 1;
-    case AV_PICTURE_TYPE_B: return v->bi_type         ? 3 : 2;
+    switch (s->pict_type)
+    {
+    case AV_PICTURE_TYPE_I:
+        return 0;
+    case AV_PICTURE_TYPE_P:
+        return v->p_frame_skipped ? 4 : 1;
+    case AV_PICTURE_TYPE_B:
+        return v->bi_type         ? 3 : 2;
     }
     return 0;
 }
@@ -104,7 +114,7 @@ static int vc1_get_PTYPE(VC1Context *v)
 static inline VAMvModeVC1 vc1_get_MVMODE(VC1Context *v)
 {
     if (v->s.pict_type == AV_PICTURE_TYPE_P ||
-        (v->s.pict_type == AV_PICTURE_TYPE_B && !v->bi_type))
+            (v->s.pict_type == AV_PICTURE_TYPE_B && !v->bi_type))
         return get_VAMvModeVC1(v->mv_mode);
     return 0;
 }
@@ -120,11 +130,16 @@ static inline VAMvModeVC1 vc1_get_MVMODE2(VC1Context *v)
 /** Reconstruct bitstream TTFRM (7.1.1.41, Table-53) */
 static inline int vc1_get_TTFRM(VC1Context *v)
 {
-    switch (v->ttfrm) {
-    case TT_8X8: return 0;
-    case TT_8X4: return 1;
-    case TT_4X8: return 2;
-    case TT_4X4: return 3;
+    switch (v->ttfrm)
+    {
+    case TT_8X8:
+        return 0;
+    case TT_8X4:
+        return 1;
+    case TT_4X8:
+        return 2;
+    case TT_4X4:
+        return 3;
     }
     return 0;
 }
@@ -257,34 +272,38 @@ static int vaapi_vc1_start_frame(AVCodecContext *avctx, av_unused const uint8_t 
     pic_param->transform_fields.bits.transform_ac_codingset_idx2    = v->y_ac_table_index;
     pic_param->transform_fields.bits.intra_transform_dc_table       = v->s.dc_table_index;
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
         pic_param->backward_reference_picture = ff_vaapi_get_surface_id(s->next_picture.f);
-        // fall-through
+    // fall-through
     case AV_PICTURE_TYPE_P:
         pic_param->forward_reference_picture = ff_vaapi_get_surface_id(s->last_picture.f);
         break;
     }
 
-    if (pic_param->bitplane_present.value) {
+    if (pic_param->bitplane_present.value)
+    {
         uint8_t *bitplane;
         const uint8_t *ff_bp[3];
         int x, y, n;
 
-        switch (s->pict_type) {
+        switch (s->pict_type)
+        {
         case AV_PICTURE_TYPE_P:
             ff_bp[0] = pic_param->bitplane_present.flags.bp_direct_mb  ? v->direct_mb_plane    : NULL;
             ff_bp[1] = pic_param->bitplane_present.flags.bp_skip_mb    ? s->mbskip_table       : NULL;
             ff_bp[2] = pic_param->bitplane_present.flags.bp_mv_type_mb ? v->mv_type_mb_plane   : NULL;
             break;
         case AV_PICTURE_TYPE_B:
-            if (!v->bi_type) {
+            if (!v->bi_type)
+            {
                 ff_bp[0] = pic_param->bitplane_present.flags.bp_direct_mb ? v->direct_mb_plane : NULL;
                 ff_bp[1] = pic_param->bitplane_present.flags.bp_skip_mb   ? s->mbskip_table    : NULL;
                 ff_bp[2] = NULL; /* XXX: interlaced frame (FORWARD plane) */
                 break;
             }
-            /* fall-through (BI-type) */
+        /* fall-through (BI-type) */
         case AV_PICTURE_TYPE_I:
             ff_bp[0] = NULL; /* XXX: interlaced frame (FIELDTX plane) */
             ff_bp[1] = pic_param->bitplane_present.flags.bp_ac_pred    ? v->acpred_plane       : NULL;
@@ -321,7 +340,8 @@ static int vaapi_vc1_decode_slice(AVCodecContext *avctx, const uint8_t *buffer, 
     ff_dlog(avctx, "vaapi_vc1_decode_slice(): buffer %p, size %d\n", buffer, size);
 
     /* Current bit buffer is beyond any marker for VC-1, so skip it */
-    if (avctx->codec_id == AV_CODEC_ID_VC1 && IS_MARKER(AV_RB32(buffer))) {
+    if (avctx->codec_id == AV_CODEC_ID_VC1 && IS_MARKER(AV_RB32(buffer)))
+    {
         buffer += 4;
         size -= 4;
     }
@@ -336,7 +356,8 @@ static int vaapi_vc1_decode_slice(AVCodecContext *avctx, const uint8_t *buffer, 
 }
 
 #if CONFIG_WMV3_VAAPI_HWACCEL
-AVHWAccel ff_wmv3_vaapi_hwaccel = {
+AVHWAccel ff_wmv3_vaapi_hwaccel =
+{
     .name           = "wmv3_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_WMV3,
@@ -350,7 +371,8 @@ AVHWAccel ff_wmv3_vaapi_hwaccel = {
 };
 #endif
 
-AVHWAccel ff_vc1_vaapi_hwaccel = {
+AVHWAccel ff_vc1_vaapi_hwaccel =
+{
     .name           = "vc1_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_VC1,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-H Part 2 / HEVC / H.265 HW decode acceleration through VDPAU
  *
  * Copyright (c) 2013 Philip Langdale
@@ -64,14 +64,17 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     info->max_transform_hierarchy_depth_intra = sps->max_transform_hierarchy_depth_intra;
     info->scaling_list_enabled_flag = sps->scaling_list_enable_flag;
     /** Scaling lists, in diagonal order, to be used for this frame. */
-    for (size_t i = 0; i < 6; i++) {
-        for (size_t j = 0; j < 16; j++) {
+    for (size_t i = 0; i < 6; i++)
+    {
+        for (size_t j = 0; j < 16; j++)
+        {
             /** Scaling List for 4x4 quantization matrix,
                 indexed as ScalingList4x4[matrixId][i]. */
             uint8_t pos = 4 * ff_hevc_diag_scan4x4_y[j] + ff_hevc_diag_scan4x4_x[j];
             info->ScalingList4x4[i][j] = sl->sl[0][i][pos];
         }
-        for (size_t j = 0; j < 64; j++) {
+        for (size_t j = 0; j < 64; j++)
+        {
             uint8_t pos = 8 * ff_hevc_diag_scan8x8_y[j] + ff_hevc_diag_scan8x8_x[j];
             /** Scaling List for 8x8 quantization matrix,
                 indexed as ScalingList8x8[matrixId][i]. */
@@ -79,7 +82,8 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
             /** Scaling List for 16x16 quantization matrix,
                 indexed as ScalingList16x16[matrixId][i]. */
             info->ScalingList16x16[i][j] = sl->sl[2][i][pos];
-            if (i < 2) {
+            if (i < 2)
+            {
                 /** Scaling List for 32x32 quantization matrix,
                     indexed as ScalingList32x32[matrixId][i]. */
                 info->ScalingList32x32[i][j] = sl->sl[3][i * 3][pos];
@@ -88,7 +92,8 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
         /** Scaling List DC Coefficients for 16x16,
             indexed as ScalingListDCCoeff16x16[matrixId]. */
         info->ScalingListDCCoeff16x16[i] = sl->sl_dc[0][i];
-        if (i < 2) {
+        if (i < 2)
+        {
             /** Scaling List DC Coefficients for 32x32,
                 indexed as ScalingListDCCoeff32x32[matrixId]. */
             info->ScalingListDCCoeff32x32[i] = sl->sl_dc[1][i * 3];
@@ -97,7 +102,8 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     info->amp_enabled_flag = sps->amp_enabled_flag;
     info->sample_adaptive_offset_enabled_flag = sps->sao_enabled;
     info->pcm_enabled_flag = sps->pcm_enabled_flag;
-    if (info->pcm_enabled_flag) {
+    if (info->pcm_enabled_flag)
+    {
         /** Only needs to be set if pcm_enabled_flag is set. Ignored otherwise. */
         info->pcm_sample_bit_depth_luma_minus1 = sps->pcm.bit_depth - 1;
         /** Only needs to be set if pcm_enabled_flag is set. Ignored otherwise. */
@@ -145,7 +151,8 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     info->transquant_bypass_enabled_flag = pps->transquant_bypass_enable_flag;
     info->tiles_enabled_flag = pps->tiles_enabled_flag;
     info->entropy_coding_sync_enabled_flag = pps->entropy_coding_sync_enabled_flag;
-    if (info->tiles_enabled_flag) {
+    if (info->tiles_enabled_flag)
+    {
         /** Only valid if tiles_enabled_flag is set. Ignored otherwise. */
         info->num_tile_columns_minus1 = pps->num_tile_columns - 1;
         /** Only valid if tiles_enabled_flag is set. Ignored otherwise. */
@@ -155,13 +162,15 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
         /** Only need to set 0..num_tile_columns_minus1. The struct
             definition reserves up to the maximum of 20. Invalid values are
             ignored. */
-        for (ssize_t i = 0; i < pps->num_tile_columns; i++) {
+        for (ssize_t i = 0; i < pps->num_tile_columns; i++)
+        {
             info->column_width_minus1[i] = pps->column_width[i] - 1;
         }
         /** Only need to set 0..num_tile_rows_minus1. The struct
           definition reserves up to the maximum of 22. Invalid values are
           ignored.*/
-        for (ssize_t i = 0; i < pps->num_tile_rows; i++) {
+        for (ssize_t i = 0; i < pps->num_tile_rows; i++)
+        {
             info->row_height_minus1[i] = pps->row_height[i] - 1;
         }
         /** Only needed if tiles_enabled_flag is set. Invalid values are
@@ -199,9 +208,12 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     info->RAPPicFlag = IS_IRAP(h);
     /** See section 7.4.7.1 of the specification. */
     info->CurrRpsIdx = sps->nb_st_rps;
-    if (sh->short_term_ref_pic_set_sps_flag == 1) {
-        for (size_t i = 0; i < sps->nb_st_rps; i++) {
-            if (sh->short_term_rps == &sps->st_rps[i]) {
+    if (sh->short_term_ref_pic_set_sps_flag == 1)
+    {
+        for (size_t i = 0; i < sps->nb_st_rps; i++)
+        {
+            if (sh->short_term_rps == &sps->st_rps[i])
+            {
                 info->CurrRpsIdx = i;
                 break;
             }
@@ -209,7 +221,8 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     }
     /** See section 7.4.7.2 of the specification. */
     info->NumPocTotalCurr = ff_hevc_frame_nb_refs(h);
-    if (sh->short_term_ref_pic_set_sps_flag == 0 && sh->short_term_rps) {
+    if (sh->short_term_ref_pic_set_sps_flag == 0 && sh->short_term_rps)
+    {
         /** Corresponds to specification field, NumDeltaPocs[RefRpsIdx].
             Only applicable when short_term_ref_pic_set_sps_flag == 0.
             Implementations will ignore this value in other cases. See 7.4.8. */
@@ -236,19 +249,23 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     info->CurrPicOrderCntVal = h->poc;
 
     /** Slice Decoding Process - Reference Picture Sets */
-    for (size_t i = 0; i < 16; i++) {
+    for (size_t i = 0; i < 16; i++)
+    {
         info->RefPics[i] = VDP_INVALID_HANDLE;
         info->PicOrderCntVal[i] = 0;
         info->IsLongTerm[i] = 0;
     }
-    for (size_t i = 0, j = 0; i < FF_ARRAY_ELEMS(h->DPB); i++) {
+    for (size_t i = 0, j = 0; i < FF_ARRAY_ELEMS(h->DPB); i++)
+    {
         const HEVCFrame *frame = &h->DPB[i];
         if (frame != h->ref && (frame->flags & (HEVC_FRAME_FLAG_LONG_REF |
-                                                HEVC_FRAME_FLAG_SHORT_REF))) {
-            if (j > 16) {
+                                                HEVC_FRAME_FLAG_SHORT_REF)))
+        {
+            if (j > 16)
+            {
                 av_log(avctx, AV_LOG_WARNING,
-                     "VDPAU only supports up to 16 references in the DPB. "
-                     "This frame may not be decoded correctly.\n");
+                       "VDPAU only supports up to 16 references in the DPB. "
+                       "This frame may not be decoded correctly.\n");
                 break;
             }
             /** Array of video reference surfaces.
@@ -270,96 +287,120 @@ static int vdpau_hevc_start_frame(AVCodecContext *avctx,
     /** Copy of specification field, see Section 8.3.2 of the
         H.265/HEVC Specification. */
     info->NumPocStCurrBefore = h->rps[ST_CURR_BEF].nb_refs;
-    if (info->NumPocStCurrBefore > 8) {
+    if (info->NumPocStCurrBefore > 8)
+    {
         av_log(avctx, AV_LOG_WARNING,
-             "VDPAU only supports up to 8 references in StCurrBefore. "
-             "This frame may not be decoded correctly.\n");
+               "VDPAU only supports up to 8 references in StCurrBefore. "
+               "This frame may not be decoded correctly.\n");
         info->NumPocStCurrBefore = 8;
     }
     /** Copy of specification field, see Section 8.3.2 of the
         H.265/HEVC Specification. */
     info->NumPocStCurrAfter = h->rps[ST_CURR_AFT].nb_refs;
-    if (info->NumPocStCurrAfter > 8) {
+    if (info->NumPocStCurrAfter > 8)
+    {
         av_log(avctx, AV_LOG_WARNING,
-             "VDPAU only supports up to 8 references in StCurrAfter. "
-             "This frame may not be decoded correctly.\n");
+               "VDPAU only supports up to 8 references in StCurrAfter. "
+               "This frame may not be decoded correctly.\n");
         info->NumPocStCurrAfter = 8;
     }
     /** Copy of specification field, see Section 8.3.2 of the
         H.265/HEVC Specification. */
     info->NumPocLtCurr = h->rps[LT_CURR].nb_refs;
-    if (info->NumPocLtCurr > 8) {
+    if (info->NumPocLtCurr > 8)
+    {
         av_log(avctx, AV_LOG_WARNING,
-             "VDPAU only supports up to 8 references in LtCurr. "
-             "This frame may not be decoded correctly.\n");
+               "VDPAU only supports up to 8 references in LtCurr. "
+               "This frame may not be decoded correctly.\n");
         info->NumPocLtCurr = 8;
     }
     /** Reference Picture Set list, one of the short-term RPS. These
         correspond to positions in the RefPics array. */
-    for (ssize_t i = 0, j = 0; i < h->rps[ST_CURR_BEF].nb_refs; i++) {
+    for (ssize_t i = 0, j = 0; i < h->rps[ST_CURR_BEF].nb_refs; i++)
+    {
         HEVCFrame *frame = h->rps[ST_CURR_BEF].ref[i];
-        if (frame) {
+        if (frame)
+        {
             uint8_t found = 0;
             uintptr_t id = ff_vdpau_get_surface_id(frame->frame);
-            for (size_t k = 0; k < 16; k++) {
-                if (id == info->RefPics[k]) {
+            for (size_t k = 0; k < 16; k++)
+            {
+                if (id == info->RefPics[k])
+                {
                     info->RefPicSetStCurrBefore[j] = k;
                     j++;
                     found = 1;
                     break;
                 }
             }
-            if (!found) {
+            if (!found)
+            {
                 av_log(avctx, AV_LOG_WARNING, "missing surface: %p\n",
                        (void *)id);
             }
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_WARNING, "missing STR Before frame: %zd\n", i);
         }
     }
     /** Reference Picture Set list, one of the short-term RPS. These
         correspond to positions in the RefPics array. */
-    for (ssize_t i = 0, j = 0; i < h->rps[ST_CURR_AFT].nb_refs; i++) {
+    for (ssize_t i = 0, j = 0; i < h->rps[ST_CURR_AFT].nb_refs; i++)
+    {
         HEVCFrame *frame = h->rps[ST_CURR_AFT].ref[i];
-        if (frame) {
+        if (frame)
+        {
             uint8_t found = 0;
             uintptr_t id = ff_vdpau_get_surface_id(frame->frame);
-            for (size_t k = 0; k < 16; k++) {
-                if (id == info->RefPics[k]) {
+            for (size_t k = 0; k < 16; k++)
+            {
+                if (id == info->RefPics[k])
+                {
                     info->RefPicSetStCurrAfter[j] = k;
                     j++;
                     found = 1;
                     break;
                 }
             }
-            if (!found) {
+            if (!found)
+            {
                 av_log(avctx, AV_LOG_WARNING, "missing surface: %p\n",
                        (void *)id);
             }
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_WARNING, "missing STR After frame: %zd\n", i);
         }
     }
     /** Reference Picture Set list, one of the long-term RPS. These
         correspond to positions in the RefPics array. */
-    for (ssize_t i = 0, j = 0; i < h->rps[LT_CURR].nb_refs; i++) {
+    for (ssize_t i = 0, j = 0; i < h->rps[LT_CURR].nb_refs; i++)
+    {
         HEVCFrame *frame = h->rps[LT_CURR].ref[i];
-        if (frame) {
+        if (frame)
+        {
             uint8_t found = 0;
             uintptr_t id = ff_vdpau_get_surface_id(frame->frame);
-            for (size_t k = 0; k < 16; k++) {
-                if (id == info->RefPics[k]) {
+            for (size_t k = 0; k < 16; k++)
+            {
+                if (id == info->RefPics[k])
+                {
                     info->RefPicSetLtCurr[j] = k;
                     j++;
                     found = 1;
                     break;
                 }
             }
-            if (!found) {
+            if (!found)
+            {
                 av_log(avctx, AV_LOG_WARNING, "missing surface: %p\n",
                        (void *)id);
             }
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_WARNING, "missing LTR frame: %zd\n", i);
         }
     }
@@ -405,7 +446,8 @@ static int vdpau_hevc_init(AVCodecContext *avctx)
     VdpDecoderProfile profile;
     uint32_t level = avctx->level;
 
-    switch (avctx->profile) {
+    switch (avctx->profile)
+    {
     case FF_PROFILE_HEVC_MAIN:
         profile = VDP_DECODER_PROFILE_HEVC_MAIN;
         break;
@@ -422,7 +464,8 @@ static int vdpau_hevc_init(AVCodecContext *avctx)
     return ff_vdpau_common_init(avctx, profile, level);
 }
 
-AVHWAccel ff_hevc_vdpau_hwaccel = {
+AVHWAccel ff_hevc_vdpau_hwaccel =
+{
     .name           = "hevc_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_HEVC,

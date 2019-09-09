@@ -15,8 +15,10 @@
 
 #include <string>
 
-namespace webrtc {
-namespace ios {
+namespace webrtc
+{
+namespace ios
+{
 
 bool CheckAndLogError(BOOL success, NSError* error);
 

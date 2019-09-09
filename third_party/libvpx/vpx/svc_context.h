@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,56 +23,59 @@
 extern "C" {
 #endif
 
-typedef enum SVC_LOG_LEVEL {
-  SVC_LOG_ERROR,
-  SVC_LOG_INFO,
-  SVC_LOG_DEBUG
+typedef enum SVC_LOG_LEVEL
+{
+    SVC_LOG_ERROR,
+    SVC_LOG_INFO,
+    SVC_LOG_DEBUG
 } SVC_LOG_LEVEL;
 
-typedef struct {
-  // public interface to svc_command options
-  int spatial_layers;   // number of spatial layers
-  int temporal_layers;  // number of temporal layers
-  int temporal_layering_mode;
-  SVC_LOG_LEVEL log_level;  // amount of information to display
-  int log_print;       // when set, printf log messages instead of returning the
-                       // message with svc_get_message
-  int output_rc_stat;  // for outputting rc stats
-  int speed;           // speed setting for codec
-  int threads;
-  int aqmode;  // turns on aq-mode=3 (cyclic_refresh): 0=off, 1=on.
-  // private storage for vpx_svc_encode
-  void *internal;
+typedef struct
+{
+    // public interface to svc_command options
+    int spatial_layers;   // number of spatial layers
+    int temporal_layers;  // number of temporal layers
+    int temporal_layering_mode;
+    SVC_LOG_LEVEL log_level;  // amount of information to display
+    int log_print;       // when set, printf log messages instead of returning the
+    // message with svc_get_message
+    int output_rc_stat;  // for outputting rc stats
+    int speed;           // speed setting for codec
+    int threads;
+    int aqmode;  // turns on aq-mode=3 (cyclic_refresh): 0=off, 1=on.
+    // private storage for vpx_svc_encode
+    void *internal;
 } SvcContext;
 
 #define OPTION_BUFFER_SIZE 1024
 #define COMPONENTS 4  // psnr & sse statistics maintained for total, y, u, v
 
-typedef struct SvcInternal {
-  char options[OPTION_BUFFER_SIZE];  // set by vpx_svc_set_options
+typedef struct SvcInternal
+{
+    char options[OPTION_BUFFER_SIZE];  // set by vpx_svc_set_options
 
-  // values extracted from option, quantizers
-  vpx_svc_extra_cfg_t svc_params;
-  int enable_auto_alt_ref[VPX_SS_MAX_LAYERS];
-  int bitrates[VPX_MAX_LAYERS];
+    // values extracted from option, quantizers
+    vpx_svc_extra_cfg_t svc_params;
+    int enable_auto_alt_ref[VPX_SS_MAX_LAYERS];
+    int bitrates[VPX_MAX_LAYERS];
 
-  // accumulated statistics
-  double psnr_sum[VPX_SS_MAX_LAYERS][COMPONENTS];  // total/Y/U/V
-  uint64_t sse_sum[VPX_SS_MAX_LAYERS][COMPONENTS];
-  uint32_t bytes_sum[VPX_SS_MAX_LAYERS];
+    // accumulated statistics
+    double psnr_sum[VPX_SS_MAX_LAYERS][COMPONENTS];  // total/Y/U/V
+    uint64_t sse_sum[VPX_SS_MAX_LAYERS][COMPONENTS];
+    uint32_t bytes_sum[VPX_SS_MAX_LAYERS];
 
-  // codec encoding values
-  int width;    // width of highest layer
-  int height;   // height of highest layer
-  int kf_dist;  // distance between keyframes
+    // codec encoding values
+    int width;    // width of highest layer
+    int height;   // height of highest layer
+    int kf_dist;  // distance between keyframes
 
-  // state variables
-  int psnr_pkt_received;
-  int layer;
-  int use_multiple_frame_contexts;
+    // state variables
+    int psnr_pkt_received;
+    int layer;
+    int use_multiple_frame_contexts;
 
-  char message_buffer[2048];
-  vpx_codec_ctx_t *codec_ctx;
+    char message_buffer[2048];
+    vpx_codec_ctx_t *codec_ctx;
 } SvcInternal_t;
 
 /**

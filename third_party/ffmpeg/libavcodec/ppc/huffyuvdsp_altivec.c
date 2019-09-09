@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Brian Foley
  * Copyright (c) 2002 Dieter Shirley
  * Copyright (c) 2003-2004 Romain Dolbeau <romain@dolbeau.org>
@@ -39,7 +39,8 @@ static void add_bytes_altivec(uint8_t *dst, uint8_t *src, intptr_t w)
     register vector unsigned char vdst, vsrc;
 
     /* dst and src are 16 bytes-aligned (guaranteed). */
-    for (i = 0; i + 15 < w; i += 16) {
+    for (i = 0; i + 15 < w; i += 16)
+    {
         vdst = vec_ld(i, (unsigned char *) dst);
         vsrc = vec_ld(i, (unsigned char *) src);
         vdst = vec_add(vsrc, vdst);

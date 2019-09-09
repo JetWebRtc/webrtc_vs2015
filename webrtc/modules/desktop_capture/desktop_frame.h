@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,112 +19,146 @@
 #include "webrtc/modules/desktop_capture/shared_memory.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // DesktopFrame represents a video frame captured from the screen.
-class DesktopFrame {
- public:
-  // DesktopFrame objects always hold RGBA data.
-  static const int kBytesPerPixel = 4;
+class DesktopFrame
+{
+public:
+    // DesktopFrame objects always hold RGBA data.
+    static const int kBytesPerPixel = 4;
 
-  virtual ~DesktopFrame();
+    virtual ~DesktopFrame();
 
-  // Size of the frame.
-  const DesktopSize& size() const { return size_; }
+    // Size of the frame.
+    const DesktopSize& size() const
+    {
+        return size_;
+    }
 
-  // Distance in the buffer between two neighboring rows in bytes.
-  int stride() const { return stride_; }
+    // Distance in the buffer between two neighboring rows in bytes.
+    int stride() const
+    {
+        return stride_;
+    }
 
-  // Data buffer used for the frame.
-  uint8_t* data() const { return data_; }
+    // Data buffer used for the frame.
+    uint8_t* data() const
+    {
+        return data_;
+    }
 
-  // SharedMemory used for the buffer or NULL if memory is allocated on the
-  // heap. The result is guaranteed to be deleted only after the frame is
-  // deleted (classes that inherit from DesktopFrame must ensure it).
-  SharedMemory* shared_memory() const { return shared_memory_; }
+    // SharedMemory used for the buffer or NULL if memory is allocated on the
+    // heap. The result is guaranteed to be deleted only after the frame is
+    // deleted (classes that inherit from DesktopFrame must ensure it).
+    SharedMemory* shared_memory() const
+    {
+        return shared_memory_;
+    }
 
-  // Indicates region of the screen that has changed since the previous frame.
-  const DesktopRegion& updated_region() const { return updated_region_; }
-  DesktopRegion* mutable_updated_region() { return &updated_region_; }
+    // Indicates region of the screen that has changed since the previous frame.
+    const DesktopRegion& updated_region() const
+    {
+        return updated_region_;
+    }
+    DesktopRegion* mutable_updated_region()
+    {
+        return &updated_region_;
+    }
 
-  // DPI of the screen being captured. May be set to zero, e.g. if DPI is
-  // unknown.
-  const DesktopVector& dpi() const { return dpi_; }
-  void set_dpi(const DesktopVector& dpi) { dpi_ = dpi; }
+    // DPI of the screen being captured. May be set to zero, e.g. if DPI is
+    // unknown.
+    const DesktopVector& dpi() const
+    {
+        return dpi_;
+    }
+    void set_dpi(const DesktopVector& dpi)
+    {
+        dpi_ = dpi;
+    }
 
-  // Time taken to capture the frame in milliseconds.
-  int64_t capture_time_ms() const { return capture_time_ms_; }
-  void set_capture_time_ms(int64_t time_ms) { capture_time_ms_ = time_ms; }
+    // Time taken to capture the frame in milliseconds.
+    int64_t capture_time_ms() const
+    {
+        return capture_time_ms_;
+    }
+    void set_capture_time_ms(int64_t time_ms)
+    {
+        capture_time_ms_ = time_ms;
+    }
 
-  // Copies pixels from a buffer or another frame. |dest_rect| rect must lay
-  // within bounds of this frame.
-  void CopyPixelsFrom(const uint8_t* src_buffer,
-                      int src_stride,
-                      const DesktopRect& dest_rect);
-  void CopyPixelsFrom(const DesktopFrame& src_frame,
-                      const DesktopVector& src_pos,
-                      const DesktopRect& dest_rect);
+    // Copies pixels from a buffer or another frame. |dest_rect| rect must lay
+    // within bounds of this frame.
+    void CopyPixelsFrom(const uint8_t* src_buffer,
+                        int src_stride,
+                        const DesktopRect& dest_rect);
+    void CopyPixelsFrom(const DesktopFrame& src_frame,
+                        const DesktopVector& src_pos,
+                        const DesktopRect& dest_rect);
 
-  // A helper to return the data pointer of a frame at the specified position.
-  uint8_t* GetFrameDataAtPos(const DesktopVector& pos) const;
+    // A helper to return the data pointer of a frame at the specified position.
+    uint8_t* GetFrameDataAtPos(const DesktopVector& pos) const;
 
- protected:
-  DesktopFrame(DesktopSize size,
-               int stride,
-               uint8_t* data,
-               SharedMemory* shared_memory);
+protected:
+    DesktopFrame(DesktopSize size,
+                 int stride,
+                 uint8_t* data,
+                 SharedMemory* shared_memory);
 
-  // Ownership of the buffers is defined by the classes that inherit from this
-  // class. They must guarantee that the buffer is not deleted before the frame
-  // is deleted.
-  uint8_t* const data_;
-  SharedMemory* const shared_memory_;
+    // Ownership of the buffers is defined by the classes that inherit from this
+    // class. They must guarantee that the buffer is not deleted before the frame
+    // is deleted.
+    uint8_t* const data_;
+    SharedMemory* const shared_memory_;
 
- private:
-  const DesktopSize size_;
-  const int stride_;
+private:
+    const DesktopSize size_;
+    const int stride_;
 
-  DesktopRegion updated_region_;
-  DesktopVector dpi_;
-  int64_t capture_time_ms_;
+    DesktopRegion updated_region_;
+    DesktopVector dpi_;
+    int64_t capture_time_ms_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(DesktopFrame);
+    RTC_DISALLOW_COPY_AND_ASSIGN(DesktopFrame);
 };
 
 // A DesktopFrame that stores data in the heap.
-class BasicDesktopFrame : public DesktopFrame {
- public:
-  explicit BasicDesktopFrame(DesktopSize size);
-  ~BasicDesktopFrame() override;
+class BasicDesktopFrame : public DesktopFrame
+{
+public:
+    explicit BasicDesktopFrame(DesktopSize size);
+    ~BasicDesktopFrame() override;
 
-  // Creates a BasicDesktopFrame that contains copy of |frame|.
-  static DesktopFrame* CopyOf(const DesktopFrame& frame);
+    // Creates a BasicDesktopFrame that contains copy of |frame|.
+    static DesktopFrame* CopyOf(const DesktopFrame& frame);
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(BasicDesktopFrame);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(BasicDesktopFrame);
 };
 
 // A DesktopFrame that stores data in shared memory.
-class SharedMemoryDesktopFrame : public DesktopFrame {
- public:
-  static std::unique_ptr<DesktopFrame> Create(
-      DesktopSize size,
-      SharedMemoryFactory* shared_memory_factory);
+class SharedMemoryDesktopFrame : public DesktopFrame
+{
+public:
+    static std::unique_ptr<DesktopFrame> Create(
+        DesktopSize size,
+        SharedMemoryFactory* shared_memory_factory);
 
-  static std::unique_ptr<DesktopFrame> Create(
-      DesktopSize size,
-      std::unique_ptr<SharedMemory> shared_memory);
+    static std::unique_ptr<DesktopFrame> Create(
+        DesktopSize size,
+        std::unique_ptr<SharedMemory> shared_memory);
 
-  // Takes ownership of |shared_memory|.
-  // TODO(zijiehe): Hide constructors after fake_desktop_capturer.cc has been
-  // migrated, Create() is preferred.
-  SharedMemoryDesktopFrame(DesktopSize size,
-                           int stride,
-                           SharedMemory* shared_memory);
-  ~SharedMemoryDesktopFrame() override;
+    // Takes ownership of |shared_memory|.
+    // TODO(zijiehe): Hide constructors after fake_desktop_capturer.cc has been
+    // migrated, Create() is preferred.
+    SharedMemoryDesktopFrame(DesktopSize size,
+                             int stride,
+                             SharedMemory* shared_memory);
+    ~SharedMemoryDesktopFrame() override;
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(SharedMemoryDesktopFrame);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(SharedMemoryDesktopFrame);
 };
 
 }  // namespace webrtc

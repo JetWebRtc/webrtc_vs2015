@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2010-2013, Cisco Systems
  *     All rights reserved.
@@ -71,9 +71,10 @@ typedef      FILE  WelsFileHandle;
 #ifdef _WIN32
 typedef      struct _timeb     SWelsTime;
 #else
-typedef struct TagWelsTime {
-  time_t time;
-  unsigned short millitm;
+typedef struct TagWelsTime
+{
+    time_t time;
+    unsigned short millitm;
 } SWelsTime;
 #endif
 

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -84,7 +84,7 @@ amm-info@iis.fraunhofer.de
 /*!
   \file
   \brief Memory layout
-   
+
 
   This module declares all static and dynamic memory spaces
 */
@@ -188,28 +188,31 @@ C_ALLOC_MEM   (Ram_ParamStereo, PARAMETRIC_STEREO, 1)
 */
 /* @{ */
 
-  /*! Energy buffer for envelope extraction <br>
-    Dimension #MAXNRSBRCHANNELS * +#SBR_QMF_SLOTS *  #SBR_QMF_CHANNELS
-  */
-  C_ALLOC_MEM2 (Ram_Sbr_envYBuffer, FIXP_DBL, (QMF_MAX_TIME_SLOTS/2 * QMF_CHANNELS), (8))
+/*! Energy buffer for envelope extraction <br>
+  Dimension #MAXNRSBRCHANNELS * +#SBR_QMF_SLOTS *  #SBR_QMF_CHANNELS
+*/
+C_ALLOC_MEM2 (Ram_Sbr_envYBuffer, FIXP_DBL, (QMF_MAX_TIME_SLOTS/2 * QMF_CHANNELS), (8))
 
-  FIXP_DBL* GetRam_Sbr_envYBuffer (int n, UCHAR* dynamic_RAM) {
+FIXP_DBL* GetRam_Sbr_envYBuffer (int n, UCHAR* dynamic_RAM)
+{
     FDK_ASSERT(dynamic_RAM!=0);
     return ((FIXP_DBL*) (dynamic_RAM + OFFSET_NRG + (n*Y_2_BUF_BYTE) ));
-  }
+}
 
-  /*
-   * QMF data
-   */
-  /* The SBR encoder uses a single channel overlapping buffer set (always n=0), but PS does not. */
-  FIXP_DBL* GetRam_Sbr_envRBuffer (int n, UCHAR* dynamic_RAM) {
+/*
+ * QMF data
+ */
+/* The SBR encoder uses a single channel overlapping buffer set (always n=0), but PS does not. */
+FIXP_DBL* GetRam_Sbr_envRBuffer (int n, UCHAR* dynamic_RAM)
+{
     FDK_ASSERT(dynamic_RAM!=0);
     return ((FIXP_DBL*) (dynamic_RAM + OFFSET_QMF + (n*(ENV_R_BUFF_BYTE+ENV_I_BUFF_BYTE)) ));
-  }
-  FIXP_DBL* GetRam_Sbr_envIBuffer (int n, UCHAR* dynamic_RAM) {
+}
+FIXP_DBL* GetRam_Sbr_envIBuffer (int n, UCHAR* dynamic_RAM)
+{
     FDK_ASSERT(dynamic_RAM!=0);
     return ((FIXP_DBL*) (dynamic_RAM + OFFSET_QMF + (ENV_R_BUFF_BYTE) + (n*(ENV_R_BUFF_BYTE+ENV_I_BUFF_BYTE))));
-  }
+}
 
 
 

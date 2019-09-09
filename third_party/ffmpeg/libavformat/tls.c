@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TLS/SSL Protocol
  * Copyright (c) 2011 Martin Storsjo
  *
@@ -39,7 +39,8 @@ static void set_options(TLSShared *c, const char *uri)
     if (!c->ca_file && av_find_info_tag(buf, sizeof(buf), "cafile", p))
         c->ca_file = av_strdup(buf);
 
-    if (!c->verify && av_find_info_tag(buf, sizeof(buf), "verify", p)) {
+    if (!c->verify && av_find_info_tag(buf, sizeof(buf), "verify", p))
+    {
         char *endptr = NULL;
         c->verify = strtol(buf, &endptr, 10);
         if (buf == endptr)
@@ -71,9 +72,12 @@ int ff_tls_open_underlying(TLSShared *c, URLContext *parent, const char *uri, AV
 
     p = strchr(uri, '?');
 
-    if (!p) {
+    if (!p)
+    {
         p = opts;
-    } else {
+    }
+    else
+    {
         if (av_find_info_tag(opts, sizeof(opts), "listen", p))
             c->listen = 1;
     }
@@ -81,7 +85,8 @@ int ff_tls_open_underlying(TLSShared *c, URLContext *parent, const char *uri, AV
     ff_url_join(buf, sizeof(buf), "tcp", NULL, c->underlying_host, port, "%s", p);
 
     hints.ai_flags = AI_NUMERICHOST;
-    if (!getaddrinfo(c->underlying_host, NULL, &hints, &ai)) {
+    if (!getaddrinfo(c->underlying_host, NULL, &hints, &ai))
+    {
         c->numerichost = 1;
         freeaddrinfo(ai);
     }
@@ -93,7 +98,8 @@ int ff_tls_open_underlying(TLSShared *c, URLContext *parent, const char *uri, AV
     use_proxy = !ff_http_match_no_proxy(getenv("no_proxy"), c->underlying_host) &&
                 proxy_path && av_strstart(proxy_path, "http://", NULL);
 
-    if (use_proxy) {
+    if (use_proxy)
+    {
         char proxy_host[200], proxy_auth[200], dest[200];
         int proxy_port;
         av_url_split(NULL, 0, proxy_auth, sizeof(proxy_auth),

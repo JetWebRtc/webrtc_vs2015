@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,14 +10,17 @@
 
 #include "webrtc/modules/audio_processing/include/config.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 Config::Config() {}
 
-Config::~Config() {
-  for (OptionMap::iterator it = options_.begin(); it != options_.end(); ++it) {
-    delete it->second;
-  }
+Config::~Config()
+{
+    for (OptionMap::iterator it = options_.begin(); it != options_.end(); ++it)
+    {
+        delete it->second;
+    }
 }
 
 }  // namespace webrtc

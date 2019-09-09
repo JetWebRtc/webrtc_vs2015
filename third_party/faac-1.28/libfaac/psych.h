@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -34,46 +34,48 @@ extern "C" {
 #include "channels.h"
 #include "fft.h"
 
-typedef struct {
-	int size;
-	int sizeS;
+typedef struct
+{
+    int size;
+    int sizeS;
 
-	/* Previous input samples */
-	double *prevSamples;
-	double *prevSamplesS;
+    /* Previous input samples */
+    double *prevSamples;
+    double *prevSamplesS;
 
-	int block_type;
+    int block_type;
 
-        void *data;
+    void *data;
 } PsyInfo;
 
-typedef struct {
-	double sampleRate;
+typedef struct
+{
+    double sampleRate;
 
-	/* Hann window */
-	double *hannWindow;
-	double *hannWindowS;
+    /* Hann window */
+    double *hannWindow;
+    double *hannWindowS;
 
-        void *data;
+    void *data;
 } GlobalPsyInfo;
 
-typedef struct 
+typedef struct
 {
-void (*PsyInit) (GlobalPsyInfo *gpsyInfo, PsyInfo *psyInfo,
-		unsigned int numChannels, unsigned int sampleRate,
-		int *cb_width_long, int num_cb_long,
-		int *cb_width_short, int num_cb_short);
-void (*PsyEnd) (GlobalPsyInfo *gpsyInfo, PsyInfo *psyInfo,
-		unsigned int numChannels);
-void (*PsyCalculate) (ChannelInfo *channelInfo, GlobalPsyInfo *gpsyInfo,
-		PsyInfo *psyInfo, int *cb_width_long, int num_cb_long,
-		int *cb_width_short, int num_cb_short,
-		unsigned int numChannels);
-void (*PsyBufferUpdate) ( FFT_Tables *fft_tables, GlobalPsyInfo * gpsyInfo, PsyInfo * psyInfo,
-		double *newSamples, unsigned int bandwidth,
-		int *cb_width_short, int num_cb_short);
-void (*BlockSwitch) (CoderInfo *coderInfo, PsyInfo *psyInfo,
-		unsigned int numChannels);
+    void (*PsyInit) (GlobalPsyInfo *gpsyInfo, PsyInfo *psyInfo,
+                     unsigned int numChannels, unsigned int sampleRate,
+                     int *cb_width_long, int num_cb_long,
+                     int *cb_width_short, int num_cb_short);
+    void (*PsyEnd) (GlobalPsyInfo *gpsyInfo, PsyInfo *psyInfo,
+                    unsigned int numChannels);
+    void (*PsyCalculate) (ChannelInfo *channelInfo, GlobalPsyInfo *gpsyInfo,
+                          PsyInfo *psyInfo, int *cb_width_long, int num_cb_long,
+                          int *cb_width_short, int num_cb_short,
+                          unsigned int numChannels);
+    void (*PsyBufferUpdate) ( FFT_Tables *fft_tables, GlobalPsyInfo * gpsyInfo, PsyInfo * psyInfo,
+                              double *newSamples, unsigned int bandwidth,
+                              int *cb_width_short, int num_cb_short);
+    void (*BlockSwitch) (CoderInfo *coderInfo, PsyInfo *psyInfo,
+                         unsigned int numChannels);
 } psymodel_t;
 
 extern psymodel_t psymodel2;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG Audio common tables
  * copyright (c) 2002 Fabrice Bellard
  *

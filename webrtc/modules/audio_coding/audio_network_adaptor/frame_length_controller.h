@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,59 +17,63 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/audio_network_adaptor/controller.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Determines target frame length based on the network metrics and the decision
 // of FEC controller.
-class FrameLengthController final : public Controller {
- public:
-  struct Config {
-    struct FrameLengthChange {
-      FrameLengthChange(int from_frame_length_ms, int to_frame_length_ms);
-      bool operator<(const FrameLengthChange& rhs) const;
-      int from_frame_length_ms;
-      int to_frame_length_ms;
+class FrameLengthController final : public Controller
+{
+public:
+    struct Config
+    {
+        struct FrameLengthChange
+        {
+            FrameLengthChange(int from_frame_length_ms, int to_frame_length_ms);
+            bool operator<(const FrameLengthChange& rhs) const;
+            int from_frame_length_ms;
+            int to_frame_length_ms;
+        };
+        Config(const std::vector<int>& encoder_frame_lengths_ms,
+               int initial_frame_length_ms,
+               float fl_increasing_packet_loss_fraction,
+               float fl_decreasing_packet_loss_fraction,
+               std::map<FrameLengthChange, int> fl_changing_bandwidths_bps);
+        Config(const Config& other);
+        ~Config();
+        std::vector<int> encoder_frame_lengths_ms;
+        int initial_frame_length_ms;
+        // Uplink packet loss fraction below which frame length can increase.
+        float fl_increasing_packet_loss_fraction;
+        // Uplink packet loss fraction below which frame length should decrease.
+        float fl_decreasing_packet_loss_fraction;
+        std::map<FrameLengthChange, int> fl_changing_bandwidths_bps;
     };
-    Config(const std::vector<int>& encoder_frame_lengths_ms,
-           int initial_frame_length_ms,
-           float fl_increasing_packet_loss_fraction,
-           float fl_decreasing_packet_loss_fraction,
-           std::map<FrameLengthChange, int> fl_changing_bandwidths_bps);
-    Config(const Config& other);
-    ~Config();
-    std::vector<int> encoder_frame_lengths_ms;
-    int initial_frame_length_ms;
-    // Uplink packet loss fraction below which frame length can increase.
-    float fl_increasing_packet_loss_fraction;
-    // Uplink packet loss fraction below which frame length should decrease.
-    float fl_decreasing_packet_loss_fraction;
-    std::map<FrameLengthChange, int> fl_changing_bandwidths_bps;
-  };
 
-  explicit FrameLengthController(const Config& config);
+    explicit FrameLengthController(const Config& config);
 
-  ~FrameLengthController() override;
+    ~FrameLengthController() override;
 
-  void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
+    void UpdateNetworkMetrics(const NetworkMetrics& network_metrics) override;
 
-  void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
+    void MakeDecision(AudioNetworkAdaptor::EncoderRuntimeConfig* config) override;
 
- private:
-  bool FrameLengthIncreasingDecision(
-      const AudioNetworkAdaptor::EncoderRuntimeConfig& config) const;
+private:
+    bool FrameLengthIncreasingDecision(
+        const AudioNetworkAdaptor::EncoderRuntimeConfig& config) const;
 
-  bool FrameLengthDecreasingDecision(
-      const AudioNetworkAdaptor::EncoderRuntimeConfig& config) const;
+    bool FrameLengthDecreasingDecision(
+        const AudioNetworkAdaptor::EncoderRuntimeConfig& config) const;
 
-  const Config config_;
+    const Config config_;
 
-  std::vector<int>::const_iterator frame_length_ms_;
+    std::vector<int>::const_iterator frame_length_ms_;
 
-  rtc::Optional<int> uplink_bandwidth_bps_;
+    rtc::Optional<int> uplink_bandwidth_bps_;
 
-  rtc::Optional<float> uplink_packet_loss_fraction_;
+    rtc::Optional<float> uplink_packet_loss_fraction_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(FrameLengthController);
+    RTC_DISALLOW_COPY_AND_ASSIGN(FrameLengthController);
 };
 
 }  // namespace webrtc

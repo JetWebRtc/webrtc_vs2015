@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder data
  * Copyright (c) 2015 Rostislav Pehlivanov ( atomnuker gmail com )
  *
@@ -44,7 +44,8 @@ extern const uint8_t *ff_aac_swb_size_128[];
 extern const int      ff_aac_swb_size_128_len;
 
 /** default channel configurations */
-static const uint8_t aac_chan_configs[6][5] = {
+static const uint8_t aac_chan_configs[6][5] =
+{
     {1, TYPE_SCE},                               // 1 channel  - single channel element
     {1, TYPE_CPE},                               // 2 channels - channel pair
     {2, TYPE_SCE, TYPE_CPE},                     // 3 channels - center + stereo
@@ -56,7 +57,8 @@ static const uint8_t aac_chan_configs[6][5] = {
 /**
  * Table to remap channels from libavcodec's default order to AAC order.
  */
-static const uint8_t aac_chan_maps[AAC_MAX_CHANNELS][AAC_MAX_CHANNELS] = {
+static const uint8_t aac_chan_maps[AAC_MAX_CHANNELS][AAC_MAX_CHANNELS] =
+{
     { 0 },
     { 0, 1 },
     { 2, 0, 1 },
@@ -67,38 +69,45 @@ static const uint8_t aac_chan_maps[AAC_MAX_CHANNELS][AAC_MAX_CHANNELS] = {
 
 /* duplicated from avpriv_mpeg4audio_sample_rates to avoid shared build
  * failures */
-static const int mpeg4audio_sample_rates[16] = {
+static const int mpeg4audio_sample_rates[16] =
+{
     96000, 88200, 64000, 48000, 44100, 32000,
     24000, 22050, 16000, 12000, 11025, 8000, 7350
 };
 
 /** bits needed to code codebook run value for long windows */
-static const uint8_t run_value_bits_long[64] = {
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 10,
+static const uint8_t run_value_bits_long[64] =
+{
+    5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+    5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15
 };
 
 /** bits needed to code codebook run value for short windows */
-static const uint8_t run_value_bits_short[16] = {
+static const uint8_t run_value_bits_short[16] =
+{
     3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 9
 };
 
 /* TNS starting SFBs for long and short windows */
-static const uint8_t tns_min_sfb_short[16] = {
+static const uint8_t tns_min_sfb_short[16] =
+{
     2, 2, 2, 3, 3, 4, 6, 6, 8, 10, 10, 12, 12, 12, 12, 12
 };
 
-static const uint8_t tns_min_sfb_long[16] = {
+static const uint8_t tns_min_sfb_long[16] =
+{
     12, 13, 15, 16, 17, 20, 25, 26, 24, 28, 30, 31, 31, 31, 31, 31
 };
 
-static const uint8_t * const tns_min_sfb[2] = {
+static const uint8_t * const tns_min_sfb[2] =
+{
     tns_min_sfb_long, tns_min_sfb_short
 };
 
-static const uint8_t * const run_value_bits[2] = {
+static const uint8_t * const run_value_bits[2] =
+{
     run_value_bits_long, run_value_bits_short
 };
 

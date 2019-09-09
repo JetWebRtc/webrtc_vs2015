@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -29,7 +29,8 @@
 #include "libavutil/imgutils.h"
 #include "ffmpeg.h"
 
-typedef struct VTContext {
+typedef struct VTContext
+{
     AVFrame *tmp_frame;
 } VTContext;
 
@@ -49,12 +50,21 @@ static int videotoolbox_retrieve_data(AVCodecContext *s, AVFrame *frame)
 
     av_frame_unref(vt->tmp_frame);
 
-    switch (pixel_format) {
-    case kCVPixelFormatType_420YpCbCr8Planar: vt->tmp_frame->format = AV_PIX_FMT_YUV420P; break;
-    case kCVPixelFormatType_422YpCbCr8:       vt->tmp_frame->format = AV_PIX_FMT_UYVY422; break;
-    case kCVPixelFormatType_32BGRA:           vt->tmp_frame->format = AV_PIX_FMT_BGRA; break;
+    switch (pixel_format)
+    {
+    case kCVPixelFormatType_420YpCbCr8Planar:
+        vt->tmp_frame->format = AV_PIX_FMT_YUV420P;
+        break;
+    case kCVPixelFormatType_422YpCbCr8:
+        vt->tmp_frame->format = AV_PIX_FMT_UYVY422;
+        break;
+    case kCVPixelFormatType_32BGRA:
+        vt->tmp_frame->format = AV_PIX_FMT_BGRA;
+        break;
 #ifdef kCFCoreFoundationVersionNumber10_7
-    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange: vt->tmp_frame->format = AV_PIX_FMT_NV12; break;
+    case kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange:
+        vt->tmp_frame->format = AV_PIX_FMT_NV12;
+        break;
 #endif
     default:
         av_get_codec_tag_string(codec_str, sizeof(codec_str), s->codec_tag);
@@ -70,19 +80,24 @@ static int videotoolbox_retrieve_data(AVCodecContext *s, AVFrame *frame)
         return ret;
 
     err = CVPixelBufferLockBaseAddress(pixbuf, kCVPixelBufferLock_ReadOnly);
-    if (err != kCVReturnSuccess) {
+    if (err != kCVReturnSuccess)
+    {
         av_log(NULL, AV_LOG_ERROR, "Error locking the pixel buffer.\n");
         return AVERROR_UNKNOWN;
     }
 
-    if (CVPixelBufferIsPlanar(pixbuf)) {
+    if (CVPixelBufferIsPlanar(pixbuf))
+    {
 
         planes = CVPixelBufferGetPlaneCount(pixbuf);
-        for (i = 0; i < planes; i++) {
+        for (i = 0; i < planes; i++)
+        {
             data[i]     = CVPixelBufferGetBaseAddressOfPlane(pixbuf, i);
             linesize[i] = CVPixelBufferGetBytesPerRowOfPlane(pixbuf, i);
         }
-    } else {
+    }
+    else
+    {
         data[0] = CVPixelBufferGetBaseAddress(pixbuf);
         linesize[0] = CVPixelBufferGetBytesPerRow(pixbuf);
     }
@@ -112,11 +127,14 @@ static void videotoolbox_uninit(AVCodecContext *s)
 
     av_frame_free(&vt->tmp_frame);
 
-    if (ist->hwaccel_id == HWACCEL_VIDEOTOOLBOX) {
+    if (ist->hwaccel_id == HWACCEL_VIDEOTOOLBOX)
+    {
 #if CONFIG_VIDEOTOOLBOX
         av_videotoolbox_default_free(s);
 #endif
-    } else {
+    }
+    else
+    {
 #if CONFIG_VDA
         av_vda_default_free(s);
 #endif
@@ -140,41 +158,52 @@ int videotoolbox_init(AVCodecContext *s)
     ist->hwaccel_retrieve_data = videotoolbox_retrieve_data;
 
     vt->tmp_frame = av_frame_alloc();
-    if (!vt->tmp_frame) {
+    if (!vt->tmp_frame)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    if (ist->hwaccel_id == HWACCEL_VIDEOTOOLBOX) {
+    if (ist->hwaccel_id == HWACCEL_VIDEOTOOLBOX)
+    {
 #if CONFIG_VIDEOTOOLBOX
-        if (!videotoolbox_pixfmt) {
+        if (!videotoolbox_pixfmt)
+        {
             ret = av_videotoolbox_default_init(s);
-        } else {
+        }
+        else
+        {
             AVVideotoolboxContext *vtctx = av_videotoolbox_alloc_context();
             CFStringRef pixfmt_str = CFStringCreateWithCString(kCFAllocatorDefault,
-                                                               videotoolbox_pixfmt,
-                                                               kCFStringEncodingUTF8);
+                                     videotoolbox_pixfmt,
+                                     kCFStringEncodingUTF8);
             vtctx->cv_pix_fmt_type = UTGetOSTypeFromString(pixfmt_str);
             ret = av_videotoolbox_default_init2(s, vtctx);
             CFRelease(pixfmt_str);
         }
 #endif
-    } else {
+    }
+    else
+    {
 #if CONFIG_VDA
-        if (!videotoolbox_pixfmt) {
+        if (!videotoolbox_pixfmt)
+        {
             ret = av_vda_default_init(s);
-        } else {
+        }
+        else
+        {
             AVVDAContext *vdactx = av_vda_alloc_context();
             CFStringRef pixfmt_str = CFStringCreateWithCString(kCFAllocatorDefault,
-                                                               videotoolbox_pixfmt,
-                                                               kCFStringEncodingUTF8);
+                                     videotoolbox_pixfmt,
+                                     kCFStringEncodingUTF8);
             vdactx->cv_pix_fmt_type = UTGetOSTypeFromString(pixfmt_str);
             ret = av_vda_default_init2(s, vdactx);
             CFRelease(pixfmt_str);
         }
 #endif
     }
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, loglevel,
                "Error creating %s decoder.\n", ist->hwaccel_id == HWACCEL_VIDEOTOOLBOX ? "Videotoolbox" : "VDA");
         goto fail;

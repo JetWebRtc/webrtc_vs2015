@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP parser for loss tolerant payload format for MP3 audio (RFC 5219)
  * Copyright (c) 2015 Gilles Chanteperdrix <gch@xenomai.org>
  *
@@ -25,7 +25,8 @@
 #include "avio_internal.h"
 #include "rtpdec_formats.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     unsigned adu_size;
     unsigned cur_size;
     uint32_t timestamp;
@@ -46,16 +47,20 @@ static int mpa_robust_parse_rtp_header(AVFormatContext *ctx,
 {
     unsigned header_size;
 
-    if (len < 2) {
+    if (len < 2)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid %d bytes packet\n", len);
         return AVERROR_INVALIDDATA;
     }
 
     *cont = !!(buf[0] & 0x80);
-    if (!(buf[0] & 0x40)) {
+    if (!(buf[0] & 0x40))
+    {
         header_size = 1;
         *adu_size = buf[0] & ~0xc0;
-    } else {
+    }
+    else
+    {
         header_size = 2;
         *adu_size = AV_RB16(buf) & ~0xc000;
     }
@@ -71,26 +76,30 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
     unsigned adu_size, continuation;
     int err, header_size;
 
-    if (!buf) {
+    if (!buf)
+    {
         buf = &data->split_buf[data->split_pos];
         len = data->split_buf_size - data->split_pos;
 
         header_size = mpa_robust_parse_rtp_header(ctx, buf, len, &adu_size,
-                                                  &continuation);
-        if (header_size < 0) {
+                      &continuation);
+        if (header_size < 0)
+        {
             av_freep(&data->split_buf);
             return header_size;
         }
         buf += header_size;
         len -= header_size;
 
-        if (continuation || adu_size > len) {
+        if (continuation || adu_size > len)
+        {
             av_freep(&data->split_buf);
             av_log(ctx, AV_LOG_ERROR, "Invalid frame\n");
             return AVERROR_INVALIDDATA;
         }
 
-        if (av_new_packet(pkt, adu_size)) {
+        if (av_new_packet(pkt, adu_size))
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
             return AVERROR(ENOMEM);
         }
@@ -100,7 +109,8 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
 
         data->split_pos += header_size + adu_size;
 
-        if (data->split_pos == data->split_buf_size) {
+        if (data->split_pos == data->split_buf_size)
+        {
             av_freep(&data->split_buf);
             return 0;
         }
@@ -110,17 +120,19 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
 
 
     header_size = mpa_robust_parse_rtp_header(ctx, buf, len, &adu_size,
-                                              &continuation);
+                  &continuation);
     if (header_size < 0)
         return header_size;
 
     buf += header_size;
     len -= header_size;
 
-    if (!continuation && adu_size <= len) {
+    if (!continuation && adu_size <= len)
+    {
         /* One or more complete frames */
 
-        if (av_new_packet(pkt, adu_size)) {
+        if (av_new_packet(pkt, adu_size))
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
             return AVERROR(ENOMEM);
         }
@@ -130,11 +142,13 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
 
         buf += adu_size;
         len -= adu_size;
-        if (len) {
+        if (len)
+        {
             data->split_buf_size = len;
             data->split_buf = av_malloc(data->split_buf_size);
             data->split_pos = 0;
-            if (!data->split_buf) {
+            if (!data->split_buf)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
                 av_free_packet(pkt);
                 return AVERROR(ENOMEM);
@@ -143,7 +157,9 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
             return 1;
         }
         return 0;
-    } else if (!continuation) { /* && adu_size > len */
+    }
+    else if (!continuation)     /* && adu_size > len */
+    {
         /* First fragment */
         ffio_free_dyn_buf(&data->fragment);
 
@@ -161,13 +177,15 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
     /* else continuation == 1 */
 
     /* Fragment other than first */
-    if (!data->fragment) {
+    if (!data->fragment)
+    {
         av_log(ctx, AV_LOG_WARNING,
-            "Received packet without a start fragment; dropping.\n");
+               "Received packet without a start fragment; dropping.\n");
         return AVERROR(EAGAIN);
     }
     if (adu_size = data->adu_size ||
-        data->timestamp != *timestamp) {
+                   data->timestamp != *timestamp)
+    {
         ffio_free_dyn_buf(&data->fragment);
         av_log(ctx, AV_LOG_ERROR, "Invalid packet received\n");
         return AVERROR_INVALIDDATA;
@@ -180,7 +198,8 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         return AVERROR(EAGAIN);
 
     err = ff_rtp_finalize_packet(pkt, &data->fragment, st->index);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Error occurred when getting fragment buffer.\n");
         return err;
@@ -189,7 +208,8 @@ static int mpa_robust_parse_packet(AVFormatContext *ctx, PayloadContext *data,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_mpeg_audio_robust_dynamic_handler = {
+RTPDynamicProtocolHandler ff_mpeg_audio_robust_dynamic_handler =
+{
     .enc_name          = "mpa-robust",
     .codec_type        = AVMEDIA_TYPE_AUDIO,
     .codec_id          = AV_CODEC_ID_MP3ADU,

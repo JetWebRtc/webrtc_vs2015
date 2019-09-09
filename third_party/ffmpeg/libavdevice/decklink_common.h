@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Blackmagic DeckLink common code
  * Copyright (c) 2013-2014 Ramiro Polla, Luca Barbato, Deti Fliegl
  *
@@ -26,7 +26,8 @@
 class decklink_output_callback;
 class decklink_input_callback;
 
-typedef struct AVPacketQueue {
+typedef struct AVPacketQueue
+{
     AVPacketList *first_pkt, *last_pkt;
     int nb_packets;
     unsigned long long size;
@@ -36,7 +37,8 @@ typedef struct AVPacketQueue {
     AVFormatContext *avctx;
 } AVPacketQueue;
 
-struct decklink_ctx {
+struct decklink_ctx
+{
     /* DeckLink SDK interfaces */
     IDeckLink *dl;
     IDeckLinkOutput *dlo;

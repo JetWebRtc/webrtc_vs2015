@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Roman Shaposhnik
  * Copyright (c) 2008 Alexander Strange (astrange@ithinksw.com)
  *
@@ -46,17 +46,24 @@
 static void validate_thread_parameters(AVCodecContext *avctx)
 {
     int frame_threading_supported = (avctx->codec->capabilities & AV_CODEC_CAP_FRAME_THREADS)
-                                && !(avctx->flags  & AV_CODEC_FLAG_TRUNCATED)
-                                && !(avctx->flags  & AV_CODEC_FLAG_LOW_DELAY)
-                                && !(avctx->flags2 & AV_CODEC_FLAG2_CHUNKS);
-    if (avctx->thread_count == 1) {
+                                    && !(avctx->flags  & AV_CODEC_FLAG_TRUNCATED)
+                                    && !(avctx->flags  & AV_CODEC_FLAG_LOW_DELAY)
+                                    && !(avctx->flags2 & AV_CODEC_FLAG2_CHUNKS);
+    if (avctx->thread_count == 1)
+    {
         avctx->active_thread_type = 0;
-    } else if (frame_threading_supported && (avctx->thread_type & FF_THREAD_FRAME)) {
+    }
+    else if (frame_threading_supported && (avctx->thread_type & FF_THREAD_FRAME))
+    {
         avctx->active_thread_type = FF_THREAD_FRAME;
-    } else if (avctx->codec->capabilities & AV_CODEC_CAP_SLICE_THREADS &&
-               avctx->thread_type & FF_THREAD_SLICE) {
+    }
+    else if (avctx->codec->capabilities & AV_CODEC_CAP_SLICE_THREADS &&
+             avctx->thread_type & FF_THREAD_SLICE)
+    {
         avctx->active_thread_type = FF_THREAD_SLICE;
-    } else if (!(avctx->codec->capabilities & AV_CODEC_CAP_AUTO_THREADS)) {
+    }
+    else if (!(avctx->codec->capabilities & AV_CODEC_CAP_AUTO_THREADS))
+    {
         avctx->thread_count       = 1;
         avctx->active_thread_type = 0;
     }

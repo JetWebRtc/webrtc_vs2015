@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Register all the grabbing devices.
  *
  * This file is part of FFmpeg.

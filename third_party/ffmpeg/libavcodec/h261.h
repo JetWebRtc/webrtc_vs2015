@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H261 decoder
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2004 Maarten Daniels
@@ -34,7 +34,8 @@
 /**
  * H261Context
  */
-typedef struct H261Context {
+typedef struct H261Context
+{
     MpegEncContext s;
 
     int current_mba;

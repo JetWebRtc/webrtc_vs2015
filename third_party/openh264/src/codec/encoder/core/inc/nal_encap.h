@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -47,13 +47,15 @@
 using namespace WelsCommon;
 
 //SBitStringAux
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 #define NAL_HEADER_SIZE (4)
 /*
  *  Raw payload pData for NAL unit, AVC/SVC compatible
  */
-typedef struct TagWelsNalRaw {
+typedef struct TagWelsNalRaw
+{
 uint8_t*                pRawData;       // pRawNal payload for slice pData
 int32_t                 iPayloadSize;   // size of pRawNal pData
 
@@ -65,7 +67,8 @@ int32_t iStartPos; //NAL start position in buffer
 /*
  *  Encoder majoy output pData
  */
-typedef struct TagWelsEncoderOutput {
+typedef struct TagWelsEncoderOutput
+{
 uint8_t*        pBsBuffer;              // overall bitstream pBuffer allocation for a coded picture, recycling use intend.
 uint32_t        uiSize;                 // size of allocation pBuffer above
 
@@ -83,7 +86,8 @@ int32_t         iLayerBsIndex;          // layer index of  bit stream for SFrame
 
 //#define MT_DEBUG_BS_WR        0       // for MT debugging if needed
 
-typedef struct TagWelsSliceBs {
+typedef struct TagWelsSliceBs
+{
 uint8_t*        pBs;                    // output bitstream, pBitStringAux not needed for slice 0 due to no dependency of pFrameBs available
 uint32_t        uiBsPos;                // position of output bitstream
 uint8_t*        pBsBuffer;              // overall bitstream pBuffer allocation for a coded slice, recycling use intend.

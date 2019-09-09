@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #include "webrtc/modules/audio_coding/audio_network_adaptor/dtx_controller.h"
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 DtxController::Config::Config(bool initial_dtx_enabled,
                               int dtx_enabling_bandwidth_bps,
@@ -26,26 +27,32 @@ DtxController::DtxController(const Config& config)
 DtxController::~DtxController() = default;
 
 void DtxController::UpdateNetworkMetrics(
-    const NetworkMetrics& network_metrics) {
-  if (network_metrics.uplink_bandwidth_bps)
-    uplink_bandwidth_bps_ = network_metrics.uplink_bandwidth_bps;
+    const NetworkMetrics& network_metrics)
+{
+    if (network_metrics.uplink_bandwidth_bps)
+        uplink_bandwidth_bps_ = network_metrics.uplink_bandwidth_bps;
 }
 
 void DtxController::MakeDecision(
-    AudioNetworkAdaptor::EncoderRuntimeConfig* config) {
-  // Decision on |enable_dtx| should not have been made.
-  RTC_DCHECK(!config->enable_dtx);
+    AudioNetworkAdaptor::EncoderRuntimeConfig* config)
+{
+    // Decision on |enable_dtx| should not have been made.
+    RTC_DCHECK(!config->enable_dtx);
 
-  if (uplink_bandwidth_bps_) {
-    if (dtx_enabled_ &&
-        *uplink_bandwidth_bps_ >= config_.dtx_disabling_bandwidth_bps) {
-      dtx_enabled_ = false;
-    } else if (!dtx_enabled_ &&
-               *uplink_bandwidth_bps_ <= config_.dtx_enabling_bandwidth_bps) {
-      dtx_enabled_ = true;
+    if (uplink_bandwidth_bps_)
+    {
+        if (dtx_enabled_ &&
+                *uplink_bandwidth_bps_ >= config_.dtx_disabling_bandwidth_bps)
+        {
+            dtx_enabled_ = false;
+        }
+        else if (!dtx_enabled_ &&
+                 *uplink_bandwidth_bps_ <= config_.dtx_enabling_bandwidth_bps)
+        {
+            dtx_enabled_ = true;
+        }
     }
-  }
-  config->enable_dtx = rtc::Optional<bool>(dtx_enabled_);
+    config->enable_dtx = rtc::Optional<bool>(dtx_enabled_);
 }
 
 }  // namespace webrtc

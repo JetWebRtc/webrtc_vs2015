@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,7 +10,8 @@
 
 #import "webrtc/modules/audio_device/ios/objc/RTCAudioSession.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class AudioSessionObserver;
 }
 

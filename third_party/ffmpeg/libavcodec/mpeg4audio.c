@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-4 Audio common code
  * Copyright (c) 2008 Baptiste Coudurier <baptiste.coudurier@free.fr>
  * Copyright (c) 2009 Alex Converse <alex.converse@gmail.com>
@@ -54,12 +54,14 @@ static int parse_config_ALS(GetBitContext *gb, MPEG4AudioConfig *c)
 
 /* XXX: make sure to update the copies in the different encoders if you change
  * this table */
-const int avpriv_mpeg4audio_sample_rates[16] = {
+const int avpriv_mpeg4audio_sample_rates[16] =
+{
     96000, 88200, 64000, 48000, 44100, 32000,
     24000, 22050, 16000, 12000, 11025, 8000, 7350
 };
 
-const uint8_t ff_mpeg4audio_channels[8] = {
+const uint8_t ff_mpeg4audio_channels[8] =
+{
     0, 1, 2, 3, 4, 5, 6, 8
 };
 
@@ -75,7 +77,7 @@ static inline int get_sample_rate(GetBitContext *gb, int *index)
 {
     *index = get_bits(gb, 4);
     return *index == 0x0f ? get_bits(gb, 24) :
-        avpriv_mpeg4audio_sample_rates[*index];
+           avpriv_mpeg4audio_sample_rates[*index];
 }
 
 int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
@@ -99,8 +101,9 @@ int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
     c->sbr = -1;
     c->ps  = -1;
     if (c->object_type == AOT_SBR || (c->object_type == AOT_PS &&
-        // check for W6132 Annex YYYY draft MP3onMP4
-        !(show_bits(&gb, 3) & 0x03 && !(show_bits(&gb, 9) & 0x3F)))) {
+                                      // check for W6132 Annex YYYY draft MP3onMP4
+                                      !(show_bits(&gb, 3) & 0x03 && !(show_bits(&gb, 9) & 0x3F))))
+    {
         if (c->object_type == AOT_PS)
             c->ps = 1;
         c->ext_object_type = AOT_SBR;
@@ -109,13 +112,16 @@ int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
         c->object_type = get_object_type(&gb);
         if (c->object_type == AOT_ER_BSAC)
             c->ext_chan_config = get_bits(&gb, 4);
-    } else {
+    }
+    else
+    {
         c->ext_object_type = AOT_NULL;
         c->ext_sample_rate = 0;
     }
     specific_config_bitindex = get_bits_count(&gb);
 
-    if (c->object_type == AOT_ALS) {
+    if (c->object_type == AOT_ALS)
+    {
         skip_bits(&gb, 5);
         if (show_bits_long(&gb, 24) != MKBETAG('\0','A','L','S'))
             skip_bits_long(&gb, 24);
@@ -126,12 +132,16 @@ int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
             return -1;
     }
 
-    if (c->ext_object_type != AOT_SBR && sync_extension) {
-        while (get_bits_left(&gb) > 15) {
-            if (show_bits(&gb, 11) == 0x2b7) { // sync extension
+    if (c->ext_object_type != AOT_SBR && sync_extension)
+    {
+        while (get_bits_left(&gb) > 15)
+        {
+            if (show_bits(&gb, 11) == 0x2b7)   // sync extension
+            {
                 get_bits(&gb, 11);
                 c->ext_object_type = get_object_type(&gb);
-                if (c->ext_object_type == AOT_SBR && (c->sbr = get_bits1(&gb)) == 1) {
+                if (c->ext_object_type == AOT_SBR && (c->sbr = get_bits1(&gb)) == 1)
+                {
                     c->ext_sample_rate = get_sample_rate(&gb, &c->ext_sampling_index);
                     if (c->ext_sample_rate == c->sample_rate)
                         c->sbr = -1;
@@ -139,7 +149,8 @@ int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
                 if (get_bits_left(&gb) > 11 && get_bits(&gb, 11) == 0x548)
                     c->ps = get_bits1(&gb);
                 break;
-            } else
+            }
+            else
                 get_bits1(&gb); // skip 1 bit
         }
     }
@@ -155,8 +166,8 @@ int avpriv_mpeg4audio_get_config(MPEG4AudioConfig *c, const uint8_t *buf,
 }
 
 static av_always_inline unsigned int copy_bits(PutBitContext *pb,
-                                               GetBitContext *gb,
-                                               int bits)
+        GetBitContext *gb,
+        int bits)
 {
     unsigned int el = get_bits(gb, bits);
     put_bits(pb, bits, el);

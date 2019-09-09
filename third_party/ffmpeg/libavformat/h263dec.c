@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW H.263 video demuxer
  * Copyright (c) 2009 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -33,44 +33,56 @@ static int h263_probe(AVProbeData *p)
     int last_gn=0;
     int tr, last_tr = -1;
 
-    for(i=0; i<p->buf_size; i++){
+    for(i=0; i<p->buf_size; i++)
+    {
         code = (code<<8) + p->buf[i];
-        if ((code & 0xfffffc000000) == 0x80000000) {
+        if ((code & 0xfffffc000000) == 0x80000000)
+        {
             tr = (code >> 18) & 0xFF;
             src_fmt= (code>>10)&7;
             if(   src_fmt != last_src_fmt
-               && last_src_fmt>0 && last_src_fmt<6
-               && src_fmt<6)
+                    && last_src_fmt>0 && last_src_fmt<6
+                    && src_fmt<6)
                 res_change++;
 
-            if (tr == last_tr) {
+            if (tr == last_tr)
+            {
                 invalid_psc++;
                 continue;
             }
 
-            if (src_fmt != 7 && !(code&(1<<9)) && (code&(1<<5))) {
+            if (src_fmt != 7 && !(code&(1<<9)) && (code&(1<<5)))
+            {
                 invalid_psc++;
                 continue;
             }
 
-            if((code&0x30000)==0x20000 && src_fmt){
+            if((code&0x30000)==0x20000 && src_fmt)
+            {
                 valid_psc++;
                 last_gn=0;
-            }else
+            }
+            else
                 invalid_psc++;
             last_src_fmt= src_fmt;
             last_tr = tr;
-        } else if((code & 0xffff80000000) == 0x80000000) {
+        }
+        else if((code & 0xffff80000000) == 0x80000000)
+        {
             int gn= (code>>(31-5)) & 0x1F;
-            if(gn<last_gn){
+            if(gn<last_gn)
+            {
                 invalid_psc++;
-            }else
+            }
+            else
                 last_gn= gn;
         }
     }
-    if(valid_psc > 2*invalid_psc + 2*res_change + 3){
+    if(valid_psc > 2*invalid_psc + 2*res_change + 3)
+    {
         return AVPROBE_SCORE_EXTENSION;
-    }else if(valid_psc > 2*invalid_psc)
+    }
+    else if(valid_psc > 2*invalid_psc)
         return AVPROBE_SCORE_EXTENSION / 2;
     return 0;
 }

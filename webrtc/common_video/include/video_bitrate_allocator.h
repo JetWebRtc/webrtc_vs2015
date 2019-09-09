@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,25 +13,28 @@
 
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VideoBitrateAllocator {
- public:
-  VideoBitrateAllocator() {}
-  virtual ~VideoBitrateAllocator() {}
+class VideoBitrateAllocator
+{
+public:
+    VideoBitrateAllocator() {}
+    virtual ~VideoBitrateAllocator() {}
 
-  virtual BitrateAllocation GetAllocation(uint32_t total_bitrate,
-                                          uint32_t framerate) = 0;
-  virtual uint32_t GetPreferredBitrateBps(uint32_t framerate) = 0;
+    virtual BitrateAllocation GetAllocation(uint32_t total_bitrate,
+                                            uint32_t framerate) = 0;
+    virtual uint32_t GetPreferredBitrateBps(uint32_t framerate) = 0;
 };
 
-class VideoBitrateAllocationObserver {
- public:
-  VideoBitrateAllocationObserver() {}
-  virtual ~VideoBitrateAllocationObserver() {}
+class VideoBitrateAllocationObserver
+{
+public:
+    VideoBitrateAllocationObserver() {}
+    virtual ~VideoBitrateAllocationObserver() {}
 
-  virtual void OnBitrateAllocationUpdated(
-      const BitrateAllocation& allocation) = 0;
+    virtual void OnBitrateAllocationUpdated(
+        const BitrateAllocation& allocation) = 0;
 };
 
 }  // namespace webrtc

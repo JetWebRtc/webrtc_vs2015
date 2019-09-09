@@ -1,4 +1,4 @@
-/*
+﻿/*
  * software RGB to RGB converter
  * pluralize by software PAL8 to RGB converter
  *              software YUV to YUV converter

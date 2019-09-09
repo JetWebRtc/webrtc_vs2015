@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -41,11 +41,14 @@ void silk_k2a_FLP(
     opus_int   k, n;
     silk_float Atmp[ SILK_MAX_ORDER_LPC ];
 
-    for( k = 0; k < order; k++ ) {
-        for( n = 0; n < k; n++ ) {
+    for( k = 0; k < order; k++ )
+    {
+        for( n = 0; n < k; n++ )
+        {
             Atmp[ n ] = A[ n ];
         }
-        for( n = 0; n < k; n++ ) {
+        for( n = 0; n < k; n++ )
+        {
             A[ n ] += Atmp[ k - n - 1 ] * rc[ k ];
         }
         A[ k ] = -rc[ k ];

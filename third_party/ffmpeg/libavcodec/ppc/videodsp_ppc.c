@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003-2004 Romain Dolbeau
  *
  * This file is part of FFmpeg.
@@ -24,10 +24,12 @@
 static void prefetch_ppc(uint8_t *mem, ptrdiff_t stride, int h)
 {
     register const uint8_t *p = mem;
-    do {
+    do
+    {
         __asm__ volatile ("dcbt 0,%0" : : "r" (p));
         p += stride;
-    } while(--h);
+    }
+    while(--h);
 }
 
 av_cold void ff_videodsp_init_ppc(VideoDSPContext *ctx, int bpc)

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
+﻿// Copyright (c) 2016 The WebM project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file in the root of the source
@@ -18,61 +18,73 @@
 #include <fstream>
 #include <ios>
 
-namespace libwebm {
+namespace libwebm
+{
 
-std::string GetTempFileName() {
+std::string GetTempFileName()
+{
 #if !defined _MSC_VER && !defined __MINGW32__
-  std::string temp_file_name_template_str =
-      std::string(std::getenv("TEST_TMPDIR") ? std::getenv("TEST_TMPDIR") :
-                                               ".") +
-      "/libwebm_temp.XXXXXX";
-  char* temp_file_name_template =
-      new char[temp_file_name_template_str.length() + 1];
-  memset(temp_file_name_template, 0, temp_file_name_template_str.length() + 1);
-  temp_file_name_template_str.copy(temp_file_name_template,
-                                   temp_file_name_template_str.length(), 0);
-  int fd = mkstemp(temp_file_name_template);
-  std::string temp_file_name =
-      (fd != -1) ? std::string(temp_file_name_template) : std::string();
-  delete[] temp_file_name_template;
-  if (fd != -1) {
-    close(fd);
-  }
-  return temp_file_name;
+    std::string temp_file_name_template_str =
+        std::string(std::getenv("TEST_TMPDIR") ? std::getenv("TEST_TMPDIR") :
+                    ".") +
+        "/libwebm_temp.XXXXXX";
+    char* temp_file_name_template =
+        new char[temp_file_name_template_str.length() + 1];
+    memset(temp_file_name_template, 0, temp_file_name_template_str.length() + 1);
+    temp_file_name_template_str.copy(temp_file_name_template,
+                                     temp_file_name_template_str.length(), 0);
+    int fd = mkstemp(temp_file_name_template);
+    std::string temp_file_name =
+        (fd != -1) ? std::string(temp_file_name_template) : std::string();
+    delete[] temp_file_name_template;
+    if (fd != -1)
+    {
+        close(fd);
+    }
+    return temp_file_name;
 #else
-  char tmp_file_name[_MAX_PATH];
-  errno_t err = tmpnam_s(tmp_file_name);
-  if (err == 0) {
-    return std::string(tmp_file_name);
-  }
-  return std::string();
+    char tmp_file_name[_MAX_PATH];
+    errno_t err = tmpnam_s(tmp_file_name);
+    if (err == 0)
+    {
+        return std::string(tmp_file_name);
+    }
+    return std::string();
 #endif
 }
 
-uint64_t GetFileSize(const std::string& file_name) {
-  uint64_t file_size = 0;
+uint64_t GetFileSize(const std::string& file_name)
+{
+    uint64_t file_size = 0;
 #ifndef _MSC_VER
-  struct stat st;
-  st.st_size = 0;
-  if (stat(file_name.c_str(), &st) == 0) {
+    struct stat st;
+    st.st_size = 0;
+    if (stat(file_name.c_str(), &st) == 0)
+    {
 #else
-  struct _stat st;
-  st.st_size = 0;
-  if (_stat(file_name.c_str(), &st) == 0) {
+    struct _stat st;
+    st.st_size = 0;
+    if (_stat(file_name.c_str(), &st) == 0)
+    {
 #endif
-    file_size = st.st_size;
-  }
-  return file_size;
+        file_size = st.st_size;
+    }
+    return file_size;
 }
 
-TempFileDeleter::TempFileDeleter() { file_name_ = GetTempFileName(); }
+TempFileDeleter::TempFileDeleter()
+{
+    file_name_ = GetTempFileName();
+}
 
-TempFileDeleter::~TempFileDeleter() {
-  std::ifstream file(file_name_.c_str());
-  if (file.good()) {
-    file.close();
-    std::remove(file_name_.c_str());
-  }
+TempFileDeleter::~TempFileDeleter()
+{
+    std::ifstream file(file_name_.c_str());
+    if (file.good())
+    {
+        file.close();
+        std::remove(file_name_.c_str());
+    }
 }
 
 }  // namespace libwebm

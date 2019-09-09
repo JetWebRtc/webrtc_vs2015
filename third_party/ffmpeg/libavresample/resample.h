@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "internal.h"
 #include "audio_data.h"
 
-struct ResampleContext {
+struct ResampleContext
+{
     AVAudioResampleContext *avr;
     AudioData *buffer;
     uint8_t *filter_bank;

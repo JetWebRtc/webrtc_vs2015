@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2011 Octasic Inc.
+﻿/* Copyright (c) 2008-2011 Octasic Inc.
    Written by Jean-Marc Valin */
 /*
    Redistribution and use in source and binary forms, with or without
@@ -78,12 +78,12 @@ static OPUS_INLINE float tansig_approx(float x)
 #ifndef FIXED_POINT
     /* Another check in case of -ffast-math */
     if (celt_isnan(x))
-       return 0;
+        return 0;
 #endif
     if (x<0)
     {
-       x=-x;
-       sign=-1;
+        x=-x;
+        sign=-1;
     }
     i = (int)floor(.5f+25*x);
     x -= .04f*i;
@@ -101,19 +101,19 @@ void mlp_process(const MLP *m, const opus_val16 *in, opus_val16 *out)
     opus_val16 hidden[MAX_NEURONS];
     const opus_val16 *W = m->weights;
     /* Copy to tmp_in */
-    for (j=0;j<m->topo[1];j++)
+    for (j=0; j<m->topo[1]; j++)
     {
         int k;
         opus_val32 sum = SHL32(EXTEND32(*W++),8);
-        for (k=0;k<m->topo[0];k++)
+        for (k=0; k<m->topo[0]; k++)
             sum = MAC16_16(sum, in[k],*W++);
         hidden[j] = tansig_approx(sum);
     }
-    for (j=0;j<m->topo[2];j++)
+    for (j=0; j<m->topo[2]; j++)
     {
         int k;
         opus_val32 sum = SHL32(EXTEND32(*W++),14);
-        for (k=0;k<m->topo[1];k++)
+        for (k=0; k<m->topo[1]; k++)
             sum = MAC16_16(sum, hidden[k], *W++);
         out[j] = tansig_approx(EXTRACT16(PSHR32(sum,17)));
     }
@@ -125,19 +125,19 @@ void mlp_process(const MLP *m, const float *in, float *out)
     float hidden[MAX_NEURONS];
     const float *W = m->weights;
     /* Copy to tmp_in */
-    for (j=0;j<m->topo[1];j++)
+    for (j=0; j<m->topo[1]; j++)
     {
         int k;
         float sum = *W++;
-        for (k=0;k<m->topo[0];k++)
+        for (k=0; k<m->topo[0]; k++)
             sum = sum + in[k]**W++;
         hidden[j] = tansig_approx(sum);
     }
-    for (j=0;j<m->topo[2];j++)
+    for (j=0; j<m->topo[2]; j++)
     {
         int k;
         float sum = *W++;
-        for (k=0;k<m->topo[1];k++)
+        for (k=0; k<m->topo[1]; k++)
             sum = sum + hidden[k]**W++;
         out[j] = tansig_approx(sum);
     }

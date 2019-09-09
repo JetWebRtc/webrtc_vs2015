@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "webrtc/system_wrappers/include/atomic32.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This is a work around for the Chrome tab full-screen behavior: Chrome
 // creates a new window in full-screen mode to show a tab full-screen and
@@ -30,38 +31,43 @@ namespace webrtc {
 // 3. The new window is full-screen.
 // 4. The new window didn't exist at least 500 millisecond ago.
 
-class FullScreenChromeWindowDetector {
- public:
-  FullScreenChromeWindowDetector();
+class FullScreenChromeWindowDetector
+{
+public:
+    FullScreenChromeWindowDetector();
 
-  void AddRef() { ++ref_count_; }
-  void Release() {
-    if (--ref_count_ == 0)
-      delete this;
-  }
+    void AddRef()
+    {
+        ++ref_count_;
+    }
+    void Release()
+    {
+        if (--ref_count_ == 0)
+            delete this;
+    }
 
-  // Returns the full-screen window in place of the original window if all the
-  // criteria are met, or kCGNullWindowID if no such window found.
-  CGWindowID FindFullScreenWindow(CGWindowID original_window);
+    // Returns the full-screen window in place of the original window if all the
+    // criteria are met, or kCGNullWindowID if no such window found.
+    CGWindowID FindFullScreenWindow(CGWindowID original_window);
 
-  // The caller should call this function periodically, no less than twice per
-  // second.
-  void UpdateWindowListIfNeeded(CGWindowID original_window);
+    // The caller should call this function periodically, no less than twice per
+    // second.
+    void UpdateWindowListIfNeeded(CGWindowID original_window);
 
- private:
-  ~FullScreenChromeWindowDetector();
+private:
+    ~FullScreenChromeWindowDetector();
 
-  Atomic32 ref_count_;
+    Atomic32 ref_count_;
 
-  // We cache the last two results of the window list, so
-  // |previous_window_list_| is taken at least 500ms before the next Capture()
-  // call. If we only save the last result, we may get false positive (i.e.
-  // full-screen window exists in the list) if Capture() is called too soon.
-  DesktopCapturer::SourceList current_window_list_;
-  DesktopCapturer::SourceList previous_window_list_;
-  int64_t last_update_time_ns_;
+    // We cache the last two results of the window list, so
+    // |previous_window_list_| is taken at least 500ms before the next Capture()
+    // call. If we only save the last result, we may get false positive (i.e.
+    // full-screen window exists in the list) if Capture() is called too soon.
+    DesktopCapturer::SourceList current_window_list_;
+    DesktopCapturer::SourceList previous_window_list_;
+    int64_t last_update_time_ns_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(FullScreenChromeWindowDetector);
+    RTC_DISALLOW_COPY_AND_ASSIGN(FullScreenChromeWindowDetector);
 };
 
 }  // namespace webrtc

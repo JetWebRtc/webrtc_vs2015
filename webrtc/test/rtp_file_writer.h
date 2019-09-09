@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,18 +15,22 @@
 #include "webrtc/common_types.h"
 #include "webrtc/test/rtp_file_reader.h"
 
-namespace webrtc {
-namespace test {
-class RtpFileWriter {
- public:
-  enum FileFormat {
-    kRtpDump,
-  };
+namespace webrtc
+{
+namespace test
+{
+class RtpFileWriter
+{
+public:
+    enum FileFormat
+    {
+        kRtpDump,
+    };
 
-  virtual ~RtpFileWriter() {}
-  static RtpFileWriter* Create(FileFormat format, const std::string& filename);
+    virtual ~RtpFileWriter() {}
+    static RtpFileWriter* Create(FileFormat format, const std::string& filename);
 
-  virtual bool WritePacket(const RtpPacket* packet) = 0;
+    virtual bool WritePacket(const RtpPacket* packet) = 0;
 };
 }  // namespace test
 }  // namespace webrtc

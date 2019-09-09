@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Xvid rate control wrapper for lavc video encoders
  *
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
@@ -47,12 +47,14 @@ av_cold int ff_xvid_rate_control_init(MpegEncContext *s)
     xvid_plugin_2pass2_t xvid_2pass2  = { 0 };
 
     fd = av_tempfile("xvidrc.", &tmp_name, 0, s->avctx);
-    if (fd < 0) {
+    if (fd < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't create temporary pass2 file.\n");
         return fd;
     }
 
-    for (i = 0; i < s->rc_context.num_entries; i++) {
+    for (i = 0; i < s->rc_context.num_entries; i++)
+    {
         static const char frame_types[] = " ipbs";
         char tmp[256];
         RateControlEntry *rce;
@@ -67,7 +69,8 @@ av_cold int ff_xvid_rate_control_init(MpegEncContext *s)
                  (rce->i_tex_bits + rce->p_tex_bits + rce->misc_bits + 7) / 8,
                  (rce->header_bits + rce->mv_bits + 7) / 8);
 
-        if (write(fd, tmp, strlen(tmp)) < 0) {
+        if (write(fd, tmp, strlen(tmp)) < 0)
+        {
             int ret = AVERROR(errno);
             av_log(NULL, AV_LOG_ERROR, "Error %s writing 2pass logfile\n", av_err2str(ret));
             av_free(tmp_name);
@@ -91,7 +94,8 @@ av_cold int ff_xvid_rate_control_init(MpegEncContext *s)
     xvid_plg_create.param   = &xvid_2pass2;
 
     if (xvid_plugin_2pass2(NULL, XVID_PLG_CREATE, &xvid_plg_create,
-                           &s->rc_context.non_lavc_opaque) < 0) {
+                           &s->rc_context.non_lavc_opaque) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "xvid_plugin_2pass2 failed\n");
         return -1;
     }
@@ -118,25 +122,29 @@ float ff_xvid_rate_estimate_qscale(MpegEncContext *s, int dry_run)
     xvid_plg_data.bquant_offset = 0;      //  100 * s->avctx->b_quant_offset;
     xvid_plg_data.bquant_ratio  = 100;    //      * s->avctx->b_quant_factor;
 
-    if (!s->rc_context.dry_run_qscale) {
-        if (s->picture_number) {
+    if (!s->rc_context.dry_run_qscale)
+    {
+        if (s->picture_number)
+        {
             xvid_plg_data.length        =
-            xvid_plg_data.stats.length  = (s->frame_bits + 7) / 8;
+                xvid_plg_data.stats.length  = (s->frame_bits + 7) / 8;
             xvid_plg_data.frame_num     = s->rc_context.last_picture_number;
             xvid_plg_data.quant         = s->qscale;
             xvid_plg_data.type          = s->last_pict_type;
             if (xvid_plugin_2pass2(s->rc_context.non_lavc_opaque,
-                                   XVID_PLG_AFTER, &xvid_plg_data, NULL)) {
+                                   XVID_PLG_AFTER, &xvid_plg_data, NULL))
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "xvid_plugin_2pass2(handle, XVID_PLG_AFTER, ...) FAILED\n");
                 return -1;
             }
         }
         s->rc_context.last_picture_number =
-        xvid_plg_data.frame_num           = s->picture_number;
+            xvid_plg_data.frame_num           = s->picture_number;
         xvid_plg_data.quant               = 0;
         if (xvid_plugin_2pass2(s->rc_context.non_lavc_opaque,
-                               XVID_PLG_BEFORE, &xvid_plg_data, NULL)) {
+                               XVID_PLG_BEFORE, &xvid_plg_data, NULL))
+        {
             av_log(s->avctx, AV_LOG_ERROR,
                    "xvid_plugin_2pass2(handle, XVID_PLG_BEFORE, ...) FAILED\n");
             return -1;
@@ -150,7 +158,7 @@ float ff_xvid_rate_estimate_qscale(MpegEncContext *s, int dry_run)
     // FIXME this is not exactly identical to Xvid
     if (s->pict_type == AV_PICTURE_TYPE_B)
         return xvid_plg_data.quant * FF_QP2LAMBDA * s->avctx->b_quant_factor +
-            s->avctx->b_quant_offset;
+               s->avctx->b_quant_offset;
     else
         return xvid_plg_data.quant * FF_QP2LAMBDA;
 }

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -42,7 +42,8 @@
 #include "rec_mb.h"
 #include "decoder_context.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 //Initialize error concealment
 void InitErrorCon (PWelsDecoderContext pCtx);
 //Do error concealment using frame copy method

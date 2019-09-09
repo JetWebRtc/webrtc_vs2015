@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,8 +30,8 @@ int32_t WebRtcSpl_Energy(int16_t* vector,
 
     for (i = 0; i < looptimes; i++)
     {
-      en += (*vectorptr * *vectorptr) >> scaling;
-      vectorptr++;
+        en += (*vectorptr * *vectorptr) >> scaling;
+        vectorptr++;
     }
     *scale_factor = scaling;
 

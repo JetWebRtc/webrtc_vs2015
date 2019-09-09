@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -38,14 +38,16 @@
 #define MAX_THREADS 64
 #define BUFFER_SIZE (2*MAX_THREADS)
 
-typedef struct{
+typedef struct
+{
     void *indata;
     void *outdata;
     int64_t return_code;
     unsigned index;
 } Task;
 
-typedef struct{
+typedef struct
+{
     AVCodecContext *parent_avctx;
     pthread_mutex_t buffer_mutex;
 
@@ -64,12 +66,14 @@ typedef struct{
     int exit;
 } ThreadContext;
 
-static void * attribute_align_arg worker(void *v){
+static void * attribute_align_arg worker(void *v)
+{
     AVCodecContext *avctx = v;
     ThreadContext *c = avctx->internal->frame_thread_encoder;
     AVPacket *pkt = NULL;
 
-    while(!c->exit){
+    while(!c->exit)
+    {
         int got_packet, ret;
         AVFrame *frame;
         Task task;
@@ -79,8 +83,10 @@ static void * attribute_align_arg worker(void *v){
         av_init_packet(pkt);
 
         pthread_mutex_lock(&c->task_fifo_mutex);
-        while (av_fifo_size(c->task_fifo) <= 0 || c->exit) {
-            if(c->exit){
+        while (av_fifo_size(c->task_fifo) <= 0 || c->exit)
+        {
+            if(c->exit)
+            {
                 pthread_mutex_unlock(&c->task_fifo_mutex);
                 goto end;
             }
@@ -95,14 +101,18 @@ static void * attribute_align_arg worker(void *v){
         av_frame_unref(frame);
         pthread_mutex_unlock(&c->buffer_mutex);
         av_frame_free(&frame);
-        if(got_packet) {
+        if(got_packet)
+        {
             av_dup_packet(pkt);
-        } else {
+        }
+        else
+        {
             pkt->data = NULL;
             pkt->size = 0;
         }
         pthread_mutex_lock(&c->finished_task_mutex);
-        c->finished_tasks[task.index].outdata = pkt; pkt = NULL;
+        c->finished_tasks[task.index].outdata = pkt;
+        pkt = NULL;
         c->finished_tasks[task.index].return_code = ret;
         pthread_cond_signal(&c->finished_task_cond);
         pthread_mutex_unlock(&c->finished_task_mutex);
@@ -116,49 +126,55 @@ end:
     return NULL;
 }
 
-int ff_frame_thread_encoder_init(AVCodecContext *avctx, AVDictionary *options){
+int ff_frame_thread_encoder_init(AVCodecContext *avctx, AVDictionary *options)
+{
     int i=0;
     ThreadContext *c;
 
 
     if(   !(avctx->thread_type & FF_THREAD_FRAME)
-       || !(avctx->codec->capabilities & AV_CODEC_CAP_INTRA_ONLY))
+            || !(avctx->codec->capabilities & AV_CODEC_CAP_INTRA_ONLY))
         return 0;
 
     if(   !avctx->thread_count
-       && avctx->codec_id == AV_CODEC_ID_MJPEG
-       && !(avctx->flags & AV_CODEC_FLAG_QSCALE)) {
+            && avctx->codec_id == AV_CODEC_ID_MJPEG
+            && !(avctx->flags & AV_CODEC_FLAG_QSCALE))
+    {
         av_log(avctx, AV_LOG_DEBUG,
                "Forcing thread count to 1 for MJPEG encoding, use -thread_type slice "
                "or a constant quantizer if you want to use multiple cpu cores\n");
         avctx->thread_count = 1;
     }
     if(   avctx->thread_count > 1
-       && avctx->codec_id == AV_CODEC_ID_MJPEG
-       && !(avctx->flags & AV_CODEC_FLAG_QSCALE))
+            && avctx->codec_id == AV_CODEC_ID_MJPEG
+            && !(avctx->flags & AV_CODEC_FLAG_QSCALE))
         av_log(avctx, AV_LOG_WARNING,
                "MJPEG CBR encoding works badly with frame multi-threading, consider "
                "using -threads 1, -thread_type slice or a constant quantizer.\n");
 
     if (avctx->codec_id == AV_CODEC_ID_HUFFYUV ||
-        avctx->codec_id == AV_CODEC_ID_FFVHUFF) {
+            avctx->codec_id == AV_CODEC_ID_FFVHUFF)
+    {
         int warn = 0;
         if (avctx->flags & AV_CODEC_FLAG_PASS1)
             warn = 1;
-        else if(avctx->context_model > 0) {
+        else if(avctx->context_model > 0)
+        {
             AVDictionaryEntry *t = av_dict_get(options, "non_deterministic",
                                                NULL, AV_DICT_MATCH_CASE);
             warn = !t || !t->value || !atoi(t->value) ? 1 : 0;
         }
         // huffyuv does not support these with multiple frame threads currently
-        if (warn) {
+        if (warn)
+        {
             av_log(avctx, AV_LOG_WARNING,
-               "Forcing thread count to 1 for huffyuv encoding with first pass or context 1\n");
+                   "Forcing thread count to 1 for huffyuv encoding with first pass or context 1\n");
             avctx->thread_count = 1;
         }
     }
 
-    if(!avctx->thread_count) {
+    if(!avctx->thread_count)
+    {
         avctx->thread_count = av_cpu_count();
         avctx->thread_count = FFMIN(avctx->thread_count, MAX_THREADS);
     }
@@ -186,7 +202,8 @@ int ff_frame_thread_encoder_init(AVCodecContext *avctx, AVDictionary *options){
     pthread_cond_init(&c->task_fifo_cond, NULL);
     pthread_cond_init(&c->finished_task_cond, NULL);
 
-    for(i=0; i<avctx->thread_count ; i++){
+    for(i=0; i<avctx->thread_count ; i++)
+    {
         AVDictionary *tmp = NULL;
         void *tmpv;
         AVCodecContext *thread_avctx = avcodec_alloc_context3(avctx->codec);
@@ -202,14 +219,16 @@ int ff_frame_thread_encoder_init(AVCodecContext *avctx, AVDictionary *options){
 
         av_dict_copy(&tmp, options, 0);
         av_dict_set(&tmp, "threads", "1", 0);
-        if(avcodec_open2(thread_avctx, avctx->codec, &tmp) < 0) {
+        if(avcodec_open2(thread_avctx, avctx->codec, &tmp) < 0)
+        {
             av_dict_free(&tmp);
             goto fail;
         }
         av_dict_free(&tmp);
         av_assert0(!thread_avctx->internal->frame_thread_encoder);
         thread_avctx->internal->frame_thread_encoder = c;
-        if(pthread_create(&c->worker[i], NULL, worker, thread_avctx)) {
+        if(pthread_create(&c->worker[i], NULL, worker, thread_avctx))
+        {
             goto fail;
         }
     }
@@ -224,7 +243,8 @@ fail:
     return -1;
 }
 
-void ff_frame_thread_encoder_free(AVCodecContext *avctx){
+void ff_frame_thread_encoder_free(AVCodecContext *avctx)
+{
     int i;
     ThreadContext *c= avctx->internal->frame_thread_encoder;
 
@@ -233,8 +253,9 @@ void ff_frame_thread_encoder_free(AVCodecContext *avctx){
     pthread_cond_broadcast(&c->task_fifo_cond);
     pthread_mutex_unlock(&c->task_fifo_mutex);
 
-    for (i=0; i<avctx->thread_count; i++) {
-         pthread_join(c->worker[i], NULL);
+    for (i=0; i<avctx->thread_count; i++)
+    {
+        pthread_join(c->worker[i], NULL);
     }
 
     pthread_mutex_destroy(&c->task_fifo_mutex);
@@ -246,19 +267,22 @@ void ff_frame_thread_encoder_free(AVCodecContext *avctx){
     av_freep(&avctx->internal->frame_thread_encoder);
 }
 
-int ff_thread_video_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *frame, int *got_packet_ptr){
+int ff_thread_video_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVFrame *frame, int *got_packet_ptr)
+{
     ThreadContext *c = avctx->internal->frame_thread_encoder;
     Task task;
     int ret;
 
     av_assert1(!*got_packet_ptr);
 
-    if(frame){
+    if(frame)
+    {
         AVFrame *new = av_frame_alloc();
         if(!new)
             return AVERROR(ENOMEM);
         ret = av_frame_ref(new, frame);
-        if(ret < 0) {
+        if(ret < 0)
+        {
             av_frame_free(&new);
             return ret;
         }
@@ -280,7 +304,8 @@ int ff_thread_video_encode_frame(AVCodecContext *avctx, AVPacket *pkt, const AVF
         return 0;
 
     pthread_mutex_lock(&c->finished_task_mutex);
-    while (!c->finished_tasks[c->finished_task_index].outdata) {
+    while (!c->finished_tasks[c->finished_task_index].outdata)
+    {
         pthread_cond_wait(&c->finished_task_cond, &c->finished_task_mutex);
     }
     task = c->finished_tasks[c->finished_task_index];

@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: AudEvCod.h
 //
 // Desc: List of Audio device error event codes and the expected params.
@@ -14,7 +14,8 @@
 
 #define EC_SND_DEVICE_ERROR_BASE   0x0200
 
-typedef enum _tagSND_DEVICE_ERROR {
+typedef enum _tagSND_DEVICE_ERROR
+{
 
     SNDDEV_ERROR_Open=1,
     SNDDEV_ERROR_Close=2,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * a64 muxer
  * Copyright (c) 2009 Tobias Bindhammer
  *
@@ -27,7 +27,8 @@
 static int a64_write_header(AVFormatContext *s)
 {
     AVCodecContext *avctx = s->streams[0]->codec;
-    uint8_t header[5] = {
+    uint8_t header[5] =
+    {
         0x00, //load
         0x40, //address
         0x00, //mode
@@ -35,12 +36,14 @@ static int a64_write_header(AVFormatContext *s)
         0x00  //fps in 50/fps;
     };
 
-    if (avctx->extradata_size < 4) {
+    if (avctx->extradata_size < 4)
+    {
         av_log(s, AV_LOG_ERROR, "Missing extradata\n");
         return AVERROR_INVALIDDATA;
     }
 
-    switch (avctx->codec_id) {
+    switch (avctx->codec_id)
+    {
     case AV_CODEC_ID_A64_MULTI:
         header[2] = 0x00;
         header[3] = AV_RB32(avctx->extradata+0);
@@ -58,7 +61,8 @@ static int a64_write_header(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_a64_muxer = {
+AVOutputFormat ff_a64_muxer =
+{
     .name           = "a64",
     .long_name      = NULL_IF_CONFIG_SMALL("a64 - video for Commodore 64"),
     .extensions     = "a64, A64",

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/modules/video_coding/timestamp_map.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 VCMTimestampMap::VCMTimestampMap(size_t capacity)
     : ring_buffer_(new TimestampDataTuple[capacity]),
@@ -24,40 +25,48 @@ VCMTimestampMap::VCMTimestampMap(size_t capacity)
 
 VCMTimestampMap::~VCMTimestampMap() {}
 
-void VCMTimestampMap::Add(uint32_t timestamp, VCMFrameInformation* data) {
-  ring_buffer_[next_add_idx_].timestamp = timestamp;
-  ring_buffer_[next_add_idx_].data = data;
-  next_add_idx_ = (next_add_idx_ + 1) % capacity_;
+void VCMTimestampMap::Add(uint32_t timestamp, VCMFrameInformation* data)
+{
+    ring_buffer_[next_add_idx_].timestamp = timestamp;
+    ring_buffer_[next_add_idx_].data = data;
+    next_add_idx_ = (next_add_idx_ + 1) % capacity_;
 
-  if (next_add_idx_ == next_pop_idx_) {
-    // Circular list full; forget oldest entry.
-    next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
-  }
+    if (next_add_idx_ == next_pop_idx_)
+    {
+        // Circular list full; forget oldest entry.
+        next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
+    }
 }
 
-VCMFrameInformation* VCMTimestampMap::Pop(uint32_t timestamp) {
-  while (!IsEmpty()) {
-    if (ring_buffer_[next_pop_idx_].timestamp == timestamp) {
-      // Found start time for this timestamp.
-      VCMFrameInformation* data = ring_buffer_[next_pop_idx_].data;
-      ring_buffer_[next_pop_idx_].data = nullptr;
-      next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
-      return data;
-    } else if (IsNewerTimestamp(ring_buffer_[next_pop_idx_].timestamp,
-                                timestamp)) {
-      // The timestamp we are looking for is not in the list.
-      return nullptr;
+VCMFrameInformation* VCMTimestampMap::Pop(uint32_t timestamp)
+{
+    while (!IsEmpty())
+    {
+        if (ring_buffer_[next_pop_idx_].timestamp == timestamp)
+        {
+            // Found start time for this timestamp.
+            VCMFrameInformation* data = ring_buffer_[next_pop_idx_].data;
+            ring_buffer_[next_pop_idx_].data = nullptr;
+            next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
+            return data;
+        }
+        else if (IsNewerTimestamp(ring_buffer_[next_pop_idx_].timestamp,
+                                  timestamp))
+        {
+            // The timestamp we are looking for is not in the list.
+            return nullptr;
+        }
+
+        // Not in this position, check next (and forget this position).
+        next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
     }
 
-    // Not in this position, check next (and forget this position).
-    next_pop_idx_ = (next_pop_idx_ + 1) % capacity_;
-  }
-
-  // Could not find matching timestamp in list.
-  return nullptr;
+    // Could not find matching timestamp in list.
+    return nullptr;
 }
 
-bool VCMTimestampMap::IsEmpty() const {
-  return (next_add_idx_ == next_pop_idx_);
+bool VCMTimestampMap::IsEmpty() const
+{
+    return (next_add_idx_ == next_pop_idx_);
 }
 }  // namespace webrtc

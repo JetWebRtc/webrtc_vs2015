@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TTA (The Lossless True Audio) data
  *
  * This file is part of FFmpeg.
@@ -24,18 +24,21 @@
 #include "internal.h"
 
 #define MAX_ORDER 16
-typedef struct TTAFilter {
+typedef struct TTAFilter
+{
     int32_t shift, round, error;
     int32_t qm[MAX_ORDER];
     int32_t dx[MAX_ORDER];
     int32_t dl[MAX_ORDER];
 } TTAFilter;
 
-typedef struct TTARice {
+typedef struct TTARice
+{
     uint32_t k0, k1, sum0, sum1;
 } TTARice;
 
-typedef struct TTAChannel {
+typedef struct TTAChannel
+{
     int32_t predictor;
     TTAFilter filter;
     TTARice rice;

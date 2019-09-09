@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,39 +17,43 @@
 #include "webrtc/base/optional.h"
 #include "webrtc/common_types.h"
 
-namespace webrtc {
-namespace H264 {
+namespace webrtc
+{
+namespace H264
+{
 
 // Map containting SDP codec parameters.
 typedef std::map<std::string, std::string> CodecParameterMap;
 
 // All values are equal to ten times the level number, except level 1b which is
 // special.
-enum Level {
-  kLevel1_b = 0,
-  kLevel1 = 10,
-  kLevel1_1 = 11,
-  kLevel1_2 = 12,
-  kLevel1_3 = 13,
-  kLevel2 = 20,
-  kLevel2_1 = 21,
-  kLevel2_2 = 22,
-  kLevel3 = 30,
-  kLevel3_1 = 31,
-  kLevel3_2 = 32,
-  kLevel4 = 40,
-  kLevel4_1 = 41,
-  kLevel4_2 = 42,
-  kLevel5 = 50,
-  kLevel5_1 = 51,
-  kLevel5_2 = 52
+enum Level
+{
+    kLevel1_b = 0,
+    kLevel1 = 10,
+    kLevel1_1 = 11,
+    kLevel1_2 = 12,
+    kLevel1_3 = 13,
+    kLevel2 = 20,
+    kLevel2_1 = 21,
+    kLevel2_2 = 22,
+    kLevel3 = 30,
+    kLevel3_1 = 31,
+    kLevel3_2 = 32,
+    kLevel4 = 40,
+    kLevel4_1 = 41,
+    kLevel4_2 = 42,
+    kLevel5 = 50,
+    kLevel5_1 = 51,
+    kLevel5_2 = 52
 };
 
-struct ProfileLevelId {
-  ProfileLevelId(Profile profile, Level level)
-      : profile(profile), level(level) {}
-  Profile profile;
-  Level level;
+struct ProfileLevelId
+{
+    ProfileLevelId(Profile profile, Level level)
+        : profile(profile), level(level) {}
+    Profile profile;
+    Level level;
 };
 
 // Parse profile level id that is represented as a string of 3 hex bytes.

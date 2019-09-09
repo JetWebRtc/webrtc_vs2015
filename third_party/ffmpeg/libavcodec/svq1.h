@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SVQ1 decoder
  * ported to MPlayer by Arpi <arpi@thot.banki.hu>
  * ported to libavcodec by Nick Kurshev <nickols_k@mail.ru>

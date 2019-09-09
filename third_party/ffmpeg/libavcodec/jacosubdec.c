@@ -61,11 +61,13 @@ static int insert_font(AVBPrint *dst, const char *in, const char *arg)
     return 1; // skip id
 }
 
-static const struct {
+static const struct
+{
     const char *from;
     const char *arg;
     int (*func)(AVBPrint *dst, const char *in, const char *arg);
-} ass_codes_map[] = {
+} ass_codes_map[] =
+{
     {"\\~", "~",        insert_text},       // tilde doesn't need escaping
     {"~",   "{\\h}",    insert_text},       // hard space
     {"\\n", "\\N",      insert_text},       // newline
@@ -82,7 +84,8 @@ static const struct {
     {"\\F", "",         insert_font},       // TODO: font
 };
 
-enum {
+enum
+{
     ALIGN_VB = 1<<0, // vertical bottom, default
     ALIGN_VM = 1<<1, // vertical middle
     ALIGN_VT = 1<<2, // vertical top
@@ -98,7 +101,8 @@ static void jacosub_to_ass(AVCodecContext *avctx, AVBPrint *dst, const char *src
     char directives[128] = {0};
 
     /* extract the optional directives */
-    if ((c >= 'A' && c <= 'Z') || c == '[') {
+    if ((c >= 'A' && c <= 'Z') || c == '[')
+    {
         char *p    = directives;
         char *pend = directives + sizeof(directives) - 1;
 
@@ -115,27 +119,49 @@ static void jacosub_to_ass(AVCodecContext *avctx, AVBPrint *dst, const char *src
     if      (strstr(directives, "JC")) halign = ALIGN_JC;
     else if (strstr(directives, "JL")) halign = ALIGN_JL;
     else if (strstr(directives, "JR")) halign = ALIGN_JR;
-    if (valign || halign) {
+    if (valign || halign)
+    {
         if (!valign) valign = ALIGN_VB;
         if (!halign) halign = ALIGN_JC;
-        switch (valign | halign) {
-        case ALIGN_VB | ALIGN_JL: av_bprintf(dst, "{\\an1}"); break; // bottom left
-        case ALIGN_VB | ALIGN_JC: av_bprintf(dst, "{\\an2}"); break; // bottom center
-        case ALIGN_VB | ALIGN_JR: av_bprintf(dst, "{\\an3}"); break; // bottom right
-        case ALIGN_VM | ALIGN_JL: av_bprintf(dst, "{\\an4}"); break; // middle left
-        case ALIGN_VM | ALIGN_JC: av_bprintf(dst, "{\\an5}"); break; // middle center
-        case ALIGN_VM | ALIGN_JR: av_bprintf(dst, "{\\an6}"); break; // middle right
-        case ALIGN_VT | ALIGN_JL: av_bprintf(dst, "{\\an7}"); break; // top left
-        case ALIGN_VT | ALIGN_JC: av_bprintf(dst, "{\\an8}"); break; // top center
-        case ALIGN_VT | ALIGN_JR: av_bprintf(dst, "{\\an9}"); break; // top right
+        switch (valign | halign)
+        {
+        case ALIGN_VB | ALIGN_JL:
+            av_bprintf(dst, "{\\an1}");
+            break; // bottom left
+        case ALIGN_VB | ALIGN_JC:
+            av_bprintf(dst, "{\\an2}");
+            break; // bottom center
+        case ALIGN_VB | ALIGN_JR:
+            av_bprintf(dst, "{\\an3}");
+            break; // bottom right
+        case ALIGN_VM | ALIGN_JL:
+            av_bprintf(dst, "{\\an4}");
+            break; // middle left
+        case ALIGN_VM | ALIGN_JC:
+            av_bprintf(dst, "{\\an5}");
+            break; // middle center
+        case ALIGN_VM | ALIGN_JR:
+            av_bprintf(dst, "{\\an6}");
+            break; // middle right
+        case ALIGN_VT | ALIGN_JL:
+            av_bprintf(dst, "{\\an7}");
+            break; // top left
+        case ALIGN_VT | ALIGN_JC:
+            av_bprintf(dst, "{\\an8}");
+            break; // top center
+        case ALIGN_VT | ALIGN_JR:
+            av_bprintf(dst, "{\\an9}");
+            break; // top right
         }
     }
 
     /* process timed line */
-    while (*src && *src != '\n') {
+    while (*src && *src != '\n')
+    {
 
         /* text continue on the next line */
-        if (src[0] == '\\' && src[1] == '\n') {
+        if (src[0] == '\\' && src[1] == '\n')
+        {
             src += 2;
             while (jss_whitespace(*src))
                 src++;
@@ -143,12 +169,14 @@ static void jacosub_to_ass(AVCodecContext *avctx, AVBPrint *dst, const char *src
         }
 
         /* special character codes */
-        for (i = 0; i < FF_ARRAY_ELEMS(ass_codes_map); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(ass_codes_map); i++)
+        {
             const char *from = ass_codes_map[i].from;
             const char *arg  = ass_codes_map[i].arg;
             size_t codemap_len = strlen(from);
 
-            if (!strncmp(src, from, codemap_len)) {
+            if (!strncmp(src, from, codemap_len))
+            {
                 src += codemap_len;
                 src += ass_codes_map[i].func(dst, src, arg);
                 break;
@@ -171,13 +199,18 @@ static int jacosub_decode_frame(AVCodecContext *avctx,
     if (avpkt->size <= 0)
         goto end;
 
-    if (*ptr) {
+    if (*ptr)
+    {
         AVBPrint buffer;
 
         // skip timers
         ptr = jss_skip_whitespace(ptr);
-        ptr = strchr(ptr, ' '); if (!ptr) goto end; ptr++;
-        ptr = strchr(ptr, ' '); if (!ptr) goto end; ptr++;
+        ptr = strchr(ptr, ' ');
+        if (!ptr) goto end;
+        ptr++;
+        ptr = strchr(ptr, ' ');
+        if (!ptr) goto end;
+        ptr++;
 
         av_bprint_init(&buffer, JSS_MAX_LINESIZE, JSS_MAX_LINESIZE);
         jacosub_to_ass(avctx, &buffer, ptr);
@@ -192,7 +225,8 @@ end:
     return avpkt->size;
 }
 
-AVCodec ff_jacosub_decoder = {
+AVCodec ff_jacosub_decoder =
+{
     .name           = "jacosub",
     .long_name      = NULL_IF_CONFIG_SMALL("JACOsub subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

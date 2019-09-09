@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,12 +10,15 @@
 
 #include "webrtc/modules/audio_coding/neteq/tools/audio_sink.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-bool AudioSinkFork::WriteArray(const int16_t* audio, size_t num_samples) {
-  return left_sink_->WriteArray(audio, num_samples) &&
-         right_sink_->WriteArray(audio, num_samples);
+bool AudioSinkFork::WriteArray(const int16_t* audio, size_t num_samples)
+{
+    return left_sink_->WriteArray(audio, num_samples) &&
+           right_sink_->WriteArray(audio, num_samples);
 }
 }  // namespace test
 }  // namespace webrtc

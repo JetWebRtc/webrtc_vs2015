@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,7 +25,7 @@
 @interface RTCVideoCaptureIosObjC
     : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property webrtc::VideoRotation frameRotation;
+      @property webrtc::VideoRotation frameRotation;
 
 // custom initializer. Instance of VideoCaptureIos is needed
 // for callback purposes.

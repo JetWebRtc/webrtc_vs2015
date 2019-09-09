@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DirectShow capture interface
  * Copyright (c) 2010 Ramiro Polla
  *
@@ -53,17 +53,20 @@ static inline void nothing(void *foo)
 {
 }
 
-struct GUIDoffset {
+struct GUIDoffset
+{
     const GUID *iid;
     int offset;
 };
 
-enum dshowDeviceType {
+enum dshowDeviceType
+{
     VideoDevice = 0,
     AudioDevice = 1,
 };
 
-enum dshowSourceFilterType {
+enum dshowSourceFilterType
+{
     VideoSourceDevice = 0,
     AudioSourceDevice = 1,
 };
@@ -157,7 +160,8 @@ typedef struct libAVFilter libAVFilter;
 /*****************************************************************************
  * libAVPin
  ****************************************************************************/
-struct libAVPin {
+struct libAVPin
+{
     IPinVtbl *vtbl;
     long ref;
     libAVFilter *filter;
@@ -203,7 +207,8 @@ void                 libAVMemInputPin_Destroy(libAVMemInputPin *);
 /*****************************************************************************
  * libAVEnumPins
  ****************************************************************************/
-struct libAVEnumPins {
+struct libAVEnumPins
+{
     IEnumPinsVtbl *vtbl;
     long ref;
     int pos;
@@ -225,7 +230,8 @@ libAVEnumPins       *libAVEnumPins_Create (libAVPin *pin, libAVFilter *filter);
 /*****************************************************************************
  * libAVEnumMediaTypes
  ****************************************************************************/
-struct libAVEnumMediaTypes {
+struct libAVEnumMediaTypes
+{
     IEnumMediaTypesVtbl *vtbl;
     long ref;
     int pos;
@@ -246,7 +252,8 @@ libAVEnumMediaTypes *libAVEnumMediaTypes_Create(const AM_MEDIA_TYPE *type);
 /*****************************************************************************
  * libAVFilter
  ****************************************************************************/
-struct libAVFilter {
+struct libAVFilter
+{
     IBaseFilterVtbl *vtbl;
     long ref;
     const wchar_t *name;
@@ -283,7 +290,8 @@ libAVFilter         *libAVFilter_Create (void *, void *, enum dshowDeviceType);
 /*****************************************************************************
  * dshow_ctx
  ****************************************************************************/
-struct dshow_ctx {
+struct dshow_ctx
+{
     const AVClass *class;
 
     IGraphBuilder *graph;
@@ -345,7 +353,7 @@ struct dshow_ctx {
  * CrossBar
  ****************************************************************************/
 HRESULT dshow_try_setup_crossbar_options(ICaptureGraphBuilder2 *graph_builder2,
-    IBaseFilter *device_filter, enum dshowDeviceType devtype, AVFormatContext *avctx);
+        IBaseFilter *device_filter, enum dshowDeviceType devtype, AVFormatContext *avctx);
 
 void dshow_show_filter_properties(IBaseFilter *pFilter, AVFormatContext *avctx);
 

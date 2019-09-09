@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alpha optimized DSP utils
  * copyright (c) 2002 Falk Hueffner <falk@debian.org>
  *

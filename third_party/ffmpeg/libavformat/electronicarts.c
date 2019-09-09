@@ -1,4 +1,4 @@
-/* Electronic Arts Multimedia File Demuxer
+﻿/* Electronic Arts Multimedia File Demuxer
  * Copyright (c) 2004 The FFmpeg Project
  * Copyright (c) 2006-2008 Peter Ross
  *
@@ -66,7 +66,8 @@
 #define MVIf_TAG MKTAG('M', 'V', 'I', 'f')  /* CMV I-frame */
 #define AVP6_TAG MKTAG('A', 'V', 'P', '6')
 
-typedef struct VideoProperties {
+typedef struct VideoProperties
+{
     enum AVCodecID codec;
     AVRational time_base;
     int width, height;
@@ -74,7 +75,8 @@ typedef struct VideoProperties {
     int stream_index;
 } VideoProperties;
 
-typedef struct EaDemuxContext {
+typedef struct EaDemuxContext
+{
     int big_endian;
 
     VideoProperties video, alpha;
@@ -97,7 +99,8 @@ static uint32_t read_arbitrary(AVIOContext *pb)
     size = avio_r8(pb);
 
     word = 0;
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         byte   = avio_r8(pb);
         word <<= 8;
         word  |= byte;
@@ -117,20 +120,24 @@ static int process_audio_header_elements(AVFormatContext *s)
     ea->sample_rate  = -1;
     ea->num_channels = 1;
 
-    while (!avio_feof(pb) && in_header) {
+    while (!avio_feof(pb) && in_header)
+    {
         int in_subheader;
         uint8_t byte;
         byte = avio_r8(pb);
 
-        switch (byte) {
+        switch (byte)
+        {
         case 0xFD:
             av_log(s, AV_LOG_DEBUG, "entered audio subheader\n");
             in_subheader = 1;
-            while (!avio_feof(pb) && in_subheader) {
+            while (!avio_feof(pb) && in_subheader)
+            {
                 uint8_t subbyte;
                 subbyte = avio_r8(pb);
 
-                switch (subbyte) {
+                switch (subbyte)
+                {
                 case 0x80:
                     revision = read_arbitrary(pb);
                     av_log(s, AV_LOG_DEBUG,
@@ -199,7 +206,8 @@ static int process_audio_header_elements(AVFormatContext *s)
         }
     }
 
-    switch (compression_type) {
+    switch (compression_type)
+    {
     case  0:
         ea->audio_codec = AV_CODEC_ID_PCM_S16LE;
         break;
@@ -207,7 +215,8 @@ static int process_audio_header_elements(AVFormatContext *s)
         ea->audio_codec = AV_CODEC_ID_ADPCM_EA;
         break;
     case -1:
-        switch (revision) {
+        switch (revision)
+        {
         case  1:
             ea->audio_codec = AV_CODEC_ID_ADPCM_EA_R1;
             break;
@@ -223,15 +232,21 @@ static int process_audio_header_elements(AVFormatContext *s)
             avpriv_request_sample(s, "stream type; revision=%i", revision);
             return 0;
         }
-        switch (revision2) {
+        switch (revision2)
+        {
         case  8:
             ea->audio_codec = AV_CODEC_ID_PCM_S16LE_PLANAR;
             break;
         case 10:
-            switch (revision) {
+            switch (revision)
+            {
             case -1:
-            case  2: ea->audio_codec = AV_CODEC_ID_ADPCM_EA_R1; break;
-            case  3: ea->audio_codec = AV_CODEC_ID_ADPCM_EA_R2; break;
+            case  2:
+                ea->audio_codec = AV_CODEC_ID_ADPCM_EA_R1;
+                break;
+            case  3:
+                ea->audio_codec = AV_CODEC_ID_ADPCM_EA_R2;
+                break;
             default:
                 avpriv_request_sample(s, "stream type; revision=%i, revision2=%i", revision, revision2);
                 return 0;
@@ -273,9 +288,11 @@ static void process_audio_header_eacs(AVFormatContext *s)
     compression_type = avio_r8(pb);
     avio_skip(pb, 13);
 
-    switch (compression_type) {
+    switch (compression_type)
+    {
     case 0:
-        switch (ea->bytes) {
+        switch (ea->bytes)
+        {
         case 1:
             ea->audio_codec = AV_CODEC_ID_PCM_S8;
             break;
@@ -315,7 +332,10 @@ static void process_video_header_mdec(AVFormatContext *s, VideoProperties *video
     avio_skip(pb, 4);
     video->width       = avio_rl16(pb);
     video->height      = avio_rl16(pb);
-    video->time_base   = (AVRational) { 1, 15 };
+    video->time_base   = (AVRational)
+    {
+        1, 15
+    };
     video->codec = AV_CODEC_ID_MDEC;
 }
 
@@ -328,7 +348,8 @@ static int process_video_header_vp6(AVFormatContext *s, VideoProperties *video)
     avio_skip(pb, 4);
     video->time_base.den = avio_rl32(pb);
     video->time_base.num = avio_rl32(pb);
-    if (video->time_base.den <= 0 || video->time_base.num <= 0) {
+    if (video->time_base.den <= 0 || video->time_base.num <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "Timebase is invalid\n");
         return AVERROR_INVALIDDATA;
     }
@@ -344,7 +365,10 @@ static void process_video_header_cmv(AVFormatContext *s, VideoProperties *video)
     avio_skip(s->pb, 10);
     fps = avio_rl16(s->pb);
     if (fps)
-        video->time_base = (AVRational) { 1, fps };
+        video->time_base = (AVRational)
+    {
+        1, fps
+    };
     video->codec = AV_CODEC_ID_CMV;
 }
 
@@ -357,7 +381,8 @@ static int process_ea_header(AVFormatContext *s)
     AVIOContext *pb    = s->pb;
     int i;
 
-    for (i = 0; i < 5 && (!ea->audio_codec || !ea->video.codec); i++) {
+    for (i = 0; i < 5 && (!ea->audio_codec || !ea->video.codec); i++)
+    {
         uint64_t startpos     = avio_tell(pb);
         int err               = 0;
 
@@ -368,14 +393,17 @@ static int process_ea_header(AVFormatContext *s)
         if (ea->big_endian)
             size = av_bswap32(size);
 
-        if (size < 8) {
+        if (size < 8)
+        {
             av_log(s, AV_LOG_ERROR, "chunk size too small\n");
             return AVERROR_INVALIDDATA;
         }
 
-        switch (blockid) {
+        switch (blockid)
+        {
         case ISNh_TAG:
-            if (avio_rl32(pb) != EACS_TAG) {
+            if (avio_rl32(pb) != EACS_TAG)
+            {
                 avpriv_request_sample(s, "unknown 1SNh headerid");
                 return 0;
             }
@@ -385,9 +413,12 @@ static int process_ea_header(AVFormatContext *s)
         case SCHl_TAG:
         case SHEN_TAG:
             blockid = avio_rl32(pb);
-            if (blockid == GSTR_TAG) {
+            if (blockid == GSTR_TAG)
+            {
                 avio_skip(pb, 4);
-            } else if ((blockid & 0xFFFF) != PT00_TAG) {
+            }
+            else if ((blockid & 0xFFFF) != PT00_TAG)
+            {
                 avpriv_request_sample(s, "unknown SCHl headerid");
                 return 0;
             }
@@ -417,18 +448,27 @@ static int process_ea_header(AVFormatContext *s)
         case pQGT_TAG:
         case TGQs_TAG:
             ea->video.codec = AV_CODEC_ID_TGQ;
-            ea->video.time_base   = (AVRational) { 1, 15 };
+            ea->video.time_base   = (AVRational)
+            {
+                1, 15
+            };
             break;
 
         case pIQT_TAG:
             ea->video.codec = AV_CODEC_ID_TQI;
-            ea->video.time_base   = (AVRational) { 1, 15 };
+            ea->video.time_base   = (AVRational)
+            {
+                1, 15
+            };
             break;
 
         case MADk_TAG:
             ea->video.codec = AV_CODEC_ID_MAD;
             avio_skip(pb, 6);
-            ea->video.time_base = (AVRational) { avio_rl16(pb), 1000 };
+            ea->video.time_base = (AVRational)
+            {
+                avio_rl16(pb), 1000
+            };
             break;
 
         case MVhd_TAG:
@@ -440,7 +480,8 @@ static int process_ea_header(AVFormatContext *s)
             break;
         }
 
-        if (err < 0) {
+        if (err < 0)
+        {
             av_log(s, AV_LOG_ERROR, "error parsing header: %i\n", err);
             return err;
         }
@@ -457,7 +498,8 @@ static int ea_probe(AVProbeData *p)
 {
     unsigned big_endian, size;
 
-    switch (AV_RL32(&p->buf[0])) {
+    switch (AV_RL32(&p->buf[0]))
+    {
     case ISNh_TAG:
     case SCHl_TAG:
     case SEAD_TAG:
@@ -506,7 +548,7 @@ static int init_video_stream(AVFormatContext *s, VideoProperties *video)
     if (video->time_base.num)
         avpriv_set_pts_info(st, 64, video->time_base.num, video->time_base.den);
     st->r_frame_rate       =
-    st->avg_frame_rate     = av_inv_q(video->time_base);
+        st->avg_frame_rate     = av_inv_q(video->time_base);
     return 0;
 }
 
@@ -521,20 +563,24 @@ static int ea_read_header(AVFormatContext *s)
     if (init_video_stream(s, &ea->video) || init_video_stream(s, &ea->alpha))
         return AVERROR(ENOMEM);
 
-    if (ea->audio_codec) {
-        if (ea->num_channels <= 0 || ea->num_channels > 2) {
+    if (ea->audio_codec)
+    {
+        if (ea->num_channels <= 0 || ea->num_channels > 2)
+        {
             av_log(s, AV_LOG_WARNING,
                    "Unsupported number of channels: %d\n", ea->num_channels);
             ea->audio_codec = 0;
             return 1;
         }
-        if (ea->sample_rate <= 0) {
+        if (ea->sample_rate <= 0)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Unsupported sample rate: %d\n", ea->sample_rate);
             ea->audio_codec = 0;
             return 1;
         }
-        if (ea->bytes <= 0) {
+        if (ea->bytes <= 0)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Invalid number of bytes per sample: %d\n", ea->bytes);
             ea->audio_codec = AV_CODEC_ID_NONE;
@@ -573,14 +619,16 @@ static int ea_read_packet(AVFormatContext *s, AVPacket *pkt)
     int ret = 0, packet_read = 0, key = 0;
     int av_uninit(num_samples);
 
-    while (!packet_read || partial_packet) {
+    while (!packet_read || partial_packet)
+    {
         chunk_type = avio_rl32(pb);
         chunk_size = ea->big_endian ? avio_rb32(pb) : avio_rl32(pb);
         if (chunk_size < 8)
             return AVERROR_INVALIDDATA;
         chunk_size -= 8;
 
-        switch (chunk_type) {
+        switch (chunk_type)
+        {
         /* audio data */
         case ISNh_TAG:
             /* header chunk also contains data; skip over the header portion */
@@ -592,17 +640,21 @@ static int ea_read_packet(AVFormatContext *s, AVPacket *pkt)
         case SCDl_TAG:
         case SNDC_TAG:
         case SDEN_TAG:
-            if (!ea->audio_codec) {
+            if (!ea->audio_codec)
+            {
                 avio_skip(pb, chunk_size);
                 break;
-            } else if (ea->audio_codec == AV_CODEC_ID_PCM_S16LE_PLANAR ||
-                       ea->audio_codec == AV_CODEC_ID_MP3) {
+            }
+            else if (ea->audio_codec == AV_CODEC_ID_PCM_S16LE_PLANAR ||
+                     ea->audio_codec == AV_CODEC_ID_MP3)
+            {
                 num_samples = avio_rl32(pb);
                 avio_skip(pb, 8);
                 chunk_size -= 12;
             }
 
-            if (partial_packet) {
+            if (partial_packet)
+            {
                 avpriv_request_sample(s, "video header followed by audio packet");
                 av_free_packet(pkt);
                 partial_packet = 0;
@@ -616,13 +668,15 @@ static int ea_read_packet(AVFormatContext *s, AVPacket *pkt)
                 return ret;
             pkt->stream_index = ea->audio_stream_index;
 
-            switch (ea->audio_codec) {
+            switch (ea->audio_codec)
+            {
             case AV_CODEC_ID_ADPCM_EA:
             case AV_CODEC_ID_ADPCM_EA_R1:
             case AV_CODEC_ID_ADPCM_EA_R2:
             case AV_CODEC_ID_ADPCM_IMA_EA_EACS:
             case AV_CODEC_ID_ADPCM_EA_R3:
-                if (pkt->size < 4) {
+                if (pkt->size < 4)
+                {
                     av_log(s, AV_LOG_ERROR, "Packet is too short\n");
                     av_free_packet(pkt);
                     return AVERROR_INVALIDDATA;
@@ -689,11 +743,14 @@ get_video_packet:
             if (!chunk_size)
                 continue;
 
-            if (partial_packet) {
+            if (partial_packet)
+            {
                 ret = av_append_packet(pb, pkt, chunk_size);
-            } else
+            }
+            else
                 ret = av_get_packet(pb, pkt, chunk_size);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 packet_read = 1;
                 break;
             }
@@ -717,7 +774,8 @@ get_video_packet:
     return ret;
 }
 
-AVInputFormat ff_ea_demuxer = {
+AVInputFormat ff_ea_demuxer =
+{
     .name           = "ea",
     .long_name      = NULL_IF_CONFIG_SMALL("Electronic Arts Multimedia"),
     .priv_data_size = sizeof(EaDemuxContext),

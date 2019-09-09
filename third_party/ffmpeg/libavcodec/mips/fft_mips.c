@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -73,7 +73,8 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
 
     num_transforms = (0x2aab >> (16 - s->nbits)) | 1;
 
-    for (n=0; n<num_transforms; n++) {
+    for (n=0; n<num_transforms; n++)
+    {
         offset = ff_fft_offsets_lut[n] << 2;
         tmpz = z + offset;
 
@@ -102,7 +103,8 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
 
     num_transforms = (num_transforms >> 1) | 1;
 
-    for (n=0; n<num_transforms; n++) {
+    for (n=0; n<num_transforms; n++)
+    {
         offset = ff_fft_offsets_lut[n] << 3;
         tmpz = z + offset;
 
@@ -189,9 +191,9 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
             "swc1  %[pom],  24(%[tmpz])                     \n\t"  // tmpz[3].re = tmpz[3].re + tmp4;
             "swc1  %[pom2], 28(%[tmpz])                     \n\t"  // tmpz[3].im = tmpz[3].im - tmp3;
             : [tmp1]"=&f"(tmp1), [pom]"=&f"(pom),   [pom1]"=&f"(pom1), [pom2]"=&f"(pom2),
-              [tmp3]"=&f"(tmp3), [tmp2]"=&f"(tmp2), [tmp4]"=&f"(tmp4), [tmp5]"=&f"(tmp5),  [tmp7]"=&f"(tmp7),
-              [tmp6]"=&f"(tmp6), [tmp8]"=&f"(tmp8), [pom3]"=&f"(pom3),[temp]"=&f"(temp), [temp1]"=&f"(temp1),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4)
+            [tmp3]"=&f"(tmp3), [tmp2]"=&f"(tmp2), [tmp4]"=&f"(tmp4), [tmp5]"=&f"(tmp5),  [tmp7]"=&f"(tmp7),
+            [tmp6]"=&f"(tmp6), [tmp8]"=&f"(tmp8), [pom3]"=&f"(pom3),[temp]"=&f"(temp), [temp1]"=&f"(temp1),
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4)
             : [tmpz]"r"(tmpz)
             : "memory"
         );
@@ -200,12 +202,14 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
     step = 1 << (MAX_LOG2_NFFT - 4);
     n4 = 4;
 
-    for (nbits=4; nbits<=s->nbits; nbits++) {
+    for (nbits=4; nbits<=s->nbits; nbits++)
+    {
         num_transforms = (num_transforms >> 1) | 1;
         n2  = 2 * n4;
         n34 = 3 * n4;
 
-        for (n=0; n<num_transforms; n++) {
+        for (n=0; n<num_transforms; n++)
+        {
             offset = ff_fft_offsets_lut[n] << nbits;
             tmpz = z + offset;
 
@@ -243,9 +247,9 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
                 "swc1  %[temp1],4(%[tmpz_n34])           \n\t"   //  tmpz[n34].im = tmpz[n4].im + tmp1;
                 "swc1  %[temp], 4(%[tmpz_n4])            \n\t"   //  tmpz[ n4].im = tmpz[n4].im - tmp1;
                 : [tmp5]"=&f"(tmp5),
-                  [tmp1]"=&f"(tmp1), [pom]"=&f"(pom),        [pom1]"=&f"(pom1),        [pom2]"=&f"(pom2),
-                  [tmp2]"=&f"(tmp2), [tmp6]"=&f"(tmp6),          [pom3]"=&f"(pom3),
-                  [temp]"=&f"(temp), [temp1]"=&f"(temp1),     [temp3]"=&f"(temp3),       [temp4]"=&f"(temp4)
+                [tmp1]"=&f"(tmp1), [pom]"=&f"(pom),        [pom1]"=&f"(pom1),        [pom2]"=&f"(pom2),
+                [tmp2]"=&f"(tmp2), [tmp6]"=&f"(tmp6),          [pom3]"=&f"(pom3),
+                [temp]"=&f"(temp), [temp1]"=&f"(temp1),     [temp3]"=&f"(temp3),       [temp4]"=&f"(temp4)
                 : [tmpz]"r"(tmpz), [tmpz_n2]"r"(tmpz_n2), [tmpz_n34]"r"(tmpz_n34), [tmpz_n4]"r"(tmpz_n4)
                 : "memory"
             );
@@ -253,7 +257,8 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
             w_re_ptr = (float*)(ff_cos_65536 + step);
             w_im_ptr = (float*)(ff_cos_65536 + MAX_FFT_SIZE/4 - step);
 
-            for (i=1; i<n4; i++) {
+            for (i=1; i<n4; i++)
+            {
                 w_re = w_re_ptr[0];
                 w_im = w_im_ptr[0];
                 tmpz_n2_i = tmpz_n2  + i;
@@ -299,12 +304,12 @@ static void ff_fft_calc_mips(FFTContext *s, FFTComplex *z)
                     "swc1     %[temp3], 0(%[tmpz_n4_i])               \n\t"  // tmpz[ n4+i].re = tmpz[n4+i].re + tmp2;
                     "swc1     %[pom2],  4(%[tmpz_n4_i])               \n\t"  // tmpz[ n4+i].im = tmpz[n4+i].im - tmp1;
                     : [tmp1]"=&f"(tmp1), [tmp2]"=&f" (tmp2), [temp]"=&f"(temp), [tmp3]"=&f"(tmp3),
-                      [tmp4]"=&f"(tmp4), [tmp5]"=&f"(tmp5), [tmp6]"=&f"(tmp6),
-                      [temp1]"=&f"(temp1), [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
-                      [pom]"=&f"(pom), [pom1]"=&f"(pom1), [pom2]"=&f"(pom2), [pom3]"=&f"(pom3)
+                    [tmp4]"=&f"(tmp4), [tmp5]"=&f"(tmp5), [tmp6]"=&f"(tmp6),
+                    [temp1]"=&f"(temp1), [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
+                    [pom]"=&f"(pom), [pom1]"=&f"(pom1), [pom2]"=&f"(pom2), [pom3]"=&f"(pom3)
                     : [w_re]"f"(w_re), [w_im]"f"(w_im),
-                      [tmpz_i]"r"(tmpz_i),[tmpz_n2_i]"r"(tmpz_n2_i),
-                      [tmpz_n34_i]"r"(tmpz_n34_i), [tmpz_n4_i]"r"(tmpz_n4_i)
+                    [tmpz_i]"r"(tmpz_i),[tmpz_n2_i]"r"(tmpz_n2_i),
+                    [tmpz_n34_i]"r"(tmpz_n34_i), [tmpz_n4_i]"r"(tmpz_n4_i)
                     : "memory"
                 );
                 w_re_ptr += step;
@@ -332,7 +337,7 @@ static void ff_imdct_half_mips(FFTContext *s, FFTSample *output, const FFTSample
     int j1;
     const float *tcos1, *tsin1, *tcos2, *tsin2;
     float temp1, temp2, temp3, temp4, temp5, temp6, temp7, temp8,
-        temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
+          temp9, temp10, temp11, temp12, temp13, temp14, temp15, temp16;
     FFTComplex *z1, *z2;
 
     n = 1 << s->mdct_bits;
@@ -350,7 +355,8 @@ static void ff_imdct_half_mips(FFTContext *s, FFTSample *output, const FFTSample
     tsin1 = tsin;
 
     /* n4 = 64 or 128 */
-    for(k = 0; k < n4; k += 2) {
+    for(k = 0; k < n4; k += 2)
+    {
         j  = revtab[k    ];
         j1 = revtab[k + 1];
 
@@ -379,14 +385,14 @@ static void ff_imdct_half_mips(FFTContext *s, FFTSample *output, const FFTSample
             PTR_ADDIU "     %[in4],         %[in4],     -16                     \t\n"
 
             : [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
-              [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
-              [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-              [temp9]"=&f"(temp9), [temp10]"=&f"(temp10),
-              [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
-              [tsin1]"+r"(tsin1), [tcos1]"+r"(tcos1),
-              [in1]"+r"(in1), [in2]"+r"(in2),
-              [in3]"+r"(in3), [in4]"+r"(in4)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
+            [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
+            [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+            [temp9]"=&f"(temp9), [temp10]"=&f"(temp10),
+            [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
+            [tsin1]"+r"(tsin1), [tcos1]"+r"(tcos1),
+            [in1]"+r"(in1), [in2]"+r"(in2),
+            [in3]"+r"(in3), [in4]"+r"(in4)
             :
             : "memory"
         );
@@ -401,7 +407,8 @@ static void ff_imdct_half_mips(FFTContext *s, FFTSample *output, const FFTSample
 
     /* post rotation + reordering */
     /* n8 = 32 or 64 */
-    for(k = 0; k < n8; k += 2) {
+    for(k = 0; k < n8; k += 2)
+    {
         tcos1 = &tcos[n8 - k - 2];
         tsin1 = &tsin[n8 - k - 2];
         tcos2 = &tcos[n8 + k];
@@ -443,16 +450,16 @@ static void ff_imdct_half_mips(FFTContext *s, FFTSample *output, const FFTSample
             "nmsub.s    %[temp15],  %[temp15],  %[temp8],   %[temp7]    \t\n"
             "madd.s     %[temp16],  %[temp16],  %[temp8],   %[temp6]    \t\n"
             : [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
-              [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
-              [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-              [temp9]"=&f"(temp9), [temp10]"=&f"(temp10),
-              [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
-              [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
-              [temp15]"=&f"(temp15), [temp16]"=&f"(temp16)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4),
+            [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
+            [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+            [temp9]"=&f"(temp9), [temp10]"=&f"(temp10),
+            [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
+            [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
+            [temp15]"=&f"(temp15), [temp16]"=&f"(temp16)
             : [z1]"r"(z1), [z2]"r"(z2),
-              [tsin1]"r"(tsin1), [tcos1]"r"(tcos1),
-              [tsin2]"r"(tsin2), [tcos2]"r"(tcos2)
+            [tsin1]"r"(tsin1), [tcos1]"r"(tcos1),
+            [tsin2]"r"(tsin2), [tcos2]"r"(tcos2)
             : "memory"
         );
 
@@ -482,7 +489,8 @@ static void ff_imdct_calc_mips(FFTContext *s, FFTSample *output, const FFTSample
 
     ff_imdct_half_mips(s, output+n4, input);
 
-    for(k = 0; k < n4; k+=4) {
+    for(k = 0; k < n4; k+=4)
+    {
         output[k] = -output[n2-k-1];
         output[k+1] = -output[n2-k-2];
         output[k+2] = -output[n2-k-3];

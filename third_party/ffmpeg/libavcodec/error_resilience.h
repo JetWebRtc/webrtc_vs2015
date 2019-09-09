@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * This file is part of FFmpeg.
  *
@@ -38,7 +38,8 @@
 #define ER_MB_ERROR (ER_AC_ERROR|ER_DC_ERROR|ER_MV_ERROR)
 #define ER_MB_END   (ER_AC_END|ER_DC_END|ER_MV_END)
 
-typedef struct ERPicture {
+typedef struct ERPicture
+{
     AVFrame *f;
     ThreadFrame *tf;
 
@@ -50,7 +51,8 @@ typedef struct ERPicture {
     int field_picture;
 } ERPicture;
 
-typedef struct ERContext {
+typedef struct ERContext
+{
     AVCodecContext *avctx;
     MECmpContext mecc;
     int mecc_inited;

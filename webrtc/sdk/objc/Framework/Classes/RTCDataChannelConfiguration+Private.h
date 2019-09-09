@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCDataChannelConfiguration ()
 
-@property(nonatomic, readonly) webrtc::DataChannelInit nativeDataChannelInit;
+    @property(nonatomic, readonly) webrtc::DataChannelInit nativeDataChannelInit;
 
 @end
 

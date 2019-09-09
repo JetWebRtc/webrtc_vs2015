@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ void WebRtcIlbcfix_SortSq(
     int16_t x,   /* (i) the value to quantize */
     const int16_t *cb, /* (i) the quantization codebook */
     int16_t cb_size  /* (i) the size of the quantization codebook */
-                           );
+);
 
 #endif

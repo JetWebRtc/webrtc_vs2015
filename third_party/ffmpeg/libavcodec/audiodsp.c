@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -34,7 +34,7 @@ static inline uint32_t clipf_c_one(uint32_t a, uint32_t mini,
 }
 
 static void vector_clipf_c_opposite_sign(float *dst, const float *src,
-                                         float *min, float *max, int len)
+        float *min, float *max, int len)
 {
     int i;
     uint32_t mini        = *(uint32_t *) min;
@@ -43,7 +43,8 @@ static void vector_clipf_c_opposite_sign(float *dst, const float *src,
     uint32_t *dsti       = (uint32_t *) dst;
     const uint32_t *srci = (const uint32_t *) src;
 
-    for (i = 0; i < len; i += 8) {
+    for (i = 0; i < len; i += 8)
+    {
         dsti[i + 0] = clipf_c_one(srci[i + 0], mini, maxi, maxisign);
         dsti[i + 1] = clipf_c_one(srci[i + 1], mini, maxi, maxisign);
         dsti[i + 2] = clipf_c_one(srci[i + 2], mini, maxi, maxisign);
@@ -60,10 +61,14 @@ static void vector_clipf_c(float *dst, const float *src,
 {
     int i;
 
-    if (min < 0 && max > 0) {
+    if (min < 0 && max > 0)
+    {
         vector_clipf_c_opposite_sign(dst, src, &min, &max, len);
-    } else {
-        for (i = 0; i < len; i += 8) {
+    }
+    else
+    {
+        for (i = 0; i < len; i += 8)
+        {
             dst[i]     = av_clipf(src[i], min, max);
             dst[i + 1] = av_clipf(src[i + 1], min, max);
             dst[i + 2] = av_clipf(src[i + 2], min, max);
@@ -90,7 +95,8 @@ static int32_t scalarproduct_int16_c(const int16_t *v1, const int16_t *v2,
 static void vector_clip_int32_c(int32_t *dst, const int32_t *src, int32_t min,
                                 int32_t max, unsigned int len)
 {
-    do {
+    do
+    {
         *dst++ = av_clip(*src++, min, max);
         *dst++ = av_clip(*src++, min, max);
         *dst++ = av_clip(*src++, min, max);
@@ -100,7 +106,8 @@ static void vector_clip_int32_c(int32_t *dst, const int32_t *src, int32_t min,
         *dst++ = av_clip(*src++, min, max);
         *dst++ = av_clip(*src++, min, max);
         len   -= 8;
-    } while (len > 0);
+    }
+    while (len > 0);
 }
 
 av_cold void ff_audiodsp_init(AudioDSPContext *c)

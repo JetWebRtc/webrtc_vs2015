@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (I)DCT Transforms
  * Copyright (c) 2009 Peter Ross <pross@xvid.org>
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
@@ -28,7 +28,8 @@
 
 #include "rdft.h"
 
-struct DCTContext {
+struct DCTContext
+{
     int nbits;
     int inverse;
     RDFTContext rdft;

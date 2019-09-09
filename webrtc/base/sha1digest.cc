@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,23 +10,28 @@
 
 #include "webrtc/base/sha1digest.h"
 
-namespace rtc {
+namespace rtc
+{
 
-size_t Sha1Digest::Size() const {
-  return kSize;
+size_t Sha1Digest::Size() const
+{
+    return kSize;
 }
 
-void Sha1Digest::Update(const void* buf, size_t len) {
-  SHA1Update(&ctx_, static_cast<const uint8_t*>(buf), len);
+void Sha1Digest::Update(const void* buf, size_t len)
+{
+    SHA1Update(&ctx_, static_cast<const uint8_t*>(buf), len);
 }
 
-size_t Sha1Digest::Finish(void* buf, size_t len) {
-  if (len < kSize) {
-    return 0;
-  }
-  SHA1Final(&ctx_, static_cast<uint8_t*>(buf));
-  SHA1Init(&ctx_);  // Reset for next use.
-  return kSize;
+size_t Sha1Digest::Finish(void* buf, size_t len)
+{
+    if (len < kSize)
+    {
+        return 0;
+    }
+    SHA1Final(&ctx_, static_cast<uint8_t*>(buf));
+    SHA1Init(&ctx_);  // Reset for next use.
+    return kSize;
 }
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -40,7 +40,8 @@ extern "C"
 /********************************/
 /* Noise shaping analysis state */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int8                   LastGainIndex;
     silk_float                  HarmBoost_smth;
     silk_float                  HarmShapeGain_smth;
@@ -50,7 +51,8 @@ typedef struct {
 /********************************/
 /* Prefilter state              */
 /********************************/
-typedef struct {
+typedef struct
+{
     silk_float                  sLTP_shp[ LTP_BUF_LENGTH ];
     silk_float                  sAR_shp[ MAX_SHAPE_LPC_ORDER + 1 ];
     opus_int                    sLTP_shp_buf_idx;
@@ -64,7 +66,8 @@ typedef struct {
 /********************************/
 /* Encoder state FLP            */
 /********************************/
-typedef struct {
+typedef struct
+{
     silk_encoder_state          sCmn;                               /* Common struct, shared with fixed-point code */
     silk_shape_state_FLP        sShape;                             /* Noise shaping state */
     silk_prefilter_state_FLP    sPrefilt;                           /* Prefilter State */
@@ -77,7 +80,8 @@ typedef struct {
 /************************/
 /* Encoder control FLP  */
 /************************/
-typedef struct {
+typedef struct
+{
     /* Prediction and coding parameters */
     silk_float                  Gains[ MAX_NB_SUBFR ];
     silk_float                  PredCoef[ 2 ][ MAX_LPC_ORDER ];     /* holds interpolated and final coefficients */
@@ -112,7 +116,8 @@ typedef struct {
 /************************/
 /* Encoder Super Struct */
 /************************/
-typedef struct {
+typedef struct
+{
     silk_encoder_state_FLP      state_Fxx[ ENCODER_NUM_CHANNELS ];
     stereo_enc_state            sStereo;
     opus_int32                  nBitsUsedLBRR;

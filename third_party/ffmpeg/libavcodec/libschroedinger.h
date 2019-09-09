@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 BBC, Anuradha Suraparaju <asuraparaju at gmail dot com >
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 
 #include "avcodec.h"
 
-typedef struct SchroVideoFormatInfo {
+typedef struct SchroVideoFormatInfo
+{
     uint16_t width;
     uint16_t height;
     uint16_t frame_rate_num;
@@ -41,7 +42,8 @@ typedef struct SchroVideoFormatInfo {
 /**
 * contains a single encoded frame returned from Dirac or Schroedinger
 */
-typedef struct FFSchroEncodedFrame {
+typedef struct FFSchroEncodedFrame
+{
     /** encoded frame data */
     uint8_t *p_encbuf;
 
@@ -58,7 +60,8 @@ typedef struct FFSchroEncodedFrame {
 /**
 * queue element
 */
-typedef struct FFSchroQueueElement {
+typedef struct FFSchroQueueElement
+{
     /** Data to be stored in queue*/
     void *data;
     /** Pointer to next element queue */
@@ -69,7 +72,8 @@ typedef struct FFSchroQueueElement {
 /**
 * A simple queue implementation used in libschroedinger
 */
-typedef struct FFSchroQueue {
+typedef struct FFSchroQueue
+{
     /** Pointer to head of queue */
     FFSchroQueueElement *p_head;
     /** Pointer to tail of queue */
@@ -100,11 +104,13 @@ void *ff_schro_queue_pop(FFSchroQueue *queue);
 */
 void ff_schro_queue_free(FFSchroQueue *queue, void (*free_func)(void *));
 
-static const struct {
+static const struct
+{
     enum AVPixelFormat  ff_pix_fmt;
     SchroChromaFormat schro_pix_fmt;
     SchroFrameFormat  schro_frame_fmt;
-} schro_pixel_format_map[] = {
+} schro_pixel_format_map[] =
+{
     { AV_PIX_FMT_YUV420P, SCHRO_CHROMA_420, SCHRO_FRAME_FORMAT_U8_420 },
     { AV_PIX_FMT_YUV422P, SCHRO_CHROMA_422, SCHRO_FRAME_FORMAT_U8_422 },
     { AV_PIX_FMT_YUV444P, SCHRO_CHROMA_444, SCHRO_FRAME_FORMAT_U8_444 },

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wing Commander/Xan Video Decoder
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -49,7 +49,8 @@
 #define PALETTE_SIZE (PALETTE_COUNT * 3)
 #define PALETTES_MAX 256
 
-typedef struct XanContext {
+typedef struct XanContext
+{
 
     AVCodecContext *avctx;
     AVFrame *last_frame;
@@ -99,13 +100,15 @@ static av_cold int xan_decode_init(AVCodecContext *avctx)
         return AVERROR(ENOMEM);
     s->buffer2_size = avctx->width * avctx->height;
     s->buffer2 = av_malloc(s->buffer2_size + 130);
-    if (!s->buffer2) {
+    if (!s->buffer2)
+    {
         av_freep(&s->buffer1);
         return AVERROR(ENOMEM);
     }
 
     s->last_frame = av_frame_alloc();
-    if (!s->last_frame) {
+    if (!s->last_frame)
+    {
         xan_decode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -129,13 +132,15 @@ static int xan_huffman_decode(uint8_t *dest, int dest_len,
     if ((ret = init_get_bits8(&gb, ptr, ptr_len)) < 0)
         return ret;
 
-    while (val != 0x16) {
+    while (val != 0x16)
+    {
         unsigned idx = val - 0x17 + get_bits1(&gb) * byte;
         if (idx >= 2 * byte)
             return AVERROR_INVALIDDATA;
         val = src[idx];
 
-        if (val < 0x16) {
+        if (val < 0x16)
+        {
             if (dest >= dest_end)
                 return dest_len;
             *dest++ = val;
@@ -161,22 +166,29 @@ static void xan_unpack(uint8_t *dest, int dest_len,
     GetByteContext ctx;
 
     bytestream2_init(&ctx, src, src_len);
-    while (dest < dest_end && bytestream2_get_bytes_left(&ctx)) {
+    while (dest < dest_end && bytestream2_get_bytes_left(&ctx))
+    {
         opcode = bytestream2_get_byte(&ctx);
 
-        if (opcode < 0xe0) {
+        if (opcode < 0xe0)
+        {
             int size2, back;
-            if ((opcode & 0x80) == 0) {
+            if ((opcode & 0x80) == 0)
+            {
                 size = opcode & 3;
 
                 back  = ((opcode & 0x60) << 3) + bytestream2_get_byte(&ctx) + 1;
                 size2 = ((opcode & 0x1c) >> 2) + 3;
-            } else if ((opcode & 0x40) == 0) {
+            }
+            else if ((opcode & 0x40) == 0)
+            {
                 size = bytestream2_peek_byte(&ctx) >> 6;
 
                 back  = (bytestream2_get_be16(&ctx) & 0x3fff) + 1;
                 size2 = (opcode & 0x3f) + 4;
-            } else {
+            }
+            else
+            {
                 size = opcode & 3;
 
                 back  = ((opcode & 0x10) << 12) + bytestream2_get_be16(&ctx) + 1;
@@ -184,14 +196,16 @@ static void xan_unpack(uint8_t *dest, int dest_len,
             }
 
             if (dest_end - dest < size + size2 ||
-                dest + size - dest_org < back ||
-                bytestream2_get_bytes_left(&ctx) < size)
+                    dest + size - dest_org < back ||
+                    bytestream2_get_bytes_left(&ctx) < size)
                 return;
             bytestream2_get_buffer(&ctx, dest, size);
             dest += size;
             av_memcpy_backptr(dest, back, size2);
             dest += size2;
-        } else {
+        }
+        else
+        {
             int finish = opcode >= 0xfc;
             size = finish ? opcode & 3 : ((opcode & 0x1f) << 2) + 4;
 
@@ -206,7 +220,7 @@ static void xan_unpack(uint8_t *dest, int dest_len,
 }
 
 static inline void xan_wc3_output_pixel_run(XanContext *s, AVFrame *frame,
-    const uint8_t *pixel_buffer, int x, int y, int pixel_count)
+        const uint8_t *pixel_buffer, int x, int y, int pixel_count)
 {
     int stride;
     int line_inc;
@@ -220,7 +234,8 @@ static inline void xan_wc3_output_pixel_run(XanContext *s, AVFrame *frame,
     line_inc = stride - width;
     index = y * stride + x;
     current_x = x;
-    while (pixel_count && index < s->frame_size) {
+    while (pixel_count && index < s->frame_size)
+    {
         int count = FFMIN(pixel_count, width - current_x);
         memcpy(palette_plane + index, pixel_buffer, count);
         pixel_count  -= count;
@@ -228,7 +243,8 @@ static inline void xan_wc3_output_pixel_run(XanContext *s, AVFrame *frame,
         pixel_buffer += count;
         current_x    += count;
 
-        if (current_x >= width) {
+        if (current_x >= width)
+        {
             index += line_inc;
             current_x = 0;
         }
@@ -236,9 +252,9 @@ static inline void xan_wc3_output_pixel_run(XanContext *s, AVFrame *frame,
 }
 
 static inline void xan_wc3_copy_pixel_run(XanContext *s, AVFrame *frame,
-                                          int x, int y,
-                                          int pixel_count, int motion_x,
-                                          int motion_y)
+        int x, int y,
+        int pixel_count, int motion_x,
+        int motion_y)
 {
     int stride;
     int line_inc;
@@ -248,7 +264,7 @@ static inline void xan_wc3_copy_pixel_run(XanContext *s, AVFrame *frame,
     uint8_t *palette_plane, *prev_palette_plane;
 
     if (y + motion_y < 0 || y + motion_y >= s->avctx->height ||
-        x + motion_x < 0 || x + motion_x >= s->avctx->width)
+            x + motion_x < 0 || x + motion_x >= s->avctx->width)
         return;
 
     palette_plane = frame->data[0];
@@ -262,14 +278,16 @@ static inline void xan_wc3_copy_pixel_run(XanContext *s, AVFrame *frame,
     prevframe_index = (y + motion_y) * stride + x + motion_x;
     prevframe_x = x + motion_x;
 
-    if (prev_palette_plane == palette_plane && FFABS(curframe_index - prevframe_index) < pixel_count) {
-         avpriv_request_sample(s->avctx, "Overlapping copy");
-         return ;
+    if (prev_palette_plane == palette_plane && FFABS(curframe_index - prevframe_index) < pixel_count)
+    {
+        avpriv_request_sample(s->avctx, "Overlapping copy");
+        return ;
     }
 
     while (pixel_count &&
-           curframe_index  < s->frame_size &&
-           prevframe_index < s->frame_size) {
+            curframe_index  < s->frame_size &&
+            prevframe_index < s->frame_size)
+    {
         int count = FFMIN3(pixel_count, width - curframe_x,
                            width - prevframe_x);
 
@@ -281,12 +299,14 @@ static inline void xan_wc3_copy_pixel_run(XanContext *s, AVFrame *frame,
         curframe_x      += count;
         prevframe_x     += count;
 
-        if (curframe_x >= width) {
+        if (curframe_x >= width)
+        {
             curframe_index += line_inc;
             curframe_x = 0;
         }
 
-        if (prevframe_x >= width) {
+        if (prevframe_x >= width)
+        {
             prevframe_index += line_inc;
             prevframe_x = 0;
         }
@@ -327,9 +347,9 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
     imagedata_offset  = AV_RL16(&s->buf[6]);
 
     if (huffman_offset   >= s->size ||
-        size_offset      >= s->size ||
-        vector_offset    >= s->size ||
-        imagedata_offset >= s->size)
+            size_offset      >= s->size ||
+            vector_offset    >= s->size ||
+            imagedata_offset >= s->size)
         return AVERROR_INVALIDDATA;
 
     huffman_segment   = s->buf + huffman_offset;
@@ -342,23 +362,28 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
         return AVERROR_INVALIDDATA;
     opcode_buffer_end = opcode_buffer + ret;
 
-    if (imagedata_segment[0] == 2) {
+    if (imagedata_segment[0] == 2)
+    {
         xan_unpack(s->buffer2, s->buffer2_size,
                    &imagedata_segment[1], s->size - imagedata_offset - 1);
         imagedata_size = s->buffer2_size;
-    } else {
+    }
+    else
+    {
         imagedata_size = s->size - imagedata_offset - 1;
         imagedata_buffer = &imagedata_segment[1];
     }
 
     /* use the decoded data segments to build the frame */
     x = y = 0;
-    while (total_pixels && opcode_buffer < opcode_buffer_end) {
+    while (total_pixels && opcode_buffer < opcode_buffer_end)
+    {
 
         opcode = *opcode_buffer++;
         size = 0;
 
-        switch (opcode) {
+        switch (opcode)
+        {
 
         case 0:
             flag ^= 1;
@@ -387,7 +412,8 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
 
         case 9:
         case 19:
-            if (bytestream2_get_bytes_left(&size_segment) < 1) {
+            if (bytestream2_get_bytes_left(&size_segment) < 1)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "size_segment overread\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -396,7 +422,8 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
 
         case 10:
         case 20:
-            if (bytestream2_get_bytes_left(&size_segment) < 2) {
+            if (bytestream2_get_bytes_left(&size_segment) < 2)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "size_segment overread\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -405,7 +432,8 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
 
         case 11:
         case 21:
-            if (bytestream2_get_bytes_left(&size_segment) < 3) {
+            if (bytestream2_get_bytes_left(&size_segment) < 3)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "size_segment overread\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -416,12 +444,16 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
         if (size > total_pixels)
             break;
 
-        if (opcode < 12) {
+        if (opcode < 12)
+        {
             flag ^= 1;
-            if (flag) {
+            if (flag)
+            {
                 /* run of (size) pixels is unchanged from last frame */
                 xan_wc3_copy_pixel_run(s, frame, x, y, size, 0, 0);
-            } else {
+            }
+            else
+            {
                 /* output a run of pixels from imagedata_buffer */
                 if (imagedata_size < size)
                     break;
@@ -429,9 +461,12 @@ static int xan_wc3_decode_frame(XanContext *s, AVFrame *frame)
                 imagedata_buffer += size;
                 imagedata_size -= size;
             }
-        } else {
+        }
+        else
+        {
             uint8_t vector;
-            if (bytestream2_get_bytes_left(&vector_segment) <= 0) {
+            if (bytestream2_get_bytes_left(&vector_segment) <= 0)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "vector_segment overread\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -471,7 +506,8 @@ static inline unsigned pow5(unsigned a)
     return mul(pow4(a), a);
 }
 
-static uint8_t gamma_corr(uint8_t in) {
+static uint8_t gamma_corr(uint8_t in)
+{
     unsigned lo, hi = 0xff40, target;
     int i = 15;
     in = (in << 2) | (in >> 6);
@@ -481,12 +517,14 @@ static uint8_t gamma_corr(uint8_t in) {
     return round(pow(in / 256.0, 0.8) * 256);
     */
     lo = target = in << 8;
-    do {
+    do
+    {
         unsigned mid = (lo + hi) >> 1;
         unsigned pow = pow5(mid);
         if (pow > target) hi = mid;
         else lo = mid;
-    } while (--i);
+    }
+    while (--i);
     return (pow4((lo + hi) >> 1) + 0x80) >> 8;
 }
 #else
@@ -501,7 +539,8 @@ static uint8_t gamma_corr(uint8_t in) {
  * and thus pow(x, 0.8) is still easy to calculate.
  * Also, the input values are first rotated to the left by 2.
  */
-static const uint8_t gamma_lookup[256] = {
+static const uint8_t gamma_lookup[256] =
+{
     0x00, 0x09, 0x10, 0x16, 0x1C, 0x21, 0x27, 0x2C,
     0x31, 0x35, 0x3A, 0x3F, 0x43, 0x48, 0x4C, 0x50,
     0x54, 0x59, 0x5D, 0x61, 0x65, 0x69, 0x6D, 0x71,
@@ -549,19 +588,22 @@ static int xan_decode_frame(AVCodecContext *avctx,
     int tag = 0;
 
     bytestream2_init(&ctx, buf, buf_size);
-    while (bytestream2_get_bytes_left(&ctx) > 8 && tag != VGA__TAG) {
+    while (bytestream2_get_bytes_left(&ctx) > 8 && tag != VGA__TAG)
+    {
         unsigned *tmpptr;
         uint32_t new_pal;
         int size;
         int i;
         tag  = bytestream2_get_le32(&ctx);
         size = bytestream2_get_be32(&ctx);
-        if (size < 0) {
+        if (size < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid tag size %d\n", size);
             return AVERROR_INVALIDDATA;
         }
         size = FFMIN(size, bytestream2_get_bytes_left(&ctx));
-        switch (tag) {
+        switch (tag)
+        {
         case PALT_TAG:
             if (size < PALETTE_SIZE)
                 return AVERROR_INVALIDDATA;
@@ -573,7 +615,8 @@ static int xan_decode_frame(AVCodecContext *avctx,
                 return AVERROR(ENOMEM);
             s->palettes = tmpptr;
             tmpptr += s->palettes_count * AVPALETTE_COUNT;
-            for (i = 0; i < PALETTE_COUNT; i++) {
+            for (i = 0; i < PALETTE_COUNT; i++)
+            {
 #if RUNTIME_GAMMA
                 int r = gamma_corr(bytestream2_get_byteu(&ctx));
                 int g = gamma_corr(bytestream2_get_byteu(&ctx));
@@ -591,9 +634,11 @@ static int xan_decode_frame(AVCodecContext *avctx,
             if (size < 4)
                 return AVERROR_INVALIDDATA;
             new_pal = bytestream2_get_le32(&ctx);
-            if (new_pal < s->palettes_count) {
+            if (new_pal < s->palettes_count)
+            {
                 s->cur_palette = new_pal;
-            } else
+            }
+            else
                 av_log(avctx, AV_LOG_ERROR, "Invalid palette selected\n");
             break;
         case VGA__TAG:
@@ -605,7 +650,8 @@ static int xan_decode_frame(AVCodecContext *avctx,
     }
     buf_size = bytestream2_get_bytes_left(&ctx);
 
-    if (s->palettes_count <= 0) {
+    if (s->palettes_count <= 0)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "No palette found\n");
         return AVERROR_INVALIDDATA;
     }
@@ -635,7 +681,8 @@ static int xan_decode_frame(AVCodecContext *avctx,
     return buf_size;
 }
 
-AVCodec ff_xan_wc3_decoder = {
+AVCodec ff_xan_wc3_decoder =
+{
     .name           = "xan_wc3",
     .long_name      = NULL_IF_CONFIG_SMALL("Wing Commander III / Xan"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,25 +14,28 @@
 #include "webrtc/base/array_view.h"
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 
-class NoiseSpectrumEstimator {
- public:
-  explicit NoiseSpectrumEstimator(ApmDataDumper* data_dumper);
-  void Initialize();
-  void Update(rtc::ArrayView<const float> spectrum, bool first_update);
+class NoiseSpectrumEstimator
+{
+public:
+    explicit NoiseSpectrumEstimator(ApmDataDumper* data_dumper);
+    void Initialize();
+    void Update(rtc::ArrayView<const float> spectrum, bool first_update);
 
-  rtc::ArrayView<const float> GetNoiseSpectrum() const {
-    return rtc::ArrayView<const float>(noise_spectrum_);
-  }
+    rtc::ArrayView<const float> GetNoiseSpectrum() const
+    {
+        return rtc::ArrayView<const float>(noise_spectrum_);
+    }
 
- private:
-  ApmDataDumper* data_dumper_;
-  float noise_spectrum_[65];
+private:
+    ApmDataDumper* data_dumper_;
+    float noise_spectrum_[65];
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(NoiseSpectrumEstimator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(NoiseSpectrumEstimator);
 };
 
 }  // namespace webrtc

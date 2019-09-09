@@ -55,7 +55,8 @@ SINETABLE(8192);
 #define SIN_FIX(a) a
 #endif
 
-SINETABLE_CONST INTFLOAT * const AAC_RENAME(ff_sine_windows)[] = {
+SINETABLE_CONST INTFLOAT * const AAC_RENAME(ff_sine_windows)[] =
+{
     NULL, NULL, NULL, NULL, NULL, // unused
     AAC_RENAME(ff_sine_32) , AAC_RENAME(ff_sine_64), AAC_RENAME(ff_sine_128),
     AAC_RENAME(ff_sine_256), AAC_RENAME(ff_sine_512), AAC_RENAME(ff_sine_1024),
@@ -63,13 +64,15 @@ SINETABLE_CONST INTFLOAT * const AAC_RENAME(ff_sine_windows)[] = {
 };
 
 // Generate a sine window.
-av_cold void AAC_RENAME(ff_sine_window_init)(INTFLOAT *window, int n) {
+av_cold void AAC_RENAME(ff_sine_window_init)(INTFLOAT *window, int n)
+{
     int i;
     for(i = 0; i < n; i++)
         window[i] = SIN_FIX(sinf((i + 0.5) * (M_PI / (2.0 * n))));
 }
 
-av_cold void AAC_RENAME(ff_init_ff_sine_windows)(int index) {
+av_cold void AAC_RENAME(ff_init_ff_sine_windows)(int index)
+{
     assert(index >= 0 && index < FF_ARRAY_ELEMS(AAC_RENAME(ff_sine_windows)));
 #if !CONFIG_HARDCODED_TABLES
     AAC_RENAME(ff_sine_window_init)(AAC_RENAME(ff_sine_windows)[index], 1 << index);

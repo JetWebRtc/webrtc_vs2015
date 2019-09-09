@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,21 +19,23 @@
 #include "webrtc/p2p/base/transportdescription.h"
 #include "webrtc/base/helpers.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // A TransportInfo is NOT a transport-info message.  It is comparable
 // to a "ContentInfo". A transport-infos message is basically just a
 // collection of TransportInfos.
-struct TransportInfo {
-  TransportInfo() {}
+struct TransportInfo
+{
+    TransportInfo() {}
 
-  TransportInfo(const std::string& content_name,
-                const TransportDescription& description)
-      : content_name(content_name),
-        description(description) {}
+    TransportInfo(const std::string& content_name,
+                  const TransportDescription& description)
+        : content_name(content_name),
+          description(description) {}
 
-  std::string content_name;
-  TransportDescription description;
+    std::string content_name;
+    TransportDescription description;
 };
 
 typedef std::vector<TransportInfo> TransportInfos;

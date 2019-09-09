@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012, Xidorn Quan
  *
  * This file is part of FFmpeg.
@@ -37,13 +37,15 @@
 
 extern AVCodec ff_h264_decoder, ff_h264_vda_decoder;
 
-static const enum AVPixelFormat vda_pixfmts_prior_10_7[] = {
+static const enum AVPixelFormat vda_pixfmts_prior_10_7[] =
+{
     AV_PIX_FMT_UYVY422,
     AV_PIX_FMT_YUV420P,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat vda_pixfmts[] = {
+static const enum AVPixelFormat vda_pixfmts[] =
+{
     AV_PIX_FMT_UYVY422,
     AV_PIX_FMT_YUYV422,
     AV_PIX_FMT_NV12,
@@ -51,7 +53,8 @@ static const enum AVPixelFormat vda_pixfmts[] = {
     AV_PIX_FMT_NONE
 };
 
-typedef struct {
+typedef struct
+{
     H264Context h264ctx;
     int h264_initialized;
     struct vda_context vda_ctx;
@@ -68,12 +71,13 @@ typedef struct {
 } VDADecoderContext;
 
 static enum AVPixelFormat get_format(struct AVCodecContext *avctx,
-        const enum AVPixelFormat *fmt)
+                                     const enum AVPixelFormat *fmt)
 {
     return AV_PIX_FMT_VDA_VLD;
 }
 
-typedef struct {
+typedef struct
+{
     CVPixelBufferRef cv_buffer;
 } VDABufferContext;
 
@@ -89,7 +93,8 @@ static int get_buffer2(AVCodecContext *avctx, AVFrame *pic, int flag)
 {
     VDABufferContext *context = av_mallocz(sizeof(VDABufferContext));
     AVBufferRef *buffer = av_buffer_create(NULL, 0, release_buffer, context, 0);
-    if (!context || !buffer) {
+    if (!context || !buffer)
+    {
         av_free(context);
         return AVERROR(ENOMEM);
     }
@@ -126,7 +131,7 @@ static inline void restore_context(AVCodecContext *avctx)
 }
 
 static int vdadec_decode(AVCodecContext *avctx,
-        void *data, int *got_frame, AVPacket *avpkt)
+                         void *data, int *got_frame, AVPacket *avpkt)
 {
     VDADecoderContext *ctx = avctx->priv_data;
     AVFrame *pic = data;
@@ -135,7 +140,8 @@ static int vdadec_decode(AVCodecContext *avctx,
     set_context(avctx);
     ret = ff_h264_decoder.decode(avctx, data, got_frame, avpkt);
     restore_context(avctx);
-    if (*got_frame) {
+    if (*got_frame)
+    {
         AVBufferRef *buffer = pic->buf[0];
         VDABufferContext *context = av_buffer_get_opaque(buffer);
         CVPixelBufferRef cv_buffer = (CVPixelBufferRef)pic->data[3];
@@ -144,14 +150,18 @@ static int vdadec_decode(AVCodecContext *avctx,
         CVPixelBufferLockBaseAddress(cv_buffer, 0);
         context->cv_buffer = cv_buffer;
         pic->format = ctx->pix_fmt;
-        if (CVPixelBufferIsPlanar(cv_buffer)) {
+        if (CVPixelBufferIsPlanar(cv_buffer))
+        {
             int i, count = CVPixelBufferGetPlaneCount(cv_buffer);
             av_assert0(count < 4);
-            for (i = 0; i < count; i++) {
+            for (i = 0; i < count; i++)
+            {
                 pic->data[i] = CVPixelBufferGetBaseAddressOfPlane(cv_buffer, i);
                 pic->linesize[i] = CVPixelBufferGetBytesPerRowOfPlane(cv_buffer, i);
             }
-        } else {
+        }
+        else
+        {
             pic->data[0] = CVPixelBufferGetBaseAddress(cv_buffer);
             pic->linesize[0] = CVPixelBufferGetBytesPerRow(cv_buffer);
         }
@@ -167,7 +177,8 @@ static av_cold int vdadec_close(AVCodecContext *avctx)
     /* release buffers and decoder */
     ff_vda_destroy_decoder(&ctx->vda_ctx);
     /* close H.264 decoder */
-    if (ctx->h264_initialized) {
+    if (ctx->h264_initialized)
+    {
         set_context(avctx);
         ff_h264_decoder.close(avctx);
         restore_context(avctx);
@@ -185,7 +196,8 @@ static av_cold int vdadec_init(AVCodecContext *avctx)
     ctx->h264_initialized = 0;
 
     /* init pix_fmts of codec */
-    if (!ff_h264_vda_decoder.pix_fmts) {
+    if (!ff_h264_vda_decoder.pix_fmts)
+    {
         if (kCFCoreFoundationVersionNumber < kCFCoreFoundationVersionNumber10_7)
             ff_h264_vda_decoder.pix_fmts = vda_pixfmts_prior_10_7;
         else
@@ -200,7 +212,8 @@ static av_cold int vdadec_init(AVCodecContext *avctx)
     vda_ctx->use_sync_decoding = 1;
     vda_ctx->use_ref_buffer = 1;
     ctx->pix_fmt = avctx->get_format(avctx, avctx->codec->pix_fmts);
-    switch (ctx->pix_fmt) {
+    switch (ctx->pix_fmt)
+    {
     case AV_PIX_FMT_UYVY422:
         vda_ctx->cv_pix_fmt_type = '2vuy';
         break;
@@ -219,9 +232,10 @@ static av_cold int vdadec_init(AVCodecContext *avctx)
     }
     status = ff_vda_create_decoder(vda_ctx,
                                    avctx->extradata, avctx->extradata_size);
-    if (status != kVDADecoderNoErr) {
+    if (status != kVDADecoderNoErr)
+    {
         av_log(avctx, AV_LOG_ERROR,
-                "Failed to init VDA decoder: %d.\n", status);
+               "Failed to init VDA decoder: %d.\n", status);
         goto failed;
     }
 
@@ -229,17 +243,20 @@ static av_cold int vdadec_init(AVCodecContext *avctx)
     set_context(avctx);
     ret = ff_h264_decoder.init(avctx);
     restore_context(avctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Failed to open H.264 decoder.\n");
         goto failed;
     }
     ctx->h264_initialized = 1;
 
-    for (i = 0; i < MAX_SPS_COUNT; i++) {
+    for (i = 0; i < MAX_SPS_COUNT; i++)
+    {
         SPS *sps = ctx->h264ctx.sps_buffers[i];
         if (sps && (sps->bit_depth_luma != 8 ||
-                sps->chroma_format_idc == 2 ||
-                sps->chroma_format_idc == 3)) {
+                    sps->chroma_format_idc == 2 ||
+                    sps->chroma_format_idc == 3))
+        {
             av_log(avctx, AV_LOG_ERROR, "Format is not supported.\n");
             goto failed;
         }
@@ -259,7 +276,8 @@ static void vdadec_flush(AVCodecContext *avctx)
     restore_context(avctx);
 }
 
-AVCodec ff_h264_vda_decoder = {
+AVCodec ff_h264_vda_decoder =
+{
     .name           = "h264_vda",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_H264,

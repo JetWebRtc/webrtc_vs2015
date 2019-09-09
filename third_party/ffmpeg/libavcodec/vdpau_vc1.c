@@ -42,19 +42,22 @@ static int vdpau_vc1_start_frame(AVCodecContext *avctx,
     info->forward_reference  = VDP_INVALID_HANDLE;
     info->backward_reference = VDP_INVALID_HANDLE;
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
-        if (s->next_picture_ptr) {
-        ref = ff_vdpau_get_surface_id(s->next_picture.f);
-        assert(ref != VDP_INVALID_HANDLE);
-        info->backward_reference = ref;
+        if (s->next_picture_ptr)
+        {
+            ref = ff_vdpau_get_surface_id(s->next_picture.f);
+            assert(ref != VDP_INVALID_HANDLE);
+            info->backward_reference = ref;
         }
-        /* fall-through */
+    /* fall-through */
     case AV_PICTURE_TYPE_P:
-        if (s->last_picture_ptr) {
-        ref = ff_vdpau_get_surface_id(s->last_picture.f);
-        assert(ref != VDP_INVALID_HANDLE);
-        info->forward_reference  = ref;
+        if (s->last_picture_ptr)
+        {
+            ref = ff_vdpau_get_surface_id(s->last_picture.f);
+            assert(ref != VDP_INVALID_HANDLE);
+            info->forward_reference  = ref;
         }
     }
 
@@ -117,7 +120,8 @@ static int vdpau_vc1_init(AVCodecContext *avctx)
 {
     VdpDecoderProfile profile;
 
-    switch (avctx->profile) {
+    switch (avctx->profile)
+    {
     case FF_PROFILE_VC1_SIMPLE:
         profile = VDP_DECODER_PROFILE_VC1_SIMPLE;
         break;
@@ -135,7 +139,8 @@ static int vdpau_vc1_init(AVCodecContext *avctx)
 }
 
 #if CONFIG_WMV3_VDPAU_HWACCEL
-AVHWAccel ff_wmv3_vdpau_hwaccel = {
+AVHWAccel ff_wmv3_vdpau_hwaccel =
+{
     .name           = "wm3_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_WMV3,
@@ -150,7 +155,8 @@ AVHWAccel ff_wmv3_vdpau_hwaccel = {
 };
 #endif
 
-AVHWAccel ff_vc1_vdpau_hwaccel = {
+AVHWAccel ff_vc1_vdpau_hwaccel =
+{
     .name           = "vc1_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_VC1,

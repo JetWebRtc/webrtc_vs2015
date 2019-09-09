@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
  *
  * This file is part of FFmpeg.

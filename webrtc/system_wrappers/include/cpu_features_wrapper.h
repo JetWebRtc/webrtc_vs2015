@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,17 +18,19 @@ extern "C" {
 #include "webrtc/typedefs.h"
 
 // List of features in x86.
-typedef enum {
-  kSSE2,
-  kSSE3
+typedef enum
+{
+    kSSE2,
+    kSSE3
 } CPUFeature;
 
 // List of features in ARM.
-enum {
-  kCPUFeatureARMv7       = (1 << 0),
-  kCPUFeatureVFPv3       = (1 << 1),
-  kCPUFeatureNEON        = (1 << 2),
-  kCPUFeatureLDREXSTREX  = (1 << 3)
+enum
+{
+    kCPUFeatureARMv7       = (1 << 0),
+    kCPUFeatureVFPv3       = (1 << 1),
+    kCPUFeatureNEON        = (1 << 2),
+    kCPUFeatureLDREXSTREX  = (1 << 3)
 };
 
 typedef int (*WebRtc_CPUInfo)(CPUFeature feature);

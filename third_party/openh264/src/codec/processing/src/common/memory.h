@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -47,16 +47,19 @@
 
 WELSVP_NAMESPACE_BEGIN
 
-inline void* WelsMemset (void* pPointer, int32_t iValue, uint32_t uiSize) {
-  return ::memset (pPointer, iValue, uiSize);
+inline void* WelsMemset (void* pPointer, int32_t iValue, uint32_t uiSize)
+{
+    return ::memset (pPointer, iValue, uiSize);
 }
 
-inline void* WelsMemcpy (void* pDst, const void* kpSrc, uint32_t uiSize) {
-  return ::memcpy (pDst, kpSrc, uiSize);
+inline void* WelsMemcpy (void* pDst, const void* kpSrc, uint32_t uiSize)
+{
+    return ::memcpy (pDst, kpSrc, uiSize);
 }
 
-inline int32_t WelsMemcmp (const void* kpBuf1, const void* kpBuf2, uint32_t uiSize) {
-  return ::memcmp (kpBuf1, kpBuf2, uiSize);
+inline int32_t WelsMemcmp (const void* kpBuf1, const void* kpBuf2, uint32_t uiSize)
+{
+    return ::memcmp (kpBuf1, kpBuf2, uiSize);
 }
 
 /*!

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 
 #include <string>
 
-namespace cricket {
+namespace cricket
+{
 
 const char CN_AUDIO[] = "audio";
 const char CN_VIDEO[] = "video";

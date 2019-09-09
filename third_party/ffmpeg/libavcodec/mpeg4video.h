@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG4 encoder/decoder internal header.
  * Copyright (c) 2000,2001 Fabrice Bellard
  * Copyright (c) 2002-2010 Michael Niedermayer <michaelni@gmx.at>
@@ -62,7 +62,8 @@
 /* smaller packets likely don't contain a real frame */
 #define MAX_NVOP_SIZE 19
 
-typedef struct Mpeg4DecContext {
+typedef struct Mpeg4DecContext
+{
     MpegEncContext m;
 
     /// number of bits to represent the fractional part of time
@@ -204,42 +205,54 @@ static inline int ff_mpeg4_pred_dc(MpegEncContext *s, int n, int level,
 
     /* outside slice handling (we can't do that by memset as we need the
      * dc for error resilience) */
-    if (s->first_slice_line && n != 3) {
+    if (s->first_slice_line && n != 3)
+    {
         if (n != 2)
             b = c = 1024;
         if (n != 1 && s->mb_x == s->resync_mb_x)
             b = a = 1024;
     }
-    if (s->mb_x == s->resync_mb_x && s->mb_y == s->resync_mb_y + 1) {
+    if (s->mb_x == s->resync_mb_x && s->mb_y == s->resync_mb_y + 1)
+    {
         if (n == 0 || n == 4 || n == 5)
             b = 1024;
     }
 
-    if (abs(a - b) < abs(b - c)) {
+    if (abs(a - b) < abs(b - c))
+    {
         pred     = c;
         *dir_ptr = 1; /* top */
-    } else {
+    }
+    else
+    {
         pred     = a;
         *dir_ptr = 0; /* left */
     }
     /* we assume pred is positive */
     pred = FASTDIV((pred + (scale >> 1)), scale);
 
-    if (encoding) {
+    if (encoding)
+    {
         ret = level - pred;
-    } else {
+    }
+    else
+    {
         level += pred;
         ret    = level;
     }
     level *= scale;
-    if (level & (~2047)) {
-        if (!s->encoding && (s->avctx->err_recognition & (AV_EF_BITSTREAM | AV_EF_AGGRESSIVE))) {
-            if (level < 0) {
+    if (level & (~2047))
+    {
+        if (!s->encoding && (s->avctx->err_recognition & (AV_EF_BITSTREAM | AV_EF_AGGRESSIVE)))
+        {
+            if (level < 0)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "dc<0 at %dx%d\n", s->mb_x, s->mb_y);
                 return -1;
             }
-            if (level > 2048 + scale) {
+            if (level > 2048 + scale)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "dc overflow at %dx%d\n", s->mb_x, s->mb_y);
                 return -1;

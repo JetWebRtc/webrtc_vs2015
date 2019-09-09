@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -103,7 +103,7 @@ int WebRtcIsacfix_DecodeSendBandwidth(Bitstr_dec *streamdata,
 
 
 int WebRtcIsacfix_EncodeReceiveBandwidth(int16_t *BWno,
-                                         Bitstr_enc *streamdata);
+        Bitstr_enc *streamdata);
 
 void WebRtcIsacfix_TranscodeLpcCoef(int32_t *tmpcoeffs_gQ6,
                                     int16_t *index_gQQ);

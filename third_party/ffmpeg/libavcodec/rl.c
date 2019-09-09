@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -27,7 +27,8 @@ void ff_rl_free(RLTable *rl)
 {
     int i;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_freep(&rl->max_run[i]);
         av_freep(&rl->max_level[i]);
         av_freep(&rl->index_run[i]);
@@ -46,11 +47,15 @@ av_cold int ff_rl_init(RLTable *rl,
         return 0;
 
     /* compute max_level[], max_run[] and index_run[] */
-    for (last = 0; last < 2; last++) {
-        if (last == 0) {
+    for (last = 0; last < 2; last++)
+    {
+        if (last == 0)
+        {
             start = 0;
             end = rl->last;
-        } else {
+        }
+        else
+        {
             start = rl->last;
             end = rl->n;
         }
@@ -58,7 +63,8 @@ av_cold int ff_rl_init(RLTable *rl,
         memset(max_level, 0, MAX_RUN + 1);
         memset(max_run, 0, MAX_LEVEL + 1);
         memset(index_run, rl->n, MAX_RUN + 1);
-        for (i = start; i < end; i++) {
+        for (i = start; i < end; i++)
+        {
             run   = rl->table_run[i];
             level = rl->table_level[i];
             if (index_run[run] == rl->n)
@@ -70,7 +76,8 @@ av_cold int ff_rl_init(RLTable *rl,
         }
         if (static_store)
             rl->max_level[last] = static_store[last];
-        else {
+        else
+        {
             rl->max_level[last] = av_malloc(MAX_RUN + 1);
             if (!rl->max_level[last])
                 goto fail;
@@ -78,7 +85,8 @@ av_cold int ff_rl_init(RLTable *rl,
         memcpy(rl->max_level[last], max_level, MAX_RUN + 1);
         if (static_store)
             rl->max_run[last]   = static_store[last] + MAX_RUN + 1;
-        else {
+        else
+        {
             rl->max_run[last]   = av_malloc(MAX_LEVEL + 1);
             if (!rl->max_run[last])
                 goto fail;
@@ -86,7 +94,8 @@ av_cold int ff_rl_init(RLTable *rl,
         memcpy(rl->max_run[last], max_run, MAX_LEVEL + 1);
         if (static_store)
             rl->index_run[last] = static_store[last] + MAX_RUN + MAX_LEVEL + 2;
-        else {
+        else
+        {
             rl->index_run[last] = av_malloc(MAX_RUN + 1);
             if (!rl->index_run[last])
                 goto fail;
@@ -108,30 +117,41 @@ av_cold void ff_rl_init_vlc(RLTable *rl, unsigned static_size)
     av_assert0(static_size <= FF_ARRAY_ELEMS(table));
     init_vlc(&vlc, 9, rl->n + 1, &rl->table_vlc[0][1], 4, 2, &rl->table_vlc[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC);
 
-    for (q = 0; q < 32; q++) {
+    for (q = 0; q < 32; q++)
+    {
         int qmul = q * 2;
         int qadd = (q - 1) | 1;
 
-        if (q == 0) {
+        if (q == 0)
+        {
             qmul = 1;
             qadd = 0;
         }
-        for (i = 0; i < vlc.table_size; i++) {
+        for (i = 0; i < vlc.table_size; i++)
+        {
             int code = vlc.table[i][0];
             int len  = vlc.table[i][1];
             int level, run;
 
-            if (len == 0) { // illegal code
+            if (len == 0)   // illegal code
+            {
                 run   = 66;
                 level = MAX_LEVEL;
-            } else if (len < 0) { // more bits needed
+            }
+            else if (len < 0)     // more bits needed
+            {
                 run   = 0;
                 level = code;
-            } else {
-                if (code == rl->n) { // esc
+            }
+            else
+            {
+                if (code == rl->n)   // esc
+                {
                     run   = 66;
                     level =  0;
-                } else {
+                }
+                else
+                {
                     run   = rl->table_run[code] + 1;
                     level = rl->table_level[code] * qmul + qadd;
                     if (code >= rl->last) run += 192;

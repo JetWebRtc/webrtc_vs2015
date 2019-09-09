@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Vivo stream demuxer
  * Copyright (c) 2009 Daniel Verkamp <daniel at drv.nu>
  *
@@ -30,7 +30,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct VivoContext {
+typedef struct VivoContext
+{
     int version;
 
     int type;
@@ -52,7 +53,8 @@ static int vivo_probe(AVProbeData *p)
     // read at most 2 bytes of coded length
     c = *buf++;
     length = c & 0x7F;
-    if (c & 0x80) {
+    if (c & 0x80)
+    {
         c = *buf++;
         length = (length << 7) | (c & 0x7F);
     }
@@ -79,7 +81,8 @@ static int vivo_get_packet_header(AVFormatContext *s)
         return AVERROR_EOF;
 
     c = avio_r8(pb);
-    if (c == 0x82) {
+    if (c == 0x82)
+    {
         get_length = 1;
         c = avio_r8(pb);
     }
@@ -87,25 +90,39 @@ static int vivo_get_packet_header(AVFormatContext *s)
     vivo->type     = c >> 4;
     vivo->sequence = c & 0xF;
 
-    switch (vivo->type) {
-    case 0:   get_length =   1; break;
-    case 1: vivo->length = 128; break;
-    case 2:   get_length =   1; break;
-    case 3: vivo->length =  40; break;
-    case 4: vivo->length =  24; break;
+    switch (vivo->type)
+    {
+    case 0:
+        get_length =   1;
+        break;
+    case 1:
+        vivo->length = 128;
+        break;
+    case 2:
+        get_length =   1;
+        break;
+    case 3:
+        vivo->length =  40;
+        break;
+    case 4:
+        vivo->length =  24;
+        break;
     default:
         av_log(s, AV_LOG_ERROR, "unknown packet type %d\n", vivo->type);
         return AVERROR_INVALIDDATA;
     }
 
-    if (get_length) {
+    if (get_length)
+    {
         c = avio_r8(pb);
         vivo->length = c & 0x7F;
-        if (c & 0x80) {
+        if (c & 0x80)
+        {
             c = avio_r8(pb);
             vivo->length = (vivo->length << 7) | (c & 0x7F);
 
-            if (c & 0x80) {
+            if (c & 0x80)
+            {
                 av_log(s, AV_LOG_ERROR, "coded length is more than two bytes\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -133,7 +150,8 @@ static int vivo_read_header(AVFormatContext *s)
 
     ast->codec->sample_rate = 8000;
 
-    while (1) {
+    while (1)
+    {
         if ((ret = vivo_get_packet_header(s)) < 0)
             return ret;
 
@@ -141,17 +159,21 @@ static int vivo_read_header(AVFormatContext *s)
         if (vivo->sequence || vivo->type)
             break;
 
-        if (vivo->length <= 1024) {
+        if (vivo->length <= 1024)
+        {
             avio_read(s->pb, vivo->text, vivo->length);
             vivo->text[vivo->length] = 0;
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_WARNING, "too big header, skipping\n");
             avio_skip(s->pb, vivo->length);
             continue;
         }
 
         line = vivo->text;
-        while (*line) {
+        while (*line)
+        {
             line_end = strstr(line, "\r\n");
             if (!line_end)
                 break;
@@ -164,7 +186,8 @@ static int vivo_read_header(AVFormatContext *s)
                 continue;
 
             value = strchr(key, ':');
-            if (!value) {
+            if (!value)
+            {
                 av_log(s, AV_LOG_WARNING, "missing colon in key:value pair '%s'\n",
                        value);
                 continue;
@@ -176,34 +199,55 @@ static int vivo_read_header(AVFormatContext *s)
 
             value_int = strtol(value, &end_value, 10);
             value_used = 0;
-            if (*end_value == 0) { // valid integer
+            if (*end_value == 0)   // valid integer
+            {
                 av_log(s, AV_LOG_DEBUG, "got a valid integer (%ld)\n", value_int);
                 value_used = 1;
-                if (!strcmp(key, "Duration")) {
+                if (!strcmp(key, "Duration"))
+                {
                     duration = value_int;
-                } else if (!strcmp(key, "Width")) {
+                }
+                else if (!strcmp(key, "Width"))
+                {
                     vst->codec->width = value_int;
-                } else if (!strcmp(key, "Height")) {
+                }
+                else if (!strcmp(key, "Height"))
+                {
                     vst->codec->height = value_int;
-                } else if (!strcmp(key, "TimeUnitNumerator")) {
+                }
+                else if (!strcmp(key, "TimeUnitNumerator"))
+                {
                     fps.num = value_int / 1000;
-                } else if (!strcmp(key, "TimeUnitDenominator")) {
+                }
+                else if (!strcmp(key, "TimeUnitDenominator"))
+                {
                     fps.den = value_int;
-                } else if (!strcmp(key, "SamplingFrequency")) {
+                }
+                else if (!strcmp(key, "SamplingFrequency"))
+                {
                     ast->codec->sample_rate = value_int;
-                } else if (!strcmp(key, "NominalBitrate")) {
-                } else if (!strcmp(key, "Length")) {
+                }
+                else if (!strcmp(key, "NominalBitrate"))
+                {
+                }
+                else if (!strcmp(key, "Length"))
+                {
                     // size of file
-                } else {
+                }
+                else
+                {
                     value_used = 0;
                 }
             }
 
-            if (!strcmp(key, "Version")) {
+            if (!strcmp(key, "Version"))
+            {
                 if (sscanf(value, "Vivo/%d.", &vivo->version) != 1)
                     return AVERROR_INVALIDDATA;
                 value_used = 1;
-            } else if (!strcmp(key, "FPS")) {
+            }
+            else if (!strcmp(key, "FPS"))
+            {
                 AVRational tmp;
 
                 value_used = 1;
@@ -225,7 +269,8 @@ static int vivo_read_header(AVFormatContext *s)
     vst->codec->codec_tag  = 0;
     vst->codec->codec_type = AVMEDIA_TYPE_VIDEO;
 
-    if (vivo->version == 1) {
+    if (vivo->version == 1)
+    {
         vst->codec->codec_id = AV_CODEC_ID_H263;
         ast->codec->codec_id = AV_CODEC_ID_G723_1;
         ast->codec->bits_per_coded_sample = 8;
@@ -253,7 +298,8 @@ restart:
     if (avio_feof(pb))
         return AVERROR_EOF;
 
-    switch (vivo->type) {
+    switch (vivo->type)
+    {
     case 0:
         avio_skip(pb, vivo->length);
         if ((ret = vivo_get_packet_header(s)) < 0)
@@ -280,8 +326,10 @@ restart:
         goto fail;
 
     while (vivo->sequence == old_sequence &&
-           (((vivo->type - 1) >> 1) == ((old_type - 1) >> 1))) {
-        if (avio_feof(pb)) {
+            (((vivo->type - 1) >> 1) == ((old_type - 1) >> 1)))
+    {
+        if (avio_feof(pb))
+        {
             ret = AVERROR_EOF;
             break;
         }
@@ -302,7 +350,8 @@ fail:
     return ret;
 }
 
-AVInputFormat ff_vivo_demuxer = {
+AVInputFormat ff_vivo_demuxer =
+{
     .name           = "vivo",
     .long_name      = NULL_IF_CONFIG_SMALL("Vivo"),
     .priv_data_size = sizeof(VivoContext),

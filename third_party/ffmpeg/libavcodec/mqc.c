@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MQ-coder encoder and decoder common functions
  * Copyright (c) 2007 Kamil Nowosad
  *
@@ -33,14 +33,16 @@
 #include "mqc.h"
 
 /* MQ coder context state structure */
-typedef struct MqcCxState {
+typedef struct MqcCxState
+{
     uint16_t qe;
     uint8_t  nmps;
     uint8_t  nlps;
     uint8_t  sw;
 } MqcCxState;
 
-static const MqcCxState cx_states[47] = {
+static const MqcCxState cx_states[47] =
+{
     { 0x5601,  1,  1, 1 },
     { 0x3401,  2,  6, 0 },
     { 0x1801,  3,  9, 0 },
@@ -97,9 +99,10 @@ uint8_t ff_mqc_nmps[2 * 47];
 void av_cold ff_mqc_init_context_tables(void)
 {
     int i;
-    for (i = 0; i < 47; i++) {
+    for (i = 0; i < 47; i++)
+    {
         ff_mqc_qe[2 * i]     =
-        ff_mqc_qe[2 * i + 1] = cx_states[i].qe;
+            ff_mqc_qe[2 * i + 1] = cx_states[i].qe;
 
         ff_mqc_nlps[2 * i]     = 2 * cx_states[i].nlps + cx_states[i].sw;
         ff_mqc_nlps[2 * i + 1] = 2 * cx_states[i].nlps + 1 - cx_states[i].sw;

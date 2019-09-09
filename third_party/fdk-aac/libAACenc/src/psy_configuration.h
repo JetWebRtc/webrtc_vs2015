@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -104,60 +104,63 @@ amm-info@iis.fraunhofer.de
 
 #define C_RATIO (FIXP_DBL)0x02940a10 /* FL2FXCONST_DBL(0.001258925f) << THR_SHIFTBITS; */ /* pow(10.0f, -(29.0f/10.0f)) */
 
-typedef struct{
+typedef struct
+{
 
-  INT sfbCnt;                               /* number of existing sf bands */
-  INT sfbActive;                            /* number of sf bands containing energy after lowpass */
-  INT sfbActiveLFE;
-  INT sfbOffset[MAX_SFB+1];
+    INT sfbCnt;                               /* number of existing sf bands */
+    INT sfbActive;                            /* number of sf bands containing energy after lowpass */
+    INT sfbActiveLFE;
+    INT sfbOffset[MAX_SFB+1];
 
-  INT       filterbank;                     /* LC, LD or ELD */
+    INT       filterbank;                     /* LC, LD or ELD */
 
-  FIXP_DBL  sfbPcmQuantThreshold[MAX_SFB];
+    FIXP_DBL  sfbPcmQuantThreshold[MAX_SFB];
 
-  INT       maxAllowedIncreaseFactor;          /* preecho control */
-  FIXP_SGL  minRemainingThresholdFactor;
+    INT       maxAllowedIncreaseFactor;          /* preecho control */
+    FIXP_SGL  minRemainingThresholdFactor;
 
-  INT       lowpassLine;
-  INT       lowpassLineLFE;
-  FIXP_DBL  clipEnergy;                        /* for level dependend tmn */
+    INT       lowpassLine;
+    INT       lowpassLineLFE;
+    FIXP_DBL  clipEnergy;                        /* for level dependend tmn */
 
-  FIXP_DBL  sfbMaskLowFactor[MAX_SFB];
-  FIXP_DBL  sfbMaskHighFactor[MAX_SFB];
+    FIXP_DBL  sfbMaskLowFactor[MAX_SFB];
+    FIXP_DBL  sfbMaskHighFactor[MAX_SFB];
 
-  FIXP_DBL  sfbMaskLowFactorSprEn[MAX_SFB];
-  FIXP_DBL  sfbMaskHighFactorSprEn[MAX_SFB];
+    FIXP_DBL  sfbMaskLowFactorSprEn[MAX_SFB];
+    FIXP_DBL  sfbMaskHighFactorSprEn[MAX_SFB];
 
-  FIXP_DBL  sfbMinSnrLdData[MAX_SFB];                /* minimum snr (formerly known as bmax) */
+    FIXP_DBL  sfbMinSnrLdData[MAX_SFB];                /* minimum snr (formerly known as bmax) */
 
-  TNS_CONFIG tnsConf;
-  PNS_CONFIG pnsConf;
+    TNS_CONFIG tnsConf;
+    PNS_CONFIG pnsConf;
 
-  INT        granuleLength;
-  INT        allowIS;
+    INT        granuleLength;
+    INT        allowIS;
 
-}PSY_CONFIGURATION;
+} PSY_CONFIGURATION;
 
 
-typedef struct{
+typedef struct
+{
     UCHAR sfbCnt;                     /* Number of scalefactor bands */
     UCHAR sfbWidth[MAX_SFB_LONG];     /* Width of scalefactor bands for long blocks */
-}SFB_PARAM_LONG;
+} SFB_PARAM_LONG;
 
-typedef struct{
+typedef struct
+{
     UCHAR sfbCnt;                     /* Number of scalefactor bands */
     UCHAR sfbWidth[MAX_SFB_SHORT];    /* Width of scalefactor bands for short blocks */
-}SFB_PARAM_SHORT;
+} SFB_PARAM_SHORT;
 
 
 AAC_ENCODER_ERROR FDKaacEnc_InitPsyConfiguration(INT  bitrate,
-                                                 INT  samplerate,
-                                                 INT  bandwidth,
-                                                 INT  blocktype,
-                                                 INT  granuleLength,
-                                                 INT  useIS,
-                                                 PSY_CONFIGURATION *psyConf,
-                                                 FB_TYPE filterbank);
+        INT  samplerate,
+        INT  bandwidth,
+        INT  blocktype,
+        INT  granuleLength,
+        INT  useIS,
+        PSY_CONFIGURATION *psyConf,
+        FB_TYPE filterbank);
 
 #endif /* _PSY_CONFIGURATION_H */
 

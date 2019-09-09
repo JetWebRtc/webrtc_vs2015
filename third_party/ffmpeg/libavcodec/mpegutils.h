@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Mpeg video formats-related defines and utility functions
  *
  * This file is part of FFmpeg.
@@ -115,7 +115,8 @@
 #define CANDIDATE_MB_TYPE_DIRECT0    (1 << 12)
 
 
-enum OutputFormat {
+enum OutputFormat
+{
     FMT_MPEG1,
     FMT_H261,
     FMT_H263,

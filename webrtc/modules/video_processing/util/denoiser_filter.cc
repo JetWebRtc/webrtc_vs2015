@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 #include "webrtc/modules/video_processing/util/denoiser_filter_sse2.h"
 #include "webrtc/system_wrappers/include/cpu_features_wrapper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 const int kMotionMagnitudeThreshold = 8 * 3;
 const int kSumDiffThreshold = 96;
@@ -23,37 +24,44 @@ const int kSumDiffThresholdHigh = 448;
 
 std::unique_ptr<DenoiserFilter> DenoiserFilter::Create(
     bool runtime_cpu_detection,
-    CpuType* cpu_type) {
-  std::unique_ptr<DenoiserFilter> filter;
+    CpuType* cpu_type)
+{
+    std::unique_ptr<DenoiserFilter> filter;
 
-  if (cpu_type != nullptr)
-    *cpu_type = CPU_NOT_NEON;
-  if (runtime_cpu_detection) {
+    if (cpu_type != nullptr)
+        *cpu_type = CPU_NOT_NEON;
+    if (runtime_cpu_detection)
+    {
 // If we know the minimum architecture at compile time, avoid CPU detection.
 #if defined(WEBRTC_ARCH_X86_FAMILY)
 #if defined(__SSE2__)
-    filter.reset(new DenoiserFilterSSE2());
+        filter.reset(new DenoiserFilterSSE2());
 #else
-    // x86 CPU detection required.
-    if (WebRtc_GetCPUInfo(kSSE2)) {
-      filter.reset(new DenoiserFilterSSE2());
-    } else {
-      filter.reset(new DenoiserFilterC());
-    }
+        // x86 CPU detection required.
+        if (WebRtc_GetCPUInfo(kSSE2))
+        {
+            filter.reset(new DenoiserFilterSSE2());
+        }
+        else
+        {
+            filter.reset(new DenoiserFilterC());
+        }
 #endif
 #elif defined(WEBRTC_HAS_NEON)
-    filter.reset(new DenoiserFilterNEON());
-    if (cpu_type != nullptr)
-      *cpu_type = CPU_NEON;
+        filter.reset(new DenoiserFilterNEON());
+        if (cpu_type != nullptr)
+            *cpu_type = CPU_NEON;
 #else
-    filter.reset(new DenoiserFilterC());
+        filter.reset(new DenoiserFilterC());
 #endif
-  } else {
-    filter.reset(new DenoiserFilterC());
-  }
+    }
+    else
+    {
+        filter.reset(new DenoiserFilterC());
+    }
 
-  RTC_DCHECK(filter.get() != nullptr);
-  return filter;
+    RTC_DCHECK(filter.get() != nullptr);
+    return filter;
 }
 
 }  // namespace webrtc

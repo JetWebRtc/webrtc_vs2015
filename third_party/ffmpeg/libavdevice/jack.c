@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JACK Audio Connection Kit input device
  * Copyright (c) 2009 Samalyse
  * Author: Olivier Guilyardi <olivier samalyse com>
@@ -40,7 +40,8 @@
  */
 #define FIFO_PACKETS_NUM 16
 
-typedef struct JackData {
+typedef struct JackData
+{
     AVClass        *class;
     jack_client_t * client;
     int             activated;
@@ -81,7 +82,8 @@ static int process_callback(jack_nframes_t nframes, void *arg)
                                       self->buffer_size);
 
     /* Check if an empty packet is available, and if there's enough space to send it back once filled */
-    if ((av_fifo_size(self->new_pkts) < sizeof(pkt)) || (av_fifo_space(self->filled_pkts) < sizeof(pkt))) {
+    if ((av_fifo_size(self->new_pkts) < sizeof(pkt)) || (av_fifo_space(self->filled_pkts) < sizeof(pkt)))
+    {
         self->pkt_xrun = 1;
         return 0;
     }
@@ -93,14 +95,15 @@ static int process_callback(jack_nframes_t nframes, void *arg)
     latency   = 0;
 
     /* Copy and interleave audio data from the JACK buffer into the packet */
-    for (i = 0; i < self->nports; i++) {
-    #if HAVE_JACK_PORT_GET_LATENCY_RANGE
+    for (i = 0; i < self->nports; i++)
+    {
+#if HAVE_JACK_PORT_GET_LATENCY_RANGE
         jack_latency_range_t range;
         jack_port_get_latency_range(self->ports[i], JackCaptureLatency, &range);
         latency += range.max;
-    #else
+#else
         latency += jack_port_get_total_latency(self->client, self->ports[i]);
-    #endif
+#endif
         buffer = jack_port_get_buffer(self->ports[i], self->buffer_size);
         for (j = 0; j < self->buffer_size; j++)
             pkt_data[j * self->nports + i] = buffer[j];
@@ -138,8 +141,10 @@ static int supply_new_packets(JackData *self, AVFormatContext *context)
     /* Supply the process callback with new empty packets, by filling the new
      * packets FIFO buffer with as many packets as possible. process_callback()
      * can't do this by itself, because it can't allocate memory in realtime. */
-    while (av_fifo_space(self->new_pkts) >= sizeof(pkt)) {
-        if ((test = av_new_packet(&pkt, pkt_size)) < 0) {
+    while (av_fifo_space(self->new_pkts) >= sizeof(pkt))
+    {
+        if ((test = av_new_packet(&pkt, pkt_size)) < 0)
+        {
             av_log(context, AV_LOG_ERROR, "Could not create packet of size %d\n", pkt_size);
             return test;
         }
@@ -156,7 +161,8 @@ static int start_jack(AVFormatContext *context)
 
     /* Register as a JACK client, using the context filename as client name. */
     self->client = jack_client_open(context->filename, JackNullOption, &status);
-    if (!self->client) {
+    if (!self->client)
+    {
         av_log(context, AV_LOG_ERROR, "Unable to register as a JACK client\n");
         return AVERROR(EIO);
     }
@@ -170,13 +176,15 @@ static int start_jack(AVFormatContext *context)
     self->buffer_size = jack_get_buffer_size(self->client);
 
     /* Register JACK ports */
-    for (i = 0; i < self->nports; i++) {
+    for (i = 0; i < self->nports; i++)
+    {
         char str[16];
         snprintf(str, sizeof(str), "input_%d", i + 1);
         self->ports[i] = jack_port_register(self->client, str,
                                             JACK_DEFAULT_AUDIO_TYPE,
                                             JackPortIsInput, 0);
-        if (!self->ports[i]) {
+        if (!self->ports[i])
+        {
             av_log(context, AV_LOG_ERROR, "Unable to register port %s:%s\n",
                    context->filename, str);
             jack_client_close(self->client);
@@ -191,7 +199,8 @@ static int start_jack(AVFormatContext *context)
 
     /* Create time filter */
     self->timefilter  = ff_timefilter_new (1.0 / self->sample_rate, self->buffer_size, 1.5);
-    if (!self->timefilter) {
+    if (!self->timefilter)
+    {
         jack_client_close(self->client);
         return AVERROR(ENOMEM);
     }
@@ -200,11 +209,13 @@ static int start_jack(AVFormatContext *context)
     self->filled_pkts = av_fifo_alloc_array(FIFO_PACKETS_NUM, sizeof(AVPacket));
     /* New packets FIFO with one extra packet for safety against underruns */
     self->new_pkts    = av_fifo_alloc_array((FIFO_PACKETS_NUM + 1), sizeof(AVPacket));
-    if (!self->new_pkts) {
+    if (!self->new_pkts)
+    {
         jack_client_close(self->client);
         return AVERROR(ENOMEM);
     }
-    if ((test = supply_new_packets(self, context))) {
+    if ((test = supply_new_packets(self, context)))
+    {
         jack_client_close(self->client);
         return test;
     }
@@ -216,7 +227,8 @@ static int start_jack(AVFormatContext *context)
 static void free_pkt_fifo(AVFifoBuffer **fifo)
 {
     AVPacket pkt;
-    while (av_fifo_size(*fifo)) {
+    while (av_fifo_size(*fifo))
+    {
         av_fifo_generic_read(*fifo, &pkt, sizeof(pkt), NULL);
         av_free_packet(&pkt);
     }
@@ -225,7 +237,8 @@ static void free_pkt_fifo(AVFifoBuffer **fifo)
 
 static void stop_jack(JackData *self)
 {
-    if (self->client) {
+    if (self->client)
+    {
         if (self->activated)
             jack_deactivate(self->client);
         jack_client_close(self->client);
@@ -247,7 +260,8 @@ static int audio_read_header(AVFormatContext *context)
         return test;
 
     stream = avformat_new_stream(context, NULL);
-    if (!stream) {
+    if (!stream)
+    {
         stop_jack(self);
         return AVERROR(ENOMEM);
     }
@@ -275,13 +289,17 @@ static int audio_read_packet(AVFormatContext *context, AVPacket *pkt)
      * means that process_callback() starts to get called at regular interval.
      * If we activate it in audio_read_header(), we're actually reading audio data
      * from the device before instructed to, and that may result in an overrun. */
-    if (!self->activated) {
-        if (!jack_activate(self->client)) {
+    if (!self->activated)
+    {
+        if (!jack_activate(self->client))
+        {
             self->activated = 1;
             av_log(context, AV_LOG_INFO,
                    "JACK client registered and activated (rate=%dHz, buffer_size=%d frames)\n",
                    self->sample_rate, self->buffer_size);
-        } else {
+        }
+        else
+        {
             av_log(context, AV_LOG_ERROR, "Unable to activate JACK client\n");
             return AVERROR(EIO);
         }
@@ -289,11 +307,15 @@ static int audio_read_packet(AVFormatContext *context, AVPacket *pkt)
 
     /* Wait for a packet coming back from process_callback(), if one isn't available yet */
     timeout.tv_sec = av_gettime() / 1000000 + 2;
-    if (sem_timedwait(&self->packet_count, &timeout)) {
-        if (errno == ETIMEDOUT) {
+    if (sem_timedwait(&self->packet_count, &timeout))
+    {
+        if (errno == ETIMEDOUT)
+        {
             av_log(context, AV_LOG_ERROR,
                    "Input error: timed out when waiting for JACK process callback output\n");
-        } else {
+        }
+        else
+        {
             char errbuf[128];
             int ret = AVERROR(errno);
             av_strerror(ret, errbuf, sizeof(errbuf));
@@ -306,12 +328,14 @@ static int audio_read_packet(AVFormatContext *context, AVPacket *pkt)
         return AVERROR(EIO);
     }
 
-    if (self->pkt_xrun) {
+    if (self->pkt_xrun)
+    {
         av_log(context, AV_LOG_WARNING, "Audio packet xrun\n");
         self->pkt_xrun = 0;
     }
 
-    if (self->jack_xrun) {
+    if (self->jack_xrun)
+    {
         av_log(context, AV_LOG_WARNING, "JACK xrun\n");
         self->jack_xrun = 0;
     }
@@ -333,12 +357,14 @@ static int audio_read_close(AVFormatContext *context)
 }
 
 #define OFFSET(x) offsetof(JackData, x)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "channels", "Number of audio channels.", OFFSET(nports), AV_OPT_TYPE_INT, { .i64 = 2 }, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass jack_indev_class = {
+static const AVClass jack_indev_class =
+{
     .class_name     = "JACK indev",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -346,7 +372,8 @@ static const AVClass jack_indev_class = {
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_jack_demuxer = {
+AVInputFormat ff_jack_demuxer =
+{
     .name           = "jack",
     .long_name      = NULL_IF_CONFIG_SMALL("JACK Audio Connection Kit"),
     .priv_data_size = sizeof(JackData),

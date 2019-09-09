@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -89,18 +89,24 @@ amm-info@iis.fraunhofer.de
 ******************************************************************************/
 #if defined(__x86__)
 
-  #if defined(__x86_64__)
+#if defined(__x86_64__)
 
-    inline INT fixabs_D(INT x)      { return ((x) > (INT)(0))      ? (x) : -(x) ; }
-    inline INT fixabs_S(INT x)      { return ((x) > (INT)(0))      ? (x) : -(x) ; }
+inline INT fixabs_D(INT x)
+{
+    return ((x) > (INT)(0))      ? (x) : -(x) ;
+}
+inline INT fixabs_S(INT x)
+{
+    return ((x) > (INT)(0))      ? (x) : -(x) ;
+}
 
-    #define fixabs_I(x) fixabs_D(x)
+#define fixabs_I(x) fixabs_D(x)
 
-    #define FUNCTION_fixabs_S
-    #define FUNCTION_fixabs_D
-    #define FUNCTION_fixabs_I
+#define FUNCTION_fixabs_S
+#define FUNCTION_fixabs_D
+#define FUNCTION_fixabs_I
 
-  #endif /* __x86_64__ */
+#endif /* __x86_64__ */
 
 #endif /*__x86__ */
 

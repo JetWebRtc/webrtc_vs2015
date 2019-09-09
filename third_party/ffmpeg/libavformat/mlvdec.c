@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Magic Lantern Video (MLV) demuxer
  * Copyright (c) 2014 Peter Ross
  *
@@ -44,7 +44,8 @@
 #define MLV_CLASS_FLAG_DELTA 0x40
 #define MLV_CLASS_FLAG_LZMA  0x80
 
-typedef struct {
+typedef struct
+{
     AVIOContext *pb[101];
     int class[2];
     int stream_index;
@@ -54,8 +55,8 @@ typedef struct {
 static int probe(AVProbeData *p)
 {
     if (AV_RL32(p->buf) == MKTAG('M','L','V','I') &&
-        AV_RL32(p->buf + 4) >= 52 &&
-        !memcmp(p->buf + 8, MLV_VERSION, 5))
+            AV_RL32(p->buf + 4) >= 52 &&
+            !memcmp(p->buf + 8, MLV_VERSION, 5))
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -79,13 +80,15 @@ static int check_file_header(AVIOContext *pb, uint64_t guid)
 static void read_string(AVFormatContext *avctx, AVIOContext *pb, const char *tag, int size)
 {
     char * value = av_malloc(size + 1);
-    if (!value) {
+    if (!value)
+    {
         avio_skip(pb, size);
         return;
     }
 
     avio_read(pb, value, size);
-    if (!value[0]) {
+    if (!value[0])
+    {
         av_free(value);
         return;
     }
@@ -119,7 +122,8 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
     MlvContext *mlv = avctx->priv_data;
     AVIOContext *pb = mlv->pb[file];
     int ret;
-    while (!avio_feof(pb)) {
+    while (!avio_feof(pb))
+    {
         int type;
         unsigned int size;
         type = avio_rl32(pb);
@@ -128,7 +132,8 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
         if (size < 16)
             break;
         size -= 16;
-        if (vst && type == MKTAG('R','A','W','I') && size >= 164) {
+        if (vst && type == MKTAG('R','A','W','I') && size >= 164)
+        {
             vst->codec->width  = avio_rl16(pb);
             vst->codec->height = avio_rl16(pb);
             if (avio_rl32(pb) != 1)
@@ -142,24 +147,33 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
             vst->codec->pix_fmt  = AV_PIX_FMT_BAYER_RGGB16LE;
             vst->codec->codec_tag = MKTAG('B', 'I', 'T', 16);
             size -= 164;
-        } else if (ast && type == MKTAG('W', 'A', 'V', 'I') && size >= 16) {
+        }
+        else if (ast && type == MKTAG('W', 'A', 'V', 'I') && size >= 16)
+        {
             ret = ff_get_wav_header(avctx, pb, ast->codec, 16, 0);
             if (ret < 0)
                 return ret;
             size -= 16;
-        } else if (type == MKTAG('I','N','F','O')) {
+        }
+        else if (type == MKTAG('I','N','F','O'))
+        {
             if (size > 0)
                 read_string(avctx, pb, "info", size);
             continue;
-        } else if (type == MKTAG('I','D','N','T') && size >= 36) {
+        }
+        else if (type == MKTAG('I','D','N','T') && size >= 36)
+        {
             read_string(avctx, pb, "cameraName", 32);
             read_uint32(avctx, pb, "cameraModel", "0x%"PRIx32);
             size -= 36;
-            if (size >= 32) {
+            if (size >= 32)
+            {
                 read_string(avctx, pb, "cameraSerial", 32);
                 size -= 32;
             }
-        } else if (type == MKTAG('L','E','N','S') && size >= 48) {
+        }
+        else if (type == MKTAG('L','E','N','S') && size >= 48)
+        {
             read_uint16(avctx, pb, "focalLength", "%i");
             read_uint16(avctx, pb, "focalDist", "%i");
             read_uint16(avctx, pb, "aperture", "%i");
@@ -169,21 +183,28 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
             read_uint32(avctx, pb, "lensID", "%"PRIi32);
             read_string(avctx, pb, "lensName", 32);
             size -= 48;
-            if (size >= 32) {
+            if (size >= 32)
+            {
                 read_string(avctx, pb, "lensSerial", 32);
                 size -= 32;
             }
-        } else if (vst && type == MKTAG('V', 'I', 'D', 'F') && size >= 4) {
+        }
+        else if (vst && type == MKTAG('V', 'I', 'D', 'F') && size >= 4)
+        {
             uint64_t pts = avio_rl32(pb);
             ff_add_index_entry(&vst->index_entries, &vst->nb_index_entries, &vst->index_entries_allocated_size,
                                avio_tell(pb) - 20, pts, file, 0, AVINDEX_KEYFRAME);
             size -= 4;
-        } else if (ast && type == MKTAG('A', 'U', 'D', 'F') && size >= 4) {
+        }
+        else if (ast && type == MKTAG('A', 'U', 'D', 'F') && size >= 4)
+        {
             uint64_t pts = avio_rl32(pb);
             ff_add_index_entry(&ast->index_entries, &ast->nb_index_entries, &ast->index_entries_allocated_size,
                                avio_tell(pb) - 20, pts, file, 0, AVINDEX_KEYFRAME);
             size -= 4;
-        } else if (vst && type == MKTAG('W','B','A','L') && size >= 28) {
+        }
+        else if (vst && type == MKTAG('W','B','A','L') && size >= 28)
+        {
             read_uint32(avctx, pb, "wb_mode", "%"PRIi32);
             read_uint32(avctx, pb, "kelvin", "%"PRIi32);
             read_uint32(avctx, pb, "wbgain_r", "%"PRIi32);
@@ -192,7 +213,9 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
             read_uint32(avctx, pb, "wbs_gm", "%"PRIi32);
             read_uint32(avctx, pb, "wbs_ba", "%"PRIi32);
             size -= 28;
-        } else if (type == MKTAG('R','T','C','I') && size >= 20) {
+        }
+        else if (type == MKTAG('R','T','C','I') && size >= 20)
+        {
             char str[32];
             struct tm time = { 0 };
             time.tm_sec    = avio_rl16(pb);
@@ -208,17 +231,22 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
             if (strftime(str, sizeof(str), "%Y-%m-%d %H:%M:%S", &time))
                 av_dict_set(&avctx->metadata, "time", str, 0);
             size -= 20;
-        } else if (type == MKTAG('E','X','P','O') && size >= 16) {
+        }
+        else if (type == MKTAG('E','X','P','O') && size >= 16)
+        {
             av_dict_set(&avctx->metadata, "isoMode", avio_rl32(pb) ? "auto" : "manual", 0);
             read_uint32(avctx, pb, "isoValue", "%"PRIi32);
             read_uint32(avctx, pb, "isoAnalog", "%"PRIi32);
             read_uint32(avctx, pb, "digitalGain", "%"PRIi32);
             size -= 16;
-            if (size >= 8) {
+            if (size >= 8)
+            {
                 read_uint64(avctx, pb, "shutterValue", "%"PRIi64);
                 size -= 8;
             }
-        } else if (type == MKTAG('S','T','Y','L') && size >= 36) {
+        }
+        else if (type == MKTAG('S','T','Y','L') && size >= 36)
+        {
             read_uint32(avctx, pb, "picStyleId", "%"PRIi32);
             read_uint32(avctx, pb, "contrast", "%"PRIi32);
             read_uint32(avctx, pb, "sharpness", "%"PRIi32);
@@ -226,10 +254,18 @@ static int scan_file(AVFormatContext *avctx, AVStream *vst, AVStream *ast, int f
             read_uint32(avctx, pb, "colortone", "%"PRIi32);
             read_string(avctx, pb, "picStyleName", 16);
             size -= 36;
-        } else if (type == MKTAG('M','A','R','K')) {
-        } else if (type == MKTAG('N','U','L','L')) {
-        } else if (type == MKTAG('M','L','V','I')) { /* occurs when MLV and Mnn files are concatenated */
-        } else {
+        }
+        else if (type == MKTAG('M','A','R','K'))
+        {
+        }
+        else if (type == MKTAG('N','U','L','L'))
+        {
+        }
+        else if (type == MKTAG('M','L','V','I'))     /* occurs when MLV and Mnn files are concatenated */
+        {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_INFO, "unsupported tag %c%c%c%c, size %u\n", type&0xFF, (type>>8)&0xFF, (type>>16)&0xFF, (type>>24)&0xFF, size);
         }
         avio_skip(pb, size);
@@ -266,7 +302,8 @@ static int read_header(AVFormatContext *avctx)
     nb_video_frames = avio_rl32(pb);
     nb_audio_frames = avio_rl32(pb);
 
-    if (nb_video_frames && mlv->class[0]) {
+    if (nb_video_frames && mlv->class[0])
+    {
         vst = avformat_new_stream(avctx, NULL);
         if (!vst)
             return AVERROR(ENOMEM);
@@ -275,7 +312,8 @@ static int read_header(AVFormatContext *avctx)
         if ((mlv->class[0] & (MLV_CLASS_FLAG_DELTA|MLV_CLASS_FLAG_LZMA)))
             avpriv_request_sample(avctx, "compression");
         vst->codec->codec_type = AVMEDIA_TYPE_VIDEO;
-        switch (mlv->class[0] & ~(MLV_CLASS_FLAG_DELTA|MLV_CLASS_FLAG_LZMA)) {
+        switch (mlv->class[0] & ~(MLV_CLASS_FLAG_DELTA|MLV_CLASS_FLAG_LZMA))
+        {
         case MLV_VIDEO_CLASS_RAW:
             vst->codec->codec_id = AV_CODEC_ID_RAWVIDEO;
             break;
@@ -297,7 +335,8 @@ static int read_header(AVFormatContext *avctx)
         }
     }
 
-    if (nb_audio_frames && mlv->class[1]) {
+    if (nb_audio_frames && mlv->class[1])
+    {
         ast = avformat_new_stream(avctx, NULL);
         if (!ast)
             return AVERROR(ENOMEM);
@@ -312,13 +351,15 @@ static int read_header(AVFormatContext *avctx)
         avpriv_set_pts_info(ast, 33, 1, ast->codec->sample_rate);
     }
 
-    if (vst) {
-       AVRational framerate;
-       framerate.num = avio_rl32(pb);
-       framerate.den = avio_rl32(pb);
-       avpriv_set_pts_info(vst, 64, framerate.den, framerate.num);
-    } else
-       avio_skip(pb, 8);
+    if (vst)
+    {
+        AVRational framerate;
+        framerate.num = avio_rl32(pb);
+        framerate.den = avio_rl32(pb);
+        avpriv_set_pts_info(vst, 64, framerate.den, framerate.num);
+    }
+    else
+        avio_skip(pb, 8);
 
     avio_skip(pb, size - 52);
 
@@ -329,7 +370,8 @@ static int read_header(AVFormatContext *avctx)
         return ret;
 
     /* scan secondary files */
-    if (strlen(avctx->filename) > 2) {
+    if (strlen(avctx->filename) > 2)
+    {
         int i;
         char *filename = av_strdup(avctx->filename);
         AVOpenCallback open_func = avctx->open_cb;
@@ -340,18 +382,21 @@ static int read_header(AVFormatContext *avctx)
         if (!open_func)
             open_func = ffio_open2_wrapper;
 
-        for (i = 0; i < 100; i++) {
+        for (i = 0; i < 100; i++)
+        {
             snprintf(filename + strlen(filename) - 2, 3, "%02d", i);
             if (open_func(avctx, &mlv->pb[i], filename, AVIO_FLAG_READ, &avctx->interrupt_callback, NULL) < 0)
                 break;
-            if (check_file_header(mlv->pb[i], guid) < 0) {
+            if (check_file_header(mlv->pb[i], guid) < 0)
+            {
                 av_log(avctx, AV_LOG_WARNING, "ignoring %s; bad format or guid mismatch\n", filename);
                 avio_closep(&mlv->pb[i]);
                 continue;
             }
             av_log(avctx, AV_LOG_INFO, "scanning %s\n", filename);
             ret = scan_file(avctx, vst, ast, i);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(avctx, AV_LOG_WARNING, "ignoring %s; %s\n", filename, av_err2str(ret));
                 avio_closep(&mlv->pb[i]);
                 continue;
@@ -387,7 +432,8 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
         return AVERROR_EOF;
 
     index = av_index_search_timestamp(st, mlv->pts, AVSEEK_FLAG_ANY);
-    if (index < 0) {
+    if (index < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "could not find index entry for frame %"PRId64"\n", mlv->pts);
         return AVERROR(EIO);
     }
@@ -405,11 +451,16 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
     space = avio_rl32(pb);
     avio_skip(pb, space);
 
-    if ((mlv->class[st->id] & (MLV_CLASS_FLAG_DELTA|MLV_CLASS_FLAG_LZMA))) {
+    if ((mlv->class[st->id] & (MLV_CLASS_FLAG_DELTA|MLV_CLASS_FLAG_LZMA)))
+    {
         ret = AVERROR_PATCHWELCOME;
-    } else if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+    }
+    else if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+    {
         ret = av_get_packet(pb, pkt, (st->codec->width * st->codec->height * st->codec->bits_per_coded_sample + 7) >> 3);
-    } else { // AVMEDIA_TYPE_AUDIO
+    }
+    else     // AVMEDIA_TYPE_AUDIO
+    {
         if (space > UINT_MAX - 24 || size < (24 + space))
             return AVERROR_INVALIDDATA;
         ret = av_get_packet(pb, pkt, size - (24 + space));
@@ -422,7 +473,8 @@ static int read_packet(AVFormatContext *avctx, AVPacket *pkt)
     pkt->pts = mlv->pts;
 
     mlv->stream_index++;
-    if (mlv->stream_index == avctx->nb_streams) {
+    if (mlv->stream_index == avctx->nb_streams)
+    {
         mlv->stream_index = 0;
         mlv->pts++;
     }
@@ -453,7 +505,8 @@ static int read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_mlv_demuxer = {
+AVInputFormat ff_mlv_demuxer =
+{
     .name           = "mlv",
     .long_name      = NULL_IF_CONFIG_SMALL("Magic Lantern Video (MLV)"),
     .priv_data_size = sizeof(MlvContext),

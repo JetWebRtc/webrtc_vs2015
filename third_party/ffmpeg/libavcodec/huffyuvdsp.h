@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -34,7 +34,8 @@
 #define A 3
 #endif
 
-typedef struct HuffYUVDSPContext {
+typedef struct HuffYUVDSPContext
+{
     void (*add_bytes)(uint8_t *dst /* align 16 */, uint8_t *src /* align 16 */,
                       intptr_t w);
     void (*add_hfyu_median_pred)(uint8_t *dst, const uint8_t *top,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,19 +24,22 @@
 #include "webrtc/base/thread_annotations.h"
 #include "webrtc/base/thread_checker_impl.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Do nothing implementation, for use in release mode.
 //
 // Note: You should almost always use the ThreadChecker class to get the
 // right version for your build configuration.
-class ThreadCheckerDoNothing {
- public:
-  bool CalledOnValidThread() const {
-    return true;
-  }
+class ThreadCheckerDoNothing
+{
+public:
+    bool CalledOnValidThread() const
+    {
+        return true;
+    }
 
-  void DetachFromThread() {}
+    void DetachFromThread() {}
 };
 
 // ThreadChecker is a helper class used to help verify that some methods of a
@@ -71,33 +74,39 @@ class ThreadCheckerDoNothing {
 //
 // In Release mode, CalledOnValidThread will always return true.
 #if ENABLE_THREAD_CHECKER
-class LOCKABLE ThreadChecker : public ThreadCheckerImpl {
+class LOCKABLE ThreadChecker : public ThreadCheckerImpl
+{
 };
 #else
-class LOCKABLE ThreadChecker : public ThreadCheckerDoNothing {
+class LOCKABLE ThreadChecker : public ThreadCheckerDoNothing
+{
 };
 #endif  // ENABLE_THREAD_CHECKER
 
 #undef ENABLE_THREAD_CHECKER
 
-namespace internal {
-class SCOPED_LOCKABLE AnnounceOnThread {
- public:
-  template<typename ThreadLikeObject>
-  explicit AnnounceOnThread(const ThreadLikeObject* thread_like_object)
-      EXCLUSIVE_LOCK_FUNCTION(thread_like_object) {}
-  ~AnnounceOnThread() UNLOCK_FUNCTION() {}
+namespace internal
+{
+class SCOPED_LOCKABLE AnnounceOnThread
+{
+public:
+    template<typename ThreadLikeObject>
+    explicit AnnounceOnThread(const ThreadLikeObject* thread_like_object)
+    EXCLUSIVE_LOCK_FUNCTION(thread_like_object) {}
+    ~AnnounceOnThread() UNLOCK_FUNCTION() {}
 
-  template<typename ThreadLikeObject>
-  static bool IsCurrent(const ThreadLikeObject* thread_like_object) {
-    return thread_like_object->IsCurrent();
-  }
-  static bool IsCurrent(const rtc::ThreadChecker* checker) {
-    return checker->CalledOnValidThread();
-  }
+    template<typename ThreadLikeObject>
+    static bool IsCurrent(const ThreadLikeObject* thread_like_object)
+    {
+        return thread_like_object->IsCurrent();
+    }
+    static bool IsCurrent(const rtc::ThreadChecker* checker)
+    {
+        return checker->CalledOnValidThread();
+    }
 
- private:
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AnnounceOnThread);
+private:
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(AnnounceOnThread);
 };
 
 }  // namespace internal

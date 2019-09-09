@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Ronald S. Bultje
  *
  * This file is part of FFmpeg.
@@ -38,7 +38,8 @@ void ff_emulated_edge_mc_ ## depth(uint8_t *dst, const uint8_t *src, \
 EMULATED_EDGE(8)
 EMULATED_EDGE(16)
 
-typedef struct VideoDSPContext {
+typedef struct VideoDSPContext
+{
     /**
      * Copy a rectangular area of samples to a temporary buffer and replicate
      * the border samples.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ALAC encoder and decoder common data
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 
 #include <stdint.h>
 
-enum AlacRawDataBlockType {
+enum AlacRawDataBlockType
+{
     /* At the moment, only SCE, CPE, LFE, and END are recognized. */
     TYPE_SCE,
     TYPE_CPE,

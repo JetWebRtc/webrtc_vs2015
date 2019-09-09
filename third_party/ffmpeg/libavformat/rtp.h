@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP definitions
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -89,7 +89,8 @@ enum AVCodecID ff_rtp_codec_id(const char *buf, enum AVMediaType codec_type);
 #define RTP_XIPH_IDENT 0xfecdba
 
 /* RTCP packet types */
-enum RTCPType {
+enum RTCPType
+{
     RTCP_FIR    = 192,
     RTCP_NACK, // 193
     RTCP_SMPTETC,// 194

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * aes.h
  *
  * header file for the AES block cipher
@@ -55,7 +55,8 @@ extern "C" {
 
 /* aes internals */
 
-typedef struct {
+typedef struct
+{
     v128_t round[15];
     int num_rounds;
 } srtp_aes_expanded_key_t;

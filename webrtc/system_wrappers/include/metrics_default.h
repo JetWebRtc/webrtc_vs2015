@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,22 +15,25 @@
 #include <memory>
 #include <string>
 
-namespace webrtc {
-namespace metrics {
+namespace webrtc
+{
+namespace metrics
+{
 
 // This class does not actually exist. It is casted to an implementation defined
 // pointer inside the functions.
 class Histogram;
 
-struct SampleInfo {
-  SampleInfo(const std::string& name, int min, int max, size_t bucket_count);
-  ~SampleInfo();
+struct SampleInfo
+{
+    SampleInfo(const std::string& name, int min, int max, size_t bucket_count);
+    ~SampleInfo();
 
-  const std::string name;
-  const int min;
-  const int max;
-  const size_t bucket_count;
-  std::map<int, int> samples;  // <value, # of events>
+    const std::string name;
+    const int min;
+    const int max;
+    const size_t bucket_count;
+    std::map<int, int> samples;  // <value, # of events>
 };
 
 // Enables collection of samples.

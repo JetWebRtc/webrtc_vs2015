@@ -1,4 +1,4 @@
-/*
+﻿/*
  * aes_gcm_ossl.h
  *
  * Header for AES Galois Counter Mode.
@@ -52,7 +52,8 @@
 #include <openssl/evp.h>
 #include <openssl/aes.h>
 
-typedef struct {
+typedef struct
+{
     int key_size;
     int tag_len;
     EVP_CIPHER_CTX* ctx;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW Chinese AVS video demuxer
  * Copyright (c) 2009  Stefan Gehrer <stefan.gehrer@gmx.de>
  *
@@ -36,27 +36,37 @@ static int cavsvideo_probe(AVProbeData *p)
     int pic=0, seq=0, slice_pos = 0;
     const uint8_t *ptr = p->buf, *end = p->buf + p->buf_size;
 
-    while (ptr < end) {
+    while (ptr < end)
+    {
         ptr = avpriv_find_start_code(ptr, end, &code);
-        if ((code & 0xffffff00) == 0x100) {
-            if(code < CAVS_SEQ_START_CODE) {
+        if ((code & 0xffffff00) == 0x100)
+        {
+            if(code < CAVS_SEQ_START_CODE)
+            {
                 /* slices have to be consecutive */
                 if(code < slice_pos)
                     return 0;
                 slice_pos = code;
-            } else {
+            }
+            else
+            {
                 slice_pos = 0;
             }
-            if (code == CAVS_SEQ_START_CODE) {
+            if (code == CAVS_SEQ_START_CODE)
+            {
                 seq++;
                 /* check for the only currently supported profile */
                 if (*ptr != CAVS_PROFILE_JIZHUN)
                     return 0;
-            } else if ((code == CAVS_PIC_I_START_CODE) ||
-                       (code == CAVS_PIC_PB_START_CODE)) {
+            }
+            else if ((code == CAVS_PIC_I_START_CODE) ||
+                     (code == CAVS_PIC_PB_START_CODE))
+            {
                 pic++;
-            } else if ((code == CAVS_UNDEF_START_CODE) ||
-                       (code >  CAVS_VIDEO_EDIT_CODE)) {
+            }
+            else if ((code == CAVS_UNDEF_START_CODE) ||
+                     (code >  CAVS_VIDEO_EDIT_CODE))
+            {
                 return 0;
             }
         }

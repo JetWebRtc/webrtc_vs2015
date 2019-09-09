@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Audio FIFO
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -31,7 +31,8 @@
 #include "mem.h"
 #include "samplefmt.h"
 
-struct AVAudioFifo {
+struct AVAudioFifo
+{
     AVFifoBuffer **buf;             /**< single buffer for interleaved, per-channel buffers for planar */
     int nb_buffers;                 /**< number of buffers */
     int nb_samples;                 /**< number of samples currently in the FIFO */
@@ -44,10 +45,13 @@ struct AVAudioFifo {
 
 void av_audio_fifo_free(AVAudioFifo *af)
 {
-    if (af) {
-        if (af->buf) {
+    if (af)
+    {
+        if (af->buf)
+        {
             int i;
-            for (i = 0; i < af->nb_buffers; i++) {
+            for (i = 0; i < af->nb_buffers; i++)
+            {
                 if (af->buf[i])
                     av_fifo_free(af->buf[i]);
             }
@@ -80,7 +84,8 @@ AVAudioFifo *av_audio_fifo_alloc(enum AVSampleFormat sample_fmt, int channels,
     if (!af->buf)
         goto error;
 
-    for (i = 0; i < af->nb_buffers; i++) {
+    for (i = 0; i < af->nb_buffers; i++)
+    {
         af->buf[i] = av_fifo_alloc(buf_size);
         if (!af->buf[i])
             goto error;
@@ -102,7 +107,8 @@ int av_audio_fifo_realloc(AVAudioFifo *af, int nb_samples)
                                           af->sample_fmt, 1)) < 0)
         return ret;
 
-    for (i = 0; i < af->nb_buffers; i++) {
+    for (i = 0; i < af->nb_buffers; i++)
+    {
         if ((ret = av_fifo_realloc2(af->buf[i], buf_size)) < 0)
             return ret;
     }
@@ -115,7 +121,8 @@ int av_audio_fifo_write(AVAudioFifo *af, void **data, int nb_samples)
     int i, ret, size;
 
     /* automatically reallocate buffers if needed */
-    if (av_audio_fifo_space(af) < nb_samples) {
+    if (av_audio_fifo_space(af) < nb_samples)
+    {
         int current_size = av_audio_fifo_size(af);
         /* check for integer overflow in new size calculation */
         if (INT_MAX / 2 - current_size < nb_samples)
@@ -126,7 +133,8 @@ int av_audio_fifo_write(AVAudioFifo *af, void **data, int nb_samples)
     }
 
     size = nb_samples * af->sample_size;
-    for (i = 0; i < af->nb_buffers; i++) {
+    for (i = 0; i < af->nb_buffers; i++)
+    {
         ret = av_fifo_generic_write(af->buf[i], data[i], size, NULL);
         if (ret != size)
             return AVERROR_BUG;
@@ -147,7 +155,8 @@ int av_audio_fifo_peek(AVAudioFifo *af, void **data, int nb_samples)
         return 0;
 
     size = nb_samples * af->sample_size;
-    for (i = 0; i < af->nb_buffers; i++) {
+    for (i = 0; i < af->nb_buffers; i++)
+    {
         if ((ret = av_fifo_generic_peek(af->buf[i], data[i], size, NULL)) < 0)
             return AVERROR_BUG;
     }
@@ -166,7 +175,8 @@ int av_audio_fifo_read(AVAudioFifo *af, void **data, int nb_samples)
         return 0;
 
     size = nb_samples * af->sample_size;
-    for (i = 0; i < af->nb_buffers; i++) {
+    for (i = 0; i < af->nb_buffers; i++)
+    {
         if ((ret = av_fifo_generic_read(af->buf[i], data[i], size, NULL)) < 0)
             return AVERROR_BUG;
     }
@@ -183,7 +193,8 @@ int av_audio_fifo_drain(AVAudioFifo *af, int nb_samples)
         return AVERROR(EINVAL);
     nb_samples = FFMIN(nb_samples, af->nb_samples);
 
-    if (nb_samples) {
+    if (nb_samples)
+    {
         size = nb_samples * af->sample_size;
         for (i = 0; i < af->nb_buffers; i++)
             av_fifo_drain(af->buf[i], size);

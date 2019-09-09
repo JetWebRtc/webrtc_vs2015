@@ -1,4 +1,4 @@
-/*
+﻿/*
  *    Copyright (C) 2005  Matthieu CASTET
  *
  * This file is part of FFmpeg.
@@ -43,7 +43,8 @@ flac_header (AVFormatContext * s, int idx)
     skip_bits1(&gb); /* metadata_last */
     mdt = get_bits(&gb, 7);
 
-    if (mdt == OGG_FLAC_METADATA_TYPE_STREAMINFO) {
+    if (mdt == OGG_FLAC_METADATA_TYPE_STREAMINFO)
+    {
         uint8_t *streaminfo_start = os->buf + os->pstart + 5 + 4 + 4 + 4;
         uint32_t samplerate;
 
@@ -70,7 +71,9 @@ flac_header (AVFormatContext * s, int idx)
             return AVERROR_INVALIDDATA;
 
         avpriv_set_pts_info(st, 64, 1, samplerate);
-    } else if (mdt == FLAC_METADATA_TYPE_VORBIS_COMMENT) {
+    }
+    else if (mdt == FLAC_METADATA_TYPE_VORBIS_COMMENT)
+    {
         ff_vorbis_stream_comment(s, st, os->buf + os->pstart + 4, os->psize - 4);
     }
 
@@ -100,7 +103,8 @@ old_flac_header (AVFormatContext * s, int idx)
 
     av_parser_close(parser);
 
-    if (st->codec->sample_rate) {
+    if (st->codec->sample_rate)
+    {
         avpriv_set_pts_info(st, 64, 1, st->codec->sample_rate);
         return 0;
     }
@@ -108,14 +112,16 @@ old_flac_header (AVFormatContext * s, int idx)
     return 1;
 }
 
-const struct ogg_codec ff_flac_codec = {
+const struct ogg_codec ff_flac_codec =
+{
     .magic = "\177FLAC",
     .magicsize = 5,
     .header = flac_header,
     .nb_header = 2,
 };
 
-const struct ogg_codec ff_old_flac_codec = {
+const struct ogg_codec ff_old_flac_codec =
+{
     .magic = "fLaC",
     .magicsize = 4,
     .header = old_flac_header,

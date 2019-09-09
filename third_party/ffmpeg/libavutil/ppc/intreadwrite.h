@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -86,7 +86,11 @@ static av_always_inline void av_write_bswap64(void *p, uint64_t v)
 
 static av_always_inline uint64_t av_read_bswap64(const void *p)
 {
-    union { uint64_t v; uint32_t hl[2]; } v;
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } v;
     __asm__ ("lwbrx   %0, %y2  \n\t"
              "lwbrx   %1, %y3  \n\t"
              : "=&r"(v.hl[1]), "=r"(v.hl[0])
@@ -96,7 +100,11 @@ static av_always_inline uint64_t av_read_bswap64(const void *p)
 
 static av_always_inline void av_write_bswap64(void *p, uint64_t v)
 {
-    union { uint64_t v; uint32_t hl[2]; } vv = { v };
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } vv = { v };
     __asm__ ("stwbrx  %2, %y0  \n\t"
              "stwbrx  %3, %y1  \n\t"
              : "=Z"(*(uint32_t*)p), "=Z"(*((uint32_t*)p+1))

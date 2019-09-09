@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DXVA2 HEVC HW acceleration.
  *
  * copyright (c) 2014 - 2015 Hendrik Leppkes
@@ -27,7 +27,8 @@
 
 #define MAX_SLICES 256
 
-struct hevc_dxva2_picture_context {
+struct hevc_dxva2_picture_context
+{
     DXVA_PicParams_HEVC   pp;
     DXVA_Qmatrix_HEVC     qm;
     unsigned              slice_count;
@@ -46,9 +47,10 @@ static void fill_picture_entry(DXVA_PicEntry_HEVC *pic,
 static int get_refpic_index(const DXVA_PicParams_HEVC *pp, int surface_index)
 {
     int i;
-    for (i = 0; i < FF_ARRAY_ELEMS(pp->RefPicList); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(pp->RefPicList); i++)
+    {
         if ((pp->RefPicList[i].bPicEntry & 0x7f) == surface_index)
-          return i;
+            return i;
     }
     return 0xff;
 }
@@ -91,7 +93,8 @@ static void fill_picture_parameters(const AVCodecContext *avctx, AVDXVAContext *
     pp->num_ref_idx_l1_default_active_minus1     = pps->num_ref_idx_l1_default_active - 1;
     pp->init_qp_minus26                          = pps->pic_init_qp_minus26;
 
-    if (h->sh.short_term_ref_pic_set_sps_flag == 0 && h->sh.short_term_rps) {
+    if (h->sh.short_term_ref_pic_set_sps_flag == 0 && h->sh.short_term_rps)
+    {
         pp->ucNumDeltaPocsOfRefRpsIdx            = h->sh.short_term_rps->rps_idx_num_delta_pocs;
         pp->wNumBitsForShortTermRPSInSlice       = h->sh.short_term_ref_pic_set_size;
     }
@@ -116,33 +119,35 @@ static void fill_picture_parameters(const AVCodecContext *avctx, AVDXVAContext *
                                  (0                                              << 27);
 
     pp->dwCodingSettingPicturePropertyFlags = (pps->constrained_intra_pred_flag                   <<  0) |
-                                              (pps->transform_skip_enabled_flag                   <<  1) |
-                                              (pps->cu_qp_delta_enabled_flag                      <<  2) |
-                                              (pps->pic_slice_level_chroma_qp_offsets_present_flag <<  3) |
-                                              (pps->weighted_pred_flag                            <<  4) |
-                                              (pps->weighted_bipred_flag                          <<  5) |
-                                              (pps->transquant_bypass_enable_flag                 <<  6) |
-                                              (pps->tiles_enabled_flag                            <<  7) |
-                                              (pps->entropy_coding_sync_enabled_flag              <<  8) |
-                                              (pps->uniform_spacing_flag                          <<  9) |
-                                              ((pps->tiles_enabled_flag ? pps->loop_filter_across_tiles_enabled_flag : 0) << 10) |
-                                              (pps->seq_loop_filter_across_slices_enabled_flag    << 11) |
-                                              (pps->deblocking_filter_override_enabled_flag       << 12) |
-                                              (pps->disable_dbf                                   << 13) |
-                                              (pps->lists_modification_present_flag               << 14) |
-                                              (pps->slice_header_extension_present_flag           << 15) |
-                                              (IS_IRAP(h)                                         << 16) |
-                                              (IS_IDR(h)                                          << 17) |
-                                              /* IntraPicFlag */
-                                              (IS_IRAP(h)                                         << 18) |
-                                              (0                                                  << 19);
+            (pps->transform_skip_enabled_flag                   <<  1) |
+            (pps->cu_qp_delta_enabled_flag                      <<  2) |
+            (pps->pic_slice_level_chroma_qp_offsets_present_flag <<  3) |
+            (pps->weighted_pred_flag                            <<  4) |
+            (pps->weighted_bipred_flag                          <<  5) |
+            (pps->transquant_bypass_enable_flag                 <<  6) |
+            (pps->tiles_enabled_flag                            <<  7) |
+            (pps->entropy_coding_sync_enabled_flag              <<  8) |
+            (pps->uniform_spacing_flag                          <<  9) |
+            ((pps->tiles_enabled_flag ? pps->loop_filter_across_tiles_enabled_flag : 0) << 10) |
+            (pps->seq_loop_filter_across_slices_enabled_flag    << 11) |
+            (pps->deblocking_filter_override_enabled_flag       << 12) |
+            (pps->disable_dbf                                   << 13) |
+            (pps->lists_modification_present_flag               << 14) |
+            (pps->slice_header_extension_present_flag           << 15) |
+            (IS_IRAP(h)                                         << 16) |
+            (IS_IDR(h)                                          << 17) |
+            /* IntraPicFlag */
+            (IS_IRAP(h)                                         << 18) |
+            (0                                                  << 19);
     pp->pps_cb_qp_offset            = pps->cb_qp_offset;
     pp->pps_cr_qp_offset            = pps->cr_qp_offset;
-    if (pps->tiles_enabled_flag) {
+    if (pps->tiles_enabled_flag)
+    {
         pp->num_tile_columns_minus1 = pps->num_tile_columns - 1;
         pp->num_tile_rows_minus1    = pps->num_tile_rows - 1;
 
-        if (!pps->uniform_spacing_flag) {
+        if (!pps->uniform_spacing_flag)
+        {
             for (i = 0; i < pps->num_tile_columns; i++)
                 pp->column_width_minus1[i] = pps->column_width[i] - 1;
 
@@ -158,24 +163,29 @@ static void fill_picture_parameters(const AVCodecContext *avctx, AVDXVAContext *
     pp->CurrPicOrderCntVal               = h->poc;
 
     // fill RefPicList from the DPB
-    for (i = 0, j = 0; i < FF_ARRAY_ELEMS(pp->RefPicList); i++) {
+    for (i = 0, j = 0; i < FF_ARRAY_ELEMS(pp->RefPicList); i++)
+    {
         const HEVCFrame *frame = NULL;
-        while (!frame && j < FF_ARRAY_ELEMS(h->DPB)) {
+        while (!frame && j < FF_ARRAY_ELEMS(h->DPB))
+        {
             if (&h->DPB[j] != current_picture && (h->DPB[j].flags & (HEVC_FRAME_FLAG_LONG_REF | HEVC_FRAME_FLAG_SHORT_REF)))
                 frame = &h->DPB[j];
             j++;
         }
 
-        if (frame) {
+        if (frame)
+        {
             fill_picture_entry(&pp->RefPicList[i], ff_dxva2_get_surface_index(avctx, ctx, frame->frame), !!(frame->flags & HEVC_FRAME_FLAG_LONG_REF));
             pp->PicOrderCntValList[i] = frame->poc;
-        } else {
+        }
+        else
+        {
             pp->RefPicList[i].bPicEntry = 0xff;
             pp->PicOrderCntValList[i]   = 0;
         }
     }
 
-    #define DO_REF_LIST(ref_idx, ref_list) { \
+#define DO_REF_LIST(ref_idx, ref_list) { \
         const RefPicList *rpl = &h->rps[ref_idx]; \
         for (i = 0, j = 0; i < FF_ARRAY_ELEMS(pp->ref_list); i++) { \
             const HEVCFrame *frame = NULL; \
@@ -203,13 +213,16 @@ static void fill_scaling_lists(AVDXVAContext *ctx, const HEVCContext *h, DXVA_Qm
                             &h->ps.pps->scaling_list : &h->ps.sps->scaling_list;
 
     memset(qm, 0, sizeof(*qm));
-    for (i = 0; i < 6; i++) {
-        for (j = 0; j < 16; j++) {
+    for (i = 0; i < 6; i++)
+    {
+        for (j = 0; j < 16; j++)
+        {
             pos = 4 * ff_hevc_diag_scan4x4_y[j] + ff_hevc_diag_scan4x4_x[j];
             qm->ucScalingLists0[i][j] = sl->sl[0][i][pos];
         }
 
-        for (j = 0; j < 64; j++) {
+        for (j = 0; j < 64; j++)
+        {
             pos = 8 * ff_hevc_diag_scan8x8_y[j] + ff_hevc_diag_scan8x8_x[j];
             qm->ucScalingLists1[i][j] = sl->sl[1][i][pos];
             qm->ucScalingLists2[i][j] = sl->sl[2][i][pos];
@@ -234,8 +247,8 @@ static void fill_slice_short(DXVA_Slice_HEVC_Short *slice,
 }
 
 static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
-                                             DECODER_BUFFER_DESC *bs,
-                                             DECODER_BUFFER_DESC *sc)
+        DECODER_BUFFER_DESC *bs,
+        DECODER_BUFFER_DESC *sc)
 {
     const HEVCContext *h = avctx->priv_data;
     AVDXVAContext *ctx = avctx->hwaccel_context;
@@ -253,21 +266,23 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
 
     /* Create an annex B bitstream buffer with only slice NAL and finalize slice */
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         type = D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
         if (FAILED(ID3D11VideoContext_GetDecoderBuffer(D3D11VA_CONTEXT(ctx)->video_context,
-                                                       D3D11VA_CONTEXT(ctx)->decoder,
-                                                       type,
-                                                       &dxva_size, &dxva_data_ptr)))
+                   D3D11VA_CONTEXT(ctx)->decoder,
+                   type,
+                   &dxva_size, &dxva_data_ptr)))
             return -1;
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         type = DXVA2_BitStreamDateBufferType;
         if (FAILED(IDirectXVideoDecoder_GetBuffer(DXVA2_CONTEXT(ctx)->decoder,
-                                                  type,
-                                                  &dxva_data_ptr, &dxva_size)))
+                   type,
+                   &dxva_data_ptr, &dxva_size)))
             return -1;
     }
 #endif
@@ -276,7 +291,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     current = dxva_data;
     end = dxva_data + dxva_size;
 
-    for (i = 0; i < ctx_pic->slice_count; i++) {
+    for (i = 0; i < ctx_pic->slice_count; i++)
+    {
         static const uint8_t start_code[] = { 0, 0, 1 };
         static const unsigned start_code_size = sizeof(start_code);
         unsigned position, size;
@@ -285,7 +301,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
 
         position = slice->BSNALunitDataLocation;
         size     = slice->SliceBytesInBuffer;
-        if (start_code_size + size > end - current) {
+        if (start_code_size + size > end - current)
+        {
             av_log(avctx, AV_LOG_ERROR, "Failed to build bitstream");
             break;
         }
@@ -300,7 +317,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
         current += size;
     }
     padding = FFMIN(128 - ((current - dxva_data) & 127), end - current);
-    if (slice && padding > 0) {
+    if (slice && padding > 0)
+    {
         memset(current, 0, padding);
         current += padding;
 
@@ -320,7 +338,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
         return -1;
 
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         D3D11_VIDEO_DECODER_BUFFER_DESC *dsc11 = bs;
         memset(dsc11, 0, sizeof(*dsc11));
         dsc11->BufferType           = type;
@@ -331,7 +350,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         DXVA2_DecodeBufferDesc *dsc2 = bs;
         memset(dsc2, 0, sizeof(*dsc2));
         dsc2->CompressedBufferType = type;
@@ -361,8 +381,8 @@ static int dxva2_hevc_start_frame(AVCodecContext *avctx,
     struct hevc_dxva2_picture_context *ctx_pic = h->ref->hwaccel_picture_private;
 
     if (DXVA_CONTEXT_DECODER(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
+            DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
+            DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
         return -1;
     av_assert0(ctx_pic);
 
@@ -419,7 +439,8 @@ static int dxva2_hevc_end_frame(AVCodecContext *avctx)
 }
 
 #if CONFIG_HEVC_DXVA2_HWACCEL
-AVHWAccel ff_hevc_dxva2_hwaccel = {
+AVHWAccel ff_hevc_dxva2_hwaccel =
+{
     .name           = "hevc_dxva2",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_HEVC,
@@ -432,7 +453,8 @@ AVHWAccel ff_hevc_dxva2_hwaccel = {
 #endif
 
 #if CONFIG_HEVC_D3D11VA_HWACCEL
-AVHWAccel ff_hevc_d3d11va_hwaccel = {
+AVHWAccel ff_hevc_d3d11va_hwaccel =
+{
     .name           = "hevc_d3d11va",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_HEVC,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,17 +15,19 @@
 
 #include "test/yuv_video_source.h"
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 // This class extends VideoSource to allow parsing of raw yv12
 // so that we can do actual file encodes.
-class I420VideoSource : public YUVVideoSource {
- public:
-  I420VideoSource(const std::string &file_name, unsigned int width,
-                  unsigned int height, int rate_numerator, int rate_denominator,
-                  unsigned int start, int limit)
-      : YUVVideoSource(file_name, VPX_IMG_FMT_I420, width, height,
-                       rate_numerator, rate_denominator, start, limit) {}
+class I420VideoSource : public YUVVideoSource
+{
+public:
+    I420VideoSource(const std::string &file_name, unsigned int width,
+                    unsigned int height, int rate_numerator, int rate_denominator,
+                    unsigned int start, int limit)
+        : YUVVideoSource(file_name, VPX_IMG_FMT_I420, width, height,
+                         rate_numerator, rate_denominator, start, limit) {}
 };
 
 }  // namespace libvpx_test

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG 2000 common defines, structures and functions
  * Copyright (c) 2007 Kamil Nowosad
  * Copyright (c) 2013 Nicolas Bertrand <nicoinattendu@gmail.com>
@@ -35,7 +35,8 @@
 #include "mqc.h"
 #include "jpeg2000dwt.h"
 
-enum Jpeg2000Markers {
+enum Jpeg2000Markers
+{
     JPEG2000_SOC = 0xff4f, // start of codestream
     JPEG2000_SIZ = 0xff51, // image and tile size
     JPEG2000_COD,          // coding style default
@@ -61,7 +62,8 @@ enum Jpeg2000Markers {
 #define JPEG2000_SOP_FIXED_BYTES 0xFF910004
 #define JPEG2000_SOP_BYTE_LENGTH 6
 
-enum Jpeg2000Quantsty { // quantization style
+enum Jpeg2000Quantsty   // quantization style
+{
     JPEG2000_QSTY_NONE, // no quantization
     JPEG2000_QSTY_SI,   // scalar derived
     JPEG2000_QSTY_SE    // scalar expounded
@@ -118,20 +120,23 @@ enum Jpeg2000Quantsty { // quantization style
 #define JPEG2000_PGOD_PCRL      0x03  // Position-component-resolution level-layer progression
 #define JPEG2000_PGOD_CPRL      0x04  // Component-position-resolution level-layer progression
 
-typedef struct Jpeg2000T1Context {
+typedef struct Jpeg2000T1Context
+{
     int data[6144];
     uint16_t flags[6156];
     MqcState mqc;
     int stride;
 } Jpeg2000T1Context;
 
-typedef struct Jpeg2000TgtNode {
+typedef struct Jpeg2000TgtNode
+{
     uint8_t val;
     uint8_t vis;
     struct Jpeg2000TgtNode *parent;
 } Jpeg2000TgtNode;
 
-typedef struct Jpeg2000CodingStyle {
+typedef struct Jpeg2000CodingStyle
+{
     int nreslevels;           // number of resolution levels
     int nreslevels2decode;    // number of resolution levels to decode
     uint8_t log2_cblk_width,
@@ -146,21 +151,24 @@ typedef struct Jpeg2000CodingStyle {
     uint8_t log2_prec_heights[JPEG2000_MAX_RESLEVELS]; // TODO: initialize prec_size array with 0?
 } Jpeg2000CodingStyle;
 
-typedef struct Jpeg2000QuantStyle {
+typedef struct Jpeg2000QuantStyle
+{
     uint8_t expn[JPEG2000_MAX_DECLEVELS * 3];  // quantization exponent
     uint16_t mant[JPEG2000_MAX_DECLEVELS * 3]; // quantization mantissa
     uint8_t quantsty;      // quantization style
     uint8_t nguardbits;    // number of guard bits
 } Jpeg2000QuantStyle;
 
-typedef struct Jpeg2000Pass {
+typedef struct Jpeg2000Pass
+{
     uint16_t rate;
     int64_t disto;
     uint8_t flushed[4];
     int flushed_len;
 } Jpeg2000Pass;
 
-typedef struct Jpeg2000Cblk {
+typedef struct Jpeg2000Cblk
+{
     uint8_t npasses;
     uint8_t ninclpasses; // number coding of passes included in codestream
     uint8_t nonzerobits;
@@ -177,7 +185,8 @@ typedef struct Jpeg2000Cblk {
     uint16_t coord[2][2]; // border coordinates {{x0, x1}, {y0, y1}}
 } Jpeg2000Cblk; // code block
 
-typedef struct Jpeg2000Prec {
+typedef struct Jpeg2000Prec
+{
     uint16_t nb_codeblocks_width;
     uint16_t nb_codeblocks_height;
     Jpeg2000TgtNode *zerobits;
@@ -187,7 +196,8 @@ typedef struct Jpeg2000Prec {
     uint16_t coord[2][2]; // border coordinates {{x0, x1}, {y0, y1}}
 } Jpeg2000Prec; // precinct
 
-typedef struct Jpeg2000Band {
+typedef struct Jpeg2000Band
+{
     uint16_t coord[2][2]; // border coordinates {{x0, x1}, {y0, y1}}
     uint16_t log2_cblk_width, log2_cblk_height;
     int i_stepsize; // quantization stepsize
@@ -195,7 +205,8 @@ typedef struct Jpeg2000Band {
     Jpeg2000Prec *prec;
 } Jpeg2000Band; // subband
 
-typedef struct Jpeg2000ResLevel {
+typedef struct Jpeg2000ResLevel
+{
     uint8_t nbands;
     uint16_t coord[2][2]; // border coordinates {{x0, x1}, {y0, y1}}
     uint16_t num_precincts_x, num_precincts_y; // number of precincts in x/y direction
@@ -203,7 +214,8 @@ typedef struct Jpeg2000ResLevel {
     Jpeg2000Band *band;
 } Jpeg2000ResLevel; // resolution level
 
-typedef struct Jpeg2000Component {
+typedef struct Jpeg2000Component
+{
     Jpeg2000ResLevel *reslevel;
     DWTContext dwt;
     float *f_data;
@@ -271,15 +283,18 @@ void ff_jpeg2000_reinit(Jpeg2000Component *comp, Jpeg2000CodingStyle *codsty);
 
 void ff_jpeg2000_cleanup(Jpeg2000Component *comp, Jpeg2000CodingStyle *codsty);
 
-static inline int needs_termination(int style, int passno) {
-    if (style & JPEG2000_CBLK_BYPASS) {
+static inline int needs_termination(int style, int passno)
+{
+    if (style & JPEG2000_CBLK_BYPASS)
+    {
         int type = passno % 3;
         passno /= 3;
         if (type == 0 && passno > 2)
             return 2;
         if (type == 2 && passno > 2)
             return 1;
-        if (style & JPEG2000_CBLK_TERMALL) {
+        if (style & JPEG2000_CBLK_TERMALL)
+        {
             return passno > 2 ? 2 : 1;
         }
     }

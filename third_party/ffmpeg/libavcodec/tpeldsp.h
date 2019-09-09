@@ -1,4 +1,4 @@
-/*
+﻿/*
  * thirdpel DSP functions
  *
  * This file is part of FFmpeg.
@@ -39,7 +39,8 @@ typedef void (*tpel_mc_func)(uint8_t *block /* align width (8 or 16) */,
 /**
  * thirdpel DSP context
  */
-typedef struct TpelDSPContext {
+typedef struct TpelDSPContext
+{
     /**
      * Thirdpel motion compensation with rounding (a + b + 1) >> 1.
      * this is an array[12] of motion compensation functions for the

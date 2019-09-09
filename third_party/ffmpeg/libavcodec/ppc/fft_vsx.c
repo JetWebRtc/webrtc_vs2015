@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFT  transform, optimized with VSX built-in functions
  * Copyright (c) 2014 Rong Yan
  *
@@ -207,21 +207,23 @@ static void fft65536_vsx(FFTComplex *z)
     pass_vsx(z,ff_cos_65536,8192);
 }
 
-static void (* const fft_dispatch_vsx[])(FFTComplex*) = {
+static void (* const fft_dispatch_vsx[])(FFTComplex*) =
+{
     fft4_vsx, fft8_vsx, fft16_vsx, fft32_vsx, fft64_vsx, fft128_vsx, fft256_vsx, fft512_vsx, fft1024_vsx,
     fft2048_vsx, fft4096_vsx, fft8192_vsx, fft16384_vsx, fft32768_vsx, fft65536_vsx,
 };
-static void (* const fft_dispatch_vsx_interleave[])(FFTComplex*) = {
+static void (* const fft_dispatch_vsx_interleave[])(FFTComplex*) =
+{
     fft4_vsx_interleave, fft8_vsx_interleave, fft16_vsx_interleave, fft32_vsx_interleave, fft64_vsx_interleave,
     fft128_vsx_interleave, fft256_vsx_interleave, fft512_vsx_interleave, fft1024_vsx_interleave,
     fft2048_vsx_interleave, fft4096_vsx_interleave, fft8192_vsx_interleave, fft16384_vsx_interleave, fft32768_vsx_interleave, fft65536_vsx_interleave,
 };
 void ff_fft_calc_interleave_vsx(FFTContext *s, FFTComplex *z)
 {
-     fft_dispatch_vsx_interleave[s->nbits-2](z);
+    fft_dispatch_vsx_interleave[s->nbits-2](z);
 }
 void ff_fft_calc_vsx(FFTContext *s, FFTComplex *z)
 {
-     fft_dispatch_vsx[s->nbits-2](z);
+    fft_dispatch_vsx[s->nbits-2](z);
 }
 #endif /* HAVE_VSX */

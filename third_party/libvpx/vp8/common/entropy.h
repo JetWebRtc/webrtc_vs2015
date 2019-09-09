@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -40,15 +40,16 @@ extern const vp8_tree_index vp8_coef_tree[];
 
 extern const struct vp8_token_struct vp8_coef_encodings[MAX_ENTROPY_TOKENS];
 
-typedef struct {
-  vp8_tree_p tree;
-  const vp8_prob *prob;
-  int Len;
-  int base_val;
+typedef struct
+{
+    vp8_tree_p tree;
+    const vp8_prob *prob;
+    int Len;
+    int base_val;
 } vp8_extra_bit_struct;
 
 extern const vp8_extra_bit_struct
-    vp8_extra_bits[12]; /* indexed by token value */
+vp8_extra_bits[12]; /* indexed by token value */
 
 #define PROB_UPDATE_BASELINE_COST 7
 
@@ -90,7 +91,7 @@ extern DECLARE_ALIGNED(16, const unsigned char,
                        vp8_prev_token_class[MAX_ENTROPY_TOKENS]);
 
 extern const vp8_prob vp8_coef_update_probs[BLOCK_TYPES][COEF_BANDS]
-                                           [PREV_COEF_CONTEXTS][ENTROPY_NODES];
+[PREV_COEF_CONTEXTS][ENTROPY_NODES];
 
 struct VP8Common;
 void vp8_default_coef_probs(struct VP8Common *);

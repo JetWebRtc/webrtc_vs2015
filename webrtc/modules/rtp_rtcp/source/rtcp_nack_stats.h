@@ -1,4 +1,4 @@
-/*
+﻿/*
 *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
 *
 *  Use of this source code is governed by a BSD-style license
@@ -13,27 +13,35 @@
 
 #include <stdint.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RtcpNackStats {
- public:
-  RtcpNackStats();
+class RtcpNackStats
+{
+public:
+    RtcpNackStats();
 
-  // Updates stats with requested sequence number.
-  // This function should be called for each NACK request to calculate the
-  // number of unique NACKed RTP packets.
-  void ReportRequest(uint16_t sequence_number);
+    // Updates stats with requested sequence number.
+    // This function should be called for each NACK request to calculate the
+    // number of unique NACKed RTP packets.
+    void ReportRequest(uint16_t sequence_number);
 
-  // Gets the number of NACKed RTP packets.
-  uint32_t requests() const { return requests_; }
+    // Gets the number of NACKed RTP packets.
+    uint32_t requests() const
+    {
+        return requests_;
+    }
 
-  // Gets the number of unique NACKed RTP packets.
-  uint32_t unique_requests() const { return unique_requests_; }
+    // Gets the number of unique NACKed RTP packets.
+    uint32_t unique_requests() const
+    {
+        return unique_requests_;
+    }
 
- private:
-  uint16_t max_sequence_number_;
-  uint32_t requests_;
-  uint32_t unique_requests_;
+private:
+    uint16_t max_sequence_number_;
+    uint32_t requests_;
+    uint32_t unique_requests_;
 };
 
 }  // namespace webrtc

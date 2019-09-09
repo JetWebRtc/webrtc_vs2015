@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -27,18 +27,25 @@ av_cold void ff_fdctdsp_init(FDCTDSPContext *c, AVCodecContext *avctx)
 {
     const unsigned high_bit_depth = avctx->bits_per_raw_sample > 8;
 
-    if (avctx->bits_per_raw_sample == 10 || avctx->bits_per_raw_sample == 9) {
+    if (avctx->bits_per_raw_sample == 10 || avctx->bits_per_raw_sample == 9)
+    {
         c->fdct    = ff_jpeg_fdct_islow_10;
         c->fdct248 = ff_fdct248_islow_10;
-    } else if (avctx->dct_algo == FF_DCT_FASTINT) {
+    }
+    else if (avctx->dct_algo == FF_DCT_FASTINT)
+    {
         c->fdct    = ff_fdct_ifast;
         c->fdct248 = ff_fdct_ifast248;
 #if CONFIG_FAANDCT
-    } else if (avctx->dct_algo == FF_DCT_FAAN) {
+    }
+    else if (avctx->dct_algo == FF_DCT_FAAN)
+    {
         c->fdct    = ff_faandct;
         c->fdct248 = ff_faandct248;
 #endif /* CONFIG_FAANDCT */
-    } else {
+    }
+    else
+    {
         c->fdct    = ff_jpeg_fdct_islow_8; // slow/accurate/default
         c->fdct248 = ff_fdct248_islow_8;
     }

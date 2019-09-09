@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNM image format
  * Copyright (c) 2002, 2003 Fabrice Bellard
  *
@@ -31,17 +31,18 @@ static int pnm_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint8_t *ptr, *ptr1, *ptr2;
 
     if ((ret = ff_alloc_packet2(avctx, pkt, avpicture_get_size(avctx->pix_fmt,
-                                                       avctx->width,
-                                                       avctx->height) + 200, 0)) < 0)
+                                avctx->width,
+                                avctx->height) + 200, 0)) < 0)
         return ret;
 
     bytestream_start =
-    bytestream       = pkt->data;
+        bytestream       = pkt->data;
     bytestream_end   = pkt->data + pkt->size;
 
     h  = avctx->height;
     h1 = h;
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_MONOWHITE:
         c  = '4';
         n  = (avctx->width + 7) >> 3;
@@ -63,7 +64,8 @@ static int pnm_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         n  = avctx->width * 6;
         break;
     case AV_PIX_FMT_YUV420P:
-        if (avctx->width & 1 || avctx->height & 1) {
+        if (avctx->width & 1 || avctx->height & 1)
+        {
             av_log(avctx, AV_LOG_ERROR, "pgmyuv needs even width and height\n");
             return AVERROR(EINVAL);
         }
@@ -82,7 +84,8 @@ static int pnm_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     snprintf(bytestream, bytestream_end - bytestream,
              "P%c\n%d %d\n", c, avctx->width, h1);
     bytestream += strlen(bytestream);
-    if (avctx->pix_fmt != AV_PIX_FMT_MONOWHITE) {
+    if (avctx->pix_fmt != AV_PIX_FMT_MONOWHITE)
+    {
         int maxdepth = (1 << (av_pix_fmt_desc_get(avctx->pix_fmt)->comp[0].depth_minus1 + 1)) - 1;
         snprintf(bytestream, bytestream_end - bytestream,
                  "%d\n", maxdepth);
@@ -91,24 +94,27 @@ static int pnm_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     ptr      = p->data[0];
     linesize = p->linesize[0];
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         memcpy(bytestream, ptr, n);
         bytestream += n;
         ptr        += linesize;
     }
 
-    if (avctx->pix_fmt == AV_PIX_FMT_YUV420P || avctx->pix_fmt == AV_PIX_FMT_YUV420P16BE) {
+    if (avctx->pix_fmt == AV_PIX_FMT_YUV420P || avctx->pix_fmt == AV_PIX_FMT_YUV420P16BE)
+    {
         h >>= 1;
         n >>= 1;
         ptr1 = p->data[1];
         ptr2 = p->data[2];
-        for (i = 0; i < h; i++) {
+        for (i = 0; i < h; i++)
+        {
             memcpy(bytestream, ptr1, n);
             bytestream += n;
             memcpy(bytestream, ptr2, n);
             bytestream += n;
-                ptr1 += p->linesize[1];
-                ptr2 += p->linesize[2];
+            ptr1 += p->linesize[1];
+            ptr2 += p->linesize[2];
         }
     }
     pkt->size   = bytestream - bytestream_start;
@@ -121,17 +127,18 @@ static int pnm_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 static av_cold int pnm_encode_init(AVCodecContext *avctx)
 {
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     return 0;
 }
 
 #if CONFIG_PGM_ENCODER
-AVCodec ff_pgm_encoder = {
+AVCodec ff_pgm_encoder =
+{
     .name           = "pgm",
     .long_name      = NULL_IF_CONFIG_SMALL("PGM (Portable GrayMap) image"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -145,7 +152,8 @@ AVCodec ff_pgm_encoder = {
 #endif
 
 #if CONFIG_PGMYUV_ENCODER
-AVCodec ff_pgmyuv_encoder = {
+AVCodec ff_pgmyuv_encoder =
+{
     .name           = "pgmyuv",
     .long_name      = NULL_IF_CONFIG_SMALL("PGMYUV (Portable GrayMap YUV) image"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -159,7 +167,8 @@ AVCodec ff_pgmyuv_encoder = {
 #endif
 
 #if CONFIG_PPM_ENCODER
-AVCodec ff_ppm_encoder = {
+AVCodec ff_ppm_encoder =
+{
     .name           = "ppm",
     .long_name      = NULL_IF_CONFIG_SMALL("PPM (Portable PixelMap) image"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -173,14 +182,17 @@ AVCodec ff_ppm_encoder = {
 #endif
 
 #if CONFIG_PBM_ENCODER
-AVCodec ff_pbm_encoder = {
+AVCodec ff_pbm_encoder =
+{
     .name           = "pbm",
     .long_name      = NULL_IF_CONFIG_SMALL("PBM (Portable BitMap) image"),
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_PBM,
     .init           = pnm_encode_init,
     .encode2        = pnm_encode_frame,
-    .pix_fmts       = (const enum AVPixelFormat[]){ AV_PIX_FMT_MONOWHITE,
-                                                  AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]){
+        AV_PIX_FMT_MONOWHITE,
+        AV_PIX_FMT_NONE
+    },
 };
 #endif

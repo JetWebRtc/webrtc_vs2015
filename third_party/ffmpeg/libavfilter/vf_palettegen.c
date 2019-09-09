@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Stupeflix
  *
  * This file is part of FFmpeg.
@@ -31,13 +31,15 @@
 #include "internal.h"
 
 /* Reference a color and how much it's used */
-struct color_ref {
+struct color_ref
+{
     uint32_t color;
     uint64_t count;
 };
 
 /* Store a range of colors */
-struct range_box {
+struct range_box
+{
     uint32_t color;     // average color
     int64_t variance;   // overall variance of the box (how much the colors are spread)
     int start;          // index in PaletteGenContext->refs
@@ -45,12 +47,14 @@ struct range_box {
     int sorted_by;      // whether range of colors is sorted by red (0), green (1) or blue (2)
 };
 
-struct hist_node {
+struct hist_node
+{
     struct color_ref *entries;
     int nb_entries;
 };
 
-enum {
+enum
+{
     STATS_MODE_ALL_FRAMES,
     STATS_MODE_DIFF_FRAMES,
     NB_STATS_MODE
@@ -59,7 +63,8 @@ enum {
 #define NBITS 5
 #define HIST_SIZE (1<<(3*NBITS))
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
 
     int max_colors;
@@ -77,12 +82,13 @@ typedef struct {
 
 #define OFFSET(x) offsetof(PaletteGenContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption palettegen_options[] = {
+static const AVOption palettegen_options[] =
+{
     { "max_colors", "set the maximum number of colors to use in the palette", OFFSET(max_colors), AV_OPT_TYPE_INT, {.i64=256}, 4, 256, FLAGS },
     { "reserve_transparent", "reserve a palette entry for transparency", OFFSET(reserve_transparent), AV_OPT_TYPE_INT, {.i64=1}, 0, 1, FLAGS },
     { "stats_mode", "set statistics mode", OFFSET(stats_mode), AV_OPT_TYPE_INT, {.i64=STATS_MODE_ALL_FRAMES}, 0, NB_STATS_MODE, FLAGS, "mode" },
-        { "full", "compute full frame histograms", 0, AV_OPT_TYPE_CONST, {.i64=STATS_MODE_ALL_FRAMES}, INT_MIN, INT_MAX, FLAGS, "mode" },
-        { "diff", "compute histograms only for the part that differs from previous frame", 0, AV_OPT_TYPE_CONST, {.i64=STATS_MODE_DIFF_FRAMES}, INT_MIN, INT_MAX, FLAGS, "mode" },
+    { "full", "compute full frame histograms", 0, AV_OPT_TYPE_CONST, {.i64=STATS_MODE_ALL_FRAMES}, INT_MIN, INT_MAX, FLAGS, "mode" },
+    { "diff", "compute histograms only for the part that differs from previous frame", 0, AV_OPT_TYPE_CONST, {.i64=STATS_MODE_DIFF_FRAMES}, INT_MIN, INT_MAX, FLAGS, "mode" },
     { NULL }
 };
 
@@ -94,7 +100,8 @@ static int query_formats(AVFilterContext *ctx)
     static const enum AVPixelFormat out_fmts[] = {AV_PIX_FMT_RGB32, AV_PIX_FMT_NONE};
     AVFilterFormats *in  = ff_make_format_list(in_fmts);
     AVFilterFormats *out = ff_make_format_list(out_fmts);
-    if (!in || !out) {
+    if (!in || !out)
+    {
         av_freep(&in);
         av_freep(&out);
         return AVERROR(ENOMEM);
@@ -152,25 +159,32 @@ static int get_next_box_id_to_split(PaletteGenContext *s)
     if (s->nb_boxes == s->max_colors - s->reserve_transparent)
         return -1;
 
-    for (box_id = 0; box_id < s->nb_boxes; box_id++) {
+    for (box_id = 0; box_id < s->nb_boxes; box_id++)
+    {
         struct range_box *box = &s->boxes[box_id];
 
-        if (s->boxes[box_id].len >= 2) {
+        if (s->boxes[box_id].len >= 2)
+        {
 
-            if (box->variance == -1) {
+            if (box->variance == -1)
+            {
                 int64_t variance = 0;
 
-                for (i = 0; i < box->len; i++) {
+                for (i = 0; i < box->len; i++)
+                {
                     const struct color_ref *ref = s->refs[box->start + i];
                     variance += diff(ref->color, box->color) * ref->count;
                 }
                 box->variance = variance;
             }
-            if (box->variance > max_variance) {
+            if (box->variance > max_variance)
+            {
                 best_box_id = box_id;
                 max_variance = box->variance;
             }
-        } else {
+        }
+        else
+        {
             box->variance = -1;
         }
     }
@@ -188,7 +202,8 @@ static uint32_t get_avg_color(struct color_ref * const *refs,
     const int n = box->len;
     uint64_t r = 0, g = 0, b = 0, div = 0;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         const struct color_ref *ref = refs[box->start + i];
         r += (ref->color >> 16 & 0xff) * ref->count;
         g += (ref->color >>  8 & 0xff) * ref->count;
@@ -235,21 +250,27 @@ static void write_palette(AVFilterContext *ctx, AVFrame *out)
     const int pal_linesize = out->linesize[0] >> 2;
     uint32_t last_color = 0;
 
-    for (y = 0; y < out->height; y++) {
-        for (x = 0; x < out->width; x++) {
-            if (box_id < s->nb_boxes) {
+    for (y = 0; y < out->height; y++)
+    {
+        for (x = 0; x < out->width; x++)
+        {
+            if (box_id < s->nb_boxes)
+            {
                 pal[x] = s->boxes[box_id++].color;
                 if ((x || y) && pal[x] == last_color)
                     av_log(ctx, AV_LOG_WARNING, "Dupped color: %08X\n", pal[x]);
                 last_color = pal[x];
-            } else {
+            }
+            else
+            {
                 pal[x] = 0xff000000; // pad with black
             }
         }
         pal += pal_linesize;
     }
 
-    if (s->reserve_transparent) {
+    if (s->reserve_transparent)
+    {
         av_assert0(s->nb_boxes < 256);
         pal[out->width - pal_linesize - 1] = 0x0000ff00; // add a green transparent color
     }
@@ -268,7 +289,8 @@ static struct color_ref **load_color_refs(const struct hist_node *hist, int nb_r
     if (!refs)
         return NULL;
 
-    for (j = 0; j < HIST_SIZE; j++) {
+    for (j = 0; j < HIST_SIZE; j++)
+    {
         const struct hist_node *node = &hist[j];
 
         for (i = 0; i < node->nb_entries; i++)
@@ -302,7 +324,8 @@ static AVFrame *get_palette_frame(AVFilterContext *ctx)
 
     /* reference only the used colors from histogram */
     s->refs = load_color_refs(s->histogram, s->nb_refs);
-    if (!s->refs) {
+    if (!s->refs)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unable to allocate references for %d different colors\n", s->nb_refs);
         return NULL;
     }
@@ -321,7 +344,8 @@ static AVFrame *get_palette_frame(AVFilterContext *ctx)
     box->variance = -1;
     s->nb_boxes = 1;
 
-    while (box && box->len > 1) {
+    while (box && box->len > 1)
+    {
         int i, rr, gr, br, longest;
         uint64_t median, box_weight = 0;
 
@@ -329,7 +353,8 @@ static AVFrame *get_palette_frame(AVFilterContext *ctx)
          * range) and its boundings */
         uint8_t min[3] = {0xff, 0xff, 0xff};
         uint8_t max[3] = {0x00, 0x00, 0x00};
-        for (i = box->start; i < box->start + box->len; i++) {
+        for (i = box->start; i < box->start + box->len; i++)
+        {
             const struct color_ref *ref = s->refs[i];
             const uint32_t rgb = ref->color;
             const uint8_t r = rgb >> 16 & 0xff, g = rgb >> 8 & 0xff, b = rgb & 0xff;
@@ -353,7 +378,8 @@ static AVFrame *get_palette_frame(AVFilterContext *ctx)
                 rr, gr, br, "rgb"[longest], box->sorted_by == longest ? 'y':'n');
 
         /* sort the range by its longest axis if it's not already sorted */
-        if (box->sorted_by != longest) {
+        if (box->sorted_by != longest)
+        {
             cmp_func cmpf = cmp_funcs[longest];
             AV_QSORT(&s->refs[box->start], box->len, const struct color_ref *, cmpf);
             box->sorted_by = longest;
@@ -364,7 +390,8 @@ static AVFrame *get_palette_frame(AVFilterContext *ctx)
         box_weight = 0;
         /* if you have 2 boxes, the maximum is actually #0: you must have at
          * least 1 color on each side of the split, hence the -2 */
-        for (i = box->start; i < box->start + box->len - 2; i++) {
+        for (i = box->start; i < box->start + box->len - 2; i++)
+        {
             box_weight += s->refs[i]->count;
             if (box_weight > median)
                 break;
@@ -410,9 +437,11 @@ static int color_inc(struct hist_node *hist, uint32_t color)
     struct hist_node *node = &hist[hash];
     struct color_ref *e;
 
-    for (i = 0; i < node->nb_entries; i++) {
+    for (i = 0; i < node->nb_entries; i++)
+    {
         e = &node->entries[i];
-        if (e->color == color) {
+        if (e->color == color)
+        {
             e->count++;
             return 0;
         }
@@ -435,11 +464,13 @@ static int update_histogram_diff(struct hist_node *hist,
 {
     int x, y, ret, nb_diff_colors = 0;
 
-    for (y = 0; y < f1->height; y++) {
+    for (y = 0; y < f1->height; y++)
+    {
         const uint32_t *p = (const uint32_t *)(f1->data[0] + y*f1->linesize[0]);
         const uint32_t *q = (const uint32_t *)(f2->data[0] + y*f2->linesize[0]);
 
-        for (x = 0; x < f1->width; x++) {
+        for (x = 0; x < f1->width; x++)
+        {
             if (p[x] == q[x])
                 continue;
             ret = color_inc(hist, p[x]);
@@ -458,10 +489,12 @@ static int update_histogram_frame(struct hist_node *hist, const AVFrame *f)
 {
     int x, y, ret, nb_diff_colors = 0;
 
-    for (y = 0; y < f->height; y++) {
+    for (y = 0; y < f->height; y++)
+    {
         const uint32_t *p = (const uint32_t *)(f->data[0] + y*f->linesize[0]);
 
-        for (x = 0; x < f->width; x++) {
+        for (x = 0; x < f->width; x++)
+        {
             ret = color_inc(hist, p[x]);
             if (ret < 0)
                 return ret;
@@ -479,15 +512,18 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFilterContext *ctx = inlink->dst;
     PaletteGenContext *s = ctx->priv;
     const int ret = s->prev_frame ? update_histogram_diff(s->histogram, s->prev_frame, in)
-                                  : update_histogram_frame(s->histogram, in);
+                    : update_histogram_frame(s->histogram, in);
 
     if (ret > 0)
         s->nb_refs += ret;
 
-    if (s->stats_mode == STATS_MODE_DIFF_FRAMES) {
+    if (s->stats_mode == STATS_MODE_DIFF_FRAMES)
+    {
         av_frame_free(&s->prev_frame);
         s->prev_frame = in;
-    } else {
+    }
+    else
+    {
         av_frame_free(&in);
     }
 
@@ -505,7 +541,8 @@ static int request_frame(AVFilterLink *outlink)
     int r;
 
     r = ff_request_frame(inlink);
-    if (r == AVERROR_EOF && !s->palette_pushed && s->nb_refs) {
+    if (r == AVERROR_EOF && !s->palette_pushed && s->nb_refs)
+    {
         r = ff_filter_frame(outlink, get_palette_frame(ctx));
         s->palette_pushed = 1;
         return r;
@@ -535,7 +572,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->prev_frame);
 }
 
-static const AVFilterPad palettegen_inputs[] = {
+static const AVFilterPad palettegen_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -544,7 +582,8 @@ static const AVFilterPad palettegen_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad palettegen_outputs[] = {
+static const AVFilterPad palettegen_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -554,7 +593,8 @@ static const AVFilterPad palettegen_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_palettegen = {
+AVFilter ff_vf_palettegen =
+{
     .name          = "palettegen",
     .description   = NULL_IF_CONFIG_SMALL("Find the optimal palette for a given stream."),
     .priv_size     = sizeof(PaletteGenContext),

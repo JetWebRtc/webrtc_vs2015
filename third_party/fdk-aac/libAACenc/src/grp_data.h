@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,19 +97,19 @@ amm-info@iis.fraunhofer.de
 
 void
 FDKaacEnc_groupShortData(FIXP_DBL      *mdctSpectrum,         /* in-out */
-               SFB_THRESHOLD *sfbThreshold,         /* in-out */
-               SFB_ENERGY    *sfbEnergy,            /* in-out */
-               SFB_ENERGY    *sfbEnergyMS,          /* in-out */
-               SFB_ENERGY    *sfbSpreadEnergy,
-               const INT      sfbCnt,
-               const INT      sfbActive,
-               const INT     *sfbOffset,
-               const FIXP_DBL *sfbMinSnrLdData,
-               INT           *groupedSfbOffset,     /* out */
-               INT           *maxSfbPerGroup,
-               FIXP_DBL      *groupedSfbMinSnrLdData,
-               const INT      noOfGroups,
-               const INT     *groupLen,
-               const INT      granuleLength);
+                         SFB_THRESHOLD *sfbThreshold,         /* in-out */
+                         SFB_ENERGY    *sfbEnergy,            /* in-out */
+                         SFB_ENERGY    *sfbEnergyMS,          /* in-out */
+                         SFB_ENERGY    *sfbSpreadEnergy,
+                         const INT      sfbCnt,
+                         const INT      sfbActive,
+                         const INT     *sfbOffset,
+                         const FIXP_DBL *sfbMinSnrLdData,
+                         INT           *groupedSfbOffset,     /* out */
+                         INT           *maxSfbPerGroup,
+                         FIXP_DBL      *groupedSfbMinSnrLdData,
+                         const INT      noOfGroups,
+                         const INT     *groupLen,
+                         const INT      granuleLength);
 
 #endif /* _INTERFACE_H */

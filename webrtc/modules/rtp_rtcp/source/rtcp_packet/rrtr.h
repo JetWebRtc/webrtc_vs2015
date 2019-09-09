@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,33 +15,42 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/system_wrappers/include/ntp_time.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 
-class Rrtr {
- public:
-  static const uint8_t kBlockType = 4;
-  static const uint16_t kBlockLength = 2;
-  static const size_t kLength = 4 * (kBlockLength + 1);  // 12
+class Rrtr
+{
+public:
+    static const uint8_t kBlockType = 4;
+    static const uint16_t kBlockLength = 2;
+    static const size_t kLength = 4 * (kBlockLength + 1);  // 12
 
-  Rrtr() {}
-  Rrtr(const Rrtr&) = default;
-  ~Rrtr() {}
+    Rrtr() {}
+    Rrtr(const Rrtr&) = default;
+    ~Rrtr() {}
 
-  Rrtr& operator=(const Rrtr&) = default;
+    Rrtr& operator=(const Rrtr&) = default;
 
-  void Parse(const uint8_t* buffer);
+    void Parse(const uint8_t* buffer);
 
-  // Fills buffer with the Rrtr.
-  // Consumes Rrtr::kLength bytes.
-  void Create(uint8_t* buffer) const;
+    // Fills buffer with the Rrtr.
+    // Consumes Rrtr::kLength bytes.
+    void Create(uint8_t* buffer) const;
 
-  void SetNtp(NtpTime ntp) { ntp_ = ntp; }
+    void SetNtp(NtpTime ntp)
+    {
+        ntp_ = ntp;
+    }
 
-  NtpTime ntp() const { return ntp_; }
+    NtpTime ntp() const
+    {
+        return ntp_;
+    }
 
- private:
-  NtpTime ntp_;
+private:
+    NtpTime ntp_;
 };
 
 }  // namespace rtcp

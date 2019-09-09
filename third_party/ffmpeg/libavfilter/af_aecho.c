@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 #include "audio.h"
 #include "internal.h"
 
-typedef struct AudioEchoContext {
+typedef struct AudioEchoContext
+{
     const AVClass *class;
     float in_gain, out_gain;
     char *delays, *decays;
@@ -46,7 +47,8 @@ typedef struct AudioEchoContext {
 #define OFFSET(x) offsetof(AudioEchoContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption aecho_options[] = {
+static const AVOption aecho_options[] =
+{
     { "in_gain",  "set signal input gain",  OFFSET(in_gain),  AV_OPT_TYPE_FLOAT,  {.dbl=0.6}, 0, 1, A },
     { "out_gain", "set signal output gain", OFFSET(out_gain), AV_OPT_TYPE_FLOAT,  {.dbl=0.3}, 0, 1, A },
     { "delays",   "set list of signal delays", OFFSET(delays), AV_OPT_TYPE_STRING, {.str="1000"}, 0, 0, A },
@@ -61,7 +63,8 @@ static void count_items(char *item_str, int *nb_items)
     char *p;
 
     *nb_items = 1;
-    for (p = item_str; *p; p++) {
+    for (p = item_str; *p; p++)
+    {
         if (*p == '|')
             (*nb_items)++;
     }
@@ -74,7 +77,8 @@ static void fill_items(char *item_str, int *nb_items, float *items)
     int i, new_nb_items = 0;
 
     p = item_str;
-    for (i = 0; i < *nb_items; i++) {
+    for (i = 0; i < *nb_items; i++)
+    {
         char *tstr = av_strtok(p, "|", &saveptr);
         p = NULL;
         new_nb_items += sscanf(tstr, "%f", &items[i]) == 1;
@@ -101,7 +105,8 @@ static av_cold int init(AVFilterContext *ctx)
     AudioEchoContext *s = ctx->priv;
     int nb_delays, nb_decays, i;
 
-    if (!s->delays || !s->decays) {
+    if (!s->delays || !s->decays)
+    {
         av_log(ctx, AV_LOG_ERROR, "Missing delays and/or decays.\n");
         return AVERROR(EINVAL);
     }
@@ -117,13 +122,15 @@ static av_cold int init(AVFilterContext *ctx)
     fill_items(s->delays, &nb_delays, s->delay);
     fill_items(s->decays, &nb_decays, s->decay);
 
-    if (nb_delays != nb_decays) {
+    if (nb_delays != nb_decays)
+    {
         av_log(ctx, AV_LOG_ERROR, "Number of delays %d differs from number of decays %d.\n", nb_delays, nb_decays);
         return AVERROR(EINVAL);
     }
 
     s->nb_echoes = nb_delays;
-    if (!s->nb_echoes) {
+    if (!s->nb_echoes)
+    {
         av_log(ctx, AV_LOG_ERROR, "At least one decay & delay must be set.\n");
         return AVERROR(EINVAL);
     }
@@ -132,12 +139,15 @@ static av_cold int init(AVFilterContext *ctx)
     if (!s->samples)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < nb_delays; i++) {
-        if (s->delay[i] <= 0 || s->delay[i] > 90000) {
+    for (i = 0; i < nb_delays; i++)
+    {
+        if (s->delay[i] <= 0 || s->delay[i] > 90000)
+        {
             av_log(ctx, AV_LOG_ERROR, "delay[%d]: %f is out of allowed range: (0, 90000]\n", i, s->delay[i]);
             return AVERROR(EINVAL);
         }
-        if (s->decay[i] <= 0 || s->decay[i] > 1) {
+        if (s->decay[i] <= 0 || s->decay[i] > 1)
+        {
             av_log(ctx, AV_LOG_ERROR, "decay[%d]: %f is out of allowed range: (0, 1]\n", i, s->decay[i]);
             return AVERROR(EINVAL);
         }
@@ -153,7 +163,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterChannelLayouts *layouts;
     AVFilterFormats *formats;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_S16P, AV_SAMPLE_FMT_S32P,
         AV_SAMPLE_FMT_FLTP, AV_SAMPLE_FMT_DBLP,
         AV_SAMPLE_FMT_NONE
@@ -235,13 +246,15 @@ static int config_output(AVFilterLink *outlink)
     float volume = 1.0;
     int i;
 
-    for (i = 0; i < s->nb_echoes; i++) {
+    for (i = 0; i < s->nb_echoes; i++)
+    {
         s->samples[i] = s->delay[i] * outlink->sample_rate / 1000.0;
         s->max_samples = FFMAX(s->max_samples, s->samples[i]);
         volume += s->decay[i];
     }
 
-    if (s->max_samples <= 0) {
+    if (s->max_samples <= 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Nothing to echo - missing delay samples.\n");
         return AVERROR(EINVAL);
     }
@@ -251,11 +264,20 @@ static int config_output(AVFilterLink *outlink)
         av_log(ctx, AV_LOG_WARNING,
                "out_gain %f can cause saturation of output\n", s->out_gain);
 
-    switch (outlink->format) {
-    case AV_SAMPLE_FMT_DBLP: s->echo_samples = echo_samples_dblp; break;
-    case AV_SAMPLE_FMT_FLTP: s->echo_samples = echo_samples_fltp; break;
-    case AV_SAMPLE_FMT_S16P: s->echo_samples = echo_samples_s16p; break;
-    case AV_SAMPLE_FMT_S32P: s->echo_samples = echo_samples_s32p; break;
+    switch (outlink->format)
+    {
+    case AV_SAMPLE_FMT_DBLP:
+        s->echo_samples = echo_samples_dblp;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->echo_samples = echo_samples_fltp;
+        break;
+    case AV_SAMPLE_FMT_S16P:
+        s->echo_samples = echo_samples_s16p;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->echo_samples = echo_samples_s32p;
+        break;
     }
 
 
@@ -264,9 +286,9 @@ static int config_output(AVFilterLink *outlink)
     av_freep(&s->delayptrs);
 
     return av_samples_alloc_array_and_samples(&s->delayptrs, NULL,
-                                              outlink->channels,
-                                              s->max_samples,
-                                              outlink->format, 0);
+            outlink->channels,
+            s->max_samples,
+            outlink->format, 0);
 }
 
 static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
@@ -275,9 +297,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AudioEchoContext *s = ctx->priv;
     AVFrame *out_frame;
 
-    if (av_frame_is_writable(frame)) {
+    if (av_frame_is_writable(frame))
+    {
         out_frame = frame;
-    } else {
+    }
+    else
+    {
         out_frame = ff_get_audio_buffer(inlink, frame->nb_samples);
         if (!out_frame)
             return AVERROR(ENOMEM);
@@ -287,7 +312,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     s->echo_samples(s, s->delayptrs, frame->extended_data, out_frame->extended_data,
                     frame->nb_samples, inlink->channels);
 
-    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational){1, inlink->sample_rate}, inlink->time_base);
+    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational)
+    {
+        1, inlink->sample_rate
+    }, inlink->time_base);
 
     if (frame != out_frame)
         av_frame_free(&frame);
@@ -303,7 +331,8 @@ static int request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && !ctx->is_disabled && s->fade_out) {
+    if (ret == AVERROR_EOF && !ctx->is_disabled && s->fade_out)
+    {
         int nb_samples = FFMIN(s->fade_out, 2048);
         AVFrame *frame;
 
@@ -322,7 +351,10 @@ static int request_frame(AVFilterLink *outlink)
 
         frame->pts = s->next_pts;
         if (s->next_pts != AV_NOPTS_VALUE)
-            s->next_pts += av_rescale_q(nb_samples, (AVRational){1, outlink->sample_rate}, outlink->time_base);
+            s->next_pts += av_rescale_q(nb_samples, (AVRational)
+        {
+            1, outlink->sample_rate
+        }, outlink->time_base);
 
         return ff_filter_frame(outlink, frame);
     }
@@ -330,7 +362,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad aecho_inputs[] = {
+static const AVFilterPad aecho_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -339,7 +372,8 @@ static const AVFilterPad aecho_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad aecho_outputs[] = {
+static const AVFilterPad aecho_outputs[] =
+{
     {
         .name          = "default",
         .request_frame = request_frame,
@@ -349,7 +383,8 @@ static const AVFilterPad aecho_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_aecho = {
+AVFilter ff_af_aecho =
+{
     .name          = "aecho",
     .description   = NULL_IF_CONFIG_SMALL("Add echoing to the audio."),
     .query_formats = query_formats,

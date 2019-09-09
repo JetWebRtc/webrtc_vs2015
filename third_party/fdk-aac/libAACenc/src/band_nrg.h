@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,54 +96,54 @@ amm-info@iis.fraunhofer.de
 
 void
 FDKaacEnc_CalcSfbMaxScaleSpec(
-        const FIXP_DBL     *mdctSpectrum,
-        const INT          *bandOffset,
-        INT                *sfbMaxScaleSpec,
-        const INT           numBands
-        );
+    const FIXP_DBL     *mdctSpectrum,
+    const INT          *bandOffset,
+    INT                *sfbMaxScaleSpec,
+    const INT           numBands
+);
 
 FIXP_DBL
 FDKaacEnc_CheckBandEnergyOptim(
-        const FIXP_DBL     *mdctSpectrum,
-        INT                *sfbMaxScaleSpec,
-        const INT          *bandOffset,
-        const INT           numBands,
-        FIXP_DBL           *bandEnergy,
-        FIXP_DBL           *bandEnergyLdData,
-        INT                 minSpecShift
-        );
+    const FIXP_DBL     *mdctSpectrum,
+    INT                *sfbMaxScaleSpec,
+    const INT          *bandOffset,
+    const INT           numBands,
+    FIXP_DBL           *bandEnergy,
+    FIXP_DBL           *bandEnergyLdData,
+    INT                 minSpecShift
+);
 
 INT
 FDKaacEnc_CalcBandEnergyOptimLong(
-        const FIXP_DBL     *mdctSpectrum,
-        INT                *sfbMaxScaleSpec,
-        const INT          *bandOffset,
-        const INT           numBands,
-        FIXP_DBL           *bandEnergy,
-        FIXP_DBL           *bandEnergyLdData
-        );
+    const FIXP_DBL     *mdctSpectrum,
+    INT                *sfbMaxScaleSpec,
+    const INT          *bandOffset,
+    const INT           numBands,
+    FIXP_DBL           *bandEnergy,
+    FIXP_DBL           *bandEnergyLdData
+);
 
 void
 FDKaacEnc_CalcBandEnergyOptimShort(
-        const FIXP_DBL     *mdctSpectrum,
-        INT                *sfbMaxScaleSpec,
-        const INT          *bandOffset,
-        const INT           numBands,
-        FIXP_DBL           *bandEnergy
-        );
+    const FIXP_DBL     *mdctSpectrum,
+    INT                *sfbMaxScaleSpec,
+    const INT          *bandOffset,
+    const INT           numBands,
+    FIXP_DBL           *bandEnergy
+);
 
 
 void FDKaacEnc_CalcBandNrgMSOpt(
-        const FIXP_DBL   *RESTRICT mdctSpectrumLeft,
-        const FIXP_DBL   *RESTRICT mdctSpectrumRight,
-        INT              *RESTRICT sfbMaxScaleSpecLeft,
-        INT              *RESTRICT sfbMaxScaleSpecRight,
-        const INT        *RESTRICT bandOffset,
-        const INT         numBands,
-        FIXP_DBL         *RESTRICT bandEnergyMid,
-        FIXP_DBL         *RESTRICT bandEnergySide,
-        INT               calcLdData,
-        FIXP_DBL         *RESTRICT bandEnergyMidLdData,
-        FIXP_DBL         *RESTRICT bandEnergySideLdData);
+    const FIXP_DBL   *RESTRICT mdctSpectrumLeft,
+    const FIXP_DBL   *RESTRICT mdctSpectrumRight,
+    INT              *RESTRICT sfbMaxScaleSpecLeft,
+    INT              *RESTRICT sfbMaxScaleSpecRight,
+    const INT        *RESTRICT bandOffset,
+    const INT         numBands,
+    FIXP_DBL         *RESTRICT bandEnergyMid,
+    FIXP_DBL         *RESTRICT bandEnergySide,
+    INT               calcLdData,
+    FIXP_DBL         *RESTRICT bandEnergyMidLdData,
+    FIXP_DBL         *RESTRICT bandEnergySideLdData);
 
 #endif

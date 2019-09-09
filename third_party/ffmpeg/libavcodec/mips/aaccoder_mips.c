@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -64,28 +64,33 @@
 #include "libavcodec/aactab.h"
 
 #if HAVE_INLINE_ASM
-typedef struct BandCodingPath {
+typedef struct BandCodingPath
+{
     int prev_idx;
     float cost;
     int run;
 } BandCodingPath;
 
-static const uint8_t run_value_bits_long[64] = {
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 10,
+static const uint8_t run_value_bits_long[64] =
+{
+    5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,
+    5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
     10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 15
 };
 
-static const uint8_t run_value_bits_short[16] = {
+static const uint8_t run_value_bits_short[16] =
+{
     3, 3, 3, 3, 3, 3, 3, 6, 6, 6, 6, 6, 6, 6, 6, 9
 };
 
-static const uint8_t * const run_value_bits[2] = {
+static const uint8_t * const run_value_bits[2] =
+{
     run_value_bits_long, run_value_bits_short
 };
 
-static const uint8_t uquad_sign_bits[81] = {
+static const uint8_t uquad_sign_bits[81] =
+{
     0, 1, 1, 1, 2, 2, 1, 2, 2,
     1, 2, 2, 2, 3, 3, 2, 3, 3,
     1, 2, 2, 2, 3, 3, 2, 3, 3,
@@ -97,7 +102,8 @@ static const uint8_t uquad_sign_bits[81] = {
     2, 3, 3, 3, 4, 4, 3, 4, 4
 };
 
-static const uint8_t upair7_sign_bits[64] = {
+static const uint8_t upair7_sign_bits[64] =
+{
     0, 1, 1, 1, 1, 1, 1, 1,
     1, 2, 2, 2, 2, 2, 2, 2,
     1, 2, 2, 2, 2, 2, 2, 2,
@@ -108,7 +114,8 @@ static const uint8_t upair7_sign_bits[64] = {
     1, 2, 2, 2, 2, 2, 2, 2,
 };
 
-static const uint8_t upair12_sign_bits[169] = {
+static const uint8_t upair12_sign_bits[169] =
+{
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -124,7 +131,8 @@ static const uint8_t upair12_sign_bits[169] = {
     1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2
 };
 
-static const uint8_t esc_sign_bits[289] = {
+static const uint8_t esc_sign_bits[289] =
+{
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
@@ -147,13 +155,15 @@ static const uint8_t esc_sign_bits[289] = {
 #define ROUND_STANDARD 0.4054f
 #define ROUND_TO_ZERO 0.1054f
 
-static void abs_pow34_v(float *out, const float *in, const int size) {
+static void abs_pow34_v(float *out, const float *in, const int size)
+{
 #ifndef USE_REALLY_FULL_SEARCH
     int i;
     float a, b, c, d;
     float ax, bx, cx, dx;
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         a = fabsf(in[i  ]);
         b = fabsf(in[i+1]);
         c = fabsf(in[i+2]);
@@ -177,18 +187,22 @@ static void abs_pow34_v(float *out, const float *in, const int size) {
 #endif /* USE_REALLY_FULL_SEARCH */
 }
 
-static float find_max_val(int group_len, int swb_size, const float *scaled) {
+static float find_max_val(int group_len, int swb_size, const float *scaled)
+{
     float maxval = 0.0f;
     int w2, i;
-    for (w2 = 0; w2 < group_len; w2++) {
-        for (i = 0; i < swb_size; i++) {
+    for (w2 = 0; w2 < group_len; w2++)
+    {
+        for (i = 0; i < swb_size; i++)
+        {
             maxval = FFMAX(maxval, scaled[w2*128+i]);
         }
     }
     return maxval;
 }
 
-static int find_min_book(float maxval, int sf) {
+static int find_min_book(float maxval, int sf)
+{
     float Q = ff_aac_pow2sf_tab[POW_SF2_ZERO - sf + SCALE_ONE_POS - SCALE_DIV_512];
     float Q34 = sqrtf(Q * sqrtf(Q));
     int qmaxval, cb;
@@ -207,10 +221,10 @@ static int find_min_book(float maxval, int sf) {
  * Functions developed from template function and optimized for quantizing and encoding band
  */
 static void quantize_and_encode_band_cost_SQUAD_mips(struct AACEncContext *s,
-                                                     PutBitContext *pb, const float *in, float *out,
-                                                     const float *scaled, int size, int scale_idx,
-                                                     int cb, const float lambda, const float uplim,
-                                                     int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -221,7 +235,8 @@ static void quantize_and_encode_band_cost_SQUAD_mips(struct AACEncContext *s,
 
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx;
         int *in_int = (int *)&in[i];
         int t0, t1, t2, t3, t4, t5, t6, t7;
@@ -259,9 +274,9 @@ static void quantize_and_encode_band_cost_SQUAD_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -280,10 +295,10 @@ static void quantize_and_encode_band_cost_SQUAD_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_UQUAD_mips(struct AACEncContext *s,
-                                                     PutBitContext *pb, const float *in, float *out,
-                                                     const float *scaled, int size, int scale_idx,
-                                                     int cb, const float lambda, const float uplim,
-                                                     int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -294,7 +309,8 @@ static void quantize_and_encode_band_cost_UQUAD_mips(struct AACEncContext *s,
 
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, sign, count;
         int *in_int = (int *)&in[i];
         uint8_t v_bits;
@@ -349,10 +365,10 @@ static void quantize_and_encode_band_cost_UQUAD_mips(struct AACEncContext *s,
             ".set pop                               \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [sign]"=&r"(sign), [count]"=&r"(count),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [sign]"=&r"(sign), [count]"=&r"(count),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -372,10 +388,10 @@ static void quantize_and_encode_band_cost_UQUAD_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_SPAIR_mips(struct AACEncContext *s,
-                                                     PutBitContext *pb, const float *in, float *out,
-                                                     const float *scaled, int size, int scale_idx,
-                                                     int cb, const float lambda, const float uplim,
-                                                     int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -386,7 +402,8 @@ static void quantize_and_encode_band_cost_SPAIR_mips(struct AACEncContext *s,
 
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, curidx2;
         int *in_int = (int *)&in[i];
         uint8_t v_bits;
@@ -431,9 +448,9 @@ static void quantize_and_encode_band_cost_SPAIR_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -451,10 +468,10 @@ static void quantize_and_encode_band_cost_SPAIR_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_UPAIR7_mips(struct AACEncContext *s,
-                                                      PutBitContext *pb, const float *in, float *out,
-                                                      const float *scaled, int size, int scale_idx,
-                                                      int cb, const float lambda, const float uplim,
-                                                      int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -465,7 +482,8 @@ static void quantize_and_encode_band_cost_UPAIR7_mips(struct AACEncContext *s,
 
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, sign1, count1, sign2, count2;
         int *in_int = (int *)&in[i];
         uint8_t v_bits;
@@ -518,14 +536,14 @@ static void quantize_and_encode_band_cost_UPAIR7_mips(struct AACEncContext *s,
             ".set pop                               \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-              [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+            [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
             : [in_int]"r"(in_int)
             : "t0", "t1", "t2", "t3", "t4",
-              "memory"
+            "memory"
         );
 
         curidx  = 8 * qc1;
@@ -545,10 +563,10 @@ static void quantize_and_encode_band_cost_UPAIR7_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_UPAIR12_mips(struct AACEncContext *s,
-                                                       PutBitContext *pb, const float *in, float *out,
-                                                       const float *scaled, int size, int scale_idx,
-                                                       int cb, const float lambda, const float uplim,
-                                                       int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -559,7 +577,8 @@ static void quantize_and_encode_band_cost_UPAIR12_mips(struct AACEncContext *s,
 
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, sign1, count1, sign2, count2;
         int *in_int = (int *)&in[i];
         uint8_t v_bits;
@@ -612,11 +631,11 @@ static void quantize_and_encode_band_cost_UPAIR12_mips(struct AACEncContext *s,
             ".set pop                               \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-              [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+            [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -638,10 +657,10 @@ static void quantize_and_encode_band_cost_UPAIR12_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
-                                                   PutBitContext *pb, const float *in, float *out,
-                                                   const float *scaled, int size, int scale_idx,
-                                                   int cb, const float lambda, const float uplim,
-                                                   int *bits, const float ROUNDING)
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -654,8 +673,10 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
     abs_pow34_v(s->scoefs, in, size);
     scaled = s->scoefs;
 
-    if (cb < 11) {
-        for (i = 0; i < size; i += 4) {
+    if (cb < 11)
+    {
+        for (i = 0; i < size; i += 4)
+        {
             int curidx, curidx2, sign1, count1, sign2, count2;
             int *in_int = (int *)&in[i];
             uint8_t v_bits;
@@ -708,11 +729,11 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
                 ".set pop                                   \n\t"
 
                 : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-                  [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-                  [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-                  [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-                  [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-                  [t4]"=&r"(t4)
+                [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+                [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+                [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+                [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+                [t4]"=&r"(t4)
                 : [in_int]"r"(in_int)
                 : "memory"
             );
@@ -730,8 +751,11 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
             v_bits  = p_bits[curidx2] + count2;
             put_bits(pb, v_bits, v_codes);
         }
-    } else {
-        for (i = 0; i < size; i += 4) {
+    }
+    else
+    {
+        for (i = 0; i < size; i += 4)
+        {
             int curidx, curidx2, sign1, count1, sign2, count2;
             int *in_int = (int *)&in[i];
             uint8_t v_bits;
@@ -793,13 +817,13 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
                 ".set pop                                   \n\t"
 
                 : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-                  [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-                  [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-                  [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-                  [c1]"=&r"(c1), [c2]"=&r"(c2),
-                  [c3]"=&r"(c3), [c4]"=&r"(c4),
-                  [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-                  [t4]"=&r"(t4)
+                [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+                [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+                [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+                [c1]"=&r"(c1), [c2]"=&r"(c2),
+                [c3]"=&r"(c3), [c4]"=&r"(c4),
+                [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+                [t4]"=&r"(t4)
                 : [in_int]"r"(in_int)
                 : "memory"
             );
@@ -814,12 +838,14 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
             v_bits  = p_bits[curidx] + count1;
             put_bits(pb, v_bits, v_codes);
 
-            if (p_vectors[curidx*2  ] == 64.0f) {
+            if (p_vectors[curidx*2  ] == 64.0f)
+            {
                 int len = av_log2(c1);
                 v_codes = (((1 << (len - 3)) - 2) << len) | (c1 & ((1 << len) - 1));
                 put_bits(pb, len * 2 - 3, v_codes);
             }
-            if (p_vectors[curidx*2+1] == 64.0f) {
+            if (p_vectors[curidx*2+1] == 64.0f)
+            {
                 int len = av_log2(c2);
                 v_codes = (((1 << (len - 3)) - 2) << len) | (c2 & ((1 << len) - 1));
                 put_bits(pb, len*2-3, v_codes);
@@ -829,12 +855,14 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
             v_bits  = p_bits[curidx2] + count2;
             put_bits(pb, v_bits, v_codes);
 
-            if (p_vectors[curidx2*2  ] == 64.0f) {
+            if (p_vectors[curidx2*2  ] == 64.0f)
+            {
                 int len = av_log2(c3);
                 v_codes = (((1 << (len - 3)) - 2) << len) | (c3 & ((1 << len) - 1));
                 put_bits(pb, len* 2 - 3, v_codes);
             }
-            if (p_vectors[curidx2*2+1] == 64.0f) {
+            if (p_vectors[curidx2*2+1] == 64.0f)
+            {
                 int len = av_log2(c4);
                 v_codes = (((1 << (len - 3)) - 2) << len) | (c4 & ((1 << len) - 1));
                 put_bits(pb, len * 2 - 3, v_codes);
@@ -844,36 +872,41 @@ static void quantize_and_encode_band_cost_ESC_mips(struct AACEncContext *s,
 }
 
 static void quantize_and_encode_band_cost_NONE_mips(struct AACEncContext *s,
-                                                         PutBitContext *pb, const float *in, float *out,
-                                                         const float *scaled, int size, int scale_idx,
-                                                         int cb, const float lambda, const float uplim,
-                                                         int *bits, const float ROUNDING) {
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
+{
     av_assert0(0);
 }
 
 static void quantize_and_encode_band_cost_ZERO_mips(struct AACEncContext *s,
-                                                         PutBitContext *pb, const float *in, float *out,
-                                                         const float *scaled, int size, int scale_idx,
-                                                         int cb, const float lambda, const float uplim,
-                                                         int *bits, const float ROUNDING) {
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING)
+{
     int i;
     if (bits)
         *bits = 0;
-    if (out) {
-        for (i = 0; i < size; i += 4) {
-           out[i  ] = 0.0f;
-           out[i+1] = 0.0f;
-           out[i+2] = 0.0f;
-           out[i+3] = 0.0f;
+    if (out)
+    {
+        for (i = 0; i < size; i += 4)
+        {
+            out[i  ] = 0.0f;
+            out[i+1] = 0.0f;
+            out[i+2] = 0.0f;
+            out[i+3] = 0.0f;
         }
     }
 }
 
 static void (*const quantize_and_encode_band_cost_arr[])(struct AACEncContext *s,
-                                                         PutBitContext *pb, const float *in, float *out,
-                                                         const float *scaled, int size, int scale_idx,
-                                                         int cb, const float lambda, const float uplim,
-                                                         int *bits, const float ROUNDING) = {
+        PutBitContext *pb, const float *in, float *out,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits, const float ROUNDING) =
+{
     quantize_and_encode_band_cost_ZERO_mips,
     quantize_and_encode_band_cost_SQUAD_mips,
     quantize_and_encode_band_cost_SQUAD_mips,
@@ -900,8 +933,8 @@ static void (*const quantize_and_encode_band_cost_arr[])(struct AACEncContext *s
                                 lambda, uplim, bits, ROUNDING)
 
 static void quantize_and_encode_band_mips(struct AACEncContext *s, PutBitContext *pb,
-                                          const float *in, float *out, int size, int scale_idx,
-                                          int cb, const float lambda, int rtz)
+        const float *in, float *out, int size, int scale_idx,
+        int cb, const float lambda, int rtz)
 {
     quantize_and_encode_band_cost(s, pb, in, out, NULL, size, scale_idx, cb, lambda,
                                   INFINITY, NULL, (rtz) ? ROUND_TO_ZERO : ROUND_STANDARD);
@@ -930,10 +963,10 @@ static float get_band_numbits_NONE_mips(struct AACEncContext *s,
 }
 
 static float get_band_numbits_SQUAD_mips(struct AACEncContext *s,
-                                         PutBitContext *pb, const float *in,
-                                         const float *scaled, int size, int scale_idx,
-                                         int cb, const float lambda, const float uplim,
-                                         int *bits)
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -942,7 +975,8 @@ static float get_band_numbits_SQUAD_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t *)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx;
         int *in_int = (int *)&in[i];
         int t0, t1, t2, t3, t4, t5, t6, t7;
@@ -980,9 +1014,9 @@ static float get_band_numbits_SQUAD_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -1002,10 +1036,10 @@ static float get_band_numbits_SQUAD_mips(struct AACEncContext *s,
 }
 
 static float get_band_numbits_UQUAD_mips(struct AACEncContext *s,
-                                         PutBitContext *pb, const float *in,
-                                         const float *scaled, int size, int scale_idx,
-                                         int cb, const float lambda, const float uplim,
-                                         int *bits)
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -1014,7 +1048,8 @@ static float get_band_numbits_UQUAD_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t *)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx;
         int t0, t1, t2, t3, t4;
 
@@ -1040,9 +1075,9 @@ static float get_band_numbits_UQUAD_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
         );
 
         curidx = qc1;
@@ -1060,10 +1095,10 @@ static float get_band_numbits_UQUAD_mips(struct AACEncContext *s,
 }
 
 static float get_band_numbits_SPAIR_mips(struct AACEncContext *s,
-                                         PutBitContext *pb, const float *in,
-                                         const float *scaled, int size, int scale_idx,
-                                         int cb, const float lambda, const float uplim,
-                                         int *bits)
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -1072,7 +1107,8 @@ static float get_band_numbits_SPAIR_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t*)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, curidx2;
         int *in_int = (int *)&in[i];
         int t0, t1, t2, t3, t4, t5, t6, t7;
@@ -1115,9 +1151,9 @@ static float get_band_numbits_SPAIR_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -1134,10 +1170,10 @@ static float get_band_numbits_SPAIR_mips(struct AACEncContext *s,
 }
 
 static float get_band_numbits_UPAIR7_mips(struct AACEncContext *s,
-                                          PutBitContext *pb, const float *in,
-                                          const float *scaled, int size, int scale_idx,
-                                          int cb, const float lambda, const float uplim,
-                                          int *bits)
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -1146,7 +1182,8 @@ static float get_band_numbits_UPAIR7_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t *)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, curidx2;
         int t0, t1, t2, t3, t4;
 
@@ -1172,9 +1209,9 @@ static float get_band_numbits_UPAIR7_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
         );
 
         curidx  = 8 * qc1;
@@ -1192,10 +1229,10 @@ static float get_band_numbits_UPAIR7_mips(struct AACEncContext *s,
 }
 
 static float get_band_numbits_UPAIR12_mips(struct AACEncContext *s,
-                                           PutBitContext *pb, const float *in,
-                                           const float *scaled, int size, int scale_idx,
-                                           int cb, const float lambda, const float uplim,
-                                           int *bits)
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits)
 {
     const float Q34 = ff_aac_pow34sf_tab[POW_SF2_ZERO - scale_idx + SCALE_ONE_POS - SCALE_DIV_512];
     int i;
@@ -1204,7 +1241,8 @@ static float get_band_numbits_UPAIR12_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t *)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, curidx2;
         int t0, t1, t2, t3, t4;
 
@@ -1230,9 +1268,9 @@ static float get_band_numbits_UPAIR12_mips(struct AACEncContext *s,
             ".set pop                       \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
         );
 
         curidx  = 13 * qc1;
@@ -1262,7 +1300,8 @@ static float get_band_numbits_ESC_mips(struct AACEncContext *s,
 
     uint8_t *p_bits = (uint8_t*)ff_aac_spectral_bits[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         int curidx, curidx2;
         int cond0, cond1, cond2, cond3;
         int c1, c2, c3, c4;
@@ -1324,12 +1363,12 @@ static float get_band_numbits_ESC_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [cond0]"=&r"(cond0), [cond1]"=&r"(cond1),
-              [cond2]"=&r"(cond2), [cond3]"=&r"(cond3),
-              [c1]"=&r"(c1), [c2]"=&r"(c2),
-              [c3]"=&r"(c3), [c4]"=&r"(c4),
-              [t4]"=&r"(t4), [t5]"=&r"(t5)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [cond0]"=&r"(cond0), [cond1]"=&r"(cond1),
+            [cond2]"=&r"(cond2), [cond3]"=&r"(cond3),
+            [c1]"=&r"(c1), [c2]"=&r"(c2),
+            [c3]"=&r"(c3), [c4]"=&r"(c4),
+            [t4]"=&r"(t4), [t5]"=&r"(t5)
         );
 
         curidx = 17 * qc1;
@@ -1352,10 +1391,11 @@ static float get_band_numbits_ESC_mips(struct AACEncContext *s,
 }
 
 static float (*const get_band_numbits_arr[])(struct AACEncContext *s,
-                                             PutBitContext *pb, const float *in,
-                                             const float *scaled, int size, int scale_idx,
-                                             int cb, const float lambda, const float uplim,
-                                             int *bits) = {
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits) =
+{
     get_band_numbits_ZERO_mips,
     get_band_numbits_SQUAD_mips,
     get_band_numbits_SQUAD_mips,
@@ -1402,7 +1442,8 @@ static float get_band_cost_ZERO_mips(struct AACEncContext *s,
     int i;
     float cost = 0;
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         cost += in[i  ] * in[i  ];
         cost += in[i+1] * in[i+1];
         cost += in[i+2] * in[i+2];
@@ -1439,7 +1480,8 @@ static float get_band_cost_SQUAD_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t *)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float   *)ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec;
         int curidx;
         int   *in_int = (int   *)&in[i];
@@ -1480,9 +1522,9 @@ static float get_band_cost_SQUAD_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -1519,12 +1561,12 @@ static float get_band_cost_SQUAD_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [di0]"=&f"(di0), [di1]"=&f"(di1),
-              [di2]"=&f"(di2), [di3]"=&f"(di3)
+            [di2]"=&f"(di2), [di3]"=&f"(di3)
             : [in_pos]"r"(in_pos), [vec]"r"(vec),
-              [IQ]"f"(IQ)
+            [IQ]"f"(IQ)
             : "$f0", "$f1", "$f2", "$f3",
-              "$f4", "$f5", "$f6", "$f7",
-              "memory"
+            "$f4", "$f5", "$f6", "$f7",
+            "memory"
         );
 
         cost += di0 * di0 + di1 * di1
@@ -1552,7 +1594,8 @@ static float get_band_cost_UQUAD_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t*)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float  *)ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec;
         int curidx;
         float *in_pos = (float *)&in[i];
@@ -1581,9 +1624,9 @@ static float get_band_cost_UQUAD_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
         );
 
         curidx = qc1;
@@ -1622,11 +1665,11 @@ static float get_band_cost_UQUAD_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [di0]"=&f"(di0), [di1]"=&f"(di1),
-              [di2]"=&f"(di2), [di3]"=&f"(di3)
+            [di2]"=&f"(di2), [di3]"=&f"(di3)
             : [in_pos]"r"(in_pos), [vec]"r"(vec),
-              [IQ]"f"(IQ)
+            [IQ]"f"(IQ)
             : "$f0", "$f1", "$f2", "$f3",
-              "memory"
+            "memory"
         );
 
         cost += di0 * di0 + di1 * di1
@@ -1654,7 +1697,8 @@ static float get_band_cost_SPAIR_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t *)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float   *)ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec, *vec2;
         int curidx, curidx2;
         int   *in_int = (int   *)&in[i];
@@ -1700,9 +1744,9 @@ static float get_band_cost_SPAIR_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4), [t5]"=&r"(t5), [t6]"=&r"(t6), [t7]"=&r"(t7)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -1739,12 +1783,12 @@ static float get_band_cost_SPAIR_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [di0]"=&f"(di0), [di1]"=&f"(di1),
-              [di2]"=&f"(di2), [di3]"=&f"(di3)
+            [di2]"=&f"(di2), [di3]"=&f"(di3)
             : [in_pos]"r"(in_pos), [vec]"r"(vec),
-              [vec2]"r"(vec2), [IQ]"f"(IQ)
+            [vec2]"r"(vec2), [IQ]"f"(IQ)
             : "$f0", "$f1", "$f2", "$f3",
-              "$f4", "$f5", "$f6", "$f7",
-              "memory"
+            "$f4", "$f5", "$f6", "$f7",
+            "memory"
         );
 
         cost += di0 * di0 + di1 * di1
@@ -1772,7 +1816,8 @@ static float get_band_cost_UPAIR7_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t *)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float   *)ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec, *vec2;
         int curidx, curidx2, sign1, count1, sign2, count2;
         int   *in_int = (int   *)&in[i];
@@ -1826,11 +1871,11 @@ static float get_band_cost_UPAIR7_mips(struct AACEncContext *s,
             ".set pop                                           \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-              [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+            [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -1873,11 +1918,11 @@ static float get_band_cost_UPAIR7_mips(struct AACEncContext *s,
             ".set pop                                           \n\t"
 
             : [di0]"=&f"(di0), [di1]"=&f"(di1),
-              [di2]"=&f"(di2), [di3]"=&f"(di3)
+            [di2]"=&f"(di2), [di3]"=&f"(di3)
             : [in_pos]"r"(in_pos), [vec]"r"(vec),
-              [vec2]"r"(vec2), [IQ]"f"(IQ)
+            [vec2]"r"(vec2), [IQ]"f"(IQ)
             : "$f0", "$f1", "$f2", "$f3",
-              "memory"
+            "memory"
         );
 
         cost += di0 * di0 + di1 * di1
@@ -1905,7 +1950,8 @@ static float get_band_cost_UPAIR12_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t *)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float   *)ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec, *vec2;
         int curidx, curidx2;
         int sign1, count1, sign2, count2;
@@ -1960,11 +2006,11 @@ static float get_band_cost_UPAIR12_mips(struct AACEncContext *s,
             ".set pop                                           \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [sign1]"=&r"(sign1), [count1]"=&r"(count1),
-              [sign2]"=&r"(sign2), [count2]"=&r"(count2),
-              [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
-              [t4]"=&r"(t4)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [sign1]"=&r"(sign1), [count1]"=&r"(count1),
+            [sign2]"=&r"(sign2), [count2]"=&r"(count2),
+            [t0]"=&r"(t0), [t1]"=&r"(t1), [t2]"=&r"(t2), [t3]"=&r"(t3),
+            [t4]"=&r"(t4)
             : [in_int]"r"(in_int)
             : "memory"
         );
@@ -2006,11 +2052,11 @@ static float get_band_cost_UPAIR12_mips(struct AACEncContext *s,
             ".set pop                                           \n\t"
 
             : [di0]"=&f"(di0), [di1]"=&f"(di1),
-              [di2]"=&f"(di2), [di3]"=&f"(di3)
+            [di2]"=&f"(di2), [di3]"=&f"(di3)
             : [in_pos]"r"(in_pos), [vec]"r"(vec),
-              [vec2]"r"(vec2), [IQ]"f"(IQ)
+            [vec2]"r"(vec2), [IQ]"f"(IQ)
             : "$f0", "$f1", "$f2", "$f3",
-              "memory"
+            "memory"
         );
 
         cost += di0 * di0 + di1 * di1
@@ -2039,7 +2085,8 @@ static float get_band_cost_ESC_mips(struct AACEncContext *s,
     uint8_t *p_bits  = (uint8_t*)ff_aac_spectral_bits[cb-1];
     float   *p_codes = (float*  )ff_aac_codebook_vectors[cb-1];
 
-    for (i = 0; i < size; i += 4) {
+    for (i = 0; i < size; i += 4)
+    {
         const float *vec, *vec2;
         int curidx, curidx2;
         float t1, t2, t3, t4;
@@ -2079,12 +2126,12 @@ static float get_band_cost_ESC_mips(struct AACEncContext *s,
             ".set pop                                   \n\t"
 
             : [qc1]"+r"(qc1), [qc2]"+r"(qc2),
-              [qc3]"+r"(qc3), [qc4]"+r"(qc4),
-              [cond0]"=&r"(cond0), [cond1]"=&r"(cond1),
-              [cond2]"=&r"(cond2), [cond3]"=&r"(cond3),
-              [c1]"=&r"(c1), [c2]"=&r"(c2),
-              [c3]"=&r"(c3), [c4]"=&r"(c4),
-              [t6]"=&r"(t6), [t7]"=&r"(t7)
+            [qc3]"+r"(qc3), [qc4]"+r"(qc4),
+            [cond0]"=&r"(cond0), [cond1]"=&r"(cond1),
+            [cond2]"=&r"(cond2), [cond3]"=&r"(cond3),
+            [c1]"=&r"(c1), [c2]"=&r"(c2),
+            [c3]"=&r"(c3), [c4]"=&r"(c4),
+            [t6]"=&r"(t6), [t7]"=&r"(t7)
         );
 
         curidx = 17 * qc1;
@@ -2111,40 +2158,60 @@ static float get_band_cost_ESC_mips(struct AACEncContext *s,
         t3 = fabsf(in[i+2]);
         t4 = fabsf(in[i+3]);
 
-        if (cond0) {
-            if (t1 >= CLIPPED_ESCAPE) {
+        if (cond0)
+        {
+            if (t1 >= CLIPPED_ESCAPE)
+            {
                 di1 = t1 - CLIPPED_ESCAPE;
-            } else {
+            }
+            else
+            {
                 di1 = t1 - c1 * cbrtf(c1) * IQ;
             }
-        } else
+        }
+        else
             di1 = t1 - vec[0] * IQ;
 
-        if (cond1) {
-            if (t2 >= CLIPPED_ESCAPE) {
+        if (cond1)
+        {
+            if (t2 >= CLIPPED_ESCAPE)
+            {
                 di2 = t2 - CLIPPED_ESCAPE;
-            } else {
+            }
+            else
+            {
                 di2 = t2 - c2 * cbrtf(c2) * IQ;
             }
-        } else
+        }
+        else
             di2 = t2 - vec[1] * IQ;
 
-        if (cond2) {
-            if (t3 >= CLIPPED_ESCAPE) {
+        if (cond2)
+        {
+            if (t3 >= CLIPPED_ESCAPE)
+            {
                 di3 = t3 - CLIPPED_ESCAPE;
-            } else {
+            }
+            else
+            {
                 di3 = t3 - c3 * cbrtf(c3) * IQ;
             }
-        } else
+        }
+        else
             di3 = t3 - vec2[0] * IQ;
 
-        if (cond3) {
-            if (t4 >= CLIPPED_ESCAPE) {
+        if (cond3)
+        {
+            if (t4 >= CLIPPED_ESCAPE)
+            {
                 di4 = t4 - CLIPPED_ESCAPE;
-            } else {
+            }
+            else
+            {
                 di4 = t4 - c4 * cbrtf(c4) * IQ;
             }
-        } else
+        }
+        else
             di4 = t4 - vec2[1]*IQ;
 
         cost += di1 * di1 + di2 * di2
@@ -2157,10 +2224,11 @@ static float get_band_cost_ESC_mips(struct AACEncContext *s,
 }
 
 static float (*const get_band_cost_arr[])(struct AACEncContext *s,
-                                          PutBitContext *pb, const float *in,
-                                          const float *scaled, int size, int scale_idx,
-                                          int cb, const float lambda, const float uplim,
-                                          int *bits) = {
+        PutBitContext *pb, const float *in,
+        const float *scaled, int size, int scale_idx,
+        int cb, const float lambda, const float uplim,
+        int *bits) =
+{
     get_band_cost_ZERO_mips,
     get_band_cost_SQUAD_mips,
     get_band_cost_SQUAD_mips,
@@ -2195,9 +2263,9 @@ static float quantize_band_cost(struct AACEncContext *s, const float *in,
 }
 
 static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
-                                               AACEncContext *s,
-                                               SingleChannelElement *sce,
-                                               const float lambda)
+        AACEncContext *s,
+        SingleChannelElement *sce,
+        const float lambda)
 {
     int start = 0, i, w, w2, g;
     int destbits = avctx->bit_rate * 1024.0 / avctx->sample_rate / avctx->channels;
@@ -2209,14 +2277,18 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
     float minthr = INFINITY;
 
     destbits = FFMIN(destbits, 5800);
-    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
-        for (g = 0;  g < sce->ics.num_swb; g++) {
+    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+    {
+        for (g = 0;  g < sce->ics.num_swb; g++)
+        {
             int nz = 0;
             float uplim = 0.0f;
-            for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
+            for (w2 = 0; w2 < sce->ics.group_len[w]; w2++)
+            {
                 FFPsyBand *band = &s->psy.ch[s->cur_channel].psy_bands[(w+w2)*16+g];
                 uplim += band->threshold;
-                if (band->energy <= band->threshold || band->threshold == 0.0f) {
+                if (band->energy <= band->threshold || band->threshold == 0.0f)
+                {
                     sce->zeroes[(w+w2)*16+g] = 1;
                     continue;
                 }
@@ -2229,9 +2301,12 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
             allz |= nz;
         }
     }
-    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
-        for (g = 0;  g < sce->ics.num_swb; g++) {
-            if (sce->zeroes[w*16+g]) {
+    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+    {
+        for (g = 0;  g < sce->ics.num_swb; g++)
+        {
+            if (sce->zeroes[w*16+g])
+            {
                 sce->sf_idx[w*16+g] = SCALE_ONE_POS;
                 continue;
             }
@@ -2243,40 +2318,49 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
         return;
     abs_pow34_v(s->scoefs, sce->coeffs, 1024);
 
-    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
+    for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+    {
         start = w*128;
-        for (g = 0;  g < sce->ics.num_swb; g++) {
+        for (g = 0;  g < sce->ics.num_swb; g++)
+        {
             const float *scaled = s->scoefs + start;
             maxvals[w*16+g] = find_max_val(sce->ics.group_len[w], sce->ics.swb_sizes[g], scaled);
             start += sce->ics.swb_sizes[g];
         }
     }
 
-    do {
+    do
+    {
         int tbits, qstep;
         minscaler = sce->sf_idx[0];
         qstep = its ? 1 : 32;
-        do {
+        do
+        {
             int prev = -1;
             tbits = 0;
             fflag = 0;
 
-            if (qstep > 1) {
-                for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
+            if (qstep > 1)
+            {
+                for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+                {
                     start = w*128;
-                    for (g = 0;  g < sce->ics.num_swb; g++) {
+                    for (g = 0;  g < sce->ics.num_swb; g++)
+                    {
                         const float *coefs = sce->coeffs + start;
                         const float *scaled = s->scoefs + start;
                         int bits = 0;
                         int cb;
 
-                        if (sce->zeroes[w*16+g] || sce->sf_idx[w*16+g] >= 218) {
+                        if (sce->zeroes[w*16+g] || sce->sf_idx[w*16+g] >= 218)
+                        {
                             start += sce->ics.swb_sizes[g];
                             continue;
                         }
                         minscaler = FFMIN(minscaler, sce->sf_idx[w*16+g]);
                         cb = find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]);
-                        for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
+                        for (w2 = 0; w2 < sce->ics.group_len[w]; w2++)
+                        {
                             int b;
                             bits += quantize_band_cost_bits(s, coefs + w2*128,
                                                             scaled + w2*128,
@@ -2287,7 +2371,8 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
                                                             INFINITY,
                                                             &b);
                         }
-                        if (prev != -1) {
+                        if (prev != -1)
+                        {
                             bits += ff_aac_scalefactor_bits[sce->sf_idx[w*16+g] - prev + SCALE_DIFF_ZERO];
                         }
                         tbits += bits;
@@ -2296,23 +2381,28 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
                     }
                 }
             }
-            else {
-                for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
+            else
+            {
+                for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+                {
                     start = w*128;
-                    for (g = 0;  g < sce->ics.num_swb; g++) {
+                    for (g = 0;  g < sce->ics.num_swb; g++)
+                    {
                         const float *coefs = sce->coeffs + start;
                         const float *scaled = s->scoefs + start;
                         int bits = 0;
                         int cb;
                         float dist = 0.0f;
 
-                        if (sce->zeroes[w*16+g] || sce->sf_idx[w*16+g] >= 218) {
+                        if (sce->zeroes[w*16+g] || sce->sf_idx[w*16+g] >= 218)
+                        {
                             start += sce->ics.swb_sizes[g];
                             continue;
                         }
                         minscaler = FFMIN(minscaler, sce->sf_idx[w*16+g]);
                         cb = find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]);
-                        for (w2 = 0; w2 < sce->ics.group_len[w]; w2++) {
+                        for (w2 = 0; w2 < sce->ics.group_len[w]; w2++)
+                        {
                             int b;
                             dist += quantize_band_cost(s, coefs + w2*128,
                                                        scaled + w2*128,
@@ -2325,7 +2415,8 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
                             bits += b;
                         }
                         dists[w*16+g] = dist - bits;
-                        if (prev != -1) {
+                        if (prev != -1)
+                        {
                             bits += ff_aac_scalefactor_bits[sce->sf_idx[w*16+g] - prev + SCALE_DIFF_ZERO];
                         }
                         tbits += bits;
@@ -2334,11 +2425,14 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
                     }
                 }
             }
-            if (tbits > destbits) {
+            if (tbits > destbits)
+            {
                 for (i = 0; i < 128; i++)
                     if (sce->sf_idx[i] < 218 - qstep)
                         sce->sf_idx[i] += qstep;
-            } else {
+            }
+            else
+            {
                 for (i = 0; i < 128; i++)
                     if (sce->sf_idx[i] > 60 - qstep)
                         sce->sf_idx[i] -= qstep;
@@ -2346,14 +2440,18 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
             qstep >>= 1;
             if (!qstep && tbits > destbits*1.02 && sce->sf_idx[0] < 217)
                 qstep = 1;
-        } while (qstep);
+        }
+        while (qstep);
 
         fflag = 0;
         minscaler = av_clip(minscaler, 60, 255 - SCALE_MAX_DIFF);
-        for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w]) {
-            for (g = 0; g < sce->ics.num_swb; g++) {
+        for (w = 0; w < sce->ics.num_windows; w += sce->ics.group_len[w])
+        {
+            for (g = 0; g < sce->ics.num_swb; g++)
+            {
                 int prevsc = sce->sf_idx[w*16+g];
-                if (dists[w*16+g] > uplims[w*16+g] && sce->sf_idx[w*16+g] > 60) {
+                if (dists[w*16+g] > uplims[w*16+g] && sce->sf_idx[w*16+g] > 60)
+                {
                     if (find_min_book(maxvals[w*16+g], sce->sf_idx[w*16+g]-1))
                         sce->sf_idx[w*16+g]--;
                     else
@@ -2367,7 +2465,8 @@ static void search_for_quantizers_twoloop_mips(AVCodecContext *avctx,
             }
         }
         its++;
-    } while (fflag && its < 10);
+    }
+    while (fflag && its < 10);
 }
 
 static void search_for_ms_mips(AACEncContext *s, ChannelElement *cpe)
@@ -2379,34 +2478,39 @@ static void search_for_ms_mips(AACEncContext *s, ChannelElement *cpe)
     SingleChannelElement *sce1 = &cpe->ch[1];
     if (!cpe->common_window)
         return;
-    for (w = 0; w < sce0->ics.num_windows; w += sce0->ics.group_len[w]) {
-        for (g = 0;  g < sce0->ics.num_swb; g++) {
-            if (!cpe->ch[0].zeroes[w*16+g] && !cpe->ch[1].zeroes[w*16+g]) {
+    for (w = 0; w < sce0->ics.num_windows; w += sce0->ics.group_len[w])
+    {
+        for (g = 0;  g < sce0->ics.num_swb; g++)
+        {
+            if (!cpe->ch[0].zeroes[w*16+g] && !cpe->ch[1].zeroes[w*16+g])
+            {
                 float dist1 = 0.0f, dist2 = 0.0f;
-                for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++) {
+                for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++)
+                {
                     FFPsyBand *band0 = &s->psy.ch[s->cur_channel+0].psy_bands[(w+w2)*16+g];
                     FFPsyBand *band1 = &s->psy.ch[s->cur_channel+1].psy_bands[(w+w2)*16+g];
                     float minthr = FFMIN(band0->threshold, band1->threshold);
                     float maxthr = FFMAX(band0->threshold, band1->threshold);
-                    for (i = 0; i < sce0->ics.swb_sizes[g]; i+=4) {
+                    for (i = 0; i < sce0->ics.swb_sizes[g]; i+=4)
+                    {
                         M[i  ] = (sce0->coeffs[start+w2*128+i  ]
-                                + sce1->coeffs[start+w2*128+i  ]) * 0.5;
+                                  + sce1->coeffs[start+w2*128+i  ]) * 0.5;
                         M[i+1] = (sce0->coeffs[start+w2*128+i+1]
-                                + sce1->coeffs[start+w2*128+i+1]) * 0.5;
+                                  + sce1->coeffs[start+w2*128+i+1]) * 0.5;
                         M[i+2] = (sce0->coeffs[start+w2*128+i+2]
-                                + sce1->coeffs[start+w2*128+i+2]) * 0.5;
+                                  + sce1->coeffs[start+w2*128+i+2]) * 0.5;
                         M[i+3] = (sce0->coeffs[start+w2*128+i+3]
-                                + sce1->coeffs[start+w2*128+i+3]) * 0.5;
+                                  + sce1->coeffs[start+w2*128+i+3]) * 0.5;
 
                         S[i  ] =  M[i  ]
-                                - sce1->coeffs[start+w2*128+i  ];
+                                  - sce1->coeffs[start+w2*128+i  ];
                         S[i+1] =  M[i+1]
-                                - sce1->coeffs[start+w2*128+i+1];
+                                  - sce1->coeffs[start+w2*128+i+1];
                         S[i+2] =  M[i+2]
-                                - sce1->coeffs[start+w2*128+i+2];
+                                  - sce1->coeffs[start+w2*128+i+2];
                         S[i+3] =  M[i+3]
-                                - sce1->coeffs[start+w2*128+i+3];
-                   }
+                                  - sce1->coeffs[start+w2*128+i+3];
+                    }
                     abs_pow34_v(L34, sce0->coeffs+start+w2*128, sce0->ics.swb_sizes[g]);
                     abs_pow34_v(R34, sce1->coeffs+start+w2*128, sce0->ics.swb_sizes[g]);
                     abs_pow34_v(M34, M,                         sce0->ics.swb_sizes[g]);
@@ -2460,50 +2564,62 @@ static void codebook_trellis_rate_mips(AACEncContext *s, SingleChannelElement *s
 
     abs_pow34_v(s->scoefs, sce->coeffs, 1024);
     start = win*128;
-    for (cb = 0; cb < 12; cb++) {
+    for (cb = 0; cb < 12; cb++)
+    {
         path[0][cb].cost     = run_bits+4;
         path[0][cb].prev_idx = -1;
         path[0][cb].run      = 0;
     }
-    for (swb = 0; swb < max_sfb; swb++) {
+    for (swb = 0; swb < max_sfb; swb++)
+    {
         size = sce->ics.swb_sizes[swb];
-        if (sce->zeroes[win*16 + swb]) {
+        if (sce->zeroes[win*16 + swb])
+        {
             float cost_stay_here = path[swb][0].cost;
             float cost_get_here  = next_minbits + run_bits + 4;
             if (   run_value_bits[sce->ics.num_windows == 8][path[swb][0].run]
-                != run_value_bits[sce->ics.num_windows == 8][path[swb][0].run+1])
+                    != run_value_bits[sce->ics.num_windows == 8][path[swb][0].run+1])
                 cost_stay_here += run_bits;
-            if (cost_get_here < cost_stay_here) {
+            if (cost_get_here < cost_stay_here)
+            {
                 path[swb+1][0].prev_idx = next_mincb;
                 path[swb+1][0].cost     = cost_get_here;
                 path[swb+1][0].run      = 1;
-            } else {
+            }
+            else
+            {
                 path[swb+1][0].prev_idx = 0;
                 path[swb+1][0].cost     = cost_stay_here;
                 path[swb+1][0].run      = path[swb][0].run + 1;
             }
             next_minbits = path[swb+1][0].cost;
             next_mincb = 0;
-            for (cb = 1; cb < 12; cb++) {
+            for (cb = 1; cb < 12; cb++)
+            {
                 path[swb+1][cb].cost = 61450;
                 path[swb+1][cb].prev_idx = -1;
                 path[swb+1][cb].run = 0;
             }
-        } else {
+        }
+        else
+        {
             float minbits = next_minbits;
             int mincb = next_mincb;
             int startcb = sce->band_type[win*16+swb];
             next_minbits = INFINITY;
             next_mincb = 0;
-            for (cb = 0; cb < startcb; cb++) {
+            for (cb = 0; cb < startcb; cb++)
+            {
                 path[swb+1][cb].cost = 61450;
                 path[swb+1][cb].prev_idx = -1;
                 path[swb+1][cb].run = 0;
             }
-            for (cb = startcb; cb < 12; cb++) {
+            for (cb = startcb; cb < 12; cb++)
+            {
                 float cost_stay_here, cost_get_here;
                 float bits = 0.0f;
-                for (w = 0; w < group_len; w++) {
+                for (w = 0; w < group_len; w++)
+                {
                     bits += quantize_band_cost_bits(s, sce->coeffs + start + w*128,
                                                     s->scoefs + start + w*128, size,
                                                     sce->sf_idx[(win+w)*16+swb], cb,
@@ -2512,18 +2628,22 @@ static void codebook_trellis_rate_mips(AACEncContext *s, SingleChannelElement *s
                 cost_stay_here = path[swb][cb].cost + bits;
                 cost_get_here  = minbits            + bits + run_bits + 4;
                 if (   run_value_bits[sce->ics.num_windows == 8][path[swb][cb].run]
-                    != run_value_bits[sce->ics.num_windows == 8][path[swb][cb].run+1])
+                        != run_value_bits[sce->ics.num_windows == 8][path[swb][cb].run+1])
                     cost_stay_here += run_bits;
-                if (cost_get_here < cost_stay_here) {
+                if (cost_get_here < cost_stay_here)
+                {
                     path[swb+1][cb].prev_idx = mincb;
                     path[swb+1][cb].cost     = cost_get_here;
                     path[swb+1][cb].run      = 1;
-                } else {
+                }
+                else
+                {
                     path[swb+1][cb].prev_idx = cb;
                     path[swb+1][cb].cost     = cost_stay_here;
                     path[swb+1][cb].run      = path[swb][cb].run + 1;
                 }
-                if (path[swb+1][cb].cost < next_minbits) {
+                if (path[swb+1][cb].cost < next_minbits)
+                {
                     next_minbits = path[swb+1][cb].cost;
                     next_mincb = cb;
                 }
@@ -2538,7 +2658,8 @@ static void codebook_trellis_rate_mips(AACEncContext *s, SingleChannelElement *s
         if (path[max_sfb][cb].cost < path[max_sfb][idx].cost)
             idx = cb;
     ppos = max_sfb;
-    while (ppos > 0) {
+    while (ppos > 0)
+    {
         av_assert1(idx >= 0);
         cb = idx;
         stackrun[stack_len] = path[ppos][cb].run;
@@ -2549,15 +2670,18 @@ static void codebook_trellis_rate_mips(AACEncContext *s, SingleChannelElement *s
     }
 
     start = 0;
-    for (i = stack_len - 1; i >= 0; i--) {
+    for (i = stack_len - 1; i >= 0; i--)
+    {
         put_bits(&s->pb, 4, stackcb[i]);
         count = stackrun[i];
         memset(sce->zeroes + win*16 + start, !stackcb[i], count);
-        for (j = 0; j < count; j++) {
+        for (j = 0; j < count; j++)
+        {
             sce->band_type[win*16 + start] =  stackcb[i];
             start++;
         }
-        while (count >= run_esc) {
+        while (count >= run_esc)
+        {
             put_bits(&s->pb, run_bits, run_esc);
             count -= run_esc;
         }
@@ -2566,12 +2690,14 @@ static void codebook_trellis_rate_mips(AACEncContext *s, SingleChannelElement *s
 }
 #endif /* HAVE_INLINE_ASM */
 
-void ff_aac_coder_init_mips(AACEncContext *c) {
+void ff_aac_coder_init_mips(AACEncContext *c)
+{
 #if HAVE_INLINE_ASM
     AACCoefficientsEncoder *e = c->coder;
     int option = c->options.aac_coder;
 
-    if (option == 2) {
+    if (option == 2)
+    {
 // Disabled due to failure with fate-aac-pns-encode
 //         e->quantize_and_encode_band = quantize_and_encode_band_mips;
 //         e->encode_window_bands_info = codebook_trellis_rate_mips;

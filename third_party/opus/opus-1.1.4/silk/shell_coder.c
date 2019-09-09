@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -40,7 +40,8 @@ static OPUS_INLINE void combine_pulses(
 )
 {
     opus_int k;
-    for( k = 0; k < len; k++ ) {
+    for( k = 0; k < len; k++ )
+    {
         out[ k ] = in[ 2 * k ] + in[ 2 * k + 1 ];
     }
 }
@@ -52,7 +53,8 @@ static OPUS_INLINE void encode_split(
     const opus_uint8            *shell_table    /* I    table of shell cdfs                         */
 )
 {
-    if( p > 0 ) {
+    if( p > 0 )
+    {
         ec_enc_icdf( psRangeEnc, p_child1, &shell_table[ silk_shell_code_table_offsets[ p ] ], 8 );
     }
 }
@@ -65,10 +67,13 @@ static OPUS_INLINE void decode_split(
     const opus_uint8            *shell_table    /* I    table of shell cdfs                         */
 )
 {
-    if( p > 0 ) {
+    if( p > 0 )
+    {
         p_child1[ 0 ] = ec_dec_icdf( psRangeDec, &shell_table[ silk_shell_code_table_offsets[ p ] ], 8 );
         p_child2[ 0 ] = p - p_child1[ 0 ];
-    } else {
+    }
+    else
+    {
         p_child1[ 0 ] = 0;
         p_child2[ 0 ] = 0;
     }

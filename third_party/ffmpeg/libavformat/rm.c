@@ -1,4 +1,4 @@
-/*
+﻿/*
  * "Real" compatible muxer and demuxer common code.
  * Copyright (c) 2009  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -21,14 +21,16 @@
 
 #include "rm.h"
 
-const char * const ff_rm_metadata[4] = {
+const char * const ff_rm_metadata[4] =
+{
     "title",
     "author",
     "copyright",
     "comment"
 };
 
-const AVCodecTag ff_rm_codec_tags[] = {
+const AVCodecTag ff_rm_codec_tags[] =
+{
     { AV_CODEC_ID_RV10,   MKTAG('R','V','1','0') },
     { AV_CODEC_ID_RV20,   MKTAG('R','V','2','0') },
     { AV_CODEC_ID_RV20,   MKTAG('R','V','T','R') },

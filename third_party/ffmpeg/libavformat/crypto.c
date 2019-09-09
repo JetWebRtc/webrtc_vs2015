@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Decryption protocol handler
  * Copyright (c) 2011 Martin Storsjo
  *
@@ -29,7 +29,8 @@
 #define MAX_BUFFER_BLOCKS 150
 #define BLOCKSIZE 16
 
-typedef struct CryptoContext {
+typedef struct CryptoContext
+{
     const AVClass *class;
     URLContext *hd;
     uint8_t inbuffer [BLOCKSIZE*MAX_BUFFER_BLOCKS],
@@ -60,7 +61,8 @@ typedef struct CryptoContext {
 #define OFFSET(x) offsetof(CryptoContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"key", "AES encryption/decryption key",                   OFFSET(key),         AV_OPT_TYPE_BINARY, .flags = D|E },
     {"iv",  "AES encryption/decryption initialization vector", OFFSET(iv),          AV_OPT_TYPE_BINARY, .flags = D|E },
     {"decryption_key", "AES decryption key",                   OFFSET(decrypt_key), AV_OPT_TYPE_BINARY, .flags = D },
@@ -70,7 +72,8 @@ static const AVOption options[] = {
     { NULL }
 };
 
-static const AVClass crypto_class = {
+static const AVClass crypto_class =
+{
     .class_name     = "crypto",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -81,11 +84,15 @@ static int set_aes_arg(CryptoContext *c, uint8_t **buf, int *buf_len,
                        uint8_t *default_buf, int default_buf_len,
                        const char *desc)
 {
-    if (!*buf_len) {
-        if (!default_buf_len) {
+    if (!*buf_len)
+    {
+        if (!default_buf_len)
+        {
             av_log(c, AV_LOG_ERROR, "%s not set\n", desc);
             return AVERROR(EINVAL);
-        } else if (default_buf_len != BLOCKSIZE) {
+        }
+        else if (default_buf_len != BLOCKSIZE)
+        {
             av_log(c, AV_LOG_ERROR,
                    "invalid %s size (%d bytes, block size is %d)\n",
                    desc, default_buf_len, BLOCKSIZE);
@@ -95,7 +102,9 @@ static int set_aes_arg(CryptoContext *c, uint8_t **buf, int *buf_len,
         if (!*buf)
             return AVERROR(ENOMEM);
         *buf_len = default_buf_len;
-    } else if (*buf_len != BLOCKSIZE) {
+    }
+    else if (*buf_len != BLOCKSIZE)
+    {
         av_log(c, AV_LOG_ERROR,
                "invalid %s size (%d bytes, block size is %d)\n",
                desc, *buf_len, BLOCKSIZE);
@@ -111,13 +120,15 @@ static int crypto_open2(URLContext *h, const char *uri, int flags, AVDictionary 
     CryptoContext *c = h->priv_data;
 
     if (!av_strstart(uri, "crypto+", &nested_url) &&
-        !av_strstart(uri, "crypto:", &nested_url)) {
+            !av_strstart(uri, "crypto:", &nested_url))
+    {
         av_log(h, AV_LOG_ERROR, "Unsupported url %s\n", uri);
         ret = AVERROR(EINVAL);
         goto err;
     }
 
-    if (flags & AVIO_FLAG_READ) {
+    if (flags & AVIO_FLAG_READ)
+    {
         if ((ret = set_aes_arg(c, &c->decrypt_key, &c->decrypt_keylen,
                                c->key, c->keylen, "decryption key")) < 0)
             goto err;
@@ -126,25 +137,29 @@ static int crypto_open2(URLContext *h, const char *uri, int flags, AVDictionary 
             goto err;
     }
 
-    if (flags & AVIO_FLAG_WRITE) {
+    if (flags & AVIO_FLAG_WRITE)
+    {
         if ((ret = set_aes_arg(c, &c->encrypt_key, &c->encrypt_keylen,
                                c->key, c->keylen, "encryption key")) < 0)
-        if (ret < 0)
-            goto err;
+            if (ret < 0)
+                goto err;
         if ((ret = set_aes_arg(c, &c->encrypt_iv, &c->encrypt_ivlen,
                                c->iv, c->ivlen, "encryption IV")) < 0)
             goto err;
     }
 
     if ((ret = ffurl_open(&c->hd, nested_url, flags,
-                          &h->interrupt_callback, options)) < 0) {
+                          &h->interrupt_callback, options)) < 0)
+    {
         av_log(h, AV_LOG_ERROR, "Unable to open resource: %s\n", nested_url);
         goto err;
     }
 
-    if (flags & AVIO_FLAG_READ) {
+    if (flags & AVIO_FLAG_READ)
+    {
         c->aes_decrypt = av_aes_alloc();
-        if (!c->aes_decrypt) {
+        if (!c->aes_decrypt)
+        {
             ret = AVERROR(ENOMEM);
             goto err;
         }
@@ -153,9 +168,11 @@ static int crypto_open2(URLContext *h, const char *uri, int flags, AVDictionary 
             goto err;
     }
 
-    if (flags & AVIO_FLAG_WRITE) {
+    if (flags & AVIO_FLAG_WRITE)
+    {
         c->aes_encrypt = av_aes_alloc();
-        if (!c->aes_encrypt) {
+        if (!c->aes_encrypt)
+        {
             ret = AVERROR(ENOMEM);
             goto err;
         }
@@ -177,7 +194,8 @@ static int crypto_read(URLContext *h, uint8_t *buf, int size)
     CryptoContext *c = h->priv_data;
     int blocks;
 retry:
-    if (c->outdata > 0) {
+    if (c->outdata > 0)
+    {
         size = FFMIN(size, c->outdata);
         memcpy(buf, c->outptr, size);
         c->outptr  += size;
@@ -188,10 +206,12 @@ retry:
     // since we'll remove PKCS7 padding at the end. So make
     // sure we've got at least 2 blocks, so we can decrypt
     // at least one.
-    while (c->indata - c->indata_used < 2*BLOCKSIZE) {
+    while (c->indata - c->indata_used < 2*BLOCKSIZE)
+    {
         int n = ffurl_read(c->hd, c->inbuffer + c->indata,
                            sizeof(c->inbuffer) - c->indata);
-        if (n <= 0) {
+        if (n <= 0)
+        {
             c->eof = 1;
             break;
         }
@@ -207,13 +227,15 @@ retry:
     c->outdata      = BLOCKSIZE * blocks;
     c->outptr       = c->outbuffer;
     c->indata_used += BLOCKSIZE * blocks;
-    if (c->indata_used >= sizeof(c->inbuffer)/2) {
+    if (c->indata_used >= sizeof(c->inbuffer)/2)
+    {
         memmove(c->inbuffer, c->inbuffer + c->indata_used,
                 c->indata - c->indata_used);
         c->indata     -= c->indata_used;
         c->indata_used = 0;
     }
-    if (c->eof) {
+    if (c->eof)
+    {
         // Remove PKCS7 padding at the end
         int padding = c->outbuffer[c->outdata - 1];
         c->outdata -= padding;
@@ -233,20 +255,22 @@ static int crypto_write(URLContext *h, const unsigned char *buf, int size)
     out_size = total_size - pad_len;
     blocks = out_size / BLOCKSIZE;
 
-    if (out_size) {
+    if (out_size)
+    {
         out_buf = av_malloc(out_size);
         if (!out_buf)
             return AVERROR(ENOMEM);
 
-        if (c->pad_len) {
+        if (c->pad_len)
+        {
             memcpy(&c->pad[c->pad_len], buf, BLOCKSIZE - c->pad_len);
             av_aes_crypt(c->aes_encrypt, out_buf, c->pad, 1, c->encrypt_iv, 0);
             blocks--;
         }
 
         av_aes_crypt(c->aes_encrypt, &out_buf[c->pad_len ? BLOCKSIZE : 0],
-                             &buf[c->pad_len ? BLOCKSIZE - c->pad_len: 0],
-                             blocks, c->encrypt_iv, 0);
+                     &buf[c->pad_len ? BLOCKSIZE - c->pad_len: 0],
+                     blocks, c->encrypt_iv, 0);
 
         ret = ffurl_write(c->hd, out_buf, out_size);
         av_free(out_buf);
@@ -254,7 +278,8 @@ static int crypto_write(URLContext *h, const unsigned char *buf, int size)
             return ret;
 
         memcpy(c->pad, &buf[size - pad_len], pad_len);
-    } else
+    }
+    else
         memcpy(&c->pad[c->pad_len], buf, size);
 
     c->pad_len = pad_len;
@@ -268,7 +293,8 @@ static int crypto_close(URLContext *h)
     uint8_t out_buf[BLOCKSIZE];
     int ret, pad;
 
-    if (c->aes_encrypt) {
+    if (c->aes_encrypt)
+    {
         pad = BLOCKSIZE - c->pad_len;
         memset(&c->pad[c->pad_len], pad, pad);
         av_aes_crypt(c->aes_encrypt, out_buf, c->pad, 1, c->encrypt_iv, 0);
@@ -283,7 +309,8 @@ static int crypto_close(URLContext *h)
     return 0;
 }
 
-URLProtocol ff_crypto_protocol = {
+URLProtocol ff_crypto_protocol =
+{
     .name            = "crypto",
     .url_open2       = crypto_open2,
     .url_read        = crypto_read,

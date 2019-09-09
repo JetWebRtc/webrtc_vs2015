@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -33,10 +33,10 @@ static inline uint64_t read_time(void)
     uint32_t a, d;
     __asm__ volatile(
 #if ARCH_X86_64 || defined(__SSE2__)
-                     "lfence \n\t"
+        "lfence \n\t"
 #endif
-                     "rdtsc  \n\t"
-                     : "=a" (a), "=d" (d));
+        "rdtsc  \n\t"
+        : "=a" (a), "=d" (d));
     return ((uint64_t)d << 32) + a;
 }
 

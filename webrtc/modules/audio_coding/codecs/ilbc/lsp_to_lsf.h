@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ void WebRtcIlbcfix_Lsp2Lsf(
     int16_t *lsf, /* (o) Lsf vector 0...Pi in Q13
                            (ordered, so that lsf[i]<lsf[i+1]) */
     int16_t m  /* (i) Number of coefficients */
-                           );
+);
 
 #endif

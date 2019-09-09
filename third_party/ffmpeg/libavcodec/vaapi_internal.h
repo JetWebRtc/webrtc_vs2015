@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Video Acceleration API (video decoding)
  * HW decode acceleration for MPEG-2, MPEG-4, H.264 and VC-1
  *
@@ -35,7 +35,8 @@
  * @{
  */
 
-typedef struct {
+typedef struct
+{
     VADisplay display;                  ///< Windowing system dependent handle
     VAConfigID config_id;               ///< Configuration ID
     VAContextID context_id;             ///< Context ID (video decode pipeline)

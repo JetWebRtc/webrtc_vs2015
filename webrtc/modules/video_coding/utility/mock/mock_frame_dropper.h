@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,17 +16,19 @@
 #include "webrtc/test/gmock.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockFrameDropper : public FrameDropper {
- public:
-  MOCK_METHOD0(Reset, void());
-  MOCK_METHOD1(Enable, void(bool enable));
-  MOCK_METHOD0(DropFrame, bool());
-  MOCK_METHOD2(Fill, void(size_t frameSizeBytes, bool deltaFrame));
-  MOCK_METHOD1(Leak, void(uint32_t inputFrameRate));
-  MOCK_METHOD2(SetRates, void(float bitRate, float incoming_frame_rate));
-  MOCK_CONST_METHOD1(ActualFrameRate, float(uint32_t inputFrameRate));
+class MockFrameDropper : public FrameDropper
+{
+public:
+    MOCK_METHOD0(Reset, void());
+    MOCK_METHOD1(Enable, void(bool enable));
+    MOCK_METHOD0(DropFrame, bool());
+    MOCK_METHOD2(Fill, void(size_t frameSizeBytes, bool deltaFrame));
+    MOCK_METHOD1(Leak, void(uint32_t inputFrameRate));
+    MOCK_METHOD2(SetRates, void(float bitRate, float incoming_frame_rate));
+    MOCK_CONST_METHOD1(ActualFrameRate, float(uint32_t inputFrameRate));
 };
 
 }  // namespace webrtc

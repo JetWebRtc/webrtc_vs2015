@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -59,8 +59,8 @@
 
 #if HAVE_INLINE_ASM
 static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
-                      float X_low[32][40][2], const float W[2][32][32][2],
-                      int buf_idx)
+                           float X_low[32][40][2], const float W[2][32][32][2],
+                           int buf_idx)
 {
     int i, k;
     int temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
@@ -73,7 +73,7 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
 
     /* loop unrolled 8 times */
     __asm__ volatile (
-    "1:                                                 \n\t"
+        "1:                                                 \n\t"
         "sw     $0,            0(%[p_x1_low])           \n\t"
         "sw     $0,            4(%[p_x1_low])           \n\t"
         "sw     $0,            8(%[p_x1_low])           \n\t"
@@ -91,8 +91,10 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
         : "memory"
     );
 
-    for (k = 0; k < sbr->kx[1]; k++) {
-        for (i = 0; i < 32; i+=4) {
+    for (k = 0; k < sbr->kx[1]; k++)
+    {
+        for (i = 0; i < 32; i+=4)
+        {
             /* loop unrolled 4 times */
             __asm__ volatile (
                 "lw     %[temp0],   0(%[p_w])               \n\t"
@@ -115,10 +117,10 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
                 PTR_ADDIU "%[p_w],     %[p_w],      1024    \n\t"
 
                 : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-                  [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-                  [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-                  [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
-                  [p_w]"+r"(p_w), [p_x_low]"+r"(p_x_low)
+                [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+                [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+                [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
+                [p_w]"+r"(p_w), [p_x_low]"+r"(p_x_low)
                 :
                 : "memory"
             );
@@ -127,8 +129,10 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
         p_w -= 2046;
     }
 
-    for (k = 0; k < sbr->kx[0]; k++) {
-        for (i = 0; i < 2; i++) {
+    for (k = 0; k < sbr->kx[0]; k++)
+    {
+        for (i = 0; i < 2; i++)
+        {
 
             /* loop unrolled 4 times */
             __asm__ volatile (
@@ -152,10 +156,10 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
                 PTR_ADDIU "%[p_w1],     %[p_w1],     1024   \n\t"
 
                 : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-                  [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-                  [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-                  [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
-                  [p_w1]"+r"(p_w1), [p_x1_low]"+r"(p_x1_low)
+                [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+                [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+                [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
+                [p_w1]"+r"(p_w1), [p_x1_low]"+r"(p_x1_low)
                 :
                 : "memory"
             );
@@ -167,8 +171,8 @@ static int sbr_lf_gen_mips(AACContext *ac, SpectralBandReplication *sbr,
 }
 
 static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
-                     const float Y0[38][64][2], const float Y1[38][64][2],
-                     const float X_low[32][40][2], int ch)
+                          const float Y0[38][64][2], const float Y1[38][64][2],
+                          const float X_low[32][40][2], int ch)
 {
     int k, i;
     const int i_f = 32;
@@ -180,7 +184,7 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
 
     /* loop unrolled 8 times */
     __asm__ volatile (
-    "1:                                       \n\t"
+        "1:                                       \n\t"
         "sw     $0,      0(%[x1])             \n\t"
         "sw     $0,      4(%[x1])             \n\t"
         "sw     $0,      8(%[x1])             \n\t"
@@ -198,15 +202,17 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
         : "memory"
     );
 
-    if (i_Temp != 0) {
+    if (i_Temp != 0)
+    {
 
         X_low1=&X_low[0][2][0];
 
-        for (k = 0; k < sbr->kx[0]; k++) {
+        for (k = 0; k < sbr->kx[0]; k++)
+        {
 
             __asm__ volatile (
                 "move    %[i],        $zero                  \n\t"
-            "2:                                              \n\t"
+                "2:                                              \n\t"
                 "lw      %[temp0],    0(%[X_low1])           \n\t"
                 "lw      %[temp1],    4(%[X_low1])           \n\t"
                 "sw      %[temp0],    0(%[x1])               \n\t"
@@ -217,7 +223,7 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
                 "bne     %[i],        %[i_Temp],     2b      \n\t"
 
                 : [x1]"+r"(x1), [X_low1]"+r"(X_low1), [i]"=&r"(i),
-                  [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
+                [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
                 : [i_Temp]"r"(i_Temp)
                 : "memory"
             );
@@ -228,10 +234,11 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
         x1=&X[0][0][k];
         Y01=(float*)&Y0[32][k][0];
 
-        for (; k < sbr->kx[0] + sbr->m[0]; k++) {
+        for (; k < sbr->kx[0] + sbr->m[0]; k++)
+        {
             __asm__ volatile (
                 "move    %[i],       $zero               \n\t"
-            "3:                                          \n\t"
+                "3:                                          \n\t"
                 "lw      %[temp0],   0(%[Y01])           \n\t"
                 "lw      %[temp1],   4(%[Y01])           \n\t"
                 "sw      %[temp0],   0(%[x1])            \n\t"
@@ -242,7 +249,7 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
                 "bne     %[i],       %[i_Temp],  3b      \n\t"
 
                 : [x1]"+r"(x1), [Y01]"+r"(Y01), [i]"=&r"(i),
-                  [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
+                [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
                 : [i_Temp]"r"(i_Temp)
                 : "memory"
             );
@@ -255,11 +262,12 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
     X_low1=&X_low[0][i_Temp+2][0];
     temp3=38;
 
-    for (k = 0; k < sbr->kx[1]; k++) {
+    for (k = 0; k < sbr->kx[1]; k++)
+    {
 
         __asm__ volatile (
             "move    %[i],       %[i_Temp]              \n\t"
-        "4:                                             \n\t"
+            "4:                                             \n\t"
             "lw      %[temp0],   0(%[X_low1])           \n\t"
             "lw      %[temp1],   4(%[X_low1])           \n\t"
             "sw      %[temp0],   0(%[x1])               \n\t"
@@ -270,8 +278,8 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
             "bne     %[i],       %[temp3],      4b      \n\t"
 
             : [x1]"+r"(x1), [X_low1]"+r"(X_low1), [i]"=&r"(i),
-              [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2)
+            [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
+            [temp2]"=&r"(temp2)
             : [i_Temp]"r"(i_Temp), [temp3]"r"(temp3)
             : "memory"
         );
@@ -283,44 +291,46 @@ static int sbr_x_gen_mips(SpectralBandReplication *sbr, float X[2][38][64],
     Y11=&Y1[i_Temp][k][0];
     temp2=32;
 
-    for (; k < sbr->kx[1] + sbr->m[1]; k++) {
+    for (; k < sbr->kx[1] + sbr->m[1]; k++)
+    {
 
         __asm__ volatile (
-           "move    %[i],       %[i_Temp]               \n\t"
-        "5:                                             \n\t"
-           "lw      %[temp0],   0(%[Y11])               \n\t"
-           "lw      %[temp1],   4(%[Y11])               \n\t"
-           "sw      %[temp0],   0(%[x1])                \n\t"
-           "sw      %[temp1],   9728(%[x1])             \n\t"
-           PTR_ADDIU "%[x1],    %[x1],          256     \n\t"
-           PTR_ADDIU "%[Y11],   %[Y11],         512     \n\t"
-           "addiu   %[i],       %[i],           1       \n\t"
-           "bne     %[i],       %[temp2],       5b      \n\t"
+            "move    %[i],       %[i_Temp]               \n\t"
+            "5:                                             \n\t"
+            "lw      %[temp0],   0(%[Y11])               \n\t"
+            "lw      %[temp1],   4(%[Y11])               \n\t"
+            "sw      %[temp0],   0(%[x1])                \n\t"
+            "sw      %[temp1],   9728(%[x1])             \n\t"
+            PTR_ADDIU "%[x1],    %[x1],          256     \n\t"
+            PTR_ADDIU "%[Y11],   %[Y11],         512     \n\t"
+            "addiu   %[i],       %[i],           1       \n\t"
+            "bne     %[i],       %[temp2],       5b      \n\t"
 
-           : [x1]"+r"(x1), [Y11]"+r"(Y11), [i]"=&r"(i),
-             [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
-           : [i_Temp]"r"(i_Temp), [temp3]"r"(temp3),
-             [temp2]"r"(temp2)
-           : "memory"
+            : [x1]"+r"(x1), [Y11]"+r"(Y11), [i]"=&r"(i),
+            [temp0]"=&r"(temp0), [temp1]"=&r"(temp1)
+            : [i_Temp]"r"(i_Temp), [temp3]"r"(temp3),
+            [temp2]"r"(temp2)
+            : "memory"
         );
 
         x1 -= ((32-i_Temp)<<6)-1;
         Y11 -= ((32-i_Temp)<<7)-2;
-   }
-      return 0;
+    }
+    return 0;
 }
 
 #if HAVE_MIPSFPU
 static void sbr_hf_assemble_mips(float Y1[38][64][2],
-                            const float X_high[64][40][2],
-                            SpectralBandReplication *sbr, SBRData *ch_data,
-                            const int e_a[2])
+                                 const float X_high[64][40][2],
+                                 SpectralBandReplication *sbr, SBRData *ch_data,
+                                 const int e_a[2])
 {
     int e, i, j, m;
     const int h_SL = 4 * !sbr->bs_smoothing_mode;
     const int kx = sbr->kx[1];
     const int m_max = sbr->m[1];
-    static const float h_smooth[5] = {
+    static const float h_smooth[5] =
+    {
         0.33333333333333,
         0.30150283239582,
         0.21816949906249,
@@ -335,25 +345,32 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
     float temp1, temp2, temp3, temp4;
     int size = m_max;
 
-    if (sbr->reset) {
-        for (i = 0; i < h_SL; i++) {
+    if (sbr->reset)
+    {
+        for (i = 0; i < h_SL; i++)
+        {
             memcpy(g_temp[i + 2*ch_data->t_env[0]], sbr->gain[0], m_max * sizeof(sbr->gain[0][0]));
             memcpy(q_temp[i + 2*ch_data->t_env[0]], sbr->q_m[0],  m_max * sizeof(sbr->q_m[0][0]));
         }
-    } else if (h_SL) {
+    }
+    else if (h_SL)
+    {
         memcpy(g_temp[2*ch_data->t_env[0]], g_temp[2*ch_data->t_env_num_env_old], 4*sizeof(g_temp[0]));
         memcpy(q_temp[2*ch_data->t_env[0]], q_temp[2*ch_data->t_env_num_env_old], 4*sizeof(q_temp[0]));
     }
 
-    for (e = 0; e < ch_data->bs_num_env; e++) {
-        for (i = 2 * ch_data->t_env[e]; i < 2 * ch_data->t_env[e + 1]; i++) {
+    for (e = 0; e < ch_data->bs_num_env; e++)
+    {
+        for (i = 2 * ch_data->t_env[e]; i < 2 * ch_data->t_env[e + 1]; i++)
+        {
             g_temp1 = g_temp[h_SL + i];
             pok = sbr->gain[e];
             q_temp1 = q_temp[h_SL + i];
             pok1 = sbr->q_m[e];
 
             /* loop unrolled 4 times */
-            for (j=0; j<(size>>2); j++) {
+            for (j=0; j<(size>>2); j++)
+            {
                 __asm__ volatile (
                     "lw      %[temp1],   0(%[pok])               \n\t"
                     "lw      %[temp2],   4(%[pok])               \n\t"
@@ -377,15 +394,16 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
                     PTR_ADDIU "%[q_temp1], %[q_temp1],     16    \n\t"
 
                     : [temp1]"=&r"(temp1), [temp2]"=&r"(temp2),
-                      [temp3]"=&r"(temp3), [temp4]"=&r"(temp4),
-                      [pok]"+r"(pok), [g_temp1]"+r"(g_temp1),
-                      [pok1]"+r"(pok1), [q_temp1]"+r"(q_temp1)
+                    [temp3]"=&r"(temp3), [temp4]"=&r"(temp4),
+                    [pok]"+r"(pok), [g_temp1]"+r"(g_temp1),
+                    [pok1]"+r"(pok1), [q_temp1]"+r"(q_temp1)
                     :
                     : "memory"
                 );
             }
 
-            for (j=0; j<(size&3); j++) {
+            for (j=0; j<(size&3); j++)
+            {
                 __asm__ volatile (
                     "lw      %[temp1],   0(%[pok])              \n\t"
                     "lw      %[temp2],   0(%[pok1])             \n\t"
@@ -397,9 +415,9 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
                     PTR_ADDIU "%[q_temp1], %[q_temp1],    4     \n\t"
 
                     : [temp1]"=&r"(temp1), [temp2]"=&r"(temp2),
-                      [temp3]"=&r"(temp3), [temp4]"=&r"(temp4),
-                      [pok]"+r"(pok), [g_temp1]"+r"(g_temp1),
-                      [pok1]"+r"(pok1), [q_temp1]"+r"(q_temp1)
+                    [temp3]"=&r"(temp3), [temp4]"=&r"(temp4),
+                    [pok]"+r"(pok), [g_temp1]"+r"(g_temp1),
+                    [pok1]"+r"(pok1), [q_temp1]"+r"(q_temp1)
                     :
                     : "memory"
                 );
@@ -407,27 +425,34 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
         }
     }
 
-    for (e = 0; e < ch_data->bs_num_env; e++) {
-        for (i = 2 * ch_data->t_env[e]; i < 2 * ch_data->t_env[e + 1]; i++) {
+    for (e = 0; e < ch_data->bs_num_env; e++)
+    {
+        for (i = 2 * ch_data->t_env[e]; i < 2 * ch_data->t_env[e + 1]; i++)
+        {
             LOCAL_ALIGNED_16(float, g_filt_tab, [48]);
             LOCAL_ALIGNED_16(float, q_filt_tab, [48]);
             float *g_filt, *q_filt;
 
-            if (h_SL && e != e_a[0] && e != e_a[1]) {
+            if (h_SL && e != e_a[0] && e != e_a[1])
+            {
                 g_filt = g_filt_tab;
                 q_filt = q_filt_tab;
 
-                for (m = 0; m < m_max; m++) {
+                for (m = 0; m < m_max; m++)
+                {
                     const int idx1 = i + h_SL;
                     g_filt[m] = 0.0f;
                     q_filt[m] = 0.0f;
 
-                    for (j = 0; j <= h_SL; j++) {
+                    for (j = 0; j <= h_SL; j++)
+                    {
                         g_filt[m] += g_temp[idx1 - j][m] * h_smooth[j];
                         q_filt[m] += q_temp[idx1 - j][m] * h_smooth[j];
                     }
                 }
-            } else {
+            }
+            else
+            {
                 g_filt = g_temp[i + h_SL];
                 q_filt = q_temp[i];
             }
@@ -435,11 +460,14 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
             sbr->dsp.hf_g_filt(Y1[i] + kx, X_high + kx, g_filt, m_max,
                                i + ENVELOPE_ADJUSTMENT_OFFSET);
 
-            if (e != e_a[0] && e != e_a[1]) {
+            if (e != e_a[0] && e != e_a[1])
+            {
                 sbr->dsp.hf_apply_noise[indexsine](Y1[i] + kx, sbr->s_m[e],
                                                    q_filt, indexnoise,
                                                    kx, m_max);
-            } else {
+            }
+            else
+            {
                 int idx = indexsine&1;
                 int A = (1-((indexsine+(kx & 1))&2));
                 int B = (A^(-idx)) + idx;
@@ -449,7 +477,8 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
                 float A_f = (float)A;
                 float B_f = (float)B;
 
-                for (m = 0; m+1 < m_max; m+=2) {
+                for (m = 0; m+1 < m_max; m+=2)
+                {
 
                     temp2 = out[0];
                     temp3 = out[2];
@@ -465,10 +494,10 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
                         PTR_ADDIU "%[out],  %[out],    16                \n\t"
 
                         : [temp0]"=&f" (temp0), [temp1]"=&f"(temp1),
-                          [temp4]"=&f" (temp4), [temp5]"=&f"(temp5),
-                          [in]"+r"(in), [out]"+r"(out)
+                        [temp4]"=&f" (temp4), [temp5]"=&f"(temp5),
+                        [in]"+r"(in), [out]"+r"(out)
                         : [A_f]"f"(A_f), [B_f]"f"(B_f), [temp2]"f"(temp2),
-                          [temp3]"f"(temp3)
+                        [temp3]"f"(temp3)
                         : "memory"
                     );
                 }
@@ -484,8 +513,8 @@ static void sbr_hf_assemble_mips(float Y1[38][64][2],
 }
 
 static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
-                                  float (*alpha0)[2], float (*alpha1)[2],
-                                  const float X_low[32][40][2], int k0)
+                                       float (*alpha0)[2], float (*alpha1)[2],
+                                       const float X_low[32][40][2], int k0)
 {
     int k;
     float temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7, c;
@@ -493,7 +522,8 @@ static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
 
     c = 1.000001f;
 
-    for (k = 0; k < k0; k++) {
+    for (k = 0; k < k0; k++)
+    {
         LOCAL_ALIGNED_16(float, phi, [3], [2][2]);
         float dk;
         phi1 = &phi[0][0][0];
@@ -517,16 +547,19 @@ static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
             "sub.s   %[dk],     %[dk],       %[res2]              \n\t"
 
             : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [temp6]"=&f"(temp6), [res2]"=&f"(res2), [dk]"=&f"(dk)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [temp6]"=&f"(temp6), [res2]"=&f"(res2), [dk]"=&f"(dk)
             : [phi1]"r"(phi1), [c]"f"(c)
             : "memory"
         );
 
-        if (!dk) {
+        if (!dk)
+        {
             alpha_1[0] = 0;
             alpha_1[1] = 0;
-        } else {
+        }
+        else
+        {
             __asm__ volatile (
                 "mul.s   %[temp_real], %[temp4],     %[temp2]            \n\t"
                 "nmsub.s %[temp_real], %[temp_real], %[temp5], %[temp3]  \n\t"
@@ -541,17 +574,20 @@ static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
 
                 : [temp_real]"=&f" (temp_real), [temp_im]"=&f"(temp_im)
                 : [phi1]"r"(phi1), [temp0]"f"(temp0), [temp1]"f"(temp1),
-                  [temp2]"f"(temp2), [temp3]"f"(temp3), [temp4]"f"(temp4),
-                  [temp5]"f"(temp5), [temp6]"f"(temp6),
-                  [alpha_1]"r"(alpha_1), [dk]"f"(dk)
+                [temp2]"f"(temp2), [temp3]"f"(temp3), [temp4]"f"(temp4),
+                [temp5]"f"(temp5), [temp6]"f"(temp6),
+                [alpha_1]"r"(alpha_1), [dk]"f"(dk)
                 : "memory"
             );
         }
 
-        if (!phi1[4]) {
+        if (!phi1[4])
+        {
             alpha_0[0] = 0;
             alpha_0[1] = 0;
-        } else {
+        }
+        else
+        {
             __asm__ volatile (
                 "lwc1    %[temp6],     0(%[alpha_1])                     \n\t"
                 "lwc1    %[temp7],     4(%[alpha_1])                     \n\t"
@@ -569,11 +605,11 @@ static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
                 "swc1    %[temp_im],   4(%[alpha_0])                     \n\t"
 
                 : [temp_real]"=&f"(temp_real), [temp_im]"=&f"(temp_im),
-                  [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
-                  [res1]"=&f"(res1), [res2]"=&f"(res2)
+                [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
+                [res1]"=&f"(res1), [res2]"=&f"(res2)
                 : [alpha_1]"r"(alpha_1), [alpha_0]"r"(alpha_0),
-                  [temp0]"f"(temp0), [temp1]"f"(temp1), [temp2]"f"(temp2),
-                  [temp3]"f"(temp3), [temp4]"f"(temp4), [temp5]"f"(temp5)
+                [temp0]"f"(temp0), [temp1]"f"(temp1), [temp2]"f"(temp2),
+                [temp3]"f"(temp3), [temp4]"f"(temp4), [temp5]"f"(temp5)
                 : "memory"
             );
         }
@@ -589,13 +625,14 @@ static void sbr_hf_inverse_filter_mips(SBRDSPContext *dsp,
             "madd.s  %[res2],       %[res2],       %[temp_im],  %[temp_im]  \n\t"
 
             : [temp_real]"=&f"(temp_real), [temp_im]"=&f"(temp_im),
-              [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [res1]"=&f"(res1), [res2]"=&f"(res2)
+            [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+            [res1]"=&f"(res1), [res2]"=&f"(res2)
             : [alpha_1]"r"(alpha_1), [alpha_0]"r"(alpha_0)
             : "memory"
         );
 
-        if (res1 >= 16.0f || res2 >= 16.0f) {
+        if (res1 >= 16.0f || res2 >= 16.0f)
+        {
             alpha_1[0] = 0;
             alpha_1[1] = 0;
             alpha_0[0] = 0;

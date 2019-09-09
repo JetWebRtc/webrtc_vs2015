@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -74,22 +74,23 @@ VarFunc      SampleVariance16x16_AArch64_neon;
 WELSVP_EXTERN_C_END
 #endif
 
-class CAdaptiveQuantization : public IStrategy {
- public:
-  CAdaptiveQuantization (int32_t iCpuFlag);
-  ~CAdaptiveQuantization();
+class CAdaptiveQuantization : public IStrategy
+{
+public:
+    CAdaptiveQuantization (int32_t iCpuFlag);
+    ~CAdaptiveQuantization();
 
-  EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pRef);
-  EResult Set (int32_t iType, void* pParam);
-  EResult Get (int32_t iType, void* pParam);
+    EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pRef);
+    EResult Set (int32_t iType, void* pParam);
+    EResult Get (int32_t iType, void* pParam);
 
- private:
-  void WelsInitVarFunc (PVarFunc& pfVar, int32_t iCpuFlag);
+private:
+    void WelsInitVarFunc (PVarFunc& pfVar, int32_t iCpuFlag);
 
- private:
-  PVarFunc                      m_pfVar;
-  int32_t                       m_CPUFlag;
-  SAdaptiveQuantizationParam    m_sAdaptiveQuantParam;
+private:
+    PVarFunc                      m_pfVar;
+    int32_t                       m_CPUFlag;
+    SAdaptiveQuantizationParam    m_sAdaptiveQuantParam;
 };
 
 WELSVP_NAMESPACE_END

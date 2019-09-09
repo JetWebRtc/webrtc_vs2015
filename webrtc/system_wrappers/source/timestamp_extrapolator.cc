@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 
 #include <algorithm>
 
-namespace webrtc {
+namespace webrtc
+{
 
 TimestampExtrapolator::TimestampExtrapolator(int64_t start_ms)
     : _rwLock(RWLockWrapper::CreateRWLock()),
@@ -30,7 +31,8 @@ TimestampExtrapolator::TimestampExtrapolator(int64_t start_ms)
       _alarmThreshold(60e3),
       _accDrift(6600),  // in timestamp ticks, i.e. 15 ms
       _accMaxError(7000),
-      _pP11(1e10) {
+      _pP11(1e10)
+{
     Reset(start_ms);
 }
 
@@ -83,10 +85,10 @@ TimestampExtrapolator::Update(int64_t tMs, uint32_t ts90khz)
     CheckForWrapArounds(ts90khz);
 
     int64_t unwrapped_ts90khz = static_cast<int64_t>(ts90khz) +
-        _wrapArounds * ((static_cast<int64_t>(1) << 32) - 1);
+                                _wrapArounds * ((static_cast<int64_t>(1) << 32) - 1);
 
     if (_prevUnwrappedTimestamp >= 0 &&
-        unwrapped_ts90khz < _prevUnwrappedTimestamp)
+            unwrapped_ts90khz < _prevUnwrappedTimestamp)
     {
         // Drop reordered frames.
         _rwLock->ReleaseLockExclusive();
@@ -107,7 +109,7 @@ TimestampExtrapolator::Update(int64_t tMs, uint32_t ts90khz)
         (static_cast<double>(unwrapped_ts90khz) - _firstTimestamp) -
         static_cast<double>(tMs) * _w[0] - _w[1];
     if (DelayChangeDetection(residual) &&
-        _packetCount >= _startUpFilterDelayInPackets)
+            _packetCount >= _startUpFilterDelayInPackets)
     {
         // A sudden change of average network delay has been detected.
         // Force the filter to adjust its offset parameter by changing
@@ -128,13 +130,13 @@ TimestampExtrapolator::Update(int64_t tMs, uint32_t ts90khz)
     _w[1] = _w[1] + K[1] * residual;
     //P = 1/lambda*(P - K*T'*P);
     double p00 = 1 / _lambda *
-        (_pP[0][0] - (K[0] * tMs * _pP[0][0] + K[0] * _pP[1][0]));
+                 (_pP[0][0] - (K[0] * tMs * _pP[0][0] + K[0] * _pP[1][0]));
     double p01 = 1 / _lambda *
-        (_pP[0][1] - (K[0] * tMs * _pP[0][1] + K[0] * _pP[1][1]));
+                 (_pP[0][1] - (K[0] * tMs * _pP[0][1] + K[0] * _pP[1][1]));
     _pP[1][0] = 1 / _lambda *
-        (_pP[1][0] - (K[1] * tMs * _pP[0][0] + K[1] * _pP[1][0]));
+                (_pP[1][0] - (K[1] * tMs * _pP[0][0] + K[1] * _pP[1][0]));
     _pP[1][1] = 1 / _lambda *
-        (_pP[1][1] - (K[1] * tMs * _pP[0][1] + K[1] * _pP[1][1]));
+                (_pP[1][1] - (K[1] * tMs * _pP[0][1] + K[1] * _pP[1][1]));
     _pP[0][0] = p00;
     _pP[0][1] = p01;
     _prevUnwrappedTimestamp = unwrapped_ts90khz;
@@ -152,7 +154,7 @@ TimestampExtrapolator::ExtrapolateLocalTime(uint32_t timestamp90khz)
     int64_t localTimeMs = 0;
     CheckForWrapArounds(timestamp90khz);
     double unwrapped_ts90khz = static_cast<double>(timestamp90khz) +
-        _wrapArounds * ((static_cast<int64_t>(1) << 32) - 1);
+                               _wrapArounds * ((static_cast<int64_t>(1) << 32) - 1);
     if (_packetCount == 0)
     {
         localTimeMs = -1;
@@ -160,8 +162,8 @@ TimestampExtrapolator::ExtrapolateLocalTime(uint32_t timestamp90khz)
     else if (_packetCount < _startUpFilterDelayInPackets)
     {
         localTimeMs = _prevMs + static_cast<int64_t>(
-            static_cast<double>(unwrapped_ts90khz - _prevUnwrappedTimestamp) /
-            90.0 + 0.5);
+                          static_cast<double>(unwrapped_ts90khz - _prevUnwrappedTimestamp) /
+                          90.0 + 0.5);
     }
     else
     {
@@ -172,10 +174,10 @@ TimestampExtrapolator::ExtrapolateLocalTime(uint32_t timestamp90khz)
         else
         {
             double timestampDiff = unwrapped_ts90khz -
-                static_cast<double>(_firstTimestamp);
+                                   static_cast<double>(_firstTimestamp);
             localTimeMs = static_cast<int64_t>(
-                static_cast<double>(_startMs) + (timestampDiff - _w[1]) /
-                _w[0] + 0.5);
+                              static_cast<double>(_startMs) + (timestampDiff - _w[1]) /
+                              _w[0] + 0.5);
         }
     }
     return localTimeMs;
@@ -217,7 +219,7 @@ TimestampExtrapolator::DelayChangeDetection(double error)
 {
     // CUSUM detection of sudden delay changes
     error = (error > 0) ? std::min(error, _accMaxError) :
-                          std::max(error, -_accMaxError);
+            std::max(error, -_accMaxError);
     _detectorAccumulatorPos =
         std::max(_detectorAccumulatorPos + error - _accDrift, (double)0);
     _detectorAccumulatorNeg =

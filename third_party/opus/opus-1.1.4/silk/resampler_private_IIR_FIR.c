@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -45,7 +45,8 @@ static OPUS_INLINE opus_int16 *silk_resampler_private_IIR_FIR_INTERPOL(
     opus_int32 table_index;
 
     /* Interpolate upsampled signal and store in output array */
-    for( index_Q16 = 0; index_Q16 < max_index_Q16; index_Q16 += index_increment_Q16 ) {
+    for( index_Q16 = 0; index_Q16 < max_index_Q16; index_Q16 += index_increment_Q16 )
+    {
         table_index = silk_SMULWB( index_Q16 & 0xFFFF, 12 );
         buf_ptr = &buf[ index_Q16 >> 16 ];
 
@@ -82,7 +83,8 @@ void silk_resampler_private_IIR_FIR(
 
     /* Iterate over blocks of frameSizeIn input samples */
     index_increment_Q16 = S->invRatio_Q16;
-    while( 1 ) {
+    while( 1 )
+    {
         nSamplesIn = silk_min( inLen, S->batchSize );
 
         /* Upsample 2x */
@@ -93,10 +95,13 @@ void silk_resampler_private_IIR_FIR(
         in += nSamplesIn;
         inLen -= nSamplesIn;
 
-        if( inLen > 0 ) {
+        if( inLen > 0 )
+        {
             /* More iterations to do; copy last part of filtered signal to beginning of buffer */
             silk_memcpy( buf, &buf[ nSamplesIn << 1 ], RESAMPLER_ORDER_FIR_12 * sizeof( opus_int16 ) );
-        } else {
+        }
+        else
+        {
             break;
         }
     }

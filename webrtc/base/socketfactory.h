@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,23 +14,25 @@
 #include "webrtc/base/socket.h"
 #include "webrtc/base/asyncsocket.h"
 
-namespace rtc {
+namespace rtc
+{
 
-class SocketFactory {
+class SocketFactory
+{
 public:
-  virtual ~SocketFactory() {}
+    virtual ~SocketFactory() {}
 
-  // Returns a new socket for blocking communication.  The type can be
-  // SOCK_DGRAM and SOCK_STREAM.
-  // TODO: C++ inheritance rules mean that all users must have both
-  // CreateSocket(int) and CreateSocket(int,int). Will remove CreateSocket(int)
-  // (and CreateAsyncSocket(int) when all callers are changed.
-  virtual Socket* CreateSocket(int type) = 0;
-  virtual Socket* CreateSocket(int family, int type) = 0;
-  // Returns a new socket for nonblocking communication.  The type can be
-  // SOCK_DGRAM and SOCK_STREAM.
-  virtual AsyncSocket* CreateAsyncSocket(int type) = 0;
-  virtual AsyncSocket* CreateAsyncSocket(int family, int type) = 0;
+    // Returns a new socket for blocking communication.  The type can be
+    // SOCK_DGRAM and SOCK_STREAM.
+    // TODO: C++ inheritance rules mean that all users must have both
+    // CreateSocket(int) and CreateSocket(int,int). Will remove CreateSocket(int)
+    // (and CreateAsyncSocket(int) when all callers are changed.
+    virtual Socket* CreateSocket(int type) = 0;
+    virtual Socket* CreateSocket(int family, int type) = 0;
+    // Returns a new socket for nonblocking communication.  The type can be
+    // SOCK_DGRAM and SOCK_STREAM.
+    virtual AsyncSocket* CreateAsyncSocket(int type) = 0;
+    virtual AsyncSocket* CreateAsyncSocket(int family, int type) = 0;
 };
 
 } // namespace rtc

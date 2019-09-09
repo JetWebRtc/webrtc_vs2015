@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RealAudio 2.0 (28.8K)
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -37,7 +37,8 @@
 #define RA288_BLOCK_SIZE        5
 #define RA288_BLOCKS_PER_FRAME 32
 
-typedef struct RA288Context {
+typedef struct RA288Context
+{
     AVFloatDSPContext *fdsp;
     DECLARE_ALIGNED(32, float,   sp_lpc)[FFALIGN(36, 16)];   ///< LPC coefficients for speech data (spec: A)
     DECLARE_ALIGNED(32, float, gain_lpc)[FFALIGN(10, 16)];   ///< LPC coefficients for gain        (spec: GB)
@@ -76,7 +77,8 @@ static av_cold int ra288_decode_init(AVCodecContext *avctx)
     avctx->channel_layout = AV_CH_LAYOUT_MONO;
     avctx->sample_fmt     = AV_SAMPLE_FMT_FLT;
 
-    if (avctx->block_align <= 0) {
+    if (avctx->block_align <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "unsupported block align\n");
         return AVERROR_PATCHWELCOME;
     }
@@ -162,7 +164,8 @@ static void do_hybrid_window(RA288Context *ractx,
     convolve(buffer1, work + order    , n      , order);
     convolve(buffer2, work + order + n, non_rec, order);
 
-    for (i=0; i <= order; i++) {
+    for (i=0; i <= order; i++)
+    {
         out2[i] = out2[i] * 0.5625 + buffer1[i];
         out [i] = out2[i]          + buffer2[i];
     }
@@ -200,7 +203,8 @@ static int ra288_decode_frame(AVCodecContext * avctx, void *data,
     RA288Context *ractx = avctx->priv_data;
     GetBitContext gb;
 
-    if (buf_size < avctx->block_align) {
+    if (buf_size < avctx->block_align)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Error! Input buffer is too small [%d<%d]\n",
                buf_size, avctx->block_align);
@@ -217,7 +221,8 @@ static int ra288_decode_frame(AVCodecContext * avctx, void *data,
         return ret;
     out = (float *)frame->data[0];
 
-    for (i=0; i < RA288_BLOCKS_PER_FRAME; i++) {
+    for (i=0; i < RA288_BLOCKS_PER_FRAME; i++)
+    {
         float gain = amptable[get_bits(&gb, 3)];
         int cb_coef = get_bits(&gb, 6 + (i&1));
 
@@ -226,7 +231,8 @@ static int ra288_decode_frame(AVCodecContext * avctx, void *data,
         memcpy(out, &ractx->sp_hist[70 + 36], RA288_BLOCK_SIZE * sizeof(*out));
         out += RA288_BLOCK_SIZE;
 
-        if ((i & 7) == 3) {
+        if ((i & 7) == 3)
+        {
             backward_filter(ractx, ractx->sp_hist, ractx->sp_rec, syn_window,
                             ractx->sp_lpc, syn_bw_tab, 36, 40, 35, 70);
 
@@ -240,7 +246,8 @@ static int ra288_decode_frame(AVCodecContext * avctx, void *data,
     return avctx->block_align;
 }
 
-AVCodec ff_ra_288_decoder = {
+AVCodec ff_ra_288_decoder =
+{
     .name           = "real_288",
     .long_name      = NULL_IF_CONFIG_SMALL("RealAudio 2.0 (28.8K)"),
     .type           = AVMEDIA_TYPE_AUDIO,

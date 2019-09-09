@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MLP codec common header file
  * Copyright (c) 2007-2008 Ian Caulfield
  *
@@ -46,7 +46,8 @@ int32_t ff_mlp_pack_output(int32_t lossless_check_data,
                            uint8_t max_matrix_channel,
                            int is32);
 
-typedef struct MLPDSPContext {
+typedef struct MLPDSPContext
+{
     void (*mlp_filter_channel)(int32_t *state, const int32_t *coeff,
                                int firorder, int iirorder,
                                unsigned int filter_shift, int32_t mask,

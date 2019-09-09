@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -46,13 +46,16 @@ void ff_resample_one_s32_neon(struct ResampleContext *c, void *dst0,
                               unsigned int index, int frac);
 
 av_cold void ff_audio_resample_init_aarch64(ResampleContext *c,
-                                            enum AVSampleFormat sample_fmt)
+        enum AVSampleFormat sample_fmt)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
-        if (!c->linear) {
-            switch (sample_fmt) {
+    if (have_neon(cpu_flags))
+    {
+        if (!c->linear)
+        {
+            switch (sample_fmt)
+            {
             case AV_SAMPLE_FMT_DBLP:
                 c->resample_one  = ff_resample_one_dbl_neon;
                 break;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SAUCE header parser
  * Copyright (c) 2010 Peter Ross <pross@xvid.org>
  *

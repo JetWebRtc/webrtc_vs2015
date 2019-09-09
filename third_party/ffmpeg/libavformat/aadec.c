@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Audible AA demuxer
  * Copyright (c) 2015 Vesselin Bontchev
  *
@@ -35,7 +35,8 @@
 #define MAX_DICTIONARY_ENTRIES 128
 #define TEA_BLOCK_SIZE 8
 
-typedef struct AADemuxContext {
+typedef struct AADemuxContext
+{
     AVClass *class;
     uint8_t *aa_fixed_key;
     int aa_fixed_key_len;
@@ -51,11 +52,16 @@ static int get_second_size(char *codec_name)
 {
     int result = -1;
 
-    if (!strcmp(codec_name, "mp332")) {
+    if (!strcmp(codec_name, "mp332"))
+    {
         result = 3982;
-    } else if (!strcmp(codec_name, "acelp16")) {
+    }
+    else if (!strcmp(codec_name, "acelp16"))
+    {
         result = 2000;
-    } else if (!strcmp(codec_name, "acelp85")) {
+    }
+    else if (!strcmp(codec_name, "acelp85"))
+    {
         result = 1045;
     }
 
@@ -69,7 +75,8 @@ static int aa_read_header(AVFormatContext *s)
     char key[128], val[128], codec_name[64] = {0};
     uint8_t output[24], dst[8], src[8];
     int64_t largest_size = -1, current_size = -1;
-    struct toc_entry {
+    struct toc_entry
+    {
         uint32_t offset;
         uint32_t size;
     } TOC[MAX_TOC_ENTRIES];
@@ -86,7 +93,8 @@ static int aa_read_header(AVFormatContext *s)
     avio_skip(pb, 4); // unidentified integer
     if (toc_size > MAX_TOC_ENTRIES)
         return AVERROR_INVALIDDATA;
-    for (i = 0; i < toc_size; i++) { // read TOC
+    for (i = 0; i < toc_size; i++)   // read TOC
+    {
         avio_skip(pb, 4); // TOC entry index
         TOC[i].offset = avio_rb32(pb); // block offset
         TOC[i].size = avio_rb32(pb); // block size
@@ -95,34 +103,45 @@ static int aa_read_header(AVFormatContext *s)
     npairs = avio_rb32(pb); // read dictionary entries
     if (npairs > MAX_DICTIONARY_ENTRIES)
         return AVERROR_INVALIDDATA;
-    for (i = 0; i < npairs; i++) {
+    for (i = 0; i < npairs; i++)
+    {
         memset(val, 0, sizeof(val));
         memset(key, 0, sizeof(key));
         avio_skip(pb, 1); // unidentified integer
         nkey = avio_rb32(pb); // key string length
         nval = avio_rb32(pb); // value string length
-        if (nkey > sizeof(key)) {
+        if (nkey > sizeof(key))
+        {
             avio_skip(pb, nkey);
-        } else {
+        }
+        else
+        {
             avio_read(pb, key, nkey); // key string
         }
-        if (nval > sizeof(val)) {
+        if (nval > sizeof(val))
+        {
             avio_skip(pb, nval);
-        } else {
+        }
+        else
+        {
             avio_read(pb, val, nval); // value string
         }
-        if (!strcmp(key, "codec")) {
+        if (!strcmp(key, "codec"))
+        {
             av_log(s, AV_LOG_DEBUG, "Codec is <%s>\n", val);
             strncpy(codec_name, val, sizeof(codec_name) - 1);
         }
-        if (!strcmp(key, "HeaderSeed")) {
+        if (!strcmp(key, "HeaderSeed"))
+        {
             av_log(s, AV_LOG_DEBUG, "HeaderSeed is <%s>\n", val);
             header_seed = atoi(val);
         }
-        if (!strcmp(key, "HeaderKey")) { // this looks like "1234567890 1234567890 1234567890 1234567890"
+        if (!strcmp(key, "HeaderKey"))   // this looks like "1234567890 1234567890 1234567890 1234567890"
+        {
             av_log(s, AV_LOG_DEBUG, "HeaderKey is <%s>\n", val);
             sscanf(val, "%u%u%u%u", &header_key_part[0], &header_key_part[1], &header_key_part[2], &header_key_part[3]);
-            for (idx = 0; idx < 4; idx++) {
+            for (idx = 0; idx < 4; idx++)
+            {
                 AV_WB32(&header_key[idx * 4], header_key_part[idx]); // convert each part to BE!
             }
             av_log(s, AV_LOG_DEBUG, "Processed HeaderKey is ");
@@ -133,13 +152,15 @@ static int aa_read_header(AVFormatContext *s)
     }
 
     /* verify fixed key */
-    if (c->aa_fixed_key_len != 16) {
+    if (c->aa_fixed_key_len != 16)
+    {
         av_log(s, AV_LOG_ERROR, "aa_fixed_key value needs to be 16 bytes!\n");
         return AVERROR(EINVAL);
     }
 
     /* verify codec */
-    if ((c->codec_second_size = get_second_size(codec_name)) == -1) {
+    if ((c->codec_second_size = get_second_size(codec_name)) == -1)
+    {
         av_log(s, AV_LOG_ERROR, "unknown codec <%s>!\n", codec_name);
         return AVERROR(EINVAL);
     }
@@ -152,12 +173,14 @@ static int aa_read_header(AVFormatContext *s)
     output[0] = output[1] = 0; // purely for padding purposes
     memcpy(output + 2, header_key, 16);
     idx = 0;
-    for (i = 0; i < 3; i++) { // TEA CBC with weird mixed endianness
+    for (i = 0; i < 3; i++)   // TEA CBC with weird mixed endianness
+    {
         AV_WB32(src, header_seed);
         AV_WB32(src + 4, header_seed + 1);
         header_seed += 2;
         av_tea_crypt(c->tea_ctx, dst, src, 1, NULL, 0); // TEA ECB encrypt
-        for (j = 0; j < TEA_BLOCK_SIZE && idx < 18; j+=1, idx+=1) {
+        for (j = 0; j < TEA_BLOCK_SIZE && idx < 18; j+=1, idx+=1)
+        {
             output[idx] = output[idx] ^ dst[j];
         }
     }
@@ -169,22 +192,28 @@ static int aa_read_header(AVFormatContext *s)
 
     /* decoder setup */
     st = avformat_new_stream(s, NULL);
-    if (!st) {
+    if (!st)
+    {
         av_freep(&c->tea_ctx);
         return AVERROR(ENOMEM);
     }
     st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
-    if (!strcmp(codec_name, "mp332")) {
+    if (!strcmp(codec_name, "mp332"))
+    {
         st->codec->codec_id = AV_CODEC_ID_MP3;
         st->codec->sample_rate = 22050;
         st->need_parsing = AVSTREAM_PARSE_FULL_RAW;
         st->start_time = 0;
-    } else if (!strcmp(codec_name, "acelp85")) {
+    }
+    else if (!strcmp(codec_name, "acelp85"))
+    {
         st->codec->codec_id = AV_CODEC_ID_SIPR;
         st->codec->block_align = 19;
         st->codec->channels = 1;
         st->codec->sample_rate = 8500;
-    } else if (!strcmp(codec_name, "acelp16")) {
+    }
+    else if (!strcmp(codec_name, "acelp16"))
+    {
         st->codec->codec_id = AV_CODEC_ID_SIPR;
         st->codec->block_align = 20;
         st->codec->channels = 1;
@@ -192,9 +221,11 @@ static int aa_read_header(AVFormatContext *s)
     }
 
     /* determine, and jump to audio start offset */
-    for (i = 1; i < toc_size; i++) { // skip the first entry!
+    for (i = 1; i < toc_size; i++)   // skip the first entry!
+    {
         current_size = TOC[i].size;
-        if (current_size > largest_size) {
+        if (current_size > largest_size)
+        {
             largest_idx = i;
             largest_size = current_size;
         }
@@ -219,9 +250,11 @@ static int aa_read_packet(AVFormatContext *s, AVPacket *pkt)
     AADemuxContext *c = s->priv_data;
 
     // are we at the start of a chapter?
-    if (c->current_chapter_size == 0) {
+    if (c->current_chapter_size == 0)
+    {
         c->current_chapter_size = avio_rb32(s->pb);
-        if (c->current_chapter_size == 0) {
+        if (c->current_chapter_size == 0)
+        {
             return AVERROR_EOF;
         }
         av_log(s, AV_LOG_DEBUG, "Chapter %d (%" PRId64 " bytes)\n", c->chapter_idx, c->current_chapter_size);
@@ -231,13 +264,15 @@ static int aa_read_packet(AVFormatContext *s, AVPacket *pkt)
     }
 
     // is this the last block in this chapter?
-    if (c->current_chapter_size / c->current_codec_second_size == 0) {
+    if (c->current_chapter_size / c->current_codec_second_size == 0)
+    {
         c->current_codec_second_size = c->current_chapter_size % c->current_codec_second_size;
     }
 
     // decrypt c->current_codec_second_size bytes
     blocks = c->current_codec_second_size / TEA_BLOCK_SIZE;
-    for (i = 0; i < blocks; i++) {
+    for (i = 0; i < blocks; i++)
+    {
         avio_read(s->pb, src, TEA_BLOCK_SIZE);
         av_tea_init(c->tea_ctx, c->file_key, 16);
         av_tea_crypt(c->tea_ctx, dst, src, 1, NULL, 1);
@@ -245,7 +280,8 @@ static int aa_read_packet(AVFormatContext *s, AVPacket *pkt)
         written = written + TEA_BLOCK_SIZE;
     }
     trailing_bytes = c->current_codec_second_size % TEA_BLOCK_SIZE;
-    if (trailing_bytes != 0) { // trailing bytes are left unencrypted!
+    if (trailing_bytes != 0)   // trailing bytes are left unencrypted!
+    {
         avio_read(s->pb, src, trailing_bytes);
         memcpy(buf + written, src, trailing_bytes);
         written = written + trailing_bytes;
@@ -285,22 +321,27 @@ static int aa_read_close(AVFormatContext *s)
 }
 
 #define OFFSET(x) offsetof(AADemuxContext, x)
-static const AVOption aa_options[] = {
-    { "aa_fixed_key", // extracted from libAAX_SDK.so and AAXSDKWin.dll files!
+static const AVOption aa_options[] =
+{
+    {
+        "aa_fixed_key", // extracted from libAAX_SDK.so and AAXSDKWin.dll files!
         "Fixed key used for handling Audible AA files", OFFSET(aa_fixed_key),
         AV_OPT_TYPE_BINARY, {.str="77214d4b196a87cd520045fd2a51d673"},
-        .flags = AV_OPT_FLAG_DECODING_PARAM },
+        .flags = AV_OPT_FLAG_DECODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass aa_class = {
+static const AVClass aa_class =
+{
     .class_name = "aa",
     .item_name  = av_default_item_name,
     .option     = aa_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_aa_demuxer = {
+AVInputFormat ff_aa_demuxer =
+{
     .name           = "aa",
     .long_name      = NULL_IF_CONFIG_SMALL("Audible AA format files"),
     .priv_class     = &aa_class,

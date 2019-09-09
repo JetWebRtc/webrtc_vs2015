@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003-2010 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -24,7 +24,8 @@
 
 #include "qpeldsp.h"
 
-typedef struct H264QpelContext {
+typedef struct H264QpelContext
+{
     qpel_mc_func put_h264_qpel_pixels_tab[4][16];
     qpel_mc_func avg_h264_qpel_pixels_tab[4][16];
 } H264QpelContext;

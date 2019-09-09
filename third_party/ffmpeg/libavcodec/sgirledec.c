@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Silicon Graphics RLE 8-bit video decoder
  * Copyright (c) 2012 Peter Ross
  *
@@ -31,7 +31,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct SGIRLEContext {
+typedef struct SGIRLEContext
+{
     AVFrame *frame;
 } SGIRLEContext;
 
@@ -86,21 +87,28 @@ static int decode_sgirle8(AVCodecContext *avctx, uint8_t *dst,
         x = 0;                                                                \
     }
 
-    while (src_end - src >= 2) {
+    while (src_end - src >= 2)
+    {
         uint8_t v = *src++;
-        if (v > 0 && v < 0xC0) {
-            do {
+        if (v > 0 && v < 0xC0)
+        {
+            do
+            {
                 int length = FFMIN(v, width - x);
                 if (length <= 0)
                     break;
                 memset(dst + y * linesize + x, RBG323_TO_BGR8(*src), length);
                 INC_XY(length);
                 v -= length;
-            } while (v > 0);
+            }
+            while (v > 0);
             src++;
-        } else if (v >= 0xC1) {
+        }
+        else if (v >= 0xC1)
+        {
             v -= 0xC0;
-            do {
+            do
+            {
                 int length = FFMIN3(v, width - x, src_end - src);
                 if (src_end - src < length || length <= 0)
                     break;
@@ -108,8 +116,11 @@ static int decode_sgirle8(AVCodecContext *avctx, uint8_t *dst,
                 INC_XY(length);
                 src += length;
                 v   -= length;
-            } while (v > 0);
-        } else {
+            }
+            while (v > 0);
+        }
+        else
+        {
             avpriv_request_sample(avctx, "opcode %d", v);
             return AVERROR_PATCHWELCOME;
         }
@@ -147,7 +158,8 @@ static av_cold int sgirle_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_sgirle_decoder = {
+AVCodec ff_sgirle_decoder =
+{
     .name           = "sgirle",
     .long_name      = NULL_IF_CONFIG_SMALL("Silicon Graphics RLE 8-bit video"),
     .type           = AVMEDIA_TYPE_VIDEO,

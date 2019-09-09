@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,7 +10,8 @@
 
 #include "webrtc/api/mediastreaminterface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 const char MediaStreamTrackInterface::kVideoKind[] = "video";
 const char MediaStreamTrackInterface::kAudioKind[] = "audio";

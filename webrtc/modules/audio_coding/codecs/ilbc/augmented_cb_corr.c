@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,30 +34,31 @@ void WebRtcIlbcfix_AugmentedCbCorr(
     int scale)   /* (i) Scale factor to use for
                               the crossDot */
 {
-  size_t lagcount;
-  size_t ilow;
-  int16_t *targetPtr;
-  int32_t *crossDotPtr;
-  int16_t *iSPtr=interpSamples;
+    size_t lagcount;
+    size_t ilow;
+    int16_t *targetPtr;
+    int32_t *crossDotPtr;
+    int16_t *iSPtr=interpSamples;
 
-  /* Calculate the correlation between the target and the
-     interpolated codebook. The correlation is calculated in
-     3 sections with the interpolated part in the middle */
-  crossDotPtr=crossDot;
-  for (lagcount=low; lagcount<=high; lagcount++) {
+    /* Calculate the correlation between the target and the
+       interpolated codebook. The correlation is calculated in
+       3 sections with the interpolated part in the middle */
+    crossDotPtr=crossDot;
+    for (lagcount=low; lagcount<=high; lagcount++)
+    {
 
-    ilow = lagcount - 4;
+        ilow = lagcount - 4;
 
-    /* Compute dot product for the first (lagcount-4) samples */
-    (*crossDotPtr) = WebRtcSpl_DotProductWithScale(target, buffer-lagcount, ilow, scale);
+        /* Compute dot product for the first (lagcount-4) samples */
+        (*crossDotPtr) = WebRtcSpl_DotProductWithScale(target, buffer-lagcount, ilow, scale);
 
-    /* Compute dot product on the interpolated samples */
-    (*crossDotPtr) += WebRtcSpl_DotProductWithScale(target+ilow, iSPtr, 4, scale);
-    targetPtr = target + lagcount;
-    iSPtr += lagcount-ilow;
+        /* Compute dot product on the interpolated samples */
+        (*crossDotPtr) += WebRtcSpl_DotProductWithScale(target+ilow, iSPtr, 4, scale);
+        targetPtr = target + lagcount;
+        iSPtr += lagcount-ilow;
 
-    /* Compute dot product for the remaining samples */
-    (*crossDotPtr) += WebRtcSpl_DotProductWithScale(targetPtr, buffer-lagcount, SUBL-lagcount, scale);
-    crossDotPtr++;
-  }
+        /* Compute dot product for the remaining samples */
+        (*crossDotPtr) += WebRtcSpl_DotProductWithScale(targetPtr, buffer-lagcount, SUBL-lagcount, scale);
+        crossDotPtr++;
+    }
 }

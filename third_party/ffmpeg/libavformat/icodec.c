@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Windows ICO demuxer
  * Copyright (c) 2011 Peter Ross (pross@xvid.org)
  *
@@ -30,13 +30,15 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     int offset;
     int size;
     int nb_pal;
 } IcoImage;
 
-typedef struct {
+typedef struct
+{
     int current_image;
     int nb_images;
     IcoImage * images;
@@ -62,7 +64,8 @@ static int read_header(AVFormatContext *s)
     if (!ico->images)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < ico->nb_images; i++) {
+    for (i = 0; i < ico->nb_images; i++)
+    {
         AVStream *st;
         int tmp;
 
@@ -89,7 +92,8 @@ static int read_header(AVFormatContext *s)
             break;
 
         codec = avio_rl32(pb);
-        switch (codec) {
+        switch (codec)
+        {
         case MKTAG(0x89, 'P', 'N', 'G'):
             st->codec->codec_id = AV_CODEC_ID_PNG;
             st->codec->width    = 0;
@@ -131,10 +135,13 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     if ((ret = avio_seek(pb, image->offset, SEEK_SET)) < 0)
         return ret;
 
-    if (s->streams[ico->current_image]->codec->codec_id == AV_CODEC_ID_PNG) {
+    if (s->streams[ico->current_image]->codec->codec_id == AV_CODEC_ID_PNG)
+    {
         if ((ret = av_get_packet(pb, pkt, image->size)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         uint8_t *buf;
         if ((ret = av_new_packet(pkt, 14 + image->size)) < 0)
             return ret;
@@ -156,7 +163,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
         if (AV_RL32(buf + 32))
             image->nb_pal = AV_RL32(buf + 32);
 
-        if (st->codec->bits_per_coded_sample <= 8 && !image->nb_pal) {
+        if (st->codec->bits_per_coded_sample <= 8 && !image->nb_pal)
+        {
             image->nb_pal = 1 << st->codec->bits_per_coded_sample;
             AV_WL32(buf + 32, image->nb_pal);
         }
@@ -171,7 +179,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_ico_demuxer = {
+AVInputFormat ff_ico_demuxer =
+{
     .name           = "ico",
     .long_name      = NULL_IF_CONFIG_SMALL("Microsoft Windows ICO"),
     .priv_data_size = sizeof(IcoDemuxContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,48 +12,54 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 constexpr size_t RtcpPacket::kHeaderLength;
 
-rtc::Buffer RtcpPacket::Build() const {
-  rtc::Buffer packet(BlockLength());
+rtc::Buffer RtcpPacket::Build() const
+{
+    rtc::Buffer packet(BlockLength());
 
-  size_t length = 0;
-  bool created = Create(packet.data(), &length, packet.capacity(), nullptr);
-  RTC_DCHECK(created) << "Invalid packet is not supported.";
-  RTC_DCHECK_EQ(length, packet.size())
-      << "BlockLength mispredicted size used by Create";
+    size_t length = 0;
+    bool created = Create(packet.data(), &length, packet.capacity(), nullptr);
+    RTC_DCHECK(created) << "Invalid packet is not supported.";
+    RTC_DCHECK_EQ(length, packet.size())
+            << "BlockLength mispredicted size used by Create";
 
-  return packet;
+    return packet;
 }
 
 bool RtcpPacket::BuildExternalBuffer(uint8_t* buffer,
                                      size_t max_length,
-                                     PacketReadyCallback* callback) const {
-  size_t index = 0;
-  if (!Create(buffer, &index, max_length, callback))
-    return false;
-  return OnBufferFull(buffer, &index, callback);
+                                     PacketReadyCallback* callback) const
+{
+    size_t index = 0;
+    if (!Create(buffer, &index, max_length, callback))
+        return false;
+    return OnBufferFull(buffer, &index, callback);
 }
 
 bool RtcpPacket::OnBufferFull(uint8_t* packet,
                               size_t* index,
-                              PacketReadyCallback* callback) const {
-  if (*index == 0)
-    return false;
-  RTC_DCHECK(callback) << "Fragmentation not supported.";
-  callback->OnPacketReady(packet, *index);
-  *index = 0;
-  return true;
+                              PacketReadyCallback* callback) const
+{
+    if (*index == 0)
+        return false;
+    RTC_DCHECK(callback) << "Fragmentation not supported.";
+    callback->OnPacketReady(packet, *index);
+    *index = 0;
+    return true;
 }
 
-size_t RtcpPacket::HeaderLength() const {
-  size_t length_in_bytes = BlockLength();
-  RTC_DCHECK_GT(length_in_bytes, 0);
-  RTC_DCHECK_EQ(length_in_bytes % 4, 0) << "Padding not supported";
-  // Length in 32-bit words without common header.
-  return (length_in_bytes - kHeaderLength) / 4;
+size_t RtcpPacket::HeaderLength() const
+{
+    size_t length_in_bytes = BlockLength();
+    RTC_DCHECK_GT(length_in_bytes, 0);
+    RTC_DCHECK_EQ(length_in_bytes % 4, 0) << "Padding not supported";
+    // Length in 32-bit words without common header.
+    return (length_in_bytes - kHeaderLength) / 4;
 }
 
 // From RFC 3550, RTP: A Transport Protocol for Real-Time Applications.
@@ -69,16 +75,17 @@ void RtcpPacket::CreateHeader(
     uint8_t packet_type,
     size_t length,
     uint8_t* buffer,
-    size_t* pos) {
-  RTC_DCHECK_LE(length, 0xffffU);
-  RTC_DCHECK_LE(count_or_format, 0x1f);
-  constexpr uint8_t kVersionBits = 2 << 6;
-  constexpr uint8_t kNoPaddingBit = 0 << 5;
-  buffer[*pos + 0] = kVersionBits | kNoPaddingBit | count_or_format;
-  buffer[*pos + 1] = packet_type;
-  buffer[*pos + 2] = (length >> 8) & 0xff;
-  buffer[*pos + 3] = length & 0xff;
-  *pos += kHeaderLength;
+    size_t* pos)
+{
+    RTC_DCHECK_LE(length, 0xffffU);
+    RTC_DCHECK_LE(count_or_format, 0x1f);
+    constexpr uint8_t kVersionBits = 2 << 6;
+    constexpr uint8_t kNoPaddingBit = 0 << 5;
+    buffer[*pos + 0] = kVersionBits | kNoPaddingBit | count_or_format;
+    buffer[*pos + 1] = packet_type;
+    buffer[*pos + 2] = (length >> 8) & 0xff;
+    buffer[*pos + 3] = length & 0xff;
+    *pos += kHeaderLength;
 }
 
 }  // namespace rtcp

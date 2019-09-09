@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,47 +16,50 @@
 
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VideoFrame;
 
-struct EncodedFrame {
- public:
-  EncodedFrame()
-      : data_(nullptr),
-        length_(0),
-        frame_type_(kEmptyFrame),
-        encoded_width_(0),
-        encoded_height_(0),
-        timestamp_(0) {}
-  EncodedFrame(const uint8_t* data,
-               size_t length,
-               FrameType frame_type,
-               uint32_t encoded_width,
-               uint32_t encoded_height,
-               uint32_t timestamp)
-      : data_(data),
-        length_(length),
-        frame_type_(frame_type),
-        encoded_width_(encoded_width),
-        encoded_height_(encoded_height),
-        timestamp_(timestamp) {}
+struct EncodedFrame
+{
+public:
+    EncodedFrame()
+        : data_(nullptr),
+          length_(0),
+          frame_type_(kEmptyFrame),
+          encoded_width_(0),
+          encoded_height_(0),
+          timestamp_(0) {}
+    EncodedFrame(const uint8_t* data,
+                 size_t length,
+                 FrameType frame_type,
+                 uint32_t encoded_width,
+                 uint32_t encoded_height,
+                 uint32_t timestamp)
+        : data_(data),
+          length_(length),
+          frame_type_(frame_type),
+          encoded_width_(encoded_width),
+          encoded_height_(encoded_height),
+          timestamp_(timestamp) {}
 
-  const uint8_t* data_;
-  const size_t length_;
-  const FrameType frame_type_;
-  const uint32_t encoded_width_;
-  const uint32_t encoded_height_;
-  const uint32_t timestamp_;
+    const uint8_t* data_;
+    const size_t length_;
+    const FrameType frame_type_;
+    const uint32_t encoded_width_;
+    const uint32_t encoded_height_;
+    const uint32_t timestamp_;
 };
 
-class EncodedFrameObserver {
- public:
-  virtual void EncodedFrameCallback(const EncodedFrame& encoded_frame) = 0;
-  virtual void OnEncodeTiming(int64_t capture_ntp_ms, int encode_duration_ms) {}
+class EncodedFrameObserver
+{
+public:
+    virtual void EncodedFrameCallback(const EncodedFrame& encoded_frame) = 0;
+    virtual void OnEncodeTiming(int64_t capture_ntp_ms, int encode_duration_ms) {}
 
- protected:
-  virtual ~EncodedFrameObserver() {}
+protected:
+    virtual ~EncodedFrameObserver() {}
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,59 +19,68 @@
 
 
 int PASCAL wWinMain(HINSTANCE instance, HINSTANCE prev_instance,
-                    wchar_t* cmd_line, int cmd_show) {
-  rtc::EnsureWinsockInit();
-  rtc::Win32Thread w32_thread;
-  rtc::ThreadManager::Instance()->SetCurrentThread(&w32_thread);
+                    wchar_t* cmd_line, int cmd_show)
+{
+    rtc::EnsureWinsockInit();
+    rtc::Win32Thread w32_thread;
+    rtc::ThreadManager::Instance()->SetCurrentThread(&w32_thread);
 
-  rtc::WindowsCommandLineArguments win_args;
-  int argc = win_args.argc();
-  char **argv = win_args.argv();
+    rtc::WindowsCommandLineArguments win_args;
+    int argc = win_args.argc();
+    char **argv = win_args.argv();
 
-  rtc::FlagList::SetFlagsFromCommandLine(&argc, argv, true);
-  if (FLAG_help) {
-    rtc::FlagList::Print(NULL, false);
-    return 0;
-  }
+    rtc::FlagList::SetFlagsFromCommandLine(&argc, argv, true);
+    if (FLAG_help)
+    {
+        rtc::FlagList::Print(NULL, false);
+        return 0;
+    }
 
-  // Abort if the user specifies a port that is outside the allowed
-  // range [1, 65535].
-  if ((FLAG_port < 1) || (FLAG_port > 65535)) {
-    printf("Error: %i is not a valid port.\n", FLAG_port);
-    return -1;
-  }
+    // Abort if the user specifies a port that is outside the allowed
+    // range [1, 65535].
+    if ((FLAG_port < 1) || (FLAG_port > 65535))
+    {
+        printf("Error: %i is not a valid port.\n", FLAG_port);
+        return -1;
+    }
 
-  MainWnd wnd(FLAG_server, FLAG_port, FLAG_autoconnect, FLAG_autocall);
-  if (!wnd.Create()) {
-    RTC_NOTREACHED();
-    return -1;
-  }
+    MainWnd wnd(FLAG_server, FLAG_port, FLAG_autoconnect, FLAG_autocall);
+    if (!wnd.Create())
+    {
+        RTC_NOTREACHED();
+        return -1;
+    }
 
-  rtc::InitializeSSL();
-  PeerConnectionClient client;
-  rtc::scoped_refptr<Conductor> conductor(
+    rtc::InitializeSSL();
+    PeerConnectionClient client;
+    rtc::scoped_refptr<Conductor> conductor(
         new rtc::RefCountedObject<Conductor>(&client, &wnd));
 
-  // Main loop.
-  MSG msg;
-  BOOL gm;
-  while ((gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1) {
-    if (!wnd.PreTranslateMessage(&msg)) {
-      ::TranslateMessage(&msg);
-      ::DispatchMessage(&msg);
+    // Main loop.
+    MSG msg;
+    BOOL gm;
+    while ((gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1)
+    {
+        if (!wnd.PreTranslateMessage(&msg))
+        {
+            ::TranslateMessage(&msg);
+            ::DispatchMessage(&msg);
+        }
     }
-  }
 
-  if (conductor->connection_active() || client.is_connected()) {
-    while ((conductor->connection_active() || client.is_connected()) &&
-           (gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1) {
-      if (!wnd.PreTranslateMessage(&msg)) {
-        ::TranslateMessage(&msg);
-        ::DispatchMessage(&msg);
-      }
+    if (conductor->connection_active() || client.is_connected())
+    {
+        while ((conductor->connection_active() || client.is_connected()) &&
+                (gm = ::GetMessage(&msg, NULL, 0, 0)) != 0 && gm != -1)
+        {
+            if (!wnd.PreTranslateMessage(&msg))
+            {
+                ::TranslateMessage(&msg);
+                ::DispatchMessage(&msg);
+            }
+        }
     }
-  }
 
-  rtc::CleanupSSL();
-  return 0;
+    rtc::CleanupSSL();
+    return 0;
 }

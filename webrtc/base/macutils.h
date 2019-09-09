@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2007 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <string>
 
-namespace rtc {
+namespace rtc
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -27,17 +28,18 @@ bool ToUtf16(const std::string& str8, CFStringRef* str16);
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS)
 void DecodeFourChar(UInt32 fc, std::string* out);
 
-enum MacOSVersionName {
-  kMacOSUnknown,       // ???
-  kMacOSOlder,         // 10.2-
-  kMacOSPanther,       // 10.3
-  kMacOSTiger,         // 10.4
-  kMacOSLeopard,       // 10.5
-  kMacOSSnowLeopard,   // 10.6
-  kMacOSLion,          // 10.7
-  kMacOSMountainLion,  // 10.8
-  kMacOSMavericks,     // 10.9
-  kMacOSNewer,         // 10.10+
+enum MacOSVersionName
+{
+    kMacOSUnknown,       // ???
+    kMacOSOlder,         // 10.2-
+    kMacOSPanther,       // 10.3
+    kMacOSTiger,         // 10.4
+    kMacOSLeopard,       // 10.5
+    kMacOSSnowLeopard,   // 10.6
+    kMacOSLion,          // 10.7
+    kMacOSMountainLion,  // 10.8
+    kMacOSMavericks,     // 10.9
+    kMacOSNewer,         // 10.10+
 };
 
 MacOSVersionName GetOSVersionName();

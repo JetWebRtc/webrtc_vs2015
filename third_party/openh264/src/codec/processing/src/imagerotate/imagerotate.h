@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -57,27 +57,29 @@ ImageRotateFunc   ImageRotate90D_c;
 ImageRotateFunc   ImageRotate180D_c;
 ImageRotateFunc   ImageRotate270D_c;
 
-typedef struct {
-  ImageRotateFuncPtr    pfImageRotate90D;
-  ImageRotateFuncPtr    pfImageRotate180D;
-  ImageRotateFuncPtr    pfImageRotate270D;
+typedef struct
+{
+    ImageRotateFuncPtr    pfImageRotate90D;
+    ImageRotateFuncPtr    pfImageRotate180D;
+    ImageRotateFuncPtr    pfImageRotate270D;
 } SImageRotateFuncs;
 
-class CImageRotating : public IStrategy {
- public:
-  CImageRotating (int32_t iCpuFlag);
-  ~CImageRotating();
+class CImageRotating : public IStrategy
+{
+public:
+    CImageRotating (int32_t iCpuFlag);
+    ~CImageRotating();
 
-  EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pDst);
+    EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pDst);
 
- private:
-  void InitImageRotateFuncs (SImageRotateFuncs& pf, int32_t iCpuFlag);
-  EResult ProcessImageRotate (int32_t iType, uint8_t* pSrc, uint32_t uiBytesPerPixel, uint32_t iWidth, uint32_t iHeight,
-                              uint8_t* pDst);
+private:
+    void InitImageRotateFuncs (SImageRotateFuncs& pf, int32_t iCpuFlag);
+    EResult ProcessImageRotate (int32_t iType, uint8_t* pSrc, uint32_t uiBytesPerPixel, uint32_t iWidth, uint32_t iHeight,
+                                uint8_t* pDst);
 
- private:
-  SImageRotateFuncs m_pfRotateImage;
-  int32_t          m_iCPUFlag;
+private:
+    SImageRotateFuncs m_pfRotateImage;
+    int32_t          m_iCPUFlag;
 };
 
 WELSVP_NAMESPACE_END

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -46,23 +46,23 @@ void			FilterBankInit		( faacEncHandle hEncoder );
 void			FilterBankEnd		( faacEncHandle hEncoder );
 
 void			FilterBank( faacEncHandle hEncoder,
-						CoderInfo *coderInfo,
-						double *p_in_data,
-						double *p_out_mdct,
-						double *p_overlap,
-						int overlap_select );
+                            CoderInfo *coderInfo,
+                            double *p_in_data,
+                            double *p_out_mdct,
+                            double *p_overlap,
+                            int overlap_select );
 
 void			IFilterBank( faacEncHandle hEncoder,
-						CoderInfo *coderInfo,
-						double *p_in_data,
-						double *p_out_mdct,
-						double *p_overlap,
-						int overlap_select );
+                             CoderInfo *coderInfo,
+                             double *p_in_data,
+                             double *p_out_mdct,
+                             double *p_overlap,
+                             int overlap_select );
 
 void			specFilter(	double *freqBuff,
-						int sampleRate,
-						int lowpassFreq,
-						int specLen );
+                            int sampleRate,
+                            int lowpassFreq,
+                            int specLen );
 
 #ifdef __cplusplus
 }

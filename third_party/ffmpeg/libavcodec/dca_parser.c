@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA parser
  * Copyright (C) 2004 Gildas Bazin
  * Copyright (C) 2004 Benjamin Zores
@@ -27,7 +27,8 @@
 #include "get_bits.h"
 #include "parser.h"
 
-typedef struct DCAParseContext {
+typedef struct DCAParseContext
+{
     ParseContext pc;
     uint32_t lastmarker;
     int size;
@@ -62,13 +63,17 @@ static int dca_find_frame_end(DCAParseContext *pc1, const uint8_t *buf,
     state       = pc->state64;
 
     i = 0;
-    if (!start_found) {
-        for (i = 0; i < buf_size; i++) {
+    if (!start_found)
+    {
+        for (i = 0; i < buf_size; i++)
+        {
             state = (state << 8) | buf[i];
-            if (IS_MARKER(state)) {
+            if (IS_MARKER(state))
+            {
                 if (!pc1->lastmarker ||
-                    pc1->lastmarker == CORE_MARKER(state) ||
-                    pc1->lastmarker == DCA_SYNCWORD_SUBSTREAM) {
+                        pc1->lastmarker == CORE_MARKER(state) ||
+                        pc1->lastmarker == DCA_SYNCWORD_SUBSTREAM)
+                {
                     start_found = 1;
                     if (IS_EXSS_MARKER(state))
                         pc1->lastmarker = EXSS_MARKER(state);
@@ -80,13 +85,16 @@ static int dca_find_frame_end(DCAParseContext *pc1, const uint8_t *buf,
             }
         }
     }
-    if (start_found) {
-        for (; i < buf_size; i++) {
+    if (start_found)
+    {
+        for (; i < buf_size; i++)
+        {
             pc1->size++;
             state = (state << 8) | buf[i];
             if (IS_MARKER(state) &&
-                (pc1->lastmarker == CORE_MARKER(state) ||
-                 pc1->lastmarker == DCA_SYNCWORD_SUBSTREAM)) {
+                    (pc1->lastmarker == CORE_MARKER(state) ||
+                     pc1->lastmarker == DCA_SYNCWORD_SUBSTREAM))
+            {
                 if (pc1->framesize > pc1->size)
                     continue;
                 pc->frame_start_found = 0;
@@ -151,12 +159,16 @@ static int dca_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     ParseContext *pc = &pc1->pc;
     int next, duration, sample_rate;
 
-    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES) {
+    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES)
+    {
         next = buf_size;
-    } else {
+    }
+    else
+    {
         next = dca_find_frame_end(pc1, buf, buf_size);
 
-        if (ff_combine_frame(pc, next, &buf, &buf_size) < 0) {
+        if (ff_combine_frame(pc, next, &buf, &buf_size) < 0)
+        {
             *poutbuf      = NULL;
             *poutbuf_size = 0;
             return buf_size;
@@ -164,10 +176,12 @@ static int dca_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     }
 
     /* read the duration and sample rate from the frame header */
-    if (!dca_parse_params(buf, buf_size, &duration, &sample_rate, &pc1->framesize)) {
+    if (!dca_parse_params(buf, buf_size, &duration, &sample_rate, &pc1->framesize))
+    {
         s->duration        = duration;
         avctx->sample_rate = sample_rate;
-    } else
+    }
+    else
         s->duration = 0;
 
     *poutbuf      = buf;
@@ -175,7 +189,8 @@ static int dca_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     return next;
 }
 
-AVCodecParser ff_dca_parser = {
+AVCodecParser ff_dca_parser =
+{
     .codec_ids      = { AV_CODEC_ID_DTS },
     .priv_data_size = sizeof(DCAParseContext),
     .parser_init    = dca_parse_init,

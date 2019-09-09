@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW video demuxer
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -25,7 +25,8 @@
 #include "internal.h"
 #include "avformat.h"
 
-typedef struct RawVideoDemuxerContext {
+typedef struct RawVideoDemuxerContext
+{
     const AVClass *class;     /**< Class for private options. */
     int width, height;        /**< Integers describing video size, set by a private option. */
     char *pixel_format;       /**< Set by a private option. */
@@ -47,7 +48,8 @@ static int rawvideo_read_header(AVFormatContext *ctx)
 
     st->codec->codec_id = ctx->iformat->raw_codec_id;
 
-    if ((pix_fmt = av_get_pix_fmt(s->pixel_format)) == AV_PIX_FMT_NONE) {
+    if ((pix_fmt = av_get_pix_fmt(s->pixel_format)) == AV_PIX_FMT_NONE)
+    {
         av_log(ctx, AV_LOG_ERROR, "No such pixel format: %s.\n",
                s->pixel_format);
         return AVERROR(EINVAL);
@@ -59,7 +61,10 @@ static int rawvideo_read_header(AVFormatContext *ctx)
     st->codec->height = s->height;
     st->codec->pix_fmt = pix_fmt;
     st->codec->bit_rate = av_rescale_q(avpicture_get_size(st->codec->pix_fmt, s->width, s->height),
-                                       (AVRational){8,1}, st->time_base);
+                                       (AVRational)
+    {
+        8,1
+    }, st->time_base);
 
     return 0;
 }
@@ -88,21 +93,24 @@ static int rawvideo_read_packet(AVFormatContext *s, AVPacket *pkt)
 
 #define OFFSET(x) offsetof(RawVideoDemuxerContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption rawvideo_options[] = {
+static const AVOption rawvideo_options[] =
+{
     { "video_size", "set frame size", OFFSET(width), AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL}, 0, 0, DEC },
     { "pixel_format", "set pixel format", OFFSET(pixel_format), AV_OPT_TYPE_STRING, {.str = "yuv420p"}, 0, 0, DEC },
     { "framerate", "set frame rate", OFFSET(framerate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, DEC },
     { NULL },
 };
 
-static const AVClass rawvideo_demuxer_class = {
+static const AVClass rawvideo_demuxer_class =
+{
     .class_name = "rawvideo demuxer",
     .item_name  = av_default_item_name,
     .option     = rawvideo_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_rawvideo_demuxer = {
+AVInputFormat ff_rawvideo_demuxer =
+{
     .name           = "rawvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("raw video"),
     .priv_data_size = sizeof(RawVideoDemuxerContext),

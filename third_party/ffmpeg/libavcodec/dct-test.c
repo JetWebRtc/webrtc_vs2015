@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) 2001 Fabrice Bellard
  *     2007 Marc Hoffman <marc.hoffman@analog.com>
  *
@@ -48,7 +48,8 @@
 #include "faanidct.h"
 #include "dctref.h"
 
-struct algo {
+struct algo
+{
     const char *name;
     void (*func)(int16_t *block);
     enum idct_permutation_type perm_type;
@@ -56,7 +57,8 @@ struct algo {
     int nonspec;
 };
 
-static const struct algo fdct_tab[] = {
+static const struct algo fdct_tab[] =
+{
     { "REF-DBL",     ff_ref_fdct,          FF_IDCT_PERM_NONE },
     { "IJG-AAN-INT", ff_fdct_ifast,        FF_IDCT_PERM_NONE },
     { "IJG-LLM-INT", ff_jpeg_fdct_islow_8, FF_IDCT_PERM_NONE },
@@ -65,20 +67,24 @@ static const struct algo fdct_tab[] = {
 #endif /* CONFIG_FAANDCT */
 };
 
-static void ff_prores_idct_wrap(int16_t *dst){
+static void ff_prores_idct_wrap(int16_t *dst)
+{
     LOCAL_ALIGNED(16, int16_t, qmat, [64]);
     int i;
 
-    for(i=0; i<64; i++){
+    for(i=0; i<64; i++)
+    {
         qmat[i]=4;
     }
     ff_prores_idct(dst, qmat);
-    for(i=0; i<64; i++) {
-         dst[i] -= 512;
+    for(i=0; i<64; i++)
+    {
+        dst[i] -= 512;
     }
 }
 
-static const struct algo idct_tab[] = {
+static const struct algo idct_tab[] =
+{
     { "REF-DBL",     ff_ref_idct,          FF_IDCT_PERM_NONE },
     { "INT",         ff_j_rev_dct,         FF_IDCT_PERM_LIBMPEG2 },
     { "SIMPLE-C",    ff_simple_idct_8,     FF_IDCT_PERM_NONE },
@@ -116,11 +122,13 @@ static void init_block(int16_t block[64], int test, int is_idct, AVLFG *prng, in
 
     memset(block, 0, 64 * sizeof(*block));
 
-    switch (test) {
+    switch (test)
+    {
     case 0:
         for (i = 0; i < 64; i++)
             block[i] = (av_lfg_get(prng) % (2*vals)) -vals;
-        if (is_idct) {
+        if (is_idct)
+        {
             ff_ref_fdct(block);
             for (i = 0; i < 64; i++)
                 block[i] >>= 3;
@@ -128,7 +136,8 @@ static void init_block(int16_t block[64], int test, int is_idct, AVLFG *prng, in
         break;
     case 1:
         j = av_lfg_get(prng) % 10 + 1;
-        for (i = 0; i < j; i++) {
+        for (i = 0; i < j; i++)
+        {
             int idx = av_lfg_get(prng) % 64;
             block[idx] = av_lfg_get(prng) % (2*vals) -vals;
         }
@@ -150,7 +159,8 @@ static void permute(int16_t dst[64], const int16_t src[64],
         return;
 #endif
 
-    switch (perm_type) {
+    switch (perm_type)
+    {
     case FF_IDCT_PERM_LIBMPEG2:
         for (i = 0; i < 64; i++)
             dst[(i & 0x38) | ((i & 6) >> 1) | ((i & 1) << 2)] = src[i];
@@ -190,15 +200,18 @@ static int dct_error(const struct algo *dct, int test, int is_idct, int speed, c
     err2 = 0;
     for (i = 0; i < 64; i++)
         sysErr[i] = 0;
-    for (it = 0; it < NB_ITS; it++) {
+    for (it = 0; it < NB_ITS; it++)
+    {
         init_block(block1, test, is_idct, &prng, vals);
         permute(block, block1, dct->perm_type);
 
         dct->func(block);
         emms_c();
 
-        if (!strcmp(dct->name, "IJG-AAN-INT")) {
-            for (i = 0; i < 64; i++) {
+        if (!strcmp(dct->name, "IJG-AAN-INT"))
+        {
+            for (i = 0; i < 64; i++)
+            {
                 scale = 8 * (1 << (AANSCALE_BITS + 11)) / ff_aanscales[i];
                 block[i] = (block[i] * scale) >> AANSCALE_BITS;
             }
@@ -210,7 +223,8 @@ static int dct_error(const struct algo *dct, int test, int is_idct, int speed, c
                 block1[i] = av_clip(block1[i], 4-512, 1019-512);
 
         blockSumErr = 0;
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < 64; i++)
+        {
             int err = block[i] - block1[i];
             err_sum += err;
             v = abs(err);
@@ -228,7 +242,8 @@ static int dct_error(const struct algo *dct, int test, int is_idct, int speed, c
     for (i = 0; i < 64; i++)
         sysErrMax = FFMAX(sysErrMax, FFABS(sysErr[i]));
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         if (i % 8 == 0)
             printf("\n");
         printf("%7d ", (int) sysErr[i]);
@@ -258,15 +273,18 @@ static int dct_error(const struct algo *dct, int test, int is_idct, int speed, c
 
     ti = av_gettime_relative();
     it1 = 0;
-    do {
-        for (it = 0; it < NB_ITS_SPEED; it++) {
+    do
+    {
+        for (it = 0; it < NB_ITS_SPEED; it++)
+        {
             memcpy(block, block1, sizeof(block));
             dct->func(block);
         }
         emms_c();
         it1 += NB_ITS_SPEED;
         ti1 = av_gettime_relative() - ti;
-    } while (ti1 < 1000000);
+    }
+    while (ti1 < 1000000);
 
     printf("%s %s: %0.1f kdct/s\n", is_idct ? "IDCT" : "DCT", dct->name,
            (double) it1 * 1000.0 / (double) ti1);
@@ -286,21 +304,26 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
     double s, sum, v;
     int i, j, k;
 
-    if (!init) {
+    if (!init)
+    {
         init = 1;
 
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             sum = 0;
-            for (j = 0; j < 8; j++) {
+            for (j = 0; j < 8; j++)
+            {
                 s = (i == 0) ? sqrt(1.0 / 8.0) : sqrt(1.0 / 4.0);
                 c8[i][j] = s * cos(M_PI * i * (j + 0.5) / 8.0);
                 sum += c8[i][j] * c8[i][j];
             }
         }
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i++)
+        {
             sum = 0;
-            for (j = 0; j < 4; j++) {
+            for (j = 0; j < 4; j++)
+            {
                 s = (i == 0) ? sqrt(1.0 / 4.0) : sqrt(1.0 / 2.0);
                 c4[i][j] = s * cos(M_PI * i * (j + 0.5) / 4.0);
                 sum += c4[i][j] * c4[i][j];
@@ -310,8 +333,10 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
 
     /* butterfly */
     s = 0.5 * sqrt(2.0);
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             block1[8 * (2 * i) + j] =
                 (block[8 * (2 * i) + j] + block[8 * (2 * i + 1) + j]) * s;
             block1[8 * (2 * i + 1) + j] =
@@ -320,8 +345,10 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
     }
 
     /* idct8 on lines */
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             sum = 0;
             for (k = 0; k < 8; k++)
                 sum += c8[k][j] * block1[8 * i + k];
@@ -330,8 +357,10 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
     }
 
     /* idct4 */
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 4; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 4; j++)
+        {
             /* top */
             sum = 0;
             for (k = 0; k < 4; k++)
@@ -347,8 +376,10 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
     }
 
     /* clamp and store the result */
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             v = block3[8 * i + j];
             if      (v < 0)   v = 0;
             else if (v > 255) v = 255;
@@ -359,7 +390,7 @@ static void idct248_ref(uint8_t *dest, int linesize, int16_t *block)
 
 static void idct248_error(const char *name,
                           void (*idct248_put)(uint8_t *dest, int line_size,
-                                              int16_t *block),
+                                  int16_t *block),
                           int speed)
 {
     int it, i, it1, ti, ti1, err_max, v;
@@ -370,7 +401,8 @@ static void idct248_error(const char *name,
     /* just one test to see if code is correct (precision is less
        important here) */
     err_max = 0;
-    for (it = 0; it < NB_ITS; it++) {
+    for (it = 0; it < NB_ITS; it++)
+    {
         /* XXX: use forward transform to generate values */
         for (i = 0; i < 64; i++)
             block1[i] = av_lfg_get(&prng) % 256 - 128;
@@ -384,7 +416,8 @@ static void idct248_error(const char *name,
             block[i] = block1[i];
         idct248_put(img_dest, 8, block);
 
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < 64; i++)
+        {
             v = abs((int) img_dest[i] - (int) img_dest1[i]);
             if (v == 255)
                 printf("%d %d\n", img_dest[i], img_dest1[i]);
@@ -393,18 +426,22 @@ static void idct248_error(const char *name,
         }
 #if 0
         printf("ref=\n");
-        for(i=0;i<8;i++) {
+        for(i=0; i<8; i++)
+        {
             int j;
-            for(j=0;j<8;j++) {
+            for(j=0; j<8; j++)
+            {
                 printf(" %3d", img_dest1[i*8+j]);
             }
             printf("\n");
         }
 
         printf("out=\n");
-        for(i=0;i<8;i++) {
+        for(i=0; i<8; i++)
+        {
             int j;
-            for(j=0;j<8;j++) {
+            for(j=0; j<8; j++)
+            {
                 printf(" %3d", img_dest[i*8+j]);
             }
             printf("\n");
@@ -418,8 +455,10 @@ static void idct248_error(const char *name,
 
     ti = av_gettime_relative();
     it1 = 0;
-    do {
-        for (it = 0; it < NB_ITS_SPEED; it++) {
+    do
+    {
+        for (it = 0; it < NB_ITS_SPEED; it++)
+        {
             for (i = 0; i < 64; i++)
                 block[i] = block1[i];
             idct248_put(img_dest, 8, block);
@@ -427,7 +466,8 @@ static void idct248_error(const char *name,
         emms_c();
         it1 += NB_ITS_SPEED;
         ti1 = av_gettime_relative() - ti;
-    } while (ti1 < 1000000);
+    }
+    while (ti1 < 1000000);
 
     printf("%s %s: %0.1f kdct/s\n", 1 ? "IDCT248" : "DCT248", name,
            (double) it1 * 1000.0 / (double) ti1);
@@ -460,11 +500,13 @@ int main(int argc, char **argv)
 
     ff_ref_dct_init();
 
-    for (;;) {
+    for (;;)
+    {
         c = getopt(argc, argv, "ih4t");
         if (c == -1)
             break;
-        switch (c) {
+        switch (c)
+        {
         case 'i':
             test_idct = 1;
             break;
@@ -487,11 +529,15 @@ int main(int argc, char **argv)
 
     printf("ffmpeg DCT/IDCT test\n");
 
-    if (test_248_dct) {
+    if (test_248_dct)
+    {
         idct248_error("SIMPLE-C", ff_simple_idct248_put, speed);
-    } else {
+    }
+    else
+    {
         const int cpu_flags = av_get_cpu_flags();
-        if (test_idct) {
+        if (test_idct)
+        {
             for (i = 0; i < FF_ARRAY_ELEMS(idct_tab); i++)
                 err |= dct_error(&idct_tab[i], test, test_idct, speed, bits);
 
@@ -500,7 +546,8 @@ int main(int argc, char **argv)
                     err |= dct_error(&idct_tab_arch[i], test, test_idct, speed, bits);
         }
 #if CONFIG_FDCTDSP
-        else {
+        else
+        {
             for (i = 0; i < FF_ARRAY_ELEMS(fdct_tab); i++)
                 err |= dct_error(&fdct_tab[i], test, test_idct, speed, bits);
 

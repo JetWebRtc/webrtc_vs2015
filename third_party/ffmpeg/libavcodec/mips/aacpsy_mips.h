@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -65,14 +65,17 @@ static void calc_thr_3gpp_mips(const FFPsyWindowInfo *wi, const int num_bands,
 {
     int i, w, g;
     int start = 0;
-    for (w = 0; w < wi->num_windows*16; w += 16) {
-        for (g = 0; g < num_bands; g++) {
+    for (w = 0; w < wi->num_windows*16; w += 16)
+    {
+        for (g = 0; g < num_bands; g++)
+        {
             AacPsyBand *band = &pch->band[w+g];
 
             float form_factor = 0.0f;
             float Temp;
             band->energy = 0.0f;
-            for (i = 0; i < band_sizes[g]; i+=4) {
+            for (i = 0; i < band_sizes[g]; i+=4)
+            {
                 float a, b, c, d;
                 float ax, bx, cx, dx;
                 float *cf = (float *)&coefs[start+i];
@@ -100,10 +103,10 @@ static void calc_thr_3gpp_mips(const FFPsyWindowInfo *wi, const int num_bands,
                     "add.s  %[f],   %[f],   %[dx]           \n\t"
 
                     : [a]"=&f"(a), [b]"=&f"(b),
-                      [c]"=&f"(c), [d]"=&f"(d),
-                      [e]"+f"(band->energy), [f]"+f"(form_factor),
-                      [ax]"=&f"(ax), [bx]"=&f"(bx),
-                      [cx]"=&f"(cx), [dx]"=&f"(dx)
+                    [c]"=&f"(c), [d]"=&f"(d),
+                    [e]"+f"(band->energy), [f]"+f"(form_factor),
+                    [ax]"=&f"(ax), [bx]"=&f"(bx),
+                    [cx]"=&f"(cx), [dx]"=&f"(dx)
                     : [cf]"r"(cf)
                     : "memory"
                 );
@@ -214,14 +217,14 @@ static void psy_hp_filter_mips(const float *firbuf, float *hpfsmpl, const float 
         ".set pop                                           \n\t"
 
         : [sum1]"=&f"(sum1), [sum2]"=&f"(sum2),
-          [sum3]"=&f"(sum3), [sum4]"=&f"(sum4),
-          [fb]"+r"(fb), [hp]"+r"(hp)
+        [sum3]"=&f"(sum3), [sum4]"=&f"(sum4),
+        [fb]"+r"(fb), [hp]"+r"(hp)
         : [coeff0]"f"(coeff0), [coeff1]"f"(coeff1),
-          [coeff2]"f"(coeff2), [coeff3]"f"(coeff3),
-          [coeff4]"f"(coeff4), [fb_end]"r"(fb_end)
+        [coeff2]"f"(coeff2), [coeff3]"f"(coeff3),
+        [coeff4]"f"(coeff4), [fb_end]"r"(fb_end)
         : "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "$f6",
-          "$f7", "$f8", "$f9", "$f10", "$f11", "$f12",
-          "memory"
+        "$f7", "$f8", "$f9", "$f10", "$f11", "$f12",
+        "memory"
     );
 }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV30/40 decoder motion compensation functions
  * Copyright (c) 2008 Konstantin Shishkov
  *
@@ -42,19 +42,20 @@ typedef void (*rv34_idct_dc_add_func)(uint8_t *dst, ptrdiff_t stride,
                                       int   dc);
 
 typedef void (*rv40_weak_loop_filter_func)(uint8_t *src, ptrdiff_t stride,
-                                           int filter_p1, int filter_q1,
-                                           int alpha, int beta,
-                                           int lims, int lim_q1, int lim_p1);
+        int filter_p1, int filter_q1,
+        int alpha, int beta,
+        int lims, int lim_q1, int lim_p1);
 
 typedef void (*rv40_strong_loop_filter_func)(uint8_t *src, ptrdiff_t stride,
-                                             int alpha, int lims,
-                                             int dmode, int chroma);
+        int alpha, int lims,
+        int dmode, int chroma);
 
 typedef int (*rv40_loop_filter_strength_func)(uint8_t *src, ptrdiff_t stride,
-                                              int beta, int beta2, int edge,
-                                              int *p1, int *q1);
+        int beta, int beta2, int edge,
+        int *p1, int *q1);
 
-typedef struct RV34DSPContext {
+typedef struct RV34DSPContext
+{
     qpel_mc_func put_pixels_tab[4][16];
     qpel_mc_func avg_pixels_tab[4][16];
     h264_chroma_mc_func put_chroma_pixels_tab[3];

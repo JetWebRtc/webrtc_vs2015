@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,33 +18,35 @@
 #include "webrtc/api/peerconnectioninterface.h"
 #include "webrtc/base/thread_checker.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FakeMetricsObserver : public MetricsObserverInterface {
- public:
-  FakeMetricsObserver();
-  void Reset();
+class FakeMetricsObserver : public MetricsObserverInterface
+{
+public:
+    FakeMetricsObserver();
+    void Reset();
 
-  void IncrementEnumCounter(PeerConnectionEnumCounterType,
-                            int counter,
-                            int counter_max) override;
-  void AddHistogramSample(PeerConnectionMetricsName type,
-                          int value) override;
+    void IncrementEnumCounter(PeerConnectionEnumCounterType,
+                              int counter,
+                              int counter_max) override;
+    void AddHistogramSample(PeerConnectionMetricsName type,
+                            int value) override;
 
-  // Accessors to be used by the tests.
-  int GetEnumCounter(PeerConnectionEnumCounterType type, int counter) const;
-  int GetHistogramSample(PeerConnectionMetricsName type) const;
+    // Accessors to be used by the tests.
+    int GetEnumCounter(PeerConnectionEnumCounterType type, int counter) const;
+    int GetHistogramSample(PeerConnectionMetricsName type) const;
 
- protected:
-  ~FakeMetricsObserver() {}
+protected:
+    ~FakeMetricsObserver() {}
 
- private:
-  rtc::ThreadChecker thread_checker_;
-  // The vector contains maps for each counter type. In the map, it's a mapping
-  // from individual counter to its count, such that it's memory efficient when
-  // comes to sparse enum types, like the SSL ciphers in the IANA registry.
-  std::vector<std::map<int, int>> counters_;
-  int histogram_samples_[kPeerConnectionMetricsName_Max];
+private:
+    rtc::ThreadChecker thread_checker_;
+    // The vector contains maps for each counter type. In the map, it's a mapping
+    // from individual counter to its count, such that it's memory efficient when
+    // comes to sparse enum types, like the SSL ciphers in the IANA registry.
+    std::vector<std::map<int, int>> counters_;
+    int histogram_samples_[kPeerConnectionMetricsName_Max];
 };
 
 }  // namespace webrtc

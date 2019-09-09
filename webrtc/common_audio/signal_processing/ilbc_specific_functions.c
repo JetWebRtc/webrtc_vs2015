@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,9 +22,9 @@
 #include "webrtc/common_audio/signal_processing/include/signal_processing_library.h"
 
 void WebRtcSpl_ReverseOrderMultArrayElements(int16_t *out, const int16_t *in,
-                                             const int16_t *win,
-                                             size_t vector_length,
-                                             int16_t right_shifts)
+        const int16_t *win,
+        size_t vector_length,
+        int16_t right_shifts)
 {
     size_t i;
     int16_t *outptr = out;
@@ -32,7 +32,7 @@ void WebRtcSpl_ReverseOrderMultArrayElements(int16_t *out, const int16_t *in,
     const int16_t *winptr = win;
     for (i = 0; i < vector_length; i++)
     {
-      *outptr++ = (int16_t)((*inptr++ * *winptr--) >> right_shifts);
+        *outptr++ = (int16_t)((*inptr++ * *winptr--) >> right_shifts);
     }
 }
 
@@ -46,7 +46,7 @@ void WebRtcSpl_ElementwiseVectorMult(int16_t *out, const int16_t *in,
     const int16_t *winptr = win;
     for (i = 0; i < vector_length; i++)
     {
-      *outptr++ = (int16_t)((*inptr++ * *winptr++) >> right_shifts);
+        *outptr++ = (int16_t)((*inptr++ * *winptr++) >> right_shifts);
     }
 }
 
@@ -73,7 +73,7 @@ void WebRtcSpl_AddAffineVectorToVector(int16_t *out, int16_t *in,
 
     for (i = 0; i < vector_length; i++)
     {
-      out[i] += (int16_t)((in[i] * gain + add_constant) >> right_shifts);
+        out[i] += (int16_t)((in[i] * gain + add_constant) >> right_shifts);
     }
 }
 
@@ -85,6 +85,6 @@ void WebRtcSpl_AffineTransformVector(int16_t *out, int16_t *in,
 
     for (i = 0; i < vector_length; i++)
     {
-      out[i] = (int16_t)((in[i] * gain + add_constant) >> right_shifts);
+        out[i] = (int16_t)((in[i] * gain + add_constant) >> right_shifts);
     }
 }

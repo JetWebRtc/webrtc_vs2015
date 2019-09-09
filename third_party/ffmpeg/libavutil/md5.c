@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2006 Michael Niedermayer (michaelni@gmx.at)
  * Copyright (C) 2003-2005 by Christopher R. Hertel (crh@ubiqx.mn.org)
  *
@@ -36,7 +36,8 @@
 #include "md5.h"
 #include "mem.h"
 
-typedef struct AVMD5{
+typedef struct AVMD5
+{
     uint64_t len;
     uint8_t  block[64];
     uint32_t ABCD[4];
@@ -49,14 +50,16 @@ struct AVMD5 *av_md5_alloc(void)
     return av_mallocz(sizeof(struct AVMD5));
 }
 
-static const uint8_t S[4][4] = {
+static const uint8_t S[4][4] =
+{
     { 7, 12, 17, 22 },  /* round 1 */
     { 5,  9, 14, 20 },  /* round 2 */
     { 4, 11, 16, 23 },  /* round 3 */
     { 6, 10, 15, 21 }   /* round 4 */
 };
 
-static const uint32_t T[64] = { // T[i]= fabs(sin(i+1)<<32)
+static const uint32_t T[64] =   // T[i]= fabs(sin(i+1)<<32)
+{
     0xd76aa478, 0xe8c7b756, 0x242070db, 0xc1bdceee,   /* round 1 */
     0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
     0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
@@ -98,7 +101,8 @@ static void body(uint32_t ABCD[4], uint32_t *src, int nblocks)
     int n;
     uint32_t a, b, c, d, t, *X;
 
-    for (n = 0; n < nblocks; n++) {
+    for (n = 0; n < nblocks; n++)
+    {
         a = ABCD[3];
         b = ABCD[2];
         c = ABCD[1];
@@ -112,7 +116,8 @@ static void body(uint32_t ABCD[4], uint32_t *src, int nblocks)
 #endif
 
 #if CONFIG_SMALL
-        for (i = 0; i < 64; i++) {
+        for (i = 0; i < 64; i++)
+        {
             CORE(i, a, b, c, d);
             t = d;
             d = c;
@@ -125,7 +130,10 @@ static void body(uint32_t ABCD[4], uint32_t *src, int nblocks)
         CORE( i,   a,b,c,d); CORE((i+1),d,a,b,c);                       \
         CORE((i+2),c,d,a,b); CORE((i+3),b,c,d,a)
 #define CORE4(i) CORE2(i); CORE2((i+4)); CORE2((i+8)); CORE2((i+12))
-        CORE4(0); CORE4(16); CORE4(32); CORE4(48);
+        CORE4(0);
+        CORE4(16);
+        CORE4(32);
+        CORE4(48);
 #endif
 
         ABCD[0] += d;
@@ -153,7 +161,8 @@ void av_md5_update(AVMD5 *ctx, const uint8_t *src, int len)
     j = ctx->len & 63;
     ctx->len += len;
 
-    if (j) {
+    if (j)
+    {
         int cnt = FFMIN(len, 64 - j);
         memcpy(ctx->block + j, src, cnt);
         src += cnt;
@@ -164,13 +173,17 @@ void av_md5_update(AVMD5 *ctx, const uint8_t *src, int len)
     }
 
     end = src + (len & ~63);
-    if (HAVE_BIGENDIAN || (!HAVE_FAST_UNALIGNED && ((intptr_t)src & 3))) {
-       while (src < end) {
-           memcpy(ctx->block, src, 64);
-           body(ctx->ABCD, (uint32_t *) ctx->block, 1);
-           src += 64;
+    if (HAVE_BIGENDIAN || (!HAVE_FAST_UNALIGNED && ((intptr_t)src & 3)))
+    {
+        while (src < end)
+        {
+            memcpy(ctx->block, src, 64);
+            body(ctx->ABCD, (uint32_t *) ctx->block, 1);
+            src += 64;
         }
-    } else {
+    }
+    else
+    {
         int nblocks = len / 64;
         body(ctx->ABCD, (uint32_t *)src, nblocks);
         src = end;
@@ -215,7 +228,8 @@ static void print_md5(uint8_t *md5)
     printf("\n");
 }
 
-int main(void){
+int main(void)
+{
     uint8_t md5val[16];
     int i;
     volatile uint8_t in[1000]; // volatile to workaround http://llvm.org/bugs/show_bug.cgi?id=20849
@@ -223,13 +237,18 @@ int main(void){
 
     for (i = 0; i < 1000; i++)
         in[i] = i * i;
-    av_md5_sum(md5val, in, 1000); print_md5(md5val);
-    av_md5_sum(md5val, in,   63); print_md5(md5val);
-    av_md5_sum(md5val, in,   64); print_md5(md5val);
-    av_md5_sum(md5val, in,   65); print_md5(md5val);
+    av_md5_sum(md5val, in, 1000);
+    print_md5(md5val);
+    av_md5_sum(md5val, in,   63);
+    print_md5(md5val);
+    av_md5_sum(md5val, in,   64);
+    print_md5(md5val);
+    av_md5_sum(md5val, in,   65);
+    print_md5(md5val);
     for (i = 0; i < 1000; i++)
         in[i] = i % 127;
-    av_md5_sum(md5val, in,  999); print_md5(md5val);
+    av_md5_sum(md5val, in,  999);
+    print_md5(md5val);
 
     return 0;
 }

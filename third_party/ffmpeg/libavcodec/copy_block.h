@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -37,7 +37,8 @@ static inline void copy_block2(uint8_t *dst, const uint8_t *src, int dstStride, 
 static inline void copy_block4(uint8_t *dst, const uint8_t *src, int dstStride, int srcStride, int h)
 {
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         AV_COPY32U(dst, src);
         dst += dstStride;
         src += srcStride;
@@ -47,7 +48,8 @@ static inline void copy_block4(uint8_t *dst, const uint8_t *src, int dstStride, 
 static inline void copy_block8(uint8_t *dst, const uint8_t *src, int dstStride, int srcStride, int h)
 {
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         AV_COPY64U(dst, src);
         dst += dstStride;
         src += srcStride;
@@ -57,7 +59,8 @@ static inline void copy_block8(uint8_t *dst, const uint8_t *src, int dstStride, 
 static inline void copy_block9(uint8_t *dst, const uint8_t *src, int dstStride, int srcStride, int h)
 {
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         AV_COPY64U(dst, src);
         dst[8] = src[8];
         dst   += dstStride;
@@ -68,7 +71,8 @@ static inline void copy_block9(uint8_t *dst, const uint8_t *src, int dstStride, 
 static inline void copy_block16(uint8_t *dst, const uint8_t *src, int dstStride, int srcStride, int h)
 {
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         AV_COPY128U(dst, src);
         dst += dstStride;
         src += srcStride;
@@ -78,7 +82,8 @@ static inline void copy_block16(uint8_t *dst, const uint8_t *src, int dstStride,
 static inline void copy_block17(uint8_t *dst, const uint8_t *src, int dstStride, int srcStride, int h)
 {
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         AV_COPY128U(dst, src);
         dst[16] = src[16];
         dst    += dstStride;

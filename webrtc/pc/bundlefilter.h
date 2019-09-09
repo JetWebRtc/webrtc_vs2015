@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/media/base/streamparams.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // In case of single RTP session and single transport channel, all session
 // (or media) channels share a common transport channel. Hence they all get
@@ -30,23 +31,24 @@ namespace cricket {
 // This class determines whether a packet is destined for cricket::BaseChannel.
 // This is only to be used for RTP packets as RTCP packets are not filtered.
 // For RTP packets, this is decided based on the payload type.
-class BundleFilter {
- public:
-  BundleFilter();
-  ~BundleFilter();
+class BundleFilter
+{
+public:
+    BundleFilter();
+    ~BundleFilter();
 
-  // Determines if a RTP packet belongs to valid cricket::BaseChannel.
-  bool DemuxPacket(const uint8_t* data, size_t len);
+    // Determines if a RTP packet belongs to valid cricket::BaseChannel.
+    bool DemuxPacket(const uint8_t* data, size_t len);
 
-  // Adds the supported payload type.
-  void AddPayloadType(int payload_type);
+    // Adds the supported payload type.
+    void AddPayloadType(int payload_type);
 
-  // Public for unittests.
-  bool FindPayloadType(int pl_type) const;
-  void ClearAllPayloadTypes();
+    // Public for unittests.
+    bool FindPayloadType(int pl_type) const;
+    void ClearAllPayloadTypes();
 
- private:
-  std::set<int> payload_types_;
+private:
+    std::set<int> payload_types_;
 };
 
 }  // namespace cricket

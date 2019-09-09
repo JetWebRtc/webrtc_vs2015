@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -56,8 +56,8 @@ static OPUS_INLINE void silk_prefilt_FIX(
 );
 
 void silk_warped_LPC_analysis_filter_FIX_c(
-          opus_int32            state[],                    /* I/O  State [order + 1]                   */
-          opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
+    opus_int32            state[],                    /* I/O  State [order + 1]                   */
+    opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
     const opus_int16            coef_Q13[],                 /* I    Coefficients [order]                */
     const opus_int16            input[],                    /* I    Input signal [length]               */
     const opus_int16            lambda_Q16,                 /* I    Warping factor                      */
@@ -71,7 +71,8 @@ void silk_warped_LPC_analysis_filter_FIX_c(
     /* Order must be even */
     silk_assert( ( order & 1 ) == 0 );
 
-    for( n = 0; n < length; n++ ) {
+    for( n = 0; n < length; n++ )
+    {
         /* Output of lowpass section */
         tmp2 = silk_SMLAWB( state[ 0 ], state[ 1 ], lambda_Q16 );
         state[ 0 ] = silk_LSHIFT( input[ n ], 14 );
@@ -81,7 +82,8 @@ void silk_warped_LPC_analysis_filter_FIX_c(
         acc_Q11 = silk_RSHIFT( order, 1 );
         acc_Q11 = silk_SMLAWB( acc_Q11, tmp2, coef_Q13[ 0 ] );
         /* Loop over allpass sections */
-        for( i = 2; i < order; i += 2 ) {
+        for( i = 2; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2 = silk_SMLAWB( state[ i ], state[ i + 1 ] - tmp1, lambda_Q16 );
             state[ i ] = tmp1;
@@ -123,9 +125,11 @@ void silk_prefilter_FIX(
     lag = P->lagPrev;
     ALLOC( x_filt_Q12, psEnc->sCmn.subfr_length, opus_int32 );
     ALLOC( st_res_Q2, psEnc->sCmn.subfr_length, opus_int32 );
-    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+    {
         /* Update Variables that change per sub frame */
-        if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {
+        if( psEnc->sCmn.indices.signalType == TYPE_VOICED )
+        {
             lag = psEncCtrl->pitchL[ k ];
         }
 
@@ -140,7 +144,7 @@ void silk_prefilter_FIX(
 
         /* Short term FIR filtering*/
         silk_warped_LPC_analysis_filter_FIX( P->sAR_shp, st_res_Q2, AR1_shp_Q13, px,
-            psEnc->sCmn.warping_Q16, psEnc->sCmn.subfr_length, psEnc->sCmn.shapingLPCOrder, psEnc->sCmn.arch );
+                                             psEnc->sCmn.warping_Q16, psEnc->sCmn.subfr_length, psEnc->sCmn.shapingLPCOrder, psEnc->sCmn.arch );
 
         /* Reduce (mainly) low frequencies during harmonic emphasis */
         B_Q10[ 0 ] = silk_RSHIFT_ROUND( psEncCtrl->GainsPre_Q14[ k ], 4 );
@@ -150,7 +154,8 @@ void silk_prefilter_FIX(
         tmp_32 = silk_RSHIFT_ROUND( tmp_32, 14 );                                                                     /* Q10 */
         B_Q10[ 1 ]= silk_SAT16( tmp_32 );
         x_filt_Q12[ 0 ] = silk_MLA( silk_MUL( st_res_Q2[ 0 ], B_Q10[ 0 ] ), P->sHarmHP_Q2, B_Q10[ 1 ] );
-        for( j = 1; j < psEnc->sCmn.subfr_length; j++ ) {
+        for( j = 1; j < psEnc->sCmn.subfr_length; j++ )
+        {
             x_filt_Q12[ j ] = silk_MLA( silk_MUL( st_res_Q2[ j ], B_Q10[ 0 ] ), st_res_Q2[ j - 1 ], B_Q10[ 1 ] );
         }
         P->sHarmHP_Q2 = st_res_Q2[ psEnc->sCmn.subfr_length - 1 ];
@@ -189,15 +194,19 @@ static OPUS_INLINE void silk_prefilt_FIX(
     sLF_AR_shp_Q12  = P->sLF_AR_shp_Q12;
     sLF_MA_shp_Q12  = P->sLF_MA_shp_Q12;
 
-    for( i = 0; i < length; i++ ) {
-        if( lag > 0 ) {
+    for( i = 0; i < length; i++ )
+    {
+        if( lag > 0 )
+        {
             /* unrolled loop */
             silk_assert( HARM_SHAPE_FIR_TAPS == 3 );
             idx = lag + LTP_shp_buf_idx;
             n_LTP_Q12 = silk_SMULBB(            LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2 - 1) & LTP_MASK ], HarmShapeFIRPacked_Q12 );
             n_LTP_Q12 = silk_SMLABT( n_LTP_Q12, LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2    ) & LTP_MASK ], HarmShapeFIRPacked_Q12 );
             n_LTP_Q12 = silk_SMLABB( n_LTP_Q12, LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2 + 1) & LTP_MASK ], HarmShapeFIRPacked_Q12 );
-        } else {
+        }
+        else
+        {
             n_LTP_Q12 = 0;
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Format Conversion Utils for MIPS
  *
  * Copyright (c) 2012
@@ -119,14 +119,14 @@ static void int32_to_float_fmul_scalar_mips(float *dst, const int *src,
         PTR_ADDIU "%[dst],       32                     \n\t"
         "bne     %[src],        %[src_end], i32tf_lp%=  \n\t"
         : [temp1]"=&f"(temp1),   [temp11]"=&f"(temp11),
-          [temp13]"=&f"(temp13), [temp15]"=&f"(temp15),
-          [temp3]"=&f"(temp3),   [temp5]"=&f"(temp5),
-          [temp7]"=&f"(temp7),   [temp9]"=&f"(temp9),
-          [rpom1]"=&r"(rpom1),   [rpom2]"=&r"(rpom2),
-          [rpom11]"=&r"(rpom11), [rpom21]"=&r"(rpom21),
-          [rpom12]"=&r"(rpom12), [rpom22]"=&r"(rpom22),
-          [rpom13]"=&r"(rpom13), [rpom23]"=&r"(rpom23),
-          [dst]"+r"(dst),       [src]"+r"(src)
+        [temp13]"=&f"(temp13), [temp15]"=&f"(temp15),
+        [temp3]"=&f"(temp3),   [temp5]"=&f"(temp5),
+        [temp7]"=&f"(temp7),   [temp9]"=&f"(temp9),
+        [rpom1]"=&r"(rpom1),   [rpom2]"=&r"(rpom2),
+        [rpom11]"=&r"(rpom11), [rpom21]"=&r"(rpom21),
+        [rpom12]"=&r"(rpom12), [rpom22]"=&r"(rpom22),
+        [rpom13]"=&r"(rpom13), [rpom23]"=&r"(rpom23),
+        [dst]"+r"(dst),       [src]"+r"(src)
         : [mul]"f"(mul),        [src_end]"r"(src_end)
         : "memory"
     );

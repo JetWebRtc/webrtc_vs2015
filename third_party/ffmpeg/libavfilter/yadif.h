@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,25 +22,29 @@
 #include "libavutil/pixdesc.h"
 #include "avfilter.h"
 
-enum YADIFMode {
+enum YADIFMode
+{
     YADIF_MODE_SEND_FRAME           = 0, ///< send 1 frame for each frame
     YADIF_MODE_SEND_FIELD           = 1, ///< send 1 frame for each field
     YADIF_MODE_SEND_FRAME_NOSPATIAL = 2, ///< send 1 frame for each frame but skips spatial interlacing check
     YADIF_MODE_SEND_FIELD_NOSPATIAL = 3, ///< send 1 frame for each field but skips spatial interlacing check
 };
 
-enum YADIFParity {
+enum YADIFParity
+{
     YADIF_PARITY_TFF  =  0, ///< top field first
     YADIF_PARITY_BFF  =  1, ///< bottom field first
     YADIF_PARITY_AUTO = -1, ///< auto detection
 };
 
-enum YADIFDeint {
+enum YADIFDeint
+{
     YADIF_DEINT_ALL        = 0, ///< deinterlace all frames
     YADIF_DEINT_INTERLACED = 1, ///< only deinterlace frames marked as interlaced
 };
 
-typedef struct YADIFContext {
+typedef struct YADIFContext
+{
     const AVClass *class;
 
     int mode;           ///< YADIFMode

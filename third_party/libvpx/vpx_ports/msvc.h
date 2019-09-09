@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,11 +20,12 @@
 
 #if _MSC_VER < 1800  // VS2013 provides round
 #include <math.h>
-static INLINE double round(double x) {
-  if (x < 0)
-    return ceil(x - 0.5);
-  else
-    return floor(x + 0.5);
+static INLINE double round(double x)
+{
+    if (x < 0)
+        return ceil(x - 0.5);
+    else
+        return floor(x + 0.5);
 }
 #endif  // _MSC_VER < 1800
 

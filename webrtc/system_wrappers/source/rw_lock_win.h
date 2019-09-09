@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,24 +16,26 @@
 #include <winsock2.h>
 #include <Windows.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RWLockWin : public RWLockWrapper {
- public:
-  static RWLockWin* Create();
-  ~RWLockWin() {}
+class RWLockWin : public RWLockWrapper
+{
+public:
+    static RWLockWin* Create();
+    ~RWLockWin() {}
 
-  virtual void AcquireLockExclusive();
-  virtual void ReleaseLockExclusive();
+    virtual void AcquireLockExclusive();
+    virtual void ReleaseLockExclusive();
 
-  virtual void AcquireLockShared();
-  virtual void ReleaseLockShared();
+    virtual void AcquireLockShared();
+    virtual void ReleaseLockShared();
 
- private:
-  RWLockWin();
-  static bool LoadModule();
+private:
+    RWLockWin();
+    static bool LoadModule();
 
-  SRWLOCK lock_;
+    SRWLOCK lock_;
 };
 
 }  // namespace webrtc

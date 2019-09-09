@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,20 +25,22 @@ int32_t WebRtcIlbcfix_Smooth_odata(
     int16_t *surround,
     int16_t C)
 {
-  int i;
+    int i;
 
-  int16_t err;
-  int32_t errs;
+    int16_t err;
+    int32_t errs;
 
-  for(i=0;i<80;i++) {
-    odata[i]= (int16_t)((C * surround[i] + 1024) >> 11);
-  }
+    for(i=0; i<80; i++)
+    {
+        odata[i]= (int16_t)((C * surround[i] + 1024) >> 11);
+    }
 
-  errs=0;
-  for(i=0;i<80;i++) {
-    err = (psseq[i] - odata[i]) >> 3;
-    errs += err * err;  /* errs in Q-6 */
-  }
+    errs=0;
+    for(i=0; i<80; i++)
+    {
+        err = (psseq[i] - odata[i]) >> 3;
+        errs += err * err;  /* errs in Q-6 */
+    }
 
-  return errs;
+    return errs;
 }

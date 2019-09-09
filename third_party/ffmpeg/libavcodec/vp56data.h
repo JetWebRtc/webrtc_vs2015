@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  * Copyright (C) 2013 Lenny Wang
  *
@@ -31,23 +31,27 @@
 #endif
 
 
-enum SearchMethod {
+enum SearchMethod
+{
     EXHAUSTIVE,        ///< Search all possible positions
     SMART_EXHAUSTIVE,  ///< Search most possible positions (faster)
     SEARCH_COUNT
 };
 
-typedef struct {
+typedef struct
+{
     int x;             ///< Horizontal shift
     int y;             ///< Vertical shift
 } IntMotionVector;
 
-typedef struct {
+typedef struct
+{
     double x;             ///< Horizontal shift
     double y;             ///< Vertical shift
 } MotionVector;
 
-typedef struct {
+typedef struct
+{
     MotionVector vec;     ///< Motion vector
     double angle;         ///< Angle of rotation
     double zoom;          ///< Zoom percentage
@@ -55,7 +59,8 @@ typedef struct {
 
 #if CONFIG_OPENCL
 
-typedef struct {
+typedef struct
+{
     cl_command_queue command_queue;
     cl_program program;
     cl_kernel kernel_luma;
@@ -73,7 +78,8 @@ typedef struct {
 
 #define MAX_R 64
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int counts[2*MAX_R+1][2*MAX_R+1]; /// < Scratch buffer for motion search
     double *angles;            ///< Scratch buffer for block angles

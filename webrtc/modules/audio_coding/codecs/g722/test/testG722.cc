@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,7 +33,7 @@ bool readframe(int16_t *data, FILE *inp, size_t length)
 {
     size_t rlen = fread(data, sizeof(int16_t), length, inp);
     if (rlen >= length)
-      return false;
+        return false;
     memset(data + rlen, 0, (length - rlen) * sizeof(int16_t));
     return true;
 }
@@ -61,7 +61,8 @@ int main(int argc, char* argv[])
     int16_t speechType[1];
 
     /* handling wrong input arguments in the command line */
-    if (argc!=5)  {
+    if (argc!=5)
+    {
         printf("\n\nWrong number of arguments or flag values.\n\n");
 
         printf("\n");
@@ -78,7 +79,8 @@ int main(int argc, char* argv[])
 
     /* Get frame length */
     int framelength_int = atoi(argv[1]);
-    if (framelength_int < 0) {
+    if (framelength_int < 0)
+    {
         printf("  G.722: Invalid framelength %d.\n", framelength_int);
         exit(1);
     }
@@ -89,15 +91,18 @@ int main(int argc, char* argv[])
     sscanf(argv[3], "%s", outbit);
     sscanf(argv[4], "%s", outname);
 
-    if ((inp = fopen(inname,"rb")) == NULL) {
+    if ((inp = fopen(inname,"rb")) == NULL)
+    {
         printf("  G.722: Cannot read file %s.\n", inname);
         exit(1);
     }
-    if ((outbitp = fopen(outbit,"wb")) == NULL) {
+    if ((outbitp = fopen(outbit,"wb")) == NULL)
+    {
         printf("  G.722: Cannot write file %s.\n", outbit);
         exit(1);
     }
-    if ((outp = fopen(outname,"wb")) == NULL) {
+    if ((outp = fopen(outname,"wb")) == NULL)
+    {
         printf("  G.722: Cannot write file %s.\n", outname);
         exit(1);
     }
@@ -113,7 +118,8 @@ int main(int argc, char* argv[])
     /* Initialize encoder and decoder */
     framecnt = 0;
     endfile = false;
-    while (!endfile) {
+    while (!endfile)
+    {
         framecnt++;
 
         /* Read speech block */
@@ -132,13 +138,15 @@ int main(int argc, char* argv[])
 
         /* Write coded bits to file */
         if (fwrite(streamdata, sizeof(short), stream_len / 2, outbitp) !=
-            stream_len / 2) {
-          return -1;
+                stream_len / 2)
+        {
+            return -1;
         }
         /* Write coded speech to file */
         if (fwrite(decoded, sizeof(short), framelength, outp) !=
-            framelength) {
-          return -1;
+                framelength)
+        {
+            return -1;
         }
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder
  * Copyright (c) 2011 Mashiat Sarker Shakkhar
  * Copyright (c) 2006-2007 Konstantin Shishkov
@@ -33,10 +33,11 @@
 #include "vc1.h"
 
 static av_always_inline void vc1_scale_luma(uint8_t *srcY,
-                                            int k, int linesize)
+        int k, int linesize)
 {
     int i, j;
-    for (j = 0; j < k; j++) {
+    for (j = 0; j < k; j++)
+    {
         for (i = 0; i < k; i++)
             srcY[i] = ((srcY[i] - 128) >> 1) + 128;
         srcY += linesize;
@@ -44,11 +45,13 @@ static av_always_inline void vc1_scale_luma(uint8_t *srcY,
 }
 
 static av_always_inline void vc1_scale_chroma(uint8_t *srcU, uint8_t *srcV,
-                                              int k, int uvlinesize)
+        int k, int uvlinesize)
 {
     int i, j;
-    for (j = 0; j < k; j++) {
-        for (i = 0; i < k; i++) {
+    for (j = 0; j < k; j++)
+    {
+        for (i = 0; i < k; i++)
+        {
             srcU[i] = ((srcU[i] - 128) >> 1) + 128;
             srcV[i] = ((srcV[i] - 128) >> 1) + 128;
         }
@@ -58,12 +61,13 @@ static av_always_inline void vc1_scale_chroma(uint8_t *srcU, uint8_t *srcV,
 }
 
 static av_always_inline void vc1_lut_scale_luma(uint8_t *srcY,
-                                                uint8_t *lut1, uint8_t *lut2,
-                                                int k, int linesize)
+        uint8_t *lut1, uint8_t *lut2,
+        int k, int linesize)
 {
     int i, j;
 
-    for (j = 0; j < k; j += 2) {
+    for (j = 0; j < k; j += 2)
+    {
         for (i = 0; i < k; i++)
             srcY[i] = lut1[srcY[i]];
         srcY += linesize;
@@ -78,13 +82,15 @@ static av_always_inline void vc1_lut_scale_luma(uint8_t *srcY,
 }
 
 static av_always_inline void vc1_lut_scale_chroma(uint8_t *srcU, uint8_t *srcV,
-                                                  uint8_t *lut1, uint8_t *lut2,
-                                                  int k, int uvlinesize)
+        uint8_t *lut1, uint8_t *lut2,
+        int k, int uvlinesize)
 {
     int i, j;
 
-    for (j = 0; j < k; j += 2) {
-        for (i = 0; i < k; i++) {
+    for (j = 0; j < k; j += 2)
+    {
+        for (i = 0; i < k; i++)
+        {
             srcU[i] = lut1[srcU[i]];
             srcV[i] = lut1[srcV[i]];
         }
@@ -94,7 +100,8 @@ static av_always_inline void vc1_lut_scale_chroma(uint8_t *srcU, uint8_t *srcV,
         if (j + 1 == k)
             break;
 
-        for (i = 0; i < k; i++) {
+        for (i = 0; i < k; i++)
+        {
             srcU[i] = lut2[srcU[i]];
             srcV[i] = lut2[srcV[i]];
         }
@@ -109,13 +116,14 @@ static av_always_inline int get_luma_mv(VC1Context *v, int dir, int16_t *tx, int
 {
     MpegEncContext *s = &v->s;
     int idx = v->mv_f[dir][s->block_index[0] + v->blocks_off] |
-             (v->mv_f[dir][s->block_index[1] + v->blocks_off] << 1) |
-             (v->mv_f[dir][s->block_index[2] + v->blocks_off] << 2) |
-             (v->mv_f[dir][s->block_index[3] + v->blocks_off] << 3);
+              (v->mv_f[dir][s->block_index[1] + v->blocks_off] << 1) |
+              (v->mv_f[dir][s->block_index[2] + v->blocks_off] << 2) |
+              (v->mv_f[dir][s->block_index[3] + v->blocks_off] << 3);
     static const uint8_t index2[16] = { 0, 0, 0, 0x23, 0, 0x13, 0x03, 0, 0, 0x12, 0x02, 0, 0x01, 0, 0, 0 };
     int opp_count = popcount4[idx];
 
-    switch (opp_count) {
+    switch (opp_count)
+    {
     case 0:
     case 4:
         *tx = median4(s->mv[dir][0][0], s->mv[dir][1][0], s->mv[dir][2][0], s->mv[dir][3][0]);
@@ -141,13 +149,14 @@ static av_always_inline int get_chroma_mv(VC1Context *v, int dir, int16_t *tx, i
 {
     MpegEncContext *s = &v->s;
     int idx = !v->mb_type[0][s->block_index[0]] |
-             (!v->mb_type[0][s->block_index[1]] << 1) |
-             (!v->mb_type[0][s->block_index[2]] << 2) |
-             (!v->mb_type[0][s->block_index[3]] << 3);
+              (!v->mb_type[0][s->block_index[1]] << 1) |
+              (!v->mb_type[0][s->block_index[2]] << 2) |
+              (!v->mb_type[0][s->block_index[3]] << 3);
     static const uint8_t index2[16] = { 0, 0, 0, 0x01, 0, 0x02, 0x12, 0, 0, 0x03, 0x13, 0, 0x23, 0, 0, 0 };
     int valid_count = popcount4[idx];
 
-    switch (valid_count) {
+    switch (valid_count)
+    {
     case 4:
         *tx = median4(s->mv[dir][0][0], s->mv[dir][1][0], s->mv[dir][2][0], s->mv[dir][3][0]);
         *ty = median4(s->mv[dir][0][1], s->mv[dir][1][1], s->mv[dir][2][1], s->mv[dir][3][1]);
@@ -181,16 +190,18 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
     int use_ic;
 
     if ((!v->field_mode ||
-         (v->ref_field_type[dir] == 1 && v->cur_field_type == 1)) &&
-        !v->s.last_picture.f->data[0])
+            (v->ref_field_type[dir] == 1 && v->cur_field_type == 1)) &&
+            !v->s.last_picture.f->data[0])
         return;
 
     mx = s->mv[dir][0][0];
     my = s->mv[dir][0][1];
 
     // store motion vectors for further use in B frames
-    if (s->pict_type == AV_PICTURE_TYPE_P) {
-        for (i = 0; i < 4; i++) {
+    if (s->pict_type == AV_PICTURE_TYPE_P)
+    {
+        for (i = 0; i < 4; i++)
+        {
             s->current_picture.motion_val[1][s->block_index[i] + v->blocks_off][0] = mx;
             s->current_picture.motion_val[1][s->block_index[i] + v->blocks_off][1] = my;
         }
@@ -202,25 +213,31 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
     v->luma_mv[s->mb_x][1] = uvmy;
 
     if (v->field_mode &&
-        v->cur_field_type != v->ref_field_type[dir]) {
+            v->cur_field_type != v->ref_field_type[dir])
+    {
         my   = my   - 2 + 4 * v->cur_field_type;
         uvmy = uvmy - 2 + 4 * v->cur_field_type;
     }
 
     // fastuvmc shall be ignored for interlaced frame picture
-    if (v->fastuvmc && (v->fcm != ILACE_FRAME)) {
+    if (v->fastuvmc && (v->fcm != ILACE_FRAME))
+    {
         uvmx = uvmx + ((uvmx < 0) ? (uvmx & 1) : -(uvmx & 1));
         uvmy = uvmy + ((uvmy < 0) ? (uvmy & 1) : -(uvmy & 1));
     }
-    if (!dir) {
-        if (v->field_mode && (v->cur_field_type != v->ref_field_type[dir]) && v->second_field) {
+    if (!dir)
+    {
+        if (v->field_mode && (v->cur_field_type != v->ref_field_type[dir]) && v->second_field)
+        {
             srcY = s->current_picture.f->data[0];
             srcU = s->current_picture.f->data[1];
             srcV = s->current_picture.f->data[2];
             luty  = v->curr_luty;
             lutuv = v->curr_lutuv;
             use_ic = *v->curr_use_ic;
-        } else {
+        }
+        else
+        {
             srcY = s->last_picture.f->data[0];
             srcU = s->last_picture.f->data[1];
             srcV = s->last_picture.f->data[2];
@@ -228,7 +245,9 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
             lutuv = v->last_lutuv;
             use_ic = v->last_use_ic;
         }
-    } else {
+    }
+    else
+    {
         srcY = s->next_picture.f->data[0];
         srcU = s->next_picture.f->data[1];
         srcV = s->next_picture.f->data[2];
@@ -237,7 +256,8 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
         use_ic = v->next_use_ic;
     }
 
-    if (!srcY || !srcU) {
+    if (!srcY || !srcU)
+    {
         av_log(v->s.avctx, AV_LOG_ERROR, "Referenced frame missing.\n");
         return;
     }
@@ -247,12 +267,15 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
     uvsrc_x = s->mb_x *  8 + (uvmx >> 2);
     uvsrc_y = s->mb_y *  8 + (uvmy >> 2);
 
-    if (v->profile != PROFILE_ADVANCED) {
+    if (v->profile != PROFILE_ADVANCED)
+    {
         src_x   = av_clip(  src_x, -16, s->mb_width  * 16);
         src_y   = av_clip(  src_y, -16, s->mb_height * 16);
         uvsrc_x = av_clip(uvsrc_x,  -8, s->mb_width  *  8);
         uvsrc_y = av_clip(uvsrc_y,  -8, s->mb_height *  8);
-    } else {
+    }
+    else
+    {
         src_x   = av_clip(  src_x, -17, s->avctx->coded_width);
         src_y   = av_clip(  src_y, -18, s->avctx->coded_height + 1);
         uvsrc_x = av_clip(uvsrc_x,  -8, s->avctx->coded_width  >> 1);
@@ -263,22 +286,25 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
     srcU += uvsrc_y * s->uvlinesize + uvsrc_x;
     srcV += uvsrc_y * s->uvlinesize + uvsrc_x;
 
-    if (v->field_mode && v->ref_field_type[dir]) {
+    if (v->field_mode && v->ref_field_type[dir])
+    {
         srcY += s->current_picture_ptr->f->linesize[0];
         srcU += s->current_picture_ptr->f->linesize[1];
         srcV += s->current_picture_ptr->f->linesize[2];
     }
 
     /* for grayscale we should not try to read from unknown area */
-    if (CONFIG_GRAY && s->avctx->flags & AV_CODEC_FLAG_GRAY) {
+    if (CONFIG_GRAY && s->avctx->flags & AV_CODEC_FLAG_GRAY)
+    {
         srcU = s->sc.edge_emu_buffer + 18 * s->linesize;
         srcV = s->sc.edge_emu_buffer + 18 * s->linesize;
     }
 
     if (v->rangeredfrm || use_ic
-        || s->h_edge_pos < 22 || v_edge_pos < 22
-        || (unsigned)(src_x - s->mspel) > s->h_edge_pos - (mx&3) - 16 - s->mspel * 3
-        || (unsigned)(src_y - 1)        > v_edge_pos    - (my&3) - 16 - 3) {
+            || s->h_edge_pos < 22 || v_edge_pos < 22
+            || (unsigned)(src_x - s->mspel) > s->h_edge_pos - (mx&3) - 16 - s->mspel * 3
+            || (unsigned)(src_y - 1)        > v_edge_pos    - (my&3) - 16 - 3)
+    {
         uint8_t *ubuf = s->sc.edge_emu_buffer + 19 * s->linesize;
         uint8_t *vbuf = ubuf + 9 * s->uvlinesize;
         const int k = 17 + s->mspel * 2;
@@ -303,12 +329,14 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
         srcU = ubuf;
         srcV = vbuf;
         /* if we deal with range reduction we need to scale source blocks */
-        if (v->rangeredfrm) {
+        if (v->rangeredfrm)
+        {
             vc1_scale_luma(srcY, k, s->linesize);
             vc1_scale_chroma(srcU, srcV, 9, s->uvlinesize);
         }
         /* if we deal with intensity compensation we need to scale source blocks */
-        if (use_ic) {
+        if (use_ic)
+        {
             vc1_lut_scale_luma(srcY,
                                luty[v->field_mode ? v->ref_field_type[dir] : ((0 + src_y - s->mspel) & 1)],
                                luty[v->field_mode ? v->ref_field_type[dir] : ((1 + src_y - s->mspel) & 1)],
@@ -321,10 +349,13 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
         srcY += s->mspel * (1 + s->linesize);
     }
 
-    if (s->mspel) {
+    if (s->mspel)
+    {
         dxy = ((my & 3) << 2) | (mx & 3);
         v->vc1dsp.put_vc1_mspel_pixels_tab[0][dxy](s->dest[0], srcY, s->linesize, v->rnd);
-    } else { // hpel mc - always used for luma
+    }
+    else     // hpel mc - always used for luma
+    {
         dxy = (my & 2) | ((mx & 2) >> 1);
         if (!v->rnd)
             s->hdsp.put_pixels_tab[0][dxy](s->dest[0], srcY, s->linesize, 16);
@@ -337,10 +368,13 @@ void ff_vc1_mc_1mv(VC1Context *v, int dir)
     /* Chroma MC always uses qpel bilinear */
     uvmx = (uvmx & 3) << 1;
     uvmy = (uvmy & 3) << 1;
-    if (!v->rnd) {
+    if (!v->rnd)
+    {
         h264chroma->put_h264_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         h264chroma->put_h264_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
-    } else {
+    }
+    else
+    {
         v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
     }
@@ -360,40 +394,49 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
     int use_ic;
 
     if ((!v->field_mode ||
-         (v->ref_field_type[dir] == 1 && v->cur_field_type == 1)) &&
-        !v->s.last_picture.f->data[0])
+            (v->ref_field_type[dir] == 1 && v->cur_field_type == 1)) &&
+            !v->s.last_picture.f->data[0])
         return;
 
     mx = s->mv[dir][n][0];
     my = s->mv[dir][n][1];
 
-    if (!dir) {
-        if (v->field_mode && (v->cur_field_type != v->ref_field_type[dir]) && v->second_field) {
+    if (!dir)
+    {
+        if (v->field_mode && (v->cur_field_type != v->ref_field_type[dir]) && v->second_field)
+        {
             srcY = s->current_picture.f->data[0];
             luty = v->curr_luty;
             use_ic = *v->curr_use_ic;
-        } else {
+        }
+        else
+        {
             srcY = s->last_picture.f->data[0];
             luty = v->last_luty;
             use_ic = v->last_use_ic;
         }
-    } else {
+    }
+    else
+    {
         srcY = s->next_picture.f->data[0];
         luty = v->next_luty;
         use_ic = v->next_use_ic;
     }
 
-    if (!srcY) {
+    if (!srcY)
+    {
         av_log(v->s.avctx, AV_LOG_ERROR, "Referenced frame missing.\n");
         return;
     }
 
-    if (v->field_mode) {
+    if (v->field_mode)
+    {
         if (v->cur_field_type != v->ref_field_type[dir])
             my = my - 2 + 4 * v->cur_field_type;
     }
 
-    if (s->pict_type == AV_PICTURE_TYPE_P && n == 3 && v->field_mode) {
+    if (s->pict_type == AV_PICTURE_TYPE_P && n == 3 && v->field_mode)
+    {
         int opp_count = get_luma_mv(v, 0,
                                     &s->current_picture.motion_val[1][s->block_index[0] + v->blocks_off][0],
                                     &s->current_picture.motion_val[1][s->block_index[0] + v->blocks_off][1]);
@@ -402,11 +445,13 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
             v->mv_f[1][s->block_index[k] + v->blocks_off] = f;
     }
 
-    if (v->fcm == ILACE_FRAME) {  // not sure if needed for other types of picture
+    if (v->fcm == ILACE_FRAME)    // not sure if needed for other types of picture
+    {
         int qx, qy;
         int width  = s->avctx->coded_width;
         int height = s->avctx->coded_height >> 1;
-        if (s->pict_type == AV_PICTURE_TYPE_P) {
+        if (s->pict_type == AV_PICTURE_TYPE_P)
+        {
             s->current_picture.motion_val[1][s->block_index[n] + v->blocks_off][0] = mx;
             s->current_picture.motion_val[1][s->block_index[n] + v->blocks_off][1] = my;
         }
@@ -434,17 +479,23 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
     else
         src_y = s->mb_y * 16 + ((n > 1) ? 1 : 0) + (my >> 2);
 
-    if (v->profile != PROFILE_ADVANCED) {
+    if (v->profile != PROFILE_ADVANCED)
+    {
         src_x = av_clip(src_x, -16, s->mb_width  * 16);
         src_y = av_clip(src_y, -16, s->mb_height * 16);
-    } else {
+    }
+    else
+    {
         src_x = av_clip(src_x, -17, s->avctx->coded_width);
-        if (v->fcm == ILACE_FRAME) {
+        if (v->fcm == ILACE_FRAME)
+        {
             if (src_y & 1)
                 src_y = av_clip(src_y, -17, s->avctx->coded_height + 1);
             else
                 src_y = av_clip(src_y, -18, s->avctx->coded_height);
-        } else {
+        }
+        else
+        {
             src_y = av_clip(src_y, -18, s->avctx->coded_height + 1);
         }
     }
@@ -453,16 +504,18 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
     if (v->field_mode && v->ref_field_type[dir])
         srcY += s->current_picture_ptr->f->linesize[0];
 
-    if (fieldmv) {
+    if (fieldmv)
+    {
         if (!(src_y & 1))
             v_edge_pos--;
         else
             src_y -= (src_y < 4);
     }
     if (v->rangeredfrm || use_ic
-        || s->h_edge_pos < 13 || v_edge_pos < 23
-        || (unsigned)(src_x - s->mspel) > s->h_edge_pos - (mx & 3) - 8 - s->mspel * 2
-        || (unsigned)(src_y - (s->mspel << fieldmv)) > v_edge_pos - (my & 3) - ((8 + s->mspel * 2) << fieldmv)) {
+            || s->h_edge_pos < 13 || v_edge_pos < 23
+            || (unsigned)(src_x - s->mspel) > s->h_edge_pos - (mx & 3) - 8 - s->mspel * 2
+            || (unsigned)(src_y - (s->mspel << fieldmv)) > v_edge_pos - (my & 3) - ((8 + s->mspel * 2) << fieldmv))
+    {
         const int k = 9 + s->mspel * 2;
 
         srcY -= s->mspel * (1 + (s->linesize << fieldmv));
@@ -474,11 +527,13 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
                                  s->h_edge_pos, v_edge_pos);
         srcY = s->sc.edge_emu_buffer;
         /* if we deal with range reduction we need to scale source blocks */
-        if (v->rangeredfrm) {
+        if (v->rangeredfrm)
+        {
             vc1_scale_luma(srcY, k, s->linesize << fieldmv);
         }
         /* if we deal with intensity compensation we need to scale source blocks */
-        if (use_ic) {
+        if (use_ic)
+        {
             vc1_lut_scale_luma(srcY,
                                luty[v->field_mode ? v->ref_field_type[dir] : (((0<<fieldmv)+src_y - (s->mspel << fieldmv)) & 1)],
                                luty[v->field_mode ? v->ref_field_type[dir] : (((1<<fieldmv)+src_y - (s->mspel << fieldmv)) & 1)],
@@ -487,13 +542,16 @@ void ff_vc1_mc_4mv_luma(VC1Context *v, int n, int dir, int avg)
         srcY += s->mspel * (1 + (s->linesize << fieldmv));
     }
 
-    if (s->mspel) {
+    if (s->mspel)
+    {
         dxy = ((my & 3) << 2) | (mx & 3);
         if (avg)
             v->vc1dsp.avg_vc1_mspel_pixels_tab[1][dxy](s->dest[0] + off, srcY, s->linesize << fieldmv, v->rnd);
         else
             v->vc1dsp.put_vc1_mspel_pixels_tab[1][dxy](s->dest[0] + off, srcY, s->linesize << fieldmv, v->rnd);
-    } else { // hpel mc - always used for luma
+    }
+    else     // hpel mc - always used for luma
+    {
         dxy = (my & 2) | ((mx & 2) >> 1);
         if (!v->rnd)
             s->hdsp.put_pixels_tab[1][dxy](s->dest[0] + off, srcY, s->linesize, 8);
@@ -522,16 +580,20 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
         return;
 
     /* calculate chroma MV vector from four luma MVs */
-    if (!v->field_mode || !v->numref) {
+    if (!v->field_mode || !v->numref)
+    {
         int valid_count = get_chroma_mv(v, dir, &tx, &ty);
-        if (!valid_count) {
+        if (!valid_count)
+        {
             s->current_picture.motion_val[1][s->block_index[0] + v->blocks_off][0] = 0;
             s->current_picture.motion_val[1][s->block_index[0] + v->blocks_off][1] = 0;
             v->luma_mv[s->mb_x][0] = v->luma_mv[s->mb_x][1] = 0;
             return; //no need to do MC for intra blocks
         }
         chroma_ref_type = v->ref_field_type[dir];
-    } else {
+    }
+    else
+    {
         int opp_count = get_luma_mv(v, dir, &tx, &ty);
         chroma_ref_type = v->cur_field_type ^ (opp_count > 2);
     }
@@ -545,7 +607,8 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
     v->luma_mv[s->mb_x][0] = uvmx;
     v->luma_mv[s->mb_x][1] = uvmy;
 
-    if (v->fastuvmc) {
+    if (v->fastuvmc)
+    {
         uvmx = uvmx + ((uvmx < 0) ? (uvmx & 1) : -(uvmx & 1));
         uvmy = uvmy + ((uvmy < 0) ? (uvmy & 1) : -(uvmy & 1));
     }
@@ -556,34 +619,44 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
     uvsrc_x = s->mb_x * 8 + (uvmx >> 2);
     uvsrc_y = s->mb_y * 8 + (uvmy >> 2);
 
-    if (v->profile != PROFILE_ADVANCED) {
+    if (v->profile != PROFILE_ADVANCED)
+    {
         uvsrc_x = av_clip(uvsrc_x, -8, s->mb_width  * 8);
         uvsrc_y = av_clip(uvsrc_y, -8, s->mb_height * 8);
-    } else {
+    }
+    else
+    {
         uvsrc_x = av_clip(uvsrc_x, -8, s->avctx->coded_width  >> 1);
         uvsrc_y = av_clip(uvsrc_y, -8, s->avctx->coded_height >> 1);
     }
 
-    if (!dir) {
-        if (v->field_mode && (v->cur_field_type != chroma_ref_type) && v->second_field) {
+    if (!dir)
+    {
+        if (v->field_mode && (v->cur_field_type != chroma_ref_type) && v->second_field)
+        {
             srcU = s->current_picture.f->data[1];
             srcV = s->current_picture.f->data[2];
             lutuv = v->curr_lutuv;
             use_ic = *v->curr_use_ic;
-        } else {
+        }
+        else
+        {
             srcU = s->last_picture.f->data[1];
             srcV = s->last_picture.f->data[2];
             lutuv = v->last_lutuv;
             use_ic = v->last_use_ic;
         }
-    } else {
+    }
+    else
+    {
         srcU = s->next_picture.f->data[1];
         srcV = s->next_picture.f->data[2];
         lutuv = v->next_lutuv;
         use_ic = v->next_use_ic;
     }
 
-    if (!srcU) {
+    if (!srcU)
+    {
         av_log(v->s.avctx, AV_LOG_ERROR, "Referenced frame missing.\n");
         return;
     }
@@ -591,17 +664,20 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
     srcU += uvsrc_y * s->uvlinesize + uvsrc_x;
     srcV += uvsrc_y * s->uvlinesize + uvsrc_x;
 
-    if (v->field_mode) {
-        if (chroma_ref_type) {
+    if (v->field_mode)
+    {
+        if (chroma_ref_type)
+        {
             srcU += s->current_picture_ptr->f->linesize[1];
             srcV += s->current_picture_ptr->f->linesize[2];
         }
     }
 
     if (v->rangeredfrm || use_ic
-        || s->h_edge_pos < 18 || v_edge_pos < 18
-        || (unsigned)uvsrc_x > (s->h_edge_pos >> 1) - 9
-        || (unsigned)uvsrc_y > (v_edge_pos    >> 1) - 9) {
+            || s->h_edge_pos < 18 || v_edge_pos < 18
+            || (unsigned)uvsrc_x > (s->h_edge_pos >> 1) - 9
+            || (unsigned)uvsrc_y > (v_edge_pos    >> 1) - 9)
+    {
         s->vdsp.emulated_edge_mc(s->sc.edge_emu_buffer, srcU,
                                  s->uvlinesize, s->uvlinesize,
                                  8 + 1, 8 + 1, uvsrc_x, uvsrc_y,
@@ -614,11 +690,13 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
         srcV = s->sc.edge_emu_buffer + 16;
 
         /* if we deal with range reduction we need to scale source blocks */
-        if (v->rangeredfrm) {
+        if (v->rangeredfrm)
+        {
             vc1_scale_chroma(srcU, srcV, 9, s->uvlinesize);
         }
         /* if we deal with intensity compensation we need to scale source blocks */
-        if (use_ic) {
+        if (use_ic)
+        {
             vc1_lut_scale_chroma(srcU, srcV,
                                  lutuv[v->field_mode ? chroma_ref_type : ((0 + uvsrc_y) & 1)],
                                  lutuv[v->field_mode ? chroma_ref_type : ((1 + uvsrc_y) & 1)],
@@ -629,10 +707,13 @@ void ff_vc1_mc_4mv_chroma(VC1Context *v, int dir)
     /* Chroma MC always uses qpel bilinear */
     uvmx = (uvmx & 3) << 1;
     uvmy = (uvmy & 3) << 1;
-    if (!v->rnd) {
+    if (!v->rnd)
+    {
         h264chroma->put_h264_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         h264chroma->put_h264_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
-    } else {
+    }
+    else
+    {
         v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
     }
@@ -658,7 +739,8 @@ void ff_vc1_mc_4mv_chroma4(VC1Context *v, int dir, int dir2, int avg)
     if (CONFIG_GRAY && s->avctx->flags & AV_CODEC_FLAG_GRAY)
         return;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         int d = i < 2 ? dir: dir2;
         tx = s->mv[d][i][0];
         uvmx_field[i] = (tx + ((tx & 3) == 3)) >> 1;
@@ -669,19 +751,23 @@ void ff_vc1_mc_4mv_chroma4(VC1Context *v, int dir, int dir2, int avg)
             uvmy_field[i] = (ty + ((ty & 3) == 3)) >> 1;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         off = (i & 1) * 4 + ((i & 2) ? v_dist * s->uvlinesize : 0);
         uvsrc_x = s->mb_x * 8 +  (i & 1) * 4           + (uvmx_field[i] >> 2);
         uvsrc_y = s->mb_y * 8 + ((i & 2) ? v_dist : 0) + (uvmy_field[i] >> 2);
         // FIXME: implement proper pull-back (see vc1cropmv.c, vc1CROPMV_ChromaPullBack())
         uvsrc_x = av_clip(uvsrc_x, -8, s->avctx->coded_width  >> 1);
         uvsrc_y = av_clip(uvsrc_y, -8, s->avctx->coded_height >> 1);
-        if (i < 2 ? dir : dir2) {
+        if (i < 2 ? dir : dir2)
+        {
             srcU = s->next_picture.f->data[1];
             srcV = s->next_picture.f->data[2];
             lutuv  = v->next_lutuv;
             use_ic = v->next_use_ic;
-        } else {
+        }
+        else
+        {
             srcU = s->last_picture.f->data[1];
             srcV = s->last_picture.f->data[2];
             lutuv  = v->last_lutuv;
@@ -694,16 +780,18 @@ void ff_vc1_mc_4mv_chroma4(VC1Context *v, int dir, int dir2, int avg)
         uvmx_field[i] = (uvmx_field[i] & 3) << 1;
         uvmy_field[i] = (uvmy_field[i] & 3) << 1;
 
-        if (fieldmv) {
+        if (fieldmv)
+        {
             if (!(uvsrc_y & 1))
                 v_edge_pos = (s->v_edge_pos >> 1) - 1;
             else
                 uvsrc_y -= (uvsrc_y < 2);
         }
         if (use_ic
-            || s->h_edge_pos < 10 || v_edge_pos < (5 << fieldmv)
-            || (unsigned)uvsrc_x > (s->h_edge_pos >> 1) - 5
-            || (unsigned)uvsrc_y > v_edge_pos - (5 << fieldmv)) {
+                || s->h_edge_pos < 10 || v_edge_pos < (5 << fieldmv)
+                || (unsigned)uvsrc_x > (s->h_edge_pos >> 1) - 5
+                || (unsigned)uvsrc_y > v_edge_pos - (5 << fieldmv))
+        {
             s->vdsp.emulated_edge_mc(s->sc.edge_emu_buffer, srcU,
                                      s->uvlinesize, s->uvlinesize,
                                      5, (5 << fieldmv), uvsrc_x, uvsrc_y,
@@ -716,26 +804,36 @@ void ff_vc1_mc_4mv_chroma4(VC1Context *v, int dir, int dir2, int avg)
             srcV = s->sc.edge_emu_buffer + 16;
 
             /* if we deal with intensity compensation we need to scale source blocks */
-            if (use_ic) {
+            if (use_ic)
+            {
                 vc1_lut_scale_chroma(srcU, srcV,
                                      lutuv[(uvsrc_y + (0 << fieldmv)) & 1],
                                      lutuv[(uvsrc_y + (1 << fieldmv)) & 1],
                                      5, s->uvlinesize << fieldmv);
             }
         }
-        if (avg) {
-            if (!v->rnd) {
+        if (avg)
+        {
+            if (!v->rnd)
+            {
                 h264chroma->avg_h264_chroma_pixels_tab[1](s->dest[1] + off, srcU, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
                 h264chroma->avg_h264_chroma_pixels_tab[1](s->dest[2] + off, srcV, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
-            } else {
+            }
+            else
+            {
                 v->vc1dsp.avg_no_rnd_vc1_chroma_pixels_tab[1](s->dest[1] + off, srcU, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
                 v->vc1dsp.avg_no_rnd_vc1_chroma_pixels_tab[1](s->dest[2] + off, srcV, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
             }
-        } else {
-            if (!v->rnd) {
+        }
+        else
+        {
+            if (!v->rnd)
+            {
                 h264chroma->put_h264_chroma_pixels_tab[1](s->dest[1] + off, srcU, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
                 h264chroma->put_h264_chroma_pixels_tab[1](s->dest[2] + off, srcV, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
-            } else {
+            }
+            else
+            {
                 v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[1](s->dest[1] + off, srcU, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
                 v->vc1dsp.put_no_rnd_vc1_chroma_pixels_tab[1](s->dest[2] + off, srcV, s->uvlinesize << fieldmv, 4, uvmx_field[i], uvmy_field[i]);
             }
@@ -761,11 +859,13 @@ void ff_vc1_interp_mc(VC1Context *v)
     my   = s->mv[1][0][1];
     uvmx = (mx + ((mx & 3) == 3)) >> 1;
     uvmy = (my + ((my & 3) == 3)) >> 1;
-    if (v->field_mode && v->cur_field_type != v->ref_field_type[1]) {
+    if (v->field_mode && v->cur_field_type != v->ref_field_type[1])
+    {
         my   = my   - 2 + 4 * v->cur_field_type;
         uvmy = uvmy - 2 + 4 * v->cur_field_type;
     }
-    if (v->fastuvmc) {
+    if (v->fastuvmc)
+    {
         uvmx = uvmx + ((uvmx < 0) ? -(uvmx & 1) : (uvmx & 1));
         uvmy = uvmy + ((uvmy < 0) ? -(uvmy & 1) : (uvmy & 1));
     }
@@ -778,12 +878,15 @@ void ff_vc1_interp_mc(VC1Context *v)
     uvsrc_x = s->mb_x *  8 + (uvmx >> 2);
     uvsrc_y = s->mb_y *  8 + (uvmy >> 2);
 
-    if (v->profile != PROFILE_ADVANCED) {
+    if (v->profile != PROFILE_ADVANCED)
+    {
         src_x   = av_clip(  src_x, -16, s->mb_width  * 16);
         src_y   = av_clip(  src_y, -16, s->mb_height * 16);
         uvsrc_x = av_clip(uvsrc_x,  -8, s->mb_width  *  8);
         uvsrc_y = av_clip(uvsrc_y,  -8, s->mb_height *  8);
-    } else {
+    }
+    else
+    {
         src_x   = av_clip(  src_x, -17, s->avctx->coded_width);
         src_y   = av_clip(  src_y, -18, s->avctx->coded_height + 1);
         uvsrc_x = av_clip(uvsrc_x,  -8, s->avctx->coded_width  >> 1);
@@ -794,21 +897,24 @@ void ff_vc1_interp_mc(VC1Context *v)
     srcU += uvsrc_y * s->uvlinesize + uvsrc_x;
     srcV += uvsrc_y * s->uvlinesize + uvsrc_x;
 
-    if (v->field_mode && v->ref_field_type[1]) {
+    if (v->field_mode && v->ref_field_type[1])
+    {
         srcY += s->current_picture_ptr->f->linesize[0];
         srcU += s->current_picture_ptr->f->linesize[1];
         srcV += s->current_picture_ptr->f->linesize[2];
     }
 
     /* for grayscale we should not try to read from unknown area */
-    if (CONFIG_GRAY && s->avctx->flags & AV_CODEC_FLAG_GRAY) {
+    if (CONFIG_GRAY && s->avctx->flags & AV_CODEC_FLAG_GRAY)
+    {
         srcU = s->sc.edge_emu_buffer + 18 * s->linesize;
         srcV = s->sc.edge_emu_buffer + 18 * s->linesize;
     }
 
     if (v->rangeredfrm || s->h_edge_pos < 22 || v_edge_pos < 22 || use_ic
-        || (unsigned)(src_x - 1) > s->h_edge_pos - (mx & 3) - 16 - 3
-        || (unsigned)(src_y - 1) > v_edge_pos    - (my & 3) - 16 - 3) {
+            || (unsigned)(src_x - 1) > s->h_edge_pos - (mx & 3) - 16 - 3
+            || (unsigned)(src_y - 1) > v_edge_pos    - (my & 3) - 16 - 3)
+    {
         uint8_t *ubuf = s->sc.edge_emu_buffer + 19 * s->linesize;
         uint8_t *vbuf = ubuf + 9 * s->uvlinesize;
         const int k = 17 + s->mspel * 2;
@@ -833,12 +939,14 @@ void ff_vc1_interp_mc(VC1Context *v)
         srcU = ubuf;
         srcV = vbuf;
         /* if we deal with range reduction we need to scale source blocks */
-        if (v->rangeredfrm) {
+        if (v->rangeredfrm)
+        {
             vc1_scale_luma(srcY, k, s->linesize);
             vc1_scale_chroma(srcU, srcV, 9, s->uvlinesize);
         }
 
-        if (use_ic) {
+        if (use_ic)
+        {
             uint8_t (*luty )[256] = v->next_luty;
             uint8_t (*lutuv)[256] = v->next_lutuv;
             vc1_lut_scale_luma(srcY,
@@ -853,10 +961,13 @@ void ff_vc1_interp_mc(VC1Context *v)
         srcY += s->mspel * (1 + s->linesize);
     }
 
-    if (s->mspel) {
+    if (s->mspel)
+    {
         dxy = ((my & 3) << 2) | (mx & 3);
         v->vc1dsp.avg_vc1_mspel_pixels_tab[0][dxy](s->dest[0], srcY, s->linesize, v->rnd);
-    } else { // hpel mc
+    }
+    else     // hpel mc
+    {
         dxy = (my & 2) | ((mx & 2) >> 1);
 
         if (!v->rnd)
@@ -870,10 +981,13 @@ void ff_vc1_interp_mc(VC1Context *v)
     /* Chroma MC always uses qpel blilinear */
     uvmx = (uvmx & 3) << 1;
     uvmy = (uvmy & 3) << 1;
-    if (!v->rnd) {
+    if (!v->rnd)
+    {
         h264chroma->avg_h264_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         h264chroma->avg_h264_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
-    } else {
+    }
+    else
+    {
         v->vc1dsp.avg_no_rnd_vc1_chroma_pixels_tab[0](s->dest[1], srcU, s->uvlinesize, 8, uvmx, uvmy);
         v->vc1dsp.avg_no_rnd_vc1_chroma_pixels_tab[0](s->dest[2], srcV, s->uvlinesize, 8, uvmx, uvmy);
     }

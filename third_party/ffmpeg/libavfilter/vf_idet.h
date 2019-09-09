@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,20 +26,23 @@
 
 typedef int (*ff_idet_filter_func)(const uint8_t *a, const uint8_t *b, const uint8_t *c, int w);
 
-typedef enum {
+typedef enum
+{
     TFF,
     BFF,
     PROGRESSIVE,
     UNDETERMINED,
 } Type;
 
-typedef enum {
+typedef enum
+{
     REPEAT_NONE,
     REPEAT_TOP,
     REPEAT_BOTTOM,
 } RepeatedField;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     float interlace_threshold;
     float progressive_threshold;

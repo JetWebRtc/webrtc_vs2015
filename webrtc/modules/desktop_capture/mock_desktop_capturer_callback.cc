@@ -1,4 +1,4 @@
-/* Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
+﻿/* Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
  *  that can be found in the LICENSE file in the root of the source
@@ -9,15 +9,17 @@
 
 #include "webrtc/modules/desktop_capture/mock_desktop_capturer_callback.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 MockDesktopCapturerCallback::MockDesktopCapturerCallback() = default;
 MockDesktopCapturerCallback::~MockDesktopCapturerCallback() = default;
 
 void MockDesktopCapturerCallback::OnCaptureResult(
     DesktopCapturer::Result result,
-    std::unique_ptr<DesktopFrame> frame) {
-  OnCaptureResultPtr(result, &frame);
+    std::unique_ptr<DesktopFrame> frame)
+{
+    OnCaptureResultPtr(result, &frame);
 }
 
 }  // namespace webrtc

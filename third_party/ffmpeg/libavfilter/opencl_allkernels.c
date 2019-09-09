@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  *
  * This file is part of FFmpeg.
@@ -34,8 +34,8 @@
 
 void ff_opencl_register_filter_kernel_code_all(void)
 {
- #if CONFIG_OPENCL
-   OPENCL_REGISTER_KERNEL_CODE(DESHAKE,     deshake);
-   OPENCL_REGISTER_KERNEL_CODE(UNSHARP,     unsharp);
- #endif
+#if CONFIG_OPENCL
+    OPENCL_REGISTER_KERNEL_CODE(DESHAKE,     deshake);
+    OPENCL_REGISTER_KERNEL_CODE(UNSHARP,     unsharp);
+#endif
 }

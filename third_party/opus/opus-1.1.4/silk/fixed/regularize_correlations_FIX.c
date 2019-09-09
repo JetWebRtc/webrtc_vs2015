@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -40,7 +40,8 @@ void silk_regularize_correlations_FIX(
 )
 {
     opus_int i;
-    for( i = 0; i < D; i++ ) {
+    for( i = 0; i < D; i++ )
+    {
         matrix_ptr( &XX[ 0 ], i, i, D ) = silk_ADD32( matrix_ptr( &XX[ 0 ], i, i, D ), noise );
     }
     xx[ 0 ] += noise;

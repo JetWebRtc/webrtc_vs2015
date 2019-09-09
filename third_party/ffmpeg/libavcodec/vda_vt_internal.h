@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ void ff_vda_output_callback(void *vda_hw_ctx,
 int ff_vda_default_init(AVCodecContext *avctx);
 void ff_vda_default_free(AVCodecContext *avctx);
 
-typedef struct VTContext {
+typedef struct VTContext
+{
     // The current bitstream buffer.
     uint8_t                     *bitstream;
 

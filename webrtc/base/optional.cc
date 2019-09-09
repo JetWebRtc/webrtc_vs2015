@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,12 +10,17 @@
 
 #include "webrtc/base/optional.h"
 
-namespace rtc {
-namespace optional_internal {
+namespace rtc
+{
+namespace optional_internal
+{
 
 #if RTC_HAS_ASAN
 
-void* FunctionThatDoesNothingImpl(void* x) { return x; }
+void* FunctionThatDoesNothingImpl(void* x)
+{
+    return x;
+}
 
 #endif
 

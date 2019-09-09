@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD optimized JPEG 2000 DSP functions
  * Copyright (c) 2015 James Almer
  *
@@ -32,19 +32,23 @@ void ff_rct_int_avx2 (void *src0, void *src1, void *src2, int csize);
 av_cold void ff_jpeg2000dsp_init_x86(Jpeg2000DSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         c->mct_decode[FF_DWT97] = ff_ict_float_sse;
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->mct_decode[FF_DWT53] = ff_rct_int_sse2;
     }
 
-    if (EXTERNAL_AVX_FAST(cpu_flags)) {
+    if (EXTERNAL_AVX_FAST(cpu_flags))
+    {
         c->mct_decode[FF_DWT97] = ff_ict_float_avx;
     }
 
-    if (EXTERNAL_AVX2(cpu_flags)) {
+    if (EXTERNAL_AVX2(cpu_flags))
+    {
         c->mct_decode[FF_DWT53] = ff_rct_int_avx2;
     }
 }

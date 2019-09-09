@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Discworld II BMV demuxer
  * Copyright (c) 2011 Konstantin Shishkov.
  *
@@ -23,7 +23,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-enum BMVFlags {
+enum BMVFlags
+{
     BMV_NOP = 0,
     BMV_END,
     BMV_DELTA,
@@ -32,7 +33,8 @@ enum BMVFlags {
     BMV_AUDIO   = 0x20,
 };
 
-typedef struct BMVContext {
+typedef struct BMVContext
+{
     uint8_t *packet;
     int      size;
     int      get_next;
@@ -73,7 +75,8 @@ static int bmv_read_packet(AVFormatContext *s, AVPacket *pkt)
     BMVContext *c = s->priv_data;
     int type, err;
 
-    while (c->get_next) {
+    while (c->get_next)
+    {
         if (s->pb->eof_reached)
             return AVERROR_EOF;
         type = avio_r8(s->pb);
@@ -89,9 +92,11 @@ static int bmv_read_packet(AVFormatContext *s, AVPacket *pkt)
         c->packet[0] = type;
         if (avio_read(s->pb, c->packet + 1, c->size) != c->size)
             return AVERROR(EIO);
-        if (type & BMV_AUDIO) {
+        if (type & BMV_AUDIO)
+        {
             int audio_size = c->packet[1] * 65 + 1;
-            if (audio_size >= c->size) {
+            if (audio_size >= c->size)
+            {
                 av_log(s, AV_LOG_ERROR, "Reported audio size %d is bigger than packet size (%d)\n",
                        audio_size, c->size);
                 return AVERROR_INVALIDDATA;
@@ -105,7 +110,8 @@ static int bmv_read_packet(AVFormatContext *s, AVPacket *pkt)
             c->audio_pos += pkt->duration;
             c->get_next   = 0;
             return pkt->size;
-        } else
+        }
+        else
             break;
     }
     if (av_new_packet(pkt, c->size + 1) < 0)
@@ -125,7 +131,8 @@ static int bmv_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_bmv_demuxer = {
+AVInputFormat ff_bmv_demuxer =
+{
     .name           = "bmv",
     .long_name      = NULL_IF_CONFIG_SMALL("Discworld II BMV"),
     .priv_data_size = sizeof(BMVContext),

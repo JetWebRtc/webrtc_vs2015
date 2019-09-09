@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2011 Stefano Sabatini
  *
@@ -35,7 +35,8 @@
 #include "internal.h"
 #include "video.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "w",
     "h",
     "cw",
@@ -45,7 +46,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_W,
     VAR_H,
     VAR_CW,
@@ -55,13 +57,15 @@ enum var_name {
     VARS_NB
 };
 
-typedef struct FilterParam {
+typedef struct FilterParam
+{
     int radius;
     int power;
     char *radius_expr;
 } FilterParam;
 
-typedef struct BoxBlurContext {
+typedef struct BoxBlurContext
+{
     const AVClass *class;
     FilterParam luma_param;
     FilterParam chroma_param;
@@ -82,13 +86,15 @@ static av_cold int init(AVFilterContext *ctx)
 {
     BoxBlurContext *s = ctx->priv;
 
-    if (!s->luma_param.radius_expr) {
+    if (!s->luma_param.radius_expr)
+    {
         av_log(ctx, AV_LOG_ERROR, "Luma radius expression is not set.\n");
         return AVERROR(EINVAL);
     }
 
     /* fill missing params */
-    if (!s->chroma_param.radius_expr) {
+    if (!s->chroma_param.radius_expr)
+    {
         s->chroma_param.radius_expr = av_strdup(s->luma_param.radius_expr);
         if (!s->chroma_param.radius_expr)
             return AVERROR(ENOMEM);
@@ -96,7 +102,8 @@ static av_cold int init(AVFilterContext *ctx)
     if (s->chroma_param.power < 0)
         s->chroma_param.power = s->luma_param.power;
 
-    if (!s->alpha_param.radius_expr) {
+    if (!s->alpha_param.radius_expr)
+    {
         s->alpha_param.radius_expr = av_strdup(s->luma_param.radius_expr);
         if (!s->alpha_param.radius_expr)
             return AVERROR(ENOMEM);
@@ -120,11 +127,12 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & (AV_PIX_FMT_FLAG_HWACCEL | AV_PIX_FMT_FLAG_BITSTREAM | AV_PIX_FMT_FLAG_PAL)) &&
-            (desc->flags & AV_PIX_FMT_FLAG_PLANAR || desc->nb_components == 1) &&
-            (!(desc->flags & AV_PIX_FMT_FLAG_BE) == !HAVE_BIGENDIAN || desc->comp[0].depth_minus1 == 7))
+                (desc->flags & AV_PIX_FMT_FLAG_PLANAR || desc->nb_components == 1) &&
+                (!(desc->flags & AV_PIX_FMT_FLAG_BE) == !HAVE_BIGENDIAN || desc->comp[0].depth_minus1 == 7))
             ff_add_format(&formats, fmt);
     }
 
@@ -143,7 +151,7 @@ static int config_input(AVFilterLink *inlink)
     int ret;
 
     if (!(s->temp[0] = av_malloc(2*FFMAX(w, h))) ||
-        !(s->temp[1] = av_malloc(2*FFMAX(w, h))))
+            !(s->temp[1] = av_malloc(2*FFMAX(w, h))))
         return AVERROR(ENOMEM);
 
     s->hsub = desc->log2_chroma_w;
@@ -204,7 +212,7 @@ static int config_input(AVFilterLink *inlink)
 }
 
 static inline void blur8(uint8_t *dst, int dst_step, const uint8_t *src, int src_step,
-                        int len, int radius)
+                         int len, int radius)
 {
     /* Naive boxblur would sum source pixels from x-radius .. x+radius
      * for destination pixel x. That would be O(radius*width).
@@ -229,17 +237,20 @@ static inline void blur8(uint8_t *dst, int dst_step, const uint8_t *src, int src
 
     sum = sum*inv + (1<<15);
 
-    for (x = 0; x <= radius; x++) {
+    for (x = 0; x <= radius; x++)
+    {
         sum += (src[(radius+x)*src_step] - src[(radius-x)*src_step])*inv;
         dst[x*dst_step] = sum>>16;
     }
 
-    for (; x < len-radius; x++) {
+    for (; x < len-radius; x++)
+    {
         sum += (src[(radius+x)*src_step] - src[(x-radius-1)*src_step])*inv;
         dst[x*dst_step] = sum >>16;
     }
 
-    for (; x < len; x++) {
+    for (; x < len; x++)
+    {
         sum += (src[(2*len-radius-x-1)*src_step] - src[(x-radius-1)*src_step])*inv;
         dst[x*dst_step] = sum>>16;
     }
@@ -257,17 +268,20 @@ static inline void blur16(uint16_t *dst, int dst_step, const uint16_t *src, int 
 
     sum = sum*inv + (1<<15);
 
-    for (x = 0; x <= radius; x++) {
+    for (x = 0; x <= radius; x++)
+    {
         sum += (src[(radius+x)*src_step] - src[(radius-x)*src_step])*inv;
         dst[x*dst_step] = sum>>16;
     }
 
-    for (; x < len-radius; x++) {
+    for (; x < len-radius; x++)
+    {
         sum += (src[(radius+x)*src_step] - src[(x-radius-1)*src_step])*inv;
         dst[x*dst_step] = sum >>16;
     }
 
-    for (; x < len; x++) {
+    for (; x < len; x++)
+    {
         sum += (src[(2*len-radius-x-1)*src_step] - src[(x-radius-1)*src_step])*inv;
         dst[x*dst_step] = sum>>16;
     }
@@ -285,30 +299,43 @@ static inline void blur_power(uint8_t *dst, int dst_step, const uint8_t *src, in
 {
     uint8_t *a = temp[0], *b = temp[1];
 
-    if (radius && power) {
+    if (radius && power)
+    {
         blur(a, pixsize, src, src_step, len, radius, pixsize);
-        for (; power > 2; power--) {
+        for (; power > 2; power--)
+        {
             uint8_t *c;
             blur(b, pixsize, a, pixsize, len, radius, pixsize);
-            c = a; a = b; b = c;
+            c = a;
+            a = b;
+            b = c;
         }
-        if (power > 1) {
+        if (power > 1)
+        {
             blur(dst, dst_step, a, pixsize, len, radius, pixsize);
-        } else {
+        }
+        else
+        {
             int i;
-            if (pixsize == 1) {
+            if (pixsize == 1)
+            {
                 for (i = 0; i < len; i++)
                     dst[i*dst_step] = a[i];
-            } else
+            }
+            else
                 for (i = 0; i < len; i++)
                     *(uint16_t*)(dst + i*dst_step) = ((uint16_t*)a)[i];
         }
-    } else {
+    }
+    else
+    {
         int i;
-        if (pixsize == 1) {
+        if (pixsize == 1)
+        {
             for (i = 0; i < len; i++)
                 dst[i*dst_step] = src[i*src_step];
-        } else
+        }
+        else
             for (i = 0; i < len; i++)
                 *(uint16_t*)(dst + i*dst_step) = *(uint16_t*)(src + i*src_step);
     }
@@ -355,7 +382,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     const int pixsize = (depth+7)/8;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -381,7 +409,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 #define OFFSET(x) offsetof(BoxBlurContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption boxblur_options[] = {
+static const AVOption boxblur_options[] =
+{
     { "luma_radius", "Radius of the luma blurring box", OFFSET(luma_param.radius_expr), AV_OPT_TYPE_STRING, {.str="2"}, .flags = FLAGS },
     { "lr",          "Radius of the luma blurring box", OFFSET(luma_param.radius_expr), AV_OPT_TYPE_STRING, {.str="2"}, .flags = FLAGS },
     { "luma_power",  "How many times should the boxblur be applied to luma",  OFFSET(luma_param.power), AV_OPT_TYPE_INT, {.i64=2}, 0, INT_MAX, .flags = FLAGS },
@@ -402,7 +431,8 @@ static const AVOption boxblur_options[] = {
 
 AVFILTER_DEFINE_CLASS(boxblur);
 
-static const AVFilterPad avfilter_vf_boxblur_inputs[] = {
+static const AVFilterPad avfilter_vf_boxblur_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -412,7 +442,8 @@ static const AVFilterPad avfilter_vf_boxblur_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_boxblur_outputs[] = {
+static const AVFilterPad avfilter_vf_boxblur_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -420,7 +451,8 @@ static const AVFilterPad avfilter_vf_boxblur_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_boxblur = {
+AVFilter ff_vf_boxblur =
+{
     .name          = "boxblur",
     .description   = NULL_IF_CONFIG_SMALL("Blur the input."),
     .priv_size     = sizeof(BoxBlurContext),

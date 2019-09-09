@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder
  * Copyright (c) 2006-2007 Konstantin Shishkov
  * Partly based on vc9.c (c) 2005 Anonymous, Alex Beregszaszi, Michael Niedermayer
@@ -34,7 +34,8 @@
 
 /** Sequence quantizer mode */
 //@{
-enum QuantMode {
+enum QuantMode
+{
     QUANT_FRAME_IMPLICIT,    ///< Implicitly specified at frame level
     QUANT_FRAME_EXPLICIT,    ///< Explicitly specified at frame level
     QUANT_NON_UNIFORM,       ///< Non-uniform quant used for all frames
@@ -44,7 +45,8 @@ enum QuantMode {
 
 /** Where quant can be changed */
 //@{
-enum DQProfile {
+enum DQProfile
+{
     DQPROFILE_FOUR_EDGES,
     DQPROFILE_DOUBLE_EDGES,
     DQPROFILE_SINGLE_EDGE,
@@ -55,7 +57,8 @@ enum DQProfile {
 /** @name Where quant can be changed
  */
 //@{
-enum DQSingleEdge {
+enum DQSingleEdge
+{
     DQSINGLE_BEDGE_LEFT,
     DQSINGLE_BEDGE_TOP,
     DQSINGLE_BEDGE_RIGHT,
@@ -65,7 +68,8 @@ enum DQSingleEdge {
 
 /** Which pair of edges is quantized with ALTPQUANT */
 //@{
-enum DQDoubleEdge {
+enum DQDoubleEdge
+{
     DQDOUBLE_BEDGE_TOPLEFT,
     DQDOUBLE_BEDGE_TOPRIGHT,
     DQDOUBLE_BEDGE_BOTTOMRIGHT,
@@ -75,7 +79,8 @@ enum DQDoubleEdge {
 
 /** MV modes for P frames */
 //@{
-enum MVModes {
+enum MVModes
+{
     MV_PMODE_1MV_HPEL_BILIN,
     MV_PMODE_1MV,
     MV_PMODE_1MV_HPEL,
@@ -86,7 +91,8 @@ enum MVModes {
 
 /** MBMODE for interlaced frame P-picture */
 //@{
-enum MBModesIntfr {
+enum MBModesIntfr
+{
     MV_PMODE_INTFR_1MV,
     MV_PMODE_INTFR_2MV_FIELD,
     MV_PMODE_INTFR_2MV,
@@ -98,7 +104,8 @@ enum MBModesIntfr {
 
 /** @name MV types for B frames */
 //@{
-enum BMVTypes {
+enum BMVTypes
+{
     BMV_TYPE_BACKWARD,
     BMV_TYPE_FORWARD,
     BMV_TYPE_INTERPOLATED,
@@ -108,7 +115,8 @@ enum BMVTypes {
 
 /** @name Block types for P/B frames */
 //@{
-enum TransformTypes {
+enum TransformTypes
+{
     TT_8X8,
     TT_8X4_BOTTOM,
     TT_8X4_TOP,
@@ -120,7 +128,8 @@ enum TransformTypes {
 };
 //@}
 
-enum CodingSet {
+enum CodingSet
+{
     CS_HIGH_MOT_INTRA = 0,
     CS_HIGH_MOT_INTER,
     CS_LOW_MOT_INTRA,
@@ -133,7 +142,8 @@ enum CodingSet {
 
 /** @name Overlap conditions for Advanced Profile */
 //@{
-enum COTypes {
+enum COTypes
+{
     CONDOVER_NONE = 0,
     CONDOVER_ALL,
     CONDOVER_SELECT
@@ -145,7 +155,8 @@ enum COTypes {
  * @note some content might be marked interlaced
  * but have fcm set to 0 as well (e.g. HD-DVD)
  */
-enum FrameCodingMode {
+enum FrameCodingMode
+{
     PROGRESSIVE = 0,    ///<  in the bitstream is reported as 00b
     ILACE_FRAME,        ///<  in the bitstream is reported as 10b
     ILACE_FIELD         ///<  in the bitstream is reported as 11b
@@ -155,7 +166,8 @@ enum FrameCodingMode {
  * Imode types
  * @{
  */
-enum Imode {
+enum Imode
+{
     IMODE_RAW,
     IMODE_NORM2,
     IMODE_DIFF2,
@@ -170,7 +182,8 @@ enum Imode {
  * @todo Change size wherever another size is more efficient
  * Many members are only used for Advanced Profile
  */
-typedef struct VC1Context{
+typedef struct VC1Context
+{
     MpegEncContext s;
     IntraX8Context x8;
     H264ChromaContext h264chroma;
@@ -187,7 +200,7 @@ typedef struct VC1Context{
     int res_fasttx;       ///< reserved, always 1
     int res_transtab;     ///< reserved, always 0
     int rangered;         ///< RANGEREDFRM (range reduction) syntax element present
-                          ///< at frame level
+    ///< at frame level
     int res_rtm_flag;     ///< reserved, set to 1
     int reserved;         ///< reserved
     //@}
@@ -207,7 +220,7 @@ typedef struct VC1Context{
     int transfer_char;    ///< 8bits, Opto-electronic transfer characteristics
     int matrix_coef;      ///< 8bits, Color primaries->YCbCr transform matrix
     int hrd_param_flag;   ///< Presence of Hypothetical Reference
-                          ///< Decoder parameters
+    ///< Decoder parameters
     int psf;              ///< Progressive Segmented Frame
     //@}
 
@@ -354,11 +367,11 @@ typedef struct VC1Context{
     int second_field;
     int refdist;            ///< distance of the current picture from reference
     int numref;             ///< number of past field pictures used as reference
-                            // 0 corresponds to 1 and 1 corresponds to 2 references
+    // 0 corresponds to 1 and 1 corresponds to 2 references
     int reffield;           ///< if numref = 0 (1 reference) then reffield decides which
-                            // field to use among the two fields from previous frame
+    // field to use among the two fields from previous frame
     int intcompfield;       ///< which of the two fields to be intensity compensated
-                            // 0: both fields, 1: bottom field, 2: top field
+    // 0: both fields, 1: bottom field, 2: top field
     int cur_field_type;     ///< 0: top, 1: bottom
     int ref_field_type[2];  ///< forward and backward reference field type (top or bottom)
     int blocks_off, mb_off;

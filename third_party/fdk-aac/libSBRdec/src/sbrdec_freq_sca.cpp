@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Frequency scale calculation  
+  \brief  Frequency scale calculation
 */
 
 #include "sbrdec_freq_sca.h"
@@ -118,42 +118,43 @@ getStartBand(UINT   fs,               /*!< Output sampling frequency */
              UCHAR  startFreq,        /*!< Index to table of possible start bands */
              UINT   headerDataFlags)  /*!< Info to SBR mode */
 {
-  INT  band;
-  UINT fsMapped;
+    INT  band;
+    UINT fsMapped;
 
     fsMapped = fs;
 
-  switch (fsMapped) {
+    switch (fsMapped)
+    {
     case 96000:
     case 88200:
-      band = FDK_sbrDecoder_sbr_start_freq_88[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_88[startFreq];
+        break;
     case 64000:
-      band = FDK_sbrDecoder_sbr_start_freq_64[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_64[startFreq];
+        break;
     case 48000:
-      band = FDK_sbrDecoder_sbr_start_freq_48[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_48[startFreq];
+        break;
     case 44100:
-      band = FDK_sbrDecoder_sbr_start_freq_44[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_44[startFreq];
+        break;
     case 32000:
-      band = FDK_sbrDecoder_sbr_start_freq_32[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_32[startFreq];
+        break;
     case 24000:
-      band = FDK_sbrDecoder_sbr_start_freq_24[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_24[startFreq];
+        break;
     case 22050:
-      band = FDK_sbrDecoder_sbr_start_freq_22[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_22[startFreq];
+        break;
     case 16000:
-      band = FDK_sbrDecoder_sbr_start_freq_16[startFreq];
-      break;
+        band = FDK_sbrDecoder_sbr_start_freq_16[startFreq];
+        break;
     default:
-      band = 255;
-  }
+        band = 255;
+    }
 
-  return band;
+    return band;
 }
 
 
@@ -171,74 +172,86 @@ getStopBand(UINT   fs,               /*!< Output sampling frequency */
             UINT   headerDataFlags,  /*!< Info to SBR mode */
             UCHAR  k0)               /*!< Start freq index */
 {
-  UCHAR k2;
+    UCHAR k2;
 
-  if (stopFreq < 14) {
-    INT    stopMin;
-    UCHAR  diff_tot[MAX_OCTAVE + MAX_SECOND_REGION];
-    UCHAR *diff0 = diff_tot;
-    UCHAR *diff1 = diff_tot+MAX_OCTAVE;
+    if (stopFreq < 14)
+    {
+        INT    stopMin;
+        UCHAR  diff_tot[MAX_OCTAVE + MAX_SECOND_REGION];
+        UCHAR *diff0 = diff_tot;
+        UCHAR *diff1 = diff_tot+MAX_OCTAVE;
 
-    if (fs < 32000) {
-      stopMin = (((2*6000*2*(64)) / fs) + 1) >> 1;
+        if (fs < 32000)
+        {
+            stopMin = (((2*6000*2*(64)) / fs) + 1) >> 1;
+        }
+        else
+        {
+            if (fs < 64000)
+            {
+                stopMin = (((2*8000*2*(64)) / fs) + 1) >> 1;
+            }
+            else
+            {
+                stopMin = (((2*10000*2*(64)) / fs) + 1) >> 1;
+            }
+        }
+
+        /*
+          Choose a stop band between k1 and 64 depending on stopFreq (0..13),
+          based on a logarithmic scale.
+          The vectors diff0 and diff1 are used temporarily here.
+        */
+        CalcBands( diff0, stopMin, 64, 13);
+        shellsort( diff0, 13);
+        cumSum(stopMin, diff0, 13, diff1);
+        k2 = diff1[stopFreq];
     }
-    else {
-      if (fs < 64000) {
-        stopMin = (((2*8000*2*(64)) / fs) + 1) >> 1;
-      }
-      else {
-        stopMin = (((2*10000*2*(64)) / fs) + 1) >> 1;
-      }
+    else if (stopFreq==14)
+        k2 = 2*k0;
+    else
+        k2 = 3*k0;
+
+    /* Limit to Nyquist */
+    if (k2 > (64))
+        k2 = (64);
+
+
+    /* Range checks */
+    /* 1 <= difference <= 48; 1 <= fs <= 96000 */
+    if ( ((k2 - k0) > MAX_FREQ_COEFFS) || (k2 <= k0) )
+    {
+        return 255;
     }
 
-    /*
-      Choose a stop band between k1 and 64 depending on stopFreq (0..13),
-      based on a logarithmic scale.
-      The vectors diff0 and diff1 are used temporarily here.
-    */
-    CalcBands( diff0, stopMin, 64, 13);
-    shellsort( diff0, 13);
-    cumSum(stopMin, diff0, 13, diff1);
-    k2 = diff1[stopFreq];
-  }
-  else if (stopFreq==14)
-    k2 = 2*k0;
-  else
-    k2 = 3*k0;
-
-  /* Limit to Nyquist */
-  if (k2 > (64))
-    k2 = (64);
-
-
-  /* Range checks */
-  /* 1 <= difference <= 48; 1 <= fs <= 96000 */
-  if ( ((k2 - k0) > MAX_FREQ_COEFFS) || (k2 <= k0) ) {
-    return 255;
-  }
-
-  if (headerDataFlags & (SBRDEC_SYNTAX_USAC|SBRDEC_SYNTAX_RSVD50)) {
-    /* 1 <= difference <= 35; 42000 <= fs <= 96000 */
-    if ( (fs >= 42000) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS44100 ) ) {
-      return 255;
+    if (headerDataFlags & (SBRDEC_SYNTAX_USAC|SBRDEC_SYNTAX_RSVD50))
+    {
+        /* 1 <= difference <= 35; 42000 <= fs <= 96000 */
+        if ( (fs >= 42000) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS44100 ) )
+        {
+            return 255;
+        }
+        /* 1 <= difference <= 32; 46009 <= fs <= 96000 */
+        if ( (fs >= 46009) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS48000 ) )
+        {
+            return 255;
+        }
     }
-    /* 1 <= difference <= 32; 46009 <= fs <= 96000 */
-    if ( (fs >= 46009) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS48000 ) ) {
-      return 255;
+    else
+    {
+        /* 1 <= difference <= 35; fs == 44100 */
+        if ( (fs == 44100) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS44100 ) )
+        {
+            return 255;
+        }
+        /* 1 <= difference <= 32; 48000 <= fs <= 96000 */
+        if ( (fs >= 48000) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS48000 ) )
+        {
+            return 255;
+        }
     }
-  }
-  else {
-    /* 1 <= difference <= 35; fs == 44100 */
-    if ( (fs == 44100) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS44100 ) ) {
-      return 255;
-    }
-    /* 1 <= difference <= 32; 48000 <= fs <= 96000 */
-    if ( (fs >= 48000) && ( (k2 - k0) > MAX_FREQ_COEFFS_FS48000 ) ) {
-      return 255;
-    }
-  }
 
-  return k2;
+    return k2;
 }
 
 
@@ -258,163 +271,186 @@ sbrdecUpdateFreqScale(UCHAR * v_k_master,    /*!< Master table to be created */
                       HANDLE_SBR_HEADER_DATA hHeaderData, /*!< Control data from bitstream */
                       UINT flags)
 {
-  FIXP_SGL bpo_div16;        /* bands_per_octave divided by 16 */
-  INT      dk=0;
+    FIXP_SGL bpo_div16;        /* bands_per_octave divided by 16 */
+    INT      dk=0;
 
-  /* Internal variables */
-  UCHAR  k0, k2, i;
-  UCHAR  num_bands0 = 0;
-  UCHAR  num_bands1 = 0;
-  UCHAR  diff_tot[MAX_OCTAVE + MAX_SECOND_REGION];
-  UCHAR *diff0 = diff_tot;
-  UCHAR *diff1 = diff_tot+MAX_OCTAVE;
-  INT    k2_achived;
-  INT    k2_diff;
-  INT    incr=0;
+    /* Internal variables */
+    UCHAR  k0, k2, i;
+    UCHAR  num_bands0 = 0;
+    UCHAR  num_bands1 = 0;
+    UCHAR  diff_tot[MAX_OCTAVE + MAX_SECOND_REGION];
+    UCHAR *diff0 = diff_tot;
+    UCHAR *diff1 = diff_tot+MAX_OCTAVE;
+    INT    k2_achived;
+    INT    k2_diff;
+    INT    incr=0;
 
-  /*
-    Determine start band
-  */
-  k0 = getStartBand(fs, hHeaderData->bs_data.startFreq, flags);
-  if (k0 == 255) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
-
-  /*
-    Determine stop band
-  */
-  k2 = getStopBand(fs, hHeaderData->bs_data.stopFreq, flags, k0);
-  if (k2 == 255) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
-
-  if(hHeaderData->bs_data.freqScale>0) { /* Bark */
-    INT k1;
-
-    if(hHeaderData->bs_data.freqScale==1) {
-      bpo_div16 = FL2FXCONST_SGL(12.0f/16.0f);
-    }
-    else if(hHeaderData->bs_data.freqScale==2) {
-      bpo_div16 = FL2FXCONST_SGL(10.0f/16.0f);
-    }
-    else {
-      bpo_div16 =  FL2FXCONST_SGL(8.0f/16.0f);
-    }
-
-
-    if( 1000 * k2 > 2245 * k0 ) { /* Two or more regions */
-      k1 = 2*k0;
-
-      num_bands0 = numberOfBands(bpo_div16, k0, k1, 0);
-      num_bands1 = numberOfBands(bpo_div16, k1, k2, hHeaderData->bs_data.alterScale );
-      if ( num_bands0 < 1) {
+    /*
+      Determine start band
+    */
+    k0 = getStartBand(fs, hHeaderData->bs_data.startFreq, flags);
+    if (k0 == 255)
+    {
         return SBRDEC_UNSUPPORTED_CONFIG;
-      }
-      if ( num_bands1 < 1 ) {
-        return SBRDEC_UNSUPPORTED_CONFIG;
-      }
+    }
 
-      CalcBands(diff0, k0, k1, num_bands0);
-      shellsort( diff0, num_bands0);
-      if (diff0[0] == 0) {
+    /*
+      Determine stop band
+    */
+    k2 = getStopBand(fs, hHeaderData->bs_data.stopFreq, flags, k0);
+    if (k2 == 255)
+    {
+        return SBRDEC_UNSUPPORTED_CONFIG;
+    }
+
+    if(hHeaderData->bs_data.freqScale>0)   /* Bark */
+    {
+        INT k1;
+
+        if(hHeaderData->bs_data.freqScale==1)
+        {
+            bpo_div16 = FL2FXCONST_SGL(12.0f/16.0f);
+        }
+        else if(hHeaderData->bs_data.freqScale==2)
+        {
+            bpo_div16 = FL2FXCONST_SGL(10.0f/16.0f);
+        }
+        else
+        {
+            bpo_div16 =  FL2FXCONST_SGL(8.0f/16.0f);
+        }
+
+
+        if( 1000 * k2 > 2245 * k0 )   /* Two or more regions */
+        {
+            k1 = 2*k0;
+
+            num_bands0 = numberOfBands(bpo_div16, k0, k1, 0);
+            num_bands1 = numberOfBands(bpo_div16, k1, k2, hHeaderData->bs_data.alterScale );
+            if ( num_bands0 < 1)
+            {
+                return SBRDEC_UNSUPPORTED_CONFIG;
+            }
+            if ( num_bands1 < 1 )
+            {
+                return SBRDEC_UNSUPPORTED_CONFIG;
+            }
+
+            CalcBands(diff0, k0, k1, num_bands0);
+            shellsort( diff0, num_bands0);
+            if (diff0[0] == 0)
+            {
 #ifdef DEBUG_TOOLS
 #endif
-        return SBRDEC_UNSUPPORTED_CONFIG;
-      }
+                return SBRDEC_UNSUPPORTED_CONFIG;
+            }
 
-      cumSum(k0, diff0, num_bands0, v_k_master);
+            cumSum(k0, diff0, num_bands0, v_k_master);
 
-      CalcBands(diff1, k1, k2, num_bands1);
-      shellsort( diff1, num_bands1);
-      if(diff0[num_bands0-1] > diff1[0]) {
-        SBR_ERROR err;
+            CalcBands(diff1, k1, k2, num_bands1);
+            shellsort( diff1, num_bands1);
+            if(diff0[num_bands0-1] > diff1[0])
+            {
+                SBR_ERROR err;
 
-        err = modifyBands(diff0[num_bands0-1],diff1, num_bands1);
-        if (err)
-          return SBRDEC_UNSUPPORTED_CONFIG;
-      }
+                err = modifyBands(diff0[num_bands0-1],diff1, num_bands1);
+                if (err)
+                    return SBRDEC_UNSUPPORTED_CONFIG;
+            }
 
-      /* Add 2nd region */
-      cumSum(k1, diff1, num_bands1, &v_k_master[num_bands0]);
-      *numMaster = num_bands0 + num_bands1;     /* Output nr of bands */
+            /* Add 2nd region */
+            cumSum(k1, diff1, num_bands1, &v_k_master[num_bands0]);
+            *numMaster = num_bands0 + num_bands1;     /* Output nr of bands */
 
-    }
-    else { /* Only one region */
-      k1=k2;
+        }
+        else   /* Only one region */
+        {
+            k1=k2;
 
-      num_bands0 = numberOfBands(bpo_div16, k0, k1, 0);
-      if ( num_bands0 < 1) {
-        return SBRDEC_UNSUPPORTED_CONFIG;
-      }
-      CalcBands(diff0, k0, k1, num_bands0);
-      shellsort(diff0, num_bands0);
-      if (diff0[0] == 0) {
+            num_bands0 = numberOfBands(bpo_div16, k0, k1, 0);
+            if ( num_bands0 < 1)
+            {
+                return SBRDEC_UNSUPPORTED_CONFIG;
+            }
+            CalcBands(diff0, k0, k1, num_bands0);
+            shellsort(diff0, num_bands0);
+            if (diff0[0] == 0)
+            {
 #ifdef DEBUG_TOOLS
 #endif
-        return SBRDEC_UNSUPPORTED_CONFIG;
-      }
+                return SBRDEC_UNSUPPORTED_CONFIG;
+            }
 
-      cumSum(k0, diff0, num_bands0, v_k_master);
-      *numMaster = num_bands0;        /* Output nr of bands */
+            cumSum(k0, diff0, num_bands0, v_k_master);
+            *numMaster = num_bands0;        /* Output nr of bands */
 
+        }
     }
-  }
-  else { /* Linear mode */
-     if (hHeaderData->bs_data.alterScale==0) {
-        dk = 1;
-        /* FLOOR to get to few number of bands (next lower even number) */
-        num_bands0 = (k2 - k0) & 254;
-      } else {
-        dk = 2;
-        num_bands0 = ( ((k2 - k0) >> 1) + 1 ) & 254; /* ROUND to the closest fit */
-      }
+    else   /* Linear mode */
+    {
+        if (hHeaderData->bs_data.alterScale==0)
+        {
+            dk = 1;
+            /* FLOOR to get to few number of bands (next lower even number) */
+            num_bands0 = (k2 - k0) & 254;
+        }
+        else
+        {
+            dk = 2;
+            num_bands0 = ( ((k2 - k0) >> 1) + 1 ) & 254; /* ROUND to the closest fit */
+        }
 
-      if (num_bands0 < 1) {
+        if (num_bands0 < 1)
+        {
+            return SBRDEC_UNSUPPORTED_CONFIG;
+            /* We must return already here because 'i' can become negative below. */
+        }
+
+        k2_achived = k0 + num_bands0*dk;
+        k2_diff = k2 - k2_achived;
+
+        for(i=0; i<num_bands0; i++)
+            diff_tot[i] = dk;
+
+        /* If linear scale wasn't achieved */
+        /* and we got too wide SBR area */
+        if (k2_diff < 0)
+        {
+            incr = 1;
+            i = 0;
+        }
+
+        /* If linear scale wasn't achieved */
+        /* and we got too small SBR area */
+        if (k2_diff > 0)
+        {
+            incr = -1;
+            i = num_bands0-1;
+        }
+
+        /* Adjust diff vector to get sepc. SBR range */
+        while (k2_diff != 0)
+        {
+            diff_tot[i] = diff_tot[i] - incr;
+            i = i + incr;
+            k2_diff = k2_diff + incr;
+        }
+
+        cumSum(k0, diff_tot, num_bands0, v_k_master);/* cumsum */
+        *numMaster = num_bands0;  /* Output nr of bands */
+    }
+
+    if (*numMaster < 1)
+    {
         return SBRDEC_UNSUPPORTED_CONFIG;
-        /* We must return already here because 'i' can become negative below. */
-      }
-
-      k2_achived = k0 + num_bands0*dk;
-      k2_diff = k2 - k2_achived;
-
-      for(i=0;i<num_bands0;i++)
-        diff_tot[i] = dk;
-
-      /* If linear scale wasn't achieved */
-      /* and we got too wide SBR area */
-      if (k2_diff < 0) {
-          incr = 1;
-          i = 0;
-      }
-
-      /* If linear scale wasn't achieved */
-      /* and we got too small SBR area */
-      if (k2_diff > 0) {
-          incr = -1;
-          i = num_bands0-1;
-      }
-
-      /* Adjust diff vector to get sepc. SBR range */
-      while (k2_diff != 0) {
-        diff_tot[i] = diff_tot[i] - incr;
-        i = i + incr;
-        k2_diff = k2_diff + incr;
-      }
-
-      cumSum(k0, diff_tot, num_bands0, v_k_master);/* cumsum */
-    *numMaster = num_bands0;  /* Output nr of bands */
-  }
-
-  if (*numMaster < 1) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
+    }
 
 
-  /*
-    Print out the calculated table
-  */
+    /*
+      Print out the calculated table
+    */
 
-  return SBRDEC_OK;
+    return SBRDEC_OK;
 }
 
 
@@ -429,51 +465,55 @@ sbrdecUpdateFreqScale(UCHAR * v_k_master,    /*!< Master table to be created */
 */
 static FIXP_SGL calcFactorPerBand(int k_start, int k_stop, int num_bands)
 {
-/* Scaled bandfactor and step 1 bit right to avoid overflow
- * use double data type */
-  FIXP_DBL bandfactor = FL2FXCONST_DBL(0.25f); /* Start value */
-  FIXP_DBL step = FL2FXCONST_DBL(0.125f);      /* Initial increment for factor */
+    /* Scaled bandfactor and step 1 bit right to avoid overflow
+     * use double data type */
+    FIXP_DBL bandfactor = FL2FXCONST_DBL(0.25f); /* Start value */
+    FIXP_DBL step = FL2FXCONST_DBL(0.125f);      /* Initial increment for factor */
 
-  int    direction = 1;
+    int    direction = 1;
 
-/* Because saturation can't be done in INT IIS,
- * changed start and stop data type from FIXP_SGL to FIXP_DBL */
-  FIXP_DBL start = k_start << (DFRACT_BITS-8);
-  FIXP_DBL stop = k_stop << (DFRACT_BITS-8);
+    /* Because saturation can't be done in INT IIS,
+     * changed start and stop data type from FIXP_SGL to FIXP_DBL */
+    FIXP_DBL start = k_start << (DFRACT_BITS-8);
+    FIXP_DBL stop = k_stop << (DFRACT_BITS-8);
 
-  FIXP_DBL temp;
+    FIXP_DBL temp;
 
-  int   j, i=0;
+    int   j, i=0;
 
-  while ( step > FL2FXCONST_DBL(0.0f)) {
-    i++;
-    temp = stop;
+    while ( step > FL2FXCONST_DBL(0.0f))
+    {
+        i++;
+        temp = stop;
 
-    /* Calculate temp^num_bands: */
-    for (j=0; j<num_bands; j++)
-      //temp = fMult(temp,bandfactor);
-      temp = fMultDiv2(temp,bandfactor)<<2;
+        /* Calculate temp^num_bands: */
+        for (j=0; j<num_bands; j++)
+            //temp = fMult(temp,bandfactor);
+            temp = fMultDiv2(temp,bandfactor)<<2;
 
-    if (temp<start) { /* Factor too strong, make it weaker */
-      if (direction == 0)
-        /* Halfen step. Right shift is not done as fract because otherwise the
-           lowest bit cannot be cleared due to rounding */
-        step = (FIXP_DBL)((LONG)step >> 1);
-      direction = 1;
-      bandfactor = bandfactor + step;
+        if (temp<start)   /* Factor too strong, make it weaker */
+        {
+            if (direction == 0)
+                /* Halfen step. Right shift is not done as fract because otherwise the
+                   lowest bit cannot be cleared due to rounding */
+                step = (FIXP_DBL)((LONG)step >> 1);
+            direction = 1;
+            bandfactor = bandfactor + step;
+        }
+        else    /* Factor is too weak: make it stronger */
+        {
+            if (direction == 1)
+                step = (FIXP_DBL)((LONG)step >> 1);
+            direction = 0;
+            bandfactor = bandfactor - step;
+        }
+
+        if (i>100)
+        {
+            step = FL2FXCONST_DBL(0.0f);
+        }
     }
-    else {  /* Factor is too weak: make it stronger */
-      if (direction == 1)
-        step = (FIXP_DBL)((LONG)step >> 1);
-      direction = 0;
-      bandfactor = bandfactor - step;
-    }
-
-    if (i>100) {
-      step = FL2FXCONST_DBL(0.0f);
-    }
-  }
-  return FX_DBL2FX_SGL(bandfactor<<1);
+    return FX_DBL2FX_SGL(bandfactor<<1);
 }
 
 
@@ -493,25 +533,26 @@ numberOfBands(FIXP_SGL bpo_div16, /*!< Input: number of bands per octave divided
               int    stop,      /*!< Last QMF band of SBR frequency range + 1 */
               int    warpFlag)  /*!< Stretching flag */
 {
-  FIXP_SGL num_bands_div128;
-  int    num_bands;
+    FIXP_SGL num_bands_div128;
+    int    num_bands;
 
-  num_bands_div128 = FX_DBL2FX_SGL(fMult(FDK_getNumOctavesDiv8(start,stop),bpo_div16));
+    num_bands_div128 = FX_DBL2FX_SGL(fMult(FDK_getNumOctavesDiv8(start,stop),bpo_div16));
 
-  if (warpFlag) {
-    /* Apply the warp factor of 1.3 to get wider bands.  We use a value
-       of 32768/25200 instead of the exact value to avoid critical cases
-       of rounding.
-    */
-    num_bands_div128 = FX_DBL2FX_SGL(fMult(num_bands_div128, FL2FXCONST_SGL(25200.0/32768.0)));
-  }
+    if (warpFlag)
+    {
+        /* Apply the warp factor of 1.3 to get wider bands.  We use a value
+           of 32768/25200 instead of the exact value to avoid critical cases
+           of rounding.
+        */
+        num_bands_div128 = FX_DBL2FX_SGL(fMult(num_bands_div128, FL2FXCONST_SGL(25200.0/32768.0)));
+    }
 
-  /* add scaled 1 for rounding to even numbers: */
-  num_bands_div128 = num_bands_div128 + FL2FXCONST_SGL( 1.0f/128.0f );
-  /* scale back to right aligned integer and double the value: */
-  num_bands = 2 * ((LONG)num_bands_div128 >> (FRACT_BITS - 7));
+    /* add scaled 1 for rounding to even numbers: */
+    num_bands_div128 = num_bands_div128 + FL2FXCONST_SGL( 1.0f/128.0f );
+    /* scale back to right aligned integer and double the value: */
+    num_bands = 2 * ((LONG)num_bands_div128 >> (FRACT_BITS - 7));
 
-  return(num_bands);
+    return(num_bands);
 }
 
 
@@ -528,30 +569,31 @@ CalcBands(UCHAR * diff,    /*!< Vector of widths to be calculated */
           UCHAR stop,      /*!< Upper end of subband range */
           UCHAR num_bands) /*!< Desired number of bands */
 {
-  int i;
-  int previous;
-  int current;
-  FIXP_SGL exact, temp;
-  FIXP_SGL bandfactor = calcFactorPerBand(start, stop, num_bands);
+    int i;
+    int previous;
+    int current;
+    FIXP_SGL exact, temp;
+    FIXP_SGL bandfactor = calcFactorPerBand(start, stop, num_bands);
 
-  previous = stop; /* Start with highest QMF channel */
-  exact = (FIXP_SGL)(stop << (FRACT_BITS-8)); /* Shift left to gain some accuracy */
+    previous = stop; /* Start with highest QMF channel */
+    exact = (FIXP_SGL)(stop << (FRACT_BITS-8)); /* Shift left to gain some accuracy */
 
-  for(i=num_bands-1; i>=0; i--) {
-    /* Calculate border of next lower sbr band */
-    exact = FX_DBL2FX_SGL(fMult(exact,bandfactor));
+    for(i=num_bands-1; i>=0; i--)
+    {
+        /* Calculate border of next lower sbr band */
+        exact = FX_DBL2FX_SGL(fMult(exact,bandfactor));
 
-    /* Add scaled 0.5 for rounding:
-       We use a value 128/256 instead of 0.5 to avoid some critical cases of rounding. */
-    temp = exact +  FL2FXCONST_SGL(128.0/32768.0);
+        /* Add scaled 0.5 for rounding:
+           We use a value 128/256 instead of 0.5 to avoid some critical cases of rounding. */
+        temp = exact +  FL2FXCONST_SGL(128.0/32768.0);
 
-    /* scale back to right alinged integer: */
-    current = (LONG)temp >> (FRACT_BITS-8);
+        /* scale back to right alinged integer: */
+        current = (LONG)temp >> (FRACT_BITS-8);
 
-    /* Save width of band i */
-    diff[i] = previous - current;
-    previous = current;
-  }
+        /* Save width of band i */
+        diff[i] = previous - current;
+        previous = current;
+    }
 }
 
 
@@ -561,10 +603,10 @@ CalcBands(UCHAR * diff,    /*!< Vector of widths to be calculated */
 static void
 cumSum(UCHAR start_value, UCHAR* diff, UCHAR length, UCHAR *start_adress)
 {
-  int i;
-  start_adress[0]=start_value;
-  for(i=1; i<=length; i++)
-    start_adress[i] = start_adress[i-1] + diff[i-1];
+    int i;
+    start_adress[0]=start_value;
+    for(i=1; i<=length; i++)
+        start_adress[i] = start_adress[i-1] + diff[i-1];
 }
 
 
@@ -578,17 +620,17 @@ cumSum(UCHAR start_value, UCHAR* diff, UCHAR length, UCHAR *start_adress)
 static SBR_ERROR
 modifyBands(UCHAR max_band_previous, UCHAR * diff, UCHAR length)
 {
-  int change = max_band_previous - diff[0];
+    int change = max_band_previous - diff[0];
 
-  /* Limit the change so that the last band cannot get narrower than the first one */
-  if ( change > (diff[length-1]-diff[0])>>1 )
-    change = (diff[length-1]-diff[0])>>1;
+    /* Limit the change so that the last band cannot get narrower than the first one */
+    if ( change > (diff[length-1]-diff[0])>>1 )
+        change = (diff[length-1]-diff[0])>>1;
 
-  diff[0] += change;
-  diff[length-1] -= change;
-  shellsort(diff, length);
+    diff[0] += change;
+    diff[length-1] -= change;
+    shellsort(diff, length);
 
-  return SBRDEC_OK;
+    return SBRDEC_OK;
 }
 
 
@@ -602,13 +644,14 @@ sbrdecUpdateHiRes(UCHAR * h_hires,
                   UCHAR num_bands,
                   UCHAR xover_band)
 {
-  UCHAR i;
+    UCHAR i;
 
-  *num_hires = num_bands-xover_band;
+    *num_hires = num_bands-xover_band;
 
-  for(i=xover_band; i<=num_bands; i++) {
-    h_hires[i-xover_band] = v_k_master[i];
-  }
+    for(i=xover_band; i<=num_bands; i++)
+    {
+        h_hires[i-xover_band] = v_k_master[i];
+    }
 }
 
 
@@ -621,24 +664,27 @@ sbrdecUpdateLoRes(UCHAR * h_lores,
                   UCHAR * h_hires,
                   UCHAR num_hires)
 {
-  UCHAR i;
+    UCHAR i;
 
-  if( (num_hires & 1) == 0) {
-    /* If even number of hires bands */
-    *num_lores = num_hires >> 1;
-    /* Use every second lores=hires[0,2,4...] */
-    for(i=0; i<=*num_lores; i++)
-      h_lores[i] = h_hires[i*2];
-  }
-  else {
-    /* Odd number of hires, which means xover is odd */
-    *num_lores = (num_hires+1) >> 1;
-    /* Use lores=hires[0,1,3,5 ...] */
-    h_lores[0] = h_hires[0];
-    for(i=1; i<=*num_lores; i++) {
-      h_lores[i] = h_hires[i*2-1];
+    if( (num_hires & 1) == 0)
+    {
+        /* If even number of hires bands */
+        *num_lores = num_hires >> 1;
+        /* Use every second lores=hires[0,2,4...] */
+        for(i=0; i<=*num_lores; i++)
+            h_lores[i] = h_hires[i*2];
     }
-  }
+    else
+    {
+        /* Odd number of hires, which means xover is odd */
+        *num_lores = (num_hires+1) >> 1;
+        /* Use lores=hires[0,1,3,5 ...] */
+        h_lores[0] = h_hires[0];
+        for(i=1; i<=*num_lores; i++)
+        {
+            h_lores[i] = h_hires[i*2-1];
+        }
+    }
 }
 
 
@@ -651,30 +697,32 @@ sbrdecDownSampleLoRes(UCHAR *v_result,
                       UCHAR *freqBandTableRef,
                       UCHAR num_Ref)
 {
-  int step;
-  int i,j;
-  int org_length,result_length;
-  int v_index[MAX_FREQ_COEFFS>>1];
+    int step;
+    int i,j;
+    int org_length,result_length;
+    int v_index[MAX_FREQ_COEFFS>>1];
 
-  /* init */
-  org_length = num_Ref;
-  result_length = num_result;
+    /* init */
+    org_length = num_Ref;
+    result_length = num_result;
 
-  v_index[0] = 0;   /* Always use left border */
-  i=0;
-  while(org_length > 0) {
-    /* Create downsample vector */
-    i++;
-    step = org_length / result_length;
-    org_length = org_length - step;
-    result_length--;
-    v_index[i] = v_index[i-1] + step;
-  }
+    v_index[0] = 0;   /* Always use left border */
+    i=0;
+    while(org_length > 0)
+    {
+        /* Create downsample vector */
+        i++;
+        step = org_length / result_length;
+        org_length = org_length - step;
+        result_length--;
+        v_index[i] = v_index[i-1] + step;
+    }
 
-  for(j=0;j<=i;j++) {
-    /* Use downsample vector to index LoResolution vector */
-    v_result[j]=freqBandTableRef[v_index[j]];
-  }
+    for(j=0; j<=i; j++)
+    {
+        /* Use downsample vector to index LoResolution vector */
+        v_result[j]=freqBandTableRef[v_index[j]];
+    }
 
 }
 
@@ -685,27 +733,31 @@ sbrdecDownSampleLoRes(UCHAR *v_result,
 void shellsort(UCHAR *in, UCHAR n)
 {
 
-  int i, j, v, w;
-  int inc = 1;
+    int i, j, v, w;
+    int inc = 1;
 
-  do
-    inc = 3 * inc + 1;
-  while (inc <= n);
+    do
+        inc = 3 * inc + 1;
+    while (inc <= n);
 
-  do {
-    inc = inc / 3;
-    for (i = inc; i < n; i++) {
-      v = in[i];
-      j = i;
-      while ((w=in[j-inc]) > v) {
-        in[j] = w;
-        j -= inc;
-        if (j < inc)
-          break;
-      }
-      in[j] = v;
+    do
+    {
+        inc = inc / 3;
+        for (i = inc; i < n; i++)
+        {
+            v = in[i];
+            j = i;
+            while ((w=in[j-inc]) > v)
+            {
+                in[j] = w;
+                j -= inc;
+                if (j < inc)
+                    break;
+            }
+            in[j] = v;
+        }
     }
-  } while (inc > 1);
+    while (inc > 1);
 
 }
 
@@ -718,95 +770,99 @@ void shellsort(UCHAR *in, UCHAR n)
 SBR_ERROR
 resetFreqBandTables(HANDLE_SBR_HEADER_DATA hHeaderData, const UINT flags)
 {
-  SBR_ERROR err = SBRDEC_OK;
-  int k2,kx, lsb, usb;
-  int     intTemp;
-  UCHAR    nBandsLo, nBandsHi;
-  HANDLE_FREQ_BAND_DATA hFreq = &hHeaderData->freqBandData;
+    SBR_ERROR err = SBRDEC_OK;
+    int k2,kx, lsb, usb;
+    int     intTemp;
+    UCHAR    nBandsLo, nBandsHi;
+    HANDLE_FREQ_BAND_DATA hFreq = &hHeaderData->freqBandData;
 
-  /* Calculate master frequency function */
-  err = sbrdecUpdateFreqScale(hFreq->v_k_master,
-                              &hFreq->numMaster,
-                              hHeaderData->sbrProcSmplRate,
-                              hHeaderData,
-                              flags);
+    /* Calculate master frequency function */
+    err = sbrdecUpdateFreqScale(hFreq->v_k_master,
+                                &hFreq->numMaster,
+                                hHeaderData->sbrProcSmplRate,
+                                hHeaderData,
+                                flags);
 
-  if ( err || (hHeaderData->bs_info.xover_band > hFreq->numMaster) ) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
+    if ( err || (hHeaderData->bs_info.xover_band > hFreq->numMaster) )
+    {
+        return SBRDEC_UNSUPPORTED_CONFIG;
+    }
 
-  /* Derive Hiresolution from master frequency function */
-  sbrdecUpdateHiRes(hFreq->freqBandTable[1], &nBandsHi, hFreq->v_k_master, hFreq->numMaster, hHeaderData->bs_info.xover_band );
-  /* Derive Loresolution from Hiresolution */
-  sbrdecUpdateLoRes(hFreq->freqBandTable[0], &nBandsLo, hFreq->freqBandTable[1], nBandsHi);
-
-
-  hFreq->nSfb[0] = nBandsLo;
-  hFreq->nSfb[1] = nBandsHi;
-
-  /* Check index to freqBandTable[0] */
-  if ( !(nBandsLo > 0) || (nBandsLo > (MAX_FREQ_COEFFS>>1)) ) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
-
-  lsb = hFreq->freqBandTable[0][0];
-  usb = hFreq->freqBandTable[0][nBandsLo];
-
-  /* Additional check for lsb */
-  if ( (lsb > (32)) || (lsb >= usb) ) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
+    /* Derive Hiresolution from master frequency function */
+    sbrdecUpdateHiRes(hFreq->freqBandTable[1], &nBandsHi, hFreq->v_k_master, hFreq->numMaster, hHeaderData->bs_info.xover_band );
+    /* Derive Loresolution from Hiresolution */
+    sbrdecUpdateLoRes(hFreq->freqBandTable[0], &nBandsLo, hFreq->freqBandTable[1], nBandsHi);
 
 
-  /* Calculate number of noise bands */
+    hFreq->nSfb[0] = nBandsLo;
+    hFreq->nSfb[1] = nBandsHi;
 
-  k2 = hFreq->freqBandTable[1][nBandsHi];
-  kx = hFreq->freqBandTable[1][0];
+    /* Check index to freqBandTable[0] */
+    if ( !(nBandsLo > 0) || (nBandsLo > (MAX_FREQ_COEFFS>>1)) )
+    {
+        return SBRDEC_UNSUPPORTED_CONFIG;
+    }
 
-  if (hHeaderData->bs_data.noise_bands == 0)
-  {
-    hFreq->nNfb = 1;
-  }
-  else /* Calculate no of noise bands 1,2 or 3 bands/octave */
-  {
-    /* Fetch number of octaves divided by 32 */
-    intTemp = (LONG)FDK_getNumOctavesDiv8(kx,k2) >> 2;
+    lsb = hFreq->freqBandTable[0][0];
+    usb = hFreq->freqBandTable[0][nBandsLo];
 
-    /* Integer-Multiplication with number of bands: */
-    intTemp = intTemp * hHeaderData->bs_data.noise_bands;
-
-    /* Add scaled 0.5 for rounding: */
-    intTemp = intTemp + (LONG)FL2FXCONST_SGL(0.5f/32.0f);
-
-    /* Convert to right-aligned integer: */
-    intTemp = intTemp >> (FRACT_BITS - 1 /*sign*/ - 5 /* rescale */);
-
-    /* Compare with float calculation */
-    FDK_ASSERT( intTemp ==  (int)((hHeaderData->bs_data.noise_bands * FDKlog( (float)k2/kx) / (float)(FDKlog(2.0)))+0.5) );
-
-    if( intTemp==0)
-      intTemp=1;
-
-    hFreq->nNfb = intTemp;
-  }
-
-  hFreq->nInvfBands = hFreq->nNfb;
-
-  if( hFreq->nNfb > MAX_NOISE_COEFFS ) {
-    return SBRDEC_UNSUPPORTED_CONFIG;
-  }
-
-  /* Get noise bands */
-  sbrdecDownSampleLoRes(hFreq->freqBandTableNoise,
-                        hFreq->nNfb,
-                        hFreq->freqBandTable[0],
-                        nBandsLo);
+    /* Additional check for lsb */
+    if ( (lsb > (32)) || (lsb >= usb) )
+    {
+        return SBRDEC_UNSUPPORTED_CONFIG;
+    }
 
 
+    /* Calculate number of noise bands */
+
+    k2 = hFreq->freqBandTable[1][nBandsHi];
+    kx = hFreq->freqBandTable[1][0];
+
+    if (hHeaderData->bs_data.noise_bands == 0)
+    {
+        hFreq->nNfb = 1;
+    }
+    else /* Calculate no of noise bands 1,2 or 3 bands/octave */
+    {
+        /* Fetch number of octaves divided by 32 */
+        intTemp = (LONG)FDK_getNumOctavesDiv8(kx,k2) >> 2;
+
+        /* Integer-Multiplication with number of bands: */
+        intTemp = intTemp * hHeaderData->bs_data.noise_bands;
+
+        /* Add scaled 0.5 for rounding: */
+        intTemp = intTemp + (LONG)FL2FXCONST_SGL(0.5f/32.0f);
+
+        /* Convert to right-aligned integer: */
+        intTemp = intTemp >> (FRACT_BITS - 1 /*sign*/ - 5 /* rescale */);
+
+        /* Compare with float calculation */
+        FDK_ASSERT( intTemp ==  (int)((hHeaderData->bs_data.noise_bands * FDKlog( (float)k2/kx) / (float)(FDKlog(2.0)))+0.5) );
+
+        if( intTemp==0)
+            intTemp=1;
+
+        hFreq->nNfb = intTemp;
+    }
+
+    hFreq->nInvfBands = hFreq->nNfb;
+
+    if( hFreq->nNfb > MAX_NOISE_COEFFS )
+    {
+        return SBRDEC_UNSUPPORTED_CONFIG;
+    }
+
+    /* Get noise bands */
+    sbrdecDownSampleLoRes(hFreq->freqBandTableNoise,
+                          hFreq->nNfb,
+                          hFreq->freqBandTable[0],
+                          nBandsLo);
 
 
-  hFreq->lowSubband  = lsb;
-  hFreq->highSubband = usb;
 
-  return SBRDEC_OK;
+
+    hFreq->lowSubband  = lsb;
+    hFreq->highSubband = usb;
+
+    return SBRDEC_OK;
 }

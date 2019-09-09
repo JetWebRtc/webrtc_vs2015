@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,7 +18,8 @@
 #include "webrtc/base/stream.h"
 #include "webrtc/base/sslidentity.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Constants for SSL profile.
 const int TLS_NULL_WITH_NULL_NULL = 0;
@@ -61,7 +62,7 @@ int SrtpCryptoSuiteFromName(const std::string& crypto_suite);
 // Get key length and salt length for given crypto suite. Returns true for
 // valid suites, otherwise false.
 bool GetSrtpKeyAndSaltLengths(int crypto_suite, int *key_length,
-    int *salt_length);
+                              int *salt_length);
 
 // Returns true if the given crypto suite id uses a GCM cipher.
 bool IsGcmCryptoSuite(int crypto_suite);
@@ -69,17 +70,18 @@ bool IsGcmCryptoSuite(int crypto_suite);
 // Returns true if the given crypto suite name uses a GCM cipher.
 bool IsGcmCryptoSuiteName(const std::string& crypto_suite);
 
-struct CryptoOptions {
-  CryptoOptions() {}
+struct CryptoOptions
+{
+    CryptoOptions() {}
 
-  // Helper method to return an instance of the CryptoOptions with GCM crypto
-  // suites disabled. This method should be used instead of depending on current
-  // default values set by the constructor.
-  static CryptoOptions NoGcm();
+    // Helper method to return an instance of the CryptoOptions with GCM crypto
+    // suites disabled. This method should be used instead of depending on current
+    // default values set by the constructor.
+    static CryptoOptions NoGcm();
 
-  // Enable GCM crypto suites from RFC 7714 for SRTP. GCM will only be used
-  // if both sides enable it.
-  bool enable_gcm_crypto_suites = false;
+    // Enable GCM crypto suites from RFC 7714 for SRTP. GCM will only be used
+    // if both sides enable it.
+    bool enable_gcm_crypto_suites = false;
 };
 
 // SSLStreamAdapter : A StreamInterfaceAdapter that does SSL/TLS.
@@ -99,18 +101,20 @@ struct CryptoOptions {
 
 enum SSLRole { SSL_CLIENT, SSL_SERVER };
 enum SSLMode { SSL_MODE_TLS, SSL_MODE_DTLS };
-enum SSLProtocolVersion {
-  SSL_PROTOCOL_TLS_10,
-  SSL_PROTOCOL_TLS_11,
-  SSL_PROTOCOL_TLS_12,
-  SSL_PROTOCOL_DTLS_10 = SSL_PROTOCOL_TLS_11,
-  SSL_PROTOCOL_DTLS_12 = SSL_PROTOCOL_TLS_12,
+enum SSLProtocolVersion
+{
+    SSL_PROTOCOL_TLS_10,
+    SSL_PROTOCOL_TLS_11,
+    SSL_PROTOCOL_TLS_12,
+    SSL_PROTOCOL_DTLS_10 = SSL_PROTOCOL_TLS_11,
+    SSL_PROTOCOL_DTLS_12 = SSL_PROTOCOL_TLS_12,
 };
-enum class SSLPeerCertificateDigestError {
-  NONE,
-  UNKNOWN_ALGORITHM,
-  INVALID_LENGTH,
-  VERIFICATION_FAILED,
+enum class SSLPeerCertificateDigestError
+{
+    NONE,
+    UNKNOWN_ALGORITHM,
+    INVALID_LENGTH,
+    VERIFICATION_FAILED,
 };
 
 // Errors for Read -- in the high range so no conflict with OpenSSL.
@@ -119,152 +123,165 @@ enum { SSE_MSG_TRUNC = 0xff0001 };
 // Used to send back UMA histogram value. Logged when Dtls handshake fails.
 enum class SSLHandshakeError { UNKNOWN, INCOMPATIBLE_CIPHERSUITE, MAX_VALUE };
 
-class SSLStreamAdapter : public StreamAdapterInterface {
- public:
-  // Instantiate an SSLStreamAdapter wrapping the given stream,
-  // (using the selected implementation for the platform).
-  // Caller is responsible for freeing the returned object.
-  static SSLStreamAdapter* Create(StreamInterface* stream);
+class SSLStreamAdapter : public StreamAdapterInterface
+{
+public:
+    // Instantiate an SSLStreamAdapter wrapping the given stream,
+    // (using the selected implementation for the platform).
+    // Caller is responsible for freeing the returned object.
+    static SSLStreamAdapter* Create(StreamInterface* stream);
 
-  explicit SSLStreamAdapter(StreamInterface* stream);
-  ~SSLStreamAdapter() override;
+    explicit SSLStreamAdapter(StreamInterface* stream);
+    ~SSLStreamAdapter() override;
 
-  void set_ignore_bad_cert(bool ignore) { ignore_bad_cert_ = ignore; }
-  bool ignore_bad_cert() const { return ignore_bad_cert_; }
+    void set_ignore_bad_cert(bool ignore)
+    {
+        ignore_bad_cert_ = ignore;
+    }
+    bool ignore_bad_cert() const
+    {
+        return ignore_bad_cert_;
+    }
 
-  void set_client_auth_enabled(bool enabled) { client_auth_enabled_ = enabled; }
-  bool client_auth_enabled() const { return client_auth_enabled_; }
+    void set_client_auth_enabled(bool enabled)
+    {
+        client_auth_enabled_ = enabled;
+    }
+    bool client_auth_enabled() const
+    {
+        return client_auth_enabled_;
+    }
 
-  // Specify our SSL identity: key and certificate. SSLStream takes ownership
-  // of the SSLIdentity object and will free it when appropriate. Should be
-  // called no more than once on a given SSLStream instance.
-  virtual void SetIdentity(SSLIdentity* identity) = 0;
+    // Specify our SSL identity: key and certificate. SSLStream takes ownership
+    // of the SSLIdentity object and will free it when appropriate. Should be
+    // called no more than once on a given SSLStream instance.
+    virtual void SetIdentity(SSLIdentity* identity) = 0;
 
-  // Call this to indicate that we are to play the server role (or client role,
-  // if the default argument is replaced by SSL_CLIENT).
-  // The default argument is for backward compatibility.
-  // TODO(ekr@rtfm.com): rename this SetRole to reflect its new function
-  virtual void SetServerRole(SSLRole role = SSL_SERVER) = 0;
+    // Call this to indicate that we are to play the server role (or client role,
+    // if the default argument is replaced by SSL_CLIENT).
+    // The default argument is for backward compatibility.
+    // TODO(ekr@rtfm.com): rename this SetRole to reflect its new function
+    virtual void SetServerRole(SSLRole role = SSL_SERVER) = 0;
 
-  // Do DTLS or TLS.
-  virtual void SetMode(SSLMode mode) = 0;
+    // Do DTLS or TLS.
+    virtual void SetMode(SSLMode mode) = 0;
 
-  // Set maximum supported protocol version. The highest version supported by
-  // both ends will be used for the connection, i.e. if one party supports
-  // DTLS 1.0 and the other DTLS 1.2, DTLS 1.0 will be used.
-  // If requested version is not supported by underlying crypto library, the
-  // next lower will be used.
-  virtual void SetMaxProtocolVersion(SSLProtocolVersion version) = 0;
+    // Set maximum supported protocol version. The highest version supported by
+    // both ends will be used for the connection, i.e. if one party supports
+    // DTLS 1.0 and the other DTLS 1.2, DTLS 1.0 will be used.
+    // If requested version is not supported by underlying crypto library, the
+    // next lower will be used.
+    virtual void SetMaxProtocolVersion(SSLProtocolVersion version) = 0;
 
-  // Set the initial retransmission timeout for DTLS messages. When the timeout
-  // expires, the message gets retransmitted and the timeout is exponentially
-  // increased.
-  // This should only be called before StartSSL().
-  virtual void SetInitialRetransmissionTimeout(int timeout_ms) = 0;
+    // Set the initial retransmission timeout for DTLS messages. When the timeout
+    // expires, the message gets retransmitted and the timeout is exponentially
+    // increased.
+    // This should only be called before StartSSL().
+    virtual void SetInitialRetransmissionTimeout(int timeout_ms) = 0;
 
-  // StartSSL starts negotiation with a peer, whose certificate is verified
-  // using the certificate digest. Generally, SetIdentity() and possibly
-  // SetServerRole() should have been called before this.
-  // SetPeerCertificateDigest() must also be called. It may be called after
-  // StartSSLWithPeer() but must be called before the underlying stream opens.
-  //
-  // Use of the stream prior to calling StartSSL will pass data in clear text.
-  // Calling StartSSL causes SSL negotiation to begin as soon as possible: right
-  // away if the underlying wrapped stream is already opened, or else as soon as
-  // it opens.
-  //
-  // StartSSL returns a negative error code on failure. Returning 0 means
-  // success so far, but negotiation is probably not complete and will continue
-  // asynchronously. In that case, the exposed stream will open after
-  // successful negotiation and verification, or an SE_CLOSE event will be
-  // raised if negotiation fails.
-  virtual int StartSSL() = 0;
+    // StartSSL starts negotiation with a peer, whose certificate is verified
+    // using the certificate digest. Generally, SetIdentity() and possibly
+    // SetServerRole() should have been called before this.
+    // SetPeerCertificateDigest() must also be called. It may be called after
+    // StartSSLWithPeer() but must be called before the underlying stream opens.
+    //
+    // Use of the stream prior to calling StartSSL will pass data in clear text.
+    // Calling StartSSL causes SSL negotiation to begin as soon as possible: right
+    // away if the underlying wrapped stream is already opened, or else as soon as
+    // it opens.
+    //
+    // StartSSL returns a negative error code on failure. Returning 0 means
+    // success so far, but negotiation is probably not complete and will continue
+    // asynchronously. In that case, the exposed stream will open after
+    // successful negotiation and verification, or an SE_CLOSE event will be
+    // raised if negotiation fails.
+    virtual int StartSSL() = 0;
 
-  // Specify the digest of the certificate that our peer is expected to use.
-  // Only this certificate will be accepted during SSL verification. The
-  // certificate is assumed to have been obtained through some other secure
-  // channel (such as the signaling channel). This must specify the terminal
-  // certificate, not just a CA. SSLStream makes a copy of the digest value.
-  //
-  // Returns true if successful.
-  // |error| is optional and provides more information about the failure.
-  virtual bool SetPeerCertificateDigest(
-      const std::string& digest_alg,
-      const unsigned char* digest_val,
-      size_t digest_len,
-      SSLPeerCertificateDigestError* error = nullptr) = 0;
+    // Specify the digest of the certificate that our peer is expected to use.
+    // Only this certificate will be accepted during SSL verification. The
+    // certificate is assumed to have been obtained through some other secure
+    // channel (such as the signaling channel). This must specify the terminal
+    // certificate, not just a CA. SSLStream makes a copy of the digest value.
+    //
+    // Returns true if successful.
+    // |error| is optional and provides more information about the failure.
+    virtual bool SetPeerCertificateDigest(
+        const std::string& digest_alg,
+        const unsigned char* digest_val,
+        size_t digest_len,
+        SSLPeerCertificateDigestError* error = nullptr) = 0;
 
-  // Retrieves the peer's X.509 certificate, if a connection has been
-  // established. It returns the transmitted over SSL, including the entire
-  // chain.
-  virtual std::unique_ptr<SSLCertificate> GetPeerCertificate() const = 0;
+    // Retrieves the peer's X.509 certificate, if a connection has been
+    // established. It returns the transmitted over SSL, including the entire
+    // chain.
+    virtual std::unique_ptr<SSLCertificate> GetPeerCertificate() const = 0;
 
-  // Retrieves the IANA registration id of the cipher suite used for the
-  // connection (e.g. 0x2F for "TLS_RSA_WITH_AES_128_CBC_SHA").
-  virtual bool GetSslCipherSuite(int* cipher_suite);
+    // Retrieves the IANA registration id of the cipher suite used for the
+    // connection (e.g. 0x2F for "TLS_RSA_WITH_AES_128_CBC_SHA").
+    virtual bool GetSslCipherSuite(int* cipher_suite);
 
-  virtual int GetSslVersion() const = 0;
+    virtual int GetSslVersion() const = 0;
 
-  // Key Exporter interface from RFC 5705
-  // Arguments are:
-  // label               -- the exporter label.
-  //                        part of the RFC defining each exporter
-  //                        usage (IN)
-  // context/context_len -- a context to bind to for this connection;
-  //                        optional, can be NULL, 0 (IN)
-  // use_context         -- whether to use the context value
-  //                        (needed to distinguish no context from
-  //                        zero-length ones).
-  // result              -- where to put the computed value
-  // result_len          -- the length of the computed value
-  virtual bool ExportKeyingMaterial(const std::string& label,
-                                    const uint8_t* context,
-                                    size_t context_len,
-                                    bool use_context,
-                                    uint8_t* result,
-                                    size_t result_len);
+    // Key Exporter interface from RFC 5705
+    // Arguments are:
+    // label               -- the exporter label.
+    //                        part of the RFC defining each exporter
+    //                        usage (IN)
+    // context/context_len -- a context to bind to for this connection;
+    //                        optional, can be NULL, 0 (IN)
+    // use_context         -- whether to use the context value
+    //                        (needed to distinguish no context from
+    //                        zero-length ones).
+    // result              -- where to put the computed value
+    // result_len          -- the length of the computed value
+    virtual bool ExportKeyingMaterial(const std::string& label,
+                                      const uint8_t* context,
+                                      size_t context_len,
+                                      bool use_context,
+                                      uint8_t* result,
+                                      size_t result_len);
 
-  // DTLS-SRTP interface
-  virtual bool SetDtlsSrtpCryptoSuites(const std::vector<int>& crypto_suites);
-  virtual bool GetDtlsSrtpCryptoSuite(int* crypto_suite);
+    // DTLS-SRTP interface
+    virtual bool SetDtlsSrtpCryptoSuites(const std::vector<int>& crypto_suites);
+    virtual bool GetDtlsSrtpCryptoSuite(int* crypto_suite);
 
-  // Returns true if a TLS connection has been established.
-  // The only difference between this and "GetState() == SE_OPEN" is that if
-  // the peer certificate digest hasn't been verified, the state will still be
-  // SS_OPENING but IsTlsConnected should return true.
-  virtual bool IsTlsConnected() = 0;
+    // Returns true if a TLS connection has been established.
+    // The only difference between this and "GetState() == SE_OPEN" is that if
+    // the peer certificate digest hasn't been verified, the state will still be
+    // SS_OPENING but IsTlsConnected should return true.
+    virtual bool IsTlsConnected() = 0;
 
-  // Capabilities testing.
-  // Used to have "DTLS supported", "DTLS-SRTP supported" etc. methods, but now
-  // that's assumed.
-  static bool IsBoringSsl();
+    // Capabilities testing.
+    // Used to have "DTLS supported", "DTLS-SRTP supported" etc. methods, but now
+    // that's assumed.
+    static bool IsBoringSsl();
 
-  // Returns true iff the supplied cipher is deemed to be strong.
-  // TODO(torbjorng): Consider removing the KeyType argument.
-  static bool IsAcceptableCipher(int cipher, KeyType key_type);
-  static bool IsAcceptableCipher(const std::string& cipher, KeyType key_type);
+    // Returns true iff the supplied cipher is deemed to be strong.
+    // TODO(torbjorng): Consider removing the KeyType argument.
+    static bool IsAcceptableCipher(int cipher, KeyType key_type);
+    static bool IsAcceptableCipher(const std::string& cipher, KeyType key_type);
 
-  // TODO(guoweis): Move this away from a static class method. Currently this is
-  // introduced such that any caller could depend on sslstreamadapter.h without
-  // depending on specific SSL implementation.
-  static std::string SslCipherSuiteToName(int cipher_suite);
+    // TODO(guoweis): Move this away from a static class method. Currently this is
+    // introduced such that any caller could depend on sslstreamadapter.h without
+    // depending on specific SSL implementation.
+    static std::string SslCipherSuiteToName(int cipher_suite);
 
-  // Use our timeutils.h source of timing in BoringSSL, allowing us to test
-  // using a fake clock.
-  static void enable_time_callback_for_testing();
+    // Use our timeutils.h source of timing in BoringSSL, allowing us to test
+    // using a fake clock.
+    static void enable_time_callback_for_testing();
 
-  sigslot::signal1<SSLHandshakeError> SignalSSLHandshakeError;
+    sigslot::signal1<SSLHandshakeError> SignalSSLHandshakeError;
 
- private:
-  // If true, the server certificate need not match the configured
-  // server_name, and in fact missing certificate authority and other
-  // verification errors are ignored.
-  bool ignore_bad_cert_;
+private:
+    // If true, the server certificate need not match the configured
+    // server_name, and in fact missing certificate authority and other
+    // verification errors are ignored.
+    bool ignore_bad_cert_;
 
-  // If true (default), the client is required to provide a certificate during
-  // handshake. If no certificate is given, handshake fails. This applies to
-  // server mode only.
-  bool client_auth_enabled_;
+    // If true (default), the client is required to provide a certificate during
+    // handshake. If no certificate is given, handshake fails. This applies to
+    // server mode only.
+    bool client_auth_enabled_;
 };
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 
 #pragma comment( lib, "winmm.lib" )
 
-namespace webrtc {
+namespace webrtc
+{
 class EventTimerWrapper;
 class EventWrapper;
 
@@ -164,15 +165,42 @@ public:
     virtual void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer);
 
 private:
-    void Lock() { _critSect.Enter(); };
-    void UnLock() { _critSect.Leave(); };
-    int32_t Id() {return _id;}
-    bool IsUsingOutputDeviceIndex() const {return _usingOutputDeviceIndex;}
-    AudioDeviceModule::WindowsDeviceType OutputDevice() const {return _outputDevice;}
-    uint16_t OutputDeviceIndex() const {return _outputDeviceIndex;}
-    bool IsUsingInputDeviceIndex() const {return _usingInputDeviceIndex;}
-    AudioDeviceModule::WindowsDeviceType InputDevice() const {return _inputDevice;}
-    uint16_t InputDeviceIndex() const {return _inputDeviceIndex;}
+    void Lock()
+    {
+        _critSect.Enter();
+    };
+    void UnLock()
+    {
+        _critSect.Leave();
+    };
+    int32_t Id()
+    {
+        return _id;
+    }
+    bool IsUsingOutputDeviceIndex() const
+    {
+        return _usingOutputDeviceIndex;
+    }
+    AudioDeviceModule::WindowsDeviceType OutputDevice() const
+    {
+        return _outputDevice;
+    }
+    uint16_t OutputDeviceIndex() const
+    {
+        return _outputDeviceIndex;
+    }
+    bool IsUsingInputDeviceIndex() const
+    {
+        return _usingInputDeviceIndex;
+    }
+    AudioDeviceModule::WindowsDeviceType InputDevice() const
+    {
+        return _inputDevice;
+    }
+    uint16_t InputDeviceIndex() const
+    {
+        return _inputDeviceIndex;
+    }
 
 private:
     inline int32_t InputSanityCheckAfterUnlockedPeriod() const;

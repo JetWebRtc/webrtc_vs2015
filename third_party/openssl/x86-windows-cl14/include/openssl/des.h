@@ -1,4 +1,4 @@
-/* crypto/des/des.h */
+﻿/* crypto/des/des.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -82,8 +82,10 @@ typedef /* const */ unsigned char const_DES_cblock[8];
  * const_DES_cblock * are incompatible pointer types.
  */
 
-typedef struct DES_ks {
-    union {
+typedef struct DES_ks
+{
+    union
+    {
         DES_cblock cblock;
         /*
          * make sure things are correct size on machines with 8 byte longs

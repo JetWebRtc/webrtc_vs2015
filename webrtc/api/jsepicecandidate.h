@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,70 +22,87 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/p2p/base/candidate.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Implementation of IceCandidateInterface.
-class JsepIceCandidate : public IceCandidateInterface {
- public:
-  JsepIceCandidate(const std::string& sdp_mid, int sdp_mline_index);
-  JsepIceCandidate(const std::string& sdp_mid, int sdp_mline_index,
-                   const cricket::Candidate& candidate);
-  ~JsepIceCandidate();
-  // |err| may be NULL.
-  bool Initialize(const std::string& sdp, SdpParseError* err);
-  void SetCandidate(const cricket::Candidate& candidate) {
-    candidate_ = candidate;
-  }
+class JsepIceCandidate : public IceCandidateInterface
+{
+public:
+    JsepIceCandidate(const std::string& sdp_mid, int sdp_mline_index);
+    JsepIceCandidate(const std::string& sdp_mid, int sdp_mline_index,
+                     const cricket::Candidate& candidate);
+    ~JsepIceCandidate();
+    // |err| may be NULL.
+    bool Initialize(const std::string& sdp, SdpParseError* err);
+    void SetCandidate(const cricket::Candidate& candidate)
+    {
+        candidate_ = candidate;
+    }
 
-  virtual std::string sdp_mid() const { return sdp_mid_; }
-  virtual int sdp_mline_index() const { return sdp_mline_index_; }
-  virtual const cricket::Candidate& candidate() const {
-    return candidate_;
-  }
+    virtual std::string sdp_mid() const
+    {
+        return sdp_mid_;
+    }
+    virtual int sdp_mline_index() const
+    {
+        return sdp_mline_index_;
+    }
+    virtual const cricket::Candidate& candidate() const
+    {
+        return candidate_;
+    }
 
-  virtual std::string server_url() const { return candidate_.url(); }
+    virtual std::string server_url() const
+    {
+        return candidate_.url();
+    }
 
-  virtual bool ToString(std::string* out) const;
+    virtual bool ToString(std::string* out) const;
 
- private:
-  std::string sdp_mid_;
-  int sdp_mline_index_;
-  cricket::Candidate candidate_;
+private:
+    std::string sdp_mid_;
+    int sdp_mline_index_;
+    cricket::Candidate candidate_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(JsepIceCandidate);
+    RTC_DISALLOW_COPY_AND_ASSIGN(JsepIceCandidate);
 };
 
 // Implementation of IceCandidateCollection which stores JsepIceCandidates.
-class JsepCandidateCollection : public IceCandidateCollection {
- public:
-  JsepCandidateCollection() {}
-  // Move constructor is defined so that a vector of JsepCandidateCollections
-  // can be resized.
-  JsepCandidateCollection(JsepCandidateCollection&& o)
-      : candidates_(std::move(o.candidates_)) {}
-  ~JsepCandidateCollection();
-  virtual size_t count() const {
-    return candidates_.size();
-  }
-  virtual bool HasCandidate(const IceCandidateInterface* candidate) const;
-  // Adds and takes ownership of the JsepIceCandidate.
-  // TODO(deadbeef): Make this use an std::unique_ptr<>, so ownership logic is
-  // more clear.
-  virtual void add(JsepIceCandidate* candidate) {
-    candidates_.push_back(candidate);
-  }
-  virtual const IceCandidateInterface* at(size_t index) const {
-    return candidates_[index];
-  }
-  // Removes the candidate that has a matching address and protocol.
-  //
-  // Returns the number of candidates that were removed.
-  size_t remove(const cricket::Candidate& candidate);
+class JsepCandidateCollection : public IceCandidateCollection
+{
+public:
+    JsepCandidateCollection() {}
+    // Move constructor is defined so that a vector of JsepCandidateCollections
+    // can be resized.
+    JsepCandidateCollection(JsepCandidateCollection&& o)
+        : candidates_(std::move(o.candidates_)) {}
+    ~JsepCandidateCollection();
+    virtual size_t count() const
+    {
+        return candidates_.size();
+    }
+    virtual bool HasCandidate(const IceCandidateInterface* candidate) const;
+    // Adds and takes ownership of the JsepIceCandidate.
+    // TODO(deadbeef): Make this use an std::unique_ptr<>, so ownership logic is
+    // more clear.
+    virtual void add(JsepIceCandidate* candidate)
+    {
+        candidates_.push_back(candidate);
+    }
+    virtual const IceCandidateInterface* at(size_t index) const
+    {
+        return candidates_[index];
+    }
+    // Removes the candidate that has a matching address and protocol.
+    //
+    // Returns the number of candidates that were removed.
+    size_t remove(const cricket::Candidate& candidate);
 
- private:
-  std::vector<JsepIceCandidate*> candidates_;
+private:
+    std::vector<JsepIceCandidate*> candidates_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(JsepCandidateCollection);
+    RTC_DISALLOW_COPY_AND_ASSIGN(JsepCandidateCollection);
 };
 
 }  // namespace webrtc

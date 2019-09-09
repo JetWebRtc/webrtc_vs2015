@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP muxer definitions
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -24,7 +24,8 @@
 #include "avformat.h"
 #include "rtp.h"
 
-struct RTPMuxContext {
+struct RTPMuxContext
+{
     const AVClass *av_class;
     AVFormatContext *ic;
     AVStream *st;
@@ -95,6 +96,6 @@ void ff_rtp_send_vp8(AVFormatContext *s1, const uint8_t *buff, int size);
 void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buff, int size);
 
 const uint8_t *ff_h263_find_resync_marker_reverse(const uint8_t *av_restrict start,
-                                                  const uint8_t *av_restrict end);
+        const uint8_t *av_restrict end);
 
 #endif /* AVFORMAT_RTPENC_H */

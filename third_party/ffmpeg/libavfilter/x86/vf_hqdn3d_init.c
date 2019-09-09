@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Loren Merritt
  *
  * This file is part of FFmpeg.

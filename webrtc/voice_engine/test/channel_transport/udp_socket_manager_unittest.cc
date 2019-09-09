@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,36 +20,40 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_manager_wrapper.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-TEST(UdpSocketManager, CreateCallsInitAndDoesNotLeakMemory) {
-  int32_t id = 42;
-  uint8_t threads = 1;
-  UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
-  // Create is supposed to have called init on the object.
-  EXPECT_FALSE(mgr->Init(id, threads))
-      << "Init should return false since Create is supposed to call it.";
-  UdpSocketManager::Return();
+TEST(UdpSocketManager, CreateCallsInitAndDoesNotLeakMemory)
+{
+    int32_t id = 42;
+    uint8_t threads = 1;
+    UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
+    // Create is supposed to have called init on the object.
+    EXPECT_FALSE(mgr->Init(id, threads))
+            << "Init should return false since Create is supposed to call it.";
+    UdpSocketManager::Return();
 }
 
 // Creates a socket and adds it to the socket manager, and then removes it
 // before destroying the socket manager.
-TEST(UdpSocketManager, AddAndRemoveSocketDoesNotLeakMemory) {
-  int32_t id = 42;
-  uint8_t threads = 1;
-  UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
-  UdpSocketWrapper* socket =
-      UdpSocketWrapper::CreateSocket(id,
-                                     mgr,
-                                     NULL,  // CallbackObj
-                                     NULL,  // IncomingSocketCallback
-                                     false,  // ipV6Enable
-                                     false);  // disableGQOS
-  // The constructor will do AddSocket on the manager.
-  // RemoveSocket indirectly calls Delete.
-  EXPECT_EQ(true, mgr->RemoveSocket(socket));
-  UdpSocketManager::Return();
+TEST(UdpSocketManager, AddAndRemoveSocketDoesNotLeakMemory)
+{
+    int32_t id = 42;
+    uint8_t threads = 1;
+    UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
+    UdpSocketWrapper* socket =
+        UdpSocketWrapper::CreateSocket(id,
+                                       mgr,
+                                       NULL,  // CallbackObj
+                                       NULL,  // IncomingSocketCallback
+                                       false,  // ipV6Enable
+                                       false);  // disableGQOS
+    // The constructor will do AddSocket on the manager.
+    // RemoveSocket indirectly calls Delete.
+    EXPECT_EQ(true, mgr->RemoveSocket(socket));
+    UdpSocketManager::Return();
 }
 
 // Creates a socket and add it to the socket manager, but does not remove it
@@ -57,26 +61,27 @@ TEST(UdpSocketManager, AddAndRemoveSocketDoesNotLeakMemory) {
 // On Posix, this destroys the socket.
 // On Winsock2 Windows, it enters an infinite wait for all the sockets
 // to go away.
-TEST(UdpSocketManager, UnremovedSocketsGetCollectedAtManagerDeletion) {
+TEST(UdpSocketManager, UnremovedSocketsGetCollectedAtManagerDeletion)
+{
 #if defined(_WIN32)
-  // It's hard to test an infinite wait, so we don't.
+    // It's hard to test an infinite wait, so we don't.
 #else
-  int32_t id = 42;
-  uint8_t threads = 1;
-  UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
-  UdpSocketWrapper* unused_socket = UdpSocketWrapper::CreateSocket(
-      id,
-      mgr,
-      NULL,  // CallbackObj
-      NULL,  // IncomingSocketCallback
-      false,  // ipV6Enable
-      false);  // disableGQOS
-  // The constructor will do AddSocket on the manager.
-  // Call a member funtion to work around "set but not used" compliation
-  // error on ChromeOS ARM.
-  unused_socket->SetEventToNull();
-  unused_socket = NULL;
-  UdpSocketManager::Return();
+    int32_t id = 42;
+    uint8_t threads = 1;
+    UdpSocketManager* mgr = UdpSocketManager::Create(id, threads);
+    UdpSocketWrapper* unused_socket = UdpSocketWrapper::CreateSocket(
+                                          id,
+                                          mgr,
+                                          NULL,  // CallbackObj
+                                          NULL,  // IncomingSocketCallback
+                                          false,  // ipV6Enable
+                                          false);  // disableGQOS
+    // The constructor will do AddSocket on the manager.
+    // Call a member funtion to work around "set but not used" compliation
+    // error on ChromeOS ARM.
+    unused_socket->SetEventToNull();
+    unused_socket = NULL;
+    UdpSocketManager::Return();
 #endif
 }
 

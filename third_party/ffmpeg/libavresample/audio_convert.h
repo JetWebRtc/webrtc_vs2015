@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.

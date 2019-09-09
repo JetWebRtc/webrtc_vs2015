@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,9 +10,11 @@
 
 #include "webrtc/modules/audio_coding/neteq/random_vector.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-const int16_t RandomVector::kRandomTable[RandomVector::kRandomTableSize] = {
+const int16_t RandomVector::kRandomTable[RandomVector::kRandomTableSize] =
+{
     2680, 5532, 441, 5520, 16170, -5146, -1024, -8733, 3115, 9598, -10380,
     -4959, -1280, -21716, 7133, -1522, 13458, -3902, 2789, -675, 3441, 5016,
     -13599, -4003, -2739, 3922, -7209, 13352, -11617, -7241, 12905, -2314, 5426,
@@ -35,23 +37,28 @@ const int16_t RandomVector::kRandomTable[RandomVector::kRandomTableSize] = {
     -5255, -4200, -752, 7941, -1543, 5959, 14719, 13346, 17045, -15605, -1678,
     -1600, -9230, 68, 23348, 1172, 7750, 11212, -18227, 9956, 4161, 883, 3947,
     4341, 1014, -4889, -2603, 1246, -5630, -3596, -870, -1298, 2784, -3317,
-    -6612, -20541, 4166, 4181, -8625, 3562, 12890, 4761, 3205, -12259, -8579 };
+    -6612, -20541, 4166, 4181, -8625, 3562, 12890, 4761, 3205, -12259, -8579
+};
 
-void RandomVector::Reset() {
-  seed_ = 777;
-  seed_increment_ = 1;
+void RandomVector::Reset()
+{
+    seed_ = 777;
+    seed_increment_ = 1;
 }
 
-void RandomVector::Generate(size_t length, int16_t* output) {
-  for (size_t i = 0; i < length; i++) {
-    seed_ += seed_increment_;
-    size_t position = seed_ & (kRandomTableSize - 1);
-    output[i] = kRandomTable[position];
-  }
+void RandomVector::Generate(size_t length, int16_t* output)
+{
+    for (size_t i = 0; i < length; i++)
+    {
+        seed_ += seed_increment_;
+        size_t position = seed_ & (kRandomTableSize - 1);
+        output[i] = kRandomTable[position];
+    }
 }
 
-void RandomVector::IncreaseSeedIncrement(int16_t increase_by) {
-  seed_increment_+= increase_by;
-  seed_increment_ &= kRandomTableSize - 1;
+void RandomVector::IncreaseSeedIncrement(int16_t increase_by)
+{
+    seed_increment_+= increase_by;
+    seed_increment_ &= kRandomTableSize - 1;
 }
 }  // namespace webrtc

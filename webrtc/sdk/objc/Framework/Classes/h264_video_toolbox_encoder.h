@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,67 +28,69 @@
 // the information in the VideoToolbox header files, a talk from WWDC 2014 and
 // experimentation.
 
-namespace webrtc {
+namespace webrtc
+{
 
-class H264VideoToolboxEncoder : public H264Encoder {
- public:
-  explicit H264VideoToolboxEncoder(const cricket::VideoCodec& codec);
+class H264VideoToolboxEncoder : public H264Encoder
+{
+public:
+    explicit H264VideoToolboxEncoder(const cricket::VideoCodec& codec);
 
-  ~H264VideoToolboxEncoder() override;
+    ~H264VideoToolboxEncoder() override;
 
-  int InitEncode(const VideoCodec* codec_settings,
-                 int number_of_cores,
-                 size_t max_payload_size) override;
+    int InitEncode(const VideoCodec* codec_settings,
+                   int number_of_cores,
+                   size_t max_payload_size) override;
 
-  int Encode(const VideoFrame& input_image,
-             const CodecSpecificInfo* codec_specific_info,
-             const std::vector<FrameType>* frame_types) override;
+    int Encode(const VideoFrame& input_image,
+               const CodecSpecificInfo* codec_specific_info,
+               const std::vector<FrameType>* frame_types) override;
 
-  int RegisterEncodeCompleteCallback(EncodedImageCallback* callback) override;
+    int RegisterEncodeCompleteCallback(EncodedImageCallback* callback) override;
 
-  int SetChannelParameters(uint32_t packet_loss, int64_t rtt) override;
+    int SetChannelParameters(uint32_t packet_loss, int64_t rtt) override;
 
-  int SetRates(uint32_t new_bitrate_kbit, uint32_t frame_rate) override;
+    int SetRates(uint32_t new_bitrate_kbit, uint32_t frame_rate) override;
 
-  int Release() override;
+    int Release() override;
 
-  const char* ImplementationName() const override;
+    const char* ImplementationName() const override;
 
-  bool SupportsNativeHandle() const override;
+    bool SupportsNativeHandle() const override;
 
-  void OnEncodedFrame(OSStatus status,
-                      VTEncodeInfoFlags info_flags,
-                      CMSampleBufferRef sample_buffer,
-                      CodecSpecificInfo codec_specific_info,
-                      int32_t width,
-                      int32_t height,
-                      int64_t render_time_ms,
-                      uint32_t timestamp,
-                      VideoRotation rotation);
+    void OnEncodedFrame(OSStatus status,
+                        VTEncodeInfoFlags info_flags,
+                        CMSampleBufferRef sample_buffer,
+                        CodecSpecificInfo codec_specific_info,
+                        int32_t width,
+                        int32_t height,
+                        int64_t render_time_ms,
+                        uint32_t timestamp,
+                        VideoRotation rotation);
 
-  ScalingSettings GetScalingSettings() const override;
+    ScalingSettings GetScalingSettings() const override;
 
- private:
-  int ResetCompressionSession();
-  void ConfigureCompressionSession();
-  void DestroyCompressionSession();
-  rtc::scoped_refptr<VideoFrameBuffer> GetScaledBufferOnEncode(
-      const rtc::scoped_refptr<VideoFrameBuffer>& frame);
-  void SetBitrateBps(uint32_t bitrate_bps);
-  void SetEncoderBitrateBps(uint32_t bitrate_bps);
+private:
+    int ResetCompressionSession();
+    void ConfigureCompressionSession();
+    void DestroyCompressionSession();
+    rtc::scoped_refptr<VideoFrameBuffer> GetScaledBufferOnEncode(
+        const rtc::scoped_refptr<VideoFrameBuffer>& frame);
+    void SetBitrateBps(uint32_t bitrate_bps);
+    void SetEncoderBitrateBps(uint32_t bitrate_bps);
 
-  EncodedImageCallback* callback_;
-  VTCompressionSessionRef compression_session_;
-  BitrateAdjuster bitrate_adjuster_;
-  H264PacketizationMode packetization_mode_;
-  uint32_t target_bitrate_bps_;
-  uint32_t encoder_bitrate_bps_;
-  int32_t width_;
-  int32_t height_;
-  const CFStringRef profile_;
+    EncodedImageCallback* callback_;
+    VTCompressionSessionRef compression_session_;
+    BitrateAdjuster bitrate_adjuster_;
+    H264PacketizationMode packetization_mode_;
+    uint32_t target_bitrate_bps_;
+    uint32_t encoder_bitrate_bps_;
+    int32_t width_;
+    int32_t height_;
+    const CFStringRef profile_;
 
-  H264BitstreamParser h264_bitstream_parser_;
-  std::vector<uint8_t> nv12_scale_buffer_;
+    H264BitstreamParser h264_bitstream_parser_;
+    std::vector<uint8_t> nv12_scale_buffer_;
 };  // H264VideoToolboxEncoder
 
 }  // namespace webrtc

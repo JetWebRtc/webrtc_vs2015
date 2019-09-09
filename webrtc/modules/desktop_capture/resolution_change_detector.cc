@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,20 +10,24 @@
 
 #include "webrtc/modules/desktop_capture/resolution_change_detector.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-bool ResolutionChangeDetector::IsChanged(DesktopSize size) {
-  if (!initialized_) {
-    initialized_ = true;
-    last_size_ = size;
-    return false;
-  }
+bool ResolutionChangeDetector::IsChanged(DesktopSize size)
+{
+    if (!initialized_)
+    {
+        initialized_ = true;
+        last_size_ = size;
+        return false;
+    }
 
-  return !last_size_.equals(size);
+    return !last_size_.equals(size);
 }
 
-void ResolutionChangeDetector::Reset() {
-  initialized_ = false;
+void ResolutionChangeDetector::Reset()
+{
+    initialized_ = false;
 }
 
 }  // namespace webrtc

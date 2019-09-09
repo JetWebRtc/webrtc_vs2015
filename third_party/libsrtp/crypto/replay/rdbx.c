@@ -1,4 +1,4 @@
-/*
+﻿/*
  * rdbx.c
  *
  * a replay database with extended range, using a rollover counter
@@ -44,7 +44,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "rdbx.h"
@@ -144,19 +144,28 @@ int srtp_index_guess (const srtp_xtd_seq_num_t *local, srtp_xtd_seq_num_t *guess
 #endif
     int difference;
 
-    if (local_seq < seq_num_median) {
-        if (s - local_seq > seq_num_median) {
+    if (local_seq < seq_num_median)
+    {
+        if (s - local_seq > seq_num_median)
+        {
             guess_roc = local_roc - 1;
             difference = s - local_seq - seq_num_max;
-        } else {
+        }
+        else
+        {
             guess_roc = local_roc;
             difference = s - local_seq;
         }
-    } else {
-        if (local_seq - seq_num_median > s) {
+    }
+    else
+    {
+        if (local_seq - seq_num_median > s)
+        {
             guess_roc = local_roc + 1;
             difference = s - local_seq + seq_num_max;
-        } else {
+        }
+        else
+        {
             guess_roc = local_roc;
             difference = s - local_seq;
         }
@@ -185,11 +194,13 @@ int srtp_index_guess (const srtp_xtd_seq_num_t *local, srtp_xtd_seq_num_t *guess
  */
 srtp_err_status_t srtp_rdbx_init (srtp_rdbx_t *rdbx, unsigned long ws)
 {
-    if (ws == 0) {
+    if (ws == 0)
+    {
         return srtp_err_status_bad_param;
     }
 
-    if (bitvector_alloc(&rdbx->bitmask, ws) != 0) {
+    if (bitvector_alloc(&rdbx->bitmask, ws) != 0)
+    {
         return srtp_err_status_alloc_fail;
     }
 
@@ -220,11 +231,12 @@ srtp_err_status_t srtp_rdbx_set_roc (srtp_rdbx_t *rdbx, uint32_t roc)
     bitvector_set_to_zero(&rdbx->bitmask);
 
 #ifdef NO_64BIT_MATH
-  #error not yet implemented
+#error not yet implemented
 #else
 
     /* make sure that we're not moving backwards */
-    if (roc < (rdbx->index >> 16)) {
+    if (roc < (rdbx->index >> 16))
+    {
         return srtp_err_status_replay_old;
     }
 
@@ -262,13 +274,18 @@ unsigned long srtp_rdbx_get_window_size (const srtp_rdbx_t *rdbx)
 srtp_err_status_t srtp_rdbx_check (const srtp_rdbx_t *rdbx, int delta)
 {
 
-    if (delta > 0) {     /* if delta is positive, it's good */
+    if (delta > 0)       /* if delta is positive, it's good */
+    {
         return srtp_err_status_ok;
-    } else if ((int)(bitvector_get_length(&rdbx->bitmask) - 1) + delta < 0) {
+    }
+    else if ((int)(bitvector_get_length(&rdbx->bitmask) - 1) + delta < 0)
+    {
         /* if delta is lower than the bitmask, it's bad */
         return srtp_err_status_replay_old;
-    } else if (bitvector_get_bit(&rdbx->bitmask,
-                                 (int)(bitvector_get_length(&rdbx->bitmask) - 1) + delta) == 1) {
+    }
+    else if (bitvector_get_bit(&rdbx->bitmask,
+                               (int)(bitvector_get_length(&rdbx->bitmask) - 1) + delta) == 1)
+    {
         /* delta is within the window, so check the bitmask */
         return srtp_err_status_replay_fail;
     }
@@ -288,12 +305,15 @@ srtp_err_status_t srtp_rdbx_check (const srtp_rdbx_t *rdbx, int delta)
 srtp_err_status_t srtp_rdbx_add_index (srtp_rdbx_t *rdbx, int delta)
 {
 
-    if (delta > 0) {
+    if (delta > 0)
+    {
         /* shift forward by delta */
         srtp_index_advance(&rdbx->index, delta);
         bitvector_left_shift(&rdbx->bitmask, delta);
         bitvector_set_bit(&rdbx->bitmask, bitvector_get_length(&rdbx->bitmask) - 1);
-    } else {
+    }
+    else
+    {
         /* delta is in window */
         bitvector_set_bit(&rdbx->bitmask, bitvector_get_length(&rdbx->bitmask) - 1 + delta);
     }
@@ -327,11 +347,13 @@ int srtp_rdbx_estimate_index (const srtp_rdbx_t *rdbx, srtp_xtd_seq_num_t *guess
 #ifdef NO_64BIT_MATH
     /* seq_num_median = 0x8000 */
     if (high32(rdbx->index) > 0 ||
-        low32(rdbx->index) > seq_num_median)
+            low32(rdbx->index) > seq_num_median)
 #else
     if (rdbx->index > seq_num_median)
 #endif
-    { return srtp_index_guess(&rdbx->index, guess, s); }
+    {
+        return srtp_index_guess(&rdbx->index, guess, s);
+    }
 
 #ifdef NO_64BIT_MATH
     *guess = make64(0, (uint32_t)s);

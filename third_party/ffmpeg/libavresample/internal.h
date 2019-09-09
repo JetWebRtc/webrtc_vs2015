@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@ typedef struct AudioConvert AudioConvert;
 typedef struct AudioMix AudioMix;
 typedef struct ResampleContext ResampleContext;
 
-enum RemapPoint {
+enum RemapPoint
+{
     REMAP_NONE,
     REMAP_IN_COPY,
     REMAP_IN_CONVERT,
@@ -40,7 +41,8 @@ enum RemapPoint {
     REMAP_OUT_CONVERT,
 };
 
-typedef struct ChannelMapInfo {
+typedef struct ChannelMapInfo
+{
     int channel_map[AVRESAMPLE_MAX_CHANNELS];   /**< source index of each output channel, -1 if not remapped */
     int do_remap;                               /**< remap needed */
     int channel_copy[AVRESAMPLE_MAX_CHANNELS];  /**< dest index to copy from */
@@ -50,7 +52,8 @@ typedef struct ChannelMapInfo {
     int input_map[AVRESAMPLE_MAX_CHANNELS];     /**< dest index of each input channel */
 } ChannelMapInfo;
 
-struct AVAudioResampleContext {
+struct AVAudioResampleContext
+{
     const AVClass *av_class;        /**< AVClass for logging and AVOptions  */
 
     uint64_t in_channel_layout;                 /**< input channel layout   */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -59,12 +59,14 @@ DEFINE_GUID(GUID_NULL,                0x00000000, 0x0000,0x0000,0x00,0x00,0x00,0
 typedef IDirect3D9* WINAPI pDirect3DCreate9(UINT);
 typedef HRESULT WINAPI pCreateDeviceManager9(UINT *, IDirect3DDeviceManager9 **);
 
-typedef struct dxva2_mode {
-  const GUID     *guid;
-  enum AVCodecID codec;
+typedef struct dxva2_mode
+{
+    const GUID     *guid;
+    enum AVCodecID codec;
 } dxva2_mode;
 
-static const dxva2_mode dxva2_modes[] = {
+static const dxva2_mode dxva2_modes[] =
+{
     /* MPEG-2 */
     { &DXVA2_ModeMPEG2_VLD,      AV_CODEC_ID_MPEG2VIDEO },
     { &DXVA2_ModeMPEG2and1_VLD,  AV_CODEC_ID_MPEG2VIDEO },
@@ -87,12 +89,14 @@ static const dxva2_mode dxva2_modes[] = {
     { NULL,                      0 },
 };
 
-typedef struct surface_info {
+typedef struct surface_info
+{
     int used;
     uint64_t age;
 } surface_info;
 
-typedef struct DXVA2Context {
+typedef struct DXVA2Context
+{
     HMODULE d3dlib;
     HMODULE dxva2lib;
 
@@ -115,7 +119,8 @@ typedef struct DXVA2Context {
     AVFrame                     *tmp_frame;
 } DXVA2Context;
 
-typedef struct DXVA2SurfaceWrapper {
+typedef struct DXVA2SurfaceWrapper
+{
     DXVA2Context         *ctx;
     LPDIRECT3DSURFACE9   surface;
     IDirectXVideoDecoder *decoder;
@@ -127,8 +132,10 @@ static void dxva2_destroy_decoder(AVCodecContext *s)
     DXVA2Context *ctx = ist->hwaccel_ctx;
     int i;
 
-    if (ctx->surfaces) {
-        for (i = 0; i < ctx->num_surfaces; i++) {
+    if (ctx->surfaces)
+    {
+        for (i = 0; i < ctx->num_surfaces; i++)
+        {
             if (ctx->surfaces[i])
                 IDirect3DSurface9_Release(ctx->surfaces[i]);
         }
@@ -138,7 +145,8 @@ static void dxva2_destroy_decoder(AVCodecContext *s)
     ctx->num_surfaces = 0;
     ctx->surface_age  = 0;
 
-    if (ctx->decoder) {
+    if (ctx->decoder)
+    {
         IDirectXVideoDecoder_Release(ctx->decoder);
         ctx->decoder = NULL;
     }
@@ -189,8 +197,10 @@ static void dxva2_release_buffer(void *opaque, uint8_t *data)
     DXVA2Context        *ctx = w->ctx;
     int i;
 
-    for (i = 0; i < ctx->num_surfaces; i++) {
-        if (ctx->surfaces[i] == w->surface) {
+    for (i = 0; i < ctx->num_surfaces; i++)
+    {
+        if (ctx->surfaces[i] == w->surface)
+        {
             ctx->surface_infos[i].used = 0;
             break;
         }
@@ -210,12 +220,14 @@ static int dxva2_get_buffer(AVCodecContext *s, AVFrame *frame, int flags)
 
     av_assert0(frame->format == AV_PIX_FMT_DXVA2_VLD);
 
-    for (i = 0; i < ctx->num_surfaces; i++) {
+    for (i = 0; i < ctx->num_surfaces; i++)
+    {
         surface_info *info = &ctx->surface_infos[i];
         if (!info->used && (old_unused == -1 || info->age < ctx->surface_infos[old_unused].age))
             old_unused = i;
     }
-    if (old_unused == -1) {
+    if (old_unused == -1)
+    {
         av_log(NULL, AV_LOG_ERROR, "No free DXVA2 surface!\n");
         return AVERROR(ENOMEM);
     }
@@ -230,7 +242,8 @@ static int dxva2_get_buffer(AVCodecContext *s, AVFrame *frame, int flags)
     frame->buf[0] = av_buffer_create((uint8_t*)surface, 0,
                                      dxva2_release_buffer, w,
                                      AV_BUFFER_FLAG_READONLY);
-    if (!frame->buf[0]) {
+    if (!frame->buf[0])
+    {
         av_free(w);
         return AVERROR(ENOMEM);
     }
@@ -270,7 +283,8 @@ static int dxva2_retrieve_data(AVCodecContext *s, AVFrame *frame)
         return ret;
 
     hr = IDirect3DSurface9_LockRect(surface, &LockedRect, NULL, D3DLOCK_READONLY);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, AV_LOG_ERROR, "Unable to lock DXVA2 surface\n");
         return AVERROR_UNKNOWN;
     }
@@ -323,34 +337,40 @@ static int dxva2_alloc(AVCodecContext *s)
     ist->hwaccel_retrieve_data = dxva2_retrieve_data;
 
     ctx->d3dlib = LoadLibrary("d3d9.dll");
-    if (!ctx->d3dlib) {
+    if (!ctx->d3dlib)
+    {
         av_log(NULL, loglevel, "Failed to load D3D9 library\n");
         goto fail;
     }
     ctx->dxva2lib = LoadLibrary("dxva2.dll");
-    if (!ctx->dxva2lib) {
+    if (!ctx->dxva2lib)
+    {
         av_log(NULL, loglevel, "Failed to load DXVA2 library\n");
         goto fail;
     }
 
     createD3D = (pDirect3DCreate9 *)GetProcAddress(ctx->d3dlib, "Direct3DCreate9");
-    if (!createD3D) {
+    if (!createD3D)
+    {
         av_log(NULL, loglevel, "Failed to locate Direct3DCreate9\n");
         goto fail;
     }
     createDeviceManager = (pCreateDeviceManager9 *)GetProcAddress(ctx->dxva2lib, "DXVA2CreateDirect3DDeviceManager9");
-    if (!createDeviceManager) {
+    if (!createDeviceManager)
+    {
         av_log(NULL, loglevel, "Failed to locate DXVA2CreateDirect3DDeviceManager9\n");
         goto fail;
     }
 
     ctx->d3d9 = createD3D(D3D_SDK_VERSION);
-    if (!ctx->d3d9) {
+    if (!ctx->d3d9)
+    {
         av_log(NULL, loglevel, "Failed to create IDirect3D object\n");
         goto fail;
     }
 
-    if (ist->hwaccel_device) {
+    if (ist->hwaccel_device)
+    {
         adapter = atoi(ist->hwaccel_device);
         av_log(NULL, AV_LOG_INFO, "Using HWAccel device %d\n", adapter);
     }
@@ -367,31 +387,36 @@ static int dxva2_alloc(AVCodecContext *s)
     hr = IDirect3D9_CreateDevice(ctx->d3d9, adapter, D3DDEVTYPE_HAL, GetDesktopWindow(),
                                  D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_MULTITHREADED | D3DCREATE_FPU_PRESERVE,
                                  &d3dpp, &ctx->d3d9device);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to create Direct3D device\n");
         goto fail;
     }
 
     hr = createDeviceManager(&resetToken, &ctx->d3d9devmgr);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to create Direct3D device manager\n");
         goto fail;
     }
 
     hr = IDirect3DDeviceManager9_ResetDevice(ctx->d3d9devmgr, ctx->d3d9device, resetToken);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to bind Direct3D device to device manager\n");
         goto fail;
     }
 
     hr = IDirect3DDeviceManager9_OpenDeviceHandle(ctx->d3d9devmgr, &ctx->deviceHandle);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to open device handle\n");
         goto fail;
     }
 
     hr = IDirect3DDeviceManager9_GetVideoService(ctx->d3d9devmgr, ctx->deviceHandle, &IID_IDirectXVideoDecoderService, (void **)&ctx->decoder_service);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to create IDirectXVideoDecoderService\n");
         goto fail;
     }
@@ -411,8 +436,8 @@ fail:
 }
 
 static int dxva2_get_decoder_configuration(AVCodecContext *s, const GUID *device_guid,
-                                           const DXVA2_VideoDesc *desc,
-                                           DXVA2_ConfigPictureDecode *config)
+        const DXVA2_VideoDesc *desc,
+        DXVA2_ConfigPictureDecode *config)
 {
     InputStream  *ist = s->opaque;
     int loglevel = (ist->hwaccel_id == HWACCEL_AUTO) ? AV_LOG_VERBOSE : AV_LOG_ERROR;
@@ -424,12 +449,14 @@ static int dxva2_get_decoder_configuration(AVCodecContext *s, const GUID *device
     int i;
 
     hr = IDirectXVideoDecoderService_GetDecoderConfigurations(ctx->decoder_service, device_guid, desc, NULL, &cfg_count, &cfg_list);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Unable to retrieve decoder configurations\n");
         return AVERROR(EINVAL);
     }
 
-    for (i = 0; i < cfg_count; i++) {
+    for (i = 0; i < cfg_count; i++)
+    {
         DXVA2_ConfigPictureDecode *cfg = &cfg_list[i];
 
         unsigned score;
@@ -441,14 +468,16 @@ static int dxva2_get_decoder_configuration(AVCodecContext *s, const GUID *device
             continue;
         if (IsEqualGUID(&cfg->guidConfigBitstreamEncryption, &DXVA2_NoEncrypt))
             score += 16;
-        if (score > best_score) {
+        if (score > best_score)
+        {
             best_score = score;
             best_cfg   = *cfg;
         }
     }
     CoTaskMemFree(cfg_list);
 
-    if (!best_score) {
+    if (!best_score)
+    {
         av_log(NULL, loglevel, "No valid decoder configuration available\n");
         return AVERROR(EINVAL);
     }
@@ -474,19 +503,22 @@ static int dxva2_create_decoder(AVCodecContext *s)
     int ret;
 
     hr = IDirectXVideoDecoderService_GetDecoderDeviceGuids(ctx->decoder_service, &guid_count, &guid_list);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to retrieve decoder device GUIDs\n");
         goto fail;
     }
 
-    for (i = 0; dxva2_modes[i].guid; i++) {
+    for (i = 0; dxva2_modes[i].guid; i++)
+    {
         D3DFORMAT *target_list = NULL;
         unsigned target_count = 0;
         const dxva2_mode *mode = &dxva2_modes[i];
         if (mode->codec != s->codec_id)
             continue;
 
-        for (j = 0; j < guid_count; j++) {
+        for (j = 0; j < guid_count; j++)
+        {
             if (IsEqualGUID(mode->guid, &guid_list[j]))
                 break;
         }
@@ -494,25 +526,30 @@ static int dxva2_create_decoder(AVCodecContext *s)
             continue;
 
         hr = IDirectXVideoDecoderService_GetDecoderRenderTargets(ctx->decoder_service, mode->guid, &target_count, &target_list);
-        if (FAILED(hr)) {
+        if (FAILED(hr))
+        {
             continue;
         }
-        for (j = 0; j < target_count; j++) {
+        for (j = 0; j < target_count; j++)
+        {
             const D3DFORMAT format = target_list[j];
-            if (format == MKTAG('N','V','1','2')) {
+            if (format == MKTAG('N','V','1','2'))
+            {
                 target_format = format;
                 break;
             }
         }
         CoTaskMemFree(target_list);
-        if (target_format) {
+        if (target_format)
+        {
             device_guid = *mode->guid;
             break;
         }
     }
     CoTaskMemFree(guid_list);
 
-    if (IsEqualGUID(&device_guid, &GUID_NULL)) {
+    if (IsEqualGUID(&device_guid, &GUID_NULL))
+    {
         av_log(NULL, loglevel, "No decoder device for codec found\n");
         goto fail;
     }
@@ -522,7 +559,8 @@ static int dxva2_create_decoder(AVCodecContext *s)
     desc.Format       = target_format;
 
     ret = dxva2_get_decoder_configuration(s, &device_guid, &desc, &config);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         goto fail;
     }
 
@@ -553,27 +591,30 @@ static int dxva2_create_decoder(AVCodecContext *s)
     ctx->surfaces      = av_mallocz(ctx->num_surfaces * sizeof(*ctx->surfaces));
     ctx->surface_infos = av_mallocz(ctx->num_surfaces * sizeof(*ctx->surface_infos));
 
-    if (!ctx->surfaces || !ctx->surface_infos) {
+    if (!ctx->surfaces || !ctx->surface_infos)
+    {
         av_log(NULL, loglevel, "Unable to allocate surface arrays\n");
         goto fail;
     }
 
     hr = IDirectXVideoDecoderService_CreateSurface(ctx->decoder_service,
-                                                   FFALIGN(s->coded_width, surface_alignment),
-                                                   FFALIGN(s->coded_height, surface_alignment),
-                                                   ctx->num_surfaces - 1,
-                                                   target_format, D3DPOOL_DEFAULT, 0,
-                                                   DXVA2_VideoDecoderRenderTarget,
-                                                   ctx->surfaces, NULL);
-    if (FAILED(hr)) {
+            FFALIGN(s->coded_width, surface_alignment),
+            FFALIGN(s->coded_height, surface_alignment),
+            ctx->num_surfaces - 1,
+            target_format, D3DPOOL_DEFAULT, 0,
+            DXVA2_VideoDecoderRenderTarget,
+            ctx->surfaces, NULL);
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to create %d video surfaces\n", ctx->num_surfaces);
         goto fail;
     }
 
     hr = IDirectXVideoDecoderService_CreateVideoDecoder(ctx->decoder_service, &device_guid,
-                                                        &desc, &config, ctx->surfaces,
-                                                        ctx->num_surfaces, &ctx->decoder);
-    if (FAILED(hr)) {
+            &desc, &config, ctx->surfaces,
+            ctx->num_surfaces, &ctx->decoder);
+    if (FAILED(hr))
+    {
         av_log(NULL, loglevel, "Failed to create DXVA2 video decoder\n");
         goto fail;
     }
@@ -602,7 +643,8 @@ int dxva2_init(AVCodecContext *s)
     DXVA2Context *ctx;
     int ret;
 
-    if (!ist->hwaccel_ctx) {
+    if (!ist->hwaccel_ctx)
+    {
         ret = dxva2_alloc(s);
         if (ret < 0)
             return ret;
@@ -610,7 +652,8 @@ int dxva2_init(AVCodecContext *s)
     ctx = ist->hwaccel_ctx;
 
     if (s->codec_id == AV_CODEC_ID_H264 &&
-        (s->profile & ~FF_PROFILE_H264_CONSTRAINED) > FF_PROFILE_H264_HIGH) {
+            (s->profile & ~FF_PROFILE_H264_CONSTRAINED) > FF_PROFILE_H264_HIGH)
+    {
         av_log(NULL, loglevel, "Unsupported H.264 profile for DXVA2 HWAccel: %d\n", s->profile);
         return AVERROR(EINVAL);
     }
@@ -619,7 +662,8 @@ int dxva2_init(AVCodecContext *s)
         dxva2_destroy_decoder(s);
 
     ret = dxva2_create_decoder(s);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, loglevel, "Error creating the DXVA2 decoder\n");
         return ret;
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCRtpSender ()
 
-@property(nonatomic, readonly)
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::RtpSenderInterface> nativeRtpSender;
 
 /** Initialize an RTCRtpSender with a native RtpSenderInterface. */

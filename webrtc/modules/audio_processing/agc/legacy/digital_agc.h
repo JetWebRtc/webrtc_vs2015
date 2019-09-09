@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,31 +23,33 @@
 #define AGC_SCALEDIFF32(A, B, C) \
   ((C) + ((B) >> 16) * (A) + (((0x0000FFFF & (B)) * (A)) >> 16))
 
-typedef struct {
-  int32_t downState[8];
-  int16_t HPstate;
-  int16_t counter;
-  int16_t logRatio;           // log( P(active) / P(inactive) ) (Q10)
-  int16_t meanLongTerm;       // Q10
-  int32_t varianceLongTerm;   // Q8
-  int16_t stdLongTerm;        // Q10
-  int16_t meanShortTerm;      // Q10
-  int32_t varianceShortTerm;  // Q8
-  int16_t stdShortTerm;       // Q10
+typedef struct
+{
+    int32_t downState[8];
+    int16_t HPstate;
+    int16_t counter;
+    int16_t logRatio;           // log( P(active) / P(inactive) ) (Q10)
+    int16_t meanLongTerm;       // Q10
+    int32_t varianceLongTerm;   // Q8
+    int16_t stdLongTerm;        // Q10
+    int16_t meanShortTerm;      // Q10
+    int32_t varianceShortTerm;  // Q8
+    int16_t stdShortTerm;       // Q10
 } AgcVad;                     // total = 54 bytes
 
-typedef struct {
-  int32_t capacitorSlow;
-  int32_t capacitorFast;
-  int32_t gain;
-  int32_t gainTable[32];
-  int16_t gatePrevious;
-  int16_t agcMode;
-  AgcVad vadNearend;
-  AgcVad vadFarend;
+typedef struct
+{
+    int32_t capacitorSlow;
+    int32_t capacitorFast;
+    int32_t gain;
+    int32_t gainTable[32];
+    int16_t gatePrevious;
+    int16_t agcMode;
+    AgcVad vadNearend;
+    AgcVad vadFarend;
 #ifdef WEBRTC_AGC_DEBUG_DUMP
-  FILE* logFile;
-  int frameCounter;
+    FILE* logFile;
+    int frameCounter;
 #endif
 } DigitalAgc;
 

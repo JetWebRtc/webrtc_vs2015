@@ -33,12 +33,14 @@
 
 #define HIST_SIZE (3*256)
 
-struct thumb_frame {
+struct thumb_frame
+{
     AVFrame *buf;               ///< cached frame
     int histogram[HIST_SIZE];   ///< RGB color distribution histogram of the frame
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int n;                      ///< current frame
     int n_frames;               ///< number of frames for analysis
@@ -49,7 +51,8 @@ typedef struct {
 #define OFFSET(x) offsetof(ThumbContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption thumbnail_options[] = {
+static const AVOption thumbnail_options[] =
+{
     { "n", "set the frames batch size", OFFSET(n_frames), AV_OPT_TYPE_INT, {.i64=100}, 2, INT_MAX, FLAGS },
     { NULL }
 };
@@ -61,7 +64,8 @@ static av_cold int init(AVFilterContext *ctx)
     ThumbContext *thumb = ctx->priv;
 
     thumb->frames = av_calloc(thumb->n_frames, sizeof(*thumb->frames));
-    if (!thumb->frames) {
+    if (!thumb->frames)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Allocation failure, try to lower the number of frames\n");
         return AVERROR(ENOMEM);
@@ -81,7 +85,8 @@ static double frame_sum_square_err(const int *hist, const double *median)
     int i;
     double err, sum_sq_err = 0;
 
-    for (i = 0; i < HIST_SIZE; i++) {
+    for (i = 0; i < HIST_SIZE; i++)
+    {
         err = median[i] - (double)hist[i];
         sum_sq_err += err*err;
     }
@@ -97,21 +102,24 @@ static AVFrame *get_best_frame(AVFilterContext *ctx)
     double avg_hist[HIST_SIZE] = {0}, sq_err, min_sq_err = -1;
 
     // average histogram of the N frames
-    for (j = 0; j < FF_ARRAY_ELEMS(avg_hist); j++) {
+    for (j = 0; j < FF_ARRAY_ELEMS(avg_hist); j++)
+    {
         for (i = 0; i < nb_frames; i++)
             avg_hist[j] += (double)thumb->frames[i].histogram[j];
         avg_hist[j] /= nb_frames;
     }
 
     // find the frame closer to the average using the sum of squared errors
-    for (i = 0; i < nb_frames; i++) {
+    for (i = 0; i < nb_frames; i++)
+    {
         sq_err = frame_sum_square_err(thumb->frames[i].histogram, avg_hist);
         if (i == 0 || sq_err < min_sq_err)
             best_frame_idx = i, min_sq_err = sq_err;
     }
 
     // free and reset everything (except the best frame buffer)
-    for (i = 0; i < nb_frames; i++) {
+    for (i = 0; i < nb_frames; i++)
+    {
         memset(thumb->frames[i].histogram, 0, sizeof(thumb->frames[i].histogram));
         if (i != best_frame_idx)
             av_frame_free(&thumb->frames[i].buf);
@@ -141,8 +149,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     thumb->frames[thumb->n].buf = frame;
 
     // update current frame RGB histogram
-    for (j = 0; j < inlink->h; j++) {
-        for (i = 0; i < inlink->w; i++) {
+    for (j = 0; j < inlink->h; j++)
+    {
+        for (i = 0; i < inlink->w; i++)
+        {
             hist[0*256 + p[i*3    ]]++;
             hist[1*256 + p[i*3 + 1]]++;
             hist[2*256 + p[i*3 + 2]]++;
@@ -174,9 +184,11 @@ static int request_frame(AVFilterLink *link)
 
     /* loop until a frame thumbnail is available (when a frame is queued,
      * thumb->n is reset to zero) */
-    do {
+    do
+    {
         int ret = ff_request_frame(ctx->inputs[0]);
-        if (ret == AVERROR_EOF && thumb->n) {
+        if (ret == AVERROR_EOF && thumb->n)
+        {
             ret = ff_filter_frame(link, get_best_frame(ctx));
             if (ret < 0)
                 return ret;
@@ -184,7 +196,8 @@ static int request_frame(AVFilterLink *link)
         }
         if (ret < 0)
             return ret;
-    } while (thumb->n);
+    }
+    while (thumb->n);
     return 0;
 }
 
@@ -199,7 +212,8 @@ static int config_props(AVFilterLink *inlink)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
         AV_PIX_FMT_NONE
     };
@@ -209,7 +223,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad thumbnail_inputs[] = {
+static const AVFilterPad thumbnail_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -219,7 +234,8 @@ static const AVFilterPad thumbnail_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad thumbnail_outputs[] = {
+static const AVFilterPad thumbnail_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -228,7 +244,8 @@ static const AVFilterPad thumbnail_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_thumbnail = {
+AVFilter ff_vf_thumbnail =
+{
     .name          = "thumbnail",
     .description   = NULL_IF_CONFIG_SMALL("Select the most representative frame in a given sequence of consecutive frames."),
     .priv_size     = sizeof(ThumbContext),

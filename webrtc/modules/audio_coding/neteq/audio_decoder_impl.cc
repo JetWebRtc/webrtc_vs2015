@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,10 +33,13 @@
 #endif
 #include "webrtc/modules/audio_coding/codecs/pcm16b/audio_decoder_pcm16b.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-bool CodecSupported(NetEqDecoder codec_type) {
-  switch (codec_type) {
+bool CodecSupported(NetEqDecoder codec_type)
+{
+    switch (codec_type)
+    {
     case NetEqDecoder::kDecoderPCMu:
     case NetEqDecoder::kDecoderPCMa:
     case NetEqDecoder::kDecoderPCMu_2ch:
@@ -76,13 +79,15 @@ bool CodecSupported(NetEqDecoder codec_type) {
     case NetEqDecoder::kDecoderCNGwb:
     case NetEqDecoder::kDecoderCNGswb32kHz:
     case NetEqDecoder::kDecoderCNGswb48kHz:
-    case NetEqDecoder::kDecoderArbitrary: {
-      return true;
+    case NetEqDecoder::kDecoderArbitrary:
+    {
+        return true;
     }
-    default: {
-      return false;
+    default:
+    {
+        return false;
     }
-  }
+    }
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 
 typedef struct DitherContext DitherContext;
 
-typedef struct DitherDSPContext {
+typedef struct DitherDSPContext
+{
     /**
      * Convert samples from flt to s16 with added dither noise.
      *

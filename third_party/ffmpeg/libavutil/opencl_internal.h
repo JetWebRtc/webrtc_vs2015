@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Peng Gao <peng@multicorewareinc.com>
  * Copyright (C) 2012 Li   Cao <li@multicorewareinc.com>
  * Copyright (C) 2012 Wei  Gao <weigao@multicorewareinc.com>
@@ -24,7 +24,8 @@
 
 #define FF_OPENCL_PARAM_INFO(a) ((void*)(&(a))), (sizeof(a))
 
-typedef struct {
+typedef struct
+{
     cl_kernel kernel;
     int param_num;
     void *ctx;

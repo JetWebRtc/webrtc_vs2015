@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,19 +97,21 @@ amm-info@iis.fraunhofer.de
 
 #define PE_CONSTPART_SHIFT  FRACT_BITS
 
-typedef struct {
-   /* calculated by FDKaacEnc_prepareSfbPe */
-   INT      sfbNLines[MAX_GROUPED_SFB];             /* number of relevant lines in sfb */
-   /* the rest is calculated by FDKaacEnc_calcSfbPe */
-   INT      sfbPe[MAX_GROUPED_SFB];                 /* pe for each sfb */
-   INT      sfbConstPart[MAX_GROUPED_SFB];          /* constant part for each sfb */
-   INT      sfbNActiveLines[MAX_GROUPED_SFB];       /* number of active lines in sfb */
-   INT      pe;                                     /* sum of sfbPe */
-   INT      constPart;                              /* sum of sfbConstPart */
-   INT      nActiveLines;                           /* sum of sfbNActiveLines */
+typedef struct
+{
+    /* calculated by FDKaacEnc_prepareSfbPe */
+    INT      sfbNLines[MAX_GROUPED_SFB];             /* number of relevant lines in sfb */
+    /* the rest is calculated by FDKaacEnc_calcSfbPe */
+    INT      sfbPe[MAX_GROUPED_SFB];                 /* pe for each sfb */
+    INT      sfbConstPart[MAX_GROUPED_SFB];          /* constant part for each sfb */
+    INT      sfbNActiveLines[MAX_GROUPED_SFB];       /* number of active lines in sfb */
+    INT      pe;                                     /* sum of sfbPe */
+    INT      constPart;                              /* sum of sfbConstPart */
+    INT      nActiveLines;                           /* sum of sfbNActiveLines */
 } PE_CHANNEL_DATA;
 
-typedef struct {
+typedef struct
+{
     PE_CHANNEL_DATA peChannelData[(2)];
     INT    pe;
     INT    constPart;
@@ -119,21 +121,21 @@ typedef struct {
 
 
 void FDKaacEnc_prepareSfbPe(PE_CHANNEL_DATA   *peChanData,
-                  const FIXP_DBL    *sfbEnergyLdData,
-                  const FIXP_DBL    *sfbThresholdLdData,
-                  const FIXP_DBL    *sfbFormFactorLdData,
-                  const INT         *sfbOffset,
-                  const INT         sfbCnt,
-                  const INT         sfbPerGroup,
-                  const INT         maxSfbPerGroup);
+                            const FIXP_DBL    *sfbEnergyLdData,
+                            const FIXP_DBL    *sfbThresholdLdData,
+                            const FIXP_DBL    *sfbFormFactorLdData,
+                            const INT         *sfbOffset,
+                            const INT         sfbCnt,
+                            const INT         sfbPerGroup,
+                            const INT         maxSfbPerGroup);
 
 void FDKaacEnc_calcSfbPe(PE_CHANNEL_DATA  *RESTRICT peChanData,
-               const FIXP_DBL   *RESTRICT sfbEnergyLdData,
-               const FIXP_DBL   *RESTRICT sfbThresholdLdData,
-               const INT        sfbCnt,
-               const INT        sfbPerGroup,
-               const INT        maxSfbPerGroup,
-               const INT       *isBook,
-               const INT       *isScale);
+                         const FIXP_DBL   *RESTRICT sfbEnergyLdData,
+                         const FIXP_DBL   *RESTRICT sfbThresholdLdData,
+                         const INT        sfbCnt,
+                         const INT        sfbPerGroup,
+                         const INT        maxSfbPerGroup,
+                         const INT       *isBook,
+                         const INT       *isScale);
 
 #endif

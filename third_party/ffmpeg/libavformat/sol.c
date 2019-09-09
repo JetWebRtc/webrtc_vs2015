@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sierra SOL demuxer
  * Copyright Konstantin Shishkov
  *
@@ -37,8 +37,8 @@ static int sol_probe(AVProbeData *p)
     /* check file header */
     uint16_t magic = AV_RL32(p->buf);
     if ((magic == 0x0B8D || magic == 0x0C0D || magic == 0x0C8D) &&
-        p->buf[2] == 'S' && p->buf[3] == 'O' &&
-        p->buf[4] == 'L' && p->buf[5] == 0)
+            p->buf[2] == 'S' && p->buf[3] == 'O' &&
+            p->buf[4] == 'L' && p->buf[5] == 0)
         return AVPROBE_SCORE_MAX;
     else
         return 0;
@@ -115,7 +115,7 @@ static int sol_read_header(AVFormatContext *s)
     st->codec->codec_id = codec;
     st->codec->channels = channels;
     st->codec->channel_layout = channels == 1 ? AV_CH_LAYOUT_MONO :
-                                                AV_CH_LAYOUT_STEREO;
+                                AV_CH_LAYOUT_STEREO;
     st->codec->sample_rate = rate;
     avpriv_set_pts_info(st, 64, 1, rate);
     return 0;
@@ -124,7 +124,7 @@ static int sol_read_header(AVFormatContext *s)
 #define MAX_SIZE 4096
 
 static int sol_read_packet(AVFormatContext *s,
-                          AVPacket *pkt)
+                           AVPacket *pkt)
 {
     int ret;
 
@@ -138,7 +138,8 @@ static int sol_read_packet(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_sol_demuxer = {
+AVInputFormat ff_sol_demuxer =
+{
     .name           = "sol",
     .long_name      = NULL_IF_CONFIG_SMALL("Sierra SOL"),
     .read_probe     = sol_probe,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2009 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,8 +11,9 @@
 #include "webrtc/base/gunit.h"
 #include "webrtc/base/macutils.h"
 
-TEST(MacUtilsTest, GetOsVersionName) {
-  rtc::MacOSVersionName ver = rtc::GetOSVersionName();
-  LOG(LS_INFO) << "GetOsVersionName " << ver;
-  EXPECT_NE(rtc::kMacOSUnknown, ver);
+TEST(MacUtilsTest, GetOsVersionName)
+{
+    rtc::MacOSVersionName ver = rtc::GetOSVersionName();
+    LOG(LS_INFO) << "GetOsVersionName " << ver;
+    EXPECT_NE(rtc::kMacOSUnknown, ver);
 }

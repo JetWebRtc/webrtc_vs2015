@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,14 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_transport.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class CriticalSectionWrapper;
 class RWLockWrapper;
 
-namespace test {
+namespace test
+{
 
 class UdpSocketManager;
 
@@ -27,7 +29,8 @@ class UdpTransportImpl : public UdpTransport
 {
 public:
     // A factory that returns a wrapped UDP socket or equivalent.
-    class SocketFactoryInterface {
+    class SocketFactoryInterface
+    {
     public:
         virtual ~SocketFactoryInterface() {}
         virtual UdpSocketWrapper* CreateSocket(const int32_t id,
@@ -133,7 +136,10 @@ public:
                             uint32_t& ipSize,
                             uint16_t& sourcePort) override;
 
-    int32_t Id() const {return _id;}
+    int32_t Id() const
+    {
+        return _id;
+    }
 protected:
     // IncomingSocketCallback signature functions for receiving callbacks from
     // UdpSocketWrapper.

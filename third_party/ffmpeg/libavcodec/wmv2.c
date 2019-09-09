@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -58,8 +58,10 @@ static void wmv2_add_block(Wmv2Context *w, int16_t *block1,
 {
     MpegEncContext *const s = &w->s;
 
-    if (s->block_last_index[n] >= 0) {
-        switch (w->abt_type_table[n]) {
+    if (s->block_last_index[n] >= 0)
+    {
+        switch (w->abt_type_table[n])
+        {
         case 0:
             w->wdsp.idct_add(dst, stride, block1);
             break;
@@ -127,7 +129,8 @@ void ff_mspel_motion(MpegEncContext *s, uint8_t *dest_y,
     ptr        = ref_picture[0] + (src_y * linesize) + src_x;
 
     if (src_x < 1 || src_y < 1 || src_x + 17 >= s->h_edge_pos ||
-        src_y + h + 1 >= v_edge_pos) {
+            src_y + h + 1 >= v_edge_pos)
+    {
         s->vdsp.emulated_edge_mc(s->sc.edge_emu_buffer, ptr - 1 - s->linesize,
                                  s->linesize, s->linesize, 19, 19,
                                  src_x - 1, src_y - 1,
@@ -162,7 +165,8 @@ void ff_mspel_motion(MpegEncContext *s, uint8_t *dest_y,
         dxy &= ~2;
     offset = (src_y * uvlinesize) + src_x;
     ptr    = ref_picture[1] + offset;
-    if (emu) {
+    if (emu)
+    {
         s->vdsp.emulated_edge_mc(s->sc.edge_emu_buffer, ptr,
                                  s->uvlinesize, s->uvlinesize,
                                  9, 9,
@@ -173,7 +177,8 @@ void ff_mspel_motion(MpegEncContext *s, uint8_t *dest_y,
     pix_op[1][dxy](dest_cb, ptr, uvlinesize, h >> 1);
 
     ptr = ref_picture[2] + offset;
-    if (emu) {
+    if (emu)
+    {
         s->vdsp.emulated_edge_mc(s->sc.edge_emu_buffer, ptr,
                                  s->uvlinesize, s->uvlinesize,
                                  9, 9,

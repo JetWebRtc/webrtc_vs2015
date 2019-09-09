@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (Parag.Salasakar@imgtec.com)
  *                    Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *
@@ -24,7 +24,8 @@
 #if HAVE_MSA
 static av_cold void h264qpel_init_msa(H264QpelContext *c, int bit_depth)
 {
-    if (8 == bit_depth) {
+    if (8 == bit_depth)
+    {
         c->put_h264_qpel_pixels_tab[0][0] = ff_put_h264_qpel16_mc00_msa;
         c->put_h264_qpel_pixels_tab[0][1] = ff_put_h264_qpel16_mc10_msa;
         c->put_h264_qpel_pixels_tab[0][2] = ff_put_h264_qpel16_mc20_msa;
@@ -132,7 +133,8 @@ static av_cold void h264qpel_init_msa(H264QpelContext *c, int bit_depth)
 #if HAVE_MMI
 static av_cold void h264qpel_init_mmi(H264QpelContext *c, int bit_depth)
 {
-    if (8 == bit_depth) {
+    if (8 == bit_depth)
+    {
         c->put_h264_qpel_pixels_tab[0][0] = ff_put_h264_qpel16_mc00_mmi;
         c->put_h264_qpel_pixels_tab[0][1] = ff_put_h264_qpel16_mc10_mmi;
         c->put_h264_qpel_pixels_tab[0][2] = ff_put_h264_qpel16_mc20_mmi;

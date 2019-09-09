@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ void WebRtcIlbcfix_Smooth(
                                 this block */
     int16_t *surround  /* (i) The approximation from the
                                 surrounding sequences */
-                          );
+);
 
 #endif

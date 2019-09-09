@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DVD navigation block parser for FFmpeg
  * Copyright (c) 2013 The FFmpeg Project
  *
@@ -26,7 +26,8 @@
 #define DSI_SIZE 1018
 
 /* parser definition */
-typedef struct DVDNavParseContext {
+typedef struct DVDNavParseContext
+{
     uint32_t     lba;
     uint8_t      buffer[PCI_SIZE+DSI_SIZE];
     int          copied;
@@ -55,51 +56,61 @@ static int dvd_nav_parse(AVCodecParserContext *s,
     avctx->time_base.num = 1;
     avctx->time_base.den = 90000;
 
-    if (buf && buf_size) {
-        switch(buf[0]) {
-            case 0x00:
-                if (buf_size == PCI_SIZE) {
-                    /* PCI */
-                    uint32_t lba      = AV_RB32(&buf[0x01]);
-                    uint32_t startpts = AV_RB32(&buf[0x0D]);
-                    uint32_t endpts   = AV_RB32(&buf[0x11]);
+    if (buf && buf_size)
+    {
+        switch(buf[0])
+        {
+        case 0x00:
+            if (buf_size == PCI_SIZE)
+            {
+                /* PCI */
+                uint32_t lba      = AV_RB32(&buf[0x01]);
+                uint32_t startpts = AV_RB32(&buf[0x0D]);
+                uint32_t endpts   = AV_RB32(&buf[0x11]);
 
-                    if (endpts > startpts) {
-                        pc1->lba    = lba;
-                        s->pts      = (int64_t)startpts;
-                        s->duration = endpts - startpts;
+                if (endpts > startpts)
+                {
+                    pc1->lba    = lba;
+                    s->pts      = (int64_t)startpts;
+                    s->duration = endpts - startpts;
 
-                        memcpy(pc1->buffer, buf, PCI_SIZE);
-                        pc1->copied = PCI_SIZE;
-                        valid       = 1;
-                    }
+                    memcpy(pc1->buffer, buf, PCI_SIZE);
+                    pc1->copied = PCI_SIZE;
+                    valid       = 1;
                 }
-                break;
+            }
+            break;
 
-            case 0x01:
-                if ((buf_size == DSI_SIZE) && (pc1->copied == PCI_SIZE)) {
-                    /* DSI */
-                    uint32_t lba = AV_RB32(&buf[0x05]);
+        case 0x01:
+            if ((buf_size == DSI_SIZE) && (pc1->copied == PCI_SIZE))
+            {
+                /* DSI */
+                uint32_t lba = AV_RB32(&buf[0x05]);
 
-                    if (lba == pc1->lba) {
-                        memcpy(pc1->buffer + pc1->copied, buf, DSI_SIZE);
-                        lastPacket  = 1;
-                        valid       = 1;
-                    }
+                if (lba == pc1->lba)
+                {
+                    memcpy(pc1->buffer + pc1->copied, buf, DSI_SIZE);
+                    lastPacket  = 1;
+                    valid       = 1;
                 }
-                break;
+            }
+            break;
         }
     }
 
-    if (!valid || lastPacket) {
+    if (!valid || lastPacket)
+    {
         pc1->copied = 0;
         pc1->lba    = 0xFFFFFFFF;
     }
 
-    if (lastPacket) {
+    if (lastPacket)
+    {
         *poutbuf      = pc1->buffer;
         *poutbuf_size = sizeof(pc1->buffer);
-    } else {
+    }
+    else
+    {
         *poutbuf      = NULL;
         *poutbuf_size = 0;
     }
@@ -107,7 +118,8 @@ static int dvd_nav_parse(AVCodecParserContext *s,
     return buf_size;
 }
 
-AVCodecParser ff_dvd_nav_parser = {
+AVCodecParser ff_dvd_nav_parser =
+{
     .codec_ids      = { AV_CODEC_ID_DVD_NAV },
     .priv_data_size = sizeof(DVDNavParseContext),
     .parser_init    = dvd_nav_parse_init,

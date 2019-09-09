@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H263+ tables
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@ const uint8_t ff_h263_intra_MCBPC_bits[9] = { 1, 3, 3, 3, 4, 6, 6, 6, 9 };
 /* inter MCBPC, mb_type = (inter), (intra), (interq), (intraq), (inter4v) */
 /* Changed the tables for interq and inter4v+q, following the standard
  * ** Juanjo ** */
-const uint8_t ff_h263_inter_MCBPC_code[28] = {
+const uint8_t ff_h263_inter_MCBPC_code[28] =
+{
     1,  3,  2,  5,
     3,  4,  3,  3,
     3,  7,  6,  5,
@@ -46,17 +47,19 @@ const uint8_t ff_h263_inter_MCBPC_code[28] = {
     1,  0,  0,  0,  /* Stuffing */
     2, 12, 14, 15,
 };
-const uint8_t ff_h263_inter_MCBPC_bits[28] = {
-     1,  4,  4,  6,  /* inter  */
-     5,  8,  8,  7,  /* intra  */
-     3,  7,  7,  9,  /* interQ */
-     6,  9,  9,  9,  /* intraQ */
-     3,  7,  7,  8,  /* inter4 */
-     9,  0,  0,  0,  /* Stuffing */
+const uint8_t ff_h263_inter_MCBPC_bits[28] =
+{
+    1,  4,  4,  6,  /* inter  */
+    5,  8,  8,  7,  /* intra  */
+    3,  7,  7,  9,  /* interQ */
+    6,  9,  9,  9,  /* intraQ */
+    3,  7,  7,  8,  /* inter4 */
+    9,  0,  0,  0,  /* Stuffing */
     11, 13, 13, 13,  /* inter4Q */
 };
 
-const uint8_t ff_h263_mbtype_b_tab[15][2] = {
+const uint8_t ff_h263_mbtype_b_tab[15][2] =
+{
     { 1,  1 },
     { 3,  3 },
     { 1,  5 },
@@ -74,20 +77,23 @@ const uint8_t ff_h263_mbtype_b_tab[15][2] = {
     { 1,  8 },
 };
 
-const uint8_t ff_cbpc_b_tab[4][2] = {
+const uint8_t ff_cbpc_b_tab[4][2] =
+{
     { 0, 1 },
     { 2, 2 },
     { 7, 3 },
     { 6, 3 },
 };
 
-const uint8_t ff_h263_cbpy_tab[16][2] = {
+const uint8_t ff_h263_cbpy_tab[16][2] =
+{
     {  3, 4 }, { 5, 5 }, { 4, 5 }, { 9, 4 }, {  3, 5 }, { 7, 4 }, { 2, 6 },
     { 11, 4 }, { 2, 5 }, { 3, 6 }, { 5, 4 }, { 10, 4 }, { 4, 4 }, { 8, 4 },
     {  6, 4 }, { 3, 2 }
 };
 
-const uint8_t ff_mvtab[33][2] = {
+const uint8_t ff_mvtab[33][2] =
+{
     {  1,  1 }, {  1,  2 }, {  1,  3 }, {  1,  4 }, {  3,  6 }, {  5,  7 },
     {  4,  7 }, {  3,  7 }, { 11,  9 }, { 10,  9 }, {  9,  9 }, { 17, 10 },
     { 16, 10 }, { 15, 10 }, { 14, 10 }, { 13, 10 }, { 12, 10 }, { 11, 10 },
@@ -97,7 +103,8 @@ const uint8_t ff_mvtab[33][2] = {
 };
 
 /* third non intra table */
-const uint16_t ff_inter_vlc[103][2] = {
+const uint16_t ff_inter_vlc[103][2] =
+{
     {  0x2,  2 }, {  0xf,  4 }, { 0x15,  6 }, { 0x17,  7 },
     { 0x1f,  8 }, { 0x25,  9 }, { 0x24,  9 }, { 0x21, 10 },
     { 0x20, 10 }, {  0x7, 11 }, {  0x6, 11 }, { 0x20, 11 },
@@ -126,7 +133,8 @@ const uint16_t ff_inter_vlc[103][2] = {
     { 0x5e, 12 }, { 0x5f, 12 }, {  0x3,  7 },
 };
 
-const int8_t ff_inter_level[102] = {
+const int8_t ff_inter_level[102] =
+{
     1,  2,  3,  4, 5, 6, 7, 8,
     9, 10, 11, 12, 1, 2, 3, 4,
     5,  6,  1,  2, 3, 4, 1, 2,
@@ -142,7 +150,8 @@ const int8_t ff_inter_level[102] = {
     1,  1,  1,  1, 1, 1,
 };
 
-const int8_t ff_inter_run[102] = {
+const int8_t ff_inter_run[102] =
+{
     0,   0,  0,  0,  0,  0,  0,  0,
     0,   0,  0,  0,  1,  1,  1,  1,
     1,   1,  2,  2,  2,  2,  3,  3,
@@ -158,7 +167,8 @@ const int8_t ff_inter_run[102] = {
     35, 36, 37, 38, 39, 40,
 };
 
-RLTable ff_h263_rl_inter = {
+RLTable ff_h263_rl_inter =
+{
     102,
     58,
     ff_inter_vlc,
@@ -166,7 +176,8 @@ RLTable ff_h263_rl_inter = {
     ff_inter_level,
 };
 
-static const uint16_t intra_vlc_aic[103][2] = {
+static const uint16_t intra_vlc_aic[103][2] =
+{
     {  0x2,  2 }, {  0x6,  3 }, {  0xe,  4 }, {  0xc,  5 },
     {  0xd,  5 }, { 0x10,  6 }, { 0x11,  6 }, { 0x12,  6 },
     { 0x16,  7 }, { 0x1b,  8 }, { 0x20,  9 }, { 0x21,  9 },
@@ -195,7 +206,8 @@ static const uint16_t intra_vlc_aic[103][2] = {
     { 0x59, 12 }, { 0x5a, 12 }, {  0x3,  7 },
 };
 
-static const int8_t intra_run_aic[102] = {
+static const int8_t intra_run_aic[102] =
+{
     0,   0,  0,  0,  0,  0,  0,  0,
     0,   0,  0,  0,  0,  0,  0,  0,
     0,   0,  0,  0,  0,  0,  0,  0,
@@ -211,7 +223,8 @@ static const int8_t intra_run_aic[102] = {
     18, 19, 20, 21, 22, 23,
 };
 
-static const int8_t intra_level_aic[102] = {
+static const int8_t intra_level_aic[102] =
+{
     1,   2,  3,  4,  5,  6,  7,  8,
     9,  10, 11, 12, 13, 14, 15, 16,
     17, 18, 19, 20, 21, 22, 23, 24,
@@ -227,7 +240,8 @@ static const int8_t intra_level_aic[102] = {
     1,   1,  1,  1,  1,  1,
 };
 
-RLTable ff_rl_intra_aic = {
+RLTable ff_rl_intra_aic =
+{
     102,
     58,
     intra_vlc_aic,
@@ -235,7 +249,8 @@ RLTable ff_rl_intra_aic = {
     intra_level_aic,
 };
 
-const uint16_t ff_h263_format[8][2] = {
+const uint16_t ff_h263_format[8][2] =
+{
     {    0,    0 },
     {  128,   96 },
     {  176,  144 },
@@ -244,12 +259,14 @@ const uint16_t ff_h263_format[8][2] = {
     { 1408, 1152 },
 };
 
-const uint8_t ff_aic_dc_scale_table[32] = {
+const uint8_t ff_aic_dc_scale_table[32] =
+{
 //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
     0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62
 };
 
-const uint8_t ff_modified_quant_tab[2][32] = {
+const uint8_t ff_modified_quant_tab[2][32] =
+{
 //      0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
     {
         0, 3, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28
@@ -259,20 +276,24 @@ const uint8_t ff_modified_quant_tab[2][32] = {
     }
 };
 
-const uint8_t ff_h263_chroma_qscale_table[32] = {
+const uint8_t ff_h263_chroma_qscale_table[32] =
+{
 //  0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31
     0, 1, 2, 3, 4, 5, 6, 6, 7, 8, 9, 9, 10, 10, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 14, 14, 15, 15, 15, 15, 15
 };
 
-const uint16_t ff_mba_max[6] = {
+const uint16_t ff_mba_max[6] =
+{
     47, 98, 395, 1583, 6335, 9215
 };
 
-const uint8_t ff_mba_length[7] = {
+const uint8_t ff_mba_length[7] =
+{
     6, 7, 9, 11, 13, 14, 14
 };
 
-const AVRational ff_h263_pixel_aspect[16] = {
+const AVRational ff_h263_pixel_aspect[16] =
+{
     {  0,  1 },
     {  1,  1 },
     { 12, 11 },

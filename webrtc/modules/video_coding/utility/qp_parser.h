@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,16 +13,18 @@
 
 #include "webrtc/modules/video_coding/encoded_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class QpParser {
- public:
-  QpParser() {}
-  ~QpParser() {}
+class QpParser
+{
+public:
+    QpParser() {}
+    ~QpParser() {}
 
-  // Parses an encoded |frame| and extracts the |qp|.
-  // Returns true on success, false otherwise.
-  bool GetQp(const VCMEncodedFrame& frame, int* qp);
+    // Parses an encoded |frame| and extracts the |qp|.
+    // Returns true on success, false otherwise.
+    bool GetQp(const VCMEncodedFrame& frame, int* qp);
 };
 
 }  // namespace webrtc

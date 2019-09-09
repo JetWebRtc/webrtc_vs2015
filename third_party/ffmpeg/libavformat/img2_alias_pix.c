@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alias PIX image demuxer
  * Copyright (c) 2014 Michael Niedermayer
  *
@@ -39,8 +39,10 @@ static int alias_pix_read_probe(AVProbeData *p)
     if (bpp != 24 && bpp != 8)
         return 0;
 
-    for (y=0; y<2 && y<height; y++) {
-        for (x=0; x<width; ) {
+    for (y=0; y<2 && y<height; y++)
+    {
+        for (x=0; x<width; )
+        {
             int count = *b++;
             if (count == 0 || x + count > width)
                 return 0;
@@ -54,14 +56,16 @@ static int alias_pix_read_probe(AVProbeData *p)
     return AVPROBE_SCORE_EXTENSION + 1;
 }
 
-static const AVClass image2_alias_pix_class = {
+static const AVClass image2_alias_pix_class =
+{
     .class_name = "alias_pix demuxer",
     .item_name  = av_default_item_name,
     .option     = ff_img_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_image2_alias_pix_demuxer = {
+AVInputFormat ff_image2_alias_pix_demuxer =
+{
     .name           = "alias_pix",
     .long_name      = NULL_IF_CONFIG_SMALL("Alias/Wavefront PIX image"),
     .priv_data_size = sizeof(VideoDemuxData),

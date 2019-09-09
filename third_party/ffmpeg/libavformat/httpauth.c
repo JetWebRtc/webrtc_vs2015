@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HTTP authentication
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -31,7 +31,8 @@
 static void handle_basic_params(HTTPAuthState *state, const char *key,
                                 int key_len, char **dest, int *dest_len)
 {
-    if (!strncmp(key, "realm=", key_len)) {
+    if (!strncmp(key, "realm=", key_len))
+    {
         *dest     =        state->realm;
         *dest_len = sizeof(state->realm);
     }
@@ -42,22 +43,33 @@ static void handle_digest_params(HTTPAuthState *state, const char *key,
 {
     DigestParams *digest = &state->digest_params;
 
-    if (!strncmp(key, "realm=", key_len)) {
+    if (!strncmp(key, "realm=", key_len))
+    {
         *dest     =        state->realm;
         *dest_len = sizeof(state->realm);
-    } else if (!strncmp(key, "nonce=", key_len)) {
+    }
+    else if (!strncmp(key, "nonce=", key_len))
+    {
         *dest     =        digest->nonce;
         *dest_len = sizeof(digest->nonce);
-    } else if (!strncmp(key, "opaque=", key_len)) {
+    }
+    else if (!strncmp(key, "opaque=", key_len))
+    {
         *dest     =        digest->opaque;
         *dest_len = sizeof(digest->opaque);
-    } else if (!strncmp(key, "algorithm=", key_len)) {
+    }
+    else if (!strncmp(key, "algorithm=", key_len))
+    {
         *dest     =        digest->algorithm;
         *dest_len = sizeof(digest->algorithm);
-    } else if (!strncmp(key, "qop=", key_len)) {
+    }
+    else if (!strncmp(key, "qop=", key_len))
+    {
         *dest     =        digest->qop;
         *dest_len = sizeof(digest->qop);
-    } else if (!strncmp(key, "stale=", key_len)) {
+    }
+    else if (!strncmp(key, "stale=", key_len))
+    {
         *dest     =        digest->stale;
         *dest_len = sizeof(digest->stale);
     }
@@ -68,7 +80,8 @@ static void handle_digest_update(HTTPAuthState *state, const char *key,
 {
     DigestParams *digest = &state->digest_params;
 
-    if (!strncmp(key, "nextnonce=", key_len)) {
+    if (!strncmp(key, "nextnonce=", key_len))
+    {
         *dest     =        digest->nonce;
         *dest_len = sizeof(digest->nonce);
     }
@@ -80,9 +93,12 @@ static void choose_qop(char *qop, int size)
     char *end = ptr + strlen("auth");
 
     if (ptr && (!*end || av_isspace(*end) || *end == ',') &&
-        (ptr == qop || av_isspace(ptr[-1]) || ptr[-1] == ',')) {
+            (ptr == qop || av_isspace(ptr[-1]) || ptr[-1] == ','))
+    {
         av_strlcpy(qop, "auth", size);
-    } else {
+    }
+    else
+    {
         qop[0] = 0;
     }
 }
@@ -90,17 +106,21 @@ static void choose_qop(char *qop, int size)
 void ff_http_auth_handle_header(HTTPAuthState *state, const char *key,
                                 const char *value)
 {
-    if (!strcmp(key, "WWW-Authenticate") || !strcmp(key, "Proxy-Authenticate")) {
+    if (!strcmp(key, "WWW-Authenticate") || !strcmp(key, "Proxy-Authenticate"))
+    {
         const char *p;
         if (av_stristart(value, "Basic ", &p) &&
-            state->auth_type <= HTTP_AUTH_BASIC) {
+                state->auth_type <= HTTP_AUTH_BASIC)
+        {
             state->auth_type = HTTP_AUTH_BASIC;
             state->realm[0] = 0;
             state->stale = 0;
             ff_parse_key_value(p, (ff_parse_key_val_cb) handle_basic_params,
                                state);
-        } else if (av_stristart(value, "Digest ", &p) &&
-                   state->auth_type <= HTTP_AUTH_DIGEST) {
+        }
+        else if (av_stristart(value, "Digest ", &p) &&
+                 state->auth_type <= HTTP_AUTH_DIGEST)
+        {
             state->auth_type = HTTP_AUTH_DIGEST;
             memset(&state->digest_params, 0, sizeof(DigestParams));
             state->realm[0] = 0;
@@ -112,7 +132,9 @@ void ff_http_auth_handle_header(HTTPAuthState *state, const char *key,
             if (!av_strcasecmp(state->digest_params.stale, "true"))
                 state->stale = 1;
         }
-    } else if (!strcmp(key, "Authentication-Info")) {
+    }
+    else if (!strcmp(key, "Authentication-Info"))
+    {
         ff_parse_key_value(value, (ff_parse_key_val_cb) handle_digest_update,
                            state);
     }
@@ -124,7 +146,8 @@ static void update_md5_strings(struct AVMD5 *md5ctx, ...)
     va_list vl;
 
     va_start(vl, md5ctx);
-    while (1) {
+    while (1)
+    {
         const char* str = va_arg(vl, const char*);
         if (!str)
             break;
@@ -168,14 +191,19 @@ static char *make_digest_auth(HTTPAuthState *state, const char *username,
     ff_data_to_hex(A1hash, hash, 16, 1);
     A1hash[32] = 0;
 
-    if (!strcmp(digest->algorithm, "") || !strcmp(digest->algorithm, "MD5")) {
-    } else if (!strcmp(digest->algorithm, "MD5-sess")) {
+    if (!strcmp(digest->algorithm, "") || !strcmp(digest->algorithm, "MD5"))
+    {
+    }
+    else if (!strcmp(digest->algorithm, "MD5-sess"))
+    {
         av_md5_init(md5ctx);
         update_md5_strings(md5ctx, A1hash, ":", digest->nonce, ":", cnonce, NULL);
         av_md5_final(md5ctx, hash);
         ff_data_to_hex(A1hash, hash, 16, 1);
         A1hash[32] = 0;
-    } else {
+    }
+    else
+    {
         /* Unsupported algorithm */
         av_free(md5ctx);
         return NULL;
@@ -189,7 +217,8 @@ static char *make_digest_auth(HTTPAuthState *state, const char *username,
 
     av_md5_init(md5ctx);
     update_md5_strings(md5ctx, A1hash, ":", digest->nonce, NULL);
-    if (!strcmp(digest->qop, "auth") || !strcmp(digest->qop, "auth-int")) {
+    if (!strcmp(digest->qop, "auth") || !strcmp(digest->qop, "auth-int"))
+    {
         update_md5_strings(md5ctx, ":", nc, ":", cnonce, ":", digest->qop, NULL);
     }
     update_md5_strings(md5ctx, ":", A2hash, NULL);
@@ -199,19 +228,24 @@ static char *make_digest_auth(HTTPAuthState *state, const char *username,
 
     av_free(md5ctx);
 
-    if (!strcmp(digest->qop, "") || !strcmp(digest->qop, "auth")) {
-    } else if (!strcmp(digest->qop, "auth-int")) {
+    if (!strcmp(digest->qop, "") || !strcmp(digest->qop, "auth"))
+    {
+    }
+    else if (!strcmp(digest->qop, "auth-int"))
+    {
         /* qop=auth-int not supported */
         return NULL;
-    } else {
+    }
+    else
+    {
         /* Unsupported qop value. */
         return NULL;
     }
 
     len = strlen(username) + strlen(state->realm) + strlen(digest->nonce) +
-              strlen(uri) + strlen(response) + strlen(digest->algorithm) +
-              strlen(digest->opaque) + strlen(digest->qop) + strlen(cnonce) +
-              strlen(nc) + 150;
+          strlen(uri) + strlen(response) + strlen(digest->algorithm) +
+          strlen(digest->opaque) + strlen(digest->qop) + strlen(cnonce) +
+          strlen(nc) + 150;
 
     authstr = av_malloc(len);
     if (!authstr)
@@ -231,7 +265,8 @@ static char *make_digest_auth(HTTPAuthState *state, const char *username,
 
     if (digest->opaque[0])
         av_strlcatf(authstr, len, ",opaque=\"%s\"", digest->opaque);
-    if (digest->qop[0]) {
+    if (digest->qop[0])
+    {
         av_strlcatf(authstr, len, ",qop=\"%s\"",    digest->qop);
         av_strlcatf(authstr, len, ",cnonce=\"%s\"", cnonce);
         av_strlcatf(authstr, len, ",nc=%s",         nc);
@@ -253,7 +288,8 @@ char *ff_http_auth_create_response(HTTPAuthState *state, const char *auth,
     if (!auth || !strchr(auth, ':'))
         return NULL;
 
-    if (state->auth_type == HTTP_AUTH_BASIC) {
+    if (state->auth_type == HTTP_AUTH_BASIC)
+    {
         int auth_b64_len, len;
         char *ptr, *decoded_auth = ff_urldecode(auth);
 
@@ -264,7 +300,8 @@ char *ff_http_auth_create_response(HTTPAuthState *state, const char *auth,
         len = auth_b64_len + 30;
 
         authstr = av_malloc(len);
-        if (!authstr) {
+        if (!authstr)
+        {
             av_free(decoded_auth);
             return NULL;
         }
@@ -274,13 +311,16 @@ char *ff_http_auth_create_response(HTTPAuthState *state, const char *auth,
         av_base64_encode(ptr, auth_b64_len, decoded_auth, strlen(decoded_auth));
         av_strlcat(ptr, "\r\n", len - (ptr - authstr));
         av_free(decoded_auth);
-    } else if (state->auth_type == HTTP_AUTH_DIGEST) {
+    }
+    else if (state->auth_type == HTTP_AUTH_DIGEST)
+    {
         char *username = ff_urldecode(auth), *password;
 
         if (!username)
             return NULL;
 
-        if ((password = strchr(username, ':'))) {
+        if ((password = strchr(username, ':')))
+        {
             *password++ = 0;
             authstr = make_digest_auth(state, username, password, path, method);
         }

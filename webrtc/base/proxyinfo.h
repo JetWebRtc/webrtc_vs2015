@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,27 +15,30 @@
 #include "webrtc/base/socketaddress.h"
 #include "webrtc/base/cryptstring.h"
 
-namespace rtc {
+namespace rtc
+{
 
-enum ProxyType {
-  PROXY_NONE,
-  PROXY_HTTPS,
-  PROXY_SOCKS5,
-  PROXY_UNKNOWN
+enum ProxyType
+{
+    PROXY_NONE,
+    PROXY_HTTPS,
+    PROXY_SOCKS5,
+    PROXY_UNKNOWN
 };
 const char * ProxyToString(ProxyType proxy);
 
-struct ProxyInfo {
-  ProxyType type;
-  SocketAddress address;
-  std::string autoconfig_url;
-  bool autodetect;
-  std::string bypass_list;
-  std::string username;
-  CryptString password;
+struct ProxyInfo
+{
+    ProxyType type;
+    SocketAddress address;
+    std::string autoconfig_url;
+    bool autodetect;
+    std::string bypass_list;
+    std::string username;
+    CryptString password;
 
-  ProxyInfo();
-  ~ProxyInfo();
+    ProxyInfo();
+    ~ProxyInfo();
 };
 
 } // namespace rtc

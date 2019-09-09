@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -109,20 +109,20 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  /* PNS start band */
-  short startSfb;
+    /* PNS start band */
+    short startSfb;
 
-  /* detection algorithm flags */
-  USHORT detectionAlgorithmFlags;
+    /* detection algorithm flags */
+    USHORT detectionAlgorithmFlags;
 
-  /* Parameters for detection */
-  FIXP_DBL  refPower;
-  FIXP_DBL  refTonality;
-  INT       tnsGainThreshold;
-  INT       tnsPNSGainThreshold;
-  INT       minSfbWidth;
-  FIXP_SGL  powDistPSDcurve[MAX_GROUPED_SFB];
-  FIXP_SGL  gapFillThr;
+    /* Parameters for detection */
+    FIXP_DBL  refPower;
+    FIXP_DBL  refTonality;
+    INT       tnsGainThreshold;
+    INT       tnsPNSGainThreshold;
+    INT       minSfbWidth;
+    FIXP_SGL  powDistPSDcurve[MAX_GROUPED_SFB];
+    FIXP_SGL  gapFillThr;
 } NOISEPARAMS;
 
 int FDKaacEnc_lookUpPnsUse (int bitRate, int sampleRate, int numChan, const int isLC);

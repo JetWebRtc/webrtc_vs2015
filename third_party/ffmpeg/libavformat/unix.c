@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Unix socket protocol
  * Copyright (c) 2013 Luca Barbato
  *
@@ -33,7 +33,8 @@
 #include <sys/un.h>
 #include "url.h"
 
-typedef struct UnixContext {
+typedef struct UnixContext
+{
     const AVClass *class;
     struct sockaddr_un addr;
     int timeout;
@@ -44,7 +45,8 @@ typedef struct UnixContext {
 
 #define OFFSET(x) offsetof(UnixContext, x)
 #define ED AV_OPT_FLAG_DECODING_PARAM|AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption unix_options[] = {
+static const AVOption unix_options[] =
+{
     { "listen",    "Open socket for listening",             OFFSET(listen),  AV_OPT_TYPE_INT,   { .i64 = 0 },                    0,       1, ED },
     { "timeout",   "Timeout in ms",                         OFFSET(timeout), AV_OPT_TYPE_INT,   { .i64 = -1 },                  -1, INT_MAX, ED },
     { "type",      "Socket type",                           OFFSET(type),    AV_OPT_TYPE_INT,   { .i64 = SOCK_STREAM },    INT_MIN, INT_MAX, ED, "type" },
@@ -54,7 +56,8 @@ static const AVOption unix_options[] = {
     { NULL }
 };
 
-static const AVClass unix_class = {
+static const AVClass unix_class =
+{
     .class_name = "unix",
     .item_name  = av_default_item_name,
     .option     = unix_options,
@@ -73,13 +76,16 @@ static int unix_open(URLContext *h, const char *filename, int flags)
     if ((fd = ff_socket(AF_UNIX, s->type, 0)) < 0)
         return ff_neterrno();
 
-    if (s->listen) {
+    if (s->listen)
+    {
         ret = ff_listen_bind(fd, (struct sockaddr *)&s->addr,
                              sizeof(s->addr), s->timeout, h);
         if (ret < 0)
             goto fail;
         fd = ret;
-    } else {
+    }
+    else
+    {
         ret = ff_listen_connect(fd, (struct sockaddr *)&s->addr,
                                 sizeof(s->addr), s->timeout, h, 0);
         if (ret < 0)
@@ -103,7 +109,8 @@ static int unix_read(URLContext *h, uint8_t *buf, int size)
     UnixContext *s = h->priv_data;
     int ret;
 
-    if (!(h->flags & AVIO_FLAG_NONBLOCK)) {
+    if (!(h->flags & AVIO_FLAG_NONBLOCK))
+    {
         ret = ff_network_wait_fd(s->fd, 0);
         if (ret < 0)
             return ret;
@@ -117,7 +124,8 @@ static int unix_write(URLContext *h, const uint8_t *buf, int size)
     UnixContext *s = h->priv_data;
     int ret;
 
-    if (!(h->flags & AVIO_FLAG_NONBLOCK)) {
+    if (!(h->flags & AVIO_FLAG_NONBLOCK))
+    {
         ret = ff_network_wait_fd(s->fd, 1);
         if (ret < 0)
             return ret;
@@ -141,7 +149,8 @@ static int unix_get_file_handle(URLContext *h)
     return s->fd;
 }
 
-URLProtocol ff_unix_protocol = {
+URLProtocol ff_unix_protocol =
+{
     .name                = "unix",
     .url_open            = unix_open,
     .url_read            = unix_read,

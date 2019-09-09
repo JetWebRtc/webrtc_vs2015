@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -105,14 +105,15 @@ amm-info@iis.fraunhofer.de
 inline INT getScalefactor(const FIXP_DBL *vector, /*!< Pointer to input vector */
                           INT len)                /*!< Length of input vector */
 {
-  INT i;
-  FIXP_DBL maxVal = FL2FX_DBL(0.0f);
+    INT i;
+    FIXP_DBL maxVal = FL2FX_DBL(0.0f);
 
-  for(i=len;i!=0;i--){
-    maxVal |= __builtin_mips_absq_s_w(*vector++);
-  }
+    for(i=len; i!=0; i--)
+    {
+        maxVal |= __builtin_mips_absq_s_w(*vector++);
+    }
 
-  return fixMax((INT)0,(CntLeadingZeros(maxVal) - 1));
+    return fixMax((INT)0,(CntLeadingZeros(maxVal) - 1));
 }
 #endif
 

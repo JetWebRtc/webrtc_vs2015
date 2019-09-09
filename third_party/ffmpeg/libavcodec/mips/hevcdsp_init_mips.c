@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 static av_cold void hevc_dsp_init_msa(HEVCDSPContext *c,
                                       const int bit_depth)
 {
-    if (8 == bit_depth) {
+    if (8 == bit_depth)
+    {
         c->put_hevc_qpel[1][0][0] = ff_hevc_put_hevc_pel_pixels4_8_msa;
         c->put_hevc_qpel[2][0][0] = ff_hevc_put_hevc_pel_pixels6_8_msa;
         c->put_hevc_qpel[3][0][0] = ff_hevc_put_hevc_pel_pixels8_8_msa;
@@ -404,16 +405,16 @@ static av_cold void hevc_dsp_init_msa(HEVCDSPContext *c,
         c->put_hevc_epel_bi_w[7][1][1] = ff_hevc_put_hevc_bi_w_epel_hv32_8_msa;
 
         c->sao_band_filter[0] =
-        c->sao_band_filter[1] =
-        c->sao_band_filter[2] =
-        c->sao_band_filter[3] =
-        c->sao_band_filter[4] = ff_hevc_sao_band_filter_0_8_msa;
+            c->sao_band_filter[1] =
+                c->sao_band_filter[2] =
+                    c->sao_band_filter[3] =
+                        c->sao_band_filter[4] = ff_hevc_sao_band_filter_0_8_msa;
 
         c->sao_edge_filter[0] =
-        c->sao_edge_filter[1] =
-        c->sao_edge_filter[2] =
-        c->sao_edge_filter[3] =
-        c->sao_edge_filter[4] = ff_hevc_sao_edge_filter_8_msa;
+            c->sao_edge_filter[1] =
+                c->sao_edge_filter[2] =
+                    c->sao_edge_filter[3] =
+                        c->sao_edge_filter[4] = ff_hevc_sao_edge_filter_8_msa;
 
         c->hevc_h_loop_filter_luma = ff_hevc_loop_filter_luma_h_8_msa;
         c->hevc_v_loop_filter_luma = ff_hevc_loop_filter_luma_v_8_msa;

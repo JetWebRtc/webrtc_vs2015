@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,44 +15,48 @@
 
 #include "webrtc/base/basictypes.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 
-class TargetBitrate {
- public:
-  // TODO(sprang): This block type is just a place holder. We need to get an
-  //               id assigned by IANA.
-  static constexpr uint8_t kBlockType = 42;
-  static const size_t kBitrateItemSizeBytes;
+class TargetBitrate
+{
+public:
+    // TODO(sprang): This block type is just a place holder. We need to get an
+    //               id assigned by IANA.
+    static constexpr uint8_t kBlockType = 42;
+    static const size_t kBitrateItemSizeBytes;
 
-  struct BitrateItem {
-    BitrateItem();
-    BitrateItem(uint8_t spatial_layer,
-                uint8_t temporal_layer,
-                uint32_t target_bitrate_kbps);
+    struct BitrateItem
+    {
+        BitrateItem();
+        BitrateItem(uint8_t spatial_layer,
+                    uint8_t temporal_layer,
+                    uint32_t target_bitrate_kbps);
 
-    uint8_t spatial_layer;
-    uint8_t temporal_layer;
-    uint32_t target_bitrate_kbps;
-  };
+        uint8_t spatial_layer;
+        uint8_t temporal_layer;
+        uint32_t target_bitrate_kbps;
+    };
 
-  TargetBitrate();
-  ~TargetBitrate();
+    TargetBitrate();
+    ~TargetBitrate();
 
-  void AddTargetBitrate(uint8_t spatial_layer,
-                        uint8_t temporal_layer,
-                        uint32_t target_bitrate_kbps);
+    void AddTargetBitrate(uint8_t spatial_layer,
+                          uint8_t temporal_layer,
+                          uint32_t target_bitrate_kbps);
 
-  const std::vector<BitrateItem>& GetTargetBitrates() const;
+    const std::vector<BitrateItem>& GetTargetBitrates() const;
 
-  bool Parse(const uint8_t* block, uint16_t block_length);
+    bool Parse(const uint8_t* block, uint16_t block_length);
 
-  void Create(uint8_t* buffer) const;
+    void Create(uint8_t* buffer) const;
 
-  size_t BlockLength() const;
+    size_t BlockLength() const;
 
- private:
-  std::vector<BitrateItem> bitrates_;
+private:
+    std::vector<BitrateItem> bitrates_;
 };
 
 }  // namespace rtcp

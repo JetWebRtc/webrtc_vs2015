@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -22,7 +22,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct VP3DSPContext {
+typedef struct VP3DSPContext
+{
     /**
      * Copy 8xH pixels from source to destination buffer using a bilinear
      * filter with no rounding (i.e. *dst = (*a + *b) >> 1).

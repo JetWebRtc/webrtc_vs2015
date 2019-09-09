@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,19 +10,23 @@
 
 #include "webrtc/system_wrappers/include/field_trial.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 const char* kBweTypeHistogram = "WebRTC.BWE.Types";
 
-namespace congestion_controller {
-int GetMinBitrateBps() {
-  constexpr int kAudioMinBitrateBps = 5000;
-  constexpr int kMinBitrateBps = 10000;
-  if (webrtc::field_trial::FindFullName("WebRTC-Audio-SendSideBwe") ==
-      "Enabled") {
-    return kAudioMinBitrateBps;
-  }
-  return kMinBitrateBps;
+namespace congestion_controller
+{
+int GetMinBitrateBps()
+{
+    constexpr int kAudioMinBitrateBps = 5000;
+    constexpr int kMinBitrateBps = 10000;
+    if (webrtc::field_trial::FindFullName("WebRTC-Audio-SendSideBwe") ==
+            "Enabled")
+    {
+        return kAudioMinBitrateBps;
+    }
+    return kMinBitrateBps;
 }
 
 }  // namespace congestion_controller

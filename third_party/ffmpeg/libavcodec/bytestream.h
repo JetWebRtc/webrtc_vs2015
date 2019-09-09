@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bytestream functions
  * copyright (c) 2006 Baptiste Coudurier <baptiste.coudurier@free.fr>
  * Copyright (c) 2012 Aneesh Dogra (lionaneesh) <lionaneesh@gmail.com>
@@ -30,11 +30,13 @@
 #include "libavutil/common.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct GetByteContext {
+typedef struct GetByteContext
+{
     const uint8_t *buffer, *buffer_end, *buffer_start;
 } GetByteContext;
 
-typedef struct PutByteContext {
+typedef struct PutByteContext
+{
     uint8_t *buffer, *buffer_end, *buffer_start;
     int eof;
 } PutByteContext;
@@ -131,8 +133,8 @@ DEF(unsigned int, byte, 1, AV_RB8 , AV_WB8)
 #endif
 
 static av_always_inline void bytestream2_init(GetByteContext *g,
-                                              const uint8_t *buf,
-                                              int buf_size)
+        const uint8_t *buf,
+        int buf_size)
 {
     av_assert0(buf_size >= 0);
     g->buffer       = buf;
@@ -141,8 +143,8 @@ static av_always_inline void bytestream2_init(GetByteContext *g,
 }
 
 static av_always_inline void bytestream2_init_writer(PutByteContext *p,
-                                                     uint8_t *buf,
-                                                     int buf_size)
+        uint8_t *buf,
+        int buf_size)
 {
     av_assert0(buf_size >= 0);
     p->buffer       = buf;
@@ -162,19 +164,19 @@ static av_always_inline unsigned int bytestream2_get_bytes_left_p(PutByteContext
 }
 
 static av_always_inline void bytestream2_skip(GetByteContext *g,
-                                              unsigned int size)
+        unsigned int size)
 {
     g->buffer += FFMIN(g->buffer_end - g->buffer, size);
 }
 
 static av_always_inline void bytestream2_skipu(GetByteContext *g,
-                                               unsigned int size)
+        unsigned int size)
 {
     g->buffer += size;
 }
 
 static av_always_inline void bytestream2_skip_p(PutByteContext *p,
-                                                unsigned int size)
+        unsigned int size)
 {
     int size2;
     if (p->eof)
@@ -206,10 +208,11 @@ static av_always_inline int bytestream2_size_p(PutByteContext *p)
 }
 
 static av_always_inline int bytestream2_seek(GetByteContext *g,
-                                             int offset,
-                                             int whence)
+        int offset,
+        int whence)
 {
-    switch (whence) {
+    switch (whence)
+    {
     case SEEK_CUR:
         offset     = av_clip(offset, -(g->buffer - g->buffer_start),
                              g->buffer_end - g->buffer);
@@ -230,11 +233,12 @@ static av_always_inline int bytestream2_seek(GetByteContext *g,
 }
 
 static av_always_inline int bytestream2_seek_p(PutByteContext *p,
-                                               int offset,
-                                               int whence)
+        int offset,
+        int whence)
 {
     p->eof = 0;
-    switch (whence) {
+    switch (whence)
+    {
     case SEEK_CUR:
         if (p->buffer_end - p->buffer < offset)
             p->eof = 1;
@@ -261,8 +265,8 @@ static av_always_inline int bytestream2_seek_p(PutByteContext *p,
 }
 
 static av_always_inline unsigned int bytestream2_get_buffer(GetByteContext *g,
-                                                            uint8_t *dst,
-                                                            unsigned int size)
+        uint8_t *dst,
+        unsigned int size)
 {
     int size2 = FFMIN(g->buffer_end - g->buffer, size);
     memcpy(dst, g->buffer, size2);
@@ -271,8 +275,8 @@ static av_always_inline unsigned int bytestream2_get_buffer(GetByteContext *g,
 }
 
 static av_always_inline unsigned int bytestream2_get_bufferu(GetByteContext *g,
-                                                             uint8_t *dst,
-                                                             unsigned int size)
+        uint8_t *dst,
+        unsigned int size)
 {
     memcpy(dst, g->buffer, size);
     g->buffer += size;
@@ -280,8 +284,8 @@ static av_always_inline unsigned int bytestream2_get_bufferu(GetByteContext *g,
 }
 
 static av_always_inline unsigned int bytestream2_put_buffer(PutByteContext *p,
-                                                            const uint8_t *src,
-                                                            unsigned int size)
+        const uint8_t *src,
+        unsigned int size)
 {
     int size2;
     if (p->eof)
@@ -295,8 +299,8 @@ static av_always_inline unsigned int bytestream2_put_buffer(PutByteContext *p,
 }
 
 static av_always_inline unsigned int bytestream2_put_bufferu(PutByteContext *p,
-                                                             const uint8_t *src,
-                                                             unsigned int size)
+        const uint8_t *src,
+        unsigned int size)
 {
     memcpy(p->buffer, src, size);
     p->buffer += size;
@@ -304,8 +308,8 @@ static av_always_inline unsigned int bytestream2_put_bufferu(PutByteContext *p,
 }
 
 static av_always_inline void bytestream2_set_buffer(PutByteContext *p,
-                                                    const uint8_t c,
-                                                    unsigned int size)
+        const uint8_t c,
+        unsigned int size)
 {
     int size2;
     if (p->eof)
@@ -318,8 +322,8 @@ static av_always_inline void bytestream2_set_buffer(PutByteContext *p,
 }
 
 static av_always_inline void bytestream2_set_bufferu(PutByteContext *p,
-                                                     const uint8_t c,
-                                                     unsigned int size)
+        const uint8_t c,
+        unsigned int size)
 {
     memset(p->buffer, c, size);
     p->buffer += size;
@@ -331,8 +335,8 @@ static av_always_inline unsigned int bytestream2_get_eof(PutByteContext *p)
 }
 
 static av_always_inline unsigned int bytestream2_copy_bufferu(PutByteContext *p,
-                                                              GetByteContext *g,
-                                                              unsigned int size)
+        GetByteContext *g,
+        unsigned int size)
 {
     memcpy(p->buffer, g->buffer, size);
     p->buffer += size;
@@ -341,8 +345,8 @@ static av_always_inline unsigned int bytestream2_copy_bufferu(PutByteContext *p,
 }
 
 static av_always_inline unsigned int bytestream2_copy_buffer(PutByteContext *p,
-                                                             GetByteContext *g,
-                                                             unsigned int size)
+        GetByteContext *g,
+        unsigned int size)
 {
     int size2;
 
@@ -357,8 +361,8 @@ static av_always_inline unsigned int bytestream2_copy_buffer(PutByteContext *p,
 }
 
 static av_always_inline unsigned int bytestream_get_buffer(const uint8_t **b,
-                                                           uint8_t *dst,
-                                                           unsigned int size)
+        uint8_t *dst,
+        unsigned int size)
 {
     memcpy(dst, *b, size);
     (*b) += size;
@@ -366,8 +370,8 @@ static av_always_inline unsigned int bytestream_get_buffer(const uint8_t **b,
 }
 
 static av_always_inline void bytestream_put_buffer(uint8_t **b,
-                                                   const uint8_t *src,
-                                                   unsigned int size)
+        const uint8_t *src,
+        unsigned int size)
 {
     memcpy(*b, src, size);
     (*b) += size;

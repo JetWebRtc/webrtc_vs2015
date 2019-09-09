@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -47,11 +47,13 @@ int main(void)
     flush_put_bits(&pb);
 
     init_get_bits(&gb, temp, 8 * SIZE);
-    for (i = 0; i < COUNT; i++) {
+    for (i = 0; i < COUNT; i++)
+    {
         int j, s = show_bits(&gb, 25);
 
         j = get_ue_golomb(&gb);
-        if (j != i) {
+        if (j != i)
+        {
             fprintf(stderr, "get_ue_golomb: expected %d, got %d. bits: %7x\n",
                     i, j, s);
             ret = 1;
@@ -65,11 +67,13 @@ int main(void)
     flush_put_bits(&pb);
 
     init_get_bits(&gb, temp, 8 * SIZE);
-    for (i = 0; i < COUNT; i++) {
+    for (i = 0; i < COUNT; i++)
+    {
         int j, s = show_bits_long(&gb, 32);
 
         j = get_ue_golomb_long(&gb);
-        if (j != EXTEND(i)) {
+        if (j != EXTEND(i))
+        {
             fprintf(stderr, "get_ue_golomb_long: expected %d, got %d. "
                     "bits: %8x\n", EXTEND(i), j, s);
             ret = 1;
@@ -82,11 +86,13 @@ int main(void)
     flush_put_bits(&pb);
 
     init_get_bits(&gb, temp, 8 * SIZE);
-    for (i = 0; i < COUNT; i++) {
+    for (i = 0; i < COUNT; i++)
+    {
         int j, s = show_bits(&gb, 25);
 
         j = get_se_golomb(&gb);
-        if (j != i - COUNT / 2) {
+        if (j != i - COUNT / 2)
+        {
             fprintf(stderr, "get_se_golomb: expected %d, got %d. bits: %7x\n",
                     i - COUNT / 2, j, s);
             ret = 1;

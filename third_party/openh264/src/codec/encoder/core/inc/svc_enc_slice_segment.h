@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -50,7 +50,8 @@
 
 using namespace WelsCommon;
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 
 // NOTE:
@@ -78,7 +79,8 @@ typedef struct TagWelsEncCtx sWelsEncCtx;
  * \brief   SSlice context
  */
 /* Single/multiple slices */
-typedef struct SlicepEncCtx_s {
+typedef struct SlicepEncCtx_s
+{
 SliceModeEnum           uiSliceMode;            /* 0: single slice in frame; 1: multiple slices in frame; */
 int16_t                 iMbWidth;               /* width of picture size in mb */
 int16_t                 iMbHeight;              /* height of picture size in mb */
@@ -91,7 +93,8 @@ int32_t                 iMaxSliceNumConstraint; /* maximal number of slices cons
 } SSliceCtx;
 
 
-typedef struct TagDynamicSlicingStack {
+typedef struct TagDynamicSlicingStack
+{
 int32_t         iStartPos;
 int32_t         iCurrentPos;
 

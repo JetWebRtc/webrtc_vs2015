@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2007 Luca Abeni
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@ void ff_rtp_send_aac(AVFormatContext *s1, const uint8_t *buff, int size)
     uint8_t *p;
 
     /* skip ADTS header, if present */
-    if ((s1->streams[0]->codec->extradata_size) == 0) {
+    if ((s1->streams[0]->codec->extradata_size) == 0)
+    {
         size -= 7;
         buff += 7;
     }
@@ -41,14 +42,16 @@ void ff_rtp_send_aac(AVFormatContext *s1, const uint8_t *buff, int size)
     /* test if the packet must be sent */
     len = (s->buf_ptr - s->buf);
     if (s->num_frames &&
-        (s->num_frames == s->max_frames_per_packet ||
-         (len + size) > s->max_payload_size ||
-         av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
-                       s1->max_delay, AV_TIME_BASE_Q) >= 0)) {
+            (s->num_frames == s->max_frames_per_packet ||
+             (len + size) > s->max_payload_size ||
+             av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
+                           s1->max_delay, AV_TIME_BASE_Q) >= 0))
+    {
         int au_size = s->num_frames * 2;
 
         p = s->buf + max_au_headers_size - au_size - 2;
-        if (p != s->buf) {
+        if (p != s->buf)
+        {
             memmove(p + 2, s->buf + 2, au_size);
         }
         /* Write the AU header size */
@@ -58,23 +61,28 @@ void ff_rtp_send_aac(AVFormatContext *s1, const uint8_t *buff, int size)
 
         s->num_frames = 0;
     }
-    if (s->num_frames == 0) {
+    if (s->num_frames == 0)
+    {
         s->buf_ptr = s->buf + max_au_headers_size;
         s->timestamp = s->cur_timestamp;
     }
 
-    if (size <= max_packet_size) {
+    if (size <= max_packet_size)
+    {
         p = s->buf + s->num_frames++ * 2 + 2;
         AV_WB16(p, size * 8);
         memcpy(s->buf_ptr, buff, size);
         s->buf_ptr += size;
-    } else {
+    }
+    else
+    {
         int au_size = size;
 
         max_packet_size = s->max_payload_size - 4;
         p = s->buf;
         AV_WB16(p, 2 * 8);
-        while (size > 0) {
+        while (size > 0)
+        {
             len = FFMIN(size, max_packet_size);
             AV_WB16(&p[2], au_size * 8);
             memcpy(p + 4, buff, len);

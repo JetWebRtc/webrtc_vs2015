@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -53,7 +53,8 @@ void silk_resampler_private_up2_HQ(
     silk_assert( silk_resampler_up2_hq_1[ 2 ] < 0 );
 
     /* Internal variables and state are in Q10 format */
-    for( k = 0; k < len; k++ ) {
+    for( k = 0; k < len; k++ )
+    {
         /* Convert to Q10 */
         in32 = silk_LSHIFT( (opus_int32)in[ k ], 10 );
 

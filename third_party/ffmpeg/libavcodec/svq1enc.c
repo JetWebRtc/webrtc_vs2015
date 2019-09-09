@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SVQ1 Encoder
  * Copyright (C) 2004 Mike Melanson <melanson@pcisys.net>
  *
@@ -52,7 +52,8 @@ static void svq1_write_header(SVQ1EncContext *s, int frame_type)
     /* frame type */
     put_bits(&s->pb, 2, frame_type - 1);
 
-    if (frame_type == AV_PICTURE_TYPE_I) {
+    if (frame_type == AV_PICTURE_TYPE_I)
+    {
         /* no checksum since frame code is 0x20 */
         /* no embedded string either */
         /* output 5 unknown bits (2 + 2 + 1) */
@@ -63,7 +64,8 @@ static void svq1_write_header(SVQ1EncContext *s, int frame_type)
                              s->frame_width, s->frame_height);
         put_bits(&s->pb, 3, i);
 
-        if (i == 7) {
+        if (i == 7)
+        {
             put_bits(&s->pb, 12, s->frame_width);
             put_bits(&s->pb, 12, s->frame_height);
         }
@@ -103,26 +105,33 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
 
     best_score = 0;
     // FIXME: Optimize, this does not need to be done multiple times.
-    if (intra) {
+    if (intra)
+    {
         codebook_sum   = svq1_intra_codebook_sum[level];
         codebook       = ff_svq1_intra_codebooks[level];
         mean_vlc       = ff_svq1_intra_mean_vlc;
         multistage_vlc = ff_svq1_intra_multistage_vlc[level];
-        for (y = 0; y < h; y++) {
-            for (x = 0; x < w; x++) {
+        for (y = 0; y < h; y++)
+        {
+            for (x = 0; x < w; x++)
+            {
                 int v = src[x + y * stride];
                 block[0][x + w * y] = v;
                 best_score         += v * v;
                 block_sum[0]       += v;
             }
         }
-    } else {
+    }
+    else
+    {
         codebook_sum   = svq1_inter_codebook_sum[level];
         codebook       = ff_svq1_inter_codebooks[level];
         mean_vlc       = ff_svq1_inter_mean_vlc + 256;
         multistage_vlc = ff_svq1_inter_multistage_vlc[level];
-        for (y = 0; y < h; y++) {
-            for (x = 0; x < w; x++) {
+        for (y = 0; y < h; y++)
+        {
+            for (x = 0; x < w; x++)
+            {
                 int v = src[x + y * stride] - ref[x + y * stride];
                 block[0][x + w * y] = v;
                 best_score         += v * v;
@@ -135,14 +144,17 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
     best_score -= (int)((unsigned)block_sum[0] * block_sum[0] >> (level + 3));
     best_mean   = block_sum[0] + (size >> 1) >> (level + 3);
 
-    if (level < 4) {
-        for (count = 1; count < 7; count++) {
+    if (level < 4)
+    {
+        for (count = 1; count < 7; count++)
+        {
             int best_vector_score = INT_MAX;
             int best_vector_sum   = -999, best_vector_mean = -999;
             const int stage       = count - 1;
             const int8_t *vector;
 
-            for (i = 0; i < 16; i++) {
+            for (i = 0; i < 16; i++)
+            {
                 int sum = codebook_sum[stage * 16 + i];
                 int sqr, diff, score;
 
@@ -150,7 +162,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
                 sqr    = s->ssd_int8_vs_int16(vector, block[stage], size);
                 diff   = block_sum[stage] - sum;
                 score  = sqr - (diff * (int64_t)diff >> (level + 3)); // FIXME: 64bit slooow
-                if (score < best_vector_score) {
+                if (score < best_vector_score)
+                {
                     int mean = diff + (size >> 1) >> (level + 3);
                     av_assert2(mean > -300 && mean < 300);
                     mean               = av_clip(mean, intra ? 0 : -256, 255);
@@ -170,7 +183,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
                                     multistage_vlc[1 + count][1]
                                     + mean_vlc[best_vector_mean][1]);
 
-            if (best_vector_score < best_score) {
+            if (best_vector_score < best_score)
+            {
                 best_score = best_vector_score;
                 best_count = count;
                 best_mean  = best_vector_mean;
@@ -179,7 +193,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
     }
 
     split = 0;
-    if (best_score > threshold && level) {
+    if (best_score > threshold && level)
+    {
         int score  = 0;
         int offset = level & 1 ? stride * h / 2 : w / 2;
         PutBitContext backup[6];
@@ -192,10 +207,13 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
                               stride, level - 1, threshold >> 1, lambda, intra);
         score += lambda;
 
-        if (score < best_score) {
+        if (score < best_score)
+        {
             best_score = score;
             split      = 1;
-        } else {
+        }
+        else
+        {
             for (i = level - 1; i >= 0; i--)
                 s->reorder_pb[i] = backup[i];
         }
@@ -203,7 +221,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
     if (level > 0)
         put_bits(&s->reorder_pb[level], 1, split);
 
-    if (!split) {
+    if (!split)
+    {
         av_assert1(best_mean >= 0 && best_mean < 256 || !intra);
         av_assert1(best_mean >= -256 && best_mean < 256);
         av_assert1(best_count >= 0 && best_count < 7);
@@ -216,7 +235,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
         put_bits(&s->reorder_pb[level], mean_vlc[best_mean][1],
                  mean_vlc[best_mean][0]);
 
-        for (i = 0; i < best_count; i++) {
+        for (i = 0; i < best_count; i++)
+        {
             av_assert2(best_vector[i] >= 0 && best_vector[i] < 16);
             put_bits(&s->reorder_pb[level], 4, best_vector[i]);
         }
@@ -231,7 +251,8 @@ static int encode_block(SVQ1EncContext *s, uint8_t *src, uint8_t *ref,
     return best_score;
 }
 
-static void init_block_index(MpegEncContext *s){
+static void init_block_index(MpegEncContext *s)
+{
     s->block_index[0]= s->b8_stride*(s->mb_y*2    )     + s->mb_x*2;
     s->block_index[1]= s->b8_stride*(s->mb_y*2    ) + 1 + s->mb_x*2;
     s->block_index[2]= s->b8_stride*(s->mb_y*2 + 1)     + s->mb_x*2;
@@ -263,15 +284,16 @@ static int svq1_encode_plane(SVQ1EncContext *s, int plane,
     block_width  = (width  + 15) / 16;
     block_height = (height + 15) / 16;
 
-    if (s->pict_type == AV_PICTURE_TYPE_P) {
+    if (s->pict_type == AV_PICTURE_TYPE_P)
+    {
         s->m.avctx                         = s->avctx;
         s->m.current_picture_ptr           = &s->m.current_picture;
         s->m.last_picture_ptr              = &s->m.last_picture;
         s->m.last_picture.f->data[0]        = ref_plane;
         s->m.linesize                      =
-        s->m.last_picture.f->linesize[0]    =
-        s->m.new_picture.f->linesize[0]     =
-        s->m.current_picture.f->linesize[0] = stride;
+            s->m.last_picture.f->linesize[0]    =
+                s->m.new_picture.f->linesize[0]     =
+                    s->m.current_picture.f->linesize[0] = stride;
         s->m.width                         = width;
         s->m.height                        = height;
         s->m.mb_width                      = block_width;
@@ -281,9 +303,10 @@ static int svq1_encode_plane(SVQ1EncContext *s, int plane,
         s->m.f_code                        = 1;
         s->m.pict_type                     = s->pict_type;
 #if FF_API_MOTION_EST
-FF_DISABLE_DEPRECATION_WARNINGS
+        FF_DISABLE_DEPRECATION_WARNINGS
         s->m.me_method                     = s->avctx->me_method;
-        if (s->motion_est == FF_ME_EPZS) {
+        if (s->motion_est == FF_ME_EPZS)
+        {
             if (s->avctx->me_method == ME_ZERO)
                 s->motion_est = FF_ME_ZERO;
             else if (s->avctx->me_method == ME_EPZS)
@@ -291,7 +314,7 @@ FF_DISABLE_DEPRECATION_WARNINGS
             else if (s->avctx->me_method == ME_X1)
                 s->motion_est = FF_ME_XONE;
         }
-FF_ENABLE_DEPRECATION_WARNINGS
+        FF_ENABLE_DEPRECATION_WARNINGS
 #endif
         s->m.motion_est                    = s->motion_est;
         s->m.me.scene_change_score         = 0;
@@ -305,7 +328,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
                                              FF_LAMBDA_SCALE / 2 >>
                                              FF_LAMBDA_SHIFT;
 
-        if (!s->motion_val8[plane]) {
+        if (!s->motion_val8[plane])
+        {
             s->motion_val8[plane]  = av_mallocz((s->m.b8_stride *
                                                  block_height * 2 + 2) *
                                                 2 * sizeof(int16_t));
@@ -332,11 +356,13 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
         s->m.me.dia_size      = s->avctx->dia_size;
         s->m.first_slice_line = 1;
-        for (y = 0; y < block_height; y++) {
+        for (y = 0; y < block_height; y++)
+        {
             s->m.new_picture.f->data[0] = src - y * 16 * stride; // ugly
             s->m.mb_y                  = y;
 
-            for (i = 0; i < 16 && i + 16 * y < height; i++) {
+            for (i = 0; i < 16 && i + 16 * y < height; i++)
+            {
                 memcpy(&src[i * stride], &src_plane[(i + 16 * y) * src_stride],
                        width);
                 for (x = width; x < 16 * block_width; x++)
@@ -346,7 +372,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
                 memcpy(&src[i * stride], &src[(i - 1) * stride],
                        16 * block_width);
 
-            for (x = 0; x < block_width; x++) {
+            for (x = 0; x < block_width; x++)
+            {
                 s->m.mb_x = x;
                 init_block_index(&s->m);
 
@@ -361,8 +388,10 @@ FF_ENABLE_DEPRECATION_WARNINGS
     }
 
     s->m.first_slice_line = 1;
-    for (y = 0; y < block_height; y++) {
-        for (i = 0; i < 16 && i + 16 * y < height; i++) {
+    for (y = 0; y < block_height; y++)
+    {
+        for (i = 0; i < 16 && i + 16 * y < height; i++)
+        {
             memcpy(&src[i * stride], &src_plane[(i + 16 * y) * src_stride],
                    width);
             for (x = width; x < 16 * block_width; x++)
@@ -372,7 +401,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
             memcpy(&src[i * stride], &src[(i - 1) * stride], 16 * block_width);
 
         s->m.mb_y = y;
-        for (x = 0; x < block_width; x++) {
+        for (x = 0; x < block_width; x++)
+        {
             uint8_t reorder_buffer[2][6][7 * 32];
             int count[2][6];
             int offset       = y * 16 * stride + x * 16;
@@ -382,7 +412,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
             uint8_t *temp    = s->scratchbuf;
 
             if (s->pb.buf_end - s->pb.buf -
-                (put_bits_count(&s->pb) >> 3) < 3000) { // FIXME: check size
+                    (put_bits_count(&s->pb) >> 3) < 3000)   // FIXME: check size
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "encoded frame too large\n");
                 return -1;
             }
@@ -391,35 +422,41 @@ FF_ENABLE_DEPRECATION_WARNINGS
             init_block_index(&s->m);
 
             if (s->pict_type == AV_PICTURE_TYPE_I ||
-                (s->m.mb_type[x + y * s->m.mb_stride] &
-                 CANDIDATE_MB_TYPE_INTRA)) {
+                    (s->m.mb_type[x + y * s->m.mb_stride] &
+                     CANDIDATE_MB_TYPE_INTRA))
+            {
                 for (i = 0; i < 6; i++)
                     init_put_bits(&s->reorder_pb[i], reorder_buffer[0][i],
                                   7 * 32);
-                if (s->pict_type == AV_PICTURE_TYPE_P) {
+                if (s->pict_type == AV_PICTURE_TYPE_P)
+                {
                     const uint8_t *vlc = ff_svq1_block_type_vlc[SVQ1_BLOCK_INTRA];
                     put_bits(&s->reorder_pb[5], vlc[1], vlc[0]);
                     score[0] = vlc[1] * lambda;
                 }
                 score[0] += encode_block(s, src + 16 * x, NULL, temp, stride,
                                          5, 64, lambda, 1);
-                for (i = 0; i < 6; i++) {
+                for (i = 0; i < 6; i++)
+                {
                     count[0][i] = put_bits_count(&s->reorder_pb[i]);
                     flush_put_bits(&s->reorder_pb[i]);
                 }
-            } else
+            }
+            else
                 score[0] = INT_MAX;
 
             best = 0;
 
-            if (s->pict_type == AV_PICTURE_TYPE_P) {
+            if (s->pict_type == AV_PICTURE_TYPE_P)
+            {
                 const uint8_t *vlc = ff_svq1_block_type_vlc[SVQ1_BLOCK_INTER];
                 int mx, my, pred_x, pred_y, dxy;
                 int16_t *motion_ptr;
 
                 motion_ptr = ff_h263_pred_motion(&s->m, 0, 0, &pred_x, &pred_y);
                 if (s->m.mb_type[x + y * s->m.mb_stride] &
-                    CANDIDATE_MB_TYPE_INTER) {
+                        CANDIDATE_MB_TYPE_INTER)
+                {
                     for (i = 0; i < 6; i++)
                         init_put_bits(&s->reorder_pb[i], reorder_buffer[1][i],
                                       7 * 32);
@@ -453,36 +490,41 @@ FF_ENABLE_DEPRECATION_WARNINGS
                     score[2]  = s->mecc.sse[0](NULL, src + 16 * x, ref,
                                                stride, 16);
                     score[2] += vlc[1] * lambda;
-                    if (score[2] < score[best] && mx == 0 && my == 0) {
+                    if (score[2] < score[best] && mx == 0 && my == 0)
+                    {
                         best = 2;
                         s->hdsp.put_pixels_tab[0][0](decoded, ref, stride, 16);
                         put_bits(&s->pb, vlc[1], vlc[0]);
                     }
                 }
 
-                if (best == 1) {
-                    for (i = 0; i < 6; i++) {
+                if (best == 1)
+                {
+                    for (i = 0; i < 6; i++)
+                    {
                         count[1][i] = put_bits_count(&s->reorder_pb[i]);
                         flush_put_bits(&s->reorder_pb[i]);
                     }
-                } else {
+                }
+                else
+                {
                     motion_ptr[0]                      =
-                    motion_ptr[1]                      =
-                    motion_ptr[2]                      =
-                    motion_ptr[3]                      =
-                    motion_ptr[0 + 2 * s->m.b8_stride] =
-                    motion_ptr[1 + 2 * s->m.b8_stride] =
-                    motion_ptr[2 + 2 * s->m.b8_stride] =
-                    motion_ptr[3 + 2 * s->m.b8_stride] = 0;
+                        motion_ptr[1]                      =
+                            motion_ptr[2]                      =
+                                motion_ptr[3]                      =
+                                    motion_ptr[0 + 2 * s->m.b8_stride] =
+                                        motion_ptr[1 + 2 * s->m.b8_stride] =
+                                            motion_ptr[2 + 2 * s->m.b8_stride] =
+                                                motion_ptr[3 + 2 * s->m.b8_stride] = 0;
                 }
             }
 
             s->rd_total += score[best];
 
             if (best != 2)
-            for (i = 5; i >= 0; i--)
-                avpriv_copy_bits(&s->pb, reorder_buffer[best][i],
-                                 count[best][i]);
+                for (i = 5; i >= 0; i--)
+                    avpriv_copy_bits(&s->pb, reorder_buffer[best][i],
+                                     count[best][i]);
             if (best == 0)
                 s->hdsp.put_pixels_tab[0][0](decoded, temp, stride, 16);
         }
@@ -510,7 +552,8 @@ static av_cold int svq1_encode_end(AVCodecContext *avctx)
     av_freep(&s->dummy);
     av_freep(&s->scratchbuf);
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         av_freep(&s->motion_val8[i]);
         av_freep(&s->motion_val16[i]);
     }
@@ -526,7 +569,8 @@ static av_cold int svq1_encode_init(AVCodecContext *avctx)
     SVQ1EncContext *const s = avctx->priv_data;
     int ret;
 
-    if (avctx->width >= 4096 || avctx->height >= 4096) {
+    if (avctx->width >= 4096 || avctx->height >= 4096)
+    {
         av_log(avctx, AV_LOG_ERROR, "Dimensions too large, maximum is 4095x4095\n");
         return AVERROR(EINVAL);
     }
@@ -537,7 +581,8 @@ static av_cold int svq1_encode_init(AVCodecContext *avctx)
 
     s->current_picture = av_frame_alloc();
     s->last_picture    = av_frame_alloc();
-    if (!s->current_picture || !s->last_picture) {
+    if (!s->current_picture || !s->last_picture)
+    {
         svq1_encode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -554,15 +599,16 @@ static av_cold int svq1_encode_init(AVCodecContext *avctx)
     s->avctx               = avctx;
     s->m.avctx             = avctx;
 
-    if ((ret = ff_mpv_common_init(&s->m)) < 0) {
+    if ((ret = ff_mpv_common_init(&s->m)) < 0)
+    {
         svq1_encode_end(avctx);
         return ret;
     }
 
     s->m.picture_structure = PICT_FRAME;
     s->m.me.temp           =
-    s->m.me.scratchpad     = av_mallocz((avctx->width + 64) *
-                                        2 * 16 * 2 * sizeof(uint8_t));
+        s->m.me.scratchpad     = av_mallocz((avctx->width + 64) *
+                                            2 * 16 * 2 * sizeof(uint8_t));
     s->m.me.map            = av_mallocz(ME_MAP_SIZE * sizeof(uint32_t));
     s->m.me.score_map      = av_mallocz(ME_MAP_SIZE * sizeof(uint32_t));
     s->mb_type             = av_mallocz((s->y_block_width + 1) *
@@ -572,7 +618,8 @@ static av_cold int svq1_encode_init(AVCodecContext *avctx)
     s->ssd_int8_vs_int16   = ssd_int8_vs_int16_c;
 
     if (!s->m.me.temp || !s->m.me.scratchpad || !s->m.me.map ||
-        !s->m.me.score_map || !s->mb_type || !s->dummy) {
+            !s->m.me.score_map || !s->mb_type || !s->dummy)
+    {
         svq1_encode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -594,25 +641,30 @@ static int svq1_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     int i, ret;
 
     if ((ret = ff_alloc_packet2(avctx, pkt, s->y_block_width * s->y_block_height *
-                             MAX_MB_BYTES*3 + AV_INPUT_BUFFER_MIN_SIZE, 0)) < 0)
+                                MAX_MB_BYTES*3 + AV_INPUT_BUFFER_MIN_SIZE, 0)) < 0)
         return ret;
 
-    if (avctx->pix_fmt != AV_PIX_FMT_YUV410P) {
+    if (avctx->pix_fmt != AV_PIX_FMT_YUV410P)
+    {
         av_log(avctx, AV_LOG_ERROR, "unsupported pixel format\n");
         return -1;
     }
 
-    if (!s->current_picture->data[0]) {
-        if ((ret = ff_get_buffer(avctx, s->current_picture, 0)) < 0) {
+    if (!s->current_picture->data[0])
+    {
+        if ((ret = ff_get_buffer(avctx, s->current_picture, 0)) < 0)
+        {
             return ret;
         }
     }
-    if (!s->last_picture->data[0]) {
+    if (!s->last_picture->data[0])
+    {
         ret = ff_get_buffer(avctx, s->last_picture, 0);
         if (ret < 0)
             return ret;
     }
-    if (!s->scratchbuf) {
+    if (!s->scratchbuf)
+    {
         s->scratchbuf = av_malloc_array(s->current_picture->linesize[0], 16 * 3);
         if (!s->scratchbuf)
             return AVERROR(ENOMEM);
@@ -629,10 +681,10 @@ static int svq1_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     s->quality = pict->quality;
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = s->pict_type;
     avctx->coded_frame->key_frame = s->pict_type == AV_PICTURE_TYPE_I;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     ff_side_data_set_encoder_stats(pkt, pict->quality, NULL, 0, s->pict_type);
@@ -646,9 +698,11 @@ FF_ENABLE_DEPRECATION_WARNINGS
                               s->frame_width  / (i ? 4 : 1),
                               s->frame_height / (i ? 4 : 1),
                               pict->linesize[i],
-                              s->current_picture->linesize[i]) < 0) {
+                              s->current_picture->linesize[i]) < 0)
+        {
             int j;
-            for (j = 0; j < i; j++) {
+            for (j = 0; j < i; j++)
+            {
                 av_freep(&s->motion_val8[j]);
                 av_freep(&s->motion_val16[j]);
             }
@@ -672,23 +726,26 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
 #define OFFSET(x) offsetof(struct SVQ1EncContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "motion-est", "Motion estimation algorithm", OFFSET(motion_est), AV_OPT_TYPE_INT, { .i64 = FF_ME_EPZS }, FF_ME_ZERO, FF_ME_XONE, VE, "motion-est"},
-        { "zero", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_ZERO }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
-        { "epzs", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_EPZS }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
-        { "xone", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_XONE }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
+    { "zero", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_ZERO }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
+    { "epzs", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_EPZS }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
+    { "xone", NULL, 0, AV_OPT_TYPE_CONST, { .i64 = FF_ME_XONE }, 0, 0, FF_MPV_OPT_FLAGS, "motion-est" },
 
     { NULL },
 };
 
-static const AVClass svq1enc_class = {
+static const AVClass svq1enc_class =
+{
     .class_name = "svq1enc",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_svq1_encoder = {
+AVCodec ff_svq1_encoder =
+{
     .name           = "svq1",
     .long_name      = NULL_IF_CONFIG_SMALL("Sorenson Vector Quantizer 1 / Sorenson Video 1 / SVQ1"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -698,6 +755,8 @@ AVCodec ff_svq1_encoder = {
     .init           = svq1_encode_init,
     .encode2        = svq1_encode_frame,
     .close          = svq1_encode_end,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV410P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV410P,
+        AV_PIX_FMT_NONE
+    },
 };

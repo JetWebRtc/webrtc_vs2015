@@ -1,4 +1,4 @@
-/* crypto/rc2/rc2.h */
+﻿/* crypto/rc2/rc2.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -74,7 +74,8 @@
 extern "C" {
 #endif
 
-typedef struct rc2_key_st {
+typedef struct rc2_key_st
+{
     RC2_INT data[64];
 } RC2_KEY;
 

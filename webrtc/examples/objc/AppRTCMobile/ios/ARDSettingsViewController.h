@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,14 +18,14 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @interface ARDSettingsViewController : UITableViewController
 
-/**
- * Creates new instance.
- *
- * @param style the table view style that should be used
- * @param settingsModel model class for the user settings.
- */
+    /**
+     * Creates new instance.
+     *
+     * @param style the table view style that should be used
+     * @param settingsModel model class for the user settings.
+     */
 - (instancetype)initWithStyle:(UITableViewStyle)style
-                settingsModel:(ARDSettingsModel *)settingsModel;
+    settingsModel:(ARDSettingsModel *)settingsModel;
 
 #pragma mark - Unavailable
 

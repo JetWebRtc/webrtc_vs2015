@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -58,11 +58,11 @@ opus_int silk_decode_frame(
     silk_assert( L > 0 && L <= MAX_FRAME_LENGTH );
 
     if(   lostFlag == FLAG_DECODE_NORMAL ||
-        ( lostFlag == FLAG_DECODE_LBRR && psDec->LBRR_flags[ psDec->nFramesDecoded ] == 1 ) )
+            ( lostFlag == FLAG_DECODE_LBRR && psDec->LBRR_flags[ psDec->nFramesDecoded ] == 1 ) )
     {
         VARDECL( opus_int16, pulses );
         ALLOC( pulses, (L + SHELL_CODEC_FRAME_LENGTH - 1) &
-                       ~(SHELL_CODEC_FRAME_LENGTH - 1), opus_int16 );
+               ~(SHELL_CODEC_FRAME_LENGTH - 1), opus_int16 );
         /*********************************************/
         /* Decode quantization indices of side info  */
         /*********************************************/
@@ -72,7 +72,7 @@ opus_int silk_decode_frame(
         /* Decode quantization indices of excitation */
         /*********************************************/
         silk_decode_pulses( psRangeDec, pulses, psDec->indices.signalType,
-                psDec->indices.quantOffsetType, psDec->frame_length );
+                            psDec->indices.quantOffsetType, psDec->frame_length );
 
         /********************************************/
         /* Decode parameters and pulse signal       */
@@ -95,7 +95,9 @@ opus_int silk_decode_frame(
 
         /* A frame has been decoded without errors */
         psDec->first_frame_after_reset = 0;
-    } else {
+    }
+    else
+    {
         /* Handle packet loss by extrapolation */
         silk_PLC( psDec, psDecCtrl, pOut, 1, arch );
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,92 +14,108 @@
 
 #include "webrtc/base/stringencode.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
 // Produces "{ a, b, c }". Works for non-vector |RTCStatsMemberInterface::Type|
 // types.
 template<typename T>
-std::string VectorToString(const std::vector<T>& vector) {
-  if (vector.empty())
-    return "{}";
-  std::ostringstream oss;
-  oss << "{ " << rtc::ToString<T>(vector[0]);
-  for (size_t i = 1; i < vector.size(); ++i) {
-    oss << ", " << rtc::ToString<T>(vector[i]);
-  }
-  oss << " }";
-  return oss.str();
+std::string VectorToString(const std::vector<T>& vector)
+{
+    if (vector.empty())
+        return "{}";
+    std::ostringstream oss;
+    oss << "{ " << rtc::ToString<T>(vector[0]);
+    for (size_t i = 1; i < vector.size(); ++i)
+    {
+        oss << ", " << rtc::ToString<T>(vector[i]);
+    }
+    oss << " }";
+    return oss.str();
 }
 
 // Produces "{ \"a\", \"b\", \"c\" }". Works for vectors of both const char* and
 // std::string element types.
 template<typename T>
-std::string VectorOfStringsToString(const std::vector<T>& strings) {
-  if (strings.empty())
-    return "{}";
-  std::ostringstream oss;
-  oss << "{ \"" << rtc::ToString<T>(strings[0]) << '\"';
-  for (size_t i = 1; i < strings.size(); ++i) {
-    oss << ", \"" << rtc::ToString<T>(strings[i]) << '\"';
-  }
-  oss << " }";
-  return oss.str();
+std::string VectorOfStringsToString(const std::vector<T>& strings)
+{
+    if (strings.empty())
+        return "{}";
+    std::ostringstream oss;
+    oss << "{ \"" << rtc::ToString<T>(strings[0]) << '\"';
+    for (size_t i = 1; i < strings.size(); ++i)
+    {
+        oss << ", \"" << rtc::ToString<T>(strings[i]) << '\"';
+    }
+    oss << " }";
+    return oss.str();
 }
 
 }  // namespace
 
-bool RTCStats::operator==(const RTCStats& other) const {
-  if (type() != other.type() || id() != other.id())
-    return false;
-  std::vector<const RTCStatsMemberInterface*> members = Members();
-  std::vector<const RTCStatsMemberInterface*> other_members = other.Members();
-  RTC_DCHECK_EQ(members.size(), other_members.size());
-  for (size_t i = 0; i < members.size(); ++i) {
-    const RTCStatsMemberInterface* member = members[i];
-    const RTCStatsMemberInterface* other_member = other_members[i];
-    RTC_DCHECK_EQ(member->type(), other_member->type());
-    RTC_DCHECK_EQ(member->name(), other_member->name());
-    if (*member != *other_member)
-      return false;
-  }
-  return true;
-}
-
-bool RTCStats::operator!=(const RTCStats& other) const {
-  return !(*this == other);
-}
-
-std::string RTCStats::ToString() const {
-  std::ostringstream oss;
-  oss << type() << " {\n  id: \"" << id_ << "\"\n  timestamp: "
-      << timestamp_us_ << '\n';
-  for (const RTCStatsMemberInterface* member : Members()) {
-    oss << "  " << member->name() << ": ";
-    if (member->is_defined()) {
-      if (member->is_string())
-        oss << '"' << member->ValueToString() << "\"\n";
-      else
-        oss << member->ValueToString() << '\n';
-    } else {
-      oss << "undefined\n";
+bool RTCStats::operator==(const RTCStats& other) const
+{
+    if (type() != other.type() || id() != other.id())
+        return false;
+    std::vector<const RTCStatsMemberInterface*> members = Members();
+    std::vector<const RTCStatsMemberInterface*> other_members = other.Members();
+    RTC_DCHECK_EQ(members.size(), other_members.size());
+    for (size_t i = 0; i < members.size(); ++i)
+    {
+        const RTCStatsMemberInterface* member = members[i];
+        const RTCStatsMemberInterface* other_member = other_members[i];
+        RTC_DCHECK_EQ(member->type(), other_member->type());
+        RTC_DCHECK_EQ(member->name(), other_member->name());
+        if (*member != *other_member)
+            return false;
     }
-  }
-  oss << '}';
-  return oss.str();
+    return true;
 }
 
-std::vector<const RTCStatsMemberInterface*> RTCStats::Members() const {
-  return MembersOfThisObjectAndAncestors(0);
+bool RTCStats::operator!=(const RTCStats& other) const
+{
+    return !(*this == other);
+}
+
+std::string RTCStats::ToString() const
+{
+    std::ostringstream oss;
+    oss << type() << " {\n  id: \"" << id_ << "\"\n  timestamp: "
+        << timestamp_us_ << '\n';
+    for (const RTCStatsMemberInterface* member : Members())
+    {
+        oss << "  " << member->name() << ": ";
+        if (member->is_defined())
+        {
+            if (member->is_string())
+                oss << '"' << member->ValueToString() << "\"\n";
+            else
+                oss << member->ValueToString() << '\n';
+        }
+        else
+        {
+            oss << "undefined\n";
+        }
+    }
+    oss << '}';
+    return oss.str();
+}
+
+std::vector<const RTCStatsMemberInterface*> RTCStats::Members() const
+{
+    return MembersOfThisObjectAndAncestors(0);
 }
 
 std::vector<const RTCStatsMemberInterface*>
 RTCStats::MembersOfThisObjectAndAncestors(
-    size_t additional_capacity) const {
-  std::vector<const RTCStatsMemberInterface*> members;
-  members.reserve(additional_capacity);
-  return members;
+    size_t additional_capacity) const
+{
+    std::vector<const RTCStatsMemberInterface*> members;
+    members.reserve(additional_capacity);
+    return members;
 }
 
 #define WEBRTC_DEFINE_RTCSTATSMEMBER(T, type, is_seq, is_str, to_str)          \

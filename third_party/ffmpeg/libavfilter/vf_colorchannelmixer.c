@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #define B 2
 #define A 3
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     double rr, rg, rb, ra;
     double gr, gg, gb, ga;
@@ -46,7 +47,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(ColorChannelMixerContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption colorchannelmixer_options[] = {
+static const AVOption colorchannelmixer_options[] =
+{
     { "rr", "set the red gain for the red channel",     OFFSET(rr), AV_OPT_TYPE_DOUBLE, {.dbl=1}, -2, 2, FLAGS },
     { "rg", "set the green gain for the red channel",   OFFSET(rg), AV_OPT_TYPE_DOUBLE, {.dbl=0}, -2, 2, FLAGS },
     { "rb", "set the blue gain for the red channel",    OFFSET(rb), AV_OPT_TYPE_DOUBLE, {.dbl=0}, -2, 2, FLAGS },
@@ -70,7 +72,8 @@ AVFILTER_DEFINE_CLASS(colorchannelmixer);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24,  AV_PIX_FMT_BGR24,
         AV_PIX_FMT_RGBA,   AV_PIX_FMT_BGRA,
         AV_PIX_FMT_ARGB,   AV_PIX_FMT_ABGR,
@@ -95,7 +98,8 @@ static int config_output(AVFilterLink *outlink)
 
     ff_fill_rgba_map(s->rgba_map, outlink->format);
 
-    switch (outlink->format) {
+    switch (outlink->format)
+    {
     case AV_PIX_FMT_RGB48:
     case AV_PIX_FMT_BGR48:
     case AV_PIX_FMT_RGBA64:
@@ -114,7 +118,8 @@ static int config_output(AVFilterLink *outlink)
         for (j = 0; j < 4; j++, buffer += size)
             s->lut[i][j] = buffer;
 
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         s->lut[R][R][i] = round(i * s->rr);
         s->lut[R][G][i] = round(i * s->rg);
         s->lut[R][B][i] = round(i * s->rb);
@@ -153,11 +158,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int i, j;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -165,14 +174,17 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
 
     dstrow = out->data[0];
-    switch (outlink->format) {
+    switch (outlink->format)
+    {
     case AV_PIX_FMT_BGR24:
     case AV_PIX_FMT_RGB24:
-        for (i = 0; i < outlink->h; i++) {
+        for (i = 0; i < outlink->h; i++)
+        {
             const uint8_t *src = srcrow;
             uint8_t *dst = dstrow;
 
-            for (j = 0; j < outlink->w * 3; j += 3) {
+            for (j = 0; j < outlink->w * 3; j += 3)
+            {
                 const uint8_t rin = src[j + roffset];
                 const uint8_t gin = src[j + goffset];
                 const uint8_t bin = src[j + boffset];
@@ -196,11 +208,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     case AV_PIX_FMT_0RGB:
     case AV_PIX_FMT_BGR0:
     case AV_PIX_FMT_RGB0:
-        for (i = 0; i < outlink->h; i++) {
+        for (i = 0; i < outlink->h; i++)
+        {
             const uint8_t *src = srcrow;
             uint8_t *dst = dstrow;
 
-            for (j = 0; j < outlink->w * 4; j += 4) {
+            for (j = 0; j < outlink->w * 4; j += 4)
+            {
                 const uint8_t rin = src[j + roffset];
                 const uint8_t gin = src[j + goffset];
                 const uint8_t bin = src[j + boffset];
@@ -226,11 +240,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     case AV_PIX_FMT_ARGB:
     case AV_PIX_FMT_BGRA:
     case AV_PIX_FMT_RGBA:
-        for (i = 0; i < outlink->h; i++) {
+        for (i = 0; i < outlink->h; i++)
+        {
             const uint8_t *src = srcrow;
             uint8_t *dst = dstrow;
 
-            for (j = 0; j < outlink->w * 4; j += 4) {
+            for (j = 0; j < outlink->w * 4; j += 4)
+            {
                 const uint8_t rin = src[j + roffset];
                 const uint8_t gin = src[j + goffset];
                 const uint8_t bin = src[j + boffset];
@@ -260,11 +276,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         break;
     case AV_PIX_FMT_BGR48:
     case AV_PIX_FMT_RGB48:
-        for (i = 0; i < outlink->h; i++) {
+        for (i = 0; i < outlink->h; i++)
+        {
             const uint16_t *src = (const uint16_t *)srcrow;
             uint16_t *dst = (uint16_t *)dstrow;
 
-            for (j = 0; j < outlink->w * 3; j += 3) {
+            for (j = 0; j < outlink->w * 3; j += 3)
+            {
                 const uint16_t rin = src[j + roffset];
                 const uint16_t gin = src[j + goffset];
                 const uint16_t bin = src[j + boffset];
@@ -286,11 +304,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         break;
     case AV_PIX_FMT_BGRA64:
     case AV_PIX_FMT_RGBA64:
-        for (i = 0; i < outlink->h; i++) {
+        for (i = 0; i < outlink->h; i++)
+        {
             const uint16_t *src = (const uint16_t *)srcrow;
             uint16_t *dst = (uint16_t *)dstrow;
 
-            for (j = 0; j < outlink->w * 4; j += 4) {
+            for (j = 0; j < outlink->w * 4; j += 4)
+            {
                 const uint16_t rin = src[j + roffset];
                 const uint16_t gin = src[j + goffset];
                 const uint16_t bin = src[j + boffset];
@@ -331,7 +351,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->buffer);
 }
 
-static const AVFilterPad colorchannelmixer_inputs[] = {
+static const AVFilterPad colorchannelmixer_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -340,7 +361,8 @@ static const AVFilterPad colorchannelmixer_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad colorchannelmixer_outputs[] = {
+static const AVFilterPad colorchannelmixer_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -349,7 +371,8 @@ static const AVFilterPad colorchannelmixer_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_colorchannelmixer = {
+AVFilter ff_vf_colorchannelmixer =
+{
     .name          = "colorchannelmixer",
     .description   = NULL_IF_CONFIG_SMALL("Adjust colors by mixing color channels."),
     .priv_size     = sizeof(ColorChannelMixerContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2004-2010 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@ typedef short IDWTELEM;
 #define MAX_DWT_SUPPORT 8
 #define MAX_DECOMPOSITIONS 8
 
-typedef struct DWTCompose {
+typedef struct DWTCompose
+{
     IDWTELEM *b[MAX_DWT_SUPPORT];
     int y;
 } DWTCompose;
@@ -42,7 +43,8 @@ typedef void (*vertical_compose_3tap)(IDWTELEM *b0, IDWTELEM *b1, IDWTELEM *b2, 
 typedef void (*vertical_compose_5tap)(IDWTELEM *b0, IDWTELEM *b1, IDWTELEM *b2, IDWTELEM *b3, IDWTELEM *b4, int width);
 typedef void (*vertical_compose_9tap)(IDWTELEM *dst, IDWTELEM *b[8], int width);
 
-typedef struct DWTContext {
+typedef struct DWTContext
+{
     IDWTELEM *buffer;
     IDWTELEM *temp;
     int width;
@@ -62,7 +64,8 @@ typedef struct DWTContext {
     DWTCompose cs[MAX_DECOMPOSITIONS];
 } DWTContext;
 
-enum dwt_type {
+enum dwt_type
+{
     DWT_SNOW_DAUB9_7,
     DWT_SNOW_LEGALL5_3,
     DWT_DIRAC_DD9_7,

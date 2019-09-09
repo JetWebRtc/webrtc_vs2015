@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -38,26 +38,30 @@
 
 #define SQR(a) ((a)*(a))
 
-enum Outer{
+enum Outer
+{
     ITERATION_COUNT,
     NORMALIZED_ITERATION_COUNT,
     WHITE,
     OUTZ,
 };
 
-enum Inner{
+enum Inner
+{
     BLACK,
     PERIOD,
     CONVTIME,
     MINCOL,
 };
 
-typedef struct Point {
+typedef struct Point
+{
     double p[2];
     uint32_t val;
 } Point;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int w, h;
     AVRational frame_rate;
@@ -86,7 +90,8 @@ typedef struct {
 #define OFFSET(x) offsetof(MBContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption mandelbrot_options[] = {
+static const AVOption mandelbrot_options[] =
+{
     {"size",        "set frame size",                OFFSET(w),       AV_OPT_TYPE_IMAGE_SIZE, {.str="640x480"},  CHAR_MIN, CHAR_MAX, FLAGS },
     {"s",           "set frame size",                OFFSET(w),       AV_OPT_TYPE_IMAGE_SIZE, {.str="640x480"},  CHAR_MIN, CHAR_MAX, FLAGS },
     {"rate",        "set frame rate",                OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str="25"},  CHAR_MIN, CHAR_MAX, FLAGS },
@@ -148,7 +153,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_BGR32,
         AV_PIX_FMT_NONE
     };
@@ -174,11 +180,13 @@ static int config_props(AVFilterLink *inlink)
     return 0;
 }
 
-static void fill_from_cache(AVFilterContext *ctx, uint32_t *color, int *in_cidx, int *out_cidx, double py, double scale){
+static void fill_from_cache(AVFilterContext *ctx, uint32_t *color, int *in_cidx, int *out_cidx, double py, double scale)
+{
     MBContext *mb = ctx->priv;
     if(mb->morphamp)
         return;
-    for(; *in_cidx < mb->cache_used; (*in_cidx)++){
+    for(; *in_cidx < mb->cache_used; (*in_cidx)++)
+    {
         Point *p= &mb->point_cache[*in_cidx];
         int x;
         if(p->p[1] > py)
@@ -211,24 +219,33 @@ static int interpol(MBContext *mb, uint32_t *color, int x, int y, int linesize)
     c=color[(x+0) + (y+1)*linesize];
     d=color[(x+1) + (y+1)*linesize];
 
-    if(a&&c){
+    if(a&&c)
+    {
         b= color[(x-1) + (y+0)*linesize];
         d= color[(x+0) + (y-1)*linesize];
-    }else if(b&&d){
+    }
+    else if(b&&d)
+    {
         a= color[(x+1) + (y-1)*linesize];
         c= color[(x-1) + (y-1)*linesize];
-    }else if(c){
+    }
+    else if(c)
+    {
         d= color[(x+0) + (y-1)*linesize];
         a= color[(x-1) + (y+0)*linesize];
         b= color[(x+1) + (y-1)*linesize];
-    }else if(d){
+    }
+    else if(d)
+    {
         c= color[(x-1) + (y-1)*linesize];
         a= color[(x-1) + (y+0)*linesize];
         b= color[(x+1) + (y-1)*linesize];
-    }else
+    }
+    else
         return 0;
 
-    for(i=0; i<3; i++){
+    for(i=0; i<3; i++)
+    {
         int s= 8*i;
         uint8_t ac= a>>s;
         uint8_t bc= b>>s;
@@ -255,16 +272,19 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
     fill_from_cache(ctx, NULL, &in_cidx, NULL, mb->start_y+scale*(-mb->h/2-0.5), scale);
     tmp_cidx= in_cidx;
     memset(color, 0, sizeof(*color)*mb->w);
-    for(y=0; y<mb->h; y++){
+    for(y=0; y<mb->h; y++)
+    {
         int y1= y+1;
         const double ci=mb->start_y+scale*(y-mb->h/2);
         fill_from_cache(ctx, NULL, &in_cidx, &next_cidx, ci, scale);
-        if(y1<mb->h){
+        if(y1<mb->h)
+        {
             memset(color+linesize*y1, 0, sizeof(*color)*mb->w);
             fill_from_cache(ctx, color+linesize*y1, &tmp_cidx, NULL, ci + 3*scale/2, scale);
         }
 
-        for(x=0; x<mb->w; x++){
+        for(x=0; x<mb->w; x++)
+        {
             float av_uninit(epsilon);
             const double cr=mb->start_x+scale*(x-mb->w/2);
             double zr=cr;
@@ -275,16 +295,21 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
 
             if(color[x + y*linesize] & 0xFF000000)
                 continue;
-            if(!mb->morphamp){
-                if(interpol(mb, color, x, y, linesize)){
-                    if(next_cidx < mb->cache_allocated){
+            if(!mb->morphamp)
+            {
+                if(interpol(mb, color, x, y, linesize))
+                {
+                    if(next_cidx < mb->cache_allocated)
+                    {
                         mb->next_cache[next_cidx  ].p[0]= cr;
                         mb->next_cache[next_cidx  ].p[1]= ci;
                         mb->next_cache[next_cidx++].val = color[x + y*linesize];
                     }
                     continue;
                 }
-            }else{
+            }
+            else
+            {
                 zr += cos(pts * mb->morphxf) * mb->morphamp;
                 zi += sin(pts * mb->morphyf) * mb->morphamp;
             }
@@ -308,7 +333,8 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
 
 
 
-            for(i=0; i<mb->maxiter-8; i++){
+            for(i=0; i<mb->maxiter-8; i++)
+            {
                 double t;
                 Z_Z2_C_ZYKLUS(t, zi, zr, zi, 0)
                 i++;
@@ -325,13 +351,17 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
                 Z_Z2_C_ZYKLUS(t, zi, zr, zi, 0)
                 i++;
                 Z_Z2_C_ZYKLUS(zr, zi, t, zi, 1)
-                if(zr*zr + zi*zi > mb->bailout){
+                if(zr*zr + zi*zi > mb->bailout)
+                {
                     i-= FFMIN(7, i);
-                    for(; i<mb->maxiter; i++){
+                    for(; i<mb->maxiter; i++)
+                    {
                         zr= mb->zyklus[i][0];
                         zi= mb->zyklus[i][1];
-                        if(zr*zr + zi*zi > mb->bailout){
-                            switch(mb->outer){
+                        if(zr*zr + zi*zi > mb->bailout)
+                        {
+                            switch(mb->outer)
+                            {
                             case            ITERATION_COUNT:
                                 zr = i;
                                 c = lrintf((sin(zr)+1)*127) + lrintf((sin(zr/1.234)+1)*127)*256*256 + lrintf((sin(zr/100)+1)*127)*256;
@@ -354,24 +384,32 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
                     break;
                 }
             }
-            if(!c){
-                if(mb->inner==PERIOD){
+            if(!c)
+            {
+                if(mb->inner==PERIOD)
+                {
                     int j;
                     for(j=i-1; j; j--)
                         if(SQR(mb->zyklus[j][0]-zr) + SQR(mb->zyklus[j][1]-zi) < epsilon*epsilon*10)
                             break;
-                    if(j){
+                    if(j)
+                    {
                         c= i-j;
                         c= ((c<<5)&0xE0) + ((c<<10)&0xE000) + ((c<<15)&0xE00000);
                     }
-                }else if(mb->inner==CONVTIME){
+                }
+                else if(mb->inner==CONVTIME)
+                {
                     c= floor(i*255.0/mb->maxiter+dv)*0x010101;
-                } else if(mb->inner==MINCOL){
+                }
+                else if(mb->inner==MINCOL)
+                {
                     int j;
                     double closest=9999;
                     int closest_index=0;
                     for(j=i-1; j>=0; j--)
-                        if(SQR(mb->zyklus[j][0]) + SQR(mb->zyklus[j][1]) < closest){
+                        if(SQR(mb->zyklus[j][0]) + SQR(mb->zyklus[j][1]) < closest)
+                        {
                             closest= SQR(mb->zyklus[j][0]) + SQR(mb->zyklus[j][1]);
                             closest_index= j;
                         }
@@ -381,7 +419,8 @@ static void draw_mandelbrot(AVFilterContext *ctx, uint32_t *color, int linesize,
             }
             c |= 0xFF000000;
             color[x + y*linesize]= c;
-            if(next_cidx < mb->cache_allocated){
+            if(next_cidx < mb->cache_allocated)
+            {
                 mb->next_cache[next_cidx  ].p[0]= cr;
                 mb->next_cache[next_cidx  ].p[1]= ci;
                 mb->next_cache[next_cidx++].val = c;
@@ -402,14 +441,18 @@ static int request_frame(AVFilterLink *link)
     if (!picref)
         return AVERROR(ENOMEM);
 
-    picref->sample_aspect_ratio = (AVRational) {1, 1};
+    picref->sample_aspect_ratio = (AVRational)
+    {
+        1, 1
+    };
     picref->pts = mb->pts++;
 
     draw_mandelbrot(link->src, (uint32_t*)picref->data[0], picref->linesize[0]/4, picref->pts);
     return ff_filter_frame(link, picref);
 }
 
-static const AVFilterPad mandelbrot_outputs[] = {
+static const AVFilterPad mandelbrot_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -419,7 +462,8 @@ static const AVFilterPad mandelbrot_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_mandelbrot = {
+AVFilter ff_vsrc_mandelbrot =
+{
     .name          = "mandelbrot",
     .description   = NULL_IF_CONFIG_SMALL("Render a Mandelbrot fractal."),
     .priv_size     = sizeof(MBContext),

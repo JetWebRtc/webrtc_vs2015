@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MLP DSP functions x86-optimized
  * Copyright (c) 2009 Ramiro Polla
  *
@@ -61,13 +61,15 @@ extern char ff_mlp_iirorder_1;
 extern char ff_mlp_iirorder_0;
 
 static const void * const firtable[9] = { &ff_mlp_firorder_0, &ff_mlp_firorder_1,
-                                   &ff_mlp_firorder_2, &ff_mlp_firorder_3,
-                                   &ff_mlp_firorder_4, &ff_mlp_firorder_5,
-                                   &ff_mlp_firorder_6, &ff_mlp_firorder_7,
-                                   &ff_mlp_firorder_8 };
+                                          &ff_mlp_firorder_2, &ff_mlp_firorder_3,
+                                          &ff_mlp_firorder_4, &ff_mlp_firorder_5,
+                                          &ff_mlp_firorder_6, &ff_mlp_firorder_7,
+                                          &ff_mlp_firorder_8
+                                        };
 static const void * const iirtable[5] = { &ff_mlp_iirorder_0, &ff_mlp_iirorder_1,
-                                   &ff_mlp_iirorder_2, &ff_mlp_iirorder_3,
-                                   &ff_mlp_iirorder_4 };
+                                          &ff_mlp_iirorder_2, &ff_mlp_iirorder_3,
+                                          &ff_mlp_iirorder_4
+                                        };
 
 #if ARCH_X86_64
 
@@ -171,18 +173,18 @@ static void mlp_filter_channel_x86(int32_t *state, const int32_t *coeff,
         "incl              %3         \n\t"
         "js 1b                        \n\t"
         : /* 0*/"+r"(state),
-          /* 1*/"+r"(coeff),
-          /* 2*/"+r"(sample_buffer),
+        /* 1*/"+r"(coeff),
+        /* 2*/"+r"(sample_buffer),
 #if ARCH_X86_64
-          /* 3*/"+r"(blocksize)
+        /* 3*/"+r"(blocksize)
         : /* 4*/"r"((x86_reg)mask), /* 5*/"r"(firjump),
-          /* 6*/"r"(iirjump)      , /* 7*/"c"(filter_shift)
+        /* 6*/"r"(iirjump)      , /* 7*/"c"(filter_shift)
         , /* 8*/"r"((int64_t)coeff[0])
         : "rax", "rdx", "rsi"
 #else /* ARCH_X86_32 */
-          /* 3*/"+m"(blocksize)
+        /* 3*/"+m"(blocksize)
         : /* 4*/"m"(         mask), /* 5*/"m"(firjump),
-          /* 6*/"m"(iirjump)      , /* 7*/"m"(filter_shift)
+        /* 6*/"m"(iirjump)      , /* 7*/"m"(filter_shift)
         : "eax", "edx", "esi", "ecx"
 #endif /* !ARCH_X86_64 */
     );

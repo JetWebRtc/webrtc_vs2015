@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,19 +14,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSInteger, RTCMediaSourceType) {
-  RTCMediaSourceTypeAudio,
-  RTCMediaSourceTypeVideo,
+typedef NS_ENUM(NSInteger, RTCMediaSourceType)
+{
+    RTCMediaSourceTypeAudio,
+    RTCMediaSourceTypeVideo,
 };
 
 @interface RTCMediaSource ()
 
-@property(nonatomic, readonly)
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::MediaSourceInterface> nativeMediaSource;
 
 - (instancetype)initWithNativeMediaSource:
-   (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
-                                     type:(RTCMediaSourceType)type
+    (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
+    type:(RTCMediaSourceType)type
     NS_DESIGNATED_INITIALIZER;
 
 + (webrtc::MediaSourceInterface::SourceState)nativeSourceStateForState:

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -48,43 +48,65 @@ opus_int silk_decoder_set_fs(
     frame_length = silk_SMULBB( psDec->nb_subfr, psDec->subfr_length );
 
     /* Initialize resampler when switching internal or external sampling frequency */
-    if( psDec->fs_kHz != fs_kHz || psDec->fs_API_hz != fs_API_Hz ) {
+    if( psDec->fs_kHz != fs_kHz || psDec->fs_API_hz != fs_API_Hz )
+    {
         /* Initialize the resampler for dec_API.c preparing resampling from fs_kHz to API_fs_Hz */
         ret += silk_resampler_init( &psDec->resampler_state, silk_SMULBB( fs_kHz, 1000 ), fs_API_Hz, 0 );
 
         psDec->fs_API_hz = fs_API_Hz;
     }
 
-    if( psDec->fs_kHz != fs_kHz || frame_length != psDec->frame_length ) {
-        if( fs_kHz == 8 ) {
-            if( psDec->nb_subfr == MAX_NB_SUBFR ) {
+    if( psDec->fs_kHz != fs_kHz || frame_length != psDec->frame_length )
+    {
+        if( fs_kHz == 8 )
+        {
+            if( psDec->nb_subfr == MAX_NB_SUBFR )
+            {
                 psDec->pitch_contour_iCDF = silk_pitch_contour_NB_iCDF;
-            } else {
+            }
+            else
+            {
                 psDec->pitch_contour_iCDF = silk_pitch_contour_10_ms_NB_iCDF;
             }
-        } else {
-            if( psDec->nb_subfr == MAX_NB_SUBFR ) {
+        }
+        else
+        {
+            if( psDec->nb_subfr == MAX_NB_SUBFR )
+            {
                 psDec->pitch_contour_iCDF = silk_pitch_contour_iCDF;
-            } else {
+            }
+            else
+            {
                 psDec->pitch_contour_iCDF = silk_pitch_contour_10_ms_iCDF;
             }
         }
-        if( psDec->fs_kHz != fs_kHz ) {
+        if( psDec->fs_kHz != fs_kHz )
+        {
             psDec->ltp_mem_length = silk_SMULBB( LTP_MEM_LENGTH_MS, fs_kHz );
-            if( fs_kHz == 8 || fs_kHz == 12 ) {
+            if( fs_kHz == 8 || fs_kHz == 12 )
+            {
                 psDec->LPC_order = MIN_LPC_ORDER;
                 psDec->psNLSF_CB = &silk_NLSF_CB_NB_MB;
-            } else {
+            }
+            else
+            {
                 psDec->LPC_order = MAX_LPC_ORDER;
                 psDec->psNLSF_CB = &silk_NLSF_CB_WB;
             }
-            if( fs_kHz == 16 ) {
+            if( fs_kHz == 16 )
+            {
                 psDec->pitch_lag_low_bits_iCDF = silk_uniform8_iCDF;
-            } else if( fs_kHz == 12 ) {
+            }
+            else if( fs_kHz == 12 )
+            {
                 psDec->pitch_lag_low_bits_iCDF = silk_uniform6_iCDF;
-            } else if( fs_kHz == 8 ) {
+            }
+            else if( fs_kHz == 8 )
+            {
                 psDec->pitch_lag_low_bits_iCDF = silk_uniform4_iCDF;
-            } else {
+            }
+            else
+            {
                 /* unsupported sampling rate */
                 silk_assert( 0 );
             }

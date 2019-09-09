@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SubRip subtitle muxer
  * Copyright (c) 2012  Nicolas George <nicolas.george@normalesup.org>
  *
@@ -30,7 +30,8 @@
    - byte order mark.
  */
 
-typedef struct SRTContext{
+typedef struct SRTContext
+{
     unsigned index;
 } SRTContext;
 
@@ -39,13 +40,15 @@ static int srt_write_header(AVFormatContext *avf)
     SRTContext *srt = avf->priv_data;
 
     if (avf->nb_streams != 1 ||
-        avf->streams[0]->codec->codec_type != AVMEDIA_TYPE_SUBTITLE) {
+            avf->streams[0]->codec->codec_type != AVMEDIA_TYPE_SUBTITLE)
+    {
         av_log(avf, AV_LOG_ERROR,
                "SRT supports only a single subtitles stream.\n");
         return AVERROR(EINVAL);
     }
     if (avf->streams[0]->codec->codec_id != AV_CODEC_ID_TEXT &&
-        avf->streams[0]->codec->codec_id != AV_CODEC_ID_SUBRIP) {
+            avf->streams[0]->codec->codec_id != AV_CODEC_ID_SUBRIP)
+    {
         av_log(avf, AV_LOG_ERROR,
                "Unsupported subtitles codec: %s\n",
                avcodec_get_name(avf->streams[0]->codec->codec_id));
@@ -61,37 +64,39 @@ static int srt_write_packet(AVFormatContext *avf, AVPacket *pkt)
     SRTContext *srt = avf->priv_data;
 
     // TODO: reindent
-        int64_t s = pkt->pts, e, d = pkt->duration;
-        int size, x1 = -1, y1 = -1, x2 = -1, y2 = -1;
-        const uint8_t *p;
+    int64_t s = pkt->pts, e, d = pkt->duration;
+    int size, x1 = -1, y1 = -1, x2 = -1, y2 = -1;
+    const uint8_t *p;
 
-        p = av_packet_get_side_data(pkt, AV_PKT_DATA_SUBTITLE_POSITION, &size);
-        if (p && size == 16) {
-            x1 = AV_RL32(p     );
-            y1 = AV_RL32(p +  4);
-            x2 = AV_RL32(p +  8);
-            y2 = AV_RL32(p + 12);
-        }
+    p = av_packet_get_side_data(pkt, AV_PKT_DATA_SUBTITLE_POSITION, &size);
+    if (p && size == 16)
+    {
+        x1 = AV_RL32(p     );
+        y1 = AV_RL32(p +  4);
+        x2 = AV_RL32(p +  8);
+        y2 = AV_RL32(p + 12);
+    }
 
-        if (d <= 0)
-            /* For backward compatibility, fallback to convergence_duration. */
-            d = pkt->convergence_duration;
-        if (s == AV_NOPTS_VALUE || d < 0) {
-            av_log(avf, AV_LOG_WARNING,
-                   "Insufficient timestamps in event number %d.\n", srt->index);
-            return 0;
-        }
-        e = s + d;
-        avio_printf(avf->pb, "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d",
-                       srt->index,
-                       (int)(s / 3600000),      (int)(s / 60000) % 60,
-                       (int)(s /    1000) % 60, (int)(s %  1000),
-                       (int)(e / 3600000),      (int)(e / 60000) % 60,
-                       (int)(e /    1000) % 60, (int)(e %  1000));
-        if (p)
-            avio_printf(avf->pb, "  X1:%03d X2:%03d Y1:%03d Y2:%03d",
-                        x1, x2, y1, y2);
-        avio_printf(avf->pb, "\n");
+    if (d <= 0)
+        /* For backward compatibility, fallback to convergence_duration. */
+        d = pkt->convergence_duration;
+    if (s == AV_NOPTS_VALUE || d < 0)
+    {
+        av_log(avf, AV_LOG_WARNING,
+               "Insufficient timestamps in event number %d.\n", srt->index);
+        return 0;
+    }
+    e = s + d;
+    avio_printf(avf->pb, "%d\n%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d",
+                srt->index,
+                (int)(s / 3600000),      (int)(s / 60000) % 60,
+                (int)(s /    1000) % 60, (int)(s %  1000),
+                (int)(e / 3600000),      (int)(e / 60000) % 60,
+                (int)(e /    1000) % 60, (int)(e %  1000));
+    if (p)
+        avio_printf(avf->pb, "  X1:%03d X2:%03d Y1:%03d Y2:%03d",
+                    x1, x2, y1, y2);
+    avio_printf(avf->pb, "\n");
 
     avio_write(avf->pb, pkt->data, pkt->size);
     avio_write(avf->pb, "\n\n", 2);
@@ -99,7 +104,8 @@ static int srt_write_packet(AVFormatContext *avf, AVPacket *pkt)
     return 0;
 }
 
-AVOutputFormat ff_srt_muxer = {
+AVOutputFormat ff_srt_muxer =
+{
     .name           = "srt",
     .long_name      = NULL_IF_CONFIG_SMALL("SubRip subtitle"),
     .mime_type      = "application/x-subrip",

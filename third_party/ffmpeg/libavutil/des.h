@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DES encryption/decryption
  * Copyright (c) 2007 Reimar Doeffinger
  *
@@ -30,7 +30,8 @@
  * @{
  */
 
-typedef struct AVDES {
+typedef struct AVDES
+{
     uint64_t round_keys[3][16];
     int triple_des;
 } AVDES;

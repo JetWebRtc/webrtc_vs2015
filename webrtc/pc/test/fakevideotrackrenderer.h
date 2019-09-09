@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,18 +14,24 @@
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/media/base/fakevideorenderer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FakeVideoTrackRenderer : public cricket::FakeVideoRenderer {
- public:
-  FakeVideoTrackRenderer(VideoTrackInterface* video_track)
-      : video_track_(video_track) {
-    video_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
-  }
-  ~FakeVideoTrackRenderer() { video_track_->RemoveSink(this); }
+class FakeVideoTrackRenderer : public cricket::FakeVideoRenderer
+{
+public:
+    FakeVideoTrackRenderer(VideoTrackInterface* video_track)
+        : video_track_(video_track)
+    {
+        video_track_->AddOrUpdateSink(this, rtc::VideoSinkWants());
+    }
+    ~FakeVideoTrackRenderer()
+    {
+        video_track_->RemoveSink(this);
+    }
 
- private:
-  rtc::scoped_refptr<VideoTrackInterface> video_track_;
+private:
+    rtc::scoped_refptr<VideoTrackInterface> video_track_;
 };
 
 }  // namespace webrtc

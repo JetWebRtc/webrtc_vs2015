@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,37 +13,46 @@
 #include "webrtc/base/logging.h"
 #include "webrtc/media/base/rtputils.h"
 
-namespace cricket {
+namespace cricket
+{
 
-BundleFilter::BundleFilter() {
+BundleFilter::BundleFilter()
+{
 }
 
-BundleFilter::~BundleFilter() {
+BundleFilter::~BundleFilter()
+{
 }
 
-bool BundleFilter::DemuxPacket(const uint8_t* data, size_t len) {
-  // For RTP packets, we check whether the payload type can be found.
-  if (!IsRtpPacket(data, len)) {
-    return false;
-  }
+bool BundleFilter::DemuxPacket(const uint8_t* data, size_t len)
+{
+    // For RTP packets, we check whether the payload type can be found.
+    if (!IsRtpPacket(data, len))
+    {
+        return false;
+    }
 
-  int payload_type = 0;
-  if (!GetRtpPayloadType(data, len, &payload_type)) {
-    return false;
-  }
-  return FindPayloadType(payload_type);
+    int payload_type = 0;
+    if (!GetRtpPayloadType(data, len, &payload_type))
+    {
+        return false;
+    }
+    return FindPayloadType(payload_type);
 }
 
-void BundleFilter::AddPayloadType(int payload_type) {
-  payload_types_.insert(payload_type);
+void BundleFilter::AddPayloadType(int payload_type)
+{
+    payload_types_.insert(payload_type);
 }
 
-bool BundleFilter::FindPayloadType(int pl_type) const {
-  return payload_types_.find(pl_type) != payload_types_.end();
+bool BundleFilter::FindPayloadType(int pl_type) const
+{
+    return payload_types_.find(pl_type) != payload_types_.end();
 }
 
-void BundleFilter::ClearAllPayloadTypes() {
-  payload_types_.clear();
+void BundleFilter::ClearAllPayloadTypes()
+{
+    payload_types_.clear();
 }
 
 }  // namespace cricket

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Himangi Saraogi <himangi774@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int first_field;
     char *pattern;
@@ -56,12 +57,13 @@ typedef struct {
 #define OFFSET(x) offsetof(DetelecineContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption detelecine_options[] = {
+static const AVOption detelecine_options[] =
+{
     {"first_field", "select first field", OFFSET(first_field), AV_OPT_TYPE_INT,   {.i64=0}, 0, 1, FLAGS, "field"},
-        {"top",    "select top field first",                0, AV_OPT_TYPE_CONST, {.i64=0}, 0, 0, FLAGS, "field"},
-        {"t",      "select top field first",                0, AV_OPT_TYPE_CONST, {.i64=0}, 0, 0, FLAGS, "field"},
-        {"bottom", "select bottom field first",             0, AV_OPT_TYPE_CONST, {.i64=1}, 0, 0, FLAGS, "field"},
-        {"b",      "select bottom field first",             0, AV_OPT_TYPE_CONST, {.i64=1}, 0, 0, FLAGS, "field"},
+    {"top",    "select top field first",                0, AV_OPT_TYPE_CONST, {.i64=0}, 0, 0, FLAGS, "field"},
+    {"t",      "select top field first",                0, AV_OPT_TYPE_CONST, {.i64=0}, 0, 0, FLAGS, "field"},
+    {"bottom", "select bottom field first",             0, AV_OPT_TYPE_CONST, {.i64=1}, 0, 0, FLAGS, "field"},
+    {"b",      "select bottom field first",             0, AV_OPT_TYPE_CONST, {.i64=1}, 0, 0, FLAGS, "field"},
     {"pattern", "pattern that describe for how many fields a frame is to be displayed", OFFSET(pattern), AV_OPT_TYPE_STRING, {.str="23"}, 0, 0, FLAGS},
     {"start_frame", "position of first frame with respect to the pattern if stream is cut", OFFSET(start_frame), AV_OPT_TYPE_INT, {.i64=0}, 0, 13, FLAGS},
     {NULL}
@@ -75,13 +77,16 @@ static av_cold int init(AVFilterContext *ctx)
     const char *p;
     int max = 0;
 
-    if (!strlen(s->pattern)) {
+    if (!strlen(s->pattern))
+    {
         av_log(ctx, AV_LOG_ERROR, "No pattern provided.\n");
         return AVERROR_INVALIDDATA;
     }
 
-    for (p = s->pattern; *p; p++) {
-        if (!av_isdigit(*p)) {
+    for (p = s->pattern; *p; p++)
+    {
+        if (!av_isdigit(*p))
+        {
             av_log(ctx, AV_LOG_ERROR, "Provided pattern includes non-numeric characters.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -95,12 +100,15 @@ static av_cold int init(AVFilterContext *ctx)
     s->pattern_pos = 0;
     s->start_time = AV_NOPTS_VALUE;
 
-    if (s->start_frame != 0) {
+    if (s->start_frame != 0)
+    {
         int nfields = 0;
-        for (p = s->pattern; *p; p++) {
+        for (p = s->pattern; *p; p++)
+        {
             nfields += *p - '0';
             s->pattern_pos++;
-            if (nfields >= 2*s->start_frame) {
+            if (nfields >= 2*s->start_frame)
+            {
                 s->nskip_fields = nfields - 2*s->start_frame;
                 break;
             }
@@ -118,11 +126,12 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *pix_fmts = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & AV_PIX_FMT_FLAG_HWACCEL ||
-              desc->flags & AV_PIX_FMT_FLAG_PAL     ||
-              desc->flags & AV_PIX_FMT_FLAG_BITSTREAM))
+                desc->flags & AV_PIX_FMT_FLAG_PAL     ||
+                desc->flags & AV_PIX_FMT_FLAG_BITSTREAM))
             ff_add_format(&pix_fmts, fmt);
     }
 
@@ -161,7 +170,8 @@ static int config_output(AVFilterLink *outlink)
     const AVFilterLink *inlink = ctx->inputs[0];
     AVRational fps = inlink->frame_rate;
 
-    if (!fps.num || !fps.den) {
+    if (!fps.num || !fps.den)
+    {
         av_log(ctx, AV_LOG_ERROR, "The input needs a constant frame rate; "
                "current rate of %d/%d is invalid\n", fps.num, fps.den);
         return AVERROR(EINVAL);
@@ -191,16 +201,22 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     if (s->start_time == AV_NOPTS_VALUE)
         s->start_time = inpicref->pts;
 
-    if (s->nskip_fields >= 2) {
+    if (s->nskip_fields >= 2)
+    {
         s->nskip_fields -= 2;
         return 0;
-    } else if (s->nskip_fields >= 1) {
-        if (s->occupied) {
+    }
+    else if (s->nskip_fields >= 1)
+    {
+        if (s->occupied)
+        {
             s->occupied = 0;
             s->nskip_fields--;
         }
-        else {
-            for (i = 0; i < s->nb_planes; i++) {
+        else
+        {
+            for (i = 0; i < s->nb_planes; i++)
+            {
                 av_image_copy_plane(s->temp->data[i], s->temp->linesize[i],
                                     inpicref->data[i], inpicref->linesize[i],
                                     s->stride[i],
@@ -212,8 +228,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
         }
     }
 
-    if (s->nskip_fields == 0) {
-        while(!len && s->pattern[s->pattern_pos]) {
+    if (s->nskip_fields == 0)
+    {
+        while(!len && s->pattern[s->pattern_pos])
+        {
             len = s->pattern[s->pattern_pos] - '0';
             s->pattern_pos++;
         }
@@ -221,13 +239,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
         if (!s->pattern[s->pattern_pos])
             s->pattern_pos = 0;
 
-        if(!len) { // do not output any field as the entire pattern is zero
+        if(!len)   // do not output any field as the entire pattern is zero
+        {
             av_frame_free(&inpicref);
             return 0;
         }
 
-        if (s->occupied) {
-            for (i = 0; i < s->nb_planes; i++) {
+        if (s->occupied)
+        {
+            for (i = 0; i < s->nb_planes; i++)
+            {
                 // fill in the EARLIER field from the new pic
                 av_image_copy_plane(s->frame->data[i] + s->frame->linesize[i] * s->first_field,
                                     s->frame->linesize[i] * 2,
@@ -244,7 +265,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
                                     (s->planeheight[i] - !s->first_field + 1) / 2);
             }
             len -= 2;
-            for (i = 0; i < s->nb_planes; i++) {
+            for (i = 0; i < s->nb_planes; i++)
+            {
                 av_image_copy_plane(s->temp->data[i], s->temp->linesize[i],
                                     inpicref->data[i], inpicref->linesize[i],
                                     s->stride[i],
@@ -252,8 +274,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
             }
             s->occupied = 1;
             out = 1;
-        } else {
-            if (len >= 2) {
+        }
+        else
+        {
+            if (len >= 2)
+            {
                 // output THIS image as-is
                 for (i = 0; i < s->nb_planes; i++)
                     av_image_copy_plane(s->frame->data[i], s->frame->linesize[i],
@@ -262,9 +287,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
                                         s->planeheight[i]);
                 len -= 2;
                 out = 1;
-            } else if (len == 1) {
+            }
+            else if (len == 1)
+            {
                 // fill in the EARLIER field from the new pic
-                for (i = 0; i < s->nb_planes; i++) {
+                for (i = 0; i < s->nb_planes; i++)
+                {
                     av_image_copy_plane(s->frame->data[i] +
                                         s->frame->linesize[i] * s->first_field,
                                         s->frame->linesize[i] * 2,
@@ -272,7 +300,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
                                         inpicref->linesize[i] * s->first_field,
                                         inpicref->linesize[i] * 2, s->stride[i],
                                         (s->planeheight[i] - s->first_field + 1) / 2);
-                 }
+                }
 
                 // TODO: not sure about the other field
 
@@ -289,10 +317,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     }
     s->nskip_fields = len;
 
-    if (out) {
+    if (out)
+    {
         AVFrame *frame = av_frame_clone(s->frame);
 
-        if (!frame) {
+        if (!frame)
+        {
             av_frame_free(&inpicref);
             return AVERROR(ENOMEM);
         }
@@ -317,7 +347,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->frame);
 }
 
-static const AVFilterPad detelecine_inputs[] = {
+static const AVFilterPad detelecine_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -327,7 +358,8 @@ static const AVFilterPad detelecine_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad detelecine_outputs[] = {
+static const AVFilterPad detelecine_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -336,7 +368,8 @@ static const AVFilterPad detelecine_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_detelecine = {
+AVFilter ff_vf_detelecine =
+{
     .name          = "detelecine",
     .description   = NULL_IF_CONFIG_SMALL("Apply an inverse telecine pattern."),
     .priv_size     = sizeof(DetelecineContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "bbox.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int min_val;
 } BBoxContext;
@@ -38,7 +39,8 @@ typedef struct {
 #define OFFSET(x) offsetof(BBoxContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption bbox_options[] = {
+static const AVOption bbox_options[] =
+{
     { "min_val", "set minimum luminance value for bounding box", OFFSET(min_val), AV_OPT_TYPE_INT, { .i64 = 16 }, 0, 254, FLAGS },
     { NULL }
 };
@@ -47,7 +49,8 @@ AVFILTER_DEFINE_CLASS(bbox);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_YUV440P,
@@ -83,7 +86,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
            "n:%"PRId64" pts:%s pts_time:%s", inlink->frame_count,
            av_ts2str(frame->pts), av_ts2timestr(frame->pts, &inlink->time_base));
 
-    if (has_bbox) {
+    if (has_bbox)
+    {
         AVDictionary **metadata = avpriv_frame_get_metadatap(frame);
 
         SET_META("lavfi.bbox.x1", box.x1)
@@ -105,7 +109,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     return ff_filter_frame(inlink->dst->outputs[0], frame);
 }
 
-static const AVFilterPad bbox_inputs[] = {
+static const AVFilterPad bbox_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -114,7 +119,8 @@ static const AVFilterPad bbox_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad bbox_outputs[] = {
+static const AVFilterPad bbox_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -122,7 +128,8 @@ static const AVFilterPad bbox_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_bbox = {
+AVFilter ff_vf_bbox =
+{
     .name          = "bbox",
     .description   = NULL_IF_CONFIG_SMALL("Compute bounding box for each frame."),
     .priv_size     = sizeof(BBoxContext),

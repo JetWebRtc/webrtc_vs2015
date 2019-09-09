@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP parser for DV payload format (RFC 6469)
  * Copyright (c) 2015 Thomas Volkert <thomas@homer-conferencing.com>
  *
@@ -26,7 +26,8 @@
 #include "avio_internal.h"
 #include "rtpdec_formats.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *buf;
     uint32_t    timestamp;
     int         bundled_audio;
@@ -38,16 +39,17 @@ static av_cold void dv_close_context(PayloadContext *data)
 }
 
 static av_cold int dv_sdp_parse_fmtp_config(AVFormatContext *s,
-                                            AVStream *stream,
-                                            PayloadContext *dv_data,
-                                            const char *attr, const char *value)
+        AVStream *stream,
+        PayloadContext *dv_data,
+        const char *attr, const char *value)
 {
     /* does the DV stream include audio? */
     if (!strcmp(attr, "audio") && !strcmp(value, "bundled"))
         dv_data->bundled_audio = 1;
 
     /* extract the DV profile */
-    if (!strcmp(attr, "encode")) {
+    if (!strcmp(attr, "encode"))
+    {
         /* SD-VCR/525-60 */
         /* SD-VCR/625-50 */
         /* HD-VCR/1125-60 */
@@ -80,7 +82,8 @@ static av_cold int dv_parse_sdp_line(AVFormatContext *ctx, int st_index,
 
     current_stream = ctx->streams[st_index];
 
-    if (av_strstart(sdp_line_ptr, "fmtp:", &sdp_line_ptr)) {
+    if (av_strstart(sdp_line_ptr, "fmtp:", &sdp_line_ptr))
+    {
         return ff_parse_fmtp(ctx, current_stream, dv_data, sdp_line_ptr,
                              dv_sdp_parse_fmtp_config);
     }
@@ -96,18 +99,21 @@ static int dv_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_dv_ctx,
     int res = 0;
 
     /* drop data of previous packets in case of non-continuous (lossy) packet stream */
-    if (rtp_dv_ctx->buf && rtp_dv_ctx->timestamp != *timestamp) {
+    if (rtp_dv_ctx->buf && rtp_dv_ctx->timestamp != *timestamp)
+    {
         ffio_free_dyn_buf(&rtp_dv_ctx->buf);
     }
 
     /* sanity check for size of input packet: 1 byte payload at least */
-    if (len < 1) {
+    if (len < 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short RTP/DV packet, got %d bytes\n", len);
         return AVERROR_INVALIDDATA;
     }
 
     /* start frame buffering with new dynamic buffer */
-    if (!rtp_dv_ctx->buf) {
+    if (!rtp_dv_ctx->buf)
+    {
         res = avio_open_dyn_buf(&rtp_dv_ctx->buf);
         if (res < 0)
             return res;
@@ -131,7 +137,8 @@ static int dv_handle_packet(AVFormatContext *ctx, PayloadContext *rtp_dv_ctx,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_dv_dynamic_handler = {
+RTPDynamicProtocolHandler ff_dv_dynamic_handler =
+{
     .enc_name         = "DV",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_DVVIDEO,

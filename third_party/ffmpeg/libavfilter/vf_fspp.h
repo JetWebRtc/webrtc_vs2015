@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2005 Nikolaj Poroshin <porosh3@psu.ru>
  * Copyright (c) 2014 Arwa Arif <arwaarif1994@gmail.com>
@@ -52,7 +52,8 @@ static const int16_t FIX_2_613125930   = FIX(-2.613125930, 13);
 static const int16_t FIX_1_414213562   = FIX(1.414213562, 13);
 static const int16_t FIX_1_082392200   = FIX(1.082392200, 13);
 
-typedef struct FSPPContext {
+typedef struct FSPPContext
+{
     AVClass *class;
     uint64_t threshold_mtx_noq[8 * 2];
     uint64_t threshold_mtx[8 * 2];        //used in both C & MMX (& later SSE2) versions

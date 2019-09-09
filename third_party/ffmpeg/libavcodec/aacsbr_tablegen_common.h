@@ -29,7 +29,8 @@
 #else
 ///< window coefficients for analysis/synthesis QMF banks
 static DECLARE_ALIGNED(32, INTFLOAT, sbr_qmf_window_ds)[320];
-static DECLARE_ALIGNED(32, INTFLOAT, sbr_qmf_window_us)[640] = {
+static DECLARE_ALIGNED(32, INTFLOAT, sbr_qmf_window_us)[640] =
+{
     Q31( 0.0000000000f), Q31(-0.0005525286f), Q31(-0.0005617692f), Q31(-0.0004947518f),
     Q31(-0.0004875227f), Q31(-0.0004893791f), Q31(-0.0005040714f), Q31(-0.0005226564f),
     Q31(-0.0005466565f), Q31(-0.0005677802f), Q31(-0.0005870930f), Q31(-0.0006132747f),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Nicholas Robbins
  *
  * This file is part of FFmpeg.
@@ -55,7 +55,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int64_t *ringbuff;
     int i1, i2, i3, i4;
@@ -69,9 +70,12 @@ typedef struct {
 #define OFFSET(x) offsetof(DejudderContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM | AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption dejudder_options[] = {
-    {"cycle", "set the length of the cycle to use for dejuddering",
-        OFFSET(cycle), AV_OPT_TYPE_INT, {.i64 = 4}, 2, 240, .flags = FLAGS},
+static const AVOption dejudder_options[] =
+{
+    {
+        "cycle", "set the length of the cycle to use for dejuddering",
+        OFFSET(cycle), AV_OPT_TYPE_INT, {.i64 = 4}, 2, 240, .flags = FLAGS
+    },
     {NULL}
 };
 
@@ -129,17 +133,21 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     if (next_pts == AV_NOPTS_VALUE)
         return ff_filter_frame(outlink, frame);
 
-    if (s->start_count) {
+    if (s->start_count)
+    {
         s->start_count--;
         s->new_pts = next_pts * 2 * s->cycle;
-    } else {
-        if (next_pts < judbuff[s->i2]) {
+    }
+    else
+    {
+        if (next_pts < judbuff[s->i2])
+        {
             offset = next_pts + judbuff[s->i3] - judbuff[s->i4] - judbuff[s->i1];
             for (k = 0; k < s->cycle + 2; k++)
                 judbuff[k] += offset;
         }
         s->new_pts += (s->cycle - 1) * (judbuff[s->i3] - judbuff[s->i1])
-                    + (s->cycle + 1) * (next_pts - judbuff[s->i4]);
+                      + (s->cycle + 1) * (next_pts - judbuff[s->i4]);
     }
 
     judbuff[s->i2] = next_pts;
@@ -157,7 +165,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     return ff_filter_frame(outlink, frame);
 }
 
-static const AVFilterPad dejudder_inputs[] = {
+static const AVFilterPad dejudder_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -166,7 +175,8 @@ static const AVFilterPad dejudder_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad dejudder_outputs[] = {
+static const AVFilterPad dejudder_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -175,7 +185,8 @@ static const AVFilterPad dejudder_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_dejudder = {
+AVFilter ff_vf_dejudder =
+{
     .name        = "dejudder",
     .description = NULL_IF_CONFIG_SMALL("Remove judder produced by pullup."),
     .priv_size   = sizeof(DejudderContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MMAL Video Decoder
  * Copyright (c) 2015 Rodger Combs
  *
@@ -40,7 +40,8 @@
 #include "libavutil/opt.h"
 #include "libavutil/log.h"
 
-typedef struct FFBufferEntry {
+typedef struct FFBufferEntry
+{
     AVBufferRef *ref;
     void *data;
     size_t length;
@@ -52,17 +53,20 @@ typedef struct FFBufferEntry {
 // MMAL_POOL_T destroys all of its MMAL_BUFFER_HEADER_Ts. If we want correct
 // refcounting for AVFrames, we can free the MMAL_POOL_T only after all AVFrames
 // have been unreferenced.
-typedef struct FFPoolRef {
+typedef struct FFPoolRef
+{
     volatile int refcount;
     MMAL_POOL_T *pool;
 } FFPoolRef;
 
-typedef struct FFBufferRef {
+typedef struct FFBufferRef
+{
     MMAL_BUFFER_HEADER_T *buffer;
     FFPoolRef *pool;
 } FFBufferRef;
 
-typedef struct MMALDecodeContext {
+typedef struct MMALDecodeContext
+{
     AVClass *av_class;
     int extra_buffers;
 
@@ -93,7 +97,8 @@ typedef struct MMALDecodeContext {
 
 static void ffmmal_poolref_unref(FFPoolRef *ref)
 {
-    if (ref && avpriv_atomic_int_add_and_fetch(&ref->refcount, -1) == 0) {
+    if (ref && avpriv_atomic_int_add_and_fetch(&ref->refcount, -1) == 0)
+    {
         mmal_pool_destroy(ref->pool);
         av_free(ref);
     }
@@ -124,7 +129,8 @@ static int ffmmal_set_ref(AVFrame *frame, FFPoolRef *pool,
     frame->buf[0] = av_buffer_create((void *)ref, sizeof(*ref),
                                      ffmmal_release_frame, NULL,
                                      AV_BUFFER_FLAG_READONLY);
-    if (!frame->buf[0]) {
+    if (!frame->buf[0])
+    {
         av_free(ref);
         return AVERROR(ENOMEM);
     }
@@ -154,7 +160,8 @@ static void ffmmal_stop_decoder(AVCodecContext *avctx)
     while ((buffer = mmal_queue_get(ctx->queue_decoded_frames)))
         mmal_buffer_header_release(buffer);
 
-    while (ctx->waiting_buffers) {
+    while (ctx->waiting_buffers)
+    {
         FFBufferEntry *buffer = ctx->waiting_buffers;
 
         ctx->waiting_buffers = buffer->next;
@@ -190,7 +197,8 @@ static av_cold int ffmmal_close_decoder(AVCodecContext *avctx)
 
 static void input_callback(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
 {
-    if (!buffer->cmd) {
+    if (!buffer->cmd)
+    {
         AVBufferRef *buf = buffer->user_data;
         av_buffer_unref(&buf);
     }
@@ -210,10 +218,13 @@ static void control_port_cb(MMAL_PORT_T *port, MMAL_BUFFER_HEADER_T *buffer)
     AVCodecContext *avctx = (AVCodecContext*)port->userdata;
     MMAL_STATUS_T status;
 
-    if (buffer->cmd == MMAL_EVENT_ERROR) {
+    if (buffer->cmd == MMAL_EVENT_ERROR)
+    {
         status = *(uint32_t *)buffer->data;
         av_log(avctx, AV_LOG_ERROR, "MMAL error %d on control port\n", (int)status);
-    } else {
+    }
+    else
+    {
         char s[20];
         av_get_codec_tag_string(s, sizeof(s), buffer->cmd);
         av_log(avctx, AV_LOG_WARNING, "Unknown MMAL event %s on control port\n", s);
@@ -232,8 +243,10 @@ static int ffmmal_fill_output_port(AVCodecContext *avctx)
     if (!ctx->pool_out)
         return AVERROR_UNKNOWN; // format change code failed with OOM previously
 
-    while ((buffer = mmal_queue_get(ctx->pool_out->pool->queue))) {
-        if ((status = mmal_port_send_buffer(ctx->decoder->output[0], buffer))) {
+    while ((buffer = mmal_queue_get(ctx->pool_out->pool->queue)))
+    {
+        if ((status = mmal_port_send_buffer(ctx->decoder->output[0], buffer)))
+        {
             mmal_buffer_header_release(buffer);
             av_log(avctx, AV_LOG_ERROR, "MMAL error %d when sending output buffer.\n", (int)status);
             return AVERROR_UNKNOWN;
@@ -245,18 +258,24 @@ static int ffmmal_fill_output_port(AVCodecContext *avctx)
 
 static enum AVColorSpace ffmmal_csp_to_av_csp(MMAL_FOURCC_T fourcc)
 {
-    switch (fourcc) {
+    switch (fourcc)
+    {
     case MMAL_COLOR_SPACE_BT470_2_BG:
-    case MMAL_COLOR_SPACE_BT470_2_M:
-    case MMAL_COLOR_SPACE_ITUR_BT601:   return AVCOL_SPC_BT470BG;
-    case MMAL_COLOR_SPACE_ITUR_BT709:   return AVCOL_SPC_BT709;
-    case MMAL_COLOR_SPACE_FCC:          return AVCOL_SPC_FCC;
-    case MMAL_COLOR_SPACE_SMPTE240M:    return AVCOL_SPC_SMPTE240M;
-    default:                            return AVCOL_SPC_UNSPECIFIED;
+            case MMAL_COLOR_SPACE_BT470_2_M:
+                case MMAL_COLOR_SPACE_ITUR_BT601:
+                        return AVCOL_SPC_BT470BG;
+        case MMAL_COLOR_SPACE_ITUR_BT709:
+            return AVCOL_SPC_BT709;
+        case MMAL_COLOR_SPACE_FCC:
+            return AVCOL_SPC_FCC;
+        case MMAL_COLOR_SPACE_SMPTE240M:
+            return AVCOL_SPC_SMPTE240M;
+        default:
+            return AVCOL_SPC_UNSPECIFIED;
+        }
     }
-}
 
-static int ffmal_update_format(AVCodecContext *avctx)
+    static int ffmal_update_format(AVCodecContext *avctx)
 {
     MMALDecodeContext *ctx = avctx->priv_data;
     MMAL_STATUS_T status;
@@ -265,7 +284,8 @@ static int ffmal_update_format(AVCodecContext *avctx)
     MMAL_ES_FORMAT_T *format_out = decoder->output[0]->format;
 
     ffmmal_poolref_unref(ctx->pool_out);
-    if (!(ctx->pool_out = av_mallocz(sizeof(*ctx->pool_out)))) {
+    if (!(ctx->pool_out = av_mallocz(sizeof(*ctx->pool_out))))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -277,9 +297,12 @@ static int ffmal_update_format(AVCodecContext *avctx)
     if ((status = mmal_port_parameter_set_uint32(decoder->output[0], MMAL_PARAMETER_EXTRA_BUFFERS, ctx->extra_buffers)))
         goto fail;
 
-    if (avctx->pix_fmt == AV_PIX_FMT_MMAL) {
+    if (avctx->pix_fmt == AV_PIX_FMT_MMAL)
+    {
         format_out->encoding = MMAL_ENCODING_OPAQUE;
-    } else {
+    }
+    else
+    {
         format_out->encoding_variant = format_out->encoding = MMAL_ENCODING_I420;
     }
 
@@ -287,10 +310,11 @@ static int ffmal_update_format(AVCodecContext *avctx)
         goto fail;
 
     if ((ret = ff_set_dimensions(avctx, format_out->es->video.crop.x + format_out->es->video.crop.width,
-                                        format_out->es->video.crop.y + format_out->es->video.crop.height)) < 0)
+                                 format_out->es->video.crop.y + format_out->es->video.crop.height)) < 0)
         goto fail;
 
-    if (format_out->es->video.par.num && format_out->es->video.par.den) {
+    if (format_out->es->video.par.num && format_out->es->video.par.den)
+    {
         avctx->sample_aspect_ratio.num = format_out->es->video.par.num;
         avctx->sample_aspect_ratio.den = format_out->es->video.par.den;
     }
@@ -303,7 +327,8 @@ static int ffmal_update_format(AVCodecContext *avctx)
         FFMAX(decoder->output[0]->buffer_num_min, decoder->output[0]->buffer_num_recommended) + ctx->extra_buffers;
     ctx->pool_out->pool = mmal_pool_create(decoder->output[0]->buffer_num,
                                            decoder->output[0]->buffer_size);
-    if (!ctx->pool_out->pool) {
+    if (!ctx->pool_out->pool)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -324,7 +349,8 @@ static av_cold int ffmmal_init_decoder(AVCodecContext *avctx)
 
     bcm_host_init();
 
-    if (mmal_vc_init()) {
+    if (mmal_vc_init())
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot initialize MMAL VC driver!\n");
         return AVERROR(ENOSYS);
     }
@@ -352,17 +378,21 @@ static av_cold int ffmmal_init_decoder(AVCodecContext *avctx)
     format_in->es->video.par.den = avctx->sample_aspect_ratio.den;
     format_in->flags = MMAL_ES_FORMAT_FLAG_FRAMED;
 
-    if (avctx->codec->id == AV_CODEC_ID_H264 && avctx->extradata && avctx->extradata[0] == 1) {
+    if (avctx->codec->id == AV_CODEC_ID_H264 && avctx->extradata && avctx->extradata[0] == 1)
+    {
         uint8_t *dummy_p;
         int dummy_int;
         ctx->bsfc = av_bitstream_filter_init("h264_mp4toannexb");
-        if (!ctx->bsfc) {
+        if (!ctx->bsfc)
+        {
             av_log(avctx, AV_LOG_ERROR, "Cannot open the h264_mp4toannexb BSF!\n");
             ret = AVERROR(ENOSYS);
             goto fail;
         }
         av_bitstream_filter_filter(ctx->bsfc, avctx, "private_spspps_buf", &dummy_p, &dummy_int, NULL, 0, 0);
-    } else if (avctx->extradata_size) {
+    }
+    else if (avctx->extradata_size)
+    {
         if ((status = mmal_format_extradata_alloc(format_in, avctx->extradata_size)))
             goto fail;
         format_in->extradata_size = avctx->extradata_size;
@@ -377,7 +407,8 @@ static av_cold int ffmmal_init_decoder(AVCodecContext *avctx)
     decoder->input[0]->buffer_size =
         FFMAX(decoder->input[0]->buffer_size_min, 512 * 1024);
     ctx->pool_in = mmal_pool_create(decoder->input[0]->buffer_num, 0);
-    if (!ctx->pool_in) {
+    if (!ctx->pool_in)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -445,8 +476,10 @@ static int ffmmal_add_packet(AVCodecContext *avctx, AVPacket *avpkt)
     uint8_t *start;
     int ret = 0;
 
-    if (avpkt->size) {
-        if (ctx->bsfc) {
+    if (avpkt->size)
+    {
+        if (ctx->bsfc)
+        {
             uint8_t *tmp_data;
             int tmp_size;
             if ((ret = av_bitstream_filter_filter(ctx->bsfc, avctx, "private_spspps_buf",
@@ -455,24 +488,33 @@ static int ffmmal_add_packet(AVCodecContext *avctx, AVPacket *avpkt)
                                                   avpkt->flags & AV_PKT_FLAG_KEY)) < 0)
                 goto done;
             buf = av_buffer_create(tmp_data, tmp_size, NULL, NULL, 0);
-        } else {
-            if (avpkt->buf) {
+        }
+        else
+        {
+            if (avpkt->buf)
+            {
                 buf = av_buffer_ref(avpkt->buf);
-            } else {
+            }
+            else
+            {
                 buf = av_buffer_alloc(avpkt->size);
                 if (buf)
                     memcpy(buf->data, avpkt->data, avpkt->size);
             }
         }
-        if (!buf) {
+        if (!buf)
+        {
             ret = AVERROR(ENOMEM);
             goto done;
         }
         size = buf->size;
         data = buf->data;
         ctx->packets_sent++;
-    } else {
-        if (!ctx->packets_sent) {
+    }
+    else
+    {
+        if (!ctx->packets_sent)
+        {
             // Short-cut the flush logic to avoid upsetting MMAL.
             ctx->eos_sent = 1;
             ctx->eos_received = 1;
@@ -482,9 +524,11 @@ static int ffmmal_add_packet(AVCodecContext *avctx, AVPacket *avpkt)
 
     start = data;
 
-    do {
+    do
+    {
         FFBufferEntry *buffer = av_mallocz(sizeof(*buffer));
-        if (!buffer) {
+        if (!buffer)
+        {
             ret = AVERROR(ENOMEM);
             goto done;
         }
@@ -504,14 +548,17 @@ static int ffmmal_add_packet(AVCodecContext *avctx, AVPacket *avpkt)
         if (!size)
             buffer->flags |= MMAL_BUFFER_HEADER_FLAG_FRAME_END;
 
-        if (!buffer->length) {
+        if (!buffer->length)
+        {
             buffer->flags |= MMAL_BUFFER_HEADER_FLAG_EOS;
             ctx->eos_sent = 1;
         }
 
-        if (buf) {
+        if (buf)
+        {
             buffer->ref = av_buffer_ref(buf);
-            if (!buffer->ref) {
+            if (!buffer->ref)
+            {
                 av_free(buffer);
                 ret = AVERROR(ENOMEM);
                 goto done;
@@ -524,7 +571,8 @@ static int ffmmal_add_packet(AVCodecContext *avctx, AVPacket *avpkt)
         if (ctx->waiting_buffers_tail)
             ctx->waiting_buffers_tail->next = buffer;
         ctx->waiting_buffers_tail = buffer;
-    } while (size);
+    }
+    while (size);
 
 done:
     av_buffer_unref(&buf);
@@ -536,7 +584,8 @@ static int ffmmal_fill_input_port(AVCodecContext *avctx)
 {
     MMALDecodeContext *ctx = avctx->priv_data;
 
-    while (ctx->waiting_buffers) {
+    while (ctx->waiting_buffers)
+    {
         MMAL_BUFFER_HEADER_T *mbuffer;
         FFBufferEntry *buffer;
         MMAL_STATUS_T status;
@@ -557,7 +606,8 @@ static int ffmmal_fill_input_port(AVCodecContext *avctx)
         mbuffer->user_data = buffer->ref;
         mbuffer->alloc_size = ctx->decoder->input[0]->buffer_size;
 
-        if ((status = mmal_port_send_buffer(ctx->decoder->input[0], mbuffer))) {
+        if ((status = mmal_port_send_buffer(ctx->decoder->input[0], mbuffer)))
+        {
             mmal_buffer_header_release(mbuffer);
             av_buffer_unref(&buffer->ref);
         }
@@ -568,7 +618,8 @@ static int ffmmal_fill_input_port(AVCodecContext *avctx)
             ctx->waiting_buffers_tail = NULL;
         av_free(buffer);
 
-        if (status) {
+        if (status)
+        {
             av_log(avctx, AV_LOG_ERROR, "MMAL error %d when sending input\n", (int)status);
             return AVERROR_UNKNOWN;
         }
@@ -583,7 +634,8 @@ static int ffmal_copy_frame(AVCodecContext *avctx,  AVFrame *frame,
     MMALDecodeContext *ctx = avctx->priv_data;
     int ret = 0;
 
-    if (avctx->pix_fmt == AV_PIX_FMT_MMAL) {
+    if (avctx->pix_fmt == AV_PIX_FMT_MMAL)
+    {
         if (!ctx->pool_out)
             return AVERROR_UNKNOWN; // format change code failed with OOM previously
 
@@ -592,7 +644,9 @@ static int ffmal_copy_frame(AVCodecContext *avctx,  AVFrame *frame,
 
         if ((ret = ffmmal_set_ref(frame, ctx->pool_out, buffer)) < 0)
             goto done;
-    } else {
+    }
+    else
+    {
         int w = FFALIGN(avctx->width, 32);
         int h = FFALIGN(avctx->height, 16);
         char *ptr;
@@ -608,14 +662,16 @@ static int ffmal_copy_frame(AVCodecContext *avctx,  AVFrame *frame,
 
         ptr += w * h;
 
-        for (plane = 1; plane < 3; plane++) {
+        for (plane = 1; plane < 3; plane++)
+        {
             for (i = 0; i < avctx->height / 2; i++)
                 memcpy(frame->data[plane] + frame->linesize[plane] * i, ptr + w / 2 * i, (avctx->width + 1) / 2);
             ptr += w / 2 * h / 2;
         }
     }
 
-    if (buffer->pts != MMAL_TIME_UNKNOWN) {
+    if (buffer->pts != MMAL_TIME_UNKNOWN)
+    {
         frame->pkt_pts = buffer->pts;
         frame->pts = buffer->pts;
     }
@@ -635,7 +691,8 @@ static int ffmmal_read_frame(AVCodecContext *avctx, AVFrame *frame, int *got_fra
     if (ctx->eos_received)
         goto done;
 
-    while (1) {
+    while (1)
+    {
         // To ensure decoding in lockstep with a constant delay between fed packets
         // and output frames, we always wait until an output buffer is available.
         // Except during start we don't know after how many input packets the decoder
@@ -648,18 +705,22 @@ static int ffmmal_read_frame(AVCodecContext *avctx, AVFrame *frame, int *got_fra
         // We also wait if we sent eos, but didn't receive it yet (think of decoding
         // stream with a very low number of frames).
         if (ctx->frames_output || ctx->packets_sent > MAX_DELAYED_FRAMES ||
-            (ctx->packets_sent && ctx->eos_sent)) {
+                (ctx->packets_sent && ctx->eos_sent))
+        {
             // MMAL will ignore broken input packets, which means the frame we
             // expect here may never arrive. Dealing with this correctly is
             // complicated, so here's a hack to avoid that it freezes forever
             // in this unlikely situation.
             buffer = mmal_queue_timedwait(ctx->queue_decoded_frames, 100);
-            if (!buffer) {
+            if (!buffer)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Did not get output frame from MMAL.\n");
                 ret = AVERROR_UNKNOWN;
                 goto done;
             }
-        } else {
+        }
+        else
+        {
             buffer = mmal_queue_get(ctx->queue_decoded_frames);
             if (!buffer)
                 goto done;
@@ -669,7 +730,8 @@ static int ffmmal_read_frame(AVCodecContext *avctx, AVFrame *frame, int *got_fra
         if (ctx->eos_received)
             goto done;
 
-        if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED) {
+        if (buffer->cmd == MMAL_EVENT_FORMAT_CHANGED)
+        {
             MMAL_COMPONENT_T *decoder = ctx->decoder;
             MMAL_EVENT_FORMAT_CHANGED_T *ev = mmal_event_format_changed_get(buffer);
             MMAL_BUFFER_HEADER_T *stale_buffer;
@@ -698,12 +760,16 @@ static int ffmmal_read_frame(AVCodecContext *avctx, AVFrame *frame, int *got_fra
 
             mmal_buffer_header_release(buffer);
             continue;
-        } else if (buffer->cmd) {
+        }
+        else if (buffer->cmd)
+        {
             char s[20];
             av_get_codec_tag_string(s, sizeof(s), buffer->cmd);
             av_log(avctx, AV_LOG_WARNING, "Unknown MMAL event %s on output port\n", s);
             goto done;
-        } else if (buffer->length == 0) {
+        }
+        else if (buffer->length == 0)
+        {
             // Unused output buffer that got drained after format change.
             mmal_buffer_header_release(buffer);
             continue;
@@ -756,25 +822,29 @@ static int ffmmal_decode(AVCodecContext *avctx, void *data, int *got_frame,
     return ret;
 }
 
-AVHWAccel ff_h264_mmal_hwaccel = {
+AVHWAccel ff_h264_mmal_hwaccel =
+{
     .name       = "h264_mmal",
     .type       = AVMEDIA_TYPE_VIDEO,
     .id         = AV_CODEC_ID_H264,
     .pix_fmt    = AV_PIX_FMT_MMAL,
 };
 
-static const AVOption options[]={
+static const AVOption options[]=
+{
     {"extra_buffers", "extra buffers", offsetof(MMALDecodeContext, extra_buffers), AV_OPT_TYPE_INT, {.i64 = 10}, 0, 256, 0},
     {NULL}
 };
 
-static const AVClass ffmmaldec_class = {
+static const AVClass ffmmaldec_class =
+{
     .class_name = "mmaldec",
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_h264_mmal_decoder = {
+AVCodec ff_h264_mmal_decoder =
+{
     .name           = "h264_mmal",
     .long_name      = NULL_IF_CONFIG_SMALL("h264 (mmal)"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -786,7 +856,9 @@ AVCodec ff_h264_mmal_decoder = {
     .flush          = ffmmal_flush,
     .priv_class     = &ffmmaldec_class,
     .capabilities   = AV_CODEC_CAP_DELAY,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_MMAL,
-                                                     AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE},
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_MMAL,
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
 };

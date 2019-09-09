@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AC-3 DSP functions
  * Copyright (c) 2011 Justin Ruggles
  *
@@ -32,10 +32,12 @@ static void ac3_exponent_min_c(uint8_t *exp, int num_reuse_blocks, int nb_coefs)
     if (!num_reuse_blocks)
         return;
 
-    for (i = 0; i < nb_coefs; i++) {
+    for (i = 0; i < nb_coefs; i++)
+    {
         uint8_t min_exp = *exp;
         uint8_t *exp1 = exp + 256;
-        for (blk = 0; blk < num_reuse_blocks; blk++) {
+        for (blk = 0; blk < num_reuse_blocks; blk++)
+        {
             uint8_t next_exp = *exp1;
             if (next_exp < min_exp)
                 min_exp = next_exp;
@@ -60,7 +62,8 @@ static void ac3_lshift_int16_c(int16_t *src, unsigned int len,
     const uint32_t mask = ~(((1 << shift) - 1) << 16);
     int i;
     len >>= 1;
-    for (i = 0; i < len; i += 8) {
+    for (i = 0; i < len; i += 8)
+    {
         src32[i  ] = (src32[i  ] << shift) & mask;
         src32[i+1] = (src32[i+1] << shift) & mask;
         src32[i+2] = (src32[i+2] << shift) & mask;
@@ -75,7 +78,8 @@ static void ac3_lshift_int16_c(int16_t *src, unsigned int len,
 static void ac3_rshift_int32_c(int32_t *src, unsigned int len,
                                unsigned int shift)
 {
-    do {
+    do
+    {
         *src++ >>= shift;
         *src++ >>= shift;
         *src++ >>= shift;
@@ -85,13 +89,15 @@ static void ac3_rshift_int32_c(int32_t *src, unsigned int len,
         *src++ >>= shift;
         *src++ >>= shift;
         len -= 8;
-    } while (len > 0);
+    }
+    while (len > 0);
 }
 
 static void float_to_fixed24_c(int32_t *dst, const float *src, unsigned int len)
 {
     const float scale = 1 << 24;
-    do {
+    do
+    {
         *dst++ = lrintf(*src++ * scale);
         *dst++ = lrintf(*src++ * scale);
         *dst++ = lrintf(*src++ * scale);
@@ -101,7 +107,8 @@ static void float_to_fixed24_c(int32_t *dst, const float *src, unsigned int len)
         *dst++ = lrintf(*src++ * scale);
         *dst++ = lrintf(*src++ * scale);
         len -= 8;
-    } while (len > 0);
+    }
+    while (len > 0);
 }
 
 static void ac3_bit_alloc_calc_bap_c(int16_t *mask, int16_t *psd,
@@ -112,23 +119,27 @@ static void ac3_bit_alloc_calc_bap_c(int16_t *mask, int16_t *psd,
     int bin, band, band_end;
 
     /* special case, if snr offset is -960, set all bap's to zero */
-    if (snr_offset == -960) {
+    if (snr_offset == -960)
+    {
         memset(bap, 0, AC3_MAX_COEFS);
         return;
     }
 
     bin  = start;
     band = ff_ac3_bin_to_band_tab[start];
-    do {
+    do
+    {
         int m = (FFMAX(mask[band] - snr_offset - floor, 0) & 0x1FE0) + floor;
         band_end = ff_ac3_band_start_tab[++band];
         band_end = FFMIN(band_end, end);
 
-        for (; bin < band_end; bin++) {
+        for (; bin < band_end; bin++)
+        {
             int address = av_clip_uintp2((psd[bin] - m) >> 5, 6);
             bap[bin] = bap_tab[address];
         }
-    } while (end > band_end);
+    }
+    while (end > band_end);
 }
 
 static void ac3_update_bap_counts_c(uint16_t mant_cnt[16], uint8_t *bap,
@@ -138,7 +149,8 @@ static void ac3_update_bap_counts_c(uint16_t mant_cnt[16], uint8_t *bap,
         mant_cnt[bap[len]]++;
 }
 
-DECLARE_ALIGNED(16, const uint16_t, ff_ac3_bap_bits)[16] = {
+DECLARE_ALIGNED(16, const uint16_t, ff_ac3_bap_bits)[16] =
+{
     0,  0,  0,  3,  0,  4,  5,  6,  7,  8,  9, 10, 11, 12, 14, 16
 };
 
@@ -147,7 +159,8 @@ static int ac3_compute_mantissa_size_c(uint16_t mant_cnt[6][16])
     int blk, bap;
     int bits = 0;
 
-    for (blk = 0; blk < AC3_MAX_BLOCKS; blk++) {
+    for (blk = 0; blk < AC3_MAX_BLOCKS; blk++)
+    {
         // bap=1 : 3 mantissas in 5 bits
         bits += (mant_cnt[blk][1] / 3) * 5;
         // bap=2 : 3 mantissas in 7 bits
@@ -166,22 +179,24 @@ static void ac3_extract_exponents_c(uint8_t *exp, int32_t *coef, int nb_coefs)
 {
     int i;
 
-    for (i = 0; i < nb_coefs; i++) {
+    for (i = 0; i < nb_coefs; i++)
+    {
         int v = abs(coef[i]);
         exp[i] = v ? 23 - av_log2(v) : 24;
     }
 }
 
 static void ac3_sum_square_butterfly_int32_c(int64_t sum[4],
-                                             const int32_t *coef0,
-                                             const int32_t *coef1,
-                                             int len)
+        const int32_t *coef0,
+        const int32_t *coef1,
+        int len)
 {
     int i;
 
     sum[0] = sum[1] = sum[2] = sum[3] = 0;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         int lt = coef0[i];
         int rt = coef1[i];
         int md = lt + rt;
@@ -194,15 +209,16 @@ static void ac3_sum_square_butterfly_int32_c(int64_t sum[4],
 }
 
 static void ac3_sum_square_butterfly_float_c(float sum[4],
-                                             const float *coef0,
-                                             const float *coef1,
-                                             int len)
+        const float *coef0,
+        const float *coef1,
+        int len)
 {
     int i;
 
     sum[0] = sum[1] = sum[2] = sum[3] = 0;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         float lt = coef0[i];
         float rt = coef1[i];
         float md = lt + rt;
@@ -219,18 +235,24 @@ static void ac3_downmix_c(float **samples, float (*matrix)[2],
 {
     int i, j;
     float v0, v1;
-    if (out_ch == 2) {
-        for (i = 0; i < len; i++) {
+    if (out_ch == 2)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = v1 = 0.0f;
-            for (j = 0; j < in_ch; j++) {
+            for (j = 0; j < in_ch; j++)
+            {
                 v0 += samples[j][i] * matrix[j][0];
                 v1 += samples[j][i] * matrix[j][1];
             }
             samples[0][i] = v0;
             samples[1][i] = v1;
         }
-    } else if (out_ch == 1) {
-        for (i = 0; i < len; i++) {
+    }
+    else if (out_ch == 1)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = 0.0f;
             for (j = 0; j < in_ch; j++)
                 v0 += samples[j][i] * matrix[j][0];
@@ -244,18 +266,24 @@ static void ac3_downmix_c_fixed(int32_t **samples, int16_t (*matrix)[2],
 {
     int i, j;
     int64_t v0, v1;
-    if (out_ch == 2) {
-        for (i = 0; i < len; i++) {
+    if (out_ch == 2)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = v1 = 0;
-            for (j = 0; j < in_ch; j++) {
+            for (j = 0; j < in_ch; j++)
+            {
                 v0 += (int64_t)samples[j][i] * matrix[j][0];
                 v1 += (int64_t)samples[j][i] * matrix[j][1];
             }
             samples[0][i] = (v0+2048)>>12;
             samples[1][i] = (v1+2048)>>12;
         }
-    } else if (out_ch == 1) {
-        for (i = 0; i < len; i++) {
+    }
+    else if (out_ch == 1)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = 0;
             for (j = 0; j < in_ch; j++)
                 v0 += (int64_t)samples[j][i] * matrix[j][0];
@@ -270,7 +298,8 @@ static void apply_window_int16_c(int16_t *output, const int16_t *input,
     int i;
     int len2 = len >> 1;
 
-    for (i = 0; i < len2; i++) {
+    for (i = 0; i < len2; i++)
+    {
         int16_t w       = window[i];
         output[i]       = (MUL16(input[i],       w) + (1 << 14)) >> 15;
         output[len-i-1] = (MUL16(input[len-i-1], w) + (1 << 14)) >> 15;

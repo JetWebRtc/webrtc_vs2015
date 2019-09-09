@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common code between the AC-3 encoder and decoder
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
@@ -111,7 +111,8 @@
 #define LEVEL_ONE               1.0000000000000000
 
 /** Delta bit allocation strategy */
-typedef enum {
+typedef enum
+{
     DBA_REUSE = 0,
     DBA_NEW,
     DBA_NONE,
@@ -119,7 +120,8 @@ typedef enum {
 } AC3DeltaStrategy;
 
 /** Channel mode (audio coding mode) */
-typedef enum {
+typedef enum
+{
     AC3_CHMODE_DUALMONO = 0,
     AC3_CHMODE_MONO,
     AC3_CHMODE_STEREO,
@@ -131,7 +133,8 @@ typedef enum {
 } AC3ChannelMode;
 
 /** Dolby Surround mode */
-typedef enum AC3DolbySurroundMode {
+typedef enum AC3DolbySurroundMode
+{
     AC3_DSURMOD_NOTINDICATED = 0,
     AC3_DSURMOD_OFF,
     AC3_DSURMOD_ON,
@@ -139,7 +142,8 @@ typedef enum AC3DolbySurroundMode {
 } AC3DolbySurroundMode;
 
 /** Dolby Surround EX mode */
-typedef enum AC3DolbySurroundEXMode {
+typedef enum AC3DolbySurroundEXMode
+{
     AC3_DSUREXMOD_NOTINDICATED = 0,
     AC3_DSUREXMOD_OFF,
     AC3_DSUREXMOD_ON,
@@ -147,7 +151,8 @@ typedef enum AC3DolbySurroundEXMode {
 } AC3DolbySurroundEXMode;
 
 /** Dolby Headphone mode */
-typedef enum AC3DolbyHeadphoneMode {
+typedef enum AC3DolbyHeadphoneMode
+{
     AC3_DHEADPHONMOD_NOTINDICATED = 0,
     AC3_DHEADPHONMOD_OFF,
     AC3_DHEADPHONMOD_ON,
@@ -155,14 +160,16 @@ typedef enum AC3DolbyHeadphoneMode {
 } AC3DolbyHeadphoneMode;
 
 /** Preferred Stereo Downmix mode */
-typedef enum AC3PreferredStereoDownmixMode {
+typedef enum AC3PreferredStereoDownmixMode
+{
     AC3_DMIXMOD_NOTINDICATED = 0,
     AC3_DMIXMOD_LTRT,
     AC3_DMIXMOD_LORO,
     AC3_DMIXMOD_DPLII // reserved value in A/52, but used by encoders to indicate DPL2
 } AC3PreferredStereoDownmixMode;
 
-typedef struct AC3BitAllocParameters {
+typedef struct AC3BitAllocParameters
+{
     int sr_code;
     int sr_shift;
     int slow_gain, slow_decay, fast_decay, db_per_bit, floor;
@@ -173,7 +180,8 @@ typedef struct AC3BitAllocParameters {
  * @struct AC3HeaderInfo
  * Coded AC-3 header values up to the lfeon element, plus derived values.
  */
-typedef struct AC3HeaderInfo {
+typedef struct AC3HeaderInfo
+{
     /** @name Coded elements
      * @{
      */
@@ -210,7 +218,8 @@ typedef struct AC3HeaderInfo {
 #endif
 } AC3HeaderInfo;
 
-typedef enum {
+typedef enum
+{
     EAC3_FRAME_TYPE_INDEPENDENT = 0,
     EAC3_FRAME_TYPE_DEPENDENT,
     EAC3_FRAME_TYPE_AC3_CONVERT,

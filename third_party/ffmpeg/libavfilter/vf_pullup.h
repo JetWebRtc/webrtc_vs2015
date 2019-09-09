@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,12 +21,14 @@
 
 #include "avfilter.h"
 
-typedef struct PullupBuffer {
+typedef struct PullupBuffer
+{
     int lock[2];
     uint8_t *planes[4];
 } PullupBuffer;
 
-typedef struct PullupField {
+typedef struct PullupField
+{
     int parity;
     PullupBuffer *buffer;
     unsigned flags;
@@ -38,7 +40,8 @@ typedef struct PullupField {
     struct PullupField *prev, *next;
 } PullupField;
 
-typedef struct PullupFrame {
+typedef struct PullupFrame
+{
     int lock;
     int length;
     int parity;
@@ -46,7 +49,8 @@ typedef struct PullupFrame {
     PullupBuffer *buffer;
 } PullupFrame;
 
-typedef struct PullupContext {
+typedef struct PullupContext
+{
     const AVClass *class;
     int junk_left, junk_right, junk_top, junk_bottom;
     int metric_plane;

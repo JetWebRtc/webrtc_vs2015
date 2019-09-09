@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV based H.264 enccoder
  *
  * copyright (c) 2013 Yukinori Yamazoe
@@ -35,7 +35,8 @@
 #include "qsv_internal.h"
 #include "qsvenc.h"
 
-typedef struct QSVH264EncContext {
+typedef struct QSVH264EncContext
+{
     AVClass *class;
     QSVEncContext qsv;
 } QSVH264EncContext;
@@ -64,7 +65,8 @@ static av_cold int qsv_enc_close(AVCodecContext *avctx)
 
 #define OFFSET(x) offsetof(QSVH264EncContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "async_depth", "Maximum processing parallelism", OFFSET(qsv.async_depth), AV_OPT_TYPE_INT, { .i64 = ASYNC_DEPTH_DEFAULT }, 0, INT_MAX, VE },
     { "idr_interval", "Distance (in I-frames) between IDR frames", OFFSET(qsv.idr_interval), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, VE },
     { "avbr_accuracy",    "Accuracy of the AVBR ratecontrol",    OFFSET(qsv.avbr_accuracy),    AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, VE },
@@ -101,14 +103,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "h264_qsv encoder",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-static const AVCodecDefault qsv_enc_defaults[] = {
+static const AVCodecDefault qsv_enc_defaults[] =
+{
     { "b",         "1M"    },
     { "refs",      "0"     },
     // same as the x264 default
@@ -120,7 +124,8 @@ static const AVCodecDefault qsv_enc_defaults[] = {
     { NULL },
 };
 
-AVCodec ff_h264_qsv_encoder = {
+AVCodec ff_h264_qsv_encoder =
+{
     .name           = "h264_qsv",
     .long_name      = NULL_IF_CONFIG_SMALL("H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (Intel Quick Sync Video acceleration)"),
     .priv_data_size = sizeof(QSVH264EncContext),
@@ -130,9 +135,11 @@ AVCodec ff_h264_qsv_encoder = {
     .encode2        = qsv_enc_frame,
     .close          = qsv_enc_close,
     .capabilities   = AV_CODEC_CAP_DELAY,
-    .pix_fmts       = (const enum AVPixelFormat[]){ AV_PIX_FMT_NV12,
-                                                    AV_PIX_FMT_QSV,
-                                                    AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]){
+        AV_PIX_FMT_NV12,
+        AV_PIX_FMT_QSV,
+        AV_PIX_FMT_NONE
+    },
     .priv_class     = &class,
     .defaults       = qsv_enc_defaults,
 };

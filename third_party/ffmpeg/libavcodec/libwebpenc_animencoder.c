@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WebP encoding support via libwebp
  * Copyright (c) 2015 Urvang Joshi
  *
@@ -29,7 +29,8 @@
 
 #include <webp/mux.h>
 
-typedef struct LibWebPAnimContext {
+typedef struct LibWebPAnimContext
+{
     LibWebPContextCommon cc;
     WebPAnimEncoder *enc;     // the main AnimEncoder object
     int64_t prev_frame_pts;   // pts of the previously encoded frame.
@@ -39,7 +40,8 @@ typedef struct LibWebPAnimContext {
 static av_cold int libwebp_anim_encode_init(AVCodecContext *avctx)
 {
     int ret = ff_libwebp_encode_init_common(avctx);
-    if (!ret) {
+    if (!ret)
+    {
         LibWebPAnimContext *s = avctx->priv_data;
         WebPAnimEncoderOptions enc_options;
         WebPAnimEncoderOptionsInit(&enc_options);
@@ -54,18 +56,24 @@ static av_cold int libwebp_anim_encode_init(AVCodecContext *avctx)
 }
 
 static int libwebp_anim_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
-                                     const AVFrame *frame, int *got_packet) {
+                                     const AVFrame *frame, int *got_packet)
+{
     LibWebPAnimContext *s = avctx->priv_data;
     int ret;
 
-    if (!frame) {
-        if (s->done) {  // Second flush: return empty package to denote finish.
+    if (!frame)
+    {
+        if (s->done)    // Second flush: return empty package to denote finish.
+        {
             *got_packet = 0;
             return 0;
-        } else {  // First flush: assemble bitstream and return it.
+        }
+        else      // First flush: assemble bitstream and return it.
+        {
             WebPData assembled_data = { 0 };
             ret = WebPAnimEncoderAssemble(s->enc, &assembled_data);
-            if (ret) {
+            if (ret)
+            {
                 ret = ff_alloc_packet2(avctx, pkt, assembled_data.size, assembled_data.size);
                 if (ret < 0)
                     return ret;
@@ -75,14 +83,18 @@ static int libwebp_anim_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
                 pkt->pts = pkt->dts = s->prev_frame_pts + 1;
                 *got_packet = 1;
                 return 0;
-            } else {
+            }
+            else
+            {
                 av_log(s, AV_LOG_ERROR,
                        "WebPAnimEncoderAssemble() failed with error: %d\n",
                        VP8_ENC_ERROR_OUT_OF_MEMORY);
                 return AVERROR(ENOMEM);
             }
         }
-    } else {
+    }
+    else
+    {
         int timestamp_ms;
         WebPPicture *pic = NULL;
         AVFrame *alt_frame = NULL;
@@ -93,9 +105,10 @@ static int libwebp_anim_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         timestamp_ms =
             avctx->time_base.num * frame->pts * 1000 / avctx->time_base.den;
         ret = WebPAnimEncoderAdd(s->enc, pic, timestamp_ms, &s->cc.config);
-        if (!ret) {
-                av_log(avctx, AV_LOG_ERROR,
-                       "Encoding WebP frame failed with error: %d\n",
+        if (!ret)
+        {
+            av_log(avctx, AV_LOG_ERROR,
+                   "Encoding WebP frame failed with error: %d\n",
                    pic->error_code);
             ret = ff_libwebp_error_to_averror(pic->error_code);
             goto end;
@@ -123,14 +136,16 @@ static int libwebp_anim_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "libwebp_anim",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_libwebp_anim_encoder = {
+AVCodec ff_libwebp_anim_encoder =
+{
     .name           = "libwebp_anim",
     .long_name      = NULL_IF_CONFIG_SMALL("libwebp WebP image"),
     .type           = AVMEDIA_TYPE_VIDEO,

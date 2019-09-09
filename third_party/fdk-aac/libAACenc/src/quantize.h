@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -98,24 +98,24 @@ amm-info@iis.fraunhofer.de
 #define MAX_QUANT 8191
 
 void FDKaacEnc_QuantizeSpectrum(INT sfbCnt,
-                      INT maxSfbPerGroup,
-                      INT sfbPerGroup,
-                      INT *sfbOffset, FIXP_DBL *mdctSpectrum,
-                      INT globalGain, INT *scalefactors,
-                      SHORT *quantizedSpectrum,
-                      INT dZoneQuantEnable);
+                                INT maxSfbPerGroup,
+                                INT sfbPerGroup,
+                                INT *sfbOffset, FIXP_DBL *mdctSpectrum,
+                                INT globalGain, INT *scalefactors,
+                                SHORT *quantizedSpectrum,
+                                INT dZoneQuantEnable);
 
 FIXP_DBL FDKaacEnc_calcSfbDist(FIXP_DBL *mdctSpectrum,
-                     SHORT *quantSpectrum,
-                     INT noOfLines,
-                     INT gain,
-                     INT dZoneQuantEnable);
+                               SHORT *quantSpectrum,
+                               INT noOfLines,
+                               INT gain,
+                               INT dZoneQuantEnable);
 
 void FDKaacEnc_calcSfbQuantEnergyAndDist(FIXP_DBL *mdctSpectrum,
-                               SHORT   *quantSpectrum,
-                               INT    noOfLines,
-                               INT    gain,
-                               FIXP_DBL *en,
-                               FIXP_DBL *dist);
+        SHORT   *quantSpectrum,
+        INT    noOfLines,
+        INT    gain,
+        FIXP_DBL *en,
+        FIXP_DBL *dist);
 
 #endif /* _QUANTIZE_H_ */

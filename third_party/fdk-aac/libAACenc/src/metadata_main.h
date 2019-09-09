@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,7 +101,8 @@ amm-info@iis.fraunhofer.de
 
 /* Data Types ****************************************************************/
 
-typedef enum {
+typedef enum
+{
     METADATA_OK                    = 0x0000,   /*!< No error happened. All fine. */
     METADATA_INVALID_HANDLE        = 0x0020,   /*!< Handle passed to function call was invalid. */
     METADATA_MEMORY_ERROR          = 0x0021,   /*!< Memory allocation failed. */
@@ -126,8 +127,8 @@ typedef struct FDK_METADATA_ENCODER *HANDLE_FDK_METADATA_ENCODER;
  *          - METADATA_INVALID_HANDLE, METADATA_MEMORY_ERROR, on failure.
  */
 FDK_METADATA_ERROR FDK_MetadataEnc_Open(
-        HANDLE_FDK_METADATA_ENCODER     *phMetadataEnc
-        );
+    HANDLE_FDK_METADATA_ENCODER     *phMetadataEnc
+);
 
 
 /**
@@ -148,16 +149,16 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Open(
  *          - METADATA_INVALID_HANDLE, METADATA_INIT_ERROR, on failure.
  */
 FDK_METADATA_ERROR FDK_MetadataEnc_Init(
-        HANDLE_FDK_METADATA_ENCODER      hMetadataEnc,
-        const INT                        resetStates,
-        const INT                        metadataMode,
-        const INT                        audioDelay,
-        const UINT                       frameLength,
-        const UINT                       sampleRate,
-        const UINT                       nChannels,
-        const CHANNEL_MODE               channelMode,
-        const CHANNEL_ORDER              channelOrder
-        );
+    HANDLE_FDK_METADATA_ENCODER      hMetadataEnc,
+    const INT                        resetStates,
+    const INT                        metadataMode,
+    const INT                        audioDelay,
+    const UINT                       frameLength,
+    const UINT                       sampleRate,
+    const UINT                       nChannels,
+    const CHANNEL_MODE               channelMode,
+    const CHANNEL_ORDER              channelOrder
+);
 
 
 /**
@@ -182,14 +183,14 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Init(
  *          - METADATA_INVALID_HANDLE, METADATA_ENCODE_ERROR, on failure.
  */
 FDK_METADATA_ERROR FDK_MetadataEnc_Process(
-        HANDLE_FDK_METADATA_ENCODER      hMetadataEnc,
-        INT_PCM * const                  pAudioSamples,
-        const INT                        nAudioSamples,
-        const AACENC_MetaData * const    pMetadata,
-        AACENC_EXT_PAYLOAD **            ppMetaDataExtPayload,
-        UINT *                           nMetaDataExtensions,
-        INT *                            matrix_mixdown_idx
-        );
+    HANDLE_FDK_METADATA_ENCODER      hMetadataEnc,
+    INT_PCM * const                  pAudioSamples,
+    const INT                        nAudioSamples,
+    const AACENC_MetaData * const    pMetadata,
+    AACENC_EXT_PAYLOAD **            ppMetaDataExtPayload,
+    UINT *                           nMetaDataExtensions,
+    INT *                            matrix_mixdown_idx
+);
 
 
 /**
@@ -204,8 +205,8 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Process(
  *          - METADATA_INVALID_HANDLE, on failure.
  */
 FDK_METADATA_ERROR FDK_MetadataEnc_Close(
-        HANDLE_FDK_METADATA_ENCODER     *phMetaData
-        );
+    HANDLE_FDK_METADATA_ENCODER     *phMetaData
+);
 
 
 /**
@@ -216,8 +217,8 @@ FDK_METADATA_ERROR FDK_MetadataEnc_Close(
  * \return  Delay caused by Meta Data module.
  */
 INT FDK_MetadataEnc_GetDelay(
-        HANDLE_FDK_METADATA_ENCODER      hMetadataEnc
-        );
+    HANDLE_FDK_METADATA_ENCODER      hMetadataEnc
+);
 
 
 #endif /* _METADATA_MAIN_H */

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -94,36 +94,37 @@ amm-info@iis.fraunhofer.de
 #define TRUE  1
 #define FALSE 0
 
-  #define TRANS_FAC         8  /* encoder short long ratio */
+#define TRANS_FAC         8  /* encoder short long ratio */
 
 #define FRAME_MAXLEN_SHORT    ((1024)/TRANS_FAC)
 #define FRAME_LEN_SHORT_128   ((1024)/TRANS_FAC)
 
 /* Filterbank type*/
-enum FB_TYPE {
-  FB_LC  = 0,
-  FB_LD  = 1,
-  FB_ELD = 2
+enum FB_TYPE
+{
+    FB_LC  = 0,
+    FB_LD  = 1,
+    FB_ELD = 2
 };
 
 /* Block types */
 #define N_BLOCKTYPES 6
 enum
 {
-  LONG_WINDOW = 0,
-  START_WINDOW,
-  SHORT_WINDOW,
-  STOP_WINDOW,
-  _LOWOV_WINDOW, /* Do not use this block type out side of block_switch.cpp */
-  WRONG_WINDOW
+    LONG_WINDOW = 0,
+    START_WINDOW,
+    SHORT_WINDOW,
+    STOP_WINDOW,
+    _LOWOV_WINDOW, /* Do not use this block type out side of block_switch.cpp */
+    WRONG_WINDOW
 };
 
 /* Window shapes */
 enum
 {
-  SINE_WINDOW = 0,
-  KBD_WINDOW  = 1,
-  LOL_WINDOW = 2 /* Low OverLap window shape for AAC-LD */
+    SINE_WINDOW = 0,
+    KBD_WINDOW  = 1,
+    LOL_WINDOW = 2 /* Low OverLap window shape for AAC-LD */
 };
 
 /*
@@ -131,15 +132,15 @@ enum
 */
 enum
 {
-  SI_MS_MASK_NONE = 0,
-  SI_MS_MASK_SOME = 1,
-  SI_MS_MASK_ALL  = 2
+    SI_MS_MASK_NONE = 0,
+    SI_MS_MASK_SOME = 1,
+    SI_MS_MASK_ALL  = 2
 };
 
 
-  #define MAX_NO_OF_GROUPS   4
-  #define MAX_SFB_LONG       51  /* 51 for a memory optimized implementation, maybe 64 for convenient debugging */
-  #define MAX_SFB_SHORT      15  /* 15 for a memory optimized implementation, maybe 16 for convenient debugging */
+#define MAX_NO_OF_GROUPS   4
+#define MAX_SFB_LONG       51  /* 51 for a memory optimized implementation, maybe 64 for convenient debugging */
+#define MAX_SFB_SHORT      15  /* 15 for a memory optimized implementation, maybe 16 for convenient debugging */
 
 #define MAX_SFB         (MAX_SFB_SHORT > MAX_SFB_LONG ? MAX_SFB_SHORT : MAX_SFB_LONG)   /* = 51 */
 #define MAX_GROUPED_SFB (MAX_NO_OF_GROUPS*MAX_SFB_SHORT > MAX_SFB_LONG ? \

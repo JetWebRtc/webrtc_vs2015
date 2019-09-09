@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -30,7 +30,7 @@ void ff_avg_pixels8_xy2_mmx(uint8_t *block, const uint8_t *pixels,
 void ff_avg_pixels8_xy2_mmxext(uint8_t *block, const uint8_t *pixels,
                                ptrdiff_t line_size, int h);
 void ff_avg_pixels8_xy2_ssse3(uint8_t *block, const uint8_t *pixels,
-                               ptrdiff_t line_size, int h);
+                              ptrdiff_t line_size, int h);
 
 void ff_avg_pixels16_xy2_mmx(uint8_t *block, const uint8_t *pixels,
                              ptrdiff_t line_size, int h);

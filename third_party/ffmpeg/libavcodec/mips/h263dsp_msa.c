@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -21,7 +21,8 @@
 #include "libavutil/mips/generic_macros_msa.h"
 #include "h263dsp_mips.h"
 
-static const uint8_t h263_loop_filter_strength_msa[32] = {
+static const uint8_t h263_loop_filter_strength_msa[32] =
+{
     0, 1, 1, 2, 2, 3, 3, 4, 4, 4, 5, 5, 6, 6, 7, 7,
     7, 8, 8, 8, 9, 9, 9, 10, 10, 10, 11, 11, 11, 12, 12, 12
 };

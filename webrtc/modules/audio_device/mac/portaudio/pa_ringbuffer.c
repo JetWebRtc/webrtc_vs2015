@@ -1,4 +1,4 @@
-/*
+﻿/*
  * $Id: pa_ringbuffer.c 1421 2009-11-18 16:09:05Z bjornroche $
  * Portable Audio I/O Library
  * Ring Buffer utility.
@@ -7,7 +7,7 @@
  * modified for SMP safety on Mac OS X by Bjorn Roche
  * modified for SMP safety on Linux by Leland Lucius
  * also, allowed for const where possible
- * modified for multiple-byte-sized data elements by Sven Fischer 
+ * modified for multiple-byte-sized data elements by Sven Fischer
  *
  * Note that this is safe only for a single-thread reader and a
  * single-thread writer.
@@ -37,13 +37,13 @@
  */
 
 /*
- * The text above constitutes the entire PortAudio license; however, 
+ * The text above constitutes the entire PortAudio license; however,
  * the PortAudio community also makes the following non-binding requests:
  *
  * Any person wishing to distribute modifications to the Software is
  * requested to send the modifications to the original developer so that
- * they can be incorporated into the canonical version. It is also 
- * requested that these non-binding requests be included along with the 
+ * they can be incorporated into the canonical version. It is also
+ * requested that these non-binding requests be included along with the
  * license above.
  */
 
@@ -64,9 +64,10 @@
  * elementCount must be power of 2, returns -1 if not.
  */
 PaRingBufferSize PaUtil_InitializeRingBuffer(PaUtilRingBuffer* rbuf,
-                                             PaRingBufferSize elementSizeBytes,
-                                             PaRingBufferSize elementCount,
-                                             void* dataPtr) {
+        PaRingBufferSize elementSizeBytes,
+        PaRingBufferSize elementCount,
+        void* dataPtr)
+{
     if( ((elementCount-1) & elementCount) != 0) return -1; /* Not Power of two. */
     rbuf->bufferSize = elementCount;
     rbuf->buffer = (char *)dataPtr;
@@ -106,11 +107,12 @@ void PaUtil_FlushRingBuffer( PaUtilRingBuffer *rbuf )
 ** Returns room available to be written or elementCount, whichever is smaller.
 */
 PaRingBufferSize PaUtil_GetRingBufferWriteRegions(PaUtilRingBuffer* rbuf,
-                                                  PaRingBufferSize elementCount,
-                                                  void** dataPtr1,
-                                                  PaRingBufferSize* sizePtr1,
-                                                  void** dataPtr2,
-                                                  PaRingBufferSize* sizePtr2) {
+        PaRingBufferSize elementCount,
+        void** dataPtr1,
+        PaRingBufferSize* sizePtr1,
+        void** dataPtr2,
+        PaRingBufferSize* sizePtr2)
+{
     PaRingBufferSize   index;
     PaRingBufferSize   available = PaUtil_GetRingBufferWriteAvailable( rbuf );
     if( elementCount > available ) elementCount = available;
@@ -140,7 +142,8 @@ PaRingBufferSize PaUtil_GetRingBufferWriteRegions(PaUtilRingBuffer* rbuf,
 */
 PaRingBufferSize PaUtil_AdvanceRingBufferWriteIndex(
     PaUtilRingBuffer* rbuf,
-    PaRingBufferSize elementCount) {
+    PaRingBufferSize elementCount)
+{
     /* we need to ensure that previous writes are seen before we update the write index */
     PaUtil_WriteMemoryBarrier();
     return rbuf->writeIndex = (rbuf->writeIndex + elementCount) & rbuf->bigMask;
@@ -153,11 +156,12 @@ PaRingBufferSize PaUtil_AdvanceRingBufferWriteIndex(
 ** Returns room available to be written or elementCount, whichever is smaller.
 */
 PaRingBufferSize PaUtil_GetRingBufferReadRegions(PaUtilRingBuffer* rbuf,
-                                                 PaRingBufferSize elementCount,
-                                                 void** dataPtr1,
-                                                 PaRingBufferSize* sizePtr1,
-                                                 void** dataPtr2,
-                                                 PaRingBufferSize* sizePtr2) {
+        PaRingBufferSize elementCount,
+        void** dataPtr1,
+        PaRingBufferSize* sizePtr1,
+        void** dataPtr2,
+        PaRingBufferSize* sizePtr2)
+{
     PaRingBufferSize   index;
     PaRingBufferSize   available = PaUtil_GetRingBufferReadAvailable( rbuf );
     if( elementCount > available ) elementCount = available;
@@ -185,7 +189,8 @@ PaRingBufferSize PaUtil_GetRingBufferReadRegions(PaUtilRingBuffer* rbuf,
 */
 PaRingBufferSize PaUtil_AdvanceRingBufferReadIndex(
     PaUtilRingBuffer* rbuf,
-    PaRingBufferSize elementCount) {
+    PaRingBufferSize elementCount)
+{
     /* we need to ensure that previous writes are always seen before updating the index. */
     PaUtil_WriteMemoryBarrier();
     return rbuf->readIndex = (rbuf->readIndex + elementCount) & rbuf->bigMask;
@@ -195,7 +200,8 @@ PaRingBufferSize PaUtil_AdvanceRingBufferReadIndex(
 ** Return elements written. */
 PaRingBufferSize PaUtil_WriteRingBuffer(PaUtilRingBuffer* rbuf,
                                         const void* data,
-                                        PaRingBufferSize elementCount) {
+                                        PaRingBufferSize elementCount)
+{
     PaRingBufferSize size1, size2, numWritten;
     void *data1, *data2;
     numWritten = PaUtil_GetRingBufferWriteRegions( rbuf, elementCount, &data1, &size1, &data2, &size2 );
@@ -218,7 +224,8 @@ PaRingBufferSize PaUtil_WriteRingBuffer(PaUtilRingBuffer* rbuf,
 ** Return elements read. */
 PaRingBufferSize PaUtil_ReadRingBuffer(PaUtilRingBuffer* rbuf,
                                        void* data,
-                                       PaRingBufferSize elementCount) {
+                                       PaRingBufferSize elementCount)
+{
     PaRingBufferSize size1, size2, numRead;
     void *data1, *data2;
     numRead = PaUtil_GetRingBufferReadRegions( rbuf, elementCount, &data1, &size1, &data2, &size2 );

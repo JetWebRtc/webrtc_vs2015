@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,34 +96,36 @@ amm-info@iis.fraunhofer.de
 #include "psy_const.h"
 #include "qc_data.h"
 
-typedef struct {
-  CHANNEL_MODE encMode;
-  INT nChannels;
-  INT nChannelsEff;
-  INT nElements;
+typedef struct
+{
+    CHANNEL_MODE encMode;
+    INT nChannels;
+    INT nChannelsEff;
+    INT nElements;
 } CHANNEL_MODE_CONFIG_TAB;
 
 
 /* Element mode */
-typedef enum {
-  EL_MODE_INVALID = 0,
-  EL_MODE_MONO,
-  EL_MODE_STEREO
+typedef enum
+{
+    EL_MODE_INVALID = 0,
+    EL_MODE_MONO,
+    EL_MODE_STEREO
 } ELEMENT_MODE;
 
 
 AAC_ENCODER_ERROR FDKaacEnc_DetermineEncoderMode(CHANNEL_MODE* mode,
-                                                 INT nChannels);
+        INT nChannels);
 
 AAC_ENCODER_ERROR FDKaacEnc_InitChannelMapping(CHANNEL_MODE mode,
-                                               CHANNEL_ORDER co,
-                                               CHANNEL_MAPPING* chMap);
+        CHANNEL_ORDER co,
+        CHANNEL_MAPPING* chMap);
 
 AAC_ENCODER_ERROR FDKaacEnc_InitElementBits(QC_STATE *hQC,
-                                            CHANNEL_MAPPING *cm,
-                                            INT bitrateTot,
-                                            INT averageBitsTot,
-                                            INT maxChannelBits);
+        CHANNEL_MAPPING *cm,
+        INT bitrateTot,
+        INT averageBitsTot,
+        INT maxChannelBits);
 
 ELEMENT_MODE FDKaacEnc_GetMonoStereoMode(const CHANNEL_MODE mode);
 

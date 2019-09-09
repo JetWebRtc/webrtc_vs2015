@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -70,68 +70,73 @@ static void scale_coefs (
 
     mul = (dynrng & 0x1f) + 0x20;
     shift = 4 - ((dynrng << 23) >> 28);
-    if (shift > 0 ) {
-      round = 1 << (shift-1);
-      for (i=0; i<len; i+=8) {
+    if (shift > 0 )
+    {
+        round = 1 << (shift-1);
+        for (i=0; i<len; i+=8)
+        {
 
-          temp = src[i] * mul;
-          temp1 = src[i+1] * mul;
-          temp = temp + round;
-          temp2 = src[i+2] * mul;
+            temp = src[i] * mul;
+            temp1 = src[i+1] * mul;
+            temp = temp + round;
+            temp2 = src[i+2] * mul;
 
-          temp1 = temp1 + round;
-          dst[i] = temp >> shift;
-          temp3 = src[i+3] * mul;
-          temp2 = temp2 + round;
+            temp1 = temp1 + round;
+            dst[i] = temp >> shift;
+            temp3 = src[i+3] * mul;
+            temp2 = temp2 + round;
 
-          dst[i+1] = temp1 >> shift;
-          temp4 = src[i + 4] * mul;
-          temp3 = temp3 + round;
-          dst[i+2] = temp2 >> shift;
+            dst[i+1] = temp1 >> shift;
+            temp4 = src[i + 4] * mul;
+            temp3 = temp3 + round;
+            dst[i+2] = temp2 >> shift;
 
-          temp5 = src[i+5] * mul;
-          temp4 = temp4 + round;
-          dst[i+3] = temp3 >> shift;
-          temp6 = src[i+6] * mul;
+            temp5 = src[i+5] * mul;
+            temp4 = temp4 + round;
+            dst[i+3] = temp3 >> shift;
+            temp6 = src[i+6] * mul;
 
-          dst[i+4] = temp4 >> shift;
-          temp5 = temp5 + round;
-          temp7 = src[i+7] * mul;
-          temp6 = temp6 + round;
+            dst[i+4] = temp4 >> shift;
+            temp5 = temp5 + round;
+            temp7 = src[i+7] * mul;
+            temp6 = temp6 + round;
 
-          dst[i+5] = temp5 >> shift;
-          temp7 = temp7 + round;
-          dst[i+6] = temp6 >> shift;
-          dst[i+7] = temp7 >> shift;
+            dst[i+5] = temp5 >> shift;
+            temp7 = temp7 + round;
+            dst[i+6] = temp6 >> shift;
+            dst[i+7] = temp7 >> shift;
 
-      }
-    } else {
-      shift = -shift;
-      for (i=0; i<len; i+=8) {
+        }
+    }
+    else
+    {
+        shift = -shift;
+        for (i=0; i<len; i+=8)
+        {
 
-          temp = src[i] * mul;
-          temp1 = src[i+1] * mul;
-          temp2 = src[i+2] * mul;
+            temp = src[i] * mul;
+            temp1 = src[i+1] * mul;
+            temp2 = src[i+2] * mul;
 
-          dst[i] = temp << shift;
-          temp3 = src[i+3] * mul;
+            dst[i] = temp << shift;
+            temp3 = src[i+3] * mul;
 
-          dst[i+1] = temp1 << shift;
-          temp4 = src[i + 4] * mul;
-          dst[i+2] = temp2 << shift;
+            dst[i+1] = temp1 << shift;
+            temp4 = src[i + 4] * mul;
+            dst[i+2] = temp2 << shift;
 
-          temp5 = src[i+5] * mul;
-          dst[i+3] = temp3 << shift;
-          temp6 = src[i+6] * mul;
+            temp5 = src[i+5] * mul;
+            dst[i+3] = temp3 << shift;
+            temp6 = src[i+6] * mul;
 
-          dst[i+4] = temp4 << shift;
-          temp7 = src[i+7] * mul;
+            dst[i+4] = temp4 << shift;
+            temp7 = src[i+7] * mul;
 
-          dst[i+5] = temp5 << shift;
-          dst[i+6] = temp6 << shift;
-          dst[i+7] = temp7 << shift;
+            dst[i+5] = temp5 << shift;
+            dst[i+6] = temp6 << shift;
+            dst[i+7] = temp7 << shift;
 
-      }
+        }
     }
 }
 
@@ -144,18 +149,24 @@ static void ac3_downmix_c_fixed16(int16_t **samples, int16_t (*matrix)[2],
 {
     int i, j;
     int v0, v1;
-    if (out_ch == 2) {
-        for (i = 0; i < len; i++) {
+    if (out_ch == 2)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = v1 = 0;
-            for (j = 0; j < in_ch; j++) {
+            for (j = 0; j < in_ch; j++)
+            {
                 v0 += samples[j][i] * matrix[j][0];
                 v1 += samples[j][i] * matrix[j][1];
             }
             samples[0][i] = (v0+2048)>>12;
             samples[1][i] = (v1+2048)>>12;
         }
-    } else if (out_ch == 1) {
-        for (i = 0; i < len; i++) {
+    }
+    else if (out_ch == 1)
+    {
+        for (i = 0; i < len; i++)
+        {
             v0 = 0;
             for (j = 0; j < in_ch; j++)
                 v0 += samples[j][i] * matrix[j][0];
@@ -167,20 +178,23 @@ static void ac3_downmix_c_fixed16(int16_t **samples, int16_t (*matrix)[2],
 #include "eac3dec.c"
 #include "ac3dec.c"
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "drc_scale", "percentage of dynamic range compression to apply", OFFSET(drc_scale), AV_OPT_TYPE_FLOAT, {.dbl = 1.0}, 0.0, 6.0, PAR },
     { "heavy_compr", "heavy dynamic range compression enabled", OFFSET(heavy_compression), AV_OPT_TYPE_INT, {.i64 = 0 }, 0, 1, PAR },
     { NULL},
 };
 
-static const AVClass ac3_decoder_class = {
+static const AVClass ac3_decoder_class =
+{
     .class_name = "Fixed-Point AC-3 Decoder",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_ac3_fixed_decoder = {
+AVCodec ff_ac3_fixed_decoder =
+{
     .name           = "ac3_fixed",
     .type           = AVMEDIA_TYPE_AUDIO,
     .id             = AV_CODEC_ID_AC3,
@@ -190,7 +204,9 @@ AVCodec ff_ac3_fixed_decoder = {
     .decode         = ac3_decode_frame,
     .capabilities   = AV_CODEC_CAP_DR1,
     .long_name      = NULL_IF_CONFIG_SMALL("ATSC A/52A (AC-3)"),
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class     = &ac3_decoder_class,
 };

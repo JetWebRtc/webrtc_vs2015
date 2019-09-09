@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sony OpenMG (OMA) common data
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #define ID3v2_EA3_MAGIC "ea3"
 #define OMA_ENC_HEADER_SIZE 16
 
-enum {
+enum
+{
     OMA_CODECID_ATRAC3  = 0,
     OMA_CODECID_ATRAC3P = 1,
     OMA_CODECID_MP3     = 3,

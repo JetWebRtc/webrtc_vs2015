@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised DSP functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -31,7 +31,8 @@ av_cold void ff_vorbisdsp_init_arm(VorbisDSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         c->vorbis_inverse_coupling = ff_vorbis_inverse_coupling_neon;
     }
 }

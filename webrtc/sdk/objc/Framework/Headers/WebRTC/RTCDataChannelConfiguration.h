@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCDataChannelConfiguration : NSObject
 
-/** Set to YES if ordered delivery is required. */
-@property(nonatomic, assign) BOOL isOrdered;
+    /** Set to YES if ordered delivery is required. */
+    @property(nonatomic, assign) BOOL isOrdered;
 
 /** Deprecated. Use maxPacketLifeTime. */
 @property(nonatomic, assign) NSInteger maxRetransmitTimeMs DEPRECATED_ATTRIBUTE;

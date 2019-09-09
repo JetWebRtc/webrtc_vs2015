@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,24 +16,27 @@
 #include "webrtc/base/optional.h"
 #include "webrtc/system_wrappers/include/clock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class PerformanceTimer {
- public:
-  explicit PerformanceTimer(int num_frames_to_process);
-  ~PerformanceTimer();
+class PerformanceTimer
+{
+public:
+    explicit PerformanceTimer(int num_frames_to_process);
+    ~PerformanceTimer();
 
-  void StartTimer();
-  void StopTimer();
+    void StartTimer();
+    void StopTimer();
 
-  double GetDurationAverage() const;
-  double GetDurationStandardDeviation() const;
+    double GetDurationAverage() const;
+    double GetDurationStandardDeviation() const;
 
- private:
-  webrtc::Clock* clock_;
-  rtc::Optional<int64_t> start_timestamp_us_;
-  std::vector<int64_t> timestamps_us_;
+private:
+    webrtc::Clock* clock_;
+    rtc::Optional<int64_t> start_timestamp_us_;
+    std::vector<int64_t> timestamps_us_;
 };
 
 }  // namespace test

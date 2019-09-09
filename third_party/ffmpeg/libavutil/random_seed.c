@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Baptiste Coudurier <baptiste.coudurier@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -74,22 +74,29 @@ static uint32_t get_generic_seed(void)
 
     av_assert0(sizeof(tmp) >= av_sha_size);
 
-    if(TEST){
+    if(TEST)
+    {
         memset(buffer, 0, sizeof(buffer));
         last_i = i = 0;
-    }else{
+    }
+    else
+    {
 #ifdef AV_READ_TIME
         buffer[13] ^= AV_READ_TIME();
         buffer[41] ^= AV_READ_TIME()>>32;
 #endif
     }
 
-    for (;;) {
+    for (;;)
+    {
         clock_t t = clock();
 
-        if (last_t == t) {
+        if (last_t == t)
+        {
             buffer[i & 511]++;
-        } else {
+        }
+        else
+        {
             buffer[++i & 511] += (t - last_t) % 3294638521U;
             if (last_i && i - last_i > 4 || i - last_i > 64 || TEST && i - last_i > 8)
                 break;
@@ -113,7 +120,8 @@ uint32_t av_get_random_seed(void)
 #if HAVE_CRYPTGENRANDOM
     HCRYPTPROV provider;
     if (CryptAcquireContext(&provider, NULL, NULL, PROV_RSA_FULL,
-                            CRYPT_VERIFYCONTEXT | CRYPT_SILENT)) {
+                            CRYPT_VERIFYCONTEXT | CRYPT_SILENT))
+    {
         BOOL ret = CryptGenRandom(provider, sizeof(seed), (PBYTE) &seed);
         CryptReleaseContext(provider, 0);
         if (ret)
@@ -138,8 +146,10 @@ int main(void)
     int i, j, retry;
     uint32_t seeds[N];
 
-    for (retry=0; retry<3; retry++){
-        for (i=0; i<N; i++){
+    for (retry=0; retry<3; retry++)
+    {
+        for (i=0; i<N; i++)
+        {
             seeds[i] = av_get_random_seed();
             for (j=0; j<i; j++)
                 if (seeds[j] == seeds[i])
@@ -147,7 +157,8 @@ int main(void)
         }
         printf("seeds OK\n");
         return 0;
-        retry:;
+retry:
+        ;
     }
     printf("FAIL at %d with %X\n", j, seeds[j]);
     return 1;

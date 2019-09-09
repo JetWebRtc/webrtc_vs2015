@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,13 +13,14 @@
 #import "WebRTC/RTCPeerConnection.h"
 #import "WebRTC/RTCVideoTrack.h"
 
-typedef NS_ENUM(NSInteger, ARDAppClientState) {
-  // Disconnected from servers.
-  kARDAppClientStateDisconnected,
-  // Connecting to servers.
-  kARDAppClientStateConnecting,
-  // Connected to servers.
-  kARDAppClientStateConnected,
+typedef NS_ENUM(NSInteger, ARDAppClientState)
+{
+    // Disconnected from servers.
+    kARDAppClientStateDisconnected,
+    // Connecting to servers.
+    kARDAppClientStateConnecting,
+    // Connected to servers.
+    kARDAppClientStateConnected,
 };
 
 @class ARDAppClient;
@@ -42,10 +43,10 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
     didReceiveRemoteVideoTrack:(RTCVideoTrack *)remoteVideoTrack;
 
 - (void)appClient:(ARDAppClient *)client
-         didError:(NSError *)error;
+    didError:(NSError *)error;
 
 - (void)appClient:(ARDAppClient *)client
-      didGetStats:(NSArray *)stats;
+    didGetStats:(NSArray *)stats;
 
 @end
 
@@ -55,7 +56,7 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
 
 // If |shouldGetStats| is true, stats will be reported in 1s intervals through
 // the delegate.
-@property(nonatomic, assign) BOOL shouldGetStats;
+    @property(nonatomic, assign) BOOL shouldGetStats;
 @property(nonatomic, readonly) ARDAppClientState state;
 @property(nonatomic, weak) id<ARDAppClientDelegate> delegate;
 // Convenience constructor since all expected use cases will need a delegate
@@ -75,10 +76,10 @@ typedef NS_ENUM(NSInteger, ARDAppClientState) {
 // If |shouldUseLevelControl| is true, the level controller will be used
 // in the call.
 - (void)connectToRoomWithId:(NSString *)roomId
-                 isLoopback:(BOOL)isLoopback
-                isAudioOnly:(BOOL)isAudioOnly
-          shouldMakeAecDump:(BOOL)shouldMakeAecDump
-      shouldUseLevelControl:(BOOL)shouldUseLevelControl;
+    isLoopback:(BOOL)isLoopback
+    isAudioOnly:(BOOL)isAudioOnly
+    shouldMakeAecDump:(BOOL)shouldMakeAecDump
+    shouldUseLevelControl:(BOOL)shouldUseLevelControl;
 
 // Disconnects from the AppRTC servers and any connected clients.
 - (void)disconnect;

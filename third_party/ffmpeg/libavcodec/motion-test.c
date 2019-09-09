@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) 2001 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -48,7 +48,8 @@ static void fill_random(uint8_t *tab, int size)
     AVLFG prng;
 
     av_lfg_init(&prng, 1);
-    for(i=0;i<size;i++) {
+    for(i=0; i<size; i++)
+    {
         tab[i] = av_lfg_get(&prng) % 256;
     }
 }
@@ -64,7 +65,7 @@ static void help(void)
 int dummy;
 
 static void test_motion(const char *name,
-                 me_cmp_func test_func, me_cmp_func ref_func)
+                        me_cmp_func test_func, me_cmp_func ref_func)
 {
     int x, y, d1, d2, it;
     uint8_t *ptr;
@@ -72,17 +73,21 @@ static void test_motion(const char *name,
     printf("testing '%s'\n", name);
 
     /* test correctness */
-    for(it=0;it<20;it++) {
+    for(it=0; it<20; it++)
+    {
 
         fill_random(img1, WIDTH * HEIGHT);
         fill_random(img2, WIDTH * HEIGHT);
 
-        for(y=0;y<HEIGHT-17;y++) {
-            for(x=0;x<WIDTH-17;x++) {
+        for(y=0; y<HEIGHT-17; y++)
+        {
+            for(x=0; x<WIDTH-17; x++)
+            {
                 ptr = img2 + y * WIDTH + x;
                 d1 = test_func(NULL, img1, ptr, WIDTH, 8);
                 d2 = ref_func(NULL, img1, ptr, WIDTH, 8);
-                if (d1 != d2) {
+                if (d1 != d2)
+                {
                     printf("error: mmx=%d c=%d\n", d1, d2);
                 }
             }
@@ -93,9 +98,12 @@ static void test_motion(const char *name,
     /* speed test */
     ti = av_gettime_relative();
     d1 = 0;
-    for(it=0;it<NB_ITS;it++) {
-        for(y=0;y<HEIGHT-17;y++) {
-            for(x=0;x<WIDTH-17;x++) {
+    for(it=0; it<NB_ITS; it++)
+    {
+        for(y=0; y<HEIGHT-17; y++)
+        {
+            for(x=0; x<WIDTH-17; x++)
+            {
                 ptr = img2 + y * WIDTH + x;
                 d1 += test_func(NULL, img1, ptr, WIDTH, 8);
             }
@@ -119,7 +127,8 @@ int main(int argc, char **argv)
     int flags[2] = { AV_CPU_FLAG_MMX, AV_CPU_FLAG_MMXEXT };
     int flags_size = HAVE_MMXEXT ? 2 : 1;
 
-    if (argc > 1) {
+    if (argc > 1)
+    {
         help();
         return 1;
     }
@@ -131,13 +140,15 @@ int main(int argc, char **argv)
     av_force_cpu_flags(0);
     memset(&cctx, 0, sizeof(cctx));
     ff_me_cmp_init(&cctx, ctx);
-    for (c = 0; c < flags_size; c++) {
+    for (c = 0; c < flags_size; c++)
+    {
         int x;
         av_force_cpu_flags(flags[c]);
         memset(&mmxctx, 0, sizeof(mmxctx));
         ff_me_cmp_init(&mmxctx, ctx);
 
-        for (x = 0; x < 2; x++) {
+        for (x = 0; x < 2; x++)
+        {
             printf("%s for %dx%d pixels\n", c ? "mmx2" : "mmx",
                    x ? 8 : 16, x ? 8 : 16);
             test_motion("mmx",     mmxctx.pix_abs[x][0], cctx.pix_abs[x][0]);

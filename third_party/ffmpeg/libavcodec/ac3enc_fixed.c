@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The simplest AC-3 encoder
  * Copyright (c) 2000 Fabrice Bellard
  * Copyright (c) 2006-2010 Justin Ruggles <justin.ruggles@gmail.com>
@@ -36,7 +36,8 @@
 #define AC3ENC_TYPE AC3ENC_TYPE_AC3_FIXED
 #include "ac3enc_opts_template.c"
 
-static const AVClass ac3enc_class = {
+static const AVClass ac3enc_class =
+{
     .class_name = "Fixed-Point AC-3 Encoder",
     .item_name  = av_default_item_name,
     .option     = ac3_options,
@@ -93,9 +94,11 @@ static void scale_coefficients(AC3EncodeContext *s)
 {
     int blk, ch;
 
-    for (blk = 0; blk < s->num_blocks; blk++) {
+    for (blk = 0; blk < s->num_blocks; blk++)
+    {
         AC3Block *block = &s->blocks[blk];
-        for (ch = 1; ch <= s->channels; ch++) {
+        for (ch = 1; ch <= s->channels; ch++)
+        {
             s->ac3dsp.ac3_rshift_int32(block->mdct_coef[ch], AC3_MAX_COEFS,
                                        block->coeff_shift[ch]);
         }
@@ -124,9 +127,12 @@ static void clip_coefficients(AudioDSPContext *adsp, int32_t *coef,
  */
 static CoefType calc_cpl_coord(CoefSumType energy_ch, CoefSumType energy_cpl)
 {
-    if (energy_cpl <= COEF_MAX) {
+    if (energy_cpl <= COEF_MAX)
+    {
         return 1048576;
-    } else {
+    }
+    else
+    {
         uint64_t coord   = energy_ch / (energy_cpl >> 24);
         uint32_t coord32 = FFMIN(coord, 1073741824);
         coord32          = ff_sqrt(coord32) << 9;
@@ -143,7 +149,8 @@ static av_cold int ac3_fixed_encode_init(AVCodecContext *avctx)
 }
 
 
-AVCodec ff_ac3_fixed_encoder = {
+AVCodec ff_ac3_fixed_encoder =
+{
     .name            = "ac3_fixed",
     .long_name       = NULL_IF_CONFIG_SMALL("ATSC A/52A (AC-3)"),
     .type            = AVMEDIA_TYPE_AUDIO,
@@ -152,8 +159,10 @@ AVCodec ff_ac3_fixed_encoder = {
     .init            = ac3_fixed_encode_init,
     .encode2         = ff_ac3_fixed_encode_frame,
     .close           = ff_ac3_encode_close,
-    .sample_fmts     = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts     = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class      = &ac3enc_class,
     .channel_layouts = ff_ac3_channel_layouts,
     .defaults        = ac3_defaults,

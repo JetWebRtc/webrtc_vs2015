@@ -1,4 +1,4 @@
-/*
+﻿/*
  * raw FLAC muxer
  * Copyright (C) 2009 Justin Ruggles
  *

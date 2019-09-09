@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ISS (.iss) file demuxer
  * Copyright (c) 2008 Jaikrishnan Menon <realityman@gmx.net>
  *
@@ -35,7 +35,8 @@
 #define ISS_SIG_LEN 15
 #define MAX_TOKEN_SIZE 20
 
-typedef struct IssDemuxContext {
+typedef struct IssDemuxContext
+{
     int packet_size;
     int sample_start_pos;
 } IssDemuxContext;
@@ -45,7 +46,8 @@ static void get_token(AVIOContext *s, char *buf, int maxlen)
     int i = 0;
     char c;
 
-    while ((c = avio_r8(s))) {
+    while ((c = avio_r8(s)))
+    {
         if(c == ' ')
             break;
         if (i < maxlen-1)
@@ -76,20 +78,23 @@ static av_cold int iss_read_header(AVFormatContext *s)
 
     get_token(pb, token, sizeof(token)); //"IMA_ADPCM_Sound"
     get_token(pb, token, sizeof(token)); //packet size
-    if (sscanf(token, "%d", &iss->packet_size) != 1) {
+    if (sscanf(token, "%d", &iss->packet_size) != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Failed parsing packet size\n");
         return AVERROR_INVALIDDATA;
     }
     get_token(pb, token, sizeof(token)); //File ID
     get_token(pb, token, sizeof(token)); //out size
     get_token(pb, token, sizeof(token)); //stereo
-    if (sscanf(token, "%d", &stereo) != 1) {
+    if (sscanf(token, "%d", &stereo) != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Failed parsing stereo flag\n");
         return AVERROR_INVALIDDATA;
     }
     get_token(pb, token, sizeof(token)); //Unknown1
     get_token(pb, token, sizeof(token)); //RateDivisor
-    if (sscanf(token, "%d", &rate_divisor) != 1) {
+    if (sscanf(token, "%d", &rate_divisor) != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Failed parsing rate_divisor\n");
         return AVERROR_INVALIDDATA;
     }
@@ -97,7 +102,8 @@ static av_cold int iss_read_header(AVFormatContext *s)
     get_token(pb, token, sizeof(token)); //Version ID
     get_token(pb, token, sizeof(token)); //Size
 
-    if (iss->packet_size <= 0) {
+    if (iss->packet_size <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "packet_size %d is invalid\n", iss->packet_size);
         return AVERROR_INVALIDDATA;
     }
@@ -109,19 +115,22 @@ static av_cold int iss_read_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
     st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
     st->codec->codec_id = AV_CODEC_ID_ADPCM_IMA_ISS;
-    if (stereo) {
+    if (stereo)
+    {
         st->codec->channels       = 2;
         st->codec->channel_layout = AV_CH_LAYOUT_STEREO;
-    } else {
+    }
+    else
+    {
         st->codec->channels       = 1;
         st->codec->channel_layout = AV_CH_LAYOUT_MONO;
     }
     st->codec->sample_rate = 44100;
     if(rate_divisor > 0)
-         st->codec->sample_rate /= rate_divisor;
+        st->codec->sample_rate /= rate_divisor;
     st->codec->bits_per_coded_sample = 4;
     st->codec->bit_rate = st->codec->channels * st->codec->sample_rate
-                                      * st->codec->bits_per_coded_sample;
+                          * st->codec->bits_per_coded_sample;
     st->codec->block_align = iss->packet_size;
     avpriv_set_pts_info(st, 32, 1, st->codec->sample_rate);
 
@@ -143,7 +152,8 @@ static int iss_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_iss_demuxer = {
+AVInputFormat ff_iss_demuxer =
+{
     .name           = "iss",
     .long_name      = NULL_IF_CONFIG_SMALL("Funcom ISS"),
     .priv_data_size = sizeof(IssDemuxContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a synthetic YUV video sequence suitable for codec testing.
  * NOTE: No floats are used to guarantee bitexact output.
  *
@@ -33,9 +33,12 @@ static unsigned int myrnd(unsigned int *seed_ptr, int n)
 
     seed = *seed_ptr;
     seed = (seed * 314159) + 1;
-    if (n == 256) {
+    if (n == 256)
+    {
         val = seed >> 24;
-    } else {
+    }
+    else
+    {
         val = seed % n;
     }
     *seed_ptr = seed;
@@ -57,7 +60,8 @@ static int int_cos(int a)
     if (a >= (FRAC_ONE / 2))
         a = FRAC_ONE - a;
     neg = 0;
-    if (a > (FRAC_ONE / 4)) {
+    if (a > (FRAC_ONE / 4))
+    {
         neg = -1;
         a   = (FRAC_ONE / 2) - a;
     }
@@ -68,7 +72,8 @@ static int int_cos(int a)
 
 #define NB_OBJS  10
 
-typedef struct VObj {
+typedef struct VObj
+{
     int x, y, w, h;
     int r, g, b;
 } VObj;
@@ -82,8 +87,10 @@ static void gen_image(int num, int w, int h)
     int r, g, b, x, y, i, dx, dy, x1, y1;
     unsigned int seed1;
 
-    if (num == 0) {
-        for (i = 0; i < NB_OBJS; i++) {
+    if (num == 0)
+    {
+        for (i = 0; i < NB_OBJS; i++)
+        {
             objs[i].x = myrnd(&seed, w);
             objs[i].y = myrnd(&seed, h);
             objs[i].w = myrnd(&seed, w / 4) + 10;
@@ -98,8 +105,10 @@ static void gen_image(int num, int w, int h)
     /* test motion estimation */
     dx = int_cos(num * FRAC_ONE / 50) * 35;
     dy = int_cos(num * FRAC_ONE / 50 + FRAC_ONE / 10) * 30;
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
             x1 = (x << FRAC_BITS) + dx;
             y1 = (y << FRAC_BITS) + dy;
             r  =       ((y1  * 7) >> FRAC_BITS) & 0xff;
@@ -111,8 +120,10 @@ static void gen_image(int num, int w, int h)
 
     /* then some noise with very high intensity to test saturation */
     seed1 = num;
-    for (y = 0; y < NOISE_W; y++) {
-        for (x = 0; x < NOISE_W; x++) {
+    for (y = 0; y < NOISE_W; y++)
+    {
+        for (x = 0; x < NOISE_W; x++)
+        {
             r = myrnd(&seed1, 256);
             g = myrnd(&seed1, 256);
             b = myrnd(&seed1, 256);
@@ -121,11 +132,14 @@ static void gen_image(int num, int w, int h)
     }
 
     /* then moving objects */
-    for (i = 0; i < NB_OBJS; i++) {
+    for (i = 0; i < NB_OBJS; i++)
+    {
         VObj *p = &objs[i];
         seed1 = i;
-        for (y = 0; y < p->h; y++) {
-            for (x = 0; x < p->w; x++) {
+        for (y = 0; y < p->h; y++)
+        {
+            for (x = 0; x < p->w; x++)
+            {
                 r = p->r;
                 g = p->g;
                 b = p->b;
@@ -144,8 +158,8 @@ static void gen_image(int num, int w, int h)
 void print_help(const char* name)
 {
     printf("usage: %s file|dir [w=%i] [h=%i]\n"
-            "generate a test video stream\n",
-            name, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+           "generate a test video stream\n",
+           name, DEFAULT_WIDTH, DEFAULT_HEIGHT);
     exit(1);
 }
 
@@ -155,7 +169,8 @@ int main(int argc, char **argv)
     char buf[1024];
     int isdir = 0;
 
-    if (argc < 2 || argc > 4) {
+    if (argc < 2 || argc > 4)
+    {
         print_help(argv[0]);
     }
 
@@ -163,12 +178,14 @@ int main(int argc, char **argv)
         isdir = 1;
 
     w = DEFAULT_WIDTH;
-    if(argc > 2) {
+    if(argc > 2)
+    {
         w = atoi(argv[2]);
         if (w < 1) print_help(argv[0]);
     }
     h = DEFAULT_HEIGHT;
-    if(argc > 3) {
+    if(argc > 3)
+    {
         h = atoi(argv[3]);
         if (h < 1) print_help(argv[0]);
     }
@@ -178,12 +195,16 @@ int main(int argc, char **argv)
     width   = w;
     height  = h;
 
-    for (i = 0; i < DEFAULT_NB_PICT; i++) {
+    for (i = 0; i < DEFAULT_NB_PICT; i++)
+    {
         gen_image(i, w, h);
-        if (isdir) {
+        if (isdir)
+        {
             snprintf(buf, sizeof(buf), "%s%02d.pgm", argv[1], i);
             pgmyuv_save(buf, w, h, rgb_tab);
-        } else {
+        }
+        else
+        {
             pgmyuv_save(NULL, w, h, rgb_tab);
         }
     }

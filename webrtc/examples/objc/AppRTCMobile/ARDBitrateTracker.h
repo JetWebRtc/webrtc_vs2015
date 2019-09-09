@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,8 +17,8 @@
  */
 @interface ARDBitrateTracker : NSObject
 
-/** The bitrate in bits per second. */
-@property(nonatomic, readonly) double bitrate;
+    /** The bitrate in bits per second. */
+    @property(nonatomic, readonly) double bitrate;
 /** The bitrate as a formatted string in bps, Kbps or Mbps. */
 @property(nonatomic, readonly) NSString *bitrateString;
 

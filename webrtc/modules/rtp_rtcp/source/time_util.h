@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,12 +15,14 @@
 
 #include "webrtc/system_wrappers/include/ntp_time.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Converts NTP timestamp to RTP timestamp.
-inline uint32_t NtpToRtp(NtpTime ntp, uint32_t freq) {
-  uint32_t tmp = (static_cast<uint64_t>(ntp.fractions()) * freq) >> 32;
-  return ntp.seconds() * freq + tmp;
+inline uint32_t NtpToRtp(NtpTime ntp, uint32_t freq)
+{
+    uint32_t tmp = (static_cast<uint64_t>(ntp.fractions()) * freq) >> 32;
+    return ntp.seconds() * freq + tmp;
 }
 
 // Helper function for compact ntp representation:
@@ -31,8 +33,9 @@ inline uint32_t NtpToRtp(NtpTime ntp, uint32_t freq) {
 // In some fields where a more compact representation is
 // appropriate, only the middle 32 bits are used; that is, the low 16
 // bits of the integer part and the high 16 bits of the fractional part.
-inline uint32_t CompactNtp(NtpTime ntp) {
-  return (ntp.seconds() << 16) | (ntp.fractions() >> 16);
+inline uint32_t CompactNtp(NtpTime ntp)
+{
+    return (ntp.seconds() << 16) | (ntp.fractions() >> 16);
 }
 // Converts interval between compact ntp timestamps to milliseconds.
 // This interval can be up to ~9.1 hours (2^15 seconds).

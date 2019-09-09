@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,11 +21,13 @@
 #include "webrtc/typedefs.h"
 #include "webrtc/voice_engine/include/voe_base.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioDecoderFactory;
 
-namespace voe {
+namespace voe
+{
 
 class Channel;
 
@@ -45,78 +47,91 @@ class Channel;
 // if (channel_owner.IsValid())
 //   channel_owner.channel()->...;
 //
-class ChannelOwner {
- public:
-  explicit ChannelOwner(Channel* channel);
-  ChannelOwner(const ChannelOwner& channel_owner);
+class ChannelOwner
+{
+public:
+    explicit ChannelOwner(Channel* channel);
+    ChannelOwner(const ChannelOwner& channel_owner);
 
-  ~ChannelOwner();
+    ~ChannelOwner();
 
-  ChannelOwner& operator=(const ChannelOwner& other);
+    ChannelOwner& operator=(const ChannelOwner& other);
 
-  Channel* channel() const { return channel_ref_->channel.get(); }
-  bool IsValid() { return channel_ref_->channel.get() != NULL; }
-  int use_count() const { return channel_ref_->ref_count.Value(); }
- private:
-  // Shared instance of a Channel. Copying ChannelOwners increase the reference
-  // count and destroying ChannelOwners decrease references. Channels are
-  // deleted when no references to them are held.
-  struct ChannelRef {
-    ChannelRef(Channel* channel);
-    const std::unique_ptr<Channel> channel;
-    Atomic32 ref_count;
-  };
+    Channel* channel() const
+    {
+        return channel_ref_->channel.get();
+    }
+    bool IsValid()
+    {
+        return channel_ref_->channel.get() != NULL;
+    }
+    int use_count() const
+    {
+        return channel_ref_->ref_count.Value();
+    }
+private:
+    // Shared instance of a Channel. Copying ChannelOwners increase the reference
+    // count and destroying ChannelOwners decrease references. Channels are
+    // deleted when no references to them are held.
+    struct ChannelRef
+    {
+        ChannelRef(Channel* channel);
+        const std::unique_ptr<Channel> channel;
+        Atomic32 ref_count;
+    };
 
-  ChannelRef* channel_ref_;
+    ChannelRef* channel_ref_;
 };
 
-class ChannelManager {
- public:
-  ChannelManager(uint32_t instance_id);
+class ChannelManager
+{
+public:
+    ChannelManager(uint32_t instance_id);
 
-  // Upon construction of an Iterator it will grab a copy of the channel list of
-  // the ChannelManager. The iteration will then occur over this state, not the
-  // current one of the ChannelManager. As the Iterator holds its own references
-  // to the Channels, they will remain valid even if they are removed from the
-  // ChannelManager.
-  class Iterator {
-   public:
-    explicit Iterator(ChannelManager* channel_manager);
+    // Upon construction of an Iterator it will grab a copy of the channel list of
+    // the ChannelManager. The iteration will then occur over this state, not the
+    // current one of the ChannelManager. As the Iterator holds its own references
+    // to the Channels, they will remain valid even if they are removed from the
+    // ChannelManager.
+    class Iterator
+    {
+    public:
+        explicit Iterator(ChannelManager* channel_manager);
 
-    Channel* GetChannel();
-    bool IsValid();
+        Channel* GetChannel();
+        bool IsValid();
 
-    void Increment();
+        void Increment();
 
-   private:
-    size_t iterator_pos_;
+    private:
+        size_t iterator_pos_;
+        std::vector<ChannelOwner> channels_;
+
+        RTC_DISALLOW_COPY_AND_ASSIGN(Iterator);
+    };
+
+    // CreateChannel will always return a valid ChannelOwner instance.
+    ChannelOwner CreateChannel(const VoEBase::ChannelConfig& config);
+
+    // ChannelOwner.channel() will be NULL if channel_id is invalid or no longer
+    // exists. This should be checked with ChannelOwner::IsValid().
+    ChannelOwner GetChannel(int32_t channel_id);
+    void GetAllChannels(std::vector<ChannelOwner>* channels);
+
+    void DestroyChannel(int32_t channel_id);
+    void DestroyAllChannels();
+
+    size_t NumOfChannels() const;
+
+private:
+    uint32_t instance_id_;
+
+    Atomic32 last_channel_id_;
+
+    rtc::CriticalSection lock_;
     std::vector<ChannelOwner> channels_;
 
-    RTC_DISALLOW_COPY_AND_ASSIGN(Iterator);
-  };
-
-  // CreateChannel will always return a valid ChannelOwner instance.
-  ChannelOwner CreateChannel(const VoEBase::ChannelConfig& config);
-
-  // ChannelOwner.channel() will be NULL if channel_id is invalid or no longer
-  // exists. This should be checked with ChannelOwner::IsValid().
-  ChannelOwner GetChannel(int32_t channel_id);
-  void GetAllChannels(std::vector<ChannelOwner>* channels);
-
-  void DestroyChannel(int32_t channel_id);
-  void DestroyAllChannels();
-
-  size_t NumOfChannels() const;
-
- private:
-  uint32_t instance_id_;
-
-  Atomic32 last_channel_id_;
-
-  rtc::CriticalSection lock_;
-  std::vector<ChannelOwner> channels_;
-
-  RTC_DISALLOW_COPY_AND_ASSIGN(ChannelManager);
+    RTC_DISALLOW_COPY_AND_ASSIGN(ChannelManager);
 };
 }  // namespace voe
 }  // namespace webrtc

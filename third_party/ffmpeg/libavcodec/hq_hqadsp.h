@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQ/HQA decoder
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 
 #include <stdint.h>
 
-typedef struct HQDSPContext {
+typedef struct HQDSPContext
+{
     void (*idct_put)(uint8_t *dst, int stride, int16_t *block);
 } HQDSPContext;
 

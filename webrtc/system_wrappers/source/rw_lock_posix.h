@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,24 +16,26 @@
 
 #include <pthread.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RWLockPosix : public RWLockWrapper {
- public:
-  static RWLockPosix* Create();
-  ~RWLockPosix() override;
+class RWLockPosix : public RWLockWrapper
+{
+public:
+    static RWLockPosix* Create();
+    ~RWLockPosix() override;
 
-  void AcquireLockExclusive() override;
-  void ReleaseLockExclusive() override;
+    void AcquireLockExclusive() override;
+    void ReleaseLockExclusive() override;
 
-  void AcquireLockShared() override;
-  void ReleaseLockShared() override;
+    void AcquireLockShared() override;
+    void ReleaseLockShared() override;
 
- private:
-  RWLockPosix();
-  bool Init();
+private:
+    RWLockPosix();
+    bool Init();
 
-  pthread_rwlock_t lock_;
+    pthread_rwlock_t lock_;
 };
 
 }  // namespace webrtc

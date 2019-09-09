@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Raw FLAC picture parser
  * Copyright (c) 2001 Fabrice Bellard
  *
@@ -43,9 +43,11 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
 
     /* read the picture type */
     type = avio_rb32(pb);
-    if (type >= FF_ARRAY_ELEMS(ff_id3v2_picture_types)) {
+    if (type >= FF_ARRAY_ELEMS(ff_id3v2_picture_types))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid picture type: %d.\n", type);
-        if (s->error_recognition & AV_EF_EXPLODE) {
+        if (s->error_recognition & AV_EF_EXPLODE)
+        {
             RETURN_ERROR(AVERROR_INVALIDDATA);
         }
         type = 0;
@@ -54,7 +56,8 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
     /* picture mimetype */
     len = avio_rb32(pb);
     if (len <= 0 || len >= 64 ||
-        avio_read(pb, mimetype, FFMIN(len, sizeof(mimetype) - 1)) != len) {
+            avio_read(pb, mimetype, FFMIN(len, sizeof(mimetype) - 1)) != len)
+    {
         av_log(s, AV_LOG_ERROR, "Could not read mimetype from an attached "
                "picture.\n");
         if (s->error_recognition & AV_EF_EXPLODE)
@@ -64,14 +67,17 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
     av_assert0(len < sizeof(mimetype));
     mimetype[len] = 0;
 
-    while (mime->id != AV_CODEC_ID_NONE) {
-        if (!strncmp(mime->str, mimetype, sizeof(mimetype))) {
+    while (mime->id != AV_CODEC_ID_NONE)
+    {
+        if (!strncmp(mime->str, mimetype, sizeof(mimetype)))
+        {
             id = mime->id;
             break;
         }
         mime++;
     }
-    if (id == AV_CODEC_ID_NONE) {
+    if (id == AV_CODEC_ID_NONE)
+    {
         av_log(s, AV_LOG_ERROR, "Unknown attached picture mimetype: %s.\n",
                mimetype);
         if (s->error_recognition & AV_EF_EXPLODE)
@@ -81,12 +87,15 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
 
     /* picture description */
     len = avio_rb32(pb);
-    if (len > 0) {
-        if (!(desc = av_malloc(len + 1))) {
+    if (len > 0)
+    {
+        if (!(desc = av_malloc(len + 1)))
+        {
             RETURN_ERROR(AVERROR(ENOMEM));
         }
 
-        if (avio_read(pb, desc, len) != len) {
+        if (avio_read(pb, desc, len) != len)
+        {
             av_log(s, AV_LOG_ERROR, "Error reading attached picture description.\n");
             if (s->error_recognition & AV_EF_EXPLODE)
                 ret = AVERROR(EIO);
@@ -102,17 +111,20 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
 
     /* picture data */
     len = avio_rb32(pb);
-    if (len <= 0) {
+    if (len <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid attached picture size: %d.\n", len);
         if (s->error_recognition & AV_EF_EXPLODE)
             ret = AVERROR_INVALIDDATA;
         goto fail;
     }
-    if (!(data = av_buffer_alloc(len + AV_INPUT_BUFFER_PADDING_SIZE))) {
+    if (!(data = av_buffer_alloc(len + AV_INPUT_BUFFER_PADDING_SIZE)))
+    {
         RETURN_ERROR(AVERROR(ENOMEM));
     }
     memset(data->data + len, 0, AV_INPUT_BUFFER_PADDING_SIZE);
-    if (avio_read(pb, data->data, len) != len) {
+    if (avio_read(pb, data->data, len) != len)
+    {
         av_log(s, AV_LOG_ERROR, "Error reading attached picture data.\n");
         if (s->error_recognition & AV_EF_EXPLODE)
             ret = AVERROR(EIO);
@@ -120,7 +132,8 @@ int ff_flac_parse_picture(AVFormatContext *s, uint8_t *buf, int buf_size)
     }
 
     st = avformat_new_stream(s, NULL);
-    if (!st) {
+    if (!st)
+    {
         RETURN_ERROR(AVERROR(ENOMEM));
     }
 

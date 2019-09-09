@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,27 +15,30 @@
 
 #include "webrtc/common_audio/real_fourier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RealFourierOpenmax : public RealFourier {
- public:
-  explicit RealFourierOpenmax(int fft_order);
-  ~RealFourierOpenmax() override;
+class RealFourierOpenmax : public RealFourier
+{
+public:
+    explicit RealFourierOpenmax(int fft_order);
+    ~RealFourierOpenmax() override;
 
-  void Forward(const float* src, std::complex<float>* dest) const override;
-  void Inverse(const std::complex<float>* src, float* dest) const override;
+    void Forward(const float* src, std::complex<float>* dest) const override;
+    void Inverse(const std::complex<float>* src, float* dest) const override;
 
-  int order() const override {
-    return order_;
-  }
+    int order() const override
+    {
+        return order_;
+    }
 
- private:
-  // Basically a forward declare of OMXFFTSpec_R_F32. To get rid of the
-  // dependency on openmax.
-  typedef void OMXFFTSpec_R_F32_;
-  const int order_;
+private:
+    // Basically a forward declare of OMXFFTSpec_R_F32. To get rid of the
+    // dependency on openmax.
+    typedef void OMXFFTSpec_R_F32_;
+    const int order_;
 
-  OMXFFTSpec_R_F32_* const omx_spec_;
+    OMXFFTSpec_R_F32_* const omx_spec_;
 };
 
 }  // namespace webrtc

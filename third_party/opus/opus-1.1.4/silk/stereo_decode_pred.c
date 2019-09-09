@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,17 +44,19 @@ void silk_stereo_decode_pred(
     n = ec_dec_icdf( psRangeDec, silk_stereo_pred_joint_iCDF, 8 );
     ix[ 0 ][ 2 ] = silk_DIV32_16( n, 5 );
     ix[ 1 ][ 2 ] = n - 5 * ix[ 0 ][ 2 ];
-    for( n = 0; n < 2; n++ ) {
+    for( n = 0; n < 2; n++ )
+    {
         ix[ n ][ 0 ] = ec_dec_icdf( psRangeDec, silk_uniform3_iCDF, 8 );
         ix[ n ][ 1 ] = ec_dec_icdf( psRangeDec, silk_uniform5_iCDF, 8 );
     }
 
     /* Dequantize */
-    for( n = 0; n < 2; n++ ) {
+    for( n = 0; n < 2; n++ )
+    {
         ix[ n ][ 0 ] += 3 * ix[ n ][ 2 ];
         low_Q13 = silk_stereo_pred_quant_Q13[ ix[ n ][ 0 ] ];
         step_Q13 = silk_SMULWB( silk_stereo_pred_quant_Q13[ ix[ n ][ 0 ] + 1 ] - low_Q13,
-            SILK_FIX_CONST( 0.5 / STEREO_QUANT_SUB_STEPS, 16 ) );
+                                SILK_FIX_CONST( 0.5 / STEREO_QUANT_SUB_STEPS, 16 ) );
         pred_Q13[ n ] = silk_SMLABB( low_Q13, step_Q13, 2 * ix[ n ][ 1 ] + 1 );
     }
 

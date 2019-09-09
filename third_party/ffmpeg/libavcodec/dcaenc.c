@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA encoder
  * Copyright (C) 2008-2012 Alexander E. Patrakov
  *               2010 Benjamin Larsson
@@ -43,7 +43,8 @@
 #define SUBBAND_SAMPLES (SUBFRAMES * SUBSUBFRAMES * 8)
 #define AUBANDS 25
 
-typedef struct DCAEncContext {
+typedef struct DCAEncContext
+{
     PutBitContext pb;
     int frame_size;
     int frame_bits;
@@ -116,18 +117,30 @@ static int encode_init(AVCodecContext *avctx)
     c->worst_quantization_noise = -2047;
     c->worst_noise_ever = -2047;
 
-    if (!layout) {
+    if (!layout)
+    {
         av_log(avctx, AV_LOG_WARNING, "No channel layout specified. The "
-                                      "encoder will guess the layout, but it "
-                                      "might be incorrect.\n");
+               "encoder will guess the layout, but it "
+               "might be incorrect.\n");
         layout = av_get_default_channel_layout(avctx->channels);
     }
-    switch (layout) {
-    case AV_CH_LAYOUT_MONO:         c->channel_config = 0; break;
-    case AV_CH_LAYOUT_STEREO:       c->channel_config = 2; break;
-    case AV_CH_LAYOUT_2_2:          c->channel_config = 8; break;
-    case AV_CH_LAYOUT_5POINT0:      c->channel_config = 9; break;
-    case AV_CH_LAYOUT_5POINT1:      c->channel_config = 9; break;
+    switch (layout)
+    {
+    case AV_CH_LAYOUT_MONO:
+        c->channel_config = 0;
+        break;
+    case AV_CH_LAYOUT_STEREO:
+        c->channel_config = 2;
+        break;
+    case AV_CH_LAYOUT_2_2:
+        c->channel_config = 8;
+        break;
+    case AV_CH_LAYOUT_5POINT0:
+        c->channel_config = 9;
+        break;
+    case AV_CH_LAYOUT_5POINT1:
+        c->channel_config = 9;
+        break;
     default:
         av_log(avctx, AV_LOG_ERROR, "Unsupported channel layout!\n");
         return AVERROR_PATCHWELCOME;
@@ -136,7 +149,8 @@ static int encode_init(AVCodecContext *avctx)
     if (c->lfe_channel)
         c->fullband_channels--;
 
-    for (i = 0; i < 9; i++) {
+    for (i = 0; i < 9; i++)
+    {
         if (sample_rates[i] == avctx->sample_rate)
             break;
     }
@@ -144,7 +158,8 @@ static int encode_init(AVCodecContext *avctx)
         return AVERROR(EINVAL);
     c->samplerate_index = i;
 
-    if (avctx->bit_rate < 32000 || avctx->bit_rate > 3840000) {
+    if (avctx->bit_rate < 32000 || avctx->bit_rate > 3840000)
+    {
         av_log(avctx, AV_LOG_ERROR, "Bit rate %i not supported.", avctx->bit_rate);
         return AVERROR(EINVAL);
     }
@@ -161,28 +176,35 @@ static int encode_init(AVCodecContext *avctx)
 
     avctx->frame_size = 32 * SUBBAND_SAMPLES;
 
-    if (!cos_table[0]) {
+    if (!cos_table[0])
+    {
         int j, k;
 
-        for (i = 0; i < 2048; i++) {
+        for (i = 0; i < 2048; i++)
+        {
             cos_table[i]   = (int32_t)(0x7fffffff * cos(M_PI * i / 1024));
             cb_to_level[i] = (int32_t)(0x7fffffff * pow(10, -0.005 * i));
         }
 
         /* FIXME: probably incorrect */
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             lfe_fir_64i[i] = (int32_t)(0x01ffffff * ff_dca_lfe_fir_64[i]);
             lfe_fir_64i[511 - i] = (int32_t)(0x01ffffff * ff_dca_lfe_fir_64[i]);
         }
 
-        for (i = 0; i < 512; i++) {
+        for (i = 0; i < 512; i++)
+        {
             band_interpolation[0][i] = (int32_t)(0x1000000000ULL * ff_dca_fir_32bands_perfect[i]);
             band_interpolation[1][i] = (int32_t)(0x1000000000ULL * ff_dca_fir_32bands_nonperfect[i]);
         }
 
-        for (i = 0; i < 9; i++) {
-            for (j = 0; j < AUBANDS; j++) {
-                for (k = 0; k < 256; k++) {
+        for (i = 0; i < 9; i++)
+        {
+            for (j = 0; j < AUBANDS; j++)
+            {
+                for (k = 0; k < 256; k++)
+                {
                     double freq = sample_rates[i] * (k + 0.5) / 512;
 
                     auf[i][j][k] = (int32_t)(10 * (hom(freq) + gammafilter(j, freq)));
@@ -190,21 +212,26 @@ static int encode_init(AVCodecContext *avctx)
             }
         }
 
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             double add = 1 + pow(10, -0.01 * i);
             cb_to_add[i] = (int32_t)(100 * log10(add));
         }
-        for (j = 0; j < 8; j++) {
+        for (j = 0; j < 8; j++)
+        {
             double accum = 0;
-            for (i = 0; i < 512; i++) {
+            for (i = 0; i < 512; i++)
+            {
                 double reconst = ff_dca_fir_32bands_perfect[i] * ((i & 64) ? (-1) : 1);
                 accum += reconst * cos(2 * M_PI * (i + 0.5 - 256) * (j + 0.5) / 512);
             }
             band_spectrum[0][j] = (int32_t)(200 * log10(accum));
         }
-        for (j = 0; j < 8; j++) {
+        for (j = 0; j < 8; j++)
+        {
             double accum = 0;
-            for (i = 0; i < 512; i++) {
+            for (i = 0; i < 512; i++)
+            {
                 double reconst = ff_dca_fir_32bands_nonperfect[i] * ((i & 64) ? (-1) : 1);
                 accum += reconst * cos(2 * M_PI * (i + 0.5 - 256) * (j + 0.5) / 512);
             }
@@ -239,7 +266,8 @@ static void subband_transform(DCAEncContext *c, const int32_t *input)
 {
     int ch, subs, i, k, j;
 
-    for (ch = 0; ch < c->fullband_channels; ch++) {
+    for (ch = 0; ch < c->fullband_channels; ch++)
+    {
         /* History is copied because it is also needed for PSY */
         int32_t hist[512];
         int hist_start = 0;
@@ -247,7 +275,8 @@ static void subband_transform(DCAEncContext *c, const int32_t *input)
         for (i = 0; i < 512; i++)
             hist[i] = c->history[i][ch];
 
-        for (subs = 0; subs < SUBBAND_SAMPLES; subs++) {
+        for (subs = 0; subs < SUBBAND_SAMPLES; subs++)
+        {
             int32_t accum[64];
             int32_t resp;
             int band;
@@ -267,9 +296,11 @@ static void subband_transform(DCAEncContext *c, const int32_t *input)
             for (k = 32; k < 48; k++)
                 accum[k] = accum[k] + accum[95 - k];
 
-            for (band = 0; band < 32; band++) {
+            for (band = 0; band < 32; band++)
+            {
                 resp = 0;
-                for (i = 16; i < 48; i++) {
+                for (i = 16; i < 48; i++)
+                {
                     int s = (2 * band + 1) * (2 * (i + 16) + 1);
                     resp += mul32(accum[i], cos_t(s << 3)) >> 3;
                 }
@@ -296,7 +327,8 @@ static void lfe_downsample(DCAEncContext *c, const int32_t *input)
     for (i = 0; i < 512; i++)
         hist[i] = c->history[i][c->channels - 1];
 
-    for (lfes = 0; lfes < DCA_LFE_SAMPLES; lfes++) {
+    for (lfes = 0; lfes < DCA_LFE_SAMPLES; lfes++)
+    {
         /* Calculate the convolution */
         accum = 0;
 
@@ -315,7 +347,8 @@ static void lfe_downsample(DCAEncContext *c, const int32_t *input)
     }
 }
 
-typedef struct {
+typedef struct
+{
     int32_t re;
     int32_t im;
 } cplx32;
@@ -326,22 +359,27 @@ static void fft(const int32_t in[2 * 256], cplx32 out[256])
     int i, j, k, l;
 
     /* do two transforms in parallel */
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         /* Apply the Hann window */
         rin[i].re = mul32(in[2 * i], 0x3fffffff - (cos_t(8 * i + 2) >> 1));
         rin[i].im = mul32(in[2 * i + 1], 0x3fffffff - (cos_t(8 * i + 6) >> 1));
     }
     /* pre-rotation */
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         buf[i].re = mul32(cos_t(4 * i + 2), rin[i].re)
-                  - mul32(sin_t(4 * i + 2), rin[i].im);
+                    - mul32(sin_t(4 * i + 2), rin[i].im);
         buf[i].im = mul32(cos_t(4 * i + 2), rin[i].im)
-                  + mul32(sin_t(4 * i + 2), rin[i].re);
+                    + mul32(sin_t(4 * i + 2), rin[i].re);
     }
 
-    for (j = 256, l = 1; j != 1; j >>= 1, l <<= 1) {
-        for (k = 0; k < 256; k += j) {
-            for (i = k; i < k + j / 2; i++) {
+    for (j = 256, l = 1; j != 1; j >>= 1, l <<= 1)
+    {
+        for (k = 0; k < 256; k += j)
+        {
+            for (i = k; i < k + j / 2; i++)
+            {
                 cplx32 sum, diff;
                 int t = 8 * l * i;
 
@@ -355,21 +393,23 @@ static void fft(const int32_t in[2 * 256], cplx32 out[256])
                 buf[i].im = half32(sum.im);
 
                 buf[i + j / 2].re = mul32(diff.re, cos_t(t))
-                                  - mul32(diff.im, sin_t(t));
+                                    - mul32(diff.im, sin_t(t));
                 buf[i + j / 2].im = mul32(diff.im, cos_t(t))
-                                  + mul32(diff.re, sin_t(t));
+                                    + mul32(diff.re, sin_t(t));
             }
         }
     }
     /* post-rotation */
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         int b = ff_reverse[i];
         rout[i].re = mul32(buf[b].re, cos_t(4 * i))
-                   - mul32(buf[b].im, sin_t(4 * i));
+                     - mul32(buf[b].im, sin_t(4 * i));
         rout[i].im = mul32(buf[b].im, cos_t(4 * i))
-                   + mul32(buf[b].re, sin_t(4 * i));
+                     + mul32(buf[b].re, sin_t(4 * i));
     }
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         /* separate the results of the two transforms */
         cplx32 o1, o2;
 
@@ -381,9 +421,9 @@ static void fft(const int32_t in[2 * 256], cplx32 out[256])
 
         /* combine them into one long transform */
         out[i].re = mul32( o1.re + o2.re, cos_t(2 * i + 1))
-                  + mul32( o1.im - o2.im, sin_t(2 * i + 1));
+                    + mul32( o1.im - o2.im, sin_t(2 * i + 1));
         out[i].im = mul32( o1.im + o2.im, cos_t(2 * i + 1))
-                  + mul32(-o1.re + o2.re, sin_t(2 * i + 1));
+                    + mul32(-o1.re + o2.re, sin_t(2 * i + 1));
     }
 }
 
@@ -394,7 +434,8 @@ static int32_t get_cb(int32_t in)
     res = 0;
     if (in < 0)
         in = -in;
-    for (i = 1024; i > 0; i >>= 1) {
+    for (i = 1024; i > 0; i >>= 1)
+    {
         if (cb_to_level[i + res] >= in)
             res += i;
     }
@@ -424,18 +465,20 @@ static void adjust_jnd(int samplerate_index,
 
     fft(in, out);
 
-    for (j = 0; j < 256; j++) {
+    for (j = 0; j < 256; j++)
+    {
         power[j] = add_cb(get_cb(out[j].re), get_cb(out[j].im));
         out_cb_unnorm[j] = -2047; /* and can only grow */
     }
 
-    for (i = 0; i < AUBANDS; i++) {
+    for (i = 0; i < AUBANDS; i++)
+    {
         denom = ca_cb; /* and can only grow */
         for (j = 0; j < 256; j++)
             denom = add_cb(denom, power[j] + auf[samplerate_index][i][j]);
         for (j = 0; j < 256; j++)
             out_cb_unnorm[j] = add_cb(out_cb_unnorm[j],
-                    -denom + auf[samplerate_index][i][j]);
+                                      -denom + auf[samplerate_index][i][j]);
     }
 
     for (j = 0; j < 256; j++)
@@ -451,13 +494,16 @@ static void walk_band_low(DCAEncContext *c, int band, int channel,
 {
     int f;
 
-    if (band == 0) {
+    if (band == 0)
+    {
         for (f = 0; f < 4; f++)
             walk(c, 0, 0, f, 0, -2047, channel, arg);
-    } else {
+    }
+    else
+    {
         for (f = 0; f < 8; f++)
             walk(c, band, band - 1, 8 * band - 4 + f,
-                    c->band_spectrum[7 - f], c->band_spectrum[f], channel, arg);
+                 c->band_spectrum[7 - f], c->band_spectrum[f], channel, arg);
     }
 }
 
@@ -466,13 +512,16 @@ static void walk_band_high(DCAEncContext *c, int band, int channel,
 {
     int f;
 
-    if (band == 31) {
+    if (band == 31)
+    {
         for (f = 0; f < 4; f++)
             walk(c, 31, 31, 256 - 4 + f, 0, -2047, channel, arg);
-    } else {
+    }
+    else
+    {
         for (f = 0; f < 8; f++)
             walk(c, band, band + 1, 8 * band + 4 + f,
-                    c->band_spectrum[f], c->band_spectrum[7 - f], channel, arg);
+                 c->band_spectrum[f], c->band_spectrum[7 - f], channel, arg);
     }
 }
 
@@ -496,14 +545,16 @@ static void calc_masking(DCAEncContext *c, const int32_t *input)
             c->masking_curve_cb[ssf][i] = -2047;
 
     for (ssf = 0; ssf < SUBSUBFRAMES; ssf++)
-        for (ch = 0; ch < c->fullband_channels; ch++) {
+        for (ch = 0; ch < c->fullband_channels; ch++)
+        {
             for (i = 0, k = 128 + 256 * ssf; k < 512; i++, k++)
                 data[i] = c->history[k][ch];
             for (k -= 512; i < 512; i++, k++)
                 data[i] = input[k * c->channels + ch];
             adjust_jnd(c->samplerate_index, data, c->masking_curve_cb[ssf]);
         }
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         int32_t m = 2048;
 
         for (ssf = 0; ssf < SUBSUBFRAMES; ssf++)
@@ -512,7 +563,8 @@ static void calc_masking(DCAEncContext *c, const int32_t *input)
         c->eff_masking_curve_cb[i] = m;
     }
 
-    for (band = 0; band < 32; band++) {
+    for (band = 0; band < 32; band++)
+    {
         c->band_masking_cb[band] = 2048;
         walk_band_low(c, band, 0, update_band_masking, NULL);
         walk_band_high(c, band, 0, update_band_masking, NULL);
@@ -524,11 +576,13 @@ static void find_peaks(DCAEncContext *c)
     int band, ch;
 
     for (band = 0; band < 32; band++)
-        for (ch = 0; ch < c->fullband_channels; ch++) {
+        for (ch = 0; ch < c->fullband_channels; ch++)
+        {
             int sample;
             int32_t m = 0;
 
-            for (sample = 0; sample < SUBBAND_SAMPLES; sample++) {
+            for (sample = 0; sample < SUBBAND_SAMPLES; sample++)
+            {
                 int32_t s = abs(c->subband[sample][band][ch]);
                 if (m < s)
                     m = s;
@@ -536,7 +590,8 @@ static void find_peaks(DCAEncContext *c)
             c->peak_cb[band][ch] = get_cb(m);
         }
 
-    if (c->lfe_channel) {
+    if (c->lfe_channel)
+    {
         int sample;
         int32_t m = 0;
 
@@ -561,20 +616,29 @@ static int init_quantization_noise(DCAEncContext *c, int noise)
         c->consumed_bits += 72;
 
     /* attempt to guess the bit distribution based on the prevoius frame */
-    for (ch = 0; ch < c->fullband_channels; ch++) {
-        for (band = 0; band < 32; band++) {
+    for (ch = 0; ch < c->fullband_channels; ch++)
+    {
+        for (band = 0; band < 32; band++)
+        {
             int snr_cb = c->peak_cb[band][ch] - c->band_masking_cb[band] - noise;
 
-            if (snr_cb >= 1312) {
+            if (snr_cb >= 1312)
+            {
                 c->abits[band][ch] = 26;
                 ret |= USED_26ABITS;
-            } else if (snr_cb >= 222) {
+            }
+            else if (snr_cb >= 222)
+            {
                 c->abits[band][ch] = 8 + mul32(snr_cb - 222, 69000000);
                 ret |= USED_NABITS;
-            } else if (snr_cb >= 0) {
+            }
+            else if (snr_cb >= 0)
+            {
                 c->abits[band][ch] = 2 + mul32(snr_cb, 106000000);
                 ret |= USED_NABITS;
-            } else {
+            }
+            else
+            {
                 c->abits[band][ch] = 1;
                 ret |= USED_1ABITS;
             }
@@ -582,7 +646,8 @@ static int init_quantization_noise(DCAEncContext *c, int noise)
     }
 
     for (band = 0; band < 32; band++)
-        for (ch = 0; ch < c->fullband_channels; ch++) {
+        for (ch = 0; ch < c->fullband_channels; ch++)
+        {
             c->consumed_bits += bit_consumption[c->abits[band][ch]];
         }
 
@@ -597,15 +662,20 @@ static void assign_bits(DCAEncContext *c)
 
     init_quantization_noise(c, c->worst_quantization_noise);
     low = high = c->worst_quantization_noise;
-    if (c->consumed_bits > c->frame_bits) {
-        while (c->consumed_bits > c->frame_bits) {
+    if (c->consumed_bits > c->frame_bits)
+    {
+        while (c->consumed_bits > c->frame_bits)
+        {
             av_assert0(used_abits != USED_1ABITS);
             low = high;
             high += snr_fudge;
             used_abits = init_quantization_noise(c, high);
         }
-    } else {
-        while (c->consumed_bits <= c->frame_bits) {
+    }
+    else
+    {
+        while (c->consumed_bits <= c->frame_bits)
+        {
             high = low;
             if (used_abits == USED_26ABITS)
                 goto out; /* The requested bitrate is too high, pad with zeros */
@@ -615,7 +685,8 @@ static void assign_bits(DCAEncContext *c)
     }
 
     /* Now do a binary search between low and high to see what fits */
-    for (down = snr_fudge >> 1; down; down >>= 1) {
+    for (down = snr_fudge >> 1; down; down >>= 1)
+    {
         init_quantization_noise(c, high - down);
         if (c->consumed_bits <= c->frame_bits)
             high -= down;
@@ -657,7 +728,8 @@ static int calc_one_scale(int32_t peak_cb, int abits, softfloat *quant)
     our_nscale = 127;
     peak = cb_to_level[-peak_cb];
 
-    for (try_remove = 64; try_remove > 0; try_remove >>= 1) {
+    for (try_remove = 64; try_remove > 0; try_remove >>= 1)
+    {
         if (scalefactor_inv[our_nscale - try_remove].e + stepsize_inv[abits].e <= 17)
             continue;
         our_quant.m = mul32(scalefactor_inv[our_nscale - try_remove].m, stepsize_inv[abits].m);
@@ -684,8 +756,8 @@ static void calc_scales(DCAEncContext *c)
     for (band = 0; band < 32; band++)
         for (ch = 0; ch < c->fullband_channels; ch++)
             c->scale_factor[band][ch] = calc_one_scale(c->peak_cb[band][ch],
-                                                       c->abits[band][ch],
-                                                       &c->quant[band][ch]);
+                                        c->abits[band][ch],
+                                        &c->quant[band][ch]);
 
     if (c->lfe_channel)
         c->lfe_scale_factor = calc_one_scale(c->lfe_peak_cb, 11, &c->lfe_quant);
@@ -832,20 +904,26 @@ static void put_primary_audio_header(DCAEncContext *c)
 
 static void put_subframe_samples(DCAEncContext *c, int ss, int band, int ch)
 {
-    if (c->abits[band][ch] <= 7) {
+    if (c->abits[band][ch] <= 7)
+    {
         int sum, i, j;
-        for (i = 0; i < 8; i += 4) {
+        for (i = 0; i < 8; i += 4)
+        {
             sum = 0;
-            for (j = 3; j >= 0; j--) {
+            for (j = 3; j >= 0; j--)
+            {
                 sum *= quant_levels[c->abits[band][ch]];
                 sum += c->quantized[ss * 8 + i + j][band][ch];
                 sum += (quant_levels[c->abits[band][ch]] - 1) / 2;
             }
             put_bits(&c->pb, bit_consumption[c->abits[band][ch]] / 4, sum);
         }
-    } else {
+    }
+    else
+    {
         int i;
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             int bits = bit_consumption[c->abits[band][ch]] / 16;
             put_sbits(&c->pb, bits, c->quantized[ss * 8 + i][band][ch]);
         }
@@ -873,7 +951,8 @@ static void put_subframe(DCAEncContext *c, int subframe)
         for (band = 0; band < DCAENC_SUBBANDS; band++)
             put_bits(&c->pb, 5, c->abits[band][ch]);
 
-    if (SUBSUBFRAMES > 1) {
+    if (SUBSUBFRAMES > 1)
+    {
         /* Transition mode: none for each channel and subband */
         for (ch = 0; ch < c->fullband_channels; ch++)
             for (band = 0; band < DCAENC_SUBBANDS; band++)
@@ -893,7 +972,8 @@ static void put_subframe(DCAEncContext *c, int subframe)
     /* VQ encoded high frequency subbands: not transmitted */
 
     /* LFE data: 8 samples and scalefactor */
-    if (c->lfe_channel) {
+    if (c->lfe_channel)
+    {
         for (i = 0; i < DCA_LFE_SAMPLES; i++)
             put_bits(&c->pb, 8, quantize_value(c->downsampled_lfe[i], c->lfe_quant) & 0xff);
         put_bits(&c->pb, 8, c->lfe_scale_factor);
@@ -903,7 +983,7 @@ static void put_subframe(DCAEncContext *c, int subframe)
     for (ss = 0; ss < SUBSUBFRAMES ; ss++)
         for (ch = 0; ch < c->fullband_channels; ch++)
             for (band = 0; band < DCAENC_SUBBANDS; band++)
-                    put_subframe_samples(c, ss, band, ch);
+                put_subframe_samples(c, ss, band, ch);
 
     /* DSYNC */
     put_bits(&c->pb, 16, 0xffff);
@@ -951,12 +1031,14 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-static const AVCodecDefault defaults[] = {
+static const AVCodecDefault defaults[] =
+{
     { "b",          "1411200" },
     { NULL },
 };
 
-AVCodec ff_dca_encoder = {
+AVCodec ff_dca_encoder =
+{
     .name                  = "dca",
     .long_name             = NULL_IF_CONFIG_SMALL("DCA (DTS Coherent Acoustics)"),
     .type                  = AVMEDIA_TYPE_AUDIO,
@@ -965,14 +1047,19 @@ AVCodec ff_dca_encoder = {
     .init                  = encode_init,
     .encode2               = encode_frame,
     .capabilities          = AV_CODEC_CAP_EXPERIMENTAL,
-    .sample_fmts           = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S32,
-                                                            AV_SAMPLE_FMT_NONE },
+    .sample_fmts           = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S32,
+        AV_SAMPLE_FMT_NONE
+    },
     .supported_samplerates = sample_rates,
-    .channel_layouts       = (const uint64_t[]) { AV_CH_LAYOUT_MONO,
-                                                  AV_CH_LAYOUT_STEREO,
-                                                  AV_CH_LAYOUT_2_2,
-                                                  AV_CH_LAYOUT_5POINT0,
-                                                  AV_CH_LAYOUT_5POINT1,
-                                                  0 },
+    .channel_layouts       = (const uint64_t[])
+    {
+        AV_CH_LAYOUT_MONO,
+        AV_CH_LAYOUT_STEREO,
+        AV_CH_LAYOUT_2_2,
+        AV_CH_LAYOUT_5POINT0,
+        AV_CH_LAYOUT_5POINT1,
+        0
+    },
     .defaults              = defaults,
 };

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 James Almer
  *
  * This file is part of FFmpeg.

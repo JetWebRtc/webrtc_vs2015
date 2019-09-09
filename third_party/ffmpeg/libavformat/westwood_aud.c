@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Westwood Studios AUD Format Demuxer
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -99,9 +99,11 @@ static int wsaud_read_header(AVFormatContext *s)
     if (!st)
         return AVERROR(ENOMEM);
 
-    switch (codec) {
+    switch (codec)
+    {
     case  1:
-        if (channels != 1) {
+        if (channels != 1)
+        {
             avpriv_request_sample(s, "Stereo WS-SND1");
             return AVERROR_PATCHWELCOME;
         }
@@ -120,7 +122,7 @@ static int wsaud_read_header(AVFormatContext *s)
     st->codec->codec_type  = AVMEDIA_TYPE_AUDIO;
     st->codec->channels    = channels;
     st->codec->channel_layout = channels == 1 ? AV_CH_LAYOUT_MONO :
-                                                AV_CH_LAYOUT_STEREO;
+                                AV_CH_LAYOUT_STEREO;
     st->codec->sample_rate = sample_rate;
 
     return 0;
@@ -136,7 +138,7 @@ static int wsaud_read_packet(AVFormatContext *s,
     AVStream *st = s->streams[0];
 
     if (avio_read(pb, preamble, AUD_CHUNK_PREAMBLE_SIZE) !=
-        AUD_CHUNK_PREAMBLE_SIZE)
+            AUD_CHUNK_PREAMBLE_SIZE)
         return AVERROR(EIO);
 
     /* validate the chunk */
@@ -145,7 +147,8 @@ static int wsaud_read_packet(AVFormatContext *s,
 
     chunk_size = AV_RL16(&preamble[0]);
 
-    if (st->codec->codec_id == AV_CODEC_ID_WESTWOOD_SND1) {
+    if (st->codec->codec_id == AV_CODEC_ID_WESTWOOD_SND1)
+    {
         /* For Westwood SND1 audio we need to add the output size and input
            size to the start of the packet to match what is in VQA.
            Specifically, this is needed to signal when a packet should be
@@ -159,7 +162,9 @@ static int wsaud_read_packet(AVFormatContext *s,
         AV_WL16(&pkt->data[2], chunk_size);
 
         pkt->duration = out_size;
-    } else {
+    }
+    else
+    {
         ret = av_get_packet(pb, pkt, chunk_size);
         if (ret != chunk_size)
             return AVERROR(EIO);
@@ -172,7 +177,8 @@ static int wsaud_read_packet(AVFormatContext *s,
     return ret;
 }
 
-AVInputFormat ff_wsaud_demuxer = {
+AVInputFormat ff_wsaud_demuxer =
+{
     .name           = "wsaud",
     .long_name      = NULL_IF_CONFIG_SMALL("Westwood Studios audio"),
     .read_probe     = wsaud_probe,

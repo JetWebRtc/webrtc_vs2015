@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -32,8 +32,8 @@ AVStereo3D *av_stereo3d_alloc(void)
 AVStereo3D *av_stereo3d_create_side_data(AVFrame *frame)
 {
     AVFrameSideData *side_data = av_frame_new_side_data(frame,
-                                                        AV_FRAME_DATA_STEREO3D,
-                                                        sizeof(AVStereo3D));
+                                 AV_FRAME_DATA_STEREO3D,
+                                 sizeof(AVStereo3D));
     if (!side_data)
         return NULL;
 

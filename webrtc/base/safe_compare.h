@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -37,24 +37,30 @@
 #include <type_traits>
 #include <utility>
 
-namespace rtc {
-namespace safe_cmp {
+namespace rtc
+{
+namespace safe_cmp
+{
 
-namespace safe_cmp_impl {
+namespace safe_cmp_impl
+{
 
 template <size_t N>
 struct LargerIntImpl : std::false_type {};
 template <>
-struct LargerIntImpl<sizeof(int8_t)> : std::true_type {
-  using type = int16_t;
+struct LargerIntImpl<sizeof(int8_t)> : std::true_type
+{
+    using type = int16_t;
 };
 template <>
-struct LargerIntImpl<sizeof(int16_t)> : std::true_type {
-  using type = int32_t;
+struct LargerIntImpl<sizeof(int16_t)> : std::true_type
+{
+    using type = int32_t;
 };
 template <>
-struct LargerIntImpl<sizeof(int32_t)> : std::true_type {
-  using type = int64_t;
+struct LargerIntImpl<sizeof(int32_t)> : std::true_type
+{
+    using type = int64_t;
 };
 
 // LargerInt<T1, T2>::value is true iff there's a signed type that's larger
@@ -63,13 +69,14 @@ struct LargerIntImpl<sizeof(int32_t)> : std::true_type {
 // for it.
 template <typename T1, typename T2>
 struct LargerInt
-    : LargerIntImpl<sizeof(T1) < sizeof(T2) || sizeof(T1) < sizeof(int*)
-                        ? sizeof(T1)
-                        : 0> {};
+: LargerIntImpl<sizeof(T1) < sizeof(T2) || sizeof(T1) < sizeof(int*)
+  ? sizeof(T1)
+  : 0> {};
 
 template <typename T>
-inline typename std::make_unsigned<T>::type MakeUnsigned(T a) {
-  return static_cast<typename std::make_unsigned<T>::type>(a);
+inline typename std::make_unsigned<T>::type MakeUnsigned(T a)
+{
+    return static_cast<typename std::make_unsigned<T>::type>(a);
 }
 
 // Overload for when both T1 and T2 have the same signedness.
@@ -78,8 +85,9 @@ template <typename Op,
           typename T2,
           typename std::enable_if<std::is_signed<T1>::value ==
                                   std::is_signed<T2>::value>::type* = nullptr>
-inline bool Cmp(T1 a, T2 b) {
-  return Op::Op(a, b);
+inline bool Cmp(T1 a, T2 b)
+{
+    return Op::Op(a, b);
 }
 
 // Overload for signed - unsigned comparison that can be promoted to a bigger
@@ -90,8 +98,9 @@ template <typename Op,
           typename std::enable_if<std::is_signed<T1>::value &&
                                   std::is_unsigned<T2>::value &&
                                   LargerInt<T2, T1>::value>::type* = nullptr>
-inline bool Cmp(T1 a, T2 b) {
-  return Op::Op(a, static_cast<typename LargerInt<T2, T1>::type>(b));
+inline bool Cmp(T1 a, T2 b)
+{
+    return Op::Op(a, static_cast<typename LargerInt<T2, T1>::type>(b));
 }
 
 // Overload for unsigned - signed comparison that can be promoted to a bigger
@@ -102,8 +111,9 @@ template <typename Op,
           typename std::enable_if<std::is_unsigned<T1>::value &&
                                   std::is_signed<T2>::value &&
                                   LargerInt<T1, T2>::value>::type* = nullptr>
-inline bool Cmp(T1 a, T2 b) {
-  return Op::Op(static_cast<typename LargerInt<T1, T2>::type>(a), b);
+inline bool Cmp(T1 a, T2 b)
+{
+    return Op::Op(static_cast<typename LargerInt<T1, T2>::type>(a), b);
 }
 
 // Overload for signed - unsigned comparison that can't be promoted to a bigger
@@ -114,8 +124,9 @@ template <typename Op,
           typename std::enable_if<std::is_signed<T1>::value &&
                                   std::is_unsigned<T2>::value &&
                                   !LargerInt<T2, T1>::value>::type* = nullptr>
-inline bool Cmp(T1 a, T2 b) {
-  return a < 0 ? Op::Op(-1, 0) : Op::Op(safe_cmp_impl::MakeUnsigned(a), b);
+inline bool Cmp(T1 a, T2 b)
+{
+    return a < 0 ? Op::Op(-1, 0) : Op::Op(safe_cmp_impl::MakeUnsigned(a), b);
 }
 
 // Overload for unsigned - signed comparison that can't be promoted to a bigger
@@ -126,8 +137,9 @@ template <typename Op,
           typename std::enable_if<std::is_unsigned<T1>::value &&
                                   std::is_signed<T2>::value &&
                                   !LargerInt<T1, T2>::value>::type* = nullptr>
-inline bool Cmp(T1 a, T2 b) {
-  return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::MakeUnsigned(b));
+inline bool Cmp(T1 a, T2 b)
+{
+    return b < 0 ? Op::Op(0, -1) : Op::Op(a, safe_cmp_impl::MakeUnsigned(b));
 }
 
 #define RTC_SAFECMP_MAKE_OP(name, op)      \
@@ -148,40 +160,43 @@ RTC_SAFECMP_MAKE_OP(GeOp, >=)
 // Determines if the given type is an enum that converts implicitly to
 // an integral type.
 template <typename T>
-struct IsIntEnum {
- private:
-  // This overload is used if the type is an enum, and unary plus
-  // compiles and turns it into an integral type.
-  template <typename X,
-            typename std::enable_if<
-                std::is_enum<X>::value &&
-                std::is_integral<decltype(+std::declval<X>())>::value>::type* =
-                nullptr>
-  static int Test(int);
+struct IsIntEnum
+{
+private:
+    // This overload is used if the type is an enum, and unary plus
+    // compiles and turns it into an integral type.
+    template <typename X,
+              typename std::enable_if<
+                  std::is_enum<X>::value &&
+                  std::is_integral<decltype(+std::declval<X>())>::value>::type* =
+              nullptr>
+    static int Test(int);
 
-  // Otherwise, this overload is used.
-  template <typename>
-  static char Test(...);
+    // Otherwise, this overload is used.
+    template <typename>
+    static char Test(...);
 
- public:
-  static constexpr bool value =
-      std::is_same<decltype(Test<typename std::remove_reference<T>::type>(0)),
-                   int>::value;
+public:
+    static constexpr bool value =
+        std::is_same<decltype(Test<typename std::remove_reference<T>::type>(0)),
+        int>::value;
 };
 
 // Determines if the given type is integral, or an enum that
 // converts implicitly to an integral type.
 template <typename T>
-struct IsIntlike {
- private:
-  using X = typename std::remove_reference<T>::type;
+struct IsIntlike
+{
+private:
+    using X = typename std::remove_reference<T>::type;
 
- public:
-  static constexpr bool value =
-      std::is_integral<X>::value || IsIntEnum<X>::value;
+public:
+    static constexpr bool value =
+        std::is_integral<X>::value || IsIntEnum<X>::value;
 };
 
-namespace test_enum_intlike {
+namespace test_enum_intlike
+{
 
 enum E1 { e1 };
 enum { e2 };

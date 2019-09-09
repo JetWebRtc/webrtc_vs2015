@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -140,15 +140,21 @@ int32_t WebRtcSpl_Sqrt(int32_t value)
 
     // The convention in this function is to calculate sqrt(abs(A)). Negate the
     // input if it is negative.
-    if (A < 0) {
-        if (A == WEBRTC_SPL_WORD32_MIN) {
+    if (A < 0)
+    {
+        if (A == WEBRTC_SPL_WORD32_MIN)
+        {
             // This number cannot be held in an int32_t after negating.
             // Map it to the maximum positive value.
             A = WEBRTC_SPL_WORD32_MAX;
-        } else {
+        }
+        else
+        {
             A = -A;
         }
-    } else if (A == 0) {
+    }
+    else if (A == 0)
+    {
         return 0;  // sqrt(0) = 0
     }
 
@@ -157,7 +163,8 @@ int32_t WebRtcSpl_Sqrt(int32_t value)
     if (A < (WEBRTC_SPL_WORD32_MAX - 32767))
     {
         A = A + ((int32_t)32768); // Round off bit
-    } else
+    }
+    else
     {
         A = WEBRTC_SPL_WORD32_MAX;
     }
@@ -171,7 +178,8 @@ int32_t WebRtcSpl_Sqrt(int32_t value)
     A = WEBRTC_SPL_ABS_W32(A); // A = abs(x_norm<<16)
     A = WebRtcSpl_SqrtLocal(A); // A = sqrt(A)
 
-    if (2 * nshift == sh) {
+    if (2 * nshift == sh)
+    {
         // Even shift value case
 
         t16 = (int16_t)(A >> 16);  // t16 = AH
@@ -182,7 +190,8 @@ int32_t WebRtcSpl_Sqrt(int32_t value)
 
         A >>= 15;  // A = A>>16
 
-    } else
+    }
+    else
     {
         A >>= 16;  // A = A>>16
     }

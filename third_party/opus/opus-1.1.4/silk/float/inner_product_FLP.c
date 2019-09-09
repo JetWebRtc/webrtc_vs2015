@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,7 +44,8 @@ double silk_inner_product_FLP(
     /* 4x unrolled loop */
     result = 0.0;
     dataSize4 = dataSize & 0xFFFC;
-    for( i = 0; i < dataSize4; i += 4 ) {
+    for( i = 0; i < dataSize4; i += 4 )
+    {
         result += data1[ i + 0 ] * (double)data2[ i + 0 ] +
                   data1[ i + 1 ] * (double)data2[ i + 1 ] +
                   data1[ i + 2 ] * (double)data2[ i + 2 ] +
@@ -52,7 +53,8 @@ double silk_inner_product_FLP(
     }
 
     /* add any remaining products */
-    for( ; i < dataSize; i++ ) {
+    for( ; i < dataSize; i++ )
+    {
         result += data1[ i ] * (double)data2[ i ];
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,7 @@
 #define WEBRTC_MODULES_VIDEO_CODING_CODECS_INTERFACE_VIDEO_ERROR_CODES_H_
 
 #pragma message("WARNING: video_coding/codecs/interface is DEPRECATED; "
-    "use video_coding/include")
+"use video_coding/include")
 
 // NOTE: in sync with video_coding_module_defines.h
 

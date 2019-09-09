@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/modules/rtp_rtcp/source/forward_error_correction.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // FEC Level 0 Header, 10 bytes.
 //    0                   1                   2                   3
@@ -35,31 +36,33 @@ namespace webrtc {
 //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 //   |              mask cont. (present only when L = 1)             |
 //   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-class UlpfecHeaderReader : public FecHeaderReader {
- public:
-  UlpfecHeaderReader();
-  ~UlpfecHeaderReader() override;
+class UlpfecHeaderReader : public FecHeaderReader
+{
+public:
+    UlpfecHeaderReader();
+    ~UlpfecHeaderReader() override;
 
-  bool ReadFecHeader(
-      ForwardErrorCorrection::ReceivedFecPacket* fec_packet) const override;
+    bool ReadFecHeader(
+        ForwardErrorCorrection::ReceivedFecPacket* fec_packet) const override;
 };
 
-class UlpfecHeaderWriter : public FecHeaderWriter {
- public:
-  UlpfecHeaderWriter();
-  ~UlpfecHeaderWriter() override;
+class UlpfecHeaderWriter : public FecHeaderWriter
+{
+public:
+    UlpfecHeaderWriter();
+    ~UlpfecHeaderWriter() override;
 
-  size_t MinPacketMaskSize(const uint8_t* packet_mask,
-                           size_t packet_mask_size) const override;
+    size_t MinPacketMaskSize(const uint8_t* packet_mask,
+                             size_t packet_mask_size) const override;
 
-  size_t FecHeaderSize(size_t packet_mask_row_size) const override;
+    size_t FecHeaderSize(size_t packet_mask_row_size) const override;
 
-  void FinalizeFecHeader(
-      uint32_t media_ssrc,  // Unused by ULPFEC.
-      uint16_t seq_num_base,
-      const uint8_t* packet_mask,
-      size_t packet_mask_size,
-      ForwardErrorCorrection::Packet* fec_packet) const override;
+    void FinalizeFecHeader(
+        uint32_t media_ssrc,  // Unused by ULPFEC.
+        uint16_t seq_num_base,
+        const uint8_t* packet_mask,
+        size_t packet_mask_size,
+        ForwardErrorCorrection::Packet* fec_packet) const override;
 };
 
 }  // namespace webrtc

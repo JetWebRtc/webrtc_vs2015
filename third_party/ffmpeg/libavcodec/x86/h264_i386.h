@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -48,7 +48,8 @@
 #define decode_significance decode_significance_x86
 static int decode_significance_x86(CABACContext *c, int max_coeff,
                                    uint8_t *significant_coeff_ctx_base,
-                                   int *index, x86_reg last_off){
+                                   int *index, x86_reg last_off)
+{
     void *end= significant_coeff_ctx_base + max_coeff - 1;
     int minusstart= -(intptr_t)significant_coeff_ctx_base;
     int minusindex= 4-(intptr_t)index;
@@ -111,11 +112,11 @@ static int decode_significance_x86(CABACContext *c, int max_coeff,
         "add  %9, %k0                           \n\t"
         "shr $2, %k0                            \n\t"
         : "=&q"(coeff_count), "+r"(significant_coeff_ctx_base), "+m"(index),
-          "+&r"(c->low), "=&r"(bit), "+&r"(c->range)
+        "+&r"(c->low), "=&r"(bit), "+&r"(c->range)
         : "r"(c), "m"(minusstart), "m"(end), "m"(minusindex), "m"(last_off),
-          "i"(offsetof(CABACContext, bytestream)),
-          "i"(offsetof(CABACContext, bytestream_end))
-          TABLES_ARG
+        "i"(offsetof(CABACContext, bytestream)),
+        "i"(offsetof(CABACContext, bytestream_end))
+        TABLES_ARG
         : "%"REG_c, "memory"
     );
     return coeff_count;
@@ -124,7 +125,8 @@ static int decode_significance_x86(CABACContext *c, int max_coeff,
 #define decode_significance_8x8 decode_significance_8x8_x86
 static int decode_significance_8x8_x86(CABACContext *c,
                                        uint8_t *significant_coeff_ctx_base,
-                                       int *index, uint8_t *last_coeff_ctx_base, const uint8_t *sig_off){
+                                       int *index, uint8_t *last_coeff_ctx_base, const uint8_t *sig_off)
+{
     int minusindex= 4-(intptr_t)index;
     int bit;
     x86_reg coeff_count;
@@ -196,12 +198,12 @@ static int decode_significance_8x8_x86(CABACContext *c,
         "addl %8, %k0                           \n\t"
         "shr $2, %k0                            \n\t"
         : "=&q"(coeff_count), "+"REG64(last), "+"REG64(index), "+&r"(c->low),
-          "=&r"(bit), "+&r"(c->range), "=&r"(state)
+        "=&r"(bit), "+&r"(c->range), "=&r"(state)
         : "r"(c), "m"(minusindex), "m"(significant_coeff_ctx_base),
-          REG64(sig_off), REG64(last_coeff_ctx_base),
-          "i"(offsetof(CABACContext, bytestream)),
-          "i"(offsetof(CABACContext, bytestream_end)),
-          "i"(H264_LAST_COEFF_FLAG_OFFSET_8x8_OFFSET) TABLES_ARG
+        REG64(sig_off), REG64(last_coeff_ctx_base),
+        "i"(offsetof(CABACContext, bytestream)),
+        "i"(offsetof(CABACContext, bytestream_end)),
+        "i"(H264_LAST_COEFF_FLAG_OFFSET_8x8_OFFSET) TABLES_ARG
         : "%"REG_c, "memory"
     );
     return coeff_count;

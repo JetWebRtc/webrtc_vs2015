@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Updates the audioFrame's energy (based on its samples).
 uint32_t AudioMixerCalculateEnergy(const AudioFrame& audio_frame);

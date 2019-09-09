@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-4 Parametric Stereo decoding functions
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
  *

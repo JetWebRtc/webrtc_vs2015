@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,12 +18,13 @@
 extern "C" {
 #endif
 
-typedef enum {
-  SUBMVREF_NORMAL,
-  SUBMVREF_LEFT_ZED,
-  SUBMVREF_ABOVE_ZED,
-  SUBMVREF_LEFT_ABOVE_SAME,
-  SUBMVREF_LEFT_ABOVE_ZED
+typedef enum
+{
+    SUBMVREF_NORMAL,
+    SUBMVREF_LEFT_ZED,
+    SUBMVREF_ABOVE_ZED,
+    SUBMVREF_LEFT_ABOVE_SAME,
+    SUBMVREF_LEFT_ABOVE_ZED
 } sumvfref_t;
 
 typedef int vp8_mbsplit[16];
@@ -41,8 +42,8 @@ extern int vp8_mv_cont(const int_mv *l, const int_mv *a);
 extern const vp8_prob vp8_sub_mv_ref_prob2[SUBMVREF_COUNT][VP8_SUBMVREFS - 1];
 
 extern const unsigned int vp8_kf_default_bmode_counts[VP8_BINTRAMODES]
-                                                     [VP8_BINTRAMODES]
-                                                     [VP8_BINTRAMODES];
+[VP8_BINTRAMODES]
+[VP8_BINTRAMODES];
 
 extern const vp8_tree_index vp8_bmode_tree[];
 
@@ -72,14 +73,14 @@ extern const struct vp8_token_struct vp8_small_mvencodings[8];
 
 /* Key frame default mode probs */
 extern const vp8_prob vp8_kf_bmode_prob[VP8_BINTRAMODES][VP8_BINTRAMODES]
-                                       [VP8_BINTRAMODES - 1];
+[VP8_BINTRAMODES - 1];
 extern const vp8_prob vp8_kf_uv_mode_prob[VP8_UV_MODES - 1];
 extern const vp8_prob vp8_kf_ymode_prob[VP8_YMODES - 1];
 
 void vp8_init_mbmode_probs(VP8_COMMON *x);
 void vp8_default_bmode_probs(vp8_prob dest[VP8_BINTRAMODES - 1]);
 void vp8_kf_default_bmode_probs(vp8_prob dest[VP8_BINTRAMODES][VP8_BINTRAMODES]
-                                             [VP8_BINTRAMODES - 1]);
+                                [VP8_BINTRAMODES - 1]);
 
 #ifdef __cplusplus
 }  // extern "C"

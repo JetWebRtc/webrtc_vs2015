@@ -1,21 +1,21 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is MPEG4IP.
- * 
+ *
  * The Initial Developer of the Original Code is Cisco Systems Inc.
  * Portions created by Cisco Systems Inc. are
  * Copyright (C) Cisco Systems Inc. 2005.  All Rights Reserved.
- * 
- * Contributor(s): 
+ *
+ * Contributor(s):
  *		Bill May wmay@cisco.com
  */
 /* windows defines */
@@ -63,17 +63,19 @@ typedef int socklen_t;
 typedef int ssize_t;
 typedef unsigned int uint;
 static inline int snprintf(char *buffer, size_t count,
-			  const char *format, ...) {
-  va_list ap;
-  int ret;
-  va_start(ap, format);
-  ret = vsnprintf_s(buffer, count, _TRUNCATE, format, ap);
-  va_end(ap);
-  if (ret == -1) {
-    if (errno == EINVAL) return -1;
-    return (int)count;
-  }
-  return ret;
+                           const char *format, ...)
+{
+    va_list ap;
+    int ret;
+    va_start(ap, format);
+    ret = vsnprintf_s(buffer, count, _TRUNCATE, format, ap);
+    va_end(ap);
+    if (ret == -1)
+    {
+        if (errno == EINVAL) return -1;
+        return (int)count;
+    }
+    return ret;
 }
 #define strncasecmp _strnicmp
 #define strcasecmp _stricmp
@@ -163,10 +165,11 @@ char *strcasestr(const char *haystack, const char *needle);
 
 #ifndef __GNUC__
 #ifndef _SS_PAD1SIZE
-struct sockaddr_storage {
-	unsigned short ss_family;
-	uint32_t ss_align;
-	char __ss_padding[128 - 2 * sizeof(uint32_t)];
+struct sockaddr_storage
+{
+    unsigned short ss_family;
+    uint32_t ss_align;
+    char __ss_padding[128 - 2 * sizeof(uint32_t)];
 };
 #endif
 #pragma warning(disable : 4244)

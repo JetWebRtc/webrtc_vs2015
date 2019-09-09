@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,56 +16,70 @@
 #include "webrtc/modules/desktop_capture/differ_vector_sse2.h"
 #include "webrtc/system_wrappers/include/cpu_features_wrapper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
-bool VectorDifference_C(const uint8_t* image1, const uint8_t* image2) {
-  return memcmp(image1, image2, kBlockSize * kBytesPerPixel) != 0;
+bool VectorDifference_C(const uint8_t* image1, const uint8_t* image2)
+{
+    return memcmp(image1, image2, kBlockSize * kBytesPerPixel) != 0;
 }
 
 }  // namespace
 
-bool VectorDifference(const uint8_t* image1, const uint8_t* image2) {
-  static bool (*diff_proc)(const uint8_t*, const uint8_t*) = nullptr;
+bool VectorDifference(const uint8_t* image1, const uint8_t* image2)
+{
+    static bool (*diff_proc)(const uint8_t*, const uint8_t*) = nullptr;
 
-  if (!diff_proc) {
+    if (!diff_proc)
+    {
 #if defined(WEBRTC_ARCH_ARM_FAMILY) || defined(WEBRTC_ARCH_MIPS_FAMILY)
-    // For ARM and MIPS processors, always use C version.
-    // TODO(hclam): Implement a NEON version.
-    diff_proc = &VectorDifference_C;
+        // For ARM and MIPS processors, always use C version.
+        // TODO(hclam): Implement a NEON version.
+        diff_proc = &VectorDifference_C;
 #else
-    bool have_sse2 = WebRtc_GetCPUInfo(kSSE2) != 0;
-    // For x86 processors, check if SSE2 is supported.
-    if (have_sse2 && kBlockSize == 32) {
-      diff_proc = &VectorDifference_SSE2_W32;
-    } else if (have_sse2 && kBlockSize == 16) {
-      diff_proc = &VectorDifference_SSE2_W16;
-    } else {
-      diff_proc = &VectorDifference_C;
-    }
+        bool have_sse2 = WebRtc_GetCPUInfo(kSSE2) != 0;
+        // For x86 processors, check if SSE2 is supported.
+        if (have_sse2 && kBlockSize == 32)
+        {
+            diff_proc = &VectorDifference_SSE2_W32;
+        }
+        else if (have_sse2 && kBlockSize == 16)
+        {
+            diff_proc = &VectorDifference_SSE2_W16;
+        }
+        else
+        {
+            diff_proc = &VectorDifference_C;
+        }
 #endif
-  }
+    }
 
-  return diff_proc(image1, image2);
+    return diff_proc(image1, image2);
 }
 
 bool BlockDifference(const uint8_t* image1,
                      const uint8_t* image2,
                      int height,
-                     int stride) {
-  for (int i = 0; i < height; i++) {
-    if (VectorDifference(image1, image2)) {
-      return true;
+                     int stride)
+{
+    for (int i = 0; i < height; i++)
+    {
+        if (VectorDifference(image1, image2))
+        {
+            return true;
+        }
+        image1 += stride;
+        image2 += stride;
     }
-    image1 += stride;
-    image2 += stride;
-  }
-  return false;
+    return false;
 }
 
-bool BlockDifference(const uint8_t* image1, const uint8_t* image2, int stride) {
-  return BlockDifference(image1, image2, kBlockSize, stride);
+bool BlockDifference(const uint8_t* image1, const uint8_t* image2, int stride)
+{
+    return BlockDifference(image1, image2, kBlockSize, stride);
 }
 
 }  // namespace webrtc

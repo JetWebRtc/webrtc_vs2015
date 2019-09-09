@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "./vpx_config.h"
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 #if CONFIG_VP8_DECODER
 extern const int kNumVP8TestVectors;

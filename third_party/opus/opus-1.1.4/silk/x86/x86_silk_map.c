@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -45,12 +45,13 @@ opus_int64 (*const SILK_INNER_PROD16_ALIGNED_64_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int16 *inVec1,
     const opus_int16 *inVec2,
     const opus_int   len
-) = {
-  silk_inner_prod16_aligned_64_c,                  /* non-sse */
-  silk_inner_prod16_aligned_64_c,
-  silk_inner_prod16_aligned_64_c,
-  MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 )  /* avx */
+) =
+{
+    silk_inner_prod16_aligned_64_c,                  /* non-sse */
+    silk_inner_prod16_aligned_64_c,
+    silk_inner_prod16_aligned_64_c,
+    MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_inner_prod16_aligned_64 )  /* avx */
 };
 
 #endif
@@ -58,12 +59,13 @@ opus_int64 (*const SILK_INNER_PROD16_ALIGNED_64_IMPL[ OPUS_ARCHMASK + 1 ] )(
 opus_int (*const SILK_VAD_GETSA_Q8_IMPL[ OPUS_ARCHMASK + 1 ] )(
     silk_encoder_state *psEncC,
     const opus_int16   pIn[]
-) = {
-  silk_VAD_GetSA_Q8_c,                  /* non-sse */
-  silk_VAD_GetSA_Q8_c,
-  silk_VAD_GetSA_Q8_c,
-  MAY_HAVE_SSE4_1( silk_VAD_GetSA_Q8 ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_VAD_GetSA_Q8 )  /* avx */
+) =
+{
+    silk_VAD_GetSA_Q8_c,                  /* non-sse */
+    silk_VAD_GetSA_Q8_c,
+    silk_VAD_GetSA_Q8_c,
+    MAY_HAVE_SSE4_1( silk_VAD_GetSA_Q8 ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_VAD_GetSA_Q8 )  /* avx */
 };
 
 void (*const SILK_NSQ_IMPL[ OPUS_ARCHMASK + 1 ] )(
@@ -82,12 +84,13 @@ void (*const SILK_NSQ_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int              pitchL[ MAX_NB_SUBFR ],                     /* I    Pitch lags                      */
     const opus_int              Lambda_Q10,                                 /* I    Rate/distortion tradeoff        */
     const opus_int              LTP_scale_Q14                               /* I    LTP state scaling               */
-) = {
-  silk_NSQ_c,                  /* non-sse */
-  silk_NSQ_c,
-  silk_NSQ_c,
-  MAY_HAVE_SSE4_1( silk_NSQ ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_NSQ )  /* avx */
+) =
+{
+    silk_NSQ_c,                  /* non-sse */
+    silk_NSQ_c,
+    silk_NSQ_c,
+    MAY_HAVE_SSE4_1( silk_NSQ ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_NSQ )  /* avx */
 };
 
 void (*const SILK_VQ_WMAT_EC_IMPL[ OPUS_ARCHMASK + 1 ] )(
@@ -102,12 +105,13 @@ void (*const SILK_VQ_WMAT_EC_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int              mu_Q9,                          /* I    tradeoff betw. weighted error and rate      */
     const opus_int32            max_gain_Q7,                    /* I    maximum sum of absolute LTP coefficients    */
     opus_int                    L                               /* I    number of vectors in codebook               */
-) = {
-  silk_VQ_WMat_EC_c,                  /* non-sse */
-  silk_VQ_WMat_EC_c,
-  silk_VQ_WMat_EC_c,
-  MAY_HAVE_SSE4_1( silk_VQ_WMat_EC ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_VQ_WMat_EC )  /* avx */
+) =
+{
+    silk_VQ_WMat_EC_c,                  /* non-sse */
+    silk_VQ_WMat_EC_c,
+    silk_VQ_WMat_EC_c,
+    MAY_HAVE_SSE4_1( silk_VQ_WMat_EC ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_VQ_WMat_EC )  /* avx */
 };
 
 void (*const SILK_NSQ_DEL_DEC_IMPL[ OPUS_ARCHMASK + 1 ] )(
@@ -126,12 +130,13 @@ void (*const SILK_NSQ_DEL_DEC_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int              pitchL[ MAX_NB_SUBFR ],                     /* I    Pitch lags                      */
     const opus_int              Lambda_Q10,                                 /* I    Rate/distortion tradeoff        */
     const opus_int              LTP_scale_Q14                               /* I    LTP state scaling               */
-) = {
-  silk_NSQ_del_dec_c,                  /* non-sse */
-  silk_NSQ_del_dec_c,
-  silk_NSQ_del_dec_c,
-  MAY_HAVE_SSE4_1( silk_NSQ_del_dec ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_NSQ_del_dec )  /* avx */
+) =
+{
+    silk_NSQ_del_dec_c,                  /* non-sse */
+    silk_NSQ_del_dec_c,
+    silk_NSQ_del_dec_c,
+    MAY_HAVE_SSE4_1( silk_NSQ_del_dec ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_NSQ_del_dec )  /* avx */
 };
 
 #if defined(FIXED_POINT)
@@ -144,12 +149,13 @@ void (*const SILK_WARPED_LPC_ANALYSIS_FILTER_FIX_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int16            lambda_Q16,                 /* I    Warping factor                      */
     const opus_int              length,                     /* I    Length of input signal              */
     const opus_int              order                       /* I    Filter order (even)                 */
-) = {
-  silk_warped_LPC_analysis_filter_FIX_c,                  /* non-sse */
-  silk_warped_LPC_analysis_filter_FIX_c,
-  silk_warped_LPC_analysis_filter_FIX_c,
-  MAY_HAVE_SSE4_1( silk_warped_LPC_analysis_filter_FIX ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_warped_LPC_analysis_filter_FIX )  /* avx */
+) =
+{
+    silk_warped_LPC_analysis_filter_FIX_c,                  /* non-sse */
+    silk_warped_LPC_analysis_filter_FIX_c,
+    silk_warped_LPC_analysis_filter_FIX_c,
+    MAY_HAVE_SSE4_1( silk_warped_LPC_analysis_filter_FIX ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_warped_LPC_analysis_filter_FIX )  /* avx */
 };
 
 void (*const SILK_BURG_MODIFIED_IMPL[ OPUS_ARCHMASK + 1 ] )(
@@ -162,12 +168,13 @@ void (*const SILK_BURG_MODIFIED_IMPL[ OPUS_ARCHMASK + 1 ] )(
     const opus_int              nb_subfr,           /* I    Number of subframes stacked in x                            */
     const opus_int              D,                  /* I    Order                                                       */
     int                         arch                /* I    Run-time architecture                                       */
-) = {
-  silk_burg_modified_c,                  /* non-sse */
-  silk_burg_modified_c,
-  silk_burg_modified_c,
-  MAY_HAVE_SSE4_1( silk_burg_modified ), /* sse4.1 */
-  MAY_HAVE_SSE4_1( silk_burg_modified )  /* avx */
+) =
+{
+    silk_burg_modified_c,                  /* non-sse */
+    silk_burg_modified_c,
+    silk_burg_modified_c,
+    MAY_HAVE_SSE4_1( silk_burg_modified ), /* sse4.1 */
+    MAY_HAVE_SSE4_1( silk_burg_modified )  /* avx */
 };
 
 #endif

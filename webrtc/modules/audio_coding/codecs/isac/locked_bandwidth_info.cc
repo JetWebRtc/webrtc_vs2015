@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,10 +10,12 @@
 
 #include "webrtc/modules/audio_coding/codecs/isac/locked_bandwidth_info.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-LockedIsacBandwidthInfo::LockedIsacBandwidthInfo() : ref_count_(0) {
-  bwinfo_.in_use = 0;
+LockedIsacBandwidthInfo::LockedIsacBandwidthInfo() : ref_count_(0)
+{
+    bwinfo_.in_use = 0;
 }
 
 LockedIsacBandwidthInfo::~LockedIsacBandwidthInfo() = default;

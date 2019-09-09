@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Multipart JPEG format
  * Copyright (c) 2015 Luca Barbato
  *
@@ -71,7 +71,7 @@ static int check_content_type(char *line)
         return ret;
 
     if (av_strcasecmp(tag, "Content-type") ||
-        av_strcasecmp(value, "image/jpeg"))
+            av_strcasecmp(value, "image/jpeg"))
         return AVERROR_INVALIDDATA;
 
     return 0;
@@ -90,13 +90,15 @@ static int mpjpeg_read_probe(AVProbeData *p)
     if (!pb)
         return AVERROR(ENOMEM);
 
-    while (!pb->eof_reached) {
+    while (!pb->eof_reached)
+    {
         ret = get_line(pb, line, sizeof(line));
         if (ret < 0)
             break;
 
         ret = check_content_type(line);
-        if (!ret) {
+        if (!ret)
+        {
             ret = AVPROBE_SCORE_MAX;
             break;
         }
@@ -160,7 +162,8 @@ static int parse_multipart_header(AVFormatContext *s)
     if (strncmp(line, "--", 2))
         return AVERROR_INVALIDDATA;
 
-    while (!s->pb->eof_reached) {
+    while (!s->pb->eof_reached)
+    {
         char *tag, *value;
 
         ret = get_line(s->pb, line, sizeof(line));
@@ -174,22 +177,28 @@ static int parse_multipart_header(AVFormatContext *s)
         if (ret < 0)
             return ret;
 
-        if (!av_strcasecmp(tag, "Content-type")) {
-            if (av_strcasecmp(value, "image/jpeg")) {
+        if (!av_strcasecmp(tag, "Content-type"))
+        {
+            if (av_strcasecmp(value, "image/jpeg"))
+            {
                 av_log(s, AV_LOG_ERROR,
                        "Unexpected %s : %s\n",
                        tag, value);
                 return AVERROR_INVALIDDATA;
-            } else
+            }
+            else
                 found_content_type = 1;
-        } else if (!av_strcasecmp(tag, "Content-Length")) {
+        }
+        else if (!av_strcasecmp(tag, "Content-Length"))
+        {
             size = parse_content_length(value);
             if (size < 0)
                 return size;
         }
     }
 
-    if (!found_content_type || size < 0) {
+    if (!found_content_type || size < 0)
+    {
         return AVERROR_INVALIDDATA;
     }
 
@@ -214,7 +223,8 @@ static int mpjpeg_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_mpjpeg_demuxer = {
+AVInputFormat ff_mpjpeg_demuxer =
+{
     .name              = "mpjpeg",
     .long_name         = NULL_IF_CONFIG_SMALL("MIME multipart JPEG"),
     .mime_type         = "multipart/x-mixed-replace",

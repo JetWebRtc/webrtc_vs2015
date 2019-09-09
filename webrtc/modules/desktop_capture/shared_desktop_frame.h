@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,39 +16,41 @@
 #include "webrtc/base/scoped_ref_ptr.h"
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // SharedDesktopFrame is a DesktopFrame that may have multiple instances all
 // sharing the same buffer.
-class SharedDesktopFrame : public DesktopFrame {
- public:
-  ~SharedDesktopFrame() override;
+class SharedDesktopFrame : public DesktopFrame
+{
+public:
+    ~SharedDesktopFrame() override;
 
-  static std::unique_ptr<SharedDesktopFrame> Wrap(
-      std::unique_ptr<DesktopFrame> desktop_frame);
+    static std::unique_ptr<SharedDesktopFrame> Wrap(
+        std::unique_ptr<DesktopFrame> desktop_frame);
 
-  // Deprecated.
-  // TODO(sergeyu): remove this method.
-  static SharedDesktopFrame* Wrap(DesktopFrame* desktop_frame);
+    // Deprecated.
+    // TODO(sergeyu): remove this method.
+    static SharedDesktopFrame* Wrap(DesktopFrame* desktop_frame);
 
-  // Returns the underlying instance of DesktopFrame.
-  DesktopFrame* GetUnderlyingFrame();
+    // Returns the underlying instance of DesktopFrame.
+    DesktopFrame* GetUnderlyingFrame();
 
-  // Creates a clone of this object.
-  std::unique_ptr<SharedDesktopFrame> Share();
+    // Creates a clone of this object.
+    std::unique_ptr<SharedDesktopFrame> Share();
 
-  // Checks if the frame is currently shared. If it returns false it's
-  // guaranteed that there are no clones of the object.
-  bool IsShared();
+    // Checks if the frame is currently shared. If it returns false it's
+    // guaranteed that there are no clones of the object.
+    bool IsShared();
 
- private:
-  typedef rtc::RefCountedObject<std::unique_ptr<DesktopFrame>> Core;
+private:
+    typedef rtc::RefCountedObject<std::unique_ptr<DesktopFrame>> Core;
 
-  SharedDesktopFrame(rtc::scoped_refptr<Core> core);
+    SharedDesktopFrame(rtc::scoped_refptr<Core> core);
 
-  rtc::scoped_refptr<Core> core_;
+    rtc::scoped_refptr<Core> core_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(SharedDesktopFrame);
+    RTC_DISALLOW_COPY_AND_ASSIGN(SharedDesktopFrame);
 };
 
 }  // namespace webrtc

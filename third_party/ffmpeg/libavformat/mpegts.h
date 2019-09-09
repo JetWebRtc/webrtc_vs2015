@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG2 transport stream defines
  * Copyright (c) 2003 Fabrice Bellard
  *
@@ -68,7 +68,8 @@ int avpriv_mpegts_parse_packet(MpegTSContext *ts, AVPacket *pkt,
                                const uint8_t *buf, int len);
 void avpriv_mpegts_parse_close(MpegTSContext *ts);
 
-typedef struct SLConfigDescr {
+typedef struct SLConfigDescr
+{
     int use_au_start;
     int use_au_end;
     int use_rand_acc_pt;
@@ -85,7 +86,8 @@ typedef struct SLConfigDescr {
     int packet_seq_num_len;
 } SLConfigDescr;
 
-typedef struct Mp4Descr {
+typedef struct Mp4Descr
+{
     int es_id;
     int dec_config_descr_len;
     uint8_t *dec_config_descr;

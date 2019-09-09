@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -43,9 +43,10 @@ typedef const bool_reader c_bool_reader;
 
 typedef const vp8_tree_index vp8_tree[], *vp8_tree_p;
 
-typedef const struct vp8_token_struct {
-  int value;
-  int Len;
+typedef const struct vp8_token_struct
+{
+    int value;
+    int Len;
 } vp8_token;
 
 /* Construct encoding array from tree. */

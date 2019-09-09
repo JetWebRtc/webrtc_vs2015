@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -151,92 +151,92 @@ static FORCEINLINE void fft_4(FIXP_DBL *x)
 LNK_SECTION_CODE_L1
 static FORCEINLINE void fft_8(FIXP_DBL *x)
 {
-      #define W_PiFOURTH STC(0x5a82799a)
+#define W_PiFOURTH STC(0x5a82799a)
 
-      FIXP_DBL a00, a10, a20, a30;
-      FIXP_DBL y[16];
+    FIXP_DBL a00, a10, a20, a30;
+    FIXP_DBL y[16];
 
-      a00 = (x[0] + x[8])>>1;
-      a10 =  x[4] + x[12];
-      a20 = (x[1] + x[9])>>1;
-      a30 =  x[5] + x[13];
+    a00 = (x[0] + x[8])>>1;
+    a10 =  x[4] + x[12];
+    a20 = (x[1] + x[9])>>1;
+    a30 =  x[5] + x[13];
 
-      y[0] = a00 + (a10>>1);
-      y[4] = a00 - (a10>>1);
-      y[1] = a20 + (a30>>1);
-      y[5] = a20 - (a30>>1);
+    y[0] = a00 + (a10>>1);
+    y[4] = a00 - (a10>>1);
+    y[1] = a20 + (a30>>1);
+    y[5] = a20 - (a30>>1);
 
-      a00 = a00      - x[8];
-      a10 = (a10>>1) - x[12];
-      a20 = a20      - x[9];
-      a30 = (a30>>1) - x[13];
+    a00 = a00      - x[8];
+    a10 = (a10>>1) - x[12];
+    a20 = a20      - x[9];
+    a30 = (a30>>1) - x[13];
 
-      y[2] = a00 + a30;
-      y[6] = a00 - a30;
-      y[3] = a20 - a10;
-      y[7] = a20 + a10;
+    y[2] = a00 + a30;
+    y[6] = a00 - a30;
+    y[3] = a20 - a10;
+    y[7] = a20 + a10;
 
-      a00 = (x[2] + x[10])>>1;
-      a10 =  x[6] + x[14];
-      a20 = (x[3] + x[11])>>1;
-      a30 =  x[7] + x[15];
+    a00 = (x[2] + x[10])>>1;
+    a10 =  x[6] + x[14];
+    a20 = (x[3] + x[11])>>1;
+    a30 =  x[7] + x[15];
 
-      y[8]  = a00 + (a10>>1);
-      y[12] = a00 - (a10>>1);
-      y[9]  = a20 + (a30>>1);
-      y[13] = a20 - (a30>>1);
+    y[8]  = a00 + (a10>>1);
+    y[12] = a00 - (a10>>1);
+    y[9]  = a20 + (a30>>1);
+    y[13] = a20 - (a30>>1);
 
-      a00 = a00      - x[10];
-      a10 = (a10>>1) - x[14];
-      a20 = a20      - x[11];
-      a30 = (a30>>1) - x[15];
+    a00 = a00      - x[10];
+    a10 = (a10>>1) - x[14];
+    a20 = a20      - x[11];
+    a30 = (a30>>1) - x[15];
 
-      y[10] = a00 + a30;
-      y[14] = a00 - a30;
-      y[11] = a20 - a10;
-      y[15] = a20 + a10;
+    y[10] = a00 + a30;
+    y[14] = a00 - a30;
+    y[11] = a20 - a10;
+    y[15] = a20 + a10;
 
-      FIXP_DBL vr, vi, ur, ui;
+    FIXP_DBL vr, vi, ur, ui;
 
-      ur = y[0]>>1;
-      ui = y[1]>>1;
-      vr = y[8];
-      vi = y[9];
-      x[0] = ur + (vr>>1);
-      x[1] = ui + (vi>>1);
-      x[8] = ur - (vr>>1);
-      x[9] = ui - (vi>>1);
+    ur = y[0]>>1;
+    ui = y[1]>>1;
+    vr = y[8];
+    vi = y[9];
+    x[0] = ur + (vr>>1);
+    x[1] = ui + (vi>>1);
+    x[8] = ur - (vr>>1);
+    x[9] = ui - (vi>>1);
 
-      ur = y[4]>>1;
-      ui = y[5]>>1;
-      vi = y[12];
-      vr = y[13];
-      x[4]  = ur + (vr>>1);
-      x[5]  = ui - (vi>>1);
-      x[12] = ur - (vr>>1);
-      x[13] = ui + (vi>>1);
+    ur = y[4]>>1;
+    ui = y[5]>>1;
+    vi = y[12];
+    vr = y[13];
+    x[4]  = ur + (vr>>1);
+    x[5]  = ui - (vi>>1);
+    x[12] = ur - (vr>>1);
+    x[13] = ui + (vi>>1);
 
-      ur = y[10];
-      ui = y[11];
-      vr = fMultDiv2(ui+ur,W_PiFOURTH);
-      vi = fMultDiv2(ui-ur,W_PiFOURTH);
-      ur = y[2];
-      ui = y[3];
-      x[2]  = (ur>>1) + vr;
-      x[3]  = (ui>>1) + vi;
-      x[10] = (ur>>1) - vr;
-      x[11] = (ui>>1) - vi;
+    ur = y[10];
+    ui = y[11];
+    vr = fMultDiv2(ui+ur,W_PiFOURTH);
+    vi = fMultDiv2(ui-ur,W_PiFOURTH);
+    ur = y[2];
+    ui = y[3];
+    x[2]  = (ur>>1) + vr;
+    x[3]  = (ui>>1) + vi;
+    x[10] = (ur>>1) - vr;
+    x[11] = (ui>>1) - vi;
 
-      ur = y[14];
-      ui = y[15];
-      vr = fMultDiv2(ui-ur,W_PiFOURTH);
-      vi = fMultDiv2(ui+ur,W_PiFOURTH);
-      ur = y[6];
-      ui = y[7];
-      x[6]  = (ur>>1) + vr;
-      x[7]  = (ui>>1) - vi;
-      x[14] = (ur>>1) - vr;
-      x[15] = (ui>>1) + vi;
+    ur = y[14];
+    ui = y[15];
+    vr = fMultDiv2(ui-ur,W_PiFOURTH);
+    vi = fMultDiv2(ui+ur,W_PiFOURTH);
+    ur = y[6];
+    ui = y[7];
+    x[6]  = (ur>>1) + vr;
+    x[7]  = (ui>>1) - vi;
+    x[14] = (ur>>1) - vr;
+    x[15] = (ui>>1) + vi;
 }
 
 /**

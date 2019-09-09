@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -90,7 +90,8 @@ int avpriv_atomic_int_add_and_fetch(volatile int *ptr, int inc)
 
 void *avpriv_atomic_ptr_cas(void * volatile *ptr, void *oldval, void *newval)
 {
-    if (*ptr == oldval) {
+    if (*ptr == oldval)
+    {
         *ptr = newval;
         return oldval;
     }

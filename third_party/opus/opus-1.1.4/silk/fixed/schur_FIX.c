@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -49,34 +49,47 @@ opus_int32 silk_schur(                              /* O    Returns residual ene
     lz = silk_CLZ32( c[ 0 ] );
 
     /* Copy correlations and adjust level to Q30 */
-    if( lz < 2 ) {
+    if( lz < 2 )
+    {
         /* lz must be 1, so shift one to the right */
-        for( k = 0; k < order + 1; k++ ) {
+        for( k = 0; k < order + 1; k++ )
+        {
             C[ k ][ 0 ] = C[ k ][ 1 ] = silk_RSHIFT( c[ k ], 1 );
         }
-    } else if( lz > 2 ) {
+    }
+    else if( lz > 2 )
+    {
         /* Shift to the left */
         lz -= 2;
-        for( k = 0; k < order + 1; k++ ) {
+        for( k = 0; k < order + 1; k++ )
+        {
             C[ k ][ 0 ] = C[ k ][ 1 ] = silk_LSHIFT( c[ k ], lz );
         }
-    } else {
+    }
+    else
+    {
         /* No need to shift */
-        for( k = 0; k < order + 1; k++ ) {
+        for( k = 0; k < order + 1; k++ )
+        {
             C[ k ][ 0 ] = C[ k ][ 1 ] = c[ k ];
         }
     }
 
-    for( k = 0; k < order; k++ ) {
+    for( k = 0; k < order; k++ )
+    {
         /* Check that we won't be getting an unstable rc, otherwise stop here. */
-        if (silk_abs_int32(C[ k + 1 ][ 0 ]) >= C[ 0 ][ 1 ]) {
-           if ( C[ k + 1 ][ 0 ] > 0 ) {
-              rc_Q15[ k ] = -SILK_FIX_CONST( .99f, 15 );
-           } else {
-              rc_Q15[ k ] = SILK_FIX_CONST( .99f, 15 );
-           }
-           k++;
-           break;
+        if (silk_abs_int32(C[ k + 1 ][ 0 ]) >= C[ 0 ][ 1 ])
+        {
+            if ( C[ k + 1 ][ 0 ] > 0 )
+            {
+                rc_Q15[ k ] = -SILK_FIX_CONST( .99f, 15 );
+            }
+            else
+            {
+                rc_Q15[ k ] = SILK_FIX_CONST( .99f, 15 );
+            }
+            k++;
+            break;
         }
 
         /* Get reflection coefficient */
@@ -89,7 +102,8 @@ opus_int32 silk_schur(                              /* O    Returns residual ene
         rc_Q15[ k ] = (opus_int16)rc_tmp_Q15;
 
         /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
+        for( n = 0; n < order - k; n++ )
+        {
             Ctmp1 = C[ n + k + 1 ][ 0 ];
             Ctmp2 = C[ n ][ 1 ];
             C[ n + k + 1 ][ 0 ] = silk_SMLAWB( Ctmp1, silk_LSHIFT( Ctmp2, 1 ), rc_tmp_Q15 );
@@ -97,8 +111,9 @@ opus_int32 silk_schur(                              /* O    Returns residual ene
         }
     }
 
-    for(; k < order; k++ ) {
-       rc_Q15[ k ] = 0;
+    for(; k < order; k++ )
+    {
+        rc_Q15[ k ] = 0;
     }
 
     /* return residual energy */

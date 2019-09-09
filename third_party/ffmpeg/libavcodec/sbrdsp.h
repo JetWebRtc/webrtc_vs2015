@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Mans Rullgard
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "aac_defines.h"
 #include "libavutil/softfloat.h"
 
-typedef struct SBRDSPContext {
+typedef struct SBRDSPContext
+{
     void (*sum64x5)(INTFLOAT *z);
     AAC_FLOAT (*sum_square)(INTFLOAT (*x)[2], int n);
     void (*neg_odd_64)(INTFLOAT *x);

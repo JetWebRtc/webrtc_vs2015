@@ -1,4 +1,4 @@
-/* crypto/hmac/hmac.h */
+﻿/* crypto/hmac/hmac.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -72,7 +72,8 @@
 extern "C" {
 #endif
 
-typedef struct hmac_ctx_st {
+typedef struct hmac_ctx_st
+{
     const EVP_MD *md;
     EVP_MD_CTX md_ctx;
     EVP_MD_CTX i_ctx;

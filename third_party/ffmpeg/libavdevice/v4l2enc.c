@@ -21,7 +21,8 @@
 #include "v4l2-common.h"
 #include "avdevice.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     int fd;
 } V4L2Context;
@@ -29,7 +30,8 @@ typedef struct {
 static av_cold int write_header(AVFormatContext *s1)
 {
     int res = 0, flags = O_RDWR;
-    struct v4l2_format fmt = {
+    struct v4l2_format fmt =
+    {
         .type = V4L2_BUF_TYPE_VIDEO_OUTPUT
     };
     V4L2Context *s = s1->priv_data;
@@ -40,15 +42,17 @@ static av_cold int write_header(AVFormatContext *s1)
         flags |= O_NONBLOCK;
 
     s->fd = open(s1->filename, flags);
-    if (s->fd < 0) {
+    if (s->fd < 0)
+    {
         res = AVERROR(errno);
         av_log(s1, AV_LOG_ERROR, "Unable to open V4L2 device '%s'\n", s1->filename);
         return res;
     }
 
     if (s1->nb_streams != 1 ||
-        s1->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
-        s1->streams[0]->codec->codec_id   != AV_CODEC_ID_RAWVIDEO) {
+            s1->streams[0]->codec->codec_type != AVMEDIA_TYPE_VIDEO ||
+            s1->streams[0]->codec->codec_id   != AV_CODEC_ID_RAWVIDEO)
+    {
         av_log(s1, AV_LOG_ERROR,
                "V4L2 output device supports only a single raw video stream\n");
         return AVERROR(EINVAL);
@@ -57,13 +61,15 @@ static av_cold int write_header(AVFormatContext *s1)
     enc_ctx = s1->streams[0]->codec;
 
     v4l2_pixfmt = ff_fmt_ff2v4l(enc_ctx->pix_fmt, AV_CODEC_ID_RAWVIDEO);
-    if (!v4l2_pixfmt) { // XXX: try to force them one by one?
+    if (!v4l2_pixfmt)   // XXX: try to force them one by one?
+    {
         av_log(s1, AV_LOG_ERROR, "Unknown V4L2 pixel format equivalent for %s\n",
                av_get_pix_fmt_name(enc_ctx->pix_fmt));
         return AVERROR(EINVAL);
     }
 
-    if (ioctl(s->fd, VIDIOC_G_FMT, &fmt) < 0) {
+    if (ioctl(s->fd, VIDIOC_G_FMT, &fmt) < 0)
+    {
         res = AVERROR(errno);
         av_log(s1, AV_LOG_ERROR, "ioctl(VIDIOC_G_FMT): %s\n", av_err2str(res));
         return res;
@@ -74,7 +80,8 @@ static av_cold int write_header(AVFormatContext *s1)
     fmt.fmt.pix.pixelformat = v4l2_pixfmt;
     fmt.fmt.pix.sizeimage   = av_image_get_buffer_size(enc_ctx->pix_fmt, enc_ctx->width, enc_ctx->height, 1);
 
-    if (ioctl(s->fd, VIDIOC_S_FMT, &fmt) < 0) {
+    if (ioctl(s->fd, VIDIOC_S_FMT, &fmt) < 0)
+    {
         res = AVERROR(errno);
         av_log(s1, AV_LOG_ERROR, "ioctl(VIDIOC_S_FMT): %s\n", av_err2str(res));
         return res;
@@ -98,14 +105,16 @@ static int write_trailer(AVFormatContext *s1)
     return 0;
 }
 
-static const AVClass v4l2_class = {
+static const AVClass v4l2_class =
+{
     .class_name = "V4L2 outdev",
     .item_name  = av_default_item_name,
     .version    = LIBAVUTIL_VERSION_INT,
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT,
 };
 
-AVOutputFormat ff_v4l2_muxer = {
+AVOutputFormat ff_v4l2_muxer =
+{
     .name           = "v4l2",
     .long_name      = NULL_IF_CONFIG_SMALL("Video4Linux2 output device"),
     .priv_data_size = sizeof(V4L2Context),

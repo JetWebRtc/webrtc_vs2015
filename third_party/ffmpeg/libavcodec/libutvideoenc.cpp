@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Derek Buitenhuis
  *
  * This file is part of FFmpeg.
@@ -41,7 +41,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     uint32_t flags, in_format;
     int ret;
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_YUV420P:
         in_format = UTVF_YV12;
         avctx->bits_per_coded_sample = 12;
@@ -73,7 +74,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     }
 
     /* Check before we alloc anything */
-    if (avctx->prediction_method != 0 && avctx->prediction_method != 2) {
+    if (avctx->prediction_method != 0 && avctx->prediction_method != 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid prediction method.\n");
         return AVERROR(EINVAL);
     }
@@ -85,7 +87,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
     /* Alloc extradata buffer */
     info = (UtVideoExtra *)av_malloc(sizeof(*info));
 
-    if (!info) {
+    if (!info)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not allocate extradata buffer.\n");
         return AVERROR(ENOMEM);
     }
@@ -95,7 +98,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
      * since we cannot decode planes separately with it.
      */
     ret = avpicture_get_size(avctx->pix_fmt, avctx->width, avctx->height);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_free(info);
         return ret;
     }
@@ -103,7 +107,8 @@ static av_cold int utvideo_encode_init(AVCodecContext *avctx)
 
     utv->buffer = (uint8_t *)av_malloc(utv->buf_size);
 
-    if (utv->buffer == NULL) {
+    if (utv->buffer == NULL)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not allocate output buffer.\n");
         av_free(info);
         return AVERROR(ENOMEM);
@@ -149,16 +154,19 @@ static int utvideo_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     dst = pkt->data;
 
     /* Move input if needed data into Ut Video friendly buffer */
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_YUV420P:
         y = utv->buffer;
         u = y + w * h;
         v = u + w * h / 4;
-        for (i = 0; i < h; i++) {
+        for (i = 0; i < h; i++)
+        {
             memcpy(y, pic->data[0] + i * pic->linesize[0], w);
             y += w;
         }
-        for (i = 0; i < h / 2; i++) {
+        for (i = 0; i < h / 2; i++)
+        {
             memcpy(u, pic->data[2] + i * pic->linesize[2], w >> 1);
             memcpy(v, pic->data[1] + i * pic->linesize[1], w >> 1);
             u += w >> 1;
@@ -186,7 +194,8 @@ static int utvideo_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     /* Encode frame */
     pkt->size = utv->codec->EncodeFrame(dst, &keyframe, utv->buffer);
 
-    if (!pkt->size) {
+    if (!pkt->size)
+    {
         av_log(avctx, AV_LOG_ERROR, "EncodeFrame failed!\n");
         return AVERROR_INVALIDDATA;
     }
@@ -217,7 +226,8 @@ static av_cold int utvideo_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_libutvideo_encoder = {
+AVCodec ff_libutvideo_encoder =
+{
     "libutvideo",
     NULL_IF_CONFIG_SMALL("Ut Video"),
     AVMEDIA_TYPE_VIDEO,

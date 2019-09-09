@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2009 Loren Merritt <lorenm@u.washington.edu>
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,8 @@ static void gradfun_filter_line_mmxext(uint8_t *dst, const uint8_t *src,
                                        const uint16_t *dithers)
 {
     intptr_t x;
-    if (width & 3) {
+    if (width & 3)
+    {
         x = width & ~3;
         ff_gradfun_filter_line_c(dst + x, src + x, dc + x / 2,
                                  width - x, thresh, dithers);
@@ -63,7 +64,8 @@ static void gradfun_filter_line_ssse3(uint8_t *dst, const uint8_t *src, const ui
                                       const uint16_t *dithers)
 {
     intptr_t x;
-    if (width & 7) {
+    if (width & 7)
+    {
         // could be 10% faster if I somehow eliminated this
         x = width & ~7;
         ff_gradfun_filter_line_c(dst + x, src + x, dc + x / 2,

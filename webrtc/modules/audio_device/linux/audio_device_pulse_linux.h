@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -216,13 +216,15 @@ public:
     void ClearRecordingWarning() override;
     void ClearRecordingError() override;
 
-   void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) override;
+    void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) override;
 
 private:
-    void Lock() EXCLUSIVE_LOCK_FUNCTION(_critSect) {
+    void Lock() EXCLUSIVE_LOCK_FUNCTION(_critSect)
+    {
         _critSect.Enter();
     }
-    void UnLock() UNLOCK_FUNCTION(_critSect) {
+    void UnLock() UNLOCK_FUNCTION(_critSect)
+    {
         _critSect.Leave();
     }
     void WaitForOperationCompletion(pa_operation* paOperation) const;

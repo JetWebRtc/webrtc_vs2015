@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2014 Kieran Kunhya <kierank@obe.tv>
  *
  * This file is part of FFmpeg.

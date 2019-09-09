@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -357,7 +357,7 @@ static void vp9_idct4x4_1_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct4x4_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                          int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 in0, in1, in2, in3;
 
@@ -374,7 +374,7 @@ static void vp9_idct4x4_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_iadst4x4_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 in0, in1, in2, in3;
 
@@ -592,7 +592,7 @@ static void vp9_idct8x8_1_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct8x8_12_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
     v8i16 s0, s1, s2, s3, s4, s5, s6, s7, k0, k1, k2, k3, m0, m1, m2, m3;
@@ -656,7 +656,7 @@ static void vp9_idct8x8_12_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct8x8_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                          int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
@@ -681,7 +681,7 @@ static void vp9_idct8x8_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_iadst8x8_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                           int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
     v8i16 res0, res1, res2, res3, res4, res5, res6, res7;
@@ -931,7 +931,7 @@ static void vp9_idct_iadst_8x8_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct16_1d_columns_addblk_msa(int16_t *input, uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 loc0, loc1, loc2, loc3;
     v8i16 reg0, reg2, reg4, reg6, reg8, reg10, reg12, reg14;
@@ -1165,7 +1165,7 @@ static void vp9_idct16x16_1_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct16x16_10_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t dst_stride)
 {
     int32_t i;
     int16_t out_arr[16 * 16] ALLOC_ALIGNED(ALIGNMENT);
@@ -1176,7 +1176,8 @@ static void vp9_idct16x16_10_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 
     /* short case just considers top 4 rows as valid output */
     out += 4 * 16;
-    for (i = 12; i--;) {
+    for (i = 12; i--;)
+    {
         __asm__ volatile (
             "sw     $zero,   0(%[out])     \n\t"
             "sw     $zero,   4(%[out])     \n\t"
@@ -1197,7 +1198,8 @@ static void vp9_idct16x16_10_colcol_addblk_msa(int16_t *input, uint8_t *dst,
     out = out_arr;
 
     /* transform columns */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_idct16_1d_columns_addblk_msa((out + (i << 3)), (dst + (i << 3)),
                                          dst_stride);
@@ -1205,20 +1207,22 @@ static void vp9_idct16x16_10_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct16x16_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                            int32_t dst_stride)
+        int32_t dst_stride)
 {
     int32_t i;
     int16_t out_arr[16 * 16] ALLOC_ALIGNED(ALIGNMENT);
     int16_t *out = out_arr;
 
     /* transform rows */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_idct16_1d_columns_msa((input + (i << 3)), (out + (i << 7)));
     }
 
     /* transform columns */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_idct16_1d_columns_addblk_msa((out + (i << 3)), (dst + (i << 3)),
                                          dst_stride);
@@ -1255,7 +1259,7 @@ static void vp9_iadst16_1d_columns_msa(int16_t *input, int16_t *output)
 }
 
 static void vp9_iadst16_1d_columns_addblk_msa(int16_t *input, uint8_t *dst,
-                                              int32_t dst_stride)
+        int32_t dst_stride)
 {
     v8i16 v0, v2, v4, v6, k0, k1, k2, k3;
     v8i16 r0, r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12, r13, r14, r15;
@@ -1421,20 +1425,22 @@ static void vp9_iadst16_1d_columns_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_iadst16x16_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                             int32_t dst_stride)
+        int32_t dst_stride)
 {
     int16_t out_arr[16 * 16] ALLOC_ALIGNED(ALIGNMENT);
     int16_t *out = out_arr;
     int32_t i;
 
     /* transform rows */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 16 * 8 block */
         vp9_iadst16_1d_columns_msa((input + (i << 3)), (out + (i << 7)));
     }
 
     /* transform columns */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_iadst16_1d_columns_addblk_msa((out + (i << 3)), (dst + (i << 3)),
                                           dst_stride);
@@ -1442,20 +1448,22 @@ static void vp9_iadst16x16_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_iadst_idct_16x16_add_msa(int16_t *input, uint8_t *dst,
-                                         int32_t dst_stride, int32_t eob)
+        int32_t dst_stride, int32_t eob)
 {
     int32_t i;
     int16_t out[16 * 16];
     int16_t *out_ptr = &out[0];
 
     /* transform rows */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_iadst16_1d_columns_msa((input + (i << 3)), (out_ptr + (i << 7)));
     }
 
     /* transform columns */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_idct16_1d_columns_addblk_msa((out_ptr + (i << 3)),
                                          (dst + (i << 3)), dst_stride);
@@ -1463,20 +1471,22 @@ static void vp9_iadst_idct_16x16_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct_iadst_16x16_add_msa(int16_t *input, uint8_t *dst,
-                                         int32_t dst_stride, int32_t eob)
+        int32_t dst_stride, int32_t eob)
 {
     int32_t i;
     int16_t out[16 * 16];
     int16_t *out_ptr = &out[0];
 
     /* transform rows */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_idct16_1d_columns_msa((input + (i << 3)), (out_ptr + (i << 7)));
     }
 
     /* transform columns */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* process 8 * 16 block */
         vp9_iadst16_1d_columns_addblk_msa((out_ptr + (i << 3)),
                                           (dst + (i << 3)), dst_stride);
@@ -1484,9 +1494,9 @@ static void vp9_idct_iadst_16x16_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct_butterfly_transpose_store(int16_t *tmp_buf,
-                                               int16_t *tmp_eve_buf,
-                                               int16_t *tmp_odd_buf,
-                                               int16_t *dst)
+        int16_t *tmp_eve_buf,
+        int16_t *tmp_odd_buf,
+        int16_t *dst)
 {
     v8i16 vec0, vec1, vec2, vec3, loc0, loc1, loc2, loc3;
     v8i16 m0, m1, m2, m3, m4, m5, m6, m7, n0, n1, n2, n3, n4, n5, n6, n7;
@@ -1586,7 +1596,7 @@ static void vp9_idct_butterfly_transpose_store(int16_t *tmp_buf,
 }
 
 static void vp9_idct8x32_column_even_process_store(int16_t *tmp_buf,
-                                                   int16_t *tmp_eve_buf)
+        int16_t *tmp_eve_buf)
 {
     v8i16 vec0, vec1, vec2, vec3, loc0, loc1, loc2, loc3;
     v8i16 reg0, reg1, reg2, reg3, reg4, reg5, reg6, reg7;
@@ -1667,7 +1677,7 @@ static void vp9_idct8x32_column_even_process_store(int16_t *tmp_buf,
 }
 
 static void vp9_idct8x32_column_odd_process_store(int16_t *tmp_buf,
-                                                  int16_t *tmp_odd_buf)
+        int16_t *tmp_odd_buf)
 {
     v8i16 vec0, vec1, vec2, vec3, loc0, loc1, loc2, loc3;
     v8i16 reg0, reg1, reg2, reg3, reg4, reg5, reg6, reg7;
@@ -1779,9 +1789,9 @@ static void vp9_idct8x32_column_odd_process_store(int16_t *tmp_buf,
 }
 
 static void vp9_idct8x32_column_butterfly_addblk(int16_t *tmp_eve_buf,
-                                                 int16_t *tmp_odd_buf,
-                                                 uint8_t *dst,
-                                                 int32_t dst_stride)
+        int16_t *tmp_odd_buf,
+        uint8_t *dst,
+        int32_t dst_stride)
 {
     v8i16 vec0, vec1, vec2, vec3, loc0, loc1, loc2, loc3;
     v8i16 m0, m1, m2, m3, m4, m5, m6, m7, n0, n1, n2, n3, n4, n5, n6, n7;
@@ -1867,7 +1877,7 @@ static void vp9_idct8x32_column_butterfly_addblk(int16_t *tmp_eve_buf,
 }
 
 static void vp9_idct8x32_1d_columns_addblk_msa(int16_t *input, uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t dst_stride)
 {
     int16_t tmp_odd_buf[16 * 8] ALLOC_ALIGNED(ALIGNMENT);
     int16_t tmp_eve_buf[16 * 8] ALLOC_ALIGNED(ALIGNMENT);
@@ -1930,14 +1940,15 @@ static void vp9_idct32x32_1_add_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct32x32_34_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                               int32_t dst_stride)
+        int32_t dst_stride)
 {
     int32_t i;
     int16_t out_arr[32 * 32] ALLOC_ALIGNED(ALIGNMENT);
     int16_t *out_ptr = out_arr;
     int16_t tmp_buf[8 * 32] ALLOC_ALIGNED(ALIGNMENT);
 
-    for (i = 32; i--;) {
+    for (i = 32; i--;)
+    {
         __asm__ volatile (
             "sw     $zero,       (%[out_ptr])     \n\t"
             "sw     $zero,      4(%[out_ptr])     \n\t"
@@ -1969,7 +1980,8 @@ static void vp9_idct32x32_34_colcol_addblk_msa(int16_t *input, uint8_t *dst,
     vp9_idct8x32_1d_columns_msa(input, out_ptr, &tmp_buf[0]);
 
     /* transform columns */
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         /* process 8*32 block */
         vp9_idct8x32_1d_columns_addblk_msa((out_ptr + (i << 3)),
                                            (dst + (i << 3)), dst_stride);
@@ -1977,7 +1989,7 @@ static void vp9_idct32x32_34_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 }
 
 static void vp9_idct32x32_colcol_addblk_msa(int16_t *input, uint8_t *dst,
-                                            int32_t dst_stride)
+        int32_t dst_stride)
 {
     int32_t i;
     int16_t out_arr[32 * 32] ALLOC_ALIGNED(ALIGNMENT);
@@ -1985,14 +1997,16 @@ static void vp9_idct32x32_colcol_addblk_msa(int16_t *input, uint8_t *dst,
     int16_t tmp_buf[8 * 32] ALLOC_ALIGNED(ALIGNMENT);
 
     /* transform rows */
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         /* process 8*32 block */
         vp9_idct8x32_1d_columns_msa((input + (i << 3)), (out_ptr + (i << 8)),
                                     &tmp_buf[0]);
     }
 
     /* transform columns */
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         /* process 8*32 block */
         vp9_idct8x32_1d_columns_addblk_msa((out_ptr + (i << 3)),
                                            (dst + (i << 3)), dst_stride);
@@ -2002,11 +2016,13 @@ static void vp9_idct32x32_colcol_addblk_msa(int16_t *input, uint8_t *dst,
 void ff_idct_idct_4x4_add_msa(uint8_t *dst, ptrdiff_t stride,
                               int16_t *block, int eob)
 {
-    if (eob > 1) {
+    if (eob > 1)
+    {
         vp9_idct4x4_colcol_addblk_msa(block, dst, stride);
         memset(block, 0, 4 * 4 * sizeof(*block));
     }
-    else {
+    else
+    {
         vp9_idct4x4_1_add_msa(block, dst, stride);
         block[0] = 0;
     }
@@ -2015,15 +2031,18 @@ void ff_idct_idct_4x4_add_msa(uint8_t *dst, ptrdiff_t stride,
 void ff_idct_idct_8x8_add_msa(uint8_t *dst, ptrdiff_t stride,
                               int16_t *block, int eob)
 {
-    if (eob == 1) {
+    if (eob == 1)
+    {
         vp9_idct8x8_1_add_msa(block, dst, stride);
         block[0] = 0;
     }
-    else if (eob <= 12) {
+    else if (eob <= 12)
+    {
         vp9_idct8x8_12_colcol_addblk_msa(block, dst, stride);
         memset(block, 0, 4 * 8 * sizeof(*block));
     }
-    else {
+    else
+    {
         vp9_idct8x8_colcol_addblk_msa(block, dst, stride);
         memset(block, 0, 8 * 8 * sizeof(*block));
     }
@@ -2034,19 +2053,23 @@ void ff_idct_idct_16x16_add_msa(uint8_t *dst, ptrdiff_t stride,
 {
     int i;
 
-    if (eob == 1) {
+    if (eob == 1)
+    {
         /* DC only DCT coefficient. */
         vp9_idct16x16_1_add_msa(block, dst, stride);
         block[0] = 0;
     }
-    else if (eob <= 10) {
+    else if (eob <= 10)
+    {
         vp9_idct16x16_10_colcol_addblk_msa(block, dst, stride);
-        for (i = 0; i < 4; ++i) {
+        for (i = 0; i < 4; ++i)
+        {
             memset(block, 0, 4 * sizeof(*block));
             block += 16;
         }
     }
-    else {
+    else
+    {
         vp9_idct16x16_colcol_addblk_msa(block, dst, stride);
         memset(block, 0, 16 * 16 * sizeof(*block));
     }
@@ -2057,18 +2080,22 @@ void ff_idct_idct_32x32_add_msa(uint8_t *dst, ptrdiff_t stride,
 {
     int i;
 
-    if (eob == 1) {
+    if (eob == 1)
+    {
         vp9_idct32x32_1_add_msa(block, dst, stride);
         block[0] = 0;
     }
-    else if (eob <= 34) {
+    else if (eob <= 34)
+    {
         vp9_idct32x32_34_colcol_addblk_msa(block, dst, stride);
-        for (i = 0; i < 8; ++i) {
+        for (i = 0; i < 8; ++i)
+        {
             memset(block, 0, 8 * sizeof(*block));
             block += 32;
         }
     }
-    else {
+    else
+    {
         vp9_idct32x32_colcol_addblk_msa(block, dst, stride);
         memset(block, 0, 32 * 32 * sizeof(*block));
     }

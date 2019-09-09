@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP JPEG-compressed Video Depacketizer, RFC 2435
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -31,7 +31,8 @@
 /**
  * RTP/JPEG specific private data.
  */
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *frame;         ///< current frame buffer
     uint32_t    timestamp;      ///< current frame timestamp
     int         hdr_size;       ///< size of the current frame header
@@ -39,7 +40,8 @@ struct PayloadContext {
     uint8_t     qtables_len[128];
 };
 
-static const uint8_t default_quantizers[128] = {
+static const uint8_t default_quantizers[128] =
+{
     /* luma table */
     16,  11,  12,  14,  12,  10,  16,  14,
     13,  14,  18,  17,  16,  19,  24,  40,
@@ -74,12 +76,14 @@ static int jpeg_create_huffman_table(PutByteContext *p, int table_class,
 
     bytestream2_put_byte(p, table_class << 4 | table_id);
 
-    for (i = 1; i <= 16; i++) {
+    for (i = 1; i <= 16; i++)
+    {
         n += bits_table[i];
         bytestream2_put_byte(p, bits_table[i]);
     }
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         bytestream2_put_byte(p, value_table[i]);
     }
     return n + 17;
@@ -119,7 +123,8 @@ static int jpeg_create_header(uint8_t *buf, int size, uint32_t type, uint32_t w,
     bytestream2_put_byte(&pbc, 0);
     bytestream2_put_byte(&pbc, 0);
 
-    if (dri) {
+    if (dri)
+    {
         jpeg_put_marker(&pbc, DRI);
         bytestream2_put_be16(&pbc, 4);
         bytestream2_put_be16(&pbc, dri);
@@ -129,7 +134,8 @@ static int jpeg_create_header(uint8_t *buf, int size, uint32_t type, uint32_t w,
     jpeg_put_marker(&pbc, DQT);
     bytestream2_put_be16(&pbc, 2 + nb_qtable * (1 + 64));
 
-    for (i = 0; i < nb_qtable; i++) {
+    for (i = 0; i < nb_qtable; i++)
+    {
         bytestream2_put_byte(&pbc, i);
 
         /* Each table is an array of 64 values given in zig-zag
@@ -201,7 +207,8 @@ static void create_default_qtables(uint8_t *qtables, uint8_t q)
     else
         q = 200 - factor * 2;
 
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < 128; i++)
+    {
         int val = (default_quantizers[i] * q + 50) / 100;
 
         /* Limit the quantizers to 1 <= q <= 255. */
@@ -221,7 +228,8 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
     uint32_t off;
     int ret, dri = 0;
 
-    if (len < 8) {
+    if (len < 8)
+    {
         av_log(ctx, AV_LOG_ERROR, "Too short RTP/JPEG packet.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -235,8 +243,10 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
     buf += 8;
     len -= 8;
 
-    if (type & 0x40) {
-        if (len < 4) {
+    if (type & 0x40)
+    {
+        if (len < 4)
+        {
             av_log(ctx, AV_LOG_ERROR, "Too short RTP/JPEG packet.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -246,25 +256,30 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
         type &= ~0x40;
     }
     /* Parse the restart marker header. */
-    if (type > 63) {
+    if (type > 63)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Unimplemented RTP/JPEG restart marker header.\n");
         return AVERROR_PATCHWELCOME;
     }
-    if (type > 1) {
+    if (type > 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unimplemented RTP/JPEG type %d\n", type);
         return AVERROR_PATCHWELCOME;
     }
 
     /* Parse the quantization table header. */
-    if (off == 0) {
+    if (off == 0)
+    {
         /* Start of JPEG data packet. */
         uint8_t new_qtables[128];
         uint8_t hdr[1024];
 
-        if (q > 127) {
+        if (q > 127)
+        {
             uint8_t precision;
-            if (len < 4) {
+            if (len < 4)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Too short RTP/JPEG packet.\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -278,33 +293,43 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
             if (precision)
                 av_log(ctx, AV_LOG_WARNING, "Only 8-bit precision is supported.\n");
 
-            if (qtable_len > 0) {
-                if (len < qtable_len) {
+            if (qtable_len > 0)
+            {
+                if (len < qtable_len)
+                {
                     av_log(ctx, AV_LOG_ERROR, "Too short RTP/JPEG packet.\n");
                     return AVERROR_INVALIDDATA;
                 }
                 qtables = buf;
                 buf += qtable_len;
                 len -= qtable_len;
-                if (q < 255) {
+                if (q < 255)
+                {
                     if (jpeg->qtables_len[q - 128] &&
-                        (jpeg->qtables_len[q - 128] != qtable_len ||
-                         memcmp(qtables, &jpeg->qtables[q - 128][0], qtable_len))) {
+                            (jpeg->qtables_len[q - 128] != qtable_len ||
+                             memcmp(qtables, &jpeg->qtables[q - 128][0], qtable_len)))
+                    {
                         av_log(ctx, AV_LOG_WARNING,
                                "Quantization tables for q=%d changed\n", q);
-                    } else if (!jpeg->qtables_len[q - 128] && qtable_len <= 128) {
+                    }
+                    else if (!jpeg->qtables_len[q - 128] && qtable_len <= 128)
+                    {
                         memcpy(&jpeg->qtables[q - 128][0], qtables,
                                qtable_len);
                         jpeg->qtables_len[q - 128] = qtable_len;
                     }
                 }
-            } else {
-                if (q == 255) {
+            }
+            else
+            {
+                if (q == 255)
+                {
                     av_log(ctx, AV_LOG_ERROR,
                            "Invalid RTP/JPEG packet. Quantization tables not found.\n");
                     return AVERROR_INVALIDDATA;
                 }
-                if (!jpeg->qtables_len[q - 128]) {
+                if (!jpeg->qtables_len[q - 128])
+                {
                     av_log(ctx, AV_LOG_ERROR,
                            "No quantization tables known for q=%d yet.\n", q);
                     return AVERROR_INVALIDDATA;
@@ -312,8 +337,11 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
                 qtables    = &jpeg->qtables[q - 128][0];
                 qtable_len =  jpeg->qtables_len[q - 128];
             }
-        } else { /* q <= 127 */
-            if (q == 0 || q > 99) {
+        }
+        else     /* q <= 127 */
+        {
+            if (q == 0 || q > 99)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Reserved q value %d\n", q);
                 return AVERROR_INVALIDDATA;
             }
@@ -341,13 +369,15 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
         avio_write(jpeg->frame, hdr, jpeg->hdr_size);
     }
 
-    if (!jpeg->frame) {
+    if (!jpeg->frame)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Received packet without a start chunk; dropping frame.\n");
         return AVERROR(EAGAIN);
     }
 
-    if (jpeg->timestamp != *timestamp) {
+    if (jpeg->timestamp != *timestamp)
+    {
         /* Skip the current frame if timestamp is incorrect.
          * A start packet has been lost somewhere. */
         ffio_free_dyn_buf(&jpeg->frame);
@@ -355,7 +385,8 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
         return AVERROR_INVALIDDATA;
     }
 
-    if (off != avio_tell(jpeg->frame) - jpeg->hdr_size) {
+    if (off != avio_tell(jpeg->frame) - jpeg->hdr_size)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Missing packets; dropping frame.\n");
         return AVERROR(EAGAIN);
@@ -364,7 +395,8 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
     /* Copy data to frame buffer. */
     avio_write(jpeg->frame, buf, len);
 
-    if (flags & RTP_FLAG_MARKER) {
+    if (flags & RTP_FLAG_MARKER)
+    {
         /* End of JPEG data packet. */
         uint8_t buf[2] = { 0xff, EOI };
 
@@ -372,7 +404,8 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
         avio_write(jpeg->frame, buf, sizeof(buf));
 
         /* Prepare the JPEG packet. */
-        if ((ret = ff_rtp_finalize_packet(pkt, &jpeg->frame, st->index)) < 0) {
+        if ((ret = ff_rtp_finalize_packet(pkt, &jpeg->frame, st->index)) < 0)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Error occurred when getting frame buffer.\n");
             return ret;
@@ -384,7 +417,8 @@ static int jpeg_parse_packet(AVFormatContext *ctx, PayloadContext *jpeg,
     return AVERROR(EAGAIN);
 }
 
-RTPDynamicProtocolHandler ff_jpeg_dynamic_handler = {
+RTPDynamicProtocolHandler ff_jpeg_dynamic_handler =
+{
     .enc_name          = "JPEG",
     .codec_type        = AVMEDIA_TYPE_VIDEO,
     .codec_id          = AV_CODEC_ID_MJPEG,

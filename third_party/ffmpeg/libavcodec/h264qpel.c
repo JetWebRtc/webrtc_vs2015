@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003-2010 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -78,7 +78,8 @@ av_cold void ff_h264qpel_init(H264QpelContext *c, int bit_depth)
     dspfunc2(avg_h264_qpel, 1,  8, depth);      \
     dspfunc2(avg_h264_qpel, 2,  4, depth)
 
-    switch (bit_depth) {
+    switch (bit_depth)
+    {
     default:
         SET_QPEL(8);
         break;

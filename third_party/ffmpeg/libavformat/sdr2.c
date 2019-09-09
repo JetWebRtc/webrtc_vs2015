@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SDR2 demuxer
  * Copyright (c) 2014 Paul B Mahol
  *
@@ -64,7 +64,8 @@ static int sdr2_read_header(AVFormatContext *s)
     return 0;
 }
 
-static const uint8_t header[24] = {
+static const uint8_t header[24] =
+{
     0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x1e,
     0xa6, 0x80, 0xb0, 0x7e, 0x40, 0x00, 0x00, 0x00,
     0x01, 0x68, 0xce, 0x38, 0x80, 0x00, 0x00, 0x00
@@ -89,17 +90,21 @@ static int sdr2_read_packet(AVFormatContext *s, AVPacket *pkt)
     is_video = avio_rl32(s->pb);
     avio_skip(s->pb, 30);
 
-    if (pos == FIRST) {
+    if (pos == FIRST)
+    {
         if (av_new_packet(pkt, next - 52 + 24) < 0)
             return AVERROR(ENOMEM);
         memcpy(pkt->data, header, 24);
         ret = avio_read(s->pb, pkt->data + 24, next - 52);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
         av_shrink_packet(pkt, ret + 24);
-    } else {
+    }
+    else
+    {
         ret = av_get_packet(s->pb, pkt, next - 52);
     }
     pkt->stream_index = !!is_video;
@@ -110,7 +115,8 @@ static int sdr2_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_sdr2_demuxer = {
+AVInputFormat ff_sdr2_demuxer =
+{
     .name        = "sdr2",
     .long_name   = NULL_IF_CONFIG_SMALL("SDR2"),
     .read_probe  = sdr2_probe,

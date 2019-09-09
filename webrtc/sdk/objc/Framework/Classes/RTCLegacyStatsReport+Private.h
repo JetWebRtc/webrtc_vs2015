@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCLegacyStatsReport ()
 
-/** Initialize an RTCLegacyStatsReport object from a native StatsReport. */
+    /** Initialize an RTCLegacyStatsReport object from a native StatsReport. */
 - (instancetype)initWithNativeReport:(const webrtc::StatsReport &)nativeReport;
 
 @end

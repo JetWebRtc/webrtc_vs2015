@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 
 #include "dec_frame.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*!
 * \brief     update mv and ref_index cache for current MB, only for P_16x16 (SKIP inclusive)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wing Commander III Movie (.mve) File Demuxer
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -62,7 +62,8 @@
 
 #define PALETTE_SIZE (256 * 3)
 
-typedef struct Wc3DemuxContext {
+typedef struct Wc3DemuxContext
+{
     int width;
     int height;
     int64_t pts;
@@ -79,7 +80,7 @@ static int wc3_probe(AVProbeData *p)
         return 0;
 
     if ((AV_RL32(&p->buf[0]) != FORM_TAG) ||
-        (AV_RL32(&p->buf[8]) != MOVE_TAG))
+            (AV_RL32(&p->buf[8]) != MOVE_TAG))
         return 0;
 
     return AVPROBE_SCORE_MAX;
@@ -101,7 +102,8 @@ static int wc3_read_header(AVFormatContext *s)
     wc3->pts = 0;
     wc3->video_stream_index = wc3->audio_stream_index = 0;
     av_init_packet(&wc3->vpkt);
-    wc3->vpkt.data = NULL; wc3->vpkt.size = 0;
+    wc3->vpkt.data = NULL;
+    wc3->vpkt.size = 0;
 
     /* skip the first 3 32-bit numbers */
     avio_skip(pb, 12);
@@ -111,8 +113,10 @@ static int wc3_read_header(AVFormatContext *s)
     fourcc_tag = avio_rl32(pb);
     size = (avio_rb32(pb) + 1) & (~1);
 
-    do {
-        switch (fourcc_tag) {
+    do
+    {
+        switch (fourcc_tag)
+        {
 
         case SOND_TAG:
         case INDX_TAG:
@@ -134,7 +138,7 @@ static int wc3_read_header(AVFormatContext *s)
                 return AVERROR(EIO);
             buffer[size] = 0;
             av_dict_set(&s->metadata, "title", buffer,
-                                   AV_DICT_DONT_STRDUP_VAL);
+                        AV_DICT_DONT_STRDUP_VAL);
             break;
 
         case SIZE_TAG:
@@ -151,8 +155,8 @@ static int wc3_read_header(AVFormatContext *s)
 
         default:
             av_log(s, AV_LOG_ERROR, "  unrecognized WC3 chunk: %c%c%c%c (0x%02X%02X%02X%02X)\n",
-                (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24),
-                (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24));
+                   (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24),
+                   (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24));
             return AVERROR_INVALIDDATA;
         }
 
@@ -162,7 +166,8 @@ static int wc3_read_header(AVFormatContext *s)
         if (avio_feof(pb))
             return AVERROR(EIO);
 
-    } while (fourcc_tag != BRCH_TAG);
+    }
+    while (fourcc_tag != BRCH_TAG);
 
     /* initialize the decoder streams */
     st = avformat_new_stream(s, NULL);
@@ -189,7 +194,7 @@ static int wc3_read_header(AVFormatContext *s)
     st->codec->bits_per_coded_sample = WC3_AUDIO_BITS;
     st->codec->sample_rate = WC3_SAMPLE_RATE;
     st->codec->bit_rate = st->codec->channels * st->codec->sample_rate *
-        st->codec->bits_per_coded_sample;
+                          st->codec->bits_per_coded_sample;
     st->codec->block_align = WC3_AUDIO_BITS * WC3_AUDIO_CHANNELS;
 
     return 0;
@@ -206,7 +211,8 @@ static int wc3_read_packet(AVFormatContext *s,
     int ret = 0;
     unsigned char text[1024];
 
-    while (!packet_read) {
+    while (!packet_read)
+    {
 
         fourcc_tag = avio_rl32(pb);
         /* chunk sizes are 16-bit aligned */
@@ -214,7 +220,8 @@ static int wc3_read_packet(AVFormatContext *s,
         if (avio_feof(pb))
             return AVERROR(EIO);
 
-        switch (fourcc_tag) {
+        switch (fourcc_tag)
+        {
 
         case BRCH_TAG:
             /* no-op */
@@ -234,7 +241,8 @@ static int wc3_read_packet(AVFormatContext *s,
             if (wc3->vpkt.size > 0)
                 ret = 0;
             *pkt = wc3->vpkt;
-            wc3->vpkt.data = NULL; wc3->vpkt.size = 0;
+            wc3->vpkt.data = NULL;
+            wc3->vpkt.size = 0;
             pkt->stream_index = wc3->video_stream_index;
             pkt->pts = wc3->pts;
             packet_read = 1;
@@ -247,7 +255,8 @@ static int wc3_read_packet(AVFormatContext *s,
 #else
             if ((unsigned)size > sizeof(text) || (ret = avio_read(pb, text, size)) != size)
                 ret = AVERROR(EIO);
-            else {
+            else
+            {
                 int i = 0;
                 av_log (s, AV_LOG_DEBUG, "Subtitle time!\n");
                 if (i >= size || av_strnlen(&text[i + 1], size - i - 1) >= size - i - 1)
@@ -279,8 +288,8 @@ static int wc3_read_packet(AVFormatContext *s,
 
         default:
             av_log (s, AV_LOG_ERROR, "  unrecognized WC3 chunk: %c%c%c%c (0x%02X%02X%02X%02X)\n",
-                (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24),
-                (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24));
+                    (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24),
+                    (uint8_t)fourcc_tag, (uint8_t)(fourcc_tag >> 8), (uint8_t)(fourcc_tag >> 16), (uint8_t)(fourcc_tag >> 24));
             ret = AVERROR_INVALIDDATA;
             packet_read = 1;
             break;
@@ -300,7 +309,8 @@ static int wc3_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_wc3_demuxer = {
+AVInputFormat ff_wc3_demuxer =
+{
     .name           = "wc3movie",
     .long_name      = NULL_IF_CONFIG_SMALL("Wing Commander III movie"),
     .priv_data_size = sizeof(Wc3DemuxContext),

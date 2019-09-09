@@ -1,9 +1,9 @@
-#pragma once
+﻿#pragma once
 // ----------------------------------------------------------------------------
 //
 // D3D10 Tokenized Program Format
 //
-// Copyright (c) Microsoft Corporation. 
+// Copyright (c) Microsoft Corporation.
 //
 // ----------------------------------------------------------------------------
 //
@@ -118,7 +118,8 @@ typedef enum D3D10_SB_TOKENIZED_PROGRAM_TYPE
 //
 // ----------------------------------------------------------------------------
 
-typedef enum D3D10_SB_OPCODE_TYPE {
+typedef enum D3D10_SB_OPCODE_TYPE
+{
     D3D10_SB_OPCODE_ADD          ,
     D3D10_SB_OPCODE_AND          ,
     D3D10_SB_OPCODE_BREAK        ,
@@ -230,7 +231,7 @@ typedef enum D3D10_SB_OPCODE_TYPE {
 // -----------------------------------------------
 
     D3D10_SB_OPCODE_RESERVED0,
-    
+
 // ---------- DX 10.1 op codes---------------------
 
     D3D10_1_SB_OPCODE_LOD,
@@ -298,7 +299,7 @@ typedef enum D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE
 #define D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE_MASK  0x00001800
 #define D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE_SHIFT 11
 
-// DECODER MACRO: For an OpcodeToken0 for the resinfo instruction, 
+// DECODER MACRO: For an OpcodeToken0 for the resinfo instruction,
 // determine the return type.
 #define DECODE_D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE(OpcodeToken0) ((D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE)(((OpcodeToken0)&D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE_MASK)>>D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE_SHIFT))
 // ENCODER MACRO: Encode the return type for the resinfo instruction
@@ -312,7 +313,7 @@ typedef enum D3D10_SB_RESINFO_INSTRUCTION_RETURN_TYPE
 // extended opcodes.
 #define DECODE_IS_D3D10_SB_OPCODE_EXTENDED(OpcodeToken0) (((OpcodeToken0)&D3D10_SB_OPCODE_EXTENDED_MASK)>> D3D10_SB_OPCODE_EXTENDED_SHIFT)
 // ENCODER MACRO: Store in OpcodeToken0 whether the opcode is extended
-// by an additional opcode token.  
+// by an additional opcode token.
 #define ENCODE_D3D10_SB_OPCODE_EXTENDED(bExtended) (((bExtended)!=0)?D3D10_SB_OPCODE_EXTENDED_MASK:0)
 
 // ----------------------------------------------------------------------------
@@ -410,7 +411,7 @@ typedef enum D3D10_SB_IMMEDIATE_ADDRESS_OFFSET_COORD
 // [10:00] == D3D10_SB_OPCODE_CUSTOMDATA
 // [31:11] == D3D10_SB_CUSTOMDATA_CLASS
 //
-// DWORD 1: 
+// DWORD 1:
 //          32-bit unsigned integer count of number
 //          of DWORDs in custom-data block,
 //          including DWORD 0 and DWORD 1.
@@ -660,12 +661,12 @@ typedef enum D3D10_SB_OPERAND_TYPE
     D3D10_SB_OPERAND_TYPE_OUTPUT         = 2,  // General Output Register File
     D3D10_SB_OPERAND_TYPE_INDEXABLE_TEMP = 3,  // Temporary Register File (indexable)
     D3D10_SB_OPERAND_TYPE_IMMEDIATE32    = 4,  // 32bit/component immediate value(s)
-                                          // If for example, operand token bits
-                                          // [01:00]==D3D10_SB_OPERAND_4_COMPONENT,
-                                          // this means that the operand type:
-                                          // D3D10_SB_OPERAND_TYPE_IMMEDIATE32
-                                          // results in 4 additional 32bit
-                                          // DWORDS present for the operand.
+    // If for example, operand token bits
+    // [01:00]==D3D10_SB_OPERAND_4_COMPONENT,
+    // this means that the operand type:
+    // D3D10_SB_OPERAND_TYPE_IMMEDIATE32
+    // results in 4 additional 32bit
+    // DWORDS present for the operand.
     D3D10_SB_OPERAND_TYPE_IMMEDIATE64    = 5,  // 64bit/comp.imm.val(s)HI:LO(unused)
     D3D10_SB_OPERAND_TYPE_SAMPLER        = 6,  // Reference to sampler state
     D3D10_SB_OPERAND_TYPE_RESOURCE       = 7,  // Reference to memory resource (e.g. texture)
@@ -709,13 +710,13 @@ typedef enum D3D10_SB_OPERAND_INDEX_REPRESENTATION
 {
     D3D10_SB_OPERAND_INDEX_IMMEDIATE32               = 0, // Extra DWORD
     D3D10_SB_OPERAND_INDEX_IMMEDIATE64               = 1, // 2 Extra DWORDs
-                                                     //   (HI32:LO32)
+    //   (HI32:LO32)
     D3D10_SB_OPERAND_INDEX_RELATIVE                  = 2, // Extra operand
     D3D10_SB_OPERAND_INDEX_IMMEDIATE32_PLUS_RELATIVE = 3, // Extra DWORD followed by
-                                                     //   extra operand
+    //   extra operand
     D3D10_SB_OPERAND_INDEX_IMMEDIATE64_PLUS_RELATIVE = 4, // 2 Extra DWORDS
-                                                     //   (HI32:LO32) followed
-                                                     //   by extra operand
+    //   (HI32:LO32) followed
+    //   by extra operand
 } D3D10_SB_OPERAND_INDEX_REPRESENTATION;
 #define D3D10_SB_OPERAND_INDEX_REPRESENTATION_SHIFT(Dim) (22+3*((Dim)&3))
 #define D3D10_SB_OPERAND_INDEX_REPRESENTATION_MASK(Dim) (0x3<<D3D10_SB_OPERAND_INDEX_REPRESENTATION_SHIFT(Dim))
@@ -775,9 +776,9 @@ typedef enum D3D10_SB_OPERAND_INDEX_REPRESENTATION
 typedef enum D3D10_SB_EXTENDED_OPERAND_TYPE
 {
     D3D10_SB_EXTENDED_OPERAND_EMPTY            = 0, // Might be used if this
-                                               // enum is full and
-                                               // further extended opcode
-                                               // is needed.
+    // enum is full and
+    // further extended opcode
+    // is needed.
     D3D10_SB_EXTENDED_OPERAND_MODIFIER         = 1,
 } D3D10_SB_EXTENDED_OPERAND_TYPE;
 #define D3D10_SB_EXTENDED_OPERAND_TYPE_MASK 0x0000003f
@@ -795,10 +796,10 @@ typedef enum D3D10_SB_EXTENDED_OPERAND_TYPE
 typedef enum D3D10_SB_OPERAND_MODIFIER
 {
     D3D10_SB_OPERAND_MODIFIER_NONE     = 0, // Nop.  This is the implied
-                                             // default if the extended
-                                             // operand is not present for
-                                             // an operand for which source
-                                             // modifiers are meaningful
+    // default if the extended
+    // operand is not present for
+    // an operand for which source
+    // modifiers are meaningful
     D3D10_SB_OPERAND_MODIFIER_NEG      = 1, // Negate
     D3D10_SB_OPERAND_MODIFIER_ABS      = 2, // Absolute value, abs()
     D3D10_SB_OPERAND_MODIFIER_ABSNEG   = 3, // -abs()
@@ -1019,7 +1020,7 @@ typedef enum D3D10_SB_SAMPLER_MODE
 //
 // OpcodeToken0 is followed by 1 operand:
 // (1) Operand, starting with OperandToken0, defining which input
-//     v# register (D3D10_SB_OPERAND_TYPE_INPUT) is being declared, 
+//     v# register (D3D10_SB_OPERAND_TYPE_INPUT) is being declared,
 //     including writemask.
 //
 // ----------------------------------------------------------------------------
@@ -1040,9 +1041,9 @@ typedef enum D3D10_SB_SAMPLER_MODE
 // OpcodeToken0 is followed by 2 operands:
 // (1) Operand, starting with OperandToken0, defining which input
 //     v# register (D3D10_SB_OPERAND_TYPE_INPUT) is being declared,
-//     including writemask.  For Geometry Shaders, the input is 
-//     v[vertex][attribute], and this declaration is only for which register 
-//     on the attribute axis is being declared.  The vertex axis value must 
+//     including writemask.  For Geometry Shaders, the input is
+//     v[vertex][attribute], and this declaration is only for which register
+//     on the attribute axis is being declared.  The vertex axis value must
 //     be equal to the # of vertices in the current input primitive for the GS
 //     (i.e. 6 for triangle + adjacency).
 // (2) a System Interpreted Value Name (NameToken)
@@ -1213,18 +1214,18 @@ typedef enum D3D10_SB_SAMPLER_MODE
 // OpcodeToken0 is followed by 2 operands:
 // (1) an operand, starting with OperandToken0, defining which
 //     input (v#) or output (o#) register is having its array indexing range
-//     declared, including writemask.  For Geometry Shader inputs, 
+//     declared, including writemask.  For Geometry Shader inputs,
 //     it is assumed that the vertex axis is always fully indexable,
-//     and 0 must be specified as the vertex# in this declaration, so that 
+//     and 0 must be specified as the vertex# in this declaration, so that
 //     only the a range of attributes are having their index range defined.
-//     
+//
 // (2) a DWORD representing the count of registers starting from the one
 //     indicated in (1).
 //
 // ----------------------------------------------------------------------------
 
 // ----------------------------------------------------------------------------
-// Temp Register Declaration r0...r(n-1) 
+// Temp Register Declaration r0...r(n-1)
 //
 // OpcodeToken0:
 //
@@ -1236,7 +1237,7 @@ typedef enum D3D10_SB_SAMPLER_MODE
 //         extended.
 //
 // OpcodeToken0 is followed by 1 operand:
-// (1) DWORD (unsigned int) indicating how many temps are being declared.  
+// (1) DWORD (unsigned int) indicating how many temps are being declared.
 //     i.e. 5 means r0...r4 are declared.
 //
 // ----------------------------------------------------------------------------
@@ -1276,18 +1277,18 @@ typedef enum D3D10_SB_SAMPLER_MODE
 // OpcodeToken0 is followed by 1 operand:
 // (1) Operand, starting with OperandToken0, defining which CB slot (cb#[size])
 //     is being declared. (operand type: D3D10_SB_OPERAND_TYPE_CONSTANT_BUFFER)
-//     The indexing dimension for the register must be 
+//     The indexing dimension for the register must be
 //     D3D10_SB_OPERAND_INDEX_DIMENSION_2D, where the first index specifies
-//     which cb#[] is being declared, and the second (array) index specifies the size 
-//     of the buffer, as a count of 32-bit*4 elements.  (As opposed to when the 
-//     cb#[] is used in shader instructions, and the array index represents which 
+//     which cb#[] is being declared, and the second (array) index specifies the size
+//     of the buffer, as a count of 32-bit*4 elements.  (As opposed to when the
+//     cb#[] is used in shader instructions, and the array index represents which
 //     location in the constant buffer is being referenced.)
 //     If the size is specified as 0, the CB size is not known (any size CB
 //     can be bound to the slot).
 //
 // The order of constant buffer declarations in a shader indicates their
 // relative priority from highest to lowest (hint to driver).
-// 
+//
 // ----------------------------------------------------------------------------
 
 typedef enum D3D10_SB_CONSTANT_BUFFER_ACCESS_PATTERN
@@ -1315,7 +1316,7 @@ typedef enum D3D10_SB_CONSTANT_BUFFER_ACCESS_PATTERN
 //
 // OpcodeToken1 is followed by:
 // (1) DWORD indicating length of declaration, including OpcodeToken0 and 1.
-//     This length must = 2(for OpcodeToken0 and 1) + a multiple of 4 
+//     This length must = 2(for OpcodeToken0 and 1) + a multiple of 4
 //                                                    (# of immediate constants)
 // (2) Sequence of 4-tuples of DWORDs defining the Immediate Constant Buffer.
 //     The number of 4-tuples is (length above - 1) / 4
@@ -1505,7 +1506,7 @@ typedef enum D3D10_SB_INSTRUCTION_RETURN_TYPE
 #define D3D10_SB_INSTRUCTION_RETURN_TYPE_MASK  0x00001800
 #define D3D10_SB_INSTRUCTION_RETURN_TYPE_SHIFT 11
 
-// DECODER MACRO: For an OpcodeToken0 with the return type 
+// DECODER MACRO: For an OpcodeToken0 with the return type
 // determine the return type.
 #define DECODE_D3D10_SB_INSTRUCTION_RETURN_TYPE(OpcodeToken0) ((D3D10_SB_INSTRUCTION_RETURN_TYPE)(((OpcodeToken0)&D3D10_SB_INSTRUCTION_RETURN_TYPE_MASK)>>D3D10_SB_INSTRUCTION_RETURN_TYPE_SHIFT))
 // ENCODER MACRO: Encode the return type for instructions

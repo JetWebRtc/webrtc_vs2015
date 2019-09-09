@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -120,34 +120,34 @@ amm-info@iis.fraunhofer.de
 
 typedef enum
 {
-  SBRDEC_OK = 0,                       /*!< All fine.                                                       */
-  /* SBRDEC_CONCEAL,                                                                                        */
-  /* SBRDEC_NOSYNCH,                                                                                        */
-  /* SBRDEC_ILLEGAL_PROGRAM,                                                                                */
-  /* SBRDEC_ILLEGAL_TAG,                                                                                    */
-  /* SBRDEC_ILLEGAL_CHN_CONFIG,                                                                             */
-  /* SBRDEC_ILLEGAL_SECTION,                                                                                */
-  /* SBRDEC_ILLEGAL_SCFACTORS,                                                                              */
-  /* SBRDEC_ILLEGAL_PULSE_DATA,                                                                             */
-  /* SBRDEC_MAIN_PROFILE_NOT_IMPLEMENTED,                                                                   */
-  /* SBRDEC_GC_NOT_IMPLEMENTED,                                                                             */
-  /* SBRDEC_ILLEGAL_PLUS_ELE_ID,                                                                            */
-  SBRDEC_CREATE_ERROR,                 /*!<                                                                 */
-  SBRDEC_NOT_INITIALIZED,              /*!<                                                                 */
-  SBRDEC_MEM_ALLOC_FAILED,             /*!< Memory allocation failed. Probably not enough memory available. */
-  SBRDEC_PARSE_ERROR,                  /*!<                                                                 */
-  SBRDEC_UNSUPPORTED_CONFIG,           /*!<                                                                 */
-  SBRDEC_SET_PARAM_FAIL                /*!<                                                                 */
+    SBRDEC_OK = 0,                       /*!< All fine.                                                       */
+    /* SBRDEC_CONCEAL,                                                                                        */
+    /* SBRDEC_NOSYNCH,                                                                                        */
+    /* SBRDEC_ILLEGAL_PROGRAM,                                                                                */
+    /* SBRDEC_ILLEGAL_TAG,                                                                                    */
+    /* SBRDEC_ILLEGAL_CHN_CONFIG,                                                                             */
+    /* SBRDEC_ILLEGAL_SECTION,                                                                                */
+    /* SBRDEC_ILLEGAL_SCFACTORS,                                                                              */
+    /* SBRDEC_ILLEGAL_PULSE_DATA,                                                                             */
+    /* SBRDEC_MAIN_PROFILE_NOT_IMPLEMENTED,                                                                   */
+    /* SBRDEC_GC_NOT_IMPLEMENTED,                                                                             */
+    /* SBRDEC_ILLEGAL_PLUS_ELE_ID,                                                                            */
+    SBRDEC_CREATE_ERROR,                 /*!<                                                                 */
+    SBRDEC_NOT_INITIALIZED,              /*!<                                                                 */
+    SBRDEC_MEM_ALLOC_FAILED,             /*!< Memory allocation failed. Probably not enough memory available. */
+    SBRDEC_PARSE_ERROR,                  /*!<                                                                 */
+    SBRDEC_UNSUPPORTED_CONFIG,           /*!<                                                                 */
+    SBRDEC_SET_PARAM_FAIL                /*!<                                                                 */
 } SBR_ERROR;
 
 typedef enum
 {
-  SBR_SYSTEM_BITSTREAM_DELAY,          /*!< System: Switch to enable an additional SBR bitstream delay of one frame. */
-  SBR_QMF_MODE,                        /*!< Set QMF mode, either complex or low power. */
-  SBR_LD_QMF_TIME_ALIGN,               /*!< Set QMF type, either LD-MPS or CLDFB. Relevant for ELD streams only. */
-  SBR_FLUSH_DATA,                      /*!< Set internal state to flush the decoder with the next process call. */
-  SBR_CLEAR_HISTORY,                   /*!< Clear all internal states (delay lines, QMF states, ...). */
-  SBR_BS_INTERRUPTION                  /*!< Signal bit stream interruption. Value is ignored. */
+    SBR_SYSTEM_BITSTREAM_DELAY,          /*!< System: Switch to enable an additional SBR bitstream delay of one frame. */
+    SBR_QMF_MODE,                        /*!< Set QMF mode, either complex or low power. */
+    SBR_LD_QMF_TIME_ALIGN,               /*!< Set QMF type, either LD-MPS or CLDFB. Relevant for ELD streams only. */
+    SBR_FLUSH_DATA,                      /*!< Set internal state to flush the decoder with the next process call. */
+    SBR_CLEAR_HISTORY,                   /*!< Clear all internal states (delay lines, QMF states, ...). */
+    SBR_BS_INTERRUPTION                  /*!< Signal bit stream interruption. Value is ignored. */
 } SBRDEC_PARAM;
 
 typedef struct SBR_DECODER_INSTANCE *HANDLE_SBRDECODER;
@@ -180,14 +180,14 @@ SBR_ERROR sbrDecoder_Open ( HANDLE_SBRDECODER *pSelf );
  * \return  Error code.
  */
 SBR_ERROR sbrDecoder_InitElement (
-        HANDLE_SBRDECODER       self,
-        const int               sampleRateIn,
-        const int               sampleRateOut,
-        const int               samplesPerFrame,
-        const AUDIO_OBJECT_TYPE coreCodec,
-        const MP4_ELEMENT_ID    elementID,
-        const int               elementIndex
-        );
+    HANDLE_SBRDECODER       self,
+    const int               sampleRateIn,
+    const int               sampleRateOut,
+    const int               samplesPerFrame,
+    const AUDIO_OBJECT_TYPE coreCodec,
+    const MP4_ELEMENT_ID    elementID,
+    const int               elementIndex
+);
 
 /**
  * \brief pass out of band SBR header to SBR decoder
@@ -200,15 +200,15 @@ SBR_ERROR sbrDecoder_InitElement (
  * \return  Error code.
  */
 INT sbrDecoder_Header (
-        HANDLE_SBRDECODER       self,
-        HANDLE_FDK_BITSTREAM    hBs,
-        const INT sampleRateIn,
-        const INT sampleRateOut,
-        const INT samplesPerFrame,
-        const AUDIO_OBJECT_TYPE coreCodec,
-        const MP4_ELEMENT_ID    elementID,
-        const INT               elementIndex
-        );
+    HANDLE_SBRDECODER       self,
+    HANDLE_FDK_BITSTREAM    hBs,
+    const INT sampleRateIn,
+    const INT sampleRateOut,
+    const INT samplesPerFrame,
+    const AUDIO_OBJECT_TYPE coreCodec,
+    const MP4_ELEMENT_ID    elementID,
+    const INT               elementIndex
+);
 
 /**
  * \brief        Set a parameter of the SBR decoder runtime instance.
@@ -275,19 +275,19 @@ void sbrDecoder_drcDisable ( HANDLE_SBRDECODER  self,
  * \return  Error code.
  */
 SBR_ERROR sbrDecoder_Parse (
-        HANDLE_SBRDECODER  self,
-        HANDLE_FDK_BITSTREAM hBs,
-        int *count,
-        int  bsPayLen,
-        int  crcFlag,
-        MP4_ELEMENT_ID prev_element,
-        int element_index,
-        int fGlobalIndependencyFlag
-        );
+    HANDLE_SBRDECODER  self,
+    HANDLE_FDK_BITSTREAM hBs,
+    int *count,
+    int  bsPayLen,
+    int  crcFlag,
+    MP4_ELEMENT_ID prev_element,
+    int element_index,
+    int fGlobalIndependencyFlag
+);
 
 /**
  * \brief  This function decodes the given SBR bitstreams and applies SBR to the given time data.
- * 
+ *
  * SBR-processing works InPlace. I.e. the calling function has to provide
  * a time domain buffer timeData which can hold the completely decoded
  * result.
@@ -330,7 +330,7 @@ SBR_ERROR sbrDecoder_Close ( HANDLE_SBRDECODER *self );
  * \param info  Pointer to a LIB_INFO struct, where library information is written to.
  * \return      0 on success, -1 if invalid handle or if no free element is available to write information to.
  */
-INT sbrDecoder_GetLibInfo( LIB_INFO *info );    
+INT sbrDecoder_GetLibInfo( LIB_INFO *info );
 
 /**
  * \brief       Determine the modules output signal delay in samples.

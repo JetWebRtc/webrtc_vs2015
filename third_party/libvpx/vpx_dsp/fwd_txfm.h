@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,12 +13,13 @@
 
 #include "vpx_dsp/txfm_common.h"
 
-static INLINE tran_high_t fdct_round_shift(tran_high_t input) {
-  tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
-  // TODO(debargha, peter.derivaz): Find new bounds for this assert
-  // and make the bounds consts.
-  // assert(INT16_MIN <= rv && rv <= INT16_MAX);
-  return rv;
+static INLINE tran_high_t fdct_round_shift(tran_high_t input)
+{
+    tran_high_t rv = ROUND_POWER_OF_TWO(input, DCT_CONST_BITS);
+    // TODO(debargha, peter.derivaz): Find new bounds for this assert
+    // and make the bounds consts.
+    // assert(INT16_MIN <= rv && rv <= INT16_MAX);
+    return rv;
 }
 
 void vpx_fdct32(const tran_high_t *input, tran_high_t *output, int round);

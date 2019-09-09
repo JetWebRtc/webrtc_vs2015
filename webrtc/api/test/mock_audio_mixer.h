@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,16 +15,19 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockAudioMixer : public AudioMixer {
- public:
-  MOCK_METHOD1(AddSource, bool(Source* audio_source));
-  MOCK_METHOD1(RemoveSource, void(Source* audio_source));
-  MOCK_METHOD2(Mix,
-               void(size_t number_of_channels,
-                    AudioFrame* audio_frame_for_mixing));
+class MockAudioMixer : public AudioMixer
+{
+public:
+    MOCK_METHOD1(AddSource, bool(Source* audio_source));
+    MOCK_METHOD1(RemoveSource, void(Source* audio_source));
+    MOCK_METHOD2(Mix,
+                 void(size_t number_of_channels,
+                      AudioFrame* audio_frame_for_mixing));
 };
 }  // namespace test
 }  // namespace webrtc

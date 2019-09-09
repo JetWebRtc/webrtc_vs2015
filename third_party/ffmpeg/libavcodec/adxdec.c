@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADX ADPCM codecs
  * Copyright (c) 2001,2003 BERO
  *
@@ -39,10 +39,12 @@ static av_cold int adx_decode_init(AVCodecContext *avctx)
     ADXContext *c = avctx->priv_data;
     int ret, header_size;
 
-    if (avctx->extradata_size >= 24) {
+    if (avctx->extradata_size >= 24)
+    {
         if ((ret = ff_adx_decode_header(avctx, avctx->extradata,
                                         avctx->extradata_size, &header_size,
-                                        c->coeff)) < 0) {
+                                        c->coeff)) < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "error parsing ADX header\n");
             return AVERROR_INVALIDDATA;
         }
@@ -79,7 +81,8 @@ static int adx_decode(ADXContext *c, int16_t *out, int offset,
     out += offset;
     s1 = prev->s1;
     s2 = prev->s2;
-    for (i = 0; i < BLOCK_SAMPLES; i++) {
+    for (i = 0; i < BLOCK_SAMPLES; i++)
+    {
         d  = get_sbits(&gb, 4);
         s0 = ((d << COEFF_BITS) * scale + c->coeff[0] * s1 + c->coeff[1] * s2) >> COEFF_BITS;
         s2 = s1;
@@ -104,15 +107,18 @@ static int adx_decode_frame(AVCodecContext *avctx, void *data,
     const uint8_t *buf_end = buf + avpkt->size;
     int num_blocks, ch, ret;
 
-    if (c->eof) {
+    if (c->eof)
+    {
         *got_frame_ptr = 0;
         return buf_size;
     }
 
-    if (!c->header_parsed && buf_size >= 2 && AV_RB16(buf) == 0x8000) {
+    if (!c->header_parsed && buf_size >= 2 && AV_RB16(buf) == 0x8000)
+    {
         int header_size;
         if ((ret = ff_adx_decode_header(avctx, buf, buf_size, &header_size,
-                                        c->coeff)) < 0) {
+                                        c->coeff)) < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "error parsing ADX header\n");
             return AVERROR_INVALIDDATA;
         }
@@ -131,8 +137,10 @@ static int adx_decode_frame(AVCodecContext *avctx, void *data,
 
     /* if the packet is not an even multiple of BLOCK_SIZE, check for an EOF
        packet */
-    if (!num_blocks || buf_size % (BLOCK_SIZE * avctx->channels)) {
-        if (buf_size >= 4 && (AV_RB16(buf) & 0x8000)) {
+    if (!num_blocks || buf_size % (BLOCK_SIZE * avctx->channels))
+    {
+        if (buf_size >= 4 && (AV_RB16(buf) & 0x8000))
+        {
             c->eof = 1;
             *got_frame_ptr = 0;
             return avpkt->size;
@@ -147,9 +155,12 @@ static int adx_decode_frame(AVCodecContext *avctx, void *data,
     samples = (int16_t **)frame->extended_data;
     samples_offset = 0;
 
-    while (num_blocks--) {
-        for (ch = 0; ch < c->channels; ch++) {
-            if (buf_end - buf < BLOCK_SIZE || adx_decode(c, samples[ch], samples_offset, buf, ch)) {
+    while (num_blocks--)
+    {
+        for (ch = 0; ch < c->channels; ch++)
+        {
+            if (buf_end - buf < BLOCK_SIZE || adx_decode(c, samples[ch], samples_offset, buf, ch))
+            {
                 c->eof = 1;
                 buf = avpkt->data + avpkt->size;
                 break;
@@ -174,7 +185,8 @@ static void adx_decode_flush(AVCodecContext *avctx)
     c->eof = 0;
 }
 
-AVCodec ff_adpcm_adx_decoder = {
+AVCodec ff_adpcm_adx_decoder =
+{
     .name           = "adpcm_adx",
     .long_name      = NULL_IF_CONFIG_SMALL("SEGA CRI ADX ADPCM"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -184,6 +196,8 @@ AVCodec ff_adpcm_adx_decoder = {
     .decode         = adx_decode_frame,
     .flush          = adx_decode_flush,
     .capabilities   = AV_CODEC_CAP_DR1,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
 };

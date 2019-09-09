@@ -40,7 +40,8 @@ static av_cold int gsm_init(AVCodecContext *avctx)
         avctx->sample_rate = 8000;
     avctx->sample_fmt     = AV_SAMPLE_FMT_S16;
 
-    switch (avctx->codec_id) {
+    switch (avctx->codec_id)
+    {
     case AV_CODEC_ID_GSM:
         avctx->frame_size  = GSM_FRAME_SIZE;
         avctx->block_align = GSM_BLOCK_SIZE;
@@ -49,14 +50,14 @@ static av_cold int gsm_init(AVCodecContext *avctx)
         avctx->frame_size  = 2 * GSM_FRAME_SIZE;
         if (!avctx->block_align)
             avctx->block_align = GSM_MS_BLOCK_SIZE;
-        else
-            if (avctx->block_align < MSN_MIN_BLOCK_SIZE ||
-                avctx->block_align > GSM_MS_BLOCK_SIZE  ||
-                (avctx->block_align - MSN_MIN_BLOCK_SIZE) % 3) {
-                av_log(avctx, AV_LOG_ERROR, "Invalid block alignment %d\n",
-                       avctx->block_align);
-                return AVERROR_INVALIDDATA;
-            }
+        else if (avctx->block_align < MSN_MIN_BLOCK_SIZE ||
+                 avctx->block_align > GSM_MS_BLOCK_SIZE  ||
+                 (avctx->block_align - MSN_MIN_BLOCK_SIZE) % 3)
+        {
+            av_log(avctx, AV_LOG_ERROR, "Invalid block alignment %d\n",
+                   avctx->block_align);
+            return AVERROR_INVALIDDATA;
+        }
     }
 
     return 0;
@@ -72,7 +73,8 @@ static int gsm_decode_frame(AVCodecContext *avctx, void *data,
     int buf_size = avpkt->size;
     int16_t *samples;
 
-    if (buf_size < avctx->block_align) {
+    if (buf_size < avctx->block_align)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet is too small\n");
         return AVERROR_INVALIDDATA;
     }
@@ -83,7 +85,8 @@ static int gsm_decode_frame(AVCodecContext *avctx, void *data,
         return res;
     samples = (int16_t *)frame->data[0];
 
-    switch (avctx->codec_id) {
+    switch (avctx->codec_id)
+    {
     case AV_CODEC_ID_GSM:
         init_get_bits(&gb, buf, buf_size * 8);
         if (get_bits(&gb, 4) != 0xd)
@@ -111,7 +114,8 @@ static void gsm_flush(AVCodecContext *avctx)
 }
 
 #if CONFIG_GSM_DECODER
-AVCodec ff_gsm_decoder = {
+AVCodec ff_gsm_decoder =
+{
     .name           = "gsm",
     .long_name      = NULL_IF_CONFIG_SMALL("GSM"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -124,7 +128,8 @@ AVCodec ff_gsm_decoder = {
 };
 #endif
 #if CONFIG_GSM_MS_DECODER
-AVCodec ff_gsm_ms_decoder = {
+AVCodec ff_gsm_ms_decoder =
+{
     .name           = "gsm_ms",
     .long_name      = NULL_IF_CONFIG_SMALL("GSM Microsoft variant"),
     .type           = AVMEDIA_TYPE_AUDIO,

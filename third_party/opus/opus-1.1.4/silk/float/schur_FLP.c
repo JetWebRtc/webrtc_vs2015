@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,11 +44,13 @@ silk_float silk_schur_FLP(                  /* O    returns residual energy     
     silk_assert( order==6||order==8||order==10||order==12||order==14||order==16 );
 
     /* Copy correlations */
-    for( k = 0; k < order+1; k++ ) {
+    for( k = 0; k < order+1; k++ )
+    {
         C[ k ][ 0 ] = C[ k ][ 1 ] = auto_corr[ k ];
     }
 
-    for( k = 0; k < order; k++ ) {
+    for( k = 0; k < order; k++ )
+    {
         /* Get reflection coefficient */
         rc_tmp = -C[ k + 1 ][ 0 ] / silk_max_float( C[ 0 ][ 1 ], 1e-9f );
 
@@ -56,7 +58,8 @@ silk_float silk_schur_FLP(                  /* O    returns residual energy     
         refl_coef[ k ] = rc_tmp;
 
         /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
+        for( n = 0; n < order - k; n++ )
+        {
             Ctmp1 = C[ n + k + 1 ][ 0 ];
             Ctmp2 = C[ n ][ 1 ];
             C[ n + k + 1 ][ 0 ] = Ctmp1 + Ctmp2 * rc_tmp;

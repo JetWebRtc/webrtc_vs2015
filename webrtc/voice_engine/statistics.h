@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,14 +17,16 @@
 #include "webrtc/voice_engine/include/voe_errors.h"
 #include "webrtc/voice_engine/voice_engine_defines.h"
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 
 class Statistics
 {
- public:
+public:
     enum {KTraceMaxMessageSize = 256};
- public:
+public:
     Statistics(uint32_t instanceId);
     ~Statistics();
 
@@ -38,7 +40,7 @@ class Statistics
                          const char* msg) const;
     int32_t LastError() const;
 
- private:
+private:
     rtc::CriticalSection lock_;
     const uint32_t _instanceId;
     mutable int32_t _lastError;

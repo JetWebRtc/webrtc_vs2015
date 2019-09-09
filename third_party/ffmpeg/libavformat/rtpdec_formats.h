@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP depacketizer declarations
  * Copyright (c) 2010 Martin Storsjo
  *

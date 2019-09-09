@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,12 +28,14 @@ extern "C" {
 #define ALIGN8_END __attribute__((aligned(8)))
 #endif
 
-typedef struct {
+typedef struct
+{
     int16_t real;
     int16_t imag;
 } ComplexInt16;
 
-typedef struct {
+typedef struct
+{
     int farBufWritePos;
     int farBufReadPos;
     int knownDelay;
@@ -411,8 +413,8 @@ void WebRtcAecm_CalcLinearEnergiesNeon(AecmCore* aecm,
                                        uint32_t* echo_energy_stored);
 
 void WebRtcAecm_StoreAdaptiveChannelNeon(AecmCore* aecm,
-                                         const uint16_t* far_spectrum,
-                                         int32_t* echo_est);
+        const uint16_t* far_spectrum,
+        int32_t* echo_est);
 
 void WebRtcAecm_ResetAdaptiveChannelNeon(AecmCore* aecm);
 #endif
@@ -426,8 +428,8 @@ void WebRtcAecm_CalcLinearEnergies_mips(AecmCore* aecm,
                                         uint32_t* echo_energy_stored);
 #if defined(MIPS_DSP_R1_LE)
 void WebRtcAecm_StoreAdaptiveChannel_mips(AecmCore* aecm,
-                                          const uint16_t* far_spectrum,
-                                          int32_t* echo_est);
+        const uint16_t* far_spectrum,
+        int32_t* echo_est);
 
 void WebRtcAecm_ResetAdaptiveChannel_mips(AecmCore* aecm);
 #endif

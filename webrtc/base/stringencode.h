@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 
 #include "webrtc/base/checks.h"
 
-namespace rtc {
+namespace rtc
+{
 
 //////////////////////////////////////////////////////////////////////
 // String Encoding Utilities
@@ -129,11 +130,13 @@ size_t transform(std::string& value, size_t maxlen, const std::string& source,
 std::string s_transform(const std::string& source, Transform t);
 
 // Convenience wrappers.
-inline std::string s_url_encode(const std::string& source) {
-  return s_transform(source, url_encode);
+inline std::string s_url_encode(const std::string& source)
+{
+    return s_transform(source, url_encode);
 }
-inline std::string s_url_decode(const std::string& source) {
-  return s_transform(source, url_decode);
+inline std::string s_url_decode(const std::string& source)
+{
+    return s_transform(source, url_decode);
 }
 
 // Splits the source string into multiple fields separated by delimiter,
@@ -180,37 +183,48 @@ bool tokenize_first(const std::string& source,
 // Convert arbitrary values to/from a string.
 
 template <class T>
-static bool ToString(const T &t, std::string* s) {
-  RTC_DCHECK(s);
-  std::ostringstream oss;
-  oss << std::boolalpha << t;
-  *s = oss.str();
-  return !oss.fail();
+static bool ToString(const T &t, std::string* s)
+{
+    RTC_DCHECK(s);
+    std::ostringstream oss;
+    oss << std::boolalpha << t;
+    *s = oss.str();
+    return !oss.fail();
 }
 
 template <class T>
-static bool FromString(const std::string& s, T* t) {
-  RTC_DCHECK(t);
-  std::istringstream iss(s);
-  iss >> std::boolalpha >> *t;
-  return !iss.fail();
+static bool FromString(const std::string& s, T* t)
+{
+    RTC_DCHECK(t);
+    std::istringstream iss(s);
+    iss >> std::boolalpha >> *t;
+    return !iss.fail();
 }
 
 // Inline versions of the string conversion routines.
 
 template<typename T>
-static inline std::string ToString(const T& val) {
-  std::string str; ToString(val, &str); return str;
+static inline std::string ToString(const T& val)
+{
+    std::string str;
+    ToString(val, &str);
+    return str;
 }
 
 template<typename T>
-static inline T FromString(const std::string& str) {
-  T val; FromString(str, &val); return val;
+static inline T FromString(const std::string& str)
+{
+    T val;
+    FromString(str, &val);
+    return val;
 }
 
 template<typename T>
-static inline T FromString(const T& defaultValue, const std::string& str) {
-  T val(defaultValue); FromString(str, &val); return val;
+static inline T FromString(const T& defaultValue, const std::string& str)
+{
+    T val(defaultValue);
+    FromString(str, &val);
+    return val;
 }
 
 // simple function to strip out characters which shouldn't be

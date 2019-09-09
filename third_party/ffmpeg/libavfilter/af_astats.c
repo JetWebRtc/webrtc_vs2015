@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Rob Sykes <robs@users.sourceforge.net>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -26,7 +26,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct ChannelStats {
+typedef struct ChannelStats
+{
     double last;
     double sigma_x, sigma_x2;
     double avg_sigma_x2, min_sigma_x2, max_sigma_x2;
@@ -40,7 +41,8 @@ typedef struct ChannelStats {
     uint64_t nb_samples;
 } ChannelStats;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     ChannelStats *chstats;
     int nb_channels;
@@ -55,7 +57,8 @@ typedef struct {
 #define OFFSET(x) offsetof(AudioStatsContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption astats_options[] = {
+static const AVOption astats_options[] =
+{
     { "length", "set the window length", OFFSET(time_constant), AV_OPT_TYPE_DOUBLE, {.dbl=.05}, .01, 10, FLAGS },
     { "metadata", "inject metadata in the filtergraph", OFFSET(metadata), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
     { "reset", "recalculate stats after this many frames", OFFSET(reset_count), AV_OPT_TYPE_INT, {.i64=0}, 0, INT_MAX, FLAGS },
@@ -68,7 +71,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_DBL, AV_SAMPLE_FMT_DBLP,
         AV_SAMPLE_FMT_NONE
     };
@@ -100,7 +104,8 @@ static void reset_stats(AudioStatsContext *s)
 
     memset(s->chstats, 0, sizeof(*s->chstats));
 
-    for (c = 0; c < s->nb_channels; c++) {
+    for (c = 0; c < s->nb_channels; c++)
+    {
         ChannelStats *p = &s->chstats[c];
 
         p->min = p->min_sigma_x2 = DBL_MAX;
@@ -136,27 +141,37 @@ static unsigned bit_depth(uint64_t mask)
 
 static inline void update_stat(AudioStatsContext *s, ChannelStats *p, double d)
 {
-    if (d < p->min) {
+    if (d < p->min)
+    {
         p->min = d;
         p->min_run = 1;
         p->min_runs = 0;
         p->min_count = 1;
-    } else if (d == p->min) {
+    }
+    else if (d == p->min)
+    {
         p->min_count++;
         p->min_run = d == p->last ? p->min_run + 1 : 1;
-    } else if (p->last == p->min) {
+    }
+    else if (p->last == p->min)
+    {
         p->min_runs += p->min_run * p->min_run;
     }
 
-    if (d > p->max) {
+    if (d > p->max)
+    {
         p->max = d;
         p->max_run = 1;
         p->max_runs = 0;
         p->max_count = 1;
-    } else if (d == p->max) {
+    }
+    else if (d == p->max)
+    {
         p->max_count++;
         p->max_run = d == p->last ? p->max_run + 1 : 1;
-    } else if (p->last == p->max) {
+    }
+    else if (p->last == p->max)
+    {
         p->max_runs += p->max_run * p->max_run;
     }
 
@@ -169,7 +184,8 @@ static inline void update_stat(AudioStatsContext *s, ChannelStats *p, double d)
     p->last = d;
     p->mask |= llrint(d * (UINT64_C(1) << 63));
 
-    if (p->nb_samples >= s->tc_samples) {
+    if (p->nb_samples >= s->tc_samples)
+    {
         p->max_sigma_x2 = FFMAX(p->max_sigma_x2, p->avg_sigma_x2);
         p->min_sigma_x2 = FFMIN(p->min_sigma_x2, p->avg_sigma_x2);
     }
@@ -205,7 +221,8 @@ static void set_metadata(AudioStatsContext *s, AVDictionary **metadata)
            max_sigma_x2 = DBL_MIN;
     int c;
 
-    for (c = 0; c < s->nb_channels; c++) {
+    for (c = 0; c < s->nb_channels; c++)
+    {
         ChannelStats *p = &s->chstats[c];
 
         if (p->nb_samples < s->tc_samples)
@@ -216,7 +233,7 @@ static void set_metadata(AudioStatsContext *s, AVDictionary **metadata)
         min_diff = FFMIN(min_diff, p->min_diff);
         max_diff = FFMAX(max_diff, p->max_diff);
         diff1_sum += p->diff1_sum,
-        min_sigma_x2 = FFMIN(min_sigma_x2, p->min_sigma_x2);
+                     min_sigma_x2 = FFMIN(min_sigma_x2, p->min_sigma_x2);
         max_sigma_x2 = FFMAX(max_sigma_x2, p->max_sigma_x2);
         sigma_x += p->sigma_x;
         sigma_x2 += p->sigma_x2;
@@ -269,9 +286,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     const double *src;
     int i, c;
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_SAMPLE_FMT_DBLP:
-        for (c = 0; c < channels; c++) {
+        for (c = 0; c < channels; c++)
+        {
             ChannelStats *p = &s->chstats[c];
             src = (const double *)buf->extended_data[c];
 
@@ -282,7 +301,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     case AV_SAMPLE_FMT_DBL:
         src = (const double *)buf->extended_data[0];
 
-        for (i = 0; i < buf->nb_samples; i++) {
+        for (i = 0; i < buf->nb_samples; i++)
+        {
             for (c = 0; c < channels; c++, src++)
                 update_stat(s, &s->chstats[c], *src);
         }
@@ -292,9 +312,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     if (s->metadata)
         set_metadata(s, metadata);
 
-    if (s->reset_count > 0) {
+    if (s->reset_count > 0)
+    {
         s->nb_frames++;
-        if (s->nb_frames >= s->reset_count) {
+        if (s->nb_frames >= s->reset_count)
+        {
             reset_stats(s);
             s->nb_frames = 0;
         }
@@ -317,7 +339,8 @@ static void print_stats(AVFilterContext *ctx)
            max_sigma_x2 = DBL_MIN;
     int c;
 
-    for (c = 0; c < s->nb_channels; c++) {
+    for (c = 0; c < s->nb_channels; c++)
+    {
         ChannelStats *p = &s->chstats[c];
 
         if (p->nb_samples < s->tc_samples)
@@ -328,7 +351,7 @@ static void print_stats(AVFilterContext *ctx)
         min_diff = FFMIN(min_diff, p->min_diff);
         max_diff = FFMAX(max_diff, p->max_diff);
         diff1_sum += p->diff1_sum,
-        min_sigma_x2 = FFMIN(min_sigma_x2, p->min_sigma_x2);
+                     min_sigma_x2 = FFMIN(min_sigma_x2, p->min_sigma_x2);
         max_sigma_x2 = FFMAX(max_sigma_x2, p->max_sigma_x2);
         sigma_x += p->sigma_x;
         sigma_x2 += p->sigma_x2;
@@ -386,7 +409,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->chstats);
 }
 
-static const AVFilterPad astats_inputs[] = {
+static const AVFilterPad astats_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -395,7 +419,8 @@ static const AVFilterPad astats_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad astats_outputs[] = {
+static const AVFilterPad astats_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -404,7 +429,8 @@ static const AVFilterPad astats_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_astats = {
+AVFilter ff_af_astats =
+{
     .name          = "astats",
     .description   = NULL_IF_CONFIG_SMALL("Show time domain statistics about audio frames."),
     .query_formats = query_formats,

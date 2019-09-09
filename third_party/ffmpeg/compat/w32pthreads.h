@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010-2011 x264 project
  *
  * Authors: Steven Walters <kemuri9@gmail.com>
@@ -44,7 +44,8 @@
 #include "libavutil/internal.h"
 #include "libavutil/mem.h"
 
-typedef struct pthread_t {
+typedef struct pthread_t
+{
     void *handle;
     void *(*func)(void* arg);
     void *arg;
@@ -60,7 +61,8 @@ typedef CRITICAL_SECTION pthread_mutex_t;
 #if HAVE_CONDITION_VARIABLE_PTR
 typedef CONDITION_VARIABLE pthread_cond_t;
 #else
-typedef struct pthread_cond_t {
+typedef struct pthread_cond_t
+{
     void *Ptr;
 } pthread_cond_t;
 #endif
@@ -150,7 +152,8 @@ static inline void pthread_cond_signal(pthread_cond_t *cond)
 #else // _WIN32_WINNT < 0x0600
 /* for pre-Windows 6.0 platforms we need to define and use our own condition
  * variable and api */
-typedef struct  win32_cond_t {
+typedef struct  win32_cond_t
+{
     pthread_mutex_t mtx_broadcast;
     pthread_mutex_t mtx_waiter_count;
     volatile int waiter_count;
@@ -169,7 +172,8 @@ static BOOL (WINAPI *cond_wait)(pthread_cond_t *cond, pthread_mutex_t *mutex,
 static av_unused int pthread_cond_init(pthread_cond_t *cond, const void *unused_attr)
 {
     win32_cond_t *win32_cond = NULL;
-    if (cond_init) {
+    if (cond_init)
+    {
         cond_init(cond);
         return 0;
     }
@@ -212,7 +216,8 @@ static av_unused void pthread_cond_broadcast(pthread_cond_t *cond)
     win32_cond_t *win32_cond = cond->Ptr;
     int have_waiter;
 
-    if (cond_broadcast) {
+    if (cond_broadcast)
+    {
         cond_broadcast(cond);
         return;
     }
@@ -222,18 +227,21 @@ static av_unused void pthread_cond_broadcast(pthread_cond_t *cond)
     pthread_mutex_lock(&win32_cond->mtx_waiter_count);
     have_waiter = 0;
 
-    if (win32_cond->waiter_count) {
+    if (win32_cond->waiter_count)
+    {
         win32_cond->is_broadcast = 1;
         have_waiter = 1;
     }
 
-    if (have_waiter) {
+    if (have_waiter)
+    {
         ReleaseSemaphore(win32_cond->semaphore, win32_cond->waiter_count, NULL);
         pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
         WaitForSingleObject(win32_cond->waiters_done, INFINITE);
         ResetEvent(win32_cond->waiters_done);
         win32_cond->is_broadcast = 0;
-    } else
+    }
+    else
         pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
     pthread_mutex_unlock(&win32_cond->mtx_broadcast);
 }
@@ -242,7 +250,8 @@ static av_unused int pthread_cond_wait(pthread_cond_t *cond, pthread_mutex_t *mu
 {
     win32_cond_t *win32_cond = cond->Ptr;
     int last_waiter;
-    if (cond_wait) {
+    if (cond_wait)
+    {
         cond_wait(cond, mutex, INFINITE);
         return 0;
     }
@@ -274,7 +283,8 @@ static av_unused void pthread_cond_signal(pthread_cond_t *cond)
 {
     win32_cond_t *win32_cond = cond->Ptr;
     int have_waiter;
-    if (cond_signal) {
+    if (cond_signal)
+    {
         cond_signal(cond);
         return;
     }
@@ -286,7 +296,8 @@ static av_unused void pthread_cond_signal(pthread_cond_t *cond)
     have_waiter = win32_cond->waiter_count;
     pthread_mutex_unlock(&win32_cond->mtx_waiter_count);
 
-    if (have_waiter) {
+    if (have_waiter)
+    {
         ReleaseSemaphore(win32_cond->semaphore, 1, NULL);
         WaitForSingleObject(win32_cond->waiters_done, INFINITE);
         ResetEvent(win32_cond->waiters_done);

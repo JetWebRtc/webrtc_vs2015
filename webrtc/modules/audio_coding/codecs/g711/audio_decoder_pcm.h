@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,54 +15,59 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class AudioDecoderPcmU final : public AudioDecoder {
- public:
-  explicit AudioDecoderPcmU(size_t num_channels) : num_channels_(num_channels) {
-    RTC_DCHECK_GE(num_channels, 1);
-  }
-  void Reset() override;
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
-                                        uint32_t timestamp) override;
-  int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
-  int SampleRateHz() const override;
-  size_t Channels() const override;
+class AudioDecoderPcmU final : public AudioDecoder
+{
+public:
+    explicit AudioDecoderPcmU(size_t num_channels) : num_channels_(num_channels)
+    {
+        RTC_DCHECK_GE(num_channels, 1);
+    }
+    void Reset() override;
+    std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+                                          uint32_t timestamp) override;
+    int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
+    int SampleRateHz() const override;
+    size_t Channels() const override;
 
- protected:
-  int DecodeInternal(const uint8_t* encoded,
-                     size_t encoded_len,
-                     int sample_rate_hz,
-                     int16_t* decoded,
-                     SpeechType* speech_type) override;
+protected:
+    int DecodeInternal(const uint8_t* encoded,
+                       size_t encoded_len,
+                       int sample_rate_hz,
+                       int16_t* decoded,
+                       SpeechType* speech_type) override;
 
- private:
-  const size_t num_channels_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderPcmU);
+private:
+    const size_t num_channels_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderPcmU);
 };
 
-class AudioDecoderPcmA final : public AudioDecoder {
- public:
-  explicit AudioDecoderPcmA(size_t num_channels) : num_channels_(num_channels) {
-    RTC_DCHECK_GE(num_channels, 1);
-  }
-  void Reset() override;
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
-                                        uint32_t timestamp) override;
-  int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
-  int SampleRateHz() const override;
-  size_t Channels() const override;
+class AudioDecoderPcmA final : public AudioDecoder
+{
+public:
+    explicit AudioDecoderPcmA(size_t num_channels) : num_channels_(num_channels)
+    {
+        RTC_DCHECK_GE(num_channels, 1);
+    }
+    void Reset() override;
+    std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+                                          uint32_t timestamp) override;
+    int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
+    int SampleRateHz() const override;
+    size_t Channels() const override;
 
- protected:
-  int DecodeInternal(const uint8_t* encoded,
-                     size_t encoded_len,
-                     int sample_rate_hz,
-                     int16_t* decoded,
-                     SpeechType* speech_type) override;
+protected:
+    int DecodeInternal(const uint8_t* encoded,
+                       size_t encoded_len,
+                       int sample_rate_hz,
+                       int16_t* decoded,
+                       SpeechType* speech_type) override;
 
- private:
-  const size_t num_channels_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderPcmA);
+private:
+    const size_t num_channels_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderPcmA);
 };
 
 }  // namespace webrtc

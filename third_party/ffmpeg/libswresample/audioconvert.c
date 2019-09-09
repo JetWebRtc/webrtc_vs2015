@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio conversion
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -79,7 +79,8 @@ CONV_FUNC(AV_SAMPLE_FMT_DBL, double , AV_SAMPLE_FMT_DBL, *(const double*)pi)
 
 #define FMT_PAIR_FUNC(out, in) [(out) + AV_SAMPLE_FMT_NB*(in)] = CONV_FUNC_NAME(out, in)
 
-static conv_func_type * const fmt_pair_to_conv_functions[AV_SAMPLE_FMT_NB*AV_SAMPLE_FMT_NB] = {
+static conv_func_type * const fmt_pair_to_conv_functions[AV_SAMPLE_FMT_NB*AV_SAMPLE_FMT_NB] =
+{
     FMT_PAIR_FUNC(AV_SAMPLE_FMT_U8 , AV_SAMPLE_FMT_U8 ),
     FMT_PAIR_FUNC(AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_U8 ),
     FMT_PAIR_FUNC(AV_SAMPLE_FMT_S32, AV_SAMPLE_FMT_U8 ),
@@ -107,16 +108,20 @@ static conv_func_type * const fmt_pair_to_conv_functions[AV_SAMPLE_FMT_NB*AV_SAM
     FMT_PAIR_FUNC(AV_SAMPLE_FMT_DBL, AV_SAMPLE_FMT_DBL),
 };
 
-static void cpy1(uint8_t **dst, const uint8_t **src, int len){
+static void cpy1(uint8_t **dst, const uint8_t **src, int len)
+{
     memcpy(*dst, *src, len);
 }
-static void cpy2(uint8_t **dst, const uint8_t **src, int len){
+static void cpy2(uint8_t **dst, const uint8_t **src, int len)
+{
     memcpy(*dst, *src, 2*len);
 }
-static void cpy4(uint8_t **dst, const uint8_t **src, int len){
+static void cpy4(uint8_t **dst, const uint8_t **src, int len)
+{
     memcpy(*dst, *src, 4*len);
 }
-static void cpy8(uint8_t **dst, const uint8_t **src, int len){
+static void cpy8(uint8_t **dst, const uint8_t **src, int len)
+{
     memcpy(*dst, *src, 8*len);
 }
 
@@ -134,8 +139,9 @@ AudioConvert *swri_audio_convert_alloc(enum AVSampleFormat out_fmt,
     if (!ctx)
         return NULL;
 
-    if(channels == 1){
-         in_fmt = av_get_planar_sample_fmt( in_fmt);
+    if(channels == 1)
+    {
+        in_fmt = av_get_planar_sample_fmt( in_fmt);
         out_fmt = av_get_planar_sample_fmt(out_fmt);
     }
 
@@ -145,12 +151,22 @@ AudioConvert *swri_audio_convert_alloc(enum AVSampleFormat out_fmt,
     if (in_fmt == AV_SAMPLE_FMT_U8 || in_fmt == AV_SAMPLE_FMT_U8P)
         memset(ctx->silence, 0x80, sizeof(ctx->silence));
 
-    if(out_fmt == in_fmt && !ch_map) {
-        switch(av_get_bytes_per_sample(in_fmt)){
-            case 1:ctx->simd_f = cpy1; break;
-            case 2:ctx->simd_f = cpy2; break;
-            case 4:ctx->simd_f = cpy4; break;
-            case 8:ctx->simd_f = cpy8; break;
+    if(out_fmt == in_fmt && !ch_map)
+    {
+        switch(av_get_bytes_per_sample(in_fmt))
+        {
+        case 1:
+            ctx->simd_f = cpy1;
+            break;
+        case 2:
+            ctx->simd_f = cpy2;
+            break;
+        case 4:
+            ctx->simd_f = cpy4;
+            break;
+        case 8:
+            ctx->simd_f = cpy8;
+            break;
         }
     }
 
@@ -175,14 +191,16 @@ int swri_audio_convert(AudioConvert *ctx, AudioData *out, AudioData *in, int len
 
     av_assert0(ctx->channels == out->ch_count);
 
-    if (ctx->in_simd_align_mask) {
+    if (ctx->in_simd_align_mask)
+    {
         int planes = in->planar ? in->ch_count : 1;
         unsigned m = 0;
         for (ch = 0; ch < planes; ch++)
             m |= (intptr_t)in->ch[ch];
         misaligned |= m & ctx->in_simd_align_mask;
     }
-    if (ctx->out_simd_align_mask) {
+    if (ctx->out_simd_align_mask)
+    {
         int planes = out->planar ? out->ch_count : 1;
         unsigned m = 0;
         for (ch = 0; ch < planes; ch++)
@@ -192,18 +210,24 @@ int swri_audio_convert(AudioConvert *ctx, AudioData *out, AudioData *in, int len
 
     //FIXME optimize common cases
 
-    if(ctx->simd_f && !ctx->ch_map && !misaligned){
+    if(ctx->simd_f && !ctx->ch_map && !misaligned)
+    {
         off = len&~15;
         av_assert1(off>=0);
         av_assert1(off<=len);
         av_assert2(ctx->channels == SWR_CH_MAX || !in->ch[ctx->channels]);
-        if(off>0){
-            if(out->planar == in->planar){
+        if(off>0)
+        {
+            if(out->planar == in->planar)
+            {
                 int planes = out->planar ? out->ch_count : 1;
-                for(ch=0; ch<planes; ch++){
+                for(ch=0; ch<planes; ch++)
+                {
                     ctx->simd_f(out->ch+ch, (const uint8_t **)in->ch+ch, off * (out->planar ? 1 :out->ch_count));
                 }
-            }else{
+            }
+            else
+            {
                 ctx->simd_f(out->ch, (const uint8_t **)in->ch, off);
             }
         }
@@ -211,7 +235,8 @@ int swri_audio_convert(AudioConvert *ctx, AudioData *out, AudioData *in, int len
             return 0;
     }
 
-    for(ch=0; ch<ctx->channels; ch++){
+    for(ch=0; ch<ctx->channels; ch++)
+    {
         const int ich= ctx->ch_map ? ctx->ch_map[ch] : ch;
         const int is= ich < 0 ? 0 : (in->planar ? 1 : in->ch_count) * in->bps;
         const uint8_t *pi= ich < 0 ? ctx->silence : in->ch[ich];

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,45 +25,50 @@
 
 #include "webrtc/base/logging.h"
 
-namespace internal {
-static int DetectNumberOfCores() {
-  // We fall back on assuming a single core in case of errors.
-  int number_of_cores = 1;
+namespace internal
+{
+static int DetectNumberOfCores()
+{
+    // We fall back on assuming a single core in case of errors.
+    int number_of_cores = 1;
 
 #if defined(WEBRTC_WIN)
-  SYSTEM_INFO si;
-  GetSystemInfo(&si);
-  number_of_cores = static_cast<int>(si.dwNumberOfProcessors);
+    SYSTEM_INFO si;
+    GetSystemInfo(&si);
+    number_of_cores = static_cast<int>(si.dwNumberOfProcessors);
 #elif defined(WEBRTC_LINUX) || defined(WEBRTC_ANDROID)
-  number_of_cores = static_cast<int>(sysconf(_SC_NPROCESSORS_ONLN));
+    number_of_cores = static_cast<int>(sysconf(_SC_NPROCESSORS_ONLN));
 #elif defined(WEBRTC_MAC)
-  int name[] = {CTL_HW, HW_AVAILCPU};
-  size_t size = sizeof(number_of_cores);
-  if (0 != sysctl(name, 2, &number_of_cores, &size, NULL, 0)) {
-    LOG(LS_ERROR) << "Failed to get number of cores";
-    number_of_cores = 1;
-  }
+    int name[] = {CTL_HW, HW_AVAILCPU};
+    size_t size = sizeof(number_of_cores);
+    if (0 != sysctl(name, 2, &number_of_cores, &size, NULL, 0))
+    {
+        LOG(LS_ERROR) << "Failed to get number of cores";
+        number_of_cores = 1;
+    }
 #else
-  LOG(LS_ERROR) << "No function to get number of cores";
+    LOG(LS_ERROR) << "No function to get number of cores";
 #endif
 
-  LOG(LS_INFO) << "Available number of cores: " << number_of_cores;
+    LOG(LS_INFO) << "Available number of cores: " << number_of_cores;
 
-  return number_of_cores;
+    return number_of_cores;
 }
 }
 
-namespace webrtc {
+namespace webrtc
+{
 
-uint32_t CpuInfo::DetectNumberOfCores() {
-  // Statically cache the number of system cores available since if the process
-  // is running in a sandbox, we may only be able to read the value once (before
-  // the sandbox is initialized) and not thereafter.
-  // For more information see crbug.com/176522.
-  static uint32_t logical_cpus = 0;
-  if (!logical_cpus)
-    logical_cpus = static_cast<uint32_t>(internal::DetectNumberOfCores());
-  return logical_cpus;
+uint32_t CpuInfo::DetectNumberOfCores()
+{
+    // Statically cache the number of system cores available since if the process
+    // is running in a sandbox, we may only be able to read the value once (before
+    // the sandbox is initialized) and not thereafter.
+    // For more information see crbug.com/176522.
+    static uint32_t logical_cpus = 0;
+    if (!logical_cpus)
+        logical_cpus = static_cast<uint32_t>(internal::DetectNumberOfCores());
+    return logical_cpus;
 }
 
 }  // namespace webrtc

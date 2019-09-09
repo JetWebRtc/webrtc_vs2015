@@ -1,4 +1,4 @@
-/*
+﻿/*
  * APNG demuxer
  * Copyright (c) 2014 Benoit Fouet
  *
@@ -38,7 +38,8 @@
 
 #define DEFAULT_APNG_FPS 15
 
-typedef struct APNGDemuxContext {
+typedef struct APNGDemuxContext
+{
     const AVClass *class;
 
     int max_fps;
@@ -78,7 +79,8 @@ static int apng_probe(AVProbeData *p)
     if (bytestream2_get_be64(&gb) != PNGSIG)
         return 0;
 
-    for (;;) {
+    for (;;)
+    {
         len = bytestream2_get_be32(&gb);
         if (len > 0x7fffffff)
             return 0;
@@ -87,10 +89,11 @@ static int apng_probe(AVProbeData *p)
         /* we don't check IDAT size, as this is the last tag
          * we check, and it may be larger than the probe buffer */
         if (tag != MKTAG('I', 'D', 'A', 'T') &&
-            len + 4 > bytestream2_get_bytes_left(&gb))
+                len + 4 > bytestream2_get_bytes_left(&gb))
             return 0;
 
-        switch (tag) {
+        switch (tag)
+        {
         case MKTAG('I', 'H', 'D', 'R'):
             if (len != 13)
                 return 0;
@@ -101,8 +104,8 @@ static int apng_probe(AVProbeData *p)
             break;
         case MKTAG('a', 'c', 'T', 'L'):
             if (state != 1 ||
-                len != 8 ||
-                bytestream2_get_be32(&gb) == 0) /* 0 is not a valid value for number of frames */
+                    len != 8 ||
+                    bytestream2_get_be32(&gb) == 0) /* 0 is not a valid value for number of frames */
                 return 0;
             bytestream2_skip(&gb, 8);
             state++;
@@ -189,60 +192,71 @@ static int apng_read_header(AVFormatContext *s)
     if ((ret = avio_read(pb, st->codec->extradata+16, 9)) < 0)
         goto fail;
 
-    while (!avio_feof(pb)) {
-        if (acTL_found && ctx->num_play != 1) {
+    while (!avio_feof(pb))
+    {
+        if (acTL_found && ctx->num_play != 1)
+        {
             int64_t size   = avio_size(pb);
             int64_t offset = avio_tell(pb);
-            if (size < 0) {
+            if (size < 0)
+            {
                 ret = size;
                 goto fail;
-            } else if (offset < 0) {
+            }
+            else if (offset < 0)
+            {
                 ret = offset;
                 goto fail;
-            } else if ((ret = ffio_ensure_seekback(pb, size - offset)) < 0) {
+            }
+            else if ((ret = ffio_ensure_seekback(pb, size - offset)) < 0)
+            {
                 av_log(s, AV_LOG_WARNING, "Could not ensure seekback, will not loop\n");
                 ctx->num_play = 1;
             }
         }
         if ((ctx->num_play == 1 || !acTL_found) &&
-            ((ret = ffio_ensure_seekback(pb, 4 /* len */ + 4 /* tag */)) < 0))
+                ((ret = ffio_ensure_seekback(pb, 4 /* len */ + 4 /* tag */)) < 0))
             goto fail;
 
         len = avio_rb32(pb);
-        if (len > 0x7fffffff) {
+        if (len > 0x7fffffff)
+        {
             ret = AVERROR_INVALIDDATA;
             goto fail;
         }
 
         tag = avio_rl32(pb);
-        switch (tag) {
+        switch (tag)
+        {
         case MKTAG('a', 'c', 'T', 'L'):
             if ((ret = avio_seek(pb, -8, SEEK_CUR)) < 0 ||
-                (ret = append_extradata(st->codec, pb, len + 12)) < 0)
+                    (ret = append_extradata(st->codec, pb, len + 12)) < 0)
                 goto fail;
             acTL_found = 1;
             ctx->num_frames = AV_RB32(st->codec->extradata + ret + 8);
             ctx->num_play   = AV_RB32(st->codec->extradata + ret + 12);
             av_log(s, AV_LOG_DEBUG, "num_frames: %"PRIu32", num_play: %"PRIu32"\n",
-                                    ctx->num_frames, ctx->num_play);
+                   ctx->num_frames, ctx->num_play);
             break;
         case MKTAG('f', 'c', 'T', 'L'):
-            if (!acTL_found) {
-               ret = AVERROR_INVALIDDATA;
-               goto fail;
+            if (!acTL_found)
+            {
+                ret = AVERROR_INVALIDDATA;
+                goto fail;
             }
             if ((ret = avio_seek(pb, -8, SEEK_CUR)) < 0)
                 goto fail;
             return 0;
         default:
             if ((ret = avio_seek(pb, -8, SEEK_CUR)) < 0 ||
-                (ret = append_extradata(st->codec, pb, len + 12)) < 0)
+                    (ret = append_extradata(st->codec, pb, len + 12)) < 0)
                 goto fail;
         }
     }
 
 fail:
-    if (st->codec->extradata_size) {
+    if (st->codec->extradata_size)
+    {
         av_freep(&st->codec->extradata);
         st->codec->extradata_size = 0;
     }
@@ -269,47 +283,54 @@ static int decode_fctl_chunk(AVFormatContext *s, APNGDemuxContext *ctx, AVPacket
     /* default is hundredths of seconds */
     if (!delay_den)
         delay_den = 100;
-    if (!delay_num || delay_den / delay_num > ctx->max_fps) {
+    if (!delay_num || delay_den / delay_num > ctx->max_fps)
+    {
         delay_num = 1;
         delay_den = ctx->default_fps;
     }
     ctx->pkt_duration = av_rescale_q(delay_num,
-                                     (AVRational){ 1, delay_den },
-                                     s->streams[0]->time_base);
+                                     (AVRational)
+    {
+        1, delay_den
+    },
+    s->streams[0]->time_base);
 
     av_log(s, AV_LOG_DEBUG, "%s: "
-            "sequence_number: %"PRId32", "
-            "width: %"PRIu32", "
-            "height: %"PRIu32", "
-            "x_offset: %"PRIu32", "
-            "y_offset: %"PRIu32", "
-            "delay_num: %"PRIu16", "
-            "delay_den: %"PRIu16", "
-            "dispose_op: %d, "
-            "blend_op: %d\n",
-            __FUNCTION__,
-            sequence_number,
-            width,
-            height,
-            x_offset,
-            y_offset,
-            delay_num,
-            delay_den,
-            dispose_op,
-            blend_op);
+           "sequence_number: %"PRId32", "
+           "width: %"PRIu32", "
+           "height: %"PRIu32", "
+           "x_offset: %"PRIu32", "
+           "y_offset: %"PRIu32", "
+           "delay_num: %"PRIu16", "
+           "delay_den: %"PRIu16", "
+           "dispose_op: %d, "
+           "blend_op: %d\n",
+           __FUNCTION__,
+           sequence_number,
+           width,
+           height,
+           x_offset,
+           y_offset,
+           delay_num,
+           delay_den,
+           dispose_op,
+           blend_op);
 
     if (width != s->streams[0]->codec->width ||
-        height != s->streams[0]->codec->height ||
-        x_offset != 0 ||
-        y_offset != 0) {
+            height != s->streams[0]->codec->height ||
+            x_offset != 0 ||
+            y_offset != 0)
+    {
         if (sequence_number == 0 ||
-            x_offset >= s->streams[0]->codec->width ||
-            width > s->streams[0]->codec->width - x_offset ||
-            y_offset >= s->streams[0]->codec->height ||
-            height > s->streams[0]->codec->height - y_offset)
+                x_offset >= s->streams[0]->codec->width ||
+                width > s->streams[0]->codec->width - x_offset ||
+                y_offset >= s->streams[0]->codec->height ||
+                height > s->streams[0]->codec->height - y_offset)
             return AVERROR_INVALIDDATA;
         ctx->is_key_frame = 0;
-    } else {
+    }
+    else
+    {
         if (sequence_number == 0 && dispose_op == APNG_DISPOSE_OP_PREVIOUS)
             dispose_op = APNG_DISPOSE_OP_BACKGROUND;
         ctx->is_key_frame = dispose_op == APNG_DISPOSE_OP_BACKGROUND ||
@@ -343,7 +364,8 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     len = avio_rb32(pb);
     tag = avio_rl32(pb);
-    switch (tag) {
+    switch (tag)
+    {
     case MKTAG('f', 'c', 'T', 'L'):
         if (len != 26)
             return AVERROR_INVALIDDATA;
@@ -355,8 +377,8 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
         len = avio_rb32(pb);
         tag = avio_rl32(pb);
         if (len > 0x7fffffff ||
-            tag != MKTAG('f', 'd', 'A', 'T') &&
-            tag != MKTAG('I', 'D', 'A', 'T'))
+                tag != MKTAG('f', 'd', 'A', 'T') &&
+                tag != MKTAG('I', 'D', 'A', 'T'))
             return AVERROR_INVALIDDATA;
 
         size = 38 /* fcTL */ + 8 /* len, tag */ + len + 4 /* crc */;
@@ -364,7 +386,7 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
             return AVERROR(EINVAL);
 
         if ((ret = avio_seek(pb, -46, SEEK_CUR)) < 0 ||
-            (ret = av_append_packet(pb, pkt, size)) < 0)
+                (ret = av_append_packet(pb, pkt, size)) < 0)
             return ret;
 
         if (ctx->num_play == 1 && (ret = ffio_ensure_seekback(pb, 8)) < 0)
@@ -373,12 +395,13 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
         len = avio_rb32(pb);
         tag = avio_rl32(pb);
         while (tag &&
-               tag != MKTAG('f', 'c', 'T', 'L') &&
-               tag != MKTAG('I', 'E', 'N', 'D')) {
+                tag != MKTAG('f', 'c', 'T', 'L') &&
+                tag != MKTAG('I', 'E', 'N', 'D'))
+        {
             if (len > 0x7fffffff)
                 return AVERROR_INVALIDDATA;
             if ((ret = avio_seek(pb, -8, SEEK_CUR)) < 0 ||
-                (ret = av_append_packet(pb, pkt, len + 12)) < 0)
+                    (ret = av_append_packet(pb, pkt, len + 12)) < 0)
                 return ret;
             if (ctx->num_play == 1 && (ret = ffio_ensure_seekback(pb, 8)) < 0)
                 return ret;
@@ -396,7 +419,8 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
         return ret;
     case MKTAG('I', 'E', 'N', 'D'):
         ctx->cur_loop++;
-        if (ctx->ignore_loop || ctx->num_play >= 1 && ctx->cur_loop == ctx->num_play) {
+        if (ctx->ignore_loop || ctx->num_play >= 1 && ctx->cur_loop == ctx->num_play)
+        {
             avio_seek(pb, -8, SEEK_CUR);
             return AVERROR_EOF;
         }
@@ -404,30 +428,38 @@ static int apng_read_packet(AVFormatContext *s, AVPacket *pkt)
             return ret;
         return 0;
     default:
-        {
+    {
         char tag_buf[32];
 
         av_get_codec_tag_string(tag_buf, sizeof(tag_buf), tag);
         avpriv_request_sample(s, "In-stream tag=%s (0x%08X) len=%"PRIu32, tag_buf, tag, len);
         avio_skip(pb, len + 4);
-        }
+    }
     }
 
     /* Handle the unsupported yet cases */
     return AVERROR_PATCHWELCOME;
 }
 
-static const AVOption options[] = {
-    { "ignore_loop", "ignore loop setting"                         , offsetof(APNGDemuxContext, ignore_loop),
-      AV_OPT_TYPE_INT, { .i64 = 1 }               , 0, 1      , AV_OPT_FLAG_DECODING_PARAM },
-    { "max_fps"    , "maximum framerate (0 is no limit)"           , offsetof(APNGDemuxContext, max_fps),
-      AV_OPT_TYPE_INT, { .i64 = DEFAULT_APNG_FPS }, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
-    { "default_fps", "default framerate (0 is as fast as possible)", offsetof(APNGDemuxContext, default_fps),
-      AV_OPT_TYPE_INT, { .i64 = DEFAULT_APNG_FPS }, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
+static const AVOption options[] =
+{
+    {
+        "ignore_loop", "ignore loop setting"                         , offsetof(APNGDemuxContext, ignore_loop),
+        AV_OPT_TYPE_INT, { .i64 = 1 }               , 0, 1      , AV_OPT_FLAG_DECODING_PARAM
+    },
+    {
+        "max_fps"    , "maximum framerate (0 is no limit)"           , offsetof(APNGDemuxContext, max_fps),
+        AV_OPT_TYPE_INT, { .i64 = DEFAULT_APNG_FPS }, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM
+    },
+    {
+        "default_fps", "default framerate (0 is as fast as possible)", offsetof(APNGDemuxContext, default_fps),
+        AV_OPT_TYPE_INT, { .i64 = DEFAULT_APNG_FPS }, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass demuxer_class = {
+static const AVClass demuxer_class =
+{
     .class_name = "APNG demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -435,7 +467,8 @@ static const AVClass demuxer_class = {
     .category   = AV_CLASS_CATEGORY_DEMUXER,
 };
 
-AVInputFormat ff_apng_demuxer = {
+AVInputFormat ff_apng_demuxer =
+{
     .name           = "apng",
     .long_name      = NULL_IF_CONFIG_SMALL("Animated Portable Network Graphics"),
     .priv_data_size = sizeof(APNGDemuxContext),

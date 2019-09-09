@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "internal.h"
 #include "generate_wave_table.h"
 
-typedef struct AudioPhaserContext {
+typedef struct AudioPhaserContext
+{
     const AVClass *class;
     double in_gain, out_gain;
     double delay;
@@ -55,7 +56,8 @@ typedef struct AudioPhaserContext {
 #define OFFSET(x) offsetof(AudioPhaserContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption aphaser_options[] = {
+static const AVOption aphaser_options[] =
+{
     { "in_gain",  "set input gain",            OFFSET(in_gain),  AV_OPT_TYPE_DOUBLE, {.dbl=.4},  0,  1,   FLAGS },
     { "out_gain", "set output gain",           OFFSET(out_gain), AV_OPT_TYPE_DOUBLE, {.dbl=.74}, 0,  1e9, FLAGS },
     { "delay",    "set delay in milliseconds", OFFSET(delay),    AV_OPT_TYPE_DOUBLE, {.dbl=3.},  0,  5,   FLAGS },
@@ -87,7 +89,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_DBL, AV_SAMPLE_FMT_DBLP,
         AV_SAMPLE_FMT_FLT, AV_SAMPLE_FMT_FLTP,
         AV_SAMPLE_FMT_S32, AV_SAMPLE_FMT_S32P,
@@ -206,7 +209,8 @@ static int config_output(AVFilterLink *outlink)
     AVFilterLink *inlink = outlink->src->inputs[0];
 
     s->delay_buffer_length = s->delay * 0.001 * inlink->sample_rate + 0.5;
-    if (s->delay_buffer_length <= 0) {
+    if (s->delay_buffer_length <= 0)
+    {
         av_log(outlink->src, AV_LOG_ERROR, "delay is too small\n");
         return AVERROR(EINVAL);
     }
@@ -223,16 +227,34 @@ static int config_output(AVFilterLink *outlink)
 
     s->delay_pos = s->modulation_pos = 0;
 
-    switch (inlink->format) {
-    case AV_SAMPLE_FMT_DBL:  s->phaser = phaser_dbl;  break;
-    case AV_SAMPLE_FMT_DBLP: s->phaser = phaser_dblp; break;
-    case AV_SAMPLE_FMT_FLT:  s->phaser = phaser_flt;  break;
-    case AV_SAMPLE_FMT_FLTP: s->phaser = phaser_fltp; break;
-    case AV_SAMPLE_FMT_S16:  s->phaser = phaser_s16;  break;
-    case AV_SAMPLE_FMT_S16P: s->phaser = phaser_s16p; break;
-    case AV_SAMPLE_FMT_S32:  s->phaser = phaser_s32;  break;
-    case AV_SAMPLE_FMT_S32P: s->phaser = phaser_s32p; break;
-    default: av_assert0(0);
+    switch (inlink->format)
+    {
+    case AV_SAMPLE_FMT_DBL:
+        s->phaser = phaser_dbl;
+        break;
+    case AV_SAMPLE_FMT_DBLP:
+        s->phaser = phaser_dblp;
+        break;
+    case AV_SAMPLE_FMT_FLT:
+        s->phaser = phaser_flt;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->phaser = phaser_fltp;
+        break;
+    case AV_SAMPLE_FMT_S16:
+        s->phaser = phaser_s16;
+        break;
+    case AV_SAMPLE_FMT_S16P:
+        s->phaser = phaser_s16p;
+        break;
+    case AV_SAMPLE_FMT_S32:
+        s->phaser = phaser_s32;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->phaser = phaser_s32p;
+        break;
+    default:
+        av_assert0(0);
     }
 
     return 0;
@@ -244,9 +266,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inbuf)
     AVFilterLink *outlink = inlink->dst->outputs[0];
     AVFrame *outbuf;
 
-    if (av_frame_is_writable(inbuf)) {
+    if (av_frame_is_writable(inbuf))
+    {
         outbuf = inbuf;
-    } else {
+    }
+    else
+    {
         outbuf = ff_get_audio_buffer(inlink, inbuf->nb_samples);
         if (!outbuf)
             return AVERROR(ENOMEM);
@@ -270,7 +295,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->modulation_buffer);
 }
 
-static const AVFilterPad aphaser_inputs[] = {
+static const AVFilterPad aphaser_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -279,7 +305,8 @@ static const AVFilterPad aphaser_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad aphaser_outputs[] = {
+static const AVFilterPad aphaser_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -288,7 +315,8 @@ static const AVFilterPad aphaser_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_aphaser = {
+AVFilter ff_af_aphaser =
+{
     .name          = "aphaser",
     .description   = NULL_IF_CONFIG_SMALL("Add a phasing effect to the audio."),
     .query_formats = query_formats,

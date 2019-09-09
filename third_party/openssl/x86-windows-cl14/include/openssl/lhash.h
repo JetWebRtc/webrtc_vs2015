@@ -1,4 +1,4 @@
-/* crypto/lhash/lhash.h */
+﻿/* crypto/lhash/lhash.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -76,7 +76,8 @@
 extern "C" {
 #endif
 
-typedef struct lhash_node_st {
+typedef struct lhash_node_st
+{
     void *data;
     struct lhash_node_st *next;
 # ifndef OPENSSL_NO_HASH_COMP
@@ -136,7 +137,8 @@ typedef void (*LHASH_DOALL_ARG_FN_TYPE) (void *, void *);
                 name##_doall_arg(a, b); }
 # define LHASH_DOALL_ARG_FN(name) name##_LHASH_DOALL_ARG
 
-typedef struct lhash_st {
+typedef struct lhash_st
+{
     LHASH_NODE **b;
     LHASH_COMP_FN_TYPE comp;
     LHASH_HASH_FN_TYPE hash;

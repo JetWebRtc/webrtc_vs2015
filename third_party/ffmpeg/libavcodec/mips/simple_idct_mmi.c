@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized simple idct
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -37,29 +37,30 @@
 #define ROW_SHIFT 11
 #define COL_SHIFT 20
 
-DECLARE_ALIGNED(8, static const int16_t, coeffs)[]= {
+DECLARE_ALIGNED(8, static const int16_t, coeffs)[]=
+{
     1<<(ROW_SHIFT-1),   0, 1<<(ROW_SHIFT-1),   0,
     1<<(ROW_SHIFT-1),   1, 1<<(ROW_SHIFT-1),   0,
-                  C4,  C4,               C4,  C4,
-                  C4, -C4,               C4, -C4,
-                  C2,  C6,               C2,  C6,
-                  C6, -C2,               C6, -C2,
-                  C1,  C3,               C1,  C3,
-                  C5,  C7,               C5,  C7,
-                  C3, -C7,               C3, -C7,
-                 -C1, -C5,              -C1, -C5,
-                  C5, -C1,               C5, -C1,
-                  C7,  C3,               C7,  C3,
-                  C7, -C5,               C7, -C5,
-                  C3, -C1,               C3, -C1
+    C4,  C4,               C4,  C4,
+    C4, -C4,               C4, -C4,
+    C2,  C6,               C2,  C6,
+    C6, -C2,               C6, -C2,
+    C1,  C3,               C1,  C3,
+    C5,  C7,               C5,  C7,
+    C3, -C7,               C3, -C7,
+    -C1, -C5,              -C1, -C5,
+    C5, -C1,               C5, -C1,
+    C7,  C3,               C7,  C3,
+    C7, -C5,               C7, -C5,
+    C3, -C1,               C3, -C1
 };
 
 void ff_simple_idct_mmi(int16_t *block)
 {
-        DECLARE_ALIGNED(8, int64_t, align_tmp)[16];
-        int16_t * const temp= (int16_t*)align_tmp;
+    DECLARE_ALIGNED(8, int64_t, align_tmp)[16];
+    int16_t * const temp= (int16_t*)align_tmp;
 
-        __asm__ volatile (
+    __asm__ volatile (
 #undef  DC_COND_IDCT
 #define DC_COND_IDCT(src0, src4, src1, src5, dst, rounder, rarg, shift)      \
         "ldc1 $f0, " #src0 "            \n\t" /* R4     R0      r4      r0 */\

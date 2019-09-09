@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -27,7 +27,8 @@ static int process_frame(FFFrameSync *fs)
     int ret = 0;
 
     if ((ret = ff_framesync_get_frame(&s->fs, 0, &mainpic,   1)) < 0 ||
-        (ret = ff_framesync_get_frame(&s->fs, 1, &secondpic, 0)) < 0) {
+            (ret = ff_framesync_get_frame(&s->fs, 1, &secondpic, 0)) < 0)
+    {
         av_frame_free(&mainpic);
         return ret;
     }
@@ -62,7 +63,8 @@ int ff_dualinput_init(AVFilterContext *ctx, FFDualInputContext *s)
 
     if (s->shortest)
         in[0].after = in[1].after = EXT_STOP;
-    if (!s->repeatlast) {
+    if (!s->repeatlast)
+    {
         in[1].after = EXT_NULL;
         in[1].sync  = 0;
     }
@@ -71,7 +73,7 @@ int ff_dualinput_init(AVFilterContext *ctx, FFDualInputContext *s)
 }
 
 int ff_dualinput_filter_frame(FFDualInputContext *s,
-                                   AVFilterLink *inlink, AVFrame *in)
+                              AVFilterLink *inlink, AVFrame *in)
 {
     return ff_framesync_filter_frame(&s->fs, inlink, in);
 }

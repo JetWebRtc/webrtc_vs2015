@@ -1,4 +1,4 @@
-/*
+﻿/*
  * XVideo Motion Compensation internal functions
  *
  * This file is part of FFmpeg.

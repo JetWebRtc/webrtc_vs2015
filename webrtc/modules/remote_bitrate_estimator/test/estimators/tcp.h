@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,22 +15,26 @@
 
 #include "webrtc/modules/remote_bitrate_estimator/test/bwe.h"
 
-namespace webrtc {
-namespace testing {
-namespace bwe {
-class TcpBweReceiver : public BweReceiver {
- public:
-  explicit TcpBweReceiver(int flow_id);
-  virtual ~TcpBweReceiver();
+namespace webrtc
+{
+namespace testing
+{
+namespace bwe
+{
+class TcpBweReceiver : public BweReceiver
+{
+public:
+    explicit TcpBweReceiver(int flow_id);
+    virtual ~TcpBweReceiver();
 
-  void ReceivePacket(int64_t arrival_time_ms,
-                     const MediaPacket& media_packet) override;
-  FeedbackPacket* GetFeedback(int64_t now_ms) override;
+    void ReceivePacket(int64_t arrival_time_ms,
+                       const MediaPacket& media_packet) override;
+    FeedbackPacket* GetFeedback(int64_t now_ms) override;
 
- private:
-  int64_t last_feedback_ms_;
-  int64_t latest_owd_ms_;
-  std::vector<uint16_t> acks_;
+private:
+    int64_t last_feedback_ms_;
+    int64_t latest_owd_ms_;
+    std::vector<uint16_t> acks_;
 };
 }  // namespace bwe
 }  // namespace testing

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised H.264 chroma functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -39,7 +39,8 @@ av_cold void ff_h264chroma_init_arm(H264ChromaContext *c, int bit_depth)
     const int high_bit_depth = bit_depth > 8;
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags) && !high_bit_depth) {
+    if (have_neon(cpu_flags) && !high_bit_depth)
+    {
         c->put_h264_chroma_pixels_tab[0] = ff_put_h264_chroma_mc8_neon;
         c->put_h264_chroma_pixels_tab[1] = ff_put_h264_chroma_mc4_neon;
         c->put_h264_chroma_pixels_tab[2] = ff_put_h264_chroma_mc2_neon;

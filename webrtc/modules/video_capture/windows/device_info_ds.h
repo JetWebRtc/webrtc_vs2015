@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -47,24 +47,24 @@ public:
      * Returns the available capture devices.
      */
     virtual int32_t
-        GetDeviceName(uint32_t deviceNumber,
-                      char* deviceNameUTF8,
-                      uint32_t deviceNameLength,
-                      char* deviceUniqueIdUTF8,
-                      uint32_t deviceUniqueIdUTF8Length,
-                      char* productUniqueIdUTF8,
-                      uint32_t productUniqueIdUTF8Length);
+    GetDeviceName(uint32_t deviceNumber,
+                  char* deviceNameUTF8,
+                  uint32_t deviceNameLength,
+                  char* deviceUniqueIdUTF8,
+                  uint32_t deviceUniqueIdUTF8Length,
+                  char* productUniqueIdUTF8,
+                  uint32_t productUniqueIdUTF8Length);
 
     /*
      * Display OS /capture device specific settings dialog
      */
     virtual int32_t
-        DisplayCaptureSettingsDialogBox(
-                                        const char* deviceUniqueIdUTF8,
-                                        const char* dialogTitleUTF8,
-                                        void* parentWindow,
-                                        uint32_t positionX,
-                                        uint32_t positionY);
+    DisplayCaptureSettingsDialogBox(
+        const char* deviceUniqueIdUTF8,
+        const char* dialogTitleUTF8,
+        void* parentWindow,
+        uint32_t positionX,
+        uint32_t positionY);
 
     // Windows specific
 
@@ -76,8 +76,8 @@ public:
                                   uint32_t productUniqueIdUTF8Length = 0);
 
     int32_t
-        GetWindowsCapability(const int32_t capabilityIndex,
-                             VideoCaptureCapabilityWindows& windowsCapability);
+    GetWindowsCapability(const int32_t capabilityIndex,
+                         VideoCaptureCapabilityWindows& windowsCapability);
 
     static void GetProductId(const char* devicePath,
                              char* productUniqueIdUTF8,
@@ -93,7 +93,7 @@ protected:
                           uint32_t productUniqueIdUTF8Length);
 
     virtual int32_t
-        CreateCapabilityMap(const char* deviceUniqueIdUTF8);
+    CreateCapabilityMap(const char* deviceUniqueIdUTF8);
 
 private:
     ICreateDevEnum* _dsDevEnum;

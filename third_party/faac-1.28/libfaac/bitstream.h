@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
 MPEG-4 Audio VM
 Bit stream module
 
@@ -140,11 +140,11 @@ extern "C" {
 
 typedef struct
 {
-  unsigned char *data;      /* data bits */
-  long numBit;          /* number of bits in buffer */
-  long size;            /* buffer size in bytes */
-  long currentBit;      /* current bit position in bit stream */
-  long numByte;         /* number of bytes read/written (only file) */
+    unsigned char *data;      /* data bits */
+    long numBit;          /* number of bits in buffer */
+    long size;            /* buffer size in bytes */
+    long currentBit;      /* current bit position in bit stream */
+    long numByte;         /* number of bytes read/written (only file) */
 } BitStream;
 
 

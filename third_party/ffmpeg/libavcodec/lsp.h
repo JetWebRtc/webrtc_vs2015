@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LSP computing for ACELP-based codecs
  *
  * Copyright (c) 2008 Vladimir Voroshilov

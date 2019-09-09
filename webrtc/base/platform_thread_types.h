@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #include <unistd.h>
 #endif
 
-namespace rtc {
+namespace rtc
+{
 #if defined(WEBRTC_WIN)
 typedef DWORD PlatformThreadId;
 typedef DWORD PlatformThreadRef;

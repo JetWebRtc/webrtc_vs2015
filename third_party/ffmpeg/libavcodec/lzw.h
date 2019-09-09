@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LZW decoder
  * Copyright (c) 2003 Fabrice Bellard
  * Copyright (c) 2006 Konstantin Shishkov
@@ -34,7 +34,8 @@
 
 struct PutBitContext;
 
-enum FF_LZW_MODES{
+enum FF_LZW_MODES
+{
     FF_LZW_GIF,
     FF_LZW_TIFF
 };

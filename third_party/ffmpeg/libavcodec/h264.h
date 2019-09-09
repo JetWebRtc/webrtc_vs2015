@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -108,7 +108,8 @@
 #define QP_MAX_NUM (51 + 6*6)           // The maximum supported qp
 
 /* NAL unit types */
-enum {
+enum
+{
     NAL_SLICE           = 1,
     NAL_DPA             = 2,
     NAL_DPB             = 3,
@@ -129,7 +130,8 @@ enum {
 /**
  * SEI message types
  */
-typedef enum {
+typedef enum
+{
     SEI_TYPE_BUFFERING_PERIOD       = 0,   ///< buffering period (H.264, D.1.1)
     SEI_TYPE_PIC_TIMING             = 1,   ///< picture timing
     SEI_TYPE_USER_DATA_REGISTERED   = 4,   ///< registered user data as specified by Rec. ITU-T T.35
@@ -143,7 +145,8 @@ typedef enum {
 /**
  * pic_struct in picture timing SEI message
  */
-typedef enum {
+typedef enum
+{
     SEI_PIC_STRUCT_FRAME             = 0, ///<  0: %frame
     SEI_PIC_STRUCT_TOP_FIELD         = 1, ///<  1: top field
     SEI_PIC_STRUCT_BOTTOM_FIELD      = 2, ///<  2: bottom field
@@ -158,7 +161,8 @@ typedef enum {
 /**
  * frame_packing_arrangement types
  */
-typedef enum {
+typedef enum
+{
     SEI_FPA_TYPE_CHECKERBOARD        = 0,
     SEI_FPA_TYPE_INTERLEAVE_COLUMN   = 1,
     SEI_FPA_TYPE_INTERLEAVE_ROW      = 2,
@@ -171,7 +175,8 @@ typedef enum {
 /**
  * Sequence parameter set
  */
-typedef struct SPS {
+typedef struct SPS
+{
     unsigned int sps_id;
     int profile_idc;
     int level_idc;
@@ -234,7 +239,8 @@ typedef struct SPS {
 /**
  * Picture parameter set
  */
-typedef struct PPS {
+typedef struct PPS
+{
     unsigned int sps_id;
     int cabac;                  ///< entropy_coding_mode_flag
     int pic_order_present;      ///< pic_order_present_flag
@@ -259,7 +265,8 @@ typedef struct PPS {
 /**
  * Frame Packing Arrangement Type
  */
-typedef struct FPA {
+typedef struct FPA
+{
     int         frame_packing_arrangement_id;
     int         frame_packing_arrangement_cancel_flag; ///< is previous arrangement canceled, -1 if never received
     SEI_FpaType frame_packing_arrangement_type;
@@ -271,7 +278,8 @@ typedef struct FPA {
 /**
  *     Green MetaData Information Type
  */
-typedef struct GreenMetaData {
+typedef struct GreenMetaData
+{
     uint8_t  green_metadata_type;
     uint8_t  period_type;
     uint16_t  num_seconds;
@@ -287,7 +295,8 @@ typedef struct GreenMetaData {
 /**
  * Memory management control operation opcode.
  */
-typedef enum MMCOOpcode {
+typedef enum MMCOOpcode
+{
     MMCO_END = 0,
     MMCO_SHORT2UNUSED,
     MMCO_LONG2UNUSED,
@@ -300,13 +309,15 @@ typedef enum MMCOOpcode {
 /**
  * Memory management control operation.
  */
-typedef struct MMCO {
+typedef struct MMCO
+{
     MMCOOpcode opcode;
     int short_pic_num;  ///< pic_num without wrapping (pic_num & max_pic_num)
     int long_arg;       ///< index, pic_num, or num long refs depending on opcode
 } MMCO;
 
-typedef struct H264Picture {
+typedef struct H264Picture
+{
     AVFrame *f;
     ThreadFrame tf;
 
@@ -348,7 +359,8 @@ typedef struct H264Picture {
     int crop_top;
 } H264Picture;
 
-typedef struct H264Ref {
+typedef struct H264Ref
+{
     uint8_t *data[3];
     int linesize[3];
 
@@ -359,7 +371,8 @@ typedef struct H264Ref {
     H264Picture *parent;
 } H264Ref;
 
-typedef struct H264SliceContext {
+typedef struct H264SliceContext
+{
     struct H264Context *h264;
     GetBitContext gb;
     ERContext er;
@@ -514,7 +527,8 @@ typedef struct H264SliceContext {
 /**
  * H264Context
  */
-typedef struct H264Context {
+typedef struct H264Context
+{
     AVClass *av_class;
     AVCodecContext *avctx;
     VideoDSPContext vdsp;
@@ -790,15 +804,15 @@ typedef struct H264Context {
      */
     int recovery_frame;
 
-/**
- * We have seen an IDR, so all the following frames in coded order are correctly
- * decodable.
- */
+    /**
+     * We have seen an IDR, so all the following frames in coded order are correctly
+     * decodable.
+     */
 #define FRAME_RECOVERED_IDR  (1 << 0)
-/**
- * Sufficient number of frames have been decoded since a SEI recovery point,
- * so all the following frames in presentation order are correct.
- */
+    /**
+     * Sufficient number of frames have been decoded since a SEI recovery point,
+     * so all the following frames in presentation order are correct.
+     */
 #define FRAME_RECOVERED_SEI  (1 << 1)
 
     int frame_recovered;    ///< Initial frame has been completely recovered
@@ -807,10 +821,10 @@ typedef struct H264Context {
 
     int missing_fields;
 
-/* for frame threading, this is set to 1
-     * after finish_setup() has been called, so we cannot modify
-     * some context properties (which are supposed to stay constant between
-     * slices) anymore */
+    /* for frame threading, this is set to 1
+         * after finish_setup() has been called, so we cannot modify
+         * some context properties (which are supposed to stay constant between
+         * slices) anymore */
     int setup_finished;
 
     // Timestamp stuff
@@ -1004,7 +1018,8 @@ const char* ff_h264_sei_stereo_mode(H264Context *h);
 #define CHROMA_DC_BLOCK_INDEX 49
 
 // This table must be here because scan8[constant] must be known at compiletime
-static const uint8_t scan8[16 * 3 + 3] = {
+static const uint8_t scan8[16 * 3 + 3] =
+{
     4 +  1 * 8, 5 +  1 * 8, 4 +  2 * 8, 5 +  2 * 8,
     6 +  1 * 8, 7 +  1 * 8, 6 +  2 * 8, 7 +  2 * 8,
     4 +  3 * 8, 5 +  3 * 8, 4 +  4 * 8, 5 +  4 * 8,
@@ -1050,7 +1065,7 @@ static av_always_inline int get_chroma_qp(const H264Context *h, int t, int qscal
  * Get the predicted intra4x4 prediction mode.
  */
 static av_always_inline int pred_intra_mode(const H264Context *h,
-                                            H264SliceContext *sl, int n)
+        H264SliceContext *sl, int n)
 {
     const int index8 = scan8[n];
     const int left   = sl->intra4x4_pred_mode_cache[index8 - 1];
@@ -1066,7 +1081,7 @@ static av_always_inline int pred_intra_mode(const H264Context *h,
 }
 
 static av_always_inline void write_back_intra_pred_mode(const H264Context *h,
-                                                        H264SliceContext *sl)
+        H264SliceContext *sl)
 {
     int8_t *i4x4       = sl->intra4x4_pred_mode + h->mb2br_xy[sl->mb_xy];
     int8_t *i4x4_cache = sl->intra4x4_pred_mode_cache;
@@ -1078,7 +1093,7 @@ static av_always_inline void write_back_intra_pred_mode(const H264Context *h,
 }
 
 static av_always_inline void write_back_non_zero_count(const H264Context *h,
-                                                       H264SliceContext *sl)
+        H264SliceContext *sl)
 {
     const int mb_xy    = sl->mb_xy;
     uint8_t *nnz       = h->non_zero_count[mb_xy];
@@ -1093,7 +1108,8 @@ static av_always_inline void write_back_non_zero_count(const H264Context *h,
     AV_COPY32(&nnz[32], &nnz_cache[4 + 8 * 11]);
     AV_COPY32(&nnz[36], &nnz_cache[4 + 8 * 12]);
 
-    if (!h->chroma_y_shift) {
+    if (!h->chroma_y_shift)
+    {
         AV_COPY32(&nnz[24], &nnz_cache[4 + 8 * 8]);
         AV_COPY32(&nnz[28], &nnz_cache[4 + 8 * 9]);
         AV_COPY32(&nnz[40], &nnz_cache[4 + 8 * 13]);
@@ -1102,10 +1118,10 @@ static av_always_inline void write_back_non_zero_count(const H264Context *h,
 }
 
 static av_always_inline void write_back_motion_list(const H264Context *h,
-                                                    H264SliceContext *sl,
-                                                    int b_stride,
-                                                    int b_xy, int b8_xy,
-                                                    int mb_type, int list)
+        H264SliceContext *sl,
+        int b_stride,
+        int b_xy, int b8_xy,
+        int mb_type, int list)
 {
     int16_t(*mv_dst)[2] = &h->cur_pic.motion_val[list][b_xy];
     int16_t(*mv_src)[2] = &sl->mv_cache[list][scan8[0]];
@@ -1113,13 +1129,17 @@ static av_always_inline void write_back_motion_list(const H264Context *h,
     AV_COPY128(mv_dst + 1 * b_stride, mv_src + 8 * 1);
     AV_COPY128(mv_dst + 2 * b_stride, mv_src + 8 * 2);
     AV_COPY128(mv_dst + 3 * b_stride, mv_src + 8 * 3);
-    if (CABAC(h)) {
+    if (CABAC(h))
+    {
         uint8_t (*mvd_dst)[2] = &sl->mvd_table[list][FMO ? 8 * sl->mb_xy
-                                                        : h->mb2br_xy[sl->mb_xy]];
+                                : h->mb2br_xy[sl->mb_xy]];
         uint8_t(*mvd_src)[2]  = &sl->mvd_cache[list][scan8[0]];
-        if (IS_SKIP(mb_type)) {
+        if (IS_SKIP(mb_type))
+        {
             AV_ZERO128(mvd_dst);
-        } else {
+        }
+        else
+        {
             AV_COPY64(mvd_dst, mvd_src + 8 * 3);
             AV_COPY16(mvd_dst + 3 + 3, mvd_src + 3 + 8 * 0);
             AV_COPY16(mvd_dst + 3 + 2, mvd_src + 3 + 8 * 1);
@@ -1138,24 +1158,29 @@ static av_always_inline void write_back_motion_list(const H264Context *h,
 }
 
 static av_always_inline void write_back_motion(const H264Context *h,
-                                               H264SliceContext *sl,
-                                               int mb_type)
+        H264SliceContext *sl,
+        int mb_type)
 {
     const int b_stride      = h->b_stride;
     const int b_xy  = 4 * sl->mb_x + 4 * sl->mb_y * h->b_stride; // try mb2b(8)_xy
     const int b8_xy = 4 * sl->mb_xy;
 
-    if (USES_LIST(mb_type, 0)) {
+    if (USES_LIST(mb_type, 0))
+    {
         write_back_motion_list(h, sl, b_stride, b_xy, b8_xy, mb_type, 0);
-    } else {
+    }
+    else
+    {
         fill_rectangle(&h->cur_pic.ref_index[0][b8_xy],
                        2, 2, 2, (uint8_t)LIST_NOT_USED, 1);
     }
     if (USES_LIST(mb_type, 1))
         write_back_motion_list(h, sl, b_stride, b_xy, b8_xy, mb_type, 1);
 
-    if (sl->slice_type_nos == AV_PICTURE_TYPE_B && CABAC(h)) {
-        if (IS_8X8(mb_type)) {
+    if (sl->slice_type_nos == AV_PICTURE_TYPE_B && CABAC(h))
+    {
+        if (IS_8X8(mb_type))
+        {
             uint8_t *direct_table = &h->direct_table[4 * sl->mb_xy];
             direct_table[1] = sl->sub_mb_type[1] >> 1;
             direct_table[2] = sl->sub_mb_type[2] >> 1;
@@ -1177,7 +1202,7 @@ static av_always_inline int get_dct8x8_allowed(const H264Context *h, H264SliceCo
 }
 
 static inline int find_start_code(const uint8_t *buf, int buf_size,
-                           int buf_index, int next_avc)
+                                  int buf_index, int next_avc)
 {
     uint32_t state = -1;
 
@@ -1187,18 +1212,20 @@ static inline int find_start_code(const uint8_t *buf, int buf_size,
 }
 
 static inline int get_avc_nalsize(H264Context *h, const uint8_t *buf,
-                           int buf_size, int *buf_index)
+                                  int buf_size, int *buf_index)
 {
     int i, nalsize = 0;
 
-    if (*buf_index >= buf_size - h->nal_length_size) {
+    if (*buf_index >= buf_size - h->nal_length_size)
+    {
         // the end of the buffer is reached, refill it.
         return AVERROR(EAGAIN);
     }
 
     for (i = 0; i < h->nal_length_size; i++)
         nalsize = ((unsigned)nalsize << 8) | buf[(*buf_index)++];
-    if (nalsize <= 0 || nalsize > buf_size - *buf_index) {
+    if (nalsize <= 0 || nalsize > buf_size - *buf_index)
+    {
         av_log(h->avctx, AV_LOG_ERROR,
                "AVC: nal size %d\n", nalsize);
         return AVERROR_INVALIDDATA;

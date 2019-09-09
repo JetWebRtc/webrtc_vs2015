@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -51,8 +51,10 @@ static OPUS_INLINE void silk_A2NLSF_trans_poly(
 {
     opus_int k, n;
 
-    for( k = 2; k <= dd; k++ ) {
-        for( n = dd; n > k; n-- ) {
+    for( k = 2; k <= dd; k++ )
+    {
+        for( n = dd; n > k; n-- )
+        {
             p[ n - 2 ] -= p[ n ];
         }
         p[ k - 2 ] -= silk_LSHIFT( p[ k ], 1 );
@@ -85,7 +87,8 @@ static OPUS_INLINE opus_int32 silk_A2NLSF_eval_poly( /* return the polynomial ev
     }
     else
     {
-        for( n = dd - 1; n >= 0; n-- ) {
+        for( n = dd - 1; n >= 0; n-- )
+        {
             y32 = silk_SMLAWW( p[ n ], y32, x_Q16 );    /* Q16 */
         }
     }
@@ -93,10 +96,10 @@ static OPUS_INLINE opus_int32 silk_A2NLSF_eval_poly( /* return the polynomial ev
 }
 
 static OPUS_INLINE void silk_A2NLSF_init(
-     const opus_int32    *a_Q16,
-     opus_int32          *P,
-     opus_int32          *Q,
-     const opus_int      dd
+    const opus_int32    *a_Q16,
+    opus_int32          *P,
+    opus_int32          *Q,
+    const opus_int      dd
 )
 {
     opus_int k;
@@ -104,7 +107,8 @@ static OPUS_INLINE void silk_A2NLSF_init(
     /* Convert filter coefs to even and odd polynomials */
     P[dd] = silk_LSHIFT( 1, 16 );
     Q[dd] = silk_LSHIFT( 1, 16 );
-    for( k = 0; k < dd; k++ ) {
+    for( k = 0; k < dd; k++ )
+    {
         P[ k ] = -a_Q16[ dd - k - 1 ] - a_Q16[ dd + k ];    /* Q16 */
         Q[ k ] = -a_Q16[ dd - k - 1 ] + a_Q16[ dd + k ];    /* Q16 */
     }
@@ -112,7 +116,8 @@ static OPUS_INLINE void silk_A2NLSF_init(
     /* Divide out zeros as we have that for even filter orders, */
     /* z =  1 is always a root in Q, and                        */
     /* z = -1 is always a root in P                             */
-    for( k = dd; k > 0; k-- ) {
+    for( k = dd; k > 0; k-- )
+    {
         P[ k - 1 ] -= P[ k ];
         Q[ k - 1 ] += Q[ k ];
     }
@@ -153,45 +158,57 @@ void silk_A2NLSF(
     xlo = silk_LSFCosTab_FIX_Q12[ 0 ]; /* Q12*/
     ylo = silk_A2NLSF_eval_poly( p, xlo, dd );
 
-    if( ylo < 0 ) {
+    if( ylo < 0 )
+    {
         /* Set the first NLSF to zero and move on to the next */
         NLSF[ 0 ] = 0;
         p = Q;                      /* Pointer to polynomial */
         ylo = silk_A2NLSF_eval_poly( p, xlo, dd );
         root_ix = 1;                /* Index of current root */
-    } else {
+    }
+    else
+    {
         root_ix = 0;                /* Index of current root */
     }
     k = 1;                          /* Loop counter */
     i = 0;                          /* Counter for bandwidth expansions applied */
     thr = 0;
-    while( 1 ) {
+    while( 1 )
+    {
         /* Evaluate polynomial */
         xhi = silk_LSFCosTab_FIX_Q12[ k ]; /* Q12 */
         yhi = silk_A2NLSF_eval_poly( p, xhi, dd );
 
         /* Detect zero crossing */
-        if( ( ylo <= 0 && yhi >= thr ) || ( ylo >= 0 && yhi <= -thr ) ) {
-            if( yhi == 0 ) {
+        if( ( ylo <= 0 && yhi >= thr ) || ( ylo >= 0 && yhi <= -thr ) )
+        {
+            if( yhi == 0 )
+            {
                 /* If the root lies exactly at the end of the current       */
                 /* interval, look for the next root in the next interval    */
                 thr = 1;
-            } else {
+            }
+            else
+            {
                 thr = 0;
             }
             /* Binary division */
             ffrac = -256;
-            for( m = 0; m < BIN_DIV_STEPS_A2NLSF_FIX; m++ ) {
+            for( m = 0; m < BIN_DIV_STEPS_A2NLSF_FIX; m++ )
+            {
                 /* Evaluate polynomial */
                 xmid = silk_RSHIFT_ROUND( xlo + xhi, 1 );
                 ymid = silk_A2NLSF_eval_poly( p, xmid, dd );
 
                 /* Detect zero crossing */
-                if( ( ylo <= 0 && ymid >= 0 ) || ( ylo >= 0 && ymid <= 0 ) ) {
+                if( ( ylo <= 0 && ymid >= 0 ) || ( ylo >= 0 && ymid <= 0 ) )
+                {
                     /* Reduce frequency */
                     xhi = xmid;
                     yhi = ymid;
-                } else {
+                }
+                else
+                {
                     /* Increase frequency */
                     xlo = xmid;
                     ylo = ymid;
@@ -200,14 +217,18 @@ void silk_A2NLSF(
             }
 
             /* Interpolate */
-            if( silk_abs( ylo ) < 65536 ) {
+            if( silk_abs( ylo ) < 65536 )
+            {
                 /* Avoid dividing by zero */
                 den = ylo - yhi;
                 nom = silk_LSHIFT( ylo, 8 - BIN_DIV_STEPS_A2NLSF_FIX ) + silk_RSHIFT( den, 1 );
-                if( den != 0 ) {
+                if( den != 0 )
+                {
                     ffrac += silk_DIV32( nom, den );
                 }
-            } else {
+            }
+            else
+            {
                 /* No risk of dividing by zero because abs(ylo - yhi) >= abs(ylo) >= 65536 */
                 ffrac += silk_DIV32( ylo, silk_RSHIFT( ylo - yhi, 8 - BIN_DIV_STEPS_A2NLSF_FIX ) );
             }
@@ -216,7 +237,8 @@ void silk_A2NLSF(
             silk_assert( NLSF[ root_ix ] >= 0 );
 
             root_ix++;        /* Next root */
-            if( root_ix >= d ) {
+            if( root_ix >= d )
+            {
                 /* Found all roots */
                 break;
             }
@@ -226,19 +248,24 @@ void silk_A2NLSF(
             /* Evaluate polynomial */
             xlo = silk_LSFCosTab_FIX_Q12[ k - 1 ]; /* Q12*/
             ylo = silk_LSHIFT( 1 - ( root_ix & 2 ), 12 );
-        } else {
+        }
+        else
+        {
             /* Increment loop counter */
             k++;
             xlo = xhi;
             ylo = yhi;
             thr = 0;
 
-            if( k > LSF_COS_TAB_SZ_FIX ) {
+            if( k > LSF_COS_TAB_SZ_FIX )
+            {
                 i++;
-                if( i > MAX_ITERATIONS_A2NLSF_FIX ) {
+                if( i > MAX_ITERATIONS_A2NLSF_FIX )
+                {
                     /* Set NLSFs to white spectrum and exit */
                     NLSF[ 0 ] = (opus_int16)silk_DIV32_16( 1 << 15, d + 1 );
-                    for( k = 1; k < d; k++ ) {
+                    for( k = 1; k < d; k++ )
+                    {
                         NLSF[ k ] = (opus_int16)silk_SMULBB( k + 1, NLSF[ 0 ] );
                     }
                     return;
@@ -251,13 +278,16 @@ void silk_A2NLSF(
                 p = P;                            /* Pointer to polynomial */
                 xlo = silk_LSFCosTab_FIX_Q12[ 0 ]; /* Q12*/
                 ylo = silk_A2NLSF_eval_poly( p, xlo, dd );
-                if( ylo < 0 ) {
+                if( ylo < 0 )
+                {
                     /* Set the first NLSF to zero and move on to the next */
                     NLSF[ 0 ] = 0;
                     p = Q;                        /* Pointer to polynomial */
                     ylo = silk_A2NLSF_eval_poly( p, xlo, dd );
                     root_ix = 1;                  /* Index of current root */
-                } else {
+                }
+                else
+                {
                     root_ix = 0;                  /* Index of current root */
                 }
                 k = 1;                            /* Reset loop counter */

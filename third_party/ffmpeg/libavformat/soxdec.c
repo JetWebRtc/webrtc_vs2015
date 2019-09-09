@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SoX native format demuxer
  * Copyright (c) 2009 Daniel Verkamp <daniel@drv.nu>
  *
@@ -57,14 +57,17 @@ static int sox_read_header(AVFormatContext *s)
 
     st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
 
-    if (avio_rl32(pb) == SOX_TAG) {
+    if (avio_rl32(pb) == SOX_TAG)
+    {
         st->codec->codec_id = AV_CODEC_ID_PCM_S32LE;
         header_size         = avio_rl32(pb);
         avio_skip(pb, 8); /* sample count */
         sample_rate         = av_int2double(avio_rl64(pb));
         st->codec->channels = avio_rl32(pb);
         comment_size        = avio_rl32(pb);
-    } else {
+    }
+    else
+    {
         st->codec->codec_id = AV_CODEC_ID_PCM_S32BE;
         header_size         = avio_rb32(pb);
         avio_skip(pb, 8); /* sample count */
@@ -73,12 +76,14 @@ static int sox_read_header(AVFormatContext *s)
         comment_size        = avio_rb32(pb);
     }
 
-    if (comment_size > 0xFFFFFFFFU - SOX_FIXED_HDR - 4U) {
+    if (comment_size > 0xFFFFFFFFU - SOX_FIXED_HDR - 4U)
+    {
         av_log(s, AV_LOG_ERROR, "invalid comment size (%u)\n", comment_size);
         return AVERROR_INVALIDDATA;
     }
 
-    if (sample_rate <= 0 || sample_rate > INT_MAX) {
+    if (sample_rate <= 0 || sample_rate > INT_MAX)
+    {
         av_log(s, AV_LOG_ERROR, "invalid sample rate (%f)\n", sample_rate);
         return AVERROR_INVALIDDATA;
     }
@@ -90,23 +95,26 @@ static int sox_read_header(AVFormatContext *s)
                sample_rate_frac);
 
     if ((header_size + 4) & 7 || header_size < SOX_FIXED_HDR + comment_size
-        || st->codec->channels > 65535) /* Reserve top 16 bits */ {
+            || st->codec->channels > 65535) /* Reserve top 16 bits */
+    {
         av_log(s, AV_LOG_ERROR, "invalid header\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (comment_size && comment_size < UINT_MAX) {
+    if (comment_size && comment_size < UINT_MAX)
+    {
         char *comment = av_malloc(comment_size+1);
         if(!comment)
             return AVERROR(ENOMEM);
-        if (avio_read(pb, comment, comment_size) != comment_size) {
+        if (avio_read(pb, comment, comment_size) != comment_size)
+        {
             av_freep(&comment);
             return AVERROR(EIO);
         }
         comment[comment_size] = 0;
 
         av_dict_set(&s->metadata, "comment", comment,
-                               AV_DICT_DONT_STRDUP_VAL);
+                    AV_DICT_DONT_STRDUP_VAL);
     }
 
     avio_skip(pb, header_size - SOX_FIXED_HDR - comment_size);
@@ -124,7 +132,8 @@ static int sox_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_sox_demuxer = {
+AVInputFormat ff_sox_demuxer =
+{
     .name           = "sox",
     .long_name      = NULL_IF_CONFIG_SMALL("SoX native"),
     .read_probe     = sox_probe,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Real Audio 1.0 (14.4K)
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -34,7 +34,8 @@
 #define FRAME_SIZE      20      ///< size of encoded frame
 #define LPC_ORDER       10      ///< order of LPC filter
 
-typedef struct RA144Context {
+typedef struct RA144Context
+{
     AVCodecContext *avctx;
     AudioDSPContext adsp;
     LPCContext lpc_ctx;

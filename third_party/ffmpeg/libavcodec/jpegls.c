@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG-LS common code
  * Copyright (c) 2003 Michael Niedermayer
  * Copyright (c) 2006 Konstantin Shishkov
@@ -42,7 +42,8 @@ void ff_jpegls_init_state(JLSState *state)
     state->bpp   = FFMAX(av_log2(state->maxval) + 1, 2);
     state->limit = 2*(state->bpp + FFMAX(state->bpp, 8)) - state->qbpp;
 
-    for (i = 0; i < 367; i++) {
+    for (i = 0; i < 367; i++)
+    {
         state->A[i] = FFMAX(state->range + 32 >> 6, 2);
         state->N[i] = 1;
     }
@@ -69,7 +70,8 @@ void ff_jpegls_reset_coding_parameters(JLSState *s, int reset_all)
     if (s->maxval == 0 || reset_all)
         s->maxval = (1 << s->bpp) - 1;
 
-    if (s->maxval >= 128) {
+    if (s->maxval >= 128)
+    {
         factor = FFMIN(s->maxval, 4095) + 128 >> 8;
 
         if (s->T1 == 0 || reset_all)
@@ -81,7 +83,9 @@ void ff_jpegls_reset_coding_parameters(JLSState *s, int reset_all)
         if (s->T3 == 0 || reset_all)
             s->T3 = iso_clip(factor * (basic_t3 - 4) + 4 + 7 * s->near,
                              s->T2, s->maxval);
-    } else {
+    }
+    else
+    {
         factor = 256 / (s->maxval + 1);
 
         if (s->T1 == 0 || reset_all)

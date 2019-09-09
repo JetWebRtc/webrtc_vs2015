@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,7 +25,8 @@
 #include "webrtc/modules/audio_device/audio_device_generic.h"
 #include "webrtc/modules/utility/include/helpers_android.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class FineAudioBuffer;
 
@@ -50,142 +51,149 @@ class FineAudioBuffer;
 // for input effects preclude the lower latency path.
 // See https://developer.android.com/ndk/guides/audio/opensl-prog-notes.html
 // for more details.
-class OpenSLESRecorder {
- public:
-  // Beginning with API level 17 (Android 4.2), a buffer count of 2 or more is
-  // required for lower latency. Beginning with API level 18 (Android 4.3), a
-  // buffer count of 1 is sufficient for lower latency. In addition, the buffer
-  // size and sample rate must be compatible with the device's native input
-  // configuration provided via the audio manager at construction.
-  // TODO(henrika): perhaps set this value dynamically based on OS version.
-  static const int kNumOfOpenSLESBuffers = 2;
+class OpenSLESRecorder
+{
+public:
+    // Beginning with API level 17 (Android 4.2), a buffer count of 2 or more is
+    // required for lower latency. Beginning with API level 18 (Android 4.3), a
+    // buffer count of 1 is sufficient for lower latency. In addition, the buffer
+    // size and sample rate must be compatible with the device's native input
+    // configuration provided via the audio manager at construction.
+    // TODO(henrika): perhaps set this value dynamically based on OS version.
+    static const int kNumOfOpenSLESBuffers = 2;
 
-  explicit OpenSLESRecorder(AudioManager* audio_manager);
-  ~OpenSLESRecorder();
+    explicit OpenSLESRecorder(AudioManager* audio_manager);
+    ~OpenSLESRecorder();
 
-  int Init();
-  int Terminate();
+    int Init();
+    int Terminate();
 
-  int InitRecording();
-  bool RecordingIsInitialized() const { return initialized_; }
+    int InitRecording();
+    bool RecordingIsInitialized() const
+    {
+        return initialized_;
+    }
 
-  int StartRecording();
-  int StopRecording();
-  bool Recording() const { return recording_; }
+    int StartRecording();
+    int StopRecording();
+    bool Recording() const
+    {
+        return recording_;
+    }
 
-  void AttachAudioBuffer(AudioDeviceBuffer* audio_buffer);
+    void AttachAudioBuffer(AudioDeviceBuffer* audio_buffer);
 
-  // TODO(henrika): add support using OpenSL ES APIs when available.
-  int EnableBuiltInAEC(bool enable);
-  int EnableBuiltInAGC(bool enable);
-  int EnableBuiltInNS(bool enable);
+    // TODO(henrika): add support using OpenSL ES APIs when available.
+    int EnableBuiltInAEC(bool enable);
+    int EnableBuiltInAGC(bool enable);
+    int EnableBuiltInNS(bool enable);
 
- private:
-  // Obtaines the SL Engine Interface from the existing global Engine object.
-  // The interface exposes creation methods of all the OpenSL ES object types.
-  // This method defines the |engine_| member variable.
-  bool ObtainEngineInterface();
+private:
+    // Obtaines the SL Engine Interface from the existing global Engine object.
+    // The interface exposes creation methods of all the OpenSL ES object types.
+    // This method defines the |engine_| member variable.
+    bool ObtainEngineInterface();
 
-  // Creates/destroys the audio recorder and the simple-buffer queue object.
-  bool CreateAudioRecorder();
-  void DestroyAudioRecorder();
+    // Creates/destroys the audio recorder and the simple-buffer queue object.
+    bool CreateAudioRecorder();
+    void DestroyAudioRecorder();
 
-  // Allocate memory for audio buffers which will be used to capture audio
-  // via the SLAndroidSimpleBufferQueueItf interface.
-  void AllocateDataBuffers();
+    // Allocate memory for audio buffers which will be used to capture audio
+    // via the SLAndroidSimpleBufferQueueItf interface.
+    void AllocateDataBuffers();
 
-  // These callback methods are called when data has been written to the input
-  // buffer queue. They are both called from an internal "OpenSL ES thread"
-  // which is not attached to the Dalvik VM.
-  static void SimpleBufferQueueCallback(SLAndroidSimpleBufferQueueItf caller,
-                                        void* context);
-  void ReadBufferQueue();
+    // These callback methods are called when data has been written to the input
+    // buffer queue. They are both called from an internal "OpenSL ES thread"
+    // which is not attached to the Dalvik VM.
+    static void SimpleBufferQueueCallback(SLAndroidSimpleBufferQueueItf caller,
+                                          void* context);
+    void ReadBufferQueue();
 
-  // Wraps calls to SLAndroidSimpleBufferQueueState::Enqueue() and it can be
-  // called both on the main thread (but before recording has started) and from
-  // the internal audio thread while input streaming is active. It uses
-  // |simple_buffer_queue_| but no lock is needed since the initial calls from
-  // the main thread and the native callback thread are mutually exclusive.
-  bool EnqueueAudioBuffer();
+    // Wraps calls to SLAndroidSimpleBufferQueueState::Enqueue() and it can be
+    // called both on the main thread (but before recording has started) and from
+    // the internal audio thread while input streaming is active. It uses
+    // |simple_buffer_queue_| but no lock is needed since the initial calls from
+    // the main thread and the native callback thread are mutually exclusive.
+    bool EnqueueAudioBuffer();
 
-  // Returns the current recorder state.
-  SLuint32 GetRecordState() const;
+    // Returns the current recorder state.
+    SLuint32 GetRecordState() const;
 
-  // Returns the current buffer queue state.
-  SLAndroidSimpleBufferQueueState GetBufferQueueState() const;
+    // Returns the current buffer queue state.
+    SLAndroidSimpleBufferQueueState GetBufferQueueState() const;
 
-  // Number of buffers currently in the queue.
-  SLuint32 GetBufferCount();
+    // Number of buffers currently in the queue.
+    SLuint32 GetBufferCount();
 
-  // Prints a log message of the current queue state. Can be used for debugging
-  // purposes.
-  void LogBufferState() const;
+    // Prints a log message of the current queue state. Can be used for debugging
+    // purposes.
+    void LogBufferState() const;
 
-  // Ensures that methods are called from the same thread as this object is
-  // created on.
-  rtc::ThreadChecker thread_checker_;
+    // Ensures that methods are called from the same thread as this object is
+    // created on.
+    rtc::ThreadChecker thread_checker_;
 
-  // Stores thread ID in first call to SimpleBufferQueueCallback() from internal
-  // non-application thread which is not attached to the Dalvik JVM.
-  // Detached during construction of this object.
-  rtc::ThreadChecker thread_checker_opensles_;
+    // Stores thread ID in first call to SimpleBufferQueueCallback() from internal
+    // non-application thread which is not attached to the Dalvik JVM.
+    // Detached during construction of this object.
+    rtc::ThreadChecker thread_checker_opensles_;
 
-  // Raw pointer to the audio manager injected at construction. Used to cache
-  // audio parameters and to access the global SL engine object needed by the
-  // ObtainEngineInterface() method. The audio manager outlives any instance of
-  // this class.
-  AudioManager* const audio_manager_;
+    // Raw pointer to the audio manager injected at construction. Used to cache
+    // audio parameters and to access the global SL engine object needed by the
+    // ObtainEngineInterface() method. The audio manager outlives any instance of
+    // this class.
+    AudioManager* const audio_manager_;
 
-  // Contains audio parameters provided to this class at construction by the
-  // AudioManager.
-  const AudioParameters audio_parameters_;
+    // Contains audio parameters provided to this class at construction by the
+    // AudioManager.
+    const AudioParameters audio_parameters_;
 
-  // Raw pointer handle provided to us in AttachAudioBuffer(). Owned by the
-  // AudioDeviceModuleImpl class and called by AudioDeviceModule::Create().
-  AudioDeviceBuffer* audio_device_buffer_;
+    // Raw pointer handle provided to us in AttachAudioBuffer(). Owned by the
+    // AudioDeviceModuleImpl class and called by AudioDeviceModule::Create().
+    AudioDeviceBuffer* audio_device_buffer_;
 
-  // PCM-type format definition.
-  // TODO(henrika): add support for SLAndroidDataFormat_PCM_EX (android-21) if
-  // 32-bit float representation is needed.
-  SLDataFormat_PCM pcm_format_;
+    // PCM-type format definition.
+    // TODO(henrika): add support for SLAndroidDataFormat_PCM_EX (android-21) if
+    // 32-bit float representation is needed.
+    SLDataFormat_PCM pcm_format_;
 
-  bool initialized_;
-  bool recording_;
+    bool initialized_;
+    bool recording_;
 
-  // This interface exposes creation methods for all the OpenSL ES object types.
-  // It is the OpenSL ES API entry point.
-  SLEngineItf engine_;
+    // This interface exposes creation methods for all the OpenSL ES object types.
+    // It is the OpenSL ES API entry point.
+    SLEngineItf engine_;
 
-  // The audio recorder media object records audio to the destination specified
-  // by the data sink capturing it from the input specified by the data source.
-  webrtc::ScopedSLObjectItf recorder_object_;
+    // The audio recorder media object records audio to the destination specified
+    // by the data sink capturing it from the input specified by the data source.
+    webrtc::ScopedSLObjectItf recorder_object_;
 
-  // This interface is supported on the audio recorder object and it controls
-  // the state of the audio recorder.
-  SLRecordItf recorder_;
+    // This interface is supported on the audio recorder object and it controls
+    // the state of the audio recorder.
+    SLRecordItf recorder_;
 
-  // The Android Simple Buffer Queue interface is supported on the audio
-  // recorder. For recording, an app should enqueue empty buffers. When a
-  // registered callback sends notification that the system has finished writing
-  // data to the buffer, the app can read the buffer.
-  SLAndroidSimpleBufferQueueItf simple_buffer_queue_;
+    // The Android Simple Buffer Queue interface is supported on the audio
+    // recorder. For recording, an app should enqueue empty buffers. When a
+    // registered callback sends notification that the system has finished writing
+    // data to the buffer, the app can read the buffer.
+    SLAndroidSimpleBufferQueueItf simple_buffer_queue_;
 
-  // Consumes audio of native buffer size and feeds the WebRTC layer with 10ms
-  // chunks of audio.
-  std::unique_ptr<FineAudioBuffer> fine_audio_buffer_;
+    // Consumes audio of native buffer size and feeds the WebRTC layer with 10ms
+    // chunks of audio.
+    std::unique_ptr<FineAudioBuffer> fine_audio_buffer_;
 
-  // Queue of audio buffers to be used by the recorder object for capturing
-  // audio. They will be used in a Round-robin way and the size of each buffer
-  // is given by AudioParameters::GetBytesPerBuffer(), i.e., it corresponds to
-  // the native OpenSL ES buffer size.
-  std::unique_ptr<std::unique_ptr<SLint8[]>[]> audio_buffers_;
+    // Queue of audio buffers to be used by the recorder object for capturing
+    // audio. They will be used in a Round-robin way and the size of each buffer
+    // is given by AudioParameters::GetBytesPerBuffer(), i.e., it corresponds to
+    // the native OpenSL ES buffer size.
+    std::unique_ptr<std::unique_ptr<SLint8[]>[]> audio_buffers_;
 
-  // Keeps track of active audio buffer 'n' in the audio_buffers_[n] queue.
-  // Example (kNumOfOpenSLESBuffers = 2): counts 0, 1, 0, 1, ...
-  int buffer_index_;
+    // Keeps track of active audio buffer 'n' in the audio_buffers_[n] queue.
+    // Example (kNumOfOpenSLESBuffers = 2): counts 0, 1, 0, 1, ...
+    int buffer_index_;
 
-  // Last time the OpenSL ES layer delivered recorded audio data.
-  uint32_t last_rec_time_;
+    // Last time the OpenSL ES layer delivered recorded audio data.
+    uint32_t last_rec_time_;
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNM image parser
  * Copyright (c) 2002, 2003 Fabrice Bellard
  *
@@ -31,31 +31,41 @@ static int pnm_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     PNMContext pnmctx;
     int next;
 
-    for (; pc->overread > 0; pc->overread--) {
+    for (; pc->overread > 0; pc->overread--)
+    {
         pc->buffer[pc->index++]= pc->buffer[pc->overread_index++];
     }
 retry:
-    if (pc->index) {
+    if (pc->index)
+    {
         pnmctx.bytestream_start =
-        pnmctx.bytestream       = pc->buffer;
+            pnmctx.bytestream       = pc->buffer;
         pnmctx.bytestream_end   = pc->buffer + pc->index;
-    } else {
+    }
+    else
+    {
         pnmctx.bytestream_start =
-        pnmctx.bytestream       = (uint8_t *) buf; /* casts avoid warnings */
+            pnmctx.bytestream       = (uint8_t *) buf; /* casts avoid warnings */
         pnmctx.bytestream_end   = (uint8_t *) buf + buf_size;
     }
-    if (ff_pnm_decode_header(avctx, &pnmctx) < 0) {
-        if (pnmctx.bytestream < pnmctx.bytestream_end) {
-            if (pc->index) {
+    if (ff_pnm_decode_header(avctx, &pnmctx) < 0)
+    {
+        if (pnmctx.bytestream < pnmctx.bytestream_end)
+        {
+            if (pc->index)
+            {
                 pc->index = 0;
-            } else {
+            }
+            else
+            {
                 buf++;
                 buf_size--;
             }
             goto retry;
         }
 #if 0
-        if (pc->index && pc->index * 2 + AV_INPUT_BUFFER_PADDING_SIZE < pc->buffer_size && buf_size > pc->index) {
+        if (pc->index && pc->index * 2 + AV_INPUT_BUFFER_PADDING_SIZE < pc->buffer_size && buf_size > pc->index)
+        {
             memcpy(pc->buffer + pc->index, buf, pc->index);
             pc->index += pc->index;
             buf       += pc->index;
@@ -64,7 +74,9 @@ retry:
         }
 #endif
         next = END_NOT_FOUND;
-    } else {
+    }
+    else
+    {
         next = pnmctx.bytestream - pnmctx.bytestream_start
                + avpicture_get_size(avctx->pix_fmt, avctx->width, avctx->height);
         if (pnmctx.bytestream_start != buf)
@@ -73,7 +85,8 @@ retry:
             next = END_NOT_FOUND;
     }
 
-    if (ff_combine_frame(pc, next, &buf, &buf_size) < 0) {
+    if (ff_combine_frame(pc, next, &buf, &buf_size) < 0)
+    {
         *poutbuf      = NULL;
         *poutbuf_size = 0;
         return buf_size;
@@ -83,9 +96,12 @@ retry:
     return next;
 }
 
-AVCodecParser ff_pnm_parser = {
-    .codec_ids      = { AV_CODEC_ID_PGM, AV_CODEC_ID_PGMYUV, AV_CODEC_ID_PPM,
-                        AV_CODEC_ID_PBM, AV_CODEC_ID_PAM },
+AVCodecParser ff_pnm_parser =
+{
+    .codec_ids      = {
+        AV_CODEC_ID_PGM, AV_CODEC_ID_PGMYUV, AV_CODEC_ID_PPM,
+        AV_CODEC_ID_PBM, AV_CODEC_ID_PAM
+    },
     .priv_data_size = sizeof(ParseContext),
     .parser_parse   = pnm_parse,
     .parser_close   = ff_parse_close,

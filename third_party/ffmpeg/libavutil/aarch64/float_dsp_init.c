@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised Float DSP functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -55,7 +55,8 @@ av_cold void ff_float_dsp_init_aarch64(AVFloatDSPContext *fdsp)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         fdsp->butterflies_float   = ff_butterflies_float_neon;
         fdsp->scalarproduct_float = ff_scalarproduct_float_neon;
         fdsp->vector_dmul_scalar  = ff_vector_dmul_scalar_neon;

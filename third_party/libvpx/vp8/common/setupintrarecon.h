@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,16 +21,17 @@ extern void vp8_setup_intra_recon(YV12_BUFFER_CONFIG *ybf);
 extern void vp8_setup_intra_recon_top_line(YV12_BUFFER_CONFIG *ybf);
 
 static INLINE void setup_intra_recon_left(unsigned char *y_buffer,
-                                          unsigned char *u_buffer,
-                                          unsigned char *v_buffer, int y_stride,
-                                          int uv_stride) {
-  int i;
+        unsigned char *u_buffer,
+        unsigned char *v_buffer, int y_stride,
+        int uv_stride)
+{
+    int i;
 
-  for (i = 0; i < 16; ++i) y_buffer[y_stride * i] = (unsigned char)129;
+    for (i = 0; i < 16; ++i) y_buffer[y_stride * i] = (unsigned char)129;
 
-  for (i = 0; i < 8; ++i) u_buffer[uv_stride * i] = (unsigned char)129;
+    for (i = 0; i < 8; ++i) u_buffer[uv_stride * i] = (unsigned char)129;
 
-  for (i = 0; i < 8; ++i) v_buffer[uv_stride * i] = (unsigned char)129;
+    for (i = 0; i < 8; ++i) v_buffer[uv_stride * i] = (unsigned char)129;
 }
 
 #ifdef __cplusplus

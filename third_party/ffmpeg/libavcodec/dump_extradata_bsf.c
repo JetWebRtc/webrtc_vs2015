@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -25,15 +25,18 @@
 
 
 static int dump_extradata(AVBitStreamFilterContext *bsfc, AVCodecContext *avctx, const char *args,
-                     uint8_t **poutbuf, int *poutbuf_size,
-                     const uint8_t *buf, int buf_size, int keyframe){
+                          uint8_t **poutbuf, int *poutbuf_size,
+                          const uint8_t *buf, int buf_size, int keyframe)
+{
     int cmd= args ? *args : 0;
     /* cast to avoid warning about discarding qualifiers */
-    if(avctx->extradata){
+    if(avctx->extradata)
+    {
         if(  (keyframe && (avctx->flags2 & AV_CODEC_FLAG2_LOCAL_HEADER) && cmd == 'a')
-           ||(keyframe && (cmd=='k' || !cmd))
-           ||(cmd=='e')
-            /*||(? && (s->flags & PARSER_FLAG_DUMP_EXTRADATA_AT_BEGIN)*/){
+                ||(keyframe && (cmd=='k' || !cmd))
+                ||(cmd=='e')
+                /*||(? && (s->flags & PARSER_FLAG_DUMP_EXTRADATA_AT_BEGIN)*/)
+        {
             int size= buf_size + avctx->extradata_size;
             *poutbuf_size= size;
             *poutbuf= av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE);
@@ -48,7 +51,8 @@ static int dump_extradata(AVBitStreamFilterContext *bsfc, AVCodecContext *avctx,
     return 0;
 }
 
-AVBitStreamFilter ff_dump_extradata_bsf={
+AVBitStreamFilter ff_dump_extradata_bsf=
+{
     .name   = "dump_extra",
     .filter = dump_extradata,
 };

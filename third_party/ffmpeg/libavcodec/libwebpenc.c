@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WebP encoding support via libwebp
  * Copyright (c) 2013 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -50,7 +50,8 @@ static int libwebp_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     pic->writer     = WebPMemoryWrite;
 
     ret = WebPEncode(&s->config, pic);
-    if (!ret) {
+    if (!ret)
+    {
         av_log(avctx, AV_LOG_ERROR, "WebPEncode() failed with error: %d\n",
                pic->error_code);
         ret = ff_libwebp_error_to_averror(pic->error_code);
@@ -86,14 +87,16 @@ static int libwebp_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "libwebp",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_libwebp_encoder = {
+AVCodec ff_libwebp_encoder =
+{
     .name           = "libwebp",
     .long_name      = NULL_IF_CONFIG_SMALL("libwebp WebP image"),
     .type           = AVMEDIA_TYPE_VIDEO,

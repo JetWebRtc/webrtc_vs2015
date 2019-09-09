@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TIFF Common Routines
  * Copyright (c) 2013 Thilo Borgmann <thilo.borgmann _at_ mail.de>
  *
@@ -34,7 +34,8 @@
 #include "libavutil/bprint.h"
 
 /** data type identifiers for TIFF tags */
-enum TiffTypes {
+enum TiffTypes
+{
     TIFF_BYTE = 1,
     TIFF_STRING,
     TIFF_SHORT,
@@ -51,11 +52,13 @@ enum TiffTypes {
 };
 
 /** sizes of various TIFF field types (string size = 100)*/
-static const uint8_t type_sizes[14] = {
+static const uint8_t type_sizes[14] =
+{
     0, 1, 100, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8, 4
 };
 
-static const uint16_t ifd_tags[] = {
+static const uint16_t ifd_tags[] =
+{
     0x8769, // EXIF IFD
     0x8825, // GPS IFD
     0xA005  // Interoperability IFD

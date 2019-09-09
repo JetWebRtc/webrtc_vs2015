@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,21 +18,23 @@
 #include "webrtc/modules/audio_processing/aec3/aec3_constants.h"
 #include "webrtc/modules/audio_processing/aec3/cascaded_biquad_filter.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Provides functionality for decimating a signal by 4.
-class DecimatorBy4 {
- public:
-  DecimatorBy4();
+class DecimatorBy4
+{
+public:
+    DecimatorBy4();
 
-  // Downsamples the signal.
-  void Decimate(rtc::ArrayView<const float> in,
-                std::array<float, kSubBlockSize>* out);
+    // Downsamples the signal.
+    void Decimate(rtc::ArrayView<const float> in,
+                  std::array<float, kSubBlockSize>* out);
 
- private:
-  CascadedBiQuadFilter low_pass_filter_;
+private:
+    CascadedBiQuadFilter low_pass_filter_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(DecimatorBy4);
+    RTC_DISALLOW_COPY_AND_ASSIGN(DecimatorBy4);
 };
 }  // namespace webrtc
 

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -64,12 +64,12 @@ opus_int32 silk_stereo_find_predictor(                          /* O    Returns 
     silk_assert( smooth_coef_Q16 < 32768 );
     scale = silk_RSHIFT( scale, 1 );
     mid_res_amp_Q0[ 0 ] = silk_SMLAWB( mid_res_amp_Q0[ 0 ], silk_LSHIFT( silk_SQRT_APPROX( nrgx ), scale ) - mid_res_amp_Q0[ 0 ],
-        smooth_coef_Q16 );
+                                       smooth_coef_Q16 );
     /* Residual energy = nrgy - 2 * pred * corr + pred^2 * nrgx */
     nrgy = silk_SUB_LSHIFT32( nrgy, silk_SMULWB( corr, pred_Q13 ), 3 + 1 );
     nrgy = silk_ADD_LSHIFT32( nrgy, silk_SMULWB( nrgx, pred2_Q10 ), 6 );
     mid_res_amp_Q0[ 1 ] = silk_SMLAWB( mid_res_amp_Q0[ 1 ], silk_LSHIFT( silk_SQRT_APPROX( nrgy ), scale ) - mid_res_amp_Q0[ 1 ],
-        smooth_coef_Q16 );
+                                       smooth_coef_Q16 );
 
     /* Ratio of smoothed residual and mid norms */
     *ratio_Q14 = silk_DIV32_varQ( mid_res_amp_Q0[ 1 ], silk_max( mid_res_amp_Q0[ 0 ], 1 ), 14 );

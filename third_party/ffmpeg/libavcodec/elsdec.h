@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ELS (Entropy Logarithmic-Scale) decoder
  *
  * Copyright (c) 2013 Maxim Poliakovski
@@ -33,19 +33,22 @@
 
 #define ELS_EXPGOLOMB_LEN   10
 
-typedef struct ElsDecCtx {
+typedef struct ElsDecCtx
+{
     const uint8_t *in_buf;
     unsigned x;
     size_t data_size;
     int j, t, diff, err;
 } ElsDecCtx;
 
-typedef struct ElsRungNode {
+typedef struct ElsRungNode
+{
     uint8_t  rung;
     uint16_t next_index;
 } ElsRungNode;
 
-typedef struct ElsUnsignedRung {
+typedef struct ElsUnsignedRung
+{
     uint8_t      prefix_rung[ELS_EXPGOLOMB_LEN + 1];
     ElsRungNode  *rem_rung_list;
     size_t       rung_list_size;

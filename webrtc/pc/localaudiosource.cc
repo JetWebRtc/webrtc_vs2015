@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,35 +18,40 @@
 using webrtc::MediaConstraintsInterface;
 using webrtc::MediaSourceInterface;
 
-namespace webrtc {
+namespace webrtc
+{
 
 rtc::scoped_refptr<LocalAudioSource> LocalAudioSource::Create(
-    const MediaConstraintsInterface* constraints) {
-  rtc::scoped_refptr<LocalAudioSource> source(
-      new rtc::RefCountedObject<LocalAudioSource>());
-  source->Initialize(constraints);
-  return source;
+    const MediaConstraintsInterface* constraints)
+{
+    rtc::scoped_refptr<LocalAudioSource> source(
+        new rtc::RefCountedObject<LocalAudioSource>());
+    source->Initialize(constraints);
+    return source;
 }
 
 rtc::scoped_refptr<LocalAudioSource> LocalAudioSource::Create(
-    const cricket::AudioOptions* audio_options) {
-  rtc::scoped_refptr<LocalAudioSource> source(
-      new rtc::RefCountedObject<LocalAudioSource>());
-  source->Initialize(audio_options);
-  return source;
+    const cricket::AudioOptions* audio_options)
+{
+    rtc::scoped_refptr<LocalAudioSource> source(
+        new rtc::RefCountedObject<LocalAudioSource>());
+    source->Initialize(audio_options);
+    return source;
 }
 
 void LocalAudioSource::Initialize(
-    const MediaConstraintsInterface* constraints) {
-  CopyConstraintsIntoAudioOptions(constraints, &options_);
+    const MediaConstraintsInterface* constraints)
+{
+    CopyConstraintsIntoAudioOptions(constraints, &options_);
 }
 
 void LocalAudioSource::Initialize(
-    const cricket::AudioOptions* audio_options) {
-  if (!audio_options)
-    return;
+    const cricket::AudioOptions* audio_options)
+{
+    if (!audio_options)
+        return;
 
-  options_ = *audio_options;
+    options_ = *audio_options;
 }
 
 }  // namespace webrtc

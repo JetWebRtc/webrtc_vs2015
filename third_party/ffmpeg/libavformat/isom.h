@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ISO Media common code
  * copyright (c) 2001 Fabrice Bellard
  * copyright (c) 2002 Francois Revol <revol@free.fr>
@@ -42,24 +42,28 @@ int ff_mov_lang_to_iso639(unsigned code, char to[4]);
  * Here we just use what is needed to read the chunks
  */
 
-typedef struct MOVStts {
+typedef struct MOVStts
+{
     int count;
     int duration;
 } MOVStts;
 
-typedef struct MOVStsc {
+typedef struct MOVStsc
+{
     int first;
     int count;
     int id;
 } MOVStsc;
 
-typedef struct MOVElst {
+typedef struct MOVElst
+{
     int64_t duration;
     int64_t time;
     float rate;
 } MOVElst;
 
-typedef struct MOVDref {
+typedef struct MOVDref
+{
     uint32_t type;
     char *path;
     char *dir;
@@ -68,14 +72,16 @@ typedef struct MOVDref {
     int16_t nlvl_to, nlvl_from;
 } MOVDref;
 
-typedef struct MOVAtom {
+typedef struct MOVAtom
+{
     uint32_t type;
     int64_t size; /* total size (excluding the size and type fields) */
 } MOVAtom;
 
 struct MOVParseTableEntry;
 
-typedef struct MOVFragment {
+typedef struct MOVFragment
+{
     unsigned track_id;
     uint64_t base_data_offset;
     uint64_t moof_offset;
@@ -87,7 +93,8 @@ typedef struct MOVFragment {
     int64_t time;
 } MOVFragment;
 
-typedef struct MOVTrackExt {
+typedef struct MOVTrackExt
+{
     unsigned track_id;
     unsigned stsd_id;
     unsigned duration;
@@ -95,24 +102,28 @@ typedef struct MOVTrackExt {
     unsigned flags;
 } MOVTrackExt;
 
-typedef struct MOVSbgp {
+typedef struct MOVSbgp
+{
     unsigned int count;
     unsigned int index;
 } MOVSbgp;
 
-typedef struct MOVFragmentIndexItem {
+typedef struct MOVFragmentIndexItem
+{
     int64_t moof_offset;
     int64_t time;
 } MOVFragmentIndexItem;
 
-typedef struct MOVFragmentIndex {
+typedef struct MOVFragmentIndex
+{
     unsigned track_id;
     unsigned item_count;
     unsigned current_item;
     MOVFragmentIndexItem *items;
 } MOVFragmentIndex;
 
-typedef struct MOVStreamContext {
+typedef struct MOVStreamContext
+{
     AVIOContext *pb;
     int pb_is_copied;
     int ffindex;          ///< AVStream index
@@ -169,7 +180,8 @@ typedef struct MOVStreamContext {
     int32_t *display_matrix;
 } MOVStreamContext;
 
-typedef struct MOVContext {
+typedef struct MOVContext
+{
     const AVClass *class; ///< class for private options
     AVFormatContext *fc;
     int time_scale;

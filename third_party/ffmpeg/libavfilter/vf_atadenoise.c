@@ -38,7 +38,8 @@
 
 #define SIZE FF_BUFQUEUE_SIZE
 
-typedef struct ATADenoiseContext {
+typedef struct ATADenoiseContext
+{
     const AVClass *class;
 
     float fthra[4], fthrb[4];
@@ -60,7 +61,8 @@ typedef struct ATADenoiseContext {
 #define OFFSET(x) offsetof(ATADenoiseContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption atadenoise_options[] = {
+static const AVOption atadenoise_options[] =
+{
     { "0a", "set threshold A for 1st plane", OFFSET(fthra[0]), AV_OPT_TYPE_FLOAT, {.dbl=0.02}, 0, 0.3, FLAGS },
     { "0b", "set threshold B for 1st plane", OFFSET(fthrb[0]), AV_OPT_TYPE_FLOAT, {.dbl=0.04}, 0, 5.0, FLAGS },
     { "1a", "set threshold A for 2nd plane", OFFSET(fthra[1]), AV_OPT_TYPE_FLOAT, {.dbl=0.02}, 0, 0.3, FLAGS },
@@ -75,7 +77,8 @@ AVFILTER_DEFINE_CLASS(atadenoise);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pixel_fmts[] = {
+    static const enum AVPixelFormat pixel_fmts[] =
+    {
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P,
@@ -100,7 +103,8 @@ static av_cold int init(AVFilterContext *ctx)
 {
     ATADenoiseContext *s = ctx->priv;
 
-    if (!(s->size & 1)) {
+    if (!(s->size & 1))
+    {
         av_log(ctx, AV_LOG_ERROR, "size %d is invalid. Must be an odd value.\n", s->size);
         return AVERROR(EINVAL);
     }
@@ -109,7 +113,8 @@ static av_cold int init(AVFilterContext *ctx)
     return 0;
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
@@ -123,7 +128,8 @@ static int filter_slice8(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs
     const int mid = s->mid;
     int p, x, y, i, j;
 
-    for (p = 0; p < s->nb_planes; p++) {
+    for (p = 0; p < s->nb_planes; p++)
+    {
         const int h = s->planeheight[p];
         const int w = s->planewidth[p];
         const int slice_start = (h * jobnr) / nb_jobs;
@@ -139,8 +145,10 @@ static int filter_slice8(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs
         for (i = 0; i < size; i++)
             srcf[i] = data[i] + slice_start * linesize[i];
 
-        for (y = slice_start; y < slice_end; y++) {
-            for (x = 0; x < w; x++) {
+        for (y = slice_start; y < slice_end; y++)
+        {
+            for (x = 0; x < w; x++)
+            {
                 const int srcx = src[x];
                 unsigned lsumdiff = 0, rsumdiff = 0;
                 unsigned ldiff, rdiff;
@@ -148,13 +156,14 @@ static int filter_slice8(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs
                 int l = 0, r = 0;
                 int srcjx, srcix;
 
-                for (j = mid - 1, i = mid + 1; j >= 0 && i < size; j--, i++) {
+                for (j = mid - 1, i = mid + 1; j >= 0 && i < size; j--, i++)
+                {
                     srcjx = srcf[j][x];
 
                     ldiff = FFABS(srcx - srcjx);
                     lsumdiff += ldiff;
                     if (ldiff > thra ||
-                        lsumdiff > thrb)
+                            lsumdiff > thrb)
                         break;
                     l++;
                     sum += srcjx;
@@ -164,7 +173,7 @@ static int filter_slice8(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs
                     rdiff = FFABS(srcx - srcix);
                     rsumdiff += rdiff;
                     if (rdiff > thra ||
-                        rsumdiff > thrb)
+                            rsumdiff > thrb)
                         break;
                     r++;
                     sum += srcix;
@@ -194,7 +203,8 @@ static int filter_slice16(AVFilterContext *ctx, void *arg, int jobnr, int nb_job
     const int mid = s->mid;
     int p, x, y, i, j;
 
-    for (p = 0; p < s->nb_planes; p++) {
+    for (p = 0; p < s->nb_planes; p++)
+    {
         const int h = s->planeheight[p];
         const int w = s->planewidth[p];
         const int slice_start = (h * jobnr) / nb_jobs;
@@ -210,8 +220,10 @@ static int filter_slice16(AVFilterContext *ctx, void *arg, int jobnr, int nb_job
         for (i = 0; i < s->size; i++)
             srcf[i] = (const uint16_t *)(data[i] + slice_start * linesize[i]);
 
-        for (y = slice_start; y < slice_end; y++) {
-            for (x = 0; x < w; x++) {
+        for (y = slice_start; y < slice_end; y++)
+        {
+            for (x = 0; x < w; x++)
+            {
                 const int srcx = src[x];
                 unsigned lsumdiff = 0, rsumdiff = 0;
                 unsigned ldiff, rdiff;
@@ -219,13 +231,14 @@ static int filter_slice16(AVFilterContext *ctx, void *arg, int jobnr, int nb_job
                 int l = 0, r = 0;
                 int srcjx, srcix;
 
-                for (j = mid - 1, i = mid + 1; j >= 0 && i < size; j--, i++) {
+                for (j = mid - 1, i = mid + 1; j >= 0 && i < size; j--, i++)
+                {
                     srcjx = srcf[j][x];
 
                     ldiff = FFABS(srcx - srcjx);
                     lsumdiff += ldiff;
                     if (ldiff > thra ||
-                        lsumdiff > thrb)
+                            lsumdiff > thrb)
                         break;
                     l++;
                     sum += srcjx;
@@ -235,7 +248,7 @@ static int filter_slice16(AVFilterContext *ctx, void *arg, int jobnr, int nb_job
                     rdiff = FFABS(srcx - srcix);
                     rsumdiff += rdiff;
                     if (rdiff > thra ||
-                        rsumdiff > thrb)
+                            rsumdiff > thrb)
                         break;
                     r++;
                     sum += srcix;
@@ -299,8 +312,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     AVFrame *out, *in;
     int i;
 
-    if (s->q.available != s->size) {
-        if (s->q.available < s->mid) {
+    if (s->q.available != s->size)
+    {
+        if (s->q.available < s->mid)
+        {
             out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
             if (!out)
                 return AVERROR(ENOMEM);
@@ -309,7 +324,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
                 ff_bufqueue_add(ctx, &s->q, av_frame_clone(out));
             av_frame_free(&out);
         }
-        if (s->q.available < s->size) {
+        if (s->q.available < s->size)
+        {
             ff_bufqueue_add(ctx, &s->q, buf);
             s->available++;
         }
@@ -318,16 +334,19 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
 
     in = ff_bufqueue_peek(&s->q, s->mid);
 
-    if (!ctx->is_disabled) {
+    if (!ctx->is_disabled)
+    {
         ThreadData td;
 
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&buf);
             return AVERROR(ENOMEM);
         }
 
-        for (i = 0; i < s->size; i++) {
+        for (i = 0; i < s->size; i++)
+        {
             AVFrame *frame = ff_bufqueue_peek(&s->q, i);
 
             s->data[0][i] = frame->data[0];
@@ -338,15 +357,19 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
             s->linesize[2][i] = frame->linesize[2];
         }
 
-        td.in = in; td.out = out;
+        td.in = in;
+        td.out = out;
         ctx->internal->execute(ctx, s->filter_slice, &td, NULL,
                                FFMIN3(s->planeheight[1],
                                       s->planeheight[2],
                                       ctx->graph->nb_threads));
         av_frame_copy_props(out, in);
-    } else {
+    }
+    else
+    {
         out = av_frame_clone(in);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&buf);
             return AVERROR(ENOMEM);
         }
@@ -367,7 +390,8 @@ static int request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && !ctx->is_disabled && s->available) {
+    if (ret == AVERROR_EOF && !ctx->is_disabled && s->available)
+    {
         AVFrame *buf = ff_get_video_buffer(outlink, outlink->w, outlink->h);
         if (!buf)
             return AVERROR(ENOMEM);
@@ -386,7 +410,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     ff_bufqueue_discard_all(&s->q);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -396,7 +421,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -406,7 +432,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_atadenoise = {
+AVFilter ff_vf_atadenoise =
+{
     .name          = "atadenoise",
     .description   = NULL_IF_CONFIG_SMALL("Apply an Adaptive Temporal Averaging Denoiser."),
     .priv_size     = sizeof(ATADenoiseContext),

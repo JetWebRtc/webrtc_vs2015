@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Konstantin Shishkov
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "avcodec.h"
 #include "mss12.h"
 
-enum SplitMode {
+enum SplitMode
+{
     SPLIT_VERT = 0,
     SPLIT_HOR,
     SPLIT_NONE
@@ -38,7 +39,8 @@ enum SplitMode {
 
 static const int sec_order_sizes[4] = { 1, 7, 6, 1 };
 
-enum ContextDirection {
+enum ContextDirection
+{
     TOP_LEFT = 0,
     TOP,
     TOP_RIGHT,
@@ -59,7 +61,8 @@ static void model_reset(Model *m)
 {
     int i;
 
-    for (i = 0; i <= m->num_syms; i++) {
+    for (i = 0; i <= m->num_syms; i++)
+    {
         m->weights[i]  = 1;
         m->cum_prob[i] = m->num_syms - i;
     }
@@ -82,9 +85,11 @@ static void model_rescale_weights(Model *m)
 
     if (m->thr_weight == THRESH_ADAPTIVE)
         m->threshold = model_calc_threshold(m);
-    while (m->cum_prob[0] > m->threshold) {
+    while (m->cum_prob[0] > m->threshold)
+    {
         cum_prob = 0;
-        for (i = m->num_syms; i >= 0; i--) {
+        for (i = m->num_syms; i >= 0; i--)
+        {
             m->cum_prob[i] = cum_prob;
             m->weights[i]  = (m->weights[i] + 1) >> 1;
             cum_prob      += m->weights[i];
@@ -96,9 +101,11 @@ void ff_mss12_model_update(Model *m, int val)
 {
     int i;
 
-    if (m->weights[val] == m->weights[val - 1]) {
+    if (m->weights[val] == m->weights[val - 1])
+    {
         for (i = val; m->weights[i - 1] == m->weights[val]; i--);
-        if (i != val) {
+        if (i != val)
+        {
             int sym1, sym2;
 
             sym1 = m->idx2sym[val];
@@ -123,7 +130,8 @@ static void pixctx_reset(PixContext *ctx)
     if (!ctx->special_initial_cache)
         for (i = 0; i < ctx->cache_size; i++)
             ctx->cache[i] = i;
-    else {
+    else
+    {
         ctx->cache[0] = 1;
         ctx->cache[1] = 2;
         ctx->cache[2] = 4;
@@ -157,21 +165,25 @@ static av_cold void pixctx_init(PixContext *ctx, int cache_size,
 }
 
 static av_always_inline int decode_pixel(ArithCoder *acoder, PixContext *pctx,
-                                         uint8_t *ngb, int num_ngb, int any_ngb)
+        uint8_t *ngb, int num_ngb, int any_ngb)
 {
     int i, val, pix;
 
     val = acoder->get_model_sym(acoder, &pctx->cache_model);
-    if (val < pctx->num_syms) {
-        if (any_ngb) {
+    if (val < pctx->num_syms)
+    {
+        if (any_ngb)
+        {
             int idx, j;
 
             idx = 0;
-            for (i = 0; i < pctx->cache_size; i++) {
+            for (i = 0; i < pctx->cache_size; i++)
+            {
                 for (j = 0; j < num_ngb; j++)
                     if (pctx->cache[i] == ngb[j])
                         break;
-                if (j == num_ngb) {
+                if (j == num_ngb)
+                {
                     if (idx == val)
                         break;
                     idx++;
@@ -180,14 +192,17 @@ static av_always_inline int decode_pixel(ArithCoder *acoder, PixContext *pctx,
             val = FFMIN(i, pctx->cache_size - 1);
         }
         pix = pctx->cache[val];
-    } else {
+    }
+    else
+    {
         pix = acoder->get_model_sym(acoder, &pctx->full_model);
         for (i = 0; i < pctx->cache_size - 1; i++)
             if (pctx->cache[i] == pix)
                 break;
         val = i;
     }
-    if (val) {
+    if (val)
+    {
         for (i = val; i > 0; i--)
             pctx->cache[i] = pctx->cache[i - 1];
         pctx->cache[0] = pix;
@@ -207,13 +222,19 @@ static int decode_pixel_in_context(ArithCoder *acoder, PixContext *pctx,
     int pix;
     int i, j;
 
-    if (!y) {
+    if (!y)
+    {
         memset(neighbours, src[-1], 4);
-    } else {
+    }
+    else
+    {
         neighbours[TOP] = src[-stride];
-        if (!x) {
+        if (!x)
+        {
             neighbours[TOP_LEFT] = neighbours[LEFT] = neighbours[TOP];
-        } else {
+        }
+        else
+        {
             neighbours[TOP_LEFT] = src[-stride - 1];
             neighbours[    LEFT] = src[-1];
         }
@@ -231,7 +252,8 @@ static int decode_pixel_in_context(ArithCoder *acoder, PixContext *pctx,
 
     nlen = 1;
     ref_pix[0] = neighbours[0];
-    for (i = 1; i < 4; i++) {
+    for (i = 1; i < 4; i++)
+    {
         for (j = 0; j < nlen; j++)
             if (ref_pix[j] == neighbours[i])
                 break;
@@ -239,26 +261,34 @@ static int decode_pixel_in_context(ArithCoder *acoder, PixContext *pctx,
             ref_pix[nlen++] = neighbours[i];
     }
 
-    switch (nlen) {
+    switch (nlen)
+    {
     case 1:
         layer = 0;
         break;
     case 2:
-        if (neighbours[TOP] == neighbours[TOP_LEFT]) {
+        if (neighbours[TOP] == neighbours[TOP_LEFT])
+        {
             if (neighbours[TOP_RIGHT] == neighbours[TOP_LEFT])
                 layer = 1;
             else if (neighbours[LEFT] == neighbours[TOP_LEFT])
                 layer = 2;
             else
                 layer = 3;
-        } else if (neighbours[TOP_RIGHT] == neighbours[TOP_LEFT]) {
+        }
+        else if (neighbours[TOP_RIGHT] == neighbours[TOP_LEFT])
+        {
             if (neighbours[LEFT] == neighbours[TOP_LEFT])
                 layer = 4;
             else
                 layer = 5;
-        } else if (neighbours[LEFT] == neighbours[TOP_LEFT]) {
+        }
+        else if (neighbours[LEFT] == neighbours[TOP_LEFT])
+        {
             layer = 6;
-        } else {
+        }
+        else
+        {
             layer = 7;
         }
         break;
@@ -298,8 +328,10 @@ static int decode_region(ArithCoder *acoder, uint8_t *dst, uint8_t *rgb_pic,
 
     dst += x + y * stride;
 
-    for (j = 0; j < height; j++) {
-        for (i = 0; i < width; i++) {
+    for (j = 0; j < height; j++)
+    {
+        for (i = 0; i < width; i++)
+        {
             if (!i && !j)
                 p = decode_pixel(acoder, pctx, NULL, 0, 0);
             else
@@ -323,7 +355,8 @@ static void copy_rectangles(MSS12Context const *c,
     int j;
 
     if (c->last_rgb_pic)
-        for (j = y; j < y + height; j++) {
+        for (j = y; j < y + height; j++)
+        {
             memcpy(c->rgb_pic      + j * c->rgb_stride + x * 3,
                    c->last_rgb_pic + j * c->rgb_stride + x * 3,
                    width * 3);
@@ -337,10 +370,11 @@ static int motion_compensation(MSS12Context const *c,
                                int x, int y, int width, int height)
 {
     if (x + c->mvX < 0 || x + c->mvX + width  > c->avctx->width  ||
-        y + c->mvY < 0 || y + c->mvY + height > c->avctx->height ||
-        !c->rgb_pic)
+            y + c->mvY < 0 || y + c->mvY + height > c->avctx->height ||
+            !c->rgb_pic)
         return -1;
-    else {
+    else
+    {
         uint8_t *dst     = c->pal_pic + x     + y * c->pal_stride;
         uint8_t *rgb_dst = c->rgb_pic + x * 3 + y * c->rgb_stride;
         uint8_t *src;
@@ -348,14 +382,18 @@ static int motion_compensation(MSS12Context const *c,
         int j;
         x += c->mvX;
         y += c->mvY;
-        if (c->last_rgb_pic) {
+        if (c->last_rgb_pic)
+        {
             src     = c->last_pal_pic + x +     y * c->pal_stride;
             rgb_src = c->last_rgb_pic + x * 3 + y * c->rgb_stride;
-        } else {
+        }
+        else
+        {
             src     = c->pal_pic + x     + y * c->pal_stride;
             rgb_src = c->rgb_pic + x * 3 + y * c->rgb_stride;
         }
-        for (j = 0; j < height; j++) {
+        for (j = 0; j < height; j++)
+        {
             memmove(dst, src, width);
             memmove(rgb_dst, rgb_src, width * 3);
             dst     += c->pal_stride;
@@ -379,19 +417,26 @@ static int decode_region_masked(MSS12Context const *c, ArithCoder *acoder,
     dst  += x + y * stride;
     mask += x + y * mask_stride;
 
-    for (j = 0; j < height; j++) {
-        for (i = 0; i < width; i++) {
+    for (j = 0; j < height; j++)
+    {
+        for (i = 0; i < width; i++)
+        {
             if (c->avctx->err_recognition & AV_EF_EXPLODE &&
-                ( c->rgb_pic && mask[i] != 0x01 && mask[i] != 0x02 && mask[i] != 0x04 ||
-                 !c->rgb_pic && mask[i] != 0x80 && mask[i] != 0xFF))
+                    ( c->rgb_pic && mask[i] != 0x01 && mask[i] != 0x02 && mask[i] != 0x04 ||
+                      !c->rgb_pic && mask[i] != 0x80 && mask[i] != 0xFF))
                 return -1;
 
-            if (mask[i] == 0x02) {
+            if (mask[i] == 0x02)
+            {
                 copy_rectangles(c, x + i, y + j, 1, 1);
-            } else if (mask[i] == 0x04) {
+            }
+            else if (mask[i] == 0x04)
+            {
                 if (motion_compensation(c, x + i, y + j, 1, 1))
                     return -1;
-            } else if (mask[i] != 0x80) {
+            }
+            else if (mask[i] != 0x80)
+            {
                 if (!i && !j)
                     p = decode_pixel(acoder, pctx, NULL, 0, 0);
                 else
@@ -443,7 +488,8 @@ static int decode_pivot(SliceContext *sc, ArithCoder *acoder, int base)
     inv = acoder->get_model_sym(acoder, &sc->edge_mode);
     val = acoder->get_model_sym(acoder, &sc->pivot) + 1;
 
-    if (val > 2) {
+    if (val > 2)
+    {
         if ((base + 1) / 2 - 2 <= 0)
             return -1;
 
@@ -464,7 +510,8 @@ static int decode_region_intra(SliceContext *sc, ArithCoder *acoder,
 
     mode = acoder->get_model_sym(acoder, &sc->intra_region);
 
-    if (!mode) {
+    if (!mode)
+    {
         int i, j, pix, rgb_pix;
         int stride       = c->pal_stride;
         int rgb_stride   = c->rgb_stride;
@@ -473,13 +520,16 @@ static int decode_region_intra(SliceContext *sc, ArithCoder *acoder,
 
         pix     = decode_pixel(acoder, &sc->intra_pix_ctx, NULL, 0, 0);
         rgb_pix = c->pal[pix];
-        for (i = 0; i < height; i++, dst += stride, rgb_dst += rgb_stride) {
+        for (i = 0; i < height; i++, dst += stride, rgb_dst += rgb_stride)
+        {
             memset(dst, pix, width);
             if (c->rgb_pic)
                 for (j = 0; j < width * 3; j += 3)
                     AV_WB24(rgb_dst + j, rgb_pix);
         }
-    } else {
+    }
+    else
+    {
         return decode_region(acoder, c->pal_pic, c->rgb_pic,
                              x, y, width, height, c->pal_stride, c->rgb_stride,
                              &sc->intra_pix_ctx, &c->pal[0]);
@@ -496,12 +546,13 @@ static int decode_region_inter(SliceContext *sc, ArithCoder *acoder,
 
     mode = acoder->get_model_sym(acoder, &sc->inter_region);
 
-    if (!mode) {
+    if (!mode)
+    {
         mode = decode_pixel(acoder, &sc->inter_pix_ctx, NULL, 0, 0);
 
         if (c->avctx->err_recognition & AV_EF_EXPLODE &&
-            ( c->rgb_pic && mode != 0x01 && mode != 0x02 && mode != 0x04 ||
-             !c->rgb_pic && mode != 0x80 && mode != 0xFF))
+                ( c->rgb_pic && mode != 0x01 && mode != 0x02 && mode != 0x04 ||
+                  !c->rgb_pic && mode != 0x80 && mode != 0xFF))
             return -1;
 
         if (mode == 0x02)
@@ -510,7 +561,9 @@ static int decode_region_inter(SliceContext *sc, ArithCoder *acoder,
             return motion_compensation(c, x, y, width, height);
         else if (mode != 0x80)
             return decode_region_intra(sc, acoder, x, y, width, height);
-    } else {
+    }
+    else
+    {
         if (decode_region(acoder, c->mask, NULL,
                           x, y, width, height, c->mask_stride, 0,
                           &sc->inter_pix_ctx, &c->pal[0]) < 0)
@@ -532,7 +585,8 @@ int ff_mss12_decode_rect(SliceContext *sc, ArithCoder *acoder,
 
     mode = acoder->get_model_sym(acoder, &sc->split_mode);
 
-    switch (mode) {
+    switch (mode)
+    {
     case SPLIT_VERT:
         if ((pivot = decode_pivot(sc, acoder, height)) < 1)
             return -1;
@@ -567,13 +621,15 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
     AVCodecContext *avctx = c->avctx;
     int i;
 
-    if (avctx->extradata_size < 52 + 256 * 3) {
+    if (avctx->extradata_size < 52 + 256 * 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient extradata size %d\n",
                avctx->extradata_size);
         return AVERROR_INVALIDDATA;
     }
 
-    if (AV_RB32(avctx->extradata) < avctx->extradata_size) {
+    if (AV_RB32(avctx->extradata) < avctx->extradata_size)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Insufficient extradata size: expected %"PRIu32" got %d\n",
                AV_RB32(avctx->extradata),
@@ -583,12 +639,14 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
 
     avctx->coded_width  = AV_RB32(avctx->extradata + 20);
     avctx->coded_height = AV_RB32(avctx->extradata + 24);
-    if (avctx->coded_width > 4096 || avctx->coded_height > 4096) {
+    if (avctx->coded_width > 4096 || avctx->coded_height > 4096)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame dimensions %dx%d too large",
                avctx->coded_width, avctx->coded_height);
         return AVERROR_INVALIDDATA;
     }
-    if (avctx->coded_width < 1 || avctx->coded_height < 1) {
+    if (avctx->coded_width < 1 || avctx->coded_height < 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame dimensions %dx%d too small",
                avctx->coded_width, avctx->coded_height);
         return AVERROR_INVALIDDATA;
@@ -596,14 +654,16 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
 
     av_log(avctx, AV_LOG_DEBUG, "Encoder version %"PRIu32".%"PRIu32"\n",
            AV_RB32(avctx->extradata + 4), AV_RB32(avctx->extradata + 8));
-    if (version != AV_RB32(avctx->extradata + 4) > 1) {
+    if (version != AV_RB32(avctx->extradata + 4) > 1)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Header version doesn't match codec tag\n");
         return -1;
     }
 
     c->free_colours = AV_RB32(avctx->extradata + 48);
-    if ((unsigned)c->free_colours > 256) {
+    if ((unsigned)c->free_colours > 256)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Incorrect number of changeable palette entries: %d\n",
                c->free_colours);
@@ -626,8 +686,10 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
     av_log(avctx, AV_LOG_DEBUG, "Max. seek time %g ms\n",
            av_int2float(AV_RB32(avctx->extradata + 44)));
 
-    if (version) {
-        if (avctx->extradata_size < 60 + 256 * 3) {
+    if (version)
+    {
+        if (avctx->extradata_size < 60 + 256 * 3)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Insufficient extradata size %d for v2\n",
                    avctx->extradata_size);
@@ -638,7 +700,8 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
         av_log(avctx, AV_LOG_DEBUG, "Slice split %d\n", c->slice_split);
 
         c->full_model_syms = AV_RB32(avctx->extradata + 56);
-        if (c->full_model_syms < 2 || c->full_model_syms > 256) {
+        if (c->full_model_syms < 2 || c->full_model_syms > 256)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Incorrect number of used colours %d\n",
                    c->full_model_syms);
@@ -646,25 +709,29 @@ av_cold int ff_mss12_decode_init(MSS12Context *c, int version,
         }
         av_log(avctx, AV_LOG_DEBUG, "Used colours %d\n",
                c->full_model_syms);
-    } else {
+    }
+    else
+    {
         c->slice_split     = 0;
         c->full_model_syms = 256;
     }
 
     for (i = 0; i < 256; i++)
         c->pal[i] = 0xFFU << 24 | AV_RB24(avctx->extradata + 52 +
-                            (version ? 8 : 0) + i * 3);
+                                          (version ? 8 : 0) + i * 3);
 
     c->mask_stride = FFALIGN(avctx->width, 16);
     c->mask        = av_malloc_array(c->mask_stride, avctx->height);
-    if (!c->mask) {
+    if (!c->mask)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot allocate mask plane\n");
         return AVERROR(ENOMEM);
     }
 
     sc1->c = c;
     slicecontext_init(sc1, version, c->full_model_syms);
-    if (c->slice_split) {
+    if (c->slice_split)
+    {
         sc2->c = c;
         slicecontext_init(sc2, version, c->full_model_syms);
     }

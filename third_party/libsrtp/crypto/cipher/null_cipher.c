@@ -1,4 +1,4 @@
-/*
+﻿/*
  * null_cipher.c
  *
  * A null cipher implementation.  This cipher leaves the plaintext
@@ -45,7 +45,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "datatypes.h"
@@ -66,7 +66,8 @@ static srtp_err_status_t srtp_null_cipher_alloc (srtp_cipher_t **c, int key_len,
 
     /* allocate memory a cipher of type null_cipher */
     *c = (srtp_cipher_t *)srtp_crypto_alloc(sizeof(srtp_cipher_t));
-    if (*c == NULL) {
+    if (*c == NULL)
+    {
         return srtp_err_status_alloc_fail;
     }
     memset(*c, 0x0, sizeof(srtp_cipher_t));
@@ -99,7 +100,7 @@ static srtp_err_status_t srtp_null_cipher_dealloc (srtp_cipher_t *c)
 
 static srtp_err_status_t srtp_null_cipher_init (void *cv, const uint8_t *key)
 {
-	/* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
+    /* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
 
     debug_print(srtp_mod_cipher, "initializing null cipher", NULL);
 
@@ -108,20 +109,21 @@ static srtp_err_status_t srtp_null_cipher_init (void *cv, const uint8_t *key)
 
 static srtp_err_status_t srtp_null_cipher_set_iv (void *cv, uint8_t *iv, srtp_cipher_direction_t dir)
 {
-	/* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
+    /* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
     return srtp_err_status_ok;
 }
 
 static srtp_err_status_t srtp_null_cipher_encrypt (void *cv,
-                                            unsigned char *buf, unsigned int *bytes_to_encr)
+        unsigned char *buf, unsigned int *bytes_to_encr)
 {
-	/* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
+    /* srtp_null_cipher_ctx_t *c = (srtp_null_cipher_ctx_t *)cv; */
     return srtp_err_status_ok;
 }
 
 static const char srtp_null_cipher_description[] = "null cipher";
 
-static const srtp_cipher_test_case_t srtp_null_cipher_test_0 = {
+static const srtp_cipher_test_case_t srtp_null_cipher_test_0 =
+{
     0,    /* octets in key            */
     NULL, /* key                      */
     0,    /* packet index             */
@@ -140,7 +142,8 @@ static const srtp_cipher_test_case_t srtp_null_cipher_test_0 = {
  * note: the decrypt function is idential to the encrypt function
  */
 
-const srtp_cipher_type_t srtp_null_cipher = {
+const srtp_cipher_type_t srtp_null_cipher =
+{
     srtp_null_cipher_alloc,
     srtp_null_cipher_dealloc,
     srtp_null_cipher_init,

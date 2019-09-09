@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple ProRes encoder
  *
  * Copyright (c) 2011 Anatoliy Wasserman
@@ -40,7 +40,8 @@
 #define FF_PROFILE_PRORES_STANDARD  2
 #define FF_PROFILE_PRORES_HQ        3
 
-static const AVProfile profiles[] = {
+static const AVProfile profiles[] =
+{
     { FF_PROFILE_PRORES_PROXY,    "apco"},
     { FF_PROFILE_PRORES_LT,       "apcs"},
     { FF_PROFILE_PRORES_STANDARD, "apcn"},
@@ -52,10 +53,11 @@ static const int qp_start_table[4] = { 4, 1, 1, 1 };
 static const int qp_end_table[4]   = { 8, 9, 6, 6 };
 static const int bitrate_table[5]  = { 1000, 2100, 3500, 5400 };
 
-static const uint8_t progressive_scan[64] = {
-     0,  1,  8,  9,  2,  3, 10, 11,
+static const uint8_t progressive_scan[64] =
+{
+    0,  1,  8,  9,  2,  3, 10, 11,
     16, 17, 24, 25, 18, 19, 26, 27,
-     4,  5, 12, 20, 13,  6,  7, 14,
+    4,  5, 12, 20, 13,  6,  7, 14,
     21, 28, 29, 22, 15, 23, 30, 31,
     32, 33, 40, 48, 41, 34, 35, 42,
     49, 56, 57, 50, 43, 36, 37, 44,
@@ -63,88 +65,91 @@ static const uint8_t progressive_scan[64] = {
     53, 60, 61, 54, 47, 55, 62, 63
 };
 
-static const uint8_t QMAT_LUMA[4][64] = {
+static const uint8_t QMAT_LUMA[4][64] =
+{
     {
-         4,  7,  9, 11, 13, 14, 15, 63,
-         7,  7, 11, 12, 14, 15, 63, 63,
-         9, 11, 13, 14, 15, 63, 63, 63,
+        4,  7,  9, 11, 13, 14, 15, 63,
+        7,  7, 11, 12, 14, 15, 63, 63,
+        9, 11, 13, 14, 15, 63, 63, 63,
         11, 11, 13, 14, 63, 63, 63, 63,
         11, 13, 14, 63, 63, 63, 63, 63,
         13, 14, 63, 63, 63, 63, 63, 63,
         13, 63, 63, 63, 63, 63, 63, 63,
         63, 63, 63, 63, 63, 63, 63, 63
     }, {
-         4,  5,  6,  7,  9, 11, 13, 15,
-         5,  5,  7,  8, 11, 13, 15, 17,
-         6,  7,  9, 11, 13, 15, 15, 17,
-         7,  7,  9, 11, 13, 15, 17, 19,
-         7,  9, 11, 13, 14, 16, 19, 23,
-         9, 11, 13, 14, 16, 19, 23, 29,
-         9, 11, 13, 15, 17, 21, 28, 35,
+        4,  5,  6,  7,  9, 11, 13, 15,
+        5,  5,  7,  8, 11, 13, 15, 17,
+        6,  7,  9, 11, 13, 15, 15, 17,
+        7,  7,  9, 11, 13, 15, 17, 19,
+        7,  9, 11, 13, 14, 16, 19, 23,
+        9, 11, 13, 14, 16, 19, 23, 29,
+        9, 11, 13, 15, 17, 21, 28, 35,
         11, 13, 16, 17, 21, 28, 35, 41
     }, {
-         4,  4,  5,  5,  6,  7,  7,  9,
-         4,  4,  5,  6,  7,  7,  9,  9,
-         5,  5,  6,  7,  7,  9,  9, 10,
-         5,  5,  6,  7,  7,  9,  9, 10,
-         5,  6,  7,  7,  8,  9, 10, 12,
-         6,  7,  7,  8,  9, 10, 12, 15,
-         6,  7,  7,  9, 10, 11, 14, 17,
-         7,  7,  9, 10, 11, 14, 17, 21
+        4,  4,  5,  5,  6,  7,  7,  9,
+        4,  4,  5,  6,  7,  7,  9,  9,
+        5,  5,  6,  7,  7,  9,  9, 10,
+        5,  5,  6,  7,  7,  9,  9, 10,
+        5,  6,  7,  7,  8,  9, 10, 12,
+        6,  7,  7,  8,  9, 10, 12, 15,
+        6,  7,  7,  9, 10, 11, 14, 17,
+        7,  7,  9, 10, 11, 14, 17, 21
     }, {
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  5,
-         4,  4,  4,  4,  4,  4,  5,  5,
-         4,  4,  4,  4,  4,  5,  5,  6,
-         4,  4,  4,  4,  5,  5,  6,  7,
-         4,  4,  4,  4,  5,  6,  7,  7
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  5,
+        4,  4,  4,  4,  4,  4,  5,  5,
+        4,  4,  4,  4,  4,  5,  5,  6,
+        4,  4,  4,  4,  5,  5,  6,  7,
+        4,  4,  4,  4,  5,  6,  7,  7
     }
 };
 
-static const uint8_t QMAT_CHROMA[4][64] = {
+static const uint8_t QMAT_CHROMA[4][64] =
+{
     {
-         4,  7,  9, 11, 13, 14, 63, 63,
-         7,  7, 11, 12, 14, 63, 63, 63,
-         9, 11, 13, 14, 63, 63, 63, 63,
+        4,  7,  9, 11, 13, 14, 63, 63,
+        7,  7, 11, 12, 14, 63, 63, 63,
+        9, 11, 13, 14, 63, 63, 63, 63,
         11, 11, 13, 14, 63, 63, 63, 63,
         11, 13, 14, 63, 63, 63, 63, 63,
         13, 14, 63, 63, 63, 63, 63, 63,
         13, 63, 63, 63, 63, 63, 63, 63,
         63, 63, 63, 63, 63, 63, 63, 63
     }, {
-         4,  5,  6,  7,  9, 11, 13, 15,
-         5,  5,  7,  8, 11, 13, 15, 17,
-         6,  7,  9, 11, 13, 15, 15, 17,
-         7,  7,  9, 11, 13, 15, 17, 19,
-         7,  9, 11, 13, 14, 16, 19, 23,
-         9, 11, 13, 14, 16, 19, 23, 29,
-         9, 11, 13, 15, 17, 21, 28, 35,
+        4,  5,  6,  7,  9, 11, 13, 15,
+        5,  5,  7,  8, 11, 13, 15, 17,
+        6,  7,  9, 11, 13, 15, 15, 17,
+        7,  7,  9, 11, 13, 15, 17, 19,
+        7,  9, 11, 13, 14, 16, 19, 23,
+        9, 11, 13, 14, 16, 19, 23, 29,
+        9, 11, 13, 15, 17, 21, 28, 35,
         11, 13, 16, 17, 21, 28, 35, 41
     }, {
-         4,  4,  5,  5,  6,  7,  7,  9,
-         4,  4,  5,  6,  7,  7,  9,  9,
-         5,  5,  6,  7,  7,  9,  9, 10,
-         5,  5,  6,  7,  7,  9,  9, 10,
-         5,  6,  7,  7,  8,  9, 10, 12,
-         6,  7,  7,  8,  9, 10, 12, 15,
-         6,  7,  7,  9, 10, 11, 14, 17,
-         7,  7,  9, 10, 11, 14, 17, 21
+        4,  4,  5,  5,  6,  7,  7,  9,
+        4,  4,  5,  6,  7,  7,  9,  9,
+        5,  5,  6,  7,  7,  9,  9, 10,
+        5,  5,  6,  7,  7,  9,  9, 10,
+        5,  6,  7,  7,  8,  9, 10, 12,
+        6,  7,  7,  8,  9, 10, 12, 15,
+        6,  7,  7,  9, 10, 11, 14, 17,
+        7,  7,  9, 10, 11, 14, 17, 21
     }, {
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  4,
-         4,  4,  4,  4,  4,  4,  4,  5,
-         4,  4,  4,  4,  4,  4,  5,  5,
-         4,  4,  4,  4,  4,  5,  5,  6,
-         4,  4,  4,  4,  5,  5,  6,  7,
-         4,  4,  4,  4,  5,  6,  7,  7
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  4,
+        4,  4,  4,  4,  4,  4,  4,  5,
+        4,  4,  4,  4,  4,  4,  5,  5,
+        4,  4,  4,  4,  4,  5,  5,  6,
+        4,  4,  4,  4,  5,  5,  6,  7,
+        4,  4,  4,  4,  5,  6,  7,  7
     }
 };
 
 
-typedef struct {
+typedef struct
+{
     FDCTDSPContext fdsp;
     uint8_t* fill_y;
     uint8_t* fill_u;
@@ -165,18 +170,23 @@ static void encode_codeword(PutBitContext *pb, int val, int codebook)
 
     first_exp = ((switch_bits + 1) << rice_order);
 
-    if (val >= first_exp) { /* exp golomb */
+    if (val >= first_exp)   /* exp golomb */
+    {
         val -= first_exp;
         val += (1 << exp_order);
         exp = av_log2(val);
         zeros = exp - exp_order + switch_bits + 1;
         put_bits(pb, zeros, 0);
         put_bits(pb, exp + 1, val);
-    } else if (rice_order) {
+    }
+    else if (rice_order)
+    {
         put_bits(pb, (val >> rice_order), 0);
         put_bits(pb, 1, 1);
         put_sbits(pb, rice_order, val);
-    } else {
+    }
+    else
+    {
         put_bits(pb, val, 0);
         put_bits(pb, 1, 1);
     }
@@ -199,7 +209,7 @@ static av_always_inline int get_level(int val)
 static const uint8_t dc_codebook[7] = { 0x04, 0x28, 0x28, 0x4D, 0x4D, 0x70, 0x70};
 
 static void encode_dc_coeffs(PutBitContext *pb, int16_t *in,
-        int blocks_per_slice, int *qmat)
+                             int blocks_per_slice, int *qmat)
 {
     int prev_dc, code;
     int i, sign, idx;
@@ -209,8 +219,11 @@ static void encode_dc_coeffs(PutBitContext *pb, int16_t *in,
     code = TO_GOLOMB(prev_dc);
     encode_codeword(pb, code, FIRST_DC_CB);
 
-    code = 5; sign = 0; idx = 64;
-    for (i = 1; i < blocks_per_slice; i++, idx += 64) {
+    code = 5;
+    sign = 0;
+    idx = 64;
+    for (i = 1; i < blocks_per_slice; i++, idx += 64)
+    {
         new_dc    = QSCALE(qmat, 0, in[idx] - 16384);
         delta     = new_dc - prev_dc;
         diff_sign = DIFF_SIGN(delta, sign);
@@ -225,22 +238,27 @@ static void encode_dc_coeffs(PutBitContext *pb, int16_t *in,
 }
 
 static const uint8_t run_to_cb[16] = { 0x06, 0x06, 0x05, 0x05, 0x04, 0x29,
-        0x29, 0x29, 0x29, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x4C };
+                                       0x29, 0x29, 0x29, 0x28, 0x28, 0x28, 0x28, 0x28, 0x28, 0x4C
+                                     };
 static const uint8_t lev_to_cb[10] = { 0x04, 0x0A, 0x05, 0x06, 0x04, 0x28,
-        0x28, 0x28, 0x28, 0x4C };
+                                       0x28, 0x28, 0x28, 0x4C
+                                     };
 
 static void encode_ac_coeffs(AVCodecContext *avctx, PutBitContext *pb,
-        int16_t *in, int blocks_per_slice, int *qmat)
+                             int16_t *in, int blocks_per_slice, int *qmat)
 {
     int prev_run = 4;
     int prev_level = 2;
 
     int run = 0, level, code, i, j;
-    for (i = 1; i < 64; i++) {
+    for (i = 1; i < 64; i++)
+    {
         int indp = progressive_scan[i];
-        for (j = 0; j < blocks_per_slice; j++) {
+        for (j = 0; j < blocks_per_slice; j++)
+        {
             int val = QSCALE(qmat, indp, in[(j << 6) + indp]);
-            if (val) {
+            if (val)
+            {
                 encode_codeword(pb, run, run_to_cb[FFMIN(prev_run, 15)]);
 
                 prev_run   = run;
@@ -253,7 +271,9 @@ static void encode_ac_coeffs(AVCodecContext *avctx, PutBitContext *pb,
                 prev_level = level;
 
                 put_bits(pb, 1, IS_NEGATIVE(val));
-            } else {
+            }
+            else
+            {
                 ++run;
             }
         }
@@ -264,7 +284,8 @@ static void get(uint8_t *pixels, int stride, int16_t* block)
 {
     int i;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         AV_WN64(block, AV_RN64(pixels));
         AV_WN64(block+4, AV_RN64(pixels+8));
         pixels += stride;
@@ -279,8 +300,8 @@ static void fdct_get(FDCTDSPContext *fdsp, uint8_t *pixels, int stride, int16_t*
 }
 
 static int encode_slice_plane(AVCodecContext *avctx, int mb_count,
-        uint8_t *src, int src_stride, uint8_t *buf, unsigned buf_size,
-        int *qmat, int chroma)
+                              uint8_t *src, int src_stride, uint8_t *buf, unsigned buf_size,
+                              int *qmat, int chroma)
 {
     ProresContext* ctx = avctx->priv_data;
     FDCTDSPContext *fdsp = &ctx->fdsp;
@@ -290,10 +311,12 @@ static int encode_slice_plane(AVCodecContext *avctx, int mb_count,
     PutBitContext pb;
 
     block = blocks;
-    for (i = 0; i < mb_count; i++) {
+    for (i = 0; i < mb_count; i++)
+    {
         fdct_get(fdsp, src,                  src_stride, block + (0 << 6));
         fdct_get(fdsp, src + 8 * src_stride, src_stride, block + ((2 - chroma) << 6));
-        if (!chroma) {
+        if (!chroma)
+        {
             fdct_get(fdsp, src + 16,                  src_stride, block + (1 << 6));
             fdct_get(fdsp, src + 16 + 8 * src_stride, src_stride, block + (3 << 6));
         }
@@ -321,25 +344,26 @@ static av_always_inline unsigned encode_slice_data(AVCodecContext *avctx,
     ProresContext* ctx = avctx->priv_data;
 
     *y_data_size = encode_slice_plane(avctx, mb_count, dest_y, luma_stride,
-            buf, data_size, ctx->qmat_luma[qp - 1], 0);
+                                      buf, data_size, ctx->qmat_luma[qp - 1], 0);
 
-    if (!(avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         *u_data_size = encode_slice_plane(avctx, mb_count, dest_u,
-                chroma_stride, buf + *y_data_size, data_size - *y_data_size,
-                ctx->qmat_chroma[qp - 1], 1);
+                                          chroma_stride, buf + *y_data_size, data_size - *y_data_size,
+                                          ctx->qmat_chroma[qp - 1], 1);
 
         *v_data_size = encode_slice_plane(avctx, mb_count, dest_v,
-                chroma_stride, buf + *y_data_size + *u_data_size,
-                data_size - *y_data_size - *u_data_size,
-                ctx->qmat_chroma[qp - 1], 1);
+                                          chroma_stride, buf + *y_data_size + *u_data_size,
+                                          data_size - *y_data_size - *u_data_size,
+                                          ctx->qmat_chroma[qp - 1], 1);
     }
 
     return *y_data_size + *u_data_size + *v_data_size;
 }
 
 static void subimage_with_fill(uint16_t *src, unsigned x, unsigned y,
-        unsigned stride, unsigned width, unsigned height, uint16_t *dst,
-        unsigned dst_width, unsigned dst_height)
+                               unsigned stride, unsigned width, unsigned height, uint16_t *dst,
+                               unsigned dst_width, unsigned dst_height)
 {
 
     int box_width = FFMIN(width - x, dst_width);
@@ -348,8 +372,10 @@ static void subimage_with_fill(uint16_t *src, unsigned x, unsigned y,
     uint16_t last_pix, *last_line;
 
     src += y * src_stride + x;
-    for (i = 0; i < box_height; ++i) {
-        for (j = 0; j < box_width; ++j) {
+    for (i = 0; i < box_height; ++i)
+    {
+        for (j = 0; j < box_width; ++j)
+        {
             dst[j] = src[j];
         }
         last_pix = dst[j - 1];
@@ -359,8 +385,10 @@ static void subimage_with_fill(uint16_t *src, unsigned x, unsigned y,
         dst += dst_width;
     }
     last_line = dst - dst_width;
-    for (; i < dst_height; i++) {
-        for (j = 0; j < dst_width; ++j) {
+    for (; i < dst_height; i++)
+    {
+        for (j = 0; j < dst_width; ++j)
+        {
             dst[j] = last_line[j];
         }
         dst += dst_width;
@@ -368,8 +396,8 @@ static void subimage_with_fill(uint16_t *src, unsigned x, unsigned y,
 }
 
 static int encode_slice(AVCodecContext *avctx, const AVFrame *pic, int mb_x,
-        int mb_y, unsigned mb_count, uint8_t *buf, unsigned data_size,
-        int unsafe, int *qp)
+                        int mb_y, unsigned mb_count, uint8_t *buf, unsigned data_size,
+                        int unsafe, int *qp)
 {
     int luma_stride, chroma_stride;
     int hdr_size = 6, slice_size;
@@ -387,45 +415,55 @@ static int encode_slice(AVCodecContext *avctx, const AVFrame *pic, int mb_x,
     dest_u = pic->data[1] + (mb_y << 4) * chroma_stride + (mb_x << 4);
     dest_v = pic->data[2] + (mb_y << 4) * chroma_stride + (mb_x << 4);
 
-    if (unsafe) {
+    if (unsafe)
+    {
 
         subimage_with_fill((uint16_t *) pic->data[0], mb_x << 4, mb_y << 4,
-                luma_stride, avctx->width, avctx->height,
-                (uint16_t *) ctx->fill_y, mb_count << 4, 16);
+                           luma_stride, avctx->width, avctx->height,
+                           (uint16_t *) ctx->fill_y, mb_count << 4, 16);
         subimage_with_fill((uint16_t *) pic->data[1], mb_x << 3, mb_y << 4,
-                chroma_stride, avctx->width >> 1, avctx->height,
-                (uint16_t *) ctx->fill_u, mb_count << 3, 16);
+                           chroma_stride, avctx->width >> 1, avctx->height,
+                           (uint16_t *) ctx->fill_u, mb_count << 3, 16);
         subimage_with_fill((uint16_t *) pic->data[2], mb_x << 3, mb_y << 4,
-                chroma_stride, avctx->width >> 1, avctx->height,
-                (uint16_t *) ctx->fill_v, mb_count << 3, 16);
+                           chroma_stride, avctx->width >> 1, avctx->height,
+                           (uint16_t *) ctx->fill_v, mb_count << 3, 16);
 
         encode_slice_data(avctx, ctx->fill_y, ctx->fill_u, ctx->fill_v,
-                mb_count << 5, mb_count << 4, mb_count, buf + hdr_size,
-                data_size - hdr_size, &y_data_size, &u_data_size, &v_data_size,
-                *qp);
-    } else {
+                          mb_count << 5, mb_count << 4, mb_count, buf + hdr_size,
+                          data_size - hdr_size, &y_data_size, &u_data_size, &v_data_size,
+                          *qp);
+    }
+    else
+    {
         slice_size = encode_slice_data(avctx, dest_y, dest_u, dest_v,
-                luma_stride, chroma_stride, mb_count, buf + hdr_size,
-                data_size - hdr_size, &y_data_size, &u_data_size, &v_data_size,
-                *qp);
+                                       luma_stride, chroma_stride, mb_count, buf + hdr_size,
+                                       data_size - hdr_size, &y_data_size, &u_data_size, &v_data_size,
+                                       *qp);
 
-        if (slice_size > high_bytes && *qp < qp_end_table[avctx->profile]) {
-            do {
+        if (slice_size > high_bytes && *qp < qp_end_table[avctx->profile])
+        {
+            do
+            {
                 *qp += 1;
                 slice_size = encode_slice_data(avctx, dest_y, dest_u, dest_v,
-                        luma_stride, chroma_stride, mb_count, buf + hdr_size,
-                        data_size - hdr_size, &y_data_size, &u_data_size,
-                        &v_data_size, *qp);
-            } while (slice_size > high_bytes && *qp < qp_end_table[avctx->profile]);
-        } else if (slice_size < low_bytes && *qp
-                > qp_start_table[avctx->profile]) {
-            do {
+                                               luma_stride, chroma_stride, mb_count, buf + hdr_size,
+                                               data_size - hdr_size, &y_data_size, &u_data_size,
+                                               &v_data_size, *qp);
+            }
+            while (slice_size > high_bytes && *qp < qp_end_table[avctx->profile]);
+        }
+        else if (slice_size < low_bytes && *qp
+                 > qp_start_table[avctx->profile])
+        {
+            do
+            {
                 *qp -= 1;
                 slice_size = encode_slice_data(avctx, dest_y, dest_u, dest_v,
-                        luma_stride, chroma_stride, mb_count, buf + hdr_size,
-                        data_size - hdr_size, &y_data_size, &u_data_size,
-                        &v_data_size, *qp);
-            } while (slice_size < low_bytes && *qp > qp_start_table[avctx->profile]);
+                                               luma_stride, chroma_stride, mb_count, buf + hdr_size,
+                                               data_size - hdr_size, &y_data_size, &u_data_size,
+                                               &v_data_size, *qp);
+            }
+            while (slice_size < low_bytes && *qp > qp_start_table[avctx->profile]);
         }
     }
 
@@ -438,7 +476,7 @@ static int encode_slice(AVCodecContext *avctx, const AVFrame *pic, int mb_x,
 }
 
 static int prores_encode_picture(AVCodecContext *avctx, const AVFrame *pic,
-        uint8_t *buf, const int buf_size)
+                                 uint8_t *buf, const int buf_size)
 {
     int mb_width = (avctx->width + 15) >> 4;
     int mb_height = (avctx->height + 15) >> 4;
@@ -448,19 +486,23 @@ static int prores_encode_picture(AVCodecContext *avctx, const AVFrame *pic,
     uint8_t *sl_data, *sl_data_sizes;
     int slice_per_line = 0, rem = mb_width;
 
-    for (i = av_log2(DEFAULT_SLICE_MB_WIDTH); i >= 0; --i) {
+    for (i = av_log2(DEFAULT_SLICE_MB_WIDTH); i >= 0; --i)
+    {
         slice_per_line += rem >> i;
         rem &= (1 << i) - 1;
     }
 
     qp = qp_start_table[avctx->profile];
-    hdr_size = 8; sl_data_size = buf_size - hdr_size;
+    hdr_size = 8;
+    sl_data_size = buf_size - hdr_size;
     sl_data_sizes = buf + hdr_size;
     sl_data = sl_data_sizes + (slice_per_line * mb_height * 2);
-    for (mb_y = 0; mb_y < mb_height; mb_y++) {
+    for (mb_y = 0; mb_y < mb_height; mb_y++)
+    {
         int mb_x = 0;
         int slice_mb_count = DEFAULT_SLICE_MB_WIDTH;
-        while (mb_x < mb_width) {
+        while (mb_x < mb_width)
+        {
             while (mb_width - mb_x < slice_mb_count)
                 slice_mb_count >>= 1;
 
@@ -468,7 +510,7 @@ static int prores_encode_picture(AVCodecContext *avctx, const AVFrame *pic,
             unsafe_right = (avctx->width & 0xf) && (mb_x + slice_mb_count == mb_width);
 
             sl_size = encode_slice(avctx, pic, mb_x, mb_y, slice_mb_count,
-                    sl_data, sl_data_size, unsafe_bot || unsafe_right, &qp);
+                                   sl_data, sl_data_size, unsafe_bot || unsafe_right, &qp);
 
             bytestream_put_be16(&sl_data_sizes, sl_size);
             sl_data           += sl_size;
@@ -499,7 +541,7 @@ static int prores_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     buf = pkt->data;
     pic_size = prores_encode_picture(avctx, pict, buf + header_size + 8,
-            pkt->size - header_size - 8);
+                                     pkt->size - header_size - 8);
 
     bytestream_put_be32(&buf, pic_size + 8 + header_size);
     bytestream_put_buffer(&buf, "icpf", 4);
@@ -540,25 +582,29 @@ static av_cold int prores_encode_init(AVCodecContext *avctx)
     int i;
     ProresContext* ctx = avctx->priv_data;
 
-    if (avctx->pix_fmt != AV_PIX_FMT_YUV422P10) {
+    if (avctx->pix_fmt != AV_PIX_FMT_YUV422P10)
+    {
         av_log(avctx, AV_LOG_ERROR, "need YUV422P10\n");
         return AVERROR_PATCHWELCOME;
     }
     avctx->bits_per_raw_sample = 10;
 
-    if (avctx->width & 0x1) {
+    if (avctx->width & 0x1)
+    {
         av_log(avctx, AV_LOG_ERROR,
-                "frame width needs to be multiple of 2\n");
+               "frame width needs to be multiple of 2\n");
         return AVERROR(EINVAL);
     }
 
-    if (avctx->width > 65534 || avctx->height > 65535) {
+    if (avctx->width > 65534 || avctx->height > 65535)
+    {
         av_log(avctx, AV_LOG_ERROR,
-                "The maximum dimensions are 65534x65535\n");
+               "The maximum dimensions are 65534x65535\n");
         return AVERROR(EINVAL);
     }
 
-    if ((avctx->height & 0xf) || (avctx->width & 0xf)) {
+    if ((avctx->height & 0xf) || (avctx->width & 0xf))
+    {
         ctx->fill_y = av_malloc(4 * (DEFAULT_SLICE_MB_WIDTH << 8));
         if (!ctx->fill_y)
             return AVERROR(ENOMEM);
@@ -566,18 +612,21 @@ static av_cold int prores_encode_init(AVCodecContext *avctx)
         ctx->fill_v = ctx->fill_u + (DEFAULT_SLICE_MB_WIDTH << 8);
     }
 
-    if (avctx->profile == FF_PROFILE_UNKNOWN) {
+    if (avctx->profile == FF_PROFILE_UNKNOWN)
+    {
         avctx->profile = FF_PROFILE_PRORES_STANDARD;
         av_log(avctx, AV_LOG_INFO,
-                "encoding with ProRes standard (apcn) profile\n");
+               "encoding with ProRes standard (apcn) profile\n");
 
-    } else if (avctx->profile < FF_PROFILE_PRORES_PROXY
-            || avctx->profile > FF_PROFILE_PRORES_HQ) {
+    }
+    else if (avctx->profile < FF_PROFILE_PRORES_PROXY
+             || avctx->profile > FF_PROFILE_PRORES_HQ)
+    {
         av_log(
-                avctx,
-                AV_LOG_ERROR,
-                "unknown profile %d, use [0 - apco, 1 - apcs, 2 - apcn (default), 3 - apch]\n",
-                avctx->profile);
+            avctx,
+            AV_LOG_ERROR,
+            "unknown profile %d, use [0 - apco, 1 - apcs, 2 - apcn (default), 3 - apch]\n",
+            avctx->profile);
         return AVERROR(EINVAL);
     }
 
@@ -585,7 +634,8 @@ static av_cold int prores_encode_init(AVCodecContext *avctx)
 
     avctx->codec_tag = AV_RL32((const uint8_t*)profiles[avctx->profile].name);
 
-    for (i = 1; i <= 16; i++) {
+    for (i = 1; i <= 16; i++)
+    {
         scale_mat(QMAT_LUMA[avctx->profile]  , ctx->qmat_luma[i - 1]  , i);
         scale_mat(QMAT_CHROMA[avctx->profile], ctx->qmat_chroma[i - 1], i);
     }
@@ -601,7 +651,8 @@ static av_cold int prores_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_prores_aw_encoder = {
+AVCodec ff_prores_aw_encoder =
+{
     .name           = "prores_aw",
     .long_name      = NULL_IF_CONFIG_SMALL("Apple ProRes"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -615,7 +666,8 @@ AVCodec ff_prores_aw_encoder = {
     .profiles       = profiles
 };
 
-AVCodec ff_prores_encoder = {
+AVCodec ff_prores_encoder =
+{
     .name           = "prores",
     .long_name      = NULL_IF_CONFIG_SMALL("Apple ProRes"),
     .type           = AVMEDIA_TYPE_VIDEO,

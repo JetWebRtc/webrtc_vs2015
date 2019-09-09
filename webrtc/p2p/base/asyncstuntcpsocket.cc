@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/logging.h"
 
-namespace cricket {
+namespace cricket
+{
 
 static const size_t kMaxPacketSize = 64 * 1024;
 
@@ -26,9 +27,10 @@ static const size_t kPacketLenOffset = 2;
 static const size_t kBufSize = kMaxPacketSize + kStunHeaderSize;
 static const size_t kTurnChannelDataHdrSize = 4;
 
-inline bool IsStunMessage(uint16_t msg_type) {
-  // The first two bits of a channel data message are 0b01.
-  return (msg_type & 0xC000) ? false : true;
+inline bool IsStunMessage(uint16_t msg_type)
+{
+    // The first two bits of a channel data message are 0b01.
+    return (msg_type & 0xC000) ? false : true;
 }
 
 // AsyncStunTCPSocket
@@ -38,116 +40,130 @@ inline bool IsStunMessage(uint16_t msg_type) {
 AsyncStunTCPSocket* AsyncStunTCPSocket::Create(
     rtc::AsyncSocket* socket,
     const rtc::SocketAddress& bind_address,
-    const rtc::SocketAddress& remote_address) {
-  return new AsyncStunTCPSocket(AsyncTCPSocketBase::ConnectSocket(
-      socket, bind_address, remote_address), false);
+    const rtc::SocketAddress& remote_address)
+{
+    return new AsyncStunTCPSocket(AsyncTCPSocketBase::ConnectSocket(
+                                      socket, bind_address, remote_address), false);
 }
 
 AsyncStunTCPSocket::AsyncStunTCPSocket(
     rtc::AsyncSocket* socket, bool listen)
-    : rtc::AsyncTCPSocketBase(socket, listen, kBufSize) {
+    : rtc::AsyncTCPSocketBase(socket, listen, kBufSize)
+{
 }
 
 int AsyncStunTCPSocket::Send(const void *pv, size_t cb,
-                             const rtc::PacketOptions& options) {
-  if (cb > kBufSize || cb < kPacketLenSize + kPacketLenOffset) {
-    SetError(EMSGSIZE);
-    return -1;
-  }
+                             const rtc::PacketOptions& options)
+{
+    if (cb > kBufSize || cb < kPacketLenSize + kPacketLenOffset)
+    {
+        SetError(EMSGSIZE);
+        return -1;
+    }
 
-  // If we are blocking on send, then silently drop this packet
-  if (!IsOutBufferEmpty())
-    return static_cast<int>(cb);
-
-  int pad_bytes;
-  size_t expected_pkt_len = GetExpectedLength(pv, cb, &pad_bytes);
-
-  // Accepts only complete STUN/ChannelData packets.
-  if (cb != expected_pkt_len)
-    return -1;
-
-  AppendToOutBuffer(pv, cb);
-
-  RTC_DCHECK(pad_bytes < 4);
-  char padding[4] = {0};
-  AppendToOutBuffer(padding, pad_bytes);
-
-  int res = FlushOutBuffer();
-  if (res <= 0) {
-    // drop packet if we made no progress
-    ClearOutBuffer();
-    return res;
-  }
-
-  // We claim to have sent the whole thing, even if we only sent partial
-  return static_cast<int>(cb);
-}
-
-void AsyncStunTCPSocket::ProcessInput(char* data, size_t* len) {
-  rtc::SocketAddress remote_addr(GetRemoteAddress());
-  // STUN packet - First 4 bytes. Total header size is 20 bytes.
-  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  // |0 0|     STUN Message Type     |         Message Length        |
-  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-  // TURN ChannelData
-  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-  // |         Channel Number        |            Length             |
-  // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-  while (true) {
-    // We need at least 4 bytes to read the STUN or ChannelData packet length.
-    if (*len < kPacketLenOffset + kPacketLenSize)
-      return;
+    // If we are blocking on send, then silently drop this packet
+    if (!IsOutBufferEmpty())
+        return static_cast<int>(cb);
 
     int pad_bytes;
-    size_t expected_pkt_len = GetExpectedLength(data, *len, &pad_bytes);
-    size_t actual_length = expected_pkt_len + pad_bytes;
+    size_t expected_pkt_len = GetExpectedLength(pv, cb, &pad_bytes);
 
-    if (*len < actual_length) {
-      return;
+    // Accepts only complete STUN/ChannelData packets.
+    if (cb != expected_pkt_len)
+        return -1;
+
+    AppendToOutBuffer(pv, cb);
+
+    RTC_DCHECK(pad_bytes < 4);
+    char padding[4] = {0};
+    AppendToOutBuffer(padding, pad_bytes);
+
+    int res = FlushOutBuffer();
+    if (res <= 0)
+    {
+        // drop packet if we made no progress
+        ClearOutBuffer();
+        return res;
     }
 
-    SignalReadPacket(this, data, expected_pkt_len, remote_addr,
-                     rtc::CreatePacketTime(0));
+    // We claim to have sent the whole thing, even if we only sent partial
+    return static_cast<int>(cb);
+}
 
-    *len -= actual_length;
-    if (*len > 0) {
-      memmove(data, data + actual_length, *len);
+void AsyncStunTCPSocket::ProcessInput(char* data, size_t* len)
+{
+    rtc::SocketAddress remote_addr(GetRemoteAddress());
+    // STUN packet - First 4 bytes. Total header size is 20 bytes.
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |0 0|     STUN Message Type     |         Message Length        |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    // TURN ChannelData
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    // |         Channel Number        |            Length             |
+    // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+    while (true)
+    {
+        // We need at least 4 bytes to read the STUN or ChannelData packet length.
+        if (*len < kPacketLenOffset + kPacketLenSize)
+            return;
+
+        int pad_bytes;
+        size_t expected_pkt_len = GetExpectedLength(data, *len, &pad_bytes);
+        size_t actual_length = expected_pkt_len + pad_bytes;
+
+        if (*len < actual_length)
+        {
+            return;
+        }
+
+        SignalReadPacket(this, data, expected_pkt_len, remote_addr,
+                         rtc::CreatePacketTime(0));
+
+        *len -= actual_length;
+        if (*len > 0)
+        {
+            memmove(data, data + actual_length, *len);
+        }
     }
-  }
 }
 
 void AsyncStunTCPSocket::HandleIncomingConnection(
-    rtc::AsyncSocket* socket) {
-  SignalNewConnection(this, new AsyncStunTCPSocket(socket, false));
+    rtc::AsyncSocket* socket)
+{
+    SignalNewConnection(this, new AsyncStunTCPSocket(socket, false));
 }
 
 size_t AsyncStunTCPSocket::GetExpectedLength(const void* data, size_t len,
-                                             int* pad_bytes) {
-  *pad_bytes = 0;
-  PacketLength pkt_len =
-      rtc::GetBE16(static_cast<const char*>(data) + kPacketLenOffset);
-  size_t expected_pkt_len;
-  uint16_t msg_type = rtc::GetBE16(data);
-  if (IsStunMessage(msg_type)) {
-    // STUN message.
-    expected_pkt_len = kStunHeaderSize + pkt_len;
-  } else {
-    // TURN ChannelData message.
-    expected_pkt_len = kTurnChannelDataHdrSize + pkt_len;
-    // From RFC 5766 section 11.5
-    // Over TCP and TLS-over-TCP, the ChannelData message MUST be padded to
-    // a multiple of four bytes in order to ensure the alignment of
-    // subsequent messages.  The padding is not reflected in the length
-    // field of the ChannelData message, so the actual size of a ChannelData
-    // message (including padding) is (4 + Length) rounded up to the nearest
-    // multiple of 4.  Over UDP, the padding is not required but MAY be
-    // included.
-    if (expected_pkt_len % 4)
-      *pad_bytes = 4 - (expected_pkt_len % 4);
-  }
-  return expected_pkt_len;
+        int* pad_bytes)
+{
+    *pad_bytes = 0;
+    PacketLength pkt_len =
+        rtc::GetBE16(static_cast<const char*>(data) + kPacketLenOffset);
+    size_t expected_pkt_len;
+    uint16_t msg_type = rtc::GetBE16(data);
+    if (IsStunMessage(msg_type))
+    {
+        // STUN message.
+        expected_pkt_len = kStunHeaderSize + pkt_len;
+    }
+    else
+    {
+        // TURN ChannelData message.
+        expected_pkt_len = kTurnChannelDataHdrSize + pkt_len;
+        // From RFC 5766 section 11.5
+        // Over TCP and TLS-over-TCP, the ChannelData message MUST be padded to
+        // a multiple of four bytes in order to ensure the alignment of
+        // subsequent messages.  The padding is not reflected in the length
+        // field of the ChannelData message, so the actual size of a ChannelData
+        // message (including padding) is (4 + Length) rounded up to the nearest
+        // multiple of 4.  Over UDP, the padding is not required but MAY be
+        // included.
+        if (expected_pkt_len % 4)
+            *pad_bytes = 4 - (expected_pkt_len % 4);
+    }
+    return expected_pkt_len;
 }
 
 }  // namespace cricket

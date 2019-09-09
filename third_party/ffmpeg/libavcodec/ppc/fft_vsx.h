@@ -1,4 +1,4 @@
-#ifndef AVCODEC_PPC_FFT_VSX_H
+﻿#ifndef AVCODEC_PPC_FFT_VSX_H
 #define AVCODEC_PPC_FFT_VSX_H
 /*
  * FFT  transform, optimized with VSX built-in functions
@@ -150,7 +150,8 @@ inline static void pass_vsx_interleave(FFTComplex *z, const FFTSample *wre, unsi
     vec_st(x16, i3, &(out[0]));
     vec_st(y23, i3+16, &(out[0]));
 
-    do {
+    do
+    {
         out += 8;
         wre += 4;
         wim -= 4;
@@ -241,7 +242,8 @@ inline static void pass_vsx_interleave(FFTComplex *z, const FFTSample *wre, unsi
         vec_st(y19, i2+16, &(out[0]));
         vec_st(x23, i3, &(out[0]));
         vec_st(y23, i3+16, &(out[0]));
-    } while (n-=2);
+    }
+    while (n-=2);
 }
 
 inline static void fft2_vsx_interleave(FFTComplex *z)
@@ -255,7 +257,7 @@ inline static void fft2_vsx_interleave(FFTComplex *z)
     i1 = z[0].im - z[1].im;
     z[0].im += z[1].im;
     z[1].im = i1;
- }
+}
 
 inline static void fft4_vsx_interleave(FFTComplex *z)
 {
@@ -771,7 +773,8 @@ inline static void pass_vsx(FFTComplex * z, const FFTSample * wre, unsigned int 
     vec_st(v5, i2+16, &(out[0])); // i2
     vec_st(v6, i3, &(out[0])); // r3
 
-    do {
+    do
+    {
         out += 8;
         wre += 4;
         wim -= 4;
@@ -822,7 +825,8 @@ inline static void pass_vsx(FFTComplex * z, const FFTSample * wre, unsigned int 
         vec_st(v2, i1, &(out[0])); // r1
         vec_st(v5, i2+16, &(out[0])); // i2
         vec_st(v6, i3, &(out[0])); // r3
-    } while (n-=2);
+    }
+    while (n-=2);
 }
 
 #endif

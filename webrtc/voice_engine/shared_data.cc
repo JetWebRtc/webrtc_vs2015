@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,9 +16,11 @@
 #include "webrtc/voice_engine/output_mixer.h"
 #include "webrtc/voice_engine/transmit_mixer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace voe {
+namespace voe
+{
 
 static int32_t _gInstanceCounter = 0;
 
@@ -28,7 +30,8 @@ SharedData::SharedData()
       _engineStatistics(_gInstanceCounter),
       _audioDevicePtr(NULL),
       _moduleProcessThreadPtr(
-          ProcessThread::Create("VoiceProcessThread")) {
+          ProcessThread::Create("VoiceProcessThread"))
+{
     Trace::CreateTrace();
     if (OutputMixer::Create(_outputMixerPtr, _gInstanceCounter) == 0)
     {
@@ -47,7 +50,8 @@ SharedData::~SharedData()
 {
     OutputMixer::Destroy(_outputMixerPtr);
     TransmitMixer::Destroy(_transmitMixerPtr);
-    if (_audioDevicePtr) {
+    if (_audioDevicePtr)
+    {
         _audioDevicePtr->Release();
     }
     _moduleProcessThreadPtr->Stop();
@@ -55,54 +59,63 @@ SharedData::~SharedData()
 }
 
 void SharedData::set_audio_device(
-    const rtc::scoped_refptr<AudioDeviceModule>& audio_device) {
-  _audioDevicePtr = audio_device;
+    const rtc::scoped_refptr<AudioDeviceModule>& audio_device)
+{
+    _audioDevicePtr = audio_device;
 }
 
-void SharedData::set_audio_processing(AudioProcessing* audioproc) {
-  audioproc_.reset(audioproc);
-  _transmitMixerPtr->SetAudioProcessingModule(audioproc);
-  _outputMixerPtr->SetAudioProcessingModule(audioproc);
+void SharedData::set_audio_processing(AudioProcessing* audioproc)
+{
+    audioproc_.reset(audioproc);
+    _transmitMixerPtr->SetAudioProcessingModule(audioproc);
+    _outputMixerPtr->SetAudioProcessingModule(audioproc);
 }
 
-int SharedData::NumOfSendingChannels() {
-  ChannelManager::Iterator it(&_channelManager);
-  int sending_channels = 0;
+int SharedData::NumOfSendingChannels()
+{
+    ChannelManager::Iterator it(&_channelManager);
+    int sending_channels = 0;
 
-  for (ChannelManager::Iterator it(&_channelManager); it.IsValid();
-       it.Increment()) {
-    if (it.GetChannel()->Sending())
-      ++sending_channels;
-  }
+    for (ChannelManager::Iterator it(&_channelManager); it.IsValid();
+            it.Increment())
+    {
+        if (it.GetChannel()->Sending())
+            ++sending_channels;
+    }
 
-  return sending_channels;
+    return sending_channels;
 }
 
-int SharedData::NumOfPlayingChannels() {
-  ChannelManager::Iterator it(&_channelManager);
-  int playout_channels = 0;
+int SharedData::NumOfPlayingChannels()
+{
+    ChannelManager::Iterator it(&_channelManager);
+    int playout_channels = 0;
 
-  for (ChannelManager::Iterator it(&_channelManager); it.IsValid();
-       it.Increment()) {
-    if (it.GetChannel()->Playing())
-      ++playout_channels;
-  }
+    for (ChannelManager::Iterator it(&_channelManager); it.IsValid();
+            it.Increment())
+    {
+        if (it.GetChannel()->Playing())
+            ++playout_channels;
+    }
 
-  return playout_channels;
+    return playout_channels;
 }
 
-void SharedData::SetLastError(int32_t error) const {
-  _engineStatistics.SetLastError(error);
+void SharedData::SetLastError(int32_t error) const
+{
+    _engineStatistics.SetLastError(error);
 }
 
 void SharedData::SetLastError(int32_t error,
-                              TraceLevel level) const {
-  _engineStatistics.SetLastError(error, level);
+                              TraceLevel level) const
+{
+    _engineStatistics.SetLastError(error, level);
 }
 
 void SharedData::SetLastError(int32_t error, TraceLevel level,
-                              const char* msg) const {
-  _engineStatistics.SetLastError(error, level, msg);
+                              const char* msg) const
+{
+    _engineStatistics.SetLastError(error, level, msg);
 }
 
 }  // namespace voe

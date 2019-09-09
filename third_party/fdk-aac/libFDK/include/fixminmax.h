@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,12 +99,12 @@ amm-info@iis.fraunhofer.de
 
 template <class T> inline T fixmin (T a, T b)
 {
-	return (a < b ? a : b);
+    return (a < b ? a : b);
 }
 
 template <class T> inline T fixmax (T a, T b)
 {
-	return (a > b ? a : b);
+    return (a > b ? a : b);
 }
 
 #define fixmax_D(a,b) fixmax(a,b)

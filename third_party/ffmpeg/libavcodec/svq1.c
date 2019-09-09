@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SVQ1 decoder
  * ported to MPlayer by Arpi <arpi@thot.banki.hu>
  * ported to libavcodec by Nick Kurshev <nickols_k@mail.ru>
@@ -37,7 +37,8 @@
 #include "svq1_vlc.h"
 
 /* standard video sizes */
-const uint16_t ff_svq1_frame_size_table[7][2] = {
+const uint16_t ff_svq1_frame_size_table[7][2] =
+{
     { 160, 120 }, { 128,  96 }, { 176, 144 }, { 352, 288 },
     { 704, 576 }, { 240, 180 }, { 320, 240 }
 };

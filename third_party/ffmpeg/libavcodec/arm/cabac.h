@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,7 +28,7 @@
 
 #define get_cabac_inline get_cabac_inline_arm
 static av_always_inline int get_cabac_inline_arm(CABACContext *c,
-                                                 uint8_t *const state)
+        uint8_t *const state)
 {
     int bit;
     void *reg_b, *reg_c, *tmp;
@@ -85,21 +85,21 @@ static av_always_inline int get_cabac_inline_arm(CABACContext *c,
         "add        %[low]        , %[low]      , %[tmp]        \n\t"
         "2:                                                     \n\t"
         :    [bit]"=&r"(bit),
-             [low]"+&r"(c->low),
-           [range]"+&r"(c->range),
-             [r_b]"=&r"(reg_b),
-             [r_c]"=&r"(reg_c),
-             [tmp]"=&r"(tmp)
+        [low]"+&r"(c->low),
+        [range]"+&r"(c->range),
+        [r_b]"=&r"(reg_b),
+        [r_c]"=&r"(reg_c),
+        [tmp]"=&r"(tmp)
         :        [c]"r"(c),
-             [state]"r"(state),
-            [tables]"r"(ff_h264_cabac_tables),
-              [byte]"M"(offsetof(CABACContext, bytestream)),
-               [end]"M"(offsetof(CABACContext, bytestream_end)),
-          [norm_off]"I"(H264_NORM_SHIFT_OFFSET),
-           [lps_off]"I"(H264_LPS_RANGE_OFFSET),
-          [mlps_off]"I"(H264_MLPS_STATE_OFFSET + 128)
+        [state]"r"(state),
+        [tables]"r"(ff_h264_cabac_tables),
+        [byte]"M"(offsetof(CABACContext, bytestream)),
+        [end]"M"(offsetof(CABACContext, bytestream_end)),
+        [norm_off]"I"(H264_NORM_SHIFT_OFFSET),
+        [lps_off]"I"(H264_LPS_RANGE_OFFSET),
+        [mlps_off]"I"(H264_MLPS_STATE_OFFSET + 128)
         : "memory", "cc"
-        );
+    );
 
     return bit & 1;
 }

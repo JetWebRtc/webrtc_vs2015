@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -40,7 +40,7 @@ RTC_EXPORT
 
 /** Initialize an RTCAudioTrack with a source and an id. */
 - (RTCAudioTrack *)audioTrackWithSource:(RTCAudioSource *)source
-                                trackId:(NSString *)trackId;
+    trackId:(NSString *)trackId;
 
 /** Initialize an RTCAVFoundationVideoSource with constraints. */
 - (RTCAVFoundationVideoSource *)avFoundationVideoSourceWithConstraints:
@@ -48,7 +48,7 @@ RTC_EXPORT
 
 /** Initialize an RTCVideoTrack with a source and an id. */
 - (RTCVideoTrack *)videoTrackWithSource:(RTCVideoSource *)source
-                                trackId:(NSString *)trackId;
+    trackId:(NSString *)trackId;
 
 /** Initialize an RTCMediaStream with an id. */
 - (RTCMediaStream *)mediaStreamWithStreamId:(NSString *)streamId;
@@ -58,14 +58,14 @@ RTC_EXPORT
  */
 - (RTCPeerConnection *)peerConnectionWithConfiguration:
     (RTCConfiguration *)configuration
-                                           constraints:
+    constraints:
     (RTCMediaConstraints *)constraints
-                                              delegate:
+    delegate:
     (nullable id<RTCPeerConnectionDelegate>)delegate;
 
 /** Start an AecDump recording. This API call will likely change in the future. */
 - (BOOL)startAecDumpWithFilePath:(NSString *)filePath
-                  maxSizeInBytes:(int64_t)maxSizeInBytes;
+    maxSizeInBytes:(int64_t)maxSizeInBytes;
 
 /* Stop an active AecDump recording */
 - (void)stopAecDump;

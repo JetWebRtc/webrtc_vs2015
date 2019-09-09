@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,6 +33,6 @@ int WebRtcIlbcfix_DecodeImpl(
                                            structure */
     int16_t mode               /* (i) 0: bad packet, PLC,
                                       1: normal */
-    ) WARN_UNUSED_RESULT;
+) WARN_UNUSED_RESULT;
 
 #endif

@@ -1,15 +1,15 @@
-
+﻿
 #pragma warning( disable: 4049 )  /* more than 64k source lines */
 
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 6.00.0347 */
+/* File created by MIDL compiler version 6.00.0347 */
 /* Compiler settings for vidcap.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
     protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
+    error checks: allocation ref bounds_check enum stub_data
+    VC __declspec() decoration level:
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
@@ -40,7 +40,7 @@
 #pragma once
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifndef __IKsTopologyInfo_FWD_DEFINED__
 #define __IKsTopologyInfo_FWD_DEFINED__
@@ -65,24 +65,24 @@ typedef interface IKsNodeControl IKsNodeControl;
 #include "strmif.h"
 
 #ifdef __cplusplus
-extern "C"{
-#endif 
+extern "C" {
+#endif
 
 void * __RPC_USER MIDL_user_allocate(size_t);
-void __RPC_USER MIDL_user_free( void * ); 
+void __RPC_USER MIDL_user_free( void * );
 
 /* interface __MIDL_itf_vidcap_0000 */
-/* [local] */ 
+/* [local] */
 
 #include "ks.h"
 #ifndef _KS_
 typedef /* [public][public] */ struct __MIDL___MIDL_itf_vidcap_0000_0001
-    {
+{
     ULONG FromNode;
     ULONG FromNodePin;
     ULONG ToNode;
     ULONG ToNodePin;
-    } 	KSTOPOLOGY_CONNECTION;
+} 	KSTOPOLOGY_CONNECTION;
 
 typedef struct __MIDL___MIDL_itf_vidcap_0000_0001 *PKSTOPOLOGY_CONNECTION;
 
@@ -96,117 +96,118 @@ extern RPC_IF_HANDLE __MIDL_itf_vidcap_0000_v0_0_s_ifspec;
 #define __IKsTopologyInfo_INTERFACE_DEFINED__
 
 /* interface IKsTopologyInfo */
-/* [unique][uuid][local][object] */ 
+/* [unique][uuid][local][object] */
 
 
 EXTERN_C const IID IID_IKsTopologyInfo;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("720D4AC0-7533-11D0-A5D6-28DB04C10000")
-    IKsTopologyInfo : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE get_NumCategories( 
-            /* [out] */ DWORD *pdwNumCategories) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_Category( 
-            /* [in] */ DWORD dwIndex,
-            /* [out] */ GUID *pCategory) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_NumConnections( 
-            /* [out] */ DWORD *pdwNumConnections) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_ConnectionInfo( 
-            /* [in] */ DWORD dwIndex,
-            /* [out] */ KSTOPOLOGY_CONNECTION *pConnectionInfo) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_NodeName( 
-            /* [in] */ DWORD dwNodeId,
-            /* [out] */ WCHAR *pwchNodeName,
-            /* [in] */ DWORD dwBufSize,
-            /* [out] */ DWORD *pdwNameLen) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_NumNodes( 
-            /* [out] */ DWORD *pdwNumNodes) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_NodeType( 
-            /* [in] */ DWORD dwNodeId,
-            /* [out] */ GUID *pNodeType) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE CreateNodeInstance( 
-            /* [in] */ DWORD dwNodeId,
-            /* [in] */ REFIID iid,
-            /* [out] */ void **ppvObject) = 0;
-        
-    };
-    
+
+MIDL_INTERFACE("720D4AC0-7533-11D0-A5D6-28DB04C10000")
+IKsTopologyInfo :
+public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE get_NumCategories(
+        /* [out] */ DWORD *pdwNumCategories) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_Category(
+        /* [in] */ DWORD dwIndex,
+        /* [out] */ GUID *pCategory) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_NumConnections(
+        /* [out] */ DWORD *pdwNumConnections) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_ConnectionInfo(
+        /* [in] */ DWORD dwIndex,
+        /* [out] */ KSTOPOLOGY_CONNECTION *pConnectionInfo) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_NodeName(
+        /* [in] */ DWORD dwNodeId,
+        /* [out] */ WCHAR *pwchNodeName,
+        /* [in] */ DWORD dwBufSize,
+        /* [out] */ DWORD *pdwNameLen) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_NumNodes(
+        /* [out] */ DWORD *pdwNumNodes) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_NodeType(
+        /* [in] */ DWORD dwNodeId,
+        /* [out] */ GUID *pNodeType) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE CreateNodeInstance(
+        /* [in] */ DWORD dwNodeId,
+        /* [in] */ REFIID iid,
+        /* [out] */ void **ppvObject) = 0;
+
+};
+
 #else 	/* C style interface */
 
-    typedef struct IKsTopologyInfoVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IKsTopologyInfo * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IKsTopologyInfo * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IKsTopologyInfo * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NumCategories )( 
-            IKsTopologyInfo * This,
-            /* [out] */ DWORD *pdwNumCategories);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_Category )( 
-            IKsTopologyInfo * This,
-            /* [in] */ DWORD dwIndex,
-            /* [out] */ GUID *pCategory);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NumConnections )( 
-            IKsTopologyInfo * This,
-            /* [out] */ DWORD *pdwNumConnections);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_ConnectionInfo )( 
-            IKsTopologyInfo * This,
-            /* [in] */ DWORD dwIndex,
-            /* [out] */ KSTOPOLOGY_CONNECTION *pConnectionInfo);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NodeName )( 
-            IKsTopologyInfo * This,
-            /* [in] */ DWORD dwNodeId,
-            /* [out] */ WCHAR *pwchNodeName,
-            /* [in] */ DWORD dwBufSize,
-            /* [out] */ DWORD *pdwNameLen);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NumNodes )( 
-            IKsTopologyInfo * This,
-            /* [out] */ DWORD *pdwNumNodes);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NodeType )( 
-            IKsTopologyInfo * This,
-            /* [in] */ DWORD dwNodeId,
-            /* [out] */ GUID *pNodeType);
-        
-        HRESULT ( STDMETHODCALLTYPE *CreateNodeInstance )( 
-            IKsTopologyInfo * This,
-            /* [in] */ DWORD dwNodeId,
-            /* [in] */ REFIID iid,
-            /* [out] */ void **ppvObject);
-        
-        END_INTERFACE
-    } IKsTopologyInfoVtbl;
+typedef struct IKsTopologyInfoVtbl
+{
+    BEGIN_INTERFACE
 
-    interface IKsTopologyInfo
-    {
-        CONST_VTBL struct IKsTopologyInfoVtbl *lpVtbl;
-    };
+    HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
+        IKsTopologyInfo * This,
+        /* [in] */ REFIID riid,
+        /* [iid_is][out] */ void **ppvObject);
 
-    
+    ULONG ( STDMETHODCALLTYPE *AddRef )(
+        IKsTopologyInfo * This);
+
+    ULONG ( STDMETHODCALLTYPE *Release )(
+        IKsTopologyInfo * This);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NumCategories )(
+        IKsTopologyInfo * This,
+        /* [out] */ DWORD *pdwNumCategories);
+
+    HRESULT ( STDMETHODCALLTYPE *get_Category )(
+        IKsTopologyInfo * This,
+        /* [in] */ DWORD dwIndex,
+        /* [out] */ GUID *pCategory);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NumConnections )(
+        IKsTopologyInfo * This,
+        /* [out] */ DWORD *pdwNumConnections);
+
+    HRESULT ( STDMETHODCALLTYPE *get_ConnectionInfo )(
+        IKsTopologyInfo * This,
+        /* [in] */ DWORD dwIndex,
+        /* [out] */ KSTOPOLOGY_CONNECTION *pConnectionInfo);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NodeName )(
+        IKsTopologyInfo * This,
+        /* [in] */ DWORD dwNodeId,
+        /* [out] */ WCHAR *pwchNodeName,
+        /* [in] */ DWORD dwBufSize,
+        /* [out] */ DWORD *pdwNameLen);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NumNodes )(
+        IKsTopologyInfo * This,
+        /* [out] */ DWORD *pdwNumNodes);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NodeType )(
+        IKsTopologyInfo * This,
+        /* [in] */ DWORD dwNodeId,
+        /* [out] */ GUID *pNodeType);
+
+    HRESULT ( STDMETHODCALLTYPE *CreateNodeInstance )(
+        IKsTopologyInfo * This,
+        /* [in] */ DWORD dwNodeId,
+        /* [in] */ REFIID iid,
+        /* [out] */ void **ppvObject);
+
+    END_INTERFACE
+} IKsTopologyInfoVtbl;
+
+interface IKsTopologyInfo
+{
+    CONST_VTBL struct IKsTopologyInfoVtbl *lpVtbl;
+};
+
+
 
 #ifdef COBJMACROS
 
@@ -252,7 +253,7 @@ EXTERN_C const IID IID_IKsTopologyInfo;
 
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumCategories_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumCategories_Proxy(
     IKsTopologyInfo * This,
     /* [out] */ DWORD *pdwNumCategories);
 
@@ -264,7 +265,7 @@ void __RPC_STUB IKsTopologyInfo_get_NumCategories_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_Category_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_Category_Proxy(
     IKsTopologyInfo * This,
     /* [in] */ DWORD dwIndex,
     /* [out] */ GUID *pCategory);
@@ -277,7 +278,7 @@ void __RPC_STUB IKsTopologyInfo_get_Category_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumConnections_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumConnections_Proxy(
     IKsTopologyInfo * This,
     /* [out] */ DWORD *pdwNumConnections);
 
@@ -289,7 +290,7 @@ void __RPC_STUB IKsTopologyInfo_get_NumConnections_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_ConnectionInfo_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_ConnectionInfo_Proxy(
     IKsTopologyInfo * This,
     /* [in] */ DWORD dwIndex,
     /* [out] */ KSTOPOLOGY_CONNECTION *pConnectionInfo);
@@ -302,7 +303,7 @@ void __RPC_STUB IKsTopologyInfo_get_ConnectionInfo_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NodeName_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NodeName_Proxy(
     IKsTopologyInfo * This,
     /* [in] */ DWORD dwNodeId,
     /* [out] */ WCHAR *pwchNodeName,
@@ -317,7 +318,7 @@ void __RPC_STUB IKsTopologyInfo_get_NodeName_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumNodes_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NumNodes_Proxy(
     IKsTopologyInfo * This,
     /* [out] */ DWORD *pdwNumNodes);
 
@@ -329,7 +330,7 @@ void __RPC_STUB IKsTopologyInfo_get_NumNodes_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NodeType_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_get_NodeType_Proxy(
     IKsTopologyInfo * This,
     /* [in] */ DWORD dwNodeId,
     /* [out] */ GUID *pNodeType);
@@ -342,7 +343,7 @@ void __RPC_STUB IKsTopologyInfo_get_NodeType_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsTopologyInfo_CreateNodeInstance_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsTopologyInfo_CreateNodeInstance_Proxy(
     IKsTopologyInfo * This,
     /* [in] */ DWORD dwNodeId,
     /* [in] */ REFIID iid,
@@ -364,66 +365,67 @@ void __RPC_STUB IKsTopologyInfo_CreateNodeInstance_Stub(
 #define __ISelector_INTERFACE_DEFINED__
 
 /* interface ISelector */
-/* [unique][uuid][local][object] */ 
+/* [unique][uuid][local][object] */
 
 
 EXTERN_C const IID IID_ISelector;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("1ABDAECA-68B6-4F83-9371-B413907C7B9F")
-    ISelector : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE get_NumSources( 
-            /* [out] */ DWORD *pdwNumSources) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE get_SourceNodeId( 
-            /* [out] */ DWORD *pdwPinId) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE put_SourceNodeId( 
-            /* [in] */ DWORD dwPinId) = 0;
-        
-    };
-    
+
+MIDL_INTERFACE("1ABDAECA-68B6-4F83-9371-B413907C7B9F")
+ISelector :
+public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE get_NumSources(
+        /* [out] */ DWORD *pdwNumSources) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE get_SourceNodeId(
+        /* [out] */ DWORD *pdwPinId) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE put_SourceNodeId(
+        /* [in] */ DWORD dwPinId) = 0;
+
+};
+
 #else 	/* C style interface */
 
-    typedef struct ISelectorVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            ISelector * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            ISelector * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            ISelector * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_NumSources )( 
-            ISelector * This,
-            /* [out] */ DWORD *pdwNumSources);
-        
-        HRESULT ( STDMETHODCALLTYPE *get_SourceNodeId )( 
-            ISelector * This,
-            /* [out] */ DWORD *pdwPinId);
-        
-        HRESULT ( STDMETHODCALLTYPE *put_SourceNodeId )( 
-            ISelector * This,
-            /* [in] */ DWORD dwPinId);
-        
-        END_INTERFACE
-    } ISelectorVtbl;
+typedef struct ISelectorVtbl
+{
+    BEGIN_INTERFACE
 
-    interface ISelector
-    {
-        CONST_VTBL struct ISelectorVtbl *lpVtbl;
-    };
+    HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
+        ISelector * This,
+        /* [in] */ REFIID riid,
+        /* [iid_is][out] */ void **ppvObject);
 
-    
+    ULONG ( STDMETHODCALLTYPE *AddRef )(
+        ISelector * This);
+
+    ULONG ( STDMETHODCALLTYPE *Release )(
+        ISelector * This);
+
+    HRESULT ( STDMETHODCALLTYPE *get_NumSources )(
+        ISelector * This,
+        /* [out] */ DWORD *pdwNumSources);
+
+    HRESULT ( STDMETHODCALLTYPE *get_SourceNodeId )(
+        ISelector * This,
+        /* [out] */ DWORD *pdwPinId);
+
+    HRESULT ( STDMETHODCALLTYPE *put_SourceNodeId )(
+        ISelector * This,
+        /* [in] */ DWORD dwPinId);
+
+    END_INTERFACE
+} ISelectorVtbl;
+
+interface ISelector
+{
+    CONST_VTBL struct ISelectorVtbl *lpVtbl;
+};
+
+
 
 #ifdef COBJMACROS
 
@@ -454,7 +456,7 @@ EXTERN_C const IID IID_ISelector;
 
 
 
-HRESULT STDMETHODCALLTYPE ISelector_get_NumSources_Proxy( 
+HRESULT STDMETHODCALLTYPE ISelector_get_NumSources_Proxy(
     ISelector * This,
     /* [out] */ DWORD *pdwNumSources);
 
@@ -466,7 +468,7 @@ void __RPC_STUB ISelector_get_NumSources_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE ISelector_get_SourceNodeId_Proxy( 
+HRESULT STDMETHODCALLTYPE ISelector_get_SourceNodeId_Proxy(
     ISelector * This,
     /* [out] */ DWORD *pdwPinId);
 
@@ -478,7 +480,7 @@ void __RPC_STUB ISelector_get_SourceNodeId_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE ISelector_put_SourceNodeId_Proxy( 
+HRESULT STDMETHODCALLTYPE ISelector_put_SourceNodeId_Proxy(
     ISelector * This,
     /* [in] */ DWORD dwPinId);
 
@@ -498,59 +500,60 @@ void __RPC_STUB ISelector_put_SourceNodeId_Stub(
 #define __IKsNodeControl_INTERFACE_DEFINED__
 
 /* interface IKsNodeControl */
-/* [unique][uuid][local][object] */ 
+/* [unique][uuid][local][object] */
 
 
 EXTERN_C const IID IID_IKsNodeControl;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("11737C14-24A7-4bb5-81A0-0D003813B0C4")
-    IKsNodeControl : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE put_NodeId( 
-            /* [in] */ DWORD dwNodeId) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE put_KsControl( 
-            /* [in] */ PVOID pKsControl) = 0;
-        
-    };
-    
+
+MIDL_INTERFACE("11737C14-24A7-4bb5-81A0-0D003813B0C4")
+IKsNodeControl :
+public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE put_NodeId(
+        /* [in] */ DWORD dwNodeId) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE put_KsControl(
+        /* [in] */ PVOID pKsControl) = 0;
+
+};
+
 #else 	/* C style interface */
 
-    typedef struct IKsNodeControlVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IKsNodeControl * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IKsNodeControl * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IKsNodeControl * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *put_NodeId )( 
-            IKsNodeControl * This,
-            /* [in] */ DWORD dwNodeId);
-        
-        HRESULT ( STDMETHODCALLTYPE *put_KsControl )( 
-            IKsNodeControl * This,
-            /* [in] */ PVOID pKsControl);
-        
-        END_INTERFACE
-    } IKsNodeControlVtbl;
+typedef struct IKsNodeControlVtbl
+{
+    BEGIN_INTERFACE
 
-    interface IKsNodeControl
-    {
-        CONST_VTBL struct IKsNodeControlVtbl *lpVtbl;
-    };
+    HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
+        IKsNodeControl * This,
+        /* [in] */ REFIID riid,
+        /* [iid_is][out] */ void **ppvObject);
 
-    
+    ULONG ( STDMETHODCALLTYPE *AddRef )(
+        IKsNodeControl * This);
+
+    ULONG ( STDMETHODCALLTYPE *Release )(
+        IKsNodeControl * This);
+
+    HRESULT ( STDMETHODCALLTYPE *put_NodeId )(
+        IKsNodeControl * This,
+        /* [in] */ DWORD dwNodeId);
+
+    HRESULT ( STDMETHODCALLTYPE *put_KsControl )(
+        IKsNodeControl * This,
+        /* [in] */ PVOID pKsControl);
+
+    END_INTERFACE
+} IKsNodeControlVtbl;
+
+interface IKsNodeControl
+{
+    CONST_VTBL struct IKsNodeControlVtbl *lpVtbl;
+};
+
+
 
 #ifdef COBJMACROS
 
@@ -578,7 +581,7 @@ EXTERN_C const IID IID_IKsNodeControl;
 
 
 
-HRESULT STDMETHODCALLTYPE IKsNodeControl_put_NodeId_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsNodeControl_put_NodeId_Proxy(
     IKsNodeControl * This,
     /* [in] */ DWORD dwNodeId);
 
@@ -590,7 +593,7 @@ void __RPC_STUB IKsNodeControl_put_NodeId_Stub(
     DWORD *_pdwStubPhase);
 
 
-HRESULT STDMETHODCALLTYPE IKsNodeControl_put_KsControl_Proxy( 
+HRESULT STDMETHODCALLTYPE IKsNodeControl_put_KsControl_Proxy(
     IKsNodeControl * This,
     /* [in] */ PVOID pKsControl);
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MP3 demuxer
  * Copyright (c) 2003 Fabrice Bellard
  *
@@ -42,7 +42,8 @@
 
 #define XING_TOC_COUNT 100
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     int64_t filesize;
     int xing_toc;
@@ -77,12 +78,14 @@ static int mp3_read_probe(AVProbeData *p)
     max_frames = 0;
     buf = buf0;
 
-    for(; buf < end; buf= buf2+1) {
+    for(; buf < end; buf= buf2+1)
+    {
         buf2 = buf;
         if(ff_mpa_check_header(AV_RB32(buf2)))
             continue;
 
-        for(frames = 0; buf2 < end; frames++) {
+        for(frames = 0; buf2 < end; frames++)
+        {
             int dummy;
             header = AV_RB32(buf2);
             fsize = avpriv_mpa_decode_header(avctx, header,
@@ -102,7 +105,7 @@ static int mp3_read_probe(AVProbeData *p)
     else if(max_frames>200)return AVPROBE_SCORE_EXTENSION;
     else if(max_frames>=4 && max_frames >= p->buf_size/10000) return AVPROBE_SCORE_EXTENSION / 2;
     else if(ff_id3v2_match(buf0, ID3v2_DEFAULT_MAGIC) && 2*ff_id3v2_tag_len(buf0) >= p->buf_size)
-                           return p->buf_size < PROBE_BUF_MAX ? AVPROBE_SCORE_EXTENSION / 4 : AVPROBE_SCORE_EXTENSION - 2;
+        return p->buf_size < PROBE_BUF_MAX ? AVPROBE_SCORE_EXTENSION / 4 : AVPROBE_SCORE_EXTENSION - 2;
     else if(max_frames>=1 && max_frames >= p->buf_size/10000) return 1;
     else                   return 0;
 //mpegps_mp3_unrecognized_format.mpg has max_frames=3
@@ -115,18 +118,20 @@ static void read_xing_toc(AVFormatContext *s, int64_t filesize, int64_t duration
     int fill_index = mp3->usetoc == 1 && duration > 0;
 
     if (!filesize &&
-        !(filesize = avio_size(s->pb))) {
+            !(filesize = avio_size(s->pb)))
+    {
         av_log(s, AV_LOG_WARNING, "Cannot determine file size, skipping TOC table.\n");
         fill_index = 0;
     }
 
-    for (i = 0; i < XING_TOC_COUNT; i++) {
+    for (i = 0; i < XING_TOC_COUNT; i++)
+    {
         uint8_t b = avio_r8(s->pb);
         if (fill_index)
             av_add_index_entry(s->streams[0],
-                           av_rescale(b, filesize, 256),
-                           av_rescale(i, duration, XING_TOC_COUNT),
-                           0, 0, AVINDEX_KEYFRAME);
+                               av_rescale(b, filesize, 256),
+                               av_rescale(i, duration, XING_TOC_COUNT),
+                               0, 0, AVINDEX_KEYFRAME);
     }
     if (fill_index)
         mp3->xing_toc = 1;
@@ -163,23 +168,30 @@ static void mp3_parse_info_tag(AVFormatContext *s, AVStream *st,
         mp3->frames = avio_rb32(s->pb);
     if (v & XING_FLAG_SIZE)
         mp3->header_filesize = avio_rb32(s->pb);
-    if (fsize && mp3->header_filesize) {
+    if (fsize && mp3->header_filesize)
+    {
         uint64_t min, delta;
         min = FFMIN(fsize, mp3->header_filesize);
         delta = FFMAX(fsize, mp3->header_filesize) - min;
-        if (fsize > mp3->header_filesize && delta > min >> 4) {
+        if (fsize > mp3->header_filesize && delta > min >> 4)
+        {
             mp3->frames = 0;
             av_log(s, AV_LOG_WARNING,
                    "invalid concatenated file detected - using bitrate for duration\n");
-        } else if (delta > min >> 4) {
+        }
+        else if (delta > min >> 4)
+        {
             av_log(s, AV_LOG_WARNING,
                    "filesize and duration do not match (growing file?)\n");
         }
     }
     if (v & XING_FLAG_TOC)
         read_xing_toc(s, mp3->header_filesize, av_rescale_q(mp3->frames,
-                                       (AVRational){spf, c->sample_rate},
-                                       st->time_base));
+                      (AVRational)
+    {
+        spf, c->sample_rate
+    },
+    st->time_base));
     /* VBR quality */
     if (v & XING_FLAC_QSCALE)
         avio_rb32(s->pb);
@@ -201,7 +213,8 @@ static void mp3_parse_info_tag(AVFormatContext *s, AVStream *st,
     /* Radio ReplayGain */
     v = avio_rb16(s->pb);
 
-    if (MIDDLE_BITS(v, 13, 15) == 1) {
+    if (MIDDLE_BITS(v, 13, 15) == 1)
+    {
         r_gain = MIDDLE_BITS(v, 0, 8) * 10000;
 
         if (v & (1 << 9))
@@ -211,7 +224,8 @@ static void mp3_parse_info_tag(AVFormatContext *s, AVStream *st,
     /* Audiophile ReplayGain */
     v = avio_rb16(s->pb);
 
-    if (MIDDLE_BITS(v, 13, 15) == 2) {
+    if (MIDDLE_BITS(v, 13, 15) == 2)
+    {
         a_gain = MIDDLE_BITS(v, 0, 8) * 10000;
 
         if (v & (1 << 9))
@@ -227,21 +241,26 @@ static void mp3_parse_info_tag(AVFormatContext *s, AVStream *st,
     /* Encoder delays */
     v= avio_rb24(s->pb);
     if(AV_RB32(version) == MKBETAG('L', 'A', 'M', 'E')
-        || AV_RB32(version) == MKBETAG('L', 'a', 'v', 'f')
-        || AV_RB32(version) == MKBETAG('L', 'a', 'v', 'c')
-    ) {
+            || AV_RB32(version) == MKBETAG('L', 'a', 'v', 'f')
+            || AV_RB32(version) == MKBETAG('L', 'a', 'v', 'c')
+      )
+    {
 
         mp3->start_pad = v>>12;
         mp3->  end_pad = v&4095;
         st->start_skip_samples = mp3->start_pad + 528 + 1;
-        if (mp3->frames) {
+        if (mp3->frames)
+        {
             st->first_discard_sample = -mp3->end_pad + 528 + 1 + mp3->frames * (int64_t)spf;
             st->last_discard_sample = mp3->frames * (int64_t)spf;
         }
         if (!st->start_time)
             st->start_time = av_rescale_q(st->start_skip_samples,
-                                            (AVRational){1, c->sample_rate},
-                                            st->time_base);
+                                          (AVRational)
+        {
+            1, c->sample_rate
+        },
+        st->time_base);
         av_log(s, AV_LOG_DEBUG, "pad %d %d\n", mp3->start_pad, mp3->  end_pad);
     }
 
@@ -264,7 +283,8 @@ static void mp3_parse_info_tag(AVFormatContext *s, AVStream *st,
     crc = ffio_get_checksum(s->pb);
     v   = avio_rb16(s->pb);
 
-    if (v == crc) {
+    if (v == crc)
+    {
         ff_replaygain_export_raw(st, r_gain, peak, a_gain, 0);
         av_dict_set(&st->metadata, "encoder", version, 0);
     }
@@ -278,9 +298,11 @@ static void mp3_parse_vbri_tag(AVFormatContext *s, AVStream *st, int64_t base)
     /* Check for VBRI tag (always 32 bytes after end of mpegaudio header) */
     avio_seek(s->pb, base + 4 + 32, SEEK_SET);
     v = avio_rb32(s->pb);
-    if (v == MKBETAG('V', 'B', 'R', 'I')) {
+    if (v == MKBETAG('V', 'B', 'R', 'I'))
+    {
         /* Check tag version */
-        if (avio_rb16(s->pb) == 1) {
+        if (avio_rb16(s->pb) == 1)
+        {
             /* skip delay and quality */
             avio_skip(s->pb, 4);
             mp3->header_filesize = avio_rb32(s->pb);
@@ -303,7 +325,7 @@ static int mp3_parse_vbr_tags(AVFormatContext *s, AVStream *st, int64_t base)
 
     v = avio_rb32(s->pb);
     if(ff_mpa_check_header(v) < 0)
-      return -1;
+        return -1;
 
     if (avpriv_mpegaudio_decode_header(&c, v) == 0)
         vbrtag_size = c.frame_size;
@@ -325,8 +347,11 @@ static int mp3_parse_vbr_tags(AVFormatContext *s, AVStream *st, int64_t base)
     avio_seek(s->pb, base + vbrtag_size, SEEK_SET);
 
     if (mp3->frames)
-        st->duration = av_rescale_q(mp3->frames, (AVRational){spf, c.sample_rate},
-                                    st->time_base);
+        st->duration = av_rescale_q(mp3->frames, (AVRational)
+    {
+        spf, c.sample_rate
+    },
+    st->time_base);
     if (mp3->header_filesize && mp3->frames && !mp3->is_cbr)
         st->codec->bit_rate = av_rescale(mp3->header_filesize, 8 * c.sample_rate, mp3->frames * (int64_t)spf);
 
@@ -373,10 +398,12 @@ static int mp3_read_header(AVFormatContext *s)
         return ret;
 
     off = avio_tell(s->pb);
-    for (i = 0; i < 64 * 1024; i++) {
+    for (i = 0; i < 64 * 1024; i++)
+    {
         if (!(i&1023))
             ffio_ensure_seekback(s->pb, i + 1024 + 4);
-        if (check(s->pb, off + i) >= 0) {
+        if (check(s->pb, off + i) >= 0)
+        {
             av_log(s, AV_LOG_INFO, "Skipping %d bytes of junk at %"PRId64".\n", i, off);
             avio_seek(s->pb, off + i, SEEK_SET);
             break;
@@ -406,7 +433,8 @@ static int mp3_read_packet(AVFormatContext *s, AVPacket *pkt)
         size= FFMIN(size, mp3->filesize - pos);
 
     ret= av_get_packet(s->pb, pkt, size);
-    if (ret <= 0) {
+    if (ret <= 0)
+    {
         if(ret<0)
             return ret;
         return AVERROR_EOF;
@@ -452,7 +480,8 @@ static int64_t mp3_sync(AVFormatContext *s, int64_t target_pos, int flags)
 #define MIN_VALID 3
     best_pos = target_pos;
     best_score = 999;
-    for(i=0; i<SEEK_WINDOW; i++) {
+    for(i=0; i<SEEK_WINDOW; i++)
+    {
         int64_t pos = target_pos + (dir > 0 ? i - SEEK_WINDOW/4 : -i);
         int64_t candidate = -1;
         int score = 999;
@@ -460,17 +489,20 @@ static int64_t mp3_sync(AVFormatContext *s, int64_t target_pos, int flags)
         if (pos < 0)
             continue;
 
-        for(j=0; j<MIN_VALID; j++) {
+        for(j=0; j<MIN_VALID; j++)
+        {
             ret = check(s->pb, pos);
             if(ret < 0)
                 break;
-            if ((target_pos - pos)*dir <= 0 && abs(MIN_VALID/2-j) < score) {
+            if ((target_pos - pos)*dir <= 0 && abs(MIN_VALID/2-j) < score)
+            {
                 candidate = pos;
                 score = abs(MIN_VALID/2-j);
             }
             pos += ret;
         }
-        if (best_score > score && j == MIN_VALID) {
+        if (best_score > score && j == MIN_VALID)
+        {
             best_pos = candidate;
             best_score = score;
             if(score == 0)
@@ -494,20 +526,25 @@ static int mp3_seek(AVFormatContext *s, int stream_index, int64_t timestamp,
         return -1; // generic index code
 
     if (   mp3->is_cbr
-        && (mp3->usetoc == 0 || !mp3->xing_toc)
-        && st->duration > 0
-        && mp3->header_filesize > s->internal->data_offset
-        && mp3->frames) {
+            && (mp3->usetoc == 0 || !mp3->xing_toc)
+            && st->duration > 0
+            && mp3->header_filesize > s->internal->data_offset
+            && mp3->frames)
+    {
         ie = &ie1;
         timestamp = av_clip64(timestamp, 0, st->duration);
         ie->timestamp = timestamp;
         ie->pos       = av_rescale(timestamp, mp3->header_filesize, st->duration) + s->internal->data_offset;
-    } else if (mp3->xing_toc) {
+    }
+    else if (mp3->xing_toc)
+    {
         if (ret < 0)
             return ret;
 
         ie = &st->index_entries[ret];
-    } else {
+    }
+    else
+    {
         return -1;
     }
 
@@ -515,7 +552,8 @@ static int mp3_seek(AVFormatContext *s, int stream_index, int64_t timestamp,
     if (best_pos < 0)
         return best_pos;
 
-    if (mp3->is_cbr && ie == &ie1) {
+    if (mp3->is_cbr && ie == &ie1)
+    {
         int frame_duration = av_rescale(st->duration, 1, mp3->frames);
         ie1.timestamp = frame_duration * av_rescale(best_pos - s->internal->data_offset, mp3->frames, mp3->header_filesize);
     }
@@ -524,12 +562,14 @@ static int mp3_seek(AVFormatContext *s, int stream_index, int64_t timestamp,
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "usetoc", "use table of contents", offsetof(MP3DecContext, usetoc), AV_OPT_TYPE_INT, {.i64 = -1}, -1, 2, AV_OPT_FLAG_DECODING_PARAM},
     { NULL },
 };
 
-static const AVClass demuxer_class = {
+static const AVClass demuxer_class =
+{
     .class_name = "mp3",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -537,7 +577,8 @@ static const AVClass demuxer_class = {
     .category   = AV_CLASS_CATEGORY_DEMUXER,
 };
 
-AVInputFormat ff_mp3_demuxer = {
+AVInputFormat ff_mp3_demuxer =
+{
     .name           = "mp3",
     .long_name      = NULL_IF_CONFIG_SMALL("MP2/3 (MPEG audio layer 2/3)"),
     .read_probe     = mp3_read_probe,

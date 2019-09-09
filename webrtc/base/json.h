@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include "third_party/jsoncpp/json.h"
 #endif
 
-namespace rtc {
+namespace rtc
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 // JSON Helpers

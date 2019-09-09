@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,19 +13,22 @@
 
 #include <pthread.h>
 
-namespace rtc {
+namespace rtc
+{
 
 class TaskQueue;
 
-namespace internal {
+namespace internal
+{
 
-class AutoSetCurrentQueuePtr {
- public:
-  explicit AutoSetCurrentQueuePtr(TaskQueue* q);
-  ~AutoSetCurrentQueuePtr();
+class AutoSetCurrentQueuePtr
+{
+public:
+    explicit AutoSetCurrentQueuePtr(TaskQueue* q);
+    ~AutoSetCurrentQueuePtr();
 
- private:
-  TaskQueue* const prev_;
+private:
+    TaskQueue* const prev_;
 };
 
 pthread_key_t GetQueuePtrTls();

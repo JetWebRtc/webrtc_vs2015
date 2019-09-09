@@ -1,4 +1,4 @@
-/*
+﻿/*
  * g722 raw demuxer
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -46,7 +46,8 @@ static int g722_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_g722_demuxer = {
+AVInputFormat ff_g722_demuxer =
+{
     .name           = "g722",
     .long_name      = NULL_IF_CONFIG_SMALL("raw G.722"),
     .read_header    = g722_read_header,

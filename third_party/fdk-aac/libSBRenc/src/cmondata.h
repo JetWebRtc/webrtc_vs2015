@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Core Coder's and SBR's shared data structure definition  
+  \brief  Core Coder's and SBR's shared data structure definition
 */
 #ifndef __SBR_CMONDATA_H
 #define __SBR_CMONDATA_H
@@ -91,16 +91,17 @@ amm-info@iis.fraunhofer.de
 #include "FDK_bitstream.h"
 
 
-struct COMMON_DATA {
-  INT                   sbrHdrBits;             /**< number of SBR header bits */
-  INT                   sbrDataBits;            /**< number of SBR data bits */
-  INT                   sbrFillBits;            /**< number of SBR fill bits */
-  FDK_BITSTREAM         sbrBitbuf;              /**< the SBR data bitbuffer */
-  FDK_BITSTREAM         tmpWriteBitbuf;         /**< helper var for writing header*/
-  INT                   xOverFreq;              /**< the SBR crossover frequency */
-  INT                   dynBwEnabled;           /**< indicates if dynamic bandwidth is enabled */
-  INT                   sbrNumChannels;         /**< number of channels (meaning mono or stereo) */
-  INT                   dynXOverFreqEnc;        /**< encoder dynamic crossover frequency */
+struct COMMON_DATA
+{
+    INT                   sbrHdrBits;             /**< number of SBR header bits */
+    INT                   sbrDataBits;            /**< number of SBR data bits */
+    INT                   sbrFillBits;            /**< number of SBR fill bits */
+    FDK_BITSTREAM         sbrBitbuf;              /**< the SBR data bitbuffer */
+    FDK_BITSTREAM         tmpWriteBitbuf;         /**< helper var for writing header*/
+    INT                   xOverFreq;              /**< the SBR crossover frequency */
+    INT                   dynBwEnabled;           /**< indicates if dynamic bandwidth is enabled */
+    INT                   sbrNumChannels;         /**< number of channels (meaning mono or stereo) */
+    INT                   dynXOverFreqEnc;        /**< encoder dynamic crossover frequency */
 };
 
 typedef struct COMMON_DATA *HANDLE_COMMON_DATA;

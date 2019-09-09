@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP output format
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -28,7 +28,8 @@
 
 #include "rtpenc.h"
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     FF_RTP_FLAG_OPTS(RTPMuxContext, flags),
     { "payload_type", "Specify RTP payload type", offsetof(RTPMuxContext, payload_type), AV_OPT_TYPE_INT, {.i64 = -1 }, -1, 127, AV_OPT_FLAG_ENCODING_PARAM },
     { "ssrc", "Stream identifier", offsetof(RTPMuxContext, ssrc), AV_OPT_TYPE_INT, { .i64 = 0 }, INT_MIN, INT_MAX, AV_OPT_FLAG_ENCODING_PARAM },
@@ -37,7 +38,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass rtp_muxer_class = {
+static const AVClass rtp_muxer_class =
+{
     .class_name = "RTP muxer",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -48,7 +50,8 @@ static const AVClass rtp_muxer_class = {
 
 static int is_supported(enum AVCodecID id)
 {
-    switch(id) {
+    switch(id)
+    {
     case AV_CODEC_ID_H261:
     case AV_CODEC_ID_H263:
     case AV_CODEC_ID_H263P:
@@ -92,24 +95,29 @@ static int rtp_write_header(AVFormatContext *s1)
     int n, ret = AVERROR(EINVAL);
     AVStream *st;
 
-    if (s1->nb_streams != 1) {
+    if (s1->nb_streams != 1)
+    {
         av_log(s1, AV_LOG_ERROR, "Only one stream supported in the RTP muxer\n");
         return AVERROR(EINVAL);
     }
     st = s1->streams[0];
-    if (!is_supported(st->codec->codec_id)) {
+    if (!is_supported(st->codec->codec_id))
+    {
         av_log(s1, AV_LOG_ERROR, "Unsupported codec %s\n", avcodec_get_name(st->codec->codec_id));
 
         return -1;
     }
 
-    if (s->payload_type < 0) {
+    if (s->payload_type < 0)
+    {
         /* Re-validate non-dynamic payload types */
         if (st->id < RTP_PT_PRIVATE)
             st->id = ff_rtp_get_payload_type(s1, st->codec, -1);
 
         s->payload_type = st->id;
-    } else {
+    }
+    else
+    {
         /* private option takes priority */
         st->id = s->payload_type;
     }
@@ -128,37 +136,49 @@ static int rtp_write_header(AVFormatContext *s1)
     // Pick a random sequence start number, but in the lower end of the
     // available range, so that any wraparound doesn't happen immediately.
     // (Immediate wraparound would be an issue for SRTP.)
-    if (s->seq < 0) {
-        if (s1->flags & AVFMT_FLAG_BITEXACT) {
+    if (s->seq < 0)
+    {
+        if (s1->flags & AVFMT_FLAG_BITEXACT)
+        {
             s->seq = 0;
-        } else
+        }
+        else
             s->seq = av_get_random_seed() & 0x0fff;
-    } else
+    }
+    else
         s->seq &= 0xffff; // Use the given parameter, wrapped to the right interval
 
-    if (s1->packet_size) {
+    if (s1->packet_size)
+    {
         if (s1->pb->max_packet_size)
             s1->packet_size = FFMIN(s1->packet_size,
                                     s1->pb->max_packet_size);
-    } else
+    }
+    else
         s1->packet_size = s1->pb->max_packet_size;
-    if (s1->packet_size <= 12) {
+    if (s1->packet_size <= 12)
+    {
         av_log(s1, AV_LOG_ERROR, "Max packet size %d too low\n", s1->packet_size);
         return AVERROR(EIO);
     }
     s->buf = av_malloc(s1->packet_size);
-    if (!s->buf) {
+    if (!s->buf)
+    {
         return AVERROR(ENOMEM);
     }
     s->max_payload_size = s1->packet_size - 12;
 
-    if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+    if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+    {
         avpriv_set_pts_info(st, 32, 1, st->codec->sample_rate);
-    } else {
+    }
+    else
+    {
         avpriv_set_pts_info(st, 32, 1, 90000);
     }
     s->buf_ptr = s->buf;
-    switch(st->codec->codec_id) {
+    switch(st->codec->codec_id)
+    {
     case AV_CODEC_ID_MP2:
     case AV_CODEC_ID_MP3:
         s->buf_ptr = s->buf + 4;
@@ -174,7 +194,8 @@ static int rtp_write_header(AVFormatContext *s1)
         s->max_payload_size = n * TS_PACKET_SIZE;
         break;
     case AV_CODEC_ID_H261:
-        if (s1->strict_std_compliance > FF_COMPLIANCE_EXPERIMENTAL) {
+        if (s1->strict_std_compliance > FF_COMPLIANCE_EXPERIMENTAL)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Packetizing H261 is experimental and produces incorrect "
                    "packetization for cases where GOBs don't fit into packets "
@@ -186,7 +207,8 @@ static int rtp_write_header(AVFormatContext *s1)
         break;
     case AV_CODEC_ID_H264:
         /* check for H.264 MP4 syntax */
-        if (st->codec->extradata_size > 4 && st->codec->extradata[0] == 1) {
+        if (st->codec->extradata_size > 4 && st->codec->extradata[0] == 1)
+        {
             s->nal_length_size = (st->codec->extradata[4] & 0x03) + 1;
         }
         break;
@@ -195,7 +217,8 @@ static int rtp_write_header(AVFormatContext *s1)
          * things simple and similar to the avcC/H264 case above, instead
          * of trying to handle the pre-standardization versions (as in
          * libavcodec/hevc.c). */
-        if (st->codec->extradata_size > 21 && st->codec->extradata[0] == 1) {
+        if (st->codec->extradata_size > 21 && st->codec->extradata[0] == 1)
+        {
             s->nal_length_size = (st->codec->extradata[21] & 0x03) + 1;
         }
         break;
@@ -209,7 +232,8 @@ static int rtp_write_header(AVFormatContext *s1)
         avpriv_set_pts_info(st, 32, 1, 8000);
         break;
     case AV_CODEC_ID_OPUS:
-        if (st->codec->channels > 2) {
+        if (st->codec->channels > 2)
+        {
             av_log(s1, AV_LOG_ERROR, "Multistream opus not supported in RTP\n");
             goto fail;
         }
@@ -219,7 +243,8 @@ static int rtp_write_header(AVFormatContext *s1)
         avpriv_set_pts_info(st, 32, 1, 48000);
         break;
     case AV_CODEC_ID_ILBC:
-        if (st->codec->block_align != 38 && st->codec->block_align != 50) {
+        if (st->codec->block_align != 38 && st->codec->block_align != 50)
+        {
             av_log(s1, AV_LOG_ERROR, "Incorrect iLBC block size specified\n");
             goto fail;
         }
@@ -233,11 +258,13 @@ static int rtp_write_header(AVFormatContext *s1)
         else
             n = 61;
         /* max_header_toc_size + the largest AMR payload must fit */
-        if (1 + s->max_frames_per_packet + n > s->max_payload_size) {
+        if (1 + s->max_frames_per_packet + n > s->max_payload_size)
+        {
             av_log(s1, AV_LOG_ERROR, "RTP max payload size too small for AMR\n");
             goto fail;
         }
-        if (st->codec->channels != 1) {
+        if (st->codec->channels != 1)
+        {
             av_log(s1, AV_LOG_ERROR, "Only mono is supported\n");
             goto fail;
         }
@@ -265,8 +292,11 @@ static void rtcp_send_sr(AVFormatContext *s1, int64_t ntp_time, int bye)
     av_log(s1, AV_LOG_TRACE, "RTCP: %02x %"PRIx64" %x\n", s->payload_type, ntp_time, s->timestamp);
 
     s->last_rtcp_ntp_time = ntp_time;
-    rtp_ts = av_rescale_q(ntp_time - s->first_rtcp_ntp_time, (AVRational){1, 1000000},
-                          s1->streams[0]->time_base) + s->base_timestamp;
+    rtp_ts = av_rescale_q(ntp_time - s->first_rtcp_ntp_time, (AVRational)
+    {
+        1, 1000000
+    },
+    s1->streams[0]->time_base) + s->base_timestamp;
     avio_w8(s1->pb, RTP_VERSION << 6);
     avio_w8(s1->pb, RTCP_SR);
     avio_wb16(s1->pb, 6); /* length in words - 1 */
@@ -276,7 +306,8 @@ static void rtcp_send_sr(AVFormatContext *s1, int64_t ntp_time, int bye)
     avio_wb32(s1->pb, s->packet_count);
     avio_wb32(s1->pb, s->octet_count);
 
-    if (s->cname) {
+    if (s->cname)
+    {
         int len = FFMIN(strlen(s->cname), 255);
         avio_w8(s1->pb, (RTP_VERSION << 6) + 1);
         avio_w8(s1->pb, RTCP_SDES);
@@ -291,7 +322,8 @@ static void rtcp_send_sr(AVFormatContext *s1, int64_t ntp_time, int bye)
             avio_w8(s1->pb, 0);
     }
 
-    if (bye) {
+    if (bye)
+    {
         avio_w8(s1->pb, (RTP_VERSION << 6) | 1);
         avio_w8(s1->pb, RTCP_BYE);
         avio_wb16(s1->pb, 1); /* length in words - 1 */
@@ -339,7 +371,8 @@ static int rtp_send_samples(AVFormatContext *s1,
     if ((sample_size_bits % 8) == 0 && ((8 * size) % sample_size_bits) != 0)
         return AVERROR(EINVAL);
     n = 0;
-    while (size > 0) {
+    while (size > 0)
+    {
         s->buf_ptr = s->buf;
         len = FFMIN(max_packet_size, size);
 
@@ -365,21 +398,26 @@ static void rtp_send_mpegaudio(AVFormatContext *s1,
 
     /* test if we must flush because not enough space */
     len = (s->buf_ptr - s->buf);
-    if ((len + size) > max_packet_size) {
-        if (len > 4) {
+    if ((len + size) > max_packet_size)
+    {
+        if (len > 4)
+        {
             ff_rtp_send_data(s1, s->buf, s->buf_ptr - s->buf, 0);
             s->buf_ptr = s->buf + 4;
         }
     }
-    if (s->buf_ptr == s->buf + 4) {
+    if (s->buf_ptr == s->buf + 4)
+    {
         s->timestamp = s->cur_timestamp;
     }
 
     /* add the packet */
-    if (size > max_packet_size) {
+    if (size > max_packet_size)
+    {
         /* big packet: fragment */
         count = 0;
-        while (size > 0) {
+        while (size > 0)
+        {
             len = max_packet_size - 4;
             if (len > size)
                 len = size;
@@ -394,8 +432,11 @@ static void rtp_send_mpegaudio(AVFormatContext *s1,
             buf1 += len;
             count += len;
         }
-    } else {
-        if (s->buf_ptr == s->buf + 4) {
+    }
+    else
+    {
+        if (s->buf_ptr == s->buf + 4)
+        {
             /* no fragmentation possible */
             s->buf[0] = 0;
             s->buf[1] = 0;
@@ -415,7 +456,8 @@ static void rtp_send_raw(AVFormatContext *s1,
 
     max_packet_size = s->max_payload_size;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         len = max_packet_size;
         if (len > size)
             len = size;
@@ -436,7 +478,8 @@ static void rtp_send_mpegts_raw(AVFormatContext *s1,
     int len, out_len;
 
     s->timestamp = s->cur_timestamp;
-    while (size >= TS_PACKET_SIZE) {
+    while (size >= TS_PACKET_SIZE)
+    {
         len = s->max_payload_size - (s->buf_ptr - s->buf);
         if (len > size)
             len = size;
@@ -446,7 +489,8 @@ static void rtp_send_mpegts_raw(AVFormatContext *s1,
         s->buf_ptr += len;
 
         out_len = s->buf_ptr - s->buf;
-        if (out_len >= s->max_payload_size) {
+        if (out_len >= s->max_payload_size)
+        {
             ff_rtp_send_data(s1, s->buf, out_len, 0);
             s->buf_ptr = s->buf;
         }
@@ -461,15 +505,18 @@ static int rtp_send_ilbc(AVFormatContext *s1, const uint8_t *buf, int size)
     int frame_size = st->codec->block_align;
     int frames = size / frame_size;
 
-    while (frames > 0) {
+    while (frames > 0)
+    {
         if (s->num_frames > 0 &&
-            av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
-                          s1->max_delay, AV_TIME_BASE_Q) >= 0) {
+                av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
+                              s1->max_delay, AV_TIME_BASE_Q) >= 0)
+        {
             ff_rtp_send_data(s1, s->buf, s->buf_ptr - s->buf, 1);
             s->num_frames = 0;
         }
 
-        if (!s->num_frames) {
+        if (!s->num_frames)
+        {
             s->buf_ptr = s->buf;
             s->timestamp = s->cur_timestamp;
         }
@@ -480,7 +527,8 @@ static int rtp_send_ilbc(AVFormatContext *s1, const uint8_t *buf, int size)
         buf              += frame_size;
         s->cur_timestamp += frame_duration;
 
-        if (s->num_frames == s->max_frames_per_packet) {
+        if (s->num_frames == s->max_frames_per_packet)
+        {
             ff_rtp_send_data(s1, s->buf, s->buf_ptr - s->buf, 1);
             s->num_frames = 0;
         }
@@ -498,17 +546,19 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
     av_log(s1, AV_LOG_TRACE, "%d: write len=%d\n", pkt->stream_index, size);
 
     rtcp_bytes = ((s->octet_count - s->last_octet_count) * RTCP_TX_RATIO_NUM) /
-        RTCP_TX_RATIO_DEN;
+                 RTCP_TX_RATIO_DEN;
     if ((s->first_packet || ((rtcp_bytes >= RTCP_SR_SIZE) &&
-                            (ff_ntp_time() - s->last_rtcp_ntp_time > 5000000))) &&
-        !(s->flags & FF_RTP_FLAG_SKIP_RTCP)) {
+                             (ff_ntp_time() - s->last_rtcp_ntp_time > 5000000))) &&
+            !(s->flags & FF_RTP_FLAG_SKIP_RTCP))
+    {
         rtcp_send_sr(s1, ff_ntp_time(), 0);
         s->last_octet_count = s->octet_count;
         s->first_packet = 0;
     }
     s->cur_timestamp = s->base_timestamp + pkt->pts;
 
-    switch(st->codec->codec_id) {
+    switch(st->codec->codec_id)
+    {
     case AV_CODEC_ID_PCM_MULAW:
     case AV_CODEC_ID_PCM_ALAW:
     case AV_CODEC_ID_PCM_U8:
@@ -556,7 +606,8 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
         ff_rtp_send_h261(s1, pkt->data, size);
         break;
     case AV_CODEC_ID_H263:
-        if (s->flags & FF_RTP_FLAG_RFC2190) {
+        if (s->flags & FF_RTP_FLAG_RFC2190)
+        {
             int mb_info_size = 0;
             const uint8_t *mb_info =
                 av_packet_get_side_data(pkt, AV_PKT_DATA_H263_MB_INFO,
@@ -564,7 +615,7 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
             ff_rtp_send_h263_rfc2190(s1, pkt->data, size, mb_info, mb_info_size);
             break;
         }
-        /* Fallthrough */
+    /* Fallthrough */
     case AV_CODEC_ID_H263P:
         ff_rtp_send_h263(s1, pkt->data, size);
         break;
@@ -585,13 +636,14 @@ static int rtp_write_packet(AVFormatContext *s1, AVPacket *pkt)
         ff_rtp_send_jpeg(s1, pkt->data, size);
         break;
     case AV_CODEC_ID_OPUS:
-        if (size > s->max_payload_size) {
+        if (size > s->max_payload_size)
+        {
             av_log(s1, AV_LOG_ERROR,
                    "Packet size %d too large for max RTP payload size %d\n",
                    size, s->max_payload_size);
             return AVERROR(EINVAL);
         }
-        /* Intentional fallthrough */
+    /* Intentional fallthrough */
     default:
         /* better than nothing : send the codec raw data */
         rtp_send_raw(s1, pkt->data, size);
@@ -613,7 +665,8 @@ static int rtp_write_trailer(AVFormatContext *s1)
     return 0;
 }
 
-AVOutputFormat ff_rtp_muxer = {
+AVOutputFormat ff_rtp_muxer =
+{
     .name              = "rtp",
     .long_name         = NULL_IF_CONFIG_SMALL("RTP output"),
     .priv_data_size    = sizeof(RTPMuxContext),

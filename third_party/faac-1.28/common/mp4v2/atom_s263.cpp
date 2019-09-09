@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
@@ -27,52 +27,53 @@
 
 #include "mp4common.h"
 
-MP4S263Atom::MP4S263Atom() 
-	: MP4Atom("s263") 
+MP4S263Atom::MP4S263Atom()
+    : MP4Atom("s263")
 {
-	AddReserved("reserved1", 6); /* 0 */
+    AddReserved("reserved1", 6); /* 0 */
 
-	AddProperty( /* 1 */
-		new MP4Integer16Property("dataReferenceIndex"));
+    AddProperty( /* 1 */
+        new MP4Integer16Property("dataReferenceIndex"));
 
-	AddReserved("reserved2", 16); /* 2 */
+    AddReserved("reserved2", 16); /* 2 */
 
-	AddProperty( /* 3 */
-		new MP4Integer16Property("width"));
+    AddProperty( /* 3 */
+        new MP4Integer16Property("width"));
 
-	AddProperty( /* 4 */
-		new MP4Integer16Property("height"));
+    AddProperty( /* 4 */
+        new MP4Integer16Property("height"));
 
-	AddReserved("reserved3", 50); /* 5 */
+    AddReserved("reserved3", 50); /* 5 */
 
 
-	ExpectChildAtom("d263", Required, OnlyOne);
+    ExpectChildAtom("d263", Required, OnlyOne);
 }
 
 void MP4S263Atom::Generate()
 {
-	MP4Atom::Generate();
+    MP4Atom::Generate();
 
-	((MP4Integer16Property*)m_pProperties[1])->SetValue(1);
+    ((MP4Integer16Property*)m_pProperties[1])->SetValue(1);
 
-	// property reserved2 has non-zero fixed values
-	static u_int8_t reserved3[50] = {
-		0x00, 0x48, 0x00, 0x00, 
-		0x00, 0x48, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x01, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x24, 
-		0xFF, 0xFF
-	};
-	m_pProperties[5]->SetReadOnly(false);
-	((MP4BytesProperty*)m_pProperties[5])->
-		SetValue(reserved3, sizeof(reserved3));
-	m_pProperties[5]->SetReadOnly(true);
+    // property reserved2 has non-zero fixed values
+    static u_int8_t reserved3[50] =
+    {
+        0x00, 0x48, 0x00, 0x00,
+        0x00, 0x48, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x01, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x24,
+        0xFF, 0xFF
+    };
+    m_pProperties[5]->SetReadOnly(false);
+    ((MP4BytesProperty*)m_pProperties[5])->
+    SetValue(reserved3, sizeof(reserved3));
+    m_pProperties[5]->SetReadOnly(true);
 }

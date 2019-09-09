@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 Georg Martius <georg.martius@web.de>
  * Copyright (C) 2010 Daniel G. Taylor <dan@programmer-art.org>
  *
@@ -36,7 +36,8 @@
  *                      0, 0, 1};
  */
 
-enum InterpolateMethod {
+enum InterpolateMethod
+{
     INTERPOLATE_NEAREST,        //< Nearest-neighbor (fast)
     INTERPOLATE_BILINEAR,       //< Bilinear
     INTERPOLATE_BIQUADRATIC,    //< Biquadratic (best)
@@ -48,7 +49,8 @@ enum InterpolateMethod {
 #define INTERPOLATE_FAST    INTERPOLATE_NEAREST
 #define INTERPOLATE_BEST    INTERPOLATE_BIQUADRATIC
 
-enum FillMethod {
+enum FillMethod
+{
     FILL_BLANK,         //< Fill zeroes at blank locations
     FILL_ORIGINAL,      //< Original image at blank locations
     FILL_CLAMP,         //< Extruded edge value at blank locations
@@ -119,9 +121,9 @@ void avfilter_mul_matrix(const float *m1, float scalar, float *result);
  * @return negative on error
  */
 int avfilter_transform(const uint8_t *src, uint8_t *dst,
-                        int src_stride, int dst_stride,
-                        int width, int height, const float *matrix,
-                        enum InterpolateMethod interpolate,
-                        enum FillMethod fill);
+                       int src_stride, int dst_stride,
+                       int width, int height, const float *matrix,
+                       enum InterpolateMethod interpolate,
+                       enum FillMethod fill);
 
 #endif /* AVFILTER_TRANSFORM_H */

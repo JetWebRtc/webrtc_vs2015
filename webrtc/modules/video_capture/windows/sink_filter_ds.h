@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -62,16 +62,28 @@ public:
     void ProcessCapturedFrame(unsigned char* pBuffer, size_t length,
                               const VideoCaptureCapability& frameInfo);
     //  explicit receiver lock aquisition and release
-    void LockReceive()  { m_crtRecv.Lock();}
-    void UnlockReceive() {m_crtRecv.Unlock();}
+    void LockReceive()
+    {
+        m_crtRecv.Lock();
+    }
+    void UnlockReceive()
+    {
+        m_crtRecv.Unlock();
+    }
     //  explicit filter lock aquisition and release
-    void LockFilter() {m_crtFilter.Lock();}
-    void UnlockFilter() { m_crtFilter.Unlock(); }
+    void LockFilter()
+    {
+        m_crtFilter.Lock();
+    }
+    void UnlockFilter()
+    {
+        m_crtFilter.Unlock();
+    }
     void SetFilterGraph(IGraphBuilder* graph); // Used if EVR
 
     //  --------------------------------------------------------------------
     //  COM interfaces
-DECLARE_IUNKNOWN    ;
+    DECLARE_IUNKNOWN    ;
     STDMETHODIMP SetMatchingMediaType(const VideoCaptureCapability& capability);
 
     //  --------------------------------------------------------------------

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,22 +12,26 @@
 
 #include "webrtc/tools/event_log_visualizer/plot_base.h"
 
-namespace webrtc {
-namespace plotting {
+namespace webrtc
+{
+namespace plotting
+{
 
-class PythonPlot final : public Plot {
- public:
-  PythonPlot();
-  ~PythonPlot() override;
-  void Draw() override;
+class PythonPlot final : public Plot
+{
+public:
+    PythonPlot();
+    ~PythonPlot() override;
+    void Draw() override;
 };
 
-class PythonPlotCollection final : public PlotCollection {
- public:
-  PythonPlotCollection();
-  ~PythonPlotCollection() override;
-  void Draw() override;
-  Plot* AppendNewPlot() override;
+class PythonPlotCollection final : public PlotCollection
+{
+public:
+    PythonPlotCollection();
+    ~PythonPlotCollection() override;
+    void Draw() override;
+    Plot* AppendNewPlot() override;
 };
 
 }  // namespace plotting

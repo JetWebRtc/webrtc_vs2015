@@ -1,4 +1,4 @@
-/************************* MPEG-2 NBC Audio Decoder **************************
+﻿/************************* MPEG-2 NBC Audio Decoder **************************
  *                                                                           *
 "This software module was originally developed in the course of
 development of the MPEG-2 NBC/MPEG-4 Audio standard ISO/IEC 13818-7,
@@ -62,7 +62,8 @@ void GetChannelInfo(ChannelInfo *channelInfo, int numChannels, int useLfe)
 
 
     /* First element is sce, except for 2 channel case */
-    if (numChannelsLeft != 2) {
+    if (numChannelsLeft != 2)
+    {
         channelInfo[numChannels-numChannelsLeft].present = 1;
         channelInfo[numChannels-numChannelsLeft].tag = sceTag++;
         channelInfo[numChannels-numChannelsLeft].cpe = 0;
@@ -71,7 +72,8 @@ void GetChannelInfo(ChannelInfo *channelInfo, int numChannels, int useLfe)
     }
 
     /* Next elements are cpe's */
-    while (numChannelsLeft > 1) {
+    while (numChannelsLeft > 1)
+    {
         /* Left channel info */
         channelInfo[numChannels-numChannelsLeft].present = 1;
         channelInfo[numChannels-numChannelsLeft].tag = cpeTag++;
@@ -93,13 +95,17 @@ void GetChannelInfo(ChannelInfo *channelInfo, int numChannels, int useLfe)
     }
 
     /* Is there another channel left ? */
-    if (numChannelsLeft) {
-        if (useLfe) {
+    if (numChannelsLeft)
+    {
+        if (useLfe)
+        {
             channelInfo[numChannels-numChannelsLeft].present = 1;
             channelInfo[numChannels-numChannelsLeft].tag = lfeTag++;
             channelInfo[numChannels-numChannelsLeft].cpe = 0;
             channelInfo[numChannels-numChannelsLeft].lfe = 1;
-        } else {
+        }
+        else
+        {
             channelInfo[numChannels-numChannelsLeft].present = 1;
             channelInfo[numChannels-numChannelsLeft].tag = sceTag++;
             channelInfo[numChannels-numChannelsLeft].cpe = 0;

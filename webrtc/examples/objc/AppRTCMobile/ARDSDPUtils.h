@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,6 +19,6 @@
 // codec list if it exists in the sdp.
 + (RTCSessionDescription *)
     descriptionForDescription:(RTCSessionDescription *)description
-          preferredVideoCodec:(NSString *)codec;
+    preferredVideoCodec:(NSString *)codec;
 
 @end

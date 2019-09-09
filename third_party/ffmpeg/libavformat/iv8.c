@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -26,11 +26,11 @@ static int probe(AVProbeData *p)
 {
     // the single file I have starts with that, I do not know if others do, too
     if(   p->buf[0] == 1
-       && p->buf[1] == 1
-       && p->buf[2] == 3
-       && p->buf[3] == 0xB8
-       && p->buf[4] == 0x80
-       && p->buf[5] == 0x60
+            && p->buf[1] == 1
+            && p->buf[2] == 3
+            && p->buf[3] == 0xB8
+            && p->buf[4] == 0x80
+            && p->buf[5] == 0x60
       )
         return AVPROBE_SCORE_MAX-2;
 
@@ -60,14 +60,15 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     int first_pkt      = 0;
     int frame_complete = 0;
 
-    while (!frame_complete) {
+    while (!frame_complete)
+    {
 
         type  = avio_rb16(s->pb); // 257 or 258
         size  = avio_rb16(s->pb);
         flags = avio_rb16(s->pb); //some flags, 0x80 indicates end of frame
-                avio_rb16(s->pb); //packet number
+        avio_rb16(s->pb); //packet number
         pts   = avio_rb32(s->pb);
-                avio_rb32(s->pb); //6A 13 E3 88
+        avio_rb32(s->pb); //6A 13 E3 88
 
         frame_complete = flags & 0x80;
 
@@ -75,28 +76,34 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
         if (size < 1)
             return -1;
 
-        if (type == 258) {
+        if (type == 258)
+        {
             avio_skip(s->pb, size);
             frame_complete = 0;
             continue;
         }
 
-        if (!first_pkt) {
+        if (!first_pkt)
+        {
             ret = av_get_packet(s->pb, pkt, size);
             if (ret < 0)
                 return ret;
             first_pkt = 1;
             pkt->pts  = pts;
             pkt->pos -= 16;
-        } else {
+        }
+        else
+        {
             ret = av_append_packet(s->pb, pkt, size);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(s, AV_LOG_ERROR, "failed to grow packet\n");
                 av_free_packet(pkt);
                 return ret;
             }
         }
-        if (ret < size) {
+        if (ret < size)
+        {
             av_log(s, AV_LOG_ERROR, "Truncated packet! Read %d of %d bytes\n",
                    ret, size);
             pkt->flags |= AV_PKT_FLAG_CORRUPT;
@@ -108,7 +115,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_iv8_demuxer = {
+AVInputFormat ff_iv8_demuxer =
+{
     .name           = "iv8",
     .long_name      = NULL_IF_CONFIG_SMALL("IndigoVision 8000 video"),
     .read_probe     = probe,

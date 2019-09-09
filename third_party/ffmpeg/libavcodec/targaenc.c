@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Targa (.tga) image encoder
  * Copyright (c) 2007 Bobby Bingham
  *
@@ -47,9 +47,11 @@ static int targa_encode_rle(uint8_t *outbuf, int out_size, const AVFrame *pic,
 
     out = outbuf;
 
-    for(y = 0; y < h; y ++) {
+    for(y = 0; y < h; y ++)
+    {
         ret = ff_rle_encode(out, out_size, pic->data[0] + pic->linesize[0] * y, bpp, w, 0x7f, 0, -1, 0);
-        if(ret == -1){
+        if(ret == -1)
+        {
             return -1;
         }
         out+= ret;
@@ -65,7 +67,8 @@ static int targa_encode_normal(uint8_t *outbuf, const AVFrame *pic, int bpp, int
     uint8_t *out = outbuf;
     uint8_t *ptr = pic->data[0];
 
-    for(i=0; i < h; i++) {
+    for(i=0; i < h; i++)
+    {
         memcpy(out, ptr, n);
         out += n;
         ptr += pic->linesize[0];
@@ -80,7 +83,8 @@ static int targa_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     int bpp, picsize, datasize = -1, ret, i;
     uint8_t *out;
 
-    if(avctx->width > 0xffff || avctx->height > 0xffff) {
+    if(avctx->width > 0xffff || avctx->height > 0xffff)
+    {
         av_log(avctx, AV_LOG_ERROR, "image dimensions too large\n");
         return AVERROR(EINVAL);
     }
@@ -98,11 +102,14 @@ static int targa_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     out = pkt->data + 18;  /* skip past the header we write */
 
     avctx->bits_per_coded_sample = av_get_bits_per_pixel(av_pix_fmt_desc_get(avctx->pix_fmt));
-    switch(avctx->pix_fmt) {
-    case AV_PIX_FMT_PAL8: {
+    switch(avctx->pix_fmt)
+    {
+    case AV_PIX_FMT_PAL8:
+    {
         int pal_bpp = 24; /* Only write 32bit palette if there is transparency information */
         for (i = 0; i < 256; i++)
-            if (AV_RN32(p->data[1] + 4 * i) >> 24 != 0xFF) {
+            if (AV_RN32(p->data[1] + 4 * i) >> 24 != 0xFF)
+            {
                 pal_bpp = 32;
                 break;
             }
@@ -112,14 +119,17 @@ static int targa_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         pkt->data[7]  = pal_bpp;    /* palette contains pal_bpp bit entries */
         pkt->data[16] = 8;          /* bpp */
         for (i = 0; i < 256; i++)
-            if (pal_bpp == 32) {
+            if (pal_bpp == 32)
+            {
                 AV_WL32(pkt->data + 18 + 4 * i, *(uint32_t *)(p->data[1] + i * 4));
-            } else {
-            AV_WL24(pkt->data + 18 + 3 * i, *(uint32_t *)(p->data[1] + i * 4));
+            }
+            else
+            {
+                AV_WL24(pkt->data + 18 + 3 * i, *(uint32_t *)(p->data[1] + i * 4));
             }
         out += 32 * pal_bpp;        /* skip past the palette we just output */
         break;
-        }
+    }
     case AV_PIX_FMT_GRAY8:
         pkt->data[2]  = TGA_BW;     /* uncompressed grayscale image */
         avctx->bits_per_coded_sample = 0x28;
@@ -128,7 +138,7 @@ static int targa_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     case AV_PIX_FMT_RGB555LE:
         pkt->data[2]  = TGA_RGB;    /* uncompressed true-color image */
         avctx->bits_per_coded_sample =
-        pkt->data[16] = 16;         /* bpp */
+            pkt->data[16] = 16;         /* bpp */
         break;
     case AV_PIX_FMT_BGR24:
         pkt->data[2]  = TGA_RGB;    /* uncompressed true-color image */
@@ -173,16 +183,17 @@ static int targa_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 static av_cold int targa_encode_init(AVCodecContext *avctx)
 {
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->key_frame = 1;
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     return 0;
 }
 
-AVCodec ff_targa_encoder = {
+AVCodec ff_targa_encoder =
+{
     .name           = "targa",
     .long_name      = NULL_IF_CONFIG_SMALL("Truevision Targa image"),
     .type           = AVMEDIA_TYPE_VIDEO,

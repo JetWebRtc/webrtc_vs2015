@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,6 +29,6 @@ void WebRtcIlbcfix_CbMemEnergy(
     int16_t *energyShifts, /* (o) Shift value of the energy */
     int scale,   /* (i) The scaling of all energy values */
     size_t base_size  /* (i) Index to where energy values should be stored */
-                               );
+);
 
 #endif

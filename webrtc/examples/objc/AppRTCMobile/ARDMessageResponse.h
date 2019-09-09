@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,16 +10,17 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, ARDMessageResultType) {
-  kARDMessageResultTypeUnknown,
-  kARDMessageResultTypeSuccess,
-  kARDMessageResultTypeInvalidRoom,
-  kARDMessageResultTypeInvalidClient
+typedef NS_ENUM(NSInteger, ARDMessageResultType)
+{
+    kARDMessageResultTypeUnknown,
+    kARDMessageResultTypeSuccess,
+    kARDMessageResultTypeInvalidRoom,
+    kARDMessageResultTypeInvalidClient
 };
 
 @interface ARDMessageResponse : NSObject
 
-@property(nonatomic, readonly) ARDMessageResultType result;
+    @property(nonatomic, readonly) ARDMessageResultType result;
 
 + (ARDMessageResponse *)responseFromJSONData:(NSData *)data;
 

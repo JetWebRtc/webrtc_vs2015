@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP/Quicktime support.
  * Copyright (c) 2009 Ronald S. Bultje
  *
@@ -33,7 +33,8 @@
 #include "isom.h"
 #include "libavcodec/get_bits.h"
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVPacket pkt;
     int bytes_per_frame, remaining;
     uint32_t timestamp;
@@ -50,7 +51,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         has_marker_bit = flags & RTP_FLAG_MARKER,
         keyframe;
 
-    if (qt->remaining) {
+    if (qt->remaining)
+    {
         int num = qt->pkt.size / qt->bytes_per_frame;
 
         if (av_new_packet(pkt, qt->bytes_per_frame))
@@ -60,7 +62,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         memcpy(pkt->data,
                &qt->pkt.data[(num - qt->remaining) * qt->bytes_per_frame],
                qt->bytes_per_frame);
-        if (--qt->remaining == 0) {
+        if (--qt->remaining == 0)
+        {
             av_freep(&qt->pkt.data);
             qt->pkt.size = 0;
         }
@@ -85,7 +88,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
     has_packet_info     = get_bits1(&gb);
     skip_bits(&gb, 23); // reserved:7, cache payload info:1, payload ID:15
 
-    if (has_payload_desc) {
+    if (has_payload_desc)
+    {
         int data_len, pos, is_start, is_finish;
         uint32_t tag;
 
@@ -96,7 +100,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         skip_bits(&gb, 2); // has non-I frames:1, is sparse:1
         is_start  = get_bits1(&gb);
         is_finish = get_bits1(&gb);
-        if (!is_start || !is_finish) {
+        if (!is_start || !is_finish)
+        {
             avpriv_request_sample(s, "RTP-X-QT with payload description "
                                   "split over several packets");
             return AVERROR_PATCHWELCOME;
@@ -107,8 +112,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         avio_seek(&pb, pos + 4, SEEK_SET);
         tag = avio_rl32(&pb);
         if ((st->codec->codec_type == AVMEDIA_TYPE_VIDEO &&
-                 tag != MKTAG('v','i','d','e')) ||
-            (st->codec->codec_type == AVMEDIA_TYPE_AUDIO &&
+                tag != MKTAG('v','i','d','e')) ||
+                (st->codec->codec_type == AVMEDIA_TYPE_AUDIO &&
                  tag != MKTAG('s','o','u','n')))
             return AVERROR_INVALIDDATA;
         avpriv_set_pts_info(st, 32, 1, avio_rb32(&pb));
@@ -116,15 +121,18 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         if (pos + data_len > len)
             return AVERROR_INVALIDDATA;
         /* TLVs */
-        while (avio_tell(&pb) + 4 < pos + data_len) {
+        while (avio_tell(&pb) + 4 < pos + data_len)
+        {
             int tlv_len = avio_rb16(&pb);
             tag = avio_rl16(&pb);
             if (avio_tell(&pb) + tlv_len > pos + data_len)
                 return AVERROR_INVALIDDATA;
 
 #define MKTAG16(a,b) MKTAG(a,b,0,0)
-            switch (tag) {
-            case MKTAG16('s','d'): {
+            switch (tag)
+            {
+            case MKTAG16('s','d'):
+            {
                 MOVStreamContext *msc;
                 void *priv_data = st->priv_data;
                 int nb_streams = s->nb_streams;
@@ -133,7 +141,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
                     return AVERROR(ENOMEM);
                 mc->fc = s;
                 st->priv_data = msc = av_mallocz(sizeof(MOVStreamContext));
-                if (!msc) {
+                if (!msc)
+                {
                     av_free(mc);
                     st->priv_data = priv_data;
                     return AVERROR(ENOMEM);
@@ -157,10 +166,12 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
 
         /* 32-bit alignment */
         avio_skip(&pb, ((avio_tell(&pb) + 3) & ~3) - avio_tell(&pb));
-    } else
+    }
+    else
         avio_seek(&pb, 4, SEEK_SET);
 
-    if (has_packet_info) {
+    if (has_packet_info)
+    {
         avpriv_request_sample(s, "RTP-X-QT with packet-specific info");
         return AVERROR_PATCHWELCOME;
     }
@@ -169,16 +180,21 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
     if (alen <= 0)
         return AVERROR_INVALIDDATA;
 
-    switch (packing_scheme) {
+    switch (packing_scheme)
+    {
     case 3: /* one data packet spread over 1 or multiple RTP packets */
-        if (qt->pkt.size > 0 && qt->timestamp == *timestamp) {
+        if (qt->pkt.size > 0 && qt->timestamp == *timestamp)
+        {
             int err;
             if ((err = av_reallocp(&qt->pkt.data, qt->pkt.size + alen +
-                                   AV_INPUT_BUFFER_PADDING_SIZE)) < 0) {
+                                   AV_INPUT_BUFFER_PADDING_SIZE)) < 0)
+            {
                 qt->pkt.size = 0;
                 return err;
             }
-        } else {
+        }
+        else
+        {
             av_freep(&qt->pkt.data);
             av_init_packet(&qt->pkt);
             qt->pkt.data = av_realloc(NULL, alen + AV_INPUT_BUFFER_PADDING_SIZE);
@@ -189,7 +205,8 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         }
         memcpy(qt->pkt.data + qt->pkt.size, buf + avio_tell(&pb), alen);
         qt->pkt.size += alen;
-        if (has_marker_bit) {
+        if (has_marker_bit)
+        {
             int ret = av_packet_from_data(pkt, qt->pkt.data, qt->pkt.size);
             if (ret < 0)
                 return ret;
@@ -205,7 +222,7 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
 
     case 1: /* constant packet size, multiple packets per RTP packet */
         if (qt->bytes_per_frame == 0 ||
-            alen % qt->bytes_per_frame != 0)
+                alen % qt->bytes_per_frame != 0)
             return AVERROR_INVALIDDATA; /* wrongly padded */
         qt->remaining = (alen / qt->bytes_per_frame) - 1;
         if (av_new_packet(pkt, qt->bytes_per_frame))
@@ -213,10 +230,12 @@ static int qt_rtp_parse_packet(AVFormatContext *s, PayloadContext *qt,
         memcpy(pkt->data, buf + avio_tell(&pb), qt->bytes_per_frame);
         pkt->flags = keyframe ? AV_PKT_FLAG_KEY : 0;
         pkt->stream_index = st->index;
-        if (qt->remaining > 0) {
+        if (qt->remaining > 0)
+        {
             av_freep(&qt->pkt.data);
             qt->pkt.data = av_realloc(NULL, qt->remaining * qt->bytes_per_frame);
-            if (!qt->pkt.data) {
+            if (!qt->pkt.data)
+            {
                 av_free_packet(pkt);
                 return AVERROR(ENOMEM);
             }

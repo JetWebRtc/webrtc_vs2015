@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libquicktime yuv4 encoder
  *
  * Copyright (c) 2011 Carl Eugen Hoyos
@@ -43,8 +43,10 @@ static int yuv4_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     u = pic->data[1];
     v = pic->data[2];
 
-    for (i = 0; i < avctx->height + 1 >> 1; i++) {
-        for (j = 0; j < avctx->width + 1 >> 1; j++) {
+    for (i = 0; i < avctx->height + 1 >> 1; i++)
+    {
+        for (j = 0; j < avctx->width + 1 >> 1; j++)
+        {
             *dst++ = u[j] ^ 0x80;
             *dst++ = v[j] ^ 0x80;
             *dst++ = y[                   2 * j    ];
@@ -67,7 +69,8 @@ static av_cold int yuv4_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_yuv4_encoder = {
+AVCodec ff_yuv4_encoder =
+{
     .name         = "yuv4",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed 4:2:0"),
     .type         = AVMEDIA_TYPE_VIDEO,

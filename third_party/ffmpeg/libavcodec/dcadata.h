@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA compatible decoder data
  *
  * This file is part of FFmpeg.

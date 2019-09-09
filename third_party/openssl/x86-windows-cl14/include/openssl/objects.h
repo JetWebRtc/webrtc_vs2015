@@ -1,4 +1,4 @@
-/* crypto/objects/objects.h */
+﻿/* crypto/objects/objects.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -981,7 +981,8 @@
 extern "C" {
 #endif
 
-typedef struct obj_name_st {
+typedef struct obj_name_st
+{
     int type;
     int alias;
     const char *name;

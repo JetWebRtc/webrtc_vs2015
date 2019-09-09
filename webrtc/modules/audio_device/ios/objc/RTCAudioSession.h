@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -40,13 +40,13 @@ RTC_EXPORT
  *  interruption event.
  */
 - (void)audioSessionDidEndInterruption:(RTCAudioSession *)session
-                   shouldResumeSession:(BOOL)shouldResumeSession;
+    shouldResumeSession:(BOOL)shouldResumeSession;
 
 /** Called on a system notification thread when AVAudioSession changes the
  *  route.
  */
 - (void)audioSessionDidChangeRoute:(RTCAudioSession *)session
-           reason:(AVAudioSessionRouteChangeReason)reason
+    reason:(AVAudioSessionRouteChangeReason)reason
     previousRoute:(AVAudioSessionRouteDescription *)previousRoute;
 
 /** Called on a system notification thread when AVAudioSession media server
@@ -86,11 +86,11 @@ RTC_EXPORT
 RTC_EXPORT
 @interface RTCAudioSession : NSObject
 
-/** Convenience property to access the AVAudioSession singleton. Callers should
- *  not call setters on AVAudioSession directly, but other method invocations
- *  are fine.
- */
-@property(nonatomic, readonly) AVAudioSession *session;
+    /** Convenience property to access the AVAudioSession singleton. Callers should
+     *  not call setters on AVAudioSession directly, but other method invocations
+     *  are fine.
+     */
+    @property(nonatomic, readonly) AVAudioSession *session;
 
 /** Our best guess at whether the session is active based on results of calls to
  *  AVAudioSession.
@@ -132,13 +132,13 @@ RTC_EXPORT
 @property(readonly) BOOL inputGainSettable;
 @property(readonly) BOOL inputAvailable;
 @property(readonly, nullable)
-    NSArray<AVAudioSessionDataSourceDescription *> * inputDataSources;
+NSArray<AVAudioSessionDataSourceDescription *> * inputDataSources;
 @property(readonly, nullable)
-  AVAudioSessionDataSourceDescription *inputDataSource;
+AVAudioSessionDataSourceDescription *inputDataSource;
 @property(readonly, nullable)
-    NSArray<AVAudioSessionDataSourceDescription *> * outputDataSources;
+NSArray<AVAudioSessionDataSourceDescription *> * outputDataSources;
 @property(readonly, nullable)
-    AVAudioSessionDataSourceDescription *outputDataSource;
+AVAudioSessionDataSourceDescription *outputDataSource;
 @property(readonly) double sampleRate;
 @property(readonly) double preferredSampleRate;
 @property(readonly) NSInteger inputNumberOfChannels;
@@ -173,51 +173,51 @@ RTC_EXPORT
  *  AVAudioSession.
  */
 - (BOOL)setActive:(BOOL)active
-            error:(NSError **)outError;
+    error:(NSError **)outError;
 
 // The following methods are proxies for the associated methods on
 // AVAudioSession. |lockForConfiguration| must be called before using them
 // otherwise they will fail with kRTCAudioSessionErrorLockRequired.
 
 - (BOOL)setCategory:(NSString *)category
-        withOptions:(AVAudioSessionCategoryOptions)options
-              error:(NSError **)outError;
+    withOptions:(AVAudioSessionCategoryOptions)options
+    error:(NSError **)outError;
 - (BOOL)setMode:(NSString *)mode error:(NSError **)outError;
 - (BOOL)setInputGain:(float)gain error:(NSError **)outError;
 - (BOOL)setPreferredSampleRate:(double)sampleRate error:(NSError **)outError;
 - (BOOL)setPreferredIOBufferDuration:(NSTimeInterval)duration
-                               error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)setPreferredInputNumberOfChannels:(NSInteger)count
-                                    error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)setPreferredOutputNumberOfChannels:(NSInteger)count
-                                     error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)overrideOutputAudioPort:(AVAudioSessionPortOverride)portOverride
-                          error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)setPreferredInput:(AVAudioSessionPortDescription *)inPort
-                    error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)setInputDataSource:(AVAudioSessionDataSourceDescription *)dataSource
-                     error:(NSError **)outError;
+    error:(NSError **)outError;
 - (BOOL)setOutputDataSource:(AVAudioSessionDataSourceDescription *)dataSource
-                      error:(NSError **)outError;
+    error:(NSError **)outError;
 
 @end
 
 @interface RTCAudioSession (Configuration)
 
-/** Applies the configuration to the current session. Attempts to set all
- *  properties even if previous ones fail. Only the last error will be
- *  returned.
- *  |lockForConfiguration| must be called first.
- */
+    /** Applies the configuration to the current session. Attempts to set all
+     *  properties even if previous ones fail. Only the last error will be
+     *  returned.
+     *  |lockForConfiguration| must be called first.
+     */
 - (BOOL)setConfiguration:(RTCAudioSessionConfiguration *)configuration
-                   error:(NSError **)outError;
+    error:(NSError **)outError;
 
 /** Convenience method that calls both setConfiguration and setActive.
  *  |lockForConfiguration| must be called first.
  */
 - (BOOL)setConfiguration:(RTCAudioSessionConfiguration *)configuration
-                  active:(BOOL)active
-                   error:(NSError **)outError;
+    active:(BOOL)active
+    error:(NSError **)outError;
 
 @end
 

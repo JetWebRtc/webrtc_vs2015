@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -42,7 +42,8 @@
 
 #include "encoder_context.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 /*!
  * \brief   request specific memory for SVC
  * \param   pEncCtx     sWelsEncCtx*

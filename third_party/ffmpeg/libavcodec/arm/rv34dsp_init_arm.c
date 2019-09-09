@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Janne Grunau <janne-libav@jannau.net>
  *
  * This file is part of FFmpeg.
@@ -36,7 +36,8 @@ av_cold void ff_rv34dsp_init_arm(RV34DSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         c->rv34_inv_transform    = ff_rv34_inv_transform_noround_neon;
         c->rv34_inv_transform_dc = ff_rv34_inv_transform_noround_dc_neon;
 

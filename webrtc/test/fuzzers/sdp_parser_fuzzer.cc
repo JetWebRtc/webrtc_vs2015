@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,13 +13,15 @@
 
 #include "webrtc/api/jsepsessiondescription.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  std::string message(reinterpret_cast<const char*>(data), size);
-  webrtc::SdpParseError error;
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    std::string message(reinterpret_cast<const char*>(data), size);
+    webrtc::SdpParseError error;
 
-  std::unique_ptr<webrtc::SessionDescriptionInterface> sdp(
-      CreateSessionDescription("offer", message, &error));
+    std::unique_ptr<webrtc::SessionDescriptionInterface> sdp(
+        CreateSessionDescription("offer", message, &error));
 }
 
 }  // namespace webrtc

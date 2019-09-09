@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
  * This file is part of FFmpeg.
@@ -50,13 +50,15 @@ static int vp5_parse_header(VP56Context *s, const uint8_t *buf, int buf_size)
         if(vp56_rac_gets(c, 5) > 5)
             return AVERROR_INVALIDDATA;
         vp56_rac_gets(c, 2);
-        if (vp56_rac_get(c)) {
+        if (vp56_rac_get(c))
+        {
             av_log(s->avctx, AV_LOG_ERROR, "interlacing not supported\n");
             return AVERROR_PATCHWELCOME;
         }
         rows = vp56_rac_gets(c, 8);  /* number of stored macroblock rows */
         cols = vp56_rac_gets(c, 8);  /* number of stored macroblock cols */
-        if (!rows || !cols) {
+        if (!rows || !cols)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "Invalid size %dx%d\n",
                    cols << 4, rows << 4);
             return AVERROR_INVALIDDATA;
@@ -65,14 +67,16 @@ static int vp5_parse_header(VP56Context *s, const uint8_t *buf, int buf_size)
         vp56_rac_gets(c, 8);  /* number of displayed macroblock cols */
         vp56_rac_gets(c, 2);
         if (!s->macroblocks || /* first frame */
-            16*cols != s->avctx->coded_width ||
-            16*rows != s->avctx->coded_height) {
+                16*cols != s->avctx->coded_width ||
+                16*rows != s->avctx->coded_height)
+        {
             int ret = ff_set_dimensions(s->avctx, 16 * cols, 16 * rows);
             if (ret < 0)
                 return ret;
             return VP56_SIZE_CHANGE;
         }
-    } else if (!s->macroblocks)
+    }
+    else if (!s->macroblocks)
         return AVERROR_INVALIDDATA;
     return 0;
 }
@@ -83,9 +87,11 @@ static void vp5_parse_vector_adjustment(VP56Context *s, VP56mv *vect)
     VP56Model *model = s->modelp;
     int comp, di;
 
-    for (comp=0; comp<2; comp++) {
+    for (comp=0; comp<2; comp++)
+    {
         int delta = 0;
-        if (vp56_rac_get_prob_branchy(c, model->vector_dct[comp])) {
+        if (vp56_rac_get_prob_branchy(c, model->vector_dct[comp]))
+        {
             int sign = vp56_rac_get_prob(c, model->vector_sig[comp]);
             di  = vp56_rac_get_prob(c, model->vector_pdi[comp][0]);
             di |= vp56_rac_get_prob(c, model->vector_pdi[comp][1]) << 1;
@@ -107,7 +113,8 @@ static void vp5_parse_vector_models(VP56Context *s)
     VP56Model *model = s->modelp;
     int comp, node;
 
-    for (comp=0; comp<2; comp++) {
+    for (comp=0; comp<2; comp++)
+    {
         if (vp56_rac_get_prob_branchy(c, vp5_vmc_pct[comp][0]))
             model->vector_dct[comp] = vp56_rac_gets_nn(c, 7);
         if (vp56_rac_get_prob_branchy(c, vp5_vmc_pct[comp][1]))
@@ -137,10 +144,13 @@ static int vp5_parse_coeff_models(VP56Context *s)
 
     for (pt=0; pt<2; pt++)
         for (node=0; node<11; node++)
-            if (vp56_rac_get_prob_branchy(c, vp5_dccv_pct[pt][node])) {
+            if (vp56_rac_get_prob_branchy(c, vp5_dccv_pct[pt][node]))
+            {
                 def_prob[node] = vp56_rac_gets_nn(c, 7);
                 model->coeff_dccv[pt][node] = def_prob[node];
-            } else if (s->frames[VP56_FRAME_CURRENT]->key_frame) {
+            }
+            else if (s->frames[VP56_FRAME_CURRENT]->key_frame)
+            {
                 model->coeff_dccv[pt][node] = def_prob[node];
             }
 
@@ -148,10 +158,13 @@ static int vp5_parse_coeff_models(VP56Context *s)
         for (pt=0; pt<2; pt++)
             for (cg=0; cg<6; cg++)
                 for (node=0; node<11; node++)
-                    if (vp56_rac_get_prob_branchy(c, vp5_ract_pct[ct][pt][cg][node])) {
+                    if (vp56_rac_get_prob_branchy(c, vp5_ract_pct[ct][pt][cg][node]))
+                    {
                         def_prob[node] = vp56_rac_gets_nn(c, 7);
                         model->coeff_ract[pt][ct][cg][node] = def_prob[node];
-                    } else if (s->frames[VP56_FRAME_CURRENT]->key_frame) {
+                    }
+                    else if (s->frames[VP56_FRAME_CURRENT]->key_frame)
+                    {
                         model->coeff_ract[pt][ct][cg][node] = def_prob[node];
                     }
 
@@ -181,7 +194,8 @@ static void vp5_parse_coeff(VP56Context *s)
     int b, i, cg, idx, ctx, ctx_last;
     int pt = 0;    /* plane type (0 for Y, 1 for U or V) */
 
-    for (b=0; b<6; b++) {
+    for (b=0; b<6; b++)
+    {
         int ct = 1;    /* code type */
 
         if (b > 3) pt = 1;
@@ -192,28 +206,39 @@ static void vp5_parse_coeff(VP56Context *s)
         model2 = model->coeff_dcct[pt][ctx];
 
         coeff_idx = 0;
-        for (;;) {
-            if (vp56_rac_get_prob_branchy(c, model2[0])) {
-                if (vp56_rac_get_prob_branchy(c, model2[2])) {
-                    if (vp56_rac_get_prob_branchy(c, model2[3])) {
+        for (;;)
+        {
+            if (vp56_rac_get_prob_branchy(c, model2[0]))
+            {
+                if (vp56_rac_get_prob_branchy(c, model2[2]))
+                {
+                    if (vp56_rac_get_prob_branchy(c, model2[3]))
+                    {
                         s->coeff_ctx[ff_vp56_b6to4[b]][coeff_idx] = 4;
                         idx = vp56_rac_get_tree(c, ff_vp56_pc_tree, model1);
                         sign = vp56_rac_get(c);
                         coeff = ff_vp56_coeff_bias[idx+5];
                         for (i=ff_vp56_coeff_bit_length[idx]; i>=0; i--)
                             coeff += vp56_rac_get_prob(c, ff_vp56_coeff_parse_table[idx][i]) << i;
-                    } else {
-                        if (vp56_rac_get_prob_branchy(c, model2[4])) {
+                    }
+                    else
+                    {
+                        if (vp56_rac_get_prob_branchy(c, model2[4]))
+                        {
                             coeff = 3 + vp56_rac_get_prob(c, model1[5]);
                             s->coeff_ctx[ff_vp56_b6to4[b]][coeff_idx] = 3;
-                        } else {
+                        }
+                        else
+                        {
                             coeff = 2;
                             s->coeff_ctx[ff_vp56_b6to4[b]][coeff_idx] = 2;
                         }
                         sign = vp56_rac_get(c);
                     }
                     ct = 2;
-                } else {
+                }
+                else
+                {
                     ct = 1;
                     s->coeff_ctx[ff_vp56_b6to4[b]][coeff_idx] = 1;
                     sign = vp56_rac_get(c);
@@ -223,7 +248,9 @@ static void vp5_parse_coeff(VP56Context *s)
                 if (coeff_idx)
                     coeff *= s->dequant_ac;
                 s->block_coeff[b][permute[coeff_idx]] = coeff;
-            } else {
+            }
+            else
+            {
                 if (ct && !vp56_rac_get_prob_branchy(c, model2[1]))
                     break;
                 ct = 0;
@@ -253,7 +280,8 @@ static void vp5_default_models_init(VP56Context *s)
     VP56Model *model = s->modelp;
     int i;
 
-    for (i=0; i<2; i++) {
+    for (i=0; i<2; i++)
+    {
         model->vector_sig[i] = 0x80;
         model->vector_dct[i] = 0x80;
         model->vector_pdi[i][0] = 0x55;
@@ -281,7 +309,8 @@ static av_cold int vp5_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_vp5_decoder = {
+AVCodec ff_vp5_decoder =
+{
     .name           = "vp5",
     .long_name      = NULL_IF_CONFIG_SMALL("On2 VP5"),
     .type           = AVMEDIA_TYPE_VIDEO,

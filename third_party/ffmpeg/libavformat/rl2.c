@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RL2 Format Demuxer
  * Copyright (c) 2008 Sascha Sommer (saschasommer@freenet.de)
  *
@@ -45,7 +45,8 @@
 #define RLV2_TAG MKBETAG('R', 'L', 'V', '2')
 #define RLV3_TAG MKBETAG('R', 'L', 'V', '3')
 
-typedef struct Rl2DemuxContext {
+typedef struct Rl2DemuxContext
+{
     unsigned int index_pos[2];   ///< indexes in the sample tables
 } Rl2DemuxContext;
 
@@ -62,7 +63,7 @@ static int rl2_probe(AVProbeData *p)
         return 0;
 
     if(AV_RB32(&p->buf[8]) != RLV2_TAG &&
-        AV_RB32(&p->buf[8]) != RLV3_TAG)
+            AV_RB32(&p->buf[8]) != RLV3_TAG)
         return 0;
 
     return AVPROBE_SCORE_MAX;
@@ -113,7 +114,7 @@ static av_cold int rl2_read_header(AVFormatContext *s)
     /** setup video stream */
     st = avformat_new_stream(s, NULL);
     if(!st)
-         return AVERROR(ENOMEM);
+        return AVERROR(ENOMEM);
 
     st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codec->codec_id = AV_CODEC_ID_RL2;
@@ -131,8 +132,10 @@ static av_cold int rl2_read_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
 
     /** setup audio stream if present */
-    if(sound_rate){
-        if (!channels || channels > 42) {
+    if(sound_rate)
+    {
+        if (!channels || channels > 42)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid number of channels: %d\n", channels);
             return AVERROR_INVALIDDATA;
         }
@@ -150,9 +153,9 @@ static av_cold int rl2_read_header(AVFormatContext *s)
         st->codec->bits_per_coded_sample = 8;
         st->codec->sample_rate = rate;
         st->codec->bit_rate = st->codec->channels * st->codec->sample_rate *
-            st->codec->bits_per_coded_sample;
+                              st->codec->bits_per_coded_sample;
         st->codec->block_align = st->codec->channels *
-            st->codec->bits_per_coded_sample / 8;
+                                 st->codec->bits_per_coded_sample / 8;
         avpriv_set_pts_info(st,32,1,rate);
     }
 
@@ -162,7 +165,8 @@ static av_cold int rl2_read_header(AVFormatContext *s)
     audio_size =   av_malloc(frame_count * sizeof(uint32_t));
     chunk_offset = av_malloc(frame_count * sizeof(uint32_t));
 
-    if(!chunk_size || !audio_size || !chunk_offset){
+    if(!chunk_size || !audio_size || !chunk_offset)
+    {
         av_free(chunk_size);
         av_free(audio_size);
         av_free(chunk_offset);
@@ -170,27 +174,30 @@ static av_cold int rl2_read_header(AVFormatContext *s)
     }
 
     /** read offset and size tables */
-    for(i=0; i < frame_count;i++)
+    for(i=0; i < frame_count; i++)
         chunk_size[i] = avio_rl32(pb);
-    for(i=0; i < frame_count;i++)
+    for(i=0; i < frame_count; i++)
         chunk_offset[i] = avio_rl32(pb);
-    for(i=0; i < frame_count;i++)
+    for(i=0; i < frame_count; i++)
         audio_size[i] = avio_rl32(pb) & 0xFFFF;
 
     /** build the sample index */
-    for(i=0;i<frame_count;i++){
-        if(chunk_size[i] < 0 || audio_size[i] > chunk_size[i]){
+    for(i=0; i<frame_count; i++)
+    {
+        if(chunk_size[i] < 0 || audio_size[i] > chunk_size[i])
+        {
             ret = AVERROR_INVALIDDATA;
             break;
         }
 
-        if(sound_rate && audio_size[i]){
+        if(sound_rate && audio_size[i])
+        {
             av_add_index_entry(s->streams[1], chunk_offset[i],
-                audio_frame_counter,audio_size[i], 0, AVINDEX_KEYFRAME);
+                               audio_frame_counter,audio_size[i], 0, AVINDEX_KEYFRAME);
             audio_frame_counter += audio_size[i] / channels;
         }
         av_add_index_entry(s->streams[0], chunk_offset[i] + audio_size[i],
-            video_frame_counter,chunk_size[i]-audio_size[i],0,AVINDEX_KEYFRAME);
+                           video_frame_counter,chunk_size[i]-audio_size[i],0,AVINDEX_KEYFRAME);
         ++video_frame_counter;
     }
 
@@ -209,7 +216,7 @@ static av_cold int rl2_read_header(AVFormatContext *s)
  * @return 0 on success, AVERROR otherwise
  */
 static int rl2_read_packet(AVFormatContext *s,
-                            AVPacket *pkt)
+                           AVPacket *pkt)
 {
     Rl2DemuxContext *rl2 = s->priv_data;
     AVIOContext *pb = s->pb;
@@ -220,9 +227,11 @@ static int rl2_read_packet(AVFormatContext *s,
     int64_t pos = INT64_MAX;
 
     /** check if there is a valid video or audio entry that can be used */
-    for(i=0; i<s->nb_streams; i++){
+    for(i=0; i<s->nb_streams; i++)
+    {
         if(rl2->index_pos[i] < s->streams[i]->nb_index_entries
-              && s->streams[i]->index_entries[ rl2->index_pos[i] ].pos < pos){
+                && s->streams[i]->index_entries[ rl2->index_pos[i] ].pos < pos)
+        {
             sample = &s->streams[i]->index_entries[ rl2->index_pos[i] ];
             pos= sample->pos;
             stream_id= i;
@@ -239,7 +248,8 @@ static int rl2_read_packet(AVFormatContext *s,
 
     /** fill the packet */
     ret = av_get_packet(pb, pkt, sample->size);
-    if(ret != sample->size){
+    if(ret != sample->size)
+    {
         av_free_packet(pkt);
         return AVERROR(EIO);
     }
@@ -270,11 +280,12 @@ static int rl2_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
     rl2->index_pos[stream_index] = index;
     timestamp = st->index_entries[index].timestamp;
 
-    for(i=0; i < s->nb_streams; i++){
+    for(i=0; i < s->nb_streams; i++)
+    {
         AVStream *st2 = s->streams[i];
         index = av_index_search_timestamp(st2,
-                    av_rescale_q(timestamp, st->time_base, st2->time_base),
-                    flags | AVSEEK_FLAG_BACKWARD);
+                                          av_rescale_q(timestamp, st->time_base, st2->time_base),
+                                          flags | AVSEEK_FLAG_BACKWARD);
 
         if(index < 0)
             index = 0;
@@ -285,7 +296,8 @@ static int rl2_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
     return 0;
 }
 
-AVInputFormat ff_rl2_demuxer = {
+AVInputFormat ff_rl2_demuxer =
+{
     .name           = "rl2",
     .long_name      = NULL_IF_CONFIG_SMALL("RL2"),
     .priv_data_size = sizeof(Rl2DemuxContext),

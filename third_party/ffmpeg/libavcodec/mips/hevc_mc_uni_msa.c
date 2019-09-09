@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -30,8 +30,10 @@ static void copy_width8_msa(uint8_t *src, int32_t src_stride,
     uint64_t out0, out1, out2, out3, out4, out5, out6, out7;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    if (0 == height % 12) {
-        for (cnt = (height / 12); cnt--;) {
+    if (0 == height % 12)
+    {
+        for (cnt = (height / 12); cnt--;)
+        {
             LD_UB8(src, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src += (8 * src_stride);
@@ -61,8 +63,11 @@ static void copy_width8_msa(uint8_t *src, int32_t src_stride,
             SD4(out0, out1, out2, out3, dst, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 8) {
-        for (cnt = height >> 3; cnt--;) {
+    }
+    else if (0 == height % 8)
+    {
+        for (cnt = height >> 3; cnt--;)
+        {
             LD_UB8(src, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src += (8 * src_stride);
@@ -81,8 +86,11 @@ static void copy_width8_msa(uint8_t *src, int32_t src_stride,
             SD4(out4, out5, out6, out7, dst, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 4) {
-        for (cnt = (height / 4); cnt--;) {
+    }
+    else if (0 == height % 4)
+    {
+        for (cnt = (height / 4); cnt--;)
+        {
             LD_UB4(src, src_stride, src0, src1, src2, src3);
             src += (4 * src_stride);
             out0 = __msa_copy_u_d((v2i64) src0, 0);
@@ -93,8 +101,11 @@ static void copy_width8_msa(uint8_t *src, int32_t src_stride,
             SD4(out0, out1, out2, out3, dst, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 2) {
-        for (cnt = (height / 2); cnt--;) {
+    }
+    else if (0 == height % 2)
+    {
+        for (cnt = (height / 2); cnt--;)
+        {
             LD_UB2(src, src_stride, src0, src1);
             src += (2 * src_stride);
             out0 = __msa_copy_u_d((v2i64) src0, 0);
@@ -130,11 +141,13 @@ static void copy_16multx8mult_msa(uint8_t *src, int32_t src_stride,
     uint8_t *src_tmp, *dst_tmp;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    for (cnt = (width >> 4); cnt--;) {
+    for (cnt = (width >> 4); cnt--;)
+    {
         src_tmp = src;
         dst_tmp = dst;
 
-        for (loop_cnt = (height >> 3); loop_cnt--;) {
+        for (loop_cnt = (height >> 3); loop_cnt--;)
+        {
             LD_UB8(src_tmp, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src_tmp += (8 * src_stride);
@@ -156,8 +169,10 @@ static void copy_width16_msa(uint8_t *src, int32_t src_stride,
     int32_t cnt;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    if (0 == height % 12) {
-        for (cnt = (height / 12); cnt--;) {
+    if (0 == height % 12)
+    {
+        for (cnt = (height / 12); cnt--;)
+        {
             LD_UB8(src, src_stride,
                    src0, src1, src2, src3, src4, src5, src6, src7);
             src += (8 * src_stride);
@@ -170,10 +185,15 @@ static void copy_width16_msa(uint8_t *src, int32_t src_stride,
             ST_UB4(src0, src1, src2, src3, dst, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 8) {
+    }
+    else if (0 == height % 8)
+    {
         copy_16multx8mult_msa(src, src_stride, dst, dst_stride, height, 16);
-    } else if (0 == height % 4) {
-        for (cnt = (height >> 2); cnt--;) {
+    }
+    else if (0 == height % 4)
+    {
+        for (cnt = (height >> 2); cnt--;)
+        {
             LD_UB4(src, src_stride, src0, src1, src2, src3);
             src += (4 * src_stride);
 
@@ -198,8 +218,10 @@ static void copy_width32_msa(uint8_t *src, int32_t src_stride,
     int32_t cnt;
     v16u8 src0, src1, src2, src3, src4, src5, src6, src7;
 
-    if (0 == height % 12) {
-        for (cnt = (height / 12); cnt--;) {
+    if (0 == height % 12)
+    {
+        for (cnt = (height / 12); cnt--;)
+        {
             LD_UB4(src, src_stride, src0, src1, src2, src3);
             LD_UB4(src + 16, src_stride, src4, src5, src6, src7);
             src += (4 * src_stride);
@@ -221,10 +243,15 @@ static void copy_width32_msa(uint8_t *src, int32_t src_stride,
             ST_UB4(src4, src5, src6, src7, dst + 16, dst_stride);
             dst += (4 * dst_stride);
         }
-    } else if (0 == height % 8) {
+    }
+    else if (0 == height % 8)
+    {
         copy_16multx8mult_msa(src, src_stride, dst, dst_stride, height, 32);
-    } else if (0 == height % 4) {
-        for (cnt = (height >> 2); cnt--;) {
+    }
+    else if (0 == height % 4)
+    {
+        for (cnt = (height >> 2); cnt--;)
+        {
             LD_UB4(src, src_stride, src0, src1, src2, src3);
             LD_UB4(src + 16, src_stride, src4, src5, src6, src7);
             src += (4 * src_stride);
@@ -249,7 +276,8 @@ static void copy_width64_msa(uint8_t *src, int32_t src_stride,
     copy_16multx8mult_msa(src, src_stride, dst, dst_stride, height, 64);
 }
 
-static const uint8_t mc_filt_mask_arr[16 * 3] = {
+static const uint8_t mc_filt_mask_arr[16 * 3] =
+{
     /* 8 width cases */
     0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8,
     /* 4 width cases */
@@ -492,11 +520,16 @@ static void common_hz_8t_4w_msa(uint8_t *src, int32_t src_stride,
                                 uint8_t *dst, int32_t dst_stride,
                                 const int8_t *filter, int32_t height, uint8_t rnd_val)
 {
-    if (4 == height) {
+    if (4 == height)
+    {
         common_hz_8t_4x4_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (8 == height) {
+    }
+    else if (8 == height)
+    {
         common_hz_8t_4x8_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (16 == height) {
+    }
+    else if (16 == height)
+    {
         common_hz_8t_4x16_msa(src, src_stride, dst, dst_stride, filter,
                               rnd_val);
     }
@@ -558,7 +591,8 @@ static void common_hz_8t_8x8mult_msa(uint8_t *src, int32_t src_stride,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src1, src2, src3);
         XORI_B4_128_SB(src0, src1, src2, src3);
         src += (4 * src_stride);
@@ -579,9 +613,12 @@ static void common_hz_8t_8w_msa(uint8_t *src, int32_t src_stride,
                                 const int8_t *filter, int32_t height,
                                 uint8_t rnd_val)
 {
-    if (4 == height) {
+    if (4 == height)
+    {
         common_hz_8t_8x4_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else {
+    }
+    else
+    {
         common_hz_8t_8x8mult_msa(src, src_stride, dst, dst_stride, filter,
                                  height, rnd_val);
     }
@@ -620,7 +657,8 @@ static void common_hz_8t_12w_msa(uint8_t *src, int32_t src_stride,
     mask5 = mask0 + 4;
     mask6 = mask0 + 6;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         /* 8 width */
         LD_SB4(src1_ptr, src_stride, src0, src1, src2, src3);
         XORI_B4_128_SB(src0, src1, src2, src3);
@@ -673,7 +711,8 @@ static void common_hz_8t_16w_msa(uint8_t *src, int32_t src_stride,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src, src_stride, src0, src2);
         LD_SB2(src + 8, src_stride, src1, src3);
         XORI_B4_128_SB(src0, src1, src2, src3);
@@ -722,7 +761,8 @@ static void common_hz_8t_24w_msa(uint8_t *src, int32_t src_stride,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src, src_stride, src0, src2);
         LD_SB2(src + 16, src_stride, src1, src3);
         XORI_B4_128_SB(src0, src1, src2, src3);
@@ -792,7 +832,8 @@ static void common_hz_8t_32w_msa(uint8_t *src, int32_t src_stride,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         src0 = LD_SB(src);
         src2 = LD_SB(src + 16);
         src3 = LD_SB(src + 24);
@@ -858,7 +899,8 @@ static void common_hz_8t_48w_msa(uint8_t *src, int32_t src_stride,
     mask6 = mask0 + 12;
     mask7 = mask0 + 14;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         LD_SB3(src, 16, src0, src2, src3);
         src1 = __msa_sldi_b(src2, src0, 8);
 
@@ -938,7 +980,8 @@ static void common_hz_8t_64w_msa(uint8_t *src, int32_t src_stride,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (loop_cnt = height; loop_cnt--;) {
+    for (loop_cnt = height; loop_cnt--;)
+    {
         src0 = LD_SB(src);
         src2 = LD_SB(src + 16);
         src3 = LD_SB(src + 24);
@@ -1005,7 +1048,8 @@ static void common_vt_8t_4w_msa(uint8_t *src, int32_t src_stride,
                src4332, src6554);
     XORI_B3_128_SB(src2110, src4332, src6554);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src7, src8, src9, src10);
         src += (4 * src_stride);
 
@@ -1056,7 +1100,8 @@ static void common_vt_8t_8w_msa(uint8_t *src, int32_t src_stride,
                src54_r, src21_r);
     ILVR_B2_SB(src4, src3, src6, src5, src43_r, src65_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src7, src8, src9, src10);
         XORI_B4_128_SB(src7, src8, src9, src10);
         src += (4 * src_stride);
@@ -1120,7 +1165,8 @@ static void common_vt_8t_12w_msa(uint8_t *src, int32_t src_stride,
     VSHF_W2_SB(src2, src3, src3, src4, mask, mask, vec2, vec3);
     VSHF_W2_SB(src4, src5, src5, src6, mask, mask, vec4, vec5);
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src, src_stride, src7, src8);
         XORI_B2_128_SB(src7, src8);
         src += (2 * src_stride);
@@ -1203,7 +1249,8 @@ static void common_vt_8t_16w_msa(uint8_t *src, int32_t src_stride,
                src54_l, src21_l);
     ILVL_B2_SB(src4, src3, src6, src5, src43_l, src65_l);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src7, src8, src9, src10);
         XORI_B4_128_SB(src7, src8, src9, src10);
         src += (4 * src_stride);
@@ -1277,7 +1324,8 @@ static void common_vt_8t_16w_mult_msa(uint8_t *src, int32_t src_stride,
     filt = LD_SH(filter);
     SPLATI_H4_SB(filt, 0, 1, 2, 3, filt0, filt1, filt2, filt3);
 
-    for (cnt = (width >> 4); cnt--;) {
+    for (cnt = (width >> 4); cnt--;)
+    {
         src_tmp = src;
         dst_tmp = dst;
 
@@ -1291,7 +1339,8 @@ static void common_vt_8t_16w_mult_msa(uint8_t *src, int32_t src_stride,
                    src32_l, src54_l, src21_l);
         ILVL_B2_SB(src4, src3, src6, src5, src43_l, src65_l);
 
-        for (loop_cnt = (height >> 2); loop_cnt--;) {
+        for (loop_cnt = (height >> 2); loop_cnt--;)
+        {
             LD_SB4(src_tmp, src_stride, src7, src8, src9, src10);
             XORI_B4_128_SB(src7, src8, src9, src10);
             src_tmp += (4 * src_stride);
@@ -1451,7 +1500,8 @@ static void hevc_hv_uni_8t_4w_msa(uint8_t *src,
     dst65_r = __msa_ilvl_h(dst63, dst52);
     dst66 = (v8i16) __msa_splati_d((v2i64) dst63, 1);
 
-    for (loop_cnt = height >> 1; loop_cnt--;) {
+    for (loop_cnt = height >> 1; loop_cnt--;)
+    {
         LD_SB2(src, src_stride, src7, src8);
         src += 2 * src_stride;
         XORI_B2_128_SB(src7, src8);
@@ -1490,12 +1540,12 @@ static void hevc_hv_uni_8t_4w_msa(uint8_t *src,
 }
 
 static void hevc_hv_uni_8t_8multx2mult_msa(uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride,
-                                           const int8_t *filter_x,
-                                           const int8_t *filter_y,
-                                           int32_t height, int32_t width)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter_x,
+        const int8_t *filter_y,
+        int32_t height, int32_t width)
 {
     uint32_t loop_cnt, cnt;
     uint8_t *src_tmp;
@@ -1532,7 +1582,8 @@ static void hevc_hv_uni_8t_8multx2mult_msa(uint8_t *src,
     mask2 = mask0 + 4;
     mask3 = mask0 + 6;
 
-    for (cnt = width >> 3; cnt--;) {
+    for (cnt = width >> 3; cnt--;)
+    {
         src_tmp = src;
         dst_tmp = dst;
 
@@ -1585,7 +1636,8 @@ static void hevc_hv_uni_8t_8multx2mult_msa(uint8_t *src,
                    dst10_l, dst32_l, dst54_l, dst21_l);
         ILVL_H2_SH(dst4, dst3, dst6, dst5, dst43_l, dst65_l);
 
-        for (loop_cnt = height >> 1; loop_cnt--;) {
+        for (loop_cnt = height >> 1; loop_cnt--;)
+        {
             LD_SB2(src_tmp, src_stride, src7, src8);
             XORI_B2_128_SB(src7, src8);
             src_tmp += 2 * src_stride;
@@ -1887,13 +1939,20 @@ static void common_hz_4t_4w_msa(uint8_t *src, int32_t src_stride,
                                 const int8_t *filter, int32_t height,
                                 uint8_t rnd_val)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         common_hz_4t_4x2_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         common_hz_4t_4x4_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (8 == height) {
+    }
+    else if (8 == height)
+    {
         common_hz_4t_4x8_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (16 == height) {
+    }
+    else if (16 == height)
+    {
         common_hz_4t_4x16_msa(src, src_stride, dst, dst_stride, filter,
                               rnd_val);
     }
@@ -1920,7 +1979,8 @@ static void common_hz_4t_6w_msa(uint8_t *src, int32_t src_stride,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -1957,7 +2017,8 @@ static void common_hz_4t_8x2mult_msa(uint8_t *src, int32_t src_stride,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         LD_SB2(src, src_stride, src0, src1);
         src += (2 * src_stride);
 
@@ -1995,7 +2056,8 @@ static void common_hz_4t_8x4mult_msa(uint8_t *src, int32_t src_stride,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -2016,10 +2078,13 @@ static void common_hz_4t_8w_msa(uint8_t *src, int32_t src_stride,
                                 const int8_t *filter, int32_t height,
                                 uint8_t rnd_val)
 {
-    if ((2 == height) || (6 == height)) {
+    if ((2 == height) || (6 == height))
+    {
         common_hz_4t_8x2mult_msa(src, src_stride, dst, dst_stride, filter,
                                  height, rnd_val);
-    } else {
+    }
+    else
+    {
         common_hz_4t_8x4mult_msa(src, src_stride, dst, dst_stride, filter,
                                  height, rnd_val);
     }
@@ -2052,7 +2117,8 @@ static void common_hz_4t_12w_msa(uint8_t *src, int32_t src_stride,
 
     rnd_vec = __msa_fill_h(rnd_val);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src1, src2, src3);
         src += (4 * src_stride);
 
@@ -2104,7 +2170,8 @@ static void common_hz_4t_16w_msa(uint8_t *src, int32_t src_stride,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src2, src4, src6);
         LD_SB4(src + 8, src_stride, src1, src3, src5, src7);
         src += (4 * src_stride);
@@ -2159,7 +2226,8 @@ static void common_hz_4t_24w_msa(uint8_t *src, int32_t src_stride,
     mask00 = mask0 + 8;
     mask11 = mask0 + 10;
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src0, src2, src4, src6);
         LD_SB4(src + 16, src_stride, src1, src3, src5, src7);
         src += (4 * src_stride);
@@ -2241,7 +2309,8 @@ static void common_hz_4t_32w_msa(uint8_t *src, int32_t src_stride,
 
     mask1 = mask0 + 2;
 
-    for (loop_cnt = (height >> 1); loop_cnt--;) {
+    for (loop_cnt = (height >> 1); loop_cnt--;)
+    {
         src0 = LD_SB(src);
         src2 = LD_SB(src + 16);
         src3 = LD_SB(src + 24);
@@ -2308,9 +2377,9 @@ static void common_vt_4t_4x2_msa(uint8_t *src, int32_t src_stride,
 }
 
 static void common_vt_4t_4x4multiple_msa(uint8_t *src, int32_t src_stride,
-                                         uint8_t *dst, int32_t dst_stride,
-                                         const int8_t *filter, int32_t height,
-                                         uint8_t rnd_val)
+        uint8_t *dst, int32_t dst_stride,
+        const int8_t *filter, int32_t height,
+        uint8_t rnd_val)
 {
     uint32_t loop_cnt;
     v16i8 src0, src1, src2, src3, src4, src5;
@@ -2334,7 +2403,8 @@ static void common_vt_4t_4x4multiple_msa(uint8_t *src, int32_t src_stride,
     src2110 = (v16i8) __msa_ilvr_d((v2i64) src21_r, (v2i64) src10_r);
     src2110 = (v16i8) __msa_xori_b((v16u8) src2110, 128);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB3(src, src_stride, src3, src4, src5);
         src += (3 * src_stride);
         ILVR_B2_SB(src3, src2, src4, src3, src32_r, src43_r);
@@ -2361,9 +2431,12 @@ static void common_vt_4t_4w_msa(uint8_t *src, int32_t src_stride,
                                 const int8_t *filter, int32_t height,
                                 uint8_t rnd_val)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         common_vt_4t_4x2_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else {
+    }
+    else
+    {
         common_vt_4t_4x4multiple_msa(src, src_stride, dst, dst_stride, filter,
                                      height, rnd_val);
     }
@@ -2394,7 +2467,8 @@ static void common_vt_4t_6w_msa(uint8_t *src, int32_t src_stride,
     vec1 = (v16u8) __msa_xori_b((v16u8) src1, 128);
     vec2 = (v16u8) __msa_xori_b((v16u8) src2, 128);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_UB4(src, src_stride, src3, src0, src1, src2);
         src += (4 * src_stride);
 
@@ -2475,7 +2549,8 @@ static void common_vt_4t_8x6_msa(uint8_t *src, int32_t src_stride,
     XORI_B3_128_SB(src0, src1, src2);
     ILVR_B2_SH(src1, src0, src2, src1, vec0, vec2);
 
-    for (loop_cnt = 2; loop_cnt--;) {
+    for (loop_cnt = 2; loop_cnt--;)
+    {
         LD_SB3(src, src_stride, src3, src4, src5);
         src += (3 * src_stride);
 
@@ -2529,7 +2604,8 @@ static void common_vt_4t_8x4mult_msa(uint8_t *src, int32_t src_stride,
     XORI_B3_128_SB(src0, src1, src2);
     ILVR_B2_SB(src1, src0, src2, src1, src10_r, src21_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src7, src8, src9, src10);
         src += (4 * src_stride);
 
@@ -2558,11 +2634,16 @@ static void common_vt_4t_8w_msa(uint8_t *src, int32_t src_stride,
                                 const int8_t *filter, int32_t height,
                                 uint8_t rnd_val)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         common_vt_4t_8x2_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         common_vt_4t_8x6_msa(src, src_stride, dst, dst_stride, filter, rnd_val);
-    } else {
+    }
+    else
+    {
         common_vt_4t_8x4mult_msa(src, src_stride, dst, dst_stride,
                                  filter, height, rnd_val);
     }
@@ -2596,7 +2677,8 @@ static void common_vt_4t_12w_msa(uint8_t *src, int32_t src_stride,
     XORI_B3_128_SB(src0, src1, src2);
     VSHF_W2_SB(src0, src1, src1, src2, mask, mask, vec0, vec1);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src3, src4, src5, src6);
         src += (4 * src_stride);
 
@@ -2659,7 +2741,8 @@ static void common_vt_4t_16w_msa(uint8_t *src, int32_t src_stride,
     ILVR_B2_SB(src1, src0, src2, src1, src10_r, src21_r);
     ILVL_B2_SB(src1, src0, src2, src1, src10_l, src21_l);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src3, src4, src5, src6);
         src += (4 * src_stride);
 
@@ -2728,7 +2811,8 @@ static void common_vt_4t_24w_msa(uint8_t *src, int32_t src_stride,
     XORI_B3_128_SB(src6, src7, src8);
     ILVR_B2_SB(src7, src6, src8, src7, src76_r, src87_r);
 
-    for (loop_cnt = (height >> 2); loop_cnt--;) {
+    for (loop_cnt = (height >> 2); loop_cnt--;)
+    {
         /* 16 width */
         LD_SB2(src, src_stride, src3, src4);
         XORI_B2_128_SB(src3, src4);
@@ -2833,7 +2917,8 @@ static void common_vt_4t_32w_mult_msa(uint8_t *src, int32_t src_stride,
     filt = LD_SH(filter);
     SPLATI_H2_SB(filt, 0, 1, filt0, filt1);
 
-    for (cnt = (width >> 5); cnt--;) {
+    for (cnt = (width >> 5); cnt--;)
+    {
         dst_tmp = dst;
         src_tmp = src;
 
@@ -2852,7 +2937,8 @@ static void common_vt_4t_32w_mult_msa(uint8_t *src, int32_t src_stride,
         ILVR_B2_SB(src7, src6, src8, src7, src76_r, src87_r);
         ILVL_B2_SB(src7, src6, src8, src7, src76_l, src87_l);
 
-        for (loop_cnt = (height >> 1); loop_cnt--;) {
+        for (loop_cnt = (height >> 1); loop_cnt--;)
+        {
             /* 16 width */
             LD_SB2(src_tmp, src_stride, src3, src4);
             XORI_B2_128_SB(src3, src4);
@@ -3105,12 +3191,12 @@ static void hevc_hv_uni_4t_4x4_msa(uint8_t *src,
 }
 
 static void hevc_hv_uni_4t_4multx8mult_msa(uint8_t *src,
-                                           int32_t src_stride,
-                                           uint8_t *dst,
-                                           int32_t dst_stride,
-                                           const int8_t *filter_x,
-                                           const int8_t *filter_y,
-                                           int32_t height)
+        int32_t src_stride,
+        uint8_t *dst,
+        int32_t dst_stride,
+        const int8_t *filter_x,
+        const int8_t *filter_y,
+        int32_t height)
 {
     uint32_t loop_cnt;
     v16i8 src0, src1, src2, src3, src4, src5;
@@ -3161,7 +3247,8 @@ static void hevc_hv_uni_4t_4multx8mult_msa(uint8_t *src,
 
     ILVR_H2_SH(dst1, dst0, dst2, dst1, dst10_r, dst21_r);
 
-    for (loop_cnt = height >> 3; loop_cnt--;) {
+    for (loop_cnt = height >> 3; loop_cnt--;)
+    {
         LD_SB8(src, src_stride,
                src3, src4, src5, src6, src7, src8, src9, src10);
         src += (8 * src_stride);
@@ -3261,13 +3348,18 @@ static void hevc_hv_uni_4t_4w_msa(uint8_t *src,
                                   const int8_t *filter_y,
                                   int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hv_uni_4t_4x2_msa(src, src_stride, dst, dst_stride,
                                filter_x, filter_y, height);
-    } else if (4 == height) {
+    }
+    else if (4 == height)
+    {
         hevc_hv_uni_4t_4x4_msa(src, src_stride, dst, dst_stride,
                                filter_x, filter_y, height);
-    } else if (0 == (height % 8)) {
+    }
+    else if (0 == (height % 8))
+    {
         hevc_hv_uni_4t_4multx8mult_msa(src, src_stride, dst, dst_stride,
                                        filter_x, filter_y, height);
     }
@@ -3330,7 +3422,8 @@ static void hevc_hv_uni_4t_6w_msa(uint8_t *src,
     ILVRL_H2_SH(dst1, dst0, dst10_r, dst10_l);
     ILVRL_H2_SH(dst2, dst1, dst21_r, dst21_l);
 
-    for (loop_cnt = height >> 2; loop_cnt--;) {
+    for (loop_cnt = height >> 2; loop_cnt--;)
+    {
         LD_SB4(src, src_stride, src3, src4, src5, src6);
         src += (4 * src_stride);
 
@@ -3683,7 +3776,8 @@ static void hevc_hv_uni_4t_8w_mult_msa(uint8_t *src,
     const_vec = __msa_ldi_h(128);
     const_vec <<= 6;
 
-    for (cnt = width >> 3; cnt--;) {
+    for (cnt = width >> 3; cnt--;)
+    {
         src_tmp = src;
         dst_tmp = dst;
 
@@ -3706,7 +3800,8 @@ static void hevc_hv_uni_4t_8w_mult_msa(uint8_t *src,
         ILVRL_H2_SH(dst1, dst0, dst10_r, dst10_l);
         ILVRL_H2_SH(dst2, dst1, dst21_r, dst21_l);
 
-        for (loop_cnt = height >> 2; loop_cnt--;) {
+        for (loop_cnt = height >> 2; loop_cnt--;)
+        {
             LD_SB4(src_tmp, src_stride, src3, src4, src5, src6);
             src_tmp += (4 * src_stride);
 
@@ -3784,13 +3879,18 @@ static void hevc_hv_uni_4t_8w_msa(uint8_t *src,
                                   const int8_t *filter_y,
                                   int32_t height)
 {
-    if (2 == height) {
+    if (2 == height)
+    {
         hevc_hv_uni_4t_8x2_msa(src, src_stride, dst, dst_stride,
                                filter_x, filter_y, height);
-    } else if (6 == height) {
+    }
+    else if (6 == height)
+    {
         hevc_hv_uni_4t_8x6_msa(src, src_stride, dst, dst_stride,
                                filter_x, filter_y, height);
-    } else if (0 == (height % 4)) {
+    }
+    else if (0 == (height % 4))
+    {
         hevc_hv_uni_4t_8w_mult_msa(src, src_stride, dst, dst_stride,
                                    filter_x, filter_y, height, 8);
     }

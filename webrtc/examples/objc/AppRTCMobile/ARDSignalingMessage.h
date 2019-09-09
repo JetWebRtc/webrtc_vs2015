@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,17 +13,18 @@
 #import "WebRTC/RTCIceCandidate.h"
 #import "WebRTC/RTCSessionDescription.h"
 
-typedef enum {
-  kARDSignalingMessageTypeCandidate,
-  kARDSignalingMessageTypeCandidateRemoval,
-  kARDSignalingMessageTypeOffer,
-  kARDSignalingMessageTypeAnswer,
-  kARDSignalingMessageTypeBye,
+typedef enum
+{
+    kARDSignalingMessageTypeCandidate,
+    kARDSignalingMessageTypeCandidateRemoval,
+    kARDSignalingMessageTypeOffer,
+    kARDSignalingMessageTypeAnswer,
+    kARDSignalingMessageTypeBye,
 } ARDSignalingMessageType;
 
 @interface ARDSignalingMessage : NSObject
 
-@property(nonatomic, readonly) ARDSignalingMessageType type;
+    @property(nonatomic, readonly) ARDSignalingMessageType type;
 
 + (ARDSignalingMessage *)messageFromJSONString:(NSString *)jsonString;
 - (NSData *)JSONData;
@@ -32,7 +33,7 @@ typedef enum {
 
 @interface ARDICECandidateMessage : ARDSignalingMessage
 
-@property(nonatomic, readonly) RTCIceCandidate *candidate;
+    @property(nonatomic, readonly) RTCIceCandidate *candidate;
 
 - (instancetype)initWithCandidate:(RTCIceCandidate *)candidate;
 
@@ -40,7 +41,7 @@ typedef enum {
 
 @interface ARDICECandidateRemovalMessage : ARDSignalingMessage
 
-@property(nonatomic, readonly) NSArray<RTCIceCandidate *> *candidates;
+    @property(nonatomic, readonly) NSArray<RTCIceCandidate *> *candidates;
 
 - (instancetype)initWithRemovedCandidates:
     (NSArray<RTCIceCandidate *> *)candidates;
@@ -49,7 +50,7 @@ typedef enum {
 
 @interface ARDSessionDescriptionMessage : ARDSignalingMessage
 
-@property(nonatomic, readonly) RTCSessionDescription *sessionDescription;
+    @property(nonatomic, readonly) RTCSessionDescription *sessionDescription;
 
 - (instancetype)initWithDescription:(RTCSessionDescription *)description;
 

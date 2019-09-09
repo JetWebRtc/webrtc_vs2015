@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -94,9 +94,9 @@ amm-info@iis.fraunhofer.de
 #define MPFREAD_MP4FF_DISABLE
 
 #ifndef MPFREAD_MP4FF_DISABLE
-  /*!< If MPFREAD_MP4FF_ENABLE is set, include support for MPEG ISO fileformat.
-       If not set, no .mp4, .m4a and .3gp files can be used for input. */
-  #define MPFREAD_MP4FF_ENABLE
+/*!< If MPFREAD_MP4FF_ENABLE is set, include support for MPEG ISO fileformat.
+     If not set, no .mp4, .m4a and .3gp files can be used for input. */
+#define MPFREAD_MP4FF_ENABLE
 #endif
 
 /* maximum number of layers which can be read        */
@@ -172,7 +172,7 @@ int mpegFileRead_Read( HANDLE_FILEREAD   hMpegFile,
 int mpegFileRead_seek( HANDLE_FILEREAD   hMpegFile,
                        INT               origin,
                        INT               offset
-                      );
+                     );
 
 /**
  * \brief            Get file position in percent.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,17 +13,20 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class NetEqPerformanceTest {
- public:
-  // Runs a performance test with parameters as follows:
-  //   |runtime_ms|: the simulation time, i.e., the duration of the audio data.
-  //   |lossrate|: drop one out of |lossrate| packets, e.g., one out of 10.
-  //   |drift_factor|: clock drift in [0, 1].
-  // Returns the runtime in ms.
-  static int64_t Run(int runtime_ms, int lossrate, double drift_factor);
+class NetEqPerformanceTest
+{
+public:
+    // Runs a performance test with parameters as follows:
+    //   |runtime_ms|: the simulation time, i.e., the duration of the audio data.
+    //   |lossrate|: drop one out of |lossrate| packets, e.g., one out of 10.
+    //   |drift_factor|: clock drift in [0, 1].
+    // Returns the runtime in ms.
+    static int64_t Run(int runtime_ms, int lossrate, double drift_factor);
 };
 
 }  // namespace test

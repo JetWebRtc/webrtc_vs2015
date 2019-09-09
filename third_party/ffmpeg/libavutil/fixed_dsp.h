@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -53,7 +53,8 @@
 #include "common.h"
 #include "libavcodec/mathops.h"
 
-typedef struct AVFixedDSPContext {
+typedef struct AVFixedDSPContext
+{
     /* Assume len is a multiple of 16, and arrays are 32-byte aligned */
     /* Results of multiplications are scaled down by 31 bit (and rounded) if not
      * stated otherwise */
@@ -181,11 +182,13 @@ static av_always_inline int fixed_sqrt(int x, int bits)
     if (shift1 > 0) retval = ff_sqrt(x << shift1);
     else retval = ff_sqrt(x >> -shift1);
 
-    if (shift2 > 0) {
+    if (shift2 > 0)
+    {
         retval = retval << shift2;
         bit_mask = (1 << (shift2 - 1));
 
-        for (i=0; i<shift2; i++){
+        for (i=0; i<shift2; i++)
+        {
             guess = retval + bit_mask;
             accu = (int64_t)guess * guess;
             square = (int)((accu + bit_mask) >> bits);

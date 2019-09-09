@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include "webrtc/base/logging.h"
 #include "webrtc/base/thread.h"
 
-namespace webrtc_jni {
+namespace webrtc_jni
+{
 
 // Uncomment this define to enable verbose logging for every encoded/decoded
 // video frame.
@@ -32,18 +33,19 @@ namespace webrtc_jni {
 // colors from supportedColorList in MediaCodecVideoEncoder.java and
 // MediaCodecVideoDecoder.java. Supported color format set in encoder
 // and decoder could be different.
-enum COLOR_FORMATTYPE {
-  COLOR_FormatYUV420Planar = 0x13,
-  COLOR_FormatYUV420SemiPlanar = 0x15,
-  COLOR_QCOM_FormatYUV420SemiPlanar = 0x7FA30C00,
-  // NV12 color format supported by QCOM codec, but not declared in MediaCodec -
-  // see /hardware/qcom/media/mm-core/inc/OMX_QCOMExtns.h
-  // This format is presumably similar to COLOR_FormatYUV420SemiPlanar,
-  // but requires some (16, 32?) byte alignment.
-  COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka = 0x7FA30C01,
-  COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka = 0x7FA30C02,
-  COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03,
-  COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m = 0x7FA30C04
+enum COLOR_FORMATTYPE
+{
+    COLOR_FormatYUV420Planar = 0x13,
+    COLOR_FormatYUV420SemiPlanar = 0x15,
+    COLOR_QCOM_FormatYUV420SemiPlanar = 0x7FA30C00,
+    // NV12 color format supported by QCOM codec, but not declared in MediaCodec -
+    // see /hardware/qcom/media/mm-core/inc/OMX_QCOMExtns.h
+    // This format is presumably similar to COLOR_FormatYUV420SemiPlanar,
+    // but requires some (16, 32?) byte alignment.
+    COLOR_QCOM_FORMATYVU420PackedSemiPlanar32m4ka = 0x7FA30C01,
+    COLOR_QCOM_FORMATYVU420PackedSemiPlanar16m4ka = 0x7FA30C02,
+    COLOR_QCOM_FORMATYVU420PackedSemiPlanar64x32Tile2m8ka = 0x7FA30C03,
+    COLOR_QCOM_FORMATYUV420PackedSemiPlanar32m = 0x7FA30C04
 };
 
 // Arbitrary interval to poll the codec for new outputs.
@@ -65,31 +67,35 @@ enum { kMaxDecodedLogFrames = 10 };
 // Maximum amount of encoded frames for which per-frame logging is enabled.
 enum { kMaxEncodedLogFrames = 10 };
 
-static inline void AllowBlockingCalls() {
-  rtc::Thread* current_thread = rtc::Thread::Current();
-  if (current_thread != NULL)
-    current_thread->SetAllowBlockingCalls(true);
+static inline void AllowBlockingCalls()
+{
+    rtc::Thread* current_thread = rtc::Thread::Current();
+    if (current_thread != NULL)
+        current_thread->SetAllowBlockingCalls(true);
 }
 
 // Return the (singleton) Java Enum object corresponding to |index|;
 // |state_class_fragment| is something like "MediaSource$State".
 static inline jobject JavaEnumFromIndexAndClassName(
-    JNIEnv* jni, const std::string& state_class_fragment, int index) {
-  const std::string state_class = "org/webrtc/" + state_class_fragment;
-  return JavaEnumFromIndex(jni, FindClass(jni, state_class.c_str()),
-                           state_class, index);
+    JNIEnv* jni, const std::string& state_class_fragment, int index)
+{
+    const std::string state_class = "org/webrtc/" + state_class_fragment;
+    return JavaEnumFromIndex(jni, FindClass(jni, state_class.c_str()),
+                             state_class, index);
 }
 
 // Checks for any Java exception, prints stack backtrace and clears
 // currently thrown exception.
-static inline bool CheckException(JNIEnv* jni) {
-  if (jni->ExceptionCheck()) {
-    LOG_TAG(rtc::LS_ERROR, TAG_COMMON) << "Java JNI exception.";
-    jni->ExceptionDescribe();
-    jni->ExceptionClear();
-    return true;
-  }
-  return false;
+static inline bool CheckException(JNIEnv* jni)
+{
+    if (jni->ExceptionCheck())
+    {
+        LOG_TAG(rtc::LS_ERROR, TAG_COMMON) << "Java JNI exception.";
+        jni->ExceptionDescribe();
+        jni->ExceptionClear();
+        return true;
+    }
+    return false;
 }
 
 }  // namespace webrtc_jni

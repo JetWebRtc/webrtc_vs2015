@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -35,24 +35,26 @@ typedef enum { NORMAL_LOOPFILTER = 0, SIMPLE_LOOPFILTER = 1 } LOOPFILTERTYPE;
 /* Need to align this structure so when it is declared and
  * passed it can be loaded into vector registers.
  */
-typedef struct {
-  DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
-                  mblim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
-  DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
-                  blim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
-  DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
-                  lim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
-  DECLARE_ALIGNED(SIMD_WIDTH, unsigned char, hev_thr[4][SIMD_WIDTH]);
-  unsigned char lvl[4][4][4];
-  unsigned char hev_thr_lut[2][MAX_LOOP_FILTER + 1];
-  unsigned char mode_lf_lut[10];
+typedef struct
+{
+    DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
+                    mblim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
+    DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
+                    blim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
+    DECLARE_ALIGNED(SIMD_WIDTH, unsigned char,
+                    lim[MAX_LOOP_FILTER + 1][SIMD_WIDTH]);
+    DECLARE_ALIGNED(SIMD_WIDTH, unsigned char, hev_thr[4][SIMD_WIDTH]);
+    unsigned char lvl[4][4][4];
+    unsigned char hev_thr_lut[2][MAX_LOOP_FILTER + 1];
+    unsigned char mode_lf_lut[10];
 } loop_filter_info_n;
 
-typedef struct loop_filter_info {
-  const unsigned char *mblim;
-  const unsigned char *blim;
-  const unsigned char *lim;
-  const unsigned char *hev_thr;
+typedef struct loop_filter_info
+{
+    const unsigned char *mblim;
+    const unsigned char *blim;
+    const unsigned char *lim;
+    const unsigned char *hev_thr;
 } loop_filter_info;
 
 typedef void loop_filter_uvfunction(unsigned char *u, /* source pointer */

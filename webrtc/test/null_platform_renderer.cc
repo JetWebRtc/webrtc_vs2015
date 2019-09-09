@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,13 +10,16 @@
 
 #include "webrtc/test/video_renderer.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 VideoRenderer* VideoRenderer::CreatePlatformRenderer(const char* window_title,
-                                                     size_t width,
-                                                     size_t height) {
-  return NULL;
+        size_t width,
+        size_t height)
+{
+    return NULL;
 }
 }  // test
 }  // webrtc

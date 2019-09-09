@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV encoder/decoder shared code
  *
  * This file is part of FFmpeg.
@@ -49,7 +49,8 @@
     (MFX_VERSION_MAJOR > (MAJOR) ||         \
      MFX_VERSION_MAJOR == (MAJOR) && MFX_VERSION_MINOR >= (MINOR))
 
-typedef struct QSVFrame {
+typedef struct QSVFrame
+{
     AVFrame *frame;
     mfxFrameSurface1 *surface;
 
@@ -60,7 +61,8 @@ typedef struct QSVFrame {
     struct QSVFrame *next;
 } QSVFrame;
 
-typedef struct QSVSession {
+typedef struct QSVSession
+{
     mfxSession session;
 #ifdef AVCODEC_QSV_LINUX_SESSION_HANDLE
     int        fd_display;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Original MPlayer filters by Richard Felker, Hampa Hug, Daniel Moreno,
  * and Michael Niedermeyer.
  *
@@ -28,7 +28,8 @@
 #include "avfilter.h"
 #include "libavutil/eval.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "n",   // frame count
     "pos", // frame position
     "r",   // frame rate
@@ -36,7 +37,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_N,
     VAR_POS,
     VAR_R,
@@ -44,7 +46,8 @@ enum var_name {
     VAR_NB
 };
 
-typedef struct EQParameters {
+typedef struct EQParameters
+{
     void (*adjust)(struct EQParameters *eq, uint8_t *dst, int dst_stride,
                    const uint8_t *src, int src_stride, int w, int h);
 
@@ -55,7 +58,8 @@ typedef struct EQParameters {
 
 } EQParameters;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
 
     EQParameters param[3];

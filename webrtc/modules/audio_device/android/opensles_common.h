@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include <stddef.h>
 #include <SLES/OpenSLES.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Returns a string representation given an integer SL_RESULT_XXX code.
 // The mapping can be found in <SLES/OpenSLES.h>.
@@ -27,30 +28,43 @@ SLDataFormat_PCM CreatePCMConfiguration(size_t channels,
 
 // Helper class for using SLObjectItf interfaces.
 template <typename SLType, typename SLDerefType>
-class ScopedSLObject {
- public:
-  ScopedSLObject() : obj_(nullptr) {}
+class ScopedSLObject
+{
+public:
+    ScopedSLObject() : obj_(nullptr) {}
 
-  ~ScopedSLObject() { Reset(); }
-
-  SLType* Receive() {
-    RTC_DCHECK(!obj_);
-    return &obj_;
-  }
-
-  SLDerefType operator->() { return *obj_; }
-
-  SLType Get() const { return obj_; }
-
-  void Reset() {
-    if (obj_) {
-      (*obj_)->Destroy(obj_);
-      obj_ = nullptr;
+    ~ScopedSLObject()
+    {
+        Reset();
     }
-  }
 
- private:
-  SLType obj_;
+    SLType* Receive()
+    {
+        RTC_DCHECK(!obj_);
+        return &obj_;
+    }
+
+    SLDerefType operator->()
+    {
+        return *obj_;
+    }
+
+    SLType Get() const
+    {
+        return obj_;
+    }
+
+    void Reset()
+    {
+        if (obj_)
+        {
+            (*obj_)->Destroy(obj_);
+            obj_ = nullptr;
+        }
+    }
+
+private:
+    SLType obj_;
 };
 
 typedef ScopedSLObject<SLObjectItf, const SLObjectItf_*> ScopedSLObjectItf;

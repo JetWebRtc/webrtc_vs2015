@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,6 +34,6 @@ bool WebRtcIlbcfix_CbConstruct(
     int16_t* mem,              /* (i) Buffer for codevector construction */
     size_t lMem,               /* (i) Length of buffer */
     size_t veclen              /* (i) Length of vector */
-    ) WARN_UNUSED_RESULT;
+) WARN_UNUSED_RESULT;
 
 #endif

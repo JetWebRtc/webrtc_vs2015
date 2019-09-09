@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ void WebRtcIlbcfix_MyCorr(
     size_t dim1,  /* (i) dimension first seq1 */
     const int16_t* seq2, /* (i) second sequence */
     size_t dim2   /* (i) dimension seq2 */
-                          );
+);
 
 #endif

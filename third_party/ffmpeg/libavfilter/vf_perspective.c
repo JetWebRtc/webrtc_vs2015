@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -36,7 +36,8 @@
 #define LINEAR 0
 #define CUBIC  1
 
-typedef struct PerspectiveContext {
+typedef struct PerspectiveContext
+{
     const AVClass *class;
     char *expr_str[4][2];
     double ref[4][2];
@@ -56,12 +57,14 @@ typedef struct PerspectiveContext {
 #define OFFSET(x) offsetof(PerspectiveContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-enum PERSPECTIVESense {
+enum PERSPECTIVESense
+{
     PERSPECTIVE_SENSE_SOURCE      = 0, ///< coordinates give locations in source of corners of destination.
     PERSPECTIVE_SENSE_DESTINATION = 1, ///< coordinates give locations in destination of corners of source.
 };
 
-static const AVOption perspective_options[] = {
+static const AVOption perspective_options[] =
+{
     { "x0", "set top left x coordinate",     OFFSET(expr_str[0][0]), AV_OPT_TYPE_STRING, {.str="0"}, 0, 0, FLAGS },
     { "y0", "set top left y coordinate",     OFFSET(expr_str[0][1]), AV_OPT_TYPE_STRING, {.str="0"}, 0, 0, FLAGS },
     { "x1", "set top right x coordinate",    OFFSET(expr_str[1][0]), AV_OPT_TYPE_STRING, {.str="W"}, 0, 0, FLAGS },
@@ -74,10 +77,14 @@ static const AVOption perspective_options[] = {
     {      "linear", "", 0, AV_OPT_TYPE_CONST, {.i64=LINEAR}, 0, 0, FLAGS, "interpolation" },
     {       "cubic", "", 0, AV_OPT_TYPE_CONST, {.i64=CUBIC},  0, 0, FLAGS, "interpolation" },
     { "sense",   "specify the sense of the coordinates", OFFSET(sense), AV_OPT_TYPE_INT, {.i64=PERSPECTIVE_SENSE_SOURCE}, 0, 1, FLAGS, "sense"},
-    {       "source", "specify locations in source to send to corners in destination",
-                0, AV_OPT_TYPE_CONST, {.i64=PERSPECTIVE_SENSE_SOURCE}, 0, 0, FLAGS, "sense"},
-    {       "destination", "specify locations in destination to send corners of source",
-                0, AV_OPT_TYPE_CONST, {.i64=PERSPECTIVE_SENSE_DESTINATION}, 0, 0, FLAGS, "sense"},
+    {
+        "source", "specify locations in source to send to corners in destination",
+        0, AV_OPT_TYPE_CONST, {.i64=PERSPECTIVE_SENSE_SOURCE}, 0, 0, FLAGS, "sense"
+    },
+    {
+        "destination", "specify locations in destination to send corners of source",
+        0, AV_OPT_TYPE_CONST, {.i64=PERSPECTIVE_SENSE_DESTINATION}, 0, 0, FLAGS, "sense"
+    },
 
     { NULL }
 };
@@ -86,7 +93,8 @@ AVFILTER_DEFINE_CLASS(perspective);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ422P,AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ411P,
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV411P, AV_PIX_FMT_YUV410P,
@@ -131,8 +139,10 @@ static int config_input(AVFilterLink *inlink)
     int w = inlink->w;
     int x, y, i, j, ret;
 
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 2; j++) {
+    for (i = 0; i < 4; i++)
+    {
+        for (j = 0; j < 2; j++)
+        {
             if (!s->expr_str[i][j])
                 return AVERROR(EINVAL);
             ret = av_expr_parse_and_eval(&s->ref[i][j], s->expr_str[i][j],
@@ -157,15 +167,16 @@ static int config_input(AVFilterLink *inlink)
     if (!s->pv)
         return AVERROR(ENOMEM);
 
-    switch (s->sense) {
+    switch (s->sense)
+    {
     case PERSPECTIVE_SENSE_SOURCE:
         x6 = ((ref[0][0] - ref[1][0] - ref[2][0] + ref[3][0]) *
               (ref[2][1] - ref[3][1]) -
-             ( ref[0][1] - ref[1][1] - ref[2][1] + ref[3][1]) *
+              ( ref[0][1] - ref[1][1] - ref[2][1] + ref[3][1]) *
               (ref[2][0] - ref[3][0])) * h;
         x7 = ((ref[0][1] - ref[1][1] - ref[2][1] + ref[3][1]) *
               (ref[1][0] - ref[3][0]) -
-             ( ref[0][0] - ref[1][0] - ref[2][0] + ref[3][0]) *
+              ( ref[0][0] - ref[1][0] - ref[2][0] + ref[3][0]) *
               (ref[1][1] - ref[3][1])) * w;
         q =  ( ref[1][0] - ref[3][0]) * (ref[2][1] - ref[3][1]) -
              ( ref[2][0] - ref[3][0]) * (ref[1][1] - ref[3][1]);
@@ -209,21 +220,24 @@ static int config_input(AVFilterLink *inlink)
         av_assert0(0);
     }
 
-    for (y = 0; y < h; y++){
-        for (x = 0; x < w; x++){
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
             int u, v;
 
             u = (int)floor(SUB_PIXELS * (x0 * x + x1 * y + x2) /
-                                        (x6 * x + x7 * y + x8) + 0.5);
+                           (x6 * x + x7 * y + x8) + 0.5);
             v = (int)floor(SUB_PIXELS * (x3 * x + x4 * y + x5) /
-                                        (x6 * x + x7 * y + x8) + 0.5);
+                           (x6 * x + x7 * y + x8) + 0.5);
 
             s->pv[x + y * w][0] = u;
             s->pv[x + y * w][1] = v;
         }
     }
 
-    for (i = 0; i < SUB_PIXELS; i++){
+    for (i = 0; i < SUB_PIXELS; i++)
+    {
         double d = i / (double)SUB_PIXELS;
         double temp[4];
         double sum = 0;
@@ -241,7 +255,8 @@ static int config_input(AVFilterLink *inlink)
     return 0;
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     uint8_t *dst;
     int dst_linesize;
     uint8_t *src;
@@ -268,9 +283,11 @@ static int resample_cubic(AVFilterContext *ctx, void *arg,
     const int linesize = s->linesize[0];
     int x, y;
 
-    for (y = start; y < end; y++) {
+    for (y = start; y < end; y++)
+    {
         int sy = y << vsub;
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             int u, v, subU, subV, sum, sx;
 
             sx   = x << hsub;
@@ -281,7 +298,8 @@ static int resample_cubic(AVFilterContext *ctx, void *arg,
             u  >>= SUB_PIXEL_BITS;
             v  >>= SUB_PIXEL_BITS;
 
-            if (u > 0 && v > 0 && u < w - 2 && v < h - 2){
+            if (u > 0 && v > 0 && u < w - 2 && v < h - 2)
+            {
                 const int index = u + v*src_linesize;
                 const int a = s->coeff[subU][0];
                 const int b = s->coeff[subU][1];
@@ -289,26 +307,30 @@ static int resample_cubic(AVFilterContext *ctx, void *arg,
                 const int d = s->coeff[subU][3];
 
                 sum = s->coeff[subV][0] * (a * src[index - 1 -     src_linesize] + b * src[index - 0 -     src_linesize]  +
-                                      c *      src[index + 1 -     src_linesize] + d * src[index + 2 -     src_linesize]) +
+                                           c *      src[index + 1 -     src_linesize] + d * src[index + 2 -     src_linesize]) +
                       s->coeff[subV][1] * (a * src[index - 1                   ] + b * src[index - 0                   ]  +
-                                      c *      src[index + 1                   ] + d * src[index + 2                   ]) +
+                                           c *      src[index + 1                   ] + d * src[index + 2                   ]) +
                       s->coeff[subV][2] * (a * src[index - 1 +     src_linesize] + b * src[index - 0 +     src_linesize]  +
-                                      c *      src[index + 1 +     src_linesize] + d * src[index + 2 +     src_linesize]) +
+                                           c *      src[index + 1 +     src_linesize] + d * src[index + 2 +     src_linesize]) +
                       s->coeff[subV][3] * (a * src[index - 1 + 2 * src_linesize] + b * src[index - 0 + 2 * src_linesize]  +
-                                      c *      src[index + 1 + 2 * src_linesize] + d * src[index + 2 + 2 * src_linesize]);
-            } else {
+                                           c *      src[index + 1 + 2 * src_linesize] + d * src[index + 2 + 2 * src_linesize]);
+            }
+            else
+            {
                 int dx, dy;
 
                 sum = 0;
 
-                for (dy = 0; dy < 4; dy++) {
+                for (dy = 0; dy < 4; dy++)
+                {
                     int iy = v + dy - 1;
 
                     if (iy < 0)
                         iy = 0;
                     else if (iy >= h)
                         iy = h-1;
-                    for (dx = 0; dx < 4; dx++) {
+                    for (dx = 0; dx < 4; dx++)
+                    {
                         int ix = u + dx - 1;
 
                         if (ix < 0)
@@ -347,9 +369,11 @@ static int resample_linear(AVFilterContext *ctx, void *arg,
     const int linesize = s->linesize[0];
     int x, y;
 
-    for (y = start; y < end; y++){
+    for (y = start; y < end; y++)
+    {
         int sy = y << vsub;
-        for (x = 0; x < w; x++){
+        for (x = 0; x < w; x++)
+        {
             int u, v, subU, subV, sum, sx, index, subUI, subVI;
 
             sx   = x << hsub;
@@ -364,12 +388,16 @@ static int resample_linear(AVFilterContext *ctx, void *arg,
             subUI = SUB_PIXELS - subU;
             subVI = SUB_PIXELS - subV;
 
-            if ((unsigned)u < (unsigned)(w - 1)){
-                if((unsigned)v < (unsigned)(h - 1)){
+            if ((unsigned)u < (unsigned)(w - 1))
+            {
+                if((unsigned)v < (unsigned)(h - 1))
+                {
                     sum = subVI * (subUI * src[index] + subU * src[index + 1]) +
                           subV  * (subUI * src[index + src_linesize] + subU * src[index + src_linesize + 1]);
                     sum = (sum + (1 << (SUB_PIXEL_BITS * 2 - 1)))>> (SUB_PIXEL_BITS * 2);
-                } else {
+                }
+                else
+                {
                     if (v < 0)
                         v = 0;
                     else
@@ -378,16 +406,21 @@ static int resample_linear(AVFilterContext *ctx, void *arg,
                     sum   = subUI * src[index] + subU * src[index + 1];
                     sum   = (sum + (1 << (SUB_PIXEL_BITS - 1))) >> SUB_PIXEL_BITS;
                 }
-            } else {
+            }
+            else
+            {
                 if (u < 0)
                     u = 0;
                 else
                     u = w - 1;
-                if ((unsigned)v < (unsigned)(h - 1)){
+                if ((unsigned)v < (unsigned)(h - 1))
+                {
                     index = u + v * src_linesize;
                     sum   = subVI * src[index] + subV * src[index + src_linesize];
                     sum   = (sum + (1 << (SUB_PIXEL_BITS - 1))) >> SUB_PIXEL_BITS;
-                } else {
+                }
+                else
+                {
                     if (v < 0)
                         v = 0;
                     else
@@ -408,9 +441,14 @@ static av_cold int init(AVFilterContext *ctx)
 {
     PerspectiveContext *s = ctx->priv;
 
-    switch (s->interpolation) {
-    case LINEAR: s->perspective = resample_linear; break;
-    case CUBIC:  s->perspective = resample_cubic;  break;
+    switch (s->interpolation)
+    {
+    case LINEAR:
+        s->perspective = resample_linear;
+        break;
+    case CUBIC:
+        s->perspective = resample_cubic;
+        break;
     }
 
     return 0;
@@ -425,13 +463,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int plane;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&frame);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, frame);
 
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         int hsub = plane == 1 || plane == 2 ? s->hsub : 0;
         int vsub = plane == 1 || plane == 2 ? s->vsub : 0;
         ThreadData td = {.dst = out->data[plane],
@@ -441,7 +481,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
                          .w = s->linesize[plane],
                          .h = s->height[plane],
                          .hsub = hsub,
-                         .vsub = vsub };
+                         .vsub = vsub
+                        };
         ctx->internal->execute(ctx, s->perspective, &td, NULL, FFMIN(td.h, ctx->graph->nb_threads));
     }
 
@@ -456,7 +497,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->pv);
 }
 
-static const AVFilterPad perspective_inputs[] = {
+static const AVFilterPad perspective_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -466,7 +508,8 @@ static const AVFilterPad perspective_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad perspective_outputs[] = {
+static const AVFilterPad perspective_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -474,7 +517,8 @@ static const AVFilterPad perspective_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_perspective = {
+AVFilter ff_vf_perspective =
+{
     .name          = "perspective",
     .description   = NULL_IF_CONFIG_SMALL("Correct the perspective of video."),
     .priv_size     = sizeof(PerspectiveContext),

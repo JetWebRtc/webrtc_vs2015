@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@ static void intra_predict_vert_8x8_msa(uint8_t *src, uint8_t *dst,
     src_data1 = LW(src);
     src_data2 = LW(src + 4);
 
-    for (row = 8; row--;) {
+    for (row = 8; row--;)
+    {
         SW(src_data1, dst);
         SW(src_data2, (dst + 4));
         dst += dst_stride;
@@ -38,14 +39,15 @@ static void intra_predict_vert_8x8_msa(uint8_t *src, uint8_t *dst,
 }
 
 static void intra_predict_vert_16x16_msa(uint8_t *src, uint8_t *dst,
-                                         int32_t dst_stride)
+        int32_t dst_stride)
 {
     uint32_t row;
     v16u8 src0;
 
     src0 = LD_UB(src);
 
-    for (row = 16; row--;) {
+    for (row = 16; row--;)
+    {
         ST_UB(src0, dst);
         dst += dst_stride;
     }
@@ -71,13 +73,14 @@ static void intra_predict_horiz_8x8_msa(uint8_t *src, int32_t src_stride,
 }
 
 static void intra_predict_horiz_16x16_msa(uint8_t *src, int32_t src_stride,
-                                          uint8_t *dst, int32_t dst_stride)
+        uint8_t *dst, int32_t dst_stride)
 {
     uint32_t row;
     uint8_t inp0, inp1, inp2, inp3;
     v16u8 src0, src1, src2, src3;
 
-    for (row = 4; row--;) {
+    for (row = 4; row--;)
+    {
         inp0 = src[0];
         src += src_stride;
         inp1 = src[0];
@@ -109,7 +112,8 @@ static void intra_predict_dc_8x8_msa(uint8_t *src_top, uint8_t *src_left,
     v4u32 sum_top;
     v2u64 sum;
 
-    if (is_left && is_above) {
+    if (is_left && is_above)
+    {
         src_above = LD_UB(src_top);
 
         sum_above = __msa_hadd_u_h(src_above, src_above);
@@ -117,20 +121,26 @@ static void intra_predict_dc_8x8_msa(uint8_t *src_top, uint8_t *src_left,
         sum = __msa_hadd_u_d(sum_top, sum_top);
         addition = __msa_copy_u_w((v4i32) sum, 0);
 
-        for (row = 0; row < 8; row++) {
+        for (row = 0; row < 8; row++)
+        {
             addition += src_left[row * src_stride_left];
         }
 
         addition = (addition + 8) >> 4;
         store = (v16u8) __msa_fill_b(addition);
-    } else if (is_left) {
-        for (row = 0; row < 8; row++) {
+    }
+    else if (is_left)
+    {
+        for (row = 0; row < 8; row++)
+        {
             addition += src_left[row * src_stride_left];
         }
 
         addition = (addition + 4) >> 3;
         store = (v16u8) __msa_fill_b(addition);
-    } else if (is_above) {
+    }
+    else if (is_above)
+    {
         src_above = LD_UB(src_top);
 
         sum_above = __msa_hadd_u_h(src_above, src_above);
@@ -138,13 +148,16 @@ static void intra_predict_dc_8x8_msa(uint8_t *src_top, uint8_t *src_left,
         sum = __msa_hadd_u_d(sum_top, sum_top);
         sum = (v2u64) __msa_srari_d((v2i64) sum, 3);
         store = (v16u8) __msa_splati_b((v16i8) sum, 0);
-    } else {
+    }
+    else
+    {
         store = (v16u8) __msa_ldi_b(128);
     }
 
     out = __msa_copy_u_w((v4i32) store, 0);
 
-    for (row = 8; row--;) {
+    for (row = 8; row--;)
+    {
         SW(out, dst);
         SW(out, (dst + 4));
         dst += dst_stride;
@@ -163,7 +176,8 @@ static void intra_predict_dc_16x16_msa(uint8_t *src_top, uint8_t *src_left,
     v4u32 sum_top;
     v2u64 sum;
 
-    if (is_left && is_above) {
+    if (is_left && is_above)
+    {
         src_above = LD_UB(src_top);
 
         sum_above = __msa_hadd_u_h(src_above, src_above);
@@ -173,20 +187,26 @@ static void intra_predict_dc_16x16_msa(uint8_t *src_top, uint8_t *src_left,
         sum = __msa_hadd_u_d(sum_top, sum_top);
         addition = __msa_copy_u_w((v4i32) sum, 0);
 
-        for (row = 0; row < 16; row++) {
+        for (row = 0; row < 16; row++)
+        {
             addition += src_left[row * src_stride_left];
         }
 
         addition = (addition + 16) >> 5;
         store = (v16u8) __msa_fill_b(addition);
-    } else if (is_left) {
-        for (row = 0; row < 16; row++) {
+    }
+    else if (is_left)
+    {
+        for (row = 0; row < 16; row++)
+        {
             addition += src_left[row * src_stride_left];
         }
 
         addition = (addition + 8) >> 4;
         store = (v16u8) __msa_fill_b(addition);
-    } else if (is_above) {
+    }
+    else if (is_above)
+    {
         src_above = LD_UB(src_top);
 
         sum_above = __msa_hadd_u_h(src_above, src_above);
@@ -196,11 +216,14 @@ static void intra_predict_dc_16x16_msa(uint8_t *src_top, uint8_t *src_left,
         sum = __msa_hadd_u_d(sum_top, sum_top);
         sum = (v2u64) __msa_srari_d((v2i64) sum, 4);
         store = (v16u8) __msa_splati_b((v16i8) sum, 0);
-    } else {
+    }
+    else
+    {
         store = (v16u8) __msa_ldi_b(128);
     }
 
-    for (row = 16; row--;) {
+    for (row = 16; row--;)
+    {
         ST_UB(store, dst);
         dst += dst_stride;
     }
@@ -268,9 +291,9 @@ static void intra_predict_plane_8x8_msa(uint8_t *src, int32_t stride)
     res0 = __msa_copy_s_w((v4i32) sum, 0);
 
     res1 = (src[4 * stride - 1] - src[2 * stride - 1]) +
-        2 * (src[5 * stride - 1] - src[stride - 1]) +
-        3 * (src[6 * stride - 1] - src[-1]) +
-        4 * (src[7 * stride - 1] - src[-stride - 1]);
+           2 * (src[5 * stride - 1] - src[stride - 1]) +
+           3 * (src[6 * stride - 1] - src[-1]) +
+           4 * (src[7 * stride - 1] - src[-stride - 1]);
 
     res0 *= 17;
     res1 *= 17;
@@ -287,7 +310,8 @@ static void intra_predict_plane_8x8_msa(uint8_t *src, int32_t stride)
     vec5 = vec8 * int_multiplier;
     vec3 = vec8 * 4;
 
-    for (lpcnt = 4; lpcnt--;) {
+    for (lpcnt = 4; lpcnt--;)
+    {
         vec0 = vec5;
         vec0 += vec4;
         vec1 = vec0 + vec3;
@@ -339,13 +363,13 @@ static void intra_predict_plane_16x16_msa(uint8_t *src, int32_t stride)
     res0 = __msa_copy_s_w(res_add, 0) + __msa_copy_s_w(res_add, 2);
 
     res1 = (src[8 * stride - 1] - src[6 * stride - 1]) +
-        2 * (src[9 * stride - 1] - src[5 * stride - 1]) +
-        3 * (src[10 * stride - 1] - src[4 * stride - 1]) +
-        4 * (src[11 * stride - 1] - src[3 * stride - 1]) +
-        5 * (src[12 * stride - 1] - src[2 * stride - 1]) +
-        6 * (src[13 * stride - 1] - src[stride - 1]) +
-        7 * (src[14 * stride - 1] - src[-1]) +
-        8 * (src[15 * stride - 1] - src[-1 * stride - 1]);
+           2 * (src[9 * stride - 1] - src[5 * stride - 1]) +
+           3 * (src[10 * stride - 1] - src[4 * stride - 1]) +
+           4 * (src[11 * stride - 1] - src[3 * stride - 1]) +
+           5 * (src[12 * stride - 1] - src[2 * stride - 1]) +
+           6 * (src[13 * stride - 1] - src[stride - 1]) +
+           7 * (src[14 * stride - 1] - src[-1]) +
+           8 * (src[15 * stride - 1] - src[-1 * stride - 1]);
 
     res0 *= 5;
     res1 *= 5;
@@ -362,7 +386,8 @@ static void intra_predict_plane_16x16_msa(uint8_t *src, int32_t stride)
     vec6 = vec8 * 4;
     vec7 = vec8 * int_multiplier;
 
-    for (lpcnt = 16; lpcnt--;) {
+    for (lpcnt = 16; lpcnt--;)
+    {
         vec0 = vec7;
         vec0 += vec4;
         vec1 = vec0 + vec6;
@@ -394,7 +419,8 @@ static void intra_predict_dc_4blk_8x8_msa(uint8_t *src, int32_t stride)
     src0 = __msa_copy_u_w((v4i32) sum, 0);
     src1 = __msa_copy_u_w((v4i32) sum, 1);
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src0 += src[lp_cnt * stride - 1];
         src2 += src[(4 + lp_cnt) * stride - 1];
     }
@@ -408,7 +434,8 @@ static void intra_predict_dc_4blk_8x8_msa(uint8_t *src, int32_t stride)
     out2 = src2 * 0x01010101;
     out3 = src3 * 0x01010101;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SW(out0, src);
         SW(out1, (src + 4));
         SW(out2, (src + 4 * stride));
@@ -423,7 +450,8 @@ static void intra_predict_hor_dc_8x8_msa(uint8_t *src, int32_t stride)
     uint32_t src0 = 0, src1 = 0;
     uint64_t out0, out1;
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src0 += src[lp_cnt * stride - 1];
         src1 += src[(4 + lp_cnt) * stride - 1];
     }
@@ -433,7 +461,8 @@ static void intra_predict_hor_dc_8x8_msa(uint8_t *src, int32_t stride)
     out0 = src0 * 0x0101010101010101;
     out1 = src1 * 0x0101010101010101;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SD(out0, src);
         SD(out1, (src + 4 * stride));
         src += stride;
@@ -458,7 +487,8 @@ static void intra_predict_vert_dc_8x8_msa(uint8_t *src, int32_t stride)
     out0 = __msa_copy_u_w(res0, 0);
     out1 = __msa_copy_u_w(res1, 0);
 
-    for (lp_cnt = 8; lp_cnt--;) {
+    for (lp_cnt = 8; lp_cnt--;)
+    {
         SW(out0, src);
         SW(out1, src + 4);
         src += stride;
@@ -480,7 +510,8 @@ static void intra_predict_mad_cow_dc_l0t_8x8_msa(uint8_t *src, int32_t stride)
     src0 = __msa_copy_u_w((v4i32) sum, 0);
     src1 = __msa_copy_u_w((v4i32) sum, 1);
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src2 += src[lp_cnt * stride - 1];
     }
     src2 = (src0 + src2 + 4) >> 3;
@@ -490,7 +521,8 @@ static void intra_predict_mad_cow_dc_l0t_8x8_msa(uint8_t *src, int32_t stride)
     out1 = src1 * 0x01010101;
     out2 = src2 * 0x01010101;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SW(out2, src);
         SW(out1, src + 4);
         SW(out0, src + stride * 4);
@@ -514,7 +546,8 @@ static void intra_predict_mad_cow_dc_0lt_8x8_msa(uint8_t *src, int32_t stride)
     src0 = __msa_copy_u_w((v4i32) sum, 0);
     src1 = __msa_copy_u_w((v4i32) sum, 1);
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src2 += src[(4 + lp_cnt) * stride - 1];
     }
 
@@ -528,7 +561,8 @@ static void intra_predict_mad_cow_dc_0lt_8x8_msa(uint8_t *src, int32_t stride)
     out2 = src2 * 0x01010101;
     out3 = src3 * 0x01010101;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SW(out0, src);
         SW(out1, src + 4);
         SW(out2, src + stride * 4);
@@ -543,7 +577,8 @@ static void intra_predict_mad_cow_dc_l00_8x8_msa(uint8_t *src, int32_t stride)
     uint32_t src0 = 0;
     uint64_t out0, out1;
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src0 += src[lp_cnt * stride - 1];
     }
 
@@ -551,7 +586,8 @@ static void intra_predict_mad_cow_dc_l00_8x8_msa(uint8_t *src, int32_t stride)
     out0 = src0 * 0x0101010101010101;
     out1 = 0x8080808080808080;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SD(out0, src);
         SD(out1, src + stride * 4);
         src += stride;
@@ -564,7 +600,8 @@ static void intra_predict_mad_cow_dc_0l0_8x8_msa(uint8_t *src, int32_t stride)
     uint32_t src0 = 0;
     uint64_t out0, out1;
 
-    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++) {
+    for (lp_cnt = 0; lp_cnt < 4; lp_cnt++)
+    {
         src0 += src[(4 + lp_cnt) * stride - 1];
     }
 
@@ -573,7 +610,8 @@ static void intra_predict_mad_cow_dc_0l0_8x8_msa(uint8_t *src, int32_t stride)
     out0 = 0x8080808080808080;
     out1 = src0 * 0x0101010101010101;
 
-    for (lp_cnt = 4; lp_cnt--;) {
+    for (lp_cnt = 4; lp_cnt--;)
+    {
         SD(out0, src);
         SD(out1, src + stride * 4);
         src += stride;
@@ -601,25 +639,25 @@ void ff_h264_intra_predict_vert_dc_8x8_msa(uint8_t *src, ptrdiff_t stride)
 }
 
 void ff_h264_intra_predict_mad_cow_dc_l0t_8x8_msa(uint8_t *src,
-                                                  ptrdiff_t stride)
+        ptrdiff_t stride)
 {
     intra_predict_mad_cow_dc_l0t_8x8_msa(src, stride);
 }
 
 void ff_h264_intra_predict_mad_cow_dc_0lt_8x8_msa(uint8_t *src,
-                                                  ptrdiff_t stride)
+        ptrdiff_t stride)
 {
     intra_predict_mad_cow_dc_0lt_8x8_msa(src, stride);
 }
 
 void ff_h264_intra_predict_mad_cow_dc_l00_8x8_msa(uint8_t *src,
-                                                  ptrdiff_t stride)
+        ptrdiff_t stride)
 {
     intra_predict_mad_cow_dc_l00_8x8_msa(src, stride);
 }
 
 void ff_h264_intra_predict_mad_cow_dc_0l0_8x8_msa(uint8_t *src,
-                                                  ptrdiff_t stride)
+        ptrdiff_t stride)
 {
     intra_predict_mad_cow_dc_0l0_8x8_msa(src, stride);
 }

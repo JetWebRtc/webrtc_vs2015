@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Input cache protocol.
  * Copyright (c) 2011,2014 Michael Niedermayer
  *
@@ -45,13 +45,15 @@
 #include "os_support.h"
 #include "url.h"
 
-typedef struct CacheEntry {
+typedef struct CacheEntry
+{
     int64_t logical_pos;
     int64_t physical_pos;
     int size;
 } CacheEntry;
 
-typedef struct Context {
+typedef struct Context
+{
     AVClass *class;
     int fd;
     struct AVTreeNode *root;
@@ -78,7 +80,8 @@ static int cache_open(URLContext *h, const char *arg, int flags, AVDictionary **
     av_strstart(arg, "cache:", &arg);
 
     c->fd = av_tempfile("ffcache", &buffername, 0, h);
-    if (c->fd < 0){
+    if (c->fd < 0)
+    {
         av_log(h, AV_LOG_ERROR, "Failed to create tempfile\n");
         return c->fd;
     }
@@ -100,7 +103,8 @@ static int add_entry(URLContext *h, const unsigned char *buf, int size)
 
     //FIXME avoid lseek
     pos = lseek(c->fd, 0, SEEK_END);
-    if (pos < 0) {
+    if (pos < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "seek in cache failed\n");
         goto fail;
@@ -108,7 +112,8 @@ static int add_entry(URLContext *h, const unsigned char *buf, int size)
     c->cache_pos = pos;
 
     ret = write(c->fd, buf, size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         ret = AVERROR(errno);
         av_log(h, AV_LOG_ERROR, "write in cache failed\n");
         goto fail;
@@ -121,12 +126,14 @@ static int add_entry(URLContext *h, const unsigned char *buf, int size)
         entry = next[0];
 
     if (!entry ||
-        entry->logical_pos  + entry->size != c->logical_pos ||
-        entry->physical_pos + entry->size != pos
-    ) {
+            entry->logical_pos  + entry->size != c->logical_pos ||
+            entry->physical_pos + entry->size != pos
+       )
+    {
         entry = av_malloc(sizeof(*entry));
         node = av_tree_node_alloc();
-        if (!entry || !node) {
+        if (!entry || !node)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -135,12 +142,14 @@ static int add_entry(URLContext *h, const unsigned char *buf, int size)
         entry->size = ret;
 
         entry_ret = av_tree_insert(&c->root, entry, cmp, &node);
-        if (entry_ret && entry_ret != entry) {
+        if (entry_ret && entry_ret != entry)
+        {
             ret = -1;
             av_log(h, AV_LOG_ERROR, "av_tree_insert failed\n");
             goto fail;
         }
-    } else
+    }
+    else
         entry->size += ret;
 
     return 0;
@@ -163,23 +172,29 @@ static int cache_read(URLContext *h, unsigned char *buf, int size)
     if (!entry)
         entry = next[0];
 
-    if (entry) {
+    if (entry)
+    {
         int64_t in_block_pos = c->logical_pos - entry->logical_pos;
         av_assert0(entry->logical_pos <= c->logical_pos);
-        if (in_block_pos < entry->size) {
+        if (in_block_pos < entry->size)
+        {
             int64_t physical_target = entry->physical_pos + in_block_pos;
 
-            if (c->cache_pos != physical_target) {
+            if (c->cache_pos != physical_target)
+            {
                 r = lseek(c->fd, physical_target, SEEK_SET);
-            } else
+            }
+            else
                 r = c->cache_pos;
 
-            if (r >= 0) {
+            if (r >= 0)
+            {
                 c->cache_pos = r;
                 r = read(c->fd, buf, FFMIN(size, entry->size - in_block_pos));
             }
 
-            if (r > 0) {
+            if (r > 0)
+            {
                 c->cache_pos += r;
                 c->logical_pos += r;
                 c->cache_hit ++;
@@ -190,9 +205,11 @@ static int cache_read(URLContext *h, unsigned char *buf, int size)
 
     // Cache miss or some kind of fault with the cache
 
-    if (c->logical_pos != c->inner_pos) {
+    if (c->logical_pos != c->inner_pos)
+    {
         r = ffurl_seek(c->inner, c->logical_pos, SEEK_SET);
-        if (r<0) {
+        if (r<0)
+        {
             av_log(h, AV_LOG_ERROR, "Failed to perform internal seek\n");
             return r;
         }
@@ -200,7 +217,8 @@ static int cache_read(URLContext *h, unsigned char *buf, int size)
     }
 
     r = ffurl_read(c->inner, buf, size);
-    if (r == 0 && size>0) {
+    if (r == 0 && size>0)
+    {
         c->is_true_eof = 1;
         av_assert0(c->end >= c->logical_pos);
     }
@@ -222,9 +240,11 @@ static int64_t cache_seek(URLContext *h, int64_t pos, int whence)
     Context *c= h->priv_data;
     int64_t ret;
 
-    if (whence == AVSEEK_SIZE) {
+    if (whence == AVSEEK_SIZE)
+    {
         pos= ffurl_seek(c->inner, pos, whence);
-        if(pos <= 0){
+        if(pos <= 0)
+        {
             pos= ffurl_seek(c->inner, -1, SEEK_END);
             if (ffurl_seek(c->inner, c->inner_pos, SEEK_SET) < 0)
                 av_log(h, AV_LOG_ERROR, "Inner protocol failed to seekback end : %"PRId64"\n", pos);
@@ -235,16 +255,20 @@ static int64_t cache_seek(URLContext *h, int64_t pos, int whence)
         return pos;
     }
 
-    if (whence == SEEK_CUR) {
+    if (whence == SEEK_CUR)
+    {
         whence = SEEK_SET;
         pos += c->logical_pos;
-    } else if (whence == SEEK_END && c->is_true_eof) {
+    }
+    else if (whence == SEEK_END && c->is_true_eof)
+    {
 resolve_eof:
         whence = SEEK_SET;
         pos += c->end;
     }
 
-    if (whence == SEEK_SET && pos >= 0 && pos < c->end) {
+    if (whence == SEEK_SET && pos >= 0 && pos < c->end)
+    {
         //Seems within filesize, assume it will not fail.
         c->logical_pos = pos;
         return pos;
@@ -253,20 +277,25 @@ resolve_eof:
     //cache miss
     ret= ffurl_seek(c->inner, pos, whence);
     if ((whence == SEEK_SET && pos >= c->logical_pos ||
-         whence == SEEK_END && pos <= 0) && ret < 0) {
+            whence == SEEK_END && pos <= 0) && ret < 0)
+    {
         if (   (whence == SEEK_SET && c->read_ahead_limit >= pos - c->logical_pos)
-            || c->read_ahead_limit < 0) {
+                || c->read_ahead_limit < 0)
+        {
             uint8_t tmp[32768];
-            while (c->logical_pos < pos || whence == SEEK_END) {
+            while (c->logical_pos < pos || whence == SEEK_END)
+            {
                 int size = sizeof(tmp);
                 if (whence == SEEK_SET)
                     size = FFMIN(sizeof(tmp), pos - c->logical_pos);
                 ret = cache_read(h, tmp, size);
-                if (ret == 0 && whence == SEEK_END) {
+                if (ret == 0 && whence == SEEK_END)
+                {
                     av_assert0(c->is_true_eof);
                     goto resolve_eof;
                 }
-                if (ret < 0) {
+                if (ret < 0)
+                {
                     return ret;
                 }
             }
@@ -274,7 +303,8 @@ resolve_eof:
         }
     }
 
-    if (ret >= 0) {
+    if (ret >= 0)
+    {
         c->logical_pos = ret;
         c->end = FFMAX(c->end, ret);
     }
@@ -299,19 +329,22 @@ static int cache_close(URLContext *h)
 #define OFFSET(x) offsetof(Context, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "read_ahead_limit", "Amount in bytes that may be read ahead when seeking isn't supported, -1 for unlimited", OFFSET(read_ahead_limit), AV_OPT_TYPE_INT, { .i64 = 65536 }, -1, INT_MAX, D },
     {NULL},
 };
 
-static const AVClass cache_context_class = {
+static const AVClass cache_context_class =
+{
     .class_name = "Cache",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_cache_protocol = {
+URLProtocol ff_cache_protocol =
+{
     .name                = "cache",
     .url_open2           = cache_open,
     .url_read            = cache_read,

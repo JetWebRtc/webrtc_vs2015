@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,9 +19,11 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/logging.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
 #if defined(WEBRTC_USE_H264)
 bool g_rtc_use_h264 = true;
@@ -29,51 +31,57 @@ bool g_rtc_use_h264 = true;
 
 }  // namespace
 
-void DisableRtcUseH264() {
+void DisableRtcUseH264()
+{
 #if defined(WEBRTC_USE_H264)
-  g_rtc_use_h264 = false;
+    g_rtc_use_h264 = false;
 #endif
 }
 
 // If any H.264 codec is supported (iOS HW or OpenH264/FFmpeg).
-bool IsH264CodecSupported() {
+bool IsH264CodecSupported()
+{
 #if defined(WEBRTC_USE_H264)
-  return g_rtc_use_h264;
+    return g_rtc_use_h264;
 #else
-  return false;
+    return false;
 #endif
 }
 
-H264Encoder* H264Encoder::Create(const cricket::VideoCodec& codec) {
-  RTC_DCHECK(H264Encoder::IsSupported());
+H264Encoder* H264Encoder::Create(const cricket::VideoCodec& codec)
+{
+    RTC_DCHECK(H264Encoder::IsSupported());
 #if defined(WEBRTC_USE_H264)
-  RTC_CHECK(g_rtc_use_h264);
-  LOG(LS_INFO) << "Creating H264EncoderImpl.";
-  return new H264EncoderImpl(codec);
+    RTC_CHECK(g_rtc_use_h264);
+    LOG(LS_INFO) << "Creating H264EncoderImpl.";
+    return new H264EncoderImpl(codec);
 #else
-  RTC_NOTREACHED();
-  return nullptr;
+    RTC_NOTREACHED();
+    return nullptr;
 #endif
 }
 
-bool H264Encoder::IsSupported() {
-  return IsH264CodecSupported();
+bool H264Encoder::IsSupported()
+{
+    return IsH264CodecSupported();
 }
 
-H264Decoder* H264Decoder::Create() {
-  RTC_DCHECK(H264Decoder::IsSupported());
+H264Decoder* H264Decoder::Create()
+{
+    RTC_DCHECK(H264Decoder::IsSupported());
 #if defined(WEBRTC_USE_H264)
-  RTC_CHECK(g_rtc_use_h264);
-  LOG(LS_INFO) << "Creating H264DecoderImpl.";
-  return new H264DecoderImpl();
+    RTC_CHECK(g_rtc_use_h264);
+    LOG(LS_INFO) << "Creating H264DecoderImpl.";
+    return new H264DecoderImpl();
 #else
-  RTC_NOTREACHED();
-  return nullptr;
+    RTC_NOTREACHED();
+    return nullptr;
 #endif
 }
 
-bool H264Decoder::IsSupported() {
-  return IsH264CodecSupported();
+bool H264Decoder::IsSupported()
+{
+    return IsH264CodecSupported();
 }
 
 }  // namespace webrtc

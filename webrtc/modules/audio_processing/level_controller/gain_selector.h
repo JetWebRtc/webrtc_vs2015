@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,24 +15,26 @@
 
 #include "webrtc/modules/audio_processing/level_controller/signal_classifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class GainSelector {
- public:
-  GainSelector();
-  void Initialize(int sample_rate_hz);
-  float GetNewGain(float peak_level,
-                   float noise_energy,
-                   float saturating_gain,
-                   bool gain_jumpstart,
-                   SignalClassifier::SignalType signal_type);
+class GainSelector
+{
+public:
+    GainSelector();
+    void Initialize(int sample_rate_hz);
+    float GetNewGain(float peak_level,
+                     float noise_energy,
+                     float saturating_gain,
+                     bool gain_jumpstart,
+                     SignalClassifier::SignalType signal_type);
 
- private:
-  float gain_;
-  size_t frame_length_;
-  int highly_nonstationary_signal_hold_counter_;
+private:
+    float gain_;
+    size_t frame_length_;
+    int highly_nonstationary_signal_hold_counter_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(GainSelector);
+    RTC_DISALLOW_COPY_AND_ASSIGN(GainSelector);
 };
 
 }  // namespace webrtc

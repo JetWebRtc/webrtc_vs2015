@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SpanDSP - a series of DSP components for telephony
  *
  * g722.h - The ITU G.722 codec.
@@ -7,7 +7,7 @@
  *
  * Copyright (C) 2005 Steve Underwood
  *
- *  Despite my general liking of the GPL, I place my own contributions 
+ *  Despite my general liking of the GPL, I place my own contributions
  *  to this code in the public domain for the benefit of all mankind -
  *  even the slimy ones who might try to proprietize my work and use it
  *  to my detriment.
@@ -124,7 +124,7 @@ typedef struct
         int nb;
         int det;
     } band[2];
-    
+
     unsigned int in_buffer;
     int in_bits;
     unsigned int out_buffer;
@@ -136,8 +136,8 @@ extern "C" {
 #endif
 
 G722EncoderState* WebRtc_g722_encode_init(G722EncoderState* s,
-                                          int rate,
-                                          int options);
+        int rate,
+        int options);
 int WebRtc_g722_encode_release(G722EncoderState *s);
 size_t WebRtc_g722_encode(G722EncoderState *s,
                           uint8_t g722_data[],
@@ -145,8 +145,8 @@ size_t WebRtc_g722_encode(G722EncoderState *s,
                           size_t len);
 
 G722DecoderState* WebRtc_g722_decode_init(G722DecoderState* s,
-                                          int rate,
-                                          int options);
+        int rate,
+        int options);
 int WebRtc_g722_decode_release(G722DecoderState *s);
 size_t WebRtc_g722_decode(G722DecoderState *s,
                           int16_t amp[],

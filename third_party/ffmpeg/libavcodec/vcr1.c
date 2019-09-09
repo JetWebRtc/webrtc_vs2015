@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ATI VCR1 codec
  * Copyright (c) 2003 Michael Niedermayer
  *
@@ -29,7 +29,8 @@
 #include "libavutil/avassert.h"
 #include "libavutil/internal.h"
 
-typedef struct VCR1Context {
+typedef struct VCR1Context
+{
     int delta[16];
     int offset[4];
 } VCR1Context;
@@ -38,7 +39,8 @@ static av_cold int vcr1_decode_init(AVCodecContext *avctx)
 {
     avctx->pix_fmt = AV_PIX_FMT_YUV410P;
 
-    if (avctx->width % 8 || avctx->height%4) {
+    if (avctx->width % 8 || avctx->height%4)
+    {
         avpriv_request_sample(avctx, "odd dimensions (%d x %d) support", avctx->width, avctx->height);
         return AVERROR_INVALIDDATA;
     }
@@ -55,7 +57,8 @@ static int vcr1_decode_frame(AVCodecContext *avctx, void *data,
     const uint8_t *bytestream_end = bytestream + avpkt->size;
     int i, x, y, ret;
 
-    if(avpkt->size < 32 + avctx->height + avctx->width*avctx->height*5/8){
+    if(avpkt->size < 32 + avctx->height + avctx->width*avctx->height*5/8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data. %d < %d\n", avpkt->size ,  32 + avctx->height + avctx->width*avctx->height*5/8);
         return AVERROR(EINVAL);
     }
@@ -65,16 +68,19 @@ static int vcr1_decode_frame(AVCodecContext *avctx, void *data,
     p->pict_type = AV_PICTURE_TYPE_I;
     p->key_frame = 1;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         a->delta[i] = *bytestream++;
         bytestream++;
     }
 
-    for (y = 0; y < avctx->height; y++) {
+    for (y = 0; y < avctx->height; y++)
+    {
         int offset;
         uint8_t *luma = &p->data[0][y * p->linesize[0]];
 
-        if ((y & 3) == 0) {
+        if ((y & 3) == 0)
+        {
             uint8_t *cb = &p->data[1][(y >> 2) * p->linesize[1]];
             uint8_t *cr = &p->data[2][(y >> 2) * p->linesize[2]];
 
@@ -84,7 +90,8 @@ static int vcr1_decode_frame(AVCodecContext *avctx, void *data,
                 a->offset[i] = *bytestream++;
 
             offset = a->offset[0] - a->delta[bytestream[2] & 0xF];
-            for (x = 0; x < avctx->width; x += 4) {
+            for (x = 0; x < avctx->width; x += 4)
+            {
                 luma[0]     = offset += a->delta[bytestream[2] & 0xF];
                 luma[1]     = offset += a->delta[bytestream[2] >>  4];
                 luma[2]     = offset += a->delta[bytestream[0] & 0xF];
@@ -96,12 +103,15 @@ static int vcr1_decode_frame(AVCodecContext *avctx, void *data,
 
                 bytestream += 4;
             }
-        } else {
+        }
+        else
+        {
             av_assert0 (bytestream_end - bytestream >= avctx->width / 2);
 
             offset = a->offset[y & 3] - a->delta[bytestream[2] & 0xF];
 
-            for (x = 0; x < avctx->width; x += 8) {
+            for (x = 0; x < avctx->width; x += 8)
+            {
                 luma[0]     = offset += a->delta[bytestream[2] & 0xF];
                 luma[1]     = offset += a->delta[bytestream[2] >>  4];
                 luma[2]     = offset += a->delta[bytestream[3] & 0xF];
@@ -121,7 +131,8 @@ static int vcr1_decode_frame(AVCodecContext *avctx, void *data,
     return bytestream - avpkt->data;
 }
 
-AVCodec ff_vcr1_decoder = {
+AVCodec ff_vcr1_decoder =
+{
     .name           = "vcr1",
     .long_name      = NULL_IF_CONFIG_SMALL("ATI VCR1"),
     .type           = AVMEDIA_TYPE_VIDEO,

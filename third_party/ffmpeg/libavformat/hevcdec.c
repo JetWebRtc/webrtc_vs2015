@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW HEVC video demuxer
  * Copyright (c) 2013 Dirk Farin <dirk.farin@gmail.com>
  *
@@ -30,9 +30,11 @@ static int hevc_probe(AVProbeData *p)
     int vps = 0, sps = 0, pps = 0, irap = 0;
     int i;
 
-    for (i = 0; i < p->buf_size - 1; i++) {
+    for (i = 0; i < p->buf_size - 1; i++)
+    {
         code = (code << 8) + p->buf[i];
-        if ((code & 0xffffff00) == 0x100) {
+        if ((code & 0xffffff00) == 0x100)
+        {
             uint8_t nal2 = p->buf[i + 1];
             int type = (code & 0x7E) >> 1;
 
@@ -42,16 +44,25 @@ static int hevc_probe(AVProbeData *p)
             if (nal2 & 0xf8) // reserved zero
                 return 0;
 
-            switch (type) {
-            case NAL_VPS:        vps++;  break;
-            case NAL_SPS:        sps++;  break;
-            case NAL_PPS:        pps++;  break;
+            switch (type)
+            {
+            case NAL_VPS:
+                vps++;
+                break;
+            case NAL_SPS:
+                sps++;
+                break;
+            case NAL_PPS:
+                pps++;
+                break;
             case NAL_BLA_N_LP:
             case NAL_BLA_W_LP:
             case NAL_BLA_W_RADL:
             case NAL_CRA_NUT:
             case NAL_IDR_N_LP:
-            case NAL_IDR_W_RADL: irap++; break;
+            case NAL_IDR_W_RADL:
+                irap++;
+                break;
             }
         }
     }

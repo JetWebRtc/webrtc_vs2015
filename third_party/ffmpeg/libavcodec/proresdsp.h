@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple ProRes compatible decoder
  *
  * Copyright (c) 2010-2011 Maxim Poliakovski
@@ -28,7 +28,8 @@
 
 #define PRORES_BITS_PER_SAMPLE 10 ///< output precision of prores decoder
 
-typedef struct ProresDSPContext {
+typedef struct ProresDSPContext
+{
     int idct_permutation_type;
     uint8_t idct_permutation[64];
     void (* idct_put) (uint16_t *out, int linesize, int16_t *block, const int16_t *qmat);

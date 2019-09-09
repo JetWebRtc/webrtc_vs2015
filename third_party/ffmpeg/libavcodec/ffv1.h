@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFV1 codec for libavcodec
  *
  * Copyright (c) 2003-2012 Michael Niedermayer <michaelni@gmx.at>
@@ -53,14 +53,16 @@
 #define MAX_QUANT_TABLES 8
 #define MAX_CONTEXT_INPUTS 5
 
-typedef struct VlcState {
+typedef struct VlcState
+{
     int16_t drift;
     uint16_t error_sum;
     int8_t bias;
     uint8_t count;
 } VlcState;
 
-typedef struct PlaneContext {
+typedef struct PlaneContext
+{
     int16_t quant_table[MAX_CONTEXT_INPUTS][256];
     int quant_table_index;
     int context_count;
@@ -71,7 +73,8 @@ typedef struct PlaneContext {
 
 #define MAX_SLICES 256
 
-typedef struct FFV1Context {
+typedef struct FFV1Context
+{
     AVClass *class;
     AVCodecContext *avctx;
     RangeCoder c;
@@ -142,7 +145,8 @@ static av_always_inline int fold(int diff, int bits)
 {
     if (bits == 8)
         diff = (int8_t)diff;
-    else {
+    else
+    {
         diff +=  1 << (bits  - 1);
         diff  = av_mod_uintp2(diff, bits);
         diff -=  1 << (bits  - 1);
@@ -168,7 +172,8 @@ static inline int get_context(PlaneContext *p, int16_t *src,
     const int RT = last[1];
     const int L  = src[-1];
 
-    if (p->quant_table[3][127]) {
+    if (p->quant_table[3][127])
+    {
         const int TT = last2[0];
         const int LL = src[-2];
         return p->quant_table[0][(L - LT) & 0xFF] +
@@ -176,7 +181,8 @@ static inline int get_context(PlaneContext *p, int16_t *src,
                p->quant_table[2][(T - RT) & 0xFF] +
                p->quant_table[3][(LL - L) & 0xFF] +
                p->quant_table[4][(TT - T) & 0xFF];
-    } else
+    }
+    else
         return p->quant_table[0][(L - LT) & 0xFF] +
                p->quant_table[1][(LT - T) & 0xFF] +
                p->quant_table[2][(T - RT) & 0xFF];
@@ -189,21 +195,25 @@ static inline void update_vlc_state(VlcState *const state, const int v)
     state->error_sum += FFABS(v);
     drift            += v;
 
-    if (count == 128) { // FIXME: variable
+    if (count == 128)   // FIXME: variable
+    {
         count            >>= 1;
         drift            >>= 1;
         state->error_sum >>= 1;
     }
     count++;
 
-    if (drift <= -count) {
+    if (drift <= -count)
+    {
         if (state->bias > -128)
             state->bias--;
 
         drift += count;
         if (drift <= -count)
             drift = -count + 1;
-    } else if (drift > 0) {
+    }
+    else if (drift > 0)
+    {
         if (state->bias < 127)
             state->bias++;
 

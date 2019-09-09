@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,7 +18,8 @@
 #include "webrtc/base/win32.h"
 #endif
 
-namespace rtc {
+namespace rtc
+{
 
 #if defined(WEBRTC_WIN)
 typedef HANDLE PlatformFile;

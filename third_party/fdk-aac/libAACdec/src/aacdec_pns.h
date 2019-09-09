@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,17 +96,19 @@ amm-info@iis.fraunhofer.de
 
 #define NO_OFBANDS ((8*16))
 
-typedef struct {
-  UCHAR correlated[NO_OFBANDS];
+typedef struct
+{
+    UCHAR correlated[NO_OFBANDS];
 } CPnsInterChannelData;
 
-typedef struct {
-  CPnsInterChannelData *pPnsInterChannelData;
-  UCHAR  pnsUsed[NO_OFBANDS];
-  int    CurrentEnergy;
-  UCHAR  PnsActive;
-  INT   *currentSeed;
-  INT   *randomSeed;
+typedef struct
+{
+    CPnsInterChannelData *pPnsInterChannelData;
+    UCHAR  pnsUsed[NO_OFBANDS];
+    int    CurrentEnergy;
+    UCHAR  PnsActive;
+    INT   *currentSeed;
+    INT   *randomSeed;
 } CPnsData;
 
 void CPns_InitPns ( CPnsData *pPnsData,

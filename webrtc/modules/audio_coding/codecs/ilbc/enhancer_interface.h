@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,9 +26,9 @@
  *---------------------------------------------------------------*/
 
 size_t  // (o) Estimated lag in end of in[]
-    WebRtcIlbcfix_EnhancerInterface(
-        int16_t* out,                // (o) enhanced signal
-        const int16_t* in,           // (i) unenhanced signal
-        IlbcDecoder* iLBCdec_inst);  // (i) buffers etc
+WebRtcIlbcfix_EnhancerInterface(
+    int16_t* out,                // (o) enhanced signal
+    const int16_t* in,           // (i) unenhanced signal
+    IlbcDecoder* iLBCdec_inst);  // (i) buffers etc
 
 #endif

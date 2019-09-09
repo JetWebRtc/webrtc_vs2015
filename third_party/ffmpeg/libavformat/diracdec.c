@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW Dirac demuxer
  * Copyright (c) 2007 Marco Gerards <marco@gnu.org>
  *

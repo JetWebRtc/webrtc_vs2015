@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -97,7 +97,7 @@ void WebRtcNsx_Process(NsxHandle* nsxInst,
  *                        uninitialized instance.
  */
 const uint32_t* WebRtcNsx_noise_estimate(const NsxHandle* nsxInst,
-                                         int* q_noise);
+        int* q_noise);
 
 /* Returns the number of frequency bins, which is the length of the noise
  * estimate for example.

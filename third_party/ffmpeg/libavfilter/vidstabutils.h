@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Georg Martius <georg dot martius at web dot de>
  *
  * This file is part of FFmpeg.

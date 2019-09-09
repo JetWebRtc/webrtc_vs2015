@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -59,7 +59,7 @@
 
 #if HAVE_INLINE_ASM
 static void compute_antialias_mips_float(MPADecodeContext *s,
-                                        GranuleDef *g)
+        GranuleDef *g)
 {
     float *ptr, *ptr_end;
     float *csa = &csa_table[0][0];
@@ -69,12 +69,15 @@ static void compute_antialias_mips_float(MPADecodeContext *s,
 
     ptr = g->sb_hybrid + 18;
     /* we antialias only "long" bands */
-    if (g->block_type == 2) {
+    if (g->block_type == 2)
+    {
         if (!g->switch_point)
             return;
         /* XXX: check this for 8000Hz case */
         ptr_end = ptr + 18;
-    } else {
+    }
+    else
+    {
         ptr_end = ptr + 558;
     }
 
@@ -168,12 +171,12 @@ static void compute_antialias_mips_float(MPADecodeContext *s,
         "bne     %[ptr],  %[ptr_end],  compute_antialias_float_loop%=   \t\n"
 
         : [ptr] "+r" (ptr),
-          [in1] "=&f" (in1), [in2] "=&f" (in2),
-          [in3] "=&f" (in3), [in4] "=&f" (in4),
-          [in5] "=&f" (in5), [in6] "=&f" (in6),
-          [in7] "=&f" (in7), [in8] "=&f" (in8),
-          [out1] "=&f" (out1), [out2] "=&f" (out2),
-          [out3] "=&f" (out3), [out4] "=&f" (out4)
+        [in1] "=&f" (in1), [in2] "=&f" (in2),
+        [in3] "=&f" (in3), [in4] "=&f" (in4),
+        [in5] "=&f" (in5), [in6] "=&f" (in6),
+        [in7] "=&f" (in7), [in8] "=&f" (in8),
+        [out1] "=&f" (out1), [out2] "=&f" (out2),
+        [out3] "=&f" (out3), [out4] "=&f" (out4)
         : [csa] "r" (csa), [ptr_end] "r" (ptr_end)
         : "memory"
     );

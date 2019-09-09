@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -46,20 +46,29 @@ void silk_decode_pitch(
     opus_int   lag, k, min_lag, max_lag, cbk_size;
     const opus_int8 *Lag_CB_ptr;
 
-    if( Fs_kHz == 8 ) {
-        if( nb_subfr == PE_MAX_NB_SUBFR ) {
+    if( Fs_kHz == 8 )
+    {
+        if( nb_subfr == PE_MAX_NB_SUBFR )
+        {
             Lag_CB_ptr = &silk_CB_lags_stage2[ 0 ][ 0 ];
             cbk_size   = PE_NB_CBKS_STAGE2_EXT;
-        } else {
+        }
+        else
+        {
             silk_assert( nb_subfr == PE_MAX_NB_SUBFR >> 1 );
             Lag_CB_ptr = &silk_CB_lags_stage2_10_ms[ 0 ][ 0 ];
             cbk_size   = PE_NB_CBKS_STAGE2_10MS;
         }
-    } else {
-        if( nb_subfr == PE_MAX_NB_SUBFR ) {
+    }
+    else
+    {
+        if( nb_subfr == PE_MAX_NB_SUBFR )
+        {
             Lag_CB_ptr = &silk_CB_lags_stage3[ 0 ][ 0 ];
             cbk_size   = PE_NB_CBKS_STAGE3_MAX;
-        } else {
+        }
+        else
+        {
             silk_assert( nb_subfr == PE_MAX_NB_SUBFR >> 1 );
             Lag_CB_ptr = &silk_CB_lags_stage3_10_ms[ 0 ][ 0 ];
             cbk_size   = PE_NB_CBKS_STAGE3_10MS;
@@ -70,7 +79,8 @@ void silk_decode_pitch(
     max_lag = silk_SMULBB( PE_MAX_LAG_MS, Fs_kHz );
     lag = min_lag + lagIndex;
 
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         pitch_lags[ k ] = lag + matrix_ptr( Lag_CB_ptr, k, contourIndex, cbk_size );
         pitch_lags[ k ] = silk_LIMIT( pitch_lags[ k ], min_lag, max_lag );
     }

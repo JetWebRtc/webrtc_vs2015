@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC definitions and structures
  * Copyright (c) 2005-2006 Oded Shimon ( ods15 ods15 dyndns org )
  * Copyright (c) 2006-2007 Maxim Gavrilov ( maxim.gavrilov gmail com )
@@ -52,7 +52,8 @@
 
 #define CLIP_AVOIDANCE_FACTOR 0.95f
 
-enum RawDataBlockType {
+enum RawDataBlockType
+{
     TYPE_SCE,
     TYPE_CPE,
     TYPE_CCE,
@@ -63,7 +64,8 @@ enum RawDataBlockType {
     TYPE_END,
 };
 
-enum ExtensionPayloadID {
+enum ExtensionPayloadID
+{
     EXT_FILL,
     EXT_FILL_DATA,
     EXT_DATA_ELEMENT,
@@ -72,14 +74,16 @@ enum ExtensionPayloadID {
     EXT_SBR_DATA_CRC  = 0xe,
 };
 
-enum WindowSequence {
+enum WindowSequence
+{
     ONLY_LONG_SEQUENCE,
     LONG_START_SEQUENCE,
     EIGHT_SHORT_SEQUENCE,
     LONG_STOP_SEQUENCE,
 };
 
-enum BandType {
+enum BandType
+{
     ZERO_BT        = 0,     ///< Scalefactors and spectral data are all zero.
     FIRST_PAIR_BT  = 5,     ///< This and later band types encode two values (rather than four) with one code word.
     ESC_BT         = 11,    ///< Spectral data are coded with an escape sequence.
@@ -91,7 +95,8 @@ enum BandType {
 
 #define IS_CODEBOOK_UNSIGNED(x) (((x) - 1) & 10)
 
-enum ChannelPosition {
+enum ChannelPosition
+{
     AAC_CHANNEL_OFF   = 0,
     AAC_CHANNEL_FRONT = 1,
     AAC_CHANNEL_SIDE  = 2,
@@ -103,7 +108,8 @@ enum ChannelPosition {
 /**
  * The point during decoding at which channel coupling is applied.
  */
-enum CouplingPoint {
+enum CouplingPoint
+{
     BEFORE_TNS,
     BETWEEN_TNS_AND_IMDCT,
     AFTER_IMDCT = 3,
@@ -112,7 +118,8 @@ enum CouplingPoint {
 /**
  * Output configuration status
  */
-enum OCStatus {
+enum OCStatus
+{
     OC_NONE,        ///< Output unconfigured
     OC_TRIAL_PCE,   ///< Output configuration under trial specified by an inband PCE
     OC_TRIAL_FRAME, ///< Output configuration under trial specified by a frame header
@@ -120,7 +127,8 @@ enum OCStatus {
     OC_LOCKED,      ///< Output configuration locked in place
 };
 
-typedef struct OutputConfiguration {
+typedef struct OutputConfiguration
+{
     MPEG4AudioConfig m4ac;
     uint8_t layout_map[MAX_ELEM_ID*4][3];
     int layout_map_tags;
@@ -132,7 +140,8 @@ typedef struct OutputConfiguration {
 /**
  * Predictor State
  */
-typedef struct PredictorState {
+typedef struct PredictorState
+{
     AAC_FLOAT cor0;
     AAC_FLOAT cor1;
     AAC_FLOAT var0;
@@ -158,7 +167,8 @@ typedef struct PredictorState {
 /**
  * Long Term Prediction
  */
-typedef struct LongTermPrediction {
+typedef struct LongTermPrediction
+{
     int8_t present;
     int16_t lag;
     INTFLOAT coef;
@@ -168,7 +178,8 @@ typedef struct LongTermPrediction {
 /**
  * Individual Channel Stream
  */
-typedef struct IndividualChannelStream {
+typedef struct IndividualChannelStream
+{
     uint8_t max_sfb;            ///< number of scalefactor bands per group
     enum WindowSequence window_sequence[2];
     uint8_t use_kb_window[2];   ///< If set, use Kaiser-Bessel window, otherwise use a sine window.
@@ -192,7 +203,8 @@ typedef struct IndividualChannelStream {
 /**
  * Temporal Noise Shaping
  */
-typedef struct TemporalNoiseShaping {
+typedef struct TemporalNoiseShaping
+{
     int present;
     int n_filt[8];
     int length[8][4];
@@ -205,7 +217,8 @@ typedef struct TemporalNoiseShaping {
 /**
  * Dynamic Range Control - decoded from the bitstream but not processed further.
  */
-typedef struct DynamicRangeControl {
+typedef struct DynamicRangeControl
+{
     int pce_instance_tag;                           ///< Indicates with which program the DRC info is associated.
     int dyn_rng_sgn[17];                            ///< DRC sign information; 0 - positive, 1 - negative
     int dyn_rng_ctl[17];                            ///< DRC magnitude information
@@ -218,7 +231,8 @@ typedef struct DynamicRangeControl {
                                                      */
 } DynamicRangeControl;
 
-typedef struct Pulse {
+typedef struct Pulse
+{
     int num_pulse;
     int start;
     int pos[4];
@@ -228,7 +242,8 @@ typedef struct Pulse {
 /**
  * coupling parameters
  */
-typedef struct ChannelCoupling {
+typedef struct ChannelCoupling
+{
     enum CouplingPoint coupling_point;  ///< The point during decoding at which coupling is applied.
     int num_coupled;       ///< number of target elements
     enum RawDataBlockType type[8];   ///< Type of channel element to be coupled - SCE or CPE.
@@ -242,7 +257,8 @@ typedef struct ChannelCoupling {
 /**
  * Single Channel Element - used for both SCE and LFE elements.
  */
-typedef struct SingleChannelElement {
+typedef struct SingleChannelElement
+{
     IndividualChannelStream ics;
     TemporalNoiseShaping tns;
     Pulse pulse;
@@ -267,7 +283,8 @@ typedef struct SingleChannelElement {
 /**
  * channel element - generic struct for SCE/CPE/CCE/LFE
  */
-typedef struct ChannelElement {
+typedef struct ChannelElement
+{
     int present;
     // CPE specific
     int common_window;        ///< Set if channels share a common 'IndividualChannelStream' in bitstream.
@@ -285,7 +302,8 @@ typedef struct ChannelElement {
 /**
  * main AAC context
  */
-struct AACContext {
+struct AACContext
+{
     AVClass        *class;
     AVCodecContext *avctx;
     AVFrame *frame;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Jonathan Baldwin
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "libavformat/internal.h"
 #include "avdevice.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     /** OpenAL capture device context. **/
     ALCdevice *device;
@@ -47,7 +48,8 @@ typedef struct {
     int list_devices;
 } al_data;
 
-typedef struct {
+typedef struct
+{
     ALCenum al_fmt;
     enum AVCodecID codec_id;
     int channels;
@@ -62,7 +64,8 @@ typedef struct {
  */
 static const inline al_format_info* get_al_format_info(ALCenum al_fmt)
 {
-    static const al_format_info info_table[] = {
+    static const al_format_info info_table[] =
+    {
         [AL_FORMAT_MONO8-LOWEST_AL_FORMAT]    = {AL_FORMAT_MONO8, AV_CODEC_ID_PCM_U8, 1},
         [AL_FORMAT_MONO16-LOWEST_AL_FORMAT]   = {AL_FORMAT_MONO16, AV_NE (AV_CODEC_ID_PCM_S16BE, AV_CODEC_ID_PCM_S16LE), 1},
         [AL_FORMAT_STEREO8-LOWEST_AL_FORMAT]  = {AL_FORMAT_STEREO8, AV_CODEC_ID_PCM_U8, 2},
@@ -83,7 +86,8 @@ static inline int al_get_error(ALCdevice *device, const char** error_msg_ret)
     ALCenum error = alcGetError(device);
     if (error_msg_ret)
         *error_msg_ret = (const char*) alcGetString(device, error);
-    switch (error) {
+    switch (error)
+    {
     case ALC_NO_ERROR:
         return 0;
     case ALC_INVALID_DEVICE:
@@ -121,7 +125,8 @@ static inline void print_al_capture_devices(void *log_ctx)
 static int read_header(AVFormatContext *ctx)
 {
     al_data *ad = ctx->priv_data;
-    static const ALCenum sample_formats[2][2] = {
+    static const ALCenum sample_formats[2][2] =
+    {
         { AL_FORMAT_MONO8,  AL_FORMAT_STEREO8  },
         { AL_FORMAT_MONO16, AL_FORMAT_STEREO16 }
     };
@@ -130,7 +135,8 @@ static int read_header(AVFormatContext *ctx)
     AVStream *st = NULL;
     AVCodecContext *codec = NULL;
 
-    if (ad->list_devices) {
+    if (ad->list_devices)
+    {
         print_al_capture_devices(ctx);
         return AVERROR_EXIT;
     }
@@ -147,7 +153,8 @@ static int read_header(AVFormatContext *ctx)
     if (error = al_get_error(ad->device, &error_msg)) goto fail;
 
     /* Create stream */
-    if (!(st = avformat_new_stream(ctx, NULL))) {
+    if (!(st = avformat_new_stream(ctx, NULL)))
+    {
         error = AVERROR(ENOMEM);
         goto fail;
     }
@@ -214,7 +221,8 @@ static int read_close(AVFormatContext* ctx)
 {
     al_data *ad = ctx->priv_data;
 
-    if (ad->device) {
+    if (ad->device)
+    {
         alcCaptureStop(ad->device);
         alcCaptureCloseDevice(ad->device);
     }
@@ -223,7 +231,8 @@ static int read_close(AVFormatContext* ctx)
 
 #define OFFSET(x) offsetof(al_data, x)
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"channels", "set number of channels",     OFFSET(channels),     AV_OPT_TYPE_INT, {.i64=2},     1, 2,      AV_OPT_FLAG_DECODING_PARAM },
     {"sample_rate", "set sample rate",         OFFSET(sample_rate),  AV_OPT_TYPE_INT, {.i64=44100}, 1, 192000, AV_OPT_FLAG_DECODING_PARAM },
     {"sample_size", "set sample size",         OFFSET(sample_size),  AV_OPT_TYPE_INT, {.i64=16},    8, 16,     AV_OPT_FLAG_DECODING_PARAM },
@@ -233,7 +242,8 @@ static const AVOption options[] = {
     {NULL},
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "openal",
     .item_name = av_default_item_name,
     .option = options,
@@ -241,7 +251,8 @@ static const AVClass class = {
     .category = AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT,
 };
 
-AVInputFormat ff_openal_demuxer = {
+AVInputFormat ff_openal_demuxer =
+{
     .name = "openal",
     .long_name = NULL_IF_CONFIG_SMALL("OpenAL audio capture device"),
     .priv_data_size = sizeof(al_data),
@@ -251,4 +262,4 @@ AVInputFormat ff_openal_demuxer = {
     .read_close = read_close,
     .flags = AVFMT_NOFILE,
     .priv_class = &class
-};
+    };

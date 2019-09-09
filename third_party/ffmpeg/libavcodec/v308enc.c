@@ -1,4 +1,4 @@
-/*
+﻿/*
  * v308 encoder
  *
  * Copyright (c) 2011 Carl Eugen Hoyos
@@ -26,7 +26,8 @@
 
 static av_cold int v308_encode_init(AVCodecContext *avctx)
 {
-    if (avctx->width & 1) {
+    if (avctx->width & 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "v308 requires width to be even.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -49,8 +50,10 @@ static int v308_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     u = pic->data[1];
     v = pic->data[2];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width; j++) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width; j++)
+        {
             *dst++ = v[j];
             *dst++ = y[j];
             *dst++ = u[j];
@@ -70,7 +73,8 @@ static av_cold int v308_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_v308_encoder = {
+AVCodec ff_v308_encoder =
+{
     .name         = "v308",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed 4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -47,11 +47,13 @@
 
 #include "fixed_dsp.h"
 
-static void vector_fmul_add_c(int *dst, const int *src0, const int *src1, const int *src2, int len){
+static void vector_fmul_add_c(int *dst, const int *src0, const int *src1, const int *src2, int len)
+{
     int i;
     int64_t accu;
 
-    for (i=0; i<len; i++) {
+    for (i=0; i<len; i++)
+    {
         accu = (int64_t)src0[i] * src1[i];
         dst[i] = src2[i] + (int)((accu + 0x40000000) >> 31);
     }
@@ -63,15 +65,16 @@ static void vector_fmul_reverse_c(int *dst, const int *src0, const int *src1, in
     int64_t accu;
 
     src1 += len-1;
-    for (i=0; i<len; i++) {
+    for (i=0; i<len; i++)
+    {
         accu = (int64_t)src0[i] * src1[-i];
         dst[i] = (int)((accu+0x40000000) >> 31);
     }
 }
 
 static void vector_fmul_window_scaled_c(int16_t *dst, const int32_t *src0,
-                                       const int32_t *src1, const int32_t *win,
-                                       int len, uint8_t bits)
+                                        const int32_t *src1, const int32_t *win,
+                                        int len, uint8_t bits)
 {
     int32_t s0, s1, wi, wj, i,j, round;
 
@@ -80,7 +83,8 @@ static void vector_fmul_window_scaled_c(int16_t *dst, const int32_t *src0,
     src0+= len;
     round = bits? 1 << (bits-1) : 0;
 
-    for (i=-len, j=len-1; i<0; i++, j--) {
+    for (i=-len, j=len-1; i<0; i++, j--)
+    {
         s0 = src0[i];
         s1 = src1[j];
         wi = win[i];
@@ -91,8 +95,8 @@ static void vector_fmul_window_scaled_c(int16_t *dst, const int32_t *src0,
 }
 
 static void vector_fmul_window_c(int32_t *dst, const int32_t *src0,
-                                       const int32_t *src1, const int32_t *win,
-                                       int len)
+                                 const int32_t *src1, const int32_t *win,
+                                 int len)
 {
     int32_t s0, s1, wi, wj, i, j;
 
@@ -100,7 +104,8 @@ static void vector_fmul_window_c(int32_t *dst, const int32_t *src0,
     win += len;
     src0+= len;
 
-    for (i=-len, j=len-1; i<0; i++, j--) {
+    for (i=-len, j=len-1; i<0; i++, j--)
+    {
         s0 = src0[i];
         s1 = src1[j];
         wi = win[i];
@@ -115,7 +120,8 @@ static void vector_fmul_c(int *dst, const int *src0, const int *src1, int len)
     int i;
     int64_t accu;
 
-    for (i = 0; i < len; i++){
+    for (i = 0; i < len; i++)
+    {
         accu = (int64_t)src0[i] * src1[i];
         dst[i] = (int)((accu+0x40000000) >> 31);
     }
@@ -138,7 +144,8 @@ static void butterflies_fixed_c(int *v1, int *v2, int len)
 {
     int i;
 
-    for (i = 0; i < len; i++){
+    for (i = 0; i < len; i++)
+    {
         int t = v1[i] - v2[i];
         v1[i] += v2[i];
         v2[i] = t;

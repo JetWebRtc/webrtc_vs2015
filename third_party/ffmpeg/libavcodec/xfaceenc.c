@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 1990 James Ashton - Sydney University
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -29,7 +29,8 @@
 #include "internal.h"
 #include "libavutil/avassert.h"
 
-typedef struct XFaceContext {
+typedef struct XFaceContext
+{
     AVClass *class;
     uint8_t bitmap[XFACE_PIXELS]; ///< image used internally for decoding
     int max_line_len;             ///< max line length for compressed data
@@ -42,7 +43,8 @@ static int all_same(char *bitmap, int w, int h)
     int x;
 
     val = *bitmap;
-    while (h--) {
+    while (h--)
+    {
         row = bitmap;
         x = w;
         while (x--)
@@ -55,13 +57,16 @@ static int all_same(char *bitmap, int w, int h)
 
 static int all_black(char *bitmap, int w, int h)
 {
-    if (w > 3) {
+    if (w > 3)
+    {
         w /= 2;
         h /= 2;
         return (all_black(bitmap, w, h) && all_black(bitmap + w, w, h) &&
                 all_black(bitmap + XFACE_WIDTH * h, w, h) &&
                 all_black(bitmap + XFACE_WIDTH * h + w, w, h));
-    } else {
+    }
+    else
+    {
         /* at least one pixel in the 2x2 grid is non-zero */
         return *bitmap || *(bitmap + 1) ||
                *(bitmap + XFACE_WIDTH) || *(bitmap + XFACE_WIDTH + 1);
@@ -73,7 +78,8 @@ static int all_white(char *bitmap, int w, int h)
     return *bitmap == 0 && all_same(bitmap, w, h);
 }
 
-typedef struct {
+typedef struct
+{
     ProbRange prob_ranges[XFACE_PIXELS*2];
     int prob_ranges_idx;
 } ProbRangesQueue;
@@ -88,31 +94,39 @@ static inline int pq_push(ProbRangesQueue *pq, const ProbRange *p)
 
 static void push_greys(ProbRangesQueue *pq, char *bitmap, int w, int h)
 {
-    if (w > 3) {
+    if (w > 3)
+    {
         w /= 2;
         h /= 2;
         push_greys(pq, bitmap,                       w, h);
         push_greys(pq, bitmap + w,                   w, h);
         push_greys(pq, bitmap + XFACE_WIDTH * h,     w, h);
         push_greys(pq, bitmap + XFACE_WIDTH * h + w, w, h);
-    } else {
+    }
+    else
+    {
         const ProbRange *p = ff_xface_probranges_2x2 +
-                 *bitmap +
-            2 * *(bitmap + 1) +
-            4 * *(bitmap + XFACE_WIDTH) +
-            8 * *(bitmap + XFACE_WIDTH + 1);
+                             *bitmap +
+                             2 * *(bitmap + 1) +
+                             4 * *(bitmap + XFACE_WIDTH) +
+                             8 * *(bitmap + XFACE_WIDTH + 1);
         pq_push(pq, p);
     }
 }
 
 static void encode_block(char *bitmap, int w, int h, int level, ProbRangesQueue *pq)
 {
-    if (all_white(bitmap, w, h)) {
+    if (all_white(bitmap, w, h))
+    {
         pq_push(pq, &ff_xface_probranges_per_level[level][XFACE_COLOR_WHITE]);
-    } else if (all_black(bitmap, w, h)) {
+    }
+    else if (all_black(bitmap, w, h))
+    {
         pq_push(pq, &ff_xface_probranges_per_level[level][XFACE_COLOR_BLACK]);
         push_greys(pq, bitmap, w, h);
-    } else {
+    }
+    else
+    {
         pq_push(pq, &ff_xface_probranges_per_level[level][XFACE_COLOR_GREY]);
         w /= 2;
         h /= 2;
@@ -145,8 +159,10 @@ static int xface_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint8_t *p;
     char intbuf[XFACE_MAX_DIGITS];
 
-    if (avctx->width || avctx->height) {
-        if (avctx->width != XFACE_WIDTH || avctx->height != XFACE_HEIGHT) {
+    if (avctx->width || avctx->height)
+    {
+        if (avctx->width != XFACE_WIDTH || avctx->height != XFACE_HEIGHT)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Size value %dx%d not supported, only accepts a size of %dx%d\n",
                    avctx->width, avctx->height, XFACE_WIDTH, XFACE_HEIGHT);
@@ -159,14 +175,17 @@ static int xface_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     /* convert image from MONOWHITE to 1=black 0=white bitmap */
     buf = frame->data[0];
     i = j = 0;
-    do {
+    do
+    {
         for (k = 0; k < 8; k++)
             xface->bitmap[i++] = (buf[j]>>(7-k))&1;
-        if (++j == XFACE_WIDTH/8) {
+        if (++j == XFACE_WIDTH/8)
+        {
             buf += frame->linesize[0];
             j = 0;
         }
-    } while (i < XFACE_PIXELS);
+    }
+    while (i < XFACE_PIXELS);
 
     /* create a copy of bitmap */
     memcpy(bitmap_copy, xface->bitmap, XFACE_PIXELS);
@@ -188,7 +207,8 @@ static int xface_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     /* write the inverted big integer in b to intbuf */
     i = 0;
     av_assert0(b.nb_words < XFACE_MAX_WORDS);
-    while (b.nb_words) {
+    while (b.nb_words)
+    {
         uint8_t r;
         ff_big_div(&b, XFACE_PRINTS, &r);
         av_assert0(i < sizeof(intbuf));
@@ -211,7 +231,8 @@ static int xface_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     return 0;
 }
 
-AVCodec ff_xface_encoder = {
+AVCodec ff_xface_encoder =
+{
     .name           = "xface",
     .long_name      = NULL_IF_CONFIG_SMALL("X-face image"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,15 +97,15 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  UINT ValidBits;
-  UINT ReadOffset;
-  UINT WriteOffset;
-  UINT BitCnt;
-  UINT BitNdx;
+    UINT ValidBits;
+    UINT ReadOffset;
+    UINT WriteOffset;
+    UINT BitCnt;
+    UINT BitNdx;
 
-  UCHAR *Buffer;
-  UINT   bufSize;
-  UINT   bufBits;
+    UCHAR *Buffer;
+    UINT   bufSize;
+    UINT   bufBits;
 } FDK_BITBUF;
 
 typedef FDK_BITBUF *HANDLE_FDK_BITBUF;

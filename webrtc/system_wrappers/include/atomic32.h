@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,45 +20,49 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // 32 bit atomic variable.  Note that this class relies on the compiler to
 // align the 32 bit value correctly (on a 32 bit boundary), so as long as you're
 // not doing things like reinterpret_cast over some custom allocated memory
 // without being careful with alignment, you should be fine.
-class Atomic32 {
- public:
-  Atomic32(int32_t initial_value = 0);
-  ~Atomic32();
+class Atomic32
+{
+public:
+    Atomic32(int32_t initial_value = 0);
+    ~Atomic32();
 
-  // Prefix operator!
-  int32_t operator++();
-  int32_t operator--();
+    // Prefix operator!
+    int32_t operator++();
+    int32_t operator--();
 
-  int32_t operator+=(int32_t value);
-  int32_t operator-=(int32_t value);
+    int32_t operator+=(int32_t value);
+    int32_t operator-=(int32_t value);
 
-  // Sets the value atomically to new_value if the value equals compare value.
-  // The function returns true if the exchange happened.
-  bool CompareExchange(int32_t new_value, int32_t compare_value);
-  int32_t Value() {
-    return *this += 0;
-  }
+    // Sets the value atomically to new_value if the value equals compare value.
+    // The function returns true if the exchange happened.
+    bool CompareExchange(int32_t new_value, int32_t compare_value);
+    int32_t Value()
+    {
+        return *this += 0;
+    }
 
- private:
-  // Disable the + and - operator since it's unclear what these operations
-  // should do.
-  Atomic32 operator+(const Atomic32& other);
-  Atomic32 operator-(const Atomic32& other);
+private:
+    // Disable the + and - operator since it's unclear what these operations
+    // should do.
+    Atomic32 operator+(const Atomic32& other);
+    Atomic32 operator-(const Atomic32& other);
 
-  // Checks if |_value| is 32bit aligned.
-  inline bool Is32bitAligned() const {
-    return (reinterpret_cast<ptrdiff_t>(&value_) & 3) == 0;
-  }
+    // Checks if |_value| is 32bit aligned.
+    inline bool Is32bitAligned() const
+    {
+        return (reinterpret_cast<ptrdiff_t>(&value_) & 3) == 0;
+    }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(Atomic32);
+    RTC_DISALLOW_COPY_AND_ASSIGN(Atomic32);
 
-  int32_t value_;
+    int32_t value_;
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -55,7 +55,7 @@
 
 #if HAVE_MIPSFPU && HAVE_INLINE_ASM
 void hb_fir_filter_mips(float *out, const float fir_coef[],
-                          float mem[], const float *in);
+                        float mem[], const float *in);
 #define hb_fir_filter hb_fir_filter_mips
 #endif
 

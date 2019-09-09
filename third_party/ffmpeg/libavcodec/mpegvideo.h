@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generic DCT based hybrid video encoder
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer
@@ -85,7 +85,8 @@
 /**
  * MpegEncContext.
  */
-typedef struct MpegEncContext {
+typedef struct MpegEncContext
+{
     AVClass *class;
 
     int y_dc_scale, c_dc_scale;
@@ -112,7 +113,7 @@ typedef struct MpegEncContext {
     int h263_pred;    ///< use mpeg4/h263 ac/dc predictions
     int pb_frame;     ///< PB frame mode (0 = none, 1 = base, 2 = improved)
 
-/* the following codec id fields are deprecated in favor of codec_id */
+    /* the following codec id fields are deprecated in favor of codec_id */
     int h263_plus;    ///< h263 plus headers
     int h263_flv;     ///< use flv h263 header
 
@@ -506,21 +507,21 @@ typedef struct MpegEncContext {
 #define SLICE_NOEND     -3 ///<no end marker or error found but mb count exceeded
 
     void (*dct_unquantize_mpeg1_intra)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                       int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_mpeg1_inter)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                       int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_mpeg2_intra)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                       int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_mpeg2_inter)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                       int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_h263_intra)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                      int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_h263_inter)(struct MpegEncContext *s,
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                      int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_intra)(struct MpegEncContext *s, // unquantizer to use (mpeg4 can use both)
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                 int16_t *block/*align 16*/, int n, int qscale);
     void (*dct_unquantize_inter)(struct MpegEncContext *s, // unquantizer to use (mpeg4 can use both)
-                           int16_t *block/*align 16*/, int n, int qscale);
+                                 int16_t *block/*align 16*/, int n, int qscale);
     int (*dct_quantize)(struct MpegEncContext *s, int16_t *block/*align 16*/, int n, int qscale, int *overflow);
     int (*fast_dct_quantize)(struct MpegEncContext *s, int16_t *block/*align 16*/, int n, int qscale, int *overflow);
     void (*denoise_dct)(struct MpegEncContext *s, int16_t *block);
@@ -651,9 +652,9 @@ void ff_mpeg_flush(AVCodecContext *avctx);
 
 void ff_print_debug_info(MpegEncContext *s, Picture *p, AVFrame *pict);
 void ff_print_debug_info2(AVCodecContext *avctx, AVFrame *pict, uint8_t *mbskip_table,
-                         uint32_t *mbtype_table, int8_t *qscale_table, int16_t (*motion_val[2])[2],
-                         int *low_delay,
-                         int mb_width, int mb_height, int mb_stride, int quarter_sample);
+                          uint32_t *mbtype_table, int8_t *qscale_table, int16_t (*motion_val[2])[2],
+                          int *low_delay,
+                          int mb_width, int mb_height, int mb_stride, int quarter_sample);
 
 int ff_mpv_export_qp_table(MpegEncContext *s, AVFrame *f, Picture *p, int qp_type);
 
@@ -678,7 +679,8 @@ void ff_mpv_motion(MpegEncContext *s,
                    op_pixels_func (*pix_op)[4],
                    qpel_mc_func (*qpix_op)[16]);
 
-static inline void ff_update_block_index(MpegEncContext *s){
+static inline void ff_update_block_index(MpegEncContext *s)
+{
     const int block_size= 8 >> s->avctx->lowres;
 
     s->block_index[0]+=2;
@@ -692,7 +694,8 @@ static inline void ff_update_block_index(MpegEncContext *s){
     s->dest[2]+= block_size;
 }
 
-static inline int get_bits_diff(MpegEncContext *s){
+static inline int get_bits_diff(MpegEncContext *s)
+{
     const int bits= put_bits_count(&s->pb);
     const int last= s->last_bits;
 

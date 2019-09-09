@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2010-2013, Cisco Systems
  *     All rights reserved.
@@ -57,7 +57,8 @@ using namespace WelsEnc;
 #define THRESHOLD_RMSE_CORE4    0.0215f // v1.1: 0.0215f; v1.0: 0.03f
 #define THRESHOLD_RMSE_CORE2    0.0200f // v1.1: 0.0200f; v1.0: 0.04f
 
-typedef struct TagSliceThreadPrivateData {
+typedef struct TagSliceThreadPrivateData
+{
 void*           pWelsPEncCtx;
 SFrameBSInfo*   pFrameBsInfo;
 int32_t         iSliceIndex;    // slice index, zero based
@@ -68,7 +69,8 @@ int32_t         iStartMbIndex;  // inclusive
 int32_t         iEndMbIndex;    // exclusive
 } SSliceThreadPrivateData;
 
-typedef struct TagSliceThreading {
+typedef struct TagSliceThreading
+{
 SSliceThreadPrivateData*        pThreadPEncCtx;// thread context, [iThreadIdx]
 char eventNamespace[100];
 WELS_THREAD_HANDLE              pThreadHandles[MAX_THREADS_NUM];// thread handles, [iThreadIdx]

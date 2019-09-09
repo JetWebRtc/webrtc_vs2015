@@ -1,4 +1,4 @@
-/*
+﻿/*
  * huffyuv codec for libavcodec
  *
  * Copyright (c) 2002-2014 Michael Niedermayer <michaelni@gmx.at>
@@ -41,12 +41,15 @@ int ff_huffyuv_generate_bits_table(uint32_t *dst, const uint8_t *len_table, int 
     int len, index;
     uint32_t bits = 0;
 
-    for (len = 32; len > 0; len--) {
-        for (index = 0; index < n; index++) {
+    for (len = 32; len > 0; len--)
+    {
+        for (index = 0; index < n; index++)
+        {
             if (len_table[index] == len)
                 dst[index] = bits++;
         }
-        if (bits & 1) {
+        if (bits & 1)
+        {
             av_log(NULL, AV_LOG_ERROR, "Error generating huffman table\n");
             return -1;
         }
@@ -59,7 +62,8 @@ av_cold int ff_huffyuv_alloc_temp(HYuvContext *s)
 {
     int i;
 
-    for (i=0; i<3; i++) {
+    for (i=0; i<3; i++)
+    {
         s->temp[i]= av_malloc(4*s->width + 16);
         if (!s->temp[i])
             return AVERROR(ENOMEM);
@@ -88,7 +92,8 @@ av_cold void ff_huffyuv_common_end(HYuvContext *s)
 {
     int i;
 
-    for(i = 0; i < 3; i++) {
+    for(i = 0; i < 3; i++)
+    {
         av_freep(&s->temp[i]);
         s->temp16[i] = NULL;
     }

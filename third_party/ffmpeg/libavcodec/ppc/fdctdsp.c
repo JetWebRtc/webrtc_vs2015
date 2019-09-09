@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2003  James Klicman <james@klicman.org>
  *
  * This file is part of FFmpeg.
@@ -59,7 +59,8 @@
 #define WA (SQRT_2 * (-C3 - C5))
 #define WB (SQRT_2 *  (C5 - C3))
 
-static const vector float fdctconsts[3] = {
+static const vector float fdctconsts[3] =
+{
     { W0, W1, W2, W3 },
     { W4, W5, W6, W7 },
     { W8, W9, WA, WB }
@@ -469,9 +470,11 @@ av_cold void ff_fdctdsp_init_ppc(FDCTDSPContext *c, AVCodecContext *avctx,
     if (!PPC_ALTIVEC(av_get_cpu_flags()))
         return;
 
-    if (!high_bit_depth) {
+    if (!high_bit_depth)
+    {
         if (avctx->dct_algo == FF_DCT_AUTO ||
-            avctx->dct_algo == FF_DCT_ALTIVEC) {
+                avctx->dct_algo == FF_DCT_ALTIVEC)
+        {
             c->fdct = ff_fdct_altivec;
         }
     }

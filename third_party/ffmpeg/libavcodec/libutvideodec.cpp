@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Derek Buitenhuis
  *
  * This file is part of FFmpeg.
@@ -39,7 +39,8 @@ static av_cold int utvideo_decode_init(AVCodecContext *avctx)
     int format;
     int begin_ret;
 
-    if (avctx->extradata_size != 16 && avctx->extradata_size != 8 ) {
+    if (avctx->extradata_size != 16 && avctx->extradata_size != 8 )
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata size (%d) mismatch.\n", avctx->extradata_size);
         return -1;
     }
@@ -51,7 +52,8 @@ static av_cold int utvideo_decode_init(AVCodecContext *avctx)
     info.flags = AV_RL32(avctx->extradata + 12);
 
     /* Pick format based on FOURCC */
-    switch (avctx->codec_tag) {
+    switch (avctx->codec_tag)
+    {
 #ifdef UTV_BT709
     case MKTAG('U', 'L', 'H', '0'):
         avctx->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -88,7 +90,7 @@ static av_cold int utvideo_decode_init(AVCodecContext *avctx)
 #endif
     default:
         av_log(avctx, AV_LOG_ERROR,
-              "Not a Ut Video FOURCC: %X\n", avctx->codec_tag);
+               "Not a Ut Video FOURCC: %X\n", avctx->codec_tag);
         return -1;
     }
 
@@ -100,7 +102,8 @@ static av_cold int utvideo_decode_init(AVCodecContext *avctx)
 #endif
     utv->buffer = (uint8_t *)av_malloc(utv->buf_size * sizeof(uint8_t));
 
-    if (utv->buffer == NULL) {
+    if (utv->buffer == NULL)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to allocate output buffer.\n");
         return -1;
     }
@@ -125,10 +128,11 @@ static av_cold int utvideo_decode_init(AVCodecContext *avctx)
 
     /* Initialize Decoding */
     begin_ret = utv->codec->DecodeBegin(format, avctx->width, avctx->height,
-                            CBGROSSWIDTH_WINDOWS, &info, sizeof(UtVideoExtra));
+                                        CBGROSSWIDTH_WINDOWS, &info, sizeof(UtVideoExtra));
 
     /* Check to see if the decoder initlized properly */
-    if (begin_ret != 0) {
+    if (begin_ret != 0)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Could not initialize decoder: %d\n", begin_ret);
         return -1;
@@ -153,7 +157,8 @@ static int utvideo_decode_frame(AVCodecContext *avctx, void *data,
     utv->codec->DecodeFrame(utv->buffer, avpkt->data, true);
 
     /* Set the output data depending on the colorspace */
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_YUV420P:
         pic->linesize[0] = w;
         pic->linesize[1] = pic->linesize[2] = w / 2;
@@ -165,24 +170,27 @@ static int utvideo_decode_frame(AVCodecContext *avctx, void *data,
         pic->linesize[0] = w * 2;
         pic->data[0] = utv->buffer;
         break;
-    case AV_PIX_FMT_YUV422P10: {
+    case AV_PIX_FMT_YUV422P10:
+    {
         uint16_t *y, *u, *v;
         int i,j;
         int linesize = ((w + 47) / 48) * 128;
 
         pic->linesize[0] = w * 2;
         pic->linesize[1] =
-        pic->linesize[2] = w;
+            pic->linesize[2] = w;
         pic->data[0] = utv->buffer + linesize * h;
         pic->data[1] = pic->data[0] + h*pic->linesize[0];
         pic->data[2] = pic->data[1] + h*pic->linesize[1];
         y = (uint16_t*)pic->data[0];
         u = (uint16_t*)pic->data[1];
         v = (uint16_t*)pic->data[2];
-        for (j = 0; j < h; j++) {
+        for (j = 0; j < h; j++)
+        {
             const uint8_t *in = utv->buffer + j * linesize;
 
-            for (i = 0; i + 1 < w; i += 6, in += 4) {
+            for (i = 0; i + 1 < w; i += 6, in += 4)
+            {
                 unsigned a,b;
                 a = AV_RL32(in);
                 in += 4;
@@ -244,7 +252,8 @@ static av_cold int utvideo_decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_libutvideo_decoder = {
+AVCodec ff_libutvideo_decoder =
+{
     "libutvideo",
     NULL_IF_CONFIG_SMALL("Ut Video"),
     AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -37,7 +37,8 @@
 #include "wels_func_ptr_def.h"
 #include "copy_mb.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 void WelsInitEncodingFuncs (SWelsFuncPtrList* pFuncList, uint32_t  uiCpuFlag);
 int32_t WelsGetNoneZeroCount_c (int16_t* pLevel);
 

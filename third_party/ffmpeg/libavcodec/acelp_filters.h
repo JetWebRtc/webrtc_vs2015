@@ -1,4 +1,4 @@
-/*
+﻿/*
  * various filters for ACELP-based codecs
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -25,13 +25,14 @@
 
 #include <stdint.h>
 
-typedef struct ACELPFContext {
+typedef struct ACELPFContext
+{
     /**
     * Floating point version of ff_acelp_interpolate()
     */
     void (*acelp_interpolatef)(float *out, const float *in,
-                            const float *filter_coeffs, int precision,
-                            int frac_pos, int filter_length, int length);
+                               const float *filter_coeffs, int precision,
+                               int frac_pos, int filter_length, int length);
 
     /**
      * Apply an order 2 rational transfer function in-place.
@@ -45,12 +46,12 @@ typedef struct ACELPFContext {
      * @param n number of samples (should be a multiple of eight)
      */
     void (*acelp_apply_order_2_transfer_function)(float *out, const float *in,
-                                                  const float zero_coeffs[2],
-                                                  const float pole_coeffs[2],
-                                                  float gain,
-                                                  float mem[2], int n);
+            const float zero_coeffs[2],
+            const float pole_coeffs[2],
+            float gain,
+            float mem[2], int n);
 
-}ACELPFContext;
+} ACELPFContext;
 
 /**
  * Initialize ACELPFContext.
@@ -134,10 +135,10 @@ void ff_acelp_high_pass_filter(int16_t* out, int hpf_f[2],
  * @param n number of samples
  */
 void ff_acelp_apply_order_2_transfer_function(float *out, const float *in,
-                                              const float zero_coeffs[2],
-                                              const float pole_coeffs[2],
-                                              float gain,
-                                              float mem[2], int n);
+        const float zero_coeffs[2],
+        const float pole_coeffs[2],
+        float gain,
+        float mem[2], int n);
 
 /**
  * Apply tilt compensation filter, 1 - tilt * z-1.

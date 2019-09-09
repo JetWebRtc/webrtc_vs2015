@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -39,10 +39,12 @@
  */
 #include "wels_task_base.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 
-CWelsBaseTask::~CWelsBaseTask() {
+CWelsBaseTask::~CWelsBaseTask()
+{
 }
 
 

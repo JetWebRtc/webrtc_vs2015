@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
 
 This software module was originally developed by
 and edited by Texas Instruments in the course of
@@ -115,41 +115,41 @@ static void calc_CRC(BitStream *bitStream, int len);
 
 static int WriteFAACStr(BitStream *bitStream, char *version, int write)
 {
-  int i;
-  char str[200];
-  int len, padbits, count;
-  int bitcnt;
+    int i;
+    char str[200];
+    int len, padbits, count;
+    int bitcnt;
 
-  sprintf(str, "libfaac %s", version);
+    sprintf(str, "libfaac %s", version);
 
-  len = strlen(str) + 1;
-  padbits = (8 - ((bitStream->numBit + 7) % 8)) % 8;
-  count = len + 3;
+    len = strlen(str) + 1;
+    padbits = (8 - ((bitStream->numBit + 7) % 8)) % 8;
+    count = len + 3;
 
-  bitcnt = LEN_SE_ID + 4 + ((count < 15) ? 0 : 8) + count * 8;
-  if (!write)
+    bitcnt = LEN_SE_ID + 4 + ((count < 15) ? 0 : 8) + count * 8;
+    if (!write)
+        return bitcnt;
+
+    PutBit(bitStream, ID_FIL, LEN_SE_ID);
+    if (count < 15)
+    {
+        PutBit(bitStream, count, 4);
+    }
+    else
+    {
+        PutBit(bitStream, 15, 4);
+        PutBit(bitStream, count - 14, 8);
+    }
+
+    PutBit(bitStream, 0, padbits);
+    PutBit(bitStream, 0, 8);
+    PutBit(bitStream, 0, 8); // just in case
+    for (i = 0; i < len; i++)
+        PutBit(bitStream, str[i], 8);
+
+    PutBit(bitStream, 0, 8 - padbits);
+
     return bitcnt;
-
-  PutBit(bitStream, ID_FIL, LEN_SE_ID);
-  if (count < 15)
-  {
-    PutBit(bitStream, count, 4);
-  }
-  else
-  {
-    PutBit(bitStream, 15, 4);
-    PutBit(bitStream, count - 14, 8);
-  }
-
-  PutBit(bitStream, 0, padbits);
-  PutBit(bitStream, 0, 8);
-  PutBit(bitStream, 0, 8); // just in case
-  for (i = 0; i < len; i++)
-    PutBit(bitStream, str[i], 8);
-
-  PutBit(bitStream, 0, 8 - padbits);
-
-  return bitcnt;
 }
 
 
@@ -165,51 +165,63 @@ int WriteBitstream(faacEncHandle hEncoder,
 
     CountBitstream(hEncoder, coderInfo, channelInfo, bitStream, numChannel);
 
-    if(hEncoder->config.outputFormat == 1){
+    if(hEncoder->config.outputFormat == 1)
+    {
         bits += WriteADTSHeader(hEncoder, bitStream, 1);
-    }else{
+    }
+    else
+    {
         bits = 0; // compilier will remove it, byt anyone will see that current size of bitstream is 0
     }
 
-/* sur: faad2 complains about scalefactor error if we are writing FAAC String */
+    /* sur: faad2 complains about scalefactor error if we are writing FAAC String */
 #ifndef DRM
     if (hEncoder->frameNum == 4)
-      WriteFAACStr(bitStream, hEncoder->config.name, 1);
+        WriteFAACStr(bitStream, hEncoder->config.name, 1);
 #endif
 
-    for (channel = 0; channel < numChannel; channel++) {
+    for (channel = 0; channel < numChannel; channel++)
+    {
 
-        if (channelInfo[channel].present) {
+        if (channelInfo[channel].present)
+        {
 
             /* Write out a single_channel_element */
-            if (!channelInfo[channel].cpe) {
+            if (!channelInfo[channel].cpe)
+            {
 
-                if (channelInfo[channel].lfe) {
+                if (channelInfo[channel].lfe)
+                {
                     /* Write out lfe */
                     bits += WriteLFE(&coderInfo[channel],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        1);
-                } else {
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     1);
+                }
+                else
+                {
                     /* Write out sce */
                     bits += WriteSCE(&coderInfo[channel],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        1);
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     1);
                 }
 
-            } else {
+            }
+            else
+            {
 
-                if (channelInfo[channel].ch_is_left) {
+                if (channelInfo[channel].ch_is_left)
+                {
                     /* Write out cpe */
                     bits += WriteCPE(&coderInfo[channel],
-                        &coderInfo[channelInfo[channel].paired_ch],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        1);
+                                     &coderInfo[channelInfo[channel].paired_ch],
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     1);
                 }
             }
         }
@@ -217,9 +229,12 @@ int WriteBitstream(faacEncHandle hEncoder,
 
     /* Compute how many fill bits are needed to avoid overflowing bit reservoir */
     /* Save room for ID_END terminator */
-    if (bits < (8 - LEN_SE_ID) ) {
+    if (bits < (8 - LEN_SE_ID) )
+    {
         numFillBits = 8 - LEN_SE_ID - bits;
-    } else {
+    }
+    else
+    {
         numFillBits = 0;
     }
 
@@ -255,51 +270,63 @@ static int CountBitstream(faacEncHandle hEncoder,
     int bitsLeftAfterFill, numFillBits;
 
 
-    if(hEncoder->config.outputFormat == 1){
+    if(hEncoder->config.outputFormat == 1)
+    {
         bits += WriteADTSHeader(hEncoder, bitStream, 0);
-    }else{
+    }
+    else
+    {
         bits = 0; // compilier will remove it, byt anyone will see that current size of bitstream is 0
     }
 
-/* sur: faad2 complains about scalefactor error if we are writing FAAC String */
+    /* sur: faad2 complains about scalefactor error if we are writing FAAC String */
 #ifndef DRM
     if (hEncoder->frameNum == 4)
-      bits += WriteFAACStr(bitStream, hEncoder->config.name, 0);
+        bits += WriteFAACStr(bitStream, hEncoder->config.name, 0);
 #endif
 
-    for (channel = 0; channel < numChannel; channel++) {
+    for (channel = 0; channel < numChannel; channel++)
+    {
 
-        if (channelInfo[channel].present) {
+        if (channelInfo[channel].present)
+        {
 
             /* Write out a single_channel_element */
-            if (!channelInfo[channel].cpe) {
+            if (!channelInfo[channel].cpe)
+            {
 
-                if (channelInfo[channel].lfe) {
+                if (channelInfo[channel].lfe)
+                {
                     /* Write out lfe */
                     bits += WriteLFE(&coderInfo[channel],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        0);
-                } else {
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     0);
+                }
+                else
+                {
                     /* Write out sce */
                     bits += WriteSCE(&coderInfo[channel],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        0);
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     0);
                 }
 
-            } else {
+            }
+            else
+            {
 
-                if (channelInfo[channel].ch_is_left) {
+                if (channelInfo[channel].ch_is_left)
+                {
                     /* Write out cpe */
                     bits += WriteCPE(&coderInfo[channel],
-                        &coderInfo[channelInfo[channel].paired_ch],
-                        &channelInfo[channel],
-                        bitStream,
-                        hEncoder->config.aacObjectType,
-                        0);
+                                     &coderInfo[channelInfo[channel].paired_ch],
+                                     &channelInfo[channel],
+                                     bitStream,
+                                     hEncoder->config.aacObjectType,
+                                     0);
                 }
             }
         }
@@ -307,9 +334,12 @@ static int CountBitstream(faacEncHandle hEncoder,
 
     /* Compute how many fill bits are needed to avoid overflowing bit reservoir */
     /* Save room for ID_END terminator */
-    if (bits < (8 - LEN_SE_ID) ) {
+    if (bits < (8 - LEN_SE_ID) )
+    {
         numFillBits = 8 - LEN_SE_ID - bits;
-    } else {
+    }
+    else
+    {
         numFillBits = 0;
     }
 
@@ -336,7 +366,8 @@ static int WriteADTSHeader(faacEncHandle hEncoder,
 {
     int bits = 56;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* Fixed ADTS header */
         PutBit(bitStream, 0xFFFF, 12); /* 12 bit Syncword */
         PutBit(bitStream, hEncoder->config.mpegVersion, 1); /* ID == 0 for MPEG4 AAC, 1 for MPEG2 AAC */
@@ -346,9 +377,9 @@ static int WriteADTSHeader(faacEncHandle hEncoder,
         PutBit(bitStream, hEncoder->sampleRateIdx, 4); /* sampling rate */
         PutBit(bitStream, 0, 1); /* private bit */
         PutBit(bitStream, hEncoder->numChannels, 3); /* ch. config (must be > 0) */
-                                                     /* simply using numChannels only works for
-                                                        6 channels or less, else a channel
-                                                        configuration should be written */
+        /* simply using numChannels only works for
+           6 channels or less, else a channel
+           configuration should be written */
         PutBit(bitStream, 0, 1); /* original/copy */
         PutBit(bitStream, 0, 1); /* home */
 
@@ -393,7 +424,8 @@ static int WriteCPE(CoderInfo *coderInfoL,
     int bits = 0;
 
 #ifndef DRM
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* write ID_CPE, single_element_channel() identifier */
         PutBit(bitStream, ID_CPE, LEN_SE_ID);
 
@@ -410,20 +442,25 @@ static int WriteCPE(CoderInfo *coderInfoL,
 #endif
 
     /* if common_window, write ics_info */
-    if (channelInfo->common_window) {
+    if (channelInfo->common_window)
+    {
         int numWindows, maxSfb;
 
         bits += WriteICSInfo(coderInfoL, bitStream, objectType, channelInfo->common_window, writeFlag);
         numWindows = coderInfoL->num_window_groups;
         maxSfb = coderInfoL->max_sfb;
 
-        if (writeFlag) {
+        if (writeFlag)
+        {
             PutBit(bitStream, channelInfo->msInfo.is_present, LEN_MASK_PRES);
-            if (channelInfo->msInfo.is_present == 1) {
+            if (channelInfo->msInfo.is_present == 1)
+            {
                 int g;
                 int b;
-                for (g=0;g<numWindows;g++) {
-                    for (b=0;b<maxSfb;b++) {
+                for (g=0; g<numWindows; g++)
+                {
+                    for (b=0; b<maxSfb; b++)
+                    {
                         PutBit(bitStream, channelInfo->msInfo.ms_used[g*maxSfb+b], LEN_MASK);
                     }
                 }
@@ -450,7 +487,8 @@ static int WriteSCE(CoderInfo *coderInfo,
     int bits = 0;
 
 #ifndef DRM
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* write Single Element Channel (SCE) identifier */
         PutBit(bitStream, ID_SCE, LEN_SE_ID);
 
@@ -476,7 +514,8 @@ static int WriteLFE(CoderInfo *coderInfo,
 {
     int bits = 0;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* write ID_LFE, lfe_element_channel() identifier */
         PutBit(bitStream, ID_LFE, LEN_SE_ID);
 
@@ -502,7 +541,8 @@ static int WriteICSInfo(CoderInfo *coderInfo,
     int grouping_bits;
     int bits = 0;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* write out ics_info() information */
         PutBit(bitStream, 0, LEN_ICS_RESERV);  /* reserved Bit*/
 
@@ -518,47 +558,55 @@ static int WriteICSInfo(CoderInfo *coderInfo,
     bits += LEN_WIN_SH;
 
     /* For short windows, write out max_sfb and scale_factor_grouping */
-    if (coderInfo->block_type == ONLY_SHORT_WINDOW){
-        if (writeFlag) {
+    if (coderInfo->block_type == ONLY_SHORT_WINDOW)
+    {
+        if (writeFlag)
+        {
             PutBit(bitStream, coderInfo->max_sfb, LEN_MAX_SFBS);
             grouping_bits = FindGroupingBits(coderInfo);
             PutBit(bitStream, grouping_bits, MAX_SHORT_WINDOWS - 1);  /* the grouping bits */
         }
         bits += LEN_MAX_SFBS;
         bits += MAX_SHORT_WINDOWS - 1;
-    } else { /* Otherwise, write out max_sfb and predictor data */
-        if (writeFlag) {
+    }
+    else     /* Otherwise, write out max_sfb and predictor data */
+    {
+        if (writeFlag)
+        {
             PutBit(bitStream, coderInfo->max_sfb, LEN_MAX_SFBL);
         }
         bits += LEN_MAX_SFBL;
 #ifdef DRM
     }
-    if (writeFlag) {
+    if (writeFlag)
+    {
         PutBit(bitStream,coderInfo->tnsInfo.tnsDataPresent,LEN_TNS_PRES);
     }
     bits += LEN_TNS_PRES;
 #endif
-        if (objectType == LTP)
-        {
-            bits++;
-            if(writeFlag)
-                PutBit(bitStream, coderInfo->ltpInfo.global_pred_flag, 1); /* Prediction Global used */
+    if (objectType == LTP)
+    {
+        bits++;
+        if(writeFlag)
+            PutBit(bitStream, coderInfo->ltpInfo.global_pred_flag, 1); /* Prediction Global used */
 
+        bits += WriteLTPPredictorData(coderInfo, bitStream, writeFlag);
+        if (common_window)
             bits += WriteLTPPredictorData(coderInfo, bitStream, writeFlag);
-            if (common_window)
-                bits += WriteLTPPredictorData(coderInfo, bitStream, writeFlag);
-        } else {
-            bits++;
-            if (writeFlag)
-                PutBit(bitStream, coderInfo->pred_global_flag, LEN_PRED_PRES);  /* predictor_data_present */
-
-            bits += WritePredictorData(coderInfo, bitStream, writeFlag);
-        }
-#ifndef DRM
     }
+    else
+    {
+        bits++;
+        if (writeFlag)
+            PutBit(bitStream, coderInfo->pred_global_flag, LEN_PRED_PRES);  /* predictor_data_present */
+
+        bits += WritePredictorData(coderInfo, bitStream, writeFlag);
+    }
+#ifndef DRM
+}
 #endif
 
-    return bits;
+return bits;
 }
 
 static int WriteICS(CoderInfo *coderInfo,
@@ -579,7 +627,8 @@ static int WriteICS(CoderInfo *coderInfo,
 #endif
 
     /* Write ics information */
-    if (!commonWindow) {
+    if (!commonWindow)
+    {
         bits += WriteICSInfo(coderInfo, bitStream, objectType, commonWindow, writeFlag);
     }
 
@@ -593,7 +642,8 @@ static int WriteICS(CoderInfo *coderInfo,
     bits += SortBookNumbers(coderInfo, bitStream, writeFlag);
     bits += WriteScalefactors(coderInfo, bitStream, writeFlag);
 #ifdef DRM
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* length_of_reordered_spectral_data */
         PutBit(bitStream, coderInfo->iLenReordSpData, LEN_HCR_REORDSD);
 
@@ -652,7 +702,7 @@ static int WriteLTPPredictorData(CoderInfo *coderInfo, BitStream *bitStream, int
             }
 
             last_band = ((coderInfo->nr_of_sfb < MAX_LT_PRED_LONG_SFB) ?
-                coderInfo->nr_of_sfb : MAX_LT_PRED_LONG_SFB);
+                         coderInfo->nr_of_sfb : MAX_LT_PRED_LONG_SFB);
 //            last_band = coderInfo->nr_of_sfb;
 
             bits += last_band;
@@ -679,26 +729,32 @@ static int WritePredictorData(CoderInfo *coderInfo,
     short predictorDataPresent = coderInfo->pred_global_flag;
     int numBands = min(coderInfo->max_pred_sfb, coderInfo->nr_of_sfb);
 
-    if (writeFlag) {
-        if (predictorDataPresent) {
+    if (writeFlag)
+    {
+        if (predictorDataPresent)
+        {
             int b;
-            if (coderInfo->reset_group_number == -1) {
+            if (coderInfo->reset_group_number == -1)
+            {
                 PutBit(bitStream, 0, LEN_PRED_RST); /* No prediction reset */
-            } else {
+            }
+            else
+            {
                 PutBit(bitStream, 1, LEN_PRED_RST);
                 PutBit(bitStream, (unsigned long)coderInfo->reset_group_number,
-                    LEN_PRED_RSTGRP);
+                       LEN_PRED_RSTGRP);
             }
 
-            for (b=0;b<numBands;b++) {
+            for (b=0; b<numBands; b++)
+            {
                 PutBit(bitStream, coderInfo->pred_sfb_flag[b], LEN_PRED_ENAB);
             }
         }
     }
     bits += (predictorDataPresent) ?
-        (LEN_PRED_RST +
-        ((coderInfo->reset_group_number)!=-1)*LEN_PRED_RSTGRP +
-        numBands*LEN_PRED_ENAB) : 0;
+            (LEN_PRED_RST +
+             ((coderInfo->reset_group_number)!=-1)*LEN_PRED_RSTGRP +
+             numBands*LEN_PRED_ENAB) : 0;
 
     return bits;
 }
@@ -709,7 +765,8 @@ static int WritePulseData(CoderInfo *coderInfo,
 {
     int bits = 0;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         PutBit(bitStream, 0, LEN_PULSE_PRES);  /* no pulse_data_present */
     }
 
@@ -736,25 +793,29 @@ static int WriteTNSData(CoderInfo *coderInfo,
     TnsInfo* tnsInfoPtr = &coderInfo->tnsInfo;
 
 #ifndef DRM
-    if (writeFlag) {
+    if (writeFlag)
+    {
         PutBit(bitStream,tnsInfoPtr->tnsDataPresent,LEN_TNS_PRES);
     }
     bits += LEN_TNS_PRES;
 #endif
 
     /* If TNS is not present, bail */
-    if (!tnsInfoPtr->tnsDataPresent) {
+    if (!tnsInfoPtr->tnsDataPresent)
+    {
         return bits;
     }
 
     /* Set window-dependent TNS parameters */
-    if (coderInfo->block_type == ONLY_SHORT_WINDOW) {
+    if (coderInfo->block_type == ONLY_SHORT_WINDOW)
+    {
         numWindows = MAX_SHORT_WINDOWS;
         len_tns_nfilt = LEN_TNS_NFILTS;
         len_tns_length = LEN_TNS_LENGTHS;
         len_tns_order = LEN_TNS_ORDERS;
     }
-    else {
+    else
+    {
         numWindows = 1;
         len_tns_nfilt = LEN_TNS_NFILTL;
         len_tns_length = LEN_TNS_LENGTHL;
@@ -763,37 +824,47 @@ static int WriteTNSData(CoderInfo *coderInfo,
 
     /* Write TNS data */
     bits += (numWindows * len_tns_nfilt);
-    for (w=0;w<numWindows;w++) {
+    for (w=0; w<numWindows; w++)
+    {
         TnsWindowData* windowDataPtr = &tnsInfoPtr->windowData[w];
         int numFilters = windowDataPtr->numFilters;
-        if (writeFlag) {
+        if (writeFlag)
+        {
             PutBit(bitStream,numFilters,len_tns_nfilt); /* n_filt[] = 0 */
         }
-        if (numFilters) {
+        if (numFilters)
+        {
             bits += LEN_TNS_COEFF_RES;
             resInBits = windowDataPtr->coefResolution;
-            if (writeFlag) {
+            if (writeFlag)
+            {
                 PutBit(bitStream,resInBits-DEF_TNS_RES_OFFSET,LEN_TNS_COEFF_RES);
             }
             bits += numFilters * (len_tns_length+len_tns_order);
-            for (filtNumber=0;filtNumber<numFilters;filtNumber++) {
+            for (filtNumber=0; filtNumber<numFilters; filtNumber++)
+            {
                 TnsFilterData* tnsFilterPtr=&windowDataPtr->tnsFilter[filtNumber];
                 int order = tnsFilterPtr->order;
-                if (writeFlag) {
+                if (writeFlag)
+                {
                     PutBit(bitStream,tnsFilterPtr->length,len_tns_length);
                     PutBit(bitStream,order,len_tns_order);
                 }
-                if (order) {
+                if (order)
+                {
                     bits += (LEN_TNS_DIRECTION + LEN_TNS_COMPRESS);
-                    if (writeFlag) {
+                    if (writeFlag)
+                    {
                         PutBit(bitStream,tnsFilterPtr->direction,LEN_TNS_DIRECTION);
                         PutBit(bitStream,tnsFilterPtr->coefCompress,LEN_TNS_COMPRESS);
                     }
                     bitsToTransmit = resInBits - tnsFilterPtr->coefCompress;
                     bits += order * bitsToTransmit;
-                    if (writeFlag) {
+                    if (writeFlag)
+                    {
                         int i;
-                        for (i=1;i<=order;i++) {
+                        for (i=1; i<=order; i++)
+                        {
                             unsignedIndex = (unsigned long) (tnsFilterPtr->index[i])&(~(~0<<bitsToTransmit));
                             PutBit(bitStream,unsignedIndex,bitsToTransmit);
                         }
@@ -811,7 +882,8 @@ static int WriteGainControlData(CoderInfo *coderInfo,
 {
     int bits = 0;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         PutBit(bitStream, 0, LEN_GAIN_PRES);
     }
 
@@ -832,15 +904,21 @@ static int WriteSpectralData(CoderInfo *coderInfo,
     int* data = coderInfo->data;
     int* len  = coderInfo->len;
 
-    if (writeFlag) {
-        for(i = 0; i < coderInfo->spectral_count; i++) {
-            if (len[i] > 0) {  /* only send out non-zero codebook data */
+    if (writeFlag)
+    {
+        for(i = 0; i < coderInfo->spectral_count; i++)
+        {
+            if (len[i] > 0)    /* only send out non-zero codebook data */
+            {
                 PutBit(bitStream, data[i], len[i]); /* write data */
                 bits += len[i];
             }
         }
-    } else {
-        for(i = 0; i < coderInfo->spectral_count; i++) {
+    }
+    else
+    {
+        for(i = 0; i < coderInfo->spectral_count; i++)
+        {
             bits += len[i];
         }
     }
@@ -862,7 +940,8 @@ static int WriteAACFillBits(BitStream* bitStream,
         int numberOfBytes;
         int maxCount;
 
-        if (writeFlag) {
+        if (writeFlag)
+        {
             PutBit(bitStream, ID_FIL, LEN_SE_ID);   /* Write fill_element ID */
         }
         numberOfBitsLeft -= minNumberOfBits;    /* Subtract for ID,count */
@@ -871,29 +950,36 @@ static int WriteAACFillBits(BitStream* bitStream,
         maxCount = (1<<LEN_F_CNT) - 1;  /* Max count without escaping */
 
         /* if we have less than maxCount bytes, write them now */
-        if (numberOfBytes < maxCount) {
+        if (numberOfBytes < maxCount)
+        {
             int i;
-            if (writeFlag) {
+            if (writeFlag)
+            {
                 PutBit(bitStream, numberOfBytes, LEN_F_CNT);
-                for (i = 0; i < numberOfBytes; i++) {
+                for (i = 0; i < numberOfBytes; i++)
+                {
                     PutBit(bitStream, 0, LEN_BYTE);
                 }
             }
             /* otherwise, we need to write an escape count */
         }
-        else {
+        else
+        {
             int maxEscapeCount, maxNumberOfBytes, escCount;
             int i;
-            if (writeFlag) {
+            if (writeFlag)
+            {
                 PutBit(bitStream, maxCount, LEN_F_CNT);
             }
             maxEscapeCount = (1<<LEN_BYTE) - 1;  /* Max escape count */
             maxNumberOfBytes = maxCount + maxEscapeCount;
             numberOfBytes = (numberOfBytes > maxNumberOfBytes ) ? (maxNumberOfBytes) : (numberOfBytes);
             escCount = numberOfBytes - maxCount;
-            if (writeFlag) {
+            if (writeFlag)
+            {
                 PutBit(bitStream, escCount, LEN_BYTE);
-                for (i = 0; i < numberOfBytes-1; i++) {
+                for (i = 0; i < numberOfBytes-1; i++)
+                {
                     PutBit(bitStream, 0, LEN_BYTE);
                 }
             }
@@ -914,15 +1000,19 @@ static int FindGroupingBits(CoderInfo *coderInfo)
     int i, j;
     int index = 0;
 
-    for(i = 0; i < coderInfo->num_window_groups; i++){
-        for (j = 0; j < coderInfo->window_group_length[i]; j++){
+    for(i = 0; i < coderInfo->num_window_groups; i++)
+    {
+        for (j = 0; j < coderInfo->window_group_length[i]; j++)
+        {
             tmp[index++] = i;
         }
     }
 
-    for(i = 1; i < 8; i++){
+    for(i = 1; i < 8; i++)
+    {
         grouping_bits = grouping_bits << 1;
-        if(tmp[i] == tmp[i-1]) {
+        if(tmp[i] == tmp[i-1])
+        {
             grouping_bits++;
         }
     }
@@ -978,7 +1068,7 @@ static int WriteByte(BitStream *bitStream,
         bitStream->data[idx] = 0;
 #endif
     bitStream->data[idx] |= (data & ((1<<numBit)-1)) <<
-        (BYTE_NUMBIT-numUsed-numBit);
+                            (BYTE_NUMBIT-numUsed-numBit);
     bitStream->currentBit += numBit;
     bitStream->numBit = bitStream->currentBit;
 
@@ -998,10 +1088,12 @@ int PutBit(BitStream *bitStream,
     /* write bits in packets according to buffer byte boundaries */
     num = 0;
     maxNum = BYTE_NUMBIT - bitStream->currentBit % BYTE_NUMBIT;
-    while (num < numBit) {
+    while (num < numBit)
+    {
         curNum = min(numBit-num,maxNum);
         bits = data>>(numBit-num-curNum);
-        if (WriteByte(bitStream, bits, curNum)) {
+        if (WriteByte(bitStream, bits, curNum))
+        {
             return 1;
         }
         num += curNum;
@@ -1018,15 +1110,19 @@ static int ByteAlign(BitStream *bitStream, int writeFlag, int bitsSoFar)
     if (writeFlag)
     {
         len = BufferNumBit(bitStream);
-    } else {
+    }
+    else
+    {
         len = bitsSoFar;
     }
 
     j = (8 - (len%8))%8;
 
     if ((len % 8) == 0) j = 0;
-    if (writeFlag) {
-        for( i=0; i<j; i++ ) {
+    if (writeFlag)
+    {
+        for( i=0; i<j; i++ )
+        {
             PutBit(bitStream, 0, 1);
         }
     }
@@ -1045,15 +1141,18 @@ static int ByteAlign(BitStream *bitStream, int writeFlag, int bitsSoFar)
 #define LEN_PRESORT_CODEBOOK 22
 static const unsigned short PresortedCodebook_VCB11[] = {11, 31, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 9, 7, 5, 3, 1};
 static const int maxCwLen[32] = {0, 11, 9, 20, 16, 13, 11, 14, 12, 17, 14, 49,
-    0, 0, 0, 0, 14, 17, 21, 21, 25, 25, 29, 29, 29, 29, 33, 33, 33, 37, 37, 41}; /* 8.5.3.3.3.1 */
+                                 0, 0, 0, 0, 14, 17, 21, 21, 25, 25, 29, 29, 29, 29, 33, 33, 33, 37, 37, 41
+                                }; /* 8.5.3.3.3.1 */
 
-typedef struct { /* segment parameters */
+typedef struct   /* segment parameters */
+{
     unsigned int left; /* left start of free space in segment */
     unsigned int right; /* right position of free space in segment */
     unsigned int len; /* length of free space in segment */
 } segment_t;
 
-typedef struct { /* codeword parameters */
+typedef struct   /* codeword parameters */
+{
     unsigned int   cw_offset; /* offset in actual codeword data vector */
     unsigned short window; /* which window belongs to this codeword */
     unsigned short cb; /* codebook */
@@ -1067,17 +1166,20 @@ static int PutBitHcr(BitStream *bitStream,
                      unsigned long curpos,
                      unsigned long data,
                      int numBit)
-{ /* data can be written at an arbitrary position in the bitstream */
+{
+    /* data can be written at an arbitrary position in the bitstream */
     bitStream->currentBit = curpos;
     return PutBit(bitStream, data, numBit);
 }
 
 static int rewind_word(int W, int len)
-{ /* rewind len (max. 32) bits so that the MSB becomes LSB */
+{
+    /* rewind len (max. 32) bits so that the MSB becomes LSB */
     short i;
     int tmp_W = 0;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         tmp_W <<= 1;
         if (W & (1<<i)) tmp_W |= 1;
     }
@@ -1119,13 +1221,16 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
     int* len  = coderInfo->len;
     int* num_data = coderInfo->num_data_cw;
 
-    if (writeFlag) {
+    if (writeFlag)
+    {
         /* build offset table */
         cur_data = 0;
         cw_info[0].cw_offset = 0;
-        for (i = 0; i < num_cw; i++) {
+        for (i = 0; i < num_cw; i++)
+        {
             cur_cw_len = 0;
-            for (j = 0; j < num_data[i]; j++) {
+            for (j = 0; j < num_data[i]; j++)
+            {
                 cur_cw_len += len[cur_data++];
             }
 
@@ -1140,7 +1245,8 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
         sfb_cnt = win_cnt = win_grp_cnt = coeff_cnt = last_sfb = acc_win_cnt = 0;
         cur_sfb_len = sfb_offset[1] / window_group_length[0];
         cur_cb = coderInfo->book_vector[0];
-        for (i = 0; i < num_cw; i++) {
+        for (i = 0; i < num_cw; i++)
+        {
             /* Set codeword info parameters */
             cw_info[i].cb = cur_cb;
             cw_info[i].num_sl_cw = (cur_cb < FIRST_PAIR_HCB) ? QUAD_LEN : PAIR_LEN;
@@ -1150,15 +1256,18 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
             window_cw_cnt[cw_info[i].window]++;
 
             coeff_cnt += cw_info[i].num_sl_cw;
-            if (coeff_cnt - last_sfb >= cur_sfb_len) {
+            if (coeff_cnt - last_sfb >= cur_sfb_len)
+            {
                 last_sfb += cur_sfb_len;
 
                 win_cnt++; /* next window */
-                if (win_cnt == window_group_length[win_grp_cnt]) {
+                if (win_cnt == window_group_length[win_grp_cnt])
+                {
                     win_cnt = 0;
 
                     sfb_cnt++; /* next sfb */
-                    if (sfb_cnt == coderInfo->all_sfb) {
+                    if (sfb_cnt == coderInfo->all_sfb)
+                    {
                         sfb_cnt = 0;
 
                         acc_win_cnt += window_group_length[win_grp_cnt];
@@ -1167,9 +1276,10 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
 
                     /* new codebook and sfb length */
                     cur_cb = coderInfo->book_vector[sfb_cnt];
-                    if (last_sfb < FRAME_LEN) {
+                    if (last_sfb < FRAME_LEN)
+                    {
                         cur_sfb_len = (sfb_offset[sfb_cnt + 1] - sfb_offset[sfb_cnt])
-                            / window_group_length[win_grp_cnt];
+                                      / window_group_length[win_grp_cnt];
                     }
                 }
             }
@@ -1178,23 +1288,29 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
         /* presorting (first presorting step) */
         /* only needed for short windows */
 
-/* Somehow the second presorting step does not give expected results. Disabling the
-   following code surprisingly gives good results. TODO: find the bug */
-        if (0) {//coderInfo->block_type == ONLY_SHORT_WINDOW) {
+        /* Somehow the second presorting step does not give expected results. Disabling the
+           following code surprisingly gives good results. TODO: find the bug */
+        if (0)  //coderInfo->block_type == ONLY_SHORT_WINDOW) {
+        {
             for (i = 0; i < MAX_SHORT_WINDOWS; i++)
                 window_cw_cnt[i] = 0; /* reset all counters */
 
             win_cnt = 0;
             cw_cnt = 0;
-            for (i = 0; i < num_cw; i++) {
-                for (j = 0; j < num_cw; j++) {
-                    if (cw_info[j].window == win_cnt) {
-                        if (cw_info[j].cw_nr == window_cw_cnt[win_cnt]) {
+            for (i = 0; i < num_cw; i++)
+            {
+                for (j = 0; j < num_cw; j++)
+                {
+                    if (cw_info[j].window == win_cnt)
+                    {
+                        if (cw_info[j].cw_nr == window_cw_cnt[win_cnt])
+                        {
                             cw_info_preso[cw_cnt++] = cw_info[j];
                             window_cw_cnt[win_cnt]++;
 
                             /* check if two one-dimensional codewords */
-                            if (cw_info[j].num_sl_cw == PAIR_LEN) {
+                            if (cw_info[j].num_sl_cw == PAIR_LEN)
+                            {
                                 cw_info_preso[cw_cnt++] = cw_info[j + 1];
                                 window_cw_cnt[win_cnt]++;
                             }
@@ -1206,22 +1322,27 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
                     }
                 }
             }
-        } else {
-            for (i = 0; i < num_cw; i++) {
+        }
+        else
+        {
+            for (i = 0; i < num_cw; i++)
+            {
                 cw_info_preso[i] = cw_info[i]; /* just copy */
             }
         }
 
         /* presorting (second presorting step) */
         cw_cnt = 0;
-        for (presort = 0; presort < LEN_PRESORT_CODEBOOK; presort++) {
+        for (presort = 0; presort < LEN_PRESORT_CODEBOOK; presort++)
+        {
             /* next codebook that has to be processed according to presorting */
             unsigned short nextCB = PresortedCodebook_VCB11[presort];
 
-            for (i = 0; i < num_cw; i++) {
+            for (i = 0; i < num_cw; i++)
+            {
                 /* process only codewords that are due now */
                 if ((cw_info_preso[i].cb == nextCB) ||
-                    ((nextCB < ESC_HCB) && (cw_info_preso[i].cb == nextCB + 1)))
+                        ((nextCB < ESC_HCB) && (cw_info_preso[i].cb == nextCB + 1)))
                 {
                     cw_info[cw_cnt++] = cw_info_preso[i];
                 }
@@ -1230,11 +1351,13 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
 
         /* init segments */
         accsegmsize = 0;
-        for (i = 0; i < num_cw; i++) {
+        for (i = 0; i < num_cw; i++)
+        {
             /* 8.5.3.3.3.2 Derivation of segment width */
             cursegmsize = min(maxCwLen[cw_info[i].cb], coderInfo->iLenLongestCW);
 
-            if (accsegmsize + cursegmsize > coderInfo->iLenReordSpData) {
+            if (accsegmsize + cursegmsize > coderInfo->iLenReordSpData)
+            {
                 /* the last segment is extended until iLenReordSpData */
                 segment[segmcnt - 1].right = coderInfo->iLenReordSpData - 1;
                 segment[segmcnt - 1].len = coderInfo->iLenReordSpData - segment[segmcnt - 1].left;
@@ -1253,36 +1376,43 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
         /* write write priority codewords (PCWs) and nonPCWs ---------------- */
         num_sets = num_cw / segmcnt; /* number of sets */
 
-        for (set = 0; set <= num_sets; set++) {
+        for (set = 0; set <= num_sets; set++)
+        {
             int trial;
 
             /* ever second set the bit order is reversed */
             is_backwards = set % 2;
 
-            for (trial = 0; trial < segmcnt; trial++) {
+            for (trial = 0; trial < segmcnt; trial++)
+            {
                 int codewordBase;
                 int set_encoded = segmcnt;
 
                 if (set == num_sets)
                     set_encoded = num_cw - set * segmcnt; /* last set is shorter than the rest */
 
-                for (codewordBase = 0; codewordBase < segmcnt; codewordBase++) {
+                for (codewordBase = 0; codewordBase < segmcnt; codewordBase++)
+                {
                     int segment_index = (trial + codewordBase) % segmcnt;
                     int codeword_index = codewordBase + set * segmcnt;
 
                     if (codeword_index >= num_cw)
                         break;
 
-                    if ((cw_info[codeword_index].cw_len > 0) && (segment[segment_index].len > 0)) {
+                    if ((cw_info[codeword_index].cw_len > 0) && (segment[segment_index].len > 0))
+                    {
                         /* codeword is not yet written (completely) */
                         /* space left in this segment */
                         short tmplen;
 
                         /* how many bits can be written? */
-                        if (segment[segment_index].len >= cw_info[codeword_index].cw_len) {
+                        if (segment[segment_index].len >= cw_info[codeword_index].cw_len)
+                        {
                             tmplen = cw_info[codeword_index].cw_len;
                             set_encoded--; /* CW fits into segment */
-                        } else {
+                        }
+                        else
+                        {
                             tmplen = segment[segment_index].len;
                         }
 
@@ -1291,27 +1421,34 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
                         segment[segment_index].len -= tmplen;
 
                         /* write codewords to bitstream */
-                        for (cw_part_cnt = 0; cw_part_cnt < cw_info[codeword_index].num_data; cw_part_cnt++) {
+                        for (cw_part_cnt = 0; cw_part_cnt < cw_info[codeword_index].num_data; cw_part_cnt++)
+                        {
                             cur_cw_part = cw_info[codeword_index].cw_offset + cw_part_cnt;
 
-                            if (len[cur_cw_part] <= tmplen) {
+                            if (len[cur_cw_part] <= tmplen)
+                            {
                                 /* write complete data, no partitioning */
-                                if (is_backwards) {
+                                if (is_backwards)
+                                {
                                     /* write data in reversed bit-order */
                                     PutBitHcr(bitStream, startbitpos + segment[segment_index].right - len[cur_cw_part] + 1,
-                                        rewind_word(data[cur_cw_part], len[cur_cw_part]), len[cur_cw_part]);
+                                              rewind_word(data[cur_cw_part], len[cur_cw_part]), len[cur_cw_part]);
 
                                     segment[segment_index].right -= len[cur_cw_part];
-                                } else {
+                                }
+                                else
+                                {
                                     PutBitHcr(bitStream, startbitpos + segment[segment_index].left,
-                                        data[cur_cw_part], len[cur_cw_part]);
+                                              data[cur_cw_part], len[cur_cw_part]);
 
                                     segment[segment_index].left += len[cur_cw_part];
                                 }
 
                                 tmplen -= len[cur_cw_part];
                                 len[cur_cw_part] = 0;
-                            } else {
+                            }
+                            else
+                            {
                                 /* codeword part must be partitioned */
                                 /* data must be taken from the left side */
                                 tmp_data = data[cur_cw_part];
@@ -1323,22 +1460,25 @@ static int WriteReorderedSpectralData(CoderInfo *coderInfo,
                                 data[cur_cw_part] &= (1 << diff) - 1 /* diff number of ones */;
                                 len[cur_cw_part] = diff;
 
-                                if (is_backwards) {
+                                if (is_backwards)
+                                {
                                     /* write data in reversed bit-order */
                                     PutBitHcr(bitStream, startbitpos + segment[segment_index].right - tmplen + 1,
-                                        rewind_word(tmp_data, tmplen), tmplen);
+                                              rewind_word(tmp_data, tmplen), tmplen);
 
                                     segment[segment_index].right -= tmplen;
-                                } else {
+                                }
+                                else
+                                {
                                     PutBitHcr(bitStream, startbitpos + segment[segment_index].left,
-                                        tmp_data, tmplen);
+                                              tmp_data, tmplen);
 
                                     segment[segment_index].left += tmplen;
                                 }
 
                                 tmplen = 0;
                             }
-                            
+
                             if (tmplen == 0)
                                 break; /* all data written for this segment trial */
                         }
@@ -1402,7 +1542,7 @@ static void calc_CRC(BitStream *bitStream, int len)
     //int i;
     //unsigned char r = ~0;  /* Initialize to all ones */
     unsigned char crc = ~0;  /* Initialize to all ones */
-    
+
     /* CRC polynome used x^8 + x^4 + x^3 + x^2 +1 */
 
     unsigned int cb         = len / 8;
@@ -1410,7 +1550,7 @@ static void calc_CRC(BitStream *bitStream, int len)
     unsigned char* pb       = &bitStream->data[1];
     //compatible, but slower unsigned char b         = ( bitStream->data[cb + 1] ) >> ( 8 - taillen );
     unsigned char b         = bitStream->data[cb + 1];
-    
+
 //#define GPOLY 0435
 //
 //    for (i = 8; i < len + 8; i++) {
@@ -1428,7 +1568,7 @@ static void calc_CRC(BitStream *bitStream, int len)
 //fprintf( stderr, " %02X", *pb );
         crc = _crctable[ crc ^ *pb++ ];
     }
-    
+
     //compatible, but slower switch ( taillen )
     //{
     //case 7:
@@ -1459,27 +1599,27 @@ static void calc_CRC(BitStream *bitStream, int len)
     case 7:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 6:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 5:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 4:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 3:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 2:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         b <<= 1;
-        // goto next case
+    // goto next case
     case 1:
         crc = ( ( crc << 1 ) ^ ( ( (signed char)( b ^ crc ) >> 7 ) & GP ) ) & 0xFF;
         break;
@@ -1490,7 +1630,7 @@ static void calc_CRC(BitStream *bitStream, int len)
     //    fprintf( stderr, "%08X != %08X\n", crc, r );
     //}
 //fprintf( stderr, " (%5d bits), CRC is %02X\n", len, ~crc & 0xFF );
-    
+
     /* CRC is stored inverted, per definition at first byte in stream */
     bitStream->data[0] = ~crc;
 }

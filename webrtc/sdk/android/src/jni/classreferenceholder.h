@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include <map>
 #include <string>
 
-namespace webrtc_jni {
+namespace webrtc_jni
+{
 
 // LoadGlobalClassReferenceHolder must be called in JNI_OnLoad.
 void LoadGlobalClassReferenceHolder();

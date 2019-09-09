@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,20 +14,23 @@
 #include "webrtc/media/base/fakemediaengine.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockVideoMediaChannel : public cricket::FakeVideoMediaChannel {
- public:
-  MockVideoMediaChannel() :
-      cricket::FakeVideoMediaChannel(NULL, cricket::VideoOptions()) {}
-  MOCK_METHOD1(GetStats, bool(cricket::VideoMediaInfo*));
+class MockVideoMediaChannel : public cricket::FakeVideoMediaChannel
+{
+public:
+    MockVideoMediaChannel() :
+        cricket::FakeVideoMediaChannel(NULL, cricket::VideoOptions()) {}
+    MOCK_METHOD1(GetStats, bool(cricket::VideoMediaInfo*));
 };
 
-class MockVoiceMediaChannel : public cricket::FakeVoiceMediaChannel {
- public:
-  MockVoiceMediaChannel() :
-      cricket::FakeVoiceMediaChannel(NULL, cricket::AudioOptions()) {}
-  MOCK_METHOD1(GetStats, bool(cricket::VoiceMediaInfo*));
+class MockVoiceMediaChannel : public cricket::FakeVoiceMediaChannel
+{
+public:
+    MockVoiceMediaChannel() :
+        cricket::FakeVoiceMediaChannel(NULL, cricket::AudioOptions()) {}
+    MOCK_METHOD1(GetStats, bool(cricket::VoiceMediaInfo*));
 };
 
 }  // namespace webrtc

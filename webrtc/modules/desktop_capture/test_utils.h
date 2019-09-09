@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Clears a DesktopFrame |frame| by setting its data() into 0.
 void ClearDesktopFrame(DesktopFrame* frame);

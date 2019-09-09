@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MSMPEG4 backend for encoder and decoder
  * copyright (c) 2007 Aurelien Jacobs <aurel@gnuage.org>
  *

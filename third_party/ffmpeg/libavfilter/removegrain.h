@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B Mahol
  * Copyright (c) 2015 James Darnley
  *
@@ -21,7 +21,8 @@
 
 #include "avfilter.h"
 
-typedef struct RemoveGrainContext {
+typedef struct RemoveGrainContext
+{
     const AVClass *class;
 
     int mode[4];

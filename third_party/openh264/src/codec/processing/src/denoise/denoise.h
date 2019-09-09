@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -78,30 +78,32 @@ DenoiseFilterFunc     WaverageChromaFilter8_sse2 ;
 WELSVP_EXTERN_C_END
 #endif
 
-typedef  struct TagDenoiseFuncs {
-  DenoiseFilterFuncPtr pfBilateralLumaFilter8;//on 8 samples
-  DenoiseFilterFuncPtr pfWaverageChromaFilter8;//on 8 samples
+typedef  struct TagDenoiseFuncs
+{
+    DenoiseFilterFuncPtr pfBilateralLumaFilter8;//on 8 samples
+    DenoiseFilterFuncPtr pfWaverageChromaFilter8;//on 8 samples
 } SDenoiseFuncs;
 
-class CDenoiser : public IStrategy {
- public:
-  CDenoiser (int32_t iCpuFlag);
-  ~CDenoiser();
+class CDenoiser : public IStrategy
+{
+public:
+    CDenoiser (int32_t iCpuFlag);
+    ~CDenoiser();
 
-  EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* dst);
+    EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* dst);
 
- private:
-  void InitDenoiseFunc (SDenoiseFuncs& pf, int32_t cpu);
-  void BilateralDenoiseLuma (uint8_t* p_y_data, int32_t width, int32_t height, int32_t stride);
-  void WaverageDenoiseChroma (uint8_t* pSrcUV, int32_t width, int32_t height, int32_t stride);
+private:
+    void InitDenoiseFunc (SDenoiseFuncs& pf, int32_t cpu);
+    void BilateralDenoiseLuma (uint8_t* p_y_data, int32_t width, int32_t height, int32_t stride);
+    void WaverageDenoiseChroma (uint8_t* pSrcUV, int32_t width, int32_t height, int32_t stride);
 
- private:
-  float          m_fSigmaGrey;                  //sigma for grey scale similarity, suggestion 2.5-3
-  uint16_t       m_uiSpaceRadius;               //filter windows radius: 1-3x3, 2-5x5,3-7x7. Larger size, slower speed
-  uint16_t       m_uiType;                      //do denoising on which component 1-Y, 2-U, 4-V; 7-YUV, 3-YU, 5-YV, 6-UV
+private:
+    float          m_fSigmaGrey;                  //sigma for grey scale similarity, suggestion 2.5-3
+    uint16_t       m_uiSpaceRadius;               //filter windows radius: 1-3x3, 2-5x5,3-7x7. Larger size, slower speed
+    uint16_t       m_uiType;                      //do denoising on which component 1-Y, 2-U, 4-V; 7-YUV, 3-YU, 5-YV, 6-UV
 
-  SDenoiseFuncs m_pfDenoise;
-  int32_t      m_CPUFlag;
+    SDenoiseFuncs m_pfDenoise;
+    int32_t      m_CPUFlag;
 };
 
 WELSVP_NAMESPACE_END

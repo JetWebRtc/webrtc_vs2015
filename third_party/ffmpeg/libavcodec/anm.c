@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Deluxe Paint Animation decoder
  * Copyright (c) 2009 Peter Ross
  *
@@ -28,7 +28,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-typedef struct AnmContext {
+typedef struct AnmContext
+{
     AVFrame *frame;
     int palette[AVPALETTE_COUNT];
     GetByteContext gb;
@@ -47,7 +48,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
         return AVERROR(ENOMEM);
 
     bytestream2_init(&s->gb, avctx->extradata, avctx->extradata_size);
-    if (bytestream2_get_bytes_left(&s->gb) < 16 * 8 + 4 * 256) {
+    if (bytestream2_get_bytes_left(&s->gb) < 16 * 8 + 4 * 256)
+    {
         av_frame_free(&s->frame);
         return AVERROR_INVALIDDATA;
     }
@@ -81,24 +83,31 @@ static inline int op(uint8_t **dst, const uint8_t *dst_end,
                      int *x, int width, int linesize)
 {
     int remaining = width - *x;
-    while(count > 0) {
+    while(count > 0)
+    {
         int striplen = FFMIN(count, remaining);
-        if (gb) {
+        if (gb)
+        {
             if (bytestream2_get_bytes_left(gb) < striplen)
                 goto exhausted;
             bytestream2_get_bufferu(gb, *dst, striplen);
-        } else if (pixel >= 0)
+        }
+        else if (pixel >= 0)
             memset(*dst, pixel, striplen);
         *dst      += striplen;
         remaining -= striplen;
         count     -= striplen;
-        if (remaining <= 0) {
+        if (remaining <= 0)
+        {
             *dst      += linesize - width;
             remaining  = width;
         }
-        if (linesize > 0) {
+        if (linesize > 0)
+        {
             if (*dst >= dst_end) goto exhausted;
-        } else {
+        }
+        else
+        {
             if (*dst <= dst_end) goto exhausted;
         }
     }
@@ -126,18 +135,21 @@ static int decode_frame(AVCodecContext *avctx,
 
     bytestream2_init(&s->gb, avpkt->data, buf_size);
 
-    if (bytestream2_get_byte(&s->gb) != 0x42) {
+    if (bytestream2_get_byte(&s->gb) != 0x42)
+    {
         avpriv_request_sample(avctx, "Unknown record type");
         return AVERROR_INVALIDDATA;
     }
-    if (bytestream2_get_byte(&s->gb)) {
+    if (bytestream2_get_byte(&s->gb))
+    {
         avpriv_request_sample(avctx, "Padding bytes");
         return AVERROR_PATCHWELCOME;
     }
     bytestream2_skip(&s->gb, 2);
 
     s->x = 0;
-    do {
+    do
+    {
         /* if statements are ordered by probability */
 #define OP(gb, pixel, count) \
     op(&dst, dst_end, (gb), (pixel), (count), &s->x, avctx->width, s->frame->linesize[0])
@@ -145,22 +157,29 @@ static int decode_frame(AVCodecContext *avctx,
         int type = bytestream2_get_byte(&s->gb);
         count = type & 0x7F;
         type >>= 7;
-        if (count) {
+        if (count)
+        {
             if (OP(type ? NULL : &s->gb, -1, count)) break;
-        } else if (!type) {
+        }
+        else if (!type)
+        {
             int pixel;
             count = bytestream2_get_byte(&s->gb);  /* count==0 gives nop */
             pixel = bytestream2_get_byte(&s->gb);
             if (OP(NULL, pixel, count)) break;
-        } else {
+        }
+        else
+        {
             int pixel;
             type = bytestream2_get_le16(&s->gb);
             count = type & 0x3FFF;
             type >>= 14;
-            if (!count) {
+            if (!count)
+            {
                 if (type == 0)
                     break; // stop
-                if (type == 2) {
+                if (type == 2)
+                {
                     avpriv_request_sample(avctx, "Unknown opcode");
                     return AVERROR_PATCHWELCOME;
                 }
@@ -170,7 +189,8 @@ static int decode_frame(AVCodecContext *avctx,
             if (type == 1) count += 0x4000;
             if (OP(type == 2 ? &s->gb : NULL, pixel, count)) break;
         }
-    } while (bytestream2_get_bytes_left(&s->gb) > 0);
+    }
+    while (bytestream2_get_bytes_left(&s->gb) > 0);
 
     memcpy(s->frame->data[1], s->palette, AVPALETTE_SIZE);
 
@@ -189,7 +209,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_anm_decoder = {
+AVCodec ff_anm_decoder =
+{
     .name           = "anm",
     .long_name      = NULL_IF_CONFIG_SMALL("Deluxe Paint Animation"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-DASH ISO BMFF segmenter
  * Copyright (c) 2014 Martin Storsjo
  *
@@ -39,7 +39,8 @@
 #include "url.h"
 
 // See ISO/IEC 23009-1:2014 5.3.9.4.4
-typedef enum {
+typedef enum
+{
     DASH_TMPL_ID_UNDEFINED = -1,
     DASH_TMPL_ID_ESCAPE,
     DASH_TMPL_ID_REP_ID,
@@ -48,7 +49,8 @@ typedef enum {
     DASH_TMPL_ID_TIME,
 } DASHTmplId;
 
-typedef struct Segment {
+typedef struct Segment
+{
     char file[1024];
     int64_t start_pos;
     int range_length, index_length;
@@ -57,7 +59,8 @@ typedef struct Segment {
     int n;
 } Segment;
 
-typedef struct OutputStream {
+typedef struct OutputStream
+{
     AVFormatContext *ctx;
     int ctx_inited;
     uint8_t iobuf[32768];
@@ -76,7 +79,8 @@ typedef struct OutputStream {
     char codec_str[100];
 } OutputStream;
 
-typedef struct DASHContext {
+typedef struct DASHContext
+{
     const AVClass *class;  /* Class for private options. */
     int window_size;
     int extra_window_size;
@@ -125,7 +129,8 @@ static void set_codec_str(AVFormatContext *s, AVCodecContext *codec,
 
     AV_WL32(str, tag);
     str[4] = '\0';
-    if (!strcmp(str, "mp4a") || !strcmp(str, "mp4v")) {
+    if (!strcmp(str, "mp4a") || !strcmp(str, "mp4v"))
+    {
         uint32_t oti;
         tags[0] = ff_mp4_obj_type;
         oti = av_codec_get_tag(tags, codec->codec_id);
@@ -134,28 +139,36 @@ static void set_codec_str(AVFormatContext *s, AVCodecContext *codec,
         else
             return;
 
-        if (tag == MKTAG('m', 'p', '4', 'a')) {
-            if (codec->extradata_size >= 2) {
+        if (tag == MKTAG('m', 'p', '4', 'a'))
+        {
+            if (codec->extradata_size >= 2)
+            {
                 int aot = codec->extradata[0] >> 3;
                 if (aot == 31)
                     aot = ((AV_RB16(codec->extradata) >> 5) & 0x3f) + 32;
                 av_strlcatf(str, size, ".%d", aot);
             }
-        } else if (tag == MKTAG('m', 'p', '4', 'v')) {
+        }
+        else if (tag == MKTAG('m', 'p', '4', 'v'))
+        {
             // Unimplemented, should output ProfileLevelIndication as a decimal number
             av_log(s, AV_LOG_WARNING, "Incomplete RFC 6381 codec string for mp4v\n");
         }
-    } else if (!strcmp(str, "avc1")) {
+    }
+    else if (!strcmp(str, "avc1"))
+    {
         uint8_t *tmpbuf = NULL;
         uint8_t *extradata = codec->extradata;
         int extradata_size = codec->extradata_size;
         if (!extradata_size)
             return;
-        if (extradata[0] != 1) {
+        if (extradata[0] != 1)
+        {
             AVIOContext *pb;
             if (avio_open_dyn_buf(&pb) < 0)
                 return;
-            if (ff_isom_write_avcc(pb, extradata, extradata_size) < 0) {
+            if (ff_isom_write_avcc(pb, extradata, extradata_size) < 0)
+            {
                 ffio_free_dyn_buf(&pb);
                 return;
             }
@@ -176,7 +189,8 @@ static void dash_free(AVFormatContext *s)
     int i, j;
     if (!c->streams)
         return;
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         if (os->ctx && os->ctx_inited)
             av_write_trailer(os->ctx);
@@ -196,32 +210,37 @@ static void dash_free(AVFormatContext *s)
 static void output_segment_list(OutputStream *os, AVIOContext *out, DASHContext *c)
 {
     int i, start_index = 0, start_number = 1;
-    if (c->window_size) {
+    if (c->window_size)
+    {
         start_index  = FFMAX(os->nb_segments   - c->window_size, 0);
         start_number = FFMAX(os->segment_index - c->window_size, 1);
     }
 
-    if (c->use_template) {
+    if (c->use_template)
+    {
         int timescale = c->use_timeline ? os->ctx->streams[0]->time_base.den : AV_TIME_BASE;
         avio_printf(out, "\t\t\t\t<SegmentTemplate timescale=\"%d\" ", timescale);
         if (!c->use_timeline)
             avio_printf(out, "duration=\"%"PRId64"\" ", c->last_duration);
         avio_printf(out, "initialization=\"%s\" media=\"%s\" startNumber=\"%d\">\n", c->init_seg_name, c->media_seg_name, c->use_timeline ? start_number : 1);
-        if (c->use_timeline) {
+        if (c->use_timeline)
+        {
             int64_t cur_time = 0;
             avio_printf(out, "\t\t\t\t\t<SegmentTimeline>\n");
-            for (i = start_index; i < os->nb_segments; ) {
+            for (i = start_index; i < os->nb_segments; )
+            {
                 Segment *seg = os->segments[i];
                 int repeat = 0;
                 avio_printf(out, "\t\t\t\t\t\t<S ");
-                if (i == start_index || seg->time != cur_time) {
+                if (i == start_index || seg->time != cur_time)
+                {
                     cur_time = seg->time;
                     avio_printf(out, "t=\"%"PRId64"\" ", seg->time);
                 }
                 avio_printf(out, "d=\"%d\" ", seg->duration);
                 while (i + repeat + 1 < os->nb_segments &&
-                       os->segments[i + repeat + 1]->duration == seg->duration &&
-                       os->segments[i + repeat + 1]->time == os->segments[i + repeat]->time + os->segments[i + repeat]->duration)
+                        os->segments[i + repeat + 1]->duration == seg->duration &&
+                        os->segments[i + repeat + 1]->time == os->segments[i + repeat]->time + os->segments[i + repeat]->duration)
                     repeat++;
                 if (repeat > 0)
                     avio_printf(out, "r=\"%d\" ", repeat);
@@ -232,11 +251,14 @@ static void output_segment_list(OutputStream *os, AVIOContext *out, DASHContext 
             avio_printf(out, "\t\t\t\t\t</SegmentTimeline>\n");
         }
         avio_printf(out, "\t\t\t\t</SegmentTemplate>\n");
-    } else if (c->single_file) {
+    }
+    else if (c->single_file)
+    {
         avio_printf(out, "\t\t\t\t<BaseURL>%s</BaseURL>\n", os->initfile);
         avio_printf(out, "\t\t\t\t<SegmentList timescale=\"%d\" duration=\"%"PRId64"\" startNumber=\"%d\">\n", AV_TIME_BASE, c->last_duration, start_number);
         avio_printf(out, "\t\t\t\t\t<Initialization range=\"%"PRId64"-%"PRId64"\" />\n", os->init_start_pos, os->init_start_pos + os->init_range_length - 1);
-        for (i = start_index; i < os->nb_segments; i++) {
+        for (i = start_index; i < os->nb_segments; i++)
+        {
             Segment *seg = os->segments[i];
             avio_printf(out, "\t\t\t\t\t<SegmentURL mediaRange=\"%"PRId64"-%"PRId64"\" ", seg->start_pos, seg->start_pos + seg->range_length - 1);
             if (seg->index_length)
@@ -244,10 +266,13 @@ static void output_segment_list(OutputStream *os, AVIOContext *out, DASHContext 
             avio_printf(out, "/>\n");
         }
         avio_printf(out, "\t\t\t\t</SegmentList>\n");
-    } else {
+    }
+    else
+    {
         avio_printf(out, "\t\t\t\t<SegmentList timescale=\"%d\" duration=\"%"PRId64"\" startNumber=\"%d\">\n", AV_TIME_BASE, c->last_duration, start_number);
         avio_printf(out, "\t\t\t\t\t<Initialization sourceURL=\"%s\" />\n", os->initfile);
-        for (i = start_index; i < os->nb_segments; i++) {
+        for (i = start_index; i < os->nb_segments; i++)
+        {
             Segment *seg = os->segments[i];
             avio_printf(out, "\t\t\t\t\t<SegmentURL media=\"%s\" />\n", seg->file);
         }
@@ -256,20 +281,26 @@ static void output_segment_list(OutputStream *os, AVIOContext *out, DASHContext 
 }
 
 static DASHTmplId dash_read_tmpl_id(const char *identifier, char *format_tag,
-                                    size_t format_tag_size, const char **ptr) {
+                                    size_t format_tag_size, const char **ptr)
+{
     const char *next_ptr;
     DASHTmplId id_type = DASH_TMPL_ID_UNDEFINED;
 
-    if (av_strstart(identifier, "$$", &next_ptr)) {
+    if (av_strstart(identifier, "$$", &next_ptr))
+    {
         id_type = DASH_TMPL_ID_ESCAPE;
         *ptr = next_ptr;
-    } else if (av_strstart(identifier, "$RepresentationID$", &next_ptr)) {
+    }
+    else if (av_strstart(identifier, "$RepresentationID$", &next_ptr))
+    {
         id_type = DASH_TMPL_ID_REP_ID;
         // default to basic format, as $RepresentationID$ identifiers
         // are not allowed to have custom format-tags.
         av_strlcpy(format_tag, "%d", format_tag_size);
         *ptr = next_ptr;
-    } else { // the following identifiers may have an explicit format_tag
+    }
+    else     // the following identifiers may have an explicit format_tag
+    {
         if (av_strstart(identifier, "$Number", &next_ptr))
             id_type = DASH_TMPL_ID_NUMBER;
         else if (av_strstart(identifier, "$Bandwidth", &next_ptr))
@@ -281,24 +312,31 @@ static DASHTmplId dash_read_tmpl_id(const char *identifier, char *format_tag,
 
         // next parse the dash format-tag and generate a c-string format tag
         // (next_ptr now points at the first '%' at the beginning of the format-tag)
-        if (id_type != DASH_TMPL_ID_UNDEFINED) {
+        if (id_type != DASH_TMPL_ID_UNDEFINED)
+        {
             const char *number_format = (id_type == DASH_TMPL_ID_TIME) ? PRId64 : "d";
-            if (next_ptr[0] == '$') { // no dash format-tag
+            if (next_ptr[0] == '$')   // no dash format-tag
+            {
                 snprintf(format_tag, format_tag_size, "%%%s", number_format);
                 *ptr = &next_ptr[1];
-            } else {
+            }
+            else
+            {
                 const char *width_ptr;
                 // only tolerate single-digit width-field (i.e. up to 9-digit width)
                 if (av_strstart(next_ptr, "%0", &width_ptr) &&
-                    av_isdigit(width_ptr[0]) &&
-                    av_strstart(&width_ptr[1], "d$", &next_ptr)) {
+                        av_isdigit(width_ptr[0]) &&
+                        av_strstart(&width_ptr[1], "d$", &next_ptr))
+                {
                     // yes, we're using a format tag to build format_tag.
                     snprintf(format_tag, format_tag_size, "%s%c%s", "%0", width_ptr[0], number_format);
                     *ptr = next_ptr;
-                } else {
+                }
+                else
+                {
                     av_log(NULL, AV_LOG_WARNING, "Failed to parse format-tag beginning with %s. Expected either a "
-                                                 "closing '$' character or a format-string like '%%0[width]d', "
-                                                 "where width must be a single digit\n", next_ptr);
+                           "closing '$' character or a format-string like '%%0[width]d', "
+                           "where width must be a single digit\n", next_ptr);
                     id_type = DASH_TMPL_ID_UNDEFINED;
                 }
             }
@@ -310,21 +348,26 @@ static DASHTmplId dash_read_tmpl_id(const char *identifier, char *format_tag,
 static void dash_fill_tmpl_params(char *dst, size_t buffer_size,
                                   const char *template, int rep_id,
                                   int number, int bit_rate,
-                                  int64_t time) {
+                                  int64_t time)
+{
     int dst_pos = 0;
     const char *t_cur = template;
-    while (dst_pos < buffer_size - 1 && *t_cur) {
+    while (dst_pos < buffer_size - 1 && *t_cur)
+    {
         char format_tag[7]; // May be "%d", "%0Xd", or "%0Xlld" (for $Time$), where X is in [0-9]
         int n = 0;
         DASHTmplId id_type;
         const char *t_next = strchr(t_cur, '$'); // copy over everything up to the first '$' character
-        if (t_next) {
+        if (t_next)
+        {
             int num_copy_bytes = FFMIN(t_next - t_cur, buffer_size - dst_pos - 1);
             av_strlcpy(&dst[dst_pos], t_cur, num_copy_bytes + 1);
             // advance
             dst_pos += num_copy_bytes;
             t_cur = t_next;
-        } else { // no more DASH identifiers to substitute - just copy the rest over and break
+        }
+        else     // no more DASH identifiers to substitute - just copy the rest over and break
+        {
             av_strlcpy(&dst[dst_pos], t_cur, buffer_size - dst_pos);
             break;
         }
@@ -334,7 +377,8 @@ static void dash_fill_tmpl_params(char *dst, size_t buffer_size,
 
         // t_cur is now pointing to a '$' character
         id_type = dash_read_tmpl_id(t_cur, format_tag, sizeof(format_tag), &t_next);
-        switch (id_type) {
+        switch (id_type)
+        {
         case DASH_TMPL_ID_ESCAPE:
             av_strlcpy(&dst[dst_pos], "$", 2);
             n = 1;
@@ -368,39 +412,54 @@ static void dash_fill_tmpl_params(char *dst, size_t buffer_size,
     }
 }
 
-static char *xmlescape(const char *str) {
+static char *xmlescape(const char *str)
+{
     int outlen = strlen(str)*3/2 + 6;
     char *out = av_realloc(NULL, outlen + 1);
     int pos = 0;
     if (!out)
         return NULL;
-    for (; *str; str++) {
-        if (pos + 6 > outlen) {
+    for (; *str; str++)
+    {
+        if (pos + 6 > outlen)
+        {
             char *tmp;
             outlen = 2 * outlen + 6;
             tmp = av_realloc(out, outlen + 1);
-            if (!tmp) {
+            if (!tmp)
+            {
                 av_free(out);
                 return NULL;
             }
             out = tmp;
         }
-        if (*str == '&') {
+        if (*str == '&')
+        {
             memcpy(&out[pos], "&amp;", 5);
             pos += 5;
-        } else if (*str == '<') {
+        }
+        else if (*str == '<')
+        {
             memcpy(&out[pos], "&lt;", 4);
             pos += 4;
-        } else if (*str == '>') {
+        }
+        else if (*str == '>')
+        {
             memcpy(&out[pos], "&gt;", 4);
             pos += 4;
-        } else if (*str == '\'') {
+        }
+        else if (*str == '\'')
+        {
             memcpy(&out[pos], "&apos;", 6);
             pos += 6;
-        } else if (*str == '\"') {
+        }
+        else if (*str == '\"')
+        {
             memcpy(&out[pos], "&quot;", 6);
             pos += 6;
-        } else {
+        }
+        else
+        {
             out[pos++] = *str;
         }
     }
@@ -429,7 +488,8 @@ static void format_date_now(char *buf, int size)
     time_t t = time(NULL);
     struct tm *ptm, tmbuf;
     ptm = gmtime_r(&t, &tmbuf);
-    if (ptm) {
+    if (ptm)
+    {
         if (!strftime(buf, size, "%Y-%m-%dT%H:%M:%S", ptm))
             buf[0] = '\0';
     }
@@ -445,7 +505,8 @@ static int write_manifest(AVFormatContext *s, int final)
 
     snprintf(temp_filename, sizeof(temp_filename), "%s.tmp", s->filename);
     ret = avio_open2(&out, temp_filename, AVIO_FLAG_WRITE, &s->interrupt_callback, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Unable to open %s for writing\n", temp_filename);
         return ret;
     }
@@ -456,18 +517,22 @@ static int write_manifest(AVFormatContext *s, int final)
                 "\txsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd\"\n"
                 "\tprofiles=\"urn:mpeg:dash:profile:isoff-live:2011\"\n"
                 "\ttype=\"%s\"\n", final ? "static" : "dynamic");
-    if (final) {
+    if (final)
+    {
         avio_printf(out, "\tmediaPresentationDuration=\"");
         write_time(out, c->total_duration);
         avio_printf(out, "\"\n");
-    } else {
+    }
+    else
+    {
         int64_t update_period = c->last_duration / AV_TIME_BASE;
         char now_str[100];
         if (c->use_template && !c->use_timeline)
             update_period = 500;
         avio_printf(out, "\tminimumUpdatePeriod=\"PT%"PRId64"S\"\n", update_period);
         avio_printf(out, "\tsuggestedPresentationDelay=\"PT%"PRId64"S\"\n", c->last_duration / AV_TIME_BASE);
-        if (!c->availability_start_time[0] && s->nb_streams > 0 && c->streams[0].nb_segments > 0) {
+        if (!c->availability_start_time[0] && s->nb_streams > 0 && c->streams[0].nb_segments > 0)
+        {
             format_date_now(c->availability_start_time, sizeof(c->availability_start_time));
         }
         if (c->availability_start_time[0])
@@ -475,7 +540,8 @@ static int write_manifest(AVFormatContext *s, int final)
         format_date_now(now_str, sizeof(now_str));
         if (now_str[0])
             avio_printf(out, "\tpublishTime=\"%s\"\n", now_str);
-        if (c->window_size && c->use_template) {
+        if (c->window_size && c->use_template)
+        {
             avio_printf(out, "\ttimeShiftBufferDepth=\"");
             write_time(out, c->last_duration * c->window_size);
             avio_printf(out, "\"\n");
@@ -485,26 +551,32 @@ static int write_manifest(AVFormatContext *s, int final)
     write_time(out, c->last_duration);
     avio_printf(out, "\">\n");
     avio_printf(out, "\t<ProgramInformation>\n");
-    if (title) {
+    if (title)
+    {
         char *escaped = xmlescape(title->value);
         avio_printf(out, "\t\t<Title>%s</Title>\n", escaped);
         av_free(escaped);
     }
     avio_printf(out, "\t</ProgramInformation>\n");
-    if (c->window_size && s->nb_streams > 0 && c->streams[0].nb_segments > 0 && !c->use_template) {
+    if (c->window_size && s->nb_streams > 0 && c->streams[0].nb_segments > 0 && !c->use_template)
+    {
         OutputStream *os = &c->streams[0];
         int start_index = FFMAX(os->nb_segments - c->window_size, 0);
         int64_t start_time = av_rescale_q(os->segments[start_index]->time, s->streams[0]->time_base, AV_TIME_BASE_Q);
         avio_printf(out, "\t<Period start=\"");
         write_time(out, start_time);
         avio_printf(out, "\">\n");
-    } else {
+    }
+    else
+    {
         avio_printf(out, "\t<Period start=\"PT0.0S\">\n");
     }
 
-    if (c->has_video) {
+    if (c->has_video)
+    {
         avio_printf(out, "\t\t<AdaptationSet contentType=\"video\" segmentAlignment=\"true\" bitstreamSwitching=\"true\">\n");
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             AVStream *st = s->streams[i];
             OutputStream *os = &c->streams[i];
 
@@ -517,9 +589,11 @@ static int write_manifest(AVFormatContext *s, int final)
         }
         avio_printf(out, "\t\t</AdaptationSet>\n");
     }
-    if (c->has_audio) {
+    if (c->has_audio)
+    {
         avio_printf(out, "\t\t<AdaptationSet contentType=\"audio\" segmentAlignment=\"true\" bitstreamSwitching=\"true\">\n");
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             AVStream *st = s->streams[i];
             OutputStream *os = &c->streams[i];
 
@@ -555,10 +629,13 @@ static int dash_write_header(AVFormatContext *s)
 
     av_strlcpy(c->dirname, s->filename, sizeof(c->dirname));
     ptr = strrchr(c->dirname, '/');
-    if (ptr) {
+    if (ptr)
+    {
         av_strlcpy(basename, &ptr[1], sizeof(basename));
         ptr[1] = '\0';
-    } else {
+    }
+    else
+    {
         c->dirname[0] = '\0';
         av_strlcpy(basename, s->filename, sizeof(basename));
     }
@@ -568,18 +645,21 @@ static int dash_write_header(AVFormatContext *s)
         *ptr = '\0';
 
     oformat = av_guess_format("mp4", NULL, NULL);
-    if (!oformat) {
+    if (!oformat)
+    {
         ret = AVERROR_MUXER_NOT_FOUND;
         goto fail;
     }
 
     c->streams = av_mallocz(sizeof(*c->streams) * s->nb_streams);
-    if (!c->streams) {
+    if (!c->streams)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         AVFormatContext *ctx;
         AVStream *st;
@@ -589,21 +669,26 @@ static int dash_write_header(AVFormatContext *s)
         os->bit_rate = s->streams[i]->codec->bit_rate ?
                        s->streams[i]->codec->bit_rate :
                        s->streams[i]->codec->rc_max_rate;
-        if (os->bit_rate) {
+        if (os->bit_rate)
+        {
             snprintf(os->bandwidth_str, sizeof(os->bandwidth_str),
                      " bandwidth=\"%d\"", os->bit_rate);
-        } else {
+        }
+        else
+        {
             int level = s->strict_std_compliance >= FF_COMPLIANCE_STRICT ?
                         AV_LOG_ERROR : AV_LOG_WARNING;
             av_log(s, level, "No bit rate set for stream %d\n", i);
-            if (s->strict_std_compliance >= FF_COMPLIANCE_STRICT) {
+            if (s->strict_std_compliance >= FF_COMPLIANCE_STRICT)
+            {
                 ret = AVERROR(EINVAL);
                 goto fail;
             }
         }
 
         ctx = avformat_alloc_context();
-        if (!ctx) {
+        if (!ctx)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -611,7 +696,8 @@ static int dash_write_header(AVFormatContext *s)
         ctx->oformat = oformat;
         ctx->interrupt_callback = s->interrupt_callback;
 
-        if (!(st = avformat_new_stream(ctx, NULL))) {
+        if (!(st = avformat_new_stream(ctx, NULL)))
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -621,17 +707,21 @@ static int dash_write_header(AVFormatContext *s)
         ctx->avoid_negative_ts = s->avoid_negative_ts;
 
         ctx->pb = avio_alloc_context(os->iobuf, sizeof(os->iobuf), AVIO_FLAG_WRITE, os, NULL, dash_write, NULL);
-        if (!ctx->pb) {
+        if (!ctx->pb)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
 
-        if (c->single_file) {
+        if (c->single_file)
+        {
             if (c->single_file_name)
                 dash_fill_tmpl_params(os->initfile, sizeof(os->initfile), c->single_file_name, i, 0, os->bit_rate, 0);
             else
                 snprintf(os->initfile, sizeof(os->initfile), "%s-stream%d.m4s", basename, i);
-        } else {
+        }
+        else
+        {
             dash_fill_tmpl_params(os->initfile, sizeof(os->initfile), c->init_seg_name, i, 0, os->bit_rate, 0);
         }
         snprintf(filename, sizeof(filename), "%s%s", c->dirname, os->initfile);
@@ -641,8 +731,9 @@ static int dash_write_header(AVFormatContext *s)
         os->init_start_pos = 0;
 
         av_dict_set(&opts, "movflags", "frag_custom+dash+delay_moov", 0);
-        if ((ret = avformat_write_header(ctx, &opts)) < 0) {
-             goto fail;
+        if ((ret = avformat_write_header(ctx, &opts)) < 0)
+        {
+            goto fail;
         }
         os->ctx_inited = 1;
         avio_flush(ctx->pb);
@@ -667,7 +758,8 @@ static int dash_write_header(AVFormatContext *s)
         os->segment_index = 1;
     }
 
-    if (!c->has_video && c->min_seg_duration <= 0) {
+    if (!c->has_video && c->min_seg_duration <= 0)
+    {
         av_log(s, AV_LOG_WARNING, "no video stream and no min seg duration set\n");
         ret = AVERROR(EINVAL);
     }
@@ -688,10 +780,12 @@ static int add_segment(OutputStream *os, const char *file,
 {
     int err;
     Segment *seg;
-    if (os->nb_segments >= os->segments_size) {
+    if (os->nb_segments >= os->segments_size)
+    {
         os->segments_size = (os->segments_size + 1) * 2;
         if ((err = av_reallocp(&os->segments, sizeof(*os->segments) *
-                               os->segments_size)) < 0) {
+                               os->segments_size)) < 0)
+        {
             os->segments_size = 0;
             os->nb_segments = 0;
             return err;
@@ -703,7 +797,8 @@ static int add_segment(OutputStream *os, const char *file,
     av_strlcpy(seg->file, file, sizeof(seg->file));
     seg->time = time;
     seg->duration = duration;
-    if (seg->time < 0) { // If pts<0, it is expected to be cut away with an edit list
+    if (seg->time < 0)   // If pts<0, it is expected to be cut away with an edit list
+    {
         seg->duration += seg->time;
         seg->time = 0;
     }
@@ -735,7 +830,8 @@ static void find_index_range(AVFormatContext *s, const char *full_path,
     ret = ffurl_open(&fd, full_path, AVIO_FLAG_READ, &s->interrupt_callback, NULL);
     if (ret < 0)
         return;
-    if (ffurl_seek(fd, pos, SEEK_SET) != pos) {
+    if (ffurl_seek(fd, pos, SEEK_SET) != pos)
+    {
         ffurl_close(fd);
         return;
     }
@@ -779,7 +875,8 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
     if (stream >= 0)
         cur_flush_segment_index = c->streams[stream].segment_index;
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         OutputStream *os = &c->streams[i];
         char filename[1024] = "", full_path[1024], temp_path[1024];
         int64_t start_pos;
@@ -791,7 +888,8 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
         // Flush the single stream that got a keyframe right now.
         // Flush all audio streams as well, in sync with video keyframes,
         // but not the other video streams.
-        if (stream >= 0 && i != stream) {
+        if (stream >= 0 && i != stream)
+        {
             if (s->streams[i]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
                 continue;
             // Make sure we don't flush audio streams multiple times, when
@@ -800,10 +898,12 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
                 continue;
         }
 
-        if (!os->init_range_length) {
+        if (!os->init_range_length)
+        {
             av_write_frame(os->ctx, NULL);
             os->init_range_length = avio_tell(os->ctx->pb);
-            if (!c->single_file) {
+            if (!c->single_file)
+            {
                 ffurl_close(os->out);
                 os->out = NULL;
             }
@@ -811,7 +911,8 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
 
         start_pos = avio_tell(os->ctx->pb);
 
-        if (!c->single_file) {
+        if (!c->single_file)
+        {
             dash_fill_tmpl_params(filename, sizeof(filename), c->media_seg_name, i, os->segment_index, os->bit_rate, os->start_pts);
             snprintf(full_path, sizeof(full_path), "%s%s", c->dirname, filename);
             snprintf(temp_path, sizeof(temp_path), "%s.tmp", full_path);
@@ -819,7 +920,9 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
             if (ret < 0)
                 break;
             write_styp(os->ctx->pb);
-        } else {
+        }
+        else
+        {
             snprintf(full_path, sizeof(full_path), "%s%s", c->dirname, os->initfile);
         }
 
@@ -828,9 +931,12 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
         os->packets_written = 0;
 
         range_length = avio_tell(os->ctx->pb) - start_pos;
-        if (c->single_file) {
+        if (c->single_file)
+        {
             find_index_range(s, full_path, start_pos, &index_length);
-        } else {
+        }
+        else
+        {
             ffurl_close(os->out);
             os->out = NULL;
             ret = ff_rename(temp_path, full_path, s);
@@ -841,15 +947,19 @@ static int dash_flush(AVFormatContext *s, int final, int stream)
         av_log(s, AV_LOG_VERBOSE, "Representation %d media segment %d written to: %s\n", i, os->segment_index, full_path);
     }
 
-    if (c->window_size || (final && c->remove_at_exit)) {
-        for (i = 0; i < s->nb_streams; i++) {
+    if (c->window_size || (final && c->remove_at_exit))
+    {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             OutputStream *os = &c->streams[i];
             int j;
             int remove = os->nb_segments - c->window_size - c->extra_window_size;
             if (final && c->remove_at_exit)
                 remove = os->nb_segments;
-            if (remove > 0) {
-                for (j = 0; j < remove; j++) {
+            if (remove > 0)
+            {
+                for (j = 0; j < remove; j++)
+                {
                     char filename[1024];
                     snprintf(filename, sizeof(filename), "%s%s", c->dirname, os->segments[j]->file);
                     unlink(filename);
@@ -891,7 +1001,8 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
     // If forcing the stream to start at 0, the mp4 muxer will set the start
     // timestamps to 0. Do the same here, to avoid mismatches in duration/timestamps.
     if (os->first_pts == AV_NOPTS_VALUE &&
-        s->avoid_negative_ts == AVFMT_AVOID_NEG_TS_MAKE_ZERO) {
+            s->avoid_negative_ts == AVFMT_AVOID_NEG_TS_MAKE_ZERO)
+    {
         pkt->pts -= pkt->dts;
         pkt->dts  = 0;
     }
@@ -900,9 +1011,10 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
         os->first_pts = pkt->pts;
 
     if ((!c->has_video || st->codec->codec_type == AVMEDIA_TYPE_VIDEO) &&
-        pkt->flags & AV_PKT_FLAG_KEY && os->packets_written &&
-        av_compare_ts(pkt->pts - os->first_pts, st->time_base,
-                      seg_end_duration, AV_TIME_BASE_Q) >= 0) {
+            pkt->flags & AV_PKT_FLAG_KEY && os->packets_written &&
+            av_compare_ts(pkt->pts - os->first_pts, st->time_base,
+                          seg_end_duration, AV_TIME_BASE_Q) >= 0)
+    {
         int64_t prev_duration = c->last_duration;
 
         c->last_duration = av_rescale_q(pkt->pts - os->start_pts,
@@ -912,9 +1024,11 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
                                          st->time_base,
                                          AV_TIME_BASE_Q);
 
-        if ((!c->use_timeline || !c->use_template) && prev_duration) {
+        if ((!c->use_timeline || !c->use_template) && prev_duration)
+        {
             if (c->last_duration < prev_duration*9/10 ||
-                c->last_duration > prev_duration*11/10) {
+                    c->last_duration > prev_duration*11/10)
+            {
                 av_log(s, AV_LOG_WARNING,
                        "Segment durations differ too much, enable use_timeline "
                        "and use_template, or keep a stricter keyframe interval\n");
@@ -925,7 +1039,8 @@ static int dash_write_packet(AVFormatContext *s, AVPacket *pkt)
             return ret;
     }
 
-    if (!os->packets_written) {
+    if (!os->packets_written)
+    {
         // If we wrote a previous segment, adjust the start time of the segment
         // to the end of the previous one (which is the same as the mp4 muxer
         // does). This avoids gaps in the timeline.
@@ -946,7 +1061,8 @@ static int dash_write_trailer(AVFormatContext *s)
 {
     DASHContext *c = s->priv_data;
 
-    if (s->nb_streams > 0) {
+    if (s->nb_streams > 0)
+    {
         OutputStream *os = &c->streams[0];
         // If no segments have been written so far, try to do a crude
         // guess of the segment duration
@@ -960,10 +1076,12 @@ static int dash_write_trailer(AVFormatContext *s)
     }
     dash_flush(s, 1, -1);
 
-    if (c->remove_at_exit) {
+    if (c->remove_at_exit)
+    {
         char filename[1024];
         int i;
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             OutputStream *os = &c->streams[i];
             snprintf(filename, sizeof(filename), "%s%s", c->dirname, os->initfile);
             unlink(filename);
@@ -977,7 +1095,8 @@ static int dash_write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(DASHContext, x)
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "window_size", "number of segments kept in the manifest", OFFSET(window_size), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, E },
     { "extra_window_size", "number of segments kept outside of the manifest before removing from disk", OFFSET(extra_window_size), AV_OPT_TYPE_INT, { .i64 = 5 }, 0, INT_MAX, E },
     { "min_seg_duration", "minimum segment duration (in microseconds)", OFFSET(min_seg_duration), AV_OPT_TYPE_INT64, { .i64 = 5000000 }, 0, INT_MAX, E },
@@ -991,14 +1110,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass dash_class = {
+static const AVClass dash_class =
+{
     .class_name = "dash muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_dash_muxer = {
+AVOutputFormat ff_dash_muxer =
+{
     .name           = "dash",
     .long_name      = NULL_IF_CONFIG_SMALL("DASH Muxer"),
     .priv_data_size = sizeof(DASHContext),

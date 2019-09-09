@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTMP Diffie-Hellmann utilities
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -36,7 +36,8 @@ typedef mpz_ptr FFBigNum;
 typedef gcry_mpi_t FFBigNum;
 #endif
 
-typedef struct FF_DH {
+typedef struct FF_DH
+{
     FFBigNum p;
     FFBigNum g;
     FFBigNum pub_key;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD-optimized halfpel functions are compiled twice for rnd/no_rnd
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -135,12 +135,12 @@ STATIC void DEF(avg, pixels8_xy2)(uint8_t *block, const uint8_t *pixels,
         "paddusw %%mm1, %%mm5           \n\t"
         "psrlw  $2, %%mm4               \n\t"
         "psrlw  $2, %%mm5               \n\t"
-                "movq   (%2, %%"REG_a"), %%mm3  \n\t"
+        "movq   (%2, %%"REG_a"), %%mm3  \n\t"
         "packuswb  %%mm5, %%mm4         \n\t"
-                "pcmpeqd %%mm2, %%mm2   \n\t"
-                "paddb %%mm2, %%mm2     \n\t"
-                PAVGB_MMX(%%mm3, %%mm4, %%mm5, %%mm2)
-                "movq   %%mm5, (%2, %%"REG_a")  \n\t"
+        "pcmpeqd %%mm2, %%mm2   \n\t"
+        "paddb %%mm2, %%mm2     \n\t"
+        PAVGB_MMX(%%mm3, %%mm4, %%mm5, %%mm2)
+        "movq   %%mm5, (%2, %%"REG_a")  \n\t"
         "add    %3, %%"REG_a"                \n\t"
 
         "movq   (%1, %%"REG_a"), %%mm2  \n\t" // 0 <-> 2   1 <-> 3
@@ -159,12 +159,12 @@ STATIC void DEF(avg, pixels8_xy2)(uint8_t *block, const uint8_t *pixels,
         "paddusw %%mm5, %%mm1           \n\t"
         "psrlw  $2, %%mm0               \n\t"
         "psrlw  $2, %%mm1               \n\t"
-                "movq   (%2, %%"REG_a"), %%mm3  \n\t"
+        "movq   (%2, %%"REG_a"), %%mm3  \n\t"
         "packuswb  %%mm1, %%mm0         \n\t"
-                "pcmpeqd %%mm2, %%mm2   \n\t"
-                "paddb %%mm2, %%mm2     \n\t"
-                PAVGB_MMX(%%mm3, %%mm0, %%mm1, %%mm2)
-                "movq   %%mm1, (%2, %%"REG_a")  \n\t"
+        "pcmpeqd %%mm2, %%mm2   \n\t"
+        "paddb %%mm2, %%mm2     \n\t"
+        PAVGB_MMX(%%mm3, %%mm0, %%mm1, %%mm2)
+        "movq   %%mm1, (%2, %%"REG_a")  \n\t"
         "add    %3, %%"REG_a"           \n\t"
 
         "subl   $2, %0                  \n\t"

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * EXIF metadata parser
  * Copyright (c) 2013 Thilo Borgmann <thilo.borgmann _at_ mail.de>
  *
@@ -35,12 +35,14 @@
 #define EXIF_MAX_IFD_RECURSION 2
 #define EXIF_TAG_NAME_LENGTH   32
 
-struct exif_tag {
+struct exif_tag
+{
     char      name[EXIF_TAG_NAME_LENGTH];
     uint16_t  id;
 };
 
-static const struct exif_tag tag_list[] = { // JEITA CP-3451 EXIF specification:
+static const struct exif_tag tag_list[] =   // JEITA CP-3451 EXIF specification:
+{
     {"GPSVersionID",               0x00}, // <- Table 12 GPS Attribute Information
     {"GPSLatitudeRef",             0x01},
     {"GPSLatitude",                0x02},

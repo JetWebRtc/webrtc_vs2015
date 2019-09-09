@@ -1,4 +1,4 @@
-/**
+﻿/**
  * @file
  * Vorbis I decoder
  * @author Denes Balatoni  ( dbalatoni programozo hu )
@@ -46,7 +46,8 @@
 #define V_MAX_VLCS (1 << 16)
 #define V_MAX_PARTITIONS (1 << 20)
 
-typedef struct vorbis_codebook {
+typedef struct vorbis_codebook
+{
     uint8_t      dimensions;
     uint8_t      lookup_type;
     uint8_t      maxdepth;
@@ -61,12 +62,15 @@ typedef struct vorbis_floor1_s vorbis_floor1;
 struct vorbis_context_s;
 typedef
 int (* vorbis_floor_decode_func)
-    (struct vorbis_context_s *, vorbis_floor_data *, float *);
-typedef struct vorbis_floor {
+(struct vorbis_context_s *, vorbis_floor_data *, float *);
+typedef struct vorbis_floor
+{
     uint8_t floor_type;
     vorbis_floor_decode_func decode;
-    union vorbis_floor_u {
-        struct vorbis_floor0_s {
+    union vorbis_floor_u
+    {
+        struct vorbis_floor0_s
+        {
             uint8_t       order;
             uint16_t      rate;
             uint16_t      bark_map_size;
@@ -78,7 +82,8 @@ typedef struct vorbis_floor {
             uint8_t      *book_list;
             float        *lsp;
         } t0;
-        struct vorbis_floor1_s {
+        struct vorbis_floor1_s
+        {
             uint8_t       partitions;
             uint8_t       partition_class[32];
             uint8_t       class_dimensions[16];
@@ -92,7 +97,8 @@ typedef struct vorbis_floor {
     } data;
 } vorbis_floor;
 
-typedef struct vorbis_residue {
+typedef struct vorbis_residue
+{
     uint16_t      type;
     uint32_t      begin;
     uint32_t      end;
@@ -105,7 +111,8 @@ typedef struct vorbis_residue {
     uint8_t      *classifs;
 } vorbis_residue;
 
-typedef struct vorbis_mapping {
+typedef struct vorbis_mapping
+{
     uint8_t       submaps;
     uint16_t      coupling_steps;
     uint8_t      *magnitude;
@@ -115,14 +122,16 @@ typedef struct vorbis_mapping {
     uint8_t       submap_residue[16];
 } vorbis_mapping;
 
-typedef struct vorbis_mode {
+typedef struct vorbis_mode
+{
     uint8_t       blockflag;
     uint16_t      windowtype;
     uint16_t      transformtype;
     uint8_t       mapping;
 } vorbis_mode;
 
-typedef struct vorbis_context_s {
+typedef struct vorbis_context_s
+{
     AVCodecContext *avctx;
     GetBitContext gb;
     VorbisDSPContext dsp;
@@ -203,27 +212,33 @@ static void vorbis_free(vorbis_context *vc)
     ff_mdct_end(&vc->mdct[1]);
 
     if (vc->codebooks)
-        for (i = 0; i < vc->codebook_count; ++i) {
+        for (i = 0; i < vc->codebook_count; ++i)
+        {
             av_freep(&vc->codebooks[i].codevectors);
             ff_free_vlc(&vc->codebooks[i].vlc);
         }
     av_freep(&vc->codebooks);
 
     if (vc->floors)
-        for (i = 0; i < vc->floor_count; ++i) {
-            if (vc->floors[i].floor_type == 0) {
+        for (i = 0; i < vc->floor_count; ++i)
+        {
+            if (vc->floors[i].floor_type == 0)
+            {
                 av_freep(&vc->floors[i].data.t0.map[0]);
                 av_freep(&vc->floors[i].data.t0.map[1]);
                 av_freep(&vc->floors[i].data.t0.book_list);
                 av_freep(&vc->floors[i].data.t0.lsp);
-            } else {
+            }
+            else
+            {
                 av_freep(&vc->floors[i].data.t1.list);
             }
         }
     av_freep(&vc->floors);
 
     if (vc->mappings)
-        for (i = 0; i < vc->mapping_count; ++i) {
+        for (i = 0; i < vc->mapping_count; ++i)
+        {
             av_freep(&vc->mappings[i].magnitude);
             av_freep(&vc->mappings[i].angle);
             av_freep(&vc->mappings[i].mux);
@@ -253,18 +268,21 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
     tmp_vlc_codes = av_mallocz(V_MAX_VLCS * sizeof(*tmp_vlc_codes));
     codebook_multiplicands = av_malloc(V_MAX_VLCS * sizeof(*codebook_multiplicands));
     if (!vc->codebooks ||
-        !tmp_vlc_bits || !tmp_vlc_codes || !codebook_multiplicands) {
+            !tmp_vlc_bits || !tmp_vlc_codes || !codebook_multiplicands)
+    {
         ret = AVERROR(ENOMEM);
         goto error;
     }
 
-    for (cb = 0; cb < vc->codebook_count; ++cb) {
+    for (cb = 0; cb < vc->codebook_count; ++cb)
+    {
         vorbis_codebook *codebook_setup = &vc->codebooks[cb];
         unsigned ordered, t, entries, used_entries = 0;
 
         ff_dlog(NULL, " %u. Codebook\n", cb);
 
-        if (get_bits(gb, 24) != 0x564342) {
+        if (get_bits(gb, 24) != 0x564342)
+        {
             av_log(vc->avctx, AV_LOG_ERROR,
                    " %u. Codebook setup data corrupt.\n", cb);
             ret = AVERROR_INVALIDDATA;
@@ -272,7 +290,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
         }
 
         codebook_setup->dimensions=get_bits(gb, 16);
-        if (codebook_setup->dimensions > 16 || codebook_setup->dimensions == 0) {
+        if (codebook_setup->dimensions > 16 || codebook_setup->dimensions == 0)
+        {
             av_log(vc->avctx, AV_LOG_ERROR,
                    " %u. Codebook's dimension is invalid (%d).\n",
                    cb, codebook_setup->dimensions);
@@ -280,7 +299,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
             goto error;
         }
         entries = get_bits(gb, 24);
-        if (entries > V_MAX_VLCS) {
+        if (entries > V_MAX_VLCS)
+        {
             av_log(vc->avctx, AV_LOG_ERROR,
                    " %u. Codebook has too many entries (%u).\n",
                    cb, entries);
@@ -293,39 +313,49 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
         ff_dlog(NULL, " codebook_dimensions %d, codebook_entries %u\n",
                 codebook_setup->dimensions, entries);
 
-        if (!ordered) {
+        if (!ordered)
+        {
             unsigned ce, flag;
             unsigned sparse = get_bits1(gb);
 
             ff_dlog(NULL, " not ordered \n");
 
-            if (sparse) {
+            if (sparse)
+            {
                 ff_dlog(NULL, " sparse \n");
 
                 used_entries = 0;
-                for (ce = 0; ce < entries; ++ce) {
+                for (ce = 0; ce < entries; ++ce)
+                {
                     flag = get_bits1(gb);
-                    if (flag) {
+                    if (flag)
+                    {
                         tmp_vlc_bits[ce] = get_bits(gb, 5) + 1;
                         ++used_entries;
-                    } else
+                    }
+                    else
                         tmp_vlc_bits[ce] = 0;
                 }
-            } else {
+            }
+            else
+            {
                 ff_dlog(NULL, " not sparse \n");
 
                 used_entries = entries;
                 for (ce = 0; ce < entries; ++ce)
                     tmp_vlc_bits[ce] = get_bits(gb, 5) + 1;
             }
-        } else {
+        }
+        else
+        {
             unsigned current_entry  = 0;
             unsigned current_length = get_bits(gb, 5) + 1;
 
             ff_dlog(NULL, " ordered, current length: %u\n", current_length);  //FIXME
 
             used_entries = entries;
-            for (; current_entry < used_entries && current_length <= 32; ++current_length) {
+            for (; current_entry < used_entries && current_length <= 32; ++current_length)
+            {
                 unsigned i, number;
 
                 ff_dlog(NULL, " number bits: %u ", ilog(entries - current_entry));
@@ -340,7 +370,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
 
                 current_entry+=number;
             }
-            if (current_entry>used_entries) {
+            if (current_entry>used_entries)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR, " More codelengths than codes in codebook. \n");
                 ret = AVERROR_INVALIDDATA;
                 goto error;
@@ -354,7 +385,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
 
 // If the codebook is used for (inverse) VQ, calculate codevectors.
 
-        if (codebook_setup->lookup_type == 1) {
+        if (codebook_setup->lookup_type == 1)
+        {
             unsigned i, j, k;
             unsigned codebook_lookup_values = ff_vorbis_nth_root(entries, codebook_setup->dimensions);
 
@@ -368,7 +400,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
             ff_dlog(NULL, "  delta %f minmum %f \n",
                     codebook_delta_value, codebook_minimum_value);
 
-            for (i = 0; i < codebook_lookup_values; ++i) {
+            for (i = 0; i < codebook_lookup_values; ++i)
+            {
                 codebook_multiplicands[i] = get_bits(gb, codebook_value_bits);
 
                 ff_dlog(NULL, " multiplicands*delta+minmum : %e \n",
@@ -377,27 +410,33 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
             }
 
 // Weed out unused vlcs and build codevector vector
-            if (used_entries) {
+            if (used_entries)
+            {
                 codebook_setup->codevectors =
                     av_mallocz_array(used_entries, codebook_setup->dimensions *
-                               sizeof(*codebook_setup->codevectors));
-                if (!codebook_setup->codevectors) {
+                                     sizeof(*codebook_setup->codevectors));
+                if (!codebook_setup->codevectors)
+                {
                     ret = AVERROR(ENOMEM);
                     goto error;
                 }
-            } else
+            }
+            else
                 codebook_setup->codevectors = NULL;
 
-            for (j = 0, i = 0; i < entries; ++i) {
+            for (j = 0, i = 0; i < entries; ++i)
+            {
                 unsigned dim = codebook_setup->dimensions;
 
-                if (tmp_vlc_bits[i]) {
+                if (tmp_vlc_bits[i])
+                {
                     float last = 0.0;
                     unsigned lookup_offset = i;
 
                     ff_dlog(vc->avctx, "Lookup offset %u ,", i);
 
-                    for (k = 0; k < dim; ++k) {
+                    for (k = 0; k < dim; ++k)
+                    {
                         unsigned multiplicand_offset = lookup_offset % codebook_lookup_values;
                         codebook_setup->codevectors[j * dim + k] = codebook_multiplicands[multiplicand_offset] * codebook_delta_value + codebook_minimum_value + last;
                         if (codebook_sequence_p)
@@ -415,20 +454,24 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
                     ++j;
                 }
             }
-            if (j != used_entries) {
+            if (j != used_entries)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR, "Bug in codevector vector building code. \n");
                 ret = AVERROR_INVALIDDATA;
                 goto error;
             }
             entries = used_entries;
-        } else if (codebook_setup->lookup_type >= 2) {
+        }
+        else if (codebook_setup->lookup_type >= 2)
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Codebook lookup type not supported. \n");
             ret = AVERROR_INVALIDDATA;
             goto error;
         }
 
 // Initialize VLC table
-        if (ff_vorbis_len2vlc(tmp_vlc_bits, tmp_vlc_codes, entries)) {
+        if (ff_vorbis_len2vlc(tmp_vlc_bits, tmp_vlc_codes, entries))
+        {
             av_log(vc->avctx, AV_LOG_ERROR, " Invalid code lengths while generating vlcs. \n");
             ret = AVERROR_INVALIDDATA;
             goto error;
@@ -449,7 +492,8 @@ static int vorbis_parse_setup_hdr_codebooks(vorbis_context *vc)
                             entries, tmp_vlc_bits, sizeof(*tmp_vlc_bits),
                             sizeof(*tmp_vlc_bits), tmp_vlc_codes,
                             sizeof(*tmp_vlc_codes), sizeof(*tmp_vlc_codes),
-                            INIT_VLC_LE))) {
+                            INIT_VLC_LE)))
+        {
             av_log(vc->avctx, AV_LOG_ERROR, " Error generating vlc tables. \n");
             goto error;
         }
@@ -475,13 +519,15 @@ static int vorbis_parse_setup_hdr_tdtransforms(vorbis_context *vc)
     GetBitContext *gb = &vc->gb;
     unsigned i, vorbis_time_count = get_bits(gb, 6) + 1;
 
-    for (i = 0; i < vorbis_time_count; ++i) {
+    for (i = 0; i < vorbis_time_count; ++i)
+    {
         unsigned vorbis_tdtransform = get_bits(gb, 16);
 
         ff_dlog(NULL, " Vorbis time domain transform %u: %u\n",
                 vorbis_time_count, vorbis_tdtransform);
 
-        if (vorbis_tdtransform) {
+        if (vorbis_tdtransform)
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Vorbis time domain transform data nonzero. \n");
             return AVERROR_INVALIDDATA;
         }
@@ -507,14 +553,16 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
     if (!vc->floors)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < vc->floor_count; ++i) {
+    for (i = 0; i < vc->floor_count; ++i)
+    {
         vorbis_floor *floor_setup = &vc->floors[i];
 
         floor_setup->floor_type = get_bits(gb, 16);
 
         ff_dlog(NULL, " %d. floor type %d \n", i, floor_setup->floor_type);
 
-        if (floor_setup->floor_type == 1) {
+        if (floor_setup->floor_type == 1)
+        {
             int maximum_class = -1;
             unsigned rangebits, rangemax, floor1_values = 2;
 
@@ -525,7 +573,8 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
             ff_dlog(NULL, " %d.floor: %d partitions \n",
                     i, floor_setup->data.t1.partitions);
 
-            for (j = 0; j < floor_setup->data.t1.partitions; ++j) {
+            for (j = 0; j < floor_setup->data.t1.partitions; ++j)
+            {
                 floor_setup->data.t1.partition_class[j] = get_bits(gb, 4);
                 if (floor_setup->data.t1.partition_class[j] > maximum_class)
                     maximum_class = floor_setup->data.t1.partition_class[j];
@@ -537,7 +586,8 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
 
             ff_dlog(NULL, " maximum class %d \n", maximum_class);
 
-            for (j = 0; j <= maximum_class; ++j) {
+            for (j = 0; j <= maximum_class; ++j)
+            {
                 floor_setup->data.t1.class_dimensions[j] = get_bits(gb, 3) + 1;
                 floor_setup->data.t1.class_subclasses[j] = get_bits(gb, 2);
 
@@ -545,17 +595,19 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
                         floor_setup->data.t1.class_dimensions[j],
                         floor_setup->data.t1.class_subclasses[j]);
 
-                if (floor_setup->data.t1.class_subclasses[j]) {
+                if (floor_setup->data.t1.class_subclasses[j])
+                {
                     GET_VALIDATED_INDEX(floor_setup->data.t1.class_masterbook[j], 8, vc->codebook_count)
 
                     ff_dlog(NULL, "   masterbook: %d \n", floor_setup->data.t1.class_masterbook[j]);
                 }
 
-                for (k = 0; k < (1 << floor_setup->data.t1.class_subclasses[j]); ++k) {
+                for (k = 0; k < (1 << floor_setup->data.t1.class_subclasses[j]); ++k)
+                {
                     int16_t bits = get_bits(gb, 8) - 1;
                     if (bits != -1)
                         VALIDATE_INDEX(bits, vc->codebook_count)
-                    floor_setup->data.t1.subclass_books[j][k] = bits;
+                        floor_setup->data.t1.subclass_books[j][k] = bits;
 
                     ff_dlog(NULL, "    book %d. : %d \n", k, floor_setup->data.t1.subclass_books[j][k]);
                 }
@@ -568,13 +620,14 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
                 floor_setup->data.t1.x_list_dim+=floor_setup->data.t1.class_dimensions[floor_setup->data.t1.partition_class[j]];
 
             floor_setup->data.t1.list = av_mallocz_array(floor_setup->data.t1.x_list_dim,
-                                                   sizeof(*floor_setup->data.t1.list));
+                                        sizeof(*floor_setup->data.t1.list));
             if (!floor_setup->data.t1.list)
                 return AVERROR(ENOMEM);
 
             rangebits = get_bits(gb, 4);
             rangemax = (1 << rangebits);
-            if (rangemax > vc->blocksize[1] / 2) {
+            if (rangemax > vc->blocksize[1] / 2)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR,
                        "Floor value is too large for blocksize: %u (%"PRIu32")\n",
                        rangemax, vc->blocksize[1] / 2);
@@ -583,8 +636,10 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
             floor_setup->data.t1.list[0].x = 0;
             floor_setup->data.t1.list[1].x = rangemax;
 
-            for (j = 0; j < floor_setup->data.t1.partitions; ++j) {
-                for (k = 0; k < floor_setup->data.t1.class_dimensions[floor_setup->data.t1.partition_class[j]]; ++k, ++floor1_values) {
+            for (j = 0; j < floor_setup->data.t1.partitions; ++j)
+            {
+                for (k = 0; k < floor_setup->data.t1.class_dimensions[floor_setup->data.t1.partition_class[j]]; ++k, ++floor1_values)
+                {
                     floor_setup->data.t1.list[floor1_values].x = get_bits(gb, rangebits);
 
                     ff_dlog(NULL, " %u. floor1 Y coord. %d\n", floor1_values,
@@ -595,26 +650,32 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
 // Precalculate order of x coordinates - needed for decode
             if (ff_vorbis_ready_floor1_list(vc->avctx,
                                             floor_setup->data.t1.list,
-                                            floor_setup->data.t1.x_list_dim)) {
+                                            floor_setup->data.t1.x_list_dim))
+            {
                 return AVERROR_INVALIDDATA;
             }
-        } else if (floor_setup->floor_type == 0) {
+        }
+        else if (floor_setup->floor_type == 0)
+        {
             unsigned max_codebook_dim = 0;
 
             floor_setup->decode = vorbis_floor0_decode;
 
             floor_setup->data.t0.order          = get_bits(gb,  8);
-            if (!floor_setup->data.t0.order) {
+            if (!floor_setup->data.t0.order)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR, "Floor 0 order is 0.\n");
                 return AVERROR_INVALIDDATA;
             }
             floor_setup->data.t0.rate           = get_bits(gb, 16);
-            if (!floor_setup->data.t0.rate) {
+            if (!floor_setup->data.t0.rate)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR, "Floor 0 rate is 0.\n");
                 return AVERROR_INVALIDDATA;
             }
             floor_setup->data.t0.bark_map_size  = get_bits(gb, 16);
-            if (!floor_setup->data.t0.bark_map_size) {
+            if (!floor_setup->data.t0.bark_map_size)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR,
                        "Floor 0 bark map size is 0.\n");
                 return AVERROR_INVALIDDATA;
@@ -632,7 +693,8 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
             {
                 int idx;
                 unsigned book_idx;
-                for (idx = 0; idx < floor_setup->data.t0.num_books; ++idx) {
+                for (idx = 0; idx < floor_setup->data.t0.num_books; ++idx)
+                {
                     GET_VALIDATED_INDEX(book_idx, 8, vc->codebook_count)
                     floor_setup->data.t0.book_list[idx] = book_idx;
                     if (vc->codebooks[book_idx].dimensions > max_codebook_dim)
@@ -666,12 +728,15 @@ static int vorbis_parse_setup_hdr_floors(vorbis_context *vc)
                     floor_setup->data.t0.book_list);
             {
                 int idx;
-                for (idx = 0; idx < floor_setup->data.t0.num_books; ++idx) {
+                for (idx = 0; idx < floor_setup->data.t0.num_books; ++idx)
+                {
                     ff_dlog(NULL, "  Book %d: %u\n", idx + 1,
                             floor_setup->data.t0.book_list[idx]);
                 }
             }
-        } else {
+        }
+        else
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Invalid floor type!\n");
             return AVERROR_INVALIDDATA;
         }
@@ -693,7 +758,8 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
 
     ff_dlog(NULL, " There are %d residues. \n", vc->residue_count);
 
-    for (i = 0; i < vc->residue_count; ++i) {
+    for (i = 0; i < vc->residue_count; ++i)
+    {
         vorbis_residue *res_setup = &vc->residues[i];
         uint8_t cascade[64];
         unsigned high_bits, low_bits;
@@ -707,7 +773,8 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
         res_setup->partition_size = get_bits(gb, 24) + 1;
         /* Validations to prevent a buffer overflow later. */
         if (res_setup->begin>res_setup->end ||
-            (res_setup->end-res_setup->begin) / res_setup->partition_size > FFMIN(V_MAX_PARTITIONS, 65535)) {
+                (res_setup->end-res_setup->begin) / res_setup->partition_size > FFMIN(V_MAX_PARTITIONS, 65535))
+        {
             av_log(vc->avctx, AV_LOG_ERROR,
                    "partition out of bounds: type, begin, end, size, blocksize: %"PRIu16", %"PRIu32", %"PRIu32", %u, %"PRIu32"\n",
                    res_setup->type, res_setup->begin, res_setup->end,
@@ -721,8 +788,8 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
         res_setup->ptns_to_read =
             (res_setup->end - res_setup->begin) / res_setup->partition_size;
         res_setup->classifs = av_malloc_array(res_setup->ptns_to_read,
-                                        vc->audio_channels *
-                                        sizeof(*res_setup->classifs));
+                                              vc->audio_channels *
+                                              sizeof(*res_setup->classifs));
         if (!res_setup->classifs)
             return AVERROR(ENOMEM);
 
@@ -730,7 +797,8 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
                 res_setup->begin, res_setup->end, res_setup->partition_size,
                 res_setup->classifications, res_setup->classbook);
 
-        for (j = 0; j < res_setup->classifications; ++j) {
+        for (j = 0; j < res_setup->classifications; ++j)
+        {
             high_bits = 0;
             low_bits  = get_bits(gb, 3);
             if (get_bits1(gb))
@@ -741,9 +809,12 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
         }
 
         res_setup->maxpass = 0;
-        for (j = 0; j < res_setup->classifications; ++j) {
-            for (k = 0; k < 8; ++k) {
-                if (cascade[j]&(1 << k)) {
+        for (j = 0; j < res_setup->classifications; ++j)
+        {
+            for (k = 0; k < 8; ++k)
+            {
+                if (cascade[j]&(1 << k))
+                {
                     GET_VALIDATED_INDEX(res_setup->books[j][k], 8, vc->codebook_count)
 
                     ff_dlog(NULL, "     %u class cascade depth %u book: %d\n",
@@ -751,7 +822,9 @@ static int vorbis_parse_setup_hdr_residues(vorbis_context *vc)
 
                     if (k>res_setup->maxpass)
                         res_setup->maxpass = k;
-                } else {
+                }
+                else
+                {
                     res_setup->books[j][k] = -1;
                 }
             }
@@ -774,47 +847,58 @@ static int vorbis_parse_setup_hdr_mappings(vorbis_context *vc)
 
     ff_dlog(NULL, " There are %d mappings. \n", vc->mapping_count);
 
-    for (i = 0; i < vc->mapping_count; ++i) {
+    for (i = 0; i < vc->mapping_count; ++i)
+    {
         vorbis_mapping *mapping_setup = &vc->mappings[i];
 
-        if (get_bits(gb, 16)) {
+        if (get_bits(gb, 16))
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Other mappings than type 0 are not compliant with the Vorbis I specification. \n");
             return AVERROR_INVALIDDATA;
         }
-        if (get_bits1(gb)) {
+        if (get_bits1(gb))
+        {
             mapping_setup->submaps = get_bits(gb, 4) + 1;
-        } else {
+        }
+        else
+        {
             mapping_setup->submaps = 1;
         }
 
-        if (get_bits1(gb)) {
+        if (get_bits1(gb))
+        {
             mapping_setup->coupling_steps = get_bits(gb, 8) + 1;
             mapping_setup->magnitude      = av_mallocz(mapping_setup->coupling_steps *
-                                                       sizeof(*mapping_setup->magnitude));
+                                            sizeof(*mapping_setup->magnitude));
             mapping_setup->angle          = av_mallocz(mapping_setup->coupling_steps *
-                                                       sizeof(*mapping_setup->angle));
+                                            sizeof(*mapping_setup->angle));
             if (!mapping_setup->angle || !mapping_setup->magnitude)
                 return AVERROR(ENOMEM);
 
-            for (j = 0; j < mapping_setup->coupling_steps; ++j) {
+            for (j = 0; j < mapping_setup->coupling_steps; ++j)
+            {
                 GET_VALIDATED_INDEX(mapping_setup->magnitude[j], ilog(vc->audio_channels - 1), vc->audio_channels)
                 GET_VALIDATED_INDEX(mapping_setup->angle[j],     ilog(vc->audio_channels - 1), vc->audio_channels)
             }
-        } else {
+        }
+        else
+        {
             mapping_setup->coupling_steps = 0;
         }
 
         ff_dlog(NULL, "   %u mapping coupling steps: %d\n",
                 i, mapping_setup->coupling_steps);
 
-        if (get_bits(gb, 2)) {
+        if (get_bits(gb, 2))
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "%u. mapping setup data invalid.\n", i);
             return AVERROR_INVALIDDATA; // following spec.
         }
 
-        if (mapping_setup->submaps>1) {
+        if (mapping_setup->submaps>1)
+        {
             mapping_setup->mux = av_mallocz_array(vc->audio_channels,
-                                            sizeof(*mapping_setup->mux));
+                                                  sizeof(*mapping_setup->mux));
             if (!mapping_setup->mux)
                 return AVERROR(ENOMEM);
 
@@ -822,7 +906,8 @@ static int vorbis_parse_setup_hdr_mappings(vorbis_context *vc)
                 mapping_setup->mux[j] = get_bits(gb, 4);
         }
 
-        for (j = 0; j < mapping_setup->submaps; ++j) {
+        for (j = 0; j < mapping_setup->submaps; ++j)
+        {
             skip_bits(gb, 8); // FIXME check?
             GET_VALIDATED_INDEX(mapping_setup->submap_floor[j],   8, vc->floor_count)
             GET_VALIDATED_INDEX(mapping_setup->submap_residue[j], 8, vc->residue_count)
@@ -845,7 +930,8 @@ static int create_map(vorbis_context *vc, unsigned floor_number)
     int blockflag, n;
     int32_t *map;
 
-    for (blockflag = 0; blockflag < 2; ++blockflag) {
+    for (blockflag = 0; blockflag < 2; ++blockflag)
+    {
         n = vc->blocksize[blockflag] / 2;
         floors[floor_number].data.t0.map[blockflag] =
             av_malloc_array(n + 1, sizeof(int32_t)); // n + sentinel
@@ -855,7 +941,8 @@ static int create_map(vorbis_context *vc, unsigned floor_number)
         map =  floors[floor_number].data.t0.map[blockflag];
         vf  = &floors[floor_number].data.t0;
 
-        for (idx = 0; idx < n; ++idx) {
+        for (idx = 0; idx < n; ++idx)
+        {
             map[idx] = floor(BARK((vf->rate * idx) / (2.0f * n)) *
                              (vf->bark_map_size / BARK(vf->rate / 2.0f)));
             if (vf->bark_map_size-1 < map[idx])
@@ -865,7 +952,8 @@ static int create_map(vorbis_context *vc, unsigned floor_number)
         vf->map_size[blockflag] = n;
     }
 
-    for (idx = 0; idx <= n; ++idx) {
+    for (idx = 0; idx <= n; ++idx)
+    {
         ff_dlog(NULL, "floor0 map: map at pos %d is %d\n", idx, map[idx]);
     }
 
@@ -884,7 +972,8 @@ static int vorbis_parse_setup_hdr_modes(vorbis_context *vc)
 
     ff_dlog(NULL, " There are %d modes.\n", vc->mode_count);
 
-    for (i = 0; i < vc->mode_count; ++i) {
+    for (i = 0; i < vc->mode_count; ++i)
+    {
         vorbis_mode *mode_setup = &vc->modes[i];
 
         mode_setup->blockflag     = get_bits1(gb);
@@ -907,37 +996,45 @@ static int vorbis_parse_setup_hdr(vorbis_context *vc)
     int ret;
 
     if ((get_bits(gb, 8) != 'v') || (get_bits(gb, 8) != 'o') ||
-        (get_bits(gb, 8) != 'r') || (get_bits(gb, 8) != 'b') ||
-        (get_bits(gb, 8) != 'i') || (get_bits(gb, 8) != 's')) {
+            (get_bits(gb, 8) != 'r') || (get_bits(gb, 8) != 'b') ||
+            (get_bits(gb, 8) != 'i') || (get_bits(gb, 8) != 's'))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (no vorbis signature). \n");
         return AVERROR_INVALIDDATA;
     }
 
-    if ((ret = vorbis_parse_setup_hdr_codebooks(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_codebooks(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (codebooks). \n");
         return ret;
     }
-    if ((ret = vorbis_parse_setup_hdr_tdtransforms(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_tdtransforms(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (time domain transforms). \n");
         return ret;
     }
-    if ((ret = vorbis_parse_setup_hdr_floors(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_floors(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (floors). \n");
         return ret;
     }
-    if ((ret = vorbis_parse_setup_hdr_residues(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_residues(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (residues). \n");
         return ret;
     }
-    if ((ret = vorbis_parse_setup_hdr_mappings(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_mappings(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (mappings). \n");
         return ret;
     }
-    if ((ret = vorbis_parse_setup_hdr_modes(vc))) {
+    if ((ret = vorbis_parse_setup_hdr_modes(vc)))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (modes). \n");
         return ret;
     }
-    if (!get_bits1(gb)) {
+    if (!get_bits1(gb))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis setup header packet corrupt (framing flag). \n");
         return AVERROR_INVALIDDATA; // framing flag bit unset error
     }
@@ -953,20 +1050,23 @@ static int vorbis_parse_id_hdr(vorbis_context *vc)
     unsigned bl0, bl1;
 
     if ((get_bits(gb, 8) != 'v') || (get_bits(gb, 8) != 'o') ||
-        (get_bits(gb, 8) != 'r') || (get_bits(gb, 8) != 'b') ||
-        (get_bits(gb, 8) != 'i') || (get_bits(gb, 8) != 's')) {
+            (get_bits(gb, 8) != 'r') || (get_bits(gb, 8) != 'b') ||
+            (get_bits(gb, 8) != 'i') || (get_bits(gb, 8) != 's'))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis id header packet corrupt (no vorbis signature). \n");
         return AVERROR_INVALIDDATA;
     }
 
     vc->version        = get_bits_long(gb, 32);    //FIXME check 0
     vc->audio_channels = get_bits(gb, 8);
-    if (vc->audio_channels <= 0) {
+    if (vc->audio_channels <= 0)
+    {
         av_log(vc->avctx, AV_LOG_ERROR, "Invalid number of channels\n");
         return AVERROR_INVALIDDATA;
     }
     vc->audio_samplerate = get_bits_long(gb, 32);
-    if (vc->audio_samplerate <= 0) {
+    if (vc->audio_samplerate <= 0)
+    {
         av_log(vc->avctx, AV_LOG_ERROR, "Invalid samplerate\n");
         return AVERROR_INVALIDDATA;
     }
@@ -975,7 +1075,8 @@ static int vorbis_parse_id_hdr(vorbis_context *vc)
     vc->bitrate_minimum = get_bits_long(gb, 32);
     bl0 = get_bits(gb, 4);
     bl1 = get_bits(gb, 4);
-    if (bl0 > 13 || bl0 < 6 || bl1 > 13 || bl1 < 6 || bl1 < bl0) {
+    if (bl0 > 13 || bl0 < 6 || bl1 > 13 || bl1 < 6 || bl1 < bl0)
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis id header packet corrupt (illegal blocksize). \n");
         return AVERROR_INVALIDDATA;
     }
@@ -984,7 +1085,8 @@ static int vorbis_parse_id_hdr(vorbis_context *vc)
     vc->win[0] = ff_vorbis_vwin[bl0 - 6];
     vc->win[1] = ff_vorbis_vwin[bl1 - 6];
 
-    if ((get_bits1(gb)) == 0) {
+    if ((get_bits1(gb)) == 0)
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Vorbis id header packet corrupt (framing flag not set). \n");
         return AVERROR_INVALIDDATA;
     }
@@ -1005,12 +1107,12 @@ static int vorbis_parse_id_hdr(vorbis_context *vc)
     ff_dlog(NULL, " vorbis version %d \n audio_channels %d \n audio_samplerate %d \n bitrate_max %d \n bitrate_nom %d \n bitrate_min %d \n blk_0 %d blk_1 %d \n ",
             vc->version, vc->audio_channels, vc->audio_samplerate, vc->bitrate_maximum, vc->bitrate_nominal, vc->bitrate_minimum, vc->blocksize[0], vc->blocksize[1]);
 
-/*
-    BLK = vc->blocksize[0];
-    for (i = 0; i < BLK / 2; ++i) {
-        vc->win[0][i] = sin(0.5*3.14159265358*(sin(((float)i + 0.5) / (float)BLK*3.14159265358))*(sin(((float)i + 0.5) / (float)BLK*3.14159265358)));
-    }
-*/
+    /*
+        BLK = vc->blocksize[0];
+        for (i = 0; i < BLK / 2; ++i) {
+            vc->win[0][i] = sin(0.5*3.14159265358*(sin(((float)i + 0.5) / (float)BLK*3.14159265358))*(sin(((float)i + 0.5) / (float)BLK*3.14159265358)));
+        }
+    */
 
     return 0;
 }
@@ -1032,23 +1134,27 @@ static av_cold int vorbis_decode_init(AVCodecContext *avctx)
 
     avctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
 
-    if (!headers_len) {
+    if (!headers_len)
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata missing.\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if ((ret = avpriv_split_xiph_headers(headers, headers_len, 30, header_start, header_len)) < 0) {
+    if ((ret = avpriv_split_xiph_headers(headers, headers_len, 30, header_start, header_len)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata corrupt.\n");
         return ret;
     }
 
     init_get_bits(gb, header_start[0], header_len[0]*8);
     hdr_type = get_bits(gb, 8);
-    if (hdr_type != 1) {
+    if (hdr_type != 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "First header is not the id header.\n");
         return AVERROR_INVALIDDATA;
     }
-    if ((ret = vorbis_parse_id_hdr(vc))) {
+    if ((ret = vorbis_parse_id_hdr(vc)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Id header corrupt.\n");
         vorbis_free(vc);
         return ret;
@@ -1056,12 +1162,14 @@ static av_cold int vorbis_decode_init(AVCodecContext *avctx)
 
     init_get_bits(gb, header_start[2], header_len[2]*8);
     hdr_type = get_bits(gb, 8);
-    if (hdr_type != 5) {
+    if (hdr_type != 5)
+    {
         av_log(avctx, AV_LOG_ERROR, "Third header is not the setup header.\n");
         vorbis_free(vc);
         return AVERROR_INVALIDDATA;
     }
-    if ((ret = vorbis_parse_setup_hdr(vc))) {
+    if ((ret = vorbis_parse_setup_hdr(vc)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Setup header corrupt.\n");
         vorbis_free(vc);
         return ret;
@@ -1094,13 +1202,15 @@ static int vorbis_floor0_decode(vorbis_context *vc,
         return 1;
 
     amplitude = get_bits(&vc->gb, vf->amplitude_bits);
-    if (amplitude > 0) {
+    if (amplitude > 0)
+    {
         float last = 0;
         unsigned idx, lsp_len = 0;
         vorbis_codebook codebook;
 
         book_idx = get_bits(&vc->gb, ilog(vf->num_books));
-        if (book_idx >= vf->num_books) {
+        if (book_idx >= vf->num_books)
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "floor0 dec: booknumber too high!\n");
             book_idx =  0;
         }
@@ -1110,7 +1220,8 @@ static int vorbis_floor0_decode(vorbis_context *vc,
         if (!codebook.codevectors)
             return AVERROR_INVALIDDATA;
 
-        while (lsp_len<vf->order) {
+        while (lsp_len<vf->order)
+        {
             int vec_off;
 
             ff_dlog(NULL, "floor0 dec: book dimension: %d\n", codebook.dimensions);
@@ -1147,21 +1258,26 @@ static int vorbis_floor0_decode(vorbis_context *vc,
                     vf->map_size[blockflag], order, wstep);
 
             i = 0;
-            while (i < vf->map_size[blockflag]) {
+            while (i < vf->map_size[blockflag])
+            {
                 int j, iter_cond = vf->map[blockflag][i];
                 float p = 0.5f;
                 float q = 0.5f;
                 float two_cos_w = 2.0f * cos(wstep * iter_cond); // needed all times
 
                 /* similar part for the q and p products */
-                for (j = 0; j + 1 < order; j += 2) {
+                for (j = 0; j + 1 < order; j += 2)
+                {
                     q *= lsp[j]     - two_cos_w;
                     p *= lsp[j + 1] - two_cos_w;
                 }
-                if (j == order) { // even order
+                if (j == order)   // even order
+                {
                     p *= p * (2.0f - two_cos_w);
                     q *= q * (2.0f + two_cos_w);
-                } else { // odd order
+                }
+                else     // odd order
+                {
                     q *= two_cos_w-lsp[j]; // one more time for q
 
                     /* final step and square */
@@ -1175,12 +1291,17 @@ static int vorbis_floor0_decode(vorbis_context *vc,
                          - vf->amplitude_offset) * .11512925f);
 
                 /* fill vector */
-                do {
-                    vec[i] = q; ++i;
-                } while (vf->map[blockflag][i] == iter_cond);
+                do
+                {
+                    vec[i] = q;
+                    ++i;
+                }
+                while (vf->map[blockflag][i] == iter_cond);
             }
         }
-    } else {
+    }
+    else
+    {
         /* this channel is unused */
         return 1;
     }
@@ -1215,7 +1336,8 @@ static int vorbis_floor1_decode(vorbis_context *vc,
     ff_dlog(NULL, "floor 0 Y %d floor 1 Y %d \n", floor1_Y[0], floor1_Y[1]);
 
     offset = 2;
-    for (i = 0; i < vf->partitions; ++i) {
+    for (i = 0; i < vf->partitions; ++i)
+    {
         partition_class = vf->partition_class[i];
         cdim   = vf->class_dimensions[partition_class];
         cbits  = vf->class_subclasses[partition_class];
@@ -1228,20 +1350,24 @@ static int vorbis_floor1_decode(vorbis_context *vc,
             cval = get_vlc2(gb, vc->codebooks[vf->class_masterbook[partition_class]].vlc.table,
                             vc->codebooks[vf->class_masterbook[partition_class]].nb_bits, 3);
 
-        for (j = 0; j < cdim; ++j) {
+        for (j = 0; j < cdim; ++j)
+        {
             book = vf->subclass_books[partition_class][cval & csub];
 
             ff_dlog(NULL, "book %d Cbits %u cval %u  bits:%d\n",
                     book, cbits, cval, get_bits_count(gb));
 
             cval = cval >> cbits;
-            if (book > -1) {
+            if (book > -1)
+            {
                 int v = get_vlc2(gb, vc->codebooks[book].vlc.table,
                                  vc->codebooks[book].nb_bits, 3);
                 if (v < 0)
                     return AVERROR_INVALIDDATA;
                 floor1_Y[offset+j] = v;
-            } else {
+            }
+            else
+            {
                 floor1_Y[offset+j] = 0;
             }
 
@@ -1258,7 +1384,8 @@ static int vorbis_floor1_decode(vorbis_context *vc,
     floor1_Y_final[0] = floor1_Y[0];
     floor1_Y_final[1] = floor1_Y[1];
 
-    for (i = 2; i < vf->x_list_dim; ++i) {
+    for (i = 2; i < vf->x_list_dim; ++i)
+    {
         unsigned val, highroom, lowroom, room, high_neigh_offs, low_neigh_offs;
 
         low_neigh_offs  = vf->list[i].low;
@@ -1268,38 +1395,56 @@ static int vorbis_floor1_decode(vorbis_context *vc,
         ady = FFABS(dy);
         err = ady * (vf->list[i].x - vf->list[low_neigh_offs].x);
         off = err / adx;
-        if (dy < 0) {
+        if (dy < 0)
+        {
             predicted = floor1_Y_final[low_neigh_offs] - off;
-        } else {
+        }
+        else
+        {
             predicted = floor1_Y_final[low_neigh_offs] + off;
         } // render_point end
 
         val = floor1_Y[i];
         highroom = range-predicted;
         lowroom  = predicted;
-        if (highroom < lowroom) {
+        if (highroom < lowroom)
+        {
             room = highroom * 2;
-        } else {
+        }
+        else
+        {
             room = lowroom * 2;   // SPEC misspelling
         }
-        if (val) {
+        if (val)
+        {
             floor1_flag[low_neigh_offs]  = 1;
             floor1_flag[high_neigh_offs] = 1;
             floor1_flag[i]               = 1;
-            if (val >= room) {
-                if (highroom > lowroom) {
+            if (val >= room)
+            {
+                if (highroom > lowroom)
+                {
                     floor1_Y_final[i] = av_clip_uint16(val - lowroom + predicted);
-                } else {
+                }
+                else
+                {
                     floor1_Y_final[i] = av_clip_uint16(predicted - val + highroom - 1);
                 }
-            } else {
-                if (val & 1) {
+            }
+            else
+            {
+                if (val & 1)
+                {
                     floor1_Y_final[i] = av_clip_uint16(predicted - (val + 1) / 2);
-                } else {
+                }
+                else
+                {
                     floor1_Y_final[i] = av_clip_uint16(predicted + val / 2);
                 }
             }
-        } else {
+        }
+        else
+        {
             floor1_flag[i]    = 0;
             floor1_Y_final[i] = av_clip_uint16(predicted);
         }
@@ -1318,11 +1463,11 @@ static int vorbis_floor1_decode(vorbis_context *vc,
 }
 
 static av_always_inline int setup_classifs(vorbis_context *vc,
-                                           vorbis_residue *vr,
-                                           uint8_t *do_not_decode,
-                                           unsigned ch_used,
-                                           int partition_count,
-                                           int ptns_to_read
+        vorbis_residue *vr,
+        uint8_t *do_not_decode,
+        unsigned ch_used,
+        int partition_count,
+        int ptns_to_read
                                           )
 {
     vorbis_codebook *codebook = vc->codebooks + vr->classbook;
@@ -1330,16 +1475,19 @@ static av_always_inline int setup_classifs(vorbis_context *vc,
     unsigned c_p_c         = codebook->dimensions;
     unsigned inverse_class = ff_inverse[vr->classifications];
     int temp, temp2;
-    for (p = 0, j = 0; j < ch_used; ++j) {
-        if (!do_not_decode[j]) {
+    for (p = 0, j = 0; j < ch_used; ++j)
+    {
+        if (!do_not_decode[j])
+        {
             temp = get_vlc2(&vc->gb, codebook->vlc.table,
-                                     codebook->nb_bits, 3);
+                            codebook->nb_bits, 3);
 
             ff_dlog(NULL, "Classword: %u\n", temp);
 
             av_assert0(temp < 65536);
 
-            if (temp < 0) {
+            if (temp < 0)
+            {
                 av_log(vc->avctx, AV_LOG_ERROR,
                        "Invalid vlc code decoding %d channel.", j);
                 return AVERROR_INVALIDDATA;
@@ -1347,7 +1495,8 @@ static av_always_inline int setup_classifs(vorbis_context *vc,
 
             av_assert0(vr->classifications > 1); //needed for inverse[]
 
-            for (i = partition_count + c_p_c - 1; i >= partition_count; i--) {
+            for (i = partition_count + c_p_c - 1; i >= partition_count; i--)
+            {
                 temp2 = (((uint64_t)temp) * inverse_class) >> 32;
 
                 if (i < ptns_to_read)
@@ -1362,13 +1511,13 @@ static av_always_inline int setup_classifs(vorbis_context *vc,
 // Read and decode residue
 
 static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
-                                                           vorbis_residue *vr,
-                                                           unsigned ch,
-                                                           uint8_t *do_not_decode,
-                                                           float *vec,
-                                                           unsigned vlen,
-                                                           unsigned ch_left,
-                                                           int vr_type)
+        vorbis_residue *vr,
+        unsigned ch,
+        uint8_t *do_not_decode,
+        float *vec,
+        unsigned vlen,
+        unsigned ch_left,
+        int vr_type)
 {
     GetBitContext *gb = &vc->gb;
     unsigned c_p_c        = vc->codebooks[vr->classbook].dimensions;
@@ -1378,23 +1527,30 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
     int ptns_to_read = vr->ptns_to_read;
     int libvorbis_bug = 0;
 
-    if (vr_type == 2) {
+    if (vr_type == 2)
+    {
         for (j = 1; j < ch; ++j)
             do_not_decode[0] &= do_not_decode[j];  // FIXME - clobbering input
         if (do_not_decode[0])
             return 0;
         ch_used = 1;
         max_output += vr->end / ch;
-    } else {
+    }
+    else
+    {
         ch_used = ch;
         max_output += vr->end;
     }
 
-    if (max_output > ch_left * vlen) {
-        if (max_output <= ch_left * vlen + vr->partition_size*ch_used/ch) {
+    if (max_output > ch_left * vlen)
+    {
+        if (max_output <= ch_left * vlen + vr->partition_size*ch_used/ch)
+        {
             ptns_to_read--;
             libvorbis_bug = 1;
-        } else {
+        }
+        else
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Insufficient output buffer\n");
             return AVERROR_INVALIDDATA;
         }
@@ -1402,87 +1558,114 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
 
     ff_dlog(NULL, " residue type 0/1/2 decode begin, ch: %d  cpc %d  \n", ch, c_p_c);
 
-    for (pass = 0; pass <= vr->maxpass; ++pass) { // FIXME OPTIMIZE?
+    for (pass = 0; pass <= vr->maxpass; ++pass)   // FIXME OPTIMIZE?
+    {
         int voffset, partition_count, j_times_ptns_to_read;
 
         voffset = vr->begin;
-        for (partition_count = 0; partition_count < ptns_to_read;) {  // SPEC        error
-            if (!pass) {
+        for (partition_count = 0; partition_count < ptns_to_read;)    // SPEC        error
+        {
+            if (!pass)
+            {
                 int ret = setup_classifs(vc, vr, do_not_decode, ch_used, partition_count, ptns_to_read);
                 if (ret < 0)
                     return ret;
             }
-            for (i = 0; (i < c_p_c) && (partition_count < ptns_to_read); ++i) {
-                for (j_times_ptns_to_read = 0, j = 0; j < ch_used; ++j) {
+            for (i = 0; (i < c_p_c) && (partition_count < ptns_to_read); ++i)
+            {
+                for (j_times_ptns_to_read = 0, j = 0; j < ch_used; ++j)
+                {
                     unsigned voffs;
 
-                    if (!do_not_decode[j]) {
+                    if (!do_not_decode[j])
+                    {
                         unsigned vqclass = classifs[j_times_ptns_to_read + partition_count];
                         int vqbook  = vr->books[vqclass][pass];
 
-                        if (vqbook >= 0 && vc->codebooks[vqbook].codevectors) {
+                        if (vqbook >= 0 && vc->codebooks[vqbook].codevectors)
+                        {
                             unsigned coffs;
                             unsigned dim  = vc->codebooks[vqbook].dimensions;
                             unsigned step = FASTDIV(vr->partition_size << 1, dim << 1);
                             vorbis_codebook codebook = vc->codebooks[vqbook];
 
-                            if (vr_type == 0) {
+                            if (vr_type == 0)
+                            {
 
                                 voffs = voffset+j*vlen;
-                                for (k = 0; k < step; ++k) {
+                                for (k = 0; k < step; ++k)
+                                {
                                     coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * dim;
                                     for (l = 0; l < dim; ++l)
                                         vec[voffs + k + l * step] += codebook.codevectors[coffs + l];
                                 }
-                            } else if (vr_type == 1) {
+                            }
+                            else if (vr_type == 1)
+                            {
                                 voffs = voffset + j * vlen;
-                                for (k = 0; k < step; ++k) {
+                                for (k = 0; k < step; ++k)
+                                {
                                     coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * dim;
-                                    for (l = 0; l < dim; ++l, ++voffs) {
+                                    for (l = 0; l < dim; ++l, ++voffs)
+                                    {
                                         vec[voffs]+=codebook.codevectors[coffs+l];
 
                                         ff_dlog(NULL, " pass %d offs: %d curr: %f change: %f cv offs.: %d  \n",
                                                 pass, voffs, vec[voffs], codebook.codevectors[coffs+l], coffs);
                                     }
                                 }
-                            } else if (vr_type == 2 && ch == 2 && (voffset & 1) == 0 && (dim & 1) == 0) { // most frequent case optimized
+                            }
+                            else if (vr_type == 2 && ch == 2 && (voffset & 1) == 0 && (dim & 1) == 0)     // most frequent case optimized
+                            {
                                 voffs = voffset >> 1;
 
-                                if (dim == 2) {
-                                    for (k = 0; k < step; ++k) {
+                                if (dim == 2)
+                                {
+                                    for (k = 0; k < step; ++k)
+                                    {
                                         coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * 2;
                                         vec[voffs + k       ] += codebook.codevectors[coffs    ];
                                         vec[voffs + k + vlen] += codebook.codevectors[coffs + 1];
                                     }
-                                } else if (dim == 4) {
-                                    for (k = 0; k < step; ++k, voffs += 2) {
+                                }
+                                else if (dim == 4)
+                                {
+                                    for (k = 0; k < step; ++k, voffs += 2)
+                                    {
                                         coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * 4;
                                         vec[voffs           ] += codebook.codevectors[coffs    ];
                                         vec[voffs + 1       ] += codebook.codevectors[coffs + 2];
                                         vec[voffs + vlen    ] += codebook.codevectors[coffs + 1];
                                         vec[voffs + vlen + 1] += codebook.codevectors[coffs + 3];
                                     }
-                                } else
-                                for (k = 0; k < step; ++k) {
-                                    coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * dim;
-                                    for (l = 0; l < dim; l += 2, voffs++) {
-                                        vec[voffs       ] += codebook.codevectors[coffs + l    ];
-                                        vec[voffs + vlen] += codebook.codevectors[coffs + l + 1];
-
-                                        ff_dlog(NULL, " pass %d offs: %d curr: %f change: %f cv offs.: %d+%d  \n",
-                                                pass, voffset / ch + (voffs % ch) * vlen,
-                                                vec[voffset / ch + (voffs % ch) * vlen],
-                                                codebook.codevectors[coffs + l], coffs, l);
-                                    }
                                 }
+                                else
+                                    for (k = 0; k < step; ++k)
+                                    {
+                                        coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * dim;
+                                        for (l = 0; l < dim; l += 2, voffs++)
+                                        {
+                                            vec[voffs       ] += codebook.codevectors[coffs + l    ];
+                                            vec[voffs + vlen] += codebook.codevectors[coffs + l + 1];
 
-                            } else if (vr_type == 2) {
+                                            ff_dlog(NULL, " pass %d offs: %d curr: %f change: %f cv offs.: %d+%d  \n",
+                                                    pass, voffset / ch + (voffs % ch) * vlen,
+                                                    vec[voffset / ch + (voffs % ch) * vlen],
+                                                    codebook.codevectors[coffs + l], coffs, l);
+                                        }
+                                    }
+
+                            }
+                            else if (vr_type == 2)
+                            {
                                 unsigned voffs_div = FASTDIV(voffset << 1, ch <<1);
                                 unsigned voffs_mod = voffset - voffs_div * ch;
 
-                                for (k = 0; k < step; ++k) {
+                                for (k = 0; k < step; ++k)
+                                {
                                     coffs = get_vlc2(gb, codebook.vlc.table, codebook.nb_bits, 3) * dim;
-                                    for (l = 0; l < dim; ++l) {
+                                    for (l = 0; l < dim; ++l)
+                                    {
                                         vec[voffs_div + voffs_mod * vlen] +=
                                             codebook.codevectors[coffs + l];
 
@@ -1491,7 +1674,8 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
                                                 vec[voffs_div + voffs_mod * vlen],
                                                 codebook.codevectors[coffs + l], coffs, l);
 
-                                        if (++voffs_mod == ch) {
+                                        if (++voffs_mod == ch)
+                                        {
                                             voffs_div++;
                                             voffs_mod = 0;
                                         }
@@ -1506,11 +1690,14 @@ static av_always_inline int vorbis_residue_decode_internal(vorbis_context *vc,
                 voffset += vr->partition_size;
             }
         }
-        if (libvorbis_bug && !pass) {
-            for (j = 0; j < ch_used; ++j) {
-                if (!do_not_decode[j]) {
+        if (libvorbis_bug && !pass)
+        {
+            for (j = 0; j < ch_used; ++j)
+            {
+                if (!do_not_decode[j])
+                {
                     get_vlc2(&vc->gb, vc->codebooks[vr->classbook].vlc.table,
-                                vc->codebooks[vr->classbook].nb_bits, 3);
+                             vc->codebooks[vr->classbook].nb_bits, 3);
                 }
             }
         }
@@ -1530,7 +1717,8 @@ static inline int vorbis_residue_decode(vorbis_context *vc, vorbis_residue *vr,
         return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, ch_left, 1);
     else if (vr->type == 0)
         return vorbis_residue_decode_internal(vc, vr, ch, do_not_decode, vec, vlen, ch_left, 0);
-    else {
+    else
+    {
         av_log(vc->avctx, AV_LOG_ERROR, " Invalid residue type while residue decode?! \n");
         return AVERROR_INVALIDDATA;
     }
@@ -1539,19 +1727,29 @@ static inline int vorbis_residue_decode(vorbis_context *vc, vorbis_residue *vr,
 void ff_vorbis_inverse_coupling(float *mag, float *ang, intptr_t blocksize)
 {
     int i;
-    for (i = 0;  i < blocksize;  i++) {
-        if (mag[i] > 0.0) {
-            if (ang[i] > 0.0) {
+    for (i = 0;  i < blocksize;  i++)
+    {
+        if (mag[i] > 0.0)
+        {
+            if (ang[i] > 0.0)
+            {
                 ang[i] = mag[i] - ang[i];
-            } else {
+            }
+            else
+            {
                 float temp = ang[i];
                 ang[i]     = mag[i];
                 mag[i]    += temp;
             }
-        } else {
-            if (ang[i] > 0.0) {
+        }
+        else
+        {
+            if (ang[i] > 0.0)
+            {
                 ang[i] += mag[i];
-            } else {
+            }
+            else
+            {
                 float temp = ang[i];
                 ang[i]     = mag[i];
                 mag[i]    -= temp;
@@ -1579,14 +1777,18 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
     unsigned ch_left = vc->audio_channels;
     unsigned vlen;
 
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         av_log(vc->avctx, AV_LOG_ERROR, "Not a Vorbis I audio packet.\n");
         return AVERROR_INVALIDDATA; // packet type not audio
     }
 
-    if (vc->mode_count == 1) {
+    if (vc->mode_count == 1)
+    {
         mode_number = 0;
-    } else {
+    }
+    else
+    {
         GET_VALIDATED_INDEX(mode_number, ilog(vc->mode_count-1), vc->mode_count)
     }
     vc->mode_number = mode_number;
@@ -1598,11 +1800,13 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
     blockflag = vc->modes[mode_number].blockflag;
     blocksize = vc->blocksize[blockflag];
     vlen = blocksize / 2;
-    if (blockflag) {
+    if (blockflag)
+    {
         int code = get_bits(gb, 2);
         if (previous_window < 0)
             previous_window = code>>1;
-    } else if (previous_window < 0)
+    }
+    else if (previous_window < 0)
         previous_window = 0;
 
     memset(ch_res_ptr,   0, sizeof(float) * vc->audio_channels * vlen); //FIXME can this be removed ?
@@ -1611,18 +1815,23 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 
 // Decode floor
 
-    for (i = 0; i < vc->audio_channels; ++i) {
+    for (i = 0; i < vc->audio_channels; ++i)
+    {
         vorbis_floor *floor;
         int ret;
-        if (mapping->submaps > 1) {
+        if (mapping->submaps > 1)
+        {
             floor = &vc->floors[mapping->submap_floor[mapping->mux[i]]];
-        } else {
+        }
+        else
+        {
             floor = &vc->floors[mapping->submap_floor[0]];
         }
 
         ret = floor->decode(vc, &floor->data, floor_ptr[i]);
 
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Invalid codebook in vorbis_floor_decode.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -1631,8 +1840,10 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 
 // Nonzero vector propagate
 
-    for (i = mapping->coupling_steps - 1; i >= 0; --i) {
-        if (!(no_residue[mapping->magnitude[i]] & no_residue[mapping->angle[i]])) {
+    for (i = mapping->coupling_steps - 1; i >= 0; --i)
+    {
+        if (!(no_residue[mapping->magnitude[i]] & no_residue[mapping->angle[i]]))
+        {
             no_residue[mapping->magnitude[i]] = 0;
             no_residue[mapping->angle[i]]     = 0;
         }
@@ -1640,17 +1851,23 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 
 // Decode residue
 
-    for (i = 0; i < mapping->submaps; ++i) {
+    for (i = 0; i < mapping->submaps; ++i)
+    {
         vorbis_residue *residue;
         unsigned ch = 0;
         int ret;
 
-        for (j = 0; j < vc->audio_channels; ++j) {
-            if ((mapping->submaps == 1) || (i == mapping->mux[j])) {
+        for (j = 0; j < vc->audio_channels; ++j)
+        {
+            if ((mapping->submaps == 1) || (i == mapping->mux[j]))
+            {
                 res_chan[j] = res_num;
-                if (no_residue[j]) {
+                if (no_residue[j])
+                {
                     do_not_decode[ch] = 1;
-                } else {
+                }
+                else
+                {
                     do_not_decode[ch] = 0;
                 }
                 ++ch;
@@ -1658,11 +1875,13 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
             }
         }
         residue = &vc->residues[mapping->submap_residue[i]];
-        if (ch_left < ch) {
+        if (ch_left < ch)
+        {
             av_log(vc->avctx, AV_LOG_ERROR, "Too many channels in vorbis_floor_decode.\n");
             return AVERROR_INVALIDDATA;
         }
-        if (ch) {
+        if (ch)
+        {
             ret = vorbis_residue_decode(vc, residue, ch, do_not_decode, ch_res_ptr, vlen, ch_left);
             if (ret < 0)
                 return ret;
@@ -1677,7 +1896,8 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 
 // Inverse coupling
 
-    for (i = mapping->coupling_steps - 1; i >= 0; --i) { //warning: i has to be signed
+    for (i = mapping->coupling_steps - 1; i >= 0; --i)   //warning: i has to be signed
+    {
         float *mag, *ang;
 
         mag = vc->channel_residues+res_chan[mapping->magnitude[i]] * blocksize / 2;
@@ -1689,7 +1909,8 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 
     mdct = &vc->mdct[blockflag];
 
-    for (j = vc->audio_channels-1;j >= 0; j--) {
+    for (j = vc->audio_channels-1; j >= 0; j--)
+    {
         ch_res_ptr   = vc->channel_residues + res_chan[j] * blocksize / 2;
         vc->fdsp->vector_fmul(floor_ptr[j], floor_ptr[j], ch_res_ptr, blocksize / 2);
         mdct->imdct_half(mdct, ch_res_ptr, floor_ptr[j]);
@@ -1698,7 +1919,8 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
 // Overlap/add, save data for next overlapping
 
     retlen = (blocksize + vc->blocksize[previous_window]) / 4;
-    for (j = 0; j < vc->audio_channels; j++) {
+    for (j = 0; j < vc->audio_channels; j++)
+    {
         unsigned bs0 = vc->blocksize[0];
         unsigned bs1 = vc->blocksize[1];
         float *residue    = vc->channel_residues + res_chan[j] * blocksize / 2;
@@ -1707,12 +1929,17 @@ static int vorbis_parse_audio_packet(vorbis_context *vc, float **floor_ptr)
         float *buf        = residue;
         const float *win  = vc->win[blockflag & previous_window];
 
-        if (blockflag == previous_window) {
+        if (blockflag == previous_window)
+        {
             vc->fdsp->vector_fmul_window(ret, saved, buf, win, blocksize / 4);
-        } else if (blockflag > previous_window) {
+        }
+        else if (blockflag > previous_window)
+        {
             vc->fdsp->vector_fmul_window(ret, saved, buf, win, bs0 / 4);
             memcpy(ret+bs0/2, buf+bs0/4, ((bs1-bs0)/4) * sizeof(float));
-        } else {
+        }
+        else
+        {
             memcpy(ret, saved, ((bs1 - bs0) / 4) * sizeof(float));
             vc->fdsp->vector_fmul_window(ret + (bs1 - bs0) / 4, saved + (bs1 - bs0) / 4, buf, win, bs0 / 4);
         }
@@ -1738,12 +1965,14 @@ static int vorbis_decode_frame(AVCodecContext *avctx, void *data,
 
     ff_dlog(NULL, "packet length %d \n", buf_size);
 
-    if (*buf == 1 && buf_size > 7) {
+    if (*buf == 1 && buf_size > 7)
+    {
         if ((ret = init_get_bits8(gb, buf + 1, buf_size - 1)) < 0)
             return ret;
 
         vorbis_free(vc);
-        if ((ret = vorbis_parse_id_hdr(vc))) {
+        if ((ret = vorbis_parse_id_hdr(vc)))
+        {
             av_log(avctx, AV_LOG_ERROR, "Id header corrupt.\n");
             vorbis_free(vc);
             return ret;
@@ -1759,16 +1988,19 @@ static int vorbis_decode_frame(AVCodecContext *avctx, void *data,
         return buf_size;
     }
 
-    if (*buf == 3 && buf_size > 7) {
+    if (*buf == 3 && buf_size > 7)
+    {
         av_log(avctx, AV_LOG_DEBUG, "Ignoring comment header\n");
         return buf_size;
     }
 
-    if (*buf == 5 && buf_size > 7 && vc->channel_residues && !vc->modes) {
+    if (*buf == 5 && buf_size > 7 && vc->channel_residues && !vc->modes)
+    {
         if ((ret = init_get_bits8(gb, buf + 1, buf_size - 1)) < 0)
             return ret;
 
-        if ((ret = vorbis_parse_setup_hdr(vc))) {
+        if ((ret = vorbis_parse_setup_hdr(vc)))
+        {
             av_log(avctx, AV_LOG_ERROR, "Setup header corrupt.\n");
             vorbis_free(vc);
             return ret;
@@ -1776,7 +2008,8 @@ static int vorbis_decode_frame(AVCodecContext *avctx, void *data,
         return buf_size;
     }
 
-    if (!vc->channel_residues || !vc->modes) {
+    if (!vc->channel_residues || !vc->modes)
+    {
         av_log(avctx, AV_LOG_ERROR, "Data packet before valid headers\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1786,11 +2019,15 @@ static int vorbis_decode_frame(AVCodecContext *avctx, void *data,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    if (vc->audio_channels > 8) {
+    if (vc->audio_channels > 8)
+    {
         for (i = 0; i < vc->audio_channels; i++)
             channel_ptrs[i] = (float *)frame->extended_data[i];
-    } else {
-        for (i = 0; i < vc->audio_channels; i++) {
+    }
+    else
+    {
+        for (i = 0; i < vc->audio_channels; i++)
+        {
             int ch = ff_vorbis_channel_layout_offsets[vc->audio_channels - 1][i];
             channel_ptrs[ch] = (float *)frame->extended_data[i];
         }
@@ -1802,7 +2039,8 @@ static int vorbis_decode_frame(AVCodecContext *avctx, void *data,
     if ((len = vorbis_parse_audio_packet(vc, channel_ptrs)) <= 0)
         return len;
 
-    if (!vc->first_frame) {
+    if (!vc->first_frame)
+    {
         vc->first_frame = 1;
         *got_frame_ptr = 0;
         av_frame_unref(frame);
@@ -1833,15 +2071,17 @@ static av_cold void vorbis_decode_flush(AVCodecContext *avctx)
 {
     vorbis_context *vc = avctx->priv_data;
 
-    if (vc->saved) {
+    if (vc->saved)
+    {
         memset(vc->saved, 0, (vc->blocksize[1] / 4) * vc->audio_channels *
-                             sizeof(*vc->saved));
+               sizeof(*vc->saved));
     }
     vc->previous_window = -1;
     vc->first_frame = 0;
 }
 
-AVCodec ff_vorbis_decoder = {
+AVCodec ff_vorbis_decoder =
+{
     .name            = "vorbis",
     .long_name       = NULL_IF_CONFIG_SMALL("Vorbis"),
     .type            = AVMEDIA_TYPE_AUDIO,
@@ -1853,6 +2093,8 @@ AVCodec ff_vorbis_decoder = {
     .flush           = vorbis_decode_flush,
     .capabilities    = AV_CODEC_CAP_DR1,
     .channel_layouts = ff_vorbis_channel_layouts,
-    .sample_fmts     = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLTP,
-                                                       AV_SAMPLE_FMT_NONE },
+    .sample_fmts     = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
 };

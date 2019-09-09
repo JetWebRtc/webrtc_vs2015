@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (C) 2005 Nikolaj Poroshin <porosh3@psu.ru>
  * Copyright (c) 2014 Arwa Arif <arwaarif1994@gmail.com>
@@ -44,7 +44,8 @@
 
 #define OFFSET(x) offsetof(FSPPContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption fspp_options[] = {
+static const AVOption fspp_options[] =
+{
     { "quality",       "set quality",                          OFFSET(log2_count),    AV_OPT_TYPE_INT, {.i64 = 4},   4, MAX_LEVEL, FLAGS },
     { "qp",            "force a constant quantizer parameter", OFFSET(qp),            AV_OPT_TYPE_INT, {.i64 = 0},   0, 64,        FLAGS },
     { "strength",      "set filter strength",                  OFFSET(strength),      AV_OPT_TYPE_INT, {.i64 = 0}, -15, 32,        FLAGS },
@@ -54,7 +55,8 @@ static const AVOption fspp_options[] = {
 
 AVFILTER_DEFINE_CLASS(fspp);
 
-DECLARE_ALIGNED(32, static const uint8_t, dither)[8][8] = {
+DECLARE_ALIGNED(32, static const uint8_t, dither)[8][8] =
+{
     {  0,  48,  12,  60,   3,  51,  15,  63, },
     { 32,  16,  44,  28,  35,  19,  47,  31, },
     {  8,  56,   4,  52,  11,  59,   7,  55, },
@@ -65,18 +67,19 @@ DECLARE_ALIGNED(32, static const uint8_t, dither)[8][8] = {
     { 42,  26,  38,  22,  41,  25,  37,  21, },
 };
 
-static const short custom_threshold[64] = {
+static const short custom_threshold[64] =
+{
 // values (296) can't be too high
 // -it causes too big quant dependence
 // or maybe overflow(check), which results in some flashing
-     71, 296, 295, 237,  71,  40,  38,  19,
+    71, 296, 295, 237,  71,  40,  38,  19,
     245, 193, 185, 121, 102,  73,  53,  27,
     158, 129, 141, 107,  97,  73,  50,  26,
     102, 116, 109,  98,  82,  66,  45,  23,
-     71,  94,  95,  81,  70,  56,  38,  20,
-     56,  77,  74,  66,  56,  44,  30,  15,
-     38,  53,  50,  45,  38,  30,  21,  11,
-     20,  27,  26,  23,  20,  15,  11,   5
+    71,  94,  95,  81,  70,  56,  38,  20,
+    56,  77,  74,  66,  56,  44,  30,  15,
+    38,  53,  50,  45,  38,  30,  21,  11,
+    20,  27,  26,  23,  20,  15,  11,   5
 };
 
 //This func reads from 1 slice, 1 and clears 0 & 1
@@ -91,9 +94,11 @@ static void store_slice_c(uint8_t *dst, int16_t *src,
     if (temp & 0x100) temp = ~(temp >> 31);                                    \
     dst[x + pos] = temp;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         const uint8_t *d = dither[y];
-        for (x = 0; x < width; x += 8) {
+        for (x = 0; x < width; x += 8)
+        {
             int temp;
             STORE(0);
             STORE(1);
@@ -121,9 +126,11 @@ static void store_slice2_c(uint8_t *dst, int16_t *src,
     if (temp & 0x100) temp = ~(temp >> 31);                                                               \
     dst[x + pos] = temp;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         const uint8_t *d = dither[y];
-        for (x = 0; x < width; x += 8) {
+        for (x = 0; x < width; x += 8)
+        {
             int temp;
             STORE2(0);
             STORE2(1);
@@ -166,16 +173,19 @@ static void filter(FSPPContext *p, uint8_t *dst, uint8_t *src,
 
     if (!src || !dst) return;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         int index = 8 + 8 * stride + y * stride;
         memcpy(p->src + index, src + y * src_stride, width);
-        for (x = 0; x < 8; x++) {
+        for (x = 0; x < 8; x++)
+        {
             p->src[index         - x - 1] = p->src[index +         x    ];
             p->src[index + width + x    ] = p->src[index + width - x - 1];
         }
     }
 
-    for (y = 0; y < 8; y++) {
+    for (y = 0; y < 8; y++)
+    {
         memcpy(p->src + (     7 - y    ) * stride, p->src + (     y + 8    ) * stride, stride);
         memcpy(p->src + (height + 8 + y) * stride, p->src + (height - y + 7) * stride, stride);
     }
@@ -184,7 +194,8 @@ static void filter(FSPPContext *p, uint8_t *dst, uint8_t *src,
     for (y = 8; y < 24; y++)
         memset(p->temp + 8 + y * stride, 0, width * sizeof(int16_t));
 
-    for (y = step; y < height + 8; y += step) {    //step= 1,2
+    for (y = step; y < height + 8; y += step)      //step= 1,2
+    {
         const int y1 = y - 8 + step;                 //l5-7  l4-6;
         qy = y - 4;
 
@@ -194,13 +205,15 @@ static void filter(FSPPContext *p, uint8_t *dst, uint8_t *src,
         qy = (qy >> qpsv) * qp_stride;
         p->row_fdct(block, p->src + y * stride + 2 - (y&1), stride, 2);
 
-        for (x0 = 0; x0 < width + 8 - 8 * (BLOCKSZ - 1); x0 += 8 * (BLOCKSZ - 1)) {
+        for (x0 = 0; x0 < width + 8 - 8 * (BLOCKSZ - 1); x0 += 8 * (BLOCKSZ - 1))
+        {
             p->row_fdct(block + 8 * 8, p->src + y * stride + 8 + x0 + 2 - (y&1), stride, 2 * (BLOCKSZ - 1));
 
             if (p->qp)
                 p->column_fidct((int16_t *)(&p->threshold_mtx[0]), block + 0 * 8, block3 + 0 * 8, 8 * (BLOCKSZ - 1)); //yes, this is a HOTSPOT
             else
-                for (x = 0; x < 8 * (BLOCKSZ - 1); x += 8) {
+                for (x = 0; x < 8 * (BLOCKSZ - 1); x += 8)
+                {
                     t = x + x0 - 2;                    //correct t=x+x0-2-(y&1), but its the same
 
                     if (t < 0) t = 0;                   //t always < width-2
@@ -224,7 +237,8 @@ static void filter(FSPPContext *p, uint8_t *dst, uint8_t *src,
         if (es > 3)
             p->row_idct(block3 + 0 * 8, p->temp + (y & 15) * stride + x0 + 2 - (y & 1), stride, es >> 2);
 
-        if (!(y1 & 7) && y1) {
+        if (!(y1 & 7) && y1)
+        {
             if (y1 & 8)
                 p->store_slice(dst + (y1 - 8) * dst_stride, p->temp + 8 + 8 * stride,
                                dst_stride, stride, width, 8, 5 - p->log2_count);
@@ -234,7 +248,8 @@ static void filter(FSPPContext *p, uint8_t *dst, uint8_t *src,
         }
     }
 
-    if (y & 7) {  // height % 8 != 0
+    if (y & 7)    // height % 8 != 0
+    {
         if (y & 8)
             p->store_slice(dst + ((y - 8) & ~7) * dst_stride, p->temp + 8 + 8 * stride,
                            dst_stride, stride, width, y&7, 5 - p->log2_count);
@@ -259,9 +274,11 @@ static void column_fidct_c(int16_t *thr_adr, int16_t *data, int16_t *output, int
     dataptr = data;
     wsptr = output;
 
-    for (; cnt > 0; cnt -= 2) { //start positions
+    for (; cnt > 0; cnt -= 2)   //start positions
+    {
         threshold = (int16_t *)thr_adr;//threshold_mtx
-        for (ctr = DCTSIZE; ctr > 0; ctr--) {
+        for (ctr = DCTSIZE; ctr > 0; ctr--)
+        {
             // Process columns from input, add to output.
             tmp0 = dataptr[DCTSIZE * 0] + dataptr[DCTSIZE * 7];
             tmp7 = dataptr[DCTSIZE * 0] - dataptr[DCTSIZE * 7];
@@ -378,7 +395,8 @@ static void row_idct_c(int16_t *workspace, int16_t *output_adr, ptrdiff_t output
     cnt *= 4;
     wsptr = workspace;
     outptr = output_adr;
-    for (; cnt > 0; cnt--) {
+    for (; cnt > 0; cnt--)
+    {
         // Even part
         //Simd version reads 4x4 block and transposes it
         tmp10 = wsptr[2] +  wsptr[3];
@@ -440,7 +458,8 @@ static void row_fdct_c(int16_t *data, const uint8_t *pixels, ptrdiff_t line_size
     // Pass 1: process rows.
 
     dataptr = data;
-    for (; cnt > 0; cnt--) {
+    for (; cnt > 0; cnt--)
+    {
         tmp0 = pixels[line_size * 0] + pixels[line_size * 7];
         tmp7 = pixels[line_size * 0] - pixels[line_size * 7];
         tmp1 = pixels[line_size * 1] + pixels[line_size * 6];
@@ -492,7 +511,8 @@ static void row_fdct_c(int16_t *data, const uint8_t *pixels, ptrdiff_t line_size
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,  AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUV440P,
@@ -525,7 +545,8 @@ static int config_input(AVFilterLink *inlink)
     if (!fspp->temp || !fspp->src)
         return AVERROR(ENOMEM);
 
-    if (!fspp->use_bframe_qp && !fspp->qp) {
+    if (!fspp->use_bframe_qp && !fspp->qp)
+    {
         fspp->non_b_qp_alloc_size = FF_CEIL_RSHIFT(inlink->w, 4) * FF_CEIL_RSHIFT(inlink->h, 4);
         fspp->non_b_qp_table = av_calloc(fspp->non_b_qp_alloc_size, sizeof(*fspp->non_b_qp_table));
         if (!fspp->non_b_qp_table)
@@ -562,16 +583,17 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     for (i = 0; i < 64; i++) //FIXME: tune custom_threshold[] and remove this !
         custom_threshold_m[i] = (int)(custom_threshold[i] * (bias / 71.0) + 0.5);
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         fspp->threshold_mtx_noq[2 * i] = (uint64_t)custom_threshold_m[i * 8 + 2]
-                                      |(((uint64_t)custom_threshold_m[i * 8 + 6]) << 16)
-                                      |(((uint64_t)custom_threshold_m[i * 8 + 0]) << 32)
-                                      |(((uint64_t)custom_threshold_m[i * 8 + 4]) << 48);
+                                         |(((uint64_t)custom_threshold_m[i * 8 + 6]) << 16)
+                                         |(((uint64_t)custom_threshold_m[i * 8 + 0]) << 32)
+                                         |(((uint64_t)custom_threshold_m[i * 8 + 4]) << 48);
 
         fspp->threshold_mtx_noq[2 * i + 1] = (uint64_t)custom_threshold_m[i * 8 + 5]
-                                          |(((uint64_t)custom_threshold_m[i * 8 + 3]) << 16)
-                                          |(((uint64_t)custom_threshold_m[i * 8 + 1]) << 32)
-                                          |(((uint64_t)custom_threshold_m[i * 8 + 7]) << 48);
+                                             |(((uint64_t)custom_threshold_m[i * 8 + 3]) << 16)
+                                             |(((uint64_t)custom_threshold_m[i * 8 + 1]) << 32)
+                                             |(((uint64_t)custom_threshold_m[i * 8 + 7]) << 48);
     }
 
     if (fspp->qp)
@@ -581,24 +603,31 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
      * the quantizers from the B-frames (B-frames often have a higher QP), we
      * need to save the qp table from the last non B-frame; this is what the
      * following code block does */
-    if (!fspp->qp) {
+    if (!fspp->qp)
+    {
         qp_table = av_frame_get_qp_table(in, &qp_stride, &fspp->qscale_type);
 
-        if (qp_table && !fspp->use_bframe_qp && in->pict_type != AV_PICTURE_TYPE_B) {
+        if (qp_table && !fspp->use_bframe_qp && in->pict_type != AV_PICTURE_TYPE_B)
+        {
             int w, h;
 
             /* if the qp stride is not set, it means the QP are only defined on
              * a line basis */
-           if (!qp_stride) {
+            if (!qp_stride)
+            {
                 w = FF_CEIL_RSHIFT(inlink->w, 4);
                 h = 1;
-            } else {
+            }
+            else
+            {
                 w = qp_stride;
                 h = FF_CEIL_RSHIFT(inlink->h, 4);
             }
-            if (w * h > fspp->non_b_qp_alloc_size) {
+            if (w * h > fspp->non_b_qp_alloc_size)
+            {
                 int ret = av_reallocp_array(&fspp->non_b_qp_table, w, h);
-                if (ret < 0) {
+                if (ret < 0)
+                {
                     fspp->non_b_qp_alloc_size = 0;
                     return ret;
                 }
@@ -610,22 +639,26 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         }
     }
 
-    if (fspp->log2_count && !ctx->is_disabled) {
+    if (fspp->log2_count && !ctx->is_disabled)
+    {
         if (!fspp->use_bframe_qp && fspp->non_b_qp_table)
             qp_table = fspp->non_b_qp_table;
 
-        if (qp_table || fspp->qp) {
+        if (qp_table || fspp->qp)
+        {
             const int cw = FF_CEIL_RSHIFT(inlink->w, fspp->hsub);
             const int ch = FF_CEIL_RSHIFT(inlink->h, fspp->vsub);
 
             /* get a new frame if in-place is not possible or if the dimensions
              * are not multiple of 8 */
-            if (!av_frame_is_writable(in) || (inlink->w & 7) || (inlink->h & 7)) {
+            if (!av_frame_is_writable(in) || (inlink->w & 7) || (inlink->h & 7))
+            {
                 const int aligned_w = FFALIGN(inlink->w, 8);
                 const int aligned_h = FFALIGN(inlink->h, 8);
 
                 out = ff_get_video_buffer(outlink, aligned_w, aligned_h);
-                if (!out) {
+                if (!out)
+                {
                     av_frame_free(&in);
                     return AVERROR(ENOMEM);
                 }
@@ -644,7 +677,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         }
     }
 
-    if (in != out) {
+    if (in != out)
+    {
         if (in->data[3])
             av_image_copy_plane(out->data[3], out->linesize[3],
                                 in ->data[3], in ->linesize[3],
@@ -662,7 +696,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&fspp->non_b_qp_table);
 }
 
-static const AVFilterPad fspp_inputs[] = {
+static const AVFilterPad fspp_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -672,7 +707,8 @@ static const AVFilterPad fspp_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad fspp_outputs[] = {
+static const AVFilterPad fspp_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -680,7 +716,8 @@ static const AVFilterPad fspp_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_fspp = {
+AVFilter ff_vf_fspp =
+{
     .name            = "fspp",
     .description     = NULL_IF_CONFIG_SMALL("Apply Fast Simple Post-processing filter."),
     .priv_size       = sizeof(FSPPContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW Ingenient MJPEG demuxer
  * Copyright (c) 2005 Alex Beregszaszi
  *
@@ -42,7 +42,7 @@ static int ingenient_read_packet(AVFormatContext *s, AVPacket *pkt)
     avio_skip(s->pb, 22); // ASCII timestamp
 
     av_log(s, AV_LOG_DEBUG, "Ingenient packet: size=%d, width=%d, height=%d, unk1=%d unk2=%d\n",
-        size, w, h, unk1, unk2);
+           size, w, h, unk1, unk2);
 
     ret = av_get_packet(s->pb, pkt, size);
     if (ret < 0)
@@ -53,7 +53,8 @@ static int ingenient_read_packet(AVFormatContext *s, AVPacket *pkt)
 
 FF_RAWVIDEO_DEMUXER_CLASS(ingenient)
 
-AVInputFormat ff_ingenient_demuxer = {
+AVInputFormat ff_ingenient_demuxer =
+{
     .name           = "ingenient",
     .long_name      = NULL_IF_CONFIG_SMALL("raw Ingenient MJPEG"),
     .priv_data_size = sizeof(FFRawVideoDemuxerContext),

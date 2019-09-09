@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Falk Hueffner <falk@debian.org>
  *
  * This file is part of FFmpeg.
@@ -42,7 +42,8 @@ static void put_pixels_clamped_mvi(const int16_t *block, uint8_t *pixels,
     int i = 8;
     uint64_t clampmask = zap(-1, 0xaa); /* 0x00ff00ff00ff00ff */
 
-    do {
+    do
+    {
         uint64_t shorts0, shorts1;
 
         shorts0 = ldq(block);
@@ -57,7 +58,8 @@ static void put_pixels_clamped_mvi(const int16_t *block, uint8_t *pixels,
 
         pixels += line_size;
         block += 8;
-    } while (--i);
+    }
+    while (--i);
 }
 
 void add_pixels_clamped_mvi(const int16_t *block, uint8_t *pixels,
@@ -70,7 +72,8 @@ void add_pixels_clamped_mvi(const int16_t *block, uint8_t *pixels,
     uint64_t signmask  = zap(-1, 0x33);
     signmask ^= signmask >> 1;  /* 0x8000800080008000 */
 
-    do {
+    do
+    {
         uint64_t shorts0, pix0, signs0;
         uint64_t shorts1, pix1, signs1;
 
@@ -101,7 +104,8 @@ void add_pixels_clamped_mvi(const int16_t *block, uint8_t *pixels,
 
         pixels += line_size;
         block += 8;
-    } while (--h);
+    }
+    while (--h);
 }
 #endif
 
@@ -109,7 +113,8 @@ av_cold void ff_idctdsp_init_alpha(IDCTDSPContext *c, AVCodecContext *avctx,
                                    unsigned high_bit_depth)
 {
     /* amask clears all bits that correspond to present features.  */
-    if (amask(AMASK_MVI) == 0) {
+    if (amask(AMASK_MVI) == 0)
+    {
         c->put_pixels_clamped = put_pixels_clamped_mvi_asm;
         c->add_pixels_clamped = add_pixels_clamped_mvi_asm;
     }
@@ -118,8 +123,9 @@ av_cold void ff_idctdsp_init_alpha(IDCTDSPContext *c, AVCodecContext *avctx,
     add_pixels_clamped_axp_p = c->add_pixels_clamped;
 
     if (!high_bit_depth && !avctx->lowres &&
-        (avctx->idct_algo == FF_IDCT_AUTO ||
-         avctx->idct_algo == FF_IDCT_SIMPLEALPHA)) {
+            (avctx->idct_algo == FF_IDCT_AUTO ||
+             avctx->idct_algo == FF_IDCT_SIMPLEALPHA))
+    {
         c->idct_put = ff_simple_idct_put_axp;
         c->idct_add = ff_simple_idct_add_axp;
         c->idct =     ff_simple_idct_axp;

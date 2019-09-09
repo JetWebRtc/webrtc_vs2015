@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MD STUDIO audio demuxer
  *
  * Copyright (c) 2009 Benjamin Larsson
@@ -33,7 +33,8 @@ static int aea_read_probe(AVProbeData *p)
         return 0;
 
     /* Magic is '00 08 00 00' in Little Endian*/
-    if (AV_RL32(p->buf)==0x800) {
+    if (AV_RL32(p->buf)==0x800)
+    {
         int ch, i;
         ch = p->buf[264];
 
@@ -44,7 +45,8 @@ static int aea_read_probe(AVProbeData *p)
          * the block size mode bytes have to be the same
          * the info bytes have to be the same
          */
-        for (i = 2048; i + 211 < p->buf_size; i+= 212) {
+        for (i = 2048; i + 211 < p->buf_size; i+= 212)
+        {
             int bsm_s, bsm_e, inb_s, inb_e;
             bsm_s = p->buf[0];
             inb_s = p->buf[1];
@@ -76,7 +78,8 @@ static int aea_read_header(AVFormatContext *s)
     st->codec->sample_rate    = 44100;
     st->codec->bit_rate       = 292000;
 
-    if (st->codec->channels != 1 && st->codec->channels != 2) {
+    if (st->codec->channels != 1 && st->codec->channels != 2)
+    {
         av_log(s,AV_LOG_ERROR,"Channels %d not supported!\n",st->codec->channels);
         return AVERROR_INVALIDDATA;
     }
@@ -98,7 +101,8 @@ static int aea_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_aea_demuxer = {
+AVInputFormat ff_aea_demuxer =
+{
     .name           = "aea",
     .long_name      = NULL_IF_CONFIG_SMALL("MD STUDIO audio"),
     .read_probe     = aea_read_probe,

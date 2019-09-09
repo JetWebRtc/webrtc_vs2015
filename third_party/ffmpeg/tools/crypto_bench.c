@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -59,7 +59,8 @@ static void fatal_error(const char *tag)
     exit(1);
 }
 
-struct hash_impl {
+struct hash_impl
+{
     const char *lib;
     const char *name;
     void (*run)(uint8_t *output, const uint8_t *input, unsigned size);
@@ -149,7 +150,7 @@ static void run_lavu_cast128(uint8_t *output,
 }
 
 static void run_lavu_twofish(uint8_t *output,
-                              const uint8_t *input, unsigned size)
+                             const uint8_t *input, unsigned size)
 {
     static struct AVTWOFISH *twofish;
     if (!twofish && !(twofish = av_twofish_alloc()))
@@ -159,7 +160,7 @@ static void run_lavu_twofish(uint8_t *output,
 }
 
 static void run_lavu_rc4(uint8_t *output,
-                              const uint8_t *input, unsigned size)
+                         const uint8_t *input, unsigned size)
 {
     static struct AVRC4 *rc4;
     if (!rc4 && !(rc4 = av_rc4_alloc()))
@@ -169,7 +170,7 @@ static void run_lavu_rc4(uint8_t *output,
 }
 
 static void run_lavu_xtea(uint8_t *output,
-                              const uint8_t *input, unsigned size)
+                          const uint8_t *input, unsigned size)
 {
     static struct AVXTEA *xtea;
     if (!xtea && !(xtea = av_xtea_alloc()))
@@ -253,7 +254,7 @@ static void run_crypto_cast128(uint8_t *output,
 }
 
 static void run_crypto_rc4(uint8_t *output,
-                                const uint8_t *input, unsigned size)
+                           const uint8_t *input, unsigned size)
 {
     RC4_KEY rc4;
 
@@ -318,7 +319,7 @@ static void run_gcrypt_camellia(uint8_t *output,
 }
 
 static void run_gcrypt_cast128(uint8_t *output,
-                              const uint8_t *input, unsigned size)
+                               const uint8_t *input, unsigned size)
 {
     static gcry_cipher_hd_t cast;
     if (!cast)
@@ -328,7 +329,7 @@ static void run_gcrypt_cast128(uint8_t *output,
 }
 
 static void run_gcrypt_twofish(uint8_t *output,
-                                const uint8_t *input, unsigned size)
+                               const uint8_t *input, unsigned size)
 {
     static gcry_cipher_hd_t twofish;
     if (!twofish)
@@ -403,7 +404,7 @@ static void run_tomcrypt_camellia(uint8_t *output,
 }
 
 static void run_tomcrypt_cast128(uint8_t *output,
-                                const uint8_t *input, unsigned size)
+                                 const uint8_t *input, unsigned size)
 {
     symmetric_key cast;
     unsigned i;
@@ -414,7 +415,7 @@ static void run_tomcrypt_cast128(uint8_t *output,
 }
 
 static void run_tomcrypt_twofish(uint8_t *output,
-                                const uint8_t *input, unsigned size)
+                                 const uint8_t *input, unsigned size)
 {
     symmetric_key twofish;
     unsigned i;
@@ -462,24 +463,28 @@ static void run_implementation(const uint8_t *input, uint8_t *output,
     uint8_t outref[MAX_OUTPUT_SIZE];
 
     if (enabled_libs  && !av_stristr(enabled_libs,  impl->lib) ||
-        enabled_algos && !av_stristr(enabled_algos, impl->name))
+            enabled_algos && !av_stristr(enabled_algos, impl->name))
         return;
-    if (!sscanf(impl->output, "crc:%x", &outcrc)) {
+    if (!sscanf(impl->output, "crc:%x", &outcrc))
+    {
         outlen = strlen(impl->output) / 2;
-        for (i = 0; i < outlen; i++) {
+        for (i = 0; i < outlen; i++)
+        {
             sscanf(impl->output + i * 2, "%02x", &val);
             outref[i] = val;
         }
     }
     for (i = 0; i < 8; i++) /* heat caches */
         impl->run(output, input, size);
-    for (i = 0; i < nruns; i++) {
+    for (i = 0; i < nruns; i++)
+    {
         memset(output, 0, size); /* avoid leftovers from previous runs */
         t0 = AV_READ_TIME();
         impl->run(output, input, size);
         t1 = AV_READ_TIME();
         if (outlen ? memcmp(output, outref, outlen) :
-                     crc32(output, size) != outcrc) {
+                crc32(output, size) != outcrc)
+        {
             fprintf(stderr, "Expected: ");
             if (outlen)
                 for (j = 0; j < outlen; j++)
@@ -511,12 +516,13 @@ static void run_implementation(const uint8_t *input, uint8_t *output,
     IMPL(gcrypt,     __VA_ARGS__) \
     IMPL(tomcrypt,   __VA_ARGS__)
 
-struct hash_impl implementations[] = {
+struct hash_impl implementations[] =
+{
     IMPL_ALL("MD5",        md5,       "aa26ff5b895356bcffd9292ba9f89e66")
     IMPL_ALL("SHA-1",      sha1,      "1fd8bd1fa02f5b0fe916b0d71750726b096c5744")
     IMPL_ALL("SHA-256",    sha256,    "14028ac673b3087e51a1d407fbf0df4deeec8f217119e13b07bf2138f93db8c5")
     IMPL_ALL("SHA-512",    sha512,    "3afdd44a80d99af15c87bd724cb717243193767835ce866dd5d58c02d674bb57"
-                                      "7c25b9e118c200a189fcd5a01ef106a4e200061f3e97dbf50ba065745fd46bef")
+    "7c25b9e118c200a189fcd5a01ef106a4e200061f3e97dbf50ba065745fd46bef")
     IMPL(lavu,     "RIPEMD-128", ripemd128, "9ab8bfba2ddccc5d99c9d4cdfb844a5f")
     IMPL(tomcrypt, "RIPEMD-128", ripemd128, "9ab8bfba2ddccc5d99c9d4cdfb844a5f")
     IMPL_ALL("RIPEMD-160", ripemd160, "62a5321e4fc8784903bb43ab7752c75f8b25af00")
@@ -540,8 +546,10 @@ int main(int argc, char **argv)
     unsigned i, impl, size;
     int opt;
 
-    while ((opt = getopt(argc, argv, "hl:a:r:")) != -1) {
-        switch (opt) {
+    while ((opt = getopt(argc, argv, "hl:a:r:")) != -1)
+    {
+        switch (opt)
+        {
         case 'l':
             enabled_libs = optarg;
             break;
@@ -555,7 +563,8 @@ int main(int argc, char **argv)
         default:
             fprintf(stderr, "Usage: %s [-l libs] [-a algos] [-r runs]\n",
                     argv[0]);
-            if ((USE_EXT_LIBS)) {
+            if ((USE_EXT_LIBS))
+            {
                 char buf[1024];
                 snprintf(buf, sizeof(buf), "%s%s%s",
                          ((USE_EXT_LIBS) & USE_crypto)   ? "+crypto"   : "",
@@ -563,7 +572,9 @@ int main(int argc, char **argv)
                          ((USE_EXT_LIBS) & USE_tomcrypt) ? "+tomcrypt" : "");
                 fprintf(stderr, "Built with the following external libraries:\n"
                         "make VERSUS=%s\n", buf + 1);
-            } else {
+            }
+            else
+            {
                 fprintf(stderr, "Built without external libraries; use\n"
                         "make VERSUS=crypto+gcrypt+tomcrypt tools/crypto_bench\n"
                         "to enable them.\n");

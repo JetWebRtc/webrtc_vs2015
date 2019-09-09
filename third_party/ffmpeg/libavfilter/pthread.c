@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * This file is part of FFmpeg.
  *
@@ -40,7 +40,8 @@
 #include "compat/w32pthreads.h"
 #endif
 
-typedef struct ThreadContext {
+typedef struct ThreadContext
+{
     AVFilterGraph *graph;
 
     int nb_threads;
@@ -72,8 +73,10 @@ static void* attribute_align_arg worker(void *v)
 
     pthread_mutex_lock(&c->current_job_lock);
     self_id = c->current_job++;
-    for (;;) {
-        while (our_job >= c->nb_jobs) {
+    for (;;)
+    {
+        while (our_job >= c->nb_jobs)
+        {
             if (c->current_job == nb_threads + c->nb_jobs)
                 pthread_cond_signal(&c->last_job_cond);
 
@@ -82,7 +85,8 @@ static void* attribute_align_arg worker(void *v)
             last_execute = c->current_execute;
             our_job = self_id;
 
-            if (c->done) {
+            if (c->done)
+            {
                 pthread_mutex_unlock(&c->current_job_lock);
                 return NULL;
             }
@@ -106,7 +110,7 @@ static void slice_thread_uninit(ThreadContext *c)
     pthread_mutex_unlock(&c->current_job_lock);
 
     for (i = 0; i < c->nb_threads; i++)
-         pthread_join(c->workers[i], NULL);
+        pthread_join(c->workers[i], NULL);
 
     pthread_mutex_destroy(&c->current_job_lock);
     pthread_cond_destroy(&c->current_job_cond);
@@ -137,10 +141,13 @@ static int thread_execute(AVFilterContext *ctx, avfilter_action_func *func,
     c->ctx         = ctx;
     c->arg         = arg;
     c->func        = func;
-    if (ret) {
+    if (ret)
+    {
         c->rets    = ret;
         c->nb_rets = nb_jobs;
-    } else {
+    }
+    else
+    {
         c->rets    = &dummy_ret;
         c->nb_rets = 1;
     }
@@ -157,7 +164,8 @@ static int thread_init_internal(ThreadContext *c, int nb_threads)
 {
     int i, ret;
 
-    if (!nb_threads) {
+    if (!nb_threads)
+    {
         int nb_cpus = av_cpu_count();
         // use number of cores + 1 as thread count if there is more than one
         if (nb_cpus > 1)
@@ -183,13 +191,15 @@ static int thread_init_internal(ThreadContext *c, int nb_threads)
 
     pthread_mutex_init(&c->current_job_lock, NULL);
     pthread_mutex_lock(&c->current_job_lock);
-    for (i = 0; i < nb_threads; i++) {
+    for (i = 0; i < nb_threads; i++)
+    {
         ret = pthread_create(&c->workers[i], NULL, worker, c);
-        if (ret) {
-           pthread_mutex_unlock(&c->current_job_lock);
-           c->nb_threads = i;
-           slice_thread_uninit(c);
-           return AVERROR(ret);
+        if (ret)
+        {
+            pthread_mutex_unlock(&c->current_job_lock);
+            c->nb_threads = i;
+            slice_thread_uninit(c);
+            return AVERROR(ret);
         }
     }
 
@@ -206,7 +216,8 @@ int ff_graph_thread_init(AVFilterGraph *graph)
     w32thread_init();
 #endif
 
-    if (graph->nb_threads == 1) {
+    if (graph->nb_threads == 1)
+    {
         graph->thread_type = 0;
         return 0;
     }
@@ -216,7 +227,8 @@ int ff_graph_thread_init(AVFilterGraph *graph)
         return AVERROR(ENOMEM);
 
     ret = thread_init_internal(graph->internal->thread, graph->nb_threads);
-    if (ret <= 1) {
+    if (ret <= 1)
+    {
         av_freep(&graph->internal->thread);
         graph->thread_type = 0;
         graph->nb_threads  = 1;

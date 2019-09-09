@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+﻿#include <gtest/gtest.h>
 #include "codec_def.h"
 #include "utils/BufferedData.h"
 #include "utils/FileInputStream.h"
@@ -41,116 +41,131 @@ using namespace WelsCommon;
 #define VALID_SIZE(iSize) (((iSize)>16)?(iSize):16)
 #define GET_MB_WIDTH(x) (((x) + 15)/16)
 
-typedef struct SLost_Sim {
-  WelsCommon::EWelsNalUnitType eNalType;
-  bool isLost;
+typedef struct SLost_Sim
+{
+    WelsCommon::EWelsNalUnitType eNalType;
+    bool isLost;
 } SLostSim;
 
 
-struct EncodeDecodeFileParamBase {
-  int numframes;
-  int width;
-  int height;
-  float frameRate;
-  int slicenum;
-  bool bLostPara;
-  const char* pLossSequence;
+struct EncodeDecodeFileParamBase
+{
+    int numframes;
+    int width;
+    int height;
+    float frameRate;
+    int slicenum;
+    bool bLostPara;
+    const char* pLossSequence;
 };
 
-static void welsStderrTraceOrigin (void* ctx, int level, const char* string) {
-  fprintf (stderr, "%s\n", string);
+static void welsStderrTraceOrigin (void* ctx, int level, const char* string)
+{
+    fprintf (stderr, "%s\n", string);
 }
 
-typedef struct STrace_Unit {
-  int iTarLevel;
+typedef struct STrace_Unit
+{
+    int iTarLevel;
 } STraceUnit;
 
-class EncodeDecodeTestBase : public BaseEncoderTest, public BaseDecoderTest {
- public:
-  uint8_t iRandValue;
- public:
-  virtual void SetUp() {
-    BaseEncoderTest::SetUp();
-    BaseDecoderTest::SetUp();
-    pFunc = welsStderrTraceOrigin;
-    pTraceInfo = NULL;
-    encoder_->SetOption (ENCODER_OPTION_TRACE_CALLBACK, &pFunc);
-    encoder_->SetOption (ENCODER_OPTION_TRACE_CALLBACK_CONTEXT, &pTraceInfo);
-    decoder_->SetOption (DECODER_OPTION_TRACE_CALLBACK, &pFunc);
-    decoder_->SetOption (DECODER_OPTION_TRACE_CALLBACK_CONTEXT, &pTraceInfo);
-  }
+class EncodeDecodeTestBase : public BaseEncoderTest, public BaseDecoderTest
+{
+public:
+    uint8_t iRandValue;
+public:
+    virtual void SetUp()
+    {
+        BaseEncoderTest::SetUp();
+        BaseDecoderTest::SetUp();
+        pFunc = welsStderrTraceOrigin;
+        pTraceInfo = NULL;
+        encoder_->SetOption (ENCODER_OPTION_TRACE_CALLBACK, &pFunc);
+        encoder_->SetOption (ENCODER_OPTION_TRACE_CALLBACK_CONTEXT, &pTraceInfo);
+        decoder_->SetOption (DECODER_OPTION_TRACE_CALLBACK, &pFunc);
+        decoder_->SetOption (DECODER_OPTION_TRACE_CALLBACK_CONTEXT, &pTraceInfo);
+    }
 
-  virtual void TearDown() {
-    BaseEncoderTest::TearDown();
-    BaseDecoderTest::TearDown();
-  }
+    virtual void TearDown()
+    {
+        BaseEncoderTest::TearDown();
+        BaseDecoderTest::TearDown();
+    }
 
-  virtual void prepareParam (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
+    virtual void prepareParam (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
 
-  virtual void prepareEncDecParam (const EncodeDecodeFileParamBase EncDecFileParam);
+    virtual void prepareEncDecParam (const EncodeDecodeFileParamBase EncDecFileParam);
 
-  virtual void encToDecData (const SFrameBSInfo& info, int& len);
+    virtual void encToDecData (const SFrameBSInfo& info, int& len);
 
-  virtual void encToDecSliceData (const int iLayerNum, const int iSliceNum, const SFrameBSInfo& info, int& len);
+    virtual void encToDecSliceData (const int iLayerNum, const int iSliceNum, const SFrameBSInfo& info, int& len);
 
-  virtual int GetRandWidth() {
-    return WelsClip3 ((((rand() % MAX_WIDTH) >> 1) + 1) << 1, 16, MAX_WIDTH);
-  }
+    virtual int GetRandWidth()
+    {
+        return WelsClip3 ((((rand() % MAX_WIDTH) >> 1) + 1) << 1, 16, MAX_WIDTH);
+    }
 
-  virtual int GetRandHeight() {
-    return WelsClip3 ((((rand() % MAX_HEIGHT) >> 1) + 1) << 1, 16, MAX_HEIGHT);
-  }
+    virtual int GetRandHeight()
+    {
+        return WelsClip3 ((((rand() % MAX_HEIGHT) >> 1) + 1) << 1, 16, MAX_HEIGHT);
+    }
 
- protected:
-  SEncParamExt   param_;
-  BufferedData   buf_;
-  SSourcePicture EncPic;
-  SFrameBSInfo   info;
-  SBufferInfo    dstBufInfo_;
-  std::vector<SLostSim> m_SLostSim;
-  WelsTraceCallback pFunc;
-  STraceUnit sTrace;
-  STraceUnit* pTraceInfo;
+protected:
+    SEncParamExt   param_;
+    BufferedData   buf_;
+    SSourcePicture EncPic;
+    SFrameBSInfo   info;
+    SBufferInfo    dstBufInfo_;
+    std::vector<SLostSim> m_SLostSim;
+    WelsTraceCallback pFunc;
+    STraceUnit sTrace;
+    STraceUnit* pTraceInfo;
 };
 
-class EncodeDecodeTestAPIBase : public EncodeDecodeTestBase {
- public:
-  uint8_t iRandValue;
- public:
-  void SetUp() {
-    EncodeDecodeTestBase::SetUp();
-  }
+class EncodeDecodeTestAPIBase : public EncodeDecodeTestBase
+{
+public:
+    uint8_t iRandValue;
+public:
+    void SetUp()
+    {
+        EncodeDecodeTestBase::SetUp();
+    }
 
-  void TearDown() {
-    EncodeDecodeTestBase::TearDown();
-  }
+    void TearDown()
+    {
+        EncodeDecodeTestBase::TearDown();
+    }
 
-  void prepareParam0 (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
+    void prepareParam0 (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
 
-  void prepareParamDefault (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
+    void prepareParamDefault (int iLayers, int iSlices, int width, int height, float framerate, SEncParamExt* pParam);
 
-  void InitialEncDec (int iWidth, int iHeight);
-  void RandomParamExtCombination();
-  void ValidateParamExtCombination();
-  void SliceParamValidationForMode2 (int iSpatialIdx);
-  void SliceParamValidationForMode3 (int iSpatialIdx);
-  void SliceParamValidationForMode4();
+    void InitialEncDec (int iWidth, int iHeight);
+    void RandomParamExtCombination();
+    void ValidateParamExtCombination();
+    void SliceParamValidationForMode2 (int iSpatialIdx);
+    void SliceParamValidationForMode3 (int iSpatialIdx);
+    void SliceParamValidationForMode4();
 
-  void EncodeOneFrame (int iCheckTypeIndex);
-  void EncDecOneFrame (const int iWidth, const int iHeight, const int iFrame, FILE* pfEnc);
-  void TestOneSimulcastAVC (SEncParamExt* pParam, ISVCDecoder** decoder, unsigned char** pBsBuf, int iSpatialLayerNum,
-                            int iEncFrameNum,
-                            int iCallTimes);
+    void EncodeOneFrame (int iCheckTypeIndex);
+    void EncDecOneFrame (const int iWidth, const int iHeight, const int iFrame, FILE* pfEnc);
+    void TestOneSimulcastAVC (SEncParamExt* pParam, ISVCDecoder** decoder, unsigned char** pBsBuf, int iSpatialLayerNum,
+                              int iEncFrameNum,
+                              int iCallTimes);
 };
 
-class EncodeDecodeTestAPI : public ::testing::TestWithParam<EncodeDecodeFileParamBase>, public EncodeDecodeTestAPIBase {
-  void SetUp() {
-    EncodeDecodeTestAPIBase::SetUp();
-  }
+class EncodeDecodeTestAPI : public ::testing::TestWithParam<EncodeDecodeFileParamBase>, public EncodeDecodeTestAPIBase
+{
+    void SetUp()
+    {
+        EncodeDecodeTestAPIBase::SetUp();
+    }
 
-  void TearDown() {
-    EncodeDecodeTestAPIBase::TearDown();
-  }
+    void TearDown()
+    {
+        EncodeDecodeTestAPIBase::TearDown();
+    }
 };
 
 

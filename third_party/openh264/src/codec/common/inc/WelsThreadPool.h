@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -48,72 +48,76 @@
 #include "WelsCircleQueue.h"
 #include "WelsList.h"
 
-namespace WelsCommon {
+namespace WelsCommon
+{
 
 
-class  CWelsThreadPool : public CWelsThread, public IWelsTaskThreadSink {
- public:
-  enum {
-    DEFAULT_THREAD_NUM = 4,
-  };
+class  CWelsThreadPool : public CWelsThread, public IWelsTaskThreadSink
+{
+public:
+    enum
+    {
+        DEFAULT_THREAD_NUM = 4,
+    };
 
-  static WELS_THREAD_ERROR_CODE SetThreadNum (int32_t iMaxThreadNum);
+    static WELS_THREAD_ERROR_CODE SetThreadNum (int32_t iMaxThreadNum);
 
-  static CWelsThreadPool& AddReference();
-  void RemoveInstance();
+    static CWelsThreadPool& AddReference();
+    void RemoveInstance();
 
-  static bool IsReferenced();
+    static bool IsReferenced();
 
-  //IWelsTaskThreadSink
-  virtual WELS_THREAD_ERROR_CODE OnTaskStart (CWelsTaskThread* pThread,  IWelsTask* pTask);
-  virtual WELS_THREAD_ERROR_CODE OnTaskStop (CWelsTaskThread* pThread,  IWelsTask* pTask);
+    //IWelsTaskThreadSink
+    virtual WELS_THREAD_ERROR_CODE OnTaskStart (CWelsTaskThread* pThread,  IWelsTask* pTask);
+    virtual WELS_THREAD_ERROR_CODE OnTaskStop (CWelsTaskThread* pThread,  IWelsTask* pTask);
 
-  //  CWelsThread
-  virtual void ExecuteTask();
+    //  CWelsThread
+    virtual void ExecuteTask();
 
-  WELS_THREAD_ERROR_CODE  QueueTask (IWelsTask* pTask);
-  int32_t        GetThreadNum() const {
-    return m_iMaxThreadNum;
-  }
+    WELS_THREAD_ERROR_CODE  QueueTask (IWelsTask* pTask);
+    int32_t        GetThreadNum() const
+    {
+        return m_iMaxThreadNum;
+    }
 
 
- protected:
-  WELS_THREAD_ERROR_CODE Init();
-  WELS_THREAD_ERROR_CODE Uninit();
+protected:
+    WELS_THREAD_ERROR_CODE Init();
+    WELS_THREAD_ERROR_CODE Uninit();
 
-  WELS_THREAD_ERROR_CODE CreateIdleThread();
-  void           DestroyThread (CWelsTaskThread* pThread);
-  WELS_THREAD_ERROR_CODE AddThreadToIdleQueue (CWelsTaskThread* pThread);
-  WELS_THREAD_ERROR_CODE AddThreadToBusyList (CWelsTaskThread* pThread);
-  WELS_THREAD_ERROR_CODE RemoveThreadFromBusyList (CWelsTaskThread* pThread);
-  bool           AddTaskToWaitedList (IWelsTask* pTask);
-  CWelsTaskThread*   GetIdleThread();
-  IWelsTask*         GetWaitedTask();
-  int32_t            GetIdleThreadNum();
-  int32_t            GetBusyThreadNum();
-  int32_t            GetWaitedTaskNum();
-  void               ClearWaitedTasks();
+    WELS_THREAD_ERROR_CODE CreateIdleThread();
+    void           DestroyThread (CWelsTaskThread* pThread);
+    WELS_THREAD_ERROR_CODE AddThreadToIdleQueue (CWelsTaskThread* pThread);
+    WELS_THREAD_ERROR_CODE AddThreadToBusyList (CWelsTaskThread* pThread);
+    WELS_THREAD_ERROR_CODE RemoveThreadFromBusyList (CWelsTaskThread* pThread);
+    bool           AddTaskToWaitedList (IWelsTask* pTask);
+    CWelsTaskThread*   GetIdleThread();
+    IWelsTask*         GetWaitedTask();
+    int32_t            GetIdleThreadNum();
+    int32_t            GetBusyThreadNum();
+    int32_t            GetWaitedTaskNum();
+    void               ClearWaitedTasks();
 
- private:
-  CWelsThreadPool();
-  virtual ~CWelsThreadPool();
-  
-  WELS_THREAD_ERROR_CODE StopAllRunning();
+private:
+    CWelsThreadPool();
+    virtual ~CWelsThreadPool();
 
-  static int32_t   m_iRefCount;
-  static CWelsLock m_cInitLock;
-  static int32_t   m_iMaxThreadNum;
+    WELS_THREAD_ERROR_CODE StopAllRunning();
 
-  CWelsCircleQueue<IWelsTask>* m_cWaitedTasks;
-  CWelsCircleQueue<CWelsTaskThread>* m_cIdleThreads;
-  CWelsList<CWelsTaskThread>* m_cBusyThreads;
+    static int32_t   m_iRefCount;
+    static CWelsLock m_cInitLock;
+    static int32_t   m_iMaxThreadNum;
 
-  CWelsLock   m_cLockPool;
-  CWelsLock   m_cLockWaitedTasks;
-  CWelsLock   m_cLockIdleTasks;
-  CWelsLock   m_cLockBusyTasks;
+    CWelsCircleQueue<IWelsTask>* m_cWaitedTasks;
+    CWelsCircleQueue<CWelsTaskThread>* m_cIdleThreads;
+    CWelsList<CWelsTaskThread>* m_cBusyThreads;
 
-  DISALLOW_COPY_AND_ASSIGN (CWelsThreadPool);
+    CWelsLock   m_cLockPool;
+    CWelsLock   m_cLockWaitedTasks;
+    CWelsLock   m_cLockIdleTasks;
+    CWelsLock   m_cLockBusyTasks;
+
+    DISALLOW_COPY_AND_ASSIGN (CWelsThreadPool);
 };
 
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chinese AVS video (AVS1-P2, JiZhun profile) decoder.
  * Copyright (c) 2006  Stefan Gehrer <stefan.gehrer@gmx.de>
  *
@@ -141,7 +141,8 @@ static void cavs_idct8_add_mmx(uint8_t *dst, int16_t *block, int stride)
     int i;
     LOCAL_ALIGNED(16, int16_t, b2, [64]);
 
-    for(i=0; i<2; i++){
+    for(i=0; i<2; i++)
+    {
         cavs_idct8_1d(block + 4 * i, ff_pw_4.a);
 
         __asm__ volatile(
@@ -171,7 +172,8 @@ static void cavs_idct8_add_mmx(uint8_t *dst, int16_t *block, int stride)
         );
     }
 
-    for(i=0; i<2; i++){
+    for(i=0; i<2; i++)
+    {
         cavs_idct8_1d(b2+4*i, ff_pw_64.a);
 
         __asm__ volatile(
@@ -571,7 +573,8 @@ av_cold void ff_cavsdsp_init_x86(CAVSDSPContext *c, AVCodecContext *avctx)
         cavsdsp_init_3dnow(c, avctx);
 #endif /* HAVE_AMD3DNOW_INLINE */
 #if HAVE_MMXEXT_INLINE
-    if (INLINE_MMXEXT(cpu_flags)) {
+    if (INLINE_MMXEXT(cpu_flags))
+    {
         DSPFUNC(put, 0, 16, mmxext);
         DSPFUNC(put, 1,  8, mmxext);
         DSPFUNC(avg, 0, 16, mmxext);
@@ -579,13 +582,15 @@ av_cold void ff_cavsdsp_init_x86(CAVSDSPContext *c, AVCodecContext *avctx)
     }
 #endif
 #if HAVE_MMX_EXTERNAL
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
         c->avg_cavs_qpel_pixels_tab[0][0] = avg_cavs_qpel16_mc00_mmxext;
         c->avg_cavs_qpel_pixels_tab[1][0] = avg_cavs_qpel8_mc00_mmxext;
     }
 #endif
 #if HAVE_SSE2_EXTERNAL
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->put_cavs_qpel_pixels_tab[0][0] = put_cavs_qpel16_mc00_sse2;
         c->avg_cavs_qpel_pixels_tab[0][0] = avg_cavs_qpel16_mc00_sse2;
     }

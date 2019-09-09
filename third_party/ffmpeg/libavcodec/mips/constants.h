@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Loongson Technology Corporation Limited
  * Copyright (c) 2015 Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *

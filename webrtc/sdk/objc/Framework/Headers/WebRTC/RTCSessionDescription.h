@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,10 +16,11 @@
  * Represents the session description type. This exposes the same types that are
  * in C++, which doesn't include the rollback type that is in the W3C spec.
  */
-typedef NS_ENUM(NSInteger, RTCSdpType) {
-  RTCSdpTypeOffer,
-  RTCSdpTypePrAnswer,
-  RTCSdpTypeAnswer,
+typedef NS_ENUM(NSInteger, RTCSdpType)
+{
+    RTCSdpTypeOffer,
+    RTCSdpTypePrAnswer,
+    RTCSdpTypeAnswer,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -27,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCSessionDescription : NSObject
 
-/** The type of session description. */
-@property(nonatomic, readonly) RTCSdpType type;
+    /** The type of session description. */
+    @property(nonatomic, readonly) RTCSdpType type;
 
 /** The SDP string representation of this session description. */
 @property(nonatomic, readonly) NSString *sdp;

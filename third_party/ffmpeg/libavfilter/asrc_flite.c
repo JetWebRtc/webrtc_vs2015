@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     char *voice_str;
     char *textfile;
@@ -50,7 +51,8 @@ typedef struct {
 #define OFFSET(x) offsetof(FliteContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption flite_options[] = {
+static const AVOption flite_options[] =
+{
     { "list_voices", "list voices and exit",              OFFSET(list_voices), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
     { "nb_samples",  "set number of samples per frame",   OFFSET(frame_nb_samples), AV_OPT_TYPE_INT, {.i64=512}, 0, INT_MAX, FLAGS },
     { "n",           "set number of samples per frame",   OFFSET(frame_nb_samples), AV_OPT_TYPE_INT, {.i64=512}, 0, INT_MAX, FLAGS },
@@ -75,7 +77,8 @@ DECLARE_REGISTER_VOICE_FN(kal16);
 DECLARE_REGISTER_VOICE_FN(rms);
 DECLARE_REGISTER_VOICE_FN(slt);
 
-struct voice_entry {
+struct voice_entry
+{
     const char *name;
     cst_voice * (*register_fn)(const char *);
     void (*unregister_fn)(cst_voice *);
@@ -88,7 +91,8 @@ struct voice_entry {
     .register_fn   =   register_cmu_us_ ## voice_name, \
     .unregister_fn = unregister_cmu_us_ ## voice_name, \
 }
-static struct voice_entry voice_entries[] = {
+static struct voice_entry voice_entries[] =
+{
     MAKE_VOICE_STRUCTURE(awb),
     MAKE_VOICE_STRUCTURE(kal),
     MAKE_VOICE_STRUCTURE(kal16),
@@ -108,12 +112,15 @@ static int select_voice(struct voice_entry **entry_ret, const char *voice_name, 
 {
     int i;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(voice_entries); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(voice_entries); i++)
+    {
         struct voice_entry *entry = &voice_entries[i];
-        if (!strcmp(entry->name, voice_name)) {
+        if (!strcmp(entry->name, voice_name))
+        {
             if (!entry->voice)
                 entry->voice = entry->register_fn(NULL);
-            if (!entry->voice) {
+            if (!entry->voice)
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Could not register voice '%s'\n", voice_name);
                 return AVERROR_UNKNOWN;
@@ -136,13 +143,16 @@ static av_cold int init(AVFilterContext *ctx)
     FliteContext *flite = ctx->priv;
     int ret = 0;
 
-    if (flite->list_voices) {
+    if (flite->list_voices)
+    {
         list_voices(ctx, "\n");
         return AVERROR_EXIT;
     }
 
-    if (!flite_inited) {
-        if (flite_init() < 0) {
+    if (!flite_inited)
+    {
+        if (flite_init() < 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "flite initialization failed\n");
             return AVERROR_UNKNOWN;
         }
@@ -153,17 +163,20 @@ static av_cold int init(AVFilterContext *ctx)
         return ret;
     flite->voice = flite->voice_entry->voice;
 
-    if (flite->textfile && flite->text) {
+    if (flite->textfile && flite->text)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Both text and textfile options set: only one must be specified\n");
         return AVERROR(EINVAL);
     }
 
-    if (flite->textfile) {
+    if (flite->textfile)
+    {
         uint8_t *textbuf;
         size_t textbuf_size;
 
-        if ((ret = av_file_map(flite->textfile, &textbuf, &textbuf_size, 0, ctx)) < 0) {
+        if ((ret = av_file_map(flite->textfile, &textbuf, &textbuf_size, 0, ctx)) < 0)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "The text file '%s' could not be read: %s\n",
                    flite->textfile, av_err2str(ret));
@@ -177,7 +190,8 @@ static av_cold int init(AVFilterContext *ctx)
         av_file_unmap(textbuf, textbuf_size);
     }
 
-    if (!flite->text) {
+    if (!flite->text)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "No speech text specified, specify the 'text' or 'textfile' option\n");
         return AVERROR(EINVAL);
@@ -227,7 +241,10 @@ static int config_props(AVFilterLink *outlink)
     FliteContext *flite = ctx->priv;
 
     outlink->sample_rate = flite->wave->sample_rate;
-    outlink->time_base = (AVRational){1, flite->wave->sample_rate};
+    outlink->time_base = (AVRational)
+    {
+        1, flite->wave->sample_rate
+    };
 
     av_log(ctx, AV_LOG_VERBOSE, "voice:%s fmt:%s sample_rate:%d\n",
            flite->voice_str,
@@ -260,7 +277,8 @@ static int request_frame(AVFilterLink *outlink)
     return ff_filter_frame(outlink, samplesref);
 }
 
-static const AVFilterPad flite_outputs[] = {
+static const AVFilterPad flite_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -270,7 +288,8 @@ static const AVFilterPad flite_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_asrc_flite = {
+AVFilter ff_asrc_flite =
+{
     .name          = "flite",
     .description   = NULL_IF_CONFIG_SMALL("Synthesize voice from text using libflite."),
     .query_formats = query_formats,

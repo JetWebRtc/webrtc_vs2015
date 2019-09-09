@@ -1,4 +1,4 @@
-/*
+﻿/*
  * "Real" compatible muxer.
  * Copyright (c) 2000, 2001 Fabrice Bellard
  *
@@ -23,7 +23,8 @@
 #include "rm.h"
 #include "libavutil/dict.h"
 
-typedef struct StreamInfo {
+typedef struct StreamInfo
+{
     int nb_packets;
     int packet_total_size;
     int packet_max_size;
@@ -36,7 +37,8 @@ typedef struct StreamInfo {
     AVCodecContext *enc;
 } StreamInfo;
 
-typedef struct RMMuxContext {
+typedef struct RMMuxContext
+{
     StreamInfo streams[2];
     StreamInfo *audio_stream, *video_stream;
     int data_pos; /* position of the data after the header */
@@ -53,7 +55,8 @@ typedef struct RMMuxContext {
 static void put_str(AVIOContext *s, const char *tag)
 {
     avio_wb16(s,strlen(tag));
-    while (*tag) {
+    while (*tag)
+    {
         avio_w8(s, *tag++);
     }
 }
@@ -61,7 +64,8 @@ static void put_str(AVIOContext *s, const char *tag)
 static void put_str8(AVIOContext *s, const char *tag)
 {
     avio_w8(s, strlen(tag));
-    while (*tag) {
+    while (*tag)
+    {
         avio_w8(s, *tag++);
     }
 }
@@ -94,7 +98,8 @@ static int rv10_write_header(AVFormatContext *ctx,
     nb_packets = 0;
     bit_rate = 0;
     duration = 0;
-    for(i=0;i<ctx->nb_streams;i++) {
+    for(i=0; i<ctx->nb_streams; i++)
+    {
         StreamInfo *stream = &rm->streams[i];
         bit_rate += stream->bit_rate;
         if (stream->packet_max_size > packet_max_size)
@@ -102,7 +107,10 @@ static int rv10_write_header(AVFormatContext *ctx,
         nb_packets += stream->nb_packets;
         packet_total_size += stream->packet_total_size;
         /* select maximum duration */
-        v = av_rescale_q_rnd(stream->total_frames, (AVRational){1000, 1}, stream->frame_rate, AV_ROUND_ZERO);
+        v = av_rescale_q_rnd(stream->total_frames, (AVRational)
+        {
+            1000, 1
+        }, stream->frame_rate, AV_ROUND_ZERO);
         if (v > duration)
             duration = v;
     }
@@ -131,27 +139,33 @@ static int rv10_write_header(AVFormatContext *ctx,
 
     ffio_wfourcc(s,"CONT");
     size =  4 * 2 + 10;
-    for(i=0; i<FF_ARRAY_ELEMS(ff_rm_metadata); i++) {
+    for(i=0; i<FF_ARRAY_ELEMS(ff_rm_metadata); i++)
+    {
         tag = av_dict_get(ctx->metadata, ff_rm_metadata[i], NULL, 0);
         if(tag) size += strlen(tag->value);
     }
     avio_wb32(s,size);
     avio_wb16(s,0);
-    for(i=0; i<FF_ARRAY_ELEMS(ff_rm_metadata); i++) {
+    for(i=0; i<FF_ARRAY_ELEMS(ff_rm_metadata); i++)
+    {
         tag = av_dict_get(ctx->metadata, ff_rm_metadata[i], NULL, 0);
         put_str(s, tag ? tag->value : "");
     }
 
-    for(i=0;i<ctx->nb_streams;i++) {
+    for(i=0; i<ctx->nb_streams; i++)
+    {
         int codec_data_size;
 
         stream = &rm->streams[i];
 
-        if (stream->enc->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (stream->enc->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             desc = "The Audio Stream";
             mimetype = "audio/x-pn-realaudio";
             codec_data_size = 73;
-        } else {
+        }
+        else
+        {
             desc = "The Video Stream";
             mimetype = "video/x-pn-realvideo";
             codec_data_size = 34;
@@ -168,7 +182,7 @@ static int rv10_write_header(AVFormatContext *ctx,
         avio_wb32(s, stream->packet_max_size);        /* max packet size */
         if (stream->nb_packets > 0)
             packet_avg_size = stream->packet_total_size /
-                stream->nb_packets;
+                              stream->nb_packets;
         else
             packet_avg_size = 0;
         avio_wb32(s, packet_avg_size);        /* avg packet size */
@@ -178,12 +192,16 @@ static int rv10_write_header(AVFormatContext *ctx,
         if (!s->seekable || !stream->total_frames)
             avio_wb32(s, (int)(3600 * 1000));
         else
-            avio_wb32(s, av_rescale_q_rnd(stream->total_frames, (AVRational){1000, 1},  stream->frame_rate, AV_ROUND_ZERO));
+            avio_wb32(s, av_rescale_q_rnd(stream->total_frames, (AVRational)
+        {
+            1000, 1
+        },  stream->frame_rate, AV_ROUND_ZERO));
         put_str8(s, desc);
         put_str8(s, mimetype);
         avio_wb32(s, codec_data_size);
 
-        if (stream->enc->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (stream->enc->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             int coded_frame_size, fscode, sample_rate;
             sample_rate = stream->enc->sample_rate;
             coded_frame_size = (stream->enc->bit_rate *
@@ -197,7 +215,8 @@ static int rv10_write_header(AVFormatContext *ctx,
             avio_wb16(s, 4); /* unknown */
             avio_wb32(s, 0x39); /* header size */
 
-            switch(sample_rate) {
+            switch(sample_rate)
+            {
             case 48000:
             case 24000:
             case 12000:
@@ -231,10 +250,13 @@ static int rv10_write_header(AVFormatContext *ctx,
             avio_wb32(s, 0x10); /* unknown */
             avio_wb16(s, stream->enc->channels);
             put_str8(s, "Int0"); /* codec name */
-            if (stream->enc->codec_tag) {
+            if (stream->enc->codec_tag)
+            {
                 avio_w8(s, 4); /* tag length */
                 avio_wl32(s, stream->enc->codec_tag);
-            } else {
+            }
+            else
+            {
                 av_log(ctx, AV_LOG_ERROR, "Invalid codec tag\n");
                 return -1;
             }
@@ -242,7 +264,9 @@ static int rv10_write_header(AVFormatContext *ctx,
             avio_wb16(s, 0); /* author length */
             avio_wb16(s, 0); /* copyright length */
             avio_w8(s, 0); /* end of header */
-        } else {
+        }
+        else
+        {
             /* video codec info */
             avio_wb32(s,34); /* size */
             ffio_wfourcc(s, "VIDO");
@@ -300,7 +324,10 @@ static void write_packet_header(AVFormatContext *ctx, StreamInfo *stream,
     avio_wb16(s,0); /* version */
     avio_wb16(s,length + 12);
     avio_wb16(s, stream->num); /* stream number */
-    timestamp = av_rescale_q_rnd(stream->nb_frames, (AVRational){1000, 1}, stream->frame_rate, AV_ROUND_ZERO);
+    timestamp = av_rescale_q_rnd(stream->nb_frames, (AVRational)
+    {
+        1000, 1
+    }, stream->frame_rate, AV_ROUND_ZERO);
     avio_wb32(s, timestamp); /* timestamp */
     avio_w8(s, 0); /* reserved */
     avio_w8(s, key_frame ? 2 : 0); /* flags */
@@ -313,12 +340,14 @@ static int rm_write_header(AVFormatContext *s)
     int n;
     AVCodecContext *codec;
 
-    if (s->nb_streams > 2) {
+    if (s->nb_streams > 2)
+    {
         av_log(s, AV_LOG_ERROR, "At most 2 streams are currently supported for muxing in RM\n");
         return AVERROR_PATCHWELCOME;
     }
 
-    for(n=0;n<s->nb_streams;n++) {
+    for(n=0; n<s->nb_streams; n++)
+    {
         AVStream *st = s->streams[n];
 
         s->streams[n]->id = n;
@@ -329,10 +358,14 @@ static int rm_write_header(AVFormatContext *s)
         stream->bit_rate = codec->bit_rate;
         stream->enc = codec;
 
-        switch(codec->codec_type) {
+        switch(codec->codec_type)
+        {
         case AVMEDIA_TYPE_AUDIO:
             rm->audio_stream = stream;
-            stream->frame_rate = (AVRational){codec->sample_rate, codec->frame_size};
+            stream->frame_rate = (AVRational)
+            {
+                codec->sample_rate, codec->frame_size
+            };
             /* XXX: dummy values */
             stream->packet_max_size = 1024;
             stream->nb_packets = 0;
@@ -367,13 +400,17 @@ static int rm_write_audio(AVFormatContext *s, const uint8_t *buf, int size, int 
 
     write_packet_header(s, stream, size, !!(flags & AV_PKT_FLAG_KEY));
 
-    if (stream->enc->codec_id == AV_CODEC_ID_AC3) {
+    if (stream->enc->codec_id == AV_CODEC_ID_AC3)
+    {
         /* for AC-3, the words seem to be reversed */
-        for (i = 0; i < size; i += 2) {
+        for (i = 0; i < size; i += 2)
+        {
             avio_w8(pb, buf[i + 1]);
             avio_w8(pb, buf[i]);
         }
-    } else {
+    }
+    else
+    {
         avio_write(pb, buf, size);
     }
     stream->nb_frames++;
@@ -392,7 +429,8 @@ static int rm_write_video(AVFormatContext *s, const uint8_t *buf, int size, int 
     /* Well, I spent some time finding the meaning of these bits. I am
        not sure I understood everything, but it works !! */
 #if 1
-    if (size > MAX_PACKET_SIZE) {
+    if (size > MAX_PACKET_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Muxing packets larger than 64 kB (%d) is not supported\n", size);
         return AVERROR_PATCHWELCOME;
     }
@@ -401,15 +439,21 @@ static int rm_write_video(AVFormatContext *s, const uint8_t *buf, int size, int 
     avio_w8(pb, 0x81);
     /* bit 7: '1' if I frame. bits 6..0 : sequence number in current
        frame starting from 1 */
-    if (key_frame) {
+    if (key_frame)
+    {
         avio_w8(pb, 0x81);
-    } else {
+    }
+    else
+    {
         avio_w8(pb, 0x01);
     }
-    if(size >= 0x4000){
+    if(size >= 0x4000)
+    {
         avio_wb32(pb, size); /* total frame size */
         avio_wb32(pb, size); /* offset from the start or the end */
-    }else{
+    }
+    else
+    {
         avio_wb16(pb, 0x4000 | size); /* total frame size */
         avio_wb16(pb, 0x4000 | size); /* offset from the start or the end */
     }
@@ -431,7 +475,7 @@ static int rm_write_video(AVFormatContext *s, const uint8_t *buf, int size, int 
 static int rm_write_packet(AVFormatContext *s, AVPacket *pkt)
 {
     if (s->streams[pkt->stream_index]->codec->codec_type ==
-        AVMEDIA_TYPE_AUDIO)
+            AVMEDIA_TYPE_AUDIO)
         return rm_write_audio(s, pkt->data, pkt->size, pkt->flags);
     else
         return rm_write_video(s, pkt->data, pkt->size, pkt->flags);
@@ -443,7 +487,8 @@ static int rm_write_trailer(AVFormatContext *s)
     int data_size, index_pos, i;
     AVIOContext *pb = s->pb;
 
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         /* end of file: finish to write header */
         index_pos = avio_tell(pb);
         data_size = index_pos - rm->data_pos;
@@ -455,10 +500,12 @@ static int rm_write_trailer(AVFormatContext *s)
         avio_wb32(pb, 0);
 
         avio_seek(pb, 0, SEEK_SET);
-        for(i=0;i<s->nb_streams;i++)
+        for(i=0; i<s->nb_streams; i++)
             rm->streams[i].total_frames = rm->streams[i].nb_frames;
         rv10_write_header(s, data_size, 0);
-    } else {
+    }
+    else
+    {
         /* undocumented end header */
         avio_wb32(pb, 0);
         avio_wb32(pb, 0);
@@ -468,7 +515,8 @@ static int rm_write_trailer(AVFormatContext *s)
 }
 
 
-AVOutputFormat ff_rm_muxer = {
+AVOutputFormat ff_rm_muxer =
+{
     .name              = "rm",
     .long_name         = NULL_IF_CONFIG_SMALL("RealMedia"),
     .mime_type         = "application/vnd.rn-realmedia",

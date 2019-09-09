@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,56 +18,59 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/codecs/audio_encoder.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This class implements redundant audio coding. The class object will have an
 // underlying AudioEncoder object that performs the actual encodings. The
 // current class will gather the two latest encodings from the underlying codec
 // into one packet.
-class AudioEncoderCopyRed final : public AudioEncoder {
- public:
-  struct Config {
-    Config();
-    Config(Config&&);
-    ~Config();
-    int payload_type;
-    std::unique_ptr<AudioEncoder> speech_encoder;
-  };
+class AudioEncoderCopyRed final : public AudioEncoder
+{
+public:
+    struct Config
+    {
+        Config();
+        Config(Config&&);
+        ~Config();
+        int payload_type;
+        std::unique_ptr<AudioEncoder> speech_encoder;
+    };
 
-  explicit AudioEncoderCopyRed(Config&& config);
+    explicit AudioEncoderCopyRed(Config&& config);
 
-  ~AudioEncoderCopyRed() override;
+    ~AudioEncoderCopyRed() override;
 
-  int SampleRateHz() const override;
-  size_t NumChannels() const override;
-  int RtpTimestampRateHz() const override;
-  size_t Num10MsFramesInNextPacket() const override;
-  size_t Max10MsFramesInAPacket() const override;
-  int GetTargetBitrate() const override;
-  void Reset() override;
-  bool SetFec(bool enable) override;
-  bool SetDtx(bool enable) override;
-  bool SetApplication(Application application) override;
-  void SetMaxPlaybackRate(int frequency_hz) override;
-  rtc::ArrayView<std::unique_ptr<AudioEncoder>> ReclaimContainedEncoders()
-      override;
-  void OnReceivedUplinkPacketLossFraction(
-      float uplink_packet_loss_fraction) override;
-  void OnReceivedUplinkBandwidth(
-      int target_audio_bitrate_bps,
-      rtc::Optional<int64_t> probing_interval_ms) override;
+    int SampleRateHz() const override;
+    size_t NumChannels() const override;
+    int RtpTimestampRateHz() const override;
+    size_t Num10MsFramesInNextPacket() const override;
+    size_t Max10MsFramesInAPacket() const override;
+    int GetTargetBitrate() const override;
+    void Reset() override;
+    bool SetFec(bool enable) override;
+    bool SetDtx(bool enable) override;
+    bool SetApplication(Application application) override;
+    void SetMaxPlaybackRate(int frequency_hz) override;
+    rtc::ArrayView<std::unique_ptr<AudioEncoder>> ReclaimContainedEncoders()
+            override;
+    void OnReceivedUplinkPacketLossFraction(
+        float uplink_packet_loss_fraction) override;
+    void OnReceivedUplinkBandwidth(
+        int target_audio_bitrate_bps,
+        rtc::Optional<int64_t> probing_interval_ms) override;
 
- protected:
-  EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
-                         rtc::ArrayView<const int16_t> audio,
-                         rtc::Buffer* encoded) override;
+protected:
+    EncodedInfo EncodeImpl(uint32_t rtp_timestamp,
+                           rtc::ArrayView<const int16_t> audio,
+                           rtc::Buffer* encoded) override;
 
- private:
-  std::unique_ptr<AudioEncoder> speech_encoder_;
-  int red_payload_type_;
-  rtc::Buffer secondary_encoded_;
-  EncodedInfoLeaf secondary_info_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioEncoderCopyRed);
+private:
+    std::unique_ptr<AudioEncoder> speech_encoder_;
+    int red_payload_type_;
+    rtc::Buffer secondary_encoded_;
+    EncodedInfoLeaf secondary_info_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioEncoderCopyRed);
 };
 
 }  // namespace webrtc

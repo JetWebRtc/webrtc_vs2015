@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Template for the Discrete Cosine Transform for 32 samples
  * Copyright (c) 2001, 2002 Fabrice Bellard
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP iLBC Depacketizer, RFC 3952
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -27,9 +27,11 @@ static int ilbc_parse_fmtp(AVFormatContext *s,
                            AVStream *stream, PayloadContext *data,
                            const char *attr, const char *value)
 {
-    if (!strcmp(attr, "mode")) {
+    if (!strcmp(attr, "mode"))
+    {
         int mode = atoi(value);
-        switch (mode) {
+        switch (mode)
+        {
         case 20:
             stream->codec->block_align = 38;
             break;
@@ -54,11 +56,13 @@ static int ilbc_parse_sdp_line(AVFormatContext *s, int st_index,
         return 0;
     st = s->streams[st_index];
 
-    if (av_strstart(line, "fmtp:", &p)) {
+    if (av_strstart(line, "fmtp:", &p))
+    {
         int ret = ff_parse_fmtp(s, st, data, p, ilbc_parse_fmtp);
         if (ret < 0)
             return ret;
-        if (!st->codec->block_align) {
+        if (!st->codec->block_align)
+        {
             av_log(s, AV_LOG_ERROR, "No iLBC mode set\n");
             return AVERROR(EINVAL);
         }
@@ -66,7 +70,8 @@ static int ilbc_parse_sdp_line(AVFormatContext *s, int st_index,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_ilbc_dynamic_handler = {
+RTPDynamicProtocolHandler ff_ilbc_dynamic_handler =
+{
     .enc_name         = "iLBC",
     .codec_type       = AVMEDIA_TYPE_AUDIO,
     .codec_id         = AV_CODEC_ID_ILBC,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DSD Stream File (DSF) demuxer
  * Copyright (c) 2014 Peter Ross
  *
@@ -24,7 +24,8 @@
 #include "internal.h"
 #include "id3v2.h"
 
-typedef struct {
+typedef struct
+{
     uint64_t data_end;
 } DSFContext;
 
@@ -35,7 +36,8 @@ static int dsf_probe(AVProbeData *p)
     return AVPROBE_SCORE_MAX;
 }
 
-static const uint64_t dsf_channel_layout[] = {
+static const uint64_t dsf_channel_layout[] =
+{
     0,
     AV_CH_LAYOUT_MONO,
     AV_CH_LAYOUT_STEREO,
@@ -77,7 +79,8 @@ static int dsf_read_header(AVFormatContext *s)
 
     avio_skip(pb, 8);
     id3pos = avio_rl64(pb);
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         read_id3(s, id3pos);
         avio_seek(pb, 28, SEEK_SET);
     }
@@ -87,12 +90,14 @@ static int dsf_read_header(AVFormatContext *s)
     if (avio_rl32(pb) != MKTAG('f', 'm', 't', ' ') || avio_rl64(pb) != 52)
         return AVERROR_INVALIDDATA;
 
-    if (avio_rl32(pb) != 1) {
+    if (avio_rl32(pb) != 1)
+    {
         avpriv_request_sample(s, "unknown format version");
         return AVERROR_INVALIDDATA;
     }
 
-    if (avio_rl32(pb)) {
+    if (avio_rl32(pb))
+    {
         avpriv_request_sample(s, "unknown format id");
         return AVERROR_INVALIDDATA;
     }
@@ -107,9 +112,14 @@ static int dsf_read_header(AVFormatContext *s)
     st->codec->channels     = avio_rl32(pb);
     st->codec->sample_rate  = avio_rl32(pb) / 8;
 
-    switch(avio_rl32(pb)) {
-    case 1: st->codec->codec_id = AV_CODEC_ID_DSD_LSBF_PLANAR; break;
-    case 8: st->codec->codec_id = AV_CODEC_ID_DSD_MSBF_PLANAR; break;
+    switch(avio_rl32(pb))
+    {
+    case 1:
+        st->codec->codec_id = AV_CODEC_ID_DSD_LSBF_PLANAR;
+        break;
+    case 8:
+        st->codec->codec_id = AV_CODEC_ID_DSD_MSBF_PLANAR;
+        break;
     default:
         avpriv_request_sample(s, "unknown most significant bit");
         return AVERROR_INVALIDDATA;
@@ -117,7 +127,8 @@ static int dsf_read_header(AVFormatContext *s)
 
     avio_skip(pb, 8);
     st->codec->block_align = avio_rl32(pb);
-    if (st->codec->block_align > INT_MAX / st->codec->channels) {
+    if (st->codec->block_align > INT_MAX / st->codec->channels)
+    {
         avpriv_request_sample(s, "block_align overflow");
         return AVERROR_INVALIDDATA;
     }
@@ -148,7 +159,8 @@ static int dsf_read_packet(AVFormatContext *s, AVPacket *pkt)
     return av_get_packet(pb, pkt, FFMIN(dsf->data_end - pos, st->codec->block_align));
 }
 
-AVInputFormat ff_dsf_demuxer = {
+AVInputFormat ff_dsf_demuxer =
+{
     .name           = "dsf",
     .long_name      = NULL_IF_CONFIG_SMALL("DSD Stream File (DSF)"),
     .priv_data_size = sizeof(DSFContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include <stddef.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 constexpr size_t kFftLengthBy2 = 64;
 constexpr size_t kFftLengthBy2Plus1 = kFftLengthBy2 + 1;
@@ -26,17 +27,20 @@ constexpr size_t kBlockSize = kFftLengthBy2;
 constexpr size_t kExtendedBlockSize = 2 * kFftLengthBy2;
 constexpr size_t kSubBlockSize = 16;
 
-constexpr size_t NumBandsForRate(int sample_rate_hz) {
-  return static_cast<size_t>(sample_rate_hz == 8000 ? 1
-                                                    : sample_rate_hz / 16000);
+constexpr size_t NumBandsForRate(int sample_rate_hz)
+{
+    return static_cast<size_t>(sample_rate_hz == 8000 ? 1
+                               : sample_rate_hz / 16000);
 }
-constexpr int LowestBandRate(int sample_rate_hz) {
-  return sample_rate_hz == 8000 ? sample_rate_hz : 16000;
+constexpr int LowestBandRate(int sample_rate_hz)
+{
+    return sample_rate_hz == 8000 ? sample_rate_hz : 16000;
 }
 
-constexpr bool ValidFullBandRate(int sample_rate_hz) {
-  return sample_rate_hz == 8000 || sample_rate_hz == 16000 ||
-         sample_rate_hz == 32000 || sample_rate_hz == 48000;
+constexpr bool ValidFullBandRate(int sample_rate_hz)
+{
+    return sample_rate_hz == 8000 || sample_rate_hz == 16000 ||
+           sample_rate_hz == 32000 || sample_rate_hz == 48000;
 }
 
 static_assert(1 == NumBandsForRate(8000), "Number of bands for 8 kHz");

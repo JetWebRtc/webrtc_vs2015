@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@ void ff_gmc_c(uint8_t *dst, uint8_t *src, int stride, int h, int ox, int oy,
               int dxx, int dxy, int dyx, int dyy, int shift, int r,
               int width, int height);
 
-typedef struct MpegVideoDSPContext {
+typedef struct MpegVideoDSPContext
+{
     /**
      * translational global motion compensation.
      */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Martin Storsjo
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #define MAX_HASHLEN 64
 #define MAX_BLOCKLEN 128
 
-struct AVHMAC {
+struct AVHMAC
+{
     void *hash;
     int blocklen, hashlen;
     void (*final)(void*, uint8_t*);
@@ -63,7 +64,8 @@ AVHMAC *av_hmac_alloc(enum AVHMACType type)
     AVHMAC *c = av_mallocz(sizeof(*c));
     if (!c)
         return NULL;
-    switch (type) {
+    switch (type)
+    {
     case AV_HMAC_MD5:
         c->blocklen = 64;
         c->hashlen  = 16;
@@ -122,7 +124,8 @@ AVHMAC *av_hmac_alloc(enum AVHMACType type)
         av_free(c);
         return NULL;
     }
-    if (!c->hash) {
+    if (!c->hash)
+    {
         av_free(c);
         return NULL;
     }
@@ -141,12 +144,15 @@ void av_hmac_init(AVHMAC *c, const uint8_t *key, unsigned int keylen)
 {
     int i;
     uint8_t block[MAX_BLOCKLEN];
-    if (keylen > c->blocklen) {
+    if (keylen > c->blocklen)
+    {
         c->init(c->hash);
         c->update(c->hash, key, keylen);
         c->final(c->hash, c->key);
         c->keylen = c->hashlen;
-    } else {
+    }
+    else
+    {
         memcpy(c->key, key, keylen);
         c->keylen = keylen;
     }
@@ -221,14 +227,15 @@ int main(void)
     static const uint8_t data4[] = "Test Using Larger Than Block-Size Key - Hash Key First";
     static const uint8_t data5[] = "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data";
     static const uint8_t data6[] = "This is a test using a larger than block-size key and a larger "
-                            "than block-size data. The key needs to be hashed before being used"
-                            " by the HMAC algorithm.";
+                                   "than block-size data. The key needs to be hashed before being used"
+                                   " by the HMAC algorithm.";
     memset(key1, 0x0b, sizeof(key1));
     memset(key3, 0xaa, sizeof(key3));
     memset(data3, 0xdd, sizeof(data3));
 
     /* MD5, SHA-1 */
-    for (i = AV_HMAC_MD5; i <= AV_HMAC_SHA1; i++) {
+    for (i = AV_HMAC_MD5; i <= AV_HMAC_SHA1; i++)
+    {
         hmac = av_hmac_alloc(i);
         if (!hmac)
             return 1;
@@ -242,7 +249,8 @@ int main(void)
     }
 
     /* SHA-2 */
-    for (i = AV_HMAC_SHA224; i <= AV_HMAC_SHA256; i++) {
+    for (i = AV_HMAC_SHA224; i <= AV_HMAC_SHA256; i++)
+    {
         hmac = av_hmac_alloc(i);
         if (!hmac)
             return 1;
@@ -255,7 +263,8 @@ int main(void)
         av_hmac_free(hmac);
     }
 
-    for (i = AV_HMAC_SHA384; i <= AV_HMAC_SHA512; i++) {
+    for (i = AV_HMAC_SHA384; i <= AV_HMAC_SHA512; i++)
+    {
         hmac = av_hmac_alloc(i);
         if (!hmac)
             return 1;

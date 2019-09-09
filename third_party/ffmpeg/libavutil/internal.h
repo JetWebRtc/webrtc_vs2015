@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -268,7 +268,8 @@ static av_always_inline av_const int avpriv_mirror(int x, int w)
     if (!w)
         return 0;
 
-    while ((unsigned)x > (unsigned)w) {
+    while ((unsigned)x > (unsigned)w)
+    {
         x = -x;
         if (x < 0)
             x += 2 * w;

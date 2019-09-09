@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Spectral Band Replication definitions and structures
  * Copyright (c) 2008-2009 Robert Swain ( rob opendot cl )
  * Copyright (c) 2010      Alex Converse <alex.converse@gmail.com>
@@ -39,7 +39,8 @@ typedef struct AACContext AACContext;
 /**
  * Spectral Band Replication header - spectrum parameters that invoke a reset if they differ from the previous header.
  */
-typedef struct SpectrumParameters {
+typedef struct SpectrumParameters
+{
     uint8_t bs_start_freq;
     uint8_t bs_stop_freq;
     uint8_t bs_xover_band;
@@ -59,7 +60,8 @@ typedef struct SpectrumParameters {
 /**
  * Spectral Band Replication per channel data
  */
-typedef struct SBRData {
+typedef struct SBRData
+{
     /**
      * @name Main bitstream data variables
      * @{
@@ -115,7 +117,8 @@ typedef struct SpectralBandReplication SpectralBandReplication;
 /**
  * aacsbr functions pointers
  */
-typedef struct AACSBRContext {
+typedef struct AACSBRContext
+{
     int (*sbr_lf_gen)(AACContext *ac, SpectralBandReplication *sbr,
                       INTFLOAT X_low[32][40][2], const INTFLOAT W[2][32][32][2],
                       int buf_idx);
@@ -134,7 +137,8 @@ typedef struct AACSBRContext {
 /**
  * Spectral Band Replication
  */
-struct SpectralBandReplication {
+struct SpectralBandReplication
+{
     int                sample_rate;
     int                start;
     int                id_aac;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GMC (Global Motion Compensation), AltiVec-enabled
  *
  * Copyright (c) 2003 Romain Dolbeau <romain@dolbeau.org>
@@ -33,11 +33,12 @@ static void gmc1_altivec(uint8_t *dst /* align 8 */, uint8_t *src /* align1 */,
 {
     int i;
     const DECLARE_ALIGNED(16, unsigned short, rounder_a) = rounder;
-    const DECLARE_ALIGNED(16, unsigned short, ABCD)[8] = {
+    const DECLARE_ALIGNED(16, unsigned short, ABCD)[8] =
+    {
         (16 - x16) * (16 - y16), /* A */
-             (x16) * (16 - y16), /* B */
+        (x16) * (16 - y16), /* B */
         (16 - x16) * (y16),      /* C */
-             (x16) * (y16),      /* D */
+        (x16) * (y16),      /* D */
         0, 0, 0, 0               /* padding */
     };
     register const vector unsigned char vczero =
@@ -63,7 +64,7 @@ static void gmc1_altivec(uint8_t *dst /* align 8 */, uint8_t *src /* align1 */,
     register vector unsigned char src_0 = vec_ld(0, src);
     register vector unsigned char src_1 = vec_ld(16, src);
     register vector unsigned char srcvA = vec_perm(src_0, src_1,
-                                                   vec_lvsl(0, src));
+                                          vec_lvsl(0, src));
 
     if (src_really_odd != 0x0000000F)
         /* If (src & 0xF) == 0xF, then (src + 1) is properly aligned
@@ -74,7 +75,8 @@ static void gmc1_altivec(uint8_t *dst /* align 8 */, uint8_t *src /* align1 */,
     srcvA = vec_mergeh(vczero, srcvA);
     srcvB = vec_mergeh(vczero, srcvB);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst_odd        =   (unsigned long) dst            & 0x0000000F;
         src_really_odd = (((unsigned long) src) + stride) & 0x0000000F;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a synthetic YUV video sequence suitable for codec testing.
  *
  * copyright (c) Sebastien Bechet <s.bechet@av7.net>
@@ -33,7 +33,8 @@ static int64_t int_pow(int64_t a, int p)
 {
     int64_t v = FIXP;
 
-    for (; p; p--) {
+    for (; p; p--)
+    {
         v *= a;
         v /= FIXP;
     }
@@ -94,14 +95,16 @@ static void gen_image(int num, int w, int h)
     int xprime = xj;
     int yprime = yj;
 
-    for (j = 0; j < h; j++) {
+    for (j = 0; j < h; j++)
+    {
         x       = xprime + xi + FIXP * w / 2;
         xprime += s;
 
         y       = yprime + yi + FIXP * h / 2;
         yprime += c;
 
-        for (i = 0; i < w; i++) {
+        for (i = 0; i < w; i++)
+        {
             x += c;
             y -= s;
             put_pixel(i, j,
@@ -125,17 +128,20 @@ static int init_demo(const char *filename)
     FILE *input_file;
 
     input_file = fopen(filename, "rb");
-    if (!input_file) {
+    if (!input_file)
+    {
         perror(filename);
         return 1;
     }
 
     if (fread(line, 1, 15, input_file) != 15)
         return 1;
-    for (i = 0; i < H; i++) {
+    for (i = 0; i < H; i++)
+    {
         if (fread(line, 1, 3 * W, input_file) != 3 * W)
             return 1;
-        for (j = 0; j < W; j++) {
+        for (j = 0; j < W; j++)
+        {
             tab_r[W * i + j] = line[3 * j    ];
             tab_g[W * i + j] = line[3 * j + 1];
             tab_b[W * i + j] = line[3 * j + 2];
@@ -144,7 +150,8 @@ static int init_demo(const char *filename)
     fclose(input_file);
 
     /* tables sin/cos */
-    for (i = 0; i < 360; i++) {
+    for (i = 0; i < 360; i++)
+    {
         radian   = 2 * i * MY_PI / 360;
         h        = 2 * FIXP + int_sin(radian);
         h_cos[i] = h * int_sin(radian + MY_PI / 2) / 2 / FIXP;
@@ -160,7 +167,8 @@ int main(int argc, char **argv)
     char buf[1024];
     int isdir = 0;
 
-    if (argc != 3) {
+    if (argc != 3)
+    {
         printf("usage: %s image.pnm file|dir\n"
                "generate a test video stream\n", argv[0]);
         return 1;
@@ -180,12 +188,16 @@ int main(int argc, char **argv)
     if (init_demo(argv[1]))
         return 1;
 
-    for (i = 0; i < DEFAULT_NB_PICT; i++) {
+    for (i = 0; i < DEFAULT_NB_PICT; i++)
+    {
         gen_image(i, w, h);
-        if (isdir) {
+        if (isdir)
+        {
             snprintf(buf, sizeof(buf), "%s%02d.pgm", argv[2], i);
             pgmyuv_save(buf, w, h, rgb_tab);
-        } else {
+        }
+        else
+        {
             pgmyuv_save(NULL, w, h, rgb_tab);
         }
     }

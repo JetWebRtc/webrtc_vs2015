@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Eejya Singh
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "libavutil/intreadwrite.h"
 #include "libavutil/avstring.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } STLContext;
 
@@ -58,8 +59,9 @@ static int64_t get_pts(char **buf, int *duration)
     int len = 0;
 
     if (sscanf(*buf, "%2d:%2d:%2d:%2d , %2d:%2d:%2d:%2d , %n",
-                &hh1, &mm1, &ss1, &ms1,
-                &hh2, &mm2, &ss2, &ms2, &len) >= 8 && len > 0) {
+               &hh1, &mm1, &ss1, &ms1,
+               &hh2, &mm2, &ss2, &ms2, &len) >= 8 && len > 0)
+    {
         int64_t start = (hh1*3600LL + mm1*60LL + ss1) * 100LL + ms1;
         int64_t end = (hh2*3600LL + mm2*60LL + ss2) * 100LL + ms2;
         *duration = end - start;
@@ -80,7 +82,8 @@ static int stl_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_STL;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         char *p = line;
         const int64_t pos = avio_tell(s->pb);
@@ -94,7 +97,8 @@ static int stl_read_header(AVFormatContext *s)
         line[strcspn(line, "\r\n")] = 0;
         pts_start = get_pts(&p , &duration);
 
-        if (pts_start != AV_NOPTS_VALUE) {
+        if (pts_start != AV_NOPTS_VALUE)
+        {
             AVPacket *sub;
             sub = ff_subtitles_queue_insert(&stl->q, p, strlen(p), 0);
             if (!sub)
@@ -114,7 +118,7 @@ static int stl_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 static int stl_read_seek(AVFormatContext *s, int stream_index,
-                             int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
+                         int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
 {
     STLContext *stl = s->priv_data;
     return ff_subtitles_queue_seek(&stl->q, s, stream_index,
@@ -128,7 +132,8 @@ static int stl_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_stl_demuxer = {
+AVInputFormat ff_stl_demuxer =
+{
     .name           = "stl",
     .long_name      = NULL_IF_CONFIG_SMALL("Spruce subtitle format"),
     .priv_data_size = sizeof(STLContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -42,9 +42,10 @@
 // The HMAC context structure used to store authentication keys.
 // The pointer to the key  will be allocated in the external_hmac_init function.
 // This pointer is owned by srtp_t in a template context.
-typedef struct {
-  uint8_t key[HMAC_KEY_LENGTH];
-  int key_length;
+typedef struct
+{
+    uint8_t key[HMAC_KEY_LENGTH];
+    int key_length;
 } ExternalHmacContext;
 
 srtp_err_status_t external_hmac_alloc(srtp_auth_t** a,

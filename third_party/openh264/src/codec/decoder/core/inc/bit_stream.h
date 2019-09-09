@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2004-2013, Cisco Systems
  *     All rights reserved.
@@ -40,7 +40,8 @@
 
 using namespace WelsCommon;
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*!
  * \brief   input bits for decoder or initialize bitstream writing in encoder

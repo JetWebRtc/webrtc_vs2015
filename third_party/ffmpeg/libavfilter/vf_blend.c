@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #define TOP    0
 #define BOTTOM 1
 
-enum BlendMode {
+enum BlendMode
+{
     BLEND_UNSET = -1,
     BLEND_NORMAL,
     BLEND_ADDITION,
@@ -68,7 +69,8 @@ enum BlendMode {
 static const char *const var_names[] = {   "X",   "Y",   "W",   "H",   "SW",   "SH",   "T",   "N",   "A",   "B",   "TOP",   "BOTTOM",        NULL };
 enum                                   { VAR_X, VAR_Y, VAR_W, VAR_H, VAR_SW, VAR_SH, VAR_T, VAR_N, VAR_A, VAR_B, VAR_TOP, VAR_BOTTOM, VAR_VARS_NB };
 
-typedef struct FilterParams {
+typedef struct FilterParams
+{
     enum BlendMode mode;
     double opacity;
     AVExpr *e;
@@ -80,7 +82,8 @@ typedef struct FilterParams {
                   struct FilterParams *param, double *values);
 } FilterParams;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     const AVFrame *top, *bottom;
     AVFrame *dst;
     AVFilterLink *inlink;
@@ -89,7 +92,8 @@ typedef struct ThreadData {
     FilterParams *param;
 } ThreadData;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     FFDualInputContext dinput;
     int hsub, vsub;             ///< chroma subsampling values
@@ -151,7 +155,8 @@ typedef struct {
 #define OFFSET(x) offsetof(BlendContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption blend_options[] = {
+static const AVOption blend_options[] =
+{
     COMMON_OPTIONS,
     { "shortest",    "force termination when the shortest input terminates", OFFSET(dinput.shortest), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
     { "repeatlast",  "repeat last bottom frame", OFFSET(dinput.repeatlast), AV_OPT_TYPE_INT, {.i64=1}, 0, 1, FLAGS },
@@ -363,7 +368,8 @@ static AVFrame *blend_frame(AVFilterContext *ctx, AVFrame *top_buf,
         return top_buf;
     av_frame_copy_props(dst_buf, top_buf);
 
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         int hsub = plane == 1 || plane == 2 ? s->hsub : 0;
         int vsub = plane == 1 || plane == 2 ? s->vsub : 0;
         int outw = FF_CEIL_RSHIFT(dst_buf->width,  hsub);
@@ -371,7 +377,8 @@ static AVFrame *blend_frame(AVFilterContext *ctx, AVFrame *top_buf,
         FilterParams *param = &s->params[plane];
         ThreadData td = { .top = top_buf, .bottom = bottom_buf, .dst = dst_buf,
                           .w = outw, .h = outh, .param = param, .plane = plane,
-                          .inlink = inlink };
+                          .inlink = inlink
+                        };
 
         ctx->internal->execute(ctx, filter_slice, &td, NULL, FFMIN(outh, ctx->graph->nb_threads));
     }
@@ -394,7 +401,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ422P,AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ411P,
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV411P, AV_PIX_FMT_YUV410P,
@@ -431,17 +439,20 @@ static int config_output(AVFilterLink *outlink)
     const AVPixFmtDescriptor *pix_desc = av_pix_fmt_desc_get(toplink->format);
     int ret, plane, is_16bit;
 
-    if (!s->tblend) {
+    if (!s->tblend)
+    {
         AVFilterLink *bottomlink = ctx->inputs[BOTTOM];
 
-        if (toplink->format != bottomlink->format) {
+        if (toplink->format != bottomlink->format)
+        {
             av_log(ctx, AV_LOG_ERROR, "inputs must be of same pixel format\n");
             return AVERROR(EINVAL);
         }
         if (toplink->w                       != bottomlink->w ||
-            toplink->h                       != bottomlink->h ||
-            toplink->sample_aspect_ratio.num != bottomlink->sample_aspect_ratio.num ||
-            toplink->sample_aspect_ratio.den != bottomlink->sample_aspect_ratio.den) {
+                toplink->h                       != bottomlink->h ||
+                toplink->sample_aspect_ratio.num != bottomlink->sample_aspect_ratio.num ||
+                toplink->sample_aspect_ratio.den != bottomlink->sample_aspect_ratio.den)
+        {
             av_log(ctx, AV_LOG_ERROR, "First input link %s parameters "
                    "(size %dx%d, SAR %d:%d) do not match the corresponding "
                    "second input link %s parameters (%dx%d, SAR %d:%d)\n",
@@ -470,9 +481,10 @@ static int config_output(AVFilterLink *outlink)
     if (s->tblend)
         outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
     else if ((ret = ff_dualinput_init(ctx, &s->dinput)) < 0)
-            return ret;
+        return ret;
 
-    for (plane = 0; plane < FF_ARRAY_ELEMS(s->params); plane++) {
+    for (plane = 0; plane < FF_ARRAY_ELEMS(s->params); plane++)
+    {
         FilterParams *param = &s->params[plane];
 
         if (s->all_mode >= 0)
@@ -480,43 +492,102 @@ static int config_output(AVFilterLink *outlink)
         if (s->all_opacity < 1)
             param->opacity = s->all_opacity;
 
-        switch (param->mode) {
-        case BLEND_ADDITION:   param->blend = is_16bit ? blend_addition_16bit   : blend_addition_8bit;   break;
-        case BLEND_AND:        param->blend = is_16bit ? blend_and_16bit        : blend_and_8bit;        break;
-        case BLEND_AVERAGE:    param->blend = is_16bit ? blend_average_16bit    : blend_average_8bit;    break;
-        case BLEND_BURN:       param->blend = is_16bit ? blend_burn_16bit       : blend_burn_8bit;       break;
-        case BLEND_DARKEN:     param->blend = is_16bit ? blend_darken_16bit     : blend_darken_8bit;     break;
-        case BLEND_DIFFERENCE: param->blend = is_16bit ? blend_difference_16bit : blend_difference_8bit; break;
-        case BLEND_DIFFERENCE128: param->blend = is_16bit ? blend_difference128_16bit: blend_difference128_8bit; break;
-        case BLEND_DIVIDE:     param->blend = is_16bit ? blend_divide_16bit     : blend_divide_8bit;     break;
-        case BLEND_DODGE:      param->blend = is_16bit ? blend_dodge_16bit      : blend_dodge_8bit;      break;
-        case BLEND_EXCLUSION:  param->blend = is_16bit ? blend_exclusion_16bit  : blend_exclusion_8bit;  break;
-        case BLEND_GLOW:       param->blend = is_16bit ? blend_glow_16bit       : blend_glow_8bit;       break;
-        case BLEND_HARDLIGHT:  param->blend = is_16bit ? blend_hardlight_16bit  : blend_hardlight_8bit;  break;
-        case BLEND_HARDMIX:    param->blend = is_16bit ? blend_hardmix_16bit    : blend_hardmix_8bit;    break;
-        case BLEND_LIGHTEN:    param->blend = is_16bit ? blend_lighten_16bit    : blend_lighten_8bit;    break;
-        case BLEND_LINEARLIGHT:param->blend = is_16bit ? blend_linearlight_16bit: blend_linearlight_8bit;break;
-        case BLEND_MULTIPLY:   param->blend = is_16bit ? blend_multiply_16bit   : blend_multiply_8bit;   break;
-        case BLEND_NEGATION:   param->blend = is_16bit ? blend_negation_16bit   : blend_negation_8bit;   break;
-        case BLEND_NORMAL:     param->blend = blend_normal;                                              break;
-        case BLEND_OR:         param->blend = is_16bit ? blend_or_16bit         : blend_or_8bit;         break;
-        case BLEND_OVERLAY:    param->blend = is_16bit ? blend_overlay_16bit    : blend_overlay_8bit;    break;
-        case BLEND_PHOENIX:    param->blend = is_16bit ? blend_phoenix_16bit    : blend_phoenix_8bit;    break;
-        case BLEND_PINLIGHT:   param->blend = is_16bit ? blend_pinlight_16bit   : blend_pinlight_8bit;   break;
-        case BLEND_REFLECT:    param->blend = is_16bit ? blend_reflect_16bit    : blend_reflect_8bit;    break;
-        case BLEND_SCREEN:     param->blend = is_16bit ? blend_screen_16bit     : blend_screen_8bit;     break;
-        case BLEND_SOFTLIGHT:  param->blend = is_16bit ? blend_softlight_16bit  : blend_softlight_8bit;  break;
-        case BLEND_SUBTRACT:   param->blend = is_16bit ? blend_subtract_16bit   : blend_subtract_8bit;   break;
-        case BLEND_VIVIDLIGHT: param->blend = is_16bit ? blend_vividlight_16bit : blend_vividlight_8bit; break;
-        case BLEND_XOR:        param->blend = is_16bit ? blend_xor_16bit        : blend_xor_8bit;        break;
+        switch (param->mode)
+        {
+        case BLEND_ADDITION:
+            param->blend = is_16bit ? blend_addition_16bit   : blend_addition_8bit;
+            break;
+        case BLEND_AND:
+            param->blend = is_16bit ? blend_and_16bit        : blend_and_8bit;
+            break;
+        case BLEND_AVERAGE:
+            param->blend = is_16bit ? blend_average_16bit    : blend_average_8bit;
+            break;
+        case BLEND_BURN:
+            param->blend = is_16bit ? blend_burn_16bit       : blend_burn_8bit;
+            break;
+        case BLEND_DARKEN:
+            param->blend = is_16bit ? blend_darken_16bit     : blend_darken_8bit;
+            break;
+        case BLEND_DIFFERENCE:
+            param->blend = is_16bit ? blend_difference_16bit : blend_difference_8bit;
+            break;
+        case BLEND_DIFFERENCE128:
+            param->blend = is_16bit ? blend_difference128_16bit: blend_difference128_8bit;
+            break;
+        case BLEND_DIVIDE:
+            param->blend = is_16bit ? blend_divide_16bit     : blend_divide_8bit;
+            break;
+        case BLEND_DODGE:
+            param->blend = is_16bit ? blend_dodge_16bit      : blend_dodge_8bit;
+            break;
+        case BLEND_EXCLUSION:
+            param->blend = is_16bit ? blend_exclusion_16bit  : blend_exclusion_8bit;
+            break;
+        case BLEND_GLOW:
+            param->blend = is_16bit ? blend_glow_16bit       : blend_glow_8bit;
+            break;
+        case BLEND_HARDLIGHT:
+            param->blend = is_16bit ? blend_hardlight_16bit  : blend_hardlight_8bit;
+            break;
+        case BLEND_HARDMIX:
+            param->blend = is_16bit ? blend_hardmix_16bit    : blend_hardmix_8bit;
+            break;
+        case BLEND_LIGHTEN:
+            param->blend = is_16bit ? blend_lighten_16bit    : blend_lighten_8bit;
+            break;
+        case BLEND_LINEARLIGHT:
+            param->blend = is_16bit ? blend_linearlight_16bit: blend_linearlight_8bit;
+            break;
+        case BLEND_MULTIPLY:
+            param->blend = is_16bit ? blend_multiply_16bit   : blend_multiply_8bit;
+            break;
+        case BLEND_NEGATION:
+            param->blend = is_16bit ? blend_negation_16bit   : blend_negation_8bit;
+            break;
+        case BLEND_NORMAL:
+            param->blend = blend_normal;
+            break;
+        case BLEND_OR:
+            param->blend = is_16bit ? blend_or_16bit         : blend_or_8bit;
+            break;
+        case BLEND_OVERLAY:
+            param->blend = is_16bit ? blend_overlay_16bit    : blend_overlay_8bit;
+            break;
+        case BLEND_PHOENIX:
+            param->blend = is_16bit ? blend_phoenix_16bit    : blend_phoenix_8bit;
+            break;
+        case BLEND_PINLIGHT:
+            param->blend = is_16bit ? blend_pinlight_16bit   : blend_pinlight_8bit;
+            break;
+        case BLEND_REFLECT:
+            param->blend = is_16bit ? blend_reflect_16bit    : blend_reflect_8bit;
+            break;
+        case BLEND_SCREEN:
+            param->blend = is_16bit ? blend_screen_16bit     : blend_screen_8bit;
+            break;
+        case BLEND_SOFTLIGHT:
+            param->blend = is_16bit ? blend_softlight_16bit  : blend_softlight_8bit;
+            break;
+        case BLEND_SUBTRACT:
+            param->blend = is_16bit ? blend_subtract_16bit   : blend_subtract_8bit;
+            break;
+        case BLEND_VIVIDLIGHT:
+            param->blend = is_16bit ? blend_vividlight_16bit : blend_vividlight_8bit;
+            break;
+        case BLEND_XOR:
+            param->blend = is_16bit ? blend_xor_16bit        : blend_xor_8bit;
+            break;
         }
 
-        if (s->all_expr && !param->expr_str) {
+        if (s->all_expr && !param->expr_str)
+        {
             param->expr_str = av_strdup(s->all_expr);
             if (!param->expr_str)
                 return AVERROR(ENOMEM);
         }
-        if (param->expr_str) {
+        if (param->expr_str)
+        {
             ret = av_expr_parse(&param->e, param->expr_str, var_names,
                                 NULL, NULL, NULL, NULL, 0, ctx);
             if (ret < 0)
@@ -542,7 +613,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     return ff_dualinput_filter_frame(&s->dinput, inlink, buf);
 }
 
-static const AVFilterPad blend_inputs[] = {
+static const AVFilterPad blend_inputs[] =
+{
     {
         .name          = "top",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -555,7 +627,8 @@ static const AVFilterPad blend_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad blend_outputs[] = {
+static const AVFilterPad blend_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -565,7 +638,8 @@ static const AVFilterPad blend_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_blend = {
+AVFilter ff_vf_blend =
+{
     .name          = "blend",
     .description   = NULL_IF_CONFIG_SMALL("Blend two video frames into each other."),
     .init          = init,
@@ -587,7 +661,8 @@ static int tblend_filter_frame(AVFilterLink *inlink, AVFrame *frame)
     BlendContext *s = inlink->dst->priv;
     AVFilterLink *outlink = inlink->dst->outputs[0];
 
-    if (s->prev_frame) {
+    if (s->prev_frame)
+    {
         AVFrame *out = blend_frame(inlink->dst, frame, s->prev_frame);
         av_frame_free(&s->prev_frame);
         s->prev_frame = frame;
@@ -597,14 +672,16 @@ static int tblend_filter_frame(AVFilterLink *inlink, AVFrame *frame)
     return 0;
 }
 
-static const AVOption tblend_options[] = {
+static const AVOption tblend_options[] =
+{
     COMMON_OPTIONS,
     { NULL }
 };
 
 AVFILTER_DEFINE_CLASS(tblend);
 
-static const AVFilterPad tblend_inputs[] = {
+static const AVFilterPad tblend_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -613,7 +690,8 @@ static const AVFilterPad tblend_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad tblend_outputs[] = {
+static const AVFilterPad tblend_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -622,7 +700,8 @@ static const AVFilterPad tblend_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_tblend = {
+AVFilter ff_vf_tblend =
+{
     .name          = "tblend",
     .description   = NULL_IF_CONFIG_SMALL("Blend successive frames."),
     .priv_size     = sizeof(BlendContext),

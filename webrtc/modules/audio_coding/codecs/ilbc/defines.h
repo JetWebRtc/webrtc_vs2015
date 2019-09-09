@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -117,103 +117,106 @@
 
 
 /* Struct for the bits */
-typedef struct iLBC_bits_t_ {
-  int16_t lsf[LSF_NSPLIT*LPC_N_MAX];
-  int16_t cb_index[CB_NSTAGES*(NASUB_MAX+1)];  /* First CB_NSTAGES values contains extra CB index */
-  int16_t gain_index[CB_NSTAGES*(NASUB_MAX+1)]; /* First CB_NSTAGES values contains extra CB gain */
-  size_t idxForMax;
-  int16_t state_first;
-  int16_t idxVec[STATE_SHORT_LEN_30MS];
-  int16_t firstbits;
-  size_t startIdx;
+typedef struct iLBC_bits_t_
+{
+    int16_t lsf[LSF_NSPLIT*LPC_N_MAX];
+    int16_t cb_index[CB_NSTAGES*(NASUB_MAX+1)];  /* First CB_NSTAGES values contains extra CB index */
+    int16_t gain_index[CB_NSTAGES*(NASUB_MAX+1)]; /* First CB_NSTAGES values contains extra CB gain */
+    size_t idxForMax;
+    int16_t state_first;
+    int16_t idxVec[STATE_SHORT_LEN_30MS];
+    int16_t firstbits;
+    size_t startIdx;
 } iLBC_bits;
 
 /* type definition encoder instance */
-typedef struct IlbcEncoder_ {
+typedef struct IlbcEncoder_
+{
 
-  /* flag for frame size mode */
-  int16_t mode;
+    /* flag for frame size mode */
+    int16_t mode;
 
-  /* basic parameters for different frame sizes */
-  size_t blockl;
-  size_t nsub;
-  int16_t nasub;
-  size_t no_of_bytes, no_of_words;
-  int16_t lpc_n;
-  size_t state_short_len;
+    /* basic parameters for different frame sizes */
+    size_t blockl;
+    size_t nsub;
+    int16_t nasub;
+    size_t no_of_bytes, no_of_words;
+    int16_t lpc_n;
+    size_t state_short_len;
 
-  /* analysis filter state */
-  int16_t anaMem[LPC_FILTERORDER];
+    /* analysis filter state */
+    int16_t anaMem[LPC_FILTERORDER];
 
-  /* Fix-point old lsf parameters for interpolation */
-  int16_t lsfold[LPC_FILTERORDER];
-  int16_t lsfdeqold[LPC_FILTERORDER];
+    /* Fix-point old lsf parameters for interpolation */
+    int16_t lsfold[LPC_FILTERORDER];
+    int16_t lsfdeqold[LPC_FILTERORDER];
 
-  /* signal buffer for LP analysis */
-  int16_t lpc_buffer[LPC_LOOKBACK + BLOCKL_MAX];
+    /* signal buffer for LP analysis */
+    int16_t lpc_buffer[LPC_LOOKBACK + BLOCKL_MAX];
 
-  /* state of input HP filter */
-  int16_t hpimemx[2];
-  int16_t hpimemy[4];
+    /* state of input HP filter */
+    int16_t hpimemx[2];
+    int16_t hpimemy[4];
 
 #ifdef SPLIT_10MS
-  int16_t weightdenumbuf[66];
-  int16_t past_samples[160];
-  uint16_t bytes[25];
-  int16_t section;
-  int16_t Nfor_flag;
-  int16_t Nback_flag;
-  int16_t start_pos;
-  size_t diff;
+    int16_t weightdenumbuf[66];
+    int16_t past_samples[160];
+    uint16_t bytes[25];
+    int16_t section;
+    int16_t Nfor_flag;
+    int16_t Nback_flag;
+    int16_t start_pos;
+    size_t diff;
 #endif
 
 } IlbcEncoder;
 
 /* type definition decoder instance */
-typedef struct IlbcDecoder_ {
+typedef struct IlbcDecoder_
+{
 
-  /* flag for frame size mode */
-  int16_t mode;
+    /* flag for frame size mode */
+    int16_t mode;
 
-  /* basic parameters for different frame sizes */
-  size_t blockl;
-  size_t nsub;
-  int16_t nasub;
-  size_t no_of_bytes, no_of_words;
-  int16_t lpc_n;
-  size_t state_short_len;
+    /* basic parameters for different frame sizes */
+    size_t blockl;
+    size_t nsub;
+    int16_t nasub;
+    size_t no_of_bytes, no_of_words;
+    int16_t lpc_n;
+    size_t state_short_len;
 
-  /* synthesis filter state */
-  int16_t syntMem[LPC_FILTERORDER];
+    /* synthesis filter state */
+    int16_t syntMem[LPC_FILTERORDER];
 
-  /* old LSF for interpolation */
-  int16_t lsfdeqold[LPC_FILTERORDER];
+    /* old LSF for interpolation */
+    int16_t lsfdeqold[LPC_FILTERORDER];
 
-  /* pitch lag estimated in enhancer and used in PLC */
-  size_t last_lag;
+    /* pitch lag estimated in enhancer and used in PLC */
+    size_t last_lag;
 
-  /* PLC state information */
-  int consPLICount, prev_enh_pl;
-  int16_t perSquare;
+    /* PLC state information */
+    int consPLICount, prev_enh_pl;
+    int16_t perSquare;
 
-  int16_t prevScale, prevPLI;
-  size_t prevLag;
-  int16_t prevLpc[LPC_FILTERORDER+1];
-  int16_t prevResidual[NSUB_MAX*SUBL];
-  int16_t seed;
+    int16_t prevScale, prevPLI;
+    size_t prevLag;
+    int16_t prevLpc[LPC_FILTERORDER+1];
+    int16_t prevResidual[NSUB_MAX*SUBL];
+    int16_t seed;
 
-  /* previous synthesis filter parameters */
+    /* previous synthesis filter parameters */
 
-  int16_t old_syntdenum[(LPC_FILTERORDER + 1)*NSUB_MAX];
+    int16_t old_syntdenum[(LPC_FILTERORDER + 1)*NSUB_MAX];
 
-  /* state of output HP filter */
-  int16_t hpimemx[2];
-  int16_t hpimemy[4];
+    /* state of output HP filter */
+    int16_t hpimemx[2];
+    int16_t hpimemy[4];
 
-  /* enhancer state information */
-  int use_enhancer;
-  int16_t enh_buf[ENH_BUFL+ENH_BUFL_FILTEROVERHEAD];
-  size_t enh_period[ENH_NBLOCKS_TOT];
+    /* enhancer state information */
+    int use_enhancer;
+    int16_t enh_buf[ENH_BUFL+ENH_BUFL_FILTEROVERHEAD];
+    size_t enh_period[ENH_NBLOCKS_TOT];
 
 } IlbcDecoder;
 

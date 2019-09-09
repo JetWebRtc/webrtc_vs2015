@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include <string>
 
-namespace rtc {
+namespace rtc
+{
 
 // Definitions for the digest algorithms.
 extern const char DIGEST_MD5[];
@@ -24,23 +25,25 @@ extern const char DIGEST_SHA_384[];
 extern const char DIGEST_SHA_512[];
 
 // A general class for computing hashes.
-class MessageDigest {
- public:
-  enum { kMaxSize = 64 };  // Maximum known size (SHA-512)
-  virtual ~MessageDigest() {}
-  // Returns the digest output size (e.g. 16 bytes for MD5).
-  virtual size_t Size() const = 0;
-  // Updates the digest with |len| bytes from |buf|.
-  virtual void Update(const void* buf, size_t len) = 0;
-  // Outputs the digest value to |buf| with length |len|.
-  // Returns the number of bytes written, i.e., Size().
-  virtual size_t Finish(void* buf, size_t len) = 0;
+class MessageDigest
+{
+public:
+    enum { kMaxSize = 64 };  // Maximum known size (SHA-512)
+    virtual ~MessageDigest() {}
+    // Returns the digest output size (e.g. 16 bytes for MD5).
+    virtual size_t Size() const = 0;
+    // Updates the digest with |len| bytes from |buf|.
+    virtual void Update(const void* buf, size_t len) = 0;
+    // Outputs the digest value to |buf| with length |len|.
+    // Returns the number of bytes written, i.e., Size().
+    virtual size_t Finish(void* buf, size_t len) = 0;
 };
 
 // A factory class for creating digest objects.
-class MessageDigestFactory {
- public:
-  static MessageDigest* Create(const std::string& alg);
+class MessageDigestFactory
+{
+public:
+    static MessageDigest* Create(const std::string& alg);
 };
 
 // A whitelist of approved digest algorithms from RFC 4572 (FIPS 180).
@@ -71,8 +74,9 @@ bool ComputeDigest(const std::string& alg, const std::string& input,
                    std::string* output);
 
 // Shorthand way to compute a hex-encoded hash using MD5.
-inline std::string MD5(const std::string& input) {
-  return ComputeDigest(DIGEST_MD5, input);
+inline std::string MD5(const std::string& input)
+{
+    return ComputeDigest(DIGEST_MD5, input);
 }
 
 // Functions to compute RFC 2104 HMACs.

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -95,28 +95,32 @@ amm-info@iis.fraunhofer.de
 
 
 AAC_DECODER_ERROR IcsReadMaxSfb (
-        HANDLE_FDK_BITSTREAM bs,
-        CIcsInfo *pIcsInfo,
-        const SamplingRateInfo *pSamplingRateInfo
-        )
+    HANDLE_FDK_BITSTREAM bs,
+    CIcsInfo *pIcsInfo,
+    const SamplingRateInfo *pSamplingRateInfo
+)
 {
-  AAC_DECODER_ERROR ErrorStatus = AAC_DEC_OK;
-  int nbits;
+    AAC_DECODER_ERROR ErrorStatus = AAC_DEC_OK;
+    int nbits;
 
-  if (IsLongBlock(pIcsInfo)) {
-    nbits = 6;
-    pIcsInfo->TotalSfBands = pSamplingRateInfo->NumberOfScaleFactorBands_Long;
-  } else {
-    nbits = 4;
-    pIcsInfo->TotalSfBands = pSamplingRateInfo->NumberOfScaleFactorBands_Short;
-  }
-  pIcsInfo->MaxSfBands = (UCHAR) FDKreadBits(bs, nbits);
+    if (IsLongBlock(pIcsInfo))
+    {
+        nbits = 6;
+        pIcsInfo->TotalSfBands = pSamplingRateInfo->NumberOfScaleFactorBands_Long;
+    }
+    else
+    {
+        nbits = 4;
+        pIcsInfo->TotalSfBands = pSamplingRateInfo->NumberOfScaleFactorBands_Short;
+    }
+    pIcsInfo->MaxSfBands = (UCHAR) FDKreadBits(bs, nbits);
 
-  if (pIcsInfo->MaxSfBands > pIcsInfo->TotalSfBands){
-    ErrorStatus = AAC_DEC_PARSE_ERROR;
-  }
+    if (pIcsInfo->MaxSfBands > pIcsInfo->TotalSfBands)
+    {
+        ErrorStatus = AAC_DEC_PARSE_ERROR;
+    }
 
-  return ErrorStatus;
+    return ErrorStatus;
 }
 
 
@@ -126,88 +130,95 @@ AAC_DECODER_ERROR IcsRead(HANDLE_FDK_BITSTREAM bs,
                           const SamplingRateInfo* pSamplingRateInfo,
                           const UINT flags)
 {
-  AAC_DECODER_ERROR ErrorStatus = AAC_DEC_OK;
+    AAC_DECODER_ERROR ErrorStatus = AAC_DEC_OK;
 
-  pIcsInfo->Valid = 0;
+    pIcsInfo->Valid = 0;
 
-  if (flags & AC_ELD){
-    pIcsInfo->WindowSequence = OnlyLongSequence;
-    pIcsInfo->WindowShape = 0;
-  }
-  else {
-    if ( !(flags & (AC_USAC|AC_RSVD50)) ) {
-      FDKreadBits(bs,1);
-    }
-    pIcsInfo->WindowSequence = (UCHAR) FDKreadBits(bs,2);
-    pIcsInfo->WindowShape = (UCHAR) FDKreadBits(bs,1);
-    if (flags & AC_LD) {
-      if (pIcsInfo->WindowShape) {
-        pIcsInfo->WindowShape = 2; /* select low overlap instead of KBD */
-      }
-    }
-  }
-
-  /* Sanity check */
-  if ( (flags & (AC_ELD|AC_LD)) && pIcsInfo->WindowSequence != OnlyLongSequence) {
-    pIcsInfo->WindowSequence = OnlyLongSequence;
-    ErrorStatus = AAC_DEC_PARSE_ERROR;
-    goto bail;
-  }
-
-  ErrorStatus = IcsReadMaxSfb(bs, pIcsInfo, pSamplingRateInfo);
-  if (ErrorStatus != AAC_DEC_OK) {
-    goto bail;
-  }
-
-  if (IsLongBlock(pIcsInfo))
-  {
-    if ( !(flags & (AC_ELD|AC_SCALABLE|AC_BSAC|AC_USAC|AC_RSVD50)) ) /* If not ELD nor Scalable nor BSAC nor USAC syntax then ... */
+    if (flags & AC_ELD)
     {
-      if ((UCHAR)FDKreadBits(bs,1) != 0 ) /* UCHAR PredictorDataPresent */
-      {
-        ErrorStatus = AAC_DEC_UNSUPPORTED_PREDICTION;
+        pIcsInfo->WindowSequence = OnlyLongSequence;
+        pIcsInfo->WindowShape = 0;
+    }
+    else
+    {
+        if ( !(flags & (AC_USAC|AC_RSVD50)) )
+        {
+            FDKreadBits(bs,1);
+        }
+        pIcsInfo->WindowSequence = (UCHAR) FDKreadBits(bs,2);
+        pIcsInfo->WindowShape = (UCHAR) FDKreadBits(bs,1);
+        if (flags & AC_LD)
+        {
+            if (pIcsInfo->WindowShape)
+            {
+                pIcsInfo->WindowShape = 2; /* select low overlap instead of KBD */
+            }
+        }
+    }
+
+    /* Sanity check */
+    if ( (flags & (AC_ELD|AC_LD)) && pIcsInfo->WindowSequence != OnlyLongSequence)
+    {
+        pIcsInfo->WindowSequence = OnlyLongSequence;
+        ErrorStatus = AAC_DEC_PARSE_ERROR;
         goto bail;
-      }
     }
 
-    pIcsInfo->WindowGroups = 1;
-    pIcsInfo->WindowGroupLength[0] = 1;
-  }
-  else
-  {
-    INT i;
-    UINT mask;
-
-    pIcsInfo->ScaleFactorGrouping = (UCHAR) FDKreadBits(bs,7);
-
-    pIcsInfo->WindowGroups = 0 ;
-
-    for (i=0; i < (8-1); i++)
+    ErrorStatus = IcsReadMaxSfb(bs, pIcsInfo, pSamplingRateInfo);
+    if (ErrorStatus != AAC_DEC_OK)
     {
-      mask = 1 << (6 - i);
-      pIcsInfo->WindowGroupLength[i] = 1;
-
-      if (pIcsInfo->ScaleFactorGrouping & mask)
-      {
-        pIcsInfo->WindowGroupLength[pIcsInfo->WindowGroups]++;
-      }
-      else
-      {
-        pIcsInfo->WindowGroups++;
-      }
+        goto bail;
     }
 
-    /* loop runs to i < 7 only */
-    pIcsInfo->WindowGroupLength[8-1] = 1;
-    pIcsInfo->WindowGroups++;
-  }
+    if (IsLongBlock(pIcsInfo))
+    {
+        if ( !(flags & (AC_ELD|AC_SCALABLE|AC_BSAC|AC_USAC|AC_RSVD50)) ) /* If not ELD nor Scalable nor BSAC nor USAC syntax then ... */
+        {
+            if ((UCHAR)FDKreadBits(bs,1) != 0 ) /* UCHAR PredictorDataPresent */
+            {
+                ErrorStatus = AAC_DEC_UNSUPPORTED_PREDICTION;
+                goto bail;
+            }
+        }
+
+        pIcsInfo->WindowGroups = 1;
+        pIcsInfo->WindowGroupLength[0] = 1;
+    }
+    else
+    {
+        INT i;
+        UINT mask;
+
+        pIcsInfo->ScaleFactorGrouping = (UCHAR) FDKreadBits(bs,7);
+
+        pIcsInfo->WindowGroups = 0 ;
+
+        for (i=0; i < (8-1); i++)
+        {
+            mask = 1 << (6 - i);
+            pIcsInfo->WindowGroupLength[i] = 1;
+
+            if (pIcsInfo->ScaleFactorGrouping & mask)
+            {
+                pIcsInfo->WindowGroupLength[pIcsInfo->WindowGroups]++;
+            }
+            else
+            {
+                pIcsInfo->WindowGroups++;
+            }
+        }
+
+        /* loop runs to i < 7 only */
+        pIcsInfo->WindowGroupLength[8-1] = 1;
+        pIcsInfo->WindowGroups++;
+    }
 
 
 bail:
-  if (ErrorStatus == AAC_DEC_OK)
-    pIcsInfo->Valid = 1;
+    if (ErrorStatus == AAC_DEC_OK)
+        pIcsInfo->Valid = 1;
 
-  return ErrorStatus;
+    return ErrorStatus;
 }
 
 
@@ -230,47 +241,49 @@ bail:
   | num_swb_long_window | sfbands_long | num_swb_short_window | sfbands_short |
 */
 AAC_DECODER_ERROR getSamplingRateInfo(
-        SamplingRateInfo *t,
-        UINT samplesPerFrame,
-        UINT samplingRateIndex,
-        UINT samplingRate
-        )
+    SamplingRateInfo *t,
+    UINT samplesPerFrame,
+    UINT samplingRateIndex,
+    UINT samplingRate
+)
 {
-  int index = 0;
+    int index = 0;
 
 
-  t->samplingRateIndex = samplingRateIndex;
-  t->samplingRate = samplingRate;
+    t->samplingRateIndex = samplingRateIndex;
+    t->samplingRate = samplingRate;
 
-  switch (samplesPerFrame) {
-  case 1024:
-    index = 0;
-    break;
-  case 960:
-    index = 1;
-    break;
-  case 512:
-    index = 3;
-    break;
-  case 480:
-    index = 4;
-    break;
+    switch (samplesPerFrame)
+    {
+    case 1024:
+        index = 0;
+        break;
+    case 960:
+        index = 1;
+        break;
+    case 512:
+        index = 3;
+        break;
+    case 480:
+        index = 4;
+        break;
 
-  default:
-    return AAC_DEC_UNSUPPORTED_FORMAT;
-  }
+    default:
+        return AAC_DEC_UNSUPPORTED_FORMAT;
+    }
 
-  t->ScaleFactorBands_Long = sfbOffsetTables[index][samplingRateIndex].sfbOffsetLong;
-  t->ScaleFactorBands_Short = sfbOffsetTables[index][samplingRateIndex].sfbOffsetShort;
-  t->NumberOfScaleFactorBands_Long = sfbOffsetTables[index][samplingRateIndex].numberOfSfbLong;
-  t->NumberOfScaleFactorBands_Short = sfbOffsetTables[index][samplingRateIndex].numberOfSfbShort;
+    t->ScaleFactorBands_Long = sfbOffsetTables[index][samplingRateIndex].sfbOffsetLong;
+    t->ScaleFactorBands_Short = sfbOffsetTables[index][samplingRateIndex].sfbOffsetShort;
+    t->NumberOfScaleFactorBands_Long = sfbOffsetTables[index][samplingRateIndex].numberOfSfbLong;
+    t->NumberOfScaleFactorBands_Short = sfbOffsetTables[index][samplingRateIndex].numberOfSfbShort;
 
-  if (t->ScaleFactorBands_Long == NULL || t->NumberOfScaleFactorBands_Long == 0) {
-    return AAC_DEC_UNSUPPORTED_FORMAT;
-  }
+    if (t->ScaleFactorBands_Long == NULL || t->NumberOfScaleFactorBands_Long == 0)
+    {
+        return AAC_DEC_UNSUPPORTED_FORMAT;
+    }
 
-  FDK_ASSERT(t->ScaleFactorBands_Long[t->NumberOfScaleFactorBands_Long] == samplesPerFrame);
-  FDK_ASSERT(t->ScaleFactorBands_Short == NULL || t->ScaleFactorBands_Short[t->NumberOfScaleFactorBands_Short]*8 == samplesPerFrame);
+    FDK_ASSERT(t->ScaleFactorBands_Long[t->NumberOfScaleFactorBands_Long] == samplesPerFrame);
+    FDK_ASSERT(t->ScaleFactorBands_Short == NULL || t->ScaleFactorBands_Short[t->NumberOfScaleFactorBands_Short]*8 == samplesPerFrame);
 
-  return AAC_DEC_OK;
+    return AAC_DEC_OK;
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ void WebRtcIlbcfix_CbSearch(
     size_t lTarget,  /* (i) Length of vector */
     int16_t *weightDenum,/* (i) weighting filter coefficients in Q12 */
     size_t block  /* (i) the subblock number */
-                            );
+);
 
 #endif

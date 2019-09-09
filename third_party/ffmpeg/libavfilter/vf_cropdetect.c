@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 A'rpi
  * This file is part of FFmpeg.
  *
@@ -32,7 +32,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct CropDetectContext {
+typedef struct CropDetectContext
+{
     const AVClass *class;
     int x1, y1, x2, y2;
     float limit;
@@ -45,7 +46,8 @@ typedef struct CropDetectContext {
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUVJ420P,
         AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUVJ422P,
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUVJ444P,
@@ -74,43 +76,50 @@ static int checkline(void *ctx, const unsigned char *src, int stride, int len, i
     int div = len;
     const uint16_t *src16 = (const uint16_t *)src;
 
-    switch (bpp) {
+    switch (bpp)
+    {
     case 1:
-        while (len >= 8) {
+        while (len >= 8)
+        {
             total += src[       0] + src[  stride] + src[2*stride] + src[3*stride]
-                  +  src[4*stride] + src[5*stride] + src[6*stride] + src[7*stride];
+                     +  src[4*stride] + src[5*stride] + src[6*stride] + src[7*stride];
             src += 8*stride;
             len -= 8;
         }
-        while (--len >= 0) {
+        while (--len >= 0)
+        {
             total += src[0];
             src += stride;
         }
         break;
     case 2:
         stride >>= 1;
-        while (len >= 8) {
+        while (len >= 8)
+        {
             total += src16[       0] + src16[  stride] + src16[2*stride] + src16[3*stride]
-                  +  src16[4*stride] + src16[5*stride] + src16[6*stride] + src16[7*stride];
+                     +  src16[4*stride] + src16[5*stride] + src16[6*stride] + src16[7*stride];
             src16 += 8*stride;
             len -= 8;
         }
-        while (--len >= 0) {
+        while (--len >= 0)
+        {
             total += src16[0];
             src16 += stride;
         }
         break;
     case 3:
     case 4:
-        while (len >= 4) {
+        while (len >= 4)
+        {
             total += src[0]        + src[1         ] + src[2         ]
-                  +  src[  stride] + src[1+  stride] + src[2+  stride]
-                  +  src[2*stride] + src[1+2*stride] + src[2+2*stride]
-                  +  src[3*stride] + src[1+3*stride] + src[2+3*stride];
+                     +  src[  stride] + src[1+  stride] + src[2+  stride]
+                     +  src[2*stride] + src[1+2*stride] + src[2+2*stride]
+                     +  src[3*stride] + src[1+3*stride] + src[2+3*stride];
             src += 4*stride;
             len -= 4;
         }
-        while (--len >= 0) {
+        while (--len >= 0)
+        {
             total += src[0] + src[1] + src[2];
             src += stride;
         }
@@ -168,11 +177,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int limit = round(s->limit);
 
     // ignore first 2 frames - they may be empty
-    if (++s->frame_nb > 0) {
+    if (++s->frame_nb > 0)
+    {
         metadata = avpriv_frame_get_metadatap(frame);
 
         // Reset the crop area every reset_count frames, if reset_count is > 0
-        if (s->reset_count > 0 && s->frame_nb > s->reset_count) {
+        if (s->reset_count > 0 && s->frame_nb > s->reset_count)
+        {
             s->x1 = frame->width  - 1;
             s->y1 = frame->height - 1;
             s->x2 = 0;
@@ -243,7 +254,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
 #define OFFSET(x) offsetof(CropDetectContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption cropdetect_options[] = {
+static const AVOption cropdetect_options[] =
+{
     { "limit", "Threshold below which the pixel is considered black", OFFSET(limit),       AV_OPT_TYPE_FLOAT, { .dbl = 24.0/255 }, 0, 65535, FLAGS },
     { "round", "Value by which the width/height should be divisible", OFFSET(round),       AV_OPT_TYPE_INT, { .i64 = 16 }, 0, INT_MAX, FLAGS },
     { "reset", "Recalculate the crop area after this many frames",    OFFSET(reset_count), AV_OPT_TYPE_INT, { .i64 = 0 },  0, INT_MAX, FLAGS },
@@ -254,7 +266,8 @@ static const AVOption cropdetect_options[] = {
 
 AVFILTER_DEFINE_CLASS(cropdetect);
 
-static const AVFilterPad avfilter_vf_cropdetect_inputs[] = {
+static const AVFilterPad avfilter_vf_cropdetect_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -264,7 +277,8 @@ static const AVFilterPad avfilter_vf_cropdetect_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_cropdetect_outputs[] = {
+static const AVFilterPad avfilter_vf_cropdetect_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO
@@ -272,7 +286,8 @@ static const AVFilterPad avfilter_vf_cropdetect_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_cropdetect = {
+AVFilter ff_vf_cropdetect =
+{
     .name          = "cropdetect",
     .description   = NULL_IF_CONFIG_SMALL("Auto-detect crop size."),
     .priv_size     = sizeof(CropDetectContext),

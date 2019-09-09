@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,37 +12,46 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace internal {
+namespace webrtc
+{
+namespace internal
+{
 
 TransportAdapter::TransportAdapter(Transport* transport)
-    : transport_(transport), enabled_(0) {
-  RTC_DCHECK(nullptr != transport);
+    : transport_(transport), enabled_(0)
+{
+    RTC_DCHECK(nullptr != transport);
 }
 
 bool TransportAdapter::SendRtp(const uint8_t* packet,
                                size_t length,
-                               const PacketOptions& options) {
-  if (enabled_.Value() == 0)
-    return false;
+                               const PacketOptions& options)
+{
+    if (enabled_.Value() == 0)
+        return false;
 
-  return transport_->SendRtp(packet, length, options);
+    return transport_->SendRtp(packet, length, options);
 }
 
-bool TransportAdapter::SendRtcp(const uint8_t* packet, size_t length) {
-  if (enabled_.Value() == 0)
-    return false;
+bool TransportAdapter::SendRtcp(const uint8_t* packet, size_t length)
+{
+    if (enabled_.Value() == 0)
+        return false;
 
-  return transport_->SendRtcp(packet, length);
+    return transport_->SendRtcp(packet, length);
 }
 
-void TransportAdapter::Enable() {
-  // If this exchange fails it means enabled_ was already true, no need to
-  // check result and iterate.
-  enabled_.CompareExchange(1, 0);
+void TransportAdapter::Enable()
+{
+    // If this exchange fails it means enabled_ was already true, no need to
+    // check result and iterate.
+    enabled_.CompareExchange(1, 0);
 }
 
-void TransportAdapter::Disable() { enabled_.CompareExchange(0, 1); }
+void TransportAdapter::Disable()
+{
+    enabled_.CompareExchange(0, 1);
+}
 
 }  // namespace internal
 }  // namespace webrtc

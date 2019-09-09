@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Filter layer - format negotiation
  * Copyright (c) 2007 Bobby Bingham
  *
@@ -109,12 +109,14 @@ AVFilterFormats *ff_merge_formats(AVFilterFormats *a, AVFilterFormats *b,
        insertion of a conversion filter. */
     if (type == AVMEDIA_TYPE_VIDEO)
         for (i = 0; i < a->nb_formats; i++)
-            for (j = 0; j < b->nb_formats; j++) {
+            for (j = 0; j < b->nb_formats; j++)
+            {
                 const AVPixFmtDescriptor *adesc = av_pix_fmt_desc_get(a->formats[i]);
                 const AVPixFmtDescriptor *bdesc = av_pix_fmt_desc_get(b->formats[j]);
                 alpha2 |= adesc->flags & bdesc->flags & AV_PIX_FMT_FLAG_ALPHA;
                 chroma2|= adesc->nb_components > 1 && bdesc->nb_components > 1;
-                if (a->formats[i] == b->formats[j]) {
+                if (a->formats[i] == b->formats[j])
+                {
                     alpha1 |= adesc->flags & AV_PIX_FMT_FLAG_ALPHA;
                     chroma1|= adesc->nb_components > 1;
                 }
@@ -128,7 +130,8 @@ AVFilterFormats *ff_merge_formats(AVFilterFormats *a, AVFilterFormats *b,
 
     return ret;
 fail:
-    if (ret) {
+    if (ret)
+    {
         av_freep(&ret->refs);
         av_freep(&ret->formats);
     }
@@ -143,19 +146,25 @@ AVFilterFormats *ff_merge_samplerates(AVFilterFormats *a,
 
     if (a == b) return a;
 
-    if (a->nb_formats && b->nb_formats) {
+    if (a->nb_formats && b->nb_formats)
+    {
         MERGE_FORMATS(ret, a, b, formats, nb_formats, AVFilterFormats, fail);
-    } else if (a->nb_formats) {
+    }
+    else if (a->nb_formats)
+    {
         MERGE_REF(a, b, formats, AVFilterFormats, fail);
         ret = a;
-    } else {
+    }
+    else
+    {
         MERGE_REF(b, a, formats, AVFilterFormats, fail);
         ret = b;
     }
 
     return ret;
 fail:
-    if (ret) {
+    if (ret)
+    {
         av_freep(&ret->refs);
         av_freep(&ret->formats);
     }
@@ -164,7 +173,7 @@ fail:
 }
 
 AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
-                                                 AVFilterChannelLayouts *b)
+        AVFilterChannelLayouts *b)
 {
     AVFilterChannelLayouts *ret = NULL;
     unsigned a_all = a->all_layouts + a->all_counts;
@@ -174,12 +183,15 @@ AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
     if (a == b) return a;
 
     /* Put the most generic set in a, to avoid doing everything twice */
-    if (a_all < b_all) {
+    if (a_all < b_all)
+    {
         FFSWAP(AVFilterChannelLayouts *, a, b);
         FFSWAP(unsigned, a_all, b_all);
     }
-    if (a_all) {
-        if (a_all == 1 && !b_all) {
+    if (a_all)
+    {
+        if (a_all == 1 && !b_all)
+        {
             /* keep only known layouts in b; works also for b_all = 1 */
             for (i = j = 0; i < b->nb_channel_layouts; i++)
                 if (KNOWN(b->channel_layouts[i]))
@@ -196,16 +208,19 @@ AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
 
     ret_max = a->nb_channel_layouts + b->nb_channel_layouts;
     if (!(ret = av_mallocz(sizeof(*ret))) ||
-        !(ret->channel_layouts = av_malloc_array(ret_max,
-                                                 sizeof(*ret->channel_layouts))))
+            !(ret->channel_layouts = av_malloc_array(ret_max,
+                                     sizeof(*ret->channel_layouts))))
         goto fail;
 
     /* a[known] intersect b[known] */
-    for (i = 0; i < a->nb_channel_layouts; i++) {
+    for (i = 0; i < a->nb_channel_layouts; i++)
+    {
         if (!KNOWN(a->channel_layouts[i]))
             continue;
-        for (j = 0; j < b->nb_channel_layouts; j++) {
-            if (a->channel_layouts[i] == b->channel_layouts[j]) {
+        for (j = 0; j < b->nb_channel_layouts; j++)
+        {
+            if (a->channel_layouts[i] == b->channel_layouts[j])
+            {
                 ret->channel_layouts[ret_nb++] = a->channel_layouts[i];
                 a->channel_layouts[i] = b->channel_layouts[j] = 0;
             }
@@ -213,8 +228,10 @@ AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
     }
     /* 1st round: a[known] intersect b[generic]
        2nd round: a[generic] intersect b[known] */
-    for (round = 0; round < 2; round++) {
-        for (i = 0; i < a->nb_channel_layouts; i++) {
+    for (round = 0; round < 2; round++)
+    {
+        for (i = 0; i < a->nb_channel_layouts; i++)
+        {
             uint64_t fmt = a->channel_layouts[i], bfmt;
             if (!fmt || !KNOWN(fmt))
                 continue;
@@ -227,7 +244,8 @@ AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
         FFSWAP(AVFilterChannelLayouts *, a, b);
     }
     /* a[generic] intersect b[generic] */
-    for (i = 0; i < a->nb_channel_layouts; i++) {
+    for (i = 0; i < a->nb_channel_layouts; i++)
+    {
         if (KNOWN(a->channel_layouts[i]))
             continue;
         for (j = 0; j < b->nb_channel_layouts; j++)
@@ -243,7 +261,8 @@ AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
     return ret;
 
 fail:
-    if (ret) {
+    if (ret)
+    {
         av_freep(&ret->refs);
         av_freep(&ret->channel_layouts);
     }
@@ -255,7 +274,8 @@ int ff_fmt_is_in(int fmt, const int *fmts)
 {
     const int *p;
 
-    for (p = fmts; *p != -1; p++) {
+    for (p = fmts; *p != -1; p++)
+    {
         if (fmt == *p)
             return 1;
     }
@@ -337,15 +357,20 @@ AVFilterFormats *ff_all_formats(enum AVMediaType type)
 {
     AVFilterFormats *ret = NULL;
 
-    if (type == AVMEDIA_TYPE_VIDEO) {
+    if (type == AVMEDIA_TYPE_VIDEO)
+    {
         const AVPixFmtDescriptor *desc = NULL;
-        while ((desc = av_pix_fmt_desc_next(desc))) {
+        while ((desc = av_pix_fmt_desc_next(desc)))
+        {
             if (!(desc->flags & AV_PIX_FMT_FLAG_HWACCEL))
                 ff_add_format(&ret, av_pix_fmt_desc_get_id(desc));
         }
-    } else if (type == AVMEDIA_TYPE_AUDIO) {
+    }
+    else if (type == AVMEDIA_TYPE_AUDIO)
+    {
         enum AVSampleFormat fmt = 0;
-        while (av_get_sample_fmt_name(fmt)) {
+        while (av_get_sample_fmt_name(fmt))
+        {
             ff_add_format(&ret, fmt);
             fmt++;
         }
@@ -354,7 +379,8 @@ AVFilterFormats *ff_all_formats(enum AVMediaType type)
     return ret;
 }
 
-const int64_t avfilter_all_channel_layouts[] = {
+const int64_t avfilter_all_channel_layouts[] =
+{
 #include "all_channel_layouts.inc"
     -1
 };
@@ -556,7 +582,8 @@ static int default_query_formats_common(AVFilterContext *ctx,
     ret = ff_set_common_formats(ctx, ff_all_formats(type));
     if (ret < 0)
         return ret;
-    if (type == AVMEDIA_TYPE_AUDIO) {
+    if (type == AVMEDIA_TYPE_AUDIO)
+    {
         ret = ff_set_common_channel_layouts(ctx, layouts());
         if (ret < 0)
             return ret;
@@ -584,9 +611,11 @@ int ff_parse_pixel_format(enum AVPixelFormat *ret, const char *arg, void *log_ct
 {
     char *tail;
     int pix_fmt = av_get_pix_fmt(arg);
-    if (pix_fmt == AV_PIX_FMT_NONE) {
+    if (pix_fmt == AV_PIX_FMT_NONE)
+    {
         pix_fmt = strtol(arg, &tail, 0);
-        if (*tail || !av_pix_fmt_desc_get(pix_fmt)) {
+        if (*tail || !av_pix_fmt_desc_get(pix_fmt))
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Invalid pixel format '%s'\n", arg);
             return AVERROR(EINVAL);
         }
@@ -599,9 +628,11 @@ int ff_parse_sample_format(int *ret, const char *arg, void *log_ctx)
 {
     char *tail;
     int sfmt = av_get_sample_fmt(arg);
-    if (sfmt == AV_SAMPLE_FMT_NONE) {
+    if (sfmt == AV_SAMPLE_FMT_NONE)
+    {
         sfmt = strtol(arg, &tail, 0);
-        if (*tail || av_get_bytes_per_sample(sfmt)<=0) {
+        if (*tail || av_get_bytes_per_sample(sfmt)<=0)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Invalid sample format '%s'\n", arg);
             return AVERROR(EINVAL);
         }
@@ -613,7 +644,8 @@ int ff_parse_sample_format(int *ret, const char *arg, void *log_ctx)
 int ff_parse_time_base(AVRational *ret, const char *arg, void *log_ctx)
 {
     AVRational r;
-    if(av_parse_ratio(&r, arg, INT_MAX, 0, log_ctx) < 0 ||r.num<=0  ||r.den<=0) {
+    if(av_parse_ratio(&r, arg, INT_MAX, 0, log_ctx) < 0 ||r.num<=0  ||r.den<=0)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Invalid time base '%s'\n", arg);
         return AVERROR(EINVAL);
     }
@@ -625,7 +657,8 @@ int ff_parse_sample_rate(int *ret, const char *arg, void *log_ctx)
 {
     char *tail;
     double srate = av_strtod(arg, &tail);
-    if (*tail || srate < 1 || (int)srate != srate || srate > INT_MAX) {
+    if (*tail || srate < 1 || (int)srate != srate || srate > INT_MAX)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Invalid sample rate '%s'\n", arg);
         return AVERROR(EINVAL);
     }
@@ -640,13 +673,16 @@ int ff_parse_channel_layout(int64_t *ret, int *nret, const char *arg,
     int64_t chlayout;
 
     chlayout = av_get_channel_layout(arg);
-    if (chlayout == 0) {
+    if (chlayout == 0)
+    {
         chlayout = strtol(arg, &tail, 10);
-        if (!(*tail == '\0' || *tail == 'c' && *(tail + 1) == '\0') || chlayout <= 0 || chlayout > 63) {
+        if (!(*tail == '\0' || *tail == 'c' && *(tail + 1) == '\0') || chlayout <= 0 || chlayout > 63)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Invalid channel layout '%s'\n", arg);
             return AVERROR(EINVAL);
         }
-        if (nret) {
+        if (nret)
+        {
             *nret = chlayout;
             *ret = 0;
             return 0;
@@ -667,7 +703,8 @@ int main(void)
     const int64_t *cl;
     char buf[512];
     int i;
-    const char *teststrings[] ={
+    const char *teststrings[] =
+    {
         "blah",
         "1",
         "2",
@@ -687,12 +724,14 @@ int main(void)
         "0x3",
     };
 
-    for (cl = avfilter_all_channel_layouts; *cl != -1; cl++) {
+    for (cl = avfilter_all_channel_layouts; *cl != -1; cl++)
+    {
         av_get_channel_layout_string(buf, sizeof(buf), -1, *cl);
         printf("%s\n", buf);
     }
 
-    for ( i = 0; i<FF_ARRAY_ELEMS(teststrings); i++) {
+    for ( i = 0; i<FF_ARRAY_ELEMS(teststrings); i++)
+    {
         int64_t layout = -1;
         int count = -1;
         int ret;

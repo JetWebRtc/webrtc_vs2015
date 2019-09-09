@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SMJPEG demuxer
  * Copyright (c) 2011 Paul B Mahol
  *
@@ -31,7 +31,8 @@
 #include "riff.h"
 #include "smjpeg.h"
 
-typedef struct SMJPEGContext {
+typedef struct SMJPEGContext
+{
     int audio_stream_index;
     int video_stream_index;
 } SMJPEGContext;
@@ -58,9 +59,11 @@ static int smjpeg_read_header(AVFormatContext *s)
 
     duration = avio_rb32(pb); // in msec
 
-    while (!avio_feof(pb)) {
+    while (!avio_feof(pb))
+    {
         htype = avio_rl32(pb);
-        switch (htype) {
+        switch (htype)
+        {
         case SMJPEG_TXT:
             hlength = avio_rb32(pb);
             if (!hlength || hlength > 512)
@@ -68,7 +71,8 @@ static int smjpeg_read_header(AVFormatContext *s)
             comment = av_malloc(hlength + 1);
             if (!comment)
                 return AVERROR(ENOMEM);
-            if (avio_read(pb, comment, hlength) != hlength) {
+            if (avio_read(pb, comment, hlength) != hlength)
+            {
                 av_freep(&comment);
                 av_log(s, AV_LOG_ERROR, "error when reading comment\n");
                 return AVERROR_INVALIDDATA;
@@ -78,7 +82,8 @@ static int smjpeg_read_header(AVFormatContext *s)
                         AV_DICT_DONT_STRDUP_VAL);
             break;
         case SMJPEG_SND:
-            if (ast) {
+            if (ast)
+            {
                 avpriv_request_sample(s, "Multiple audio streams");
                 return AVERROR_PATCHWELCOME;
             }
@@ -94,14 +99,15 @@ static int smjpeg_read_header(AVFormatContext *s)
             ast->codec->channels    = avio_r8(pb);
             ast->codec->codec_tag   = avio_rl32(pb);
             ast->codec->codec_id    = ff_codec_get_id(ff_codec_smjpeg_audio_tags,
-                                                      ast->codec->codec_tag);
+                                      ast->codec->codec_tag);
             ast->duration           = duration;
             sc->audio_stream_index  = ast->index;
             avpriv_set_pts_info(ast, 32, 1, 1000);
             avio_skip(pb, hlength - 8);
             break;
         case SMJPEG_VID:
-            if (vst) {
+            if (vst)
+            {
                 avpriv_request_sample(s, "Multiple video streams");
                 return AVERROR_INVALIDDATA;
             }
@@ -117,7 +123,7 @@ static int smjpeg_read_header(AVFormatContext *s)
             vst->codec->height     = avio_rb16(pb);
             vst->codec->codec_tag  = avio_rl32(pb);
             vst->codec->codec_id   = ff_codec_get_id(ff_codec_smjpeg_video_tags,
-                                                     vst->codec->codec_tag);
+                                     vst->codec->codec_tag);
             vst->duration          = duration;
             sc->video_stream_index = vst->index;
             avpriv_set_pts_info(vst, 32, 1, 1000);
@@ -145,7 +151,8 @@ static int smjpeg_read_packet(AVFormatContext *s, AVPacket *pkt)
         return AVERROR_EOF;
     pos   = avio_tell(s->pb);
     dtype = avio_rl32(s->pb);
-    switch (dtype) {
+    switch (dtype)
+    {
     case SMJPEG_SNDD:
         timestamp = avio_rb32(s->pb);
         size = avio_rb32(s->pb);
@@ -173,7 +180,8 @@ static int smjpeg_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_smjpeg_demuxer = {
+AVInputFormat ff_smjpeg_demuxer =
+{
     .name           = "smjpeg",
     .long_name      = NULL_IF_CONFIG_SMALL("Loki SDL MJPEG"),
     .priv_data_size = sizeof(SMJPEGContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -63,20 +63,24 @@
 
 #endif // defined(WEBRTC_LINUX) || defined(WEBRTC_MAC)
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class SocketFactory : public UdpTransportImpl::SocketFactoryInterface {
- public:
-  UdpSocketWrapper* CreateSocket(const int32_t id,
-                                 UdpSocketManager* mgr,
-                                 CallbackObj obj,
-                                 IncomingSocketCallback cb,
-                                 bool ipV6Enable,
-                                 bool disableGQOS) override {
-    return UdpSocketWrapper::CreateSocket(id, mgr, obj, cb, ipV6Enable,
-                                          disableGQOS);
-  }
+class SocketFactory : public UdpTransportImpl::SocketFactoryInterface
+{
+public:
+    UdpSocketWrapper* CreateSocket(const int32_t id,
+                                   UdpSocketManager* mgr,
+                                   CallbackObj obj,
+                                   IncomingSocketCallback cb,
+                                   bool ipV6Enable,
+                                   bool disableGQOS) override
+    {
+        return UdpSocketWrapper::CreateSocket(id, mgr, obj, cb, ipV6Enable,
+                                              disableGQOS);
+    }
 };
 
 // Creates an UdpTransport using the definition of SocketFactory above,
@@ -85,9 +89,9 @@ class SocketFactory : public UdpTransportImpl::SocketFactoryInterface {
 UdpTransport* UdpTransport::Create(const int32_t id,
                                    uint8_t& numSocketThreads)
 {
-  return new UdpTransportImpl(id,
-                              new SocketFactory(),
-                              UdpSocketManager::Create(id, numSocketThreads));
+    return new UdpTransportImpl(id,
+                                new SocketFactory(),
+                                UdpSocketManager::Create(id, numSocketThreads));
 }
 
 // Deletes the UdpTransport and decrements the refcount of the
@@ -204,9 +208,9 @@ void UdpTransportImpl::GetCachedAddress(char* ip,
 }
 
 int32_t UdpTransportImpl::IPAddressCached(const SocketAddress& address,
-                                          char* ip,
-                                          uint32_t& ipSize,
-                                          uint16_t& sourcePort)
+        char* ip,
+        uint32_t& ipSize,
+        uint16_t& sourcePort)
 {
     {
         ReadLockScoped rl(*_cachLock);
@@ -264,13 +268,17 @@ int32_t UdpTransportImpl::InitializeReceiveSockets(
             return -1;
         }
         _localPort = _destPort;
-    } else {
+    }
+    else
+    {
         _localPort = portnr;
     }
     if(rtcpPort)
     {
         _localPortRTCP = rtcpPort;
-    }else {
+    }
+    else
+    {
         _localPortRTCP = _localPort + 1;
         WEBRTC_TRACE(
             kTraceStateInfo,
@@ -286,20 +294,23 @@ int32_t UdpTransportImpl::InitializeReceiveSockets(
         if(IsIpAddressValid(ip,IpV6Enabled()))
         {
             strncpy(_localIP, ip,kIpAddressVersion6Length);
-        } else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
                          "InitializeReceiveSockets invalid IP address");
             _lastError = kIpAddressInvalid;
             return -1;
         }
-    }else
+    }
+    else
     {
         // Don't bind to a specific IP address.
         if(! IpV6Enabled())
         {
             strncpy(_localIP, "0.0.0.0",16);
-        } else
+        }
+        else
         {
             strncpy(_localIP, "0000:0000:0000:0000:0000:0000:0000:0000",
                     kIpAddressVersion6Length);
@@ -311,7 +322,8 @@ int32_t UdpTransportImpl::InitializeReceiveSockets(
         {
             strncpy(_localMulticastIP, multicastIpAddr,
                     kIpAddressVersion6Length);
-        } else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
                          "InitializeReceiveSockets invalid IP address");
@@ -331,12 +343,12 @@ int32_t UdpTransportImpl::InitializeReceiveSockets(
     _pcp=0;
 
     _ptrRtpSocket = _socket_creator->CreateSocket(_id, _mgr, this,
-                                    IncomingRTPCallback,
-                                    IpV6Enabled(), false);
+                    IncomingRTPCallback,
+                    IpV6Enabled(), false);
 
     _ptrRtcpSocket = _socket_creator->CreateSocket(_id, _mgr, this,
-                                     IncomingRTCPCallback,
-                                     IpV6Enabled(), false);
+                     IncomingRTCPCallback,
+                     IpV6Enabled(), false);
 
     ErrorCode retVal = BindLocalRTPSocket();
     if(retVal != kNoSocketError)
@@ -431,7 +443,8 @@ int32_t UdpTransportImpl::SetQoS(bool QoS, int32_t serviceType,
     if(QoS)
     {
         return EnableQoS(serviceType, audio, maxBitrate, overrideDSCP);
-    }else
+    }
+    else
     {
         return DisableQoS();
     }
@@ -496,8 +509,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
     CriticalSectionScoped cs(_crit);
 
     UdpSocketWrapper* rtpSock = _ptrSendRtpSocket ?
-        _ptrSendRtpSocket :
-        _ptrRtpSocket;
+                                _ptrSendRtpSocket :
+                                _ptrRtpSocket;
     if (!rtpSock || !rtpSock->ValidHandle())
     {
         WEBRTC_TRACE(
@@ -509,8 +522,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
         return -1;
     }
     UdpSocketWrapper* rtcpSock = _ptrSendRtcpSocket ?
-        _ptrSendRtcpSocket :
-        _ptrRtcpSocket;
+                                 _ptrSendRtcpSocket :
+                                 _ptrRtcpSocket;
     if (!rtcpSock || !rtcpSock->ValidHandle())
     {
         WEBRTC_TRACE(
@@ -560,7 +573,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
                 _lastError = kQosError;
                 return -1;
             }
-        }else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceStateInfo, kTraceTransport, _id,
                          "Enable QOS for video with max bitrate:%d",
@@ -577,8 +591,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
             const int32_t bucket_size = maxBitrate*31;
             const int32_t peek_bandwith = maxBitrate*125;
             if (!rtpSock->SetQos(serviceType, token_rate, bucket_size,
-                                peek_bandwith, min_policed_size, max_sdu_size,
-                                _remoteRTPAddr, overrideDSCP))
+                                 peek_bandwith, min_policed_size, max_sdu_size,
+                                 _remoteRTPAddr, overrideDSCP))
             {
                 WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
                              "QOS failed on the RTP socket");
@@ -586,7 +600,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
                 return -1;
             }
         }
-    } else if(audio)
+    }
+    else if(audio)
     {
         // No max bitrate set. Audio.
         WEBRTC_TRACE(kTraceStateInfo, kTraceTransport, _id,
@@ -605,7 +620,8 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
             _lastError = kQosError;
             return -1;
         }
-    }else
+    }
+    else
     {
         // No max bitrate set. Video.
         WEBRTC_TRACE(kTraceStateInfo, kTraceTransport, _id,
@@ -641,14 +657,15 @@ int32_t UdpTransportImpl::EnableQoS(int32_t serviceType,
                          "QOS failed on the RTCP socket");
             _lastError = kQosError;
         }
-    }else
+    }
+    else
     {
         const int32_t token_rate = 5000;
         const int32_t bucket_size = 100;
         const int32_t peek_bandwith = 10000;
         if (!rtcpSock->SetQos(serviceType, token_rate, bucket_size,
                               peek_bandwith, min_policed_size, max_sdu_size,
-                            _remoteRTCPAddr, _overrideDSCP))
+                              _remoteRTCPAddr, _overrideDSCP))
         {
             WEBRTC_TRACE(kTraceWarning, kTraceTransport, _id,
                          "QOS failed on the RTCP socket");
@@ -705,8 +722,8 @@ int32_t UdpTransportImpl::DisableQoS()
         return -1;
     }
     if (!rtcpSock->SetQos(service_type, not_specified, not_specified,
-                         not_specified, not_specified, not_specified,
-                         _remoteRTCPAddr,_overrideDSCP))
+                          not_specified, not_specified, not_specified,
+                          _remoteRTCPAddr,_overrideDSCP))
     {
         _lastError = kQosError;
     }
@@ -757,7 +774,8 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
     if(_ptrSendRtpSocket)
     {
         rtpSock = _ptrSendRtpSocket;
-    }else
+    }
+    else
     {
         rtpSock = _ptrRtpSocket;
     }
@@ -774,7 +792,8 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
     if(_ptrSendRtcpSocket)
     {
         rtcpSock = _ptrSendRtcpSocket;
-    }else
+    }
+    else
     {
         rtcpSock = _ptrRtcpSocket;
     }
@@ -802,7 +821,7 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
         //                 into thinking that the sockets are in a state which
         //                 they aren't.
         if (OsVersion.dwMajorVersion == 5 &&
-            OsVersion.dwMinorVersion == 1)
+                OsVersion.dwMinorVersion == 1)
         {
             if(!_useSetSockOpt)
             {
@@ -811,12 +830,12 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
                     CloseSendSockets();
                     _ptrSendRtpSocket =
                         _socket_creator->CreateSocket(_id, _mgr, NULL,
-                                        NULL, IpV6Enabled(),
-                                        true);
+                                                      NULL, IpV6Enabled(),
+                                                      true);
                     _ptrSendRtcpSocket =
                         _socket_creator->CreateSocket(_id, _mgr, NULL,
-                                        NULL, IpV6Enabled(),
-                                        true);
+                                                      NULL, IpV6Enabled(),
+                                                      true);
                     rtpSock=_ptrSendRtpSocket;
                     rtcpSock=_ptrSendRtcpSocket;
                     ErrorCode retVal = BindRTPSendSocket();
@@ -846,11 +865,11 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
                     }
                     CloseReceiveSockets();
                     _ptrRtpSocket = _socket_creator->CreateSocket(
-                        _id, _mgr, this, IncomingRTPCallback, IpV6Enabled(),
-                        true);
+                                        _id, _mgr, this, IncomingRTPCallback, IpV6Enabled(),
+                                        true);
                     _ptrRtcpSocket = _socket_creator->CreateSocket(
-                        _id, _mgr, this, IncomingRTCPCallback, IpV6Enabled(),
-                        true);
+                                         _id, _mgr, this, IncomingRTCPCallback, IpV6Enabled(),
+                                         true);
                     rtpSock=_ptrRtpSocket;
                     rtcpSock=_ptrRtcpSocket;
                     ErrorCode retVal = BindLocalRTPSocket();
@@ -868,7 +887,7 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
                     if(receiving)
                     {
                         if(StartReceiving(noOfReceiveBuffers) !=
-                           kNoSocketError)
+                                kNoSocketError)
                         {
                             return -1;
                         }
@@ -896,7 +915,8 @@ int32_t UdpTransportImpl::SetToS(int32_t DSCP, bool useSetSockOpt)
             _lastError = kTosInvalid;
             return -1;
         }
-    } else
+    }
+    else
     {
         WEBRTC_TRACE(kTraceDebug, kTraceTransport, _id,
                      "Setting TOS NOT using SetSockopt");
@@ -951,7 +971,8 @@ int32_t UdpTransportImpl::SetPCP(int32_t PCP)
     if(_ptrSendRtpSocket)
     {
         rtpSock = _ptrSendRtpSocket;
-    }else
+    }
+    else
     {
         rtpSock = _ptrRtpSocket;
     }
@@ -968,7 +989,8 @@ int32_t UdpTransportImpl::SetPCP(int32_t PCP)
     if(_ptrSendRtcpSocket)
     {
         rtcpSock = _ptrSendRtcpSocket;
-    }else
+    }
+    else
     {
         rtcpSock = _ptrRtcpSocket;
     }
@@ -1037,20 +1059,23 @@ bool UdpTransportImpl::SetSockOptUsed()
     return _useSetSockOpt;
 }
 
-int32_t UdpTransportImpl::EnableIpV6() {
+int32_t UdpTransportImpl::EnableIpV6()
+{
 
-  CriticalSectionScoped cs(_crit);
-  const bool initialized = (_ptrSendRtpSocket || _ptrRtpSocket);
+    CriticalSectionScoped cs(_crit);
+    const bool initialized = (_ptrSendRtpSocket || _ptrRtpSocket);
 
-  if (_ipV6Enabled) {
+    if (_ipV6Enabled)
+    {
+        return 0;
+    }
+    if (initialized)
+    {
+        _lastError = kIpVersion6Error;
+        return -1;
+    }
+    _ipV6Enabled = true;
     return 0;
-  }
-  if (initialized) {
-    _lastError = kIpVersion6Error;
-    return -1;
-  }
-  _ipV6Enabled = true;
-  return 0;
 }
 
 int32_t UdpTransportImpl::FilterIP(
@@ -1089,9 +1114,9 @@ int32_t UdpTransportImpl::SetFilterIP(
         _filterIPAddress._sockaddr_storage.sin_family = AF_INET6;
 
         if (InetPresentationToNumeric(
-                AF_INET6,
-                filterIPAddress,
-                &_filterIPAddress._sockaddr_in6.sin6_addr) < 0)
+                    AF_INET6,
+                    filterIPAddress,
+                    &_filterIPAddress._sockaddr_in6.sin6_addr) < 0)
         {
             WEBRTC_TRACE(kTraceError, kTraceTransport, _id, "Failed to set\
  filter IP for IPv6");
@@ -1104,9 +1129,9 @@ int32_t UdpTransportImpl::SetFilterIP(
         _filterIPAddress._sockaddr_storage.sin_family = AF_INET;
 
         if(InetPresentationToNumeric(
-               AF_INET,
-               filterIPAddress,
-               &_filterIPAddress._sockaddr_in.sin_addr) < 0)
+                    AF_INET,
+                    filterIPAddress,
+                    &_filterIPAddress._sockaddr_in.sin_addr) < 0)
         {
             WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
                          "Failed to set filter IP for IPv4");
@@ -1119,7 +1144,7 @@ int32_t UdpTransportImpl::SetFilterIP(
 }
 
 int32_t UdpTransportImpl::SetFilterPorts(uint16_t rtpFilterPort,
-                                         uint16_t rtcpFilterPort)
+        uint16_t rtcpFilterPort)
 {
     CriticalSectionScoped cs(_critFilter);
     _rtpFilterPort = rtpFilterPort;
@@ -1181,7 +1206,8 @@ void UdpTransportImpl::BuildRemoteRTPAddr()
         _remoteRTPAddr._sockaddr_in6.sin6_port = Htons(_destPort);
         InetPresentationToNumeric(AF_INET6,_destIP,
                                   &_remoteRTPAddr._sockaddr_in6.sin6_addr);
-    } else
+    }
+    else
     {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
         _remoteRTPAddr.sin_length = 0;
@@ -1211,7 +1237,8 @@ void UdpTransportImpl::BuildRemoteRTCPAddr()
         InetPresentationToNumeric(AF_INET6,_destIP,
                                   &_remoteRTCPAddr._sockaddr_in6.sin6_addr);
 
-    } else
+    }
+    else
     {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
         _remoteRTCPAddr.sin_length = 0;
@@ -1260,7 +1287,9 @@ UdpTransportImpl::ErrorCode UdpTransportImpl::BindRTPSendSocket()
             return kFailedToBindPort;
         }
 
-    } else {
+    }
+    else
+    {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
         _localRTPAddr.sin_length = 0;
         _localRTPAddr.sin_family = PF_INET;
@@ -1311,7 +1340,9 @@ UdpTransportImpl::ErrorCode UdpTransportImpl::BindRTCPSendSocket()
                          "Failed to bind to port:%d ", _srcPortRTCP);
             return kFailedToBindPort;
         }
-    } else {
+    }
+    else
+    {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
         _localRTCPAddr.sin_length = 0;
         _localRTCPAddr.sin_family = PF_INET;
@@ -1390,12 +1421,13 @@ UdpTransportImpl::ErrorCode UdpTransportImpl::BindLocalRTPSocket()
         if (!_ptrRtpSocket->SetSockopt(IPPROTO_IP,IP_ADD_MEMBERSHIP,
                                        (int8_t*)&mreq,sizeof (mreq)))
         {
-           WEBRTC_TRACE(
+            WEBRTC_TRACE(
                 kTraceError,
                 kTraceTransport,
                 _id,
                 "setsockopt() for multicast failed, not closing socket");
-        }else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceInfo, kTraceTransport, _id,
                          "multicast group successfully joined");
@@ -1467,7 +1499,8 @@ UdpTransportImpl::ErrorCode UdpTransportImpl::BindLocalRTCPSocket()
                 kTraceTransport,
                 _id,
                 "setsockopt() for multicast failed, not closing socket");
-        }else
+        }
+        else
         {
             WEBRTC_TRACE(kTraceInfo, kTraceTransport, _id,
                          "multicast group successfully joined");
@@ -1477,7 +1510,7 @@ UdpTransportImpl::ErrorCode UdpTransportImpl::BindLocalRTCPSocket()
 }
 
 int32_t UdpTransportImpl::InitializeSourcePorts(uint16_t rtpPort,
-                                                uint16_t rtcpPort)
+        uint16_t rtcpPort)
 {
 
     if(rtpPort == 0)
@@ -1501,7 +1534,8 @@ int32_t UdpTransportImpl::InitializeSourcePorts(uint16_t rtpPort,
     if(rtcpPort == 0)
     {
         _srcPortRTCP = rtpPort+1;
-    } else
+    }
+    else
     {
         _srcPortRTCP = rtcpPort;
     }
@@ -1510,9 +1544,9 @@ int32_t UdpTransportImpl::InitializeSourcePorts(uint16_t rtpPort,
     _pcp=0;
 
     _ptrSendRtpSocket = _socket_creator->CreateSocket(_id, _mgr, NULL, NULL,
-                                        IpV6Enabled(), false);
+                        IpV6Enabled(), false);
     _ptrSendRtcpSocket = _socket_creator->CreateSocket(_id, _mgr, NULL, NULL,
-                                         IpV6Enabled(), false);
+                         IpV6Enabled(), false);
 
     ErrorCode retVal = BindRTPSendSocket();
     if(retVal != kNoSocketError)
@@ -1576,7 +1610,7 @@ int32_t UdpTransportImpl::StartReceiving(uint32_t /*numberOfSocketBuffers*/)
         }
     }
     if( _ptrRtpSocket == NULL &&
-        _ptrRtcpSocket == NULL)
+            _ptrRtcpSocket == NULL)
     {
         WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
                      "Failed to StartReceiving, no socket initialized");
@@ -1589,7 +1623,7 @@ int32_t UdpTransportImpl::StartReceiving(uint32_t /*numberOfSocketBuffers*/)
 
 bool UdpTransportImpl::Receiving() const
 {
-   return _receiving;
+    return _receiving;
 }
 
 int32_t UdpTransportImpl::StopReceiving()
@@ -1633,7 +1667,8 @@ int32_t UdpTransportImpl::InitializeSendSockets(
         if(rtcpPort == 0)
         {
             _destPortRTCP = _destPort+1;
-        } else
+        }
+        else
         {
             _destPortRTCP = rtcpPort;
         }
@@ -1647,7 +1682,8 @@ int32_t UdpTransportImpl::InitializeSendSockets(
                 _lastError = kIpAddressInvalid;
                 return -1;
             }
-        } else
+        }
+        else
         {
             if (IsIpAddressValid(ipaddr, IpV6Enabled()))
             {
@@ -1656,7 +1692,9 @@ int32_t UdpTransportImpl::InitializeSendSockets(
                     ipaddr,
                     IpV6Enabled() ? kIpAddressVersion6Length :
                     kIpAddressVersion4Length);
-            } else {
+            }
+            else
+            {
                 _destPort = 0;
                 _destPortRTCP = 0;
                 _lastError = kIpAddressInvalid;
@@ -1677,7 +1715,8 @@ int32_t UdpTransportImpl::InitializeSendSockets(
                 _id,
                 "QOS is enabled but will be ignored since IPv6 is enabled");
         }
-    }else
+    }
+    else
     {
         // TODO (grunell): Multicast support is experimantal.
 
@@ -1750,7 +1789,8 @@ void UdpTransportImpl::BuildSockaddrIn(uint16_t portnr,
                                   &remoteAddr._sockaddr_in6.sin6_addr);
         remoteAddr._sockaddr_in6.sin6_flowinfo=0;
         remoteAddr._sockaddr_in6.sin6_scope_id=0;
-    } else
+    }
+    else
     {
 #ifdef HAVE_STRUCT_SOCKADDR_SA_LEN
         remoteAddr.sin_length = 0;
@@ -1760,7 +1800,7 @@ void UdpTransportImpl::BuildSockaddrIn(uint16_t portnr,
 #endif
         remoteAddr._sockaddr_in.sin_port = Htons(portnr);
         remoteAddr._sockaddr_in.sin_addr= InetAddrIPV4(
-            const_cast<char*>(ip));
+                                              const_cast<char*>(ip));
     }
 }
 
@@ -1777,10 +1817,12 @@ int32_t UdpTransportImpl::SendRaw(const int8_t *data,
         if(_ptrSendRtcpSocket)
         {
             rtcpSock = _ptrSendRtcpSocket;
-        } else if(_ptrRtcpSocket)
+        }
+        else if(_ptrRtcpSocket)
         {
             rtcpSock = _ptrRtcpSocket;
-        } else
+        }
+        else
         {
             return -1;
         }
@@ -1788,32 +1830,39 @@ int32_t UdpTransportImpl::SendRaw(const int8_t *data,
         {
             return rtcpSock->SendTo(data,length,_remoteRTCPAddr);
 
-        } else if(portnr != 0 && ip != NULL)
+        }
+        else if(portnr != 0 && ip != NULL)
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(portnr, ip, remoteAddr);
             return rtcpSock->SendTo(data,length,remoteAddr);
-        } else if(ip != NULL)
+        }
+        else if(ip != NULL)
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(_destPortRTCP, ip, remoteAddr);
             return rtcpSock->SendTo(data,length,remoteAddr);
-        } else
+        }
+        else
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(portnr, _destIP, remoteAddr);
             return rtcpSock->SendTo(data,length,remoteAddr);
         }
-    } else {
+    }
+    else
+    {
         UdpSocketWrapper* rtpSock = NULL;
         if(_ptrSendRtpSocket)
         {
             rtpSock = _ptrSendRtpSocket;
 
-        } else if(_ptrRtpSocket)
+        }
+        else if(_ptrRtpSocket)
         {
             rtpSock = _ptrRtpSocket;
-        } else
+        }
+        else
         {
             return -1;
         }
@@ -1821,17 +1870,20 @@ int32_t UdpTransportImpl::SendRaw(const int8_t *data,
         {
             return rtpSock->SendTo(data,length,_remoteRTPAddr);
 
-        } else if(portnr != 0 && ip != NULL)
+        }
+        else if(portnr != 0 && ip != NULL)
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(portnr, ip, remoteAddr);
             return rtpSock->SendTo(data,length,remoteAddr);
-        } else if(ip != NULL)
+        }
+        else if(ip != NULL)
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(_destPort, ip, remoteAddr);
             return rtpSock->SendTo(data,length,remoteAddr);
-        } else
+        }
+        else
         {
             SocketAddress remoteAddr;
             BuildSockaddrIn(portnr, _destIP, remoteAddr);
@@ -1841,15 +1893,16 @@ int32_t UdpTransportImpl::SendRaw(const int8_t *data,
 }
 
 int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
-                                          size_t length,
-                                          const SocketAddress& to)
+        size_t length,
+        const SocketAddress& to)
 {
     CriticalSectionScoped cs(_crit);
     if(_ptrSendRtpSocket)
     {
         return _ptrSendRtpSocket->SendTo(data,length,to);
 
-    } else if(_ptrRtpSocket)
+    }
+    else if(_ptrRtpSocket)
     {
         return _ptrRtpSocket->SendTo(data,length,to);
     }
@@ -1857,8 +1910,8 @@ int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
 }
 
 int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
-                                           size_t length,
-                                           const SocketAddress& to)
+        size_t length,
+        const SocketAddress& to)
 {
 
     CriticalSectionScoped cs(_crit);
@@ -1867,7 +1920,8 @@ int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
     {
         return _ptrSendRtcpSocket->SendTo(data,length,to);
 
-    } else if(_ptrRtcpSocket)
+    }
+    else if(_ptrRtcpSocket)
     {
         return _ptrRtcpSocket->SendTo(data,length,to);
     }
@@ -1875,8 +1929,8 @@ int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
 }
 
 int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
-                                          size_t length,
-                                          const uint16_t rtpPort)
+        size_t length,
+        const uint16_t rtpPort)
 {
     CriticalSectionScoped cs(_crit);
     // Use the current SocketAdress but update it with rtpPort.
@@ -1886,7 +1940,8 @@ int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
     if(_ipV6Enabled)
     {
         to._sockaddr_in6.sin6_port = Htons(rtpPort);
-    } else
+    }
+    else
     {
         to._sockaddr_in.sin_port = Htons(rtpPort);
     }
@@ -1895,7 +1950,8 @@ int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
     {
         return _ptrSendRtpSocket->SendTo(data,length,to);
 
-    } else if(_ptrRtpSocket)
+    }
+    else if(_ptrRtpSocket)
     {
         return _ptrRtpSocket->SendTo(data,length,to);
     }
@@ -1903,8 +1959,8 @@ int32_t UdpTransportImpl::SendRTPPacketTo(const int8_t* data,
 }
 
 int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
-                                           size_t length,
-                                           const uint16_t rtcpPort)
+        size_t length,
+        const uint16_t rtcpPort)
 {
     CriticalSectionScoped cs(_crit);
 
@@ -1915,7 +1971,8 @@ int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
     if(_ipV6Enabled)
     {
         to._sockaddr_in6.sin6_port = Htons(rtcpPort);
-    } else
+    }
+    else
     {
         to._sockaddr_in.sin_port = Htons(rtcpPort);
     }
@@ -1924,7 +1981,8 @@ int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
     {
         return _ptrSendRtcpSocket->SendTo(data,length,to);
 
-    } else if(_ptrRtcpSocket)
+    }
+    else if(_ptrRtcpSocket)
     {
         return _ptrRtcpSocket->SendTo(data,length,to);
     }
@@ -1933,7 +1991,8 @@ int32_t UdpTransportImpl::SendRTCPPacketTo(const int8_t* data,
 
 bool UdpTransportImpl::SendRtp(const uint8_t* data,
                                size_t length,
-                               const PacketOptions& packet_options) {
+                               const PacketOptions& packet_options)
+{
     WEBRTC_TRACE(kTraceStream, kTraceTransport, _id, "%s", __FUNCTION__);
 
     CriticalSectionScoped cs(_crit);
@@ -1951,7 +2010,7 @@ bool UdpTransportImpl::SendRtp(const uint8_t* data,
     // TODO (hellner): why not fail here instead. Sockets not being initialized
     //                 indicates that there is a problem somewhere.
     if( _ptrSendRtpSocket == NULL &&
-        _ptrRtpSocket == NULL)
+            _ptrRtpSocket == NULL)
     {
         WEBRTC_TRACE(
             kTraceStateInfo,
@@ -1961,14 +2020,15 @@ bool UdpTransportImpl::SendRtp(const uint8_t* data,
  configured");
 
         _ptrRtpSocket = _socket_creator->CreateSocket(_id, _mgr, this,
-                                        IncomingRTPCallback,
-                                        IpV6Enabled(), false);
+                        IncomingRTPCallback,
+                        IpV6Enabled(), false);
 
         // Don't bind to a specific IP address.
         if(! IpV6Enabled())
         {
             strncpy(_localIP, "0.0.0.0",16);
-        } else
+        }
+        else
         {
             strncpy(_localIP, "0000:0000:0000:0000:0000:0000:0000:0000",
                     kIpAddressVersion6Length);
@@ -1991,7 +2051,8 @@ bool UdpTransportImpl::SendRtp(const uint8_t* data,
         return _ptrSendRtpSocket->SendTo((const int8_t*)data, length,
                                          _remoteRTPAddr) >= 0;
 
-    } else if(_ptrRtpSocket)
+    }
+    else if(_ptrRtpSocket)
     {
         return _ptrRtpSocket->SendTo((const int8_t*)data, length,
                                      _remoteRTPAddr) >= 0;
@@ -1999,7 +2060,8 @@ bool UdpTransportImpl::SendRtp(const uint8_t* data,
     return false;
 }
 
-bool UdpTransportImpl::SendRtcp(const uint8_t* data, size_t length) {
+bool UdpTransportImpl::SendRtcp(const uint8_t* data, size_t length)
+{
     CriticalSectionScoped cs(_crit);
     if(_destIP[0] == 0)
     {
@@ -2014,7 +2076,7 @@ bool UdpTransportImpl::SendRtcp(const uint8_t* data, size_t length) {
     // TODO (hellner): why not fail here instead. Sockets not being initialized
     //                 indicates that there is a problem somewhere.
     if( _ptrSendRtcpSocket == NULL &&
-        _ptrRtcpSocket == NULL)
+            _ptrRtcpSocket == NULL)
     {
         WEBRTC_TRACE(
             kTraceStateInfo,
@@ -2024,14 +2086,15 @@ bool UdpTransportImpl::SendRtcp(const uint8_t* data, size_t length) {
  configured");
 
         _ptrRtcpSocket = _socket_creator->CreateSocket(_id, _mgr, this,
-                                         IncomingRTCPCallback,
-                                         IpV6Enabled(), false);
+                         IncomingRTCPCallback,
+                         IpV6Enabled(), false);
 
         // Don't bind to a specific IP address.
         if(! IpV6Enabled())
         {
             strncpy(_localIP, "0.0.0.0",16);
-        } else
+        }
+        else
         {
             strncpy(_localIP, "0000:0000:0000:0000:0000:0000:0000:0000",
                     kIpAddressVersion6Length);
@@ -2053,7 +2116,8 @@ bool UdpTransportImpl::SendRtcp(const uint8_t* data, size_t length) {
     {
         return _ptrSendRtcpSocket->SendTo((const int8_t*)data, length,
                                           _remoteRTCPAddr) >= 0;
-    } else if(_ptrRtcpSocket)
+    }
+    else if(_ptrRtcpSocket)
     {
         return _ptrRtcpSocket->SendTo((const int8_t*)data, length,
                                       _remoteRTCPAddr) >= 0;
@@ -2081,7 +2145,8 @@ int32_t UdpTransportImpl::SetSendPorts(uint16_t rtpPort, uint16_t rtcpPort)
     if(rtcpPort == 0)
     {
         _destPortRTCP = _destPort+1;
-    } else
+    }
+    else
     {
         _destPortRTCP = rtcpPort;
     }
@@ -2091,9 +2156,9 @@ int32_t UdpTransportImpl::SetSendPorts(uint16_t rtpPort, uint16_t rtcpPort)
 }
 
 void UdpTransportImpl::IncomingRTPCallback(CallbackObj obj,
-                                           const int8_t* rtpPacket,
-                                           size_t rtpPacketLength,
-                                           const SocketAddress* from)
+        const int8_t* rtpPacket,
+        size_t rtpPacketLength,
+        const SocketAddress* from)
 {
     if (rtpPacket && rtpPacketLength > 0)
     {
@@ -2103,9 +2168,9 @@ void UdpTransportImpl::IncomingRTPCallback(CallbackObj obj,
 }
 
 void UdpTransportImpl::IncomingRTCPCallback(CallbackObj obj,
-                                            const int8_t* rtcpPacket,
-                                            size_t rtcpPacketLength,
-                                            const SocketAddress* from)
+        const int8_t* rtcpPacket,
+        size_t rtcpPacketLength,
+        const SocketAddress* from)
 {
     if (rtcpPacket && rtcpPacketLength > 0)
     {
@@ -2116,8 +2181,8 @@ void UdpTransportImpl::IncomingRTCPCallback(CallbackObj obj,
 }
 
 void UdpTransportImpl::IncomingRTPFunction(const int8_t* rtpPacket,
-                                           size_t rtpPacketLength,
-                                           const SocketAddress* fromSocket)
+        size_t rtpPacketLength,
+        const SocketAddress* fromSocket)
 {
     char ipAddress[kIpAddressVersion6Length];
     uint32_t ipAddressLength = kIpAddressVersion6Length;
@@ -2134,7 +2199,7 @@ void UdpTransportImpl::IncomingRTPFunction(const int8_t* rtpPacket,
         }
 
         if (IPAddressCached(*fromSocket, ipAddress, ipAddressLength, portNr) <
-            0)
+                0)
         {
             WEBRTC_TRACE(
                 kTraceError,
@@ -2142,7 +2207,8 @@ void UdpTransportImpl::IncomingRTPFunction(const int8_t* rtpPacket,
                 _id,
                 "UdpTransportImpl::IncomingRTPFunction - Cannot get sender\
  information");
-        }else
+        }
+        else
         {
             // Make sure ipAddress is null terminated.
             ipAddress[kIpAddressVersion6Length - 1] = 0;
@@ -2151,7 +2217,7 @@ void UdpTransportImpl::IncomingRTPFunction(const int8_t* rtpPacket,
 
         // Filter based on port.
         if (_rtpFilterPort != 0 &&
-            _rtpFilterPort != portNr)
+                _rtpFilterPort != portNr)
         {
             // Drop packet.
             memset(_fromIP, 0, sizeof(_fromIP));
@@ -2172,15 +2238,15 @@ void UdpTransportImpl::IncomingRTPFunction(const int8_t* rtpPacket,
     if (_packetCallback)
     {
         WEBRTC_TRACE(kTraceStream, kTraceTransport, _id,
-            "Incoming RTP packet from ip:%s port:%d", ipAddress, portNr);
+                     "Incoming RTP packet from ip:%s port:%d", ipAddress, portNr);
         _packetCallback->IncomingRTPPacket(rtpPacket, rtpPacketLength,
                                            ipAddress, portNr);
     }
 }
 
 void UdpTransportImpl::IncomingRTCPFunction(const int8_t* rtcpPacket,
-                                            size_t rtcpPacketLength,
-                                            const SocketAddress* fromSocket)
+        size_t rtcpPacketLength,
+        const SocketAddress* fromSocket)
 {
     char ipAddress[kIpAddressVersion6Length];
     uint32_t ipAddressLength = kIpAddressVersion6Length;
@@ -2203,7 +2269,9 @@ void UdpTransportImpl::IncomingRTCPFunction(const int8_t* rtcpPacket,
                 _id,
                 "UdpTransportImpl::IncomingRTCPFunction - Cannot get sender\
  information");
-        }else {
+        }
+        else
+        {
             // Make sure ipAddress is null terminated.
             ipAddress[kIpAddressVersion6Length - 1] = 0;
             strncpy(_fromIP, ipAddress, kIpAddressVersion6Length - 1);
@@ -2211,7 +2279,7 @@ void UdpTransportImpl::IncomingRTCPFunction(const int8_t* rtcpPacket,
 
         // Filter based on port.
         if (_rtcpFilterPort != 0 &&
-            _rtcpFilterPort != portNr)
+                _rtcpFilterPort != portNr)
         {
             // Drop packet.
             WEBRTC_TRACE(
@@ -2246,8 +2314,8 @@ bool UdpTransportImpl::FilterIPAddress(const SocketAddress* fromAddress)
         {
             // IP is stored in sin_addr.
             if (_filterIPAddress._sockaddr_in.sin_addr != 0 &&
-                (_filterIPAddress._sockaddr_in.sin_addr !=
-                 fromAddress->_sockaddr_in.sin_addr))
+                    (_filterIPAddress._sockaddr_in.sin_addr !=
+                     fromAddress->_sockaddr_in.sin_addr))
             {
                 return false;
             }
@@ -2261,7 +2329,7 @@ bool UdpTransportImpl::FilterIPAddress(const SocketAddress* fromAddress)
             for (int32_t i = 0; i < 4; i++)
             {
                 if (_filterIPAddress._sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u32[i] != 0 &&
-                    _filterIPAddress._sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u32[i] != fromAddress->_sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u32[i])
+                        _filterIPAddress._sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u32[i] != fromAddress->_sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u32[i])
                 {
                     return false;
                 }
@@ -2270,11 +2338,11 @@ bool UdpTransportImpl::FilterIPAddress(const SocketAddress* fromAddress)
     }
     else
     {
-      WEBRTC_TRACE(
-                kTraceError,
-                kTraceTransport,
-                _id,
-                "UdpTransportImpl::FilterIPAddress() unknown address family");
+        WEBRTC_TRACE(
+            kTraceError,
+            kTraceTransport,
+            _id,
+            "UdpTransportImpl::FilterIPAddress() unknown address family");
         return false;
     }
     return true;
@@ -2325,8 +2393,8 @@ uint32_t UdpTransport::InetAddrIPV4(const char* ip)
 }
 
 int32_t UdpTransport::InetPresentationToNumeric(int32_t af,
-                                                const char* src,
-                                                void* dst)
+        const char* src,
+        void* dst)
 {
 #if defined(WEBRTC_LINUX) || defined(WEBRTC_MAC)
     const int32_t result = inet_pton(af, src, dst);
@@ -2339,11 +2407,11 @@ int32_t UdpTransport::InetPresentationToNumeric(int32_t af,
     if(af == AF_INET)
     {
         int32_t result = WSAStringToAddressA(
-            (const LPSTR)src,
-            af,
-            0,
-            reinterpret_cast<struct sockaddr*>(&temp),
-            &length);
+                             (const LPSTR)src,
+                             af,
+                             0,
+                             reinterpret_cast<struct sockaddr*>(&temp),
+                             &length);
         if(result != 0)
         {
             return -1;
@@ -2355,11 +2423,11 @@ int32_t UdpTransport::InetPresentationToNumeric(int32_t af,
     else if(af == AF_INET6)
     {
         int32_t result = WSAStringToAddressA(
-            (const LPSTR)src,
-            af,
-            0,
-            reinterpret_cast<struct sockaddr*>(&temp),
-            &length);
+                             (const LPSTR)src,
+                             af,
+                             0,
+                             reinterpret_cast<struct sockaddr*>(&temp),
+                             &length);
         if(result !=0)
         {
             return -1;
@@ -2368,7 +2436,8 @@ int32_t UdpTransport::InetPresentationToNumeric(int32_t af,
                sizeof(temp._sockaddr_in6.sin6_addr));
         return 0;
 
-    }else
+    }
+    else
     {
         return -1;
     }
@@ -2402,47 +2471,47 @@ int32_t UdpTransport::LocalHostAddressIPV6(char n_localIP[16])
                      "getaddrinfo failed, error:%d", dwRetval);
         return -1;
     }
-    for(ptr=result; ptr != NULL ;ptr=ptr->ai_next)
+    for(ptr=result; ptr != NULL ; ptr=ptr->ai_next)
     {
         switch (ptr->ai_family)
         {
-            case AF_INET6:
+        case AF_INET6:
+        {
+            for(int i = 0; i< 16; i++)
+            {
+                n_localIP[i] = (*(SocketAddress*)ptr->ai_addr).
+                               _sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u8[i];
+            }
+            bool islocalIP = true;
+
+            for(int n = 0; n< 15; n++)
+            {
+                if(n_localIP[n] != 0)
                 {
-                    for(int i = 0; i< 16; i++)
-                    {
-                        n_localIP[i] = (*(SocketAddress*)ptr->ai_addr).
-                            _sockaddr_in6.sin6_addr.Version6AddressUnion._s6_u8[i];
-                    }
-                    bool islocalIP = true;
-
-                    for(int n = 0; n< 15; n++)
-                    {
-                        if(n_localIP[n] != 0)
-                        {
-                            islocalIP = false;
-                            break;
-                        }
-                    }
-
-                    if(islocalIP && n_localIP[15] != 1)
-                    {
-                        islocalIP = false;
-                    }
-
-                    if(islocalIP && ptr->ai_next)
-                    {
-                        continue;
-                    }
-                    if(n_localIP[0] == 0xfe &&
-                       n_localIP[1] == 0x80 && ptr->ai_next)
-                    {
-                        continue;
-                    }
-                    freeaddrinfo(result);
+                    islocalIP = false;
+                    break;
                 }
-                return 0;
-            default:
-                break;
+            }
+
+            if(islocalIP && n_localIP[15] != 1)
+            {
+                islocalIP = false;
+            }
+
+            if(islocalIP && ptr->ai_next)
+            {
+                continue;
+            }
+            if(n_localIP[0] == 0xfe &&
+                    n_localIP[1] == 0x80 && ptr->ai_next)
+            {
+                continue;
+            }
+            freeaddrinfo(result);
+        }
+        return 0;
+        default:
+            break;
         };
     }
     freeaddrinfo(result);
@@ -2461,11 +2530,12 @@ int32_t UdpTransport::LocalHostAddressIPV6(char n_localIP[16])
         if(ptrIfAddrs->ifa_addr->sa_family == AF_INET6)
         {
             const struct sockaddr_in6* sock_in6 =
-                reinterpret_cast<struct sockaddr_in6*>(ptrIfAddrs->ifa_addr);
+                    reinterpret_cast<struct sockaddr_in6*>(ptrIfAddrs->ifa_addr);
             const struct in6_addr* sin6_addr = &sock_in6->sin6_addr;
 
             if (IN6_IS_ADDR_LOOPBACK(sin6_addr) ||
-                IN6_IS_ADDR_LINKLOCAL(sin6_addr)) {
+                    IN6_IS_ADDR_LINKLOCAL(sin6_addr))
+            {
                 ptrIfAddrs = ptrIfAddrs->ifa_next;
                 continue;
             }
@@ -2601,7 +2671,7 @@ int32_t UdpTransport::LocalHostAddressIPV6(char n_localIP[16])
                         n_localIP[i] = in6p->s6_addr[i];
                     }
                     if(n_localIP[0] == static_cast<char> (0xfe)
-                       && n_localIP[1] == static_cast<char>(0x80) )
+                            && n_localIP[1] == static_cast<char>(0x80) )
                     {
                         // Auto configured IP.
                         continue;
@@ -2617,7 +2687,7 @@ int32_t UdpTransport::LocalHostAddressIPV6(char n_localIP[16])
 
 int32_t UdpTransport::LocalHostAddress(uint32_t& localIP)
 {
- #if defined(_WIN32)
+#if defined(_WIN32)
     hostent* localHost;
     localHost = gethostbyname( "" );
     if(localHost)
@@ -2632,7 +2702,7 @@ int32_t UdpTransport::LocalHostAddress(uint32_t& localIP)
             return -1;
         }
         localIP= Htonl(
-            (*(struct in_addr *)localHost->h_addr_list[0]).S_un.S_addr);
+                     (*(struct in_addr *)localHost->h_addr_list[0]).S_un.S_addr);
         return 0;
     }
     else
@@ -2672,7 +2742,7 @@ int32_t UdpTransport::LocalHostAddress(uint32_t& localIP)
 
     if (0 > (sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP)))
     {
-      return -1;
+        return -1;
     }
     ifc.ifc_len = IFRSIZE;
     ifc.ifc_req = NULL;
@@ -2681,9 +2751,10 @@ int32_t UdpTransport::LocalHostAddress(uint32_t& localIP)
         ++size;
         // Buffer size needed is unknown. Try increasing it until no overflow
         // occurs.
-        if (NULL == (ifc.ifc_req = (ifreq*)realloc(ifc.ifc_req, IFRSIZE))) {
-          fprintf(stderr, "Out of memory.\n");
-          exit(EXIT_FAILURE);
+        if (NULL == (ifc.ifc_req = (ifreq*)realloc(ifc.ifc_req, IFRSIZE)))
+        {
+            fprintf(stderr, "Out of memory.\n");
+            exit(EXIT_FAILURE);
         }
         ifc.ifc_len = IFRSIZE;
         if (ioctl(sockfd, SIOCGIFCONF, &ifc))
@@ -2692,27 +2763,29 @@ int32_t UdpTransport::LocalHostAddress(uint32_t& localIP)
             close(sockfd);
             return -1;
         }
-    } while  (IFRSIZE <= ifc.ifc_len);
+    }
+    while  (IFRSIZE <= ifc.ifc_len);
 
     ifr = ifc.ifc_req;
-    for (;(char *) ifr < (char *) ifc.ifc_req + ifc.ifc_len; ++ifr)
+    for (; (char *) ifr < (char *) ifc.ifc_req + ifc.ifc_len; ++ifr)
     {
         if (ifr->ifr_addr.sa_data == (ifr+1)->ifr_addr.sa_data)
         {
-          continue;  // duplicate, skip it
+            continue;  // duplicate, skip it
         }
         if (ioctl(sockfd, SIOCGIFFLAGS, ifr))
         {
-          continue;  // failed to get flags, skip it
+            continue;  // failed to get flags, skip it
         }
         if(strncmp(ifr->ifr_name, "lo",3) == 0)
         {
             continue;
-        }else
+        }
+        else
         {
             struct sockaddr* saddr = &(ifr->ifr_addr);
             SocketAddress* socket_addess = reinterpret_cast<SocketAddress*>(
-                saddr);
+                                               saddr);
             localIP = Htonl(socket_addess->_sockaddr_in.sin_addr);
             close(sockfd);
             free(ifc.ifc_req);
@@ -2730,13 +2803,13 @@ int32_t UdpTransport::IPAddress(const SocketAddress& address,
                                 uint32_t& ipSize,
                                 uint16_t& sourcePort)
 {
- #if defined(_WIN32)
+#if defined(_WIN32)
     DWORD dwIPSize = ipSize;
     int32_t returnvalue = WSAAddressToStringA((LPSOCKADDR)(&address),
-                                         sizeof(SocketAddress),
-                                         NULL,
-                                         ip,
-                                         &dwIPSize);
+                          sizeof(SocketAddress),
+                          NULL,
+                          ip,
+                          &dwIPSize);
     if(returnvalue == -1)
     {
         return -1;
@@ -2764,7 +2837,7 @@ int32_t UdpTransport::IPAddress(const SocketAddress& address,
         char* ipEnd = strchr(ip,']');
         if(ipEnd != NULL)
         {
-          // Calculate length
+            // Calculate length
             int32_t adrSize = int32_t(ipEnd - ip) - 1;
             memmove(ip, &ip[1], adrSize);   // Remove '['
             *(ipEnd - 1) = '\0';
@@ -2781,7 +2854,7 @@ int32_t UdpTransport::IPAddress(const SocketAddress& address,
     sourcePort = htons(source_port);
     return 0;
 
- #elif defined(WEBRTC_LINUX) || defined(WEBRTC_MAC)
+#elif defined(WEBRTC_LINUX) || defined(WEBRTC_MAC)
     int32_t ipFamily = address._sockaddr_storage.sin_family;
     const void* ptrNumericIP = NULL;
 
@@ -2805,16 +2878,17 @@ int32_t UdpTransport::IPAddress(const SocketAddress& address,
     if(ipFamily == AF_INET)
     {
         source_port = address._sockaddr_in.sin_port;
-    } else
+    }
+    else
     {
         source_port = address._sockaddr_in6.sin6_port;
     }
     // Convert port number to network byte order.
     sourcePort = htons(source_port);
     return 0;
- #else
+#else
     return -1;
- #endif
+#endif
 }
 
 bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
@@ -2877,7 +2951,7 @@ bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
         }
         if(nColons < 7 && nDubbleColons == 0)
         {
-          return false;
+            return false;
         }
         if(!(nDots == 3 || nDots == 0))
         {
@@ -2954,7 +3028,9 @@ bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
                 {
                     break;
                 }
-            } else {
+            }
+            else
+            {
                 break;
             }
 
@@ -2966,7 +3042,9 @@ bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
                 int32_t num = atoi(nr);
                 if (num > 255 || num < 0)
                     break;
-            } else {
+            }
+            else
+            {
                 break;
             }
 
@@ -2978,7 +3056,9 @@ bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
                 int32_t num = atoi(nr);
                 if (num > 255 || num < 0)
                     break;
-            } else {
+            }
+            else
+            {
                 break;
             }
 
@@ -2992,10 +3072,13 @@ bool UdpTransport::IsIpAddressValid(const char* ipadr, const bool ipV6)
                     break;
                 else
                     allUnder256 = true;
-            } else {
+            }
+            else
+            {
                 break;
             }
-        } while(false);
+        }
+        while(false);
 
         if (nDots != 3 || !allUnder256)
         {

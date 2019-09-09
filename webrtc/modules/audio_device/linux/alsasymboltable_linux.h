@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libjingle
  * Copyright 2004--2010, Google Inc.
  *
@@ -30,7 +30,8 @@
 
 #include "webrtc/modules/audio_device/linux/latebindingsymboltable_linux.h"
 
-namespace webrtc_adm_linux_alsa {
+namespace webrtc_adm_linux_alsa
+{
 
 // The ALSA symbols we need, as an X-Macro list.
 // This list must contain precisely every libasound function that is used in

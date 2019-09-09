@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -33,7 +33,8 @@
  */
 #define BUFFER_FLAG_REALLOCATABLE (1 << 1)
 
-struct AVBuffer {
+struct AVBuffer
+{
     uint8_t *data; /**< data described by this buffer */
     int      size; /**< size of data in bytes */
 
@@ -58,7 +59,8 @@ struct AVBuffer {
     int flags;
 };
 
-typedef struct BufferPoolEntry {
+typedef struct BufferPoolEntry
+{
     uint8_t *data;
 
     /*
@@ -72,7 +74,8 @@ typedef struct BufferPoolEntry {
     struct BufferPoolEntry *next;
 } BufferPoolEntry;
 
-struct AVBufferPool {
+struct AVBufferPool
+{
     AVMutex mutex;
     BufferPoolEntry *pool;
 

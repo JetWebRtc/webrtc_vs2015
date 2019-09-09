@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common code for the RTP depacketization of MPEG-4 formats.
  * Copyright (c) 2010 Fabrice Bellard
  *                    Romain Degez
@@ -36,7 +36,8 @@
 #define MAX_AAC_HBR_FRAME_SIZE 8191
 
 /** Structure listing useful vars to parse RTP packet payload */
-struct PayloadContext {
+struct PayloadContext
+{
     int sizelength;
     int indexlength;
     int indexdeltalength;
@@ -46,7 +47,8 @@ struct PayloadContext {
     char *mode;
 
     /** mpeg 4 AU headers */
-    struct AUHeaders {
+    struct AUHeaders
+    {
         int size;
         int index;
         int cts_flag;
@@ -66,7 +68,8 @@ struct PayloadContext {
     uint32_t timestamp;
 };
 
-typedef struct AttrNameMap {
+typedef struct AttrNameMap
+{
     const char *str;
     uint16_t    type;
     uint32_t    offset;
@@ -75,19 +78,32 @@ typedef struct AttrNameMap {
 /* All known fmtp parameters and the corresponding RTPAttrTypeEnum */
 #define ATTR_NAME_TYPE_INT 0
 #define ATTR_NAME_TYPE_STR 1
-static const AttrNameMap attr_names[] = {
-    { "SizeLength",       ATTR_NAME_TYPE_INT,
-      offsetof(PayloadContext, sizelength) },
-    { "IndexLength",      ATTR_NAME_TYPE_INT,
-      offsetof(PayloadContext, indexlength) },
-    { "IndexDeltaLength", ATTR_NAME_TYPE_INT,
-      offsetof(PayloadContext, indexdeltalength) },
-    { "profile-level-id", ATTR_NAME_TYPE_INT,
-      offsetof(PayloadContext, profile_level_id) },
-    { "StreamType",       ATTR_NAME_TYPE_INT,
-      offsetof(PayloadContext, streamtype) },
-    { "mode",             ATTR_NAME_TYPE_STR,
-      offsetof(PayloadContext, mode) },
+static const AttrNameMap attr_names[] =
+{
+    {
+        "SizeLength",       ATTR_NAME_TYPE_INT,
+        offsetof(PayloadContext, sizelength)
+    },
+    {
+        "IndexLength",      ATTR_NAME_TYPE_INT,
+        offsetof(PayloadContext, indexlength)
+    },
+    {
+        "IndexDeltaLength", ATTR_NAME_TYPE_INT,
+        offsetof(PayloadContext, indexdeltalength)
+    },
+    {
+        "profile-level-id", ATTR_NAME_TYPE_INT,
+        offsetof(PayloadContext, profile_level_id)
+    },
+    {
+        "StreamType",       ATTR_NAME_TYPE_INT,
+        offsetof(PayloadContext, streamtype)
+    },
+    {
+        "mode",             ATTR_NAME_TYPE_STR,
+        offsetof(PayloadContext, mode)
+    },
     { NULL, -1, -1 },
 };
 
@@ -121,7 +137,7 @@ static int rtp_parse_mp4_au(PayloadContext *data, const uint8_t *buf, int len)
     au_headers_length = AV_RB16(buf);
 
     if (au_headers_length > RTP_MAX_PACKET_LENGTH)
-      return -1;
+        return -1;
 
     data->au_headers_length_bytes = (au_headers_length + 7) / 8;
 
@@ -140,7 +156,8 @@ static int rtp_parse_mp4_au(PayloadContext *data, const uint8_t *buf, int len)
         return -1;
 
     data->nb_au_headers = au_headers_length / au_header_size;
-    if (!data->au_headers || data->au_headers_allocated < data->nb_au_headers) {
+    if (!data->au_headers || data->au_headers_allocated < data->nb_au_headers)
+    {
         av_free(data->au_headers);
         data->au_headers = av_malloc(sizeof(struct AUHeaders) * data->nb_au_headers);
         if (!data->au_headers)
@@ -148,7 +165,8 @@ static int rtp_parse_mp4_au(PayloadContext *data, const uint8_t *buf, int len)
         data->au_headers_allocated = data->nb_au_headers;
     }
 
-    for (i = 0; i < data->nb_au_headers; ++i) {
+    for (i = 0; i < data->nb_au_headers; ++i)
+    {
         data->au_headers[i].size  = get_bits_long(&getbitcontext, data->sizelength);
         data->au_headers[i].index = get_bits_long(&getbitcontext, data->indexlength);
     }
@@ -166,16 +184,20 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
     int ret;
 
 
-    if (!buf) {
-        if (data->cur_au_index > data->nb_au_headers) {
+    if (!buf)
+    {
+        if (data->cur_au_index > data->nb_au_headers)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid parser state\n");
             return AVERROR_INVALIDDATA;
         }
-        if (data->buf_size - data->buf_pos < data->au_headers[data->cur_au_index].size) {
+        if (data->buf_size - data->buf_pos < data->au_headers[data->cur_au_index].size)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid AU size\n");
             return AVERROR_INVALIDDATA;
         }
-        if ((ret = av_new_packet(pkt, data->au_headers[data->cur_au_index].size)) < 0) {
+        if ((ret = av_new_packet(pkt, data->au_headers[data->cur_au_index].size)) < 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory\n");
             return ret;
         }
@@ -184,7 +206,8 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         pkt->stream_index = st->index;
         data->cur_au_index++;
 
-        if (data->cur_au_index == data->nb_au_headers) {
+        if (data->cur_au_index == data->nb_au_headers)
+        {
             data->buf_pos = 0;
             return 0;
         }
@@ -192,18 +215,22 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         return 1;
     }
 
-    if (rtp_parse_mp4_au(data, buf, len)) {
+    if (rtp_parse_mp4_au(data, buf, len))
+    {
         av_log(ctx, AV_LOG_ERROR, "Error parsing AU headers\n");
         return -1;
     }
 
     buf += data->au_headers_length_bytes + 2;
     len -= data->au_headers_length_bytes + 2;
-    if (data->nb_au_headers == 1 && len < data->au_headers[0].size) {
+    if (data->nb_au_headers == 1 && len < data->au_headers[0].size)
+    {
         /* Packet is fragmented */
 
-        if (!data->buf_pos) {
-            if (data->au_headers[0].size > MAX_AAC_HBR_FRAME_SIZE) {
+        if (!data->buf_pos)
+        {
+            if (data->au_headers[0].size > MAX_AAC_HBR_FRAME_SIZE)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Invalid AU size\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -213,8 +240,9 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         }
 
         if (data->timestamp != *timestamp ||
-            data->au_headers[0].size != data->buf_size ||
-            data->buf_pos + len > MAX_AAC_HBR_FRAME_SIZE) {
+                data->au_headers[0].size != data->buf_size ||
+                data->buf_pos + len > MAX_AAC_HBR_FRAME_SIZE)
+        {
             data->buf_pos = 0;
             data->buf_size = 0;
             av_log(ctx, AV_LOG_ERROR, "Invalid packet received\n");
@@ -227,7 +255,8 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         if (!(flags & RTP_FLAG_MARKER))
             return AVERROR(EAGAIN);
 
-        if (data->buf_pos != data->buf_size) {
+        if (data->buf_pos != data->buf_size)
+        {
             data->buf_pos = 0;
             av_log(ctx, AV_LOG_ERROR, "Missed some packets, discarding frame\n");
             return AVERROR_INVALIDDATA;
@@ -235,7 +264,8 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
 
         data->buf_pos = 0;
         ret = av_new_packet(pkt, data->buf_size);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory\n");
             return ret;
         }
@@ -246,11 +276,13 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
         return 0;
     }
 
-    if (len < data->au_headers[0].size) {
+    if (len < data->au_headers[0].size)
+    {
         av_log(ctx, AV_LOG_ERROR, "First AU larger than packet size\n");
         return AVERROR_INVALIDDATA;
     }
-    if ((ret = av_new_packet(pkt, data->au_headers[0].size)) < 0) {
+    if ((ret = av_new_packet(pkt, data->au_headers[0].size)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Out of memory\n");
         return ret;
     }
@@ -259,7 +291,8 @@ static int aac_parse_packet(AVFormatContext *ctx, PayloadContext *data,
     buf += data->au_headers[0].size;
     pkt->stream_index = st->index;
 
-    if (len > 0 && data->nb_au_headers > 1) {
+    if (len > 0 && data->nb_au_headers > 1)
+    {
         data->buf_size = FFMIN(len, sizeof(data->buf));
         memcpy(data->buf, buf, data->buf_size);
         data->cur_au_index = 1;
@@ -277,23 +310,29 @@ static int parse_fmtp(AVFormatContext *s,
     AVCodecContext *codec = stream->codec;
     int res, i;
 
-    if (!strcmp(attr, "config")) {
+    if (!strcmp(attr, "config"))
+    {
         res = parse_fmtp_config(codec, value);
 
         if (res < 0)
             return res;
     }
 
-    if (codec->codec_id == AV_CODEC_ID_AAC) {
+    if (codec->codec_id == AV_CODEC_ID_AAC)
+    {
         /* Looking for a known attribute */
-        for (i = 0; attr_names[i].str; ++i) {
-            if (!av_strcasecmp(attr, attr_names[i].str)) {
-                if (attr_names[i].type == ATTR_NAME_TYPE_INT) {
+        for (i = 0; attr_names[i].str; ++i)
+        {
+            if (!av_strcasecmp(attr, attr_names[i].str))
+            {
+                if (attr_names[i].type == ATTR_NAME_TYPE_INT)
+                {
                     *(int *)((char *)data+
-                        attr_names[i].offset) = atoi(value);
-                } else if (attr_names[i].type == ATTR_NAME_TYPE_STR)
+                             attr_names[i].offset) = atoi(value);
+                }
+                else if (attr_names[i].type == ATTR_NAME_TYPE_STR)
                     *(char **)((char *)data+
-                        attr_names[i].offset) = av_strdup(value);
+                               attr_names[i].offset) = av_strdup(value);
             }
         }
     }
@@ -314,7 +353,8 @@ static int parse_sdp_line(AVFormatContext *s, int st_index,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_mp4v_es_dynamic_handler = {
+RTPDynamicProtocolHandler ff_mp4v_es_dynamic_handler =
+{
     .enc_name           = "MP4V-ES",
     .codec_type         = AVMEDIA_TYPE_VIDEO,
     .codec_id           = AV_CODEC_ID_MPEG4,
@@ -323,7 +363,8 @@ RTPDynamicProtocolHandler ff_mp4v_es_dynamic_handler = {
     .parse_sdp_a_line   = parse_sdp_line,
 };
 
-RTPDynamicProtocolHandler ff_mpeg4_generic_dynamic_handler = {
+RTPDynamicProtocolHandler ff_mpeg4_generic_dynamic_handler =
+{
     .enc_name           = "mpeg4-generic",
     .codec_type         = AVMEDIA_TYPE_AUDIO,
     .codec_id           = AV_CODEC_ID_AAC,

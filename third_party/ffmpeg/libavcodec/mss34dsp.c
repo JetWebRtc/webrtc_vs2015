@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common stuff for some Microsoft Screen codecs
  * Copyright (C) 2012 Konstantin Shishkov
  *
@@ -23,7 +23,8 @@
 #include "libavutil/common.h"
 #include "mss34dsp.h"
 
-static const uint8_t luma_quant[64] = {
+static const uint8_t luma_quant[64] =
+{
     16,  11,  10,  16,  24,  40,  51,  61,
     12,  12,  14,  19,  26,  58,  60,  55,
     14,  13,  16,  24,  40,  57,  69,  56,
@@ -34,7 +35,8 @@ static const uint8_t luma_quant[64] = {
     72,  92,  95,  98, 112, 100, 103,  99
 };
 
-static const uint8_t chroma_quant[64] = {
+static const uint8_t chroma_quant[64] =
+{
     17, 18, 24, 47, 99, 99, 99, 99,
     18, 21, 26, 66, 99, 99, 99, 99,
     24, 26, 56, 99, 99, 99, 99, 99,
@@ -50,12 +52,15 @@ void ff_mss34_gen_quant_mat(uint16_t *qmat, int quality, int luma)
     int i;
     const uint8_t *qsrc = luma ? luma_quant : chroma_quant;
 
-    if (quality >= 50) {
+    if (quality >= 50)
+    {
         int scale = 200 - 2 * quality;
 
         for (i = 0; i < 64; i++)
             qmat[i] = (qsrc[i] * scale + 50) / 100;
-    } else {
+    }
+    else
+    {
         for (i = 0; i < 64; i++)
             qmat[i] = (5000 * qsrc[i] / quality + 50) / 100;
     }
@@ -93,19 +98,22 @@ void ff_mss34_dct_put(uint8_t *dst, int stride, int *block)
     int *ptr;
 
     ptr = block;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         DCT_TEMPLATE(ptr, 1, SOP_ROW, 13);
         ptr += 8;
     }
 
     ptr = block;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         DCT_TEMPLATE(ptr, 8, SOP_COL, 22);
         ptr++;
     }
 
     ptr = block;
-    for (j = 0; j < 8; j++) {
+    for (j = 0; j < 8; j++)
+    {
         for (i = 0; i < 8; i++)
             dst[i] = av_clip_uint8(ptr[i] + 128);
         dst += stride;

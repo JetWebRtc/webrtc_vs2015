@@ -1,1 +1,1 @@
-#include "libavutil/log2_tab.c"
+﻿#include "libavutil/log2_tab.c"

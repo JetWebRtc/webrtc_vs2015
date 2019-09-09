@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,30 +20,35 @@
 #include "webrtc/modules/desktop_capture/desktop_frame.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // DesktopFrame implementation used by screen and window captures on Windows.
 // Frame data is stored in a GDI bitmap.
-class DesktopFrameWin : public DesktopFrame {
- public:
-  ~DesktopFrameWin() override;
+class DesktopFrameWin : public DesktopFrame
+{
+public:
+    ~DesktopFrameWin() override;
 
-  static std::unique_ptr<DesktopFrameWin>
-  Create(DesktopSize size, SharedMemoryFactory* shared_memory_factory, HDC hdc);
+    static std::unique_ptr<DesktopFrameWin>
+    Create(DesktopSize size, SharedMemoryFactory* shared_memory_factory, HDC hdc);
 
-  HBITMAP bitmap() { return bitmap_; }
+    HBITMAP bitmap()
+    {
+        return bitmap_;
+    }
 
- private:
-  DesktopFrameWin(DesktopSize size,
-                  int stride,
-                  uint8_t* data,
-                  std::unique_ptr<SharedMemory> shared_memory,
-                  HBITMAP bitmap);
+private:
+    DesktopFrameWin(DesktopSize size,
+                    int stride,
+                    uint8_t* data,
+                    std::unique_ptr<SharedMemory> shared_memory,
+                    HBITMAP bitmap);
 
-  HBITMAP bitmap_;
-  std::unique_ptr<SharedMemory> owned_shared_memory_;
+    HBITMAP bitmap_;
+    std::unique_ptr<SharedMemory> owned_shared_memory_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(DesktopFrameWin);
+    RTC_DISALLOW_COPY_AND_ASSIGN(DesktopFrameWin);
 };
 
 }  // namespace webrtc

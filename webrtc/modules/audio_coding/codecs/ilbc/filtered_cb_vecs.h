@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,6 +33,6 @@ void WebRtcIlbcfix_FilteredCbVecs(
                                            second CB section */
     size_t lMem,  /* (i) Length of codebook memory */
     size_t samples    /* (i) Number of samples to filter */
-                                  );
+);
 
 #endif

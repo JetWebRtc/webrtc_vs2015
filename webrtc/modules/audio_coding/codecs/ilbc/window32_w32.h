@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ void WebRtcIlbcfix_Window32W32(
     int32_t *x,    /* Input (same domain as Output)*/
     const int32_t  *y,  /* Q31 Window */
     size_t N     /* length to process */
-                               );
+);
 
 #endif

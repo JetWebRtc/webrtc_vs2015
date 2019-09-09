@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -47,52 +47,59 @@
 #include "WelsLock.h"
 #include "WelsThreadLib.h"
 
-namespace WelsCommon {
+namespace WelsCommon
+{
 
-class CWelsThread {
- public:
-  CWelsThread();
-  virtual ~CWelsThread();
+class CWelsThread
+{
+public:
+    CWelsThread();
+    virtual ~CWelsThread();
 
-  virtual void Thread();
-  virtual void ExecuteTask() = 0;
-  virtual WELS_THREAD_ERROR_CODE Start();
-  virtual void Kill();
-  WELS_MUTEX          m_hMutex;
- protected:
-  static WELS_THREAD_ROUTINE_TYPE  TheThread (void* pParam);
+    virtual void Thread();
+    virtual void ExecuteTask() = 0;
+    virtual WELS_THREAD_ERROR_CODE Start();
+    virtual void Kill();
+    WELS_MUTEX          m_hMutex;
+protected:
+    static WELS_THREAD_ROUTINE_TYPE  TheThread (void* pParam);
 
-  void SetRunning (bool bRunning) {
-    CWelsAutoLock  cLock (m_cLockStatus);
+    void SetRunning (bool bRunning)
+    {
+        CWelsAutoLock  cLock (m_cLockStatus);
 
-    m_bRunning = bRunning;
-  }
-  void SetEndFlag (bool bEndFlag) {
-    CWelsAutoLock  cLock (m_cLockStatus);
+        m_bRunning = bRunning;
+    }
+    void SetEndFlag (bool bEndFlag)
+    {
+        CWelsAutoLock  cLock (m_cLockStatus);
 
-    m_bEndFlag = bEndFlag;
-  }
+        m_bEndFlag = bEndFlag;
+    }
 
-  bool GetRunning() const {
-    return m_bRunning;
-  }
+    bool GetRunning() const
+    {
+        return m_bRunning;
+    }
 
-  bool GetEndFlag() const {
-    return m_bEndFlag;
-  }
+    bool GetEndFlag() const
+    {
+        return m_bEndFlag;
+    }
 
-  void SignalThread() {
-    WelsEventSignal (&m_hEvent);
-  }
+    void SignalThread()
+    {
+        WelsEventSignal (&m_hEvent);
+    }
 
- private:
-  WELS_THREAD_HANDLE  m_hThread;
-  WELS_EVENT          m_hEvent;
-  CWelsLock           m_cLockStatus;
-  bool                m_bRunning;
-  bool                m_bEndFlag;
+private:
+    WELS_THREAD_HANDLE  m_hThread;
+    WELS_EVENT          m_hEvent;
+    CWelsLock           m_cLockStatus;
+    bool                m_bRunning;
+    bool                m_bEndFlag;
 
-  DISALLOW_COPY_AND_ASSIGN (CWelsThread);
+    DISALLOW_COPY_AND_ASSIGN (CWelsThread);
 };
 
 

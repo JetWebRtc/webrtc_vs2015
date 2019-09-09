@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -43,10 +43,13 @@ static OPUS_INLINE opus_int32 silk_CLZ64( opus_int64 in )
     opus_int32 in_upper;
 
     in_upper = (opus_int32)silk_RSHIFT64(in, 32);
-    if (in_upper == 0) {
+    if (in_upper == 0)
+    {
         /* Search in the lower 32 bits */
         return 32 + silk_CLZ32( (opus_int32) in );
-    } else {
+    }
+    else
+    {
         /* Search in the upper 32 bits */
         return silk_CLZ32( in_upper );
     }
@@ -72,15 +75,19 @@ static OPUS_INLINE opus_int32 silk_SQRT_APPROX( opus_int32 x )
 {
     opus_int32 y, lz, frac_Q7;
 
-    if( x <= 0 ) {
+    if( x <= 0 )
+    {
         return 0;
     }
 
     silk_CLZ_FRAC(x, &lz, &frac_Q7);
 
-    if( lz & 1 ) {
+    if( lz & 1 )
+    {
         y = 32768;
-    } else {
+    }
+    else
+    {
         y = 46214;        /* 46214 = sqrt(2) * 32768 */
     }
 
@@ -127,12 +134,18 @@ static OPUS_INLINE opus_int32 silk_DIV32_varQ(   /* O    returns a good approxim
 
     /* Convert to Qres domain */
     lshift = 29 + a_headrm - b_headrm - Qres;
-    if( lshift < 0 ) {
+    if( lshift < 0 )
+    {
         return silk_LSHIFT_SAT32(result, -lshift);
-    } else {
-        if( lshift < 32){
+    }
+    else
+    {
+        if( lshift < 32)
+        {
             return silk_RSHIFT(result, lshift);
-        } else {
+        }
+        else
+        {
             /* Avoid undefined result */
             return 0;
         }
@@ -169,12 +182,18 @@ static OPUS_INLINE opus_int32 silk_INVERSE32_varQ(   /* O    returns a good appr
 
     /* Convert to Qres domain */
     lshift = 61 - b_headrm - Qres;
-    if( lshift <= 0 ) {
+    if( lshift <= 0 )
+    {
         return silk_LSHIFT_SAT32(result, -lshift);
-    } else {
-        if( lshift < 32){
+    }
+    else
+    {
+        if( lshift < 32)
+        {
             return silk_RSHIFT(result, lshift);
-        }else{
+        }
+        else
+        {
             /* Avoid undefined result */
             return 0;
         }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TDSC decoder
  * Copyright (C) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -46,7 +46,8 @@
 #define TDSF_HEADER_SIZE      0x56
 #define TDSB_HEADER_SIZE      0x08
 
-typedef struct TDSCContext {
+typedef struct TDSCContext
+{
     AVCodecContext *jpeg_avctx;   // wrapper context for MJPEG
 
     int width, height;
@@ -68,7 +69,8 @@ typedef struct TDSCContext {
 } TDSCContext;
 
 /* 1 byte bits, 1 byte planes, 2 bytes format (probably) */
-enum TDSCCursorFormat {
+enum TDSCCursorFormat
+{
     CUR_FMT_MONO = 0x01010004,
     CUR_FMT_BGRA = 0x20010004,
     CUR_FMT_RGBA = 0x20010008,
@@ -97,7 +99,8 @@ static av_cold int tdsc_init(AVCodecContext *avctx)
     avctx->pix_fmt = AV_PIX_FMT_BGR24;
 
     /* These needs to be set to estimate buffer and frame size */
-    if (!(avctx->width && avctx->height)) {
+    if (!(avctx->width && avctx->height))
+    {
         av_log(avctx, AV_LOG_ERROR, "Video size not set.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -156,23 +159,31 @@ static void tdsc_paint_cursor(AVCodecContext *avctx, uint8_t *dst, int stride)
         w = ctx->width - x;
     if (y + h > ctx->height)
         h = ctx->height - y;
-    if (x < 0) {
+    if (x < 0)
+    {
         w      +=  x;
         cursor += -x * 4;
-    } else {
+    }
+    else
+    {
         dst    +=  x * 3;
     }
-    if (y < 0) {
+    if (y < 0)
+    {
         h      +=  y;
         cursor += -y * ctx->cursor_stride;
-    } else {
+    }
+    else
+    {
         dst    +=  y * stride;
     }
     if (w < 0 || h < 0)
         return;
 
-    for (j = 0; j < h; j++) {
-        for (i = 0; i < w; i++) {
+    for (j = 0; j < h; j++)
+    {
+        for (i = 0; i < w; i++)
+        {
             uint8_t alpha = cursor[i * 4];
             APPLY_ALPHA(dst[i * 3 + 0], cursor[i * 4 + 1], alpha);
             APPLY_ALPHA(dst[i * 3 + 1], cursor[i * 4 + 2], alpha);
@@ -198,21 +209,24 @@ static int tdsc_load_cursor(AVCodecContext *avctx)
     ctx->cursor_stride = FFALIGN(ctx->cursor_w, 32) * 4;
     cursor_fmt = bytestream2_get_le32(&ctx->gbc);
 
-    if (ctx->cursor_x >= avctx->width || ctx->cursor_y >= avctx->height) {
+    if (ctx->cursor_x >= avctx->width || ctx->cursor_y >= avctx->height)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Invalid cursor position (%d.%d outside %dx%d).\n",
                ctx->cursor_x, ctx->cursor_y, avctx->width, avctx->height);
         return AVERROR_INVALIDDATA;
     }
     if (ctx->cursor_w < 1 || ctx->cursor_w > 256 ||
-        ctx->cursor_h < 1 || ctx->cursor_h > 256) {
+            ctx->cursor_h < 1 || ctx->cursor_h > 256)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Invalid cursor dimensions %dx%d.\n",
                ctx->cursor_w, ctx->cursor_h);
         return AVERROR_INVALIDDATA;
     }
     if (ctx->cursor_hot_x > ctx->cursor_w ||
-        ctx->cursor_hot_y > ctx->cursor_h) {
+            ctx->cursor_hot_y > ctx->cursor_h)
+    {
         av_log(avctx, AV_LOG_WARNING, "Invalid hotspot position %d.%d.\n",
                ctx->cursor_hot_x, ctx->cursor_hot_y);
         ctx->cursor_hot_x = FFMIN(ctx->cursor_hot_x, ctx->cursor_w - 1);
@@ -220,19 +234,24 @@ static int tdsc_load_cursor(AVCodecContext *avctx)
     }
 
     ret = av_reallocp(&ctx->cursor, ctx->cursor_stride * ctx->cursor_h);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot allocate cursor buffer.\n");
         return ret;
     }
 
     dst = ctx->cursor;
     /* here data is packed in BE */
-    switch (cursor_fmt) {
+    switch (cursor_fmt)
+    {
     case CUR_FMT_MONO:
-        for (j = 0; j < ctx->cursor_h; j++) {
-            for (i = 0; i < ctx->cursor_w; i += 32) {
+        for (j = 0; j < ctx->cursor_h; j++)
+        {
+            for (i = 0; i < ctx->cursor_w; i += 32)
+            {
                 bits = bytestream2_get_be32(&ctx->gbc);
-                for (k = 0; k < 32; k++) {
+                for (k = 0; k < 32; k++)
+                {
                     dst[0] = !!(bits & 0x80000000);
                     dst   += 4;
                     bits <<= 1;
@@ -242,12 +261,16 @@ static int tdsc_load_cursor(AVCodecContext *avctx)
         }
 
         dst = ctx->cursor;
-        for (j = 0; j < ctx->cursor_h; j++) {
-            for (i = 0; i < ctx->cursor_w; i += 32) {
+        for (j = 0; j < ctx->cursor_h; j++)
+        {
+            for (i = 0; i < ctx->cursor_w; i += 32)
+            {
                 bits = bytestream2_get_be32(&ctx->gbc);
-                for (k = 0; k < 32; k++) {
+                for (k = 0; k < 32; k++)
+                {
                     int mask_bit = !!(bits & 0x80000000);
-                    switch (dst[0] * 2 + mask_bit) {
+                    switch (dst[0] * 2 + mask_bit)
+                    {
                     case 0:
                         dst[0] = 0xFF;
                         dst[1] = 0x00;
@@ -278,9 +301,12 @@ static int tdsc_load_cursor(AVCodecContext *avctx)
         /* Skip monochrome version of the cursor */
         bytestream2_skip(&ctx->gbc,
                          ctx->cursor_h * (FFALIGN(ctx->cursor_w, 32) >> 3));
-        if (cursor_fmt & 8) { // RGBA -> ABGR
-            for (j = 0; j < ctx->cursor_h; j++) {
-                for (i = 0; i < ctx->cursor_w; i++) {
+        if (cursor_fmt & 8)   // RGBA -> ABGR
+        {
+            for (j = 0; j < ctx->cursor_h; j++)
+            {
+                for (i = 0; i < ctx->cursor_w; i++)
+                {
                     int val = bytestream2_get_be32(&ctx->gbc);
                     *dst++ = val >> 24;
                     *dst++ = val >> 16;
@@ -289,9 +315,13 @@ static int tdsc_load_cursor(AVCodecContext *avctx)
                 }
                 dst += ctx->cursor_stride - ctx->cursor_w * 4;
             }
-        } else { // BGRA -> ABGR
-            for (j = 0; j < ctx->cursor_h; j++) {
-                for (i = 0; i < ctx->cursor_w; i++) {
+        }
+        else     // BGRA -> ABGR
+        {
+            for (j = 0; j < ctx->cursor_h; j++)
+            {
+                for (i = 0; i < ctx->cursor_w; i++)
+                {
                     int val = bytestream2_get_be32(&ctx->gbc);
                     *dst++ = val >>  0;
                     *dst++ = val >> 24;
@@ -325,7 +355,8 @@ static av_always_inline void tdsc_blit(uint8_t *dst, int dst_stride,
                                        int srcuv_stride, int width, int height)
 {
     int col, line;
-    for (line = 0; line < height; line++) {
+    for (line = 0; line < height; line++)
+    {
         for (col = 0; col < width; col++)
             tdsc_yuv2rgb(dst + col * 3, srcy[col],
                          srcu[col >> 1] - 128, srcv[col >> 1] - 128);
@@ -353,7 +384,8 @@ static int tdsc_decode_jpeg_tile(AVCodecContext *avctx, int tile_size,
 
     ret = avcodec_decode_video2(ctx->jpeg_avctx, ctx->jpgframe,
                                 &got_frame, &jpkt);
-    if (ret < 0 || !got_frame || ctx->jpgframe->format != AV_PIX_FMT_YUVJ420P) {
+    if (ret < 0 || !got_frame || ctx->jpgframe->format != AV_PIX_FMT_YUVJ420P)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "JPEG decoding error (%d) for (%d) frame.\n",
                ret, got_frame);
@@ -384,15 +416,17 @@ static int tdsc_decode_tiles(AVCodecContext *avctx, int number_tiles)
     int i;
 
     /* Iterate over the number of tiles */
-    for (i = 0; i < number_tiles; i++) {
+    for (i = 0; i < number_tiles; i++)
+    {
         int tile_size;
         int tile_mode;
         int x, y, w, h;
         int ret;
 
         if (bytestream2_get_bytes_left(&ctx->gbc) < 4 ||
-            bytestream2_get_le32(&ctx->gbc) != MKTAG('T','D','S','B') ||
-            bytestream2_get_bytes_left(&ctx->gbc) < TDSB_HEADER_SIZE - 4) {
+                bytestream2_get_le32(&ctx->gbc) != MKTAG('T','D','S','B') ||
+                bytestream2_get_bytes_left(&ctx->gbc) < TDSB_HEADER_SIZE - 4)
+        {
             av_log(avctx, AV_LOG_ERROR, "TDSB tag is too small.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -408,13 +442,15 @@ static int tdsc_decode_tiles(AVCodecContext *avctx, int number_tiles)
         w = bytestream2_get_le32(&ctx->gbc) - x;
         h = bytestream2_get_le32(&ctx->gbc) - y;
 
-        if (x >= ctx->width || y >= ctx->height) {
+        if (x >= ctx->width || y >= ctx->height)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid tile position (%d.%d outside %dx%d).\n",
                    x, y, ctx->width, ctx->height);
             return AVERROR_INVALIDDATA;
         }
-        if (x + w > ctx->width || y + h > ctx->height) {
+        if (x + w > ctx->width || y + h > ctx->height)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid tile size %dx%d\n", w, h);
             return AVERROR_INVALIDDATA;
@@ -426,18 +462,23 @@ static int tdsc_decode_tiles(AVCodecContext *avctx, int number_tiles)
 
         bytestream2_get_buffer(&ctx->gbc, ctx->tilebuffer, tile_size);
 
-        if (tile_mode == MKTAG('G','E','P','J')) {
+        if (tile_mode == MKTAG('G','E','P','J'))
+        {
             /* Decode JPEG tile and copy it in the reference frame */
             ret = tdsc_decode_jpeg_tile(avctx, tile_size, x, y, w, h);
             if (ret < 0)
                 return ret;
-        } else if (tile_mode == MKTAG(' ','W','A','R')) {
+        }
+        else if (tile_mode == MKTAG(' ','W','A','R'))
+        {
             /* Just copy the buffer to output */
             av_image_copy_plane(ctx->refframe->data[0] + x * 3 +
                                 ctx->refframe->linesize[0] * y,
                                 ctx->refframe->linesize[0], ctx->tilebuffer,
                                 w * 3, w * 3, h);
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_ERROR, "Unknown tile type %08x.\n", tile_mode);
             return AVERROR_INVALIDDATA;
         }
@@ -462,13 +503,14 @@ static int tdsc_parse_tdsf(AVCodecContext *avctx, int number_tiles)
     h = -bytestream2_get_le32(&ctx->gbc);
 
     if (bytestream2_get_le16(&ctx->gbc) != 1 ||  // 1 plane
-        bytestream2_get_le16(&ctx->gbc) != 24)   // BGR24
+            bytestream2_get_le16(&ctx->gbc) != 24)   // BGR24
         return AVERROR_INVALIDDATA;
 
     bytestream2_skip(&ctx->gbc, 24); // unused fields
 
     /* Update sizes */
-    if (avctx->width != w || avctx->height != h) {
+    if (avctx->width != w || avctx->height != h)
+    {
         av_log(avctx, AV_LOG_DEBUG, "Size update %dx%d -> %d%d.\n",
                avctx->width, avctx->height, ctx->width, ctx->height);
         ret = ff_set_dimensions(avctx, w, h);
@@ -480,7 +522,8 @@ static int tdsc_parse_tdsf(AVCodecContext *avctx, int number_tiles)
     ctx->refframe->height = ctx->height = h;
 
     /* Allocate the reference frame if not already done or on size change */
-    if (init_refframe) {
+    if (init_refframe)
+    {
         ret = av_frame_get_buffer(ctx->refframe, 32);
         if (ret < 0)
             return ret;
@@ -498,19 +541,23 @@ static int tdsc_parse_dtsm(AVCodecContext *avctx)
 
     bytestream2_skip(&ctx->gbc, 4); // some kind of ID or version maybe?
 
-    if (action == 2 || action == 3) {
+    if (action == 2 || action == 3)
+    {
         /* Load cursor coordinates */
         ctx->cursor_x = bytestream2_get_le32(&ctx->gbc);
         ctx->cursor_y = bytestream2_get_le32(&ctx->gbc);
 
         /* Load a full cursor sprite */
-        if (action == 3) {
+        if (action == 3)
+        {
             ret = tdsc_load_cursor(avctx);
             /* Do not consider cursor errors fatal unless in explode mode */
             if (ret < 0 && (avctx->err_recognition & AV_EF_EXPLODE))
                 return ret;
         }
-    } else {
+    }
+    else
+    {
         avpriv_request_sample(avctx, "Cursor action %d", action);
     }
 
@@ -526,7 +573,8 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     uLongf dlen;
 
     /* Resize deflate buffer on resolution change */
-    if (ctx->width != avctx->width || ctx->height != avctx->height) {
+    if (ctx->width != avctx->width || ctx->height != avctx->height)
+    {
         ctx->deflatelen = avctx->width * avctx->height * (3 + 1);
         ret = av_reallocp(&ctx->deflatebuffer, ctx->deflatelen);
         if (ret < 0)
@@ -536,7 +584,8 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
 
     /* Frames are deflated, need to inflate them first */
     ret = uncompress(ctx->deflatebuffer, &dlen, avpkt->data, avpkt->size);
-    if (ret) {
+    if (ret)
+    {
         av_log(avctx, AV_LOG_ERROR, "Deflate error %d.\n", ret);
         return AVERROR_UNKNOWN;
     }
@@ -544,7 +593,8 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     bytestream2_init(&ctx->gbc, ctx->deflatebuffer, dlen);
 
     /* Check for tag and for size info */
-    if (bytestream2_get_bytes_left(&ctx->gbc) < 4 + 4) {
+    if (bytestream2_get_bytes_left(&ctx->gbc) < 4 + 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -552,9 +602,11 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     /* Read tag */
     tag_header = bytestream2_get_le32(&ctx->gbc);
 
-    if (tag_header == MKTAG('T','D','S','F')) {
+    if (tag_header == MKTAG('T','D','S','F'))
+    {
         int number_tiles;
-        if (bytestream2_get_bytes_left(&ctx->gbc) < TDSF_HEADER_SIZE) {
+        if (bytestream2_get_bytes_left(&ctx->gbc) < TDSF_HEADER_SIZE)
+        {
             av_log(avctx, AV_LOG_ERROR, "TDSF tag is too small.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -574,11 +626,13 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     /* This tag can be after a TDSF block or on its own frame */
-    if (tag_header == MKTAG('D','T','S','M')) {
+    if (tag_header == MKTAG('D','T','S','M'))
+    {
         /* First 4 bytes here are the total size in bytes for this frame */
         int tag_size = bytestream2_get_le32(&ctx->gbc);
 
-        if (bytestream2_get_bytes_left(&ctx->gbc) < tag_size) {
+        if (bytestream2_get_bytes_left(&ctx->gbc) < tag_size)
+        {
             av_log(avctx, AV_LOG_ERROR, "DTSM tag is too small.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -601,10 +655,13 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     tdsc_paint_cursor(avctx, frame->data[0], frame->linesize[0]);
 
     /* Frame is ready to be output */
-    if (keyframe) {
+    if (keyframe)
+    {
         frame->pict_type = AV_PICTURE_TYPE_I;
         frame->key_frame = 1;
-    } else {
+    }
+    else
+    {
         frame->pict_type = AV_PICTURE_TYPE_P;
     }
     *got_frame = 1;
@@ -612,7 +669,8 @@ static int tdsc_decode_frame(AVCodecContext *avctx, void *data,
     return 0;
 }
 
-AVCodec ff_tdsc_decoder = {
+AVCodec ff_tdsc_decoder =
+{
     .name           = "tdsc",
     .long_name      = NULL_IF_CONFIG_SMALL("TDSC"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -623,5 +681,5 @@ AVCodec ff_tdsc_decoder = {
     .priv_data_size = sizeof(TDSCContext),
     .capabilities   = AV_CODEC_CAP_DR1,
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE |
-                      FF_CODEC_CAP_INIT_CLEANUP,
+    FF_CODEC_CAP_INIT_CLEANUP,
 };

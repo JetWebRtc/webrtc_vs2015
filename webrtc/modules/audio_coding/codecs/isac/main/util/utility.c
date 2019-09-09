@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,21 +22,22 @@ readframe(
     int    length)
 {
     short k, rlen, status = 0;
-	unsigned char* ptrUChar;
-	ptrUChar = (unsigned char*)data;
+    unsigned char* ptrUChar;
+    ptrUChar = (unsigned char*)data;
 
     rlen = (short)fread(data, sizeof(short), length, inp);
-    if (rlen < length) {
+    if (rlen < length)
+    {
         for (k = rlen; k < length; k++)
             data[k] = 0;
         status = 1;
     }
 
-	// Assuming that our PCM files are written in Intel machines
-	for(k = 0; k < length; k++)
-	{
-		data[k] = (short)ptrUChar[k<<1] | ((((short)ptrUChar[(k<<1) + 1]) << 8) & 0xFF00);
-	}
+    // Assuming that our PCM files are written in Intel machines
+    for(k = 0; k < length; k++)
+    {
+        data[k] = (short)ptrUChar[k<<1] | ((((short)ptrUChar[(k<<1) + 1]) << 8) & 0xFF00);
+    }
 
     return status;
 }
@@ -142,21 +143,21 @@ get_arrival_time(
     short            receiverSampFreqHz)
 {
     unsigned int travelTimeMs;
-	const int headerSizeByte = 35;
+    const int headerSizeByte = 35;
 
-	int headerRate;
+    int headerRate;
 
     BN_data->whenPackGeneratedMs += (current_framesamples / (senderSampFreqHz / 1000));
 
-	headerRate = headerSizeByte * 8 * senderSampFreqHz / current_framesamples;     /* bits/s */
+    headerRate = headerSizeByte * 8 * senderSampFreqHz / current_framesamples;     /* bits/s */
 
-	/* everything in samples */
-	BN_data->sample_count = BN_data->sample_count + current_framesamples;
+    /* everything in samples */
+    BN_data->sample_count = BN_data->sample_count + current_framesamples;
 
     //travelTimeMs = ((packet_size + HeaderSize) * 8 * sampFreqHz) /
     //    (bottleneck + HeaderRate)
     travelTimeMs = (unsigned int)floor((double)((packet_size + headerSizeByte) * 8 * 1000)
-        / (double)(bottleneck + headerRate) + 0.5);
+                                       / (double)(bottleneck + headerRate) + 0.5);
 
     if(BN_data->whenPrevPackLeftMs > BN_data->whenPackGeneratedMs)
     {
@@ -165,14 +166,14 @@ get_arrival_time(
     else
     {
         BN_data->whenPrevPackLeftMs = BN_data->whenPackGeneratedMs +
-            travelTimeMs;
+                                      travelTimeMs;
     }
 
     BN_data->arrival_time = (BN_data->whenPrevPackLeftMs *
-        (receiverSampFreqHz / 1000));
+                             (receiverSampFreqHz / 1000));
 
 //	if (BN_data->arrival_time < BN_data->sample_count)
 //		BN_data->arrival_time = BN_data->sample_count;
 
-	BN_data->rtp_number++;
+    BN_data->rtp_number++;
 }

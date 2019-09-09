@@ -1,4 +1,4 @@
-/*
+﻿/*
  *
  * This file is part of FFmpeg.
  *
@@ -47,7 +47,7 @@ static inline int atomic_int_add_and_fetch_suncc(volatile int *ptr, int inc)
 
 #define avpriv_atomic_ptr_cas atomic_ptr_cas_suncc
 static inline void *atomic_ptr_cas_suncc(void * volatile *ptr,
-                                         void *oldval, void *newval)
+        void *oldval, void *newval)
 {
     return atomic_cas_ptr(ptr, oldval, newval);
 }

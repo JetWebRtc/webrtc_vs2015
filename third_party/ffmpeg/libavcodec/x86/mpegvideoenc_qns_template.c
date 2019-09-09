@@ -1,4 +1,4 @@
-/*
+﻿/*
  * QNS functions are compiled 3 times for MMX/3DNOW/SSSE3
  * Copyright (c) 2004 Michael Niedermayer
  *
@@ -78,31 +78,35 @@ static void DEF(add_8x8basis)(int16_t rem[64], int16_t basis[64], int scale)
 {
     x86_reg i=0;
 
-    if(FFABS(scale) < MAX_ABS){
+    if(FFABS(scale) < MAX_ABS)
+    {
         scale<<= 16 + SCALE_OFFSET - BASIS_SHIFT + RECON_SHIFT;
         SET_RND(mm6);
         __asm__ volatile(
-                "movd  %3, %%mm5        \n\t"
-                "punpcklwd %%mm5, %%mm5 \n\t"
-                "punpcklwd %%mm5, %%mm5 \n\t"
-                ".p2align 4             \n\t"
-                "1:                     \n\t"
-                "movq  (%1, %0), %%mm0  \n\t"
-                "movq  8(%1, %0), %%mm1 \n\t"
-                PMULHRW(%%mm0, %%mm1, %%mm5, %%mm6)
-                "paddw (%2, %0), %%mm0  \n\t"
-                "paddw 8(%2, %0), %%mm1 \n\t"
-                "movq %%mm0, (%2, %0)   \n\t"
-                "movq %%mm1, 8(%2, %0)  \n\t"
-                "add $16, %0            \n\t"
-                "cmp $128, %0           \n\t" // FIXME optimize & bench
-                " jb 1b                 \n\t"
+            "movd  %3, %%mm5        \n\t"
+            "punpcklwd %%mm5, %%mm5 \n\t"
+            "punpcklwd %%mm5, %%mm5 \n\t"
+            ".p2align 4             \n\t"
+            "1:                     \n\t"
+            "movq  (%1, %0), %%mm0  \n\t"
+            "movq  8(%1, %0), %%mm1 \n\t"
+            PMULHRW(%%mm0, %%mm1, %%mm5, %%mm6)
+            "paddw (%2, %0), %%mm0  \n\t"
+            "paddw 8(%2, %0), %%mm1 \n\t"
+            "movq %%mm0, (%2, %0)   \n\t"
+            "movq %%mm1, 8(%2, %0)  \n\t"
+            "add $16, %0            \n\t"
+            "cmp $128, %0           \n\t" // FIXME optimize & bench
+            " jb 1b                 \n\t"
 
-                : "+r" (i)
-                : "r"(basis), "r"(rem), "g"(scale)
+            : "+r" (i)
+            : "r"(basis), "r"(rem), "g"(scale)
         );
-    }else{
-        for(i=0; i<8*8; i++){
+    }
+    else
+    {
+        for(i=0; i<8*8; i++)
+        {
             rem[i] += (basis[i]*scale + (1<<(BASIS_SHIFT - RECON_SHIFT-1)))>>(BASIS_SHIFT - RECON_SHIFT);
         }
     }

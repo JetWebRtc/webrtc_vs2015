@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,14 +16,16 @@
 extern "C" {
 #endif
 
-typedef struct {
-  short row;
-  short col;
+typedef struct
+{
+    short row;
+    short col;
 } MV;
 
-typedef union int_mv {
-  uint32_t as_int;
-  MV as_mv;
+typedef union int_mv
+{
+    uint32_t as_int;
+    MV as_mv;
 } int_mv; /* facilitates faster equality tests and copies */
 
 #ifdef __cplusplus

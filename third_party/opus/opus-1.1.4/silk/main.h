@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -332,8 +332,8 @@ void silk_process_NLSFs(
 );
 
 opus_int32 silk_NLSF_encode(                                    /* O    Returns RD value in Q25                     */
-          opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
-          opus_int16            *pNLSF_Q15,                     /* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
+    opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
+    opus_int16            *pNLSF_Q15,                     /* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
     const silk_NLSF_CB_struct   *psNLSF_CB,                     /* I    Codebook object                             */
     const opus_int16            *pW_QW,                         /* I    NLSF weight vector [ LPC_ORDER ]            */
     const opus_int              NLSF_mu_Q20,                    /* I    Rate weight for the RD optimization         */
@@ -366,8 +366,8 @@ opus_int32 silk_NLSF_del_dec_quant(                             /* O    Returns 
 
 /* Unpack predictor values and indices for entropy coding tables */
 void silk_NLSF_unpack(
-          opus_int16            ec_ix[],                        /* O    Indices to entropy tables [ LPC_ORDER ]     */
-          opus_uint8            pred_Q8[],                      /* O    LSF predictor [ LPC_ORDER ]                 */
+    opus_int16            ec_ix[],                        /* O    Indices to entropy tables [ LPC_ORDER ]     */
+    opus_uint8            pred_Q8[],                      /* O    LSF predictor [ LPC_ORDER ]                 */
     const silk_NLSF_CB_struct   *psNLSF_CB,                     /* I    Codebook object                             */
     const opus_int              CB1_index                       /* I    Index of vector in first LSF codebook       */
 );
@@ -376,8 +376,8 @@ void silk_NLSF_unpack(
 /* NLSF vector decoder */
 /***********************/
 void silk_NLSF_decode(
-          opus_int16            *pNLSF_Q15,                     /* O    Quantized NLSF vector [ LPC_ORDER ]         */
-          opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
+    opus_int16            *pNLSF_Q15,                     /* O    Quantized NLSF vector [ LPC_ORDER ]         */
+    opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
     const silk_NLSF_CB_struct   *psNLSF_CB                      /* I    Codebook object                             */
 );
 

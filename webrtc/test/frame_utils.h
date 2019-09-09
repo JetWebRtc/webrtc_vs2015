@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,11 +14,13 @@
 
 #include "webrtc/base/scoped_ref_ptr.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class I420Buffer;
 class VideoFrame;
 class VideoFrameBuffer;
-namespace test {
+namespace test
+{
 
 bool EqualPlane(const uint8_t* data1,
                 const uint8_t* data2,
@@ -31,8 +33,9 @@ static inline bool EqualPlane(const uint8_t* data1,
                               const uint8_t* data2,
                               int stride,
                               int width,
-                              int height) {
-  return EqualPlane(data1, data2, stride, stride, width, height);
+                              int height)
+{
+    return EqualPlane(data1, data2, stride, stride, width, height);
 }
 
 bool FramesEqual(const webrtc::VideoFrame& f1, const webrtc::VideoFrame& f2);

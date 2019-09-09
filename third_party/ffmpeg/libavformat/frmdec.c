@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Megalux Frame demuxer
  * Copyright (c) 2010 Peter Ross <pross@xvid.org>
  *
@@ -28,7 +28,8 @@
 #include "libavutil/intreadwrite.h"
 #include "avformat.h"
 
-static const PixelFormatTag frm_pix_fmt_tags[] = {
+static const PixelFormatTag frm_pix_fmt_tags[] =
+{
     { AV_PIX_FMT_RGB555, 1 },
     { AV_PIX_FMT_RGB0,   2 },
     { AV_PIX_FMT_RGB24,  3 },
@@ -37,15 +38,16 @@ static const PixelFormatTag frm_pix_fmt_tags[] = {
     { AV_PIX_FMT_NONE,   0 },
 };
 
-typedef struct {
+typedef struct
+{
     int count;
 } FrmContext;
 
 static int frm_read_probe(AVProbeData *p)
 {
     if (p->buf_size > 8 &&
-        p->buf[0] == 'F' && p->buf[1] == 'R' && p->buf[2] == 'M' &&
-        AV_RL16(&p->buf[4]) && AV_RL16(&p->buf[6]))
+            p->buf[0] == 'F' && p->buf[1] == 'R' && p->buf[2] == 'M' &&
+            AV_RL16(&p->buf[4]) && AV_RL16(&p->buf[6]))
         return AVPROBE_SCORE_MAX / 4;
     return 0;
 }
@@ -88,7 +90,8 @@ static int frm_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     if (ret < 0)
         return ret;
 
-    if (stc->pix_fmt == AV_PIX_FMT_BGRA) {
+    if (stc->pix_fmt == AV_PIX_FMT_BGRA)
+    {
         int i;
         for (i = 3; i + 1 <= pkt->size; i += 4)
             pkt->data[i] = 0xFF - pkt->data[i];
@@ -100,7 +103,8 @@ static int frm_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_frm_demuxer = {
+AVInputFormat ff_frm_demuxer =
+{
     .name           = "frm",
     .priv_data_size = sizeof(FrmContext),
     .long_name      = NULL_IF_CONFIG_SMALL("Megalux Frame"),

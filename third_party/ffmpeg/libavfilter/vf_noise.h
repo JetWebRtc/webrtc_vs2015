@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -34,7 +34,8 @@
 #define NOISE_AVERAGED 8
 #define NOISE_PATTERN  16
 
-typedef struct {
+typedef struct
+{
     int strength;
     unsigned flags;
     AVLFG lfg;
@@ -45,7 +46,8 @@ typedef struct {
     int rand_shift_init;
 } FilterParams;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int nb_planes;
     int bytewidth[4];

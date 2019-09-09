@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Jeremy Tran
  * Copyright (c) 2004 Tobias Diedrich
  * Copyright (c) 2003 Donald A. Graft
@@ -35,7 +35,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int           frame; ///< frame count, starting from 0
     int           thresh, map, order, sharp, twoway;
@@ -48,7 +49,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(KerndeintContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption kerndeint_options[] = {
+static const AVOption kerndeint_options[] =
+{
     { "thresh", "set the threshold", OFFSET(thresh), AV_OPT_TYPE_INT, {.i64=10}, 0, 255, FLAGS },
     { "map",    "set the map", OFFSET(map), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
     { "order",  "set the order", OFFSET(order), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
@@ -68,7 +70,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUYV422,
         AV_PIX_FMT_ARGB, AV_PIX_FMT_0RGB,
@@ -144,14 +147,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     const int is_packed_rgb = kerndeint->is_packed_rgb;
 
     outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!outpic) {
+    if (!outpic)
+    {
         av_frame_free(&inpic);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(outpic, inpic);
     outpic->interlaced_frame = 0;
 
-    for (plane = 0; plane < 4 && inpic->data[plane] && inpic->linesize[plane]; plane++) {
+    for (plane = 0; plane < 4 && inpic->data[plane] && inpic->linesize[plane]; plane++)
+    {
         h = plane == 0 ? inlink->h : FF_CEIL_RSHIFT(inlink->h, kerndeint->vsub);
         bwidth = kerndeint->tmp_bwidth[plane];
 
@@ -163,7 +168,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
         srcp              = srcp_saved + (1 - order) * src_linesize;
         dstp              = dstp_saved + (1 - order) * dst_linesize;
 
-        for (y = 0; y < h; y += 2) {
+        for (y = 0; y < h; y += 2)
+        {
             memcpy(dstp, srcp, bwidth);
             srcp += 2 * src_linesize;
             dstp += 2 * dst_linesize;
@@ -198,65 +204,92 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
 
         dstp   = dstp_saved + 5 * dst_linesize - (1 - order) * dst_linesize;
 
-        for (y = 5 - (1 - order); y <= h - 5 - (1 - order); y += 2) {
-            for (x = 0; x < bwidth; x++) {
+        for (y = 5 - (1 - order); y <= h - 5 - (1 - order); y += 2)
+        {
+            for (x = 0; x < bwidth; x++)
+            {
                 if (thresh == 0 || n == 0 ||
-                    (abs((int)prvp[x]  - (int)srcp[x])  > thresh) ||
-                    (abs((int)prvpp[x] - (int)srcpp[x]) > thresh) ||
-                    (abs((int)prvpn[x] - (int)srcpn[x]) > thresh)) {
-                    if (map) {
+                        (abs((int)prvp[x]  - (int)srcp[x])  > thresh) ||
+                        (abs((int)prvpp[x] - (int)srcpp[x]) > thresh) ||
+                        (abs((int)prvpn[x] - (int)srcpn[x]) > thresh))
+                {
+                    if (map)
+                    {
                         g = x & ~3;
 
-                        if (is_packed_rgb) {
+                        if (is_packed_rgb)
+                        {
                             AV_WB32(dstp + g, 0xffffffff);
                             x = g + 3;
-                        } else if (inlink->format == AV_PIX_FMT_YUYV422) {
+                        }
+                        else if (inlink->format == AV_PIX_FMT_YUYV422)
+                        {
                             // y <- 235, u <- 128, y <- 235, v <- 128
                             AV_WB32(dstp + g, 0xeb80eb80);
                             x = g + 3;
-                        } else {
+                        }
+                        else
+                        {
                             dstp[x] = plane == 0 ? 235 : 128;
                         }
-                    } else {
-                        if (is_packed_rgb) {
+                    }
+                    else
+                    {
+                        if (is_packed_rgb)
+                        {
                             hi = 255;
                             lo = 0;
-                        } else if (inlink->format == AV_PIX_FMT_YUYV422) {
+                        }
+                        else if (inlink->format == AV_PIX_FMT_YUYV422)
+                        {
                             hi = x & 1 ? 240 : 235;
                             lo = 16;
-                        } else {
+                        }
+                        else
+                        {
                             hi = plane == 0 ? 235 : 240;
                             lo = 16;
                         }
 
-                        if (sharp) {
-                            if (twoway) {
+                        if (sharp)
+                        {
+                            if (twoway)
+                            {
                                 valf = + 0.526 * ((int)srcpp[x] + (int)srcpn[x])
-                                    + 0.170 * ((int)srcp[x] + (int)prvp[x])
-                                    - 0.116 * ((int)srcppp[x] + (int)srcpnn[x] + (int)prvppp[x] + (int)prvpnn[x])
-                                    - 0.026 * ((int)srcp3p[x] + (int)srcp3n[x])
-                                    + 0.031 * ((int)srcp4p[x] + (int)srcp4n[x] + (int)prvp4p[x] + (int)prvp4n[x]);
-                            } else {
+                                       + 0.170 * ((int)srcp[x] + (int)prvp[x])
+                                       - 0.116 * ((int)srcppp[x] + (int)srcpnn[x] + (int)prvppp[x] + (int)prvpnn[x])
+                                       - 0.026 * ((int)srcp3p[x] + (int)srcp3n[x])
+                                       + 0.031 * ((int)srcp4p[x] + (int)srcp4n[x] + (int)prvp4p[x] + (int)prvp4n[x]);
+                            }
+                            else
+                            {
                                 valf = + 0.526 * ((int)srcpp[x] + (int)srcpn[x])
-                                    + 0.170 * ((int)prvp[x])
-                                    - 0.116 * ((int)prvppp[x] + (int)prvpnn[x])
-                                    - 0.026 * ((int)srcp3p[x] + (int)srcp3n[x])
-                                    + 0.031 * ((int)prvp4p[x] + (int)prvp4p[x]);
+                                       + 0.170 * ((int)prvp[x])
+                                       - 0.116 * ((int)prvppp[x] + (int)prvpnn[x])
+                                       - 0.026 * ((int)srcp3p[x] + (int)srcp3n[x])
+                                       + 0.031 * ((int)prvp4p[x] + (int)prvp4p[x]);
                             }
                             dstp[x] = av_clip(valf, lo, hi);
-                        } else {
-                            if (twoway) {
+                        }
+                        else
+                        {
+                            if (twoway)
+                            {
                                 val = (8 * ((int)srcpp[x] + (int)srcpn[x]) + 2 * ((int)srcp[x] + (int)prvp[x])
                                        - (int)(srcppp[x]) - (int)(srcpnn[x])
                                        - (int)(prvppp[x]) - (int)(prvpnn[x])) >> 4;
-                            } else {
+                            }
+                            else
+                            {
                                 val = (8 * ((int)srcpp[x] + (int)srcpn[x]) + 2 * ((int)prvp[x])
                                        - (int)(prvppp[x]) - (int)(prvpnn[x])) >> 4;
                             }
                             dstp[x] = av_clip(val, lo, hi);
                         }
                     }
-                } else {
+                }
+                else
+                {
                     dstp[x] = srcp[x];
                 }
             }
@@ -288,7 +321,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     return ff_filter_frame(outlink, outpic);
 }
 
-static const AVFilterPad kerndeint_inputs[] = {
+static const AVFilterPad kerndeint_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -298,7 +332,8 @@ static const AVFilterPad kerndeint_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad kerndeint_outputs[] = {
+static const AVFilterPad kerndeint_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -307,7 +342,8 @@ static const AVFilterPad kerndeint_outputs[] = {
 };
 
 
-AVFilter ff_vf_kerndeint = {
+AVFilter ff_vf_kerndeint =
+{
     .name          = "kerndeint",
     .description   = NULL_IF_CONFIG_SMALL("Apply kernel deinterlacing to the input."),
     .priv_size     = sizeof(KerndeintContext),

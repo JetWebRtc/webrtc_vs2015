@@ -1,4 +1,4 @@
-/*
+﻿/*
  * common functions for the ATRAC family of decoders
  *
  * Copyright (c) 2009-2013 Maxim Poliakovski
@@ -32,7 +32,8 @@
 /**
  *  Gain control parameters for one subband.
  */
-typedef struct AtracGainInfo {
+typedef struct AtracGainInfo
+{
     int   num_points;   ///< number of gain control points
     int   lev_code[7];  ///< level at corresponding control point
     int   loc_code[7];  ///< location of gain control points
@@ -41,7 +42,8 @@ typedef struct AtracGainInfo {
 /**
  *  Gain compensation context structure.
  */
-typedef struct AtracGCContext {
+typedef struct AtracGCContext
+{
     float   gain_tab1[16];  ///< gain compensation level table
     float   gain_tab2[31];  ///< gain compensation interpolation table
     int     id2exp_offset;  ///< offset for converting level index into level exponent

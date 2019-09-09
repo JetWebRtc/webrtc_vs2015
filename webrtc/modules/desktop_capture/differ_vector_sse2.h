@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 
 #include <stdint.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Find vector difference of dimension 16.
 extern bool VectorDifference_SSE2_W16(const uint8_t* image1,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/logging.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 QualityThreshold::QualityThreshold(int low_threshold,
                                    int high_threshold,
@@ -30,75 +31,93 @@ QualityThreshold::QualityThreshold(int low_threshold,
       count_low_(0),
       count_high_(0),
       num_high_states_(0),
-      num_certain_states_(0) {
-  RTC_CHECK_GT(fraction, 0.5f);
-  RTC_CHECK_GT(max_measurements, 1);
-  RTC_CHECK_LT(low_threshold, high_threshold);
+      num_certain_states_(0)
+{
+    RTC_CHECK_GT(fraction, 0.5f);
+    RTC_CHECK_GT(max_measurements, 1);
+    RTC_CHECK_LT(low_threshold, high_threshold);
 }
 
-void QualityThreshold::AddMeasurement(int measurement) {
-  int prev_val = until_full_ > 0 ? 0 : buffer_[next_index_];
-  buffer_[next_index_] = measurement;
-  next_index_ = (next_index_ + 1) % max_measurements_;
+void QualityThreshold::AddMeasurement(int measurement)
+{
+    int prev_val = until_full_ > 0 ? 0 : buffer_[next_index_];
+    buffer_[next_index_] = measurement;
+    next_index_ = (next_index_ + 1) % max_measurements_;
 
-  sum_ += measurement - prev_val;
+    sum_ += measurement - prev_val;
 
-  if (until_full_ == 0) {
-    if (prev_val <= low_threshold_) {
-      --count_low_;
-    } else if (prev_val >= high_threshold_) {
-      --count_high_;
+    if (until_full_ == 0)
+    {
+        if (prev_val <= low_threshold_)
+        {
+            --count_low_;
+        }
+        else if (prev_val >= high_threshold_)
+        {
+            --count_high_;
+        }
     }
-  }
 
-  if (measurement <= low_threshold_) {
-    ++count_low_;
-  } else if (measurement >= high_threshold_) {
-    ++count_high_;
-  }
+    if (measurement <= low_threshold_)
+    {
+        ++count_low_;
+    }
+    else if (measurement >= high_threshold_)
+    {
+        ++count_high_;
+    }
 
-  float sufficient_majority = fraction_ * max_measurements_;
-  if (count_high_ >= sufficient_majority) {
-    is_high_ = rtc::Optional<bool>(true);
-  } else if (count_low_ >= sufficient_majority) {
-    is_high_ = rtc::Optional<bool>(false);
-  }
+    float sufficient_majority = fraction_ * max_measurements_;
+    if (count_high_ >= sufficient_majority)
+    {
+        is_high_ = rtc::Optional<bool>(true);
+    }
+    else if (count_low_ >= sufficient_majority)
+    {
+        is_high_ = rtc::Optional<bool>(false);
+    }
 
-  if (until_full_ > 0)
-    --until_full_;
+    if (until_full_ > 0)
+        --until_full_;
 
-  if (is_high_) {
-    if (*is_high_)
-      ++num_high_states_;
-    ++num_certain_states_;
-  }
+    if (is_high_)
+    {
+        if (*is_high_)
+            ++num_high_states_;
+        ++num_certain_states_;
+    }
 }
 
-rtc::Optional<bool> QualityThreshold::IsHigh() const {
-  return is_high_;
+rtc::Optional<bool> QualityThreshold::IsHigh() const
+{
+    return is_high_;
 }
 
-rtc::Optional<double> QualityThreshold::CalculateVariance() const {
-  if (until_full_ > 0) {
-    return rtc::Optional<double>();
-  }
+rtc::Optional<double> QualityThreshold::CalculateVariance() const
+{
+    if (until_full_ > 0)
+    {
+        return rtc::Optional<double>();
+    }
 
-  double variance = 0;
-  double mean = static_cast<double>(sum_) / max_measurements_;
-  for (int i = 0; i < max_measurements_; ++i) {
-    variance += (buffer_[i] - mean) * (buffer_[i] - mean);
-  }
-  return rtc::Optional<double>(variance / (max_measurements_ - 1));
+    double variance = 0;
+    double mean = static_cast<double>(sum_) / max_measurements_;
+    for (int i = 0; i < max_measurements_; ++i)
+    {
+        variance += (buffer_[i] - mean) * (buffer_[i] - mean);
+    }
+    return rtc::Optional<double>(variance / (max_measurements_ - 1));
 }
 
 rtc::Optional<double> QualityThreshold::FractionHigh(
-    int min_required_samples) const {
-  RTC_DCHECK_GT(min_required_samples, 0);
-  if (num_certain_states_ < min_required_samples)
-    return rtc::Optional<double>();
+    int min_required_samples) const
+{
+    RTC_DCHECK_GT(min_required_samples, 0);
+    if (num_certain_states_ < min_required_samples)
+        return rtc::Optional<double>();
 
-  return rtc::Optional<double>(static_cast<double>(num_high_states_) /
-                               num_certain_states_);
+    return rtc::Optional<double>(static_cast<double>(num_high_states_) /
+                                 num_certain_states_);
 }
 
 }  // namespace webrtc

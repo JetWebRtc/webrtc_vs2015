@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder intensity stereo
  * Copyright (C) 2015 Rostislav Pehlivanov
  *
@@ -31,9 +31,9 @@
 #include "aacenc_quantization.h"
 
 struct AACISError ff_aac_is_encoding_err(AACEncContext *s, ChannelElement *cpe,
-                                         int start, int w, int g, float ener0,
-                                         float ener1, float ener01,
-                                         int use_pcoeffs, int phase)
+        int start, int w, int g, float ener0,
+        float ener1, float ener01,
+        int use_pcoeffs, int phase)
 {
     int i, w2;
     SingleChannelElement *sce0 = &cpe->ch[0];
@@ -45,7 +45,8 @@ struct AACISError ff_aac_is_encoding_err(AACEncContext *s, ChannelElement *cpe,
     float dist1 = 0.0f, dist2 = 0.0f;
     struct AACISError is_error = {0};
 
-    for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++) {
+    for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++)
+    {
         FFPsyBand *band0 = &s->psy.ch[s->cur_channel+0].psy_bands[(w+w2)*16+g];
         FFPsyBand *band1 = &s->psy.ch[s->cur_channel+1].psy_bands[(w+w2)*16+g];
         int is_band_type, is_sf_idx = FFMAX(1, sce0->sf_idx[(w+w2)*16+g]-4);
@@ -72,7 +73,8 @@ struct AACISError ff_aac_is_encoding_err(AACEncContext *s, ChannelElement *cpe,
         dist2 += quantize_band_cost(s, IS, I34, sce0->ics.swb_sizes[g],
                                     is_sf_idx, is_band_type,
                                     s->lambda / minthr, INFINITY, NULL, 0);
-        for (i = 0; i < sce0->ics.swb_sizes[g]; i++) {
+        for (i = 0; i < sce0->ics.swb_sizes[g]; i++)
+        {
             dist_spec_err += (L34[i] - I34[i])*(L34[i] - I34[i]);
             dist_spec_err += (R34[i] - I34[i]*e01_34)*(R34[i] - I34[i]*e01_34);
         }
@@ -99,16 +101,21 @@ void ff_aac_search_for_is(AACEncContext *s, AVCodecContext *avctx, ChannelElemen
     if (!cpe->common_window)
         return;
 
-    for (w = 0; w < sce0->ics.num_windows; w += sce0->ics.group_len[w]) {
+    for (w = 0; w < sce0->ics.num_windows; w += sce0->ics.group_len[w])
+    {
         start = 0;
-        for (g = 0;  g < sce0->ics.num_swb; g++) {
+        for (g = 0;  g < sce0->ics.num_swb; g++)
+        {
             if (start*freq_mult > INT_STEREO_LOW_LIMIT*(s->lambda/170.0f) &&
-                cpe->ch[0].band_type[w*16+g] != NOISE_BT && !cpe->ch[0].zeroes[w*16+g] &&
-                cpe->ch[1].band_type[w*16+g] != NOISE_BT && !cpe->ch[1].zeroes[w*16+g]) {
+                    cpe->ch[0].band_type[w*16+g] != NOISE_BT && !cpe->ch[0].zeroes[w*16+g] &&
+                    cpe->ch[1].band_type[w*16+g] != NOISE_BT && !cpe->ch[1].zeroes[w*16+g])
+            {
                 float ener0 = 0.0f, ener1 = 0.0f, ener01 = 0.0f;
                 struct AACISError ph_err1, ph_err2, *erf;
-                for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++) {
-                    for (i = 0; i < sce0->ics.swb_sizes[g]; i++) {
+                for (w2 = 0; w2 < sce0->ics.group_len[w]; w2++)
+                {
+                    for (i = 0; i < sce0->ics.swb_sizes[g]; i++)
+                    {
                         float coef0 = sce0->pcoeffs[start+(w+w2)*128+i];
                         float coef1 = sce1->pcoeffs[start+(w+w2)*128+i];
                         ener0  += coef0*coef0;
@@ -121,7 +128,8 @@ void ff_aac_search_for_is(AACEncContext *s, AVCodecContext *avctx, ChannelElemen
                 ph_err2 = ff_aac_is_encoding_err(s, cpe, start, w, g,
                                                  ener0, ener1, ener01, 0, +1);
                 erf = ph_err1.error < ph_err2.error ? &ph_err1 : &ph_err2;
-                if (erf->pass) {
+                if (erf->pass)
+                {
                     cpe->is_mask[w*16+g] = 1;
                     cpe->ch[0].is_ener[w*16+g] = sqrt(ener0/ener01);
                     cpe->ch[1].is_ener[w*16+g] = ener0/ener1;

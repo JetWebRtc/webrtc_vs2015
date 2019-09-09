@@ -1,4 +1,4 @@
-/*
+﻿/*
  * auth.h
  *
  * common interface to authentication functions
@@ -57,19 +57,19 @@ typedef const struct srtp_auth_type_t *srtp_auth_type_pointer;
 typedef struct srtp_auth_t      *srtp_auth_pointer_t;
 
 typedef srtp_err_status_t (*srtp_auth_alloc_func)
-    (srtp_auth_pointer_t *ap, int key_len, int out_len);
+(srtp_auth_pointer_t *ap, int key_len, int out_len);
 
 typedef srtp_err_status_t (*srtp_auth_init_func)
-    (void *state, const uint8_t *key, int key_len);
+(void *state, const uint8_t *key, int key_len);
 
 typedef srtp_err_status_t (*srtp_auth_dealloc_func)(srtp_auth_pointer_t ap);
 
 typedef srtp_err_status_t (*srtp_auth_compute_func)
-    (void *state, const uint8_t *buffer, int octets_to_auth,
-    int tag_len, uint8_t *tag);
+(void *state, const uint8_t *buffer, int octets_to_auth,
+ int tag_len, uint8_t *tag);
 
 typedef srtp_err_status_t (*srtp_auth_update_func)
-    (void *state, const uint8_t *buffer, int octets_to_auth);
+(void *state, const uint8_t *buffer, int octets_to_auth);
 
 typedef srtp_err_status_t (*srtp_auth_start_func)(void *state);
 
@@ -104,7 +104,8 @@ int srtp_auth_get_prefix_length(const struct srtp_auth_t *a);
  * correctness of the implementation.  (see the srtp_auth_type_self_test()
  * function below)
  */
-typedef struct srtp_auth_test_case_t {
+typedef struct srtp_auth_test_case_t
+{
     int key_length_octets;                        /* octets in key            */
     const uint8_t *key;                                 /* key                      */
     int data_length_octets;                       /* octets in data           */
@@ -115,7 +116,8 @@ typedef struct srtp_auth_test_case_t {
 } srtp_auth_test_case_t;
 
 /* srtp_auth_type_t */
-typedef struct srtp_auth_type_t {
+typedef struct srtp_auth_type_t
+{
     srtp_auth_alloc_func alloc;
     srtp_auth_dealloc_func dealloc;
     srtp_auth_init_func init;
@@ -127,7 +129,8 @@ typedef struct srtp_auth_type_t {
     srtp_auth_type_id_t id;
 } srtp_auth_type_t;
 
-typedef struct srtp_auth_t {
+typedef struct srtp_auth_t
+{
     const srtp_auth_type_t *type;
     void        *state;
     int out_len;                  /* length of output tag in octets */
@@ -147,8 +150,8 @@ srtp_err_status_t srtp_auth_type_self_test(const srtp_auth_type_t *at);
  * provided in an array of values of key/message/tag that is known to
  * be good
  */
-srtp_err_status_t srtp_auth_type_test(const srtp_auth_type_t *at, 
-	const srtp_auth_test_case_t *test_data);
+srtp_err_status_t srtp_auth_type_test(const srtp_auth_type_t *at,
+                                      const srtp_auth_test_case_t *test_data);
 
 /*
  * srtp_replace_auth_type(ct, id)

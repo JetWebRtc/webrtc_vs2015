@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -59,7 +59,8 @@
  * Describe how the frames of a stream are extrapolated before the first one
  * and after EOF to keep sync with possibly longer other streams.
  */
-enum FFFrameSyncExtMode {
+enum FFFrameSyncExtMode
+{
 
     /**
      * Completely stop all streams with this one.
@@ -80,7 +81,8 @@ enum FFFrameSyncExtMode {
 /**
  * Input stream structure
  */
-typedef struct FFFrameSyncIn {
+typedef struct FFFrameSyncIn
+{
 
     /**
      * Queue of incoming AVFrame, and NULL to mark EOF
@@ -150,7 +152,8 @@ typedef struct FFFrameSyncIn {
 /**
  * Frame sync structure.
  */
-typedef struct FFFrameSync {
+typedef struct FFFrameSync
+{
     const AVClass *class;
     void *parent;
 

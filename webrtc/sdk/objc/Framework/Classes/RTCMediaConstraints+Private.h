@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,21 +14,23 @@
 
 #include "webrtc/api/mediaconstraintsinterface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MediaConstraints : public MediaConstraintsInterface {
- public:
-  virtual ~MediaConstraints();
-  MediaConstraints();
-  MediaConstraints(
-      const MediaConstraintsInterface::Constraints& mandatory,
-      const MediaConstraintsInterface::Constraints& optional);
-  virtual const Constraints& GetMandatory() const;
-  virtual const Constraints& GetOptional() const;
+class MediaConstraints : public MediaConstraintsInterface
+{
+public:
+    virtual ~MediaConstraints();
+    MediaConstraints();
+    MediaConstraints(
+        const MediaConstraintsInterface::Constraints& mandatory,
+        const MediaConstraintsInterface::Constraints& optional);
+    virtual const Constraints& GetMandatory() const;
+    virtual const Constraints& GetOptional() const;
 
- private:
-  MediaConstraintsInterface::Constraints mandatory_;
-  MediaConstraintsInterface::Constraints optional_;
+private:
+    MediaConstraintsInterface::Constraints mandatory_;
+    MediaConstraintsInterface::Constraints optional_;
 };
 
 }  // namespace webrtc
@@ -38,16 +40,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCMediaConstraints ()
 
-/**
- * A MediaConstraints representation of this RTCMediaConstraints object. This is
- * needed to pass to the underlying C++ APIs.
- */
+    /**
+     * A MediaConstraints representation of this RTCMediaConstraints object. This is
+     * needed to pass to the underlying C++ APIs.
+     */
 - (std::unique_ptr<webrtc::MediaConstraints>)nativeConstraints;
 
 /** Return a native Constraints object representing these constraints */
 + (webrtc::MediaConstraintsInterface::Constraints)
     nativeConstraintsForConstraints:
-        (NSDictionary<NSString *, NSString *> *)constraints;
+    (NSDictionary<NSString *, NSString *> *)constraints;
 
 @end
 

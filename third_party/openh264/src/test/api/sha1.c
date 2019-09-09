@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  1998, 2009 Paul E. Jones <paulej@packetizer.com>
  *     All rights reserved.
@@ -186,7 +186,7 @@ void SHA1Input(     SHA1Context         *context,
     while(length-- && !context->Corrupted)
     {
         context->Message_Block[context->Message_Block_Index++] =
-                                                (*message_array & 0xFF);
+            (*message_array & 0xFF);
 
         context->Length_Low += 8;
         /* Force it to 32 bits */
@@ -259,7 +259,7 @@ void SHA1ProcessMessageBlock(SHA1Context *context)
 
     for(t = 16; t < 80; t++)
     {
-       W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
+        W[t] = SHA1CircularShift(1,W[t-3] ^ W[t-8] ^ W[t-14] ^ W[t-16]);
     }
 
     A = context->Message_Digest[0];
@@ -315,15 +315,15 @@ void SHA1ProcessMessageBlock(SHA1Context *context)
     }
 
     context->Message_Digest[0] =
-                        (context->Message_Digest[0] + A) & 0xFFFFFFFF;
+        (context->Message_Digest[0] + A) & 0xFFFFFFFF;
     context->Message_Digest[1] =
-                        (context->Message_Digest[1] + B) & 0xFFFFFFFF;
+        (context->Message_Digest[1] + B) & 0xFFFFFFFF;
     context->Message_Digest[2] =
-                        (context->Message_Digest[2] + C) & 0xFFFFFFFF;
+        (context->Message_Digest[2] + C) & 0xFFFFFFFF;
     context->Message_Digest[3] =
-                        (context->Message_Digest[3] + D) & 0xFFFFFFFF;
+        (context->Message_Digest[3] + D) & 0xFFFFFFFF;
     context->Message_Digest[4] =
-                        (context->Message_Digest[4] + E) & 0xFFFFFFFF;
+        (context->Message_Digest[4] + E) & 0xFFFFFFFF;
 
     context->Message_Block_Index = 0;
 }

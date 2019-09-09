@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2008 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #ifndef WEBRTC_BASE_MACCOCOATHREADHELPER_H__
 #define WEBRTC_BASE_MACCOCOATHREADHELPER_H__
 
-namespace rtc {
+namespace rtc
+{
 
 // Cocoa must be "put into multithreading mode" before Cocoa functionality can
 // be used on POSIX threads. This function does that.

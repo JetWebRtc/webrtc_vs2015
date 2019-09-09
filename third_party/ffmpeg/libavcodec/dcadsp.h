@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -24,7 +24,8 @@
 
 #define DCA_SUBBANDS 64
 
-typedef struct DCADSPContext {
+typedef struct DCADSPContext
+{
     void (*lfe_fir[2])(float *out, const float *in, const float *coefs);
     void (*qmf_32_subbands)(float samples_in[32][8], int sb_act,
                             SynthFilterContext *synth, FFTContext *imdct,

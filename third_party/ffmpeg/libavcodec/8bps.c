@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Quicktime Planar RGB (8BPS) Video Decoder
  * Copyright (C) 2003 Roberto Togni
  *
@@ -41,10 +41,13 @@
 #include "internal.h"
 
 
-static const enum AVPixelFormat pixfmt_rgb24[] = {
-    AV_PIX_FMT_BGR24, AV_PIX_FMT_RGB32, AV_PIX_FMT_NONE };
+static const enum AVPixelFormat pixfmt_rgb24[] =
+{
+    AV_PIX_FMT_BGR24, AV_PIX_FMT_RGB32, AV_PIX_FMT_NONE
+};
 
-typedef struct EightBpsContext {
+typedef struct EightBpsContext
+{
     AVCodecContext *avctx;
 
     unsigned char planes;
@@ -78,37 +81,45 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     /* Set data pointer after line lengths */
     dp = encoded + planes * (height << 1);
 
-    for (p = 0; p < planes; p++) {
+    for (p = 0; p < planes; p++)
+    {
         /* Lines length pointer for this plane */
         lp = encoded + p * (height << 1);
 
         /* Decode a plane */
-        for (row = 0; row < height; row++) {
+        for (row = 0; row < height; row++)
+        {
             pixptr = frame->data[0] + row * frame->linesize[0] + planemap[p];
             pixptr_end = pixptr + frame->linesize[0];
             if (ep - lp < row * 2 + 2)
                 return AVERROR_INVALIDDATA;
             dlen = av_be2ne16(*(const unsigned short *)(lp + row * 2));
             /* Decode a row of this plane */
-            while (dlen > 0) {
+            while (dlen > 0)
+            {
                 if (ep - dp <= 1)
                     return AVERROR_INVALIDDATA;
-                if ((count = *dp++) <= 127) {
+                if ((count = *dp++) <= 127)
+                {
                     count++;
                     dlen -= count + 1;
                     if (pixptr_end - pixptr < count * planes)
                         break;
                     if (ep - dp < count)
                         return AVERROR_INVALIDDATA;
-                    while (count--) {
+                    while (count--)
+                    {
                         *pixptr = *dp++;
                         pixptr += planes;
                     }
-                } else {
+                }
+                else
+                {
                     count = 257 - count;
                     if (pixptr_end - pixptr < count * planes)
                         break;
-                    while (count--) {
+                    while (count--)
+                    {
                         *pixptr = *dp;
                         pixptr += planes;
                     }
@@ -119,11 +130,13 @@ static int decode_frame(AVCodecContext *avctx, void *data,
         }
     }
 
-    if (avctx->bits_per_coded_sample <= 8) {
+    if (avctx->bits_per_coded_sample <= 8)
+    {
         const uint8_t *pal = av_packet_get_side_data(avpkt,
-                                                     AV_PKT_DATA_PALETTE,
-                                                     NULL);
-        if (pal) {
+                             AV_PKT_DATA_PALETTE,
+                             NULL);
+        if (pal)
+        {
             frame->palette_has_changed = 1;
             memcpy(c->pal, pal, AVPALETTE_SIZE);
         }
@@ -143,7 +156,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     c->avctx       = avctx;
 
-    switch (avctx->bits_per_coded_sample) {
+    switch (avctx->bits_per_coded_sample)
+    {
     case 8:
         avctx->pix_fmt = AV_PIX_FMT_PAL8;
         c->planes      = 1;
@@ -167,7 +181,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
         return AVERROR_INVALIDDATA;
     }
 
-    if (avctx->pix_fmt == AV_PIX_FMT_RGB32) {
+    if (avctx->pix_fmt == AV_PIX_FMT_RGB32)
+    {
         c->planemap[0] = HAVE_BIGENDIAN ? 1 : 2; // 1st plane is red
         c->planemap[1] = HAVE_BIGENDIAN ? 2 : 1; // 2nd plane is green
         c->planemap[2] = HAVE_BIGENDIAN ? 3 : 0; // 3rd plane is blue
@@ -176,7 +191,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_eightbps_decoder = {
+AVCodec ff_eightbps_decoder =
+{
     .name           = "8bps",
     .long_name      = NULL_IF_CONFIG_SMALL("QuickTime 8BPS video"),
     .type           = AVMEDIA_TYPE_VIDEO,

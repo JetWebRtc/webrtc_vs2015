@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,42 +16,49 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/rtpfb.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 
-class Nack : public Rtpfb {
- public:
-  static constexpr uint8_t kFeedbackMessageType = 1;
-  Nack();
-  ~Nack() override;
+class Nack : public Rtpfb
+{
+public:
+    static constexpr uint8_t kFeedbackMessageType = 1;
+    Nack();
+    ~Nack() override;
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& packet);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& packet);
 
-  void SetPacketIds(const uint16_t* nack_list, size_t length);
-  const std::vector<uint16_t>& packet_ids() const { return packet_ids_; }
+    void SetPacketIds(const uint16_t* nack_list, size_t length);
+    const std::vector<uint16_t>& packet_ids() const
+    {
+        return packet_ids_;
+    }
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
-  size_t BlockLength() const override;
+    size_t BlockLength() const override;
 
- private:
-  static constexpr size_t kNackItemLength = 4;
-  struct PackedNack {
-    uint16_t first_pid;
-    uint16_t bitmask;
-  };
+private:
+    static constexpr size_t kNackItemLength = 4;
+    struct PackedNack
+    {
+        uint16_t first_pid;
+        uint16_t bitmask;
+    };
 
-  void Pack();    // Fills packed_ using packed_ids_. (used in SetPacketIds).
-  void Unpack();  // Fills packet_ids_ using packed_. (used in Parse).
+    void Pack();    // Fills packed_ using packed_ids_. (used in SetPacketIds).
+    void Unpack();  // Fills packet_ids_ using packed_. (used in Parse).
 
-  std::vector<PackedNack> packed_;
-  std::vector<uint16_t> packet_ids_;
+    std::vector<PackedNack> packed_;
+    std::vector<uint16_t> packet_ids_;
 };
 
 }  // namespace rtcp

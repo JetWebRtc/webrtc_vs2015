@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include "libavutil/mem.h"
 #include "audio_data.h"
 
-static const AVClass audio_data_class = {
+static const AVClass audio_data_class =
+{
     .class_name = "AudioData",
     .item_name  = av_default_item_name,
     .version    = LIBAVUTIL_VERSION_INT,
@@ -38,7 +39,8 @@ static void calc_ptr_alignment(AudioData *a)
     int p;
     int min_align = 128;
 
-    for (p = 0; p < a->planes; p++) {
+    for (p = 0; p < a->planes; p++)
+    {
         int cur_align = 128;
         while ((intptr_t)a->data[p] % cur_align)
             cur_align >>= 1;
@@ -59,7 +61,7 @@ int ff_sample_fmt_is_planar(enum AVSampleFormat sample_fmt, int channels)
 int ff_audio_data_set_channels(AudioData *a, int channels)
 {
     if (channels < 1 || channels > AVRESAMPLE_MAX_CHANNELS ||
-        channels > a->allocated_channels)
+            channels > a->allocated_channels)
         return AVERROR(EINVAL);
 
     a->channels  = channels;
@@ -79,13 +81,15 @@ int ff_audio_data_init(AudioData *a, uint8_t **src, int plane_size, int channels
     memset(a, 0, sizeof(*a));
     a->class = &audio_data_class;
 
-    if (channels < 1 || channels > AVRESAMPLE_MAX_CHANNELS) {
+    if (channels < 1 || channels > AVRESAMPLE_MAX_CHANNELS)
+    {
         av_log(a, AV_LOG_ERROR, "invalid channel count: %d\n", channels);
         return AVERROR(EINVAL);
     }
 
     a->sample_size = av_get_bytes_per_sample(sample_fmt);
-    if (!a->sample_size) {
+    if (!a->sample_size)
+    {
         av_log(a, AV_LOG_ERROR, "invalid sample format\n");
         return AVERROR(EINVAL);
     }
@@ -93,8 +97,10 @@ int ff_audio_data_init(AudioData *a, uint8_t **src, int plane_size, int channels
     a->planes    = a->is_planar ? channels : 1;
     a->stride    = a->sample_size * (a->is_planar ? 1 : channels);
 
-    for (p = 0; p < (a->is_planar ? channels : 1); p++) {
-        if (!src[p]) {
+    for (p = 0; p < (a->is_planar ? channels : 1); p++)
+    {
+        if (!src[p])
+        {
             av_log(a, AV_LOG_ERROR, "invalid NULL pointer for src[%d]\n", p);
             return AVERROR(EINVAL);
         }
@@ -129,7 +135,8 @@ AudioData *ff_audio_data_alloc(int channels, int nb_samples,
         return NULL;
 
     a->sample_size = av_get_bytes_per_sample(sample_fmt);
-    if (!a->sample_size) {
+    if (!a->sample_size)
+    {
         av_free(a);
         return NULL;
     }
@@ -145,14 +152,17 @@ AudioData *ff_audio_data_alloc(int channels, int nb_samples,
     a->allow_realloc      = 1;
     a->name               = name ? name : "{no name}";
 
-    if (nb_samples > 0) {
+    if (nb_samples > 0)
+    {
         ret = ff_audio_data_realloc(a, nb_samples);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_free(a);
             return NULL;
         }
         return a;
-    } else {
+    }
+    else {
         calc_ptr_alignment(a);
         return a;
     }
@@ -171,15 +181,16 @@ int ff_audio_data_realloc(AudioData *a, int nb_samples)
         return AVERROR(EINVAL);
 
     new_buf_size = av_samples_get_buffer_size(&plane_size,
-                                              a->allocated_channels, nb_samples,
-                                              a->sample_fmt, 0);
+                   a->allocated_channels, nb_samples,
+                   a->sample_fmt, 0);
     if (new_buf_size < 0)
         return new_buf_size;
 
     /* if there is already data in the buffer and the sample format is planar,
        allocate a new buffer and copy the data, otherwise just realloc the
        internal buffer and set new data pointers */
-    if (a->nb_samples > 0 && a->is_planar) {
+    if (a->nb_samples > 0 && a->is_planar)
+    {
         uint8_t *new_data[AVRESAMPLE_MAX_CHANNELS] = { NULL };
 
         ret = av_samples_alloc(new_data, &plane_size, a->allocated_channels,
@@ -193,7 +204,9 @@ int ff_audio_data_realloc(AudioData *a, int nb_samples)
         av_freep(&a->buffer);
         memcpy(a->data, new_data, sizeof(new_data));
         a->buffer = a->data[0];
-    } else {
+    }
+    else
+    {
         av_freep(&a->buffer);
         a->buffer = av_malloc(new_buf_size);
         if (!a->buffer)
@@ -229,13 +242,15 @@ int ff_audio_data_copy(AudioData *dst, AudioData *src, ChannelMapInfo *map)
     if (dst->sample_fmt != src->sample_fmt || dst->channels < src->channels)
         return AVERROR(EINVAL);
 
-    if (map && !src->is_planar) {
+    if (map && !src->is_planar)
+    {
         av_log(src, AV_LOG_ERROR, "cannot remap packed format during copy\n");
         return AVERROR(EINVAL);
     }
 
     /* if the input is empty, just empty the output */
-    if (!src->nb_samples) {
+    if (!src->nb_samples)
+    {
         dst->nb_samples = 0;
         return 0;
     }
@@ -246,16 +261,21 @@ int ff_audio_data_copy(AudioData *dst, AudioData *src, ChannelMapInfo *map)
         return ret;
 
     /* copy data */
-    if (map) {
-        if (map->do_remap) {
-            for (p = 0; p < src->planes; p++) {
+    if (map)
+    {
+        if (map->do_remap)
+        {
+            for (p = 0; p < src->planes; p++)
+            {
                 if (map->channel_map[p] >= 0)
                     memcpy(dst->data[p], src->data[map->channel_map[p]],
                            src->nb_samples * src->stride);
             }
         }
-        if (map->do_copy || map->do_zero) {
-            for (p = 0; p < src->planes; p++) {
+        if (map->do_copy || map->do_zero)
+        {
+            for (p = 0; p < src->planes; p++)
+            {
                 if (map->channel_copy[p])
                     memcpy(dst->data[p], dst->data[map->channel_copy[p]],
                            src->nb_samples * src->stride);
@@ -264,7 +284,9 @@ int ff_audio_data_copy(AudioData *dst, AudioData *src, ChannelMapInfo *map)
                                            1, dst->sample_fmt);
             }
         }
-    } else {
+    }
+    else
+    {
         for (p = 0; p < src->planes; p++)
             memcpy(dst->data[p], src->data[p], src->nb_samples * src->stride);
     }
@@ -280,14 +302,16 @@ int ff_audio_data_combine(AudioData *dst, int dst_offset, AudioData *src,
     int ret, p, dst_offset2, dst_move_size;
 
     /* validate input/output compatibility */
-    if (dst->sample_fmt != src->sample_fmt || dst->channels != src->channels) {
+    if (dst->sample_fmt != src->sample_fmt || dst->channels != src->channels)
+    {
         av_log(src, AV_LOG_ERROR, "sample format mismatch\n");
         return AVERROR(EINVAL);
     }
 
     /* validate offsets are within the buffer bounds */
     if (dst_offset < 0 || dst_offset > dst->nb_samples ||
-        src_offset < 0 || src_offset > src->nb_samples) {
+            src_offset < 0 || src_offset > src->nb_samples)
+    {
         av_log(src, AV_LOG_ERROR, "offset out-of-bounds: src=%d dst=%d\n",
                src_offset, dst_offset);
         return AVERROR(EINVAL);
@@ -300,14 +324,16 @@ int ff_audio_data_combine(AudioData *dst, int dst_offset, AudioData *src,
         return 0;
 
     /* validate that the output is not read-only */
-    if (dst->read_only) {
+    if (dst->read_only)
+    {
         av_log(dst, AV_LOG_ERROR, "dst is read-only\n");
         return AVERROR(EINVAL);
     }
 
     /* reallocate output if necessary */
     ret = ff_audio_data_realloc(dst, dst->nb_samples + nb_samples);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(dst, AV_LOG_ERROR, "error reallocating dst\n");
         return ret;
     }
@@ -315,8 +341,10 @@ int ff_audio_data_combine(AudioData *dst, int dst_offset, AudioData *src,
     dst_offset2   = dst_offset + nb_samples;
     dst_move_size = dst->nb_samples - dst_offset;
 
-    for (p = 0; p < src->planes; p++) {
-        if (dst_move_size > 0) {
+    for (p = 0; p < src->planes; p++)
+    {
+        if (dst_move_size > 0)
+        {
             memmove(dst->data[p] + dst_offset2 * dst->stride,
                     dst->data[p] + dst_offset  * dst->stride,
                     dst_move_size * dst->stride);
@@ -332,10 +360,13 @@ int ff_audio_data_combine(AudioData *dst, int dst_offset, AudioData *src,
 
 void ff_audio_data_drain(AudioData *a, int nb_samples)
 {
-    if (a->nb_samples <= nb_samples) {
+    if (a->nb_samples <= nb_samples)
+    {
         /* drain the whole buffer */
         a->nb_samples = 0;
-    } else {
+    }
+    else
+    {
         int p;
         int move_offset = a->stride * nb_samples;
         int move_size   = a->stride * (a->nb_samples - nb_samples);

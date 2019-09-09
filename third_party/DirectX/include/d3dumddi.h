@@ -1,4 +1,4 @@
-/******************************Module*Header**********************************\
+﻿/******************************Module*Header**********************************\
 *
 * Module Name: d3dumddi.h
 *
@@ -28,10 +28,10 @@ typedef struct _D3DDDI_PRESENTFLAGS
             UINT    Blt                 : 1;        // 0x00000001
             UINT    ColorFill           : 1;        // 0x00000002
             UINT    Flip                : 1;        // 0x00000004
-            UINT    Reserved            :29;        // 0xFFFFFFF8            
+            UINT    Reserved            :29;        // 0xFFFFFFF8
         };
         UINT    Value;
-    };            
+    };
 } D3DDDI_PRESENTFLAGS;
 
 typedef struct _D3DDDIARG_PRESENT
@@ -228,7 +228,7 @@ typedef struct _D3DDDIARG_WINFO
 typedef struct _D3DDDIARG_VALIDATETEXTURESTAGESTATE
 {
     UINT                NumPasses;      // out: Number of passes the hardware
-                                        //      can perform the operation in
+    //      can perform the operation in
 } D3DDDIARG_VALIDATETEXTURESTAGESTATE;
 
 typedef enum _D3DDDITEXTURESTAGESTATETYPE
@@ -282,9 +282,9 @@ typedef struct _D3DDDIARG_SETPIXELSHADERCONST
 {
     UINT    Register;   // Const register to start copying
     UINT    Count;      // Number of 4-float vectors to copy for D3DDP2OP_SETPIXELSHADERCONST
-                        // Number of 4-integer vectors to copy for D3DDP2OP_SETPIXELSHADERCONSTI
-                        // Number of BOOL values to copy for D3DDP2OP_SETPIXELSHADERCONSTB
-                        // Data follows
+    // Number of 4-integer vectors to copy for D3DDP2OP_SETPIXELSHADERCONSTI
+    // Number of BOOL values to copy for D3DDP2OP_SETPIXELSHADERCONSTB
+    // Data follows
 } D3DDDIARG_SETPIXELSHADERCONST;
 
 typedef D3DDDIARG_SETPIXELSHADERCONST D3DDDIARG_SETPIXELSHADERCONSTI;
@@ -340,9 +340,9 @@ typedef struct _D3DDDIARG_DRAWINDEXEDPRIMITIVE2
 {
     D3DPRIMITIVETYPE PrimitiveType;
     INT   BaseVertexOffset;     // Stream 0 offset of the vertex which
-                                // corresponds to index 0. This offset could be
-                                // negative, but when an index is added to the
-                                // offset the result is positive
+    // corresponds to index 0. This offset could be
+    // negative, but when an index is added to the
+    // offset the result is positive
     UINT  MinIndex;             // Min vertex index in the vertex buffer
     UINT  NumVertices;          // Number of vertices starting from MinIndex
     UINT  StartIndexOffset;     // Offset of the start index in the index buffer
@@ -379,11 +379,11 @@ typedef struct _D3DDDIARG_TEXBLT
 typedef struct _D3DDDIARG_STATESET
 {
     UINT                Operation;  // in: D3DHAL_STATESET* enum
-                                    // D3DHAL_STATESETDELETE and D3DHAL_STATESETCAPTURE
+    // D3DHAL_STATESETDELETE and D3DHAL_STATESETCAPTURE
     D3DSTATEBLOCKTYPE   StateBlockType;     // in: Type use with D3DHAL_STATESETBEGIN/END
     HANDLE              hStateSet;  // out: Device handle returned from D3DHAL_STATESETBEGIN and
-                                    //      D3DHAL_STATESETCREATE
-                                    // in: State set handle passed with D3DHAL_STATESETEXECUTE,
+    //      D3DHAL_STATESETCREATE
+    // in: State set handle passed with D3DHAL_STATESETEXECUTE,
 } D3DDDIARG_STATESET;
 
 typedef struct _D3DDDIARG_SETPRIORITY
@@ -424,9 +424,9 @@ typedef struct _D3DDDIARG_SETVERTEXSHADERCONST
 {
     UINT    Register;   // Const register to start copying
     UINT    Count;      // Number of 4-float vectors to copy for D3DDP2OP_SETVERTEXSHADERCONST
-                        // Number of 4-integer vectors to copy for D3DDP2OP_SETVERTEXSHADERCONSTI
-                        // Number of BOOL values to copy for D3DDP2OP_SETVERTEXSHADERCONSTB
-                        // Data follows
+    // Number of 4-integer vectors to copy for D3DDP2OP_SETVERTEXSHADERCONSTI
+    // Number of BOOL values to copy for D3DDP2OP_SETVERTEXSHADERCONSTB
+    // Data follows
 } D3DDDIARG_SETVERTEXSHADERCONST;
 
 typedef D3DDDIARG_SETVERTEXSHADERCONST D3DDDIARG_SETVERTEXSHADERCONSTI;
@@ -661,7 +661,7 @@ typedef struct _D3DDDIARG_OPENRESOURCE
     HANDLE                      hResource;                  // in/out : D3D runtime handle / UM driver handle
     D3DDDI_ROTATION             Rotation;                   // in: The orientation of the resource. (0, 90, 180, 270)
     D3DDDI_OPENRESOURCEFLAGS    Flags;                      // in: Flags
-}D3DDDIARG_OPENRESOURCE;
+} D3DDDIARG_OPENRESOURCE;
 
 typedef struct _D3DDDIARG_CREATEVERTEXSHADERDECL
 {
@@ -885,11 +885,11 @@ typedef enum _D3DDDIBASISTYPE
 
 typedef enum _D3DDDIDEGREETYPE
 {
-   D3DDDIDEGREE_LINEAR      = 1,
-   D3DDDIDEGREE_QUADRATIC   = 2,
-   D3DDDIDEGREE_CUBIC       = 3,
-   D3DDDIDEGREE_QUINTIC     = 5,
-   D3DDDIDEGREE_FORCE_UINT  = 0x7fffffff,
+    D3DDDIDEGREE_LINEAR      = 1,
+    D3DDDIDEGREE_QUADRATIC   = 2,
+    D3DDDIDEGREE_CUBIC       = 3,
+    D3DDDIDEGREE_QUINTIC     = 5,
+    D3DDDIDEGREE_FORCE_UINT  = 0x7fffffff,
 } D3DDDIDEGREETYPE;
 
 typedef struct _D3DDDIRECTPATCH_INFO
@@ -919,8 +919,10 @@ typedef struct _D3DDDIARG_CREATEPIXELSHADER
 
 typedef struct _DXVADDI_EXTENDEDFORMAT
 {
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             UINT SampleFormat : 8;           // See DXVADDI_SAMPLEFORMAT
             UINT VideoChromaSubsampling : 4; // See DXVADDI_VIDEOCHROMASUBSAMPLING
             UINT NominalRange : 3;           // See DXVADDI_NOMINALRANGE
@@ -955,9 +957,9 @@ typedef enum _DXVADDI_VIDEOCHROMASUBSAMPLING
     DXVADDI_VideoChromaSubsampling_Vertically_AlignedChromaPlanes = 0x1,
     // 4:2:0 variations
     DXVADDI_VideoChromaSubsampling_MPEG2  = DXVADDI_VideoChromaSubsampling_Horizontally_Cosited |
-                                            DXVADDI_VideoChromaSubsampling_Vertically_AlignedChromaPlanes, 
+                                            DXVADDI_VideoChromaSubsampling_Vertically_AlignedChromaPlanes,
 
-    DXVADDI_VideoChromaSubsampling_MPEG1  = DXVADDI_VideoChromaSubsampling_Vertically_AlignedChromaPlanes, 
+    DXVADDI_VideoChromaSubsampling_MPEG1  = DXVADDI_VideoChromaSubsampling_Vertically_AlignedChromaPlanes,
 
     DXVADDI_VideoChromaSubsampling_DV_PAL  =DXVADDI_VideoChromaSubsampling_Horizontally_Cosited |
                                             DXVADDI_VideoChromaSubsampling_Vertically_Cosited,
@@ -1200,8 +1202,10 @@ typedef struct _DXVADDI_AYUVSAMPLE16
 
 typedef struct _DXVADDI_FIXED32
 {
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             USHORT      Fraction;
             SHORT       Value;
         };
@@ -1322,22 +1326,22 @@ typedef struct _D3DDDIARG_EXTENSIONEXECUTE
 
 typedef struct _D3DDDI_OVERLAYINFOFLAGS
 {
-   union
-   {
-       struct
-       {
-           UINT          DstColorKey     : 1; // 0x00000001
-           UINT          DstColorKeyRange: 1; // 0x00000002
-           UINT          SrcColorKey     : 1; // 0x00000004
-           UINT          SrcColorKeyRange: 1; // 0x00000008
-           UINT          Bob             : 1; // 0x00000010
-           UINT          Interleaved     : 1; // 0x00000020
-           UINT          MirrorLeftRight : 1; // 0x00000040
-           UINT          MirrorUpDown    : 1; // 0x00000080
-           UINT          Deinterlace     : 1; // 0x00000100
-           UINT          Reserved        :23; // 0xFFFFFE00
-       };
-       UINT Value;
+    union
+    {
+        struct
+        {
+            UINT          DstColorKey     : 1; // 0x00000001
+            UINT          DstColorKeyRange: 1; // 0x00000002
+            UINT          SrcColorKey     : 1; // 0x00000004
+            UINT          SrcColorKeyRange: 1; // 0x00000008
+            UINT          Bob             : 1; // 0x00000010
+            UINT          Interleaved     : 1; // 0x00000020
+            UINT          MirrorLeftRight : 1; // 0x00000040
+            UINT          MirrorUpDown    : 1; // 0x00000080
+            UINT          Deinterlace     : 1; // 0x00000100
+            UINT          Reserved        :23; // 0xFFFFFE00
+        };
+        UINT Value;
     };
 } D3DDDI_OVERLAYINFOFLAGS;
 
@@ -1508,121 +1512,121 @@ typedef struct _D3DDDIARG_GETCAPS
 
 //D3DDDICAPS_DDRAW
 
-    typedef struct _DDRAW_CAPS
-    {
-        UINT   Caps;
-        UINT   Caps2;
-        UINT   CKeyCaps;
-        UINT   FxCaps;
-        UINT   MaxVideoPorts;
-    } DDRAW_CAPS;
+typedef struct _DDRAW_CAPS
+{
+    UINT   Caps;
+    UINT   Caps2;
+    UINT   CKeyCaps;
+    UINT   FxCaps;
+    UINT   MaxVideoPorts;
+} DDRAW_CAPS;
 
-    // Caps
-    #define DDRAW_CAPS_ZBLTS             0x00000001
-    #define DDRAW_CAPS_COLORKEY          0x00000002
-    #define DDRAW_CAPS_BLTDEPTHFILL      0x00000004
+// Caps
+#define DDRAW_CAPS_ZBLTS             0x00000001
+#define DDRAW_CAPS_COLORKEY          0x00000002
+#define DDRAW_CAPS_BLTDEPTHFILL      0x00000004
 
-    // Caps2
-    #define DDRAW_CAPS2_CANDROPZ16BIT    0x00000002
-    #define DDRAW_CAPS2_FLIPINTERVAL     0x00000004
-    #define DDRAW_CAPS2_FLIPNOVSYNC      0x00000008
-    #define DDRAW_CAPS2_DYNAMICTEXTURES  0x00000010
+// Caps2
+#define DDRAW_CAPS2_CANDROPZ16BIT    0x00000002
+#define DDRAW_CAPS2_FLIPINTERVAL     0x00000004
+#define DDRAW_CAPS2_FLIPNOVSYNC      0x00000008
+#define DDRAW_CAPS2_DYNAMICTEXTURES  0x00000010
 
-    // CKeyCaps
-    #define DDRAW_CKEYCAPS_SRCBLT        0x00000001
-    #define DDRAW_CKEYCAPS_DESTBLT       0x00000002
+// CKeyCaps
+#define DDRAW_CKEYCAPS_SRCBLT        0x00000001
+#define DDRAW_CKEYCAPS_DESTBLT       0x00000002
 
-    // FxCaps
-    #define DDRAW_FXCAPS_BLTMIRRORLEFTRIGHT  0x00000001
-    #define DDRAW_FXCAPS_BLTMIRRORUPDOWN     0x00000002
+// FxCaps
+#define DDRAW_FXCAPS_BLTMIRRORLEFTRIGHT  0x00000001
+#define DDRAW_FXCAPS_BLTMIRRORUPDOWN     0x00000002
 
 //D3DDDICAPS_DDRAW_MODE_SPECIFIC
 
-    typedef struct _DDRAW_MODE_SPECIFIC_CAPS
-    {
-        UINT    Head;
-        UINT    Caps;
-        UINT    CKeyCaps;
-        UINT    FxCaps;
-        UINT    MaxVisibleOverlays;
-        UINT    MinOverlayStretch;
-        UINT    MaxOverlayStretch;
-    } DDRAW_MODE_SPECIFIC_CAPS;
+typedef struct _DDRAW_MODE_SPECIFIC_CAPS
+{
+    UINT    Head;
+    UINT    Caps;
+    UINT    CKeyCaps;
+    UINT    FxCaps;
+    UINT    MaxVisibleOverlays;
+    UINT    MinOverlayStretch;
+    UINT    MaxOverlayStretch;
+} DDRAW_MODE_SPECIFIC_CAPS;
 
-    // Caps
-    #define MODE_CAPS_OVERLAY                     0x00000001
-    #define MODE_CAPS_OVERLAYSTRETCH              0x00000002
-    #define MODE_CAPS_CANBOBINTERLEAVED           0x00000004
-    #define MODE_CAPS_CANBOBNONINTERLEAVED        0x00000008
-    #define MODE_CAPS_CANFLIPODDEVEN              0x00000010
-    #define MODE_CAPS_READSCANLINE                0x00000020
-    #define MODE_CAPS_COLORCONTROLOVERLAY         0x00000040
+// Caps
+#define MODE_CAPS_OVERLAY                     0x00000001
+#define MODE_CAPS_OVERLAYSTRETCH              0x00000002
+#define MODE_CAPS_CANBOBINTERLEAVED           0x00000004
+#define MODE_CAPS_CANBOBNONINTERLEAVED        0x00000008
+#define MODE_CAPS_CANFLIPODDEVEN              0x00000010
+#define MODE_CAPS_READSCANLINE                0x00000020
+#define MODE_CAPS_COLORCONTROLOVERLAY         0x00000040
 
-    // CKeyCaps
-    #define MODE_CKEYCAPS_DESTOVERLAY             0x00000001
-    #define MODE_CKEYCAPS_DESTOVERLAYYUV          0x00000002
-    #define MODE_CKEYCAPS_SRCOVERLAY              0x00000004
-    #define MODE_CKEYCAPS_SRCOVERLAYCLRSPACE      0x00000008
-    #define MODE_CKEYCAPS_SRCOVERLAYCLRSPACEYUV   0x00000010
-    #define MODE_CKEYCAPS_SRCOVERLAYYUV           0x00000020
+// CKeyCaps
+#define MODE_CKEYCAPS_DESTOVERLAY             0x00000001
+#define MODE_CKEYCAPS_DESTOVERLAYYUV          0x00000002
+#define MODE_CKEYCAPS_SRCOVERLAY              0x00000004
+#define MODE_CKEYCAPS_SRCOVERLAYCLRSPACE      0x00000008
+#define MODE_CKEYCAPS_SRCOVERLAYCLRSPACEYUV   0x00000010
+#define MODE_CKEYCAPS_SRCOVERLAYYUV           0x00000020
 
-    // FxCaps
-    #define MODE_FXCAPS_OVERLAYSHRINKX            0x00000001
-    #define MODE_FXCAPS_OVERLAYSHRINKY            0x00000002
-    #define MODE_FXCAPS_OVERLAYSTRETCHX           0x00000004
-    #define MODE_FXCAPS_OVERLAYSTRETCHY           0x00000008
-    #define MODE_FXCAPS_OVERLAYMIRRORLEFTRIGHT    0x00000010
-    #define MODE_FXCAPS_OVERLAYMIRRORUPDOWN       0x00000020
-    #define MODE_FXCAPS_OVERLAYDEINTERLACE        0x00000040
+// FxCaps
+#define MODE_FXCAPS_OVERLAYSHRINKX            0x00000001
+#define MODE_FXCAPS_OVERLAYSHRINKY            0x00000002
+#define MODE_FXCAPS_OVERLAYSTRETCHX           0x00000004
+#define MODE_FXCAPS_OVERLAYSTRETCHY           0x00000008
+#define MODE_FXCAPS_OVERLAYMIRRORLEFTRIGHT    0x00000010
+#define MODE_FXCAPS_OVERLAYMIRRORUPDOWN       0x00000020
+#define MODE_FXCAPS_OVERLAYDEINTERLACE        0x00000040
 
 //D3DDDICAPS_GETFORMATCOUNT
 
 //D3DDDICAPS_GETFORMATDATA
 
-    typedef struct _FORMATOP
-    {
-        D3DDDIFORMAT  Format;
-        UINT          Operations;
-        UINT          FlipMsTypes;
-        UINT          BltMsTypes;
-        UINT          PrivateFormatBitCount;
-    } FORMATOP;
+typedef struct _FORMATOP
+{
+    D3DDDIFORMAT  Format;
+    UINT          Operations;
+    UINT          FlipMsTypes;
+    UINT          BltMsTypes;
+    UINT          PrivateFormatBitCount;
+} FORMATOP;
 
-    #define FORMATOP_TEXTURE                    0x00000001L
-    #define FORMATOP_VOLUMETEXTURE              0x00000002L
-    #define FORMATOP_CUBETEXTURE                0x00000004L
-    #define FORMATOP_OFFSCREEN_RENDERTARGET     0x00000008L
-    #define FORMATOP_SAME_FORMAT_RENDERTARGET   0x00000010L
-    #define FORMATOP_ZSTENCIL                   0x00000040L
-    #define FORMATOP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH 0x00000080L
-    #define FORMATOP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET 0x00000100L
-    #define FORMATOP_DISPLAYMODE                0x00000400L
-    #define FORMATOP_3DACCELERATION             0x00000800L
-    #define FORMATOP_PIXELSIZE                  0x00001000L
-    #define FORMATOP_CONVERT_TO_ARGB            0x00002000L
-    #define FORMATOP_OFFSCREENPLAIN             0x00004000L
-    #define FORMATOP_SRGBREAD                   0x00008000L
-    #define FORMATOP_BUMPMAP                    0x00010000L
-    #define FORMATOP_DMAP                       0x00020000L
-    #define FORMATOP_NOFILTER                   0x00040000L
-    #define FORMATOP_MEMBEROFGROUP_ARGB         0x00080000L
-    #define FORMATOP_SRGBWRITE                  0x00100000L
-    #define FORMATOP_NOALPHABLEND               0x00200000L
-    #define FORMATOP_AUTOGENMIPMAP              0x00400000L
-    #define FORMATOP_VERTEXTEXTURE              0x00800000L
-    #define FORMATOP_NOTEXCOORDWRAPNORMIP       0x01000000L
-    #define FORMATOP_PLANAR                     0x02000000L
-    #define FORMATOP_OVERLAY                    0x04000000L
+#define FORMATOP_TEXTURE                    0x00000001L
+#define FORMATOP_VOLUMETEXTURE              0x00000002L
+#define FORMATOP_CUBETEXTURE                0x00000004L
+#define FORMATOP_OFFSCREEN_RENDERTARGET     0x00000008L
+#define FORMATOP_SAME_FORMAT_RENDERTARGET   0x00000010L
+#define FORMATOP_ZSTENCIL                   0x00000040L
+#define FORMATOP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH 0x00000080L
+#define FORMATOP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET 0x00000100L
+#define FORMATOP_DISPLAYMODE                0x00000400L
+#define FORMATOP_3DACCELERATION             0x00000800L
+#define FORMATOP_PIXELSIZE                  0x00001000L
+#define FORMATOP_CONVERT_TO_ARGB            0x00002000L
+#define FORMATOP_OFFSCREENPLAIN             0x00004000L
+#define FORMATOP_SRGBREAD                   0x00008000L
+#define FORMATOP_BUMPMAP                    0x00010000L
+#define FORMATOP_DMAP                       0x00020000L
+#define FORMATOP_NOFILTER                   0x00040000L
+#define FORMATOP_MEMBEROFGROUP_ARGB         0x00080000L
+#define FORMATOP_SRGBWRITE                  0x00100000L
+#define FORMATOP_NOALPHABLEND               0x00200000L
+#define FORMATOP_AUTOGENMIPMAP              0x00400000L
+#define FORMATOP_VERTEXTEXTURE              0x00800000L
+#define FORMATOP_NOTEXCOORDWRAPNORMIP       0x01000000L
+#define FORMATOP_PLANAR                     0x02000000L
+#define FORMATOP_OVERLAY                    0x04000000L
 
 //D3DDDICAPS_GETMULTISAMPLEQUALITYLEVELS
 
-    typedef struct _DDIMULTISAMPLEQUALITYLEVELSDATA
-    {
-        D3DDDIFORMAT            Format;
-        BOOL                    Flip;
-        D3DDDIMULTISAMPLE_TYPE  MsType;
-        UINT                    QualityLevels;
-    } DDIMULTISAMPLEQUALITYLEVELSDATA;
+typedef struct _DDIMULTISAMPLEQUALITYLEVELSDATA
+{
+    D3DDDIFORMAT            Format;
+    BOOL                    Flip;
+    D3DDDIMULTISAMPLE_TYPE  MsType;
+    UINT                    QualityLevels;
+} DDIMULTISAMPLEQUALITYLEVELSDATA;
 
 //D3DDDICAPS_GETD3DQUERYCOUNT
 //D3DDDICAPS_GETD3DQUERYDATA
@@ -1636,79 +1640,79 @@ typedef struct _D3DDDIARG_GETCAPS
 //D3DDDICAPS_GETDECODEGUIDCOUNT
 //D3DDDICAPS_GETDECODEGUIDS
 
-    DEFINE_GUID(DXVADDI_ModeMPEG2_MoComp, 0xe6a9f44b, 0x61b0, 0x4563,0x9e,0xa4,0x63,0xd2,0xa3,0xc6,0xfe,0x66);
-    DEFINE_GUID(DXVADDI_ModeMPEG2_IDCT,   0xbf22ad00, 0x03ea, 0x4690,0x80,0x77,0x47,0x33,0x46,0x20,0x9b,0x7e);
-    DEFINE_GUID(DXVADDI_ModeMPEG2_VLD,    0xee27417f, 0x5e28, 0x4e65,0xbe,0xea,0x1d,0x26,0xb5,0x08,0xad,0xc9);
+DEFINE_GUID(DXVADDI_ModeMPEG2_MoComp, 0xe6a9f44b, 0x61b0, 0x4563,0x9e,0xa4,0x63,0xd2,0xa3,0xc6,0xfe,0x66);
+DEFINE_GUID(DXVADDI_ModeMPEG2_IDCT,   0xbf22ad00, 0x03ea, 0x4690,0x80,0x77,0x47,0x33,0x46,0x20,0x9b,0x7e);
+DEFINE_GUID(DXVADDI_ModeMPEG2_VLD,    0xee27417f, 0x5e28, 0x4e65,0xbe,0xea,0x1d,0x26,0xb5,0x08,0xad,0xc9);
 
-    DEFINE_GUID(DXVADDI_ModeH264_A,  0x1b81be64, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeH264_B,  0x1b81be65, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeH264_C,  0x1b81be66, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeH264_D,  0x1b81be67, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeH264_E,  0x1b81be68, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeH264_F,  0x1b81be69, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_A,  0x1b81be64, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_B,  0x1b81be65, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_C,  0x1b81be66, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_D,  0x1b81be67, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_E,  0x1b81be68, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeH264_F,  0x1b81be69, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
 
-    DEFINE_GUID(DXVADDI_ModeWMV8_A,  0x1b81be80, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeWMV8_B,  0x1b81be81, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeWMV8_A,  0x1b81be80, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeWMV8_B,  0x1b81be81, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
 
-    DEFINE_GUID(DXVADDI_ModeWMV9_A,  0x1b81be90, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeWMV9_B,  0x1b81be91, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeWMV9_C,  0x1b81be94, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeWMV9_A,  0x1b81be90, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeWMV9_B,  0x1b81be91, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeWMV9_C,  0x1b81be94, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
 
-    DEFINE_GUID(DXVADDI_ModeVC1_A,   0x1b81beA0, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeVC1_B,   0x1b81beA1, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeVC1_C,   0x1b81beA2, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
-    DEFINE_GUID(DXVADDI_ModeVC1_D,   0x1b81beA3, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeVC1_A,   0x1b81beA0, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeVC1_B,   0x1b81beA1, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeVC1_C,   0x1b81beA2, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_ModeVC1_D,   0x1b81beA3, 0xa0c7, 0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
 
-    #define DXVADDI_ModeMPEG2_MOCOMP        DXVADDI_ModeMPEG2_MoComp
+#define DXVADDI_ModeMPEG2_MOCOMP        DXVADDI_ModeMPEG2_MoComp
 
-    #define DXVADDI_ModeWMV8_PostProc       DXVADDI_ModeWMV8_A
-    #define DXVADDI_ModeWMV8_MoComp         DXVADDI_ModeWMV8_B
+#define DXVADDI_ModeWMV8_PostProc       DXVADDI_ModeWMV8_A
+#define DXVADDI_ModeWMV8_MoComp         DXVADDI_ModeWMV8_B
 
-    #define DXVADDI_ModeWMV9_PostProc       DXVADDI_ModeWMV9_A
-    #define DXVADDI_ModeWMV9_MoComp         DXVADDI_ModeWMV9_B
-    #define DXVADDI_ModeWMV9_IDCT           DXVADDI_ModeWMV9_C
+#define DXVADDI_ModeWMV9_PostProc       DXVADDI_ModeWMV9_A
+#define DXVADDI_ModeWMV9_MoComp         DXVADDI_ModeWMV9_B
+#define DXVADDI_ModeWMV9_IDCT           DXVADDI_ModeWMV9_C
 
-    #define DXVADDI_ModeVC1_PostProc        DXVADDI_ModeVC1_A
-    #define DXVADDI_ModeVC1_MoComp          DXVADDI_ModeVC1_B
-    #define DXVADDI_ModeVC1_IDCT            DXVADDI_ModeVC1_C
-    #define DXVADDI_ModeVC1_VLD             DXVADDI_ModeVC1_D
+#define DXVADDI_ModeVC1_PostProc        DXVADDI_ModeVC1_A
+#define DXVADDI_ModeVC1_MoComp          DXVADDI_ModeVC1_B
+#define DXVADDI_ModeVC1_IDCT            DXVADDI_ModeVC1_C
+#define DXVADDI_ModeVC1_VLD             DXVADDI_ModeVC1_D
 
-    #define DXVADDI_ModeH264_MoComp_NoFGT   DXVADDI_ModeH264_A
-    #define DXVADDI_ModeH264_MoComp_FGT     DXVADDI_ModeH264_B
-    #define DXVADDI_ModeH264_IDCT_NoFGT     DXVADDI_ModeH264_C
-    #define DXVADDI_ModeH264_IDCT_FGT       DXVADDI_ModeH264_D
-    #define DXVADDI_ModeH264_VLD_NoFGT      DXVADDI_ModeH264_E
-    #define DXVADDI_ModeH264_VLD_FGT        DXVADDI_ModeH264_F
+#define DXVADDI_ModeH264_MoComp_NoFGT   DXVADDI_ModeH264_A
+#define DXVADDI_ModeH264_MoComp_FGT     DXVADDI_ModeH264_B
+#define DXVADDI_ModeH264_IDCT_NoFGT     DXVADDI_ModeH264_C
+#define DXVADDI_ModeH264_IDCT_FGT       DXVADDI_ModeH264_D
+#define DXVADDI_ModeH264_VLD_NoFGT      DXVADDI_ModeH264_E
+#define DXVADDI_ModeH264_VLD_FGT        DXVADDI_ModeH264_F
 
 //D3DDDICAPS_GETDECODERTFORMATCOUNT
 //D3DDDICAPS_GETDECODERTFORMATS
 //D3DDDICAPS_GETDECODECOMPRESSEDBUFFERINFOCOUNT
 //D3DDDICAPS_GETDECODECOMPRESSEDBUFFERINFO
 
-    typedef struct _DXVADDI_DECODEINPUT
-    {
-        CONST GUID*        pGuid;
-        DXVADDI_VIDEODESC  VideoDesc;
-    } DXVADDI_DECODEINPUT;
+typedef struct _DXVADDI_DECODEINPUT
+{
+    CONST GUID*        pGuid;
+    DXVADDI_VIDEODESC  VideoDesc;
+} DXVADDI_DECODEINPUT;
 
-    typedef struct _DXVADDI_DECODEBUFFERINFO
-    {
-        D3DDDIFORMAT       CompressedBufferType;
-        UINT               CreationWidth;
-        UINT               CreationHeight;
-        D3DDDI_POOL        CreationPool;
-    } DXVADDI_DECODEBUFFERINFO;
+typedef struct _DXVADDI_DECODEBUFFERINFO
+{
+    D3DDDIFORMAT       CompressedBufferType;
+    UINT               CreationWidth;
+    UINT               CreationHeight;
+    D3DDDI_POOL        CreationPool;
+} DXVADDI_DECODEBUFFERINFO;
 
 //D3DDDICAPS_GETDECODECONFIGURATIONCOUNT
 //D3DDDICAPS_GETDECODECONFIGURATIONS
 
-    DEFINE_GUID(DXVADDI_NoEncrypt,  0x1b81beD0, 0xa0c7,0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
+DEFINE_GUID(DXVADDI_NoEncrypt,  0x1b81beD0, 0xa0c7,0x11d3,0xb9,0x84,0x00,0xc0,0x4f,0x2e,0x73,0xc5);
 
 //D3DDDICAPS_GETVIDEOPROCESSORDEVICEGUIDCOUNT
 //D3DDDICAPS_GETVIDEOPROCESSORDEVICEGUIDS
 
-    DEFINE_GUID(DXVADDI_VideoProcProgressiveDevice, 0x5a54a0c9,0xc7ec,0x4bd9,0x8e,0xde,0xf3,0xc7,0x5d,0xc4,0x39,0x3b);
-    DEFINE_GUID(DXVADDI_VideoProcBobDevice,         0x335aa36e,0x7884,0x43a4,0x9c,0x91,0x7f,0x87,0xfa,0xf3,0xe3,0x7e);
+DEFINE_GUID(DXVADDI_VideoProcProgressiveDevice, 0x5a54a0c9,0xc7ec,0x4bd9,0x8e,0xde,0xf3,0xc7,0x5d,0xc4,0x39,0x3b);
+DEFINE_GUID(DXVADDI_VideoProcBobDevice,         0x335aa36e,0x7884,0x43a4,0x9c,0x91,0x7f,0x87,0xfa,0xf3,0xe3,0x7e);
 
 //D3DDDICAPS_GETVIDEOPROCESSORRTFORMATCOUNT
 //D3DDDICAPS_GETVIDEOPROCESSORRTFORMATS
@@ -1716,142 +1720,142 @@ typedef struct _D3DDDIARG_GETCAPS
 //D3DDDICAPS_GETVIDEOPROCESSORRTSUBSTREAMFORMATS
 //D3DDDICAPS_GETVIDEOPROCESSORCAPS
 
-    typedef struct _DXVADDI_VIDEOPROCESSORCAPS
-    {
-        D3DDDI_POOL              InputPool;
-        UINT                     NumForwardRefSamples;
-        UINT                     NumBackwardRefSamples;
-        D3DDDIFORMAT             OutputFormat;
-        UINT                     DeinterlaceTechnology;
-        UINT                     ProcAmpControlCaps;
-        UINT                     VideoProcessorOperations;
-        UINT                     NoiseFilterTechnology;
-        UINT                     DetailFilterTechnology;
-    } DXVADDI_VIDEOPROCESSORCAPS;
+typedef struct _DXVADDI_VIDEOPROCESSORCAPS
+{
+    D3DDDI_POOL              InputPool;
+    UINT                     NumForwardRefSamples;
+    UINT                     NumBackwardRefSamples;
+    D3DDDIFORMAT             OutputFormat;
+    UINT                     DeinterlaceTechnology;
+    UINT                     ProcAmpControlCaps;
+    UINT                     VideoProcessorOperations;
+    UINT                     NoiseFilterTechnology;
+    UINT                     DetailFilterTechnology;
+} DXVADDI_VIDEOPROCESSORCAPS;
 
-    #define DXVADDI_DEINTERLACETECH_UNKNOWN                         0x0000
-    #define DXVADDI_DEINTERLACETECH_BOBLINEREPLICATE                0x0001
-    #define DXVADDI_DEINTERLACETECH_BOBVERTICALSTRETCH              0x0002
-    #define DXVADDI_DEINTERLACETECH_BOBVERTICALSTRETCH4TAP          0x0004
-    #define DXVADDI_DEINTERLACETECH_MEDIANFILTERING                 0x0008
-    #define DXVADDI_DEINTERLACETECH_EDGEFILTERING                   0x0010
-    #define DXVADDI_DEINTERLACETECH_FIELDADAPTIVE                   0x0020
-    #define DXVADDI_DEINTERLACETECH_PIXELADAPTIVE                   0x0040
-    #define DXVADDI_DEINTERLACETECH_MOTIONVECTORSTEERED             0x0080
-    #define DXVADDI_DEINTERLACETECH_INVERSETELECINE                 0x0100
+#define DXVADDI_DEINTERLACETECH_UNKNOWN                         0x0000
+#define DXVADDI_DEINTERLACETECH_BOBLINEREPLICATE                0x0001
+#define DXVADDI_DEINTERLACETECH_BOBVERTICALSTRETCH              0x0002
+#define DXVADDI_DEINTERLACETECH_BOBVERTICALSTRETCH4TAP          0x0004
+#define DXVADDI_DEINTERLACETECH_MEDIANFILTERING                 0x0008
+#define DXVADDI_DEINTERLACETECH_EDGEFILTERING                   0x0010
+#define DXVADDI_DEINTERLACETECH_FIELDADAPTIVE                   0x0020
+#define DXVADDI_DEINTERLACETECH_PIXELADAPTIVE                   0x0040
+#define DXVADDI_DEINTERLACETECH_MOTIONVECTORSTEERED             0x0080
+#define DXVADDI_DEINTERLACETECH_INVERSETELECINE                 0x0100
 
-    #define DXVADDI_PROCAMP_NONE                                    0x0000
-    #define DXVADDI_PROCAMP_BRIGHTNESS                              0x0001
-    #define DXVADDI_PROCAMP_CONTRAST                                0x0002
-    #define DXVADDI_PROCAMP_HUE                                     0x0004
-    #define DXVADDI_PROCAMP_SATURATION                              0x0008
+#define DXVADDI_PROCAMP_NONE                                    0x0000
+#define DXVADDI_PROCAMP_BRIGHTNESS                              0x0001
+#define DXVADDI_PROCAMP_CONTRAST                                0x0002
+#define DXVADDI_PROCAMP_HUE                                     0x0004
+#define DXVADDI_PROCAMP_SATURATION                              0x0008
 
-    #define DXVADDI_VIDEOPROCESS_NONE                               0x0000
-    #define DXVADDI_VIDEOPROCESS_YUV2RGB                            0x0001
-    #define DXVADDI_VIDEOPROCESS_STRETCHX                           0x0002
-    #define DXVADDI_VIDEOPROCESS_STRETCHY                           0x0004
-    #define DXVADDI_VIDEOPROCESS_ALPHABLEND                         0x0008
-    #define DXVADDI_VIDEOPROCESS_SUBRECTS                           0x0010
-    #define DXVADDI_VIDEOPROCESS_SUBSTREAMS                         0x0020
-    #define DXVADDI_VIDEOPROCESS_SUBSTREAMSEXTENDED                 0x0040
-    #define DXVADDI_VIDEOPROCESS_YUV2RGBEXTENDED                    0x0080
-    #define DXVADDI_VIDEOPROCESS_ALPHABLENDEXTENDED                 0x0100
-    #define DXVADDI_VIDEOPROCESS_CONSTRICTION                       0x0200
-    #define DXVADDI_VIDEOPROCESS_NOISEFILTER                        0x0400
-    #define DXVADDI_VIDEOPROCESS_DETAILFILTER                       0x0800
-    #define DXVADDI_VIDEOPROCESS_PLANARALPHA                        0x1000
-    #define DXVADDI_VIDEOPROCESS_LINEARSCALING                      0x2000
-    #define DXVADDI_VIDEOPROCESS_GAMMACOMPENSATED                   0x4000
-    #define DXVADDI_VIDEOPROCESS_MAINTAINSORIGINALFIELDDATA         0x8000
+#define DXVADDI_VIDEOPROCESS_NONE                               0x0000
+#define DXVADDI_VIDEOPROCESS_YUV2RGB                            0x0001
+#define DXVADDI_VIDEOPROCESS_STRETCHX                           0x0002
+#define DXVADDI_VIDEOPROCESS_STRETCHY                           0x0004
+#define DXVADDI_VIDEOPROCESS_ALPHABLEND                         0x0008
+#define DXVADDI_VIDEOPROCESS_SUBRECTS                           0x0010
+#define DXVADDI_VIDEOPROCESS_SUBSTREAMS                         0x0020
+#define DXVADDI_VIDEOPROCESS_SUBSTREAMSEXTENDED                 0x0040
+#define DXVADDI_VIDEOPROCESS_YUV2RGBEXTENDED                    0x0080
+#define DXVADDI_VIDEOPROCESS_ALPHABLENDEXTENDED                 0x0100
+#define DXVADDI_VIDEOPROCESS_CONSTRICTION                       0x0200
+#define DXVADDI_VIDEOPROCESS_NOISEFILTER                        0x0400
+#define DXVADDI_VIDEOPROCESS_DETAILFILTER                       0x0800
+#define DXVADDI_VIDEOPROCESS_PLANARALPHA                        0x1000
+#define DXVADDI_VIDEOPROCESS_LINEARSCALING                      0x2000
+#define DXVADDI_VIDEOPROCESS_GAMMACOMPENSATED                   0x4000
+#define DXVADDI_VIDEOPROCESS_MAINTAINSORIGINALFIELDDATA         0x8000
 
-    #define DXVADDI_NOISEFILTERTECH_UNSUPPORTED                     0x0000
-    #define DXVADDI_NOISEFILTERTECH_UNKNOWN                         0x0001
-    #define DXVADDI_NOISEFILTERTECH_MEDIAN                          0x0002
-    #define DXVADDI_NOISEFILTERTECH_TEMPORAL                        0x0004
-    #define DXVADDI_NOISEFILTERTECH_BLOCKNOISE                      0x0008
-    #define DXVADDI_NOISEFILTERTECH_MOSQUITONOISE                   0x0010
+#define DXVADDI_NOISEFILTERTECH_UNSUPPORTED                     0x0000
+#define DXVADDI_NOISEFILTERTECH_UNKNOWN                         0x0001
+#define DXVADDI_NOISEFILTERTECH_MEDIAN                          0x0002
+#define DXVADDI_NOISEFILTERTECH_TEMPORAL                        0x0004
+#define DXVADDI_NOISEFILTERTECH_BLOCKNOISE                      0x0008
+#define DXVADDI_NOISEFILTERTECH_MOSQUITONOISE                   0x0010
 
-    #define DXVADDI_DETAILFILTERTECH_UNSUPPORTED                    0x0000
-    #define DXVADDI_DETAILFILTERTECH_UNKNOWN                        0x0001
-    #define DXVADDI_DETAILFILTERTECH_EDGE                           0x0002
-    #define DXVADDI_DETAILFILTERTECH_SHARPENING                     0x0004
+#define DXVADDI_DETAILFILTERTECH_UNSUPPORTED                    0x0000
+#define DXVADDI_DETAILFILTERTECH_UNKNOWN                        0x0001
+#define DXVADDI_DETAILFILTERTECH_EDGE                           0x0002
+#define DXVADDI_DETAILFILTERTECH_SHARPENING                     0x0004
 
-    typedef struct _DXVADDI_VIDEOPROCESSORINPUT
-    {
-        CONST GUID*              pVideoProcGuid;
-        DXVADDI_VIDEODESC        VideoDesc;
-        D3DDDIFORMAT             RenderTargetFormat;
-    } DXVADDI_VIDEOPROCESSORINPUT;
+typedef struct _DXVADDI_VIDEOPROCESSORINPUT
+{
+    CONST GUID*              pVideoProcGuid;
+    DXVADDI_VIDEODESC        VideoDesc;
+    D3DDDIFORMAT             RenderTargetFormat;
+} DXVADDI_VIDEOPROCESSORINPUT;
 
 //D3DDDICAPS_GETPROCAMPRANGE
 
-    typedef struct _DXVADDI_QUERYPROCAMPINPUT
-    {
-        CONST GUID*              pVideoProcGuid;
-        DXVADDI_VIDEODESC        VideoDesc;
-        D3DDDIFORMAT             RenderTargetFormat;
-        UINT                     ProcAmpCap;
-    } DXVADDI_QUERYPROCAMPINPUT;
+typedef struct _DXVADDI_QUERYPROCAMPINPUT
+{
+    CONST GUID*              pVideoProcGuid;
+    DXVADDI_VIDEODESC        VideoDesc;
+    D3DDDIFORMAT             RenderTargetFormat;
+    UINT                     ProcAmpCap;
+} DXVADDI_QUERYPROCAMPINPUT;
 
-    typedef struct _DXVADDI_VALUERANGE
-    {
-        DXVADDI_FIXED32          MinValue;
-        DXVADDI_FIXED32          MaxValue;
-        DXVADDI_FIXED32          DefaultValue;
-        DXVADDI_FIXED32          StepSize;
-    } DXVADDI_VALUERANGE;
+typedef struct _DXVADDI_VALUERANGE
+{
+    DXVADDI_FIXED32          MinValue;
+    DXVADDI_FIXED32          MaxValue;
+    DXVADDI_FIXED32          DefaultValue;
+    DXVADDI_FIXED32          StepSize;
+} DXVADDI_VALUERANGE;
 
 //D3DDDICAPS_FILTERPROPERTYRANGE
 
-    #define DXVADDI_NOISEFILTER_LUMALEVEL                           1
-    #define DXVADDI_NOISEFILTER_LUMATHREASHOLD                      2
-    #define DXVADDI_NOISEFILTER_LUMARADIUS                          3
-    #define DXVADDI_NOISEFILTER_CHROMALEVEL                         4
-    #define DXVADDI_NOISEFILTER_CHROMATHREASHOLD                    5
-    #define DXVADDI_NOISEFILTER_CHROMARADIUS                        6
-    #define DXVADDI_DETAILFILTER_LUMALEVEL                          7
-    #define DXVADDI_DETAILFILTER_LUMATHREASHOLD                     8
-    #define DXVADDI_DETAILFILTER_LUMARADIUS                         9
-    #define DXVADDI_DETAILFILTER_CHROMALEVEL                        10
-    #define DXVADDI_DETAILFILTER_CHROMATHREASHOLD                   11
-    #define DXVADDI_DETAILFILTER_CHROMARADIUS                       12
+#define DXVADDI_NOISEFILTER_LUMALEVEL                           1
+#define DXVADDI_NOISEFILTER_LUMATHREASHOLD                      2
+#define DXVADDI_NOISEFILTER_LUMARADIUS                          3
+#define DXVADDI_NOISEFILTER_CHROMALEVEL                         4
+#define DXVADDI_NOISEFILTER_CHROMATHREASHOLD                    5
+#define DXVADDI_NOISEFILTER_CHROMARADIUS                        6
+#define DXVADDI_DETAILFILTER_LUMALEVEL                          7
+#define DXVADDI_DETAILFILTER_LUMATHREASHOLD                     8
+#define DXVADDI_DETAILFILTER_LUMARADIUS                         9
+#define DXVADDI_DETAILFILTER_CHROMALEVEL                        10
+#define DXVADDI_DETAILFILTER_CHROMATHREASHOLD                   11
+#define DXVADDI_DETAILFILTER_CHROMARADIUS                       12
 
-    typedef struct _DXVADDI_QUERYFILTERPROPERTYRANGEINPUT
-    {
-        CONST GUID*              pVideoProcGuid;
-        DXVADDI_VIDEODESC        VideoDesc;
-        D3DDDIFORMAT             RenderTargetFormat;
-        UINT                     FilterSetting;
-    } DXVADDI_QUERYFILTERPROPERTYRANGEINPUT;
+typedef struct _DXVADDI_QUERYFILTERPROPERTYRANGEINPUT
+{
+    CONST GUID*              pVideoProcGuid;
+    DXVADDI_VIDEODESC        VideoDesc;
+    D3DDDIFORMAT             RenderTargetFormat;
+    UINT                     FilterSetting;
+} DXVADDI_QUERYFILTERPROPERTYRANGEINPUT;
 
 //D3DDDICAPS_GETEXTENSIONGUIDCOUNT
 //D3DDDICAPS_GETEXTENSIONGUIDS
 //D3DDDICAPS_GETEXTENSIONCAPS
 
-    #define DXVADDI_EXTENSION_CATEGORY_DECODER                      0x0001
-    #define DXVADDI_EXTENSION_CATEGORY_ENCODER                      0x0002
-    #define DXVADDI_EXTENSION_CATEGORY_PROCESSOR                    0x0004
-    #define DXVADDI_EXTENSION_CATEGORY_ALL                          0x0007
+#define DXVADDI_EXTENSION_CATEGORY_DECODER                      0x0001
+#define DXVADDI_EXTENSION_CATEGORY_ENCODER                      0x0002
+#define DXVADDI_EXTENSION_CATEGORY_PROCESSOR                    0x0004
+#define DXVADDI_EXTENSION_CATEGORY_ALL                          0x0007
 
-    #define DXVADDI_EXTENSION_CAPTYPE_MIN                           300
-    #define DXVADDI_EXTENSION_CAPTYPE_MAX                           400
+#define DXVADDI_EXTENSION_CAPTYPE_MIN                           300
+#define DXVADDI_EXTENSION_CAPTYPE_MAX                           400
 
-    typedef struct _DXVADDI_QUERYEXTENSIONCAPSINPUT
-    {
-        CONST GUID*              pGuid;
-        UINT                     CapType;
-        DXVADDI_PRIVATEDATA*     pPrivate;
-    } DXVADDI_QUERYEXTENSIONCAPSINPUT;
+typedef struct _DXVADDI_QUERYEXTENSIONCAPSINPUT
+{
+    CONST GUID*              pGuid;
+    UINT                     CapType;
+    DXVADDI_PRIVATEDATA*     pPrivate;
+} DXVADDI_QUERYEXTENSIONCAPSINPUT;
 
 //D3DDDICAPS_GETGAMMARAMPCAPS
 
-    typedef struct _DDIGAMMACAPS
-    {
-        UINT                     GammaCaps;
-    } DDIGAMMACAPS;
+typedef struct _DDIGAMMACAPS
+{
+    UINT                     GammaCaps;
+} DDIGAMMACAPS;
 
-    // Caps
-    #define GAMMA_CAP_RGB256x3x16           0x00000001    // Standard GDI gamma ramps (256 entries, 3 channels per entry, 16 bits per channel)
+// Caps
+#define GAMMA_CAP_RGB256x3x16           0x00000001    // Standard GDI gamma ramps (256 entries, 3 channels per entry, 16 bits per channel)
 
 
 //
@@ -2130,7 +2134,7 @@ typedef struct _D3DDDICB_QUERYRESIDENCY
 typedef struct _D3DDDICB_LOCK
 {
     D3DKMT_HANDLE       hAllocation;        // in: allocation to lock, used by LockCb from driver.
-                                            // out: New handle representing the allocation.
+    // out: New handle representing the allocation.
     UINT                PrivateDriverData;  // in: from UMD to KMD's AcquireAperture
     UINT                NumPages;
     CONST UINT*         pPages;
@@ -2161,11 +2165,11 @@ typedef struct _D3DDDICB_PRESENT
     D3DKMT_HANDLE               hSrcAllocation;                                 // in: The allocation of which content will be presented
     D3DKMT_HANDLE               hDstAllocation;                                 // in: if non-zero, it's the destination allocation of the present
     HANDLE                      hContext;                                       // in: Context being submitted to.
-    UINT                        BroadcastContextCount;                          // in: Specifies the number of context 
-                                                                                //     to broadcast this present operation to.
-                                                                                //     Only supported for flip operation.
+    UINT                        BroadcastContextCount;                          // in: Specifies the number of context
+    //     to broadcast this present operation to.
+    //     Only supported for flip operation.
     HANDLE                      BroadcastContext[D3DDDI_MAX_BROADCAST_CONTEXT]; // in: Specifies the handle of the context to
-                                                                                //     broadcast to.    
+    //     broadcast to.
 } D3DDDICB_PRESENT;
 
 typedef struct _D3DDDICB_RENDERFLAGS
@@ -2188,24 +2192,24 @@ typedef struct _D3DDDICB_RENDER
 {
     UINT                        CommandLength;              // in:  Number of byte to process in the command buffer.
     UINT                        CommandOffset;              // in:  Offset of the command to be process in the
-                                                            //      current command buffer.
+    //      current command buffer.
     UINT                        NumAllocations;             // in: Number of allocation in allocations list.
     UINT                        NumPatchLocations;          // in: Number of patch location in patch allocations list.
     VOID*                       pNewCommandBuffer;          // out: Pointer to the next command buffer to use.
     UINT                        NewCommandBufferSize;       // in: Size requested for the next command buffer.
-                                                            // out: Size of the next command buffer to use.
+    // out: Size of the next command buffer to use.
     D3DDDI_ALLOCATIONLIST*      pNewAllocationList;         // out: Pointer to the next allocation list to use.
     UINT                        NewAllocationListSize;      // in: Size requested for the next allocation list.
-                                                            // out: Size of the new allocation list.
+    // out: Size of the new allocation list.
     D3DDDI_PATCHLOCATIONLIST*   pNewPatchLocationList;      // out: Pointer to the next patch location list.
     UINT                        NewPatchLocationListSize;   // in: Size requested for the next patch location list.
-                                                            // out: Size of the new patch location list.
+    // out: Size of the new patch location list.
     D3DDDICB_RENDERFLAGS Flags;                             // in: Flags
     HANDLE                      hContext;                   // in: Context being submitted to and owning the specified command buffer.
-    UINT                        BroadcastContextCount;                          // in: Specifies the number of context 
-                                                                                //     to broadcast this command buffer to.
+    UINT                        BroadcastContextCount;                          // in: Specifies the number of context
+    //     to broadcast this command buffer to.
     HANDLE                      BroadcastContext[D3DDDI_MAX_BROADCAST_CONTEXT]; // in: Specifies the handle of the context to
-                                                                                //     broadcast to.
+    //     broadcast to.
     ULONG                       QueuedBufferCount;          // out: Number of DMA buffer queued to this context after this submission.
 } D3DDDICB_RENDER;
 
@@ -2288,7 +2292,7 @@ typedef struct _D3DDDICB_SIGNALSYNCHRONIZATIONOBJECT
     HANDLE                  hContext;                                       // in: Specify the context that should signal the objets.
     UINT                    ObjectCount;                                    // in: Number of object to signal.
     D3DKMT_HANDLE           ObjectHandleArray[D3DDDI_MAX_OBJECT_SIGNALED];  // in: Handle to the synchronization object to signal.
-    D3DDDICB_SIGNALFLAGS    Flags;                                          // in: Specify signal behavior.    
+    D3DDDICB_SIGNALFLAGS    Flags;                                          // in: Specify signal behavior.
 } D3DDDICB_SIGNALSYNCHRONIZATIONOBJECT;
 
 typedef HRESULT (APIENTRY CALLBACK *PFND3DDDI_ALLOCATECB)(HANDLE hDevice, D3DDDICB_ALLOCATE*);
@@ -2364,10 +2368,10 @@ typedef struct _D3DDDIARG_CREATEDEVICE
     UINT                            CommandBufferSize;      // in:  Size of the first command buffer to use.
     D3DDDI_ALLOCATIONLIST*          pAllocationList;        // out: Pointer to the first allocation list to use.
     UINT                            AllocationListSize;     // in:  Size of the allocation list that will be available
-                                                            //      when the first command buffer is submitted.
+    //      when the first command buffer is submitted.
     D3DDDI_PATCHLOCATIONLIST*       pPatchLocationList;     // out: Pointer to the first patch location list to use.
     UINT                            PatchLocationListSize;  // in:  Size of the patch location list that will be available
-                                                            //      when the first command buffer is submitted.
+    //      when the first command buffer is submitted.
     D3DDDI_DEVICEFUNCS*             pDeviceFuncs;           // out: Driver function table
     D3DDDI_CREATEDEVICEFLAGS        Flags;                  // in:  Flags
 } D3DDDIARG_CREATEDEVICE;
@@ -2399,9 +2403,9 @@ typedef struct _D3DDDIARG_OPENADAPTER
     UINT                           Version;            // in:  Runtime version
     CONST D3DDDI_ADAPTERCALLBACKS* pAdapterCallbacks;  // in:  Pointer to runtime callbacks
     D3DDDI_ADAPTERFUNCS*           pAdapterFuncs;      // out: Driver function table
-    UINT                           DriverVersion;      // out: D3D UMD interface version the 
-                                                       //      driver was compiled with. Use 
-                                                       //      D3D_UMD_INTERFACE_VERSION.
+    UINT                           DriverVersion;      // out: D3D UMD interface version the
+    //      driver was compiled with. Use
+    //      D3D_UMD_INTERFACE_VERSION.
 } D3DDDIARG_OPENADAPTER;
 
 typedef HRESULT (APIENTRY *PFND3DDDI_OPENADAPTER)(IN D3DDDIARG_OPENADAPTER*);

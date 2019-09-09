@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -95,30 +95,30 @@ amm-info@iis.fraunhofer.de
 
 enum
 {
-  TNS_MAX_WINDOWS = 8,    /* 8 */
-  TNS_MAXIMUM_ORDER   = 20,  /* 12 for AAC-LC and AAC-SSR. Set to 20 for AAC-Main (AOT 1). Some broken encoders also do order 20 for AAC-LC :( */
-  TNS_MAXIMUM_FILTERS = 3
+    TNS_MAX_WINDOWS = 8,    /* 8 */
+    TNS_MAXIMUM_ORDER   = 20,  /* 12 for AAC-LC and AAC-SSR. Set to 20 for AAC-Main (AOT 1). Some broken encoders also do order 20 for AAC-LC :( */
+    TNS_MAXIMUM_FILTERS = 3
 };
 
 typedef struct
 {
-  SCHAR Coeff[TNS_MAXIMUM_ORDER];
+    SCHAR Coeff[TNS_MAXIMUM_ORDER];
 
-  UCHAR StartBand;
-  UCHAR StopBand;
+    UCHAR StartBand;
+    UCHAR StopBand;
 
-  SCHAR Direction;
-  SCHAR Resolution;
+    SCHAR Direction;
+    SCHAR Resolution;
 
-  UCHAR Order;
+    UCHAR Order;
 } CFilter;
 
 typedef struct
 {
-  CFilter Filter[TNS_MAX_WINDOWS][TNS_MAXIMUM_FILTERS];
-  UCHAR NumberOfFilters[TNS_MAX_WINDOWS];
-  UCHAR DataPresent;
-  UCHAR Active;
+    CFilter Filter[TNS_MAX_WINDOWS][TNS_MAXIMUM_FILTERS];
+    UCHAR NumberOfFilters[TNS_MAX_WINDOWS];
+    UCHAR DataPresent;
+    UCHAR Active;
 } CTnsData;
 
 void CTns_Reset(CTnsData *pTnsData);

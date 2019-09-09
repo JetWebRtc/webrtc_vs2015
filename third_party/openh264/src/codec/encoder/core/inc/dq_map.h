@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -42,12 +42,14 @@
 #if !defined(WELS_ENCODER_DEPENDENCY_QUAILITY_IDC_MAP_H__)
 #define WELS_ENCODER_DEPENDENCY_QUAILITY_IDC_MAP_H__
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 /*
  *  Dependency Quality IDC
  */
 
-typedef struct TagDqIdc {
+typedef struct TagDqIdc
+{
 uint16_t    iPpsId;         // pPps id
 uint8_t     iSpsId;         // pSps id
 int8_t      uiSpatialId;    // spatial id

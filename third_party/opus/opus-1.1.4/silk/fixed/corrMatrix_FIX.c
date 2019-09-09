@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -53,19 +53,25 @@ void silk_corrVector_FIX(
     ptr1 = &x[ order - 1 ]; /* Points to first sample of column 0 of X: X[:,0] */
     ptr2 = t;
     /* Calculate X'*t */
-    if( rshifts > 0 ) {
+    if( rshifts > 0 )
+    {
         /* Right shifting used */
-        for( lag = 0; lag < order; lag++ ) {
+        for( lag = 0; lag < order; lag++ )
+        {
             inner_prod = 0;
-            for( i = 0; i < L; i++ ) {
+            for( i = 0; i < L; i++ )
+            {
                 inner_prod += silk_RSHIFT32( silk_SMULBB( ptr1[ i ], ptr2[i] ), rshifts );
             }
             Xt[ lag ] = inner_prod; /* X[:,lag]'*t */
             ptr1--; /* Go to next column of X */
         }
-    } else {
+    }
+    else
+    {
         silk_assert( rshifts == 0 );
-        for( lag = 0; lag < order; lag++ ) {
+        for( lag = 0; lag < order; lag++ )
+        {
             Xt[ lag ] = silk_inner_prod_aligned( ptr1, ptr2, L, arch ); /* X[:,lag]'*t */
             ptr1--; /* Go to next column of X */
         }
@@ -97,10 +103,12 @@ void silk_corrMatrix_FIX(
 
     /* Calculate energy of first column (0) of X: X[:,0]'*X[:,0] */
     /* Remove contribution of first order - 1 samples */
-    for( i = 0; i < order - 1; i++ ) {
+    for( i = 0; i < order - 1; i++ )
+    {
         energy -= silk_RSHIFT32( silk_SMULBB( x[ i ], x[ i ] ), rshifts_local );
     }
-    if( rshifts_local < *rshifts ) {
+    if( rshifts_local < *rshifts )
+    {
         /* Adjust energy */
         energy = silk_RSHIFT32( energy, *rshifts - rshifts_local );
         rshifts_local = *rshifts;
@@ -110,7 +118,8 @@ void silk_corrMatrix_FIX(
     /* Fill out the diagonal of the correlation matrix */
     matrix_ptr( XX, 0, 0, order ) = energy;
     ptr1 = &x[ order - 1 ]; /* First sample of column 0 of X */
-    for( j = 1; j < order; j++ ) {
+    for( j = 1; j < order; j++ )
+    {
         energy = silk_SUB32( energy, silk_RSHIFT32( silk_SMULBB( ptr1[ L - j ], ptr1[ L - j ] ), rshifts_local ) );
         energy = silk_ADD32( energy, silk_RSHIFT32( silk_SMULBB( ptr1[ -j ], ptr1[ -j ] ), rshifts_local ) );
         matrix_ptr( XX, j, j, order ) = energy;
@@ -118,18 +127,22 @@ void silk_corrMatrix_FIX(
 
     ptr2 = &x[ order - 2 ]; /* First sample of column 1 of X */
     /* Calculate the remaining elements of the correlation matrix */
-    if( rshifts_local > 0 ) {
+    if( rshifts_local > 0 )
+    {
         /* Right shifting used */
-        for( lag = 1; lag < order; lag++ ) {
+        for( lag = 1; lag < order; lag++ )
+        {
             /* Inner product of column 0 and column lag: X[:,0]'*X[:,lag] */
             energy = 0;
-            for( i = 0; i < L; i++ ) {
+            for( i = 0; i < L; i++ )
+            {
                 energy += silk_RSHIFT32( silk_SMULBB( ptr1[ i ], ptr2[i] ), rshifts_local );
             }
             /* Calculate remaining off diagonal: X[:,j]'*X[:,j + lag] */
             matrix_ptr( XX, lag, 0, order ) = energy;
             matrix_ptr( XX, 0, lag, order ) = energy;
-            for( j = 1; j < ( order - lag ); j++ ) {
+            for( j = 1; j < ( order - lag ); j++ )
+            {
                 energy = silk_SUB32( energy, silk_RSHIFT32( silk_SMULBB( ptr1[ L - j ], ptr2[ L - j ] ), rshifts_local ) );
                 energy = silk_ADD32( energy, silk_RSHIFT32( silk_SMULBB( ptr1[ -j ], ptr2[ -j ] ), rshifts_local ) );
                 matrix_ptr( XX, lag + j, j, order ) = energy;
@@ -137,14 +150,18 @@ void silk_corrMatrix_FIX(
             }
             ptr2--; /* Update pointer to first sample of next column (lag) in X */
         }
-    } else {
-        for( lag = 1; lag < order; lag++ ) {
+    }
+    else
+    {
+        for( lag = 1; lag < order; lag++ )
+        {
             /* Inner product of column 0 and column lag: X[:,0]'*X[:,lag] */
             energy = silk_inner_prod_aligned( ptr1, ptr2, L, arch );
             matrix_ptr( XX, lag, 0, order ) = energy;
             matrix_ptr( XX, 0, lag, order ) = energy;
             /* Calculate remaining off diagonal: X[:,j]'*X[:,j + lag] */
-            for( j = 1; j < ( order - lag ); j++ ) {
+            for( j = 1; j < ( order - lag ); j++ )
+            {
                 energy = silk_SUB32( energy, silk_SMULBB( ptr1[ L - j ], ptr2[ L - j ] ) );
                 energy = silk_SMLABB( energy, ptr1[ -j ], ptr2[ -j ] );
                 matrix_ptr( XX, lag + j, j, order ) = energy;

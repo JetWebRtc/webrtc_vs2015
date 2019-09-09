@@ -1,4 +1,4 @@
-/*
+﻿/*
  * R3D REDCODE demuxer
  * Copyright (c) 2008 Baptiste Coudurier <baptiste dot coudurier at gmail dot com>
  *
@@ -25,13 +25,15 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct R3DContext {
+typedef struct R3DContext
+{
     unsigned video_offsets_count;
     unsigned *video_offsets;
     unsigned rdvo_offset;
 } R3DContext;
 
-typedef struct Atom {
+typedef struct Atom
+{
     unsigned size;
     uint32_t tag;
     uint64_t offset;
@@ -45,7 +47,7 @@ static int read_atom(AVFormatContext *s, Atom *atom)
         return -1;
     atom->tag = avio_rl32(s->pb);
     av_log(s, AV_LOG_TRACE, "atom %u %.4s offset %#"PRIx64"\n",
-            atom->size, (char*)&atom->tag, atom->offset);
+           atom->size, (char*)&atom->tag, atom->offset);
     return atom->size;
 }
 
@@ -85,16 +87,18 @@ static int r3d_read_red1(AVFormatContext *s)
 
     framerate.num = avio_rb16(s->pb);
     framerate.den = avio_rb16(s->pb);
-    if (framerate.num > 0 && framerate.den > 0) {
+    if (framerate.num > 0 && framerate.den > 0)
+    {
 #if FF_API_R_FRAME_RATE
         st->r_frame_rate =
 #endif
-        st->avg_frame_rate = framerate;
+            st->avg_frame_rate = framerate;
     }
 
     tmp = avio_r8(s->pb); // audio channels
     av_log(s, AV_LOG_TRACE, "audio channels %d\n", tmp);
-    if (tmp > 0) {
+    if (tmp > 0)
+    {
         AVStream *ast = avformat_new_stream(s, NULL);
         if (!ast)
             return AVERROR(ENOMEM);
@@ -112,7 +116,7 @@ static int r3d_read_red1(AVFormatContext *s)
     av_log(s, AV_LOG_TRACE, "resolution %dx%d\n", st->codec->width, st->codec->height);
     av_log(s, AV_LOG_TRACE, "timescale %d\n", st->time_base.den);
     av_log(s, AV_LOG_TRACE, "frame rate %d/%d\n",
-            framerate.num, framerate.den);
+           framerate.num, framerate.den);
 
     return 0;
 }
@@ -128,9 +132,11 @@ static int r3d_read_rdvo(AVFormatContext *s, Atom *atom)
     if (!r3d->video_offsets)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < r3d->video_offsets_count; i++) {
+    for (i = 0; i < r3d->video_offsets_count; i++)
+    {
         r3d->video_offsets[i] = avio_rb32(s->pb);
-        if (!r3d->video_offsets[i]) {
+        if (!r3d->video_offsets[i])
+        {
             r3d->video_offsets_count = i;
             break;
         }
@@ -171,16 +177,21 @@ static int r3d_read_header(AVFormatContext *s)
     Atom atom;
     int ret;
 
-    if (read_atom(s, &atom) < 0) {
+    if (read_atom(s, &atom) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "error reading atom\n");
         return -1;
     }
-    if (atom.tag == MKTAG('R','E','D','1')) {
-        if ((ret = r3d_read_red1(s)) < 0) {
+    if (atom.tag == MKTAG('R','E','D','1'))
+    {
+        if ((ret = r3d_read_red1(s)) < 0)
+        {
             av_log(s, AV_LOG_ERROR, "error parsing 'red1' atom\n");
             return ret;
         }
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "could not find 'red1' atom\n");
         return -1;
     }
@@ -195,23 +206,25 @@ static int r3d_read_header(AVFormatContext *s)
         av_log(s, AV_LOG_ERROR, "error reading end atom\n");
 
     if (atom.tag != MKTAG('R','E','O','B') &&
-        atom.tag != MKTAG('R','E','O','F') &&
-        atom.tag != MKTAG('R','E','O','S'))
+            atom.tag != MKTAG('R','E','O','F') &&
+            atom.tag != MKTAG('R','E','O','S'))
         goto out;
 
     r3d_read_reos(s);
 
-    if (r3d->rdvo_offset) {
+    if (r3d->rdvo_offset)
+    {
         avio_seek(s->pb, r3d->rdvo_offset, SEEK_SET);
         if (read_atom(s, &atom) < 0)
             av_log(s, AV_LOG_ERROR, "error reading 'rdvo' atom\n");
-        if (atom.tag == MKTAG('R','D','V','O')) {
+        if (atom.tag == MKTAG('R','D','V','O'))
+        {
             if (r3d_read_rdvo(s, &atom) < 0)
                 av_log(s, AV_LOG_ERROR, "error parsing 'rdvo' atom\n");
         }
     }
 
- out:
+out:
     avio_seek(s->pb, s->internal->data_offset, SEEK_SET);
     return 0;
 }
@@ -237,7 +250,8 @@ static int r3d_read_redv(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     tmp = avio_rb16(s->pb); // unknown
     av_log(s, AV_LOG_TRACE, "unknown %d\n", tmp);
 
-    if (tmp > 4) {
+    if (tmp > 4)
+    {
         tmp = avio_rb16(s->pb); // unknown
         av_log(s, AV_LOG_TRACE, "unknown %d\n", tmp);
 
@@ -256,7 +270,8 @@ static int r3d_read_redv(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     if (tmp < 0)
         return -1;
     ret = av_get_packet(s->pb, pkt, tmp);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "error reading video packet\n");
         return -1;
     }
@@ -265,7 +280,7 @@ static int r3d_read_redv(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     pkt->dts = dts;
     if (st->avg_frame_rate.num)
         pkt->duration = (uint64_t)st->time_base.den*
-            st->avg_frame_rate.den/st->avg_frame_rate.num;
+                        st->avg_frame_rate.den/st->avg_frame_rate.num;
     av_log(s, AV_LOG_TRACE, "pkt dts %"PRId64" duration %d\n", pkt->dts, pkt->duration);
 
     return 0;
@@ -283,7 +298,8 @@ static int r3d_read_reda(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     dts = avio_rb32(s->pb);
 
     st->codec->sample_rate = avio_rb32(s->pb);
-    if (st->codec->sample_rate <= 0) {
+    if (st->codec->sample_rate <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "Bad sample rate\n");
         return AVERROR_INVALIDDATA;
     }
@@ -307,7 +323,8 @@ static int r3d_read_reda(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     if (size < 0)
         return -1;
     ret = av_get_packet(s->pb, pkt, size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "error reading audio packet\n");
         return ret;
     }
@@ -317,7 +334,7 @@ static int r3d_read_reda(AVFormatContext *s, AVPacket *pkt, Atom *atom)
     if (st->codec->sample_rate)
         pkt->duration = av_rescale(samples, st->time_base.den, st->codec->sample_rate);
     av_log(s, AV_LOG_TRACE, "pkt dts %"PRId64" duration %d samples %d sample rate %d\n",
-            pkt->dts, pkt->duration, samples, st->codec->sample_rate);
+           pkt->dts, pkt->duration, samples, st->codec->sample_rate);
 
     return 0;
 }
@@ -327,12 +344,15 @@ static int r3d_read_packet(AVFormatContext *s, AVPacket *pkt)
     Atom atom;
     int err = 0;
 
-    while (!err) {
-        if (read_atom(s, &atom) < 0) {
+    while (!err)
+    {
+        if (read_atom(s, &atom) < 0)
+        {
             err = -1;
             break;
         }
-        switch (atom.tag) {
+        switch (atom.tag)
+        {
         case MKTAG('R','E','D','V'):
             if (s->streams[0]->discard == AVDISCARD_ALL)
                 goto skip;
@@ -348,7 +368,7 @@ static int r3d_read_packet(AVFormatContext *s, AVPacket *pkt)
                 return 0;
             break;
         default:
-        skip:
+skip:
             avio_skip(s->pb, atom.size-8);
         }
     }
@@ -374,12 +394,15 @@ static int r3d_seek(AVFormatContext *s, int stream_index, int64_t sample_time, i
     frame_num = av_rescale_q(sample_time, st->time_base,
                              av_inv_q(st->avg_frame_rate));
     av_log(s, AV_LOG_TRACE, "seek frame num %d timestamp %"PRId64"\n",
-            frame_num, sample_time);
+           frame_num, sample_time);
 
-    if (frame_num < r3d->video_offsets_count) {
+    if (frame_num < r3d->video_offsets_count)
+    {
         if (avio_seek(s->pb, r3d->video_offsets_count, SEEK_SET) < 0)
             return -1;
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "could not seek to frame %d\n", frame_num);
         return -1;
     }
@@ -396,7 +419,8 @@ static int r3d_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_r3d_demuxer = {
+AVInputFormat ff_r3d_demuxer =
+{
     .name           = "r3d",
     .long_name      = NULL_IF_CONFIG_SMALL("REDCODE R3D"),
     .priv_data_size = sizeof(R3DContext),

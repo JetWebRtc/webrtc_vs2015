@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,8 +10,10 @@
 
 #include "webrtc/test/constants.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 const int kTOffsetExtensionId = 6;
 const int kAbsSendTimeExtensionId = 7;

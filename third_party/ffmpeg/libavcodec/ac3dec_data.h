@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AC-3 and E-AC-3 decoder tables
  * Copyright (c) 2007 Bartlomiej Wolowiec <bartek.wolowiec@gmail.com>
  *

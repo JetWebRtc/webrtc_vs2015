@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Daniel Moreno <comac AT comac DOT darktech DOT org>
  * Copyright (c) 2010 Baptiste Coudurier
  * Copyright (c) 2012 Loren Merritt
@@ -65,8 +65,10 @@ static void denoise_temporal(uint8_t *src, uint8_t *dst,
 
     temporal += 256 << LUT_BITS;
 
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
             frame_ant[x] = tmp = lowpass(frame_ant[x], LOAD(x), temporal, depth);
             STORE(x, tmp);
         }
@@ -93,22 +95,26 @@ static void denoise_spatial(HQDN3DContext *s,
     /* First line has no top neighbor. Only left one for each tmp and
      * last frame */
     pixel_ant = LOAD(0);
-    for (x = 0; x < w; x++) {
+    for (x = 0; x < w; x++)
+    {
         line_ant[x] = tmp = pixel_ant = lowpass(pixel_ant, LOAD(x), spatial, depth);
         frame_ant[x] = tmp = lowpass(frame_ant[x], tmp, temporal, depth);
         STORE(x, tmp);
     }
 
-    for (y = 1; y < h; y++) {
+    for (y = 1; y < h; y++)
+    {
         src += sstride;
         dst += dstride;
         frame_ant += w;
-        if (s->denoise_row[depth]) {
+        if (s->denoise_row[depth])
+        {
             s->denoise_row[depth](src, dst, line_ant, frame_ant, w, spatial, temporal);
             continue;
         }
         pixel_ant = LOAD(0);
-        for (x = 0; x < w-1; x++) {
+        for (x = 0; x < w-1; x++)
+        {
             line_ant[x] = tmp = lowpass(line_ant[x], pixel_ant, spatial, depth);
             pixel_ant = lowpass(pixel_ant, LOAD(x+1), spatial, depth);
             frame_ant[x] = tmp = lowpass(frame_ant[x], tmp, temporal, depth);
@@ -131,7 +137,8 @@ static int denoise_depth(HQDN3DContext *s,
     // filtered frame rather than a separate buffer.
     long x, y;
     uint16_t *frame_ant = *frame_ant_ptr;
-    if (!frame_ant) {
+    if (!frame_ant)
+    {
         uint8_t *frame_src = src;
         *frame_ant_ptr = frame_ant = av_malloc_array(w, h*sizeof(uint16_t));
         if (!frame_ant)
@@ -180,7 +187,8 @@ static int16_t *precalc_coefs(double dist25, int depth)
 
     gamma = log(0.25) / log(1.0 - FFMIN(dist25,252.0)/255.0 - 0.00001);
 
-    for (i = -256<<LUT_BITS; i < 256<<LUT_BITS; i++) {
+    for (i = -256<<LUT_BITS; i < 256<<LUT_BITS; i++)
+    {
         double f = ((i<<(9-LUT_BITS)) + (1<<(8-LUT_BITS)) - 1) / 512.0; // midpoint of the bin
         simil = FFMAX(0, 1.0 - FFABS(f) / 255.0);
         C = pow(simil, gamma) * 256.0 * f;
@@ -231,7 +239,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV444P,
@@ -275,7 +284,8 @@ static int config_input(AVFilterLink *inlink)
     if (!s->line)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         s->coefs[i] = precalc_coefs(s->strength[i], s->depth);
         if (!s->coefs[i])
             return AVERROR(ENOMEM);
@@ -296,11 +306,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     int c, direct = av_frame_is_writable(in) && !ctx->is_disabled;
 
-    if (direct) {
+    if (direct)
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -308,7 +322,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         av_frame_copy_props(out, in);
     }
 
-    for (c = 0; c < 3; c++) {
+    for (c = 0; c < 3; c++)
+    {
         denoise(s, in->data[c], out->data[c],
                 s->line, &s->frame_prev[c],
                 FF_CEIL_RSHIFT(in->width,  (!!c * s->hsub)),
@@ -318,7 +333,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                 s->coefs[c ? CHROMA_TMP     : LUMA_TMP]);
     }
 
-    if (ctx->is_disabled) {
+    if (ctx->is_disabled)
+    {
         av_frame_free(&out);
         return ff_filter_frame(outlink, in);
     }
@@ -331,7 +347,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
 #define OFFSET(x) offsetof(HQDN3DContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption hqdn3d_options[] = {
+static const AVOption hqdn3d_options[] =
+{
     { "luma_spatial",   "spatial luma strength",    OFFSET(strength[LUMA_SPATIAL]),   AV_OPT_TYPE_DOUBLE, { .dbl = 0.0 }, 0, DBL_MAX, FLAGS },
     { "chroma_spatial", "spatial chroma strength",  OFFSET(strength[CHROMA_SPATIAL]), AV_OPT_TYPE_DOUBLE, { .dbl = 0.0 }, 0, DBL_MAX, FLAGS },
     { "luma_tmp",       "temporal luma strength",   OFFSET(strength[LUMA_TMP]),       AV_OPT_TYPE_DOUBLE, { .dbl = 0.0 }, 0, DBL_MAX, FLAGS },
@@ -341,7 +358,8 @@ static const AVOption hqdn3d_options[] = {
 
 AVFILTER_DEFINE_CLASS(hqdn3d);
 
-static const AVFilterPad avfilter_vf_hqdn3d_inputs[] = {
+static const AVFilterPad avfilter_vf_hqdn3d_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -352,7 +370,8 @@ static const AVFilterPad avfilter_vf_hqdn3d_inputs[] = {
 };
 
 
-static const AVFilterPad avfilter_vf_hqdn3d_outputs[] = {
+static const AVFilterPad avfilter_vf_hqdn3d_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO
@@ -360,7 +379,8 @@ static const AVFilterPad avfilter_vf_hqdn3d_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_hqdn3d = {
+AVFilter ff_vf_hqdn3d =
+{
     .name          = "hqdn3d",
     .description   = NULL_IF_CONFIG_SMALL("Apply a High Quality 3D Denoiser."),
     .priv_size     = sizeof(HQDN3DContext),

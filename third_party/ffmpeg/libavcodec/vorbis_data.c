@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2005 Denes Balatoni ( dbalatoni programozo hu )
  *
  * This file is part of FFmpeg.
@@ -22,7 +22,8 @@
 #include "libavutil/mem.h"
 #include "vorbis.h"
 
-const uint8_t ff_vorbis_channel_layout_offsets[8][8] = {
+const uint8_t ff_vorbis_channel_layout_offsets[8][8] =
+{
     { 0 },
     { 0, 1 },
     { 0, 2, 1 },
@@ -33,7 +34,8 @@ const uint8_t ff_vorbis_channel_layout_offsets[8][8] = {
     { 0, 2, 1, 7, 5, 6, 3, 4 },
 };
 
-const uint8_t ff_vorbis_encoding_channel_layout_offsets[8][8] = {
+const uint8_t ff_vorbis_encoding_channel_layout_offsets[8][8] =
+{
     { 0 },
     { 0, 1 },
     { 0, 2, 1 },
@@ -44,7 +46,8 @@ const uint8_t ff_vorbis_encoding_channel_layout_offsets[8][8] = {
     { 0, 2, 1, 6, 7, 4, 5, 3 },
 };
 
-const uint64_t ff_vorbis_channel_layouts[9] = {
+const uint64_t ff_vorbis_channel_layouts[9] =
+{
     AV_CH_LAYOUT_MONO,
     AV_CH_LAYOUT_STEREO,
     AV_CH_LAYOUT_SURROUND,
@@ -56,7 +59,8 @@ const uint64_t ff_vorbis_channel_layouts[9] = {
     0
 };
 
-DECLARE_ALIGNED(16, static const float, vwin64)[32] = {
+DECLARE_ALIGNED(16, static const float, vwin64)[32] =
+{
     0.0009460463F, 0.0085006468F, 0.0235352254F, 0.0458950567F,
     0.0753351908F, 0.1115073077F, 0.1539457973F, 0.2020557475F,
     0.2551056759F, 0.3122276645F, 0.3724270287F, 0.4346027792F,
@@ -67,7 +71,8 @@ DECLARE_ALIGNED(16, static const float, vwin64)[32] = {
     0.9989462667F, 0.9997230082F, 0.9999638688F, 0.9999995525F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin128)[64] = {
+DECLARE_ALIGNED(16, static const float, vwin128)[64] =
+{
     0.0002365472F, 0.0021280687F, 0.0059065254F, 0.0115626550F,
     0.0190823442F, 0.0284463735F, 0.0396300935F, 0.0526030430F,
     0.0673285281F, 0.0837631763F, 0.1018564887F, 0.1215504095F,
@@ -86,7 +91,8 @@ DECLARE_ALIGNED(16, static const float, vwin128)[64] = {
     0.9999331503F, 0.9999825563F, 0.9999977357F, 0.9999999720F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin256)[128] = {
+DECLARE_ALIGNED(16, static const float, vwin256)[128] =
+{
     0.0000591390F, 0.0005321979F, 0.0014780301F, 0.0028960636F,
     0.0047854363F, 0.0071449926F, 0.0099732775F, 0.0132685298F,
     0.0170286741F, 0.0212513119F, 0.0259337111F, 0.0310727950F,
@@ -121,7 +127,8 @@ DECLARE_ALIGNED(16, static const float, vwin256)[128] = {
     0.9999958064F, 0.9999989077F, 0.9999998584F, 0.9999999983F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin512)[256] = {
+DECLARE_ALIGNED(16, static const float, vwin512)[256] =
+{
     0.0000147849F, 0.0001330607F, 0.0003695946F, 0.0007243509F,
     0.0011972759F, 0.0017882983F, 0.0024973285F, 0.0033242588F,
     0.0042689632F, 0.0053312973F, 0.0065110982F, 0.0078081841F,
@@ -188,7 +195,8 @@ DECLARE_ALIGNED(16, static const float, vwin512)[256] = {
     0.9999997377F, 0.9999999317F, 0.9999999911F, 0.9999999999F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin1024)[512] = {
+DECLARE_ALIGNED(16, static const float, vwin1024)[512] =
+{
     0.0000036962F, 0.0000332659F, 0.0000924041F, 0.0001811086F,
     0.0002993761F, 0.0004472021F, 0.0006245811F, 0.0008315063F,
     0.0010679699F, 0.0013339631F, 0.0016294757F, 0.0019544965F,
@@ -319,7 +327,8 @@ DECLARE_ALIGNED(16, static const float, vwin1024)[512] = {
     0.9999999836F, 0.9999999957F, 0.9999999994F, 1.0000000000F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin2048)[1024] = {
+DECLARE_ALIGNED(16, static const float, vwin2048)[1024] =
+{
     0.0000009241F, 0.0000083165F, 0.0000231014F, 0.0000452785F,
     0.0000748476F, 0.0001118085F, 0.0001561608F, 0.0002079041F,
     0.0002670379F, 0.0003335617F, 0.0004074748F, 0.0004887765F,
@@ -578,7 +587,8 @@ DECLARE_ALIGNED(16, static const float, vwin2048)[1024] = {
     0.9999999990F, 0.9999999997F, 1.0000000000F, 1.0000000000F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin4096)[2048] = {
+DECLARE_ALIGNED(16, static const float, vwin4096)[2048] =
+{
     0.0000002310F, 0.0000020791F, 0.0000057754F, 0.0000113197F,
     0.0000187121F, 0.0000279526F, 0.0000390412F, 0.0000519777F,
     0.0000667623F, 0.0000833949F, 0.0001018753F, 0.0001222036F,
@@ -1093,7 +1103,8 @@ DECLARE_ALIGNED(16, static const float, vwin4096)[2048] = {
     0.9999999999F, 1.0000000000F, 1.0000000000F, 1.0000000000F,
 };
 
-DECLARE_ALIGNED(16, static const float, vwin8192)[4096] = {
+DECLARE_ALIGNED(16, static const float, vwin8192)[4096] =
+{
     0.0000000578F, 0.0000005198F, 0.0000014438F, 0.0000028299F,
     0.0000046780F, 0.0000069882F, 0.0000097604F, 0.0000129945F,
     0.0000166908F, 0.0000208490F, 0.0000254692F, 0.0000305515F,
@@ -2120,7 +2131,8 @@ DECLARE_ALIGNED(16, static const float, vwin8192)[4096] = {
     1.0000000000F, 1.0000000000F, 1.0000000000F, 1.0000000000F,
 };
 
-const float ff_vorbis_floor1_inverse_db_table[256]={
+const float ff_vorbis_floor1_inverse_db_table[256]=
+{
     1.0649863e-07F, 1.1341951e-07F, 1.2079015e-07F, 1.2863978e-07F,
     1.3699951e-07F, 1.4590251e-07F, 1.5538408e-07F, 1.6548181e-07F,
     1.7623575e-07F, 1.8768855e-07F, 1.9988561e-07F, 2.128753e-07F,
@@ -2187,7 +2199,8 @@ const float ff_vorbis_floor1_inverse_db_table[256]={
     0.82788260F,    0.88168307F,    0.9389798F,     1.F,
 };
 
-const float * const ff_vorbis_vwin[8] = {
-      vwin64,  vwin128,  vwin256,  vwin512,
+const float * const ff_vorbis_vwin[8] =
+{
+    vwin64,  vwin128,  vwin256,  vwin512,
     vwin1024, vwin2048, vwin4096, vwin8192
 };

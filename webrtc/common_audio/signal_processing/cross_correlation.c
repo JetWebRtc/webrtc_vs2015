@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,14 +17,16 @@ void WebRtcSpl_CrossCorrelationC(int32_t* cross_correlation,
                                  size_t dim_seq,
                                  size_t dim_cross_correlation,
                                  int right_shifts,
-                                 int step_seq2) {
-  size_t i = 0, j = 0;
+                                 int step_seq2)
+{
+    size_t i = 0, j = 0;
 
-  for (i = 0; i < dim_cross_correlation; i++) {
-    int32_t corr = 0;
-    for (j = 0; j < dim_seq; j++)
-      corr += (seq1[j] * seq2[j]) >> right_shifts;
-    seq2 += step_seq2;
-    *cross_correlation++ = corr;
-  }
+    for (i = 0; i < dim_cross_correlation; i++)
+    {
+        int32_t corr = 0;
+        for (j = 0; j < dim_seq; j++)
+            corr += (seq1[j] * seq2[j]) >> right_shifts;
+        seq2 += step_seq2;
+        *cross_correlation++ = corr;
+    }
 }

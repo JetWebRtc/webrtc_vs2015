@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,9 +29,9 @@ int vp9_prob_diff_update_savings_search(const unsigned int *ct, vpx_prob oldp,
                                         vpx_prob *bestp, vpx_prob upd);
 
 int vp9_prob_diff_update_savings_search_model(const unsigned int *ct,
-                                              const vpx_prob oldp,
-                                              vpx_prob *bestp, vpx_prob upd,
-                                              int stepsize);
+        const vpx_prob oldp,
+        vpx_prob *bestp, vpx_prob upd,
+        int stepsize);
 
 #ifdef __cplusplus
 }  // extern "C"

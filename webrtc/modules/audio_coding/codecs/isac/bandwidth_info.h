@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,12 +13,13 @@
 
 #include "webrtc/typedefs.h"
 
-typedef struct {
-  int in_use;
-  int32_t send_bw_avg;
-  int32_t send_max_delay_avg;
-  int16_t bottleneck_idx;
-  int16_t jitter_info;
+typedef struct
+{
+    int in_use;
+    int32_t send_bw_avg;
+    int32_t send_max_delay_avg;
+    int16_t bottleneck_idx;
+    int16_t jitter_info;
 } IsacBandwidthInfo;
 
 #endif  // WEBRTC_MODULES_AUDIO_CODING_CODECS_ISAC_BANDWIDTH_INFO_H_

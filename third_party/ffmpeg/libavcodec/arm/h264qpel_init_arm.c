@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised DSP functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -99,7 +99,8 @@ av_cold void ff_h264qpel_init_arm(H264QpelContext *c, int bit_depth)
     const int high_bit_depth = bit_depth > 8;
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags) && !high_bit_depth) {
+    if (have_neon(cpu_flags) && !high_bit_depth)
+    {
         c->put_h264_qpel_pixels_tab[0][ 0] = ff_put_h264_qpel16_mc00_neon;
         c->put_h264_qpel_pixels_tab[0][ 1] = ff_put_h264_qpel16_mc10_neon;
         c->put_h264_qpel_pixels_tab[0][ 2] = ff_put_h264_qpel16_mc20_neon;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,52 +19,57 @@
 
 @class RTCAVFoundationVideoCapturerInternal;
 
-namespace rtc {
+namespace rtc
+{
 class Thread;
 }  // namespace rtc
 
-namespace webrtc {
+namespace webrtc
+{
 
-class AVFoundationVideoCapturer : public cricket::VideoCapturer {
- public:
-  AVFoundationVideoCapturer();
-  ~AVFoundationVideoCapturer();
+class AVFoundationVideoCapturer : public cricket::VideoCapturer
+{
+public:
+    AVFoundationVideoCapturer();
+    ~AVFoundationVideoCapturer();
 
-  cricket::CaptureState Start(const cricket::VideoFormat& format) override;
-  void Stop() override;
-  bool IsRunning() override;
-  bool IsScreencast() const override {
-    return false;
-  }
-  bool GetPreferredFourccs(std::vector<uint32_t> *fourccs) override {
-    fourccs->push_back(cricket::FOURCC_NV12);
-    return true;
-  }
+    cricket::CaptureState Start(const cricket::VideoFormat& format) override;
+    void Stop() override;
+    bool IsRunning() override;
+    bool IsScreencast() const override
+    {
+        return false;
+    }
+    bool GetPreferredFourccs(std::vector<uint32_t> *fourccs) override
+    {
+        fourccs->push_back(cricket::FOURCC_NV12);
+        return true;
+    }
 
-  // Returns the active capture session. Calls to the capture session should
-  // occur on the RTCDispatcherTypeCaptureSession queue in RTCDispatcher.
-  AVCaptureSession* GetCaptureSession();
+    // Returns the active capture session. Calls to the capture session should
+    // occur on the RTCDispatcherTypeCaptureSession queue in RTCDispatcher.
+    AVCaptureSession* GetCaptureSession();
 
-  // Returns whether the rear-facing camera can be used.
-  // e.g. It can't be used because it doesn't exist.
-  bool CanUseBackCamera() const;
+    // Returns whether the rear-facing camera can be used.
+    // e.g. It can't be used because it doesn't exist.
+    bool CanUseBackCamera() const;
 
-  // Switches the camera being used (either front or back).
-  void SetUseBackCamera(bool useBackCamera);
-  bool GetUseBackCamera() const;
+    // Switches the camera being used (either front or back).
+    void SetUseBackCamera(bool useBackCamera);
+    bool GetUseBackCamera() const;
 
-  // Converts the sample buffer into a cricket::CapturedFrame and signals the
-  // frame for capture.
-  void CaptureSampleBuffer(CMSampleBufferRef sample_buffer,
-                           webrtc::VideoRotation rotation);
+    // Converts the sample buffer into a cricket::CapturedFrame and signals the
+    // frame for capture.
+    void CaptureSampleBuffer(CMSampleBufferRef sample_buffer,
+                             webrtc::VideoRotation rotation);
 
-  // Called to adjust the size of output frames to supplied |width| and
-  // |height|. Also drops frames to make the output match |fps|.
-  void AdaptOutputFormat(int width, int height, int fps);
+    // Called to adjust the size of output frames to supplied |width| and
+    // |height|. Also drops frames to make the output match |fps|.
+    void AdaptOutputFormat(int width, int height, int fps);
 
- private:
-  RTCAVFoundationVideoCapturerInternal *_capturer;
-  webrtc::I420BufferPool _buffer_pool;
+private:
+    RTCAVFoundationVideoCapturerInternal *_capturer;
+    webrtc::I420BufferPool _buffer_pool;
 };  // AVFoundationVideoCapturer
 
 }  // namespace webrtc

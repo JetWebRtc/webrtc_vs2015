@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,10 +11,12 @@
 #include "webrtc/base/messagehandler.h"
 #include "webrtc/base/messagequeue.h"
 
-namespace rtc {
+namespace rtc
+{
 
-MessageHandler::~MessageHandler() {
-  MessageQueueManager::Clear(this);
+MessageHandler::~MessageHandler()
+{
+    MessageQueueManager::Clear(this);
 }
 
 } // namespace rtc

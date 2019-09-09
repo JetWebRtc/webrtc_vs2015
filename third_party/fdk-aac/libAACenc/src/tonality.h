@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -98,11 +98,11 @@ amm-info@iis.fraunhofer.de
 
 
 void FDKaacEnc_CalculateFullTonality( FIXP_DBL      *RESTRICT spectrum,
-                            INT           *RESTRICT sfbMaxScaleSpec,
-                            FIXP_DBL      *RESTRICT sfbEnergyLD64,
-                            FIXP_SGL      *RESTRICT sfbTonality,
-                            INT           sfbCnt,
-                            const INT     *sfbOffset,
-                            INT           usePns);
+                                      INT           *RESTRICT sfbMaxScaleSpec,
+                                      FIXP_DBL      *RESTRICT sfbEnergyLD64,
+                                      FIXP_SGL      *RESTRICT sfbTonality,
+                                      INT           sfbCnt,
+                                      const INT     *sfbOffset,
+                                      INT           usePns);
 
 #endif

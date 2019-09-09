@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTMP definitions
  * Copyright (c) 2009 Konstantin Shishkov
  *

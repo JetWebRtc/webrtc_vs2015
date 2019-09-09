@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -44,24 +44,27 @@
 #include "typedefs.h"
 #include "wels_func_ptr_def.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 
-enum ECtxBlockCat {
-  LUMA_DC     = 0,
-  LUMA_AC     = 1,
-  LUMA_4x4    = 2,
-  CHROMA_DC   = 3,
-  CHROMA_AC   = 4
+enum ECtxBlockCat
+{
+LUMA_DC     = 0,
+LUMA_AC     = 1,
+LUMA_4x4    = 2,
+CHROMA_DC   = 3,
+CHROMA_AC   = 4
 };
 
 
 #define LUMA_DC_AC    0x04
 
-typedef struct TagCavlcTableItem {
-  uint16_t uiBits;
-  uint8_t  uiLen;
-  uint8_t  uiSuffixLength;
+typedef struct TagCavlcTableItem
+{
+uint16_t uiBits;
+uint8_t  uiLen;
+uint8_t  uiSuffixLength;
 } SCavlcTableItem;
 
 void  InitCoeffFunc (SWelsFuncPtrList* pFuncList, const uint32_t uiCpuFlag,int32_t iEntropyCodingModeFlag);

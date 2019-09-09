@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/timeutils.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
                        webrtc::VideoRotation rotation,
@@ -32,8 +33,9 @@ VideoFrame::VideoFrame(const rtc::scoped_refptr<VideoFrameBuffer>& buffer,
       timestamp_rtp_(timestamp),
       ntp_time_ms_(0),
       timestamp_us_(render_time_ms * rtc::kNumMicrosecsPerMillisec),
-      rotation_(rotation) {
-  RTC_DCHECK(buffer);
+      rotation_(rotation)
+{
+    RTC_DCHECK(buffer);
 }
 
 VideoFrame::~VideoFrame() = default;
@@ -43,24 +45,29 @@ VideoFrame::VideoFrame(VideoFrame&&) = default;
 VideoFrame& VideoFrame::operator=(const VideoFrame&) = default;
 VideoFrame& VideoFrame::operator=(VideoFrame&&) = default;
 
-int VideoFrame::width() const {
-  return video_frame_buffer_ ? video_frame_buffer_->width() : 0;
+int VideoFrame::width() const
+{
+    return video_frame_buffer_ ? video_frame_buffer_->width() : 0;
 }
 
-int VideoFrame::height() const {
-  return video_frame_buffer_ ? video_frame_buffer_->height() : 0;
+int VideoFrame::height() const
+{
+    return video_frame_buffer_ ? video_frame_buffer_->height() : 0;
 }
 
-uint32_t VideoFrame::size() const {
-  return width() * height();
+uint32_t VideoFrame::size() const
+{
+    return width() * height();
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> VideoFrame::video_frame_buffer() const {
-  return video_frame_buffer_;
+rtc::scoped_refptr<VideoFrameBuffer> VideoFrame::video_frame_buffer() const
+{
+    return video_frame_buffer_;
 }
 
-int64_t VideoFrame::render_time_ms() const {
-  return timestamp_us() / rtc::kNumMicrosecsPerMillisec;
+int64_t VideoFrame::render_time_ms() const
+{
+    return timestamp_us() / rtc::kNumMicrosecsPerMillisec;
 }
 
 }  // namespace webrtc

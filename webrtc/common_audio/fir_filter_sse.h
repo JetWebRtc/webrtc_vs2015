@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,21 +16,23 @@
 #include "webrtc/common_audio/fir_filter.h"
 #include "webrtc/system_wrappers/include/aligned_malloc.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FIRFilterSSE2 : public FIRFilter {
- public:
-  FIRFilterSSE2(const float* coefficients,
-                size_t coefficients_length,
-                size_t max_input_length);
+class FIRFilterSSE2 : public FIRFilter
+{
+public:
+    FIRFilterSSE2(const float* coefficients,
+                  size_t coefficients_length,
+                  size_t max_input_length);
 
-  void Filter(const float* in, size_t length, float* out) override;
+    void Filter(const float* in, size_t length, float* out) override;
 
- private:
-  size_t coefficients_length_;
-  size_t state_length_;
-  std::unique_ptr<float[], AlignedFreeDeleter> coefficients_;
-  std::unique_ptr<float[], AlignedFreeDeleter> state_;
+private:
+    size_t coefficients_length_;
+    size_t state_length_;
+    std::unique_ptr<float[], AlignedFreeDeleter> coefficients_;
+    std::unique_ptr<float[], AlignedFreeDeleter> state_;
 };
 
 }  // namespace webrtc

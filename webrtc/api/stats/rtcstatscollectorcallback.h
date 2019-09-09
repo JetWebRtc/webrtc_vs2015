@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,14 +15,16 @@
 #include "webrtc/base/refcount.h"
 #include "webrtc/base/scoped_ref_ptr.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RTCStatsCollectorCallback : public virtual rtc::RefCountInterface {
- public:
-  virtual ~RTCStatsCollectorCallback() {}
+class RTCStatsCollectorCallback : public virtual rtc::RefCountInterface
+{
+public:
+    virtual ~RTCStatsCollectorCallback() {}
 
-  virtual void OnStatsDelivered(
-      const rtc::scoped_refptr<const RTCStatsReport>& report) = 0;
+    virtual void OnStatsDelivered(
+        const rtc::scoped_refptr<const RTCStatsReport>& report) = 0;
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TwinVQ decoder
  * Copyright (c) 2009 Vitor Sessak
  *
@@ -31,12 +31,14 @@
 #include "fft.h"
 #include "internal.h"
 
-enum TwinVQCodec {
+enum TwinVQCodec
+{
     TWINVQ_CODEC_VQF,
     TWINVQ_CODEC_METASOUND,
 };
 
-enum TwinVQFrameType {
+enum TwinVQFrameType
+{
     TWINVQ_FT_SHORT = 0,  ///< Short frame  (divided in n   sub-blocks)
     TWINVQ_FT_MEDIUM,     ///< Medium frame (divided in m<n sub-blocks)
     TWINVQ_FT_LONG,       ///< Long frame   (single sub-block + PPC)
@@ -63,7 +65,8 @@ enum TwinVQFrameType {
 /**
  * Parameters and tables that are different for each frame type
  */
-struct TwinVQFrameMode {
+struct TwinVQFrameMode
+{
     uint8_t         sub;      ///< Number subblocks in each frame
     const uint16_t *bark_tab;
 
@@ -83,7 +86,8 @@ struct TwinVQFrameMode {
     uint8_t         cb_len_read; ///< number of spectrum coefficients to read
 };
 
-typedef struct TwinVQFrameData {
+typedef struct TwinVQFrameData
+{
     int     window_type;
     enum TwinVQFrameType ftype;
 
@@ -108,7 +112,8 @@ typedef struct TwinVQFrameData {
  * Parameters and tables that are different for every combination of
  * bitrate/sample rate
  */
-typedef struct TwinVQModeTab {
+typedef struct TwinVQModeTab
+{
     struct TwinVQFrameMode fmode[3]; ///< frame type-dependant parameters
 
     uint16_t     size;        ///< frame size in samples
@@ -134,7 +139,8 @@ typedef struct TwinVQModeTab {
     uint16_t     peak_per2wid;
 } TwinVQModeTab;
 
-typedef struct TwinVQContext {
+typedef struct TwinVQContext
+{
     AVCodecContext *avctx;
     AVFloatDSPContext *fdsp;
     FFTContext mdct_ctx[3];

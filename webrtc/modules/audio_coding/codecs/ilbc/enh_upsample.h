@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,6 +28,6 @@
 void WebRtcIlbcfix_EnhUpsample(
     int32_t *useq1, /* (o) upsampled output sequence */
     int16_t *seq1 /* (i) unupsampled sequence */
-                                );
+);
 
 #endif

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Stefano Sabatini
  * Copyright (c) 2008 Vitor Sessak
  *
@@ -38,7 +38,8 @@
 
 #include <float.h>
 
-static const char * const var_names[] = {
+static const char * const var_names[] =
+{
     "in_w" , "iw",  ///< width of the input video
     "in_h" , "ih",  ///< height of the input video
     "out_w", "ow",  ///< width of the input video
@@ -49,7 +50,8 @@ static const char * const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_IN_W , VAR_IW,
     VAR_IN_H , VAR_IH,
     VAR_OUT_W, VAR_OW,
@@ -60,7 +62,8 @@ enum var_name {
     VAR_VARS_NB
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     double angle;
     char *angle_expr_str;   ///< expression for the angle
@@ -79,7 +82,8 @@ typedef struct {
     FFDrawColor color;
 } RotContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
     int inw,  inh;
     int outw, outh;
@@ -92,7 +96,8 @@ typedef struct ThreadData {
 #define OFFSET(x) offsetof(RotContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption rotate_options[] = {
+static const AVOption rotate_options[] =
+{
     { "angle",     "set angle (in radians)",       OFFSET(angle_expr_str), AV_OPT_TYPE_STRING, {.str="0"}, CHAR_MIN, CHAR_MAX, .flags=FLAGS },
     { "a",         "set angle (in radians)",       OFFSET(angle_expr_str), AV_OPT_TYPE_STRING, {.str="0"}, CHAR_MIN, CHAR_MAX, .flags=FLAGS },
     { "out_w",     "set output width expression",  OFFSET(outw_expr_str), AV_OPT_TYPE_STRING, {.str="iw"}, CHAR_MIN, CHAR_MAX, .flags=FLAGS },
@@ -130,7 +135,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_GBRP,   AV_PIX_FMT_GBRAP,
         AV_PIX_FMT_ARGB,   AV_PIX_FMT_RGBA,
         AV_PIX_FMT_ABGR,   AV_PIX_FMT_BGRA,
@@ -175,13 +181,15 @@ static double get_rotated_h(void *opaque, double angle)
            FFMAX(0,  inh * cosx) + FFMAX(0,  inw * sinx);
 }
 
-static double (* const func1[])(void *, double) = {
+static double (* const func1[])(void *, double) =
+{
     get_rotated_w,
     get_rotated_h,
     NULL
 };
 
-static const char * const func1_names[] = {
+static const char * const func1_names[] =
+{
     "rotw",
     "roth",
     NULL
@@ -215,7 +223,8 @@ static int config_props(AVFilterLink *outlink)
     av_expr_free(rot->angle_expr);
     rot->angle_expr = NULL;
     if ((ret = av_expr_parse(&rot->angle_expr, expr = rot->angle_expr_str, var_names,
-                             func1_names, func1, NULL, NULL, 0, ctx)) < 0) {
+                             func1_names, func1, NULL, NULL, 0, ctx)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Error occurred parsing angle expression '%s'\n", rot->angle_expr_str);
         return ret;
@@ -275,7 +284,8 @@ static int64_t int_sin(int64_t a)
 
     /* compute sin using Taylor series approximated to the fifth term */
     a2 = (a*a)/(FIXP2);
-    for (i = 2; i < 11; i += 2) {
+    for (i = 2; i < 11; i += 2)
+    {
         res += a;
         a = -a*a2 / (FIXP2*i*(i+1));
     }
@@ -298,7 +308,8 @@ static uint8_t *interpolate_bilinear(uint8_t *dst_color,
     int int_x1 = FFMIN(int_x+1, max_x);
     int int_y1 = FFMIN(int_y+1, max_y);
 
-    for (i = 0; i < src_linestep; i++) {
+    for (i = 0; i < src_linestep; i++)
+    {
         int s00 = src[src_linestep * int_x  + i + src_linesize * int_y ];
         int s01 = src[src_linestep * int_x1 + i + src_linesize * int_y ];
         int s10 = src[src_linestep * int_x  + i + src_linesize * int_y1];
@@ -315,7 +326,8 @@ static uint8_t *interpolate_bilinear(uint8_t *dst_color,
 static av_always_inline void copy_elem(uint8_t *pout, const uint8_t *pin, int elem_size)
 {
     int v;
-    switch (elem_size) {
+    switch (elem_size)
+    {
     case 1:
         *pout = *pin;
         break;
@@ -338,7 +350,8 @@ static av_always_inline void copy_elem(uint8_t *pout, const uint8_t *pin, int el
 static av_always_inline void simple_rotate_internal(uint8_t *dst, const uint8_t *src, int src_linesize, int angle, int elem_size, int len)
 {
     int i;
-    switch(angle) {
+    switch(angle)
+    {
     case 0:
         memcpy(dst, src, elem_size * len);
         break;
@@ -359,12 +372,23 @@ static av_always_inline void simple_rotate_internal(uint8_t *dst, const uint8_t 
 
 static av_always_inline void simple_rotate(uint8_t *dst, const uint8_t *src, int src_linesize, int angle, int elem_size, int len)
 {
-    switch(elem_size) {
-    case 1 : simple_rotate_internal(dst, src, src_linesize, angle, 1, len); break;
-    case 2 : simple_rotate_internal(dst, src, src_linesize, angle, 2, len); break;
-    case 3 : simple_rotate_internal(dst, src, src_linesize, angle, 3, len); break;
-    case 4 : simple_rotate_internal(dst, src, src_linesize, angle, 4, len); break;
-    default: simple_rotate_internal(dst, src, src_linesize, angle, elem_size, len); break;
+    switch(elem_size)
+    {
+    case 1 :
+        simple_rotate_internal(dst, src, src_linesize, angle, 1, len);
+        break;
+    case 2 :
+        simple_rotate_internal(dst, src, src_linesize, angle, 2, len);
+        break;
+    case 3 :
+        simple_rotate_internal(dst, src, src_linesize, angle, 3, len);
+        break;
+    case 4 :
+        simple_rotate_internal(dst, src, src_linesize, angle, 4, len);
+        break;
+    default:
+        simple_rotate_internal(dst, src, src_linesize, angle, elem_size, len);
+        break;
     }
 }
 
@@ -387,70 +411,86 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
     int yprime = td->yprime + start * c;
     int i, j, x, y;
 
-    for (j = start; j < end; j++) {
+    for (j = start; j < end; j++)
+    {
         x = xprime + xi + FIXP*(inw-1)/2;
         y = yprime + yi + FIXP*(inh-1)/2;
 
-        if (fabs(rot->angle - 0) < FLT_EPSILON && outw == inw && outh == inh) {
+        if (fabs(rot->angle - 0) < FLT_EPSILON && outw == inw && outh == inh)
+        {
             simple_rotate(out->data[plane] + j * out->linesize[plane],
-                           in->data[plane] + j *  in->linesize[plane],
+                          in->data[plane] + j *  in->linesize[plane],
                           in->linesize[plane], 0, rot->draw.pixelstep[plane], outw);
-        } else if (fabs(rot->angle - M_PI/2) < FLT_EPSILON && outw == inh && outh == inw) {
-            simple_rotate(out->data[plane] + j * out->linesize[plane],
-                           in->data[plane] + j * rot->draw.pixelstep[plane],
-                          in->linesize[plane], 1, rot->draw.pixelstep[plane], outw);
-        } else if (fabs(rot->angle - M_PI) < FLT_EPSILON && outw == inw && outh == inh) {
-            simple_rotate(out->data[plane] + j * out->linesize[plane],
-                           in->data[plane] + (outh-j-1) *  in->linesize[plane],
-                          in->linesize[plane], 2, rot->draw.pixelstep[plane], outw);
-        } else if (fabs(rot->angle - 3*M_PI/2) < FLT_EPSILON && outw == inh && outh == inw) {
-            simple_rotate(out->data[plane] + j * out->linesize[plane],
-                           in->data[plane] + (outh-j-1) * rot->draw.pixelstep[plane],
-                          in->linesize[plane], 3, rot->draw.pixelstep[plane], outw);
-        } else {
-
-        for (i = 0; i < outw; i++) {
-            int32_t v;
-            int x1, y1;
-            uint8_t *pin, *pout;
-            x1 = x>>16;
-            y1 = y>>16;
-
-            /* the out-of-range values avoid border artifacts */
-            if (x1 >= -1 && x1 <= inw && y1 >= -1 && y1 <= inh) {
-                uint8_t inp_inv[4]; /* interpolated input value */
-                pout = out->data[plane] + j * out->linesize[plane] + i * rot->draw.pixelstep[plane];
-                if (rot->use_bilinear) {
-                    pin = interpolate_bilinear(inp_inv,
-                                               in->data[plane], in->linesize[plane], rot->draw.pixelstep[plane],
-                                               x, y, inw-1, inh-1);
-                } else {
-                    int x2 = av_clip(x1, 0, inw-1);
-                    int y2 = av_clip(y1, 0, inh-1);
-                    pin = in->data[plane] + y2 * in->linesize[plane] + x2 * rot->draw.pixelstep[plane];
-                }
-                switch (rot->draw.pixelstep[plane]) {
-                case 1:
-                    *pout = *pin;
-                    break;
-                case 2:
-                    *((uint16_t *)pout) = *((uint16_t *)pin);
-                    break;
-                case 3:
-                    v = AV_RB24(pin);
-                    AV_WB24(pout, v);
-                    break;
-                case 4:
-                    *((uint32_t *)pout) = *((uint32_t *)pin);
-                    break;
-                default:
-                    memcpy(pout, pin, rot->draw.pixelstep[plane]);
-                    break;
-                }
-            }
-            x += c;
-            y -= s;
         }
+        else if (fabs(rot->angle - M_PI/2) < FLT_EPSILON && outw == inh && outh == inw)
+        {
+            simple_rotate(out->data[plane] + j * out->linesize[plane],
+                          in->data[plane] + j * rot->draw.pixelstep[plane],
+                          in->linesize[plane], 1, rot->draw.pixelstep[plane], outw);
+        }
+        else if (fabs(rot->angle - M_PI) < FLT_EPSILON && outw == inw && outh == inh)
+        {
+            simple_rotate(out->data[plane] + j * out->linesize[plane],
+                          in->data[plane] + (outh-j-1) *  in->linesize[plane],
+                          in->linesize[plane], 2, rot->draw.pixelstep[plane], outw);
+        }
+        else if (fabs(rot->angle - 3*M_PI/2) < FLT_EPSILON && outw == inh && outh == inw)
+        {
+            simple_rotate(out->data[plane] + j * out->linesize[plane],
+                          in->data[plane] + (outh-j-1) * rot->draw.pixelstep[plane],
+                          in->linesize[plane], 3, rot->draw.pixelstep[plane], outw);
+        }
+        else
+        {
+
+            for (i = 0; i < outw; i++)
+            {
+                int32_t v;
+                int x1, y1;
+                uint8_t *pin, *pout;
+                x1 = x>>16;
+                y1 = y>>16;
+
+                /* the out-of-range values avoid border artifacts */
+                if (x1 >= -1 && x1 <= inw && y1 >= -1 && y1 <= inh)
+                {
+                    uint8_t inp_inv[4]; /* interpolated input value */
+                    pout = out->data[plane] + j * out->linesize[plane] + i * rot->draw.pixelstep[plane];
+                    if (rot->use_bilinear)
+                    {
+                        pin = interpolate_bilinear(inp_inv,
+                                                   in->data[plane], in->linesize[plane], rot->draw.pixelstep[plane],
+                                                   x, y, inw-1, inh-1);
+                    }
+                    else
+                    {
+                        int x2 = av_clip(x1, 0, inw-1);
+                        int y2 = av_clip(y1, 0, inh-1);
+                        pin = in->data[plane] + y2 * in->linesize[plane] + x2 * rot->draw.pixelstep[plane];
+                    }
+                    switch (rot->draw.pixelstep[plane])
+                    {
+                    case 1:
+                        *pout = *pin;
+                        break;
+                    case 2:
+                        *((uint16_t *)pout) = *((uint16_t *)pin);
+                        break;
+                    case 3:
+                        v = AV_RB24(pin);
+                        AV_WB24(pout, v);
+                        break;
+                    case 4:
+                        *((uint32_t *)pout) = *((uint32_t *)pin);
+                        break;
+                    default:
+                        memcpy(pout, pin, rot->draw.pixelstep[plane]);
+                        break;
+                    }
+                }
+                x += c;
+                y -= s;
+            }
         }
         xprime += s;
         yprime += c;
@@ -469,7 +509,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     double res;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -491,7 +532,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         ff_fill_rectangle(&rot->draw, &rot->color, out->data, out->linesize,
                           0, 0, outlink->w, outlink->h);
 
-    for (plane = 0; plane < rot->nb_planes; plane++) {
+    for (plane = 0; plane < rot->nb_planes; plane++)
+    {
         int hsub = plane == 1 || plane == 2 ? rot->hsub : 0;
         int vsub = plane == 1 || plane == 2 ? rot->vsub : 0;
         const int outw = FF_CEIL_RSHIFT(outlink->w, hsub);
@@ -503,7 +545,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                           .xi = -(outw-1) * c / 2, .yi =  (outw-1) * s / 2,
                           .xprime = -(outh-1) * s / 2,
                           .yprime = -(outh-1) * c / 2,
-                          .plane = plane, .c = c, .s = s };
+                          .plane = plane, .c = c, .s = s
+                        };
 
 
         ctx->internal->execute(ctx, filter_slice, &td, NULL, FFMIN(outh, ctx->graph->nb_threads));
@@ -519,24 +562,28 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
     RotContext *rot = ctx->priv;
     int ret;
 
-    if (!strcmp(cmd, "angle") || !strcmp(cmd, "a")) {
+    if (!strcmp(cmd, "angle") || !strcmp(cmd, "a"))
+    {
         AVExpr *old = rot->angle_expr;
         ret = av_expr_parse(&rot->angle_expr, args, var_names,
                             NULL, NULL, NULL, NULL, 0, ctx);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Error when parsing the expression '%s' for angle command\n", args);
             rot->angle_expr = old;
             return ret;
         }
         av_expr_free(old);
-    } else
+    }
+    else
         ret = AVERROR(ENOSYS);
 
     return ret;
 }
 
-static const AVFilterPad rotate_inputs[] = {
+static const AVFilterPad rotate_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -545,7 +592,8 @@ static const AVFilterPad rotate_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad rotate_outputs[] = {
+static const AVFilterPad rotate_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -554,7 +602,8 @@ static const AVFilterPad rotate_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_rotate = {
+AVFilter ff_vf_rotate =
+{
     .name          = "rotate",
     .description   = NULL_IF_CONFIG_SMALL("Rotate the input image."),
     .priv_size     = sizeof(RotContext),

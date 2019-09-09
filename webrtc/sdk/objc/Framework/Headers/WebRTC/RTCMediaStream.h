@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,8 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCMediaStream : NSObject
 
-/** The audio tracks in this stream. */
-@property(nonatomic, strong, readonly) NSArray<RTCAudioTrack *> *audioTracks;
+    /** The audio tracks in this stream. */
+    @property(nonatomic, strong, readonly) NSArray<RTCAudioTrack *> *audioTracks;
 
 /** The video tracks in this stream. */
 @property(nonatomic, strong, readonly) NSArray<RTCVideoTrack *> *videoTracks;

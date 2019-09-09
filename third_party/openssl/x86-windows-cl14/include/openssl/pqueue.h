@@ -1,4 +1,4 @@
-/* crypto/pqueue/pqueue.h */
+﻿/* crypto/pqueue/pqueue.h */
 /*
  * DTLS implementation written by Nagendra Modadugu
  * (nagendra@cs.stanford.edu) for the OpenSSL project 2005.
@@ -69,7 +69,8 @@ extern "C" {
 #endif
 typedef struct _pqueue *pqueue;
 
-typedef struct _pitem {
+typedef struct _pitem
+{
     unsigned char priority[8];  /* 64-bit value in big-endian encoding */
     void *data;
     struct _pitem *next;

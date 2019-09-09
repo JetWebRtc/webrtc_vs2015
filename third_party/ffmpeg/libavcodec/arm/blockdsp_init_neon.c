@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised block operations
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -30,7 +30,8 @@ void ff_clear_blocks_neon(int16_t *blocks);
 
 av_cold void ff_blockdsp_init_neon(BlockDSPContext *c, unsigned high_bit_depth)
 {
-    if (!high_bit_depth) {
+    if (!high_bit_depth)
+    {
         c->clear_block  = ff_clear_block_neon;
         c->clear_blocks = ff_clear_blocks_neon;
     }

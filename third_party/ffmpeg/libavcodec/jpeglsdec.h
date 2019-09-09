@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG-LS decoder
  * Copyright (c) 2003 Michael Niedermayer
  * Copyright (c) 2006 Konstantin Shishkov

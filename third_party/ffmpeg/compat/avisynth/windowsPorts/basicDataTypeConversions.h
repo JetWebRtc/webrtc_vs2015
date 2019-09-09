@@ -1,11 +1,12 @@
-#ifndef __DATA_TYPE_CONVERSIONS_H__
+﻿#ifndef __DATA_TYPE_CONVERSIONS_H__
 #define __DATA_TYPE_CONVERSIONS_H__
 
 #include <stdint.h>
 #include <wchar.h>
 
 #ifdef __cplusplus
-namespace avxsynth {
+namespace avxsynth
+{
 #endif // __cplusplus
 
 typedef int64_t __int64;
@@ -67,11 +68,12 @@ typedef uint64_t _fsize_t;
 // Structures
 //
 
-typedef struct _GUID {
-  DWORD Data1;
-  WORD  Data2;
-  WORD  Data3;
-  BYTE  Data4[8];
+typedef struct _GUID
+{
+    DWORD Data1;
+    WORD  Data2;
+    WORD  Data3;
+    BYTE  Data4[8];
 } GUID;
 
 typedef GUID REFIID;

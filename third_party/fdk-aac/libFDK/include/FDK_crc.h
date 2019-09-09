@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -104,10 +104,10 @@ amm-info@iis.fraunhofer.de
  */
 typedef struct
 {
-  UCHAR isActive;
-  INT   maxBits;
-  UINT  bitBufCntBits;
-  UINT  validBits;
+    UCHAR isActive;
+    INT   maxBits;
+    UINT  bitBufCntBits;
+    UINT  validBits;
 
 } CCrcRegData;
 
@@ -150,11 +150,11 @@ typedef FDK_CRCINFO* HANDLE_FDK_CRCINFO;
  * \return  none
  */
 void FDKcrcInit(
-        HANDLE_FDK_CRCINFO              hCrcInfo,
-        const UINT                      crcPoly,
-        const UINT                      crcStartValue,
-        const UINT                      crcLen
-        );
+    HANDLE_FDK_CRCINFO              hCrcInfo,
+    const UINT                      crcPoly,
+    const UINT                      crcStartValue,
+    const UINT                      crcLen
+);
 
 /**
  * \brief  Reset CRC info structure.
@@ -166,8 +166,8 @@ void FDKcrcInit(
  * \return  none
  */
 void FDKcrcReset(
-        HANDLE_FDK_CRCINFO              hCrcInfo
-        );
+    HANDLE_FDK_CRCINFO              hCrcInfo
+);
 
 
 /**
@@ -190,10 +190,10 @@ void FDKcrcReset(
  * \return  ID for the created region, -1 in case of an error
  */
 INT FDKcrcStartReg(
-        HANDLE_FDK_CRCINFO              hCrcInfo,
-        const HANDLE_FDK_BITSTREAM      hBs,
-        const INT                       mBits
-        );
+    HANDLE_FDK_CRCINFO              hCrcInfo,
+    const HANDLE_FDK_BITSTREAM      hBs,
+    const INT                       mBits
+);
 
 
 /**
@@ -210,10 +210,10 @@ INT FDKcrcStartReg(
  * \return  0 on success
  */
 INT FDKcrcEndReg(
-        HANDLE_FDK_CRCINFO              hCrcInfo,
-        const HANDLE_FDK_BITSTREAM      hBs,
-        const INT                       reg
-        );
+    HANDLE_FDK_CRCINFO              hCrcInfo,
+    const HANDLE_FDK_BITSTREAM      hBs,
+    const INT                       reg
+);
 
 
 /**
@@ -224,8 +224,8 @@ INT FDKcrcEndReg(
  * \return  CRC value masked with crc length.
  */
 USHORT FDKcrcGetCRC(
-        const HANDLE_FDK_CRCINFO        hCrcInfo
-        );
+    const HANDLE_FDK_CRCINFO        hCrcInfo
+);
 
 
 #endif /* FDK_CRC_H */

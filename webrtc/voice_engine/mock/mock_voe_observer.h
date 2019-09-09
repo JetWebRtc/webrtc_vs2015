@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,14 +14,16 @@
 #include "webrtc/test/gmock.h"
 #include "webrtc/voice_engine/include/voe_base.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockVoEObserver: public VoiceEngineObserver {
- public:
-  MockVoEObserver() {}
-  virtual ~MockVoEObserver() {}
+class MockVoEObserver: public VoiceEngineObserver
+{
+public:
+    MockVoEObserver() {}
+    virtual ~MockVoEObserver() {}
 
-  MOCK_METHOD2(CallbackOnError, void(int channel, int error_code));
+    MOCK_METHOD2(CallbackOnError, void(int channel, int error_code));
 };
 
 }

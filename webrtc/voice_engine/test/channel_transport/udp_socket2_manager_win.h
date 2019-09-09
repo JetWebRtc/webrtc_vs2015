@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,10 +24,13 @@
 
 #define MAX_IO_BUFF_SIZE 1600
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-enum IO_OPERATION {
+enum IO_OPERATION
+{
     OP_READ,
     OP_WRITE
 };
@@ -35,7 +38,8 @@ enum IO_OPERATION {
 class UdpSocket2Windows;
 
 // Struct used for all socket I/O operations.
-struct PerIoContext {
+struct PerIoContext
+{
     WSAOVERLAPPED overlapped;
     char buffer[MAX_IO_BUFF_SIZE];
     WSABUF wsabuf;
@@ -77,7 +81,9 @@ public:
     virtual PerIoContext* PopIoContext();
     virtual int32_t PushIoContext(PerIoContext* pIoContext);
     virtual inline int32_t GetSize(uint32_t* inUse = 0)
-    {return _size.Value();}
+    {
+        return _size.Value();
+    }
     virtual int32_t Free();
 private:
     // Sample code for use of msfts single linked atomic list can be found here:
@@ -124,11 +130,15 @@ public:
     virtual bool Stop();
 
     virtual inline bool AddSocket(UdpSocketWrapper* s)
-    {if(s) return AddSocketPrv(reinterpret_cast<UdpSocket2Windows*>(s));
-     return false;}
+    {
+        if(s) return AddSocketPrv(reinterpret_cast<UdpSocket2Windows*>(s));
+        return false;
+    }
     virtual bool RemoveSocket(UdpSocketWrapper* s)
-    {if(s) return RemoveSocketPrv(reinterpret_cast<UdpSocket2Windows*>(s));
-     return false;}
+    {
+        if(s) return RemoveSocketPrv(reinterpret_cast<UdpSocket2Windows*>(s));
+        return false;
+    }
 
     PerIoContext* PopIoContext(void);
     int32_t PushIoContext(PerIoContext* pIoContext);

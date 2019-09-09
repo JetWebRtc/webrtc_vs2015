@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -36,7 +36,8 @@ static void diff_pixels_c(int16_t *av_restrict block, const uint8_t *s1,
     int i;
 
     /* read the pixels */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         block[0] = s1[0] - s2[0];
         block[1] = s1[1] - s2[1];
         block[2] = s1[2] - s2[2];
@@ -57,7 +58,8 @@ av_cold void ff_pixblockdsp_init(PixblockDSPContext *c, AVCodecContext *avctx)
 
     c->diff_pixels = diff_pixels_c;
 
-    switch (avctx->bits_per_raw_sample) {
+    switch (avctx->bits_per_raw_sample)
+    {
     case 9:
     case 10:
     case 12:
@@ -65,7 +67,8 @@ av_cold void ff_pixblockdsp_init(PixblockDSPContext *c, AVCodecContext *avctx)
         c->get_pixels = get_pixels_16_c;
         break;
     default:
-        if (avctx->bits_per_raw_sample<=8 || avctx->codec_type != AVMEDIA_TYPE_VIDEO) {
+        if (avctx->bits_per_raw_sample<=8 || avctx->codec_type != AVMEDIA_TYPE_VIDEO)
+        {
             c->get_pixels = get_pixels_8_c;
         }
         break;

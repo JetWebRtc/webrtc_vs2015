@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,50 +25,56 @@
 #include "webrtc/voice_engine/voe_rtp_rtcp_impl.h"
 #include "webrtc/voice_engine/voe_volume_control_impl.h"
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 class ChannelProxy;
 }  // namespace voe
 
 class VoiceEngineImpl : public voe::SharedData,  // Must be the first base class
-                        public VoiceEngine,
-                        public VoEAudioProcessingImpl,
-                        public VoECodecImpl,
-                        public VoEFileImpl,
-                        public VoEHardwareImpl,
-                        public VoENetEqStatsImpl,
-                        public VoENetworkImpl,
-                        public VoERTP_RTCPImpl,
-                        public VoEVolumeControlImpl,
-                        public VoEBaseImpl {
- public:
-  VoiceEngineImpl()
-      : SharedData(),
-        VoEAudioProcessingImpl(this),
-        VoECodecImpl(this),
-        VoEFileImpl(this),
-        VoEHardwareImpl(this),
-        VoENetEqStatsImpl(this),
-        VoENetworkImpl(this),
-        VoERTP_RTCPImpl(this),
-        VoEVolumeControlImpl(this),
-        VoEBaseImpl(this),
-        _ref_count(0) {}
-  ~VoiceEngineImpl() override { assert(_ref_count.Value() == 0); }
+    public VoiceEngine,
+    public VoEAudioProcessingImpl,
+    public VoECodecImpl,
+    public VoEFileImpl,
+    public VoEHardwareImpl,
+    public VoENetEqStatsImpl,
+    public VoENetworkImpl,
+    public VoERTP_RTCPImpl,
+    public VoEVolumeControlImpl,
+    public VoEBaseImpl
+{
+public:
+    VoiceEngineImpl()
+        : SharedData(),
+          VoEAudioProcessingImpl(this),
+          VoECodecImpl(this),
+          VoEFileImpl(this),
+          VoEHardwareImpl(this),
+          VoENetEqStatsImpl(this),
+          VoENetworkImpl(this),
+          VoERTP_RTCPImpl(this),
+          VoEVolumeControlImpl(this),
+          VoEBaseImpl(this),
+          _ref_count(0) {}
+    ~VoiceEngineImpl() override
+    {
+        assert(_ref_count.Value() == 0);
+    }
 
-  int AddRef();
+    int AddRef();
 
-  // This implements the Release() method for all the inherited interfaces.
-  int Release() override;
+    // This implements the Release() method for all the inherited interfaces.
+    int Release() override;
 
-  // Backdoor to access a voe::Channel object without a channel ID. This is only
-  // to be used while refactoring the VoE API!
-  virtual std::unique_ptr<voe::ChannelProxy> GetChannelProxy(int channel_id);
+    // Backdoor to access a voe::Channel object without a channel ID. This is only
+    // to be used while refactoring the VoE API!
+    virtual std::unique_ptr<voe::ChannelProxy> GetChannelProxy(int channel_id);
 
- // This is *protected* so that FakeVoiceEngine can inherit from the class and
- // manipulate the reference count. See: fake_voice_engine.h.
- protected:
-  Atomic32 _ref_count;
+// This is *protected* so that FakeVoiceEngine can inherit from the class and
+// manipulate the reference count. See: fake_voice_engine.h.
+protected:
+    Atomic32 _ref_count;
 };
 
 }  // namespace webrtc

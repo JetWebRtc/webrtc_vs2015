@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 extern const int kMotionMagnitudeThreshold;
 extern const int kSumDiffThreshold;
@@ -25,30 +26,31 @@ extern const int kSumDiffThresholdHigh;
 enum DenoiserDecision { COPY_BLOCK, FILTER_BLOCK };
 enum CpuType { CPU_NEON, CPU_NOT_NEON };
 
-class DenoiserFilter {
- public:
-  static std::unique_ptr<DenoiserFilter> Create(bool runtime_cpu_detection,
-                                                CpuType* cpu_type);
+class DenoiserFilter
+{
+public:
+    static std::unique_ptr<DenoiserFilter> Create(bool runtime_cpu_detection,
+            CpuType* cpu_type);
 
-  virtual ~DenoiserFilter() {}
+    virtual ~DenoiserFilter() {}
 
-  virtual void CopyMem16x16(const uint8_t* src,
-                            int src_stride,
-                            uint8_t* dst,
-                            int dst_stride) = 0;
-  virtual uint32_t Variance16x8(const uint8_t* a,
-                                int a_stride,
-                                const uint8_t* b,
-                                int b_stride,
-                                unsigned int* sse) = 0;
-  virtual DenoiserDecision MbDenoise(const uint8_t* mc_running_avg_y,
-                                     int mc_avg_y_stride,
-                                     uint8_t* running_avg_y,
-                                     int avg_y_stride,
-                                     const uint8_t* sig,
-                                     int sig_stride,
-                                     uint8_t motion_magnitude,
-                                     int increase_denoising) = 0;
+    virtual void CopyMem16x16(const uint8_t* src,
+                              int src_stride,
+                              uint8_t* dst,
+                              int dst_stride) = 0;
+    virtual uint32_t Variance16x8(const uint8_t* a,
+                                  int a_stride,
+                                  const uint8_t* b,
+                                  int b_stride,
+                                  unsigned int* sse) = 0;
+    virtual DenoiserDecision MbDenoise(const uint8_t* mc_running_avg_y,
+                                       int mc_avg_y_stride,
+                                       uint8_t* running_avg_y,
+                                       int avg_y_stride,
+                                       const uint8_t* sig,
+                                       int sig_stride,
+                                       uint8_t motion_magnitude,
+                                       int increase_denoising) = 0;
 };
 
 }  // namespace webrtc

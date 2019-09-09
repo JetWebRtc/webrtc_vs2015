@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Cyril Comparon, Larbi Joubala, Resonate-MP4 2009
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include <stdint.h>
 #include <string.h>
 
-typedef struct LangEntry {
+typedef struct LangEntry
+{
     const char str[4];
     uint16_t next_equivalent;
 } LangEntry;
@@ -33,7 +34,8 @@ typedef struct LangEntry {
 static const uint16_t lang_table_counts[] = { 484, 20, 184 };
 static const uint16_t lang_table_offsets[] = { 0, 484, 504 };
 
-static const LangEntry lang_table[] = {
+static const LangEntry lang_table[] =
+{
     /*----- AV_LANG_ISO639_2_BIBL entries (484) -----*/
     /*0000*/ { "aar",  504 },
     /*0001*/ { "abk",  505 },
@@ -744,16 +746,16 @@ const char *av_convert_lang_to(const char *lang, enum AVLangCodespace target_cod
 
     for (i=0; !entry && i<NB_CODESPACES; i++)
         entry = bsearch(lang,
-                        lang_table + lang_table_offsets[i],
-                        lang_table_counts[i],
-                        sizeof(LangEntry),
-                        lang_table_compare);
+        lang_table + lang_table_offsets[i],
+        lang_table_counts[i],
+        sizeof(LangEntry),
+        lang_table_compare);
     if (!entry)
         return NULL;
 
     for (i=0; i<NB_CODESPACES; i++)
         if (entry >= lang_table + lang_table_offsets[target_codespace] &&
-            entry < lang_table + lang_table_offsets[target_codespace] + lang_table_counts[target_codespace])
+        entry < lang_table + lang_table_offsets[target_codespace] + lang_table_counts[target_codespace])
             return entry->str;
         else
             entry = lang_table + entry->next_equivalent;

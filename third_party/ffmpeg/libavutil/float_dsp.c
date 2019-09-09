@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2005 Balatoni Denes
  * Copyright 2006 Loren Merritt
  *
@@ -65,7 +65,8 @@ static void vector_fmul_window_c(float *dst, const float *src0,
     win  += len;
     src0 += len;
 
-    for (i = -len, j = len - 1; i < 0; i++, j--) {
+    for (i = -len, j = len - 1; i < 0; i++, j--)
+    {
         float s0 = src0[i];
         float s1 = src1[j];
         float wi = win[i];
@@ -76,7 +77,8 @@ static void vector_fmul_window_c(float *dst, const float *src0,
 }
 
 static void vector_fmul_add_c(float *dst, const float *src0, const float *src1,
-                              const float *src2, int len){
+                              const float *src2, int len)
+{
     int i;
 
     for (i = 0; i < len; i++)
@@ -98,7 +100,8 @@ static void butterflies_float_c(float *av_restrict v1, float *av_restrict v2,
 {
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         float t = v1[i] - v2[i];
         v1[i] += v2[i];
         v2[i] = t;
@@ -177,7 +180,8 @@ static void fill_float_array(AVLFG *lfg, float *a, int len)
     int i;
     double bmg[2], stddev = 10.0, mean = 0.0;
 
-    for (i = 0; i < len; i += 2) {
+    for (i = 0; i < len; i += 2)
+    {
         av_bmg_get(lfg, bmg);
         a[i]     = bmg[0] * stddev + mean;
         a[i + 1] = bmg[1] * stddev + mean;
@@ -187,8 +191,10 @@ static int compare_floats(const float *a, const float *b, int len,
                           float max_diff)
 {
     int i;
-    for (i = 0; i < len; i++) {
-        if (fabsf(a[i] - b[i]) > max_diff) {
+    for (i = 0; i < len; i++)
+    {
+        if (fabsf(a[i] - b[i]) > max_diff)
+        {
             av_log(NULL, AV_LOG_ERROR, "%d: %- .12f - %- .12f = % .12g\n",
                    i, a[i], b[i], a[i] - b[i]);
             return -1;
@@ -202,7 +208,8 @@ static void fill_double_array(AVLFG *lfg, double *a, int len)
     int i;
     double bmg[2], stddev = 10.0, mean = 0.0;
 
-    for (i = 0; i < len; i += 2) {
+    for (i = 0; i < len; i += 2)
+    {
         av_bmg_get(lfg, bmg);
         a[i]     = bmg[0] * stddev + mean;
         a[i + 1] = bmg[1] * stddev + mean;
@@ -214,8 +221,10 @@ static int compare_doubles(const double *a, const double *b, int len,
 {
     int i;
 
-    for (i = 0; i < len; i++) {
-        if (fabs(a[i] - b[i]) > max_diff) {
+    for (i = 0; i < len; i++)
+    {
+        if (fabs(a[i] - b[i]) > max_diff)
+        {
             av_log(NULL, AV_LOG_ERROR, "%d: %- .12f - %- .12f = % .12g\n",
                    i, a[i], b[i], a[i] - b[i]);
             return -1;
@@ -360,7 +369,7 @@ static int test_butterflies_float(AVFloatDSPContext *fdsp, AVFloatDSPContext *cd
     fdsp->butterflies_float(ov1, ov2, LEN);
 
     if ((ret = compare_floats(cv1, ov1, LEN, FLT_EPSILON)) ||
-        (ret = compare_floats(cv2, ov2, LEN, FLT_EPSILON)))
+            (ret = compare_floats(cv2, ov2, LEN, FLT_EPSILON)))
         av_log(NULL, AV_LOG_ERROR, "butterflies_float failed\n");
 
     return ret;
@@ -395,11 +404,13 @@ int main(int argc, char **argv)
     LOCAL_ALIGNED(32, double, dbl_src0, [LEN]);
     LOCAL_ALIGNED(32, double, dbl_src1, [LEN]);
 
-    for (;;) {
+    for (;;)
+    {
         int arg = getopt(argc, argv, "s:c:");
         if (arg == -1)
             break;
-        switch (arg) {
+        switch (arg)
+        {
         case 's':
             seed = strtoul(optarg, NULL, 10);
             seeded = 1;

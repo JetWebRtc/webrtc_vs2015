@@ -28,7 +28,8 @@
 
 #define MAX_SPATIAL_SEGMENTATION 4096 // max. value of u(12) field
 
-typedef struct HVCCNALUnitArray {
+typedef struct HVCCNALUnitArray
+{
     uint8_t  array_completeness;
     uint8_t  NAL_unit_type;
     uint16_t numNalus;
@@ -36,7 +37,8 @@ typedef struct HVCCNALUnitArray {
     uint8_t  **nalUnit;
 } HVCCNALUnitArray;
 
-typedef struct HEVCDecoderConfigurationRecord {
+typedef struct HEVCDecoderConfigurationRecord
+{
     uint8_t  configurationVersion;
     uint8_t  general_profile_space;
     uint8_t  general_tier_flag;
@@ -58,7 +60,8 @@ typedef struct HEVCDecoderConfigurationRecord {
     HVCCNALUnitArray *array;
 } HEVCDecoderConfigurationRecord;
 
-typedef struct HVCCProfileTierLevel {
+typedef struct HVCCProfileTierLevel
+{
     uint8_t  profile_space;
     uint8_t  tier_flag;
     uint8_t  profile_idc;
@@ -138,7 +141,8 @@ static void hvcc_parse_ptl(GetBitContext *gb,
     general_ptl.level_idc                   = get_bits(gb, 8);
     hvcc_update_ptl(hvcc, &general_ptl);
 
-    for (i = 0; i < max_sub_layers_minus1; i++) {
+    for (i = 0; i < max_sub_layers_minus1; i++)
+    {
         sub_layer_profile_present_flag[i] = get_bits1(gb);
         sub_layer_level_present_flag[i]   = get_bits1(gb);
     }
@@ -147,8 +151,10 @@ static void hvcc_parse_ptl(GetBitContext *gb,
         for (i = max_sub_layers_minus1; i < 8; i++)
             skip_bits(gb, 2); // reserved_zero_2bits[i]
 
-    for (i = 0; i < max_sub_layers_minus1; i++) {
-        if (sub_layer_profile_present_flag[i]) {
+    for (i = 0; i < max_sub_layers_minus1; i++)
+    {
+        if (sub_layer_profile_present_flag[i])
+        {
             /*
              * sub_layer_profile_space[i]                     u(2)
              * sub_layer_tier_flag[i]                         u(1)
@@ -171,16 +177,18 @@ static void hvcc_parse_ptl(GetBitContext *gb,
 }
 
 static void skip_sub_layer_hrd_parameters(GetBitContext *gb,
-                                          unsigned int cpb_cnt_minus1,
-                                          uint8_t sub_pic_hrd_params_present_flag)
+        unsigned int cpb_cnt_minus1,
+        uint8_t sub_pic_hrd_params_present_flag)
 {
     unsigned int i;
 
-    for (i = 0; i <= cpb_cnt_minus1; i++) {
+    for (i = 0; i <= cpb_cnt_minus1; i++)
+    {
         get_ue_golomb_long(gb); // bit_rate_value_minus1
         get_ue_golomb_long(gb); // cpb_size_value_minus1
 
-        if (sub_pic_hrd_params_present_flag) {
+        if (sub_pic_hrd_params_present_flag)
+        {
             get_ue_golomb_long(gb); // cpb_size_du_value_minus1
             get_ue_golomb_long(gb); // bit_rate_du_value_minus1
         }
@@ -190,19 +198,21 @@ static void skip_sub_layer_hrd_parameters(GetBitContext *gb,
 }
 
 static int skip_hrd_parameters(GetBitContext *gb, uint8_t cprms_present_flag,
-                                unsigned int max_sub_layers_minus1)
+                               unsigned int max_sub_layers_minus1)
 {
     unsigned int i;
     uint8_t sub_pic_hrd_params_present_flag = 0;
     uint8_t nal_hrd_parameters_present_flag = 0;
     uint8_t vcl_hrd_parameters_present_flag = 0;
 
-    if (cprms_present_flag) {
+    if (cprms_present_flag)
+    {
         nal_hrd_parameters_present_flag = get_bits1(gb);
         vcl_hrd_parameters_present_flag = get_bits1(gb);
 
         if (nal_hrd_parameters_present_flag ||
-            vcl_hrd_parameters_present_flag) {
+                vcl_hrd_parameters_present_flag)
+        {
             sub_pic_hrd_params_present_flag = get_bits1(gb);
 
             if (sub_pic_hrd_params_present_flag)
@@ -232,7 +242,8 @@ static int skip_hrd_parameters(GetBitContext *gb, uint8_t cprms_present_flag,
         }
     }
 
-    for (i = 0; i <= max_sub_layers_minus1; i++) {
+    for (i = 0; i <= max_sub_layers_minus1; i++)
+    {
         unsigned int cpb_cnt_minus1            = 0;
         uint8_t low_delay_hrd_flag             = 0;
         uint8_t fixed_pic_rate_within_cvs_flag = 0;
@@ -246,7 +257,8 @@ static int skip_hrd_parameters(GetBitContext *gb, uint8_t cprms_present_flag,
         else
             low_delay_hrd_flag = get_bits1(gb);
 
-        if (!low_delay_hrd_flag) {
+        if (!low_delay_hrd_flag)
+        {
             cpb_cnt_minus1 = get_ue_golomb_long(gb);
             if (cpb_cnt_minus1 > 31)
                 return AVERROR_INVALIDDATA;
@@ -286,7 +298,8 @@ static void hvcc_parse_vui(GetBitContext *gb,
     if (get_bits1(gb))  // overscan_info_present_flag
         skip_bits1(gb); // overscan_appropriate_flag
 
-    if (get_bits1(gb)) {  // video_signal_type_present_flag
+    if (get_bits1(gb))    // video_signal_type_present_flag
+    {
         skip_bits(gb, 4); // video_format u(3), video_full_range_flag u(1)
 
         if (get_bits1(gb)) // colour_description_present_flag
@@ -298,7 +311,8 @@ static void hvcc_parse_vui(GetBitContext *gb,
             skip_bits(gb, 24);
     }
 
-    if (get_bits1(gb)) {        // chroma_loc_info_present_flag
+    if (get_bits1(gb))          // chroma_loc_info_present_flag
+    {
         get_ue_golomb_long(gb); // chroma_sample_loc_type_top_field
         get_ue_golomb_long(gb); // chroma_sample_loc_type_bottom_field
     }
@@ -310,21 +324,24 @@ static void hvcc_parse_vui(GetBitContext *gb,
      */
     skip_bits(gb, 3);
 
-    if (get_bits1(gb)) {        // default_display_window_flag
+    if (get_bits1(gb))          // default_display_window_flag
+    {
         get_ue_golomb_long(gb); // def_disp_win_left_offset
         get_ue_golomb_long(gb); // def_disp_win_right_offset
         get_ue_golomb_long(gb); // def_disp_win_top_offset
         get_ue_golomb_long(gb); // def_disp_win_bottom_offset
     }
 
-    if (get_bits1(gb)) { // vui_timing_info_present_flag
+    if (get_bits1(gb))   // vui_timing_info_present_flag
+    {
         skip_timing_info(gb);
 
         if (get_bits1(gb)) // vui_hrd_parameters_present_flag
             skip_hrd_parameters(gb, 1, max_sub_layers_minus1);
     }
 
-    if (get_bits1(gb)) { // bitstream_restriction_flag
+    if (get_bits1(gb))   // bitstream_restriction_flag
+    {
         /*
          * tiles_fixed_structure_flag              u(1)
          * motion_vectors_over_pic_boundaries_flag u(1)
@@ -342,7 +359,7 @@ static void hvcc_parse_vui(GetBitContext *gb,
          * spatial segmentation indicated in all the parameter sets.
          */
         hvcc->min_spatial_segmentation_idc = FFMIN(hvcc->min_spatial_segmentation_idc,
-                                                   min_spatial_segmentation_idc);
+                                             min_spatial_segmentation_idc);
 
         get_ue_golomb_long(gb); // max_bytes_per_pic_denom
         get_ue_golomb_long(gb); // max_bits_per_min_cu_denom
@@ -403,7 +420,8 @@ static void skip_scaling_list_data(GetBitContext *gb)
         for (j = 0; j < (i == 3 ? 2 : 6); j++)
             if (!get_bits1(gb))         // scaling_list_pred_mode_flag[i][j]
                 get_ue_golomb_long(gb); // scaling_list_pred_matrix_id_delta[i][j]
-            else {
+            else
+            {
                 num_coeffs = FFMIN(64, 1 << (4 + (i << 1)));
 
                 if (i > 1)
@@ -420,7 +438,8 @@ static int parse_rps(GetBitContext *gb, unsigned int rps_idx,
 {
     unsigned int i;
 
-    if (rps_idx && get_bits1(gb)) { // inter_ref_pic_set_prediction_flag
+    if (rps_idx && get_bits1(gb))   // inter_ref_pic_set_prediction_flag
+    {
         /* this should only happen for slice headers, and this isn't one */
         if (rps_idx >= num_rps)
             return AVERROR_INVALIDDATA;
@@ -449,7 +468,8 @@ static int parse_rps(GetBitContext *gb, unsigned int rps_idx,
          *
          * NumDeltaPocs[RefRpsIdx]: num_delta_pocs[rps_idx - 1]
          */
-        for (i = 0; i <= num_delta_pocs[rps_idx - 1]; i++) {
+        for (i = 0; i <= num_delta_pocs[rps_idx - 1]; i++)
+        {
             uint8_t use_delta_flag = 0;
             uint8_t used_by_curr_pic_flag = get_bits1(gb);
             if (!used_by_curr_pic_flag)
@@ -458,7 +478,9 @@ static int parse_rps(GetBitContext *gb, unsigned int rps_idx,
             if (used_by_curr_pic_flag || use_delta_flag)
                 num_delta_pocs[rps_idx]++;
         }
-    } else {
+    }
+    else
+    {
         unsigned int num_negative_pics = get_ue_golomb_long(gb);
         unsigned int num_positive_pics = get_ue_golomb_long(gb);
 
@@ -467,12 +489,14 @@ static int parse_rps(GetBitContext *gb, unsigned int rps_idx,
 
         num_delta_pocs[rps_idx] = num_negative_pics + num_positive_pics;
 
-        for (i = 0; i < num_negative_pics; i++) {
+        for (i = 0; i < num_negative_pics; i++)
+        {
             get_ue_golomb_long(gb); // delta_poc_s0_minus1[rps_idx]
             skip_bits1        (gb); // used_by_curr_pic_s0_flag[rps_idx]
         }
 
-        for (i = 0; i < num_positive_pics; i++) {
+        for (i = 0; i < num_positive_pics; i++)
+        {
             get_ue_golomb_long(gb); // delta_poc_s1_minus1[rps_idx]
             skip_bits1        (gb); // used_by_curr_pic_s1_flag[rps_idx]
         }
@@ -516,7 +540,8 @@ static int hvcc_parse_sps(GetBitContext *gb,
     get_ue_golomb_long(gb); // pic_width_in_luma_samples
     get_ue_golomb_long(gb); // pic_height_in_luma_samples
 
-    if (get_bits1(gb)) {        // conformance_window_flag
+    if (get_bits1(gb))          // conformance_window_flag
+    {
         get_ue_golomb_long(gb); // conf_win_left_offset
         get_ue_golomb_long(gb); // conf_win_right_offset
         get_ue_golomb_long(gb); // conf_win_top_offset
@@ -540,13 +565,14 @@ static int hvcc_parse_sps(GetBitContext *gb,
     get_ue_golomb_long(gb); // max_transform_hierarchy_depth_intra
 
     if (get_bits1(gb) && // scaling_list_enabled_flag
-        get_bits1(gb))   // sps_scaling_list_data_present_flag
+            get_bits1(gb))   // sps_scaling_list_data_present_flag
         skip_scaling_list_data(gb);
 
     skip_bits1(gb); // amp_enabled_flag
     skip_bits1(gb); // sample_adaptive_offset_enabled_flag
 
-    if (get_bits1(gb)) {           // pcm_enabled_flag
+    if (get_bits1(gb))             // pcm_enabled_flag
+    {
         skip_bits         (gb, 4); // pcm_sample_bit_depth_luma_minus1
         skip_bits         (gb, 4); // pcm_sample_bit_depth_chroma_minus1
         get_ue_golomb_long(gb);    // log2_min_pcm_luma_coding_block_size_minus3
@@ -558,17 +584,20 @@ static int hvcc_parse_sps(GetBitContext *gb,
     if (num_short_term_ref_pic_sets > MAX_SHORT_TERM_RPS_COUNT)
         return AVERROR_INVALIDDATA;
 
-    for (i = 0; i < num_short_term_ref_pic_sets; i++) {
+    for (i = 0; i < num_short_term_ref_pic_sets; i++)
+    {
         int ret = parse_rps(gb, i, num_short_term_ref_pic_sets, num_delta_pocs);
         if (ret < 0)
             return ret;
     }
 
-    if (get_bits1(gb)) {                               // long_term_ref_pics_present_flag
+    if (get_bits1(gb))                                 // long_term_ref_pics_present_flag
+    {
         unsigned num_long_term_ref_pics_sps = get_ue_golomb_long(gb);
         if (num_long_term_ref_pics_sps > 31U)
             return AVERROR_INVALIDDATA;
-        for (i = 0; i < num_long_term_ref_pics_sps; i++) { // num_long_term_ref_pics_sps
+        for (i = 0; i < num_long_term_ref_pics_sps; i++)   // num_long_term_ref_pics_sps
+        {
             int len = FFMIN(log2_max_pic_order_cnt_lsb_minus4 + 4, 16);
             skip_bits (gb, len); // lt_ref_pic_poc_lsb_sps[i]
             skip_bits1(gb);      // used_by_curr_pic_lt_sps_flag[i]
@@ -658,11 +687,13 @@ static uint8_t *nal_unit_extract_rbsp(const uint8_t *src, uint32_t src_len,
         dst[len++] = src[i++];
 
     while (i + 2 < src_len)
-        if (!src[i] && !src[i + 1] && src[i + 2] == 3) {
+        if (!src[i] && !src[i + 1] && src[i + 2] == 3)
+        {
             dst[len++] = src[i++];
             dst[len++] = src[i++];
             i++; // remove emulation_prevention_three_byte
-        } else
+        }
+        else
             dst[len++] = src[i++];
 
     while (i < src_len)
@@ -700,7 +731,8 @@ static int hvcc_array_add_nal_unit(uint8_t *nal_buf, uint32_t nal_size,
         if (hvcc->array[index].NAL_unit_type == nal_type)
             break;
 
-    if (index >= hvcc->numOfArrays) {
+    if (index >= hvcc->numOfArrays)
+    {
         uint8_t i;
 
         ret = av_reallocp_array(&hvcc->array, index + 1, sizeof(HVCCNALUnitArray));
@@ -751,7 +783,8 @@ static int hvcc_add_nal_unit(uint8_t *nal_buf, uint32_t nal_size,
     uint32_t rbsp_size;
 
     rbsp_buf = nal_unit_extract_rbsp(nal_buf, nal_size, &rbsp_size);
-    if (!rbsp_buf) {
+    if (!rbsp_buf)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -767,7 +800,8 @@ static int hvcc_add_nal_unit(uint8_t *nal_buf, uint32_t nal_size,
      * hvcC. Perhaps the SEI playload type should be checked
      * and non-declarative SEI messages discarded?
      */
-    switch (nal_type) {
+    switch (nal_type)
+    {
     case NAL_VPS:
     case NAL_SPS:
     case NAL_PPS:
@@ -820,7 +854,8 @@ static void hvcc_close(HEVCDecoderConfigurationRecord *hvcc)
 {
     uint8_t i;
 
-    for (i = 0; i < hvcc->numOfArrays; i++) {
+    for (i = 0; i < hvcc->numOfArrays; i++)
+    {
         hvcc->array[i].numNalus = 0;
         av_freep(&hvcc->array[i].nalUnit);
         av_freep(&hvcc->array[i].nalUnitLength);
@@ -862,59 +897,61 @@ static int hvcc_write(AVIOContext *pb, HEVCDecoderConfigurationRecord *hvcc)
     hvcc->constantFrameRate = 0;
 
     av_log(NULL, AV_LOG_TRACE,  "configurationVersion:                %"PRIu8"\n",
-            hvcc->configurationVersion);
+           hvcc->configurationVersion);
     av_log(NULL, AV_LOG_TRACE,  "general_profile_space:               %"PRIu8"\n",
-            hvcc->general_profile_space);
+           hvcc->general_profile_space);
     av_log(NULL, AV_LOG_TRACE,  "general_tier_flag:                   %"PRIu8"\n",
-            hvcc->general_tier_flag);
+           hvcc->general_tier_flag);
     av_log(NULL, AV_LOG_TRACE,  "general_profile_idc:                 %"PRIu8"\n",
-            hvcc->general_profile_idc);
+           hvcc->general_profile_idc);
     av_log(NULL, AV_LOG_TRACE, "general_profile_compatibility_flags: 0x%08"PRIx32"\n",
-            hvcc->general_profile_compatibility_flags);
+           hvcc->general_profile_compatibility_flags);
     av_log(NULL, AV_LOG_TRACE, "general_constraint_indicator_flags:  0x%012"PRIx64"\n",
-            hvcc->general_constraint_indicator_flags);
+           hvcc->general_constraint_indicator_flags);
     av_log(NULL, AV_LOG_TRACE,  "general_level_idc:                   %"PRIu8"\n",
-            hvcc->general_level_idc);
+           hvcc->general_level_idc);
     av_log(NULL, AV_LOG_TRACE,  "min_spatial_segmentation_idc:        %"PRIu16"\n",
-            hvcc->min_spatial_segmentation_idc);
+           hvcc->min_spatial_segmentation_idc);
     av_log(NULL, AV_LOG_TRACE,  "parallelismType:                     %"PRIu8"\n",
-            hvcc->parallelismType);
+           hvcc->parallelismType);
     av_log(NULL, AV_LOG_TRACE,  "chromaFormat:                        %"PRIu8"\n",
-            hvcc->chromaFormat);
+           hvcc->chromaFormat);
     av_log(NULL, AV_LOG_TRACE,  "bitDepthLumaMinus8:                  %"PRIu8"\n",
-            hvcc->bitDepthLumaMinus8);
+           hvcc->bitDepthLumaMinus8);
     av_log(NULL, AV_LOG_TRACE,  "bitDepthChromaMinus8:                %"PRIu8"\n",
-            hvcc->bitDepthChromaMinus8);
+           hvcc->bitDepthChromaMinus8);
     av_log(NULL, AV_LOG_TRACE,  "avgFrameRate:                        %"PRIu16"\n",
-            hvcc->avgFrameRate);
+           hvcc->avgFrameRate);
     av_log(NULL, AV_LOG_TRACE,  "constantFrameRate:                   %"PRIu8"\n",
-            hvcc->constantFrameRate);
+           hvcc->constantFrameRate);
     av_log(NULL, AV_LOG_TRACE,  "numTemporalLayers:                   %"PRIu8"\n",
-            hvcc->numTemporalLayers);
+           hvcc->numTemporalLayers);
     av_log(NULL, AV_LOG_TRACE,  "temporalIdNested:                    %"PRIu8"\n",
-            hvcc->temporalIdNested);
+           hvcc->temporalIdNested);
     av_log(NULL, AV_LOG_TRACE,  "lengthSizeMinusOne:                  %"PRIu8"\n",
-            hvcc->lengthSizeMinusOne);
+           hvcc->lengthSizeMinusOne);
     av_log(NULL, AV_LOG_TRACE,  "numOfArrays:                         %"PRIu8"\n",
-            hvcc->numOfArrays);
-    for (i = 0; i < hvcc->numOfArrays; i++) {
+           hvcc->numOfArrays);
+    for (i = 0; i < hvcc->numOfArrays; i++)
+    {
         av_log(NULL, AV_LOG_TRACE, "array_completeness[%"PRIu8"]:               %"PRIu8"\n",
-                i, hvcc->array[i].array_completeness);
+               i, hvcc->array[i].array_completeness);
         av_log(NULL, AV_LOG_TRACE, "NAL_unit_type[%"PRIu8"]:                    %"PRIu8"\n",
-                i, hvcc->array[i].NAL_unit_type);
+               i, hvcc->array[i].NAL_unit_type);
         av_log(NULL, AV_LOG_TRACE, "numNalus[%"PRIu8"]:                         %"PRIu16"\n",
-                i, hvcc->array[i].numNalus);
+               i, hvcc->array[i].numNalus);
         for (j = 0; j < hvcc->array[i].numNalus; j++)
             av_log(NULL, AV_LOG_TRACE,
-                    "nalUnitLength[%"PRIu8"][%"PRIu16"]:                 %"PRIu16"\n",
-                    i, j, hvcc->array[i].nalUnitLength[j]);
+                   "nalUnitLength[%"PRIu8"][%"PRIu16"]:                 %"PRIu16"\n",
+                   i, j, hvcc->array[i].nalUnitLength[j]);
     }
 
     /*
      * We need at least one of each: VPS, SPS and PPS.
      */
     for (i = 0; i < hvcc->numOfArrays; i++)
-        switch (hvcc->array[i].NAL_unit_type) {
+        switch (hvcc->array[i].NAL_unit_type)
+        {
         case NAL_VPS:
             vps_count += hvcc->array[i].numNalus;
             break;
@@ -928,8 +965,8 @@ static int hvcc_write(AVIOContext *pb, HEVCDecoderConfigurationRecord *hvcc)
             break;
         }
     if (!vps_count || vps_count > MAX_VPS_COUNT ||
-        !sps_count || sps_count > MAX_SPS_COUNT ||
-        !pps_count || pps_count > MAX_PPS_COUNT)
+            !sps_count || sps_count > MAX_SPS_COUNT ||
+            !pps_count || pps_count > MAX_PPS_COUNT)
         return AVERROR_INVALIDDATA;
 
     /* unsigned int(8) configurationVersion = 1; */
@@ -941,8 +978,8 @@ static int hvcc_write(AVIOContext *pb, HEVCDecoderConfigurationRecord *hvcc)
      * unsigned int(5) general_profile_idc;
      */
     avio_w8(pb, hvcc->general_profile_space << 6 |
-                hvcc->general_tier_flag     << 5 |
-                hvcc->general_profile_idc);
+            hvcc->general_tier_flag     << 5 |
+            hvcc->general_profile_idc);
 
     /* unsigned int(32) general_profile_compatibility_flags; */
     avio_wb32(pb, hvcc->general_profile_compatibility_flags);
@@ -994,26 +1031,28 @@ static int hvcc_write(AVIOContext *pb, HEVCDecoderConfigurationRecord *hvcc)
      * unsigned int(2) lengthSizeMinusOne;
      */
     avio_w8(pb, hvcc->constantFrameRate << 6 |
-                hvcc->numTemporalLayers << 3 |
-                hvcc->temporalIdNested  << 2 |
-                hvcc->lengthSizeMinusOne);
+            hvcc->numTemporalLayers << 3 |
+            hvcc->temporalIdNested  << 2 |
+            hvcc->lengthSizeMinusOne);
 
     /* unsigned int(8) numOfArrays; */
     avio_w8(pb, hvcc->numOfArrays);
 
-    for (i = 0; i < hvcc->numOfArrays; i++) {
+    for (i = 0; i < hvcc->numOfArrays; i++)
+    {
         /*
          * bit(1) array_completeness;
          * unsigned int(1) reserved = 0;
          * unsigned int(6) NAL_unit_type;
          */
         avio_w8(pb, hvcc->array[i].array_completeness << 7 |
-                    hvcc->array[i].NAL_unit_type & 0x3f);
+                hvcc->array[i].NAL_unit_type & 0x3f);
 
         /* unsigned int(16) numNalus; */
         avio_wb16(pb, hvcc->array[i].numNalus);
 
-        for (j = 0; j < hvcc->array[i].numNalus; j++) {
+        for (j = 0; j < hvcc->array[i].numNalus; j++)
+        {
             /* unsigned int(16) nalUnitLength; */
             avio_wb16(pb, hvcc->array[i].nalUnitLength[j]);
 
@@ -1032,7 +1071,8 @@ int ff_hevc_annexb2mp4(AVIOContext *pb, const uint8_t *buf_in,
     int num_ps = 0, ret = 0;
     uint8_t *buf, *end, *start = NULL;
 
-    if (!filter_ps) {
+    if (!filter_ps)
+    {
         ret = ff_avc_parse_nal_units(pb, buf_in, size);
         goto end;
     }
@@ -1045,13 +1085,15 @@ int ff_hevc_annexb2mp4(AVIOContext *pb, const uint8_t *buf_in,
     buf = start;
     end = start + size;
 
-    while (end - buf > 4) {
+    while (end - buf > 4)
+    {
         uint32_t len = FFMIN(AV_RB32(buf), end - buf - 4);
         uint8_t type = (buf[4] >> 1) & 0x3f;
 
         buf += 4;
 
-        switch (type) {
+        switch (type)
+        {
         case NAL_VPS:
         case NAL_SPS:
         case NAL_PPS:
@@ -1099,15 +1141,20 @@ int ff_isom_write_hvcc(AVIOContext *pb, const uint8_t *data,
 
     hvcc_init(&hvcc);
 
-    if (size < 6) {
+    if (size < 6)
+    {
         /* We can't write a valid hvcC from the provided data */
         ret = AVERROR_INVALIDDATA;
         goto end;
-    } else if (*data == 1) {
+    }
+    else if (*data == 1)
+    {
         /* Data is already hvcC-formatted */
         avio_write(pb, data, size);
         goto end;
-    } else if (!(AV_RB24(data) == 1 || AV_RB32(data) == 1)) {
+    }
+    else if (!(AV_RB24(data) == 1 || AV_RB32(data) == 1))
+    {
         /* Not a valid Annex B start code prefix */
         ret = AVERROR_INVALIDDATA;
         goto end;
@@ -1120,13 +1167,15 @@ int ff_isom_write_hvcc(AVIOContext *pb, const uint8_t *data,
     buf = start;
     end = start + size;
 
-    while (end - buf > 4) {
+    while (end - buf > 4)
+    {
         uint32_t len = FFMIN(AV_RB32(buf), end - buf - 4);
         uint8_t type = (buf[4] >> 1) & 0x3f;
 
         buf += 4;
 
-        switch (type) {
+        switch (type)
+        {
         case NAL_VPS:
         case NAL_SPS:
         case NAL_PPS:

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-typedef struct IntraX8DSPContext {
+typedef struct IntraX8DSPContext
+{
     void (*v_loop_filter)(uint8_t *src, int stride, int qscale);
     void (*h_loop_filter)(uint8_t *src, int stride, int qscale);
 

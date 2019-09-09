@@ -1,4 +1,4 @@
-/*
+﻿/*
  * On2 VP8 parser for Ogg
  * Copyright (C) 2013 James Almer
  *
@@ -38,14 +38,17 @@ static int vp8_header(AVFormatContext *s, int idx)
     if (os->psize < 7 || p[0] != 0x4f)
         return 0;
 
-    switch (p[5]){
+    switch (p[5])
+    {
     case 0x01:
-        if (os->psize < VP8_HEADER_SIZE) {
+        if (os->psize < VP8_HEADER_SIZE)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid OggVP8 header packet");
             return AVERROR_INVALIDDATA;
         }
 
-        if (p[6] != 1) {
+        if (p[6] != 1)
+        {
             av_log(s, AV_LOG_WARNING,
                    "Unknown OggVP8 version %d.%d\n", p[6], p[7]);
             return AVERROR_INVALIDDATA;
@@ -101,7 +104,8 @@ static int vp8_packet(AVFormatContext *s, int idx)
     uint8_t *p = os->buf + os->pstart;
 
     if ((!os->lastpts || os->lastpts == AV_NOPTS_VALUE) &&
-        !(os->flags & OGG_FLAG_EOS)) {
+            !(os->flags & OGG_FLAG_EOS))
+    {
         int seg;
         int duration;
         uint8_t *last_pkt = p;
@@ -110,16 +114,19 @@ static int vp8_packet(AVFormatContext *s, int idx)
         seg = os->segp;
         duration = (last_pkt[0] >> 4) & 1;
         next_pkt = last_pkt += os->psize;
-        for (; seg < os->nsegs; seg++) {
-            if (os->segments[seg] < 255) {
+        for (; seg < os->nsegs; seg++)
+        {
+            if (os->segments[seg] < 255)
+            {
                 duration += (last_pkt[0] >> 4) & 1;
                 last_pkt  = next_pkt + os->segments[seg];
             }
             next_pkt += os->segments[seg];
         }
         os->lastpts =
-        os->lastdts = vp8_gptopts(s, idx, os->granule, NULL) - duration;
-        if(s->streams[idx]->start_time == AV_NOPTS_VALUE) {
+            os->lastdts = vp8_gptopts(s, idx, os->granule, NULL) - duration;
+        if(s->streams[idx]->start_time == AV_NOPTS_VALUE)
+        {
             s->streams[idx]->start_time = os->lastpts;
             if (s->streams[idx]->duration)
                 s->streams[idx]->duration -= s->streams[idx]->start_time;
@@ -132,7 +139,8 @@ static int vp8_packet(AVFormatContext *s, int idx)
     return 0;
 }
 
-const struct ogg_codec ff_vp8_codec = {
+const struct ogg_codec ff_vp8_codec =
+{
     .magic     = "OVP80",
     .magicsize = 5,
     .header    = vp8_header,

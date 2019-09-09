@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,14 +101,15 @@ amm-info@iis.fraunhofer.de
 /**
  *  DRC compression profiles.
  */
-typedef enum DRC_PROFILE {
-  DRC_NONE          = 0,
-  DRC_FILMSTANDARD  = 1,
-  DRC_FILMLIGHT     = 2,
-  DRC_MUSICSTANDARD = 3,
-  DRC_MUSICLIGHT    = 4,
-  DRC_SPEECH        = 5,
-  DRC_DELAY_TEST    = 6
+typedef enum DRC_PROFILE
+{
+    DRC_NONE          = 0,
+    DRC_FILMSTANDARD  = 1,
+    DRC_FILMLIGHT     = 2,
+    DRC_MUSICSTANDARD = 3,
+    DRC_MUSICLIGHT    = 4,
+    DRC_SPEECH        = 5,
+    DRC_DELAY_TEST    = 6
 
 } DRC_PROFILE;
 
@@ -130,8 +131,8 @@ typedef struct DRC_COMP  DRC_COMP, *HDRC_COMP;
  *          - unequal 0, on failure.
  */
 INT FDK_DRC_Generator_Open(
-        HDRC_COMP                      *phDrcComp
-        );
+    HDRC_COMP                      *phDrcComp
+);
 
 
 /**
@@ -146,8 +147,8 @@ INT FDK_DRC_Generator_Open(
  *          - unequal 0, on failure.
  */
 INT FDK_DRC_Generator_Close(
-        HDRC_COMP                      *phDrcComp
-        );
+    HDRC_COMP                      *phDrcComp
+);
 
 /**
  * \brief  Configure DRC Compressor.
@@ -166,15 +167,15 @@ INT FDK_DRC_Generator_Close(
  *          - unequal 0, on failure
  */
 INT FDK_DRC_Generator_Initialize(
-        HDRC_COMP                       drcComp,
-        const DRC_PROFILE               profileLine,
-        const DRC_PROFILE               profileRF,
-        const INT                       blockLength,
-        const UINT                      sampleRate,
-        const CHANNEL_MODE              channelMode,
-        const CHANNEL_ORDER             channelOrder,
-        const UCHAR                     useWeighting
-        );
+    HDRC_COMP                       drcComp,
+    const DRC_PROFILE               profileLine,
+    const DRC_PROFILE               profileRF,
+    const INT                       blockLength,
+    const UINT                      sampleRate,
+    const CHANNEL_MODE              channelMode,
+    const CHANNEL_ORDER             channelOrder,
+    const UCHAR                     useWeighting
+);
 
 /**
  * \brief  Calculate DRC Compressor Gain.
@@ -194,16 +195,16 @@ INT FDK_DRC_Generator_Initialize(
  *          - unequal 0, on failure
  */
 INT FDK_DRC_Generator_Calc(
-        HDRC_COMP                       drcComp,
-        const INT_PCM * const           inSamples,
-        const INT                       dialnorm,
-        const INT                       drc_TargetRefLevel,
-        const INT                       comp_TargetRefLevel,
-        FIXP_DBL                        clev,
-        FIXP_DBL                        slev,
-        INT * const                     dynrng,
-        INT * const                     compr
-        );
+    HDRC_COMP                       drcComp,
+    const INT_PCM * const           inSamples,
+    const INT                       dialnorm,
+    const INT                       drc_TargetRefLevel,
+    const INT                       comp_TargetRefLevel,
+    FIXP_DBL                        clev,
+    FIXP_DBL                        slev,
+    INT * const                     dynrng,
+    INT * const                     compr
+);
 
 
 /**
@@ -218,10 +219,10 @@ INT FDK_DRC_Generator_Calc(
  *          - unequal 0, on failure
  */
 INT FDK_DRC_Generator_setDrcProfile(
-        HDRC_COMP                       drcComp,
-        const DRC_PROFILE               profileLine,
-        const DRC_PROFILE               profileRF
-        );
+    HDRC_COMP                       drcComp,
+    const DRC_PROFILE               profileLine,
+    const DRC_PROFILE               profileRF
+);
 
 
 /**
@@ -232,8 +233,8 @@ INT FDK_DRC_Generator_setDrcProfile(
  * \return  Current Profile.
  */
 DRC_PROFILE FDK_DRC_Generator_getDrcProfile(
-        const HDRC_COMP                 drcComp
-        );
+    const HDRC_COMP                 drcComp
+);
 
 
 /**
@@ -244,8 +245,8 @@ DRC_PROFILE FDK_DRC_Generator_getDrcProfile(
  * \return  Current Profile.
  */
 DRC_PROFILE FDK_DRC_Generator_getCompProfile(
-        const HDRC_COMP                 drcComp
-        );
+    const HDRC_COMP                 drcComp
+);
 
 
 #endif /* _METADATA_COMPRESSOR_H */

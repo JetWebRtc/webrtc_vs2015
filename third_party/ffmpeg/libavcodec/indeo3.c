@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Indeo Video v3 compatible decoder
  * Copyright (c) 2009 - 2011 Maxim Poliakovski
  *
@@ -41,7 +41,8 @@
 #include "indeo3data.h"
 
 /* RLE opcodes. */
-enum {
+enum
+{
     RLE_ESC_F9    = 249, ///< same as RLE_ESC_FA + do the same with next block
     RLE_ESC_FA    = 250, ///< INTRA: skip block, INTER: copy data from reference
     RLE_ESC_FB    = 251, ///< apply null delta to N blocks / skip N blocks
@@ -61,7 +62,8 @@ enum {
 #define BS_BUFFER        9       ///< indicates which of two frame buffers should be used
 
 
-typedef struct Plane {
+typedef struct Plane
+{
     uint8_t         *buffers[2];
     uint8_t         *pixels[2]; ///< pointer to the actual pixel data of the buffers above
     uint32_t        width;
@@ -71,7 +73,8 @@ typedef struct Plane {
 
 #define CELL_STACK_MAX  20
 
-typedef struct Cell {
+typedef struct Cell
+{
     int16_t         xpos;       ///< cell coordinates in 4x4 blocks
     int16_t         ypos;
     int16_t         width;      ///< cell width  in 4x4 blocks
@@ -80,7 +83,8 @@ typedef struct Cell {
     const int8_t    *mv_ptr;    ///< ptr to the motion vector if any
 } Cell;
 
-typedef struct Indeo3DecodeContext {
+typedef struct Indeo3DecodeContext
+{
     AVCodecContext *avctx;
     HpelDSPContext  hdsp;
 
@@ -123,10 +127,11 @@ static av_cold void build_requant_tab(void)
 
     int i, j, step;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         step = i + 2;
         for (j = 0; j < 128; j++)
-                requant_tab[i][j] = (j + offsets[i]) / step * step + deltas[i];
+            requant_tab[i][j] = (j + offsets[i]) / step * step + deltas[i];
     }
 
     /* some last elements calculated above will have values >= 128 */
@@ -154,7 +159,8 @@ static av_cold void free_frame_buffers(Indeo3DecodeContext *ctx)
 
     ctx->width = ctx->height = 0;
 
-    for (p = 0; p < 3; p++) {
+    for (p = 0; p < 3; p++)
+    {
         av_freep(&ctx->planes[p].buffers[0]);
         av_freep(&ctx->planes[p].buffers[1]);
         ctx->planes[p].pixels[0] = ctx->planes[p].pixels[1] = 0;
@@ -163,14 +169,15 @@ static av_cold void free_frame_buffers(Indeo3DecodeContext *ctx)
 
 
 static av_cold int allocate_frame_buffers(Indeo3DecodeContext *ctx,
-                                          AVCodecContext *avctx, int luma_width, int luma_height)
+        AVCodecContext *avctx, int luma_width, int luma_height)
 {
     int p, chroma_width, chroma_height;
     int luma_pitch, chroma_pitch, luma_size, chroma_size;
 
     if (luma_width  < 16 || luma_width  > 640 ||
-        luma_height < 16 || luma_height > 480 ||
-        luma_width  &  3 || luma_height &   3) {
+            luma_height < 16 || luma_height > 480 ||
+            luma_width  &  3 || luma_height &   3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid picture dimensions: %d x %d!\n",
                luma_width, luma_height);
         return AVERROR_INVALIDDATA;
@@ -194,7 +201,8 @@ static av_cold int allocate_frame_buffers(Indeo3DecodeContext *ctx,
     chroma_size = chroma_pitch * (chroma_height + 1);
 
     /* allocate frame buffers */
-    for (p = 0; p < 3; p++) {
+    for (p = 0; p < 3; p++)
+    {
         ctx->planes[p].pitch  = !p ? luma_pitch  : chroma_pitch;
         ctx->planes[p].width  = !p ? luma_width  : chroma_width;
         ctx->planes[p].height = !p ? luma_height : chroma_height;
@@ -202,7 +210,8 @@ static av_cold int allocate_frame_buffers(Indeo3DecodeContext *ctx,
         ctx->planes[p].buffers[0] = av_malloc(!p ? luma_size : chroma_size);
         ctx->planes[p].buffers[1] = av_malloc(!p ? luma_size : chroma_size);
 
-        if (!ctx->planes[p].buffers[0] || !ctx->planes[p].buffers[1]) {
+        if (!ctx->planes[p].buffers[0] || !ctx->planes[p].buffers[1])
+        {
             free_frame_buffers(ctx);
             return AVERROR(ENOMEM);
         }
@@ -237,16 +246,19 @@ static int copy_cell(Indeo3DecodeContext *ctx, Plane *plane, Cell *cell)
     /* setup output and reference pointers */
     offset_dst  = (cell->ypos << 2) * plane->pitch + (cell->xpos << 2);
     dst         = plane->pixels[ctx->buf_sel] + offset_dst;
-    if(cell->mv_ptr){
-    mv_y        = cell->mv_ptr[0];
-    mv_x        = cell->mv_ptr[1];
-    }else
+    if(cell->mv_ptr)
+    {
+        mv_y        = cell->mv_ptr[0];
+        mv_x        = cell->mv_ptr[1];
+    }
+    else
         mv_x= mv_y= 0;
 
     /* -1 because there is an extra line on top for prediction */
     if ((cell->ypos << 2) + mv_y < -1 || (cell->xpos << 2) + mv_x < 0 ||
-        ((cell->ypos + cell->height) << 2) + mv_y > plane->height     ||
-        ((cell->xpos + cell->width)  << 2) + mv_x > plane->width) {
+            ((cell->ypos + cell->height) << 2) + mv_y > plane->height     ||
+            ((cell->xpos + cell->width)  << 2) + mv_x > plane->width)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR,
                "Motion vectors point out of the frame.\n");
         return AVERROR_INVALIDDATA;
@@ -257,20 +269,25 @@ static int copy_cell(Indeo3DecodeContext *ctx, Plane *plane, Cell *cell)
 
     h = cell->height << 2;
 
-    for (w = cell->width; w > 0;) {
+    for (w = cell->width; w > 0;)
+    {
         /* copy using 16xH blocks */
-        if (!((cell->xpos << 2) & 15) && w >= 4) {
+        if (!((cell->xpos << 2) & 15) && w >= 4)
+        {
             for (; w >= 4; src += 16, dst += 16, w -= 4)
                 ctx->hdsp.put_pixels_tab[0][0](dst, src, plane->pitch, h);
         }
 
         /* copy using 8xH blocks */
-        if (!((cell->xpos << 2) & 7) && w >= 2) {
+        if (!((cell->xpos << 2) & 7) && w >= 2)
+        {
             ctx->hdsp.put_pixels_tab[1][0](dst, src, plane->pitch, h);
             w -= 2;
             src += 8;
             dst += 8;
-        } else if (w >= 1) {
+        }
+        else if (w >= 1)
+        {
             ctx->hdsp.put_pixels_tab[2][0](dst, src, plane->pitch, h);
             w--;
             src += 4;
@@ -294,7 +311,8 @@ static int copy_cell(Indeo3DecodeContext *ctx, Plane *plane, Cell *cell)
  *  Replicate each even pixel as follows:
  *  ABCDEFGH -> AACCEEGG
  */
-static inline uint64_t replicate64(uint64_t a) {
+static inline uint64_t replicate64(uint64_t a)
+{
 #if HAVE_BIGENDIAN
     a &= 0xFF00FF00FF00FF00ULL;
     a |= a >> 8;
@@ -305,7 +323,8 @@ static inline uint64_t replicate64(uint64_t a) {
     return a;
 }
 
-static inline uint32_t replicate32(uint32_t a) {
+static inline uint32_t replicate32(uint32_t a)
+{
 #if HAVE_BIGENDIAN
     a &= 0xFF00FF00UL;
     a |= a >> 8;
@@ -327,7 +346,8 @@ static inline void fill_64(uint8_t *dst, const uint64_t pix, int32_t n,
 
 
 /* Error codes for cell decoding. */
-enum {
+enum
+{
     IV3_NOERR       = 0,
     IV3_BAD_RLE     = 1,
     IV3_BAD_DATA    = 2,
@@ -445,20 +465,29 @@ static int decode_cell_data(Indeo3DecodeContext *ctx, Cell *cell,
     if (cell->height & v_zoom || cell->width & h_zoom)
         return IV3_BAD_DATA;
 
-    for (y = 0; y < cell->height; is_first_row = 0, y += 1 + v_zoom) {
-        for (x = 0; x < cell->width; x += 1 + h_zoom) {
+    for (y = 0; y < cell->height; is_first_row = 0, y += 1 + v_zoom)
+    {
+        for (x = 0; x < cell->width; x += 1 + h_zoom)
+        {
             ref = ref_block;
             dst = block;
 
-            if (rle_blocks > 0) {
-                if (mode <= 4) {
+            if (rle_blocks > 0)
+            {
+                if (mode <= 4)
+                {
                     RLE_BLOCK_COPY;
-                } else if (mode == 10 && !cell->mv_ptr) {
+                }
+                else if (mode == 10 && !cell->mv_ptr)
+                {
                     RLE_BLOCK_COPY_8;
                 }
                 rle_blocks--;
-            } else {
-                for (line = 0; line < 4;) {
+            }
+            else
+            {
+                for (line = 0; line < 4;)
+                {
                     num_lines = 1;
                     is_top_of_cell = is_first_row && !line;
 
@@ -469,14 +498,18 @@ static int decode_cell_data(Indeo3DecodeContext *ctx, Cell *cell,
                         delta_tab = delta[1];
                     BUFFER_PRECHECK;
                     code = bytestream_get_byte(data_ptr);
-                    if (code < 248) {
-                        if (code < delta_tab->num_dyads) {
+                    if (code < 248)
+                    {
+                        if (code < delta_tab->num_dyads)
+                        {
                             BUFFER_PRECHECK;
                             dyad1 = bytestream_get_byte(data_ptr);
                             dyad2 = code;
                             if (dyad1 >= delta_tab->num_dyads || dyad1 >= 248)
                                 return IV3_BAD_DATA;
-                        } else {
+                        }
+                        else
+                        {
                             /* process QUADS */
                             code -= delta_tab->num_dyads;
                             dyad1 = code / delta_tab->quad_exp;
@@ -484,30 +517,41 @@ static int decode_cell_data(Indeo3DecodeContext *ctx, Cell *cell,
                             if (swap_quads[line & 1])
                                 FFSWAP(unsigned int, dyad1, dyad2);
                         }
-                        if (mode <= 4) {
+                        if (mode <= 4)
+                        {
                             APPLY_DELTA_4;
-                        } else if (mode == 10 && !cell->mv_ptr) {
+                        }
+                        else if (mode == 10 && !cell->mv_ptr)
+                        {
                             APPLY_DELTA_8;
-                        } else {
+                        }
+                        else
+                        {
                             APPLY_DELTA_1011_INTER;
                         }
-                    } else {
+                    }
+                    else
+                    {
                         /* process RLE codes */
-                        switch (code) {
+                        switch (code)
+                        {
                         case RLE_ESC_FC:
                             skip_flag  = 0;
                             rle_blocks = 1;
                             code       = 253;
-                            /* FALLTHROUGH */
+                        /* FALLTHROUGH */
                         case RLE_ESC_FF:
                         case RLE_ESC_FE:
                         case RLE_ESC_FD:
                             num_lines = 257 - code - line;
                             if (num_lines <= 0)
                                 return IV3_BAD_RLE;
-                            if (mode <= 4) {
+                            if (mode <= 4)
+                            {
                                 RLE_LINES_COPY;
-                            } else if (mode == 10 && !cell->mv_ptr) {
+                            }
+                            else if (mode == 10 && !cell->mv_ptr)
+                            {
                                 RLE_LINES_COPY_M10;
                             }
                             break;
@@ -519,10 +563,14 @@ static int decode_cell_data(Indeo3DecodeContext *ctx, Cell *cell,
                                 return IV3_BAD_COUNTER;
                             skip_flag = code & 0x20;
                             num_lines = 4 - line; /* enforce next block processing */
-                            if (mode >= 10 || (cell->mv_ptr || !skip_flag)) {
-                                if (mode <= 4) {
+                            if (mode >= 10 || (cell->mv_ptr || !skip_flag))
+                            {
+                                if (mode <= 4)
+                                {
                                     RLE_LINES_COPY;
-                                } else if (mode == 10 && !cell->mv_ptr) {
+                                }
+                                else if (mode == 10 && !cell->mv_ptr)
+                                {
                                     RLE_LINES_COPY_M10;
                                 }
                             }
@@ -530,15 +578,19 @@ static int decode_cell_data(Indeo3DecodeContext *ctx, Cell *cell,
                         case RLE_ESC_F9:
                             skip_flag  = 1;
                             rle_blocks = 1;
-                            /* FALLTHROUGH */
+                        /* FALLTHROUGH */
                         case RLE_ESC_FA:
                             if (line)
                                 return IV3_BAD_RLE;
                             num_lines = 4; /* enforce next block processing */
-                            if (cell->mv_ptr) {
-                                if (mode <= 4) {
+                            if (cell->mv_ptr)
+                            {
+                                if (mode <= 4)
+                                {
                                     RLE_LINES_COPY;
-                                } else if (mode == 10 && !cell->mv_ptr) {
+                                }
+                                else if (mode == 10 && !cell->mv_ptr)
+                                {
                                     RLE_LINES_COPY_M10;
                                 }
                             }
@@ -600,24 +652,30 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     offset = (cell->ypos << 2) * plane->pitch + (cell->xpos << 2);
     block  =  plane->pixels[ctx->buf_sel] + offset;
 
-    if (!cell->mv_ptr) {
+    if (!cell->mv_ptr)
+    {
         /* use previous line as reference for INTRA cells */
         ref_block = block - plane->pitch;
-    } else if (mode >= 10) {
+    }
+    else if (mode >= 10)
+    {
         /* for mode 10 and 11 INTER first copy the predicted cell into the current one */
         /* so we don't need to do data copying for each RLE code later */
         int ret = copy_cell(ctx, plane, cell);
         if (ret < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         /* set the pointer to the reference pixels for modes 0-4 INTER */
         mv_y      = cell->mv_ptr[0];
         mv_x      = cell->mv_ptr[1];
 
         /* -1 because there is an extra line on top for prediction */
         if ((cell->ypos << 2) + mv_y < -1 || (cell->xpos << 2) + mv_x < 0 ||
-            ((cell->ypos + cell->height) << 2) + mv_y > plane->height     ||
-            ((cell->xpos + cell->width)  << 2) + mv_x > plane->width) {
+                ((cell->ypos + cell->height) << 2) + mv_y > plane->height     ||
+                ((cell->xpos + cell->width)  << 2) + mv_x > plane->width)
+        {
             av_log(ctx->avctx, AV_LOG_ERROR,
                    "Motion vectors point out of the frame.\n");
             return AVERROR_INVALIDDATA;
@@ -630,16 +688,20 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     /* select VQ tables as follows: */
     /* modes 0 and 3 use only the primary table for all lines in a block */
     /* while modes 1 and 4 switch between primary and secondary tables on alternate lines */
-    if (mode == 1 || mode == 4) {
+    if (mode == 1 || mode == 4)
+    {
         code        = ctx->alt_quant[vq_index];
         prim_indx   = (code >> 4)  + ctx->cb_offset;
         second_indx = (code & 0xF) + ctx->cb_offset;
-    } else {
+    }
+    else
+    {
         vq_index += ctx->cb_offset;
         prim_indx = second_indx = vq_index;
     }
 
-    if (prim_indx >= 24 || second_indx >= 24) {
+    if (prim_indx >= 24 || second_indx >= 24)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid VQ table indexes! Primary: %d, secondary: %d!\n",
                prim_indx, second_indx);
         return AVERROR_INVALIDDATA;
@@ -652,19 +714,22 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
 
     /* requantize the prediction if VQ index of this cell differs from VQ index */
     /* of the predicted cell in order to avoid overflows. */
-    if (vq_index >= 8 && ref_block) {
+    if (vq_index >= 8 && ref_block)
+    {
         for (x = 0; x < cell->width << 2; x++)
             ref_block[x] = requant_tab[vq_index & 7][ref_block[x] & 127];
     }
 
     error = IV3_NOERR;
 
-    switch (mode) {
+    switch (mode)
+    {
     case 0: /*------------------ MODES 0 & 1 (4x4 block processing) --------------------*/
     case 1:
     case 3: /*------------------ MODES 3 & 4 (4x8 block processing) --------------------*/
     case 4:
-        if (mode >= 3 && cell->mv_ptr) {
+        if (mode >= 3 && cell->mv_ptr)
+        {
             av_log(avctx, AV_LOG_ERROR, "Attempt to apply Mode 3/4 to an INTER cell!\n");
             return AVERROR_INVALIDDATA;
         }
@@ -676,14 +741,18 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
         break;
     case 10: /*-------------------- MODE 10 (8x8 block processing) ---------------------*/
     case 11: /*----------------- MODE 11 (4x8 INTER block processing) ------------------*/
-        if (mode == 10 && !cell->mv_ptr) { /* MODE 10 INTRA processing */
+        if (mode == 10 && !cell->mv_ptr)   /* MODE 10 INTRA processing */
+        {
             error = decode_cell_data(ctx, cell, block, ref_block, plane->pitch,
                                      1, 1, mode, delta, swap_quads,
                                      &data_ptr, last_ptr);
-        } else { /* mode 10 and 11 INTER processing */
-            if (mode == 11 && !cell->mv_ptr) {
-               av_log(avctx, AV_LOG_ERROR, "Attempt to use Mode 11 for an INTRA cell!\n");
-               return AVERROR_INVALIDDATA;
+        }
+        else     /* mode 10 and 11 INTER processing */
+        {
+            if (mode == 11 && !cell->mv_ptr)
+            {
+                av_log(avctx, AV_LOG_ERROR, "Attempt to use Mode 11 for an INTRA cell!\n");
+                return AVERROR_INVALIDDATA;
             }
 
             zoom_fac = mode == 10;
@@ -697,7 +766,8 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
         return AVERROR_INVALIDDATA;
     }//switch mode
 
-    switch (error) {
+    switch (error)
+    {
     case IV3_BAD_RLE:
         av_log(avctx, AV_LOG_ERROR, "Mode %d: RLE code %X is not allowed at the current line\n",
                mode, data_ptr[-1]);
@@ -721,7 +791,8 @@ static int decode_cell(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
 
 
 /* Binary tree codes. */
-enum {
+enum
+{
     H_SPLIT    = 0,
     V_SPLIT    = 1,
     INTRA_NULL = 2,
@@ -758,23 +829,29 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     Cell    curr_cell;
     int     bytes_used, ret;
 
-    if (depth <= 0) {
+    if (depth <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Stack overflow (corrupted binary tree)!\n");
         return AVERROR_INVALIDDATA; // unwind recursion
     }
 
     curr_cell = *ref_cell; // clone parent cell
-    if (code == H_SPLIT) {
+    if (code == H_SPLIT)
+    {
         SPLIT_CELL(ref_cell->height, curr_cell.height);
         ref_cell->ypos   += curr_cell.height;
         ref_cell->height -= curr_cell.height;
         if (ref_cell->height <= 0 || curr_cell.height <= 0)
             return AVERROR_INVALIDDATA;
-    } else if (code == V_SPLIT) {
-        if (curr_cell.width > strip_width) {
+    }
+    else if (code == V_SPLIT)
+    {
+        if (curr_cell.width > strip_width)
+        {
             /* split strip */
             curr_cell.width = (curr_cell.width <= (strip_width << 1) ? 1 : 2) * strip_width;
-        } else
+        }
+        else
             SPLIT_CELL(ref_cell->width, curr_cell.width);
         ref_cell->xpos  += curr_cell.width;
         ref_cell->width -= curr_cell.width;
@@ -782,22 +859,28 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
             return AVERROR_INVALIDDATA;
     }
 
-    while (get_bits_left(&ctx->gb) >= 2) { /* loop until return */
+    while (get_bits_left(&ctx->gb) >= 2)   /* loop until return */
+    {
         RESYNC_BITSTREAM;
-        switch (code = get_bits(&ctx->gb, 2)) {
+        switch (code = get_bits(&ctx->gb, 2))
+        {
         case H_SPLIT:
         case V_SPLIT:
             if (parse_bintree(ctx, avctx, plane, code, &curr_cell, depth - 1, strip_width))
                 return AVERROR_INVALIDDATA;
             break;
         case INTRA_NULL:
-            if (!curr_cell.tree) { /* MC tree INTRA code */
+            if (!curr_cell.tree)   /* MC tree INTRA code */
+            {
                 curr_cell.mv_ptr = 0; /* mark the current strip as INTRA */
                 curr_cell.tree   = 1; /* enter the VQ tree */
-            } else { /* VQ tree NULL code */
+            }
+            else     /* VQ tree NULL code */
+            {
                 RESYNC_BITSTREAM;
                 code = get_bits(&ctx->gb, 2);
-                if (code >= 2) {
+                if (code >= 2)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Invalid VQ_NULL code: %d\n", code);
                     return AVERROR_INVALIDDATA;
                 }
@@ -813,24 +896,29 @@ static int parse_bintree(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
             }
             break;
         case INTER_DATA:
-            if (!curr_cell.tree) { /* MC tree INTER code */
+            if (!curr_cell.tree)   /* MC tree INTER code */
+            {
                 unsigned mv_idx;
                 /* get motion vector index and setup the pointer to the mv set */
                 if (!ctx->need_resync)
                     ctx->next_cell_data = &ctx->gb.buffer[(get_bits_count(&ctx->gb) + 7) >> 3];
-                if (ctx->next_cell_data >= ctx->last_byte) {
+                if (ctx->next_cell_data >= ctx->last_byte)
+                {
                     av_log(avctx, AV_LOG_ERROR, "motion vector out of array\n");
                     return AVERROR_INVALIDDATA;
                 }
                 mv_idx = *(ctx->next_cell_data++);
-                if (mv_idx >= ctx->num_vectors) {
+                if (mv_idx >= ctx->num_vectors)
+                {
                     av_log(avctx, AV_LOG_ERROR, "motion vector index out of range\n");
                     return AVERROR_INVALIDDATA;
                 }
                 curr_cell.mv_ptr = &ctx->mc_vectors[mv_idx << 1];
                 curr_cell.tree   = 1; /* enter the VQ tree */
                 UPDATE_BITPOS(8);
-            } else { /* VQ tree DATA code */
+            }
+            else     /* VQ tree DATA code */
+            {
                 if (!ctx->need_resync)
                     ctx->next_cell_data = &ctx->gb.buffer[(get_bits_count(&ctx->gb) + 7) >> 3];
 
@@ -861,8 +949,10 @@ static int decode_plane(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
 
     /* each plane data starts with mc_vector_count field, */
     /* an optional array of motion vectors followed by the vq data */
-    num_vectors = bytestream_get_le32(&data); data_size -= 4;
-    if (num_vectors > 256) {
+    num_vectors = bytestream_get_le32(&data);
+    data_size -= 4;
+    if (num_vectors > 256)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR,
                "Read invalid number of motion vectors %d\n", num_vectors);
         return AVERROR_INVALIDDATA;
@@ -912,7 +1002,8 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     check_sum = bytestream2_get_le32(&gb);
     data_size = bytestream2_get_le32(&gb);
 
-    if ((frame_num ^ word2 ^ data_size ^ OS_HDR_ID) != check_sum) {
+    if ((frame_num ^ word2 ^ data_size ^ OS_HDR_ID) != check_sum)
+    {
         av_log(avctx, AV_LOG_ERROR, "OS header checksum mismatch!\n");
         return AVERROR_INVALIDDATA;
     }
@@ -920,7 +1011,8 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     /* parse the bitstream header */
     bs_hdr = gb.buffer;
 
-    if (bytestream2_get_le16(&gb) != 32) {
+    if (bytestream2_get_le16(&gb) != 32)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported codec version!\n");
         return AVERROR_INVALIDDATA;
     }
@@ -942,21 +1034,23 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     if (av_image_check_size(width, height, 0, avctx))
         return AVERROR_INVALIDDATA;
 
-    if (width != ctx->width || height != ctx->height) {
+    if (width != ctx->width || height != ctx->height)
+    {
         int res;
 
         ff_dlog(avctx, "Frame dimensions changed!\n");
 
         if (width  < 16 || width  > 640 ||
-            height < 16 || height > 480 ||
-            width  &  3 || height &   3) {
+                height < 16 || height > 480 ||
+                width  &  3 || height &   3)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid picture dimensions: %d x %d!\n", width, height);
             return AVERROR_INVALIDDATA;
         }
         free_frame_buffers(ctx);
         if ((res = allocate_frame_buffers(ctx, avctx, width, height)) < 0)
-             return res;
+            return res;
         if ((res = ff_set_dimensions(avctx, width, height)) < 0)
             return res;
     }
@@ -972,7 +1066,8 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     starts[1] = v_offset;
     starts[2] = u_offset;
 
-    for (j = 0; j < 3; j++) {
+    for (j = 0; j < 3; j++)
+    {
         ends[j] = ctx->data_size;
         for (i = 2; i >= 0; i--)
             if (starts[i] < ends[j] && starts[i] > starts[j])
@@ -983,9 +1078,10 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     ctx->v_data_size = ends[1] - starts[1];
     ctx->u_data_size = ends[2] - starts[2];
     if (FFMIN3(y_offset, v_offset, u_offset) < 0 ||
-        FFMAX3(y_offset, v_offset, u_offset) >= ctx->data_size - 16 ||
-        FFMIN3(y_offset, v_offset, u_offset) < gb.buffer - bs_hdr + 16 ||
-        FFMIN3(ctx->y_data_size, ctx->v_data_size, ctx->u_data_size) <= 0) {
+            FFMAX3(y_offset, v_offset, u_offset) >= ctx->data_size - 16 ||
+            FFMIN3(y_offset, v_offset, u_offset) < gb.buffer - bs_hdr + 16 ||
+            FFMIN3(ctx->y_data_size, ctx->v_data_size, ctx->u_data_size) <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "One of the y/u/v offsets is invalid\n");
         return AVERROR_INVALIDDATA;
     }
@@ -995,17 +1091,20 @@ static int decode_frame_headers(Indeo3DecodeContext *ctx, AVCodecContext *avctx,
     ctx->u_data_ptr = bs_hdr + u_offset;
     ctx->alt_quant  = gb.buffer;
 
-    if (ctx->data_size == 16) {
+    if (ctx->data_size == 16)
+    {
         av_log(avctx, AV_LOG_DEBUG, "Sync frame encountered!\n");
         return 16;
     }
 
-    if (ctx->frame_flags & BS_8BIT_PEL) {
+    if (ctx->frame_flags & BS_8BIT_PEL)
+    {
         avpriv_request_sample(avctx, "8-bit pixel format");
         return AVERROR_PATCHWELCOME;
     }
 
-    if (ctx->frame_flags & BS_MV_X_HALF || ctx->frame_flags & BS_MV_Y_HALF) {
+    if (ctx->frame_flags & BS_MV_X_HALF || ctx->frame_flags & BS_MV_Y_HALF)
+    {
         avpriv_request_sample(avctx, "Halfpel motion vectors");
         return AVERROR_PATCHWELCOME;
     }
@@ -1032,9 +1131,11 @@ static void output_plane(const Plane *plane, int buf_sel, uint8_t *dst,
     uint32_t        pitch = plane->pitch;
 
     dst_height = FFMIN(dst_height, plane->height);
-    for (y = 0; y < dst_height; y++) {
+    for (y = 0; y < dst_height; y++)
+    {
         /* convert four pixels at once using SWAR */
-        for (x = 0; x < plane->width >> 2; x++) {
+        for (x = 0; x < plane->width >> 2; x++)
+        {
             AV_WN32A(dst, (AV_RN32A(src) & 0x7F7F7F7F) << 1);
             src += 4;
             dst += 4;
@@ -1078,7 +1179,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         return res;
 
     /* skip sync(null) frames */
-    if (res) {
+    if (res)
+    {
         // we have processed 16 bytes but no data was decoded
         *got_frame = 0;
         return buf_size;
@@ -1086,7 +1188,7 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     /* skip droppable INTER frames if requested */
     if (ctx->frame_flags & BS_NONREF &&
-       (avctx->skip_frame >= AVDISCARD_NONREF))
+            (avctx->skip_frame >= AVDISCARD_NONREF))
         return 0;
 
     /* skip INTER frames if requested */
@@ -1133,7 +1235,8 @@ static av_cold int decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_indeo3_decoder = {
+AVCodec ff_indeo3_decoder =
+{
     .name           = "indeo3",
     .long_name      = NULL_IF_CONFIG_SMALL("Intel Indeo 3"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TLS/SSL Protocol
  * Copyright (c) 2011 Martin Storsjo
  *
@@ -28,7 +28,8 @@
 
 #define CONFIG_TLS_PROTOCOL (CONFIG_TLS_GNUTLS_PROTOCOL | CONFIG_TLS_OPENSSL_PROTOCOL | CONFIG_TLS_SECURETRANSPORT_PROTOCOL)
 
-typedef struct TLSShared {
+typedef struct TLSShared
+{
     char *ca_file;
     int verify;
     char *cert_file;

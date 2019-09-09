@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Pulseaudio input
  * Copyright (c) 2011 Luca Barbato <lu_zero@gentoo.org>
  *

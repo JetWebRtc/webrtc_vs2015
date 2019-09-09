@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP packetization for AMR audio
  * Copyright (c) 2007 Luca Abeni
  * Copyright (c) 2009 Martin Storsjo
@@ -38,10 +38,11 @@ void ff_rtp_send_amr(AVFormatContext *s1, const uint8_t *buff, int size)
     /* Test if the packet must be sent. */
     len = s->buf_ptr - s->buf;
     if (s->num_frames &&
-        (s->num_frames == s->max_frames_per_packet ||
-         len + size - 1 > s->max_payload_size ||
-         av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
-                       s1->max_delay, AV_TIME_BASE_Q) >= 0)) {
+            (s->num_frames == s->max_frames_per_packet ||
+             len + size - 1 > s->max_payload_size ||
+             av_compare_ts(s->cur_timestamp - s->timestamp, st->time_base,
+                           s1->max_delay, AV_TIME_BASE_Q) >= 0))
+    {
         int header_size = s->num_frames + 1;
         p = s->buf + max_header_toc_size - header_size;
         if (p != s->buf)
@@ -52,11 +53,14 @@ void ff_rtp_send_amr(AVFormatContext *s1, const uint8_t *buff, int size)
         s->num_frames = 0;
     }
 
-    if (!s->num_frames) {
+    if (!s->num_frames)
+    {
         s->buf[0]    = 0xf0;
         s->buf_ptr   = s->buf + max_header_toc_size;
         s->timestamp = s->cur_timestamp;
-    } else {
+    }
+    else
+    {
         /* Mark the previous TOC entry as having more entries following. */
         s->buf[1 + s->num_frames - 1] |= 0x80;
     }

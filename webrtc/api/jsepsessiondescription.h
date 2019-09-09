@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,68 +23,79 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/p2p/base/candidate.h"
 
-namespace cricket {
+namespace cricket
+{
 class SessionDescription;
 }
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Implementation of SessionDescriptionInterface.
-class JsepSessionDescription : public SessionDescriptionInterface {
- public:
-  explicit JsepSessionDescription(const std::string& type);
-  virtual ~JsepSessionDescription();
+class JsepSessionDescription : public SessionDescriptionInterface
+{
+public:
+    explicit JsepSessionDescription(const std::string& type);
+    virtual ~JsepSessionDescription();
 
-  // |error| may be NULL.
-  bool Initialize(const std::string& sdp, SdpParseError* error);
+    // |error| may be NULL.
+    bool Initialize(const std::string& sdp, SdpParseError* error);
 
-  // Takes ownership of |description|.
-  // TODO(deadbeef): Make this use an std::unique_ptr<>, so ownership logic is
-  // more clear.
-  bool Initialize(cricket::SessionDescription* description,
-      const std::string& session_id,
-      const std::string& session_version);
+    // Takes ownership of |description|.
+    // TODO(deadbeef): Make this use an std::unique_ptr<>, so ownership logic is
+    // more clear.
+    bool Initialize(cricket::SessionDescription* description,
+                    const std::string& session_id,
+                    const std::string& session_version);
 
-  virtual cricket::SessionDescription* description() {
-    return description_.get();
-  }
-  virtual const cricket::SessionDescription* description() const {
-    return description_.get();
-  }
-  virtual std::string session_id() const {
-    return session_id_;
-  }
-  virtual std::string session_version() const {
-    return session_version_;
-  }
-  virtual std::string type() const {
-    return type_;
-  }
-  // Allows changing the type. Used for testing.
-  void set_type(const std::string& type) { type_ = type; }
-  virtual bool AddCandidate(const IceCandidateInterface* candidate);
-  virtual size_t RemoveCandidates(
-      const std::vector<cricket::Candidate>& candidates);
-  virtual size_t number_of_mediasections() const;
-  virtual const IceCandidateCollection* candidates(
-      size_t mediasection_index) const;
-  virtual bool ToString(std::string* out) const;
+    virtual cricket::SessionDescription* description()
+    {
+        return description_.get();
+    }
+    virtual const cricket::SessionDescription* description() const
+    {
+        return description_.get();
+    }
+    virtual std::string session_id() const
+    {
+        return session_id_;
+    }
+    virtual std::string session_version() const
+    {
+        return session_version_;
+    }
+    virtual std::string type() const
+    {
+        return type_;
+    }
+    // Allows changing the type. Used for testing.
+    void set_type(const std::string& type)
+    {
+        type_ = type;
+    }
+    virtual bool AddCandidate(const IceCandidateInterface* candidate);
+    virtual size_t RemoveCandidates(
+        const std::vector<cricket::Candidate>& candidates);
+    virtual size_t number_of_mediasections() const;
+    virtual const IceCandidateCollection* candidates(
+        size_t mediasection_index) const;
+    virtual bool ToString(std::string* out) const;
 
-  static const int kDefaultVideoCodecId;
-  static const char kDefaultVideoCodecName[];
+    static const int kDefaultVideoCodecId;
+    static const char kDefaultVideoCodecName[];
 
- private:
-  std::unique_ptr<cricket::SessionDescription> description_;
-  std::string session_id_;
-  std::string session_version_;
-  std::string type_;
-  std::vector<JsepCandidateCollection> candidate_collection_;
+private:
+    std::unique_ptr<cricket::SessionDescription> description_;
+    std::string session_id_;
+    std::string session_version_;
+    std::string type_;
+    std::vector<JsepCandidateCollection> candidate_collection_;
 
-  bool GetMediasectionIndex(const IceCandidateInterface* candidate,
-                            size_t* index);
-  int GetMediasectionIndex(const cricket::Candidate& candidate);
+    bool GetMediasectionIndex(const IceCandidateInterface* candidate,
+                              size_t* index);
+    int GetMediasectionIndex(const cricket::Candidate& candidate);
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(JsepSessionDescription);
+    RTC_DISALLOW_COPY_AND_ASSIGN(JsepSessionDescription);
 };
 
 }  // namespace webrtc

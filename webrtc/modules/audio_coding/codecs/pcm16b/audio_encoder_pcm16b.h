@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,35 +14,38 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/codecs/g711/audio_encoder_pcm.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 struct CodecInst;
 
-class AudioEncoderPcm16B final : public AudioEncoderPcm {
- public:
-  struct Config : public AudioEncoderPcm::Config {
-   public:
-    Config() : AudioEncoderPcm::Config(107), sample_rate_hz(8000) {}
-    bool IsOk() const;
+class AudioEncoderPcm16B final : public AudioEncoderPcm
+{
+public:
+    struct Config : public AudioEncoderPcm::Config
+    {
+    public:
+        Config() : AudioEncoderPcm::Config(107), sample_rate_hz(8000) {}
+        bool IsOk() const;
 
-    int sample_rate_hz;
-  };
+        int sample_rate_hz;
+    };
 
-  explicit AudioEncoderPcm16B(const Config& config)
-      : AudioEncoderPcm(config, config.sample_rate_hz) {}
-  explicit AudioEncoderPcm16B(const CodecInst& codec_inst);
+    explicit AudioEncoderPcm16B(const Config& config)
+        : AudioEncoderPcm(config, config.sample_rate_hz) {}
+    explicit AudioEncoderPcm16B(const CodecInst& codec_inst);
 
- protected:
-  size_t EncodeCall(const int16_t* audio,
-                    size_t input_len,
-                    uint8_t* encoded) override;
+protected:
+    size_t EncodeCall(const int16_t* audio,
+                      size_t input_len,
+                      uint8_t* encoded) override;
 
-  size_t BytesPerSample() const override;
+    size_t BytesPerSample() const override;
 
-  AudioEncoder::CodecType GetCodecType() const override;
+    AudioEncoder::CodecType GetCodecType() const override;
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioEncoderPcm16B);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioEncoderPcm16B);
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -146,17 +146,17 @@ public:
     int32_t CPULoad(uint16_t& load) const override;
 
 public:
- bool PlayoutWarning() const override;
- bool PlayoutError() const override;
- bool RecordingWarning() const override;
- bool RecordingError() const override;
- void ClearPlayoutWarning() override;
- void ClearPlayoutError() override;
- void ClearRecordingWarning() override;
- void ClearRecordingError() override;
+    bool PlayoutWarning() const override;
+    bool PlayoutError() const override;
+    bool RecordingWarning() const override;
+    bool RecordingError() const override;
+    void ClearPlayoutWarning() override;
+    void ClearPlayoutError() override;
+    void ClearRecordingWarning() override;
+    void ClearRecordingError() override;
 
 public:
- void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) override;
+    void AttachAudioBuffer(AudioDeviceBuffer* audioBuffer) override;
 
 private:
     int32_t GetDevicesInfo(const int32_t function,
@@ -170,8 +170,14 @@ private:
     bool KeyPressed() const;
 
 private:
-    void Lock() EXCLUSIVE_LOCK_FUNCTION(_critSect) { _critSect.Enter(); };
-    void UnLock() UNLOCK_FUNCTION(_critSect) { _critSect.Leave(); };
+    void Lock() EXCLUSIVE_LOCK_FUNCTION(_critSect)
+    {
+        _critSect.Enter();
+    };
+    void UnLock() UNLOCK_FUNCTION(_critSect)
+    {
+        _critSect.Leave();
+    };
 private:
     inline int32_t InputSanityCheckAfterUnlockedPeriod() const;
     inline int32_t OutputSanityCheckAfterUnlockedPeriod() const;

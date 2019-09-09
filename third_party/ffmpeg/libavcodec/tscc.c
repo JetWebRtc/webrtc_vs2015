@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TechSmith Camtasia decoder
  * Copyright (c) 2004 Konstantin Shishkov
  *
@@ -44,7 +44,8 @@
 
 #include <zlib.h>
 
-typedef struct TsccContext {
+typedef struct TsccContext
+{
 
     AVCodecContext *avctx;
     AVFrame *frame;
@@ -75,7 +76,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         return ret;
 
     ret = inflateReset(&c->zstream);
-    if (ret != Z_OK) {
+    if (ret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Inflate reset error: %d\n", ret);
         return AVERROR_UNKNOWN;
     }
@@ -85,23 +87,27 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     c->zstream.avail_out = c->decomp_size;
     ret = inflate(&c->zstream, Z_FINISH);
     // Z_DATA_ERROR means empty picture
-    if ((ret != Z_OK) && (ret != Z_STREAM_END) && (ret != Z_DATA_ERROR)) {
+    if ((ret != Z_OK) && (ret != Z_STREAM_END) && (ret != Z_DATA_ERROR))
+    {
         av_log(avctx, AV_LOG_ERROR, "Inflate error: %d\n", ret);
         return AVERROR_UNKNOWN;
     }
 
 
-    if (ret != Z_DATA_ERROR) {
+    if (ret != Z_DATA_ERROR)
+    {
         bytestream2_init(&c->gb, c->decomp_buf,
                          c->decomp_size - c->zstream.avail_out);
         ff_msrle_decode(avctx, (AVPicture*)frame, c->bpp, &c->gb);
     }
 
     /* make the palette available on the way out */
-    if (c->avctx->pix_fmt == AV_PIX_FMT_PAL8) {
+    if (c->avctx->pix_fmt == AV_PIX_FMT_PAL8)
+    {
         const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
 
-        if (pal) {
+        if (pal)
+        {
             frame->palette_has_changed = 1;
             memcpy(c->pal, pal, AVPALETTE_SIZE);
         }
@@ -127,23 +133,33 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     // Needed if zlib unused or init aborted before inflateInit
     memset(&c->zstream, 0, sizeof(z_stream));
-    switch(avctx->bits_per_coded_sample){
-    case  8: avctx->pix_fmt = AV_PIX_FMT_PAL8; break;
-    case 16: avctx->pix_fmt = AV_PIX_FMT_RGB555; break;
+    switch(avctx->bits_per_coded_sample)
+    {
+    case  8:
+        avctx->pix_fmt = AV_PIX_FMT_PAL8;
+        break;
+    case 16:
+        avctx->pix_fmt = AV_PIX_FMT_RGB555;
+        break;
     case 24:
-             avctx->pix_fmt = AV_PIX_FMT_BGR24;
-             break;
-    case 32: avctx->pix_fmt = AV_PIX_FMT_0RGB32; break;
-    default: av_log(avctx, AV_LOG_ERROR, "Camtasia error: unknown depth %i bpp\n", avctx->bits_per_coded_sample);
-             return AVERROR_PATCHWELCOME;
+        avctx->pix_fmt = AV_PIX_FMT_BGR24;
+        break;
+    case 32:
+        avctx->pix_fmt = AV_PIX_FMT_0RGB32;
+        break;
+    default:
+        av_log(avctx, AV_LOG_ERROR, "Camtasia error: unknown depth %i bpp\n", avctx->bits_per_coded_sample);
+        return AVERROR_PATCHWELCOME;
     }
     c->bpp = avctx->bits_per_coded_sample;
     // buffer size for RLE 'best' case when 2-byte code precedes each pixel and there may be padding after it too
     c->decomp_size = (((avctx->width * c->bpp + 7) >> 3) + 3 * avctx->width + 2) * avctx->height + 2;
 
     /* Allocate decompression buffer */
-    if (c->decomp_size) {
-        if (!(c->decomp_buf = av_malloc(c->decomp_size))) {
+    if (c->decomp_size)
+    {
+        if (!(c->decomp_buf = av_malloc(c->decomp_size)))
+        {
             av_log(avctx, AV_LOG_ERROR, "Can't allocate decompression buffer.\n");
             return AVERROR(ENOMEM);
         }
@@ -153,7 +169,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     c->zstream.zfree = Z_NULL;
     c->zstream.opaque = Z_NULL;
     zret = inflateInit(&c->zstream);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Inflate init error: %d\n", zret);
         return AVERROR_UNKNOWN;
     }
@@ -175,7 +192,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_tscc_decoder = {
+AVCodec ff_tscc_decoder =
+{
     .name           = "camtasia",
     .long_name      = NULL_IF_CONFIG_SMALL("TechSmith Screen Capture Codec"),
     .type           = AVMEDIA_TYPE_VIDEO,

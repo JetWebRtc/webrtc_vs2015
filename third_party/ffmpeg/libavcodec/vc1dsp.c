@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder - DSP functions
  * Copyright (c) 2006 Konstantin Shishkov
  *
@@ -41,7 +41,8 @@ static void vc1_v_overlap_c(uint8_t *src, int stride)
     int a, b, c, d;
     int d1, d2;
     int rnd = 1;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         a  = src[-2 * stride];
         b  = src[-stride];
         c  = src[0];
@@ -65,7 +66,8 @@ static void vc1_h_overlap_c(uint8_t *src, int stride)
     int a, b, c, d;
     int d1, d2;
     int rnd = 1;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         a  = src[-2];
         b  = src[-1];
         c  = src[0];
@@ -88,7 +90,8 @@ static void vc1_v_s_overlap_c(int16_t *top, int16_t *bottom)
     int a, b, c, d;
     int d1, d2;
     int rnd1 = 4, rnd2 = 3;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         a  = top[48];
         b  = top[56];
         c  = bottom[0];
@@ -114,7 +117,8 @@ static void vc1_h_s_overlap_c(int16_t *left, int16_t *right)
     int a, b, c, d;
     int d1, d2;
     int rnd1 = 4, rnd2 = 3;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         a  = left[6];
         b  = left[7];
         c  = right[0];
@@ -149,17 +153,20 @@ static av_always_inline int vc1_filter_line(uint8_t *src, int stride, int pq)
     int a0_sign = a0 >> 31;        /* Store sign */
 
     a0 = (a0 ^ a0_sign) - a0_sign; /* a0 = FFABS(a0); */
-    if (a0 < pq) {
+    if (a0 < pq)
+    {
         int a1 = FFABS((2 * (src[-4 * stride] - src[-1 * stride]) -
                         5 * (src[-3 * stride] - src[-2 * stride]) + 4) >> 3);
         int a2 = FFABS((2 * (src[ 0 * stride] - src[ 3 * stride]) -
                         5 * (src[ 1 * stride] - src[ 2 * stride]) + 4) >> 3);
-        if (a1 < a0 || a2 < a0) {
+        if (a1 < a0 || a2 < a0)
+        {
             int clip      = src[-1 * stride] - src[0 * stride];
             int clip_sign = clip >> 31;
 
             clip = ((clip ^ clip_sign) - clip_sign) >> 1;
-            if (clip) {
+            if (clip)
+            {
                 int a3     = FFMIN(a1, a2);
                 int d      = 5 * (a3 - a0);
                 int d_sign = (d >> 31);
@@ -169,7 +176,8 @@ static av_always_inline int vc1_filter_line(uint8_t *src, int stride, int pq)
 
                 if (d_sign ^ clip_sign)
                     d = 0;
-                else {
+                else
+                {
                     d = FFMIN(d, clip);
                     d = (d ^ d_sign) - d_sign; /* Restore sign */
                     src[-1 * stride] = av_clip_uint8(src[-1 * stride] - d);
@@ -197,9 +205,11 @@ static inline void vc1_loop_filter(uint8_t *src, int step, int stride,
     int i;
     int filt3;
 
-    for (i = 0; i < len; i += 4) {
+    for (i = 0; i < len; i += 4)
+    {
         filt3 = vc1_filter_line(src + 2 * step, stride, pq);
-        if (filt3) {
+        if (filt3)
+        {
             vc1_filter_line(src + 0 * step, stride, pq);
             vc1_filter_line(src + 1 * step, stride, pq);
             vc1_filter_line(src + 3 * step, stride, pq);
@@ -247,7 +257,8 @@ static void vc1_inv_trans_8x8_dc_c(uint8_t *dest, int linesize, int16_t *block)
     dc = (3 * dc +  1) >> 1;
     dc = (3 * dc + 16) >> 5;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + dc);
         dest[1] = av_clip_uint8(dest[1] + dc);
         dest[2] = av_clip_uint8(dest[2] + dc);
@@ -268,7 +279,8 @@ static void vc1_inv_trans_8x8_c(int16_t block[64])
 
     src = block;
     dst = temp;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         t1 = 12 * (src[ 0] + src[32]) + 4;
         t2 = 12 * (src[ 0] - src[32]) + 4;
         t3 = 16 * src[16] +  6 * src[48];
@@ -299,7 +311,8 @@ static void vc1_inv_trans_8x8_c(int16_t block[64])
 
     src = temp;
     dst = block;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         t1 = 12 * (src[ 0] + src[32]) + 64;
         t2 = 12 * (src[ 0] - src[32]) + 64;
         t3 = 16 * src[16] +  6 * src[48];
@@ -338,7 +351,8 @@ static void vc1_inv_trans_8x4_dc_c(uint8_t *dest, int linesize, int16_t *block)
     dc =  (3 * dc +  1) >> 1;
     dc = (17 * dc + 64) >> 7;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + dc);
         dest[1] = av_clip_uint8(dest[1] + dc);
         dest[2] = av_clip_uint8(dest[2] + dc);
@@ -360,7 +374,8 @@ static void vc1_inv_trans_8x4_c(uint8_t *dest, int linesize, int16_t *block)
     src = block;
     dst = block;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t1 = 12 * (src[0] + src[4]) + 4;
         t2 = 12 * (src[0] - src[4]) + 4;
         t3 = 16 * src[2] +  6 * src[6];
@@ -390,7 +405,8 @@ static void vc1_inv_trans_8x4_c(uint8_t *dest, int linesize, int16_t *block)
     }
 
     src = block;
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         t1 = 17 * (src[ 0] + src[16]) + 64;
         t2 = 17 * (src[ 0] - src[16]) + 64;
         t3 = 22 * src[ 8] + 10 * src[24];
@@ -415,7 +431,8 @@ static void vc1_inv_trans_4x8_dc_c(uint8_t *dest, int linesize, int16_t *block)
     dc = (17 * dc +  4) >> 3;
     dc = (12 * dc + 64) >> 7;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + dc);
         dest[1] = av_clip_uint8(dest[1] + dc);
         dest[2] = av_clip_uint8(dest[2] + dc);
@@ -433,7 +450,8 @@ static void vc1_inv_trans_4x8_c(uint8_t *dest, int linesize, int16_t *block)
     src = block;
     dst = block;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         t1 = 17 * (src[0] + src[2]) + 4;
         t2 = 17 * (src[0] - src[2]) + 4;
         t3 = 22 * src[1] + 10 * src[3];
@@ -449,7 +467,8 @@ static void vc1_inv_trans_4x8_c(uint8_t *dest, int linesize, int16_t *block)
     }
 
     src = block;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t1 = 12 * (src[ 0] + src[32]) + 64;
         t2 = 12 * (src[ 0] - src[32]) + 64;
         t3 = 16 * src[16] +  6 * src[48];
@@ -488,7 +507,8 @@ static void vc1_inv_trans_4x4_dc_c(uint8_t *dest, int linesize, int16_t *block)
     dc = (17 * dc +  4) >> 3;
     dc = (17 * dc + 64) >> 7;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + dc);
         dest[1] = av_clip_uint8(dest[1] + dc);
         dest[2] = av_clip_uint8(dest[2] + dc);
@@ -505,7 +525,8 @@ static void vc1_inv_trans_4x4_c(uint8_t *dest, int linesize, int16_t *block)
 
     src = block;
     dst = block;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t1 = 17 * (src[0] + src[2]) + 4;
         t2 = 17 * (src[0] - src[2]) + 4;
         t3 = 22 * src[1] + 10 * src[3];
@@ -521,7 +542,8 @@ static void vc1_inv_trans_4x4_c(uint8_t *dest, int linesize, int16_t *block)
     }
 
     src = block;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         t1 = 17 * (src[0] + src[16]) + 64;
         t2 = 17 * (src[0] - src[16]) + 64;
         t3 = 22 * src[8] + 10 * src[24];
@@ -566,9 +588,10 @@ VC1_MSPEL_FILTER_16B(hor, int16_t)
 
 /* Filter used to interpolate fractional pel values */
 static av_always_inline int vc1_mspel_filter(const uint8_t *src, int stride,
-                                             int mode, int r)
+        int mode, int r)
 {
-    switch (mode) {
+    switch (mode)
+    {
     case 0: // no shift
         return src[0];
     case 1: // 1/4 shift
@@ -576,7 +599,7 @@ static av_always_inline int vc1_mspel_filter(const uint8_t *src, int stride,
                 18 * src[stride]  -  3 * src[stride * 2] + 32 - r) >> 6;
     case 2: // 1/2 shift
         return (-1 * src[-stride] +  9 * src[0] +
-                 9 * src[stride]  -  1 * src[stride * 2] + 8 - r) >> 4;
+                9 * src[stride]  -  1 * src[stride * 2] + 8 - r) >> 4;
     case 3: // 3/4 shift
         return (-3 * src[-stride] + 18 * src[0] +
                 53 * src[stride]  -  4 * src[stride * 2] + 32 - r) >> 6;
@@ -793,7 +816,8 @@ static void put_no_rnd_vc1_chroma_mc8_c(uint8_t *dst /* align 8 */,
 
     av_assert2(x < 8 && y < 8 && x >= 0 && y >= 0);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = chroma_mc(0);
         dst[1] = chroma_mc(1);
         dst[2] = chroma_mc(2);
@@ -818,7 +842,8 @@ static void put_no_rnd_vc1_chroma_mc4_c(uint8_t *dst, uint8_t *src,
 
     av_assert2(x < 8 && y < 8 && x >= 0 && y >= 0);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = chroma_mc(0);
         dst[1] = chroma_mc(1);
         dst[2] = chroma_mc(2);
@@ -841,7 +866,8 @@ static void avg_no_rnd_vc1_chroma_mc8_c(uint8_t *dst /* align 8 */,
 
     av_assert2(x < 8 && y < 8 && x >= 0 && y >= 0);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = avg2(dst[0], chroma_mc(0));
         dst[1] = avg2(dst[1], chroma_mc(1));
         dst[2] = avg2(dst[2], chroma_mc(2));
@@ -867,7 +893,8 @@ static void avg_no_rnd_vc1_chroma_mc4_c(uint8_t *dst /* align 8 */,
 
     av_assert2(x < 8 && y < 8 && x >= 0 && y >= 0);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         dst[0] = avg2(dst[0], chroma_mc(0));
         dst[1] = avg2(dst[1], chroma_mc(1));
         dst[2] = avg2(dst[2], chroma_mc(2));
@@ -882,7 +909,8 @@ static void avg_no_rnd_vc1_chroma_mc4_c(uint8_t *dst /* align 8 */,
 static void sprite_h_c(uint8_t *dst, const uint8_t *src, int offset,
                        int advance, int count)
 {
-    while (count--) {
+    while (count--)
+    {
         int a = src[(offset >> 16)];
         int b = src[(offset >> 16) + 1];
         *dst++  = a + ((b - a) * (offset & 0xFFFF) >> 16);
@@ -891,26 +919,30 @@ static void sprite_h_c(uint8_t *dst, const uint8_t *src, int offset,
 }
 
 static av_always_inline void sprite_v_template(uint8_t *dst,
-                                               const uint8_t *src1a,
-                                               const uint8_t *src1b,
-                                               int offset1,
-                                               int two_sprites,
-                                               const uint8_t *src2a,
-                                               const uint8_t *src2b,
-                                               int offset2,
-                                               int alpha, int scaled,
-                                               int width)
+        const uint8_t *src1a,
+        const uint8_t *src1b,
+        int offset1,
+        int two_sprites,
+        const uint8_t *src2a,
+        const uint8_t *src2b,
+        int offset2,
+        int alpha, int scaled,
+        int width)
 {
     int a1, b1, a2, b2;
-    while (width--) {
+    while (width--)
+    {
         a1 = *src1a++;
-        if (scaled) {
+        if (scaled)
+        {
             b1 = *src1b++;
             a1 = a1 + ((b1 - a1) * offset1 >> 16);
         }
-        if (two_sprites) {
+        if (two_sprites)
+        {
             a2 = *src2a++;
-            if (scaled > 1) {
+            if (scaled > 1)
+            {
                 b2 = *src2b++;
                 a2 = a2 + ((b2 - a2) * offset2 >> 16);
             }

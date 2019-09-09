@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,34 +14,42 @@
 #include "webrtc/base/asyncsocket.h"
 #include "webrtc/base/sslstreamadapter.h"
 
-namespace rtc {
+namespace rtc
+{
 
 ///////////////////////////////////////////////////////////////////////////////
 
-class SSLAdapter : public AsyncSocketAdapter {
- public:
-  explicit SSLAdapter(AsyncSocket* socket)
-    : AsyncSocketAdapter(socket), ignore_bad_cert_(false) { }
+class SSLAdapter : public AsyncSocketAdapter
+{
+public:
+    explicit SSLAdapter(AsyncSocket* socket)
+        : AsyncSocketAdapter(socket), ignore_bad_cert_(false) { }
 
-  bool ignore_bad_cert() const { return ignore_bad_cert_; }
-  void set_ignore_bad_cert(bool ignore) { ignore_bad_cert_ = ignore; }
+    bool ignore_bad_cert() const
+    {
+        return ignore_bad_cert_;
+    }
+    void set_ignore_bad_cert(bool ignore)
+    {
+        ignore_bad_cert_ = ignore;
+    }
 
-  // Do DTLS or TLS (default is TLS, if unspecified)
-  virtual void SetMode(SSLMode mode) = 0;
+    // Do DTLS or TLS (default is TLS, if unspecified)
+    virtual void SetMode(SSLMode mode) = 0;
 
-  // StartSSL returns 0 if successful.
-  // If StartSSL is called while the socket is closed or connecting, the SSL
-  // negotiation will begin as soon as the socket connects.
-  virtual int StartSSL(const char* hostname, bool restartable) = 0;
+    // StartSSL returns 0 if successful.
+    // If StartSSL is called while the socket is closed or connecting, the SSL
+    // negotiation will begin as soon as the socket connects.
+    virtual int StartSSL(const char* hostname, bool restartable) = 0;
 
-  // Create the default SSL adapter for this platform. On failure, returns NULL
-  // and deletes |socket|. Otherwise, the returned SSLAdapter takes ownership
-  // of |socket|.
-  static SSLAdapter* Create(AsyncSocket* socket);
+    // Create the default SSL adapter for this platform. On failure, returns NULL
+    // and deletes |socket|. Otherwise, the returned SSLAdapter takes ownership
+    // of |socket|.
+    static SSLAdapter* Create(AsyncSocket* socket);
 
- private:
-  // If true, the server certificate need not match the configured hostname.
-  bool ignore_bad_cert_;
+private:
+    // If true, the server certificate need not match the configured hostname.
+    bool ignore_bad_cert_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

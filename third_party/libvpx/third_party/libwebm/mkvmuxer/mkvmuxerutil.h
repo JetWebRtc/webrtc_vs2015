@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The WebM project authors. All Rights Reserved.
+﻿// Copyright (c) 2012 The WebM project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
 // that can be found in the LICENSE file in the root of the source
@@ -12,7 +12,8 @@
 
 #include "stdint.h"
 
-namespace mkvmuxer {
+namespace mkvmuxer
+{
 class Cluster;
 class Frame;
 class IMkvWriter;

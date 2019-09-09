@@ -28,7 +28,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/opt.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     const char *linebreaks;
     int keep_ass_markup;
@@ -36,7 +37,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(TextContext, x)
 #define SD AV_OPT_FLAG_SUBTITLE_PARAM | AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "keep_ass_markup", "Set if ASS tags must be escaped", OFFSET(keep_ass_markup), AV_OPT_TYPE_INT,    {.i64=0}, 0, 1, .flags=SD },
     { NULL }
 };
@@ -49,12 +51,19 @@ static int text_decode_frame(AVCodecContext *avctx, void *data,
     AVSubtitle *sub = data;
     const char *ptr = avpkt->data;
     const TextContext *text = avctx->priv_data;
-    const int ts_start     = av_rescale_q(avpkt->pts,      avctx->time_base, (AVRational){1,100});
+    const int ts_start     = av_rescale_q(avpkt->pts,      avctx->time_base, (AVRational)
+    {
+        1,100
+    });
     const int ts_duration  = avpkt->duration != -1 ?
-                             av_rescale_q(avpkt->duration, avctx->time_base, (AVRational){1,100}) : -1;
+                             av_rescale_q(avpkt->duration, avctx->time_base, (AVRational)
+    {
+        1,100
+    }) : -1;
 
-    av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
-    if (ptr && avpkt->size > 0 && *ptr) {
+        av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
+        if (ptr && avpkt->size > 0 && *ptr)
+    {
         ff_ass_bprint_text_event(&buf, ptr, avpkt->size, text->linebreaks, text->keep_ass_markup);
         ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_duration);
     }
@@ -76,7 +85,8 @@ static int text_decode_frame(AVCodecContext *avctx, void *data,
 #define text_options options
 DECLARE_CLASS(text);
 
-AVCodec ff_text_decoder = {
+AVCodec ff_text_decoder =
+{
     .name           = "text",
     .long_name      = NULL_IF_CONFIG_SMALL("Raw text subtitle"),
     .priv_data_size = sizeof(TextContext),
@@ -101,7 +111,8 @@ static int linebreak_init(AVCodecContext *avctx)
 #define vplayer_options options
 DECLARE_CLASS(vplayer);
 
-AVCodec ff_vplayer_decoder = {
+AVCodec ff_vplayer_decoder =
+{
     .name           = "vplayer",
     .long_name      = NULL_IF_CONFIG_SMALL("VPlayer subtitle"),
     .priv_data_size = sizeof(TextContext),
@@ -117,7 +128,8 @@ AVCodec ff_vplayer_decoder = {
 #define stl_options options
 DECLARE_CLASS(stl);
 
-AVCodec ff_stl_decoder = {
+AVCodec ff_stl_decoder =
+{
     .name           = "stl",
     .long_name      = NULL_IF_CONFIG_SMALL("Spruce subtitle format"),
     .priv_data_size = sizeof(TextContext),
@@ -133,7 +145,8 @@ AVCodec ff_stl_decoder = {
 #define pjs_options options
 DECLARE_CLASS(pjs);
 
-AVCodec ff_pjs_decoder = {
+AVCodec ff_pjs_decoder =
+{
     .name           = "pjs",
     .long_name      = NULL_IF_CONFIG_SMALL("PJS subtitle"),
     .priv_data_size = sizeof(TextContext),
@@ -149,7 +162,8 @@ AVCodec ff_pjs_decoder = {
 #define subviewer1_options options
 DECLARE_CLASS(subviewer1);
 
-AVCodec ff_subviewer1_decoder = {
+AVCodec ff_subviewer1_decoder =
+{
     .name           = "subviewer1",
     .long_name      = NULL_IF_CONFIG_SMALL("SubViewer1 subtitle"),
     .priv_data_size = sizeof(TextContext),

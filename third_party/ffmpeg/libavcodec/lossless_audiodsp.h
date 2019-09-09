@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Monkey's Audio lossless audio decoder
  * Copyright (c) 2007 Benjamin Zores <ben@geexbox.org>
  *  based upon libdemac from Dave Chapman.
@@ -25,7 +25,8 @@
 
 #include <stdint.h>
 
-typedef struct LLAudDSPContext {
+typedef struct LLAudDSPContext
+{
     /**
      * Calculate scalar product of v1 and v2,
      * and v1[i] += v3[i] * mul

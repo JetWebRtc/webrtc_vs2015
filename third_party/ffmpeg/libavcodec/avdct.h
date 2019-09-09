@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,7 +26,8 @@
  * @note function pointers can be NULL if the specific features have been
  *       disabled at build time.
  */
-typedef struct AVDCT {
+typedef struct AVDCT
+{
     const AVClass *av_class;
 
     void (*idct)(int16_t *block /* align 16 */);

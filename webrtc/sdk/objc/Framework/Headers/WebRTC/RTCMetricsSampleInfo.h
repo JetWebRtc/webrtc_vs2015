@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,17 +17,17 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCMetricsSampleInfo : NSObject
 
-/**
- * Example of RTCMetricsSampleInfo:
- * name: "WebRTC.Video.InputFramesPerSecond"
- * min: 1
- * max: 100
- * bucketCount: 50
- * samples: [29]:2 [30]:1
- */
+    /**
+     * Example of RTCMetricsSampleInfo:
+     * name: "WebRTC.Video.InputFramesPerSecond"
+     * min: 1
+     * max: 100
+     * bucketCount: 50
+     * samples: [29]:2 [30]:1
+     */
 
-/** The name of the histogram. */
-@property(nonatomic, readonly) NSString *name;
+    /** The name of the histogram. */
+    @property(nonatomic, readonly) NSString *name;
 
 /** The minimum bucket value. */
 @property(nonatomic, readonly) int min;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW MPEG video demuxer
  * Copyright (c) 2002-2003 Fabrice Bellard
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
@@ -42,10 +42,13 @@ static int mpegvideo_probe(AVProbeData *p)
     uint32_t last = 0;
     int j;
 
-    while (ptr < end) {
+    while (ptr < end)
+    {
         ptr = avpriv_find_start_code(ptr, end, &code);
-        if ((code & 0xffffff00) == 0x100) {
-            switch(code){
+        if ((code & 0xffffff00) == 0x100)
+        {
+            switch(code)
+            {
             case     SEQ_START_CODE:
                 if (!(ptr[3 + 1 + 2] & 0x20))
                     break;
@@ -61,17 +64,26 @@ static int mpegvideo_probe(AVProbeData *p)
                 if (AV_RB24(ptr + j + 9) & 0xFFFFFE)
                     break;
                 seq++;
-            break;
-            case PICTURE_START_CODE:   pic++; break;
-            case    PACK_START_CODE: pspack++; break;
+                break;
+            case PICTURE_START_CODE:
+                pic++;
+                break;
+            case    PACK_START_CODE:
+                pspack++;
+                break;
             case              0x1b6:
-                                        res++; break;
+                res++;
+                break;
             }
-            if (code >= SLICE_START_CODE && code <= 0x1af) {
-                if (last >= SLICE_START_CODE && last <= 0x1af) {
+            if (code >= SLICE_START_CODE && code <= 0x1af)
+            {
+                if (last >= SLICE_START_CODE && last <= 0x1af)
+                {
                     if (code >= last) slice++;
                     else              sicle++;
-                }else{
+                }
+                else
+                {
                     if (code == SLICE_START_CODE) slice++;
                     else                          sicle++;
                 }
@@ -81,7 +93,8 @@ static int mpegvideo_probe(AVProbeData *p)
             last = code;
         }
     }
-    if(seq && seq*9<=pic*10 && pic*9<=slice*10 && !pspack && !apes && !res && slice > sicle) {
+    if(seq && seq*9<=pic*10 && pic*9<=slice*10 && !pspack && !apes && !res && slice > sicle)
+    {
         if(vpes) return AVPROBE_SCORE_EXTENSION / 4;
         else     return pic>1 ? AVPROBE_SCORE_EXTENSION + 1 : AVPROBE_SCORE_EXTENSION / 2; // +1 for .mpg
     }

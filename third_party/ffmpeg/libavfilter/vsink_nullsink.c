@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -26,7 +26,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
     return 0;
 }
 
-static const AVFilterPad avfilter_vsink_nullsink_inputs[] = {
+static const AVFilterPad avfilter_vsink_nullsink_inputs[] =
+{
     {
         .name        = "default",
         .type        = AVMEDIA_TYPE_VIDEO,
@@ -35,7 +36,8 @@ static const AVFilterPad avfilter_vsink_nullsink_inputs[] = {
     { NULL },
 };
 
-AVFilter ff_vsink_nullsink = {
+AVFilter ff_vsink_nullsink =
+{
     .name        = "nullsink",
     .description = NULL_IF_CONFIG_SMALL("Do absolutely nothing with the input video."),
 

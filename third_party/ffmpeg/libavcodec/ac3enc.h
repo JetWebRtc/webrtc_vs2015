@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AC-3 encoder & E-AC-3 encoder common header
  * Copyright (c) 2000 Fabrice Bellard
  * Copyright (c) 2006-2010 Justin Ruggles <justin.ruggles@gmail.com>
@@ -95,7 +95,8 @@ typedef int64_t CoefSumType;
 /**
  * Encoding Options used by AVOption.
  */
-typedef struct AC3EncOptions {
+typedef struct AC3EncOptions
+{
     /* AC-3 metadata options*/
     int dialogue_level;
     int bitstream_mode;
@@ -130,7 +131,8 @@ typedef struct AC3EncOptions {
 /**
  * Data for a single audio block.
  */
-typedef struct AC3Block {
+typedef struct AC3Block
+{
     CoefType **mdct_coef;                       ///< MDCT coefficients
     int32_t  **fixed_coef;                      ///< fixed-point MDCT coefficients
     uint8_t  **exp;                             ///< original exponents
@@ -159,7 +161,8 @@ typedef struct AC3Block {
 /**
  * AC-3 encoder private context.
  */
-typedef struct AC3EncodeContext {
+typedef struct AC3EncodeContext
+{
     AVClass *av_class;                      ///< AVClass used for AVOption
     AC3EncOptions options;                  ///< encoding options
     AVCodecContext *avctx;                  ///< parent AVCodecContext

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -9,9 +9,11 @@
  */
 #include "webrtc/modules/video_coding/utility/vp8_header_parser.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  int qp;
-  vp8::GetQp(data, size, &qp);
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    int qp;
+    vp8::GetQp(data, size, &qp);
 }
 }  // namespace webrtc

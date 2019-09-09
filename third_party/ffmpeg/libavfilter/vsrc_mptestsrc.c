@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -35,7 +35,8 @@
 #define WIDTH 512
 #define HEIGHT 512
 
-enum test_type {
+enum test_type
+{
     TEST_DC_LUMA,
     TEST_DC_CHROMA,
     TEST_FREQ_LUMA,
@@ -50,7 +51,8 @@ enum test_type {
     TEST_NB
 };
 
-typedef struct MPTestContext {
+typedef struct MPTestContext
+{
     const AVClass *class;
     AVRational frame_rate;
     int64_t pts, max_pts, duration;
@@ -60,7 +62,8 @@ typedef struct MPTestContext {
 
 #define OFFSET(x) offsetof(MPTestContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption mptestsrc_options[]= {
+static const AVOption mptestsrc_options[]=
+{
     { "rate",     "set video rate",     OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, FLAGS },
     { "r",        "set video rate",     OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, FLAGS },
     { "duration", "set video duration", OFFSET(duration), AV_OPT_TYPE_DURATION, {.i64 = -1}, -1, INT64_MAX, FLAGS },
@@ -68,17 +71,17 @@ static const AVOption mptestsrc_options[]= {
 
     { "test", "set test to perform", OFFSET(test),  AV_OPT_TYPE_INT,   {.i64=TEST_ALL}, 0, INT_MAX, FLAGS, "test" },
     { "t",    "set test to perform", OFFSET(test),  AV_OPT_TYPE_INT,   {.i64=TEST_ALL}, 0, INT_MAX, FLAGS, "test" },
-        { "dc_luma",     "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_DC_LUMA},     INT_MIN, INT_MAX, FLAGS, "test" },
-        { "dc_chroma",   "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_DC_CHROMA},   INT_MIN, INT_MAX, FLAGS, "test" },
-        { "freq_luma",   "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_FREQ_LUMA},   INT_MIN, INT_MAX, FLAGS, "test" },
-        { "freq_chroma", "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_FREQ_CHROMA}, INT_MIN, INT_MAX, FLAGS, "test" },
-        { "amp_luma",    "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_AMP_LUMA},    INT_MIN, INT_MAX, FLAGS, "test" },
-        { "amp_chroma",  "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_AMP_CHROMA},  INT_MIN, INT_MAX, FLAGS, "test" },
-        { "cbp",         "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_CBP},         INT_MIN, INT_MAX, FLAGS, "test" },
-        { "mv",          "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_MV},          INT_MIN, INT_MAX, FLAGS, "test" },
-        { "ring1",       "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_RING1},       INT_MIN, INT_MAX, FLAGS, "test" },
-        { "ring2",       "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_RING2},       INT_MIN, INT_MAX, FLAGS, "test" },
-        { "all",         "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_ALL},         INT_MIN, INT_MAX, FLAGS, "test" },
+    { "dc_luma",     "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_DC_LUMA},     INT_MIN, INT_MAX, FLAGS, "test" },
+    { "dc_chroma",   "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_DC_CHROMA},   INT_MIN, INT_MAX, FLAGS, "test" },
+    { "freq_luma",   "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_FREQ_LUMA},   INT_MIN, INT_MAX, FLAGS, "test" },
+    { "freq_chroma", "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_FREQ_CHROMA}, INT_MIN, INT_MAX, FLAGS, "test" },
+    { "amp_luma",    "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_AMP_LUMA},    INT_MIN, INT_MAX, FLAGS, "test" },
+    { "amp_chroma",  "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_AMP_CHROMA},  INT_MIN, INT_MAX, FLAGS, "test" },
+    { "cbp",         "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_CBP},         INT_MIN, INT_MAX, FLAGS, "test" },
+    { "mv",          "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_MV},          INT_MIN, INT_MAX, FLAGS, "test" },
+    { "ring1",       "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_RING1},       INT_MIN, INT_MAX, FLAGS, "test" },
+    { "ring2",       "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_RING2},       INT_MIN, INT_MAX, FLAGS, "test" },
+    { "all",         "", 0, AV_OPT_TYPE_CONST, {.i64=TEST_ALL},         INT_MIN, INT_MAX, FLAGS, "test" },
     { NULL }
 };
 
@@ -90,7 +93,8 @@ static void init_idct(void)
 {
     int i, j;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         double s = i == 0 ? sqrt(0.125) : 0.5;
 
         for (j = 0; j < 8; j++)
@@ -103,8 +107,10 @@ static void idct(uint8_t *dst, int dst_linesize, int src[64])
     int i, j, k;
     double tmp[64];
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             double sum = 0.0;
 
             for (k = 0; k < 8; k++)
@@ -114,8 +120,10 @@ static void idct(uint8_t *dst, int dst_linesize, int src[64])
         }
     }
 
-    for (j = 0; j < 8; j++) {
-        for (i = 0; i < 8; i++) {
+    for (j = 0; j < 8; j++)
+    {
+        for (i = 0; i < 8; i++)
+        {
             double sum = 0.0;
 
             for (k = 0; k < 8; k++)
@@ -161,8 +169,10 @@ static void dc_test(uint8_t *dst, int dst_linesize, int w, int h, int off)
     const int step = FFMAX(256/(w*h/256), 1);
     int x, y, color = off;
 
-    for (y = 0; y < h; y += 16) {
-        for (x = 0; x < w; x += 16) {
+    for (y = 0; y < h; y += 16)
+    {
+        for (x = 0; x < w; x += 16)
+        {
             draw_dc(dst + x + y*dst_linesize, dst_linesize, color, 8, 8);
             color += step;
         }
@@ -173,8 +183,10 @@ static void freq_test(uint8_t *dst, int dst_linesize, int off)
 {
     int x, y, freq = 0;
 
-    for (y = 0; y < 8*16; y += 16) {
-        for (x = 0; x < 8*16; x += 16) {
+    for (y = 0; y < 8*16; y += 16)
+    {
+        for (x = 0; x < 8*16; x += 16)
+        {
             draw_basis(dst + x + y*dst_linesize, dst_linesize, 4*(96+off), freq, 128*8);
             freq++;
         }
@@ -185,8 +197,10 @@ static void amp_test(uint8_t *dst, int dst_linesize, int off)
 {
     int x, y, amp = off;
 
-    for (y = 0; y < 16*16; y += 16) {
-        for (x = 0; x < 16*16; x += 16) {
+    for (y = 0; y < 16*16; y += 16)
+    {
+        for (x = 0; x < 16*16; x += 16)
+        {
             draw_basis(dst + x + y*dst_linesize, dst_linesize, 4*amp, 1, 128*8);
             amp++;
         }
@@ -197,8 +211,10 @@ static void cbp_test(uint8_t *dst[3], int dst_linesize[3], int off)
 {
     int x, y, cbp = 0;
 
-    for (y = 0; y < 16*8; y += 16) {
-        for (x = 0; x < 16*8; x += 16) {
+    for (y = 0; y < 16*8; y += 16)
+    {
+        for (x = 0; x < 16*8; x += 16)
+        {
             uint8_t *dst1[3];
             dst1[0] = dst[0] + x*2 + y*2*dst_linesize[0];
             dst1[1] = dst[1] + x   + y*  dst_linesize[1];
@@ -214,7 +230,8 @@ static void mv_test(uint8_t *dst, int dst_linesize, int off)
 {
     int x, y;
 
-    for (y = 0; y < 16*16; y++) {
+    for (y = 0; y < 16*16; y++)
+    {
         if (y&16)
             continue;
         for (x = 0; x < 16*16; x++)
@@ -226,8 +243,10 @@ static void ring1_test(uint8_t *dst, int dst_linesize, int off)
 {
     int x, y, color = 0;
 
-    for (y = off; y < 16*16; y += 16) {
-        for (x = off; x < 16*16; x += 16) {
+    for (y = off; y < 16*16; y += 16)
+    {
+        for (x = off; x < 16*16; x += 16)
+        {
             draw_dc(dst + x + y*dst_linesize, dst_linesize, ((x+y)&16) ? color : -color, 16, 16);
             color++;
         }
@@ -238,14 +257,19 @@ static void ring2_test(uint8_t *dst, int dst_linesize, int off)
 {
     int x, y;
 
-    for (y = 0; y < 16*16; y++) {
-        for (x = 0; x < 16*16; x++) {
+    for (y = 0; y < 16*16; y++)
+    {
+        for (x = 0; x < 16*16; x++)
+        {
             double d = sqrt((x-8*16)*(x-8*16) + (y-8*16)*(y-8*16));
             double r = d/20 - (int)(d/20);
-            if (r < off/30.0) {
+            if (r < off/30.0)
+            {
                 dst[x + y*dst_linesize]     = 255;
                 dst[x + y*dst_linesize+256] = 0;
-            } else {
+            }
+            else
+            {
                 dst[x + y*dst_linesize]     = x;
                 dst[x + y*dst_linesize+256] = x;
             }
@@ -258,7 +282,7 @@ static av_cold int init(AVFilterContext *ctx)
     MPTestContext *test = ctx->priv;
 
     test->max_pts = test->duration >= 0 ?
-        av_rescale_q(test->duration, AV_TIME_BASE_Q, av_inv_q(test->frame_rate)) : -1;
+                    av_rescale_q(test->duration, AV_TIME_BASE_Q, av_inv_q(test->frame_rate)) : -1;
     test->pts = 0;
 
     av_log(ctx, AV_LOG_VERBOSE, "rate:%d/%d duration:%f\n",
@@ -287,7 +311,8 @@ static int config_props(AVFilterLink *outlink)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE
     };
 
@@ -317,7 +342,8 @@ static int request_frame(AVFilterLink *outlink)
     // clean image
     for (i = 0; i < h; i++)
         memset(picref->data[0] + i*picref->linesize[0], 0, w);
-    for (i = 0; i < ch; i++) {
+    for (i = 0; i < ch; i++)
+    {
         memset(picref->data[1] + i*picref->linesize[1], 128, cw);
         memset(picref->data[2] + i*picref->linesize[2], 128, cw);
     }
@@ -325,23 +351,45 @@ static int request_frame(AVFilterLink *outlink)
     if (tt == TEST_ALL && frame%30) /* draw a black frame at the beginning of each test */
         tt = (frame/30)%(TEST_NB-1);
 
-    switch (tt) {
-    case TEST_DC_LUMA:       dc_test(picref->data[0], picref->linesize[0], 256, 256, frame%30); break;
-    case TEST_DC_CHROMA:     dc_test(picref->data[1], picref->linesize[1], 256, 256, frame%30); break;
-    case TEST_FREQ_LUMA:   freq_test(picref->data[0], picref->linesize[0], frame%30); break;
-    case TEST_FREQ_CHROMA: freq_test(picref->data[1], picref->linesize[1], frame%30); break;
-    case TEST_AMP_LUMA:     amp_test(picref->data[0], picref->linesize[0], frame%30); break;
-    case TEST_AMP_CHROMA:   amp_test(picref->data[1], picref->linesize[1], frame%30); break;
-    case TEST_CBP:          cbp_test(picref->data   , picref->linesize   , frame%30); break;
-    case TEST_MV:            mv_test(picref->data[0], picref->linesize[0], frame%30); break;
-    case TEST_RING1:      ring1_test(picref->data[0], picref->linesize[0], frame%30); break;
-    case TEST_RING2:      ring2_test(picref->data[0], picref->linesize[0], frame%30); break;
+    switch (tt)
+    {
+    case TEST_DC_LUMA:
+        dc_test(picref->data[0], picref->linesize[0], 256, 256, frame%30);
+        break;
+    case TEST_DC_CHROMA:
+        dc_test(picref->data[1], picref->linesize[1], 256, 256, frame%30);
+        break;
+    case TEST_FREQ_LUMA:
+        freq_test(picref->data[0], picref->linesize[0], frame%30);
+        break;
+    case TEST_FREQ_CHROMA:
+        freq_test(picref->data[1], picref->linesize[1], frame%30);
+        break;
+    case TEST_AMP_LUMA:
+        amp_test(picref->data[0], picref->linesize[0], frame%30);
+        break;
+    case TEST_AMP_CHROMA:
+        amp_test(picref->data[1], picref->linesize[1], frame%30);
+        break;
+    case TEST_CBP:
+        cbp_test(picref->data   , picref->linesize   , frame%30);
+        break;
+    case TEST_MV:
+        mv_test(picref->data[0], picref->linesize[0], frame%30);
+        break;
+    case TEST_RING1:
+        ring1_test(picref->data[0], picref->linesize[0], frame%30);
+        break;
+    case TEST_RING2:
+        ring2_test(picref->data[0], picref->linesize[0], frame%30);
+        break;
     }
 
     return ff_filter_frame(outlink, picref);
 }
 
-static const AVFilterPad mptestsrc_outputs[] = {
+static const AVFilterPad mptestsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -351,7 +399,8 @@ static const AVFilterPad mptestsrc_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_mptestsrc = {
+AVFilter ff_vsrc_mptestsrc =
+{
     .name          = "mptestsrc",
     .description   = NULL_IF_CONFIG_SMALL("Generate various test pattern."),
     .priv_size     = sizeof(MPTestContext),

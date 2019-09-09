@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -78,7 +78,7 @@ private:
     static void PaSourceInfoCallback(pa_context *c, const pa_source_info *i,
                                      int eol, void *pThis);
     static void
-        PaSetVolumeCallback(pa_context* /*c*/, int success, void* /*pThis*/);
+    PaSetVolumeCallback(pa_context* /*c*/, int success, void* /*pThis*/);
     void PaSinkInfoCallbackHandler(const pa_sink_info *i, int eol);
     void PaSinkInputInfoCallbackHandler(const pa_sink_input_info *i, int eol);
     void PaSourceInfoCallbackHandler(const pa_source_info *i, int eol);

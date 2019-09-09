@@ -1,4 +1,4 @@
-/******************************Module*Header**********************************\
+﻿/******************************Module*Header**********************************\
 *
 * Module Name: d3dkmthk.h
 *
@@ -39,7 +39,7 @@ typedef struct _D3DKMT_CREATEDEVICE
 typedef struct _D3DKMT_DESTROYDEVICE
 {
     D3DKMT_HANDLE     hDevice;              // in: Indentifies the device
-}D3DKMT_DESTROYDEVICE;
+} D3DKMT_DESTROYDEVICE;
 
 typedef enum _D3DKMT_CLIENTHINT
 {
@@ -106,7 +106,7 @@ typedef struct _D3DKMT_LOCK
 {
     D3DKMT_HANDLE       hDevice;            // in: identifies the device
     D3DKMT_HANDLE       hAllocation;        // in: allocation to lock
-                                            // out: New handle representing the allocation after the lock.
+    // out: New handle representing the allocation after the lock.
     UINT                PrivateDriverData;  // in: Used by UMD for AcquireAperture
     UINT                NumPages;
     CONST UINT*         pPages;
@@ -240,9 +240,9 @@ typedef struct _D3DKMT_PRESENT
     D3DDDI_FLIPINTERVAL_TYPE        FlipInterval;       // in: flip interval
     D3DKMT_PRESENTFLAGS             Flags;              // in:
     ULONG                           BroadcastContextCount;                          // in: Specifies the number of context
-                                                                                    //     to broadcast this command buffer to.
+    //     to broadcast this command buffer to.
     D3DKMT_HANDLE                   BroadcastContext[D3DDDI_MAX_BROADCAST_CONTEXT]; // in: Specifies the handle of the context to
-                                                                                    //     broadcast to.
+    //     broadcast to.
 } D3DKMT_PRESENT;
 
 typedef struct _D3DKMT_RENDERFLAGS
@@ -268,19 +268,19 @@ typedef struct _D3DKMT_RENDER
     UINT                            PatchLocationCount;         // in: Number of patch locations in patch allocation list.
     VOID*                           pNewCommandBuffer;          // out: Pointer to the next command buffer to use.
     UINT                            NewCommandBufferSize;       // in: Size requested for the next command buffer.
-                                                                // out: Size of the next command buffer to use.
+    // out: Size of the next command buffer to use.
     D3DDDI_ALLOCATIONLIST*          pNewAllocationList;         // out: Pointer to the next allocation list to use.
     UINT                            NewAllocationListSize;      // in: Size requested for the next allocation list.
-                                                                // out: Size of the new allocation list.
+    // out: Size of the new allocation list.
     D3DDDI_PATCHLOCATIONLIST*       pNewPatchLocationList;      // out: Pointer to the next patch location list.
     UINT                            NewPatchLocationListSize;   // in: Size requested for the next patch location list.
-                                                                // out: Size of the new patch location list.
+    // out: Size of the new patch location list.
     D3DKMT_RENDERFLAGS              Flags;                      // in:
     ULONGLONG                       PresentHistoryToken;        // in: Present history token for redirected present calls
     ULONG                           BroadcastContextCount;                          // in: Specifies the number of context
-                                                                                    //     to broadcast this command buffer to.
+    //     to broadcast this command buffer to.
     D3DKMT_HANDLE                   BroadcastContext[D3DDDI_MAX_BROADCAST_CONTEXT]; // in: Specifies the handle of the context to
-                                                                                    //     broadcast to.
+    //     broadcast to.
     ULONG                           QueuedBufferCount;          // out: Number of DMA buffer queued to this context after this submission.
 } D3DKMT_RENDER;
 
@@ -294,33 +294,33 @@ typedef struct _D3DKMT_CREATEALLOCATIONFLAGS
 
 typedef struct _D3DKMT_CREATEALLOCATION
 {
-                                            D3DKMT_HANDLE                   hDevice;
-                                            D3DKMT_HANDLE                   hResource;      //in/out:valid only within device
-                                            D3DKMT_HANDLE                   hGlobalShare;   //out:Shared handle if CreateShared
+    D3DKMT_HANDLE                   hDevice;
+    D3DKMT_HANDLE                   hResource;      //in/out:valid only within device
+    D3DKMT_HANDLE                   hGlobalShare;   //out:Shared handle if CreateShared
     __field_bcount(PrivateRuntimeDataSize)  CONST VOID*                     pPrivateRuntimeData;
-                                            UINT                            PrivateRuntimeDataSize;
+    UINT                            PrivateRuntimeDataSize;
     __field_bcount(PrivateDriverDataSize)   CONST VOID*                     pPrivateDriverData;
-                                            UINT                            PrivateDriverDataSize;
-                                            UINT                            NumAllocations;
-   __field_ecount(NumAllocations)           D3DDDI_ALLOCATIONINFO*          pAllocationInfo;
-                                            D3DKMT_CREATEALLOCATIONFLAGS    Flags;
-                                            HANDLE                          hPrivateRuntimeResourceHandle; // opaque handle used for event tracing
+    UINT                            PrivateDriverDataSize;
+    UINT                            NumAllocations;
+    __field_ecount(NumAllocations)           D3DDDI_ALLOCATIONINFO*          pAllocationInfo;
+    D3DKMT_CREATEALLOCATIONFLAGS    Flags;
+    HANDLE                          hPrivateRuntimeResourceHandle; // opaque handle used for event tracing
 } D3DKMT_CREATEALLOCATION;
 
 typedef struct _D3DKMT_OPENRESOURCE
 {
-                                                        D3DKMT_HANDLE               hDevice;                            // in : Indentifies the device
-                                                        D3DKMT_HANDLE               hGlobalShare;                       // in : Shared resource handle
-                                                        UINT                        NumAllocations;                     // in : Number of allocations associated with the resource
+    D3DKMT_HANDLE               hDevice;                            // in : Indentifies the device
+    D3DKMT_HANDLE               hGlobalShare;                       // in : Shared resource handle
+    UINT                        NumAllocations;                     // in : Number of allocations associated with the resource
     __field_ecount(NumAllocations)                      D3DDDI_OPENALLOCATIONINFO*  pOpenAllocationInfo;                // in : Array of open allocation structs
     __field_bcount(PrivateRuntimeDataSize)              VOID*                       pPrivateRuntimeData;                // in : Caller supplied buffer where the runtime private data associated with this resource will be copied
-                                                        UINT                        PrivateRuntimeDataSize;             // in : Size in bytes of the pPrivateRuntimeData buffer
+    UINT                        PrivateRuntimeDataSize;             // in : Size in bytes of the pPrivateRuntimeData buffer
     __field_bcount(ResourcePrivateDriverDataSize)       VOID*                       pResourcePrivateDriverData;         // in : Caller supplied buffer where the driver private data associated with the resource will be copied
-                                                        UINT                        ResourcePrivateDriverDataSize;      // in : Size in bytes of the pResourcePrivateDriverData buffer
+    UINT                        ResourcePrivateDriverDataSize;      // in : Size in bytes of the pResourcePrivateDriverData buffer
     __field_bcount(TotalPrivateDriverDataBufferSize)    VOID*                       pTotalPrivateDriverDataBuffer;      // in : Caller supplied buffer where the Driver private data will be stored
-                                                        UINT                        TotalPrivateDriverDataBufferSize;   // in/out : Size in bytes of pTotalPrivateDriverDataBuffer / Size in bytes of data written to pTotalPrivateDriverDataBuffer
-                                                        D3DKMT_HANDLE               hResource;                          // out : Handle for this resource in this process
-}D3DKMT_OPENRESOURCE;
+    UINT                        TotalPrivateDriverDataBufferSize;   // in/out : Size in bytes of pTotalPrivateDriverDataBuffer / Size in bytes of data written to pTotalPrivateDriverDataBuffer
+    D3DKMT_HANDLE               hResource;                          // out : Handle for this resource in this process
+} D3DKMT_OPENRESOURCE;
 
 typedef struct _D3DKMT_QUERYRESOURCEINFO
 {
@@ -331,7 +331,7 @@ typedef struct _D3DKMT_QUERYRESOURCEINFO
     UINT            TotalPrivateDriverDataSize;     // out : Size in bytes of buffer required to hold all the DriverPrivate data for all of the allocations associated withe the resource
     UINT            ResourcePrivateDriverDataSize;  // out : Size in bytes of the driver's resource private data
     UINT            NumAllocations;                 // out : Number of allocations associated with this resource
-}D3DKMT_QUERYRESOURCEINFO;
+} D3DKMT_QUERYRESOURCEINFO;
 
 typedef struct _D3DKMT_DESTROYALLOCATION
 {
@@ -450,18 +450,18 @@ typedef struct _D3DKMT_CURRENTDISPLAYMODE
 
 typedef enum _KMTQUERYADAPTERINFOTYPE
 {
-     KMTQAITYPE_UMDRIVERPRIVATE         =  0,
-     KMTQAITYPE_UMDRIVERNAME            =  1,
-     KMTQAITYPE_UMOPENGLINFO            =  2,
-     KMTQAITYPE_GETSEGMENTSIZE          =  3,
-     KMTQAITYPE_ADAPTERGUID             =  4,
-     KMTQAITYPE_FLIPQUEUEINFO           =  5,
-     KMTQAITYPE_ADAPTERADDRESS          =  6,
-     KMTQAITYPE_SETWORKINGSETINFO       =  7,
-     KMTQAITYPE_ADAPTERREGISTRYINFO     =  8,
-     KMTQAITYPE_CURRENTDISPLAYMODE      =  9,
-     KMTQAITYPE_MODELIST                = 10,
-     KMTQAITYPE_CHECKDRIVERUPDATESTATUS = 11,
+    KMTQAITYPE_UMDRIVERPRIVATE         =  0,
+    KMTQAITYPE_UMDRIVERNAME            =  1,
+    KMTQAITYPE_UMOPENGLINFO            =  2,
+    KMTQAITYPE_GETSEGMENTSIZE          =  3,
+    KMTQAITYPE_ADAPTERGUID             =  4,
+    KMTQAITYPE_FLIPQUEUEINFO           =  5,
+    KMTQAITYPE_ADAPTERADDRESS          =  6,
+    KMTQAITYPE_SETWORKINGSETINFO       =  7,
+    KMTQAITYPE_ADAPTERREGISTRYINFO     =  8,
+    KMTQAITYPE_CURRENTDISPLAYMODE      =  9,
+    KMTQAITYPE_MODELIST                = 10,
+    KMTQAITYPE_CHECKDRIVERUPDATESTATUS = 11,
 } KMTQUERYADAPTERINFOTYPE;
 
 typedef struct _D3DKMT_QUERYADAPTERINFO
@@ -735,10 +735,10 @@ typedef struct _D3DKMT_QUERYSTATISTICS
 
 typedef enum _D3DKMT_VIDPNSOURCEOWNER_TYPE
 {
-     D3DKMT_VIDPNSOURCEOWNER_UNOWNED        = 0,    //Has no owner or GDI is the owner   ;internal
-     D3DKMT_VIDPNSOURCEOWNER_SHARED         = 1,    //Has shared owner, that is owner can yield to any exclusive owner, not available to legacy devices
-     D3DKMT_VIDPNSOURCEOWNER_EXCLUSIVE      = 2,    //Has exclusive owner without shared gdi primary,
-     D3DKMT_VIDPNSOURCEOWNER_EXCLUSIVEGDI   = 3,    //Has exclusive owner with shared gdi primary and must be exclusive owner of all VidPn sources, only available to legacy devices
+    D3DKMT_VIDPNSOURCEOWNER_UNOWNED        = 0,    //Has no owner or GDI is the owner   ;internal
+    D3DKMT_VIDPNSOURCEOWNER_SHARED         = 1,    //Has shared owner, that is owner can yield to any exclusive owner, not available to legacy devices
+    D3DKMT_VIDPNSOURCEOWNER_EXCLUSIVE      = 2,    //Has exclusive owner without shared gdi primary,
+    D3DKMT_VIDPNSOURCEOWNER_EXCLUSIVEGDI   = 3,    //Has exclusive owner with shared gdi primary and must be exclusive owner of all VidPn sources, only available to legacy devices
 } D3DKMT_VIDPNSOURCEOWNER_TYPE;
 
 typedef struct _D3DKMT_SETVIDPNSOURCEOWNER

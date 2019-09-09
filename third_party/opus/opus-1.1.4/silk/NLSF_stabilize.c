@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* NLSF stabilizer, for a single input data vector */
 void silk_NLSF_stabilize(
-          opus_int16            *NLSF_Q15,          /* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
+    opus_int16            *NLSF_Q15,          /* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
     const opus_int16            *NDeltaMin_Q15,     /* I     Min distance vector, NDeltaMin_Q15[L] must be >= 1 [L+1]   */
     const opus_int              L                   /* I     Number of NLSF parameters in the input vector              */
 )
@@ -57,7 +57,8 @@ void silk_NLSF_stabilize(
     /* This is necessary to ensure an output within range of a opus_int16 */
     silk_assert( NDeltaMin_Q15[L] >= 1 );
 
-    for( loops = 0; loops < MAX_LOOPS; loops++ ) {
+    for( loops = 0; loops < MAX_LOOPS; loops++ )
+    {
         /**************************/
         /* Find smallest distance */
         /**************************/
@@ -65,16 +66,19 @@ void silk_NLSF_stabilize(
         min_diff_Q15 = NLSF_Q15[0] - NDeltaMin_Q15[0];
         I = 0;
         /* Middle elements */
-        for( i = 1; i <= L-1; i++ ) {
+        for( i = 1; i <= L-1; i++ )
+        {
             diff_Q15 = NLSF_Q15[i] - ( NLSF_Q15[i-1] + NDeltaMin_Q15[i] );
-            if( diff_Q15 < min_diff_Q15 ) {
+            if( diff_Q15 < min_diff_Q15 )
+            {
                 min_diff_Q15 = diff_Q15;
                 I = i;
             }
         }
         /* Last element */
         diff_Q15 = ( 1 << 15 ) - ( NLSF_Q15[L-1] + NDeltaMin_Q15[L] );
-        if( diff_Q15 < min_diff_Q15 ) {
+        if( diff_Q15 < min_diff_Q15 )
+        {
             min_diff_Q15 = diff_Q15;
             I = L;
         }
@@ -82,36 +86,44 @@ void silk_NLSF_stabilize(
         /***************************************************/
         /* Now check if the smallest distance non-negative */
         /***************************************************/
-        if( min_diff_Q15 >= 0 ) {
+        if( min_diff_Q15 >= 0 )
+        {
             return;
         }
 
-        if( I == 0 ) {
+        if( I == 0 )
+        {
             /* Move away from lower limit */
             NLSF_Q15[0] = NDeltaMin_Q15[0];
 
-        } else if( I == L) {
+        }
+        else if( I == L)
+        {
             /* Move away from higher limit */
             NLSF_Q15[L-1] = ( 1 << 15 ) - NDeltaMin_Q15[L];
 
-        } else {
+        }
+        else
+        {
             /* Find the lower extreme for the location of the current center frequency */
             min_center_Q15 = 0;
-            for( k = 0; k < I; k++ ) {
+            for( k = 0; k < I; k++ )
+            {
                 min_center_Q15 += NDeltaMin_Q15[k];
             }
             min_center_Q15 += silk_RSHIFT( NDeltaMin_Q15[I], 1 );
 
             /* Find the upper extreme for the location of the current center frequency */
             max_center_Q15 = 1 << 15;
-            for( k = L; k > I; k-- ) {
+            for( k = L; k > I; k-- )
+            {
                 max_center_Q15 -= NDeltaMin_Q15[k];
             }
             max_center_Q15 -= silk_RSHIFT( NDeltaMin_Q15[I], 1 );
 
             /* Move apart, sorted by value, keeping the same center frequency */
             center_freq_Q15 = (opus_int16)silk_LIMIT_32( silk_RSHIFT_ROUND( (opus_int32)NLSF_Q15[I-1] + (opus_int32)NLSF_Q15[I], 1 ),
-                min_center_Q15, max_center_Q15 );
+                              min_center_Q15, max_center_Q15 );
             NLSF_Q15[I-1] = center_freq_Q15 - silk_RSHIFT( NDeltaMin_Q15[I], 1 );
             NLSF_Q15[I] = NLSF_Q15[I-1] + NDeltaMin_Q15[I];
         }

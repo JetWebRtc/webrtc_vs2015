@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -114,16 +114,17 @@ static void crcAdvance(USHORT crcPoly,
                        INT     bBits
                       )
 {
-  INT i;
-  USHORT flag;
+    INT i;
+    USHORT flag;
 
-  for (i=bBits-1; i>=0; i--) {
-    flag = ((*crc) & crcMask) ? (1) : (0) ;
-    flag ^= (bValue & (1<<i)) ? (1) : (0) ;
+    for (i=bBits-1; i>=0; i--)
+    {
+        flag = ((*crc) & crcMask) ? (1) : (0) ;
+        flag ^= (bValue & (1<<i)) ? (1) : (0) ;
 
-    (*crc)<<=1;
-    if(flag) (*crc) ^= crcPoly;
-  }
+        (*crc)<<=1;
+        if(flag) (*crc) ^= crcPoly;
+    }
 }
 
 
@@ -143,26 +144,30 @@ INT  FDKsbrEnc_InitSbrBitstream(HANDLE_COMMON_DATA  hCmonData,
                                 HANDLE_FDK_CRCINFO  hCrcInfo,
                                 UINT                sbrSyntaxFlags)  /*!< SBR syntax flags */
 {
-  INT crcRegion = 0;
+    INT crcRegion = 0;
 
-  /* reset bit buffer */
-  FDKresetBitbuffer(&hCmonData->sbrBitbuf, BS_WRITER);
+    /* reset bit buffer */
+    FDKresetBitbuffer(&hCmonData->sbrBitbuf, BS_WRITER);
 
-  FDKinitBitStream(&hCmonData->tmpWriteBitbuf, memoryBase,
-                   memorySize, 0, BS_WRITER);
+    FDKinitBitStream(&hCmonData->tmpWriteBitbuf, memoryBase,
+                     memorySize, 0, BS_WRITER);
 
-  if (sbrSyntaxFlags & SBR_SYNTAX_CRC) {
-    if (sbrSyntaxFlags & SBR_SYNTAX_DRM_CRC)
-    { /* Init and start CRC region */
-      FDKwriteBits (&hCmonData->sbrBitbuf, 0x0, SI_SBR_DRM_CRC_BITS);
-      FDKcrcInit( hCrcInfo, 0x001d, 0xFFFF, SI_SBR_DRM_CRC_BITS );
-      crcRegion = FDKcrcStartReg( hCrcInfo, &hCmonData->sbrBitbuf, 0 );
-    } else {
-      FDKwriteBits (&hCmonData->sbrBitbuf, 0x0, SI_SBR_CRC_BITS);
+    if (sbrSyntaxFlags & SBR_SYNTAX_CRC)
+    {
+        if (sbrSyntaxFlags & SBR_SYNTAX_DRM_CRC)
+        {
+            /* Init and start CRC region */
+            FDKwriteBits (&hCmonData->sbrBitbuf, 0x0, SI_SBR_DRM_CRC_BITS);
+            FDKcrcInit( hCrcInfo, 0x001d, 0xFFFF, SI_SBR_DRM_CRC_BITS );
+            crcRegion = FDKcrcStartReg( hCrcInfo, &hCmonData->sbrBitbuf, 0 );
+        }
+        else
+        {
+            FDKwriteBits (&hCmonData->sbrBitbuf, 0x0, SI_SBR_CRC_BITS);
+        }
     }
-  }
 
-  return (crcRegion);
+    return (crcRegion);
 }
 
 
@@ -182,69 +187,72 @@ FDKsbrEnc_AssembleSbrBitstream( HANDLE_COMMON_DATA  hCmonData,
                                 INT                 crcRegion,
                                 UINT                sbrSyntaxFlags)
 {
-  USHORT crcReg =  SBR_CRCINIT;
-  INT numCrcBits,i;
+    USHORT crcReg =  SBR_CRCINIT;
+    INT numCrcBits,i;
 
-  /* check if SBR is present */
-  if ( hCmonData==NULL )
-    return;
+    /* check if SBR is present */
+    if ( hCmonData==NULL )
+        return;
 
-  hCmonData->sbrFillBits = 0; /* Fill bits are written only for GA streams */
+    hCmonData->sbrFillBits = 0; /* Fill bits are written only for GA streams */
 
-  if ( sbrSyntaxFlags & SBR_SYNTAX_DRM_CRC )
-  {
-    /*
-     * Calculate and write DRM CRC
-     */
-    FDKcrcEndReg( hCrcInfo, &hCmonData->sbrBitbuf, crcRegion );
-    FDKwriteBits( &hCmonData->tmpWriteBitbuf, FDKcrcGetCRC(hCrcInfo)^0xFF, SI_SBR_DRM_CRC_BITS );
-  }
-  else
-  {
-    if ( !(sbrSyntaxFlags & SBR_SYNTAX_LOW_DELAY) )
+    if ( sbrSyntaxFlags & SBR_SYNTAX_DRM_CRC )
     {
-      /* Do alignment here, because its defined as part of the sbr_extension_data */
-      int sbrLoad = hCmonData->sbrHdrBits + hCmonData->sbrDataBits;
+        /*
+         * Calculate and write DRM CRC
+         */
+        FDKcrcEndReg( hCrcInfo, &hCmonData->sbrBitbuf, crcRegion );
+        FDKwriteBits( &hCmonData->tmpWriteBitbuf, FDKcrcGetCRC(hCrcInfo)^0xFF, SI_SBR_DRM_CRC_BITS );
+    }
+    else
+    {
+        if ( !(sbrSyntaxFlags & SBR_SYNTAX_LOW_DELAY) )
+        {
+            /* Do alignment here, because its defined as part of the sbr_extension_data */
+            int sbrLoad = hCmonData->sbrHdrBits + hCmonData->sbrDataBits;
 
-      if ( sbrSyntaxFlags & SBR_SYNTAX_CRC ) {
-        sbrLoad += SI_SBR_CRC_BITS;
-      }
+            if ( sbrSyntaxFlags & SBR_SYNTAX_CRC )
+            {
+                sbrLoad += SI_SBR_CRC_BITS;
+            }
 
-      sbrLoad += 4;         /* Do byte Align with 4 bit offset. ISO/IEC 14496-3:2005(E) page 39. */
+            sbrLoad += 4;         /* Do byte Align with 4 bit offset. ISO/IEC 14496-3:2005(E) page 39. */
 
-      hCmonData->sbrFillBits = (8 - (sbrLoad % 8)) % 8;
+            hCmonData->sbrFillBits = (8 - (sbrLoad % 8)) % 8;
 
-      /*
-        append fill bits
-      */
-      FDKwriteBits(&hCmonData->sbrBitbuf, 0,  hCmonData->sbrFillBits );
+            /*
+              append fill bits
+            */
+            FDKwriteBits(&hCmonData->sbrBitbuf, 0,  hCmonData->sbrFillBits );
 
-      FDK_ASSERT(FDKgetValidBits(&hCmonData->sbrBitbuf) % 8 == 4);
+            FDK_ASSERT(FDKgetValidBits(&hCmonData->sbrBitbuf) % 8 == 4);
+        }
+
+        /*
+          calculate crc
+        */
+        if ( sbrSyntaxFlags & SBR_SYNTAX_CRC )
+        {
+            FDK_BITSTREAM  tmpCRCBuf = hCmonData->sbrBitbuf;
+            FDKresetBitbuffer( &tmpCRCBuf, BS_READER );
+
+            numCrcBits = hCmonData->sbrHdrBits + hCmonData->sbrDataBits + hCmonData->sbrFillBits;
+
+            for(i=0; i<numCrcBits; i++)
+            {
+                INT bit;
+                bit = FDKreadBits(&tmpCRCBuf,1);
+                crcAdvance(SBR_CRC_POLY,SBR_CRC_MASK,&crcReg,bit,1);
+            }
+            crcReg &= (SBR_CRC_RANGE);
+
+            /*
+             * Write CRC data.
+             */
+            FDKwriteBits (&hCmonData->tmpWriteBitbuf, crcReg, SI_SBR_CRC_BITS);
+        }
     }
 
-    /*
-      calculate crc
-    */
-    if ( sbrSyntaxFlags & SBR_SYNTAX_CRC ) {
-      FDK_BITSTREAM  tmpCRCBuf = hCmonData->sbrBitbuf;
-      FDKresetBitbuffer( &tmpCRCBuf, BS_READER );
-
-      numCrcBits = hCmonData->sbrHdrBits + hCmonData->sbrDataBits + hCmonData->sbrFillBits;
-
-      for(i=0;i<numCrcBits;i++){
-        INT bit;
-        bit = FDKreadBits(&tmpCRCBuf,1);
-        crcAdvance(SBR_CRC_POLY,SBR_CRC_MASK,&crcReg,bit,1);
-      }
-      crcReg &= (SBR_CRC_RANGE);
-
-      /*
-       * Write CRC data.
-       */
-      FDKwriteBits (&hCmonData->tmpWriteBitbuf, crcReg, SI_SBR_CRC_BITS);
-    }
-  }
-
-  FDKsyncCache(&hCmonData->tmpWriteBitbuf);
+    FDKsyncCache(&hCmonData->tmpWriteBitbuf);
 }
 

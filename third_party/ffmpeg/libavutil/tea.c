@@ -1,4 +1,4 @@
-/*
+﻿/*
  * A 32-bit implementation of the TEA algorithm
  * Copyright (c) 2015 Vesselin Bontchev
  *
@@ -27,7 +27,8 @@
 #include "intreadwrite.h"
 #include "tea.h"
 
-typedef struct AVTEA {
+typedef struct AVTEA
+{
     uint32_t key[16];
     int rounds;
 } AVTEA;
@@ -63,25 +64,31 @@ static void tea_crypt_ecb(AVTEA *ctx, uint8_t *dst, const uint8_t *src,
     v0 = AV_RB32(src);
     v1 = AV_RB32(src + 4);
 
-    if (decrypt) {
+    if (decrypt)
+    {
         int i;
         uint32_t delta = 0x9E3779B9U, sum = delta * (rounds / 2);
 
-        for (i = 0; i < rounds / 2; i++) {
+        for (i = 0; i < rounds / 2; i++)
+        {
             v1 -= ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
             v0 -= ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
             sum -= delta;
         }
-        if (iv) {
+        if (iv)
+        {
             v0 ^= AV_RB32(iv);
             v1 ^= AV_RB32(iv + 4);
             memcpy(iv, src, 8);
         }
-    } else {
+    }
+    else
+    {
         int i;
         uint32_t sum = 0, delta = 0x9E3779B9U;
 
-        for (i = 0; i < rounds / 2; i++) {
+        for (i = 0; i < rounds / 2; i++)
+        {
             sum += delta;
             v0 += ((v1 << 4) + k0) ^ (v1 + sum) ^ ((v1 >> 5) + k1);
             v1 += ((v0 << 4) + k2) ^ (v0 + sum) ^ ((v0 >> 5) + k3);
@@ -97,21 +104,29 @@ void av_tea_crypt(AVTEA *ctx, uint8_t *dst, const uint8_t *src, int count,
 {
     int i;
 
-    if (decrypt) {
-        while (count--) {
+    if (decrypt)
+    {
+        while (count--)
+        {
             tea_crypt_ecb(ctx, dst, src, decrypt, iv);
 
             src   += 8;
             dst   += 8;
         }
-    } else {
-        while (count--) {
-            if (iv) {
+    }
+    else
+    {
+        while (count--)
+        {
+            if (iv)
+            {
                 for (i = 0; i < 8; i++)
                     dst[i] = src[i] ^ iv[i];
                 tea_crypt_ecb(ctx, dst, dst, decrypt, NULL);
                 memcpy(iv, dst, 8);
-            } else {
+            }
+            else
+            {
                 tea_crypt_ecb(ctx, dst, src, decrypt, NULL);
             }
             src   += 8;
@@ -126,29 +141,36 @@ void av_tea_crypt(AVTEA *ctx, uint8_t *dst, const uint8_t *src, int count,
 #define TEA_NUM_TESTS 4
 
 // https://github.com/logandrews/TeaCrypt/blob/master/tea/tea_test.go
-static const uint8_t tea_test_key[TEA_NUM_TESTS][16] = {
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+static const uint8_t tea_test_key[TEA_NUM_TESTS][16] =
+{
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     },
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
     },
-    { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-      0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
+    {
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
     },
-    { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
-      0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
+    {
+        0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77,
+        0x88, 0x99, 0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF
     }
 };
 
-static const uint8_t tea_test_pt[TEA_NUM_TESTS][8] = {
+static const uint8_t tea_test_pt[TEA_NUM_TESTS][8] =
+{
     { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
     { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 },
     { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 },
     { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }
 };
 
-static const uint8_t tea_test_ct[TEA_NUM_TESTS][8] = {
+static const uint8_t tea_test_ct[TEA_NUM_TESTS][8] =
+{
     { 0x41, 0xEA, 0x3A, 0x0A, 0x94, 0xBA, 0xA9, 0x40 },
     { 0x6A, 0x2F, 0x9C, 0xF3, 0xFC, 0xCF, 0x3C, 0x55 },
     { 0xDE, 0xB1, 0xC0, 0xA2, 0x7E, 0x74, 0x5D, 0xB3 },
@@ -160,7 +182,8 @@ static void test_tea(AVTEA *ctx, uint8_t *dst, const uint8_t *src,
                      const char *test)
 {
     av_tea_crypt(ctx, dst, src, len, iv, dir);
-    if (memcmp(dst, ref, 8*len)) {
+    if (memcmp(dst, ref, 8*len))
+    {
         int i;
         printf("%s failed\ngot      ", test);
         for (i = 0; i < 8*len; i++)
@@ -186,7 +209,8 @@ int main(void)
     if (!ctx)
         return 1;
 
-    for (i = 0; i < TEA_NUM_TESTS; i++) {
+    for (i = 0; i < TEA_NUM_TESTS; i++)
+    {
         av_tea_init(ctx, tea_test_key[i], 64);
 
         test_tea(ctx, buf, tea_test_pt[i], tea_test_ct[i], 1, NULL, 0, "encryption");

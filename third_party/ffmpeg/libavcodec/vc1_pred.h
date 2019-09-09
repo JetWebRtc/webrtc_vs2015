@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder
  * Copyright (c) 2006-2007 Konstantin Shishkov
  * Partly based on vc9.c (c) 2005 Anonymous, Alex Beregszaszi, Michael Niedermayer

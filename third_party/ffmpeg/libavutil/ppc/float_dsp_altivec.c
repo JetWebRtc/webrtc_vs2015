@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@ void ff_vector_fmul_altivec(float *dst, const float *src0, const float *src1,
 {
     int i;
     vec_f d0, d1, s, zero = (vec_f)vec_splat_u32(0);
-    for (i = 0; i < len - 7; i += 8) {
+    for (i = 0; i < len - 7; i += 8)
+    {
         d0 = vec_ld( 0, src0 + i);
         s  = vec_ld( 0, src1 + i);
         d1 = vec_ld(16, src0 + i);
@@ -50,7 +51,8 @@ void ff_vector_fmul_window_altivec(float *dst, const float *src0,
 
     zero = (vec_f)vec_splat_u32(0);
 
-    for (i = -len * 4, j = len * 4 - 16; i < 0; i += 16, j -= 16) {
+    for (i = -len * 4, j = len * 4 - 16; i < 0; i += 16, j -= 16)
+    {
         s0 = vec_ld(i, src0);
         s1 = vec_ld(j, src1);
         wi = vec_ld(i, win);
@@ -77,7 +79,8 @@ void ff_vector_fmul_add_altivec(float *dst, const float *src0,
     int i;
     vec_f d, ss0, ss1, ss2, t0, t1, edges;
 
-    for (i = 0; i < len - 3; i += 4) {
+    for (i = 0; i < len - 3; i += 4)
+    {
         t0 = vec_ld(0, dst + i);
         t1 = vec_ld(15, dst + i);
         ss0 = vec_ld(0, src0 + i);
@@ -100,7 +103,8 @@ void ff_vector_fmul_reverse_altivec(float *dst, const float *src0,
     vec_f zero = (vec_f)vec_splat_u32(0);
 
     src1 += len-4;
-    for(i = 0; i < len - 7; i += 8) {
+    for(i = 0; i < len - 7; i += 8)
+    {
         s1 = vec_ld(0, src1 - i);              // [a,b,c,d]
         s0 = vec_ld(0, src0 + i);
         l0 = vec_mergel(s1, s1);               // [c,c,d,d]

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -61,10 +61,13 @@ static void vector_fmul_mips(float *dst, const float *src0, const float *src1,
 {
     int i;
 
-    if (len & 3) {
+    if (len & 3)
+    {
         for (i = 0; i < len; i++)
             dst[i] = src0[i] * src1[i];
-    } else {
+    }
+    else
+    {
         float *d     = (float *)dst;
         float *d_end = d + len;
         float *s0    = (float *)src0;
@@ -97,10 +100,10 @@ static void vector_fmul_mips(float *dst, const float *src0, const float *src1,
             "bne    %[d],       %[d_end],   1b          \n\t"
 
             : [src0_0]"=&f"(src0_0), [src0_1]"=&f"(src0_1),
-              [src0_2]"=&f"(src0_2), [src0_3]"=&f"(src0_3),
-              [src1_0]"=&f"(src1_0), [src1_1]"=&f"(src1_1),
-              [src1_2]"=&f"(src1_2), [src1_3]"=&f"(src1_3),
-              [d]"+r"(d), [s0]"+r"(s0), [s1]"+r"(s1)
+            [src0_2]"=&f"(src0_2), [src0_3]"=&f"(src0_3),
+            [src1_0]"=&f"(src1_0), [src1_1]"=&f"(src1_1),
+            [src1_2]"=&f"(src1_2), [src1_3]"=&f"(src1_3),
+            [d]"+r"(d), [s0]"+r"(s0), [s1]"+r"(s1)
             : [d_end]"r"(d_end)
             : "memory"
         );
@@ -108,7 +111,7 @@ static void vector_fmul_mips(float *dst, const float *src0, const float *src1,
 }
 
 static void vector_fmul_scalar_mips(float *dst, const float *src, float mul,
-                                 int len)
+                                    int len)
 {
     float temp0, temp1, temp2, temp3;
     float *local_src = (float*)src;
@@ -118,7 +121,7 @@ static void vector_fmul_scalar_mips(float *dst, const float *src, float mul,
     __asm__ volatile(
         ".set    push                             \n\t"
         ".set    noreorder                        \n\t"
-    "1:                                           \n\t"
+        "1:                                           \n\t"
         "lwc1    %[temp0],   0(%[src])            \n\t"
         "lwc1    %[temp1],   4(%[src])            \n\t"
         "lwc1    %[temp2],   8(%[src])            \n\t"
@@ -137,8 +140,8 @@ static void vector_fmul_scalar_mips(float *dst, const float *src, float mul,
         ".set    pop                              \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),
-          [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
-          [dst]"+r"(dst), [src]"+r"(local_src)
+        [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
+        [dst]"+r"(dst), [src]"+r"(local_src)
         : [end]"r"(end), [mul]"f"(mul)
         : "memory"
     );
@@ -212,19 +215,19 @@ static void vector_fmul_window_mips(float *dst, const float *src0,
         PTR_ADDIU "%[dst_j],-16                         \n\t"
         "bne     %[win_i], %[lp_end], 1b                \n\t"
         : [temp]"=&f"(temp), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-          [temp3]"=&f"(temp3), [src0_i]"+r"(src0_i), [win_i]"+r"(win_i),
-          [src1_j]"+r"(src1_j), [win_j]"+r"(win_j), [dst_i]"+r"(dst_i),
-          [dst_j]"+r"(dst_j), [s0] "=&f"(s0), [s01]"=&f"(s01), [s1] "=&f"(s1),
-          [s11]"=&f"(s11), [wi] "=&f"(wi), [wj] "=&f"(wj), [wi2]"=&f"(wi2),
-          [wj2]"=&f"(wj2), [wi3]"=&f"(wi3), [wj3]"=&f"(wj3), [wi1]"=&f"(wi1),
-          [wj1]"=&f"(wj1)
+        [temp3]"=&f"(temp3), [src0_i]"+r"(src0_i), [win_i]"+r"(win_i),
+        [src1_j]"+r"(src1_j), [win_j]"+r"(win_j), [dst_i]"+r"(dst_i),
+        [dst_j]"+r"(dst_j), [s0] "=&f"(s0), [s01]"=&f"(s01), [s1] "=&f"(s1),
+        [s11]"=&f"(s11), [wi] "=&f"(wi), [wj] "=&f"(wj), [wi2]"=&f"(wi2),
+        [wj2]"=&f"(wj2), [wi3]"=&f"(wi3), [wj3]"=&f"(wj3), [wi1]"=&f"(wi1),
+        [wj1]"=&f"(wj1)
         : [lp_end]"r"(lp_end)
         : "memory"
     );
 }
 
 static void butterflies_float_mips(float *av_restrict v1, float *av_restrict v2,
-                                int len)
+                                   int len)
 {
     float temp0, temp1, temp2, temp3, temp4;
     float temp5, temp6, temp7, temp8, temp9;
@@ -243,7 +246,7 @@ static void butterflies_float_mips(float *av_restrict v1, float *av_restrict v2,
         "lwc1     %[temp6],    8(%[v2])                 \n\t"
         "lwc1     %[temp7],    12(%[v2])                \n\t"
         "beq      %[pom],      $zero,       2f          \n\t"
-    "1:                                                 \n\t"
+        "1:                                                 \n\t"
         "sub.s    %[temp8],    %[temp0],    %[temp4]    \n\t"
         "add.s    %[temp9],    %[temp0],    %[temp4]    \n\t"
         "sub.s    %[temp10],   %[temp1],    %[temp5]    \n\t"
@@ -272,7 +275,7 @@ static void butterflies_float_mips(float *av_restrict v1, float *av_restrict v2,
         "swc1     %[temp15],   -4(%[v1])                \n\t"
         "swc1     %[temp14],   -4(%[v2])                \n\t"
         "bgtz     %[pom],      1b                       \n\t"
-    "2:                                                 \n\t"
+        "2:                                                 \n\t"
         "sub.s    %[temp8],    %[temp0],    %[temp4]    \n\t"
         "add.s    %[temp9],    %[temp0],    %[temp4]    \n\t"
         "sub.s    %[temp10],   %[temp1],    %[temp5]    \n\t"
@@ -291,17 +294,18 @@ static void butterflies_float_mips(float *av_restrict v1, float *av_restrict v2,
         "swc1     %[temp14],   12(%[v2])                \n\t"
 
         : [v1]"+r"(v1), [v2]"+r"(v2), [pom]"+r"(pom), [temp0] "=&f" (temp0),
-          [temp1]"=&f"(temp1), [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
-          [temp4]"=&f"(temp4), [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
-          [temp7]"=&f"(temp7), [temp8]"=&f"(temp8), [temp9]"=&f"(temp9),
-          [temp10]"=&f"(temp10), [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
-          [temp13]"=&f"(temp13), [temp14]"=&f"(temp14), [temp15]"=&f"(temp15)
+        [temp1]"=&f"(temp1), [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
+        [temp4]"=&f"(temp4), [temp5]"=&f"(temp5), [temp6]"=&f"(temp6),
+        [temp7]"=&f"(temp7), [temp8]"=&f"(temp8), [temp9]"=&f"(temp9),
+        [temp10]"=&f"(temp10), [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
+        [temp13]"=&f"(temp13), [temp14]"=&f"(temp14), [temp15]"=&f"(temp15)
         :
         : "memory"
     );
 }
 
-static void vector_fmul_reverse_mips(float *dst, const float *src0, const float *src1, int len){
+static void vector_fmul_reverse_mips(float *dst, const float *src0, const float *src1, int len)
+{
     int i;
     float temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
     src1 += len-1;
@@ -331,9 +335,9 @@ static void vector_fmul_reverse_mips(float *dst, const float *src0, const float 
             "swc1      %[temp6],     -4(%[dst])                 \n\t"
 
             : [dst]"+r"(dst), [src0]"+r"(src0), [src1]"+r"(src1),
-              [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),[temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [temp6]"=&f"(temp6), [temp7]"=&f"(temp7)
+            [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),[temp2]"=&f"(temp2),
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [temp6]"=&f"(temp6), [temp7]"=&f"(temp7)
             :
             : "memory"
         );
@@ -341,7 +345,8 @@ static void vector_fmul_reverse_mips(float *dst, const float *src0, const float 
 }
 #endif /* HAVE_INLINE_ASM && HAVE_MIPSFPU */
 
-void ff_float_dsp_init_mips(AVFloatDSPContext *fdsp) {
+void ff_float_dsp_init_mips(AVFloatDSPContext *fdsp)
+{
 #if HAVE_INLINE_ASM && HAVE_MIPSFPU
     fdsp->vector_fmul = vector_fmul_mips;
     fdsp->vector_fmul_scalar  = vector_fmul_scalar_mips;

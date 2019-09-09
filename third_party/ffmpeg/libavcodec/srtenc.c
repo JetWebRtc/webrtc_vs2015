@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SubRip subtitle encoder
  * Copyright (c) 2010  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -29,7 +29,8 @@
 
 #define SRT_STACK_SIZE 64
 
-typedef struct {
+typedef struct
+{
     AVCodecContext *avctx;
     ASSSplitContext *ass_ctx;
     AVBPrint buffer;
@@ -81,24 +82,28 @@ static void srt_close_tag(SRTContext *s, char tag)
 
 static void srt_stack_push_pop(SRTContext *s, const char c, int close)
 {
-    if (close) {
+    if (close)
+    {
         int i = c ? srt_stack_find(s, c) : 0;
         if (i < 0)
             return;
         while (s->stack_ptr != i)
             srt_close_tag(s, srt_stack_pop(s));
-    } else if (srt_stack_push(s, c) < 0)
+    }
+    else if (srt_stack_push(s, c) < 0)
         av_log(s->avctx, AV_LOG_ERROR, "tag stack overflow\n");
 }
 
 static void srt_style_apply(SRTContext *s, const char *style)
 {
     ASSStyle *st = ff_ass_style_get(s->ass_ctx, style);
-    if (st) {
+    if (st)
+    {
         int c = st->primary_color & 0xFFFFFF;
         if (st->font_name && strcmp(st->font_name, ASS_DEFAULT_FONT) ||
-            st->font_size != ASS_DEFAULT_FONT_SIZE ||
-            c != ASS_DEFAULT_COLOR) {
+                st->font_size != ASS_DEFAULT_FONT_SIZE ||
+                c != ASS_DEFAULT_COLOR)
+        {
             srt_print(s, "<font");
             if (st->font_name && strcmp(st->font_name, ASS_DEFAULT_FONT))
                 srt_print(s, " face=\"%s\"", st->font_name);
@@ -110,19 +115,23 @@ static void srt_style_apply(SRTContext *s, const char *style)
             srt_print(s, ">");
             srt_stack_push(s, 'f');
         }
-        if (st->bold != ASS_DEFAULT_BOLD) {
+        if (st->bold != ASS_DEFAULT_BOLD)
+        {
             srt_print(s, "<b>");
             srt_stack_push(s, 'b');
         }
-        if (st->italic != ASS_DEFAULT_ITALIC) {
+        if (st->italic != ASS_DEFAULT_ITALIC)
+        {
             srt_print(s, "<i>");
             srt_stack_push(s, 'i');
         }
-        if (st->underline != ASS_DEFAULT_UNDERLINE) {
+        if (st->underline != ASS_DEFAULT_UNDERLINE)
+        {
             srt_print(s, "<u>");
             srt_stack_push(s, 'u');
         }
-        if (st->alignment != ASS_DEFAULT_ALIGNMENT) {
+        if (st->alignment != ASS_DEFAULT_ALIGNMENT)
+        {
             srt_print(s, "{\\an%d}", st->alignment);
             s->alignment_applied = 1;
         }
@@ -164,7 +173,7 @@ static void srt_color_cb(void *priv, unsigned int color, unsigned int color_id)
     srt_stack_push_pop(priv, 'f', color == 0xFFFFFFFF);
     if (color != 0xFFFFFFFF)
         srt_print(priv, "<font color=\"#%06x\">",
-              (color & 0xFF0000) >> 16 | color & 0xFF00 | (color & 0xFF) << 16);
+                  (color & 0xFF0000) >> 16 | color & 0xFF00 | (color & 0xFF) << 16);
 }
 
 static void srt_font_name_cb(void *priv, const char *name)
@@ -184,7 +193,8 @@ static void srt_font_size_cb(void *priv, int size)
 static void srt_alignment_cb(void *priv, int alignment)
 {
     SRTContext *s = priv;
-    if (!s->alignment_applied && alignment >= 0) {
+    if (!s->alignment_applied && alignment >= 0)
+    {
         srt_print(s, "{\\an%d}", alignment);
         s->alignment_applied = 1;
     }
@@ -208,7 +218,8 @@ static void srt_end_cb(void *priv)
     srt_stack_push_pop(priv, 0, 1);
 }
 
-static const ASSCodesCallbacks srt_callbacks = {
+static const ASSCodesCallbacks srt_callbacks =
+{
     .text             = srt_text_cb,
     .new_line         = srt_new_line_cb,
     .style            = srt_style_cb,
@@ -230,15 +241,18 @@ static int srt_encode_frame(AVCodecContext *avctx,
 
     av_bprint_clear(&s->buffer);
 
-    for (i=0; i<sub->num_rects; i++) {
+    for (i=0; i<sub->num_rects; i++)
+    {
 
-        if (sub->rects[i]->type != SUBTITLE_ASS) {
+        if (sub->rects[i]->type != SUBTITLE_ASS)
+        {
             av_log(avctx, AV_LOG_ERROR, "Only SUBTITLE_ASS type supported.\n");
             return AVERROR(ENOSYS);
         }
 
         dialog = ff_ass_split_dialog(s->ass_ctx, sub->rects[i]->ass, 0, &num);
-        for (; dialog && num--; dialog++) {
+        for (; dialog && num--; dialog++)
+        {
             s->alignment_applied = 0;
             srt_style_apply(s, dialog->style);
             ff_ass_split_override_codes(&srt_callbacks, s, dialog->text);
@@ -250,7 +264,8 @@ static int srt_encode_frame(AVCodecContext *avctx,
     if (!s->buffer.len)
         return 0;
 
-    if (s->buffer.len > bufsize) {
+    if (s->buffer.len > bufsize)
+    {
         av_log(avctx, AV_LOG_ERROR, "Buffer too small for ASS event.\n");
         return -1;
     }
@@ -269,7 +284,8 @@ static int srt_encode_close(AVCodecContext *avctx)
 
 #if CONFIG_SRT_ENCODER
 /* deprecated encoder */
-AVCodec ff_srt_encoder = {
+AVCodec ff_srt_encoder =
+{
     .name           = "srt",
     .long_name      = NULL_IF_CONFIG_SMALL("SubRip subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,
@@ -282,7 +298,8 @@ AVCodec ff_srt_encoder = {
 #endif
 
 #if CONFIG_SUBRIP_ENCODER
-AVCodec ff_subrip_encoder = {
+AVCodec ff_subrip_encoder =
+{
     .name           = "subrip",
     .long_name      = NULL_IF_CONFIG_SMALL("SubRip subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

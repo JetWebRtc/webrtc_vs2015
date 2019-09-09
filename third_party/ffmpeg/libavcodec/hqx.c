@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQX decoder
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "hqxdsp.h"
 
 /* HQX has four modes - 422, 444, 422alpha and 444alpha - all 12-bit */
-enum HQXFormat {
+enum HQXFormat
+{
     HQX_422 = 0,
     HQX_444,
     HQX_422A,
@@ -45,20 +46,22 @@ enum HQXFormat {
  * a block can use any of those four quantisers
  * one column is powers of 2, the other one is powers of 2 * 3,
  * then there is the special one, powers of 2 * 5 */
-static const int hqx_quants[16][4] = {
+static const int hqx_quants[16][4] =
+{
     {  0x1,   0x2,   0x4,   0x8 }, {  0x1,  0x3,   0x6,   0xC },
     {  0x2,   0x4,   0x8,  0x10 }, {  0x3,  0x6,   0xC,  0x18 },
     {  0x4,   0x8,  0x10,  0x20 }, {  0x6,  0xC,  0x18,  0x30 },
     {  0x8,  0x10,  0x20,  0x40 },
-                      { 0xA, 0x14, 0x28, 0x50 },
-                                   {  0xC, 0x18,  0x30,  0x60 },
+    { 0xA, 0x14, 0x28, 0x50 },
+    {  0xC, 0x18,  0x30,  0x60 },
     { 0x10,  0x20,  0x40,  0x80 }, { 0x18, 0x30,  0x60,  0xC0 },
     { 0x20,  0x40,  0x80, 0x100 }, { 0x30, 0x60,  0xC0, 0x180 },
     { 0x40,  0x80, 0x100, 0x200 }, { 0x60, 0xC0, 0x180, 0x300 },
     { 0x80, 0x100, 0x200, 0x400 }
 };
 
-static const uint8_t hqx_quant_luma[64] = {
+static const uint8_t hqx_quant_luma[64] =
+{
     16,  16,  16,  19,  19,  19,  42,  44,
     16,  16,  19,  19,  19,  38,  43,  45,
     16,  19,  19,  19,  40,  41,  45,  48,
@@ -69,7 +72,8 @@ static const uint8_t hqx_quant_luma[64] = {
     44,  45,  48,  49, 101, 104, 116, 123,
 };
 
-static const uint8_t hqx_quant_chroma[64] = {
+static const uint8_t hqx_quant_chroma[64] =
+{
     16,  16,  19,  25,  26,  26,  42,  44,
     16,  19,  25,  25,  26,  38,  43,  91,
     19,  25,  26,  27,  40,  41,  91,  96,
@@ -101,7 +105,8 @@ static inline void hqx_get_ac(GetBitContext *gb, const HQXAC *ac,
     int val;
 
     val = show_bits(gb, ac->lut_bits);
-    if (ac->lut[val].bits == -1) {
+    if (ac->lut[val].bits == -1)
+    {
         GetBitContext gb2 = *gb;
         skip_bits(&gb2, ac->lut_bits);
         val = ac->lut[val].lev + show_bits(&gb2, ac->extra_bits);
@@ -141,13 +146,15 @@ static int decode_block(GetBitContext *gb, VLC *vlc,
     else
         ac_idx = HQX_AC_Q0;
 
-    do {
+    do
+    {
         hqx_get_ac(gb, &ff_hqx_ac[ac_idx], &run, &lev);
         pos += run;
         if (pos >= 64)
             break;
         block[ff_zigzag_direct[pos++]] = lev * q;
-    } while (pos < 64);
+    }
+    while (pos < 64);
 
     return 0;
 }
@@ -168,7 +175,8 @@ static int hqx_decode_422(HQXContext *ctx, int slice_no, int x, int y)
 
     quants = hqx_quants[get_bits(gb, 4)];
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         int vlc_index = ctx->dcb - 9;
         if (i == 0 || i == 4 || i == 6)
             last_dc = 0;
@@ -202,7 +210,8 @@ static int hqx_decode_422a(HQXContext *ctx, int slice_no, int x, int y)
         memset(slice->block[i], 0, sizeof(**slice->block) * 64);
     for (i = 0; i < 12; i++)
         slice->block[i][0] = -0x800;
-    if (cbp) {
+    if (cbp)
+    {
         if (ctx->interlaced)
             flag = get_bits1(gb);
 
@@ -213,10 +222,12 @@ static int hqx_decode_422a(HQXContext *ctx, int slice_no, int x, int y)
             cbp |= 0x500;
         if (cbp & 0xC)   // chroma CBP - bottom
             cbp |= 0xA00;
-        for (i = 0; i < 12; i++) {
+        for (i = 0; i < 12; i++)
+        {
             if (i == 0 || i == 4 || i == 8 || i == 10)
                 last_dc = 0;
-            if (cbp & (1 << i)) {
+            if (cbp & (1 << i))
+            {
                 int vlc_index = ctx->dcb - 9;
                 ret = decode_block(gb, &ctx->dc_vlc[vlc_index], quants,
                                    ctx->dcb, slice->block[i], &last_dc);
@@ -252,7 +263,8 @@ static int hqx_decode_444(HQXContext *ctx, int slice_no, int x, int y)
 
     quants = hqx_quants[get_bits(gb, 4)];
 
-    for (i = 0; i < 12; i++) {
+    for (i = 0; i < 12; i++)
+    {
         int vlc_index = ctx->dcb - 9;
         if (i == 0 || i == 4 || i == 8)
             last_dc = 0;
@@ -288,7 +300,8 @@ static int hqx_decode_444a(HQXContext *ctx, int slice_no, int x, int y)
         memset(slice->block[i], 0, sizeof(**slice->block) * 64);
     for (i = 0; i < 16; i++)
         slice->block[i][0] = -0x800;
-    if (cbp) {
+    if (cbp)
+    {
         if (ctx->interlaced)
             flag = get_bits1(gb);
 
@@ -296,10 +309,12 @@ static int hqx_decode_444a(HQXContext *ctx, int slice_no, int x, int y)
 
         cbp |= cbp << 4; // alpha CBP
         cbp |= cbp << 8; // chroma CBP
-        for (i = 0; i < 16; i++) {
+        for (i = 0; i < 16; i++)
+        {
             if (i == 0 || i == 4 || i == 8 || i == 12)
                 last_dc = 0;
-            if (cbp & (1 << i)) {
+            if (cbp & (1 << i))
+            {
                 int vlc_index = ctx->dcb - 9;
                 ret = decode_block(gb, &ctx->dc_vlc[vlc_index], quants,
                                    ctx->dcb, slice->block[i], &last_dc);
@@ -321,7 +336,8 @@ static int hqx_decode_444a(HQXContext *ctx, int slice_no, int x, int y)
     return 0;
 }
 
-static const int shuffle_16[16] = {
+static const int shuffle_16[16] =
+{
     0, 5, 11, 14, 2, 7, 9, 13, 1, 4, 10, 15, 3, 6, 8, 12
 };
 
@@ -342,14 +358,17 @@ static int decode_slice(HQXContext *ctx, int slice_no)
     int blk_addr, loc_addr, mb_x, mb_y, pos, loc_row, i;
     int tile_blocks, tile_limit, tile_no;
 
-    for (tile_no = 0; tile_no < num_tiles; tile_no++, g_tile++) {
+    for (tile_no = 0; tile_no < num_tiles; tile_no++, g_tile++)
+    {
         tile_blocks = std_tile_blocks;
         tile_limit = -1;
-        if (g_tile < num_mbs - std_tile_blocks * 16 * num_tiles) {
+        if (g_tile < num_mbs - std_tile_blocks * 16 * num_tiles)
+        {
             tile_limit = num_mbs / (16 * num_tiles);
             tile_blocks++;
         }
-        for (i = 0; i < tile_blocks; i++) {
+        for (i = 0; i < tile_blocks; i++)
+        {
             if (i == tile_limit)
                 blk_addr = g_tile + 16 * num_tiles * i;
             else
@@ -357,17 +376,23 @@ static int decode_slice(HQXContext *ctx, int slice_no)
                            num_tiles * shuffle_16[(i + slice_no) & 0xF];
             loc_row  = grp_h * (blk_addr / (grp_h * mb_w));
             loc_addr =          blk_addr % (grp_h * mb_w);
-            if (loc_row >= grp_v_edge) {
+            if (loc_row >= grp_v_edge)
+            {
                 mb_x = grp_w * (loc_addr / (grp_h_rest * grp_w));
                 pos  =          loc_addr % (grp_h_rest * grp_w);
-            } else {
+            }
+            else
+            {
                 mb_x = grp_w * (loc_addr / (grp_h * grp_w));
                 pos  =          loc_addr % (grp_h * grp_w);
             }
-            if (mb_x >= grp_h_edge) {
+            if (mb_x >= grp_h_edge)
+            {
                 mb_x +=            pos % grp_v_rest;
                 mb_y  = loc_row + (pos / grp_v_rest);
-            } else {
+            }
+            else
+            {
                 mb_x +=            pos % grp_w;
                 mb_y  = loc_row + (pos / grp_w);
             }
@@ -386,8 +411,9 @@ static int decode_slice_thread(AVCodecContext *avctx, void *arg,
     int ret;
 
     if (slice_off[slice_no] < HQX_HEADER_SIZE ||
-        slice_off[slice_no] >= slice_off[slice_no + 1] ||
-        slice_off[slice_no + 1] > ctx->data_size) {
+            slice_off[slice_no] >= slice_off[slice_no + 1] ||
+            slice_off[slice_no + 1] > ctx->data_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid slice size %d.\n", ctx->data_size);
         return AVERROR_INVALIDDATA;
     }
@@ -410,15 +436,18 @@ static int hqx_decode_frame(AVCodecContext *avctx, void *data,
     int data_start;
     int i, ret;
 
-    if (avpkt->size < 4 + 4) {
+    if (avpkt->size < 4 + 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small %d.\n", avpkt->size);
         return AVERROR_INVALIDDATA;
     }
 
     info_tag    = AV_RL32(src);
-    if (info_tag == MKTAG('I', 'N', 'F', 'O')) {
+    if (info_tag == MKTAG('I', 'N', 'F', 'O'))
+    {
         int info_offset = AV_RL32(src + 4);
-        if (info_offset > UINT32_MAX - 8 || info_offset + 8 > avpkt->size) {
+        if (info_offset > UINT32_MAX - 8 || info_offset + 8 > avpkt->size)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid INFO header offset: 0x%08"PRIX32" is too large.\n",
                    info_offset);
@@ -435,12 +464,14 @@ static int hqx_decode_frame(AVCodecContext *avctx, void *data,
     ctx->src       = src;
     ctx->pic       = data;
 
-    if (ctx->data_size < HQX_HEADER_SIZE) {
+    if (ctx->data_size < HQX_HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame too small.\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (src[0] != 'H' || src[1] != 'Q') {
+    if (src[0] != 'H' || src[1] != 'Q')
+    {
         av_log(avctx, AV_LOG_ERROR, "Not an HQX frame.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -452,12 +483,14 @@ static int hqx_decode_frame(AVCodecContext *avctx, void *data,
     for (i = 0; i < 17; i++)
         ctx->slice_off[i] = AV_RB24(src + 8 + i * 3);
 
-    if (ctx->dcb == 8) {
+    if (ctx->dcb == 8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid DC precision %d.\n", ctx->dcb);
         return AVERROR_INVALIDDATA;
     }
     ret = av_image_check_size(ctx->width, ctx->height, 0, avctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid stored dimensions %dx%d.\n",
                ctx->width, ctx->height);
         return AVERROR_INVALIDDATA;
@@ -469,7 +502,8 @@ static int hqx_decode_frame(AVCodecContext *avctx, void *data,
     avctx->height              = ctx->height;
     avctx->bits_per_raw_sample = 10;
 
-    switch (ctx->format) {
+    switch (ctx->format)
+    {
     case HQX_422:
         avctx->pix_fmt = AV_PIX_FMT_YUV422P16;
         ctx->decode_func = hqx_decode_422;
@@ -511,7 +545,8 @@ static av_cold int hqx_decode_close(AVCodecContext *avctx)
     HQXContext *ctx = avctx->priv_data;
 
     ff_free_vlc(&ctx->cbp_vlc);
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         ff_free_vlc(&ctx->dc_vlc[i]);
     }
 
@@ -527,7 +562,8 @@ static av_cold int hqx_decode_init(AVCodecContext *avctx)
     return ff_hqx_init_vlcs(ctx);
 }
 
-AVCodec ff_hqx_decoder = {
+AVCodec ff_hqx_decoder =
+{
     .name           = "hqx",
     .long_name      = NULL_IF_CONFIG_SMALL("Canopus HQX"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -538,5 +574,5 @@ AVCodec ff_hqx_decoder = {
     .close          = hqx_decode_close,
     .capabilities   = AV_CODEC_CAP_DR1 | AV_CODEC_CAP_SLICE_THREADS,
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE |
-                      FF_CODEC_CAP_INIT_CLEANUP,
+    FF_CODEC_CAP_INIT_CLEANUP,
 };

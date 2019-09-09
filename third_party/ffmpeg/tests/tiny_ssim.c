@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003-2013 Loren Merritt
  *
  * This program is free software; you can redistribute it and/or modify
@@ -75,9 +75,9 @@ static void ssim_4x4x2_core( const pixel *pix1, intptr_t stride1,
 
 static float ssim_end1( int s1, int s2, int ss, int s12 )
 {
-/* Maximum value for 10-bit is: ss*64 = (2^10-1)^2*16*4*64 = 4286582784, which will overflow in some cases.
- * s1*s1, s2*s2, and s1*s2 also obtain this value for edge cases: ((2^10-1)*16*4)^2 = 4286582784.
- * Maximum value for 9-bit is: ss*64 = (2^9-1)^2*16*4*64 = 1069551616, which will not overflow. */
+    /* Maximum value for 10-bit is: ss*64 = (2^10-1)^2*16*4*64 = 4286582784, which will overflow in some cases.
+     * s1*s1, s2*s2, and s1*s2 also obtain this value for edge cases: ((2^10-1)*16*4)^2 = 4286582784.
+     * Maximum value for 9-bit is: ss*64 = (2^9-1)^2*16*4*64 = 1069551616, which will not overflow. */
 #if BIT_DEPTH > 9
 #define type float
     static const float ssim_c1 = .01*.01*PIXEL_MAX*PIXEL_MAX*64;
@@ -94,7 +94,7 @@ static float ssim_end1( int s1, int s2, int ss, int s12 )
     type vars = fss*64 - fs1*fs1 - fs2*fs2;
     type covar = fs12*64 - fs1*fs2;
     return (float)(2*fs1*fs2 + ssim_c1) * (float)(2*covar + ssim_c2)
-         / ((float)(fs1*fs1 + fs2*fs2 + ssim_c1) * (float)(vars + ssim_c2));
+           / ((float)(fs1*fs1 + fs2*fs2 + ssim_c1) * (float)(vars + ssim_c2));
 #undef type
 }
 
@@ -112,9 +112,9 @@ static float ssim_end4( int sum0[5][4], int sum1[5][4], int width )
 }
 
 float ssim_plane(
-                           pixel *pix1, intptr_t stride1,
-                           pixel *pix2, intptr_t stride2,
-                           int width, int height, void *buf, int *cnt )
+    pixel *pix1, intptr_t stride1,
+    pixel *pix2, intptr_t stride2,
+    int width, int height, void *buf, int *cnt )
 {
     int z = 0;
     int x, y;
@@ -197,7 +197,8 @@ int main(int argc, char* argv[])
     f[1] = fopen(argv[2], "rb");
     sscanf(argv[3], "%dx%d", &w, &h);
 
-    if (w<=0 || h<=0 || w*(int64_t)h >= INT_MAX/3 || 2LL*w+12 >= INT_MAX / sizeof(*temp)) {
+    if (w<=0 || h<=0 || w*(int64_t)h >= INT_MAX/3 || 2LL*w+12 >= INT_MAX / sizeof(*temp))
+    {
         fprintf(stderr, "Dimensions are too large, or invalid\n");
         return -2;
     }
@@ -224,8 +225,8 @@ int main(int argc, char* argv[])
         {
             ssd_one[i]  = ssd_plane ( plane[0][i], plane[1][i], w*h>>2*!!i );
             ssim_one[i] = ssim_plane( plane[0][i], w>>!!i,
-                                     plane[1][i], w>>!!i,
-                                     w>>!!i, h>>!!i, temp, NULL );
+                                      plane[1][i], w>>!!i,
+                                      w>>!!i, h>>!!i, temp, NULL );
             ssd[i] += ssd_one[i];
             ssim[i] += ssim_one[i];
         }

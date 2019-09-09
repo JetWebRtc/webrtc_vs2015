@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,12 +10,14 @@
 
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // static
 std::unique_ptr<DesktopCapturer> DesktopCapturer::CreateRawScreenCapturer(
-    const DesktopCaptureOptions& options) {
-  return nullptr;
+    const DesktopCaptureOptions& options)
+{
+    return nullptr;
 }
 
 }  // namespace webrtc

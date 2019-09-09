@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -95,7 +95,7 @@ amm-info@iis.fraunhofer.de
 #include "genericStds.h"
 #include "fixminmax.h"
 
-  #define SCALE_INLINE inline
+#define SCALE_INLINE inline
 
 
 #if defined(__arm__)	/* cppp replaced: elif */
@@ -123,10 +123,10 @@ FIXP_DBL scaleValue(const FIXP_DBL value, /*!< Value */
                     INT scalefactor   /*!< Scalefactor */
                    )
 {
-  if(scalefactor > 0)
-    return (value<<scalefactor);
-  else
-    return (value>>(-scalefactor));
+    if(scalefactor > 0)
+        return (value<<scalefactor);
+    else
+        return (value>>(-scalefactor));
 }
 #endif
 
@@ -142,27 +142,39 @@ FIXP_DBL scaleValue(const FIXP_DBL value, /*!< Value */
 #define FUNCTION_scaleValueSaturate
 inline
 FIXP_DBL scaleValueSaturate(
-        const FIXP_DBL value,
-        INT scalefactor
-        )
+    const FIXP_DBL value,
+    INT scalefactor
+)
 {
-  if(scalefactor > 0) {
-    if (fNorm(value) < scalefactor && value != (FIXP_DBL)0) {
-      if (value > (FIXP_DBL)0) {
-        return (FIXP_DBL)MAXVAL_DBL;
-      } else {
-        return (FIXP_DBL)MINVAL_DBL;
-      }
-    } else {
-      return (value<<scalefactor);
+    if(scalefactor > 0)
+    {
+        if (fNorm(value) < scalefactor && value != (FIXP_DBL)0)
+        {
+            if (value > (FIXP_DBL)0)
+            {
+                return (FIXP_DBL)MAXVAL_DBL;
+            }
+            else
+            {
+                return (FIXP_DBL)MINVAL_DBL;
+            }
+        }
+        else
+        {
+            return (value<<scalefactor);
+        }
     }
-  } else {
-    if (-(DFRACT_BITS-1) > scalefactor) {
-      return (FIXP_DBL)0;
-    } else {
-    return (value>>(-scalefactor));
+    else
+    {
+        if (-(DFRACT_BITS-1) > scalefactor)
+        {
+            return (FIXP_DBL)0;
+        }
+        else
+        {
+            return (value>>(-scalefactor));
+        }
     }
-  }
 }
 #endif
 
@@ -177,17 +189,20 @@ FIXP_DBL scaleValueSaturate(
 #define FUNCTION_scaleValueInPlace
 inline
 void scaleValueInPlace(
-        FIXP_DBL *value, /*!< Value */
-        INT scalefactor   /*!< Scalefactor */
-        )
+    FIXP_DBL *value, /*!< Value */
+    INT scalefactor   /*!< Scalefactor */
+)
 {
-  INT newscale;
-  /* Note: The assignment inside the if conditional allows combining a load with the compare to zero (on ARM and maybe others) */
-  if ((newscale = (scalefactor)) >= 0) {
-    *(value) <<= newscale;
-  } else {
-    *(value) >>= -newscale;
-  }
+    INT newscale;
+    /* Note: The assignment inside the if conditional allows combining a load with the compare to zero (on ARM and maybe others) */
+    if ((newscale = (scalefactor)) >= 0)
+    {
+        *(value) <<= newscale;
+    }
+    else
+    {
+        *(value) >>= -newscale;
+    }
 }
 #endif
 
@@ -201,14 +216,14 @@ void scaleValueInPlace(
  */
 
 #ifndef SATURATE_RIGHT_SHIFT
-  #define SATURATE_RIGHT_SHIFT(src, scale, dBits)                                                      \
+#define SATURATE_RIGHT_SHIFT(src, scale, dBits)                                                      \
             ( (((LONG)(src)>>(scale)) > (LONG)(((1U)<<((dBits)-1))-1))      ? (LONG)(((1U)<<((dBits)-1))-1)    \
               : (((LONG)(src)>>(scale)) < ~((LONG)(((1U)<<((dBits)-1))-1))) ? ~((LONG)(((1U)<<((dBits)-1))-1)) \
               : ((LONG)(src) >> (scale)) )
 #endif
 
 #ifndef SATURATE_LEFT_SHIFT
-  #define SATURATE_LEFT_SHIFT(src, scale, dBits)                                                       \
+#define SATURATE_LEFT_SHIFT(src, scale, dBits)                                                       \
             ( ((LONG)(src) > ((LONG)(((1U)<<((dBits)-1))-1)>>(scale)))    ? (LONG)(((1U)<<((dBits)-1))-1)      \
               : ((LONG)(src) < ~((LONG)(((1U)<<((dBits)-1))-1)>>(scale))) ? ~((LONG)(((1U)<<((dBits)-1))-1))   \
               : ((LONG)(src) << (scale)) )
@@ -233,7 +248,7 @@ void scaleValueInPlace(
 #endif
 
 #ifndef SATURATE_RIGHT_SHIFT_ALT
-  #define SATURATE_RIGHT_SHIFT_ALT(src, scale, dBits)                                                  \
+#define SATURATE_RIGHT_SHIFT_ALT(src, scale, dBits)                                                  \
             ( (((LONG)(src)>>(scale)) > (LONG)(((1U)<<((dBits)-1))-1))      ? (LONG)(((1U)<<((dBits)-1))-1)    \
               : (((LONG)(src)>>(scale)) < ~((LONG)(((1U)<<((dBits)-1))-2))) ? ~((LONG)(((1U)<<((dBits)-1))-2)) \
               : ((LONG)(src) >> (scale)) )

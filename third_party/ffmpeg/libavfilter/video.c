@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2007 Bobby Bingham
  * Copyright Stefano Sabatini <stefasab gmail com>
  * Copyright Vitor Sessak <vitor1001 gmail com>
@@ -62,7 +62,7 @@ AVFrame *ff_default_get_video_buffer(AVFilterLink *link, int w, int h)
 #if FF_API_AVFILTERBUFFER
 AVFilterBufferRef *
 avfilter_get_video_buffer_ref_from_arrays(uint8_t * const data[4], const int linesize[4], int perms,
-                                          int w, int h, enum AVPixelFormat format)
+        int w, int h, enum AVPixelFormat format)
 {
     AVFilterBuffer *pic = av_mallocz(sizeof(AVFilterBuffer));
     AVFilterBufferRef *picref = av_mallocz(sizeof(AVFilterBufferRef));
@@ -110,7 +110,8 @@ AVFrame *ff_get_video_buffer(AVFilterLink *link, int w, int h)
 {
     AVFrame *ret = NULL;
 
-    FF_TPRINTF_START(NULL, get_video_buffer); ff_tlog_link(NULL, link, 0);
+    FF_TPRINTF_START(NULL, get_video_buffer);
+    ff_tlog_link(NULL, link, 0);
 
     if (link->dstpad->get_video_buffer)
         ret = link->dstpad->get_video_buffer(link, w, h);

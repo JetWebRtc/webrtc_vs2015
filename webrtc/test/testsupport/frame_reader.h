@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,55 +18,59 @@
 #include "webrtc/base/scoped_ref_ptr.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class I420Buffer;
-namespace test {
+namespace test
+{
 
 // Handles reading of I420 frames from video files.
-class FrameReader {
- public:
-  virtual ~FrameReader() {}
+class FrameReader
+{
+public:
+    virtual ~FrameReader() {}
 
-  // Initializes the frame reader, i.e. opens the input file.
-  // This must be called before reading of frames has started.
-  // Returns false if an error has occurred, in addition to printing to stderr.
-  virtual bool Init() = 0;
+    // Initializes the frame reader, i.e. opens the input file.
+    // This must be called before reading of frames has started.
+    // Returns false if an error has occurred, in addition to printing to stderr.
+    virtual bool Init() = 0;
 
-  // Reads a frame from the input file. On success, returns the frame.
-  // Returns nullptr if encountering end of file or a read error.
-  virtual rtc::scoped_refptr<I420Buffer> ReadFrame() = 0;
+    // Reads a frame from the input file. On success, returns the frame.
+    // Returns nullptr if encountering end of file or a read error.
+    virtual rtc::scoped_refptr<I420Buffer> ReadFrame() = 0;
 
-  // Closes the input file if open. Essentially makes this class impossible
-  // to use anymore. Will also be invoked by the destructor.
-  virtual void Close() = 0;
+    // Closes the input file if open. Essentially makes this class impossible
+    // to use anymore. Will also be invoked by the destructor.
+    virtual void Close() = 0;
 
-  // Frame length in bytes of a single frame image.
-  virtual size_t FrameLength() = 0;
-  // Total number of frames in the input video source.
-  virtual int NumberOfFrames() = 0;
+    // Frame length in bytes of a single frame image.
+    virtual size_t FrameLength() = 0;
+    // Total number of frames in the input video source.
+    virtual int NumberOfFrames() = 0;
 };
 
-class FrameReaderImpl : public FrameReader {
- public:
-  // Creates a file handler. The input file is assumed to exist and be readable.
-  // Parameters:
-  //   input_filename          The file to read from.
-  //   width, height           Size of each frame to read.
-  FrameReaderImpl(std::string input_filename, int width, int height);
-  ~FrameReaderImpl() override;
-  bool Init() override;
-  rtc::scoped_refptr<I420Buffer> ReadFrame() override;
-  void Close() override;
-  size_t FrameLength() override;
-  int NumberOfFrames() override;
+class FrameReaderImpl : public FrameReader
+{
+public:
+    // Creates a file handler. The input file is assumed to exist and be readable.
+    // Parameters:
+    //   input_filename          The file to read from.
+    //   width, height           Size of each frame to read.
+    FrameReaderImpl(std::string input_filename, int width, int height);
+    ~FrameReaderImpl() override;
+    bool Init() override;
+    rtc::scoped_refptr<I420Buffer> ReadFrame() override;
+    void Close() override;
+    size_t FrameLength() override;
+    int NumberOfFrames() override;
 
- private:
-  std::string input_filename_;
-  size_t frame_length_in_bytes_;
-  int width_;
-  int height_;
-  int number_of_frames_;
-  FILE* input_file_;
+private:
+    std::string input_filename_;
+    size_t frame_length_in_bytes_;
+    int width_;
+    int height_;
+    int number_of_frames_;
+    FILE* input_file_;
 };
 
 }  // namespace test

@@ -36,14 +36,16 @@
 #define B 2
 #define A 3
 
-struct keypoint {
+struct keypoint
+{
     double x, y;
     struct keypoint *next;
 };
 
 #define NB_COMP 3
 
-enum preset {
+enum preset
+{
     PRESET_NONE,
     PRESET_COLOR_NEGATIVE,
     PRESET_CROSS_PROCESS,
@@ -58,7 +60,8 @@ enum preset {
     NB_PRESETS,
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int preset;
     char *comp_points_str[NB_COMP + 1];
@@ -69,25 +72,27 @@ typedef struct {
     int step;
 } CurvesContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
 #define OFFSET(x) offsetof(CurvesContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption curves_options[] = {
+static const AVOption curves_options[] =
+{
     { "preset", "select a color curves preset", OFFSET(preset), AV_OPT_TYPE_INT, {.i64=PRESET_NONE}, PRESET_NONE, NB_PRESETS-1, FLAGS, "preset_name" },
-        { "none",               NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_NONE},                 INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "color_negative",     NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_COLOR_NEGATIVE},       INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "cross_process",      NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_CROSS_PROCESS},        INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "darker",             NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_DARKER},               INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "increase_contrast",  NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_INCREASE_CONTRAST},    INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "lighter",            NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_LIGHTER},              INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "linear_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_LINEAR_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "medium_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_MEDIUM_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "negative",           NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_NEGATIVE},             INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "strong_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_STRONG_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
-        { "vintage",            NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_VINTAGE},              INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "none",               NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_NONE},                 INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "color_negative",     NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_COLOR_NEGATIVE},       INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "cross_process",      NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_CROSS_PROCESS},        INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "darker",             NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_DARKER},               INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "increase_contrast",  NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_INCREASE_CONTRAST},    INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "lighter",            NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_LIGHTER},              INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "linear_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_LINEAR_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "medium_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_MEDIUM_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "negative",           NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_NEGATIVE},             INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "strong_contrast",    NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_STRONG_CONTRAST},      INT_MIN, INT_MAX, FLAGS, "preset_name" },
+    { "vintage",            NULL, 0, AV_OPT_TYPE_CONST, {.i64=PRESET_VINTAGE},              INT_MIN, INT_MAX, FLAGS, "preset_name" },
     { "master","set master points coordinates",OFFSET(comp_points_str[NB_COMP]), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
     { "m",     "set master points coordinates",OFFSET(comp_points_str[NB_COMP]), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
     { "red",   "set red points coordinates",   OFFSET(comp_points_str[0]), AV_OPT_TYPE_STRING, {.str=NULL}, .flags = FLAGS },
@@ -103,12 +108,14 @@ static const AVOption curves_options[] = {
 
 AVFILTER_DEFINE_CLASS(curves);
 
-static const struct {
+static const struct
+{
     const char *r;
     const char *g;
     const char *b;
     const char *master;
-} curves_presets[] = {
+} curves_presets[] =
+{
     [PRESET_COLOR_NEGATIVE] = {
         "0/1 0.129/1 0.466/0.498 0.725/0 1/0",
         "0/1 0.109/1 0.301/0.498 0.517/0 1/0",
@@ -151,21 +158,27 @@ static int parse_points_str(AVFilterContext *ctx, struct keypoint **points, cons
     struct keypoint *last = NULL;
 
     /* construct a linked list based on the key points string */
-    while (p && *p) {
+    while (p && *p)
+    {
         struct keypoint *point = make_point(0, 0, NULL);
         if (!point)
             return AVERROR(ENOMEM);
-        point->x = av_strtod(p, &p); if (p && *p) p++;
-        point->y = av_strtod(p, &p); if (p && *p) p++;
-        if (point->x < 0 || point->x > 1 || point->y < 0 || point->y > 1) {
+        point->x = av_strtod(p, &p);
+        if (p && *p) p++;
+        point->y = av_strtod(p, &p);
+        if (p && *p) p++;
+        if (point->x < 0 || point->x > 1 || point->y < 0 || point->y > 1)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid key point coordinates (%f;%f), "
                    "x and y must be in the [0;1] range.\n", point->x, point->y);
             return AVERROR(EINVAL);
         }
         if (!*points)
             *points = point;
-        if (last) {
-            if ((int)(last->x * 255) >= (int)(point->x * 255)) {
+        if (last)
+        {
+            if ((int)(last->x * 255) >= (int)(point->x * 255))
+            {
                 av_log(ctx, AV_LOG_ERROR, "Key point coordinates (%f;%f) "
                        "and (%f;%f) are too close from each other or not "
                        "strictly increasing on the x-axis\n",
@@ -178,13 +191,16 @@ static int parse_points_str(AVFilterContext *ctx, struct keypoint **points, cons
     }
 
     /* auto insert first key point if missing at x=0 */
-    if (!*points) {
+    if (!*points)
+    {
         last = make_point(0, 0, NULL);
         if (!last)
             return AVERROR(ENOMEM);
         last->x = last->y = 0;
         *points = last;
-    } else if ((*points)->x != 0.) {
+    }
+    else if ((*points)->x != 0.)
+    {
         struct keypoint *newfirst = make_point(0, 0, *points);
         if (!newfirst)
             return AVERROR(ENOMEM);
@@ -194,7 +210,8 @@ static int parse_points_str(AVFilterContext *ctx, struct keypoint **points, cons
     av_assert0(last);
 
     /* auto insert last key point if missing at x=1 */
-    if (last->x != 1.) {
+    if (last->x != 1.)
+    {
         struct keypoint *point = make_point(1, 1, NULL);
         if (!point)
             return AVERROR(ENOMEM);
@@ -207,7 +224,8 @@ static int parse_points_str(AVFilterContext *ctx, struct keypoint **points, cons
 static int get_nb_points(const struct keypoint *d)
 {
     int n = 0;
-    while (d) {
+    while (d)
+    {
         n++;
         d = d->next;
     }
@@ -231,14 +249,16 @@ static int interpolate(AVFilterContext *ctx, uint8_t *y, const struct keypoint *
     double *h = av_malloc((n - 1) * sizeof(*h));
     double *r = av_calloc(n, sizeof(*r));
 
-    if (!matrix || !h || !r) {
+    if (!matrix || !h || !r)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
     /* h(i) = x(i+1) - x(i) */
     i = -1;
-    for (point = points; point; point = point->next) {
+    for (point = points; point; point = point->next)
+    {
         if (i != -1)
             h[i] = point->x - xprev;
         xprev = point->x;
@@ -247,7 +267,8 @@ static int interpolate(AVFilterContext *ctx, uint8_t *y, const struct keypoint *
 
     /* right-side of the polynomials, will be modified to contains the solution */
     point = points;
-    for (i = 1; i < n - 1; i++) {
+    for (i = 1; i < n - 1; i++)
+    {
         double yp = point->y,
                yc = point->next->y,
                yn = point->next->next->y;
@@ -261,14 +282,16 @@ static int interpolate(AVFilterContext *ctx, uint8_t *y, const struct keypoint *
 
     /* left side of the polynomials into a tridiagonal matrix. */
     matrix[0][MD] = matrix[n - 1][MD] = 1;
-    for (i = 1; i < n - 1; i++) {
+    for (i = 1; i < n - 1; i++)
+    {
         matrix[i][BD] = h[i-1];
         matrix[i][MD] = 2 * (h[i-1] + h[i]);
         matrix[i][AD] = h[i];
     }
 
     /* tridiagonal solving of the linear system */
-    for (i = 1; i < n; i++) {
+    for (i = 1; i < n; i++)
+    {
         double den = matrix[i][MD] - matrix[i][BD] * matrix[i-1][AD];
         double k = den ? 1./den : 1.;
         matrix[i][AD] *= k;
@@ -281,7 +304,8 @@ static int interpolate(AVFilterContext *ctx, uint8_t *y, const struct keypoint *
     i = 0;
     point = points;
     av_assert0(point->next); // always at least 2 key points
-    while (point->next) {
+    while (point->next)
+    {
         double yc = point->y;
         double yn = point->next->y;
 
@@ -297,7 +321,8 @@ static int interpolate(AVFilterContext *ctx, uint8_t *y, const struct keypoint *
         av_assert0(x_start >= 0 && x_start <= 255 &&
                    x_end   >= 0 && x_end   <= 255);
 
-        for (x = x_start; x <= x_end; x++) {
+        for (x = x_start; x <= x_end; x++)
+        {
             double xx = (x - x_start) * 1/255.;
             double yy = a + b*xx + c*xx*xx + d*xx*xx*xx;
             y[x] = av_clipf(yy, 0, 1) * 255;
@@ -342,23 +367,28 @@ static int parse_psfile(AVFilterContext *ctx, const char *fname)
 
     READ16(version);
     READ16(nb_curves);
-    for (i = 0; i < FFMIN(nb_curves, FF_ARRAY_ELEMS(comp_ids)); i++) {
+    for (i = 0; i < FFMIN(nb_curves, FF_ARRAY_ELEMS(comp_ids)); i++)
+    {
         int nb_points, n;
         av_bprint_clear(&ptstr);
         READ16(nb_points);
-        for (n = 0; n < nb_points; n++) {
+        for (n = 0; n < nb_points; n++)
+        {
             int y, x;
             READ16(y);
             READ16(x);
             av_bprintf(&ptstr, "%f/%f ", x / 255., y / 255.);
         }
-        if (*ptstr.str) {
+        if (*ptstr.str)
+        {
             char **pts = &curves->comp_points_str[comp_ids[i]];
-            if (!*pts) {
+            if (!*pts)
+            {
                 *pts = av_strdup(ptstr.str);
                 av_log(ctx, AV_LOG_DEBUG, "curves %d (intid=%d) [%d points]: [%s]\n",
                        i, comp_ids[i], nb_points, *pts);
-                if (!*pts) {
+                if (!*pts)
+                {
                     ret = AVERROR(ENOMEM);
                     goto end;
                 }
@@ -382,8 +412,10 @@ static av_cold int init(AVFilterContext *ctx)
     //if (!allp && curves->preset != PRESET_NONE && curves_presets[curves->preset].all)
     //    allp = curves_presets[curves->preset].all;
 
-    if (allp) {
-        for (i = 0; i < NB_COMP; i++) {
+    if (allp)
+    {
+        for (i = 0; i < NB_COMP; i++)
+        {
             if (!pts[i])
                 pts[i] = av_strdup(allp);
             if (!pts[i])
@@ -391,13 +423,15 @@ static av_cold int init(AVFilterContext *ctx)
         }
     }
 
-    if (curves->psfile) {
+    if (curves->psfile)
+    {
         ret = parse_psfile(ctx, curves->psfile);
         if (ret < 0)
             return ret;
     }
 
-    if (curves->preset != PRESET_NONE) {
+    if (curves->preset != PRESET_NONE)
+    {
 #define SET_COMP_IF_NOT_SET(n, name) do {                           \
     if (!pts[n] && curves_presets[curves->preset].name) {           \
         pts[n] = av_strdup(curves_presets[curves->preset].name);    \
@@ -411,7 +445,8 @@ static av_cold int init(AVFilterContext *ctx)
         SET_COMP_IF_NOT_SET(3, master);
     }
 
-    for (i = 0; i < NB_COMP + 1; i++) {
+    for (i = 0; i < NB_COMP + 1; i++)
+    {
         ret = parse_points_str(ctx, comp_points + i, curves->comp_points_str[i]);
         if (ret < 0)
             return ret;
@@ -420,17 +455,21 @@ static av_cold int init(AVFilterContext *ctx)
             return ret;
     }
 
-    if (pts[NB_COMP]) {
+    if (pts[NB_COMP])
+    {
         for (i = 0; i < NB_COMP; i++)
             for (j = 0; j < 256; j++)
                 curves->graph[i][j] = curves->graph[NB_COMP][curves->graph[i][j]];
     }
 
-    if (av_log_get_level() >= AV_LOG_VERBOSE) {
-        for (i = 0; i < NB_COMP; i++) {
+    if (av_log_get_level() >= AV_LOG_VERBOSE)
+    {
+        for (i = 0; i < NB_COMP; i++)
+        {
             struct keypoint *point = comp_points[i];
             av_log(ctx, AV_LOG_VERBOSE, "#%d points:", i);
-            while (point) {
+            while (point)
+            {
                 av_log(ctx, AV_LOG_VERBOSE, " (%f;%f)", point->x, point->y);
                 point = point->next;
             }
@@ -442,9 +481,11 @@ static av_cold int init(AVFilterContext *ctx)
         }
     }
 
-    for (i = 0; i < NB_COMP + 1; i++) {
+    for (i = 0; i < NB_COMP + 1; i++)
+    {
         struct keypoint *point = comp_points[i];
-        while (point) {
+        while (point)
+        {
             struct keypoint *next = point->next;
             av_free(point);
             point = next;
@@ -456,7 +497,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24,  AV_PIX_FMT_BGR24,
         AV_PIX_FMT_RGBA,   AV_PIX_FMT_BGRA,
         AV_PIX_FMT_ARGB,   AV_PIX_FMT_ABGR,
@@ -499,8 +541,10 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     uint8_t       *dst = out->data[0] + slice_start * out->linesize[0];
     const uint8_t *src =  in->data[0] + slice_start *  in->linesize[0];
 
-    for (y = slice_start; y < slice_end; y++) {
-        for (x = 0; x < in->width * step; x += step) {
+    for (y = slice_start; y < slice_end; y++)
+    {
+        for (x = 0; x < in->width * step; x += step)
+        {
             dst[x + r] = curves->graph[R][src[x + r]];
             dst[x + g] = curves->graph[G][src[x + g]];
             dst[x + b] = curves->graph[B][src[x + b]];
@@ -520,11 +564,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
     ThreadData td;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -541,7 +589,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad curves_inputs[] = {
+static const AVFilterPad curves_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -551,7 +600,8 @@ static const AVFilterPad curves_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad curves_outputs[] = {
+static const AVFilterPad curves_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -559,7 +609,8 @@ static const AVFilterPad curves_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_curves = {
+AVFilter ff_vf_curves =
+{
     .name          = "curves",
     .description   = NULL_IF_CONFIG_SMALL("Adjust components curves."),
     .priv_size     = sizeof(CurvesContext),

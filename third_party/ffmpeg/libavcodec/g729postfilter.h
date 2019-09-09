@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.729, G729 Annex D postfilter
  * Copyright (c) 2008 Vladimir Voroshilov
  *
@@ -95,10 +95,10 @@
  *   Tilt-compensation (4.2.3)
  */
 void ff_g729_postfilter(AudioDSPContext *adsp, int16_t* ht_prev_data, int* voicing,
-                     const int16_t *lp_filter_coeffs, int pitch_delay_int,
-                     int16_t* residual, int16_t* res_filter_data,
-                     int16_t* pos_filter_data, int16_t *speech,
-                     int subframe_size);
+                        const int16_t *lp_filter_coeffs, int pitch_delay_int,
+                        int16_t* residual, int16_t* res_filter_data,
+                        int16_t* pos_filter_data, int16_t *speech,
+                        int subframe_size);
 
 /**
  * \brief Adaptive gain control (4.2.4)
@@ -111,6 +111,6 @@ void ff_g729_postfilter(AudioDSPContext *adsp, int16_t* ht_prev_data, int* voici
  * \return (Q12) last value of gain coefficient
  */
 int16_t ff_g729_adaptive_gain_control(int gain_before, int gain_after, int16_t *speech,
-                                   int subframe_size, int16_t gain_prev);
+                                      int subframe_size, int16_t gain_prev);
 
 #endif // FFMPEG_G729POSTFILTER_H

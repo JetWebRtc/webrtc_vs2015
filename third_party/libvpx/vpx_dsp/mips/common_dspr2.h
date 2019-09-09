@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,22 +23,26 @@ extern "C" {
 
 extern uint8_t *vpx_ff_cropTbl;  // From "vpx_dsp/mips/intrapred4_dspr2.c"
 
-static INLINE void prefetch_load(const unsigned char *src) {
-  __asm__ __volatile__("pref   0,  0(%[src])   \n\t" : : [src] "r"(src));
+static INLINE void prefetch_load(const unsigned char *src)
+{
+    __asm__ __volatile__("pref   0,  0(%[src])   \n\t" : : [src] "r"(src));
 }
 
 /* prefetch data for store */
-static INLINE void prefetch_store(unsigned char *dst) {
-  __asm__ __volatile__("pref   1,  0(%[dst])   \n\t" : : [dst] "r"(dst));
+static INLINE void prefetch_store(unsigned char *dst)
+{
+    __asm__ __volatile__("pref   1,  0(%[dst])   \n\t" : : [dst] "r"(dst));
 }
 
-static INLINE void prefetch_load_streamed(const unsigned char *src) {
-  __asm__ __volatile__("pref   4,  0(%[src])   \n\t" : : [src] "r"(src));
+static INLINE void prefetch_load_streamed(const unsigned char *src)
+{
+    __asm__ __volatile__("pref   4,  0(%[src])   \n\t" : : [src] "r"(src));
 }
 
 /* prefetch data for store */
-static INLINE void prefetch_store_streamed(unsigned char *dst) {
-  __asm__ __volatile__("pref   5,  0(%[dst])   \n\t" : : [dst] "r"(dst));
+static INLINE void prefetch_store_streamed(unsigned char *dst)
+{
+    __asm__ __volatile__("pref   5,  0(%[dst])   \n\t" : : [dst] "r"(dst));
 }
 #endif  // #if HAVE_DSPR2
 #ifdef __cplusplus

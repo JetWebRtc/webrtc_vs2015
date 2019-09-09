@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,18 +19,21 @@
 #include "webrtc/system_wrappers/source/rw_lock_posix.h"
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
-RWLockWrapper* RWLockWrapper::CreateRWLock() {
+RWLockWrapper* RWLockWrapper::CreateRWLock()
+{
 #ifdef _WIN32
-  // Native implementation is faster, so use that if available.
-  RWLockWrapper* lock = RWLockWin::Create();
-  if (lock) {
-    return lock;
-  }
-  return new RWLockWinXP();
+    // Native implementation is faster, so use that if available.
+    RWLockWrapper* lock = RWLockWin::Create();
+    if (lock)
+    {
+        return lock;
+    }
+    return new RWLockWinXP();
 #else
-  return RWLockPosix::Create();
+    return RWLockPosix::Create();
 #endif
 }
 

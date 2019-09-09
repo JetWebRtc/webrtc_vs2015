@@ -1,4 +1,4 @@
-/*
+﻿/*
  * err.c
  *
  * error status reporting functions
@@ -43,7 +43,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "err.h"
@@ -70,7 +70,8 @@ srtp_err_status_t srtp_err_reporting_init (const char *ident)
 #elif defined(USE_ERR_REPORTING_FILE)
     /* open file for error reporting */
     srtp_err_file = fopen(ERR_REPORTING_FILE, "w");
-    if (srtp_err_file == NULL) {
+    if (srtp_err_file == NULL)
+    {
         return srtp_err_status_init_fail;
     }
 #endif
@@ -82,10 +83,12 @@ void srtp_err_report (int priority, const char *format, ...)
 {
     va_list args;
 
-    if (priority <= srtp_err_level) {
+    if (priority <= srtp_err_level)
+    {
 
         va_start(args, format);
-        if (srtp_err_file != NULL) {
+        if (srtp_err_file != NULL)
+        {
             vfprintf(srtp_err_file, format, args);
             /*      fprintf(srtp_err_file, "\n"); */
         }

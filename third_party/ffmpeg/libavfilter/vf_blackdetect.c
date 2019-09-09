@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     double  black_min_duration_time; ///< minimum duration of detected black, in seconds
     int64_t black_min_duration;      ///< minimum duration of detected black, expressed in timebase units
@@ -49,7 +50,8 @@ typedef struct {
 #define OFFSET(x) offsetof(BlackDetectContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption blackdetect_options[] = {
+static const AVOption blackdetect_options[] =
+{
     { "d",                  "set minimum detected black duration in seconds", OFFSET(black_min_duration_time), AV_OPT_TYPE_DOUBLE, {.dbl=2}, 0, DBL_MAX, FLAGS },
     { "black_min_duration", "set minimum detected black duration in seconds", OFFSET(black_min_duration_time), AV_OPT_TYPE_DOUBLE, {.dbl=2}, 0, DBL_MAX, FLAGS },
     { "picture_black_ratio_th", "set the picture black ratio threshold", OFFSET(picture_black_ratio_th), AV_OPT_TYPE_DOUBLE, {.dbl=.98}, 0, 1, FLAGS },
@@ -64,13 +66,15 @@ AVFILTER_DEFINE_CLASS(blackdetect);
 #define YUVJ_FORMATS \
     AV_PIX_FMT_YUVJ411P, AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ422P, AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P
 
-static const enum AVPixelFormat yuvj_formats[] = {
+static const enum AVPixelFormat yuvj_formats[] =
+{
     YUVJ_FORMATS, AV_PIX_FMT_NONE
 };
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P,
@@ -95,9 +99,9 @@ static int config_input(AVFilterLink *inlink)
         blackdetect->black_min_duration_time / av_q2d(inlink->time_base);
 
     blackdetect->pixel_black_th_i = ff_fmt_is_in(inlink->format, yuvj_formats) ?
-        // luminance_minimum_value + pixel_black_th * luminance_range_size
-             blackdetect->pixel_black_th *  255 :
-        16 + blackdetect->pixel_black_th * (235 - 16);
+                                    // luminance_minimum_value + pixel_black_th * luminance_range_size
+                                    blackdetect->pixel_black_th *  255 :
+                                    16 + blackdetect->pixel_black_th * (235 - 16);
 
     av_log(blackdetect, AV_LOG_VERBOSE,
            "black_min_duration:%s pixel_black_th:%f pixel_black_th_i:%d picture_black_ratio_th:%f\n",
@@ -112,7 +116,8 @@ static void check_black_end(AVFilterContext *ctx)
     BlackDetectContext *blackdetect = ctx->priv;
     AVFilterLink *inlink = ctx->inputs[0];
 
-    if ((blackdetect->black_end - blackdetect->black_start) >= blackdetect->black_min_duration) {
+    if ((blackdetect->black_end - blackdetect->black_start) >= blackdetect->black_min_duration)
+    {
         av_log(blackdetect, AV_LOG_INFO,
                "black_start:%s black_end:%s black_duration:%s\n",
                av_ts2timestr(blackdetect->black_start, &inlink->time_base),
@@ -128,7 +133,8 @@ static int request_frame(AVFilterLink *outlink)
     AVFilterLink *inlink = ctx->inputs[0];
     int ret = ff_request_frame(inlink);
 
-    if (ret == AVERROR_EOF && blackdetect->black_started) {
+    if (ret == AVERROR_EOF && blackdetect->black_started)
+    {
         // FIXME: black_end should be set to last_picref_pts + last_picref_duration
         blackdetect->black_end = blackdetect->last_picref_pts;
         check_black_end(ctx);
@@ -145,7 +151,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *picref)
     const uint8_t *p = picref->data[0];
     int x, i;
 
-    for (i = 0; i < inlink->h; i++) {
+    for (i = 0; i < inlink->h; i++)
+    {
         for (x = 0; x < inlink->w; x++)
             blackdetect->nb_black_pixels += p[x] <= blackdetect->pixel_black_th_i;
         p += picref->linesize[0];
@@ -159,21 +166,25 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *picref)
            av_ts2str(picref->pts), av_ts2timestr(picref->pts, &inlink->time_base),
            av_get_picture_type_char(picref->pict_type));
 
-    if (picture_black_ratio >= blackdetect->picture_black_ratio_th) {
-        if (!blackdetect->black_started) {
+    if (picture_black_ratio >= blackdetect->picture_black_ratio_th)
+    {
+        if (!blackdetect->black_started)
+        {
             /* black starts here */
             blackdetect->black_started = 1;
             blackdetect->black_start = picref->pts;
             av_dict_set(avpriv_frame_get_metadatap(picref), "lavfi.black_start",
-                av_ts2timestr(blackdetect->black_start, &inlink->time_base), 0);
+                        av_ts2timestr(blackdetect->black_start, &inlink->time_base), 0);
         }
-    } else if (blackdetect->black_started) {
+    }
+    else if (blackdetect->black_started)
+    {
         /* black ends here */
         blackdetect->black_started = 0;
         blackdetect->black_end = picref->pts;
         check_black_end(ctx);
         av_dict_set(avpriv_frame_get_metadatap(picref), "lavfi.black_end",
-            av_ts2timestr(blackdetect->black_end, &inlink->time_base), 0);
+                    av_ts2timestr(blackdetect->black_end, &inlink->time_base), 0);
     }
 
     blackdetect->last_picref_pts = picref->pts;
@@ -181,7 +192,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *picref)
     return ff_filter_frame(inlink->dst->outputs[0], picref);
 }
 
-static const AVFilterPad blackdetect_inputs[] = {
+static const AVFilterPad blackdetect_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -191,7 +203,8 @@ static const AVFilterPad blackdetect_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad blackdetect_outputs[] = {
+static const AVFilterPad blackdetect_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -200,7 +213,8 @@ static const AVFilterPad blackdetect_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_blackdetect = {
+AVFilter ff_vf_blackdetect =
+{
     .name          = "blackdetect",
     .description   = NULL_IF_CONFIG_SMALL("Detect video intervals that are (almost) black."),
     .priv_size     = sizeof(BlackDetectContext),

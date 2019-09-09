@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP muxer chaining code
  * Copyright (c) 2010 Martin Storsjo
  *
@@ -35,20 +35,23 @@ int ff_rtp_chain_mux_open(AVFormatContext **out, AVFormatContext *s,
     uint8_t *rtpflags;
     AVDictionary *opts = NULL;
 
-    if (!rtp_format) {
+    if (!rtp_format)
+    {
         ret = AVERROR(ENOSYS);
         goto fail;
     }
 
     /* Allocate an AVFormatContext for each output stream */
     rtpctx = avformat_alloc_context();
-    if (!rtpctx) {
+    if (!rtpctx)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
     rtpctx->oformat = rtp_format;
-    if (!avformat_new_stream(rtpctx, NULL)) {
+    if (!avformat_new_stream(rtpctx, NULL))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -77,20 +80,26 @@ int ff_rtp_chain_mux_open(AVFormatContext **out, AVFormatContext *s,
     avcodec_copy_context(rtpctx->streams[0]->codec, st->codec);
     rtpctx->streams[0]->time_base = st->time_base;
 
-    if (handle) {
+    if (handle)
+    {
         ret = ffio_fdopen(&rtpctx->pb, handle);
         if (ret < 0)
             ffurl_close(handle);
-    } else
+    }
+    else
         ret = ffio_open_dyn_packet_buf(&rtpctx->pb, packet_size);
     if (!ret)
         ret = avformat_write_header(rtpctx, &opts);
     av_dict_free(&opts);
 
-    if (ret) {
-        if (handle && rtpctx->pb) {
+    if (ret)
+    {
+        if (handle && rtpctx->pb)
+        {
             avio_closep(&rtpctx->pb);
-        } else if (rtpctx->pb) {
+        }
+        else if (rtpctx->pb)
+        {
             ffio_free_dyn_buf(&rtpctx->pb);
         }
         avformat_free_context(rtpctx);

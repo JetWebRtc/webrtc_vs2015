@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common stuff for some Microsoft Screen codecs
  * Copyright (C) 2012 Konstantin Shishkov
  *

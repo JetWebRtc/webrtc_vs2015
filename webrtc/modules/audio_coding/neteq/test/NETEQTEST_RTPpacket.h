@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/typedefs.h"
 #include "webrtc/modules/include/module_common_types.h"
 
-enum stereoModes {
+enum stereoModes
+{
     stereoModeMono,
     stereoModeSample1,
     stereoModeSample2,
@@ -28,7 +29,10 @@ class NETEQTEST_RTPpacket
 {
 public:
     NETEQTEST_RTPpacket();
-    bool operator !() const { return (dataLen() < 0); };
+    bool operator !() const
+    {
+        return (dataLen() < 0);
+    };
     virtual ~NETEQTEST_RTPpacket();
     void reset();
     static int skipFileHeader(FILE *fp);
@@ -45,7 +49,10 @@ public:
     int16_t dataLen() const;
     bool isParsed() const;
     bool isLost() const;
-    uint32_t time() const { return _receiveTime; };
+    uint32_t time() const
+    {
+        return _receiveTime;
+    };
 
     uint8_t  payloadType() const;
     uint16_t sequenceNumber() const;
@@ -58,7 +65,10 @@ public:
     int setTimeStamp(uint32_t ts);
     int setSSRC(uint32_t ssrc);
     int setMarkerBit(uint8_t mb);
-    void setTime(uint32_t receiveTime) { _receiveTime = receiveTime; };
+    void setTime(uint32_t receiveTime)
+    {
+        _receiveTime = receiveTime;
+    };
 
     int setRTPheader(const webrtc::WebRtcRTPHeader* RTPinfo);
 
@@ -94,7 +104,9 @@ private:
     uint16_t parseRTPheader(webrtc::WebRtcRTPHeader* RTPinfo,
                             uint8_t **payloadPtr = NULL) const;
     uint16_t parseRTPheader(uint8_t **payloadPtr = NULL)
-        { return parseRTPheader(&_rtpInfo, payloadPtr);};
+    {
+        return parseRTPheader(&_rtpInfo, payloadPtr);
+    };
     int calcPadLength(int i_P) const;
     void splitStereoSample(NETEQTEST_RTPpacket* slaveRtp, int stride);
     void splitStereoFrame(NETEQTEST_RTPpacket* slaveRtp);

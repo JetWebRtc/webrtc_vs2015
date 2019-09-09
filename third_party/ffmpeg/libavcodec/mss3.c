@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Screen 3 (aka Microsoft ATC Screen) decoder
  * Copyright (c) 2012 Konstantin Shishkov
  *
@@ -36,20 +36,23 @@
 #define MODEL_SCALE        15
 #define MODEL256_SEC_SCALE  9
 
-typedef struct Model2 {
+typedef struct Model2
+{
     int      upd_val, till_rescale;
     unsigned zero_freq,  zero_weight;
     unsigned total_freq, total_weight;
 } Model2;
 
-typedef struct Model {
+typedef struct Model
+{
     int weights[16], freqs[16];
     int num_syms;
     int tot_weight;
     int upd_val, max_upd_val, till_rescale;
 } Model;
 
-typedef struct Model256 {
+typedef struct Model256
+{
     int weights[256], freqs[256];
     int tot_weight;
     int secondary[68];
@@ -58,14 +61,16 @@ typedef struct Model256 {
 } Model256;
 
 #define RAC_BOTTOM 0x01000000
-typedef struct RangeCoder {
+typedef struct RangeCoder
+{
     const uint8_t *src, *src_end;
 
     uint32_t range, low;
     int got_error;
 } RangeCoder;
 
-enum BlockType {
+enum BlockType
+{
     FILL_BLOCK = 0,
     IMAGE_BLOCK,
     DCT_BLOCK,
@@ -73,23 +78,27 @@ enum BlockType {
     SKIP_BLOCK
 };
 
-typedef struct BlockTypeContext {
+typedef struct BlockTypeContext
+{
     int      last_type;
     Model    bt_model[5];
 } BlockTypeContext;
 
-typedef struct FillBlockCoder {
+typedef struct FillBlockCoder
+{
     int      fill_val;
     Model    coef_model;
 } FillBlockCoder;
 
-typedef struct ImageBlockCoder {
+typedef struct ImageBlockCoder
+{
     Model256 esc_model, vec_entry_model;
     Model    vec_size_model;
     Model    vq_model[125];
 } ImageBlockCoder;
 
-typedef struct DCTBlockCoder {
+typedef struct DCTBlockCoder
+{
     int      *prev_dc;
     int      prev_dc_stride;
     int      prev_dc_height;
@@ -100,13 +109,15 @@ typedef struct DCTBlockCoder {
     Model256 ac_model;
 } DCTBlockCoder;
 
-typedef struct HaarBlockCoder {
+typedef struct HaarBlockCoder
+{
     int      quality, scale;
     Model256 coef_model;
     Model    coef_hi_model;
 } HaarBlockCoder;
 
-typedef struct MSS3Context {
+typedef struct MSS3Context
+{
     AVCodecContext   *avctx;
     AVFrame          *pic;
 
@@ -144,7 +155,8 @@ static void model2_update(Model2 *m, int bit)
         return;
 
     m->total_weight += m->upd_val;
-    if (m->total_weight > 0x2000) {
+    if (m->total_weight > 0x2000)
+    {
         m->total_weight = (m->total_weight + 1) >> 1;
         m->zero_weight  = (m->zero_weight  + 1) >> 1;
         if (m->total_weight == m->zero_weight)
@@ -170,15 +182,18 @@ static void model_update(Model *m, int val)
         return;
     m->tot_weight += m->upd_val;
 
-    if (m->tot_weight > 0x8000) {
+    if (m->tot_weight > 0x8000)
+    {
         m->tot_weight = 0;
-        for (i = 0; i < m->num_syms; i++) {
+        for (i = 0; i < m->num_syms; i++)
+        {
             m->weights[i]  = (m->weights[i] + 1) >> 1;
             m->tot_weight +=  m->weights[i];
         }
     }
     scale = 0x80000000u / m->tot_weight;
-    for (i = 0; i < m->num_syms; i++) {
+    for (i = 0; i < m->num_syms; i++)
+    {
         m->freqs[i] = sum * scale >> 16;
         sum += m->weights[i];
     }
@@ -202,7 +217,7 @@ static void model_reset(Model *m)
     m->till_rescale = 1;
     model_update(m, m->num_syms - 1);
     m->till_rescale =
-    m->upd_val      = (m->num_syms + 6) >> 1;
+        m->upd_val      = (m->num_syms + 6) >> 1;
 }
 
 static av_cold void model_init(Model *m, int num_syms)
@@ -225,16 +240,19 @@ static void model256_update(Model256 *m, int val)
         return;
     m->tot_weight += m->upd_val;
 
-    if (m->tot_weight > 0x8000) {
+    if (m->tot_weight > 0x8000)
+    {
         m->tot_weight = 0;
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             m->weights[i]  = (m->weights[i] + 1) >> 1;
             m->tot_weight +=  m->weights[i];
         }
     }
     scale = 0x80000000u / m->tot_weight;
     m->secondary[0] = 0;
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         m->freqs[i] = sum * scale >> 16;
         sum += m->weights[i];
         send = m->freqs[i] >> MODEL256_SEC_SCALE;
@@ -263,7 +281,7 @@ static void model256_reset(Model256 *m)
     m->till_rescale = 1;
     model256_update(m, 255);
     m->till_rescale =
-    m->upd_val      = (256 + 6) >> 1;
+        m->upd_val      = (256 + 6) >> 1;
 }
 
 static av_cold void model256_init(Model256 *m)
@@ -289,12 +307,16 @@ static void rac_init(RangeCoder *c, const uint8_t *src, int size)
 
 static void rac_normalise(RangeCoder *c)
 {
-    for (;;) {
+    for (;;)
+    {
         c->range <<= 8;
         c->low   <<= 8;
-        if (c->src < c->src_end) {
+        if (c->src < c->src_end)
+        {
             c->low |= *c->src++;
-        } else if (!c->low) {
+        }
+        else if (!c->low)
+        {
             c->got_error = 1;
             c->low = 1;
         }
@@ -339,10 +361,13 @@ static int rac_get_model2_sym(RangeCoder *c, Model2 *m)
 
     helper = m->zero_freq * (c->range >> MODEL2_SCALE);
     bit    = (c->low >= helper);
-    if (bit) {
+    if (bit)
+    {
         c->low   -= helper;
         c->range -= helper;
-    } else {
+    }
+    else
+    {
         c->range  = helper;
     }
 
@@ -365,17 +390,22 @@ static int rac_get_model_sym(RangeCoder *c, Model *m)
     val        = 0;
     end        = m->num_syms >> 1;
     end2       = m->num_syms;
-    do {
+    do
+    {
         helper = m->freqs[end] * c->range;
-        if (helper <= c->low) {
+        if (helper <= c->low)
+        {
             val   = end;
             prob  = helper;
-        } else {
+        }
+        else
+        {
             end2  = end;
             prob2 = helper;
         }
         end = (end2 + val) >> 1;
-    } while (end != val);
+    }
+    while (end != val);
     c->low  -= prob;
     c->range = prob2 - prob;
     if (c->range < RAC_BOTTOM)
@@ -400,12 +430,16 @@ static int rac_get_model256_sym(RangeCoder *c, Model256 *m)
     val        = m->secondary[ssym];
 
     end = start = m->secondary[ssym + 1] + 1;
-    while (end > val + 1) {
+    while (end > val + 1)
+    {
         ssym = (end + val) >> 1;
-        if (m->freqs[ssym] <= helper) {
+        if (m->freqs[ssym] <= helper)
+        {
             end = start;
             val = ssym;
-        } else {
+        }
+        else
+        {
             end   = (end + val) >> 1;
             start = ssym;
         }
@@ -436,9 +470,11 @@ static int decode_coeff(RangeCoder *c, Model *m)
     int val, sign;
 
     val = rac_get_model_sym(c, m);
-    if (val) {
+    if (val)
+    {
         sign = rac_get_bit(c);
-        if (val > 1) {
+        if (val > 1)
+        {
             val--;
             val = (1 << val) + rac_get_bits(c, val);
         }
@@ -476,19 +512,21 @@ static void decode_image_block(RangeCoder *c, ImageBlockCoder *ic,
         vec[i] = 0;
     memset(prev_line, 0, sizeof(prev_line));
 
-    for (j = 0; j < block_size; j++) {
+    for (j = 0; j < block_size; j++)
+    {
         A = 0;
         B = 0;
-        for (i = 0; i < block_size; i++) {
+        for (i = 0; i < block_size; i++)
+        {
             C = B;
             B = prev_line[i];
             A = rac_get_model_sym(c, &ic->vq_model[A + B * 5 + C * 25]);
 
             prev_line[i] = A;
             if (A < 4)
-               dst[i] = vec[A];
+                dst[i] = vec[A];
             else
-               dst[i] = rac_get_model256_sym(c, &ic->esc_model);
+                dst[i] = rac_get_model256_sym(c, &ic->esc_model);
         }
         dst += stride;
     }
@@ -503,8 +541,10 @@ static int decode_dct(RangeCoder *c, DCTBlockCoder *bc, int *block,
     memset(block, 0, sizeof(*block) * 64);
 
     dc = decode_coeff(c, &bc->dc_model);
-    if (by) {
-        if (bx) {
+    if (by)
+    {
+        if (bx)
+        {
             int l, tl, t;
 
             l  = bc->prev_dc[blk_pos - 1];
@@ -515,20 +555,26 @@ static int decode_dct(RangeCoder *c, DCTBlockCoder *bc, int *block,
                 dc += l;
             else
                 dc += t;
-        } else {
+        }
+        else
+        {
             dc += bc->prev_dc[blk_pos - bc->prev_dc_stride];
         }
-    } else if (bx) {
+    }
+    else if (bx)
+    {
         dc += bc->prev_dc[bx - 1];
     }
     bc->prev_dc[blk_pos] = dc;
     block[0]             = dc * bc->qmat[0];
 
-    while (pos < 64) {
+    while (pos < 64)
+    {
         val = rac_get_model256_sym(c, &bc->ac_model);
         if (!val)
             return 0;
-        if (val == 0xF0) {
+        if (val == 0xF0)
+        {
             pos += 16;
             continue;
         }
@@ -541,7 +587,8 @@ static int decode_dct(RangeCoder *c, DCTBlockCoder *bc, int *block,
             return -1;
 
         sign = rac_get_model2_sym(c, &bc->sign_model);
-        if (val > 1) {
+        if (val > 1)
+        {
             val--;
             val = (1 << val) + rac_get_bits(c, val);
         }
@@ -567,9 +614,12 @@ static void decode_dct_block(RangeCoder *c, DCTBlockCoder *bc,
     bx = mb_x * nblocks;
     by = mb_y * nblocks;
 
-    for (j = 0; j < nblocks; j++) {
-        for (i = 0; i < nblocks; i++) {
-            if (decode_dct(c, bc, block, bx + i, by + j)) {
+    for (j = 0; j < nblocks; j++)
+    {
+        for (i = 0; i < nblocks; i++)
+        {
+            if (decode_dct(c, bc, block, bx + i, by + j))
+            {
                 c->got_error = 1;
                 return;
             }
@@ -587,8 +637,10 @@ static void decode_haar_block(RangeCoder *c, HaarBlockCoder *hc,
     int A, B, C, D, t1, t2, t3, t4;
     int i, j;
 
-    for (j = 0; j < block_size; j++) {
-        for (i = 0; i < block_size; i++) {
+    for (j = 0; j < block_size; j++)
+    {
+        for (i = 0; i < block_size; i++)
+        {
             if (i < hsize && j < hsize)
                 block[i] = rac_get_model256_sym(c, &hc->coef_model);
             else
@@ -599,8 +651,10 @@ static void decode_haar_block(RangeCoder *c, HaarBlockCoder *hc,
     }
     block -= block_size * block_size;
 
-    for (j = 0; j < hsize; j++) {
-        for (i = 0; i < hsize; i++) {
+    for (j = 0; j < hsize; j++)
+    {
+        for (i = 0; i < hsize; i++)
+        {
             A = block[i];
             B = block[i + hsize];
             C = block[i + hsize * block_size];
@@ -624,7 +678,8 @@ static void reset_coders(MSS3Context *ctx, int quality)
 {
     int i, j;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         ctx->btype[i].last_type = SKIP_BLOCK;
         for (j = 0; j < 5; j++)
             model_reset(&ctx->btype[i].bt_model[j]);
@@ -635,7 +690,8 @@ static void reset_coders(MSS3Context *ctx, int quality)
         model_reset(&ctx->image_coder[i].vec_size_model);
         for (j = 0; j < 125; j++)
             model_reset(&ctx->image_coder[i].vq_model[j]);
-        if (ctx->dct_coder[i].quality != quality) {
+        if (ctx->dct_coder[i].quality != quality)
+        {
             ctx->dct_coder[i].quality = quality;
             ff_mss34_gen_quant_mat(ctx->dct_coder[i].qmat, quality, !i);
         }
@@ -646,7 +702,8 @@ static void reset_coders(MSS3Context *ctx, int quality)
         model_reset(&ctx->dct_coder[i].dc_model);
         model2_reset(&ctx->dct_coder[i].sign_model);
         model256_reset(&ctx->dct_coder[i].ac_model);
-        if (ctx->haar_coder[i].quality != quality) {
+        if (ctx->haar_coder[i].quality != quality)
+        {
             ctx->haar_coder[i].quality = quality;
             ctx->haar_coder[i].scale   = 17 - 7 * quality / 50;
         }
@@ -659,7 +716,8 @@ static av_cold void init_coders(MSS3Context *ctx)
 {
     int i, j;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         for (j = 0; j < 5; j++)
             model_init(&ctx->btype[i].bt_model[j], 5);
         model_init(&ctx->fill_coder[i].coef_model, 12);
@@ -688,7 +746,8 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     int x, y, i, mb_width, mb_height, blk_size, btype;
     int ret;
 
-    if (buf_size < HEADER_SIZE) {
+    if (buf_size < HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Frame should have at least %d bytes, got %d instead\n",
                HEADER_SIZE, buf_size);
@@ -697,7 +756,8 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     bytestream2_init(&gb, buf, buf_size);
     keyframe   = bytestream2_get_be32(&gb);
-    if (keyframe & ~0x301) {
+    if (keyframe & ~0x301)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid frame type %X\n", keyframe);
         return AVERROR_INVALIDDATA;
     }
@@ -709,21 +769,24 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     dec_height = bytestream2_get_be16(&gb);
 
     if (dec_x + dec_width > avctx->width ||
-        dec_y + dec_height > avctx->height ||
-        (dec_width | dec_height) & 0xF) {
+            dec_y + dec_height > avctx->height ||
+            (dec_width | dec_height) & 0xF)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid frame dimensions %dx%d +%d,%d\n",
                dec_width, dec_height, dec_x, dec_y);
         return AVERROR_INVALIDDATA;
     }
     bytestream2_skip(&gb, 4);
     quality    = bytestream2_get_byte(&gb);
-    if (quality < 1 || quality > 100) {
+    if (quality < 1 || quality > 100)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid quality setting %d\n", quality);
         return AVERROR_INVALIDDATA;
     }
     bytestream2_skip(&gb, 4);
 
-    if (keyframe && !bytestream2_get_bytes_left(&gb)) {
+    if (keyframe && !bytestream2_get_bytes_left(&gb))
+    {
         av_log(avctx, AV_LOG_ERROR, "Keyframe without data found\n");
         return AVERROR_INVALIDDATA;
     }
@@ -735,7 +798,8 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         return ret;
     c->pic->key_frame = keyframe;
     c->pic->pict_type = keyframe ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_P;
-    if (!bytestream2_get_bytes_left(&gb)) {
+    if (!bytestream2_get_bytes_left(&gb))
+    {
         if ((ret = av_frame_ref(data, c->pic)) < 0)
             return ret;
         *got_frame      = 1;
@@ -752,13 +816,17 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     dst[0] = c->pic->data[0] + dec_x     +  dec_y      * c->pic->linesize[0];
     dst[1] = c->pic->data[1] + dec_x / 2 + (dec_y / 2) * c->pic->linesize[1];
     dst[2] = c->pic->data[2] + dec_x / 2 + (dec_y / 2) * c->pic->linesize[2];
-    for (y = 0; y < mb_height; y++) {
-        for (x = 0; x < mb_width; x++) {
-            for (i = 0; i < 3; i++) {
+    for (y = 0; y < mb_height; y++)
+    {
+        for (x = 0; x < mb_width; x++)
+        {
+            for (i = 0; i < 3; i++)
+            {
                 blk_size = 8 << !i;
 
                 btype = decode_block_type(acoder, c->btype + i);
-                switch (btype) {
+                switch (btype)
+                {
                 case FILL_BLOCK:
                     decode_fill_block(acoder, c->fill_coder + i,
                                       dst[i] + x * blk_size,
@@ -782,7 +850,8 @@ static int mss3_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
                                       c->hblock);
                     break;
                 }
-                if (c->got_error || acoder->got_error) {
+                if (c->got_error || acoder->got_error)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Error decoding block %d,%d\n",
                            x, y);
                     c->got_error = 1;
@@ -822,24 +891,28 @@ static av_cold int mss3_decode_init(AVCodecContext *avctx)
 
     c->avctx = avctx;
 
-    if ((avctx->width & 0xF) || (avctx->height & 0xF)) {
+    if ((avctx->width & 0xF) || (avctx->height & 0xF))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Image dimensions should be a multiple of 16.\n");
         return AVERROR_INVALIDDATA;
     }
 
     c->got_error = 0;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         int b_width  = avctx->width  >> (2 + !!i);
         int b_height = avctx->height >> (2 + !!i);
         c->dct_coder[i].prev_dc_stride = b_width;
         c->dct_coder[i].prev_dc_height = b_height;
         c->dct_coder[i].prev_dc = av_malloc(sizeof(*c->dct_coder[i].prev_dc) *
                                             b_width * b_height);
-        if (!c->dct_coder[i].prev_dc) {
+        if (!c->dct_coder[i].prev_dc)
+        {
             av_log(avctx, AV_LOG_ERROR, "Cannot allocate buffer\n");
             av_frame_free(&c->pic);
-            while (i >= 0) {
+            while (i >= 0)
+            {
                 av_freep(&c->dct_coder[i].prev_dc);
                 i--;
             }
@@ -848,7 +921,8 @@ static av_cold int mss3_decode_init(AVCodecContext *avctx)
     }
 
     c->pic = av_frame_alloc();
-    if (!c->pic) {
+    if (!c->pic)
+    {
         mss3_decode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -860,7 +934,8 @@ static av_cold int mss3_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_msa1_decoder = {
+AVCodec ff_msa1_decoder =
+{
     .name           = "msa1",
     .long_name      = NULL_IF_CONFIG_SMALL("MS ATC Screen"),
     .type           = AVMEDIA_TYPE_VIDEO,

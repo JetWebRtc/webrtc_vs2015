@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -37,12 +37,14 @@
 
 #include "picture.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 #define   PICTURE_RESOLUTION_ALIGNMENT      32
 
 
-typedef struct TagPicBuff {
+typedef struct TagPicBuff
+{
 PPicture*      ppPic;
 int32_t        iCapacity;  // capacity size of queue
 int32_t        iCurrentIdx;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SGI image encoder
  * Xiaohui Sun <tjnksxh@hotmail.com>
  *

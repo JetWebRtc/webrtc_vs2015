@@ -1,0 +1,111 @@
+#BG57IV3
+[Dd]ebug*/
+!**/3rd/**/[Dd]ebug*/
+[Rr]elease*/
+!**/3rd/**/[Rr]elease*/
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+#*.lib
+#lib
+#*.a
+*.la
+*.lai
+*.lo
+*.slo
+
+# Shared objects (inc. Windows DLLs)
+#*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+#*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# vc
+*.exp
+*.user
+*.ilk
+*.obj
+*.iobj
+*.pdb
+*.ipdb
+*.suo
+*.htm
+*.idb
+#*.manifest
+*.res
+*.dep
+*.user
+*.plg
+*.opt
+*.bsc
+*.clw
+*.tmp
+*.sbr
+*.bak
+*.dmp
+*.log
+*.err
+*.wrn
+*.i
+*.vspscc
+*.cache
+*.tlog
+*.lastbuildstate
+*.ilk
+
+# Visual Studio profiler
+*.diagsession
+*.psess
+*.vsp
+*.vspx
+*.sap
+
+# Visual C++ cache files
+ipch
+ipch/
+*.ipch
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.opendb
+
+# cmake
+CMakeCache.txt
+CMakeFiles/*
+#Makefile
+#cmake*
+
+# mac
+.DS_Store
+
+# special
+*.pid
+netstackdump*
+**/certs/*.crt
+**/data/CA.crt
+**/data/gae_proxy/*
+**/data/good_ip.txt
+**/data/proxy.
+**/xx-net/data/*
+**/logs/
+dllexp.cfg

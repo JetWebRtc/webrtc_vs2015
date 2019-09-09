@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,23 +11,26 @@
 #include "webrtc/base/gunit.h"
 #include "webrtc/base/onetimeevent.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(OneTimeEventTest, ThreadSafe) {
-  OneTimeEvent ot;
+TEST(OneTimeEventTest, ThreadSafe)
+{
+    OneTimeEvent ot;
 
-  // The one time event is expected to evaluate to true only the first time.
-  EXPECT_TRUE(ot());
-  EXPECT_FALSE(ot());
-  EXPECT_FALSE(ot());
+    // The one time event is expected to evaluate to true only the first time.
+    EXPECT_TRUE(ot());
+    EXPECT_FALSE(ot());
+    EXPECT_FALSE(ot());
 }
 
-TEST(OneTimeEventTest, ThreadUnsafe) {
-  ThreadUnsafeOneTimeEvent ot;
+TEST(OneTimeEventTest, ThreadUnsafe)
+{
+    ThreadUnsafeOneTimeEvent ot;
 
-  EXPECT_TRUE(ot());
-  EXPECT_FALSE(ot());
-  EXPECT_FALSE(ot());
+    EXPECT_TRUE(ot());
+    EXPECT_FALSE(ot());
+    EXPECT_FALSE(ot());
 }
 
 }  // namespace webrtc

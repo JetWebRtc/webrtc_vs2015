@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright Stefano Sabatini <stefasab gmail com>
  * Copyright Anton Khirnov <anton khirnov net>
  * Copyright Michael Niedermayer <michaelni gmx at>
@@ -42,12 +42,15 @@ void ff_avfilter_default_free_buffer(AVFilterBuffer *ptr)
     av_free(ptr);
 }
 
-static int copy_video_props(AVFilterBufferRefVideoProps *dst, AVFilterBufferRefVideoProps *src) {
+static int copy_video_props(AVFilterBufferRefVideoProps *dst, AVFilterBufferRefVideoProps *src)
+{
     *dst = *src;
-    if (src->qp_table) {
+    if (src->qp_table)
+    {
         int qsize = src->qp_table_size;
         dst->qp_table = av_malloc(qsize);
-        if (!dst->qp_table) {
+        if (!dst->qp_table)
+        {
             av_log(NULL, AV_LOG_ERROR, "Failed to allocate qp_table\n");
             dst->qp_table_size = 0;
             return AVERROR(ENOMEM);
@@ -67,33 +70,41 @@ AVFilterBufferRef *avfilter_ref_buffer(AVFilterBufferRef *ref, int pmask)
     ret->metadata = NULL;
     av_dict_copy(&ret->metadata, ref->metadata, 0);
 
-    if (ref->type == AVMEDIA_TYPE_VIDEO) {
+    if (ref->type == AVMEDIA_TYPE_VIDEO)
+    {
         ret->video = av_malloc(sizeof(AVFilterBufferRefVideoProps));
-        if (!ret->video) {
+        if (!ret->video)
+        {
             av_free(ret);
             return NULL;
         }
         copy_video_props(ret->video, ref->video);
         ret->extended_data = ret->data;
-    } else if (ref->type == AVMEDIA_TYPE_AUDIO) {
+    }
+    else if (ref->type == AVMEDIA_TYPE_AUDIO)
+    {
         ret->audio = av_malloc(sizeof(AVFilterBufferRefAudioProps));
-        if (!ret->audio) {
+        if (!ret->audio)
+        {
             av_free(ret);
             return NULL;
         }
         *ret->audio = *ref->audio;
 
-        if (ref->extended_data && ref->extended_data != ref->data) {
+        if (ref->extended_data && ref->extended_data != ref->data)
+        {
             int nb_channels = av_get_channel_layout_nb_channels(ref->audio->channel_layout);
             if (!(ret->extended_data = av_malloc_array(sizeof(*ret->extended_data),
-                                                 nb_channels))) {
+                                       nb_channels)))
+            {
                 av_freep(&ret->audio);
                 av_freep(&ret);
                 return NULL;
             }
             memcpy(ret->extended_data, ref->extended_data,
                    sizeof(*ret->extended_data) * nb_channels);
-        } else
+        }
+        else
             ret->extended_data = ret->data;
     }
     ret->perms &= pmask;
@@ -120,9 +131,9 @@ void avfilter_unref_buffer(AVFilterBufferRef *ref)
 
 void avfilter_unref_bufferp(AVFilterBufferRef **ref)
 {
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avfilter_unref_buffer(*ref);
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
     *ref = NULL;
 }
 
@@ -135,7 +146,8 @@ int avfilter_copy_frame_props(AVFilterBufferRef *dst, const AVFrame *src)
     av_dict_free(&dst->metadata);
     av_dict_copy(&dst->metadata, av_frame_get_metadata(src), 0);
 
-    switch (dst->type) {
+    switch (dst->type)
+    {
     case AVMEDIA_TYPE_VIDEO:
         dst->video->w                   = src->width;
         dst->video->h                   = src->height;
@@ -162,15 +174,20 @@ void avfilter_copy_buffer_ref_props(AVFilterBufferRef *dst, const AVFilterBuffer
     dst->pts             = src->pts;
     dst->pos             = src->pos;
 
-    switch (src->type) {
-    case AVMEDIA_TYPE_VIDEO: {
+    switch (src->type)
+    {
+    case AVMEDIA_TYPE_VIDEO:
+    {
         if (dst->video->qp_table)
             av_freep(&dst->video->qp_table);
         copy_video_props(dst->video, src->video);
         break;
     }
-    case AVMEDIA_TYPE_AUDIO: *dst->audio = *src->audio; break;
-    default: break;
+    case AVMEDIA_TYPE_AUDIO:
+        *dst->audio = *src->audio;
+        break;
+    default:
+        break;
     }
 
     av_dict_free(&dst->metadata);

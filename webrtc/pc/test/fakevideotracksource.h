@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,33 +15,41 @@
 #include "webrtc/media/base/fakevideocapturer.h"
 #include "webrtc/pc/videotracksource.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FakeVideoTrackSource : public VideoTrackSource {
- public:
-  static rtc::scoped_refptr<FakeVideoTrackSource> Create(bool is_screencast) {
-    return new rtc::RefCountedObject<FakeVideoTrackSource>(is_screencast);
-  }
+class FakeVideoTrackSource : public VideoTrackSource
+{
+public:
+    static rtc::scoped_refptr<FakeVideoTrackSource> Create(bool is_screencast)
+    {
+        return new rtc::RefCountedObject<FakeVideoTrackSource>(is_screencast);
+    }
 
-  static rtc::scoped_refptr<FakeVideoTrackSource> Create() {
-    return Create(false);
-  }
+    static rtc::scoped_refptr<FakeVideoTrackSource> Create()
+    {
+        return Create(false);
+    }
 
-  cricket::FakeVideoCapturer* fake_video_capturer() {
-    return &fake_video_capturer_;
-  }
+    cricket::FakeVideoCapturer* fake_video_capturer()
+    {
+        return &fake_video_capturer_;
+    }
 
-  bool is_screencast() const override { return is_screencast_; }
+    bool is_screencast() const override
+    {
+        return is_screencast_;
+    }
 
- protected:
-  explicit FakeVideoTrackSource(bool is_screencast)
-      : VideoTrackSource(&fake_video_capturer_, false /* remote */),
-        is_screencast_(is_screencast) {}
-  virtual ~FakeVideoTrackSource() {}
+protected:
+    explicit FakeVideoTrackSource(bool is_screencast)
+        : VideoTrackSource(&fake_video_capturer_, false /* remote */),
+          is_screencast_(is_screencast) {}
+    virtual ~FakeVideoTrackSource() {}
 
- private:
-  cricket::FakeVideoCapturer fake_video_capturer_;
-  const bool is_screencast_;
+private:
+    cricket::FakeVideoCapturer fake_video_capturer_;
+    const bool is_screencast_;
 };
 
 }  // namespace webrtc

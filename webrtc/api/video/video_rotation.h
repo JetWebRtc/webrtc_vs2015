@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,14 +11,16 @@
 #ifndef WEBRTC_API_VIDEO_VIDEO_ROTATION_H_
 #define WEBRTC_API_VIDEO_VIDEO_ROTATION_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // enum for clockwise rotation.
-enum VideoRotation {
-  kVideoRotation_0 = 0,
-  kVideoRotation_90 = 90,
-  kVideoRotation_180 = 180,
-  kVideoRotation_270 = 270
+enum VideoRotation
+{
+    kVideoRotation_0 = 0,
+    kVideoRotation_90 = 90,
+    kVideoRotation_180 = 180,
+    kVideoRotation_270 = 270
 };
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -49,7 +49,10 @@ static av_always_inline void AV_WN16(void *p, uint16_t v)
 #define AV_RN32 AV_RN32
 static av_always_inline uint32_t AV_RN32(const void *p)
 {
-    const struct __attribute__((packed)) { uint32_t v; } *q = p;
+    const struct __attribute__((packed))
+    {
+        uint32_t v;
+    } *q = p;
     uint32_t v;
     __asm__ ("ldr  %0, %1" : "=r"(v) : "m"(*q));
     return v;
@@ -66,7 +69,10 @@ static av_always_inline void AV_WN32(void *p, uint32_t v)
 #define AV_RN64 AV_RN64
 static av_always_inline uint64_t AV_RN64(const void *p)
 {
-    const struct __attribute__((packed)) { uint32_t v; } *q = p;
+    const struct __attribute__((packed))
+    {
+        uint32_t v;
+    } *q = p;
     uint64_t v;
     __asm__ ("ldr   %Q0, %1  \n\t"
              "ldr   %R0, %2  \n\t"

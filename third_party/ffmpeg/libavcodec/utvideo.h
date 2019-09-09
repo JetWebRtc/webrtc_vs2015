@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Common Ut Video header
  * Copyright (c) 2011 Konstantin Shishkov
  *
@@ -32,14 +32,16 @@
 #include "bswapdsp.h"
 #include "huffyuvencdsp.h"
 
-enum {
+enum
+{
     PRED_NONE = 0,
     PRED_LEFT,
     PRED_GRADIENT,
     PRED_MEDIAN,
 };
 
-enum {
+enum
+{
     COMP_NONE = 0,
     COMP_HUFF,
 };
@@ -51,7 +53,8 @@ enum {
  * an informative role on seeing what was input
  * to the encoder.
  */
-enum {
+enum
+{
     UTVIDEO_RGB  = MKTAG(0x00, 0x00, 0x01, 0x18),
     UTVIDEO_RGBA = MKTAG(0x00, 0x00, 0x02, 0x18),
     UTVIDEO_420  = MKTAG('Y', 'V', '1', '2'),
@@ -64,7 +67,8 @@ extern const int ff_ut_pred_order[5];
 /* Order of RGB(A) planes in Ut Video */
 extern const int ff_ut_rgb_order[4];
 
-typedef struct UtvideoContext {
+typedef struct UtvideoContext
+{
     AVCodecContext *avctx;
     BswapDSPContext bdsp;
     HuffYUVEncDSPContext hdsp;
@@ -81,7 +85,8 @@ typedef struct UtvideoContext {
     int      slice_bits_size;
 } UtvideoContext;
 
-typedef struct HuffEntry {
+typedef struct HuffEntry
+{
     uint8_t  sym;
     uint8_t  len;
     uint32_t code;

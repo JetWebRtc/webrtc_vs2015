@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,31 +25,36 @@
 
 #include "webrtc/base/event.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class EventWrapperImpl : public EventWrapper {
- public:
-  EventWrapperImpl() : event_(false, false) {}
-  ~EventWrapperImpl() override {}
+class EventWrapperImpl : public EventWrapper
+{
+public:
+    EventWrapperImpl() : event_(false, false) {}
+    ~EventWrapperImpl() override {}
 
-  bool Set() override {
-    event_.Set();
-    return true;
-  }
+    bool Set() override
+    {
+        event_.Set();
+        return true;
+    }
 
-  EventTypeWrapper Wait(unsigned long max_time) override {
-    int to_wait = max_time == WEBRTC_EVENT_INFINITE ?
-        rtc::Event::kForever : static_cast<int>(max_time);
-    return event_.Wait(to_wait) ? kEventSignaled : kEventTimeout;
-  }
+    EventTypeWrapper Wait(unsigned long max_time) override
+    {
+        int to_wait = max_time == WEBRTC_EVENT_INFINITE ?
+                      rtc::Event::kForever : static_cast<int>(max_time);
+        return event_.Wait(to_wait) ? kEventSignaled : kEventTimeout;
+    }
 
- private:
-  rtc::Event event_;
+private:
+    rtc::Event event_;
 };
 
 // static
-EventWrapper* EventWrapper::Create() {
-  return new EventWrapperImpl();
+EventWrapper* EventWrapper::Create()
+{
+    return new EventWrapperImpl();
 }
 
 }  // namespace webrtc

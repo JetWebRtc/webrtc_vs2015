@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ATRAC3+ compatible decoder
  *
  * Copyright (c) 2010-2013 Maxim Poliakovski
@@ -47,7 +47,8 @@
 #define ATRAC3P_POWER_COMP_OFF  15  ///< disable power compensation
 
 /** ATRAC3+ channel unit types */
-enum Atrac3pChannelUnitTypes {
+enum Atrac3pChannelUnitTypes
+{
     CH_UNIT_MONO       = 0, ///< unit containing one coded channel
     CH_UNIT_STEREO     = 1, ///< unit containing two jointly-coded channels
     CH_UNIT_EXTENSION  = 2, ///< unit containing extension information
@@ -55,14 +56,16 @@ enum Atrac3pChannelUnitTypes {
 };
 
 /** Per-channel IPQF history */
-typedef struct Atrac3pIPQFChannelCtx {
+typedef struct Atrac3pIPQFChannelCtx
+{
     DECLARE_ALIGNED(32, float, buf1)[ATRAC3P_PQF_FIR_LEN * 2][8];
     DECLARE_ALIGNED(32, float, buf2)[ATRAC3P_PQF_FIR_LEN * 2][8];
     int pos;
 } Atrac3pIPQFChannelCtx;
 
 /** Amplitude envelope of a group of sine waves */
-typedef struct Atrac3pWaveEnvelope {
+typedef struct Atrac3pWaveEnvelope
+{
     int has_start_point;    ///< indicates start point within the GHA window
     int has_stop_point;     ///< indicates stop point within the GHA window
     int start_pos;          ///< start position expressed in n*4 samples
@@ -70,7 +73,8 @@ typedef struct Atrac3pWaveEnvelope {
 } Atrac3pWaveEnvelope;
 
 /** Parameters of a group of sine waves */
-typedef struct Atrac3pWavesData {
+typedef struct Atrac3pWavesData
+{
     Atrac3pWaveEnvelope pend_env;   ///< pending envelope from the previous frame
     Atrac3pWaveEnvelope curr_env;   ///< group envelope from the current frame
     int num_wavs;           ///< number of sine waves in the group
@@ -78,7 +82,8 @@ typedef struct Atrac3pWavesData {
 } Atrac3pWavesData;
 
 /** Parameters of a single sine wave */
-typedef struct Atrac3pWaveParam {
+typedef struct Atrac3pWaveParam
+{
     int   freq_index;   ///< wave frequency index
     int   amp_sf;       ///< quantized amplitude scale factor
     int   amp_index;    ///< quantized amplitude index
@@ -86,7 +91,8 @@ typedef struct Atrac3pWaveParam {
 } Atrac3pWaveParam;
 
 /** Sound channel parameters */
-typedef struct Atrac3pChanParams {
+typedef struct Atrac3pChanParams
+{
     int ch_num;
     int num_coded_vals;         ///< number of transmitted quant unit values
     int fill_mode;
@@ -116,7 +122,8 @@ typedef struct Atrac3pChanParams {
 } Atrac3pChanParams;
 
 /* Per-unit sine wave parameters */
-typedef struct Atrac3pWaveSynthParams {
+typedef struct Atrac3pWaveSynthParams
+{
     int tones_present;                      ///< 1 - tones info present
     int amplitude_mode;                     ///< 1 - low range, 0 - high range
     int num_tone_bands;                     ///< number of PQF bands with tones
@@ -128,7 +135,8 @@ typedef struct Atrac3pWaveSynthParams {
 } Atrac3pWaveSynthParams;
 
 /** Channel unit parameters */
-typedef struct Atrac3pChanUnitCtx {
+typedef struct Atrac3pChanUnitCtx
+{
     /* channel unit variables */
     int unit_type;                          ///< unit type (mono/stereo)
     int num_quant_units;

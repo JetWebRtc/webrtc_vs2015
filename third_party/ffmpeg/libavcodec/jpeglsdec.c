@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG-LS decoder
  * Copyright (c) 2003 Michael Niedermayer
  * Copyright (c) 2006 Konstantin Shishkov
@@ -56,7 +56,8 @@ int ff_jpegls_decode_lse(MJpegDecodeContext *s)
     int len = get_bits(&s->gb, 16);
     id = get_bits(&s->gb, 8);
 
-    switch (id) {
+    switch (id)
+    {
     case 1:
         if (len < 13)
             return AVERROR_INVALIDDATA;
@@ -67,7 +68,8 @@ int ff_jpegls_decode_lse(MJpegDecodeContext *s)
         s->t3     = get_bits(&s->gb, 16);
         s->reset  = get_bits(&s->gb, 16);
 
-        if(s->avctx->debug & FF_DEBUG_PICT_INFO) {
+        if(s->avctx->debug & FF_DEBUG_PICT_INFO)
+        {
             av_log(s->avctx, AV_LOG_DEBUG, "Coding parameters maxval:%d T1:%d T2:%d T3:%d reset:%d\n",
                    s->maxval, s->t1, s->t2, s->t3, s->reset);
         }
@@ -84,7 +86,8 @@ int ff_jpegls_decode_lse(MJpegDecodeContext *s)
         if (len < 5)
             return AVERROR_INVALIDDATA;
 
-        if (wt < 1 || wt > MAX_COMPONENTS) {
+        if (wt < 1 || wt > MAX_COMPONENTS)
+        {
             avpriv_request_sample(s->avctx, "wt %d", wt);
             return AVERROR_PATCHWELCOME;
         }
@@ -96,10 +99,12 @@ int ff_jpegls_decode_lse(MJpegDecodeContext *s)
         else
             maxtab = 65530/wt - 1;
 
-        if(s->avctx->debug & FF_DEBUG_PICT_INFO) {
+        if(s->avctx->debug & FF_DEBUG_PICT_INFO)
+        {
             av_log(s->avctx, AV_LOG_DEBUG, "LSE palette %d tid:%d wt:%d maxtab:%d\n", id, tid, wt, maxtab);
         }
-        if (maxtab >= 256) {
+        if (maxtab >= 256)
+        {
             avpriv_request_sample(s->avctx, ">8bit palette");
             return AVERROR_PATCHWELCOME;
         }
@@ -109,21 +114,25 @@ int ff_jpegls_decode_lse(MJpegDecodeContext *s)
             return AVERROR_INVALIDDATA;
 
         if ((s->avctx->pix_fmt == AV_PIX_FMT_GRAY8 || s->avctx->pix_fmt == AV_PIX_FMT_PAL8) &&
-            (s->picture_ptr->format == AV_PIX_FMT_GRAY8 || s->picture_ptr->format == AV_PIX_FMT_PAL8)) {
+                (s->picture_ptr->format == AV_PIX_FMT_GRAY8 || s->picture_ptr->format == AV_PIX_FMT_PAL8))
+        {
             uint32_t *pal = (uint32_t *)s->picture_ptr->data[1];
             int shift = 0;
 
-            if (s->avctx->bits_per_raw_sample > 0 && s->avctx->bits_per_raw_sample < 8) {
+            if (s->avctx->bits_per_raw_sample > 0 && s->avctx->bits_per_raw_sample < 8)
+            {
                 maxtab = FFMIN(maxtab, (1<<s->avctx->bits_per_raw_sample)-1);
                 shift = 8 - s->avctx->bits_per_raw_sample;
             }
 
             s->picture_ptr->format =
-            s->avctx->pix_fmt = AV_PIX_FMT_PAL8;
-            for (i=s->palette_index; i<=maxtab; i++) {
+                s->avctx->pix_fmt = AV_PIX_FMT_PAL8;
+            for (i=s->palette_index; i<=maxtab; i++)
+            {
                 uint8_t k = i << shift;
                 pal[k] = 0;
-                for (j=0; j<wt; j++) {
+                for (j=0; j<wt; j++)
+                {
                     pal[k] |= get_bits(&s->gb, 8) << (8*(wt-j-1));
                 }
             }
@@ -202,10 +211,13 @@ static inline int ls_get_code_runterm(GetBitContext *gb, JLSState *state,
         map = 1;
     ret += RItype + map;
 
-    if (ret & 1) {
+    if (ret & 1)
+    {
         ret = map - (ret + 1 >> 1);
         state->B[Q]++;
-    } else {
+    }
+    else
+    {
         ret = ret >> 1;
     }
 
@@ -230,7 +242,8 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
     int Ra, Rb, Rc, Rd;
     int D0, D1, D2;
 
-    while (x < w) {
+    while (x < w)
+    {
         int err, pred;
 
         /* compute gradients */
@@ -243,18 +256,21 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
         D2 = Rc - Ra;
         /* run mode */
         if ((FFABS(D0) <= state->near) &&
-            (FFABS(D1) <= state->near) &&
-            (FFABS(D2) <= state->near)) {
+                (FFABS(D1) <= state->near) &&
+                (FFABS(D2) <= state->near))
+        {
             int r;
             int RItype;
 
             /* decode full runs while available */
-            while (get_bits1(&s->gb)) {
+            while (get_bits1(&s->gb))
+            {
                 int r;
                 r = 1 << ff_log2_run[state->run_index[comp]];
                 if (x + r * stride > w)
                     r = (w - x) / stride;
-                for (i = 0; i < r; i++) {
+                for (i = 0; i < r; i++)
+                {
                     W(dst, x, Ra);
                     x += stride;
                 }
@@ -270,15 +286,18 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
             r = ff_log2_run[state->run_index[comp]];
             if (r)
                 r = get_bits_long(&s->gb, r);
-            if (x + r * stride > w) {
+            if (x + r * stride > w)
+            {
                 r = (w - x) / stride;
             }
-            for (i = 0; i < r; i++) {
+            for (i = 0; i < r; i++)
+            {
                 W(dst, x, Ra);
                 x += stride;
             }
 
-            if (x >= w) {
+            if (x >= w)
+            {
                 av_log(NULL, AV_LOG_ERROR, "run overflow\n");
                 av_assert0(x <= w);
                 return;
@@ -292,15 +311,20 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
             if (state->run_index[comp])
                 state->run_index[comp]--;
 
-            if (state->near && RItype) {
+            if (state->near && RItype)
+            {
                 pred = Ra + err;
-            } else {
+            }
+            else
+            {
                 if (Rb < Ra)
                     pred = Rb - err;
                 else
                     pred = Rb + err;
             }
-        } else { /* regular mode */
+        }
+        else     /* regular mode */
+        {
             int context, sign;
 
             context = ff_jpegls_quantize(state, D0) * 81 +
@@ -308,17 +332,23 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
                       ff_jpegls_quantize(state, D2);
             pred    = mid_pred(Ra, Ra + Rb - Rc, Rb);
 
-            if (context < 0) {
+            if (context < 0)
+            {
                 context = -context;
                 sign    = 1;
-            } else {
+            }
+            else
+            {
                 sign = 0;
             }
 
-            if (sign) {
+            if (sign)
+            {
                 pred = av_clip(pred - state->C[context], 0, state->maxval);
                 err  = -ls_get_code_regular(&s->gb, state, context);
-            } else {
+            }
+            else
+            {
                 pred = av_clip(pred + state->C[context], 0, state->maxval);
                 err  = ls_get_code_regular(&s->gb, state, context);
             }
@@ -326,7 +356,8 @@ static inline void ls_decode_line(JLSState *state, MJpegDecodeContext *s,
             /* we have to do something more for near-lossless coding */
             pred += err;
         }
-        if (state->near) {
+        if (state->near)
+        {
             if (pred < -state->near)
                 pred += state->range * state->twonear;
             else if (pred > state->maxval + state->near)
@@ -355,7 +386,8 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
     cur  = s->picture_ptr->data[0];
 
     state = av_mallocz(sizeof(JLSState));
-    if (!state) {
+    if (!state)
+    {
         av_free(zero);
         return AVERROR(ENOMEM);
     }
@@ -375,18 +407,21 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
     else
         shift = point_transform + (16 - s->bits);
 
-    if (s->avctx->debug & FF_DEBUG_PICT_INFO) {
+    if (s->avctx->debug & FF_DEBUG_PICT_INFO)
+    {
         av_log(s->avctx, AV_LOG_DEBUG,
                "JPEG-LS params: %ix%i NEAR=%i MV=%i T(%i,%i,%i) "
                "RESET=%i, LIMIT=%i, qbpp=%i, RANGE=%i\n",
-                s->width, s->height, state->near, state->maxval,
-                state->T1, state->T2, state->T3,
-                state->reset, state->limit, state->qbpp, state->range);
+               s->width, s->height, state->near, state->maxval,
+               state->T1, state->T2, state->T3,
+               state->reset, state->limit, state->qbpp, state->range);
         av_log(s->avctx, AV_LOG_DEBUG, "JPEG params: ILV=%i Pt=%i BPP=%i, scan = %i\n",
-                ilv, point_transform, s->bits, s->cur_scan);
+               ilv, point_transform, s->bits, s->cur_scan);
     }
-    if (ilv == 0) { /* separate planes */
-        if (s->cur_scan > s->nb_components) {
+    if (ilv == 0)   /* separate planes */
+    {
+        if (s->cur_scan > s->nb_components)
+        {
             ret = AVERROR_INVALIDDATA;
             goto end;
         }
@@ -394,35 +429,45 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
         off    = av_clip(s->cur_scan - 1, 0, stride - 1);
         width  = s->width * stride;
         cur   += off;
-        for (i = 0; i < s->height; i++) {
-            if (s->bits <= 8) {
+        for (i = 0; i < s->height; i++)
+        {
+            if (s->bits <= 8)
+            {
                 ls_decode_line(state, s, last, cur, t, width, stride, off, 8);
                 t = last[0];
-            } else {
+            }
+            else
+            {
                 ls_decode_line(state, s, last, cur, t, width, stride, off, 16);
                 t = *((uint16_t *)last);
             }
             last = cur;
             cur += s->picture_ptr->linesize[0];
 
-            if (s->restart_interval && !--s->restart_count) {
+            if (s->restart_interval && !--s->restart_count)
+            {
                 align_get_bits(&s->gb);
                 skip_bits(&s->gb, 16); /* skip RSTn */
             }
         }
-    } else if (ilv == 1) { /* line interleaving */
+    }
+    else if (ilv == 1)     /* line interleaving */
+    {
         int j;
         int Rc[3] = { 0, 0, 0 };
         stride = (s->nb_components > 1) ? 3 : 1;
         memset(cur, 0, s->picture_ptr->linesize[0]);
         width = s->width * stride;
-        for (i = 0; i < s->height; i++) {
-            for (j = 0; j < stride; j++) {
+        for (i = 0; i < s->height; i++)
+        {
+            for (j = 0; j < stride; j++)
+            {
                 ls_decode_line(state, s, last + j, cur + j,
                                Rc[j], width, stride, j, 8);
                 Rc[j] = last[j];
 
-                if (s->restart_interval && !--s->restart_count) {
+                if (s->restart_interval && !--s->restart_count)
+                {
                     align_get_bits(&s->gb);
                     skip_bits(&s->gb, 16); /* skip RSTn */
                 }
@@ -430,36 +475,45 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
             last = cur;
             cur += s->picture_ptr->linesize[0];
         }
-    } else if (ilv == 2) { /* sample interleaving */
+    }
+    else if (ilv == 2)     /* sample interleaving */
+    {
         avpriv_report_missing_feature(s->avctx, "Sample interleaved images");
         ret = AVERROR_PATCHWELCOME;
         goto end;
     }
 
-    if (s->xfrm && s->nb_components == 3) {
+    if (s->xfrm && s->nb_components == 3)
+    {
         int x, w;
 
         w = s->width * s->nb_components;
 
-        if (s->bits <= 8) {
+        if (s->bits <= 8)
+        {
             uint8_t *src = s->picture_ptr->data[0];
 
-            for (i = 0; i < s->height; i++) {
-                switch(s->xfrm) {
+            for (i = 0; i < s->height; i++)
+            {
+                switch(s->xfrm)
+                {
                 case 1:
-                    for (x = off; x < w; x += 3) {
+                    for (x = off; x < w; x += 3)
+                    {
                         src[x  ] += src[x+1] + 128;
                         src[x+2] += src[x+1] + 128;
                     }
                     break;
                 case 2:
-                    for (x = off; x < w; x += 3) {
+                    for (x = off; x < w; x += 3)
+                    {
                         src[x  ] += src[x+1] + 128;
                         src[x+2] += ((src[x  ] + src[x+1])>>1) + 128;
                     }
                     break;
                 case 3:
-                    for (x = off; x < w; x += 3) {
+                    for (x = off; x < w; x += 3)
+                    {
                         int g = src[x+0] - ((src[x+2]+src[x+1])>>2) + 64;
                         src[x+0] = src[x+2] + g + 128;
                         src[x+2] = src[x+1] + g + 128;
@@ -467,7 +521,8 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
                     }
                     break;
                 case 4:
-                    for (x = off; x < w; x += 3) {
+                    for (x = off; x < w; x += 3)
+                    {
                         int r    = src[x+0] - ((                       359 * (src[x+2]-128) + 490) >> 8);
                         int g    = src[x+0] - (( 88 * (src[x+1]-128) - 183 * (src[x+2]-128) +  30) >> 8);
                         int b    = src[x+0] + ((454 * (src[x+1]-128)                        + 574) >> 8);
@@ -479,27 +534,34 @@ int ff_jpegls_decode_picture(MJpegDecodeContext *s, int near,
                 }
                 src += s->picture_ptr->linesize[0];
             }
-        }else
+        }
+        else
             avpriv_report_missing_feature(s->avctx, "16bit xfrm");
     }
 
-    if (shift) { /* we need to do point transform or normalize samples */
+    if (shift)   /* we need to do point transform or normalize samples */
+    {
         int x, w;
 
         w = s->width * s->nb_components;
 
-        if (s->bits <= 8) {
+        if (s->bits <= 8)
+        {
             uint8_t *src = s->picture_ptr->data[0];
 
-            for (i = 0; i < s->height; i++) {
+            for (i = 0; i < s->height; i++)
+            {
                 for (x = off; x < w; x += stride)
                     src[x] <<= shift;
                 src += s->picture_ptr->linesize[0];
             }
-        } else {
+        }
+        else
+        {
             uint16_t *src = (uint16_t *)s->picture_ptr->data[0];
 
-            for (i = 0; i < s->height; i++) {
+            for (i = 0; i < s->height; i++)
+            {
                 for (x = 0; x < w; x++)
                     src[x] <<= shift;
                 src += s->picture_ptr->linesize[0] / 2;
@@ -514,7 +576,8 @@ end:
     return ret;
 }
 
-AVCodec ff_jpegls_decoder = {
+AVCodec ff_jpegls_decoder =
+{
     .name           = "jpegls",
     .long_name      = NULL_IF_CONFIG_SMALL("JPEG-LS"),
     .type           = AVMEDIA_TYPE_VIDEO,

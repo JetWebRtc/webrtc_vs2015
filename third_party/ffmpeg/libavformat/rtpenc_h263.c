@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP packetization for H.263 video
  * Copyright (c) 2009 Luca Abeni
  * Copyright (c) 2009 Martin Storsjo
@@ -24,12 +24,14 @@
 #include "rtpenc.h"
 
 const uint8_t *ff_h263_find_resync_marker_reverse(const uint8_t *av_restrict start,
-                                                  const uint8_t *av_restrict end)
+        const uint8_t *av_restrict end)
 {
     const uint8_t *p = end - 1;
     start += 1; /* Make sure we never return the original start. */
-    for (; p > start; p -= 2) {
-        if (!*p) {
+    for (; p > start; p -= 2)
+    {
+        if (!*p)
+        {
             if      (!p[ 1] && p[2]) return p;
             else if (!p[-1] && p[1]) return p - 1;
         }
@@ -48,13 +50,17 @@ void ff_rtp_send_h263(AVFormatContext *s1, const uint8_t *buf1, int size)
 
     max_packet_size = s->max_payload_size;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         q = s->buf;
-        if (size >= 2 && (buf1[0] == 0) && (buf1[1] == 0)) {
+        if (size >= 2 && (buf1[0] == 0) && (buf1[1] == 0))
+        {
             *q++ = 0x04;
             buf1 += 2;
             size -= 2;
-        } else {
+        }
+        else
+        {
             *q++ = 0;
         }
         *q++ = 0;
@@ -62,9 +68,10 @@ void ff_rtp_send_h263(AVFormatContext *s1, const uint8_t *buf1, int size)
         len = FFMIN(max_packet_size - 2, size);
 
         /* Look for a better place to split the frame into packets. */
-        if (len < size) {
+        if (len < size)
+        {
             const uint8_t *end = ff_h263_find_resync_marker_reverse(buf1,
-                                                                    buf1 + len);
+                                 buf1 + len);
             len = end - buf1;
         }
 

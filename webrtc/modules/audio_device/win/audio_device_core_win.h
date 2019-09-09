@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,7 @@
 #include "webrtc/modules/audio_device/audio_device_generic.h"
 
 #include <wmcodecdsp.h>      // CLSID_CWMAudioAEC
-                             // (must be before audioclient.h)
+// (must be before audioclient.h)
 #include <Audioclient.h>     // WASAPI
 #include <Audiopolicy.h>
 #include <Mmdeviceapi.h>     // MMDevice
@@ -34,7 +34,8 @@ typedef BOOL (WINAPI *PAvRevertMmThreadCharacteristics)(HANDLE);
 typedef HANDLE (WINAPI *PAvSetMmThreadCharacteristicsA)(LPCSTR, LPDWORD);
 typedef BOOL (WINAPI *PAvSetMmThreadPriority)(HANDLE, AVRT_PRIORITY);
 
-namespace webrtc {
+namespace webrtc
+{
 
 const float MAX_CORE_SPEAKER_VOLUME = 255.0f;
 const float MIN_CORE_SPEAKER_VOLUME = 0.0f;
@@ -45,37 +46,45 @@ const uint16_t CORE_MICROPHONE_VOLUME_STEP_SIZE = 1;
 
 // Utility class which initializes COM in the constructor (STA or MTA),
 // and uninitializes COM in the destructor.
-class ScopedCOMInitializer {
- public:
-  // Enum value provided to initialize the thread as an MTA instead of STA.
-  enum SelectMTA { kMTA };
+class ScopedCOMInitializer
+{
+public:
+    // Enum value provided to initialize the thread as an MTA instead of STA.
+    enum SelectMTA { kMTA };
 
-  // Constructor for STA initialization.
-  ScopedCOMInitializer() {
-    Initialize(COINIT_APARTMENTTHREADED);
-  }
+    // Constructor for STA initialization.
+    ScopedCOMInitializer()
+    {
+        Initialize(COINIT_APARTMENTTHREADED);
+    }
 
-  // Constructor for MTA initialization.
-  explicit ScopedCOMInitializer(SelectMTA mta) {
-    Initialize(COINIT_MULTITHREADED);
-  }
+    // Constructor for MTA initialization.
+    explicit ScopedCOMInitializer(SelectMTA mta)
+    {
+        Initialize(COINIT_MULTITHREADED);
+    }
 
-  ScopedCOMInitializer::~ScopedCOMInitializer() {
-    if (SUCCEEDED(hr_))
-      CoUninitialize();
-  }
+    ScopedCOMInitializer::~ScopedCOMInitializer()
+    {
+        if (SUCCEEDED(hr_))
+            CoUninitialize();
+    }
 
-  bool succeeded() const { return SUCCEEDED(hr_); }
+    bool succeeded() const
+    {
+        return SUCCEEDED(hr_);
+    }
 
- private:
-  void Initialize(COINIT init) {
-    hr_ = CoInitializeEx(NULL, init);
-  }
+private:
+    void Initialize(COINIT init)
+    {
+        hr_ = CoInitializeEx(NULL, init);
+    }
 
-  HRESULT hr_;
+    HRESULT hr_;
 
-  ScopedCOMInitializer(const ScopedCOMInitializer&);
-  void operator=(const ScopedCOMInitializer&);
+    ScopedCOMInitializer(const ScopedCOMInitializer&);
+    void operator=(const ScopedCOMInitializer&);
 };
 
 
@@ -234,11 +243,20 @@ private:    // thread functions
     static DWORD WINAPI SetCaptureVolumeThread(LPVOID context);
     DWORD DoSetCaptureVolumeThread();
 
-    void _Lock() { _critSect.Enter(); };
-    void _UnLock() { _critSect.Leave(); };
+    void _Lock()
+    {
+        _critSect.Enter();
+    };
+    void _UnLock()
+    {
+        _critSect.Leave();
+    };
 
 private:
-    int32_t Id() {return _id;}
+    int32_t Id()
+    {
+        return _id;
+    }
 
 private:
     int SetDMOProperties();

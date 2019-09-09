@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@ static const char *sws_context_to_name(void *ptr)
 #define DEFAULT 0
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
 
-static const AVOption swscale_options[] = {
+static const AVOption swscale_options[] =
+{
     { "sws_flags",       "scaler flags",                  OFFSET(flags),     AV_OPT_TYPE_FLAGS,  { .i64  = SWS_BICUBIC        }, 0,      UINT_MAX,        VE, "sws_flags" },
     { "fast_bilinear",   "fast bilinear",                 0,                 AV_OPT_TYPE_CONST,  { .i64  = SWS_FAST_BILINEAR  }, INT_MIN, INT_MAX,        VE, "sws_flags" },
     { "bilinear",        "bilinear",                      0,                 AV_OPT_TYPE_CONST,  { .i64  = SWS_BILINEAR       }, INT_MIN, INT_MAX,        VE, "sws_flags" },
@@ -86,7 +87,8 @@ static const AVOption swscale_options[] = {
     { NULL }
 };
 
-const AVClass sws_context_class = {
+const AVClass sws_context_class =
+{
     .class_name = "SWScaler",
     .item_name  = sws_context_to_name,
     .option     = swscale_options,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard
  * Copyright (c) 2014 James Yu <james.yu@linaro.org>
  *
@@ -33,7 +33,7 @@
 #include "libavcodec/mpegvideo.h"
 
 static void inline ff_dct_unquantize_h263_neon(int qscale, int qadd, int nCoeffs,
-                                               int16_t *block)
+        int16_t *block)
 {
     int16x8_t q0s16, q2s16, q3s16, q8s16, q10s16, q11s16, q13s16;
     int16x8_t q14s16, q15s16, qzs16;
@@ -48,8 +48,10 @@ static void inline ff_dct_unquantize_h263_neon(int qscale, int qadd, int nCoeffs
     q14s16 = vdupq_n_s16(qadd);
     q13s16 = vnegq_s16(q14s16);
 
-    if (nCoeffs > 4) {
-        for (; nCoeffs > 8; nCoeffs -= 16, block += 16) {
+    if (nCoeffs > 4)
+    {
+        for (; nCoeffs > 8; nCoeffs -= 16, block += 16)
+        {
             q0s16 = vld1q_s16(block);
             q3s16 = vreinterpretq_s16_u16(vcltq_s16(q0s16, qzs16));
             q8s16 = vld1q_s16(block + 8);
@@ -83,7 +85,7 @@ static void inline ff_dct_unquantize_h263_neon(int qscale, int qadd, int nCoeffs
 }
 
 static void dct_unquantize_h263_inter_neon(MpegEncContext *s, int16_t *block,
-                                           int n, int qscale)
+        int n, int qscale)
 {
     int nCoeffs = s->inter_scantable.raster_end[s->block_last_index[n]];
     int qadd    = (qscale - 1) | 1;
@@ -92,24 +94,30 @@ static void dct_unquantize_h263_inter_neon(MpegEncContext *s, int16_t *block,
 }
 
 static void dct_unquantize_h263_intra_neon(MpegEncContext *s, int16_t *block,
-                                           int n, int qscale)
+        int n, int qscale)
 {
     int qadd;
     int nCoeffs, blk0;
 
-    if (!s->h263_aic) {
+    if (!s->h263_aic)
+    {
         if (n < 4)
             block[0] *= s->y_dc_scale;
         else
             block[0] *= s->c_dc_scale;
         qadd = (qscale - 1) | 1;
-    } else {
+    }
+    else
+    {
         qadd = 0;
     }
 
-    if (s->ac_pred) {
+    if (s->ac_pred)
+    {
         nCoeffs = 63;
-    } else {
+    }
+    else
+    {
         nCoeffs = s->inter_scantable.raster_end[s->block_last_index[n]];
         if (nCoeffs <= 0)
             return;
@@ -127,7 +135,8 @@ av_cold void ff_mpv_common_init_neon(MpegEncContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->dct_unquantize_h263_intra = dct_unquantize_h263_intra_neon;
         s->dct_unquantize_h263_inter = dct_unquantize_h263_inter_neon;
     }

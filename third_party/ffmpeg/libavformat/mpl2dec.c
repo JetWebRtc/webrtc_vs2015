@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } MPL2Context;
 
@@ -39,9 +40,10 @@ static int mpl2_probe(AVProbeData *p)
     const unsigned char *ptr = p->buf;
     const unsigned char *ptr_end = ptr + p->buf_size;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         if (sscanf(ptr, "[%"SCNd64"][%"SCNd64"]%c", &start, &end, &c) != 3 &&
-            sscanf(ptr, "[%"SCNd64"][]%c",          &start,       &c) != 2)
+                sscanf(ptr, "[%"SCNd64"][]%c",          &start,       &c) != 2)
             return 0;
         ptr += ff_subtitles_next_line(ptr);
         if (ptr >= ptr_end)
@@ -57,13 +59,15 @@ static int read_ts(char **line, int64_t *pts_start, int *duration)
     int64_t end;
 
     if (sscanf(*line, "[%"SCNd64"][]%c%n",
-               pts_start, &c, &len) >= 2) {
+               pts_start, &c, &len) >= 2)
+    {
         *duration = -1;
         *line += len - 1;
         return 0;
     }
     if (sscanf(*line, "[%"SCNd64"][%"SCNd64"]%c%n",
-               pts_start, &end, &c, &len) >= 3) {
+               pts_start, &end, &c, &len) >= 3)
+    {
         *duration = end - *pts_start;
         *line += len - 1;
         return 0;
@@ -83,7 +87,8 @@ static int mpl2_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_MPL2;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         char *p = line;
         const int64_t pos = avio_tell(s->pb);
@@ -96,7 +101,8 @@ static int mpl2_read_header(AVFormatContext *s)
 
         line[strcspn(line, "\r\n")] = 0;
 
-        if (!read_ts(&p, &pts_start, &duration)) {
+        if (!read_ts(&p, &pts_start, &duration))
+        {
             AVPacket *sub;
 
             sub = ff_subtitles_queue_insert(&mpl2->q, p, strlen(p), 0);
@@ -133,7 +139,8 @@ static int mpl2_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_mpl2_demuxer = {
+AVInputFormat ff_mpl2_demuxer =
+{
     .name           = "mpl2",
     .long_name      = NULL_IF_CONFIG_SMALL("MPL2 subtitles"),
     .priv_data_size = sizeof(MPL2Context),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,40 +17,46 @@
 #include "webrtc/base/arraysize.h"
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class BiQuadFilter {
- public:
-  struct BiQuadCoefficients {
-    float b[3];
-    float a[2];
-  };
+class BiQuadFilter
+{
+public:
+    struct BiQuadCoefficients
+    {
+        float b[3];
+        float a[2];
+    };
 
-  BiQuadFilter() = default;
+    BiQuadFilter() = default;
 
-  void Initialize(const BiQuadCoefficients& coefficients) {
-    coefficients_ = coefficients;
-  }
-
-  // Produces a filtered output y of the input x. Both x and y need to
-  // have the same length.
-  void Process(rtc::ArrayView<const float> x, rtc::ArrayView<float> y);
-
- private:
-  struct BiQuadState {
-    BiQuadState() {
-      std::fill(b, b + arraysize(b), 0.f);
-      std::fill(a, a + arraysize(a), 0.f);
+    void Initialize(const BiQuadCoefficients& coefficients)
+    {
+        coefficients_ = coefficients;
     }
 
-    float b[2];
-    float a[2];
-  };
+    // Produces a filtered output y of the input x. Both x and y need to
+    // have the same length.
+    void Process(rtc::ArrayView<const float> x, rtc::ArrayView<float> y);
 
-  BiQuadState biquad_state_;
-  BiQuadCoefficients coefficients_;
+private:
+    struct BiQuadState
+    {
+        BiQuadState()
+        {
+            std::fill(b, b + arraysize(b), 0.f);
+            std::fill(a, a + arraysize(a), 0.f);
+        }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(BiQuadFilter);
+        float b[2];
+        float a[2];
+    };
+
+    BiQuadState biquad_state_;
+    BiQuadCoefficients coefficients_;
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(BiQuadFilter);
 };
 
 }  // namespace webrtc

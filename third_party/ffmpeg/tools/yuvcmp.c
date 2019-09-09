@@ -25,7 +25,8 @@ main(int argc, char **argv)
     int height;
     int to_skip = 0;
 
-    if (argc < 6) {
+    if (argc < 6)
+    {
         fprintf(stderr, "%s [YUV file 1] [YUV file 2] width height pixelcmp|blockdump (# to skip)\n", argv[0]);
         return 1;
     }
@@ -52,13 +53,15 @@ main(int argc, char **argv)
     print_pixels = strstr(argv[5], "pixelcmp") ? 1 : 0;
     dump_blocks  = strstr(argv[5], "blockdump") ? 1 : 0;
 
-    for(i = 0; i < 2; i++) {
+    for(i = 0; i < 2; i++)
+    {
         Y[i] = malloc(lsiz);
         C[0][i] = malloc(csiz);
         C[1][i] = malloc(csiz);
 
         fd[i] = open(argv[1 + i], O_RDONLY);
-        if(fd[i] == -1) {
+        if(fd[i] == -1)
+        {
             perror("open");
             exit(1);
         }
@@ -73,22 +76,27 @@ main(int argc, char **argv)
 
     mberrors = malloc(mb_x * mb_y);
 
-    while(!die) {
+    while(!die)
+    {
         memset(mberrors, 0, mb_x * mb_y);
 
         printf("Loading frame %d\n", ++fr);
 
-        for(i = 0; i < 2; i++) {
+        for(i = 0; i < 2; i++)
+        {
             v = read(fd[i], Y[i], lsiz);
-            if(v != lsiz) {
+            if(v != lsiz)
+            {
                 fprintf(stderr, "Unable to read Y from file %d, exiting\n", i + 1);
                 return 1;
             }
         }
 
 
-        for(c = 0; c < lsiz; c++) {
-            if(Y[0][c] != Y[1][c]) {
+        for(c = 0; c < lsiz; c++)
+        {
+            if(Y[0][c] != Y[1][c])
+            {
                 x = c % width;
                 y = c / width;
 
@@ -109,19 +117,24 @@ main(int argc, char **argv)
 
         /* Chroma planes */
 
-        for(p = 0; p < 2; p++) {
+        for(p = 0; p < 2; p++)
+        {
 
-            for(i = 0; i < 2; i++) {
+            for(i = 0; i < 2; i++)
+            {
                 v = read(fd[i], C[p][i], csiz);
-                if(v != csiz) {
+                if(v != csiz)
+                {
                     fprintf(stderr, "Unable to read %c from file %d, exiting\n",
                             "UV"[p], i + 1);
                     return 1;
                 }
             }
 
-            for(c = 0; c < csiz; c++) {
-                if(C[p][0][c] != C[p][1][c]) {
+            for(c = 0; c < csiz; c++)
+            {
+                if(C[p][0][c] != C[p][1][c])
+                {
                     x = c % cwidth;
                     y = c / cwidth;
 
@@ -145,11 +158,13 @@ main(int argc, char **argv)
             }
         }
 
-        for(i = 0; i < mb_x * mb_y; i++) {
+        for(i = 0; i < mb_x * mb_y; i++)
+        {
             x = i % mb_x;
             y = i / mb_x;
 
-            if(mberrors[i]) {
+            if(mberrors[i])
+            {
                 die = 1;
 
                 printf("MB (%3d,%-3d) %4d %d %c%c%c damaged\n",
@@ -158,11 +173,13 @@ main(int argc, char **argv)
                        mberrors[i] & 2 ? 'U' : ' ',
                        mberrors[i] & 4 ? 'V' : ' ');
 
-                if(dump_blocks) {
+                if(dump_blocks)
+                {
                     a = Y[0] + x * 16 + y * 16 * width;
                     b = Y[1] + x * 16 + y * 16 * width;
 
-                    for(y = 0; y < 16; y++) {
+                    for(y = 0; y < 16; y++)
+                    {
                         printf("%c ", "TB"[y&1]);
                         for(x = 0; x < 16; x++)
                             printf("%02x%c", a[x + y * width],

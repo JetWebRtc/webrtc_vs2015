@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP JPEG-compressed video Packetizer, RFC 2435
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -46,24 +46,31 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
 
     /* get the pixel format type or fail */
     if (s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUVJ422P ||
-        (s1->streams[0]->codec->color_range == AVCOL_RANGE_JPEG &&
-         s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUV422P)) {
+            (s1->streams[0]->codec->color_range == AVCOL_RANGE_JPEG &&
+             s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUV422P))
+    {
         type = 0;
-    } else if (s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUVJ420P ||
-               (s1->streams[0]->codec->color_range == AVCOL_RANGE_JPEG &&
-                s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUV420P)) {
+    }
+    else if (s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUVJ420P ||
+             (s1->streams[0]->codec->color_range == AVCOL_RANGE_JPEG &&
+              s1->streams[0]->codec->pix_fmt == AV_PIX_FMT_YUV420P))
+    {
         type = 1;
-    } else {
+    }
+    else
+    {
         av_log(s1, AV_LOG_ERROR, "Unsupported pixel format\n");
         return;
     }
 
     /* preparse the header for getting some infos */
-    for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++)
+    {
         if (buf[i] != 0xff)
             continue;
 
-        if (buf[i + 1] == DQT) {
+        if (buf[i + 1] == DQT)
+        {
             int tables, j;
             if (buf[i + 4] & 0xF0)
                 av_log(s1, AV_LOG_WARNING,
@@ -71,11 +78,13 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
 
             /* a quantization table is 64 bytes long */
             tables = AV_RB16(&buf[i + 2]) / 65;
-            if (i + 5 + tables * 65 > size) {
+            if (i + 5 + tables * 65 > size)
+            {
                 av_log(s1, AV_LOG_ERROR, "Too short JPEG header. Aborted!\n");
                 return;
             }
-            if (nb_qtables + tables > 4) {
+            if (nb_qtables + tables > 4)
+            {
                 av_log(s1, AV_LOG_ERROR, "Invalid number of quantisation tables\n");
                 return;
             }
@@ -83,35 +92,44 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
             for (j = 0; j < tables; j++)
                 qtables[nb_qtables + j] = buf + i + 5 + j * 65;
             nb_qtables += tables;
-        } else if (buf[i + 1] == SOF0) {
-            if (buf[i + 14] != 17 || buf[i + 17] != 17) {
+        }
+        else if (buf[i + 1] == SOF0)
+        {
+            if (buf[i + 14] != 17 || buf[i + 17] != 17)
+            {
                 av_log(s1, AV_LOG_ERROR,
                        "Only 1x1 chroma blocks are supported. Aborted!\n");
                 return;
             }
-        } else if (buf[i + 1] == DHT) {
+        }
+        else if (buf[i + 1] == DHT)
+        {
             if (   AV_RB16(&buf[i + 2]) < 418
-                || i + 420 >= size
-                || buf[i +   4] != 0x00
-                || buf[i +  33] != 0x01
-                || buf[i +  62] != 0x10
-                || buf[i + 241] != 0x11
-                || memcmp(buf + i +   5, avpriv_mjpeg_bits_dc_luminance   + 1, 16)
-                || memcmp(buf + i +  21, avpriv_mjpeg_val_dc, 12)
-                || memcmp(buf + i +  34, avpriv_mjpeg_bits_dc_chrominance + 1, 16)
-                || memcmp(buf + i +  50, avpriv_mjpeg_val_dc, 12)
-                || memcmp(buf + i +  63, avpriv_mjpeg_bits_ac_luminance   + 1, 16)
-                || memcmp(buf + i +  79, avpriv_mjpeg_val_ac_luminance, 162)
-                || memcmp(buf + i + 242, avpriv_mjpeg_bits_ac_chrominance + 1, 16)
-                || memcmp(buf + i + 258, avpriv_mjpeg_val_ac_chrominance, 162)) {
+                    || i + 420 >= size
+                    || buf[i +   4] != 0x00
+                    || buf[i +  33] != 0x01
+                    || buf[i +  62] != 0x10
+                    || buf[i + 241] != 0x11
+                    || memcmp(buf + i +   5, avpriv_mjpeg_bits_dc_luminance   + 1, 16)
+                    || memcmp(buf + i +  21, avpriv_mjpeg_val_dc, 12)
+                    || memcmp(buf + i +  34, avpriv_mjpeg_bits_dc_chrominance + 1, 16)
+                    || memcmp(buf + i +  50, avpriv_mjpeg_val_dc, 12)
+                    || memcmp(buf + i +  63, avpriv_mjpeg_bits_ac_luminance   + 1, 16)
+                    || memcmp(buf + i +  79, avpriv_mjpeg_val_ac_luminance, 162)
+                    || memcmp(buf + i + 242, avpriv_mjpeg_bits_ac_chrominance + 1, 16)
+                    || memcmp(buf + i + 258, avpriv_mjpeg_val_ac_chrominance, 162))
+            {
                 av_log(s1, AV_LOG_ERROR,
                        "RFC 2435 requires standard Huffman tables for jpeg\n");
                 return;
             }
-        } else if (buf[i + 1] == SOS) {
+        }
+        else if (buf[i + 1] == SOS)
+        {
             /* SOS is last marker in the header */
             i += AV_RB16(&buf[i + 2]) + 2;
-            if (i > size) {
+            if (i > size)
+            {
                 av_log(s1, AV_LOG_ERROR,
                        "Insufficient data. Aborted!\n");
                 return;
@@ -128,8 +146,10 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
     buf  += i;
     size -= i;
 
-    for (i = size - 2; i >= 0; i--) {
-        if (buf[i] == 0xff && buf[i + 1] == EOI) {
+    for (i = size - 2; i >= 0; i--)
+    {
+        if (buf[i] == 0xff && buf[i + 1] == EOI)
+        {
             /* Remove the EOI marker */
             size = i;
             break;
@@ -137,7 +157,8 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
     }
 
     p = s->buf_ptr;
-    while (size > 0) {
+    while (size > 0)
+    {
         int hdr_size = 8;
 
         if (off == 0 && nb_qtables)
@@ -154,7 +175,8 @@ void ff_rtp_send_jpeg(AVFormatContext *s1, const uint8_t *buf, int size)
         bytestream_put_byte(&p, w);
         bytestream_put_byte(&p, h);
 
-        if (off == 0 && nb_qtables) {
+        if (off == 0 && nb_qtables)
+        {
             /* set quantization tables header */
             bytestream_put_byte(&p, 0);
             bytestream_put_byte(&p, 0);

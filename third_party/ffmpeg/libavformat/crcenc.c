@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CRC encoder (for codec/format testing)
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -24,7 +24,8 @@
 #include "libavutil/adler32.h"
 #include "avformat.h"
 
-typedef struct CRCState {
+typedef struct CRCState
+{
     uint32_t crcval;
 } CRCState;
 
@@ -56,7 +57,8 @@ static int crc_write_trailer(struct AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_crc_muxer = {
+AVOutputFormat ff_crc_muxer =
+{
     .name              = "crc",
     .long_name         = NULL_IF_CONFIG_SMALL("CRC testing"),
     .priv_data_size    = sizeof(CRCState),

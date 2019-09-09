@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.729 raw format demuxer
  * Copyright (c) 2011 Vladimir Voroshilov
  *
@@ -24,7 +24,8 @@
 #include "libavutil/log.h"
 #include "libavutil/opt.h"
 
-typedef struct G729DemuxerContext {
+typedef struct G729DemuxerContext
+{
     AVClass *class;
     int bit_rate;
 } G729DemuxerContext;
@@ -43,20 +44,27 @@ static int g729_read_header(AVFormatContext *s)
     st->codec->sample_rate = 8000;
     st->codec->channels = 1;
 
-    if (s1 && s1->bit_rate) {
+    if (s1 && s1->bit_rate)
+    {
         s->bit_rate = s1->bit_rate;
     }
 
-    if (s->bit_rate == 0) {
+    if (s->bit_rate == 0)
+    {
         av_log(s, AV_LOG_DEBUG, "No bitrate specified. Assuming 8000 b/s\n");
         s->bit_rate = 8000;
     }
 
-    if (s->bit_rate == 6400) {
+    if (s->bit_rate == 6400)
+    {
         st->codec->block_align = 8;
-    } else if (s->bit_rate == 8000) {
+    }
+    else if (s->bit_rate == 8000)
+    {
         st->codec->block_align = 10;
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "Only 8000 b/s and 6400 b/s bitrates are supported. Provided: %d b/s\n", s->bit_rate);
         return AVERROR_INVALIDDATA;
     }
@@ -79,19 +87,22 @@ static int g729_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-static const AVOption g729_options[] = {
+static const AVOption g729_options[] =
+{
     { "bit_rate", "", offsetof(G729DemuxerContext, bit_rate), AV_OPT_TYPE_INT, {.i64 = 0}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass g729_demuxer_class = {
+static const AVClass g729_demuxer_class =
+{
     .class_name = "g729 demuxer",
     .item_name  = av_default_item_name,
     .option     = g729_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_g729_demuxer = {
+AVInputFormat ff_g729_demuxer =
+{
     .name           = "g729",
     .long_name      = NULL_IF_CONFIG_SMALL("G.729 raw format demuxer"),
     .priv_data_size = sizeof(G729DemuxerContext),

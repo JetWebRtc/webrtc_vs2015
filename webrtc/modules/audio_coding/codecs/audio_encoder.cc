@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/base/trace_event.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 AudioEncoder::EncodedInfo::EncodedInfo() = default;
 AudioEncoder::EncodedInfo::EncodedInfo(const EncodedInfo&) = default;
@@ -24,38 +25,44 @@ AudioEncoder::EncodedInfo& AudioEncoder::EncodedInfo::operator=(
 AudioEncoder::EncodedInfo& AudioEncoder::EncodedInfo::operator=(EncodedInfo&&) =
     default;
 
-int AudioEncoder::RtpTimestampRateHz() const {
-  return SampleRateHz();
+int AudioEncoder::RtpTimestampRateHz() const
+{
+    return SampleRateHz();
 }
 
 AudioEncoder::EncodedInfo AudioEncoder::Encode(
     uint32_t rtp_timestamp,
     rtc::ArrayView<const int16_t> audio,
-    rtc::Buffer* encoded) {
-  TRACE_EVENT0("webrtc", "AudioEncoder::Encode");
-  RTC_CHECK_EQ(audio.size(),
-               static_cast<size_t>(NumChannels() * SampleRateHz() / 100));
+    rtc::Buffer* encoded)
+{
+    TRACE_EVENT0("webrtc", "AudioEncoder::Encode");
+    RTC_CHECK_EQ(audio.size(),
+                 static_cast<size_t>(NumChannels() * SampleRateHz() / 100));
 
-  const size_t old_size = encoded->size();
-  EncodedInfo info = EncodeImpl(rtp_timestamp, audio, encoded);
-  RTC_CHECK_EQ(encoded->size() - old_size, info.encoded_bytes);
-  return info;
+    const size_t old_size = encoded->size();
+    EncodedInfo info = EncodeImpl(rtp_timestamp, audio, encoded);
+    RTC_CHECK_EQ(encoded->size() - old_size, info.encoded_bytes);
+    return info;
 }
 
-bool AudioEncoder::SetFec(bool enable) {
-  return !enable;
+bool AudioEncoder::SetFec(bool enable)
+{
+    return !enable;
 }
 
-bool AudioEncoder::SetDtx(bool enable) {
-  return !enable;
+bool AudioEncoder::SetDtx(bool enable)
+{
+    return !enable;
 }
 
-bool AudioEncoder::GetDtx() const {
-  return false;
+bool AudioEncoder::GetDtx() const
+{
+    return false;
 }
 
-bool AudioEncoder::SetApplication(Application application) {
-  return false;
+bool AudioEncoder::SetApplication(Application application)
+{
+    return false;
 }
 
 void AudioEncoder::SetMaxPlaybackRate(int frequency_hz) {}
@@ -63,12 +70,16 @@ void AudioEncoder::SetMaxPlaybackRate(int frequency_hz) {}
 void AudioEncoder::SetTargetBitrate(int target_bps) {}
 
 rtc::ArrayView<std::unique_ptr<AudioEncoder>>
-AudioEncoder::ReclaimContainedEncoders() { return nullptr; }
+        AudioEncoder::ReclaimContainedEncoders()
+{
+    return nullptr;
+}
 
 bool AudioEncoder::EnableAudioNetworkAdaptor(const std::string& config_string,
-                                             RtcEventLog* event_log,
-                                             const Clock* clock) {
-  return false;
+        RtcEventLog* event_log,
+        const Clock* clock)
+{
+    return false;
 }
 
 void AudioEncoder::DisableAudioNetworkAdaptor() {}
@@ -76,8 +87,9 @@ void AudioEncoder::DisableAudioNetworkAdaptor() {}
 void AudioEncoder::OnReceivedUplinkPacketLossFraction(
     float uplink_packet_loss_fraction) {}
 
-void AudioEncoder::OnReceivedTargetAudioBitrate(int target_audio_bitrate_bps) {
-  OnReceivedUplinkBandwidth(target_audio_bitrate_bps, rtc::Optional<int64_t>());
+void AudioEncoder::OnReceivedTargetAudioBitrate(int target_audio_bitrate_bps)
+{
+    OnReceivedUplinkBandwidth(target_audio_bitrate_bps, rtc::Optional<int64_t>());
 }
 
 void AudioEncoder::OnReceivedUplinkBandwidth(
@@ -89,6 +101,6 @@ void AudioEncoder::OnReceivedRtt(int rtt_ms) {}
 void AudioEncoder::OnReceivedOverhead(size_t overhead_bytes_per_packet) {}
 
 void AudioEncoder::SetReceiverFrameLengthRange(int min_frame_length_ms,
-                                               int max_frame_length_ms) {}
+        int max_frame_length_ms) {}
 
 }  // namespace webrtc

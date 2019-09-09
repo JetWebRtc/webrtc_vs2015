@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Stefano Sabatini 2011
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@
 #include "formats.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int w, h;
     char *filename;
@@ -60,7 +61,8 @@ typedef struct {
 #define OFFSET(x) offsetof(CellAutoContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption cellauto_options[] = {
+static const AVOption cellauto_options[] =
+{
     { "filename", "read initial pattern from file", OFFSET(filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "f",        "read initial pattern from file", OFFSET(filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "pattern",  "set initial pattern", OFFSET(pattern), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
@@ -110,14 +112,18 @@ static int init_pattern_from_string(AVFilterContext *ctx)
     w = strlen(cellauto->pattern);
     av_log(ctx, AV_LOG_DEBUG, "w:%d\n", w);
 
-    if (cellauto->w) {
-        if (w > cellauto->w) {
+    if (cellauto->w)
+    {
+        if (w > cellauto->w)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "The specified width is %d which cannot contain the provided string width of %d\n",
                    cellauto->w, w);
             return AVERROR(EINVAL);
         }
-    } else {
+    }
+    else
+    {
         /* width was not specified, set it to width of the provided row */
         cellauto->w = w;
         cellauto->h = (double)cellauto->w * M_PHI;
@@ -129,7 +135,8 @@ static int init_pattern_from_string(AVFilterContext *ctx)
 
     /* fill buf */
     p = cellauto->pattern;
-    for (i = (cellauto->w - w)/2;; i++) {
+    for (i = (cellauto->w - w)/2;; i++)
+    {
         av_log(ctx, AV_LOG_DEBUG, "%d %c\n", i, *p == '\n' ? 'N' : *p);
         if (*p == '\n' || !*p)
             break;
@@ -168,18 +175,24 @@ static av_cold int init(AVFilterContext *ctx)
     if (!cellauto->w && !cellauto->filename && !cellauto->pattern)
         av_opt_set(cellauto, "size", "320x518", 0);
 
-    if (cellauto->filename && cellauto->pattern) {
+    if (cellauto->filename && cellauto->pattern)
+    {
         av_log(ctx, AV_LOG_ERROR, "Only one of the filename or pattern options can be used\n");
         return AVERROR(EINVAL);
     }
 
-    if (cellauto->filename) {
+    if (cellauto->filename)
+    {
         if ((ret = init_pattern_from_file(ctx)) < 0)
             return ret;
-    } else if (cellauto->pattern) {
+    }
+    else if (cellauto->pattern)
+    {
         if ((ret = init_pattern_from_string(ctx)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         /* fill the first row randomly */
         int i;
 
@@ -191,7 +204,8 @@ static av_cold int init(AVFilterContext *ctx)
 
         av_lfg_init(&cellauto->lfg, cellauto->random_seed);
 
-        for (i = 0; i < cellauto->w; i++) {
+        for (i = 0; i < cellauto->w; i++)
+        {
             double r = (double)av_lfg_get(&cellauto->lfg) / UINT32_MAX;
             if (r <= cellauto->random_fill_ratio)
                 cellauto->buf[i] = 1;
@@ -237,13 +251,17 @@ static void evolve(AVFilterContext *ctx)
     cellauto->buf_row_idx      = cellauto->buf_row_idx == cellauto->h-1 ? 0 : cellauto->buf_row_idx+1;
     row = cellauto->buf + cellauto->w * cellauto->buf_row_idx;
 
-    for (i = 0; i < cellauto->w; i++) {
-        if (cellauto->stitch) {
+    for (i = 0; i < cellauto->w; i++)
+    {
+        if (cellauto->stitch)
+        {
             pos[NW] = i-1 < 0 ? cellauto->w-1 : i-1;
             pos[N]  = i;
             pos[NE] = i+1 == cellauto->w ? 0  : i+1;
             v = prev_row[pos[NW]]<<2 | prev_row[pos[N]]<<1 | prev_row[pos[NE]];
-        } else {
+        }
+        else
+        {
             v = 0;
             v|= i-1 >= 0          ? prev_row[i-1]<<2 : 0;
             v|=                     prev_row[i  ]<<1    ;
@@ -268,13 +286,16 @@ static void fill_picture(AVFilterContext *ctx, AVFrame *picref)
         row_idx = (cellauto->buf_row_idx + 1) % cellauto->h;
 
     /* fill the output picture with the whole buffer */
-    for (i = 0; i < cellauto->h; i++) {
+    for (i = 0; i < cellauto->h; i++)
+    {
         uint8_t byte = 0;
         uint8_t *row = cellauto->buf + row_idx*cellauto->w;
         uint8_t *p = p0;
-        for (k = 0, j = 0; j < cellauto->w; j++) {
+        for (k = 0, j = 0; j < cellauto->w; j++)
+        {
             byte |= row[j]<<(7-k++);
-            if (k==8 || j == cellauto->w-1) {
+            if (k==8 || j == cellauto->w-1)
+            {
                 k = 0;
                 *p++ = byte;
                 byte = 0;
@@ -291,8 +312,12 @@ static int request_frame(AVFilterLink *outlink)
     AVFrame *picref = ff_get_video_buffer(outlink, cellauto->w, cellauto->h);
     if (!picref)
         return AVERROR(ENOMEM);
-    picref->sample_aspect_ratio = (AVRational) {1, 1};
-    if (cellauto->generation == 0 && cellauto->start_full) {
+    picref->sample_aspect_ratio = (AVRational)
+    {
+        1, 1
+    };
+    if (cellauto->generation == 0 && cellauto->start_full)
+    {
         int i;
         for (i = 0; i < cellauto->h-1; i++)
             evolve(outlink->src);
@@ -317,7 +342,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad cellauto_outputs[] = {
+static const AVFilterPad cellauto_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -327,7 +353,8 @@ static const AVFilterPad cellauto_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_cellauto = {
+AVFilter ff_vsrc_cellauto =
+{
     .name          = "cellauto",
     .description   = NULL_IF_CONFIG_SMALL("Create pattern generated by an elementary cellular automaton."),
     .priv_size     = sizeof(CellAutoContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized pixblockdsp
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -24,7 +24,7 @@
 #include "pixblockdsp_mips.h"
 
 void ff_get_pixels_8_mmi(int16_t *av_restrict block, const uint8_t *pixels,
-        ptrdiff_t line_size)
+                         ptrdiff_t line_size)
 {
     __asm__ volatile (
         "move $8, $0                    \n\t"
@@ -46,7 +46,7 @@ void ff_get_pixels_8_mmi(int16_t *av_restrict block, const uint8_t *pixels,
 }
 
 void ff_diff_pixels_mmi(int16_t *av_restrict block, const uint8_t *src1,
-        const uint8_t *src2, int stride)
+                        const uint8_t *src2, int stride)
 {
     __asm__ volatile (
         "dli $2, 8                     \n\t"

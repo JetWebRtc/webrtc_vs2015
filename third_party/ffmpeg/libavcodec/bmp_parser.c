@@ -1,4 +1,4 @@
-/*
+﻿/*
  * BMP parser
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -29,7 +29,8 @@
 
 #include "parser.h"
 
-typedef struct BMPParseContext {
+typedef struct BMPParseContext
+{
     ParseContext pc;
     uint32_t fsize;
     uint32_t remaining_size;
@@ -47,34 +48,47 @@ static int bmp_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     *poutbuf_size = 0;
 
 restart:
-    if (bpc->pc.frame_start_found <= 2+4+4) {
-        for (; i < buf_size; i++) {
+    if (bpc->pc.frame_start_found <= 2+4+4)
+    {
+        for (; i < buf_size; i++)
+        {
             state = (state << 8) | buf[i];
-            if (bpc->pc.frame_start_found == 0) {
-                if ((state >> 48) == (('B' << 8) | 'M')) {
+            if (bpc->pc.frame_start_found == 0)
+            {
+                if ((state >> 48) == (('B' << 8) | 'M'))
+                {
                     bpc->fsize = av_bswap32(state >> 16);
                     bpc->pc.frame_start_found = 1;
                 }
-            } else if (bpc->pc.frame_start_found == 2+4+4) {
+            }
+            else if (bpc->pc.frame_start_found == 2+4+4)
+            {
 //                 unsigned hsize = av_bswap32(state>>32);
                 unsigned ihsize = av_bswap32(state);
-                if (ihsize < 12 || ihsize > 200) {
+                if (ihsize < 12 || ihsize > 200)
+                {
                     bpc->pc.frame_start_found = 0;
                     continue;
                 }
                 bpc->pc.frame_start_found++;
                 bpc->remaining_size = bpc->fsize + i - 17;
 
-                if (bpc->pc.index + i > 17) {
+                if (bpc->pc.index + i > 17)
+                {
                     next = i - 17;
-                } else
+                }
+                else
                     goto restart;
-            } else if (bpc->pc.frame_start_found)
+            }
+            else if (bpc->pc.frame_start_found)
                 bpc->pc.frame_start_found++;
         }
         bpc->pc.state64 = state;
-    } else {
-        if (bpc->remaining_size) {
+    }
+    else
+    {
+        if (bpc->remaining_size)
+        {
             i = FFMIN(bpc->remaining_size, buf_size);
             bpc->remaining_size -= i;
             if (bpc->remaining_size)
@@ -96,7 +110,8 @@ flush:
     return next;
 }
 
-AVCodecParser ff_bmp_parser = {
+AVCodecParser ff_bmp_parser =
+{
     .codec_ids      = { AV_CODEC_ID_BMP },
     .priv_data_size = sizeof(BMPParseContext),
     .parser_parse   = bmp_parse,

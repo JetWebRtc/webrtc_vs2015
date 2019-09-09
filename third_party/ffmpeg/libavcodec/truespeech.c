@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DSP Group TrueSpeech compatible decoder
  * Copyright (c) 2005 Konstantin Shishkov
  *
@@ -35,7 +35,8 @@
 /**
  * TrueSpeech decoder context
  */
-typedef struct TSContext {
+typedef struct TSContext
+{
     BswapDSPContext bdsp;
     /* input data */
     DECLARE_ALIGNED(16, uint8_t, buffer)[32];
@@ -62,7 +63,8 @@ static av_cold int truespeech_decode_init(AVCodecContext * avctx)
 {
     TSContext *c = avctx->priv_data;
 
-    if (avctx->channels != 1) {
+    if (avctx->channels != 1)
+    {
         avpriv_request_sample(avctx, "Channel count %d", avctx->channels);
         return AVERROR_PATCHWELCOME;
     }
@@ -128,8 +130,10 @@ static void truespeech_correlate_filter(TSContext *dec)
     int16_t tmp[8];
     int i, j;
 
-    for(i = 0; i < 8; i++){
-        if(i > 0){
+    for(i = 0; i < 8; i++)
+    {
+        if(i > 0)
+        {
             memcpy(tmp, dec->cvector, i * sizeof(*tmp));
             for(j = 0; j < i; j++)
                 dec->cvector[j] = ((tmp[i - j - 1] * dec->vector[i]) +
@@ -147,18 +151,24 @@ static void truespeech_filters_merge(TSContext *dec)
 {
     int i;
 
-    if(!dec->flag){
-        for(i = 0; i < 8; i++){
+    if(!dec->flag)
+    {
+        for(i = 0; i < 8; i++)
+        {
             dec->filters[i + 0] = dec->prevfilt[i];
             dec->filters[i + 8] = dec->prevfilt[i];
         }
-    }else{
-        for(i = 0; i < 8; i++){
+    }
+    else
+    {
+        for(i = 0; i < 8; i++)
+        {
             dec->filters[i + 0]=(dec->cvector[i] * 21846 + dec->prevfilt[i] * 10923 + 16384) >> 15;
             dec->filters[i + 8]=(dec->cvector[i] * 10923 + dec->prevfilt[i] * 21846 + 16384) >> 15;
         }
     }
-    for(i = 0; i < 8; i++){
+    for(i = 0; i < 8; i++)
+    {
         dec->filters[i + 16] = dec->cvector[i];
         dec->filters[i + 24] = dec->cvector[i];
     }
@@ -171,7 +181,8 @@ static void truespeech_apply_twopoint_filter(TSContext *dec, int quart)
     int i, t, off;
 
     t = dec->offset2[quart];
-    if(t == 127){
+    if(t == 127)
+    {
         memset(dec->newvec, 0, 60 * sizeof(*dec->newvec));
         return;
     }
@@ -182,7 +193,8 @@ static void truespeech_apply_twopoint_filter(TSContext *dec, int quart)
     ptr0 = tmp + 145 - off;
     ptr1 = tmp + 146;
     filter = ts_order2_coeffs + (t % 25) * 2;
-    for(i = 0; i < 60; i++){
+    for(i = 0; i < 60; i++)
+    {
         t = (ptr0[0] * filter[0] + ptr0[1] * filter[1] + 0x2000) >> 14;
         ptr0++;
         dec->newvec[i] = t;
@@ -199,7 +211,8 @@ static void truespeech_place_pulses(TSContext *dec, int16_t *out, int quart)
     int coef;
 
     memset(out, 0, 60 * sizeof(*out));
-    for(i = 0; i < 7; i++) {
+    for(i = 0; i < 7; i++)
+    {
         t = dec->pulseval[quart] & 3;
         dec->pulseval[quart] >>= 2;
         tmp[6 - i] = ts_pulse_scales[dec->pulseoff[quart] * 4 + t];
@@ -208,11 +221,13 @@ static void truespeech_place_pulses(TSContext *dec, int16_t *out, int quart)
     coef = dec->pulsepos[quart] >> 15;
     ptr1 = ts_pulse_values + 30;
     ptr2 = tmp;
-    for(i = 0, j = 3; (i < 30) && (j > 0); i++){
+    for(i = 0, j = 3; (i < 30) && (j > 0); i++)
+    {
         t = *ptr1++;
         if(coef >= t)
             coef -= t;
-        else{
+        else
+        {
             out[i] = *ptr2++;
             ptr1 += 30;
             j--;
@@ -220,11 +235,13 @@ static void truespeech_place_pulses(TSContext *dec, int16_t *out, int quart)
     }
     coef = dec->pulsepos[quart] & 0x7FFF;
     ptr1 = ts_pulse_values;
-    for(i = 30, j = 4; (i < 60) && (j > 0); i++){
+    for(i = 30, j = 4; (i < 60) && (j > 0); i++)
+    {
         t = *ptr1++;
         if(coef >= t)
             coef -= t;
-        else{
+        else
+        {
             out[i] = *ptr2++;
             ptr1 += 30;
             j--;
@@ -238,7 +255,8 @@ static void truespeech_update_filters(TSContext *dec, int16_t *out, int quart)
     int i;
 
     memmove(dec->filtbuf, &dec->filtbuf[60], 86 * sizeof(*dec->filtbuf));
-    for(i = 0; i < 60; i++){
+    for(i = 0; i < 60; i++)
+    {
         dec->filtbuf[i + 86] = out[i] + dec->newvec[i] - (dec->newvec[i] >> 3);
         out[i] += dec->newvec[i];
     }
@@ -252,7 +270,8 @@ static void truespeech_synth(TSContext *dec, int16_t *out, int quart)
 
     ptr0 = dec->tmp1;
     ptr1 = dec->filters + quart * 8;
-    for(i = 0; i < 60; i++){
+    for(i = 0; i < 60; i++)
+    {
         int sum = 0;
         for(k = 0; k < 8; k++)
             sum += ptr0[k] * ptr1[k];
@@ -267,7 +286,8 @@ static void truespeech_synth(TSContext *dec, int16_t *out, int quart)
         t[i] = (ts_decay_35_64[i] * ptr1[i]) >> 15;
 
     ptr0 = dec->tmp2;
-    for(i = 0; i < 60; i++){
+    for(i = 0; i < 60; i++)
+    {
         int sum = 0;
         for(k = 0; k < 8; k++)
             sum += ptr0[k] * t[k];
@@ -281,7 +301,8 @@ static void truespeech_synth(TSContext *dec, int16_t *out, int quart)
         t[i] = (ts_decay_3_4[i] * ptr1[i]) >> 15;
 
     ptr0 = dec->tmp3;
-    for(i = 0; i < 60; i++){
+    for(i = 0; i < 60; i++)
+    {
         int sum = out[i] << 12;
         for(k = 0; k < 8; k++)
             sum += ptr0[k] * t[k];
@@ -317,7 +338,8 @@ static int truespeech_decode_frame(AVCodecContext *avctx, void *data,
 
     iterations = buf_size / 32;
 
-    if (!iterations) {
+    if (!iterations)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Too small input buffer (%d bytes), need at least 32 bytes\n", buf_size);
         return -1;
@@ -331,14 +353,16 @@ static int truespeech_decode_frame(AVCodecContext *avctx, void *data,
 
     memset(samples, 0, iterations * 240 * sizeof(*samples));
 
-    for(j = 0; j < iterations; j++) {
+    for(j = 0; j < iterations; j++)
+    {
         truespeech_read_frame(c, buf);
         buf += 32;
 
         truespeech_correlate_filter(c);
         truespeech_filters_merge(c);
 
-        for(i = 0; i < 4; i++) {
+        for(i = 0; i < 4; i++)
+        {
             truespeech_apply_twopoint_filter(c, i);
             truespeech_place_pulses  (c, samples, i);
             truespeech_update_filters(c, samples, i);
@@ -354,7 +378,8 @@ static int truespeech_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_truespeech_decoder = {
+AVCodec ff_truespeech_decoder =
+{
     .name           = "truespeech",
     .long_name      = NULL_IF_CONFIG_SMALL("DSP Group TrueSpeech"),
     .type           = AVMEDIA_TYPE_AUDIO,

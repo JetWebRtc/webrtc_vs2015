@@ -1,4 +1,4 @@
-#ifndef VERSION_H
+﻿#ifndef VERSION_H
 #define VERSION_H
 
 #ifdef GENERATED_VERSION_HEADER

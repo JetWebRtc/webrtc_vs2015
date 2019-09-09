@@ -1,4 +1,4 @@
-/*
+﻿/*
  * An implementation of the CAST128 algorithm as mentioned in RFC2144
  * Copyright (c) 2014 Supraja Meedinti
  *
@@ -68,7 +68,8 @@
     } while (0)
 
 
-typedef struct AVCAST5 {
+typedef struct AVCAST5
+{
     uint32_t Km[17];
     uint32_t Kr[17];
     int rounds;
@@ -76,7 +77,8 @@ typedef struct AVCAST5 {
 
 const int av_cast5_size = sizeof(AVCAST5);
 
-static const uint32_t S1[256] = {
+static const uint32_t S1[256] =
+{
     0x30fb40d4, 0x9fa0ff0b, 0x6beccd2f, 0x3f258c7a, 0x1e213f2f, 0x9c004dd3, 0x6003e540, 0xcf9fc949,
     0xbfd4af27, 0x88bbbdb5, 0xe2034090, 0x98d09675, 0x6e63a0e0, 0x15c361d2, 0xc2e7661d, 0x22d4ff8e,
     0x28683b6f, 0xc07fd059, 0xff2379c8, 0x775f50e2, 0x43c340d3, 0xdf2f8656, 0x887ca41a, 0xa2d2bd2d,
@@ -111,7 +113,8 @@ static const uint32_t S1[256] = {
     0x1a69e783, 0x02cc4843, 0xa2f7c579, 0x429ef47d, 0x427b169c, 0x5ac9f049, 0xdd8f0f00, 0x5c8165bf
 };
 
-static const uint32_t S2[256] = {
+static const uint32_t S2[256] =
+{
     0x1f201094, 0xef0ba75b, 0x69e3cf7e, 0x393f4380, 0xfe61cf7a, 0xeec5207a, 0x55889c94, 0x72fc0651,
     0xada7ef79, 0x4e1d7235, 0xd55a63ce, 0xde0436ba, 0x99c430ef, 0x5f0c0794, 0x18dcdb7d, 0xa1d6eff3,
     0xa0b52f7b, 0x59e83605, 0xee15b094, 0xe9ffd909, 0xdc440086, 0xef944459, 0xba83ccb3, 0xe0c3cdfb,
@@ -146,7 +149,8 @@ static const uint32_t S2[256] = {
     0x43d79572, 0x7e6dd07c, 0x06dfdf1e, 0x6c6cc4ef, 0x7160a539, 0x73bfbe70, 0x83877605, 0x4523ecf1
 };
 
-static const uint32_t S3[256] = {
+static const uint32_t S3[256] =
+{
     0x8defc240, 0x25fa5d9f, 0xeb903dbf, 0xe810c907, 0x47607fff, 0x369fe44b, 0x8c1fc644, 0xaececa90,
     0xbeb1f9bf, 0xeefbcaea, 0xe8cf1950, 0x51df07ae, 0x920e8806, 0xf0ad0548, 0xe13c8d83, 0x927010d5,
     0x11107d9f, 0x07647db9, 0xb2e3e4d4, 0x3d4f285e, 0xb9afa820, 0xfade82e0, 0xa067268b, 0x8272792e,
@@ -181,7 +185,8 @@ static const uint32_t S3[256] = {
     0xf7baefd5, 0x4142ed9c, 0xa4315c11, 0x83323ec5, 0xdfef4636, 0xa133c501, 0xe9d3531c, 0xee353783
 };
 
-static const uint32_t S4[256] = {
+static const uint32_t S4[256] =
+{
     0x9db30420, 0x1fb6e9de, 0xa7be7bef, 0xd273a298, 0x4a4f7bdb, 0x64ad8c57, 0x85510443, 0xfa020ed1,
     0x7e287aff, 0xe60fb663, 0x095f35a1, 0x79ebf120, 0xfd059d43, 0x6497b7b1, 0xf3641f63, 0x241e4adf,
     0x28147f5f, 0x4fa2b8cd, 0xc9430040, 0x0cc32220, 0xfdd30b30, 0xc0a5374f, 0x1d2d00d9, 0x24147b15,
@@ -216,7 +221,8 @@ static const uint32_t S4[256] = {
     0x7ae5290c, 0x3cb9536b, 0x851e20fe, 0x9833557e, 0x13ecf0b0, 0xd3ffb372, 0x3f85c5c1, 0x0aef7ed2
 };
 
-static const uint32_t S5[256] = {
+static const uint32_t S5[256] =
+{
     0x7ec90c04, 0x2c6e74b9, 0x9b0e66df, 0xa6337911, 0xb86a7fff, 0x1dd358f5, 0x44dd9d44, 0x1731167f,
     0x08fbf1fa, 0xe7f511cc, 0xd2051b00, 0x735aba00, 0x2ab722d8, 0x386381cb, 0xacf6243a, 0x69befd7a,
     0xe6a2e77f, 0xf0c720cd, 0xc4494816, 0xccf5c180, 0x38851640, 0x15b0a848, 0xe68b18cb, 0x4caadeff,
@@ -251,7 +257,8 @@ static const uint32_t S5[256] = {
     0xe822fe15, 0x88570983, 0x750e6249, 0xda627e55, 0x5e76ffa8, 0xb1534546, 0x6d47de08, 0xefe9e7d4
 };
 
-static const uint32_t S6[256] = {
+static const uint32_t S6[256] =
+{
     0xf6fa8f9d, 0x2cac6ce1, 0x4ca34867, 0xe2337f7c, 0x95db08e7, 0x016843b4, 0xeced5cbc, 0x325553ac,
     0xbf9f0960, 0xdfa1e2ed, 0x83f0579d, 0x63ed86b9, 0x1ab6a6b8, 0xde5ebe39, 0xf38ff732, 0x8989b138,
     0x33f14961, 0xc01937bd, 0xf506c6da, 0xe4625e7e, 0xa308ea99, 0x4e23e33c, 0x79cbd7cc, 0x48a14367,
@@ -286,7 +293,8 @@ static const uint32_t S6[256] = {
     0xa2d762cf, 0x49c92f54, 0x38b5f331, 0x7128a454, 0x48392905, 0xa65b1db8, 0x851c97bd, 0xd675cf2f
 };
 
-static const uint32_t S7[256] = {
+static const uint32_t S7[256] =
+{
     0x85e04019, 0x332bf567, 0x662dbfff, 0xcfc65693, 0x2a8d7f6f, 0xab9bc912, 0xde6008a1, 0x2028da1f,
     0x0227bce7, 0x4d642916, 0x18fac300, 0x50f18b82, 0x2cb2cb11, 0xb232e75c, 0x4b3695f2, 0xb28707de,
     0xa05fbcf6, 0xcd4181e9, 0xe150210c, 0xe24ef1bd, 0xb168c381, 0xfde4e789, 0x5c79b0d8, 0x1e8bfd43,
@@ -321,7 +329,8 @@ static const uint32_t S7[256] = {
     0x518f36b2, 0x84b1d370, 0x0fedce83, 0x878ddada, 0xf2a279c7, 0x94e01be8, 0x90716f4b, 0x954b8aa3
 };
 
-static const uint32_t S8[256] = {
+static const uint32_t S8[256] =
+{
     0xe216300d, 0xbbddfffc, 0xa7ebdabd, 0x35648095, 0x7789f8b7, 0xe6c1121b, 0x0e241600, 0x052ce8b5,
     0x11a9cfb0, 0xe5952f11, 0xece7990a, 0x9386d174, 0x2a42931c, 0x76e38111, 0xb12def3a, 0x37ddddfc,
     0xde9adeb1, 0x0a0cc32c, 0xbe197029, 0x84a00940, 0xbb243a0f, 0xb4d137cf, 0xb44e79f0, 0x049eedfd,
@@ -381,7 +390,8 @@ static void generate_round_keys(int rnds, uint32_t* K, uint32_t* x, uint32_t* z)
 
     COMPUTE_X;
 
-    if (rnds == 16) {
+    if (rnds == 16)
+    {
         K[13] = S5[IA(x[2])] ^ S6[IB(x[2])] ^ S7[ID(x[1])] ^ S8[IC(x[1])] ^ S5[ID(x[0])];
         K[14] = S5[IC(x[2])] ^ S6[ID(x[2])] ^ S7[IB(x[1])] ^ S8[IA(x[1])] ^ S6[ID(x[1])];
         K[15] = S5[IA(x[3])] ^ S6[IB(x[3])] ^ S7[ID(x[0])] ^ S8[IC(x[0])] ^ S7[IA(x[2])];
@@ -406,7 +416,8 @@ static void encipher(AVCAST5* cs, uint8_t* dst, const uint8_t* src)
     F1(r, l, 10);
     F2(l, r, 11);
     F3(r, l, 12);
-    if (cs->rounds == 16) {
+    if (cs->rounds == 16)
+    {
         F1(l, r, 13);
         F2(r, l, 14);
         F3(l, r, 15);
@@ -421,7 +432,8 @@ static void decipher(AVCAST5* cs, uint8_t* dst, const uint8_t* src, uint8_t *iv)
     uint32_t f, I, r, l;
     l = AV_RB32(src);
     r = AV_RB32(src + 4);
-    if (cs->rounds == 16) {
+    if (cs->rounds == 16)
+    {
         F1(l, r, 16);
         F3(r, l, 15);
         F2(l, r, 14);
@@ -439,7 +451,8 @@ static void decipher(AVCAST5* cs, uint8_t* dst, const uint8_t* src, uint8_t *iv)
     F3(r, l, 3);
     F2(l, r, 2);
     F1(r, l, 1);
-    if (iv) {
+    if (iv)
+    {
         r ^= AV_RB32(iv);
         l ^= AV_RB32(iv + 4);
         memcpy(iv, src, 8);
@@ -476,16 +489,23 @@ av_cold int av_cast5_init(AVCAST5* cs, const uint8_t *key, int key_bits)
 void av_cast5_crypt2(AVCAST5* cs, uint8_t* dst, const uint8_t* src, int count, uint8_t *iv, int decrypt)
 {
     int i;
-    while (count--) {
-        if (decrypt) {
+    while (count--)
+    {
+        if (decrypt)
+        {
             decipher(cs, dst, src, iv);
-        } else {
-            if (iv) {
+        }
+        else
+        {
+            if (iv)
+            {
                 for (i = 0; i < 8; i++)
                     dst[i] = src[i] ^ iv[i];
                 encipher(cs, dst, dst);
                 memcpy(iv, dst, 8);
-            } else {
+            }
+            else
+            {
                 encipher(cs, dst, src);
             }
         }
@@ -495,10 +515,14 @@ void av_cast5_crypt2(AVCAST5* cs, uint8_t* dst, const uint8_t* src, int count, u
 }
 void av_cast5_crypt(AVCAST5* cs, uint8_t* dst, const uint8_t* src, int count, int decrypt)
 {
-    while (count--) {
-        if (decrypt){
+    while (count--)
+    {
+        if (decrypt)
+        {
             decipher(cs, dst, src, NULL);
-        } else {
+        }
+        else
+        {
             encipher(cs, dst, src);
         }
         src = src + 8;
@@ -514,18 +538,21 @@ void av_cast5_crypt(AVCAST5* cs, uint8_t* dst, const uint8_t* src, int count, in
 int main(int argc, char** argv)
 {
 
-    static const uint8_t Key[3][16] = {
+    static const uint8_t Key[3][16] =
+    {
         {0x01, 0x23, 0x45, 0x67, 0x12, 0x34, 0x56, 0x78, 0x23, 0x45, 0x67, 0x89, 0x34, 0x56, 0x78, 0x9a},
         {0x01, 0x23, 0x45, 0x67, 0x12, 0x34, 0x56, 0x78, 0x23, 0x45},
         {0x01, 0x23, 0x45, 0x67, 0x12}
     };
     static const uint8_t rpt[8] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
-    static const uint8_t rct[3][8] = {
+    static const uint8_t rct[3][8] =
+    {
         {0x23, 0x8b, 0x4f, 0xe5, 0x84, 0x7e, 0x44, 0xb2},
         {0xeb, 0x6a, 0x71, 0x1a, 0x2c, 0x02, 0x27, 0x1b},
         {0x7a, 0xc8, 0x16, 0xd1, 0x6e, 0x9b, 0x30, 0x2e}
     };
-    static const uint8_t rct2[2][16] = {
+    static const uint8_t rct2[2][16] =
+    {
         {0xee, 0xa9, 0xd0, 0xa2, 0x49, 0xfd, 0x3b, 0xa6, 0xb3, 0x43, 0x6f, 0xb8, 0x9d, 0x6d, 0xca, 0x92},
         {0xb2, 0xc9, 0x5e, 0xb0, 0x0c, 0x31, 0xad, 0x71, 0x80, 0xac, 0x05, 0xb8, 0xe8, 0x3d, 0x69, 0x6e}
     };
@@ -538,20 +565,25 @@ int main(int argc, char** argv)
     cs = av_cast5_alloc();
     if (!cs)
         return 1;
-    for (j = 0; j < 3; j++){
+    for (j = 0; j < 3; j++)
+    {
 
         av_cast5_init(cs, Key[j], key_bits[j]);
         av_cast5_crypt(cs, temp, rpt, 1, 0);
-        for (i = 0;i < 8; i++){
-            if (rct[j][i] != temp[i]){
+        for (i = 0; i < 8; i++)
+        {
+            if (rct[j][i] != temp[i])
+            {
                 av_log(NULL, AV_LOG_ERROR, "%d %02x %02x\n", i, rct[j][i], temp[i]);
                 err = 1;
             }
         }
 
         av_cast5_crypt(cs, temp, rct[j], 1, 1);
-        for (i =0; i < 8; i++) {
-            if (rpt[i] != temp[i]) {
+        for (i =0; i < 8; i++)
+        {
+            if (rpt[i] != temp[i])
+            {
                 av_log(NULL, AV_LOG_ERROR, "%d %02x %02x\n", i, rpt[i], temp[i]);
                 err = 1;
             }
@@ -559,29 +591,36 @@ int main(int argc, char** argv)
     }
     memcpy(rpt2[0], Key[0], 16);
     memcpy(rpt2[1], Key[0], 16);
-    for (i = 0; i < 1000000; i++){
+    for (i = 0; i < 1000000; i++)
+    {
         av_cast5_init(cs, rpt2[1], 128);
         av_cast5_crypt(cs, rpt2[0], rpt2[0], 2, 0);
         av_cast5_init(cs, rpt2[0], 128);
         av_cast5_crypt(cs, rpt2[1], rpt2[1], 2, 0);
     }
-    for (j = 0; j < 2; j++) {
-        for (i = 0; i < 16; i++) {
-            if (rct2[j][i] != rpt2[j][i]) {
+    for (j = 0; j < 2; j++)
+    {
+        for (i = 0; i < 16; i++)
+        {
+            if (rct2[j][i] != rpt2[j][i])
+            {
                 av_log(NULL, AV_LOG_ERROR, "%d %02x %02x\n", i, rct2[j][i], rpt2[j][i]);
                 err = 1;
             }
         }
     }
-    for (j = 0; j < 3; j++) {
+    for (j = 0; j < 3; j++)
+    {
 
         av_cast5_init(cs, Key[j], key_bits[j]);
         memcpy(temp, iv, 8);
         av_cast5_crypt2(cs, rpt2[0], rct2[0], 2, temp, 0);
         memcpy(temp, iv, 8);
         av_cast5_crypt2(cs, rpt2[0], rpt2[0], 2, temp, 1);
-        for (i = 0; i < 16; i++) {
-            if (rct2[0][i] != rpt2[0][i]) {
+        for (i = 0; i < 16; i++)
+        {
+            if (rct2[0][i] != rpt2[0][i])
+            {
                 av_log(NULL, AV_LOG_ERROR, "%d %02x %02x\n", i, rct2[0][i], rpt2[0][i]);
                 err = 1;
             }

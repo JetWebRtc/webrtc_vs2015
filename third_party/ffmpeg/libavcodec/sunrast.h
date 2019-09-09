@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sun Rasterfile Image Format
  * Copyright (c) 2007, 2008 Ivo van Poorten
  *

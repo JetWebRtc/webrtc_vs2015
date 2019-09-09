@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,10 +16,10 @@
  */
 @interface ARDStatsBuilder : NSObject
 
-/** String that represents the accumulated stats reports passed into this
- *  class.
- */
-@property(nonatomic, readonly) NSString *statsString;
+    /** String that represents the accumulated stats reports passed into this
+     *  class.
+     */
+    @property(nonatomic, readonly) NSString *statsString;
 
 /** Parses the information in the stats report into an appropriate internal
  *  format used to generate the stats string.

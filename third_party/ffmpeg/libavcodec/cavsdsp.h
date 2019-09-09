@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chinese AVS video (AVS1-P2, JiZhun profile) decoder.
  * Copyright (c) 2006  Stefan Gehrer <stefan.gehrer@gmx.de>
  *
@@ -27,7 +27,8 @@
 #include "avcodec.h"
 #include "qpeldsp.h"
 
-typedef struct CAVSDSPContext {
+typedef struct CAVSDSPContext
+{
     qpel_mc_func put_cavs_qpel_pixels_tab[2][16];
     qpel_mc_func avg_cavs_qpel_pixels_tab[2][16];
     void (*cavs_filter_lv)(uint8_t *pix, int stride, int alpha, int beta, int tc, int bs1, int bs2);

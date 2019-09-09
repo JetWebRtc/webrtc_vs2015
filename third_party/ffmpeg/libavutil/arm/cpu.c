@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -50,15 +50,21 @@
 
 static int get_hwcap(uint32_t *hwcap)
 {
-    struct { uint32_t a_type; uint32_t a_val; } auxv;
+    struct
+    {
+        uint32_t a_type;
+        uint32_t a_val;
+    } auxv;
     FILE *f = fopen("/proc/self/auxv", "r");
     int err = -1;
 
     if (!f)
         return -1;
 
-    while (fread(&auxv, sizeof(auxv), 1, f) > 0) {
-        if (auxv.a_type == AT_HWCAP) {
+    while (fread(&auxv, sizeof(auxv), 1, f) > 0)
+    {
+        if (auxv.a_type == AT_HWCAP)
+        {
             *hwcap = auxv.a_val;
             err = 0;
             break;
@@ -78,8 +84,10 @@ static int get_cpuinfo(uint32_t *hwcap)
         return -1;
 
     *hwcap = 0;
-    while (fgets(buf, sizeof(buf), f)) {
-        if (av_strstart(buf, "Features", NULL)) {
+    while (fgets(buf, sizeof(buf), f))
+    {
+        if (av_strstart(buf, "Features", NULL))
+        {
             if (strstr(buf, " edsp "))
                 *hwcap |= HWCAP_EDSP;
             if (strstr(buf, " tls "))
@@ -129,9 +137,9 @@ int ff_get_cpu_flags_arm(void)
     if (flags & (AV_CPU_FLAG_VFPV3 | AV_CPU_FLAG_NEON))
         flags |= AV_CPU_FLAG_ARMV6T2;
     else if (flags & (AV_CPU_FLAG_ARMV6T2 | AV_CPU_FLAG_ARMV6))
-    /* Some functions use the 'setend' instruction which is deprecated on ARMv8
-     * and serializing on some ARMv7 cores. This ensures such functions
-     * are only enabled on ARMv6. */
+        /* Some functions use the 'setend' instruction which is deprecated on ARMv8
+         * and serializing on some ARMv7 cores. This ensures such functions
+         * are only enabled on ARMv6. */
         flags |= AV_CPU_FLAG_SETEND;
 
     if (flags & AV_CPU_FLAG_ARMV6T2)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CAF common code
  * Copyright (c) 2007  Justin Ruggles
  *

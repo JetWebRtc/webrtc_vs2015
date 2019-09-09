@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VP8 compatible video decoder
  *
  * Copyright (C) 2010 David Conrad
@@ -43,7 +43,8 @@
 
 #define VP8_MAX_QUANT 127
 
-enum dct_token {
+enum dct_token
+{
     DCT_0,
     DCT_1,
     DCT_2,
@@ -63,13 +64,15 @@ enum dct_token {
 // used to signal 4x4 intra pred in luma MBs
 #define MODE_I4x4 4
 
-enum inter_mvmode {
+enum inter_mvmode
+{
     VP8_MVMODE_ZERO = MODE_I4x4 + 1,
     VP8_MVMODE_MV,
     VP8_MVMODE_SPLIT
 };
 
-enum inter_splitmvmode {
+enum inter_splitmvmode
+{
     VP8_SPLITMVMODE_16x8 = 0,    ///< 2 16x8 blocks (vertical)
     VP8_SPLITMVMODE_8x16,        ///< 2 8x16 blocks (horizontal)
     VP8_SPLITMVMODE_8x8,         ///< 2x2 blocks of 8x8px each
@@ -77,13 +80,15 @@ enum inter_splitmvmode {
     VP8_SPLITMVMODE_NONE,        ///< (only used in prediction) no split MVs
 };
 
-typedef struct VP8FilterStrength {
+typedef struct VP8FilterStrength
+{
     uint8_t filter_level;
     uint8_t inner_limit;
     uint8_t inner_filter;
 } VP8FilterStrength;
 
-typedef struct VP8Macroblock {
+typedef struct VP8Macroblock
+{
     uint8_t skip;
     // TODO: make it possible to check for at least (i4x4 or split_mv)
     // in one op. are others needed?
@@ -98,7 +103,8 @@ typedef struct VP8Macroblock {
     VP56mv bmv[16];
 } VP8Macroblock;
 
-typedef struct VP8ThreadData {
+typedef struct VP8ThreadData
+{
     DECLARE_ALIGNED(16, int16_t, block)[6][4][16];
     DECLARE_ALIGNED(16, int16_t, block_dc)[16];
     /**
@@ -129,18 +135,21 @@ typedef struct VP8ThreadData {
     VP8FilterStrength *filter_strength;
 } VP8ThreadData;
 
-typedef struct VP8Frame {
+typedef struct VP8Frame
+{
     ThreadFrame tf;
     AVBufferRef *seg_map;
 } VP8Frame;
 
-typedef struct VP8intmv {
+typedef struct VP8intmv
+{
     int x;
     int y;
 } VP8intmv;
 
 #define MAX_THREADS 8
-typedef struct VP8Context {
+typedef struct VP8Context
+{
     VP8ThreadData *thread_data;
     AVCodecContext *avctx;
     VP8Frame *framep[4];
@@ -168,7 +177,8 @@ typedef struct VP8Context {
      * These must be kept unchanged even if segmentation is not used for
      * a frame, since the values persist between interframes.
      */
-    struct {
+    struct
+    {
         uint8_t enabled;
         uint8_t absolute_vals;
         uint8_t update_map;
@@ -176,7 +186,8 @@ typedef struct VP8Context {
         int8_t filter_level[4];     ///< base loop filter level
     } segmentation;
 
-    struct {
+    struct
+    {
         uint8_t simple;
         uint8_t level;
         uint8_t sharpness;
@@ -192,14 +203,16 @@ typedef struct VP8Context {
      * segmentation is enabled.
      * If segmentation is disabled, only the first segment's values are used.
      */
-    struct {
+    struct
+    {
         // [0] - DC qmul  [1] - AC qmul
         int16_t luma_qmul[2];
         int16_t luma_dc_qmul[2];    ///< luma dc-only block quant
         int16_t chroma_qmul[2];
     } qmat[4];
 
-    struct {
+    struct
+    {
         uint8_t enabled;    ///< whether each mb can have a different strength based on mode/ref
 
         /**
@@ -234,7 +247,8 @@ typedef struct VP8Context {
      * for an interframe to desync if a prior frame's header was corrupt
      * or missing outright!
      */
-    struct {
+    struct
+    {
         uint8_t segmentid[3];
         uint8_t mbskip;
         uint8_t intra;

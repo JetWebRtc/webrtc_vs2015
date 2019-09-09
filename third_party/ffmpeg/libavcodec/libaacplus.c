@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Interface to libaacplus for aac+ (sbr+ps) encoding
  * Copyright (c) 2010 tipok <piratfm@gmail.com>
  *
@@ -29,7 +29,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct aacPlusAudioContext {
+typedef struct aacPlusAudioContext
+{
     aacplusEncHandle aacplus_handle;
     unsigned long max_output_bytes;
     unsigned long samples_input;
@@ -41,19 +42,22 @@ static av_cold int aacPlus_encode_init(AVCodecContext *avctx)
     aacplusEncConfiguration *aacplus_cfg;
 
     /* number of channels */
-    if (avctx->channels < 1 || avctx->channels > 2) {
+    if (avctx->channels < 1 || avctx->channels > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "encoding %d channel(s) is not allowed\n", avctx->channels);
         return AVERROR(EINVAL);
     }
 
-    if (avctx->profile != FF_PROFILE_AAC_LOW && avctx->profile != FF_PROFILE_UNKNOWN) {
+    if (avctx->profile != FF_PROFILE_AAC_LOW && avctx->profile != FF_PROFILE_UNKNOWN)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid AAC profile: %d, only LC supported\n", avctx->profile);
         return AVERROR(EINVAL);
     }
 
     s->aacplus_handle = aacplusEncOpen(avctx->sample_rate, avctx->channels,
                                        &s->samples_input, &s->max_output_bytes);
-    if (!s->aacplus_handle) {
+    if (!s->aacplus_handle)
+    {
         av_log(avctx, AV_LOG_ERROR, "can't open encoder\n");
         return AVERROR(EINVAL);
     }
@@ -65,7 +69,8 @@ static av_cold int aacPlus_encode_init(AVCodecContext *avctx)
     aacplus_cfg->bandWidth = avctx->cutoff;
     aacplus_cfg->outputFormat = !(avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER);
     aacplus_cfg->inputFormat = avctx->sample_fmt == AV_SAMPLE_FMT_FLT ? AACPLUS_INPUT_FLOAT : AACPLUS_INPUT_16BIT;
-    if (!aacplusEncSetConfiguration(s->aacplus_handle, aacplus_cfg)) {
+    if (!aacplusEncSetConfiguration(s->aacplus_handle, aacplus_cfg))
+    {
         av_log(avctx, AV_LOG_ERROR, "libaacplus doesn't support this output format!\n");
         return AVERROR(EINVAL);
     }
@@ -74,15 +79,18 @@ static av_cold int aacPlus_encode_init(AVCodecContext *avctx)
 
     /* Set decoder specific info */
     avctx->extradata_size = 0;
-    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+    {
 
         unsigned char *buffer = NULL;
         unsigned long decoder_specific_info_size;
 
         if (aacplusEncGetDecoderSpecificInfo(s->aacplus_handle, &buffer,
-                                           &decoder_specific_info_size) == 1) {
+                                             &decoder_specific_info_size) == 1)
+        {
             avctx->extradata = av_malloc(decoder_specific_info_size + AV_INPUT_BUFFER_PADDING_SIZE);
-            if (!avctx->extradata) {
+            if (!avctx->extradata)
+            {
                 free(buffer);
                 return AVERROR(ENOMEM);
             }
@@ -121,12 +129,14 @@ static av_cold int aacPlus_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-static const AVProfile profiles[] = {
+static const AVProfile profiles[] =
+{
     { FF_PROFILE_AAC_LOW, "LC" },
     { FF_PROFILE_UNKNOWN },
 };
 
-AVCodec ff_libaacplus_encoder = {
+AVCodec ff_libaacplus_encoder =
+{
     .name           = "libaacplus",
     .long_name      = NULL_IF_CONFIG_SMALL("libaacplus AAC+ (Advanced Audio Codec with SBR+PS)"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -135,11 +145,16 @@ AVCodec ff_libaacplus_encoder = {
     .init           = aacPlus_encode_init,
     .encode2        = aacPlus_encode_frame,
     .close          = aacPlus_encode_close,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_FLT,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_FLT,
+        AV_SAMPLE_FMT_NONE
+    },
     .profiles       = profiles,
-    .channel_layouts = (const uint64_t[]) { AV_CH_LAYOUT_MONO,
-                                            AV_CH_LAYOUT_STEREO,
-                                            0 },
+    .channel_layouts = (const uint64_t[])
+    {
+        AV_CH_LAYOUT_MONO,
+        AV_CH_LAYOUT_STEREO,
+        0
+    },
 };

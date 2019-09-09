@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,18 +15,21 @@
 #include "webrtc/api/video/video_frame.h"
 #include "webrtc/media/base/videosourceinterface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Clock;
 
-namespace test {
+namespace test
+{
 
-class VideoCapturer : public rtc::VideoSourceInterface<VideoFrame> {
- public:
-  virtual ~VideoCapturer() {}
+class VideoCapturer : public rtc::VideoSourceInterface<VideoFrame>
+{
+public:
+    virtual ~VideoCapturer() {}
 
-  virtual void Start() = 0;
-  virtual void Stop() = 0;
+    virtual void Start() = 0;
+    virtual void Stop() = 0;
 };
 }  // test
 }  // webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADTS muxer.
  * Copyright (c) 2006 Baptiste Coudurier <baptiste.coudurier@smartjog.com>
  *                    Mans Rullgard <mans@mansr.com>
@@ -31,7 +31,8 @@
 
 #define ADTS_HEADER_SIZE 7
 
-typedef struct ADTSContext {
+typedef struct ADTSContext
+{
     AVClass *class;
     int write_adts;
     int objecttype;
@@ -61,27 +62,33 @@ static int adts_decode_extradata(AVFormatContext *s, ADTSContext *adts, const ui
     adts->sample_rate_index = m4ac.sampling_index;
     adts->channel_conf      = m4ac.chan_config;
 
-    if (adts->objecttype > 3U) {
+    if (adts->objecttype > 3U)
+    {
         av_log(s, AV_LOG_ERROR, "MPEG-4 AOT %d is not allowed in ADTS\n", adts->objecttype+1);
         return AVERROR_INVALIDDATA;
     }
-    if (adts->sample_rate_index == 15) {
+    if (adts->sample_rate_index == 15)
+    {
         av_log(s, AV_LOG_ERROR, "Escape sample rate index illegal in ADTS\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits(&gb, 1)) {
+    if (get_bits(&gb, 1))
+    {
         av_log(s, AV_LOG_ERROR, "960/120 MDCT window is not allowed in ADTS\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits(&gb, 1)) {
+    if (get_bits(&gb, 1))
+    {
         av_log(s, AV_LOG_ERROR, "Scalable configurations are not allowed in ADTS\n");
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits(&gb, 1)) {
+    if (get_bits(&gb, 1))
+    {
         av_log(s, AV_LOG_ERROR, "Extension flag is not allowed in ADTS\n");
         return AVERROR_INVALIDDATA;
     }
-    if (!adts->channel_conf) {
+    if (!adts->channel_conf)
+    {
         init_put_bits(&pb, adts->pce_data, MAX_PCE_SIZE);
 
         put_bits(&pb, 3, 5); //ID_PCE
@@ -114,7 +121,8 @@ static int adts_write_frame_header(ADTSContext *ctx,
     PutBitContext pb;
 
     unsigned full_frame_size = (unsigned)ADTS_HEADER_SIZE + size + pce_size;
-    if (full_frame_size > ADTS_MAX_FRAME_BYTES) {
+    if (full_frame_size > ADTS_MAX_FRAME_BYTES)
+    {
         av_log(NULL, AV_LOG_ERROR, "ADTS frame size too large: %u (max %d)\n",
                full_frame_size, ADTS_MAX_FRAME_BYTES);
         return AVERROR_INVALIDDATA;
@@ -154,13 +162,15 @@ static int adts_write_packet(AVFormatContext *s, AVPacket *pkt)
 
     if (!pkt->size)
         return 0;
-    if (adts->write_adts) {
+    if (adts->write_adts)
+    {
         int err = adts_write_frame_header(adts, buf, pkt->size,
-                                             adts->pce_size);
+                                          adts->pce_size);
         if (err < 0)
             return err;
         avio_write(pb, buf, ADTS_HEADER_SIZE);
-        if (adts->pce_size) {
+        if (adts->pce_size)
+        {
             avio_write(pb, adts->pce_data, adts->pce_size);
             adts->pce_size = 0;
         }
@@ -182,20 +192,23 @@ static int adts_write_trailer(AVFormatContext *s)
 
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
 #define OFFSET(obj) offsetof(ADTSContext, obj)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "write_id3v2", "Enable ID3v2 tag writing", OFFSET(id3v2tag), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, ENC},
     { "write_apetag", "Enable APE tag writing", OFFSET(apetag), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, ENC},
     { NULL },
 };
 
-static const AVClass adts_muxer_class = {
+static const AVClass adts_muxer_class =
+{
     .class_name     = "ADTS muxer",
     .item_name      = av_default_item_name,
     .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_adts_muxer = {
+AVOutputFormat ff_adts_muxer =
+{
     .name              = "adts",
     .long_name         = NULL_IF_CONFIG_SMALL("ADTS AAC (Advanced Audio Coding)"),
     .mime_type         = "audio/aac",

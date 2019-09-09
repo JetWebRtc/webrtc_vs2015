@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Mans Rullgard
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #define PS_AP_LINKS 3
 #define PS_MAX_AP_DELAY 5
 
-typedef struct PSDSPContext {
+typedef struct PSDSPContext
+{
     void (*add_squares)(INTFLOAT *dst, const INTFLOAT (*src)[2], int n);
     void (*mul_pair_single)(INTFLOAT (*dst)[2], INTFLOAT (*src0)[2], INTFLOAT *src1,
                             int n);

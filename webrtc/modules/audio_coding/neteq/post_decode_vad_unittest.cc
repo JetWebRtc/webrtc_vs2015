@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,10 +14,12 @@
 
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(PostDecodeVad, CreateAndDestroy) {
-  PostDecodeVad vad;
+TEST(PostDecodeVad, CreateAndDestroy)
+{
+    PostDecodeVad vad;
 }
 
 // TODO(hlundin): Write more tests.

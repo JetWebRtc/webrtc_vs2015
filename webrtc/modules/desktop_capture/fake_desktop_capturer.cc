@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 
 #include <utility>
 
-namespace webrtc {
+namespace webrtc
+{
 
 FakeDesktopCapturer::FakeDesktopCapturer()
     : callback_(nullptr),
@@ -21,50 +22,61 @@ FakeDesktopCapturer::FakeDesktopCapturer()
 
 FakeDesktopCapturer::~FakeDesktopCapturer() = default;
 
-void FakeDesktopCapturer::set_result(DesktopCapturer::Result result) {
-  result_ = result;
+void FakeDesktopCapturer::set_result(DesktopCapturer::Result result)
+{
+    result_ = result;
 }
 
 // Uses the |generator| provided as DesktopFrameGenerator, FakeDesktopCapturer
 // does
 // not take the ownership of |generator|.
 void FakeDesktopCapturer::set_frame_generator(
-    DesktopFrameGenerator* generator) {
-  generator_ = generator;
+    DesktopFrameGenerator* generator)
+{
+    generator_ = generator;
 }
 
-void FakeDesktopCapturer::Start(DesktopCapturer::Callback* callback) {
-  callback_ = callback;
+void FakeDesktopCapturer::Start(DesktopCapturer::Callback* callback)
+{
+    callback_ = callback;
 }
 
-void FakeDesktopCapturer::CaptureFrame() {
-  if (generator_) {
-    std::unique_ptr<DesktopFrame> frame(
-        generator_->GetNextFrame(shared_memory_factory_.get()));
-    if (frame) {
-      callback_->OnCaptureResult(result_, std::move(frame));
-    } else {
-      callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_TEMPORARY,
-                                 nullptr);
+void FakeDesktopCapturer::CaptureFrame()
+{
+    if (generator_)
+    {
+        std::unique_ptr<DesktopFrame> frame(
+            generator_->GetNextFrame(shared_memory_factory_.get()));
+        if (frame)
+        {
+            callback_->OnCaptureResult(result_, std::move(frame));
+        }
+        else
+        {
+            callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_TEMPORARY,
+                                       nullptr);
+        }
+        return;
     }
-    return;
-  }
-  callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_PERMANENT, nullptr);
+    callback_->OnCaptureResult(DesktopCapturer::Result::ERROR_PERMANENT, nullptr);
 }
 
 void FakeDesktopCapturer::SetSharedMemoryFactory(
-    std::unique_ptr<SharedMemoryFactory> shared_memory_factory) {
-  shared_memory_factory_ = std::move(shared_memory_factory);
+    std::unique_ptr<SharedMemoryFactory> shared_memory_factory)
+{
+    shared_memory_factory_ = std::move(shared_memory_factory);
 }
 
-bool FakeDesktopCapturer::GetSourceList(DesktopCapturer::SourceList* sources) {
-  sources->push_back({kWindowId, "A-Fake-DesktopCapturer-Window"});
-  sources->push_back({kScreenId});
-  return true;
+bool FakeDesktopCapturer::GetSourceList(DesktopCapturer::SourceList* sources)
+{
+    sources->push_back({kWindowId, "A-Fake-DesktopCapturer-Window"});
+    sources->push_back({kScreenId});
+    return true;
 }
 
-bool FakeDesktopCapturer::SelectSource(DesktopCapturer::SourceId id) {
-  return id == kWindowId || id == kScreenId || id == kFullDesktopScreenId;
+bool FakeDesktopCapturer::SelectSource(DesktopCapturer::SourceId id)
+{
+    return id == kWindowId || id == kScreenId || id == kFullDesktopScreenId;
 }
 
 }  // namespace webrtc

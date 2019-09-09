@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -25,14 +25,16 @@
 #include "audio.h"
 #include "internal.h"
 
-typedef struct ChanDelay {
+typedef struct ChanDelay
+{
     int delay;
     unsigned delay_index;
     unsigned index;
     uint8_t *samples;
 } ChanDelay;
 
-typedef struct AudioDelayContext {
+typedef struct AudioDelayContext
+{
     const AVClass *class;
     char *delays;
     ChanDelay *chandelay;
@@ -48,7 +50,8 @@ typedef struct AudioDelayContext {
 #define OFFSET(x) offsetof(AudioDelayContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption adelay_options[] = {
+static const AVOption adelay_options[] =
+{
     { "delays", "set list of delays for each channel", OFFSET(delays), AV_OPT_TYPE_STRING, {.str=NULL}, 0, 0, A },
     { NULL }
 };
@@ -59,7 +62,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterChannelLayouts *layouts;
     AVFilterFormats *formats;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_U8P, AV_SAMPLE_FMT_S16P, AV_SAMPLE_FMT_S32P,
         AV_SAMPLE_FMT_FLTP, AV_SAMPLE_FMT_DBLP,
         AV_SAMPLE_FMT_NONE
@@ -135,7 +139,8 @@ static int config_input(AVFilterLink *inlink)
     s->block_align = av_get_bytes_per_sample(inlink->format);
 
     p = s->delays;
-    for (i = 0; i < s->nb_delays; i++) {
+    for (i = 0; i < s->nb_delays; i++)
+    {
         ChanDelay *d = &s->chandelay[i];
         float delay;
 
@@ -146,13 +151,15 @@ static int config_input(AVFilterLink *inlink)
         sscanf(arg, "%f", &delay);
 
         d->delay = delay * inlink->sample_rate / 1000.0;
-        if (d->delay < 0) {
+        if (d->delay < 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "Delay must be non negative number.\n");
             return AVERROR(EINVAL);
         }
     }
 
-    for (i = 0; i < s->nb_delays; i++) {
+    for (i = 0; i < s->nb_delays; i++)
+    {
         ChanDelay *d = &s->chandelay[i];
 
         if (!d->delay)
@@ -165,17 +172,29 @@ static int config_input(AVFilterLink *inlink)
         s->max_delay = FFMAX(s->max_delay, d->delay);
     }
 
-    if (!s->max_delay) {
+    if (!s->max_delay)
+    {
         av_log(ctx, AV_LOG_ERROR, "At least one delay >0 must be specified.\n");
         return AVERROR(EINVAL);
     }
 
-    switch (inlink->format) {
-    case AV_SAMPLE_FMT_U8P : s->delay_channel = delay_channel_u8p ; break;
-    case AV_SAMPLE_FMT_S16P: s->delay_channel = delay_channel_s16p; break;
-    case AV_SAMPLE_FMT_S32P: s->delay_channel = delay_channel_s32p; break;
-    case AV_SAMPLE_FMT_FLTP: s->delay_channel = delay_channel_fltp; break;
-    case AV_SAMPLE_FMT_DBLP: s->delay_channel = delay_channel_dblp; break;
+    switch (inlink->format)
+    {
+    case AV_SAMPLE_FMT_U8P :
+        s->delay_channel = delay_channel_u8p ;
+        break;
+    case AV_SAMPLE_FMT_S16P:
+        s->delay_channel = delay_channel_s16p;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->delay_channel = delay_channel_s32p;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->delay_channel = delay_channel_fltp;
+        break;
+    case AV_SAMPLE_FMT_DBLP:
+        s->delay_channel = delay_channel_dblp;
+        break;
     }
 
     return 0;
@@ -196,7 +215,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
         return AVERROR(ENOMEM);
     av_frame_copy_props(out_frame, frame);
 
-    for (i = 0; i < s->nb_delays; i++) {
+    for (i = 0; i < s->nb_delays; i++)
+    {
         ChanDelay *d = &s->chandelay[i];
         const uint8_t *src = frame->extended_data[i];
         uint8_t *dst = out_frame->extended_data[i];
@@ -207,7 +227,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
             s->delay_channel(d, frame->nb_samples, src, dst);
     }
 
-    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational){1, inlink->sample_rate}, inlink->time_base);
+    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational)
+    {
+        1, inlink->sample_rate
+    }, inlink->time_base);
     av_frame_free(&frame);
     return ff_filter_frame(ctx->outputs[0], out_frame);
 }
@@ -219,7 +242,8 @@ static int request_frame(AVFilterLink *outlink)
     int ret;
 
     ret = ff_request_frame(ctx->inputs[0]);
-    if (ret == AVERROR_EOF && !ctx->is_disabled && s->max_delay) {
+    if (ret == AVERROR_EOF && !ctx->is_disabled && s->max_delay)
+    {
         int nb_samples = FFMIN(s->max_delay, 2048);
         AVFrame *frame;
 
@@ -235,7 +259,10 @@ static int request_frame(AVFilterLink *outlink)
 
         frame->pts = s->next_pts;
         if (s->next_pts != AV_NOPTS_VALUE)
-            s->next_pts += av_rescale_q(nb_samples, (AVRational){1, outlink->sample_rate}, outlink->time_base);
+            s->next_pts += av_rescale_q(nb_samples, (AVRational)
+        {
+            1, outlink->sample_rate
+        }, outlink->time_base);
 
         ret = filter_frame(ctx->inputs[0], frame);
     }
@@ -253,7 +280,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->chandelay);
 }
 
-static const AVFilterPad adelay_inputs[] = {
+static const AVFilterPad adelay_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -263,7 +291,8 @@ static const AVFilterPad adelay_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad adelay_outputs[] = {
+static const AVFilterPad adelay_outputs[] =
+{
     {
         .name          = "default",
         .request_frame = request_frame,
@@ -272,7 +301,8 @@ static const AVFilterPad adelay_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_adelay = {
+AVFilter ff_af_adelay =
+{
     .name          = "adelay",
     .description   = NULL_IF_CONFIG_SMALL("Delay one or more audio channels."),
     .query_formats = query_formats,

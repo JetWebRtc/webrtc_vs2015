@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Linux DV1394 interface
  * Copyright (c) 2003 Max Krasnyansky <maxk@qualcomm.com>
  *
@@ -34,7 +34,8 @@
 #include "libavformat/dv.h"
 #include "dv1394.h"
 
-struct dv1394_data {
+struct dv1394_data
+{
     AVClass *class;
     int fd;
     int channel;
@@ -73,7 +74,8 @@ static int dv1394_reset(struct dv1394_data *dv)
 static int dv1394_start(struct dv1394_data *dv)
 {
     /* Tell DV1394 driver to enable receiver */
-    if (ioctl(dv->fd, DV1394_START_RECEIVE, 0) < 0) {
+    if (ioctl(dv->fd, DV1394_START_RECEIVE, 0) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Failed to start receiver: %s\n", strerror(errno));
         return -1;
     }
@@ -90,19 +92,22 @@ static int dv1394_read_header(AVFormatContext * context)
 
     /* Open and initialize DV1394 device */
     dv->fd = avpriv_open(context->filename, O_RDONLY);
-    if (dv->fd < 0) {
+    if (dv->fd < 0)
+    {
         av_log(context, AV_LOG_ERROR, "Failed to open DV interface: %s\n", strerror(errno));
         goto failed;
     }
 
-    if (dv1394_reset(dv) < 0) {
+    if (dv1394_reset(dv) < 0)
+    {
         av_log(context, AV_LOG_ERROR, "Failed to initialize DV interface: %s\n", strerror(errno));
         goto failed;
     }
 
     dv->ring = mmap(NULL, DV1394_PAL_FRAME_SIZE * DV1394_RING_FRAMES,
                     PROT_READ, MAP_PRIVATE, dv->fd, 0);
-    if (dv->ring == MAP_FAILED) {
+    if (dv->ring == MAP_FAILED)
+    {
         av_log(context, AV_LOG_ERROR, "Failed to mmap DV ring buffer: %s\n", strerror(errno));
         goto failed;
     }
@@ -126,13 +131,16 @@ static int dv1394_read_packet(AVFormatContext *context, AVPacket *pkt)
     if (size > 0)
         return size;
 
-    if (!dv->avail) {
+    if (!dv->avail)
+    {
         struct dv1394_status s;
         struct pollfd p;
 
-        if (dv->done) {
+        if (dv->done)
+        {
             /* Request more frames */
-            if (ioctl(dv->fd, DV1394_RECEIVE_FRAMES, dv->done) < 0) {
+            if (ioctl(dv->fd, DV1394_RECEIVE_FRAMES, dv->done) < 0)
+            {
                 /* This usually means that ring buffer overflowed.
                  * We have to reset :(.
                  */
@@ -149,32 +157,35 @@ static int dv1394_read_packet(AVFormatContext *context, AVPacket *pkt)
 restart_poll:
         p.fd = dv->fd;
         p.events = POLLIN | POLLERR | POLLHUP;
-        if (poll(&p, 1, -1) < 0) {
+        if (poll(&p, 1, -1) < 0)
+        {
             if (errno == EAGAIN || errno == EINTR)
                 goto restart_poll;
             av_log(context, AV_LOG_ERROR, "Poll failed: %s\n", strerror(errno));
             return AVERROR(EIO);
         }
 
-        if (ioctl(dv->fd, DV1394_GET_STATUS, &s) < 0) {
+        if (ioctl(dv->fd, DV1394_GET_STATUS, &s) < 0)
+        {
             av_log(context, AV_LOG_ERROR, "Failed to get status: %s\n", strerror(errno));
             return AVERROR(EIO);
         }
         av_log(context, AV_LOG_TRACE, "DV1394: status\n"
-                "\tactive_frame\t%d\n"
-                "\tfirst_clear_frame\t%d\n"
-                "\tn_clear_frames\t%d\n"
-                "\tdropped_frames\t%d\n",
-                s.active_frame, s.first_clear_frame,
-                s.n_clear_frames, s.dropped_frames);
+               "\tactive_frame\t%d\n"
+               "\tfirst_clear_frame\t%d\n"
+               "\tn_clear_frames\t%d\n"
+               "\tdropped_frames\t%d\n",
+               s.active_frame, s.first_clear_frame,
+               s.n_clear_frames, s.dropped_frames);
 
         dv->avail = s.n_clear_frames;
         dv->index = s.first_clear_frame;
         dv->done  = 0;
 
-        if (s.dropped_frames) {
+        if (s.dropped_frames)
+        {
             av_log(context, AV_LOG_ERROR, "DV1394: Frame drop detected (%d). Reseting ..\n",
-                    s.dropped_frames);
+                   s.dropped_frames);
 
             dv1394_reset(dv);
             dv1394_start(dv);
@@ -182,13 +193,14 @@ restart_poll:
     }
 
     av_log(context, AV_LOG_TRACE, "index %d, avail %d, done %d\n", dv->index, dv->avail,
-            dv->done);
+           dv->done);
 
     size = avpriv_dv_produce_packet(dv->dv_demux, pkt,
-                             dv->ring + (dv->index * DV1394_PAL_FRAME_SIZE),
-                             DV1394_PAL_FRAME_SIZE, -1);
+                                    dv->ring + (dv->index * DV1394_PAL_FRAME_SIZE),
+                                    DV1394_PAL_FRAME_SIZE, -1);
     dv->index = (dv->index + 1) % DV1394_RING_FRAMES;
-    dv->done++; dv->avail--;
+    dv->done++;
+    dv->avail--;
 
     return size;
 }
@@ -211,7 +223,8 @@ static int dv1394_close(AVFormatContext * context)
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "standard", "", offsetof(struct dv1394_data, format), AV_OPT_TYPE_INT, {.i64 = DV1394_NTSC}, DV1394_NTSC, DV1394_PAL, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "PAL",      "", 0, AV_OPT_TYPE_CONST, {.i64 = DV1394_PAL},   0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "NTSC",     "", 0, AV_OPT_TYPE_CONST, {.i64 = DV1394_NTSC},  0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
@@ -219,7 +232,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass dv1394_class = {
+static const AVClass dv1394_class =
+{
     .class_name = "DV1394 indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -227,7 +241,8 @@ static const AVClass dv1394_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
 };
 
-AVInputFormat ff_dv1394_demuxer = {
+AVInputFormat ff_dv1394_demuxer =
+{
     .name           = "dv1394",
     .long_name      = NULL_IF_CONFIG_SMALL("DV1394 A/V grab"),
     .priv_data_size = sizeof(struct dv1394_data),

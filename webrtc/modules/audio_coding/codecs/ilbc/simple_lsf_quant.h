@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -32,6 +32,6 @@ void WebRtcIlbcfix_SimpleLsfQ(
     int16_t *lsf, /* (i) the lsf coefficient vector to be
                            quantized (dimension FILTERORDER) Q13 */
     int16_t lpc_n /* (i) number of lsf sets to quantize */
-                              );
+);
 
 #endif

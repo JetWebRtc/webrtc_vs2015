@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Peng  Gao     <peng@multicorewareinc.com>
  * Copyright (C) 2012 Li    Cao     <li@multicorewareinc.com>
  * Copyright (C) 2012 Wei   Gao     <weigao@multicorewareinc.com>
@@ -44,25 +44,29 @@
 
 #define AV_OPENCL_KERNEL( ... )# __VA_ARGS__
 
-typedef struct {
+typedef struct
+{
     int device_type;
     char *device_name;
     cl_device_id device_id;
 } AVOpenCLDeviceNode;
 
-typedef struct {
+typedef struct
+{
     cl_platform_id platform_id;
     char *platform_name;
     int device_num;
     AVOpenCLDeviceNode **device_node;
 } AVOpenCLPlatformNode;
 
-typedef struct {
+typedef struct
+{
     int platform_num;
     AVOpenCLPlatformNode **platform_node;
 } AVOpenCLDeviceList;
 
-typedef struct {
+typedef struct
+{
     cl_platform_id platform_id;
     cl_device_type device_type;
     cl_context context;

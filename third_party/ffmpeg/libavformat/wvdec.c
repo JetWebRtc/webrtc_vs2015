@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WavPack demuxer
  * Copyright (c) 2006,2011 Konstantin Shishkov
  *
@@ -28,7 +28,8 @@
 #include "id3v1.h"
 #include "wv.h"
 
-enum WV_FLAGS {
+enum WV_FLAGS
+{
     WV_MONO   = 0x0004,
     WV_HYBRID = 0x0008,
     WV_JOINT  = 0x0010,
@@ -42,12 +43,14 @@ enum WV_FLAGS {
     WV_MCEND  = 0x1000,
 };
 
-static const int wv_rates[16] = {
-     6000,  8000,  9600, 11025, 12000, 16000,  22050, 24000,
+static const int wv_rates[16] =
+{
+    6000,  8000,  9600, 11025, 12000, 16000,  22050, 24000,
     32000, 44100, 48000, 64000, 88200, 96000, 192000,    -1
 };
 
-typedef struct WVContext {
+typedef struct WVContext
+{
     uint8_t block_header[WV_HEADER_SIZE];
     WvHeader header;
     int rate, chan, bpp;
@@ -65,10 +68,10 @@ static int wv_probe(AVProbeData *p)
     if (p->buf_size <= 32)
         return 0;
     if (AV_RL32(&p->buf[0]) == MKTAG('w', 'v', 'p', 'k') &&
-        AV_RL32(&p->buf[4]) >= 24 &&
-        AV_RL32(&p->buf[4]) <= WV_BLOCK_LIMIT &&
-        AV_RL16(&p->buf[8]) >= 0x402 &&
-        AV_RL16(&p->buf[8]) <= 0x410)
+            AV_RL32(&p->buf[4]) >= 24 &&
+            AV_RL32(&p->buf[4]) <= WV_BLOCK_LIMIT &&
+            AV_RL16(&p->buf[8]) >= 0x402 &&
+            AV_RL16(&p->buf[8]) <= 0x410)
         return AVPROBE_SCORE_MAX;
     else
         return 0;
@@ -92,12 +95,14 @@ static int wv_read_block_header(AVFormatContext *ctx, AVIOContext *pb)
         return (ret < 0) ? ret : AVERROR_EOF;
 
     ret = ff_wv_parse_header(&wc->header, wc->block_header);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid block header.\n");
         return ret;
     }
 
-    if (wc->header.version < 0x402 || wc->header.version > 0x410) {
+    if (wc->header.version < 0x402 || wc->header.version > 0x410)
+    {
         av_log(ctx, AV_LOG_ERROR, "Unsupported version %03X\n", wc->header.version);
         return AVERROR_PATCHWELCOME;
     }
@@ -113,33 +118,40 @@ static int wv_read_block_header(AVFormatContext *ctx, AVIOContext *pb)
     chmask = flags & WV_MONO ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO;
     rate   = wv_rates[(flags >> 23) & 0xF];
     wc->multichannel = !(wc->header.initial && wc->header.final);
-    if (wc->multichannel) {
+    if (wc->multichannel)
+    {
         chan   = wc->chan;
         chmask = wc->chmask;
     }
-    if ((rate == -1 || !chan) && !wc->block_parsed) {
+    if ((rate == -1 || !chan) && !wc->block_parsed)
+    {
         int64_t block_end = avio_tell(pb) + wc->header.blocksize;
-        if (!pb->seekable) {
+        if (!pb->seekable)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Cannot determine additional parameters\n");
             return AVERROR_INVALIDDATA;
         }
-        while (avio_tell(pb) < block_end && !avio_feof(pb)) {
+        while (avio_tell(pb) < block_end && !avio_feof(pb))
+        {
             int id, size;
             id   = avio_r8(pb);
             size = (id & 0x80) ? avio_rl24(pb) : avio_r8(pb);
             size <<= 1;
             if (id & 0x40)
                 size--;
-            switch (id & 0x3F) {
+            switch (id & 0x3F)
+            {
             case 0xD:
-                if (size <= 1) {
+                if (size <= 1)
+                {
                     av_log(ctx, AV_LOG_ERROR,
                            "Insufficient channel information\n");
                     return AVERROR_INVALIDDATA;
                 }
                 chan = avio_r8(pb);
-                switch (size - 2) {
+                switch (size - 2)
+                {
                 case 0:
                     chmask = avio_r8(pb);
                     break;
@@ -172,7 +184,8 @@ static int wv_read_block_header(AVFormatContext *ctx, AVIOContext *pb)
             if (id & 0x40)
                 avio_skip(pb, 1);
         }
-        if (rate == -1) {
+        if (rate == -1)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Cannot determine custom sampling rate\n");
             return AVERROR_INVALIDDATA;
@@ -188,19 +201,22 @@ static int wv_read_block_header(AVFormatContext *ctx, AVIOContext *pb)
     if (!wc->rate)
         wc->rate   = rate;
 
-    if (flags && bpp != wc->bpp) {
+    if (flags && bpp != wc->bpp)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Bits per sample differ, this block: %i, header block: %i\n",
                bpp, wc->bpp);
         return AVERROR_INVALIDDATA;
     }
-    if (flags && !wc->multichannel && chan != wc->chan) {
+    if (flags && !wc->multichannel && chan != wc->chan)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Channels differ, this block: %i, header block: %i\n",
                chan, wc->chan);
         return AVERROR_INVALIDDATA;
     }
-    if (flags && rate != -1 && rate != wc->rate) {
+    if (flags && rate != -1 && rate != wc->rate)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Sampling rate differ, this block: %i, header block: %i\n",
                rate, wc->rate);
@@ -217,7 +233,8 @@ static int wv_read_header(AVFormatContext *s)
     int ret;
 
     wc->block_parsed = 0;
-    for (;;) {
+    for (;;)
+    {
         if ((ret = wv_read_block_header(s, pb)) < 0)
             return ret;
         if (!wc->header.samples)
@@ -241,7 +258,8 @@ static int wv_read_header(AVFormatContext *s)
     if (wc->header.total_samples != 0xFFFFFFFFu)
         st->duration = wc->header.total_samples;
 
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         int64_t cur = avio_tell(s->pb);
         wc->apetag_start = ff_ape_parse_tag(s);
         if (!av_dict_get(s->metadata, "", NULL, AV_DICT_IGNORE_SUFFIX))
@@ -262,7 +280,8 @@ static int wv_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     if (avio_feof(s->pb))
         return AVERROR_EOF;
-    if (wc->block_parsed) {
+    if (wc->block_parsed)
+    {
         if ((ret = wv_read_block_header(s, s->pb)) < 0)
             return ret;
     }
@@ -272,25 +291,30 @@ static int wv_read_packet(AVFormatContext *s, AVPacket *pkt)
         return AVERROR(ENOMEM);
     memcpy(pkt->data, wc->block_header, WV_HEADER_SIZE);
     ret = avio_read(s->pb, pkt->data + WV_HEADER_SIZE, wc->header.blocksize);
-    if (ret != wc->header.blocksize) {
+    if (ret != wc->header.blocksize)
+    {
         av_free_packet(pkt);
         return AVERROR(EIO);
     }
-    while (!(wc->header.flags & WV_FLAG_FINAL_BLOCK)) {
-        if ((ret = wv_read_block_header(s, s->pb)) < 0) {
+    while (!(wc->header.flags & WV_FLAG_FINAL_BLOCK))
+    {
+        if ((ret = wv_read_block_header(s, s->pb)) < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
 
         off = pkt->size;
-        if ((ret = av_grow_packet(pkt, WV_HEADER_SIZE + wc->header.blocksize)) < 0) {
+        if ((ret = av_grow_packet(pkt, WV_HEADER_SIZE + wc->header.blocksize)) < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
         memcpy(pkt->data + off, wc->block_header, WV_HEADER_SIZE);
 
         ret = avio_read(s->pb, pkt->data + off + WV_HEADER_SIZE, wc->header.blocksize);
-        if (ret != wc->header.blocksize) {
+        if (ret != wc->header.blocksize)
+        {
             av_free_packet(pkt);
             return (ret < 0) ? ret : AVERROR_EOF;
         }
@@ -309,7 +333,8 @@ static int wv_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_wv_demuxer = {
+AVInputFormat ff_wv_demuxer =
+{
     .name           = "wv",
     .long_name      = NULL_IF_CONFIG_SMALL("WavPack"),
     .priv_data_size = sizeof(WVContext),

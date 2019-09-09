@@ -1,4 +1,4 @@
-/*
+﻿/*
  * APNG common header
  * Copyright (c) 2014 Benoit Fouet
  *
@@ -27,13 +27,15 @@
 #ifndef AVCODEC_APNG_H
 #define AVCODEC_APNG_H
 
-enum {
-   APNG_DISPOSE_OP_NONE       = 0,
-   APNG_DISPOSE_OP_BACKGROUND = 1,
-   APNG_DISPOSE_OP_PREVIOUS   = 2,
+enum
+{
+    APNG_DISPOSE_OP_NONE       = 0,
+    APNG_DISPOSE_OP_BACKGROUND = 1,
+    APNG_DISPOSE_OP_PREVIOUS   = 2,
 };
 
-enum {
+enum
+{
     APNG_BLEND_OP_SOURCE = 0,
     APNG_BLEND_OP_OVER   = 1,
 };

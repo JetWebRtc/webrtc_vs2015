@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #include "avio.h"
 #include "url.h"
 
-struct MD5Context {
+struct MD5Context
+{
     struct AVMD5 *md5;
 };
 
@@ -68,14 +69,17 @@ static int md5_close(URLContext *h)
 
     av_strstart(filename, "md5:", &filename);
 
-    if (*filename) {
+    if (*filename)
+    {
         err = ffurl_open(&out, filename, AVIO_FLAG_WRITE,
                          &h->interrupt_callback, NULL);
         if (err)
             return err;
         err = ffurl_write(out, buf, i*2+1);
         ffurl_close(out);
-    } else {
+    }
+    else
+    {
         if (fwrite(buf, 1, i*2+1, stdout) < i*2+1)
             err = AVERROR(errno);
     }
@@ -86,7 +90,8 @@ static int md5_close(URLContext *h)
 }
 
 
-URLProtocol ff_md5_protocol = {
+URLProtocol ff_md5_protocol =
+{
     .name                = "md5",
     .url_open            = md5_open,
     .url_write           = md5_write,

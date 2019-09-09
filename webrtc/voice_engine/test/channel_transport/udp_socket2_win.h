@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -27,8 +27,10 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket2_manager_win.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class UdpSocket2ManagerWindows;
 class TrafficControlWindows;
@@ -52,7 +54,10 @@ public:
                     int32_t optlen) override;
 
     bool StartReceiving(const uint32_t receiveBuffers) override;
-    inline bool StartReceiving() override { return StartReceiving(8); }
+    inline bool StartReceiving() override
+    {
+        return StartReceiving(8);
+    }
     bool StopReceiving() override;
 
     int32_t SendTo(const int8_t* buf,
@@ -61,7 +66,10 @@ public:
 
     void CloseBlocking() override;
 
-    SOCKET GetFd() { return _socket;}
+    SOCKET GetFd()
+    {
+        return _socket;
+    }
 
     bool SetQos(int32_t serviceType,
                 int32_t tokenRate,
@@ -75,7 +83,10 @@ public:
     int32_t SetTOS(const int32_t serviceType) override;
     int32_t SetPCP(const int32_t pcp) override;
 
-    uint32_t ReceiveBuffers() override { return _receiveBuffers.Value(); }
+    uint32_t ReceiveBuffers() override
+    {
+        return _receiveBuffers.Value();
+    }
 
 protected:
     void IOCompleted(PerIoContext* pIOContext, uint32_t ioSize, uint32_t error);

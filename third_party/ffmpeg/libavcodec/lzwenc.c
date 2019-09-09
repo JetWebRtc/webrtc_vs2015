@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LZW encoder
  * Copyright (c) 2007 Bartlomiej Wolowiec
  *
@@ -39,15 +39,17 @@
 #define LZW_PREFIX_FREE -2
 
 /** One code in hash table */
-typedef struct Code{
+typedef struct Code
+{
     /// Hash code of prefix, LZW_PREFIX_EMPTY if empty prefix, or LZW_PREFIX_FREE if no code
     int hash_prefix;
     int code;               ///< LZW code
     uint8_t suffix;         ///< Last character in code block
-}Code;
+} Code;
 
 /** LZW encode state */
-typedef struct LZWEncodeState {
+typedef struct LZWEncodeState
+{
     int clear_code;          ///< Value of clear code
     int end_code;            ///< Value of end code
     Code tab[LZW_HASH_SIZE]; ///< Hash table
@@ -61,7 +63,7 @@ typedef struct LZWEncodeState {
     int last_code;           ///< Value of last output code or LZW_PREFIX_EMPTY
     enum FF_LZW_MODES mode;  ///< TIFF or GIF
     void (*put_bits)(PutBitContext *, int, unsigned); ///< GIF is LE while TIFF is BE
-}LZWEncodeState;
+} LZWEncodeState;
 
 
 const int ff_lzw_encode_state_size = sizeof(LZWEncodeState);
@@ -129,9 +131,10 @@ static inline int findCode(LZWEncodeState * s, uint8_t c, int hash_prefix)
     int h = hash(FFMAX(hash_prefix, 0), c);
     int hash_offset = hashOffset(h);
 
-    while (s->tab[h].hash_prefix != LZW_PREFIX_FREE) {
+    while (s->tab[h].hash_prefix != LZW_PREFIX_FREE)
+    {
         if ((s->tab[h].suffix == c)
-            && (s->tab[h].hash_prefix == hash_prefix))
+                && (s->tab[h].hash_prefix == hash_prefix))
             return h;
         h = hashNext(h, hash_offset);
     }
@@ -168,10 +171,12 @@ static void clearTable(LZWEncodeState * s)
 
     writeCode(s, s->clear_code);
     s->bits = 9;
-    for (i = 0; i < LZW_HASH_SIZE; i++) {
+    for (i = 0; i < LZW_HASH_SIZE; i++)
+    {
         s->tab[i].hash_prefix = LZW_PREFIX_FREE;
     }
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         h = hash(0, i);
         s->tab[h].code = i;
         s->tab[h].suffix = i;
@@ -185,7 +190,8 @@ static void clearTable(LZWEncodeState * s)
  * @param s LZW encode state
  * @return Number of bytes written
  */
-static int writtenBytes(LZWEncodeState *s){
+static int writtenBytes(LZWEncodeState *s)
+{
     int ret = put_bits_count(&s->pb) >> 3;
     ret -= s->output_bytes;
     s->output_bytes += ret;
@@ -228,23 +234,27 @@ int ff_lzw_encode(LZWEncodeState * s, const uint8_t * inbuf, int insize)
 {
     int i;
 
-    if(insize * 3 > (s->bufsize - s->output_bytes) * 2){
+    if(insize * 3 > (s->bufsize - s->output_bytes) * 2)
+    {
         return -1;
     }
 
     if (s->last_code == LZW_PREFIX_EMPTY)
         clearTable(s);
 
-    for (i = 0; i < insize; i++) {
+    for (i = 0; i < insize; i++)
+    {
         uint8_t c = *inbuf++;
         int code = findCode(s, c, s->last_code);
-        if (s->tab[code].hash_prefix == LZW_PREFIX_FREE) {
+        if (s->tab[code].hash_prefix == LZW_PREFIX_FREE)
+        {
             writeCode(s, s->last_code);
             addCode(s, c, s->last_code, code);
             code= hash(0, c);
         }
         s->last_code = s->tab[code].code;
-        if (s->tabsize >= s->maxcode - 1) {
+        if (s->tabsize >= s->maxcode - 1)
+        {
             clearTable(s);
         }
     }

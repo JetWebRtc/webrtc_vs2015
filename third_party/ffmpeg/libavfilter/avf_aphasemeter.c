@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -34,7 +34,8 @@
 #include "video.h"
 #include "internal.h"
 
-typedef struct AudioPhaseMeterContext {
+typedef struct AudioPhaseMeterContext
+{
     const AVClass *class;
     AVFrame *out;
     int w, h;
@@ -48,7 +49,8 @@ typedef struct AudioPhaseMeterContext {
 #define OFFSET(x) offsetof(AudioPhaseMeterContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption aphasemeter_options[] = {
+static const AVOption aphasemeter_options[] =
+{
     { "rate", "set video rate", OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str="25"}, 0, 0, FLAGS },
     { "r",    "set video rate", OFFSET(frame_rate), AV_OPT_TYPE_VIDEO_RATE, {.str="25"}, 0, 0, FLAGS },
     { "size", "set video size", OFFSET(w), AV_OPT_TYPE_IMAGE_SIZE, {.str="800x400"}, 0, 0, FLAGS },
@@ -100,8 +102,8 @@ static int config_input(AVFilterLink *inlink)
 
     nb_samples = FFMAX(1024, ((double)inlink->sample_rate / av_q2d(s->frame_rate)) + 0.5);
     inlink->partial_buf_size =
-    inlink->min_samples =
-    inlink->max_samples = nb_samples;
+        inlink->min_samples =
+            inlink->max_samples = nb_samples;
 
     return 0;
 }
@@ -113,7 +115,10 @@ static int config_output(AVFilterLink *outlink)
 
     outlink->w = s->w;
     outlink->h = s->h;
-    outlink->sample_aspect_ratio = (AVRational){1,1};
+    outlink->sample_aspect_ratio = (AVRational)
+    {
+        1,1
+    };
     outlink->frame_rate = s->frame_rate;
 
     if (!strcmp(s->mpc_str, "none"))
@@ -128,7 +133,7 @@ static int config_output(AVFilterLink *outlink)
 
 static inline int get_x(float phase, int w)
 {
-  return (phase + 1.) / 2. * (w - 1);
+    return (phase + 1.) / 2. * (w - 1);
 }
 
 static int filter_frame(AVFilterLink *inlink, AVFrame *in)
@@ -146,10 +151,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i;
 
     if (!s->out || s->out->width  != outlink->w ||
-                   s->out->height != outlink->h) {
+            s->out->height != outlink->h)
+    {
         av_frame_free(&s->out);
         s->out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!s->out) {
+        if (!s->out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -157,7 +164,9 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         out = s->out;
         for (i = 0; i < outlink->h; i++)
             memset(out->data[0] + i * out->linesize[0], 0, outlink->w * 4);
-    } else {
+    }
+    else
+    {
         out = s->out;
         for (i = outlink->h - 1; i >= 10; i--)
             memmove(out->data[0] + (i  ) * out->linesize[0],
@@ -168,7 +177,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
     s->out->pts = in->pts;
 
-    for (i = 0; i < in->nb_samples; i++) {
+    for (i = 0; i < in->nb_samples; i++)
+    {
         const float *src = (float *)in->data[0] + i * 2;
         const float f = src[0] * src[1] / (src[0]*src[0] + src[1] * src[1]) * 2;
         const float phase = isnan(f) ? 1 : f;
@@ -183,7 +193,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
     fphase /= in->nb_samples;
 
-    if (s->draw_median_phase) {
+    if (s->draw_median_phase)
+    {
         dst = out->data[0] + get_x(fphase, s->w) * 4;
         AV_WL32(dst, AV_RL32(s->mpc));
     }
@@ -192,7 +203,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         memcpy(out->data[0] + i * out->linesize[0], out->data[0], outlink->w * 4);
 
     metadata = avpriv_frame_get_metadatap(out);
-    if (metadata) {
+    if (metadata)
+    {
         uint8_t value[128];
 
         snprintf(value, sizeof(value), "%f", fphase);
@@ -210,7 +222,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->out);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -220,7 +233,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -229,7 +243,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_avf_aphasemeter = {
+AVFilter ff_avf_aphasemeter =
+{
     .name          = "aphasemeter",
     .description   = NULL_IF_CONFIG_SMALL("Convert input audio to phase meter video output."),
     .uninit        = uninit,

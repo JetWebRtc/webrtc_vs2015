@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Interface to libshine for mp3 encoding
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -30,7 +30,8 @@
 
 #define BUFFER_SIZE (4096 * 20)
 
-typedef struct SHINEContext {
+typedef struct SHINEContext
+{
     shine_config_t  config;
     shine_t         shine;
     uint8_t         buffer[BUFFER_SIZE];
@@ -42,7 +43,8 @@ static av_cold int libshine_encode_init(AVCodecContext *avctx)
 {
     SHINEContext *s = avctx->priv_data;
 
-    if (avctx->channels <= 0 || avctx->channels > 2){
+    if (avctx->channels <= 0 || avctx->channels > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "only mono or stereo is supported\n");
         return AVERROR(EINVAL);
     }
@@ -53,7 +55,8 @@ static av_cold int libshine_encode_init(AVCodecContext *avctx)
     s->config.mpeg.mode = avctx->channels == 2 ? STEREO : MONO;
     s->config.wave.samplerate = avctx->sample_rate;
     s->config.wave.channels   = avctx->channels == 2 ? PCM_STEREO : PCM_MONO;
-    if (shine_check_config(s->config.wave.samplerate, s->config.mpeg.bitr) < 0) {
+    if (shine_check_config(s->config.wave.samplerate, s->config.mpeg.bitr) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid configuration\n");
         return AVERROR(EINVAL);
     }
@@ -80,28 +83,33 @@ static int libshine_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
         data = shine_flush(s->shine, &written);
     if (written < 0)
         return -1;
-    if (written > 0) {
-        if (s->buffer_index + written > BUFFER_SIZE) {
+    if (written > 0)
+    {
+        if (s->buffer_index + written > BUFFER_SIZE)
+        {
             av_log(avctx, AV_LOG_ERROR, "internal buffer too small\n");
             return AVERROR_BUG;
         }
         memcpy(s->buffer + s->buffer_index, data, written);
         s->buffer_index += written;
     }
-    if (frame) {
+    if (frame)
+    {
         if ((ret = ff_af_queue_add(&s->afq, frame)) < 0)
             return ret;
     }
 
     if (s->buffer_index < 4 || !s->afq.frame_count)
         return 0;
-    if (avpriv_mpegaudio_decode_header(&hdr, AV_RB32(s->buffer))) {
+    if (avpriv_mpegaudio_decode_header(&hdr, AV_RB32(s->buffer)))
+    {
         av_log(avctx, AV_LOG_ERROR, "free format output not supported\n");
         return -1;
     }
 
     len = hdr.frame_size;
-    if (len <= s->buffer_index) {
+    if (len <= s->buffer_index)
+    {
         if ((ret = ff_alloc_packet2(avctx, avpkt, len, 0)))
             return ret;
         memcpy(avpkt->data, s->buffer, len);
@@ -126,11 +134,13 @@ static av_cold int libshine_encode_close(AVCodecContext *avctx)
     return 0;
 }
 
-static const int libshine_sample_rates[] = {
+static const int libshine_sample_rates[] =
+{
     44100, 48000, 32000, 0
 };
 
-AVCodec ff_libshine_encoder = {
+AVCodec ff_libshine_encoder =
+{
     .name                  = "libshine",
     .long_name             = NULL_IF_CONFIG_SMALL("libshine MP3 (MPEG audio layer 3)"),
     .type                  = AVMEDIA_TYPE_AUDIO,
@@ -140,10 +150,15 @@ AVCodec ff_libshine_encoder = {
     .encode2               = libshine_encode_frame,
     .close                 = libshine_encode_close,
     .capabilities          = AV_CODEC_CAP_DELAY,
-    .sample_fmts           = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16P,
-                                                            AV_SAMPLE_FMT_NONE },
+    .sample_fmts           = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
     .supported_samplerates = libshine_sample_rates,
-    .channel_layouts       = (const uint64_t[]) { AV_CH_LAYOUT_MONO,
-                                                  AV_CH_LAYOUT_STEREO,
-                                                  0 },
+    .channel_layouts       = (const uint64_t[])
+    {
+        AV_CH_LAYOUT_MONO,
+        AV_CH_LAYOUT_STEREO,
+        0
+    },
 };

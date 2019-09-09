@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SRTP network protocol
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -28,7 +28,8 @@
 #include "rtpdec.h"
 #include "srtp.h"
 
-typedef struct SRTPProtoContext {
+typedef struct SRTPProtoContext
+{
     const AVClass *class;
     URLContext *rtp_hd;
     const char *out_suite, *out_params;
@@ -39,7 +40,8 @@ typedef struct SRTPProtoContext {
 
 #define D AV_OPT_FLAG_DECODING_PARAM
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "srtp_out_suite", "", offsetof(SRTPProtoContext, out_suite), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0, E },
     { "srtp_out_params", "", offsetof(SRTPProtoContext, out_params), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0, E },
     { "srtp_in_suite", "", offsetof(SRTPProtoContext, in_suite), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0, D },
@@ -47,7 +49,8 @@ static const AVOption options[] = {
     { NULL }
 };
 
-static const AVClass srtp_context_class = {
+static const AVClass srtp_context_class =
+{
     .class_name     = "srtp",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -99,7 +102,8 @@ static int srtp_read(URLContext *h, uint8_t *buf, int size)
     int ret;
 start:
     ret = ffurl_read(s->rtp_hd, buf, size);
-    if (ret > 0 && s->srtp_in.aes) {
+    if (ret > 0 && s->srtp_in.aes)
+    {
         if (ff_srtp_decrypt(&s->srtp_in, buf, &ret) < 0)
             goto start;
     }
@@ -131,7 +135,8 @@ static int srtp_get_multi_file_handle(URLContext *h, int **handles,
     return ffurl_get_multi_file_handle(s->rtp_hd, handles, numhandles);
 }
 
-URLProtocol ff_srtp_protocol = {
+URLProtocol ff_srtp_protocol =
+{
     .name                      = "srtp",
     .url_open                  = srtp_open,
     .url_read                  = srtp_read,

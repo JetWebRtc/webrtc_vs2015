@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libjingle
  * Copyright 2004--2010, Google Inc.
  *
@@ -27,7 +27,8 @@
 
 #include "webrtc/modules/audio_device/linux/pulseaudiosymboltable_linux.h"
 
-namespace webrtc_adm_linux_pulse {
+namespace webrtc_adm_linux_pulse
+{
 
 LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(PulseAudioSymbolTable, "libpulse.so.0")
 #define X(sym) \

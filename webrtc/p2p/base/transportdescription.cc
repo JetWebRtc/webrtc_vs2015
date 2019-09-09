@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,43 +14,50 @@
 #include "webrtc/base/stringutils.h"
 #include "webrtc/p2p/base/p2pconstants.h"
 
-namespace cricket {
+namespace cricket
+{
 
-bool StringToConnectionRole(const std::string& role_str, ConnectionRole* role) {
-  const char* const roles[] = {
-      CONNECTIONROLE_ACTIVE_STR,
-      CONNECTIONROLE_PASSIVE_STR,
-      CONNECTIONROLE_ACTPASS_STR,
-      CONNECTIONROLE_HOLDCONN_STR
-  };
+bool StringToConnectionRole(const std::string& role_str, ConnectionRole* role)
+{
+    const char* const roles[] =
+    {
+        CONNECTIONROLE_ACTIVE_STR,
+        CONNECTIONROLE_PASSIVE_STR,
+        CONNECTIONROLE_ACTPASS_STR,
+        CONNECTIONROLE_HOLDCONN_STR
+    };
 
-  for (size_t i = 0; i < arraysize(roles); ++i) {
-    if (_stricmp(roles[i], role_str.c_str()) == 0) {
-      *role = static_cast<ConnectionRole>(CONNECTIONROLE_ACTIVE + i);
-      return true;
+    for (size_t i = 0; i < arraysize(roles); ++i)
+    {
+        if (_stricmp(roles[i], role_str.c_str()) == 0)
+        {
+            *role = static_cast<ConnectionRole>(CONNECTIONROLE_ACTIVE + i);
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
-bool ConnectionRoleToString(const ConnectionRole& role, std::string* role_str) {
-  switch (role) {
+bool ConnectionRoleToString(const ConnectionRole& role, std::string* role_str)
+{
+    switch (role)
+    {
     case cricket::CONNECTIONROLE_ACTIVE:
-      *role_str = cricket::CONNECTIONROLE_ACTIVE_STR;
-      break;
+        *role_str = cricket::CONNECTIONROLE_ACTIVE_STR;
+        break;
     case cricket::CONNECTIONROLE_ACTPASS:
-      *role_str = cricket::CONNECTIONROLE_ACTPASS_STR;
-      break;
+        *role_str = cricket::CONNECTIONROLE_ACTPASS_STR;
+        break;
     case cricket::CONNECTIONROLE_PASSIVE:
-      *role_str = cricket::CONNECTIONROLE_PASSIVE_STR;
-      break;
+        *role_str = cricket::CONNECTIONROLE_PASSIVE_STR;
+        break;
     case cricket::CONNECTIONROLE_HOLDCONN:
-      *role_str = cricket::CONNECTIONROLE_HOLDCONN_STR;
-      break;
+        *role_str = cricket::CONNECTIONROLE_HOLDCONN_STR;
+        break;
     default:
-      return false;
-  }
-  return true;
+        return false;
+    }
+    return true;
 }
 
 }  // namespace cricket

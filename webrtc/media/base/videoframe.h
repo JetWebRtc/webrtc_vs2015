@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,11 +24,13 @@
 
 // TODO(nisse): Similarly, some applications expect that including this file
 // implies a forward declaration of rtc::Thread.
-namespace rtc {
+namespace rtc
+{
 class Thread;
 }  // namespace rtc
 
-namespace cricket {
+namespace cricket
+{
 
 using VideoFrame = webrtc::VideoFrame;
 

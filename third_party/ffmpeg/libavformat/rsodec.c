@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RSO demuxer
  * Copyright (c) 2001 Fabrice Bellard (original AU code)
  * Copyright (c) 2010 Rafael Carre
@@ -42,13 +42,15 @@ static int rso_read_header(AVFormatContext *s)
 
     codec = ff_codec_get_id(ff_codec_rso_tags, id);
 
-    if (codec == AV_CODEC_ID_ADPCM_IMA_WAV) {
+    if (codec == AV_CODEC_ID_ADPCM_IMA_WAV)
+    {
         avpriv_report_missing_feature(s, "ADPCM in RSO");
         return AVERROR_PATCHWELCOME;
     }
 
     bps = av_get_bits_per_sample(codec);
-    if (!bps) {
+    if (!bps)
+    {
         avpriv_request_sample(s, "Unknown bits per sample");
         return AVERROR_PATCHWELCOME;
     }
@@ -72,7 +74,8 @@ static int rso_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_rso_demuxer = {
+AVInputFormat ff_rso_demuxer =
+{
     .name           =   "rso",
     .long_name      =   NULL_IF_CONFIG_SMALL("Lego Mindstorms RSO"),
     .extensions     =   "rso",

@@ -34,10 +34,12 @@ static int mpl2_event_to_ass(AVBPrint *buf, const char *p)
     if (*p == ' ')
         p++;
 
-    while (*p) {
+    while (*p)
+    {
         int got_style = 0;
 
-        while (*p && strchr("/\\_", *p)) {
+        while (*p && strchr("/\\_", *p))
+        {
             if      (*p == '/')  av_bprintf(buf, "{\\i1}");
             else if (*p == '\\') av_bprintf(buf, "{\\b1}");
             else if (*p == '_')  av_bprintf(buf, "{\\u1}");
@@ -45,13 +47,15 @@ static int mpl2_event_to_ass(AVBPrint *buf, const char *p)
             p++;
         }
 
-        while (*p && *p != '|') {
+        while (*p && *p != '|')
+        {
             if (*p != '\r' && *p != '\n')
                 av_bprint_chars(buf, *p, 1);
             p++;
         }
 
-        if (*p == '|') {
+        if (*p == '|')
+        {
             if (got_style)
                 av_bprintf(buf, "{\\r}");
             av_bprintf(buf, "\\N");
@@ -69,21 +73,28 @@ static int mpl2_decode_frame(AVCodecContext *avctx, void *data,
     AVBPrint buf;
     AVSubtitle *sub = data;
     const char *ptr = avpkt->data;
-    const int ts_start     = av_rescale_q(avpkt->pts,      avctx->time_base, (AVRational){1,100});
+    const int ts_start     = av_rescale_q(avpkt->pts,      avctx->time_base, (AVRational)
+    {
+        1,100
+    });
     const int ts_duration  = avpkt->duration != -1 ?
-                             av_rescale_q(avpkt->duration, avctx->time_base, (AVRational){1,100}) : -1;
+                             av_rescale_q(avpkt->duration, avctx->time_base, (AVRational)
+    {
+        1,100
+    }) : -1;
 
-    av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
-    if (ptr && avpkt->size > 0 && *ptr && !mpl2_event_to_ass(&buf, ptr))
-        ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_duration);
-    av_bprint_finalize(&buf, NULL);
-    if (ret < 0)
-        return ret;
-    *got_sub_ptr = sub->num_rects > 0;
-    return avpkt->size;
-}
+        av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
+        if (ptr && avpkt->size > 0 && *ptr && !mpl2_event_to_ass(&buf, ptr))
+            ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_duration);
+        av_bprint_finalize(&buf, NULL);
+        if (ret < 0)
+            return ret;
+        *got_sub_ptr = sub->num_rects > 0;
+        return avpkt->size;
+    }
 
-AVCodec ff_mpl2_decoder = {
+    AVCodec ff_mpl2_decoder =
+{
     .name           = "mpl2",
     .long_name      = NULL_IF_CONFIG_SMALL("MPL2 subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

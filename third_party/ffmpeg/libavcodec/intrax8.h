@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -24,7 +24,8 @@
 #include "intrax8dsp.h"
 #include "wmv2dsp.h"
 
-typedef struct IntraX8Context {
+typedef struct IntraX8Context
+{
     VLC * j_ac_vlc[4];//they point to the static j_mb_vlc
     VLC * j_orient_vlc;
     VLC * j_dc_vlc[3];

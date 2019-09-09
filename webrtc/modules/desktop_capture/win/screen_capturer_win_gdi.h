@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,7 +21,8 @@
 #include "webrtc/modules/desktop_capture/shared_desktop_frame.h"
 #include "webrtc/modules/desktop_capture/win/scoped_thread_desktop.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // ScreenCapturerWinGdi captures 32bit RGB using GDI.
 //
@@ -29,54 +30,55 @@ namespace webrtc {
 // This class does not detect DesktopFrame::updated_region(), the field is
 // always set to the entire frame rectangle. ScreenCapturerDifferWrapper should
 // be used if that functionality is necessary.
-class ScreenCapturerWinGdi : public DesktopCapturer {
- public:
-  explicit ScreenCapturerWinGdi(const DesktopCaptureOptions& options);
-  ~ScreenCapturerWinGdi() override;
+class ScreenCapturerWinGdi : public DesktopCapturer
+{
+public:
+    explicit ScreenCapturerWinGdi(const DesktopCaptureOptions& options);
+    ~ScreenCapturerWinGdi() override;
 
-  // Overridden from ScreenCapturer:
-  void Start(Callback* callback) override;
-  void SetSharedMemoryFactory(
-      std::unique_ptr<SharedMemoryFactory> shared_memory_factory) override;
-  void CaptureFrame() override;
-  bool GetSourceList(SourceList* sources) override;
-  bool SelectSource(SourceId id) override;
+    // Overridden from ScreenCapturer:
+    void Start(Callback* callback) override;
+    void SetSharedMemoryFactory(
+        std::unique_ptr<SharedMemoryFactory> shared_memory_factory) override;
+    void CaptureFrame() override;
+    bool GetSourceList(SourceList* sources) override;
+    bool SelectSource(SourceId id) override;
 
- private:
-  typedef HRESULT (WINAPI * DwmEnableCompositionFunc)(UINT);
+private:
+    typedef HRESULT (WINAPI * DwmEnableCompositionFunc)(UINT);
 
-  // Make sure that the device contexts match the screen configuration.
-  void PrepareCaptureResources();
+    // Make sure that the device contexts match the screen configuration.
+    void PrepareCaptureResources();
 
-  // Captures the current screen contents into the current buffer. Returns true
-  // if succeeded.
-  bool CaptureImage();
+    // Captures the current screen contents into the current buffer. Returns true
+    // if succeeded.
+    bool CaptureImage();
 
-  // Capture the current cursor shape.
-  void CaptureCursor();
+    // Capture the current cursor shape.
+    void CaptureCursor();
 
-  Callback* callback_ = nullptr;
-  std::unique_ptr<SharedMemoryFactory> shared_memory_factory_;
-  SourceId current_screen_id_ = kFullDesktopScreenId;
-  std::wstring current_device_key_;
+    Callback* callback_ = nullptr;
+    std::unique_ptr<SharedMemoryFactory> shared_memory_factory_;
+    SourceId current_screen_id_ = kFullDesktopScreenId;
+    std::wstring current_device_key_;
 
-  ScopedThreadDesktop desktop_;
+    ScopedThreadDesktop desktop_;
 
-  // GDI resources used for screen capture.
-  HDC desktop_dc_ = NULL;
-  HDC memory_dc_ = NULL;
+    // GDI resources used for screen capture.
+    HDC desktop_dc_ = NULL;
+    HDC memory_dc_ = NULL;
 
-  // Queue of the frames buffers.
-  ScreenCaptureFrameQueue<SharedDesktopFrame> queue_;
+    // Queue of the frames buffers.
+    ScreenCaptureFrameQueue<SharedDesktopFrame> queue_;
 
-  // Rectangle describing the bounds of the desktop device context, relative to
-  // the primary display's top-left.
-  DesktopRect desktop_dc_rect_;
+    // Rectangle describing the bounds of the desktop device context, relative to
+    // the primary display's top-left.
+    DesktopRect desktop_dc_rect_;
 
-  HMODULE dwmapi_library_ = NULL;
-  DwmEnableCompositionFunc composition_func_ = nullptr;
+    HMODULE dwmapi_library_ = NULL;
+    DwmEnableCompositionFunc composition_func_ = nullptr;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(ScreenCapturerWinGdi);
+    RTC_DISALLOW_COPY_AND_ASSIGN(ScreenCapturerWinGdi);
 };
 
 }  // namespace webrtc

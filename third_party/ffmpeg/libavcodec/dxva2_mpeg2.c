@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-2 HW acceleration.
  *
  * copyright (c) 2010 Laurent Aimar
@@ -25,7 +25,8 @@
 #include "mpegutils.h"
 
 #define MAX_SLICES 1024
-struct dxva2_picture_context {
+struct dxva2_picture_context
+{
     DXVA_PictureParameters pp;
     DXVA_QmatrixData       qm;
     unsigned               slice_count;
@@ -109,7 +110,8 @@ static void fill_quantization_matrices(AVCodecContext *avctx,
     int i;
     for (i = 0; i < 4; i++)
         qm->bNewQmatrix[i] = 1;
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int n = s->idsp.idct_permutation[ff_zigzag_direct[i]];
         qm->Qmatrix[0][i] = s->intra_matrix[n];
         qm->Qmatrix[1][i] = s->inter_matrix[n];
@@ -146,13 +148,13 @@ static void fill_slice(AVCodecContext *avctx,
     slice->wMBbitOffset        = 4 * 8 + get_bits_count(&gb);
 }
 static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
-                                             DECODER_BUFFER_DESC *bs,
-                                             DECODER_BUFFER_DESC *sc)
+        DECODER_BUFFER_DESC *bs,
+        DECODER_BUFFER_DESC *sc)
 {
     const struct MpegEncContext *s = avctx->priv_data;
     AVDXVAContext *ctx = avctx->hwaccel_context;
     struct dxva2_picture_context *ctx_pic =
-        s->current_picture_ptr->hwaccel_picture_private;
+            s->current_picture_ptr->hwaccel_picture_private;
     const int is_field = s->picture_structure != PICT_FRAME;
     const unsigned mb_count = s->mb_width * (s->mb_height >> is_field);
     void     *dxva_data_ptr;
@@ -162,21 +164,23 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     unsigned type;
 
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         type = D3D11_VIDEO_DECODER_BUFFER_BITSTREAM;
         if (FAILED(ID3D11VideoContext_GetDecoderBuffer(D3D11VA_CONTEXT(ctx)->video_context,
-                                                       D3D11VA_CONTEXT(ctx)->decoder,
-                                                       type,
-                                                       &dxva_size, &dxva_data_ptr)))
+                   D3D11VA_CONTEXT(ctx)->decoder,
+                   type,
+                   &dxva_size, &dxva_data_ptr)))
             return -1;
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         type = DXVA2_BitStreamDateBufferType;
         if (FAILED(IDirectXVideoDecoder_GetBuffer(DXVA2_CONTEXT(ctx)->decoder,
-                                                  type,
-                                                  &dxva_data_ptr, &dxva_size)))
+                   type,
+                   &dxva_data_ptr, &dxva_size)))
             return -1;
     }
 #endif
@@ -185,11 +189,13 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     current = dxva_data;
     end = dxva_data + dxva_size;
 
-    for (i = 0; i < ctx_pic->slice_count; i++) {
+    for (i = 0; i < ctx_pic->slice_count; i++)
+    {
         DXVA_SliceInfo *slice = &ctx_pic->slice[i];
         unsigned position = slice->dwSliceDataLocation;
         unsigned size     = slice->dwSliceBitsInBuffer / 8;
-        if (size > end - current) {
+        if (size > end - current)
+        {
             av_log(avctx, AV_LOG_ERROR, "Failed to build bitstream");
             break;
         }
@@ -219,7 +225,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
         return -1;
 
 #if CONFIG_D3D11VA
-    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_D3D11VA_VLD)
+    {
         D3D11_VIDEO_DECODER_BUFFER_DESC *dsc11 = bs;
         memset(dsc11, 0, sizeof(*dsc11));
         dsc11->BufferType           = type;
@@ -230,7 +237,8 @@ static int commit_bitstream_and_slice_buffer(AVCodecContext *avctx,
     }
 #endif
 #if CONFIG_DXVA2
-    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD) {
+    if (avctx->pix_fmt == AV_PIX_FMT_DXVA2_VLD)
+    {
         DXVA2_DecodeBufferDesc *dsc2 = bs;
         memset(dsc2, 0, sizeof(*dsc2));
         dsc2->CompressedBufferType = type;
@@ -255,11 +263,11 @@ static int dxva2_mpeg2_start_frame(AVCodecContext *avctx,
     const struct MpegEncContext *s = avctx->priv_data;
     AVDXVAContext *ctx = avctx->hwaccel_context;
     struct dxva2_picture_context *ctx_pic =
-        s->current_picture_ptr->hwaccel_picture_private;
+            s->current_picture_ptr->hwaccel_picture_private;
 
     if (DXVA_CONTEXT_DECODER(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
-        DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
+            DXVA_CONTEXT_CFG(avctx, ctx) == NULL ||
+            DXVA_CONTEXT_COUNT(avctx, ctx) <= 0)
         return -1;
     assert(ctx_pic);
 
@@ -277,10 +285,11 @@ static int dxva2_mpeg2_decode_slice(AVCodecContext *avctx,
 {
     const struct MpegEncContext *s = avctx->priv_data;
     struct dxva2_picture_context *ctx_pic =
-        s->current_picture_ptr->hwaccel_picture_private;
+            s->current_picture_ptr->hwaccel_picture_private;
     unsigned position;
 
-    if (ctx_pic->slice_count >= MAX_SLICES) {
+    if (ctx_pic->slice_count >= MAX_SLICES)
+    {
         avpriv_request_sample(avctx, "%d slices in dxva2",
                               ctx_pic->slice_count);
         return -1;
@@ -299,7 +308,7 @@ static int dxva2_mpeg2_end_frame(AVCodecContext *avctx)
 {
     struct MpegEncContext *s = avctx->priv_data;
     struct dxva2_picture_context *ctx_pic =
-        s->current_picture_ptr->hwaccel_picture_private;
+            s->current_picture_ptr->hwaccel_picture_private;
     int ret;
 
     if (ctx_pic->slice_count <= 0 || ctx_pic->bitstream_size <= 0)
@@ -314,7 +323,8 @@ static int dxva2_mpeg2_end_frame(AVCodecContext *avctx)
 }
 
 #if CONFIG_MPEG2_DXVA2_HWACCEL
-AVHWAccel ff_mpeg2_dxva2_hwaccel = {
+AVHWAccel ff_mpeg2_dxva2_hwaccel =
+{
     .name           = "mpeg2_dxva2",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG2VIDEO,
@@ -327,7 +337,8 @@ AVHWAccel ff_mpeg2_dxva2_hwaccel = {
 #endif
 
 #if CONFIG_MPEG2_D3D11VA_HWACCEL
-AVHWAccel ff_mpeg2_d3d11va_hwaccel = {
+AVHWAccel ff_mpeg2_d3d11va_hwaccel =
+{
     .name           = "mpeg2_d3d11va",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG2VIDEO,

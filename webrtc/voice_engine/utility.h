@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,11 +18,13 @@
 #include "webrtc/common_audio/resampler/include/push_resampler.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioFrame;
 
-namespace voe {
+namespace voe
+{
 
 // Upmix or downmix and resample the audio to |dst_frame|. Expects |dst_frame|
 // to have its sample rate and channels members set to the desired values.

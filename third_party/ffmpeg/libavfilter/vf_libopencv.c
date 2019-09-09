@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -39,12 +39,27 @@ static void fill_iplimage_from_frame(IplImage *img, const AVFrame *frame, enum A
     IplImage *tmpimg;
     int depth, channels_nb;
 
-    if      (pixfmt == AV_PIX_FMT_GRAY8) { depth = IPL_DEPTH_8U;  channels_nb = 1; }
-    else if (pixfmt == AV_PIX_FMT_BGRA)  { depth = IPL_DEPTH_8U;  channels_nb = 4; }
-    else if (pixfmt == AV_PIX_FMT_BGR24) { depth = IPL_DEPTH_8U;  channels_nb = 3; }
+    if      (pixfmt == AV_PIX_FMT_GRAY8)
+    {
+        depth = IPL_DEPTH_8U;
+        channels_nb = 1;
+    }
+    else if (pixfmt == AV_PIX_FMT_BGRA)
+    {
+        depth = IPL_DEPTH_8U;
+        channels_nb = 4;
+    }
+    else if (pixfmt == AV_PIX_FMT_BGR24)
+    {
+        depth = IPL_DEPTH_8U;
+        channels_nb = 3;
+    }
     else return;
 
-    tmpimg = cvCreateImageHeader((CvSize){frame->width, frame->height}, depth, channels_nb);
+    tmpimg = cvCreateImageHeader((CvSize)
+    {
+        frame->width, frame->height
+    }, depth, channels_nb);
     *img = *tmpimg;
     img->imageData = img->imageDataOrigin = frame->data[0];
     img->dataOrder = IPL_DATA_ORDER_PIXEL;
@@ -60,7 +75,8 @@ static void fill_frame_from_iplimage(AVFrame *frame, const IplImage *img, enum A
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_BGR24, AV_PIX_FMT_BGRA, AV_PIX_FMT_GRAY8, AV_PIX_FMT_NONE
     };
     AVFilterFormats *fmts_list = ff_make_format_list(pix_fmts);
@@ -69,7 +85,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-typedef struct OCVContext {
+typedef struct OCVContext
+{
     const AVClass *class;
     char *name;
     char *params;
@@ -79,7 +96,8 @@ typedef struct OCVContext {
     void *priv;
 } OCVContext;
 
-typedef struct SmoothContext {
+typedef struct SmoothContext
+{
     int type;
     int    param1, param2;
     double param3, param4;
@@ -104,19 +122,22 @@ static av_cold int smooth_init(AVFilterContext *ctx, const char *args)
     else if (!strcmp(type_str, "median"       )) smooth->type = CV_MEDIAN;
     else if (!strcmp(type_str, "gaussian"     )) smooth->type = CV_GAUSSIAN;
     else if (!strcmp(type_str, "bilateral"    )) smooth->type = CV_BILATERAL;
-    else {
+    else
+    {
         av_log(ctx, AV_LOG_ERROR, "Smoothing type '%s' unknown.\n", type_str);
         return AVERROR(EINVAL);
     }
 
-    if (smooth->param1 < 0 || !(smooth->param1%2)) {
+    if (smooth->param1 < 0 || !(smooth->param1%2))
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid value '%d' for param1, it has to be a positive odd number\n",
                smooth->param1);
         return AVERROR(EINVAL);
     }
     if ((smooth->type == CV_BLUR || smooth->type == CV_BLUR_NO_SCALE || smooth->type == CV_GAUSSIAN) &&
-        (smooth->param2 < 0 || (smooth->param2 && !(smooth->param2%2)))) {
+            (smooth->param2 < 0 || (smooth->param2 && !(smooth->param2%2))))
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid value '%d' for param2, it has to be zero or a positive odd number\n",
                smooth->param2);
@@ -147,22 +168,28 @@ static int read_shape_from_file(int *cols, int *rows, int **values, const char *
 
     /* prescan file to get the number of lines and the maximum width */
     w = 0;
-    for (i = 0; i < size; i++) {
-        if (buf[i] == '\n') {
-            if (*rows == INT_MAX) {
+    for (i = 0; i < size; i++)
+    {
+        if (buf[i] == '\n')
+        {
+            if (*rows == INT_MAX)
+            {
                 av_log(log_ctx, AV_LOG_ERROR, "Overflow on the number of rows in the file\n");
                 return AVERROR_INVALIDDATA;
             }
             ++(*rows);
             *cols = FFMAX(*cols, w);
             w = 0;
-        } else if (w == INT_MAX) {
+        }
+        else if (w == INT_MAX)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Overflow on the number of columns in the file\n");
             return AVERROR_INVALIDDATA;
         }
         w++;
     }
-    if (*rows > (SIZE_MAX / sizeof(int) / *cols)) {
+    if (*rows > (SIZE_MAX / sizeof(int) / *cols))
+    {
         av_log(log_ctx, AV_LOG_ERROR, "File with size %dx%d is too big\n",
                *rows, *cols);
         return AVERROR_INVALIDDATA;
@@ -173,12 +200,16 @@ static int read_shape_from_file(int *cols, int *rows, int **values, const char *
     /* fill *values */
     p    = buf;
     pend = buf + size-1;
-    for (i = 0; i < *rows; i++) {
-        for (j = 0;; j++) {
-            if (p > pend || *p == '\n') {
+    for (i = 0; i < *rows; i++)
+    {
+        for (j = 0;; j++)
+        {
+            if (p > pend || *p == '\n')
+            {
                 p++;
                 break;
-            } else
+            }
+            else
                 (*values)[*cols*i + j] = !!av_isgraph(*(p++));
         }
     }
@@ -189,7 +220,8 @@ static int read_shape_from_file(int *cols, int *rows, int **values, const char *
         char *line;
         if (!(line = av_malloc(*cols + 1)))
             return AVERROR(ENOMEM);
-        for (i = 0; i < *rows; i++) {
+        for (i = 0; i < *rows; i++)
+        {
             for (j = 0; j < *cols; j++)
                 line[j] = (*values)[i * *cols + j] ? '@' : ' ';
             line[j] = 0;
@@ -213,25 +245,30 @@ static int parse_iplconvkernel(IplConvKernel **kernel, char *buf, void *log_ctx)
     if      (!strcmp(shape_str, "rect"   )) shape = CV_SHAPE_RECT;
     else if (!strcmp(shape_str, "cross"  )) shape = CV_SHAPE_CROSS;
     else if (!strcmp(shape_str, "ellipse")) shape = CV_SHAPE_ELLIPSE;
-    else if (!strcmp(shape_str, "custom" )) {
+    else if (!strcmp(shape_str, "custom" ))
+    {
         shape = CV_SHAPE_CUSTOM;
         if ((ret = read_shape_from_file(&cols, &rows, &values, shape_filename, log_ctx)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "Shape unspecified or type '%s' unknown.\n", shape_str);
         ret = AVERROR(EINVAL);
         goto out;
     }
 
-    if (rows <= 0 || cols <= 0) {
+    if (rows <= 0 || cols <= 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "Invalid non-positive values for shape size %dx%d\n", cols, rows);
         ret = AVERROR(EINVAL);
         goto out;
     }
 
-    if (anchor_x < 0 || anchor_y < 0 || anchor_x >= cols || anchor_y >= rows) {
+    if (anchor_x < 0 || anchor_y < 0 || anchor_x >= cols || anchor_y >= rows)
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "Shape anchor %dx%d is not inside the rectangle with size %dx%d.\n",
                anchor_x, anchor_y, cols, rows);
@@ -240,7 +277,8 @@ static int parse_iplconvkernel(IplConvKernel **kernel, char *buf, void *log_ctx)
     }
 
     *kernel = cvCreateStructuringElementEx(cols, rows, anchor_x, anchor_y, shape, values);
-    if (!*kernel) {
+    if (!*kernel)
+    {
         ret = AVERROR(ENOMEM);
         goto out;
     }
@@ -252,7 +290,8 @@ out:
     return ret;
 }
 
-typedef struct DilateContext {
+typedef struct DilateContext
+{
     int nb_iterations;
     IplConvKernel *kernel;
 } DilateContext;
@@ -266,7 +305,8 @@ static av_cold int dilate_init(AVFilterContext *ctx, const char *args)
     const char *buf = args;
     int ret;
 
-    if (args) {
+    if (args)
+    {
         kernel_str = av_get_token(&buf, "|");
 
         if (!kernel_str)
@@ -275,7 +315,7 @@ static av_cold int dilate_init(AVFilterContext *ctx, const char *args)
 
     ret = parse_iplconvkernel(&dilate->kernel,
                               (!kernel_str || !*kernel_str) ? default_kernel_str
-                                                            : kernel_str,
+                              : kernel_str,
                               ctx);
     av_free(kernel_str);
     if (ret < 0)
@@ -284,7 +324,8 @@ static av_cold int dilate_init(AVFilterContext *ctx, const char *args)
     if (!buf || sscanf(buf, "|%d", &dilate->nb_iterations) != 1)
         dilate->nb_iterations = 1;
     av_log(ctx, AV_LOG_VERBOSE, "iterations_nb:%d\n", dilate->nb_iterations);
-    if (dilate->nb_iterations <= 0) {
+    if (dilate->nb_iterations <= 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid non-positive value '%d' for nb_iterations\n",
                dilate->nb_iterations);
         return AVERROR(EINVAL);
@@ -314,7 +355,8 @@ static void erode_end_frame_filter(AVFilterContext *ctx, IplImage *inimg, IplIma
     cvErode(inimg, outimg, dilate->kernel, dilate->nb_iterations);
 }
 
-typedef struct OCVFilterEntry {
+typedef struct OCVFilterEntry
+{
     const char *name;
     size_t priv_size;
     int  (*init)(AVFilterContext *ctx, const char *args);
@@ -322,7 +364,8 @@ typedef struct OCVFilterEntry {
     void (*end_frame_filter)(AVFilterContext *ctx, IplImage *inimg, IplImage *outimg);
 } OCVFilterEntry;
 
-static const OCVFilterEntry ocv_filter_entries[] = {
+static const OCVFilterEntry ocv_filter_entries[] =
+{
     { "dilate", sizeof(DilateContext), dilate_init, dilate_uninit, dilate_end_frame_filter },
     { "erode",  sizeof(DilateContext), dilate_init, dilate_uninit, erode_end_frame_filter  },
     { "smooth", sizeof(SmoothContext), smooth_init, NULL, smooth_end_frame_filter },
@@ -333,13 +376,16 @@ static av_cold int init(AVFilterContext *ctx)
     OCVContext *s = ctx->priv;
     int i;
 
-    if (!s->name) {
+    if (!s->name)
+    {
         av_log(ctx, AV_LOG_ERROR, "No libopencv filter name specified\n");
         return AVERROR(EINVAL);
     }
-    for (i = 0; i < FF_ARRAY_ELEMS(ocv_filter_entries); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(ocv_filter_entries); i++)
+    {
         const OCVFilterEntry *entry = &ocv_filter_entries[i];
-        if (!strcmp(s->name, entry->name)) {
+        if (!strcmp(s->name, entry->name))
+        {
             s->init             = entry->init;
             s->uninit           = entry->uninit;
             s->end_frame_filter = entry->end_frame_filter;
@@ -372,7 +418,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     IplImage inimg, outimg;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -390,7 +437,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
 #define OFFSET(x) offsetof(OCVContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption ocv_options[] = {
+static const AVOption ocv_options[] =
+{
     { "filter_name",   NULL, OFFSET(name),   AV_OPT_TYPE_STRING, .flags = FLAGS },
     { "filter_params", NULL, OFFSET(params), AV_OPT_TYPE_STRING, .flags = FLAGS },
     { NULL }
@@ -398,7 +446,8 @@ static const AVOption ocv_options[] = {
 
 AVFILTER_DEFINE_CLASS(ocv);
 
-static const AVFilterPad avfilter_vf_ocv_inputs[] = {
+static const AVFilterPad avfilter_vf_ocv_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -407,7 +456,8 @@ static const AVFilterPad avfilter_vf_ocv_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_ocv_outputs[] = {
+static const AVFilterPad avfilter_vf_ocv_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -415,7 +465,8 @@ static const AVFilterPad avfilter_vf_ocv_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_ocv = {
+AVFilter ff_vf_ocv =
+{
     .name          = "ocv",
     .description   = NULL_IF_CONFIG_SMALL("Apply transform using libopencv."),
     .priv_size     = sizeof(OCVContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CDXL demuxer
  * Copyright (c) 2011-2012 Paul B Mahol
  *
@@ -28,7 +28,8 @@
 
 #define CDXL_HEADER_SIZE 32
 
-typedef struct CDXLDemuxContext {
+typedef struct CDXLDemuxContext
+{
     AVClass     *class;
     int         sample_rate;
     char        *framerate;
@@ -87,7 +88,8 @@ static int cdxl_read_header(AVFormatContext *s)
     CDXLDemuxContext *cdxl = s->priv_data;
     int ret;
 
-    if (cdxl->framerate && (ret = av_parse_video_rate(&cdxl->fps, cdxl->framerate)) < 0) {
+    if (cdxl->framerate && (ret = av_parse_video_rate(&cdxl->fps, cdxl->framerate)) < 0)
+    {
         av_log(s, AV_LOG_ERROR,
                "Could not parse framerate: %s.\n", cdxl->framerate);
         return ret;
@@ -118,9 +120,10 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     pos = avio_tell(pb);
     if (!cdxl->read_chunk &&
-        avio_read(pb, cdxl->header, CDXL_HEADER_SIZE) != CDXL_HEADER_SIZE)
+            avio_read(pb, cdxl->header, CDXL_HEADER_SIZE) != CDXL_HEADER_SIZE)
         return AVERROR_EOF;
-    if (cdxl->header[0] != 1) {
+    if (cdxl->header[0] != 1)
+    {
         av_log(s, AV_LOG_ERROR, "non-standard cdxl file\n");
         return AVERROR_INVALIDDATA;
     }
@@ -140,8 +143,10 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (current_size < (uint64_t)audio_size + video_size + CDXL_HEADER_SIZE)
         return AVERROR_INVALIDDATA;
 
-    if (cdxl->read_chunk && audio_size) {
-        if (cdxl->audio_stream_index == -1) {
+    if (cdxl->read_chunk && audio_size)
+    {
+        if (cdxl->audio_stream_index == -1)
+        {
             AVStream *st = avformat_new_stream(s, NULL);
             if (!st)
                 return AVERROR(ENOMEM);
@@ -149,10 +154,13 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
             st->codec->codec_type    = AVMEDIA_TYPE_AUDIO;
             st->codec->codec_tag     = 0;
             st->codec->codec_id      = AV_CODEC_ID_PCM_S8;
-            if (cdxl->header[1] & 0x10) {
+            if (cdxl->header[1] & 0x10)
+            {
                 st->codec->channels       = 2;
                 st->codec->channel_layout = AV_CH_LAYOUT_STEREO;
-            } else {
+            }
+            else
+            {
                 st->codec->channels       = 1;
                 st->codec->channel_layout = AV_CH_LAYOUT_MONO;
             }
@@ -169,8 +177,11 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
         pkt->pos          = pos;
         pkt->duration     = audio_size;
         cdxl->read_chunk  = 0;
-    } else {
-        if (cdxl->video_stream_index == -1) {
+    }
+    else
+    {
+        if (cdxl->video_stream_index == -1)
+        {
             AVStream *st = avformat_new_stream(s, NULL);
             if (!st)
                 return AVERROR(ENOMEM);
@@ -181,7 +192,8 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
             st->codec->width         = width;
             st->codec->height        = height;
 
-            if (audio_size + video_size && cdxl->filesize > 0) {
+            if (audio_size + video_size && cdxl->filesize > 0)
+            {
                 frames = cdxl->filesize / (audio_size + video_size);
 
                 if(cdxl->framerate)
@@ -201,7 +213,8 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
             return AVERROR(ENOMEM);
         memcpy(pkt->data, cdxl->header, CDXL_HEADER_SIZE);
         ret = avio_read(pb, pkt->data + CDXL_HEADER_SIZE, video_size);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
@@ -219,20 +232,23 @@ static int cdxl_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 #define OFFSET(x) offsetof(CDXLDemuxContext, x)
-static const AVOption cdxl_options[] = {
+static const AVOption cdxl_options[] =
+{
     { "sample_rate", "", OFFSET(sample_rate), AV_OPT_TYPE_INT,    { .i64 = 11025 }, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM },
     { "framerate",   "", OFFSET(framerate),   AV_OPT_TYPE_STRING, { .str = NULL },  0, 0,       AV_OPT_FLAG_DECODING_PARAM },
     { NULL },
 };
 
-static const AVClass cdxl_demuxer_class = {
+static const AVClass cdxl_demuxer_class =
+{
     .class_name = "CDXL demuxer",
     .item_name  = av_default_item_name,
     .option     = cdxl_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_cdxl_demuxer = {
+AVInputFormat ff_cdxl_demuxer =
+{
     .name           = "cdxl",
     .long_name      = NULL_IF_CONFIG_SMALL("Commodore CDXL video"),
     .priv_data_size = sizeof(CDXLDemuxContext),

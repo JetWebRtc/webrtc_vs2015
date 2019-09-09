@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,41 +16,44 @@
 
 #include "webrtc/video_encoder.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class ConfigurableFrameSizeEncoder : public VideoEncoder {
- public:
-  explicit ConfigurableFrameSizeEncoder(size_t max_frame_size);
-  virtual ~ConfigurableFrameSizeEncoder();
+class ConfigurableFrameSizeEncoder : public VideoEncoder
+{
+public:
+    explicit ConfigurableFrameSizeEncoder(size_t max_frame_size);
+    virtual ~ConfigurableFrameSizeEncoder();
 
-  int32_t InitEncode(const VideoCodec* codec_settings,
-                     int32_t number_of_cores,
-                     size_t max_payload_size) override;
+    int32_t InitEncode(const VideoCodec* codec_settings,
+                       int32_t number_of_cores,
+                       size_t max_payload_size) override;
 
-  int32_t Encode(const VideoFrame& input_image,
-                 const CodecSpecificInfo* codec_specific_info,
-                 const std::vector<FrameType>* frame_types) override;
+    int32_t Encode(const VideoFrame& input_image,
+                   const CodecSpecificInfo* codec_specific_info,
+                   const std::vector<FrameType>* frame_types) override;
 
-  int32_t RegisterEncodeCompleteCallback(
-      EncodedImageCallback* callback) override;
+    int32_t RegisterEncodeCompleteCallback(
+        EncodedImageCallback* callback) override;
 
-  int32_t Release() override;
+    int32_t Release() override;
 
-  int32_t SetChannelParameters(uint32_t packet_loss, int64_t rtt) override;
+    int32_t SetChannelParameters(uint32_t packet_loss, int64_t rtt) override;
 
-  int32_t SetRateAllocation(const BitrateAllocation& allocation,
-                            uint32_t framerate) override;
+    int32_t SetRateAllocation(const BitrateAllocation& allocation,
+                              uint32_t framerate) override;
 
-  int32_t SetPeriodicKeyFrames(bool enable) override;
+    int32_t SetPeriodicKeyFrames(bool enable) override;
 
-  int32_t SetFrameSize(size_t size);
+    int32_t SetFrameSize(size_t size);
 
- private:
-  EncodedImageCallback* callback_;
-  const size_t max_frame_size_;
-  size_t current_frame_size_;
-  std::unique_ptr<uint8_t[]> buffer_;
+private:
+    EncodedImageCallback* callback_;
+    const size_t max_frame_size_;
+    size_t current_frame_size_;
+    std::unique_ptr<uint8_t[]> buffer_;
 };
 
 }  // namespace test

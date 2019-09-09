@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Screen 2 (aka Windows Media Video V9 Screen) decoder
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 
 #include <stdint.h>
 
-typedef struct MSS2DSPContext {
+typedef struct MSS2DSPContext
+{
     void (*mss2_blit_wmv9)(uint8_t *dst, int dst_stride,
                            const uint8_t *srcy, int srcy_stride,
                            const uint8_t *srcu, const uint8_t *srcv,

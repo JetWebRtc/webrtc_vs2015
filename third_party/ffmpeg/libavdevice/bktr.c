@@ -1,4 +1,4 @@
-/*
+﻿/*
  * *BSD video grab interface
  * Copyright (c) 2002 Steve O'Hara-Smith
  * based on
@@ -51,7 +51,8 @@
 #include <stdint.h>
 #include "avdevice.h"
 
-typedef struct VideoData {
+typedef struct VideoData
+{
     AVClass *class;
     int video_fd;
     int tuner_fd;
@@ -81,7 +82,8 @@ typedef struct VideoData {
 #endif
 
 static const int bktr_dev[] = { METEOR_DEV0, METEOR_DEV1, METEOR_DEV2,
-    METEOR_DEV3, METEOR_DEV_SVIDEO };
+                                METEOR_DEV3, METEOR_DEV_SVIDEO
+                              };
 
 uint8_t *video_buf;
 size_t video_buf_size;
@@ -96,7 +98,7 @@ static void catchsignal(int signal)
 }
 
 static av_cold int bktr_init(const char *video_device, int width, int height,
-    int format, int *video_fd, int *tuner_fd, int idev, double frequency)
+                             int format, int *video_fd, int *tuner_fd, int idev, double frequency)
 {
     struct meteor_geomet geo;
     int h_max;
@@ -143,7 +145,8 @@ static av_cold int bktr_init(const char *video_device, int width, int height,
         av_log(NULL, AV_LOG_ERROR, "Warning. Tuner not opened, continuing: %s\n", strerror(errno));
 
     *video_fd = avpriv_open(video_device, O_RDONLY);
-    if (*video_fd < 0) {
+    if (*video_fd < 0)
+    {
         ret = AVERROR(errno);
         av_strerror(ret, errbuf, sizeof(errbuf));
         av_log(NULL, AV_LOG_ERROR, "%s: %s\n", video_device, errbuf);
@@ -155,27 +158,51 @@ static av_cold int bktr_init(const char *video_device, int width, int height,
     geo.frames = 1;
     geo.oformat = METEOR_GEO_YUV_422 | METEOR_GEO_YUV_12;
 
-    switch (format) {
-    case PAL:   h_max = PAL_HEIGHT;   c = BT848_IFORM_F_PALBDGHI; break;
-    case PALN:  h_max = PAL_HEIGHT;   c = BT848_IFORM_F_PALN;     break;
-    case PALM:  h_max = PAL_HEIGHT;   c = BT848_IFORM_F_PALM;     break;
-    case SECAM: h_max = SECAM_HEIGHT; c = BT848_IFORM_F_SECAM;    break;
-    case NTSC:  h_max = NTSC_HEIGHT;  c = BT848_IFORM_F_NTSCM;    break;
-    case NTSCJ: h_max = NTSC_HEIGHT;  c = BT848_IFORM_F_NTSCJ;    break;
-    default:    h_max = PAL_HEIGHT;   c = BT848_IFORM_F_PALBDGHI; break;
+    switch (format)
+    {
+    case PAL:
+        h_max = PAL_HEIGHT;
+        c = BT848_IFORM_F_PALBDGHI;
+        break;
+    case PALN:
+        h_max = PAL_HEIGHT;
+        c = BT848_IFORM_F_PALN;
+        break;
+    case PALM:
+        h_max = PAL_HEIGHT;
+        c = BT848_IFORM_F_PALM;
+        break;
+    case SECAM:
+        h_max = SECAM_HEIGHT;
+        c = BT848_IFORM_F_SECAM;
+        break;
+    case NTSC:
+        h_max = NTSC_HEIGHT;
+        c = BT848_IFORM_F_NTSCM;
+        break;
+    case NTSCJ:
+        h_max = NTSC_HEIGHT;
+        c = BT848_IFORM_F_NTSCJ;
+        break;
+    default:
+        h_max = PAL_HEIGHT;
+        c = BT848_IFORM_F_PALBDGHI;
+        break;
     }
 
     if (height <= h_max / 2)
         geo.oformat |= METEOR_GEO_EVEN_ONLY;
 
-    if (ioctl(*video_fd, METEORSETGEO, &geo) < 0) {
+    if (ioctl(*video_fd, METEORSETGEO, &geo) < 0)
+    {
         ret = AVERROR(errno);
         av_strerror(ret, errbuf, sizeof(errbuf));
         av_log(NULL, AV_LOG_ERROR, "METEORSETGEO: %s\n", errbuf);
         return ret;
     }
 
-    if (ioctl(*video_fd, BT848SFMT, &c) < 0) {
+    if (ioctl(*video_fd, BT848SFMT, &c) < 0)
+    {
         ret = AVERROR(errno);
         av_strerror(ret, errbuf, sizeof(errbuf));
         av_log(NULL, AV_LOG_ERROR, "BT848SFMT: %s\n", errbuf);
@@ -183,7 +210,8 @@ static av_cold int bktr_init(const char *video_device, int width, int height,
     }
 
     c = bktr_dev[idev];
-    if (ioctl(*video_fd, METEORSINPUT, &c) < 0) {
+    if (ioctl(*video_fd, METEORSINPUT, &c) < 0)
+    {
         ret = AVERROR(errno);
         av_strerror(ret, errbuf, sizeof(errbuf));
         av_log(NULL, AV_LOG_ERROR, "METEORSINPUT: %s\n", errbuf);
@@ -193,15 +221,17 @@ static av_cold int bktr_init(const char *video_device, int width, int height,
     video_buf_size = width * height * 12 / 8;
 
     video_buf = (uint8_t *)mmap((caddr_t)0, video_buf_size,
-        PROT_READ, MAP_SHARED, *video_fd, (off_t)0);
-    if (video_buf == MAP_FAILED) {
+                                PROT_READ, MAP_SHARED, *video_fd, (off_t)0);
+    if (video_buf == MAP_FAILED)
+    {
         ret = AVERROR(errno);
         av_strerror(ret, errbuf, sizeof(errbuf));
         av_log(NULL, AV_LOG_ERROR, "mmap: %s\n", errbuf);
         return ret;
     }
 
-    if (frequency != 0.0) {
+    if (frequency != 0.0)
+    {
         ioctl_frequency  = (unsigned long)(frequency*16);
         if (ioctl(*tuner_fd, TVTUNER_SETFREQ, &ioctl_frequency) < 0)
             av_log(NULL, AV_LOG_ERROR, "TVTUNER_SETFREQ: %s\n", strerror(errno));
@@ -226,8 +256,10 @@ static void bktr_getframe(uint64_t per_frame)
 
     curtime = av_gettime();
     if (!last_frame_time
-        || ((last_frame_time + per_frame) > curtime)) {
-        if (!usleep(last_frame_time + per_frame + per_frame / 8 - curtime)) {
+            || ((last_frame_time + per_frame) > curtime))
+    {
+        if (!usleep(last_frame_time + per_frame + per_frame / 8 - curtime))
+        {
             if (!nsignals)
                 av_log(NULL, AV_LOG_INFO,
                        "SLEPT NO signals - %d microseconds late\n",
@@ -263,22 +295,31 @@ static int grab_read_header(AVFormatContext *s1)
     int ret = 0;
 
     if (!s->framerate)
-        switch (s->standard) {
-        case PAL:   s->framerate = av_strdup("pal");  break;
-        case NTSC:  s->framerate = av_strdup("ntsc"); break;
-        case SECAM: s->framerate = av_strdup("25");   break;
+        switch (s->standard)
+        {
+        case PAL:
+            s->framerate = av_strdup("pal");
+            break;
+        case NTSC:
+            s->framerate = av_strdup("ntsc");
+            break;
+        case SECAM:
+            s->framerate = av_strdup("25");
+            break;
         default:
             av_log(s1, AV_LOG_ERROR, "Unknown standard.\n");
             ret = AVERROR(EINVAL);
             goto out;
         }
-    if ((ret = av_parse_video_rate(&framerate, s->framerate)) < 0) {
+    if ((ret = av_parse_video_rate(&framerate, s->framerate)) < 0)
+    {
         av_log(s1, AV_LOG_ERROR, "Could not parse framerate '%s'.\n", s->framerate);
         goto out;
     }
 
     st = avformat_new_stream(s1, NULL);
-    if (!st) {
+    if (!st)
+    {
         ret = AVERROR(ENOMEM);
         goto out;
     }
@@ -296,7 +337,8 @@ static int grab_read_header(AVFormatContext *s1)
 
 
     if (bktr_init(s1->filename, s->width, s->height, s->standard,
-                  &s->video_fd, &s->tuner_fd, -1, 0.0) < 0) {
+                  &s->video_fd, &s->tuner_fd, -1, 0.0) < 0)
+    {
         ret = AVERROR(EIO);
         goto out;
     }
@@ -328,7 +370,8 @@ static int grab_read_close(AVFormatContext *s1)
 
 #define OFFSET(x) offsetof(VideoData, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "standard", "", offsetof(VideoData, standard), AV_OPT_TYPE_INT, {.i64 = VIDEO_FORMAT}, PAL, NTSCJ, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "PAL",      "", 0, AV_OPT_TYPE_CONST, {.i64 = PAL},   0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "NTSC",     "", 0, AV_OPT_TYPE_CONST, {.i64 = NTSC},  0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
@@ -341,7 +384,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass bktr_class = {
+static const AVClass bktr_class =
+{
     .class_name = "BKTR grab interface",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -349,7 +393,8 @@ static const AVClass bktr_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
 };
 
-AVInputFormat ff_bktr_demuxer = {
+AVInputFormat ff_bktr_demuxer =
+{
     .name           = "bktr",
     .long_name      = NULL_IF_CONFIG_SMALL("video grab"),
     .priv_data_size = sizeof(VideoData),

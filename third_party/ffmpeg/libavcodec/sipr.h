@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIPR / ACELP.NET decoder
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -45,7 +45,8 @@
 
 #define SUBFRAME_COUNT_16k   2
 
-typedef enum {
+typedef enum
+{
     MODE_16k,
     MODE_8k5,
     MODE_6k5,
@@ -53,7 +54,8 @@ typedef enum {
     MODE_COUNT
 } SiprMode;
 
-typedef struct SiprParameters {
+typedef struct SiprParameters
+{
     int ma_pred_switch;        ///< switched moving average predictor
     int vq_indexes[5];
     int pitch_delay[5];        ///< pitch delay
@@ -62,7 +64,8 @@ typedef struct SiprParameters {
     int gc_index[5];           ///< fixed-codebook gain indexes
 } SiprParameters;
 
-typedef struct SiprContext {
+typedef struct SiprContext
+{
     AVCodecContext *avctx;
 
     SiprMode mode;

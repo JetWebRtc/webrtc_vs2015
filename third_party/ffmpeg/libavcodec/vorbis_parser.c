@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "xiph.h"
 #include "vorbis_parser_internal.h"
 
-static const AVClass vorbis_parser_class = {
+static const AVClass vorbis_parser_class =
+{
     .class_name = "Vorbis parser",
     .item_name  = av_default_item_name,
     .version    = LIBAVUTIL_VERSION_INT,
@@ -42,24 +43,28 @@ static int parse_id_header(AVVorbisParseContext *s,
                            const uint8_t *buf, int buf_size)
 {
     /* Id header should be 30 bytes */
-    if (buf_size < 30) {
+    if (buf_size < 30)
+    {
         av_log(s, AV_LOG_ERROR, "Id header is too short\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* make sure this is the Id header */
-    if (buf[0] != 1) {
+    if (buf[0] != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Wrong packet type in Id header\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* check for header signature */
-    if (memcmp(&buf[1], "vorbis", 6)) {
+    if (memcmp(&buf[1], "vorbis", 6))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid packet signature in Id header\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (!(buf[29] & 0x1)) {
+    if (!(buf[29] & 0x1))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid framing bit in Id header\n");
         return AVERROR_INVALIDDATA;
     }
@@ -79,25 +84,29 @@ static int parse_setup_header(AVVorbisParseContext *s,
     int got_framing_bit, mode_count, got_mode_header, last_mode_count = 0;
 
     /* avoid overread */
-    if (buf_size < 7) {
+    if (buf_size < 7)
+    {
         av_log(s, AV_LOG_ERROR, "Setup header is too short\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* make sure this is the Setup header */
-    if (buf[0] != 5) {
+    if (buf[0] != 5)
+    {
         av_log(s, AV_LOG_ERROR, "Wrong packet type in Setup header\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* check for header signature */
-    if (memcmp(&buf[1], "vorbis", 6)) {
+    if (memcmp(&buf[1], "vorbis", 6))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid packet signature in Setup header\n");
         return AVERROR_INVALIDDATA;
     }
 
     /* reverse bytes so we can easily read backwards with get_bits() */
-    if (!(rev_buf = av_malloc(buf_size))) {
+    if (!(rev_buf = av_malloc(buf_size)))
+    {
         av_log(s, AV_LOG_ERROR, "Out of memory\n");
         return AVERROR(ENOMEM);
     }
@@ -106,13 +115,16 @@ static int parse_setup_header(AVVorbisParseContext *s,
     init_get_bits(&gb, rev_buf, buf_size * 8);
 
     got_framing_bit = 0;
-    while (get_bits_left(&gb) > 97) {
-        if (get_bits1(&gb)) {
+    while (get_bits_left(&gb) > 97)
+    {
+        if (get_bits1(&gb))
+        {
             got_framing_bit = get_bits_count(&gb);
             break;
         }
     }
-    if (!got_framing_bit) {
+    if (!got_framing_bit)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid Setup header\n");
         ret = AVERROR_INVALIDDATA;
         goto bad_header;
@@ -126,7 +138,8 @@ static int parse_setup_header(AVVorbisParseContext *s,
      * liboggz. */
     mode_count = 0;
     got_mode_header = 0;
-    while (get_bits_left(&gb) >= 97) {
+    while (get_bits_left(&gb) >= 97)
+    {
         if (get_bits(&gb, 8) > 63 || get_bits(&gb, 16) || get_bits(&gb, 16))
             break;
         skip_bits(&gb, 1);
@@ -134,12 +147,14 @@ static int parse_setup_header(AVVorbisParseContext *s,
         if (mode_count > 64)
             break;
         gb0 = gb;
-        if (get_bits(&gb0, 6) + 1 == mode_count) {
+        if (get_bits(&gb0, 6) + 1 == mode_count)
+        {
             got_mode_header = 1;
             last_mode_count = mode_count;
         }
     }
-    if (!got_mode_header) {
+    if (!got_mode_header)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid Setup header\n");
         ret = AVERROR_INVALIDDATA;
         goto bad_header;
@@ -148,7 +163,8 @@ static int parse_setup_header(AVVorbisParseContext *s,
      * more than that, as it is most likely a false positive. If we get any
      * we may need to approach this the long way and parse the whole Setup
      * header, but I hope very much that it never comes to that. */
-    if (last_mode_count > 2) {
+    if (last_mode_count > 2)
+    {
         avpriv_request_sample(s,
                               "%d modes (either a false positive or a "
                               "sample from an unknown encoder)",
@@ -156,7 +172,8 @@ static int parse_setup_header(AVVorbisParseContext *s,
     }
     /* We're limiting the mode count to 63 so that we know that the previous
      * block flag will be in the first packet byte. */
-    if (last_mode_count > 63) {
+    if (last_mode_count > 63)
+    {
         av_log(s, AV_LOG_ERROR, "Unsupported mode count: %d\n",
                last_mode_count);
         ret = AVERROR_INVALIDDATA;
@@ -171,7 +188,8 @@ static int parse_setup_header(AVVorbisParseContext *s,
 
     init_get_bits(&gb, rev_buf, buf_size * 8);
     skip_bits_long(&gb, got_framing_bit);
-    for (i = mode_count - 1; i >= 0; i--) {
+    for (i = mode_count - 1; i >= 0; i--)
+    {
         skip_bits_long(&gb, 40);
         s->mode_blocksize[i] = get_bits1(&gb);
     }
@@ -193,7 +211,8 @@ static int vorbis_parse_init(AVVorbisParseContext *s,
 
     if ((ret = avpriv_split_xiph_headers(extradata,
                                          extradata_size, 30,
-                                         header_start, header_len)) < 0) {
+                                         header_start, header_len)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Extradata corrupt.\n");
         return ret;
     }
@@ -215,11 +234,13 @@ int av_vorbis_parse_frame_flags(AVVorbisParseContext *s, const uint8_t *buf,
 {
     int duration = 0;
 
-    if (s->valid_extradata && buf_size > 0) {
+    if (s->valid_extradata && buf_size > 0)
+    {
         int mode, current_blocksize;
         int previous_blocksize = s->previous_blocksize;
 
-        if (buf[0] & 1) {
+        if (buf[0] & 1)
+        {
             /* If the user doesn't care about special packets, it's a bad one. */
             if (!flags)
                 goto bad_packet;
@@ -245,11 +266,13 @@ bad_packet:
             mode = 0;
         else
             mode = (buf[0] & s->mode_mask) >> 1;
-        if (mode >= s->mode_count) {
+        if (mode >= s->mode_count)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid mode in packet\n");
             return AVERROR_INVALIDDATA;
         }
-        if(s->mode_blocksize[mode]){
+        if(s->mode_blocksize[mode])
+        {
             int flag = !!(buf[0] & s->prev_mask);
             previous_blocksize = s->blocksize[flag];
         }
@@ -279,7 +302,7 @@ void av_vorbis_parse_free(AVVorbisParseContext **s)
 }
 
 AVVorbisParseContext *av_vorbis_parse_init(const uint8_t *extradata,
-                                           int extradata_size)
+        int extradata_size)
 {
     AVVorbisParseContext *s = av_mallocz(sizeof(*s));
     int ret;
@@ -288,7 +311,8 @@ AVVorbisParseContext *av_vorbis_parse_init(const uint8_t *extradata,
         return NULL;
 
     ret = vorbis_parse_init(s, extradata, extradata_size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_vorbis_parse_free(&s);
         return NULL;
     }
@@ -319,7 +343,8 @@ int avpriv_vorbis_parse_frame_flags(AVVorbisParseContext *s, const uint8_t *buf,
 
 #if CONFIG_VORBIS_PARSER
 
-typedef struct VorbisParseContext {
+typedef struct VorbisParseContext
+{
     AVVorbisParseContext *vp;
 } VorbisParseContext;
 
@@ -330,7 +355,8 @@ static int vorbis_parse(AVCodecParserContext *s1, AVCodecContext *avctx,
     VorbisParseContext *s = s1->priv_data;
     int duration;
 
-    if (!s->vp && avctx->extradata && avctx->extradata_size) {
+    if (!s->vp && avctx->extradata && avctx->extradata_size)
+    {
         s->vp = av_vorbis_parse_init(avctx->extradata, avctx->extradata_size);
     }
     if (!s->vp)
@@ -353,7 +379,8 @@ static void vorbis_parser_close(AVCodecParserContext *ctx)
     av_vorbis_parse_free(&s->vp);
 }
 
-AVCodecParser ff_vorbis_parser = {
+AVCodecParser ff_vorbis_parser =
+{
     .codec_ids      = { AV_CODEC_ID_VORBIS },
     .priv_data_size = sizeof(VorbisParseContext),
     .parser_parse   = vorbis_parse,

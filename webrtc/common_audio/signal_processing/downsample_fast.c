@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,39 +22,43 @@ int WebRtcSpl_DownsampleFastC(const int16_t* data_in,
                               const int16_t* __restrict coefficients,
                               size_t coefficients_length,
                               int factor,
-                              size_t delay) {
-  int16_t* const original_data_out = data_out;
-  size_t i = 0;
-  size_t j = 0;
-  int32_t out_s32 = 0;
-  size_t endpos = delay + factor * (data_out_length - 1) + 1;
+                              size_t delay)
+{
+    int16_t* const original_data_out = data_out;
+    size_t i = 0;
+    size_t j = 0;
+    int32_t out_s32 = 0;
+    size_t endpos = delay + factor * (data_out_length - 1) + 1;
 
-  // Return error if any of the running conditions doesn't meet.
-  if (data_out_length == 0 || coefficients_length == 0
-                           || data_in_length < endpos) {
-    return -1;
-  }
-
-  rtc_MsanCheckInitialized(coefficients, sizeof(coefficients[0]),
-                           coefficients_length);
-
-  for (i = delay; i < endpos; i += factor) {
-    out_s32 = 2048;  // Round value, 0.5 in Q12.
-
-    for (j = 0; j < coefficients_length; j++) {
-      rtc_MsanCheckInitialized(&data_in[i - j], sizeof(data_in[0]), 1);
-      out_s32 += coefficients[j] * data_in[i - j];  // Q12.
+    // Return error if any of the running conditions doesn't meet.
+    if (data_out_length == 0 || coefficients_length == 0
+            || data_in_length < endpos)
+    {
+        return -1;
     }
 
-    out_s32 >>= 12;  // Q0.
+    rtc_MsanCheckInitialized(coefficients, sizeof(coefficients[0]),
+                             coefficients_length);
 
-    // Saturate and store the output.
-    *data_out++ = WebRtcSpl_SatW32ToW16(out_s32);
-  }
+    for (i = delay; i < endpos; i += factor)
+    {
+        out_s32 = 2048;  // Round value, 0.5 in Q12.
 
-  RTC_DCHECK_EQ(original_data_out + data_out_length, data_out);
-  rtc_MsanCheckInitialized(original_data_out, sizeof(original_data_out[0]),
-                           data_out_length);
+        for (j = 0; j < coefficients_length; j++)
+        {
+            rtc_MsanCheckInitialized(&data_in[i - j], sizeof(data_in[0]), 1);
+            out_s32 += coefficients[j] * data_in[i - j];  // Q12.
+        }
 
-  return 0;
+        out_s32 >>= 12;  // Q0.
+
+        // Saturate and store the output.
+        *data_out++ = WebRtcSpl_SatW32ToW16(out_s32);
+    }
+
+    RTC_DCHECK_EQ(original_data_out + data_out_length, data_out);
+    rtc_MsanCheckInitialized(original_data_out, sizeof(original_data_out[0]),
+                             data_out_length);
+
+    return 0;
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SSA/ASS decoder
  * Copyright (c) 2010  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -55,7 +55,8 @@ static int ssa_decode_frame(AVCodecContext *avctx, void *data, int *got_sub_ptr,
     const char *ptr = avpkt->data;
     int len, size = avpkt->size;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         int duration;
         ASSDialog *dialog = ff_ass_split_dialog(avctx->priv_data, ptr, 0, NULL);
         if (!dialog)
@@ -72,7 +73,8 @@ static int ssa_decode_frame(AVCodecContext *avctx, void *data, int *got_sub_ptr,
     return avpkt->size;
 }
 
-AVCodec ff_ssa_decoder = {
+AVCodec ff_ssa_decoder =
+{
     .name         = "ssa",
     .long_name    = NULL_IF_CONFIG_SMALL("SSA (SubStation Alpha) subtitle"),
     .type         = AVMEDIA_TYPE_SUBTITLE,
@@ -98,7 +100,8 @@ static int ass_decode_frame(AVCodecContext *avctx, void *data, int *got_sub_ptr,
         return avpkt->size;
 
     ret = ff_ass_add_rect(sub, ptr, ts_start, ts_duration, 2);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         if (ret == AVERROR_INVALIDDATA)
             av_log(avctx, AV_LOG_ERROR, "Invalid ASS packet\n");
         return ret;
@@ -108,7 +111,8 @@ static int ass_decode_frame(AVCodecContext *avctx, void *data, int *got_sub_ptr,
     return avpkt->size;
 }
 
-AVCodec ff_ass_decoder = {
+AVCodec ff_ass_decoder =
+{
     .name         = "ass",
     .long_name    = NULL_IF_CONFIG_SMALL("ASS (Advanced SubStation Alpha) subtitle"),
     .type         = AVMEDIA_TYPE_SUBTITLE,

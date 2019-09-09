@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,8 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCLegacyStatsReport : NSObject
 
-/** Time since 1970-01-01T00:00:00Z in milliseconds. */
-@property(nonatomic, readonly) CFTimeInterval timestamp;
+    /** Time since 1970-01-01T00:00:00Z in milliseconds. */
+    @property(nonatomic, readonly) CFTimeInterval timestamp;
 
 /** The type of stats held by this object. */
 @property(nonatomic, readonly) NSString *type;

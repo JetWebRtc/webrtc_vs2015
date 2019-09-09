@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Indeo Video v3 compatible decoder
  * Copyright (c) 2009 - 2011 Maxim Poliakovski
  *
@@ -320,14 +320,16 @@ static const int32_t delta_tab_3_4_m10[79]  = { TAB_3_4 };
 static const int32_t delta_tab_3_5_m10[79]  = { TAB_3_5 };
 
 
-typedef struct vqEntry {
+typedef struct vqEntry
+{
     const int16_t  *deltas;     ///< delta tables for 4x4 block modes
     const int32_t  *deltas_m10; ///< delta tables for 8x8 block modes
     uint8_t        num_dyads;   ///< number of two-pixel deltas
     uint8_t        quad_exp;    ///< log2 of four-pixel deltas
 } vqEntry;
 
-static const vqEntry vq_tab[24] = {
+static const vqEntry vq_tab[24] =
+{
     /* set 1 */
     { delta_tab_1_1, delta_tab_1_1_m10, 195,  7 },
     { delta_tab_1_2, delta_tab_1_2_m10, 159,  9 },

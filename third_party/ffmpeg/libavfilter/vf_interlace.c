@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Zucchi <notzed@ximian.com>
  * Copyright (c) 2010 Baptiste Coudurier
  * Copyright (c) 2011 Stefano Sabatini
@@ -39,15 +39,24 @@
 
 #define OFFSET(x) offsetof(InterlaceContext, x)
 #define V AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption interlace_options[] = {
-    { "scan", "scanning mode", OFFSET(scan),
-        AV_OPT_TYPE_INT,   {.i64 = MODE_TFF }, 0, 1, .flags = V, .unit = "scan" },
-    { "tff", "top field first", 0,
-        AV_OPT_TYPE_CONST, {.i64 = MODE_TFF }, INT_MIN, INT_MAX, .flags = V, .unit = "scan" },
-    { "bff", "bottom field first", 0,
-        AV_OPT_TYPE_CONST, {.i64 = MODE_BFF }, INT_MIN, INT_MAX, .flags = V, .unit = "scan" },
-    { "lowpass", "enable vertical low-pass filter", OFFSET(lowpass),
-        AV_OPT_TYPE_INT,   {.i64 = 1 },        0, 1, .flags = V },
+static const AVOption interlace_options[] =
+{
+    {
+        "scan", "scanning mode", OFFSET(scan),
+        AV_OPT_TYPE_INT,   {.i64 = MODE_TFF }, 0, 1, .flags = V, .unit = "scan"
+    },
+    {
+        "tff", "top field first", 0,
+        AV_OPT_TYPE_CONST, {.i64 = MODE_TFF }, INT_MIN, INT_MAX, .flags = V, .unit = "scan"
+    },
+    {
+        "bff", "bottom field first", 0,
+        AV_OPT_TYPE_CONST, {.i64 = MODE_BFF }, INT_MIN, INT_MAX, .flags = V, .unit = "scan"
+    },
+    {
+        "lowpass", "enable vertical low-pass filter", OFFSET(lowpass),
+        AV_OPT_TYPE_INT,   {.i64 = 1 },        0, 1, .flags = V
+    },
     { NULL }
 };
 
@@ -59,7 +68,8 @@ static void lowpass_line_c(uint8_t *dstp, ptrdiff_t linesize,
                            const uint8_t *srcp_below)
 {
     int i;
-    for (i = 0; i < linesize; i++) {
+    for (i = 0; i < linesize; i++)
+    {
         // this calculation is an integer representation of
         // '0.5 * current + 0.25 * above + 0.25 * below'
         // '1 +' is for rounding.
@@ -67,7 +77,8 @@ static void lowpass_line_c(uint8_t *dstp, ptrdiff_t linesize,
     }
 }
 
-static const enum AVPixelFormat formats_supported[] = {
+static const enum AVPixelFormat formats_supported[] =
+{
     AV_PIX_FMT_YUV420P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV444P,
     AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUVA420P,
     AV_PIX_FMT_GRAY8,    AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ422P,
@@ -96,7 +107,8 @@ static int config_out_props(AVFilterLink *outlink)
     AVFilterLink *inlink = outlink->src->inputs[0];
     InterlaceContext *s = ctx->priv;
 
-    if (inlink->h < 2) {
+    if (inlink->h < 2)
+    {
         av_log(ctx, AV_LOG_ERROR, "input video height is too small\n");
         return AVERROR_INVALIDDATA;
     }
@@ -116,7 +128,8 @@ static int config_out_props(AVFilterLink *outlink)
     outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
 
 
-    if (s->lowpass) {
+    if (s->lowpass)
+    {
         s->lowpass_line = lowpass_line_c;
         if (ARCH_X86)
             ff_interlace_init_x86(s);
@@ -138,7 +151,8 @@ static void copy_picture_field(InterlaceContext *s,
     int vsub = desc->log2_chroma_h;
     int plane, j;
 
-    for (plane = 0; plane < desc->nb_components; plane++) {
+    for (plane = 0; plane < desc->nb_components; plane++)
+    {
         int cols  = (plane == 1 || plane == 2) ? -(-inlink->w) >> hsub : inlink->w;
         int lines = (plane == 1 || plane == 2) ? FF_CEIL_RSHIFT(inlink->h, vsub) : inlink->h;
         uint8_t *dstp = dst_frame->data[plane];
@@ -147,14 +161,17 @@ static void copy_picture_field(InterlaceContext *s,
         av_assert0(cols >= 0 || lines >= 0);
 
         lines = (lines + (field_type == FIELD_UPPER)) / 2;
-        if (field_type == FIELD_LOWER) {
+        if (field_type == FIELD_LOWER)
+        {
             srcp += src_frame->linesize[plane];
             dstp += dst_frame->linesize[plane];
         }
-        if (lowpass) {
+        if (lowpass)
+        {
             int srcp_linesize = src_frame->linesize[plane] * 2;
             int dstp_linesize = dst_frame->linesize[plane] * 2;
-            for (j = lines; j > 0; j--) {
+            for (j = lines; j > 0; j--)
+            {
                 const uint8_t *srcp_above = srcp - src_frame->linesize[plane];
                 const uint8_t *srcp_below = srcp + src_frame->linesize[plane];
                 if (j == lines)
@@ -165,7 +182,9 @@ static void copy_picture_field(InterlaceContext *s,
                 dstp += dstp_linesize;
                 srcp += srcp_linesize;
             }
-        } else {
+        }
+        else
+        {
             av_image_copy_plane(dstp, dst_frame->linesize[plane] * 2,
                                 srcp, src_frame->linesize[plane] * 2,
                                 cols, lines);
@@ -189,7 +208,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     if (!s->cur || !s->next)
         return 0;
 
-    if (s->cur->interlaced_frame) {
+    if (s->cur->interlaced_frame)
+    {
         av_log(ctx, AV_LOG_WARNING,
                "video is already interlaced, adjusting framerate only\n");
         out = av_frame_clone(s->cur);
@@ -223,7 +243,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     return ret;
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -232,7 +253,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -241,7 +263,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_interlace = {
+AVFilter ff_vf_interlace =
+{
     .name          = "interlace",
     .description   = NULL_IF_CONFIG_SMALL("Convert progressive video into interlaced."),
     .uninit        = uninit,

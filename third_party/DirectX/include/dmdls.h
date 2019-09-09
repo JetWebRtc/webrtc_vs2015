@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
 *                                                                       *
 *   dmdls.h -- DLS download definitions for DirectMusic API's           *
 *                                                                       *
@@ -191,13 +191,13 @@ typedef struct _DMUS_WAVEARTDL
     ULONG               ulMasterDLId;       /* Download ID of master voice of slave group */
     USHORT              usOptions;          /* Same as DLS2 region options */
 }   DMUS_WAVEARTDL,
-    *LPDMUS_WAVEARTDL;
+*LPDMUS_WAVEARTDL;
 
 typedef struct _DMUS_WAVEDL
 {
     ULONG               cbWaveData;         /* Bytes of wave data */
 }   DMUS_WAVEDL,
-    *LPDMUS_WAVEDL;
+*LPDMUS_WAVEDL;
 
 #endif /* NTDDI_VERSION >= NTDDI_WINXP */
 

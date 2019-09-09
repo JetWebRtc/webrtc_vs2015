@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -347,38 +347,38 @@ void WebRtcSpl_ScaleAndAddVectors(const int16_t* in_vector1,
 //                           || in_vector2 == NULL || out_vector == NULL
 //                           || length <= 0 || right_shift < 0).
 typedef int (*ScaleAndAddVectorsWithRound)(const int16_t* in_vector1,
-                                           int16_t in_vector1_scale,
-                                           const int16_t* in_vector2,
-                                           int16_t in_vector2_scale,
-                                           int right_shifts,
-                                           int16_t* out_vector,
-                                           size_t length);
+        int16_t in_vector1_scale,
+        const int16_t* in_vector2,
+        int16_t in_vector2_scale,
+        int right_shifts,
+        int16_t* out_vector,
+        size_t length);
 extern ScaleAndAddVectorsWithRound WebRtcSpl_ScaleAndAddVectorsWithRound;
 int WebRtcSpl_ScaleAndAddVectorsWithRoundC(const int16_t* in_vector1,
-                                           int16_t in_vector1_scale,
-                                           const int16_t* in_vector2,
-                                           int16_t in_vector2_scale,
-                                           int right_shifts,
-                                           int16_t* out_vector,
-                                           size_t length);
+        int16_t in_vector1_scale,
+        const int16_t* in_vector2,
+        int16_t in_vector2_scale,
+        int right_shifts,
+        int16_t* out_vector,
+        size_t length);
 #if defined(MIPS_DSP_R1_LE)
 int WebRtcSpl_ScaleAndAddVectorsWithRound_mips(const int16_t* in_vector1,
-                                               int16_t in_vector1_scale,
-                                               const int16_t* in_vector2,
-                                               int16_t in_vector2_scale,
-                                               int right_shifts,
-                                               int16_t* out_vector,
-                                               size_t length);
+        int16_t in_vector1_scale,
+        const int16_t* in_vector2,
+        int16_t in_vector2_scale,
+        int right_shifts,
+        int16_t* out_vector,
+        size_t length);
 #endif
 // End: Vector scaling operations.
 
 // iLBC specific functions. Implementations in ilbc_specific_functions.c.
 // Description at bottom of file.
 void WebRtcSpl_ReverseOrderMultArrayElements(int16_t* out_vector,
-                                             const int16_t* in_vector,
-                                             const int16_t* window,
-                                             size_t vector_length,
-                                             int16_t right_shifts);
+        const int16_t* in_vector,
+        const int16_t* window,
+        size_t vector_length,
+        int16_t right_shifts);
 void WebRtcSpl_ElementwiseVectorMult(int16_t* out_vector,
                                      const int16_t* in_vector,
                                      const int16_t* window,
@@ -759,10 +759,11 @@ void WebRtcSpl_ComplexBitReverse(int16_t* __restrict complex_data, int stages);
  ******************************************************************/
 
 // state structure for 22 -> 16 resampler
-typedef struct {
-  int32_t S_22_44[8];
-  int32_t S_44_32[8];
-  int32_t S_32_16[8];
+typedef struct
+{
+    int32_t S_22_44[8];
+    int32_t S_44_32[8];
+    int32_t S_32_16[8];
 } WebRtcSpl_State22khzTo16khz;
 
 void WebRtcSpl_Resample22khzTo16khz(const int16_t* in,
@@ -773,9 +774,10 @@ void WebRtcSpl_Resample22khzTo16khz(const int16_t* in,
 void WebRtcSpl_ResetResample22khzTo16khz(WebRtcSpl_State22khzTo16khz* state);
 
 // state structure for 16 -> 22 resampler
-typedef struct {
-  int32_t S_16_32[8];
-  int32_t S_32_22[8];
+typedef struct
+{
+    int32_t S_16_32[8];
+    int32_t S_32_22[8];
 } WebRtcSpl_State16khzTo22khz;
 
 void WebRtcSpl_Resample16khzTo22khz(const int16_t* in,
@@ -786,10 +788,11 @@ void WebRtcSpl_Resample16khzTo22khz(const int16_t* in,
 void WebRtcSpl_ResetResample16khzTo22khz(WebRtcSpl_State16khzTo22khz* state);
 
 // state structure for 22 -> 8 resampler
-typedef struct {
-  int32_t S_22_22[16];
-  int32_t S_22_16[8];
-  int32_t S_16_8[8];
+typedef struct
+{
+    int32_t S_22_22[16];
+    int32_t S_22_16[8];
+    int32_t S_16_8[8];
 } WebRtcSpl_State22khzTo8khz;
 
 void WebRtcSpl_Resample22khzTo8khz(const int16_t* in, int16_t* out,
@@ -799,10 +802,11 @@ void WebRtcSpl_Resample22khzTo8khz(const int16_t* in, int16_t* out,
 void WebRtcSpl_ResetResample22khzTo8khz(WebRtcSpl_State22khzTo8khz* state);
 
 // state structure for 8 -> 22 resampler
-typedef struct {
-  int32_t S_8_16[8];
-  int32_t S_16_11[8];
-  int32_t S_11_22[8];
+typedef struct
+{
+    int32_t S_8_16[8];
+    int32_t S_16_11[8];
+    int32_t S_11_22[8];
 } WebRtcSpl_State8khzTo22khz;
 
 void WebRtcSpl_Resample8khzTo22khz(const int16_t* in, int16_t* out,
@@ -839,10 +843,11 @@ void WebRtcSpl_Resample44khzTo32khz(const int32_t* In, int32_t* Out, size_t K);
  *
  ******************************************************************/
 
-typedef struct {
-  int32_t S_48_48[16];
-  int32_t S_48_32[8];
-  int32_t S_32_16[8];
+typedef struct
+{
+    int32_t S_48_48[16];
+    int32_t S_48_32[8];
+    int32_t S_32_16[8];
 } WebRtcSpl_State48khzTo16khz;
 
 void WebRtcSpl_Resample48khzTo16khz(const int16_t* in, int16_t* out,
@@ -851,10 +856,11 @@ void WebRtcSpl_Resample48khzTo16khz(const int16_t* in, int16_t* out,
 
 void WebRtcSpl_ResetResample48khzTo16khz(WebRtcSpl_State48khzTo16khz* state);
 
-typedef struct {
-  int32_t S_16_32[8];
-  int32_t S_32_24[8];
-  int32_t S_24_48[8];
+typedef struct
+{
+    int32_t S_16_32[8];
+    int32_t S_32_24[8];
+    int32_t S_24_48[8];
 } WebRtcSpl_State16khzTo48khz;
 
 void WebRtcSpl_Resample16khzTo48khz(const int16_t* in, int16_t* out,
@@ -863,11 +869,12 @@ void WebRtcSpl_Resample16khzTo48khz(const int16_t* in, int16_t* out,
 
 void WebRtcSpl_ResetResample16khzTo48khz(WebRtcSpl_State16khzTo48khz* state);
 
-typedef struct {
-  int32_t S_48_24[8];
-  int32_t S_24_24[16];
-  int32_t S_24_16[8];
-  int32_t S_16_8[8];
+typedef struct
+{
+    int32_t S_48_24[8];
+    int32_t S_24_24[16];
+    int32_t S_24_16[8];
+    int32_t S_16_8[8];
 } WebRtcSpl_State48khzTo8khz;
 
 void WebRtcSpl_Resample48khzTo8khz(const int16_t* in, int16_t* out,
@@ -876,11 +883,12 @@ void WebRtcSpl_Resample48khzTo8khz(const int16_t* in, int16_t* out,
 
 void WebRtcSpl_ResetResample48khzTo8khz(WebRtcSpl_State48khzTo8khz* state);
 
-typedef struct {
-  int32_t S_8_16[8];
-  int32_t S_16_12[8];
-  int32_t S_12_24[8];
-  int32_t S_24_48[8];
+typedef struct
+{
+    int32_t S_8_16[8];
+    int32_t S_16_12[8];
+    int32_t S_12_24[8];
+    int32_t S_24_48[8];
 } WebRtcSpl_State8khzTo48khz;
 
 void WebRtcSpl_Resample8khzTo48khz(const int16_t* in, int16_t* out,

@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
@@ -206,8 +206,10 @@
   } while (0)
 
 
-namespace webrtc {
-namespace metrics {
+namespace webrtc
+{
+namespace metrics
+{
 
 // Time that should have elapsed for stats that are gathered once per call.
 enum { kMinRunTimeInSeconds = 10 };
@@ -223,9 +225,9 @@ Histogram* HistogramFactoryGetCounts(
 
 // Get histogram for counters with linear bucket spacing.
 Histogram* HistogramFactoryGetCountsLinear(const std::string& name,
-                                           int min,
-                                           int max,
-                                           int bucket_count);
+        int min,
+        int max,
+        int bucket_count);
 
 // Get histogram for enumerators.
 // |boundary| should be above the max enumerator sample.

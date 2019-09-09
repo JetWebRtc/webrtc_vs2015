@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Electronic Arts .cdata file Demuxer
  * Copyright (c) 2007 Peter Ross
  *
@@ -31,9 +31,10 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct CdataDemuxContext {
-  unsigned int channels;
-  unsigned int audio_pts;
+typedef struct CdataDemuxContext
+{
+    unsigned int channels;
+    unsigned int audio_pts;
 } CdataDemuxContext;
 
 static int cdata_probe(AVProbeData *p)
@@ -54,14 +55,25 @@ static int cdata_read_header(AVFormatContext *s)
     int64_t channel_layout = 0;
 
     header = avio_rb16(pb);
-    switch (header) {
-        case 0x0400: cdata->channels = 1; break;
-        case 0x0404: cdata->channels = 2; break;
-        case 0x040C: cdata->channels = 4; channel_layout = AV_CH_LAYOUT_QUAD;         break;
-        case 0x0414: cdata->channels = 6; channel_layout = AV_CH_LAYOUT_5POINT1_BACK; break;
-        default:
-            av_log(s, AV_LOG_INFO, "unknown header 0x%04x\n", header);
-            return -1;
+    switch (header)
+    {
+    case 0x0400:
+        cdata->channels = 1;
+        break;
+    case 0x0404:
+        cdata->channels = 2;
+        break;
+    case 0x040C:
+        cdata->channels = 4;
+        channel_layout = AV_CH_LAYOUT_QUAD;
+        break;
+    case 0x0414:
+        cdata->channels = 6;
+        channel_layout = AV_CH_LAYOUT_5POINT1_BACK;
+        break;
+    default:
+        av_log(s, AV_LOG_INFO, "unknown header 0x%04x\n", header);
+        return -1;
     };
 
     sample_rate = avio_rb16(pb);
@@ -94,7 +106,8 @@ static int cdata_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_ea_cdata_demuxer = {
+AVInputFormat ff_ea_cdata_demuxer =
+{
     .name           = "ea_cdata",
     .long_name      = NULL_IF_CONFIG_SMALL("Electronic Arts cdata"),
     .priv_data_size = sizeof(CdataDemuxContext),

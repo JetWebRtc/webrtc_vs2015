@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001-2003 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -30,7 +30,8 @@
 
 #define BLKSIZE 1024
 
-typedef struct ADPCMChannelStatus {
+typedef struct ADPCMChannelStatus
+{
     int predictor;
     int16_t step_index;
     int step;

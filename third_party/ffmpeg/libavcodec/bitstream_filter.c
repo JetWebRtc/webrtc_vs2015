@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -36,26 +36,32 @@ AVBitStreamFilter *av_bitstream_filter_next(const AVBitStreamFilter *f)
 
 void av_register_bitstream_filter(AVBitStreamFilter *bsf)
 {
-    do {
+    do
+    {
         bsf->next = first_bitstream_filter;
-    } while(bsf->next != avpriv_atomic_ptr_cas((void * volatile *)&first_bitstream_filter, bsf->next, bsf));
+    }
+    while(bsf->next != avpriv_atomic_ptr_cas((void * volatile *)&first_bitstream_filter, bsf->next, bsf));
 }
 
 AVBitStreamFilterContext *av_bitstream_filter_init(const char *name)
 {
     AVBitStreamFilter *bsf = NULL;
 
-    while (bsf = av_bitstream_filter_next(bsf)) {
-        if (!strcmp(name, bsf->name)) {
+    while (bsf = av_bitstream_filter_next(bsf))
+    {
+        if (!strcmp(name, bsf->name))
+        {
             AVBitStreamFilterContext *bsfc =
                 av_mallocz(sizeof(AVBitStreamFilterContext));
             if (!bsfc)
                 return NULL;
             bsfc->filter    = bsf;
             bsfc->priv_data = NULL;
-            if (bsf->priv_data_size) {
+            if (bsf->priv_data_size)
+            {
                 bsfc->priv_data = av_mallocz(bsf->priv_data_size);
-                if (!bsfc->priv_data) {
+                if (!bsfc->priv_data)
+                {
                     av_freep(&bsfc);
                     return NULL;
                 }

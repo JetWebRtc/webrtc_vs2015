@@ -1,4 +1,4 @@
-#define MPEG4IP_PACKAGE "mpeg4ip"
+﻿#define MPEG4IP_PACKAGE "mpeg4ip"
 #define MPEG4IP_VERSION "1.6.1"
 #define MPEG4IP_MAJOR_VERSION 0x1
 #define MPEG4IP_MINOR_VERSION 0x6

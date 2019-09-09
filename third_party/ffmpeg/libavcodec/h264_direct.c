@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.26L/H.264/AVC/JVT/14496-10/... direct mb/block decoding
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -39,9 +39,12 @@ static int get_scale_factor(H264SliceContext *sl,
 {
     int poc0 = sl->ref_list[0][i].poc;
     int td = av_clip_int8(poc1 - poc0);
-    if (td == 0 || sl->ref_list[0][i].parent->long_ref) {
+    if (td == 0 || sl->ref_list[0][i].parent->long_ref)
+    {
         return 256;
-    } else {
+    }
+    else
+    {
         int tb = av_clip_int8(poc - poc0);
         int tx = (16384 + (FFABS(td) >> 1)) / td;
         return av_clip_intp2((tb * tx + 32) >> 6, 10);
@@ -52,12 +55,13 @@ void ff_h264_direct_dist_scale_factor(const H264Context *const h,
                                       H264SliceContext *sl)
 {
     const int poc  = FIELD_PICTURE(h) ? h->cur_pic_ptr->field_poc[h->picture_structure == PICT_BOTTOM_FIELD]
-                                      : h->cur_pic_ptr->poc;
+                     : h->cur_pic_ptr->poc;
     const int poc1 = sl->ref_list[1][0].poc;
     int i, field;
 
     if (FRAME_MBAFF(h))
-        for (field = 0; field < 2; field++) {
+        for (field = 0; field < 2; field++)
+        {
             const int poc  = h->cur_pic_ptr->field_poc[field];
             const int poc1 = sl->ref_list[1][0].parent->field_poc[field];
             for (i = 0; i < 2 * sl->ref_count[0]; i++)
@@ -82,8 +86,10 @@ static void fill_colmap(const H264Context *h, H264SliceContext *sl,
     /* bogus; fills in for missing frames */
     memset(map[list], 0, sizeof(map[list]));
 
-    for (rfield = 0; rfield < 2; rfield++) {
-        for (old_ref = 0; old_ref < ref1->ref_count[colfield][list]; old_ref++) {
+    for (rfield = 0; rfield < 2; rfield++)
+    {
+        for (old_ref = 0; old_ref < ref1->ref_count[colfield][list]; old_ref++)
+        {
             int poc = ref1->ref_poc[colfield][list][old_ref];
 
             if (!interl)
@@ -92,9 +98,11 @@ static void fill_colmap(const H264Context *h, H264SliceContext *sl,
             else if (interl && (poc & 3) == 3)
                 poc = (poc & ~3) + rfield + 1;
 
-            for (j = start; j < end; j++) {
+            for (j = start; j < end; j++)
+            {
                 if (4 * sl->ref_list[0][j].parent->frame_num +
-                    (sl->ref_list[0][j].reference & 3) == poc) {
+                        (sl->ref_list[0][j].reference & 3) == poc)
+                {
                     int cur_ref = mbafi ? (j - 16) ^ field : j;
                     if (ref1->mbaff)
                         map[list][2 * old_ref + (rfield ^ field) + 16] = cur_ref;
@@ -115,14 +123,16 @@ void ff_h264_direct_ref_list_init(const H264Context *const h, H264SliceContext *
     int sidx     = (h->picture_structure & 1) ^ 1;
     int ref1sidx = (ref1->reference      & 1) ^ 1;
 
-    for (list = 0; list < sl->list_count; list++) {
+    for (list = 0; list < sl->list_count; list++)
+    {
         cur->ref_count[sidx][list] = sl->ref_count[list];
         for (j = 0; j < sl->ref_count[list]; j++)
             cur->ref_poc[sidx][list][j] = 4 * sl->ref_list[list][j].parent->frame_num +
                                           (sl->ref_list[list][j].reference & 3);
     }
 
-    if (h->picture_structure == PICT_FRAME) {
+    if (h->picture_structure == PICT_FRAME)
+    {
         memcpy(cur->ref_count[1], cur->ref_count[0], sizeof(cur->ref_count[0]));
         memcpy(cur->ref_poc[1],   cur->ref_poc[0],   sizeof(cur->ref_poc[0]));
     }
@@ -134,23 +144,27 @@ void ff_h264_direct_ref_list_init(const H264Context *const h, H264SliceContext *
     if (sl->list_count != 2 || !sl->ref_count[1])
         return;
 
-    if (h->picture_structure == PICT_FRAME) {
+    if (h->picture_structure == PICT_FRAME)
+    {
         int cur_poc  = h->cur_pic_ptr->poc;
         int *col_poc = sl->ref_list[1][0].parent->field_poc;
         sl->col_parity = (FFABS(col_poc[0] - cur_poc) >=
                           FFABS(col_poc[1] - cur_poc));
         ref1sidx =
-        sidx     = sl->col_parity;
-    // FL -> FL & differ parity
-    } else if (!(h->picture_structure & sl->ref_list[1][0].reference) &&
-               !sl->ref_list[1][0].parent->mbaff) {
+            sidx     = sl->col_parity;
+        // FL -> FL & differ parity
+    }
+    else if (!(h->picture_structure & sl->ref_list[1][0].reference) &&
+             !sl->ref_list[1][0].parent->mbaff)
+    {
         sl->col_fieldoff = 2 * sl->ref_list[1][0].reference - 3;
     }
 
     if (sl->slice_type_nos != AV_PICTURE_TYPE_B || sl->direct_spatial_mv_pred)
         return;
 
-    for (list = 0; list < 2; list++) {
+    for (list = 0; list < 2; list++)
+    {
         fill_colmap(h, sl, sl->map_col_to_list0, list, sidx, ref1sidx, 0);
         if (FRAME_MBAFF(h))
             for (field = 0; field < 2; field++)
@@ -203,19 +217,22 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
                                 MB_TYPE_INTRA16x16 | MB_TYPE_INTRA_PCM)
 
     /* ref = min(neighbors) */
-    for (list = 0; list < 2; list++) {
+    for (list = 0; list < 2; list++)
+    {
         int left_ref     = sl->ref_cache[list][scan8[0] - 1];
         int top_ref      = sl->ref_cache[list][scan8[0] - 8];
         int refc         = sl->ref_cache[list][scan8[0] - 8 + 4];
         const int16_t *C = sl->mv_cache[list][scan8[0]  - 8 + 4];
-        if (refc == PART_NOT_AVAILABLE) {
+        if (refc == PART_NOT_AVAILABLE)
+        {
             refc = sl->ref_cache[list][scan8[0] - 8 - 1];
             C    = sl->mv_cache[list][scan8[0]  - 8 - 1];
         }
         ref[list] = FFMIN3((unsigned)left_ref,
                            (unsigned)top_ref,
                            (unsigned)refc);
-        if (ref[list] >= 0) {
+        if (ref[list] >= 0)
+        {
             /* This is just pred_motion() but with the cases removed that
              * cannot happen for direct blocks. */
             const int16_t *const A = sl->mv_cache[list][scan8[0] - 1];
@@ -225,10 +242,13 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
                               (top_ref  == ref[list]) +
                               (refc     == ref[list]);
 
-            if (match_count > 1) { // most common
+            if (match_count > 1)   // most common
+            {
                 mv[list] = pack16to32(mid_pred(A[0], B[0], C[0]),
                                       mid_pred(A[1], B[1], C[1]));
-            } else {
+            }
+            else
+            {
                 assert(match_count == 1);
                 if (left_ref == ref[list])
                     mv[list] = AV_RN32A(A);
@@ -238,7 +258,9 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
                     mv[list] = AV_RN32A(C);
             }
             av_assert2(ref[list] < (sl->ref_count[list] << !!FRAME_MBAFF(h)));
-        } else {
+        }
+        else
+        {
             int mask = ~(MB_TYPE_L0 << (2 * list));
             mv[list]  = 0;
             ref[list] = -1;
@@ -247,14 +269,16 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
             sub_mb_type &= mask;
         }
     }
-    if (ref[0] < 0 && ref[1] < 0) {
+    if (ref[0] < 0 && ref[1] < 0)
+    {
         ref[0] = ref[1] = 0;
         if (!is_b8x8)
             *mb_type |= MB_TYPE_L0L1;
         sub_mb_type |= MB_TYPE_L0L1;
     }
 
-    if (!(is_b8x8 | mv[0] | mv[1])) {
+    if (!(is_b8x8 | mv[0] | mv[1]))
+    {
         fill_rectangle(&sl->ref_cache[0][scan8[0]], 4, 4, 8, (uint8_t)ref[0], 1);
         fill_rectangle(&sl->ref_cache[1][scan8[0]], 4, 4, 8, (uint8_t)ref[1], 1);
         fill_rectangle(&sl->mv_cache[0][scan8[0]], 4, 4, 8, 0, 4);
@@ -265,19 +289,26 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
         return;
     }
 
-    if (IS_INTERLACED(sl->ref_list[1][0].parent->mb_type[mb_xy])) { // AFL/AFR/FR/FL -> AFL/FL
-        if (!IS_INTERLACED(*mb_type)) {                    //     AFR/FR    -> AFL/FL
+    if (IS_INTERLACED(sl->ref_list[1][0].parent->mb_type[mb_xy]))   // AFL/AFR/FR/FL -> AFL/FL
+    {
+        if (!IS_INTERLACED(*mb_type))                      //     AFR/FR    -> AFL/FL
+        {
             mb_y  = (sl->mb_y & ~1) + sl->col_parity;
             mb_xy = sl->mb_x +
                     ((sl->mb_y & ~1) + sl->col_parity) * h->mb_stride;
             b8_stride = 0;
-        } else {
+        }
+        else
+        {
             mb_y  += sl->col_fieldoff;
             mb_xy += h->mb_stride * sl->col_fieldoff; // non-zero for FL -> FL & differ parity
         }
         goto single_col;
-    } else {                                             // AFL/AFR/FR/FL -> AFR/FR
-        if (IS_INTERLACED(*mb_type)) {                   // AFL       /FL -> AFR/FR
+    }
+    else                                                 // AFL/AFR/FR/FL -> AFR/FR
+    {
+        if (IS_INTERLACED(*mb_type))                     // AFL       /FL -> AFR/FR
+        {
             mb_y           =  sl->mb_y & ~1;
             mb_xy          = (sl->mb_y & ~1) * h->mb_stride + sl->mb_x;
             mb_type_col[0] = sl->ref_list[1][0].parent->mb_type[mb_xy];
@@ -285,33 +316,45 @@ static void pred_spatial_direct_motion(const H264Context *const h, H264SliceCont
             b8_stride      = 2 + 4 * h->mb_stride;
             b4_stride     *= 6;
             if (IS_INTERLACED(mb_type_col[0]) !=
-                IS_INTERLACED(mb_type_col[1])) {
+                    IS_INTERLACED(mb_type_col[1]))
+            {
                 mb_type_col[0] &= ~MB_TYPE_INTERLACED;
                 mb_type_col[1] &= ~MB_TYPE_INTERLACED;
             }
 
             sub_mb_type |= MB_TYPE_16x16 | MB_TYPE_DIRECT2; /* B_SUB_8x8 */
             if ((mb_type_col[0] & MB_TYPE_16x16_OR_INTRA) &&
-                (mb_type_col[1] & MB_TYPE_16x16_OR_INTRA) &&
-                !is_b8x8) {
+                    (mb_type_col[1] & MB_TYPE_16x16_OR_INTRA) &&
+                    !is_b8x8)
+            {
                 *mb_type |= MB_TYPE_16x8 | MB_TYPE_DIRECT2;  /* B_16x8 */
-            } else {
+            }
+            else
+            {
                 *mb_type |= MB_TYPE_8x8;
             }
-        } else {                                         //     AFR/FR    -> AFR/FR
+        }
+        else                                             //     AFR/FR    -> AFR/FR
+        {
 single_col:
             mb_type_col[0] =
-            mb_type_col[1] = sl->ref_list[1][0].parent->mb_type[mb_xy];
+                mb_type_col[1] = sl->ref_list[1][0].parent->mb_type[mb_xy];
 
             sub_mb_type |= MB_TYPE_16x16 | MB_TYPE_DIRECT2; /* B_SUB_8x8 */
-            if (!is_b8x8 && (mb_type_col[0] & MB_TYPE_16x16_OR_INTRA)) {
+            if (!is_b8x8 && (mb_type_col[0] & MB_TYPE_16x16_OR_INTRA))
+            {
                 *mb_type |= MB_TYPE_16x16 | MB_TYPE_DIRECT2; /* B_16x16 */
-            } else if (!is_b8x8 &&
-                       (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16))) {
+            }
+            else if (!is_b8x8 &&
+                     (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16)))
+            {
                 *mb_type |= MB_TYPE_DIRECT2 |
                             (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16));
-            } else {
-                if (!h->sps.direct_8x8_inference_flag) {
+            }
+            else
+            {
+                if (!h->sps.direct_8x8_inference_flag)
+                {
                     /* FIXME: Save sub mb types from previous frames (or derive
                      * from MVs) so we know exactly what block size to use. */
                     sub_mb_type += (MB_TYPE_8x8 - MB_TYPE_16x16); /* B_SUB_4x4 */
@@ -327,8 +370,10 @@ single_col:
     l1mv1  = (void*)&sl->ref_list[1][0].parent->motion_val[1][h->mb2b_xy[mb_xy]];
     l1ref0 = &sl->ref_list[1][0].parent->ref_index[0][4 * mb_xy];
     l1ref1 = &sl->ref_list[1][0].parent->ref_index[1][4 * mb_xy];
-    if (!b8_stride) {
-        if (sl->mb_y & 1) {
+    if (!b8_stride)
+    {
+        if (sl->mb_y & 1)
+        {
             l1ref0 += 2;
             l1ref1 += 2;
             l1mv0  += 2 * b4_stride;
@@ -336,9 +381,11 @@ single_col:
         }
     }
 
-    if (IS_INTERLACED(*mb_type) != IS_INTERLACED(mb_type_col[0])) {
+    if (IS_INTERLACED(*mb_type) != IS_INTERLACED(mb_type_col[0]))
+    {
         int n = 0;
-        for (i8 = 0; i8 < 4; i8++) {
+        for (i8 = 0; i8 < 4; i8++)
+        {
             int x8  = i8 & 1;
             int y8  = i8 >> 1;
             int xy8 = x8     + y8 * b8_stride;
@@ -354,21 +401,24 @@ single_col:
             fill_rectangle(&sl->ref_cache[1][scan8[i8 * 4]], 2, 2, 8,
                            (uint8_t)ref[1], 1);
             if (!IS_INTRA(mb_type_col[y8]) && !sl->ref_list[1][0].parent->long_ref &&
-                ((l1ref0[xy8] == 0 &&
-                  FFABS(l1mv0[xy4][0]) <= 1 &&
-                  FFABS(l1mv0[xy4][1]) <= 1) ||
-                 (l1ref0[xy8] < 0 &&
-                  l1ref1[xy8] == 0 &&
-                  FFABS(l1mv1[xy4][0]) <= 1 &&
-                  FFABS(l1mv1[xy4][1]) <= 1))) {
+                    ((l1ref0[xy8] == 0 &&
+                      FFABS(l1mv0[xy4][0]) <= 1 &&
+                      FFABS(l1mv0[xy4][1]) <= 1) ||
+                     (l1ref0[xy8] < 0 &&
+                      l1ref1[xy8] == 0 &&
+                      FFABS(l1mv1[xy4][0]) <= 1 &&
+                      FFABS(l1mv1[xy4][1]) <= 1)))
+            {
                 a =
-                b = 0;
+                    b = 0;
                 if (ref[0] > 0)
                     a = mv[0];
                 if (ref[1] > 0)
                     b = mv[1];
                 n++;
-            } else {
+            }
+            else
+            {
                 a = mv[0];
                 b = mv[1];
             }
@@ -379,33 +429,41 @@ single_col:
             *mb_type = (*mb_type & ~(MB_TYPE_8x8 | MB_TYPE_16x8 | MB_TYPE_8x16 |
                                      MB_TYPE_P1L0 | MB_TYPE_P1L1)) |
                        MB_TYPE_16x16 | MB_TYPE_DIRECT2;
-    } else if (IS_16X16(*mb_type)) {
+    }
+    else if (IS_16X16(*mb_type))
+    {
         int a, b;
 
         fill_rectangle(&sl->ref_cache[0][scan8[0]], 4, 4, 8, (uint8_t)ref[0], 1);
         fill_rectangle(&sl->ref_cache[1][scan8[0]], 4, 4, 8, (uint8_t)ref[1], 1);
         if (!IS_INTRA(mb_type_col[0]) && !sl->ref_list[1][0].parent->long_ref &&
-            ((l1ref0[0] == 0 &&
-              FFABS(l1mv0[0][0]) <= 1 &&
-              FFABS(l1mv0[0][1]) <= 1) ||
-             (l1ref0[0] < 0 && !l1ref1[0] &&
-              FFABS(l1mv1[0][0]) <= 1 &&
-              FFABS(l1mv1[0][1]) <= 1 &&
-              h->x264_build > 33U))) {
+                ((l1ref0[0] == 0 &&
+                  FFABS(l1mv0[0][0]) <= 1 &&
+                  FFABS(l1mv0[0][1]) <= 1) ||
+                 (l1ref0[0] < 0 && !l1ref1[0] &&
+                  FFABS(l1mv1[0][0]) <= 1 &&
+                  FFABS(l1mv1[0][1]) <= 1 &&
+                  h->x264_build > 33U)))
+        {
             a = b = 0;
             if (ref[0] > 0)
                 a = mv[0];
             if (ref[1] > 0)
                 b = mv[1];
-        } else {
+        }
+        else
+        {
             a = mv[0];
             b = mv[1];
         }
         fill_rectangle(&sl->mv_cache[0][scan8[0]], 4, 4, 8, a, 4);
         fill_rectangle(&sl->mv_cache[1][scan8[0]], 4, 4, 8, b, 4);
-    } else {
+    }
+    else
+    {
         int n = 0;
-        for (i8 = 0; i8 < 4; i8++) {
+        for (i8 = 0; i8 < 4; i8++)
+        {
             const int x8 = i8 & 1;
             const int y8 = i8 >> 1;
 
@@ -423,14 +481,17 @@ single_col:
             assert(b8_stride == 2);
             /* col_zero_flag */
             if (!IS_INTRA(mb_type_col[0]) && !sl->ref_list[1][0].parent->long_ref &&
-                (l1ref0[i8] == 0 ||
-                 (l1ref0[i8] < 0 &&
-                  l1ref1[i8] == 0 &&
-                  h->x264_build > 33U))) {
+                    (l1ref0[i8] == 0 ||
+                     (l1ref0[i8] < 0 &&
+                      l1ref1[i8] == 0 &&
+                      h->x264_build > 33U)))
+            {
                 const int16_t (*l1mv)[2] = l1ref0[i8] == 0 ? l1mv0 : l1mv1;
-                if (IS_SUB_8X8(sub_mb_type)) {
+                if (IS_SUB_8X8(sub_mb_type))
+                {
                     const int16_t *mv_col = l1mv[x8 * 3 + y8 * 3 * b4_stride];
-                    if (FFABS(mv_col[0]) <= 1 && FFABS(mv_col[1]) <= 1) {
+                    if (FFABS(mv_col[0]) <= 1 && FFABS(mv_col[1]) <= 1)
+                    {
                         if (ref[0] == 0)
                             fill_rectangle(&sl->mv_cache[0][scan8[i8 * 4]], 2, 2,
                                            8, 0, 4);
@@ -439,12 +500,16 @@ single_col:
                                            8, 0, 4);
                         n += 4;
                     }
-                } else {
+                }
+                else
+                {
                     int m = 0;
-                    for (i4 = 0; i4 < 4; i4++) {
+                    for (i4 = 0; i4 < 4; i4++)
+                    {
                         const int16_t *mv_col = l1mv[x8 * 2 + (i4 & 1) +
                                                      (y8 * 2 + (i4 >> 1)) * b4_stride];
-                        if (FFABS(mv_col[0]) <= 1 && FFABS(mv_col[1]) <= 1) {
+                        if (FFABS(mv_col[0]) <= 1 && FFABS(mv_col[1]) <= 1)
+                        {
                             if (ref[0] == 0)
                                 AV_ZERO32(sl->mv_cache[0][scan8[i8 * 4 + i4]]);
                             if (ref[1] == 0)
@@ -483,19 +548,26 @@ static void pred_temp_direct_motion(const H264Context *const h, H264SliceContext
     await_reference_mb_row(h, &sl->ref_list[1][0],
                            sl->mb_y + !!IS_INTERLACED(*mb_type));
 
-    if (IS_INTERLACED(sl->ref_list[1][0].parent->mb_type[mb_xy])) { // AFL/AFR/FR/FL -> AFL/FL
-        if (!IS_INTERLACED(*mb_type)) {                    //     AFR/FR    -> AFL/FL
+    if (IS_INTERLACED(sl->ref_list[1][0].parent->mb_type[mb_xy]))   // AFL/AFR/FR/FL -> AFL/FL
+    {
+        if (!IS_INTERLACED(*mb_type))                      //     AFR/FR    -> AFL/FL
+        {
             mb_y  = (sl->mb_y & ~1) + sl->col_parity;
             mb_xy = sl->mb_x +
                     ((sl->mb_y & ~1) + sl->col_parity) * h->mb_stride;
             b8_stride = 0;
-        } else {
+        }
+        else
+        {
             mb_y  += sl->col_fieldoff;
             mb_xy += h->mb_stride * sl->col_fieldoff; // non-zero for FL -> FL & differ parity
         }
         goto single_col;
-    } else {                                        // AFL/AFR/FR/FL -> AFR/FR
-        if (IS_INTERLACED(*mb_type)) {              // AFL       /FL -> AFR/FR
+    }
+    else                                            // AFL/AFR/FR/FL -> AFR/FR
+    {
+        if (IS_INTERLACED(*mb_type))                // AFL       /FL -> AFR/FR
+        {
             mb_y           = sl->mb_y & ~1;
             mb_xy          = sl->mb_x + (sl->mb_y & ~1) * h->mb_stride;
             mb_type_col[0] = sl->ref_list[1][0].parent->mb_type[mb_xy];
@@ -503,7 +575,8 @@ static void pred_temp_direct_motion(const H264Context *const h, H264SliceContext
             b8_stride      = 2 + 4 * h->mb_stride;
             b4_stride     *= 6;
             if (IS_INTERLACED(mb_type_col[0]) !=
-                IS_INTERLACED(mb_type_col[1])) {
+                    IS_INTERLACED(mb_type_col[1]))
+            {
                 mb_type_col[0] &= ~MB_TYPE_INTERLACED;
                 mb_type_col[1] &= ~MB_TYPE_INTERLACED;
             }
@@ -512,29 +585,40 @@ static void pred_temp_direct_motion(const H264Context *const h, H264SliceContext
                           MB_TYPE_DIRECT2;                  /* B_SUB_8x8 */
 
             if ((mb_type_col[0] & MB_TYPE_16x16_OR_INTRA) &&
-                (mb_type_col[1] & MB_TYPE_16x16_OR_INTRA) &&
-                !is_b8x8) {
+                    (mb_type_col[1] & MB_TYPE_16x16_OR_INTRA) &&
+                    !is_b8x8)
+            {
                 *mb_type |= MB_TYPE_16x8 | MB_TYPE_L0L1 |
                             MB_TYPE_DIRECT2;                /* B_16x8 */
-            } else {
+            }
+            else
+            {
                 *mb_type |= MB_TYPE_8x8 | MB_TYPE_L0L1;
             }
-        } else {                                    //     AFR/FR    -> AFR/FR
+        }
+        else                                        //     AFR/FR    -> AFR/FR
+        {
 single_col:
             mb_type_col[0]     =
                 mb_type_col[1] = sl->ref_list[1][0].parent->mb_type[mb_xy];
 
             sub_mb_type = MB_TYPE_16x16 | MB_TYPE_P0L0 | MB_TYPE_P0L1 |
                           MB_TYPE_DIRECT2;                  /* B_SUB_8x8 */
-            if (!is_b8x8 && (mb_type_col[0] & MB_TYPE_16x16_OR_INTRA)) {
+            if (!is_b8x8 && (mb_type_col[0] & MB_TYPE_16x16_OR_INTRA))
+            {
                 *mb_type |= MB_TYPE_16x16 | MB_TYPE_P0L0 | MB_TYPE_P0L1 |
                             MB_TYPE_DIRECT2;                /* B_16x16 */
-            } else if (!is_b8x8 &&
-                       (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16))) {
+            }
+            else if (!is_b8x8 &&
+                     (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16)))
+            {
                 *mb_type |= MB_TYPE_L0L1 | MB_TYPE_DIRECT2 |
                             (mb_type_col[0] & (MB_TYPE_16x8 | MB_TYPE_8x16));
-            } else {
-                if (!h->sps.direct_8x8_inference_flag) {
+            }
+            else
+            {
+                if (!h->sps.direct_8x8_inference_flag)
+                {
                     /* FIXME: save sub mb types from previous frames (or derive
                      * from MVs) so we know exactly what block size to use */
                     sub_mb_type = MB_TYPE_8x8 | MB_TYPE_P0L0 | MB_TYPE_P0L1 |
@@ -551,8 +635,10 @@ single_col:
     l1mv1  = (void*)&sl->ref_list[1][0].parent->motion_val[1][h->mb2b_xy[mb_xy]];
     l1ref0 = &sl->ref_list[1][0].parent->ref_index[0][4 * mb_xy];
     l1ref1 = &sl->ref_list[1][0].parent->ref_index[1][4 * mb_xy];
-    if (!b8_stride) {
-        if (sl->mb_y & 1) {
+    if (!b8_stride)
+    {
+        if (sl->mb_y & 1)
+        {
             l1ref0 += 2;
             l1ref1 += 2;
             l1mv0  += 2 * b4_stride;
@@ -562,22 +648,26 @@ single_col:
 
     {
         const int *map_col_to_list0[2] = { sl->map_col_to_list0[0],
-                                           sl->map_col_to_list0[1] };
+                                           sl->map_col_to_list0[1]
+                                         };
         const int *dist_scale_factor = sl->dist_scale_factor;
         int ref_offset;
 
-        if (FRAME_MBAFF(h) && IS_INTERLACED(*mb_type)) {
+        if (FRAME_MBAFF(h) && IS_INTERLACED(*mb_type))
+        {
             map_col_to_list0[0] = sl->map_col_to_list0_field[sl->mb_y & 1][0];
             map_col_to_list0[1] = sl->map_col_to_list0_field[sl->mb_y & 1][1];
             dist_scale_factor   = sl->dist_scale_factor_field[sl->mb_y & 1];
         }
         ref_offset = (sl->ref_list[1][0].parent->mbaff << 4) & (mb_type_col[0] >> 3);
 
-        if (IS_INTERLACED(*mb_type) != IS_INTERLACED(mb_type_col[0])) {
+        if (IS_INTERLACED(*mb_type) != IS_INTERLACED(mb_type_col[0]))
+        {
             int y_shift = 2 * !IS_INTERLACED(*mb_type);
             assert(h->sps.direct_8x8_inference_flag);
 
-            for (i8 = 0; i8 < 4; i8++) {
+            for (i8 = 0; i8 < 4; i8++)
+            {
                 const int x8 = i8 & 1;
                 const int y8 = i8 >> 1;
                 int ref0, scale;
@@ -588,7 +678,8 @@ single_col:
                 sl->sub_mb_type[i8] = sub_mb_type;
 
                 fill_rectangle(&sl->ref_cache[1][scan8[i8 * 4]], 2, 2, 8, 0, 1);
-                if (IS_INTRA(mb_type_col[y8])) {
+                if (IS_INTRA(mb_type_col[y8]))
+                {
                     fill_rectangle(&sl->ref_cache[0][scan8[i8 * 4]], 2, 2, 8, 0, 1);
                     fill_rectangle(&sl->mv_cache[0][scan8[i8 * 4]], 2, 2, 8, 0, 4);
                     fill_rectangle(&sl->mv_cache[1][scan8[i8 * 4]], 2, 2, 8, 0, 4);
@@ -598,7 +689,8 @@ single_col:
                 ref0 = l1ref0[x8 + y8 * b8_stride];
                 if (ref0 >= 0)
                     ref0 = map_col_to_list0[0][ref0 + ref_offset];
-                else {
+                else
+                {
                     ref0 = map_col_to_list0[1][l1ref1[x8 + y8 * b8_stride] +
                                                ref_offset];
                     l1mv = l1mv1;
@@ -623,15 +715,19 @@ single_col:
 
         /* one-to-one mv scaling */
 
-        if (IS_16X16(*mb_type)) {
+        if (IS_16X16(*mb_type))
+        {
             int ref, mv0, mv1;
 
             fill_rectangle(&sl->ref_cache[1][scan8[0]], 4, 4, 8, 0, 1);
-            if (IS_INTRA(mb_type_col[0])) {
+            if (IS_INTRA(mb_type_col[0]))
+            {
                 ref = mv0 = mv1 = 0;
-            } else {
+            }
+            else
+            {
                 const int ref0 = l1ref0[0] >= 0 ? map_col_to_list0[0][l1ref0[0] + ref_offset]
-                                                : map_col_to_list0[1][l1ref1[0] + ref_offset];
+                                 : map_col_to_list0[1][l1ref1[0] + ref_offset];
                 const int scale = dist_scale_factor[ref0];
                 const int16_t *mv_col = l1ref0[0] >= 0 ? l1mv0[0] : l1mv1[0];
                 int mv_l0[2];
@@ -644,8 +740,11 @@ single_col:
             fill_rectangle(&sl->ref_cache[0][scan8[0]], 4, 4, 8, ref, 1);
             fill_rectangle(&sl->mv_cache[0][scan8[0]], 4, 4, 8, mv0, 4);
             fill_rectangle(&sl->mv_cache[1][scan8[0]], 4, 4, 8, mv1, 4);
-        } else {
-            for (i8 = 0; i8 < 4; i8++) {
+        }
+        else
+        {
+            for (i8 = 0; i8 < 4; i8++)
+            {
                 const int x8 = i8 & 1;
                 const int y8 = i8 >> 1;
                 int ref0, scale;
@@ -655,7 +754,8 @@ single_col:
                     continue;
                 sl->sub_mb_type[i8] = sub_mb_type;
                 fill_rectangle(&sl->ref_cache[1][scan8[i8 * 4]], 2, 2, 8, 0, 1);
-                if (IS_INTRA(mb_type_col[0])) {
+                if (IS_INTRA(mb_type_col[0]))
+                {
                     fill_rectangle(&sl->ref_cache[0][scan8[i8 * 4]], 2, 2, 8, 0, 1);
                     fill_rectangle(&sl->mv_cache[0][scan8[i8 * 4]], 2, 2, 8, 0, 4);
                     fill_rectangle(&sl->mv_cache[1][scan8[i8 * 4]], 2, 2, 8, 0, 4);
@@ -666,7 +766,8 @@ single_col:
                 ref0 = l1ref0[i8];
                 if (ref0 >= 0)
                     ref0 = map_col_to_list0[0][ref0 + ref_offset];
-                else {
+                else
+                {
                     ref0 = map_col_to_list0[1][l1ref1[i8] + ref_offset];
                     l1mv = l1mv1;
                 }
@@ -674,7 +775,8 @@ single_col:
 
                 fill_rectangle(&sl->ref_cache[0][scan8[i8 * 4]], 2, 2, 8,
                                ref0, 1);
-                if (IS_SUB_8X8(sub_mb_type)) {
+                if (IS_SUB_8X8(sub_mb_type))
+                {
                     const int16_t *mv_col = l1mv[x8 * 3 + y8 * 3 * b4_stride];
                     int mx                = (scale * mv_col[0] + 128) >> 8;
                     int my                = (scale * mv_col[1] + 128) >> 8;
@@ -682,8 +784,11 @@ single_col:
                                    pack16to32(mx, my), 4);
                     fill_rectangle(&sl->mv_cache[1][scan8[i8 * 4]], 2, 2, 8,
                                    pack16to32(mx - mv_col[0], my - mv_col[1]), 4);
-                } else {
-                    for (i4 = 0; i4 < 4; i4++) {
+                }
+                else
+                {
+                    for (i4 = 0; i4 < 4; i4++)
+                    {
                         const int16_t *mv_col = l1mv[x8 * 2 + (i4 & 1) +
                                                      (y8 * 2 + (i4 >> 1)) * b4_stride];
                         int16_t *mv_l0 = sl->mv_cache[0][scan8[i8 * 4 + i4]];

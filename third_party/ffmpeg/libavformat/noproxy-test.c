@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Martin Storsjo
  *
  * This file is part of FFmpeg.

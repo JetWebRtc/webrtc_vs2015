@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,19 +14,21 @@
 #include "webrtc/modules/audio_device/audio_device_buffer.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockAudioDeviceBuffer : public AudioDeviceBuffer {
- public:
-  MockAudioDeviceBuffer() {}
-  virtual ~MockAudioDeviceBuffer() {}
-  MOCK_METHOD1(RequestPlayoutData, int32_t(size_t nSamples));
-  MOCK_METHOD1(GetPlayoutData, int32_t(void* audioBuffer));
-  MOCK_METHOD2(SetRecordedBuffer,
-               int32_t(const void* audioBuffer, size_t nSamples));
-  MOCK_METHOD3(SetVQEData,
-               void(int playDelayMS, int recDelayMS, int clockDrift));
-  MOCK_METHOD0(DeliverRecordedData, int32_t());
+class MockAudioDeviceBuffer : public AudioDeviceBuffer
+{
+public:
+    MockAudioDeviceBuffer() {}
+    virtual ~MockAudioDeviceBuffer() {}
+    MOCK_METHOD1(RequestPlayoutData, int32_t(size_t nSamples));
+    MOCK_METHOD1(GetPlayoutData, int32_t(void* audioBuffer));
+    MOCK_METHOD2(SetRecordedBuffer,
+                 int32_t(const void* audioBuffer, size_t nSamples));
+    MOCK_METHOD3(SetVQEData,
+                 void(int playDelayMS, int recDelayMS, int clockDrift));
+    MOCK_METHOD0(DeliverRecordedData, int32_t());
 };
 
 }  // namespace webrtc

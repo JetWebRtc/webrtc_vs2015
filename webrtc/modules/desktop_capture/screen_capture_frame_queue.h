@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
 #include "webrtc/modules/desktop_capture/shared_desktop_frame.h"  // Remove
 
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Represents a queue of reusable video frames. Provides access to the 'current'
 // frame - the frame that the caller is working with at the moment, and to the
@@ -36,48 +37,55 @@ namespace webrtc {
 // created by this function and it should release the earliest one before trying
 // to capture a new frame (i.e. before MoveToNextFrame() is called).
 template <typename FrameType>
-class ScreenCaptureFrameQueue {
- public:
-  ScreenCaptureFrameQueue() : current_(0) {}
-  ~ScreenCaptureFrameQueue() = default;
+class ScreenCaptureFrameQueue
+{
+public:
+    ScreenCaptureFrameQueue() : current_(0) {}
+    ~ScreenCaptureFrameQueue() = default;
 
-  // Moves to the next frame in the queue, moving the 'current' frame to become
-  // the 'previous' one.
-  void MoveToNextFrame() {
-    current_ = (current_ + 1) % kQueueLength;
-  }
-
-  // Replaces the current frame with a new one allocated by the caller. The
-  // existing frame (if any) is destroyed. Takes ownership of |frame|.
-  void ReplaceCurrentFrame(std::unique_ptr<FrameType> frame) {
-    frames_[current_] = std::move(frame);
-  }
-
-  // Marks all frames obsolete and resets the previous frame pointer. No
-  // frames are freed though as the caller can still access them.
-  void Reset() {
-    for (int i = 0; i < kQueueLength; i++) {
-      frames_[i].reset();
+    // Moves to the next frame in the queue, moving the 'current' frame to become
+    // the 'previous' one.
+    void MoveToNextFrame()
+    {
+        current_ = (current_ + 1) % kQueueLength;
     }
-    current_ = 0;
-  }
 
-  FrameType* current_frame() const {
-    return frames_[current_].get();
-  }
+    // Replaces the current frame with a new one allocated by the caller. The
+    // existing frame (if any) is destroyed. Takes ownership of |frame|.
+    void ReplaceCurrentFrame(std::unique_ptr<FrameType> frame)
+    {
+        frames_[current_] = std::move(frame);
+    }
 
-  FrameType* previous_frame() const {
-    return frames_[(current_ + kQueueLength - 1) % kQueueLength].get();
-  }
+    // Marks all frames obsolete and resets the previous frame pointer. No
+    // frames are freed though as the caller can still access them.
+    void Reset()
+    {
+        for (int i = 0; i < kQueueLength; i++)
+        {
+            frames_[i].reset();
+        }
+        current_ = 0;
+    }
 
- private:
-  // Index of the current frame.
-  int current_;
+    FrameType* current_frame() const
+    {
+        return frames_[current_].get();
+    }
 
-  static const int kQueueLength = 2;
-  std::unique_ptr<FrameType> frames_[kQueueLength];
+    FrameType* previous_frame() const
+    {
+        return frames_[(current_ + kQueueLength - 1) % kQueueLength].get();
+    }
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(ScreenCaptureFrameQueue);
+private:
+    // Index of the current frame.
+    int current_;
+
+    static const int kQueueLength = 2;
+    std::unique_ptr<FrameType> frames_[kQueueLength];
+
+    RTC_DISALLOW_COPY_AND_ASSIGN(ScreenCaptureFrameQueue);
 };
 
 }  // namespace webrtc

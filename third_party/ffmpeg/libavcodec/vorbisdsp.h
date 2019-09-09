@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-typedef struct VorbisDSPContext {
+typedef struct VorbisDSPContext
+{
     /* assume len is a multiple of 4, and arrays are 16-byte aligned */
     void (*vorbis_inverse_coupling)(float *mag, float *ang,
                                     intptr_t blocksize);

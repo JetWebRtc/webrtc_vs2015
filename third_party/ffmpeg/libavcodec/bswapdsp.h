@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-typedef struct BswapDSPContext {
+typedef struct BswapDSPContext
+{
     void (*bswap_buf)(uint32_t *dst, const uint32_t *src, int w);
     void (*bswap16_buf)(uint16_t *dst, const uint16_t *src, int len);
 } BswapDSPContext;

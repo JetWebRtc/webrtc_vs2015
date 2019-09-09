@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -44,97 +44,108 @@
 #include "wels_task_base.h"
 #include "encoder_context.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 extern int32_t WriteSliceToFrameBs (sWelsEncCtx* pCtx, SLayerBSInfo* pLbi, uint8_t* pFrameBsBuffer,
                                     const int32_t iSliceIdx,
                                     int32_t& iSliceSize);
 extern int32_t WriteSliceBs (sWelsEncCtx* pCtx,SWelsSliceBs* pSliceBs,const int32_t iSliceIdx, int32_t& iSliceSize);
 
-class CWelsSliceEncodingTask : public CWelsBaseTask {
- public:
-  CWelsSliceEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx);
-  virtual ~CWelsSliceEncodingTask();
+class CWelsSliceEncodingTask : public CWelsBaseTask
+{
+public:
+    CWelsSliceEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx);
+    virtual ~CWelsSliceEncodingTask();
 
-  CWelsSliceEncodingTask* CreateSliceEncodingTask (sWelsEncCtx* pCtx, const int32_t iSliceIdx);
-  WelsErrorType SetBoundary (int32_t iStartMbIdx, int32_t iEndMbIdx);
+    CWelsSliceEncodingTask* CreateSliceEncodingTask (sWelsEncCtx* pCtx, const int32_t iSliceIdx);
+    WelsErrorType SetBoundary (int32_t iStartMbIdx, int32_t iEndMbIdx);
 
-  virtual WelsErrorType Execute();
-  virtual WelsErrorType InitTask();
-  virtual WelsErrorType ExecuteTask();
-  virtual void FinishTask();
+    virtual WelsErrorType Execute();
+    virtual WelsErrorType InitTask();
+    virtual WelsErrorType ExecuteTask();
+    virtual void FinishTask();
 
-  virtual uint32_t        GetTaskType() const {
-    return WELS_ENC_TASK_ENCODE_FIXED_SLICE;
-  }
- protected:
-  WelsErrorType m_eTaskResult;
+    virtual uint32_t        GetTaskType() const
+    {
+        return WELS_ENC_TASK_ENCODE_FIXED_SLICE;
+    }
+protected:
+    WelsErrorType m_eTaskResult;
 
-  int32_t QueryEmptyThread (bool* pThreadBsBufferUsage);
+    int32_t QueryEmptyThread (bool* pThreadBsBufferUsage);
 
-  sWelsEncCtx* m_pCtx;
-  SSliceThreadPrivateData* m_pPrivateData;
-  SLayerBSInfo* m_pLbi;
-  int32_t m_iStartMbIdx;
-  int32_t m_iEndMbIdx;
+    sWelsEncCtx* m_pCtx;
+    SSliceThreadPrivateData* m_pPrivateData;
+    SLayerBSInfo* m_pLbi;
+    int32_t m_iStartMbIdx;
+    int32_t m_iEndMbIdx;
 
-  EWelsNalUnitType m_eNalType;
-  EWelsNalRefIdc m_eNalRefIdc;
-  bool m_bNeedPrefix;
-  uint32_t m_uiDependencyId;
+    EWelsNalUnitType m_eNalType;
+    EWelsNalRefIdc m_eNalRefIdc;
+    bool m_bNeedPrefix;
+    uint32_t m_uiDependencyId;
 
-  SSlice* m_pSlice;
-  SWelsSliceBs* m_pSliceBs;
-  int32_t m_iSliceIdx;
-  int32_t m_iSliceSize;
-  int32_t m_iThreadIdx;
+    SSlice* m_pSlice;
+    SWelsSliceBs* m_pSliceBs;
+    int32_t m_iSliceIdx;
+    int32_t m_iSliceSize;
+    int32_t m_iThreadIdx;
 };
 
-class CWelsLoadBalancingSlicingEncodingTask : public CWelsSliceEncodingTask {
- public:
-  CWelsLoadBalancingSlicingEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx) : CWelsSliceEncodingTask (pSink, pCtx,
-        iSliceIdx) {
-  };
+class CWelsLoadBalancingSlicingEncodingTask : public CWelsSliceEncodingTask
+{
+public:
+    CWelsLoadBalancingSlicingEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx) : CWelsSliceEncodingTask (pSink, pCtx,
+                iSliceIdx)
+    {
+    };
 
-  virtual WelsErrorType InitTask();
-  virtual void FinishTask();
+    virtual WelsErrorType InitTask();
+    virtual void FinishTask();
 
-  virtual uint32_t        GetTaskType() const {
-    return WELS_ENC_TASK_ENCODE_SLICE_LOADBALANCING;
-  }
- private:
-  int64_t m_iSliceStart;
-};
-
-
-class CWelsConstrainedSizeSlicingEncodingTask : public CWelsLoadBalancingSlicingEncodingTask {
- public:
-  CWelsConstrainedSizeSlicingEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx,
-      const int32_t iSliceIdx) : CWelsLoadBalancingSlicingEncodingTask (pSink, pCtx, iSliceIdx) {
-  };
-
-  virtual WelsErrorType ExecuteTask();
-
-  virtual uint32_t        GetTaskType() const {
-    return WELS_ENC_TASK_ENCODE_SLICE_SIZECONSTRAINED;
-  }
-
+    virtual uint32_t        GetTaskType() const
+    {
+        return WELS_ENC_TASK_ENCODE_SLICE_LOADBALANCING;
+    }
+private:
+    int64_t m_iSliceStart;
 };
 
 
-class CWelsUpdateMbMapTask : public CWelsBaseTask {
- public:
-  CWelsUpdateMbMapTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx);
-  virtual ~CWelsUpdateMbMapTask();
+class CWelsConstrainedSizeSlicingEncodingTask : public CWelsLoadBalancingSlicingEncodingTask
+{
+public:
+    CWelsConstrainedSizeSlicingEncodingTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx,
+            const int32_t iSliceIdx) : CWelsLoadBalancingSlicingEncodingTask (pSink, pCtx, iSliceIdx)
+    {
+    };
 
-  virtual WelsErrorType Execute();
+    virtual WelsErrorType ExecuteTask();
 
-  virtual uint32_t        GetTaskType() const {
-    return WELS_ENC_TASK_UPDATEMBMAP;
-  }
- protected:
-  sWelsEncCtx* m_pCtx;
-  int32_t m_iSliceIdx;
+    virtual uint32_t        GetTaskType() const
+    {
+        return WELS_ENC_TASK_ENCODE_SLICE_SIZECONSTRAINED;
+    }
+
+};
+
+
+class CWelsUpdateMbMapTask : public CWelsBaseTask
+{
+public:
+    CWelsUpdateMbMapTask (WelsCommon::IWelsTaskSink* pSink, sWelsEncCtx* pCtx, const int32_t iSliceIdx);
+    virtual ~CWelsUpdateMbMapTask();
+
+    virtual WelsErrorType Execute();
+
+    virtual uint32_t        GetTaskType() const
+    {
+        return WELS_ENC_TASK_UPDATEMBMAP;
+    }
+protected:
+    sWelsEncCtx* m_pCtx;
+    int32_t m_iSliceIdx;
 };
 
 }       //namespace

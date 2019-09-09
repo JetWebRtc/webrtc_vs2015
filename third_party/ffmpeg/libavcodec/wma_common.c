@@ -1,4 +1,4 @@
-/*
+﻿/*
  * common code shared by all WMA variants
  *
  * This file is part of FFmpeg.
@@ -45,7 +45,8 @@ av_cold int ff_wma_get_frame_len_bits(int sample_rate, int version,
     else
         frame_len_bits = 13;
 
-    if (version == 3) {
+    if (version == 3)
+    {
         int tmp = decode_flags & 0x6;
         if (tmp == 0x2)
             ++frame_len_bits;

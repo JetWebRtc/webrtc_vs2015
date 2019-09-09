@@ -1,4 +1,4 @@
-/*
+﻿/*
  * sndio play and grab interface
  * Copyright (c) 2010 Jacob Meuser
  *
@@ -28,7 +28,8 @@
 #include "libavutil/log.h"
 #include "avdevice.h"
 
-typedef struct SndioData {
+typedef struct SndioData
+{
     AVClass *class;
     struct sio_hdl *hdl;
     enum AVCodecID codec_id;

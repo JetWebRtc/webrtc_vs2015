@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -60,8 +60,8 @@
 
 #if HAVE_INLINE_ASM
 static void sbr_qmf_analysis_mips(AVFloatDSPContext *fdsp, FFTContext *mdct,
-                             SBRDSPContext *sbrdsp, const float *in, float *x,
-                             float z[320], float W[2][32][32][2], int buf_idx)
+                                  SBRDSPContext *sbrdsp, const float *in, float *x,
+                                  float z[320], float W[2][32][32][2], int buf_idx)
 {
     int i;
     float *w0;
@@ -94,10 +94,10 @@ static void sbr_qmf_analysis_mips(AVFloatDSPContext *fdsp, FFTContext *mdct,
             PTR_ADDIU " %[w1],      %[w1],     32 \n\t"
 
             : [w0]"+r"(w0), [w1]"+r"(w1),
-              [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-              [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-              [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
+            [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
+            [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+            [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+            [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
             :
             : "memory"
         );
@@ -129,17 +129,18 @@ static void sbr_qmf_analysis_mips(AVFloatDSPContext *fdsp, FFTContext *mdct,
             PTR_ADDIU "  %[w1],       %[w1],    32 \n\t"
 
             : [w0]"+r"(w0), [w1]"+r"(w1),
-              [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-              [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-              [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
+            [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
+            [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+            [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+            [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
             :
             : "memory"
         );
     }
 
-    for (i = 0; i < 32; i++) { // numTimeSlots*RATE = 16*2 as 960 sample frames
-                               // are not supported
+    for (i = 0; i < 32; i++)   // numTimeSlots*RATE = 16*2 as 960 sample frames
+    {
+        // are not supported
         fdsp->vector_fmul_reverse(z, sbr_qmf_window_ds, x, 320);
         sbrdsp->sum64x5(z);
         sbrdsp->qmf_pre_shuffle(z);
@@ -151,10 +152,10 @@ static void sbr_qmf_analysis_mips(AVFloatDSPContext *fdsp, FFTContext *mdct,
 
 #if HAVE_MIPSFPU
 static void sbr_qmf_synthesis_mips(FFTContext *mdct,
-                              SBRDSPContext *sbrdsp, AVFloatDSPContext *fdsp,
-                              float *out, float X[2][38][64],
-                              float mdct_buf[2][64],
-                              float *v0, int *v_off, const unsigned int div)
+                                   SBRDSPContext *sbrdsp, AVFloatDSPContext *fdsp,
+                                   float *out, float X[2][38][64],
+                                   float mdct_buf[2][64],
+                                   float *v0, int *v_off, const unsigned int div)
 {
     int i, n;
     const float *sbr_qmf_window = div ? sbr_qmf_window_ds : sbr_qmf_window_us;
@@ -165,23 +166,31 @@ static void sbr_qmf_synthesis_mips(FFTContext *mdct,
     float *vv0, *s0, *dst;
     dst = out;
 
-    for (i = 0; i < 32; i++) {
-        if (*v_off < step) {
+    for (i = 0; i < 32; i++)
+    {
+        if (*v_off < step)
+        {
             int saved_samples = (1280 - 128) >> div;
             memcpy(&v0[SBR_SYNTHESIS_BUF_SIZE - saved_samples], v0, saved_samples * sizeof(float));
             *v_off = SBR_SYNTHESIS_BUF_SIZE - saved_samples - step;
-        } else {
+        }
+        else
+        {
             *v_off -= step;
         }
         v = v0 + *v_off;
-        if (div) {
-            for (n = 0; n < 32; n++) {
+        if (div)
+        {
+            for (n = 0; n < 32; n++)
+            {
                 X[0][i][   n] = -X[0][i][n];
                 X[0][i][32+n] =  X[1][i][31-n];
             }
             mdct->imdct_half(mdct, mdct_buf[0], X[0][i]);
             sbrdsp->qmf_deint_neg(v, mdct_buf[0]);
-        } else {
+        }
+        else
+        {
             sbrdsp->neg_odd_64(X[1][i]);
             mdct->imdct_half(mdct, mdct_buf[0], X[0][i]);
             mdct->imdct_half(mdct, mdct_buf[1], X[1][i]);
@@ -216,7 +225,7 @@ static void sbr_qmf_synthesis_mips(FFTContext *mdct,
                 "lwc1    %[temp17],  264(%[s0])                         \n\t"
                 "lwc1    %[temp18],  780(%[v0])                         \n\t"
                 "lwc1    %[temp19],  268(%[s0])                         \n\t"
-            "1:                                                         \n\t"
+                "1:                                                         \n\t"
                 "mul.s   %[temp0],   %[temp4],   %[temp5]               \n\t"
                 "lwc1    %[temp4],   1024(%[v0])                        \n\t"
                 "mul.s   %[temp1],   %[temp6],   %[temp7]               \n\t"
@@ -457,13 +466,13 @@ static void sbr_qmf_synthesis_mips(FFTContext *mdct,
                 ".set    pop                                            \n\t"
 
                 : [dst]"+r"(dst), [v0]"+r"(vv0), [s0]"+r"(s0),
-                  [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-                  [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-                  [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-                  [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11),
-                  [temp12]"=&f"(temp12), [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
-                  [temp15]"=&f"(temp15), [temp16]"=&f"(temp16), [temp17]"=&f"(temp17),
-                  [temp18]"=&f"(temp18), [temp19]"=&f"(temp19)
+                [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
+                [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+                [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+                [temp9]"=&f"(temp9), [temp10]"=&f"(temp10), [temp11]"=&f"(temp11),
+                [temp12]"=&f"(temp12), [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
+                [temp15]"=&f"(temp15), [temp16]"=&f"(temp16), [temp17]"=&f"(temp17),
+                [temp18]"=&f"(temp18), [temp19]"=&f"(temp19)
                 : [v0_end]"r"(v0_end)
                 : "memory"
             );

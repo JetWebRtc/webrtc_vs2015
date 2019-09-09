@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,13 +29,15 @@ typedef BOOL_DECODER vp8_reader;
 
 static INLINE int vp8_treed_read(
     vp8_reader *const r, /* !!! must return a 0 or 1 !!! */
-    vp8_tree t, const vp8_prob *const p) {
-  register vp8_tree_index i = 0;
+    vp8_tree t, const vp8_prob *const p)
+{
+    register vp8_tree_index i = 0;
 
-  while ((i = t[i + vp8_read(r, p[i >> 1])]) > 0) {
-  }
+    while ((i = t[i + vp8_read(r, p[i >> 1])]) > 0)
+    {
+    }
 
-  return -i;
+    return -i;
 }
 
 #ifdef __cplusplus

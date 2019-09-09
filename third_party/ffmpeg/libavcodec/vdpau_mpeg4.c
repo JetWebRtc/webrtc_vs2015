@@ -44,13 +44,14 @@ static int vdpau_mpeg4_start_frame(AVCodecContext *avctx,
     info->backward_reference = VDP_INVALID_HANDLE;
     info->vop_coding_type    = 0;
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
         ref = ff_vdpau_get_surface_id(s->next_picture.f);
         assert(ref != VDP_INVALID_HANDLE);
         info->backward_reference = ref;
         info->vop_coding_type    = 2;
-        /* fall-through */
+    /* fall-through */
     case AV_PICTURE_TYPE_P:
         ref = ff_vdpau_get_surface_id(s->last_picture.f);
         assert(ref != VDP_INVALID_HANDLE);
@@ -72,7 +73,8 @@ static int vdpau_mpeg4_start_frame(AVCodecContext *avctx,
     info->rounding_control                  = s->no_rounding;
     info->alternate_vertical_scan_flag      = s->alternate_scan;
     info->top_field_first                   = s->top_field_first;
-    for (i = 0; i < 64; ++i) {
+    for (i = 0; i < 64; ++i)
+    {
         info->intra_quantizer_matrix[i]     = s->intra_matrix[i];
         info->non_intra_quantizer_matrix[i] = s->inter_matrix[i];
     }
@@ -85,7 +87,7 @@ static int vdpau_mpeg4_decode_slice(av_unused AVCodecContext *avctx,
                                     av_unused const uint8_t *buffer,
                                     av_unused uint32_t size)
 {
-     return 0;
+    return 0;
 }
 
 #if CONFIG_H263_VDPAU_HWACCEL
@@ -95,7 +97,8 @@ static int vdpau_h263_init(AVCodecContext *avctx)
                                 VDP_DECODER_LEVEL_MPEG4_PART2_ASP_L5);
 }
 
-AVHWAccel ff_h263_vdpau_hwaccel = {
+AVHWAccel ff_h263_vdpau_hwaccel =
+{
     .name           = "h263_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_H263,
@@ -115,7 +118,8 @@ static int vdpau_mpeg4_init(AVCodecContext *avctx)
 {
     VdpDecoderProfile profile;
 
-    switch (avctx->profile) {
+    switch (avctx->profile)
+    {
     case FF_PROFILE_MPEG4_SIMPLE:
         profile = VDP_DECODER_PROFILE_MPEG4_PART2_SP;
         break;
@@ -132,7 +136,8 @@ static int vdpau_mpeg4_init(AVCodecContext *avctx)
     return ff_vdpau_common_init(avctx, profile, avctx->level);
 }
 
-AVHWAccel ff_mpeg4_vdpau_hwaccel = {
+AVHWAccel ff_mpeg4_vdpau_hwaccel =
+{
     .name           = "mpeg4_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG4,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/api/audio_codecs/audio_format.h"
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 SdpAudioFormat CodecInstToSdp(const CodecInst& codec_inst);
 CodecInst SdpToCodecInst(int payload_type, const SdpAudioFormat& audio_format);

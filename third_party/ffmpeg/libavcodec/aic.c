@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple Intermediate Codec decoder
  *
  * Copyright (c) 2013 Konstantin Shishkov
@@ -33,7 +33,8 @@
 #define AIC_HDR_SIZE    24
 #define AIC_BAND_COEFFS (64 + 32 + 192 + 96)
 
-enum AICBands {
+enum AICBands
+{
     COEFF_LUMA = 0,
     COEFF_CHROMA,
     COEFF_LUMA_EXT,
@@ -45,8 +46,9 @@ static const int aic_num_band_coeffs[NUM_BANDS] = { 64, 32, 192, 96 };
 
 static const int aic_band_off[NUM_BANDS] = { 0, 64, 96, 288 };
 
-static const uint8_t aic_quant_matrix[64] = {
-     8, 16, 19, 22, 22, 26, 26, 27,
+static const uint8_t aic_quant_matrix[64] =
+{
+    8, 16, 19, 22, 22, 26, 26, 27,
     16, 16, 22, 22, 26, 27, 27, 29,
     19, 22, 26, 26, 27, 29, 29, 35,
     22, 24, 27, 27, 29, 32, 34, 38,
@@ -56,9 +58,10 @@ static const uint8_t aic_quant_matrix[64] = {
     34, 37, 38, 40, 48, 58, 69, 83,
 };
 
-static const uint8_t aic_y_scan[64] = {
-     0,  4,  1,  2,  5,  8, 12,  9,
-     6,  3,  7, 10, 13, 14, 11, 15,
+static const uint8_t aic_y_scan[64] =
+{
+    0,  4,  1,  2,  5,  8, 12,  9,
+    6,  3,  7, 10, 13, 14, 11, 15,
     47, 43, 46, 45, 42, 39, 35, 38,
     41, 44, 40, 37, 34, 33, 36, 32,
     16, 20, 17, 18, 21, 24, 28, 25,
@@ -67,23 +70,24 @@ static const uint8_t aic_y_scan[64] = {
     57, 60, 56, 53, 50, 49, 52, 48,
 };
 
-static const uint8_t aic_y_ext_scan[192] = {
-     64,  72,  65,  66,  73,  80,  88,  81,
-     74,  67,  75,  82,  89,  90,  83,  91,
-      0,   4,   1,   2,   5,   8,  12,   9,
-      6,   3,   7,  10,  13,  14,  11,  15,
-     16,  20,  17,  18,  21,  24,  28,  25,
-     22,  19,  23,  26,  29,  30,  27,  31,
+static const uint8_t aic_y_ext_scan[192] =
+{
+    64,  72,  65,  66,  73,  80,  88,  81,
+    74,  67,  75,  82,  89,  90,  83,  91,
+    0,   4,   1,   2,   5,   8,  12,   9,
+    6,   3,   7,  10,  13,  14,  11,  15,
+    16,  20,  17,  18,  21,  24,  28,  25,
+    22,  19,  23,  26,  29,  30,  27,  31,
     155, 147, 154, 153, 146, 139, 131, 138,
     145, 152, 144, 137, 130, 129, 136, 128,
-     47,  43,  46,  45,  42,  39,  35,  38,
-     41,  44,  40,  37,  34,  33,  36,  32,
-     63,  59,  62,  61,  58,  55,  51,  54,
-     57,  60,  56,  53,  50,  49,  52,  48,
-     96, 104,  97,  98, 105, 112, 120, 113,
+    47,  43,  46,  45,  42,  39,  35,  38,
+    41,  44,  40,  37,  34,  33,  36,  32,
+    63,  59,  62,  61,  58,  55,  51,  54,
+    57,  60,  56,  53,  50,  49,  52,  48,
+    96, 104,  97,  98, 105, 112, 120, 113,
     106,  99, 107, 114, 121, 122, 115, 123,
-     68,  76,  69,  70,  77,  84,  92,  85,
-     78,  71,  79,  86,  93,  94,  87,  95,
+    68,  76,  69,  70,  77,  84,  92,  85,
+    78,  71,  79,  86,  93,  94,  87,  95,
     100, 108, 101, 102, 109, 116, 124, 117,
     110, 103, 111, 118, 125, 126, 119, 127,
     187, 179, 186, 185, 178, 171, 163, 170,
@@ -94,9 +98,10 @@ static const uint8_t aic_y_ext_scan[192] = {
     181, 188, 180, 173, 166, 165, 172, 164,
 };
 
-static const uint8_t aic_c_scan[64] = {
-     0,  4,  1,  2,  5,  8, 12,  9,
-     6,  3,  7, 10, 13, 14, 11, 15,
+static const uint8_t aic_c_scan[64] =
+{
+    0,  4,  1,  2,  5,  8, 12,  9,
+    6,  3,  7, 10, 13, 14, 11, 15,
     31, 27, 30, 29, 26, 23, 19, 22,
     25, 28, 24, 21, 18, 17, 20, 16,
     32, 36, 33, 34, 37, 40, 44, 41,
@@ -105,22 +110,23 @@ static const uint8_t aic_c_scan[64] = {
     57, 60, 56, 53, 50, 49, 52, 48,
 };
 
-static const uint8_t aic_c_ext_scan[192] = {
-     16,  24,  17,  18,  25,  32,  40,  33,
-     26,  19,  27,  34,  41,  42,  35,  43,
-      0,   4,   1,   2,   5,   8,  12,   9,
-      6,   3,   7,  10,  13,  14,  11,  15,
-     20,  28,  21,  22,  29,  36,  44,  37,
-     30,  23,  31,  38,  45,  46,  39,  47,
-     95,  87,  94,  93,  86,  79,  71,  78,
-     85,  92,  84,  77,  70,  69,  76,  68,
-     63,  59,  62,  61,  58,  55,  51,  54,
-     57,  60,  56,  53,  50,  49,  52,  48,
-     91,  83,  90,  89,  82,  75,  67,  74,
-     81,  88,  80,  73,  66,  65,  72,  64,
+static const uint8_t aic_c_ext_scan[192] =
+{
+    16,  24,  17,  18,  25,  32,  40,  33,
+    26,  19,  27,  34,  41,  42,  35,  43,
+    0,   4,   1,   2,   5,   8,  12,   9,
+    6,   3,   7,  10,  13,  14,  11,  15,
+    20,  28,  21,  22,  29,  36,  44,  37,
+    30,  23,  31,  38,  45,  46,  39,  47,
+    95,  87,  94,  93,  86,  79,  71,  78,
+    85,  92,  84,  77,  70,  69,  76,  68,
+    63,  59,  62,  61,  58,  55,  51,  54,
+    57,  60,  56,  53,  50,  49,  52,  48,
+    91,  83,  90,  89,  82,  75,  67,  74,
+    81,  88,  80,  73,  66,  65,  72,  64,
     112, 120, 113, 114, 121, 128, 136, 129,
     122, 115, 123, 130, 137, 138, 131, 139,
-     96, 100,  97,  98, 101, 104, 108, 105,
+    96, 100,  97,  98, 101, 104, 108, 105,
     102,  99, 103, 106, 109, 110, 107, 111,
     116, 124, 117, 118, 125, 132, 140, 133,
     126, 119, 127, 134, 141, 142, 135, 143,
@@ -132,11 +138,13 @@ static const uint8_t aic_c_ext_scan[192] = {
     177, 184, 176, 169, 162, 161, 168, 160,
 };
 
-static const uint8_t * const aic_scan[NUM_BANDS] = {
+static const uint8_t * const aic_scan[NUM_BANDS] =
+{
     aic_y_scan, aic_c_scan, aic_y_ext_scan, aic_c_ext_scan
 };
 
-typedef struct AICContext {
+typedef struct AICContext
+{
     AVCodecContext *avctx;
     AVFrame        *frame;
     IDCTDSPContext idsp;
@@ -160,23 +168,27 @@ static int aic_decode_header(AICContext *ctx, const uint8_t *src, int size)
     uint32_t frame_size;
     int width, height;
 
-    if (src[0] != 1) {
+    if (src[0] != 1)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Invalid version %d\n", src[0]);
         return AVERROR_INVALIDDATA;
     }
-    if (src[1] != AIC_HDR_SIZE - 2) {
+    if (src[1] != AIC_HDR_SIZE - 2)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Invalid header size %d\n", src[1]);
         return AVERROR_INVALIDDATA;
     }
     frame_size = AV_RB32(src + 2);
     width      = AV_RB16(src + 6);
     height     = AV_RB16(src + 8);
-    if (frame_size > size) {
+    if (frame_size > size)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Frame size should be %"PRIu32" got %d\n",
                frame_size, size);
         return AVERROR_INVALIDDATA;
     }
-    if (width != ctx->avctx->width || height != ctx->avctx->height) {
+    if (width != ctx->avctx->width || height != ctx->avctx->height)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR,
                "Picture dimension changed: old: %d x %d, new: %d x %d\n",
                ctx->avctx->width, ctx->avctx->height, width, height);
@@ -211,13 +223,16 @@ static int aic_decode_coeffs(GetBitContext *gb, int16_t *dst,
     coeff_type = get_bits1(gb);
     coeff_bits = get_bits(gb, 3);
 
-    if (has_skips) {
+    if (has_skips)
+    {
         skip_type = get_bits1(gb);
         skip_bits = get_bits(gb, 3);
 
-        for (mb = 0; mb < slice_width; mb++) {
+        for (mb = 0; mb < slice_width; mb++)
+        {
             idx = -1;
-            do {
+            do
+            {
                 GET_CODE(val, skip_type, skip_bits);
                 if (val >= 0x10000)
                     return AVERROR_INVALIDDATA;
@@ -229,12 +244,17 @@ static int aic_decode_coeffs(GetBitContext *gb, int16_t *dst,
                 if (val >= 0x10000)
                     return AVERROR_INVALIDDATA;
                 dst[scan[idx]] = val;
-            } while (idx < num_coeffs - 1);
+            }
+            while (idx < num_coeffs - 1);
             dst += num_coeffs;
         }
-    } else {
-        for (mb = 0; mb < slice_width; mb++) {
-            for (idx = 0; idx < num_coeffs; idx++) {
+    }
+    else
+    {
+        for (mb = 0; mb < slice_width; mb++)
+        {
+            for (idx = 0; idx < num_coeffs; idx++)
+            {
                 GET_CODE(val, coeff_type, coeff_bits);
                 if (val >= 0x10000)
                     return AVERROR_INVALIDDATA;
@@ -251,7 +271,8 @@ static void recombine_block(int16_t *dst, const uint8_t *scan,
 {
     int i, j;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         for (j = 0; j < 4; j++)
             dst[scan[i * 8 + j]]     = (*base)[j];
         for (j = 0; j < 4; j++)
@@ -259,7 +280,8 @@ static void recombine_block(int16_t *dst, const uint8_t *scan,
         *base += 4;
         *ext  += 4;
     }
-    for (; i < 8; i++) {
+    for (; i < 8; i++)
+    {
         for (j = 0; j < 8; j++)
             dst[scan[i * 8 + j]] = (*ext)[j];
         *ext  += 8;
@@ -272,8 +294,10 @@ static void recombine_block_il(int16_t *dst, const uint8_t *scan,
 {
     int i, j;
 
-    if (block_no < 2) {
-        for (i = 0; i < 8; i++) {
+    if (block_no < 2)
+    {
+        for (i = 0; i < 8; i++)
+        {
             for (j = 0; j < 4; j++)
                 dst[scan[i * 8 + j]]     = (*base)[j];
             for (j = 0; j < 4; j++)
@@ -281,7 +305,9 @@ static void recombine_block_il(int16_t *dst, const uint8_t *scan,
             *base += 4;
             *ext  += 4;
         }
-    } else {
+    }
+    else
+    {
         for (i = 0; i < 64; i++)
             dst[scan[i]] = (*ext)[i];
         *ext += 64;
@@ -292,7 +318,8 @@ static void unquant_block(int16_t *block, int q, uint8_t *quant_matrix)
 {
     int i;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int val  = (uint16_t)block[i];
         int sign = val & 1;
 
@@ -329,8 +356,10 @@ static int aic_decode_slice(AICContext *ctx, int mb_x, int mb_y,
                                      !ctx->interlaced)) < 0)
             return ret;
 
-    for (mb = 0; mb < slice_width; mb++) {
-        for (blk = 0; blk < 4; blk++) {
+    for (mb = 0; mb < slice_width; mb++)
+    {
+        for (blk = 0; blk < 4; blk++)
+        {
             if (!ctx->interlaced)
                 recombine_block(ctx->block, ctx->scantable.permutated,
                                 &base_y, &ext_y);
@@ -340,10 +369,13 @@ static int aic_decode_slice(AICContext *ctx, int mb_x, int mb_y,
             unquant_block(ctx->block, ctx->quant, ctx->quant_matrix);
             ctx->idsp.idct(ctx->block);
 
-            if (!ctx->interlaced) {
+            if (!ctx->interlaced)
+            {
                 dst = Y + (blk >> 1) * 8 * ystride + (blk & 1) * 8;
                 ctx->idsp.put_signed_pixels_clamped(ctx->block, dst, ystride);
-            } else {
+            }
+            else
+            {
                 dst = Y + (blk & 1) * 8 + (blk >> 1) * ystride;
                 ctx->idsp.put_signed_pixels_clamped(ctx->block, dst,
                                                     ystride * 2);
@@ -351,7 +383,8 @@ static int aic_decode_slice(AICContext *ctx, int mb_x, int mb_y,
         }
         Y += 16;
 
-        for (blk = 0; blk < 2; blk++) {
+        for (blk = 0; blk < 2; blk++)
+        {
             recombine_block(ctx->block, ctx->scantable.permutated,
                             &base_c, &ext_c);
             unquant_block(ctx->block, ctx->quant, ctx->quant_matrix);
@@ -382,13 +415,15 @@ static int aic_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     off = FFALIGN(AIC_HDR_SIZE + ctx->num_x_slices * ctx->mb_height * 2, 4);
 
-    if (buf_size < off) {
+    if (buf_size < off)
+    {
         av_log(avctx, AV_LOG_ERROR, "Too small frame\n");
         return AVERROR_INVALIDDATA;
     }
 
     ret = aic_decode_header(ctx, buf, buf_size);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid header\n");
         return ret;
     }
@@ -399,17 +434,21 @@ static int aic_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     bytestream2_init(&gb, buf + AIC_HDR_SIZE,
                      ctx->num_x_slices * ctx->mb_height * 2);
 
-    for (y = 0; y < ctx->mb_height; y++) {
-        for (x = 0; x < ctx->mb_width; x += ctx->slice_width) {
+    for (y = 0; y < ctx->mb_height; y++)
+    {
+        for (x = 0; x < ctx->mb_width; x += ctx->slice_width)
+        {
             slice_size = bytestream2_get_le16(&gb) * 4;
-            if (slice_size + off > buf_size || !slice_size) {
+            if (slice_size + off > buf_size || !slice_size)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Incorrect slice size %d at %d.%d\n", slice_size, x, y);
                 return AVERROR_INVALIDDATA;
             }
 
             ret = aic_decode_slice(ctx, x, y, buf + off, slice_size);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Error decoding slice at %d.%d\n", x, y);
                 return ret;
@@ -447,8 +486,10 @@ static av_cold int aic_decode_init(AVCodecContext *avctx)
 
     ctx->num_x_slices = (ctx->mb_width + 15) >> 4;
     ctx->slice_width  = 16;
-    for (i = 1; i < 32; i++) {
-        if (!(ctx->mb_width % i) && (ctx->mb_width / i <= 32)) {
+    for (i = 1; i < 32; i++)
+    {
+        if (!(ctx->mb_width % i) && (ctx->mb_width / i <= 32))
+        {
             ctx->slice_width  = ctx->mb_width / i;
             ctx->num_x_slices = i;
             break;
@@ -456,8 +497,9 @@ static av_cold int aic_decode_init(AVCodecContext *avctx)
     }
 
     ctx->slice_data = av_malloc_array(ctx->slice_width, AIC_BAND_COEFFS
-                                * sizeof(*ctx->slice_data));
-    if (!ctx->slice_data) {
+                                      * sizeof(*ctx->slice_data));
+    if (!ctx->slice_data)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error allocating slice buffer\n");
 
         return AVERROR(ENOMEM);
@@ -465,7 +507,7 @@ static av_cold int aic_decode_init(AVCodecContext *avctx)
 
     for (i = 0; i < NUM_BANDS; i++)
         ctx->data_ptr[i] = ctx->slice_data + ctx->slice_width
-                                             * aic_band_off[i];
+                           * aic_band_off[i];
 
     return 0;
 }
@@ -479,7 +521,8 @@ static av_cold int aic_decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_aic_decoder = {
+AVCodec ff_aic_decoder =
+{
     .name           = "aic",
     .long_name      = NULL_IF_CONFIG_SMALL("Apple Intermediate Codec"),
     .type           = AVMEDIA_TYPE_VIDEO,

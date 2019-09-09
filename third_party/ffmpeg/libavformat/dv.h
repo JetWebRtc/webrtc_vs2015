@@ -1,4 +1,4 @@
-/*
+﻿/*
  * General DV muxer/demuxer
  * Copyright (c) 2003 Roman Shaposhnik
  *

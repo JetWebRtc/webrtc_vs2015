@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Anton Khirnov
  *
  * This file is part of FFmpeg.
@@ -39,20 +39,36 @@ static void print_usage(void)
 static void print_option(const AVClass *class, const AVOption *o)
 {
     printf("@item -%s @var{", o->name);
-    switch (o->type) {
-    case FF_OPT_TYPE_BINARY:   printf("hexadecimal string"); break;
-    case FF_OPT_TYPE_STRING:   printf("string");             break;
+    switch (o->type)
+    {
+    case FF_OPT_TYPE_BINARY:
+        printf("hexadecimal string");
+        break;
+    case FF_OPT_TYPE_STRING:
+        printf("string");
+        break;
     case FF_OPT_TYPE_INT:
-    case FF_OPT_TYPE_INT64:    printf("integer");            break;
+    case FF_OPT_TYPE_INT64:
+        printf("integer");
+        break;
     case FF_OPT_TYPE_FLOAT:
-    case FF_OPT_TYPE_DOUBLE:   printf("float");              break;
-    case FF_OPT_TYPE_RATIONAL: printf("rational number");    break;
-    case FF_OPT_TYPE_FLAGS:    printf("flags");              break;
-    default:                   printf("value");              break;
+    case FF_OPT_TYPE_DOUBLE:
+        printf("float");
+        break;
+    case FF_OPT_TYPE_RATIONAL:
+        printf("rational number");
+        break;
+    case FF_OPT_TYPE_FLAGS:
+        printf("flags");
+        break;
+    default:
+        printf("value");
+        break;
     }
     printf("} (@emph{");
 
-    if (o->flags & AV_OPT_FLAG_ENCODING_PARAM) {
+    if (o->flags & AV_OPT_FLAG_ENCODING_PARAM)
+    {
         printf("input");
         if (o->flags & AV_OPT_FLAG_ENCODING_PARAM)
             printf("/");
@@ -64,7 +80,8 @@ static void print_option(const AVClass *class, const AVOption *o)
     if (o->help)
         printf("%s\n", o->help);
 
-    if (o->unit) {
+    if (o->unit)
+    {
         const AVOption *u = NULL;
         printf("\nPossible values:\n@table @samp\n");
 
@@ -95,13 +112,15 @@ static void show_format_opts(void)
     show_opts(avformat_get_class());
 
     printf("@section Format-specific AVOptions\n");
-    while ((iformat = av_iformat_next(iformat))) {
+    while ((iformat = av_iformat_next(iformat)))
+    {
         if (!iformat->priv_class)
             continue;
         printf("@subsection %s AVOptions\n", iformat->priv_class->class_name);
         show_opts(iformat->priv_class);
     }
-    while ((oformat = av_oformat_next(oformat))) {
+    while ((oformat = av_oformat_next(oformat)))
+    {
         if (!oformat->priv_class)
             continue;
         printf("@subsection %s AVOptions\n", oformat->priv_class->class_name);
@@ -117,7 +136,8 @@ static void show_codec_opts(void)
     show_opts(avcodec_get_class());
 
     printf("@section Codec-specific AVOptions\n");
-    while ((c = av_codec_next(c))) {
+    while ((c = av_codec_next(c)))
+    {
         if (!c->priv_class)
             continue;
         printf("@subsection %s AVOptions\n", c->priv_class->class_name);

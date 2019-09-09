@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -35,15 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Calculates residual energies of input subframes where all subframes have LPC_order   */
 /* of preceding samples                                                                 */
 void silk_residual_energy_FIX(
-          opus_int32                nrgs[ MAX_NB_SUBFR ],                   /* O    Residual energy per subframe                                                */
-          opus_int                  nrgsQ[ MAX_NB_SUBFR ],                  /* O    Q value per subframe                                                        */
+    opus_int32                nrgs[ MAX_NB_SUBFR ],                   /* O    Residual energy per subframe                                                */
+    opus_int                  nrgsQ[ MAX_NB_SUBFR ],                  /* O    Q value per subframe                                                        */
     const opus_int16                x[],                                    /* I    Input signal                                                                */
-          opus_int16                a_Q12[ 2 ][ MAX_LPC_ORDER ],            /* I    AR coefs for each frame half                                                */
+    opus_int16                a_Q12[ 2 ][ MAX_LPC_ORDER ],            /* I    AR coefs for each frame half                                                */
     const opus_int32                gains[ MAX_NB_SUBFR ],                  /* I    Quantization gains                                                          */
     const opus_int                  subfr_length,                           /* I    Subframe length                                                             */
     const opus_int                  nb_subfr,                               /* I    Number of subframes                                                         */
     const opus_int                  LPC_order,                              /* I    LPC order                                                                   */
-          int                       arch                                    /* I    Run-time architecture                                                       */
+    int                       arch                                    /* I    Run-time architecture                                                       */
 )
 {
     opus_int         offset, i, j, rshift, lz1, lz2;
@@ -59,13 +59,15 @@ void silk_residual_energy_FIX(
     /* Filter input to create the LPC residual for each frame half, and measure subframe energies */
     ALLOC( LPC_res, ( MAX_NB_SUBFR >> 1 ) * offset, opus_int16 );
     silk_assert( ( nb_subfr >> 1 ) * ( MAX_NB_SUBFR >> 1 ) == nb_subfr );
-    for( i = 0; i < nb_subfr >> 1; i++ ) {
+    for( i = 0; i < nb_subfr >> 1; i++ )
+    {
         /* Calculate half frame LPC residual signal including preceding samples */
         silk_LPC_analysis_filter( LPC_res, x_ptr, a_Q12[ i ], ( MAX_NB_SUBFR >> 1 ) * offset, LPC_order, arch );
 
         /* Point to first subframe of the just calculated LPC residual signal */
         LPC_res_ptr = LPC_res + LPC_order;
-        for( j = 0; j < ( MAX_NB_SUBFR >> 1 ); j++ ) {
+        for( j = 0; j < ( MAX_NB_SUBFR >> 1 ); j++ )
+        {
             /* Measure subframe energy */
             silk_sum_sqr_shift( &nrgs[ i * ( MAX_NB_SUBFR >> 1 ) + j ], &rshift, LPC_res_ptr, subfr_length );
 
@@ -80,7 +82,8 @@ void silk_residual_energy_FIX(
     }
 
     /* Apply the squared subframe gains */
-    for( i = 0; i < nb_subfr; i++ ) {
+    for( i = 0; i < nb_subfr; i++ )
+    {
         /* Fully upscale gains and energies */
         lz1 = silk_CLZ32( nrgs[  i ] ) - 1;
         lz2 = silk_CLZ32( gains[ i ] ) - 1;

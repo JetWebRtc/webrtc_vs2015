@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ALSA input and output
  * Copyright (c) 2007 Luca Abeni ( lucabe72 email it )
  * Copyright (c) 2007 Benoit Fouet ( benoit fouet free fr )
@@ -55,7 +55,8 @@ static av_cold int audio_write_header(AVFormatContext *s1)
     enum AVCodecID codec_id;
     int res;
 
-    if (s1->nb_streams != 1 || s1->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO) {
+    if (s1->nb_streams != 1 || s1->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
+    {
         av_log(s1, AV_LOG_ERROR, "Only a single audio stream is supported.\n");
         return AVERROR(EINVAL);
     }
@@ -64,8 +65,9 @@ static av_cold int audio_write_header(AVFormatContext *s1)
     sample_rate = st->codec->sample_rate;
     codec_id    = st->codec->codec_id;
     res = ff_alsa_open(s1, SND_PCM_STREAM_PLAYBACK, &sample_rate,
-        st->codec->channels, &codec_id);
-    if (sample_rate != st->codec->sample_rate) {
+                       st->codec->channels, &codec_id);
+    if (sample_rate != st->codec->sample_rate)
+    {
         av_log(s1, AV_LOG_ERROR,
                "sample rate %d not available, nearest is %d\n",
                st->codec->sample_rate, sample_rate);
@@ -92,20 +94,24 @@ static int audio_write_packet(AVFormatContext *s1, AVPacket *pkt)
         s->timestamp = pkt->dts;
     s->timestamp += pkt->duration ? pkt->duration : size;
 
-    if (s->reorder_func) {
+    if (s->reorder_func)
+    {
         if (size > s->reorder_buf_size)
             if (ff_alsa_extend_reorder_buf(s, size))
                 return AVERROR(ENOMEM);
         s->reorder_func(buf, s->reorder_buf, size);
         buf = s->reorder_buf;
     }
-    while ((res = snd_pcm_writei(s->h, buf, size)) < 0) {
-        if (res == -EAGAIN) {
+    while ((res = snd_pcm_writei(s->h, buf, size)) < 0)
+    {
+        if (res == -EAGAIN)
+        {
 
             return AVERROR(EAGAIN);
         }
 
-        if (ff_alsa_xrun_recover(s1, res) < 0) {
+        if (ff_alsa_xrun_recover(s1, res) < 0)
+        {
             av_log(s1, AV_LOG_ERROR, "ALSA write error: %s\n",
                    snd_strerror(res));
 
@@ -136,7 +142,7 @@ static int audio_write_frame(AVFormatContext *s1, int stream_index,
 
 static void
 audio_get_output_timestamp(AVFormatContext *s1, int stream,
-    int64_t *dts, int64_t *wall)
+                           int64_t *dts, int64_t *wall)
 {
     AlsaData *s  = s1->priv_data;
     snd_pcm_sframes_t delay = 0;
@@ -150,14 +156,16 @@ static int audio_get_device_list(AVFormatContext *h, AVDeviceInfoList *device_li
     return ff_alsa_get_device_list(device_list, SND_PCM_STREAM_PLAYBACK);
 }
 
-static const AVClass alsa_muxer_class = {
+static const AVClass alsa_muxer_class =
+{
     .class_name     = "ALSA muxer",
     .item_name      = av_default_item_name,
     .version        = LIBAVUTIL_VERSION_INT,
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
 };
 
-AVOutputFormat ff_alsa_muxer = {
+AVOutputFormat ff_alsa_muxer =
+{
     .name           = "alsa",
     .long_name      = NULL_IF_CONFIG_SMALL("ALSA audio output"),
     .priv_data_size = sizeof(AlsaData),

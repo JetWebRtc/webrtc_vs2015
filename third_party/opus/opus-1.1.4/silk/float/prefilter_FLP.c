@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -48,8 +48,8 @@ static OPUS_INLINE void silk_prefilt_FLP(
 );
 
 static void silk_warped_LPC_analysis_filter_FLP(
-          silk_float                 state[],            /* I/O  State [order + 1]                       */
-          silk_float                 res[],              /* O    Residual signal [length]                */
+    silk_float                 state[],            /* I/O  State [order + 1]                       */
+    silk_float                 res[],              /* O    Residual signal [length]                */
     const silk_float                 coef[],             /* I    Coefficients [order]                    */
     const silk_float                 input[],            /* I    Input signal [length]                   */
     const silk_float                 lambda,             /* I    Warping factor                          */
@@ -63,7 +63,8 @@ static void silk_warped_LPC_analysis_filter_FLP(
     /* Order must be even */
     silk_assert( ( order & 1 ) == 0 );
 
-    for( n = 0; n < length; n++ ) {
+    for( n = 0; n < length; n++ )
+    {
         /* Output of lowpass section */
         tmp2 = state[ 0 ] + lambda * state[ 1 ];
         state[ 0 ] = input[ n ];
@@ -72,7 +73,8 @@ static void silk_warped_LPC_analysis_filter_FLP(
         state[ 1 ] = tmp2;
         acc = coef[ 0 ] * tmp2;
         /* Loop over allpass sections */
-        for( i = 2; i < order; i += 2 ) {
+        for( i = 2; i < order; i += 2 )
+        {
             /* Output of allpass section */
             tmp2 = state[ i ] + lambda * ( state[ i + 1 ] - tmp1 );
             state[ i ] = tmp1;
@@ -112,9 +114,11 @@ void silk_prefilter_FLP(
     px  = x;
     pxw = xw;
     lag = P->lagPrev;
-    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+    {
         /* Update Variables that change per sub frame */
-        if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {
+        if( psEnc->sCmn.indices.signalType == TYPE_VOICED )
+        {
             lag = psEncCtrl->pitchL[ k ];
         }
 
@@ -130,14 +134,15 @@ void silk_prefilter_FLP(
 
         /* Short term FIR filtering */
         silk_warped_LPC_analysis_filter_FLP( P->sAR_shp, st_res, AR1_shp, px,
-            (silk_float)psEnc->sCmn.warping_Q16 / 65536.0f, psEnc->sCmn.subfr_length, psEnc->sCmn.shapingLPCOrder );
+                                             (silk_float)psEnc->sCmn.warping_Q16 / 65536.0f, psEnc->sCmn.subfr_length, psEnc->sCmn.shapingLPCOrder );
 
         /* Reduce (mainly) low frequencies during harmonic emphasis */
         B[ 0 ] =  psEncCtrl->GainsPre[ k ];
         B[ 1 ] = -psEncCtrl->GainsPre[ k ] *
-            ( psEncCtrl->HarmBoost[ k ] * HarmShapeGain + INPUT_TILT + psEncCtrl->coding_quality * HIGH_RATE_INPUT_TILT );
+                 ( psEncCtrl->HarmBoost[ k ] * HarmShapeGain + INPUT_TILT + psEncCtrl->coding_quality * HIGH_RATE_INPUT_TILT );
         pxw[ 0 ] = B[ 0 ] * st_res[ 0 ] + B[ 1 ] * P->sHarmHP;
-        for( j = 1; j < psEnc->sCmn.subfr_length; j++ ) {
+        for( j = 1; j < psEnc->sCmn.subfr_length; j++ )
+        {
             pxw[ j ] = B[ 0 ] * st_res[ j ] + B[ 1 ] * st_res[ j - 1 ];
         }
         P->sHarmHP = st_res[ psEnc->sCmn.subfr_length - 1 ];
@@ -177,14 +182,18 @@ static OPUS_INLINE void silk_prefilt_FLP(
     sLF_AR_shp      = P->sLF_AR_shp;
     sLF_MA_shp      = P->sLF_MA_shp;
 
-    for( i = 0; i < length; i++ ) {
-        if( lag > 0 ) {
+    for( i = 0; i < length; i++ )
+    {
+        if( lag > 0 )
+        {
             silk_assert( HARM_SHAPE_FIR_TAPS == 3 );
             idx = lag + LTP_shp_buf_idx;
             n_LTP  = LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2 - 1) & LTP_MASK ] * HarmShapeFIR[ 0 ];
             n_LTP += LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2    ) & LTP_MASK ] * HarmShapeFIR[ 1 ];
             n_LTP += LTP_shp_buf[ ( idx - HARM_SHAPE_FIR_TAPS / 2 + 1) & LTP_MASK ] * HarmShapeFIR[ 2 ];
-        } else {
+        }
+        else
+        {
             n_LTP = 0;
         }
 

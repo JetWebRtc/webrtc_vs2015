@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,35 +14,41 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 SharedDesktopFrame::~SharedDesktopFrame() {}
 
 // static
 std::unique_ptr<SharedDesktopFrame> SharedDesktopFrame::Wrap(
-    std::unique_ptr<DesktopFrame> desktop_frame) {
-  return std::unique_ptr<SharedDesktopFrame>(
-      new SharedDesktopFrame(new Core(std::move(desktop_frame))));
+    std::unique_ptr<DesktopFrame> desktop_frame)
+{
+    return std::unique_ptr<SharedDesktopFrame>(
+               new SharedDesktopFrame(new Core(std::move(desktop_frame))));
 }
 
-SharedDesktopFrame* SharedDesktopFrame::Wrap(DesktopFrame* desktop_frame) {
-  return Wrap(std::unique_ptr<DesktopFrame>(desktop_frame)).release();
+SharedDesktopFrame* SharedDesktopFrame::Wrap(DesktopFrame* desktop_frame)
+{
+    return Wrap(std::unique_ptr<DesktopFrame>(desktop_frame)).release();
 }
 
-DesktopFrame* SharedDesktopFrame::GetUnderlyingFrame() {
-  return core_->get();
+DesktopFrame* SharedDesktopFrame::GetUnderlyingFrame()
+{
+    return core_->get();
 }
 
-std::unique_ptr<SharedDesktopFrame> SharedDesktopFrame::Share() {
-  std::unique_ptr<SharedDesktopFrame> result(new SharedDesktopFrame(core_));
-  result->set_dpi(dpi());
-  result->set_capture_time_ms(capture_time_ms());
-  *result->mutable_updated_region() = updated_region();
-  return result;
+std::unique_ptr<SharedDesktopFrame> SharedDesktopFrame::Share()
+{
+    std::unique_ptr<SharedDesktopFrame> result(new SharedDesktopFrame(core_));
+    result->set_dpi(dpi());
+    result->set_capture_time_ms(capture_time_ms());
+    *result->mutable_updated_region() = updated_region();
+    return result;
 }
 
-bool SharedDesktopFrame::IsShared() {
-  return !core_->HasOneRef();
+bool SharedDesktopFrame::IsShared()
+{
+    return !core_->HasOneRef();
 }
 
 SharedDesktopFrame::SharedDesktopFrame(rtc::scoped_refptr<Core> core)

@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
@@ -11,8 +11,10 @@
 #ifndef WEBRTC_SYSTEM_WRAPPERS_INCLUDE_FIELD_TRIAL_DEFAULT_H_
 #define WEBRTC_SYSTEM_WRAPPERS_INCLUDE_FIELD_TRIAL_DEFAULT_H_
 
-namespace webrtc {
-namespace field_trial {
+namespace webrtc
+{
+namespace field_trial
+{
 
 // Optionally initialize field trial from a string.
 // This method can be called at most once before any other call into webrtc.

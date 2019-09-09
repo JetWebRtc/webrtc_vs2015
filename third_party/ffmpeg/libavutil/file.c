@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -35,13 +35,15 @@
 #include <windows.h>
 #endif
 
-typedef struct FileLogContext {
+typedef struct FileLogContext
+{
     const AVClass *class;
     int   log_offset;
     void *log_ctx;
 } FileLogContext;
 
-static const AVClass file_log_ctx_class = {
+static const AVClass file_log_ctx_class =
+{
     "FILE", av_default_item_name, NULL, LIBAVUTIL_VERSION_INT,
     offsetof(FileLogContext, log_offset), offsetof(FileLogContext, log_ctx)
 };
@@ -57,14 +59,16 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
     char errbuf[128];
     *bufptr = NULL;
 
-    if (fd < 0) {
+    if (fd < 0)
+    {
         err = AVERROR(errno);
         av_strerror(err, errbuf, sizeof(errbuf));
         av_log(&file_log_ctx, AV_LOG_ERROR, "Cannot read file '%s': %s\n", filename, errbuf);
         return err;
     }
 
-    if (fstat(fd, &st) < 0) {
+    if (fstat(fd, &st) < 0)
+    {
         err = AVERROR(errno);
         av_strerror(err, errbuf, sizeof(errbuf));
         av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in fstat(): %s\n", errbuf);
@@ -73,7 +77,8 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
     }
 
     off_size = st.st_size;
-    if (off_size > SIZE_MAX) {
+    if (off_size > SIZE_MAX)
+    {
         av_log(&file_log_ctx, AV_LOG_ERROR,
                "File size for file '%s' is too big\n", filename);
         close(fd);
@@ -83,7 +88,8 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
 
 #if HAVE_MMAP
     ptr = mmap(NULL, *size, PROT_READ|PROT_WRITE, MAP_PRIVATE, fd, 0);
-    if (ptr == MAP_FAILED) {
+    if (ptr == MAP_FAILED)
+    {
         err = AVERROR(errno);
         av_strerror(err, errbuf, sizeof(errbuf));
         av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in mmap(): %s\n", errbuf);
@@ -96,7 +102,8 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
         HANDLE mh, fh = (HANDLE)_get_osfhandle(fd);
 
         mh = CreateFileMapping(fh, NULL, PAGE_READONLY, 0, 0, NULL);
-        if (!mh) {
+        if (!mh)
+        {
             av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in CreateFileMapping()\n");
             close(fd);
             return -1;
@@ -104,7 +111,8 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
 
         ptr = MapViewOfFile(mh, FILE_MAP_READ, 0, 0, *size);
         CloseHandle(mh);
-        if (!ptr) {
+        if (!ptr)
+        {
             av_log(&file_log_ctx, AV_LOG_ERROR, "Error occurred in MapViewOfFile()\n");
             close(fd);
             return -1;
@@ -114,7 +122,8 @@ int av_file_map(const char *filename, uint8_t **bufptr, size_t *size,
     }
 #else
     *bufptr = av_malloc(*size);
-    if (!*bufptr) {
+    if (!*bufptr)
+    {
         av_log(&file_log_ctx, AV_LOG_ERROR, "Memory allocation error occurred\n");
         close(fd);
         return AVERROR(ENOMEM);
@@ -153,7 +162,8 @@ int av_tempfile(const char *prefix, char **filename, int log_offset, void *log_c
     *filename  = av_malloc(len);
 #endif
     /* -----common section-----*/
-    if (!*filename) {
+    if (!*filename)
+    {
         av_log(&file_log_ctx, AV_LOG_ERROR, "ff_tempfile: Cannot allocate file name\n");
         return AVERROR(ENOMEM);
     }
@@ -169,14 +179,16 @@ int av_tempfile(const char *prefix, char **filename, int log_offset, void *log_c
     snprintf(*filename, len, "/tmp/%sXXXXXX", prefix);
     fd = mkstemp(*filename);
 #ifdef _WIN32
-    if (fd < 0) {
+    if (fd < 0)
+    {
         snprintf(*filename, len, "./%sXXXXXX", prefix);
         fd = mkstemp(*filename);
     }
 #endif
 #endif
     /* -----common section-----*/
-    if (fd < 0) {
+    if (fd < 0)
+    {
         int err = AVERROR(errno);
         av_log(&file_log_ctx, AV_LOG_ERROR, "ff_tempfile: Cannot open temporary file %s\n", *filename);
         av_freep(filename);

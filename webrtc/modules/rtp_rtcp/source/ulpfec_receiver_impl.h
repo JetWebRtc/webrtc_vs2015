@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,32 +19,34 @@
 #include "webrtc/modules/rtp_rtcp/source/forward_error_correction.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class UlpfecReceiverImpl : public UlpfecReceiver {
- public:
-  explicit UlpfecReceiverImpl(RtpData* callback);
-  virtual ~UlpfecReceiverImpl();
+class UlpfecReceiverImpl : public UlpfecReceiver
+{
+public:
+    explicit UlpfecReceiverImpl(RtpData* callback);
+    virtual ~UlpfecReceiverImpl();
 
-  int32_t AddReceivedRedPacket(const RTPHeader& rtp_header,
-                               const uint8_t* incoming_rtp_packet,
-                               size_t packet_length,
-                               uint8_t ulpfec_payload_type) override;
+    int32_t AddReceivedRedPacket(const RTPHeader& rtp_header,
+                                 const uint8_t* incoming_rtp_packet,
+                                 size_t packet_length,
+                                 uint8_t ulpfec_payload_type) override;
 
-  int32_t ProcessReceivedFec() override;
+    int32_t ProcessReceivedFec() override;
 
-  FecPacketCounter GetPacketCounter() const override;
+    FecPacketCounter GetPacketCounter() const override;
 
- private:
-  rtc::CriticalSection crit_sect_;
-  RtpData* recovered_packet_callback_;
-  std::unique_ptr<ForwardErrorCorrection> fec_;
-  // TODO(holmer): In the current version |received_packets_| is never more
-  // than one packet, since we process FEC every time a new packet
-  // arrives. We should remove the list.
-  ForwardErrorCorrection::ReceivedPacketList received_packets_;
-  ForwardErrorCorrection::RecoveredPacketList recovered_packets_;
-  FecPacketCounter packet_counter_;
+private:
+    rtc::CriticalSection crit_sect_;
+    RtpData* recovered_packet_callback_;
+    std::unique_ptr<ForwardErrorCorrection> fec_;
+    // TODO(holmer): In the current version |received_packets_| is never more
+    // than one packet, since we process FEC every time a new packet
+    // arrives. We should remove the list.
+    ForwardErrorCorrection::ReceivedPacketList received_packets_;
+    ForwardErrorCorrection::RecoveredPacketList recovered_packets_;
+    FecPacketCounter packet_counter_;
 };
 
 }  // namespace webrtc

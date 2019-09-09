@@ -1,4 +1,4 @@
-/*
+﻿/*
  * simple math operations
  * Copyright (c) 2001, 2002 Fabrice Bellard
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at> et al
@@ -57,13 +57,15 @@ extern const uint8_t ff_zigzag_direct[64];
 #endif
 
 #ifndef MULH
-static av_always_inline int MULH(int a, int b){
+static av_always_inline int MULH(int a, int b)
+{
     return MUL64(a, b) >> 32;
 }
 #endif
 
 #ifndef UMULH
-static av_always_inline unsigned UMULH(unsigned a, unsigned b){
+static av_always_inline unsigned UMULH(unsigned a, unsigned b)
+{
     return ((uint64_t)(a) * (uint64_t)(b))>>32;
 }
 #endif
@@ -104,13 +106,18 @@ static inline av_const int mid_pred(int a, int b, int c)
 
     return b;
 #else
-    if(a>b){
-        if(c>b){
+    if(a>b)
+    {
+        if(c>b)
+        {
             if(c>a) b=a;
             else    b=c;
         }
-    }else{
-        if(b>c){
+    }
+    else
+    {
+        if(b>c)
+        {
             if(c>a) b=c;
             else    b=a;
         }
@@ -124,10 +131,13 @@ static inline av_const int mid_pred(int a, int b, int c)
 #define median4 median4
 static inline av_const int median4(int a, int b, int c, int d)
 {
-    if (a < b) {
+    if (a < b)
+    {
         if (c < d) return (FFMIN(b, d) + FFMAX(a, c)) / 2;
         else       return (FFMIN(b, c) + FFMAX(a, d)) / 2;
-    } else {
+    }
+    else
+    {
         if (c < d) return (FFMIN(a, d) + FFMAX(b, c)) / 2;
         else       return (FFMIN(a, c) + FFMAX(b, d)) / 2;
     }
@@ -138,7 +148,11 @@ static inline av_const int median4(int a, int b, int c, int d)
 static inline av_const int sign_extend(int val, unsigned bits)
 {
     unsigned shift = 8 * sizeof(int) - bits;
-    union { unsigned u; int s; } v = { (unsigned) val << shift };
+    union
+    {
+        unsigned u;
+        int s;
+    } v = { (unsigned) val << shift };
     return v.s >> shift;
 }
 #endif
@@ -222,7 +236,8 @@ static inline av_const unsigned int ff_sqrt(unsigned int a)
     else if (a < (1 << 14)) b = ff_sqrt_tab[a >> 6] >> 1;
     else if (a < (1 << 16)) b = ff_sqrt_tab[a >> 8]   ;
 #endif
-    else {
+    else
+    {
         int s = av_log2_16bit(a >> 16) >> 1;
         unsigned int c = a >> (s + 2);
         b = ff_sqrt_tab[c >> (s + 8)];
@@ -235,7 +250,8 @@ static inline av_const unsigned int ff_sqrt(unsigned int a)
 
 static inline int8_t ff_u8_to_s8(uint8_t a)
 {
-    union {
+    union
+    {
         uint8_t u8;
         int8_t  s8;
     } b;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized blockdsp
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited

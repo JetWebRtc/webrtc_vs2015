@@ -1,4 +1,4 @@
-/*
+﻿/*
  * E-AC-3 encoder
  * Copyright (c) 2011 Justin Ruggles <justin.ruggles@gmail.com>
  *

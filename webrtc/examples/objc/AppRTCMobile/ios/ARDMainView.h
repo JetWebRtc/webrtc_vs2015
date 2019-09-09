@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,12 +15,12 @@
 @protocol ARDMainViewDelegate <NSObject>
 
 - (void)mainView:(ARDMainView *)mainView
-             didInputRoom:(NSString *)room
-               isLoopback:(BOOL)isLoopback
-              isAudioOnly:(BOOL)isAudioOnly
-        shouldMakeAecDump:(BOOL)shouldMakeAecDump
+    didInputRoom:(NSString *)room
+    isLoopback:(BOOL)isLoopback
+    isAudioOnly:(BOOL)isAudioOnly
+    shouldMakeAecDump:(BOOL)shouldMakeAecDump
     shouldUseLevelControl:(BOOL)shouldUseLevelControl
-           useManualAudio:(BOOL)useManualAudio;
+    useManualAudio:(BOOL)useManualAudio;
 
 - (void)mainViewDidToggleAudioLoop:(ARDMainView *)mainView;
 
@@ -30,7 +30,7 @@
 // name on apprtc to connect to.
 @interface ARDMainView : UIView
 
-@property(nonatomic, weak) id<ARDMainViewDelegate> delegate;
+    @property(nonatomic, weak) id<ARDMainViewDelegate> delegate;
 // Updates the audio loop button as needed.
 @property(nonatomic, assign) BOOL isAudioLoopPlaying;
 

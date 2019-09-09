@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,10 +16,11 @@
 #include "webrtc/modules/video_coding/internal_defines.h"
 #include "webrtc/system_wrappers/include/clock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 VCMDecodedFrameCallback::VCMDecodedFrameCallback(VCMTiming* timing,
-                                                 Clock* clock)
+        Clock* clock)
     : _critSect(CriticalSectionWrapper::CreateCriticalSection()),
       _clock(clock),
       _receiveCallback(NULL),
@@ -27,113 +28,132 @@ VCMDecodedFrameCallback::VCMDecodedFrameCallback(VCMTiming* timing,
       _timestampMap(kDecoderFrameMemoryLength),
       _lastReceivedPictureID(0) {}
 
-VCMDecodedFrameCallback::~VCMDecodedFrameCallback() {
-  delete _critSect;
+VCMDecodedFrameCallback::~VCMDecodedFrameCallback()
+{
+    delete _critSect;
 }
 
 void VCMDecodedFrameCallback::SetUserReceiveCallback(
-    VCMReceiveCallback* receiveCallback) {
-  CriticalSectionScoped cs(_critSect);
-  _receiveCallback = receiveCallback;
+    VCMReceiveCallback* receiveCallback)
+{
+    CriticalSectionScoped cs(_critSect);
+    _receiveCallback = receiveCallback;
 }
 
-VCMReceiveCallback* VCMDecodedFrameCallback::UserReceiveCallback() {
-  CriticalSectionScoped cs(_critSect);
-  return _receiveCallback;
+VCMReceiveCallback* VCMDecodedFrameCallback::UserReceiveCallback()
+{
+    CriticalSectionScoped cs(_critSect);
+    return _receiveCallback;
 }
 
-int32_t VCMDecodedFrameCallback::Decoded(VideoFrame& decodedImage) {
-  return Decoded(decodedImage, -1);
+int32_t VCMDecodedFrameCallback::Decoded(VideoFrame& decodedImage)
+{
+    return Decoded(decodedImage, -1);
 }
 
 int32_t VCMDecodedFrameCallback::Decoded(VideoFrame& decodedImage,
-                                         int64_t decode_time_ms) {
-  Decoded(decodedImage,
-          decode_time_ms >= 0 ? rtc::Optional<int32_t>(decode_time_ms)
-                              : rtc::Optional<int32_t>(),
-          rtc::Optional<uint8_t>());
-  return WEBRTC_VIDEO_CODEC_OK;
+        int64_t decode_time_ms)
+{
+    Decoded(decodedImage,
+            decode_time_ms >= 0 ? rtc::Optional<int32_t>(decode_time_ms)
+            : rtc::Optional<int32_t>(),
+            rtc::Optional<uint8_t>());
+    return WEBRTC_VIDEO_CODEC_OK;
 }
 
 void VCMDecodedFrameCallback::Decoded(VideoFrame& decodedImage,
                                       rtc::Optional<int32_t> decode_time_ms,
-                                      rtc::Optional<uint8_t> qp) {
-  TRACE_EVENT_INSTANT1("webrtc", "VCMDecodedFrameCallback::Decoded",
-                       "timestamp", decodedImage.timestamp());
-  // TODO(holmer): We should improve this so that we can handle multiple
-  // callbacks from one call to Decode().
-  VCMFrameInformation* frameInfo;
-  VCMReceiveCallback* callback;
-  {
-    CriticalSectionScoped cs(_critSect);
-    frameInfo = _timestampMap.Pop(decodedImage.timestamp());
-    callback = _receiveCallback;
-  }
+                                      rtc::Optional<uint8_t> qp)
+{
+    TRACE_EVENT_INSTANT1("webrtc", "VCMDecodedFrameCallback::Decoded",
+                         "timestamp", decodedImage.timestamp());
+    // TODO(holmer): We should improve this so that we can handle multiple
+    // callbacks from one call to Decode().
+    VCMFrameInformation* frameInfo;
+    VCMReceiveCallback* callback;
+    {
+        CriticalSectionScoped cs(_critSect);
+        frameInfo = _timestampMap.Pop(decodedImage.timestamp());
+        callback = _receiveCallback;
+    }
 
-  if (frameInfo == NULL) {
-    LOG(LS_WARNING) << "Too many frames backed up in the decoder, dropping "
-                       "this one.";
-    return;
-  }
+    if (frameInfo == NULL)
+    {
+        LOG(LS_WARNING) << "Too many frames backed up in the decoder, dropping "
+                        "this one.";
+        return;
+    }
 
-  const int64_t now_ms = _clock->TimeInMilliseconds();
-  if (!decode_time_ms) {
-    decode_time_ms =
-        rtc::Optional<int32_t>(now_ms - frameInfo->decodeStartTimeMs);
-  }
-  _timing->StopDecodeTimer(decodedImage.timestamp(), *decode_time_ms, now_ms,
-                           frameInfo->renderTimeMs);
+    const int64_t now_ms = _clock->TimeInMilliseconds();
+    if (!decode_time_ms)
+    {
+        decode_time_ms =
+            rtc::Optional<int32_t>(now_ms - frameInfo->decodeStartTimeMs);
+    }
+    _timing->StopDecodeTimer(decodedImage.timestamp(), *decode_time_ms, now_ms,
+                             frameInfo->renderTimeMs);
 
-  decodedImage.set_timestamp_us(
-      frameInfo->renderTimeMs * rtc::kNumMicrosecsPerMillisec);
-  decodedImage.set_rotation(frameInfo->rotation);
-  // TODO(sakal): Investigate why callback is NULL sometimes and replace if
-  // statement with a DCHECK.
-  if (callback) {
-    callback->FrameToRender(decodedImage, qp);
-  } else {
-    LOG(LS_WARNING) << "No callback, dropping frame.";
-  }
+    decodedImage.set_timestamp_us(
+        frameInfo->renderTimeMs * rtc::kNumMicrosecsPerMillisec);
+    decodedImage.set_rotation(frameInfo->rotation);
+    // TODO(sakal): Investigate why callback is NULL sometimes and replace if
+    // statement with a DCHECK.
+    if (callback)
+    {
+        callback->FrameToRender(decodedImage, qp);
+    }
+    else
+    {
+        LOG(LS_WARNING) << "No callback, dropping frame.";
+    }
 }
 
 int32_t VCMDecodedFrameCallback::ReceivedDecodedReferenceFrame(
-    const uint64_t pictureId) {
-  CriticalSectionScoped cs(_critSect);
-  if (_receiveCallback != NULL) {
-    return _receiveCallback->ReceivedDecodedReferenceFrame(pictureId);
-  }
-  return -1;
+    const uint64_t pictureId)
+{
+    CriticalSectionScoped cs(_critSect);
+    if (_receiveCallback != NULL)
+    {
+        return _receiveCallback->ReceivedDecodedReferenceFrame(pictureId);
+    }
+    return -1;
 }
 
 int32_t VCMDecodedFrameCallback::ReceivedDecodedFrame(
-    const uint64_t pictureId) {
-  _lastReceivedPictureID = pictureId;
-  return 0;
+    const uint64_t pictureId)
+{
+    _lastReceivedPictureID = pictureId;
+    return 0;
 }
 
-uint64_t VCMDecodedFrameCallback::LastReceivedPictureID() const {
-  return _lastReceivedPictureID;
+uint64_t VCMDecodedFrameCallback::LastReceivedPictureID() const
+{
+    return _lastReceivedPictureID;
 }
 
 void VCMDecodedFrameCallback::OnDecoderImplementationName(
-    const char* implementation_name) {
-  CriticalSectionScoped cs(_critSect);
-  if (_receiveCallback)
-    _receiveCallback->OnDecoderImplementationName(implementation_name);
+    const char* implementation_name)
+{
+    CriticalSectionScoped cs(_critSect);
+    if (_receiveCallback)
+        _receiveCallback->OnDecoderImplementationName(implementation_name);
 }
 
 void VCMDecodedFrameCallback::Map(uint32_t timestamp,
-                                  VCMFrameInformation* frameInfo) {
-  CriticalSectionScoped cs(_critSect);
-  _timestampMap.Add(timestamp, frameInfo);
+                                  VCMFrameInformation* frameInfo)
+{
+    CriticalSectionScoped cs(_critSect);
+    _timestampMap.Add(timestamp, frameInfo);
 }
 
-int32_t VCMDecodedFrameCallback::Pop(uint32_t timestamp) {
-  CriticalSectionScoped cs(_critSect);
-  if (_timestampMap.Pop(timestamp) == NULL) {
-    return VCM_GENERAL_ERROR;
-  }
-  return VCM_OK;
+int32_t VCMDecodedFrameCallback::Pop(uint32_t timestamp)
+{
+    CriticalSectionScoped cs(_critSect);
+    if (_timestampMap.Pop(timestamp) == NULL)
+    {
+        return VCM_GENERAL_ERROR;
+    }
+    return VCM_OK;
 }
 
 VCMGenericDecoder::VCMGenericDecoder(VideoDecoder* decoder, bool isExternal)
@@ -148,14 +168,16 @@ VCMGenericDecoder::VCMGenericDecoder(VideoDecoder* decoder, bool isExternal)
 VCMGenericDecoder::~VCMGenericDecoder() {}
 
 int32_t VCMGenericDecoder::InitDecode(const VideoCodec* settings,
-                                      int32_t numberOfCores) {
-  TRACE_EVENT0("webrtc", "VCMGenericDecoder::InitDecode");
-  _codecType = settings->codecType;
+                                      int32_t numberOfCores)
+{
+    TRACE_EVENT0("webrtc", "VCMGenericDecoder::InitDecode");
+    _codecType = settings->codecType;
 
-  return _decoder->InitDecode(settings, numberOfCores);
+    return _decoder->InitDecode(settings, numberOfCores);
 }
 
-int32_t VCMGenericDecoder::Decode(const VCMEncodedFrame& frame, int64_t nowMs) {
+int32_t VCMGenericDecoder::Decode(const VCMEncodedFrame& frame, int64_t nowMs)
+{
     TRACE_EVENT1("webrtc", "VCMGenericDecoder::Decode", "timestamp",
                  frame.EncodedImage()._timeStamp);
     _frameInfos[_nextFrameInfoIdx].decodeStartTimeMs = nowMs;
@@ -170,35 +192,42 @@ int32_t VCMGenericDecoder::Decode(const VCMEncodedFrame& frame, int64_t nowMs) {
                                    frame.CodecSpecific(), frame.RenderTimeMs());
 
     _callback->OnDecoderImplementationName(_decoder->ImplementationName());
-    if (ret < WEBRTC_VIDEO_CODEC_OK) {
+    if (ret < WEBRTC_VIDEO_CODEC_OK)
+    {
         LOG(LS_WARNING) << "Failed to decode frame with timestamp "
                         << frame.TimeStamp() << ", error code: " << ret;
         _callback->Pop(frame.TimeStamp());
         return ret;
-    } else if (ret == WEBRTC_VIDEO_CODEC_NO_OUTPUT ||
-               ret == WEBRTC_VIDEO_CODEC_REQUEST_SLI) {
+    }
+    else if (ret == WEBRTC_VIDEO_CODEC_NO_OUTPUT ||
+             ret == WEBRTC_VIDEO_CODEC_REQUEST_SLI)
+    {
         // No output
         _callback->Pop(frame.TimeStamp());
     }
     return ret;
 }
 
-int32_t VCMGenericDecoder::Release() {
-  return _decoder->Release();
+int32_t VCMGenericDecoder::Release()
+{
+    return _decoder->Release();
 }
 
 int32_t VCMGenericDecoder::RegisterDecodeCompleteCallback(
-    VCMDecodedFrameCallback* callback) {
-  _callback = callback;
-  return _decoder->RegisterDecodeCompleteCallback(callback);
+    VCMDecodedFrameCallback* callback)
+{
+    _callback = callback;
+    return _decoder->RegisterDecodeCompleteCallback(callback);
 }
 
-bool VCMGenericDecoder::External() const {
-  return _isExternal;
+bool VCMGenericDecoder::External() const
+{
+    return _isExternal;
 }
 
-bool VCMGenericDecoder::PrefersLateDecoding() const {
-  return _decoder->PrefersLateDecoding();
+bool VCMGenericDecoder::PrefersLateDecoding() const
+{
+    return _decoder->PrefersLateDecoding();
 }
 
 }  // namespace webrtc

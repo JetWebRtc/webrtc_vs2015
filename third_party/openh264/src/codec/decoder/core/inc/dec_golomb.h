@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -47,7 +47,8 @@
 #include "ls_defines.h"
 #include "error_code.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 #define WELS_READ_VERIFY(uiRet) do{ \
   uint32_t uiRetTmp = (uint32_t)uiRet; \
@@ -74,13 +75,14 @@ namespace WelsDec {
   NEED_BITS(iCurBits, pBufPtr, iLeftBits, iAllowedBytes, iReadBytes); \
 }
 
-static inline int32_t BsGetBits (PBitStringAux pBs, int32_t iNumBits, uint32_t* pCode) {
-  intX_t iRc = UBITS (pBs->uiCurBits, iNumBits);
-  intX_t iAllowedBytes = pBs->pEndBuf - pBs->pStartBuf; //actual stream bytes
-  intX_t iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
-  DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, iNumBits, iAllowedBytes, iReadBytes);
-  *pCode = (uint32_t)iRc;
-  return ERR_NONE;
+static inline int32_t BsGetBits (PBitStringAux pBs, int32_t iNumBits, uint32_t* pCode)
+{
+intX_t iRc = UBITS (pBs->uiCurBits, iNumBits);
+intX_t iAllowedBytes = pBs->pEndBuf - pBs->pStartBuf; //actual stream bytes
+intX_t iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
+DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, iNumBits, iAllowedBytes, iReadBytes);
+*pCode = (uint32_t)iRc;
+return ERR_NONE;
 }
 
 /*
@@ -89,159 +91,194 @@ static inline int32_t BsGetBits (PBitStringAux pBs, int32_t iNumBits, uint32_t* 
 
 // for data sharing cross modules and try to reduce size of binary generated, 12/10/2009
 extern const uint8_t g_kuiIntra4x4CbpTable[48];
-    extern const uint8_t g_kuiIntra4x4CbpTable400[16];
+extern const uint8_t g_kuiIntra4x4CbpTable400[16];
 extern const uint8_t g_kuiInterCbpTable[48];
-    extern const uint8_t g_kuiInterCbpTable400[16];
+extern const uint8_t g_kuiInterCbpTable400[16];
 
 extern const uint8_t g_kuiLeadingZeroTable[256];
 
-static const uint32_t g_kuiPrefix8BitsTable[16] = {
-  0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3
+static const uint32_t g_kuiPrefix8BitsTable[16] =
+{
+0, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3
 };
 
 
-static inline uint32_t GetPrefixBits (uint32_t uiValue) {
-  uint32_t iNumBit = 0;
+static inline uint32_t GetPrefixBits (uint32_t uiValue)
+{
+uint32_t iNumBit = 0;
 
-  if (uiValue & 0xffff0000) {
+if (uiValue & 0xffff0000)
+{
     uiValue >>= 16;
     iNumBit += 16;
-  }
-  if (uiValue & 0xff00) {
+}
+if (uiValue & 0xff00)
+{
     uiValue >>= 8;
     iNumBit += 8;
-  }
+}
 
-  if (uiValue & 0xf0) {
+if (uiValue & 0xf0)
+{
     uiValue >>= 4;
     iNumBit += 4;
-  }
-  iNumBit += g_kuiPrefix8BitsTable[uiValue];
+}
+iNumBit += g_kuiPrefix8BitsTable[uiValue];
 
-  return (32 - iNumBit);
+return (32 - iNumBit);
 }
 
 /*
  *  Read one bit from bit stream followed
  */
-static inline uint32_t BsGetOneBit (PBitStringAux pBs, uint32_t* pCode) {
-  return (BsGetBits (pBs, 1, pCode));
+static inline uint32_t BsGetOneBit (PBitStringAux pBs, uint32_t* pCode)
+{
+return (BsGetBits (pBs, 1, pCode));
 }
 
-static inline int32_t GetLeadingZeroBits (uint32_t iCurBits) { //<=32 bits
-  uint32_t  uiValue;
+static inline int32_t GetLeadingZeroBits (uint32_t iCurBits)   //<=32 bits
+{
+uint32_t  uiValue;
 
-  uiValue = UBITS (iCurBits, 8); //ShowBits( bs, 8 );
-  if (uiValue) {
+uiValue = UBITS (iCurBits, 8); //ShowBits( bs, 8 );
+if (uiValue)
+{
     return g_kuiLeadingZeroTable[uiValue];
-  }
-
-  uiValue = UBITS (iCurBits, 16); //ShowBits( bs, 16 );
-  if (uiValue) {
-    return (g_kuiLeadingZeroTable[uiValue] + 8);
-  }
-
-  uiValue = UBITS (iCurBits, 24); //ShowBits( bs, 24 );
-  if (uiValue) {
-    return (g_kuiLeadingZeroTable[uiValue] + 16);
-  }
-
-  uiValue = iCurBits; //ShowBits( bs, 32 );
-  if (uiValue) {
-    return (g_kuiLeadingZeroTable[uiValue] + 24);
-  }
-//ASSERT(false);  // should not go here
-  return -1;
 }
 
-static inline uint32_t BsGetUe (PBitStringAux pBs, uint32_t* pCode) {
-  uint32_t iValue = 0;
-  int32_t  iLeadingZeroBits = GetLeadingZeroBits (pBs->uiCurBits);
-  intX_t iAllowedBytes, iReadBytes;
-  iAllowedBytes = pBs->pEndBuf - pBs->pStartBuf; //actual stream bytes
+uiValue = UBITS (iCurBits, 16); //ShowBits( bs, 16 );
+if (uiValue)
+{
+    return (g_kuiLeadingZeroTable[uiValue] + 8);
+}
 
-  if (iLeadingZeroBits == -1) { //bistream error
+uiValue = UBITS (iCurBits, 24); //ShowBits( bs, 24 );
+if (uiValue)
+{
+    return (g_kuiLeadingZeroTable[uiValue] + 16);
+}
+
+uiValue = iCurBits; //ShowBits( bs, 32 );
+if (uiValue)
+{
+    return (g_kuiLeadingZeroTable[uiValue] + 24);
+}
+//ASSERT(false);  // should not go here
+return -1;
+}
+
+static inline uint32_t BsGetUe (PBitStringAux pBs, uint32_t* pCode)
+{
+uint32_t iValue = 0;
+int32_t  iLeadingZeroBits = GetLeadingZeroBits (pBs->uiCurBits);
+intX_t iAllowedBytes, iReadBytes;
+iAllowedBytes = pBs->pEndBuf - pBs->pStartBuf; //actual stream bytes
+
+if (iLeadingZeroBits == -1)   //bistream error
+{
     return ERR_INFO_READ_LEADING_ZERO;//-1
-  } else if (iLeadingZeroBits >
-             16) { //rarely into this condition (even may be bitstream error), prevent from 16-bit reading overflow
+}
+else if (iLeadingZeroBits >
+         16)   //rarely into this condition (even may be bitstream error), prevent from 16-bit reading overflow
+{
     //using two-step reading instead of one time reading of >16 bits.
     iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
     DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, 16, iAllowedBytes, iReadBytes);
     iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
     DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, iLeadingZeroBits + 1 - 16, iAllowedBytes, iReadBytes);
-  } else {
+}
+else
+{
     iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
     DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, iLeadingZeroBits + 1, iAllowedBytes, iReadBytes);
-  }
-  if (iLeadingZeroBits) {
+}
+if (iLeadingZeroBits)
+{
     iValue = UBITS (pBs->uiCurBits, iLeadingZeroBits);
     iReadBytes = pBs->pCurBuf - pBs->pStartBuf;
     DUMP_BITS (pBs->uiCurBits, pBs->pCurBuf, pBs->iLeftBits, iLeadingZeroBits, iAllowedBytes, iReadBytes);
-  }
+}
 
-  *pCode = ((1u << iLeadingZeroBits) - 1 + iValue);
-  return ERR_NONE;
+*pCode = ((1u << iLeadingZeroBits) - 1 + iValue);
+return ERR_NONE;
 }
 
 
 /*
  *  Read signed exp golomb codes
  */
-static inline int32_t BsGetSe (PBitStringAux pBs, int32_t* pCode) {
-  uint32_t uiCodeNum;
+static inline int32_t BsGetSe (PBitStringAux pBs, int32_t* pCode)
+{
+uint32_t uiCodeNum;
 
-  WELS_READ_VERIFY (BsGetUe (pBs, &uiCodeNum));
+WELS_READ_VERIFY (BsGetUe (pBs, &uiCodeNum));
 
-  if (uiCodeNum & 0x01) {
+if (uiCodeNum & 0x01)
+{
     *pCode = (int32_t) ((uiCodeNum + 1) >> 1);
-  } else {
+}
+else
+{
     *pCode = NEG_NUM ((int32_t) (uiCodeNum >> 1));
-  }
-  return ERR_NONE;
+}
+return ERR_NONE;
 }
 
 /*
  * Get unsigned truncated exp golomb code.
  */
-static inline int32_t BsGetTe0 (PBitStringAux pBs, int32_t iRange, uint32_t* pCode) {
-  if (iRange == 1) {
+static inline int32_t BsGetTe0 (PBitStringAux pBs, int32_t iRange, uint32_t* pCode)
+{
+if (iRange == 1)
+{
     *pCode = 0;
-  } else if (iRange == 2) {
+}
+else if (iRange == 2)
+{
     WELS_READ_VERIFY (BsGetOneBit (pBs, pCode));
     *pCode ^= 1;
-  } else {
+}
+else
+{
     WELS_READ_VERIFY (BsGetUe (pBs, pCode));
-  }
-  return ERR_NONE;
+}
+return ERR_NONE;
 }
 
 /*
  *  Get number of trailing bits
  */
-static inline int32_t BsGetTrailingBits (uint8_t* pBuf) {
+static inline int32_t BsGetTrailingBits (uint8_t* pBuf)
+{
 // TODO
-  uint32_t uiValue = *pBuf;
-  int32_t iRetNum = 0;
+uint32_t uiValue = *pBuf;
+int32_t iRetNum = 0;
 
-  do {
+do
+{
     if (uiValue & 1)
-      return iRetNum;
+        return iRetNum;
     uiValue >>= 1;
     ++ iRetNum;
-  } while (iRetNum < 9);
+}
+while (iRetNum < 9);
 
-  return 0;
+return 0;
 }
 
 /*
  *      Check whether there is more rbsp data for processing
  */
-static inline bool CheckMoreRBSPData(PBitStringAux pBsAux) {
-  if ((pBsAux->iBits - ((pBsAux->pCurBuf - pBsAux->pStartBuf - 2) << 3) - pBsAux->iLeftBits) > 1) {
+static inline bool CheckMoreRBSPData(PBitStringAux pBsAux)
+{
+if ((pBsAux->iBits - ((pBsAux->pCurBuf - pBsAux->pStartBuf - 2) << 3) - pBsAux->iLeftBits) > 1)
+{
     return true;
-  } else {
+}
+else
+{
     return false;
-  }
+}
 }
 
 //define macros to check syntax elements

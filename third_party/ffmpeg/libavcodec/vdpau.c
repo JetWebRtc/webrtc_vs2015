@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Video Decode and Presentation API for UNIX (VDPAU) is used for
  * HW decode acceleration for MPEG-1/2, MPEG-4 ASP, H.264 and VC-1.
  *
@@ -43,7 +43,8 @@
 
 static int vdpau_error(VdpStatus status)
 {
-    switch (status) {
+    switch (status)
+    {
     case VDP_STATUS_OK:
         return 0;
     case VDP_STATUS_NO_IMPLEMENTATION:
@@ -81,7 +82,8 @@ int av_vdpau_get_surface_parameters(AVCodecContext *avctx,
     uint32_t h = avctx->coded_height;
 
     /* See <vdpau/vdpau.h> for per-type alignment constraints. */
-    switch (avctx->sw_pix_fmt) {
+    switch (avctx->sw_pix_fmt)
+    {
     case AV_PIX_FMT_YUV420P:
     case AV_PIX_FMT_YUVJ420P:
         t = VDP_CHROMA_TYPE_420;
@@ -131,13 +133,15 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
     vdctx->width            = UINT32_MAX;
     vdctx->height           = UINT32_MAX;
 
-    if (!hwctx) {
+    if (!hwctx)
+    {
         vdctx->device  = VDP_INVALID_HANDLE;
         av_log(avctx, AV_LOG_WARNING, "hwaccel_context has not been setup by the user application, cannot initialize\n");
         return 0;
     }
 
-    if (hwctx->context.decoder != VDP_INVALID_HANDLE) {
+    if (hwctx->context.decoder != VDP_INVALID_HANDLE)
+    {
         vdctx->decoder = hwctx->context.decoder;
         vdctx->render  = hwctx->context.render;
         vdctx->device  = VDP_INVALID_HANDLE;
@@ -157,7 +161,7 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
         return AVERROR(ENOSYS);
 
     if (!(hwctx->flags & AV_HWACCEL_FLAG_ALLOW_HIGH_DEPTH) &&
-        type != VDP_CHROMA_TYPE_420)
+            type != VDP_CHROMA_TYPE_420)
         return AVERROR(ENOSYS);
 
     status = vdctx->get_proc_address(vdctx->device,
@@ -173,7 +177,7 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
     if (status != VDP_STATUS_OK)
         return vdpau_error(status);
     if (supported != VDP_TRUE ||
-        max_width < width || max_height < height)
+            max_width < width || max_height < height)
         return AVERROR(ENOTSUP);
 
     status = vdctx->get_proc_address(vdctx->device,
@@ -187,7 +191,8 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
     status = decoder_query_caps(vdctx->device, profile, &supported, &max_level,
                                 &max_mb, &max_width, &max_height);
 #ifdef VDP_DECODER_PROFILE_H264_CONSTRAINED_BASELINE
-    if (status != VDP_STATUS_OK && profile == VDP_DECODER_PROFILE_H264_CONSTRAINED_BASELINE) {
+    if (status != VDP_STATUS_OK && profile == VDP_DECODER_PROFILE_H264_CONSTRAINED_BASELINE)
+    {
         /* Run-time backward compatibility for libvdpau 0.8 and earlier */
         profile = VDP_DECODER_PROFILE_H264_MAIN;
         status = decoder_query_caps(vdctx->device, profile, &supported,
@@ -199,7 +204,7 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
         return vdpau_error(status);
 
     if (supported != VDP_TRUE || max_level < level ||
-        max_width < width || max_height < height)
+            max_width < width || max_height < height)
         return AVERROR(ENOTSUP);
 
     status = vdctx->get_proc_address(vdctx->device, VDP_FUNC_ID_DECODER_CREATE,
@@ -218,7 +223,8 @@ int ff_vdpau_common_init(AVCodecContext *avctx, VdpDecoderProfile profile,
 
     status = create(vdctx->device, profile, width, height, avctx->refs,
                     &vdctx->decoder);
-    if (status == VDP_STATUS_OK) {
+    if (status == VDP_STATUS_OK)
+    {
         vdctx->width  = avctx->coded_width;
         vdctx->height = avctx->coded_height;
     }
@@ -257,7 +263,7 @@ static int ff_vdpau_common_reinit(AVCodecContext *avctx)
     if (vdctx->device == VDP_INVALID_HANDLE)
         return 0; /* Decoder created by user */
     if (avctx->coded_width == vdctx->width &&
-        avctx->coded_height == vdctx->height && !hwctx->reset)
+            avctx->coded_height == vdctx->height && !hwctx->reset)
         return 0;
 
     avctx->hwaccel->uninit(avctx);
@@ -288,31 +294,33 @@ int ff_vdpau_common_end_frame(AVCodecContext *avctx, AVFrame *frame,
         return val;
 
 #if FF_API_BUFS_VDPAU
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     av_assert0(sizeof(hwctx->info) <= sizeof(pic_ctx->info));
     memcpy(&hwctx->info, &pic_ctx->info, sizeof(hwctx->info));
     hwctx->bitstream_buffers = pic_ctx->bitstream_buffers;
     hwctx->bitstream_buffers_used = pic_ctx->bitstream_buffers_used;
     hwctx->bitstream_buffers_allocated = pic_ctx->bitstream_buffers_allocated;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
-    if (!hwctx->render && hwctx->render2) {
+    if (!hwctx->render && hwctx->render2)
+    {
         status = hwctx->render2(avctx, frame, (void *)&pic_ctx->info,
                                 pic_ctx->bitstream_buffers_used, pic_ctx->bitstream_buffers);
-    } else
-    status = vdctx->render(vdctx->decoder, surf, (void *)&pic_ctx->info,
-                           pic_ctx->bitstream_buffers_used,
-                           pic_ctx->bitstream_buffers);
+    }
+    else
+        status = vdctx->render(vdctx->decoder, surf, (void *)&pic_ctx->info,
+                               pic_ctx->bitstream_buffers_used,
+                               pic_ctx->bitstream_buffers);
 
     av_freep(&pic_ctx->bitstream_buffers);
 
 #if FF_API_BUFS_VDPAU
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     hwctx->bitstream_buffers = NULL;
     hwctx->bitstream_buffers_used = 0;
     hwctx->bitstream_buffers_allocated = 0;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     return vdpau_error(status);
@@ -365,10 +373,10 @@ void ff_vdpau_add_data_chunk(uint8_t *data, const uint8_t *buf, int buf_size)
     assert(render);
 
     render->bitstream_buffers= av_fast_realloc(
-        render->bitstream_buffers,
-        &render->bitstream_buffers_allocated,
-        sizeof(*render->bitstream_buffers)*(render->bitstream_buffers_used + 1)
-    );
+                                   render->bitstream_buffers,
+                                   &render->bitstream_buffers_allocated,
+                                   sizeof(*render->bitstream_buffers)*(render->bitstream_buffers_used + 1)
+                               );
 
     render->bitstream_buffers[render->bitstream_buffers_used].struct_version  = VDP_BITSTREAM_BUFFER_VERSION;
     render->bitstream_buffers[render->bitstream_buffers_used].bitstream       = buf;
@@ -390,11 +398,13 @@ void ff_vdpau_h264_set_reference_frames(H264Context *h)
     rf = &render->info.h264.referenceFrames[0];
 #define H264_RF_COUNT FF_ARRAY_ELEMS(render->info.h264.referenceFrames)
 
-    for (list = 0; list < 2; ++list) {
+    for (list = 0; list < 2; ++list)
+    {
         H264Picture **lp = list ? h->long_ref : h->short_ref;
         int ls = list ? 16 : h->short_ref_count;
 
-        for (i = 0; i < ls; ++i) {
+        for (i = 0; i < ls; ++i)
+        {
             pic = lp[i];
             if (!pic || !pic->reference)
                 continue;
@@ -404,7 +414,8 @@ void ff_vdpau_h264_set_reference_frames(H264Context *h)
             assert(render_ref);
 
             rf2 = &render->info.h264.referenceFrames[0];
-            while (rf2 != rf) {
+            while (rf2 != rf)
+            {
                 if (
                     (rf2->surface == render_ref->surface)
                     && (rf2->is_long_term == pic->long_ref)
@@ -413,7 +424,8 @@ void ff_vdpau_h264_set_reference_frames(H264Context *h)
                     break;
                 ++rf2;
             }
-            if (rf2 != rf) {
+            if (rf2 != rf)
+            {
                 rf2->top_is_reference    |= (pic->reference & PICT_TOP_FIELD)    ? VDP_TRUE : VDP_FALSE;
                 rf2->bottom_is_reference |= (pic->reference & PICT_BOTTOM_FIELD) ? VDP_TRUE : VDP_FALSE;
                 continue;
@@ -434,7 +446,8 @@ void ff_vdpau_h264_set_reference_frames(H264Context *h)
         }
     }
 
-    for (; rf < &render->info.h264.referenceFrames[H264_RF_COUNT]; ++rf) {
+    for (; rf < &render->info.h264.referenceFrames[H264_RF_COUNT]; ++rf)
+    {
         rf->surface             = VDP_INVALID_HANDLE;
         rf->is_long_term        = 0;
         rf->top_is_reference    = 0;
@@ -453,7 +466,8 @@ void ff_vdpau_h264_picture_start(H264Context *h)
     render = (struct vdpau_render_state *)h->cur_pic_ptr->f->data[0];
     assert(render);
 
-    for (i = 0; i < 2; ++i) {
+    for (i = 0; i < 2; ++i)
+    {
         int foc = h->cur_pic_ptr->field_poc[i];
         if (foc == INT_MAX)
             foc = 0;
@@ -535,7 +549,8 @@ void ff_vdpau_mpeg_picture_complete(MpegEncContext *s, const uint8_t *buf,
     render->info.mpeg.f_code[0][1]               = s->mpeg_f_code[0][1];
     render->info.mpeg.f_code[1][0]               = s->mpeg_f_code[1][0];
     render->info.mpeg.f_code[1][1]               = s->mpeg_f_code[1][1];
-    for (i = 0; i < 64; ++i) {
+    for (i = 0; i < 64; ++i)
+    {
         render->info.mpeg.intra_quantizer_matrix[i]     = s->intra_matrix[i];
         render->info.mpeg.non_intra_quantizer_matrix[i] = s->inter_matrix[i];
     }
@@ -543,12 +558,13 @@ void ff_vdpau_mpeg_picture_complete(MpegEncContext *s, const uint8_t *buf,
     render->info.mpeg.forward_reference          = VDP_INVALID_HANDLE;
     render->info.mpeg.backward_reference         = VDP_INVALID_HANDLE;
 
-    switch(s->pict_type){
+    switch(s->pict_type)
+    {
     case  AV_PICTURE_TYPE_B:
         next = (struct vdpau_render_state *)s->next_picture.f->data[0];
         assert(next);
         render->info.mpeg.backward_reference     = next->surface;
-        // no return here, going to set forward prediction
+    // no return here, going to set forward prediction
     case  AV_PICTURE_TYPE_P:
         last = (struct vdpau_render_state *)s->last_picture.f->data[0];
         if (!last) // FIXME: Does this test make sense?
@@ -615,12 +631,13 @@ void ff_vdpau_vc1_decode_picture(MpegEncContext *s, const uint8_t *buf,
     else
         render->info.vc1.picture_type = s->pict_type - 1 + s->pict_type / 3;
 
-    switch(s->pict_type){
+    switch(s->pict_type)
+    {
     case  AV_PICTURE_TYPE_B:
         next = (struct vdpau_render_state *)s->next_picture.f->data[0];
         assert(next);
         render->info.vc1.backward_reference = next->surface;
-        // no break here, going to set forward prediction
+    // no break here, going to set forward prediction
     case  AV_PICTURE_TYPE_P:
         last = (struct vdpau_render_state *)s->last_picture.f->data[0];
         if (!last) // FIXME: Does this test make sense?
@@ -667,20 +684,22 @@ void ff_vdpau_mpeg4_decode_picture(Mpeg4DecContext *ctx, const uint8_t *buf,
     render->info.mpeg4.rounding_control                  = s->no_rounding;
     render->info.mpeg4.alternate_vertical_scan_flag      = s->alternate_scan;
     render->info.mpeg4.top_field_first                   = s->top_field_first;
-    for (i = 0; i < 64; ++i) {
+    for (i = 0; i < 64; ++i)
+    {
         render->info.mpeg4.intra_quantizer_matrix[i]     = s->intra_matrix[i];
         render->info.mpeg4.non_intra_quantizer_matrix[i] = s->inter_matrix[i];
     }
     render->info.mpeg4.forward_reference                 = VDP_INVALID_HANDLE;
     render->info.mpeg4.backward_reference                = VDP_INVALID_HANDLE;
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
         next = (struct vdpau_render_state *)s->next_picture.f->data[0];
         assert(next);
         render->info.mpeg4.backward_reference     = next->surface;
         render->info.mpeg4.vop_coding_type        = 2;
-        // no break here, going to set forward prediction
+    // no break here, going to set forward prediction
     case AV_PICTURE_TYPE_P:
         last = (struct vdpau_render_state *)s->last_picture.f->data[0];
         assert(last);
@@ -703,39 +722,61 @@ do {                                       \
     return 0;                              \
 } while (0)
 
-    switch (avctx->codec_id) {
-    case AV_CODEC_ID_MPEG1VIDEO:               PROFILE(MPEG1);
+    switch (avctx->codec_id)
+    {
+    case AV_CODEC_ID_MPEG1VIDEO:
+        PROFILE(MPEG1);
     case AV_CODEC_ID_MPEG2VIDEO:
-        switch (avctx->profile) {
-        case FF_PROFILE_MPEG2_MAIN:            PROFILE(MPEG2_MAIN);
-        case FF_PROFILE_MPEG2_SIMPLE:          PROFILE(MPEG2_SIMPLE);
-        default:                               return AVERROR(EINVAL);
+        switch (avctx->profile)
+        {
+        case FF_PROFILE_MPEG2_MAIN:
+            PROFILE(MPEG2_MAIN);
+        case FF_PROFILE_MPEG2_SIMPLE:
+            PROFILE(MPEG2_SIMPLE);
+        default:
+            return AVERROR(EINVAL);
         }
-    case AV_CODEC_ID_H263:                     PROFILE(MPEG4_PART2_ASP);
+    case AV_CODEC_ID_H263:
+        PROFILE(MPEG4_PART2_ASP);
     case AV_CODEC_ID_MPEG4:
-        switch (avctx->profile) {
-        case FF_PROFILE_MPEG4_SIMPLE:          PROFILE(MPEG4_PART2_SP);
-        case FF_PROFILE_MPEG4_ADVANCED_SIMPLE: PROFILE(MPEG4_PART2_ASP);
-        default:                               return AVERROR(EINVAL);
+        switch (avctx->profile)
+        {
+        case FF_PROFILE_MPEG4_SIMPLE:
+            PROFILE(MPEG4_PART2_SP);
+        case FF_PROFILE_MPEG4_ADVANCED_SIMPLE:
+            PROFILE(MPEG4_PART2_ASP);
+        default:
+            return AVERROR(EINVAL);
         }
     case AV_CODEC_ID_H264:
-        switch (avctx->profile & ~FF_PROFILE_H264_INTRA) {
-        case FF_PROFILE_H264_BASELINE:         PROFILE(H264_BASELINE);
+        switch (avctx->profile & ~FF_PROFILE_H264_INTRA)
+        {
+        case FF_PROFILE_H264_BASELINE:
+            PROFILE(H264_BASELINE);
         case FF_PROFILE_H264_CONSTRAINED_BASELINE:
-        case FF_PROFILE_H264_MAIN:             PROFILE(H264_MAIN);
-        case FF_PROFILE_H264_HIGH:             PROFILE(H264_HIGH);
+        case FF_PROFILE_H264_MAIN:
+            PROFILE(H264_MAIN);
+        case FF_PROFILE_H264_HIGH:
+            PROFILE(H264_HIGH);
 #ifdef VDP_DECODER_PROFILE_H264_EXTENDED
-        case FF_PROFILE_H264_EXTENDED:         PROFILE(H264_EXTENDED);
+        case FF_PROFILE_H264_EXTENDED:
+            PROFILE(H264_EXTENDED);
 #endif
-        default:                               return AVERROR(EINVAL);
+        default:
+            return AVERROR(EINVAL);
         }
     case AV_CODEC_ID_WMV3:
     case AV_CODEC_ID_VC1:
-        switch (avctx->profile) {
-        case FF_PROFILE_VC1_SIMPLE:            PROFILE(VC1_SIMPLE);
-        case FF_PROFILE_VC1_MAIN:              PROFILE(VC1_MAIN);
-        case FF_PROFILE_VC1_ADVANCED:          PROFILE(VC1_ADVANCED);
-        default:                               return AVERROR(EINVAL);
+        switch (avctx->profile)
+        {
+        case FF_PROFILE_VC1_SIMPLE:
+            PROFILE(VC1_SIMPLE);
+        case FF_PROFILE_VC1_MAIN:
+            PROFILE(VC1_MAIN);
+        case FF_PROFILE_VC1_ADVANCED:
+            PROFILE(VC1_ADVANCED);
+        default:
+            return AVERROR(EINVAL);
         }
     }
     return AVERROR(EINVAL);

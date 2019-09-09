@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,6 +29,6 @@ void WebRtcIlbcfix_SwapBytes(
     const uint16_t* input,   /* (i) the sequence to swap */
     size_t wordLength,      /* (i) number or uint16_t to swap */
     uint16_t* output         /* (o) the swapped sequence */
-                              );
+);
 
 #endif

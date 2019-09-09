@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,45 +21,47 @@ extern "C" {
 #include "vpx_scale/yv12config.h"
 
 // metrics used for calculating ssim, ssim2, dssim, and ssimc
-typedef struct {
-  // source sum ( over 8x8 region )
-  uint32_t sum_s;
+typedef struct
+{
+    // source sum ( over 8x8 region )
+    uint32_t sum_s;
 
-  // reference sum (over 8x8 region )
-  uint32_t sum_r;
+    // reference sum (over 8x8 region )
+    uint32_t sum_r;
 
-  // source sum squared ( over 8x8 region )
-  uint32_t sum_sq_s;
+    // source sum squared ( over 8x8 region )
+    uint32_t sum_sq_s;
 
-  // reference sum squared (over 8x8 region )
-  uint32_t sum_sq_r;
+    // reference sum squared (over 8x8 region )
+    uint32_t sum_sq_r;
 
-  // sum of source times reference (over 8x8 region)
-  uint32_t sum_sxr;
+    // sum of source times reference (over 8x8 region)
+    uint32_t sum_sxr;
 
-  // calculated ssim score between source and reference
-  double ssim;
+    // calculated ssim score between source and reference
+    double ssim;
 } Ssimv;
 
 // metrics collected on a frame basis
-typedef struct {
-  // ssim consistency error metric ( see code for explanation )
-  double ssimc;
+typedef struct
+{
+    // ssim consistency error metric ( see code for explanation )
+    double ssimc;
 
-  // standard ssim
-  double ssim;
+    // standard ssim
+    double ssim;
 
-  // revised ssim ( see code for explanation)
-  double ssim2;
+    // revised ssim ( see code for explanation)
+    double ssim2;
 
-  // ssim restated as an error metric like sse
-  double dssim;
+    // ssim restated as an error metric like sse
+    double dssim;
 
-  // dssim converted to decibels
-  double dssimd;
+    // dssim converted to decibels
+    double dssimd;
 
-  // ssimc converted to decibels
-  double ssimcd;
+    // ssimc converted to decibels
+    double ssimcd;
 } Metrics;
 
 double vpx_get_ssim_metrics(uint8_t *img1, int img1_pitch, uint8_t *img2,

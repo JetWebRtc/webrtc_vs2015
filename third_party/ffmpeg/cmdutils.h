@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Various utilities for command line tools
  * copyright (c) 2003 Fabrice Bellard
  *
@@ -144,9 +144,11 @@ double parse_number_or_die(const char *context, const char *numstr, int type,
 int64_t parse_time_or_die(const char *context, const char *timestr,
                           int is_duration);
 
-typedef struct SpecifierOpt {
+typedef struct SpecifierOpt
+{
     char *specifier;    /**< stream/chapter/program/... specifier */
-    union {
+    union
+    {
         uint8_t *str;
         int        i;
         int64_t  i64;
@@ -155,7 +157,8 @@ typedef struct SpecifierOpt {
     } u;
 } SpecifierOpt;
 
-typedef struct OptionDef {
+typedef struct OptionDef
+{
     const char *name;
     int flags;
 #define HAS_ARG    0x0001
@@ -180,7 +183,8 @@ typedef struct OptionDef {
 #define OPT_DOUBLE 0x20000
 #define OPT_INPUT  0x40000
 #define OPT_OUTPUT 0x80000
-     union {
+    union
+    {
         void *dst_ptr;
         int (*func_arg)(void *, const char *, const char *);
         size_t off;
@@ -246,13 +250,15 @@ int parse_option(void *optctx, const char *opt, const char *arg,
  * Cannot use AVDictionary because of options like -map which can be
  * used multiple times.
  */
-typedef struct Option {
+typedef struct Option
+{
     const OptionDef  *opt;
     const char       *key;
     const char       *val;
 } Option;
 
-typedef struct OptionGroupDef {
+typedef struct OptionGroupDef
+{
     /**< group name */
     const char *name;
     /**
@@ -267,7 +273,8 @@ typedef struct OptionGroupDef {
     int flags;
 } OptionGroupDef;
 
-typedef struct OptionGroup {
+typedef struct OptionGroup
+{
     const OptionGroupDef *group_def;
     const char *arg;
 
@@ -285,14 +292,16 @@ typedef struct OptionGroup {
  * A list of option groups that all have the same group type
  * (e.g. input files or output files)
  */
-typedef struct OptionGroupList {
+typedef struct OptionGroupList
+{
     const OptionGroupDef *group_def;
 
     OptionGroup *groups;
     int       nb_groups;
 } OptionGroupList;
 
-typedef struct OptionParseContext {
+typedef struct OptionParseContext
+{
     OptionGroup global_opts;
 
     OptionGroupList *groups;
@@ -387,7 +396,7 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
  * cannot be created
  */
 AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
-                                           AVDictionary *codec_opts);
+        AVDictionary *codec_opts);
 
 /**
  * Print an error message to stderr, indicating filename and a human

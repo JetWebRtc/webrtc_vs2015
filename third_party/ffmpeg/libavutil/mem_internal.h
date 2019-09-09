@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@ static inline int ff_fast_malloc(void *ptr, unsigned int *size, size_t min_size,
     void *val;
 
     memcpy(&val, ptr, sizeof(val));
-    if (min_size <= *size) {
+    if (min_size <= *size)
+    {
         av_assert0(val || !min_size);
         return 0;
     }

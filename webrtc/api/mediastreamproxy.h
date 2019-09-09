@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,27 +16,28 @@
 #include "webrtc/api/mediastreaminterface.h"
 #include "webrtc/api/proxy.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // TODO(deadbeef): Move this to .cc file and out of api/. What threads methods
 // are called on is an implementation detail.
 BEGIN_SIGNALING_PROXY_MAP(MediaStream)
-  PROXY_SIGNALING_THREAD_DESTRUCTOR()
-  PROXY_CONSTMETHOD0(std::string, label)
-  PROXY_METHOD0(AudioTrackVector, GetAudioTracks)
-  PROXY_METHOD0(VideoTrackVector, GetVideoTracks)
-  PROXY_METHOD1(rtc::scoped_refptr<AudioTrackInterface>,
-                FindAudioTrack,
-                const std::string&)
-  PROXY_METHOD1(rtc::scoped_refptr<VideoTrackInterface>,
-                FindVideoTrack,
-                const std::string&)
-  PROXY_METHOD1(bool, AddTrack, AudioTrackInterface*)
-  PROXY_METHOD1(bool, AddTrack, VideoTrackInterface*)
-  PROXY_METHOD1(bool, RemoveTrack, AudioTrackInterface*)
-  PROXY_METHOD1(bool, RemoveTrack, VideoTrackInterface*)
-  PROXY_METHOD1(void, RegisterObserver, ObserverInterface*)
-  PROXY_METHOD1(void, UnregisterObserver, ObserverInterface*)
+PROXY_SIGNALING_THREAD_DESTRUCTOR()
+PROXY_CONSTMETHOD0(std::string, label)
+PROXY_METHOD0(AudioTrackVector, GetAudioTracks)
+PROXY_METHOD0(VideoTrackVector, GetVideoTracks)
+PROXY_METHOD1(rtc::scoped_refptr<AudioTrackInterface>,
+              FindAudioTrack,
+              const std::string&)
+PROXY_METHOD1(rtc::scoped_refptr<VideoTrackInterface>,
+              FindVideoTrack,
+              const std::string&)
+PROXY_METHOD1(bool, AddTrack, AudioTrackInterface*)
+PROXY_METHOD1(bool, AddTrack, VideoTrackInterface*)
+PROXY_METHOD1(bool, RemoveTrack, AudioTrackInterface*)
+PROXY_METHOD1(bool, RemoveTrack, VideoTrackInterface*)
+PROXY_METHOD1(void, RegisterObserver, ObserverInterface*)
+PROXY_METHOD1(void, UnregisterObserver, ObserverInterface*)
 END_PROXY_MAP()
 
 }  // namespace webrtc

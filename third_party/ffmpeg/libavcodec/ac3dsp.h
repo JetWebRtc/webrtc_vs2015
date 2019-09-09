@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AC-3 DSP functions
  * Copyright (c) 2011 Justin Ruggles
  *
@@ -30,7 +30,8 @@
  */
 extern const uint16_t ff_ac3_bap_bits[16];
 
-typedef struct AC3DSPContext {
+typedef struct AC3DSPContext
+{
     /**
      * Set each encoded exponent in a block to the minimum of itself and the
      * exponents in the same frequency bin of up to 5 following blocks.

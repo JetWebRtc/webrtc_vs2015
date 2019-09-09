@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,18 +20,19 @@
 
 // Declaration of internally used functions
 static void WebRtcSpl_32khzTo22khzIntToShort(const int32_t *In, int16_t *Out,
-                                             int32_t K);
+        int32_t K);
 
 void WebRtcSpl_32khzTo22khzIntToInt(const int32_t *In, int32_t *Out,
                                     int32_t K);
 
 // interpolation coefficients
-static const int16_t kCoefficients32To22[5][9] = {
-        {127, -712,  2359, -6333, 23456, 16775, -3695,  945, -154},
-        {-39,  230,  -830,  2785, 32366, -2324,   760, -218,   38},
-        {117, -663,  2222, -6133, 26634, 13070, -3174,  831, -137},
-        {-77,  457, -1677,  5958, 31175, -4136,  1405, -408,   71},
-        { 98, -560,  1900, -5406, 29240,  9423, -2480,  663, -110}
+static const int16_t kCoefficients32To22[5][9] =
+{
+    {127, -712,  2359, -6333, 23456, 16775, -3695,  945, -154},
+    {-39,  230,  -830,  2785, 32366, -2324,   760, -218,   38},
+    {117, -663,  2222, -6133, 26634, 13070, -3174,  831, -137},
+    {-77,  457, -1677,  5958, 31175, -4136,  1405, -408,   71},
+    { 98, -560,  1900, -5406, 29240,  9423, -2480,  663, -110}
 };
 
 //////////////////////

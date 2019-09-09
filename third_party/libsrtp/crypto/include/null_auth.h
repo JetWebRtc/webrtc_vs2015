@@ -1,4 +1,4 @@
-/*
+﻿/*
  * null-auth.h
  *
  * David A. McGrew
@@ -51,7 +51,8 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct
+{
     char foo;
 } srtp_null_auth_ctx_t;
 

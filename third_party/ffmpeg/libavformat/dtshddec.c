@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Raw DTS-HD demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -37,7 +37,8 @@
 #define STRMDATA 0x5354524D44415441
 #define TIMECODE 0x54494D45434F4445
 
-typedef struct DTSHDDemuxContext {
+typedef struct DTSHDDemuxContext
+{
     uint64_t    data_end;
 } DTSHDDemuxContext;
 
@@ -64,20 +65,24 @@ static int dtshd_read_header(AVFormatContext *s)
     st->codec->codec_id   = AV_CODEC_ID_DTS;
     st->need_parsing      = AVSTREAM_PARSE_FULL_RAW;
 
-    while (!avio_feof(pb)) {
+    while (!avio_feof(pb))
+    {
         chunk_type = avio_rb64(pb);
         chunk_size = avio_rb64(pb);
 
-        if (chunk_size < 4) {
+        if (chunk_size < 4)
+        {
             av_log(s, AV_LOG_ERROR, "chunk size too small\n");
             return AVERROR_INVALIDDATA;
         }
-        if (chunk_size > ((uint64_t)1 << 61)) {
+        if (chunk_size > ((uint64_t)1 << 61))
+        {
             av_log(s, AV_LOG_ERROR, "chunk size too big\n");
             return AVERROR_INVALIDDATA;
         }
 
-        switch (chunk_type) {
+        switch (chunk_type)
+        {
         case STRMDATA:
             dtshd->data_end = chunk_size + avio_tell(pb);
             if (dtshd->data_end <= chunk_size)
@@ -126,7 +131,8 @@ static int raw_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_dtshd_demuxer = {
+AVInputFormat ff_dtshd_demuxer =
+{
     .name           = "dtshd",
     .long_name      = NULL_IF_CONFIG_SMALL("raw DTS-HD"),
     .priv_data_size = sizeof(DTSHDDemuxContext),

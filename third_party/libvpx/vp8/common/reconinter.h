@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,11 +21,11 @@ extern void vp8_build_inter16x16_predictors_mb(
     unsigned char *dst_v, int dst_ystride, int dst_uvstride);
 
 extern void vp8_build_inter16x16_predictors_mby(MACROBLOCKD *x,
-                                                unsigned char *dst_y,
-                                                int dst_ystride);
+        unsigned char *dst_y,
+        int dst_ystride);
 extern void vp8_build_inter_predictors_b(BLOCKD *d, int pitch,
-                                         unsigned char *base_pre,
-                                         int pre_stride, vp8_subpix_fn_t sppf);
+        unsigned char *base_pre,
+        int pre_stride, vp8_subpix_fn_t sppf);
 
 extern void vp8_build_inter16x16_predictors_mbuv(MACROBLOCKD *x);
 extern void vp8_build_inter4x4_predictors_mbuv(MACROBLOCKD *x);

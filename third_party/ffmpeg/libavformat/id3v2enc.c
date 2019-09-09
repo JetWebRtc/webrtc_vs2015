@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ID3v2 header writer
  *
  * This file is part of FFmpeg.
@@ -44,14 +44,16 @@ static int string_is_ascii(const uint8_t *str)
 }
 
 static void id3v2_encode_string(AVIOContext *pb, const uint8_t *str,
-                               enum ID3v2Encoding enc)
+                                enum ID3v2Encoding enc)
 {
     int (*put)(AVIOContext*, const char*);
 
-    if (enc == ID3v2_ENCODING_UTF16BOM) {
+    if (enc == ID3v2_ENCODING_UTF16BOM)
+    {
         avio_wl16(pb, 0xFEFF);      /* BOM */
         put = avio_put_str16le;
-    } else
+    }
+    else
         put = avio_put_str;
 
     put(pb, str);
@@ -74,7 +76,7 @@ static int id3v2_put_ttag(ID3v2EncContext *id3, AVIOContext *avioc, const char *
     /* check if the strings are ASCII-only and use UTF16 only if
      * they're not */
     if (enc == ID3v2_ENCODING_UTF16BOM && string_is_ascii(str1) &&
-        (!str2 || string_is_ascii(str2)))
+    (!str2 || string_is_ascii(str2)))
         enc = ID3v2_ENCODING_ISO8859;
 
     avio_w8(dyn_buf, enc);
@@ -119,30 +121,36 @@ static void id3v2_3_metadata_split_date(AVDictionary **pm)
     char year[5] = {0}, day_month[5] = {0};
     int i;
 
-    while ((mtag = av_dict_get(*pm, "", mtag, AV_DICT_IGNORE_SUFFIX))) {
+    while ((mtag = av_dict_get(*pm, "", mtag, AV_DICT_IGNORE_SUFFIX)))
+    {
         key = mtag->key;
-        if (!av_strcasecmp(key, "date")) {
+        if (!av_strcasecmp(key, "date"))
+        {
             /* split date tag using "YYYY-MM-DD" format into year and month/day segments */
             value = mtag->value;
             i = 0;
             while (value[i] >= '0' && value[i] <= '9') i++;
-            if (value[i] == '\0' || value[i] == '-') {
+            if (value[i] == '\0' || value[i] == '-')
+            {
                 av_strlcpy(year, value, sizeof(year));
                 av_dict_set(&dst, "TYER", year, 0);
 
                 if (value[i] == '-' &&
-                    value[i+1] >= '0' && value[i+1] <= '1' &&
-                    value[i+2] >= '0' && value[i+2] <= '9' &&
-                    value[i+3] == '-' &&
-                    value[i+4] >= '0' && value[i+4] <= '3' &&
-                    value[i+5] >= '0' && value[i+5] <= '9' &&
-                    (value[i+6] == '\0' || value[i+6] == ' ')) {
+                        value[i+1] >= '0' && value[i+1] <= '1' &&
+                        value[i+2] >= '0' && value[i+2] <= '9' &&
+                        value[i+3] == '-' &&
+                        value[i+4] >= '0' && value[i+4] <= '3' &&
+                        value[i+5] >= '0' && value[i+5] <= '9' &&
+                        (value[i+6] == '\0' || value[i+6] == ' '))
+                {
                     snprintf(day_month, sizeof(day_month), "%.2s%.2s", value + i + 4, value + i + 1);
                     av_dict_set(&dst, "TDAT", day_month, 0);
                 }
-            } else
+            }
+            else
                 av_dict_set(&dst, key, value, 0);
-        } else
+        }
+        else
             av_dict_set(&dst, key, mtag->value, 0);
     }
     av_dict_free(pm);
@@ -175,13 +183,16 @@ static int write_metadata(AVIOContext *pb, AVDictionary **metadata,
     else if (id3->version == 4)
         ff_metadata_conv(metadata, ff_id3v2_4_metadata_conv, NULL);
 
-    while ((t = av_dict_get(*metadata, "", t, AV_DICT_IGNORE_SUFFIX))) {
-        if ((ret = id3v2_check_write_tag(id3, pb, t, ff_id3v2_tags, enc)) > 0) {
+    while ((t = av_dict_get(*metadata, "", t, AV_DICT_IGNORE_SUFFIX)))
+    {
+        if ((ret = id3v2_check_write_tag(id3, pb, t, ff_id3v2_tags, enc)) > 0)
+        {
             id3->len += ret;
             continue;
         }
         if ((ret = id3v2_check_write_tag(id3, pb, t, id3->version == 3 ?
-                                         ff_id3v2_3_tags : ff_id3v2_4_tags, enc)) > 0) {
+                                         ff_id3v2_3_tags : ff_id3v2_4_tags, enc)) > 0)
+        {
             id3->len += ret;
             continue;
         }
@@ -239,13 +250,14 @@ fail:
 int ff_id3v2_write_metadata(AVFormatContext *s, ID3v2EncContext *id3)
 {
     int enc = id3->version == 3 ? ID3v2_ENCODING_UTF16BOM :
-                                  ID3v2_ENCODING_UTF8;
+              ID3v2_ENCODING_UTF8;
     int i, ret;
 
     if ((ret = write_metadata(s->pb, &s->metadata, id3, enc)) < 0)
         return ret;
 
-    for (i = 0; i < s->nb_chapters; i++) {
+    for (i = 0; i < s->nb_chapters; i++)
+    {
         if ((ret = write_chapter(s, id3, i, enc)) < 0)
             return ret;
     }
@@ -263,18 +275,21 @@ int ff_id3v2_write_apic(AVFormatContext *s, ID3v2EncContext *id3, AVPacket *pkt)
     const CodecMime *mime = ff_id3v2_mime_tags;
     const char  *mimetype = NULL, *desc = "";
     int enc = id3->version == 3 ? ID3v2_ENCODING_UTF16BOM :
-                                  ID3v2_ENCODING_UTF8;
+              ID3v2_ENCODING_UTF8;
     int i, len, type = 0;
 
     /* get the mimetype*/
-    while (mime->id != AV_CODEC_ID_NONE) {
-        if (mime->id == st->codec->codec_id) {
+    while (mime->id != AV_CODEC_ID_NONE)
+    {
+        if (mime->id == st->codec->codec_id)
+        {
             mimetype = mime->str;
             break;
         }
         mime++;
     }
-    if (!mimetype) {
+    if (!mimetype)
+    {
         av_log(s, AV_LOG_ERROR, "No mimetype is known for stream %d, cannot "
                "write an attached picture.\n", st->index);
         return AVERROR(EINVAL);
@@ -282,8 +297,10 @@ int ff_id3v2_write_apic(AVFormatContext *s, ID3v2EncContext *id3, AVPacket *pkt)
 
     /* get the picture type */
     e = av_dict_get(st->metadata, "comment", NULL, 0);
-    for (i = 0; e && i < FF_ARRAY_ELEMS(ff_id3v2_picture_types); i++) {
-        if (!av_strcasecmp(e->value, ff_id3v2_picture_types[i])) {
+    for (i = 0; e && i < FF_ARRAY_ELEMS(ff_id3v2_picture_types); i++)
+    {
+        if (!av_strcasecmp(e->value, ff_id3v2_picture_types[i]))
+        {
             type = i;
             break;
         }

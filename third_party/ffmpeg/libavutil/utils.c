@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -52,12 +52,14 @@ unsigned avutil_version(void)
 
     av_assert0(((size_t)-1) > 0); // C guarantees this but if false on a platform we care about revert at least b284e1ffe343d6697fb950d1ee517bafda8a9844
 
-    if (av_sat_dadd32(1, 2) != 5) {
+    if (av_sat_dadd32(1, 2) != 5)
+    {
         av_log(NULL, AV_LOG_FATAL, "Libavutil has been build with a broken binutils, please upgrade binutils and rebuild\n");
         abort();
     }
 
-    if (llrint(1LL<<60) != 1LL<<60) {
+    if (llrint(1LL<<60) != 1LL<<60)
+    {
         av_log(NULL, AV_LOG_ERROR, "Libavutil has been linked to a broken llrint()\n");
     }
 
@@ -78,27 +80,43 @@ const char *avutil_license(void)
 
 const char *av_get_media_type_string(enum AVMediaType media_type)
 {
-    switch (media_type) {
-    case AVMEDIA_TYPE_VIDEO:      return "video";
-    case AVMEDIA_TYPE_AUDIO:      return "audio";
-    case AVMEDIA_TYPE_DATA:       return "data";
-    case AVMEDIA_TYPE_SUBTITLE:   return "subtitle";
-    case AVMEDIA_TYPE_ATTACHMENT: return "attachment";
-    default:                      return NULL;
+    switch (media_type)
+    {
+    case AVMEDIA_TYPE_VIDEO:
+        return "video";
+    case AVMEDIA_TYPE_AUDIO:
+        return "audio";
+    case AVMEDIA_TYPE_DATA:
+        return "data";
+    case AVMEDIA_TYPE_SUBTITLE:
+        return "subtitle";
+    case AVMEDIA_TYPE_ATTACHMENT:
+        return "attachment";
+    default:
+        return NULL;
     }
 }
 
 char av_get_picture_type_char(enum AVPictureType pict_type)
 {
-    switch (pict_type) {
-    case AV_PICTURE_TYPE_I:  return 'I';
-    case AV_PICTURE_TYPE_P:  return 'P';
-    case AV_PICTURE_TYPE_B:  return 'B';
-    case AV_PICTURE_TYPE_S:  return 'S';
-    case AV_PICTURE_TYPE_SI: return 'i';
-    case AV_PICTURE_TYPE_SP: return 'p';
-    case AV_PICTURE_TYPE_BI: return 'b';
-    default:                 return '?';
+    switch (pict_type)
+    {
+    case AV_PICTURE_TYPE_I:
+        return 'I';
+    case AV_PICTURE_TYPE_P:
+        return 'P';
+    case AV_PICTURE_TYPE_B:
+        return 'B';
+    case AV_PICTURE_TYPE_S:
+        return 'S';
+    case AV_PICTURE_TYPE_SI:
+        return 'i';
+    case AV_PICTURE_TYPE_SP:
+        return 'p';
+    case AV_PICTURE_TYPE_BI:
+        return 'b';
+    default:
+        return '?';
     }
 }
 
@@ -111,17 +129,30 @@ unsigned av_int_list_length_for_size(unsigned elsize,
         return 0;
 #define LIST_LENGTH(type) \
     { type t = term, *l = (type *)list; for (i = 0; l[i] != t; i++); }
-    switch (elsize) {
-    case 1: LIST_LENGTH(uint8_t);  break;
-    case 2: LIST_LENGTH(uint16_t); break;
-    case 4: LIST_LENGTH(uint32_t); break;
-    case 8: LIST_LENGTH(uint64_t); break;
-    default: av_assert0(!"valid element size");
+    switch (elsize)
+    {
+    case 1:
+        LIST_LENGTH(uint8_t);
+        break;
+    case 2:
+        LIST_LENGTH(uint16_t);
+        break;
+    case 4:
+        LIST_LENGTH(uint32_t);
+        break;
+    case 8:
+        LIST_LENGTH(uint64_t);
+        break;
+    default:
+        av_assert0(!"valid element size");
     }
     return i;
 }
 
 AVRational av_get_time_base_q(void)
 {
-    return (AVRational){1, AV_TIME_BASE};
+    return (AVRational)
+    {
+        1, AV_TIME_BASE
+    };
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * lossless JPEG shared bits
  *
  * This file is part of FFmpeg.

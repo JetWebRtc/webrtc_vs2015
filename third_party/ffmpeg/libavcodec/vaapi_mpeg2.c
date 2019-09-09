@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-2 HW decode acceleration through VA API
  *
  * Copyright (C) 2008-2009 Splitted-Desktop Systems
@@ -72,10 +72,11 @@ static int vaapi_mpeg2_start_frame(AVCodecContext *avctx, av_unused const uint8_
     pic_param->picture_coding_extension.bits.progressive_frame  = s->progressive_frame;
     pic_param->picture_coding_extension.bits.is_first_field     = mpeg2_get_is_frame_start(s);
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
         pic_param->backward_reference_picture = ff_vaapi_get_surface_id(s->next_picture.f);
-        // fall-through
+    // fall-through
     case AV_PICTURE_TYPE_P:
         pic_param->forward_reference_picture = ff_vaapi_get_surface_id(s->last_picture.f);
         break;
@@ -90,7 +91,8 @@ static int vaapi_mpeg2_start_frame(AVCodecContext *avctx, av_unused const uint8_
     iq_matrix->load_chroma_intra_quantiser_matrix       = 1;
     iq_matrix->load_chroma_non_intra_quantiser_matrix   = 1;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int n = s->idsp.idct_permutation[ff_zigzag_direct[i]];
         iq_matrix->intra_quantiser_matrix[i]            = s->intra_matrix[n];
         iq_matrix->non_intra_quantiser_matrix[i]        = s->inter_matrix[n];
@@ -116,7 +118,8 @@ static int vaapi_mpeg2_decode_slice(AVCodecContext *avctx, const uint8_t *buffer
         return AVERROR_INVALIDDATA;
     quantiser_scale_code = get_bits(&gb, 5);
     intra_slice_flag = get_bits1(&gb);
-    if (intra_slice_flag) {
+    if (intra_slice_flag)
+    {
         skip_bits(&gb, 8);
         if (skip_1stop_8data_bits(&gb) < 0)
             return AVERROR_INVALIDDATA;
@@ -135,7 +138,8 @@ static int vaapi_mpeg2_decode_slice(AVCodecContext *avctx, const uint8_t *buffer
     return 0;
 }
 
-AVHWAccel ff_mpeg2_vaapi_hwaccel = {
+AVHWAccel ff_mpeg2_vaapi_hwaccel =
+{
     .name           = "mpeg2_vaapi",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG2VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,39 +15,41 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/codecs/opus/opus_interface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class AudioDecoderOpus final : public AudioDecoder {
- public:
-  explicit AudioDecoderOpus(size_t num_channels);
-  ~AudioDecoderOpus() override;
+class AudioDecoderOpus final : public AudioDecoder
+{
+public:
+    explicit AudioDecoderOpus(size_t num_channels);
+    ~AudioDecoderOpus() override;
 
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
-                                        uint32_t timestamp) override;
-  void Reset() override;
-  int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
-  int PacketDurationRedundant(const uint8_t* encoded,
-                              size_t encoded_len) const override;
-  bool PacketHasFec(const uint8_t* encoded, size_t encoded_len) const override;
-  int SampleRateHz() const override;
-  size_t Channels() const override;
+    std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+                                          uint32_t timestamp) override;
+    void Reset() override;
+    int PacketDuration(const uint8_t* encoded, size_t encoded_len) const override;
+    int PacketDurationRedundant(const uint8_t* encoded,
+                                size_t encoded_len) const override;
+    bool PacketHasFec(const uint8_t* encoded, size_t encoded_len) const override;
+    int SampleRateHz() const override;
+    size_t Channels() const override;
 
- protected:
-  int DecodeInternal(const uint8_t* encoded,
-                     size_t encoded_len,
-                     int sample_rate_hz,
-                     int16_t* decoded,
-                     SpeechType* speech_type) override;
-  int DecodeRedundantInternal(const uint8_t* encoded,
-                              size_t encoded_len,
-                              int sample_rate_hz,
-                              int16_t* decoded,
-                              SpeechType* speech_type) override;
+protected:
+    int DecodeInternal(const uint8_t* encoded,
+                       size_t encoded_len,
+                       int sample_rate_hz,
+                       int16_t* decoded,
+                       SpeechType* speech_type) override;
+    int DecodeRedundantInternal(const uint8_t* encoded,
+                                size_t encoded_len,
+                                int sample_rate_hz,
+                                int16_t* decoded,
+                                SpeechType* speech_type) override;
 
- private:
-  OpusDecInst* dec_state_;
-  const size_t channels_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderOpus);
+private:
+    OpusDecInst* dec_state_;
+    const size_t channels_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderOpus);
 };
 
 }  // namespace webrtc

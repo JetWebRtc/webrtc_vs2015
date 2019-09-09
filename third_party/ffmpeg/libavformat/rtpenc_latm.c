@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP Packetization of MPEG-4 Audio (RFC 3016)
  * Copyright (c) 2011 Juan Carlos Rodriguez <ing.juancarlosrodriguez@hotmail.com>
  *
@@ -34,7 +34,8 @@ void ff_rtp_send_latm(AVFormatContext *s1, const uint8_t *buff, int size)
     int len    = 0;
 
     /* skip ADTS header, if present */
-    if ((s1->streams[0]->codec->extradata_size) == 0) {
+    if ((s1->streams[0]->codec->extradata_size) == 0)
+    {
         size -= 7;
         buff += 7;
     }
@@ -47,13 +48,17 @@ void ff_rtp_send_latm(AVFormatContext *s1, const uint8_t *buff, int size)
     s->timestamp = s->cur_timestamp;
 
     /* PayloadMux() */
-    while (size > 0) {
+    while (size > 0)
+    {
         len   = FFMIN(size, s->max_payload_size - (!offset ? header_size : 0));
         size -= len;
-        if (!offset) {
+        if (!offset)
+        {
             memcpy(s->buf + header_size, buff, len);
             ff_rtp_send_data(s1, s->buf, header_size + len, !size);
-        } else {
+        }
+        else
+        {
             ff_rtp_send_data(s1, buff + offset, len, !size);
         }
         offset += len;

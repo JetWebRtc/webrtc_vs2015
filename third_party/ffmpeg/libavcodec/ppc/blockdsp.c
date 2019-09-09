@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Brian Foley
  * Copyright (c) 2002 Dieter Shirley
  * Copyright (c) 2003-2004 Romain Dolbeau <romain@dolbeau.org>
@@ -56,7 +56,8 @@ static void clear_blocks_dcbz32_ppc(int16_t *blocks)
 {
     register int misal = (unsigned long) blocks & 0x00000010, i = 0;
 
-    if (misal) {
+    if (misal)
+    {
         ((unsigned long *) blocks)[0] = 0L;
         ((unsigned long *) blocks)[1] = 0L;
         ((unsigned long *) blocks)[2] = 0L;
@@ -65,7 +66,8 @@ static void clear_blocks_dcbz32_ppc(int16_t *blocks)
     }
     for (; i < sizeof(int16_t) * 6 * 64 - 31; i += 32)
         __asm__ volatile ("dcbz %0,%1" :: "b" (blocks), "r" (i) : "memory");
-    if (misal) {
+    if (misal)
+    {
         ((unsigned long *) blocks)[188] = 0L;
         ((unsigned long *) blocks)[189] = 0L;
         ((unsigned long *) blocks)[190] = 0L;
@@ -81,12 +83,15 @@ static void clear_blocks_dcbz128_ppc(int16_t *blocks)
 #if HAVE_DCBZL
     register int misal = (unsigned long) blocks & 0x0000007f, i = 0;
 
-    if (misal) {
+    if (misal)
+    {
         /* We could probably also optimize this case,
          * but there's not much point as the machines
          * aren't available yet (2003-06-26). */
         memset(blocks, 0, sizeof(int16_t) * 6 * 64);
-    } else {
+    }
+    else
+    {
         for (; i < sizeof(int16_t) * 6 * 64; i += 128)
             __asm__ volatile ("dcbzl %0,%1" :: "b" (blocks), "r" (i) : "memory");
     }
@@ -146,8 +151,10 @@ static void clear_block_altivec(int16_t *block)
 av_cold void ff_blockdsp_init_ppc(BlockDSPContext *c, unsigned high_bit_depth)
 {
     // common optimizations whether AltiVec is available or not
-    if (!high_bit_depth) {
-        switch (check_dcbzl_effect()) {
+    if (!high_bit_depth)
+    {
+        switch (check_dcbzl_effect())
+        {
         case 32:
             c->clear_blocks = clear_blocks_dcbz32_ppc;
             break;

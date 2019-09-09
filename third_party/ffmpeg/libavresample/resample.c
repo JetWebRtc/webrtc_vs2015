@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -55,7 +55,8 @@ static double bessel(double x)
     int i;
 
     x = x * x / 4;
-    for (i = 1; v != lastv; i++) {
+    for (i = 1; v != lastv; i++)
+    {
         lastv = v;
         t    *= x / (i * i);
         v    += t;
@@ -77,14 +78,18 @@ static int build_filter(ResampleContext *c, double factor)
     if (!tab)
         return AVERROR(ENOMEM);
 
-    for (ph = 0; ph < phase_count; ph++) {
+    for (ph = 0; ph < phase_count; ph++)
+    {
         double norm = 0;
-        for (i = 0; i < tap_count; i++) {
+        for (i = 0; i < tap_count; i++)
+        {
             x = M_PI * ((double)(i - center) - (double)ph / phase_count) * factor;
             if (x == 0) y = 1.0;
             else        y = sin(x) / x;
-            switch (c->filter_type) {
-            case AV_RESAMPLE_FILTER_TYPE_CUBIC: {
+            switch (c->filter_type)
+            {
+            case AV_RESAMPLE_FILTER_TYPE_CUBIC:
+            {
                 const float d = -0.5; //first order derivative = -0.5
                 x = fabs(((double)(i - center) - (double)ph / phase_count) * factor);
                 if (x < 1.0) y = 1 - 3 * x*x + 2 * x*x*x + d * (                -x*x + x*x*x);
@@ -94,8 +99,8 @@ static int build_filter(ResampleContext *c, double factor)
             case AV_RESAMPLE_FILTER_TYPE_BLACKMAN_NUTTALL:
                 w  = 2.0 * x / (factor * tap_count) + M_PI;
                 y *= 0.3635819 - 0.4891775 * cos(    w) +
-                                 0.1365995 * cos(2 * w) -
-                                 0.0106411 * cos(3 * w);
+                     0.1365995 * cos(2 * w) -
+                     0.0106411 * cos(3 * w);
                 break;
             case AV_RESAMPLE_FILTER_TYPE_KAISER:
                 w  = 2.0 * x / (factor * tap_count * M_PI);
@@ -127,9 +132,10 @@ ResampleContext *ff_audio_resample_init(AVAudioResampleContext *avr)
     int felem_size;
 
     if (avr->internal_sample_fmt != AV_SAMPLE_FMT_S16P &&
-        avr->internal_sample_fmt != AV_SAMPLE_FMT_S32P &&
-        avr->internal_sample_fmt != AV_SAMPLE_FMT_FLTP &&
-        avr->internal_sample_fmt != AV_SAMPLE_FMT_DBLP) {
+            avr->internal_sample_fmt != AV_SAMPLE_FMT_S32P &&
+            avr->internal_sample_fmt != AV_SAMPLE_FMT_FLTP &&
+            avr->internal_sample_fmt != AV_SAMPLE_FMT_DBLP)
+    {
         av_log(avr, AV_LOG_ERROR, "Unsupported internal format for "
                "resampling: %s\n",
                av_get_sample_fmt_name(avr->internal_sample_fmt));
@@ -147,7 +153,8 @@ ResampleContext *ff_audio_resample_init(AVAudioResampleContext *avr)
     c->filter_type   = avr->filter_type;
     c->kaiser_beta   = avr->kaiser_beta;
 
-    switch (avr->internal_sample_fmt) {
+    switch (avr->internal_sample_fmt)
+    {
     case AV_SAMPLE_FMT_DBLP:
         c->resample_one  = c->linear ? resample_linear_dbl : resample_one_dbl;
         c->resample_nearest = resample_nearest_dbl;
@@ -242,7 +249,8 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
     if (!compensation_distance && sample_delta)
         return AVERROR(EINVAL);
 
-    if (!avr->resample_needed) {
+    if (!avr->resample_needed)
+    {
 #if FF_API_RESAMPLE_CLOSE_OPEN
         /* if resampling was not enabled previously, re-initialize the
            AVAudioResampleContext and force resampling */
@@ -252,7 +260,8 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
 
         /* buffer any remaining samples in the output FIFO before closing */
         fifo_samples = av_audio_fifo_size(avr->out_fifo);
-        if (fifo_samples > 0) {
+        if (fifo_samples > 0)
+        {
             fifo_buf = ff_audio_data_alloc(avr->out_channels, fifo_samples,
                                            avr->out_sample_fmt, NULL);
             if (!fifo_buf)
@@ -263,7 +272,8 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
                 goto reinit_fail;
         }
         /* save the channel mixing matrix */
-        if (avr->am) {
+        if (avr->am)
+        {
             ret = avresample_get_matrix(avr, matrix, AVRESAMPLE_MAX_CHANNELS);
             if (ret < 0)
                 goto reinit_fail;
@@ -276,7 +286,8 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
         avr->force_resampling = 1;
 
         /* restore the channel mixing matrix */
-        if (restore_matrix) {
+        if (restore_matrix)
+        {
             ret = avresample_set_matrix(avr, matrix, AVRESAMPLE_MAX_CHANNELS);
             if (ret < 0)
                 goto reinit_fail;
@@ -288,7 +299,8 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
             goto reinit_fail;
 
         /* restore buffered samples to the output FIFO */
-        if (fifo_samples > 0) {
+        if (fifo_samples > 0)
+        {
             ret = ff_audio_data_add_to_fifo(avr->out_fifo, fifo_buf, 0,
                                             fifo_samples);
             if (ret < 0)
@@ -302,10 +314,13 @@ int avresample_set_compensation(AVAudioResampleContext *avr, int sample_delta,
     }
     c = avr->resample;
     c->compensation_distance = compensation_distance;
-    if (compensation_distance) {
+    if (compensation_distance)
+    {
         c->dst_incr = c->ideal_dst_incr - c->ideal_dst_incr *
                       (int64_t)sample_delta / compensation_distance;
-    } else {
+    }
+    else
+    {
         c->dst_incr = c->ideal_dst_incr;
     }
     return 0;
@@ -329,26 +344,34 @@ static int resample(ResampleContext *c, void *dst, const void *src,
     if (!dst != !src)
         return AVERROR(EINVAL);
 
-    if (nearest_neighbour) {
+    if (nearest_neighbour)
+    {
         uint64_t index2 = ((uint64_t)index) << 32;
         int64_t incr   = (1LL << 32) * c->dst_incr / c->src_incr;
         dst_size       = FFMIN(dst_size,
                                (src_size-1-index) * (int64_t)c->src_incr /
                                c->dst_incr);
 
-        if (dst) {
-            for(dst_index = 0; dst_index < dst_size; dst_index++) {
+        if (dst)
+        {
+            for(dst_index = 0; dst_index < dst_size; dst_index++)
+            {
                 c->resample_nearest(dst, dst_index, src, index2 >> 32);
                 index2 += incr;
             }
-        } else {
+        }
+        else
+        {
             dst_index = dst_size;
         }
         index += dst_index * dst_incr;
         index += (frac + dst_index * (int64_t)dst_incr_frac) / c->src_incr;
         frac   = (frac + dst_index * (int64_t)dst_incr_frac) % c->src_incr;
-    } else {
-        for (dst_index = 0; dst_index < dst_size; dst_index++) {
+    }
+    else
+    {
+        for (dst_index = 0; dst_index < dst_size; dst_index++)
+        {
             int sample_index = index >> c->phase_shift;
 
             if (sample_index + c->filter_length > src_size)
@@ -359,11 +382,13 @@ static int resample(ResampleContext *c, void *dst, const void *src,
 
             frac  += dst_incr_frac;
             index += dst_incr;
-            if (frac >= c->src_incr) {
+            if (frac >= c->src_incr)
+            {
                 frac -= c->src_incr;
                 index++;
             }
-            if (dst_index + 1 == compensation_distance) {
+            if (dst_index + 1 == compensation_distance)
+            {
                 compensation_distance = 0;
                 dst_incr_frac = c->ideal_dst_incr % c->src_incr;
                 dst_incr      = c->ideal_dst_incr / c->src_incr;
@@ -373,10 +398,12 @@ static int resample(ResampleContext *c, void *dst, const void *src,
     if (consumed)
         *consumed = index >> c->phase_shift;
 
-    if (update_ctx) {
+    if (update_ctx)
+    {
         index &= c->phase_mask;
 
-        if (compensation_distance) {
+        if (compensation_distance)
+        {
             compensation_distance -= dst_index;
             if (compensation_distance <= 0)
                 return AVERROR_BUG;
@@ -402,16 +429,20 @@ int ff_audio_resample(ResampleContext *c, AudioData *dst, AudioData *src)
     in_leftover = c->buffer->nb_samples;
 
     /* add input samples to the internal buffer */
-    if (src) {
+    if (src)
+    {
         ret = ff_audio_data_combine(c->buffer, in_leftover, src, 0, in_samples);
         if (ret < 0)
             return ret;
-    } else if (in_leftover <= c->final_padding_samples) {
+    }
+    else if (in_leftover <= c->final_padding_samples)
+    {
         /* no remaining samples to flush */
         return 0;
     }
 
-    if (!c->initial_padding_filled) {
+    if (!c->initial_padding_filled)
+    {
         int bps = av_get_bytes_per_sample(c->avr->internal_sample_fmt);
         int i;
 
@@ -419,36 +450,46 @@ int ff_audio_resample(ResampleContext *c, AudioData *dst, AudioData *src)
             return 0;
 
         for (i = 0; i < c->padding_size; i++)
-            for (ch = 0; ch < c->buffer->channels; ch++) {
-                if (c->buffer->nb_samples > 2 * c->padding_size - i) {
+            for (ch = 0; ch < c->buffer->channels; ch++)
+            {
+                if (c->buffer->nb_samples > 2 * c->padding_size - i)
+                {
                     memcpy(c->buffer->data[ch] + bps * i,
                            c->buffer->data[ch] + bps * (2 * c->padding_size - i), bps);
-                } else {
+                }
+                else
+                {
                     memset(c->buffer->data[ch] + bps * i, 0, bps);
                 }
             }
         c->initial_padding_filled = 1;
     }
 
-    if (!src && !c->final_padding_filled) {
+    if (!src && !c->final_padding_filled)
+    {
         int bps = av_get_bytes_per_sample(c->avr->internal_sample_fmt);
         int i;
 
         ret = ff_audio_data_realloc(c->buffer,
                                     FFMAX(in_samples, in_leftover) +
                                     c->padding_size);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(c->avr, AV_LOG_ERROR, "Error reallocating resampling buffer\n");
             return AVERROR(ENOMEM);
         }
 
         for (i = 0; i < c->padding_size; i++)
-            for (ch = 0; ch < c->buffer->channels; ch++) {
-                if (in_leftover > i) {
+            for (ch = 0; ch < c->buffer->channels; ch++)
+            {
+                if (in_leftover > i)
+                {
                     memcpy(c->buffer->data[ch] + bps * (in_leftover + i),
                            c->buffer->data[ch] + bps * (in_leftover - i - 1),
                            bps);
-                } else {
+                }
+                else
+                {
                     memset(c->buffer->data[ch] + bps * (in_leftover + i),
                            0, bps);
                 }
@@ -461,24 +502,28 @@ int ff_audio_resample(ResampleContext *c, AudioData *dst, AudioData *src)
 
     /* calculate output size and reallocate output buffer if needed */
     /* TODO: try to calculate this without the dummy resample() run */
-    if (!dst->read_only && dst->allow_realloc) {
+    if (!dst->read_only && dst->allow_realloc)
+    {
         out_samples = resample(c, NULL, NULL, NULL, c->buffer->nb_samples,
                                INT_MAX, 0, nearest_neighbour);
         ret = ff_audio_data_realloc(dst, out_samples);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(c->avr, AV_LOG_ERROR, "error reallocating output\n");
             return ret;
         }
     }
 
     /* resample each channel plane */
-    for (ch = 0; ch < c->buffer->channels; ch++) {
+    for (ch = 0; ch < c->buffer->channels; ch++)
+    {
         out_samples = resample(c, (void *)dst->data[ch],
                                (const void *)c->buffer->data[ch], &consumed,
                                c->buffer->nb_samples, dst->allocated_samples,
                                ch + 1 == c->buffer->channels, nearest_neighbour);
     }
-    if (out_samples < 0) {
+    if (out_samples < 0)
+    {
         av_log(c->avr, AV_LOG_ERROR, "error during resampling\n");
         return out_samples;
     }
@@ -488,7 +533,7 @@ int ff_audio_resample(ResampleContext *c, AudioData *dst, AudioData *src)
     c->initial_padding_samples = FFMAX(c->initial_padding_samples - consumed, 0);
 
     av_log(c->avr, AV_LOG_TRACE, "resampled %d in + %d leftover to %d out + %d leftover\n",
-            in_samples, in_leftover, out_samples, c->buffer->nb_samples);
+           in_samples, in_leftover, out_samples, c->buffer->nb_samples);
 
     dst->nb_samples = out_samples;
     return 0;

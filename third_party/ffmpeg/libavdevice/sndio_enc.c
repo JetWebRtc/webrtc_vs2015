@@ -1,4 +1,4 @@
-/*
+﻿/*
  * sndio play and grab interface
  * Copyright (c) 2010 Jacob Meuser
  *
@@ -50,13 +50,15 @@ static int audio_write_packet(AVFormatContext *s1, AVPacket *pkt)
     int size = pkt->size;
     int len, ret;
 
-    while (size > 0) {
+    while (size > 0)
+    {
         len = FFMIN(s->buffer_size - s->buffer_offset, size);
         memcpy(s->buffer + s->buffer_offset, buf, len);
         buf  += len;
         size -= len;
         s->buffer_offset += len;
-        if (s->buffer_offset >= s->buffer_size) {
+        if (s->buffer_offset >= s->buffer_size)
+        {
             ret = sio_write(s->hdl, s->buffer, s->buffer_size);
             if (ret == 0 || sio_eof(s->hdl))
                 return AVERROR(EIO);
@@ -79,14 +81,16 @@ static int audio_write_trailer(AVFormatContext *s1)
     return 0;
 }
 
-static const AVClass sndio_muxer_class = {
+static const AVClass sndio_muxer_class =
+{
     .class_name     = "sndio outdev",
     .item_name      = av_default_item_name,
     .version        = LIBAVUTIL_VERSION_INT,
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
 };
 
-AVOutputFormat ff_sndio_muxer = {
+AVOutputFormat ff_sndio_muxer =
+{
     .name           = "sndio",
     .long_name      = NULL_IF_CONFIG_SMALL("sndio audio playback"),
     .priv_data_size = sizeof(SndioData),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.729, G729 Annex D decoders
  * Copyright (c) 2008 Vladimir Voroshilov
  *

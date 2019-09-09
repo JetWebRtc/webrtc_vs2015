@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -81,7 +81,7 @@
         if (err != code)                                                \
         {                                                               \
             TEST_LOG_ERROR("Invalid error code (%d, should be %d) at line %d\n",
-                           code, err, __LINE__);
+code, err, __LINE__);
 }
 }
 #else

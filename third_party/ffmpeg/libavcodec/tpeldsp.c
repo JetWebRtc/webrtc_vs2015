@@ -1,4 +1,4 @@
-/*
+﻿/*
  * thirdpel DSP functions
  *
  * This file is part of FFmpeg.
@@ -32,9 +32,10 @@
 #include "pel_template.c"
 
 static inline void put_tpel_pixels_mc00_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
-    switch (width) {
+    switch (width)
+    {
     case 2:
         put_pixels2_8_c(dst, src, stride, height);
         break;
@@ -51,11 +52,12 @@ static inline void put_tpel_pixels_mc00_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc10_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((2 * src[j] + src[j + 1] + 1) *
                       683) >> 11;
@@ -65,11 +67,12 @@ static inline void put_tpel_pixels_mc10_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc20_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((src[j] + 2 * src[j + 1] + 1) *
                       683) >> 11;
@@ -79,11 +82,12 @@ static inline void put_tpel_pixels_mc20_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc01_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((2 * src[j] + src[j + stride] + 1) *
                       683) >> 11;
@@ -93,11 +97,12 @@ static inline void put_tpel_pixels_mc01_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc11_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((4 * src[j]          + 3 * src[j + 1] +
                        3 * src[j + stride] + 2 * src[j + stride + 1] + 6) *
@@ -108,11 +113,12 @@ static inline void put_tpel_pixels_mc11_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc12_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((3 * src[j]          + 2 * src[j + 1] +
                        4 * src[j + stride] + 3 * src[j + stride + 1] + 6) *
@@ -123,11 +129,12 @@ static inline void put_tpel_pixels_mc12_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc02_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((src[j] + 2 * src[j + stride] + 1) *
                       683) >> 11;
@@ -137,11 +144,12 @@ static inline void put_tpel_pixels_mc02_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc21_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((3 * src[j]          + 4 * src[j + 1] +
                        2 * src[j + stride] + 3 * src[j + stride + 1] + 6) *
@@ -152,11 +160,12 @@ static inline void put_tpel_pixels_mc21_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void put_tpel_pixels_mc22_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = ((2 * src[j]          + 3 * src[j + 1] +
                        3 * src[j + stride] + 4 * src[j + stride + 1] + 6) *
@@ -167,9 +176,10 @@ static inline void put_tpel_pixels_mc22_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc00_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
-    switch (width) {
+    switch (width)
+    {
     case 2:
         avg_pixels2_8_c(dst, src, stride, height);
         break;
@@ -186,11 +196,12 @@ static inline void avg_tpel_pixels_mc00_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc10_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((2 * src[j] + src[j + 1] + 1) *
@@ -201,11 +212,12 @@ static inline void avg_tpel_pixels_mc10_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc20_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((src[j] + 2 * src[j + 1] + 1) *
@@ -216,11 +228,12 @@ static inline void avg_tpel_pixels_mc20_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc01_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((2 * src[j] + src[j + stride] + 1) *
@@ -231,11 +244,12 @@ static inline void avg_tpel_pixels_mc01_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc11_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((4 * src[j]          + 3 * src[j + 1] +
@@ -247,11 +261,12 @@ static inline void avg_tpel_pixels_mc11_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc12_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((3 * src[j]          + 2 * src[j + 1] +
@@ -263,11 +278,12 @@ static inline void avg_tpel_pixels_mc12_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc02_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((src[j] + 2 * src[j + stride] + 1) *
@@ -278,11 +294,12 @@ static inline void avg_tpel_pixels_mc02_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc21_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((3 * src[j]          + 4 * src[j + 1] +
@@ -294,11 +311,12 @@ static inline void avg_tpel_pixels_mc21_c(uint8_t *dst, const uint8_t *src,
 }
 
 static inline void avg_tpel_pixels_mc22_c(uint8_t *dst, const uint8_t *src,
-                                          int stride, int width, int height)
+        int stride, int width, int height)
 {
     int i, j;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         for (j = 0; j < width; j++)
             dst[j] = (dst[j] +
                       (((2 * src[j]          + 3 * src[j + 1] +

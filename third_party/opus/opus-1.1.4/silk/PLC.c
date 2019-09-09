@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -71,19 +71,23 @@ void silk_PLC(
 )
 {
     /* PLC control function */
-    if( psDec->fs_kHz != psDec->sPLC.fs_kHz ) {
+    if( psDec->fs_kHz != psDec->sPLC.fs_kHz )
+    {
         silk_PLC_Reset( psDec );
         psDec->sPLC.fs_kHz = psDec->fs_kHz;
     }
 
-    if( lost ) {
+    if( lost )
+    {
         /****************************/
         /* Generate Signal          */
         /****************************/
         silk_PLC_conceal( psDec, psDecCtrl, frame, arch );
 
         psDec->lossCnt++;
-    } else {
+    }
+    else
+    {
         /****************************/
         /* Update state             */
         /****************************/
@@ -108,21 +112,26 @@ static OPUS_INLINE void silk_PLC_update(
     /* Update parameters used in case of packet loss */
     psDec->prevSignalType = psDec->indices.signalType;
     LTP_Gain_Q14 = 0;
-    if( psDec->indices.signalType == TYPE_VOICED ) {
+    if( psDec->indices.signalType == TYPE_VOICED )
+    {
         /* Find the parameters for the last subframe which contains a pitch pulse */
-        for( j = 0; j * psDec->subfr_length < psDecCtrl->pitchL[ psDec->nb_subfr - 1 ]; j++ ) {
-            if( j == psDec->nb_subfr ) {
+        for( j = 0; j * psDec->subfr_length < psDecCtrl->pitchL[ psDec->nb_subfr - 1 ]; j++ )
+        {
+            if( j == psDec->nb_subfr )
+            {
                 break;
             }
             temp_LTP_Gain_Q14 = 0;
-            for( i = 0; i < LTP_ORDER; i++ ) {
+            for( i = 0; i < LTP_ORDER; i++ )
+            {
                 temp_LTP_Gain_Q14 += psDecCtrl->LTPCoef_Q14[ ( psDec->nb_subfr - 1 - j ) * LTP_ORDER  + i ];
             }
-            if( temp_LTP_Gain_Q14 > LTP_Gain_Q14 ) {
+            if( temp_LTP_Gain_Q14 > LTP_Gain_Q14 )
+            {
                 LTP_Gain_Q14 = temp_LTP_Gain_Q14;
                 silk_memcpy( psPLC->LTPCoef_Q14,
-                    &psDecCtrl->LTPCoef_Q14[ silk_SMULBB( psDec->nb_subfr - 1 - j, LTP_ORDER ) ],
-                    LTP_ORDER * sizeof( opus_int16 ) );
+                             &psDecCtrl->LTPCoef_Q14[ silk_SMULBB( psDec->nb_subfr - 1 - j, LTP_ORDER ) ],
+                             LTP_ORDER * sizeof( opus_int16 ) );
 
                 psPLC->pitchL_Q8 = silk_LSHIFT( psDecCtrl->pitchL[ psDec->nb_subfr - 1 - j ], 8 );
             }
@@ -132,26 +141,33 @@ static OPUS_INLINE void silk_PLC_update(
         psPLC->LTPCoef_Q14[ LTP_ORDER / 2 ] = LTP_Gain_Q14;
 
         /* Limit LT coefs */
-        if( LTP_Gain_Q14 < V_PITCH_GAIN_START_MIN_Q14 ) {
+        if( LTP_Gain_Q14 < V_PITCH_GAIN_START_MIN_Q14 )
+        {
             opus_int   scale_Q10;
             opus_int32 tmp;
 
             tmp = silk_LSHIFT( V_PITCH_GAIN_START_MIN_Q14, 10 );
             scale_Q10 = silk_DIV32( tmp, silk_max( LTP_Gain_Q14, 1 ) );
-            for( i = 0; i < LTP_ORDER; i++ ) {
+            for( i = 0; i < LTP_ORDER; i++ )
+            {
                 psPLC->LTPCoef_Q14[ i ] = silk_RSHIFT( silk_SMULBB( psPLC->LTPCoef_Q14[ i ], scale_Q10 ), 10 );
             }
-        } else if( LTP_Gain_Q14 > V_PITCH_GAIN_START_MAX_Q14 ) {
+        }
+        else if( LTP_Gain_Q14 > V_PITCH_GAIN_START_MAX_Q14 )
+        {
             opus_int   scale_Q14;
             opus_int32 tmp;
 
             tmp = silk_LSHIFT( V_PITCH_GAIN_START_MAX_Q14, 14 );
             scale_Q14 = silk_DIV32( tmp, silk_max( LTP_Gain_Q14, 1 ) );
-            for( i = 0; i < LTP_ORDER; i++ ) {
+            for( i = 0; i < LTP_ORDER; i++ )
+            {
                 psPLC->LTPCoef_Q14[ i ] = silk_RSHIFT( silk_SMULBB( psPLC->LTPCoef_Q14[ i ], scale_Q14 ), 14 );
             }
         }
-    } else {
+    }
+    else
+    {
         psPLC->pitchL_Q8 = silk_LSHIFT( silk_SMULBB( psDec->fs_kHz, 18 ), 8 );
         silk_memset( psPLC->LTPCoef_Q14, 0, LTP_ORDER * sizeof( opus_int16 ));
     }
@@ -168,7 +184,7 @@ static OPUS_INLINE void silk_PLC_update(
 }
 
 static OPUS_INLINE void silk_PLC_energy(opus_int32 *energy1, opus_int *shift1, opus_int32 *energy2, opus_int *shift2,
-      const opus_int32 *exc_Q14, const opus_int32 *prevGain_Q10, int subfr_length, int nb_subfr)
+                                        const opus_int32 *exc_Q14, const opus_int32 *prevGain_Q10, int subfr_length, int nb_subfr)
 {
     int i, k;
     VARDECL( opus_int16, exc_buf );
@@ -178,10 +194,12 @@ static OPUS_INLINE void silk_PLC_energy(opus_int32 *energy1, opus_int *shift1, o
     /* Find random noise component */
     /* Scale previous excitation signal */
     exc_buf_ptr = exc_buf;
-    for( k = 0; k < 2; k++ ) {
-        for( i = 0; i < subfr_length; i++ ) {
+    for( k = 0; k < 2; k++ )
+    {
+        for( i = 0; i < subfr_length; i++ )
+        {
             exc_buf_ptr[ i ] = (opus_int16)silk_SAT16( silk_RSHIFT(
-                silk_SMULWW( exc_Q14[ i + ( k + nb_subfr - 2 ) * subfr_length ], prevGain_Q10[ k ] ), 8 ) );
+                                   silk_SMULWW( exc_Q14[ i + ( k + nb_subfr - 2 ) * subfr_length ], prevGain_Q10[ k ] ), 8 ) );
         }
         exc_buf_ptr += subfr_length;
     }
@@ -228,16 +246,20 @@ static OPUS_INLINE void silk_PLC_conceal(
     prevGain_Q10[0] = silk_RSHIFT( psPLC->prevGain_Q16[ 0 ], 6);
     prevGain_Q10[1] = silk_RSHIFT( psPLC->prevGain_Q16[ 1 ], 6);
 
-    if( psDec->first_frame_after_reset ) {
-       silk_memset( psPLC->prevLPC_Q12, 0, sizeof( psPLC->prevLPC_Q12 ) );
+    if( psDec->first_frame_after_reset )
+    {
+        silk_memset( psPLC->prevLPC_Q12, 0, sizeof( psPLC->prevLPC_Q12 ) );
     }
 
     silk_PLC_energy(&energy1, &shift1, &energy2, &shift2, psDec->exc_Q14, prevGain_Q10, psDec->subfr_length, psDec->nb_subfr);
 
-    if( silk_RSHIFT( energy1, shift2 ) < silk_RSHIFT( energy2, shift1 ) ) {
+    if( silk_RSHIFT( energy1, shift2 ) < silk_RSHIFT( energy2, shift1 ) )
+    {
         /* First sub-frame has lowest energy */
         rand_ptr = &psDec->exc_Q14[ silk_max_int( 0, ( psPLC->nb_subfr - 1 ) * psPLC->subfr_length - RAND_BUF_SIZE ) ];
-    } else {
+    }
+    else
+    {
         /* Second sub-frame has lowest energy */
         rand_ptr = &psDec->exc_Q14[ silk_max_int( 0, psPLC->nb_subfr * psPLC->subfr_length - RAND_BUF_SIZE ) ];
     }
@@ -248,9 +270,12 @@ static OPUS_INLINE void silk_PLC_conceal(
 
     /* Set up attenuation gains */
     harm_Gain_Q15 = HARM_ATT_Q15[ silk_min_int( NB_ATT - 1, psDec->lossCnt ) ];
-    if( psDec->prevSignalType == TYPE_VOICED ) {
+    if( psDec->prevSignalType == TYPE_VOICED )
+    {
         rand_Gain_Q15 = PLC_RAND_ATTENUATE_V_Q15[  silk_min_int( NB_ATT - 1, psDec->lossCnt ) ];
-    } else {
+    }
+    else
+    {
         rand_Gain_Q15 = PLC_RAND_ATTENUATE_UV_Q15[ silk_min_int( NB_ATT - 1, psDec->lossCnt ) ];
     }
 
@@ -261,17 +286,22 @@ static OPUS_INLINE void silk_PLC_conceal(
     silk_memcpy( A_Q12, psPLC->prevLPC_Q12, psDec->LPC_order * sizeof( opus_int16 ) );
 
     /* First Lost frame */
-    if( psDec->lossCnt == 0 ) {
+    if( psDec->lossCnt == 0 )
+    {
         rand_scale_Q14 = 1 << 14;
 
         /* Reduce random noise Gain for voiced frames */
-        if( psDec->prevSignalType == TYPE_VOICED ) {
-            for( i = 0; i < LTP_ORDER; i++ ) {
+        if( psDec->prevSignalType == TYPE_VOICED )
+        {
+            for( i = 0; i < LTP_ORDER; i++ )
+            {
                 rand_scale_Q14 -= B_Q14[ i ];
             }
             rand_scale_Q14 = silk_max_16( 3277, rand_scale_Q14 ); /* 0.2 */
             rand_scale_Q14 = (opus_int16)silk_RSHIFT( silk_SMULBB( rand_scale_Q14, psPLC->prevLTP_scale_Q14 ), 14 );
-        } else {
+        }
+        else
+        {
             /* Reduce random noise for unvoiced frames with high LPC gain */
             opus_int32 invGain_Q30, down_scale_Q30;
 
@@ -296,17 +326,20 @@ static OPUS_INLINE void silk_PLC_conceal(
     /* Scale LTP state */
     inv_gain_Q30 = silk_INVERSE32_varQ( psPLC->prevGain_Q16[ 1 ], 46 );
     inv_gain_Q30 = silk_min( inv_gain_Q30, silk_int32_MAX >> 1 );
-    for( i = idx + psDec->LPC_order; i < psDec->ltp_mem_length; i++ ) {
+    for( i = idx + psDec->LPC_order; i < psDec->ltp_mem_length; i++ )
+    {
         sLTP_Q14[ i ] = silk_SMULWB( inv_gain_Q30, sLTP[ i ] );
     }
 
     /***************************/
     /* LTP synthesis filtering */
     /***************************/
-    for( k = 0; k < psDec->nb_subfr; k++ ) {
+    for( k = 0; k < psDec->nb_subfr; k++ )
+    {
         /* Set up pointer */
         pred_lag_ptr = &sLTP_Q14[ sLTP_buf_idx - lag + LTP_ORDER / 2 ];
-        for( i = 0; i < psDec->subfr_length; i++ ) {
+        for( i = 0; i < psDec->subfr_length; i++ )
+        {
             /* Unrolled loop */
             /* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
             LTP_pred_Q12 = 2;
@@ -325,7 +358,8 @@ static OPUS_INLINE void silk_PLC_conceal(
         }
 
         /* Gradually reduce LTP gain */
-        for( j = 0; j < LTP_ORDER; j++ ) {
+        for( j = 0; j < LTP_ORDER; j++ )
+        {
             B_Q14[ j ] = silk_RSHIFT( silk_SMULBB( harm_Gain_Q15, B_Q14[ j ] ), 15 );
         }
         /* Gradually reduce excitation gain */
@@ -346,7 +380,8 @@ static OPUS_INLINE void silk_PLC_conceal(
     silk_memcpy( sLPC_Q14_ptr, psDec->sLPC_Q14_buf, MAX_LPC_ORDER * sizeof( opus_int32 ) );
 
     silk_assert( psDec->LPC_order >= 10 ); /* check that unrolling works */
-    for( i = 0; i < psDec->frame_length; i++ ) {
+    for( i = 0; i < psDec->frame_length; i++ )
+    {
         /* partly unrolled */
         /* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
         LPC_pred_Q10 = silk_RSHIFT( psDec->LPC_order, 1 );
@@ -360,7 +395,8 @@ static OPUS_INLINE void silk_PLC_conceal(
         LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, sLPC_Q14_ptr[ MAX_LPC_ORDER + i -  8 ], A_Q12[ 7 ] );
         LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, sLPC_Q14_ptr[ MAX_LPC_ORDER + i -  9 ], A_Q12[ 8 ] );
         LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, sLPC_Q14_ptr[ MAX_LPC_ORDER + i - 10 ], A_Q12[ 9 ] );
-        for( j = 10; j < psDec->LPC_order; j++ ) {
+        for( j = 10; j < psDec->LPC_order; j++ )
+        {
             LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, sLPC_Q14_ptr[ MAX_LPC_ORDER + i - j - 1 ], A_Q12[ j ] );
         }
 
@@ -380,7 +416,8 @@ static OPUS_INLINE void silk_PLC_conceal(
     /**************************************/
     psPLC->rand_seed     = rand_seed;
     psPLC->randScale_Q14 = rand_scale_Q14;
-    for( i = 0; i < MAX_NB_SUBFR; i++ ) {
+    for( i = 0; i < MAX_NB_SUBFR; i++ )
+    {
         psDecCtrl->pitchL[ i ] = lag;
     }
     RESTORE_STACK;
@@ -398,25 +435,33 @@ void silk_PLC_glue_frames(
     silk_PLC_struct *psPLC;
     psPLC = &psDec->sPLC;
 
-    if( psDec->lossCnt ) {
+    if( psDec->lossCnt )
+    {
         /* Calculate energy in concealed residual */
         silk_sum_sqr_shift( &psPLC->conc_energy, &psPLC->conc_energy_shift, frame, length );
 
         psPLC->last_frame_lost = 1;
-    } else {
-        if( psDec->sPLC.last_frame_lost ) {
+    }
+    else
+    {
+        if( psDec->sPLC.last_frame_lost )
+        {
             /* Calculate residual in decoded signal if last frame was lost */
             silk_sum_sqr_shift( &energy, &energy_shift, frame, length );
 
             /* Normalize energies */
-            if( energy_shift > psPLC->conc_energy_shift ) {
+            if( energy_shift > psPLC->conc_energy_shift )
+            {
                 psPLC->conc_energy = silk_RSHIFT( psPLC->conc_energy, energy_shift - psPLC->conc_energy_shift );
-            } else if( energy_shift < psPLC->conc_energy_shift ) {
+            }
+            else if( energy_shift < psPLC->conc_energy_shift )
+            {
                 energy = silk_RSHIFT( energy, psPLC->conc_energy_shift - energy_shift );
             }
 
             /* Fade in the energy difference */
-            if( energy > psPLC->conc_energy ) {
+            if( energy > psPLC->conc_energy )
+            {
                 opus_int32 frac_Q24, LZ;
                 opus_int32 gain_Q16, slope_Q16;
 
@@ -432,10 +477,12 @@ void silk_PLC_glue_frames(
                 /* Make slope 4x steeper to avoid missing onsets after DTX */
                 slope_Q16 = silk_LSHIFT( slope_Q16, 2 );
 
-                for( i = 0; i < length; i++ ) {
+                for( i = 0; i < length; i++ )
+                {
                     frame[ i ] = silk_SMULWB( gain_Q16, frame[ i ] );
                     gain_Q16 += slope_Q16;
-                    if( gain_Q16 > (opus_int32)1 << 16 ) {
+                    if( gain_Q16 > (opus_int32)1 << 16 )
+                    {
                         break;
                     }
                 }

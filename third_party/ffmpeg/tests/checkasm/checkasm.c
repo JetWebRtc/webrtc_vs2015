@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Assembly testing and benchmarking tool
  * Copyright (c) 2015 Henrik Gramner
  * Copyright (c) 2008 Loren Merritt
@@ -53,10 +53,12 @@
 #endif
 
 /* List of tests to invoke */
-static const struct {
+static const struct
+{
     const char *name;
     void (*func)(void);
-} tests[] = {
+} tests[] =
+{
 #if CONFIG_BSWAPDSP
     { "bswapdsp", checkasm_check_bswapdsp },
 #endif
@@ -70,11 +72,13 @@ static const struct {
 };
 
 /* List of cpu flags to check */
-static const struct {
+static const struct
+{
     const char *name;
     const char *suffix;
     int flag;
-} cpus[] = {
+} cpus[] =
+{
 #if   ARCH_AARCH64
     { "ARMV8",    "armv8",    AV_CPU_FLAG_ARMV8 },
     { "NEON",     "neon",     AV_CPU_FLAG_NEON },
@@ -109,7 +113,8 @@ static const struct {
     { NULL }
 };
 
-typedef struct CheckasmFuncVersion {
+typedef struct CheckasmFuncVersion
+{
     struct CheckasmFuncVersion *next;
     void *func;
     int ok;
@@ -119,14 +124,16 @@ typedef struct CheckasmFuncVersion {
 } CheckasmFuncVersion;
 
 /* Binary search tree node */
-typedef struct CheckasmFunc {
+typedef struct CheckasmFunc
+{
     struct CheckasmFunc *child[2];
     CheckasmFuncVersion versions;
     char name[1];
 } CheckasmFunc;
 
 /* Internal state */
-static struct {
+static struct
+{
     CheckasmFunc *funcs;
     CheckasmFunc *current_func;
     CheckasmFuncVersion *current_func_ver;
@@ -153,19 +160,23 @@ static void color_printf(int color, const char *fmt, ...)
     static HANDLE con;
     static WORD org_attributes;
 
-    if (use_color < 0) {
+    if (use_color < 0)
+    {
         CONSOLE_SCREEN_BUFFER_INFO con_info;
         con = GetStdHandle(STD_ERROR_HANDLE);
-        if (con && con != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(con, &con_info)) {
+        if (con && con != INVALID_HANDLE_VALUE && GetConsoleScreenBufferInfo(con, &con_info))
+        {
             org_attributes = con_info.wAttributes;
             use_color = 1;
-        } else
+        }
+        else
             use_color = 0;
     }
     if (use_color)
         SetConsoleTextAttribute(con, (org_attributes & 0xfff0) | (color & 0x0f));
 #else
-    if (use_color < 0) {
+    if (use_color < 0)
+    {
         const char *term = getenv("TERM");
         use_color = term && strcmp(term, "dumb") && isatty(2);
     }
@@ -177,7 +188,8 @@ static void color_printf(int color, const char *fmt, ...)
     vfprintf(stderr, fmt, arg);
     va_end(arg);
 
-    if (use_color) {
+    if (use_color)
+    {
 #if HAVE_SETCONSOLETEXTATTRIBUTE
         SetConsoleTextAttribute(con, org_attributes);
 #else
@@ -189,9 +201,11 @@ static void color_printf(int color, const char *fmt, ...)
 /* Deallocate a tree */
 static void destroy_func_tree(CheckasmFunc *f)
 {
-    if (f) {
+    if (f)
+    {
         CheckasmFuncVersion *v = f->versions.next;
-        while (v) {
+        while (v)
+        {
             CheckasmFuncVersion *next = v->next;
             free(v);
             v = next;
@@ -207,7 +221,8 @@ static void destroy_func_tree(CheckasmFunc *f)
 static void *checkasm_malloc(size_t size)
 {
     void *ptr = calloc(1, size);
-    if (!ptr) {
+    if (!ptr)
+    {
         fprintf(stderr, "checkasm: malloc failed\n");
         destroy_func_tree(state.funcs);
         exit(1);
@@ -239,7 +254,8 @@ static int measure_nop_time(void)
     uint16_t nops[10000];
     int i, nop_sum = 0;
 
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++)
+    {
         uint64_t t = AV_READ_TIME();
         nops[i] = AV_READ_TIME() - t;
     }
@@ -254,18 +270,23 @@ static int measure_nop_time(void)
 /* Print benchmark results */
 static void print_benchs(CheckasmFunc *f)
 {
-    if (f) {
+    if (f)
+    {
         print_benchs(f->child[0]);
 
         /* Only print functions with at least one assembly version */
-        if (f->versions.cpu || f->versions.next) {
+        if (f->versions.cpu || f->versions.next)
+        {
             CheckasmFuncVersion *v = &f->versions;
-            do {
-                if (v->iterations) {
+            do
+            {
+                if (v->iterations)
+                {
                     int decicycles = (10*v->cycles/v->iterations - state.nop_time) / 4;
                     printf("%s_%s: %d.%d\n", f->name, cpu_suffix(v->cpu), decicycles/10, decicycles%10);
                 }
-            } while ((v = v->next));
+            }
+            while ((v = v->next));
         }
 
         print_benchs(f->child[1]);
@@ -290,7 +311,8 @@ static CheckasmFunc *get_func(const char *name, int length)
     CheckasmFunc *f, **f_ptr = &state.funcs;
 
     /* Search the tree for a matching node */
-    while ((f = *f_ptr)) {
+    while ((f = *f_ptr))
+    {
         int cmp = cmp_func_names(name, f->name);
         if (!cmp)
             return f;
@@ -314,11 +336,13 @@ static void check_cpu_flag(const char *name, int flag)
     av_set_cpu_flags_mask(flag);
     state.cpu_flag = av_get_cpu_flags();
 
-    if (!flag || state.cpu_flag != old_cpu_flag) {
+    if (!flag || state.cpu_flag != old_cpu_flag)
+    {
         int i;
 
         state.cpu_flag_name = name;
-        for (i = 0; tests[i].func; i++) {
+        for (i = 0; tests[i].func; i++)
+        {
             state.current_test_name = tests[i].name;
             tests[i].func();
         }
@@ -328,7 +352,8 @@ static void check_cpu_flag(const char *name, int flag)
 /* Print the name of the current CPU flag, but only do it once */
 static void print_cpu_name(void)
 {
-    if (state.cpu_flag_name) {
+    if (state.cpu_flag_name)
+    {
         color_printf(COLOR_YELLOW, "%s:\n", state.cpu_flag_name);
         state.cpu_flag_name = NULL;
     }
@@ -338,20 +363,24 @@ int main(int argc, char *argv[])
 {
     int i, seed, ret = 0;
 
-    if (!tests[0].func || !cpus[0].flag) {
+    if (!tests[0].func || !cpus[0].flag)
+    {
         fprintf(stderr, "checkasm: no tests to perform\n");
         return 0;
     }
 
-    if (argc > 1 && !strncmp(argv[1], "--bench", 7)) {
+    if (argc > 1 && !strncmp(argv[1], "--bench", 7))
+    {
 #ifndef AV_READ_TIME
         fprintf(stderr, "checkasm: --bench is not supported on your system\n");
         return 1;
 #endif
-        if (argv[1][7] == '=') {
+        if (argv[1][7] == '=')
+        {
             state.bench_pattern = argv[1] + 8;
             state.bench_pattern_len = strlen(state.bench_pattern);
-        } else
+        }
+        else
             state.bench_pattern = "";
 
         argc--;
@@ -366,13 +395,17 @@ int main(int argc, char *argv[])
     for (i = 0; cpus[i].flag; i++)
         check_cpu_flag(cpus[i].name, cpus[i].flag);
 
-    if (state.num_failed) {
+    if (state.num_failed)
+    {
         fprintf(stderr, "checkasm: %d of %d tests have failed\n", state.num_failed, state.num_checked);
         ret = 1;
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "checkasm: all %d tests passed\n", state.num_checked);
 #ifdef AV_READ_TIME
-        if (state.bench_pattern) {
+        if (state.bench_pattern)
+        {
             state.nop_time = measure_nop_time();
             printf("nop: %d.%d\n", state.nop_time/10, state.nop_time%10);
             print_benchs(state.funcs);
@@ -405,9 +438,11 @@ void *checkasm_check_func(void *func, const char *name, ...)
     state.current_func = get_func(name_buf, name_length);
     v = &state.current_func->versions;
 
-    if (v->func) {
+    if (v->func)
+    {
         CheckasmFuncVersion *prev;
-        do {
+        do
+        {
             /* Only test functions that haven't already been tested */
             if (v->func == func)
                 return NULL;
@@ -416,7 +451,8 @@ void *checkasm_check_func(void *func, const char *name, ...)
                 ref = v->func;
 
             prev = v;
-        } while ((v = v->next));
+        }
+        while ((v = v->next));
 
         v = prev->next = checkasm_malloc(sizeof(CheckasmFuncVersion));
     }
@@ -442,7 +478,8 @@ int checkasm_bench_func(void)
 /* Indicate that the current test has failed */
 void checkasm_fail_func(const char *msg, ...)
 {
-    if (state.current_func_ver->cpu && state.current_func_ver->ok) {
+    if (state.current_func_ver->cpu && state.current_func_ver->ok)
+    {
         va_list arg;
 
         print_cpu_name();
@@ -469,7 +506,8 @@ void checkasm_report(const char *name, ...)
 {
     static int prev_checked, prev_failed, max_length;
 
-    if (state.num_checked > prev_checked) {
+    if (state.num_checked > prev_checked)
+    {
         int pad_length = max_length + 4;
         va_list arg;
 
@@ -488,7 +526,9 @@ void checkasm_report(const char *name, ...)
 
         prev_checked = state.num_checked;
         prev_failed  = state.num_failed;
-    } else if (!state.cpu_flag) {
+    }
+    else if (!state.cpu_flag)
+    {
         /* Calculate the amount of padding required to make the output vertically aligned */
         int length = strlen(state.current_test_name);
         va_list arg;

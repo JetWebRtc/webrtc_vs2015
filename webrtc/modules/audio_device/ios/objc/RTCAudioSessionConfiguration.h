@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,7 +25,7 @@ extern const double kRTCAudioSessionLowComplexityIOBufferDuration;
 RTC_EXPORT
 @interface RTCAudioSessionConfiguration : NSObject
 
-@property(nonatomic, strong) NSString *category;
+    @property(nonatomic, strong) NSString *category;
 @property(nonatomic, assign) AVAudioSessionCategoryOptions categoryOptions;
 @property(nonatomic, strong) NSString *mode;
 @property(nonatomic, assign) double sampleRate;

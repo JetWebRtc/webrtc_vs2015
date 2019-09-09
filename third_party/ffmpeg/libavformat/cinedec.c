@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Phantom Cine demuxer
  * Copyright (c) 2010-2011 Peter Ross <pross@xvid.org>
  *
@@ -31,19 +31,22 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     uint64_t pts;
 } CineDemuxContext;
 
 /** Compression */
-enum {
+enum
+{
     CC_RGB   = 0,  /**< Gray */
     CC_LEAD  = 1,  /**< LEAD (M)JPEG */
     CC_UNINT = 2   /**< Uninterpolated color image (CFA field indicates color ordering)  */
 };
 
 /** Color Filter Array */
-enum {
+enum
+{
     CFA_NONE      = 0,  /**< GRAY */
     CFA_VRI       = 1,  /**< GBRG/RGGB */
     CFA_VRIV6     = 2,  /**< BGGR/GRBG */
@@ -60,20 +63,21 @@ static int cine_read_probe(AVProbeData *p)
 {
     int HeaderSize;
     if (p->buf[0] == 'C' && p->buf[1] == 'I' &&  // Type
-        (HeaderSize = AV_RL16(p->buf + 2)) >= 0x2C &&  // HeaderSize
-        AV_RL16(p->buf + 4) <= CC_UNINT &&       // Compression
-        AV_RL16(p->buf + 6) <= 1 &&              // Version
-        AV_RL32(p->buf + 20) &&                  // ImageCount
-        AV_RL32(p->buf + 24) >= HeaderSize &&    // OffImageHeader
-        AV_RL32(p->buf + 28) >= HeaderSize &&    // OffSetup
-        AV_RL32(p->buf + 32) >= HeaderSize)      // OffImageOffsets
+            (HeaderSize = AV_RL16(p->buf + 2)) >= 0x2C &&  // HeaderSize
+            AV_RL16(p->buf + 4) <= CC_UNINT &&       // Compression
+            AV_RL16(p->buf + 6) <= 1 &&              // Version
+            AV_RL32(p->buf + 20) &&                  // ImageCount
+            AV_RL32(p->buf + 24) >= HeaderSize &&    // OffImageHeader
+            AV_RL32(p->buf + 28) >= HeaderSize &&    // OffSetup
+            AV_RL32(p->buf + 32) >= HeaderSize)      // OffImageOffsets
         return AVPROBE_SCORE_MAX;
     return 0;
 }
 
 static int set_metadata_int(AVDictionary **dict, const char *key, int value, int allow_zero)
 {
-    if (value || allow_zero) {
+    if (value || allow_zero)
+    {
         return av_dict_set_int(dict, key, value, 0);
     }
     return 0;
@@ -81,7 +85,8 @@ static int set_metadata_int(AVDictionary **dict, const char *key, int value, int
 
 static int set_metadata_float(AVDictionary **dict, const char *key, float value, int allow_zero)
 {
-    if (value != 0 || allow_zero) {
+    if (value != 0 || allow_zero)
+    {
         char tmp[64];
         snprintf(tmp, sizeof(tmp), "%f", value);
         return av_dict_set(dict, key, tmp, 0);
@@ -110,7 +115,8 @@ static int cine_read_header(AVFormatContext *avctx)
 
     compression = avio_rl16(pb);
     version     = avio_rl16(pb);
-    if (version != 1) {
+    if (version != 1)
+    {
         avpriv_request_sample(avctx, "uknown version %i", version);
         return AVERROR_INVALIDDATA;
     }
@@ -134,12 +140,14 @@ static int cine_read_header(AVFormatContext *avctx)
         return AVERROR_INVALIDDATA;
 
     biBitCount = avio_rl16(pb);
-    if (biBitCount != 8 && biBitCount != 16 && biBitCount != 24 && biBitCount != 48) {
+    if (biBitCount != 8 && biBitCount != 16 && biBitCount != 24 && biBitCount != 48)
+    {
         avpriv_request_sample(avctx, "unsupported biBitCount %i", biBitCount);
         return AVERROR_INVALIDDATA;
     }
 
-    switch (avio_rl32(pb)) {
+    switch (avio_rl32(pb))
+    {
     case BMP_RGB:
         vflip = 0;
         break;
@@ -160,13 +168,15 @@ static int cine_read_header(AVFormatContext *avctx)
     if (avio_rl16(pb) != 0x5453)
         return AVERROR_INVALIDDATA;
     length = avio_rl16(pb);
-    if (length < 0x163C) {
+    if (length < 0x163C)
+    {
         avpriv_request_sample(avctx, "short SETUP header");
         return AVERROR_INVALIDDATA;
     }
 
     avio_skip(pb, 616); // Binning .. bFlipH
-    if (!avio_rl32(pb) ^ vflip) {
+    if (!avio_rl32(pb) ^ vflip)
+    {
         st->codec->extradata  = av_strdup("BottomUp");
         st->codec->extradata_size  = 9;
     }
@@ -195,46 +205,71 @@ static int cine_read_header(AVFormatContext *avctx)
 
     st->codec->bits_per_coded_sample = avio_rl32(pb);
 
-    if (compression == CC_RGB) {
-        if (biBitCount == 8) {
+    if (compression == CC_RGB)
+    {
+        if (biBitCount == 8)
+        {
             st->codec->pix_fmt = AV_PIX_FMT_GRAY8;
-        } else if (biBitCount == 16) {
+        }
+        else if (biBitCount == 16)
+        {
             st->codec->pix_fmt = AV_PIX_FMT_GRAY16LE;
-        } else if (biBitCount == 24) {
+        }
+        else if (biBitCount == 24)
+        {
             st->codec->pix_fmt = AV_PIX_FMT_BGR24;
-        } else if (biBitCount == 48) {
+        }
+        else if (biBitCount == 48)
+        {
             st->codec->pix_fmt = AV_PIX_FMT_BGR48LE;
-        } else {
+        }
+        else
+        {
             avpriv_request_sample(avctx, "unsupported biBitCount %i", biBitCount);
             return AVERROR_INVALIDDATA;
         }
-    } else if (compression == CC_UNINT) {
-        switch (CFA & 0xFFFFFF) {
+    }
+    else if (compression == CC_UNINT)
+    {
+        switch (CFA & 0xFFFFFF)
+        {
         case CFA_BAYER:
-            if (biBitCount == 8) {
+            if (biBitCount == 8)
+            {
                 st->codec->pix_fmt = AV_PIX_FMT_BAYER_GBRG8;
-            } else if (biBitCount == 16) {
+            }
+            else if (biBitCount == 16)
+            {
                 st->codec->pix_fmt = AV_PIX_FMT_BAYER_GBRG16LE;
-            } else {
+            }
+            else
+            {
                 avpriv_request_sample(avctx, "unsupported biBitCount %i", biBitCount);
                 return AVERROR_INVALIDDATA;
             }
             break;
         case CFA_BAYERFLIP:
-            if (biBitCount == 8) {
+            if (biBitCount == 8)
+            {
                 st->codec->pix_fmt = AV_PIX_FMT_BAYER_RGGB8;
-            } else if (biBitCount == 16) {
+            }
+            else if (biBitCount == 16)
+            {
                 st->codec->pix_fmt = AV_PIX_FMT_BAYER_RGGB16LE;
-            } else {
+            }
+            else
+            {
                 avpriv_request_sample(avctx, "unsupported biBitCount %i", biBitCount);
                 return AVERROR_INVALIDDATA;
             }
             break;
         default:
-           avpriv_request_sample(avctx, "unsupported Color Field Array (CFA) %i", CFA & 0xFFFFFF);
+            avpriv_request_sample(avctx, "unsupported Color Field Array (CFA) %i", CFA & 0xFFFFFF);
             return AVERROR_INVALIDDATA;
         }
-    } else { //CC_LEAD
+    }
+    else     //CC_LEAD
+    {
         avpriv_request_sample(avctx, "unsupported compression %i", compression);
         return AVERROR_INVALIDDATA;
     }
@@ -314,7 +349,8 @@ static int cine_read_seek(AVFormatContext *avctx, int stream_index, int64_t time
     return 0;
 }
 
-AVInputFormat ff_cine_demuxer = {
+AVInputFormat ff_cine_demuxer =
+{
     .name           = "cine",
     .long_name      = NULL_IF_CONFIG_SMALL("Phantom Cine"),
     .priv_data_size = sizeof(CineDemuxContext),

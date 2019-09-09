@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,37 +21,39 @@
 // the information in the VideoToolbox header files, a talk from WWDC 2014 and
 // experimentation.
 
-namespace webrtc {
+namespace webrtc
+{
 
-class H264VideoToolboxDecoder : public H264Decoder {
- public:
-  H264VideoToolboxDecoder();
+class H264VideoToolboxDecoder : public H264Decoder
+{
+public:
+    H264VideoToolboxDecoder();
 
-  ~H264VideoToolboxDecoder() override;
+    ~H264VideoToolboxDecoder() override;
 
-  int InitDecode(const VideoCodec* video_codec, int number_of_cores) override;
+    int InitDecode(const VideoCodec* video_codec, int number_of_cores) override;
 
-  int Decode(const EncodedImage& input_image,
-             bool missing_frames,
-             const RTPFragmentationHeader* fragmentation,
-             const CodecSpecificInfo* codec_specific_info,
-             int64_t render_time_ms) override;
+    int Decode(const EncodedImage& input_image,
+               bool missing_frames,
+               const RTPFragmentationHeader* fragmentation,
+               const CodecSpecificInfo* codec_specific_info,
+               int64_t render_time_ms) override;
 
-  int RegisterDecodeCompleteCallback(DecodedImageCallback* callback) override;
+    int RegisterDecodeCompleteCallback(DecodedImageCallback* callback) override;
 
-  int Release() override;
+    int Release() override;
 
-  const char* ImplementationName() const override;
+    const char* ImplementationName() const override;
 
- private:
-  int ResetDecompressionSession();
-  void ConfigureDecompressionSession();
-  void DestroyDecompressionSession();
-  void SetVideoFormat(CMVideoFormatDescriptionRef video_format);
+private:
+    int ResetDecompressionSession();
+    void ConfigureDecompressionSession();
+    void DestroyDecompressionSession();
+    void SetVideoFormat(CMVideoFormatDescriptionRef video_format);
 
-  DecodedImageCallback* callback_;
-  CMVideoFormatDescriptionRef video_format_;
-  VTDecompressionSessionRef decompression_session_;
+    DecodedImageCallback* callback_;
+    CMVideoFormatDescriptionRef video_format_;
+    VTDecompressionSessionRef decompression_session_;
 };  // H264VideoToolboxDecoder
 
 }  // namespace webrtc

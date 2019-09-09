@@ -32,7 +32,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct SilenceDetectContext {
+typedef struct SilenceDetectContext
+{
     const AVClass *class;
     double noise;               ///< noise amplitude ratio
     double duration;            ///< minimum duration of silence until notification
@@ -47,7 +48,8 @@ typedef struct SilenceDetectContext {
 
 #define OFFSET(x) offsetof(SilenceDetectContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_AUDIO_PARAM
-static const AVOption silencedetect_options[] = {
+static const AVOption silencedetect_options[] =
+{
     { "n",         "set noise tolerance",              OFFSET(noise),     AV_OPT_TYPE_DOUBLE, {.dbl=0.001},          0, DBL_MAX,  FLAGS },
     { "noise",     "set noise tolerance",              OFFSET(noise),     AV_OPT_TYPE_DOUBLE, {.dbl=0.001},          0, DBL_MAX,  FLAGS },
     { "d",         "set minimum duration in seconds",  OFFSET(duration),  AV_OPT_TYPE_DOUBLE, {.dbl=2.},             0, 24*60*60, FLAGS },
@@ -67,10 +69,13 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
                                     int is_silence, int64_t nb_samples_notify,
                                     AVRational time_base)
 {
-    if (is_silence) {
-        if (!s->start) {
+    if (is_silence)
+    {
+        if (!s->start)
+        {
             s->nb_null_samples++;
-            if (s->nb_null_samples >= nb_samples_notify) {
+            if (s->nb_null_samples >= nb_samples_notify)
+            {
                 s->start = insamples->pts - (int64_t)(s->duration / av_q2d(time_base) + .5);
                 av_dict_set(&insamples->metadata, "lavfi.silence_start",
                             av_ts2timestr(s->start, &time_base), 0);
@@ -78,8 +83,11 @@ static av_always_inline void update(SilenceDetectContext *s, AVFrame *insamples,
                        get_metadata_val(insamples, "lavfi.silence_start"));
             }
         }
-    } else {
-        if (s->start) {
+    }
+    else
+    {
+        if (s->start)
+        {
             av_dict_set(&insamples->metadata, "lavfi.silence_end",
                         av_ts2timestr(insamples->pts, &time_base), 0);
             av_dict_set(&insamples->metadata, "lavfi.silence_duration",
@@ -117,9 +125,14 @@ static int config_input(AVFilterLink *inlink)
     AVFilterContext *ctx = inlink->dst;
     SilenceDetectContext *s = ctx->priv;
 
-    switch (inlink->format) {
-    case AV_SAMPLE_FMT_DBL: s->silencedetect = silencedetect_dbl; break;
-    case AV_SAMPLE_FMT_FLT: s->silencedetect = silencedetect_flt; break;
+    switch (inlink->format)
+    {
+    case AV_SAMPLE_FMT_DBL:
+        s->silencedetect = silencedetect_dbl;
+        break;
+    case AV_SAMPLE_FMT_FLT:
+        s->silencedetect = silencedetect_flt;
+        break;
     case AV_SAMPLE_FMT_S32:
         s->noise *= INT32_MAX;
         s->silencedetect = silencedetect_s32;
@@ -157,7 +170,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats = NULL;
     AVFilterChannelLayouts *layouts = NULL;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_DBL,
         AV_SAMPLE_FMT_FLT,
         AV_SAMPLE_FMT_S32,
@@ -186,7 +200,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_samplerates(ctx, formats);
 }
 
-static const AVFilterPad silencedetect_inputs[] = {
+static const AVFilterPad silencedetect_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -196,7 +211,8 @@ static const AVFilterPad silencedetect_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad silencedetect_outputs[] = {
+static const AVFilterPad silencedetect_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -204,7 +220,8 @@ static const AVFilterPad silencedetect_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_silencedetect = {
+AVFilter ff_af_silencedetect =
+{
     .name          = "silencedetect",
     .description   = NULL_IF_CONFIG_SMALL("Detect silence."),
     .priv_size     = sizeof(SilenceDetectContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Adobe Filmstrip demuxer
  * Copyright (c) 2010 Peter Ross
  *
@@ -30,7 +30,8 @@
 
 #define RAND_TAG MKBETAG('R','a','n','d')
 
-typedef struct FilmstripDemuxContext {
+typedef struct FilmstripDemuxContext
+{
     int leading;
 } FilmstripDemuxContext;
 
@@ -44,7 +45,8 @@ static int read_header(AVFormatContext *s)
         return AVERROR(EIO);
 
     avio_seek(pb, avio_size(pb) - 36, SEEK_SET);
-    if (avio_rb32(pb) != RAND_TAG) {
+    if (avio_rb32(pb) != RAND_TAG)
+    {
         av_log(s, AV_LOG_ERROR, "magic number not found\n");
         return AVERROR_INVALIDDATA;
     }
@@ -54,7 +56,8 @@ static int read_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
 
     st->nb_frames = avio_rb32(pb);
-    if (avio_rb16(pb) != 0) {
+    if (avio_rb16(pb) != 0)
+    {
         avpriv_request_sample(s, "Unsupported packing method");
         return AVERROR_PATCHWELCOME;
     }
@@ -68,7 +71,8 @@ static int read_header(AVFormatContext *s)
     st->codec->height     = avio_rb16(pb);
     film->leading         = avio_rb16(pb);
 
-    if (st->codec->width * 4LL * st->codec->height >= INT_MAX) {
+    if (st->codec->width * 4LL * st->codec->height >= INT_MAX)
+    {
         av_log(s, AV_LOG_ERROR, "dimensions too large\n");
         return AVERROR_PATCHWELCOME;
     }
@@ -105,7 +109,8 @@ static int read_seek(AVFormatContext *s, int stream_index, int64_t timestamp, in
     return 0;
 }
 
-AVInputFormat ff_filmstrip_demuxer = {
+AVInputFormat ff_filmstrip_demuxer =
+{
     .name           = "filmstrip",
     .long_name      = NULL_IF_CONFIG_SMALL("Adobe Filmstrip"),
     .priv_data_size = sizeof(FilmstripDemuxContext),

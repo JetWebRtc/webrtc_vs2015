@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -102,7 +102,8 @@ void silk_find_pitch_lags_FIX(
     silk_k2a( A_Q24, rc_Q15, psEnc->sCmn.pitchEstimationLPCOrder );
 
     /* Convert From 32 bit Q24 to 16 bit Q12 coefs */
-    for( i = 0; i < psEnc->sCmn.pitchEstimationLPCOrder; i++ ) {
+    for( i = 0; i < psEnc->sCmn.pitchEstimationLPCOrder; i++ )
+    {
         A_Q12[ i ] = (opus_int16)silk_SAT16( silk_RSHIFT( A_Q24[ i ], 12 ) );
     }
 
@@ -114,7 +115,8 @@ void silk_find_pitch_lags_FIX(
     /*****************************************/
     silk_LPC_analysis_filter( res, x_buf, A_Q12, buf_len, psEnc->sCmn.pitchEstimationLPCOrder, psEnc->sCmn.arch );
 
-    if( psEnc->sCmn.indices.signalType != TYPE_NO_VOICE_ACTIVITY && psEnc->sCmn.first_frame_after_reset == 0 ) {
+    if( psEnc->sCmn.indices.signalType != TYPE_NO_VOICE_ACTIVITY && psEnc->sCmn.first_frame_after_reset == 0 )
+    {
         /* Threshold for pitch estimator */
         thrhld_Q13 = SILK_FIX_CONST( 0.6, 13 );
         thrhld_Q13 = silk_SMLABB( thrhld_Q13, SILK_FIX_CONST( -0.004, 13 ), psEnc->sCmn.pitchEstimationLPCOrder );
@@ -127,15 +129,19 @@ void silk_find_pitch_lags_FIX(
         /* Call pitch estimator                  */
         /*****************************************/
         if( silk_pitch_analysis_core( res, psEncCtrl->pitchL, &psEnc->sCmn.indices.lagIndex, &psEnc->sCmn.indices.contourIndex,
-                &psEnc->LTPCorr_Q15, psEnc->sCmn.prevLag, psEnc->sCmn.pitchEstimationThreshold_Q16,
-                (opus_int)thrhld_Q13, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity, psEnc->sCmn.nb_subfr,
-                psEnc->sCmn.arch) == 0 )
+                                      &psEnc->LTPCorr_Q15, psEnc->sCmn.prevLag, psEnc->sCmn.pitchEstimationThreshold_Q16,
+                                      (opus_int)thrhld_Q13, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity, psEnc->sCmn.nb_subfr,
+                                      psEnc->sCmn.arch) == 0 )
         {
             psEnc->sCmn.indices.signalType = TYPE_VOICED;
-        } else {
+        }
+        else
+        {
             psEnc->sCmn.indices.signalType = TYPE_UNVOICED;
         }
-    } else {
+    }
+    else
+    {
         silk_memset( psEncCtrl->pitchL, 0, sizeof( psEncCtrl->pitchL ) );
         psEnc->sCmn.indices.lagIndex = 0;
         psEnc->sCmn.indices.contourIndex = 0;

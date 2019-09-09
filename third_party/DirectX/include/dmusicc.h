@@ -1,4 +1,4 @@
-/************************************************************************
+﻿/************************************************************************
 *                                                                       *
 *   dmusicc.h -- This module defines the DirectMusic core API's         *
 *                                                                       *
@@ -350,23 +350,23 @@ DECLARE_INTERFACE_(IDirectMusic, IUnknown)
 
     /*  IDirectMusic */
     STDMETHOD(EnumPort)             (THIS_ DWORD dwIndex,
-                                           LPDMUS_PORTCAPS pPortCaps) PURE;
+                                     LPDMUS_PORTCAPS pPortCaps) PURE;
     STDMETHOD(CreateMusicBuffer)    (THIS_ LPDMUS_BUFFERDESC pBufferDesc,
-                                           LPDIRECTMUSICBUFFER *ppBuffer,
-                                           LPUNKNOWN pUnkOuter) PURE;
+                                     LPDIRECTMUSICBUFFER *ppBuffer,
+                                     LPUNKNOWN pUnkOuter) PURE;
     STDMETHOD(CreatePort)           (THIS_ REFCLSID rclsidPort,
-                                           LPDMUS_PORTPARAMS pPortParams,
-                                           LPDIRECTMUSICPORT *ppPort,
-                                           LPUNKNOWN pUnkOuter) PURE;
+                                     LPDMUS_PORTPARAMS pPortParams,
+                                     LPDIRECTMUSICPORT *ppPort,
+                                     LPUNKNOWN pUnkOuter) PURE;
     STDMETHOD(EnumMasterClock)      (THIS_ DWORD dwIndex,
-                                           LPDMUS_CLOCKINFO lpClockInfo) PURE;
+                                     LPDMUS_CLOCKINFO lpClockInfo) PURE;
     STDMETHOD(GetMasterClock)       (THIS_ LPGUID pguidClock,
-                                           IReferenceClock **ppReferenceClock) PURE;
+                                     IReferenceClock **ppReferenceClock) PURE;
     STDMETHOD(SetMasterClock)       (THIS_ REFGUID rguidClock) PURE;
     STDMETHOD(Activate)             (THIS_ BOOL fEnable) PURE;
     STDMETHOD(GetDefaultPort)       (THIS_ LPGUID pguidPort) PURE;
     STDMETHOD(SetDirectSound)       (THIS_ LPDIRECTSOUND pDirectSound,
-                                           HWND hWnd) PURE;
+                                     HWND hWnd) PURE;
 };
 
 #if (NTDDI_VERSION >= NTDDI_WINXP) /* Windows XP or greater */
@@ -382,26 +382,26 @@ DECLARE_INTERFACE_(IDirectMusic8, IDirectMusic)
 
     /*  IDirectMusic */
     STDMETHOD(EnumPort)             (THIS_ DWORD dwIndex,
-                                           LPDMUS_PORTCAPS pPortCaps) PURE;
+                                     LPDMUS_PORTCAPS pPortCaps) PURE;
     STDMETHOD(CreateMusicBuffer)    (THIS_ LPDMUS_BUFFERDESC pBufferDesc,
-                                           LPDIRECTMUSICBUFFER *ppBuffer,
-                                           LPUNKNOWN pUnkOuter) PURE;
+                                     LPDIRECTMUSICBUFFER *ppBuffer,
+                                     LPUNKNOWN pUnkOuter) PURE;
     STDMETHOD(CreatePort)           (THIS_ REFCLSID rclsidPort,
-                                           LPDMUS_PORTPARAMS pPortParams,
-                                           LPDIRECTMUSICPORT *ppPort,
-                                           LPUNKNOWN pUnkOuter) PURE;
+                                     LPDMUS_PORTPARAMS pPortParams,
+                                     LPDIRECTMUSICPORT *ppPort,
+                                     LPUNKNOWN pUnkOuter) PURE;
     STDMETHOD(EnumMasterClock)      (THIS_ DWORD dwIndex,
-                                           LPDMUS_CLOCKINFO lpClockInfo) PURE;
+                                     LPDMUS_CLOCKINFO lpClockInfo) PURE;
     STDMETHOD(GetMasterClock)       (THIS_ LPGUID pguidClock,
-                                           IReferenceClock **ppReferenceClock) PURE;
+                                     IReferenceClock **ppReferenceClock) PURE;
     STDMETHOD(SetMasterClock)       (THIS_ REFGUID rguidClock) PURE;
     STDMETHOD(Activate)             (THIS_ BOOL fEnable) PURE;
     STDMETHOD(GetDefaultPort)       (THIS_ LPGUID pguidPort) PURE;
     STDMETHOD(SetDirectSound)       (THIS_ LPDIRECTSOUND pDirectSound,
-                                           HWND hWnd) PURE;
+                                     HWND hWnd) PURE;
     /*  IDirectMusic8 */
     STDMETHOD(SetExternalMasterClock)
-                                    (THIS_ IReferenceClock *pClock) PURE;
+    (THIS_ IReferenceClock *pClock) PURE;
 };
 
 #endif /* NTDDI_VERSION >= NTDDI_WINXP */
@@ -420,19 +420,19 @@ DECLARE_INTERFACE_(IDirectMusicBuffer, IUnknown)
     STDMETHOD(TotalTime)            (THIS_ LPREFERENCE_TIME prtTime) PURE;
 
     STDMETHOD(PackStructured)       (THIS_ REFERENCE_TIME rt,
-                                           DWORD dwChannelGroup,
-                                           DWORD dwChannelMessage) PURE;
+                                     DWORD dwChannelGroup,
+                                     DWORD dwChannelMessage) PURE;
 
     STDMETHOD(PackUnstructured)     (THIS_ REFERENCE_TIME rt,
-                                           DWORD dwChannelGroup,
-                                           DWORD cb,
-                                           LPBYTE lpb) PURE;
+                                     DWORD dwChannelGroup,
+                                     DWORD cb,
+                                     LPBYTE lpb) PURE;
 
     STDMETHOD(ResetReadPtr)         (THIS) PURE;
     STDMETHOD(GetNextEvent)         (THIS_ LPREFERENCE_TIME prt,
-                                           LPDWORD pdwChannelGroup,
-                                           LPDWORD pdwLength,
-                                           LPBYTE *ppData) PURE;
+                                     LPDWORD pdwChannelGroup,
+                                     LPDWORD pdwLength,
+                                     LPBYTE *ppData) PURE;
 
     STDMETHOD(GetRawBufferPtr)      (THIS_ LPBYTE *ppData) PURE;
     STDMETHOD(GetStartTime)         (THIS_ LPREFERENCE_TIME prt) PURE;
@@ -503,11 +503,11 @@ DECLARE_INTERFACE_(IDirectMusicCollection, IUnknown)
 
     /* IDirectMusicCollection */
     STDMETHOD(GetInstrument)            (THIS_ DWORD dwPatch,
-                                               IDirectMusicInstrument** ppInstrument) PURE;
+                                         IDirectMusicInstrument** ppInstrument) PURE;
     STDMETHOD(EnumInstrument)           (THIS_ DWORD dwIndex,
-                                               DWORD* pdwPatch,
-                                               LPWSTR pwszName,
-                                               DWORD dwNameLen) PURE;
+                                         DWORD* pdwPatch,
+                                         LPWSTR pwszName,
+                                         DWORD dwNameLen) PURE;
 };
 
 #if (NTDDI_VERSION >= NTDDI_WINXP) /* Windows XP or greater */
@@ -528,7 +528,7 @@ DECLARE_INTERFACE_(IDirectMusicDownload , IUnknown)
 
     /* IDirectMusicDownload */
     STDMETHOD(GetBuffer)            (THIS_ void** ppvBuffer,
-                                           DWORD* pdwSize) PURE;
+                                     DWORD* pdwSize) PURE;
 };
 
 #if (NTDDI_VERSION >= NTDDI_WINXP) /* Windows XP or greater */
@@ -549,11 +549,11 @@ DECLARE_INTERFACE_(IDirectMusicPortDownload, IUnknown)
 
     /* IDirectMusicPortDownload */
     STDMETHOD(GetBuffer)            (THIS_ DWORD dwDLId,
-                                           IDirectMusicDownload** ppIDMDownload) PURE;
+                                     IDirectMusicDownload** ppIDMDownload) PURE;
     STDMETHOD(AllocateBuffer)       (THIS_ DWORD dwSize,
-                                           IDirectMusicDownload** ppIDMDownload) PURE;
+                                     IDirectMusicDownload** ppIDMDownload) PURE;
     STDMETHOD(GetDLId)              (THIS_ DWORD* pdwStartDLId,
-                                           DWORD dwCount) PURE;
+                                     DWORD dwCount) PURE;
     STDMETHOD(GetAppend)            (THIS_ DWORD* pdwAppend) PURE;
     STDMETHOD(Download)             (THIS_ IDirectMusicDownload* pIDMDownload) PURE;
     STDMETHOD(Unload)               (THIS_ IDirectMusicDownload* pIDMDownload) PURE;
@@ -652,12 +652,12 @@ DECLARE_INTERFACE_(IDirectMusicPort, IUnknown)
     STDMETHOD(Compact)              (THIS) PURE;
     STDMETHOD(GetCaps)              (THIS_ LPDMUS_PORTCAPS pPortCaps) PURE;
     STDMETHOD(DeviceIoControl)      (THIS_ DWORD dwIoControlCode,
-                                           LPVOID lpInBuffer,
-                                           DWORD nInBufferSize,
-                                           LPVOID lpOutBuffer,
-                                           DWORD nOutBufferSize,
-                                           LPDWORD lpBytesReturned,
-                                           LPOVERLAPPED lpOverlapped) PURE;
+                                     LPVOID lpInBuffer,
+                                     DWORD nInBufferSize,
+                                     LPVOID lpOutBuffer,
+                                     DWORD nOutBufferSize,
+                                     LPDWORD lpBytesReturned,
+                                     LPOVERLAPPED lpOverlapped) PURE;
     STDMETHOD(SetNumChannelGroups)  (THIS_ DWORD dwChannelGroups) PURE;
     STDMETHOD(GetNumChannelGroups)  (THIS_ LPDWORD pdwChannelGroups) PURE;
     STDMETHOD(Activate)             (THIS_ BOOL fActive) PURE;
@@ -686,10 +686,10 @@ DECLARE_INTERFACE_(IDirectMusicThru, IUnknown)
     /* IDirectMusicThru
      */
     STDMETHOD(ThruChannel)          (THIS_ DWORD dwSourceChannelGroup,
-                                           DWORD dwSourceChannel,
-                                           DWORD dwDestinationChannelGroup,
-                                           DWORD dwDestinationChannel,
-                                           LPDIRECTMUSICPORT pDestinationPort) PURE;
+                                     DWORD dwSourceChannel,
+                                     DWORD dwDestinationChannelGroup,
+                                     DWORD dwDestinationChannel,
+                                     LPDIRECTMUSICPORT pDestinationPort) PURE;
 };
 
 #if (NTDDI_VERSION >= NTDDI_WINXP) /* Windows XP or greater */
@@ -721,15 +721,15 @@ DECLARE_INTERFACE_(IReferenceClock, IUnknown)
 
     /*  ask for an async notification that a time has elapsed */
     STDMETHOD(AdviseTime)               (THIS_ REFERENCE_TIME baseTime,         /*  base time */
-                                               REFERENCE_TIME streamTime,       /*  stream offset time */
-                                               HANDLE hEvent,                   /*  advise via this event */
-                                               DWORD * pdwAdviseCookie) PURE;   /*  where your cookie goes */
+                                         REFERENCE_TIME streamTime,       /*  stream offset time */
+                                         HANDLE hEvent,                   /*  advise via this event */
+                                         DWORD * pdwAdviseCookie) PURE;   /*  where your cookie goes */
 
     /*  ask for an async periodic notification that a time has elapsed */
     STDMETHOD(AdvisePeriodic)           (THIS_ REFERENCE_TIME startTime,        /*  starting at this time */
-                                               REFERENCE_TIME periodTime,       /*  time between notifications */
-                                               HANDLE hSemaphore,               /*  advise via a semaphore */
-                                               DWORD * pdwAdviseCookie) PURE;   /*  where your cookie goes */
+                                         REFERENCE_TIME periodTime,       /*  time between notifications */
+                                         HANDLE hSemaphore,               /*  advise via a semaphore */
+                                         DWORD * pdwAdviseCookie) PURE;   /*  where your cookie goes */
 
     /*  cancel a request for notification */
     STDMETHOD(Unadvise)                 (THIS_ DWORD dwAdviseCookie) PURE;

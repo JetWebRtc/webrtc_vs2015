@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,39 +31,42 @@ int WebRtcIsacfix_EstimateBandwidth(BwEstimatorstr *bwest_str,
                                     uint32_t send_ts,
                                     uint32_t arr_ts)
 {
-  int16_t index;
-  size_t frame_samples;
-  int err;
+    int16_t index;
+    size_t frame_samples;
+    int err;
 
-  /* decode framelength */
-  err = WebRtcIsacfix_DecodeFrameLen(streamdata, &frame_samples);
-  /* error check */
-  if (err<0) {
-    return err;
-  }
+    /* decode framelength */
+    err = WebRtcIsacfix_DecodeFrameLen(streamdata, &frame_samples);
+    /* error check */
+    if (err<0)
+    {
+        return err;
+    }
 
-  /* decode BW estimation */
-  err = WebRtcIsacfix_DecodeSendBandwidth(streamdata, &index);
-  /* error check */
-  if (err<0) {
-    return err;
-  }
+    /* decode BW estimation */
+    err = WebRtcIsacfix_DecodeSendBandwidth(streamdata, &index);
+    /* error check */
+    if (err<0)
+    {
+        return err;
+    }
 
-  /* Update BWE with received data */
-  err = WebRtcIsacfix_UpdateUplinkBwImpl(
-      bwest_str,
-      rtp_seq_number,
-      (int16_t)(frame_samples * 1000 / FS),
-      send_ts,
-      arr_ts,
-      packet_size,  /* in bytes */
-      index);
+    /* Update BWE with received data */
+    err = WebRtcIsacfix_UpdateUplinkBwImpl(
+              bwest_str,
+              rtp_seq_number,
+              (int16_t)(frame_samples * 1000 / FS),
+              send_ts,
+              arr_ts,
+              packet_size,  /* in bytes */
+              index);
 
-  /* error check */
-  if (err<0) {
-    return err;
-  }
+    /* error check */
+    if (err<0)
+    {
+        return err;
+    }
 
-  /* Succesful */
-  return 0;
+    /* Succesful */
+    return 0;
 }

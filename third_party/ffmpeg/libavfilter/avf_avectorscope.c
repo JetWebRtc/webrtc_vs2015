@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -33,14 +33,16 @@
 #include "video.h"
 #include "internal.h"
 
-enum VectorScopeMode {
+enum VectorScopeMode
+{
     LISSAJOUS,
     LISSAJOUS_XY,
     POLAR,
     MODE_NB,
 };
 
-typedef struct AudioVectorScopeContext {
+typedef struct AudioVectorScopeContext
+{
     const AVClass *class;
     AVFrame *outpicref;
     int w, h;
@@ -55,7 +57,8 @@ typedef struct AudioVectorScopeContext {
 #define OFFSET(x) offsetof(AudioVectorScopeContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption avectorscope_options[] = {
+static const AVOption avectorscope_options[] =
+{
     { "mode", "set mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=LISSAJOUS}, 0, MODE_NB-1, FLAGS, "mode" },
     { "m",    "set mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=LISSAJOUS}, 0, MODE_NB-1, FLAGS, "mode" },
     { "lissajous",    "", 0, AV_OPT_TYPE_CONST, {.i64=LISSAJOUS},    0, 0, FLAGS, "mode" },
@@ -84,10 +87,13 @@ static void draw_dot(AudioVectorScopeContext *s, unsigned x, unsigned y)
     const int linesize = s->outpicref->linesize[0];
     uint8_t *dst;
 
-    if (s->zoom > 1) {
+    if (s->zoom > 1)
+    {
         if (y >= s->h || x >= s->w)
             return;
-    } else {
+    }
+    else
+    {
         y = FFMIN(y, s->h - 1);
         x = FFMIN(x, s->w - 1);
     }
@@ -104,10 +110,13 @@ static void fade(AudioVectorScopeContext *s)
     const int linesize = s->outpicref->linesize[0];
     int i, j;
 
-    if (s->fade[0] || s->fade[1] || s->fade[2]) {
+    if (s->fade[0] || s->fade[1] || s->fade[2])
+    {
         uint8_t *d = s->outpicref->data[0];
-        for (i = 0; i < s->h; i++) {
-            for (j = 0; j < s->w*4; j+=4) {
+        for (i = 0; i < s->h; i++)
+        {
+            for (j = 0; j < s->w*4; j+=4)
+            {
                 d[j+0] = FFMAX(d[j+0] - s->fade[0], 0);
                 d[j+1] = FFMAX(d[j+1] - s->fade[1], 0);
                 d[j+2] = FFMAX(d[j+2] - s->fade[2], 0);
@@ -156,8 +165,8 @@ static int config_input(AVFilterLink *inlink)
 
     nb_samples = FFMAX(1024, ((double)inlink->sample_rate / av_q2d(s->frame_rate)) + 0.5);
     inlink->partial_buf_size =
-    inlink->min_samples =
-    inlink->max_samples = nb_samples;
+        inlink->min_samples =
+            inlink->max_samples = nb_samples;
 
     return 0;
 }
@@ -168,7 +177,10 @@ static int config_output(AVFilterLink *outlink)
 
     outlink->w = s->w;
     outlink->h = s->h;
-    outlink->sample_aspect_ratio = (AVRational){1,1};
+    outlink->sample_aspect_ratio = (AVRational)
+    {
+        1,1
+    };
     outlink->frame_rate = s->frame_rate;
 
     s->hw = s->w / 2;
@@ -189,10 +201,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     int i;
 
     if (!s->outpicref || s->outpicref->width  != outlink->w ||
-                         s->outpicref->height != outlink->h) {
+            s->outpicref->height != outlink->h)
+    {
         av_frame_free(&s->outpicref);
         s->outpicref = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!s->outpicref) {
+        if (!s->outpicref)
+        {
             av_frame_free(&insamples);
             return AVERROR(ENOMEM);
         }
@@ -204,18 +218,25 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
 
     fade(s);
 
-    switch (insamples->format) {
+    switch (insamples->format)
+    {
     case AV_SAMPLE_FMT_S16:
-        for (i = 0; i < insamples->nb_samples; i++) {
+        for (i = 0; i < insamples->nb_samples; i++)
+        {
             int16_t *src = (int16_t *)insamples->data[0] + i * 2;
 
-            if (s->mode == LISSAJOUS) {
+            if (s->mode == LISSAJOUS)
+            {
                 x = ((src[1] - src[0]) * zoom / (float)(UINT16_MAX) + 1) * hw;
                 y = (1.0 - (src[0] + src[1]) * zoom / (float)UINT16_MAX) * hh;
-            } else if (s->mode == LISSAJOUS_XY) {
+            }
+            else if (s->mode == LISSAJOUS_XY)
+            {
                 x = (src[1] * zoom / (float)INT16_MAX + 1) * hw;
                 y = (src[0] * zoom / (float)INT16_MAX + 1) * hh;
-            } else {
+            }
+            else
+            {
                 float sx, sy, cx, cy;
 
                 sx = src[1] * zoom / (float)INT16_MAX;
@@ -230,16 +251,22 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
         }
         break;
     case AV_SAMPLE_FMT_FLT:
-        for (i = 0; i < insamples->nb_samples; i++) {
+        for (i = 0; i < insamples->nb_samples; i++)
+        {
             float *src = (float *)insamples->data[0] + i * 2;
 
-            if (s->mode == LISSAJOUS) {
+            if (s->mode == LISSAJOUS)
+            {
                 x = ((src[1] - src[0]) * zoom / 2 + 1) * hw;
                 y = (1.0 - (src[0] + src[1]) * zoom / 2) * hh;
-            } else if (s->mode == LISSAJOUS_XY){
+            }
+            else if (s->mode == LISSAJOUS_XY)
+            {
                 x = (src[1] * zoom + 1) * hw;
                 y = (src[0] * zoom + 1) * hh;
-            } else {
+            }
+            else
+            {
                 float sx, sy, cx, cy;
 
                 sx = src[1] * zoom;
@@ -267,7 +294,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->outpicref);
 }
 
-static const AVFilterPad audiovectorscope_inputs[] = {
+static const AVFilterPad audiovectorscope_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -277,7 +305,8 @@ static const AVFilterPad audiovectorscope_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad audiovectorscope_outputs[] = {
+static const AVFilterPad audiovectorscope_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -286,7 +315,8 @@ static const AVFilterPad audiovectorscope_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_avf_avectorscope = {
+AVFilter ff_avf_avectorscope =
+{
     .name          = "avectorscope",
     .description   = NULL_IF_CONFIG_SMALL("Convert input audio to vectorscope video output."),
     .uninit        = uninit,

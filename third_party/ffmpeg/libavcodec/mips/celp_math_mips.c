@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -57,7 +57,7 @@
 
 #if HAVE_INLINE_ASM
 static float ff_dot_productf_mips(const float* a, const float* b,
-                                              int length)
+                                  int length)
 {
     float sum;
     const float* a_end = a + length;

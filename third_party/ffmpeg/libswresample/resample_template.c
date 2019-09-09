@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio resampling
  * Copyright (c) 2004-2012 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -77,7 +77,8 @@ static void RENAME(resample_one)(void *dest, const void *source,
     const DELEM *src = source;
     int dst_index;
 
-    for (dst_index = 0; dst_index < dst_size; dst_index++) {
+    for (dst_index = 0; dst_index < dst_size; dst_index++)
+    {
         dst[dst_index] = src[index2 >> 32];
         index2 += incr;
     }
@@ -95,19 +96,22 @@ static int RENAME(resample_common)(ResampleContext *c,
     int sample_index = index >> c->phase_shift;
 
     index &= c->phase_mask;
-    for (dst_index = 0; dst_index < n; dst_index++) {
+    for (dst_index = 0; dst_index < n; dst_index++)
+    {
         FELEM *filter = ((FELEM *) c->filter_bank) + c->filter_alloc * index;
 
         FELEM2 val=0;
         int i;
-        for (i = 0; i < c->filter_length; i++) {
+        for (i = 0; i < c->filter_length; i++)
+        {
             val += src[sample_index + i] * (FELEM2)filter[i];
         }
         OUT(dst[dst_index], val);
 
         frac  += c->dst_incr_mod;
         index += c->dst_incr_div;
-        if (frac >= c->src_incr) {
+        if (frac >= c->src_incr)
+        {
             frac -= c->src_incr;
             index++;
         }
@@ -115,7 +119,8 @@ static int RENAME(resample_common)(ResampleContext *c,
         index &= c->phase_mask;
     }
 
-    if(update_ctx){
+    if(update_ctx)
+    {
         c->frac= frac;
         c->index= index;
     }
@@ -138,12 +143,14 @@ static int RENAME(resample_linear)(ResampleContext *c,
 #endif
 
     index &= c->phase_mask;
-    for (dst_index = 0; dst_index < n; dst_index++) {
+    for (dst_index = 0; dst_index < n; dst_index++)
+    {
         FELEM *filter = ((FELEM *) c->filter_bank) + c->filter_alloc * index;
         FELEM2 val=0, v2 = 0;
 
         int i;
-        for (i = 0; i < c->filter_length; i++) {
+        for (i = 0; i < c->filter_length; i++)
+        {
             val += src[sample_index + i] * (FELEM2)filter[i];
             v2  += src[sample_index + i] * (FELEM2)filter[i + c->filter_alloc];
         }
@@ -160,7 +167,8 @@ static int RENAME(resample_linear)(ResampleContext *c,
 
         frac += c->dst_incr_mod;
         index += c->dst_incr_div;
-        if (frac >= c->src_incr) {
+        if (frac >= c->src_incr)
+        {
             frac -= c->src_incr;
             index++;
         }
@@ -168,7 +176,8 @@ static int RENAME(resample_linear)(ResampleContext *c,
         index &= c->phase_mask;
     }
 
-    if(update_ctx){
+    if(update_ctx)
+    {
         c->frac= frac;
         c->index= index;
     }

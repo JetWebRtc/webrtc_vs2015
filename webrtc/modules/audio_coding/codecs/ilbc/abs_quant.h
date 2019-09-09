@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,6 +34,6 @@ void WebRtcIlbcfix_AbsQuant(
                                    input) */
     int16_t *in,     /* (i) vector to encode */
     int16_t *weightDenum   /* (i) denominator of synthesis filter */
-                            );
+);
 
 #endif

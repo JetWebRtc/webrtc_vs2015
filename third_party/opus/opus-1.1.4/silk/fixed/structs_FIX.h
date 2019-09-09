@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -40,7 +40,8 @@ extern "C"
 /********************************/
 /* Noise shaping analysis state */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int8                   LastGainIndex;
     opus_int32                  HarmBoost_smth_Q16;
     opus_int32                  HarmShapeGain_smth_Q16;
@@ -50,7 +51,8 @@ typedef struct {
 /********************************/
 /* Prefilter state              */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int16                  sLTP_shp[ LTP_BUF_LENGTH ];
     opus_int32                  sAR_shp[ MAX_SHAPE_LPC_ORDER + 1 ];
     opus_int                    sLTP_shp_buf_idx;
@@ -64,7 +66,8 @@ typedef struct {
 /********************************/
 /* Encoder state FIX            */
 /********************************/
-typedef struct {
+typedef struct
+{
     silk_encoder_state          sCmn;                                   /* Common struct, shared with floating-point code       */
     silk_shape_state_FIX        sShape;                                 /* Shape state                                          */
     silk_prefilter_state_FIX    sPrefilt;                               /* Prefilter State                                      */
@@ -77,7 +80,8 @@ typedef struct {
 /************************/
 /* Encoder control FIX  */
 /************************/
-typedef struct {
+typedef struct
+{
     /* Prediction and coding parameters */
     opus_int32                  Gains_Q16[ MAX_NB_SUBFR ];
     silk_DWORD_ALIGN opus_int16 PredCoef_Q12[ 2 ][ MAX_LPC_ORDER ];
@@ -113,7 +117,8 @@ typedef struct {
 /************************/
 /* Encoder Super Struct */
 /************************/
-typedef struct {
+typedef struct
+{
     silk_encoder_state_FIX      state_Fxx[ ENCODER_NUM_CHANNELS ];
     stereo_enc_state            sStereo;
     opus_int32                  nBitsUsedLBRR;

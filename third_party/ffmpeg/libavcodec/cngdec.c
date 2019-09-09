@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RFC 3389 comfort noise generator
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "libavutil/lfg.h"
 
-typedef struct CNGContext {
+typedef struct CNGContext
+{
     float *refl_coef, *target_refl_coef;
     float *lpc_coef;
     int order;
@@ -63,10 +64,11 @@ static av_cold int cng_decode_init(AVCodecContext *avctx)
     p->target_refl_coef = av_mallocz_array(p->order, sizeof(*p->target_refl_coef));
     p->lpc_coef         = av_mallocz_array(p->order, sizeof(*p->lpc_coef));
     p->filter_out       = av_mallocz_array(avctx->frame_size + p->order,
-                                     sizeof(*p->filter_out));
+                                           sizeof(*p->filter_out));
     p->excitation       = av_mallocz_array(avctx->frame_size, sizeof(*p->excitation));
     if (!p->refl_coef || !p->target_refl_coef || !p->lpc_coef ||
-        !p->filter_out || !p->excitation) {
+            !p->filter_out || !p->excitation)
+    {
         cng_decode_close(avctx);
         return AVERROR(ENOMEM);
     }
@@ -83,7 +85,8 @@ static void make_lpc_coefs(float *lpc, const float *refl, int order)
     int m, i;
     next = buf;
     cur  = lpc;
-    for (m = 0; m < order; m++) {
+    for (m = 0; m < order; m++)
+    {
         next[m] = refl[m];
         for (i = 0; i < m; i++)
             next[i] = cur[i] + refl[m] * cur[m - i - 1];
@@ -110,20 +113,25 @@ static int cng_decode_frame(AVCodecContext *avctx, void *data,
     float e = 1.0;
     float scaling;
 
-    if (avpkt->size) {
+    if (avpkt->size)
+    {
         int dbov = -avpkt->data[0];
         p->target_energy = 1081109975 * pow(10, dbov / 10.0) * 0.75;
         memset(p->target_refl_coef, 0, p->order * sizeof(*p->target_refl_coef));
-        for (i = 0; i < FFMIN(avpkt->size - 1, p->order); i++) {
+        for (i = 0; i < FFMIN(avpkt->size - 1, p->order); i++)
+        {
             p->target_refl_coef[i] = (avpkt->data[1 + i] - 127) / 128.0;
         }
     }
 
-    if (p->inited) {
+    if (p->inited)
+    {
         p->energy = p->energy / 2 + p->target_energy / 2;
         for (i = 0; i < p->order; i++)
             p->refl_coef[i] = 0.6 *p->refl_coef[i] + 0.4 * p->target_refl_coef[i];
-    } else {
+    }
+    else
+    {
         p->energy = p->target_energy;
         memcpy(p->refl_coef, p->target_refl_coef, p->order * sizeof(*p->refl_coef));
         p->inited = 1;
@@ -134,7 +142,8 @@ static int cng_decode_frame(AVCodecContext *avctx, void *data,
         e *= 1.0 - p->refl_coef[i]*p->refl_coef[i];
 
     scaling = sqrt(e * p->energy / 1081109975);
-    for (i = 0; i < avctx->frame_size; i++) {
+    for (i = 0; i < avctx->frame_size; i++)
+    {
         int r = (av_lfg_get(&p->lfg) & 0xffff) - 0x8000;
         p->excitation[i] = scaling * r;
     }
@@ -155,7 +164,8 @@ static int cng_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_comfortnoise_decoder = {
+AVCodec ff_comfortnoise_decoder =
+{
     .name           = "comfortnoise",
     .long_name      = NULL_IF_CONFIG_SMALL("RFC 3389 comfort noise generator"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -165,7 +175,9 @@ AVCodec ff_comfortnoise_decoder = {
     .decode         = cng_decode_frame,
     .flush          = cng_decode_flush,
     .close          = cng_decode_close,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
     .capabilities   = AV_CODEC_CAP_DELAY | AV_CODEC_CAP_DR1,
 };

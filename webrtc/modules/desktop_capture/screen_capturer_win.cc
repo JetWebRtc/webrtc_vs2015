@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,24 +17,30 @@
 #include "webrtc/modules/desktop_capture/win/screen_capturer_win_gdi.h"
 #include "webrtc/modules/desktop_capture/win/screen_capturer_win_magnifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // static
 std::unique_ptr<DesktopCapturer> DesktopCapturer::CreateRawScreenCapturer(
-    const DesktopCaptureOptions& options) {
-  std::unique_ptr<DesktopCapturer> capturer;
-  if (options.allow_directx_capturer() &&
-      ScreenCapturerWinDirectx::IsSupported()) {
-    capturer.reset(new ScreenCapturerWinDirectx(options));
-  } else {
-    capturer.reset(new ScreenCapturerWinGdi(options));
-  }
+    const DesktopCaptureOptions& options)
+{
+    std::unique_ptr<DesktopCapturer> capturer;
+    if (options.allow_directx_capturer() &&
+            ScreenCapturerWinDirectx::IsSupported())
+    {
+        capturer.reset(new ScreenCapturerWinDirectx(options));
+    }
+    else
+    {
+        capturer.reset(new ScreenCapturerWinGdi(options));
+    }
 
-  if (options.allow_use_magnification_api()) {
-    capturer.reset(new ScreenCapturerWinMagnifier(std::move(capturer)));
-  }
+    if (options.allow_use_magnification_api())
+    {
+        capturer.reset(new ScreenCapturerWinMagnifier(std::move(capturer)));
+    }
 
-  return capturer;
+    return capturer;
 }
 
 }  // namespace webrtc

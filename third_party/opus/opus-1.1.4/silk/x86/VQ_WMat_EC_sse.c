@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,8 @@ void silk_VQ_WMat_EC_sse4_1(
     /* Loop over codebook */
     *rate_dist_Q14 = silk_int32_MAX;
     cb_row_Q7 = cb_Q7;
-    for( k = 0; k < L; k++ ) {
+    for( k = 0; k < L; k++ )
+    {
         gain_tmp_Q7 = cb_gain_Q7[k];
 
         diff_Q14[ 0 ] = in_Q14[ 0 ] - silk_LSHIFT( cb_row_Q7[ 0 ], 7 );
@@ -130,7 +131,8 @@ void silk_VQ_WMat_EC_sse4_1(
         silk_assert( sum1_Q14 >= 0 );
 
         /* find best */
-        if( sum1_Q14 < *rate_dist_Q14 ) {
+        if( sum1_Q14 < *rate_dist_Q14 )
+        {
             *rate_dist_Q14 = sum1_Q14;
             *ind = (opus_int8)k;
             *gain_Q7 = gain_tmp_Q7;

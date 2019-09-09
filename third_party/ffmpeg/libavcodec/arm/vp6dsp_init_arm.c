@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@ av_cold void ff_vp6dsp_init_arm(VP56DSPContext *s, enum AVCodecID codec)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->edge_filter_hor = ff_vp6_edge_filter_hor_neon;
         s->edge_filter_ver = ff_vp6_edge_filter_ver_neon;
     }

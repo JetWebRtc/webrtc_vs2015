@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@ av_cold void ff_vorbisdsp_init_aarch64(VorbisDSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         c->vorbis_inverse_coupling = ff_vorbis_inverse_coupling_neon;
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -22,22 +22,26 @@
 
 
 static int remove_extradata(AVBitStreamFilterContext *bsfc, AVCodecContext *avctx, const char *args,
-                     uint8_t **poutbuf, int *poutbuf_size,
-                     const uint8_t *buf, int buf_size, int keyframe){
+                            uint8_t **poutbuf, int *poutbuf_size,
+                            const uint8_t *buf, int buf_size, int keyframe)
+{
     int cmd= args ? *args : 0;
     AVCodecParserContext *s;
 
-    if(!bsfc->parser){
+    if(!bsfc->parser)
+    {
         bsfc->parser= av_parser_init(avctx->codec_id);
     }
     s= bsfc->parser;
 
-    if(s && s->parser->split){
+    if(s && s->parser->split)
+    {
         if(  (((avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) ||
-               (avctx->flags2 & AV_CODEC_FLAG2_LOCAL_HEADER)) && cmd == 'a')
-           ||(!keyframe && cmd=='k')
-           ||(cmd=='e' || !cmd)
-          ){
+                (avctx->flags2 & AV_CODEC_FLAG2_LOCAL_HEADER)) && cmd == 'a')
+                ||(!keyframe && cmd=='k')
+                ||(cmd=='e' || !cmd)
+          )
+        {
             int i= s->parser->split(avctx, buf, buf_size);
             buf += i;
             buf_size -= i;
@@ -49,7 +53,8 @@ static int remove_extradata(AVBitStreamFilterContext *bsfc, AVCodecContext *avct
     return 0;
 }
 
-AVBitStreamFilter ff_remove_extradata_bsf={
+AVBitStreamFilter ff_remove_extradata_bsf=
+{
     .name   = "remove_extra",
     .filter = remove_extradata,
 };

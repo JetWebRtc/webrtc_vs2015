@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,44 +15,46 @@
 
 #include "webrtc/voice_engine/shared_data.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VoEVolumeControlImpl : public VoEVolumeControl {
- public:
-  int SetSpeakerVolume(unsigned int volume) override;
+class VoEVolumeControlImpl : public VoEVolumeControl
+{
+public:
+    int SetSpeakerVolume(unsigned int volume) override;
 
-  int GetSpeakerVolume(unsigned int& volume) override;
+    int GetSpeakerVolume(unsigned int& volume) override;
 
-  int SetMicVolume(unsigned int volume) override;
+    int SetMicVolume(unsigned int volume) override;
 
-  int GetMicVolume(unsigned int& volume) override;
+    int GetMicVolume(unsigned int& volume) override;
 
-  int SetInputMute(int channel, bool enable) override;
+    int SetInputMute(int channel, bool enable) override;
 
-  int GetInputMute(int channel, bool& enabled) override;
+    int GetInputMute(int channel, bool& enabled) override;
 
-  int GetSpeechInputLevel(unsigned int& level) override;
+    int GetSpeechInputLevel(unsigned int& level) override;
 
-  int GetSpeechOutputLevel(int channel, unsigned int& level) override;
+    int GetSpeechOutputLevel(int channel, unsigned int& level) override;
 
-  int GetSpeechInputLevelFullRange(unsigned int& level) override;
+    int GetSpeechInputLevelFullRange(unsigned int& level) override;
 
-  int GetSpeechOutputLevelFullRange(int channel, unsigned int& level) override;
+    int GetSpeechOutputLevelFullRange(int channel, unsigned int& level) override;
 
-  int SetChannelOutputVolumeScaling(int channel, float scaling) override;
+    int SetChannelOutputVolumeScaling(int channel, float scaling) override;
 
-  int GetChannelOutputVolumeScaling(int channel, float& scaling) override;
+    int GetChannelOutputVolumeScaling(int channel, float& scaling) override;
 
-  int SetOutputVolumePan(int channel, float left, float right) override;
+    int SetOutputVolumePan(int channel, float left, float right) override;
 
-  int GetOutputVolumePan(int channel, float& left, float& right) override;
+    int GetOutputVolumePan(int channel, float& left, float& right) override;
 
- protected:
-  VoEVolumeControlImpl(voe::SharedData* shared);
-  ~VoEVolumeControlImpl() override;
+protected:
+    VoEVolumeControlImpl(voe::SharedData* shared);
+    ~VoEVolumeControlImpl() override;
 
- private:
-  voe::SharedData* _shared;
+private:
+    voe::SharedData* _shared;
 };
 
 }  // namespace webrtc

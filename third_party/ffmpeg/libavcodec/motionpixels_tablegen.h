@@ -26,11 +26,13 @@
 #include <stdint.h>
 #include "libavutil/attributes.h"
 
-typedef struct YuvPixel {
+typedef struct YuvPixel
+{
     int8_t y, v, u;
 } YuvPixel;
 
-static int mp_yuv_to_rgb(int y, int v, int u, int clip_rgb) {
+static int mp_yuv_to_rgb(int y, int v, int u, int clip_rgb)
+{
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int r, g, b;
 
@@ -54,7 +56,8 @@ static av_cold void mp_set_zero_yuv(YuvPixel *p)
 {
     int i, j;
 
-    for (i = 0; i < 31; ++i) {
+    for (i = 0; i < 31; ++i)
+    {
         for (j = 31; j > i; --j)
             if (!(p[j].u | p[j].v | p[j].y))
                 p[j] = p[j - 1];
@@ -70,9 +73,11 @@ static av_cold void mp_build_rgb_yuv_table(YuvPixel *p)
 
     for (y = 0; y <= 31; ++y)
         for (v = -31; v <= 31; ++v)
-            for (u = -31; u <= 31; ++u) {
+            for (u = -31; u <= 31; ++u)
+            {
                 i = mp_yuv_to_rgb(y, v, u, 0);
-                if (i < (1 << 15) && !(p[i].u | p[i].v | p[i].y)) {
+                if (i < (1 << 15) && !(p[i].u | p[i].v | p[i].y))
+                {
                     p[i].y = y;
                     p[i].v = v;
                     p[i].u = u;

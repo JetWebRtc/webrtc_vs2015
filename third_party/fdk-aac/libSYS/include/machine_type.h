@@ -1,8 +1,8 @@
-
+﻿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-?Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur F�rderung der angewandten Forschung e.V.
+?Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,8 +96,8 @@ amm-info@iis.fraunhofer.de
 
 
 /* Library calling convention spec. __cdecl and friends might be added here as required. */
-  #define LINKSPEC_H
-  #define LINKSPEC_CPP
+#define LINKSPEC_H
+#define LINKSPEC_CPP
 
 
 /**
@@ -152,56 +152,56 @@ amm-info@iis.fraunhofer.de
  */
 
 
-  typedef signed int INT;
-  typedef unsigned int UINT;
+typedef signed int INT;
+typedef unsigned int UINT;
 #ifdef __LP64__
-  /* force FDK long-datatypes to 4 byte  */
-  /* jdr: Use defines to avoid type alias problems on 64 bit machines. */
-  #define LONG INT
-  #define ULONG UINT
+/* force FDK long-datatypes to 4 byte  */
+/* jdr: Use defines to avoid type alias problems on 64 bit machines. */
+#define LONG INT
+#define ULONG UINT
 #else /* __LP64__ */
-  typedef signed long LONG;
-  typedef unsigned long ULONG;
+typedef signed long LONG;
+typedef unsigned long ULONG;
 #endif	/* __LP64__ */
-  typedef signed short SHORT;
-  typedef unsigned short USHORT;
-  typedef signed char SCHAR;
-  typedef unsigned char UCHAR;
+typedef signed short SHORT;
+typedef unsigned short USHORT;
+typedef signed char SCHAR;
+typedef unsigned char UCHAR;
 
-  #define SHORT_BITS 16
-  #define CHAR_BITS 8
+#define SHORT_BITS 16
+#define CHAR_BITS 8
 
 
 /* Define 64 bit base integer type. */
 #ifdef _MSC_VER
-  typedef __int64 INT64;
-  typedef unsigned __int64 UINT64;
+typedef __int64 INT64;
+typedef unsigned __int64 UINT64;
 #else
-  typedef long long INT64;
-  typedef unsigned long long UINT64;
+typedef long long INT64;
+typedef unsigned long long UINT64;
 #endif
 
 #ifndef NULL
-  #ifdef __cplusplus
-    #define NULL    0
-  #else
-    #define NULL    ((void *)0)
-  #endif
+#ifdef __cplusplus
+#define NULL    0
+#else
+#define NULL    ((void *)0)
+#endif
 #endif
 
 /* Assert is functional on x86 PC's and also when debugging is turned on. */
 #if defined(DEBUG) || defined(__i686__) || defined(__i586__) || defined(__i386__) || defined(__x86_64__) || defined(_M_IX86) || defined(FDK_DEBUG) || defined(FDK_ASSERT_ENABLE)
-  #include <assert.h>
-  #define FDK_ASSERT(x) assert(x)
+#include <assert.h>
+#define FDK_ASSERT(x) assert(x)
 #else
-  #define FDK_ASSERT(ignore)
+#define FDK_ASSERT(ignore)
 #endif
 
-  typedef SHORT        INT_PCM;
-  #define WAV_BITS     16
-  #define SAMPLE_BITS  16
-  #define SAMPLE_MAX (((LONG)1<<(SAMPLE_BITS-1))-1)
-  #define SAMPLE_MIN (~SAMPLE_MAX)
+typedef SHORT        INT_PCM;
+#define WAV_BITS     16
+#define SAMPLE_BITS  16
+#define SAMPLE_MAX (((LONG)1<<(SAMPLE_BITS-1))-1)
+#define SAMPLE_MIN (~SAMPLE_MAX)
 
 /*!
 * \def    RAM_ALIGN
@@ -225,11 +225,11 @@ amm-info@iis.fraunhofer.de
 *         Default alignment in bytes.
 */
 #if defined(__GNUC__)	/* cppp replaced: elif */
-  #define ALIGNMENT_DEFAULT 8
-  #define RAM_ALIGN __attribute__((aligned(ALIGNMENT_DEFAULT)))
+#define ALIGNMENT_DEFAULT 8
+#define RAM_ALIGN __attribute__((aligned(ALIGNMENT_DEFAULT)))
 #else
-  #define ALIGNMENT_DEFAULT 8
-  #define RAM_ALIGN
+#define ALIGNMENT_DEFAULT 8
+#define RAM_ALIGN
 #endif
 
 
@@ -247,9 +247,9 @@ amm-info@iis.fraunhofer.de
 *       Tells the compiler that pointer x is DWORD aligned.
 *       At the moment only supported by TI compilers.
 */
-  #define RESTRICT
-  #define WORD_ALIGNED(x)
-  #define DWORD_ALIGNED(x)
+#define RESTRICT
+#define WORD_ALIGNED(x)
+#define DWORD_ALIGNED(x)
 
 
 /*-----------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ amm-info@iis.fraunhofer.de
  */
 #define ALIGN_PTR(a) ( (unsigned char*)(a) + (((INT)ALIGNMENT_DEFAULT - ((INT)(UINT64)(a) & (ALIGNMENT_DEFAULT-1)) ) & (ALIGNMENT_DEFAULT-1)) )
 
- /* Alignment macro for libSYS heap implementation */
+/* Alignment macro for libSYS heap implementation */
 #define ALIGNMENT_EXTRES    ( ALIGNMENT_DEFAULT )
 #define ALGN_SIZE_EXTRES(a) ((a)+ (((INT)ALIGNMENT_EXTRES - ((INT)(a) & (ALIGNMENT_EXTRES-1)) ) & (ALIGNMENT_EXTRES-1)))
 
@@ -292,16 +292,16 @@ amm-info@iis.fraunhofer.de
 #define FORCEINLINE
 #else
 #ifndef FORCEINLINE
-  #if defined(__GNUC__)	/* cppp replaced: elif */
-    #define FORCEINLINE inline __attribute((always_inline))
-  #else
-    #define FORCEINLINE
-  #endif
+#if defined(__GNUC__)	/* cppp replaced: elif */
+#define FORCEINLINE inline __attribute((always_inline))
+#else
+#define FORCEINLINE
+#endif
 #endif
 #endif
 
-  /* for all other platforms */
-  #define FDK_INLINE inline
+/* for all other platforms */
+#define FDK_INLINE inline
 
 
 /*!
@@ -329,29 +329,29 @@ amm-info@iis.fraunhofer.de
 /**************************************************
  * Code Section macros
  **************************************************/
-  #define LNK_SECTION_CODE_L1
-  #define LNK_SECTION_CODE_L2
-  #define LNK_SECTION_INITCODE
+#define LNK_SECTION_CODE_L1
+#define LNK_SECTION_CODE_L2
+#define LNK_SECTION_INITCODE
 
 /* Memory section macros. */
 
-  /* default fall back */
-  #define LNK_SECTION_DATA_L1
-  #define LNK_SECTION_DATA_L2
-  #define LNK_SECTION_CONSTDATA
-  #define LNK_SECTION_CONSTDATA_L1
+/* default fall back */
+#define LNK_SECTION_DATA_L1
+#define LNK_SECTION_DATA_L2
+#define LNK_SECTION_CONSTDATA
+#define LNK_SECTION_CONSTDATA_L1
 
-  #define LNK_SECTION_L1_DATA_A
-  #define LNK_SECTION_L1_DATA_B
+#define LNK_SECTION_L1_DATA_A
+#define LNK_SECTION_L1_DATA_B
 
 
 #ifdef _MSC_VER
-  /*
-   * Sometimes certain features are excluded from compilation and therefore the warning 4065 may occur:
-   * "switch statement contains 'default' but no 'case' labels"
-   * We consider this warning irrelevant and disable it.
-   */
-  #pragma warning( disable : 4065 )
+/*
+ * Sometimes certain features are excluded from compilation and therefore the warning 4065 may occur:
+ * "switch statement contains 'default' but no 'case' labels"
+ * We consider this warning irrelevant and disable it.
+ */
+#pragma warning( disable : 4065 )
 #endif
 
 #endif /* __MACHINE_TYPE_H__ */

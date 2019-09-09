@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libjingle
  * Copyright 2004--2010, Google Inc.
  *
@@ -30,7 +30,8 @@
 
 #include "webrtc/modules/audio_device/linux/latebindingsymboltable_linux.h"
 
-namespace webrtc_adm_linux_pulse {
+namespace webrtc_adm_linux_pulse
+{
 
 // The PulseAudio symbols we need, as an X-Macro list.
 // This list must contain precisely every libpulse function that is used in

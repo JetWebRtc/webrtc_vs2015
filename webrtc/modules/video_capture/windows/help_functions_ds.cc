@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -9,8 +9,8 @@
  */
 
 #include <initguid.h>  // Must come before the help_functions_ds.h include so
-                       // that DEFINE_GUID() entries will be defined in this
-                       // object file.
+// that DEFINE_GUID() entries will be defined in this
+// object file.
 
 #include "webrtc/modules/video_capture/windows/help_functions_ds.h"
 

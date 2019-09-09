@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC1 Test Bitstreams Format Demuxer
  * Copyright (c) 2006, 2008 Konstantin Shishkov
  *
@@ -71,8 +71,10 @@ static int vc1t_read_header(AVFormatContext *s)
     fps = avio_rl32(pb);
     if(fps == 0xFFFFFFFF)
         avpriv_set_pts_info(st, 32, 1, 1000);
-    else{
-        if (!fps) {
+    else
+    {
+        if (!fps)
+        {
             av_log(s, AV_LOG_ERROR, "Zero FPS specified, defaulting to 1 FPS\n");
             fps = 1;
         }
@@ -84,7 +86,7 @@ static int vc1t_read_header(AVFormatContext *s)
 }
 
 static int vc1t_read_packet(AVFormatContext *s,
-                           AVPacket *pkt)
+                            AVPacket *pkt)
 {
     AVIOContext *pb = s->pb;
     int frame_size;
@@ -108,7 +110,8 @@ static int vc1t_read_packet(AVFormatContext *s,
     return pkt->size;
 }
 
-AVInputFormat ff_vc1t_demuxer = {
+AVInputFormat ff_vc1t_demuxer =
+{
     .name           = "vc1test",
     .long_name      = NULL_IF_CONFIG_SMALL("VC-1 test bitstream"),
     .read_probe     = vc1t_probe,

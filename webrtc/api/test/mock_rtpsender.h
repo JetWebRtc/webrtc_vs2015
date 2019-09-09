@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,19 +17,21 @@
 #include "webrtc/api/rtpsenderinterface.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockRtpSender : public rtc::RefCountedObject<RtpSenderInterface> {
- public:
-  MOCK_METHOD1(SetTrack, bool(MediaStreamTrackInterface*));
-  MOCK_CONST_METHOD0(track, rtc::scoped_refptr<MediaStreamTrackInterface>());
-  MOCK_CONST_METHOD0(ssrc, uint32_t());
-  MOCK_CONST_METHOD0(media_type, cricket::MediaType());
-  MOCK_CONST_METHOD0(id, std::string());
-  MOCK_CONST_METHOD0(stream_ids, std::vector<std::string>());
-  MOCK_CONST_METHOD0(GetParameters, RtpParameters());
-  MOCK_METHOD1(SetParameters, bool(const RtpParameters&));
-  MOCK_CONST_METHOD0(GetDtmfSender, rtc::scoped_refptr<DtmfSenderInterface>());
+class MockRtpSender : public rtc::RefCountedObject<RtpSenderInterface>
+{
+public:
+    MOCK_METHOD1(SetTrack, bool(MediaStreamTrackInterface*));
+    MOCK_CONST_METHOD0(track, rtc::scoped_refptr<MediaStreamTrackInterface>());
+    MOCK_CONST_METHOD0(ssrc, uint32_t());
+    MOCK_CONST_METHOD0(media_type, cricket::MediaType());
+    MOCK_CONST_METHOD0(id, std::string());
+    MOCK_CONST_METHOD0(stream_ids, std::vector<std::string>());
+    MOCK_CONST_METHOD0(GetParameters, RtpParameters());
+    MOCK_METHOD1(SetParameters, bool(const RtpParameters&));
+    MOCK_CONST_METHOD0(GetDtmfSender, rtc::scoped_refptr<DtmfSenderInterface>());
 };
 
 }  // namespace webrtc

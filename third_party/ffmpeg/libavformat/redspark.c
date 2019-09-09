@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RedSpark demuxer
  * Copyright (c) 2013 James Almer
  *
@@ -27,7 +27,8 @@
 
 #define HEADER_SIZE 4096
 
-typedef struct RedSparkContext {
+typedef struct RedSparkContext
+{
     int         samples_count;
 } RedSparkContext;
 
@@ -78,7 +79,8 @@ static int redspark_read_header(AVFormatContext *s)
     bytestream_put_be32(&pbc, data);
     key = (key << 11) | (key >> 21);
 
-    for (i = 4; i < HEADER_SIZE; i += 4) {
+    for (i = 4; i < HEADER_SIZE; i += 4)
+    {
         data = avio_rb32(pb) ^ (key = ((key << 3) | (key >> 29)) + key);
         bytestream_put_be32(&pbc, data);
     }
@@ -89,7 +91,8 @@ static int redspark_read_header(AVFormatContext *s)
     bytestream2_init(&gbc, header, HEADER_SIZE);
     bytestream2_seek(&gbc, 0x3c, SEEK_SET);
     codec->sample_rate = bytestream2_get_be32u(&gbc);
-    if (codec->sample_rate <= 0 || codec->sample_rate > 96000) {
+    if (codec->sample_rate <= 0 || codec->sample_rate > 96000)
+    {
         av_log(s, AV_LOG_ERROR, "Invalid sample rate: %d\n", codec->sample_rate);
         ret = AVERROR_INVALIDDATA;
         goto fail;
@@ -99,7 +102,8 @@ static int redspark_read_header(AVFormatContext *s)
     redspark->samples_count = 0;
     bytestream2_skipu(&gbc, 10);
     codec->channels = bytestream2_get_byteu(&gbc);
-    if (!codec->channels) {
+    if (!codec->channels)
+    {
         ret = AVERROR_INVALIDDATA;
         goto fail;
     }
@@ -108,20 +112,24 @@ static int redspark_read_header(AVFormatContext *s)
     if (bytestream2_get_byteu(&gbc)) // Loop flag
         coef_off += 16;
 
-    if (coef_off + codec->channels * (32 + 14) > HEADER_SIZE) {
+    if (coef_off + codec->channels * (32 + 14) > HEADER_SIZE)
+    {
         ret = AVERROR_INVALIDDATA;
         goto fail;
     }
 
-    if (ff_alloc_extradata(codec, 32 * codec->channels)) {
+    if (ff_alloc_extradata(codec, 32 * codec->channels))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
     /* Get the ADPCM table */
     bytestream2_seek(&gbc, coef_off, SEEK_SET);
-    for (i = 0; i < codec->channels; i++) {
-        if (bytestream2_get_bufferu(&gbc, codec->extradata + i * 32, 32) != 32) {
+    for (i = 0; i < codec->channels; i++)
+    {
+        if (bytestream2_get_bufferu(&gbc, codec->extradata + i * 32, 32) != 32)
+        {
             ret = AVERROR_INVALIDDATA;
             goto fail;
         }
@@ -147,7 +155,8 @@ static int redspark_read_packet(AVFormatContext *s, AVPacket *pkt)
         return AVERROR_EOF;
 
     ret = av_get_packet(s->pb, pkt, size);
-    if (ret != size) {
+    if (ret != size)
+    {
         av_free_packet(pkt);
         return AVERROR(EIO);
     }
@@ -159,7 +168,8 @@ static int redspark_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_redspark_demuxer = {
+AVInputFormat ff_redspark_demuxer =
+{
     .name           =   "redspark",
     .long_name      =   NULL_IF_CONFIG_SMALL("RedSpark"),
     .priv_data_size =   sizeof(RedSparkContext),

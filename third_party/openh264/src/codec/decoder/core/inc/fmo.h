@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 #include "parameter_sets.h"
 #include "memory_align.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 #ifndef MB_XY_T
 #define MB_XY_T int32_t
@@ -54,7 +55,8 @@ namespace WelsDec {
 /*!
  * \brief   Wels Flexible Macroblock Ordering (FMO)
  */
-typedef struct TagFmo {
+typedef struct TagFmo
+{
 uint8_t*        pMbAllocMap;
 int32_t         iCountMbNum;
 int32_t         iSliceGroupCount;

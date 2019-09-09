@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LucasArts Smush video decoder
  * Copyright (c) 2006 Cyril Zorin
  * Copyright (c) 2011 Konstantin Shishkov
@@ -34,23 +34,28 @@
 #define PALETTE_SIZE 256
 #define PALETTE_DELTA 768
 
-static const int8_t glyph4_x[GLYPH_COORD_VECT_SIZE] = {
+static const int8_t glyph4_x[GLYPH_COORD_VECT_SIZE] =
+{
     0, 1, 2, 3, 3, 3, 3, 2, 1, 0, 0, 0, 1, 2, 2, 1
 };
 
-static const int8_t glyph4_y[GLYPH_COORD_VECT_SIZE] = {
+static const int8_t glyph4_y[GLYPH_COORD_VECT_SIZE] =
+{
     0, 0, 0, 0, 1, 2, 3, 3, 3, 3, 2, 1, 1, 1, 2, 2
 };
 
-static const int8_t glyph8_x[GLYPH_COORD_VECT_SIZE] = {
+static const int8_t glyph8_x[GLYPH_COORD_VECT_SIZE] =
+{
     0, 2, 5, 7, 7, 7, 7, 7, 7, 5, 2, 0, 0, 0, 0, 0
 };
 
-static const int8_t glyph8_y[GLYPH_COORD_VECT_SIZE] = {
+static const int8_t glyph8_y[GLYPH_COORD_VECT_SIZE] =
+{
     0, 0, 0, 0, 1, 3, 4, 6, 7, 7, 7, 7, 6, 4, 3, 1
 };
 
-static const int8_t motion_vectors[256][2] = {
+static const int8_t motion_vectors[256][2] =
+{
     {   0,   0 }, {  -1, -43 }, {   6, -43 }, {  -9, -42 }, {  13, -41 },
     { -16, -40 }, {  19, -39 }, { -23, -36 }, {  26, -34 }, {  -2, -33 },
     {   4, -33 }, { -29, -32 }, {  -9, -32 }, {  11, -31 }, { -16, -29 },
@@ -104,163 +109,165 @@ static const int8_t motion_vectors[256][2] = {
     {  -6,  43 }, {   1,  43 }, {   0,   0 }, {   0,   0 }, {   0,   0 },
 };
 
-static const int8_t c37_mv[] = {
+static const int8_t c37_mv[] =
+{
     0,   0,   1,   0,   2,   0,   3,   0,   5,   0,
     8,   0,  13,   0,  21,   0,  -1,   0,  -2,   0,
-   -3,   0,  -5,   0,  -8,   0, -13,   0, -17,   0,
-  -21,   0,   0,   1,   1,   1,   2,   1,   3,   1,
+    -3,   0,  -5,   0,  -8,   0, -13,   0, -17,   0,
+    -21,   0,   0,   1,   1,   1,   2,   1,   3,   1,
     5,   1,   8,   1,  13,   1,  21,   1,  -1,   1,
-   -2,   1,  -3,   1,  -5,   1,  -8,   1, -13,   1,
-  -17,   1, -21,   1,   0,   2,   1,   2,   2,   2,
+    -2,   1,  -3,   1,  -5,   1,  -8,   1, -13,   1,
+    -17,   1, -21,   1,   0,   2,   1,   2,   2,   2,
     3,   2,   5,   2,   8,   2,  13,   2,  21,   2,
-   -1,   2,  -2,   2,  -3,   2,  -5,   2,  -8,   2,
-  -13,   2, -17,   2, -21,   2,   0,   3,   1,   3,
+    -1,   2,  -2,   2,  -3,   2,  -5,   2,  -8,   2,
+    -13,   2, -17,   2, -21,   2,   0,   3,   1,   3,
     2,   3,   3,   3,   5,   3,   8,   3,  13,   3,
-   21,   3,  -1,   3,  -2,   3,  -3,   3,  -5,   3,
-   -8,   3, -13,   3, -17,   3, -21,   3,   0,   5,
+    21,   3,  -1,   3,  -2,   3,  -3,   3,  -5,   3,
+    -8,   3, -13,   3, -17,   3, -21,   3,   0,   5,
     1,   5,   2,   5,   3,   5,   5,   5,   8,   5,
-   13,   5,  21,   5,  -1,   5,  -2,   5,  -3,   5,
-   -5,   5,  -8,   5, -13,   5, -17,   5, -21,   5,
+    13,   5,  21,   5,  -1,   5,  -2,   5,  -3,   5,
+    -5,   5,  -8,   5, -13,   5, -17,   5, -21,   5,
     0,   8,   1,   8,   2,   8,   3,   8,   5,   8,
     8,   8,  13,   8,  21,   8,  -1,   8,  -2,   8,
-   -3,   8,  -5,   8,  -8,   8, -13,   8, -17,   8,
-  -21,   8,   0,  13,   1,  13,   2,  13,   3,  13,
+    -3,   8,  -5,   8,  -8,   8, -13,   8, -17,   8,
+    -21,   8,   0,  13,   1,  13,   2,  13,   3,  13,
     5,  13,   8,  13,  13,  13,  21,  13,  -1,  13,
-   -2,  13,  -3,  13,  -5,  13,  -8,  13, -13,  13,
-  -17,  13, -21,  13,   0,  21,   1,  21,   2,  21,
+    -2,  13,  -3,  13,  -5,  13,  -8,  13, -13,  13,
+    -17,  13, -21,  13,   0,  21,   1,  21,   2,  21,
     3,  21,   5,  21,   8,  21,  13,  21,  21,  21,
-   -1,  21,  -2,  21,  -3,  21,  -5,  21,  -8,  21,
-  -13,  21, -17,  21, -21,  21,   0,  -1,   1,  -1,
+    -1,  21,  -2,  21,  -3,  21,  -5,  21,  -8,  21,
+    -13,  21, -17,  21, -21,  21,   0,  -1,   1,  -1,
     2,  -1,   3,  -1,   5,  -1,   8,  -1,  13,  -1,
-   21,  -1,  -1,  -1,  -2,  -1,  -3,  -1,  -5,  -1,
-   -8,  -1, -13,  -1, -17,  -1, -21,  -1,   0,  -2,
+    21,  -1,  -1,  -1,  -2,  -1,  -3,  -1,  -5,  -1,
+    -8,  -1, -13,  -1, -17,  -1, -21,  -1,   0,  -2,
     1,  -2,   2,  -2,   3,  -2,   5,  -2,   8,  -2,
-   13,  -2,  21,  -2,  -1,  -2,  -2,  -2,  -3,  -2,
-   -5,  -2,  -8,  -2, -13,  -2, -17,  -2, -21,  -2,
+    13,  -2,  21,  -2,  -1,  -2,  -2,  -2,  -3,  -2,
+    -5,  -2,  -8,  -2, -13,  -2, -17,  -2, -21,  -2,
     0,  -3,   1,  -3,   2,  -3,   3,  -3,   5,  -3,
     8,  -3,  13,  -3,  21,  -3,  -1,  -3,  -2,  -3,
-   -3,  -3,  -5,  -3,  -8,  -3, -13,  -3, -17,  -3,
-  -21,  -3,   0,  -5,   1,  -5,   2,  -5,   3,  -5,
+    -3,  -3,  -5,  -3,  -8,  -3, -13,  -3, -17,  -3,
+    -21,  -3,   0,  -5,   1,  -5,   2,  -5,   3,  -5,
     5,  -5,   8,  -5,  13,  -5,  21,  -5,  -1,  -5,
-   -2,  -5,  -3,  -5,  -5,  -5,  -8,  -5, -13,  -5,
-  -17,  -5, -21,  -5,   0,  -8,   1,  -8,   2,  -8,
+    -2,  -5,  -3,  -5,  -5,  -5,  -8,  -5, -13,  -5,
+    -17,  -5, -21,  -5,   0,  -8,   1,  -8,   2,  -8,
     3,  -8,   5,  -8,   8,  -8,  13,  -8,  21,  -8,
-   -1,  -8,  -2,  -8,  -3,  -8,  -5,  -8,  -8,  -8,
-  -13,  -8, -17,  -8, -21,  -8,   0, -13,   1, -13,
+    -1,  -8,  -2,  -8,  -3,  -8,  -5,  -8,  -8,  -8,
+    -13,  -8, -17,  -8, -21,  -8,   0, -13,   1, -13,
     2, -13,   3, -13,   5, -13,   8, -13,  13, -13,
-   21, -13,  -1, -13,  -2, -13,  -3, -13,  -5, -13,
-   -8, -13, -13, -13, -17, -13, -21, -13,   0, -17,
+    21, -13,  -1, -13,  -2, -13,  -3, -13,  -5, -13,
+    -8, -13, -13, -13, -17, -13, -21, -13,   0, -17,
     1, -17,   2, -17,   3, -17,   5, -17,   8, -17,
-   13, -17,  21, -17,  -1, -17,  -2, -17,  -3, -17,
-   -5, -17,  -8, -17, -13, -17, -17, -17, -21, -17,
+    13, -17,  21, -17,  -1, -17,  -2, -17,  -3, -17,
+    -5, -17,  -8, -17, -13, -17, -17, -17, -21, -17,
     0, -21,   1, -21,   2, -21,   3, -21,   5, -21,
     8, -21,  13, -21,  21, -21,  -1, -21,  -2, -21,
-   -3, -21,  -5, -21,  -8, -21, -13, -21, -17, -21,
+    -3, -21,  -5, -21,  -8, -21, -13, -21, -17, -21,
     0,   0,  -8, -29,   8, -29, -18, -25,  17, -25,
     0, -23,  -6, -22,   6, -22, -13, -19,  12, -19,
     0, -18,  25, -18, -25, -17,  -5, -17,   5, -17,
-  -10, -15,  10, -15,   0, -14,  -4, -13,   4, -13,
-   19, -13, -19, -12,  -8, -11,  -2, -11,   0, -11,
+    -10, -15,  10, -15,   0, -14,  -4, -13,   4, -13,
+    19, -13, -19, -12,  -8, -11,  -2, -11,   0, -11,
     2, -11,   8, -11, -15, -10,  -4, -10,   4, -10,
-   15, -10,  -6,  -9,  -1,  -9,   1,  -9,   6,  -9,
-  -29,  -8, -11,  -8,  -8,  -8,  -3,  -8,   3,  -8,
+    15, -10,  -6,  -9,  -1,  -9,   1,  -9,   6,  -9,
+    -29,  -8, -11,  -8,  -8,  -8,  -3,  -8,   3,  -8,
     8,  -8,  11,  -8,  29,  -8,  -5,  -7,  -2,  -7,
     0,  -7,   2,  -7,   5,  -7, -22,  -6,  -9,  -6,
-   -6,  -6,  -3,  -6,  -1,  -6,   1,  -6,   3,  -6,
+    -6,  -6,  -3,  -6,  -1,  -6,   1,  -6,   3,  -6,
     6,  -6,   9,  -6,  22,  -6, -17,  -5,  -7,  -5,
-   -4,  -5,  -2,  -5,   0,  -5,   2,  -5,   4,  -5,
+    -4,  -5,  -2,  -5,   0,  -5,   2,  -5,   4,  -5,
     7,  -5,  17,  -5, -13,  -4, -10,  -4,  -5,  -4,
-   -3,  -4,  -1,  -4,   0,  -4,   1,  -4,   3,  -4,
+    -3,  -4,  -1,  -4,   0,  -4,   1,  -4,   3,  -4,
     5,  -4,  10,  -4,  13,  -4,  -8,  -3,  -6,  -3,
-   -4,  -3,  -3,  -3,  -2,  -3,  -1,  -3,   0,  -3,
+    -4,  -3,  -3,  -3,  -2,  -3,  -1,  -3,   0,  -3,
     1,  -3,   2,  -3,   4,  -3,   6,  -3,   8,  -3,
-  -11,  -2,  -7,  -2,  -5,  -2,  -3,  -2,  -2,  -2,
-   -1,  -2,   0,  -2,   1,  -2,   2,  -2,   3,  -2,
+    -11,  -2,  -7,  -2,  -5,  -2,  -3,  -2,  -2,  -2,
+    -1,  -2,   0,  -2,   1,  -2,   2,  -2,   3,  -2,
     5,  -2,   7,  -2,  11,  -2,  -9,  -1,  -6,  -1,
-   -4,  -1,  -3,  -1,  -2,  -1,  -1,  -1,   0,  -1,
+    -4,  -1,  -3,  -1,  -2,  -1,  -1,  -1,   0,  -1,
     1,  -1,   2,  -1,   3,  -1,   4,  -1,   6,  -1,
     9,  -1, -31,   0, -23,   0, -18,   0, -14,   0,
-  -11,   0,  -7,   0,  -5,   0,  -4,   0,  -3,   0,
-   -2,   0,  -1,   0,   0, -31,   1,   0,   2,   0,
+    -11,   0,  -7,   0,  -5,   0,  -4,   0,  -3,   0,
+    -2,   0,  -1,   0,   0, -31,   1,   0,   2,   0,
     3,   0,   4,   0,   5,   0,   7,   0,  11,   0,
-   14,   0,  18,   0,  23,   0,  31,   0,  -9,   1,
-   -6,   1,  -4,   1,  -3,   1,  -2,   1,  -1,   1,
+    14,   0,  18,   0,  23,   0,  31,   0,  -9,   1,
+    -6,   1,  -4,   1,  -3,   1,  -2,   1,  -1,   1,
     0,   1,   1,   1,   2,   1,   3,   1,   4,   1,
     6,   1,   9,   1, -11,   2,  -7,   2,  -5,   2,
-   -3,   2,  -2,   2,  -1,   2,   0,   2,   1,   2,
+    -3,   2,  -2,   2,  -1,   2,   0,   2,   1,   2,
     2,   2,   3,   2,   5,   2,   7,   2,  11,   2,
-   -8,   3,  -6,   3,  -4,   3,  -2,   3,  -1,   3,
+    -8,   3,  -6,   3,  -4,   3,  -2,   3,  -1,   3,
     0,   3,   1,   3,   2,   3,   3,   3,   4,   3,
     6,   3,   8,   3, -13,   4, -10,   4,  -5,   4,
-   -3,   4,  -1,   4,   0,   4,   1,   4,   3,   4,
+    -3,   4,  -1,   4,   0,   4,   1,   4,   3,   4,
     5,   4,  10,   4,  13,   4, -17,   5,  -7,   5,
-   -4,   5,  -2,   5,   0,   5,   2,   5,   4,   5,
+    -4,   5,  -2,   5,   0,   5,   2,   5,   4,   5,
     7,   5,  17,   5, -22,   6,  -9,   6,  -6,   6,
-   -3,   6,  -1,   6,   1,   6,   3,   6,   6,   6,
+    -3,   6,  -1,   6,   1,   6,   3,   6,   6,   6,
     9,   6,  22,   6,  -5,   7,  -2,   7,   0,   7,
     2,   7,   5,   7, -29,   8, -11,   8,  -8,   8,
-   -3,   8,   3,   8,   8,   8,  11,   8,  29,   8,
-   -6,   9,  -1,   9,   1,   9,   6,   9, -15,  10,
-   -4,  10,   4,  10,  15,  10,  -8,  11,  -2,  11,
+    -3,   8,   3,   8,   8,   8,  11,   8,  29,   8,
+    -6,   9,  -1,   9,   1,   9,   6,   9, -15,  10,
+    -4,  10,   4,  10,  15,  10,  -8,  11,  -2,  11,
     0,  11,   2,  11,   8,  11,  19,  12, -19,  13,
-   -4,  13,   4,  13,   0,  14, -10,  15,  10,  15,
-   -5,  17,   5,  17,  25,  17, -25,  18,   0,  18,
-  -12,  19,  13,  19,  -6,  22,   6,  22,   0,  23,
-  -17,  25,  18,  25,  -8,  29,   8,  29,   0,  31,
+    -4,  13,   4,  13,   0,  14, -10,  15,  10,  15,
+    -5,  17,   5,  17,  25,  17, -25,  18,   0,  18,
+    -12,  19,  13,  19,  -6,  22,   6,  22,   0,  23,
+    -17,  25,  18,  25,  -8,  29,   8,  29,   0,  31,
     0,   0,  -6, -22,   6, -22, -13, -19,  12, -19,
     0, -18,  -5, -17,   5, -17, -10, -15,  10, -15,
     0, -14,  -4, -13,   4, -13,  19, -13, -19, -12,
-   -8, -11,  -2, -11,   0, -11,   2, -11,   8, -11,
-  -15, -10,  -4, -10,   4, -10,  15, -10,  -6,  -9,
-   -1,  -9,   1,  -9,   6,  -9, -11,  -8,  -8,  -8,
-   -3,  -8,   0,  -8,   3,  -8,   8,  -8,  11,  -8,
-   -5,  -7,  -2,  -7,   0,  -7,   2,  -7,   5,  -7,
-  -22,  -6,  -9,  -6,  -6,  -6,  -3,  -6,  -1,  -6,
+    -8, -11,  -2, -11,   0, -11,   2, -11,   8, -11,
+    -15, -10,  -4, -10,   4, -10,  15, -10,  -6,  -9,
+    -1,  -9,   1,  -9,   6,  -9, -11,  -8,  -8,  -8,
+    -3,  -8,   0,  -8,   3,  -8,   8,  -8,  11,  -8,
+    -5,  -7,  -2,  -7,   0,  -7,   2,  -7,   5,  -7,
+    -22,  -6,  -9,  -6,  -6,  -6,  -3,  -6,  -1,  -6,
     1,  -6,   3,  -6,   6,  -6,   9,  -6,  22,  -6,
-  -17,  -5,  -7,  -5,  -4,  -5,  -2,  -5,  -1,  -5,
+    -17,  -5,  -7,  -5,  -4,  -5,  -2,  -5,  -1,  -5,
     0,  -5,   1,  -5,   2,  -5,   4,  -5,   7,  -5,
-   17,  -5, -13,  -4, -10,  -4,  -5,  -4,  -3,  -4,
-   -2,  -4,  -1,  -4,   0,  -4,   1,  -4,   2,  -4,
+    17,  -5, -13,  -4, -10,  -4,  -5,  -4,  -3,  -4,
+    -2,  -4,  -1,  -4,   0,  -4,   1,  -4,   2,  -4,
     3,  -4,   5,  -4,  10,  -4,  13,  -4,  -8,  -3,
-   -6,  -3,  -4,  -3,  -3,  -3,  -2,  -3,  -1,  -3,
+    -6,  -3,  -4,  -3,  -3,  -3,  -2,  -3,  -1,  -3,
     0,  -3,   1,  -3,   2,  -3,   3,  -3,   4,  -3,
     6,  -3,   8,  -3, -11,  -2,  -7,  -2,  -5,  -2,
-   -4,  -2,  -3,  -2,  -2,  -2,  -1,  -2,   0,  -2,
+    -4,  -2,  -3,  -2,  -2,  -2,  -1,  -2,   0,  -2,
     1,  -2,   2,  -2,   3,  -2,   4,  -2,   5,  -2,
     7,  -2,  11,  -2,  -9,  -1,  -6,  -1,  -5,  -1,
-   -4,  -1,  -3,  -1,  -2,  -1,  -1,  -1,   0,  -1,
+    -4,  -1,  -3,  -1,  -2,  -1,  -1,  -1,   0,  -1,
     1,  -1,   2,  -1,   3,  -1,   4,  -1,   5,  -1,
     6,  -1,   9,  -1, -23,   0, -18,   0, -14,   0,
-  -11,   0,  -7,   0,  -5,   0,  -4,   0,  -3,   0,
-   -2,   0,  -1,   0,   0, -23,   1,   0,   2,   0,
+    -11,   0,  -7,   0,  -5,   0,  -4,   0,  -3,   0,
+    -2,   0,  -1,   0,   0, -23,   1,   0,   2,   0,
     3,   0,   4,   0,   5,   0,   7,   0,  11,   0,
-   14,   0,  18,   0,  23,   0,  -9,   1,  -6,   1,
-   -5,   1,  -4,   1,  -3,   1,  -2,   1,  -1,   1,
+    14,   0,  18,   0,  23,   0,  -9,   1,  -6,   1,
+    -5,   1,  -4,   1,  -3,   1,  -2,   1,  -1,   1,
     0,   1,   1,   1,   2,   1,   3,   1,   4,   1,
     5,   1,   6,   1,   9,   1, -11,   2,  -7,   2,
-   -5,   2,  -4,   2,  -3,   2,  -2,   2,  -1,   2,
+    -5,   2,  -4,   2,  -3,   2,  -2,   2,  -1,   2,
     0,   2,   1,   2,   2,   2,   3,   2,   4,   2,
     5,   2,   7,   2,  11,   2,  -8,   3,  -6,   3,
-   -4,   3,  -3,   3,  -2,   3,  -1,   3,   0,   3,
+    -4,   3,  -3,   3,  -2,   3,  -1,   3,   0,   3,
     1,   3,   2,   3,   3,   3,   4,   3,   6,   3,
     8,   3, -13,   4, -10,   4,  -5,   4,  -3,   4,
-   -2,   4,  -1,   4,   0,   4,   1,   4,   2,   4,
+    -2,   4,  -1,   4,   0,   4,   1,   4,   2,   4,
     3,   4,   5,   4,  10,   4,  13,   4, -17,   5,
-   -7,   5,  -4,   5,  -2,   5,  -1,   5,   0,   5,
+    -7,   5,  -4,   5,  -2,   5,  -1,   5,   0,   5,
     1,   5,   2,   5,   4,   5,   7,   5,  17,   5,
-  -22,   6,  -9,   6,  -6,   6,  -3,   6,  -1,   6,
+    -22,   6,  -9,   6,  -6,   6,  -3,   6,  -1,   6,
     1,   6,   3,   6,   6,   6,   9,   6,  22,   6,
-   -5,   7,  -2,   7,   0,   7,   2,   7,   5,   7,
-  -11,   8,  -8,   8,  -3,   8,   0,   8,   3,   8,
+    -5,   7,  -2,   7,   0,   7,   2,   7,   5,   7,
+    -11,   8,  -8,   8,  -3,   8,   0,   8,   3,   8,
     8,   8,  11,   8,  -6,   9,  -1,   9,   1,   9,
     6,   9, -15,  10,  -4,  10,   4,  10,  15,  10,
-   -8,  11,  -2,  11,   0,  11,   2,  11,   8,  11,
-   19,  12, -19,  13,  -4,  13,   4,  13,   0,  14,
-  -10,  15,  10,  15,  -5,  17,   5,  17,   0,  18,
-  -12,  19,  13,  19,  -6,  22,   6,  22,   0,  23,
+    -8,  11,  -2,  11,   0,  11,   2,  11,   8,  11,
+    19,  12, -19,  13,  -4,  13,   4,  13,   0,  14,
+    -10,  15,  10,  15,  -5,  17,   5,  17,   0,  18,
+    -12,  19,  13,  19,  -6,  22,   6,  22,   0,  23,
 };
 
-typedef struct SANMVideoContext {
+typedef struct SANMVideoContext
+{
     AVCodecContext *avctx;
     GetByteContext gb;
 
@@ -293,14 +300,16 @@ typedef struct SANMVideoContext {
     int8_t p8x8glyphs[NGLYPHS][64];
 } SANMVideoContext;
 
-typedef struct SANMFrameHeader {
+typedef struct SANMFrameHeader
+{
     int seq_num, codec, rotate_code, rle_output_size;
 
     uint16_t bg_color;
     uint32_t width, height;
 } SANMFrameHeader;
 
-enum GlyphEdge {
+enum GlyphEdge
+{
     LEFT_EDGE,
     TOP_EDGE,
     RIGHT_EDGE,
@@ -308,7 +317,8 @@ enum GlyphEdge {
     NO_EDGE
 };
 
-enum GlyphDir {
+enum GlyphDir
+{
     DIR_LEFT,
     DIR_UP,
     DIR_RIGHT,
@@ -342,20 +352,20 @@ static enum GlyphEdge which_edge(int x, int y, int edge_size)
 static enum GlyphDir which_direction(enum GlyphEdge edge0, enum GlyphEdge edge1)
 {
     if ((edge0 == LEFT_EDGE && edge1 == RIGHT_EDGE) ||
-        (edge1 == LEFT_EDGE && edge0 == RIGHT_EDGE) ||
-        (edge0 == BOTTOM_EDGE && edge1 != TOP_EDGE) ||
-        (edge1 == BOTTOM_EDGE && edge0 != TOP_EDGE))
+            (edge1 == LEFT_EDGE && edge0 == RIGHT_EDGE) ||
+            (edge0 == BOTTOM_EDGE && edge1 != TOP_EDGE) ||
+            (edge1 == BOTTOM_EDGE && edge0 != TOP_EDGE))
         return DIR_UP;
     else if ((edge0 == TOP_EDGE && edge1 != BOTTOM_EDGE) ||
-             (edge1 == TOP_EDGE && edge0 != BOTTOM_EDGE))
+    (edge1 == TOP_EDGE && edge0 != BOTTOM_EDGE))
         return DIR_DOWN;
     else if ((edge0 == LEFT_EDGE && edge1 != RIGHT_EDGE) ||
-             (edge1 == LEFT_EDGE && edge0 != RIGHT_EDGE))
+    (edge1 == LEFT_EDGE && edge0 != RIGHT_EDGE))
         return DIR_LEFT;
     else if ((edge0 == TOP_EDGE && edge1 == BOTTOM_EDGE) ||
-             (edge1 == TOP_EDGE && edge0 == BOTTOM_EDGE) ||
-             (edge0 == RIGHT_EDGE && edge1 != LEFT_EDGE) ||
-             (edge1 == RIGHT_EDGE && edge0 != LEFT_EDGE))
+    (edge1 == TOP_EDGE && edge0 == BOTTOM_EDGE) ||
+    (edge0 == RIGHT_EDGE && edge1 != LEFT_EDGE) ||
+    (edge1 == RIGHT_EDGE && edge0 != LEFT_EDGE))
         return DIR_RIGHT;
 
     return NO_DIR;
@@ -365,10 +375,13 @@ static enum GlyphDir which_direction(enum GlyphEdge edge0, enum GlyphEdge edge1)
 static void interp_point(int8_t *points, int x0, int y0, int x1, int y1,
                          int pos, int npoints)
 {
-    if (npoints) {
+    if (npoints)
+    {
         points[0] = (x0 * pos + x1 * (npoints - pos) + (npoints >> 1)) / npoints;
         points[1] = (y0 * pos + y1 * (npoints - pos) + (npoints >> 1)) / npoints;
-    } else {
+    }
+    else
+    {
         points[0] = x0;
         points[1] = y0;
     }
@@ -389,12 +402,14 @@ static void make_glyphs(int8_t *pglyphs, const int8_t *xvec, const int8_t *yvec,
     int8_t *pglyph = pglyphs;
 
     int i, j;
-    for (i = 0; i < GLYPH_COORD_VECT_SIZE; i++) {
+    for (i = 0; i < GLYPH_COORD_VECT_SIZE; i++)
+    {
         int x0 = xvec[i];
         int y0 = yvec[i];
         enum GlyphEdge edge0 = which_edge(x0, y0, side_length);
 
-        for (j = 0; j < GLYPH_COORD_VECT_SIZE; j++, pglyph += glyph_size) {
+        for (j = 0; j < GLYPH_COORD_VECT_SIZE; j++, pglyph += glyph_size)
+        {
             int x1 = xvec[j];
             int y1 = yvec[j];
             enum GlyphEdge edge1 = which_edge(x1, y1, side_length);
@@ -402,13 +417,15 @@ static void make_glyphs(int8_t *pglyphs, const int8_t *xvec, const int8_t *yvec,
             int npoints = FFMAX(FFABS(x1 - x0), FFABS(y1 - y0));
             int ipoint;
 
-            for (ipoint = 0; ipoint <= npoints; ipoint++) {
+            for (ipoint = 0; ipoint <= npoints; ipoint++)
+            {
                 int8_t point[2];
                 int irow, icol;
 
                 interp_point(point, x0, y0, x1, y1, ipoint, npoints);
 
-                switch (dir) {
+                switch (dir)
+                {
                 case DIR_UP:
                     for (irow = point[1]; irow >= 0; irow--)
                         pglyph[point[0] + irow * side_length] = 1;
@@ -455,8 +472,8 @@ static void destroy_buffers(SANMVideoContext *ctx)
     av_freep(&ctx->stored_frame);
     av_freep(&ctx->rle_buf);
     ctx->frm0_size =
-    ctx->frm1_size =
-    ctx->frm2_size = 0;
+        ctx->frm1_size =
+            ctx->frm2_size = 0;
     init_sizes(ctx, 0, 0);
 }
 
@@ -470,7 +487,8 @@ static av_cold int init_buffers(SANMVideoContext *ctx)
                               &ctx->stored_frame_size, ctx->buf_size);
 
     if (!ctx->frm0 || !ctx->frm1 || !ctx->frm2 ||
-        (!ctx->stored_frame && !ctx->version)) {
+            (!ctx->stored_frame && !ctx->version))
+    {
         destroy_buffers(ctx);
         return AVERROR(ENOMEM);
     }
@@ -495,7 +513,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     avctx->pix_fmt = ctx->version ? AV_PIX_FMT_RGB565 : AV_PIX_FMT_PAL8;
 
     init_sizes(ctx, avctx->width, avctx->height);
-    if (init_buffers(ctx)) {
+    if (init_buffers(ctx))
+    {
         av_log(avctx, AV_LOG_ERROR, "Error allocating buffers.\n");
         return AVERROR(ENOMEM);
     }
@@ -503,10 +522,12 @@ static av_cold int decode_init(AVCodecContext *avctx)
     make_glyphs(ctx->p4x4glyphs[0], glyph4_x, glyph4_y, 4);
     make_glyphs(ctx->p8x8glyphs[0], glyph8_x, glyph8_y, 8);
 
-    if (!ctx->version) {
+    if (!ctx->version)
+    {
         int i;
 
-        if (avctx->extradata_size < 1026) {
+        if (avctx->extradata_size < 1026)
+        {
             av_log(avctx, AV_LOG_ERROR, "Not enough extradata.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -532,16 +553,20 @@ static int rle_decode(SANMVideoContext *ctx, uint8_t *dst, const int out_size)
 {
     int opcode, color, run_len, left = out_size;
 
-    while (left > 0) {
+    while (left > 0)
+    {
         opcode = bytestream2_get_byte(&ctx->gb);
         run_len = (opcode >> 1) + 1;
         if (run_len > left || bytestream2_get_bytes_left(&ctx->gb) <= 0)
             return AVERROR_INVALIDDATA;
 
-        if (opcode & 1) {
+        if (opcode & 1)
+        {
             color = bytestream2_get_byte(&ctx->gb);
             memset(dst, color, run_len);
-        } else {
+        }
+        else
+        {
             if (bytestream2_get_bytes_left(&ctx->gb) < run_len)
                 return AVERROR_INVALIDDATA;
             bytestream2_get_bufferu(&ctx->gb, dst, run_len);
@@ -560,7 +585,8 @@ static int old_codec1(SANMVideoContext *ctx, int top,
     uint8_t *dst = ((uint8_t *)ctx->frm0) + left + top * ctx->pitch;
     int i, j, len, flag, code, val, pos, end;
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         pos = 0;
 
         if (bytestream2_get_bytes_left(&ctx->gb) < 2)
@@ -569,7 +595,8 @@ static int old_codec1(SANMVideoContext *ctx, int top,
         len = bytestream2_get_le16u(&ctx->gb);
         end = bytestream2_tell(&ctx->gb) + len;
 
-        while (bytestream2_tell(&ctx->gb) < end) {
+        while (bytestream2_tell(&ctx->gb) < end)
+        {
             if (bytestream2_get_bytes_left(&ctx->gb) < 2)
                 return AVERROR_INVALIDDATA;
 
@@ -578,15 +605,19 @@ static int old_codec1(SANMVideoContext *ctx, int top,
             code = (code >> 1) + 1;
             if (pos + code > width)
                 return AVERROR_INVALIDDATA;
-            if (flag) {
+            if (flag)
+            {
                 val = bytestream2_get_byteu(&ctx->gb);
                 if (val)
                     memset(dst + pos, val, code);
                 pos += code;
-            } else {
+            }
+            else
+            {
                 if (bytestream2_get_bytes_left(&ctx->gb) < code)
                     return AVERROR_INVALIDDATA;
-                for (j = 0; j < code; j++) {
+                for (j = 0; j < code; j++)
+                {
                     val = bytestream2_get_byteu(&ctx->gb);
                     if (val)
                         dst[pos] = val;
@@ -607,8 +638,10 @@ static inline void codec37_mv(uint8_t *dst, const uint8_t *src,
     int pos, i, j;
 
     pos = x + y * stride;
-    for (j = 0; j < 4; j++) {
-        for (i = 0; i < 4; i++) {
+    for (j = 0; j < 4; j++)
+    {
+        for (i = 0; i < 4; i++)
+        {
             if ((pos + i) < 0 || (pos + i) >= height * stride)
                 dst[i] = 0;
             else
@@ -637,7 +670,8 @@ static int old_codec37(SANMVideoContext *ctx, int top,
     flags = bytestream2_get_byte(&ctx->gb);
     bytestream2_skip(&ctx->gb, 3);
 
-    if (decoded_size > ctx->height * stride - left - top * stride) {
+    if (decoded_size > ctx->height * stride - left - top * stride)
+    {
         decoded_size = ctx->height * stride - left - top * stride;
         av_log(ctx->avctx, AV_LOG_WARNING, "Decoded size is too large.\n");
     }
@@ -650,14 +684,17 @@ static int old_codec37(SANMVideoContext *ctx, int top,
     dst  = ((uint8_t*)ctx->frm0) + left + top * stride;
     prev = ((uint8_t*)ctx->frm2) + left + top * stride;
 
-    if (mvoff > 2) {
+    if (mvoff > 2)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Invalid motion base value %d.\n", mvoff);
         return AVERROR_INVALIDDATA;
     }
 
-    switch (compr) {
+    switch (compr)
+    {
     case 0:
-        for (i = 0; i < height; i++) {
+        for (i = 0; i < height; i++)
+        {
             bytestream2_get_buffer(&ctx->gb, dst, width);
             dst += stride;
         }
@@ -672,11 +709,15 @@ static int old_codec37(SANMVideoContext *ctx, int top,
         break;
     case 3:
     case 4:
-        if (flags & 4) {
-            for (j = 0; j < height; j += 4) {
-                for (i = 0; i < width; i += 4) {
+        if (flags & 4)
+        {
+            for (j = 0; j < height; j += 4)
+            {
+                for (i = 0; i < width; i += 4)
+                {
                     int code;
-                    if (skip_run) {
+                    if (skip_run)
+                    {
                         skip_run--;
                         copy_block4(dst + i, prev + i, stride, stride, 4);
                         continue;
@@ -684,7 +725,8 @@ static int old_codec37(SANMVideoContext *ctx, int top,
                     if (bytestream2_get_bytes_left(&ctx->gb) < 1)
                         return AVERROR_INVALIDDATA;
                     code = bytestream2_get_byteu(&ctx->gb);
-                    switch (code) {
+                    switch (code)
+                    {
                     case 0xFF:
                         if (bytestream2_get_bytes_left(&ctx->gb) < 16)
                             return AVERROR_INVALIDDATA;
@@ -705,12 +747,15 @@ static int old_codec37(SANMVideoContext *ctx, int top,
                             memset(dst + i + k * stride, t, 4);
                         break;
                     default:
-                        if (compr == 4 && !code) {
+                        if (compr == 4 && !code)
+                        {
                             if (bytestream2_get_bytes_left(&ctx->gb) < 1)
                                 return AVERROR_INVALIDDATA;
                             skip_run = bytestream2_get_byteu(&ctx->gb) + 1;
                             i -= 4;
-                        } else {
+                        }
+                        else
+                        {
                             int mx, my;
 
                             mx = c37_mv[(mvoff * 255 + code) * 2];
@@ -723,27 +768,37 @@ static int old_codec37(SANMVideoContext *ctx, int top,
                 dst  += stride * 4;
                 prev += stride * 4;
             }
-        } else {
-            for (j = 0; j < height; j += 4) {
-                for (i = 0; i < width; i += 4) {
+        }
+        else
+        {
+            for (j = 0; j < height; j += 4)
+            {
+                for (i = 0; i < width; i += 4)
+                {
                     int code;
-                    if (skip_run) {
+                    if (skip_run)
+                    {
                         skip_run--;
                         copy_block4(dst + i, prev + i, stride, stride, 4);
                         continue;
                     }
                     code = bytestream2_get_byte(&ctx->gb);
-                    if (code == 0xFF) {
+                    if (code == 0xFF)
+                    {
                         if (bytestream2_get_bytes_left(&ctx->gb) < 16)
                             return AVERROR_INVALIDDATA;
                         for (k = 0; k < 4; k++)
                             bytestream2_get_bufferu(&ctx->gb, dst + i + k * stride, 4);
-                    } else if (compr == 4 && !code) {
+                    }
+                    else if (compr == 4 && !code)
+                    {
                         if (bytestream2_get_bytes_left(&ctx->gb) < 1)
                             return AVERROR_INVALIDDATA;
                         skip_run = bytestream2_get_byteu(&ctx->gb) + 1;
                         i -= 4;
-                    } else {
+                    }
+                    else
+                    {
                         int mx, my;
 
                         mx = c37_mv[(mvoff * 255 + code) * 2];
@@ -777,17 +832,22 @@ static int process_block(SANMVideoContext *ctx, uint8_t *dst, uint8_t *prev1,
         return AVERROR_INVALIDDATA;
 
     code = bytestream2_get_byteu(&ctx->gb);
-    if (code >= 0xF8) {
-        switch (code) {
+    if (code >= 0xF8)
+    {
+        switch (code)
+        {
         case 0xFF:
-            if (size == 2) {
+            if (size == 2)
+            {
                 if (bytestream2_get_bytes_left(&ctx->gb) < 4)
                     return AVERROR_INVALIDDATA;
                 dst[0]          = bytestream2_get_byteu(&ctx->gb);
                 dst[1]          = bytestream2_get_byteu(&ctx->gb);
                 dst[0 + stride] = bytestream2_get_byteu(&ctx->gb);
                 dst[1 + stride] = bytestream2_get_byteu(&ctx->gb);
-            } else {
+            }
+            else
+            {
                 size >>= 1;
                 if (process_block(ctx, dst, prev1, prev2, stride, tbl, size))
                     return AVERROR_INVALIDDATA;
@@ -836,7 +896,9 @@ static int process_block(SANMVideoContext *ctx, uint8_t *dst, uint8_t *prev1,
             for (k = 0; k < size; k++)
                 memset(dst + k * stride, t, size);
         }
-    } else {
+    }
+    else
+    {
         int mx = motion_vectors[code][0];
         int my = motion_vectors[code][1];
         int index = prev2 - (const uint8_t *)ctx->frm2;
@@ -844,7 +906,8 @@ static int process_block(SANMVideoContext *ctx, uint8_t *dst, uint8_t *prev1,
         av_assert2(index >= 0 && index < (ctx->buf_size >> 1));
 
         if (index < -mx - my * stride ||
-            (ctx->buf_size >> 1) - index < mx + size + (my + size - 1) * stride) {
+                (ctx->buf_size >> 1) - index < mx + size + (my + size - 1) * stride)
+        {
             av_log(ctx->avctx, AV_LOG_ERROR, "MV is invalid.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -875,24 +938,28 @@ static int old_codec47(SANMVideoContext *ctx, int top,
     decoded_size = bytestream2_get_le32(&ctx->gb);
     bytestream2_skip(&ctx->gb, 8);
 
-    if (decoded_size > ctx->height * stride - left - top * stride) {
+    if (decoded_size > ctx->height * stride - left - top * stride)
+    {
         decoded_size = ctx->height * stride - left - top * stride;
         av_log(ctx->avctx, AV_LOG_WARNING, "Decoded size is too large.\n");
     }
 
     if (skip & 1)
         bytestream2_skip(&ctx->gb, 0x8080);
-    if (!seq) {
+    if (!seq)
+    {
         ctx->prev_seq = -1;
         memset(prev1, 0, ctx->height * stride);
         memset(prev2, 0, ctx->height * stride);
     }
 
-    switch (compr) {
+    switch (compr)
+    {
     case 0:
         if (bytestream2_get_bytes_left(&ctx->gb) < width * height)
             return AVERROR_INVALIDDATA;
-        for (j = 0; j < height; j++) {
+        for (j = 0; j < height; j++)
+        {
             bytestream2_get_bufferu(&ctx->gb, dst, width);
             dst += stride;
         }
@@ -900,19 +967,23 @@ static int old_codec47(SANMVideoContext *ctx, int top,
     case 1:
         if (bytestream2_get_bytes_left(&ctx->gb) < ((width + 1) >> 1) * ((height + 1) >> 1))
             return AVERROR_INVALIDDATA;
-        for (j = 0; j < height; j += 2) {
-            for (i = 0; i < width; i += 2) {
+        for (j = 0; j < height; j += 2)
+        {
+            for (i = 0; i < width; i += 2)
+            {
                 dst[i] =
-                dst[i + 1] =
-                dst[stride + i] =
-                dst[stride + i + 1] = bytestream2_get_byteu(&ctx->gb);
+                    dst[i + 1] =
+                        dst[stride + i] =
+                            dst[stride + i + 1] = bytestream2_get_byteu(&ctx->gb);
             }
             dst += stride * 2;
         }
         break;
     case 2:
-        if (seq == ctx->prev_seq + 1) {
-            for (j = 0; j < height; j += 8) {
+        if (seq == ctx->prev_seq + 1)
+        {
+            for (j = 0; j < height; j += 8)
+            {
                 for (i = 0; i < width; i += 8)
                     if (process_block(ctx, dst + i, prev1 + i, prev2 + i, stride,
                                       tbl_pos + 8, 8))
@@ -955,26 +1026,30 @@ static int process_frame_obj(SANMVideoContext *ctx)
     uint16_t w     = bytestream2_get_le16u(&ctx->gb);
     uint16_t h     = bytestream2_get_le16u(&ctx->gb);
 
-    if (!w || !h) {
+    if (!w || !h)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Dimensions are invalid.\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (ctx->width < left + w || ctx->height < top + h) {
+    if (ctx->width < left + w || ctx->height < top + h)
+    {
         int ret = ff_set_dimensions(ctx->avctx, FFMAX(left + w, ctx->width),
                                     FFMAX(top + h, ctx->height));
         if (ret < 0)
             return ret;
         init_sizes(ctx, FFMAX(left + w, ctx->width),
                    FFMAX(top + h, ctx->height));
-        if (init_buffers(ctx)) {
+        if (init_buffers(ctx))
+        {
             av_log(ctx->avctx, AV_LOG_ERROR, "Error resizing buffers.\n");
             return AVERROR(ENOMEM);
         }
     }
     bytestream2_skip(&ctx->gb, 4);
 
-    switch (codec) {
+    switch (codec)
+    {
     case 1:
     case 3:
         return old_codec1(ctx, top, left, w, h);
@@ -996,11 +1071,13 @@ static int decode_0(SANMVideoContext *ctx)
     uint16_t *frm = ctx->frm0;
     int x, y;
 
-    if (bytestream2_get_bytes_left(&ctx->gb) < ctx->width * ctx->height * 2) {
+    if (bytestream2_get_bytes_left(&ctx->gb) < ctx->width * ctx->height * 2)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Insufficient data for raw frame.\n");
         return AVERROR_INVALIDDATA;
     }
-    for (y = 0; y < ctx->height; y++) {
+    for (y = 0; y < ctx->height; y++)
+    {
         for (x = 0; x < ctx->width; x++)
             frm[x] = bytestream2_get_le16u(&ctx->gb);
         frm += ctx->pitch;
@@ -1020,7 +1097,8 @@ static void copy_block(uint16_t *pdest, uint16_t *psrc, int block_size, int pitc
     uint8_t *src = (uint8_t *)psrc;
     int stride = pitch * 2;
 
-    switch (block_size) {
+    switch (block_size)
+    {
     case 2:
         copy_block4(dst, src, stride, stride, 2);
         break;
@@ -1051,7 +1129,8 @@ static int draw_glyph(SANMVideoContext *ctx, uint16_t *dst, int index,
     uint16_t colors[2] = { fg_color, bg_color };
     int x, y;
 
-    if (index >= NGLYPHS) {
+    if (index >= NGLYPHS)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Ignoring nonexistent glyph #%u.\n", index);
         return AVERROR_INVALIDDATA;
     }
@@ -1069,7 +1148,8 @@ static int opcode_0xf7(SANMVideoContext *ctx, int cx, int cy, int block_size, in
 {
     uint16_t *dst = ctx->frm0 + cx + cy * ctx->pitch;
 
-    if (block_size == 2) {
+    if (block_size == 2)
+    {
         uint32_t indices;
 
         if (bytestream2_get_bytes_left(&ctx->gb) < 4)
@@ -1083,7 +1163,9 @@ static int opcode_0xf7(SANMVideoContext *ctx, int cx, int cy, int block_size, in
         dst[pitch]     = ctx->codebook[indices & 0xFF];
         indices      >>= 8;
         dst[pitch + 1] = ctx->codebook[indices & 0xFF];
-    } else {
+    }
+    else
+    {
         uint16_t fgcolor, bgcolor;
         int glyph;
 
@@ -1103,7 +1185,8 @@ static int opcode_0xf8(SANMVideoContext *ctx, int cx, int cy, int block_size, in
 {
     uint16_t *dst = ctx->frm0 + cx + cy * ctx->pitch;
 
-    if (block_size == 2) {
+    if (block_size == 2)
+    {
         if (bytestream2_get_bytes_left(&ctx->gb) < 8)
             return AVERROR_INVALIDDATA;
 
@@ -1111,7 +1194,9 @@ static int opcode_0xf8(SANMVideoContext *ctx, int cx, int cy, int block_size, in
         dst[1]         = bytestream2_get_le16u(&ctx->gb);
         dst[pitch]     = bytestream2_get_le16u(&ctx->gb);
         dst[pitch + 1] = bytestream2_get_le16u(&ctx->gb);
-    } else {
+    }
+    else
+    {
         uint16_t fgcolor, bgcolor;
         int glyph;
 
@@ -1153,12 +1238,14 @@ static int codec2subblock(SANMVideoContext *ctx, int cx, int cy, int blk_size)
 
     opcode = bytestream2_get_byteu(&ctx->gb);
 
-    switch (opcode) {
+    switch (opcode)
+    {
     default:
         mx = motion_vectors[opcode][0];
         my = motion_vectors[opcode][1];
 
-        if (good_mvec(ctx, cx, cy, mx, my, blk_size)) {
+        if (good_mvec(ctx, cx, cy, mx, my, blk_size))
+        {
             copy_block(ctx->frm0 + cx      + ctx->pitch *  cy,
                        ctx->frm2 + cx + mx + ctx->pitch * (cy + my),
                        blk_size, ctx->pitch);
@@ -1172,7 +1259,8 @@ static int codec2subblock(SANMVideoContext *ctx, int cx, int cy, int blk_size)
         mx = index % ctx->width;
         my = index / ctx->width;
 
-        if (good_mvec(ctx, cx, cy, mx, my, blk_size)) {
+        if (good_mvec(ctx, cx, cy, mx, my, blk_size))
+        {
             copy_block(ctx->frm0 + cx      + ctx->pitch *  cy,
                        ctx->frm2 + cx + mx + ctx->pitch * (cy + my),
                        blk_size, ctx->pitch);
@@ -1210,9 +1298,12 @@ static int codec2subblock(SANMVideoContext *ctx, int cx, int cy, int blk_size)
                    bytestream2_get_le16u(&ctx->gb), blk_size, ctx->pitch);
         break;
     case 0xFF:
-        if (blk_size == 2) {
+        if (blk_size == 2)
+        {
             opcode_0xf8(ctx, cx, cy, blk_size, ctx->pitch);
-        } else {
+        }
+        else
+        {
             blk_size >>= 1;
             if (codec2subblock(ctx, cx, cy, blk_size))
                 return AVERROR_INVALIDDATA;
@@ -1266,7 +1357,8 @@ static int decode_5(SANMVideoContext *ctx)
 #if HAVE_BIGENDIAN
     npixels = ctx->npixels;
     frm = ctx->frm0;
-    while (npixels--) {
+    while (npixels--)
+    {
         *frm = av_bswap16(*frm);
         frm++;
     }
@@ -1280,7 +1372,8 @@ static int decode_6(SANMVideoContext *ctx)
     int npixels = ctx->npixels;
     uint16_t *frm = ctx->frm0;
 
-    if (bytestream2_get_bytes_left(&ctx->gb) < npixels) {
+    if (bytestream2_get_bytes_left(&ctx->gb) < npixels)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Insufficient data for frame.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1297,7 +1390,8 @@ static int decode_8(SANMVideoContext *ctx)
     long npixels = ctx->npixels;
 
     av_fast_malloc(&ctx->rle_buf, &ctx->rle_buf_size, npixels);
-    if (!ctx->rle_buf) {
+    if (!ctx->rle_buf)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "RLE buffer allocation failed.\n");
         return AVERROR(ENOMEM);
     }
@@ -1314,7 +1408,8 @@ static int decode_8(SANMVideoContext *ctx)
 
 typedef int (*frm_decoder)(SANMVideoContext *ctx);
 
-static const frm_decoder v1_decoders[] = {
+static const frm_decoder v1_decoders[] =
+{
     decode_0, decode_nop, decode_2, decode_3, decode_4, decode_5,
     decode_6, decode_nop, decode_8
 };
@@ -1323,7 +1418,8 @@ static int read_frame_header(SANMVideoContext *ctx, SANMFrameHeader *hdr)
 {
     int i, ret;
 
-    if ((ret = bytestream2_get_bytes_left(&ctx->gb)) < 560) {
+    if ((ret = bytestream2_get_bytes_left(&ctx->gb)) < 560)
+    {
         av_log(ctx->avctx, AV_LOG_ERROR, "Input frame too short (%d bytes).\n",
                ret);
         return AVERROR_INVALIDDATA;
@@ -1333,7 +1429,8 @@ static int read_frame_header(SANMVideoContext *ctx, SANMFrameHeader *hdr)
     hdr->width  = bytestream2_get_le32u(&ctx->gb);
     hdr->height = bytestream2_get_le32u(&ctx->gb);
 
-    if (hdr->width != ctx->width || hdr->height != ctx->height) {
+    if (hdr->width != ctx->width || hdr->height != ctx->height)
+    {
         avpriv_report_missing_feature(ctx->avctx, "Variable size frames");
         return AVERROR_PATCHWELCOME;
     }
@@ -1378,7 +1475,8 @@ static int copy_output(SANMVideoContext *ctx, SANMFrameHeader *hdr)
     dst      = ctx->frame->data[0];
     dstpitch = ctx->frame->linesize[0];
 
-    while (height--) {
+    while (height--)
+    {
         memcpy(dst, src, srcpitch);
         src += srcpitch;
         dst += dstpitch;
@@ -1396,10 +1494,12 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     ctx->frame = data;
     bytestream2_init(&ctx->gb, pkt->data, pkt->size);
 
-    if (!ctx->version) {
+    if (!ctx->version)
+    {
         int to_store = 0;
 
-        while (bytestream2_get_bytes_left(&ctx->gb) >= 8) {
+        while (bytestream2_get_bytes_left(&ctx->gb) >= 8)
+        {
             uint32_t sig, size;
             int pos;
 
@@ -1407,13 +1507,16 @@ static int decode_frame(AVCodecContext *avctx, void *data,
             size = bytestream2_get_be32u(&ctx->gb);
             pos  = bytestream2_tell(&ctx->gb);
 
-            if (bytestream2_get_bytes_left(&ctx->gb) < size) {
+            if (bytestream2_get_bytes_left(&ctx->gb) < size)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Incorrect chunk size %"PRIu32".\n", size);
                 break;
             }
-            switch (sig) {
+            switch (sig)
+            {
             case MKBETAG('N', 'P', 'A', 'L'):
-                if (size != PALETTE_SIZE * 3) {
+                if (size != PALETTE_SIZE * 3)
+                {
                     av_log(avctx, AV_LOG_ERROR,
                            "Incorrect palette block size %"PRIu32".\n", size);
                     return AVERROR_INVALIDDATA;
@@ -1428,19 +1531,25 @@ static int decode_frame(AVCodecContext *avctx, void *data,
                     return ret;
                 break;
             case MKBETAG('X', 'P', 'A', 'L'):
-                if (size == 6 || size == 4) {
+                if (size == 6 || size == 4)
+                {
                     uint8_t tmp[3];
                     int j;
 
-                    for (i = 0; i < PALETTE_SIZE; i++) {
-                        for (j = 0; j < 3; j++) {
+                    for (i = 0; i < PALETTE_SIZE; i++)
+                    {
+                        for (j = 0; j < 3; j++)
+                        {
                             int t = (ctx->pal[i] >> (16 - j * 8)) & 0xFF;
                             tmp[j] = av_clip_uint8((t * 129 + ctx->delta_pal[i * 3 + j]) >> 7);
                         }
                         ctx->pal[i] = 0xFFU << 24 | AV_RB24(tmp);
                     }
-                } else {
-                    if (size < PALETTE_DELTA * 2 + 4) {
+                }
+                else
+                {
+                    if (size < PALETTE_DELTA * 2 + 4)
+                    {
                         av_log(avctx, AV_LOG_ERROR,
                                "Incorrect palette change block size %"PRIu32".\n",
                                size);
@@ -1449,10 +1558,13 @@ static int decode_frame(AVCodecContext *avctx, void *data,
                     bytestream2_skipu(&ctx->gb, 4);
                     for (i = 0; i < PALETTE_DELTA; i++)
                         ctx->delta_pal[i] = bytestream2_get_le16u(&ctx->gb);
-                    if (size >= PALETTE_DELTA * 5 + 4) {
+                    if (size >= PALETTE_DELTA * 5 + 4)
+                    {
                         for (i = 0; i < PALETTE_SIZE; i++)
                             ctx->pal[i] = 0xFFU << 24 | bytestream2_get_be24u(&ctx->gb);
-                    } else {
+                    }
+                    else
+                    {
                         memset(ctx->pal, 0, sizeof(ctx->pal));
                     }
                 }
@@ -1479,28 +1591,37 @@ static int decode_frame(AVCodecContext *avctx, void *data,
         if ((ret = copy_output(ctx, NULL)))
             return ret;
         memcpy(ctx->frame->data[1], ctx->pal, 1024);
-    } else {
+    }
+    else
+    {
         SANMFrameHeader header;
 
         if ((ret = read_frame_header(ctx, &header)))
             return ret;
 
         ctx->rotate_code = header.rotate_code;
-        if ((ctx->frame->key_frame = !header.seq_num)) {
+        if ((ctx->frame->key_frame = !header.seq_num))
+        {
             ctx->frame->pict_type = AV_PICTURE_TYPE_I;
             fill_frame(ctx->frm1, ctx->npixels, header.bg_color);
             fill_frame(ctx->frm2, ctx->npixels, header.bg_color);
-        } else {
+        }
+        else
+        {
             ctx->frame->pict_type = AV_PICTURE_TYPE_P;
         }
 
-        if (header.codec < FF_ARRAY_ELEMS(v1_decoders)) {
-            if ((ret = v1_decoders[header.codec](ctx))) {
+        if (header.codec < FF_ARRAY_ELEMS(v1_decoders))
+        {
+            if ((ret = v1_decoders[header.codec](ctx)))
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Subcodec %d: error decoding frame.\n", header.codec);
                 return ret;
             }
-        } else {
+        }
+        else
+        {
             avpriv_request_sample(avctx, "Subcodec %d", header.codec);
             return AVERROR_PATCHWELCOME;
         }
@@ -1516,7 +1637,8 @@ static int decode_frame(AVCodecContext *avctx, void *data,
     return pkt->size;
 }
 
-AVCodec ff_sanm_decoder = {
+AVCodec ff_sanm_decoder =
+{
     .name           = "sanm",
     .long_name      = NULL_IF_CONFIG_SMALL("LucasArts SANM/Smush video"),
     .type           = AVMEDIA_TYPE_VIDEO,

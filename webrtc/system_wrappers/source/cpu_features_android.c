@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,6 +10,7 @@
 
 #include <cpu-features.h>
 
-uint64_t WebRtc_GetCPUFeaturesARM(void) {
-  return android_getCpuFeatures();
+uint64_t WebRtc_GetCPUFeaturesARM(void)
+{
+    return android_getCpuFeatures();
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,24 +16,29 @@
 #include "webrtc/base/checks.h"
 #include "webrtc/modules/video_coding/codecs/vp9/include/vp9.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-bool VP9Encoder::IsSupported() {
-  return false;
+bool VP9Encoder::IsSupported()
+{
+    return false;
 }
 
-VP9Encoder* VP9Encoder::Create() {
-  RTC_NOTREACHED();
-  return nullptr;
+VP9Encoder* VP9Encoder::Create()
+{
+    RTC_NOTREACHED();
+    return nullptr;
 }
 
-bool VP9Decoder::IsSupported() {
-  return false;
+bool VP9Decoder::IsSupported()
+{
+    return false;
 }
 
-VP9Decoder* VP9Decoder::Create() {
-  RTC_NOTREACHED();
-  return nullptr;
+VP9Decoder* VP9Decoder::Create()
+{
+    RTC_NOTREACHED();
+    return nullptr;
 }
 
 }  // namespace webrtc

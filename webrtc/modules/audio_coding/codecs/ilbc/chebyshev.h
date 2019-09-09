@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -32,6 +32,6 @@ int16_t WebRtcIlbcfix_Chebyshev(
     /* (o) Result of C(x) */
     int16_t x,  /* (i) Value to the Chevyshev polynomial */
     int16_t *f  /* (i) The coefficients in the polynomial */
-                                      );
+);
 
 #endif

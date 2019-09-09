@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CRYO APC audio format demuxer
  * Copyright (c) 2007 Anssi Hannula <anssi.hannula@gmail.com>
  *
@@ -56,10 +56,13 @@ static int apc_read_header(AVFormatContext *s)
     if (ff_get_extradata(st->codec, pb, 2 * 4) < 0)
         return AVERROR(ENOMEM);
 
-    if (avio_rl32(pb)) {
+    if (avio_rl32(pb))
+    {
         st->codec->channels       = 2;
         st->codec->channel_layout = AV_CH_LAYOUT_STEREO;
-    } else {
+    }
+    else
+    {
         st->codec->channels       = 1;
         st->codec->channel_layout = AV_CH_LAYOUT_MONO;
     }
@@ -83,7 +86,8 @@ static int apc_read_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVInputFormat ff_apc_demuxer = {
+AVInputFormat ff_apc_demuxer =
+{
     .name           = "apc",
     .long_name      = NULL_IF_CONFIG_SMALL("CRYO APC"),
     .read_probe     = apc_probe,

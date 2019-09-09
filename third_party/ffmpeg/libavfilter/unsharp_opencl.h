@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  *
  * This file is part of FFmpeg.

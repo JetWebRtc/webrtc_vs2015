@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -41,19 +41,21 @@ typedef void (*PWelsMcFunc) (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* p
 typedef void (*PWelsLumaHalfpelMcFunc) (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
                                         int32_t iWidth, int32_t iHeight);
 typedef void (*PWelsSampleAveragingFunc) (uint8_t*, int32_t, const uint8_t*, int32_t, const uint8_t*, int32_t,
-    int32_t, int32_t);
+        int32_t, int32_t);
 
-typedef struct TagMcFunc {
-  PWelsLumaHalfpelMcFunc      pfLumaHalfpelHor;
-  PWelsLumaHalfpelMcFunc      pfLumaHalfpelVer;
-  PWelsLumaHalfpelMcFunc      pfLumaHalfpelCen;
-  PWelsMcFunc                 pMcChromaFunc;
+typedef struct TagMcFunc
+{
+    PWelsLumaHalfpelMcFunc      pfLumaHalfpelHor;
+    PWelsLumaHalfpelMcFunc      pfLumaHalfpelVer;
+    PWelsLumaHalfpelMcFunc      pfLumaHalfpelCen;
+    PWelsMcFunc                 pMcChromaFunc;
 
-  PWelsMcFunc                 pMcLumaFunc;
-  PWelsSampleAveragingFunc    pfSampleAveraging;
+    PWelsMcFunc                 pMcLumaFunc;
+    PWelsSampleAveragingFunc    pfSampleAveraging;
 } SMcFunc;
 
-namespace WelsCommon {
+namespace WelsCommon
+{
 
 void InitMcFunc (SMcFunc* pMcFunc, uint32_t iCpu);
 
@@ -221,7 +223,7 @@ void McHorVer22WidthEq8_AArch64_neon (const uint8_t* pSrc, int32_t iSrcStride, u
 void McHorVer22WidthEq4_AArch64_neon (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
                                       int32_t iHeight);
 void PixStrideAvgWidthEq16_AArch64_neon (uint8_t* pDst, int32_t iDstStride, const uint8_t* pSrcA, int32_t iSrcStrideA,
-    const uint8_t* pSrcB, int32_t iSrcStrideB, int32_t iHeight);
+        const uint8_t* pSrcB, int32_t iSrcStrideB, int32_t iHeight);
 void PixStrideAvgWidthEq8_AArch64_neon (uint8_t* pDst, int32_t iDstStride, const uint8_t* pSrcA, int32_t iSrcStrideA,
                                         const uint8_t* pSrcB, int32_t iSrcStrideB, int32_t iHeight);
 void McHorVer20Width17_AArch64_neon (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
@@ -277,7 +279,7 @@ void McHorVer22Width8HorFirst_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uin
 void McHorVer22Width8VerLastAlign_sse2 (const uint8_t* pTap, int32_t iTapStride, uint8_t* pDst, int32_t iDstStride,
                                         int32_t iWidth, int32_t iHeight);
 void McHorVer22Width8VerLastUnAlign_sse2 (const uint8_t* pTap, int32_t iTapStride, uint8_t* pDst, int32_t iDstStride,
-    int32_t iWidth, int32_t iHeight);
+        int32_t iWidth, int32_t iHeight);
 
 void PixelAvgWidthEq16_sse2 (uint8_t* pDst, int32_t iDstStride, const uint8_t* pSrcA, int32_t iSrcAStride,
                              const uint8_t* pSrcB, int32_t iSrcBStride, int32_t iHeight);
@@ -286,19 +288,19 @@ void McHorVer20Width9Or17_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t
                                 int32_t iWidth,
                                 int32_t iHeight);
 void McHorVer20Width5_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
-                                int32_t iWidth, int32_t iHeight);
+                            int32_t iWidth, int32_t iHeight);
 
 void McHorVer02Height9Or17_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
                                  int32_t iWidth,
                                  int32_t iHeight);
 void McHorVer02Height5_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pDst, int32_t iDstStride,
-                                 int32_t iWidth, int32_t iHeight);
+                             int32_t iWidth, int32_t iHeight);
 
 void McHorVer22HorFirst_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pTap, int32_t iTapStride,
                               int32_t iWidth,
                               int32_t iHeight);
 void McHorVer22Width5HorFirst_sse2 (const uint8_t* pSrc, int32_t iSrcStride, uint8_t* pTap, int32_t iTapStride,
-                              int32_t iWidth, int32_t iHeight);
+                                    int32_t iWidth, int32_t iHeight);
 void McHorVer22Width4VerLastAlign_sse2 (const uint8_t* pTap, int32_t iTapStride, uint8_t* pDst, int32_t iDstStride,
                                         int32_t iWidth, int32_t iHeight);
 void McHorVer22Width4VerLastUnAlign_sse2 (const uint8_t* pTap, int32_t iTapStride, uint8_t* pDst, int32_t iDstStride,

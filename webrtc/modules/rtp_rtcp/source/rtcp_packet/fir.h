@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,47 +16,56 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/psfb.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 // Full intra request (FIR) (RFC 5104).
-class Fir : public Psfb {
- public:
-  static constexpr uint8_t kFeedbackMessageType = 4;
-  struct Request {
-    Request() : ssrc(0), seq_nr(0) {}
-    Request(uint32_t ssrc, uint8_t seq_nr) : ssrc(ssrc), seq_nr(seq_nr) {}
-    uint32_t ssrc;
-    uint8_t seq_nr;
-  };
+class Fir : public Psfb
+{
+public:
+    static constexpr uint8_t kFeedbackMessageType = 4;
+    struct Request
+    {
+        Request() : ssrc(0), seq_nr(0) {}
+        Request(uint32_t ssrc, uint8_t seq_nr) : ssrc(ssrc), seq_nr(seq_nr) {}
+        uint32_t ssrc;
+        uint8_t seq_nr;
+    };
 
-  Fir() {}
-  ~Fir() override {}
+    Fir() {}
+    ~Fir() override {}
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& packet);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& packet);
 
-  void AddRequestTo(uint32_t ssrc, uint8_t seq_num) {
-    items_.emplace_back(ssrc, seq_num);
-  }
-  const std::vector<Request>& requests() const { return items_; }
+    void AddRequestTo(uint32_t ssrc, uint8_t seq_num)
+    {
+        items_.emplace_back(ssrc, seq_num);
+    }
+    const std::vector<Request>& requests() const
+    {
+        return items_;
+    }
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
- private:
-  static constexpr size_t kFciLength = 8;
-  size_t BlockLength() const override {
-    return kHeaderLength + kCommonFeedbackLength + kFciLength * items_.size();
-  }
-  // SSRC of media source is not used in FIR packet. Shadow base functions.
-  void SetMediaSsrc(uint32_t ssrc);
-  uint32_t media_ssrc() const;
+private:
+    static constexpr size_t kFciLength = 8;
+    size_t BlockLength() const override
+    {
+        return kHeaderLength + kCommonFeedbackLength + kFciLength * items_.size();
+    }
+    // SSRC of media source is not used in FIR packet. Shadow base functions.
+    void SetMediaSsrc(uint32_t ssrc);
+    uint32_t media_ssrc() const;
 
-  std::vector<Request> items_;
+    std::vector<Request> items_;
 };
 }  // namespace rtcp
 }  // namespace webrtc

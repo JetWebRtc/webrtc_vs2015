@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,9 +17,10 @@
 #include "webrtc/common_audio/signal_processing/resample_by_2_internal.h"
 
 // allpass filter coefficients.
-static const int16_t kResampleAllpass[2][3] = {
-        {821, 6110, 12382},
-        {3050, 9368, 15063}
+static const int16_t kResampleAllpass[2][3] =
+{
+    {821, 6110, 12382},
+    {3050, 9368, 15063}
 };
 
 //
@@ -122,9 +123,9 @@ void WebRtcSpl_DownBy2IntToShort(int32_t *in, int32_t len, int16_t *out,
 // state:  filter state array; length = 8
 
 void WebRtcSpl_DownBy2ShortToInt(const int16_t *in,
-                                  int32_t len,
-                                  int32_t *out,
-                                  int32_t *state)
+                                 int32_t len,
+                                 int32_t *out,
+                                 int32_t *state)
 {
     int32_t tmp0, tmp1, diff;
     int32_t i;

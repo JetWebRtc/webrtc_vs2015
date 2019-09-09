@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft RTP/ASF support.
  * Copyright (c) 2008 Ronald S. Bultje
  *
@@ -48,14 +48,17 @@ static int rtp_asf_fix_header(uint8_t *buf, int len)
     uint8_t *p = buf, *end = buf + len;
 
     if (len < sizeof(ff_asf_guid) * 2 + 22 ||
-        memcmp(p, ff_asf_header, sizeof(ff_asf_guid))) {
+            memcmp(p, ff_asf_header, sizeof(ff_asf_guid)))
+    {
         return -1;
     }
     p += sizeof(ff_asf_guid) + 14;
-    do {
+    do
+    {
         uint64_t chunksize = AV_RL64(p + sizeof(ff_asf_guid));
         int skip = 6 * 8 + 3 * 4 + sizeof(ff_asf_guid) * 2;
-        if (memcmp(p, ff_asf_file_header, sizeof(ff_asf_guid))) {
+        if (memcmp(p, ff_asf_file_header, sizeof(ff_asf_guid)))
+        {
             if (chunksize > end - p)
                 return -1;
             p += chunksize;
@@ -66,13 +69,15 @@ static int rtp_asf_fix_header(uint8_t *buf, int len)
             break;
         /* skip most of the file header, to min_pktsize */
         p += skip;
-        if (AV_RL32(p) == AV_RL32(p + 4)) {
+        if (AV_RL32(p) == AV_RL32(p + 4))
+        {
             /* and set that to zero */
             AV_WL32(p, 0);
             return 0;
         }
         break;
-    } while (end - p >= sizeof(ff_asf_guid) + 8);
+    }
+    while (end - p >= sizeof(ff_asf_guid) + 8);
 
     return -1;
 }
@@ -100,7 +105,8 @@ static void init_packetizer(AVIOContext *pb, uint8_t *buf, int len)
 int ff_wms_parse_sdp_a_line(AVFormatContext *s, const char *p)
 {
     int ret = 0;
-    if (av_strstart(p, "pgmpu:data:application/vnd.ms.wms-hdr.asfv1;base64,", &p)) {
+    if (av_strstart(p, "pgmpu:data:application/vnd.ms.wms-hdr.asfv1;base64,", &p))
+    {
         AVIOContext pb;
         RTSPState *rt = s->priv_data;
         AVDictionary *opts = NULL;
@@ -116,7 +122,8 @@ int ff_wms_parse_sdp_a_line(AVFormatContext *s, const char *p)
             av_log(s, AV_LOG_ERROR,
                    "Failed to fix invalid RTSP-MS/ASF min_pktsize\n");
         init_packetizer(&pb, buf, len);
-        if (rt->asf_ctx) {
+        if (rt->asf_ctx)
+        {
             avformat_close_input(&rt->asf_ctx);
         }
 
@@ -124,21 +131,24 @@ int ff_wms_parse_sdp_a_line(AVFormatContext *s, const char *p)
             return AVERROR_DEMUXER_NOT_FOUND;
 
         rt->asf_ctx = avformat_alloc_context();
-        if (!rt->asf_ctx) {
+        if (!rt->asf_ctx)
+        {
             av_free(buf);
             return AVERROR(ENOMEM);
         }
         rt->asf_ctx->pb      = &pb;
         av_dict_set(&opts, "no_resync_search", "1", 0);
 
-        if ((ret = ff_copy_whitelists(rt->asf_ctx, s)) < 0) {
+        if ((ret = ff_copy_whitelists(rt->asf_ctx, s)) < 0)
+        {
             av_dict_free(&opts);
             return ret;
         }
 
         ret = avformat_open_input(&rt->asf_ctx, "", iformat, &opts);
         av_dict_free(&opts);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_free(buf);
             return ret;
         }
@@ -155,16 +165,20 @@ static int asfrtp_parse_sdp_line(AVFormatContext *s, int stream_index,
 {
     if (stream_index < 0)
         return 0;
-    if (av_strstart(line, "stream:", &line)) {
+    if (av_strstart(line, "stream:", &line))
+    {
         RTSPState *rt = s->priv_data;
 
         s->streams[stream_index]->id = strtol(line, NULL, 10);
 
-        if (rt->asf_ctx) {
+        if (rt->asf_ctx)
+        {
             int i;
 
-            for (i = 0; i < rt->asf_ctx->nb_streams; i++) {
-                if (s->streams[stream_index]->id == rt->asf_ctx->streams[i]->id) {
+            for (i = 0; i < rt->asf_ctx->nb_streams; i++)
+            {
+                if (s->streams[stream_index]->id == rt->asf_ctx->streams[i]->id)
+                {
                     *s->streams[stream_index]->codec =
                         *rt->asf_ctx->streams[i]->codec;
                     s->streams[stream_index]->need_parsing =
@@ -173,14 +187,15 @@ static int asfrtp_parse_sdp_line(AVFormatContext *s, int stream_index,
                     rt->asf_ctx->streams[i]->codec->extradata = NULL;
                     avpriv_set_pts_info(s->streams[stream_index], 32, 1, 1000);
                 }
-           }
+            }
         }
     }
 
     return 0;
 }
 
-struct PayloadContext {
+struct PayloadContext
+{
     AVIOContext *pktbuf, pb;
     uint8_t *buf;
 };
@@ -203,7 +218,8 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
     if (!rt->asf_ctx)
         return -1;
 
-    if (len > 0) {
+    if (len > 0)
+    {
         int off, out_len = 0;
 
         if (len < 4)
@@ -213,7 +229,8 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
 
         ffio_init_context(pb, (uint8_t *)buf, len, 0, NULL, NULL, NULL, NULL);
 
-        while (avio_tell(pb) + 4 < len) {
+        while (avio_tell(pb) + 4 < len)
+        {
             int start_off = avio_tell(pb);
 
             mflags = avio_r8(pb);
@@ -226,18 +243,20 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
                 avio_skip(pb, 4);
             off = avio_tell(pb);
 
-            if (!(mflags & 0x40)) {
+            if (!(mflags & 0x40))
+            {
                 /**
                  * If 0x40 is not set, the len_off field specifies an offset
                  * of this packet's payload data in the complete (reassembled)
                  * ASF packet. This is used to spread one ASF packet over
                  * multiple RTP packets.
                  */
-                if (asf->pktbuf && len_off != avio_tell(asf->pktbuf)) {
+                if (asf->pktbuf && len_off != avio_tell(asf->pktbuf))
+                {
                     ffio_free_dyn_buf(&asf->pktbuf);
                 }
                 if (!len_off && !asf->pktbuf &&
-                    (res = avio_open_dyn_buf(&asf->pktbuf)) < 0)
+                        (res = avio_open_dyn_buf(&asf->pktbuf)) < 0)
                     return res;
                 if (!asf->pktbuf)
                     return AVERROR(EIO);
@@ -248,7 +267,9 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
                     return -1;
                 out_len     = avio_close_dyn_buf(asf->pktbuf, &asf->buf);
                 asf->pktbuf = NULL;
-            } else {
+            }
+            else
+            {
                 /**
                  * If 0x40 is set, the len_off field specifies the length of
                  * the next ASF packet that can be read from this payload
@@ -276,15 +297,18 @@ static int asfrtp_parse_packet(AVFormatContext *s, PayloadContext *asf,
         rt->asf_ctx->pb = pb;
     }
 
-    for (;;) {
+    for (;;)
+    {
         int i;
 
         res = ff_read_packet(rt->asf_ctx, pkt);
         rt->asf_pb_pos = avio_tell(pb);
         if (res != 0)
             break;
-        for (i = 0; i < s->nb_streams; i++) {
-            if (s->streams[i]->id == rt->asf_ctx->streams[pkt->stream_index]->id) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
+            if (s->streams[i]->id == rt->asf_ctx->streams[pkt->stream_index]->id)
+            {
                 pkt->stream_index = i;
                 return 1; // FIXME: return 0 if last packet
             }

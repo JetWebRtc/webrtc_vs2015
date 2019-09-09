@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Parag Salasakar (parag.salasakar@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@ static void copy_8bit_value_width8_msa(uint8_t *src, uint8_t val,
     val0 = (v16u8) __msa_fill_b(val);
     dst0 = __msa_copy_u_d((v2i64) val0, 0);
 
-    for (cnt = (height >> 2); cnt--;) {
+    for (cnt = (height >> 2); cnt--;)
+    {
         SD4(dst0, dst0, dst0, dst0, src, src_stride);
         src += (4 * src_stride);
     }
@@ -45,7 +46,8 @@ static void copy_8bit_value_width16_msa(uint8_t *src, uint8_t val,
 
     val0 = (v16u8) __msa_fill_b(val);
 
-    for (cnt = (height >> 3); cnt--;) {
+    for (cnt = (height >> 3); cnt--;)
+    {
         ST_UB8(val0, val0, val0, val0, val0, val0, val0, val0, src, src_stride);
         src += (8 * src_stride);
     }
@@ -57,7 +59,8 @@ static void memset_zero_16width_msa(uint8_t *src, int32_t stride,
     int8_t cnt;
     v16u8 zero = { 0 };
 
-    for (cnt = (height / 2); cnt--;) {
+    for (cnt = (height / 2); cnt--;)
+    {
         ST_UB(zero, src);
         src += stride;
         ST_UB(zero, src);

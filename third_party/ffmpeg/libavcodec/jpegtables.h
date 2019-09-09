@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG-related tables
  *
  * This file is part of FFmpeg.

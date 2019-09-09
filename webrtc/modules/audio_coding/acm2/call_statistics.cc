@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,46 +12,58 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace acm2 {
+namespace acm2
+{
 
 void CallStatistics::DecodedByNetEq(AudioFrame::SpeechType speech_type,
-                                    bool muted) {
-  ++decoding_stat_.calls_to_neteq;
-  if (muted) {
-    ++decoding_stat_.decoded_muted_output;
-  }
-  switch (speech_type) {
-    case AudioFrame::kNormalSpeech: {
-      ++decoding_stat_.decoded_normal;
-      break;
+                                    bool muted)
+{
+    ++decoding_stat_.calls_to_neteq;
+    if (muted)
+    {
+        ++decoding_stat_.decoded_muted_output;
     }
-    case AudioFrame::kPLC: {
-      ++decoding_stat_.decoded_plc;
-      break;
+    switch (speech_type)
+    {
+    case AudioFrame::kNormalSpeech:
+    {
+        ++decoding_stat_.decoded_normal;
+        break;
     }
-    case AudioFrame::kCNG: {
-      ++decoding_stat_.decoded_cng;
-      break;
+    case AudioFrame::kPLC:
+    {
+        ++decoding_stat_.decoded_plc;
+        break;
     }
-    case AudioFrame::kPLCCNG: {
-      ++decoding_stat_.decoded_plc_cng;
-      break;
+    case AudioFrame::kCNG:
+    {
+        ++decoding_stat_.decoded_cng;
+        break;
     }
-    case AudioFrame::kUndefined: {
-      // If the audio is decoded by NetEq, |kUndefined| is not an option.
-      RTC_NOTREACHED();
+    case AudioFrame::kPLCCNG:
+    {
+        ++decoding_stat_.decoded_plc_cng;
+        break;
     }
-  }
+    case AudioFrame::kUndefined:
+    {
+        // If the audio is decoded by NetEq, |kUndefined| is not an option.
+        RTC_NOTREACHED();
+    }
+    }
 }
 
-void CallStatistics::DecodedBySilenceGenerator() {
-  ++decoding_stat_.calls_to_silence_generator;
+void CallStatistics::DecodedBySilenceGenerator()
+{
+    ++decoding_stat_.calls_to_silence_generator;
 }
 
-const AudioDecodingCallStats& CallStatistics::GetDecodingStatistics() const {
-  return decoding_stat_;
+const AudioDecodingCallStats& CallStatistics::GetDecodingStatistics() const
+{
+    return decoding_stat_;
 }
 
 }  // namespace acm2

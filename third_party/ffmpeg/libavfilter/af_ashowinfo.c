@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -43,7 +43,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct AShowInfoContext {
+typedef struct AShowInfoContext
+{
     /**
      * Scratch space for individual plane checksums for planar audio
      */
@@ -62,21 +63,39 @@ static void dump_matrixenc(AVFilterContext *ctx, AVFrameSideData *sd)
 
     av_log(ctx, AV_LOG_INFO, "matrix encoding: ");
 
-    if (sd->size < sizeof(enum AVMatrixEncoding)) {
+    if (sd->size < sizeof(enum AVMatrixEncoding))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
 
     enc = *(enum AVMatrixEncoding *)sd->data;
-    switch (enc) {
-    case AV_MATRIX_ENCODING_NONE:           av_log(ctx, AV_LOG_INFO, "none");                break;
-    case AV_MATRIX_ENCODING_DOLBY:          av_log(ctx, AV_LOG_INFO, "Dolby Surround");      break;
-    case AV_MATRIX_ENCODING_DPLII:          av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic II");  break;
-    case AV_MATRIX_ENCODING_DPLIIX:         av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic IIx"); break;
-    case AV_MATRIX_ENCODING_DPLIIZ:         av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic IIz"); break;
-    case AV_MATRIX_ENCODING_DOLBYEX:        av_log(ctx, AV_LOG_INFO, "Dolby EX");            break;
-    case AV_MATRIX_ENCODING_DOLBYHEADPHONE: av_log(ctx, AV_LOG_INFO, "Dolby Headphone");     break;
-    default:                                av_log(ctx, AV_LOG_WARNING, "unknown");          break;
+    switch (enc)
+    {
+    case AV_MATRIX_ENCODING_NONE:
+        av_log(ctx, AV_LOG_INFO, "none");
+        break;
+    case AV_MATRIX_ENCODING_DOLBY:
+        av_log(ctx, AV_LOG_INFO, "Dolby Surround");
+        break;
+    case AV_MATRIX_ENCODING_DPLII:
+        av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic II");
+        break;
+    case AV_MATRIX_ENCODING_DPLIIX:
+        av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic IIx");
+        break;
+    case AV_MATRIX_ENCODING_DPLIIZ:
+        av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic IIz");
+        break;
+    case AV_MATRIX_ENCODING_DOLBYEX:
+        av_log(ctx, AV_LOG_INFO, "Dolby EX");
+        break;
+    case AV_MATRIX_ENCODING_DOLBYHEADPHONE:
+        av_log(ctx, AV_LOG_INFO, "Dolby Headphone");
+        break;
+    default:
+        av_log(ctx, AV_LOG_WARNING, "unknown");
+        break;
     }
 }
 
@@ -85,7 +104,8 @@ static void dump_downmix(AVFilterContext *ctx, AVFrameSideData *sd)
     AVDownmixInfo *di;
 
     av_log(ctx, AV_LOG_INFO, "downmix: ");
-    if (sd->size < sizeof(*di)) {
+    if (sd->size < sizeof(*di))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
@@ -93,11 +113,20 @@ static void dump_downmix(AVFilterContext *ctx, AVFrameSideData *sd)
     di = (AVDownmixInfo *)sd->data;
 
     av_log(ctx, AV_LOG_INFO, "preferred downmix type - ");
-    switch (di->preferred_downmix_type) {
-    case AV_DOWNMIX_TYPE_LORO:    av_log(ctx, AV_LOG_INFO, "Lo/Ro");              break;
-    case AV_DOWNMIX_TYPE_LTRT:    av_log(ctx, AV_LOG_INFO, "Lt/Rt");              break;
-    case AV_DOWNMIX_TYPE_DPLII:   av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic II"); break;
-    default:                      av_log(ctx, AV_LOG_WARNING, "unknown");         break;
+    switch (di->preferred_downmix_type)
+    {
+    case AV_DOWNMIX_TYPE_LORO:
+        av_log(ctx, AV_LOG_INFO, "Lo/Ro");
+        break;
+    case AV_DOWNMIX_TYPE_LTRT:
+        av_log(ctx, AV_LOG_INFO, "Lt/Rt");
+        break;
+    case AV_DOWNMIX_TYPE_DPLII:
+        av_log(ctx, AV_LOG_INFO, "Dolby Pro Logic II");
+        break;
+    default:
+        av_log(ctx, AV_LOG_WARNING, "unknown");
+        break;
     }
 
     av_log(ctx, AV_LOG_INFO, " Mix levels: center %f (%f ltrt) - "
@@ -132,7 +161,8 @@ static void dump_replaygain(AVFilterContext *ctx, AVFrameSideData *sd)
     AVReplayGain *rg;
 
     av_log(ctx, AV_LOG_INFO, "replaygain: ");
-    if (sd->size < sizeof(*rg)) {
+    if (sd->size < sizeof(*rg))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
@@ -149,22 +179,44 @@ static void dump_audio_service_type(AVFilterContext *ctx, AVFrameSideData *sd)
     enum AVAudioServiceType *ast;
 
     av_log(ctx, AV_LOG_INFO, "audio service type: ");
-    if (sd->size < sizeof(*ast)) {
+    if (sd->size < sizeof(*ast))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
     ast = (enum AVAudioServiceType*)sd->data;
-    switch (*ast) {
-    case AV_AUDIO_SERVICE_TYPE_MAIN:              av_log(ctx, AV_LOG_INFO, "Main Audio Service"); break;
-    case AV_AUDIO_SERVICE_TYPE_EFFECTS:           av_log(ctx, AV_LOG_INFO, "Effects");            break;
-    case AV_AUDIO_SERVICE_TYPE_VISUALLY_IMPAIRED: av_log(ctx, AV_LOG_INFO, "Visually Impaired");  break;
-    case AV_AUDIO_SERVICE_TYPE_HEARING_IMPAIRED:  av_log(ctx, AV_LOG_INFO, "Hearing Impaired");   break;
-    case AV_AUDIO_SERVICE_TYPE_DIALOGUE:          av_log(ctx, AV_LOG_INFO, "Dialogue");           break;
-    case AV_AUDIO_SERVICE_TYPE_COMMENTARY:        av_log(ctx, AV_LOG_INFO, "Commentary");         break;
-    case AV_AUDIO_SERVICE_TYPE_EMERGENCY:         av_log(ctx, AV_LOG_INFO, "Emergency");          break;
-    case AV_AUDIO_SERVICE_TYPE_VOICE_OVER:        av_log(ctx, AV_LOG_INFO, "Voice Over");         break;
-    case AV_AUDIO_SERVICE_TYPE_KARAOKE:           av_log(ctx, AV_LOG_INFO, "Karaoke");            break;
-    default:                                      av_log(ctx, AV_LOG_INFO, "unknown");            break;
+    switch (*ast)
+    {
+    case AV_AUDIO_SERVICE_TYPE_MAIN:
+        av_log(ctx, AV_LOG_INFO, "Main Audio Service");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_EFFECTS:
+        av_log(ctx, AV_LOG_INFO, "Effects");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_VISUALLY_IMPAIRED:
+        av_log(ctx, AV_LOG_INFO, "Visually Impaired");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_HEARING_IMPAIRED:
+        av_log(ctx, AV_LOG_INFO, "Hearing Impaired");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_DIALOGUE:
+        av_log(ctx, AV_LOG_INFO, "Dialogue");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_COMMENTARY:
+        av_log(ctx, AV_LOG_INFO, "Commentary");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_EMERGENCY:
+        av_log(ctx, AV_LOG_INFO, "Emergency");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_VOICE_OVER:
+        av_log(ctx, AV_LOG_INFO, "Voice Over");
+        break;
+    case AV_AUDIO_SERVICE_TYPE_KARAOKE:
+        av_log(ctx, AV_LOG_INFO, "Karaoke");
+        break;
+    default:
+        av_log(ctx, AV_LOG_INFO, "unknown");
+        break;
     }
 }
 
@@ -191,12 +243,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
         return AVERROR(ENOMEM);
     s->plane_checksums = tmp_ptr;
 
-    for (i = 0; i < planes; i++) {
+    for (i = 0; i < planes; i++)
+    {
         uint8_t *data = buf->extended_data[i];
 
         s->plane_checksums[i] = av_adler32_update(0, data, data_size);
         checksum = i ? av_adler32_update(checksum, data, data_size) :
-                       s->plane_checksums[0];
+                   s->plane_checksums[0];
     }
 
     av_get_channel_layout_string(chlayout_str, sizeof(chlayout_str), -1,
@@ -218,16 +271,28 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
         av_log(ctx, AV_LOG_INFO, "%08"PRIX32" ", s->plane_checksums[i]);
     av_log(ctx, AV_LOG_INFO, "]\n");
 
-    for (i = 0; i < buf->nb_side_data; i++) {
+    for (i = 0; i < buf->nb_side_data; i++)
+    {
         AVFrameSideData *sd = buf->side_data[i];
 
         av_log(ctx, AV_LOG_INFO, "  side data - ");
-        switch (sd->type) {
-        case AV_FRAME_DATA_MATRIXENCODING: dump_matrixenc (ctx, sd); break;
-        case AV_FRAME_DATA_DOWNMIX_INFO:   dump_downmix   (ctx, sd); break;
-        case AV_FRAME_DATA_REPLAYGAIN:     dump_replaygain(ctx, sd); break;
-        case AV_FRAME_DATA_AUDIO_SERVICE_TYPE: dump_audio_service_type(ctx, sd); break;
-        default:                           dump_unknown   (ctx, sd); break;
+        switch (sd->type)
+        {
+        case AV_FRAME_DATA_MATRIXENCODING:
+            dump_matrixenc (ctx, sd);
+            break;
+        case AV_FRAME_DATA_DOWNMIX_INFO:
+            dump_downmix   (ctx, sd);
+            break;
+        case AV_FRAME_DATA_REPLAYGAIN:
+            dump_replaygain(ctx, sd);
+            break;
+        case AV_FRAME_DATA_AUDIO_SERVICE_TYPE:
+            dump_audio_service_type(ctx, sd);
+            break;
+        default:
+            dump_unknown   (ctx, sd);
+            break;
         }
 
         av_log(ctx, AV_LOG_INFO, "\n");
@@ -236,7 +301,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     return ff_filter_frame(inlink->dst->outputs[0], buf);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -245,7 +311,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -253,7 +320,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_ashowinfo = {
+AVFilter ff_af_ashowinfo =
+{
     .name        = "ashowinfo",
     .description = NULL_IF_CONFIG_SMALL("Show textual information for each audio frame."),
     .priv_size   = sizeof(AShowInfoContext),

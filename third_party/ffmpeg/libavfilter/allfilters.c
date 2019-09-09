@@ -1,4 +1,4 @@
-/*
+﻿/*
  * filter registration
  * Copyright (c) 2008 Vitor Sessak
  *

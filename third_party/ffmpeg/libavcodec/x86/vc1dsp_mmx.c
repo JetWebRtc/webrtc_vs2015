@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 - DSP functions MMX-optimized
  * Copyright (c) 2007 Christophe GISQUET <christophe.gisquet@free.fr>
  *
@@ -109,8 +109,8 @@ static void vc1_put_ver_16b_shift2_mmx(int16_t *dst,
         "jnz 1b                            \n\t"
         : "+r"(src), "+r"(dst)
         : "r"(stride), "r"(-2*stride),
-          "m"(shift), "m"(rnd), "r"(9*stride-4)
-          NAMED_CONSTRAINTS_ADD(ff_pw_9)
+        "m"(shift), "m"(rnd), "r"(9*stride-4)
+        NAMED_CONSTRAINTS_ADD(ff_pw_9)
         : "%"REG_c, "memory"
     );
 }
@@ -559,9 +559,9 @@ static void vc1_inv_trans_4x4_dc_mmxext(uint8_t *dest, int linesize,
         "movd       %%mm4, %2    \n\t"
         "movd       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
 }
 
@@ -598,9 +598,9 @@ static void vc1_inv_trans_4x8_dc_mmxext(uint8_t *dest, int linesize,
         "movd       %%mm4, %2    \n\t"
         "movd       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
     dest += 4*linesize;
     __asm__ volatile(
@@ -621,9 +621,9 @@ static void vc1_inv_trans_4x8_dc_mmxext(uint8_t *dest, int linesize,
         "movd       %%mm4, %2    \n\t"
         "movd       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
 }
 
@@ -660,9 +660,9 @@ static void vc1_inv_trans_8x4_dc_mmxext(uint8_t *dest, int linesize,
         "movq       %%mm4, %2    \n\t"
         "movq       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
 }
 
@@ -699,9 +699,9 @@ static void vc1_inv_trans_8x8_dc_mmxext(uint8_t *dest, int linesize,
         "movq       %%mm4, %2    \n\t"
         "movq       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
     dest += 4*linesize;
     __asm__ volatile(
@@ -722,9 +722,9 @@ static void vc1_inv_trans_8x8_dc_mmxext(uint8_t *dest, int linesize,
         "movq       %%mm4, %2    \n\t"
         "movq       %%mm5, %3    \n\t"
         :"+m"(*(uint32_t*)(dest+0*linesize)),
-         "+m"(*(uint32_t*)(dest+1*linesize)),
-         "+m"(*(uint32_t*)(dest+2*linesize)),
-         "+m"(*(uint32_t*)(dest+3*linesize))
+        "+m"(*(uint32_t*)(dest+1*linesize)),
+        "+m"(*(uint32_t*)(dest+2*linesize)),
+        "+m"(*(uint32_t*)(dest+3*linesize))
     );
 }
 

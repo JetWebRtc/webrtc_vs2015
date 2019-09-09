@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,19 +26,22 @@ extern webrtc_adm_linux_pulse::PulseAudioSymbolTable PaSymbolTable;
 namespace webrtc
 {
 
-class AutoPulseLock {
- public:
-  explicit AutoPulseLock(pa_threaded_mainloop* pa_mainloop)
-      : pa_mainloop_(pa_mainloop) {
-    LATE(pa_threaded_mainloop_lock)(pa_mainloop_);
-  }
+class AutoPulseLock
+{
+public:
+    explicit AutoPulseLock(pa_threaded_mainloop* pa_mainloop)
+        : pa_mainloop_(pa_mainloop)
+    {
+        LATE(pa_threaded_mainloop_lock)(pa_mainloop_);
+    }
 
-  ~AutoPulseLock() {
-    LATE(pa_threaded_mainloop_unlock)(pa_mainloop_);
-  }
+    ~AutoPulseLock()
+    {
+        LATE(pa_threaded_mainloop_unlock)(pa_mainloop_);
+    }
 
- private:
-  pa_threaded_mainloop* const pa_mainloop_;
+private:
+    pa_threaded_mainloop* const pa_mainloop_;
 };
 
 AudioMixerManagerLinuxPulse::AudioMixerManagerLinuxPulse(const int32_t id) :
@@ -252,7 +255,7 @@ int32_t AudioMixerManagerLinuxPulse::SetSpeakerVolume(
     bool setFailed(false);
 
     if (_paPlayStream && (LATE(pa_stream_get_state)(_paPlayStream)
-        != PA_STREAM_UNCONNECTED))
+                          != PA_STREAM_UNCONNECTED))
     {
         // We can only really set the volume if we have a connected stream
         AutoPulseLock auto_lock(_paMainloop);
@@ -273,10 +276,10 @@ int32_t AudioMixerManagerLinuxPulse::SetSpeakerVolume(
 
         pa_operation* paOperation = NULL;
         paOperation = LATE(pa_context_set_sink_input_volume)(
-            _paContext,
-            LATE(pa_stream_get_index)(_paPlayStream),
-            &cVolumes,
-            PaSetVolumeCallback, NULL);
+                          _paContext,
+                          LATE(pa_stream_get_index)(_paPlayStream),
+                          &cVolumes,
+                          PaSetVolumeCallback, NULL);
         if (!paOperation)
         {
             setFailed = true;
@@ -284,7 +287,8 @@ int32_t AudioMixerManagerLinuxPulse::SetSpeakerVolume(
 
         // Don't need to wait for the completion
         LATE(pa_operation_unref)(paOperation);
-    } else
+    }
+    else
     {
         // We have not created a stream or it's not connected to the sink
         // Save the volume to be set at connection
@@ -314,15 +318,16 @@ AudioMixerManagerLinuxPulse::SpeakerVolume(uint32_t& volume) const
     }
 
     if (_paPlayStream && (LATE(pa_stream_get_state)(_paPlayStream)
-        != PA_STREAM_UNCONNECTED))
+                          != PA_STREAM_UNCONNECTED))
     {
         // We can only get the volume if we have a connected stream
         if (!GetSinkInputInfo())
-          return -1;
+            return -1;
 
         AutoPulseLock auto_lock(_paMainloop);
         volume = static_cast<uint32_t> (_paVolume);
-    } else
+    }
+    else
     {
         AutoPulseLock auto_lock(_paMainloop);
         volume = _paSpeakerVolume;
@@ -442,18 +447,18 @@ int32_t AudioMixerManagerLinuxPulse::SetSpeakerMute(bool enable)
     bool setFailed(false);
 
     if (_paPlayStream && (LATE(pa_stream_get_state)(_paPlayStream)
-        != PA_STREAM_UNCONNECTED))
+                          != PA_STREAM_UNCONNECTED))
     {
         // We can only really mute if we have a connected stream
         AutoPulseLock auto_lock(_paMainloop);
 
         pa_operation* paOperation = NULL;
         paOperation = LATE(pa_context_set_sink_input_mute)(
-            _paContext,
-            LATE(pa_stream_get_index)(_paPlayStream),
-            (int) enable,
-            PaSetVolumeCallback,
-            NULL);
+                          _paContext,
+                          LATE(pa_stream_get_index)(_paPlayStream),
+                          (int) enable,
+                          PaSetVolumeCallback,
+                          NULL);
         if (!paOperation)
         {
             setFailed = true;
@@ -461,7 +466,8 @@ int32_t AudioMixerManagerLinuxPulse::SetSpeakerMute(bool enable)
 
         // Don't need to wait for the completion
         LATE(pa_operation_unref)(paOperation);
-    } else
+    }
+    else
     {
         // We have not created a stream or it's not connected to the sink
         // Save the mute status to be set at connection
@@ -490,14 +496,15 @@ int32_t AudioMixerManagerLinuxPulse::SpeakerMute(bool& enabled) const
     }
 
     if (_paPlayStream && (LATE(pa_stream_get_state)(_paPlayStream)
-        != PA_STREAM_UNCONNECTED))
+                          != PA_STREAM_UNCONNECTED))
     {
         // We can only get the mute status if we have a connected stream
         if (!GetSinkInputInfo())
-          return -1;
+            return -1;
 
         enabled = static_cast<bool> (_paMute);
-    } else
+    }
+    else
     {
         enabled = _paSpeakerMute;
     }
@@ -529,14 +536,14 @@ AudioMixerManagerLinuxPulse::StereoPlayoutIsAvailable(bool& available)
         // The device used by the stream can be changed
         // during the call
         if (_paPlayStream && (LATE(pa_stream_get_state)(_paPlayStream)
-            != PA_STREAM_UNCONNECTED))
+                              != PA_STREAM_UNCONNECTED))
         {
             deviceIndex = LATE(pa_stream_get_device_index)(_paPlayStream);
         }
     }
 
     if (!GetSinkInfoByIndex(deviceIndex))
-      return -1;
+        return -1;
 
     available = static_cast<bool> (_paChannels == 2);
 
@@ -562,7 +569,7 @@ AudioMixerManagerLinuxPulse::StereoRecordingIsAvailable(bool& available)
     // The device used by the stream can be changed
     // during the call
     if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-        != PA_STREAM_UNCONNECTED))
+                         != PA_STREAM_UNCONNECTED))
     {
         deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
     }
@@ -572,9 +579,9 @@ AudioMixerManagerLinuxPulse::StereoRecordingIsAvailable(bool& available)
     // Get info for this source
     // We want to know if the actual device can record in stereo
     paOperation = LATE(pa_context_get_source_info_by_index)(
-        _paContext, deviceIndex,
-        PaSourceInfoCallback,
-        (void*) this);
+                      _paContext, deviceIndex,
+                      PaSourceInfoCallback,
+                      (void*) this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -629,16 +636,16 @@ int32_t AudioMixerManagerLinuxPulse::SetMicrophoneMute(bool enable)
     // The device used by the stream can be changed
     // during the call
     if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-        != PA_STREAM_UNCONNECTED))
+                         != PA_STREAM_UNCONNECTED))
     {
         deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
     }
 
     // Set mute switch for the source
     paOperation = LATE(pa_context_set_source_mute_by_index)(
-        _paContext, deviceIndex,
-        enable,
-        PaSetVolumeCallback, NULL);
+                      _paContext, deviceIndex,
+                      enable,
+                      PaSetVolumeCallback, NULL);
 
     if (!paOperation)
     {
@@ -677,14 +684,14 @@ int32_t AudioMixerManagerLinuxPulse::MicrophoneMute(bool& enabled) const
         // The device used by the stream can be changed
         // during the call
         if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-            != PA_STREAM_UNCONNECTED))
+                             != PA_STREAM_UNCONNECTED))
         {
             deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
         }
     }
 
     if (!GetSourceInfoByIndex(deviceIndex))
-      return -1;
+        return -1;
 
     enabled = static_cast<bool> (_paMute);
 
@@ -808,7 +815,7 @@ AudioMixerManagerLinuxPulse::SetMicrophoneVolume(uint32_t volume)
     // The device used by the stream can be changed
     // during the call
     if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-        != PA_STREAM_UNCONNECTED))
+                         != PA_STREAM_UNCONNECTED))
     {
         deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
     }
@@ -819,8 +826,8 @@ AudioMixerManagerLinuxPulse::SetMicrophoneVolume(uint32_t volume)
     // Get the number of channels for this source
     paOperation
         = LATE(pa_context_get_source_info_by_index)(_paContext, deviceIndex,
-                                                    PaSourceInfoCallback,
-                                                    (void*) this);
+                PaSourceInfoCallback,
+                (void*) this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -831,9 +838,9 @@ AudioMixerManagerLinuxPulse::SetMicrophoneVolume(uint32_t volume)
     // Set the volume for the source
     paOperation
         = LATE(pa_context_set_source_volume_by_index)(_paContext, deviceIndex,
-                                                      &cVolumes,
-                                                      PaSetVolumeCallback,
-                                                      NULL);
+                &cVolumes,
+                PaSetVolumeCallback,
+                NULL);
 
     if (!paOperation)
     {
@@ -868,14 +875,14 @@ AudioMixerManagerLinuxPulse::MicrophoneVolume(uint32_t& volume) const
     uint32_t deviceIndex = (uint32_t) _paInputDeviceIndex;
 
     {
-      AutoPulseLock auto_lock(_paMainloop);
-      // Get the actual stream device index if we have a connected stream.
-      // The device used by the stream can be changed during the call.
-      if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-          != PA_STREAM_UNCONNECTED))
-      {
-          deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
-      }
+        AutoPulseLock auto_lock(_paMainloop);
+        // Get the actual stream device index if we have a connected stream.
+        // The device used by the stream can be changed during the call.
+        if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
+                             != PA_STREAM_UNCONNECTED))
+        {
+            deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
+        }
     }
 
     if (!GetSourceInfoByIndex(deviceIndex))
@@ -947,7 +954,7 @@ int32_t AudioMixerManagerLinuxPulse::MicrophoneVolumeStepSize(
     // The device used by the stream can be changed
     // during the call
     if (_paRecStream && (LATE(pa_stream_get_state)(_paRecStream)
-        != PA_STREAM_UNCONNECTED))
+                         != PA_STREAM_UNCONNECTED))
     {
         deviceIndex = LATE(pa_stream_get_device_index)(_paRecStream);
     }
@@ -957,8 +964,8 @@ int32_t AudioMixerManagerLinuxPulse::MicrophoneVolumeStepSize(
     // Get info for this source
     paOperation
         = LATE(pa_context_get_source_info_by_index)(_paContext, deviceIndex,
-                                                    PaSourceInfoCallback,
-                                                    (void*) this);
+                PaSourceInfoCallback,
+                (void*) this);
 
     WaitForOperationCompletion(paOperation);
 
@@ -977,12 +984,12 @@ int32_t AudioMixerManagerLinuxPulse::MicrophoneVolumeStepSize(
 
 void
 AudioMixerManagerLinuxPulse::PaSinkInfoCallback(pa_context */*c*/,
-                                                const pa_sink_info *i,
-                                                int eol,
-                                                void *pThis)
+        const pa_sink_info *i,
+        int eol,
+        void *pThis)
 {
     static_cast<AudioMixerManagerLinuxPulse*> (pThis)->
-        PaSinkInfoCallbackHandler(i, eol);
+    PaSinkInfoCallbackHandler(i, eol);
 }
 
 void
@@ -993,24 +1000,24 @@ AudioMixerManagerLinuxPulse::PaSinkInputInfoCallback(
     void *pThis)
 {
     static_cast<AudioMixerManagerLinuxPulse*> (pThis)->
-        PaSinkInputInfoCallbackHandler(i, eol);
+    PaSinkInputInfoCallbackHandler(i, eol);
 }
 
 
 void
 AudioMixerManagerLinuxPulse::PaSourceInfoCallback(pa_context */*c*/,
-                                                  const pa_source_info *i,
-                                                  int eol,
-                                                  void *pThis)
+        const pa_source_info *i,
+        int eol,
+        void *pThis)
 {
     static_cast<AudioMixerManagerLinuxPulse*> (pThis)->
-        PaSourceInfoCallbackHandler(i, eol);
+    PaSourceInfoCallbackHandler(i, eol);
 }
 
 void
 AudioMixerManagerLinuxPulse::PaSetVolumeCallback(pa_context * c,
-                                                 int success,
-                                                 void */*pThis*/)
+        int success,
+        void */*pThis*/)
 {
     if (!success)
     {
@@ -1112,43 +1119,46 @@ void AudioMixerManagerLinuxPulse::WaitForOperationCompletion(
     LATE(pa_operation_unref)(paOperation);
 }
 
-bool AudioMixerManagerLinuxPulse::GetSinkInputInfo() const {
-  pa_operation* paOperation = NULL;
+bool AudioMixerManagerLinuxPulse::GetSinkInputInfo() const
+{
+    pa_operation* paOperation = NULL;
 
-  AutoPulseLock auto_lock(_paMainloop);
-  // Get info for this stream (sink input).
-  paOperation = LATE(pa_context_get_sink_input_info)(
-      _paContext,
-      LATE(pa_stream_get_index)(_paPlayStream),
-      PaSinkInputInfoCallback,
-      (void*) this);
+    AutoPulseLock auto_lock(_paMainloop);
+    // Get info for this stream (sink input).
+    paOperation = LATE(pa_context_get_sink_input_info)(
+                      _paContext,
+                      LATE(pa_stream_get_index)(_paPlayStream),
+                      PaSinkInputInfoCallback,
+                      (void*) this);
 
-  WaitForOperationCompletion(paOperation);
-  return true;
+    WaitForOperationCompletion(paOperation);
+    return true;
 }
 
 bool AudioMixerManagerLinuxPulse::GetSinkInfoByIndex(
-    int device_index) const {
-  pa_operation* paOperation = NULL;
+    int device_index) const
+{
+    pa_operation* paOperation = NULL;
 
-  AutoPulseLock auto_lock(_paMainloop);
-  paOperation = LATE(pa_context_get_sink_info_by_index)(_paContext,
-      device_index, PaSinkInfoCallback, (void*) this);
+    AutoPulseLock auto_lock(_paMainloop);
+    paOperation = LATE(pa_context_get_sink_info_by_index)(_paContext,
+                  device_index, PaSinkInfoCallback, (void*) this);
 
-  WaitForOperationCompletion(paOperation);
-  return true;
+    WaitForOperationCompletion(paOperation);
+    return true;
 }
 
 bool AudioMixerManagerLinuxPulse::GetSourceInfoByIndex(
-    int device_index) const {
-  pa_operation* paOperation = NULL;
+    int device_index) const
+{
+    pa_operation* paOperation = NULL;
 
-  AutoPulseLock auto_lock(_paMainloop);
-  paOperation  = LATE(pa_context_get_source_info_by_index)(
-      _paContext, device_index, PaSourceInfoCallback, (void*) this);
+    AutoPulseLock auto_lock(_paMainloop);
+    paOperation  = LATE(pa_context_get_source_info_by_index)(
+                       _paContext, device_index, PaSourceInfoCallback, (void*) this);
 
-  WaitForOperationCompletion(paOperation);
-  return true;
+    WaitForOperationCompletion(paOperation);
+    return true;
 }
 
 }

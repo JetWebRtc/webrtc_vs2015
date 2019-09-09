@@ -28,13 +28,15 @@
 #define INPUT_MAIN     0
 #define INPUT_CLEANSRC 1
 
-struct qitem {
+struct qitem
+{
     AVFrame *frame;
     int64_t maxbdiff;
     int64_t totdiff;
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     struct qitem *queue;    ///< window of cycle frames and the associated data diff
     int fid;                ///< current frame id in the queue
@@ -65,7 +67,8 @@ typedef struct {
 #define OFFSET(x) offsetof(DecimateContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption decimate_options[] = {
+static const AVOption decimate_options[] =
+{
     { "cycle",     "set the number of frame from which one will be dropped", OFFSET(cycle), AV_OPT_TYPE_INT, {.i64 = 5}, 2, 25, FLAGS },
     { "dupthresh", "set duplicate threshold",    OFFSET(dupthresh_flt), AV_OPT_TYPE_DOUBLE, {.dbl =  1.1}, 0, 100, FLAGS },
     { "scthresh",  "set scene change threshold", OFFSET(scthresh_flt),  AV_OPT_TYPE_DOUBLE, {.dbl = 15.0}, 0, 100, FLAGS },
@@ -87,7 +90,8 @@ static void calc_diffs(const DecimateContext *dm, struct qitem *q,
 
     memset(bdiffs, 0, dm->bdiffsize * sizeof(*bdiffs));
 
-    for (plane = 0; plane < (dm->chroma && f1->data[2] ? 3 : 1); plane++) {
+    for (plane = 0; plane < (dm->chroma && f1->data[2] ? 3 : 1); plane++)
+    {
         int x, y, xl;
         const int linesize1 = f1->linesize[plane];
         const int linesize2 = f2->linesize[plane];
@@ -98,12 +102,14 @@ static void calc_diffs(const DecimateContext *dm, struct qitem *q,
         int hblockx  = dm->blockx / 2;
         int hblocky  = dm->blocky / 2;
 
-        if (plane) {
+        if (plane)
+        {
             hblockx >>= dm->hsub;
             hblocky >>= dm->vsub;
         }
 
-        for (y = 0; y < height; y++) {
+        for (y = 0; y < height; y++)
+        {
             int ydest = y / hblocky;
             int xdest = 0;
 
@@ -126,12 +132,14 @@ static void calc_diffs(const DecimateContext *dm, struct qitem *q,
         }
     }
 
-    for (i = 0; i < dm->nyblocks - 1; i++) {
-        for (j = 0; j < dm->nxblocks - 1; j++) {
+    for (i = 0; i < dm->nyblocks - 1; i++)
+    {
+        for (j = 0; j < dm->nxblocks - 1; j++)
+        {
             int64_t tmp = bdiffs[      i * dm->nxblocks + j    ]
-                        + bdiffs[      i * dm->nxblocks + j + 1]
-                        + bdiffs[(i + 1) * dm->nxblocks + j    ]
-                        + bdiffs[(i + 1) * dm->nxblocks + j + 1];
+                          + bdiffs[      i * dm->nxblocks + j + 1]
+                          + bdiffs[(i + 1) * dm->nxblocks + j    ]
+                          + bdiffs[(i + 1) * dm->nxblocks + j + 1];
             if (tmp > maxdiff)
                 maxdiff = tmp;
         }
@@ -153,10 +161,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *prv;
 
     /* update frames queue(s) */
-    if (FF_INLINK_IDX(inlink) == INPUT_MAIN) {
+    if (FF_INLINK_IDX(inlink) == INPUT_MAIN)
+    {
         dm->queue[dm->fid].frame = in;
         dm->got_frame[INPUT_MAIN] = 1;
-    } else {
+    }
+    else
+    {
         dm->clean_src[dm->fid] = in;
         dm->got_frame[INPUT_CLEANSRC] = 1;
     }
@@ -164,7 +175,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         return 0;
     dm->got_frame[INPUT_MAIN] = dm->got_frame[INPUT_CLEANSRC] = 0;
 
-    if (in) {
+    if (in)
+    {
         /* update frame metrics */
         prv = dm->fid ? dm->queue[dm->fid - 1].frame : dm->last;
         if (!prv)
@@ -178,7 +190,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
         /* we have a complete cycle, select the frame to drop */
         lowest = 0;
-        for (i = 0; i < dm->cycle; i++) {
+        for (i = 0; i < dm->cycle; i++)
+        {
             if (dm->queue[i].totdiff > dm->scthresh)
                 scpos = i;
             if (dm->queue[i].maxbdiff < dm->queue[lowest].maxbdiff)
@@ -190,9 +203,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
 
     /* metrics debug */
-    if (av_log_get_level() >= AV_LOG_DEBUG) {
+    if (av_log_get_level() >= AV_LOG_DEBUG)
+    {
         av_log(ctx, AV_LOG_DEBUG, "1/%d frame drop:\n", dm->cycle);
-        for (i = 0; i < dm->cycle && dm->queue[i].frame; i++) {
+        for (i = 0; i < dm->cycle && dm->queue[i].frame; i++)
+        {
             av_log(ctx, AV_LOG_DEBUG,"  #%d: totdiff=%08"PRIx64" maxbdiff=%08"PRIx64"%s%s%s%s\n",
                    i + 1, dm->queue[i].totdiff, dm->queue[i].maxbdiff,
                    i == scpos  ? " sc"     : "",
@@ -204,16 +219,21 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
     /* push all frames except the drop */
     ret = 0;
-    for (i = 0; i < dm->cycle && dm->queue[i].frame; i++) {
-        if (i == drop) {
+    for (i = 0; i < dm->cycle && dm->queue[i].frame; i++)
+    {
+        if (i == drop)
+        {
             if (dm->ppsrc)
                 av_frame_free(&dm->clean_src[i]);
             av_frame_free(&dm->queue[i].frame);
-        } else {
+        }
+        else
+        {
             AVFrame *frame = dm->queue[i].frame;
             if (frame->pts != AV_NOPTS_VALUE && dm->start_pts == AV_NOPTS_VALUE)
                 dm->start_pts = frame->pts;
-            if (dm->ppsrc) {
+            if (dm->ppsrc)
+            {
                 av_frame_free(&frame);
                 frame = dm->clean_src[i];
             }
@@ -252,7 +272,8 @@ static int config_input(AVFilterLink *inlink)
     if (!dm->bdiffs || !dm->queue)
         return AVERROR(ENOMEM);
 
-    if (dm->ppsrc) {
+    if (dm->ppsrc)
+    {
         dm->clean_src = av_calloc(dm->cycle, sizeof(*dm->clean_src));
         if (!dm->clean_src)
             return AVERROR(ENOMEM);
@@ -264,7 +285,8 @@ static int config_input(AVFilterLink *inlink)
 static av_cold int decimate_init(AVFilterContext *ctx)
 {
     DecimateContext *dm = ctx->priv;
-    AVFilterPad pad = {
+    AVFilterPad pad =
+    {
         .name         = av_strdup("main"),
         .type         = AVMEDIA_TYPE_VIDEO,
         .filter_frame = filter_frame,
@@ -275,7 +297,8 @@ static av_cold int decimate_init(AVFilterContext *ctx)
         return AVERROR(ENOMEM);
     ff_insert_inpad(ctx, INPUT_MAIN, &pad);
 
-    if (dm->ppsrc) {
+    if (dm->ppsrc)
+    {
         pad.name = av_strdup("clean_src");
         pad.config_props = NULL;
         if (!pad.name)
@@ -284,7 +307,8 @@ static av_cold int decimate_init(AVFilterContext *ctx)
     }
 
     if ((dm->blockx & (dm->blockx - 1)) ||
-        (dm->blocky & (dm->blocky - 1))) {
+            (dm->blocky & (dm->blocky - 1)))
+    {
         av_log(ctx, AV_LOG_ERROR, "blockx and blocky settings must be power of two\n");
         return AVERROR(EINVAL);
     }
@@ -312,10 +336,12 @@ static int request_inlink(AVFilterContext *ctx, int lid)
     int ret = 0;
     DecimateContext *dm = ctx->priv;
 
-    if (!dm->got_frame[lid]) {
+    if (!dm->got_frame[lid])
+    {
         AVFilterLink *inlink = ctx->inputs[lid];
         ret = ff_request_frame(inlink);
-        if (ret == AVERROR_EOF) { // flushing
+        if (ret == AVERROR_EOF)   // flushing
+        {
             dm->eof |= 1 << lid;
             ret = filter_frame(inlink, NULL);
         }
@@ -341,7 +367,8 @@ static int request_frame(AVFilterLink *outlink)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
 #define PF_NOALPHA(suf) AV_PIX_FMT_YUV420##suf,  AV_PIX_FMT_YUV422##suf,  AV_PIX_FMT_YUV444##suf
 #define PF_ALPHA(suf)   AV_PIX_FMT_YUVA420##suf, AV_PIX_FMT_YUVA422##suf, AV_PIX_FMT_YUVA444##suf
 #define PF(suf)         PF_NOALPHA(suf), PF_ALPHA(suf)
@@ -364,12 +391,16 @@ static int config_output(AVFilterLink *outlink)
         ctx->inputs[dm->ppsrc ? INPUT_CLEANSRC : INPUT_MAIN];
     AVRational fps = inlink->frame_rate;
 
-    if (!fps.num || !fps.den) {
+    if (!fps.num || !fps.den)
+    {
         av_log(ctx, AV_LOG_ERROR, "The input needs a constant frame rate; "
                "current rate of %d/%d is invalid\n", fps.num, fps.den);
         return AVERROR(EINVAL);
     }
-    fps = av_mul_q(fps, (AVRational){dm->cycle - 1, dm->cycle});
+    fps = av_mul_q(fps, (AVRational)
+    {
+        dm->cycle - 1, dm->cycle
+    });
     av_log(ctx, AV_LOG_VERBOSE, "FPS: %d/%d -> %d/%d\n",
            inlink->frame_rate.num, inlink->frame_rate.den, fps.num, fps.den);
     outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
@@ -382,7 +413,8 @@ static int config_output(AVFilterLink *outlink)
     return 0;
 }
 
-static const AVFilterPad decimate_outputs[] = {
+static const AVFilterPad decimate_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -392,7 +424,8 @@ static const AVFilterPad decimate_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_decimate = {
+AVFilter ff_vf_decimate =
+{
     .name          = "decimate",
     .description   = NULL_IF_CONFIG_SMALL("Decimate frames (post field matching filter)."),
     .init          = decimate_init,

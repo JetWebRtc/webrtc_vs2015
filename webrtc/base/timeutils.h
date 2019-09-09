@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2005 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 
 #include <ctime>
 
-namespace rtc {
+namespace rtc
+{
 
 static const int64_t kNumMillisecsPerSec = INT64_C(1000);
 static const int64_t kNumMicrosecsPerSec = INT64_C(1000000);
@@ -31,10 +32,11 @@ static const int64_t kNumNanosecsPerMicrosec =
 
 // TODO(honghaiz): Define a type for the time value specifically.
 
-class ClockInterface {
- public:
-  virtual ~ClockInterface() {}
-  virtual int64_t TimeNanos() const = 0;
+class ClockInterface
+{
+public:
+    virtual ~ClockInterface() {}
+    virtual int64_t TimeNanos() const = 0;
 };
 
 // Sets the global source of time. This is useful mainly for unit tests.
@@ -64,8 +66,9 @@ uint32_t Time32();
 // Returns the current time in milliseconds in 64 bits.
 int64_t TimeMillis();
 // Deprecated. Do not use this in any new code.
-inline int64_t Time() {
-  return TimeMillis();
+inline int64_t Time()
+{
+    return TimeMillis();
 }
 
 // Returns the current time in microseconds.
@@ -84,24 +87,27 @@ int64_t TimeDiff(int64_t later, int64_t earlier);
 int32_t TimeDiff32(uint32_t later, uint32_t earlier);
 
 // The number of milliseconds that have elapsed since 'earlier'.
-inline int64_t TimeSince(int64_t earlier) {
-  return TimeMillis() - earlier;
+inline int64_t TimeSince(int64_t earlier)
+{
+    return TimeMillis() - earlier;
 }
 
 // The number of milliseconds that will elapse between now and 'later'.
-inline int64_t TimeUntil(int64_t later) {
-  return later - TimeMillis();
+inline int64_t TimeUntil(int64_t later)
+{
+    return later - TimeMillis();
 }
 
-class TimestampWrapAroundHandler {
- public:
-  TimestampWrapAroundHandler();
+class TimestampWrapAroundHandler
+{
+public:
+    TimestampWrapAroundHandler();
 
-  int64_t Unwrap(uint32_t ts);
+    int64_t Unwrap(uint32_t ts);
 
- private:
-  uint32_t last_ts_;
-  int64_t num_wrap_;
+private:
+    uint32_t last_ts_;
+    int64_t num_wrap_;
 };
 
 // Convert from std::tm, which is relative to 1900-01-01 00:00 to number of

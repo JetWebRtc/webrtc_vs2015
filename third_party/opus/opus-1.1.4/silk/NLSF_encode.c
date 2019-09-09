@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -36,8 +36,8 @@ POSSIBILITY OF SUCH DAMAGE.
 /* NLSF vector encoder */
 /***********************/
 opus_int32 silk_NLSF_encode(                                    /* O    Returns RD value in Q25                     */
-          opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
-          opus_int16            *pNLSF_Q15,                     /* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
+    opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
+    opus_int16            *pNLSF_Q15,                     /* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
     const silk_NLSF_CB_struct   *psNLSF_CB,                     /* I    Codebook object                             */
     const opus_int16            *pW_QW,                         /* I    NLSF weight vector [ LPC_ORDER ]            */
     const opus_int              NLSF_mu_Q20,                    /* I    Rate weight for the RD optimization         */
@@ -80,12 +80,14 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
     ALLOC( tempIndices2, nSurvivors * MAX_LPC_ORDER, opus_int8 );
 
     /* Loop over survivors */
-    for( s = 0; s < nSurvivors; s++ ) {
+    for( s = 0; s < nSurvivors; s++ )
+    {
         ind1 = tempIndices1[ s ];
 
         /* Residual after first stage */
         pCB_element = &psNLSF_CB->CB1_NLSF_Q8[ ind1 * psNLSF_CB->order ];
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
+        for( i = 0; i < psNLSF_CB->order; i++ )
+        {
             NLSF_tmp_Q15[ i ] = silk_LSHIFT16( (opus_int16)pCB_element[ i ], 7 );
             res_Q15[ i ] = pNLSF_Q15[ i ] - NLSF_tmp_Q15[ i ];
         }
@@ -94,13 +96,15 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
         silk_NLSF_VQ_weights_laroia( W_tmp_QW, NLSF_tmp_Q15, psNLSF_CB->order );
 
         /* Apply square-rooted weights */
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
+        for( i = 0; i < psNLSF_CB->order; i++ )
+        {
             W_tmp_Q9 = silk_SQRT_APPROX( silk_LSHIFT( (opus_int32)W_tmp_QW[ i ], 18 - NLSF_W_Q ) );
             res_Q10[ i ] = (opus_int16)silk_RSHIFT( silk_SMULBB( res_Q15[ i ], W_tmp_Q9 ), 14 );
         }
 
         /* Modify input weights accordingly */
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
+        for( i = 0; i < psNLSF_CB->order; i++ )
+        {
             W_adj_Q5[ i ] = silk_DIV32_16( silk_LSHIFT( (opus_int32)pW_QW[ i ], 5 ), W_tmp_QW[ i ] );
         }
 
@@ -109,13 +113,16 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
 
         /* Trellis quantizer */
         RD_Q25[ s ] = silk_NLSF_del_dec_quant( &tempIndices2[ s * MAX_LPC_ORDER ], res_Q10, W_adj_Q5, pred_Q8, ec_ix,
-            psNLSF_CB->ec_Rates_Q5, psNLSF_CB->quantStepSize_Q16, psNLSF_CB->invQuantStepSize_Q6, NLSF_mu_Q20, psNLSF_CB->order );
+                                               psNLSF_CB->ec_Rates_Q5, psNLSF_CB->quantStepSize_Q16, psNLSF_CB->invQuantStepSize_Q6, NLSF_mu_Q20, psNLSF_CB->order );
 
         /* Add rate for first stage */
         iCDF_ptr = &psNLSF_CB->CB1_iCDF[ ( signalType >> 1 ) * psNLSF_CB->nVectors ];
-        if( ind1 == 0 ) {
+        if( ind1 == 0 )
+        {
             prob_Q8 = 256 - iCDF_ptr[ ind1 ];
-        } else {
+        }
+        else
+        {
             prob_Q8 = iCDF_ptr[ ind1 - 1 ] - iCDF_ptr[ ind1 ];
         }
         bits_q7 = ( 8 << 7 ) - silk_lin2log( prob_Q8 );

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * On2 Audio for Video Codec decoder
  *
  * Copyright (c) 2013 Konstantin Shishkov
@@ -28,7 +28,8 @@
 #define ON2AVC_MAX_BANDS 112
 #define ON2AVC_ESC_CB     15
 
-typedef struct On2AVCMode {
+typedef struct On2AVCMode
+{
     int num_windows;
     int num_bands;
     const int *band_start;

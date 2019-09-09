@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Bobby Bingham
  *
  * This file is part of FFmpeg.
@@ -37,7 +37,8 @@
 #include "libavutil/mathematics.h"
 #include "libavutil/opt.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "in_w", "iw",   ///< width  of the input video
     "in_h", "ih",   ///< height of the input video
     "out_w", "ow",  ///< width  of the cropped video
@@ -55,7 +56,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_IN_W,  VAR_IW,
     VAR_IN_H,  VAR_IH,
     VAR_OUT_W, VAR_OW,
@@ -73,7 +75,8 @@ enum var_name {
     VAR_VARS_NB
 };
 
-typedef struct CropContext {
+typedef struct CropContext
+{
     const AVClass *class;
     int  x;             ///< x offset of the non-cropped area with respect to the input area
     int  y;             ///< y offset of the non-cropped area with respect to the input area
@@ -95,10 +98,11 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & (AV_PIX_FMT_FLAG_HWACCEL | AV_PIX_FMT_FLAG_BITSTREAM)) &&
-            !((desc->log2_chroma_w || desc->log2_chroma_h) && !(desc->flags & AV_PIX_FMT_FLAG_PLANAR)))
+                !((desc->log2_chroma_w || desc->log2_chroma_h) && !(desc->flags & AV_PIX_FMT_FLAG_PLANAR)))
             ff_add_format(&formats, fmt);
     }
 
@@ -119,12 +123,16 @@ static inline int normalize_double(int *n, double d)
 {
     int ret = 0;
 
-    if (isnan(d)) {
+    if (isnan(d))
+    {
         ret = AVERROR(EINVAL);
-    } else if (d > INT_MAX || d < INT_MIN) {
+    }
+    else if (d > INT_MAX || d < INT_MIN)
+    {
         *n = d > INT_MAX ? INT_MAX : INT_MIN;
         ret = AVERROR(EINVAL);
-    } else
+    }
+    else
         *n = round(d);
 
     return ret;
@@ -176,7 +184,8 @@ static int config_input(AVFilterLink *link)
 
     s->var_values[VAR_OUT_W] = s->var_values[VAR_OW] = res;
     if (normalize_double(&s->w, s->var_values[VAR_OUT_W]) < 0 ||
-        normalize_double(&s->h, s->var_values[VAR_OUT_H]) < 0) {
+            normalize_double(&s->h, s->var_values[VAR_OUT_H]) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Too big value or invalid expression for out_w/ow or out_h/oh. "
                "Maybe the expression for out_w:'%s' or for out_h:'%s' is self-referencing.\n",
@@ -191,16 +200,21 @@ static int config_input(AVFilterLink *link)
     s->x_pexpr = s->y_pexpr = NULL;
     if ((ret = av_expr_parse(&s->x_pexpr, s->x_expr, var_names,
                              NULL, NULL, NULL, NULL, 0, ctx)) < 0 ||
-        (ret = av_expr_parse(&s->y_pexpr, s->y_expr, var_names,
-                             NULL, NULL, NULL, NULL, 0, ctx)) < 0)
+            (ret = av_expr_parse(&s->y_pexpr, s->y_expr, var_names,
+                                 NULL, NULL, NULL, NULL, 0, ctx)) < 0)
         return AVERROR(EINVAL);
 
-    if (s->keep_aspect) {
+    if (s->keep_aspect)
+    {
         AVRational dar = av_mul_q(link->sample_aspect_ratio,
-                                  (AVRational){ link->w, link->h });
+                                  (AVRational)
+        {
+            link->w, link->h
+        });
         av_reduce(&s->out_sar.num, &s->out_sar.den,
                   dar.num * s->h, dar.den * s->w, INT_MAX);
-    } else
+    }
+    else
         s->out_sar = link->sample_aspect_ratio;
 
     av_log(ctx, AV_LOG_VERBOSE, "w:%d h:%d sar:%d/%d -> w:%d h:%d sar:%d/%d\n",
@@ -208,7 +222,8 @@ static int config_input(AVFilterLink *link)
            s->w, s->h, s->out_sar.num, s->out_sar.den);
 
     if (s->w <= 0 || s->h <= 0 ||
-        s->w > link->w || s->h > link->h) {
+            s->w > link->w || s->h > link->h)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid too big or non positive size for width '%d' or height '%d'\n",
                s->w, s->h);
@@ -250,9 +265,9 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
 
     s->var_values[VAR_N] = link->frame_count;
     s->var_values[VAR_T] = frame->pts == AV_NOPTS_VALUE ?
-        NAN : frame->pts * av_q2d(link->time_base);
+                           NAN : frame->pts * av_q2d(link->time_base);
     s->var_values[VAR_POS] = av_frame_get_pkt_pos(frame) == -1 ?
-        NAN : av_frame_get_pkt_pos(frame);
+                             NAN : av_frame_get_pkt_pos(frame);
     s->var_values[VAR_X] = av_expr_eval(s->x_pexpr, s->var_values, NULL);
     s->var_values[VAR_Y] = av_expr_eval(s->y_pexpr, s->var_values, NULL);
     s->var_values[VAR_X] = av_expr_eval(s->x_pexpr, s->var_values, NULL);
@@ -272,15 +287,18 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
     s->y &= ~((1 << s->vsub) - 1);
 
     av_log(ctx, AV_LOG_TRACE, "n:%d t:%f pos:%f x:%d y:%d x+w:%d y+h:%d\n",
-            (int)s->var_values[VAR_N], s->var_values[VAR_T], s->var_values[VAR_POS],
-            s->x, s->y, s->x+s->w, s->y+s->h);
+           (int)s->var_values[VAR_N], s->var_values[VAR_T], s->var_values[VAR_POS],
+           s->x, s->y, s->x+s->w, s->y+s->h);
 
     frame->data[0] += s->y * frame->linesize[0];
     frame->data[0] += s->x * s->max_step[0];
 
-    if (!(desc->flags & AV_PIX_FMT_FLAG_PAL || desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL)) {
-        for (i = 1; i < 3; i ++) {
-            if (frame->data[i]) {
+    if (!(desc->flags & AV_PIX_FMT_FLAG_PAL || desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL))
+    {
+        for (i = 1; i < 3; i ++)
+        {
+            if (frame->data[i])
+            {
                 frame->data[i] += (s->y >> s->vsub) * frame->linesize[i];
                 frame->data[i] += (s->x * s->max_step[i]) >> s->hsub;
             }
@@ -288,7 +306,8 @@ static int filter_frame(AVFilterLink *link, AVFrame *frame)
     }
 
     /* alpha plane */
-    if (frame->data[3]) {
+    if (frame->data[3])
+    {
         frame->data[3] += s->y * frame->linesize[3];
         frame->data[3] += s->x * s->max_step[3];
     }
@@ -303,8 +322,9 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
     int ret;
 
     if (   !strcmp(cmd, "out_w")  || !strcmp(cmd, "w")
-        || !strcmp(cmd, "out_h")  || !strcmp(cmd, "h")
-        || !strcmp(cmd, "x")      || !strcmp(cmd, "y")) {
+            || !strcmp(cmd, "out_h")  || !strcmp(cmd, "h")
+            || !strcmp(cmd, "x")      || !strcmp(cmd, "y"))
+    {
 
         int old_x = s->x;
         int old_y = s->y;
@@ -316,7 +336,8 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
 
         av_opt_set(s, cmd, args, 0);
 
-        if ((ret = config_input(inlink)) < 0) {
+        if ((ret = config_input(inlink)) < 0)
+        {
             s->x = old_x;
             s->y = old_y;
             s->w = old_w;
@@ -326,7 +347,8 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
 
         ret = config_output(outlink);
 
-    } else
+    }
+    else
         ret = AVERROR(ENOSYS);
 
     return ret;
@@ -335,7 +357,8 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
 #define OFFSET(x) offsetof(CropContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption crop_options[] = {
+static const AVOption crop_options[] =
+{
     { "out_w",       "set the width crop area expression",   OFFSET(w_expr), AV_OPT_TYPE_STRING, {.str = "iw"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "w",           "set the width crop area expression",   OFFSET(w_expr), AV_OPT_TYPE_STRING, {.str = "iw"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "out_h",       "set the height crop area expression",  OFFSET(h_expr), AV_OPT_TYPE_STRING, {.str = "ih"}, CHAR_MIN, CHAR_MAX, FLAGS },
@@ -348,7 +371,8 @@ static const AVOption crop_options[] = {
 
 AVFILTER_DEFINE_CLASS(crop);
 
-static const AVFilterPad avfilter_vf_crop_inputs[] = {
+static const AVFilterPad avfilter_vf_crop_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -358,7 +382,8 @@ static const AVFilterPad avfilter_vf_crop_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_crop_outputs[] = {
+static const AVFilterPad avfilter_vf_crop_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -367,7 +392,8 @@ static const AVFilterPad avfilter_vf_crop_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_crop = {
+AVFilter ff_vf_crop =
+{
     .name            = "crop",
     .description     = NULL_IF_CONFIG_SMALL("Crop the input video."),
     .priv_size       = sizeof(CropContext),

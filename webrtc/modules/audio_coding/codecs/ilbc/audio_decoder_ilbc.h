@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,30 +16,32 @@
 
 typedef struct iLBC_decinst_t_ IlbcDecoderInstance;
 
-namespace webrtc {
+namespace webrtc
+{
 
-class AudioDecoderIlbc final : public AudioDecoder {
- public:
-  AudioDecoderIlbc();
-  ~AudioDecoderIlbc() override;
-  bool HasDecodePlc() const override;
-  size_t DecodePlc(size_t num_frames, int16_t* decoded) override;
-  void Reset() override;
-  std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
-                                        uint32_t timestamp) override;
-  int SampleRateHz() const override;
-  size_t Channels() const override;
+class AudioDecoderIlbc final : public AudioDecoder
+{
+public:
+    AudioDecoderIlbc();
+    ~AudioDecoderIlbc() override;
+    bool HasDecodePlc() const override;
+    size_t DecodePlc(size_t num_frames, int16_t* decoded) override;
+    void Reset() override;
+    std::vector<ParseResult> ParsePayload(rtc::Buffer&& payload,
+                                          uint32_t timestamp) override;
+    int SampleRateHz() const override;
+    size_t Channels() const override;
 
- protected:
-  int DecodeInternal(const uint8_t* encoded,
-                     size_t encoded_len,
-                     int sample_rate_hz,
-                     int16_t* decoded,
-                     SpeechType* speech_type) override;
+protected:
+    int DecodeInternal(const uint8_t* encoded,
+                       size_t encoded_len,
+                       int sample_rate_hz,
+                       int16_t* decoded,
+                       SpeechType* speech_type) override;
 
- private:
-  IlbcDecoderInstance* dec_state_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderIlbc);
+private:
+    IlbcDecoderInstance* dec_state_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(AudioDecoderIlbc);
 };
 
 }  // namespace webrtc

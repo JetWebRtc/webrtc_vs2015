@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -105,20 +105,26 @@ amm-info@iis.fraunhofer.de
  */
 FDK_INLINE INT fIsLessThan(FIXP_DBL a_m, INT a_e, FIXP_DBL b_m, INT b_e)
 {
-  if (a_e > b_e) {
-    return (b_m >> fMin(a_e-b_e, DFRACT_BITS-1) > a_m);
-  } else {
-    return (a_m >> fMin(b_e-a_e, DFRACT_BITS-1) < b_m);
-  }
+    if (a_e > b_e)
+    {
+        return (b_m >> fMin(a_e-b_e, DFRACT_BITS-1) > a_m);
+    }
+    else
+    {
+        return (a_m >> fMin(b_e-a_e, DFRACT_BITS-1) < b_m);
+    }
 }
 
 FDK_INLINE INT fIsLessThan(FIXP_SGL a_m, INT a_e, FIXP_SGL b_m, INT b_e)
 {
-  if (a_e > b_e) {
-    return (b_m >> fMin(a_e-b_e, FRACT_BITS-1) > a_m);
-  } else {
-    return (a_m >> fMin(b_e-a_e, FRACT_BITS-1) < b_m);
-  }
+    if (a_e > b_e)
+    {
+        return (b_m >> fMin(a_e-b_e, FRACT_BITS-1) > a_m);
+    }
+    else
+    {
+        return (a_m >> fMin(b_e-a_e, FRACT_BITS-1) < b_m);
+    }
 }
 #endif
 
@@ -144,46 +150,48 @@ extern const USHORT sqrt_tab[49];
 
 inline FIXP_DBL sqrtFixp_lookup(FIXP_DBL x)
 {
-  UINT y = (INT)x;
-  UCHAR is_zero=(y==0);
-  INT zeros=fixnormz_D(y) & 0x1e;
-  y<<=zeros;
-  UINT idx=(y>>26)-16;
-  USHORT frac=(y>>10)&0xffff;
-  USHORT nfrac=0xffff^frac;
-  UINT t=nfrac*sqrt_tab[idx]+frac*sqrt_tab[idx+1];
-  t=t>>(zeros>>1);
-  return(is_zero ? 0 : t);
+    UINT y = (INT)x;
+    UCHAR is_zero=(y==0);
+    INT zeros=fixnormz_D(y) & 0x1e;
+    y<<=zeros;
+    UINT idx=(y>>26)-16;
+    USHORT frac=(y>>10)&0xffff;
+    USHORT nfrac=0xffff^frac;
+    UINT t=nfrac*sqrt_tab[idx]+frac*sqrt_tab[idx+1];
+    t=t>>(zeros>>1);
+    return(is_zero ? 0 : t);
 }
 
 inline FIXP_DBL sqrtFixp_lookup(FIXP_DBL x, INT *x_e)
 {
-  UINT y = (INT)x;
-  INT e;
+    UINT y = (INT)x;
+    INT e;
 
-  if (x == (FIXP_DBL)0) {
-    return x;
-  }
+    if (x == (FIXP_DBL)0)
+    {
+        return x;
+    }
 
-  /* Normalize */
-  e=fixnormz_D(y);
-  y<<=e;
-  e  = *x_e - e + 2;
+    /* Normalize */
+    e=fixnormz_D(y);
+    y<<=e;
+    e  = *x_e - e + 2;
 
-  /* Correct odd exponent. */
-  if (e & 1) {
-    y >>= 1;
-    e ++;
-  }
-  /* Get square root */
-  UINT idx=(y>>26)-16;
-  USHORT frac=(y>>10)&0xffff;
-  USHORT nfrac=0xffff^frac;
-  UINT t=nfrac*sqrt_tab[idx]+frac*sqrt_tab[idx+1];
+    /* Correct odd exponent. */
+    if (e & 1)
+    {
+        y >>= 1;
+        e ++;
+    }
+    /* Get square root */
+    UINT idx=(y>>26)-16;
+    USHORT frac=(y>>10)&0xffff;
+    USHORT nfrac=0xffff^frac;
+    UINT t=nfrac*sqrt_tab[idx]+frac*sqrt_tab[idx+1];
 
-  /* Write back exponent */
-  *x_e = e >> 1;
-  return (FIXP_DBL)(LONG)(t>>1);
+    /* Write back exponent */
+    *x_e = e >> 1;
+    return (FIXP_DBL)(LONG)(t>>1);
 }
 
 
@@ -215,12 +223,12 @@ inline FIXP_DBL invFixp(FIXP_DBL op)
 #define FUNCTION_schur_div
 inline FIXP_DBL schur_div(FIXP_DBL num,FIXP_DBL denum, INT count)
 {
-  INT result, tmp ;
-   __asm__ ("srl %1, %2, 15\n"
-            "div %3, %1\n" : "=lo" (result)
-                           : "%d" (tmp), "d" (denum) ,  "d" (num)
-                           : "hi" ) ;
-  return result<<16 ;
+    INT result, tmp ;
+    __asm__ ("srl %1, %2, 15\n"
+             "div %3, %1\n" : "=lo" (result)
+             : "%d" (tmp), "d" (denum) ,  "d" (num)
+             : "hi" ) ;
+    return result<<16 ;
 }
 
 /*###########################################################################################*/
@@ -229,14 +237,14 @@ inline FIXP_DBL schur_div(FIXP_DBL num,FIXP_DBL denum, INT count)
 #define FUNCTION_schur_div
 inline FIXP_DBL schur_div(FIXP_DBL num,FIXP_DBL denum, INT count)
 {
-  INT result, tmp;
+    INT result, tmp;
 
-   __asm__ ("srl  %[tmp], %[denum], 15\n"
-            "div %[result], %[num], %[tmp]\n"
-            : [tmp] "+r" (tmp), [result]"=r"(result)
-            : [denum]"r"(denum), [num]"r"(num)
-            : "hi", "lo");
-  return result << (DFRACT_BITS-16);
+    __asm__ ("srl  %[tmp], %[denum], 15\n"
+             "div %[result], %[num], %[tmp]\n"
+             : [tmp] "+r" (tmp), [result]"=r"(result)
+             : [denum]"r"(denum), [num]"r"(num)
+             : "hi", "lo");
+    return result << (DFRACT_BITS-16);
 }
 
 /*###########################################################################################*/
@@ -291,21 +299,21 @@ FIXP_DBL mul_dbl_sgl_rnd (const FIXP_DBL op1,
  * \return mantissa of the product f1*f2
  */
 FIXP_DBL fMultNorm(
-        FIXP_DBL f1,
-        FIXP_DBL f2,
-        INT *result_e
-        );
+    FIXP_DBL f1,
+    FIXP_DBL f2,
+    INT *result_e
+);
 
 inline FIXP_DBL fMultNorm(FIXP_DBL f1, FIXP_DBL f2)
 {
-  FIXP_DBL m;
-  INT e;
+    FIXP_DBL m;
+    INT e;
 
-  m = fMultNorm(f1, f2, &e);
+    m = fMultNorm(f1, f2, &e);
 
-  m = scaleValueSaturate(m, e);
+    m = scaleValueSaturate(m, e);
 
-  return m;
+    return m;
 }
 
 /**
@@ -371,11 +379,11 @@ FIXP_DBL f2Pow(const FIXP_DBL exp_m, const INT exp_e);
  * \return mantissa of the result
  */
 FIXP_DBL fLdPow(
-        FIXP_DBL baseLd_m,
-        INT baseLd_e,
-        FIXP_DBL exp_m, INT exp_e,
-        INT *result_e
-        );
+    FIXP_DBL baseLd_m,
+    INT baseLd_e,
+    FIXP_DBL exp_m, INT exp_e,
+    INT *result_e
+);
 
 /**
  * \brief return x ^ (exp * 2^exp_e), where log2(x) = baseLd_m * 2^(baseLd_e). This saves
@@ -388,9 +396,9 @@ FIXP_DBL fLdPow(
  * \return mantissa of the result
  */
 FIXP_DBL fLdPow(
-        FIXP_DBL baseLd_m, INT baseLd_e,
-        FIXP_DBL exp_m, INT exp_e
-        );
+    FIXP_DBL baseLd_m, INT baseLd_e,
+    FIXP_DBL exp_m, INT exp_e
+);
 
 /**
  * \brief return (base * 2^base_e) ^ (exp * 2^exp_e). Use fLdPow() instead whenever possible.
@@ -438,11 +446,11 @@ FIXP_DBL fLog2(FIXP_DBL x_m, INT x_e);
  */
 inline FIXP_SGL fAddSaturate(const FIXP_SGL a, const FIXP_SGL b)
 {
-  LONG sum;
+    LONG sum;
 
-  sum = (LONG)(SHORT)a + (LONG)(SHORT)b;
-  sum = fMax(fMin((INT)sum, (INT)MAXVAL_SGL), (INT)MINVAL_SGL);
-  return (FIXP_SGL)(SHORT)sum;
+    sum = (LONG)(SHORT)a + (LONG)(SHORT)b;
+    sum = fMax(fMin((INT)sum, (INT)MAXVAL_SGL), (INT)MINVAL_SGL);
+    return (FIXP_SGL)(SHORT)sum;
 }
 
 /**
@@ -453,11 +461,11 @@ inline FIXP_SGL fAddSaturate(const FIXP_SGL a, const FIXP_SGL b)
  */
 inline FIXP_DBL fAddSaturate(const FIXP_DBL a, const FIXP_DBL b)
 {
-  LONG sum;
+    LONG sum;
 
-  sum = (LONG)(a>>1) + (LONG)(b>>1);
-  sum = fMax(fMin((INT)sum, (INT)(MAXVAL_DBL>>1)), (INT)(MINVAL_DBL>>1));
-  return (FIXP_DBL)(LONG)(sum<<1);
+    sum = (LONG)(a>>1) + (LONG)(b>>1);
+    sum = fMax(fMin((INT)sum, (INT)(MAXVAL_DBL>>1)), (INT)(MINVAL_DBL>>1));
+    return (FIXP_DBL)(LONG)(sum<<1);
 }
 
 //#define TEST_ROUNDING
@@ -471,10 +479,10 @@ inline FIXP_DBL fAddSaturate(const FIXP_DBL a, const FIXP_DBL b)
 
 ****************************************************************************/
 
-  extern const FIXP_DBL invCount[80];
+extern const FIXP_DBL invCount[80];
 
-  LNK_SECTION_INITCODE
-  inline void InitInvInt(void) {}
+LNK_SECTION_INITCODE
+inline void InitInvInt(void) {}
 
 
 /**
@@ -485,9 +493,9 @@ inline FIXP_DBL fAddSaturate(const FIXP_DBL a, const FIXP_DBL b)
  */
 inline FIXP_DBL GetInvInt(int intValue)
 {
-  FDK_ASSERT((intValue > 0) && (intValue < 80));
-  FDK_ASSERT(intValue<80);
-	return invCount[intValue];
+    FDK_ASSERT((intValue > 0) && (intValue < 80));
+    FDK_ASSERT(intValue<80);
+    return invCount[intValue];
 }
 
 

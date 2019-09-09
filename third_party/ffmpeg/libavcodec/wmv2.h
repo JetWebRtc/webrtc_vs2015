@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #define SKIP_TYPE_COL  3
 
 
-typedef struct Wmv2Context {
+typedef struct Wmv2Context
+{
     MpegEncContext s;
     IntraX8Context x8;
     WMV2DSPContext wdsp;
@@ -73,7 +74,8 @@ void ff_mspel_motion(MpegEncContext *s,
 
 static av_always_inline int wmv2_get_cbp_table_index(MpegEncContext *s, int cbp_index)
 {
-    static const uint8_t map[3][3] = {
+    static const uint8_t map[3][3] =
+    {
         { 0, 2, 1 },
         { 1, 0, 2 },
         { 2, 1, 0 },

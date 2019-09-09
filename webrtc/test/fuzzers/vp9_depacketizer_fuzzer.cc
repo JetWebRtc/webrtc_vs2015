@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -9,10 +9,12 @@
  */
 #include "webrtc/modules/rtp_rtcp/source/rtp_format_vp9.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  RtpDepacketizerVp9 depacketizer;
-  RtpDepacketizer::ParsedPayload parsed_payload;
-  depacketizer.Parse(&parsed_payload, data, size);
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    RtpDepacketizerVp9 depacketizer;
+    RtpDepacketizer::ParsedPayload parsed_payload;
+    depacketizer.Parse(&parsed_payload, data, size);
 }
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,7 +31,7 @@ RTC_EXPORT
 RTC_EXPORT
 @interface RTCEAGLVideoView : UIView <RTCVideoRenderer>
 
-@property(nonatomic, weak) id<RTCEAGLVideoViewDelegate> delegate;
+    @property(nonatomic, weak) id<RTCEAGLVideoViewDelegate> delegate;
 
 @end
 

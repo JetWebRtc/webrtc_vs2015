@@ -1,4 +1,4 @@
-/*==========================================================================;
+﻿/*==========================================================================;
  *
  *  Copyright (C) Microsoft Corporation.  All Rights Reserved.
  *
@@ -32,13 +32,14 @@
 typedef long    HRESULT;
 typedef LPVOID  REFIID;
 #ifndef GUID_DEFINED
-    #define GUID_DEFINED
-    typedef struct _GUID {
-        ULONG   Data1;
-        unsigned short Data2;
-        unsigned short Data3;
-        unsigned char Data4[8];
-    } GUID;
+#define GUID_DEFINED
+typedef struct _GUID
+{
+    ULONG   Data1;
+    unsigned short Data2;
+    unsigned short Data3;
+    unsigned char Data4[8];
+} GUID;
 #endif // !defined(GUID_DEFINED)
 
 typedef GUID FAR *LPGUID;
@@ -57,9 +58,9 @@ typedef GUID FAR *LPGUID;
 #define PULONG_PTR   LPDWORD
 #endif //MAXULONG_PTR
 
-    #include "ddraw.h"
-    #include "dvp.h"
-    #include "ddkernel.h"
+#include "ddraw.h"
+#include "dvp.h"
+#include "ddkernel.h"
 #include "dmemmgr.h"
 
 #ifdef IS_16
@@ -130,7 +131,7 @@ DEFINE_GUID( GUID_Miscellaneous2Callbacks,  0x406B2F00, 0x3E5A, 0x11D1, 0xB6, 0x
 extern "C"
 #endif
 HRESULT CALLBACK D3DParseUnknownCommand (LPVOID lpvCommands,
-                                         LPVOID *lplpvReturnedCommand);
+        LPVOID *lplpvReturnedCommand);
 /*
  * This DDPF flag is used by drivers to signify that this format is new and may be
  * a candidate for hiding from certain applications
@@ -158,9 +159,9 @@ HRESULT CALLBACK D3DParseUnknownCommand (LPVOID lpvCommands,
 #define D3DFORMAT_OP_ZSTENCIL_WITH_ARBITRARY_COLOR_DEPTH 0x00000080L
 
 // This format can be used as a render target if the current display mode
-// is the same depth if the alpha channel is ignored. e.g. if the device 
+// is the same depth if the alpha channel is ignored. e.g. if the device
 // can render to A8R8G8B8 when the display mode is X8R8G8B8, then the
-// format op list entry for A8R8G8B8 should have this cap. 
+// format op list entry for A8R8G8B8 should have this cap.
 #define D3DFORMAT_OP_SAME_FORMAT_UP_TO_ALPHA_RENDERTARGET 0x00000100L
 
 // This format contains DirectDraw support (including Flip).  This flag
@@ -168,7 +169,7 @@ HRESULT CALLBACK D3DParseUnknownCommand (LPVOID lpvCommands,
 #define D3DFORMAT_OP_DISPLAYMODE                0x00000400L
 
 // The rasterizer can support some level of Direct3D support in this format
-// and implies that the driver can create a Context in this mode (for some 
+// and implies that the driver can create a Context in this mode (for some
 // render target format).  When this flag is set, the D3DFORMAT_OP_DISPLAYMODE
 // flag must also be set.
 #define D3DFORMAT_OP_3DACCELERATION             0x00000800L
@@ -216,7 +217,7 @@ HRESULT CALLBACK D3DParseUnknownCommand (LPVOID lpvCommands,
 #define D3DFORMAT_OP_AUTOGENMIPMAP              0x00400000L
 
 // Indicates that this format cannot be used by vertex texture sampler
-#define D3DFORMAT_OP_VERTEXTEXTURE              0x00800000L 
+#define D3DFORMAT_OP_VERTEXTEXTURE              0x00800000L
 
 // Indicates that this format supports neither texture coordinate wrap modes, nor mipmapping
 #define D3DFORMAT_OP_NOTEXCOORDWRAPNORMIP		0x01000000L
@@ -306,13 +307,13 @@ extern "C" {
 #endif
 
 #if defined( IS_32 ) || defined( WIN32 ) || defined( _WIN32 )
-    #undef IS_32
-    #define IS_32
-    #define DDAPI       WINAPI
-    #define EXTERN_DDAPI    WINAPI
+#undef IS_32
+#define IS_32
+#define DDAPI       WINAPI
+#define EXTERN_DDAPI    WINAPI
 #else
-    #define DDAPI       __loadds WINAPI
-    #define EXTERN_DDAPI    __export WINAPI
+#define DDAPI       __loadds WINAPI
+#define EXTERN_DDAPI    __export WINAPI
 #endif
 
 
@@ -575,15 +576,15 @@ typedef struct _VIDMEM
     FLATPTR     fpStart;    // start of memory chunk
     union
     {
-    FLATPTR     fpEnd;      // end of memory chunk
-    DWORD       dwWidth;    // width of chunk (rectanglar memory)
+        FLATPTR     fpEnd;      // end of memory chunk
+        DWORD       dwWidth;    // width of chunk (rectanglar memory)
     };
     DDSCAPS     ddsCaps;        // what this memory CANNOT be used for
     DDSCAPS     ddsCapsAlt; // what this memory CANNOT be used for if it must
     union
     {
-    LPVMEMHEAP  lpHeap;     // heap pointer, used by DDRAW
-    DWORD       dwHeight;   // height of chunk (rectanguler memory)
+        LPVMEMHEAP  lpHeap;     // heap pointer, used by DDRAW
+        DWORD       dwHeight;   // height of chunk (rectanguler memory)
     };
 } VIDMEM;
 typedef VIDMEM FAR *LPVIDMEM;
@@ -600,19 +601,19 @@ typedef VIDMEM FAR *LPVIDMEM;
 
 typedef struct _VIDMEMINFO
 {
-/* 0*/ FLATPTR      fpPrimary;      // pointer to primary surface
-/* 4*/ DWORD        dwFlags;        // flags
-/* 8*/ DWORD        dwDisplayWidth;     // current display width
-/* c*/ DWORD        dwDisplayHeight;    // current display height
-/*10*/ LONG     lDisplayPitch;      // current display pitch
-/*14*/ DDPIXELFORMAT    ddpfDisplay;        // pixel format of display
-/*34*/ DWORD        dwOffscreenAlign;   // byte alignment for offscreen surfaces
-/*38*/ DWORD        dwOverlayAlign;     // byte alignment for overlays
-/*3c*/ DWORD        dwTextureAlign;     // byte alignment for textures
-/*40*/ DWORD        dwZBufferAlign;     // byte alignment for z buffers
-/*44*/ DWORD        dwAlphaAlign;       // byte alignment for alpha
-/*48*/ DWORD        dwNumHeaps;     // number of memory heaps in vmList
-/*4c*/ LPVIDMEM     pvmList;        // array of heaps
+    /* 0*/ FLATPTR      fpPrimary;      // pointer to primary surface
+    /* 4*/ DWORD        dwFlags;        // flags
+    /* 8*/ DWORD        dwDisplayWidth;     // current display width
+    /* c*/ DWORD        dwDisplayHeight;    // current display height
+    /*10*/ LONG     lDisplayPitch;      // current display pitch
+    /*14*/ DDPIXELFORMAT    ddpfDisplay;        // pixel format of display
+    /*34*/ DWORD        dwOffscreenAlign;   // byte alignment for offscreen surfaces
+    /*38*/ DWORD        dwOverlayAlign;     // byte alignment for overlays
+    /*3c*/ DWORD        dwTextureAlign;     // byte alignment for textures
+    /*40*/ DWORD        dwZBufferAlign;     // byte alignment for z buffers
+    /*44*/ DWORD        dwAlphaAlign;       // byte alignment for alpha
+    /*48*/ DWORD        dwNumHeaps;     // number of memory heaps in vmList
+    /*4c*/ LPVIDMEM     pvmList;        // array of heaps
 } VIDMEMINFO;
 typedef VIDMEMINFO FAR *LPVIDMEMINFO;
 
@@ -811,7 +812,8 @@ typedef DWORD   (FAR PASCAL *LPDDHAL_GETHEAPALIGNMENT)(LPDDHAL_GETHEAPALIGNMENTD
  * This prototype is identical to that of GetBltStatus
  */
 
-typedef struct _DDHAL_DDMISCELLANEOUSCALLBACKS {
+typedef struct _DDHAL_DDMISCELLANEOUSCALLBACKS
+{
     DWORD                               dwSize;
     DWORD                               dwFlags;
     LPDDHAL_GETAVAILDRIVERMEMORY        GetAvailDriverMemory;
@@ -840,7 +842,8 @@ typedef DWORD   (FAR PASCAL *LPDDHAL_CREATESURFACEEX)(LPDDHAL_CREATESURFACEEXDAT
 typedef DWORD   (FAR PASCAL *LPDDHAL_GETDRIVERSTATE)(LPDDHAL_GETDRIVERSTATEDATA);
 typedef DWORD   (FAR PASCAL *LPDDHAL_DESTROYDDLOCAL)(LPDDHAL_DESTROYDDLOCALDATA);
 
-typedef struct _DDHAL_DDMISCELLANEOUS2CALLBACKS {
+typedef struct _DDHAL_DDMISCELLANEOUS2CALLBACKS
+{
     DWORD                               dwSize;
     DWORD                               dwFlags;
     LPVOID                              Reserved;
@@ -1245,8 +1248,8 @@ typedef struct _DDRAWI_DDRAWCLIPPER_LCL
     LPDDRAWI_DIRECTDRAW_INT     lpDD_int;   // pointer to owning DD object interface
     ULONG_PTR                   dwReserved1;    // reserved for use by display driver
     IUnknown *                  pAddrefedThisOwner; //This is the ddraw object that created this
-                                                    //clipper, if nonzero. Must Release it when clipper
-                                                    //is released.
+    //clipper, if nonzero. Must Release it when clipper
+    //is released.
 } DDRAWI_DDRAWCLIPPER_LCL;
 
 #define DDRAWICLIP_WATCHWINDOW          0x00000001l
@@ -1297,7 +1300,7 @@ typedef ACCESSRECTLIST FAR *LPACCESSRECTLIST;
 #define ACCESSRECT_BROKEN              0x00000004L    // PRIVATE: this lock was broken by an invalidate - don't call HAL on unlock
 
 #ifndef WIN95
-/* 
+/*
  * Do not change the size of this struct. This will move various members of surface and ddraw
  * structs and will prevent binaries from running on old win2k systems (or mismatched later NT builds)
  */
@@ -1350,8 +1353,8 @@ typedef struct _DDRAWI_DDRAWSURFACE_GBL
     {
         LPDDRAWI_DIRECTDRAW_GBL lpDD;       // internal DIRECTDRAW object
         LPVOID          lpDDHandle;     // handle to internal DIRECTDRAW object
-                        // for use by display driver
-                        // when calling fns in DDRAW16.DLL
+        // for use by display driver
+        // when calling fns in DDRAW16.DLL
     };
     FLATPTR             fpVidMem;   // pointer to video memory
     union
@@ -1420,8 +1423,8 @@ typedef struct _DDRAWI_DDRAWSURFACE_GBL_MORE
     DWORD           dwDDRAWReserved1;
     DWORD           dwDDRAWReserved2;
     FLATPTR         fpAliasOfVidMem;    // PRIVATE: The original VidMem pointer of which fpAliasedVidMem is an alias of
-                                        // This is used to compare with a given fpVidMem to see if we can use the cached fpAliasedVidMem or
-                                        // if we need to call GetAliasedVidMem.
+    // This is used to compare with a given fpVidMem to see if we can use the cached fpAliasedVidMem or
+    // if we need to call GetAliasedVidMem.
 } DDRAWI_DDRAWSURFACE_GBL_MORE;
 
 
@@ -1452,20 +1455,20 @@ typedef struct _DDRAWI_DDRAWSURFACE_MORE
     LPVOID                      lpDDrawReserved3;
     DWORD                       dwDDrawReserved4;
     LPVOID                      lpDDrawReserved5;
-   LPDWORD                      lpGammaRamp;
-   LPDWORD                      lpOriginalGammaRamp;
-   LPVOID                       lpDDrawReserved6;
+    LPDWORD                      lpGammaRamp;
+    LPDWORD                      lpOriginalGammaRamp;
+    LPVOID                       lpDDrawReserved6;
 #ifndef WIN95
-   DISPLAYMODEINFO              dmiDDrawReserved7;
+    DISPLAYMODEINFO              dmiDDrawReserved7;
 #endif
-   DWORD                        dwSurfaceHandle;    // cookie for use with CreateSurfaceEx DDI
-   DWORD                        qwDDrawReserved8[2];
-   LPVOID                       lpDDrawReserved9;
+    DWORD                        dwSurfaceHandle;    // cookie for use with CreateSurfaceEx DDI
+    DWORD                        qwDDrawReserved8[2];
+    LPVOID                       lpDDrawReserved9;
     DWORD                       cSurfaces;                  //PRIVATE
     LPDDSURFACEDESC2            pCreatedDDSurfaceDesc2;     //PRIVATE
     LPDDRAWI_DDRAWSURFACE_LCL   *slist;                     //PRIVATE
     DWORD                       dwFVF;              // saved FVF flags for exe bufs
-   LPVOID                       lpVB;                       //PRIVATE
+    LPVOID                       lpVB;                       //PRIVATE
 } DDRAWI_DDRAWSURFACE_MORE;
 
 /*
@@ -1678,7 +1681,7 @@ typedef struct _DDHAL_CALLBACKS
     DDHAL_DDKERNELCALLBACKS HALDDKernel;
     DDHAL_DDMOTIONCOMPCALLBACKS cbDDMotionCompCallbacks;
     DDHAL_DDMOTIONCOMPCALLBACKS HALDDMotionComp;
- } DDHAL_CALLBACKS, far *LPDDHAL_CALLBACKS;
+} DDHAL_CALLBACKS, far *LPDDHAL_CALLBACKS;
 
 
 /*
@@ -1746,82 +1749,82 @@ typedef DDCORECAPS FAR* LPDDCORECAPS;
 
 typedef struct _DDRAWI_DIRECTDRAW_GBL
 {
-/*  0*/ DWORD                   dwRefCnt;    // reference count
-/*  4*/ DWORD                   dwFlags;     // flags
-/*  8*/ FLATPTR                 fpPrimaryOrig;   // primary surf vid mem. ptr
-/*  c*/ DDCORECAPS              ddCaps;      // driver caps
-/*148*/ DWORD                   dwInternal1;     // Private to ddraw.dll
-/*16c*/ DWORD                   dwUnused1[9];    // not currently used
-/*170*/ LPDDHAL_CALLBACKS       lpDDCBtmp;   // HAL callbacks
-/*174*/ LPDDRAWI_DDRAWSURFACE_INT   dsList;      // PRIVATE: list of all surfaces
-/*178*/ LPDDRAWI_DDRAWPALETTE_INT   palList;     // PRIVATE: list of all palettes
-/*17c*/ LPDDRAWI_DDRAWCLIPPER_INT   clipperList;     // PRIVATE: list of all clippers
-/*180*/ LPDDRAWI_DIRECTDRAW_GBL     lp16DD;      // PRIVATE: 16-bit ptr to this struct
-/*184*/ DWORD                   dwMaxOverlays;   // maximum number of overlays
-/*188*/ DWORD                   dwCurrOverlays;  // current number of visible overlays
-/*18c*/ DWORD                   dwMonitorFrequency; // monitor frequency in current mode
-/*190*/ DDCORECAPS              ddHELCaps;   // HEL capabilities
-/*2cc*/ DWORD                   dwUnused2[50];   // not currently used
-/*394*/ DDCOLORKEY              ddckCKDestOverlay; // color key for destination overlay use
-/*39c*/ DDCOLORKEY              ddckCKSrcOverlay; // color key for source overlay use
-/*3a4*/ VIDMEMINFO              vmiData;     // info about vid memory
-/*3f4*/ LPVOID                  lpDriverHandle;  // handle for use by display driver
-/*   */                          // to call fns in DDRAW16.DLL
-/*3f8*/ LPDDRAWI_DIRECTDRAW_LCL         lpExclusiveOwner;   // PRIVATE: exclusive local object
-/*3fc*/ DWORD                   dwModeIndex;     // current mode index
-/*400*/ DWORD                   dwModeIndexOrig; // original mode index
-/*404*/ DWORD                   dwNumFourCC;     // number of fourcc codes supported
-/*408*/ DWORD                   FAR *lpdwFourCC; // PRIVATE: fourcc codes supported
-/*40c*/ DWORD                   dwNumModes;  // number of modes supported
-/*410*/ LPDDHALMODEINFO         lpModeInfo;  // PRIVATE: mode information
-/*424*/ PROCESS_LIST            plProcessList;   // PRIVATE: list of processes using driver
-/*428*/ DWORD                   dwSurfaceLockCount; // total number of outstanding locks
-/*42c*/ DWORD                   dwAliasedLockCnt; // PRIVATE: number of outstanding aliased locks
-/*430*/ ULONG_PTR                dwReserved3;     // reserved for use by display driver
-/*434*/ ULONG_PTR                hDD;             // PRIVATE: NT Kernel-mode handle (was dwFree3).
-/*438*/ char                    cObsolete[12];   // Obsolete field, do not use
-/*444*/ DWORD                   dwReserved1;     // reserved for use by display driver
-/*448*/ DWORD                   dwReserved2;     // reserved for use by display driver
-/*44c*/ DBLNODE                 dbnOverlayRoot;  // The root node of the doubly-
-/*   */                                                  // linked list of overlay z orders.
-/*45c*/ volatile LPWORD         lpwPDeviceFlags; // driver physical device flags
-/*460*/ DWORD                   dwPDevice;       // driver physical device (16:16 pointer)
-/*464*/ DWORD                   dwWin16LockCnt;  // count on win16 holds
-/*468*/ DWORD                   dwUnused3;       // was lpWin16LockOwner
-/*46c*/ DWORD                   hInstance;       // instance handle of driver
-/*470*/ DWORD                   dwEvent16;       // 16-bit event
-/*474*/ DWORD                   dwSaveNumModes;  // saved number of modes supported
-/*   */ //------- Fields added in Version 2.0 -------
-/*478*/ ULONG_PTR                lpD3DGlobalDriverData;  // Global D3D Data
-/*47c*/ ULONG_PTR                lpD3DHALCallbacks;  // D3D HAL Callbacks
-/*480*/ DDCORECAPS              ddBothCaps;      // logical AND of driver and HEL caps
-/*   */ //------- Fields added in Version 5.0 -------
-/*5bc*/ LPDDVIDEOPORTCAPS       lpDDVideoPortCaps;// Info returned by the HAL (an array if more than one video port)
-/*5c0*/ LPDDRAWI_DDVIDEOPORT_INT    dvpList;     // PRIVATE: list of all video ports
-/*5c4*/ ULONG_PTR                lpD3DHALCallbacks2;     // Post-DX3 D3D HAL callbacks
-/*5c8*/ RECT                    rectDevice;  // rectangle (in desktop coord) for device
-/*5d8*/ DWORD                   cMonitors;   // number of monitors in the system
-/*5dc*/ LPVOID                  gpbmiSrc;    // PRIVATE: used by HEL
-/*5e0*/ LPVOID                  gpbmiDest;   // PRIVATE: used by HEL
-/*5e4*/ LPHEAPALIASINFO         phaiHeapAliases; // PRIVATE: video memory heap aliases
-/*5e8*/ ULONG_PTR               hKernelHandle;
-/*5ec*/ ULONG_PTR               pfnNotifyProc;   // Notification proc registered w/ VDD
-/*5f0*/ LPDDKERNELCAPS          lpDDKernelCaps;  // Capabilies of kernel mode interface
-/*5f4*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVCaps;     // hardware non-local to local vidmem caps
-/*5f8*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVHELCaps;  // emulation layer non-local to local vidmem caps
-/*5fc*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVBothCaps; // logical AND of hardware and emulation non-local to local vidmem caps
-/*600*/ ULONG_PTR                lpD3DExtendedCaps; // extended caps for D3D
-/*   */ //--------Fields added in Version 5.0A
-/*604*/ DWORD                   dwDOSBoxEvent;      // Event set when returning from a DOS box
-/*608*/ RECT                    rectDesktop;        // Desktop coordinates
-/*618*/ char                    cDriverName[MAX_DRIVER_NAME]; // Display name
-/*   */ //------- Fields added in Version 6.0 -------
-/*638*/ ULONG_PTR                lpD3DHALCallbacks3;     // DX6 D3D callbacks
-/*63c*/ DWORD                   dwNumZPixelFormats;     // Number of z-buffer+stencil pixel formats
-/*640*/ LPDDPIXELFORMAT         lpZPixelFormats;        // Pointer to array of z-buffer pixel formats
-/*644*/ LPDDRAWI_DDMOTIONCOMP_INT mcList;               // PRIVATE: list of all motion comp objects
-/*648*/ DWORD                   hDDVxd;                 // handle to ddraw.vxd
-/*64c*/ DDSCAPSEX               ddsCapsMore;            // as queried via GUID_DDMoreSurfaceCaps
+    /*  0*/ DWORD                   dwRefCnt;    // reference count
+    /*  4*/ DWORD                   dwFlags;     // flags
+    /*  8*/ FLATPTR                 fpPrimaryOrig;   // primary surf vid mem. ptr
+    /*  c*/ DDCORECAPS              ddCaps;      // driver caps
+    /*148*/ DWORD                   dwInternal1;     // Private to ddraw.dll
+    /*16c*/ DWORD                   dwUnused1[9];    // not currently used
+    /*170*/ LPDDHAL_CALLBACKS       lpDDCBtmp;   // HAL callbacks
+    /*174*/ LPDDRAWI_DDRAWSURFACE_INT   dsList;      // PRIVATE: list of all surfaces
+    /*178*/ LPDDRAWI_DDRAWPALETTE_INT   palList;     // PRIVATE: list of all palettes
+    /*17c*/ LPDDRAWI_DDRAWCLIPPER_INT   clipperList;     // PRIVATE: list of all clippers
+    /*180*/ LPDDRAWI_DIRECTDRAW_GBL     lp16DD;      // PRIVATE: 16-bit ptr to this struct
+    /*184*/ DWORD                   dwMaxOverlays;   // maximum number of overlays
+    /*188*/ DWORD                   dwCurrOverlays;  // current number of visible overlays
+    /*18c*/ DWORD                   dwMonitorFrequency; // monitor frequency in current mode
+    /*190*/ DDCORECAPS              ddHELCaps;   // HEL capabilities
+    /*2cc*/ DWORD                   dwUnused2[50];   // not currently used
+    /*394*/ DDCOLORKEY              ddckCKDestOverlay; // color key for destination overlay use
+    /*39c*/ DDCOLORKEY              ddckCKSrcOverlay; // color key for source overlay use
+    /*3a4*/ VIDMEMINFO              vmiData;     // info about vid memory
+    /*3f4*/ LPVOID                  lpDriverHandle;  // handle for use by display driver
+    /*   */                          // to call fns in DDRAW16.DLL
+    /*3f8*/ LPDDRAWI_DIRECTDRAW_LCL         lpExclusiveOwner;   // PRIVATE: exclusive local object
+    /*3fc*/ DWORD                   dwModeIndex;     // current mode index
+    /*400*/ DWORD                   dwModeIndexOrig; // original mode index
+    /*404*/ DWORD                   dwNumFourCC;     // number of fourcc codes supported
+    /*408*/ DWORD                   FAR *lpdwFourCC; // PRIVATE: fourcc codes supported
+    /*40c*/ DWORD                   dwNumModes;  // number of modes supported
+    /*410*/ LPDDHALMODEINFO         lpModeInfo;  // PRIVATE: mode information
+    /*424*/ PROCESS_LIST            plProcessList;   // PRIVATE: list of processes using driver
+    /*428*/ DWORD                   dwSurfaceLockCount; // total number of outstanding locks
+    /*42c*/ DWORD                   dwAliasedLockCnt; // PRIVATE: number of outstanding aliased locks
+    /*430*/ ULONG_PTR                dwReserved3;     // reserved for use by display driver
+    /*434*/ ULONG_PTR                hDD;             // PRIVATE: NT Kernel-mode handle (was dwFree3).
+    /*438*/ char                    cObsolete[12];   // Obsolete field, do not use
+    /*444*/ DWORD                   dwReserved1;     // reserved for use by display driver
+    /*448*/ DWORD                   dwReserved2;     // reserved for use by display driver
+    /*44c*/ DBLNODE                 dbnOverlayRoot;  // The root node of the doubly-
+    /*   */                                                  // linked list of overlay z orders.
+    /*45c*/ volatile LPWORD         lpwPDeviceFlags; // driver physical device flags
+    /*460*/ DWORD                   dwPDevice;       // driver physical device (16:16 pointer)
+    /*464*/ DWORD                   dwWin16LockCnt;  // count on win16 holds
+    /*468*/ DWORD                   dwUnused3;       // was lpWin16LockOwner
+    /*46c*/ DWORD                   hInstance;       // instance handle of driver
+    /*470*/ DWORD                   dwEvent16;       // 16-bit event
+    /*474*/ DWORD                   dwSaveNumModes;  // saved number of modes supported
+    /*   */ //------- Fields added in Version 2.0 -------
+    /*478*/ ULONG_PTR                lpD3DGlobalDriverData;  // Global D3D Data
+    /*47c*/ ULONG_PTR                lpD3DHALCallbacks;  // D3D HAL Callbacks
+    /*480*/ DDCORECAPS              ddBothCaps;      // logical AND of driver and HEL caps
+    /*   */ //------- Fields added in Version 5.0 -------
+    /*5bc*/ LPDDVIDEOPORTCAPS       lpDDVideoPortCaps;// Info returned by the HAL (an array if more than one video port)
+    /*5c0*/ LPDDRAWI_DDVIDEOPORT_INT    dvpList;     // PRIVATE: list of all video ports
+    /*5c4*/ ULONG_PTR                lpD3DHALCallbacks2;     // Post-DX3 D3D HAL callbacks
+    /*5c8*/ RECT                    rectDevice;  // rectangle (in desktop coord) for device
+    /*5d8*/ DWORD                   cMonitors;   // number of monitors in the system
+    /*5dc*/ LPVOID                  gpbmiSrc;    // PRIVATE: used by HEL
+    /*5e0*/ LPVOID                  gpbmiDest;   // PRIVATE: used by HEL
+    /*5e4*/ LPHEAPALIASINFO         phaiHeapAliases; // PRIVATE: video memory heap aliases
+    /*5e8*/ ULONG_PTR               hKernelHandle;
+    /*5ec*/ ULONG_PTR               pfnNotifyProc;   // Notification proc registered w/ VDD
+    /*5f0*/ LPDDKERNELCAPS          lpDDKernelCaps;  // Capabilies of kernel mode interface
+    /*5f4*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVCaps;     // hardware non-local to local vidmem caps
+    /*5f8*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVHELCaps;  // emulation layer non-local to local vidmem caps
+    /*5fc*/ LPDDNONLOCALVIDMEMCAPS  lpddNLVBothCaps; // logical AND of hardware and emulation non-local to local vidmem caps
+    /*600*/ ULONG_PTR                lpD3DExtendedCaps; // extended caps for D3D
+    /*   */ //--------Fields added in Version 5.0A
+    /*604*/ DWORD                   dwDOSBoxEvent;      // Event set when returning from a DOS box
+    /*608*/ RECT                    rectDesktop;        // Desktop coordinates
+    /*618*/ char                    cDriverName[MAX_DRIVER_NAME]; // Display name
+    /*   */ //------- Fields added in Version 6.0 -------
+    /*638*/ ULONG_PTR                lpD3DHALCallbacks3;     // DX6 D3D callbacks
+    /*63c*/ DWORD                   dwNumZPixelFormats;     // Number of z-buffer+stencil pixel formats
+    /*640*/ LPDDPIXELFORMAT         lpZPixelFormats;        // Pointer to array of z-buffer pixel formats
+    /*644*/ LPDDRAWI_DDMOTIONCOMP_INT mcList;               // PRIVATE: list of all motion comp objects
+    /*648*/ DWORD                   hDDVxd;                 // handle to ddraw.vxd
+    /*64c*/ DDSCAPSEX               ddsCapsMore;            // as queried via GUID_DDMoreSurfaceCaps
 } DDRAWI_DIRECTDRAW_GBL;
 
 
@@ -2024,7 +2027,7 @@ typedef DDHALINFO FAR *LPDDHALINFO;
 #define DDHALINFO_MODEXILLEGAL      0x00000002l // indicates this hardware does not support modex modes
 #define DDHALINFO_GETDRIVERINFOSET  0x00000004l // indicates that GetDriverInfo is set
 #define DDHALINFO_GETDRIVERINFO2    0x00000008l // indicates driver support GetDriverInfo2 variant
-                                                // of GetDriverInfo. New for DX 8.0
+// of GetDriverInfo. New for DX 8.0
 
 /*
  * DDRAW16.DLL entry points
@@ -2071,11 +2074,11 @@ typedef struct _DDHAL_BLTDATA
     LPDDHALSURFCB_BLT           Blt;        // PRIVATE: ptr to callback
     BOOL                        IsClipped;      // clipped blt?
     RECTL                       rOrigDest;  // unclipped dest rect
-                                            // (only valid if IsClipped)
+    // (only valid if IsClipped)
     RECTL                       rOrigSrc;   // unclipped src rect
-                                            // (only valid if IsClipped)
+    // (only valid if IsClipped)
     DWORD                       dwRectCnt;  // count of dest rects
-                                            // (only valid if IsClipped)
+    // (only valid if IsClipped)
     LPRECT                      prDestRects;    // array of dest rects
 
 } DDHAL_BLTDATA;
@@ -2634,7 +2637,8 @@ typedef struct _DDHAL_COLORCONTROLDATA
  *
  ***************************************************************************/
 
-typedef struct _DDHAL_GETDRIVERINFODATA {
+typedef struct _DDHAL_GETDRIVERINFODATA
+{
 
     // Input fields filled in by DirectDraw
     DWORD       dwSize;         // Size of this structure
@@ -2672,7 +2676,7 @@ typedef struct _DDHAL_GETAVAILDRIVERMEMORYDATA
     HRESULT                 ddRVal;      // return value
     LPDDHAL_GETAVAILDRIVERMEMORY   GetAvailDriverMemory; // PRIVATE: ptr to callback
     DDSCAPSEX               ddsCapsEx;       // Added in V6. Driver should check DDVERSION info
-                                                 // to see if this field is present.
+    // to see if this field is present.
 } DDHAL_GETAVAILDRIVERMEMORYDATA;
 
 /*
@@ -2720,24 +2724,26 @@ typedef struct _DDHAL_GETHEAPALIGNMENTDATA
  */
 
 
-typedef struct _DDHAL_CREATESURFACEEXDATA {
+typedef struct _DDHAL_CREATESURFACEEXDATA
+{
     DWORD                       dwFlags;    // Currently always 0 and not used
     LPDDRAWI_DIRECTDRAW_LCL     lpDDLcl;    // driver struct
     LPDDRAWI_DDRAWSURFACE_LCL   lpDDSLcl;   // list of created surface objects
     HRESULT                     ddRVal;     // return value
 } DDHAL_CREATESURFACEEXDATA;
 
-typedef struct _DDHAL_GETDRIVERSTATEDATA {
+typedef struct _DDHAL_GETDRIVERSTATEDATA
+{
     DWORD                       dwFlags;        // Flags to indicate the data
-                                                // required
+    // required
     union
     {
         // LPDDRAWI_DIRECTDRAW_GBL     lpDD;           // driver struct
         ULONG_PTR               dwhContext;     // d3d context
     };
     LPDWORD                     lpdwStates;     // ptr to the state data
-                                                // to be filled in by the
-                                                // driver
+    // to be filled in by the
+    // driver
     DWORD                       dwLength;
     HRESULT                     ddRVal;         // return value
 } DDHAL_GETDRIVERSTATEDATA;

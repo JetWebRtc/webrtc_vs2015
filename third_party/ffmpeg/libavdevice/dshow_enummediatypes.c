@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DirectShow capture interface
  * Copyright (c) 2010 Ramiro Polla
  *
@@ -22,7 +22,7 @@
 #include "dshow_capture.h"
 
 DECLARE_QUERYINTERFACE(libAVEnumMediaTypes,
-    { {&IID_IUnknown,0}, {&IID_IEnumMediaTypes,0} })
+{ {&IID_IUnknown,0}, {&IID_IEnumMediaTypes,0} })
 DECLARE_ADDREF(libAVEnumMediaTypes)
 DECLARE_RELEASE(libAVEnumMediaTypes)
 
@@ -34,8 +34,10 @@ libAVEnumMediaTypes_Next(libAVEnumMediaTypes *this, unsigned long n,
     dshowdebug("libAVEnumMediaTypes_Next(%p)\n", this);
     if (!types)
         return E_POINTER;
-    if (!this->pos && n == 1) {
-        if (!IsEqualGUID(&this->type.majortype, &GUID_NULL)) {
+    if (!this->pos && n == 1)
+    {
+        if (!IsEqualGUID(&this->type.majortype, &GUID_NULL))
+        {
             AM_MEDIA_TYPE *type = av_malloc(sizeof(AM_MEDIA_TYPE));
             ff_copy_dshow_media_type(type, &this->type);
             *types = type;
@@ -91,9 +93,12 @@ libAVEnumMediaTypes_Setup(libAVEnumMediaTypes *this, const AM_MEDIA_TYPE *type)
     SETVTBL(vtbl, libAVEnumMediaTypes, Reset);
     SETVTBL(vtbl, libAVEnumMediaTypes, Clone);
 
-    if (!type) {
+    if (!type)
+    {
         this->type.majortype = GUID_NULL;
-    } else {
+    }
+    else
+    {
         ff_copy_dshow_media_type(&this->type, type);
     }
 

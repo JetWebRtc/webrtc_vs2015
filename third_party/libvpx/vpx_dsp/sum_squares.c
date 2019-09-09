@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,17 +11,20 @@
 #include "./vpx_dsp_rtcd.h"
 
 uint64_t vpx_sum_squares_2d_i16_c(const int16_t *src, int src_stride,
-                                  int size) {
-  int r, c;
-  uint64_t ss = 0;
+                                  int size)
+{
+    int r, c;
+    uint64_t ss = 0;
 
-  for (r = 0; r < size; r++) {
-    for (c = 0; c < size; c++) {
-      const int16_t v = src[c];
-      ss += v * v;
+    for (r = 0; r < size; r++)
+    {
+        for (c = 0; c < size; c++)
+        {
+            const int16_t v = src[c];
+            ss += v * v;
+        }
+        src += src_stride;
     }
-    src += src_stride;
-  }
 
-  return ss;
+    return ss;
 }

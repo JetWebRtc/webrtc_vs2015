@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include <stdint.h>
 
-typedef struct HuffYUVEncDSPContext {
+typedef struct HuffYUVEncDSPContext
+{
     void (*diff_bytes)(uint8_t *dst /* align 16 */,
                        const uint8_t *src1 /* align 16 */,
                        const uint8_t *src2 /* align 1 */,

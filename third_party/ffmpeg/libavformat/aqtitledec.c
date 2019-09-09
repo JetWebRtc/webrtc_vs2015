@@ -31,7 +31,8 @@
 #include "subtitles.h"
 #include "libavutil/opt.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     FFDemuxSubtitlesQueue q;
     AVRational frame_rate;
@@ -61,7 +62,8 @@ static int aqt_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_TEXT;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         int len = ff_get_line(s->pb, line, sizeof(line));
 
@@ -70,15 +72,20 @@ static int aqt_read_header(AVFormatContext *s)
 
         line[strcspn(line, "\r\n")] = 0;
 
-        if (sscanf(line, "-->> %"SCNd64, &frame) == 1) {
+        if (sscanf(line, "-->> %"SCNd64, &frame) == 1)
+        {
             new_event = 1;
             pos = avio_tell(s->pb);
-            if (sub) {
+            if (sub)
+            {
                 sub->duration = frame - sub->pts;
                 sub = NULL;
             }
-        } else if (*line) {
-            if (!new_event) {
+        }
+        else if (*line)
+        {
+            if (!new_event)
+            {
                 sub = ff_subtitles_queue_insert(&aqt->q, "\n", 1, 1);
                 if (!sub)
                     return AVERROR(ENOMEM);
@@ -86,7 +93,8 @@ static int aqt_read_header(AVFormatContext *s)
             sub = ff_subtitles_queue_insert(&aqt->q, line, strlen(line), !new_event);
             if (!sub)
                 return AVERROR(ENOMEM);
-            if (new_event) {
+            if (new_event)
+            {
                 sub->pts = frame;
                 sub->duration = -1;
                 sub->pos = pos;
@@ -122,19 +130,22 @@ static int aqt_read_close(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(AQTitleContext, x)
 #define SD AV_OPT_FLAG_SUBTITLE_PARAM|AV_OPT_FLAG_DECODING_PARAM
-static const AVOption aqt_options[] = {
+static const AVOption aqt_options[] =
+{
     { "subfps", "set the movie frame rate", OFFSET(frame_rate), AV_OPT_TYPE_RATIONAL, {.dbl=25}, 0, INT_MAX, SD },
     { NULL }
 };
 
-static const AVClass aqt_class = {
+static const AVClass aqt_class =
+{
     .class_name = "aqtdec",
     .item_name  = av_default_item_name,
     .option     = aqt_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_aqtitle_demuxer = {
+AVInputFormat ff_aqtitle_demuxer =
+{
     .name           = "aqtitle",
     .long_name      = NULL_IF_CONFIG_SMALL("AQTitle subtitles"),
     .priv_data_size = sizeof(AQTitleContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Videotoolbox hardware acceleration
  *
  * copyright (c) 2012 Sebastien Zwickert
@@ -43,7 +43,8 @@
  * Its size is not a part of the public ABI, it must be allocated with
  * av_videotoolbox_alloc_context() and freed with av_free().
  */
-typedef struct AVVideotoolboxContext {
+typedef struct AVVideotoolboxContext
+{
     /**
      * Videotoolbox decompression session object.
      * Created and freed the caller.

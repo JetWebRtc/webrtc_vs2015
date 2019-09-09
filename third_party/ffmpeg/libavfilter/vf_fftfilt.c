@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Arwa Arif <arwaarif1994@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@
 
 #define MAX_PLANES 4
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
 
     RDFTContext *rdft;
@@ -59,7 +60,8 @@ enum { Y = 0, U, V };
 #define OFFSET(x) offsetof(FFTFILTContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption fftfilt_options[] = {
+static const AVOption fftfilt_options[] =
+{
     { "dc_Y",  "adjust gain in Y plane",              OFFSET(dc[Y]),      AV_OPT_TYPE_INT,    {.i64 = 0},      0,     1000,     FLAGS },
     { "dc_U",  "adjust gain in U plane",              OFFSET(dc[U]),      AV_OPT_TYPE_INT,    {.i64 = 0},      0,     1000,     FLAGS },
     { "dc_V",  "adjust gain in V plane",              OFFSET(dc[V]),      AV_OPT_TYPE_INT,    {.i64 = 0},      0,     1000,     FLAGS },
@@ -77,9 +79,18 @@ static inline double lum(void *priv, double x, double y, int plane)
     return fftfilt->rdft_vdata[plane][(int)x * fftfilt->rdft_vlen[plane] + (int)y];
 }
 
-static double weight_Y(void *priv, double x, double y) { return lum(priv, x, y, Y); }
-static double weight_U(void *priv, double x, double y) { return lum(priv, x, y, U); }
-static double weight_V(void *priv, double x, double y) { return lum(priv, x, y, V); }
+static double weight_Y(void *priv, double x, double y)
+{
+    return lum(priv, x, y, Y);
+}
+static double weight_U(void *priv, double x, double y)
+{
+    return lum(priv, x, y, U);
+}
+static double weight_V(void *priv, double x, double y)
+{
+    return lum(priv, x, y, V);
+}
 
 static void copy_rev (FFTSample *dest, int w, int w2)
 {
@@ -98,7 +109,8 @@ static void rdft_horizontal(FFTFILTContext *fftfilt, AVFrame *in, int w, int h, 
     int i, j;
     fftfilt->rdft = av_rdft_init(fftfilt->rdft_hbits[plane], DFT_R2C);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         for (j = 0; j < w; j++)
             fftfilt->rdft_hdata[plane][i * fftfilt->rdft_hlen[plane] + j] = *(in->data[plane] + in->linesize[plane] * i + j);
 
@@ -117,10 +129,11 @@ static void rdft_vertical(FFTFILTContext *fftfilt, int h, int plane)
     int i, j;
     fftfilt->rdft = av_rdft_init(fftfilt->rdft_vbits[plane], DFT_R2C);
 
-    for (i = 0; i < fftfilt->rdft_hlen[plane]; i++) {
+    for (i = 0; i < fftfilt->rdft_hlen[plane]; i++)
+    {
         for (j = 0; j < h; j++)
             fftfilt->rdft_vdata[plane][i * fftfilt->rdft_vlen[plane] + j] =
-            fftfilt->rdft_hdata[plane][j * fftfilt->rdft_hlen[plane] + i];
+                fftfilt->rdft_hdata[plane][j * fftfilt->rdft_hlen[plane] + i];
         copy_rev(fftfilt->rdft_vdata[plane] + i * fftfilt->rdft_vlen[plane], h, fftfilt->rdft_vlen[plane]);
     }
 
@@ -140,7 +153,7 @@ static void irdft_vertical(FFTFILTContext *fftfilt, int h, int plane)
     for (i = 0; i < fftfilt->rdft_hlen[plane]; i++)
         for (j = 0; j < h; j++)
             fftfilt->rdft_hdata[plane][j * fftfilt->rdft_hlen[plane] + i] =
-            fftfilt->rdft_vdata[plane][i * fftfilt->rdft_vlen[plane] + j];
+                fftfilt->rdft_vdata[plane][i * fftfilt->rdft_vlen[plane] + j];
 
     av_rdft_end(fftfilt->rdft);
 }
@@ -156,9 +169,9 @@ static void irdft_horizontal(FFTFILTContext *fftfilt, AVFrame *out, int w, int h
     for (i = 0; i < h; i++)
         for (j = 0; j < w; j++)
             *(out->data[plane] + out->linesize[plane] * i + j) = av_clip(fftfilt->rdft_hdata[plane][i
-                                                                         *fftfilt->rdft_hlen[plane] + j] * 4 /
-                                                                         (fftfilt->rdft_hlen[plane] *
-                                                                          fftfilt->rdft_vlen[plane]), 0, 255);
+                    *fftfilt->rdft_hlen[plane] + j] * 4 /
+                    (fftfilt->rdft_hlen[plane] *
+                     fftfilt->rdft_vlen[plane]), 0, 255);
 
     av_rdft_end(fftfilt->rdft);
 }
@@ -168,23 +181,30 @@ static av_cold int initialize(AVFilterContext *ctx)
     FFTFILTContext *fftfilt = ctx->priv;
     int ret = 0, plane;
 
-    if (!fftfilt->dc[U] && !fftfilt->dc[V]) {
+    if (!fftfilt->dc[U] && !fftfilt->dc[V])
+    {
         fftfilt->dc[U] = fftfilt->dc[Y];
         fftfilt->dc[V] = fftfilt->dc[Y];
-    } else {
+    }
+    else
+    {
         if (!fftfilt->dc[U]) fftfilt->dc[U] = fftfilt->dc[V];
         if (!fftfilt->dc[V]) fftfilt->dc[V] = fftfilt->dc[U];
     }
 
-    if (!fftfilt->weight_str[U] && !fftfilt->weight_str[V]) {
+    if (!fftfilt->weight_str[U] && !fftfilt->weight_str[V])
+    {
         fftfilt->weight_str[U] = av_strdup(fftfilt->weight_str[Y]);
         fftfilt->weight_str[V] = av_strdup(fftfilt->weight_str[Y]);
-    } else {
+    }
+    else
+    {
         if (!fftfilt->weight_str[U]) fftfilt->weight_str[U] = av_strdup(fftfilt->weight_str[V]);
         if (!fftfilt->weight_str[V]) fftfilt->weight_str[V] = av_strdup(fftfilt->weight_str[U]);
     }
 
-    for (plane = 0; plane < 3; plane++) {
+    for (plane = 0; plane < 3; plane++)
+    {
         static double (*p[])(void *, double, double) = { weight_Y, weight_U, weight_V };
         const char *const func2_names[] = {"weight_Y", "weight_U", "weight_V", NULL };
         double (*func2[])(void *, double, double) = { weight_Y, weight_U, weight_V, p[plane], NULL };
@@ -205,7 +225,8 @@ static int config_props(AVFilterLink *inlink)
     double values[VAR_VARS_NB];
 
     desc = av_pix_fmt_desc_get(inlink->format);
-    for (i = 0; i < desc->nb_components; i++) {
+    for (i = 0; i < desc->nb_components; i++)
+    {
         int w = inlink->w;
         int h = inlink->h;
 
@@ -238,7 +259,7 @@ static int config_props(AVFilterLink *inlink)
             {
                 values[VAR_Y] = j;
                 fftfilt->weight[plane][i * fftfilt->rdft_vlen[plane] + j] =
-                av_expr_eval(fftfilt->weight_expr[plane], values, fftfilt);
+                    av_expr_eval(fftfilt->weight_expr[plane], values, fftfilt);
             }
         }
     }
@@ -261,11 +282,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     av_frame_copy_props(out, in);
 
     desc = av_pix_fmt_desc_get(inlink->format);
-    for (plane = 0; plane < desc->nb_components; plane++) {
+    for (plane = 0; plane < desc->nb_components; plane++)
+    {
         int w = inlink->w;
         int h = inlink->h;
 
-        if (plane == 1 || plane == 2) {
+        if (plane == 1 || plane == 2)
+        {
             w = FF_CEIL_RSHIFT(w, desc->log2_chroma_w);
             h = FF_CEIL_RSHIFT(h, desc->log2_chroma_h);
         }
@@ -277,7 +300,7 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         for (i = 0; i < fftfilt->rdft_hlen[plane]; i++)
             for (j = 0; j < fftfilt->rdft_vlen[plane]; j++)
                 fftfilt->rdft_vdata[plane][i * fftfilt->rdft_vlen[plane] + j] *=
-                  fftfilt->weight[plane][i * fftfilt->rdft_vlen[plane] + j];
+                    fftfilt->weight[plane][i * fftfilt->rdft_vlen[plane] + j];
 
         fftfilt->rdft_vdata[plane][0] += fftfilt->rdft_hlen[plane] * fftfilt->rdft_vlen[plane] * fftfilt->dc[plane];
 
@@ -293,7 +316,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 {
     FFTFILTContext *fftfilt = ctx->priv;
     int i;
-    for (i = 0; i < MAX_PLANES; i++) {
+    for (i = 0; i < MAX_PLANES; i++)
+    {
         av_free(fftfilt->rdft_hdata[i]);
         av_free(fftfilt->rdft_vdata[i]);
         av_expr_free(fftfilt->weight_expr[i]);
@@ -303,7 +327,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pixel_fmts_fftfilt[] = {
+    static const enum AVPixelFormat pixel_fmts_fftfilt[] =
+    {
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_NONE
@@ -315,7 +340,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad fftfilt_inputs[] = {
+static const AVFilterPad fftfilt_inputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -325,7 +351,8 @@ static const AVFilterPad fftfilt_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad fftfilt_outputs[] = {
+static const AVFilterPad fftfilt_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -333,7 +360,8 @@ static const AVFilterPad fftfilt_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_fftfilt = {
+AVFilter ff_vf_fftfilt =
+{
     .name            = "fftfilt",
     .description     = NULL_IF_CONFIG_SMALL("Apply arbitrary expressions to samples in frequency domain"),
     .priv_size       = sizeof(FFTFILTContext),

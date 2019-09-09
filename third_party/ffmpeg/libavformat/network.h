@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -98,7 +98,8 @@ int ff_network_wait_fd_timeout(int fd, int write, int64_t timeout, AVIOInterrupt
 int ff_inet_aton (const char * str, struct in_addr * add);
 
 #if !HAVE_STRUCT_SOCKADDR_STORAGE
-struct sockaddr_storage {
+struct sockaddr_storage
+{
 #if HAVE_STRUCT_SOCKADDR_SA_LEN
     uint8_t ss_len;
     uint8_t ss_family;
@@ -111,7 +112,8 @@ struct sockaddr_storage {
 };
 #endif /* !HAVE_STRUCT_SOCKADDR_STORAGE */
 
-typedef union sockaddr_union {
+typedef union sockaddr_union
+{
     struct sockaddr_storage storage;
     struct sockaddr_in in;
 #if HAVE_STRUCT_SOCKADDR_IN6
@@ -124,7 +126,8 @@ typedef union sockaddr_union {
 #endif
 
 #if !HAVE_STRUCT_ADDRINFO
-struct addrinfo {
+struct addrinfo
+{
     int ai_flags;
     int ai_family;
     int ai_socktype;

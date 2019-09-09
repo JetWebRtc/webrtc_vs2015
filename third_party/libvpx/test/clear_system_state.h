@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,13 +15,15 @@
 #include "vpx_ports/x86.h"
 #endif
 
-namespace libvpx_test {
+namespace libvpx_test
+{
 
 // Reset system to a known state. This function should be used for all non-API
 // test cases.
-inline void ClearSystemState() {
+inline void ClearSystemState()
+{
 #if ARCH_X86 || ARCH_X86_64
-  vpx_reset_mmx_state();
+    vpx_reset_mmx_state();
 #endif
 }
 

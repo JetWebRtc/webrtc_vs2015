@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -39,9 +39,11 @@ void av_image_fill_max_pixsteps(int max_pixsteps[4], int max_pixstep_comps[4],
     if (max_pixstep_comps)
         memset(max_pixstep_comps, 0, 4*sizeof(max_pixstep_comps[0]));
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         const AVComponentDescriptor *comp = &(pixdesc->comp[i]);
-        if ((comp->step_minus1+1) > max_pixsteps[comp->plane]) {
+        if ((comp->step_minus1+1) > max_pixsteps[comp->plane])
+        {
             max_pixsteps[comp->plane] = comp->step_minus1+1;
             if (max_pixstep_comps)
                 max_pixstep_comps[comp->plane] = i;
@@ -98,7 +100,8 @@ int av_image_fill_linesizes(int linesizes[4], enum AVPixelFormat pix_fmt, int wi
         return AVERROR(EINVAL);
 
     av_image_fill_max_pixsteps(max_step, max_step_comp, desc);
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         if ((ret = image_get_linesize(width, i, max_step[i], max_step_comp[i], desc)) < 0)
             return ret;
         linesizes[i] = ret;
@@ -124,7 +127,8 @@ int av_image_fill_pointers(uint8_t *data[4], enum AVPixelFormat pix_fmt, int hei
     size[0] = linesizes[0] * height;
 
     if (desc->flags & AV_PIX_FMT_FLAG_PAL ||
-        desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) {
+            desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL)
+    {
         size[0] = (size[0] + 3) & ~3;
         data[1] = ptr + size[0]; /* palette is stored here as 256 32 bits words */
         return size[0] + 256 * 4;
@@ -134,7 +138,8 @@ int av_image_fill_pointers(uint8_t *data[4], enum AVPixelFormat pix_fmt, int hei
         has_plane[desc->comp[i].plane] = 1;
 
     total_size = size[0];
-    for (i = 1; i < 4 && has_plane[i]; i++) {
+    for (i = 1; i < 4 && has_plane[i]; i++)
+    {
         int h, s = (i == 1 || i == 2) ? desc->log2_chroma_h : 0;
         data[i] = data[i-1] + size[i-1];
         h = (height + (1 << s) - 1) >> s;
@@ -153,10 +158,12 @@ int avpriv_set_systematic_pal2(uint32_t pal[256], enum AVPixelFormat pix_fmt)
 {
     int i;
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         int r, g, b;
 
-        switch (pix_fmt) {
+        switch (pix_fmt)
+        {
         case AV_PIX_FMT_RGB8:
             r = (i>>5    )*36;
             g = ((i>>2)&7)*36;
@@ -212,7 +219,8 @@ int av_image_alloc(uint8_t *pointers[4], int linesizes[4],
     buf = av_malloc(ret + align);
     if (!buf)
         return AVERROR(ENOMEM);
-    if ((ret = av_image_fill_pointers(pointers, pix_fmt, h, buf, linesizes)) < 0) {
+    if ((ret = av_image_fill_pointers(pointers, pix_fmt, h, buf, linesizes)) < 0)
+    {
         av_free(buf);
         return ret;
     }
@@ -220,17 +228,19 @@ int av_image_alloc(uint8_t *pointers[4], int linesizes[4],
         avpriv_set_systematic_pal2((uint32_t*)pointers[1], pix_fmt);
 
     if ((desc->flags & AV_PIX_FMT_FLAG_PAL ||
-         desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) &&
-        pointers[1] - pointers[0] > linesizes[0] * h) {
+    desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) &&
+    pointers[1] - pointers[0] > linesizes[0] * h)
+    {
         /* zero-initialize the padding before the palette */
         memset(pointers[0] + linesizes[0] * h, 0,
-               pointers[1] - pointers[0] - linesizes[0] * h);
+        pointers[1] - pointers[0] - linesizes[0] * h);
     }
 
     return ret;
 }
 
-typedef struct ImgUtils {
+typedef struct ImgUtils
+{
     const AVClass *class;
     int   log_offset;
     void *log_ctx;
@@ -278,7 +288,8 @@ void av_image_copy_plane(uint8_t       *dst, int dst_linesize,
         return;
     av_assert0(abs(src_linesize) >= bytewidth);
     av_assert0(abs(dst_linesize) >= bytewidth);
-    for (;height > 0; height--) {
+    for (; height > 0; height--)
+    {
         memcpy(dst, src, bytewidth);
         dst += dst_linesize;
         src += src_linesize;
@@ -295,26 +306,31 @@ void av_image_copy(uint8_t *dst_data[4], int dst_linesizes[4],
         return;
 
     if (desc->flags & AV_PIX_FMT_FLAG_PAL ||
-        desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) {
+    desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL)
+    {
         av_image_copy_plane(dst_data[0], dst_linesizes[0],
-                            src_data[0], src_linesizes[0],
-                            width, height);
+        src_data[0], src_linesizes[0],
+        width, height);
         /* copy the palette */
         memcpy(dst_data[1], src_data[1], 4*256);
-    } else {
+    }
+    else {
         int i, planes_nb = 0;
 
         for (i = 0; i < desc->nb_components; i++)
             planes_nb = FFMAX(planes_nb, desc->comp[i].plane + 1);
 
-        for (i = 0; i < planes_nb; i++) {
+        for (i = 0; i < planes_nb; i++)
+        {
             int h = height;
             int bwidth = av_image_get_linesize(pix_fmt, width, i);
-            if (bwidth < 0) {
+            if (bwidth < 0)
+            {
                 av_log(NULL, AV_LOG_ERROR, "av_image_get_linesize failed\n");
                 return;
             }
-            if (i == 1 || i == 2) {
+            if (i == 1 || i == 2)
+            {
                 h = FF_CEIL_RSHIFT(height, desc->log2_chroma_h);
             }
             av_image_copy_plane(dst_data[i], dst_linesizes[i],
@@ -363,7 +379,7 @@ int av_image_get_buffer_size(enum AVPixelFormat pix_fmt,
         return width * height;
 
     return av_image_fill_arrays(data, linesize, NULL, pix_fmt,
-                                width, height, align);
+    width, height, align);
 }
 
 int av_image_copy_to_buffer(uint8_t *dst, int dst_size,
@@ -385,19 +401,22 @@ int av_image_copy_to_buffer(uint8_t *dst, int dst_size,
     nb_planes++;
 
     av_image_fill_linesizes(linesize, pix_fmt, width);
-    for (i = 0; i < nb_planes; i++) {
+    for (i = 0; i < nb_planes; i++)
+    {
         int h, shift = (i == 1 || i == 2) ? desc->log2_chroma_h : 0;
         const uint8_t *src = src_data[i];
         h = (height + (1 << shift) - 1) >> shift;
 
-        for (j = 0; j < h; j++) {
+        for (j = 0; j < h; j++)
+        {
             memcpy(dst, src, linesize[i]);
             dst += FFALIGN(linesize[i], align);
             src += src_linesize[i];
         }
     }
 
-    if (desc->flags & AV_PIX_FMT_FLAG_PAL) {
+    if (desc->flags & AV_PIX_FMT_FLAG_PAL)
+    {
         uint32_t *d32 = (uint32_t *)(((size_t)dst + 3) & ~3);
         for (i = 0; i<256; i++)
             AV_WL32(d32 + i, AV_RN32(src_data[1] + 4*i));

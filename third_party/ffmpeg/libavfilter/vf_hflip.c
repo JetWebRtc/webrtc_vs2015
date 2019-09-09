@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Benoit Fouet
  * Copyright (c) 2010 Stefano Sabatini
  *
@@ -35,7 +35,8 @@
 #include "libavutil/intreadwrite.h"
 #include "libavutil/imgutils.h"
 
-typedef struct FlipContext {
+typedef struct FlipContext
+{
     int max_step[4];    ///< max pixel step for each plane, expressed as a number of bytes
     int planewidth[4];  ///< width of each plane
     int planeheight[4]; ///< height of each plane
@@ -46,12 +47,13 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *pix_fmts = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & AV_PIX_FMT_FLAG_HWACCEL ||
-              desc->flags & AV_PIX_FMT_FLAG_BITSTREAM ||
-              (desc->log2_chroma_w != desc->log2_chroma_h &&
-               desc->comp[0].plane == desc->comp[1].plane)))
+                desc->flags & AV_PIX_FMT_FLAG_BITSTREAM ||
+                (desc->log2_chroma_w != desc->log2_chroma_h &&
+                 desc->comp[0].plane == desc->comp[1].plane)))
             ff_add_format(&pix_fmts, fmt);
     }
 
@@ -74,7 +76,8 @@ static int config_props(AVFilterLink *inlink)
     return 0;
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
@@ -87,7 +90,8 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
     uint8_t *inrow, *outrow;
     int i, j, plane, step;
 
-    for (plane = 0; plane < 4 && in->data[plane] && in->linesize[plane]; plane++) {
+    for (plane = 0; plane < 4 && in->data[plane] && in->linesize[plane]; plane++)
+    {
         const int width  = s->planewidth[plane];
         const int height = s->planeheight[plane];
         const int start = (height *  job   ) / nb_jobs;
@@ -97,12 +101,14 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
 
         outrow = out->data[plane] + start * out->linesize[plane];
         inrow  = in ->data[plane] + start * in->linesize[plane] + (width - 1) * step;
-        for (i = start; i < end; i++) {
-            switch (step) {
+        for (i = start; i < end; i++)
+        {
+            switch (step)
+            {
             case 1:
                 for (j = 0; j < width; j++)
                     outrow[j] = inrow[-j];
-            break;
+                break;
 
             case 2:
             {
@@ -117,7 +123,8 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int job, int nb_jobs)
             {
                 uint8_t *in  =  inrow;
                 uint8_t *out = outrow;
-                for (j = 0; j < width; j++, out += 3, in -= 3) {
+                for (j = 0; j < width; j++, out += 3, in -= 3)
+                {
                     int32_t v = AV_RB24(in);
                     AV_WB24(out, v);
                 }
@@ -154,7 +161,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -171,7 +179,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad avfilter_vf_hflip_inputs[] = {
+static const AVFilterPad avfilter_vf_hflip_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -181,7 +190,8 @@ static const AVFilterPad avfilter_vf_hflip_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_hflip_outputs[] = {
+static const AVFilterPad avfilter_vf_hflip_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -189,7 +199,8 @@ static const AVFilterPad avfilter_vf_hflip_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_hflip = {
+AVFilter ff_vf_hflip =
+{
     .name          = "hflip",
     .description   = NULL_IF_CONFIG_SMALL("Horizontally flip the input video."),
     .priv_size     = sizeof(FlipContext),

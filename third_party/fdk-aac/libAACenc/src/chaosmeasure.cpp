@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -99,44 +99,48 @@ amm-info@iis.fraunhofer.de
 *****************************************************************************/
 static void
 FDKaacEnc_FDKaacEnc_CalculateChaosMeasurePeakFast( FIXP_DBL  *RESTRICT paMDCTDataNM0,
-                               INT        numberOfLines,
-                               FIXP_DBL  *RESTRICT chaosMeasure )
+        INT        numberOfLines,
+        FIXP_DBL  *RESTRICT chaosMeasure )
 {
-  INT i, j;
+    INT i, j;
 
-  /* calculate chaos measure by "peak filter" */
-  for (i=0; i<2; i++) {
-    /* make even and odd pass through data */
-    FIXP_DBL left,center; /* left, center tap of filter */
+    /* calculate chaos measure by "peak filter" */
+    for (i=0; i<2; i++)
+    {
+        /* make even and odd pass through data */
+        FIXP_DBL left,center; /* left, center tap of filter */
 
-    left   = (FIXP_DBL)((LONG)paMDCTDataNM0[i]^((LONG)paMDCTDataNM0[i]>>(DFRACT_BITS-1)));
-    center = (FIXP_DBL)((LONG)paMDCTDataNM0[i+2]^((LONG)paMDCTDataNM0[i+2]>>(DFRACT_BITS-1)));
+        left   = (FIXP_DBL)((LONG)paMDCTDataNM0[i]^((LONG)paMDCTDataNM0[i]>>(DFRACT_BITS-1)));
+        center = (FIXP_DBL)((LONG)paMDCTDataNM0[i+2]^((LONG)paMDCTDataNM0[i+2]>>(DFRACT_BITS-1)));
 
-    for (j = i+2; j < numberOfLines - 2; j+=2) {
-      FIXP_DBL right = (FIXP_DBL)((LONG)paMDCTDataNM0[j+2]^((LONG)paMDCTDataNM0[j+2]>>(DFRACT_BITS-1)));
-      FIXP_DBL tmp = (left>>1)+(right>>1);
+        for (j = i+2; j < numberOfLines - 2; j+=2)
+        {
+            FIXP_DBL right = (FIXP_DBL)((LONG)paMDCTDataNM0[j+2]^((LONG)paMDCTDataNM0[j+2]>>(DFRACT_BITS-1)));
+            FIXP_DBL tmp = (left>>1)+(right>>1);
 
-      if (tmp < center ) {
-         INT leadingBits = CntLeadingZeros(center)-1;
-         tmp = schur_div(tmp<<leadingBits, center<<leadingBits, 8);
-         chaosMeasure[j] = fMult(tmp,tmp);
-      }
-      else {
-         chaosMeasure[j] = (FIXP_DBL)MAXVAL_DBL;
-      }
+            if (tmp < center )
+            {
+                INT leadingBits = CntLeadingZeros(center)-1;
+                tmp = schur_div(tmp<<leadingBits, center<<leadingBits, 8);
+                chaosMeasure[j] = fMult(tmp,tmp);
+            }
+            else
+            {
+                chaosMeasure[j] = (FIXP_DBL)MAXVAL_DBL;
+            }
 
-      left   = center;
-      center = right;
+            left   = center;
+            center = right;
+        }
     }
-  }
 
-  /* provide chaos measure for first few lines */
-  chaosMeasure[0] = chaosMeasure[2];
-  chaosMeasure[1] = chaosMeasure[2];
+    /* provide chaos measure for first few lines */
+    chaosMeasure[0] = chaosMeasure[2];
+    chaosMeasure[1] = chaosMeasure[2];
 
-  /* provide chaos measure for last few lines */
-  for (i = (numberOfLines-3); i < numberOfLines; i++)
-    chaosMeasure[i] = FL2FXCONST_DBL(0.5);
+    /* provide chaos measure for last few lines */
+    for (i = (numberOfLines-3); i < numberOfLines; i++)
+        chaosMeasure[i] = FL2FXCONST_DBL(0.5);
 }
 
 
@@ -150,12 +154,12 @@ FDKaacEnc_FDKaacEnc_CalculateChaosMeasurePeakFast( FIXP_DBL  *RESTRICT paMDCTDat
 *****************************************************************************/
 void
 FDKaacEnc_CalculateChaosMeasure( FIXP_DBL    *paMDCTDataNM0,
-                       INT          numberOfLines,
-                       FIXP_DBL    *chaosMeasure )
+                                 INT          numberOfLines,
+                                 FIXP_DBL    *chaosMeasure )
 
 {
     FDKaacEnc_FDKaacEnc_CalculateChaosMeasurePeakFast( paMDCTDataNM0,
-                                   numberOfLines,
-                                   chaosMeasure );
+            numberOfLines,
+            chaosMeasure );
 }
 

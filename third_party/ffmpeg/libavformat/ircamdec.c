@@ -1,4 +1,4 @@
-/*
+﻿/*
  * IRCAM demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -28,25 +28,27 @@
 static int ircam_probe(AVProbeData *p)
 {
     if ((p->buf[0] == 0x64 && p->buf[1] == 0xA3 && p->buf[3] == 0x00 &&
-         p->buf[2] >=    1 && p->buf[2] <= 4) ||
-        (p->buf[3] == 0x64 && p->buf[2] == 0xA3 && p->buf[0] == 0x00 &&
-         p->buf[1] >=    1 && p->buf[1] <= 3) &&
-        AV_RN32(p->buf + 4) && AV_RN32(p->buf + 8))
+            p->buf[2] >=    1 && p->buf[2] <= 4) ||
+            (p->buf[3] == 0x64 && p->buf[2] == 0xA3 && p->buf[0] == 0x00 &&
+             p->buf[1] >=    1 && p->buf[1] <= 3) &&
+            AV_RN32(p->buf + 4) && AV_RN32(p->buf + 8))
         return AVPROBE_SCORE_MAX / 4 * 3;
     return 0;
 }
 
-static const struct endianess {
+static const struct endianess
+{
     uint32_t magic;
     int      is_le;
-} table[] = {
-  { 0x64A30100, 0 },
-  { 0x64A30200, 1 },
-  { 0x64A30300, 0 },
-  { 0x64A30400, 1 },
-  { 0x0001A364, 1 },
-  { 0x0002A364, 0 },
-  { 0x0003A364, 1 },
+} table[] =
+{
+    { 0x64A30100, 0 },
+    { 0x64A30200, 1 },
+    { 0x64A30300, 0 },
+    { 0x64A30400, 1 },
+    { 0x0001A364, 1 },
+    { 0x0002A364, 0 },
+    { 0x0003A364, 1 },
 };
 
 static int ircam_read_header(AVFormatContext *s)
@@ -57,24 +59,31 @@ static int ircam_read_header(AVFormatContext *s)
     AVStream *st;
 
     magic = avio_rl32(s->pb);
-    for (i = 0; i < 7; i++) {
-        if (magic == table[i].magic) {
+    for (i = 0; i < 7; i++)
+    {
+        if (magic == table[i].magic)
+        {
             le = table[i].is_le;
             break;
         }
     }
 
-    if (le == 1) {
+    if (le == 1)
+    {
         sample_rate = av_int2float(avio_rl32(s->pb));
         channels    = avio_rl32(s->pb);
         tag         = avio_rl32(s->pb);
         tags        = ff_codec_ircam_le_tags;
-    } else if (le == 0) {
+    }
+    else if (le == 0)
+    {
         sample_rate = av_int2float(avio_rb32(s->pb));
         channels    = avio_rb32(s->pb);
         tag         = avio_rb32(s->pb);
         tags        = ff_codec_ircam_be_tags;
-    } else {
+    }
+    else
+    {
         return AVERROR_INVALIDDATA;
     }
 
@@ -90,7 +99,8 @@ static int ircam_read_header(AVFormatContext *s)
     st->codec->sample_rate = sample_rate;
 
     st->codec->codec_id = ff_codec_get_id(tags, tag);
-    if (st->codec->codec_id == AV_CODEC_ID_NONE) {
+    if (st->codec->codec_id == AV_CODEC_ID_NONE)
+    {
         av_log(s, AV_LOG_ERROR, "unknown tag %X\n", tag);
         return AVERROR_INVALIDDATA;
     }
@@ -103,7 +113,8 @@ static int ircam_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_ircam_demuxer = {
+AVInputFormat ff_ircam_demuxer =
+{
     .name           = "ircam",
     .long_name      = NULL_IF_CONFIG_SMALL("Berkeley/IRCAM/CARL Sound Format"),
     .read_probe     = ircam_probe,

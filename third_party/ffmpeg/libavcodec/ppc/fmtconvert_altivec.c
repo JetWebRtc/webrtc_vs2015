@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -29,9 +29,10 @@
 #if HAVE_ALTIVEC
 
 static void int32_to_float_fmul_scalar_altivec(float *dst, const int32_t *src,
-                                               float mul, int len)
+        float mul, int len)
 {
-    union {
+    union
+    {
         vector float v;
         float s[4];
     } mul_u;
@@ -42,7 +43,8 @@ static void int32_to_float_fmul_scalar_altivec(float *dst, const int32_t *src,
     mul_u.s[0] = mul;
     mul_v = vec_splat(mul_u.v, 0);
 
-    for (i = 0; i < len; i += 8) {
+    for (i = 0; i < len; i += 8)
+    {
         src1 = vec_ctf(vec_ld(0,  src+i), 0);
         src2 = vec_ctf(vec_ld(16, src+i), 0);
         dst1 = vec_madd(src1, mul_v, zero);

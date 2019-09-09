@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Musepack decoder
  * Copyright (c) 2006 Konstantin Shishkov
  *
@@ -41,15 +41,17 @@
 #define MPC_FRAME_SIZE   (BANDS * SAMPLES_PER_BAND)
 
 /** Subband structure - hold all variables for each subband */
-typedef struct Band {
+typedef struct Band
+{
     int msf; ///< mid-stereo flag
     int res[2];
     int scfi[2];
     int scf_idx[2][3];
     int Q[2];
-}Band;
+} Band;
 
-typedef struct MPCContext {
+typedef struct MPCContext
+{
     BswapDSPContext bdsp;
     MPADSPContext mpadsp;
     GetBitContext gb;

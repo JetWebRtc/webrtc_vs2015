@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Musepack SV8 demuxer
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -32,7 +32,8 @@
 #define TAG_MPCK MKTAG('M','P','C','K')
 
 /// Reserved MPC tags
-enum MPCPacketTags{
+enum MPCPacketTags
+{
     TAG_STREAMHDR   = MKMPCTAG('S','H'),
     TAG_STREAMEND   = MKMPCTAG('S','E'),
 
@@ -47,7 +48,8 @@ enum MPCPacketTags{
 
 static const int mpc8_rate[8] = { 44100, 48000, 37800, 32000, -1, -1, -1, -1 };
 
-typedef struct MPCContext {
+typedef struct MPCContext
+{
     int ver;
     int64_t header_pos;
     int64_t samples;
@@ -61,14 +63,17 @@ static inline int64_t bs_get_v(const uint8_t **bs)
     int br = 0;
     int c;
 
-    do {
-        c = **bs; (*bs)++;
+    do
+    {
+        c = **bs;
+        (*bs)++;
         v <<= 7;
         v |= c & 0x7F;
         br++;
         if (br > 10)
             return -1;
-    } while (c & 0x80);
+    }
+    while (c & 0x80);
 
     return v - br;
 }
@@ -83,7 +88,8 @@ static int mpc8_probe(AVProbeData *p)
         return 0;
     if (AV_RL32(p->buf) != TAG_MPCK)
         return 0;
-    while (bs < bs_end + 3) {
+    while (bs < bs_end + 3)
+    {
         int header_found = (bs[0] == 'S' && bs[1] == 'H');
         if (bs[0] < 'A' || bs[0] > 'Z' || bs[1] < 'A' || bs[1] > 'Z')
             return 0;
@@ -93,13 +99,16 @@ static int mpc8_probe(AVProbeData *p)
             return 0;
         if (size >= bs_end - bs + 2)
             return AVPROBE_SCORE_EXTENSION - 1; // seems to be valid MPC but no header yet
-        if (header_found) {
+        if (header_found)
+        {
             if (size < 11 || size > 28)
                 return 0;
             if (!AV_RL32(bs)) //zero CRC is invalid
                 return 0;
             return AVPROBE_SCORE_MAX;
-        } else {
+        }
+        else
+        {
             bs += size - 2;
         }
     }
@@ -110,7 +119,8 @@ static inline int64_t gb_get_v(GetBitContext *gb)
 {
     uint64_t v = 0;
     int bits = 0;
-    while(get_bits1(gb) && bits < 64-7){
+    while(get_bits1(gb) && bits < 64-7)
+    {
         v <<= 7;
         v |= get_bits(gb, 7);
         bits += 7;
@@ -139,25 +149,29 @@ static void mpc8_parse_seektable(AVFormatContext *s, int64_t off)
     int i, t, seekd, ret;
     GetBitContext gb;
 
-    if (s->nb_streams == 0) {
+    if (s->nb_streams == 0)
+    {
         av_log(s, AV_LOG_ERROR, "No stream added before parsing seek table\n");
         return;
     }
 
     avio_seek(s->pb, off, SEEK_SET);
     mpc8_get_chunk_header(s->pb, &tag, &size);
-    if(tag != TAG_SEEKTABLE){
+    if(tag != TAG_SEEKTABLE)
+    {
         av_log(s, AV_LOG_ERROR, "No seek table at given position\n");
         return;
     }
-    if (size > INT_MAX/10 || size<=0) {
+    if (size > INT_MAX/10 || size<=0)
+    {
         av_log(s, AV_LOG_ERROR, "Bad seek table size\n");
         return;
     }
     if(!(buf = av_malloc(size + AV_INPUT_BUFFER_PADDING_SIZE)))
         return;
     ret = avio_read(s->pb, buf, size);
-    if (ret != size) {
+    if (ret != size)
+    {
         av_log(s, AV_LOG_ERROR, "seek table truncated\n");
         av_free(buf);
         return;
@@ -166,17 +180,20 @@ static void mpc8_parse_seektable(AVFormatContext *s, int64_t off)
 
     init_get_bits(&gb, buf, size * 8);
     size = gb_get_v(&gb);
-    if(size > UINT_MAX/4 || size > c->samples/1152){
+    if(size > UINT_MAX/4 || size > c->samples/1152)
+    {
         av_log(s, AV_LOG_ERROR, "Seek table is too big\n");
         return;
     }
     seekd = get_bits(&gb, 4);
-    for(i = 0; i < 2; i++){
+    for(i = 0; i < 2; i++)
+    {
         pos = gb_get_v(&gb) + c->header_pos;
         ppos[1 - i] = pos;
         av_add_index_entry(s->streams[0], pos, i, 0, 0, AVINDEX_KEYFRAME);
     }
-    for(; i < size; i++){
+    for(; i < size; i++)
+    {
         t = get_unary(&gb, 1, 33) << 12;
         t += get_bits(&gb, 12);
         if(t & 1)
@@ -194,7 +211,8 @@ static void mpc8_handle_chunk(AVFormatContext *s, int tag, int64_t chunk_pos, in
     AVIOContext *pb = s->pb;
     int64_t pos, off;
 
-    switch(tag){
+    switch(tag)
+    {
     case TAG_SEEKTBLOFF:
         pos = avio_tell(pb) + size;
         off = ffio_read_varlen(pb);
@@ -215,15 +233,18 @@ static int mpc8_read_header(AVFormatContext *s)
     int64_t size, pos;
 
     c->header_pos = avio_tell(pb);
-    if(avio_rl32(pb) != TAG_MPCK){
+    if(avio_rl32(pb) != TAG_MPCK)
+    {
         av_log(s, AV_LOG_ERROR, "Not a Musepack8 file\n");
         return AVERROR_INVALIDDATA;
     }
 
-    while(!avio_feof(pb)){
+    while(!avio_feof(pb))
+    {
         pos = avio_tell(pb);
         mpc8_get_chunk_header(pb, &tag, &size);
-        if (size < 0) {
+        if (size < 0)
+        {
             av_log(s, AV_LOG_ERROR, "Invalid chunk length\n");
             return AVERROR_INVALIDDATA;
         }
@@ -231,14 +252,16 @@ static int mpc8_read_header(AVFormatContext *s)
             break;
         mpc8_handle_chunk(s, tag, pos, size);
     }
-    if(tag != TAG_STREAMHDR){
+    if(tag != TAG_STREAMHDR)
+    {
         av_log(s, AV_LOG_ERROR, "Stream header not found\n");
         return AVERROR_INVALIDDATA;
     }
     pos = avio_tell(pb);
     avio_skip(pb, 4); //CRC
     c->ver = avio_r8(pb);
-    if(c->ver != 8){
+    if(c->ver != 8)
+    {
         av_log(s, AV_LOG_ERROR, "Unknown stream version %d\n", c->ver);
         return AVERROR_PATCHWELCOME;
     }
@@ -264,7 +287,8 @@ static int mpc8_read_header(AVFormatContext *s)
     if (size > 0)
         avio_skip(pb, size);
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         int64_t pos = avio_tell(s->pb);
         c->apetag_start = ff_ape_parse_tag(s);
         avio_seek(s->pb, pos, SEEK_SET);
@@ -279,7 +303,8 @@ static int mpc8_read_packet(AVFormatContext *s, AVPacket *pkt)
     int tag;
     int64_t pos, size;
 
-    while(!avio_feof(s->pb)){
+    while(!avio_feof(s->pb))
+    {
         pos = avio_tell(s->pb);
 
         /* don't return bogus packets with the ape tag data */
@@ -289,7 +314,8 @@ static int mpc8_read_packet(AVFormatContext *s, AVPacket *pkt)
         mpc8_get_chunk_header(s->pb, &tag, &size);
         if (size < 0)
             return -1;
-        if(tag == TAG_AUDIOPACKET){
+        if(tag == TAG_AUDIOPACKET)
+        {
             if(av_get_packet(s->pb, pkt, size) < 0)
                 return AVERROR(ENOMEM);
             pkt->stream_index = 0;
@@ -316,7 +342,8 @@ static int mpc8_read_seek(AVFormatContext *s, int stream_index, int64_t timestam
 }
 
 
-AVInputFormat ff_mpc8_demuxer = {
+AVInputFormat ff_mpc8_demuxer =
+{
     .name           = "mpc8",
     .long_name      = NULL_IF_CONFIG_SMALL("Musepack SV8"),
     .priv_data_size = sizeof(MPCContext),

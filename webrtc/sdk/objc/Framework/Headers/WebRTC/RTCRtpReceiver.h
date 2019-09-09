@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,10 +17,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /** Represents the media type of the RtpReceiver. */
-typedef NS_ENUM(NSInteger, RTCRtpMediaType) {
-  RTCRtpMediaTypeAudio,
-  RTCRtpMediaTypeVideo,
-  RTCRtpMediaTypeData,
+typedef NS_ENUM(NSInteger, RTCRtpMediaType)
+{
+    RTCRtpMediaTypeAudio,
+    RTCRtpMediaTypeVideo,
+    RTCRtpMediaTypeData,
 };
 
 @class RTCRtpReceiver;

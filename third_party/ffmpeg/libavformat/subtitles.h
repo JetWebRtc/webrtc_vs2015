@@ -26,18 +26,21 @@
 #include "avformat.h"
 #include "libavutil/bprint.h"
 
-enum sub_sort {
+enum sub_sort
+{
     SUB_SORT_TS_POS = 0,    ///< sort by timestamps, then position
     SUB_SORT_POS_TS,        ///< sort by position, then timestamps
 };
 
-enum ff_utf_type {
+enum ff_utf_type
+{
     FF_UTF_8,       // or other 8 bit encodings
     FF_UTF16LE,
     FF_UTF16BE,
 };
 
-typedef struct {
+typedef struct
+{
     int type;
     AVIOContext *pb;
     unsigned char buf[8];
@@ -99,7 +102,8 @@ int ff_text_peek_r8(FFTextReader *r);
  */
 void ff_text_read(FFTextReader *r, char *buf, size_t size);
 
-typedef struct {
+typedef struct
+{
     AVPacket *subs;         ///< array of subtitles packets
     int nb_subs;            ///< number of subtitles packets
     int allocated_size;     ///< allocated size for subs
@@ -186,7 +190,8 @@ static av_always_inline int ff_subtitles_next_line(const char *ptr)
 {
     int n = strcspn(ptr, "\r\n");
     ptr += n;
-    if (*ptr == '\r') {
+    if (*ptr == '\r')
+    {
         ptr++;
         n++;
     }

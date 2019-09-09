@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -44,36 +44,46 @@ static int getopt(int argc, char *argv[], char *opts)
     int c;
     char *cp;
 
-    if (sp == 1) {
+    if (sp == 1)
+    {
         if (optind >= argc ||
-            argv[optind][0] != '-' || argv[optind][1] == '\0')
+                argv[optind][0] != '-' || argv[optind][1] == '\0')
             return EOF;
-        else if (!strcmp(argv[optind], "--")) {
+        else if (!strcmp(argv[optind], "--"))
+        {
             optind++;
             return EOF;
         }
     }
     optopt = c = argv[optind][sp];
-    if (c == ':' || !(cp = strchr(opts, c))) {
+    if (c == ':' || !(cp = strchr(opts, c)))
+    {
         fprintf(stderr, ": illegal option -- %c\n", c);
-        if (argv[optind][++sp] == '\0') {
+        if (argv[optind][++sp] == '\0')
+        {
             optind++;
             sp = 1;
         }
         return '?';
     }
-    if (*++cp == ':') {
+    if (*++cp == ':')
+    {
         if (argv[optind][sp+1] != '\0')
             optarg = &argv[optind++][sp+1];
-        else if(++optind >= argc) {
+        else if(++optind >= argc)
+        {
             fprintf(stderr, ": option requires an argument -- %c\n", c);
             sp = 1;
             return '?';
-        } else
+        }
+        else
             optarg = argv[optind++];
         sp = 1;
-    } else {
-        if (argv[optind][++sp] == '\0') {
+    }
+    else
+    {
+        if (argv[optind][++sp] == '\0')
+        {
             sp = 1;
             optind++;
         }

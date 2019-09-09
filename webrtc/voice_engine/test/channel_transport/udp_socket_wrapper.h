@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,11 +13,13 @@
 
 #include "webrtc/voice_engine/test/channel_transport/udp_transport.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class EventWrapper;
 
-namespace test {
+namespace test
+{
 
 class UdpSocketManager;
 

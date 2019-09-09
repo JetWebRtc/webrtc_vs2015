@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Stefano Sabatini
  * Copyright (c) 2008 Victor Paesa
  *
@@ -36,7 +36,8 @@
 #include "internal.h"
 #include "video.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "FRAME_RATE",  ///< defined only for constant frame-rate video
     "INTERLACED",  ///< tell if the current frame is interlaced
     "N",           ///< frame / sample number (starting at zero)
@@ -60,7 +61,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_FRAME_RATE,
     VAR_INTERLACED,
     VAR_N,
@@ -84,7 +86,8 @@ enum var_name {
     VAR_VARS_NB
 };
 
-typedef struct SetPTSContext {
+typedef struct SetPTSContext
+{
     const AVClass *class;
     char *expr_str;
     AVExpr *expr;
@@ -98,7 +101,8 @@ static av_cold int init(AVFilterContext *ctx)
     int ret;
 
     if ((ret = av_expr_parse(&setpts->expr, setpts->expr_str,
-                             var_names, NULL, NULL, NULL, NULL, 0, ctx)) < 0) {
+                             var_names, NULL, NULL, NULL, NULL, 0, ctx)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Error while parsing expression '%s'\n", setpts->expr_str);
         return ret;
     }
@@ -124,11 +128,11 @@ static int config_input(AVFilterLink *inlink)
     setpts->var_values[VAR_RTCSTART] = av_gettime();
 
     setpts->var_values[VAR_SR] =
-    setpts->var_values[VAR_SAMPLE_RATE] =
-        setpts->type == AVMEDIA_TYPE_AUDIO ? inlink->sample_rate : NAN;
+        setpts->var_values[VAR_SAMPLE_RATE] =
+            setpts->type == AVMEDIA_TYPE_AUDIO ? inlink->sample_rate : NAN;
 
     setpts->var_values[VAR_FRAME_RATE] = inlink->frame_rate.num && inlink->frame_rate.den ?
-        av_q2d(inlink->frame_rate) : NAN;
+                                         av_q2d(inlink->frame_rate) : NAN;
 
     av_log(inlink->src, AV_LOG_VERBOSE, "TB:%f FRAME_RATE:%f SAMPLE_RATE:%f\n",
            setpts->var_values[VAR_TB],
@@ -158,7 +162,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int64_t in_pts = frame->pts;
     double d;
 
-    if (isnan(setpts->var_values[VAR_STARTPTS])) {
+    if (isnan(setpts->var_values[VAR_STARTPTS]))
+    {
         setpts->var_values[VAR_STARTPTS] = TS2D(frame->pts);
         setpts->var_values[VAR_STARTT  ] = TS2T(frame->pts, inlink->time_base);
     }
@@ -167,9 +172,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     setpts->var_values[VAR_POS       ] = av_frame_get_pkt_pos(frame) == -1 ? NAN : av_frame_get_pkt_pos(frame);
     setpts->var_values[VAR_RTCTIME   ] = av_gettime();
 
-    if (inlink->type == AVMEDIA_TYPE_VIDEO) {
+    if (inlink->type == AVMEDIA_TYPE_VIDEO)
+    {
         setpts->var_values[VAR_INTERLACED] = frame->interlaced_frame;
-    } else if (inlink->type == AVMEDIA_TYPE_AUDIO) {
+    }
+    else if (inlink->type == AVMEDIA_TYPE_AUDIO)
+    {
         setpts->var_values[VAR_S] = frame->nb_samples;
         setpts->var_values[VAR_NB_SAMPLES] = frame->nb_samples;
     }
@@ -178,27 +186,31 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     frame->pts = D2TS(d);
 
     av_log(inlink->dst, AV_LOG_TRACE,
-            "N:%"PRId64" PTS:%s T:%f POS:%s",
-            (int64_t)setpts->var_values[VAR_N],
-            d2istr(setpts->var_values[VAR_PTS]),
-            setpts->var_values[VAR_T],
-            d2istr(setpts->var_values[VAR_POS]));
-    switch (inlink->type) {
+           "N:%"PRId64" PTS:%s T:%f POS:%s",
+           (int64_t)setpts->var_values[VAR_N],
+           d2istr(setpts->var_values[VAR_PTS]),
+           setpts->var_values[VAR_T],
+           d2istr(setpts->var_values[VAR_POS]));
+    switch (inlink->type)
+    {
     case AVMEDIA_TYPE_VIDEO:
         av_log(inlink->dst, AV_LOG_TRACE, " INTERLACED:%"PRId64,
-                (int64_t)setpts->var_values[VAR_INTERLACED]);
+               (int64_t)setpts->var_values[VAR_INTERLACED]);
         break;
     case AVMEDIA_TYPE_AUDIO:
         av_log(inlink->dst, AV_LOG_TRACE, " NB_SAMPLES:%"PRId64" NB_CONSUMED_SAMPLES:%"PRId64,
-                (int64_t)setpts->var_values[VAR_NB_SAMPLES],
-                (int64_t)setpts->var_values[VAR_NB_CONSUMED_SAMPLES]);
+               (int64_t)setpts->var_values[VAR_NB_SAMPLES],
+               (int64_t)setpts->var_values[VAR_NB_CONSUMED_SAMPLES]);
         break;
     }
     av_log(inlink->dst, AV_LOG_TRACE, " -> PTS:%s T:%f\n", d2istr(d), TS2T(d, inlink->time_base));
 
-    if (inlink->type == AVMEDIA_TYPE_VIDEO) {
+    if (inlink->type == AVMEDIA_TYPE_VIDEO)
+    {
         setpts->var_values[VAR_N] += 1.0;
-    } else {
+    }
+    else
+    {
         setpts->var_values[VAR_N] += frame->nb_samples;
     }
 
@@ -206,7 +218,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     setpts->var_values[VAR_PREV_INT   ] = TS2T(in_pts, inlink->time_base);
     setpts->var_values[VAR_PREV_OUTPTS] = TS2D(frame->pts);
     setpts->var_values[VAR_PREV_OUTT]   = TS2T(frame->pts, inlink->time_base);
-    if (setpts->type == AVMEDIA_TYPE_AUDIO) {
+    if (setpts->type == AVMEDIA_TYPE_AUDIO)
+    {
         setpts->var_values[VAR_NB_CONSUMED_SAMPLES] += frame->nb_samples;
     }
     return ff_filter_frame(inlink->dst->outputs[0], frame);
@@ -221,7 +234,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 #define OFFSET(x) offsetof(SetPTSContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "expr", "Expression determining the frame timestamp", OFFSET(expr_str), AV_OPT_TYPE_STRING, { .str = "PTS" }, .flags = FLAGS },
     { NULL }
 };
@@ -230,7 +244,8 @@ static const AVOption options[] = {
 #define setpts_options options
 AVFILTER_DEFINE_CLASS(setpts);
 
-static const AVFilterPad avfilter_vf_setpts_inputs[] = {
+static const AVFilterPad avfilter_vf_setpts_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -240,7 +255,8 @@ static const AVFilterPad avfilter_vf_setpts_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_setpts_outputs[] = {
+static const AVFilterPad avfilter_vf_setpts_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -248,7 +264,8 @@ static const AVFilterPad avfilter_vf_setpts_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_setpts = {
+AVFilter ff_vf_setpts =
+{
     .name      = "setpts",
     .description = NULL_IF_CONFIG_SMALL("Set PTS for the output video frame."),
     .init      = init,
@@ -267,7 +284,8 @@ AVFilter ff_vf_setpts = {
 #define asetpts_options options
 AVFILTER_DEFINE_CLASS(asetpts);
 
-static const AVFilterPad asetpts_inputs[] = {
+static const AVFilterPad asetpts_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -277,7 +295,8 @@ static const AVFilterPad asetpts_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad asetpts_outputs[] = {
+static const AVFilterPad asetpts_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -285,7 +304,8 @@ static const AVFilterPad asetpts_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_asetpts = {
+AVFilter ff_af_asetpts =
+{
     .name        = "asetpts",
     .description = NULL_IF_CONFIG_SMALL("Set PTS for the output audio frame."),
     .init        = init,

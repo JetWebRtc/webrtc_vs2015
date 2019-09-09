@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Half-pel DSP functions.
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -42,7 +42,8 @@ typedef void (*op_pixels_func)(uint8_t *block /*align width (8 or 16)*/,
 /**
  * Half-pel DSP context.
  */
-typedef struct HpelDSPContext {
+typedef struct HpelDSPContext
+{
     /**
      * Halfpel motion compensation with rounding (a+b+1)>>1.
      * this is an array[4][4] of motion compensation functions for 4

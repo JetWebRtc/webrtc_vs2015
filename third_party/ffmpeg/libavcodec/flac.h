@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLAC (Free Lossless Audio Codec) decoder/demuxer common functions
  * Copyright (c) 2008 Justin Ruggles
  *
@@ -37,14 +37,16 @@
 #define FLAC_MAX_BLOCKSIZE  65535
 #define FLAC_MIN_FRAME_SIZE    11
 
-enum {
+enum
+{
     FLAC_CHMODE_INDEPENDENT = 0,
     FLAC_CHMODE_LEFT_SIDE   = 1,
     FLAC_CHMODE_RIGHT_SIDE  = 2,
     FLAC_CHMODE_MID_SIDE    = 3,
 };
 
-enum {
+enum
+{
     FLAC_METADATA_TYPE_STREAMINFO = 0,
     FLAC_METADATA_TYPE_PADDING,
     FLAC_METADATA_TYPE_APPLICATION,
@@ -55,7 +57,8 @@ enum {
     FLAC_METADATA_TYPE_INVALID = 127
 };
 
-enum FLACExtradataFormat {
+enum FLACExtradataFormat
+{
     FLAC_EXTRADATA_FORMAT_STREAMINFO  = 0,
     FLAC_EXTRADATA_FORMAT_FULL_HEADER = 1
 };
@@ -75,11 +78,13 @@ enum FLACExtradataFormat {
     int max_framesize;      /**< maximum frame size, in bytes            */\
     int64_t samples;        /**< total number of samples                 */\
 
-typedef struct FLACStreaminfo {
+typedef struct FLACStreaminfo
+{
     FLACSTREAMINFO
 } FLACStreaminfo;
 
-typedef struct FLACFrameInfo {
+typedef struct FLACFrameInfo
+{
     FLACCOMMONINFO
     int blocksize;          /**< block size of the frame                 */
     int ch_mode;            /**< channel decorrelation mode              */
@@ -147,7 +152,7 @@ void ff_flac_set_channel_layout(AVCodecContext *avctx);
  * @param[out] size metadata block size
  */
 static av_always_inline void flac_parse_block_header(const uint8_t *block_header,
-                                                      int *last, int *type, int *size)
+        int *last, int *type, int *size)
 {
     int tmp = bytestream_get_byte(&block_header);
     if (last)

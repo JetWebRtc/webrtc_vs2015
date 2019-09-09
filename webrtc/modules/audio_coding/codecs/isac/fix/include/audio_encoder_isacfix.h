@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/modules/audio_coding/codecs/isac/audio_encoder_isac_t.h"
 #include "webrtc/modules/audio_coding/codecs/isac/fix/source/isac_fix_type.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 using AudioEncoderIsacFix = AudioEncoderIsacT<IsacFix>;
 

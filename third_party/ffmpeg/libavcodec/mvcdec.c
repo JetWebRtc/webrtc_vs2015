@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Silicon Graphics Motion Video Compressor 1 & 2 decoder
  * Copyright (c) 2012 Peter Ross
  *
@@ -30,7 +30,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-typedef struct MvcContext {
+typedef struct MvcContext
+{
     AVFrame *frame;
     int vflip;
 } MvcContext;
@@ -42,7 +43,8 @@ static av_cold int mvc_decode_init(AVCodecContext *avctx)
     int height    = avctx->height;
     int ret;
 
-    if (avctx->codec_id == AV_CODEC_ID_MVC1) {
+    if (avctx->codec_id == AV_CODEC_ID_MVC1)
+    {
         width  += 3;
         height += 3;
     }
@@ -52,7 +54,7 @@ static av_cold int mvc_decode_init(AVCodecContext *avctx)
         return ret;
 
     avctx->pix_fmt = (avctx->codec_id == AV_CODEC_ID_MVC1) ? AV_PIX_FMT_RGB555
-                                                           : AV_PIX_FMT_RGB32;
+                     : AV_PIX_FMT_RGB32;
     s->frame       = av_frame_alloc();
     if (!s->frame)
         return AVERROR(ENOMEM);
@@ -69,22 +71,28 @@ static int decode_mvc1(AVCodecContext *avctx, GetByteContext *gb,
     uint16_t v[8];
     int mask, x, y, i;
 
-    for (y = 0; y < height; y += 4) {
-        for (x = 0; x < width; x += 4) {
+    for (y = 0; y < height; y += 4)
+    {
+        for (x = 0; x < width; x += 4)
+        {
             if (bytestream2_get_bytes_left(gb) < 6)
                 return 0;
 
             mask = bytestream2_get_be16u(gb);
             v[0] = bytestream2_get_be16u(gb);
             v[1] = bytestream2_get_be16u(gb);
-            if ((v[0] & 0x8000)) {
-                if (bytestream2_get_bytes_left(gb) < 12) {
+            if ((v[0] & 0x8000))
+            {
+                if (bytestream2_get_bytes_left(gb) < 12)
+                {
                     av_log(avctx, AV_LOG_WARNING, "buffer overflow\n");
                     return AVERROR_INVALIDDATA;
                 }
                 for (i = 2; i < 8; i++)
                     v[i] = bytestream2_get_be16u(gb);
-            } else {
+            }
+            else
+            {
                 v[2] = v[4] = v[6] = v[0];
                 v[3] = v[5] = v[7] = v[1];
             }
@@ -151,7 +159,8 @@ static int decode_mvc2(AVCodecContext *avctx, GetByteContext *gb,
     if ((w & ~3) != width || (h & ~3) != height)
         av_log(avctx, AV_LOG_WARNING, "dimension mismatch\n");
 
-    if (bytestream2_get_byteu(gb)) {
+    if (bytestream2_get_byteu(gb))
+    {
         avpriv_request_sample(avctx, "bitmap feature");
         return AVERROR_PATCHWELCOME;
     }
@@ -164,20 +173,26 @@ static int decode_mvc2(AVCodecContext *avctx, GetByteContext *gb,
     if (nb_colors > 128)
         bytestream2_skip(gb, (nb_colors - 128) * 3);
 
-    if (vflip) {
+    if (vflip)
+    {
         dst_start += (height - 1) * linesize;
         linesize   = -linesize;
     }
     x = y = 0;
-    while (bytestream2_get_bytes_left(gb) >= 1) {
+    while (bytestream2_get_bytes_left(gb) >= 1)
+    {
         p0 = bytestream2_get_byteu(gb);
-        if ((p0 & 0x80)) {
-            if ((p0 & 0x40)) {
+        if ((p0 & 0x80))
+        {
+            if ((p0 & 0x40))
+            {
                 p0 &= 0x3F;
                 p0  = (p0 << 2) | (p0 >> 4);
                 set_4x4_block(dst_start + y * linesize + x * 4, linesize,
                               0xFF000000 | (p0 << 16) | (p0 << 8) | p0);
-            } else {
+            }
+            else
+            {
                 int g, r;
                 p0 &= 0x3F;
                 p0  = (p0 << 2) | (p0 >> 4);
@@ -188,15 +203,21 @@ static int decode_mvc2(AVCodecContext *avctx, GetByteContext *gb,
                 set_4x4_block(dst_start + y * linesize + x * 4, linesize,
                               0xFF000000 | (r << 16) | (g << 8) | p0);
             }
-        } else {
+        }
+        else
+        {
             if (bytestream2_get_bytes_left(gb) < 1)
                 return AVERROR_INVALIDDATA;
             p1 = bytestream2_get_byteu(gb);
-            if ((p1 & 0x80)) {
-                if ((p0 & 0x7F) == (p1 & 0x7F)) {
+            if ((p1 & 0x80))
+            {
+                if ((p0 & 0x7F) == (p1 & 0x7F))
+                {
                     set_4x4_block(dst_start + y * linesize + x * 4, linesize,
                                   color[p0 & 0x7F]);
-                } else {
+                }
+                else
+                {
                     if (bytestream2_get_bytes_left(gb) < 2)
                         return AVERROR_INVALIDDATA;
                     v[0] = v[2] = v[4] = v[6] = color[p0 & 0x7F];
@@ -204,7 +225,9 @@ static int decode_mvc2(AVCodecContext *avctx, GetByteContext *gb,
                     mask = bytestream2_get_le16u(gb);
                     MVC2_BLOCK
                 }
-            } else {
+            }
+            else
+            {
                 if (bytestream2_get_bytes_left(gb) < 8)
                     return AVERROR_INVALIDDATA;
                 v[0] = color[p0 & 0x7F];
@@ -217,7 +240,8 @@ static int decode_mvc2(AVCodecContext *avctx, GetByteContext *gb,
         }
 
         x += 4;
-        if (x >= width) {
+        if (x >= width)
+        {
             y += 4;
             if (y >= height)
                 break;
@@ -265,7 +289,8 @@ static av_cold int mvc_decode_end(AVCodecContext *avctx)
 }
 
 #if CONFIG_MVC1_DECODER
-AVCodec ff_mvc1_decoder = {
+AVCodec ff_mvc1_decoder =
+{
     .name           = "mvc1",
     .long_name      = NULL_IF_CONFIG_SMALL("Silicon Graphics Motion Video Compressor 1"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -279,7 +304,8 @@ AVCodec ff_mvc1_decoder = {
 #endif
 
 #if CONFIG_MVC2_DECODER
-AVCodec ff_mvc2_decoder = {
+AVCodec ff_mvc2_decoder =
+{
     .name           = "mvc2",
     .long_name      = NULL_IF_CONFIG_SMALL("Silicon Graphics Motion Video Compressor 2"),
     .type           = AVMEDIA_TYPE_VIDEO,

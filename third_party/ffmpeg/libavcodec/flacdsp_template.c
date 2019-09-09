@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -49,7 +49,7 @@
 #define FUNC(n) AV_JOIN(n ## _, FSUF)
 
 static void FUNC(flac_decorrelate_indep_c)(uint8_t **out, int32_t **in,
-                                           int channels, int len, int shift)
+        int channels, int len, int shift)
 {
     sample *samples = (sample *) OUT(out);
     int i, j;
@@ -65,7 +65,8 @@ static void FUNC(flac_decorrelate_ls_c)(uint8_t **out, int32_t **in,
     sample *samples = (sample *) OUT(out);
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         int a = in[0][i];
         int b = in[1][i];
         S(samples, 0, i) =  a      << shift;
@@ -79,7 +80,8 @@ static void FUNC(flac_decorrelate_rs_c)(uint8_t **out, int32_t **in,
     sample *samples = (sample *) OUT(out);
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         int a = in[0][i];
         int b = in[1][i];
         S(samples, 0, i) = (a + b) << shift;
@@ -93,7 +95,8 @@ static void FUNC(flac_decorrelate_ms_c)(uint8_t **out, int32_t **in,
     sample *samples = (sample *) OUT(out);
     int i;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         int a = in[0][i];
         int b = in[1][i];
         a -= b >> 1;

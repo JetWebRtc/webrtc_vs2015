@@ -1,4 +1,4 @@
-/* Declarations for getopt.
+﻿/* Declarations for getopt.
    Copyright (C) 1989, 1990, 1991, 1992, 1993 Free Software Foundation, Inc.
 
    This program is free software; you can redistribute it and/or modify it
@@ -80,15 +80,15 @@ extern int optopt;
 struct option
 {
 #if __STDC__
-  const char *name;
+    const char *name;
 #else
-  char *name;
+    char *name;
 #endif
-  /* has_arg can't be an enum because some compilers complain about
-     type mismatches in all the code that assumes it is an int.  */
-  int has_arg;
-  int *flag;
-  int val;
+    /* has_arg can't be an enum because some compilers complain about
+       type mismatches in all the code that assumes it is an int.  */
+    int has_arg;
+    int *flag;
+    int val;
 };
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
@@ -105,16 +105,16 @@ struct option
 extern int getopt (int argc, char *const *argv, const char *shortopts);
 #endif /* not __GNU_LIBRARY__ */
 extern int getopt_long (int argc, char *const *argv, const char *shortopts,
-                const struct option *longopts, int *longind);
+                        const struct option *longopts, int *longind);
 extern int getopt_long_only (int argc, char *const *argv,
-                 const char *shortopts,
-                     const struct option *longopts, int *longind);
+                             const char *shortopts,
+                             const struct option *longopts, int *longind);
 
 /* Internal only.  Users should not call this directly.  */
 extern int _getopt_internal (int argc, char *const *argv,
-                 const char *shortopts,
-                     const struct option *longopts, int *longind,
-                 int long_only);
+                             const char *shortopts,
+                             const struct option *longopts, int *longind,
+                             int long_only);
 //#else /* not __STDC__ */
 extern int getopt (int argc, char *const *argv, const char *shortopts);
 //extern int getopt_long ();

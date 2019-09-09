@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,14 +11,18 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 // [B,A] = butter(2,1500/16000) which are the same as [B,A] =
 // butter(2,750/8000).
-const CascadedBiQuadFilter::BiQuadCoefficients kLowPassFilterCoefficients = {
+const CascadedBiQuadFilter::BiQuadCoefficients kLowPassFilterCoefficients =
+{
     {0.0179f, 0.0357f, 0.0179f},
-    {-1.5879f, 0.6594f}};
+    {-1.5879f, 0.6594f}
+};
 
 }  // namespace
 
@@ -26,19 +30,21 @@ DecimatorBy4::DecimatorBy4()
     : low_pass_filter_(kLowPassFilterCoefficients, 3) {}
 
 void DecimatorBy4::Decimate(rtc::ArrayView<const float> in,
-                            std::array<float, kSubBlockSize>* out) {
-  RTC_DCHECK_EQ(kBlockSize, in.size());
-  RTC_DCHECK(out);
-  std::array<float, kBlockSize> x;
+                            std::array<float, kSubBlockSize>* out)
+{
+    RTC_DCHECK_EQ(kBlockSize, in.size());
+    RTC_DCHECK(out);
+    std::array<float, kBlockSize> x;
 
-  // Limit the frequency content of the signal to avoid aliasing.
-  low_pass_filter_.Process(in, x);
+    // Limit the frequency content of the signal to avoid aliasing.
+    low_pass_filter_.Process(in, x);
 
-  // Downsample the signal.
-  for (size_t j = 0, k = 0; j < out->size(); ++j, k += 4) {
-    RTC_DCHECK_GT(kBlockSize, k);
-    (*out)[j] = x[k];
-  }
+    // Downsample the signal.
+    for (size_t j = 0, k = 0; j < out->size(); ++j, k += 4)
+    {
+        RTC_DCHECK_GT(kBlockSize, k);
+        (*out)[j] = x[k];
+    }
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,36 +18,38 @@
 #include "webrtc/api/video/video_frame.h"
 #include "webrtc/base/optional.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Class definitions
-class VideoRenderFrames {
- public:
-  explicit VideoRenderFrames(uint32_t render_delay_ms);
-  VideoRenderFrames(const VideoRenderFrames&) = delete;
+class VideoRenderFrames
+{
+public:
+    explicit VideoRenderFrames(uint32_t render_delay_ms);
+    VideoRenderFrames(const VideoRenderFrames&) = delete;
 
-  // Add a frame to the render queue
-  int32_t AddFrame(const VideoFrame& new_frame);
+    // Add a frame to the render queue
+    int32_t AddFrame(const VideoFrame& new_frame);
 
-  // Get a frame for rendering, or false if it's not time to render.
-  rtc::Optional<VideoFrame> FrameToRender();
+    // Get a frame for rendering, or false if it's not time to render.
+    rtc::Optional<VideoFrame> FrameToRender();
 
-  // Returns the number of ms to next frame to render
-  uint32_t TimeToNextFrameRelease();
+    // Returns the number of ms to next frame to render
+    uint32_t TimeToNextFrameRelease();
 
- private:
-  // 10 seconds for 30 fps.
-  enum { KMaxNumberOfFrames = 300 };
-  // Don't render frames with timestamp older than 500ms from now.
-  enum { KOldRenderTimestampMS = 500 };
-  // Don't render frames with timestamp more than 10s into the future.
-  enum { KFutureRenderTimestampMS = 10000 };
+private:
+    // 10 seconds for 30 fps.
+    enum { KMaxNumberOfFrames = 300 };
+    // Don't render frames with timestamp older than 500ms from now.
+    enum { KOldRenderTimestampMS = 500 };
+    // Don't render frames with timestamp more than 10s into the future.
+    enum { KFutureRenderTimestampMS = 10000 };
 
-  // Sorted list with framed to be rendered, oldest first.
-  std::list<VideoFrame> incoming_frames_;
+    // Sorted list with framed to be rendered, oldest first.
+    std::list<VideoFrame> incoming_frames_;
 
-  // Estimated delay from a frame is released until it's rendered.
-  const uint32_t render_delay_ms_;
+    // Estimated delay from a frame is released until it's rendered.
+    const uint32_t render_delay_ms_;
 };
 
 }  // namespace webrtc

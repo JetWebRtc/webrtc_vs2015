@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Binary text decoder
  * eXtended BINary text (XBIN) decoder
  * iCEDraw File decoder
@@ -35,7 +35,8 @@
 #include "bintext.h"
 #include "internal.h"
 
-typedef struct XbinContext {
+typedef struct XbinContext
+{
     AVFrame *frame;
     int palette[16];
     int flags;
@@ -52,34 +53,46 @@ static av_cold int decode_init(AVCodecContext *avctx)
 
     avctx->pix_fmt = AV_PIX_FMT_PAL8;
     p = avctx->extradata;
-    if (p) {
+    if (p)
+    {
         s->font_height = p[0];
         s->flags = p[1];
         p += 2;
         if(avctx->extradata_size < 2 + (!!(s->flags & BINTEXT_PALETTE))*3*16
-                                     + (!!(s->flags & BINTEXT_FONT))*s->font_height*256) {
+                + (!!(s->flags & BINTEXT_FONT))*s->font_height*256)
+        {
             av_log(avctx, AV_LOG_ERROR, "not enough extradata\n");
             return AVERROR_INVALIDDATA;
         }
-    } else {
+    }
+    else
+    {
         s->font_height = 8;
         s->flags = 0;
     }
 
-    if ((s->flags & BINTEXT_PALETTE)) {
-        for (i = 0; i < 16; i++) {
+    if ((s->flags & BINTEXT_PALETTE))
+    {
+        for (i = 0; i < 16; i++)
+        {
             s->palette[i] = 0xFF000000 | (AV_RB24(p) << 2) | ((AV_RB24(p) >> 4) & 0x30303);
             p += 3;
         }
-    } else {
+    }
+    else
+    {
         for (i = 0; i < 16; i++)
             s->palette[i] = 0xFF000000 | ff_cga_palette[i];
     }
 
-    if ((s->flags & BINTEXT_FONT)) {
+    if ((s->flags & BINTEXT_FONT))
+    {
         s->font = p;
-    } else {
-        switch(s->font_height) {
+    }
+    else
+    {
+        switch(s->font_height)
+        {
         default:
             av_log(avctx, AV_LOG_WARNING, "font height %i not supported\n", s->font_height);
             s->font_height = 8;
@@ -103,13 +116,16 @@ static av_cold int decode_init(AVCodecContext *avctx)
 av_unused static void hscroll(AVCodecContext *avctx)
 {
     XbinContext *s = avctx->priv_data;
-    if (s->y < avctx->height - s->font_height) {
+    if (s->y < avctx->height - s->font_height)
+    {
         s->y += s->font_height;
-    } else {
+    }
+    else
+    {
         memmove(s->frame->data[0], s->frame->data[0] + s->font_height*s->frame->linesize[0],
-            (avctx->height - s->font_height)*s->frame->linesize[0]);
+                (avctx->height - s->font_height)*s->frame->linesize[0]);
         memset(s->frame->data[0] + (avctx->height - s->font_height)*s->frame->linesize[0],
-            DEFAULT_BG_COLOR, s->font_height * s->frame->linesize[0]);
+               DEFAULT_BG_COLOR, s->font_height * s->frame->linesize[0]);
     }
 }
 
@@ -127,15 +143,16 @@ static void draw_char(AVCodecContext *avctx, int c, int a)
                     s->frame->linesize[0], s->font, s->font_height, c,
                     a & 0x0F, a >> 4);
     s->x += FONT_WIDTH;
-    if (s->x > avctx->width - FONT_WIDTH) {
+    if (s->x > avctx->width - FONT_WIDTH)
+    {
         s->x = 0;
         s->y += s->font_height;
     }
 }
 
 static int decode_frame(AVCodecContext *avctx,
-                            void *data, int *got_frame,
-                            AVPacket *avpkt)
+                        void *data, int *got_frame,
+                        AVPacket *avpkt)
 {
     XbinContext *s = avctx->priv_data;
     const uint8_t *buf = avpkt->data;
@@ -150,15 +167,19 @@ static int decode_frame(AVCodecContext *avctx,
     s->frame->palette_has_changed = 1;
     memcpy(s->frame->data[1], s->palette, 16 * 4);
 
-    if (avctx->codec_id == AV_CODEC_ID_XBIN) {
-        while (buf + 2 < buf_end) {
+    if (avctx->codec_id == AV_CODEC_ID_XBIN)
+    {
+        while (buf + 2 < buf_end)
+        {
             int i,c,a;
             int type  = *buf >> 6;
             int count = (*buf & 0x3F) + 1;
             buf++;
-            switch (type) {
+            switch (type)
+            {
             case 0: //no compression
-                for (i = 0; i < count && buf + 1 < buf_end; i++) {
+                for (i = 0; i < count && buf + 1 < buf_end; i++)
+                {
                     draw_char(avctx, buf[0], buf[1]);
                     buf += 2;
                 }
@@ -181,22 +202,31 @@ static int decode_frame(AVCodecContext *avctx,
                 break;
             }
         }
-    } else if (avctx->codec_id == AV_CODEC_ID_IDF) {
-        while (buf + 2 < buf_end) {
-            if (AV_RL16(buf) == 1) {
-               int i;
-               if (buf + 6 > buf_end)
-                   break;
-               for (i = 0; i < buf[2]; i++)
-                   draw_char(avctx, buf[4], buf[5]);
-               buf += 6;
-            } else {
-               draw_char(avctx, buf[0], buf[1]);
-               buf += 2;
+    }
+    else if (avctx->codec_id == AV_CODEC_ID_IDF)
+    {
+        while (buf + 2 < buf_end)
+        {
+            if (AV_RL16(buf) == 1)
+            {
+                int i;
+                if (buf + 6 > buf_end)
+                    break;
+                for (i = 0; i < buf[2]; i++)
+                    draw_char(avctx, buf[4], buf[5]);
+                buf += 6;
+            }
+            else
+            {
+                draw_char(avctx, buf[0], buf[1]);
+                buf += 2;
             }
         }
-    } else {
-        while (buf + 1 < buf_end) {
+    }
+    else
+    {
+        while (buf + 1 < buf_end)
+        {
             draw_char(avctx, buf[0], buf[1]);
             buf += 2;
         }
@@ -218,7 +248,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
 }
 
 #if CONFIG_BINTEXT_DECODER
-AVCodec ff_bintext_decoder = {
+AVCodec ff_bintext_decoder =
+{
     .name           = "bintext",
     .long_name      = NULL_IF_CONFIG_SMALL("Binary text"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -231,7 +262,8 @@ AVCodec ff_bintext_decoder = {
 };
 #endif
 #if CONFIG_XBIN_DECODER
-AVCodec ff_xbin_decoder = {
+AVCodec ff_xbin_decoder =
+{
     .name           = "xbin",
     .long_name      = NULL_IF_CONFIG_SMALL("eXtended BINary text"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -244,7 +276,8 @@ AVCodec ff_xbin_decoder = {
 };
 #endif
 #if CONFIG_IDF_DECODER
-AVCodec ff_idf_decoder = {
+AVCodec ff_idf_decoder =
+{
     .name           = "idf",
     .long_name      = NULL_IF_CONFIG_SMALL("iCEDraw text"),
     .type           = AVMEDIA_TYPE_VIDEO,

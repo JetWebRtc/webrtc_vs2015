@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "avcodec.h"
 #include "bswapdsp.h"
 
-const uint8_t ff_asv_scantab[64] = {
+const uint8_t ff_asv_scantab[64] =
+{
     0x00, 0x08, 0x01, 0x09, 0x10, 0x18, 0x11, 0x19,
     0x02, 0x0A, 0x03, 0x0B, 0x12, 0x1A, 0x13, 0x1B,
     0x04, 0x0C, 0x05, 0x0D, 0x20, 0x28, 0x21, 0x29,
@@ -40,7 +41,8 @@ const uint8_t ff_asv_scantab[64] = {
     0x34, 0x3C, 0x35, 0x3D, 0x36, 0x3E, 0x37, 0x3F,
 };
 
-const uint8_t ff_asv_ccp_tab[17][2] = {
+const uint8_t ff_asv_ccp_tab[17][2] =
+{
     { 0x2, 2 }, { 0x7, 5 }, { 0xB, 5 }, { 0x3, 5 },
     { 0xD, 5 }, { 0x5, 5 }, { 0x9, 5 }, { 0x1, 5 },
     { 0xE, 5 }, { 0x6, 5 }, { 0xA, 5 }, { 0x2, 5 },
@@ -48,23 +50,27 @@ const uint8_t ff_asv_ccp_tab[17][2] = {
     { 0xF, 5 }, // EOB
 };
 
-const uint8_t ff_asv_level_tab[7][2] = {
+const uint8_t ff_asv_level_tab[7][2] =
+{
     { 3, 4 }, { 3, 3 }, { 3, 2 }, { 0, 3 }, { 2, 2 }, { 2, 3 }, { 2, 4 }
 };
 
-const uint8_t ff_asv_dc_ccp_tab[8][2] = {
+const uint8_t ff_asv_dc_ccp_tab[8][2] =
+{
     { 0x1, 2 }, { 0xD, 4 }, { 0xF, 4 }, { 0xC, 4 },
     { 0x5, 3 }, { 0xE, 4 }, { 0x4, 3 }, { 0x0, 2 },
 };
 
-const uint8_t ff_asv_ac_ccp_tab[16][2] = {
+const uint8_t ff_asv_ac_ccp_tab[16][2] =
+{
     { 0x00, 2 }, { 0x3B, 6 }, { 0x0A, 4 }, { 0x3A, 6 },
     { 0x02, 3 }, { 0x39, 6 }, { 0x3C, 6 }, { 0x38, 6 },
     { 0x03, 3 }, { 0x3D, 6 }, { 0x08, 4 }, { 0x1F, 5 },
     { 0x09, 4 }, { 0x0B, 4 }, { 0x0D, 4 }, { 0x0C, 4 },
 };
 
-const uint8_t ff_asv2_level_tab[63][2] = {
+const uint8_t ff_asv2_level_tab[63][2] =
+{
     { 0x3F, 10 }, { 0x2F, 10 }, { 0x37, 10 }, { 0x27, 10 }, { 0x3B, 10 }, { 0x2B, 10 }, { 0x33, 10 }, { 0x23, 10 },
     { 0x3D, 10 }, { 0x2D, 10 }, { 0x35, 10 }, { 0x25, 10 }, { 0x39, 10 }, { 0x29, 10 }, { 0x31, 10 }, { 0x21, 10 },
     { 0x1F,  8 }, { 0x17,  8 }, { 0x1B,  8 }, { 0x13,  8 }, { 0x1D,  8 }, { 0x15,  8 }, { 0x19,  8 }, { 0x11,  8 },

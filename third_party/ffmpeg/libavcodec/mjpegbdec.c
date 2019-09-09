@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Apple MJPEG-B decoder
  * Copyright (c) 2002 Alex Beregszaszi
  *
@@ -31,9 +31,11 @@
 #include "mjpeg.h"
 #include "mjpegdec.h"
 
-static uint32_t read_offs(AVCodecContext *avctx, GetBitContext *gb, uint32_t size, const char *err_msg){
+static uint32_t read_offs(AVCodecContext *avctx, GetBitContext *gb, uint32_t size, const char *err_msg)
+{
     uint32_t offs= get_bits_long(gb, 32);
-    if(offs >= size){
+    if(offs >= size)
+    {
         av_log(avctx, AV_LOG_WARNING, err_msg, offs, size);
         return 0;
     }
@@ -41,8 +43,8 @@ static uint32_t read_offs(AVCodecContext *avctx, GetBitContext *gb, uint32_t siz
 }
 
 static int mjpegb_decode_frame(AVCodecContext *avctx,
-                              void *data, int *got_frame,
-                              AVPacket *avpkt)
+                               void *data, int *got_frame,
+                               AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
@@ -90,8 +92,8 @@ read_header:
         init_get_bits(&s->gb, buf_ptr+dqt_offs, (buf_end - (buf_ptr+dqt_offs))*8);
         s->start_code = DQT;
         if (ff_mjpeg_decode_dqt(s) < 0 &&
-            (avctx->err_recognition & AV_EF_EXPLODE))
-          return AVERROR_INVALIDDATA;
+                (avctx->err_recognition & AV_EF_EXPLODE))
+            return AVERROR_INVALIDDATA;
     }
 
     dht_offs = read_offs(avctx, &hgb, buf_end - buf_ptr, "dht is %d and size is %d\n");
@@ -124,23 +126,25 @@ read_header:
         s->mjpb_skiptosod = (sod_offs - sos_offs - show_bits(&s->gb, 16));
         s->start_code = SOS;
         if (ff_mjpeg_decode_sos(s, NULL, 0, NULL) < 0 &&
-            (avctx->err_recognition & AV_EF_EXPLODE))
-          return AVERROR_INVALIDDATA;
+                (avctx->err_recognition & AV_EF_EXPLODE))
+            return AVERROR_INVALIDDATA;
     }
 
-    if (s->interlaced) {
+    if (s->interlaced)
+    {
         s->bottom_field ^= 1;
         /* if not bottom field, do not output image yet */
         if (s->bottom_field != s->interlace_polarity && second_field_offs)
         {
             buf_ptr = buf + second_field_offs;
             goto read_header;
-            }
+        }
     }
 
     //XXX FIXME factorize, this looks very similar to the EOI code
 
-    if(!s->got_picture) {
+    if(!s->got_picture)
+    {
         av_log(avctx, AV_LOG_WARNING, "no picture\n");
         return buf_size;
     }
@@ -149,7 +153,8 @@ read_header:
         return ret;
     *got_frame = 1;
 
-    if (!s->lossless && avctx->debug & FF_DEBUG_QP) {
+    if (!s->lossless && avctx->debug & FF_DEBUG_QP)
+    {
         av_log(avctx, AV_LOG_DEBUG, "QP: %d\n",
                FFMAX3(s->qscale[0], s->qscale[1], s->qscale[2]));
     }
@@ -157,7 +162,8 @@ read_header:
     return buf_size;
 }
 
-AVCodec ff_mjpegb_decoder = {
+AVCodec ff_mjpegb_decoder =
+{
     .name           = "mjpegb",
     .long_name      = NULL_IF_CONFIG_SMALL("Apple MJPEG-B"),
     .type           = AVMEDIA_TYPE_VIDEO,

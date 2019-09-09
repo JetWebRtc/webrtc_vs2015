@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -38,7 +38,8 @@ int main(void)
         i_shift -= 6;                                   \
     } while (0)
 
-    while ((in = getchar()) != EOF) {
+    while ((in = getchar()) != EOF)
+    {
         i_bits   = (i_bits << 8) + in;
         i_shift += 8;
         while (i_shift > 6)

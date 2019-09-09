@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLV decoding.
  *
  * This file is part of FFmpeg.
@@ -30,19 +30,22 @@ int ff_flv_decode_picture_header(MpegEncContext *s)
     int format, width, height;
 
     /* picture header */
-    if (get_bits_long(&s->gb, 17) != 1) {
+    if (get_bits_long(&s->gb, 17) != 1)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Bad picture start code\n");
         return AVERROR_INVALIDDATA;
     }
     format = get_bits(&s->gb, 5);
-    if (format != 0 && format != 1) {
+    if (format != 0 && format != 1)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Bad picture format\n");
         return AVERROR_INVALIDDATA;
     }
     s->h263_flv       = format + 1;
     s->picture_number = get_bits(&s->gb, 8); /* picture timestamp */
     format            = get_bits(&s->gb, 3);
-    switch (format) {
+    switch (format)
+    {
     case 0:
         width  = get_bits(&s->gb, 8);
         height = get_bits(&s->gb, 8);
@@ -100,9 +103,13 @@ int ff_flv_decode_picture_header(MpegEncContext *s)
     s->f_code = 1;
 
     if (s->ehc_mode)
-        s->avctx->sample_aspect_ratio= (AVRational){1,2};
+        s->avctx->sample_aspect_ratio= (AVRational)
+    {
+        1,2
+    };
 
-    if (s->avctx->debug & FF_DEBUG_PICT_INFO) {
+    if (s->avctx->debug & FF_DEBUG_PICT_INFO)
+    {
         av_log(s->avctx, AV_LOG_DEBUG, "%c esc_type:%d, qp:%d num:%d\n",
                s->droppable ? 'D' : av_get_picture_type_char(s->pict_type),
                s->h263_flv - 1, s->qscale, s->picture_number);
@@ -113,7 +120,8 @@ int ff_flv_decode_picture_header(MpegEncContext *s)
     return 0;
 }
 
-AVCodec ff_flv_decoder = {
+AVCodec ff_flv_decoder =
+{
     .name           = "flv",
     .long_name      = NULL_IF_CONFIG_SMALL("FLV / Sorenson Spark / Sorenson H.263 (Flash Video)"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -124,6 +132,8 @@ AVCodec ff_flv_decoder = {
     .decode         = ff_h263_decode_frame,
     .capabilities   = AV_CODEC_CAP_DRAW_HORIZ_BAND | AV_CODEC_CAP_DR1,
     .max_lowres     = 3,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
 };

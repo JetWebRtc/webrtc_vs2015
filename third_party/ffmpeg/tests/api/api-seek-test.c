@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Ludmila Glinskih
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,13 +36,15 @@ int number_of_elements;
 
 static int add_crc_to_array(int64_t crc, int64_t pts)
 {
-    if (size_of_array <= number_of_elements) {
+    if (size_of_array <= number_of_elements)
+    {
         if (size_of_array == 0)
             size_of_array = 10;
         size_of_array *= 2;
         crc_array = av_realloc(crc_array, size_of_array * sizeof(int64_t));
         pts_array = av_realloc(pts_array, size_of_array * sizeof(int64_t));
-        if ((crc_array == NULL) || (pts_array == NULL)) {
+        if ((crc_array == NULL) || (pts_array == NULL))
+        {
             av_log(NULL, AV_LOG_ERROR, "Can't allocate array to store crcs\n");
             return AVERROR(ENOMEM);
         }
@@ -56,13 +58,17 @@ static int add_crc_to_array(int64_t crc, int64_t pts)
 static int compare_crc_in_array(int64_t crc, int64_t pts)
 {
     int i;
-    for (i = 0; i < number_of_elements; i++) {
-        if (pts_array[i] == pts) {
-            if (crc_array[i] == crc) {
+    for (i = 0; i < number_of_elements; i++)
+    {
+        if (pts_array[i] == pts)
+        {
+            if (crc_array[i] == crc)
+            {
                 printf("Comparing 0x%08lx %"PRId64" %d is OK\n", crc, pts, i);
                 return 0;
             }
-            else {
+            else
+            {
                 av_log(NULL, AV_LOG_ERROR, "Incorrect crc of a frame after seeking\n");
                 return -1;
             }
@@ -73,7 +79,7 @@ static int compare_crc_in_array(int64_t crc, int64_t pts)
 }
 
 static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
-                                AVCodecContext *ctx, AVFrame *fr, uint64_t ts_start, uint64_t ts_end, int no_seeking)
+                                  AVCodecContext *ctx, AVFrame *fr, uint64_t ts_start, uint64_t ts_end, int no_seeking)
 {
     int number_of_written_bytes;
     int got_frame = 0;
@@ -86,15 +92,18 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
 
     byte_buffer_size = av_image_get_buffer_size(ctx->pix_fmt, ctx->width, ctx->height, 16);
     byte_buffer = av_malloc(byte_buffer_size);
-    if (!byte_buffer) {
+    if (!byte_buffer)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't allocate buffer\n");
         return AVERROR(ENOMEM);
     }
 
-    if (!no_seeking) {
+    if (!no_seeking)
+    {
         result = av_seek_frame(fmt_ctx, video_stream, ts_start, AVSEEK_FLAG_ANY);
         printf("Seeking to %"PRId64", computing crc for frames with pts < %"PRId64"\n", ts_start, ts_end);
-        if (result < 0) {
+        if (result < 0)
+        {
             av_log(NULL, AV_LOG_ERROR, "Error in seeking\n");
             return result;
         }
@@ -102,30 +111,37 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
     }
 
     av_init_packet(&pkt);
-    do {
+    do
+    {
         if (!end_of_stream)
             if (av_read_frame(fmt_ctx, &pkt) < 0)
                 end_of_stream = 1;
-        if (end_of_stream) {
+        if (end_of_stream)
+        {
             pkt.data = NULL;
             pkt.size = 0;
         }
-        if (pkt.stream_index == video_stream || end_of_stream) {
+        if (pkt.stream_index == video_stream || end_of_stream)
+        {
             got_frame = 0;
-            if ((pkt.pts == AV_NOPTS_VALUE) && (!end_of_stream)) {
+            if ((pkt.pts == AV_NOPTS_VALUE) && (!end_of_stream))
+            {
                 av_log(NULL, AV_LOG_ERROR, "Error: frames doesn't have pts values\n");
                 return -1;
             }
             result = avcodec_decode_video2(ctx, fr, &got_frame, &pkt);
-            if (result < 0) {
+            if (result < 0)
+            {
                 av_log(NULL, AV_LOG_ERROR, "Error decoding frame\n");
                 return result;
             }
-            if (got_frame) {
+            if (got_frame)
+            {
                 number_of_written_bytes = av_image_copy_to_buffer(byte_buffer, byte_buffer_size,
-                                        (const uint8_t* const *)fr->data, (const int*) fr->linesize,
-                                        ctx->pix_fmt, ctx->width, ctx->height, 1);
-                if (number_of_written_bytes < 0) {
+                                          (const uint8_t* const *)fr->data, (const int*) fr->linesize,
+                                          ctx->pix_fmt, ctx->width, ctx->height, 1);
+                if (number_of_written_bytes < 0)
+                {
                     av_log(NULL, AV_LOG_ERROR, "Can't copy image to buffer\n");
                     return number_of_written_bytes;
                 }
@@ -133,11 +149,13 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
                     break;
                 crc = av_adler32_update(0, (const uint8_t*)byte_buffer, number_of_written_bytes);
                 printf("%10"PRId64", 0x%08lx\n", fr->pkt_pts, crc);
-                if (no_seeking) {
+                if (no_seeking)
+                {
                     if (add_crc_to_array(crc, fr->pkt_pts) < 0)
                         return -1;
                 }
-                else {
+                else
+                {
                     if (compare_crc_in_array(crc, fr->pkt_pts) < 0)
                         return -1;
                 }
@@ -145,7 +163,8 @@ static int compute_crc_of_packets(AVFormatContext *fmt_ctx, int video_stream,
         }
         av_free_packet(&pkt);
         av_init_packet(&pkt);
-    } while ((!end_of_stream || got_frame) && (no_seeking || (fr->pkt_pts + av_frame_get_pkt_duration(fr) <= ts_end)));
+    }
+    while ((!end_of_stream || got_frame) && (no_seeking || (fr->pkt_pts + av_frame_get_pkt_duration(fr) <= ts_end)));
 
     av_free_packet(&pkt);
     av_freep(&byte_buffer);
@@ -158,12 +177,15 @@ static long int read_seek_range(const char *string_with_number)
     long int number;
     char *end_of_string = NULL;
     number = strtol(string_with_number, &end_of_string, 10);
-    if ((strlen(string_with_number) != end_of_string - string_with_number)  || (number < 0)) {
+    if ((strlen(string_with_number) != end_of_string - string_with_number)  || (number < 0))
+    {
         av_log(NULL, AV_LOG_ERROR, "Incorrect input ranges of seeking\n");
         return -1;
     }
-    else if ((number == LONG_MAX) || (number == LONG_MIN)) {
-        if (errno == ERANGE) {
+    else if ((number == LONG_MAX) || (number == LONG_MIN))
+    {
+        if (errno == ERANGE)
+        {
             av_log(NULL, AV_LOG_ERROR, "Incorrect input ranges of seeking\n");
             return -1;
         }
@@ -187,13 +209,15 @@ static int seek_test(const char *input_filename, const char *start, const char *
     crc_array = pts_array = NULL;
 
     result = avformat_open_input(&fmt_ctx, input_filename, NULL, NULL);
-    if (result < 0) {
+    if (result < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't open file\n");
         return result;
     }
 
     result = avformat_find_stream_info(fmt_ctx, NULL);
-    if (result < 0) {
+    if (result < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't get stream info\n");
         return result;
     }
@@ -205,39 +229,45 @@ static int seek_test(const char *input_filename, const char *start, const char *
 
     //TODO: add ability to work with audio format
     video_stream = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
-    if (video_stream < 0) {
-      av_log(NULL, AV_LOG_ERROR, "Can't find video stream in input file\n");
-      return -1;
+    if (video_stream < 0)
+    {
+        av_log(NULL, AV_LOG_ERROR, "Can't find video stream in input file\n");
+        return -1;
     }
 
     origin_ctx = fmt_ctx->streams[video_stream]->codec;
 
     codec = avcodec_find_decoder(origin_ctx->codec_id);
-    if (!codec) {
+    if (!codec)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't find decoder\n");
         return -1;
     }
 
     ctx = avcodec_alloc_context3(codec);
-    if (!ctx) {
+    if (!ctx)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't allocate decoder context\n");
         return AVERROR(ENOMEM);
     }
 
     result = avcodec_copy_context(ctx, origin_ctx);
-    if (result) {
+    if (result)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't copy decoder context\n");
         return result;
     }
 
     result = avcodec_open2(ctx, codec, NULL);
-    if (result < 0) {
+    if (result < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Can't open decoder\n");
         return result;
     }
 
     fr = av_frame_alloc();
-    if (!fr) {
+    if (!fr)
+    {
         av_log(NULL, AV_LOG_ERROR, "Can't allocate frame\n");
         return AVERROR(ENOMEM);
     }
@@ -246,9 +276,10 @@ static int seek_test(const char *input_filename, const char *start, const char *
     if (result != 0)
         return -1;
 
-    for (i = start_ts; i < end_ts; i += 100) {
+    for (i = start_ts; i < end_ts; i += 100)
+    {
         for (j = i + 100; j < end_ts; j += 100)
-        result = compute_crc_of_packets(fmt_ctx, video_stream, ctx, fr, i, j, 0);
+            result = compute_crc_of_packets(fmt_ctx, video_stream, ctx, fr, i, j, 0);
         if (result != 0)
             return -1;
     }
@@ -264,7 +295,8 @@ static int seek_test(const char *input_filename, const char *start, const char *
 
 int main(int argc, char **argv)
 {
-    if (argc < 4) {
+    if (argc < 4)
+    {
         av_log(NULL, AV_LOG_ERROR, "Incorrect input\n");
         return 1;
     }

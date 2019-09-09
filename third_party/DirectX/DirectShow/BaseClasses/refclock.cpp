@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: RefClock.cpp
 //
 // Desc: DirectShow base classes - implements the IReferenceClock interface.
@@ -48,7 +48,7 @@ CBaseReferenceClock::~CBaseReferenceClock()
         EXECUTE_ASSERT( CloseHandle(m_hThread) );
         m_hThread = 0;
         EXECUTE_ASSERT( CloseHandle(m_pSchedule->GetEvent()) );
-	delete m_pSchedule;
+        delete m_pSchedule;
     }
 }
 
@@ -56,59 +56,59 @@ CBaseReferenceClock::~CBaseReferenceClock()
 // of calling the schedulers Advise method.  (Refere to CBaseReferenceClock::AdviseThread()
 // to see what such a thread has to do.)
 CBaseReferenceClock::CBaseReferenceClock( TCHAR *pName, LPUNKNOWN pUnk, HRESULT *phr, CAMSchedule * pShed )
-: CUnknown( pName, pUnk )
-, m_rtLastGotTime(0)
-, m_TimerResolution(0)
-, m_bAbort( FALSE )
-, m_pSchedule( pShed ? pShed : new CAMSchedule(CreateEvent(NULL, FALSE, FALSE, NULL)) )
-, m_hThread(0)
+    : CUnknown( pName, pUnk )
+    , m_rtLastGotTime(0)
+    , m_TimerResolution(0)
+    , m_bAbort( FALSE )
+    , m_pSchedule( pShed ? pShed : new CAMSchedule(CreateEvent(NULL, FALSE, FALSE, NULL)) )
+    , m_hThread(0)
 {
 
 
     ASSERT(m_pSchedule);
     if (!m_pSchedule)
     {
-	*phr = E_OUTOFMEMORY;
+        *phr = E_OUTOFMEMORY;
     }
     else
     {
-	// Set up the highest resolution timer we can manage
-	TIMECAPS tc;
-	m_TimerResolution = (TIMERR_NOERROR == timeGetDevCaps(&tc, sizeof(tc)))
-			    ? tc.wPeriodMin
-			    : 1;
+        // Set up the highest resolution timer we can manage
+        TIMECAPS tc;
+        m_TimerResolution = (TIMERR_NOERROR == timeGetDevCaps(&tc, sizeof(tc)))
+                            ? tc.wPeriodMin
+                            : 1;
 
-	timeBeginPeriod(m_TimerResolution);
+        timeBeginPeriod(m_TimerResolution);
 
-	/* Initialise our system times - the derived clock should set the right values */
-	m_dwPrevSystemTime = timeGetTime();
-	m_rtPrivateTime = (UNITS / MILLISECONDS) * m_dwPrevSystemTime;
+        /* Initialise our system times - the derived clock should set the right values */
+        m_dwPrevSystemTime = timeGetTime();
+        m_rtPrivateTime = (UNITS / MILLISECONDS) * m_dwPrevSystemTime;
 
-	#ifdef PERF
-	    m_idGetSystemTime = MSR_REGISTER(TEXT("CBaseReferenceClock::GetTime"));
-	#endif
+#ifdef PERF
+        m_idGetSystemTime = MSR_REGISTER(TEXT("CBaseReferenceClock::GetTime"));
+#endif
 
-	if ( !pShed )
-	{
-	    DWORD ThreadID;
-	    m_hThread = ::CreateThread(NULL,                  // Security attributes
-				       (DWORD) 0,             // Initial stack size
-				       AdviseThreadFunction,  // Thread start address
-				       (LPVOID) this,         // Thread parameter
-				       (DWORD) 0,             // Creation flags
-				       &ThreadID);            // Thread identifier
+        if ( !pShed )
+        {
+            DWORD ThreadID;
+            m_hThread = ::CreateThread(NULL,                  // Security attributes
+                                       (DWORD) 0,             // Initial stack size
+                                       AdviseThreadFunction,  // Thread start address
+                                       (LPVOID) this,         // Thread parameter
+                                       (DWORD) 0,             // Creation flags
+                                       &ThreadID);            // Thread identifier
 
-	    if (m_hThread)
-	    {
-		SetThreadPriority( m_hThread, THREAD_PRIORITY_TIME_CRITICAL );
-	    }
-	    else
-	    {
-		*phr = E_FAIL;
-		EXECUTE_ASSERT( CloseHandle(m_pSchedule->GetEvent()) );
-		delete m_pSchedule;
-	    }
-	}
+            if (m_hThread)
+            {
+                SetThreadPriority( m_hThread, THREAD_PRIORITY_TIME_CRITICAL );
+            }
+            else
+            {
+                *phr = E_FAIL;
+                EXECUTE_ASSERT( CloseHandle(m_pSchedule->GetEvent()) );
+                delete m_pSchedule;
+            }
+        }
     }
 }
 
@@ -242,7 +242,8 @@ STDMETHODIMP CBaseReferenceClock::SetTimeDelta(const REFERENCE_TIME & TimeDelta)
 
     // Just break if passed an improper time delta value
     LONGLONG llDelta = TimeDelta > 0 ? TimeDelta : -TimeDelta;
-    if (llDelta > UNITS * 1000) {
+    if (llDelta > UNITS * 1000)
+    {
         DbgLog((LOG_TRACE, 0, TEXT("Bad Time Delta")));
         //DebugBreak();
     }
@@ -263,16 +264,16 @@ STDMETHODIMP CBaseReferenceClock::SetTimeDelta(const REFERENCE_TIME & TimeDelta)
 
     // Sev == 0 => > 2 second delta!
     DbgLog((LOG_TIMING, Severity < 0 ? 0 : Severity,
-        TEXT("Sev %2i: CSystemClock::SetTimeDelta(%8ld us) %lu -> %lu ms."),
-        Severity, usDelta, DWORD(ConvertToMilliseconds(m_rtPrivateTime)),
-        DWORD(ConvertToMilliseconds(TimeDelta+m_rtPrivateTime)) ));
+            TEXT("Sev %2i: CSystemClock::SetTimeDelta(%8ld us) %lu -> %lu ms."),
+            Severity, usDelta, DWORD(ConvertToMilliseconds(m_rtPrivateTime)),
+            DWORD(ConvertToMilliseconds(TimeDelta+m_rtPrivateTime)) ));
 
     // Don't want the DbgBreak to fire when running stress on debug-builds.
-    #ifdef BREAK_ON_SEVERE_TIME_DELTA
-        if (Severity < 0)
-            DbgBreakPoint(TEXT("SetTimeDelta > 16 seconds!"),
-                          TEXT(__FILE__),__LINE__);
-    #endif
+#ifdef BREAK_ON_SEVERE_TIME_DELTA
+    if (Severity < 0)
+        DbgBreakPoint(TEXT("SetTimeDelta > 16 seconds!"),
+                      TEXT(__FILE__),__LINE__);
+#endif
 
 #endif
 
@@ -321,8 +322,8 @@ HRESULT CBaseReferenceClock::AdviseThread()
         const REFERENCE_TIME  rtNow = GetPrivateTime();
 
         DbgLog((LOG_TIMING, 3,
-              TEXT("CBaseRefClock::AdviseThread() Woke at = %lu ms"),
-              ConvertToMilliseconds(rtNow) ));
+                TEXT("CBaseRefClock::AdviseThread() Woke at = %lu ms"),
+                ConvertToMilliseconds(rtNow) ));
 
         // We must add in a millisecond, since this is the resolution of our
         // WaitForSingleObject timer.  Failure to do so will cause us to loop

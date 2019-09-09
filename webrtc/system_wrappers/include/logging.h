@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -41,7 +41,8 @@
 
 #include <sstream>
 
-namespace webrtc {
+namespace webrtc
+{
 
 //////////////////////////////////////////////////////////////////////
 
@@ -55,24 +56,29 @@ namespace webrtc {
 //   in debug builds.
 //  LS_WARNING: Something that may warrant investigation.
 //  LS_ERROR: Something that should not have occurred.
-enum LoggingSeverity {
-  LS_SENSITIVE, LS_VERBOSE, LS_INFO, LS_WARNING, LS_ERROR
+enum LoggingSeverity
+{
+    LS_SENSITIVE, LS_VERBOSE, LS_INFO, LS_WARNING, LS_ERROR
 };
 
-class LogMessage {
- public:
-  LogMessage(const char* file, int line, LoggingSeverity sev);
-  ~LogMessage();
+class LogMessage
+{
+public:
+    LogMessage(const char* file, int line, LoggingSeverity sev);
+    ~LogMessage();
 
-  static bool Loggable(LoggingSeverity sev);
-  std::ostream& stream() { return print_stream_; }
+    static bool Loggable(LoggingSeverity sev);
+    std::ostream& stream()
+    {
+        return print_stream_;
+    }
 
- private:
-  // The ostream that buffers the formatted message before output
-  std::ostringstream print_stream_;
+private:
+    // The ostream that buffers the formatted message before output
+    std::ostringstream print_stream_;
 
-  // The severity level of this message
-  LoggingSeverity severity_;
+    // The severity level of this message
+    LoggingSeverity severity_;
 };
 
 //////////////////////////////////////////////////////////////////////
@@ -87,12 +93,13 @@ class LogMessage {
 // logging macros.  This avoids compiler warnings like "value computed
 // is not used" and "statement has no effect".
 
-class LogMessageVoidify {
- public:
-  LogMessageVoidify() { }
-  // This has to be an operator with a precedence lower than << but
-  // higher than ?:
-  void operator&(std::ostream&) { }
+class LogMessageVoidify
+{
+public:
+    LogMessageVoidify() { }
+    // This has to be an operator with a precedence lower than << but
+    // higher than ?:
+    void operator&(std::ostream&) { }
 };
 
 #if defined(WEBRTC_RESTRICT_LOGGING)

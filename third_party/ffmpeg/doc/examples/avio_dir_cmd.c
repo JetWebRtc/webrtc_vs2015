@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Lukasz Marek
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,7 +26,8 @@
 
 static const char *type_string(int type)
 {
-    switch (type) {
+    switch (type)
+    {
     case AVIO_ENTRY_DIRECTORY:
         return "<DIR>";
     case AVIO_ENTRY_FILE:
@@ -61,22 +62,28 @@ static int list_op(const char *input_dir)
     int cnt, ret;
     char filemode[4], uid_and_gid[20];
 
-    if ((ret = avio_open_dir(&ctx, input_dir, NULL)) < 0) {
+    if ((ret = avio_open_dir(&ctx, input_dir, NULL)) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot open directory: %s.\n", av_err2str(ret));
         goto fail;
     }
 
     cnt = 0;
-    for (;;) {
-        if ((ret = avio_read_dir(ctx, &entry)) < 0) {
+    for (;;)
+    {
+        if ((ret = avio_read_dir(ctx, &entry)) < 0)
+        {
             av_log(NULL, AV_LOG_ERROR, "Cannot list directory: %s.\n", av_err2str(ret));
             goto fail;
         }
         if (!entry)
             break;
-        if (entry->filemode == -1) {
+        if (entry->filemode == -1)
+        {
             snprintf(filemode, 4, "???");
-        } else {
+        }
+        else
+        {
             snprintf(filemode, 4, "%3"PRIo64, entry->filemode);
         }
         snprintf(uid_and_gid, 20, "%"PRId64"(%"PRId64")", entry->user_id, entry->group_id);
@@ -97,7 +104,7 @@ static int list_op(const char *input_dir)
         cnt++;
     };
 
-  fail:
+fail:
     avio_close_dir(&ctx);
     return ret;
 }
@@ -138,7 +145,8 @@ int main(int argc, char *argv[])
 
     av_log_set_level(AV_LOG_DEBUG);
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         usage(argv[0]);
         return 1;
     }
@@ -148,28 +156,44 @@ int main(int argc, char *argv[])
     avformat_network_init();
 
     op = argv[1];
-    if (strcmp(op, "list") == 0) {
-        if (argc < 3) {
+    if (strcmp(op, "list") == 0)
+    {
+        if (argc < 3)
+        {
             av_log(NULL, AV_LOG_INFO, "Missing argument for list operation.\n");
             ret = AVERROR(EINVAL);
-        } else {
+        }
+        else
+        {
             ret = list_op(argv[2]);
         }
-    } else if (strcmp(op, "del") == 0) {
-        if (argc < 3) {
+    }
+    else if (strcmp(op, "del") == 0)
+    {
+        if (argc < 3)
+        {
             av_log(NULL, AV_LOG_INFO, "Missing argument for del operation.\n");
             ret = AVERROR(EINVAL);
-        } else {
+        }
+        else
+        {
             ret = del_op(argv[2]);
         }
-    } else if (strcmp(op, "move") == 0) {
-        if (argc < 4) {
+    }
+    else if (strcmp(op, "move") == 0)
+    {
+        if (argc < 4)
+        {
             av_log(NULL, AV_LOG_INFO, "Missing argument for move operation.\n");
             ret = AVERROR(EINVAL);
-        } else {
+        }
+        else
+        {
             ret = move_op(argv[2], argv[3]);
         }
-    } else {
+    }
+    else
+    {
         av_log(NULL, AV_LOG_INFO, "Invalid operation %s\n", op);
         ret = AVERROR(EINVAL);
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TIFF image encoder
  * Copyright (c) 2007 Bartlomiej Wolowiec
  *
@@ -45,11 +45,13 @@
 #define TIFF_MAX_ENTRY 32
 
 /** sizes of various TIFF field types (string size = 1)*/
-static const uint8_t type_sizes2[14] = {
+static const uint8_t type_sizes2[14] =
+{
     0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8, 4
 };
 
-typedef struct TiffEncoderContext {
+typedef struct TiffEncoderContext
+{
     AVClass *class;                         ///< for private options
     AVCodecContext *avctx;
 
@@ -86,7 +88,8 @@ typedef struct TiffEncoderContext {
  */
 static inline int check_size(TiffEncoderContext *s, uint64_t need)
 {
-    if (s->buf_size < *s->buf - s->buf_start + need) {
+    if (s->buf_size < *s->buf - s->buf_start + need)
+    {
         *s->buf = s->buf_start + s->buf_size + 1;
         av_log(s->avctx, AV_LOG_ERROR, "Buffer is too small\n");
         return 1;
@@ -108,7 +111,10 @@ static void tnput(uint8_t **p, int n, const uint8_t *val, enum TiffTypes type,
 {
     int i;
 #if HAVE_BIGENDIAN
-    flip ^= ((int[]) { 0, 0, 0, 1, 3, 3 })[type];
+    flip ^= ((int[])
+    {
+        0, 0, 0, 1, 3, 3
+    })[type];
 #endif
     for (i = 0; i < n * type_sizes2[type]; i++)
         *(*p)++ = val[i ^ flip];
@@ -134,9 +140,11 @@ static int add_entry(TiffEncoderContext *s, enum TiffTags tag,
     bytestream_put_le16(&entries_ptr, type);
     bytestream_put_le32(&entries_ptr, count);
 
-    if (type_sizes[type] * (int64_t)count <= 4) {
+    if (type_sizes[type] * (int64_t)count <= 4)
+    {
         tnput(&entries_ptr, count, ptr_val, type, 0);
-    } else {
+    }
+    else {
         bytestream_put_le32(&entries_ptr, *s->buf - s->buf_start);
         if (check_size(s, count * (int64_t)type_sizes2[type]))
             return AVERROR_INVALIDDATA;
@@ -153,7 +161,7 @@ static int add_entry1(TiffEncoderContext *s,
     uint16_t w  = val;
     uint32_t dw = val;
     return add_entry(s, tag, type, 1,
-                     type == TIFF_SHORT ? (void *)&w : (void *)&dw);
+    type == TIFF_SHORT ? (void *)&w : (void *)&dw);
 }
 
 /**
@@ -170,13 +178,15 @@ static int add_entry1(TiffEncoderContext *s,
 static int encode_strip(TiffEncoderContext *s, const int8_t *src,
                         uint8_t *dst, int n, int compr)
 {
-    switch (compr) {
+    switch (compr)
+    {
 #if CONFIG_ZLIB
     case TIFF_DEFLATE:
     case TIFF_ADOBE_DEFLATE:
     {
         unsigned long zlen = s->buf_size - (*s->buf - s->buf_start);
-        if (compress(dst, &zlen, src, n) != Z_OK) {
+        if (compress(dst, &zlen, src, n) != Z_OK)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "Compressing failed\n");
             return AVERROR_EXTERNAL;
         }
@@ -207,8 +217,10 @@ static void pack_yuv(TiffEncoderContext *s, const AVFrame *p,
     int w       = (s->width - 1) / s->subsampling[0] + 1;
     uint8_t *pu = &p->data[1][lnum / s->subsampling[1] * p->linesize[1]];
     uint8_t *pv = &p->data[2][lnum / s->subsampling[1] * p->linesize[2]];
-    if (s->width % s->subsampling[0] || s->height % s->subsampling[1]) {
-        for (i = 0; i < w; i++) {
+    if (s->width % s->subsampling[0] || s->height % s->subsampling[1])
+    {
+        for (i = 0; i < w; i++)
+        {
             for (j = 0; j < s->subsampling[1]; j++)
                 for (k = 0; k < s->subsampling[0]; k++)
                     *dst++ = p->data[0][FFMIN(lnum + j, s->height-1) * p->linesize[0] +
@@ -216,8 +228,11 @@ static void pack_yuv(TiffEncoderContext *s, const AVFrame *p,
             *dst++ = *pu++;
             *dst++ = *pv++;
         }
-    }else{
-        for (i = 0; i < w; i++) {
+    }
+    else
+    {
+        for (i = 0; i < w; i++)
+        {
             for (j = 0; j < s->subsampling[1]; j++)
                 for (k = 0; k < s->subsampling[0]; k++)
                     *dst++ = p->data[0][(lnum + j) * p->linesize[0] +
@@ -266,10 +281,11 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     s->subsampling[1] = 1;
 
     avctx->bits_per_coded_sample =
-    s->bpp          = av_get_bits_per_pixel(desc);
+        s->bpp          = av_get_bits_per_pixel(desc);
     s->bpp_tab_size = desc->nb_components;
 
-    switch (avctx->pix_fmt) {
+    switch (avctx->pix_fmt)
+    {
     case AV_PIX_FMT_RGBA64LE:
     case AV_PIX_FMT_RGBA:
         alpha = 1;
@@ -314,8 +330,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         bpp_tab[i] = desc->comp[i].depth_minus1 + 1;
 
     if (s->compr == TIFF_DEFLATE       ||
-        s->compr == TIFF_ADOBE_DEFLATE ||
-        s->compr == TIFF_LZW)
+            s->compr == TIFF_ADOBE_DEFLATE ||
+            s->compr == TIFF_LZW)
         // best choice for DEFLATE
         s->rps = s->height;
     else
@@ -338,7 +354,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     s->buf       = &ptr;
     s->buf_size  = pkt->size;
 
-    if (check_size(s, 8)) {
+    if (check_size(s, 8))
+    {
         ret = AVERROR(EINVAL);
         goto fail;
     }
@@ -350,21 +367,25 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     offset = ptr;
     bytestream_put_le32(&ptr, 0);
 
-    if (strips > INT_MAX / FFMAX(sizeof(s->strip_sizes[0]), sizeof(s->strip_offsets[0]))) {
+    if (strips > INT_MAX / FFMAX(sizeof(s->strip_sizes[0]), sizeof(s->strip_offsets[0])))
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
     av_fast_padded_mallocz(&s->strip_sizes  , &s->strip_sizes_size  , sizeof(s->strip_sizes  [0]) * strips);
     av_fast_padded_mallocz(&s->strip_offsets, &s->strip_offsets_size, sizeof(s->strip_offsets[0]) * strips);
 
-    if (!s->strip_sizes || !s->strip_offsets) {
+    if (!s->strip_sizes || !s->strip_offsets)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
-    if (is_yuv) {
+    if (is_yuv)
+    {
         av_fast_padded_malloc(&s->yuv_line, &s->yuv_line_size, bytes_per_row);
-        if (s->yuv_line == NULL) {
+        if (s->yuv_line == NULL)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "Not enough memory\n");
             ret = AVERROR(ENOMEM);
             goto fail;
@@ -372,78 +393,94 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     }
 
 #if CONFIG_ZLIB
-    if (s->compr == TIFF_DEFLATE || s->compr == TIFF_ADOBE_DEFLATE) {
+    if (s->compr == TIFF_DEFLATE || s->compr == TIFF_ADOBE_DEFLATE)
+    {
         uint8_t *zbuf;
         int zlen, zn;
         int j;
 
         zlen = bytes_per_row * s->rps;
         zbuf = av_malloc(zlen);
-        if (!zbuf) {
+        if (!zbuf)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
         s->strip_offsets[0] = ptr - pkt->data;
         zn               = 0;
-        for (j = 0; j < s->rps; j++) {
-            if (is_yuv) {
+        for (j = 0; j < s->rps; j++)
+        {
+            if (is_yuv)
+            {
                 pack_yuv(s, p, s->yuv_line, j);
                 memcpy(zbuf + zn, s->yuv_line, bytes_per_row);
                 j += s->subsampling[1] - 1;
-            } else
+            }
+            else
                 memcpy(zbuf + j * bytes_per_row,
                        p->data[0] + j * p->linesize[0], bytes_per_row);
             zn += bytes_per_row;
         }
         ret = encode_strip(s, zbuf, ptr, zn, s->compr);
         av_free(zbuf);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "Encode strip failed\n");
             goto fail;
         }
         ptr           += ret;
         s->strip_sizes[0] = ptr - pkt->data - s->strip_offsets[0];
-    } else
+    }
+    else
 #endif
     {
-    if (s->compr == TIFF_LZW) {
-        s->lzws = av_malloc(ff_lzw_encode_state_size);
-        if (!s->lzws) {
-            ret = AVERROR(ENOMEM);
-            goto fail;
-        }
-    }
-    for (i = 0; i < s->height; i++) {
-        if (s->strip_sizes[i / s->rps] == 0) {
-            if (s->compr == TIFF_LZW) {
-                ff_lzw_encode_init(s->lzws, ptr,
-                                   s->buf_size - (*s->buf - s->buf_start),
-                                   12, FF_LZW_TIFF, put_bits);
+        if (s->compr == TIFF_LZW)
+        {
+            s->lzws = av_malloc(ff_lzw_encode_state_size);
+            if (!s->lzws)
+            {
+                ret = AVERROR(ENOMEM);
+                goto fail;
             }
-            s->strip_offsets[i / s->rps] = ptr - pkt->data;
         }
-        if (is_yuv) {
-            pack_yuv(s, p, s->yuv_line, i);
-            ret = encode_strip(s, s->yuv_line, ptr, bytes_per_row, s->compr);
-            i  += s->subsampling[1] - 1;
-        } else
-            ret = encode_strip(s, p->data[0] + i * p->linesize[0],
-                               ptr, bytes_per_row, s->compr);
-        if (ret < 0) {
-            av_log(s->avctx, AV_LOG_ERROR, "Encode strip failed\n");
-            goto fail;
+        for (i = 0; i < s->height; i++)
+        {
+            if (s->strip_sizes[i / s->rps] == 0)
+            {
+                if (s->compr == TIFF_LZW)
+                {
+                    ff_lzw_encode_init(s->lzws, ptr,
+                                       s->buf_size - (*s->buf - s->buf_start),
+                                       12, FF_LZW_TIFF, put_bits);
+                }
+                s->strip_offsets[i / s->rps] = ptr - pkt->data;
+            }
+            if (is_yuv)
+            {
+                pack_yuv(s, p, s->yuv_line, i);
+                ret = encode_strip(s, s->yuv_line, ptr, bytes_per_row, s->compr);
+                i  += s->subsampling[1] - 1;
+            }
+            else
+                ret = encode_strip(s, p->data[0] + i * p->linesize[0],
+                                   ptr, bytes_per_row, s->compr);
+            if (ret < 0)
+            {
+                av_log(s->avctx, AV_LOG_ERROR, "Encode strip failed\n");
+                goto fail;
+            }
+            s->strip_sizes[i / s->rps] += ret;
+            ptr                     += ret;
+            if (s->compr == TIFF_LZW &&
+                    (i == s->height - 1 || i % s->rps == s->rps - 1))
+            {
+                ret = ff_lzw_encode_flush(s->lzws, flush_put_bits);
+                s->strip_sizes[(i / s->rps)] += ret;
+                ptr                          += ret;
+            }
         }
-        s->strip_sizes[i / s->rps] += ret;
-        ptr                     += ret;
-        if (s->compr == TIFF_LZW &&
-            (i == s->height - 1 || i % s->rps == s->rps - 1)) {
-            ret = ff_lzw_encode_flush(s->lzws, flush_put_bits);
-            s->strip_sizes[(i / s->rps)] += ret;
-            ptr                          += ret;
-        }
-    }
-    if (s->compr == TIFF_LZW)
-        av_freep(&s->lzws);
+        if (s->compr == TIFF_LZW)
+            av_freep(&s->lzws);
     }
 
     s->num_entries = 0;
@@ -466,7 +503,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     ADD_ENTRY(s,  TIFF_STRIP_SIZE,   TIFF_LONG,     strips, s->strip_sizes);
     ADD_ENTRY(s,  TIFF_XRES,         TIFF_RATIONAL, 1,      res);
     if (avctx->sample_aspect_ratio.num > 0 &&
-        avctx->sample_aspect_ratio.den > 0) {
+            avctx->sample_aspect_ratio.den > 0)
+    {
         AVRational y = av_mul_q(av_make_q(s->dpi, 1),
                                 avctx->sample_aspect_ratio);
         res[0] = y.num;
@@ -479,9 +517,11 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         ADD_ENTRY(s, TIFF_SOFTWARE_NAME, TIFF_STRING,
                   strlen(LIBAVCODEC_IDENT) + 1, LIBAVCODEC_IDENT);
 
-    if (avctx->pix_fmt == AV_PIX_FMT_PAL8) {
+    if (avctx->pix_fmt == AV_PIX_FMT_PAL8)
+    {
         uint16_t pal[256 * 3];
-        for (i = 0; i < 256; i++) {
+        for (i = 0; i < 256; i++)
+        {
             uint32_t rgb = *(uint32_t *) (p->data[1] + i * 4);
             pal[i]       = ((rgb >> 16) & 0xff) * 257;
             pal[i + 256] = ((rgb >>  8) & 0xff) * 257;
@@ -491,7 +531,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     }
     if (alpha)
         ADD_ENTRY1(s,TIFF_EXTRASAMPLES,      TIFF_SHORT,            2);
-    if (is_yuv) {
+    if (is_yuv)
+    {
         /** according to CCIR Recommendation 601.1 */
         uint32_t refbw[12] = { 15, 1, 235, 1, 128, 1, 240, 1, 128, 1, 240, 1 };
         ADD_ENTRY(s, TIFF_YCBCR_SUBSAMPLING, TIFF_SHORT,    2, s->subsampling);
@@ -502,7 +543,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     // write offset to dir
     bytestream_put_le32(&offset, ptr - pkt->data);
 
-    if (check_size(s, 6 + s->num_entries * 12)) {
+    if (check_size(s, 6 + s->num_entries * 12))
+    {
         ret = AVERROR(EINVAL);
         goto fail;
     }
@@ -522,10 +564,10 @@ static av_cold int encode_init(AVCodecContext *avctx)
 {
     TiffEncoderContext *s = avctx->priv_data;
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     s->avctx = avctx;
 
@@ -545,7 +587,8 @@ static av_cold int encode_close(AVCodecContext *avctx)
 
 #define OFFSET(x) offsetof(TiffEncoderContext, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"dpi", "set the image resolution (in dpi)", OFFSET(dpi), AV_OPT_TYPE_INT, {.i64 = 72}, 1, 0x10000, AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_ENCODING_PARAM},
     { "compression_algo", NULL, OFFSET(compr), AV_OPT_TYPE_INT,   { .i64 = TIFF_PACKBITS }, TIFF_RAW, TIFF_DEFLATE, VE, "compression_algo" },
     { "packbits",         NULL, 0,             AV_OPT_TYPE_CONST, { .i64 = TIFF_PACKBITS }, 0,        0,            VE, "compression_algo" },
@@ -557,14 +600,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass tiffenc_class = {
+static const AVClass tiffenc_class =
+{
     .class_name = "TIFF encoder",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_tiff_encoder = {
+AVCodec ff_tiff_encoder =
+{
     .name           = "tiff",
     .long_name      = NULL_IF_CONFIG_SMALL("TIFF image"),
     .type           = AVMEDIA_TYPE_VIDEO,

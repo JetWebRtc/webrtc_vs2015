@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Flash Screen Video Version 2 encoder
  * Copyright (C) 2009 Joshua Warner
  *
@@ -65,7 +65,8 @@
 // At the moment, the "smart" code is a great example of how the parameters *shouldn't* be chosen.
 #define FLASHSV2_DUMB
 
-typedef struct Block {
+typedef struct Block
+{
     uint8_t *enc;
     uint8_t *sl_begin, *sl_end;
     int enc_size;
@@ -78,12 +79,14 @@ typedef struct Block {
     uint8_t flags;
 } Block;
 
-typedef struct Palette {
+typedef struct Palette
+{
     unsigned colors[128];
     uint8_t index[1 << 15];
 } Palette;
 
-typedef struct FlashSV2Context {
+typedef struct FlashSV2Context
+{
     AVCodecContext *avctx;
     uint8_t *current_frame;
     uint8_t *key_frame;
@@ -142,16 +145,18 @@ static void init_blocks(FlashSV2Context * s, Block * blocks,
 {
     int row, col;
     Block *b;
-    for (col = 0; col < s->cols; col++) {
-        for (row = 0; row < s->rows; row++) {
+    for (col = 0; col < s->cols; col++)
+    {
+        for (row = 0; row < s->rows; row++)
+        {
             b = blocks + (col + row * s->cols);
             b->width = (col < s->cols - 1) ?
-                s->block_width :
-                s->image_width - col * s->block_width;
+                       s->block_width :
+                       s->image_width - col * s->block_width;
 
             b->height = (row < s->rows - 1) ?
-                s->block_height :
-                s->image_height - row * s->block_height;
+                        s->block_height :
+                        s->image_height - row * s->block_height;
 
             b->row   = row;
             b->col   = col;
@@ -183,19 +188,22 @@ static av_cold int flashsv2_encode_init(AVCodecContext * avctx)
     s->comp = avctx->compression_level;
     if (s->comp == -1)
         s->comp = 9;
-    if (s->comp < 0 || s->comp > 9) {
+    if (s->comp < 0 || s->comp > 9)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Compression level should be 0-9, not %d\n", s->comp);
         return -1;
     }
 
 
-    if ((avctx->width > 4095) || (avctx->height > 4095)) {
+    if ((avctx->width > 4095) || (avctx->height > 4095))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Input dimensions too large, input must be max 4095x4095 !\n");
         return -1;
     }
-    if ((avctx->width < 16) || (avctx->height < 16)) {
+    if ((avctx->width < 16) || (avctx->height < 16))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Input dimensions too small, input must be at least 16x16 !\n");
         return -1;
@@ -246,8 +254,9 @@ static av_cold int flashsv2_encode_init(AVCodecContext * avctx)
     s->palette_type       = -1;        // so that the palette will be generated in reconfigure_at_keyframe
 
     if (!s->encbuffer || !s->keybuffer || !s->databuffer
-        || !s->current_frame || !s->key_frame || !s->key_blocks
-        || !s->frame_blocks) {
+            || !s->current_frame || !s->key_frame || !s->key_blocks
+            || !s->frame_blocks)
+    {
         av_log(avctx, AV_LOG_ERROR, "Memory allocation failed.\n");
         cleanup(s);
         return -1;
@@ -262,7 +271,8 @@ static int new_key_frame(FlashSV2Context * s)
     memcpy(s->key_blocks, s->frame_blocks, s->blocks_size);
     memcpy(s->key_frame, s->current_frame, s->frame_size);
 
-    for (i = 0; i < s->rows * s->cols; i++) {
+    for (i = 0; i < s->rows * s->cols; i++)
+    {
         s->key_blocks[i].enc += (s->keybuffer - s->encbuffer);
         s->key_blocks[i].sl_begin = 0;
         s->key_blocks[i].sl_end   = 0;
@@ -299,7 +309,8 @@ static int write_header(FlashSV2Context * s, uint8_t * buf, int buf_size)
 
     buf[buf_pos++] = s->flags;
 
-    if (s->flags & HAS_PALLET_INFO) {
+    if (s->flags & HAS_PALLET_INFO)
+    {
         len = write_palette(s, buf + buf_pos, buf_size - buf_pos);
         if (len < 0)
             return -1;
@@ -331,12 +342,14 @@ static int write_block(Block * b, uint8_t * buf, int buf_size)
 
     buf[buf_pos++] = b->flags;
 
-    if (b->flags & HAS_DIFF_BLOCKS) {
+    if (b->flags & HAS_DIFF_BLOCKS)
+    {
         buf[buf_pos++] = (b->start);
         buf[buf_pos++] = (b->len);
     }
 
-    if (b->flags & ZLIB_PRIME_COMPRESS_CURRENT) {
+    if (b->flags & ZLIB_PRIME_COMPRESS_CURRENT)
+    {
         //This feature of the format is poorly understood, and as of now, unused.
         buf[buf_pos++] = (b->col);
         buf[buf_pos++] = (b->row);
@@ -369,7 +382,8 @@ static int encode_zlibprime(Block * b, Block * prime, uint8_t * buf,
 
     s.next_in  = prime->enc;
     s.avail_in = prime->enc_size;
-    while (s.avail_in > 0) {
+    while (s.avail_in > 0)
+    {
         s.next_out  = buf;
         s.avail_out = *buf_size;
         res = deflate(&s, Z_SYNC_FLUSH);
@@ -416,8 +430,8 @@ static inline unsigned int chroma_diff(unsigned int c1, unsigned int c2)
     unsigned int t2 = (c2 & 0x000000ff) + ((c2 & 0x0000ff00) >> 8) + ((c2 & 0x00ff0000) >> 16);
 
     return abs(t1 - t2) + abs((c1 & 0x000000ff) - (c2 & 0x000000ff)) +
-        abs(((c1 & 0x0000ff00) >> 8) - ((c2 & 0x0000ff00) >> 8)) +
-        abs(((c1 & 0x00ff0000) >> 16) - ((c2 & 0x00ff0000) >> 16));
+           abs(((c1 & 0x0000ff00) >> 8) - ((c2 & 0x0000ff00) >> 8)) +
+           abs(((c1 & 0x00ff0000) >> 16) - ((c2 & 0x00ff0000) >> 16));
 }
 
 static inline int pixel_color7_fast(Palette * palette, unsigned c15)
@@ -429,10 +443,12 @@ static int pixel_color7_slow(Palette * palette, unsigned color)
 {
     int i, min = 0x7fffffff;
     int minc = -1;
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < 128; i++)
+    {
         int c1 = palette->colors[i];
         int diff = chroma_diff(c1, color);
-        if (diff < min) {
+        if (diff < min)
+        {
             min = diff;
             minc = i;
         }
@@ -453,10 +469,13 @@ static int write_pixel_15_7(Palette * palette, uint8_t * dest, const uint8_t * s
     int d15 = chroma_diff(color, color & 0x00f8f8f8);
     int c7 = pixel_color7_fast(palette, c15);
     int d7 = chroma_diff(color, palette->colors[c7]);
-    if (dist + d15 >= d7) {
+    if (dist + d15 >= d7)
+    {
         dest[0] = c7;
         return 1;
-    } else {
+    }
+    else
+    {
         dest[0] = 0x80 | (c15 >> 8);
         dest[1] = c15 & 0xff;
         return 2;
@@ -467,9 +486,12 @@ static int update_palette_index(Palette * palette)
 {
     int r, g, b;
     unsigned int bgr, c15, index;
-    for (r = 4; r < 256; r += 8) {
-        for (g = 4; g < 256; g += 8) {
-            for (b = 4; b < 256; b += 8) {
+    for (r = 4; r < 256; r += 8)
+    {
+        for (g = 4; g < 256; g += 8)
+        {
+            for (b = 4; b < 256; b += 8)
+            {
                 bgr = b | (g << 8) | (r << 16);
                 c15 = (b >> 3) | ((g & 0xf8) << 2) | ((r & 0xf8) << 7);
                 index = pixel_color7_slow(palette, bgr);
@@ -481,7 +503,8 @@ static int update_palette_index(Palette * palette)
     return 0;
 }
 
-static const unsigned int default_screen_video_v2_palette[128] = {
+static const unsigned int default_screen_video_v2_palette[128] =
+{
     0x00000000, 0x00333333, 0x00666666, 0x00999999, 0x00CCCCCC, 0x00FFFFFF,
     0x00330000, 0x00660000, 0x00990000, 0x00CC0000, 0x00FF0000, 0x00003300,
     0x00006600, 0x00009900, 0x0000CC00, 0x0000FF00, 0x00000033, 0x00000066,
@@ -515,7 +538,7 @@ static int generate_default_palette(Palette * palette)
 }
 
 static int generate_optimum_palette(Palette * palette, const uint8_t * image,
-                                   int width, int height, int stride)
+                                    int width, int height, int stride)
 {
     //this isn't implemented yet!  Default palette only!
     return -1;
@@ -525,7 +548,8 @@ static inline int encode_15_7_sl(Palette * palette, uint8_t * dest,
                                  const uint8_t * src, int width, int dist)
 {
     int len = 0, x;
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         len += write_pixel_15_7(palette, dest + len, src + 3 * x, dist);
     }
     return len;
@@ -556,30 +580,38 @@ static int encode_block(FlashSV2Context *s, Palette * palette, Block * b,
     uint8_t *buf = s->blockbuffer;
     int res;
 
-    if (b->flags & COLORSPACE_15_7) {
+    if (b->flags & COLORSPACE_15_7)
+    {
         encode_15_7(palette, b, src, stride, dist);
-    } else {
+    }
+    else
+    {
         encode_bgr(b, src, stride);
     }
 
-    if (b->len > 0) {
+    if (b->len > 0)
+    {
         b->data_size = buf_size;
         res = encode_zlib(b, b->data, &b->data_size, comp);
         if (res)
             return res;
 
-        if (!keyframe) {
+        if (!keyframe)
+        {
             res = encode_zlibprime(b, prev, buf, &buf_size, comp);
             if (res)
                 return res;
 
-            if (buf_size < b->data_size) {
+            if (buf_size < b->data_size)
+            {
                 b->data_size = buf_size;
                 memcpy(b->data, buf, buf_size);
                 b->flags |= ZLIB_PRIME_COMPRESS_PREVIOUS;
             }
         }
-    } else {
+    }
+    else
+    {
         b->data_size = 0;
     }
     return 0;
@@ -588,14 +620,16 @@ static int encode_block(FlashSV2Context *s, Palette * palette, Block * b,
 static int compare_sl(FlashSV2Context * s, Block * b, const uint8_t * src,
                       uint8_t * frame, uint8_t * key, int y, int keyframe)
 {
-    if (memcmp(src, frame, b->width * 3) != 0) {
+    if (memcmp(src, frame, b->width * 3) != 0)
+    {
         b->dirty = 1;
         memcpy(frame, src, b->width * 3);
 #ifndef FLASHSV2_DUMB
         s->diff_lines++;
 #endif
     }
-    if (memcmp(src, key, b->width * 3) != 0) {
+    if (memcmp(src, key, b->width * 3) != 0)
+    {
         if (b->len == 0)
             b->start = y;
         b->len = y + 1 - b->start;
@@ -608,8 +642,10 @@ static int mark_all_blocks(FlashSV2Context * s, const uint8_t * src, int stride,
 {
     int sl, rsl, col, pos, possl;
     Block *b;
-    for (sl = s->image_height - 1; sl >= 0; sl--) {
-        for (col = 0; col < s->cols; col++) {
+    for (sl = s->image_height - 1; sl >= 0; sl--)
+    {
+        for (col = 0; col < s->cols; col++)
+        {
             rsl = s->image_height - sl - 1;
             b = s->frame_blocks + col + rsl / s->block_height * s->cols;
             possl = stride * sl + col * s->block_width * 3;
@@ -629,20 +665,27 @@ static int encode_all_blocks(FlashSV2Context * s, int keyframe)
     int row, col, res;
     uint8_t *data;
     Block *b, *prev;
-    for (row = 0; row < s->rows; row++) {
-        for (col = 0; col < s->cols; col++) {
+    for (row = 0; row < s->rows; row++)
+    {
+        for (col = 0; col < s->cols; col++)
+        {
             b = s->frame_blocks + (row * s->cols + col);
             prev = s->key_blocks + (row * s->cols + col);
             b->flags = s->use15_7 ? COLORSPACE_15_7 : 0;
-            if (keyframe) {
+            if (keyframe)
+            {
                 b->start = 0;
                 b->len = b->height;
-            } else if (!b->dirty) {
+            }
+            else if (!b->dirty)
+            {
                 b->start = 0;
                 b->len = 0;
                 b->data_size = 0;
                 continue;
-            } else if (b->start != 0 || b->len != b->height) {
+            }
+            else if (b->start != 0 || b->len != b->height)
+            {
                 b->flags |= HAS_DIFF_BLOCKS;
             }
             data = s->current_frame + s->image_width * 3 * s->block_height * row + s->block_width * col * 3;
@@ -669,8 +712,10 @@ static int write_all_blocks(FlashSV2Context * s, uint8_t * buf,
 {
     int row, col, buf_pos = 0, len;
     Block *b;
-    for (row = 0; row < s->rows; row++) {
-        for (col = 0; col < s->cols; col++) {
+    for (row = 0; row < s->rows; row++)
+    {
+        for (col = 0; col < s->cols; col++)
+        {
             b = s->frame_blocks + row * s->cols + col;
             len = write_block(b, buf + buf_pos, buf_size - buf_pos);
             b->start = b->len = b->dirty = 0;
@@ -695,9 +740,12 @@ static int write_bitstream(FlashSV2Context * s, const uint8_t * src, int stride,
         return res;
 
     res = write_header(s, buf, buf_size);
-    if (res < 0) {
+    if (res < 0)
+    {
         return res;
-    } else {
+    }
+    else
+    {
         buf_pos = res;
     }
     res = write_all_blocks(s, buf + buf_pos, buf_size - buf_pos);
@@ -715,14 +763,16 @@ static void recommend_keyframe(FlashSV2Context * s, int *keyframe)
 {
 #ifndef FLASHSV2_DUMB
     double block_ratio, line_ratio, enc_ratio, comp_ratio, data_ratio;
-    if (s->avctx->gop_size > 0) {
+    if (s->avctx->gop_size > 0)
+    {
         block_ratio = s->diff_blocks / s->tot_blocks;
         line_ratio = s->diff_lines / s->tot_lines;
         enc_ratio = s->uncomp_size / s->raw_size;
         comp_ratio = s->comp_size / s->uncomp_size;
         data_ratio = s->comp_size / s->raw_size;
 
-        if ((block_ratio >= 0.5 && line_ratio / block_ratio <= 0.5) || line_ratio >= 0.95) {
+        if ((block_ratio >= 0.5 && line_ratio / block_ratio <= 0.5) || line_ratio >= 0.95)
+        {
             *keyframe = 1;
             return;
         }
@@ -765,10 +815,13 @@ static int optimum_use15_7(FlashSV2Context * s)
 {
 #ifndef FLASHSV2_DUMB
     double ideal = ((double)(s->avctx->bit_rate * s->avctx->time_base.den * s->avctx->ticks_per_frame)) /
-        ((double) s->avctx->time_base.num) * s->avctx->frame_number;
-    if (ideal + use15_7_threshold < s->total_bits) {
+                   ((double) s->avctx->time_base.num) * s->avctx->frame_number;
+    if (ideal + use15_7_threshold < s->total_bits)
+    {
         return 1;
-    } else {
+    }
+    else
+    {
         return 0;
     }
 #else
@@ -802,13 +855,16 @@ static int reconfigure_at_keyframe(FlashSV2Context * s, const uint8_t * image,
     s->rows = (s->image_height + block_height - 1) / block_height;
     s->cols = (s->image_width  + block_width  - 1) / block_width;
 
-    if (block_width != s->block_width || block_height != s->block_height) {
+    if (block_width != s->block_width || block_height != s->block_height)
+    {
         s->block_width  = block_width;
         s->block_height = block_height;
-        if (s->rows * s->cols > s->blocks_size / sizeof(Block)) {
+        if (s->rows * s->cols > s->blocks_size / sizeof(Block))
+        {
             s->frame_blocks = av_realloc_array(s->frame_blocks, s->rows, s->cols * sizeof(Block));
             s->key_blocks = av_realloc_array(s->key_blocks, s->cols, s->rows * sizeof(Block));
-            if (!s->frame_blocks || !s->key_blocks) {
+            if (!s->frame_blocks || !s->key_blocks)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "Memory allocation failed.\n");
                 return -1;
             }
@@ -818,21 +874,26 @@ static int reconfigure_at_keyframe(FlashSV2Context * s, const uint8_t * image,
         init_blocks(s, s->key_blocks, s->keybuffer, 0);
 
         av_fast_malloc(&s->blockbuffer, &s->blockbuffer_size, block_width * block_height * 6);
-        if (!s->blockbuffer) {
+        if (!s->blockbuffer)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "Could not allocate block buffer.\n");
             return AVERROR(ENOMEM);
         }
     }
 
     s->use15_7 = optimum_use15_7(s);
-    if (s->use15_7) {
-        if ((s->use_custom_palette && s->palette_type != 1) || update_palette) {
+    if (s->use15_7)
+    {
+        if ((s->use_custom_palette && s->palette_type != 1) || update_palette)
+        {
             res = generate_optimum_palette(&s->palette, image, s->image_width, s->image_height, stride);
             if (res)
                 return res;
             s->palette_type = 1;
             av_log(s->avctx, AV_LOG_DEBUG, "Generated optimum palette\n");
-        } else if (!s->use_custom_palette && s->palette_type != 0) {
+        }
+        else if (!s->use_custom_palette && s->palette_type != 0)
+        {
             res = generate_default_palette(&s->palette);
             if (res)
                 return res;
@@ -862,19 +923,22 @@ static int flashsv2_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         keyframe = 1;
 
     /* Check the placement of keyframes */
-    if (avctx->gop_size > 0) {
+    if (avctx->gop_size > 0)
+    {
         if (avctx->frame_number >= s->last_key_frame + avctx->gop_size)
             keyframe = 1;
     }
 
     if (!keyframe
-        && avctx->frame_number > s->last_key_frame + avctx->keyint_min) {
+            && avctx->frame_number > s->last_key_frame + avctx->keyint_min)
+    {
         recommend_keyframe(s, &keyframe);
         if (keyframe)
             av_log(avctx, AV_LOG_DEBUG, "Recommending key frame at frame %d\n", avctx->frame_number);
     }
 
-    if (keyframe) {
+    if (keyframe)
+    {
         res = reconfigure_at_keyframe(s, p->data[0], p->linesize[0]);
         if (res)
             return res;
@@ -885,7 +949,8 @@ static int flashsv2_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     res = write_bitstream(s, p->data[0], p->linesize[0], pkt->data, pkt->size, keyframe);
 
-    if (keyframe) {
+    if (keyframe)
+    {
         new_key_frame(s);
         s->last_key_frame = avctx->frame_number;
         pkt->flags |= AV_PKT_FLAG_KEY;
@@ -907,7 +972,8 @@ static av_cold int flashsv2_encode_end(AVCodecContext * avctx)
     return 0;
 }
 
-AVCodec ff_flashsv2_encoder = {
+AVCodec ff_flashsv2_encoder =
+{
     .name           = "flashsv2",
     .long_name      = NULL_IF_CONFIG_SMALL("Flash Screen Video Version 2"),
     .type           = AVMEDIA_TYPE_VIDEO,

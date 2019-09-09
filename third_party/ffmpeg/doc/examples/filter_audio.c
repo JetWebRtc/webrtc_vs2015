@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2013 Andrew Kelley
  *
  * This file is part of FFmpeg.
@@ -80,7 +80,8 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
 
     /* Create a new filtergraph, which will contain all the filters. */
     filter_graph = avfilter_graph_alloc();
-    if (!filter_graph) {
+    if (!filter_graph)
+    {
         fprintf(stderr, "Unable to create filter graph.\n");
         return AVERROR(ENOMEM);
     }
@@ -88,13 +89,15 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
     /* Create the abuffer filter;
      * it will be used for feeding the data into the graph. */
     abuffer = avfilter_get_by_name("abuffer");
-    if (!abuffer) {
+    if (!abuffer)
+    {
         fprintf(stderr, "Could not find the abuffer filter.\n");
         return AVERROR_FILTER_NOT_FOUND;
     }
 
     abuffer_ctx = avfilter_graph_alloc_filter(filter_graph, abuffer, "src");
-    if (!abuffer_ctx) {
+    if (!abuffer_ctx)
+    {
         fprintf(stderr, "Could not allocate the abuffer instance.\n");
         return AVERROR(ENOMEM);
     }
@@ -103,26 +106,32 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
     av_get_channel_layout_string(ch_layout, sizeof(ch_layout), 0, INPUT_CHANNEL_LAYOUT);
     av_opt_set    (abuffer_ctx, "channel_layout", ch_layout,                            AV_OPT_SEARCH_CHILDREN);
     av_opt_set    (abuffer_ctx, "sample_fmt",     av_get_sample_fmt_name(INPUT_FORMAT), AV_OPT_SEARCH_CHILDREN);
-    av_opt_set_q  (abuffer_ctx, "time_base",      (AVRational){ 1, INPUT_SAMPLERATE },  AV_OPT_SEARCH_CHILDREN);
+    av_opt_set_q  (abuffer_ctx, "time_base",      (AVRational)
+    {
+        1, INPUT_SAMPLERATE
+    },  AV_OPT_SEARCH_CHILDREN);
     av_opt_set_int(abuffer_ctx, "sample_rate",    INPUT_SAMPLERATE,                     AV_OPT_SEARCH_CHILDREN);
 
     /* Now initialize the filter; we pass NULL options, since we have already
      * set all the options above. */
     err = avfilter_init_str(abuffer_ctx, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "Could not initialize the abuffer filter.\n");
         return err;
     }
 
     /* Create volume filter. */
     volume = avfilter_get_by_name("volume");
-    if (!volume) {
+    if (!volume)
+    {
         fprintf(stderr, "Could not find the volume filter.\n");
         return AVERROR_FILTER_NOT_FOUND;
     }
 
     volume_ctx = avfilter_graph_alloc_filter(filter_graph, volume, "volume");
-    if (!volume_ctx) {
+    if (!volume_ctx)
+    {
         fprintf(stderr, "Could not allocate the volume instance.\n");
         return AVERROR(ENOMEM);
     }
@@ -132,7 +141,8 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
     av_dict_set(&options_dict, "volume", AV_STRINGIFY(VOLUME_VAL), 0);
     err = avfilter_init_dict(volume_ctx, &options_dict);
     av_dict_free(&options_dict);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "Could not initialize the volume filter.\n");
         return err;
     }
@@ -140,13 +150,15 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
     /* Create the aformat filter;
      * it ensures that the output is of the format we want. */
     aformat = avfilter_get_by_name("aformat");
-    if (!aformat) {
+    if (!aformat)
+    {
         fprintf(stderr, "Could not find the aformat filter.\n");
         return AVERROR_FILTER_NOT_FOUND;
     }
 
     aformat_ctx = avfilter_graph_alloc_filter(filter_graph, aformat, "aformat");
-    if (!aformat_ctx) {
+    if (!aformat_ctx)
+    {
         fprintf(stderr, "Could not allocate the aformat instance.\n");
         return AVERROR(ENOMEM);
     }
@@ -158,7 +170,8 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
              av_get_sample_fmt_name(AV_SAMPLE_FMT_S16), 44100,
              (uint64_t)AV_CH_LAYOUT_STEREO);
     err = avfilter_init_str(aformat_ctx, options_str);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Could not initialize the aformat filter.\n");
         return err;
     }
@@ -166,20 +179,23 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
     /* Finally create the abuffersink filter;
      * it will be used to get the filtered data out of the graph. */
     abuffersink = avfilter_get_by_name("abuffersink");
-    if (!abuffersink) {
+    if (!abuffersink)
+    {
         fprintf(stderr, "Could not find the abuffersink filter.\n");
         return AVERROR_FILTER_NOT_FOUND;
     }
 
     abuffersink_ctx = avfilter_graph_alloc_filter(filter_graph, abuffersink, "sink");
-    if (!abuffersink_ctx) {
+    if (!abuffersink_ctx)
+    {
         fprintf(stderr, "Could not allocate the abuffersink instance.\n");
         return AVERROR(ENOMEM);
     }
 
     /* This filter takes no options. */
     err = avfilter_init_str(abuffersink_ctx, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "Could not initialize the abuffersink instance.\n");
         return err;
     }
@@ -191,14 +207,16 @@ static int init_filter_graph(AVFilterGraph **graph, AVFilterContext **src,
         err = avfilter_link(volume_ctx, 0, aformat_ctx, 0);
     if (err >= 0)
         err = avfilter_link(aformat_ctx, 0, abuffersink_ctx, 0);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "Error connecting filters\n");
         return err;
     }
 
     /* Configure the graph. */
     err = avfilter_graph_config(filter_graph, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Error configuring the filter graph\n");
         return err;
     }
@@ -221,7 +239,8 @@ static int process_output(struct AVMD5 *md5, AVFrame *frame)
     int plane_size = bps * frame->nb_samples * (planar ? 1 : channels);
     int i, j;
 
-    for (i = 0; i < planes; i++) {
+    for (i = 0; i < planes; i++)
+    {
         uint8_t checksum[16];
 
         av_md5_init(md5);
@@ -257,7 +276,8 @@ static int get_input(AVFrame *frame, int frame_num)
         return err;
 
     /* Fill the data for each channel. */
-    for (i = 0; i < 5; i++) {
+    for (i = 0; i < 5; i++)
+    {
         float *data = (float*)frame->extended_data[i];
 
         for (j = 0; j < frame->nb_samples; j++)
@@ -277,14 +297,16 @@ int main(int argc, char *argv[])
     float duration;
     int err, nb_frames, i;
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         fprintf(stderr, "Usage: %s <duration>\n", argv[0]);
         return 1;
     }
 
     duration  = atof(argv[1]);
     nb_frames = duration * INPUT_SAMPLERATE / FRAME_SIZE;
-    if (nb_frames <= 0) {
+    if (nb_frames <= 0)
+    {
         fprintf(stderr, "Invalid duration: %s\n", argv[1]);
         return 1;
     }
@@ -293,59 +315,72 @@ int main(int argc, char *argv[])
 
     /* Allocate the frame we will be using to store the data. */
     frame  = av_frame_alloc();
-    if (!frame) {
+    if (!frame)
+    {
         fprintf(stderr, "Error allocating the frame\n");
         return 1;
     }
 
     md5 = av_md5_alloc();
-    if (!md5) {
+    if (!md5)
+    {
         fprintf(stderr, "Error allocating the MD5 context\n");
         return 1;
     }
 
     /* Set up the filtergraph. */
     err = init_filter_graph(&graph, &src, &sink);
-    if (err < 0) {
+    if (err < 0)
+    {
         fprintf(stderr, "Unable to init filter graph:");
         goto fail;
     }
 
     /* the main filtering loop */
-    for (i = 0; i < nb_frames; i++) {
+    for (i = 0; i < nb_frames; i++)
+    {
         /* get an input frame to be filtered */
         err = get_input(frame, i);
-        if (err < 0) {
+        if (err < 0)
+        {
             fprintf(stderr, "Error generating input frame:");
             goto fail;
         }
 
         /* Send the frame to the input of the filtergraph. */
         err = av_buffersrc_add_frame(src, frame);
-        if (err < 0) {
+        if (err < 0)
+        {
             av_frame_unref(frame);
             fprintf(stderr, "Error submitting the frame to the filtergraph:");
             goto fail;
         }
 
         /* Get all the filtered output that is available. */
-        while ((err = av_buffersink_get_frame(sink, frame)) >= 0) {
+        while ((err = av_buffersink_get_frame(sink, frame)) >= 0)
+        {
             /* now do something with our filtered frame */
             err = process_output(md5, frame);
-            if (err < 0) {
+            if (err < 0)
+            {
                 fprintf(stderr, "Error processing the filtered frame:");
                 goto fail;
             }
             av_frame_unref(frame);
         }
 
-        if (err == AVERROR(EAGAIN)) {
+        if (err == AVERROR(EAGAIN))
+        {
             /* Need to feed more frames in. */
             continue;
-        } else if (err == AVERROR_EOF) {
+        }
+        else if (err == AVERROR_EOF)
+        {
             /* Nothing more to do, finish. */
             break;
-        } else if (err < 0) {
+        }
+        else if (err < 0)
+        {
             /* An error occurred. */
             fprintf(stderr, "Error filtering the data:");
             goto fail;

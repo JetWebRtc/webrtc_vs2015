@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,23 +14,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-namespace webrtc {
+namespace webrtc
+{
 
-class RtpReceiverDelegateAdapter : public RtpReceiverObserverInterface {
- public:
-  RtpReceiverDelegateAdapter(RTCRtpReceiver* receiver);
+class RtpReceiverDelegateAdapter : public RtpReceiverObserverInterface
+{
+public:
+    RtpReceiverDelegateAdapter(RTCRtpReceiver* receiver);
 
-  void OnFirstPacketReceived(cricket::MediaType media_type) override;
+    void OnFirstPacketReceived(cricket::MediaType media_type) override;
 
- private:
-  __weak RTCRtpReceiver* receiver_;
+private:
+    __weak RTCRtpReceiver* receiver_;
 };
 
 }  // namespace webrtc
 
 @interface RTCRtpReceiver ()
 
-@property(nonatomic, readonly)
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::RtpReceiverInterface> nativeRtpReceiver;
 
 /** Initialize an RTCRtpReceiver with a native RtpReceiverInterface. */

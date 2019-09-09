@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) Stefano Sabatini 2010
  *
  * This file is part of FFmpeg.
@@ -38,7 +38,8 @@
 #include "formats.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int w, h;
     char *filename;
@@ -77,7 +78,8 @@ typedef struct {
 #define OFFSET(x) offsetof(LifeContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption life_options[] = {
+static const AVOption life_options[] =
+{
     { "filename", "set source file",  OFFSET(filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "f",        "set source file",  OFFSET(filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "size",     "set video size",   OFFSET(w),        AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL}, 0, 0, FLAGS },
@@ -107,24 +109,30 @@ static int parse_rule(uint16_t *born_rule, uint16_t *stay_rule,
     *born_rule = 0;
     *stay_rule = 0;
 
-    if (strchr("bBsS", *p)) {
+    if (strchr("bBsS", *p))
+    {
         /* parse rule as a Born / Stay Alive code, see
          * http://en.wikipedia.org/wiki/Conway%27s_Game_of_Life */
-        do {
+        do
+        {
             uint16_t *rule = (*p == 'b' || *p == 'B') ? born_rule : stay_rule;
             p++;
-            while (*p >= '0' && *p <= '8') {
+            while (*p >= '0' && *p <= '8')
+            {
                 *rule += 1<<(*p - '0');
                 p++;
             }
             if (*p != '/')
                 break;
             p++;
-        } while (strchr("bBsS", *p));
+        }
+        while (strchr("bBsS", *p));
 
         if (*p)
             goto error;
-    } else {
+    }
+    else
+    {
         /* parse rule as a number, expressed in the form STAY|(BORN<<9),
          * where STAY and BORN encode the corresponding 9-bits rule */
         long int rule = strtol(rule_str, &tail, 10);
@@ -150,7 +158,8 @@ static void show_life_grid(AVFilterContext *ctx)
     char *line = av_malloc(life->w + 1);
     if (!line)
         return;
-    for (i = 0; i < life->h; i++) {
+    for (i = 0; i < life->h; i++)
+    {
         for (j = 0; j < life->w; j++)
             line[j] = life->buf[life->buf_idx][i*life->w + j] == ALIVE_CELL ? '@' : ' ';
         line[j] = 0;
@@ -173,30 +182,41 @@ static int init_pattern_from_file(AVFilterContext *ctx)
 
     /* prescan file to get the number of lines and the maximum width */
     w = 0;
-    for (i = 0; i < life->file_bufsize; i++) {
-        if (life->file_buf[i] == '\n') {
-            h++; max_w = FFMAX(w, max_w); w = 0;
-        } else {
+    for (i = 0; i < life->file_bufsize; i++)
+    {
+        if (life->file_buf[i] == '\n')
+        {
+            h++;
+            max_w = FFMAX(w, max_w);
+            w = 0;
+        }
+        else
+        {
             w++;
         }
     }
     av_log(ctx, AV_LOG_DEBUG, "h:%d max_w:%d\n", h, max_w);
 
-    if (life->w) {
-        if (max_w > life->w || h > life->h) {
+    if (life->w)
+    {
+        if (max_w > life->w || h > life->h)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "The specified size is %dx%d which cannot contain the provided file size of %dx%d\n",
                    life->w, life->h, max_w, h);
             return AVERROR(EINVAL);
         }
-    } else {
+    }
+    else
+    {
         /* size was not specified, set it to size of the grid */
         life->w = max_w;
         life->h = h;
     }
 
     if (!(life->buf[0] = av_calloc(life->h * life->w, sizeof(*life->buf[0]))) ||
-        !(life->buf[1] = av_calloc(life->h * life->w, sizeof(*life->buf[1])))) {
+            !(life->buf[1] = av_calloc(life->h * life->w, sizeof(*life->buf[1]))))
+    {
         av_freep(&life->buf[0]);
         av_freep(&life->buf[1]);
         return AVERROR(ENOMEM);
@@ -204,12 +224,17 @@ static int init_pattern_from_file(AVFilterContext *ctx)
 
     /* fill buf[0] */
     p = life->file_buf;
-    for (i0 = 0, i = (life->h - h)/2; i0 < h; i0++, i++) {
-        for (j = (life->w - max_w)/2;; j++) {
+    for (i0 = 0, i = (life->h - h)/2; i0 < h; i0++, i++)
+    {
+        for (j = (life->w - max_w)/2;; j++)
+        {
             av_log(ctx, AV_LOG_DEBUG, "%d:%d %c\n", i, j, *p == '\n' ? 'N' : *p);
-            if (*p == '\n') {
-                p++; break;
-            } else
+            if (*p == '\n')
+            {
+                p++;
+                break;
+            }
+            else
                 life->buf[0][i*life->w + j] = av_isgraph(*(p++)) ? ALIVE_CELL : 0;
         }
     }
@@ -233,12 +258,14 @@ static av_cold int init(AVFilterContext *ctx)
         av_log(ctx, AV_LOG_WARNING,
                "Mold color is set while mold isn't, ignoring the color.\n");
 
-    if (!life->filename) {
+    if (!life->filename)
+    {
         /* fill the grid randomly */
         int i;
 
         if (!(life->buf[0] = av_calloc(life->h * life->w, sizeof(*life->buf[0]))) ||
-            !(life->buf[1] = av_calloc(life->h * life->w, sizeof(*life->buf[1])))) {
+                !(life->buf[1] = av_calloc(life->h * life->w, sizeof(*life->buf[1]))))
+        {
             av_freep(&life->buf[0]);
             av_freep(&life->buf[1]);
             return AVERROR(ENOMEM);
@@ -248,13 +275,16 @@ static av_cold int init(AVFilterContext *ctx)
 
         av_lfg_init(&life->lfg, life->random_seed);
 
-        for (i = 0; i < life->w * life->h; i++) {
+        for (i = 0; i < life->w * life->h; i++)
+        {
             double r = (double)av_lfg_get(&life->lfg) / UINT32_MAX;
             if (r <= life->random_fill_ratio)
                 life->buf[0][i] = ALIVE_CELL;
         }
         life->buf_idx = 0;
-    } else {
+    }
+    else
+    {
         if ((ret = init_pattern_from_file(ctx)) < 0)
             return ret;
     }
@@ -298,27 +328,48 @@ static void evolve(AVFilterContext *ctx)
     enum { NW, N, NE, W, E, SW, S, SE };
 
     /* evolve the grid */
-    for (i = 0; i < life->h; i++) {
-        for (j = 0; j < life->w; j++) {
+    for (i = 0; i < life->h; i++)
+    {
+        for (j = 0; j < life->w; j++)
+        {
             int pos[8][2], n, alive, cell;
-            if (life->stitch) {
-                pos[NW][0] = (i-1) < 0 ? life->h-1 : i-1; pos[NW][1] = (j-1) < 0 ? life->w-1 : j-1;
-                pos[N ][0] = (i-1) < 0 ? life->h-1 : i-1; pos[N ][1] =                         j  ;
-                pos[NE][0] = (i-1) < 0 ? life->h-1 : i-1; pos[NE][1] = (j+1) == life->w ?  0 : j+1;
-                pos[W ][0] =                         i  ; pos[W ][1] = (j-1) < 0 ? life->w-1 : j-1;
-                pos[E ][0] =                         i  ; pos[E ][1] = (j+1) == life->w ? 0  : j+1;
-                pos[SW][0] = (i+1) == life->h ?  0 : i+1; pos[SW][1] = (j-1) < 0 ? life->w-1 : j-1;
-                pos[S ][0] = (i+1) == life->h ?  0 : i+1; pos[S ][1] =                         j  ;
-                pos[SE][0] = (i+1) == life->h ?  0 : i+1; pos[SE][1] = (j+1) == life->w ?  0 : j+1;
-            } else {
-                pos[NW][0] = (i-1) < 0 ? -1        : i-1; pos[NW][1] = (j-1) < 0 ? -1        : j-1;
-                pos[N ][0] = (i-1) < 0 ? -1        : i-1; pos[N ][1] =                         j  ;
-                pos[NE][0] = (i-1) < 0 ? -1        : i-1; pos[NE][1] = (j+1) == life->w ? -1 : j+1;
-                pos[W ][0] =                         i  ; pos[W ][1] = (j-1) < 0 ? -1        : j-1;
-                pos[E ][0] =                         i  ; pos[E ][1] = (j+1) == life->w ? -1 : j+1;
-                pos[SW][0] = (i+1) == life->h ? -1 : i+1; pos[SW][1] = (j-1) < 0 ? -1        : j-1;
-                pos[S ][0] = (i+1) == life->h ? -1 : i+1; pos[S ][1] =                         j  ;
-                pos[SE][0] = (i+1) == life->h ? -1 : i+1; pos[SE][1] = (j+1) == life->w ? -1 : j+1;
+            if (life->stitch)
+            {
+                pos[NW][0] = (i-1) < 0 ? life->h-1 : i-1;
+                pos[NW][1] = (j-1) < 0 ? life->w-1 : j-1;
+                pos[N ][0] = (i-1) < 0 ? life->h-1 : i-1;
+                pos[N ][1] =                         j  ;
+                pos[NE][0] = (i-1) < 0 ? life->h-1 : i-1;
+                pos[NE][1] = (j+1) == life->w ?  0 : j+1;
+                pos[W ][0] =                         i  ;
+                pos[W ][1] = (j-1) < 0 ? life->w-1 : j-1;
+                pos[E ][0] =                         i  ;
+                pos[E ][1] = (j+1) == life->w ? 0  : j+1;
+                pos[SW][0] = (i+1) == life->h ?  0 : i+1;
+                pos[SW][1] = (j-1) < 0 ? life->w-1 : j-1;
+                pos[S ][0] = (i+1) == life->h ?  0 : i+1;
+                pos[S ][1] =                         j  ;
+                pos[SE][0] = (i+1) == life->h ?  0 : i+1;
+                pos[SE][1] = (j+1) == life->w ?  0 : j+1;
+            }
+            else
+            {
+                pos[NW][0] = (i-1) < 0 ? -1        : i-1;
+                pos[NW][1] = (j-1) < 0 ? -1        : j-1;
+                pos[N ][0] = (i-1) < 0 ? -1        : i-1;
+                pos[N ][1] =                         j  ;
+                pos[NE][0] = (i-1) < 0 ? -1        : i-1;
+                pos[NE][1] = (j+1) == life->w ? -1 : j+1;
+                pos[W ][0] =                         i  ;
+                pos[W ][1] = (j-1) < 0 ? -1        : j-1;
+                pos[E ][0] =                         i  ;
+                pos[E ][1] = (j+1) == life->w ? -1 : j+1;
+                pos[SW][0] = (i+1) == life->h ? -1 : i+1;
+                pos[SW][1] = (j-1) < 0 ? -1        : j-1;
+                pos[S ][0] = (i+1) == life->h ? -1 : i+1;
+                pos[S ][1] =                         j  ;
+                pos[SE][0] = (i+1) == life->h ? -1 : i+1;
+                pos[SE][1] = (j+1) == life->w ? -1 : j+1;
             }
 
             /* compute the number of live neighbor cells */
@@ -350,12 +401,15 @@ static void fill_picture_monoblack(AVFilterContext *ctx, AVFrame *picref)
     int i, j, k;
 
     /* fill the output picture with the old grid buffer */
-    for (i = 0; i < life->h; i++) {
+    for (i = 0; i < life->h; i++)
+    {
         uint8_t byte = 0;
         uint8_t *p = picref->data[0] + i * picref->linesize[0];
-        for (k = 0, j = 0; j < life->w; j++) {
+        for (k = 0, j = 0; j < life->w; j++)
+        {
             byte |= (buf[i*life->w+j] == ALIVE_CELL)<<(7-k++);
-            if (k==8 || j == life->w-1) {
+            if (k==8 || j == life->w-1)
+            {
                 k = 0;
                 *p++ = byte;
                 byte = 0;
@@ -375,18 +429,23 @@ static void fill_picture_rgb(AVFilterContext *ctx, AVFrame *picref)
     int i, j;
 
     /* fill the output picture with the old grid buffer */
-    for (i = 0; i < life->h; i++) {
+    for (i = 0; i < life->h; i++)
+    {
         uint8_t *p = picref->data[0] + i * picref->linesize[0];
-        for (j = 0; j < life->w; j++) {
+        for (j = 0; j < life->w; j++)
+        {
             uint8_t v = buf[i*life->w + j];
-            if (life->mold && v != ALIVE_CELL) {
+            if (life->mold && v != ALIVE_CELL)
+            {
                 const uint8_t *c1 = life-> mold_color;
                 const uint8_t *c2 = life->death_color;
                 int death_age = FFMIN((0xff - v) * life->mold, 0xff);
                 *p++ = FAST_DIV255((c2[0] << 8) + ((int)c1[0] - (int)c2[0]) * death_age);
                 *p++ = FAST_DIV255((c2[1] << 8) + ((int)c1[1] - (int)c2[1]) * death_age);
                 *p++ = FAST_DIV255((c2[2] << 8) + ((int)c1[2] - (int)c2[2]) * death_age);
-            } else {
+            }
+            else
+            {
                 const uint8_t *c = v == ALIVE_CELL ? life->life_color : life->death_color;
                 AV_WB24(p, c[0]<<16 | c[1]<<8 | c[2]);
                 p += 3;
@@ -401,7 +460,10 @@ static int request_frame(AVFilterLink *outlink)
     AVFrame *picref = ff_get_video_buffer(outlink, life->w, life->h);
     if (!picref)
         return AVERROR(ENOMEM);
-    picref->sample_aspect_ratio = (AVRational) {1, 1};
+    picref->sample_aspect_ratio = (AVRational)
+    {
+        1, 1
+    };
     picref->pts = life->pts++;
 
     life->draw(outlink->src, picref);
@@ -419,10 +481,13 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *fmts_list;
 
     if (life->mold || memcmp(life-> life_color, "\xff\xff\xff", 3)
-                   || memcmp(life->death_color, "\x00\x00\x00", 3)) {
+            || memcmp(life->death_color, "\x00\x00\x00", 3))
+    {
         pix_fmts[0] = AV_PIX_FMT_RGB24;
         life->draw = fill_picture_rgb;
-    } else {
+    }
+    else
+    {
         pix_fmts[0] = AV_PIX_FMT_MONOBLACK;
         life->draw = fill_picture_monoblack;
     }
@@ -434,7 +499,8 @@ static int query_formats(AVFilterContext *ctx)
     return 0;
 }
 
-static const AVFilterPad life_outputs[] = {
+static const AVFilterPad life_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -444,7 +510,8 @@ static const AVFilterPad life_outputs[] = {
     { NULL}
 };
 
-AVFilter ff_vsrc_life = {
+AVFilter ff_vsrc_life =
+{
     .name          = "life",
     .description   = NULL_IF_CONFIG_SMALL("Create life."),
     .priv_size     = sizeof(LifeContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #include "webrtc/system_wrappers/include/atomic32.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 template<class MemoryType> struct MemoryPoolItem;
 
 template<class MemoryType>
@@ -148,7 +149,7 @@ template<class MemoryType>
 bool MemoryPoolImpl<MemoryType>::Initialize()
 {
     _pListHead = (PSLIST_HEADER)AlignedMalloc(sizeof(SLIST_HEADER),
-                                              MEMORY_ALLOCATION_ALIGNMENT);
+                 MEMORY_ALLOCATION_ALIGNMENT);
     if(_pListHead == NULL)
     {
         return false;
@@ -178,8 +179,8 @@ template<class MemoryType>
 MemoryPoolItem<MemoryType>* MemoryPoolImpl<MemoryType>::CreateMemory()
 {
     MemoryPoolItem<MemoryType>* returnValue = (MemoryPoolItem<MemoryType>*)
-        AlignedMalloc(sizeof(MemoryPoolItem<MemoryType>),
-                      MEMORY_ALLOCATION_ALIGNMENT);
+            AlignedMalloc(sizeof(MemoryPoolItem<MemoryType>),
+                          MEMORY_ALLOCATION_ALIGNMENT);
     if(returnValue == NULL)
     {
         return NULL;

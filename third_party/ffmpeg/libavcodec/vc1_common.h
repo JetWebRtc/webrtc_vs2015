@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder
  * Copyright (c) 2006-2007 Konstantin Shishkov
  * Partly based on vc9.c (c) 2005 Anonymous, Alex Beregszaszi, Michael Niedermayer
@@ -30,7 +30,8 @@
 
 /** Markers used in VC-1 AP frame data */
 //@{
-enum VC1Code {
+enum VC1Code
+{
     VC1_CODE_RES0       = 0x00000100,
     VC1_CODE_ENDOFSEQ   = 0x0000010A,
     VC1_CODE_SLICE,
@@ -45,7 +46,8 @@ enum VC1Code {
 
 /** Available Profiles */
 //@{
-enum Profile {
+enum Profile
+{
     PROFILE_SIMPLE,
     PROFILE_MAIN,
     PROFILE_COMPLEX, ///< TODO: WMV9 specific
@@ -58,7 +60,8 @@ enum Profile {
  */
 static av_always_inline const uint8_t* find_next_marker(const uint8_t *src, const uint8_t *end)
 {
-    if (end - src >= 4) {
+    if (end - src >= 4)
+    {
         uint32_t mrk = 0xFFFFFFFF;
         src = avpriv_find_start_code(src, end, &mrk);
         if (IS_MARKER(mrk))
@@ -71,17 +74,21 @@ static av_always_inline int vc1_unescape_buffer(const uint8_t *src, int size, ui
 {
     int dsize = 0, i;
 
-    if (size < 4) {
+    if (size < 4)
+    {
         for (dsize = 0; dsize < size; dsize++)
             *dst++ = *src++;
         return size;
     }
-    for (i = 0; i < size; i++, src++) {
-        if (src[0] == 3 && i >= 2 && !src[-1] && !src[-2] && i < size-1 && src[1] < 4) {
+    for (i = 0; i < size; i++, src++)
+    {
+        if (src[0] == 3 && i >= 2 && !src[-1] && !src[-2] && i < size-1 && src[1] < 4)
+        {
             dst[dsize++] = src[1];
             src++;
             i++;
-        } else
+        }
+        else
             dst[dsize++] = *src;
     }
     return dsize;

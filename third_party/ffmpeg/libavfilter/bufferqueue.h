@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generic buffer queue
  * Copyright (c) 2012 Nicolas George
  *
@@ -46,7 +46,8 @@
 /**
  * Structure holding the queue
  */
-struct FFBufQueue {
+struct FFBufQueue
+{
     AVFrame *queue[FF_BUFQUEUE_SIZE];
     unsigned short head;
     unsigned short available; /**< number of available buffers */
@@ -71,7 +72,8 @@ static inline int ff_bufqueue_is_full(struct FFBufQueue *queue)
 static inline void ff_bufqueue_add(void *log, struct FFBufQueue *queue,
                                    AVFrame *buf)
 {
-    if (ff_bufqueue_is_full(queue)) {
+    if (ff_bufqueue_is_full(queue))
+    {
         av_log(log, AV_LOG_WARNING, "Buffer queue overflow, dropping.\n");
         av_frame_free(&BUCKET(--queue->available));
     }
@@ -110,7 +112,8 @@ static inline AVFrame *ff_bufqueue_get(struct FFBufQueue *queue)
  */
 static inline void ff_bufqueue_discard_all(struct FFBufQueue *queue)
 {
-    while (queue->available) {
+    while (queue->available)
+    {
         AVFrame *buf = ff_bufqueue_get(queue);
         av_frame_free(&buf);
     }

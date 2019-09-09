@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,39 +22,45 @@
 
 DECLARE_string(isolated_out_dir);
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-TEST(IsolatedOutputTest, ShouldRejectInvalidIsolatedOutDir) {
-  std::string backup = FLAGS_isolated_out_dir;
-  FLAGS_isolated_out_dir = "";
-  ASSERT_FALSE(WriteIsolatedOutput("a-file", "some-contents"));
-  FLAGS_isolated_out_dir = backup;
+TEST(IsolatedOutputTest, ShouldRejectInvalidIsolatedOutDir)
+{
+    std::string backup = FLAGS_isolated_out_dir;
+    FLAGS_isolated_out_dir = "";
+    ASSERT_FALSE(WriteIsolatedOutput("a-file", "some-contents"));
+    FLAGS_isolated_out_dir = backup;
 }
 
-TEST(IsolatedOutputTest, ShouldRejectInvalidFileName) {
-  ASSERT_FALSE(WriteIsolatedOutput(nullptr, "some-contents"));
-  ASSERT_FALSE(WriteIsolatedOutput("", "some-contents"));
+TEST(IsolatedOutputTest, ShouldRejectInvalidFileName)
+{
+    ASSERT_FALSE(WriteIsolatedOutput(nullptr, "some-contents"));
+    ASSERT_FALSE(WriteIsolatedOutput("", "some-contents"));
 }
 
 // Sets isolated_out_dir=<a-writable-path> to execute this test.
-TEST(IsolatedOutputTest, ShouldBeAbleToWriteContent) {
-  const char* filename = "a-file";
-  const char* content = "some-contents";
-  if (WriteIsolatedOutput(filename, content)) {
-    rtc::Pathname out_file(FLAGS_isolated_out_dir, filename);
-    rtc::File input = rtc::File::Open(out_file);
-    EXPECT_TRUE(input.IsOpen());
-    EXPECT_TRUE(input.Seek(0));
-    uint8_t buffer[32];
-    EXPECT_EQ(input.Read(buffer, strlen(content)), strlen(content));
-    buffer[strlen(content)] = 0;
-    EXPECT_EQ(std::string(content),
-              std::string(reinterpret_cast<char*>(buffer)));
-    input.Close();
+TEST(IsolatedOutputTest, ShouldBeAbleToWriteContent)
+{
+    const char* filename = "a-file";
+    const char* content = "some-contents";
+    if (WriteIsolatedOutput(filename, content))
+    {
+        rtc::Pathname out_file(FLAGS_isolated_out_dir, filename);
+        rtc::File input = rtc::File::Open(out_file);
+        EXPECT_TRUE(input.IsOpen());
+        EXPECT_TRUE(input.Seek(0));
+        uint8_t buffer[32];
+        EXPECT_EQ(input.Read(buffer, strlen(content)), strlen(content));
+        buffer[strlen(content)] = 0;
+        EXPECT_EQ(std::string(content),
+                  std::string(reinterpret_cast<char*>(buffer)));
+        input.Close();
 
-    EXPECT_TRUE(rtc::File::Remove(out_file));
-  }
+        EXPECT_TRUE(rtc::File::Remove(out_file));
+    }
 }
 
 }  // namespace test

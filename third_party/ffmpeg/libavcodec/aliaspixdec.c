@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alias PIX image decoder
  * Copyright (C) 2014 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -39,7 +39,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     bytestream2_init(&gb, avpkt->data, avpkt->size);
 
-    if (bytestream2_get_bytes_left(&gb) < ALIAS_HEADER_SIZE) {
+    if (bytestream2_get_bytes_left(&gb) < ALIAS_HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Header too small %d.\n", avpkt->size);
         return AVERROR_INVALIDDATA;
     }
@@ -53,7 +54,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         avctx->pix_fmt = AV_PIX_FMT_BGR24;
     else if (bits_pixel == 8)
         avctx->pix_fmt = AV_PIX_FMT_GRAY8;
-    else {
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid pixel format.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -72,14 +74,17 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     x = 0;
     y = 1;
     out_buf = f->data[0];
-    while (bytestream2_get_bytes_left(&gb) > 0) {
+    while (bytestream2_get_bytes_left(&gb) > 0)
+    {
         int i;
 
         /* set buffer at the right position at every new line */
-        if (x == avctx->width) {
+        if (x == avctx->width)
+        {
             x = 0;
             out_buf = f->data[0] + f->linesize[0] * y++;
-            if (y > avctx->height) {
+            if (y > avctx->height)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Ended frame decoding with %d bytes left.\n",
                        bytestream2_get_bytes_left(&gb));
@@ -89,18 +94,23 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
         /* read packet and copy data */
         count = bytestream2_get_byteu(&gb);
-        if (!count || x + count > avctx->width) {
+        if (!count || x + count > avctx->width)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid run length %d.\n", count);
             return AVERROR_INVALIDDATA;
         }
 
-        if (avctx->pix_fmt == AV_PIX_FMT_BGR24) {
+        if (avctx->pix_fmt == AV_PIX_FMT_BGR24)
+        {
             pixel = bytestream2_get_be24(&gb);
-            for (i = 0; i < count; i++) {
+            for (i = 0; i < count; i++)
+            {
                 AV_WB24(out_buf, pixel);
                 out_buf += 3;
             }
-        } else { // AV_PIX_FMT_GRAY8
+        }
+        else     // AV_PIX_FMT_GRAY8
+        {
             pixel = bytestream2_get_byte(&gb);
             for (i = 0; i < count; i++)
                 *out_buf++ = pixel;
@@ -109,7 +119,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         x += i;
     }
 
-    if (x != width || y != height) {
+    if (x != width || y != height)
+    {
         av_log(avctx, AV_LOG_ERROR, "Picture stopped at %d,%d.\n", x, y);
         return AVERROR_INVALIDDATA;
     }
@@ -118,7 +129,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     return avpkt->size;
 }
 
-AVCodec ff_alias_pix_decoder = {
+AVCodec ff_alias_pix_decoder =
+{
     .name         = "alias_pix",
     .long_name    = NULL_IF_CONFIG_SMALL("Alias/Wavefront PIX image"),
     .type         = AVMEDIA_TYPE_VIDEO,

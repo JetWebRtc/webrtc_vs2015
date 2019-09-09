@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -111,73 +111,75 @@ amm-info@iis.fraunhofer.de
 
 #include "conceal_types.h"
 
- #include "aacdec_drc_types.h"
+#include "aacdec_drc_types.h"
 
 /* Output rendering mode */
-typedef enum {
-  AACDEC_RENDER_INVALID = 0,
-  AACDEC_RENDER_IMDCT,
-  AACDEC_RENDER_ELDFB,
-  AACDEC_RENDER_LPD,
-  AACDEC_RENDER_INTIMDCT
+typedef enum
+{
+    AACDEC_RENDER_INVALID = 0,
+    AACDEC_RENDER_IMDCT,
+    AACDEC_RENDER_ELDFB,
+    AACDEC_RENDER_LPD,
+    AACDEC_RENDER_INTIMDCT
 } AACDEC_RENDER_MODE;
 
-enum {
-  MAX_QUANTIZED_VALUE = 8191
+enum
+{
+    MAX_QUANTIZED_VALUE = 8191
 };
 
 enum
 {
-  OnlyLongSequence = 0,
-  LongStartSequence,
-  EightShortSequence,
-  LongStopSequence
+    OnlyLongSequence = 0,
+    LongStartSequence,
+    EightShortSequence,
+    LongStopSequence
 };
 
 
 typedef struct
 {
-  const SHORT *ScaleFactorBands_Long;
-  const SHORT *ScaleFactorBands_Short;
-  UCHAR NumberOfScaleFactorBands_Long;
-  UCHAR NumberOfScaleFactorBands_Short;
-  UINT samplingRateIndex;
-  UINT samplingRate;
+    const SHORT *ScaleFactorBands_Long;
+    const SHORT *ScaleFactorBands_Short;
+    UCHAR NumberOfScaleFactorBands_Long;
+    UCHAR NumberOfScaleFactorBands_Short;
+    UINT samplingRateIndex;
+    UINT samplingRate;
 } SamplingRateInfo;
 
 typedef struct
 {
-  UCHAR CommonWindow;
-  UCHAR GlobalGain;
+    UCHAR CommonWindow;
+    UCHAR GlobalGain;
 
 } CRawDataInfo;
 
 typedef struct
 {
-  UCHAR WindowGroupLength[8];
-  UCHAR WindowGroups;
-  UCHAR Valid;
+    UCHAR WindowGroupLength[8];
+    UCHAR WindowGroups;
+    UCHAR Valid;
 
-  UCHAR WindowShape;    /* 0: sine window, 1: KBD, 2: low overlap */
-  UCHAR WindowSequence; /* See enum above, 0: long, 1: start, 2: short, 3: stop */
-  UCHAR MaxSfBands;
-  UCHAR ScaleFactorGrouping;
+    UCHAR WindowShape;    /* 0: sine window, 1: KBD, 2: low overlap */
+    UCHAR WindowSequence; /* See enum above, 0: long, 1: start, 2: short, 3: stop */
+    UCHAR MaxSfBands;
+    UCHAR ScaleFactorGrouping;
 
-  UCHAR TotalSfBands;
+    UCHAR TotalSfBands;
 
 } CIcsInfo;
 
 
 enum
 {
-  ZERO_HCB = 0,
-  ESCBOOK  = 11,
-  NSPECBOOKS = ESCBOOK + 1,
-  BOOKSCL    = NSPECBOOKS,
-  NOISE_HCB      = 13,
-  INTENSITY_HCB2 = 14,
-  INTENSITY_HCB  = 15,
-  LAST_HCB
+    ZERO_HCB = 0,
+    ESCBOOK  = 11,
+    NSPECBOOKS = ESCBOOK + 1,
+    BOOKSCL    = NSPECBOOKS,
+    NOISE_HCB      = 13,
+    INTENSITY_HCB2 = 14,
+    INTENSITY_HCB  = 15,
+    LAST_HCB
 };
 
 #define TNS_SCALE  3
@@ -187,13 +189,13 @@ enum
  */
 typedef struct
 {
-  FIXP_DBL *pOverlapBuffer;
-  mdct_t IMdct;
+    FIXP_DBL *pOverlapBuffer;
+    mdct_t IMdct;
 
 
 
-  CDrcChannelData   drcData;
-  CConcealmentInfo concealmentInfo;
+    CDrcChannelData   drcData;
+    CConcealmentInfo concealmentInfo;
 
 } CAacDecoderStaticChannelInfo;
 
@@ -201,62 +203,67 @@ typedef struct
 /*
  * This union must be allocated for every element (up to 2 channels).
  */
-typedef struct {
+typedef struct
+{
 
-  /* Common bit stream data */
-  SHORT aScaleFactor[(8*16)];           /* Spectral scale factors for each sfb in each window. */
-  SHORT aSfbScale[(8*16)];              /* could be free after ApplyTools() */
-  UCHAR aCodeBook[(8*16)];              /* section data: codebook for each window and sfb. */
-  CTnsData         TnsData;
-  CRawDataInfo     RawDataInfo;
+    /* Common bit stream data */
+    SHORT aScaleFactor[(8*16)];           /* Spectral scale factors for each sfb in each window. */
+    SHORT aSfbScale[(8*16)];              /* could be free after ApplyTools() */
+    UCHAR aCodeBook[(8*16)];              /* section data: codebook for each window and sfb. */
+    CTnsData         TnsData;
+    CRawDataInfo     RawDataInfo;
 
-  shouldBeUnion {
+    shouldBeUnion
+    {
 
-    struct {
-      CPulseData PulseData;
-      SHORT aNumLineInSec4Hcr[MAX_SFB_HCR];          /* needed once for all channels except for Drm syntax */
-      UCHAR aCodeBooks4Hcr[MAX_SFB_HCR];             /* needed once for all channels except for Drm syntax. Same as "aCodeBook" ? */
-      SHORT lenOfReorderedSpectralData;
-      SCHAR lenOfLongestCodeword;
-      SCHAR numberSection;
-      SCHAR rvlcCurrentScaleFactorOK;
-      SCHAR rvlcIntensityUsed;
-    } aac;
-  } specificTo;
+        struct {
+            CPulseData PulseData;
+            SHORT aNumLineInSec4Hcr[MAX_SFB_HCR];          /* needed once for all channels except for Drm syntax */
+            UCHAR aCodeBooks4Hcr[MAX_SFB_HCR];             /* needed once for all channels except for Drm syntax. Same as "aCodeBook" ? */
+            SHORT lenOfReorderedSpectralData;
+            SCHAR lenOfLongestCodeword;
+            SCHAR numberSection;
+            SCHAR rvlcCurrentScaleFactorOK;
+            SCHAR rvlcIntensityUsed;
+        } aac;
+    } specificTo;
 
 } CAacDecoderDynamicData;
 
-typedef shouldBeUnion {
-  CAacDecoderDynamicData pAacDecoderDynamicData[2];
+typedef shouldBeUnion
+{
+    CAacDecoderDynamicData pAacDecoderDynamicData[2];
 
-  /* Common signal data, can be used once the bit stream data from above is not used anymore. */
-  FIXP_DBL mdctOutTemp[1024];
-  FIXP_DBL sbrWorkBuffer[1024*2];
+    /* Common signal data, can be used once the bit stream data from above is not used anymore. */
+    FIXP_DBL mdctOutTemp[1024];
+    FIXP_DBL sbrWorkBuffer[1024*2];
 
 } CWorkBufferCore1;
 
 /* Common data referenced by all channels */
-typedef struct {
+typedef struct
+{
 
-  CWorkBufferCore1 *workBufferCore1;
-  FIXP_DBL* workBufferCore2;
+    CWorkBufferCore1 *workBufferCore1;
+    FIXP_DBL* workBufferCore2;
 
-  CPnsInterChannelData pnsInterChannelData;
-  INT pnsCurrentSeed;
-  INT pnsRandomSeed[(8*16)];
+    CPnsInterChannelData pnsInterChannelData;
+    INT pnsCurrentSeed;
+    INT pnsRandomSeed[(8*16)];
 
-  CJointStereoData jointStereoData;              /* One for one element */
+    CJointStereoData jointStereoData;              /* One for one element */
 
-  shouldBeUnion {
-    struct {
-      CErHcrInfo erHcrInfo;
-      CErRvlcInfo erRvlcInfo;
-      SHORT aRvlcScfEsc[RVLC_MAX_SFB];               /* needed once for all channels */
-      SHORT aRvlcScfFwd[RVLC_MAX_SFB];               /* needed once for all channels */
-      SHORT aRvlcScfBwd[RVLC_MAX_SFB];               /* needed once for all channels */
-    } aac;
+    shouldBeUnion
+    {
+        struct {
+            CErHcrInfo erHcrInfo;
+            CErRvlcInfo erRvlcInfo;
+            SHORT aRvlcScfEsc[RVLC_MAX_SFB];               /* needed once for all channels */
+            SHORT aRvlcScfFwd[RVLC_MAX_SFB];               /* needed once for all channels */
+            SHORT aRvlcScfBwd[RVLC_MAX_SFB];               /* needed once for all channels */
+        } aac;
 
-  } overlay;
+    } overlay;
 
 } CAacDecoderCommonData;
 
@@ -271,25 +278,26 @@ typedef struct {
  */
 typedef struct
 {
-  SPECTRAL_PTR pSpectralCoefficient;             /* Spectral coefficients of each window */
-  SHORT specScale[8];                  /* Scale shift values of each spectrum window */
-  CIcsInfo icsInfo;
-  INT granuleLength;                             /* Size of smallest spectrum piece */
-  UCHAR ElementInstanceTag;
+    SPECTRAL_PTR pSpectralCoefficient;             /* Spectral coefficients of each window */
+    SHORT specScale[8];                  /* Scale shift values of each spectrum window */
+    CIcsInfo icsInfo;
+    INT granuleLength;                             /* Size of smallest spectrum piece */
+    UCHAR ElementInstanceTag;
 
-  AACDEC_RENDER_MODE renderMode;                 /* Output signal rendering mode */
+    AACDEC_RENDER_MODE renderMode;                 /* Output signal rendering mode */
 
-  shouldBeUnion {
-    struct {
-      CPnsData PnsData; /* Not required for USAC */
-    } aac;
+    shouldBeUnion
+    {
+        struct {
+            CPnsData PnsData; /* Not required for USAC */
+        } aac;
 
-    struct {
-    } usac;
-  } data;
+        struct {
+        } usac;
+    } data;
 
-  CAacDecoderDynamicData *pDynData; /* Data required for one element and discarded after decoding */
-  CAacDecoderCommonData  *pComData; /* Data required for one channel at a time during decode */
+    CAacDecoderDynamicData *pDynData; /* Data required for one element and discarded after decoding */
+    CAacDecoderCommonData  *pComData; /* Data required for one channel at a time during decode */
 
 } CAacDecoderChannelInfo;
 
@@ -305,23 +313,23 @@ AAC_DECODER_ERROR getSamplingRateInfo(SamplingRateInfo *t, UINT samplesPerFrame,
  * \param pSamplingRateInfo read only
  */
 AAC_DECODER_ERROR IcsReadMaxSfb (
-        HANDLE_FDK_BITSTREAM hBs,
-        CIcsInfo *pIcsInfo,
-        const SamplingRateInfo *pSamplingRateInfo
-        );
+    HANDLE_FDK_BITSTREAM hBs,
+    CIcsInfo *pIcsInfo,
+    const SamplingRateInfo *pSamplingRateInfo
+);
 
 AAC_DECODER_ERROR IcsRead(
-        HANDLE_FDK_BITSTREAM bs,
-        CIcsInfo *pIcsInfo,
-        const SamplingRateInfo* SamplingRateInfoTable,
-        const UINT flags
-        );
+    HANDLE_FDK_BITSTREAM bs,
+    CIcsInfo *pIcsInfo,
+    const SamplingRateInfo* SamplingRateInfoTable,
+    const UINT flags
+);
 
 /* stereo.cpp, only called from this file */
 
 /*!
-  \brief Applies MS stereo. 
-  
+  \brief Applies MS stereo.
+
   The function applies MS stereo.
 
   \param pAacDecoderChannelInfo aac channel info.
@@ -329,7 +337,7 @@ AAC_DECODER_ERROR IcsRead(
   \param pWindowGroupLength pointer to window group length array.
   \param windowGroups number of window groups.
   \param scaleFactorBandsTransmittedL number of transmitted scalefactor bands in left channel.
-  \param scaleFactorBandsTransmittedR number of transmitted scalefactor bands in right channel. 
+  \param scaleFactorBandsTransmittedR number of transmitted scalefactor bands in right channel.
                                       May differ from scaleFactorBandsTransmittedL only for USAC.
   \return  none
 */
@@ -375,75 +383,75 @@ void CPns_SetCorrelation(CPnsData *pPnsData,
 
 inline UCHAR IsValid(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->Valid;
+    return pIcsInfo->Valid;
 }
 
 inline UCHAR IsLongBlock(const CIcsInfo *pIcsInfo)
 {
-  return (pIcsInfo->WindowSequence != EightShortSequence);
+    return (pIcsInfo->WindowSequence != EightShortSequence);
 }
 
 inline UCHAR GetWindowShape(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->WindowShape;
+    return pIcsInfo->WindowShape;
 }
 
 inline UCHAR GetWindowSequence(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->WindowSequence;
+    return pIcsInfo->WindowSequence;
 }
 
 inline const SHORT *GetScaleFactorBandOffsets(const CIcsInfo *pIcsInfo, const SamplingRateInfo* samplingRateInfo)
 {
-  if (IsLongBlock(pIcsInfo))
-  {
-    return samplingRateInfo->ScaleFactorBands_Long;
-  }
-  else
-  {
-    return samplingRateInfo->ScaleFactorBands_Short;
-  }
+    if (IsLongBlock(pIcsInfo))
+    {
+        return samplingRateInfo->ScaleFactorBands_Long;
+    }
+    else
+    {
+        return samplingRateInfo->ScaleFactorBands_Short;
+    }
 }
 
 inline int GetWindowsPerFrame(const CIcsInfo *pIcsInfo)
 {
-  return (pIcsInfo->WindowSequence == EightShortSequence) ? 8 : 1;
+    return (pIcsInfo->WindowSequence == EightShortSequence) ? 8 : 1;
 }
 
 inline UCHAR GetWindowGroups(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->WindowGroups;
+    return pIcsInfo->WindowGroups;
 }
 
 inline UCHAR GetWindowGroupLength(const CIcsInfo *pIcsInfo, const INT index)
 {
-  return pIcsInfo->WindowGroupLength[index];
+    return pIcsInfo->WindowGroupLength[index];
 }
 
 inline const UCHAR *GetWindowGroupLengthTable(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->WindowGroupLength;
+    return pIcsInfo->WindowGroupLength;
 }
 
 inline UCHAR GetScaleFactorBandsTransmitted(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->MaxSfBands;
+    return pIcsInfo->MaxSfBands;
 }
 
 inline UCHAR GetScaleMaxFactorBandsTransmitted(const CIcsInfo *pIcsInfo0, const CIcsInfo *pIcsInfo1)
 {
-  return fMax(pIcsInfo0->MaxSfBands, pIcsInfo1->MaxSfBands);
+    return fMax(pIcsInfo0->MaxSfBands, pIcsInfo1->MaxSfBands);
 }
 
 inline UCHAR GetScaleFactorBandsTotal(const CIcsInfo *pIcsInfo)
 {
-  return pIcsInfo->TotalSfBands;
+    return pIcsInfo->TotalSfBands;
 }
 
 /* Note: This function applies to AAC-LC only ! */
 inline UCHAR GetMaximumTnsBands(const CIcsInfo *pIcsInfo, const int samplingRateIndex)
 {
-  return tns_max_bands_tbl[samplingRateIndex][!IsLongBlock(pIcsInfo)];
+    return tns_max_bands_tbl[samplingRateIndex][!IsLongBlock(pIcsInfo)];
 }
 
 #endif /* #ifndef CHANNELINFO_H */

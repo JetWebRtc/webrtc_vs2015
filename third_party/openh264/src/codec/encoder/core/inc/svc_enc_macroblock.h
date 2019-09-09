@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -39,14 +39,16 @@
 #include "wels_common_basis.h"
 #include "macros.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 //struct Mb_s;
 
 /* MB syntax and context, refer to Page 399 in JVT X201wcm */
 // keep the most essential level pData structure be 64 Bytes, which matches cache line size; if so, the order with structure maybe negligible.
 // pls take care when modify MB structure size
-typedef struct TagMB {
+typedef struct TagMB
+{
 /*************************mb_layer() syntax and generated********************************/
 /*mb_layer():*/
 Mb_Type         uiMbType;       // including MB detailed partition type, number and type of reference list

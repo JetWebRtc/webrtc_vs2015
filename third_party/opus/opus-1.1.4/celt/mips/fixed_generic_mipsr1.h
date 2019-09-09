@@ -1,4 +1,4 @@
-/* Copyright (C) 2007-2009 Xiph.Org Foundation
+﻿/* Copyright (C) 2007-2009 Xiph.Org Foundation
    Copyright (C) 2003-2008 Jean-Marc Valin
    Copyright (C) 2007-2008 CSIRO */
 /**
@@ -34,7 +34,8 @@
 #define CELT_FIXED_GENERIC_MIPSR1_H
 
 #undef MULT16_32_Q15_ADD
-static inline int MULT16_32_Q15_ADD(int a, int b, int c, int d) {
+static inline int MULT16_32_Q15_ADD(int a, int b, int c, int d)
+{
     int m;
     asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
     asm volatile("madd $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));
@@ -43,7 +44,8 @@ static inline int MULT16_32_Q15_ADD(int a, int b, int c, int d) {
 }
 
 #undef MULT16_32_Q15_SUB
-static inline int MULT16_32_Q15_SUB(int a, int b, int c, int d) {
+static inline int MULT16_32_Q15_SUB(int a, int b, int c, int d)
+{
     int m;
     asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
     asm volatile("msub $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));
@@ -52,7 +54,8 @@ static inline int MULT16_32_Q15_SUB(int a, int b, int c, int d) {
 }
 
 #undef MULT16_16_Q15_ADD
-static inline int MULT16_16_Q15_ADD(int a, int b, int c, int d) {
+static inline int MULT16_16_Q15_ADD(int a, int b, int c, int d)
+{
     int m;
     asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
     asm volatile("madd $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));
@@ -61,7 +64,8 @@ static inline int MULT16_16_Q15_ADD(int a, int b, int c, int d) {
 }
 
 #undef MULT16_16_Q15_SUB
-static inline int MULT16_16_Q15_SUB(int a, int b, int c, int d) {
+static inline int MULT16_16_Q15_SUB(int a, int b, int c, int d)
+{
     int m;
     asm volatile("MULT $ac1, %0, %1" : : "r" ((int)a), "r" ((int)b));
     asm volatile("msub $ac1, %0, %1" : : "r" ((int)c), "r" ((int)d));

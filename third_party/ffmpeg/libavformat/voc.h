@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Creative Voice File demuxer.
  * Copyright (c) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -25,12 +25,14 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct voc_dec_context {
+typedef struct voc_dec_context
+{
     int64_t remaining_size;
     int64_t pts;
 } VocDecContext;
 
-typedef enum voc_type {
+typedef enum voc_type
+{
     VOC_TYPE_EOF              = 0x00,
     VOC_TYPE_VOICE_DATA       = 0x01,
     VOC_TYPE_VOICE_DATA_CONT  = 0x02,

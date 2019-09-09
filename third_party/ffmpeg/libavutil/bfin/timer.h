@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Marc Hoffman
  *
  * This file is part of FFmpeg.
@@ -27,8 +27,10 @@
 
 static inline uint64_t read_time(void)
 {
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             unsigned lo;
             unsigned hi;
         } p;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Konstantin Shishkov
  * Copyright (c) 2007 Loren Merritt
  *
@@ -33,21 +33,25 @@
 /* symbol for Huffman tree node */
 #define HNODE -1
 
-typedef struct HeapElem {
+typedef struct HeapElem
+{
     uint64_t val;
     int name;
 } HeapElem;
 
 static void heap_sift(HeapElem *h, int root, int size)
 {
-    while (root * 2 + 1 < size) {
+    while (root * 2 + 1 < size)
+    {
         int child = root * 2 + 1;
         if (child < size - 1 && h[child].val > h[child+1].val)
             child++;
-        if (h[root].val > h[child].val) {
+        if (h[root].val > h[child].val)
+        {
             FFSWAP(HeapElem, h[root], h[child]);
             root = child;
-        } else
+        }
+        else
             break;
     }
 }
@@ -62,26 +66,31 @@ int ff_huff_gen_len_table(uint8_t *dst, const uint64_t *stats, int stats_size, i
     int size = 0;
     int ret = 0;
 
-    if (!h || !up || !len || !map) {
+    if (!h || !up || !len || !map)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
 
-    for (i = 0; i<stats_size; i++) {
+    for (i = 0; i<stats_size; i++)
+    {
         dst[i] = 255;
         if (stats[i] || !skip0)
             map[size++] = i;
     }
 
-    for (offset = 1; ; offset <<= 1) {
-        for (i=0; i < size; i++) {
+    for (offset = 1; ; offset <<= 1)
+    {
+        for (i=0; i < size; i++)
+        {
             h[i].name = i;
             h[i].val = (stats[map[i]] << 14) + offset;
         }
         for (i = size / 2 - 1; i >= 0; i--)
             heap_sift(h, i, size);
 
-        for (next = size; next < size * 2 - 1; next++) {
+        for (next = size; next < size * 2 - 1; next++)
+        {
             // merge the two smallest entries, and put it back in the heap
             uint64_t min1v = h[0].val;
             up[h[0].name] = next;
@@ -96,7 +105,8 @@ int ff_huff_gen_len_table(uint8_t *dst, const uint64_t *stats, int stats_size, i
         len[2 * size - 2] = 0;
         for (i = 2 * size - 3; i >= size; i--)
             len[i] = len[up[i]] + 1;
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
             dst[map[i]] = len[up[i]] + 1;
             if (dst[map[i]] >= 32) break;
         }
@@ -117,12 +127,15 @@ static void get_tree_codes(uint32_t *bits, int16_t *lens, uint8_t *xlat,
     int s;
 
     s = nodes[node].sym;
-    if (s != HNODE || (no_zero_count && !nodes[node].count)) {
+    if (s != HNODE || (no_zero_count && !nodes[node].count))
+    {
         bits[*pos] = pfx;
         lens[*pos] = pl;
         xlat[*pos] = s;
         (*pos)++;
-    } else {
+    }
+    else
+    {
         pfx <<= 1;
         pl++;
         get_tree_codes(bits, lens, xlat, nodes, nodes[node].n0, pfx, pl,
@@ -158,13 +171,15 @@ int ff_huff_build_tree(AVCodecContext *avctx, VLC *vlc, int nb_codes, int nb_bit
     int cur_node;
     int64_t sum = 0;
 
-    for (i = 0; i < nb_codes; i++) {
+    for (i = 0; i < nb_codes; i++)
+    {
         nodes[i].sym = i;
         nodes[i].n0 = -2;
         sum += nodes[i].count;
     }
 
-    if (sum >> 31) {
+    if (sum >> 31)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Too high symbol frequencies. "
                "Tree construction is not possible\n");
@@ -173,14 +188,16 @@ int ff_huff_build_tree(AVCodecContext *avctx, VLC *vlc, int nb_codes, int nb_bit
     qsort(nodes, nb_codes, sizeof(Node), cmp);
     cur_node = nb_codes;
     nodes[nb_codes*2-1].count = 0;
-    for (i = 0; i < nb_codes * 2 - 1; i += 2) {
+    for (i = 0; i < nb_codes * 2 - 1; i += 2)
+    {
         uint32_t cur_count = nodes[i].count + nodes[i+1].count;
         // find correct place to insert new node, and
         // make space for the new node while at it
-        for(j = cur_node; j > i + 2; j--){
+        for(j = cur_node; j > i + 2; j--)
+        {
             if(cur_count > nodes[j-1].count ||
-               (cur_count == nodes[j-1].count &&
-                !(flags & FF_HUFFMAN_FLAG_HNODE_FIRST)))
+                    (cur_count == nodes[j-1].count &&
+                     !(flags & FF_HUFFMAN_FLAG_HNODE_FIRST)))
                 break;
             nodes[j] = nodes[j - 1];
         }
@@ -189,7 +206,8 @@ int ff_huff_build_tree(AVCodecContext *avctx, VLC *vlc, int nb_codes, int nb_bit
         nodes[j].n0 = i;
         cur_node++;
     }
-    if (build_huff_tree(vlc, nodes, nb_codes * 2 - 2, flags, nb_bits) < 0) {
+    if (build_huff_tree(vlc, nodes, nb_codes * 2 - 2, flags, nb_bits) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error building tree\n");
         return -1;
     }

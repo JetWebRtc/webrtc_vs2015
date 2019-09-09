@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -97,17 +97,19 @@ amm-info@iis.fraunhofer.de
 
 #define NO_NOISE_PNS FDK_INT_MIN
 
-typedef struct{
-  NOISEPARAMS np;
-  FIXP_DBL minCorrelationEnergy;
-  FIXP_DBL noiseCorrelationThresh;
-  INT      usePns;
+typedef struct
+{
+    NOISEPARAMS np;
+    FIXP_DBL minCorrelationEnergy;
+    FIXP_DBL noiseCorrelationThresh;
+    INT      usePns;
 } PNS_CONFIG;
 
-typedef struct{
-  FIXP_SGL noiseFuzzyMeasure[MAX_GROUPED_SFB];
-  FIXP_DBL noiseEnergyCorrelation[MAX_GROUPED_SFB];
-  INT      pnsFlag[MAX_GROUPED_SFB];
+typedef struct
+{
+    FIXP_SGL noiseFuzzyMeasure[MAX_GROUPED_SFB];
+    FIXP_DBL noiseEnergyCorrelation[MAX_GROUPED_SFB];
+    INT      pnsFlag[MAX_GROUPED_SFB];
 } PNS_DATA;
 
 #endif

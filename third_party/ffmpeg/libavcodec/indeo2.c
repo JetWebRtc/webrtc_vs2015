@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel Indeo 2 codec
  * Copyright (c) 2005 Konstantin Shishkov
  *
@@ -32,7 +32,8 @@
 #include "internal.h"
 #include "mathops.h"
 
-typedef struct Ir2Context{
+typedef struct Ir2Context
+{
     AVCodecContext *avctx;
     AVFrame *picture;
     GetBitContext gb;
@@ -59,34 +60,44 @@ static int ir2_decode_plane(Ir2Context *ctx, int width, int height, uint8_t *dst
         return AVERROR_INVALIDDATA;
 
     /* first line contain absolute values, other lines contain deltas */
-    while (out < width) {
+    while (out < width)
+    {
         int c = ir2_get_code(&ctx->gb);
-        if (c >= 0x80) { /* we have a run */
+        if (c >= 0x80)   /* we have a run */
+        {
             c -= 0x7F;
             if (out + c*2 > width)
                 return AVERROR_INVALIDDATA;
             for (i = 0; i < c * 2; i++)
                 dst[out++] = 0x80;
-        } else { /* copy two values from table */
+        }
+        else     /* copy two values from table */
+        {
             dst[out++] = table[c * 2];
             dst[out++] = table[(c * 2) + 1];
         }
     }
     dst += pitch;
 
-    for (j = 1; j < height; j++) {
+    for (j = 1; j < height; j++)
+    {
         out = 0;
-        while (out < width) {
+        while (out < width)
+        {
             int c = ir2_get_code(&ctx->gb);
-            if (c >= 0x80) { /* we have a skip */
+            if (c >= 0x80)   /* we have a skip */
+            {
                 c -= 0x7F;
                 if (out + c*2 > width)
                     return AVERROR_INVALIDDATA;
-                for (i = 0; i < c * 2; i++) {
+                for (i = 0; i < c * 2; i++)
+                {
                     dst[out] = dst[out - pitch];
                     out++;
                 }
-            } else { /* add two deltas from table */
+            }
+            else     /* add two deltas from table */
+            {
                 int t    = dst[out - pitch] + (table[c * 2] - 128);
                 t        = av_clip_uint8(t);
                 dst[out] = t;
@@ -113,14 +124,19 @@ static int ir2_decode_plane_inter(Ir2Context *ctx, int width, int height, uint8_
     if (width & 1)
         return AVERROR_INVALIDDATA;
 
-    for (j = 0; j < height; j++) {
+    for (j = 0; j < height; j++)
+    {
         out = 0;
-        while (out < width) {
+        while (out < width)
+        {
             c = ir2_get_code(&ctx->gb);
-            if (c >= 0x80) { /* we have a skip */
+            if (c >= 0x80)   /* we have a skip */
+            {
                 c   -= 0x7F;
                 out += c * 2;
-            } else { /* add two deltas from table */
+            }
+            else     /* add two deltas from table */
+            {
                 t        = dst[out] + (((table[c * 2] - 128)*3) >> 2);
                 t        = av_clip_uint8(t);
                 dst[out] = t;
@@ -137,8 +153,8 @@ static int ir2_decode_plane_inter(Ir2Context *ctx, int width, int height, uint8_
 }
 
 static int ir2_decode_frame(AVCodecContext *avctx,
-                        void *data, int *got_frame,
-                        AVPacket *avpkt)
+                            void *data, int *got_frame,
+                            AVPacket *avpkt)
 {
     Ir2Context * const s = avctx->priv_data;
     const uint8_t *buf   = avpkt->data;
@@ -152,7 +168,8 @@ static int ir2_decode_frame(AVCodecContext *avctx,
 
     start = 48; /* hardcoded for now */
 
-    if (start >= buf_size) {
+    if (start >= buf_size)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "input buffer size too small (%d)\n", buf_size);
         return AVERROR_INVALIDDATA;
     }
@@ -167,7 +184,8 @@ static int ir2_decode_frame(AVCodecContext *avctx,
 
     init_get_bits(&s->gb, buf + start, (buf_size - start) * 8);
 
-    if (s->decode_delta) { /* intraframe */
+    if (s->decode_delta)   /* intraframe */
+    {
         if ((ret = ir2_decode_plane(s, avctx->width, avctx->height,
                                     p->data[0], p->linesize[0],
                                     ir2_luma_table)) < 0)
@@ -182,7 +200,9 @@ static int ir2_decode_frame(AVCodecContext *avctx,
                                     p->data[1], p->linesize[1],
                                     ir2_luma_table)) < 0)
             return ret;
-    } else { /* interframe */
+    }
+    else     /* interframe */
+    {
         if ((ret = ir2_decode_plane_inter(s, avctx->width, avctx->height,
                                           p->data[0], p->linesize[0],
                                           ir2_luma_table)) < 0)
@@ -222,13 +242,13 @@ static av_cold int ir2_decode_init(AVCodecContext *avctx)
     ir2_vlc.table = vlc_tables;
     ir2_vlc.table_allocated = 1 << CODE_VLC_BITS;
 #ifdef BITSTREAM_READER_LE
-        init_vlc(&ir2_vlc, CODE_VLC_BITS, IR2_CODES,
-                 &ir2_codes[0][1], 4, 2,
-                 &ir2_codes[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC | INIT_VLC_LE);
+    init_vlc(&ir2_vlc, CODE_VLC_BITS, IR2_CODES,
+             &ir2_codes[0][1], 4, 2,
+             &ir2_codes[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC | INIT_VLC_LE);
 #else
-        init_vlc(&ir2_vlc, CODE_VLC_BITS, IR2_CODES,
-                 &ir2_codes[0][1], 4, 2,
-                 &ir2_codes[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC);
+    init_vlc(&ir2_vlc, CODE_VLC_BITS, IR2_CODES,
+             &ir2_codes[0][1], 4, 2,
+             &ir2_codes[0][0], 4, 2, INIT_VLC_USE_NEW_STATIC);
 #endif
 
     return 0;
@@ -243,7 +263,8 @@ static av_cold int ir2_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_indeo2_decoder = {
+AVCodec ff_indeo2_decoder =
+{
     .name           = "indeo2",
     .long_name      = NULL_IF_CONFIG_SMALL("Intel Indeo 2"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Imagination Technologies Ltd
  *
  * This file is part of FFmpeg.

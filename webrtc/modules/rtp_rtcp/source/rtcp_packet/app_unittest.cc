@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 #include "webrtc/test/gtest.h"
 #include "webrtc/test/rtcp_packet_parser.h"
 
-namespace webrtc {
-namespace {
+namespace webrtc
+{
+namespace
+{
 
 using ::testing::ElementsAreArray;
 using ::testing::make_tuple;
@@ -29,82 +31,96 @@ constexpr uint8_t kData[] = {'t', 'e', 's', 't', 'd', 'a', 't', 'a'};
 constexpr uint8_t kVersionBits = 2 << 6;
 constexpr uint8_t kPaddingBit = 1 << 5;
 // clang-format off
-constexpr uint8_t kPacketWithoutData[] = {
+constexpr uint8_t kPacketWithoutData[] =
+{
     kVersionBits | kSubtype, App::kPacketType, 0x00, 0x02,
     0x12, 0x34, 0x56, 0x78,
-    'n',  'a',  'm',  'e'};
-constexpr uint8_t kPacketWithData[] = {
+    'n',  'a',  'm',  'e'
+};
+constexpr uint8_t kPacketWithData[] =
+{
     kVersionBits | kSubtype, App::kPacketType, 0x00, 0x04,
     0x12, 0x34, 0x56, 0x78,
     'n',  'a',  'm',  'e',
     't',  'e',  's',  't',
-    'd',  'a',  't',  'a'};
-constexpr uint8_t kTooSmallPacket[] = {
+    'd',  'a',  't',  'a'
+};
+constexpr uint8_t kTooSmallPacket[] =
+{
     kVersionBits | kSubtype, App::kPacketType, 0x00, 0x01,
-    0x12, 0x34, 0x56, 0x78};
+    0x12, 0x34, 0x56, 0x78
+};
 constexpr uint8_t kPaddingSize = 1;
-constexpr uint8_t kPacketWithUnalignedPayload[] = {
+constexpr uint8_t kPacketWithUnalignedPayload[] =
+{
     kVersionBits | kPaddingBit | kSubtype, App::kPacketType, 0x00, 0x03,
     0x12, 0x34, 0x56, 0x78,
-     'n',  'a',  'm',  'e',
-     'd',  'a',  't', kPaddingSize};
+    'n',  'a',  'm',  'e',
+    'd',  'a',  't', kPaddingSize
+};
 // clang-format on
 }  // namespace
 
-TEST(RtcpPacketAppTest, CreateWithoutData) {
-  App app;
-  app.SetSsrc(kSenderSsrc);
-  app.SetSubType(kSubtype);
-  app.SetName(kName);
+TEST(RtcpPacketAppTest, CreateWithoutData)
+{
+    App app;
+    app.SetSsrc(kSenderSsrc);
+    app.SetSubType(kSubtype);
+    app.SetName(kName);
 
-  rtc::Buffer raw = app.Build();
+    rtc::Buffer raw = app.Build();
 
-  EXPECT_THAT(make_tuple(raw.data(), raw.size()),
-              ElementsAreArray(kPacketWithoutData));
+    EXPECT_THAT(make_tuple(raw.data(), raw.size()),
+                ElementsAreArray(kPacketWithoutData));
 }
 
-TEST(RtcpPacketAppTest, ParseWithoutData) {
-  App parsed;
-  EXPECT_TRUE(test::ParseSinglePacket(kPacketWithoutData, &parsed));
+TEST(RtcpPacketAppTest, ParseWithoutData)
+{
+    App parsed;
+    EXPECT_TRUE(test::ParseSinglePacket(kPacketWithoutData, &parsed));
 
-  EXPECT_EQ(kSenderSsrc, parsed.ssrc());
-  EXPECT_EQ(kSubtype, parsed.sub_type());
-  EXPECT_EQ(kName, parsed.name());
-  EXPECT_EQ(0u, parsed.data_size());
+    EXPECT_EQ(kSenderSsrc, parsed.ssrc());
+    EXPECT_EQ(kSubtype, parsed.sub_type());
+    EXPECT_EQ(kName, parsed.name());
+    EXPECT_EQ(0u, parsed.data_size());
 }
 
-TEST(RtcpPacketAppTest, CreateWithData) {
-  App app;
-  app.SetSsrc(kSenderSsrc);
-  app.SetSubType(kSubtype);
-  app.SetName(kName);
-  app.SetData(kData, sizeof(kData));
+TEST(RtcpPacketAppTest, CreateWithData)
+{
+    App app;
+    app.SetSsrc(kSenderSsrc);
+    app.SetSubType(kSubtype);
+    app.SetName(kName);
+    app.SetData(kData, sizeof(kData));
 
-  rtc::Buffer raw = app.Build();
+    rtc::Buffer raw = app.Build();
 
-  EXPECT_THAT(make_tuple(raw.data(), raw.size()),
-              ElementsAreArray(kPacketWithData));
+    EXPECT_THAT(make_tuple(raw.data(), raw.size()),
+                ElementsAreArray(kPacketWithData));
 }
 
-TEST(RtcpPacketAppTest, ParseWithData) {
-  App parsed;
-  EXPECT_TRUE(test::ParseSinglePacket(kPacketWithData, &parsed));
+TEST(RtcpPacketAppTest, ParseWithData)
+{
+    App parsed;
+    EXPECT_TRUE(test::ParseSinglePacket(kPacketWithData, &parsed));
 
-  EXPECT_EQ(kSenderSsrc, parsed.ssrc());
-  EXPECT_EQ(kSubtype, parsed.sub_type());
-  EXPECT_EQ(kName, parsed.name());
-  EXPECT_THAT(make_tuple(parsed.data(), parsed.data_size()),
-              ElementsAreArray(kData));
+    EXPECT_EQ(kSenderSsrc, parsed.ssrc());
+    EXPECT_EQ(kSubtype, parsed.sub_type());
+    EXPECT_EQ(kName, parsed.name());
+    EXPECT_THAT(make_tuple(parsed.data(), parsed.data_size()),
+                ElementsAreArray(kData));
 }
 
-TEST(RtcpPacketAppTest, ParseFailsOnTooSmallPacket) {
-  App parsed;
-  EXPECT_FALSE(test::ParseSinglePacket(kTooSmallPacket, &parsed));
+TEST(RtcpPacketAppTest, ParseFailsOnTooSmallPacket)
+{
+    App parsed;
+    EXPECT_FALSE(test::ParseSinglePacket(kTooSmallPacket, &parsed));
 }
 
-TEST(RtcpPacketAppTest, ParseFailsOnUnalignedPayload) {
-  App parsed;
-  EXPECT_FALSE(test::ParseSinglePacket(kPacketWithUnalignedPayload, &parsed));
+TEST(RtcpPacketAppTest, ParseFailsOnUnalignedPayload)
+{
+    App parsed;
+    EXPECT_FALSE(test::ParseSinglePacket(kPacketWithUnalignedPayload, &parsed));
 }
 
 }  // namespace webrtc

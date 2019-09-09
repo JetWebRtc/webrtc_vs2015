@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (C) 2006 Corey Hickey
  *
  * This file is part of FFmpeg.

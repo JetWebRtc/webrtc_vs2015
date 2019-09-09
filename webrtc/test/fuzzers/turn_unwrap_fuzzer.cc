@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,10 +13,12 @@
 
 #include "webrtc/media/base/turnutils.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  size_t content_position;
-  size_t content_size;
-  cricket::UnwrapTurnPacket(data, size, &content_position, &content_size);
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    size_t content_position;
+    size_t content_size;
+    cricket::UnwrapTurnPacket(data, size, &content_position, &content_size);
 }
 }  // namespace webrtc

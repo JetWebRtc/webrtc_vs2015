@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -41,8 +41,9 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Matlab code for table:
    for k=16:9*4:16+2*9*4, fprintf(' %7.d,', -round(65536*pi ./ (k:4:k+8*4))); fprintf('\n'); end
 */
-static const opus_int16 freq_table_Q16[ 27 ] = {
-   12111,    9804,    8235,    7100,    6239,    5565,    5022,    4575,    4202,
+static const opus_int16 freq_table_Q16[ 27 ] =
+{
+    12111,    9804,    8235,    7100,    6239,    5565,    5022,    4575,    4202,
     3885,    3612,    3375,    3167,    2984,    2820,    2674,    2542,    2422,
     2313,    2214,    2123,    2038,    1961,    1889,    1822,    1760,    1702,
 };
@@ -73,12 +74,15 @@ void silk_apply_sine_window(
     silk_assert( c_Q16 >= -32768 );
 
     /* initialize state */
-    if( win_type == 1 ) {
+    if( win_type == 1 )
+    {
         /* start from 0 */
         S0_Q16 = 0;
         /* approximation of sin(f) */
         S1_Q16 = f_Q16 + silk_RSHIFT( length, 3 );
-    } else {
+    }
+    else
+    {
         /* start from 1 */
         S0_Q16 = ( (opus_int32)1 << 16 );
         /* approximation of cos(f) */
@@ -87,7 +91,8 @@ void silk_apply_sine_window(
 
     /* Uses the recursive equation:   sin(n*f) = 2 * cos(f) * sin((n-1)*f) - sin((n-2)*f)    */
     /* 4 samples at a time */
-    for( k = 0; k < length; k += 4 ) {
+    for( k = 0; k < length; k += 4 )
+    {
         px_win[ k ]     = (opus_int16)silk_SMULWB( silk_RSHIFT( S0_Q16 + S1_Q16, 1 ), px[ k ] );
         px_win[ k + 1 ] = (opus_int16)silk_SMULWB( S1_Q16, px[ k + 1] );
         S0_Q16 = silk_SMULWB( S1_Q16, c_Q16 ) + silk_LSHIFT( S1_Q16, 1 ) - S0_Q16 + 1;

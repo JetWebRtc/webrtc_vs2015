@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 #ifndef WEBRTC_PC_TEST_TESTSDPSTRINGS_H_
 #define WEBRTC_PC_TEST_TESTSDPSTRINGS_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // SDP offer string from a Nightly FireFox build.
 static const char kFireFoxSdpOffer[] =

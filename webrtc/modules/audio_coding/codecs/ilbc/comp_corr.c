@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,19 +31,21 @@ void WebRtcIlbcfix_CompCorr(
     size_t bLen, /* (i) length of buffer */
     size_t sRange, /* (i) correlation search length */
     int16_t scale /* (i) number of rightshifts to use */
-                            ){
-  int16_t *w16ptr;
+)
+{
+    int16_t *w16ptr;
 
-  w16ptr=&buffer[bLen-sRange-lag];
+    w16ptr=&buffer[bLen-sRange-lag];
 
-  /* Calculate correlation and energy */
-  (*corr)=WebRtcSpl_DotProductWithScale(&buffer[bLen-sRange], w16ptr, sRange, scale);
-  (*ener)=WebRtcSpl_DotProductWithScale(w16ptr, w16ptr, sRange, scale);
+    /* Calculate correlation and energy */
+    (*corr)=WebRtcSpl_DotProductWithScale(&buffer[bLen-sRange], w16ptr, sRange, scale);
+    (*ener)=WebRtcSpl_DotProductWithScale(w16ptr, w16ptr, sRange, scale);
 
-  /* For zero energy set the energy to 0 in order to avoid potential
-     problems for coming divisions */
-  if (*ener == 0) {
-    *corr = 0;
-    *ener = 1;
-  }
+    /* For zero energy set the energy to 0 in order to avoid potential
+       problems for coming divisions */
+    if (*ener == 0)
+    {
+        *corr = 0;
+        *ener = 1;
+    }
 }

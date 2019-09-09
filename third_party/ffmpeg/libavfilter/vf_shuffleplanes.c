@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct ShufflePlanesContext {
+typedef struct ShufflePlanesContext
+{
     const AVClass *class;
 
     /* number of planes in the selected pixel format */
@@ -52,8 +53,10 @@ static av_cold int shuffleplanes_config_input(AVFilterLink *inlink)
     s->planes = av_pix_fmt_count_planes(inlink->format);
     desc      = av_pix_fmt_desc_get(inlink->format);
 
-    for (i = 0; i < s->planes; i++) {
-        if (s->map[i] >= s->planes) {
+    for (i = 0; i < s->planes; i++)
+    {
+        if (s->map[i] >= s->planes)
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Non-existing input plane #%d mapped to output plane #%d.\n",
                    s->map[i], i);
@@ -61,7 +64,8 @@ static av_cold int shuffleplanes_config_input(AVFilterLink *inlink)
         }
 
         if ((desc->log2_chroma_h || desc->log2_chroma_w) &&
-            (i == 1 || i == 2) != (s->map[i] == 1 || s->map[i] == 2)) {
+                (i == 1 || i == 2) != (s->map[i] == 1 || s->map[i] == 2))
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Cannot map between a subsampled chroma plane and a luma "
                    "or alpha plane.\n");
@@ -69,8 +73,9 @@ static av_cold int shuffleplanes_config_input(AVFilterLink *inlink)
         }
 
         if ((desc->flags & AV_PIX_FMT_FLAG_PAL ||
-             desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) &&
-            (i == 1) != (s->map[i] == 1)) {
+                desc->flags & AV_PIX_FMT_FLAG_PSEUDOPAL) &&
+                (i == 1) != (s->map[i] == 1))
+        {
             av_log(ctx, AV_LOG_ERROR,
                    "Cannot map between a palette plane and a data plane.\n");
             return AVERROR(EINVAL);
@@ -91,17 +96,20 @@ static int shuffleplanes_filter_frame(AVFilterLink *inlink, AVFrame *frame)
     int      shuffled_linesize[4] = { 0 };
     int i, ret;
 
-    for (i = 0; i < s->planes; i++) {
+    for (i = 0; i < s->planes; i++)
+    {
         shuffled_data[i]     = frame->data[s->map[i]];
         shuffled_linesize[i] = frame->linesize[s->map[i]];
     }
     memcpy(frame->data,     shuffled_data,     sizeof(shuffled_data));
     memcpy(frame->linesize, shuffled_linesize, sizeof(shuffled_linesize));
 
-    if (s->copy) {
+    if (s->copy)
+    {
         AVFrame *copy = ff_get_video_buffer(ctx->outputs[0], frame->width, frame->height);
 
-        if (!copy) {
+        if (!copy)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -109,7 +117,8 @@ static int shuffleplanes_filter_frame(AVFilterLink *inlink, AVFrame *frame)
         av_frame_copy(copy, frame);
 
         ret = av_frame_copy_props(copy, frame);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_frame_free(&copy);
             goto fail;
         }
@@ -126,7 +135,8 @@ fail:
 
 #define OFFSET(x) offsetof(ShufflePlanesContext, x)
 #define FLAGS (AV_OPT_FLAG_FILTERING_PARAM | AV_OPT_FLAG_VIDEO_PARAM)
-static const AVOption shuffleplanes_options[] = {
+static const AVOption shuffleplanes_options[] =
+{
     { "map0", "Index of the input plane to be used as the first output plane ",  OFFSET(map[0]), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 4, FLAGS },
     { "map1", "Index of the input plane to be used as the second output plane ", OFFSET(map[1]), AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 4, FLAGS },
     { "map2", "Index of the input plane to be used as the third output plane ",  OFFSET(map[2]), AV_OPT_TYPE_INT, { .i64 = 2 }, 0, 4, FLAGS },
@@ -136,7 +146,8 @@ static const AVOption shuffleplanes_options[] = {
 
 AVFILTER_DEFINE_CLASS(shuffleplanes);
 
-static const AVFilterPad shuffleplanes_inputs[] = {
+static const AVFilterPad shuffleplanes_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -147,7 +158,8 @@ static const AVFilterPad shuffleplanes_inputs[] = {
     { NULL },
 };
 
-static const AVFilterPad shuffleplanes_outputs[] = {
+static const AVFilterPad shuffleplanes_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -155,7 +167,8 @@ static const AVFilterPad shuffleplanes_outputs[] = {
     { NULL },
 };
 
-AVFilter ff_vf_shuffleplanes = {
+AVFilter ff_vf_shuffleplanes =
+{
     .name         = "shuffleplanes",
     .description  = NULL_IF_CONFIG_SMALL("Shuffle video planes"),
 

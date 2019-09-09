@@ -1,4 +1,4 @@
-/*
+﻿/*
  * v408 encoder
  *
  * Copyright (c) 2012 Carl Eugen Hoyos
@@ -46,14 +46,19 @@ static int v408_encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     v = pic->data[2];
     a = pic->data[3];
 
-    for (i = 0; i < avctx->height; i++) {
-        for (j = 0; j < avctx->width; j++) {
-           if (avctx->codec_id==AV_CODEC_ID_AYUV) {
+    for (i = 0; i < avctx->height; i++)
+    {
+        for (j = 0; j < avctx->width; j++)
+        {
+            if (avctx->codec_id==AV_CODEC_ID_AYUV)
+            {
                 *dst++ = v[j];
                 *dst++ = u[j];
                 *dst++ = y[j];
                 *dst++ = a[j];
-            } else {
+            }
+            else
+            {
                 *dst++ = u[j];
                 *dst++ = y[j];
                 *dst++ = v[j];
@@ -77,7 +82,8 @@ static av_cold int v408_encode_close(AVCodecContext *avctx)
 }
 
 #if CONFIG_AYUV_ENCODER
-AVCodec ff_ayuv_encoder = {
+AVCodec ff_ayuv_encoder =
+{
     .name         = "ayuv",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed MS 4:4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,
@@ -90,7 +96,8 @@ AVCodec ff_ayuv_encoder = {
 };
 #endif
 #if CONFIG_V408_ENCODER
-AVCodec ff_v408_encoder = {
+AVCodec ff_v408_encoder =
+{
     .name         = "v408",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed QT 4:4:4:4"),
     .type         = AVMEDIA_TYPE_VIDEO,

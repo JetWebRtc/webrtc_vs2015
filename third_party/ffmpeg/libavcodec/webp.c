@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WebP (.webp) image decoder
  * Copyright (c) 2013 Aneesh Dogra <aneesh@sugarlabs.org>
  * Copyright (c) 2013 Justin Ruggles <justin.ruggles@gmail.com>
@@ -66,17 +66,20 @@
 #define NUM_SHORT_DISTANCES             120
 #define MAX_HUFFMAN_CODE_LENGTH         15
 
-static const uint16_t alphabet_sizes[HUFFMAN_CODES_PER_META_CODE] = {
+static const uint16_t alphabet_sizes[HUFFMAN_CODES_PER_META_CODE] =
+{
     NUM_LITERAL_CODES + NUM_LENGTH_CODES,
     NUM_LITERAL_CODES, NUM_LITERAL_CODES, NUM_LITERAL_CODES,
     NUM_DISTANCE_CODES
 };
 
-static const uint8_t code_length_code_order[NUM_CODE_LENGTH_CODES] = {
+static const uint8_t code_length_code_order[NUM_CODE_LENGTH_CODES] =
+{
     17, 18, 0, 1, 2, 3, 4, 5, 16, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-static const int8_t lz77_distance_offsets[NUM_SHORT_DISTANCES][2] = {
+static const int8_t lz77_distance_offsets[NUM_SHORT_DISTANCES][2] =
+{
     {  0, 1 }, {  1, 0 }, {  1, 1 }, { -1, 1 }, {  0, 2 }, {  2, 0 }, {  1, 2 }, { -1, 2 },
     {  2, 1 }, { -2, 1 }, {  2, 2 }, { -2, 2 }, {  0, 3 }, {  3, 0 }, {  1, 3 }, { -1, 3 },
     {  3, 1 }, { -3, 1 }, {  2, 3 }, { -2, 3 }, {  3, 2 }, { -3, 2 }, {  0, 4 }, {  4, 0 },
@@ -94,26 +97,30 @@ static const int8_t lz77_distance_offsets[NUM_SHORT_DISTANCES][2] = {
     { -6, 7 }, {  7, 6 }, { -7, 6 }, {  8, 5 }, {  7, 7 }, { -7, 7 }, {  8, 6 }, {  8, 7 }
 };
 
-enum AlphaCompression {
+enum AlphaCompression
+{
     ALPHA_COMPRESSION_NONE,
     ALPHA_COMPRESSION_VP8L,
 };
 
-enum AlphaFilter {
+enum AlphaFilter
+{
     ALPHA_FILTER_NONE,
     ALPHA_FILTER_HORIZONTAL,
     ALPHA_FILTER_VERTICAL,
     ALPHA_FILTER_GRADIENT,
 };
 
-enum TransformType {
+enum TransformType
+{
     PREDICTOR_TRANSFORM      = 0,
     COLOR_TRANSFORM          = 1,
     SUBTRACT_GREEN           = 2,
     COLOR_INDEXING_TRANSFORM = 3,
 };
 
-enum PredictionMode {
+enum PredictionMode
+{
     PRED_MODE_BLACK,
     PRED_MODE_L,
     PRED_MODE_T,
@@ -130,7 +137,8 @@ enum PredictionMode {
     PRED_MODE_ADD_SUBTRACT_HALF,
 };
 
-enum HuffmanIndex {
+enum HuffmanIndex
+{
     HUFF_IDX_GREEN = 0,
     HUFF_IDX_RED   = 1,
     HUFF_IDX_BLUE  = 2,
@@ -144,7 +152,8 @@ enum HuffmanIndex {
  * basic image type called an "entropy coded image" that is used for all of
  * these. The type of each entropy coded image is referred to by the
  * specification as its role. */
-enum ImageRole {
+enum ImageRole
+{
     /* Primary Image: Stores the actual pixels of the image. */
     IMAGE_ROLE_ARGB,
 
@@ -166,14 +175,16 @@ enum ImageRole {
     IMAGE_ROLE_NB,
 };
 
-typedef struct HuffReader {
+typedef struct HuffReader
+{
     VLC vlc;                            /* Huffman decoder context */
     int simple;                         /* whether to use simple mode */
     int nb_symbols;                     /* number of coded symbols */
     uint16_t simple_symbols[2];         /* symbols for simple mode */
 } HuffReader;
 
-typedef struct ImageContext {
+typedef struct ImageContext
+{
     enum ImageRole role;                /* role of this image */
     AVFrame *frame;                     /* AVFrame for data */
     int color_cache_bits;               /* color cache size, log2 */
@@ -184,7 +195,8 @@ typedef struct ImageContext {
     int is_alpha_primary;
 } ImageContext;
 
-typedef struct WebPContext {
+typedef struct WebPContext
+{
     VP8Context v;                       /* VP8 Context used for lossy decoding */
     GetBitContext gb;                   /* bitstream reader for main image chunk */
     AVFrame *alpha_frame;               /* AVFrame for alpha data decompressed from VP8L */
@@ -221,8 +233,10 @@ static void image_ctx_free(ImageContext *img)
     av_free(img->color_cache);
     if (img->role != IMAGE_ROLE_ARGB && !img->is_alpha_primary)
         av_frame_free(&img->frame);
-    if (img->huffman_groups) {
-        for (i = 0; i < img->nb_huffman_groups; i++) {
+    if (img->huffman_groups)
+    {
+        for (i = 0; i < img->nb_huffman_groups; i++)
+        {
             for (j = 0; j < HUFFMAN_CODES_PER_META_CODE; j++)
                 ff_free_vlc(&img->huffman_groups[i * HUFFMAN_CODES_PER_META_CODE + j].vlc);
         }
@@ -251,7 +265,8 @@ static av_always_inline int webp_get_vlc(GetBitContext *gb, VLC_TYPE (*table)[2]
     code  = table[index][0];
     n     = table[index][1];
 
-    if (n < 0) {
+    if (n < 0)
+    {
         LAST_SKIP_BITS(re, gb, 8);
         UPDATE_CACHE(re, gb);
 
@@ -271,12 +286,14 @@ static av_always_inline int webp_get_vlc(GetBitContext *gb, VLC_TYPE (*table)[2]
 
 static int huff_reader_get_symbol(HuffReader *r, GetBitContext *gb)
 {
-    if (r->simple) {
+    if (r->simple)
+    {
         if (r->nb_symbols == 1)
             return r->simple_symbols[0];
         else
             return r->simple_symbols[get_bits1(gb)];
-    } else
+    }
+    else
         return webp_get_vlc(gb, r->vlc.table);
 }
 
@@ -288,15 +305,18 @@ static int huff_reader_build_canonical(HuffReader *r, int *code_lengths,
     uint16_t *codes;
 
     /* special-case 1 symbol since the vlc reader cannot handle it */
-    for (sym = 0; sym < alphabet_size; sym++) {
-        if (code_lengths[sym] > 0) {
+    for (sym = 0; sym < alphabet_size; sym++)
+    {
+        if (code_lengths[sym] > 0)
+        {
             len++;
             code = sym;
             if (len > 1)
                 break;
         }
     }
-    if (len == 1) {
+    if (len == 1)
+    {
         r->nb_symbols = 1;
         r->simple_symbols[0] = code;
         r->simple = 1;
@@ -315,8 +335,10 @@ static int huff_reader_build_canonical(HuffReader *r, int *code_lengths,
 
     code = 0;
     r->nb_symbols = 0;
-    for (len = 1; len <= max_code_length; len++) {
-        for (sym = 0; sym < alphabet_size; sym++) {
+    for (len = 1; len <= max_code_length; len++)
+    {
+        for (sym = 0; sym < alphabet_size; sym++)
+        {
             if (code_lengths[sym] != len)
                 continue;
             codes[sym] = code++;
@@ -324,7 +346,8 @@ static int huff_reader_build_canonical(HuffReader *r, int *code_lengths,
         }
         code <<= 1;
     }
-    if (!r->nb_symbols) {
+    if (!r->nb_symbols)
+    {
         av_free(codes);
         return AVERROR_INVALIDDATA;
     }
@@ -332,7 +355,8 @@ static int huff_reader_build_canonical(HuffReader *r, int *code_lengths,
     ret = init_vlc(&r->vlc, 8, alphabet_size,
                    code_lengths, sizeof(*code_lengths), sizeof(*code_lengths),
                    codes, sizeof(*codes), sizeof(*codes), 0);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_free(codes);
         return ret;
     }
@@ -378,40 +402,50 @@ static int read_huffman_code_normal(WebPContext *s, HuffReader *hc,
         goto finish;
 
     code_lengths = av_mallocz_array(alphabet_size, sizeof(*code_lengths));
-    if (!code_lengths) {
+    if (!code_lengths)
+    {
         ret = AVERROR(ENOMEM);
         goto finish;
     }
 
-    if (get_bits1(&s->gb)) {
+    if (get_bits1(&s->gb))
+    {
         int bits   = 2 + 2 * get_bits(&s->gb, 3);
         max_symbol = 2 + get_bits(&s->gb, bits);
-        if (max_symbol > alphabet_size) {
+        if (max_symbol > alphabet_size)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "max symbol %d > alphabet size %d\n",
                    max_symbol, alphabet_size);
             ret = AVERROR_INVALIDDATA;
             goto finish;
         }
-    } else {
+    }
+    else
+    {
         max_symbol = alphabet_size;
     }
 
     prev_code_len = 8;
     symbol        = 0;
-    while (symbol < alphabet_size) {
+    while (symbol < alphabet_size)
+    {
         int code_len;
 
         if (!max_symbol--)
             break;
         code_len = huff_reader_get_symbol(&code_len_hc, &s->gb);
-        if (code_len < 16) {
+        if (code_len < 16)
+        {
             /* Code length code [0..15] indicates literal code lengths. */
             code_lengths[symbol++] = code_len;
             if (code_len)
                 prev_code_len = code_len;
-        } else {
+        }
+        else
+        {
             int repeat = 0, length = 0;
-            switch (code_len) {
+            switch (code_len)
+            {
             case 16:
                 /* Code 16 repeats the previous non-zero value [3..6] times,
                  * i.e., 3 + ReadBits(2) times. If code 16 is used before a
@@ -430,7 +464,8 @@ static int read_huffman_code_normal(WebPContext *s, HuffReader *hc,
                 repeat = 11 + get_bits(&s->gb, 7);
                 break;
             }
-            if (symbol + repeat > alphabet_size) {
+            if (symbol + repeat > alphabet_size)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "invalid symbol %d + repeat %d > alphabet size %d\n",
                        symbol, repeat, alphabet_size);
@@ -480,8 +515,10 @@ static int decode_entropy_image(WebPContext *s)
     /* the number of huffman groups is determined by the maximum group number
      * coded in the entropy image */
     max = 0;
-    for (y = 0; y < img->frame->height; y++) {
-        for (x = 0; x < img->frame->width; x++) {
+    for (y = 0; y < img->frame->height; y++)
+    {
+        for (x = 0; x < img->frame->width; x++)
+        {
             int p0 = GET_PIXEL_COMP(img->frame, x, y, 1);
             int p1 = GET_PIXEL_COMP(img->frame, x, y, 2);
             int p  = p0 << 8 | p1;
@@ -566,7 +603,8 @@ static HuffReader *get_huffman_group(WebPContext *s, ImageContext *img,
     ImageContext *gimg = &s->image[IMAGE_ROLE_ENTROPY];
     int group = 0;
 
-    if (gimg->size_reduction > 0) {
+    if (gimg->size_reduction > 0)
+    {
         int group_x = x >> gimg->size_reduction;
         int group_y = y >> gimg->size_reduction;
         int g0      = GET_PIXEL_COMP(gimg->frame, group_x, group_y, 1);
@@ -593,7 +631,8 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
     img       = &s->image[role];
     img->role = role;
 
-    if (!img->frame) {
+    if (!img->frame)
+    {
         img->frame = av_frame_alloc();
         if (!img->frame)
             return AVERROR(ENOMEM);
@@ -603,17 +642,21 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
     img->frame->width  = w;
     img->frame->height = h;
 
-    if (role == IMAGE_ROLE_ARGB && !img->is_alpha_primary) {
+    if (role == IMAGE_ROLE_ARGB && !img->is_alpha_primary)
+    {
         ThreadFrame pt = { .f = img->frame };
         ret = ff_thread_get_buffer(s->avctx, &pt, 0);
-    } else
+    }
+    else
         ret = av_frame_get_buffer(img->frame, 1);
     if (ret < 0)
         return ret;
 
-    if (get_bits1(&s->gb)) {
+    if (get_bits1(&s->gb))
+    {
         img->color_cache_bits = get_bits(&s->gb, 4);
-        if (img->color_cache_bits < 1 || img->color_cache_bits > 11) {
+        if (img->color_cache_bits < 1 || img->color_cache_bits > 11)
+        {
             av_log(s->avctx, AV_LOG_ERROR, "invalid color cache bits: %d\n",
                    img->color_cache_bits);
             return AVERROR_INVALIDDATA;
@@ -622,33 +665,40 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
                                             sizeof(*img->color_cache));
         if (!img->color_cache)
             return AVERROR(ENOMEM);
-    } else {
+    }
+    else {
         img->color_cache_bits = 0;
     }
 
     img->nb_huffman_groups = 1;
-    if (role == IMAGE_ROLE_ARGB && get_bits1(&s->gb)) {
+    if (role == IMAGE_ROLE_ARGB && get_bits1(&s->gb))
+    {
         ret = decode_entropy_image(s);
         if (ret < 0)
             return ret;
         img->nb_huffman_groups = s->nb_huffman_groups;
     }
     img->huffman_groups = av_mallocz_array(img->nb_huffman_groups *
-                                           HUFFMAN_CODES_PER_META_CODE,
-                                           sizeof(*img->huffman_groups));
+    HUFFMAN_CODES_PER_META_CODE,
+    sizeof(*img->huffman_groups));
     if (!img->huffman_groups)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < img->nb_huffman_groups; i++) {
+    for (i = 0; i < img->nb_huffman_groups; i++)
+    {
         hg = &img->huffman_groups[i * HUFFMAN_CODES_PER_META_CODE];
-        for (j = 0; j < HUFFMAN_CODES_PER_META_CODE; j++) {
+        for (j = 0; j < HUFFMAN_CODES_PER_META_CODE; j++)
+        {
             int alphabet_size = alphabet_sizes[j];
             if (!j && img->color_cache_bits > 0)
                 alphabet_size += 1 << img->color_cache_bits;
 
-            if (get_bits1(&s->gb)) {
+            if (get_bits1(&s->gb))
+            {
                 read_huffman_code_simple(s, &hg[j]);
-            } else {
+            }
+            else
+            {
                 ret = read_huffman_code_normal(s, &hg[j], alphabet_size);
                 if (ret < 0)
                     return ret;
@@ -660,13 +710,16 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
     if (role == IMAGE_ROLE_ARGB && s->reduced_width > 0)
         width = s->reduced_width;
 
-    x = 0; y = 0;
-    while (y < img->frame->height) {
+    x = 0;
+    y = 0;
+    while (y < img->frame->height)
+    {
         int v;
 
         hg = get_huffman_group(s, img, x, y);
         v = huff_reader_get_symbol(&hg[HUFF_IDX_GREEN], &s->gb);
-        if (v < NUM_LITERAL_CODES) {
+        if (v < NUM_LITERAL_CODES)
+        {
             /* literal pixel values */
             uint8_t *p = GET_PIXEL(img->frame, x, y);
             p[2] = v;
@@ -676,59 +729,77 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
             if (img->color_cache_bits)
                 color_cache_put(img, AV_RB32(p));
             x++;
-            if (x == width) {
+            if (x == width)
+            {
                 x = 0;
                 y++;
             }
-        } else if (v < NUM_LITERAL_CODES + NUM_LENGTH_CODES) {
+        }
+        else if (v < NUM_LITERAL_CODES + NUM_LENGTH_CODES)
+        {
             /* LZ77 backwards mapping */
             int prefix_code, length, distance, ref_x, ref_y;
 
             /* parse length and distance */
             prefix_code = v - NUM_LITERAL_CODES;
-            if (prefix_code < 4) {
+            if (prefix_code < 4)
+            {
                 length = prefix_code + 1;
-            } else {
+            }
+            else
+            {
                 int extra_bits = (prefix_code - 2) >> 1;
                 int offset     = 2 + (prefix_code & 1) << extra_bits;
                 length = offset + get_bits(&s->gb, extra_bits) + 1;
             }
             prefix_code = huff_reader_get_symbol(&hg[HUFF_IDX_DIST], &s->gb);
-            if (prefix_code > 39) {
+            if (prefix_code > 39)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "distance prefix code too large: %d\n", prefix_code);
                 return AVERROR_INVALIDDATA;
             }
-            if (prefix_code < 4) {
+            if (prefix_code < 4)
+            {
                 distance = prefix_code + 1;
-            } else {
+            }
+            else
+            {
                 int extra_bits = prefix_code - 2 >> 1;
                 int offset     = 2 + (prefix_code & 1) << extra_bits;
                 distance = offset + get_bits(&s->gb, extra_bits) + 1;
             }
 
             /* find reference location */
-            if (distance <= NUM_SHORT_DISTANCES) {
+            if (distance <= NUM_SHORT_DISTANCES)
+            {
                 int xi = lz77_distance_offsets[distance - 1][0];
                 int yi = lz77_distance_offsets[distance - 1][1];
                 distance = FFMAX(1, xi + yi * width);
-            } else {
+            }
+            else
+            {
                 distance -= NUM_SHORT_DISTANCES;
             }
             ref_x = x;
             ref_y = y;
-            if (distance <= x) {
+            if (distance <= x)
+            {
                 ref_x -= distance;
                 distance = 0;
-            } else {
+            }
+            else
+            {
                 ref_x = 0;
                 distance -= x;
             }
-            while (distance >= width) {
+            while (distance >= width)
+            {
                 ref_y--;
                 distance -= width;
             }
-            if (distance > 0) {
+            if (distance > 0)
+            {
                 ref_x = width - distance;
                 ref_y--;
             }
@@ -738,7 +809,8 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
             /* copy pixels
              * source and dest regions can overlap and wrap lines, so just
              * copy per-pixel */
-            for (i = 0; i < length; i++) {
+            for (i = 0; i < length; i++)
+            {
                 uint8_t *p_ref = GET_PIXEL(img->frame, ref_x, ref_y);
                 uint8_t *p     = GET_PIXEL(img->frame,     x,     y);
 
@@ -747,34 +819,41 @@ static int decode_entropy_coded_image(WebPContext *s, enum ImageRole role,
                     color_cache_put(img, AV_RB32(p));
                 x++;
                 ref_x++;
-                if (x == width) {
+                if (x == width)
+                {
                     x = 0;
                     y++;
                 }
-                if (ref_x == width) {
+                if (ref_x == width)
+                {
                     ref_x = 0;
                     ref_y++;
                 }
                 if (y == img->frame->height || ref_y == img->frame->height)
                     break;
             }
-        } else {
+        }
+        else
+        {
             /* read from color cache */
             uint8_t *p = GET_PIXEL(img->frame, x, y);
             int cache_idx = v - (NUM_LITERAL_CODES + NUM_LENGTH_CODES);
 
-            if (!img->color_cache_bits) {
+            if (!img->color_cache_bits)
+            {
                 av_log(s->avctx, AV_LOG_ERROR, "color cache not found\n");
                 return AVERROR_INVALIDDATA;
             }
-            if (cache_idx >= 1 << img->color_cache_bits) {
+            if (cache_idx >= 1 << img->color_cache_bits)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "color cache index out-of-bounds\n");
                 return AVERROR_INVALIDDATA;
             }
             AV_WB32(p, img->color_cache[cache_idx]);
             x++;
-            if (x == width) {
+            if (x == width)
+            {
                 x = 0;
                 y++;
             }
@@ -923,7 +1002,8 @@ typedef void (*inv_predict_func)(uint8_t *p, const uint8_t *p_l,
                                  const uint8_t *p_tl, const uint8_t *p_t,
                                  const uint8_t *p_tr);
 
-static const inv_predict_func inverse_predict[14] = {
+static const inv_predict_func inverse_predict[14] =
+{
     inv_predict_0,  inv_predict_1,  inv_predict_2,  inv_predict_3,
     inv_predict_4,  inv_predict_5,  inv_predict_6,  inv_predict_7,
     inv_predict_8,  inv_predict_9,  inv_predict_10, inv_predict_11,
@@ -958,21 +1038,26 @@ static int apply_predictor_transform(WebPContext *s)
     ImageContext *pimg = &s->image[IMAGE_ROLE_PREDICTOR];
     int x, y;
 
-    for (y = 0; y < img->frame->height; y++) {
-        for (x = 0; x < img->frame->width; x++) {
+    for (y = 0; y < img->frame->height; y++)
+    {
+        for (x = 0; x < img->frame->width; x++)
+        {
             int tx = x >> pimg->size_reduction;
             int ty = y >> pimg->size_reduction;
             enum PredictionMode m = GET_PIXEL_COMP(pimg->frame, tx, ty, 2);
 
-            if (x == 0) {
+            if (x == 0)
+            {
                 if (y == 0)
                     m = PRED_MODE_BLACK;
                 else
                     m = PRED_MODE_T;
-            } else if (y == 0)
+            }
+            else if (y == 0)
                 m = PRED_MODE_L;
 
-            if (m > 13) {
+            if (m > 13)
+            {
                 av_log(s->avctx, AV_LOG_ERROR,
                        "invalid predictor mode: %d\n", m);
                 return AVERROR_INVALIDDATA;
@@ -984,7 +1069,7 @@ static int apply_predictor_transform(WebPContext *s)
 }
 
 static av_always_inline uint8_t color_transform_delta(uint8_t color_pred,
-                                                      uint8_t color)
+        uint8_t color)
 {
     return (int)ff_u8_to_s8(color_pred) * ff_u8_to_s8(color) >> 5;
 }
@@ -998,8 +1083,10 @@ static int apply_color_transform(WebPContext *s)
     img  = &s->image[IMAGE_ROLE_ARGB];
     cimg = &s->image[IMAGE_ROLE_COLOR_TRANSFORM];
 
-    for (y = 0; y < img->frame->height; y++) {
-        for (x = 0; x < img->frame->width; x++) {
+    for (y = 0; y < img->frame->height; y++)
+    {
+        for (x = 0; x < img->frame->width; x++)
+        {
             cx = x >> cimg->size_reduction;
             cy = y >> cimg->size_reduction;
             cp = GET_PIXEL(cimg->frame, cx, cy);
@@ -1018,8 +1105,10 @@ static int apply_subtract_green_transform(WebPContext *s)
     int x, y;
     ImageContext *img = &s->image[IMAGE_ROLE_ARGB];
 
-    for (y = 0; y < img->frame->height; y++) {
-        for (x = 0; x < img->frame->width; x++) {
+    for (y = 0; y < img->frame->height; y++)
+    {
+        for (x = 0; x < img->frame->width; x++)
+        {
             uint8_t *p = GET_PIXEL(img->frame, x, y);
             p[1] += p[2];
             p[3] += p[2];
@@ -1038,7 +1127,8 @@ static int apply_color_indexing_transform(WebPContext *s)
     img = &s->image[IMAGE_ROLE_ARGB];
     pal = &s->image[IMAGE_ROLE_COLOR_INDEXING];
 
-    if (pal->size_reduction > 0) {
+    if (pal->size_reduction > 0)
+    {
         GetBitContext gb_g;
         uint8_t *line;
         int pixel_bits = 8 >> pal->size_reduction;
@@ -1047,17 +1137,20 @@ static int apply_color_indexing_transform(WebPContext *s)
         if (!line)
             return AVERROR(ENOMEM);
 
-        for (y = 0; y < img->frame->height; y++) {
+        for (y = 0; y < img->frame->height; y++)
+        {
             p = GET_PIXEL(img->frame, 0, y);
             memcpy(line, p, img->frame->linesize[0]);
             init_get_bits(&gb_g, line, img->frame->linesize[0] * 8);
             skip_bits(&gb_g, 16);
             i = 0;
-            for (x = 0; x < img->frame->width; x++) {
+            for (x = 0; x < img->frame->width; x++)
+            {
                 p    = GET_PIXEL(img->frame, x, y);
                 p[2] = get_bits(&gb_g, pixel_bits);
                 i++;
-                if (i == 1 << pal->size_reduction) {
+                if (i == 1 << pal->size_reduction)
+                {
                     skip_bits(&gb_g, 24);
                     i = 0;
                 }
@@ -1067,28 +1160,38 @@ static int apply_color_indexing_transform(WebPContext *s)
     }
 
     // switch to local palette if it's worth initializing it
-    if (img->frame->height * img->frame->width > 300) {
+    if (img->frame->height * img->frame->width > 300)
+    {
         uint8_t palette[256 * 4];
         const int size = pal->frame->width * 4;
         av_assert0(size <= 1024U);
         memcpy(palette, GET_PIXEL(pal->frame, 0, 0), size);   // copy palette
         // set extra entries to transparent black
         memset(palette + size, 0, 256 * 4 - size);
-        for (y = 0; y < img->frame->height; y++) {
-            for (x = 0; x < img->frame->width; x++) {
+        for (y = 0; y < img->frame->height; y++)
+        {
+            for (x = 0; x < img->frame->width; x++)
+            {
                 p = GET_PIXEL(img->frame, x, y);
                 i = p[2];
                 AV_COPY32(p, &palette[i * 4]);
             }
         }
-    } else {
-        for (y = 0; y < img->frame->height; y++) {
-            for (x = 0; x < img->frame->width; x++) {
+    }
+    else
+    {
+        for (y = 0; y < img->frame->height; y++)
+        {
+            for (x = 0; x < img->frame->width; x++)
+            {
                 p = GET_PIXEL(img->frame, x, y);
                 i = p[2];
-                if (i >= pal->frame->width) {
+                if (i >= pal->frame->width)
+                {
                     AV_WB32(p, 0x00000000);
-                } else {
+                }
+                else
+                {
                     const uint8_t *pi = GET_PIXEL(pal->frame, i, 0);
                     AV_COPY32(p, pi);
                 }
@@ -1106,7 +1209,8 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
     WebPContext *s = avctx->priv_data;
     int w, h, ret, i, used;
 
-    if (!is_alpha_chunk) {
+    if (!is_alpha_chunk)
+    {
         s->lossless = 1;
         avctx->pix_fmt = AV_PIX_FMT_ARGB;
     }
@@ -1115,20 +1219,24 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
     if (ret < 0)
         return ret;
 
-    if (!is_alpha_chunk) {
-        if (get_bits(&s->gb, 8) != 0x2F) {
+    if (!is_alpha_chunk)
+    {
+        if (get_bits(&s->gb, 8) != 0x2F)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid WebP Lossless signature\n");
             return AVERROR_INVALIDDATA;
         }
 
         w = get_bits(&s->gb, 14) + 1;
         h = get_bits(&s->gb, 14) + 1;
-        if (s->width && s->width != w) {
+        if (s->width && s->width != w)
+        {
             av_log(avctx, AV_LOG_WARNING, "Width mismatch. %d != %d\n",
                    s->width, w);
         }
         s->width = w;
-        if (s->height && s->height != h) {
+        if (s->height && s->height != h)
+        {
             av_log(avctx, AV_LOG_WARNING, "Height mismatch. %d != %d\n",
                    s->width, w);
         }
@@ -1140,11 +1248,14 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
 
         s->has_alpha = get_bits1(&s->gb);
 
-        if (get_bits(&s->gb, 3) != 0x0) {
+        if (get_bits(&s->gb, 3) != 0x0)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid WebP Lossless version\n");
             return AVERROR_INVALIDDATA;
         }
-    } else {
+    }
+    else
+    {
         if (!s->width || !s->height)
             return AVERROR_BUG;
         w = s->width;
@@ -1155,9 +1266,11 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
     s->nb_transforms = 0;
     s->reduced_width = 0;
     used = 0;
-    while (get_bits1(&s->gb)) {
+    while (get_bits1(&s->gb))
+    {
         enum TransformType transform = get_bits(&s->gb, 2);
-        if (used & (1 << transform)) {
+        if (used & (1 << transform))
+        {
             av_log(avctx, AV_LOG_ERROR, "Transform %d used more than once\n",
                    transform);
             ret = AVERROR_INVALIDDATA;
@@ -1165,7 +1278,8 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
         }
         used |= (1 << transform);
         s->transforms[s->nb_transforms++] = transform;
-        switch (transform) {
+        switch (transform)
+        {
         case PREDICTOR_TRANSFORM:
             ret = parse_transform_predictor(s);
             break;
@@ -1189,8 +1303,10 @@ static int vp8_lossless_decode_frame(AVCodecContext *avctx, AVFrame *p,
         goto free_and_return;
 
     /* apply transformations */
-    for (i = s->nb_transforms - 1; i >= 0; i--) {
-        switch (s->transforms[i]) {
+    for (i = s->nb_transforms - 1; i >= 0; i--)
+    {
+        switch (s->transforms[i])
+        {
         case PREDICTOR_TRANSFORM:
             ret = apply_predictor_transform(s);
             break;
@@ -1238,23 +1354,27 @@ static void alpha_inverse_prediction(AVFrame *frame, enum AlphaFilter m)
         *dec += *(dec - ls);
 
     /* filter the rest using the specified filter */
-    switch (m) {
+    switch (m)
+    {
     case ALPHA_FILTER_HORIZONTAL:
-        for (y = 1; y < frame->height; y++) {
+        for (y = 1; y < frame->height; y++)
+        {
             dec = frame->data[3] + y * ls + 1;
             for (x = 1; x < frame->width; x++, dec++)
                 *dec += *(dec - 1);
         }
         break;
     case ALPHA_FILTER_VERTICAL:
-        for (y = 1; y < frame->height; y++) {
+        for (y = 1; y < frame->height; y++)
+        {
             dec = frame->data[3] + y * ls + 1;
             for (x = 1; x < frame->width; x++, dec++)
                 *dec += *(dec - ls);
         }
         break;
     case ALPHA_FILTER_GRADIENT:
-        for (y = 1; y < frame->height; y++) {
+        for (y = 1; y < frame->height; y++)
+        {
             dec = frame->data[3] + y * ls + 1;
             for (x = 1; x < frame->width; x++, dec++)
                 dec[0] += av_clip_uint8(*(dec - 1) + *(dec - ls) - *(dec - ls - 1));
@@ -1270,14 +1390,17 @@ static int vp8_lossy_decode_alpha(AVCodecContext *avctx, AVFrame *p,
     WebPContext *s = avctx->priv_data;
     int x, y, ret;
 
-    if (s->alpha_compression == ALPHA_COMPRESSION_NONE) {
+    if (s->alpha_compression == ALPHA_COMPRESSION_NONE)
+    {
         GetByteContext gb;
 
         bytestream2_init(&gb, data_start, data_size);
         for (y = 0; y < s->height; y++)
             bytestream2_get_buffer(&gb, p->data[3] + p->linesize[3] * y,
                                    s->width);
-    } else if (s->alpha_compression == ALPHA_COMPRESSION_VP8L) {
+    }
+    else if (s->alpha_compression == ALPHA_COMPRESSION_VP8L)
+    {
         uint8_t *ap, *pp;
         int alpha_got_frame = 0;
 
@@ -1287,20 +1410,24 @@ static int vp8_lossy_decode_alpha(AVCodecContext *avctx, AVFrame *p,
 
         ret = vp8_lossless_decode_frame(avctx, s->alpha_frame, &alpha_got_frame,
                                         data_start, data_size, 1);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_frame_free(&s->alpha_frame);
             return ret;
         }
-        if (!alpha_got_frame) {
+        if (!alpha_got_frame)
+        {
             av_frame_free(&s->alpha_frame);
             return AVERROR_INVALIDDATA;
         }
 
         /* copy green component of alpha image to alpha plane of primary image */
-        for (y = 0; y < s->height; y++) {
+        for (y = 0; y < s->height; y++)
+        {
             ap = GET_PIXEL(s->alpha_frame, 0, y) + 2;
             pp = p->data[3] + p->linesize[3] * y;
-            for (x = 0; x < s->width; x++) {
+            for (x = 0; x < s->width; x++)
+            {
                 *pp = *ap;
                 pp++;
                 ap += 4;
@@ -1324,7 +1451,8 @@ static int vp8_lossy_decode_frame(AVCodecContext *avctx, AVFrame *p,
     AVPacket pkt;
     int ret;
 
-    if (!s->initialized) {
+    if (!s->initialized)
+    {
         ff_vp8_decode_init(avctx);
         s->initialized = 1;
         if (s->has_alpha)
@@ -1332,7 +1460,8 @@ static int vp8_lossy_decode_frame(AVCodecContext *avctx, AVFrame *p,
     }
     s->lossless = 0;
 
-    if (data_size > INT_MAX) {
+    if (data_size > INT_MAX)
+    {
         av_log(avctx, AV_LOG_ERROR, "unsupported chunk size\n");
         return AVERROR_PATCHWELCOME;
     }
@@ -1342,7 +1471,8 @@ static int vp8_lossy_decode_frame(AVCodecContext *avctx, AVFrame *p,
     pkt.size = data_size;
 
     ret = ff_vp8_decode_frame(avctx, p, got_frame, &pkt);
-    if (s->has_alpha) {
+    if (s->has_alpha)
+    {
         ret = vp8_lossy_decode_alpha(avctx, p, s->alpha_data,
                                      s->alpha_data_size);
         if (ret < 0)
@@ -1372,7 +1502,8 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     if (bytestream2_get_bytes_left(&gb) < 12)
         return AVERROR_INVALIDDATA;
 
-    if (bytestream2_get_le32(&gb) != MKTAG('R', 'I', 'F', 'F')) {
+    if (bytestream2_get_le32(&gb) != MKTAG('R', 'I', 'F', 'F'))
+    {
         av_log(avctx, AV_LOG_ERROR, "missing RIFF tag\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1381,13 +1512,15 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     if (bytestream2_get_bytes_left(&gb) < chunk_size)
         return AVERROR_INVALIDDATA;
 
-    if (bytestream2_get_le32(&gb) != MKTAG('W', 'E', 'B', 'P')) {
+    if (bytestream2_get_le32(&gb) != MKTAG('W', 'E', 'B', 'P'))
+    {
         av_log(avctx, AV_LOG_ERROR, "missing WEBP tag\n");
         return AVERROR_INVALIDDATA;
     }
 
     av_dict_free(&s->exif_metadata);
-    while (bytestream2_get_bytes_left(&gb) > 8) {
+    while (bytestream2_get_bytes_left(&gb) > 8)
+    {
         char chunk_str[5] = { 0 };
 
         chunk_type = bytestream2_get_le32(&gb);
@@ -1399,9 +1532,11 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         if (bytestream2_get_bytes_left(&gb) < chunk_size)
             return AVERROR_INVALIDDATA;
 
-        switch (chunk_type) {
+        switch (chunk_type)
+        {
         case MKTAG('V', 'P', '8', ' '):
-            if (!*got_frame) {
+            if (!*got_frame)
+            {
                 ret = vp8_lossy_decode_frame(avctx, p, got_frame,
                                              avpkt->data + bytestream2_tell(&gb),
                                              chunk_size);
@@ -1411,7 +1546,8 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             bytestream2_skip(&gb, chunk_size);
             break;
         case MKTAG('V', 'P', '8', 'L'):
-            if (!*got_frame) {
+            if (!*got_frame)
+            {
                 ret = vp8_lossless_decode_frame(avctx, p, got_frame,
                                                 avpkt->data + bytestream2_tell(&gb),
                                                 chunk_size, 0);
@@ -1430,15 +1566,18 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             if (ret < 0)
                 return ret;
             break;
-        case MKTAG('A', 'L', 'P', 'H'): {
+        case MKTAG('A', 'L', 'P', 'H'):
+        {
             int alpha_header, filter_m, compression;
 
-            if (!(vp8x_flags & VP8X_FLAG_ALPHA)) {
+            if (!(vp8x_flags & VP8X_FLAG_ALPHA))
+            {
                 av_log(avctx, AV_LOG_WARNING,
                        "ALPHA chunk present, but alpha bit not set in the "
                        "VP8X header\n");
             }
-            if (chunk_size == 0) {
+            if (chunk_size == 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "invalid ALPHA chunk size\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -1450,10 +1589,13 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             filter_m    = (alpha_header >> 2) & 0x03;
             compression =  alpha_header       & 0x03;
 
-            if (compression > ALPHA_COMPRESSION_VP8L) {
+            if (compression > ALPHA_COMPRESSION_VP8L)
+            {
                 av_log(avctx, AV_LOG_VERBOSE,
                        "skipping unsupported ALPHA chunk\n");
-            } else {
+            }
+            else
+            {
                 s->has_alpha         = 1;
                 s->alpha_compression = compression;
                 s->alpha_filter      = filter_m;
@@ -1461,11 +1603,13 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
             break;
         }
-        case MKTAG('E', 'X', 'I', 'F'): {
+        case MKTAG('E', 'X', 'I', 'F'):
+        {
             int le, ifd_offset, exif_offset = bytestream2_tell(&gb);
             GetByteContext exif_gb;
 
-            if (s->has_exif) {
+            if (s->has_exif)
+            {
                 av_log(avctx, AV_LOG_VERBOSE, "Ignoring extra EXIF chunk\n");
                 goto exif_end;
             }
@@ -1477,14 +1621,16 @@ static int webp_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             s->has_exif = 1;
             bytestream2_init(&exif_gb, avpkt->data + exif_offset,
                              avpkt->size - exif_offset);
-            if (ff_tdecode_header(&exif_gb, &le, &ifd_offset) < 0) {
+            if (ff_tdecode_header(&exif_gb, &le, &ifd_offset) < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "invalid TIFF header "
                        "in Exif data\n");
                 goto exif_end;
             }
 
             bytestream2_seek(&exif_gb, ifd_offset, SEEK_SET);
-            if (avpriv_exif_decode_ifd(avctx, &exif_gb, le, 0, &s->exif_metadata) < 0) {
+            if (avpriv_exif_decode_ifd(avctx, &exif_gb, le, 0, &s->exif_metadata) < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "error decoding Exif data\n");
                 goto exif_end;
             }
@@ -1514,7 +1660,8 @@ exif_end:
         }
     }
 
-    if (!*got_frame) {
+    if (!*got_frame)
+    {
         av_log(avctx, AV_LOG_ERROR, "image data not found\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1532,7 +1679,8 @@ static av_cold int webp_decode_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_webp_decoder = {
+AVCodec ff_webp_decoder =
+{
     .name           = "webp",
     .long_name      = NULL_IF_CONFIG_SMALL("WebP image"),
     .type           = AVMEDIA_TYPE_VIDEO,

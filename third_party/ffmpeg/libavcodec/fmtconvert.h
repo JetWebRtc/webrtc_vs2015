@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Format Conversion Utils
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -25,7 +25,8 @@
 
 #include "avcodec.h"
 
-typedef struct FmtConvertContext {
+typedef struct FmtConvertContext
+{
     /**
      * Convert an array of int32_t to float and multiply by a float value.
      * @param dst destination array of float.

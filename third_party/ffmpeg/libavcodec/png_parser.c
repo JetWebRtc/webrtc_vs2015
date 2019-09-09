@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNG parser
  * Copyright (c) 2009 Peter Holik
  *
@@ -27,7 +27,8 @@
 #include "parser.h"
 #include "png.h"
 
-typedef struct PNGParseContext {
+typedef struct PNGParseContext
+{
     ParseContext pc;
     uint32_t chunk_pos;           ///< position inside current chunk
     uint32_t chunk_length;        ///< length of the current chunk
@@ -46,47 +47,61 @@ static int png_parse(AVCodecParserContext *s, AVCodecContext *avctx,
 
     *poutbuf_size = 0;
 
-    if (!ppc->pc.frame_start_found) {
+    if (!ppc->pc.frame_start_found)
+    {
         uint64_t state64 = ppc->pc.state64;
-        for (; i < buf_size; i++) {
+        for (; i < buf_size; i++)
+        {
             state64 = (state64 << 8) | buf[i];
-            if (state64 == PNGSIG || state64 == MNGSIG) {
+            if (state64 == PNGSIG || state64 == MNGSIG)
+            {
                 i++;
                 ppc->pc.frame_start_found = 1;
                 break;
             }
         }
         ppc->pc.state64 = state64;
-    } else if (ppc->remaining_size) {
+    }
+    else if (ppc->remaining_size)
+    {
         i = FFMIN(ppc->remaining_size, buf_size);
         ppc->remaining_size -= i;
         if (ppc->remaining_size)
             goto flush;
-        if (ppc->chunk_pos == -1) {
+        if (ppc->chunk_pos == -1)
+        {
             next = i;
             goto flush;
         }
     }
 
-    for (; ppc->pc.frame_start_found && i < buf_size; i++) {
+    for (; ppc->pc.frame_start_found && i < buf_size; i++)
+    {
         ppc->pc.state = (ppc->pc.state << 8) | buf[i];
-        if (ppc->chunk_pos == 3) {
+        if (ppc->chunk_pos == 3)
+        {
             ppc->chunk_length = ppc->pc.state;
-            if (ppc->chunk_length > 0x7fffffff) {
+            if (ppc->chunk_length > 0x7fffffff)
+            {
                 ppc->chunk_pos = ppc->pc.frame_start_found = 0;
                 goto flush;
             }
             ppc->chunk_length += 4;
-        } else if (ppc->chunk_pos == 7) {
+        }
+        else if (ppc->chunk_pos == 7)
+        {
             if (ppc->chunk_length >= buf_size - i)
                 ppc->remaining_size = ppc->chunk_length - buf_size + i + 1;
-            if (ppc->pc.state == MKBETAG('I', 'E', 'N', 'D')) {
+            if (ppc->pc.state == MKBETAG('I', 'E', 'N', 'D'))
+            {
                 if (ppc->remaining_size)
                     ppc->chunk_pos = -1;
                 else
                     next = ppc->chunk_length + i + 1;
                 break;
-            } else {
+            }
+            else
+            {
                 ppc->chunk_pos = 0;
                 if (ppc->remaining_size)
                     break;
@@ -109,7 +124,8 @@ flush:
     return next;
 }
 
-AVCodecParser ff_png_parser = {
+AVCodecParser ff_png_parser =
+{
     .codec_ids      = { AV_CODEC_ID_PNG },
     .priv_data_size = sizeof(PNGParseContext),
     .parser_parse   = png_parse,

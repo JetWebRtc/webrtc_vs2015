@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 // This is a private header for media_opt_util.cc.
 // It should not be included by other files.
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Table for Protection factor (code rate) of delta frames, for the XOR FEC.
 // Input is the packet loss and an effective rate (bits/frame).
@@ -23,7 +24,8 @@ namespace webrtc {
 // TODO(brandtr): Consider replacing this big static table with a closed-form
 // expression instead.
 static const int kFecRateTableSize = 6450;
-static const unsigned char kFecRateTable[kFecRateTableSize] = {
+static const unsigned char kFecRateTable[kFecRateTableSize] =
+{
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
     0,   0,   0,   11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,  11,

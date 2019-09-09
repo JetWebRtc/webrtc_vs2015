@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -45,9 +45,9 @@
 
 #if HAVE_ALTIVEC
 static int32_t scalarproduct_and_madd_int16_altivec(int16_t *v1,
-                                                    const int16_t *v2,
-                                                    const int16_t *v3,
-                                                    int order, int mul)
+        const int16_t *v2,
+        const int16_t *v3,
+        int order, int mul)
 {
     LOAD_ZERO;
     vec_s16 *pv1 = (vec_s16 *) v1;
@@ -62,7 +62,8 @@ static int32_t scalarproduct_and_madd_int16_altivec(int16_t *v1,
     int32_t ires;
 
     order >>= 4;
-    do {
+    do
+    {
         GET_T(t0,t1,v2,i1,i2);
         i0     = pv1[0];
         i1     = pv1[1];
@@ -74,7 +75,8 @@ static int32_t scalarproduct_and_madd_int16_altivec(int16_t *v1,
         pv1   += 2;
         v2    += 16;
         v3    += 16;
-    } while (--order);
+    }
+    while (--order);
     res = vec_splat(vec_sums(res, zero_s32v), 3);
     vec_ste(res, 0, &ires);
 

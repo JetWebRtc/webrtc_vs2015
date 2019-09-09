@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -55,75 +55,77 @@
 //#define REC_FRAME_COUNT
 
 class ISVCEncoder;
-namespace WelsEnc {
-class CWelsH264SVCEncoder : public ISVCEncoder {
- public:
-  CWelsH264SVCEncoder();
-  virtual ~CWelsH264SVCEncoder();
+namespace WelsEnc
+{
+class CWelsH264SVCEncoder : public ISVCEncoder
+{
+public:
+    CWelsH264SVCEncoder();
+    virtual ~CWelsH264SVCEncoder();
 
-  /* Interfaces override from ISVCEncoder */
-  /*
-   * return: CM_RETURN: 0 - success; otherwise - failed;
-   */
-  virtual int EXTAPI Initialize (const SEncParamBase* argv);
-  virtual int EXTAPI InitializeExt (const SEncParamExt* argv);
+    /* Interfaces override from ISVCEncoder */
+    /*
+     * return: CM_RETURN: 0 - success; otherwise - failed;
+     */
+    virtual int EXTAPI Initialize (const SEncParamBase* argv);
+    virtual int EXTAPI InitializeExt (const SEncParamExt* argv);
 
-  virtual int EXTAPI GetDefaultParams (SEncParamExt* argv);
+    virtual int EXTAPI GetDefaultParams (SEncParamExt* argv);
 
-  virtual int EXTAPI Uninitialize();
+    virtual int EXTAPI Uninitialize();
 
-  /*
-   * return: 0 - success; otherwise - failed;
-   */
-  virtual int EXTAPI EncodeFrame (const SSourcePicture* kpSrcPic, SFrameBSInfo* pBsInfo);
-  virtual int        EncodeFrameInternal (const SSourcePicture* kpSrcPic, SFrameBSInfo* pBsInfo);
+    /*
+     * return: 0 - success; otherwise - failed;
+     */
+    virtual int EXTAPI EncodeFrame (const SSourcePicture* kpSrcPic, SFrameBSInfo* pBsInfo);
+    virtual int        EncodeFrameInternal (const SSourcePicture* kpSrcPic, SFrameBSInfo* pBsInfo);
 
-  /*
-   * return: 0 - success; otherwise - failed;
-   */
-  virtual int EXTAPI EncodeParameterSets (SFrameBSInfo* pBsInfo);
-  /*
-   * return: 0 - success; otherwise - failed;
-   */
-  virtual int EXTAPI ForceIntraFrame (bool bIDR);
+    /*
+     * return: 0 - success; otherwise - failed;
+     */
+    virtual int EXTAPI EncodeParameterSets (SFrameBSInfo* pBsInfo);
+    /*
+     * return: 0 - success; otherwise - failed;
+     */
+    virtual int EXTAPI ForceIntraFrame (bool bIDR);
 
-  /************************************************************************
-   * InDataFormat, IDRInterval, SVC Encode Param, Frame Rate, Bitrate,..
-   ************************************************************************/
-  /*
-   * return: CM_RETURN: 0 - success; otherwise - failed;
-   */
-  virtual int EXTAPI SetOption (ENCODER_OPTION opt_id, void* option);
-  virtual int EXTAPI GetOption (ENCODER_OPTION opt_id, void* option);
+    /************************************************************************
+     * InDataFormat, IDRInterval, SVC Encode Param, Frame Rate, Bitrate,..
+     ************************************************************************/
+    /*
+     * return: CM_RETURN: 0 - success; otherwise - failed;
+     */
+    virtual int EXTAPI SetOption (ENCODER_OPTION opt_id, void* option);
+    virtual int EXTAPI GetOption (ENCODER_OPTION opt_id, void* option);
 
- private:
-  int InitializeInternal (SWelsSvcCodingParam* argv);
-  void TraceParamInfo(SEncParamExt *pParam);
-  void LogStatistics (const int64_t kiCurrentFrameTs,int32_t iMaxDid);
-  void UpdateStatistics(SFrameBSInfo* pBsInfo, const int64_t kiCurrentFrameMs);
+private:
+    int InitializeInternal (SWelsSvcCodingParam* argv);
+    void TraceParamInfo(SEncParamExt *pParam);
+    void LogStatistics (const int64_t kiCurrentFrameTs,int32_t iMaxDid);
+    void UpdateStatistics(SFrameBSInfo* pBsInfo, const int64_t kiCurrentFrameMs);
 
-  sWelsEncCtx*      m_pEncContext;
+    sWelsEncCtx*      m_pEncContext;
 
-  welsCodecTrace*   m_pWelsTrace;
-  int32_t           m_iMaxPicWidth;
-  int32_t           m_iMaxPicHeight;
+    welsCodecTrace*   m_pWelsTrace;
+    int32_t           m_iMaxPicWidth;
+    int32_t           m_iMaxPicHeight;
 
-  int32_t           m_iCspInternal;
-  bool              m_bInitialFlag;
+    int32_t           m_iCspInternal;
+    bool              m_bInitialFlag;
 
 #ifdef OUTPUT_BIT_STREAM
-  FILE*             m_pFileBs;
-  FILE*             m_pFileBsSize;
-  bool              m_bSwitch;
-  int32_t           m_iSwitchTimes;
+    FILE*             m_pFileBs;
+    FILE*             m_pFileBsSize;
+    bool              m_bSwitch;
+    int32_t           m_iSwitchTimes;
 #endif//OUTPUT_BIT_STREAM
 
 #ifdef REC_FRAME_COUNT
-  int32_t           m_uiCountFrameNum;
+    int32_t           m_uiCountFrameNum;
 #endif//REC_FRAME_COUNT
 
-  void    InitEncoder (void);
-  void    DumpSrcPicture (const uint8_t* pSrc);
+    void    InitEncoder (void);
+    void    DumpSrcPicture (const uint8_t* pSrc);
 };
 }
 #endif // !defined(WELS_PLUS_WELSENCODEREXT_H)

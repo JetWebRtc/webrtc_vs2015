@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Nicolas George
  *
  * This file is part of FFmpeg.
@@ -36,7 +36,8 @@
 
 #define TYPE_ALL 2
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     unsigned nb_streams[TYPE_ALL]; /**< number of out streams of each type */
     unsigned nb_segments;
@@ -44,7 +45,8 @@ typedef struct {
     int64_t delta_ts; /**< timestamp to add to produce output timestamps */
     unsigned nb_in_active; /**< number of active inputs in current segment */
     unsigned unsafe;
-    struct concat_in {
+    struct concat_in
+    {
         int64_t pts;
         int64_t nb_frames;
         unsigned eof;
@@ -57,18 +59,27 @@ typedef struct {
 #define F AV_OPT_FLAG_FILTERING_PARAM
 #define V AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption concat_options[] = {
-    { "n", "specify the number of segments", OFFSET(nb_segments),
-      AV_OPT_TYPE_INT, { .i64 = 2 }, 1, INT_MAX, V|A|F},
-    { "v", "specify the number of video streams",
-      OFFSET(nb_streams[AVMEDIA_TYPE_VIDEO]),
-      AV_OPT_TYPE_INT, { .i64 = 1 }, 0, INT_MAX, V|F },
-    { "a", "specify the number of audio streams",
-      OFFSET(nb_streams[AVMEDIA_TYPE_AUDIO]),
-      AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, A|F},
-    { "unsafe", "enable unsafe mode",
-      OFFSET(unsafe),
-      AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, V|A|F},
+static const AVOption concat_options[] =
+{
+    {
+        "n", "specify the number of segments", OFFSET(nb_segments),
+        AV_OPT_TYPE_INT, { .i64 = 2 }, 1, INT_MAX, V|A|F
+    },
+    {
+        "v", "specify the number of video streams",
+        OFFSET(nb_streams[AVMEDIA_TYPE_VIDEO]),
+        AV_OPT_TYPE_INT, { .i64 = 1 }, 0, INT_MAX, V|F
+    },
+    {
+        "a", "specify the number of audio streams",
+        OFFSET(nb_streams[AVMEDIA_TYPE_AUDIO]),
+        AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, A|F
+    },
+    {
+        "unsafe", "enable unsafe mode",
+        OFFSET(unsafe),
+        AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, V|A|F
+    },
     { NULL }
 };
 
@@ -81,9 +92,11 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats, *rates = NULL;
     AVFilterChannelLayouts *layouts = NULL;
 
-    for (type = 0; type < TYPE_ALL; type++) {
+    for (type = 0; type < TYPE_ALL; type++)
+    {
         nb_str = cat->nb_streams[type];
-        for (str = 0; str < nb_str; str++) {
+        for (str = 0; str < nb_str; str++)
+        {
             idx = idx0;
 
             /* Set the output formats */
@@ -91,7 +104,8 @@ static int query_formats(AVFilterContext *ctx)
             if (!formats)
                 return AVERROR(ENOMEM);
             ff_formats_ref(formats, &ctx->outputs[idx]->in_formats);
-            if (type == AVMEDIA_TYPE_AUDIO) {
+            if (type == AVMEDIA_TYPE_AUDIO)
+            {
                 rates = ff_all_samplerates();
                 if (!rates)
                     return AVERROR(ENOMEM);
@@ -103,9 +117,11 @@ static int query_formats(AVFilterContext *ctx)
             }
 
             /* Set the same formats for each corresponding input */
-            for (seg = 0; seg < cat->nb_segments; seg++) {
+            for (seg = 0; seg < cat->nb_segments; seg++)
+            {
                 ff_formats_ref(formats, &ctx->inputs[idx]->out_formats);
-                if (type == AVMEDIA_TYPE_AUDIO) {
+                if (type == AVMEDIA_TYPE_AUDIO)
+                {
                     ff_formats_ref(rates, &ctx->inputs[idx]->out_samplerates);
                     ff_channel_layouts_ref(layouts, &ctx->inputs[idx]->out_channel_layouts);
                 }
@@ -132,16 +148,18 @@ static int config_output(AVFilterLink *outlink)
     outlink->h                   = inlink->h;
     outlink->sample_aspect_ratio = inlink->sample_aspect_ratio;
     outlink->format              = inlink->format;
-    for (seg = 1; seg < cat->nb_segments; seg++) {
+    for (seg = 1; seg < cat->nb_segments; seg++)
+    {
         inlink = ctx->inputs[in_no += ctx->nb_outputs];
         if (!outlink->sample_aspect_ratio.num)
             outlink->sample_aspect_ratio = inlink->sample_aspect_ratio;
         /* possible enhancement: unsafe mode, do not check */
         if (outlink->w                       != inlink->w                       ||
-            outlink->h                       != inlink->h                       ||
-            outlink->sample_aspect_ratio.num != inlink->sample_aspect_ratio.num &&
-                                                inlink->sample_aspect_ratio.num ||
-            outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den) {
+                outlink->h                       != inlink->h                       ||
+                outlink->sample_aspect_ratio.num != inlink->sample_aspect_ratio.num &&
+                inlink->sample_aspect_ratio.num ||
+                outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den)
+        {
             av_log(ctx, AV_LOG_ERROR, "Input link %s parameters "
                    "(size %dx%d, SAR %d:%d) do not match the corresponding "
                    "output link %s parameters (%dx%d, SAR %d:%d)\n",
@@ -190,13 +208,18 @@ static int process_frame(AVFilterLink *inlink, AVFrame *buf)
     ConcatContext *cat    = ctx->priv;
     unsigned in_no = FF_INLINK_IDX(inlink);
 
-    if (in_no < cat->cur_idx) {
+    if (in_no < cat->cur_idx)
+    {
         av_log(ctx, AV_LOG_ERROR, "Frame after EOF on input %s\n",
                ctx->input_pads[in_no].name);
         av_frame_free(&buf);
-    } else if (in_no >= cat->cur_idx + ctx->nb_outputs) {
+    }
+    else if (in_no >= cat->cur_idx + ctx->nb_outputs)
+    {
         ff_bufqueue_add(ctx, &cat->in[in_no].queue, buf);
-    } else {
+    }
+    else
+    {
         return push_frame(ctx, in_no, buf);
     }
     return 0;
@@ -266,7 +289,8 @@ static int send_silence(AVFilterContext *ctx, unsigned in_no, unsigned out_no,
     nb_samples = av_rescale_q(seg_delta - cat->in[in_no].pts,
                               outlink->time_base, rate_tb);
     frame_nb_samples = FFMAX(9600, rate_tb.den / 5); /* arbitrary */
-    while (nb_samples) {
+    while (nb_samples)
+    {
         frame_nb_samples = FFMIN(frame_nb_samples, nb_samples);
         buf = ff_get_audio_buffer(outlink, frame_nb_samples);
         if (!buf)
@@ -296,11 +320,13 @@ static int flush_segment(AVFilterContext *ctx)
     av_log(ctx, AV_LOG_VERBOSE, "Segment finished at pts=%"PRId64"\n",
            cat->delta_ts);
 
-    if (cat->cur_idx < ctx->nb_inputs) {
+    if (cat->cur_idx < ctx->nb_inputs)
+    {
         /* pad audio streams with silence */
         str = cat->nb_streams[AVMEDIA_TYPE_VIDEO];
         str_max = str + cat->nb_streams[AVMEDIA_TYPE_AUDIO];
-        for (; str < str_max; str++) {
+        for (; str < str_max; str++)
+        {
             ret = send_silence(ctx, cat->cur_idx - ctx->nb_outputs + str, str,
                                seg_delta);
             if (ret < 0)
@@ -309,8 +335,10 @@ static int flush_segment(AVFilterContext *ctx)
         /* flush queued buffers */
         /* possible enhancement: flush in PTS order */
         str_max = cat->cur_idx + ctx->nb_outputs;
-        for (str = cat->cur_idx; str < str_max; str++) {
-            while (cat->in[str].queue.available) {
+        for (str = cat->cur_idx; str < str_max; str++)
+        {
+            while (cat->in[str].queue.available)
+            {
                 ret = push_frame(ctx, str, ff_bufqueue_get(&cat->in[str].queue));
                 if (ret < 0)
                     return ret;
@@ -329,10 +357,12 @@ static int request_frame(AVFilterLink *outlink)
     unsigned str, str_max;
     int ret;
 
-    while (1) {
+    while (1)
+    {
         if (in_no >= ctx->nb_inputs)
             return AVERROR_EOF;
-        if (!cat->in[in_no].eof) {
+        if (!cat->in[in_no].eof)
+        {
             ret = ff_request_frame(ctx->inputs[in_no]);
             if (ret != AVERROR_EOF)
                 return ret;
@@ -342,7 +372,8 @@ static int request_frame(AVFilterLink *outlink)
         /* possible enhancement: request in PTS order */
         str_max = cat->cur_idx + ctx->nb_outputs - 1;
         for (str = cat->cur_idx; cat->nb_in_active;
-             str = str == str_max ? cat->cur_idx : str + 1) {
+                str = str == str_max ? cat->cur_idx : str + 1)
+        {
             if (cat->in[str].eof)
                 continue;
             ret = ff_request_frame(ctx->inputs[str]);
@@ -364,10 +395,14 @@ static av_cold int init(AVFilterContext *ctx)
     unsigned seg, type, str;
 
     /* create input pads */
-    for (seg = 0; seg < cat->nb_segments; seg++) {
-        for (type = 0; type < TYPE_ALL; type++) {
-            for (str = 0; str < cat->nb_streams[type]; str++) {
-                AVFilterPad pad = {
+    for (seg = 0; seg < cat->nb_segments; seg++)
+    {
+        for (type = 0; type < TYPE_ALL; type++)
+        {
+            for (str = 0; str < cat->nb_streams[type]; str++)
+            {
+                AVFilterPad pad =
+                {
                     .type             = type,
                     .get_video_buffer = get_video_buffer,
                     .get_audio_buffer = get_audio_buffer,
@@ -379,9 +414,12 @@ static av_cold int init(AVFilterContext *ctx)
         }
     }
     /* create output pads */
-    for (type = 0; type < TYPE_ALL; type++) {
-        for (str = 0; str < cat->nb_streams[type]; str++) {
-            AVFilterPad pad = {
+    for (type = 0; type < TYPE_ALL; type++)
+    {
+        for (str = 0; str < cat->nb_streams[type]; str++)
+        {
+            AVFilterPad pad =
+            {
                 .type          = type,
                 .config_props  = config_output,
                 .request_frame = request_frame,
@@ -403,7 +441,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     ConcatContext *cat = ctx->priv;
     unsigned i;
 
-    for (i = 0; i < ctx->nb_inputs; i++) {
+    for (i = 0; i < ctx->nb_inputs; i++)
+    {
         av_freep(&ctx->input_pads[i].name);
         ff_bufqueue_discard_all(&cat->in[i].queue);
     }
@@ -412,7 +451,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&cat->in);
 }
 
-AVFilter ff_avf_concat = {
+AVFilter ff_avf_concat =
+{
     .name          = "concat",
     .description   = NULL_IF_CONFIG_SMALL("Concatenate audio and video streams."),
     .init          = init,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,16 +13,19 @@
 #include "webrtc/common_types.h"
 #include "webrtc/modules/video_coding/utility/vp8_header_parser.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-bool QpParser::GetQp(const VCMEncodedFrame& frame, int* qp) {
-  switch (frame.CodecSpecific()->codecType) {
+bool QpParser::GetQp(const VCMEncodedFrame& frame, int* qp)
+{
+    switch (frame.CodecSpecific()->codecType)
+    {
     case kVideoCodecVP8:
-      // QP range: [0, 127].
-      return vp8::GetQp(frame.Buffer(), frame.Length(), qp);
+        // QP range: [0, 127].
+        return vp8::GetQp(frame.Buffer(), frame.Length(), qp);
     default:
-      return false;
-  }
+        return false;
+    }
 }
 
 }  // namespace webrtc

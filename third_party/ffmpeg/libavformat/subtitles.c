@@ -32,15 +32,21 @@ void ff_text_init_avio(void *s, FFTextReader *r, AVIOContext *pb)
     r->type = FF_UTF_8;
     for (i = 0; i < 2; i++)
         r->buf[r->buf_len++] = avio_r8(r->pb);
-    if (strncmp("\xFF\xFE", r->buf, 2) == 0) {
+    if (strncmp("\xFF\xFE", r->buf, 2) == 0)
+    {
         r->type = FF_UTF16LE;
         r->buf_pos += 2;
-    } else if (strncmp("\xFE\xFF", r->buf, 2) == 0) {
+    }
+    else if (strncmp("\xFE\xFF", r->buf, 2) == 0)
+    {
         r->type = FF_UTF16BE;
         r->buf_pos += 2;
-    } else {
+    }
+    else
+    {
         r->buf[r->buf_len++] = avio_r8(r->pb);
-        if (strncmp("\xEF\xBB\xBF", r->buf, 3) == 0) {
+        if (strncmp("\xEF\xBB\xBF", r->buf, 3) == 0)
+        {
             // UTF8
             r->buf_pos += 3;
         }
@@ -68,11 +74,16 @@ int ff_text_r8(FFTextReader *r)
     uint8_t tmp;
     if (r->buf_pos < r->buf_len)
         return r->buf[r->buf_pos++];
-    if (r->type == FF_UTF16LE) {
+    if (r->type == FF_UTF16LE)
+    {
         GET_UTF16(val, avio_rl16(r->pb), return 0;)
-    } else if (r->type == FF_UTF16BE) {
+    }
+    else if (r->type == FF_UTF16BE)
+    {
         GET_UTF16(val, avio_rb16(r->pb), return 0;)
-    } else {
+    }
+    else
+    {
         return avio_r8(r->pb);
     }
     if (!val)
@@ -100,7 +111,8 @@ int ff_text_peek_r8(FFTextReader *r)
     if (r->buf_pos < r->buf_len)
         return r->buf[r->buf_pos];
     c = ff_text_r8(r);
-    if (!avio_feof(r->pb)) {
+    if (!avio_feof(r->pb))
+    {
         r->buf_pos = 0;
         r->buf_len = 1;
         r->buf[0] = c;
@@ -113,7 +125,8 @@ AVPacket *ff_subtitles_queue_insert(FFDemuxSubtitlesQueue *q,
 {
     AVPacket *subs, *sub;
 
-    if (merge && q->nb_subs > 0) {
+    if (merge && q->nb_subs > 0)
+    {
         /* merge with previous event */
 
         int old_len;
@@ -122,7 +135,9 @@ AVPacket *ff_subtitles_queue_insert(FFDemuxSubtitlesQueue *q,
         if (av_grow_packet(sub, len) < 0)
             return NULL;
         memcpy(sub->data + old_len, event, len);
-    } else {
+    }
+    else
+    {
         /* new event */
 
         if (q->nb_subs >= INT_MAX/sizeof(*q->subs) - 1)
@@ -146,7 +161,8 @@ static int cmp_pkt_sub_ts_pos(const void *a, const void *b)
 {
     const AVPacket *s1 = a;
     const AVPacket *s2 = b;
-    if (s1->pts == s2->pts) {
+    if (s1->pts == s2->pts)
+    {
         if (s1->pos == s2->pos)
             return 0;
         return s1->pos > s2->pos ? 1 : -1;
@@ -158,7 +174,8 @@ static int cmp_pkt_sub_pos_ts(const void *a, const void *b)
 {
     const AVPacket *s1 = a;
     const AVPacket *s2 = b;
-    if (s1->pos == s2->pos) {
+    if (s1->pos == s2->pos)
+    {
         if (s1->pts == s2->pts)
             return 0;
         return s1->pts > s2->pts ? 1 : -1;
@@ -172,7 +189,7 @@ void ff_subtitles_queue_finalize(FFDemuxSubtitlesQueue *q)
 
     qsort(q->subs, q->nb_subs, sizeof(*q->subs),
           q->sort == SUB_SORT_TS_POS ? cmp_pkt_sub_ts_pos
-                                     : cmp_pkt_sub_pos_ts);
+          : cmp_pkt_sub_pos_ts);
     for (i = 0; i < q->nb_subs; i++)
         if (q->subs[i].duration == -1 && i < q->nb_subs - 1)
             q->subs[i].duration = q->subs[i + 1].pts - q->subs[i].pts;
@@ -184,7 +201,8 @@ int ff_subtitles_queue_read_packet(FFDemuxSubtitlesQueue *q, AVPacket *pkt)
 
     if (q->current_sub_idx == q->nb_subs)
         return AVERROR_EOF;
-    if (av_copy_packet(pkt, sub) < 0) {
+    if (av_copy_packet(pkt, sub) < 0)
+    {
         return AVERROR(ENOMEM);
     }
 
@@ -200,7 +218,8 @@ static int search_sub_ts(const FFDemuxSubtitlesQueue *q, int64_t ts)
     if (s2 < s1)
         return AVERROR(ERANGE);
 
-    for (;;) {
+    for (;;)
+    {
         int mid;
 
         if (s1 == s2)
@@ -218,13 +237,18 @@ static int search_sub_ts(const FFDemuxSubtitlesQueue *q, int64_t ts)
 int ff_subtitles_queue_seek(FFDemuxSubtitlesQueue *q, AVFormatContext *s, int stream_index,
                             int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
 {
-    if (flags & AVSEEK_FLAG_BYTE) {
+    if (flags & AVSEEK_FLAG_BYTE)
+    {
         return AVERROR(ENOSYS);
-    } else if (flags & AVSEEK_FLAG_FRAME) {
+    }
+    else if (flags & AVSEEK_FLAG_FRAME)
+    {
         if (ts < 0 || ts >= q->nb_subs)
             return AVERROR(ERANGE);
         q->current_sub_idx = ts;
-    } else {
+    }
+    else
+    {
         int i, idx = search_sub_ts(q, ts);
         int64_t ts_selected;
 
@@ -242,10 +266,11 @@ int ff_subtitles_queue_seek(FFDemuxSubtitlesQueue *q, AVFormatContext *s, int st
             return AVERROR(ERANGE);
 
         /* look back in the latest subtitles for overlapping subtitles */
-        for (i = idx - 1; i >= 0; i--) {
+        for (i = idx - 1; i >= 0; i--)
+        {
             int64_t pts = q->subs[i].pts;
             if (q->subs[i].duration <= 0 ||
-                (stream_index != -1 && q->subs[i].stream_index != stream_index))
+                    (stream_index != -1 && q->subs[i].stream_index != stream_index))
                 continue;
             if (pts >= min_ts && pts > ts_selected - q->subs[i].duration)
                 idx = i;
@@ -288,12 +313,15 @@ int ff_smil_extract_next_text_chunk(FFTextReader *tr, AVBPrint *buf, char *c)
         return 0;
 
     end_chr = *c == '<' ? '>' : '<';
-    do {
+    do
+    {
         av_bprint_chars(buf, *c, 1);
         *c = ff_text_r8(tr);
         i++;
-    } while (*c != end_chr && *c);
-    if (end_chr == '>') {
+    }
+    while (*c != end_chr && *c);
+    if (end_chr == '>')
+    {
         av_bprint_chars(buf, '>', 1);
         *c = 0;
     }
@@ -305,8 +333,10 @@ const char *ff_smil_get_attr_ptr(const char *s, const char *attr)
     int in_quotes = 0;
     const size_t len = strlen(attr);
 
-    while (*s) {
-        while (*s) {
+    while (*s)
+    {
+        while (*s)
+        {
             if (!in_quotes && av_isspace(*s))
                 break;
             in_quotes ^= *s == '"'; // XXX: support escaping?
@@ -332,7 +362,8 @@ void ff_subtitles_read_text_chunk(FFTextReader *tr, AVBPrint *buf)
 
     av_bprint_clear(buf);
 
-    for (;;) {
+    for (;;)
+    {
         char c = ff_text_r8(tr);
 
         if (!c)
@@ -343,7 +374,8 @@ void ff_subtitles_read_text_chunk(FFTextReader *tr, AVBPrint *buf)
             continue;
 
         /* line break buffering: we don't want to add the trailing \r\n */
-        if (is_eol(c)) {
+        if (is_eol(c))
+        {
             nb_eol += c == '\n' || last_was_cr;
             if (nb_eol == 2)
                 break;
@@ -356,7 +388,8 @@ void ff_subtitles_read_text_chunk(FFTextReader *tr, AVBPrint *buf)
 
         /* only one line break followed by data: we flush the line breaks
          * buffer */
-        if (i) {
+        if (i)
+        {
             eol_buf[i] = 0;
             av_bprintf(buf, "%s", eol_buf);
             i = nb_eol = 0;
@@ -381,7 +414,8 @@ ptrdiff_t ff_subtitles_read_line(FFTextReader *tr, char *buf, size_t size)
     size_t cur = 0;
     if (!size)
         return 0;
-    while (cur + 1 < size) {
+    while (cur + 1 < size)
+    {
         unsigned char c = ff_text_r8(tr);
         if (!c)
             return ff_text_eof(tr) ? cur : AVERROR_INVALIDDATA;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -46,7 +46,7 @@ static inline int atomic_int_add_and_fetch_win32(volatile int *ptr, int inc)
 
 #define avpriv_atomic_ptr_cas atomic_ptr_cas_win32
 static inline void *atomic_ptr_cas_win32(void * volatile *ptr,
-                                         void *oldval, void *newval)
+        void *oldval, void *newval)
 {
     return InterlockedCompareExchangePointer(ptr, newval, oldval);
 }

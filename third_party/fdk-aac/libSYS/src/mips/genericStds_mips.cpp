@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -125,52 +125,52 @@ static unsigned char *__pScratchBuffer = NULL;
 static int fd;
 static inline void * getSram(void)
 {
-  unsigned long *ptr = NULL;
+    unsigned long *ptr = NULL;
 
-  /* Open driver */
-  fd = open("/dev/sram", 0);
-  if (fd < 0)
-  {
-    printf("Unable to access sram. Fallback to malloc\n");
-    /* Signal "no sram driver at use". */
-    fd = -1;
-    /* Return malloced pointer (fallback) */
-    return malloc(MIPS_SRAM_SIZE);
-  }
+    /* Open driver */
+    fd = open("/dev/sram", 0);
+    if (fd < 0)
+    {
+        printf("Unable to access sram. Fallback to malloc\n");
+        /* Signal "no sram driver at use". */
+        fd = -1;
+        /* Return malloced pointer (fallback) */
+        return malloc(MIPS_SRAM_SIZE);
+    }
 
-  /* Get memory mapped into CPU (virtual) address space */
-  ptr = (unsigned long *)mmap(NULL, MIPS_SRAM_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-  if(ptr == MAP_FAILED)
-  {
-     printf("Unable to access sram. Fallback to malloc\n");
-     /* Give up on the sram driver */
-     close(fd);
-     /* Signal "no sram driver at use". */
-     fd = -1;
-     /* Return malloced pointer (fallback) */
-     ptr = (unsigned long *)malloc(MIPS_SRAM_SIZE);
-  }
+    /* Get memory mapped into CPU (virtual) address space */
+    ptr = (unsigned long *)mmap(NULL, MIPS_SRAM_SIZE, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    if(ptr == MAP_FAILED)
+    {
+        printf("Unable to access sram. Fallback to malloc\n");
+        /* Give up on the sram driver */
+        close(fd);
+        /* Signal "no sram driver at use". */
+        fd = -1;
+        /* Return malloced pointer (fallback) */
+        ptr = (unsigned long *)malloc(MIPS_SRAM_SIZE);
+    }
 
 
-  /* Return pointer to sram */
-  return (void*)ptr;
+    /* Return pointer to sram */
+    return (void*)ptr;
 }
 
 static inline void freeSram(void* ptr)
 {
-  /* Check if sram driver is being used. */
-  if (fd == -1)
-  {
-    free(ptr);
+    /* Check if sram driver is being used. */
+    if (fd == -1)
+    {
+        free(ptr);
+        return;
+    }
+
+    /* Unmap memory */
+    munmap(ptr, MIPS_SRAM_SIZE);
+    /* Close driver */
+    close(fd);
+
     return;
-  }
-
-  /* Unmap memory */
-  munmap(ptr, MIPS_SRAM_SIZE);
-  /* Close driver */
-  close(fd);
-
-  return;
 }
 
 #elif defined(__SDE_MIPS__)
@@ -182,46 +182,50 @@ static int hasISPRAM, hasDSPRAM;
 
 static inline void * getSram(void)
 {
-  void *addr;
-  unsigned int Config;
+    void *addr;
+    unsigned int Config;
 
-  Config = mips_getconfig();
-  hasISPRAM = (Config >> 24) & 1;
-  hasDSPRAM = (Config >> 23) & 1;
+    Config = mips_getconfig();
+    hasISPRAM = (Config >> 24) & 1;
+    hasDSPRAM = (Config >> 23) & 1;
 
-  FDKprintf("Config ISP/DSP: %d/%d\n", hasISPRAM, hasDSPRAM);
+    FDKprintf("Config ISP/DSP: %d/%d\n", hasISPRAM, hasDSPRAM);
 
-  if (hasDSPRAM) {
-    long paddr, laddr;
+    if (hasDSPRAM)
+    {
+        long paddr, laddr;
 
-    FDKprintf("wrong\n");
-    paddr = MIPS_SDE_SCRATCHPAD;
-    /* Fixed mapping of kseg0: 0x80000000-0x9fffffff virtual => 0x00000000-0x1fffffff physical */
-    laddr = MIPS_VIRTUAL_START + MIPS_SDE_SCRATCHPAD;
-    addr = (void*)(laddr);
-  } else {
-    FDKprintf("ok\n");
-    addr = malloc(MIPS_SRAM_SIZE);
-    FDKprintf("addr %d\n", (int)addr);
-  }
-  return addr;
+        FDKprintf("wrong\n");
+        paddr = MIPS_SDE_SCRATCHPAD;
+        /* Fixed mapping of kseg0: 0x80000000-0x9fffffff virtual => 0x00000000-0x1fffffff physical */
+        laddr = MIPS_VIRTUAL_START + MIPS_SDE_SCRATCHPAD;
+        addr = (void*)(laddr);
+    }
+    else
+    {
+        FDKprintf("ok\n");
+        addr = malloc(MIPS_SRAM_SIZE);
+        FDKprintf("addr %d\n", (int)addr);
+    }
+    return addr;
 }
 static inline void freeSram(void* ptr)
 {
-  if (!hasDSPRAM) {
-    free(ptr);
-  }
+    if (!hasDSPRAM)
+    {
+        free(ptr);
+    }
 }
 
 #else
 
 static inline void * getSram(void)
 {
-  return malloc(MIPS_SRAM_SIZE);
+    return malloc(MIPS_SRAM_SIZE);
 }
 static inline void freeSram(void* ptr)
 {
-  free(ptr);
+    free(ptr);
 }
 
 #endif
@@ -230,31 +234,34 @@ static inline void freeSram(void* ptr)
 #ifdef FUNCTION_FDKprolog
 void FDKprolog(void)
 {
-   unsigned char *addr;
+    unsigned char *addr;
 
 #ifdef _MIPS_ARCH_MIPS32R2
-   unsigned status;
-   asm volatile("mfc0 %0, $12, 0;\n" : "=r" (status));
-   status |= (1 << 24);
-   asm volatile("mtc0 %0, $12, 0;\n" :: "r" (status));
+    unsigned status;
+    asm volatile("mfc0 %0, $12, 0;\n" : "=r" (status));
+    status |= (1 << 24);
+    asm volatile("mtc0 %0, $12, 0;\n" :: "r" (status));
 #endif
 
-   addr = (unsigned char*)getSram();
-   if (addr == NULL) {
-     FDKprintfErr("SRAM allocation failed ! This is fatal.\n");
-     exit(-1);
-   } else {
-     FDKprintf("SRAM @ 0x%08x, size = 0x%x\n", (unsigned int) addr, MIPS_SRAM_SIZE);
-   }
+    addr = (unsigned char*)getSram();
+    if (addr == NULL)
+    {
+        FDKprintfErr("SRAM allocation failed ! This is fatal.\n");
+        exit(-1);
+    }
+    else
+    {
+        FDKprintf("SRAM @ 0x%08x, size = 0x%x\n", (unsigned int) addr, MIPS_SRAM_SIZE);
+    }
 
 
 #ifdef RESOURCE_scratchBuffer
-   ___scratchBuffer = (LONG*)(addr + MIPS_SRAM_SIZE - MIPS_SCRATCH_SIZE);
+    ___scratchBuffer = (LONG*)(addr + MIPS_SRAM_SIZE - MIPS_SCRATCH_SIZE);
 #endif
 
-   atexit(FDKepilog);
+    atexit(FDKepilog);
 
-   FDKprolog_generic();
+    FDKprolog_generic();
 }
 #endif
 
@@ -263,13 +270,13 @@ void FDKepilog(void)
 {
 
 #ifdef _MIPS_ARCH_MIPS32R2
-   unsigned status;
-   asm volatile("mfc0 %0, $12, 0;\n" : "=r" (status));
-           status &= ~(1 << 24);
-   asm volatile("mtc0 %0, $12, 0;\n" :: "r" (status));
+    unsigned status;
+    asm volatile("mfc0 %0, $12, 0;\n" : "=r" (status));
+    status &= ~(1 << 24);
+    asm volatile("mtc0 %0, $12, 0;\n" :: "r" (status));
 #endif
 
-   FDKepilog_generic();
+    FDKepilog_generic();
 }
 #endif
 
@@ -282,11 +289,12 @@ void FDKepilog(void)
 #define MIPS_CPU_CLK 100000000
 #endif
 
-INT FDKclock(void) {
-  INT clk;
+INT FDKclock(void)
+{
+    INT clk;
 
-  asm volatile ("mfc0 %0,$9 " : "=r" (clk));
-  return clk;
+    asm volatile ("mfc0 %0,$9 " : "=r" (clk));
+    return clk;
 }
 
 #endif /* !defined(__linux__) */

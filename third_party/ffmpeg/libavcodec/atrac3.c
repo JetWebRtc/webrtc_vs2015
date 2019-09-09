@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ATRAC3 compatible decoder
  * Copyright (c) 2006-2008 Maxim Poliakovski
  * Copyright (c) 2006-2008 Benjamin Larsson
@@ -54,17 +54,20 @@
 #define SAMPLES_PER_FRAME 1024
 #define MDCT_SIZE          512
 
-typedef struct GainBlock {
+typedef struct GainBlock
+{
     AtracGainInfo g_block[4];
 } GainBlock;
 
-typedef struct TonalComponent {
+typedef struct TonalComponent
+{
     int pos;
     int num_coefs;
     float coef[8];
 } TonalComponent;
 
-typedef struct ChannelUnit {
+typedef struct ChannelUnit
+{
     int            bands_coded;
     int            num_components;
     float          prev_frame[SAMPLES_PER_FRAME];
@@ -80,7 +83,8 @@ typedef struct ChannelUnit {
     float          delay_buf3[46];
 } ChannelUnit;
 
-typedef struct ATRAC3Context {
+typedef struct ATRAC3Context
+{
     GetBitContext gb;
     //@{
     /** stream data */
@@ -124,7 +128,8 @@ static void imlt(ATRAC3Context *q, float *input, float *output, int odd_band)
 {
     int i;
 
-    if (odd_band) {
+    if (odd_band)
+    {
         /**
          * Reverse the odd bands before IMDCT, this is an effect of the QMF
          * transform or it gives better compression to do it this way.
@@ -175,7 +180,8 @@ static av_cold void init_imdct_window(void)
 
     /* generate the mdct window, for details see
      * http://wiki.multimedia.cx/index.php?title=RealAudio_atrc#Windows */
-    for (i = 0, j = 255; i < 128; i++, j--) {
+    for (i = 0, j = 255; i < 128; i++, j--)
+    {
         float wi = sin(((i + 0.5) / 256.0 - 0.5) * M_PI) + 1.0;
         float wj = sin(((j + 0.5) / 256.0 - 0.5) * M_PI) + 1.0;
         float w  = 0.5 * (wi * wi + wj * wj);
@@ -214,20 +220,26 @@ static void read_quant_spectral_coeffs(GetBitContext *gb, int selector,
     if (selector == 1)
         num_codes /= 2;
 
-    if (coding_flag != 0) {
+    if (coding_flag != 0)
+    {
         /* constant length coding (CLC) */
         int num_bits = clc_length_tab[selector];
 
-        if (selector > 1) {
-            for (i = 0; i < num_codes; i++) {
+        if (selector > 1)
+        {
+            for (i = 0; i < num_codes; i++)
+            {
                 if (num_bits)
                     code = get_sbits(gb, num_bits);
                 else
                     code = 0;
                 mantissas[i] = code;
             }
-        } else {
-            for (i = 0; i < num_codes; i++) {
+        }
+        else
+        {
+            for (i = 0; i < num_codes; i++)
+            {
                 if (num_bits)
                     code = get_bits(gb, num_bits); // num_bits is always 4 in this case
                 else
@@ -236,10 +248,14 @@ static void read_quant_spectral_coeffs(GetBitContext *gb, int selector,
                 mantissas[i * 2 + 1] = mantissa_clc_tab[code &  3];
             }
         }
-    } else {
+    }
+    else
+    {
         /* variable length coding (VLC) */
-        if (selector != 1) {
-            for (i = 0; i < num_codes; i++) {
+        if (selector != 1)
+        {
+            for (i = 0; i < num_codes; i++)
+            {
                 huff_symb = get_vlc2(gb, spectral_coeff_tab[selector-1].table,
                                      spectral_coeff_tab[selector-1].bits, 3);
                 huff_symb += 1;
@@ -248,8 +264,11 @@ static void read_quant_spectral_coeffs(GetBitContext *gb, int selector,
                     code = -code;
                 mantissas[i] = code;
             }
-        } else {
-            for (i = 0; i < num_codes; i++) {
+        }
+        else
+        {
+            for (i = 0; i < num_codes; i++)
+            {
                 huff_symb = get_vlc2(gb, spectral_coeff_tab[selector - 1].table,
                                      spectral_coeff_tab[selector - 1].bits, 3);
                 mantissas[i * 2    ] = mantissa_vlc_tab[huff_symb * 2    ];
@@ -279,18 +298,21 @@ static int decode_spectrum(GetBitContext *gb, float *output)
         subband_vlc_index[i] = get_bits(gb, 3);
 
     /* read the scale factor indexes from the stream */
-    for (i = 0; i <= num_subbands; i++) {
+    for (i = 0; i <= num_subbands; i++)
+    {
         if (subband_vlc_index[i] != 0)
             sf_index[i] = get_bits(gb, 6);
     }
 
-    for (i = 0; i <= num_subbands; i++) {
+    for (i = 0; i <= num_subbands; i++)
+    {
         first = subband_tab[i    ];
         last  = subband_tab[i + 1];
 
         subband_size = last - first;
 
-        if (subband_vlc_index[i] != 0) {
+        if (subband_vlc_index[i] != 0)
+        {
             /* decode spectral coefficients for this subband */
             /* TODO: This can be done faster is several blocks share the
              * same VLC selector (subband_vlc_index) */
@@ -304,7 +326,9 @@ static int decode_spectrum(GetBitContext *gb, float *output)
             /* inverse quantize the coefficients */
             for (j = 0; first < last; first++, j++)
                 output[first] = mantissas[j] * scale_factor;
-        } else {
+        }
+        else
+        {
             /* this subband was not coded, so zero the entire subband */
             memset(output + first, 0, subband_size * sizeof(*output));
         }
@@ -342,7 +366,8 @@ static int decode_tonal_components(GetBitContext *gb,
 
     coding_mode = coding_mode_selector & 1;
 
-    for (i = 0; i < nb_components; i++) {
+    for (i = 0; i < nb_components; i++)
+    {
         int coded_values_per_component, quant_step_index;
 
         for (b = 0; b <= num_bands; b++)
@@ -357,7 +382,8 @@ static int decode_tonal_components(GetBitContext *gb,
         if (coding_mode_selector == 3)
             coding_mode = get_bits1(gb);
 
-        for (b = 0; b < (num_bands + 1) * 4; b++) {
+        for (b = 0; b < (num_bands + 1) * 4; b++)
+        {
             int coded_components;
 
             if (band_flags[b >> 2] == 0)
@@ -365,7 +391,8 @@ static int decode_tonal_components(GetBitContext *gb,
 
             coded_components = get_bits(gb, 3);
 
-            for (c = 0; c < coded_components; c++) {
+            for (c = 0; c < coded_components; c++)
+            {
                 TonalComponent *cmp = &components[component_count];
                 int sf_index, coded_values, max_coded_values;
                 float scale_factor;
@@ -414,12 +441,14 @@ static int decode_gain_control(GetBitContext *gb, GainBlock *block,
 
     AtracGainInfo *gain = block->g_block;
 
-    for (b = 0; b <= num_bands; b++) {
+    for (b = 0; b <= num_bands; b++)
+    {
         gain[b].num_points = get_bits(gb, 3);
         level              = gain[b].lev_code;
         loc                = gain[b].loc_code;
 
-        for (j = 0; j < gain[b].num_points; j++) {
+        for (j = 0; j < gain[b].num_points; j++)
+        {
             level[j] = get_bits(gb, 4);
             loc[j]   = get_bits(gb, 5);
             if (j && loc[j] <= loc[j - 1])
@@ -448,7 +477,8 @@ static int add_tonal_components(float *spectrum, int num_components,
     int i, j, last_pos = -1;
     float *input, *output;
 
-    for (i = 0; i < num_components; i++) {
+    for (i = 0; i < num_components; i++)
+    {
         last_pos = FFMAX(components[i].pos + components[i].num_coefs, last_pos);
         input    = components[i].coef;
         output   = &spectrum[components[i].pos];
@@ -469,12 +499,14 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
     int i, nsample, band;
     float mc1_l, mc1_r, mc2_l, mc2_r;
 
-    for (i = 0, band = 0; band < 4 * 256; band += 256, i++) {
+    for (i = 0, band = 0; band < 4 * 256; band += 256, i++)
+    {
         int s1 = prev_code[i];
         int s2 = curr_code[i];
         nsample = band;
 
-        if (s1 != s2) {
+        if (s1 != s2)
+        {
             /* Selector value changed, interpolation needed. */
             mc1_l = matrix_coeffs[s1 * 2    ];
             mc1_r = matrix_coeffs[s1 * 2 + 1];
@@ -482,7 +514,8 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
             mc2_r = matrix_coeffs[s2 * 2 + 1];
 
             /* Interpolation is done over the first eight samples. */
-            for (; nsample < band + 8; nsample++) {
+            for (; nsample < band + 8; nsample++)
+            {
                 float c1 = su1[nsample];
                 float c2 = su2[nsample];
                 c2 = c1 * INTERPOLATE(mc1_l, mc2_l, nsample - band) +
@@ -493,9 +526,11 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
         }
 
         /* Apply the matrix without interpolation. */
-        switch (s2) {
+        switch (s2)
+        {
         case 0:     /* M/S decoding */
-            for (; nsample < band + 256; nsample++) {
+            for (; nsample < band + 256; nsample++)
+            {
                 float c1 = su1[nsample];
                 float c2 = su2[nsample];
                 su1[nsample] =  c2       * 2.0;
@@ -503,7 +538,8 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
             }
             break;
         case 1:
-            for (; nsample < band + 256; nsample++) {
+            for (; nsample < band + 256; nsample++)
+            {
                 float c1 = su1[nsample];
                 float c2 = su2[nsample];
                 su1[nsample] = (c1 + c2) *  2.0;
@@ -512,7 +548,8 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
             break;
         case 2:
         case 3:
-            for (; nsample < band + 256; nsample++) {
+            for (; nsample < band + 256; nsample++)
+            {
                 float c1 = su1[nsample];
                 float c2 = su2[nsample];
                 su1[nsample] = c1 + c2;
@@ -527,10 +564,13 @@ static void reverse_matrixing(float *su1, float *su2, int *prev_code,
 
 static void get_channel_weights(int index, int flag, float ch[2])
 {
-    if (index == 7) {
+    if (index == 7)
+    {
         ch[0] = 1.0;
         ch[1] = 1.0;
-    } else {
+    }
+    else
+    {
         ch[0] = (index & 7) / 7.0;
         ch[1] = sqrt(2 - ch[0] * ch[0]);
         if (flag)
@@ -544,16 +584,20 @@ static void channel_weighting(float *su1, float *su2, int *p3)
     /* w[x][y] y=0 is left y=1 is right */
     float w[2][2];
 
-    if (p3[1] != 7 || p3[3] != 7) {
+    if (p3[1] != 7 || p3[3] != 7)
+    {
         get_channel_weights(p3[1], p3[0], w[0]);
         get_channel_weights(p3[3], p3[2], w[1]);
 
-        for (band = 256; band < 4 * 256; band += 256) {
-            for (nsample = band; nsample < band + 8; nsample++) {
+        for (band = 256; band < 4 * 256; band += 256)
+        {
+            for (nsample = band; nsample < band + 8; nsample++)
+            {
                 su1[nsample] *= INTERPOLATE(w[0][0], w[0][1], nsample - band);
                 su2[nsample] *= INTERPOLATE(w[1][0], w[1][1], nsample - band);
             }
-            for(; nsample < band + 256; nsample++) {
+            for(; nsample < band + 256; nsample++)
+            {
                 su1[nsample] *= w[1][0];
                 su2[nsample] *= w[1][1];
             }
@@ -577,13 +621,18 @@ static int decode_channel_sound_unit(ATRAC3Context *q, GetBitContext *gb,
     GainBlock *gain1 = &snd->gain_block[    snd->gc_blk_switch];
     GainBlock *gain2 = &snd->gain_block[1 - snd->gc_blk_switch];
 
-    if (coding_mode == JOINT_STEREO && channel_num == 1) {
-        if (get_bits(gb, 2) != 3) {
+    if (coding_mode == JOINT_STEREO && channel_num == 1)
+    {
+        if (get_bits(gb, 2) != 3)
+        {
             av_log(NULL,AV_LOG_ERROR,"JS mono Sound Unit id != 3.\n");
             return AVERROR_INVALIDDATA;
         }
-    } else {
-        if (get_bits(gb, 6) != 0x28) {
+    }
+    else
+    {
+        if (get_bits(gb, 6) != 0x28)
+        {
             av_log(NULL,AV_LOG_ERROR,"Sound Unit id != 0x28.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -597,7 +646,7 @@ static int decode_channel_sound_unit(ATRAC3Context *q, GetBitContext *gb,
         return ret;
 
     snd->num_components = decode_tonal_components(gb, snd->components,
-                                                  snd->bands_coded);
+                          snd->bands_coded);
     if (snd->num_components < 0)
         return snd->num_components;
 
@@ -616,7 +665,8 @@ static int decode_channel_sound_unit(ATRAC3Context *q, GetBitContext *gb,
 
 
     /* Reconstruct time domain samples. */
-    for (band = 0; band < 4; band++) {
+    for (band = 0; band < 4; band++)
+    {
         /* Perform the IMDCT step without overlapping. */
         if (band <= num_bands)
             imlt(q, &snd->spectrum[band * 256], snd->imdct_buf, band & 1);
@@ -643,7 +693,8 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
     int ret, i;
     uint8_t *ptr1;
 
-    if (q->coding_mode == JOINT_STEREO) {
+    if (q->coding_mode == JOINT_STEREO)
+    {
         /* channel coupling mode */
         /* decode Sound Unit 1 */
         init_get_bits(&q->gb, databuf, avctx->block_align * 8);
@@ -655,12 +706,15 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
 
         /* Framedata of the su2 in the joint-stereo mode is encoded in
          * reverse byte order so we need to swap it first. */
-        if (databuf == q->decoded_bytes_buffer) {
+        if (databuf == q->decoded_bytes_buffer)
+        {
             uint8_t *ptr2 = q->decoded_bytes_buffer + avctx->block_align - 1;
             ptr1          = q->decoded_bytes_buffer;
             for (i = 0; i < avctx->block_align / 2; i++, ptr1++, ptr2--)
                 FFSWAP(uint8_t, *ptr1, *ptr2);
-        } else {
+        }
+        else
+        {
             const uint8_t *ptr2 = databuf + avctx->block_align - 1;
             for (i = 0; i < avctx->block_align; i++)
                 q->decoded_bytes_buffer[i] = *ptr2--;
@@ -668,7 +722,8 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
 
         /* Skip the sync codes (0xF8). */
         ptr1 = q->decoded_bytes_buffer;
-        for (i = 4; *ptr1 == 0xF8; i++, ptr1++) {
+        for (i = 4; *ptr1 == 0xF8; i++, ptr1++)
+        {
             if (i >= avctx->block_align)
                 return AVERROR_INVALIDDATA;
         }
@@ -683,7 +738,8 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
         q->weighting_delay[4] = get_bits1(&q->gb);
         q->weighting_delay[5] = get_bits(&q->gb, 3);
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i++)
+        {
             q->matrix_coeff_index_prev[i] = q->matrix_coeff_index_now[i];
             q->matrix_coeff_index_now[i]  = q->matrix_coeff_index_next[i];
             q->matrix_coeff_index_next[i] = get_bits(&q->gb, 2);
@@ -701,10 +757,13 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
                           q->matrix_coeff_index_now);
 
         channel_weighting(out_samples[0], out_samples[1], q->weighting_delay);
-    } else {
+    }
+    else
+    {
         /* normal stereo mode or mono */
         /* Decode the channel sound units. */
-        for (i = 0; i < avctx->channels; i++) {
+        for (i = 0; i < avctx->channels; i++)
+        {
             /* Set the bitstream reader at the start of a channel sound unit. */
             init_get_bits(&q->gb,
                           databuf + i * avctx->block_align / avctx->channels,
@@ -718,7 +777,8 @@ static int decode_frame(AVCodecContext *avctx, const uint8_t *databuf,
     }
 
     /* Apply the iQMF synthesis filter. */
-    for (i = 0; i < avctx->channels; i++) {
+    for (i = 0; i < avctx->channels; i++)
+    {
         float *p1 = out_samples[i];
         float *p2 = p1 + 256;
         float *p3 = p2 + 256;
@@ -741,7 +801,8 @@ static int atrac3_decode_frame(AVCodecContext *avctx, void *data,
     int ret;
     const uint8_t *databuf;
 
-    if (buf_size < avctx->block_align) {
+    if (buf_size < avctx->block_align)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Frame too small (%d bytes). Truncated file?\n", buf_size);
         return AVERROR_INVALIDDATA;
@@ -753,15 +814,19 @@ static int atrac3_decode_frame(AVCodecContext *avctx, void *data,
         return ret;
 
     /* Check if we need to descramble and what buffer to pass on. */
-    if (q->scrambled_stream) {
+    if (q->scrambled_stream)
+    {
         decode_bytes(buf, q->decoded_bytes_buffer, avctx->block_align);
         databuf = q->decoded_bytes_buffer;
-    } else {
+    }
+    else
+    {
         databuf = buf;
     }
 
     ret = decode_frame(avctx, databuf, (float **)frame->extended_data);
-    if (ret) {
+    if (ret)
+    {
         av_log(NULL, AV_LOG_ERROR, "Frame decoding error!\n");
         return ret;
     }
@@ -779,7 +844,8 @@ static av_cold void atrac3_init_static_data(void)
     ff_atrac_generate_tables();
 
     /* Initialize the VLC tables. */
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++)
+    {
         spectral_coeff_tab[i].table = &atrac3_vlc_table[atrac3_vlc_offs[i]];
         spectral_coeff_tab[i].table_allocated = atrac3_vlc_offs[i + 1] -
                                                 atrac3_vlc_offs[i    ];
@@ -797,7 +863,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     const uint8_t *edata_ptr = avctx->extradata;
     ATRAC3Context *q = avctx->priv_data;
 
-    if (avctx->channels <= 0 || avctx->channels > 2) {
+    if (avctx->channels <= 0 || avctx->channels > 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Channel configuration error!\n");
         return AVERROR(EINVAL);
     }
@@ -807,7 +874,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     static_init_done = 1;
 
     /* Take care of the codec-specific extradata. */
-    if (avctx->extradata_size == 14) {
+    if (avctx->extradata_size == 14)
+    {
         /* Parse the extradata, WAV format */
         av_log(avctx, AV_LOG_DEBUG, "[0-1] %d\n",
                bytestream_get_le16(&edata_ptr));  // Unknown value always 1
@@ -827,14 +895,17 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
         q->scrambled_stream  = 0;
 
         if (avctx->block_align !=  96 * avctx->channels * frame_factor &&
-            avctx->block_align != 152 * avctx->channels * frame_factor &&
-            avctx->block_align != 192 * avctx->channels * frame_factor) {
+                avctx->block_align != 152 * avctx->channels * frame_factor &&
+                avctx->block_align != 192 * avctx->channels * frame_factor)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unknown frame/channel/frame_factor "
                    "configuration %d/%d/%d\n", avctx->block_align,
                    avctx->channels, frame_factor);
             return AVERROR_INVALIDDATA;
         }
-    } else if (avctx->extradata_size == 12 || avctx->extradata_size == 10) {
+    }
+    else if (avctx->extradata_size == 12 || avctx->extradata_size == 10)
+    {
         /* Parse the extradata, RM format. */
         version                = bytestream_get_be32(&edata_ptr);
         samples_per_frame      = bytestream_get_be16(&edata_ptr);
@@ -842,7 +913,9 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
         q->coding_mode         = bytestream_get_be16(&edata_ptr);
         q->scrambled_stream    = 1;
 
-    } else {
+    }
+    else
+    {
         av_log(NULL, AV_LOG_ERROR, "Unknown extradata size %d.\n",
                avctx->extradata_size);
         return AVERROR(EINVAL);
@@ -850,19 +923,22 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
 
     /* Check the extradata */
 
-    if (version != 4) {
+    if (version != 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "Version %d != 4.\n", version);
         return AVERROR_INVALIDDATA;
     }
 
     if (samples_per_frame != SAMPLES_PER_FRAME &&
-        samples_per_frame != SAMPLES_PER_FRAME * 2) {
+            samples_per_frame != SAMPLES_PER_FRAME * 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unknown amount of samples per frame %d.\n",
                samples_per_frame);
         return AVERROR_INVALIDDATA;
     }
 
-    if (delay != 0x88E) {
+    if (delay != 0x88E)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unknown amount of delay %x != 0x88E.\n",
                delay);
         return AVERROR_INVALIDDATA;
@@ -870,13 +946,17 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
 
     if (q->coding_mode == STEREO)
         av_log(avctx, AV_LOG_DEBUG, "Normal stereo detected.\n");
-    else if (q->coding_mode == JOINT_STEREO) {
-        if (avctx->channels != 2) {
+    else if (q->coding_mode == JOINT_STEREO)
+    {
+        if (avctx->channels != 2)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid coding mode\n");
             return AVERROR_INVALIDDATA;
         }
         av_log(avctx, AV_LOG_DEBUG, "Joint stereo detected.\n");
-    } else {
+    }
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "Unknown channel coding mode %x!\n",
                q->coding_mode);
         return AVERROR_INVALIDDATA;
@@ -893,7 +973,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     avctx->sample_fmt = AV_SAMPLE_FMT_FLTP;
 
     /* initialize the MDCT transform */
-    if ((ret = ff_mdct_init(&q->mdct_ctx, 9, 1, 1.0 / 32768)) < 0) {
+    if ((ret = ff_mdct_init(&q->mdct_ctx, 9, 1, 1.0 / 32768)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error initializing MDCT\n");
         av_freep(&q->decoded_bytes_buffer);
         return ret;
@@ -907,7 +988,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     q->weighting_delay[4] = 0;
     q->weighting_delay[5] = 7;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         q->matrix_coeff_index_prev[i] = 3;
         q->matrix_coeff_index_now[i]  = 3;
         q->matrix_coeff_index_next[i] = 3;
@@ -917,7 +999,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     q->fdsp = avpriv_float_dsp_alloc(avctx->flags & AV_CODEC_FLAG_BITEXACT);
 
     q->units = av_mallocz_array(avctx->channels, sizeof(*q->units));
-    if (!q->units || !q->fdsp) {
+    if (!q->units || !q->fdsp)
+    {
         atrac3_decode_close(avctx);
         return AVERROR(ENOMEM);
     }
@@ -925,7 +1008,8 @@ static av_cold int atrac3_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_atrac3_decoder = {
+AVCodec ff_atrac3_decoder =
+{
     .name             = "atrac3",
     .long_name        = NULL_IF_CONFIG_SMALL("ATRAC3 (Adaptive TRansform Acoustic Coding 3)"),
     .type             = AVMEDIA_TYPE_AUDIO,
@@ -935,6 +1019,8 @@ AVCodec ff_atrac3_decoder = {
     .close            = atrac3_decode_close,
     .decode           = atrac3_decode_frame,
     .capabilities     = AV_CODEC_CAP_SUBFRAMES | AV_CODEC_CAP_DR1,
-    .sample_fmts      = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_FLTP,
-                                                        AV_SAMPLE_FMT_NONE },
+    .sample_fmts      = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
 };

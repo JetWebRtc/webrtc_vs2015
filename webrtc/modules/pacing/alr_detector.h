@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/modules/pacing/paced_sender.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Application limited region detector is a class that utilizes signals of
 // elapsed time and bytes sent to estimate whether network traffic is
@@ -25,26 +26,27 @@ namespace webrtc {
 // AlrDetector provides a signal that can be utilized to adjust
 // estimate bandwidth.
 // Note: This class is not thread-safe.
-class AlrDetector {
- public:
-  AlrDetector();
-  ~AlrDetector();
+class AlrDetector
+{
+public:
+    AlrDetector();
+    ~AlrDetector();
 
-  void OnBytesSent(size_t bytes_sent, int64_t now_ms);
+    void OnBytesSent(size_t bytes_sent, int64_t now_ms);
 
-  // Set current estimated bandwidth.
-  void SetEstimatedBitrate(int bitrate_bps);
+    // Set current estimated bandwidth.
+    void SetEstimatedBitrate(int bitrate_bps);
 
-  // Returns time in milliseconds when the current application-limited region
-  // started or empty result if the sender is currently not application-limited.
-  rtc::Optional<int64_t> GetApplicationLimitedRegionStartTime() const;
+    // Returns time in milliseconds when the current application-limited region
+    // started or empty result if the sender is currently not application-limited.
+    rtc::Optional<int64_t> GetApplicationLimitedRegionStartTime() const;
 
- private:
-  RateStatistics rate_;
-  int estimated_bitrate_bps_ = 0;
+private:
+    RateStatistics rate_;
+    int estimated_bitrate_bps_ = 0;
 
-  // Non-empty in ALR state.
-  rtc::Optional<int64_t> alr_started_time_ms_;
+    // Non-empty in ALR state.
+    rtc::Optional<int64_t> alr_started_time_ms_;
 };
 
 }  // namespace webrtc

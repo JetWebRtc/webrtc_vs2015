@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Enhanced Variable Rate Codec, Service Option 3 decoder
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -42,7 +42,8 @@
 #define FILTER_ORDER   10
 #define ACB_SIZE      128
 
-typedef enum {
+typedef enum
+{
     RATE_ERRS = -1,
     SILENCE,
     RATE_QUANT,
@@ -54,7 +55,8 @@ typedef enum {
 /**
  * EVRC-A unpacked data frame
  */
-typedef struct EVRCAFrame {
+typedef struct EVRCAFrame
+{
     uint8_t  lpc_flag;        ///< spectral change indicator
     uint16_t lsp[4];          ///< index into LSP codebook
     uint8_t  pitch_delay;     ///< pitch delay for entire frame
@@ -66,7 +68,8 @@ typedef struct EVRCAFrame {
     uint8_t  tty;             ///< tty baud rate bit
 } EVRCAFrame;
 
-typedef struct EVRCContext {
+typedef struct EVRCContext
+{
     AVClass *class;
 
     int              postfilter;
@@ -110,7 +113,8 @@ static void unpack_frame(EVRCContext *e)
     EVRCAFrame *frame = &e->frame;
     GetBitContext *gb = &e->gb;
 
-    switch (e->bitrate) {
+    switch (e->bitrate)
+    {
     case RATE_FULL:
         frame->lpc_flag        = get_bits1(gb);
         frame->lsp[0]          = get_bits(gb,  6);
@@ -164,12 +168,18 @@ static void unpack_frame(EVRCContext *e)
 
 static evrc_packet_rate buf_size2bitrate(const int buf_size)
 {
-    switch (buf_size) {
-    case 23: return RATE_FULL;
-    case 11: return RATE_HALF;
-    case  6: return RATE_QUARTER;
-    case  3: return RATE_QUANT;
-    case  1: return SILENCE;
+    switch (buf_size)
+    {
+    case 23:
+        return RATE_FULL;
+    case 11:
+        return RATE_HALF;
+    case  6:
+        return RATE_QUARTER;
+    case  3:
+        return RATE_QUANT;
+    case  1:
+        return SILENCE;
     }
 
     return RATE_ERRS;
@@ -186,38 +196,46 @@ static evrc_packet_rate buf_size2bitrate(const int buf_size)
  *         RATE_ERRS  if the bitrate cannot be satisfactorily determined
  */
 static evrc_packet_rate determine_bitrate(AVCodecContext *avctx,
-                                          int *buf_size,
-                                          const uint8_t **buf)
+        int *buf_size,
+        const uint8_t **buf)
 {
     evrc_packet_rate bitrate;
 
-    if ((bitrate = buf_size2bitrate(*buf_size)) >= 0) {
-        if (bitrate > **buf) {
+    if ((bitrate = buf_size2bitrate(*buf_size)) >= 0)
+    {
+        if (bitrate > **buf)
+        {
             EVRCContext *e = avctx->priv_data;
-            if (!e->warned_buf_mismatch_bitrate) {
+            if (!e->warned_buf_mismatch_bitrate)
+            {
                 av_log(avctx, AV_LOG_WARNING,
                        "Claimed bitrate and buffer size mismatch.\n");
                 e->warned_buf_mismatch_bitrate = 1;
             }
             bitrate = **buf;
-        } else if (bitrate < **buf) {
+        }
+        else if (bitrate < **buf)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Buffer is too small for the claimed bitrate.\n");
             return RATE_ERRS;
         }
         (*buf)++;
         *buf_size -= 1;
-    } else if ((bitrate = buf_size2bitrate(*buf_size + 1)) >= 0) {
+    }
+    else if ((bitrate = buf_size2bitrate(*buf_size + 1)) >= 0)
+    {
         av_log(avctx, AV_LOG_DEBUG,
                "Bitrate byte is missing, guessing the bitrate from packet size.\n");
-    } else
+    }
+    else
         return RATE_ERRS;
 
     return bitrate;
 }
 
 static void warn_insufficient_frame_quality(AVCodecContext *avctx,
-                                            const char *message)
+        const char *message)
 {
     av_log(avctx, AV_LOG_WARNING, "Frame #%d, %s\n",
            avctx->frame_number, message);
@@ -238,7 +256,8 @@ static av_cold int evrc_decode_init(AVCodecContext *avctx)
     avctx->channel_layout = AV_CH_LAYOUT_MONO;
     avctx->sample_fmt     = AV_SAMPLE_FMT_FLT;
 
-    for (i = 0; i < FILTER_ORDER; i++) {
+    for (i = 0; i < FILTER_ORDER; i++)
+    {
         e->prev_lspf[i] = (i + 1) * 0.048;
         e->synthesis[i] = 0.0;
     }
@@ -252,17 +271,19 @@ static av_cold int evrc_decode_init(AVCodecContext *avctx)
     e->prev_error_flag    = 0;
     e->avg_acb_gain = e->avg_fcb_gain = 0.0;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         float tt = ((float)i - 8.0 / 2.0) / 8.0;
 
-        for (n = -8; n <= 8; n++, idx++) {
+        for (n = -8; n <= 8; n++, idx++)
+        {
             float arg1 = M_PI * 0.9 * (tt - n);
             float arg2 = M_PI * (tt - n);
 
             e->interpolation_coeffs[idx] = 0.9;
             if (arg1)
                 e->interpolation_coeffs[idx] *= (0.54 + 0.46 * cos(arg2 * denom)) *
-                                                 sin(arg1) / arg1;
+                                                sin(arg1) / arg1;
         }
     }
 
@@ -284,7 +305,8 @@ static int decode_lspf(EVRCContext *e)
     const float * const *codebooks = evrc_lspq_codebooks[e->bitrate];
     int i, j, k = 0;
 
-    for (i = 0; i < evrc_lspq_nb_codebooks[e->bitrate]; i++) {
+    for (i = 0; i < evrc_lspq_nb_codebooks[e->bitrate]; i++)
+    {
         int row_size = evrc_lspq_codebooks_row_sizes[e->bitrate][i];
         const float *codebook = codebooks[i];
 
@@ -298,7 +320,8 @@ static int decode_lspf(EVRCContext *e)
             return -1;
 
     // check for minimum separation of LSPs at the splits
-    for (i = 0, k = 0; i < evrc_lspq_nb_codebooks[e->bitrate] - 1; i++) {
+    for (i = 0, k = 0; i < evrc_lspq_nb_codebooks[e->bitrate] - 1; i++)
+    {
         k += evrc_lspq_codebooks_row_sizes[e->bitrate][i];
         if (e->lspf[k] - e->lspf[k - 1] <= MIN_LSP_SEP)
             return -1;
@@ -330,11 +353,11 @@ static void interpolate_delay(float *dst, float current, float prev, int index)
 {
     static const float d_interpolation_factors[] = { 0, 0.3313, 0.6625, 1, 1 };
     dst[0] = (1.0 - d_interpolation_factors[index    ]) * prev
-                  + d_interpolation_factors[index    ]  * current;
+             + d_interpolation_factors[index    ]  * current;
     dst[1] = (1.0 - d_interpolation_factors[index + 1]) * prev
-                  + d_interpolation_factors[index + 1]  * current;
+             + d_interpolation_factors[index + 1]  * current;
     dst[2] = (1.0 - d_interpolation_factors[index + 2]) * prev
-                  + d_interpolation_factors[index + 2]  * current;
+             + d_interpolation_factors[index + 2]  * current;
 }
 
 /*
@@ -355,11 +378,13 @@ static void decode_predictor_coeffs(const float *ilspf, float *ilpc)
 
     ff_acelp_lsf2lspd(lsp, ilspf, FILTER_ORDER);
 
-    for (k = 0; k <= FILTER_ORDER; k++) {
+    for (k = 0; k <= FILTER_ORDER; k++)
+    {
         a[0] = k < 2 ? 0.25 : 0;
         b[0] = k < 2 ? k < 1 ? 0.25 : -0.25 : 0;
 
-        for (i = 0; i < FILTER_ORDER / 2; i++) {
+        for (i = 0; i < FILTER_ORDER / 2; i++)
+        {
             a[i + 1] = a[i] - 2 * lsp[i * 2    ] * a1[i] + a2[i];
             b[i + 1] = b[i] - 2 * lsp[i * 2 + 1] * b1[i] + b2[i];
             a2[i] = a1[i];
@@ -382,7 +407,8 @@ static void bl_intrp(EVRCContext *e, float *ex, float delay)
     offset = lrintf(delay);
 
     t = (offset - delay + 0.5) * 8.0 + 0.5;
-    if (t == 8) {
+    if (t == 8)
+    {
         t = 0;
         offset--;
     }
@@ -412,14 +438,16 @@ static void acb_excitation(EVRCContext *e, float *excitation, float gain,
 
     /* first at-most extra samples */
     denom = (delay[1] - delay[0]) * invl;
-    for (i = 0; i < dpr; i++) {
+    for (i = 0; i < dpr; i++)
+    {
         locdelay = delay[0] + i * denom;
         bl_intrp(e, excitation + i, locdelay);
     }
 
     denom = (delay[2] - delay[1]) * invl;
     /* interpolation */
-    for (i = dpr; i < dpr + 10; i++) {
+    for (i = dpr; i < dpr + 10; i++)
+    {
         locdelay = delay[1] + (i - dpr) * denom;
         bl_intrp(e, excitation + i, locdelay);
     }
@@ -434,7 +462,8 @@ static void decode_8_pulses_35bits(const uint16_t *fixed_index, float *cod)
 
     offset = (fixed_index[3] >> 9) & 3;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         pos1 = ((fixed_index[i] & 0x7f) / 11) * 5 + ((i + offset) % 5);
         pos2 = ((fixed_index[i] & 0x7f) % 11) * 5 + ((i + offset) % 5);
 
@@ -506,9 +535,11 @@ static void synthesis_filter(const float *in, const float *filter_coeffs,
 {
     int i, j;
 
-    for (i = 0; i < buffer_length; i++) {
+    for (i = 0; i < buffer_length; i++)
+    {
         samples[i] = in[i];
-        for (j = FILTER_ORDER - 1; j > 0; j--) {
+        for (j = FILTER_ORDER - 1; j > 0; j--)
+        {
             samples[i] -= filter_coeffs[j] * memory[j];
             memory[j]   = memory[j - 1];
         }
@@ -522,7 +553,8 @@ static void bandwidth_expansion(float *coeff, const float *inbuf, float gamma)
     double fac = gamma;
     int i;
 
-    for (i = 0; i < FILTER_ORDER; i++) {
+    for (i = 0; i < FILTER_ORDER; i++)
+    {
         coeff[i] = inbuf[i] * fac;
         fac *= gamma;
     }
@@ -534,10 +566,12 @@ static void residual_filter(float *output, const float *input,
     float sum;
     int i, j;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i++)
+    {
         sum = input[i];
 
-        for (j = FILTER_ORDER - 1; j > 0; j--) {
+        for (j = FILTER_ORDER - 1; j > 0; j--)
+        {
             sum      += coef[j] * memory[j];
             memory[j] = memory[j - 1];
         }
@@ -550,12 +584,14 @@ static void residual_filter(float *output, const float *input,
 /*
  * TIA/IS-127 Table 5.9.1-1.
  */
-static const struct PfCoeff {
+static const struct PfCoeff
+{
     float tilt;
     float ltgain;
     float p1;
     float p2;
-} postfilter_coeffs[5] = {
+} postfilter_coeffs[5] =
+{
     { 0.0 , 0.0 , 0.0 , 0.0  },
     { 0.0 , 0.0 , 0.57, 0.57 },
     { 0.0 , 0.0 , 0.0 , 0.0  },
@@ -588,7 +624,8 @@ static void postfilter(EVRCContext *e, float *in, const float *coeff,
     if (sum2 < 0.0)
         tilt = 0.0;
 
-    for (i = 0; i < length; i++) {
+    for (i = 0; i < length; i++)
+    {
         scratch[i] = in[i] - tilt * e->last;
         e->last = in[i];
     }
@@ -598,10 +635,12 @@ static void postfilter(EVRCContext *e, float *in, const float *coeff,
 
     /* Long term postfilter */
     best = idx;
-    for (i = FFMIN(MIN_DELAY, idx - 3); i <= FFMAX(MAX_DELAY, idx + 3); i++) {
+    for (i = FFMIN(MIN_DELAY, idx - 3); i <= FFMAX(MAX_DELAY, idx + 3); i++)
+    {
         for (n = ACB_SIZE, sum2 = 0; n < ACB_SIZE + length; n++)
             sum2 += e->postfilter_residual[n] * e->postfilter_residual[n - i];
-        if (sum2 > sum1) {
+        if (sum2 > sum1)
+        {
             sum1 = sum2;
             best = i;
         }
@@ -612,18 +651,23 @@ static void postfilter(EVRCContext *e, float *in, const float *coeff,
     for (i = ACB_SIZE, sum2 = 0; i < ACB_SIZE + length; i++)
         sum2 += e->postfilter_residual[i] * e->postfilter_residual[i - best];
 
-    if (sum2 * sum1 == 0 || e->bitrate == RATE_QUANT) {
+    if (sum2 * sum1 == 0 || e->bitrate == RATE_QUANT)
+    {
         memcpy(temp, e->postfilter_residual + ACB_SIZE, length * sizeof(float));
-    } else {
+    }
+    else
+    {
         gamma = sum2 / sum1;
         if (gamma < 0.5)
             memcpy(temp, e->postfilter_residual + ACB_SIZE, length * sizeof(float));
-        else {
+        else
+        {
             gamma = FFMIN(gamma, 1.0);
 
-            for (i = 0; i < length; i++) {
+            for (i = 0; i < length; i++)
+            {
                 temp[i] = e->postfilter_residual[ACB_SIZE + i] + gamma *
-                    pfc->ltgain * e->postfilter_residual[ACB_SIZE + i - best];
+                          pfc->ltgain * e->postfilter_residual[ACB_SIZE + i - best];
             }
         }
     }
@@ -633,7 +677,8 @@ static void postfilter(EVRCContext *e, float *in, const float *coeff,
     synthesis_filter(scratch, wcoef2, mem, length, scratch);
 
     /* Gain computation, TIA/IS-127 5.9.4-2 */
-    for (i = 0, sum1 = 0, sum2 = 0; i < length; i++) {
+    for (i = 0, sum1 = 0, sum2 = 0; i < length; i++)
+    {
         sum1 += in[i] * in[i];
         sum2 += scratch[i] * scratch[i];
     }
@@ -646,7 +691,7 @@ static void postfilter(EVRCContext *e, float *in, const float *coeff,
     synthesis_filter(temp, wcoef2, e->postfilter_iir, length, out);
 
     memmove(e->postfilter_residual,
-           e->postfilter_residual + length, ACB_SIZE * sizeof(float));
+            e->postfilter_residual + length, ACB_SIZE * sizeof(float));
 }
 
 static void frame_erasure(EVRCContext *e, float *samples)
@@ -655,7 +700,8 @@ static void frame_erasure(EVRCContext *e, float *samples)
           tmp[SUBFRAME_SIZE + 6], f;
     int i, j;
 
-    for (i = 0; i < FILTER_ORDER; i++) {
+    for (i = 0; i < FILTER_ORDER; i++)
+    {
         if (e->bitrate != RATE_QUANT)
             e->lspf[i] = e->prev_lspf[i] * 0.875 + 0.125 * (i + 1) * 0.048;
         else
@@ -671,9 +717,12 @@ static void frame_erasure(EVRCContext *e, float *samples)
     else
         e->bitrate = RATE_FULL;
 
-    if (e->bitrate == RATE_FULL || e->bitrate == RATE_HALF) {
+    if (e->bitrate == RATE_FULL || e->bitrate == RATE_HALF)
+    {
         e->pitch_delay = e->prev_pitch_delay;
-    } else {
+    }
+    else
+    {
         float sum = 0;
 
         idelay[0] = idelay[1] = idelay[2] = MIN_DELAY;
@@ -689,18 +738,23 @@ static void frame_erasure(EVRCContext *e, float *samples)
     if (fabs(e->pitch_delay - e->prev_pitch_delay) > 15)
         e->prev_pitch_delay = e->pitch_delay;
 
-    for (i = 0; i < NB_SUBFRAMES; i++) {
+    for (i = 0; i < NB_SUBFRAMES; i++)
+    {
         int subframe_size = subframe_sizes[i];
         int pitch_lag;
 
         interpolate_lsp(ilspf, e->lspf, e->prev_lspf, i);
 
-        if (e->bitrate != RATE_QUANT) {
-            if (e->avg_acb_gain < 0.3) {
+        if (e->bitrate != RATE_QUANT)
+        {
+            if (e->avg_acb_gain < 0.3)
+            {
                 idelay[0] = estimation_delay[i];
                 idelay[1] = estimation_delay[i + 1];
                 idelay[2] = estimation_delay[i + 2];
-            } else {
+            }
+            else
+            {
                 interpolate_delay(idelay, e->pitch_delay, e->prev_pitch_delay, i);
             }
         }
@@ -708,24 +762,30 @@ static void frame_erasure(EVRCContext *e, float *samples)
         pitch_lag = lrintf((idelay[1] + idelay[0]) / 2.0);
         decode_predictor_coeffs(ilspf, ilpc);
 
-        if (e->bitrate != RATE_QUANT) {
+        if (e->bitrate != RATE_QUANT)
+        {
             acb_excitation(e, e->pitch + ACB_SIZE,
                            e->avg_acb_gain, idelay, subframe_size);
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] *= e->fade_scale;
             e->fade_scale = FFMAX(e->fade_scale - 0.05, 0.0);
-        } else {
+        }
+        else
+        {
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] = e->energy_vector[i];
         }
 
         memmove(e->pitch, e->pitch + subframe_size, ACB_SIZE * sizeof(float));
 
-        if (e->bitrate != RATE_QUANT && e->avg_acb_gain < 0.4) {
+        if (e->bitrate != RATE_QUANT && e->avg_acb_gain < 0.4)
+        {
             f = 0.1 * e->avg_fcb_gain;
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] += f;
-        } else if (e->bitrate == RATE_QUANT) {
+        }
+        else if (e->bitrate == RATE_QUANT)
+        {
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] = e->energy_vector[i];
         }
@@ -755,14 +815,15 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
         return ret;
     samples = (float *)frame->data[0];
 
-    if ((e->bitrate = determine_bitrate(avctx, &buf_size, &buf)) == RATE_ERRS) {
+    if ((e->bitrate = determine_bitrate(avctx, &buf_size, &buf)) == RATE_ERRS)
+    {
         warn_insufficient_frame_quality(avctx, "bitrate cannot be determined.");
         goto erasure;
     }
     if (e->bitrate <= SILENCE || e->bitrate == RATE_QUARTER)
         goto erasure;
     if (e->bitrate == RATE_QUANT && e->last_valid_bitrate == RATE_FULL
-                                 && !e->prev_error_flag)
+            && !e->prev_error_flag)
         goto erasure;
 
     if ((ret = init_get_bits8(&e->gb, buf, buf_size)) < 0)
@@ -771,24 +832,29 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
 
     unpack_frame(e);
 
-    if (e->bitrate != RATE_QUANT) {
+    if (e->bitrate != RATE_QUANT)
+    {
         uint8_t *p = (uint8_t *) &e->frame;
-        for (i = 0; i < sizeof(EVRCAFrame); i++) {
+        for (i = 0; i < sizeof(EVRCAFrame); i++)
+        {
             if (p[i])
                 break;
         }
         if (i == sizeof(EVRCAFrame))
             goto erasure;
-    } else if (e->frame.lsp[0] == 0xf &&
-               e->frame.lsp[1] == 0xf &&
-               e->frame.energy_gain == 0xff) {
+    }
+    else if (e->frame.lsp[0] == 0xf &&
+             e->frame.lsp[1] == 0xf &&
+             e->frame.energy_gain == 0xff)
+    {
         goto erasure;
     }
 
     if (decode_lspf(e) < 0)
         goto erasure;
 
-    if (e->bitrate == RATE_FULL || e->bitrate == RATE_HALF) {
+    if (e->bitrate == RATE_FULL || e->bitrate == RATE_HALF)
+    {
         /* Pitch delay parameter checking as per TIA/IS-127 5.1.5.1 */
         if (e->frame.pitch_delay > MAX_DELAY - MIN_DELAY)
             goto erasure;
@@ -796,7 +862,8 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
         e->pitch_delay = e->frame.pitch_delay + MIN_DELAY;
 
         /* Delay diff parameter checking as per TIA/IS-127 5.1.5.2 */
-        if (e->frame.delay_diff) {
+        if (e->frame.delay_diff)
+        {
             int p = e->pitch_delay - e->frame.delay_diff + 16;
             if (p < MIN_DELAY || p > MAX_DELAY)
                 goto erasure;
@@ -804,7 +871,8 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
 
         /* Delay contour reconstruction as per TIA/IS-127 5.2.2.2 */
         if (e->frame.delay_diff &&
-            e->bitrate == RATE_FULL && e->prev_error_flag) {
+                e->bitrate == RATE_FULL && e->prev_error_flag)
+        {
             float delay;
 
             memcpy(e->pitch, e->pitch_back, ACB_SIZE * sizeof(float));
@@ -815,7 +883,8 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
             if (fabs(e->pitch_delay - delay) > 15)
                 delay = e->pitch_delay;
 
-            for (i = 0; i < NB_SUBFRAMES; i++) {
+            for (i = 0; i < NB_SUBFRAMES; i++)
+            {
                 int subframe_size = subframe_sizes[i];
 
                 interpolate_delay(idelay, delay, e->prev_pitch_delay, i);
@@ -829,7 +898,9 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
             e->prev_pitch_delay = e->pitch_delay;
 
         e->avg_acb_gain = e->avg_fcb_gain = 0.0;
-    } else {
+    }
+    else
+    {
         idelay[0] = idelay[1] = idelay[2] = MIN_DELAY;
 
         /* Decode frame energy vectors as per TIA/IS-127 5.7.2 */
@@ -838,7 +909,8 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
         e->prev_energy_gain = e->frame.energy_gain;
     }
 
-    for (i = 0; i < NB_SUBFRAMES; i++) {
+    for (i = 0; i < NB_SUBFRAMES; i++)
+    {
         float tmp[SUBFRAME_SIZE + 6] = { 0 };
         int subframe_size = subframe_sizes[i];
         int pitch_lag;
@@ -855,11 +927,12 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
         if (e->frame.lpc_flag && e->prev_error_flag)
             bandwidth_expansion(ilpc, ilpc, 0.75);
 
-        if (e->bitrate != RATE_QUANT) {
+        if (e->bitrate != RATE_QUANT)
+        {
             float acb_sum, f;
 
             f = exp((e->bitrate == RATE_HALF ? 0.5 : 0.25)
-                         * (e->frame.fcb_gain[i] + 1));
+                    * (e->frame.fcb_gain[i] + 1));
             acb_sum = pitch_gain_vq[e->frame.acb_gain[i]];
             e->avg_acb_gain += acb_sum / NB_SUBFRAMES;
             e->avg_fcb_gain += f / NB_SUBFRAMES;
@@ -873,7 +946,9 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] += f * tmp[j];
             e->fade_scale = FFMIN(e->fade_scale + 0.2, 1.0);
-        } else {
+        }
+        else
+        {
             for (j = 0; j < subframe_size; j++)
                 e->pitch[ACB_SIZE + j] = e->energy_vector[i];
         }
@@ -890,7 +965,8 @@ static int evrc_decode_frame(AVCodecContext *avctx, void *data,
         samples += subframe_size;
     }
 
-    if (error_flag) {
+    if (error_flag)
+    {
 erasure:
         error_flag = 1;
         av_log(avctx, AV_LOG_WARNING, "frame erasure\n");
@@ -916,19 +992,22 @@ erasure:
 #define OFFSET(x) offsetof(EVRCContext, x)
 #define AD AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "postfilter", "enable postfilter", OFFSET(postfilter), AV_OPT_TYPE_INT, {.i64 = 1}, 0, 1, AD },
     { NULL }
 };
 
-static const AVClass evrcdec_class = {
+static const AVClass evrcdec_class =
+{
     .class_name = "evrc",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_evrc_decoder = {
+AVCodec ff_evrc_decoder =
+{
     .name           = "evrc",
     .long_name      = NULL_IF_CONFIG_SMALL("EVRC (Enhanced Variable Rate Codec)"),
     .type           = AVMEDIA_TYPE_AUDIO,

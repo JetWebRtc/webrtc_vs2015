@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -75,10 +75,13 @@ unsigned int BitAllocation(double pe, int short_block)
     double pew2;
     double bit_allocation;
 
-    if (short_block) {
+    if (short_block)
+    {
         pew1 = 0.6;
         pew2 = 24.0;
-    } else {
+    }
+    else
+    {
         pew1 = 0.3;
         pew2 = 6.0;
     }

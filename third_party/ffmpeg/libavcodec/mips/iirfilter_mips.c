@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -47,22 +47,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
- /**
- * @file
- * Reference: libavcodec/iirfilter.c
- */
+/**
+* @file
+* Reference: libavcodec/iirfilter.c
+*/
 
 #include "libavcodec/iirfilter.h"
 
 #if HAVE_INLINE_ASM
-typedef struct FFIIRFilterCoeffs {
+typedef struct FFIIRFilterCoeffs
+{
     int   order;
     float gain;
     int   *cx;
     float *cy;
 } FFIIRFilterCoeffs;
 
-typedef struct FFIIRFilterState {
+typedef struct FFIIRFilterState
+{
     float x[1];
 } FFIIRFilterState;
 
@@ -70,11 +72,13 @@ static void ff_iir_filter_flt_mips(const struct FFIIRFilterCoeffs *c,
                                    struct FFIIRFilterState *s, int size,
                                    const float *src, int sstep, float *dst, int dstep)
 {
-    if (c->order == 2) {
+    if (c->order == 2)
+    {
         int i;
         const float *src0 = src;
         float       *dst0 = dst;
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
             float in = *src0 * c->gain  + s->x[0] * c->cy[0] + s->x[1] * c->cy[1];
             *dst0 = s->x[0] + in + s->x[1] * c->cx[1];
             s->x[0] = s->x[1];
@@ -82,13 +86,16 @@ static void ff_iir_filter_flt_mips(const struct FFIIRFilterCoeffs *c,
             src0 += sstep;
             dst0 += dstep;
         }
-    } else if (c->order == 4) {
+    }
+    else if (c->order == 4)
+    {
         int i;
         const float *src0 = src;
         float       *dst0 = dst;
         float four = 4.0;
         float six  = 6.0;
-        for (i = 0; i < size; i += 4) {
+        for (i = 0; i < size; i += 4)
+        {
             float in1, in2, in3, in4;
             float res1, res2, res3, res4;
             float *x  = s->x;
@@ -152,17 +159,17 @@ static void ff_iir_filter_flt_mips(const struct FFIIRFilterCoeffs *c,
                 "madd.s %[res4],    %[res4],    %[in2], %[six]  \n\t"
 
                 : [in1]"=&f"(in1), [in2]"=&f"(in2),
-                  [in3]"=&f"(in3), [in4]"=&f"(in4),
-                  [res1]"=&f"(res1), [res2]"=&f"(res2),
-                  [res3]"=&f"(res3), [res4]"=&f"(res4)
+                [in3]"=&f"(in3), [in4]"=&f"(in4),
+                [res1]"=&f"(res1), [res2]"=&f"(res2),
+                [res3]"=&f"(res3), [res4]"=&f"(res4)
                 : [src0_0]"f"(src0_0), [src0_1]"f"(src0_1),
-                  [src0_2]"f"(src0_2), [src0_3]"f"(src0_3),
-                  [gain]"f"(gain), [x]"r"(x), [cy]"r"(cy),
-                  [four]"f"(four), [six]"f"(six)
+                [src0_2]"f"(src0_2), [src0_3]"f"(src0_3),
+                [gain]"f"(gain), [x]"r"(x), [cy]"r"(cy),
+                [four]"f"(four), [six]"f"(six)
                 : "$f0", "$f1", "$f2", "$f3",
-                  "$f4", "$f5", "$f6", "$f7",
-                  "$f8", "$f9", "$f10",
-                  "memory"
+                "$f4", "$f5", "$f6", "$f7",
+                "$f8", "$f9", "$f10",
+                "memory"
             );
 
             dst0[0      ] = res1;
@@ -173,11 +180,14 @@ static void ff_iir_filter_flt_mips(const struct FFIIRFilterCoeffs *c,
             src0 += 4*sstep;
             dst0 += 4*dstep;
         }
-    } else {
+    }
+    else
+    {
         int i;
         const float *src0 = src;
         float       *dst0 = dst;
-        for (i = 0; i < size; i++) {
+        for (i = 0; i < size; i++)
+        {
             int j;
             float in, res;
             in = *src0 * c->gain;
@@ -197,7 +207,8 @@ static void ff_iir_filter_flt_mips(const struct FFIIRFilterCoeffs *c,
 }
 #endif /* HAVE_INLINE_ASM */
 
-void ff_iir_filter_init_mips(FFIIRFilterContext *f) {
+void ff_iir_filter_init_mips(FFIIRFilterContext *f)
+{
 #if HAVE_INLINE_ASM
     f->filter_flt = ff_iir_filter_flt_mips;
 #endif /* HAVE_INLINE_ASM */

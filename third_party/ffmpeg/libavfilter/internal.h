@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -35,7 +35,8 @@
 
 #if FF_API_AVFILTERBUFFER
 #define POOL_SIZE 32
-typedef struct AVFilterPool {
+typedef struct AVFilterPool
+{
     AVFilterBufferRef *pic[POOL_SIZE];
     int count;
     int refcount;
@@ -43,7 +44,8 @@ typedef struct AVFilterPool {
 } AVFilterPool;
 #endif
 
-typedef struct AVFilterCommand {
+typedef struct AVFilterCommand
+{
     double time;                ///< time expressed in seconds
     char *command;              ///< command
     char *arg;                  ///< optional argument for the command
@@ -60,7 +62,8 @@ void ff_avfilter_graph_update_heap(AVFilterGraph *graph, AVFilterLink *link);
 /**
  * A filter pad used for either input or output.
  */
-struct AVFilterPad {
+struct AVFilterPad
+{
     /**
      * Pad name. The name is unique among inputs and among outputs, but an
      * input may have the same name as an output. This may be NULL if this
@@ -155,12 +158,14 @@ struct AVFilterPad {
 };
 #endif
 
-struct AVFilterGraphInternal {
+struct AVFilterGraphInternal
+{
     void *thread;
     avfilter_execute_func *thread_execute;
 };
 
-struct AVFilterInternal {
+struct AVFilterInternal
+{
     avfilter_execute_func *execute;
 };
 
@@ -264,33 +269,33 @@ void ff_tlog_link(void *ctx, AVFilterLink *link, int end);
  * @return >= 0 in case of success, a negative AVERROR code on error
  */
 int ff_insert_pad(unsigned idx, unsigned *count, size_t padidx_off,
-                   AVFilterPad **pads, AVFilterLink ***links,
-                   AVFilterPad *newpad);
+                  AVFilterPad **pads, AVFilterLink ***links,
+                  AVFilterPad *newpad);
 
 /** Insert a new input pad for the filter. */
 static inline int ff_insert_inpad(AVFilterContext *f, unsigned index,
-                                   AVFilterPad *p)
+                                  AVFilterPad *p)
 {
     int ret = ff_insert_pad(index, &f->nb_inputs, offsetof(AVFilterLink, dstpad),
-                  &f->input_pads, &f->inputs, p);
+                            &f->input_pads, &f->inputs, p);
 #if FF_API_FOO_COUNT
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     f->input_count = f->nb_inputs;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     return ret;
 }
 
 /** Insert a new output pad for the filter. */
 static inline int ff_insert_outpad(AVFilterContext *f, unsigned index,
-                                    AVFilterPad *p)
+                                   AVFilterPad *p)
 {
     int ret = ff_insert_pad(index, &f->nb_outputs, offsetof(AVFilterLink, srcpad),
-                  &f->output_pads, &f->outputs, p);
+                            &f->output_pads, &f->outputs, p);
 #if FF_API_FOO_COUNT
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     f->output_count = f->nb_outputs;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     return ret;
 }
@@ -364,7 +369,8 @@ int ff_filter_frame(AVFilterLink *link, AVFrame *frame);
 /**
  * Flags for AVFilterLink.flags.
  */
-enum {
+enum
+{
 
     /**
      * Frame requests may need to loop in order to be fulfilled.
@@ -397,11 +403,16 @@ void ff_filter_graph_remove_filter(AVFilterGraph *graph, AVFilterContext *filter
  */
 static inline int ff_norm_qscale(int qscale, int type)
 {
-    switch (type) {
-    case FF_QSCALE_TYPE_MPEG1: return qscale;
-    case FF_QSCALE_TYPE_MPEG2: return qscale >> 1;
-    case FF_QSCALE_TYPE_H264:  return qscale >> 2;
-    case FF_QSCALE_TYPE_VP56:  return (63 - qscale + 2) >> 2;
+    switch (type)
+    {
+    case FF_QSCALE_TYPE_MPEG1:
+        return qscale;
+    case FF_QSCALE_TYPE_MPEG2:
+        return qscale >> 1;
+    case FF_QSCALE_TYPE_H264:
+        return qscale >> 2;
+    case FF_QSCALE_TYPE_VP56:
+        return (63 - qscale + 2) >> 2;
     }
     return qscale;
 }

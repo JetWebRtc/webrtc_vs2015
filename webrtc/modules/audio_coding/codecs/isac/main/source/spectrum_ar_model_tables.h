@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,7 @@
 /*
  * spectrum_ar_model_tables.h
  *
- * This file contains definitions of tables with AR coefficients, 
+ * This file contains definitions of tables with AR coefficients,
  * Gain coefficients and cosine tables.
  *
  */

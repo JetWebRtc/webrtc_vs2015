@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC video Decoder
  *
  * Copyright (C) 2012 - 2013 Guillaume Martres
@@ -28,7 +28,8 @@
 
 struct HEVCContext;
 
-typedef struct HEVCPredContext {
+typedef struct HEVCPredContext
+{
     void (*intra_pred[4])(struct HEVCContext *s, int x0, int y0, int c_idx);
 
     void (*pred_planar[4])(uint8_t *src, const uint8_t *top,

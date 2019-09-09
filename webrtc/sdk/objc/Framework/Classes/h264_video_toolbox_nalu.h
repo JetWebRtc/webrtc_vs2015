@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,7 +23,8 @@
 
 using webrtc::H264::NaluIndex;
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Converts a sample buffer emitted from the VideoToolbox encoder into a buffer
 // suitable for RTP. The sample buffer is in avcc format whereas the rtp buffer
@@ -49,7 +50,7 @@ bool H264AnnexBBufferToCMSampleBuffer(const uint8_t* annexb_buffer,
 // Returns true if the type of the first NALU in the supplied Annex B buffer is
 // the SPS type.
 bool H264AnnexBBufferHasVideoFormatDescription(const uint8_t* annexb_buffer,
-                                               size_t annexb_buffer_size);
+        size_t annexb_buffer_size);
 
 // Returns a video format description created from the sps/pps information in
 // the Annex B buffer. If there is no such information, nullptr is returned.
@@ -59,52 +60,54 @@ CMVideoFormatDescriptionRef CreateVideoFormatDescription(
     size_t annexb_buffer_size);
 
 // Helper class for reading NALUs from an RTP Annex B buffer.
-class AnnexBBufferReader final {
- public:
-  AnnexBBufferReader(const uint8_t* annexb_buffer, size_t length);
-  ~AnnexBBufferReader() {}
-  AnnexBBufferReader(const AnnexBBufferReader& other) = delete;
-  void operator=(const AnnexBBufferReader& other) = delete;
+class AnnexBBufferReader final
+{
+public:
+    AnnexBBufferReader(const uint8_t* annexb_buffer, size_t length);
+    ~AnnexBBufferReader() {}
+    AnnexBBufferReader(const AnnexBBufferReader& other) = delete;
+    void operator=(const AnnexBBufferReader& other) = delete;
 
-  // Returns a pointer to the beginning of the next NALU slice without the
-  // header bytes and its length. Returns false if no more slices remain.
-  bool ReadNalu(const uint8_t** out_nalu, size_t* out_length);
+    // Returns a pointer to the beginning of the next NALU slice without the
+    // header bytes and its length. Returns false if no more slices remain.
+    bool ReadNalu(const uint8_t** out_nalu, size_t* out_length);
 
-  // Returns the number of unread NALU bytes, including the size of the header.
-  // If the buffer has no remaining NALUs this will return zero.
-  size_t BytesRemaining() const;
+    // Returns the number of unread NALU bytes, including the size of the header.
+    // If the buffer has no remaining NALUs this will return zero.
+    size_t BytesRemaining() const;
 
- private:
-  // Returns the the next offset that contains NALU data.
-  size_t FindNextNaluHeader(const uint8_t* start,
-                            size_t length,
-                            size_t offset) const;
+private:
+    // Returns the the next offset that contains NALU data.
+    size_t FindNextNaluHeader(const uint8_t* start,
+                              size_t length,
+                              size_t offset) const;
 
-  const uint8_t* const start_;
-  std::vector<NaluIndex> offsets_;
-  std::vector<NaluIndex>::iterator offset_;
-  const size_t length_;
+    const uint8_t* const start_;
+    std::vector<NaluIndex> offsets_;
+    std::vector<NaluIndex>::iterator offset_;
+    const size_t length_;
 };
 
 // Helper class for writing NALUs using avcc format into a buffer.
-class AvccBufferWriter final {
- public:
-  AvccBufferWriter(uint8_t* const avcc_buffer, size_t length);
-  ~AvccBufferWriter() {}
-  AvccBufferWriter(const AvccBufferWriter& other) = delete;
-  void operator=(const AvccBufferWriter& other) = delete;
+class AvccBufferWriter final
+{
+public:
+    AvccBufferWriter(uint8_t* const avcc_buffer, size_t length);
+    ~AvccBufferWriter() {}
+    AvccBufferWriter(const AvccBufferWriter& other) = delete;
+    void operator=(const AvccBufferWriter& other) = delete;
 
-  // Writes the data slice into the buffer. Returns false if there isn't
-  // enough space left.
-  bool WriteNalu(const uint8_t* data, size_t data_size);
+    // Writes the data slice into the buffer. Returns false if there isn't
+    // enough space left.
+    bool WriteNalu(const uint8_t* data, size_t data_size);
 
-  // Returns the unused bytes in the buffer.
-  size_t BytesRemaining() const;
+    // Returns the unused bytes in the buffer.
+    size_t BytesRemaining() const;
 
- private:
-  uint8_t* const start_;
-  size_t offset_;
-  const size_t length_;
+private:
+    uint8_t* const start_;
+    size_t offset_;
+    const size_t length_;
 };
 
 }  // namespace webrtc

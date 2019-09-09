@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Stefano Sabatini
  * Copyright (c) 2009 Giliard B. de Freitas <giliarde@gmail.com>
  * Copyright (C) 2002 Gunnar Monell <gmo@linux.nu>

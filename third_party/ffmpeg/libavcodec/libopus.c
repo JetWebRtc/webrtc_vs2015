@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libopus encoder/decoder common code
  * Copyright (c) 2012 Nicolas George
  *
@@ -27,7 +27,8 @@
 
 int ff_opus_error_to_averror(int err)
 {
-    switch (err) {
+    switch (err)
+    {
     case OPUS_BAD_ARG:
         return AVERROR(EINVAL);
     case OPUS_BUFFER_TOO_SMALL:

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,67 +13,70 @@
 
 #include "webrtc/p2p/base/sessiondescription.h"
 
-namespace cricket {
+namespace cricket
+{
 
 // RTCP Muxer, as defined in RFC 5761 (http://tools.ietf.org/html/rfc5761)
-class RtcpMuxFilter {
- public:
-  RtcpMuxFilter();
+class RtcpMuxFilter
+{
+public:
+    RtcpMuxFilter();
 
-  // Whether RTCP mux has been negotiated with a final answer (not provisional).
-  bool IsFullyActive() const;
+    // Whether RTCP mux has been negotiated with a final answer (not provisional).
+    bool IsFullyActive() const;
 
-  // Whether RTCP mux has been negotiated with a provisional answer; this means
-  // a later answer could disable RTCP mux, and so the RTCP transport should
-  // not be disposed yet.
-  bool IsProvisionallyActive() const;
+    // Whether RTCP mux has been negotiated with a provisional answer; this means
+    // a later answer could disable RTCP mux, and so the RTCP transport should
+    // not be disposed yet.
+    bool IsProvisionallyActive() const;
 
-  // Whether the filter is active, i.e. has RTCP mux been properly negotiated,
-  // either with a final or provisional answer.
-  bool IsActive() const;
+    // Whether the filter is active, i.e. has RTCP mux been properly negotiated,
+    // either with a final or provisional answer.
+    bool IsActive() const;
 
-  // Make the filter active (fully, not provisionally) regardless of the
-  // current state. This should be used when an endpoint *requires* RTCP mux.
-  void SetActive();
+    // Make the filter active (fully, not provisionally) regardless of the
+    // current state. This should be used when an endpoint *requires* RTCP mux.
+    void SetActive();
 
-  // Specifies whether the offer indicates the use of RTCP mux.
-  bool SetOffer(bool offer_enable, ContentSource src);
+    // Specifies whether the offer indicates the use of RTCP mux.
+    bool SetOffer(bool offer_enable, ContentSource src);
 
-  // Specifies whether the provisional answer indicates the use of RTCP mux.
-  bool SetProvisionalAnswer(bool answer_enable, ContentSource src);
+    // Specifies whether the provisional answer indicates the use of RTCP mux.
+    bool SetProvisionalAnswer(bool answer_enable, ContentSource src);
 
-  // Specifies whether the answer indicates the use of RTCP mux.
-  bool SetAnswer(bool answer_enable, ContentSource src);
+    // Specifies whether the answer indicates the use of RTCP mux.
+    bool SetAnswer(bool answer_enable, ContentSource src);
 
-  // Determines whether the specified packet is RTCP.
-  bool DemuxRtcp(const char* data, int len);
+    // Determines whether the specified packet is RTCP.
+    bool DemuxRtcp(const char* data, int len);
 
- private:
-  bool ExpectOffer(bool offer_enable, ContentSource source);
-  bool ExpectAnswer(ContentSource source);
-  enum State {
-    // RTCP mux filter unused.
-    ST_INIT,
-    // Offer with RTCP mux enabled received.
-    // RTCP mux filter is not active.
-    ST_RECEIVEDOFFER,
-    // Offer with RTCP mux enabled sent.
-    // RTCP mux filter can demux incoming packets but is not active.
-    ST_SENTOFFER,
-    // RTCP mux filter is active but the sent answer is only provisional.
-    // When the final answer is set, the state transitions to ST_ACTIVE or
-    // ST_INIT.
-    ST_SENTPRANSWER,
-    // RTCP mux filter is active but the received answer is only provisional.
-    // When the final answer is set, the state transitions to ST_ACTIVE or
-    // ST_INIT.
-    ST_RECEIVEDPRANSWER,
-    // Offer and answer set, RTCP mux enabled. It is not possible to de-activate
-    // the filter.
-    ST_ACTIVE
-  };
-  State state_;
-  bool offer_enable_;
+private:
+    bool ExpectOffer(bool offer_enable, ContentSource source);
+    bool ExpectAnswer(ContentSource source);
+    enum State
+    {
+        // RTCP mux filter unused.
+        ST_INIT,
+        // Offer with RTCP mux enabled received.
+        // RTCP mux filter is not active.
+        ST_RECEIVEDOFFER,
+        // Offer with RTCP mux enabled sent.
+        // RTCP mux filter can demux incoming packets but is not active.
+        ST_SENTOFFER,
+        // RTCP mux filter is active but the sent answer is only provisional.
+        // When the final answer is set, the state transitions to ST_ACTIVE or
+        // ST_INIT.
+        ST_SENTPRANSWER,
+        // RTCP mux filter is active but the received answer is only provisional.
+        // When the final answer is set, the state transitions to ST_ACTIVE or
+        // ST_INIT.
+        ST_RECEIVEDPRANSWER,
+        // Offer and answer set, RTCP mux enabled. It is not possible to de-activate
+        // the filter.
+        ST_ACTIVE
+    };
+    State state_;
+    bool offer_enable_;
 };
 
 }  // namespace cricket

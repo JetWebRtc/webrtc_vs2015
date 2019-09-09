@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Henrik Gramner
  *
  * This file is part of FFmpeg.
@@ -57,16 +57,20 @@ void checkasm_check_h264qpel(void)
     int op, bit_depth, i, j;
     declare_func(void, uint8_t *dst, const uint8_t *src, ptrdiff_t stride);
 
-    for (op = 0; op < 2; op++) {
+    for (op = 0; op < 2; op++)
+    {
         qpel_mc_func (*tab)[16] = op ? h.avg_h264_qpel_pixels_tab : h.put_h264_qpel_pixels_tab;
         const char *op_name = op ? "avg" : "put";
 
-        for (bit_depth = 8; bit_depth <= 10; bit_depth++) {
+        for (bit_depth = 8; bit_depth <= 10; bit_depth++)
+        {
             ff_h264qpel_init(&h, bit_depth);
-            for (i = 0; i < (op ? 3 : 4); i++) {
+            for (i = 0; i < (op ? 3 : 4); i++)
+            {
                 int size = 16 >> i;
                 for (j = 0; j < 16; j++)
-                    if (check_func(tab[i][j], "%s_h264_qpel_%d_mc%d%d_%d", op_name, size, j & 3, j >> 2, bit_depth)) {
+                    if (check_func(tab[i][j], "%s_h264_qpel_%d_mc%d%d_%d", op_name, size, j & 3, j >> 2, bit_depth))
+                    {
                         randomize_buffers();
                         call_ref(dst0, src0, size * SIZEOF_PIXEL);
                         call_new(dst1, src1, size * SIZEOF_PIXEL);

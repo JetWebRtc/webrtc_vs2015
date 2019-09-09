@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,22 +25,24 @@ extern "C" {
 
 #define MAX_LAG_BUFFERS 25
 
-struct lookahead_entry {
-  YV12_BUFFER_CONFIG img;
-  int64_t ts_start;
-  int64_t ts_end;
-  vpx_enc_frame_flags_t flags;
+struct lookahead_entry
+{
+    YV12_BUFFER_CONFIG img;
+    int64_t ts_start;
+    int64_t ts_end;
+    vpx_enc_frame_flags_t flags;
 };
 
 // The max of past frames we want to keep in the queue.
 #define MAX_PRE_FRAMES 1
 
-struct lookahead_ctx {
-  int max_sz;                  /* Absolute size of the queue */
-  int sz;                      /* Number of buffers currently in the queue */
-  int read_idx;                /* Read index */
-  int write_idx;               /* Write index */
-  struct lookahead_entry *buf; /* Buffer list */
+struct lookahead_ctx
+{
+    int max_sz;                  /* Absolute size of the queue */
+    int sz;                      /* Number of buffers currently in the queue */
+    int read_idx;                /* Read index */
+    int write_idx;               /* Write index */
+    struct lookahead_entry *buf; /* Buffer list */
 };
 
 /**\brief Initializes the lookahead stage
@@ -49,13 +51,13 @@ struct lookahead_ctx {
  * may be done when buffers are enqueued.
  */
 struct lookahead_ctx *vp9_lookahead_init(unsigned int width,
-                                         unsigned int height,
-                                         unsigned int subsampling_x,
-                                         unsigned int subsampling_y,
+        unsigned int height,
+        unsigned int subsampling_x,
+        unsigned int subsampling_y,
 #if CONFIG_VP9_HIGHBITDEPTH
-                                         int use_highbitdepth,
+        int use_highbitdepth,
 #endif
-                                         unsigned int depth);
+        unsigned int depth);
 
 /**\brief Destroys the lookahead stage
  */
@@ -103,7 +105,7 @@ struct lookahead_entry *vp9_lookahead_pop(struct lookahead_ctx *ctx, int drain);
  * \retval NULL, if no buffer exists at the specified index
  */
 struct lookahead_entry *vp9_lookahead_peek(struct lookahead_ctx *ctx,
-                                           int index);
+        int index);
 
 /**\brief Get the number of frames currently in the lookahead queue
  *

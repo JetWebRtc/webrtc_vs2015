@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -21,7 +21,8 @@
 
 #include "libavutil/samplefmt.h"
 
-enum WaveType {
+enum WaveType
+{
     WAVE_SIN,
     WAVE_TRI,
     WAVE_NB,

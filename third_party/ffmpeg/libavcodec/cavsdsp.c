@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chinese AVS video (AVS1-P2, JiZhun profile) decoder.
  *
  * DSP functions
@@ -42,66 +42,84 @@
 #define Q1 p0_p[ 1*stride]
 #define Q2 p0_p[ 2*stride]
 
-static inline void loop_filter_l2(uint8_t *p0_p,int stride,int alpha, int beta) {
+static inline void loop_filter_l2(uint8_t *p0_p,int stride,int alpha, int beta)
+{
     int p0 = P0;
     int q0 = Q0;
 
-    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta) {
+    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta)
+    {
         int s = p0 + q0 + 2;
         alpha = (alpha>>2) + 2;
-        if(abs(P2-p0) < beta && abs(p0-q0) < alpha) {
+        if(abs(P2-p0) < beta && abs(p0-q0) < alpha)
+        {
             P0 = (P1 + p0 + s) >> 2;
             P1 = (2*P1 + s) >> 2;
-        } else
+        }
+        else
             P0 = (2*P1 + s) >> 2;
-        if(abs(Q2-q0) < beta && abs(q0-p0) < alpha) {
+        if(abs(Q2-q0) < beta && abs(q0-p0) < alpha)
+        {
             Q0 = (Q1 + q0 + s) >> 2;
             Q1 = (2*Q1 + s) >> 2;
-        } else
+        }
+        else
             Q0 = (2*Q1 + s) >> 2;
     }
 }
 
-static inline void loop_filter_l1(uint8_t *p0_p, int stride, int alpha, int beta, int tc) {
+static inline void loop_filter_l1(uint8_t *p0_p, int stride, int alpha, int beta, int tc)
+{
     int p0 = P0;
     int q0 = Q0;
 
-    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta) {
+    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta)
+    {
         int delta = av_clip(((q0-p0)*3+P1-Q1+4)>>3,-tc, tc);
         P0 = av_clip_uint8(p0+delta);
         Q0 = av_clip_uint8(q0-delta);
-        if(abs(P2-p0)<beta) {
+        if(abs(P2-p0)<beta)
+        {
             delta = av_clip(((P0-P1)*3+P2-Q0+4)>>3, -tc, tc);
             P1 = av_clip_uint8(P1+delta);
         }
-        if(abs(Q2-q0)<beta) {
+        if(abs(Q2-q0)<beta)
+        {
             delta = av_clip(((Q1-Q0)*3+P0-Q2+4)>>3, -tc, tc);
             Q1 = av_clip_uint8(Q1-delta);
         }
     }
 }
 
-static inline void loop_filter_c2(uint8_t *p0_p,int stride,int alpha, int beta) {
+static inline void loop_filter_c2(uint8_t *p0_p,int stride,int alpha, int beta)
+{
     int p0 = P0;
     int q0 = Q0;
 
-    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta) {
+    if(abs(p0-q0)<alpha && abs(P1-p0)<beta && abs(Q1-q0)<beta)
+    {
         int s = p0 + q0 + 2;
         alpha = (alpha>>2) + 2;
-        if(abs(P2-p0) < beta && abs(p0-q0) < alpha) {
+        if(abs(P2-p0) < beta && abs(p0-q0) < alpha)
+        {
             P0 = (P1 + p0 + s) >> 2;
-        } else
+        }
+        else
             P0 = (2*P1 + s) >> 2;
-        if(abs(Q2-q0) < beta && abs(q0-p0) < alpha) {
+        if(abs(Q2-q0) < beta && abs(q0-p0) < alpha)
+        {
             Q0 = (Q1 + q0 + s) >> 2;
-        } else
+        }
+        else
             Q0 = (2*Q1 + s) >> 2;
     }
 }
 
 static inline void loop_filter_c1(uint8_t *p0_p,int stride,int alpha, int beta,
-                                  int tc) {
-    if(abs(P0-Q0)<alpha && abs(P1-P0)<beta && abs(Q1-Q0)<beta) {
+                                  int tc)
+{
+    if(abs(P0-Q0)<alpha && abs(P1-P0)<beta && abs(Q1-Q0)<beta)
+    {
         int delta = av_clip(((Q0-P0)*3+P1-Q1+4)>>3, -tc, tc);
         P0 = av_clip_uint8(P0+delta);
         Q0 = av_clip_uint8(Q0-delta);
@@ -116,65 +134,73 @@ static inline void loop_filter_c1(uint8_t *p0_p,int stride,int alpha, int beta,
 #undef Q2
 
 static void cavs_filter_lv_c(uint8_t *d, int stride, int alpha, int beta, int tc,
-                           int bs1, int bs2) {
+                             int bs1, int bs2)
+{
     int i;
     if(bs1==2)
-        for(i=0;i<16;i++)
+        for(i=0; i<16; i++)
             loop_filter_l2(d + i*stride,1,alpha,beta);
-    else {
+    else
+    {
         if(bs1)
-            for(i=0;i<8;i++)
+            for(i=0; i<8; i++)
                 loop_filter_l1(d + i*stride,1,alpha,beta,tc);
         if (bs2)
-            for(i=8;i<16;i++)
+            for(i=8; i<16; i++)
                 loop_filter_l1(d + i*stride,1,alpha,beta,tc);
     }
 }
 
 static void cavs_filter_lh_c(uint8_t *d, int stride, int alpha, int beta, int tc,
-                           int bs1, int bs2) {
+                             int bs1, int bs2)
+{
     int i;
     if(bs1==2)
-        for(i=0;i<16;i++)
+        for(i=0; i<16; i++)
             loop_filter_l2(d + i,stride,alpha,beta);
-    else {
+    else
+    {
         if(bs1)
-            for(i=0;i<8;i++)
+            for(i=0; i<8; i++)
                 loop_filter_l1(d + i,stride,alpha,beta,tc);
         if (bs2)
-            for(i=8;i<16;i++)
+            for(i=8; i<16; i++)
                 loop_filter_l1(d + i,stride,alpha,beta,tc);
     }
 }
 
 static void cavs_filter_cv_c(uint8_t *d, int stride, int alpha, int beta, int tc,
-                           int bs1, int bs2) {
+                             int bs1, int bs2)
+{
     int i;
     if(bs1==2)
-        for(i=0;i<8;i++)
+        for(i=0; i<8; i++)
             loop_filter_c2(d + i*stride,1,alpha,beta);
-    else {
+    else
+    {
         if(bs1)
-            for(i=0;i<4;i++)
+            for(i=0; i<4; i++)
                 loop_filter_c1(d + i*stride,1,alpha,beta,tc);
         if (bs2)
-            for(i=4;i<8;i++)
+            for(i=4; i<8; i++)
                 loop_filter_c1(d + i*stride,1,alpha,beta,tc);
     }
 }
 
 static void cavs_filter_ch_c(uint8_t *d, int stride, int alpha, int beta, int tc,
-                           int bs1, int bs2) {
+                             int bs1, int bs2)
+{
     int i;
     if(bs1==2)
-        for(i=0;i<8;i++)
+        for(i=0; i<8; i++)
             loop_filter_c2(d + i,stride,alpha,beta);
-    else {
+    else
+    {
         if(bs1)
-            for(i=0;i<4;i++)
+            for(i=0; i<4; i++)
                 loop_filter_c1(d + i,stride,alpha,beta,tc);
         if (bs2)
-            for(i=4;i<8;i++)
+            for(i=4; i<8; i++)
                 loop_filter_c1(d + i,stride,alpha,beta,tc);
     }
 }
@@ -185,14 +211,16 @@ static void cavs_filter_ch_c(uint8_t *d, int stride, int alpha, int beta, int tc
  *
  ****************************************************************************/
 
-static void cavs_idct8_add_c(uint8_t *dst, int16_t *block, int stride) {
+static void cavs_idct8_add_c(uint8_t *dst, int16_t *block, int stride)
+{
     int i;
     int16_t (*src)[8] = (int16_t(*)[8])block;
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
 
     src[0][0] += 8;
 
-    for( i = 0; i < 8; i++ ) {
+    for( i = 0; i < 8; i++ )
+    {
         const int a0 =  3*src[i][1] - (src[i][7]<<1);
         const int a1 =  3*src[i][3] + (src[i][5]<<1);
         const int a2 =  (src[i][3]<<1) - 3*src[i][5];
@@ -222,7 +250,8 @@ static void cavs_idct8_add_c(uint8_t *dst, int16_t *block, int stride) {
         src[i][6] = (b1 - b5) >> 3;
         src[i][7] = (b0 - b4) >> 3;
     }
-    for( i = 0; i < 8; i++ ) {
+    for( i = 0; i < 8; i++ )
+    {
         const int a0 =  3*src[1][i] - (src[7][i]<<1);
         const int a1 =  3*src[3][i] + (src[5][i]<<1);
         const int a2 =  (src[3][i]<<1) - 3*src[5][i];
@@ -534,7 +563,8 @@ CAVS_MC(avg_, 16)
 #define put_cavs_qpel16_mc00_c ff_put_pixels16x16_c
 #define avg_cavs_qpel16_mc00_c ff_avg_pixels16x16_c
 
-av_cold void ff_cavsdsp_init(CAVSDSPContext* c, AVCodecContext *avctx) {
+av_cold void ff_cavsdsp_init(CAVSDSPContext* c, AVCodecContext *avctx)
+{
 #define dspfunc(PFX, IDX, NUM) \
     c->PFX ## _pixels_tab[IDX][ 0] = PFX ## NUM ## _mc00_c; \
     c->PFX ## _pixels_tab[IDX][ 1] = PFX ## NUM ## _mc10_c; \

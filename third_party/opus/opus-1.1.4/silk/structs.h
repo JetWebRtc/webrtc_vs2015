@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -42,7 +42,8 @@ extern "C"
 /************************************/
 /* Noise shaping quantization state */
 /************************************/
-typedef struct {
+typedef struct
+{
     opus_int16                  xq[           2 * MAX_FRAME_LENGTH ]; /* Buffer for quantized output signal                             */
     opus_int32                  sLTP_shp_Q14[ 2 * MAX_FRAME_LENGTH ];
     opus_int32                  sLPC_Q14[ MAX_SUB_FRAME_LENGTH + NSQ_LPC_BUF_LENGTH ];
@@ -59,7 +60,8 @@ typedef struct {
 /********************************/
 /* VAD state                    */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int32                  AnaState[ 2 ];                  /* Analysis filterbank state: 0-8 kHz                                   */
     opus_int32                  AnaState1[ 2 ];                 /* Analysis filterbank state: 0-4 kHz                                   */
     opus_int32                  AnaState2[ 2 ];                 /* Analysis filterbank state: 0-2 kHz                                   */
@@ -73,14 +75,16 @@ typedef struct {
 } silk_VAD_state;
 
 /* Variable cut-off low-pass filter state */
-typedef struct {
+typedef struct
+{
     opus_int32                   In_LP_State[ 2 ];           /* Low pass filter state */
     opus_int32                   transition_frame_no;        /* Counter which is mapped to a cut-off frequency */
     opus_int                     mode;                       /* Operating mode, <0: switch down, >0: switch up; 0: do nothing           */
 } silk_LP_state;
 
 /* Structure containing NLSF codebook */
-typedef struct {
+typedef struct
+{
     const opus_int16             nVectors;
     const opus_int16             order;
     const opus_int16             quantStepSize_Q16;
@@ -94,7 +98,8 @@ typedef struct {
     const opus_int16             *deltaMin_Q15;
 } silk_NLSF_CB_struct;
 
-typedef struct {
+typedef struct
+{
     opus_int16                   pred_prev_Q13[ 2 ];
     opus_int16                   sMid[ 2 ];
     opus_int16                   sSide[ 2 ];
@@ -106,13 +111,15 @@ typedef struct {
     opus_int8                    mid_only_flags[ MAX_FRAMES_PER_PACKET ];
 } stereo_enc_state;
 
-typedef struct {
+typedef struct
+{
     opus_int16                   pred_prev_Q13[ 2 ];
     opus_int16                   sMid[ 2 ];
     opus_int16                   sSide[ 2 ];
 } stereo_dec_state;
 
-typedef struct {
+typedef struct
+{
     opus_int8                    GainsIndices[ MAX_NB_SUBFR ];
     opus_int8                    LTPIndex[ MAX_NB_SUBFR ];
     opus_int8                    NLSFIndices[ MAX_LPC_ORDER + 1 ];
@@ -129,7 +136,8 @@ typedef struct {
 /********************************/
 /* Encoder state                */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int32                   In_HP_State[ 2 ];                  /* High pass filter state                                           */
     opus_int32                   variable_HP_smth1_Q15;             /* State of first smoother                                          */
     opus_int32                   variable_HP_smth2_Q15;             /* State of second smoother                                         */
@@ -228,7 +236,8 @@ typedef struct {
 
 
 /* Struct for Packet Loss Concealment */
-typedef struct {
+typedef struct
+{
     opus_int32                  pitchL_Q8;                          /* Pitch lag to use for voiced concealment                          */
     opus_int16                  LTPCoef_Q14[ LTP_ORDER ];           /* LTP coeficients to use for voiced concealment                    */
     opus_int16                  prevLPC_Q12[ MAX_LPC_ORDER ];
@@ -245,7 +254,8 @@ typedef struct {
 } silk_PLC_struct;
 
 /* Struct for CNG */
-typedef struct {
+typedef struct
+{
     opus_int32                  CNG_exc_buf_Q14[ MAX_FRAME_LENGTH ];
     opus_int16                  CNG_smth_NLSF_Q15[ MAX_LPC_ORDER ];
     opus_int32                  CNG_synth_state[ MAX_LPC_ORDER ];
@@ -257,7 +267,8 @@ typedef struct {
 /********************************/
 /* Decoder state                */
 /********************************/
-typedef struct {
+typedef struct
+{
     opus_int32                  prev_gain_Q16;
     opus_int32                  exc_Q14[ MAX_FRAME_LENGTH ];
     opus_int32                  sLPC_Q14_buf[ MAX_LPC_ORDER ];
@@ -309,7 +320,8 @@ typedef struct {
 /************************/
 /* Decoder control      */
 /************************/
-typedef struct {
+typedef struct
+{
     /* Prediction and coding parameters */
     opus_int                    pitchL[ MAX_NB_SUBFR ];
     opus_int32                  Gains_Q16[ MAX_NB_SUBFR ];

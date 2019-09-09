@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,7 +33,8 @@
 #include "webrtc/typedefs.h"
 #include "webrtc/video_receive_stream.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class NackModule;
 class PacedSender;
@@ -52,153 +53,158 @@ class UlpfecReceiver;
 class VCMTiming;
 class VieRemb;
 
-namespace vcm {
+namespace vcm
+{
 class VideoReceiver;
 }  // namespace vcm
 
 class RtpStreamReceiver : public RtpData,
-                          public RtpFeedback,
-                          public VCMFrameTypeCallback,
-                          public VCMPacketRequestCallback,
-                          public video_coding::OnReceivedFrameCallback,
-                          public video_coding::OnCompleteFrameCallback,
-                          public CallStatsObserver {
- public:
-  RtpStreamReceiver(
-      vcm::VideoReceiver* video_receiver,
-      Transport* transport,
-      RtcpRttStats* rtt_stats,
-      PacketRouter* packet_router,
-      VieRemb* remb,
-      const VideoReceiveStream::Config* config,
-      ReceiveStatisticsProxy* receive_stats_proxy,
-      ProcessThread* process_thread,
-      NackSender* nack_sender,
-      KeyFrameRequestSender* keyframe_request_sender,
-      video_coding::OnCompleteFrameCallback* complete_frame_callback,
-      VCMTiming* timing);
-  ~RtpStreamReceiver();
+    public RtpFeedback,
+    public VCMFrameTypeCallback,
+    public VCMPacketRequestCallback,
+    public video_coding::OnReceivedFrameCallback,
+    public video_coding::OnCompleteFrameCallback,
+    public CallStatsObserver
+{
+public:
+    RtpStreamReceiver(
+        vcm::VideoReceiver* video_receiver,
+        Transport* transport,
+        RtcpRttStats* rtt_stats,
+        PacketRouter* packet_router,
+        VieRemb* remb,
+        const VideoReceiveStream::Config* config,
+        ReceiveStatisticsProxy* receive_stats_proxy,
+        ProcessThread* process_thread,
+        NackSender* nack_sender,
+        KeyFrameRequestSender* keyframe_request_sender,
+        video_coding::OnCompleteFrameCallback* complete_frame_callback,
+        VCMTiming* timing);
+    ~RtpStreamReceiver();
 
-  bool AddReceiveCodec(const VideoCodec& video_codec,
-                       const std::map<std::string, std::string>& codec_params);
-  uint32_t GetRemoteSsrc() const;
-  int GetCsrcs(uint32_t* csrcs) const;
+    bool AddReceiveCodec(const VideoCodec& video_codec,
+                         const std::map<std::string, std::string>& codec_params);
+    uint32_t GetRemoteSsrc() const;
+    int GetCsrcs(uint32_t* csrcs) const;
 
-  RtpReceiver* GetRtpReceiver() const;
-  RtpRtcp* rtp_rtcp() const { return rtp_rtcp_.get(); }
+    RtpReceiver* GetRtpReceiver() const;
+    RtpRtcp* rtp_rtcp() const
+    {
+        return rtp_rtcp_.get();
+    }
 
-  void StartReceive();
-  void StopReceive();
+    void StartReceive();
+    void StopReceive();
 
-  bool DeliverRtcp(const uint8_t* rtcp_packet, size_t rtcp_packet_length);
+    bool DeliverRtcp(const uint8_t* rtcp_packet, size_t rtcp_packet_length);
 
-  void FrameContinuous(uint16_t seq_num);
+    void FrameContinuous(uint16_t seq_num);
 
-  void FrameDecoded(uint16_t seq_num);
+    void FrameDecoded(uint16_t seq_num);
 
-  void SignalNetworkState(NetworkState state);
+    void SignalNetworkState(NetworkState state);
 
-  // TODO(nisse): Intended to be part of an RtpPacketReceiver interface.
-  void OnRtpPacket(const RtpPacketReceived& packet);
+    // TODO(nisse): Intended to be part of an RtpPacketReceiver interface.
+    void OnRtpPacket(const RtpPacketReceived& packet);
 
-  // Implements RtpData.
-  int32_t OnReceivedPayloadData(const uint8_t* payload_data,
-                                size_t payload_size,
-                                const WebRtcRTPHeader* rtp_header) override;
-  bool OnRecoveredPacket(const uint8_t* packet, size_t packet_length) override;
+    // Implements RtpData.
+    int32_t OnReceivedPayloadData(const uint8_t* payload_data,
+                                  size_t payload_size,
+                                  const WebRtcRTPHeader* rtp_header) override;
+    bool OnRecoveredPacket(const uint8_t* packet, size_t packet_length) override;
 
-  // Implements RtpFeedback.
-  int32_t OnInitializeDecoder(int8_t payload_type,
-                              const char payload_name[RTP_PAYLOAD_NAME_SIZE],
-                              int frequency,
-                              size_t channels,
-                              uint32_t rate) override;
-  void OnIncomingSSRCChanged(uint32_t ssrc) override;
-  void OnIncomingCSRCChanged(uint32_t CSRC, bool added) override {}
+    // Implements RtpFeedback.
+    int32_t OnInitializeDecoder(int8_t payload_type,
+                                const char payload_name[RTP_PAYLOAD_NAME_SIZE],
+                                int frequency,
+                                size_t channels,
+                                uint32_t rate) override;
+    void OnIncomingSSRCChanged(uint32_t ssrc) override;
+    void OnIncomingCSRCChanged(uint32_t CSRC, bool added) override {}
 
-  // Implements VCMFrameTypeCallback.
-  int32_t RequestKeyFrame() override;
-  int32_t SliceLossIndicationRequest(const uint64_t picture_id) override;
+    // Implements VCMFrameTypeCallback.
+    int32_t RequestKeyFrame() override;
+    int32_t SliceLossIndicationRequest(const uint64_t picture_id) override;
 
-  bool IsUlpfecEnabled() const;
-  bool IsRetransmissionsEnabled() const;
-  // Don't use, still experimental.
-  void RequestPacketRetransmit(const std::vector<uint16_t>& sequence_numbers);
+    bool IsUlpfecEnabled() const;
+    bool IsRetransmissionsEnabled() const;
+    // Don't use, still experimental.
+    void RequestPacketRetransmit(const std::vector<uint16_t>& sequence_numbers);
 
-  // Implements VCMPacketRequestCallback.
-  int32_t ResendPackets(const uint16_t* sequenceNumbers,
-                        uint16_t length) override;
+    // Implements VCMPacketRequestCallback.
+    int32_t ResendPackets(const uint16_t* sequenceNumbers,
+                          uint16_t length) override;
 
-  // Implements OnReceivedFrameCallback.
-  void OnReceivedFrame(
-      std::unique_ptr<video_coding::RtpFrameObject> frame) override;
+    // Implements OnReceivedFrameCallback.
+    void OnReceivedFrame(
+        std::unique_ptr<video_coding::RtpFrameObject> frame) override;
 
-  // Implements OnCompleteFrameCallback.
-  void OnCompleteFrame(
-      std::unique_ptr<video_coding::FrameObject> frame) override;
+    // Implements OnCompleteFrameCallback.
+    void OnCompleteFrame(
+        std::unique_ptr<video_coding::FrameObject> frame) override;
 
-  void OnRttUpdate(int64_t avg_rtt_ms, int64_t max_rtt_ms) override;
+    void OnRttUpdate(int64_t avg_rtt_ms, int64_t max_rtt_ms) override;
 
- private:
-  bool AddReceiveCodec(const VideoCodec& video_codec);
-  bool ReceivePacket(const uint8_t* packet,
-                     size_t packet_length,
-                     const RTPHeader& header,
-                     bool in_order);
-  // Parses and handles for instance RTX and RED headers.
-  // This function assumes that it's being called from only one thread.
-  bool ParseAndHandleEncapsulatingHeader(const uint8_t* packet,
-                                         size_t packet_length,
-                                         const RTPHeader& header);
-  void NotifyReceiverOfFecPacket(const RTPHeader& header);
-  bool IsPacketInOrder(const RTPHeader& header) const;
-  bool IsPacketRetransmitted(const RTPHeader& header, bool in_order) const;
-  void UpdateHistograms();
-  void EnableReceiveRtpHeaderExtension(const std::string& extension, int id);
-  bool IsRedEnabled() const;
-  void InsertSpsPpsIntoTracker(uint8_t payload_type);
+private:
+    bool AddReceiveCodec(const VideoCodec& video_codec);
+    bool ReceivePacket(const uint8_t* packet,
+                       size_t packet_length,
+                       const RTPHeader& header,
+                       bool in_order);
+    // Parses and handles for instance RTX and RED headers.
+    // This function assumes that it's being called from only one thread.
+    bool ParseAndHandleEncapsulatingHeader(const uint8_t* packet,
+                                           size_t packet_length,
+                                           const RTPHeader& header);
+    void NotifyReceiverOfFecPacket(const RTPHeader& header);
+    bool IsPacketInOrder(const RTPHeader& header) const;
+    bool IsPacketRetransmitted(const RTPHeader& header, bool in_order) const;
+    void UpdateHistograms();
+    void EnableReceiveRtpHeaderExtension(const std::string& extension, int id);
+    bool IsRedEnabled() const;
+    void InsertSpsPpsIntoTracker(uint8_t payload_type);
 
-  Clock* const clock_;
-  // Ownership of this object lies with VideoReceiveStream, which owns |this|.
-  const VideoReceiveStream::Config& config_;
-  vcm::VideoReceiver* const video_receiver_;
-  PacketRouter* const packet_router_;
-  VieRemb* const remb_;
-  ProcessThread* const process_thread_;
+    Clock* const clock_;
+    // Ownership of this object lies with VideoReceiveStream, which owns |this|.
+    const VideoReceiveStream::Config& config_;
+    vcm::VideoReceiver* const video_receiver_;
+    PacketRouter* const packet_router_;
+    VieRemb* const remb_;
+    ProcessThread* const process_thread_;
 
-  RemoteNtpTimeEstimator ntp_estimator_;
-  RTPPayloadRegistry rtp_payload_registry_;
+    RemoteNtpTimeEstimator ntp_estimator_;
+    RTPPayloadRegistry rtp_payload_registry_;
 
-  const std::unique_ptr<RtpHeaderParser> rtp_header_parser_;
-  const std::unique_ptr<RtpReceiver> rtp_receiver_;
-  const std::unique_ptr<ReceiveStatistics> rtp_receive_statistics_;
-  std::unique_ptr<UlpfecReceiver> ulpfec_receiver_;
+    const std::unique_ptr<RtpHeaderParser> rtp_header_parser_;
+    const std::unique_ptr<RtpReceiver> rtp_receiver_;
+    const std::unique_ptr<ReceiveStatistics> rtp_receive_statistics_;
+    std::unique_ptr<UlpfecReceiver> ulpfec_receiver_;
 
-  rtc::CriticalSection receive_cs_;
-  bool receiving_ GUARDED_BY(receive_cs_);
-  uint8_t restored_packet_[IP_PACKET_SIZE] GUARDED_BY(receive_cs_);
-  bool restored_packet_in_use_ GUARDED_BY(receive_cs_);
-  int64_t last_packet_log_ms_ GUARDED_BY(receive_cs_);
+    rtc::CriticalSection receive_cs_;
+    bool receiving_ GUARDED_BY(receive_cs_);
+    uint8_t restored_packet_[IP_PACKET_SIZE] GUARDED_BY(receive_cs_);
+    bool restored_packet_in_use_ GUARDED_BY(receive_cs_);
+    int64_t last_packet_log_ms_ GUARDED_BY(receive_cs_);
 
-  const std::unique_ptr<RtpRtcp> rtp_rtcp_;
+    const std::unique_ptr<RtpRtcp> rtp_rtcp_;
 
-  // Members for the new jitter buffer experiment.
-  bool jitter_buffer_experiment_;
-  video_coding::OnCompleteFrameCallback* complete_frame_callback_;
-  KeyFrameRequestSender* keyframe_request_sender_;
-  VCMTiming* timing_;
-  std::unique_ptr<NackModule> nack_module_;
-  rtc::scoped_refptr<video_coding::PacketBuffer> packet_buffer_;
-  std::unique_ptr<video_coding::RtpFrameReferenceFinder> reference_finder_;
-  rtc::CriticalSection last_seq_num_cs_;
-  std::map<uint16_t, uint16_t, DescendingSeqNumComp<uint16_t>>
-      last_seq_num_for_pic_id_ GUARDED_BY(last_seq_num_cs_);
-  video_coding::H264SpsPpsTracker tracker_;
-  // TODO(johan): Remove pt_codec_params_ once
-  // https://bugs.chromium.org/p/webrtc/issues/detail?id=6883 is resolved.
-  // Maps a payload type to a map of out-of-band supplied codec parameters.
-  std::map<uint8_t, std::map<std::string, std::string>> pt_codec_params_;
-  int16_t last_payload_type_ = -1;
+    // Members for the new jitter buffer experiment.
+    bool jitter_buffer_experiment_;
+    video_coding::OnCompleteFrameCallback* complete_frame_callback_;
+    KeyFrameRequestSender* keyframe_request_sender_;
+    VCMTiming* timing_;
+    std::unique_ptr<NackModule> nack_module_;
+    rtc::scoped_refptr<video_coding::PacketBuffer> packet_buffer_;
+    std::unique_ptr<video_coding::RtpFrameReferenceFinder> reference_finder_;
+    rtc::CriticalSection last_seq_num_cs_;
+    std::map<uint16_t, uint16_t, DescendingSeqNumComp<uint16_t>>
+            last_seq_num_for_pic_id_ GUARDED_BY(last_seq_num_cs_);
+    video_coding::H264SpsPpsTracker tracker_;
+    // TODO(johan): Remove pt_codec_params_ once
+    // https://bugs.chromium.org/p/webrtc/issues/detail?id=6883 is resolved.
+    // Maps a payload type to a map of out-of-band supplied codec parameters.
+    std::map<uint8_t, std::map<std::string, std::string>> pt_codec_params_;
+    int16_t last_payload_type_ = -1;
 };
 
 }  // namespace webrtc

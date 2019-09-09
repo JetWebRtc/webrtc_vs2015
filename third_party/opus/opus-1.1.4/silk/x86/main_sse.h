@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -235,16 +235,16 @@ opus_int silk_VAD_GetSA_Q8_sse4_1(
      ((*SILK_VAD_GETSA_Q8_IMPL[(arch) & OPUS_ARCHMASK])(psEnC, pIn))
 
 extern opus_int (*const SILK_VAD_GETSA_Q8_IMPL[OPUS_ARCHMASK + 1])(
-     silk_encoder_state *psEnC,
-     const opus_int16   pIn[]);
+    silk_encoder_state *psEnC,
+    const opus_int16   pIn[]);
 
 #  define OVERRIDE_silk_warped_LPC_analysis_filter_FIX
 
 #endif
 
 void silk_warped_LPC_analysis_filter_FIX_sse4_1(
-          opus_int32            state[],                    /* I/O  State [order + 1]                   */
-          opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
+    opus_int32            state[],                    /* I/O  State [order + 1]                   */
+    opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
     const opus_int16            coef_Q13[],                 /* I    Coefficients [order]                */
     const opus_int16            input[],                    /* I    Input signal [length]               */
     const opus_int16            lambda_Q16,                 /* I    Warping factor                      */
@@ -259,8 +259,8 @@ void silk_warped_LPC_analysis_filter_FIX_sse4_1(
 #else
 
 extern void (*const SILK_WARPED_LPC_ANALYSIS_FILTER_FIX_IMPL[OPUS_ARCHMASK + 1])(
-          opus_int32            state[],                    /* I/O  State [order + 1]                   */
-          opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
+    opus_int32            state[],                    /* I/O  State [order + 1]                   */
+    opus_int32            res_Q2[],                   /* O    Residual signal [length]            */
     const opus_int16            coef_Q13[],                 /* I    Coefficients [order]                */
     const opus_int16            input[],                    /* I    Input signal [length]               */
     const opus_int16            lambda_Q16,                 /* I    Warping factor                      */

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -52,10 +52,12 @@ void silk_find_pred_coefs_FIX(
 
     /* weighting for weighted least squares */
     min_gain_Q16 = silk_int32_MAX >> 6;
-    for( i = 0; i < psEnc->sCmn.nb_subfr; i++ ) {
+    for( i = 0; i < psEnc->sCmn.nb_subfr; i++ )
+    {
         min_gain_Q16 = silk_min( min_gain_Q16, psEncCtrl->Gains_Q16[ i ] );
     }
-    for( i = 0; i < psEnc->sCmn.nb_subfr; i++ ) {
+    for( i = 0; i < psEnc->sCmn.nb_subfr; i++ )
+    {
         /* Divide to Q16 */
         silk_assert( psEncCtrl->Gains_Q16[ i ] > 0 );
         /* Invert and normalize gains, and ensure that maximum invGains_Q16 is within range of a 16 bit int */
@@ -75,8 +77,9 @@ void silk_find_pred_coefs_FIX(
 
     ALLOC( LPC_in_pre,
            psEnc->sCmn.nb_subfr * psEnc->sCmn.predictLPCOrder
-               + psEnc->sCmn.frame_length, opus_int16 );
-    if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {
+           + psEnc->sCmn.frame_length, opus_int16 );
+    if( psEnc->sCmn.indices.signalType == TYPE_VOICED )
+    {
         VARDECL( opus_int32, WLTP );
 
         /**********/
@@ -88,31 +91,34 @@ void silk_find_pred_coefs_FIX(
 
         /* LTP analysis */
         silk_find_LTP_FIX( psEncCtrl->LTPCoef_Q14, WLTP, &psEncCtrl->LTPredCodGain_Q7,
-            res_pitch, psEncCtrl->pitchL, Wght_Q15, psEnc->sCmn.subfr_length,
-            psEnc->sCmn.nb_subfr, psEnc->sCmn.ltp_mem_length, LTP_corrs_rshift, psEnc->sCmn.arch );
+                           res_pitch, psEncCtrl->pitchL, Wght_Q15, psEnc->sCmn.subfr_length,
+                           psEnc->sCmn.nb_subfr, psEnc->sCmn.ltp_mem_length, LTP_corrs_rshift, psEnc->sCmn.arch );
 
         /* Quantize LTP gain parameters */
         silk_quant_LTP_gains( psEncCtrl->LTPCoef_Q14, psEnc->sCmn.indices.LTPIndex, &psEnc->sCmn.indices.PERIndex,
-            &psEnc->sCmn.sum_log_gain_Q7, WLTP, psEnc->sCmn.mu_LTP_Q9, psEnc->sCmn.LTPQuantLowComplexity, psEnc->sCmn.nb_subfr,
-            psEnc->sCmn.arch);
+                              &psEnc->sCmn.sum_log_gain_Q7, WLTP, psEnc->sCmn.mu_LTP_Q9, psEnc->sCmn.LTPQuantLowComplexity, psEnc->sCmn.nb_subfr,
+                              psEnc->sCmn.arch);
 
         /* Control LTP scaling */
         silk_LTP_scale_ctrl_FIX( psEnc, psEncCtrl, condCoding );
 
         /* Create LTP residual */
         silk_LTP_analysis_filter_FIX( LPC_in_pre, x - psEnc->sCmn.predictLPCOrder, psEncCtrl->LTPCoef_Q14,
-            psEncCtrl->pitchL, invGains_Q16, psEnc->sCmn.subfr_length, psEnc->sCmn.nb_subfr, psEnc->sCmn.predictLPCOrder );
+                                      psEncCtrl->pitchL, invGains_Q16, psEnc->sCmn.subfr_length, psEnc->sCmn.nb_subfr, psEnc->sCmn.predictLPCOrder );
 
-    } else {
+    }
+    else
+    {
         /************/
         /* UNVOICED */
         /************/
         /* Create signal with prepended subframes, scaled by inverse gains */
         x_ptr     = x - psEnc->sCmn.predictLPCOrder;
         x_pre_ptr = LPC_in_pre;
-        for( i = 0; i < psEnc->sCmn.nb_subfr; i++ ) {
+        for( i = 0; i < psEnc->sCmn.nb_subfr; i++ )
+        {
             silk_scale_copy_vector16( x_pre_ptr, x_ptr, invGains_Q16[ i ],
-                psEnc->sCmn.subfr_length + psEnc->sCmn.predictLPCOrder );
+                                      psEnc->sCmn.subfr_length + psEnc->sCmn.predictLPCOrder );
             x_pre_ptr += psEnc->sCmn.subfr_length + psEnc->sCmn.predictLPCOrder;
             x_ptr     += psEnc->sCmn.subfr_length;
         }
@@ -123,13 +129,16 @@ void silk_find_pred_coefs_FIX(
     }
 
     /* Limit on total predictive coding gain */
-    if( psEnc->sCmn.first_frame_after_reset ) {
+    if( psEnc->sCmn.first_frame_after_reset )
+    {
         minInvGain_Q30 = SILK_FIX_CONST( 1.0f / MAX_PREDICTION_POWER_GAIN_AFTER_RESET, 30 );
-    } else {
+    }
+    else
+    {
         minInvGain_Q30 = silk_log2lin( silk_SMLAWB( 16 << 7, (opus_int32)psEncCtrl->LTPredCodGain_Q7, SILK_FIX_CONST( 1.0 / 3, 16 ) ) );      /* Q16 */
         minInvGain_Q30 = silk_DIV32_varQ( minInvGain_Q30,
-            silk_SMULWW( SILK_FIX_CONST( MAX_PREDICTION_POWER_GAIN, 0 ),
-                silk_SMLAWB( SILK_FIX_CONST( 0.25, 18 ), SILK_FIX_CONST( 0.75, 18 ), psEncCtrl->coding_quality_Q14 ) ), 14 );
+                                          silk_SMULWW( SILK_FIX_CONST( MAX_PREDICTION_POWER_GAIN, 0 ),
+                                                  silk_SMLAWB( SILK_FIX_CONST( 0.25, 18 ), SILK_FIX_CONST( 0.75, 18 ), psEncCtrl->coding_quality_Q14 ) ), 14 );
     }
 
     /* LPC_in_pre contains the LTP-filtered input for voiced, and the unfiltered input for unvoiced */
@@ -140,7 +149,7 @@ void silk_find_pred_coefs_FIX(
 
     /* Calculate residual energy using quantized LPC coefficients */
     silk_residual_energy_FIX( psEncCtrl->ResNrg, psEncCtrl->ResNrgQ, LPC_in_pre, psEncCtrl->PredCoef_Q12, local_gains,
-        psEnc->sCmn.subfr_length, psEnc->sCmn.nb_subfr, psEnc->sCmn.predictLPCOrder, psEnc->sCmn.arch );
+                              psEnc->sCmn.subfr_length, psEnc->sCmn.nb_subfr, psEnc->sCmn.predictLPCOrder, psEnc->sCmn.arch );
 
     /* Copy to prediction struct for use in next frame for interpolation */
     silk_memcpy( psEnc->sCmn.prev_NLSFq_Q15, NLSF_Q15, sizeof( psEnc->sCmn.prev_NLSFq_Q15 ) );

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 
 #include "deshake.h"
 
-typedef struct {
+typedef struct
+{
     float x;
     float y;
     float z;

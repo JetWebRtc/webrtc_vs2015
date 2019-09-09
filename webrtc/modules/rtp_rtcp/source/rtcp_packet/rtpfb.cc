@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,8 +12,10 @@
 
 #include "webrtc/modules/rtp_rtcp/source/byte_io.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 constexpr uint8_t Rtpfb::kPacketType;
 // RFC 4585, Section 6.1: Feedback format.
 //
@@ -31,14 +33,16 @@ constexpr uint8_t Rtpfb::kPacketType;
 //   :            Feedback Control Information (FCI)                 :
 //   :                                                               :
 
-void Rtpfb::ParseCommonFeedback(const uint8_t* payload) {
-  sender_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&payload[0]);
-  media_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&payload[4]);
+void Rtpfb::ParseCommonFeedback(const uint8_t* payload)
+{
+    sender_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&payload[0]);
+    media_ssrc_ = ByteReader<uint32_t>::ReadBigEndian(&payload[4]);
 }
 
-void Rtpfb::CreateCommonFeedback(uint8_t* payload) const {
-  ByteWriter<uint32_t>::WriteBigEndian(&payload[0], sender_ssrc_);
-  ByteWriter<uint32_t>::WriteBigEndian(&payload[4], media_ssrc_);
+void Rtpfb::CreateCommonFeedback(uint8_t* payload) const
+{
+    ByteWriter<uint32_t>::WriteBigEndian(&payload[0], sender_ssrc_);
+    ByteWriter<uint32_t>::WriteBigEndian(&payload[4], media_ssrc_);
 }
 
 }  // namespace rtcp

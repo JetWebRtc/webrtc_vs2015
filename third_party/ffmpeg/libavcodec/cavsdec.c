@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Chinese AVS video (AVS1-P2, JiZhun profile) decoder.
  * Copyright (c) 2006  Stefan Gehrer <stefan.gehrer@gmx.de>
  *
@@ -34,51 +34,57 @@
 #include "mpeg12data.h"
 #include "mpegvideo.h"
 
-static const uint8_t mv_scan[4] = {
+static const uint8_t mv_scan[4] =
+{
     MV_FWD_X0, MV_FWD_X1,
     MV_FWD_X2, MV_FWD_X3
 };
 
-static const uint8_t cbp_tab[64][2] = {
-  { 63,  0 }, { 15, 15 }, { 31, 63 }, { 47, 31 }, {  0, 16 }, { 14, 32 }, { 13, 47 }, { 11, 13 },
-  {  7, 14 }, {  5, 11 }, { 10, 12 }, {  8,  5 }, { 12, 10 }, { 61,  7 }, {  4, 48 }, { 55,  3 },
-  {  1,  2 }, {  2,  8 }, { 59,  4 }, {  3,  1 }, { 62, 61 }, {  9, 55 }, {  6, 59 }, { 29, 62 },
-  { 45, 29 }, { 51, 27 }, { 23, 23 }, { 39, 19 }, { 27, 30 }, { 46, 28 }, { 53,  9 }, { 30,  6 },
-  { 43, 60 }, { 37, 21 }, { 60, 44 }, { 16, 26 }, { 21, 51 }, { 28, 35 }, { 19, 18 }, { 35, 20 },
-  { 42, 24 }, { 26, 53 }, { 44, 17 }, { 32, 37 }, { 58, 39 }, { 24, 45 }, { 20, 58 }, { 17, 43 },
-  { 18, 42 }, { 48, 46 }, { 22, 36 }, { 33, 33 }, { 25, 34 }, { 49, 40 }, { 40, 52 }, { 36, 49 },
-  { 34, 50 }, { 50, 56 }, { 52, 25 }, { 54, 22 }, { 41, 54 }, { 56, 57 }, { 38, 41 }, { 57, 38 }
+static const uint8_t cbp_tab[64][2] =
+{
+    { 63,  0 }, { 15, 15 }, { 31, 63 }, { 47, 31 }, {  0, 16 }, { 14, 32 }, { 13, 47 }, { 11, 13 },
+    {  7, 14 }, {  5, 11 }, { 10, 12 }, {  8,  5 }, { 12, 10 }, { 61,  7 }, {  4, 48 }, { 55,  3 },
+    {  1,  2 }, {  2,  8 }, { 59,  4 }, {  3,  1 }, { 62, 61 }, {  9, 55 }, {  6, 59 }, { 29, 62 },
+    { 45, 29 }, { 51, 27 }, { 23, 23 }, { 39, 19 }, { 27, 30 }, { 46, 28 }, { 53,  9 }, { 30,  6 },
+    { 43, 60 }, { 37, 21 }, { 60, 44 }, { 16, 26 }, { 21, 51 }, { 28, 35 }, { 19, 18 }, { 35, 20 },
+    { 42, 24 }, { 26, 53 }, { 44, 17 }, { 32, 37 }, { 58, 39 }, { 24, 45 }, { 20, 58 }, { 17, 43 },
+    { 18, 42 }, { 48, 46 }, { 22, 36 }, { 33, 33 }, { 25, 34 }, { 49, 40 }, { 40, 52 }, { 36, 49 },
+    { 34, 50 }, { 50, 56 }, { 52, 25 }, { 54, 22 }, { 41, 54 }, { 56, 57 }, { 38, 41 }, { 57, 38 }
 };
 
 static const uint8_t scan3x3[4] = { 4, 5, 7, 8 };
 
-static const uint8_t dequant_shift[64] = {
-  14, 14, 14, 14, 14, 14, 14, 14,
-  13, 13, 13, 13, 13, 13, 13, 13,
-  13, 12, 12, 12, 12, 12, 12, 12,
-  11, 11, 11, 11, 11, 11, 11, 11,
-  11, 10, 10, 10, 10, 10, 10, 10,
-  10,  9,  9,  9,  9,  9,  9,  9,
-  9,   8,  8,  8,  8,  8,  8,  8,
-  7,   7,  7,  7,  7,  7,  7,  7
+static const uint8_t dequant_shift[64] =
+{
+    14, 14, 14, 14, 14, 14, 14, 14,
+    13, 13, 13, 13, 13, 13, 13, 13,
+    13, 12, 12, 12, 12, 12, 12, 12,
+    11, 11, 11, 11, 11, 11, 11, 11,
+    11, 10, 10, 10, 10, 10, 10, 10,
+    10,  9,  9,  9,  9,  9,  9,  9,
+    9,   8,  8,  8,  8,  8,  8,  8,
+    7,   7,  7,  7,  7,  7,  7,  7
 };
 
-static const uint16_t dequant_mul[64] = {
-  32768, 36061, 38968, 42495, 46341, 50535, 55437, 60424,
-  32932, 35734, 38968, 42495, 46177, 50535, 55109, 59933,
-  65535, 35734, 38968, 42577, 46341, 50617, 55027, 60097,
-  32809, 35734, 38968, 42454, 46382, 50576, 55109, 60056,
-  65535, 35734, 38968, 42495, 46320, 50515, 55109, 60076,
-  65535, 35744, 38968, 42495, 46341, 50535, 55099, 60087,
-  65535, 35734, 38973, 42500, 46341, 50535, 55109, 60097,
-  32771, 35734, 38965, 42497, 46341, 50535, 55109, 60099
+static const uint16_t dequant_mul[64] =
+{
+    32768, 36061, 38968, 42495, 46341, 50535, 55437, 60424,
+    32932, 35734, 38968, 42495, 46177, 50535, 55109, 59933,
+    65535, 35734, 38968, 42577, 46341, 50617, 55027, 60097,
+    32809, 35734, 38968, 42454, 46382, 50576, 55109, 60056,
+    65535, 35734, 38968, 42495, 46320, 50515, 55109, 60076,
+    65535, 35744, 38968, 42495, 46341, 50535, 55099, 60087,
+    65535, 35734, 38973, 42500, 46341, 50535, 55109, 60097,
+    32771, 35734, 38965, 42497, 46341, 50535, 55109, 60099
 };
 
 #define EOB 0, 0, 0
 
-static const struct dec_2dvlc intra_dec[7] = {
+static const struct dec_2dvlc intra_dec[7] =
+{
     {
-        { //level / run / table_inc
+        {
+            //level / run / table_inc
             {  1,  1,  1 }, { -1,  1,  1 }, {  1,  2,  1 }, { -1,  2,  1 }, {  1,  3,  1 }, { -1,  3, 1 },
             {  1,  4,  1 }, { -1,  4,  1 }, {  1,  5,  1 }, { -1,  5,  1 }, {  1,  6,  1 }, { -1,  6, 1 },
             {  1,  7,  1 }, { -1,  7,  1 }, {  1,  8,  1 }, { -1,  8,  1 }, {  1,  9,  1 }, { -1,  9, 1 },
@@ -97,7 +103,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         23, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 }, {  2,  1,  1 }, { -2,  1,  1 },
             {  1,  3,  0 }, { -1,  3,  0 }, {     EOB    }, {  1,  4,  0 }, { -1,  4,  0 }, {  1,  5,  0 },
             { -1,  5,  0 }, {  1,  6,  0 }, { -1,  6,  0 }, {  3,  1,  2 }, { -3,  1,  2 }, {  2,  2,  1 },
@@ -116,7 +123,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         15, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 },
             {  3,  1,  1 }, { -3,  1,  1 }, {     EOB    }, {  1,  3,  0 }, { -1,  3,  0 }, {  2,  2,  0 },
             { -2,  2,  0 }, {  4,  1,  1 }, { -4,  1,  1 }, {  1,  4,  0 }, { -1,  4,  0 }, {  5,  1,  2 },
@@ -135,7 +143,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         10, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 }, { -3,  1,  0 },
             {  1,  2,  0 }, { -1,  2,  0 }, {     EOB    }, {  4,  1,  0 }, { -4,  1,  0 }, {  5,  1,  1 },
             { -5,  1,  1 }, {  2,  2,  0 }, { -2,  2,  0 }, {  1,  3,  0 }, { -1,  3,  0 }, {  6,  1,  1 },
@@ -146,7 +155,7 @@ static const struct dec_2dvlc intra_dec[7] = {
             { -3,  3,  0 }, {  1,  6,  0 }, { -1,  6,  0 }, { 11,  1,  3 }, {-11,  1,  3 }, {  6,  2,  1 },
             { -6,  2,  1 }, {  1,  7,  0 }, { -1,  7,  0 }, {  2,  5,  0 }, { -2,  5,  0 }, {  3,  4,  0 },
             { -3,  4,  0 }, { 12,  1,  3 }, {-12,  1,  3 }, {  4,  3,  0 }, { -4,  3,  0 }
-         },
+        },
         //level_add
         { 0, 13, 7, 5, 4, 3, 2, 2, -1, -1, -1 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 },
         2, //golomb_order
@@ -154,7 +163,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         7, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 }, { -3,  1,  0 },
             {     EOB    }, {  4,  1,  0 }, { -4,  1,  0 }, {  5,  1,  0 }, { -5,  1,  0 }, {  6,  1,  0 },
             { -6,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 }, {  7,  1,  0 }, { -7,  1,  0 }, {  8,  1,  1 },
@@ -173,7 +183,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         5, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {     EOB    }, {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 },
             { -3,  1,  0 }, {  4,  1,  0 }, { -4,  1,  0 }, {  5,  1,  0 }, { -5,  1,  0 }, {  6,  1,  0 },
             { -6,  1,  0 }, {  7,  1,  0 }, { -7,  1,  0 }, {  8,  1,  0 }, { -8,  1,  0 }, {  9,  1,  0 },
@@ -192,7 +203,8 @@ static const struct dec_2dvlc intra_dec[7] = {
         3, //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {     EOB    }, {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 },
             { -3,  1,  0 }, {  4,  1,  0 }, { -4,  1,  0 }, {  5,  1,  0 }, { -5,  1,  0 }, {  6,  1,  0 },
             { -6,  1,  0 }, {  7,  1,  0 }, { -7,  1,  0 }, {  8,  1,  0 }, { -8,  1,  0 }, {  9,  1,  0 },
@@ -212,9 +224,11 @@ static const struct dec_2dvlc intra_dec[7] = {
     }
 };
 
-static const struct dec_2dvlc inter_dec[7] = {
+static const struct dec_2dvlc inter_dec[7] =
+{
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  1 }, { -1,  1,  1 }, {  1,  2,  1 }, { -1,  2,  1 }, {  1,  3,  1 }, { -1,  3,  1 },
             {  1,  4,  1 }, { -1,  4,  1 }, {  1,  5,  1 }, { -1,  5,  1 }, {  1,  6,  1 }, { -1,  6,  1 },
             {  1,  7,  1 }, { -1,  7,  1 }, {  1,  8,  1 }, { -1,  8,  1 }, {  1,  9,  1 }, { -1,  9,  1 },
@@ -233,7 +247,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         26 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {     EOB    }, {  1,  2,  0 }, { -1,  2,  0 }, {  1,  3,  0 },
             { -1,  3,  0 }, {  1,  4,  0 }, { -1,  4,  0 }, {  1,  5,  0 }, { -1,  5,  0 }, {  1,  6,  0 },
             { -1,  6,  0 }, {  2,  1,  1 }, { -2,  1,  1 }, {  1,  7,  0 }, { -1,  7,  0 }, {  1,  8,  0 },
@@ -252,7 +267,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         19 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {     EOB    }, {  1,  2,  0 }, { -1,  2,  0 }, {  2,  1,  0 },
             { -2,  1,  0 }, {  1,  3,  0 }, { -1,  3,  0 }, {  1,  4,  0 }, { -1,  4,  0 }, {  3,  1,  1 },
             { -3,  1,  1 }, {  2,  2,  0 }, { -2,  2,  0 }, {  1,  5,  0 }, { -1,  5,  0 }, {  1,  6,  0 },
@@ -271,7 +287,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         14 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {     EOB    }, {  2,  1,  0 }, { -2,  1,  0 }, {  1,  2,  0 },
             { -1,  2,  0 }, {  3,  1,  0 }, { -3,  1,  0 }, {  1,  3,  0 }, { -1,  3,  0 }, {  2,  2,  0 },
             { -2,  2,  0 }, {  4,  1,  1 }, { -4,  1,  1 }, {  1,  4,  0 }, { -1,  4,  0 }, {  5,  1,  1 },
@@ -290,7 +307,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         10 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {     EOB    }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 },
             { -3,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 }, {  4,  1,  0 }, { -4,  1,  0 }, {  5,  1,  0 },
             { -5,  1,  0 }, {  2,  2,  0 }, { -2,  2,  0 }, {  1,  3,  0 }, { -1,  3,  0 }, {  6,  1,  0 },
@@ -309,7 +327,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         7  //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {      EOB    }, {  1,  1,  0 }, {  -1,  1,  0 }, {  2,  1,  0 }, {  -2,  1,  0 }, {  3,  1,  0 },
             {  -3,  1,  0 }, {  4,  1,  0 }, {  -4,  1,  0 }, {  5,  1,  0 }, {  -5,  1,  0 }, {  1,  2,  0 },
             {  -1,  2,  0 }, {  6,  1,  0 }, {  -6,  1,  0 }, {  7,  1,  0 }, {  -7,  1,  0 }, {  8,  1,  0 },
@@ -328,7 +347,8 @@ static const struct dec_2dvlc inter_dec[7] = {
         5  //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {      EOB    }, {  1,  1,  0 }, {  -1,  1,  0 }, {  2,  1,  0 }, {  -2,  1,  0 }, {   3,  1,  0 },
             {  -3,  1,  0 }, {  4,  1,  0 }, {  -4,  1,  0 }, {  5,  1,  0 }, {  -5,  1,  0 }, {   6,  1,  0 },
             {  -6,  1,  0 }, {  7,  1,  0 }, {  -7,  1,  0 }, {  1,  2,  0 }, {  -1,  2,  0 }, {   8,  1,  0 },
@@ -348,9 +368,11 @@ static const struct dec_2dvlc inter_dec[7] = {
     }
 };
 
-static const struct dec_2dvlc chroma_dec[5] = {
+static const struct dec_2dvlc chroma_dec[5] =
+{
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  1 }, { -1,  1,  1 }, {  1,  2,  1 }, { -1,  2,  1 }, {  1,  3,  1 }, { -1,  3,  1 },
             {  1,  4,  1 }, { -1,  4,  1 }, {  1,  5,  1 }, { -1,  5,  1 }, {  1,  6,  1 }, { -1,  6,  1 },
             {  1,  7,  1 }, { -1,  7,  1 }, {  2,  1,  2 }, { -2,  1,  2 }, {  1,  8,  1 }, { -1,  8,  1 },
@@ -369,7 +391,8 @@ static const struct dec_2dvlc chroma_dec[5] = {
         25 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {     EOB    }, {  1,  1,  0 }, { -1,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 }, {  2,  1,  1 },
             { -2,  1,  1 }, {  1,  3,  0 }, { -1,  3,  0 }, {  1,  4,  0 }, { -1,  4,  0 }, {  1,  5,  0 },
             { -1,  5,  0 }, {  1,  6,  0 }, { -1,  6,  0 }, {  3,  1,  2 }, { -3,  1,  2 }, {  1,  7,  0 },
@@ -388,7 +411,8 @@ static const struct dec_2dvlc chroma_dec[5] = {
         20 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {  1,  1,  0 }, { -1,  1,  0 }, {     EOB    }, {  2,  1,  0 }, { -2,  1,  0 }, {  1,  2,  0 },
             { -1,  2,  0 }, {  3,  1,  1 }, { -3,  1,  1 }, {  1,  3,  0 }, { -1,  3,  0 }, {  4,  1,  1 },
             { -4,  1,  1 }, {  2,  2,  0 }, { -2,  2,  0 }, {  1,  4,  0 }, { -1,  4,  0 }, {  5,  1,  2 },
@@ -407,7 +431,8 @@ static const struct dec_2dvlc chroma_dec[5] = {
         11 //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {     EOB    }, {  1,  1,  0 }, { -1,  1,  0 }, {  2,  1,  0 }, { -2,  1,  0 }, {  3,  1,  0 },
             { -3,  1,  0 }, {  4,  1,  0 }, { -4,  1,  0 }, {  1,  2,  0 }, { -1,  2,  0 }, {  5,  1,  1 },
             { -5,  1,  1 }, {  2,  2,  0 }, { -2,  2,  0 }, {  6,  1,  1 }, { -6,  1,  1 }, {  1,  3,  0 },
@@ -426,7 +451,8 @@ static const struct dec_2dvlc chroma_dec[5] = {
         8  //max_run
     },
     {
-        { //level / run
+        {
+            //level / run
             {      EOB    }, {  1,  1,  0 }, {  -1,  1,  0 }, {  2,  1,  0 }, {  -2,  1,  0 }, {  3,  1,  0 },
             {  -3,  1,  0 }, {  4,  1,  0 }, {  -4,  1,  0 }, {  5,  1,  0 }, {  -5,  1,  0 }, {  6,  1,  0 },
             {  -6,  1,  0 }, {  7,  1,  0 }, {  -7,  1,  0 }, {  8,  1,  0 }, {  -8,  1,  0 }, {  1,  2,  0 },
@@ -504,11 +530,13 @@ static inline void mv_pred_sym(AVSContext *h, cavs_vector *src,
 static inline int get_ue_code(GetBitContext *gb, int order)
 {
     unsigned ret = get_ue_golomb(gb);
-    if (ret >= ((1U<<31)>>order)) {
+    if (ret >= ((1U<<31)>>order))
+    {
         av_log(NULL, AV_LOG_ERROR, "get_ue_code: value too larger\n");
         return AVERROR_INVALIDDATA;
     }
-    if (order) {
+    if (order)
+    {
         return (ret<<order) + get_bits(gb, order);
     }
     return ret;
@@ -522,9 +550,11 @@ static inline int dequant(AVSContext *h, int16_t *level_buf, uint8_t *run_buf,
     const uint8_t *scantab = h->scantable.permutated;
 
     /* inverse scan and dequantization */
-    while (--coeff_num >= 0) {
+    while (--coeff_num >= 0)
+    {
         pos += run_buf[coeff_num];
-        if (pos > 63) {
+        if (pos > 63)
+        {
             av_log(h->avctx, AV_LOG_ERROR,
                    "position out of block bounds at pic %d MB(%d,%d)\n",
                    h->cur.poc, h->mbx, h->mby);
@@ -554,16 +584,20 @@ static int decode_residual_block(AVSContext *h, GetBitContext *gb,
     uint8_t run_buf[65];
     int16_t *block = h->block;
 
-    for (i = 0; i < 65; i++) {
+    for (i = 0; i < 65; i++)
+    {
         level_code = get_ue_code(gb, r->golomb_order);
-        if (level_code >= ESCAPE_CODE) {
+        if (level_code >= ESCAPE_CODE)
+        {
             run      = ((level_code - ESCAPE_CODE) >> 1) + 1;
-            if(run > 64) {
+            if(run > 64)
+            {
                 av_log(h->avctx, AV_LOG_ERROR, "run %d is too large\n", run);
                 return AVERROR_INVALIDDATA;
             }
             esc_code = get_ue_code(gb, esc_golomb_order);
-            if (esc_code < 0 || esc_code > 32767) {
+            if (esc_code < 0 || esc_code > 32767)
+            {
                 av_log(h->avctx, AV_LOG_ERROR, "esc_code invalid\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -573,7 +607,9 @@ static int decode_residual_block(AVSContext *h, GetBitContext *gb,
                 r++;
             mask  = -(level_code & 1);
             level = (level ^ mask) - mask;
-        } else {
+        }
+        else
+        {
             level = r->rltab[level_code][0];
             if (!level) //end of block signal
                 break;
@@ -584,7 +620,7 @@ static int decode_residual_block(AVSContext *h, GetBitContext *gb,
         run_buf[i]   = run;
     }
     if ((ret = dequant(h, level_buf, run_buf, block, dequant_mul[qp],
-                      dequant_shift[qp], i)) < 0)
+                       dequant_shift[qp], i)) < 0)
         return ret;
     h->cdsp.cavs_idct8_add(dst, block, stride);
     h->bdsp.clear_block(block);
@@ -608,7 +644,8 @@ static inline int decode_residual_inter(AVSContext *h)
 
     /* get coded block pattern */
     int cbp = get_ue_golomb(&h->gb);
-    if (cbp > 63U) {
+    if (cbp > 63U)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "illegal inter cbp %d\n", cbp);
         return AVERROR_INVALIDDATA;
     }
@@ -654,7 +691,8 @@ static int decode_mb_i(AVSContext *h, int cbp_code)
     ff_cavs_init_mb(h);
 
     /* get intra prediction modes from stream */
-    for (block = 0; block < 4; block++) {
+    for (block = 0; block < 4; block++)
+    {
         int nA, nB, predpred;
         int pos = scan3x3[block];
 
@@ -663,14 +701,16 @@ static int decode_mb_i(AVSContext *h, int cbp_code)
         predpred = FFMIN(nA, nB);
         if (predpred == NOT_AVAIL) // if either is not available
             predpred = INTRA_L_LP;
-        if (!get_bits1(gb)) {
+        if (!get_bits1(gb))
+        {
             int rem_mode = get_bits(gb, 2);
             predpred     = rem_mode + (rem_mode >= predpred);
         }
         h->pred_mode_Y[pos] = predpred;
     }
     pred_mode_uv = get_ue_golomb(gb);
-    if (pred_mode_uv > 6) {
+    if (pred_mode_uv > 6)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "illegal intra chroma pred mode\n");
         return AVERROR_INVALIDDATA;
     }
@@ -679,7 +719,8 @@ static int decode_mb_i(AVSContext *h, int cbp_code)
     /* get coded block pattern */
     if (h->cur.f->pict_type == AV_PICTURE_TYPE_I)
         cbp_code = get_ue_golomb(gb);
-    if (cbp_code > 63U) {
+    if (cbp_code > 63U)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "illegal intra cbp\n");
         return AVERROR_INVALIDDATA;
     }
@@ -688,11 +729,12 @@ static int decode_mb_i(AVSContext *h, int cbp_code)
         h->qp = (h->qp + get_se_golomb(gb)) & 63; //qp_delta
 
     /* luma intra prediction interleaved with residual decode/transform/add */
-    for (block = 0; block < 4; block++) {
+    for (block = 0; block < 4; block++)
+    {
         d = h->cy + h->luma_scan[block];
         ff_cavs_load_intra_pred_luma(h, top, &left, block);
         h->intra_pred_l[h->pred_mode_Y[scan3x3[block]]]
-            (d, top, left, h->l_stride);
+        (d, top, left, h->l_stride);
         if (h->cbp & (1<<block))
             decode_residual_block(h, gb, intra_dec, 1, h->qp, d, h->l_stride);
     }
@@ -712,10 +754,13 @@ static int decode_mb_i(AVSContext *h, int cbp_code)
 
 static inline void set_intra_mode_default(AVSContext *h)
 {
-    if (h->stream_revision > 0) {
+    if (h->stream_revision > 0)
+    {
         h->pred_mode_Y[3] =  h->pred_mode_Y[6] = NOT_AVAIL;
         h->top_pred_Y[h->mbx * 2 + 0] = h->top_pred_Y[h->mbx * 2 + 1] = NOT_AVAIL;
-    } else {
+    }
+    else
+    {
         h->pred_mode_Y[3] =  h->pred_mode_Y[6] = INTRA_L_LP;
         h->top_pred_Y[h->mbx * 2 + 0] = h->top_pred_Y[h->mbx * 2 + 1] = INTRA_L_LP;
     }
@@ -727,7 +772,8 @@ static void decode_mb_p(AVSContext *h, enum cavs_mb mb_type)
     int ref[4];
 
     ff_cavs_init_mb(h);
-    switch (mb_type) {
+    switch (mb_type)
+    {
     case P_SKIP:
         ff_cavs_mv(h, MV_FWD_X0, MV_FWD_C2, MV_PRED_PSKIP,  BLK_16X16, 0);
         break;
@@ -779,14 +825,17 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
     set_mvs(&h->mv[MV_FWD_X0], BLK_16X16);
     h->mv[MV_BWD_X0] = ff_cavs_dir_mv;
     set_mvs(&h->mv[MV_BWD_X0], BLK_16X16);
-    switch (mb_type) {
+    switch (mb_type)
+    {
     case B_SKIP:
     case B_DIRECT:
-        if (!h->col_type_base[h->mbidx]) {
+        if (!h->col_type_base[h->mbidx])
+        {
             /* intra MB at co-location, do in-plane prediction */
             ff_cavs_mv(h, MV_FWD_X0, MV_FWD_C2, MV_PRED_BSKIP, BLK_16X16, 1);
             ff_cavs_mv(h, MV_BWD_X0, MV_BWD_C2, MV_PRED_BSKIP, BLK_16X16, 0);
-        } else
+        }
+        else
             /* direct prediction from co-located P MB, block-wise */
             for (block = 0; block < 4; block++)
                 mv_pred_direct(h, &h->mv[mv_scan[block]],
@@ -807,15 +856,20 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
         flags = 0;
         for (block = 0; block < 4; block++)
             sub_type[block] = get_bits(&h->gb, 2);
-        for (block = 0; block < 4; block++) {
-            switch (sub_type[block]) {
+        for (block = 0; block < 4; block++)
+        {
+            switch (sub_type[block])
+            {
             case B_SUB_DIRECT:
-                if (!h->col_type_base[h->mbidx]) {
+                if (!h->col_type_base[h->mbidx])
+                {
                     /* intra MB at co-location, do in-plane prediction */
-                    if(flags==0) {
+                    if(flags==0)
+                    {
                         // if col-MB is a Intra MB, current Block size is 16x16.
                         // AVS standard section 9.9.1
-                        if(block>0){
+                        if(block>0)
+                        {
                             h->mv[TMP_UNUSED_INX              ] = h->mv[MV_FWD_X0              ];
                             h->mv[TMP_UNUSED_INX + MV_BWD_OFFS] = h->mv[MV_FWD_X0 + MV_BWD_OFFS];
                         }
@@ -824,19 +878,24 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
                         ff_cavs_mv(h, MV_FWD_X0+MV_BWD_OFFS,
                                    MV_FWD_C2+MV_BWD_OFFS,
                                    MV_PRED_BSKIP, BLK_8X8, 0);
-                        if(block>0) {
+                        if(block>0)
+                        {
                             flags = mv_scan[block];
                             h->mv[flags              ] = h->mv[MV_FWD_X0              ];
                             h->mv[flags + MV_BWD_OFFS] = h->mv[MV_FWD_X0 + MV_BWD_OFFS];
                             h->mv[MV_FWD_X0              ] = h->mv[TMP_UNUSED_INX              ];
                             h->mv[MV_FWD_X0 + MV_BWD_OFFS] = h->mv[TMP_UNUSED_INX + MV_BWD_OFFS];
-                        } else
+                        }
+                        else
                             flags = MV_FWD_X0;
-                    } else {
+                    }
+                    else
+                    {
                         h->mv[mv_scan[block]              ] = h->mv[flags              ];
                         h->mv[mv_scan[block] + MV_BWD_OFFS] = h->mv[flags + MV_BWD_OFFS];
                     }
-                } else
+                }
+                else
                     mv_pred_direct(h, &h->mv[mv_scan[block]],
                                    &h->col_mv[h->mbidx * 4 + block]);
                 break;
@@ -852,7 +911,8 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
             }
         }
 #undef TMP_UNUSED_INX
-        for (block = 0; block < 4; block++) {
+        for (block = 0; block < 4; block++)
+        {
             if (sub_type[block] == B_SUB_BWD)
                 ff_cavs_mv(h, mv_scan[block] + MV_BWD_OFFS,
                            mv_scan[block] + MV_BWD_OFFS - 3,
@@ -860,13 +920,15 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
         }
         break;
     default:
-        if (mb_type <= B_SYM_16X16) {
+        if (mb_type <= B_SYM_16X16)
+        {
             av_log(h->avctx, AV_LOG_ERROR, "Invalid mb_type %d in B frame\n", mb_type);
             return AVERROR_INVALIDDATA;
         }
         av_assert2(mb_type < B_8X8);
         flags = ff_cavs_partition_flags[mb_type];
-        if (mb_type & 1) { /* 16x8 macroblock types */
+        if (mb_type & 1)   /* 16x8 macroblock types */
+        {
             if (flags & FWD0)
                 ff_cavs_mv(h, MV_FWD_X0, MV_FWD_C2, MV_PRED_TOP,  BLK_16X8, 1);
             if (flags & SYM0)
@@ -879,7 +941,9 @@ static int decode_mb_b(AVSContext *h, enum cavs_mb mb_type)
                 ff_cavs_mv(h, MV_BWD_X0, MV_BWD_C2, MV_PRED_TOP,  BLK_16X8, 0);
             if (flags & BWD1)
                 ff_cavs_mv(h, MV_BWD_X2, MV_BWD_A1, MV_PRED_LEFT, BLK_16X8, 0);
-        } else {          /* 8x16 macroblock types */
+        }
+        else              /* 8x16 macroblock types */
+        {
             if (flags & FWD0)
                 ff_cavs_mv(h, MV_FWD_X0, MV_FWD_B3, MV_PRED_LEFT, BLK_8X16, 1);
             if (flags & SYM0)
@@ -914,7 +978,8 @@ static inline int decode_slice_header(AVSContext *h, GetBitContext *gb)
     if (h->stc > 0xAF)
         av_log(h->avctx, AV_LOG_ERROR, "unexpected start code 0x%02x\n", h->stc);
 
-    if (h->stc >= h->mb_height) {
+    if (h->stc >= h->mb_height)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "stc 0x%02x is too large\n", h->stc);
         return AVERROR_INVALIDDATA;
     }
@@ -924,14 +989,16 @@ static inline int decode_slice_header(AVSContext *h, GetBitContext *gb)
 
     /* mark top macroblocks as unavailable */
     h->flags &= ~(B_AVAIL | C_AVAIL);
-    if (!h->pic_qp_fixed) {
+    if (!h->pic_qp_fixed)
+    {
         h->qp_fixed = get_bits1(gb);
         h->qp       = get_bits(gb, 6);
     }
     /* inter frame or second slice can have weighting params */
     if ((h->cur.f->pict_type != AV_PICTURE_TYPE_I) ||
-        (!h->pic_structure && h->mby >= h->mb_width / 2))
-        if (get_bits1(gb)) { //slice_weighting_flag
+            (!h->pic_structure && h->mby >= h->mb_width / 2))
+        if (get_bits1(gb))   //slice_weighting_flag
+        {
             av_log(h->avctx, AV_LOG_ERROR,
                    "weighted prediction not yet supported\n");
         }
@@ -949,7 +1016,8 @@ static inline int check_for_slice(AVSContext *h)
     /* check for stuffing byte */
     if (!align && (show_bits(gb, 8) == 0x80))
         align = 8;
-    if ((show_bits_long(gb, 24 + align) & 0xFFFFFF) == 0x000001) {
+    if ((show_bits_long(gb, 24 + align) & 0xFFFFFF) == 0x000001)
+    {
         skip_bits_long(gb, 24 + align);
         h->stc = get_bits(gb, 8);
         if (h->stc >= h->mb_height)
@@ -972,7 +1040,8 @@ static int decode_pic(AVSContext *h)
     int skip_count    = -1;
     enum cavs_mb mb_type;
 
-    if (!h->top_qp) {
+    if (!h->top_qp)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "No sequence header decoded yet\n");
         return AVERROR_INVALIDDATA;
     }
@@ -980,17 +1049,21 @@ static int decode_pic(AVSContext *h)
     av_frame_unref(h->cur.f);
 
     skip_bits(&h->gb, 16);//bbv_dwlay
-    if (h->stc == PIC_PB_START_CODE) {
+    if (h->stc == PIC_PB_START_CODE)
+    {
         h->cur.f->pict_type = get_bits(&h->gb, 2) + AV_PICTURE_TYPE_I;
-        if (h->cur.f->pict_type > AV_PICTURE_TYPE_B) {
+        if (h->cur.f->pict_type > AV_PICTURE_TYPE_B)
+        {
             av_log(h->avctx, AV_LOG_ERROR, "illegal picture type\n");
             return AVERROR_INVALIDDATA;
         }
         /* make sure we have the reference frames we need */
         if (!h->DPB[0].f->data[0] ||
-           (!h->DPB[1].f->data[0] && h->cur.f->pict_type == AV_PICTURE_TYPE_B))
+                (!h->DPB[1].f->data[0] && h->cur.f->pict_type == AV_PICTURE_TYPE_B))
             return AVERROR_INVALIDDATA;
-    } else {
+    }
+    else
+    {
         h->cur.f->pict_type = AV_PICTURE_TYPE_I;
         if (get_bits1(&h->gb))
             skip_bits(&h->gb, 24);//time_code
@@ -1010,7 +1083,8 @@ static int decode_pic(AVSContext *h)
     if (ret < 0)
         return ret;
 
-    if (!h->edge_emu_buffer) {
+    if (!h->edge_emu_buffer)
+    {
         int alloc_size = FFALIGN(FFABS(h->cur.f->linesize[0]) + 32, 32);
         h->edge_emu_buffer = av_mallocz(alloc_size * 2 * 24);
         if (!h->edge_emu_buffer)
@@ -1022,17 +1096,23 @@ static int decode_pic(AVSContext *h)
     h->cur.poc = get_bits(&h->gb, 8) * 2;
 
     /* get temporal distances and MV scaling factors */
-    if (h->cur.f->pict_type != AV_PICTURE_TYPE_B) {
+    if (h->cur.f->pict_type != AV_PICTURE_TYPE_B)
+    {
         h->dist[0] = (h->cur.poc - h->DPB[0].poc) & 511;
-    } else {
+    }
+    else
+    {
         h->dist[0] = (h->DPB[0].poc  - h->cur.poc) & 511;
     }
     h->dist[1] = (h->cur.poc - h->DPB[1].poc) & 511;
     h->scale_den[0] = h->dist[0] ? 512/h->dist[0] : 0;
     h->scale_den[1] = h->dist[1] ? 512/h->dist[1] : 0;
-    if (h->cur.f->pict_type == AV_PICTURE_TYPE_B) {
+    if (h->cur.f->pict_type == AV_PICTURE_TYPE_B)
+    {
         h->sym_factor = h->dist[0] * h->scale_den[1];
-    } else {
+    }
+    else
+    {
         h->direct_den[0] = h->dist[0] ? 16384 / h->dist[0] : 0;
         h->direct_den[1] = h->dist[1] ? 16384 / h->dist[1] : 0;
     }
@@ -1048,64 +1128,88 @@ static int decode_pic(AVSContext *h)
     skip_bits1(&h->gb);        //top_field_first
     skip_bits1(&h->gb);        //repeat_first_field
     h->pic_qp_fixed =
-    h->qp_fixed = get_bits1(&h->gb);
+        h->qp_fixed = get_bits1(&h->gb);
     h->qp       = get_bits(&h->gb, 6);
-    if (h->cur.f->pict_type == AV_PICTURE_TYPE_I) {
+    if (h->cur.f->pict_type == AV_PICTURE_TYPE_I)
+    {
         if (!h->progressive && !h->pic_structure)
             skip_bits1(&h->gb);//what is this?
         skip_bits(&h->gb, 4);   //reserved bits
-    } else {
+    }
+    else
+    {
         if (!(h->cur.f->pict_type == AV_PICTURE_TYPE_B && h->pic_structure == 1))
             h->ref_flag        = get_bits1(&h->gb);
         skip_bits(&h->gb, 4);   //reserved bits
         h->skip_mode_flag      = get_bits1(&h->gb);
     }
     h->loop_filter_disable     = get_bits1(&h->gb);
-    if (!h->loop_filter_disable && get_bits1(&h->gb)) {
+    if (!h->loop_filter_disable && get_bits1(&h->gb))
+    {
         h->alpha_offset        = get_se_golomb(&h->gb);
         h->beta_offset         = get_se_golomb(&h->gb);
-    } else {
+    }
+    else
+    {
         h->alpha_offset = h->beta_offset  = 0;
     }
-    if (h->cur.f->pict_type == AV_PICTURE_TYPE_I) {
-        do {
+    if (h->cur.f->pict_type == AV_PICTURE_TYPE_I)
+    {
+        do
+        {
             check_for_slice(h);
             decode_mb_i(h, 0);
-        } while (ff_cavs_next_mb(h));
-    } else if (h->cur.f->pict_type == AV_PICTURE_TYPE_P) {
-        do {
+        }
+        while (ff_cavs_next_mb(h));
+    }
+    else if (h->cur.f->pict_type == AV_PICTURE_TYPE_P)
+    {
+        do
+        {
             if (check_for_slice(h))
                 skip_count = -1;
             if (h->skip_mode_flag && (skip_count < 0))
                 skip_count = get_ue_golomb(&h->gb);
-            if (h->skip_mode_flag && skip_count--) {
+            if (h->skip_mode_flag && skip_count--)
+            {
                 decode_mb_p(h, P_SKIP);
-            } else {
+            }
+            else
+            {
                 mb_type = get_ue_golomb(&h->gb) + P_SKIP + h->skip_mode_flag;
                 if (mb_type > P_8X8)
                     decode_mb_i(h, mb_type - P_8X8 - 1);
                 else
                     decode_mb_p(h, mb_type);
             }
-        } while (ff_cavs_next_mb(h));
-    } else { /* AV_PICTURE_TYPE_B */
-        do {
+        }
+        while (ff_cavs_next_mb(h));
+    }
+    else     /* AV_PICTURE_TYPE_B */
+    {
+        do
+        {
             if (check_for_slice(h))
                 skip_count = -1;
             if (h->skip_mode_flag && (skip_count < 0))
                 skip_count = get_ue_golomb(&h->gb);
-            if (h->skip_mode_flag && skip_count--) {
+            if (h->skip_mode_flag && skip_count--)
+            {
                 decode_mb_b(h, B_SKIP);
-            } else {
+            }
+            else
+            {
                 mb_type = get_ue_golomb(&h->gb) + B_SKIP + h->skip_mode_flag;
                 if (mb_type > B_8X8)
                     decode_mb_i(h, mb_type - B_8X8 - 1);
                 else
                     decode_mb_b(h, mb_type);
             }
-        } while (ff_cavs_next_mb(h));
+        }
+        while (ff_cavs_next_mb(h));
     }
-    if (h->cur.f->pict_type != AV_PICTURE_TYPE_B) {
+    if (h->cur.f->pict_type != AV_PICTURE_TYPE_B)
+    {
         av_frame_unref(h->DPB[1].f);
         FFSWAP(AVSFrame, h->cur, h->DPB[1]);
         FFSWAP(AVSFrame, h->DPB[0], h->DPB[1]);
@@ -1131,12 +1235,14 @@ static int decode_seq_header(AVSContext *h)
 
     width  = get_bits(&h->gb, 14);
     height = get_bits(&h->gb, 14);
-    if ((h->width || h->height) && (h->width != width || h->height != height)) {
+    if ((h->width || h->height) && (h->width != width || h->height != height))
+    {
         avpriv_report_missing_feature(h->avctx,
                                       "Width/height changing in CAVS");
         return AVERROR_PATCHWELCOME;
     }
-    if (width <= 0 || height <= 0) {
+    if (width <= 0 || height <= 0)
+    {
         av_log(h->avctx, AV_LOG_ERROR, "Dimensions invalid\n");
         return AVERROR_INVALIDDATA;
     }
@@ -1144,7 +1250,8 @@ static int decode_seq_header(AVSContext *h)
     skip_bits(&h->gb, 3); //sample_precision
     h->aspect_ratio = get_bits(&h->gb, 4);
     frame_rate_code = get_bits(&h->gb, 4);
-    if (frame_rate_code == 0 || frame_rate_code > 13) {
+    if (frame_rate_code == 0 || frame_rate_code > 13)
+    {
         av_log(h->avctx, AV_LOG_WARNING,
                "frame_rate_code %d is invalid\n", frame_rate_code);
         frame_rate_code = 1;
@@ -1186,8 +1293,10 @@ static int cavs_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     const uint8_t *buf_end;
     const uint8_t *buf_ptr;
 
-    if (buf_size == 0) {
-        if (!h->low_delay && h->DPB[0].f->data[0]) {
+    if (buf_size == 0)
+    {
+        if (!h->low_delay && h->DPB[0].f->data[0])
+        {
             *got_frame = 1;
             av_frame_move_ref(data, h->DPB[0].f);
         }
@@ -1198,21 +1307,25 @@ static int cavs_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     buf_ptr = buf;
     buf_end = buf + buf_size;
-    for(;;) {
+    for(;;)
+    {
         buf_ptr = avpriv_find_start_code(buf_ptr, buf_end, &stc);
-        if ((stc & 0xFFFFFE00) || buf_ptr == buf_end) {
+        if ((stc & 0xFFFFFE00) || buf_ptr == buf_end)
+        {
             if (!h->stc)
                 av_log(h->avctx, AV_LOG_WARNING, "no frame decoded\n");
             return FFMAX(0, buf_ptr - buf);
         }
         input_size = (buf_end - buf_ptr) * 8;
-        switch (stc) {
+        switch (stc)
+        {
         case CAVS_START_CODE:
             init_get_bits(&h->gb, buf_ptr, input_size);
             decode_seq_header(h);
             break;
         case PIC_I_START_CODE:
-            if (!h->got_keyframe) {
+            if (!h->got_keyframe)
+            {
                 av_frame_unref(h->DPB[0].f);
                 av_frame_unref(h->DPB[1].f);
                 h->got_keyframe = 1;
@@ -1226,14 +1339,20 @@ static int cavs_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             if (decode_pic(h))
                 break;
             *got_frame = 1;
-            if (h->cur.f->pict_type != AV_PICTURE_TYPE_B) {
-                if (h->DPB[!h->low_delay].f->data[0]) {
+            if (h->cur.f->pict_type != AV_PICTURE_TYPE_B)
+            {
+                if (h->DPB[!h->low_delay].f->data[0])
+                {
                     if ((ret = av_frame_ref(data, h->DPB[!h->low_delay].f)) < 0)
                         return ret;
-                } else {
+                }
+                else
+                {
                     *got_frame = 0;
                 }
-            } else {
+            }
+            else
+            {
                 av_frame_move_ref(data, h->cur.f);
             }
             break;
@@ -1244,7 +1363,8 @@ static int cavs_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
             //mpeg_decode_user_data(avctx, buf_ptr, input_size);
             break;
         default:
-            if (stc <= SLICE_MAX_START_CODE) {
+            if (stc <= SLICE_MAX_START_CODE)
+            {
                 init_get_bits(&h->gb, buf_ptr, input_size);
                 decode_slice_header(h, &h->gb);
             }
@@ -1253,7 +1373,8 @@ static int cavs_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     }
 }
 
-AVCodec ff_cavs_decoder = {
+AVCodec ff_cavs_decoder =
+{
     .name           = "cavs",
     .long_name      = NULL_IF_CONFIG_SMALL("Chinese AVS (Audio Video Standard) (AVS1-P2, JiZhun profile)"),
     .type           = AVMEDIA_TYPE_VIDEO,

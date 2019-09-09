@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,63 +14,70 @@
 #include "./video_writer.h"
 #include "vpx/vpx_encoder.h"
 
-struct VpxVideoWriterStruct {
-  VpxVideoInfo info;
-  FILE *file;
-  int frame_count;
+struct VpxVideoWriterStruct
+{
+    VpxVideoInfo info;
+    FILE *file;
+    int frame_count;
 };
 
 static void write_header(FILE *file, const VpxVideoInfo *info,
-                         int frame_count) {
-  struct vpx_codec_enc_cfg cfg;
-  cfg.g_w = info->frame_width;
-  cfg.g_h = info->frame_height;
-  cfg.g_timebase.num = info->time_base.numerator;
-  cfg.g_timebase.den = info->time_base.denominator;
+                         int frame_count)
+{
+    struct vpx_codec_enc_cfg cfg;
+    cfg.g_w = info->frame_width;
+    cfg.g_h = info->frame_height;
+    cfg.g_timebase.num = info->time_base.numerator;
+    cfg.g_timebase.den = info->time_base.denominator;
 
-  ivf_write_file_header(file, &cfg, info->codec_fourcc, frame_count);
+    ivf_write_file_header(file, &cfg, info->codec_fourcc, frame_count);
 }
 
 VpxVideoWriter *vpx_video_writer_open(const char *filename,
                                       VpxContainer container,
-                                      const VpxVideoInfo *info) {
-  if (container == kContainerIVF) {
-    VpxVideoWriter *writer = NULL;
-    FILE *const file = fopen(filename, "wb");
-    if (!file) return NULL;
+                                      const VpxVideoInfo *info)
+{
+    if (container == kContainerIVF)
+    {
+        VpxVideoWriter *writer = NULL;
+        FILE *const file = fopen(filename, "wb");
+        if (!file) return NULL;
 
-    writer = malloc(sizeof(*writer));
-    if (!writer) return NULL;
+        writer = malloc(sizeof(*writer));
+        if (!writer) return NULL;
 
-    writer->frame_count = 0;
-    writer->info = *info;
-    writer->file = file;
+        writer->frame_count = 0;
+        writer->info = *info;
+        writer->file = file;
 
-    write_header(writer->file, info, 0);
+        write_header(writer->file, info, 0);
 
-    return writer;
-  }
+        return writer;
+    }
 
-  return NULL;
+    return NULL;
 }
 
-void vpx_video_writer_close(VpxVideoWriter *writer) {
-  if (writer) {
-    // Rewriting frame header with real frame count
-    rewind(writer->file);
-    write_header(writer->file, &writer->info, writer->frame_count);
+void vpx_video_writer_close(VpxVideoWriter *writer)
+{
+    if (writer)
+    {
+        // Rewriting frame header with real frame count
+        rewind(writer->file);
+        write_header(writer->file, &writer->info, writer->frame_count);
 
-    fclose(writer->file);
-    free(writer);
-  }
+        fclose(writer->file);
+        free(writer);
+    }
 }
 
 int vpx_video_writer_write_frame(VpxVideoWriter *writer, const uint8_t *buffer,
-                                 size_t size, int64_t pts) {
-  ivf_write_frame_header(writer->file, pts, size);
-  if (fwrite(buffer, 1, size, writer->file) != size) return 0;
+                                 size_t size, int64_t pts)
+{
+    ivf_write_frame_header(writer->file, pts, size);
+    if (fwrite(buffer, 1, size, writer->file) != size) return 0;
 
-  ++writer->frame_count;
+    ++writer->frame_count;
 
-  return 1;
+    return 1;
 }

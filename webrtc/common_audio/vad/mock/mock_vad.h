@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,18 +14,23 @@
 #include "webrtc/common_audio/vad/include/vad.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockVad : public Vad {
- public:
-  virtual ~MockVad() { Die(); }
-  MOCK_METHOD0(Die, void());
+class MockVad : public Vad
+{
+public:
+    virtual ~MockVad()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
 
-  MOCK_METHOD3(VoiceActivity,
-               enum Activity(const int16_t* audio,
-                             size_t num_samples,
-                             int sample_rate_hz));
-  MOCK_METHOD0(Reset, void());
+    MOCK_METHOD3(VoiceActivity,
+                 enum Activity(const int16_t* audio,
+                               size_t num_samples,
+                               int sample_rate_hz));
+    MOCK_METHOD0(Reset, void());
 };
 
 }  // namespace webrtc

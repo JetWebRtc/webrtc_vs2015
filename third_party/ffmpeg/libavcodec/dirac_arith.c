@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2007 Marco Gerards <marco@gnu.org>
  * Copyright (C) 2009 David Conrad
  *
@@ -28,7 +28,8 @@
 #include "dirac_arith.h"
 
 
-const uint16_t ff_dirac_prob[256] = {
+const uint16_t ff_dirac_prob[256] =
+{
     0,    2,    5,    8,    11,   15,   20,   24,
     29,   35,   41,   47,   53,   60,   67,   74,
     82,   89,   97,   106,  114,  123,  132,  141,
@@ -63,7 +64,8 @@ const uint16_t ff_dirac_prob[256] = {
     805,  750,  690,  625,  553,  471,  376,  255
 };
 
-const uint8_t ff_dirac_next_ctx[DIRAC_CTX_COUNT] = {
+const uint8_t ff_dirac_next_ctx[DIRAC_CTX_COUNT] =
+{
     [CTX_ZPZN_F1]   = CTX_ZP_F2,
     [CTX_ZPNN_F1]   = CTX_ZP_F2,
     [CTX_ZP_F2]     = CTX_ZP_F3,
@@ -95,7 +97,8 @@ void ff_dirac_init_arith_decoder(DiracArith *c, GetBitContext *gb, int length)
     skip_bits_long(gb, length*8);
 
     c->low = 0;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         c->low <<= 8;
         if (c->bytestream < c->bytestream_end)
             c->low |= *c->bytestream++;
@@ -106,7 +109,8 @@ void ff_dirac_init_arith_decoder(DiracArith *c, GetBitContext *gb, int length)
     c->counter = -16;
     c->range   = 0xffff;
 
-    for (i = 0; i < 256; i++) {
+    for (i = 0; i < 256; i++)
+    {
         ff_dirac_prob_branchless[i][0] =  ff_dirac_prob[255-i];
         ff_dirac_prob_branchless[i][1] = -ff_dirac_prob[i];
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,7 +10,8 @@
 
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // A test that always passes. Useful when all tests in a executable are
 // disabled, since a gtest returns exit code 1 if no tests have executed.

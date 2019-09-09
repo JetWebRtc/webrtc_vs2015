@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,7 +13,8 @@
 
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Output the list of active screens into |screens|. Returns true if succeeded,
 // or false if it fails to enumerate the display devices.

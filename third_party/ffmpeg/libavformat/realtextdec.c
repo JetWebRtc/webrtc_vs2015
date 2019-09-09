@@ -31,7 +31,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } RealTextContext;
 
@@ -75,7 +76,8 @@ static int realtext_read_header(AVFormatContext *s)
 
     av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
 
-    while (!ff_text_eof(&tr)) {
+    while (!ff_text_eof(&tr))
+    {
         AVPacket *sub;
         const int64_t pos = ff_text_pos(&tr) - (c != 0);
         int n = ff_smil_extract_next_text_chunk(&tr, &buf, &c);
@@ -83,28 +85,34 @@ static int realtext_read_header(AVFormatContext *s)
         if (n == 0)
             break;
 
-        if (!av_strncasecmp(buf.str, "<window", 7)) {
+        if (!av_strncasecmp(buf.str, "<window", 7))
+        {
             /* save header to extradata */
             const char *p = ff_smil_get_attr_ptr(buf.str, "duration");
 
             if (p)
                 duration = read_ts(p);
             st->codec->extradata = av_strdup(buf.str);
-            if (!st->codec->extradata) {
+            if (!st->codec->extradata)
+            {
                 res = AVERROR(ENOMEM);
                 goto end;
             }
             st->codec->extradata_size = buf.len + 1;
-        } else {
+        }
+        else
+        {
             /* if we just read a <time> tag, introduce a new event, otherwise merge
              * with the previous one */
             int merge = !av_strncasecmp(buf.str, "<time", 5) ? 0 : 1;
             sub = ff_subtitles_queue_insert(&rt->q, buf.str, buf.len, merge);
-            if (!sub) {
+            if (!sub)
+            {
                 res = AVERROR(ENOMEM);
                 goto end;
             }
-            if (!merge) {
+            if (!merge)
+            {
                 const char *begin = ff_smil_get_attr_ptr(buf.str, "begin");
                 const char *end   = ff_smil_get_attr_ptr(buf.str, "end");
 
@@ -129,7 +137,7 @@ static int realtext_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 static int realtext_read_seek(AVFormatContext *s, int stream_index,
-                             int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
+                              int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
 {
     RealTextContext *rt = s->priv_data;
     return ff_subtitles_queue_seek(&rt->q, s, stream_index,
@@ -143,7 +151,8 @@ static int realtext_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_realtext_demuxer = {
+AVInputFormat ff_realtext_demuxer =
+{
     .name           = "realtext",
     .long_name      = NULL_IF_CONFIG_SMALL("RealText subtitle format"),
     .priv_data_size = sizeof(RealTextContext),

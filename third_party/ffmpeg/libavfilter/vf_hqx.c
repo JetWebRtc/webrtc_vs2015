@@ -34,21 +34,24 @@
 
 typedef int (*hqxfunc_t)(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs);
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int n;
     hqxfunc_t func;
     uint32_t rgbtoyuv[1<<24];
 } HQXContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
     const uint32_t *rgbtoyuv;
 } ThreadData;
 
 #define OFFSET(x) offsetof(HQXContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption hqx_options[] = {
+static const AVOption hqx_options[] =
+{
     { "n", "set scale factor", OFFSET(n), AV_OPT_TYPE_INT, {.i64 = 3}, 2, 4, .flags = FLAGS },
     { NULL }
 };
@@ -115,10 +118,10 @@ static av_always_inline uint32_t interp_3px(uint32_t c1, int w1, uint32_t c2, in
  * top-left pixel in the total of the 2x2 pixels to interpolates. The function
  * is also used for the 3 other pixels */
 static av_always_inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
-                                                 const uint32_t *w,
-                                                 int p0, int p1, int p2,
-                                                 int p3, int p4, int p5,
-                                                 int p6, int p7, int p8)
+        const uint32_t *w,
+        int p0, int p1, int p2,
+        int p3, int p4, int p5,
+        int p6, int p7, int p8)
 {
     INTERP_BOOTSTRAP(0);
 
@@ -129,9 +132,9 @@ static av_always_inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
     if ((P(0x0b,0x0b) || P(0xfe,0x4a) || P(0xfe,0x1a)) && WDIFF(w3, w1))
         return w4;
     if ((P(0x6f,0x2a) || P(0x5b,0x0a) || P(0xbf,0x3a) || P(0xdf,0x5a) ||
-         P(0x9f,0x8a) || P(0xcf,0x8a) || P(0xef,0x4e) || P(0x3f,0x0e) ||
-         P(0xfb,0x5a) || P(0xbb,0x8a) || P(0x7f,0x5a) || P(0xaf,0x8a) ||
-         P(0xeb,0x8a)) && WDIFF(w3, w1))
+            P(0x9f,0x8a) || P(0xcf,0x8a) || P(0xef,0x4e) || P(0x3f,0x0e) ||
+            P(0xfb,0x5a) || P(0xbb,0x8a) || P(0x7f,0x5a) || P(0xaf,0x8a) ||
+            P(0xeb,0x8a)) && WDIFF(w3, w1))
         return interp_2px(w4, 3, w0, 1, 2);
     if (P(0x0b,0x08))
         return interp_3px(w4, 2, w0, 1, w1, 1, 2);
@@ -150,11 +153,11 @@ static av_always_inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
     if (P(0x7e,0x2a) || P(0xef,0xab) || P(0xbf,0x8f) || P(0x7e,0x0e))
         return interp_3px(w4, 2, w3, 3, w1, 3, 3);
     if (P(0xfb,0x6a) || P(0x6f,0x6e) || P(0x3f,0x3e) || P(0xfb,0xfa) ||
-        P(0xdf,0xde) || P(0xdf,0x1e))
+            P(0xdf,0xde) || P(0xdf,0x1e))
         return interp_2px(w4, 3, w0, 1, 2);
     if (P(0x0a,0x00) || P(0x4f,0x4b) || P(0x9f,0x1b) || P(0x2f,0x0b) ||
-        P(0xbe,0x0a) || P(0xee,0x0a) || P(0x7e,0x0a) || P(0xeb,0x4b) ||
-        P(0x3b,0x1b))
+            P(0xbe,0x0a) || P(0xee,0x0a) || P(0x7e,0x0a) || P(0xeb,0x4b) ||
+            P(0x3b,0x1b))
         return interp_3px(w4, 2, w3, 1, w1, 1, 2);
     return interp_3px(w4, 6, w3, 1, w1, 1, 3);
 }
@@ -165,13 +168,13 @@ static av_always_inline uint32_t hq2x_interp_1x1(const uint32_t *r2y, int k,
  * defining the outline. The center pixel is not defined through this function,
  * since it's just the same as the original value. */
 static av_always_inline void hq3x_interp_2x1(uint32_t *dst, int dst_linesize,
-                                             const uint32_t *r2y, int k,
-                                             const uint32_t *w,
-                                             int pos00, int pos01,
-                                             int p0, int p1, int p2,
-                                             int p3, int p4, int p5,
-                                             int p6, int p7, int p8,
-                                             int rotate)
+        const uint32_t *r2y, int k,
+        const uint32_t *w,
+        int pos00, int pos01,
+        int p0, int p1, int p2,
+        int p3, int p4, int p5,
+        int p6, int p7, int p8,
+        int rotate)
 {
     INTERP_BOOTSTRAP(rotate);
 
@@ -207,7 +210,7 @@ static av_always_inline void hq3x_interp_2x1(uint32_t *dst, int dst_linesize,
         *dst00 = interp_3px(w4, 2, w3, 1, w1, 1, 2);
 
     if ((P(0xfe,0xde) || P(0x9e,0x16) || P(0xda,0x12) || P(0x17,0x16) ||
-         P(0x5b,0x12) || P(0xbb,0x12)) && WDIFF(w1, w5))
+            P(0x5b,0x12) || P(0xbb,0x12)) && WDIFF(w1, w5))
         *dst01 = w4;
     else if ((P(0x0f,0x0b) || P(0x5e,0x0a) || P(0xfb,0x7b) || P(0x3b,0x0b) ||
               P(0xbe,0x0a) || P(0x7a,0x0a)) && WDIFF(w3, w1))
@@ -231,13 +234,13 @@ static av_always_inline void hq3x_interp_2x1(uint32_t *dst, int dst_linesize,
  * interpolates. The function is also used for the 3 other blocks of 2x2
  * pixels. */
 static av_always_inline void hq4x_interp_2x2(uint32_t *dst, int dst_linesize,
-                                             const uint32_t *r2y, int k,
-                                             const uint32_t *w,
-                                             int pos00, int pos01,
-                                             int pos10, int pos11,
-                                             int p0, int p1, int p2,
-                                             int p3, int p4, int p5,
-                                             int p6, int p7, int p8)
+        const uint32_t *r2y, int k,
+        const uint32_t *w,
+        int pos00, int pos01,
+        int pos10, int pos11,
+        int p0, int p1, int p2,
+        int p3, int p4, int p5,
+        int p6, int p7, int p8)
 {
     INTERP_BOOTSTRAP(0);
 
@@ -361,7 +364,7 @@ static av_always_inline void hq4x_interp_2x2(uint32_t *dst, int dst_linesize,
         *dst10 = interp_2px(w4, 3, w3, 1, 2);
 
     if ((P(0x7f,0x2b) || P(0xef,0xab) || P(0xbf,0x8f) || P(0x7f,0x0f)) &&
-         WDIFF(w3, w1))
+            WDIFF(w3, w1))
         *dst11 = w4;
     else if (cond02)
         *dst11 = interp_2px(w4, 7, w0, 1, 3);
@@ -395,47 +398,57 @@ static av_always_inline void hqx_filter(const ThreadData *td, int jobnr, int nb_
     const int dst32_linesize = dst_linesize >> 2;
     const int src32_linesize = src_linesize >> 2;
 
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
         const uint32_t *src32 = (const uint32_t *)src;
         uint32_t       *dst32 = (uint32_t *)dst;
         const int prevline = y > 0          ? -src32_linesize : 0;
         const int nextline = y < height - 1 ?  src32_linesize : 0;
 
-        for (x = 0; x < width; x++) {
+        for (x = 0; x < width; x++)
+        {
             const int prevcol = x > 0        ? -1 : 0;
             const int nextcol = x < width -1 ?  1 : 0;
-            const uint32_t w[3*3] = {
+            const uint32_t w[3*3] =
+            {
                 src32[prevcol + prevline], src32[prevline], src32[prevline + nextcol],
                 src32[prevcol           ], src32[       0], src32[           nextcol],
                 src32[prevcol + nextline], src32[nextline], src32[nextline + nextcol]
             };
             const uint32_t yuv1 = rgb2yuv(r2y, w[4]);
             const int pattern = (w[4] != w[0] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[0]))) : 0)
-                              | (w[4] != w[1] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[1]))) : 0) << 1
-                              | (w[4] != w[2] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[2]))) : 0) << 2
-                              | (w[4] != w[3] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[3]))) : 0) << 3
-                              | (w[4] != w[5] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[5]))) : 0) << 4
-                              | (w[4] != w[6] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[6]))) : 0) << 5
-                              | (w[4] != w[7] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[7]))) : 0) << 6
-                              | (w[4] != w[8] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[8]))) : 0) << 7;
+                                | (w[4] != w[1] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[1]))) : 0) << 1
+                                | (w[4] != w[2] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[2]))) : 0) << 2
+                                | (w[4] != w[3] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[3]))) : 0) << 3
+                                | (w[4] != w[5] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[5]))) : 0) << 4
+                                | (w[4] != w[6] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[6]))) : 0) << 5
+                                | (w[4] != w[7] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[7]))) : 0) << 6
+                                | (w[4] != w[8] ? (yuv_diff(yuv1, rgb2yuv(r2y, w[8]))) : 0) << 7;
 
-            if (n == 2) {
+            if (n == 2)
+            {
                 dst32[dst32_linesize*0 + 0] = hq2x_interp_1x1(r2y, pattern, w, 0,1,2,3,4,5,6,7,8);  // 00
                 dst32[dst32_linesize*0 + 1] = hq2x_interp_1x1(r2y, pattern, w, 2,1,0,5,4,3,8,7,6);  // 01 (vert mirrored)
                 dst32[dst32_linesize*1 + 0] = hq2x_interp_1x1(r2y, pattern, w, 6,7,8,3,4,5,0,1,2);  // 10 (horiz mirrored)
                 dst32[dst32_linesize*1 + 1] = hq2x_interp_1x1(r2y, pattern, w, 8,7,6,5,4,3,2,1,0);  // 11 (center mirrored)
-            } else if (n == 3) {
+            }
+            else if (n == 3)
+            {
                 hq3x_interp_2x1(dst32,                        dst32_linesize, r2y, pattern, w, 0,1, 0,1,2,3,4,5,6,7,8, 0);  // 00 01
                 hq3x_interp_2x1(dst32 + 1,                    dst32_linesize, r2y, pattern, w, 1,3, 2,5,8,1,4,7,0,3,6, 1);  // 02 12 (rotated to the right)
                 hq3x_interp_2x1(dst32 + 1*dst32_linesize,     dst32_linesize, r2y, pattern, w, 2,0, 6,3,0,7,4,1,8,5,2, 1);  // 20 10 (rotated to the left)
                 hq3x_interp_2x1(dst32 + 1*dst32_linesize + 1, dst32_linesize, r2y, pattern, w, 3,2, 8,7,6,5,4,3,2,1,0, 0);  // 22 21 (center mirrored)
                 dst32[dst32_linesize + 1] = w[4];                                                                           // 11
-            } else if (n == 4) {
+            }
+            else if (n == 4)
+            {
                 hq4x_interp_2x2(dst32,                        dst32_linesize, r2y, pattern, w, 0,1,2,3, 0,1,2,3,4,5,6,7,8); // 00 01 10 11
                 hq4x_interp_2x2(dst32 + 2,                    dst32_linesize, r2y, pattern, w, 1,0,3,2, 2,1,0,5,4,3,8,7,6); // 02 03 12 13 (vert mirrored)
                 hq4x_interp_2x2(dst32 + 2*dst32_linesize,     dst32_linesize, r2y, pattern, w, 2,3,0,1, 6,7,8,3,4,5,0,1,2); // 20 21 30 31 (horiz mirrored)
                 hq4x_interp_2x2(dst32 + 2*dst32_linesize + 2, dst32_linesize, r2y, pattern, w, 3,2,1,0, 8,7,6,5,4,3,2,1,0); // 22 23 32 33 (center mirrored)
-            } else {
+            }
+            else
+            {
                 av_assert0(0);
             }
 
@@ -489,7 +502,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     HQXContext *hqx = ctx->priv;
     ThreadData td;
     AVFrame *out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -514,15 +528,18 @@ static av_cold int init(AVFilterContext *ctx)
     uint32_t c;
     int bg, rg, g;
 
-    for (bg=-255; bg<256; bg++) {
-        for (rg=-255; rg<256; rg++) {
+    for (bg=-255; bg<256; bg++)
+    {
+        for (rg=-255; rg<256; rg++)
+        {
             const uint32_t u = (uint32_t)((-169*rg + 500*bg)/1000) + 128;
             const uint32_t v = (uint32_t)(( 500*rg -  81*bg)/1000) + 128;
             int startg = FFMAX3(-bg, -rg, 0);
             int endg = FFMIN3(255-bg, 255-rg, 255);
             uint32_t y = (uint32_t)(( 299*rg + 1000*startg + 114*bg)/1000);
             c = bg + (rg<<16) + 0x010101 * startg;
-            for (g = startg; g <= endg; g++) {
+            for (g = startg; g <= endg; g++)
+            {
                 hqx->rgbtoyuv[c] = ((y++) << 16) + (u << 8) + v;
                 c+= 0x010101;
             }
@@ -533,7 +550,8 @@ static av_cold int init(AVFilterContext *ctx)
     return 0;
 }
 
-static const AVFilterPad hqx_inputs[] = {
+static const AVFilterPad hqx_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -542,7 +560,8 @@ static const AVFilterPad hqx_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad hqx_outputs[] = {
+static const AVFilterPad hqx_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -551,7 +570,8 @@ static const AVFilterPad hqx_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_hqx = {
+AVFilter ff_vf_hqx =
+{
     .name          = "hqx",
     .description   = NULL_IF_CONFIG_SMALL("Scale the input by 2, 3 or 4 using the hq*x magnification algorithm."),
     .priv_size     = sizeof(HQXContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Bobby Bingham
  *
  * This file is part of FFmpeg.
@@ -34,12 +34,14 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct Buf {
+typedef struct Buf
+{
     AVFrame *frame;
     struct Buf        *next;
 } Buf;
 
-typedef struct FifoContext {
+typedef struct FifoContext
+{
     Buf  root;
     Buf *last;   ///< last buffered frame
 
@@ -64,7 +66,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     FifoContext *fifo = ctx->priv;
     Buf *buf, *tmp;
 
-    for (buf = fifo->root.next; buf; buf = tmp) {
+    for (buf = fifo->root.next; buf; buf = tmp)
+    {
         tmp = buf->next;
         av_frame_free(&buf->frame);
         av_free(buf);
@@ -78,7 +81,8 @@ static int add_to_queue(AVFilterLink *inlink, AVFrame *frame)
     FifoContext *fifo = inlink->dst->priv;
 
     fifo->last->next = av_mallocz(sizeof(Buf));
-    if (!fifo->last->next) {
+    if (!fifo->last->next)
+    {
         av_frame_free(&frame);
         return AVERROR(ENOMEM);
     }
@@ -120,9 +124,13 @@ static void buffer_offset(AVFilterLink *link, AVFrame *frame,
     frame->linesize[0] -= block_align*offset;
     frame->nb_samples -= offset;
 
-    if (frame->pts != AV_NOPTS_VALUE) {
-        frame->pts += av_rescale_q(offset, (AVRational){1, link->sample_rate},
-                                   link->time_base);
+    if (frame->pts != AV_NOPTS_VALUE)
+    {
+        frame->pts += av_rescale_q(offset, (AVRational)
+        {
+            1, link->sample_rate
+        },
+        link->time_base);
     }
 }
 
@@ -133,7 +141,8 @@ static int calc_ptr_alignment(AVFrame *frame)
     int min_align = 128;
     int p;
 
-    for (p = 0; p < planes; p++) {
+    for (p = 0; p < planes; p++)
+    {
         int cur_align = 128;
         while ((intptr_t)frame->extended_data[p] % cur_align)
             cur_align >>= 1;
@@ -156,12 +165,16 @@ static int return_audio_frame(AVFilterContext *ctx)
         return AVERROR_EOF;
 
     if (!s->out &&
-        head->nb_samples >= link->request_samples &&
-        calc_ptr_alignment(head) >= 32) {
-        if (head->nb_samples == link->request_samples) {
+            head->nb_samples >= link->request_samples &&
+            calc_ptr_alignment(head) >= 32)
+    {
+        if (head->nb_samples == link->request_samples)
+        {
             out = head;
             queue_pop(s);
-        } else {
+        }
+        else
+        {
             out = av_frame_clone(head);
             if (!out)
                 return AVERROR(ENOMEM);
@@ -169,10 +182,13 @@ static int return_audio_frame(AVFilterContext *ctx)
             out->nb_samples = link->request_samples;
             buffer_offset(link, head, link->request_samples);
         }
-    } else {
+    }
+    else
+    {
         int nb_channels = av_get_channel_layout_nb_channels(link->channel_layout);
 
-        if (!s->out) {
+        if (!s->out)
+        {
             s->out = ff_get_audio_buffer(link, link->request_samples);
             if (!s->out)
                 return AVERROR(ENOMEM);
@@ -180,18 +196,23 @@ static int return_audio_frame(AVFilterContext *ctx)
             s->out->nb_samples = 0;
             s->out->pts                   = head->pts;
             s->allocated_samples          = link->request_samples;
-        } else if (link->request_samples != s->allocated_samples) {
+        }
+        else if (link->request_samples != s->allocated_samples)
+        {
             av_log(ctx, AV_LOG_ERROR, "request_samples changed before the "
                    "buffer was returned.\n");
             return AVERROR(EINVAL);
         }
 
-        while (s->out->nb_samples < s->allocated_samples) {
+        while (s->out->nb_samples < s->allocated_samples)
+        {
             int len;
 
-            if (!s->root.next) {
+            if (!s->root.next)
+            {
                 ret = ff_request_frame(ctx->inputs[0]);
-                if (ret == AVERROR_EOF) {
+                if (ret == AVERROR_EOF)
+                {
                     av_samples_set_silence(s->out->extended_data,
                                            s->out->nb_samples,
                                            s->allocated_samples -
@@ -199,7 +220,8 @@ static int return_audio_frame(AVFilterContext *ctx)
                                            nb_channels, link->format);
                     s->out->nb_samples = s->allocated_samples;
                     break;
-                } else if (ret < 0)
+                }
+                else if (ret < 0)
                     return ret;
                 av_assert0(s->root.next); // If ff_request_frame() succeeded then we should have a frame
             }
@@ -213,10 +235,13 @@ static int return_audio_frame(AVFilterContext *ctx)
                             link->format);
             s->out->nb_samples += len;
 
-            if (len == head->nb_samples) {
+            if (len == head->nb_samples)
+            {
                 av_frame_free(&head);
                 queue_pop(s);
-            } else {
+            }
+            else
+            {
                 buffer_offset(link, head, len);
             }
         }
@@ -231,8 +256,10 @@ static int request_frame(AVFilterLink *outlink)
     FifoContext *fifo = outlink->src->priv;
     int ret = 0;
 
-    if (!fifo->root.next) {
-        if ((ret = ff_request_frame(outlink->src->inputs[0])) < 0) {
+    if (!fifo->root.next)
+    {
+        if ((ret = ff_request_frame(outlink->src->inputs[0])) < 0)
+        {
             if (ret == AVERROR_EOF && outlink->request_samples)
                 return return_audio_frame(outlink->src);
             return ret;
@@ -240,9 +267,12 @@ static int request_frame(AVFilterLink *outlink)
         av_assert0(fifo->root.next);
     }
 
-    if (outlink->request_samples) {
+    if (outlink->request_samples)
+    {
         return return_audio_frame(outlink->src);
-    } else {
+    }
+    else
+    {
         ret = ff_filter_frame(outlink, fifo->root.next->frame);
         queue_pop(fifo);
     }
@@ -250,7 +280,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad avfilter_vf_fifo_inputs[] = {
+static const AVFilterPad avfilter_vf_fifo_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -259,7 +290,8 @@ static const AVFilterPad avfilter_vf_fifo_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_fifo_outputs[] = {
+static const AVFilterPad avfilter_vf_fifo_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -268,7 +300,8 @@ static const AVFilterPad avfilter_vf_fifo_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_fifo = {
+AVFilter ff_vf_fifo =
+{
     .name      = "fifo",
     .description = NULL_IF_CONFIG_SMALL("Buffer input images and send them when they are requested."),
 
@@ -281,7 +314,8 @@ AVFilter ff_vf_fifo = {
     .outputs   = avfilter_vf_fifo_outputs,
 };
 
-static const AVFilterPad avfilter_af_afifo_inputs[] = {
+static const AVFilterPad avfilter_af_afifo_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_AUDIO,
@@ -290,7 +324,8 @@ static const AVFilterPad avfilter_af_afifo_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_afifo_outputs[] = {
+static const AVFilterPad avfilter_af_afifo_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -299,7 +334,8 @@ static const AVFilterPad avfilter_af_afifo_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_afifo = {
+AVFilter ff_af_afifo =
+{
     .name        = "afifo",
     .description = NULL_IF_CONFIG_SMALL("Buffer input frames and send them when they are requested."),
 

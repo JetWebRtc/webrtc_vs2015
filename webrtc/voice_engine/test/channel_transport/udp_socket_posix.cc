@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,8 +24,10 @@
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_manager_wrapper.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_wrapper.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 UdpSocketPosix::UdpSocketPosix(const int32_t id, UdpSocketManager* mgr,
                                bool ipV6Enable)
     : _id(id),
@@ -47,7 +49,8 @@ UdpSocketPosix::UdpSocketPosix(const int32_t id, UdpSocketManager* mgr,
     {
         _socket = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
     }
-    else {
+    else
+    {
         _socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     }
 
@@ -85,12 +88,12 @@ bool UdpSocketPosix::SetCallback(CallbackObj obj, IncomingSocketCallback cb)
                  "UdpSocketPosix(%p)::SetCallback", this);
 
     if (_mgr->AddSocket(this))
-      {
+    {
         WEBRTC_TRACE(kTraceDebug, kTraceTransport, _id,
                      "UdpSocketPosix(%p)::SetCallback socket added to manager",
                      this);
         return true;   // socket is now ready for action
-      }
+    }
 
     WEBRTC_TRACE(kTraceDebug, kTraceTransport, _id,
                  "UdpSocketPosix(%p)::SetCallback error adding me to mgr",
@@ -101,14 +104,14 @@ bool UdpSocketPosix::SetCallback(CallbackObj obj, IncomingSocketCallback cb)
 bool UdpSocketPosix::SetSockopt(int32_t level, int32_t optname,
                                 const int8_t* optval, int32_t optlen)
 {
-   if(0 == setsockopt(_socket, level, optname, optval, optlen ))
-   {
-       return true;
-   }
+    if(0 == setsockopt(_socket, level, optname, optval, optlen ))
+    {
+        return true;
+    }
 
-   WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
-                "UdpSocketPosix::SetSockopt(), error:%d", errno);
-   return false;
+    WEBRTC_TRACE(kTraceError, kTraceTransport, _id,
+                 "UdpSocketPosix::SetSockopt(), error:%d", errno);
+    return false;
 }
 
 int32_t UdpSocketPosix::SetTOS(int32_t serviceType)
@@ -147,7 +150,10 @@ int32_t UdpSocketPosix::SendTo(const int8_t* buf, size_t len,
     return retVal;
 }
 
-SOCKET UdpSocketPosix::GetFd() { return _socket; }
+SOCKET UdpSocketPosix::GetFd()
+{
+    return _socket;
+}
 
 bool UdpSocketPosix::ValidHandle()
 {
@@ -161,8 +167,9 @@ bool UdpSocketPosix::SetQos(int32_t /*serviceType*/,
                             int32_t /*minPolicedSize*/,
                             int32_t /*maxSduSize*/,
                             const SocketAddress& /*stRemName*/,
-                            int32_t /*overrideDSCP*/) {
-  return false;
+                            int32_t /*overrideDSCP*/)
+{
+    return false;
 }
 
 void UdpSocketPosix::HasIncoming()
@@ -183,13 +190,13 @@ void UdpSocketPosix::HasIncoming()
 #endif
 
 #if defined(WEBRTC_MAC)
-        retval = recvfrom(_socket,buf, sizeof(buf), 0,
-                          reinterpret_cast<sockaddr*>(&sockaddrfrom), &fromlen);
-        memcpy(&from, &sockaddrfrom, fromlen);
-        from._sockaddr_storage.sin_family = sockaddrfrom.sa_family;
+    retval = recvfrom(_socket,buf, sizeof(buf), 0,
+                      reinterpret_cast<sockaddr*>(&sockaddrfrom), &fromlen);
+    memcpy(&from, &sockaddrfrom, fromlen);
+    from._sockaddr_storage.sin_family = sockaddrfrom.sa_family;
 #else
-        retval = recvfrom(_socket,buf, sizeof(buf), 0,
-                          reinterpret_cast<sockaddr*>(&from), &fromlen);
+    retval = recvfrom(_socket,buf, sizeof(buf), 0,
+                      reinterpret_cast<sockaddr*>(&from), &fromlen);
 #endif
 
     switch(retval)
@@ -202,13 +209,16 @@ void UdpSocketPosix::HasIncoming()
     default:
         if (_wantsIncoming && _incomingCb)
         {
-          _incomingCb(_obj, buf, retval, &from);
+            _incomingCb(_obj, buf, retval, &from);
         }
         break;
     }
 }
 
-bool UdpSocketPosix::WantsIncoming() { return _wantsIncoming; }
+bool UdpSocketPosix::WantsIncoming()
+{
+    return _wantsIncoming;
+}
 
 void UdpSocketPosix::CloseBlocking()
 {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized mpegvideo
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -25,20 +25,23 @@
 #include "mpegvideo_mips.h"
 
 void ff_dct_unquantize_h263_intra_mmi(MpegEncContext *s, int16_t *block,
-        int n, int qscale)
+                                      int n, int qscale)
 {
     int64_t level, qmul, qadd, nCoeffs;
 
     qmul = qscale << 1;
     av_assert2(s->block_last_index[n]>=0 || s->h263_aic);
 
-    if (!s->h263_aic) {
+    if (!s->h263_aic)
+    {
         if (n<4)
             level = block[0] * s->y_dc_scale;
         else
             level = block[0] * s->c_dc_scale;
         qadd = (qscale-1) | 1;
-    } else {
+    }
+    else
+    {
         qadd = 0;
         level = block[0];
     }
@@ -97,7 +100,7 @@ void ff_dct_unquantize_h263_intra_mmi(MpegEncContext *s, int16_t *block,
 }
 
 void ff_dct_unquantize_h263_inter_mmi(MpegEncContext *s, int16_t *block,
-        int n, int qscale)
+                                      int n, int qscale)
 {
     int64_t qmul, qadd, nCoeffs;
 
@@ -153,7 +156,7 @@ void ff_dct_unquantize_h263_inter_mmi(MpegEncContext *s, int16_t *block,
 }
 
 void ff_dct_unquantize_mpeg1_intra_mmi(MpegEncContext *s, int16_t *block,
-        int n, int qscale)
+                                       int n, int qscale)
 {
     int64_t nCoeffs;
     const uint16_t *quant_matrix;
@@ -223,7 +226,7 @@ void ff_dct_unquantize_mpeg1_intra_mmi(MpegEncContext *s, int16_t *block,
         "addi $8, $8, 16                \r\n"
         "bltz $8, 1b                    \r\n"
         ::"r"(block+nCoeffs),"r"(quant_matrix+nCoeffs),"m"(qscale),
-          "g"(-2*nCoeffs)
+        "g"(-2*nCoeffs)
         : "$8","$10","memory"
     );
 
@@ -231,7 +234,7 @@ void ff_dct_unquantize_mpeg1_intra_mmi(MpegEncContext *s, int16_t *block,
 }
 
 void ff_dct_unquantize_mpeg1_inter_mmi(MpegEncContext *s, int16_t *block,
-        int n, int qscale)
+                                       int n, int qscale)
 {
     int64_t nCoeffs;
     const uint16_t *quant_matrix;
@@ -297,7 +300,7 @@ void ff_dct_unquantize_mpeg1_inter_mmi(MpegEncContext *s, int16_t *block,
         "addi $8, $8, 16                \r\n"
         "bltz $8, 1b                    \r\n"
         ::"r"(block+nCoeffs),"r"(quant_matrix+nCoeffs),"m"(qscale),
-          "g"(-2*nCoeffs)
+        "g"(-2*nCoeffs)
         :"$8","$10","memory"
     );
 }
@@ -365,7 +368,7 @@ void ff_denoise_dct_mmi(MpegEncContext *s, int16_t *block)
 }
 
 void ff_dct_unquantize_mpeg2_intra_mmi(MpegEncContext *s, int16_t *block,
-        int n, int qscale)
+                                       int n, int qscale)
 {
     uint64_t nCoeffs;
     const uint16_t *quant_matrix;
@@ -434,9 +437,9 @@ void ff_dct_unquantize_mpeg2_intra_mmi(MpegEncContext *s, int16_t *block,
         "daddiu $8, $8, 16                  \r\n"
         "blez $8, 1b                        \r\n"
         ::[block]"r"(block+nCoeffs),[quant]"r"(quant_matrix+nCoeffs),
-          [qscale]"m"(qscale),[ncoeffs]"g"(-2*nCoeffs)
+        [qscale]"m"(qscale),[ncoeffs]"g"(-2*nCoeffs)
         : "$8","$10","$f0","$f2","$f4","$f6","$f8","$f10","$f12","$f14","$f16",
-          "$f18"
+        "$f18"
     );
 
     block[0]= block0;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bayer-to-RGB/YV12 template
  * Copyright (c) 2011-2014 Peter Ross <pross@xvid.org>
  *
@@ -127,7 +127,8 @@
 static void BAYER_RENAME(rgb24_copy)(const uint8_t *src, int src_stride, uint8_t *dst, int dst_stride, int width)
 {
     int i;
-    for (i = 0 ; i < width; i+= 2) {
+    for (i = 0 ; i < width; i+= 2)
+    {
         BAYER_TO_RGB24_COPY
         src += 2 * BAYER_SIZEOF;
         dst += 6;
@@ -142,13 +143,15 @@ static void BAYER_RENAME(rgb24_interpolate)(const uint8_t *src, int src_stride, 
     src += 2 * BAYER_SIZEOF;
     dst += 6;
 
-    for (i = 2 ; i < width - 2; i+= 2) {
+    for (i = 2 ; i < width - 2; i+= 2)
+    {
         BAYER_TO_RGB24_INTERPOLATE
         src += 2 * BAYER_SIZEOF;
         dst += 6;
     }
 
-    if (width > 2) {
+    if (width > 2)
+    {
         BAYER_TO_RGB24_COPY
     }
 }
@@ -158,7 +161,8 @@ static void BAYER_RENAME(yv12_copy)(const uint8_t *src, int src_stride, uint8_t 
     uint8_t dst[12];
     const int dst_stride = 6;
     int i;
-    for (i = 0 ; i < width; i+= 2) {
+    for (i = 0 ; i < width; i+= 2)
+    {
         BAYER_TO_RGB24_COPY
         rgb24toyv12_2x2(dst, dstY, dstU, dstV, luma_stride, dst_stride, rgb2yuv);
         src  += 2 * BAYER_SIZEOF;
@@ -181,7 +185,8 @@ static void BAYER_RENAME(yv12_interpolate)(const uint8_t *src, int src_stride, u
     dstU++;
     dstV++;
 
-    for (i = 2 ; i < width - 2; i+= 2) {
+    for (i = 2 ; i < width - 2; i+= 2)
+    {
         BAYER_TO_RGB24_INTERPOLATE
         rgb24toyv12_2x2(dst, dstY, dstU, dstV, luma_stride, dst_stride, rgb2yuv);
         src  += 2 * BAYER_SIZEOF;
@@ -190,7 +195,8 @@ static void BAYER_RENAME(yv12_interpolate)(const uint8_t *src, int src_stride, u
         dstV++;
     }
 
-    if (width > 2) {
+    if (width > 2)
+    {
         BAYER_TO_RGB24_COPY
         rgb24toyv12_2x2(dst, dstY, dstU, dstV, luma_stride, dst_stride, rgb2yuv);
     }

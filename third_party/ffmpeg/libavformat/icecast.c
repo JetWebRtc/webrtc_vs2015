@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Icecast protocol for FFmpeg
  * Copyright (c) 2014 Marvin Scholz
  *
@@ -28,7 +28,8 @@
 #include "network.h"
 
 
-typedef struct IcecastContext {
+typedef struct IcecastContext
+{
     const AVClass *class;
     URLContext *hd;
     int send_started;
@@ -52,7 +53,8 @@ typedef struct IcecastContext {
 #define OFFSET(x) offsetof(IcecastContext, x)
 #define E AV_OPT_FLAG_ENCODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "ice_genre", "set stream genre", OFFSET(genre), AV_OPT_TYPE_STRING, { 0 }, 0, 0, E },
     { "ice_name", "set stream description", OFFSET(name), AV_OPT_TYPE_STRING, { 0 }, 0, 0, E },
     { "ice_description", "set stream description", OFFSET(description), AV_OPT_TYPE_STRING, { 0 }, 0, 0, E },
@@ -104,7 +106,8 @@ static int icecast_open(URLContext *h, const char *uri, int flags)
     cat_header(&bp, "Ice-URL", s->url);
     cat_header(&bp, "Ice-Genre", s->genre);
     cat_header(&bp, "Ice-Public", s->public ? "1" : "0");
-    if (!av_bprint_is_complete(&bp)) {
+    if (!av_bprint_is_complete(&bp))
+    {
         ret = AVERROR(ENOMEM);
         goto cleanup;
     }
@@ -128,21 +131,26 @@ static int icecast_open(URLContext *h, const char *uri, int flags)
                  &port, path, sizeof(path), uri);
 
     // Check for auth data in URI
-    if (auth[0]) {
+    if (auth[0])
+    {
         char *sep = strchr(auth, ':');
-        if (sep) {
+        if (sep)
+        {
             *sep = 0;
             sep++;
-            if (s->pass) {
+            if (s->pass)
+            {
                 av_free(s->pass);
                 av_log(h, AV_LOG_WARNING, "Overwriting -password <pass> with URI password!\n");
             }
-            if (!(s->pass = av_strdup(sep))) {
+            if (!(s->pass = av_strdup(sep)))
+            {
                 ret = AVERROR(ENOMEM);
                 goto cleanup;
             }
         }
-        if (!(user = av_strdup(auth))) {
+        if (!(user = av_strdup(auth)))
+        {
             ret = AVERROR(ENOMEM);
             goto cleanup;
         }
@@ -155,7 +163,8 @@ static int icecast_open(URLContext *h, const char *uri, int flags)
              s->pass ? s->pass : "");
 
     // Check for mountpoint (path)
-    if (!path[0] || strcmp(path, "/") == 0) {
+    if (!path[0] || strcmp(path, "/") == 0)
+    {
         av_log(h, AV_LOG_ERROR, "No mountpoint (path) specified!\n");
         ret = AVERROR(EIO);
         goto cleanup;
@@ -177,22 +186,31 @@ cleanup:
 static int icecast_write(URLContext *h, const uint8_t *buf, int size)
 {
     IcecastContext *s = h->priv_data;
-    if (!s->send_started) {
+    if (!s->send_started)
+    {
         s->send_started = 1;
-        if (!s->content_type && size >= 8) {
+        if (!s->content_type && size >= 8)
+        {
             static const uint8_t oggs[4] = { 0x4F, 0x67, 0x67, 0x53 };
             static const uint8_t webm[4] = { 0x1A, 0x45, 0xDF, 0xA3 };
             static const uint8_t opus[8] = { 0x4F, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64 };
-            if (memcmp(buf, oggs, sizeof(oggs)) == 0) {
+            if (memcmp(buf, oggs, sizeof(oggs)) == 0)
+            {
                 av_log(h, AV_LOG_WARNING, "Streaming Ogg but appropriate content type NOT set!\n");
                 av_log(h, AV_LOG_WARNING, "Set it with -content_type application/ogg\n");
-            } else if (memcmp(buf, opus, sizeof(opus)) == 0) {
+            }
+            else if (memcmp(buf, opus, sizeof(opus)) == 0)
+            {
                 av_log(h, AV_LOG_WARNING, "Streaming Opus but appropriate content type NOT set!\n");
                 av_log(h, AV_LOG_WARNING, "Set it with -content_type audio/ogg\n");
-            } else if (memcmp(buf, webm, sizeof(webm)) == 0) {
+            }
+            else if (memcmp(buf, webm, sizeof(webm)) == 0)
+            {
                 av_log(h, AV_LOG_WARNING, "Streaming WebM but appropriate content type NOT set!\n");
                 av_log(h, AV_LOG_WARNING, "Set it with -content_type video/webm\n");
-            } else {
+            }
+            else
+            {
                 av_log(h, AV_LOG_WARNING, "It seems you are streaming an unsupported format.\n");
                 av_log(h, AV_LOG_WARNING, "It might work, but is not officially supported in Icecast!\n");
             }
@@ -201,14 +219,16 @@ static int icecast_write(URLContext *h, const uint8_t *buf, int size)
     return ffurl_write(s->hd, buf, size);
 }
 
-static const AVClass icecast_context_class = {
+static const AVClass icecast_context_class =
+{
     .class_name     = "icecast",
     .item_name      = av_default_item_name,
     .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
 };
 
-URLProtocol ff_icecast_protocol = {
+URLProtocol ff_icecast_protocol =
+{
     .name            = "icecast",
     .url_open        = icecast_open,
     .url_write       = icecast_write,

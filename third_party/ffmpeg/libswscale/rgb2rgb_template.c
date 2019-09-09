@@ -1,4 +1,4 @@
-/*
+﻿/*
  * software RGB to RGB converter
  * pluralize by software PAL8 to RGB converter
  *              software YUV to YUV converter
@@ -35,7 +35,8 @@ static inline void rgb24tobgr32_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
 #if HAVE_BIGENDIAN
         /* RGB24 (= R, G, B) -> RGB32 (= A, B, G, R) */
         *dest++  = 255;
@@ -59,7 +60,8 @@ static inline void rgb32tobgr24_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
 #if HAVE_BIGENDIAN
         /* RGB32 (= A, B, G, R) -> RGB24 (= R, G, B) */
         s++;
@@ -89,13 +91,15 @@ static inline void rgb15to16_c(const uint8_t *src, uint8_t *dst, int src_size)
     register const uint8_t *end = s + src_size;
     const uint8_t *mm_end       = end - 3;
 
-    while (s < mm_end) {
+    while (s < mm_end)
+    {
         register unsigned x = *((const uint32_t *)s);
         *((uint32_t *)d)    = (x & 0x7FFF7FFF) + (x & 0x7FE07FE0);
         d += 4;
         s += 4;
     }
-    if (s < end) {
+    if (s < end)
+    {
         register unsigned short x = *((const uint16_t *)s);
         *((uint16_t *)d)          = (x & 0x7FFF) + (x & 0x7FE0);
     }
@@ -108,13 +112,15 @@ static inline void rgb16to15_c(const uint8_t *src, uint8_t *dst, int src_size)
     register const uint8_t *end = s + src_size;
     const uint8_t *mm_end       = end - 3;
 
-    while (s < mm_end) {
+    while (s < mm_end)
+    {
         register uint32_t x  = *((const uint32_t *)s);
         *((uint32_t *)d)     = ((x >> 1) & 0x7FE07FE0) | (x & 0x001F001F);
         s                   += 4;
         d                   += 4;
     }
-    if (s < end) {
+    if (s < end)
+    {
         register uint16_t x = *((const uint16_t *)s);
         *((uint16_t *)d)    = ((x >> 1) & 0x7FE0) | (x & 0x001F);
     }
@@ -126,7 +132,8 @@ static inline void rgb32to16_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         register int rgb  = *(const uint32_t *)s;
         s                += 4;
         *d++              = ((rgb & 0xFF)     >> 3) +
@@ -142,7 +149,8 @@ static inline void rgb32tobgr16_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         register int rgb  = *(const uint32_t *)s;
         s                += 4;
         *d++              = ((rgb & 0xF8)     << 8) +
@@ -157,7 +165,8 @@ static inline void rgb32to15_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         register int rgb  = *(const uint32_t *)s;
         s                += 4;
         *d++              = ((rgb & 0xFF)     >> 3) +
@@ -173,7 +182,8 @@ static inline void rgb32tobgr15_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         register int rgb  = *(const uint32_t *)s;
         s                += 4;
         *d++              = ((rgb & 0xF8)     <<  7) +
@@ -189,7 +199,8 @@ static inline void rgb24tobgr16_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         const int b = *s++;
         const int g = *s++;
         const int r = *s++;
@@ -203,7 +214,8 @@ static inline void rgb24to16_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         const int r = *s++;
         const int g = *s++;
         const int b = *s++;
@@ -218,7 +230,8 @@ static inline void rgb24tobgr15_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         const int b = *s++;
         const int g = *s++;
         const int r = *s++;
@@ -232,7 +245,8 @@ static inline void rgb24to15_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint8_t *s   = src;
     const uint8_t *end = s + src_size;
 
-    while (s < end) {
+    while (s < end)
+    {
         const int r = *s++;
         const int g = *s++;
         const int b = *s++;
@@ -247,7 +261,8 @@ static inline void rgb15tobgr24_c(const uint8_t *src, uint8_t *dst,
     const uint16_t *s   = (const uint16_t *)src;
     const uint16_t *end = s + src_size / 2;
 
-    while (s < end) {
+    while (s < end)
+    {
         register uint16_t bgr = *s++;
         *d++ = ((bgr&0x001F)<<3) | ((bgr&0x001F)>> 2);
         *d++ = ((bgr&0x03E0)>>2) | ((bgr&0x03E0)>> 7);
@@ -262,7 +277,8 @@ static inline void rgb16tobgr24_c(const uint8_t *src, uint8_t *dst,
     const uint16_t *s   = (const uint16_t *)src;
     const uint16_t *end = s + src_size / 2;
 
-    while (s < end) {
+    while (s < end)
+    {
         register uint16_t bgr = *s++;
         *d++ = ((bgr&0x001F)<<3) | ((bgr&0x001F)>> 2);
         *d++ = ((bgr&0x07E0)>>3) | ((bgr&0x07E0)>> 9);
@@ -276,7 +292,8 @@ static inline void rgb15to32_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint16_t *s   = (const uint16_t *)src;
     const uint16_t *end = s + src_size / 2;
 
-    while (s < end) {
+    while (s < end)
+    {
         register uint16_t bgr = *s++;
 #if HAVE_BIGENDIAN
         *d++ = 255;
@@ -298,7 +315,8 @@ static inline void rgb16to32_c(const uint8_t *src, uint8_t *dst, int src_size)
     const uint16_t *s   = (const uint16_t *)src;
     const uint16_t *end = s + src_size / 2;
 
-    while (s < end) {
+    while (s < end)
+    {
         register uint16_t bgr = *s++;
 #if HAVE_BIGENDIAN
         *d++ = 255;
@@ -321,7 +339,8 @@ static inline void shuffle_bytes_2103_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s = src - idx;
     uint8_t *d       = dst - idx;
 
-    for (; idx < 15; idx += 4) {
+    for (; idx < 15; idx += 4)
+    {
         register unsigned v   = *(const uint32_t *)&s[idx], g = v & 0xff00ff00;
         v                    &= 0xff00ff;
         *(uint32_t *)&d[idx]  = (v >> 16) + g + (v << 16);
@@ -335,7 +354,8 @@ static inline void shuffle_bytes_0321_c(const uint8_t *src, uint8_t *dst,
     const uint8_t *s = src - idx;
     uint8_t *d       = dst - idx;
 
-    for (; idx < 15; idx += 4) {
+    for (; idx < 15; idx += 4)
+    {
         register unsigned v   = *(const uint32_t *)&s[idx], g = v & 0x00ff00ff;
         v                    &= 0xff00ff00;
         *(uint32_t *)&d[idx]  = (v >> 16) + g + (v << 16);
@@ -346,7 +366,8 @@ static inline void rgb24tobgr24_c(const uint8_t *src, uint8_t *dst, int src_size
 {
     unsigned i;
 
-    for (i = 0; i < src_size; i += 3) {
+    for (i = 0; i < src_size; i += 3)
+    {
         register uint8_t x = src[i + 2];
         dst[i + 1]         = src[i + 1];
         dst[i + 2]         = src[i + 0];
@@ -363,11 +384,13 @@ static inline void yuvPlanartoyuy2_c(const uint8_t *ysrc, const uint8_t *usrc,
     int y, i;
     const int chromWidth = width >> 1;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
 #if HAVE_FAST_64BIT
         uint64_t *ldst = (uint64_t *)dst;
         const uint8_t *yc = ysrc, *uc = usrc, *vc = vsrc;
-        for (i = 0; i < chromWidth; i += 2) {
+        for (i = 0; i < chromWidth; i += 2)
+        {
             uint64_t k = yc[0] + (uc[0] << 8) +
                          (yc[1] << 16) + ((unsigned) vc[0] << 24);
             uint64_t l = yc[2] + (uc[1] << 8) +
@@ -382,7 +405,8 @@ static inline void yuvPlanartoyuy2_c(const uint8_t *ysrc, const uint8_t *usrc,
         int *idst = (int32_t *)dst;
         const uint8_t *yc = ysrc, *uc = usrc, *vc = vsrc;
 
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
 #if HAVE_BIGENDIAN
             *idst++ = (yc[0] << 24) + (uc[0] << 16) +
                       (yc[1] <<  8) + (vc[0] <<  0);
@@ -395,7 +419,8 @@ static inline void yuvPlanartoyuy2_c(const uint8_t *ysrc, const uint8_t *usrc,
             vc++;
         }
 #endif
-        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1) {
+        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1)
+        {
             usrc += chromStride;
             vsrc += chromStride;
         }
@@ -427,11 +452,13 @@ static inline void yuvPlanartouyvy_c(const uint8_t *ysrc, const uint8_t *usrc,
     int y, i;
     const int chromWidth = width >> 1;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
 #if HAVE_FAST_64BIT
         uint64_t *ldst = (uint64_t *)dst;
         const uint8_t *yc = ysrc, *uc = usrc, *vc = vsrc;
-        for (i = 0; i < chromWidth; i += 2) {
+        for (i = 0; i < chromWidth; i += 2)
+        {
             uint64_t k = uc[0] + (yc[0] << 8) +
                          (vc[0] << 16) + ((unsigned) yc[1] << 24);
             uint64_t l = uc[1] + (yc[2] << 8) +
@@ -446,7 +473,8 @@ static inline void yuvPlanartouyvy_c(const uint8_t *ysrc, const uint8_t *usrc,
         int *idst = (int32_t *)dst;
         const uint8_t *yc = ysrc, *uc = usrc, *vc = vsrc;
 
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
 #if HAVE_BIGENDIAN
             *idst++ = (uc[0] << 24) + (yc[0] << 16) +
                       (vc[0] <<  8) + (yc[1] <<  0);
@@ -459,7 +487,8 @@ static inline void yuvPlanartouyvy_c(const uint8_t *ysrc, const uint8_t *usrc,
             vc++;
         }
 #endif
-        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1) {
+        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1)
+        {
             usrc += chromStride;
             vsrc += chromStride;
         }
@@ -518,9 +547,11 @@ static inline void yuy2toyv12_c(const uint8_t *src, uint8_t *ydst,
     int y;
     const int chromWidth = width >> 1;
 
-    for (y = 0; y < height; y += 2) {
+    for (y = 0; y < height; y += 2)
+    {
         int i;
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             ydst[2 * i + 0] = src[4 * i + 0];
             udst[i]         = src[4 * i + 1];
             ydst[2 * i + 1] = src[4 * i + 2];
@@ -529,7 +560,8 @@ static inline void yuy2toyv12_c(const uint8_t *src, uint8_t *ydst,
         ydst += lumStride;
         src  += srcStride;
 
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             ydst[2 * i + 0] = src[4 * i + 0];
             ydst[2 * i + 1] = src[4 * i + 2];
         }
@@ -548,7 +580,8 @@ static inline void planar2x_c(const uint8_t *src, uint8_t *dst, int srcWidth,
     dst[0] = src[0];
 
     // first line
-    for (x = 0; x < srcWidth - 1; x++) {
+    for (x = 0; x < srcWidth - 1; x++)
+    {
         dst[2 * x + 1] = (3 * src[x] + src[x + 1]) >> 2;
         dst[2 * x + 2] = (src[x] + 3 * src[x + 1]) >> 2;
     }
@@ -556,13 +589,15 @@ static inline void planar2x_c(const uint8_t *src, uint8_t *dst, int srcWidth,
 
     dst += dstStride;
 
-    for (y = 1; y < srcHeight; y++) {
+    for (y = 1; y < srcHeight; y++)
+    {
         const int mmxSize = 1;
 
         dst[0]         = (src[0] * 3 + src[srcStride]) >> 2;
         dst[dstStride] = (src[0] + 3 * src[srcStride]) >> 2;
 
-        for (x = mmxSize - 1; x < srcWidth - 1; x++) {
+        for (x = mmxSize - 1; x < srcWidth - 1; x++)
+        {
             dst[2 * x + 1]             = (src[x + 0] * 3 + src[x + srcStride + 1]) >> 2;
             dst[2 * x + dstStride + 2] = (src[x + 0] + 3 * src[x + srcStride + 1]) >> 2;
             dst[2 * x + dstStride + 1] = (src[x + 1] + 3 * src[x + srcStride])     >> 2;
@@ -578,7 +613,8 @@ static inline void planar2x_c(const uint8_t *src, uint8_t *dst, int srcWidth,
     // last line
     dst[0] = src[0];
 
-    for (x = 0; x < srcWidth - 1; x++) {
+    for (x = 0; x < srcWidth - 1; x++)
+    {
         dst[2 * x + 1] = (src[x] * 3 + src[x + 1]) >> 2;
         dst[2 * x + 2] = (src[x] + 3 * src[x + 1]) >> 2;
     }
@@ -599,9 +635,11 @@ static inline void uyvytoyv12_c(const uint8_t *src, uint8_t *ydst,
     int y;
     const int chromWidth = width >> 1;
 
-    for (y = 0; y < height; y += 2) {
+    for (y = 0; y < height; y += 2)
+    {
         int i;
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             udst[i]         = src[4 * i + 0];
             ydst[2 * i + 0] = src[4 * i + 1];
             vdst[i]         = src[4 * i + 2];
@@ -610,7 +648,8 @@ static inline void uyvytoyv12_c(const uint8_t *src, uint8_t *ydst,
         ydst += lumStride;
         src  += srcStride;
 
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             ydst[2 * i + 0] = src[4 * i + 1];
             ydst[2 * i + 1] = src[4 * i + 3];
         }
@@ -629,8 +668,8 @@ static inline void uyvytoyv12_c(const uint8_t *src, uint8_t *ydst,
  * FIXME: Write HQ version.
  */
 void ff_rgb24toyv12_c(const uint8_t *src, uint8_t *ydst, uint8_t *udst,
-                   uint8_t *vdst, int width, int height, int lumStride,
-                   int chromStride, int srcStride, int32_t *rgb2yuv)
+                      uint8_t *vdst, int width, int height, int lumStride,
+                      int chromStride, int srcStride, int32_t *rgb2yuv)
 {
     int32_t ry = rgb2yuv[RY_IDX], gy = rgb2yuv[GY_IDX], by = rgb2yuv[BY_IDX];
     int32_t ru = rgb2yuv[RU_IDX], gu = rgb2yuv[GU_IDX], bu = rgb2yuv[BU_IDX];
@@ -638,9 +677,11 @@ void ff_rgb24toyv12_c(const uint8_t *src, uint8_t *ydst, uint8_t *udst,
     int y;
     const int chromWidth = width >> 1;
 
-    for (y = 0; y < height; y += 2) {
+    for (y = 0; y < height; y += 2)
+    {
         int i;
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             unsigned int b = src[6 * i + 0];
             unsigned int g = src[6 * i + 1];
             unsigned int r = src[6 * i + 2];
@@ -666,7 +707,8 @@ void ff_rgb24toyv12_c(const uint8_t *src, uint8_t *ydst, uint8_t *udst,
         if (y+1 == height)
             break;
 
-        for (i = 0; i < chromWidth; i++) {
+        for (i = 0; i < chromWidth; i++)
+        {
             unsigned int b = src[6 * i + 0];
             unsigned int g = src[6 * i + 1];
             unsigned int r = src[6 * i + 2];
@@ -695,9 +737,11 @@ static void interleaveBytes_c(const uint8_t *src1, const uint8_t *src2,
 {
     int h;
 
-    for (h = 0; h < height; h++) {
+    for (h = 0; h < height; h++)
+    {
         int w;
-        for (w = 0; w < width; w++) {
+        for (w = 0; w < width; w++)
+        {
             dest[2 * w + 0] = src1[w];
             dest[2 * w + 1] = src2[w];
         }
@@ -713,9 +757,11 @@ static void deinterleaveBytes_c(const uint8_t *src, uint8_t *dst1, uint8_t *dst2
 {
     int h;
 
-    for (h = 0; h < height; h++) {
+    for (h = 0; h < height; h++)
+    {
         int w;
-        for (w = 0; w < width; w++) {
+        for (w = 0; w < width; w++)
+        {
             dst1[w] = src[2 * w + 0];
             dst2[w] = src[2 * w + 1];
         }
@@ -735,13 +781,15 @@ static inline void vu9_to_vu12_c(const uint8_t *src1, const uint8_t *src2,
     int w = width  / 2;
     int h = height / 2;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         const uint8_t *s1 = src1 + srcStride1 * (y >> 1);
         uint8_t *d        = dst1 + dstStride1 *  y;
         for (x = 0; x < w; x++)
             d[2 * x] = d[2 * x + 1] = s1[x];
     }
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         const uint8_t *s2 = src2 + srcStride2 * (y >> 1);
         uint8_t *d        = dst2 + dstStride2 *  y;
         for (x = 0; x < w; x++)
@@ -759,12 +807,14 @@ static inline void yvu9_to_yuy2_c(const uint8_t *src1, const uint8_t *src2,
     int w = width / 2;
     int h = height;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         const uint8_t *yp = src1 + srcStride1 *  y;
         const uint8_t *up = src2 + srcStride2 * (y >> 2);
         const uint8_t *vp = src3 + srcStride3 * (y >> 2);
         uint8_t *d        = dst  + dstStride  *  y;
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             const int x2 = x << 2;
             d[8 * x + 0] = yp[x2];
             d[8 * x + 1] = up[x];
@@ -783,7 +833,8 @@ static void extract_even_c(const uint8_t *src, uint8_t *dst, int count)
     dst   +=  count;
     src   +=  count * 2;
     count  = -count;
-    while (count < 0) {
+    while (count < 0)
+    {
         dst[count] = src[2 * count];
         count++;
     }
@@ -796,7 +847,8 @@ static void extract_even2_c(const uint8_t *src, uint8_t *dst0, uint8_t *dst1,
     dst1  +=  count;
     src   +=  count * 4;
     count  = -count;
-    while (count < 0) {
+    while (count < 0)
+    {
         dst0[count] = src[4 * count + 0];
         dst1[count] = src[4 * count + 2];
         count++;
@@ -811,7 +863,8 @@ static void extract_even2avg_c(const uint8_t *src0, const uint8_t *src1,
     src0  +=  count * 4;
     src1  +=  count * 4;
     count  = -count;
-    while (count < 0) {
+    while (count < 0)
+    {
         dst0[count] = (src0[4 * count + 0] + src1[4 * count + 0]) >> 1;
         dst1[count] = (src0[4 * count + 2] + src1[4 * count + 2]) >> 1;
         count++;
@@ -826,7 +879,8 @@ static void extract_odd2_c(const uint8_t *src, uint8_t *dst0, uint8_t *dst1,
     src   +=  count * 4;
     count  = -count;
     src++;
-    while (count < 0) {
+    while (count < 0)
+    {
         dst0[count] = src[4 * count + 0];
         dst1[count] = src[4 * count + 2];
         count++;
@@ -843,7 +897,8 @@ static void extract_odd2avg_c(const uint8_t *src0, const uint8_t *src1,
     count  = -count;
     src0++;
     src1++;
-    while (count < 0) {
+    while (count < 0)
+    {
         dst0[count] = (src0[4 * count + 0] + src1[4 * count + 0]) >> 1;
         dst1[count] = (src0[4 * count + 2] + src1[4 * count + 2]) >> 1;
         count++;
@@ -857,9 +912,11 @@ static void yuyvtoyuv420_c(uint8_t *ydst, uint8_t *udst, uint8_t *vdst,
     int y;
     const int chromWidth = FF_CEIL_RSHIFT(width, 1);
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         extract_even_c(src, ydst, width);
-        if (y & 1) {
+        if (y & 1)
+        {
             extract_odd2avg_c(src - srcStride, src, udst, vdst, chromWidth);
             udst += chromStride;
             vdst += chromStride;
@@ -877,7 +934,8 @@ static void yuyvtoyuv422_c(uint8_t *ydst, uint8_t *udst, uint8_t *vdst,
     int y;
     const int chromWidth = FF_CEIL_RSHIFT(width, 1);
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         extract_even_c(src, ydst, width);
         extract_odd2_c(src, udst, vdst, chromWidth);
 
@@ -895,9 +953,11 @@ static void uyvytoyuv420_c(uint8_t *ydst, uint8_t *udst, uint8_t *vdst,
     int y;
     const int chromWidth = FF_CEIL_RSHIFT(width, 1);
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         extract_even_c(src + 1, ydst, width);
-        if (y & 1) {
+        if (y & 1)
+        {
             extract_even2avg_c(src - srcStride, src, udst, vdst, chromWidth);
             udst += chromStride;
             vdst += chromStride;
@@ -915,7 +975,8 @@ static void uyvytoyuv422_c(uint8_t *ydst, uint8_t *udst, uint8_t *vdst,
     int y;
     const int chromWidth = FF_CEIL_RSHIFT(width, 1);
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         extract_even_c(src + 1, ydst, width);
         extract_even2_c(src, udst, vdst, chromWidth);
 

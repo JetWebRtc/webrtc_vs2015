@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -52,14 +52,17 @@ void silk_insertion_sort_decreasing_FLP(
     silk_assert( L >= K );
 
     /* Write start indices in index vector */
-    for( i = 0; i < K; i++ ) {
+    for( i = 0; i < K; i++ )
+    {
         idx[ i ] = i;
     }
 
     /* Sort vector elements by value, decreasing order */
-    for( i = 1; i < K; i++ ) {
+    for( i = 1; i < K; i++ )
+    {
         value = a[ i ];
-        for( j = i - 1; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {
+        for( j = i - 1; ( j >= 0 ) && ( value > a[ j ] ); j-- )
+        {
             a[ j + 1 ]   = a[ j ];      /* Shift value */
             idx[ j + 1 ] = idx[ j ];    /* Shift index */
         }
@@ -69,10 +72,13 @@ void silk_insertion_sort_decreasing_FLP(
 
     /* If less than L values are asked check the remaining values,      */
     /* but only spend CPU to ensure that the K first values are correct */
-    for( i = K; i < L; i++ ) {
+    for( i = K; i < L; i++ )
+    {
         value = a[ i ];
-        if( value > a[ K - 1 ] ) {
-            for( j = K - 2; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {
+        if( value > a[ K - 1 ] )
+        {
+            for( j = K - 2; ( j >= 0 ) && ( value > a[ j ] ); j-- )
+            {
                 a[ j + 1 ]   = a[ j ];      /* Shift value */
                 idx[ j + 1 ] = idx[ j ];    /* Shift index */
             }

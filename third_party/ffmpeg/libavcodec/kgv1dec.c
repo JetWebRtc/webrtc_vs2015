@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Kega Game Video (KGV1) decoder
  * Copyright (c) 2010 Daniel Verkamp
  *
@@ -30,7 +30,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct KgvContext {
+typedef struct KgvContext
+{
     uint16_t *frame_buffer;
     uint16_t *last_frame_buffer;
 } KgvContext;
@@ -62,17 +63,20 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     h = (buf[1] + 1) * 8;
     buf += 2;
 
-    if (w != avctx->width || h != avctx->height) {
+    if (w != avctx->width || h != avctx->height)
+    {
         av_freep(&c->frame_buffer);
         av_freep(&c->last_frame_buffer);
         if ((res = ff_set_dimensions(avctx, w, h)) < 0)
             return res;
     }
 
-    if (!c->frame_buffer) {
+    if (!c->frame_buffer)
+    {
         c->frame_buffer      = av_mallocz(avctx->width * avctx->height * 2);
         c->last_frame_buffer = av_mallocz(avctx->width * avctx->height * 2);
-        if (!c->frame_buffer || !c->last_frame_buffer) {
+        if (!c->frame_buffer || !c->last_frame_buffer)
+        {
             decode_flush(avctx);
             return AVERROR(ENOMEM);
         }
@@ -88,24 +92,30 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     for (i = 0; i < 8; i++)
         offsets[i] = -1;
 
-    while (outcnt < maxcnt && buf_end - 2 >= buf) {
+    while (outcnt < maxcnt && buf_end - 2 >= buf)
+    {
         int code = AV_RL16(buf);
         buf += 2;
 
-        if (!(code & 0x8000)) {
+        if (!(code & 0x8000))
+        {
             AV_WN16A(&out[2 * outcnt], code); // rgb555 pixel coded directly
             outcnt++;
-        } else {
+        }
+        else
+        {
             int count;
 
-            if ((code & 0x6000) == 0x6000) {
+            if ((code & 0x6000) == 0x6000)
+            {
                 // copy from previous frame
                 int oidx = (code >> 10) & 7;
                 int start;
 
                 count = (code & 0x3FF) + 3;
 
-                if (offsets[oidx] < 0) {
+                if (offsets[oidx] < 0)
+                {
                     if (buf_end - 3 < buf)
                         break;
                     offsets[oidx] = AV_RL24(buf);
@@ -117,22 +127,30 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
                 if (maxcnt - start < count || maxcnt - outcnt < count)
                     break;
 
-                if (!prev) {
+                if (!prev)
+                {
                     av_log(avctx, AV_LOG_ERROR,
                            "Frame reference does not exist\n");
                     break;
                 }
 
                 memcpy(out + 2 * outcnt, prev + 2 * start, 2 * count);
-            } else {
+            }
+            else
+            {
                 // copy from earlier in this frame
                 int offset = (code & 0x1FFF) + 1;
 
-                if (!(code & 0x6000)) {
+                if (!(code & 0x6000))
+                {
                     count = 2;
-                } else if ((code & 0x6000) == 0x2000) {
+                }
+                else if ((code & 0x6000) == 0x2000)
+                {
                     count = 3;
-                } else {
+                }
+                else
+                {
                     if (buf_end - 1 < buf)
                         break;
                     count = 4 + *buf++;
@@ -173,7 +191,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_kgv1_decoder = {
+AVCodec ff_kgv1_decoder =
+{
     .name           = "kgv1",
     .long_name      = NULL_IF_CONFIG_SMALL("Kega Game Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -46,55 +46,58 @@
 #define CS_DEBUG_CODE(x)
 #endif  // !CS_DEBUG_CHECKS
 
-namespace rtc {
+namespace rtc
+{
 
 // Locking methods (Enter, TryEnter, Leave)are const to permit protecting
 // members inside a const context without requiring mutable CriticalSections
 // everywhere.
-class LOCKABLE CriticalSection {
- public:
-  CriticalSection();
-  ~CriticalSection();
+class LOCKABLE CriticalSection
+{
+public:
+    CriticalSection();
+    ~CriticalSection();
 
-  void Enter() const EXCLUSIVE_LOCK_FUNCTION();
-  bool TryEnter() const EXCLUSIVE_TRYLOCK_FUNCTION(true);
-  void Leave() const UNLOCK_FUNCTION();
+    void Enter() const EXCLUSIVE_LOCK_FUNCTION();
+    bool TryEnter() const EXCLUSIVE_TRYLOCK_FUNCTION(true);
+    void Leave() const UNLOCK_FUNCTION();
 
- private:
-  // Use only for RTC_DCHECKing.
-  bool CurrentThreadIsOwner() const;
+private:
+    // Use only for RTC_DCHECKing.
+    bool CurrentThreadIsOwner() const;
 
 #if defined(WEBRTC_WIN)
-  mutable CRITICAL_SECTION crit_;
+    mutable CRITICAL_SECTION crit_;
 #elif defined(WEBRTC_POSIX)
 #if defined(WEBRTC_MAC) && !USE_NATIVE_MUTEX_ON_MAC
-  // Number of times the lock has been locked + number of threads waiting.
-  // TODO(tommi): We could use this number and subtract the recursion count
-  // to find places where we have multiple threads contending on the same lock.
-  mutable volatile int lock_queue_;
-  // |recursion_| represents the recursion count + 1 for the thread that owns
-  // the lock. Only modified by the thread that owns the lock.
-  mutable int recursion_;
-  // Used to signal a single waiting thread when the lock becomes available.
-  mutable dispatch_semaphore_t semaphore_;
-  // The thread that currently holds the lock. Required to handle recursion.
-  mutable PlatformThreadRef owning_thread_;
+    // Number of times the lock has been locked + number of threads waiting.
+    // TODO(tommi): We could use this number and subtract the recursion count
+    // to find places where we have multiple threads contending on the same lock.
+    mutable volatile int lock_queue_;
+    // |recursion_| represents the recursion count + 1 for the thread that owns
+    // the lock. Only modified by the thread that owns the lock.
+    mutable int recursion_;
+    // Used to signal a single waiting thread when the lock becomes available.
+    mutable dispatch_semaphore_t semaphore_;
+    // The thread that currently holds the lock. Required to handle recursion.
+    mutable PlatformThreadRef owning_thread_;
 #else
-  mutable pthread_mutex_t mutex_;
+    mutable pthread_mutex_t mutex_;
 #endif
-  CS_DEBUG_CODE(mutable PlatformThreadRef thread_);
-  CS_DEBUG_CODE(mutable int recursion_count_);
+    CS_DEBUG_CODE(mutable PlatformThreadRef thread_);
+    CS_DEBUG_CODE(mutable int recursion_count_);
 #endif
 };
 
 // CritScope, for serializing execution through a scope.
-class SCOPED_LOCKABLE CritScope {
- public:
-  explicit CritScope(const CriticalSection* cs) EXCLUSIVE_LOCK_FUNCTION(cs);
-  ~CritScope() UNLOCK_FUNCTION();
- private:
-  const CriticalSection* const cs_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(CritScope);
+class SCOPED_LOCKABLE CritScope
+{
+public:
+    explicit CritScope(const CriticalSection* cs) EXCLUSIVE_LOCK_FUNCTION(cs);
+    ~CritScope() UNLOCK_FUNCTION();
+private:
+    const CriticalSection* const cs_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(CritScope);
 };
 
 // Tries to lock a critical section on construction via
@@ -104,46 +107,50 @@ class SCOPED_LOCKABLE CritScope {
 // IMPORTANT: Unlike CritScope, the lock may not be owned by this thread in
 // subsequent code. Users *must* check locked() to determine if the
 // lock was taken. If you're not calling locked(), you're doing it wrong!
-class TryCritScope {
- public:
-  explicit TryCritScope(const CriticalSection* cs);
-  ~TryCritScope();
+class TryCritScope
+{
+public:
+    explicit TryCritScope(const CriticalSection* cs);
+    ~TryCritScope();
 #if defined(WEBRTC_WIN)
-  _Check_return_ bool locked() const;
+    _Check_return_ bool locked() const;
 #else
-  bool locked() const __attribute__ ((__warn_unused_result__));
+    bool locked() const __attribute__ ((__warn_unused_result__));
 #endif
- private:
-  const CriticalSection* const cs_;
-  const bool locked_;
-  CS_DEBUG_CODE(mutable bool lock_was_called_);
-  RTC_DISALLOW_COPY_AND_ASSIGN(TryCritScope);
+private:
+    const CriticalSection* const cs_;
+    const bool locked_;
+    CS_DEBUG_CODE(mutable bool lock_was_called_);
+    RTC_DISALLOW_COPY_AND_ASSIGN(TryCritScope);
 };
 
 // A POD lock used to protect global variables. Do NOT use for other purposes.
 // No custom constructor or private data member should be added.
-class LOCKABLE GlobalLockPod {
- public:
-  void Lock() EXCLUSIVE_LOCK_FUNCTION();
+class LOCKABLE GlobalLockPod
+{
+public:
+    void Lock() EXCLUSIVE_LOCK_FUNCTION();
 
-  void Unlock() UNLOCK_FUNCTION();
+    void Unlock() UNLOCK_FUNCTION();
 
-  volatile int lock_acquired;
+    volatile int lock_acquired;
 };
 
-class GlobalLock : public GlobalLockPod {
- public:
-  GlobalLock();
+class GlobalLock : public GlobalLockPod
+{
+public:
+    GlobalLock();
 };
 
 // GlobalLockScope, for serializing execution through a scope.
-class SCOPED_LOCKABLE GlobalLockScope {
- public:
-  explicit GlobalLockScope(GlobalLockPod* lock) EXCLUSIVE_LOCK_FUNCTION(lock);
-  ~GlobalLockScope() UNLOCK_FUNCTION();
- private:
-  GlobalLockPod* const lock_;
-  RTC_DISALLOW_COPY_AND_ASSIGN(GlobalLockScope);
+class SCOPED_LOCKABLE GlobalLockScope
+{
+public:
+    explicit GlobalLockScope(GlobalLockPod* lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+    ~GlobalLockScope() UNLOCK_FUNCTION();
+private:
+    GlobalLockPod* const lock_;
+    RTC_DISALLOW_COPY_AND_ASSIGN(GlobalLockScope);
 };
 
 } // namespace rtc

@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -47,13 +47,15 @@
 #include "md.h"
 
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 ////////////////////////
 // INTERFACE, called by svc_encode_slice.c
 ///////////////////////
 #define DELTA_QP_SCD_THD 5
 
-typedef enum {
+typedef enum
+{
 STATIC,
 SCROLLED
 } ESkipModes;

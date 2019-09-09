@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus common routines
  * Copyright (c) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  *

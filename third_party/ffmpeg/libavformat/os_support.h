@@ -1,4 +1,4 @@
-/*
+﻿/*
  * various OS-feature replacement utilities
  * copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
@@ -112,7 +112,8 @@ typedef unsigned long nfds_t;
 #include <winsock2.h>
 #endif
 #if !HAVE_STRUCT_POLLFD
-struct pollfd {
+struct pollfd
+{
     int fd;
     short events;  /* events to look for */
     short revents; /* events that occurred */
@@ -189,11 +190,13 @@ static inline int win32_rename(const char *src_utf8, const char *dest_utf8)
 
     if (utf8towchar(src_utf8, &src_w))
         return -1;
-    if (utf8towchar(dest_utf8, &dest_w)) {
+    if (utf8towchar(dest_utf8, &dest_w))
+    {
         av_free(src_w);
         return -1;
     }
-    if (!src_w || !dest_w) {
+    if (!src_w || !dest_w)
+    {
         av_free(src_w);
         av_free(dest_w);
         goto fallback;

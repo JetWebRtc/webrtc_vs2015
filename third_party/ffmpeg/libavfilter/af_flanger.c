@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Rob Sykes <robs@users.sourceforge.net>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #define INTERPOLATION_LINEAR    0
 #define INTERPOLATION_QUADRATIC 1
 
-typedef struct FlangerContext {
+typedef struct FlangerContext
+{
     const AVClass *class;
     double delay_min;
     double delay_depth;
@@ -52,7 +53,8 @@ typedef struct FlangerContext {
 #define OFFSET(x) offsetof(FlangerContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption flanger_options[] = {
+static const AVOption flanger_options[] =
+{
     { "delay", "base delay in milliseconds",        OFFSET(delay_min),   AV_OPT_TYPE_DOUBLE, {.dbl=0}, 0, 30, A },
     { "depth", "added swept delay in milliseconds", OFFSET(delay_depth), AV_OPT_TYPE_DOUBLE, {.dbl=2}, 0, 10, A },
     { "regen", "percentage regeneration (delayed signal feedback)", OFFSET(feedback_gain), AV_OPT_TYPE_DOUBLE, {.dbl=0}, -95, 95, A },
@@ -92,7 +94,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterChannelLayouts *layouts;
     AVFilterFormats *formats;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_DBLP, AV_SAMPLE_FMT_NONE
     };
     int ret;
@@ -134,8 +137,8 @@ static int config_input(AVFilterLink *inlink)
                            s->max_samples - 2., 3 * M_PI_2);
 
     return av_samples_alloc_array_and_samples(&s->delay_buffer, NULL,
-                                              inlink->channels, s->max_samples,
-                                              inlink->format, 0);
+            inlink->channels, s->max_samples,
+            inlink->format, 0);
 }
 
 static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
@@ -145,20 +148,25 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AVFrame *out_frame;
     int chan, i;
 
-    if (av_frame_is_writable(frame)) {
+    if (av_frame_is_writable(frame))
+    {
         out_frame = frame;
-    } else {
+    }
+    else
+    {
         out_frame = ff_get_audio_buffer(inlink, frame->nb_samples);
         if (!out_frame)
             return AVERROR(ENOMEM);
         av_frame_copy_props(out_frame, frame);
     }
 
-    for (i = 0; i < frame->nb_samples; i++) {
+    for (i = 0; i < frame->nb_samples; i++)
+    {
 
         s->delay_buf_pos = (s->delay_buf_pos + s->max_samples - 1) % s->max_samples;
 
-        for (chan = 0; chan < inlink->channels; chan++) {
+        for (chan = 0; chan < inlink->channels; chan++)
+        {
             double *src = (double *)frame->extended_data[chan];
             double *dst = (double *)out_frame->extended_data[chan];
             double delayed_0, delayed_1;
@@ -172,13 +180,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
 
             in = src[i];
             delay_buffer[s->delay_buf_pos] = in + s->delay_last[chan] *
-                                                           s->feedback_gain;
+                                             s->feedback_gain;
             delayed_0 = delay_buffer[(s->delay_buf_pos + int_delay++) % s->max_samples];
             delayed_1 = delay_buffer[(s->delay_buf_pos + int_delay++) % s->max_samples];
 
-            if (s->interpolation == INTERPOLATION_LINEAR) {
+            if (s->interpolation == INTERPOLATION_LINEAR)
+            {
                 delayed = delayed_0 + (delayed_1 - delayed_0) * frac_delay;
-            } else {
+            }
+            else
+            {
                 double a, b;
                 double delayed_2 = delay_buffer[(s->delay_buf_pos + int_delay++) % s->max_samples];
                 delayed_2 -= delayed_0;
@@ -213,7 +224,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->delay_buffer);
 }
 
-static const AVFilterPad flanger_inputs[] = {
+static const AVFilterPad flanger_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -223,7 +235,8 @@ static const AVFilterPad flanger_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad flanger_outputs[] = {
+static const AVFilterPad flanger_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -231,7 +244,8 @@ static const AVFilterPad flanger_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_flanger = {
+AVFilter ff_af_flanger =
+{
     .name          = "flanger",
     .description   = NULL_IF_CONFIG_SMALL("Apply a flanging effect to the audio."),
     .query_formats = query_formats,

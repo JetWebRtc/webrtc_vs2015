@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -350,10 +350,12 @@ void ff_h264_idct_add16_msa(uint8_t *dst,
 {
     int32_t i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         int32_t nnz = nzc[scan8[i]];
 
-        if (nnz) {
+        if (nnz)
+        {
             if (nnz == 1 && ((dctcoef *) block)[i * 16])
                 ff_h264_idct4x4_addblk_dc_msa(dst + blk_offset[i],
                                               block + i * 16 * sizeof(pixel),
@@ -372,10 +374,12 @@ void ff_h264_idct8_add4_msa(uint8_t *dst, const int32_t *blk_offset,
 {
     int32_t cnt;
 
-    for (cnt = 0; cnt < 16; cnt += 4) {
+    for (cnt = 0; cnt < 16; cnt += 4)
+    {
         int32_t nnz = nzc[scan8[cnt]];
 
-        if (nnz) {
+        if (nnz)
+        {
             if (nnz == 1 && ((dctcoef *) block)[cnt * 16])
                 ff_h264_idct8_dc_addblk_msa(dst + blk_offset[cnt],
                                             block + cnt * 16 * sizeof(pixel),
@@ -395,8 +399,10 @@ void ff_h264_idct_add8_msa(uint8_t **dst,
 {
     int32_t i, j;
 
-    for (j = 1; j < 3; j++) {
-        for (i = (j * 16); i < (j * 16 + 4); i++) {
+    for (j = 1; j < 3; j++)
+    {
+        for (i = (j * 16); i < (j * 16 + 4); i++)
+        {
             if (nzc[scan8[i]])
                 ff_h264_idct_add_msa(dst[j - 1] + blk_offset[i],
                                      block + i * 16 * sizeof(pixel),
@@ -416,8 +422,10 @@ void ff_h264_idct_add8_422_msa(uint8_t **dst,
 {
     int32_t i, j;
 
-    for (j = 1; j < 3; j++) {
-        for (i = (j * 16); i < (j * 16 + 4); i++) {
+    for (j = 1; j < 3; j++)
+    {
+        for (i = (j * 16); i < (j * 16 + 4); i++)
+        {
             if (nzc[scan8[i]])
                 ff_h264_idct_add_msa(dst[j - 1] + blk_offset[i],
                                      block + i * 16 * sizeof(pixel),
@@ -429,8 +437,10 @@ void ff_h264_idct_add8_422_msa(uint8_t **dst,
         }
     }
 
-    for (j = 1; j < 3; j++) {
-        for (i = (j * 16 + 4); i < (j * 16 + 8); i++) {
+    for (j = 1; j < 3; j++)
+    {
+        for (i = (j * 16 + 4); i < (j * 16 + 8); i++)
+        {
             if (nzc[scan8[i + 4]])
                 ff_h264_idct_add_msa(dst[j - 1] + blk_offset[i + 4],
                                      block + i * 16 * sizeof(pixel),
@@ -451,7 +461,8 @@ void ff_h264_idct_add16_intra_msa(uint8_t *dst,
 {
     int32_t i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         if (nzc[scan8[i]])
             ff_h264_idct_add_msa(dst + blk_offset[i],
                                  block + i * 16 * sizeof(pixel), dst_stride);

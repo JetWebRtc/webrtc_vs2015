@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,11 +12,12 @@
 
 #import <WebRTC/RTCMacros.h>
 
-typedef NS_ENUM(NSInteger, RTCSourceState) {
-  RTCSourceStateInitializing,
-  RTCSourceStateLive,
-  RTCSourceStateEnded,
-  RTCSourceStateMuted,
+typedef NS_ENUM(NSInteger, RTCSourceState)
+{
+    RTCSourceStateInitializing,
+    RTCSourceStateLive,
+    RTCSourceStateEnded,
+    RTCSourceStateMuted,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -24,8 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCMediaSource : NSObject
 
-/** The current state of the RTCMediaSource. */
-@property(nonatomic, readonly) RTCSourceState state;
+    /** The current state of the RTCMediaSource. */
+    @property(nonatomic, readonly) RTCSourceState state;
 
 - (instancetype)init NS_UNAVAILABLE;
 

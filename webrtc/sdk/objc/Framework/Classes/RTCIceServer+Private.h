@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,11 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCIceServer ()
 
-/**
- * IceServer struct representation of this RTCIceServer object's data.
- * This is needed to pass to the underlying C++ APIs.
- */
-@property(nonatomic, readonly)
+    /**
+     * IceServer struct representation of this RTCIceServer object's data.
+     * This is needed to pass to the underlying C++ APIs.
+     */
+    @property(nonatomic, readonly)
     webrtc::PeerConnectionInterface::IceServer nativeServer;
 
 /** Initialize an RTCIceServer from a native IceServer. */

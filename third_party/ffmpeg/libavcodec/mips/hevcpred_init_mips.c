@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #if HAVE_MSA
 static av_cold void hevc_pred_init_msa(HEVCPredContext *c, const int bit_depth)
 {
-    if (8 == bit_depth) {
+    if (8 == bit_depth)
+    {
         c->intra_pred[2] = ff_intra_pred_8_16x16_msa;
         c->intra_pred[3] = ff_intra_pred_8_32x32_msa;
         c->pred_planar[0] = ff_hevc_intra_pred_planar_0_msa;

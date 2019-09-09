@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Stefano Sabatini
  * Copyright (c) 2010 Baptiste Coudurier
  * Copyright (c) 2007 Bobby Bingham
@@ -40,7 +40,8 @@
 #include "drawutils.h"
 #include "video.h"
 
-static const char *const var_names[] = {
+static const char *const var_names[] =
+{
     "main_w",    "W", ///< width  of the main    video
     "main_h",    "H", ///< height of the main    video
     "overlay_w", "w", ///< width  of the overlay video
@@ -55,7 +56,8 @@ static const char *const var_names[] = {
     NULL
 };
 
-enum var_name {
+enum var_name
+{
     VAR_MAIN_W,    VAR_MW,
     VAR_MAIN_H,    VAR_MH,
     VAR_OVERLAY_W, VAR_OW,
@@ -70,13 +72,15 @@ enum var_name {
     VAR_VARS_NB
 };
 
-enum EOFAction {
+enum EOFAction
+{
     EOF_ACTION_REPEAT,
     EOF_ACTION_ENDALL,
     EOF_ACTION_PASS
 };
 
-static const char * const eof_action_str[] = {
+static const char * const eof_action_str[] =
+{
     "repeat", "endall", "pass"
 };
 
@@ -92,13 +96,15 @@ static const char * const eof_action_str[] = {
 #define U 1
 #define V 2
 
-enum EvalMode {
+enum EvalMode
+{
     EVAL_MODE_INIT,
     EVAL_MODE_FRAME,
     EVAL_MODE_NB
 };
 
-enum OverlayFormat {
+enum OverlayFormat
+{
     OVERLAY_FORMAT_YUV420,
     OVERLAY_FORMAT_YUV422,
     OVERLAY_FORMAT_YUV444,
@@ -106,7 +112,8 @@ enum OverlayFormat {
     OVERLAY_FORMAT_NB
 };
 
-typedef struct OverlayContext {
+typedef struct OverlayContext
+{
     const AVClass *class;
     int x, y;                   ///< position of overlayed picture
 
@@ -139,8 +146,10 @@ static av_cold void uninit(AVFilterContext *ctx)
     OverlayContext *s = ctx->priv;
 
     ff_dualinput_uninit(&s->dinput);
-    av_expr_free(s->x_pexpr); s->x_pexpr = NULL;
-    av_expr_free(s->y_pexpr); s->y_pexpr = NULL;
+    av_expr_free(s->x_pexpr);
+    s->x_pexpr = NULL;
+    av_expr_free(s->y_pexpr);
+    s->y_pexpr = NULL;
 }
 
 static inline int normalize_xy(double d, int chroma_sub)
@@ -170,7 +179,8 @@ static int set_expr(AVExpr **pexpr, const char *expr, const char *option, void *
         old = *pexpr;
     ret = av_expr_parse(pexpr, expr, var_names,
                         NULL, NULL, NULL, NULL, 0, log_ctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "Error when evaluating the expression '%s' for %s\n",
                expr, option);
@@ -198,7 +208,8 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
     if (ret < 0)
         return ret;
 
-    if (s->eval_mode == EVAL_MODE_INIT) {
+    if (s->eval_mode == EVAL_MODE_INIT)
+    {
         eval_expr(ctx);
         av_log(ctx, AV_LOG_VERBOSE, "x:%f xi:%d y:%f yi:%d\n",
                s->var_values[VAR_X], s->x,
@@ -212,34 +223,42 @@ static int query_formats(AVFilterContext *ctx)
     OverlayContext *s = ctx->priv;
 
     /* overlay formats contains alpha, for avoiding conversion with alpha information loss */
-    static const enum AVPixelFormat main_pix_fmts_yuv420[] = {
+    static const enum AVPixelFormat main_pix_fmts_yuv420[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUVA420P, AV_PIX_FMT_NONE
     };
-    static const enum AVPixelFormat overlay_pix_fmts_yuv420[] = {
+    static const enum AVPixelFormat overlay_pix_fmts_yuv420[] =
+    {
         AV_PIX_FMT_YUVA420P, AV_PIX_FMT_NONE
     };
 
-    static const enum AVPixelFormat main_pix_fmts_yuv422[] = {
+    static const enum AVPixelFormat main_pix_fmts_yuv422[] =
+    {
         AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_NONE
     };
-    static const enum AVPixelFormat overlay_pix_fmts_yuv422[] = {
+    static const enum AVPixelFormat overlay_pix_fmts_yuv422[] =
+    {
         AV_PIX_FMT_YUVA422P, AV_PIX_FMT_NONE
     };
 
-    static const enum AVPixelFormat main_pix_fmts_yuv444[] = {
+    static const enum AVPixelFormat main_pix_fmts_yuv444[] =
+    {
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUVA444P, AV_PIX_FMT_NONE
     };
-    static const enum AVPixelFormat overlay_pix_fmts_yuv444[] = {
+    static const enum AVPixelFormat overlay_pix_fmts_yuv444[] =
+    {
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_NONE
     };
 
-    static const enum AVPixelFormat main_pix_fmts_rgb[] = {
+    static const enum AVPixelFormat main_pix_fmts_rgb[] =
+    {
         AV_PIX_FMT_ARGB,  AV_PIX_FMT_RGBA,
         AV_PIX_FMT_ABGR,  AV_PIX_FMT_BGRA,
         AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
         AV_PIX_FMT_NONE
     };
-    static const enum AVPixelFormat overlay_pix_fmts_rgb[] = {
+    static const enum AVPixelFormat overlay_pix_fmts_rgb[] =
+    {
         AV_PIX_FMT_ARGB,  AV_PIX_FMT_RGBA,
         AV_PIX_FMT_ABGR,  AV_PIX_FMT_BGRA,
         AV_PIX_FMT_NONE
@@ -248,7 +267,8 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *main_formats;
     AVFilterFormats *overlay_formats;
 
-    switch (s->format) {
+    switch (s->format)
+    {
     case OVERLAY_FORMAT_YUV420:
         main_formats    = ff_make_format_list(main_pix_fmts_yuv420);
         overlay_formats = ff_make_format_list(overlay_pix_fmts_yuv420);
@@ -276,7 +296,8 @@ static int query_formats(AVFilterContext *ctx)
     return 0;
 }
 
-static const enum AVPixelFormat alpha_pix_fmts[] = {
+static const enum AVPixelFormat alpha_pix_fmts[] =
+{
     AV_PIX_FMT_YUVA420P, AV_PIX_FMT_YUVA444P,
     AV_PIX_FMT_ARGB, AV_PIX_FMT_ABGR, AV_PIX_FMT_RGBA,
     AV_PIX_FMT_BGRA, AV_PIX_FMT_NONE
@@ -322,14 +343,15 @@ static int config_input_overlay(AVFilterLink *inlink)
     s->var_values[VAR_POS]   = NAN;
 
     if ((ret = set_expr(&s->x_pexpr,      s->x_expr,      "x",      ctx)) < 0 ||
-        (ret = set_expr(&s->y_pexpr,      s->y_expr,      "y",      ctx)) < 0)
+            (ret = set_expr(&s->y_pexpr,      s->y_expr,      "y",      ctx)) < 0)
         return ret;
 
     s->overlay_is_packed_rgb =
         ff_fill_rgba_map(s->overlay_rgba_map, inlink->format) >= 0;
     s->overlay_has_alpha = ff_fmt_is_in(inlink->format, alpha_pix_fmts);
 
-    if (s->eval_mode == EVAL_MODE_INIT) {
+    if (s->eval_mode == EVAL_MODE_INIT)
+    {
         eval_expr(ctx);
         av_log(ctx, AV_LOG_VERBOSE, "x:%f xi:%d y:%f yi:%d\n",
                s->var_values[VAR_X], s->x,
@@ -387,10 +409,11 @@ static void blend_image(AVFilterContext *ctx,
     const int dst_h = dst->height;
 
     if (x >= dst_w || x+src_w < 0 ||
-        y >= dst_h || y+src_h < 0)
+            y >= dst_h || y+src_h < 0)
         return; /* no intersection */
 
-    if (s->main_is_packed_rgb) {
+    if (s->main_is_packed_rgb)
+    {
         uint8_t alpha;          ///< the amount of overlay to blend on to main
         const int dr = s->main_rgba_map[R];
         const int dg = s->main_rgba_map[G];
@@ -409,22 +432,26 @@ static void blend_image(AVFilterContext *ctx,
         sp = src->data[0] + i     * src->linesize[0];
         dp = dst->data[0] + (y+i) * dst->linesize[0];
 
-        for (imax = FFMIN(-y + dst_h, src_h); i < imax; i++) {
+        for (imax = FFMIN(-y + dst_h, src_h); i < imax; i++)
+        {
             j = FFMAX(-x, 0);
             s = sp + j     * sstep;
             d = dp + (x+j) * dstep;
 
-            for (jmax = FFMIN(-x + dst_w, src_w); j < jmax; j++) {
+            for (jmax = FFMIN(-x + dst_w, src_w); j < jmax; j++)
+            {
                 alpha = s[sa];
 
                 // if the main channel has an alpha channel, alpha has to be calculated
                 // to create an un-premultiplied (straight) alpha value
-                if (main_has_alpha && alpha != 0 && alpha != 255) {
+                if (main_has_alpha && alpha != 0 && alpha != 255)
+                {
                     uint8_t alpha_d = d[da];
                     alpha = UNPREMULTIPLY_ALPHA(alpha, alpha_d);
                 }
 
-                switch (alpha) {
+                switch (alpha)
+                {
                 case 0:
                     break;
                 case 255:
@@ -439,8 +466,10 @@ static void blend_image(AVFilterContext *ctx,
                     d[dg] = FAST_DIV255(d[dg] * (255 - alpha) + s[sg] * alpha);
                     d[db] = FAST_DIV255(d[db] * (255 - alpha) + s[sb] * alpha);
                 }
-                if (main_has_alpha) {
-                    switch (alpha) {
+                if (main_has_alpha)
+                {
+                    switch (alpha)
+                    {
                     case 0:
                         break;
                     case 255:
@@ -457,9 +486,12 @@ static void blend_image(AVFilterContext *ctx,
             dp += dst->linesize[0];
             sp += src->linesize[0];
         }
-    } else {
+    }
+    else
+    {
         const int main_has_alpha = s->main_has_alpha;
-        if (main_has_alpha) {
+        if (main_has_alpha)
+        {
             uint8_t alpha;          ///< the amount of overlay to blend on to main
             uint8_t *s, *sa, *d, *da;
 
@@ -467,18 +499,22 @@ static void blend_image(AVFilterContext *ctx,
             sa = src->data[3] + i     * src->linesize[3];
             da = dst->data[3] + (y+i) * dst->linesize[3];
 
-            for (imax = FFMIN(-y + dst_h, src_h); i < imax; i++) {
+            for (imax = FFMIN(-y + dst_h, src_h); i < imax; i++)
+            {
                 j = FFMAX(-x, 0);
                 s = sa + j;
                 d = da + x+j;
 
-                for (jmax = FFMIN(-x + dst_w, src_w); j < jmax; j++) {
+                for (jmax = FFMIN(-x + dst_w, src_w); j < jmax; j++)
+                {
                     alpha = *s;
-                    if (alpha != 0 && alpha != 255) {
+                    if (alpha != 0 && alpha != 255)
+                    {
                         uint8_t alpha_d = *d;
                         alpha = UNPREMULTIPLY_ALPHA(alpha, alpha_d);
                     }
-                    switch (alpha) {
+                    switch (alpha)
+                    {
                     case 0:
                         break;
                     case 255:
@@ -495,7 +531,8 @@ static void blend_image(AVFilterContext *ctx,
                 sa += src->linesize[3];
             }
         }
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++)
+        {
             int hsub = i ? s->hsub : 0;
             int vsub = i ? s->vsub : 0;
             int src_wp = FF_CEIL_RSHIFT(src_w, hsub);
@@ -511,42 +548,53 @@ static void blend_image(AVFilterContext *ctx,
             dp = dst->data[i] + (yp+j)    * dst->linesize[i];
             ap = src->data[3] + (j<<vsub) * src->linesize[3];
 
-            for (jmax = FFMIN(-yp + dst_hp, src_hp); j < jmax; j++) {
+            for (jmax = FFMIN(-yp + dst_hp, src_hp); j < jmax; j++)
+            {
                 k = FFMAX(-xp, 0);
                 d = dp + xp+k;
                 s = sp + k;
                 a = ap + (k<<hsub);
 
-                for (kmax = FFMIN(-xp + dst_wp, src_wp); k < kmax; k++) {
+                for (kmax = FFMIN(-xp + dst_wp, src_wp); k < kmax; k++)
+                {
                     int alpha_v, alpha_h, alpha;
 
                     // average alpha for color components, improve quality
-                    if (hsub && vsub && j+1 < src_hp && k+1 < src_wp) {
+                    if (hsub && vsub && j+1 < src_hp && k+1 < src_wp)
+                    {
                         alpha = (a[0] + a[src->linesize[3]] +
                                  a[1] + a[src->linesize[3]+1]) >> 2;
-                    } else if (hsub || vsub) {
+                    }
+                    else if (hsub || vsub)
+                    {
                         alpha_h = hsub && k+1 < src_wp ?
-                            (a[0] + a[1]) >> 1 : a[0];
+                                  (a[0] + a[1]) >> 1 : a[0];
                         alpha_v = vsub && j+1 < src_hp ?
-                            (a[0] + a[src->linesize[3]]) >> 1 : a[0];
+                                  (a[0] + a[src->linesize[3]]) >> 1 : a[0];
                         alpha = (alpha_v + alpha_h) >> 1;
-                    } else
+                    }
+                    else
                         alpha = a[0];
                     // if the main channel has an alpha channel, alpha has to be calculated
                     // to create an un-premultiplied (straight) alpha value
-                    if (main_has_alpha && alpha != 0 && alpha != 255) {
+                    if (main_has_alpha && alpha != 0 && alpha != 255)
+                    {
                         // average alpha for color components, improve quality
                         uint8_t alpha_d;
-                        if (hsub && vsub && j+1 < src_hp && k+1 < src_wp) {
+                        if (hsub && vsub && j+1 < src_hp && k+1 < src_wp)
+                        {
                             alpha_d = (d[0] + d[src->linesize[3]] +
                                        d[1] + d[src->linesize[3]+1]) >> 2;
-                        } else if (hsub || vsub) {
+                        }
+                        else if (hsub || vsub)
+                        {
                             alpha_h = hsub && k+1 < src_wp ?
-                                (d[0] + d[1]) >> 1 : d[0];
+                                      (d[0] + d[1]) >> 1 : d[0];
                             alpha_v = vsub && j+1 < src_hp ?
-                                (d[0] + d[src->linesize[3]]) >> 1 : d[0];
+                                      (d[0] + d[src->linesize[3]]) >> 1 : d[0];
                             alpha_d = (alpha_v + alpha_h) >> 1;
-                        } else
+                        }
+                        else
                             alpha_d = d[0];
                         alpha = UNPREMULTIPLY_ALPHA(alpha, alpha_d);
                     }
@@ -569,12 +617,13 @@ static AVFrame *do_blend(AVFilterContext *ctx, AVFrame *mainpic,
     OverlayContext *s = ctx->priv;
     AVFilterLink *inlink = ctx->inputs[0];
 
-    if (s->eval_mode == EVAL_MODE_FRAME) {
+    if (s->eval_mode == EVAL_MODE_FRAME)
+    {
         int64_t pos = av_frame_get_pkt_pos(mainpic);
 
         s->var_values[VAR_N] = inlink->frame_count;
         s->var_values[VAR_T] = mainpic->pts == AV_NOPTS_VALUE ?
-            NAN : mainpic->pts * av_q2d(inlink->time_base);
+                               NAN : mainpic->pts * av_q2d(inlink->time_base);
         s->var_values[VAR_POS] = pos == -1 ? NAN : pos;
 
         eval_expr(ctx);
@@ -605,16 +654,19 @@ static av_cold int init(AVFilterContext *ctx)
 {
     OverlayContext *s = ctx->priv;
 
-    if (s->allow_packed_rgb) {
+    if (s->allow_packed_rgb)
+    {
         av_log(ctx, AV_LOG_WARNING,
                "The rgb option is deprecated and is overriding the format option, use format instead\n");
         s->format = OVERLAY_FORMAT_RGB;
     }
-    if (!s->dinput.repeatlast || s->eof_action == EOF_ACTION_PASS) {
+    if (!s->dinput.repeatlast || s->eof_action == EOF_ACTION_PASS)
+    {
         s->dinput.repeatlast = 0;
         s->eof_action = EOF_ACTION_PASS;
     }
-    if (s->dinput.shortest || s->eof_action == EOF_ACTION_ENDALL) {
+    if (s->dinput.shortest || s->eof_action == EOF_ACTION_ENDALL)
+    {
         s->dinput.shortest = 1;
         s->eof_action = EOF_ACTION_ENDALL;
     }
@@ -626,32 +678,36 @@ static av_cold int init(AVFilterContext *ctx)
 #define OFFSET(x) offsetof(OverlayContext, x)
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption overlay_options[] = {
+static const AVOption overlay_options[] =
+{
     { "x", "set the x expression", OFFSET(x_expr), AV_OPT_TYPE_STRING, {.str = "0"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "y", "set the y expression", OFFSET(y_expr), AV_OPT_TYPE_STRING, {.str = "0"}, CHAR_MIN, CHAR_MAX, FLAGS },
-    { "eof_action", "Action to take when encountering EOF from secondary input ",
+    {
+        "eof_action", "Action to take when encountering EOF from secondary input ",
         OFFSET(eof_action), AV_OPT_TYPE_INT, { .i64 = EOF_ACTION_REPEAT },
-        EOF_ACTION_REPEAT, EOF_ACTION_PASS, .flags = FLAGS, "eof_action" },
-        { "repeat", "Repeat the previous frame.",   0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_REPEAT }, .flags = FLAGS, "eof_action" },
-        { "endall", "End both streams.",            0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_ENDALL }, .flags = FLAGS, "eof_action" },
-        { "pass",   "Pass through the main input.", 0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_PASS },   .flags = FLAGS, "eof_action" },
+        EOF_ACTION_REPEAT, EOF_ACTION_PASS, .flags = FLAGS, "eof_action"
+    },
+    { "repeat", "Repeat the previous frame.",   0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_REPEAT }, .flags = FLAGS, "eof_action" },
+    { "endall", "End both streams.",            0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_ENDALL }, .flags = FLAGS, "eof_action" },
+    { "pass",   "Pass through the main input.", 0, AV_OPT_TYPE_CONST, { .i64 = EOF_ACTION_PASS },   .flags = FLAGS, "eof_action" },
     { "eval", "specify when to evaluate expressions", OFFSET(eval_mode), AV_OPT_TYPE_INT, {.i64 = EVAL_MODE_FRAME}, 0, EVAL_MODE_NB-1, FLAGS, "eval" },
-         { "init",  "eval expressions once during initialization", 0, AV_OPT_TYPE_CONST, {.i64=EVAL_MODE_INIT},  .flags = FLAGS, .unit = "eval" },
-         { "frame", "eval expressions per-frame",                  0, AV_OPT_TYPE_CONST, {.i64=EVAL_MODE_FRAME}, .flags = FLAGS, .unit = "eval" },
+    { "init",  "eval expressions once during initialization", 0, AV_OPT_TYPE_CONST, {.i64=EVAL_MODE_INIT},  .flags = FLAGS, .unit = "eval" },
+    { "frame", "eval expressions per-frame",                  0, AV_OPT_TYPE_CONST, {.i64=EVAL_MODE_FRAME}, .flags = FLAGS, .unit = "eval" },
     { "rgb", "force packed RGB in input and output (deprecated)", OFFSET(allow_packed_rgb), AV_OPT_TYPE_INT, {.i64=0}, 0, 1, FLAGS },
     { "shortest", "force termination when the shortest input terminates", OFFSET(dinput.shortest), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, FLAGS },
     { "format", "set output format", OFFSET(format), AV_OPT_TYPE_INT, {.i64=OVERLAY_FORMAT_YUV420}, 0, OVERLAY_FORMAT_NB-1, FLAGS, "format" },
-        { "yuv420", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV420}, .flags = FLAGS, .unit = "format" },
-        { "yuv422", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV422}, .flags = FLAGS, .unit = "format" },
-        { "yuv444", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV444}, .flags = FLAGS, .unit = "format" },
-        { "rgb",    "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_RGB},    .flags = FLAGS, .unit = "format" },
+    { "yuv420", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV420}, .flags = FLAGS, .unit = "format" },
+    { "yuv422", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV422}, .flags = FLAGS, .unit = "format" },
+    { "yuv444", "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_YUV444}, .flags = FLAGS, .unit = "format" },
+    { "rgb",    "", 0, AV_OPT_TYPE_CONST, {.i64=OVERLAY_FORMAT_RGB},    .flags = FLAGS, .unit = "format" },
     { "repeatlast", "repeat overlay of the last overlay frame", OFFSET(dinput.repeatlast), AV_OPT_TYPE_INT, {.i64=1}, 0, 1, FLAGS },
     { NULL }
 };
 
 AVFILTER_DEFINE_CLASS(overlay);
 
-static const AVFilterPad avfilter_vf_overlay_inputs[] = {
+static const AVFilterPad avfilter_vf_overlay_inputs[] =
+{
     {
         .name         = "main",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -668,7 +724,8 @@ static const AVFilterPad avfilter_vf_overlay_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_overlay_outputs[] = {
+static const AVFilterPad avfilter_vf_overlay_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -678,7 +735,8 @@ static const AVFilterPad avfilter_vf_overlay_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_overlay = {
+AVFilter ff_vf_overlay =
+{
     .name          = "overlay",
     .description   = NULL_IF_CONFIG_SMALL("Overlay a video source on top of the input."),
     .init          = init,

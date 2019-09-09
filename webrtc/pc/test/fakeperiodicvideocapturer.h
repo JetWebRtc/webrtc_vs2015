@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,54 +19,64 @@
 #include "webrtc/base/thread.h"
 #include "webrtc/media/base/fakevideocapturer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class FakePeriodicVideoCapturer : public cricket::FakeVideoCapturer,
-                                  public rtc::MessageHandler {
- public:
-  FakePeriodicVideoCapturer() {
-    std::vector<cricket::VideoFormat> formats;
-    formats.push_back(cricket::VideoFormat(1280, 720,
-            cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
-    formats.push_back(cricket::VideoFormat(640, 480,
-        cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
-    formats.push_back(cricket::VideoFormat(640, 360,
-            cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
-    formats.push_back(cricket::VideoFormat(320, 240,
-        cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
-    formats.push_back(cricket::VideoFormat(160, 120,
-        cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
-    ResetSupportedFormats(formats);
-  }
-
-  virtual cricket::CaptureState Start(const cricket::VideoFormat& format) {
-    cricket::CaptureState state = FakeVideoCapturer::Start(format);
-    if (state != cricket::CS_FAILED) {
-      rtc::Thread::Current()->Post(RTC_FROM_HERE, this, MSG_CREATEFRAME);
+    public rtc::MessageHandler
+{
+public:
+    FakePeriodicVideoCapturer()
+    {
+        std::vector<cricket::VideoFormat> formats;
+        formats.push_back(cricket::VideoFormat(1280, 720,
+                                               cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
+        formats.push_back(cricket::VideoFormat(640, 480,
+                                               cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
+        formats.push_back(cricket::VideoFormat(640, 360,
+                                               cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
+        formats.push_back(cricket::VideoFormat(320, 240,
+                                               cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
+        formats.push_back(cricket::VideoFormat(160, 120,
+                                               cricket::VideoFormat::FpsToInterval(30), cricket::FOURCC_I420));
+        ResetSupportedFormats(formats);
     }
-    return state;
-  }
-  virtual void Stop() {
-    rtc::Thread::Current()->Clear(this);
-  }
-  // Inherited from MesageHandler.
-  virtual void OnMessage(rtc::Message* msg) {
-    if (msg->message_id == MSG_CREATEFRAME) {
-      if (IsRunning()) {
-        CaptureFrame();
-        rtc::Thread::Current()->PostDelayed(
-            RTC_FROM_HERE, static_cast<int>(GetCaptureFormat()->interval /
-                                            rtc::kNumNanosecsPerMillisec),
-            this, MSG_CREATEFRAME);
+
+    virtual cricket::CaptureState Start(const cricket::VideoFormat& format)
+    {
+        cricket::CaptureState state = FakeVideoCapturer::Start(format);
+        if (state != cricket::CS_FAILED)
+        {
+            rtc::Thread::Current()->Post(RTC_FROM_HERE, this, MSG_CREATEFRAME);
+        }
+        return state;
+    }
+    virtual void Stop()
+    {
+        rtc::Thread::Current()->Clear(this);
+    }
+    // Inherited from MesageHandler.
+    virtual void OnMessage(rtc::Message* msg)
+    {
+        if (msg->message_id == MSG_CREATEFRAME)
+        {
+            if (IsRunning())
+            {
+                CaptureFrame();
+                rtc::Thread::Current()->PostDelayed(
+                    RTC_FROM_HERE, static_cast<int>(GetCaptureFormat()->interval /
+                                                    rtc::kNumNanosecsPerMillisec),
+                    this, MSG_CREATEFRAME);
+            }
         }
     }
-  }
 
- private:
-  enum {
-    // Offset  0xFF to make sure this don't collide with base class messages.
-    MSG_CREATEFRAME = 0xFF
-  };
+private:
+    enum
+    {
+        // Offset  0xFF to make sure this don't collide with base class messages.
+        MSG_CREATEFRAME = 0xFF
+    };
 };
 
 }  // namespace webrtc

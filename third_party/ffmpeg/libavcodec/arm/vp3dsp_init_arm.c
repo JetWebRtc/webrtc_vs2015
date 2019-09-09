@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -34,7 +34,8 @@ av_cold void ff_vp3dsp_init_arm(VP3DSPContext *c, int flags)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         c->idct_put      = ff_vp3_idct_put_neon;
         c->idct_add      = ff_vp3_idct_add_neon;
         c->idct_dc_add   = ff_vp3_idct_dc_add_neon;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Linux audio play and grab interface
  * Copyright (c) 2000, 2001 Fabrice Bellard
  *
@@ -54,18 +54,22 @@ int ff_oss_audio_open(AVFormatContext *s1, int is_output,
         audio_fd = avpriv_open(audio_device, O_WRONLY);
     else
         audio_fd = avpriv_open(audio_device, O_RDONLY);
-    if (audio_fd < 0) {
+    if (audio_fd < 0)
+    {
         av_log(s1, AV_LOG_ERROR, "%s: %s\n", audio_device, av_err2str(AVERROR(errno)));
         return AVERROR(EIO);
     }
 
-    if (flip && *flip == '1') {
+    if (flip && *flip == '1')
+    {
         s->flip_left = 1;
     }
 
     /* non blocking mode */
-    if (!is_output) {
-        if (fcntl(audio_fd, F_SETFL, O_NONBLOCK) < 0) {
+    if (!is_output)
+    {
+        if (fcntl(audio_fd, F_SETFL, O_NONBLOCK) < 0)
+        {
             av_log(s1, AV_LOG_WARNING, "%s: Could not enable non block mode (%s)\n", audio_device, av_err2str(AVERROR(errno)));
         }
     }
@@ -83,29 +87,41 @@ int ff_oss_audio_open(AVFormatContext *s1, int is_output,
      * usable. If OSS is not usable the SNDCTL_DSP_SETFMTS later is going to
      * fail anyway. */
     err = ioctl(audio_fd, SNDCTL_DSP_GETFMTS, &tmp);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_log(s1, AV_LOG_WARNING, "SNDCTL_DSP_GETFMTS: %s\n", av_err2str(AVERROR(errno)));
     }
 
 #if HAVE_BIGENDIAN
-    if (tmp & AFMT_S16_BE) {
+    if (tmp & AFMT_S16_BE)
+    {
         tmp = AFMT_S16_BE;
-    } else if (tmp & AFMT_S16_LE) {
+    }
+    else if (tmp & AFMT_S16_LE)
+    {
         tmp = AFMT_S16_LE;
-    } else {
+    }
+    else
+    {
         tmp = 0;
     }
 #else
-    if (tmp & AFMT_S16_LE) {
+    if (tmp & AFMT_S16_LE)
+    {
         tmp = AFMT_S16_LE;
-    } else if (tmp & AFMT_S16_BE) {
+    }
+    else if (tmp & AFMT_S16_BE)
+    {
         tmp = AFMT_S16_BE;
-    } else {
+    }
+    else
+    {
         tmp = 0;
     }
 #endif
 
-    switch(tmp) {
+    switch(tmp)
+    {
     case AFMT_S16_LE:
         s->codec_id = AV_CODEC_ID_PCM_S16LE;
         break;
@@ -131,7 +147,7 @@ int ff_oss_audio_open(AVFormatContext *s1, int is_output,
     s->fd = audio_fd;
 
     return 0;
- fail:
+fail:
     close(audio_fd);
     return AVERROR(EIO);
 #undef CHECK_IOCTL_ERROR

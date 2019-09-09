@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_MEDIA_ENGINE_CONSTANTS_H_
 #define WEBRTC_MEDIA_ENGINE_CONSTANTS_H_
 
-namespace cricket {
+namespace cricket
+{
 
 extern const int kVideoMtu;
 extern const int kVideoRtpBufferSize;

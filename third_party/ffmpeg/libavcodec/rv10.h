@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV10/RV20 decoder
  *
  * This file is part of FFmpeg.

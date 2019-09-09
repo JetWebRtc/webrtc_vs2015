@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Xiaolei Yu <dreifachstein@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -24,50 +24,54 @@
 #include "libavutil/arm/cpu.h"
 
 extern void rgbx_to_nv12_neon_32(const uint8_t *src, uint8_t *y, uint8_t *chroma,
-                int width, int height,
-                int y_stride, int c_stride, int src_stride,
-                int32_t coeff_tbl[9]);
+                                 int width, int height,
+                                 int y_stride, int c_stride, int src_stride,
+                                 int32_t coeff_tbl[9]);
 
 extern void rgbx_to_nv12_neon_16(const uint8_t *src, uint8_t *y, uint8_t *chroma,
-                int width, int height,
-                int y_stride, int c_stride, int src_stride,
-                int32_t coeff_tbl[9]);
+                                 int width, int height,
+                                 int y_stride, int c_stride, int src_stride,
+                                 int32_t coeff_tbl[9]);
 
 static int rgbx_to_nv12_neon_32_wrapper(SwsContext *context, const uint8_t *src[],
-                        int srcStride[], int srcSliceY, int srcSliceH,
-                        uint8_t *dst[], int dstStride[]) {
+                                        int srcStride[], int srcSliceY, int srcSliceH,
+                                        uint8_t *dst[], int dstStride[])
+{
 
     rgbx_to_nv12_neon_32(src[0] + srcSliceY * srcStride[0],
-            dst[0] + srcSliceY * dstStride[0],
-            dst[1] + (srcSliceY / 2) * dstStride[1],
-            context->srcW, srcSliceH,
-            dstStride[0], dstStride[1], srcStride[0],
-            context->input_rgb2yuv_table);
+                         dst[0] + srcSliceY * dstStride[0],
+                         dst[1] + (srcSliceY / 2) * dstStride[1],
+                         context->srcW, srcSliceH,
+                         dstStride[0], dstStride[1], srcStride[0],
+                         context->input_rgb2yuv_table);
 
     return 0;
 }
 
 static int rgbx_to_nv12_neon_16_wrapper(SwsContext *context, const uint8_t *src[],
-                        int srcStride[], int srcSliceY, int srcSliceH,
-                        uint8_t *dst[], int dstStride[]) {
+                                        int srcStride[], int srcSliceY, int srcSliceH,
+                                        uint8_t *dst[], int dstStride[])
+{
 
     rgbx_to_nv12_neon_16(src[0] + srcSliceY * srcStride[0],
-            dst[0] + srcSliceY * dstStride[0],
-            dst[1] + (srcSliceY / 2) * dstStride[1],
-            context->srcW, srcSliceH,
-            dstStride[0], dstStride[1], srcStride[0],
-            context->input_rgb2yuv_table);
+                         dst[0] + srcSliceY * dstStride[0],
+                         dst[1] + (srcSliceY / 2) * dstStride[1],
+                         context->srcW, srcSliceH,
+                         dstStride[0], dstStride[1], srcStride[0],
+                         context->input_rgb2yuv_table);
 
     return 0;
 }
 
-static void get_unscaled_swscale_neon(SwsContext *c) {
+static void get_unscaled_swscale_neon(SwsContext *c)
+{
     int accurate_rnd = c->flags & SWS_ACCURATE_RND;
     if (c->srcFormat == AV_PIX_FMT_RGBA
             && c->dstFormat == AV_PIX_FMT_NV12
-            && (c->srcW >= 16)) {
+            && (c->srcW >= 16))
+    {
         c->swscale = accurate_rnd ? rgbx_to_nv12_neon_32_wrapper
-                        : rgbx_to_nv12_neon_16_wrapper;
+                     : rgbx_to_nv12_neon_16_wrapper;
     }
 }
 

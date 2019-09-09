@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004-2005 Michael Niedermayer, Loren Merritt
  * Copyright (c) 2011 Daniel Kang
  *
@@ -199,14 +199,15 @@ static av_always_inline void ff_ ## OPNAME ## h264_qpel16_v_lowpass_ ## MMX(uint
 }
 
 static av_always_inline void put_h264_qpel8or16_hv1_lowpass_sse2(int16_t *tmp,
-                                                                 const uint8_t *src,
-                                                                 int tmpStride,
-                                                                 int srcStride,
-                                                                 int size)
+        const uint8_t *src,
+        int tmpStride,
+        int srcStride,
+        int size)
 {
     int w = (size+8)>>3;
     src -= 2*srcStride+2;
-    while(w--){
+    while(w--)
+    {
         ff_put_h264_qpel8or16_hv1_lowpass_op_sse2(src, tmp, srcStride, size);
         tmp += 8;
         src += 8;
@@ -545,15 +546,19 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
     int high_bit_depth = bit_depth > 8;
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
-        if (!high_bit_depth) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
+        if (!high_bit_depth)
+        {
             SET_QPEL_FUNCS(put_h264_qpel, 0, 16, mmxext, );
             SET_QPEL_FUNCS(put_h264_qpel, 1,  8, mmxext, );
             SET_QPEL_FUNCS(put_h264_qpel, 2,  4, mmxext, );
             SET_QPEL_FUNCS(avg_h264_qpel, 0, 16, mmxext, );
             SET_QPEL_FUNCS(avg_h264_qpel, 1,  8, mmxext, );
             SET_QPEL_FUNCS(avg_h264_qpel, 2,  4, mmxext, );
-        } else if (bit_depth == 10) {
+        }
+        else if (bit_depth == 10)
+        {
 #if ARCH_X86_32
             SET_QPEL_FUNCS(avg_h264_qpel, 0, 16, 10_mmxext, ff_);
             SET_QPEL_FUNCS(put_h264_qpel, 0, 16, 10_mmxext, ff_);
@@ -565,13 +570,16 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
         }
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
-        if (!(cpu_flags & AV_CPU_FLAG_SSE2SLOW) && !high_bit_depth) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
+        if (!(cpu_flags & AV_CPU_FLAG_SSE2SLOW) && !high_bit_depth)
+        {
             // these functions are slower than mmx on AMD, but faster on Intel
             H264_QPEL_FUNCS(0, 0, sse2);
         }
 
-        if (!high_bit_depth) {
+        if (!high_bit_depth)
+        {
             H264_QPEL_FUNCS(0, 1, sse2);
             H264_QPEL_FUNCS(0, 2, sse2);
             H264_QPEL_FUNCS(0, 3, sse2);
@@ -586,7 +594,8 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
             H264_QPEL_FUNCS(3, 3, sse2);
         }
 
-        if (bit_depth == 10) {
+        if (bit_depth == 10)
+        {
             SET_QPEL_FUNCS(put_h264_qpel, 0, 16, 10_sse2, ff_);
             SET_QPEL_FUNCS(put_h264_qpel, 1,  8, 10_sse2, ff_);
             SET_QPEL_FUNCS(avg_h264_qpel, 0, 16, 10_sse2, ff_);
@@ -597,8 +606,10 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
         }
     }
 
-    if (EXTERNAL_SSSE3(cpu_flags)) {
-        if (!high_bit_depth) {
+    if (EXTERNAL_SSSE3(cpu_flags))
+    {
+        if (!high_bit_depth)
+        {
             H264_QPEL_FUNCS(1, 0, ssse3);
             H264_QPEL_FUNCS(1, 1, ssse3);
             H264_QPEL_FUNCS(1, 2, ssse3);
@@ -613,19 +624,22 @@ av_cold void ff_h264qpel_init_x86(H264QpelContext *c, int bit_depth)
             H264_QPEL_FUNCS(3, 3, ssse3);
         }
 
-        if (bit_depth == 10) {
+        if (bit_depth == 10)
+        {
             H264_QPEL_FUNCS_10(1, 0, ssse3_cache64);
             H264_QPEL_FUNCS_10(2, 0, ssse3_cache64);
             H264_QPEL_FUNCS_10(3, 0, ssse3_cache64);
         }
     }
 
-    if (EXTERNAL_AVX(cpu_flags)) {
+    if (EXTERNAL_AVX(cpu_flags))
+    {
         /* AVX implies 64 byte cache lines without the need to avoid unaligned
          * memory accesses that cross the boundary between two cache lines.
          * TODO: Port X264_CPU_CACHELINE_32/64 detection from x264 to avoid
          * having to treat SSE2 functions with such properties as AVX. */
-        if (bit_depth == 10) {
+        if (bit_depth == 10)
+        {
             H264_QPEL_FUNCS_10(1, 0, sse2);
             H264_QPEL_FUNCS_10(2, 0, sse2);
             H264_QPEL_FUNCS_10(3, 0, sse2);

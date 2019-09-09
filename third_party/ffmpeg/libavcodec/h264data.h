@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H26L/H264/AVC/JVT/14496-10/... encoder/decoder
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -34,49 +34,57 @@
 #include "libavutil/rational.h"
 #include "h264.h"
 
-static const uint8_t golomb_to_pict_type[5] = {
+static const uint8_t golomb_to_pict_type[5] =
+{
     AV_PICTURE_TYPE_P, AV_PICTURE_TYPE_B, AV_PICTURE_TYPE_I,
     AV_PICTURE_TYPE_SP, AV_PICTURE_TYPE_SI
 };
 
-static const uint8_t golomb_to_intra4x4_cbp[48] = {
+static const uint8_t golomb_to_intra4x4_cbp[48] =
+{
     47, 31, 15, 0,  23, 27, 29, 30, 7,  11, 13, 14, 39, 43, 45, 46,
     16, 3,  5,  10, 12, 19, 21, 26, 28, 35, 37, 42, 44, 1,  2,  4,
     8,  17, 18, 20, 24, 6,  9,  22, 25, 32, 33, 34, 36, 40, 38, 41
 };
 
-static const uint8_t golomb_to_inter_cbp[48] = {
+static const uint8_t golomb_to_inter_cbp[48] =
+{
     0,  16, 1,  2,  4,  8,  32, 3,  5,  10, 12, 15, 47, 7,  11, 13,
     14, 6,  9,  31, 35, 37, 42, 44, 33, 34, 36, 40, 39, 43, 45, 46,
     17, 18, 20, 24, 19, 21, 26, 28, 23, 27, 29, 30, 22, 25, 38, 41
 };
 
-static const uint8_t zigzag_scan[16+1] = {
+static const uint8_t zigzag_scan[16+1] =
+{
     0 + 0 * 4, 1 + 0 * 4, 0 + 1 * 4, 0 + 2 * 4,
     1 + 1 * 4, 2 + 0 * 4, 3 + 0 * 4, 2 + 1 * 4,
     1 + 2 * 4, 0 + 3 * 4, 1 + 3 * 4, 2 + 2 * 4,
     3 + 1 * 4, 3 + 2 * 4, 2 + 3 * 4, 3 + 3 * 4,
 };
 
-static const uint8_t chroma_dc_scan[4] = {
+static const uint8_t chroma_dc_scan[4] =
+{
     (0 + 0 * 2) * 16, (1 + 0 * 2) * 16,
     (0 + 1 * 2) * 16, (1 + 1 * 2) * 16,
 };
 
-static const uint8_t chroma422_dc_scan[8] = {
+static const uint8_t chroma422_dc_scan[8] =
+{
     (0 + 0 * 2) * 16, (0 + 1 * 2) * 16,
     (1 + 0 * 2) * 16, (0 + 2 * 2) * 16,
     (0 + 3 * 2) * 16, (1 + 1 * 2) * 16,
     (1 + 2 * 2) * 16, (1 + 3 * 2) * 16,
 };
 
-typedef struct IMbInfo {
+typedef struct IMbInfo
+{
     uint16_t type;
     uint8_t pred_mode;
     uint8_t cbp;
 } IMbInfo;
 
-static const IMbInfo i_mb_type_info[26] = {
+static const IMbInfo i_mb_type_info[26] =
+{
     { MB_TYPE_INTRA4x4,  -1,  -1 },
     { MB_TYPE_INTRA16x16, 2,   0 },
     { MB_TYPE_INTRA16x16, 1,   0 },
@@ -105,12 +113,14 @@ static const IMbInfo i_mb_type_info[26] = {
     { MB_TYPE_INTRA_PCM,  -1, -1 },
 };
 
-typedef struct PMbInfo {
+typedef struct PMbInfo
+{
     uint16_t type;
     uint8_t partition_count;
 } PMbInfo;
 
-static const PMbInfo p_mb_type_info[5] = {
+static const PMbInfo p_mb_type_info[5] =
+{
     { MB_TYPE_16x16 | MB_TYPE_P0L0,                               1 },
     { MB_TYPE_16x8  | MB_TYPE_P0L0 | MB_TYPE_P1L0,                2 },
     { MB_TYPE_8x16  | MB_TYPE_P0L0 | MB_TYPE_P1L0,                2 },
@@ -118,14 +128,16 @@ static const PMbInfo p_mb_type_info[5] = {
     { MB_TYPE_8x8   | MB_TYPE_P0L0 | MB_TYPE_P1L0 | MB_TYPE_REF0, 4 },
 };
 
-static const PMbInfo p_sub_mb_type_info[4] = {
+static const PMbInfo p_sub_mb_type_info[4] =
+{
     { MB_TYPE_16x16 | MB_TYPE_P0L0, 1 },
     { MB_TYPE_16x8  | MB_TYPE_P0L0, 2 },
     { MB_TYPE_8x16  | MB_TYPE_P0L0, 2 },
     { MB_TYPE_8x8   | MB_TYPE_P0L0, 4 },
 };
 
-static const PMbInfo b_mb_type_info[23] = {
+static const PMbInfo b_mb_type_info[23] =
+{
     { MB_TYPE_DIRECT2 | MB_TYPE_L0L1,                                              1, },
     { MB_TYPE_16x16   | MB_TYPE_P0L0,                                              1, },
     { MB_TYPE_16x16   | MB_TYPE_P0L1,                                              1, },
@@ -151,7 +163,8 @@ static const PMbInfo b_mb_type_info[23] = {
     { MB_TYPE_8x8     | MB_TYPE_P0L0 | MB_TYPE_P0L1 | MB_TYPE_P1L0 | MB_TYPE_P1L1, 4, },
 };
 
-static const PMbInfo b_sub_mb_type_info[13] = {
+static const PMbInfo b_sub_mb_type_info[13] =
+{
     { MB_TYPE_DIRECT2,                                                           1, },
     { MB_TYPE_16x16 | MB_TYPE_P0L0,                                              1, },
     { MB_TYPE_16x16 | MB_TYPE_P0L1,                                              1, },
@@ -167,7 +180,8 @@ static const PMbInfo b_sub_mb_type_info[13] = {
     { MB_TYPE_8x8   | MB_TYPE_P0L0 | MB_TYPE_P0L1 | MB_TYPE_P1L0 | MB_TYPE_P1L1, 4, },
 };
 
-static const AVRational ff_h264_pixel_aspect[17] = {
+static const AVRational ff_h264_pixel_aspect[17] =
+{
     {   0,  1 },
     {   1,  1 },
     {  12, 11 },

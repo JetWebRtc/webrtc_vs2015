@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Seppo Tomperi <seppo.tomperi@vtt.fi>
  *
  * This file is part of FFmpeg.
@@ -39,9 +39,9 @@ void ff_hevc_transform_add_4x4_neon_8(uint8_t *_dst, int16_t *coeffs,
 void ff_hevc_transform_add_8x8_neon_8(uint8_t *_dst, int16_t *coeffs,
                                       ptrdiff_t stride);
 void ff_hevc_transform_add_16x16_neon_8(uint8_t *_dst, int16_t *coeffs,
-                                      ptrdiff_t stride);
+                                        ptrdiff_t stride);
 void ff_hevc_transform_add_32x32_neon_8(uint8_t *_dst, int16_t *coeffs,
-                                      ptrdiff_t stride);
+                                        ptrdiff_t stride);
 
 #define PUT_PIXELS(name) \
     void name(int16_t *dst, uint8_t *src, \
@@ -60,16 +60,16 @@ PUT_PIXELS(ff_hevc_put_pixels_w64_neon_8);
 #undef PUT_PIXELS
 
 static void (*put_hevc_qpel_neon[4][4])(int16_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
-                                   int height, int width);
+                                        int height, int width);
 static void (*put_hevc_qpel_uw_neon[4][4])(uint8_t *dst, ptrdiff_t dststride, uint8_t *_src, ptrdiff_t _srcstride,
-                                   int width, int height, int16_t* src2, ptrdiff_t src2stride);
+        int width, int height, int16_t* src2, ptrdiff_t src2stride);
 void ff_hevc_put_qpel_neon_wrapper(int16_t *dst, uint8_t *src, ptrdiff_t srcstride,
                                    int height, intptr_t mx, intptr_t my, int width);
 void ff_hevc_put_qpel_uni_neon_wrapper(uint8_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
-                                   int height, intptr_t mx, intptr_t my, int width);
-void ff_hevc_put_qpel_bi_neon_wrapper(uint8_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
-                                       int16_t *src2,
                                        int height, intptr_t mx, intptr_t my, int width);
+void ff_hevc_put_qpel_bi_neon_wrapper(uint8_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
+                                      int16_t *src2,
+                                      int height, intptr_t mx, intptr_t my, int width);
 #define QPEL_FUNC(name) \
     void name(int16_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride, \
                                    int height, int width)
@@ -125,26 +125,30 @@ QPEL_FUNC_UW(ff_hevc_put_qpel_uw_h3v3_neon_8);
 #undef QPEL_FUNC_UW
 
 void ff_hevc_put_qpel_neon_wrapper(int16_t *dst, uint8_t *src, ptrdiff_t srcstride,
-                                   int height, intptr_t mx, intptr_t my, int width) {
+                                   int height, intptr_t mx, intptr_t my, int width)
+{
 
     put_hevc_qpel_neon[my][mx](dst, MAX_PB_SIZE, src, srcstride, height, width);
 }
 
 void ff_hevc_put_qpel_uni_neon_wrapper(uint8_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
-                                   int height, intptr_t mx, intptr_t my, int width) {
+                                       int height, intptr_t mx, intptr_t my, int width)
+{
 
     put_hevc_qpel_uw_neon[my][mx](dst, dststride, src, srcstride, width, height, NULL, 0);
 }
 
 void ff_hevc_put_qpel_bi_neon_wrapper(uint8_t *dst, ptrdiff_t dststride, uint8_t *src, ptrdiff_t srcstride,
-                                       int16_t *src2,
-                                       int height, intptr_t mx, intptr_t my, int width) {
+                                      int16_t *src2,
+                                      int height, intptr_t mx, intptr_t my, int width)
+{
     put_hevc_qpel_uw_neon[my][mx](dst, dststride, src, srcstride, width, height, src2, MAX_PB_SIZE);
 }
 
 av_cold void ff_hevcdsp_init_neon(HEVCDSPContext *c, const int bit_depth)
 {
-    if (bit_depth == 8) {
+    if (bit_depth == 8)
+    {
         int x;
         c->hevc_v_loop_filter_luma     = ff_hevc_v_loop_filter_luma_neon;
         c->hevc_h_loop_filter_luma     = ff_hevc_h_loop_filter_luma_neon;
@@ -191,7 +195,8 @@ av_cold void ff_hevcdsp_init_neon(HEVCDSPContext *c, const int bit_depth)
         put_hevc_qpel_uw_neon[3][1]      = ff_hevc_put_qpel_uw_h1v3_neon_8;
         put_hevc_qpel_uw_neon[3][2]      = ff_hevc_put_qpel_uw_h2v3_neon_8;
         put_hevc_qpel_uw_neon[3][3]      = ff_hevc_put_qpel_uw_h3v3_neon_8;
-        for (x = 0; x < 10; x++) {
+        for (x = 0; x < 10; x++)
+        {
             c->put_hevc_qpel[x][1][0]         = ff_hevc_put_qpel_neon_wrapper;
             c->put_hevc_qpel[x][0][1]         = ff_hevc_put_qpel_neon_wrapper;
             c->put_hevc_qpel[x][1][1]         = ff_hevc_put_qpel_neon_wrapper;

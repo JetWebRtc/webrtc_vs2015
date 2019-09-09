@@ -1,4 +1,4 @@
-/*
+﻿/*
  * GSM common header
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 /* samples per block */
 #define GSM_FRAME_SIZE 160
 
-enum GSMModes {
+enum GSMModes
+{
     GSM_13000 = 0,
     MSN_12400,
     MSN_11800,

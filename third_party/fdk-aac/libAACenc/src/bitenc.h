@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,12 +101,13 @@ amm-info@iis.fraunhofer.de
 
 #include "tpenc_lib.h"
 
-typedef enum{
-  MAX_ENCODER_CHANNELS  = 9,
-  MAX_BLOCK_TYPES       = 4,
-  MAX_AAC_LAYERS        = 9,
-  MAX_LAYERS            = MAX_AAC_LAYERS  , /* only one core layer if present */
-  FIRST_LAY             = 1   /* default layer number for AAC nonscalable */
+typedef enum
+{
+    MAX_ENCODER_CHANNELS  = 9,
+    MAX_BLOCK_TYPES       = 4,
+    MAX_AAC_LAYERS        = 9,
+    MAX_LAYERS            = MAX_AAC_LAYERS  , /* only one core layer if present */
+    FIRST_LAY             = 1   /* default layer number for AAC nonscalable */
 } _MAX_CONST;
 
 #define BUFFER_MX_HUFFCB_SIZE (32*sizeof(INT))  /* our FDK_bitbuffer needs size of power 2 */
@@ -137,15 +138,15 @@ typedef enum{
  * \return AAC_ENCODER_ERROR error code
  */
 AAC_ENCODER_ERROR FDKaacEnc_ChannelElementWrite( HANDLE_TRANSPORTENC  hTpEnc,
-                                                 ELEMENT_INFO        *pElInfo,
-                                                 QC_OUT_CHANNEL      *qcOutChannel[(2)],
-                                                 PSY_OUT_ELEMENT     *psyOutElement,
-                                                 PSY_OUT_CHANNEL     *psyOutChannel[(2)],
-                                                 UINT                 syntaxFlags,
-                                                 AUDIO_OBJECT_TYPE    aot,
-                                                 SCHAR                epConfig,
-                                                 INT                 *pBitDemand,
-                                                 UCHAR                minCnt
+        ELEMENT_INFO        *pElInfo,
+        QC_OUT_CHANNEL      *qcOutChannel[(2)],
+        PSY_OUT_ELEMENT     *psyOutElement,
+        PSY_OUT_CHANNEL     *psyOutChannel[(2)],
+        UINT                 syntaxFlags,
+        AUDIO_OBJECT_TYPE    aot,
+        SCHAR                epConfig,
+        INT                 *pBitDemand,
+        UCHAR                minCnt
                                                );
 /**
  * \brief Write bit stream or account static bits
@@ -162,13 +163,13 @@ AAC_ENCODER_ERROR FDKaacEnc_ChannelElementWrite( HANDLE_TRANSPORTENC  hTpEnc,
  * \param epConfig Error protection config
  */
 AAC_ENCODER_ERROR FDKaacEnc_WriteBitstream (HANDLE_TRANSPORTENC hTpEnc,
-                                            CHANNEL_MAPPING *channelMapping,
-                                            QC_OUT* qcOut,
-                                            PSY_OUT* psyOut,
-                                            QC_STATE* qcKernel,
-                                            AUDIO_OBJECT_TYPE  aot,
-                                            UINT  syntaxFlags,
-                                            SCHAR  epConfig
+        CHANNEL_MAPPING *channelMapping,
+        QC_OUT* qcOut,
+        PSY_OUT* psyOut,
+        QC_STATE* qcKernel,
+        AUDIO_OBJECT_TYPE  aot,
+        UINT  syntaxFlags,
+        SCHAR  epConfig
                                            );
 
 INT FDKaacEnc_writeExtensionData( HANDLE_TRANSPORTENC  hTpEnc,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The LibYuv Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,8 +14,10 @@
 #include "libyuv/basic_types.h"
 
 #ifdef __cplusplus
-namespace libyuv {
-extern "C" {
+namespace libyuv
+{
+extern "C"
+{
 #endif
 
 #if defined(__pnacl__) || defined(__CLR_VER) || \

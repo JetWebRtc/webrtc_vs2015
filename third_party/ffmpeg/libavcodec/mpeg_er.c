@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -25,7 +25,8 @@ static void set_erpic(ERPicture *dst, Picture *src)
     int i;
 
     memset(dst, 0, sizeof(*dst));
-    if (!src) {
+    if (!src)
+    {
         dst->f  = NULL;
         dst->tf = NULL;
         return;
@@ -34,7 +35,8 @@ static void set_erpic(ERPicture *dst, Picture *src)
     dst->f = src->f;
     dst->tf = &src->tf;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         dst->motion_val[i] = src->motion_val[i];
         dst->ref_index[i] = src->ref_index[i];
     }

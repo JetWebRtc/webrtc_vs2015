@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2008-2013, Cisco Systems
  *     All rights reserved.
@@ -46,7 +46,8 @@
 #include "nalu.h"
 #include "memory_align.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 int32_t MemInitNalList (PAccessUnit* ppAu, const uint32_t kuiSize, CMemoryAlign* pMa);
 

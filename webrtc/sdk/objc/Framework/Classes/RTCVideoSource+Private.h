@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,13 +18,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCVideoSource ()
 
-/**
- * The VideoTrackSourceInterface object passed to this RTCVideoSource during
- * construction.
- */
-@property(nonatomic, readonly)
+    /**
+     * The VideoTrackSourceInterface object passed to this RTCVideoSource during
+     * construction.
+     */
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>
-        nativeVideoSource;
+    nativeVideoSource;
 
 /** Initialize an RTCVideoSource from a native VideoTrackSourceInterface. */
 - (instancetype)initWithNativeVideoSource:
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithNativeMediaSource:
     (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
-                                     type:(RTCMediaSourceType)type NS_UNAVAILABLE;
+    type:(RTCMediaSourceType)type NS_UNAVAILABLE;
 
 @end
 

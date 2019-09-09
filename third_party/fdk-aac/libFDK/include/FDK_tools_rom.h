@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -153,18 +153,18 @@ extern const FIXP_WTP sin_twiddle_L64[];
  */
 
 #if defined(ARCH_PREFER_MULT_16x16) || defined(ARCH_PREFER_MULT_32x16)
-  #define QMF_COEFF_16BIT
+#define QMF_COEFF_16BIT
 #endif
 
 #define QMF_FILTER_PROTOTYPE_SIZE    640
 #define QMF_NO_POLY                  5
 
 #ifdef QMF_COEFF_16BIT
-  #define FIXP_PFT FIXP_SGL
-  #define FIXP_QTW FIXP_SGL
+#define FIXP_PFT FIXP_SGL
+#define FIXP_QTW FIXP_SGL
 #else
-  #define FIXP_PFT FIXP_DBL
-  #define FIXP_QTW FIXP_DBL
+#define FIXP_PFT FIXP_DBL
+#define FIXP_QTW FIXP_DBL
 #endif
 
 #define QMF640_PFT_TABLE_SIZE       (640/2 + QMF_NO_POLY)
@@ -202,56 +202,58 @@ extern const FIXP_PFT qmf_cldfb_320[QMF320_CLDFB_PFT_TABLE_SIZE];
 /*
  * Raw Data Block list stuff.
  */
-typedef enum {
-  element_instance_tag,
-  common_window,
-  global_gain,
-  ics_info, /* ics_reserved_bit, window_sequence, window_shape, max_sfb, scale_factor_grouping, predictor_data_present, ltp_data_present, ltp_data */
-  max_sfb,
-  ms, /* ms_mask_present, ms_used */
-  /*predictor_data_present,*/ /* part of ics_info */
-  ltp_data_present,
-  ltp_data,
-  section_data,
-  scale_factor_data,
-  pulse, /* pulse_data_present, pulse_data  */
-  tns_data_present,
-  tns_data,
-  gain_control_data_present,
-  gain_control_data,
-  esc1_hcr,
-  esc2_rvlc,
-  spectral_data,
+typedef enum
+{
+    element_instance_tag,
+    common_window,
+    global_gain,
+    ics_info, /* ics_reserved_bit, window_sequence, window_shape, max_sfb, scale_factor_grouping, predictor_data_present, ltp_data_present, ltp_data */
+    max_sfb,
+    ms, /* ms_mask_present, ms_used */
+    /*predictor_data_present,*/ /* part of ics_info */
+    ltp_data_present,
+    ltp_data,
+    section_data,
+    scale_factor_data,
+    pulse, /* pulse_data_present, pulse_data  */
+    tns_data_present,
+    tns_data,
+    gain_control_data_present,
+    gain_control_data,
+    esc1_hcr,
+    esc2_rvlc,
+    spectral_data,
 
-  scale_factor_data_usac,
-  core_mode,
-  common_tw,
-  lpd_channel_stream,
-  tw_data,
-  noise,
-  ac_spectral_data,
-  fac_data,
-  tns_active, /* introduced in MPEG-D usac CD */
-  tns_data_present_usac,
-  common_max_sfb,
+    scale_factor_data_usac,
+    core_mode,
+    common_tw,
+    lpd_channel_stream,
+    tw_data,
+    noise,
+    ac_spectral_data,
+    fac_data,
+    tns_active, /* introduced in MPEG-D usac CD */
+    tns_data_present_usac,
+    common_max_sfb,
 
 
-  /* Non data list items */
-  adtscrc_start_reg1,
-  adtscrc_start_reg2,
-  adtscrc_end_reg1,
-  adtscrc_end_reg2,
-  drmcrc_start_reg,
-  drmcrc_end_reg,
-  next_channel,
-  next_channel_loop,
-  link_sequence,
-  end_of_sequence
+    /* Non data list items */
+    adtscrc_start_reg1,
+    adtscrc_start_reg2,
+    adtscrc_end_reg1,
+    adtscrc_end_reg2,
+    drmcrc_start_reg,
+    drmcrc_end_reg,
+    next_channel,
+    next_channel_loop,
+    link_sequence,
+    end_of_sequence
 } rbd_id_t;
 
-struct element_list {
-  const rbd_id_t *id;
-  const struct element_list *next[2];
+struct element_list
+{
+    const rbd_id_t *id;
+    const struct element_list *next[2];
 };
 
 typedef struct element_list element_list_t;

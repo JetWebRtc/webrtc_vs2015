@@ -1,4 +1,4 @@
-/*
+﻿/*
  * util.c
  *
  * Utilities used by the test apps
@@ -50,30 +50,54 @@ char bit_string[MAX_PRINT_STRING_LEN];
 
 static inline int hex_char_to_nibble (uint8_t c)
 {
-    switch (c) {
-    case ('0'): return 0x0;
-    case ('1'): return 0x1;
-    case ('2'): return 0x2;
-    case ('3'): return 0x3;
-    case ('4'): return 0x4;
-    case ('5'): return 0x5;
-    case ('6'): return 0x6;
-    case ('7'): return 0x7;
-    case ('8'): return 0x8;
-    case ('9'): return 0x9;
-    case ('a'): return 0xa;
-    case ('A'): return 0xa;
-    case ('b'): return 0xb;
-    case ('B'): return 0xb;
-    case ('c'): return 0xc;
-    case ('C'): return 0xc;
-    case ('d'): return 0xd;
-    case ('D'): return 0xd;
-    case ('e'): return 0xe;
-    case ('E'): return 0xe;
-    case ('f'): return 0xf;
-    case ('F'): return 0xf;
-    default: return -1; /* this flags an error */
+    switch (c)
+    {
+    case ('0'):
+        return 0x0;
+    case ('1'):
+        return 0x1;
+    case ('2'):
+        return 0x2;
+    case ('3'):
+        return 0x3;
+    case ('4'):
+        return 0x4;
+    case ('5'):
+        return 0x5;
+    case ('6'):
+        return 0x6;
+    case ('7'):
+        return 0x7;
+    case ('8'):
+        return 0x8;
+    case ('9'):
+        return 0x9;
+    case ('a'):
+        return 0xa;
+    case ('A'):
+        return 0xa;
+    case ('b'):
+        return 0xb;
+    case ('B'):
+        return 0xb;
+    case ('c'):
+        return 0xc;
+    case ('C'):
+        return 0xc;
+    case ('d'):
+        return 0xd;
+    case ('D'):
+        return 0xd;
+    case ('e'):
+        return 0xe;
+    case ('E'):
+        return 0xe;
+    case ('f'):
+        return 0xf;
+    case ('F'):
+        return 0xf;
+    default:
+        return -1; /* this flags an error */
     }
     /* NOTREACHED */
     return -1; /* this keeps compilers from complaining */
@@ -82,7 +106,8 @@ static inline int hex_char_to_nibble (uint8_t c)
 uint8_t nibble_to_hex_char (uint8_t nibble)
 {
     char buf[16] = { '0', '1', '2', '3', '4', '5', '6', '7',
-                     '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+                     '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+                   };
 
     return buf[nibble & 0xF];
 }
@@ -98,15 +123,18 @@ int hex_string_to_octet_string (char *raw, char *hex, int len)
     int hex_len;
 
     hex_len = 0;
-    while (hex_len < len) {
+    while (hex_len < len)
+    {
         tmp = hex_char_to_nibble(hex[0]);
-        if (tmp == -1) {
+        if (tmp == -1)
+        {
             return hex_len;
         }
         x = (tmp << 4);
         hex_len++;
         tmp = hex_char_to_nibble(hex[1]);
-        if (tmp == -1) {
+        if (tmp == -1)
+        {
             return hex_len;
         }
         x |= (tmp & 0xff);
@@ -126,11 +154,13 @@ char * octet_string_hex_string (const void *s, int length)
     length *= 2;
 
     /* truncate string if it would be too long */
-    if (length > MAX_PRINT_STRING_LEN) {
+    if (length > MAX_PRINT_STRING_LEN)
+    {
         length = MAX_PRINT_STRING_LEN - 1;
     }
 
-    for (i = 0; i < length; i += 2) {
+    for (i = 0; i < length; i += 2)
+    {
         bit_string[i]   = nibble_to_hex_char(*str >> 4);
         bit_string[i + 1] = nibble_to_hex_char(*str++ & 0xF);
     }
@@ -147,18 +177,26 @@ static int base64_block_to_octet_triple (char *out, char *in)
     int j = 0;
     int i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         char *p = strchr(b64chars, in[i]);
-        if (p != NULL) {
+        if (p != NULL)
+        {
             sextets[i] = p - b64chars;
-        } else{  j++; }
+        }
+        else
+        {
+            j++;
+        }
     }
 
     out[0] = (sextets[0] << 2) | (sextets[1] >> 4);
-    if (j < 2) {
+    if (j < 2)
+    {
         out[1] = (sextets[1] << 4) | (sextets[2] >> 2);
     }
-    if (j < 1) {
+    if (j < 1)
+    {
         out[2] = (sextets[2] << 6) | sextets[3];
     }
     return j;
@@ -170,11 +208,13 @@ int base64_string_to_octet_string (char *out, int *pad, char *in, int len)
     int i = 0;
     int j = 0;
 
-    if (len % 4 != 0) {
+    if (len % 4 != 0)
+    {
         return 0;
     }
 
-    while (i < len && j == 0) {
+    while (i < len && j == 0)
+    {
         j = base64_block_to_octet_triple(out + k, in + i);
         k += 3;
         i += 4;

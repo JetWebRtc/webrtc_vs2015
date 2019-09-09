@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -57,7 +57,8 @@
 
 #define MAX_STREAMS 1024    /* arbitrary sanity check value */
 
-enum HWAccelID {
+enum HWAccelID
+{
     HWACCEL_NONE = 0,
     HWACCEL_AUTO,
     HWACCEL_VDPAU,
@@ -66,7 +67,8 @@ enum HWAccelID {
     HWACCEL_VIDEOTOOLBOX,
 };
 
-typedef struct HWAccel {
+typedef struct HWAccel
+{
     const char *name;
     int (*init)(AVCodecContext *s);
     enum HWAccelID id;
@@ -74,7 +76,8 @@ typedef struct HWAccel {
 } HWAccel;
 
 /* select an input stream for an output stream */
-typedef struct StreamMap {
+typedef struct StreamMap
+{
     int disabled;           /* 1 is this mapping is disabled by a negative map */
     int file_index;
     int stream_index;
@@ -83,12 +86,14 @@ typedef struct StreamMap {
     char *linklabel;       /* name of an output link, for mapping lavfi outputs */
 } StreamMap;
 
-typedef struct {
+typedef struct
+{
     int  file_idx,  stream_idx,  channel_idx; // input
     int ofile_idx, ostream_idx;               // output
 } AudioChannelMap;
 
-typedef struct OptionsContext {
+typedef struct OptionsContext
+{
     OptionGroup *g;
 
     /* input/output options */
@@ -216,14 +221,16 @@ typedef struct OptionsContext {
     int        nb_disposition;
 } OptionsContext;
 
-typedef struct InputFilter {
+typedef struct InputFilter
+{
     AVFilterContext    *filter;
     struct InputStream *ist;
     struct FilterGraph *graph;
     uint8_t            *name;
 } InputFilter;
 
-typedef struct OutputFilter {
+typedef struct OutputFilter
+{
     AVFilterContext     *filter;
     struct OutputStream *ost;
     struct FilterGraph  *graph;
@@ -234,7 +241,8 @@ typedef struct OutputFilter {
     enum AVMediaType     type;
 } OutputFilter;
 
-typedef struct FilterGraph {
+typedef struct FilterGraph
+{
     int            index;
     const char    *graph_desc;
 
@@ -247,7 +255,8 @@ typedef struct FilterGraph {
     int         nb_outputs;
 } FilterGraph;
 
-typedef struct InputStream {
+typedef struct InputStream
+{
     int file_index;
     AVStream *st;
     int discard;             /* true if stream data should be discarded */
@@ -292,13 +301,15 @@ typedef struct InputStream {
     uint64_t resample_channel_layout;
 
     int fix_sub_duration;
-    struct { /* previous decoded subtitle and related variables */
+    struct   /* previous decoded subtitle and related variables */
+    {
         int got_output;
         int ret;
         AVSubtitle subtitle;
     } prev_sub;
 
-    struct sub2video {
+    struct sub2video
+    {
         int64_t last_pts;
         int64_t end_pts;
         AVFrame *frame;
@@ -337,7 +348,8 @@ typedef struct InputStream {
     uint64_t samples_decoded;
 } InputStream;
 
-typedef struct InputFile {
+typedef struct InputFile
+{
     AVFormatContext *ctx;
     int eof_reached;      /* true if eof reached */
     int eagain;           /* true if last read attempt returned EAGAIN */
@@ -363,7 +375,8 @@ typedef struct InputFile {
 #endif
 } InputFile;
 
-enum forced_keyframes_const {
+enum forced_keyframes_const
+{
     FKF_N,
     FKF_N_FORCED,
     FKF_PREV_FORCED_N,
@@ -374,12 +387,14 @@ enum forced_keyframes_const {
 
 extern const char *const forced_keyframes_const_names[];
 
-typedef enum {
+typedef enum
+{
     ENCODER_FINISHED = 1,
     MUXER_FINISHED = 2,
 } OSTFinished ;
 
-typedef struct OutputStream {
+typedef struct OutputStream
+{
     int file_index;          /* file index */
     int index;               /* stream index in the output file */
     int source_index;        /* InputStream index */
@@ -469,7 +484,8 @@ typedef struct OutputStream {
     int64_t error[4];
 } OutputStream;
 
-typedef struct OutputFile {
+typedef struct OutputFile
+{
     AVFormatContext *ctx;
     AVDictionary *opts;
     int ost_index;       /* index of the first stream in output_streams */

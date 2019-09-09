@@ -1,4 +1,4 @@
-/*
+﻿/*
  * null_auth.c
  *
  * implements the do-nothing auth algorithm
@@ -45,7 +45,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "null_auth.h"
@@ -66,7 +66,8 @@ static srtp_err_status_t srtp_null_auth_alloc (srtp_auth_t **a, int key_len, int
 
     /* allocate memory for auth and srtp_null_auth_ctx_t structures */
     pointer = (uint8_t*)srtp_crypto_alloc(sizeof(srtp_null_auth_ctx_t) + sizeof(srtp_auth_t));
-    if (pointer == NULL) {
+    if (pointer == NULL)
+    {
         return srtp_err_status_alloc_fail;
     }
 
@@ -104,7 +105,7 @@ static srtp_err_status_t srtp_null_auth_init (void *statev, const uint8_t *key, 
 }
 
 static srtp_err_status_t srtp_null_auth_compute (void *statev, const uint8_t *message,
-                                          int msg_octets, int tag_len, uint8_t *result)
+        int msg_octets, int tag_len, uint8_t *result)
 {
     /* srtp_null_auth_ctx_t *state = (srtp_null_auth_ctx_t *)statev; */
 
@@ -112,7 +113,7 @@ static srtp_err_status_t srtp_null_auth_compute (void *statev, const uint8_t *me
 }
 
 static srtp_err_status_t srtp_null_auth_update (void *statev, const uint8_t *message,
-                                         int msg_octets)
+        int msg_octets)
 {
     /* srtp_null_auth_ctx_t *state = (srtp_null_auth_ctx_t *)statev; */
 
@@ -133,7 +134,8 @@ static srtp_err_status_t srtp_null_auth_start (void *statev)
 
 /* begin test case 0 */
 
-static const srtp_auth_test_case_t srtp_null_auth_test_case_0 = {
+static const srtp_auth_test_case_t srtp_null_auth_test_case_0 =
+{
     0,                                     /* octets in key            */
     NULL,                                  /* key                      */
     0,                                     /* octets in data           */
@@ -147,7 +149,8 @@ static const srtp_auth_test_case_t srtp_null_auth_test_case_0 = {
 
 static const char srtp_null_auth_description[] = "null authentication function";
 
-const srtp_auth_type_t srtp_null_auth  = {
+const srtp_auth_type_t srtp_null_auth  =
+{
     srtp_null_auth_alloc,
     srtp_null_auth_dealloc,
     srtp_null_auth_init,

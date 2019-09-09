@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,14 +28,16 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int size;
 } ShowPaletteContext;
 
 #define OFFSET(x) offsetof(ShowPaletteContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption showpalette_options[] = {
+static const AVOption showpalette_options[] =
+{
     { "s", "set pixel box size", OFFSET(size), AV_OPT_TYPE_INT, {.i64=30}, 1, 100, FLAGS },
     { NULL }
 };
@@ -48,7 +50,8 @@ static int query_formats(AVFilterContext *ctx)
     static const enum AVPixelFormat out_fmts[] = {AV_PIX_FMT_RGB32, AV_PIX_FMT_NONE};
     AVFilterFormats *in  = ff_make_format_list(in_fmts);
     AVFilterFormats *out = ff_make_format_list(out_fmts);
-    if (!in || !out) {
+    if (!in || !out)
+    {
         av_freep(&in);
         av_freep(&out);
         return AVERROR(ENOMEM);
@@ -90,7 +93,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFilterLink *outlink = ctx->outputs[0];
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -100,7 +104,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ret < 0 ? ret : ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad showpalette_inputs[] = {
+static const AVFilterPad showpalette_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -109,7 +114,8 @@ static const AVFilterPad showpalette_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad showpalette_outputs[] = {
+static const AVFilterPad showpalette_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -118,7 +124,8 @@ static const AVFilterPad showpalette_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_showpalette = {
+AVFilter ff_vf_showpalette =
+{
     .name          = "showpalette",
     .description   = NULL_IF_CONFIG_SMALL("Display frame palette"),
     .priv_size     = sizeof(ShowPaletteContext),

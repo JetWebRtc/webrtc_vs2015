@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@
 #include "audio.h"
 #include "video.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int nb_inputs;
     struct FFBufQueue *queues;
@@ -56,14 +57,17 @@ inline static int push_frame(AVFilterContext *ctx)
     int64_t pts_min = INT64_MAX;
 
     /* look for oldest frame */
-    for (i = 0; i < ctx->nb_inputs; i++) {
+    for (i = 0; i < ctx->nb_inputs; i++)
+    {
         struct FFBufQueue *q = &s->queues[i];
 
         if (!q->available && !ctx->inputs[i]->closed)
             return 0;
-        if (q->available) {
+        if (q->available)
+        {
             frame = ff_bufqueue_peek(q, 0);
-            if (frame->pts < pts_min) {
+            if (frame->pts < pts_min)
+            {
                 pts_min = frame->pts;
                 queue_idx = i;
             }
@@ -86,7 +90,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     InterleaveContext *s = ctx->priv;
     unsigned in_no = FF_INLINK_IDX(inlink);
 
-    if (frame->pts == AV_NOPTS_VALUE) {
+    if (frame->pts == AV_NOPTS_VALUE)
+    {
         av_log(ctx, AV_LOG_WARNING,
                "NOPTS value for input frame cannot be accepted, frame discarded\n");
         av_frame_free(&frame);
@@ -112,7 +117,8 @@ static av_cold int init(AVFilterContext *ctx)
     if (!s->queues)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < s->nb_inputs; i++) {
+    for (i = 0; i < s->nb_inputs; i++)
+    {
         AVFilterPad inpad = { 0 };
 
         inpad.name = av_asprintf("input%d", i);
@@ -121,11 +127,14 @@ static av_cold int init(AVFilterContext *ctx)
         inpad.type         = outpad->type;
         inpad.filter_frame = filter_frame;
 
-        switch (outpad->type) {
+        switch (outpad->type)
+        {
         case AVMEDIA_TYPE_VIDEO:
-            inpad.get_video_buffer = ff_null_get_video_buffer; break;
+            inpad.get_video_buffer = ff_null_get_video_buffer;
+            break;
         case AVMEDIA_TYPE_AUDIO:
-            inpad.get_audio_buffer = ff_null_get_audio_buffer; break;
+            inpad.get_audio_buffer = ff_null_get_audio_buffer;
+            break;
         default:
             av_assert0(0);
         }
@@ -140,7 +149,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     InterleaveContext *s = ctx->priv;
     int i;
 
-    for (i = 0; i < ctx->nb_inputs; i++) {
+    for (i = 0; i < ctx->nb_inputs; i++)
+    {
         ff_bufqueue_discard_all(&s->queues[i]);
         av_freep(&s->queues[i]);
         av_freep(&ctx->input_pads[i].name);
@@ -153,20 +163,26 @@ static int config_output(AVFilterLink *outlink)
     AVFilterLink *inlink0 = ctx->inputs[0];
     int i;
 
-    if (outlink->type == AVMEDIA_TYPE_VIDEO) {
+    if (outlink->type == AVMEDIA_TYPE_VIDEO)
+    {
         outlink->time_base           = AV_TIME_BASE_Q;
         outlink->w                   = inlink0->w;
         outlink->h                   = inlink0->h;
         outlink->sample_aspect_ratio = inlink0->sample_aspect_ratio;
         outlink->format              = inlink0->format;
-        outlink->frame_rate = (AVRational) {1, 0};
-        for (i = 1; i < ctx->nb_inputs; i++) {
+        outlink->frame_rate = (AVRational)
+        {
+            1, 0
+        };
+        for (i = 1; i < ctx->nb_inputs; i++)
+        {
             AVFilterLink *inlink = ctx->inputs[i];
 
             if (outlink->w                       != inlink->w                       ||
-                outlink->h                       != inlink->h                       ||
-                outlink->sample_aspect_ratio.num != inlink->sample_aspect_ratio.num ||
-                outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den) {
+                    outlink->h                       != inlink->h                       ||
+                    outlink->sample_aspect_ratio.num != inlink->sample_aspect_ratio.num ||
+                    outlink->sample_aspect_ratio.den != inlink->sample_aspect_ratio.den)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Parameters for input link %s "
                        "(size %dx%d, SAR %d:%d) do not match the corresponding "
                        "output link parameters (%dx%d, SAR %d:%d)\n",
@@ -191,8 +207,10 @@ static int request_frame(AVFilterLink *outlink)
     InterleaveContext *s = ctx->priv;
     int i, ret;
 
-    for (i = 0; i < ctx->nb_inputs; i++) {
-        if (!s->queues[i].available && !ctx->inputs[i]->closed) {
+    for (i = 0; i < ctx->nb_inputs; i++)
+    {
+        if (!s->queues[i].available && !ctx->inputs[i]->closed)
+        {
             ret = ff_request_frame(ctx->inputs[i]);
             if (ret != AVERROR_EOF)
                 return ret;
@@ -207,7 +225,8 @@ static int request_frame(AVFilterLink *outlink)
 DEFINE_OPTIONS(interleave, AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM);
 AVFILTER_DEFINE_CLASS(interleave);
 
-static const AVFilterPad interleave_outputs[] = {
+static const AVFilterPad interleave_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -217,7 +236,8 @@ static const AVFilterPad interleave_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_interleave = {
+AVFilter ff_vf_interleave =
+{
     .name        = "interleave",
     .description = NULL_IF_CONFIG_SMALL("Temporally interleave video inputs."),
     .priv_size   = sizeof(InterleaveContext),
@@ -235,7 +255,8 @@ AVFilter ff_vf_interleave = {
 DEFINE_OPTIONS(ainterleave, AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM);
 AVFILTER_DEFINE_CLASS(ainterleave);
 
-static const AVFilterPad ainterleave_outputs[] = {
+static const AVFilterPad ainterleave_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -245,7 +266,8 @@ static const AVFilterPad ainterleave_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_ainterleave = {
+AVFilter ff_af_ainterleave =
+{
     .name        = "ainterleave",
     .description = NULL_IF_CONFIG_SMALL("Temporally interleave audio inputs."),
     .priv_size   = sizeof(InterleaveContext),

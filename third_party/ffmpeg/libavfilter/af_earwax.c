@@ -36,42 +36,45 @@
 
 #define NUMTAPS 64
 
-static const int8_t filt[NUMTAPS] = {
-/* 30°  330° */
+static const int8_t filt[NUMTAPS] =
+{
+    /* 30°  330° */
     4,   -6,     /* 32 tap stereo FIR filter. */
     4,  -11,     /* One side filters as if the */
-   -1,   -5,     /* signal was from 30 degrees */
+    -1,   -5,     /* signal was from 30 degrees */
     3,    3,     /* from the ear, the other as */
-   -2,    5,     /* if 330 degrees. */
-   -5,    0,
+    -2,    5,     /* if 330 degrees. */
+    -5,    0,
     9,    1,
     6,    3,     /*                         Input                         */
-   -4,   -1,     /*                   Left         Right                  */
-   -5,   -3,     /*                __________   __________                */
-   -2,   -5,     /*               |          | |          |               */
-   -7,    1,     /*           .---|  Hh,0(f) | |  Hh,0(f) |---.           */
+    -4,   -1,     /*                   Left         Right                  */
+    -5,   -3,     /*                __________   __________                */
+    -2,   -5,     /*               |          | |          |               */
+    -7,    1,     /*           .---|  Hh,0(f) | |  Hh,0(f) |---.           */
     6,   -7,     /*          /    |__________| |__________|    \          */
-   30,  -29,     /*         /                \ /                \         */
-   12,   -3,     /*        /                  X                  \        */
-  -11,    4,     /*       /                  / \                  \       */
-   -3,    7,     /*  ____V_____   __________V   V__________   _____V____  */
-  -20,   23,     /* |          | |          |   |          | |          | */
+    30,  -29,     /*         /                \ /                \         */
+    12,   -3,     /*        /                  X                  \        */
+    -11,    4,     /*       /                  / \                  \       */
+    -3,    7,     /*  ____V_____   __________V   V__________   _____V____  */
+    -20,   23,     /* |          | |          |   |          | |          | */
     2,    0,     /* | Hh,30(f) | | Hh,330(f)|   | Hh,330(f)| | Hh,30(f) | */
     1,   -6,     /* |__________| |__________|   |__________| |__________| */
-  -14,   -5,     /*      \     ___      /           \      ___     /      */
-   15,  -18,     /*       \   /   \    /    _____    \    /   \   /       */
+    -14,   -5,     /*      \     ___      /           \      ___     /      */
+    15,  -18,     /*       \   /   \    /    _____    \    /   \   /       */
     6,    7,     /*        `->| + |<--'    /     \    `-->| + |<-'        */
-   15,  -10,     /*           \___/      _/       \_      \___/           */
-  -14,   22,     /*               \     / \       / \     /               */
-   -7,   -2,     /*                `--->| |       | |<---'                */
-   -4,    9,     /*                     \_/       \_/                     */
+    15,  -10,     /*           \___/      _/       \_      \___/           */
+    -14,   22,     /*               \     / \       / \     /               */
+    -7,   -2,     /*                `--->| |       | |<---'                */
+    -4,    9,     /*                     \_/       \_/                     */
     6,  -12,     /*                                                       */
     6,   -6,     /*                       Headphones                      */
     0,  -11,
     0,   -5,
-    4,    0};
+    4,    0
+};
 
-typedef struct {
+typedef struct
+{
     int16_t taps[NUMTAPS * 2];
 } EarwaxContext;
 
@@ -97,7 +100,8 @@ static inline int16_t *scalarproduct(const int16_t *in, const int16_t *endin, in
     int32_t sample;
     int16_t j;
 
-    while (in < endin) {
+    while (in < endin)
+    {
         sample = 0;
         for (j = 0; j < NUMTAPS; j++)
             sample += in[j] * filt[j];
@@ -116,7 +120,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     AVFrame *outsamples = ff_get_audio_buffer(inlink, insamples->nb_samples);
     int len;
 
-    if (!outsamples) {
+    if (!outsamples)
+    {
         av_frame_free(&insamples);
         return AVERROR(ENOMEM);
     }
@@ -132,20 +137,23 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *insamples)
     out   = scalarproduct(taps, taps + len, out);
 
     // process current input
-    if (2*insamples->nb_samples >= NUMTAPS ){
+    if (2*insamples->nb_samples >= NUMTAPS )
+    {
         endin = in + insamples->nb_samples * 2 - NUMTAPS;
         scalarproduct(in, endin, out);
 
         // save part of input for next round
         memcpy(taps, endin, NUMTAPS * sizeof(*taps));
-    } else
+    }
+    else
         memmove(taps, taps + 2*insamples->nb_samples, NUMTAPS * sizeof(*taps));
 
     av_frame_free(&insamples);
     return ff_filter_frame(outlink, outsamples);
 }
 
-static const AVFilterPad earwax_inputs[] = {
+static const AVFilterPad earwax_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -154,7 +162,8 @@ static const AVFilterPad earwax_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad earwax_outputs[] = {
+static const AVFilterPad earwax_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -162,7 +171,8 @@ static const AVFilterPad earwax_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_earwax = {
+AVFilter ff_af_earwax =
+{
     .name           = "earwax",
     .description    = NULL_IF_CONFIG_SMALL("Widen the stereo image."),
     .query_formats  = query_formats,

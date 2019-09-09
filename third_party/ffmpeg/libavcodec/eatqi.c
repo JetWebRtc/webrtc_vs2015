@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Electronic Arts TQI Video Decoder
  * Copyright (c) 2007-2009 Peter Ross <pross@xvid.org>
  *
@@ -37,7 +37,8 @@
 #include "mpeg12.h"
 #include "mpegvideo.h"
 
-typedef struct TqiContext {
+typedef struct TqiContext
+{
     MpegEncContext s;
     BswapDSPContext bsdsp;
     void *bitstream_buf;
@@ -56,7 +57,10 @@ static av_cold int tqi_decode_init(AVCodecContext *avctx)
     ff_init_scantable_permutation(s->idsp.idct_permutation, FF_IDCT_PERM_NONE);
     ff_init_scantable(s->idsp.idct_permutation, &s->intra_scantable, ff_zigzag_direct);
     s->qscale = 1;
-    avctx->framerate = (AVRational){ 15, 1 };
+    avctx->framerate = (AVRational)
+    {
+        15, 1
+    };
     avctx->pix_fmt = AV_PIX_FMT_YUV420P;
     ff_mpeg12_init_vlcs();
     return 0;
@@ -85,7 +89,8 @@ static inline void tqi_idct_put(TqiContext *t, AVFrame *frame, int16_t (*block)[
     ff_ea_idct_put_c(dest_y              + 8, linesize, block[1]);
     ff_ea_idct_put_c(dest_y + 8*linesize    , linesize, block[2]);
     ff_ea_idct_put_c(dest_y + 8*linesize + 8, linesize, block[3]);
-    if(!(s->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if(!(s->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         ff_ea_idct_put_c(dest_cb, frame->linesize[1], block[4]);
         ff_ea_idct_put_c(dest_cr, frame->linesize[2], block[5]);
     }
@@ -134,13 +139,13 @@ static int tqi_decode_frame(AVCodecContext *avctx,
 
     s->last_dc[0] = s->last_dc[1] = s->last_dc[2] = 0;
     for (s->mb_y=0; s->mb_y<(avctx->height+15)/16; s->mb_y++)
-    for (s->mb_x=0; s->mb_x<(avctx->width+15)/16; s->mb_x++)
-    {
-        if (tqi_decode_mb(s, t->block) < 0)
-            goto end;
-        tqi_idct_put(t, frame, t->block);
-    }
-    end:
+        for (s->mb_x=0; s->mb_x<(avctx->width+15)/16; s->mb_x++)
+        {
+            if (tqi_decode_mb(s, t->block) < 0)
+                goto end;
+            tqi_idct_put(t, frame, t->block);
+        }
+end:
 
     *got_frame = 1;
     return buf_size;
@@ -153,7 +158,8 @@ static av_cold int tqi_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_eatqi_decoder = {
+AVCodec ff_eatqi_decoder =
+{
     .name           = "eatqi",
     .long_name      = NULL_IF_CONFIG_SMALL("Electronic Arts TQI Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

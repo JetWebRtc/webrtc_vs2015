@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV30 decoder motion compensation functions
  * Copyright (c) 2007 Konstantin Shishkov
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -58,7 +58,7 @@
 
 #if HAVE_INLINE_ASM
 static void ps_hybrid_analysis_ileave_mips(float (*out)[32][2], float L[2][38][64],
-                                        int i, int len)
+        int i, int len)
 {
     int temp0, temp1, temp2, temp3;
     int temp4, temp5, temp6, temp7;
@@ -66,11 +66,12 @@ static void ps_hybrid_analysis_ileave_mips(float (*out)[32][2], float L[2][38][6
     float *L1=&L[0][0][i];
     float *j=out1+ len*2;
 
-    for (; i < 64; i++) {
+    for (; i < 64; i++)
+    {
 
         /* loop unrolled 8 times */
         __asm__ volatile (
-        "1:                                          \n\t"
+            "1:                                          \n\t"
             "lw      %[temp0],   0(%[L1])            \n\t"
             "lw      %[temp1],   9728(%[L1])         \n\t"
             "lw      %[temp2],   256(%[L1])          \n\t"
@@ -92,10 +93,10 @@ static void ps_hybrid_analysis_ileave_mips(float (*out)[32][2], float L[2][38][6
             "bne     %[out1],    %[j],         1b    \n\t"
 
             : [out1]"+r"(out1), [L1]"+r"(L1), [j]"+r"(j),
-              [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-              [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-              [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
+            [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
+            [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+            [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+            [temp6]"=&r"(temp6), [temp7]"=&r"(temp7)
             : [len]"r"(len)
             : "memory"
         );
@@ -106,8 +107,8 @@ static void ps_hybrid_analysis_ileave_mips(float (*out)[32][2], float L[2][38][6
 }
 
 static void ps_hybrid_synthesis_deint_mips(float out[2][38][64],
-                                        float (*in)[32][2],
-                                        int i, int len)
+        float (*in)[32][2],
+        int i, int len)
 {
     int n;
     int temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
@@ -116,40 +117,42 @@ static void ps_hybrid_synthesis_deint_mips(float out[2][38][64],
     float *in1 = (float*)in + 64 * i;
     float *in2 = (float*)in + 64 * i + 1;
 
-    for (; i < 64; i++) {
-        for (n = 0; n < 7; n++) {
+    for (; i < 64; i++)
+    {
+        for (n = 0; n < 7; n++)
+        {
 
             /* loop unrolled 8 times */
             __asm__ volatile (
-                 "lw      %[temp0],   0(%[in1])               \n\t"
-                 "lw      %[temp1],   0(%[in2])               \n\t"
-                 "lw      %[temp2],   8(%[in1])               \n\t"
-                 "lw      %[temp3],   8(%[in2])               \n\t"
-                 "lw      %[temp4],   16(%[in1])              \n\t"
-                 "lw      %[temp5],   16(%[in2])              \n\t"
-                 "lw      %[temp6],   24(%[in1])              \n\t"
-                 "lw      %[temp7],   24(%[in2])              \n\t"
-                 PTR_ADDIU "%[out1],  %[out1],         1024   \n\t"
-                 PTR_ADDIU "%[out2],  %[out2],         1024   \n\t"
-                 PTR_ADDIU "%[in1],   %[in1],          32     \n\t"
-                 PTR_ADDIU "%[in2],   %[in2],          32     \n\t"
-                 "sw      %[temp0],   -1024(%[out1])          \n\t"
-                 "sw      %[temp1],   -1024(%[out2])          \n\t"
-                 "sw      %[temp2],   -768(%[out1])           \n\t"
-                 "sw      %[temp3],   -768(%[out2])           \n\t"
-                 "sw      %[temp4],   -512(%[out1])           \n\t"
-                 "sw      %[temp5],   -512(%[out2])           \n\t"
-                 "sw      %[temp6],   -256(%[out1])           \n\t"
-                 "sw      %[temp7],   -256(%[out2])           \n\t"
+                "lw      %[temp0],   0(%[in1])               \n\t"
+                "lw      %[temp1],   0(%[in2])               \n\t"
+                "lw      %[temp2],   8(%[in1])               \n\t"
+                "lw      %[temp3],   8(%[in2])               \n\t"
+                "lw      %[temp4],   16(%[in1])              \n\t"
+                "lw      %[temp5],   16(%[in2])              \n\t"
+                "lw      %[temp6],   24(%[in1])              \n\t"
+                "lw      %[temp7],   24(%[in2])              \n\t"
+                PTR_ADDIU "%[out1],  %[out1],         1024   \n\t"
+                PTR_ADDIU "%[out2],  %[out2],         1024   \n\t"
+                PTR_ADDIU "%[in1],   %[in1],          32     \n\t"
+                PTR_ADDIU "%[in2],   %[in2],          32     \n\t"
+                "sw      %[temp0],   -1024(%[out1])          \n\t"
+                "sw      %[temp1],   -1024(%[out2])          \n\t"
+                "sw      %[temp2],   -768(%[out1])           \n\t"
+                "sw      %[temp3],   -768(%[out2])           \n\t"
+                "sw      %[temp4],   -512(%[out1])           \n\t"
+                "sw      %[temp5],   -512(%[out2])           \n\t"
+                "sw      %[temp6],   -256(%[out1])           \n\t"
+                "sw      %[temp7],   -256(%[out2])           \n\t"
 
-                 : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-                   [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-                   [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-                   [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
-                   [out1]"+r"(out1), [out2]"+r"(out2),
-                   [in1]"+r"(in1), [in2]"+r"(in2)
-                 :
-                 : "memory"
+                : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
+                [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+                [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+                [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
+                [out1]"+r"(out1), [out2]"+r"(out2),
+                [in1]"+r"(in1), [in2]"+r"(in2)
+                :
+                : "memory"
             );
         }
         /* loop unrolled 8 times */
@@ -176,11 +179,11 @@ static void ps_hybrid_synthesis_deint_mips(float out[2][38][64],
             "sw      %[temp7],   7932(%[out2])           \n\t"
 
             : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-              [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-              [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-              [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
-              [out1]"+r"(out1), [out2]"+r"(out2),
-              [in1]"+r"(in1), [in2]"+r"(in2)
+            [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+            [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+            [temp6]"=&r"(temp6), [temp7]"=&r"(temp7),
+            [out1]"+r"(out1), [out2]"+r"(out2),
+            [in1]"+r"(in1), [in2]"+r"(in2)
             :
             : "memory"
         );
@@ -196,7 +199,8 @@ static void ps_add_squares_mips(float *dst, const float (*src)[2], int n)
     float *src0 = (float*)&src[0][0];
     float *dst0 = &dst[0];
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         /* loop unrolled 4 times */
         __asm__ volatile (
             "lwc1     %[temp0],    0(%[src0])                          \n\t"
@@ -231,18 +235,18 @@ static void ps_add_squares_mips(float *dst, const float (*src)[2], int n)
             PTR_ADDIU "%[src0],    %[src0],     32                     \n\t"
 
             : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-              [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-              [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-              [temp9]"=&f"(temp9), [dst0]"+r"(dst0), [src0]"+r"(src0),
-              [temp10]"=&f"(temp10), [temp11]"=&f"(temp11)
+            [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+            [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+            [temp9]"=&f"(temp9), [dst0]"+r"(dst0), [src0]"+r"(src0),
+            [temp10]"=&f"(temp10), [temp11]"=&f"(temp11)
             :
             : "memory"
         );
-   }
+    }
 }
 
 static void ps_mul_pair_single_mips(float (*dst)[2], float (*src0)[2], float *src1,
-                                 int n)
+                                    int n)
 {
     float temp0, temp1, temp2;
     float *p_d, *p_s0, *p_s1, *end;
@@ -269,19 +273,19 @@ static void ps_mul_pair_single_mips(float (*dst)[2], float (*src0)[2], float *sr
         ".set pop                                       \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),
-          [temp2]"=&f"(temp2), [p_d]"+r"(p_d),
-          [p_s0]"+r"(p_s0), [p_s1]"+r"(p_s1)
+        [temp2]"=&f"(temp2), [p_d]"+r"(p_d),
+        [p_s0]"+r"(p_s0), [p_s1]"+r"(p_s1)
         : [end]"r"(end)
         : "memory"
     );
 }
 
 static void ps_decorrelate_mips(float (*out)[2], float (*delay)[2],
-                             float (*ap_delay)[PS_QMF_TIME_SLOTS + PS_MAX_AP_DELAY][2],
-                             const float phi_fract[2], const float (*Q_fract)[2],
-                             const float *transient_gain,
-                             float g_decay_slope,
-                             int len)
+                                float (*ap_delay)[PS_QMF_TIME_SLOTS + PS_MAX_AP_DELAY][2],
+                                const float phi_fract[2], const float (*Q_fract)[2],
+                                const float *transient_gain,
+                                float g_decay_slope,
+                                int len)
 {
     float *p_delay = &delay[0][0];
     float *p_out = &out[0][0];
@@ -305,7 +309,7 @@ static void ps_decorrelate_mips(float (*out)[2], float (*delay)[2],
         "mul.s   %[ag0],        %[ag0],        %[g_decay_slope]          \n\t"
         "mul.s   %[ag1],        %[ag1],        %[g_decay_slope]          \n\t"
         "mul.s   %[ag2],        %[ag2],        %[g_decay_slope]          \n\t"
-    "1:                                                                  \n\t"
+        "1:                                                                  \n\t"
         "lwc1    %[temp0],      0(%[p_delay])                            \n\t"
         "lwc1    %[temp1],      4(%[p_delay])                            \n\t"
         "lwc1    %[temp4],      16(%[p_ap_delay])                        \n\t"
@@ -374,20 +378,20 @@ static void ps_decorrelate_mips(float (*out)[2], float (*delay)[2],
         ".set    pop                                                     \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1), [temp2]"=&f"(temp2),
-          [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-          [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
-          [temp9]"=&f"(temp9), [p_delay]"+r"(p_delay), [p_ap_delay]"+r"(p_ap_delay),
-          [p_Q_fract]"+r"(p_Q_fract), [p_t_gain]"+r"(p_t_gain), [p_out]"+r"(p_out),
-          [ag0]"=&f"(ag0), [ag1]"=&f"(ag1), [ag2]"=&f"(ag2)
+        [temp3]"=&f"(temp3), [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+        [temp6]"=&f"(temp6), [temp7]"=&f"(temp7), [temp8]"=&f"(temp8),
+        [temp9]"=&f"(temp9), [p_delay]"+r"(p_delay), [p_ap_delay]"+r"(p_ap_delay),
+        [p_Q_fract]"+r"(p_Q_fract), [p_t_gain]"+r"(p_t_gain), [p_out]"+r"(p_out),
+        [ag0]"=&f"(ag0), [ag1]"=&f"(ag1), [ag2]"=&f"(ag2)
         : [phi_fract0]"f"(phi_fract0), [phi_fract1]"f"(phi_fract1),
-          [p_delay_end]"r"(p_delay_end), [g_decay_slope]"f"(g_decay_slope)
+        [p_delay_end]"r"(p_delay_end), [g_decay_slope]"f"(g_decay_slope)
         : "memory"
     );
 }
 
 static void ps_stereo_interpolate_mips(float (*l)[2], float (*r)[2],
-                                    float h[2][4], float h_step[2][4],
-                                    int len)
+                                       float h[2][4], float h_step[2][4],
+                                       int len)
 {
     float h0 = h[0][0];
     float h1 = h[0][1];
@@ -405,7 +409,7 @@ static void ps_stereo_interpolate_mips(float (*l)[2], float (*r)[2],
     __asm__ volatile(
         ".set    push                                     \n\t"
         ".set    noreorder                                \n\t"
-    "1:                                                   \n\t"
+        "1:                                                   \n\t"
         "add.s   %[h0],     %[h0],     %[hs0]             \n\t"
         "lwc1    %[l_re],   0(%[l])                       \n\t"
         "add.s   %[h1],     %[h1],     %[hs1]             \n\t"
@@ -432,13 +436,13 @@ static void ps_stereo_interpolate_mips(float (*l)[2], float (*r)[2],
         ".set    pop                                      \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),
-          [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
-          [h0]"+f"(h0), [h1]"+f"(h1), [h2]"+f"(h2),
-          [h3]"+f"(h3), [l]"+r"(l), [r]"+r"(r),
-          [l_re]"=&f"(l_re), [l_im]"=&f"(l_im),
-          [r_re]"=&f"(r_re), [r_im]"=&f"(r_im)
+        [temp2]"=&f"(temp2), [temp3]"=&f"(temp3),
+        [h0]"+f"(h0), [h1]"+f"(h1), [h2]"+f"(h2),
+        [h3]"+f"(h3), [l]"+r"(l), [r]"+r"(r),
+        [l_re]"=&f"(l_re), [l_im]"=&f"(l_im),
+        [r_re]"=&f"(r_re), [r_im]"=&f"(r_im)
         : [hs0]"f"(hs0), [hs1]"f"(hs1), [hs2]"f"(hs2),
-          [hs3]"f"(hs3), [l_end]"r"(l_end)
+        [hs3]"f"(hs3), [l_end]"r"(l_end)
         : "memory"
     );
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -34,7 +34,8 @@ int ff_sample_fmt_is_planar(enum AVSampleFormat sample_fmt, int channels);
 /**
  * Audio buffer used for intermediate storage between conversion phases.
  */
-struct AudioData {
+struct AudioData
+{
     const AVClass *class;               /**< AVClass for logging            */
     uint8_t *data[AVRESAMPLE_MAX_CHANNELS]; /**< data plane pointers        */
     uint8_t *buffer;                    /**< data buffer                    */

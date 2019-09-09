@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio encoder psychoacoustic model
  * Copyright (C) 2008 Konstantin Shishkov
  *
@@ -34,7 +34,8 @@
 /**
  * single band psychoacoustic information
  */
-typedef struct FFPsyBand {
+typedef struct FFPsyBand
+{
     int   bits;
     float energy;
     float threshold;
@@ -44,7 +45,8 @@ typedef struct FFPsyBand {
 /**
  * single channel psychoacoustic information
  */
-typedef struct FFPsyChannel {
+typedef struct FFPsyChannel
+{
     FFPsyBand psy_bands[PSY_MAX_BANDS]; ///< channel bands information
     float     entropy;                  ///< total PE for this channel
 } FFPsyChannel;
@@ -52,7 +54,8 @@ typedef struct FFPsyChannel {
 /**
  * psychoacoustic information for an arbitrary group of channels
  */
-typedef struct FFPsyChannelGroup {
+typedef struct FFPsyChannelGroup
+{
     FFPsyChannel *ch[PSY_MAX_CHANS];  ///< pointers to the individual channels in the group
     uint8_t num_ch;                   ///< number of channels in this group
     uint8_t coupling[PSY_MAX_BANDS];  ///< allow coupling for this band in the group
@@ -61,7 +64,8 @@ typedef struct FFPsyChannelGroup {
 /**
  * windowing related information
  */
-typedef struct FFPsyWindowInfo {
+typedef struct FFPsyWindowInfo
+{
     int window_type[3];               ///< window type (short/long/transitional, etc.) - current, previous and next
     int window_shape;                 ///< window shape (sine/KBD/whatever)
     int num_windows;                  ///< number of windows in a frame
@@ -73,7 +77,8 @@ typedef struct FFPsyWindowInfo {
 /**
  * context used by psychoacoustic model
  */
-typedef struct FFPsyContext {
+typedef struct FFPsyContext
+{
     AVCodecContext *avctx;            ///< encoder context
     const struct FFPsyModel *model;   ///< encoder-specific model functions
 
@@ -85,7 +90,8 @@ typedef struct FFPsyContext {
     int     *num_bands;               ///< number of scalefactor bands for possible frame sizes
     int num_lens;                     ///< number of scalefactor band sets
 
-    struct {
+    struct
+    {
         int size;                     ///< size of the bitresevoir in bits
         int bits;                     ///< number of bits used in the bitresevoir
     } bitres;
@@ -96,7 +102,8 @@ typedef struct FFPsyContext {
 /**
  * codec-specific psychoacoustic model implementation
  */
-typedef struct FFPsyModel {
+typedef struct FFPsyModel
+{
     const char *name;
     int  (*init)   (FFPsyContext *apc);
 

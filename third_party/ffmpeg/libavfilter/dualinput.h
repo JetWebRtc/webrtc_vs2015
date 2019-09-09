@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -29,7 +29,8 @@
 #include "framesync.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     FFFrameSync fs;
 
     AVFrame *(*process)(AVFilterContext *ctx, AVFrame *main, const AVFrame *second);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP muxer chaining code
  * Copyright (c) 2010 Martin Storsjo
  *

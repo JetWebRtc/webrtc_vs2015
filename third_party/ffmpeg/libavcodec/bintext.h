@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Binary text decoder
  * Copyright (c) 2010 Peter Ross (pross@xvid.org)
  *

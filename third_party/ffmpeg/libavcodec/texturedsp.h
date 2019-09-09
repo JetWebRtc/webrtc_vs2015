@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Texture block module
  * Copyright (C) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -42,7 +42,8 @@
 #define TEXTURE_BLOCK_W 4
 #define TEXTURE_BLOCK_H 4
 
-typedef struct TextureDSPContext {
+typedef struct TextureDSPContext
+{
     int (*dxt1_block)  (uint8_t *dst, ptrdiff_t stride, const uint8_t *block);
     int (*dxt1a_block) (uint8_t *dst, ptrdiff_t stride, const uint8_t *block);
     int (*dxt2_block)  (uint8_t *dst, ptrdiff_t stride, const uint8_t *block);

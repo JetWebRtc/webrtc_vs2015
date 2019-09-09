@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -35,6 +35,6 @@ void WebRtcIlbcfix_GetSyncSeq(
     size_t hl,    /* (i) 2*hl+1 is the number of sequences */
     int16_t *surround  /* (i/o) The contribution from this sequence
                                 summed with earlier contributions */
-                              );
+);
 
 #endif

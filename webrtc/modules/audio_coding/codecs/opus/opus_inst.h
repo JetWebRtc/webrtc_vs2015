@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,17 +19,19 @@ RTC_PUSH_IGNORING_WUNDEF()
 #include "opus.h"
 RTC_POP_IGNORING_WUNDEF()
 
-struct WebRtcOpusEncInst {
-  OpusEncoder* encoder;
-  size_t channels;
-  int in_dtx_mode;
+struct WebRtcOpusEncInst
+{
+    OpusEncoder* encoder;
+    size_t channels;
+    int in_dtx_mode;
 };
 
-struct WebRtcOpusDecInst {
-  OpusDecoder* decoder;
-  int prev_decoded_samples;
-  size_t channels;
-  int in_dtx_mode;
+struct WebRtcOpusDecInst
+{
+    OpusDecoder* decoder;
+    int prev_decoded_samples;
+    size_t channels;
+    int in_dtx_mode;
 };
 
 

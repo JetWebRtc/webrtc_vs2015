@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.722 ADPCM audio encoder/decoder
  *
  * Copyright (c) CMU 1993 Computer Science, Speech Group
@@ -41,7 +41,8 @@
 
 static const int8_t sign_lookup[2] = { -1, 1 };
 
-static const int16_t inv_log2_table[32] = {
+static const int16_t inv_log2_table[32] =
+{
     2048, 2093, 2139, 2186, 2233, 2282, 2332, 2383,
     2435, 2489, 2543, 2599, 2656, 2714, 2774, 2834,
     2896, 2960, 3025, 3091, 3158, 3228, 3298, 3371,
@@ -52,44 +53,50 @@ const int16_t ff_g722_high_inv_quant[4] = { -926, -202, 926, 202 };
 /**
  * low_log_factor_step[index] == wl[rl42[index]]
  */
-static const int16_t low_log_factor_step[16] = {
-     -60, 3042, 1198, 538, 334, 172,  58, -30,
+static const int16_t low_log_factor_step[16] =
+{
+    -60, 3042, 1198, 538, 334, 172,  58, -30,
     3042, 1198,  538, 334, 172,  58, -30, -60
 };
-const int16_t ff_g722_low_inv_quant4[16] = {
-       0, -2557, -1612, -1121,  -786,  -530,  -323,  -150,
+const int16_t ff_g722_low_inv_quant4[16] =
+{
+    0, -2557, -1612, -1121,  -786,  -530,  -323,  -150,
     2557,  1612,  1121,   786,   530,   323,   150,     0
 };
-const int16_t ff_g722_low_inv_quant6[64] = {
-     -17,   -17,   -17,   -17, -3101, -2738, -2376, -2088,
-   -1873, -1689, -1535, -1399, -1279, -1170, -1072,  -982,
+const int16_t ff_g722_low_inv_quant6[64] =
+{
+    -17,   -17,   -17,   -17, -3101, -2738, -2376, -2088,
+    -1873, -1689, -1535, -1399, -1279, -1170, -1072,  -982,
     -899,  -822,  -750,  -682,  -618,  -558,  -501,  -447,
     -396,  -347,  -300,  -254,  -211,  -170,  -130,   -91,
     3101,  2738,  2376,  2088,  1873,  1689,  1535,  1399,
     1279,  1170,  1072,   982,   899,   822,   750,   682,
-     618,   558,   501,   447,   396,   347,   300,   254,
-     211,   170,   130,    91,    54,    17,   -54,   -17
+    618,   558,   501,   447,   396,   347,   300,   254,
+    211,   170,   130,    91,    54,    17,   -54,   -17
 };
 
 static inline void s_zero(int cur_diff, struct G722Band *band)
 {
     int s_zero = 0;
 
-    #define ACCUM(k, x, d) do { \
+#define ACCUM(k, x, d) do { \
             int tmp = x; \
             band->zero_mem[k] = ((band->zero_mem[k] * 255) >> 8) + \
                d*((band->diff_mem[k]^cur_diff) < 0 ? -128 : 128); \
             band->diff_mem[k] = tmp; \
             s_zero += (tmp * band->zero_mem[k]) >> 15; \
         } while (0)
-    if (cur_diff) {
+    if (cur_diff)
+    {
         ACCUM(5, band->diff_mem[4], 1);
         ACCUM(4, band->diff_mem[3], 1);
         ACCUM(3, band->diff_mem[2], 1);
         ACCUM(2, band->diff_mem[1], 1);
         ACCUM(1, band->diff_mem[0], 1);
         ACCUM(0, cur_diff << 1, 1);
-    } else {
+    }
+    else
+    {
         ACCUM(5, band->diff_mem[4], 0);
         ACCUM(4, band->diff_mem[3], 0);
         ACCUM(3, band->diff_mem[2], 0);
@@ -97,7 +104,7 @@ static inline void s_zero(int cur_diff, struct G722Band *band)
         ACCUM(1, band->diff_mem[0], 0);
         ACCUM(0, cur_diff << 1, 0);
     }
-    #undef ACCUM
+#undef ACCUM
     band->s_zero = s_zero;
 }
 
@@ -152,7 +159,7 @@ void ff_g722_update_low_predictor(struct G722Band *band, const int ilow)
 }
 
 void ff_g722_update_high_predictor(struct G722Band *band, const int dhigh,
-                                  const int ihigh)
+                                   const int ihigh)
 {
     do_adaptive_prediction(band, dhigh);
 

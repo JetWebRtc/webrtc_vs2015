@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,29 +17,32 @@
 #include "webrtc/test/gl/gl_renderer.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class GlxRenderer : public GlRenderer {
- public:
-  static GlxRenderer* Create(const char* window_title, size_t width,
-                             size_t height);
-  virtual ~GlxRenderer();
+class GlxRenderer : public GlRenderer
+{
+public:
+    static GlxRenderer* Create(const char* window_title, size_t width,
+                               size_t height);
+    virtual ~GlxRenderer();
 
-  void OnFrame(const webrtc::VideoFrame& frame) override;
+    void OnFrame(const webrtc::VideoFrame& frame) override;
 
- private:
-  GlxRenderer(size_t width, size_t height);
+private:
+    GlxRenderer(size_t width, size_t height);
 
-  bool Init(const char* window_title);
-  void Resize(size_t width, size_t height);
-  void Destroy();
+    bool Init(const char* window_title);
+    void Resize(size_t width, size_t height);
+    void Destroy();
 
-  size_t width_, height_;
+    size_t width_, height_;
 
-  Display* display_;
-  Window window_;
-  GLXContext context_;
+    Display* display_;
+    Window window_;
+    GLXContext context_;
 };
 }  // test
 }  // webrtc

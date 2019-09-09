@@ -1,4 +1,4 @@
-// Copyright 2007-2010 Baptiste Lepilleur
+﻿// Copyright 2007-2010 Baptiste Lepilleur
 // Distributed under MIT license, or public domain if desired and
 // recognized in your jurisdiction.
 // See file LICENSE for detail or copy at http://jsoncpp.sourceforge.net/LICENSE
@@ -22,7 +22,8 @@
 
 #pragma pack(push, 8)
 
-namespace Json {
+namespace Json
+{
 
 class Value;
 
@@ -39,30 +40,32 @@ Usage:
   }
 \endcode
 */
-class JSON_API StreamWriter {
+class JSON_API StreamWriter
+{
 protected:
-  JSONCPP_OSTREAM* sout_;  // not owned; will not delete
+    JSONCPP_OSTREAM* sout_;  // not owned; will not delete
 public:
-  StreamWriter();
-  virtual ~StreamWriter();
-  /** Write Value into document as configured in sub-class.
-      Do not take ownership of sout, but maintain a reference during function.
-      \pre sout != NULL
-      \return zero on success (For now, we always return zero, so check the stream instead.)
-      \throw std::exception possibly, depending on configuration
-   */
-  virtual int write(Value const& root, JSONCPP_OSTREAM* sout) = 0;
-
-  /** \brief A simple abstract factory.
-   */
-  class JSON_API Factory {
-  public:
-    virtual ~Factory();
-    /** \brief Allocate a CharReader via operator new().
-     * \throw std::exception if something goes wrong (e.g. invalid settings)
+    StreamWriter();
+    virtual ~StreamWriter();
+    /** Write Value into document as configured in sub-class.
+        Do not take ownership of sout, but maintain a reference during function.
+        \pre sout != NULL
+        \return zero on success (For now, we always return zero, so check the stream instead.)
+        \throw std::exception possibly, depending on configuration
      */
-    virtual StreamWriter* newStreamWriter() const = 0;
-  };  // Factory
+    virtual int write(Value const& root, JSONCPP_OSTREAM* sout) = 0;
+
+    /** \brief A simple abstract factory.
+     */
+    class JSON_API Factory
+    {
+    public:
+        virtual ~Factory();
+        /** \brief Allocate a CharReader via operator new().
+         * \throw std::exception if something goes wrong (e.g. invalid settings)
+         */
+        virtual StreamWriter* newStreamWriter() const = 0;
+    };  // Factory
 };  // StreamWriter
 
 /** \brief Write into stringstream, then return string, for convenience.
@@ -86,65 +89,67 @@ Usage:
   std::cout << std::endl;  // add lf and flush
 \endcode
 */
-class JSON_API StreamWriterBuilder : public StreamWriter::Factory {
+class JSON_API StreamWriterBuilder : public StreamWriter::Factory
+{
 public:
-  // Note: We use a Json::Value so that we can add data-members to this class
-  // without a major version bump.
-  /** Configuration of this builder.
-    Available settings (case-sensitive):
-    - "commentStyle": "None" or "All"
-    - "indentation":  "<anything>"
-    - "enableYAMLCompatibility": false or true
-      - slightly change the whitespace around colons
-    - "dropNullPlaceholders": false or true
-      - Drop the "null" string from the writer's output for nullValues.
-        Strictly speaking, this is not valid JSON. But when the output is being
-        fed to a browser's Javascript, it makes for smaller output and the
-        browser can handle the output just fine.
-    - "useSpecialFloats": false or true
-      - If true, outputs non-finite floating point values in the following way:
-        NaN values as "NaN", positive infinity as "Infinity", and negative infinity
-        as "-Infinity".
+    // Note: We use a Json::Value so that we can add data-members to this class
+    // without a major version bump.
+    /** Configuration of this builder.
+      Available settings (case-sensitive):
+      - "commentStyle": "None" or "All"
+      - "indentation":  "<anything>"
+      - "enableYAMLCompatibility": false or true
+        - slightly change the whitespace around colons
+      - "dropNullPlaceholders": false or true
+        - Drop the "null" string from the writer's output for nullValues.
+          Strictly speaking, this is not valid JSON. But when the output is being
+          fed to a browser's Javascript, it makes for smaller output and the
+          browser can handle the output just fine.
+      - "useSpecialFloats": false or true
+        - If true, outputs non-finite floating point values in the following way:
+          NaN values as "NaN", positive infinity as "Infinity", and negative infinity
+          as "-Infinity".
 
-    You can examine 'settings_` yourself
-    to see the defaults. You can also write and read them just like any
-    JSON Value.
-    \sa setDefaults()
-    */
-  Json::Value settings_;
+      You can examine 'settings_` yourself
+      to see the defaults. You can also write and read them just like any
+      JSON Value.
+      \sa setDefaults()
+      */
+    Json::Value settings_;
 
-  StreamWriterBuilder();
-  ~StreamWriterBuilder() JSONCPP_OVERRIDE;
+    StreamWriterBuilder();
+    ~StreamWriterBuilder() JSONCPP_OVERRIDE;
 
-  /**
-   * \throw std::exception if something goes wrong (e.g. invalid settings)
-   */
-  StreamWriter* newStreamWriter() const JSONCPP_OVERRIDE;
+    /**
+     * \throw std::exception if something goes wrong (e.g. invalid settings)
+     */
+    StreamWriter* newStreamWriter() const JSONCPP_OVERRIDE;
 
-  /** \return true if 'settings' are legal and consistent;
-   *   otherwise, indicate bad settings via 'invalid'.
-   */
-  bool validate(Json::Value* invalid) const;
-  /** A simple way to update a specific setting.
-   */
-  Value& operator[](JSONCPP_STRING key);
+    /** \return true if 'settings' are legal and consistent;
+     *   otherwise, indicate bad settings via 'invalid'.
+     */
+    bool validate(Json::Value* invalid) const;
+    /** A simple way to update a specific setting.
+     */
+    Value& operator[](JSONCPP_STRING key);
 
-  /** Called by ctor, but you can use this to reset settings_.
-   * \pre 'settings' != NULL (but Json::null is fine)
-   * \remark Defaults:
-   * \snippet src/lib_json/json_writer.cpp StreamWriterBuilderDefaults
-   */
-  static void setDefaults(Json::Value* settings);
+    /** Called by ctor, but you can use this to reset settings_.
+     * \pre 'settings' != NULL (but Json::null is fine)
+     * \remark Defaults:
+     * \snippet src/lib_json/json_writer.cpp StreamWriterBuilderDefaults
+     */
+    static void setDefaults(Json::Value* settings);
 };
 
 /** \brief Abstract class for writers.
  * \deprecated Use StreamWriter. (And really, this is an implementation detail.)
  */
-class JSON_API Writer {
+class JSON_API Writer
+{
 public:
-  virtual ~Writer();
+    virtual ~Writer();
 
-  virtual JSONCPP_STRING write(const Value& root) = 0;
+    virtual JSONCPP_STRING write(const Value& root) = 0;
 };
 
 /** \brief Outputs a Value in <a HREF="http://www.json.org">JSON</a> format
@@ -156,33 +161,34 @@ public:
  * \sa Reader, Value
  * \deprecated Use StreamWriterBuilder.
  */
-class JSON_API FastWriter : public Writer {
+class JSON_API FastWriter : public Writer
+{
 
 public:
-  FastWriter();
-  ~FastWriter() JSONCPP_OVERRIDE {}
+    FastWriter();
+    ~FastWriter() JSONCPP_OVERRIDE {}
 
-  void enableYAMLCompatibility();
+    void enableYAMLCompatibility();
 
-  /** \brief Drop the "null" string from the writer's output for nullValues.
-   * Strictly speaking, this is not valid JSON. But when the output is being
-   * fed to a browser's Javascript, it makes for smaller output and the
-   * browser can handle the output just fine.
-   */
-  void dropNullPlaceholders();
+    /** \brief Drop the "null" string from the writer's output for nullValues.
+     * Strictly speaking, this is not valid JSON. But when the output is being
+     * fed to a browser's Javascript, it makes for smaller output and the
+     * browser can handle the output just fine.
+     */
+    void dropNullPlaceholders();
 
-  void omitEndingLineFeed();
+    void omitEndingLineFeed();
 
 public: // overridden from Writer
-  JSONCPP_STRING write(const Value& root) JSONCPP_OVERRIDE;
+    JSONCPP_STRING write(const Value& root) JSONCPP_OVERRIDE;
 
 private:
-  void writeValue(const Value& value);
+    void writeValue(const Value& value);
 
-  JSONCPP_STRING document_;
-  bool yamlCompatiblityEnabled_;
-  bool dropNullPlaceholders_;
-  bool omitEndingLineFeed_;
+    JSONCPP_STRING document_;
+    bool yamlCompatiblityEnabled_;
+    bool dropNullPlaceholders_;
+    bool omitEndingLineFeed_;
 };
 
 /** \brief Writes a Value in <a HREF="http://www.json.org">JSON</a> format in a
@@ -209,40 +215,41 @@ private:
  * \sa Reader, Value, Value::setComment()
  * \deprecated Use StreamWriterBuilder.
  */
-class JSON_API StyledWriter : public Writer {
+class JSON_API StyledWriter : public Writer
+{
 public:
-  StyledWriter();
-  ~StyledWriter() JSONCPP_OVERRIDE {}
+    StyledWriter();
+    ~StyledWriter() JSONCPP_OVERRIDE {}
 
 public: // overridden from Writer
-  /** \brief Serialize a Value in <a HREF="http://www.json.org">JSON</a> format.
-   * \param root Value to serialize.
-   * \return String containing the JSON document that represents the root value.
-   */
-  JSONCPP_STRING write(const Value& root) JSONCPP_OVERRIDE;
+    /** \brief Serialize a Value in <a HREF="http://www.json.org">JSON</a> format.
+     * \param root Value to serialize.
+     * \return String containing the JSON document that represents the root value.
+     */
+    JSONCPP_STRING write(const Value& root) JSONCPP_OVERRIDE;
 
 private:
-  void writeValue(const Value& value);
-  void writeArrayValue(const Value& value);
-  bool isMultineArray(const Value& value);
-  void pushValue(const JSONCPP_STRING& value);
-  void writeIndent();
-  void writeWithIndent(const JSONCPP_STRING& value);
-  void indent();
-  void unindent();
-  void writeCommentBeforeValue(const Value& root);
-  void writeCommentAfterValueOnSameLine(const Value& root);
-  bool hasCommentForValue(const Value& value);
-  static JSONCPP_STRING normalizeEOL(const JSONCPP_STRING& text);
+    void writeValue(const Value& value);
+    void writeArrayValue(const Value& value);
+    bool isMultineArray(const Value& value);
+    void pushValue(const JSONCPP_STRING& value);
+    void writeIndent();
+    void writeWithIndent(const JSONCPP_STRING& value);
+    void indent();
+    void unindent();
+    void writeCommentBeforeValue(const Value& root);
+    void writeCommentAfterValueOnSameLine(const Value& root);
+    bool hasCommentForValue(const Value& value);
+    static JSONCPP_STRING normalizeEOL(const JSONCPP_STRING& text);
 
-  typedef std::vector<JSONCPP_STRING> ChildValues;
+    typedef std::vector<JSONCPP_STRING> ChildValues;
 
-  ChildValues childValues_;
-  JSONCPP_STRING document_;
-  JSONCPP_STRING indentString_;
-  unsigned int rightMargin_;
-  unsigned int indentSize_;
-  bool addChildValues_;
+    ChildValues childValues_;
+    JSONCPP_STRING document_;
+    JSONCPP_STRING indentString_;
+    unsigned int rightMargin_;
+    unsigned int indentSize_;
+    bool addChildValues_;
 };
 
 /** \brief Writes a Value in <a HREF="http://www.json.org">JSON</a> format in a
@@ -271,43 +278,44 @@ private:
  * \sa Reader, Value, Value::setComment()
  * \deprecated Use StreamWriterBuilder.
  */
-class JSON_API StyledStreamWriter {
+class JSON_API StyledStreamWriter
+{
 public:
-  StyledStreamWriter(JSONCPP_STRING indentation = "\t");
-  ~StyledStreamWriter() {}
+    StyledStreamWriter(JSONCPP_STRING indentation = "\t");
+    ~StyledStreamWriter() {}
 
 public:
-  /** \brief Serialize a Value in <a HREF="http://www.json.org">JSON</a> format.
-   * \param out Stream to write to. (Can be ostringstream, e.g.)
-   * \param root Value to serialize.
-   * \note There is no point in deriving from Writer, since write() should not
-   * return a value.
-   */
-  void write(JSONCPP_OSTREAM& out, const Value& root);
+    /** \brief Serialize a Value in <a HREF="http://www.json.org">JSON</a> format.
+     * \param out Stream to write to. (Can be ostringstream, e.g.)
+     * \param root Value to serialize.
+     * \note There is no point in deriving from Writer, since write() should not
+     * return a value.
+     */
+    void write(JSONCPP_OSTREAM& out, const Value& root);
 
 private:
-  void writeValue(const Value& value);
-  void writeArrayValue(const Value& value);
-  bool isMultineArray(const Value& value);
-  void pushValue(const JSONCPP_STRING& value);
-  void writeIndent();
-  void writeWithIndent(const JSONCPP_STRING& value);
-  void indent();
-  void unindent();
-  void writeCommentBeforeValue(const Value& root);
-  void writeCommentAfterValueOnSameLine(const Value& root);
-  bool hasCommentForValue(const Value& value);
-  static JSONCPP_STRING normalizeEOL(const JSONCPP_STRING& text);
+    void writeValue(const Value& value);
+    void writeArrayValue(const Value& value);
+    bool isMultineArray(const Value& value);
+    void pushValue(const JSONCPP_STRING& value);
+    void writeIndent();
+    void writeWithIndent(const JSONCPP_STRING& value);
+    void indent();
+    void unindent();
+    void writeCommentBeforeValue(const Value& root);
+    void writeCommentAfterValueOnSameLine(const Value& root);
+    bool hasCommentForValue(const Value& value);
+    static JSONCPP_STRING normalizeEOL(const JSONCPP_STRING& text);
 
-  typedef std::vector<JSONCPP_STRING> ChildValues;
+    typedef std::vector<JSONCPP_STRING> ChildValues;
 
-  ChildValues childValues_;
-  JSONCPP_OSTREAM* document_;
-  JSONCPP_STRING indentString_;
-  unsigned int rightMargin_;
-  JSONCPP_STRING indentation_;
-  bool addChildValues_ : 1;
-  bool indented_ : 1;
+    ChildValues childValues_;
+    JSONCPP_OSTREAM* document_;
+    JSONCPP_STRING indentString_;
+    unsigned int rightMargin_;
+    JSONCPP_STRING indentation_;
+    bool addChildValues_ : 1;
+    bool indented_ : 1;
 };
 
 #if defined(JSON_HAS_INT64)

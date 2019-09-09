@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -51,7 +51,8 @@ silk_float silk_levinsondurbin_FLP(         /* O    prediction error energy     
     for( m = 1; m < order; m++ )
     {
         t = corr[ m + 1 ];
-        for( i = 0; i < m; i++ ) {
+        for( i = 0; i < m; i++ )
+        {
             t -= A[ i ] * corr[ m - i ];
         }
 
@@ -63,13 +64,15 @@ silk_float silk_levinsondurbin_FLP(         /* O    prediction error energy     
         nrg = silk_max_float(min_nrg, nrg);
 
         mHalf = m >> 1;
-        for( i = 0; i < mHalf; i++ ) {
+        for( i = 0; i < mHalf; i++ )
+        {
             Atmp1 = A[ i ];
             Atmp2 = A[ m - i - 1 ];
             A[ m - i - 1 ] -= km * Atmp1;
             A[ i ]         -= km * Atmp2;
         }
-        if( m & 1 ) {
+        if( m & 1 )
+        {
             A[ mHalf ]     -= km * A[ mHalf ];
         }
         A[ m ] = km;

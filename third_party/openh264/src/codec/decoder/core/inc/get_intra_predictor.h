@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 
 #include "typedefs.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 void WelsI4x4LumaPredV_c (uint8_t* pPred, const int32_t kiStride);
 void WelsI4x4LumaPredH_c (uint8_t* pPred, const int32_t kiStride);

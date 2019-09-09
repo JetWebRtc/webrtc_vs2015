@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,21 +20,23 @@
 extern "C" {
 #endif
 
-struct WebmOutputContext {
-  int debug;
-  FILE *stream;
-  int64_t last_pts_ns;
-  void *writer;
-  void *segment;
+struct WebmOutputContext
+{
+    int debug;
+    FILE *stream;
+    int64_t last_pts_ns;
+    void *writer;
+    void *segment;
 };
 
 /* Stereo 3D packed frame format */
-typedef enum stereo_format {
-  STEREO_FORMAT_MONO = 0,
-  STEREO_FORMAT_LEFT_RIGHT = 1,
-  STEREO_FORMAT_BOTTOM_TOP = 2,
-  STEREO_FORMAT_TOP_BOTTOM = 3,
-  STEREO_FORMAT_RIGHT_LEFT = 11
+typedef enum stereo_format
+{
+    STEREO_FORMAT_MONO = 0,
+    STEREO_FORMAT_LEFT_RIGHT = 1,
+    STEREO_FORMAT_BOTTOM_TOP = 2,
+    STEREO_FORMAT_TOP_BOTTOM = 3,
+    STEREO_FORMAT_RIGHT_LEFT = 11
 } stereo_format_t;
 
 void write_webm_file_header(struct WebmOutputContext *webm_ctx,

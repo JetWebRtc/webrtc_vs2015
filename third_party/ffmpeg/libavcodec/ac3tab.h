@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AC-3 tables
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
@@ -61,7 +61,8 @@ extern HCONST uint8_t ff_ac3_bin_to_band_tab[253];
  *      Lc/Rc pair, Lrs/Rrs pair, Ts, Lsd/Rsd pair,
  *      Lw/Rw pair, Lvh/Rvh pair, Cvh, Reserved, LFE2
  */
-enum CustomChannelMapLocation{
+enum CustomChannelMapLocation
+{
     AC3_CHMAP_L=        1<<(15-0),
     AC3_CHMAP_C=        1<<(15-1),
     AC3_CHMAP_R=        1<<(15-2),

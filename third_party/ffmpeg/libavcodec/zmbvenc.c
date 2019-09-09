@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Zip Motion Blocks Video (ZMBV) encoder
  * Copyright (c) 2006 Konstantin Shishkov
  *
@@ -42,7 +42,8 @@
 /**
  * Encoder context
  */
-typedef struct ZmbvEncContext {
+typedef struct ZmbvEncContext
+{
     AVCodecContext *avctx;
 
     int range;
@@ -70,8 +71,10 @@ static inline int block_cmp(uint8_t *src, int stride, uint8_t *src2, int stride2
     uint8_t histogram[256] = {0};
 
     *xored = 0;
-    for(j = 0; j < bh; j++){
-        for(i = 0; i < bw; i++){
+    for(j = 0; j < bh; j++)
+    {
+        for(i = 0; i < bw; i++)
+        {
             int t = src[i] ^ src2[i];
             histogram[t]++;
             *xored |= t;
@@ -99,19 +102,22 @@ static int zmbv_me(ZmbvEncContext *c, uint8_t *src, int sstride, uint8_t *prev,
     bh = FFMIN(ZMBV_BLOCK, c->avctx->height - y);
     bv = block_cmp(src, sstride, prev, pstride, bw, bh, xored);
     if(!bv) return 0;
-    for(ty = FFMAX(y - c->range, 0); ty < FFMIN(y + c->range, c->avctx->height - bh); ty++){
-        for(tx = FFMAX(x - c->range, 0); tx < FFMIN(x + c->range, c->avctx->width - bw); tx++){
+    for(ty = FFMAX(y - c->range, 0); ty < FFMIN(y + c->range, c->avctx->height - bh); ty++)
+    {
+        for(tx = FFMAX(x - c->range, 0); tx < FFMIN(x + c->range, c->avctx->width - bw); tx++)
+        {
             if(tx == x && ty == y) continue; // we already tested this block
             dx = tx - x;
             dy = ty - y;
             tv = block_cmp(src, sstride, prev + dx + dy*pstride, pstride, bw, bh, xored);
-            if(tv < bv){
-                 bv = tv;
-                 *mx = dx;
-                 *my = dy;
-                 if(!bv) return 0;
-             }
-         }
+            if(tv < bv)
+            {
+                bv = tv;
+                *mx = dx;
+                *my = dy;
+                if(!bv) return 0;
+            }
+        }
     }
     return bv;
 }
@@ -134,19 +140,21 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     if(c->curfrm == c->keyint)
         c->curfrm = 0;
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = keyframe ? AV_PICTURE_TYPE_I : AV_PICTURE_TYPE_P;
     avctx->coded_frame->key_frame = keyframe;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
     chpal = !keyframe && memcmp(p->data[1], c->pal2, 1024);
 
     palptr = (uint32_t*)p->data[1];
     src = p->data[0];
     prev = c->prev;
-    if(chpal){
+    if(chpal)
+    {
         uint8_t tpal[3];
-        for(i = 0; i < 256; i++){
+        for(i = 0; i < 256; i++)
+        {
             AV_WB24(tpal, palptr[i]);
             c->work_buf[work_size++] = tpal[0] ^ c->pal[i * 3 + 0];
             c->work_buf[work_size++] = tpal[1] ^ c->pal[i * 3 + 1];
@@ -157,19 +165,24 @@ FF_ENABLE_DEPRECATION_WARNINGS
         }
         memcpy(c->pal2, p->data[1], 1024);
     }
-    if(keyframe){
-        for(i = 0; i < 256; i++){
+    if(keyframe)
+    {
+        for(i = 0; i < 256; i++)
+        {
             AV_WB24(c->pal+(i*3), palptr[i]);
         }
         memcpy(c->work_buf, c->pal, 768);
         memcpy(c->pal2, p->data[1], 1024);
         work_size = 768;
-        for(i = 0; i < avctx->height; i++){
+        for(i = 0; i < avctx->height; i++)
+        {
             memcpy(c->work_buf + work_size, src, avctx->width);
             src += p->linesize[0];
             work_size += avctx->width;
         }
-    }else{
+    }
+    else
+    {
         int x, y, bh2, bw2, xored;
         uint8_t *tsrc, *tprev;
         uint8_t *mv;
@@ -181,9 +194,11 @@ FF_ENABLE_DEPRECATION_WARNINGS
         memset(c->work_buf + work_size, 0, (bw * bh * 2 + 3) & ~3);
         work_size += (bw * bh * 2 + 3) & ~3;
         /* for now just XOR'ing */
-        for(y = 0; y < avctx->height; y += ZMBV_BLOCK) {
+        for(y = 0; y < avctx->height; y += ZMBV_BLOCK)
+        {
             bh2 = FFMIN(avctx->height - y, ZMBV_BLOCK);
-            for(x = 0; x < avctx->width; x += ZMBV_BLOCK, mv += 2) {
+            for(x = 0; x < avctx->width; x += ZMBV_BLOCK, mv += 2)
+            {
                 bw2 = FFMIN(avctx->width - x, ZMBV_BLOCK);
 
                 tsrc = src + x;
@@ -193,8 +208,10 @@ FF_ENABLE_DEPRECATION_WARNINGS
                 mv[0] = (mx << 1) | !!xored;
                 mv[1] = my << 1;
                 tprev += mx + my * c->pstride;
-                if(xored){
-                    for(j = 0; j < bh2; j++){
+                if(xored)
+                {
+                    for(j = 0; j < bh2; j++)
+                    {
                         for(i = 0; i < bw2; i++)
                             c->work_buf[work_size++] = tsrc[i] ^ tprev[i];
                         tsrc += p->linesize[0];
@@ -209,7 +226,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     /* save the previous frame */
     src = p->data[0];
     prev = c->prev;
-    for(i = 0; i < avctx->height; i++){
+    for(i = 0; i < avctx->height; i++)
+    {
         memcpy(prev, src, avctx->width);
         prev += c->pstride;
         src += p->linesize[0];
@@ -225,7 +243,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     c->zstream.next_out = c->comp_buf;
     c->zstream.avail_out = c->comp_size;
     c->zstream.total_out = 0;
-    if(deflate(&c->zstream, Z_SYNC_FLUSH) != Z_OK){
+    if(deflate(&c->zstream, Z_SYNC_FLUSH) != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error compressing data\n");
         return -1;
     }
@@ -237,7 +256,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
 
     fl = (keyframe ? ZMBV_KEYFRAME : 0) | (chpal ? ZMBV_DELTAPAL : 0);
     *buf++ = fl;
-    if (keyframe) {
+    if (keyframe)
+    {
         *buf++ = 0; // hi ver
         *buf++ = 1; // lo ver
         *buf++ = 1; // comp
@@ -289,7 +309,8 @@ static av_cold int encode_init(AVCodecContext *avctx)
 
     if(avctx->compression_level >= 0)
         lvl = avctx->compression_level;
-    if(lvl < 0 || lvl > 9){
+    if(lvl < 0 || lvl > 9)
+    {
         av_log(avctx, AV_LOG_ERROR, "Compression level should be 0-9, not %i\n", lvl);
         return AVERROR(EINVAL);
     }
@@ -297,22 +318,25 @@ static av_cold int encode_init(AVCodecContext *avctx)
     // Needed if zlib unused or init aborted before deflateInit
     memset(&c->zstream, 0, sizeof(z_stream));
     c->comp_size = avctx->width * avctx->height + 1024 +
-        ((avctx->width + ZMBV_BLOCK - 1) / ZMBV_BLOCK) * ((avctx->height + ZMBV_BLOCK - 1) / ZMBV_BLOCK) * 2 + 4;
-    if (!(c->work_buf = av_malloc(c->comp_size))) {
+                   ((avctx->width + ZMBV_BLOCK - 1) / ZMBV_BLOCK) * ((avctx->height + ZMBV_BLOCK - 1) / ZMBV_BLOCK) * 2 + 4;
+    if (!(c->work_buf = av_malloc(c->comp_size)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Can't allocate work buffer.\n");
         return AVERROR(ENOMEM);
     }
     /* Conservative upper bound taken from zlib v1.2.1 source via lcl.c */
     c->comp_size = c->comp_size + ((c->comp_size + 7) >> 3) +
-                           ((c->comp_size + 63) >> 6) + 11;
+                   ((c->comp_size + 63) >> 6) + 11;
 
     /* Allocate compression buffer */
-    if (!(c->comp_buf = av_malloc(c->comp_size))) {
+    if (!(c->comp_buf = av_malloc(c->comp_size)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Can't allocate compression buffer.\n");
         return AVERROR(ENOMEM);
     }
     c->pstride = FFALIGN(avctx->width, 16);
-    if (!(c->prev = av_malloc(c->pstride * avctx->height))) {
+    if (!(c->prev = av_malloc(c->pstride * avctx->height)))
+    {
         av_log(avctx, AV_LOG_ERROR, "Can't allocate picture.\n");
         return AVERROR(ENOMEM);
     }
@@ -321,7 +345,8 @@ static av_cold int encode_init(AVCodecContext *avctx)
     c->zstream.zfree = Z_NULL;
     c->zstream.opaque = Z_NULL;
     zret = deflateInit(&c->zstream, lvl);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Inflate init error: %d\n", zret);
         return -1;
     }
@@ -329,7 +354,8 @@ static av_cold int encode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_zmbv_encoder = {
+AVCodec ff_zmbv_encoder =
+{
     .name           = "zmbv",
     .long_name      = NULL_IF_CONFIG_SMALL("Zip Motion Blocks Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

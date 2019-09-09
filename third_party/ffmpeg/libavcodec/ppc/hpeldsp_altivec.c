@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Brian Foley
  * Copyright (c) 2002 Dieter Shirley
  * Copyright (c) 2003-2004 Romain Dolbeau <romain@dolbeau.org>
@@ -53,7 +53,8 @@ void ff_put_pixels16_altivec(uint8_t *block, const uint8_t *pixels, ptrdiff_t li
 // it's faster than -funroll-loops, but using
 // -funroll-loops w/ this is bad - 74 cycles again.
 // all this is on a 7450, tuning for the 7450
-    for (i = 0; i < h; i += 4) {
+    for (i = 0; i < h; i += 4)
+    {
         pixelsv1  = unaligned_load( 0, pixels);
         pixelsv1B = unaligned_load(line_size, pixels);
         pixelsv1C = unaligned_load(line_size_2, pixels);
@@ -74,7 +75,8 @@ void ff_avg_pixels16_altivec(uint8_t *block, const uint8_t *pixels, ptrdiff_t li
     register vector unsigned char pixelsv, blockv;
 
     int i;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         blockv = vec_ld(0, block);
         pixelsv = VEC_LD( 0, pixels);
         blockv = vec_avg(blockv,pixelsv);
@@ -90,27 +92,31 @@ static void avg_pixels8_altivec(uint8_t * block, const uint8_t * pixels, ptrdiff
     register vector unsigned char pixelsv1, pixelsv2, pixelsv, blockv;
     int i;
 
-   for (i = 0; i < h; i++) {
-       /* block is 8 bytes-aligned, so we're either in the
-          left block (16 bytes-aligned) or in the right block (not) */
-       int rightside = ((unsigned long)block & 0x0000000F);
+    for (i = 0; i < h; i++)
+    {
+        /* block is 8 bytes-aligned, so we're either in the
+           left block (16 bytes-aligned) or in the right block (not) */
+        int rightside = ((unsigned long)block & 0x0000000F);
 
-       blockv = vec_ld(0, block);
-       pixelsv = VEC_LD( 0, pixels);
+        blockv = vec_ld(0, block);
+        pixelsv = VEC_LD( 0, pixels);
 
-       if (rightside) {
-           pixelsv = vec_perm(blockv, pixelsv, vcprm(0,1,s0,s1));
-       } else {
-           pixelsv = vec_perm(blockv, pixelsv, vcprm(s0,s1,2,3));
-       }
+        if (rightside)
+        {
+            pixelsv = vec_perm(blockv, pixelsv, vcprm(0,1,s0,s1));
+        }
+        else
+        {
+            pixelsv = vec_perm(blockv, pixelsv, vcprm(s0,s1,2,3));
+        }
 
-       blockv = vec_avg(blockv, pixelsv);
+        blockv = vec_avg(blockv, pixelsv);
 
-       vec_st(blockv, 0, block);
+        vec_st(blockv, 0, block);
 
-       pixels += line_size;
-       block += line_size;
-   }
+        pixels += line_size;
+        block += line_size;
+    }
 }
 
 /* next one assumes that ((line_size % 8) == 0) */
@@ -132,7 +138,8 @@ static void put_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels, ptrdi
                          (vector unsigned short)pixelsv2);
     pixelssum1 = vec_add(pixelssum1, vctwo);
 
-    for (i = 0; i < h ; i++) {
+    for (i = 0; i < h ; i++)
+    {
         int rightside = ((unsigned long)block & 0x0000000F);
         blockv = vec_ld(0, block);
 
@@ -147,9 +154,12 @@ static void put_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels, ptrdi
         pixelssum1 = vec_add(pixelssum2, vctwo);
         pixelsavg = vec_packsu(temp3, (vector unsigned short) vczero);
 
-        if (rightside) {
+        if (rightside)
+        {
             blockv = vec_perm(blockv, pixelsavg, vcprm(0, 1, s0, s1));
-        } else {
+        }
+        else
+        {
             blockv = vec_perm(blockv, pixelsavg, vcprm(s0, s1, 2, 3));
         }
 
@@ -179,7 +189,8 @@ static void put_no_rnd_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels
                          (vector unsigned short)pixelsv2);
     pixelssum1 = vec_add(pixelssum1, vcone);
 
-    for (i = 0; i < h ; i++) {
+    for (i = 0; i < h ; i++)
+    {
         int rightside = ((unsigned long)block & 0x0000000F);
         blockv = vec_ld(0, block);
 
@@ -194,9 +205,12 @@ static void put_no_rnd_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels
         pixelssum1 = vec_add(pixelssum2, vcone);
         pixelsavg = vec_packsu(temp3, (vector unsigned short) vczero);
 
-        if (rightside) {
+        if (rightside)
+        {
             blockv = vec_perm(blockv, pixelsavg, vcprm(0, 1, s0, s1));
-        } else {
+        }
+        else
+        {
             blockv = vec_perm(blockv, pixelsavg, vcprm(s0, s1, 2, 3));
         }
 
@@ -214,7 +228,7 @@ static void put_pixels16_xy2_altivec(uint8_t * block, const uint8_t * pixels, pt
     register vector unsigned char pixelsv1, pixelsv2, pixelsv3, pixelsv4;
     register vector unsigned char blockv;
     register vector unsigned short temp3, temp4,
-        pixelssum1, pixelssum2, pixelssum3, pixelssum4;
+             pixelssum1, pixelssum2, pixelssum3, pixelssum4;
     register const vector unsigned char vczero = (const vector unsigned char)vec_splat_u8(0);
     register const vector unsigned short vctwo = (const vector unsigned short)vec_splat_u16(2);
 
@@ -231,7 +245,8 @@ static void put_pixels16_xy2_altivec(uint8_t * block, const uint8_t * pixels, pt
                          (vector unsigned short)pixelsv2);
     pixelssum1 = vec_add(pixelssum1, vctwo);
 
-    for (i = 0; i < h ; i++) {
+    for (i = 0; i < h ; i++)
+    {
         blockv = vec_ld(0, block);
 
         pixelsv1 = unaligned_load(line_size, pixels);
@@ -269,7 +284,7 @@ static void put_no_rnd_pixels16_xy2_altivec(uint8_t * block, const uint8_t * pix
     register vector unsigned char pixelsv1, pixelsv2, pixelsv3, pixelsv4;
     register vector unsigned char blockv;
     register vector unsigned short temp3, temp4,
-        pixelssum1, pixelssum2, pixelssum3, pixelssum4;
+             pixelssum1, pixelssum2, pixelssum3, pixelssum4;
     register const vector unsigned char vczero = (const vector unsigned char)vec_splat_u8(0);
     register const vector unsigned short vcone = (const vector unsigned short)vec_splat_u16(1);
     register const vector unsigned short vctwo = (const vector unsigned short)vec_splat_u16(2);
@@ -287,7 +302,8 @@ static void put_no_rnd_pixels16_xy2_altivec(uint8_t * block, const uint8_t * pix
                          (vector unsigned short)pixelsv2);
     pixelssum1 = vec_add(pixelssum1, vcone);
 
-    for (i = 0; i < h ; i++) {
+    for (i = 0; i < h ; i++)
+    {
         pixelsv1 = unaligned_load(line_size, pixels);
         pixelsv2 = unaligned_load(line_size+1, pixels);
 
@@ -325,9 +341,9 @@ static void avg_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels, ptrdi
     register vector unsigned short pixelssum1, pixelssum2, temp3;
 
     register const vector unsigned char vczero = (const vector unsigned char)
-                                        vec_splat_u8(0);
+            vec_splat_u8(0);
     register const vector unsigned short vctwo = (const vector unsigned short)
-                                        vec_splat_u16(2);
+            vec_splat_u16(2);
 
     pixelsv1 = VEC_LD(0, pixels);
     pixelsv2 = VEC_LD(1, pixels);
@@ -337,7 +353,8 @@ static void avg_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels, ptrdi
                          (vector unsigned short)pixelsv2);
     pixelssum1 = vec_add(pixelssum1, vctwo);
 
-    for (i = 0; i < h ; i++) {
+    for (i = 0; i < h ; i++)
+    {
         int rightside = ((unsigned long)block & 0x0000000F);
         blockv = vec_ld(0, block);
 
@@ -353,9 +370,12 @@ static void avg_pixels8_xy2_altivec(uint8_t *block, const uint8_t *pixels, ptrdi
         pixelssum1 = vec_add(pixelssum2, vctwo);
         pixelsavg = vec_packsu(temp3, (vector unsigned short) vczero);
 
-        if (rightside) {
+        if (rightside)
+        {
             blocktemp = vec_perm(blockv, pixelsavg, vcprm(0, 1, s0, s1));
-        } else {
+        }
+        else
+        {
             blocktemp = vec_perm(blockv, pixelsavg, vcprm(s0, s1, 2, 3));
         }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Fabrice Bellard
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -59,7 +59,8 @@ PUT_FUNC(dbl, AV_SAMPLE_FMT_DBL, double,  v_dbl)
 static void put_sample(void **data, enum AVSampleFormat sample_fmt,
                        int channels, int sample, int ch, double v_dbl)
 {
-    switch (av_get_packed_sample_fmt(sample_fmt)) {
+    switch (av_get_packed_sample_fmt(sample_fmt))
+    {
     case AV_SAMPLE_FMT_U8:
         put_sample_u8(data, sample_fmt, channels, sample, ch, v_dbl);
         break;
@@ -93,45 +94,52 @@ static void audiogen(AVLFG *rnd, void **data, enum AVSampleFormat sample_fmt,
 
     /* 1 second of single freq sine at 1000 Hz */
     a = 0;
-    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++) {
+    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++)
+    {
         v = sin(a) * 0.30;
         for (ch = 0; ch < channels; ch++)
             PUT_SAMPLE
-        a += M_PI * 1000.0 * 2.0 / sample_rate;
+            a += M_PI * 1000.0 * 2.0 / sample_rate;
     }
 
     /* 1 second of varying frequency between 100 and 10000 Hz */
     a = 0;
-    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++) {
+    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++)
+    {
         v = sin(a) * 0.30;
         for (ch = 0; ch < channels; ch++)
             PUT_SAMPLE
-        f  = 100.0 + (((10000.0 - 100.0) * i) / sample_rate);
+            f  = 100.0 + (((10000.0 - 100.0) * i) / sample_rate);
         a += M_PI * f * 2.0 / sample_rate;
     }
 
     /* 0.5 second of low amplitude white noise */
-    for (i = 0; i < sample_rate / 2 && k < nb_samples; i++, k++) {
+    for (i = 0; i < sample_rate / 2 && k < nb_samples; i++, k++)
+    {
         v = dbl_rand(rnd) * 0.30;
         for (ch = 0; ch < channels; ch++)
             PUT_SAMPLE
-    }
+        }
 
     /* 0.5 second of high amplitude white noise */
-    for (i = 0; i < sample_rate / 2 && k < nb_samples; i++, k++) {
+    for (i = 0; i < sample_rate / 2 && k < nb_samples; i++, k++)
+    {
         v = dbl_rand(rnd);
         for (ch = 0; ch < channels; ch++)
             PUT_SAMPLE
-    }
+        }
 
     /* 1 second of unrelated ramps for each channel */
-    for (ch = 0; ch < channels; ch++) {
+    for (ch = 0; ch < channels; ch++)
+    {
         taba[ch]  = 0;
         tabf1[ch] = 100 + av_lfg_get(rnd) % 5000;
         tabf2[ch] = 100 + av_lfg_get(rnd) % 5000;
     }
-    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++) {
-        for (ch = 0; ch < channels; ch++) {
+    for (i = 0; i < 1 * sample_rate && k < nb_samples; i++, k++)
+    {
+        for (ch = 0; ch < channels; ch++)
+        {
             v = sin(taba[ch]) * 0.30;
             PUT_SAMPLE
             f = tabf1[ch] + (((tabf2[ch] - tabf1[ch]) * i) / sample_rate);
@@ -142,8 +150,10 @@ static void audiogen(AVLFG *rnd, void **data, enum AVSampleFormat sample_fmt,
     /* 2 seconds of 500 Hz with varying volume */
     a    = 0;
     ampa = 0;
-    for (i = 0; i < 2 * sample_rate && k < nb_samples; i++, k++) {
-        for (ch = 0; ch < channels; ch++) {
+    for (i = 0; i < 2 * sample_rate && k < nb_samples; i++, k++)
+    {
+        for (ch = 0; ch < channels; ch++)
+        {
             double amp = (1.0 + sin(ampa)) * 0.15;
             if (ch & 1)
                 amp = 0.30 - amp;
@@ -159,7 +169,8 @@ static void audiogen(AVLFG *rnd, void **data, enum AVSampleFormat sample_fmt,
    e.g. 'avresample-test 4 2 2' will test all input/output combinations of
    S16/FLTP/S16P/FLT, 48000/44100, and stereo/mono */
 
-static const enum AVSampleFormat formats[] = {
+static const enum AVSampleFormat formats[] =
+{
     AV_SAMPLE_FMT_S16,
     AV_SAMPLE_FMT_FLTP,
     AV_SAMPLE_FMT_S16P,
@@ -172,13 +183,15 @@ static const enum AVSampleFormat formats[] = {
     AV_SAMPLE_FMT_DBL,
 };
 
-static const int rates[] = {
+static const int rates[] =
+{
     48000,
     44100,
     16000
 };
 
-static const uint64_t layouts[] = {
+static const uint64_t layouts[] =
+{
     AV_CH_LAYOUT_STEREO,
     AV_CH_LAYOUT_MONO,
     AV_CH_LAYOUT_5POINT1,
@@ -212,8 +225,10 @@ int main(int argc, char **argv)
     num_formats = 2;
     num_rates   = 2;
     num_layouts = 2;
-    if (argc > 1) {
-        if (!av_strncasecmp(argv[1], "-h", 3)) {
+    if (argc > 1)
+    {
+        if (!av_strncasecmp(argv[1], "-h", 3))
+        {
             av_log(NULL, AV_LOG_INFO, "Usage: avresample-test [<num formats> "
                    "[<num sample rates> [<num channel layouts>]]]\n"
                    "Default is 2 2 2\n");
@@ -222,11 +237,13 @@ int main(int argc, char **argv)
         num_formats = strtol(argv[1], NULL, 0);
         num_formats = av_clip(num_formats, 1, FF_ARRAY_ELEMS(formats));
     }
-    if (argc > 2) {
+    if (argc > 2)
+    {
         num_rates = strtol(argv[2], NULL, 0);
         num_rates = av_clip(num_rates, 1, FF_ARRAY_ELEMS(rates));
     }
-    if (argc > 3) {
+    if (argc > 3)
+    {
         num_layouts = strtol(argv[3], NULL, 0);
         num_layouts = av_clip(num_layouts, 1, FF_ARRAY_ELEMS(layouts));
     }
@@ -236,7 +253,7 @@ int main(int argc, char **argv)
     av_lfg_init(&rnd, 0xC0FFEE);
 
     in_buf_size = av_samples_get_buffer_size(&in_linesize, 8, 48000 * 6,
-                                             AV_SAMPLE_FMT_DBLP, 0);
+                  AV_SAMPLE_FMT_DBLP, 0);
     out_buf_size = in_buf_size;
 
     in_buf = av_malloc(in_buf_size);
@@ -247,35 +264,43 @@ int main(int argc, char **argv)
         goto end;
 
     s = avresample_alloc_context();
-    if (!s) {
+    if (!s)
+    {
         av_log(NULL, AV_LOG_ERROR, "Error allocating AVAudioResampleContext\n");
         ret = 1;
         goto end;
     }
 
-    for (i = 0; i < num_formats; i++) {
+    for (i = 0; i < num_formats; i++)
+    {
         in_fmt = formats[i];
-        for (k = 0; k < num_layouts; k++) {
+        for (k = 0; k < num_layouts; k++)
+        {
             in_ch_layout = layouts[k];
             in_channels  = av_get_channel_layout_nb_channels(in_ch_layout);
-            for (m = 0; m < num_rates; m++) {
+            for (m = 0; m < num_rates; m++)
+            {
                 in_rate = rates[m];
 
                 ret = av_samples_fill_arrays(in_data, &in_linesize, in_buf,
                                              in_channels, in_rate * 6,
                                              in_fmt, 0);
-                if (ret < 0) {
+                if (ret < 0)
+                {
                     av_log(s, AV_LOG_ERROR, "failed in_data fill arrays\n");
                     goto end;
                 }
                 audiogen(&rnd, (void **)in_data, in_fmt, in_channels, in_rate, in_rate * 6);
 
-                for (j = 0; j < num_formats; j++) {
+                for (j = 0; j < num_formats; j++)
+                {
                     out_fmt = formats[j];
-                    for (l = 0; l < num_layouts; l++) {
+                    for (l = 0; l < num_layouts; l++)
+                    {
                         out_ch_layout = layouts[l];
                         out_channels  = av_get_channel_layout_nb_channels(out_ch_layout);
-                        for (n = 0; n < num_rates; n++) {
+                        for (n = 0; n < num_rates; n++)
+                        {
                             out_rate = rates[n];
 
                             av_log(NULL, AV_LOG_INFO, "%s to %s, %d to %d channels, %d Hz to %d Hz\n",
@@ -285,7 +310,8 @@ int main(int argc, char **argv)
                             ret = av_samples_fill_arrays(out_data, &out_linesize,
                                                          out_buf, out_channels,
                                                          out_rate * 6, out_fmt, 0);
-                            if (ret < 0) {
+                            if (ret < 0)
+                            {
                                 av_log(s, AV_LOG_ERROR, "failed out_data fill arrays\n");
                                 goto end;
                             }
@@ -300,14 +326,16 @@ int main(int argc, char **argv)
                             av_opt_set_int(s, "internal_sample_fmt", AV_SAMPLE_FMT_FLTP, 0);
 
                             ret = avresample_open(s);
-                            if (ret < 0) {
+                            if (ret < 0)
+                            {
                                 av_log(s, AV_LOG_ERROR, "Error opening context\n");
                                 goto end;
                             }
 
                             ret = avresample_convert(s, out_data, out_linesize, out_rate * 6,
-                                                         in_data,  in_linesize,  in_rate * 6);
-                            if (ret < 0) {
+                                                     in_data,  in_linesize,  in_rate * 6);
+                            if (ret < 0)
+                            {
                                 char errbuf[256];
                                 av_strerror(ret, errbuf, sizeof(errbuf));
                                 av_log(NULL, AV_LOG_ERROR, "%s\n", errbuf);

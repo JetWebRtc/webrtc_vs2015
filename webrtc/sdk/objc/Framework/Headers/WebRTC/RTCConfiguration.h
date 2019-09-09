@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,48 +18,55 @@
  * Represents the ice transport policy. This exposes the same states in C++,
  * which include one more state than what exists in the W3C spec.
  */
-typedef NS_ENUM(NSInteger, RTCIceTransportPolicy) {
-  RTCIceTransportPolicyNone,
-  RTCIceTransportPolicyRelay,
-  RTCIceTransportPolicyNoHost,
-  RTCIceTransportPolicyAll
+typedef NS_ENUM(NSInteger, RTCIceTransportPolicy)
+{
+    RTCIceTransportPolicyNone,
+    RTCIceTransportPolicyRelay,
+    RTCIceTransportPolicyNoHost,
+    RTCIceTransportPolicyAll
 };
 
 /** Represents the bundle policy. */
-typedef NS_ENUM(NSInteger, RTCBundlePolicy) {
-  RTCBundlePolicyBalanced,
-  RTCBundlePolicyMaxCompat,
-  RTCBundlePolicyMaxBundle
+typedef NS_ENUM(NSInteger, RTCBundlePolicy)
+{
+    RTCBundlePolicyBalanced,
+    RTCBundlePolicyMaxCompat,
+    RTCBundlePolicyMaxBundle
 };
 
 /** Represents the rtcp mux policy. */
-typedef NS_ENUM(NSInteger, RTCRtcpMuxPolicy) {
-  RTCRtcpMuxPolicyNegotiate,
-  RTCRtcpMuxPolicyRequire
+typedef NS_ENUM(NSInteger, RTCRtcpMuxPolicy)
+{
+    RTCRtcpMuxPolicyNegotiate,
+    RTCRtcpMuxPolicyRequire
 };
 
 /** Represents the tcp candidate policy. */
-typedef NS_ENUM(NSInteger, RTCTcpCandidatePolicy) {
-  RTCTcpCandidatePolicyEnabled,
-  RTCTcpCandidatePolicyDisabled
+typedef NS_ENUM(NSInteger, RTCTcpCandidatePolicy)
+{
+    RTCTcpCandidatePolicyEnabled,
+    RTCTcpCandidatePolicyDisabled
 };
 
 /** Represents the candidate network policy. */
-typedef NS_ENUM(NSInteger, RTCCandidateNetworkPolicy) {
-  RTCCandidateNetworkPolicyAll,
-  RTCCandidateNetworkPolicyLowCost
+typedef NS_ENUM(NSInteger, RTCCandidateNetworkPolicy)
+{
+    RTCCandidateNetworkPolicyAll,
+    RTCCandidateNetworkPolicyLowCost
 };
 
 /** Represents the continual gathering policy. */
-typedef NS_ENUM(NSInteger, RTCContinualGatheringPolicy) {
-  RTCContinualGatheringPolicyGatherOnce,
-  RTCContinualGatheringPolicyGatherContinually
+typedef NS_ENUM(NSInteger, RTCContinualGatheringPolicy)
+{
+    RTCContinualGatheringPolicyGatherOnce,
+    RTCContinualGatheringPolicyGatherContinually
 };
 
 /** Represents the encryption key type. */
-typedef NS_ENUM(NSInteger, RTCEncryptionKeyType) {
-  RTCEncryptionKeyTypeRSA,
-  RTCEncryptionKeyTypeECDSA,
+typedef NS_ENUM(NSInteger, RTCEncryptionKeyType)
+{
+    RTCEncryptionKeyTypeRSA,
+    RTCEncryptionKeyTypeECDSA,
 };
 
 NS_ASSUME_NONNULL_BEGIN
@@ -67,8 +74,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCConfiguration : NSObject
 
-/** An array of Ice Servers available to be used by ICE. */
-@property(nonatomic, copy) NSArray<RTCIceServer *> *iceServers;
+    /** An array of Ice Servers available to be used by ICE. */
+    @property(nonatomic, copy) NSArray<RTCIceServer *> *iceServers;
 
 /** Which candidates the ICE agent is allowed to use. The W3C calls it
  * |iceTransportPolicy|, while in C++ it is called |type|. */
@@ -82,7 +89,7 @@ RTC_EXPORT
 @property(nonatomic, assign) RTCTcpCandidatePolicy tcpCandidatePolicy;
 @property(nonatomic, assign) RTCCandidateNetworkPolicy candidateNetworkPolicy;
 @property(nonatomic, assign)
-    RTCContinualGatheringPolicy continualGatheringPolicy;
+RTCContinualGatheringPolicy continualGatheringPolicy;
 @property(nonatomic, assign) int audioJitterBufferMaxPackets;
 @property(nonatomic, assign) BOOL audioJitterBufferFastAccelerate;
 @property(nonatomic, assign) int iceConnectionReceivingTimeout;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HTTP definitions
  * Copyright (c) 2010 Josh Allmann
  *

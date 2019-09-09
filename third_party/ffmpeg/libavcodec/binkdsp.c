@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bink DSP routines
  * Copyright (c) 2009 Konstantin Shishkov
  *
@@ -66,16 +66,19 @@
 
 static inline void bink_idct_col(int *dest, const int32_t *src)
 {
-    if ((src[8]|src[16]|src[24]|src[32]|src[40]|src[48]|src[56])==0) {
+    if ((src[8]|src[16]|src[24]|src[32]|src[40]|src[48]|src[56])==0)
+    {
         dest[0]  =
-        dest[8]  =
-        dest[16] =
-        dest[24] =
-        dest[32] =
-        dest[40] =
-        dest[48] =
-        dest[56] = src[0];
-    } else {
+            dest[8]  =
+                dest[16] =
+                    dest[24] =
+                        dest[32] =
+                            dest[40] =
+                                dest[48] =
+                                    dest[56] = src[0];
+    }
+    else
+    {
         IDCT_COL(dest, src);
     }
 }
@@ -87,7 +90,8 @@ static void bink_idct_c(int32_t *block)
 
     for (i = 0; i < 8; i++)
         bink_idct_col(&temp[i], &block[i]);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         IDCT_ROW( (&block[8*i]), (&temp[8*i]) );
     }
 }
@@ -99,7 +103,7 @@ static void bink_idct_add_c(uint8_t *dest, int linesize, int32_t *block)
     bink_idct_c(block);
     for (i = 0; i < 8; i++, dest += linesize, block += 8)
         for (j = 0; j < 8; j++)
-             dest[j] += block[j];
+            dest[j] += block[j];
 }
 
 static void bink_idct_put_c(uint8_t *dest, int linesize, int32_t *block)
@@ -108,7 +112,8 @@ static void bink_idct_put_c(uint8_t *dest, int linesize, int32_t *block)
     int temp[64];
     for (i = 0; i < 8; i++)
         bink_idct_col(&temp[i], &block[i]);
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         IDCT_ROW( (&dest[i*linesize]), (&temp[8*i]) );
     }
 }
@@ -119,8 +124,10 @@ static void scale_block_c(const uint8_t src[64]/*align 8*/, uint8_t *dst/*align 
     uint16_t *dst1 = (uint16_t *) dst;
     uint16_t *dst2 = (uint16_t *)(dst + linesize);
 
-    for (j = 0; j < 8; j++) {
-        for (i = 0; i < 8; i++) {
+    for (j = 0; j < 8; j++)
+    {
+        for (i = 0; i < 8; i++)
+        {
             dst1[i] = dst2[i] = src[i] * 0x0101;
         }
         src  += 8;
@@ -134,7 +141,8 @@ static void add_pixels8_c(uint8_t *av_restrict pixels, int16_t *block,
 {
     int i;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         pixels[0] += block[0];
         pixels[1] += block[1];
         pixels[2] += block[2];

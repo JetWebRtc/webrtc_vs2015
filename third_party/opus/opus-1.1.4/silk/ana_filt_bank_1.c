@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -48,7 +48,8 @@ void silk_ana_filt_bank_1(
     opus_int32    in32, X, Y, out_1, out_2;
 
     /* Internal variables and state are in Q10 format */
-    for( k = 0; k < N2; k++ ) {
+    for( k = 0; k < N2; k++ )
+    {
         /* Convert to Q10 */
         in32 = silk_LSHIFT( (opus_int32)in[ 2 * k ], 10 );
 

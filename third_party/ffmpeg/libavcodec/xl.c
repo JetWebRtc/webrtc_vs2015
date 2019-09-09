@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Miro VideoXL codec
  * Copyright (c) 2004 Konstantin Shishkov
  *
@@ -29,11 +29,12 @@
 #include "avcodec.h"
 #include "internal.h"
 
-static const int xl_table[32] = {
-   0,   1,   2,   3,   4,   5,   6,   7,
-   8,   9,  12,  15,  20,  25,  34,  46,
-  64,  82,  94, 103, 108, 113, 116, 119,
- 120, 121, 122, 123, 124, 125, 126, 127
+static const int xl_table[32] =
+{
+    0,   1,   2,   3,   4,   5,   6,   7,
+    8,   9,  12,  15,  20,  25,  34,  46,
+    64,  82,  94, 103, 108, 113, 116, 119,
+    120, 121, 122, 123, 124, 125, 126, 127
 };
 
 static int decode_frame(AVCodecContext *avctx,
@@ -49,11 +50,13 @@ static int decode_frame(AVCodecContext *avctx,
     uint32_t val;
     int y0, y1, y2, y3 = 0, c0 = 0, c1 = 0;
 
-    if (avctx->width % 4) {
+    if (avctx->width % 4)
+    {
         av_log(avctx, AV_LOG_ERROR, "width is not a multiple of 4\n");
         return AVERROR_INVALIDDATA;
     }
-    if (buf_size < avctx->width * avctx->height) {
+    if (buf_size < avctx->width * avctx->height)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet is too small\n");
         return AVERROR_INVALIDDATA;
     }
@@ -69,11 +72,13 @@ static int decode_frame(AVCodecContext *avctx,
 
     stride = avctx->width - 4;
 
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         /* lines are stored in reversed order */
         buf += stride;
 
-        for (j = 0; j < avctx->width; j += 4) {
+        for (j = 0; j < avctx->width; j += 4)
+        {
             /* value is stored in LE dword with word swapped */
             val  = AV_RL32(buf);
             buf -= 4;
@@ -127,7 +132,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_xl_decoder = {
+AVCodec ff_xl_decoder =
+{
     .name         = "xl",
     .long_name    = NULL_IF_CONFIG_SMALL("Miro VideoXL"),
     .type         = AVMEDIA_TYPE_VIDEO,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2002 Michael Niedermayer (michaelni@gmx.at)
  *
  * This file is part of FFmpeg.
@@ -108,14 +108,15 @@
 /**
  * Check if the middle 8x8 Block in the given 8x16 block is flat
  */
-static inline int RENAME(vertClassify)(const uint8_t src[], int stride, PPContext *c){
+static inline int RENAME(vertClassify)(const uint8_t src[], int stride, PPContext *c)
+{
     int numEq= 0, dcOk;
     src+= stride*4; // src points to begin of the 8x8 Block
     __asm__ volatile(
         "movq %0, %%mm7                         \n\t"
         "movq %1, %%mm6                         \n\t"
         : : "m" (c->mmxDcOffset[c->nonBQP]),  "m" (c->mmxDcThreshold[c->nonBQP])
-        );
+    );
 
     __asm__ volatile(
         "lea (%2, %3), %%"REG_a"                \n\t"
@@ -208,13 +209,16 @@ static inline int RENAME(vertClassify)(const uint8_t src[], int stride, PPContex
         : "=r" (numEq), "=r" (dcOk)
         : "r" (src), "r" ((x86_reg)stride), "m" (c->pQPb)
         : "%"REG_a
-        );
+    );
 
     numEq= (-numEq) &0xFF;
-    if(numEq > c->ppMode.flatnessThreshold){
+    if(numEq > c->ppMode.flatnessThreshold)
+    {
         if(dcOk) return 0;
         else     return 1;
-    }else{
+    }
+    else
+    {
         return 2;
     }
 }
@@ -366,7 +370,8 @@ static inline void RENAME(doVertLowPass)(uint8_t *src, int stride, PPContext *c)
     const int l9= stride + l8;
     int x;
     src+= stride*3;
-    for(x=0; x<BLOCK_SIZE; x++){
+    for(x=0; x<BLOCK_SIZE; x++)
+    {
         const int first= FFABS(src[0] - src[l1]) < c->QP ? src[0] : src[l1];
         const int last= FFABS(src[l8] - src[l9]) < c->QP ? src[l9] : src[l8];
 
@@ -490,7 +495,7 @@ static inline void RENAME(vertX1Filter)(uint8_t *src, int stride, PPContext *co)
 
         :
         : "r" (src), "r" ((x86_reg)stride), "m" (co->pQPb)
-          NAMED_CONSTRAINTS_ADD(b01)
+        NAMED_CONSTRAINTS_ADD(b01)
         : "%"REG_a, "%"REG_c
     );
 #else //TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW
@@ -507,7 +512,8 @@ static inline void RENAME(vertX1Filter)(uint8_t *src, int stride, PPContext *co)
     int x;
 
     src+= stride*3;
-    for(x=0; x<BLOCK_SIZE; x++){
+    for(x=0; x<BLOCK_SIZE; x++)
+    {
         int a= src[l3] - src[l4];
         int b= src[l4] - src[l5];
         int c= src[l5] - src[l6];
@@ -515,7 +521,8 @@ static inline void RENAME(vertX1Filter)(uint8_t *src, int stride, PPContext *co)
         int d= FFABS(b) - ((FFABS(a) + FFABS(c))>>1);
         d= FFMAX(d, 0);
 
-        if(d < co->QP*2){
+        if(d < co->QP*2)
+        {
             int v = d * FFSIGN(-b);
 
             src[l2] +=v>>3;
@@ -534,20 +541,20 @@ static inline void RENAME(vertX1Filter)(uint8_t *src, int stride, PPContext *co)
 static inline void RENAME(doVertDefFilter)(uint8_t src[], int stride, PPContext *c)
 {
 #if TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW
-/*
-    uint8_t tmp[16];
-    const int l1= stride;
-    const int l2= stride + l1;
-    const int l3= stride + l2;
-    const int l4= (int)tmp - (int)src - stride*3;
-    const int l5= (int)tmp - (int)src - stride*3 + 8;
-    const int l6= stride*3 + l3;
-    const int l7= stride + l6;
-    const int l8= stride + l7;
+    /*
+        uint8_t tmp[16];
+        const int l1= stride;
+        const int l2= stride + l1;
+        const int l3= stride + l2;
+        const int l4= (int)tmp - (int)src - stride*3;
+        const int l5= (int)tmp - (int)src - stride*3 + 8;
+        const int l6= stride*3 + l3;
+        const int l7= stride + l6;
+        const int l8= stride + l7;
 
-    memcpy(tmp, src+stride*7, 8);
-    memcpy(tmp+8, src+stride*8, 8);
-*/
+        memcpy(tmp, src+stride*7, 8);
+        memcpy(tmp+8, src+stride*8, 8);
+    */
     src+= stride*4;
     __asm__ volatile(
 
@@ -756,65 +763,65 @@ static inline void RENAME(doVertDefFilter)(uint8_t src[], int stride, PPContext 
 
         :
         : "r" (src), "r" ((x86_reg)stride), "m" (c->pQPb)
-          NAMED_CONSTRAINTS_ADD(b80,b00,b01)
+        NAMED_CONSTRAINTS_ADD(b80,b00,b01)
         : "%"REG_a, "%"REG_c
     );
 
-/*
-    {
-    int x;
-    src-= stride;
-    for(x=0; x<BLOCK_SIZE; x++){
-        const int middleEnergy= 5*(src[l5] - src[l4]) + 2*(src[l3] - src[l6]);
-        if(FFABS(middleEnergy)< 8*QP){
-            const int q=(src[l4] - src[l5])/2;
-            const int leftEnergy=  5*(src[l3] - src[l2]) + 2*(src[l1] - src[l4]);
-            const int rightEnergy= 5*(src[l7] - src[l6]) + 2*(src[l5] - src[l8]);
+    /*
+        {
+        int x;
+        src-= stride;
+        for(x=0; x<BLOCK_SIZE; x++){
+            const int middleEnergy= 5*(src[l5] - src[l4]) + 2*(src[l3] - src[l6]);
+            if(FFABS(middleEnergy)< 8*QP){
+                const int q=(src[l4] - src[l5])/2;
+                const int leftEnergy=  5*(src[l3] - src[l2]) + 2*(src[l1] - src[l4]);
+                const int rightEnergy= 5*(src[l7] - src[l6]) + 2*(src[l5] - src[l8]);
 
-            int d= FFABS(middleEnergy) - FFMIN( FFABS(leftEnergy), FFABS(rightEnergy) );
-            d= FFMAX(d, 0);
+                int d= FFABS(middleEnergy) - FFMIN( FFABS(leftEnergy), FFABS(rightEnergy) );
+                d= FFMAX(d, 0);
 
-            d= (5*d + 32) >> 6;
-            d*= FFSIGN(-middleEnergy);
+                d= (5*d + 32) >> 6;
+                d*= FFSIGN(-middleEnergy);
 
-            if(q>0){
-                d= d<0 ? 0 : d;
-                d= d>q ? q : d;
-            }else{
-                d= d>0 ? 0 : d;
-                d= d<q ? q : d;
+                if(q>0){
+                    d= d<0 ? 0 : d;
+                    d= d>q ? q : d;
+                }else{
+                    d= d>0 ? 0 : d;
+                    d= d<q ? q : d;
+                }
+
+                src[l4]-= d;
+                src[l5]+= d;
             }
-
-            src[l4]-= d;
-            src[l5]+= d;
+            src++;
         }
-        src++;
-    }
-    src-=8;
-    for(x=0; x<8; x++){
-        int y;
-        for(y=4; y<6; y++){
-            int d= src[x+y*stride] - tmp[x+(y-4)*8];
-            int ad= FFABS(d);
-            static int max=0;
-            static int sum=0;
-            static int num=0;
-            static int bias=0;
+        src-=8;
+        for(x=0; x<8; x++){
+            int y;
+            for(y=4; y<6; y++){
+                int d= src[x+y*stride] - tmp[x+(y-4)*8];
+                int ad= FFABS(d);
+                static int max=0;
+                static int sum=0;
+                static int num=0;
+                static int bias=0;
 
-            if(max<ad) max=ad;
-            sum+= ad>3 ? 1 : 0;
-            if(ad>3){
-                src[0] = src[7] = src[stride*7] = src[(stride+1)*7]=255;
-            }
-            if(y==4) bias+=d;
-            num++;
-            if(num%1000000 == 0){
-                av_log(c, AV_LOG_INFO, " %d %d %d %d\n", num, sum, max, bias);
+                if(max<ad) max=ad;
+                sum+= ad>3 ? 1 : 0;
+                if(ad>3){
+                    src[0] = src[7] = src[stride*7] = src[(stride+1)*7]=255;
+                }
+                if(y==4) bias+=d;
+                num++;
+                if(num%1000000 == 0){
+                    av_log(c, AV_LOG_INFO, " %d %d %d %d\n", num, sum, max, bias);
+                }
             }
         }
     }
-}
-*/
+    */
 #elif TEMPLATE_PP_MMX
     DECLARE_ALIGNED(8, uint64_t, tmp)[4]; // make space for 4 8-byte vars
     src+= stride*4;
@@ -1044,7 +1051,7 @@ static inline void RENAME(doVertDefFilter)(uint8_t src[], int stride, PPContext 
 
         : "+r" (src)
         : "r" ((x86_reg)stride), "m" (c->pQPb), "r"(tmp)
-          NAMED_CONSTRAINTS_ADD(w05,w20)
+        NAMED_CONSTRAINTS_ADD(w05,w20)
         : "%"REG_a
     );
 #else //TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW
@@ -1059,9 +1066,11 @@ static inline void RENAME(doVertDefFilter)(uint8_t src[], int stride, PPContext 
 //    const int l9= stride + l8;
     int x;
     src+= stride*3;
-    for(x=0; x<BLOCK_SIZE; x++){
+    for(x=0; x<BLOCK_SIZE; x++)
+    {
         const int middleEnergy= 5*(src[l5] - src[l4]) + 2*(src[l3] - src[l6]);
-        if(FFABS(middleEnergy) < 8*c->QP){
+        if(FFABS(middleEnergy) < 8*c->QP)
+        {
             const int q=(src[l4] - src[l5])/2;
             const int leftEnergy=  5*(src[l3] - src[l2]) + 2*(src[l1] - src[l4]);
             const int rightEnergy= 5*(src[l7] - src[l6]) + 2*(src[l5] - src[l8]);
@@ -1072,10 +1081,13 @@ static inline void RENAME(doVertDefFilter)(uint8_t src[], int stride, PPContext 
             d= (5*d + 32) >> 6;
             d*= FFSIGN(-middleEnergy);
 
-            if(q>0){
+            if(q>0)
+            {
                 d = FFMAX(d, 0);
                 d = FFMIN(d, q);
-            }else{
+            }
+            else
+            {
                 d = FFMIN(d, 0);
                 d = FFMAX(d, q);
             }
@@ -1128,14 +1140,14 @@ static inline void RENAME(dering)(uint8_t src[], int stride, PPContext *c)
 #endif
 #define FIND_MIN_MAX(addr)  REAL_FIND_MIN_MAX(addr)
 
-FIND_MIN_MAX((%%REGa))
-FIND_MIN_MAX((%%REGa, %1))
-FIND_MIN_MAX((%%REGa, %1, 2))
-FIND_MIN_MAX((%0, %1, 4))
-FIND_MIN_MAX((%%REGd))
-FIND_MIN_MAX((%%REGd, %1))
-FIND_MIN_MAX((%%REGd, %1, 2))
-FIND_MIN_MAX((%0, %1, 8))
+        FIND_MIN_MAX((%%REGa))
+        FIND_MIN_MAX((%%REGa, %1))
+        FIND_MIN_MAX((%%REGa, %1, 2))
+        FIND_MIN_MAX((%0, %1, 4))
+        FIND_MIN_MAX((%%REGd))
+        FIND_MIN_MAX((%%REGd, %1))
+        FIND_MIN_MAX((%%REGd, %1, 2))
+        FIND_MIN_MAX((%0, %1, 8))
 
         "movq %%mm7, %%mm4                      \n\t"
         "psrlq $8, %%mm7                        \n\t"
@@ -1289,34 +1301,34 @@ FIND_MIN_MAX((%0, %1, 8))
 
 #define DERING_CORE(dst,src,ppsx,psx,sx,pplx,plx,lx,t0,t1) \
    REAL_DERING_CORE(dst,src,ppsx,psx,sx,pplx,plx,lx,t0,t1)
-/*
-0000000
-1111111
+        /*
+        0000000
+        1111111
 
-1111110
-1111101
-1111100
-1111011
-1111010
-1111001
+        1111110
+        1111101
+        1111100
+        1111011
+        1111010
+        1111001
 
-1111000
-1110111
+        1111000
+        1110111
 
-*/
+        */
 //DERING_CORE(dst          ,src            ,ppsx ,psx  ,sx   ,pplx ,plx  ,lx   ,t0   ,t1)
-DERING_CORE((%%REGa)       ,(%%REGa, %1)   ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
-DERING_CORE((%%REGa, %1)   ,(%%REGa, %1, 2),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
-DERING_CORE((%%REGa, %1, 2),(%0, %1, 4)    ,%%mm4,%%mm0,%%mm2,%%mm5,%%mm1,%%mm3,%%mm6,%%mm7)
-DERING_CORE((%0, %1, 4)    ,(%%REGd)       ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
-DERING_CORE((%%REGd)       ,(%%REGd, %1)   ,%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
-DERING_CORE((%%REGd, %1)   ,(%%REGd, %1, 2),%%mm4,%%mm0,%%mm2,%%mm5,%%mm1,%%mm3,%%mm6,%%mm7)
-DERING_CORE((%%REGd, %1, 2),(%0, %1, 8)    ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
-DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
+        DERING_CORE((%%REGa)       ,(%%REGa, %1)   ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
+        DERING_CORE((%%REGa, %1)   ,(%%REGa, %1, 2),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
+        DERING_CORE((%%REGa, %1, 2),(%0, %1, 4)    ,%%mm4,%%mm0,%%mm2,%%mm5,%%mm1,%%mm3,%%mm6,%%mm7)
+        DERING_CORE((%0, %1, 4)    ,(%%REGd)       ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
+        DERING_CORE((%%REGd)       ,(%%REGd, %1)   ,%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
+        DERING_CORE((%%REGd, %1)   ,(%%REGd, %1, 2),%%mm4,%%mm0,%%mm2,%%mm5,%%mm1,%%mm3,%%mm6,%%mm7)
+        DERING_CORE((%%REGd, %1, 2),(%0, %1, 8)    ,%%mm0,%%mm2,%%mm4,%%mm1,%%mm3,%%mm5,%%mm6,%%mm7)
+        DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,%%mm6,%%mm7)
 
         "1:                        \n\t"
         : : "r" (src), "r" ((x86_reg)stride), "m" (c->pQPb), "m"(c->pQPb2), "q"(tmp)
-          NAMED_CONSTRAINTS_ADD(deringThreshold,b00,b02,b08)
+        NAMED_CONSTRAINTS_ADD(deringThreshold,b00,b02,b08)
         : "%"REG_a, "%"REG_d, "%"REG_sp
     );
 #else // HAVE_7REGS && (TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW)
@@ -1329,10 +1341,12 @@ DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,
     const int QP2= c->QP/2 + 1;
 
     src --;
-    for(y=1; y<9; y++){
+    for(y=1; y<9; y++)
+    {
         int x;
         p= src + stride*y;
-        for(x=1; x<9; x++){
+        for(x=1; x<9; x++)
+        {
             p++;
             if(*p > max) max= *p;
             if(*p < min) min= *p;
@@ -1342,7 +1356,8 @@ DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,
 
     if(max - min <deringThreshold) return;
 
-    for(y=0; y<10; y++){
+    for(y=0; y<10; y++)
+    {
         int t = 0;
 
         if(src[stride*y + 0] > avg) t+= 1;
@@ -1361,34 +1376,39 @@ DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,
         s[y] = t;
     }
 
-    for(y=1; y<9; y++){
+    for(y=1; y<9; y++)
+    {
         int t = s[y-1] & s[y] & s[y+1];
         t|= t>>16;
         s[y-1]= t;
     }
 
-    for(y=1; y<9; y++){
+    for(y=1; y<9; y++)
+    {
         int x;
         int t = s[y-1];
 
         p= src + stride*y;
-        for(x=1; x<9; x++){
+        for(x=1; x<9; x++)
+        {
             p++;
-            if(t & (1<<x)){
+            if(t & (1<<x))
+            {
                 int f= (*(p-stride-1)) + 2*(*(p-stride)) + (*(p-stride+1))
-                      +2*(*(p     -1)) + 4*(*p         ) + 2*(*(p     +1))
-                      +(*(p+stride-1)) + 2*(*(p+stride)) + (*(p+stride+1));
+                       +2*(*(p     -1)) + 4*(*p         ) + 2*(*(p     +1))
+                       +(*(p+stride-1)) + 2*(*(p+stride)) + (*(p+stride+1));
                 f= (f + 8)>>4;
 
 #ifdef DEBUG_DERING_THRESHOLD
-                    __asm__ volatile("emms\n\t":);
-                    {
+                __asm__ volatile("emms\n\t":);
+                {
                     static uint64_t numPixels=0;
                     if(x!=1 && x!=8 && y!=1 && y!=8) numPixels++;
 //                    if((max-min)<20 || (max-min)*QP<200)
 //                    if((max-min)*QP < 500)
 //                    if(max-min<QP/2)
-                    if(max-min < 20){
+                    if(max-min < 20)
+                    {
                         static int numSkipped=0;
                         static int errorSum=0;
                         static int worstQP=0;
@@ -1401,35 +1421,40 @@ DERING_CORE((%0, %1, 8)    ,(%%REGd, %1, 4),%%mm2,%%mm4,%%mm0,%%mm3,%%mm5,%%mm1,
                         if(x==1 || x==8 || y==1 || y==8) continue;
 
                         numSkipped++;
-                        if(absDiff > worstDiff){
+                        if(absDiff > worstDiff)
+                        {
                             worstDiff= absDiff;
                             worstQP= QP;
                             worstRange= max-min;
                         }
                         errorSum+= error;
 
-                        if(1024LL*1024LL*1024LL % numSkipped == 0){
+                        if(1024LL*1024LL*1024LL % numSkipped == 0)
+                        {
                             av_log(c, AV_LOG_INFO, "sum:%1.3f, skip:%d, wQP:%d, "
                                    "wRange:%d, wDiff:%d, relSkip:%1.3f\n",
                                    (float)errorSum/numSkipped, numSkipped, worstQP, worstRange,
                                    worstDiff, (float)numSkipped/numPixels);
                         }
                     }
-                    }
+                }
 #endif
-                    if     (*p + QP2 < f) *p= *p + QP2;
-                    else if(*p - QP2 > f) *p= *p - QP2;
-                    else *p=f;
+                if     (*p + QP2 < f) *p= *p + QP2;
+                else if(*p - QP2 > f) *p= *p - QP2;
+                else *p=f;
             }
         }
     }
 #ifdef DEBUG_DERING_THRESHOLD
-    if(max-min < 20){
-        for(y=1; y<9; y++){
+    if(max-min < 20)
+    {
+        for(y=1; y<9; y++)
+        {
             int x;
             int t = 0;
             p= src + stride*y;
-            for(x=1; x<9; x++){
+            for(x=1; x<9; x++)
+            {
                 p++;
                 *p = FFMIN(*p + 20, 255);
             }
@@ -1478,7 +1503,8 @@ static inline void RENAME(deInterlaceInterpolateLinear)(uint8_t src[], int strid
     int a, b, x;
     src+= 4*stride;
 
-    for(x=0; x<2; x++){
+    for(x=0; x<2; x++)
+    {
         a= *(uint32_t*)&src[stride*0];
         b= *(uint32_t*)&src[stride*2];
         *(uint32_t*)&src[stride*1]= (a|b) - (((a^b)&0xFEFEFEFEUL)>>1);
@@ -1554,10 +1580,10 @@ static inline void RENAME(deInterlaceInterpolateCubic)(uint8_t src[], int stride
 #endif //TEMPLATE_PP_SSE2
 #define DEINT_CUBIC(a,b,c,d,e)  REAL_DEINT_CUBIC(a,b,c,d,e)
 
-DEINT_CUBIC((%0)        , (%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4) , (%%REGd, %1))
-DEINT_CUBIC((%%REGa, %1), (%0, %1, 4) , (%%REGd)       , (%%REGd, %1), (%0, %1, 8))
-DEINT_CUBIC((%0, %1, 4) , (%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8) , (%%REGc))
-DEINT_CUBIC((%%REGd, %1), (%0, %1, 8) , (%%REGd, %1, 4), (%%REGc)    , (%%REGc, %1, 2))
+        DEINT_CUBIC((%0)        , (%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4) , (%%REGd, %1))
+        DEINT_CUBIC((%%REGa, %1), (%0, %1, 4) , (%%REGd)       , (%%REGd, %1), (%0, %1, 8))
+        DEINT_CUBIC((%0, %1, 4) , (%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8) , (%%REGc))
+        DEINT_CUBIC((%%REGd, %1), (%0, %1, 8) , (%%REGd, %1, 4), (%%REGc)    , (%%REGc, %1, 2))
 
         : : "r" (src), "r" ((x86_reg)stride)
         :
@@ -1570,7 +1596,8 @@ DEINT_CUBIC((%%REGd, %1), (%0, %1, 8) , (%%REGd, %1, 4), (%%REGc)    , (%%REGc, 
 #else //TEMPLATE_PP_SSE2 || TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW
     int x;
     src+= stride*3;
-    for(x=0; x<8; x++){
+    for(x=0; x<8; x++)
+    {
         src[stride*3] = av_clip_uint8((-src[0]        + 9*src[stride*2] + 9*src[stride*4] - src[stride*6])>>4);
         src[stride*5] = av_clip_uint8((-src[stride*2] + 9*src[stride*4] + 9*src[stride*6] - src[stride*8])>>4);
         src[stride*7] = av_clip_uint8((-src[stride*4] + 9*src[stride*6] + 9*src[stride*8] - src[stride*10])>>4);
@@ -1629,10 +1656,10 @@ static inline void RENAME(deInterlaceFF)(uint8_t src[], int stride, uint8_t *tmp
 
 #define DEINT_FF(a,b,c,d)  REAL_DEINT_FF(a,b,c,d)
 
-DEINT_FF((%0)        , (%%REGa)       , (%%REGa, %1), (%%REGa, %1, 2))
-DEINT_FF((%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4) , (%%REGd)       )
-DEINT_FF((%0, %1, 4) , (%%REGd)       , (%%REGd, %1), (%%REGd, %1, 2))
-DEINT_FF((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8) , (%%REGd, %1, 4))
+        DEINT_FF((%0)        , (%%REGa)       , (%%REGa, %1), (%%REGa, %1, 2))
+        DEINT_FF((%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4) , (%%REGd)       )
+        DEINT_FF((%0, %1, 4) , (%%REGd)       , (%%REGd, %1), (%%REGd, %1, 2))
+        DEINT_FF((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8) , (%%REGd, %1, 4))
 
         "movq %%mm0, (%2)                       \n\t"
         : : "r" (src), "r" ((x86_reg)stride), "r"(tmp)
@@ -1641,7 +1668,8 @@ DEINT_FF((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8) , (%%REGd, %1, 4))
 #else //TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW
     int x;
     src+= stride*4;
-    for(x=0; x<8; x++){
+    for(x=0; x<8; x++)
+    {
         int t1= tmp[x];
         int t2= src[stride*1];
 
@@ -1714,14 +1742,14 @@ static inline void RENAME(deInterlaceL5)(uint8_t src[], int stride, uint8_t *tmp
 
 #define DEINT_L5(t1,t2,a,b,c)  REAL_DEINT_L5(t1,t2,a,b,c)
 
-DEINT_L5(%%mm0, %%mm1, (%0)           , (%%REGa)       , (%%REGa, %1)   )
-DEINT_L5(%%mm1, %%mm0, (%%REGa)       , (%%REGa, %1)   , (%%REGa, %1, 2))
-DEINT_L5(%%mm0, %%mm1, (%%REGa, %1)   , (%%REGa, %1, 2), (%0, %1, 4)   )
-DEINT_L5(%%mm1, %%mm0, (%%REGa, %1, 2), (%0, %1, 4)    , (%%REGd)       )
-DEINT_L5(%%mm0, %%mm1, (%0, %1, 4)    , (%%REGd)       , (%%REGd, %1)   )
-DEINT_L5(%%mm1, %%mm0, (%%REGd)       , (%%REGd, %1)   , (%%REGd, %1, 2))
-DEINT_L5(%%mm0, %%mm1, (%%REGd, %1)   , (%%REGd, %1, 2), (%0, %1, 8)   )
-DEINT_L5(%%mm1, %%mm0, (%%REGd, %1, 2), (%0, %1, 8)    , (%%REGd, %1, 4))
+        DEINT_L5(%%mm0, %%mm1, (%0)           , (%%REGa)       , (%%REGa, %1)   )
+        DEINT_L5(%%mm1, %%mm0, (%%REGa)       , (%%REGa, %1)   , (%%REGa, %1, 2))
+        DEINT_L5(%%mm0, %%mm1, (%%REGa, %1)   , (%%REGa, %1, 2), (%0, %1, 4)   )
+        DEINT_L5(%%mm1, %%mm0, (%%REGa, %1, 2), (%0, %1, 4)    , (%%REGd)       )
+        DEINT_L5(%%mm0, %%mm1, (%0, %1, 4)    , (%%REGd)       , (%%REGd, %1)   )
+        DEINT_L5(%%mm1, %%mm0, (%%REGd)       , (%%REGd, %1)   , (%%REGd, %1, 2))
+        DEINT_L5(%%mm0, %%mm1, (%%REGd, %1)   , (%%REGd, %1, 2), (%0, %1, 8)   )
+        DEINT_L5(%%mm1, %%mm0, (%%REGd, %1, 2), (%0, %1, 8)    , (%%REGd, %1, 4))
 
         "movq %%mm0, (%2)                       \n\t"
         "movq %%mm1, (%3)                       \n\t"
@@ -1731,7 +1759,8 @@ DEINT_L5(%%mm1, %%mm0, (%%REGd, %1, 2), (%0, %1, 8)    , (%%REGd, %1, 4))
 #else //(TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW) && HAVE_6REGS
     int x;
     src+= stride*4;
-    for(x=0; x<8; x++){
+    for(x=0; x<8; x++)
+    {
         int t1= tmp[x];
         int t2= tmp2[x];
         int t3= src[0];
@@ -1820,7 +1849,8 @@ static inline void RENAME(deInterlaceBlendLinear)(uint8_t src[], int stride, uin
     int a, b, c, x;
     src+= 4*stride;
 
-    for(x=0; x<2; x++){
+    for(x=0; x<2; x++)
+    {
         a= *(uint32_t*)&tmp[stride*0];
         b= *(uint32_t*)&src[stride*0];
         c= *(uint32_t*)&src[stride*1];
@@ -1954,10 +1984,10 @@ static inline void RENAME(deInterlaceMedian)(uint8_t src[], int stride)
         "movq %%mm0, " #b "                     \n\t"
 #define MEDIAN(a,b,c)  REAL_MEDIAN(a,b,c)
 
-MEDIAN((%0)        , (%%REGa)       , (%%REGa, %1))
-MEDIAN((%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4))
-MEDIAN((%0, %1, 4) , (%%REGd)       , (%%REGd, %1))
-MEDIAN((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8))
+        MEDIAN((%0)        , (%%REGa)       , (%%REGa, %1))
+        MEDIAN((%%REGa, %1), (%%REGa, %1, 2), (%0, %1, 4))
+        MEDIAN((%0, %1, 4) , (%%REGd)       , (%%REGd, %1))
+        MEDIAN((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8))
 
         : : "r" (src), "r" ((x86_reg)stride)
         : "%"REG_a, "%"REG_d
@@ -1967,9 +1997,11 @@ MEDIAN((%%REGd, %1), (%%REGd, %1, 2), (%0, %1, 8))
     int x, y;
     src+= 4*stride;
     // FIXME - there should be a way to do a few columns in parallel like w/mmx
-    for(x=0; x<8; x++){
+    for(x=0; x<8; x++)
+    {
         uint8_t *colsrc = src;
-        for (y=0; y<4; y++){
+        for (y=0; y<4; y++)
+        {
             int a, b, c, d, e, f;
             a = colsrc[0       ];
             b = colsrc[stride  ];
@@ -2155,7 +2187,7 @@ static inline void RENAME(transpose2)(uint8_t *dst, int dstStride, const uint8_t
 
 #if !TEMPLATE_PP_ALTIVEC
 static inline void RENAME(tempNoiseReducer)(uint8_t *src, int stride,
-                                    uint8_t *tempBlurred, uint32_t *tempBlurredPast, const int *maxNoise)
+        uint8_t *tempBlurred, uint32_t *tempBlurredPast, const int *maxNoise)
 {
     // to save a register (FIXME do this outside of the loops)
     tempBlurredPast[127]= maxNoise[0];
@@ -2239,14 +2271,14 @@ static inline void RENAME(tempNoiseReducer)(uint8_t *src, int stride,
 
 #define L2_DIFF_CORE(a, b)  REAL_L2_DIFF_CORE(a, b)
 
-L2_DIFF_CORE((%0)          , (%1))
-L2_DIFF_CORE((%0, %2)      , (%1, %2))
-L2_DIFF_CORE((%0, %2, 2)   , (%1, %2, 2))
-L2_DIFF_CORE((%0, %%REGa)  , (%1, %%REGa))
-L2_DIFF_CORE((%0, %2, 4)   , (%1, %2, 4))
-L2_DIFF_CORE((%0, %%REGd)  , (%1, %%REGd))
-L2_DIFF_CORE((%0, %%REGa,2), (%1, %%REGa,2))
-L2_DIFF_CORE((%0, %%REGc)  , (%1, %%REGc))
+        L2_DIFF_CORE((%0)          , (%1))
+        L2_DIFF_CORE((%0, %2)      , (%1, %2))
+        L2_DIFF_CORE((%0, %2, 2)   , (%1, %2, 2))
+        L2_DIFF_CORE((%0, %%REGa)  , (%1, %%REGa))
+        L2_DIFF_CORE((%0, %2, 4)   , (%1, %2, 4))
+        L2_DIFF_CORE((%0, %%REGd)  , (%1, %%REGd))
+        L2_DIFF_CORE((%0, %%REGa,2), (%1, %%REGa,2))
+        L2_DIFF_CORE((%0, %%REGc)  , (%1, %%REGc))
 
 #endif //L1_DIFF
 
@@ -2450,92 +2482,111 @@ L2_DIFF_CORE((%0, %%REGc)  , (%1, %%REGc))
         "4:                                     \n\t"
 
         :: "r" (src), "r" (tempBlurred), "r"((x86_reg)stride), "m" (tempBlurredPast)
-          NAMED_CONSTRAINTS_ADD(b80)
+        NAMED_CONSTRAINTS_ADD(b80)
         : "%"REG_a, "%"REG_d, "%"REG_c, "memory"
     );
 #else //(TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW) && HAVE_6REGS
-{
-    int y;
-    int d=0;
+    {
+        int y;
+        int d=0;
 //    int sysd=0;
-    int i;
+        int i;
 
-    for(y=0; y<8; y++){
-        int x;
-        for(x=0; x<8; x++){
-            int ref= tempBlurred[ x + y*stride ];
-            int cur= src[ x + y*stride ];
-            int d1=ref - cur;
+        for(y=0; y<8; y++)
+        {
+            int x;
+            for(x=0; x<8; x++)
+            {
+                int ref= tempBlurred[ x + y*stride ];
+                int cur= src[ x + y*stride ];
+                int d1=ref - cur;
 //            if(x==0 || x==7) d1+= d1>>1;
 //            if(y==0 || y==7) d1+= d1>>1;
 //            d+= FFABS(d1);
-            d+= d1*d1;
+                d+= d1*d1;
 //            sysd+= d1;
+            }
         }
-    }
-    i=d;
-    d=  (
-        4*d
-        +(*(tempBlurredPast-256))
-        +(*(tempBlurredPast-1))+ (*(tempBlurredPast+1))
-        +(*(tempBlurredPast+256))
-        +4)>>3;
-    *tempBlurredPast=i;
+        i=d;
+        d=  (
+                4*d
+                +(*(tempBlurredPast-256))
+                +(*(tempBlurredPast-1))+ (*(tempBlurredPast+1))
+                +(*(tempBlurredPast+256))
+                +4)>>3;
+        *tempBlurredPast=i;
 //    ((*tempBlurredPast)*3 + d + 2)>>2;
 
-/*
-Switch between
- 1  0  0  0  0  0  0  (0)
-64 32 16  8  4  2  1  (1)
-64 48 36 27 20 15 11 (33) (approx)
-64 56 49 43 37 33 29 (200) (approx)
-*/
-    if(d > maxNoise[1]){
-        if(d < maxNoise[2]){
-            for(y=0; y<8; y++){
-                int x;
-                for(x=0; x<8; x++){
-                    int ref= tempBlurred[ x + y*stride ];
-                    int cur= src[ x + y*stride ];
-                    tempBlurred[ x + y*stride ]=
-                    src[ x + y*stride ]=
-                        (ref + cur + 1)>>1;
+        /*
+        Switch between
+         1  0  0  0  0  0  0  (0)
+        64 32 16  8  4  2  1  (1)
+        64 48 36 27 20 15 11 (33) (approx)
+        64 56 49 43 37 33 29 (200) (approx)
+        */
+        if(d > maxNoise[1])
+        {
+            if(d < maxNoise[2])
+            {
+                for(y=0; y<8; y++)
+                {
+                    int x;
+                    for(x=0; x<8; x++)
+                    {
+                        int ref= tempBlurred[ x + y*stride ];
+                        int cur= src[ x + y*stride ];
+                        tempBlurred[ x + y*stride ]=
+                            src[ x + y*stride ]=
+                                (ref + cur + 1)>>1;
+                    }
                 }
             }
-        }else{
-            for(y=0; y<8; y++){
-                int x;
-                for(x=0; x<8; x++){
-                    tempBlurred[ x + y*stride ]= src[ x + y*stride ];
+            else
+            {
+                for(y=0; y<8; y++)
+                {
+                    int x;
+                    for(x=0; x<8; x++)
+                    {
+                        tempBlurred[ x + y*stride ]= src[ x + y*stride ];
+                    }
                 }
             }
         }
-    }else{
-        if(d < maxNoise[0]){
-            for(y=0; y<8; y++){
-                int x;
-                for(x=0; x<8; x++){
-                    int ref= tempBlurred[ x + y*stride ];
-                    int cur= src[ x + y*stride ];
-                    tempBlurred[ x + y*stride ]=
-                    src[ x + y*stride ]=
-                        (ref*7 + cur + 4)>>3;
+        else
+        {
+            if(d < maxNoise[0])
+            {
+                for(y=0; y<8; y++)
+                {
+                    int x;
+                    for(x=0; x<8; x++)
+                    {
+                        int ref= tempBlurred[ x + y*stride ];
+                        int cur= src[ x + y*stride ];
+                        tempBlurred[ x + y*stride ]=
+                            src[ x + y*stride ]=
+                                (ref*7 + cur + 4)>>3;
+                    }
                 }
             }
-        }else{
-            for(y=0; y<8; y++){
-                int x;
-                for(x=0; x<8; x++){
-                    int ref= tempBlurred[ x + y*stride ];
-                    int cur= src[ x + y*stride ];
-                    tempBlurred[ x + y*stride ]=
-                    src[ x + y*stride ]=
-                        (ref*3 + cur + 2)>>2;
+            else
+            {
+                for(y=0; y<8; y++)
+                {
+                    int x;
+                    for(x=0; x<8; x++)
+                    {
+                        int ref= tempBlurred[ x + y*stride ];
+                        int cur= src[ x + y*stride ];
+                        tempBlurred[ x + y*stride ]=
+                            src[ x + y*stride ]=
+                                (ref*3 + cur + 2)>>2;
+                    }
                 }
             }
         }
     }
-}
 #endif //(TEMPLATE_PP_MMXEXT || TEMPLATE_PP_3DNOW) && HAVE_6REGS
 }
 #endif //TEMPLATE_PP_ALTIVEC
@@ -2544,7 +2595,8 @@ Switch between
 /**
  * accurate deblock filter
  */
-static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int stride, const PPContext *c, int mode){
+static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int stride, const PPContext *c, int mode)
+{
     int64_t dc_mask, eq_mask, both_masks;
     int64_t sums[10*8*2];
     src+= step*3; // src points to begin of the 8x8 Block
@@ -2553,7 +2605,7 @@ static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int st
         "movq %0, %%mm7                         \n\t"
         "movq %1, %%mm6                         \n\t"
         : : "m" (c->mmxDcOffset[c->nonBQP]),  "m" (c->mmxDcThreshold[c->nonBQP])
-        );
+    );
 
     __asm__ volatile(
         "lea (%2, %3), %%"REG_a"                \n\t"
@@ -2656,7 +2708,8 @@ static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int st
 
     both_masks = dc_mask & eq_mask;
 
-    if(both_masks){
+    if(both_masks)
+    {
         x86_reg offset= -8*step;
         int64_t *temp_sums= sums;
 
@@ -2795,7 +2848,7 @@ static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int st
 
             : "+&r"(src)
             : "r" ((x86_reg)step), "m" (c->pQPb), "r"(sums), "g"(src)
-              NAMED_CONSTRAINTS_ADD(w04)
+            NAMED_CONSTRAINTS_ADD(w04)
         );
 
         src+= step; // src points to begin of the 8x8 Block
@@ -2834,10 +2887,12 @@ static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int st
             : "+r"(offset), "+r"(temp_sums)
             : "r" ((x86_reg)step), "r"(src - offset), "m"(both_masks)
         );
-    }else
+    }
+    else
         src+= step; // src points to begin of the 8x8 Block
 
-    if(eq_mask != -1LL){
+    if(eq_mask != -1LL)
+    {
         uint8_t *temp_src= src;
         DECLARE_ALIGNED(8, uint64_t, tmp)[4]; // make space for 4 8-byte vars
         __asm__ volatile(
@@ -3067,16 +3122,16 @@ static av_always_inline void RENAME(do_a_deblock)(uint8_t *src, int step, int st
 
             : "+r" (temp_src)
             : "r" ((x86_reg)step), "m" (c->pQPb), "m"(eq_mask), "r"(tmp)
-              NAMED_CONSTRAINTS_ADD(w05,w20)
+            NAMED_CONSTRAINTS_ADD(w05,w20)
             : "%"REG_a
         );
     }
-/*if(step==16){
-    STOP_TIMER("step16")
-}else{
-    STOP_TIMER("stepX")
-}
-    } */
+    /*if(step==16){
+        STOP_TIMER("step16")
+    }else{
+        STOP_TIMER("stepX")
+    }
+        } */
 }
 #endif //TEMPLATE_PP_MMX
 
@@ -3096,14 +3151,15 @@ static inline void RENAME(blockCopy)(uint8_t dst[], int dstStride, const uint8_t
 #if !TEMPLATE_PP_MMX || !HAVE_6REGS
     int i;
 #endif
-    if(levelFix){
+    if(levelFix)
+    {
 #if TEMPLATE_PP_MMX && HAVE_6REGS
-    __asm__ volatile(
-        "movq (%%"REG_a"), %%mm2        \n\t" // packedYOffset
-        "movq 8(%%"REG_a"), %%mm3       \n\t" // packedYScale
-        "lea (%2,%4), %%"REG_a"         \n\t"
-        "lea (%3,%5), %%"REG_d"         \n\t"
-        "pxor %%mm4, %%mm4              \n\t"
+        __asm__ volatile(
+            "movq (%%"REG_a"), %%mm2        \n\t" // packedYOffset
+            "movq 8(%%"REG_a"), %%mm3       \n\t" // packedYScale
+            "lea (%2,%4), %%"REG_a"         \n\t"
+            "lea (%3,%5), %%"REG_d"         \n\t"
+            "pxor %%mm4, %%mm4              \n\t"
 #if TEMPLATE_PP_MMXEXT
 #define REAL_SCALED_CPY(src1, src2, dst1, dst2)                                                \
         "movq " #src1 ", %%mm0          \n\t"\
@@ -3158,32 +3214,34 @@ static inline void RENAME(blockCopy)(uint8_t dst[], int dstStride, const uint8_t
 #define SCALED_CPY(src1, src2, dst1, dst2)\
    REAL_SCALED_CPY(src1, src2, dst1, dst2)
 
-SCALED_CPY((%2)       , (%2, %4)      , (%3)       , (%3, %5))
-SCALED_CPY((%2, %4, 2), (%%REGa, %4, 2), (%3, %5, 2), (%%REGd, %5, 2))
-SCALED_CPY((%2, %4, 4), (%%REGa, %4, 4), (%3, %5, 4), (%%REGd, %5, 4))
-        "lea (%%"REG_a",%4,4), %%"REG_a"        \n\t"
-        "lea (%%"REG_d",%5,4), %%"REG_d"        \n\t"
-SCALED_CPY((%%REGa, %4), (%%REGa, %4, 2), (%%REGd, %5), (%%REGd, %5, 2))
+            SCALED_CPY((%2)       , (%2, %4)      , (%3)       , (%3, %5))
+            SCALED_CPY((%2, %4, 2), (%%REGa, %4, 2), (%3, %5, 2), (%%REGd, %5, 2))
+            SCALED_CPY((%2, %4, 4), (%%REGa, %4, 4), (%3, %5, 4), (%%REGd, %5, 4))
+            "lea (%%"REG_a",%4,4), %%"REG_a"        \n\t"
+            "lea (%%"REG_d",%5,4), %%"REG_d"        \n\t"
+            SCALED_CPY((%%REGa, %4), (%%REGa, %4, 2), (%%REGd, %5), (%%REGd, %5, 2))
 
 
-        : "=&a" (packedOffsetAndScale)
-        : "0" (packedOffsetAndScale),
-        "r"(src),
-        "r"(dst),
-        "r" ((x86_reg)srcStride),
-        "r" ((x86_reg)dstStride)
-        : "%"REG_d
-    );
+            : "=&a" (packedOffsetAndScale)
+            : "0" (packedOffsetAndScale),
+            "r"(src),
+            "r"(dst),
+            "r" ((x86_reg)srcStride),
+            "r" ((x86_reg)dstStride)
+            : "%"REG_d
+        );
 #else //TEMPLATE_PP_MMX && HAVE_6REGS
-    for(i=0; i<8; i++)
-        memcpy( &(dst[dstStride*i]),
-                &(src[srcStride*i]), BLOCK_SIZE);
+        for(i=0; i<8; i++)
+            memcpy( &(dst[dstStride*i]),
+                    &(src[srcStride*i]), BLOCK_SIZE);
 #endif //TEMPLATE_PP_MMX && HAVE_6REGS
-    }else{
+    }
+    else
+    {
 #if TEMPLATE_PP_MMX && HAVE_6REGS
-    __asm__ volatile(
-        "lea (%0,%2), %%"REG_a"                 \n\t"
-        "lea (%1,%3), %%"REG_d"                 \n\t"
+        __asm__ volatile(
+            "lea (%0,%2), %%"REG_a"                 \n\t"
+            "lea (%1,%3), %%"REG_d"                 \n\t"
 
 #define REAL_SIMPLE_CPY(src1, src2, dst1, dst2)                              \
         "movq " #src1 ", %%mm0          \n\t"\
@@ -3194,23 +3252,23 @@ SCALED_CPY((%%REGa, %4), (%%REGa, %4, 2), (%%REGd, %5), (%%REGd, %5, 2))
 #define SIMPLE_CPY(src1, src2, dst1, dst2)\
    REAL_SIMPLE_CPY(src1, src2, dst1, dst2)
 
-SIMPLE_CPY((%0)       , (%0, %2)       , (%1)       , (%1, %3))
-SIMPLE_CPY((%0, %2, 2), (%%REGa, %2, 2), (%1, %3, 2), (%%REGd, %3, 2))
-SIMPLE_CPY((%0, %2, 4), (%%REGa, %2, 4), (%1, %3, 4), (%%REGd, %3, 4))
-        "lea (%%"REG_a",%2,4), %%"REG_a"        \n\t"
-        "lea (%%"REG_d",%3,4), %%"REG_d"        \n\t"
-SIMPLE_CPY((%%REGa, %2), (%%REGa, %2, 2), (%%REGd, %3), (%%REGd, %3, 2))
+            SIMPLE_CPY((%0)       , (%0, %2)       , (%1)       , (%1, %3))
+            SIMPLE_CPY((%0, %2, 2), (%%REGa, %2, 2), (%1, %3, 2), (%%REGd, %3, 2))
+            SIMPLE_CPY((%0, %2, 4), (%%REGa, %2, 4), (%1, %3, 4), (%%REGd, %3, 4))
+            "lea (%%"REG_a",%2,4), %%"REG_a"        \n\t"
+            "lea (%%"REG_d",%3,4), %%"REG_d"        \n\t"
+            SIMPLE_CPY((%%REGa, %2), (%%REGa, %2, 2), (%%REGd, %3), (%%REGd, %3, 2))
 
-        : : "r" (src),
-        "r" (dst),
-        "r" ((x86_reg)srcStride),
-        "r" ((x86_reg)dstStride)
-        : "%"REG_a, "%"REG_d
-    );
+            : : "r" (src),
+            "r" (dst),
+            "r" ((x86_reg)srcStride),
+            "r" ((x86_reg)dstStride)
+            : "%"REG_a, "%"REG_d
+        );
 #else //TEMPLATE_PP_MMX && HAVE_6REGS
-    for(i=0; i<8; i++)
-        memcpy( &(dst[dstStride*i]),
-                &(src[srcStride*i]), BLOCK_SIZE);
+        for(i=0; i<8; i++)
+            memcpy( &(dst[dstStride*i]),
+                    &(src[srcStride*i]), BLOCK_SIZE);
 #endif //TEMPLATE_PP_MMX && HAVE_6REGS
     }
 }
@@ -3235,7 +3293,8 @@ static inline void RENAME(duplicate)(uint8_t src[], int stride)
 #else
     int i;
     uint8_t *p=src;
-    for(i=0; i<5; i++){
+    for(i=0; i<5; i++)
+    {
         p-= stride;
         memcpy(p, src, 8);
     }
@@ -3246,29 +3305,29 @@ static inline void RENAME(duplicate)(uint8_t src[], int stride)
 static inline void RENAME(prefetchnta)(const void *p)
 {
     __asm__ volatile(   "prefetchnta (%0)\n\t"
-        : : "r" (p)
-    );
+                        : : "r" (p)
+                    );
 }
 
 static inline void RENAME(prefetcht0)(const void *p)
 {
     __asm__ volatile(   "prefetcht0 (%0)\n\t"
-        : : "r" (p)
-    );
+                        : : "r" (p)
+                    );
 }
 
 static inline void RENAME(prefetcht1)(const void *p)
 {
     __asm__ volatile(   "prefetcht1 (%0)\n\t"
-        : : "r" (p)
-    );
+                        : : "r" (p)
+                    );
 }
 
 static inline void RENAME(prefetcht2)(const void *p)
 {
     __asm__ volatile(   "prefetcht2 (%0)\n\t"
-        : : "r" (p)
-    );
+                        : : "r" (p)
+                    );
 }
 #elif !ARCH_X86 && AV_GCC_VERSION_AT_LEAST(3,2)
 static inline void RENAME(prefetchnta)(const void *p)
@@ -3335,14 +3394,17 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
     uint8_t * const tempDst= (dstStride > 0 ? c.tempDst : c.tempDst - 23*dstStride) + 32;
     //const int mbWidth= isColor ? (width+7)>>3 : (width+15)>>4;
 
-    if (mode & VISUALIZE){
-        if(!(mode & (V_A_DEBLOCK | H_A_DEBLOCK)) || TEMPLATE_PP_MMX) {
+    if (mode & VISUALIZE)
+    {
+        if(!(mode & (V_A_DEBLOCK | H_A_DEBLOCK)) || TEMPLATE_PP_MMX)
+        {
             av_log(c2, AV_LOG_WARNING, "Visualization is currently only supported with the accurate deblock filter without SIMD\n");
         }
     }
 
 #if TEMPLATE_PP_MMX
-    for(i=0; i<57; i++){
+    for(i=0; i<57; i++)
+    {
         int offset= ((i*c.ppMode.baseDcDiff)>>8) + 1;
         int threshold= offset*2 + 1;
         c.mmxDcOffset[i]= 0x7F - offset;
@@ -3354,12 +3416,12 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
 
     if(mode & CUBIC_IPOL_DEINT_FILTER) copyAhead=16;
     else if(   (mode & LINEAR_BLEND_DEINT_FILTER)
-            || (mode & FFMPEG_DEINT_FILTER)
-            || (mode & LOWPASS5_DEINT_FILTER)) copyAhead=14;
+               || (mode & FFMPEG_DEINT_FILTER)
+               || (mode & LOWPASS5_DEINT_FILTER)) copyAhead=14;
     else if(   (mode & V_DEBLOCK)
-            || (mode & LINEAR_IPOL_DEINT_FILTER)
-            || (mode & MEDIAN_DEINT_FILTER)
-            || (mode & V_A_DEBLOCK)) copyAhead=13;
+               || (mode & LINEAR_IPOL_DEINT_FILTER)
+               || (mode & MEDIAN_DEINT_FILTER)
+               || (mode & V_A_DEBLOCK)) copyAhead=13;
     else if(mode & V_X1_FILTER) copyAhead=11;
 //    else if(mode & V_RK1_FILTER) copyAhead=10;
     else if(mode & DERING) copyAhead=9;
@@ -3367,7 +3429,8 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
 
     copyAhead-= 8;
 
-    if(!isColor){
+    if(!isColor)
+    {
         uint64_t sum= 0;
         int i;
         uint64_t maxClipped;
@@ -3378,7 +3441,8 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
         // first frame is fscked so we ignore it
         if(c.frameNum == 1) yHistogram[0]= width*(uint64_t)height/64*15/256;
 
-        for(i=0; i<256; i++){
+        for(i=0; i<256; i++)
+        {
             sum+= yHistogram[i];
         }
 
@@ -3386,18 +3450,23 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
         maxClipped= av_rescale(sum, c.ppMode.maxClippedThreshold.num, c.ppMode.maxClippedThreshold.den);
 
         clipped= sum;
-        for(black=255; black>0; black--){
+        for(black=255; black>0; black--)
+        {
             if(clipped < maxClipped) break;
             clipped-= yHistogram[black];
         }
 
         clipped= sum;
-        for(white=0; white<256; white++){
+        for(white=0; white<256; white++)
+        {
             if(clipped < maxClipped) break;
             clipped-= yHistogram[white];
         }
 
-        scale = (AVRational){c.ppMode.maxAllowedY - c.ppMode.minAllowedY, white - black};
+        scale = (AVRational)
+        {
+            c.ppMode.maxAllowedY - c.ppMode.minAllowedY, white - black
+        };
 
 #if TEMPLATE_PP_MMXEXT
         c.packedYScale = (uint16_t)av_rescale(scale.num, 256, scale.den);
@@ -3415,7 +3484,9 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
 
         if(mode & LEVEL_FIX)        QPCorrecture= (int)av_rescale(scale.num, 256*256, scale.den);
         else                        QPCorrecture= 256*256;
-    }else{
+    }
+    else
+    {
         c.packedYScale= 0x0100010001000100LL;
         c.packedYOffset= 0;
         QPCorrecture= 256*256;
@@ -3430,7 +3501,8 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
         // From this point on it is guaranteed that we can read and write 16 lines downward
         // finish 1 block before the next otherwise we might have a problem
         // with the L1 Cache of the P4 ... or only a few blocks at a time or something
-        for(x=0; x<width; x+=BLOCK_SIZE){
+        for(x=0; x<width; x+=BLOCK_SIZE)
+        {
             RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead)*srcStride + 32);
             RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead+1)*srcStride + 32);
             RENAME(prefetcht0)(dstBlock + (((x>>2)&6) + copyAhead)*dstStride + 32);
@@ -3453,23 +3525,26 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
                 RENAME(deInterlaceFF)(dstBlock, dstStride, c.deintTemp + x);
             else if(mode & LOWPASS5_DEINT_FILTER)
                 RENAME(deInterlaceL5)(dstBlock, dstStride, c.deintTemp + x, c.deintTemp + width + x);
-/*          else if(mode & CUBIC_BLEND_DEINT_FILTER)
-                RENAME(deInterlaceBlendCubic)(dstBlock, dstStride);
-*/
+            /*          else if(mode & CUBIC_BLEND_DEINT_FILTER)
+                            RENAME(deInterlaceBlendCubic)(dstBlock, dstStride);
+            */
             dstBlock+=8;
             srcBlock+=8;
         }
         if(width==FFABS(dstStride))
             linecpy(dst, tempDst + 9*dstStride, copyAhead, dstStride);
-        else{
+        else
+        {
             int i;
-            for(i=0; i<copyAhead; i++){
+            for(i=0; i<copyAhead; i++)
+            {
                 memcpy(dst + i*dstStride, tempDst + (9+i)*dstStride, width);
             }
         }
     }
 
-    for(y=0; y<height; y+=BLOCK_SIZE){
+    for(y=0; y<height; y+=BLOCK_SIZE)
+    {
         //1% speedup if these are here instead of the inner loop
         const uint8_t *srcBlock= &(src[y*srcStride]);
         uint8_t *dstBlock= &(dst[y*dstStride]);
@@ -3482,7 +3557,8 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
         int QP=0, nonBQP=0;
         /* can we mess with a 8x16 block from srcBlock/dstBlock downwards and 1 line upwards
            if not than use a temporary buffer */
-        if(y+15 >= height){
+        if(y+15 >= height)
+        {
             int i;
             /* copy from line (copyAhead) to (copyAhead+7) of src, these will be copied with
                blockcopy to dst later */
@@ -3491,14 +3567,14 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
 
             /* duplicate last line of src to fill the void up to line (copyAhead+7) */
             for(i=FFMAX(height-y, 8); i<copyAhead+8; i++)
-                    memcpy(tempSrc + srcStride*i, src + srcStride*(height-1), FFABS(srcStride));
+                memcpy(tempSrc + srcStride*i, src + srcStride*(height-1), FFABS(srcStride));
 
             /* copy up to (copyAhead+1) lines of dst (line -1 to (copyAhead-1))*/
             linecpy(tempDst, dstBlock - dstStride, FFMIN(height-y+1, copyAhead+1), dstStride);
 
             /* duplicate last line of dst to fill the void up to line (copyAhead) */
             for(i=height-y+1; i<=copyAhead; i++)
-                    memcpy(tempDst + dstStride*i, dst + dstStride*(height-1), FFABS(dstStride));
+                memcpy(tempDst + dstStride*i, dst + dstStride*(height-1), FFABS(dstStride));
 
             dstBlock= tempDst + dstStride;
             srcBlock= tempSrc;
@@ -3507,198 +3583,223 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
         // From this point on it is guaranteed that we can read and write 16 lines downward
         // finish 1 block before the next otherwise we might have a problem
         // with the L1 Cache of the P4 ... or only a few blocks at a time or something
-        for(x=0; x<width; ){
+        for(x=0; x<width; )
+        {
             int startx = x;
             int endx = FFMIN(width, x+32);
             uint8_t *dstBlockStart = dstBlock;
             const uint8_t *srcBlockStart = srcBlock;
             int qp_index = 0;
-            for(qp_index=0; qp_index < (endx-startx)/BLOCK_SIZE; qp_index++){
+            for(qp_index=0; qp_index < (endx-startx)/BLOCK_SIZE; qp_index++)
+            {
                 QP = QPptr[(x+qp_index*BLOCK_SIZE)>>qpHShift];
                 nonBQP = nonBQPptr[(x+qp_index*BLOCK_SIZE)>>qpHShift];
-            if(!isColor){
-                QP= (QP* QPCorrecture + 256*128)>>16;
-                nonBQP= (nonBQP* QPCorrecture + 256*128)>>16;
-                yHistogram[(srcBlock+qp_index*8)[srcStride*12 + 4]]++;
-            }
-            c.QP_block[qp_index] = QP;
-            c.nonBQP_block[qp_index] = nonBQP;
-#if TEMPLATE_PP_MMX
-            __asm__ volatile(
-                "movd %1, %%mm7         \n\t"
-                "packuswb %%mm7, %%mm7  \n\t" // 0, 0, 0, QP, 0, 0, 0, QP
-                "packuswb %%mm7, %%mm7  \n\t" // 0,QP, 0, QP, 0,QP, 0, QP
-                "packuswb %%mm7, %%mm7  \n\t" // QP,..., QP
-                "movq %%mm7, %0         \n\t"
-                : "=m" (c.pQPb_block[qp_index])
-                : "r" (QP)
-            );
-#endif
-            }
-          for(; x < endx; x+=BLOCK_SIZE){
-            RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead)*srcStride + 32);
-            RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead+1)*srcStride + 32);
-            RENAME(prefetcht0)(dstBlock + (((x>>2)&6) + copyAhead)*dstStride + 32);
-            RENAME(prefetcht0)(dstBlock + (((x>>2)&6) + copyAhead+1)*dstStride + 32);
-
-            RENAME(blockCopy)(dstBlock + dstStride*copyAhead, dstStride,
-                              srcBlock + srcStride*copyAhead, srcStride, mode & LEVEL_FIX, &c.packedYOffset);
-
-            if(mode & LINEAR_IPOL_DEINT_FILTER)
-                RENAME(deInterlaceInterpolateLinear)(dstBlock, dstStride);
-            else if(mode & LINEAR_BLEND_DEINT_FILTER)
-                RENAME(deInterlaceBlendLinear)(dstBlock, dstStride, c.deintTemp + x);
-            else if(mode & MEDIAN_DEINT_FILTER)
-                RENAME(deInterlaceMedian)(dstBlock, dstStride);
-            else if(mode & CUBIC_IPOL_DEINT_FILTER)
-                RENAME(deInterlaceInterpolateCubic)(dstBlock, dstStride);
-            else if(mode & FFMPEG_DEINT_FILTER)
-                RENAME(deInterlaceFF)(dstBlock, dstStride, c.deintTemp + x);
-            else if(mode & LOWPASS5_DEINT_FILTER)
-                RENAME(deInterlaceL5)(dstBlock, dstStride, c.deintTemp + x, c.deintTemp + width + x);
-/*          else if(mode & CUBIC_BLEND_DEINT_FILTER)
-                RENAME(deInterlaceBlendCubic)(dstBlock, dstStride);
-*/
-            dstBlock+=8;
-            srcBlock+=8;
-          }
-
-          dstBlock = dstBlockStart;
-          srcBlock = srcBlockStart;
-
-          for(x = startx, qp_index = 0; x < endx; x+=BLOCK_SIZE, qp_index++){
-            const int stride= dstStride;
-            //temporary while changing QP stuff to make things continue to work
-            //eventually QP,nonBQP,etc will be arrays and this will be unnecessary
-            c.QP = c.QP_block[qp_index];
-            c.nonBQP = c.nonBQP_block[qp_index];
-            c.pQPb = c.pQPb_block[qp_index];
-            c.pQPb2 = c.pQPb2_block[qp_index];
-
-            /* only deblock if we have 2 blocks */
-            if(y + 8 < height){
-                if(mode & V_X1_FILTER)
-                    RENAME(vertX1Filter)(dstBlock, stride, &c);
-                else if(mode & V_DEBLOCK){
-                    const int t= RENAME(vertClassify)(dstBlock, stride, &c);
-
-                    if(t==1)
-                        RENAME(doVertLowPass)(dstBlock, stride, &c);
-                    else if(t==2)
-                        RENAME(doVertDefFilter)(dstBlock, stride, &c);
-                }else if(mode & V_A_DEBLOCK){
-                    RENAME(do_a_deblock)(dstBlock, stride, 1, &c, mode);
-                }
-            }
-
-            dstBlock+=8;
-            srcBlock+=8;
-          }
-
-          dstBlock = dstBlockStart;
-          srcBlock = srcBlockStart;
-
-          for(x = startx, qp_index=0; x < endx; x+=BLOCK_SIZE, qp_index++){
-            const int stride= dstStride;
-            av_unused uint8_t *tmpXchg;
-            c.QP = c.QP_block[qp_index];
-            c.nonBQP = c.nonBQP_block[qp_index];
-            c.pQPb = c.pQPb_block[qp_index];
-            c.pQPb2 = c.pQPb2_block[qp_index];
-#if TEMPLATE_PP_MMX
-            RENAME(transpose1)(tempBlock1, tempBlock2, dstBlock, dstStride);
-#endif
-            /* check if we have a previous block to deblock it with dstBlock */
-            if(x - 8 >= 0){
-#if TEMPLATE_PP_MMX
-                if(mode & H_X1_FILTER)
-                        RENAME(vertX1Filter)(tempBlock1, 16, &c);
-                else if(mode & H_DEBLOCK){
-                    const int t= RENAME(vertClassify)(tempBlock1, 16, &c);
-                    if(t==1)
-                        RENAME(doVertLowPass)(tempBlock1, 16, &c);
-                    else if(t==2)
-                        RENAME(doVertDefFilter)(tempBlock1, 16, &c);
-                }else if(mode & H_A_DEBLOCK){
-                        RENAME(do_a_deblock)(tempBlock1, 16, 1, &c, mode);
-                }
-
-                RENAME(transpose2)(dstBlock-4, dstStride, tempBlock1 + 4*16);
-
-#else
-                if(mode & H_X1_FILTER)
-                    horizX1Filter(dstBlock-4, stride, c.QP);
-                else if(mode & H_DEBLOCK){
-#if TEMPLATE_PP_ALTIVEC
-                    DECLARE_ALIGNED(16, unsigned char, tempBlock)[272];
-                    int t;
-                    transpose_16x8_char_toPackedAlign_altivec(tempBlock, dstBlock - (4 + 1), stride);
-
-                    t = vertClassify_altivec(tempBlock-48, 16, &c);
-                    if(t==1) {
-                        doVertLowPass_altivec(tempBlock-48, 16, &c);
-                        transpose_8x16_char_fromPackedAlign_altivec(dstBlock - (4 + 1), tempBlock, stride);
-                    }
-                    else if(t==2) {
-                        doVertDefFilter_altivec(tempBlock-48, 16, &c);
-                        transpose_8x16_char_fromPackedAlign_altivec(dstBlock - (4 + 1), tempBlock, stride);
-                    }
-#else
-                    const int t= RENAME(horizClassify)(dstBlock-4, stride, &c);
-
-                    if(t==1)
-                        RENAME(doHorizLowPass)(dstBlock-4, stride, &c);
-                    else if(t==2)
-                        RENAME(doHorizDefFilter)(dstBlock-4, stride, &c);
-#endif
-                }else if(mode & H_A_DEBLOCK){
-                    RENAME(do_a_deblock)(dstBlock-8, 1, stride, &c, mode);
-                }
-#endif //TEMPLATE_PP_MMX
-                if(mode & DERING){
-                //FIXME filter first line
-                    if(y>0) RENAME(dering)(dstBlock - stride - 8, stride, &c);
-                }
-
-                if(mode & TEMP_NOISE_FILTER)
+                if(!isColor)
                 {
-                    RENAME(tempNoiseReducer)(dstBlock-8, stride,
-                            c.tempBlurred[isColor] + y*dstStride + x,
-                            c.tempBlurredPast[isColor] + (y>>3)*256 + (x>>3) + 256,
-                            c.ppMode.maxTmpNoise);
+                    QP= (QP* QPCorrecture + 256*128)>>16;
+                    nonBQP= (nonBQP* QPCorrecture + 256*128)>>16;
+                    yHistogram[(srcBlock+qp_index*8)[srcStride*12 + 4]]++;
                 }
+                c.QP_block[qp_index] = QP;
+                c.nonBQP_block[qp_index] = nonBQP;
+#if TEMPLATE_PP_MMX
+                __asm__ volatile(
+                    "movd %1, %%mm7         \n\t"
+                    "packuswb %%mm7, %%mm7  \n\t" // 0, 0, 0, QP, 0, 0, 0, QP
+                    "packuswb %%mm7, %%mm7  \n\t" // 0,QP, 0, QP, 0,QP, 0, QP
+                    "packuswb %%mm7, %%mm7  \n\t" // QP,..., QP
+                    "movq %%mm7, %0         \n\t"
+                    : "=m" (c.pQPb_block[qp_index])
+                    : "r" (QP)
+                );
+#endif
+            }
+            for(; x < endx; x+=BLOCK_SIZE)
+            {
+                RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead)*srcStride + 32);
+                RENAME(prefetchnta)(srcBlock + (((x>>2)&6) + copyAhead+1)*srcStride + 32);
+                RENAME(prefetcht0)(dstBlock + (((x>>2)&6) + copyAhead)*dstStride + 32);
+                RENAME(prefetcht0)(dstBlock + (((x>>2)&6) + copyAhead+1)*dstStride + 32);
+
+                RENAME(blockCopy)(dstBlock + dstStride*copyAhead, dstStride,
+                                  srcBlock + srcStride*copyAhead, srcStride, mode & LEVEL_FIX, &c.packedYOffset);
+
+                if(mode & LINEAR_IPOL_DEINT_FILTER)
+                    RENAME(deInterlaceInterpolateLinear)(dstBlock, dstStride);
+                else if(mode & LINEAR_BLEND_DEINT_FILTER)
+                    RENAME(deInterlaceBlendLinear)(dstBlock, dstStride, c.deintTemp + x);
+                else if(mode & MEDIAN_DEINT_FILTER)
+                    RENAME(deInterlaceMedian)(dstBlock, dstStride);
+                else if(mode & CUBIC_IPOL_DEINT_FILTER)
+                    RENAME(deInterlaceInterpolateCubic)(dstBlock, dstStride);
+                else if(mode & FFMPEG_DEINT_FILTER)
+                    RENAME(deInterlaceFF)(dstBlock, dstStride, c.deintTemp + x);
+                else if(mode & LOWPASS5_DEINT_FILTER)
+                    RENAME(deInterlaceL5)(dstBlock, dstStride, c.deintTemp + x, c.deintTemp + width + x);
+                /*          else if(mode & CUBIC_BLEND_DEINT_FILTER)
+                                RENAME(deInterlaceBlendCubic)(dstBlock, dstStride);
+                */
+                dstBlock+=8;
+                srcBlock+=8;
             }
 
-            dstBlock+=8;
-            srcBlock+=8;
+            dstBlock = dstBlockStart;
+            srcBlock = srcBlockStart;
+
+            for(x = startx, qp_index = 0; x < endx; x+=BLOCK_SIZE, qp_index++)
+            {
+                const int stride= dstStride;
+                //temporary while changing QP stuff to make things continue to work
+                //eventually QP,nonBQP,etc will be arrays and this will be unnecessary
+                c.QP = c.QP_block[qp_index];
+                c.nonBQP = c.nonBQP_block[qp_index];
+                c.pQPb = c.pQPb_block[qp_index];
+                c.pQPb2 = c.pQPb2_block[qp_index];
+
+                /* only deblock if we have 2 blocks */
+                if(y + 8 < height)
+                {
+                    if(mode & V_X1_FILTER)
+                        RENAME(vertX1Filter)(dstBlock, stride, &c);
+                    else if(mode & V_DEBLOCK)
+                    {
+                        const int t= RENAME(vertClassify)(dstBlock, stride, &c);
+
+                        if(t==1)
+                            RENAME(doVertLowPass)(dstBlock, stride, &c);
+                        else if(t==2)
+                            RENAME(doVertDefFilter)(dstBlock, stride, &c);
+                    }
+                    else if(mode & V_A_DEBLOCK)
+                    {
+                        RENAME(do_a_deblock)(dstBlock, stride, 1, &c, mode);
+                    }
+                }
+
+                dstBlock+=8;
+                srcBlock+=8;
+            }
+
+            dstBlock = dstBlockStart;
+            srcBlock = srcBlockStart;
+
+            for(x = startx, qp_index=0; x < endx; x+=BLOCK_SIZE, qp_index++)
+            {
+                const int stride= dstStride;
+                av_unused uint8_t *tmpXchg;
+                c.QP = c.QP_block[qp_index];
+                c.nonBQP = c.nonBQP_block[qp_index];
+                c.pQPb = c.pQPb_block[qp_index];
+                c.pQPb2 = c.pQPb2_block[qp_index];
+#if TEMPLATE_PP_MMX
+                RENAME(transpose1)(tempBlock1, tempBlock2, dstBlock, dstStride);
+#endif
+                /* check if we have a previous block to deblock it with dstBlock */
+                if(x - 8 >= 0)
+                {
+#if TEMPLATE_PP_MMX
+                    if(mode & H_X1_FILTER)
+                        RENAME(vertX1Filter)(tempBlock1, 16, &c);
+                    else if(mode & H_DEBLOCK)
+                    {
+                        const int t= RENAME(vertClassify)(tempBlock1, 16, &c);
+                        if(t==1)
+                            RENAME(doVertLowPass)(tempBlock1, 16, &c);
+                        else if(t==2)
+                            RENAME(doVertDefFilter)(tempBlock1, 16, &c);
+                    }
+                    else if(mode & H_A_DEBLOCK)
+                    {
+                        RENAME(do_a_deblock)(tempBlock1, 16, 1, &c, mode);
+                    }
+
+                    RENAME(transpose2)(dstBlock-4, dstStride, tempBlock1 + 4*16);
+
+#else
+                    if(mode & H_X1_FILTER)
+                        horizX1Filter(dstBlock-4, stride, c.QP);
+                    else if(mode & H_DEBLOCK)
+                    {
+#if TEMPLATE_PP_ALTIVEC
+                        DECLARE_ALIGNED(16, unsigned char, tempBlock)[272];
+                        int t;
+                        transpose_16x8_char_toPackedAlign_altivec(tempBlock, dstBlock - (4 + 1), stride);
+
+                        t = vertClassify_altivec(tempBlock-48, 16, &c);
+                        if(t==1)
+                        {
+                            doVertLowPass_altivec(tempBlock-48, 16, &c);
+                            transpose_8x16_char_fromPackedAlign_altivec(dstBlock - (4 + 1), tempBlock, stride);
+                        }
+                        else if(t==2)
+                        {
+                            doVertDefFilter_altivec(tempBlock-48, 16, &c);
+                            transpose_8x16_char_fromPackedAlign_altivec(dstBlock - (4 + 1), tempBlock, stride);
+                        }
+#else
+                        const int t= RENAME(horizClassify)(dstBlock-4, stride, &c);
+
+                        if(t==1)
+                            RENAME(doHorizLowPass)(dstBlock-4, stride, &c);
+                        else if(t==2)
+                            RENAME(doHorizDefFilter)(dstBlock-4, stride, &c);
+#endif
+                    }
+                    else if(mode & H_A_DEBLOCK)
+                    {
+                        RENAME(do_a_deblock)(dstBlock-8, 1, stride, &c, mode);
+                    }
+#endif //TEMPLATE_PP_MMX
+                    if(mode & DERING)
+                    {
+                        //FIXME filter first line
+                        if(y>0) RENAME(dering)(dstBlock - stride - 8, stride, &c);
+                    }
+
+                    if(mode & TEMP_NOISE_FILTER)
+                    {
+                        RENAME(tempNoiseReducer)(dstBlock-8, stride,
+                                                 c.tempBlurred[isColor] + y*dstStride + x,
+                                                 c.tempBlurredPast[isColor] + (y>>3)*256 + (x>>3) + 256,
+                                                 c.ppMode.maxTmpNoise);
+                    }
+                }
+
+                dstBlock+=8;
+                srcBlock+=8;
 
 #if TEMPLATE_PP_MMX
-            tmpXchg= tempBlock1;
-            tempBlock1= tempBlock2;
-            tempBlock2 = tmpXchg;
+                tmpXchg= tempBlock1;
+                tempBlock1= tempBlock2;
+                tempBlock2 = tmpXchg;
 #endif
-          }
+            }
         }
 
-        if(mode & DERING){
+        if(mode & DERING)
+        {
             if(y > 0) RENAME(dering)(dstBlock - dstStride - 8, dstStride, &c);
         }
 
-        if((mode & TEMP_NOISE_FILTER)){
+        if((mode & TEMP_NOISE_FILTER))
+        {
             RENAME(tempNoiseReducer)(dstBlock-8, dstStride,
-                    c.tempBlurred[isColor] + y*dstStride + x,
-                    c.tempBlurredPast[isColor] + (y>>3)*256 + (x>>3) + 256,
-                    c.ppMode.maxTmpNoise);
+                                     c.tempBlurred[isColor] + y*dstStride + x,
+                                     c.tempBlurredPast[isColor] + (y>>3)*256 + (x>>3) + 256,
+                                     c.ppMode.maxTmpNoise);
         }
 
         /* did we use a tmp buffer for the last lines*/
-        if(y+15 >= height){
+        if(y+15 >= height)
+        {
             uint8_t *dstBlock= &(dst[y*dstStride]);
             if(width==FFABS(dstStride))
                 linecpy(dstBlock, tempDst + dstStride, height-y, dstStride);
-            else{
+            else
+            {
                 int i;
-                for(i=0; i<height-y; i++){
+                for(i=0; i<height-y; i++)
+                {
                     memcpy(dstBlock + i*dstStride, tempDst + (i+1)*dstStride, width);
                 }
             }
@@ -3711,13 +3812,15 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
 #endif
 
 #ifdef DEBUG_BRIGHTNESS
-    if(!isColor){
+    if(!isColor)
+    {
         int max=1;
         int i;
         for(i=0; i<256; i++)
             if(yHistogram[i] > max) max=yHistogram[i];
 
-        for(i=1; i<256; i++){
+        for(i=1; i<256; i++)
+        {
             int x;
             int start=yHistogram[i-1]/(max/256+1);
             int end=yHistogram[i]/(max/256+1);
@@ -3726,7 +3829,8 @@ static void RENAME(postProcess)(const uint8_t src[], int srcStride, uint8_t dst[
                 dst[ i*dstStride + x]+=128;
         }
 
-        for(i=0; i<100; i+=2){
+        for(i=0; i<100; i+=2)
+        {
             dst[ (white)*dstStride + i]+=128;
             dst[ (black)*dstStride + i]+=128;
         }

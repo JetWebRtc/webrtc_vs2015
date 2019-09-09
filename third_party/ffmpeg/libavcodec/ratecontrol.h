@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Ratecontrol
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer
@@ -32,13 +32,15 @@
 #include <stdint.h>
 #include "libavutil/eval.h"
 
-typedef struct Predictor{
+typedef struct Predictor
+{
     double coeff;
     double count;
     double decay;
 } Predictor;
 
-typedef struct RateControlEntry{
+typedef struct RateControlEntry
+{
     int pict_type;
     float qscale;
     int mv_bits;
@@ -55,12 +57,13 @@ typedef struct RateControlEntry{
     int skip_count;
     int f_code;
     int b_code;
-}RateControlEntry;
+} RateControlEntry;
 
 /**
  * rate control context.
  */
-typedef struct RateControlContext{
+typedef struct RateControlContext
+{
     int num_entries;              ///< number of RateControlEntries
     RateControlEntry *entry;
     double buffer_index;          ///< amount of bits in the video/audio buffer
@@ -84,7 +87,7 @@ typedef struct RateControlContext{
     float dry_run_qscale;         ///< for xvid rc
     int last_picture_number;      ///< for xvid rc
     AVExpr * rc_eq_eval;
-}RateControlContext;
+} RateControlContext;
 
 struct MpegEncContext;
 

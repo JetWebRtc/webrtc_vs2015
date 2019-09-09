@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -181,7 +181,8 @@ static void store_slice_mmx(uint8_t *dst, const int16_t *src,
 {
     int y;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         uint8_t *dst1 = dst;
         const int16_t *src1 = src;
         __asm__ volatile(
@@ -222,14 +223,21 @@ av_cold void ff_spp_init_x86(SPPContext *s)
 #if HAVE_MMX_INLINE
     int cpu_flags = av_get_cpu_flags();
 
-    if (cpu_flags & AV_CPU_FLAG_MMX) {
+    if (cpu_flags & AV_CPU_FLAG_MMX)
+    {
         int64_t bps;
         s->store_slice = store_slice_mmx;
         av_opt_get_int(s->dct, "bits_per_sample", 0, &bps);
-        if (bps <= 8) {
-            switch (s->mode) {
-            case 0: s->requantize = hardthresh_mmx; break;
-            case 1: s->requantize = softthresh_mmx; break;
+        if (bps <= 8)
+        {
+            switch (s->mode)
+            {
+            case 0:
+                s->requantize = hardthresh_mmx;
+                break;
+            case 1:
+                s->requantize = softthresh_mmx;
+                break;
             }
         }
     }

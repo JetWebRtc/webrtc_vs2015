@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,7 +10,8 @@
 
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 Beamforming::Beamforming()
     : enabled(false),

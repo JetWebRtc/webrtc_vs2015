@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Bobby Bingham
  *
  * This file is part of FFmpeg.

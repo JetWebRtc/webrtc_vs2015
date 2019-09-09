@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -59,12 +59,14 @@ av_cold void ff_dcadsp_init_arm(DCADSPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_vfp(cpu_flags) && !have_vfpv3(cpu_flags)) {
+    if (have_vfp(cpu_flags) && !have_vfpv3(cpu_flags))
+    {
         s->lfe_fir[0]      = ff_dca_lfe_fir32_vfp;
         s->lfe_fir[1]      = ff_dca_lfe_fir64_vfp;
         s->qmf_32_subbands = ff_dca_qmf_32_subbands_vfp;
     }
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->lfe_fir[0] = ff_dca_lfe_fir0_neon;
         s->lfe_fir[1] = ff_dca_lfe_fir1_neon;
         s->decode_hf  = ff_decode_hf_neon;

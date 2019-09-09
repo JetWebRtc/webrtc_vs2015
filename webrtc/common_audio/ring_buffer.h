@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,13 +22,14 @@ extern "C" {
 
 enum Wrap { SAME_WRAP, DIFF_WRAP };
 
-typedef struct RingBuffer {
-  size_t read_pos;
-  size_t write_pos;
-  size_t element_count;
-  size_t element_size;
-  enum Wrap rw_wrap;
-  char* data;
+typedef struct RingBuffer
+{
+    size_t read_pos;
+    size_t write_pos;
+    size_t element_count;
+    size_t element_size;
+    enum Wrap rw_wrap;
+    char* data;
 } RingBuffer;
 
 // Creates and initializes the buffer. Returns NULL on failure.

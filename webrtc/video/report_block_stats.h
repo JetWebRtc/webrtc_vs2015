@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,43 +17,45 @@
 #include "webrtc/common_types.h"
 #include "webrtc/modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Helper class for rtcp statistics.
-class ReportBlockStats {
- public:
-  typedef std::map<uint32_t, RTCPReportBlock> ReportBlockMap;
-  typedef std::vector<RTCPReportBlock> ReportBlockVector;
-  ReportBlockStats();
-  ~ReportBlockStats() {}
+class ReportBlockStats
+{
+public:
+    typedef std::map<uint32_t, RTCPReportBlock> ReportBlockMap;
+    typedef std::vector<RTCPReportBlock> ReportBlockVector;
+    ReportBlockStats();
+    ~ReportBlockStats() {}
 
-  // Updates stats and stores report blocks.
-  // Returns an aggregate of the |report_blocks|.
-  RTCPReportBlock AggregateAndStore(const ReportBlockVector& report_blocks);
+    // Updates stats and stores report blocks.
+    // Returns an aggregate of the |report_blocks|.
+    RTCPReportBlock AggregateAndStore(const ReportBlockVector& report_blocks);
 
-  // Updates stats and stores report block.
-  void Store(const RtcpStatistics& rtcp_stats,
-             uint32_t remote_ssrc,
-             uint32_t source_ssrc);
+    // Updates stats and stores report block.
+    void Store(const RtcpStatistics& rtcp_stats,
+               uint32_t remote_ssrc,
+               uint32_t source_ssrc);
 
-  // Returns the total fraction of lost packets (or -1 if less than two report
-  // blocks have been stored).
-  int FractionLostInPercent() const;
+    // Returns the total fraction of lost packets (or -1 if less than two report
+    // blocks have been stored).
+    int FractionLostInPercent() const;
 
- private:
-  // Updates the total number of packets/lost packets.
-  // Stores the report block.
-  // Returns the number of packets/lost packets since previous report block.
-  void StoreAndAddPacketIncrement(const RTCPReportBlock& report_block,
-                                  uint32_t* num_sequence_numbers,
-                                  uint32_t* num_lost_sequence_numbers);
+private:
+    // Updates the total number of packets/lost packets.
+    // Stores the report block.
+    // Returns the number of packets/lost packets since previous report block.
+    void StoreAndAddPacketIncrement(const RTCPReportBlock& report_block,
+                                    uint32_t* num_sequence_numbers,
+                                    uint32_t* num_lost_sequence_numbers);
 
-  // The total number of packets/lost packets.
-  uint32_t num_sequence_numbers_;
-  uint32_t num_lost_sequence_numbers_;
+    // The total number of packets/lost packets.
+    uint32_t num_sequence_numbers_;
+    uint32_t num_lost_sequence_numbers_;
 
-  // Map holding the last stored report block (mapped by the source SSRC).
-  ReportBlockMap prev_report_blocks_;
+    // Map holding the last stored report block (mapped by the source SSRC).
+    ReportBlockMap prev_report_blocks_;
 };
 
 }  // namespace webrtc

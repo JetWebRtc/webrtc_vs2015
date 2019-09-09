@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Image format
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2004 Michael Niedermayer
@@ -23,12 +23,14 @@
 #include "libavutil/avstring.h"
 #include "internal.h"
 
-typedef struct IdStrMap {
+typedef struct IdStrMap
+{
     enum AVCodecID id;
     const char *str;
 } IdStrMap;
 
-static const IdStrMap img_tags[] = {
+static const IdStrMap img_tags[] =
+{
     { AV_CODEC_ID_MJPEG,      "jpeg"     },
     { AV_CODEC_ID_MJPEG,      "jpg"      },
     { AV_CODEC_ID_MJPEG,      "jps"      },
@@ -92,7 +94,8 @@ static enum AVCodecID av_str2id(const IdStrMap *tags, const char *str)
         return AV_CODEC_ID_NONE;
     str++;
 
-    while (tags->id) {
+    while (tags->id)
+    {
         if (!av_strcasecmp(str, tags->str))
             return tags->id;
 

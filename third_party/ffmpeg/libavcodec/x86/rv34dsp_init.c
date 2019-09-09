@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV30/40 MMX/SSE2 optimizations
  * Copyright (C) 2012 Christophe Gisquet <christophe.gisquet@gmail.com>
  *
@@ -37,7 +37,8 @@ av_cold void ff_rv34dsp_init_x86(RV34DSPContext* c)
 
     if (EXTERNAL_MMX(cpu_flags))
         c->rv34_idct_dc_add = ff_rv34_idct_dc_add_mmx;
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
         c->rv34_inv_transform_dc = ff_rv34_idct_dc_noround_mmxext;
         c->rv34_idct_add         = ff_rv34_idct_add_mmxext;
     }

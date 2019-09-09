@@ -31,7 +31,8 @@ static int daud_write_header(struct AVFormatContext *s)
 
 static int daud_write_packet(struct AVFormatContext *s, AVPacket *pkt)
 {
-    if (pkt->size > 65535) {
+    if (pkt->size > 65535)
+    {
         av_log(s, AV_LOG_ERROR,
                "Packet size too large for s302m. (%d > 65535)\n", pkt->size);
         return -1;
@@ -42,7 +43,8 @@ static int daud_write_packet(struct AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVOutputFormat ff_daud_muxer = {
+AVOutputFormat ff_daud_muxer =
+{
     .name         = "daud",
     .long_name    = NULL_IF_CONFIG_SMALL("D-Cinema audio"),
     .extensions   = "302",

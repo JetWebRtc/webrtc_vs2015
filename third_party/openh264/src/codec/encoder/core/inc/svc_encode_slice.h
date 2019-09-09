@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 #include "svc_enc_macroblock.h"
 #include "mb_cache.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 #if defined(MB_TYPES_CHECK)
 void WelsCountMbType (int32_t (*iMbCount)[18], const EWelsSliceType eSt, const SMB* pMb);
 #endif
@@ -121,7 +122,7 @@ void AddSliceBoundary (sWelsEncCtx* pEncCtx, SSlice* pCurSlice, SSliceCtx* pSlic
 int32_t WelsMdInterMbLoop (sWelsEncCtx* pEncCtx, SSlice* pSlice, void* pMd,
                            const int32_t kiSliceFirstMbXY); // for inter non-dynamic slice
 int32_t WelsMdInterMbLoopOverDynamicSlice (sWelsEncCtx* pEncCtx, SSlice* pSlice, void* pMd,
-    const int32_t kiSliceFirstMbXY); // for inter dynamic slice
+        const int32_t kiSliceFirstMbXY); // for inter dynamic slice
 
 
 bool DynSlcJudgeSliceBoundaryStepBack (void* pEncCtx, void* pSlice, SSliceCtx* pSliceCtx, SMB* pCurMb,

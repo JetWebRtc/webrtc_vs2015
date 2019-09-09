@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,17 +30,17 @@ namespace videocapturemodule
 
 typedef struct tagTHREADNAME_INFO
 {
-   DWORD dwType;        // must be 0x1000
-   LPCSTR szName;       // pointer to name (in user addr space)
-   DWORD dwThreadID;    // thread ID (-1=caller thread)
-   DWORD dwFlags;       // reserved for future use, must be zero
+    DWORD dwType;        // must be 0x1000
+    LPCSTR szName;       // pointer to name (in user addr space)
+    DWORD dwThreadID;    // thread ID (-1=caller thread)
+    DWORD dwFlags;       // reserved for future use, must be zero
 } THREADNAME_INFO;
 
 CaptureInputPin::CaptureInputPin (IN TCHAR * szName,
-                            IN CaptureSinkFilter* pFilter,
-                            IN CCritSec * pLock,
-                            OUT HRESULT * pHr,
-                            IN LPCWSTR pszName)
+                                  IN CaptureSinkFilter* pFilter,
+                                  IN CCritSec * pLock,
+                                  OUT HRESULT * pHr,
+                                  IN LPCWSTR pszName)
     : CBaseInputPin (szName, pFilter, pLock, pHr, pszName),
       _requestedCapability(),
       _resultingCapability()
@@ -59,10 +59,10 @@ CaptureInputPin::GetMediaType (IN int iPosition, OUT CMediaType * pmt)
     _threadHandle = NULL;
 
     if(iPosition < 0)
-    return E_INVALIDARG;
+        return E_INVALIDARG;
 
     VIDEOINFOHEADER* pvi = (VIDEOINFOHEADER*) pmt->AllocFormatBuffer(
-                            sizeof(VIDEOINFOHEADER));
+                               sizeof(VIDEOINFOHEADER));
     if(NULL == pvi)
     {
         WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
@@ -75,7 +75,8 @@ CaptureInputPin::GetMediaType (IN int iPosition, OUT CMediaType * pmt)
     pvi->bmiHeader.biPlanes = 1;
     pvi->bmiHeader.biClrImportant = 0;
     pvi->bmiHeader.biClrUsed = 0;
-    if (_requestedCapability.maxFPS != 0) {
+    if (_requestedCapability.maxFPS != 0)
+    {
         pvi->AvgTimePerFrame = 10000000/_requestedCapability.maxFPS;
     }
 
@@ -94,69 +95,69 @@ CaptureInputPin::GetMediaType (IN int iPosition, OUT CMediaType * pmt)
 
     switch (iPosition+positionOffset)
     {
-        case 0:
-        {
-            pvi->bmiHeader.biCompression = MAKEFOURCC('I','4','2','0');
-            pvi->bmiHeader.biBitCount = 12; //bit per pixel
-            pvi->bmiHeader.biWidth = _requestedCapability.width;
-            pvi->bmiHeader.biHeight = _requestedCapability.height;
-            pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
-                                        *_requestedCapability.width/2;
-            pmt->SetSubtype(&MEDIASUBTYPE_I420);
-        }
-        break;
-        case 1:
-        {
-            pvi->bmiHeader.biCompression = MAKEFOURCC('Y','U','Y','2');;
-            pvi->bmiHeader.biBitCount = 16; //bit per pixel
-            pvi->bmiHeader.biWidth = _requestedCapability.width;
-            pvi->bmiHeader.biHeight = _requestedCapability.height;
-            pvi->bmiHeader.biSizeImage = 2*_requestedCapability.width
-                                        *_requestedCapability.height;
-            pmt->SetSubtype(&MEDIASUBTYPE_YUY2);
-        }
-        break;
-        case 2:
-        {
-            pvi->bmiHeader.biCompression = BI_RGB;
-            pvi->bmiHeader.biBitCount = 24; //bit per pixel
-            pvi->bmiHeader.biWidth = _requestedCapability.width;
-            pvi->bmiHeader.biHeight = _requestedCapability.height;
-            pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
-                                        *_requestedCapability.width;
-            pmt->SetSubtype(&MEDIASUBTYPE_RGB24);
-        }
-        break;
-        case 3:
-        {
-            pvi->bmiHeader.biCompression = MAKEFOURCC('U','Y','V','Y');
-            pvi->bmiHeader.biBitCount = 16; //bit per pixel
-            pvi->bmiHeader.biWidth = _requestedCapability.width;
-            pvi->bmiHeader.biHeight = _requestedCapability.height;
-            pvi->bmiHeader.biSizeImage = 2*_requestedCapability.height
-                                         *_requestedCapability.width;
-            pmt->SetSubtype(&MEDIASUBTYPE_UYVY);
-        }
-        break;
-        case 4:
-        {
-            pvi->bmiHeader.biCompression = MAKEFOURCC('M','J','P','G');
-            pvi->bmiHeader.biBitCount = 12; //bit per pixel
-            pvi->bmiHeader.biWidth = _requestedCapability.width;
-            pvi->bmiHeader.biHeight = _requestedCapability.height;
-            pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
-                                         *_requestedCapability.width/2;
-            pmt->SetSubtype(&MEDIASUBTYPE_MJPG);
-        }
-        break;
-        default :
+    case 0:
+    {
+        pvi->bmiHeader.biCompression = MAKEFOURCC('I','4','2','0');
+        pvi->bmiHeader.biBitCount = 12; //bit per pixel
+        pvi->bmiHeader.biWidth = _requestedCapability.width;
+        pvi->bmiHeader.biHeight = _requestedCapability.height;
+        pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
+                                     *_requestedCapability.width/2;
+        pmt->SetSubtype(&MEDIASUBTYPE_I420);
+    }
+    break;
+    case 1:
+    {
+        pvi->bmiHeader.biCompression = MAKEFOURCC('Y','U','Y','2');;
+        pvi->bmiHeader.biBitCount = 16; //bit per pixel
+        pvi->bmiHeader.biWidth = _requestedCapability.width;
+        pvi->bmiHeader.biHeight = _requestedCapability.height;
+        pvi->bmiHeader.biSizeImage = 2*_requestedCapability.width
+                                     *_requestedCapability.height;
+        pmt->SetSubtype(&MEDIASUBTYPE_YUY2);
+    }
+    break;
+    case 2:
+    {
+        pvi->bmiHeader.biCompression = BI_RGB;
+        pvi->bmiHeader.biBitCount = 24; //bit per pixel
+        pvi->bmiHeader.biWidth = _requestedCapability.width;
+        pvi->bmiHeader.biHeight = _requestedCapability.height;
+        pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
+                                     *_requestedCapability.width;
+        pmt->SetSubtype(&MEDIASUBTYPE_RGB24);
+    }
+    break;
+    case 3:
+    {
+        pvi->bmiHeader.biCompression = MAKEFOURCC('U','Y','V','Y');
+        pvi->bmiHeader.biBitCount = 16; //bit per pixel
+        pvi->bmiHeader.biWidth = _requestedCapability.width;
+        pvi->bmiHeader.biHeight = _requestedCapability.height;
+        pvi->bmiHeader.biSizeImage = 2*_requestedCapability.height
+                                     *_requestedCapability.width;
+        pmt->SetSubtype(&MEDIASUBTYPE_UYVY);
+    }
+    break;
+    case 4:
+    {
+        pvi->bmiHeader.biCompression = MAKEFOURCC('M','J','P','G');
+        pvi->bmiHeader.biBitCount = 12; //bit per pixel
+        pvi->bmiHeader.biWidth = _requestedCapability.width;
+        pvi->bmiHeader.biHeight = _requestedCapability.height;
+        pvi->bmiHeader.biSizeImage = 3*_requestedCapability.height
+                                     *_requestedCapability.width/2;
+        pmt->SetSubtype(&MEDIASUBTYPE_MJPG);
+    }
+    break;
+    default :
         return VFW_S_NO_MORE_ITEMS;
     }
     pmt->SetSampleSize(pvi->bmiHeader.biSizeImage);
     WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
-             "GetMediaType position %d, width %d, height %d, biCompression 0x%x",
-             iPosition, _requestedCapability.width,
-             _requestedCapability.height,pvi->bmiHeader.biCompression);
+                 "GetMediaType position %d, width %d, height %d, biCompression 0x%x",
+                 iPosition, _requestedCapability.width,
+                 _requestedCapability.height,pvi->bmiHeader.biCompression);
     return NOERROR;
 }
 
@@ -168,7 +169,7 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
 
     const GUID *type = pMediaType->Type();
     if (*type != MEDIATYPE_Video)
-    return E_INVALIDARG;
+        return E_INVALIDARG;
 
     const GUID *formatType = pMediaType->FormatType();
 
@@ -193,13 +194,13 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
         // Store the incoming height,
         // for RGB24 we assume the frame to be upside down
         if(*SubType == MEDIASUBTYPE_RGB24
-            && pvi->bmiHeader.biHeight > 0)
+                && pvi->bmiHeader.biHeight > 0)
         {
-           _resultingCapability.height = -(pvi->bmiHeader.biHeight);
+            _resultingCapability.height = -(pvi->bmiHeader.biHeight);
         }
         else
         {
-           _resultingCapability.height = abs(pvi->bmiHeader.biHeight);
+            _resultingCapability.height = abs(pvi->bmiHeader.biHeight);
         }
 
         WEBRTC_TRACE(webrtc::kTraceInfo, webrtc::kTraceVideoCapture, 0,
@@ -208,26 +209,26 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
                      pvi->bmiHeader.biCompression);
 
         if(*SubType == MEDIASUBTYPE_MJPG
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('M','J','P','G'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('M','J','P','G'))
         {
             _resultingCapability.rawType = kVideoMJPEG;
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_I420
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('I','4','2','0'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('I','4','2','0'))
         {
             _resultingCapability.rawType = kVideoI420;
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_YUY2
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('Y','U','Y','2'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('Y','U','Y','2'))
         {
             _resultingCapability.rawType = kVideoYUY2;
             ::Sleep(60); // workaround for bad driver
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_UYVY
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('U','Y','V','Y'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('U','Y','V','Y'))
         {
             _resultingCapability.rawType = kVideoUYVY;
             return S_OK; // This format is acceptable.
@@ -239,7 +240,7 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_RGB24
-            && pvi->bmiHeader.biCompression == BI_RGB)
+                && pvi->bmiHeader.biCompression == BI_RGB)
         {
             _resultingCapability.rawType = kVideoRGB24;
             return S_OK; // This format is acceptable.
@@ -265,35 +266,35 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
         // Store the incoming height,
         // for RGB24 we assume the frame to be upside down
         if(*SubType == MEDIASUBTYPE_RGB24
-            && pvi->bmiHeader.biHeight > 0)
+                && pvi->bmiHeader.biHeight > 0)
         {
-           _resultingCapability.height = -(pvi->bmiHeader.biHeight);
+            _resultingCapability.height = -(pvi->bmiHeader.biHeight);
         }
         else
         {
-           _resultingCapability.height = abs(pvi->bmiHeader.biHeight);
+            _resultingCapability.height = abs(pvi->bmiHeader.biHeight);
         }
 
         if(*SubType == MEDIASUBTYPE_MJPG
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('M','J','P','G'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('M','J','P','G'))
         {
             _resultingCapability.rawType = kVideoMJPEG;
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_I420
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('I','4','2','0'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('I','4','2','0'))
         {
             _resultingCapability.rawType = kVideoI420;
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_YUY2
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('Y','U','Y','2'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('Y','U','Y','2'))
         {
             _resultingCapability.rawType = kVideoYUY2;
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_UYVY
-            && pvi->bmiHeader.biCompression == MAKEFOURCC('U','Y','V','Y'))
+                && pvi->bmiHeader.biCompression == MAKEFOURCC('U','Y','V','Y'))
         {
             _resultingCapability.rawType = kVideoUYVY;
             return S_OK; // This format is acceptable.
@@ -305,7 +306,7 @@ CaptureInputPin::CheckMediaType ( IN const CMediaType * pMediaType)
             return S_OK; // This format is acceptable.
         }
         if(*SubType == MEDIASUBTYPE_RGB24
-            && pvi->bmiHeader.biCompression == BI_RGB)
+                && pvi->bmiHeader.biCompression == BI_RGB)
         {
             _resultingCapability.rawType = kVideoRGB24;
             return S_OK; // This format is acceptable.
@@ -361,7 +362,7 @@ CaptureInputPin::Receive ( IN IMediaSample * pIMediaSample )
 
 // called under LockReceive
 HRESULT CaptureInputPin::SetMatchingMediaType(
-                                    const VideoCaptureCapability& capability)
+    const VideoCaptureCapability& capability)
 {
 
     _requestedCapability = capability;
@@ -370,9 +371,9 @@ HRESULT CaptureInputPin::SetMatchingMediaType(
 }
 //  ----------------------------------------------------------------------------
 CaptureSinkFilter::CaptureSinkFilter (IN TCHAR * tszName,
-                              IN LPUNKNOWN punk,
-                              OUT HRESULT * phr,
-                              VideoCaptureExternal& captureObserver)
+                                      IN LPUNKNOWN punk,
+                                      OUT HRESULT * phr,
+                                      VideoCaptureExternal& captureObserver)
     : CBaseFilter(tszName,punk,& m_crtFilter,CLSID_SINKFILTER),
       m_pInput(NULL),
       _captureObserver(captureObserver)
@@ -387,7 +388,7 @@ CaptureSinkFilter::CaptureSinkFilter (IN TCHAR * tszName,
         (* phr) = FAILED (* phr) ? (* phr) : E_OUTOFMEMORY;
         goto cleanup;
     }
-    cleanup :
+cleanup :
     return;
 }
 
@@ -488,7 +489,7 @@ void CaptureSinkFilter::ProcessCapturedFrame(
 }
 
 STDMETHODIMP CaptureSinkFilter::SetMatchingMediaType(
-                                        const VideoCaptureCapability& capability)
+    const VideoCaptureCapability& capability)
 {
     LockReceive();
     LockFilter();

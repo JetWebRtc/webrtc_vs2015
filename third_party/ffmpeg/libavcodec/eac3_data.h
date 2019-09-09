@@ -1,4 +1,4 @@
-/*
+﻿/*
  * E-AC-3 tables
  * Copyright (c) 2007 Bartlomiej Wolowiec <bartek.wolowiec@gmail.com>
  *

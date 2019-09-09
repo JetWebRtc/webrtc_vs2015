@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Romain Dolbeau <romain@dolbeau.org>
  *
  * This file is part of FFmpeg.
@@ -103,8 +103,8 @@
 /* this code assume stride % 16 == 0 */
 #ifdef PREFIX_h264_qpel16_h_lowpass_altivec
 static void PREFIX_h264_qpel16_h_lowpass_altivec(uint8_t *dst,
-                                                 const uint8_t *src,
-                                                 int dstStride, int srcStride)
+        const uint8_t *src,
+        int dstStride, int srcStride)
 {
     register int i;
 
@@ -120,11 +120,11 @@ static void PREFIX_h264_qpel16_h_lowpass_altivec(uint8_t *dst,
     register int align = ((((unsigned long)src) - 2) % 16);
 
     vec_s16 srcP0A, srcP0B, srcP1A, srcP1B,
-              srcP2A, srcP2B, srcP3A, srcP3B,
-              srcM1A, srcM1B, srcM2A, srcM2B,
-              sum1A, sum1B, sum2A, sum2B, sum3A, sum3B,
-              pp1A, pp1B, pp2A, pp2B, pp3A, pp3B,
-              psumA, psumB, sumA, sumB;
+            srcP2A, srcP2B, srcP3A, srcP3B,
+            srcM1A, srcM1B, srcM2A, srcM2B,
+            sum1A, sum1B, sum2A, sum2B, sum3A, sum3B,
+            pp1A, pp1B, pp2A, pp2B, pp3A, pp3B,
+            psumA, psumB, sumA, sumB;
 
     vec_u8 sum, fsum;
 
@@ -137,7 +137,8 @@ static void PREFIX_h264_qpel16_h_lowpass_altivec(uint8_t *dst,
     permP3 = vec_lvsl(+3, src);
 #endif /* HAVE_BIGENDIAN */
 
-    for (i = 0 ; i < 16 ; i ++) {
+    for (i = 0 ; i < 16 ; i ++)
+    {
         load_alignment(src, align, permM2, permM1, permP0, permP1, permP2, permP3);
 
         srcP0A = (vec_s16) VEC_MERGEH(zero_u8v, srcP0);
@@ -194,8 +195,8 @@ static void PREFIX_h264_qpel16_h_lowpass_altivec(uint8_t *dst,
 /* this code assume stride % 16 == 0 */
 #ifdef PREFIX_h264_qpel16_v_lowpass_altivec
 static void PREFIX_h264_qpel16_v_lowpass_altivec(uint8_t *dst,
-                                                 const uint8_t *src,
-                                                 int dstStride, int srcStride)
+        const uint8_t *src,
+        int dstStride, int srcStride)
 {
     register int i;
 
@@ -234,13 +235,14 @@ static void PREFIX_h264_qpel16_v_lowpass_altivec(uint8_t *dst,
     vec_s16 srcP2ssB = (vec_s16) VEC_MERGEL(zero_u8v, srcP2);
 
     vec_s16 pp1A, pp1B, pp2A, pp2B, pp3A, pp3B,
-              psumA, psumB, sumA, sumB,
-              srcP3ssA, srcP3ssB,
-              sum1A, sum1B, sum2A, sum2B, sum3A, sum3B;
+            psumA, psumB, sumA, sumB,
+            srcP3ssA, srcP3ssB,
+            sum1A, sum1B, sum2A, sum2B, sum3A, sum3B;
 
     vec_u8 sum, fsum, srcP3;
 
-    for (i = 0 ; i < 16 ; i++) {
+    for (i = 0 ; i < 16 ; i++)
+    {
         srcP3 = load_with_perm_vec(0, srcbis, perm);
         srcbis += srcStride;
 
@@ -296,9 +298,9 @@ static void PREFIX_h264_qpel16_v_lowpass_altivec(uint8_t *dst,
 /* this code assume stride % 16 == 0 *and* tmp is properly aligned */
 #ifdef PREFIX_h264_qpel16_hv_lowpass_altivec
 static void PREFIX_h264_qpel16_hv_lowpass_altivec(uint8_t *dst, int16_t *tmp,
-                                                  const uint8_t *src,
-                                                  int dstStride, int tmpStride,
-                                                  int srcStride)
+        const uint8_t *src,
+        int dstStride, int tmpStride,
+        int srcStride)
 {
     register int i;
     LOAD_ZERO;
@@ -313,24 +315,26 @@ static void PREFIX_h264_qpel16_hv_lowpass_altivec(uint8_t *dst, int16_t *tmp,
     register int align = ((((unsigned long)src) - 2) % 16);
 
     vec_s16 srcP0A, srcP0B, srcP1A, srcP1B,
-              srcP2A, srcP2B, srcP3A, srcP3B,
-              srcM1A, srcM1B, srcM2A, srcM2B,
-              sum1A, sum1B, sum2A, sum2B, sum3A, sum3B,
-              pp1A, pp1B, pp2A, pp2B, psumA, psumB;
+            srcP2A, srcP2B, srcP3A, srcP3B,
+            srcM1A, srcM1B, srcM2A, srcM2B,
+            sum1A, sum1B, sum2A, sum2B, sum3A, sum3B,
+            pp1A, pp1B, pp2A, pp2B, psumA, psumB;
 
     const vec_u8 mperm = (const vec_u8)
-        {0x00, 0x08, 0x01, 0x09, 0x02, 0x0A, 0x03, 0x0B,
-         0x04, 0x0C, 0x05, 0x0D, 0x06, 0x0E, 0x07, 0x0F};
+    {
+        0x00, 0x08, 0x01, 0x09, 0x02, 0x0A, 0x03, 0x0B,
+              0x04, 0x0C, 0x05, 0x0D, 0x06, 0x0E, 0x07, 0x0F
+    };
     int16_t *tmpbis = tmp;
 
     vec_s16 tmpM1ssA, tmpM1ssB, tmpM2ssA, tmpM2ssB,
-              tmpP0ssA, tmpP0ssB, tmpP1ssA, tmpP1ssB,
-              tmpP2ssA, tmpP2ssB;
+            tmpP0ssA, tmpP0ssB, tmpP1ssA, tmpP1ssB,
+            tmpP2ssA, tmpP2ssB;
 
     vec_s32 pp1Ae, pp1Ao, pp1Be, pp1Bo, pp2Ae, pp2Ao, pp2Be, pp2Bo,
-              pp3Ae, pp3Ao, pp3Be, pp3Bo, pp1cAe, pp1cAo, pp1cBe, pp1cBo,
-              pp32Ae, pp32Ao, pp32Be, pp32Bo, sumAe, sumAo, sumBe, sumBo,
-              ssumAe, ssumAo, ssumBe, ssumBo;
+            pp3Ae, pp3Ao, pp3Be, pp3Bo, pp1cAe, pp1cAo, pp1cBe, pp1cBo,
+            pp32Ae, pp32Ao, pp32Be, pp32Bo, sumAe, sumAo, sumBe, sumBo,
+            ssumAe, ssumAo, ssumBe, ssumBo;
     vec_u8 fsum, sumv, sum;
     vec_s16 ssume, ssumo;
 
@@ -344,7 +348,8 @@ static void PREFIX_h264_qpel16_hv_lowpass_altivec(uint8_t *dst, int16_t *tmp,
 #endif /* HAVE_BIGENDIAN */
 
     src -= (2 * srcStride);
-    for (i = 0 ; i < 21 ; i ++) {
+    for (i = 0 ; i < 21 ; i ++)
+    {
         vec_u8 srcM2, srcM1, srcP0, srcP1, srcP2, srcP3;
 
         load_alignment(src, align, permM2, permM1, permP0, permP1, permP2, permP3);
@@ -403,7 +408,8 @@ static void PREFIX_h264_qpel16_hv_lowpass_altivec(uint8_t *dst, int16_t *tmp,
     tmpP2ssB = vec_ld(16, tmpbis);
     tmpbis += tmpStride;
 
-    for (i = 0 ; i < 16 ; i++) {
+    for (i = 0 ; i < 16 ; i++)
+    {
         const vec_s16 tmpP3ssA = vec_ld(0, tmpbis);
         const vec_s16 tmpP3ssB = vec_ld(16, tmpbis);
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -32,127 +32,161 @@ extern "C" double vp9_get_blockiness(const unsigned char *img1, int img1_pitch,
 
 using libvpx_test::ACMRandom;
 
-namespace {
-class BlockinessTestBase : public ::testing::Test {
- public:
-  BlockinessTestBase(int width, int height) : width_(width), height_(height) {}
+namespace
+{
+class BlockinessTestBase : public ::testing::Test
+{
+public:
+    BlockinessTestBase(int width, int height) : width_(width), height_(height) {}
 
-  static void SetUpTestCase() {
-    source_data_ = reinterpret_cast<uint8_t *>(
-        vpx_memalign(kDataAlignment, kDataBufferSize));
-    reference_data_ = reinterpret_cast<uint8_t *>(
-        vpx_memalign(kDataAlignment, kDataBufferSize));
-  }
-
-  static void TearDownTestCase() {
-    vpx_free(source_data_);
-    source_data_ = NULL;
-    vpx_free(reference_data_);
-    reference_data_ = NULL;
-  }
-
-  virtual void TearDown() { libvpx_test::ClearSystemState(); }
-
- protected:
-  // Handle frames up to 640x480
-  static const int kDataAlignment = 16;
-  static const int kDataBufferSize = 640 * 480;
-
-  virtual void SetUp() {
-    source_stride_ = (width_ + 31) & ~31;
-    reference_stride_ = width_ * 2;
-    rnd_.Reset(ACMRandom::DeterministicSeed());
-  }
-
-  void FillConstant(uint8_t *data, int stride, uint8_t fill_constant, int width,
-                    int height) {
-    for (int h = 0; h < height; ++h) {
-      for (int w = 0; w < width; ++w) {
-        data[h * stride + w] = fill_constant;
-      }
+    static void SetUpTestCase()
+    {
+        source_data_ = reinterpret_cast<uint8_t *>(
+                           vpx_memalign(kDataAlignment, kDataBufferSize));
+        reference_data_ = reinterpret_cast<uint8_t *>(
+                              vpx_memalign(kDataAlignment, kDataBufferSize));
     }
-  }
 
-  void FillConstant(uint8_t *data, int stride, uint8_t fill_constant) {
-    FillConstant(data, stride, fill_constant, width_, height_);
-  }
-
-  void FillRandom(uint8_t *data, int stride, int width, int height) {
-    for (int h = 0; h < height; ++h) {
-      for (int w = 0; w < width; ++w) {
-        data[h * stride + w] = rnd_.Rand8();
-      }
+    static void TearDownTestCase()
+    {
+        vpx_free(source_data_);
+        source_data_ = NULL;
+        vpx_free(reference_data_);
+        reference_data_ = NULL;
     }
-  }
 
-  void FillRandom(uint8_t *data, int stride) {
-    FillRandom(data, stride, width_, height_);
-  }
-
-  void FillRandomBlocky(uint8_t *data, int stride) {
-    for (int h = 0; h < height_; h += 4) {
-      for (int w = 0; w < width_; w += 4) {
-        FillRandom(data + h * stride + w, stride, 4, 4);
-      }
+    virtual void TearDown()
+    {
+        libvpx_test::ClearSystemState();
     }
-  }
 
-  void FillCheckerboard(uint8_t *data, int stride) {
-    for (int h = 0; h < height_; h += 4) {
-      for (int w = 0; w < width_; w += 4) {
-        if (((h / 4) ^ (w / 4)) & 1) {
-          FillConstant(data + h * stride + w, stride, 255, 4, 4);
-        } else {
-          FillConstant(data + h * stride + w, stride, 0, 4, 4);
+protected:
+    // Handle frames up to 640x480
+    static const int kDataAlignment = 16;
+    static const int kDataBufferSize = 640 * 480;
+
+    virtual void SetUp()
+    {
+        source_stride_ = (width_ + 31) & ~31;
+        reference_stride_ = width_ * 2;
+        rnd_.Reset(ACMRandom::DeterministicSeed());
+    }
+
+    void FillConstant(uint8_t *data, int stride, uint8_t fill_constant, int width,
+                      int height)
+    {
+        for (int h = 0; h < height; ++h)
+        {
+            for (int w = 0; w < width; ++w)
+            {
+                data[h * stride + w] = fill_constant;
+            }
         }
-      }
     }
-  }
 
-  void Blur(uint8_t *data, int stride, int taps) {
-    int sum = 0;
-    int half_taps = taps / 2;
-    for (int h = 0; h < height_; ++h) {
-      for (int w = 0; w < taps; ++w) {
-        sum += data[w + h * stride];
-      }
-      for (int w = taps; w < width_; ++w) {
-        sum += data[w + h * stride] - data[w - taps + h * stride];
-        data[w - half_taps + h * stride] = (sum + half_taps) / taps;
-      }
+    void FillConstant(uint8_t *data, int stride, uint8_t fill_constant)
+    {
+        FillConstant(data, stride, fill_constant, width_, height_);
     }
-    for (int w = 0; w < width_; ++w) {
-      for (int h = 0; h < taps; ++h) {
-        sum += data[h + w * stride];
-      }
-      for (int h = taps; h < height_; ++h) {
-        sum += data[w + h * stride] - data[(h - taps) * stride + w];
-        data[(h - half_taps) * stride + w] = (sum + half_taps) / taps;
-      }
-    }
-  }
-  int width_, height_;
-  static uint8_t *source_data_;
-  int source_stride_;
-  static uint8_t *reference_data_;
-  int reference_stride_;
 
-  ACMRandom rnd_;
+    void FillRandom(uint8_t *data, int stride, int width, int height)
+    {
+        for (int h = 0; h < height; ++h)
+        {
+            for (int w = 0; w < width; ++w)
+            {
+                data[h * stride + w] = rnd_.Rand8();
+            }
+        }
+    }
+
+    void FillRandom(uint8_t *data, int stride)
+    {
+        FillRandom(data, stride, width_, height_);
+    }
+
+    void FillRandomBlocky(uint8_t *data, int stride)
+    {
+        for (int h = 0; h < height_; h += 4)
+        {
+            for (int w = 0; w < width_; w += 4)
+            {
+                FillRandom(data + h * stride + w, stride, 4, 4);
+            }
+        }
+    }
+
+    void FillCheckerboard(uint8_t *data, int stride)
+    {
+        for (int h = 0; h < height_; h += 4)
+        {
+            for (int w = 0; w < width_; w += 4)
+            {
+                if (((h / 4) ^ (w / 4)) & 1)
+                {
+                    FillConstant(data + h * stride + w, stride, 255, 4, 4);
+                }
+                else
+                {
+                    FillConstant(data + h * stride + w, stride, 0, 4, 4);
+                }
+            }
+        }
+    }
+
+    void Blur(uint8_t *data, int stride, int taps)
+    {
+        int sum = 0;
+        int half_taps = taps / 2;
+        for (int h = 0; h < height_; ++h)
+        {
+            for (int w = 0; w < taps; ++w)
+            {
+                sum += data[w + h * stride];
+            }
+            for (int w = taps; w < width_; ++w)
+            {
+                sum += data[w + h * stride] - data[w - taps + h * stride];
+                data[w - half_taps + h * stride] = (sum + half_taps) / taps;
+            }
+        }
+        for (int w = 0; w < width_; ++w)
+        {
+            for (int h = 0; h < taps; ++h)
+            {
+                sum += data[h + w * stride];
+            }
+            for (int h = taps; h < height_; ++h)
+            {
+                sum += data[w + h * stride] - data[(h - taps) * stride + w];
+                data[(h - half_taps) * stride + w] = (sum + half_taps) / taps;
+            }
+        }
+    }
+    int width_, height_;
+    static uint8_t *source_data_;
+    int source_stride_;
+    static uint8_t *reference_data_;
+    int reference_stride_;
+
+    ACMRandom rnd_;
 };
 
 #if CONFIG_VP9_ENCODER
 typedef std::tr1::tuple<int, int> BlockinessParam;
 class BlockinessVP9Test
     : public BlockinessTestBase,
-      public ::testing::WithParamInterface<BlockinessParam> {
- public:
-  BlockinessVP9Test() : BlockinessTestBase(GET_PARAM(0), GET_PARAM(1)) {}
+      public ::testing::WithParamInterface<BlockinessParam>
+{
+public:
+    BlockinessVP9Test() : BlockinessTestBase(GET_PARAM(0), GET_PARAM(1)) {}
 
- protected:
-  double GetBlockiness() const {
-    return vp9_get_blockiness(source_data_, source_stride_, reference_data_,
-                              reference_stride_, width_, height_);
-  }
+protected:
+    double GetBlockiness() const
+    {
+        return vp9_get_blockiness(source_data_, source_stride_, reference_data_,
+                                  reference_stride_, width_, height_);
+    }
 };
 #endif  // CONFIG_VP9_ENCODER
 
@@ -160,51 +194,55 @@ uint8_t *BlockinessTestBase::source_data_ = NULL;
 uint8_t *BlockinessTestBase::reference_data_ = NULL;
 
 #if CONFIG_VP9_ENCODER
-TEST_P(BlockinessVP9Test, SourceBlockierThanReference) {
-  // Source is blockier than reference.
-  FillRandomBlocky(source_data_, source_stride_);
-  FillConstant(reference_data_, reference_stride_, 128);
-  const double super_blocky = GetBlockiness();
+TEST_P(BlockinessVP9Test, SourceBlockierThanReference)
+{
+    // Source is blockier than reference.
+    FillRandomBlocky(source_data_, source_stride_);
+    FillConstant(reference_data_, reference_stride_, 128);
+    const double super_blocky = GetBlockiness();
 
-  EXPECT_DOUBLE_EQ(0.0, super_blocky)
-      << "Blocky source should produce 0 blockiness.";
+    EXPECT_DOUBLE_EQ(0.0, super_blocky)
+            << "Blocky source should produce 0 blockiness.";
 }
 
-TEST_P(BlockinessVP9Test, ReferenceBlockierThanSource) {
-  // Source is blockier than reference.
-  FillConstant(source_data_, source_stride_, 128);
-  FillRandomBlocky(reference_data_, reference_stride_);
-  const double super_blocky = GetBlockiness();
+TEST_P(BlockinessVP9Test, ReferenceBlockierThanSource)
+{
+    // Source is blockier than reference.
+    FillConstant(source_data_, source_stride_, 128);
+    FillRandomBlocky(reference_data_, reference_stride_);
+    const double super_blocky = GetBlockiness();
 
-  EXPECT_GT(super_blocky, 0.0)
-      << "Blocky reference should score high for blockiness.";
+    EXPECT_GT(super_blocky, 0.0)
+            << "Blocky reference should score high for blockiness.";
 }
 
-TEST_P(BlockinessVP9Test, BlurringDecreasesBlockiness) {
-  // Source is blockier than reference.
-  FillConstant(source_data_, source_stride_, 128);
-  FillRandomBlocky(reference_data_, reference_stride_);
-  const double super_blocky = GetBlockiness();
+TEST_P(BlockinessVP9Test, BlurringDecreasesBlockiness)
+{
+    // Source is blockier than reference.
+    FillConstant(source_data_, source_stride_, 128);
+    FillRandomBlocky(reference_data_, reference_stride_);
+    const double super_blocky = GetBlockiness();
 
-  Blur(reference_data_, reference_stride_, 4);
-  const double less_blocky = GetBlockiness();
+    Blur(reference_data_, reference_stride_, 4);
+    const double less_blocky = GetBlockiness();
 
-  EXPECT_GT(super_blocky, less_blocky)
-      << "A straight blur should decrease blockiness.";
+    EXPECT_GT(super_blocky, less_blocky)
+            << "A straight blur should decrease blockiness.";
 }
 
-TEST_P(BlockinessVP9Test, WorstCaseBlockiness) {
-  // Source is blockier than reference.
-  FillConstant(source_data_, source_stride_, 128);
-  FillCheckerboard(reference_data_, reference_stride_);
+TEST_P(BlockinessVP9Test, WorstCaseBlockiness)
+{
+    // Source is blockier than reference.
+    FillConstant(source_data_, source_stride_, 128);
+    FillCheckerboard(reference_data_, reference_stride_);
 
-  const double super_blocky = GetBlockiness();
+    const double super_blocky = GetBlockiness();
 
-  Blur(reference_data_, reference_stride_, 4);
-  const double less_blocky = GetBlockiness();
+    Blur(reference_data_, reference_stride_, 4);
+    const double less_blocky = GetBlockiness();
 
-  EXPECT_GT(super_blocky, less_blocky)
-      << "A straight blur should decrease blockiness.";
+    EXPECT_GT(super_blocky, less_blocky)
+            << "A straight blur should decrease blockiness.";
 }
 #endif  // CONFIG_VP9_ENCODER
 
@@ -214,8 +252,9 @@ using std::tr1::make_tuple;
 // C functions
 
 #if CONFIG_VP9_ENCODER
-const BlockinessParam c_vp9_tests[] = {
-  make_tuple(320, 240), make_tuple(318, 242), make_tuple(318, 238),
+const BlockinessParam c_vp9_tests[] =
+{
+    make_tuple(320, 240), make_tuple(318, 242), make_tuple(318, 238),
 };
 INSTANTIATE_TEST_CASE_P(C, BlockinessVP9Test, ::testing::ValuesIn(c_vp9_tests));
 #endif

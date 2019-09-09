@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder data
  * Copyright (c) 2015 Rostislav Pehlivanov ( atomnuker gmail com )
  *
@@ -21,74 +21,88 @@
 
 #include "aacenctab.h"
 
-static const uint8_t swb_size_128_96[] = {
+static const uint8_t swb_size_128_96[] =
+{
     4, 4, 4, 4, 4, 4, 8, 8, 8, 16, 28, 36
 };
 
-static const uint8_t swb_size_128_64[] = {
+static const uint8_t swb_size_128_64[] =
+{
     4, 4, 4, 4, 4, 4, 8, 8, 8, 16, 28, 36
 };
 
-static const uint8_t swb_size_128_48[] = {
+static const uint8_t swb_size_128_48[] =
+{
     4, 4, 4, 4, 4, 8, 8, 8, 12, 12, 12, 16, 16, 16
 };
 
-static const uint8_t swb_size_128_24[] = {
+static const uint8_t swb_size_128_24[] =
+{
     4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 12, 12, 16, 16, 20
 };
 
-static const uint8_t swb_size_128_16[] = {
+static const uint8_t swb_size_128_16[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 12, 12, 16, 20, 20
 };
 
-static const uint8_t swb_size_128_8[] = {
+static const uint8_t swb_size_128_8[] =
+{
     4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 12, 16, 20, 20
 };
 
-static const uint8_t swb_size_1024_96[] = {
+static const uint8_t swb_size_1024_96[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8,
     12, 12, 12, 12, 12, 16, 16, 24, 28, 36, 44,
     64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64
 };
 
-static const uint8_t swb_size_1024_64[] = {
+static const uint8_t swb_size_1024_64[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8,
     12, 12, 12, 16, 16, 16, 20, 24, 24, 28, 36,
     40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40
 };
 
-static const uint8_t swb_size_1024_48[] = {
+static const uint8_t swb_size_1024_48[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8,
     12, 12, 12, 12, 16, 16, 20, 20, 24, 24, 28, 28,
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32,
     96
 };
 
-static const uint8_t swb_size_1024_32[] = {
+static const uint8_t swb_size_1024_32[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8,
     12, 12, 12, 12, 16, 16, 20, 20, 24, 24, 28, 28,
     32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32
 };
 
-static const uint8_t swb_size_1024_24[] = {
+static const uint8_t swb_size_1024_24[] =
+{
     4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
     12, 12, 12, 12, 16, 16, 16, 20, 20, 24, 24, 28, 28,
     32, 36, 36, 40, 44, 48, 52, 52, 64, 64, 64, 64, 64
 };
 
-static const uint8_t swb_size_1024_16[] = {
+static const uint8_t swb_size_1024_16[] =
+{
     8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
     12, 12, 12, 12, 12, 12, 12, 12, 12, 16, 16, 16, 16, 20, 20, 20, 24, 24, 28, 28,
     32, 36, 40, 40, 44, 48, 52, 56, 60, 64, 64, 64
 };
 
-static const uint8_t swb_size_1024_8[] = {
+static const uint8_t swb_size_1024_8[] =
+{
     12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12,
     16, 16, 16, 16, 16, 16, 16, 20, 20, 20, 20, 24, 24, 24, 28, 28,
     32, 36, 36, 40, 44, 48, 52, 56, 60, 64, 80
 };
 
-const uint8_t *ff_aac_swb_size_128[] = {
+const uint8_t *ff_aac_swb_size_128[] =
+{
     swb_size_128_96, swb_size_128_96, swb_size_128_64,
     swb_size_128_48, swb_size_128_48, swb_size_128_48,
     swb_size_128_24, swb_size_128_24, swb_size_128_16,
@@ -96,7 +110,8 @@ const uint8_t *ff_aac_swb_size_128[] = {
     swb_size_128_8
 };
 
-const uint8_t *ff_aac_swb_size_1024[] = {
+const uint8_t *ff_aac_swb_size_1024[] =
+{
     swb_size_1024_96, swb_size_1024_96, swb_size_1024_64,
     swb_size_1024_48, swb_size_1024_48, swb_size_1024_32,
     swb_size_1024_24, swb_size_1024_24, swb_size_1024_16,

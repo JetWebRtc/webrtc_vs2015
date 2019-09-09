@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RSO format common data
  * Copyright (c) 2010 Rafael Carre
  *

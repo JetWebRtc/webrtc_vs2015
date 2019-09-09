@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -81,12 +81,13 @@ typedef VAACalcSadFunc*          PVAACalcSadFunc;
 typedef VAACalcSadVarFunc*       PVAACalcSadVarFunc;
 typedef VAACalcSadSsdFunc*       PVAACalcSadSsdFunc;
 
-typedef  struct TagVaaFuncs {
-  PVAACalcSadBgdFunc    pfVAACalcSadBgd;
-  PVAACalcSadSsdBgdFunc pfVAACalcSadSsdBgd;
-  PVAACalcSadFunc       pfVAACalcSad;
-  PVAACalcSadVarFunc    pfVAACalcSadVar;
-  PVAACalcSadSsdFunc    pfVAACalcSadSsd;
+typedef  struct TagVaaFuncs
+{
+    PVAACalcSadBgdFunc    pfVAACalcSadBgd;
+    PVAACalcSadSsdBgdFunc pfVAACalcSadSsdBgd;
+    PVAACalcSadFunc       pfVAACalcSad;
+    PVAACalcSadVarFunc    pfVAACalcSadVar;
+    PVAACalcSadSsdFunc    pfVAACalcSadSsd;
 } SVaaFuncs;
 
 
@@ -132,21 +133,22 @@ VAACalcSadSsdFunc       VAACalcSadSsd_AArch64_neon;
 WELSVP_EXTERN_C_END
 #endif
 
-class CVAACalculation : public IStrategy {
- public:
-  CVAACalculation (int32_t iCpuFlag);
-  ~CVAACalculation();
+class CVAACalculation : public IStrategy
+{
+public:
+    CVAACalculation (int32_t iCpuFlag);
+    ~CVAACalculation();
 
-  EResult Process (int32_t iType, SPixMap* pCurPixMap, SPixMap* pRefPixMap);
-  EResult Set (int32_t iType, void* pParam);
+    EResult Process (int32_t iType, SPixMap* pCurPixMap, SPixMap* pRefPixMap);
+    EResult Set (int32_t iType, void* pParam);
 
- private:
-  void InitVaaFuncs (SVaaFuncs& sVaaFunc, int32_t iCpuFlag);
+private:
+    void InitVaaFuncs (SVaaFuncs& sVaaFunc, int32_t iCpuFlag);
 
- private:
-  SVaaFuncs      m_sVaaFuncs;
-  int32_t       m_iCPUFlag;
-  SVAACalcParam m_sCalcParam;
+private:
+    SVaaFuncs      m_sVaaFuncs;
+    int32_t       m_iCPUFlag;
+    SVAACalcParam m_sCalcParam;
 };
 
 WELSVP_NAMESPACE_END

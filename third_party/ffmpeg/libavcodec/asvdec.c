@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,8 @@ static av_cold void init_vlcs(ASV1Context *a)
 {
     static int done = 0;
 
-    if (!done) {
+    if (!done)
+    {
         done = 1;
 
         INIT_VLC_STATIC(&ccp_vlc, VLC_BITS, 17,
@@ -100,13 +101,16 @@ static inline int asv1_decode_block(ASV1Context *a, int16_t block[64])
 
     block[0] = 8 * get_bits(&a->gb, 8);
 
-    for (i = 0; i < 11; i++) {
+    for (i = 0; i < 11; i++)
+    {
         const int ccp = get_vlc2(&a->gb, ccp_vlc.table, VLC_BITS, 1);
 
-        if (ccp) {
+        if (ccp)
+        {
             if (ccp == 16)
                 break;
-            if (ccp < 0 || i >= 10) {
+            if (ccp < 0 || i >= 10)
+            {
                 av_log(a->avctx, AV_LOG_ERROR, "coded coeff pattern damaged\n");
                 return AVERROR_INVALIDDATA;
             }
@@ -134,7 +138,8 @@ static inline int asv2_decode_block(ASV1Context *a, int16_t block[64])
     block[0] = 8 * asv2_get_bits(&a->gb, 8);
 
     ccp = get_vlc2(&a->gb, dc_ccp_vlc.table, VLC_BITS, 1);
-    if (ccp) {
+    if (ccp)
+    {
         if (ccp & 4)
             block[a->scantable.permutated[1]] = (asv2_get_level(&a->gb) * a->intra_matrix[1]) >> 4;
         if (ccp & 2)
@@ -143,10 +148,12 @@ static inline int asv2_decode_block(ASV1Context *a, int16_t block[64])
             block[a->scantable.permutated[3]] = (asv2_get_level(&a->gb) * a->intra_matrix[3]) >> 4;
     }
 
-    for (i = 1; i < count + 1; i++) {
+    for (i = 1; i < count + 1; i++)
+    {
         const int ccp = get_vlc2(&a->gb, ac_ccp_vlc.table, VLC_BITS, 1);
 
-        if (ccp) {
+        if (ccp)
+        {
             if (ccp & 8)
                 block[a->scantable.permutated[4 * i + 0]] = (asv2_get_level(&a->gb) * a->intra_matrix[4 * i + 0]) >> 4;
             if (ccp & 4)
@@ -167,13 +174,18 @@ static inline int decode_mb(ASV1Context *a, int16_t block[6][64])
 
     a->bdsp.clear_blocks(block[0]);
 
-    if (a->avctx->codec_id == AV_CODEC_ID_ASV1) {
-        for (i = 0; i < 6; i++) {
+    if (a->avctx->codec_id == AV_CODEC_ID_ASV1)
+    {
+        for (i = 0; i < 6; i++)
+        {
             if (asv1_decode_block(a, block[i]) < 0)
                 return -1;
         }
-    } else {
-        for (i = 0; i < 6; i++) {
+    }
+    else
+    {
+        for (i = 0; i < 6; i++)
+        {
             if (asv2_decode_block(a, block[i]) < 0)
                 return -1;
         }
@@ -195,7 +207,8 @@ static inline void idct_put(ASV1Context *a, AVFrame *frame, int mb_x, int mb_y)
     a->idsp.idct_put(dest_y + 8 * linesize,     linesize, block[2]);
     a->idsp.idct_put(dest_y + 8 * linesize + 8, linesize, block[3]);
 
-    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         a->idsp.idct_put(dest_cb, frame->linesize[1], block[4]);
         a->idsp.idct_put(dest_cr, frame->linesize[2], block[5]);
     }
@@ -220,10 +233,13 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     if (!a->bitstream_buffer)
         return AVERROR(ENOMEM);
 
-    if (avctx->codec_id == AV_CODEC_ID_ASV1) {
+    if (avctx->codec_id == AV_CODEC_ID_ASV1)
+    {
         a->bbdsp.bswap_buf((uint32_t *) a->bitstream_buffer,
                            (const uint32_t *) buf, buf_size / 4);
-    } else {
+    }
+    else
+    {
         int i;
         for (i = 0; i < buf_size; i++)
             a->bitstream_buffer[i] = ff_reverse[buf[i]];
@@ -231,8 +247,10 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     init_get_bits(&a->gb, a->bitstream_buffer, buf_size * 8);
 
-    for (mb_y = 0; mb_y < a->mb_height2; mb_y++) {
-        for (mb_x = 0; mb_x < a->mb_width2; mb_x++) {
+    for (mb_y = 0; mb_y < a->mb_height2; mb_y++)
+    {
+        for (mb_x = 0; mb_x < a->mb_width2; mb_x++)
+        {
             if ((ret = decode_mb(a, a->block)) < 0)
                 return ret;
 
@@ -240,9 +258,11 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         }
     }
 
-    if (a->mb_width2 != a->mb_width) {
+    if (a->mb_width2 != a->mb_width)
+    {
         mb_x = a->mb_width2;
-        for (mb_y = 0; mb_y < a->mb_height2; mb_y++) {
+        for (mb_y = 0; mb_y < a->mb_height2; mb_y++)
+        {
             if ((ret = decode_mb(a, a->block)) < 0)
                 return ret;
 
@@ -250,9 +270,11 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         }
     }
 
-    if (a->mb_height2 != a->mb_height) {
+    if (a->mb_height2 != a->mb_height)
+    {
         mb_y = a->mb_height2;
-        for (mb_x = 0; mb_x < a->mb_width; mb_x++) {
+        for (mb_x = 0; mb_x < a->mb_width; mb_x++)
+        {
             if ((ret = decode_mb(a, a->block)) < 0)
                 return ret;
 
@@ -273,7 +295,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     const int scale      = avctx->codec_id == AV_CODEC_ID_ASV1 ? 1 : 2;
     int i;
 
-    if (avctx->extradata_size < 1) {
+    if (avctx->extradata_size < 1)
+    {
         av_log(avctx, AV_LOG_WARNING, "No extradata provided\n");
     }
 
@@ -284,7 +307,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     ff_init_scantable(a->idsp.idct_permutation, &a->scantable, ff_asv_scantab);
     avctx->pix_fmt = AV_PIX_FMT_YUV420P;
 
-    if (avctx->extradata_size < 1 || (a->inv_qscale = avctx->extradata[0]) == 0) {
+    if (avctx->extradata_size < 1 || (a->inv_qscale = avctx->extradata[0]) == 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "illegal qscale 0\n");
         if (avctx->codec_id == AV_CODEC_ID_ASV1)
             a->inv_qscale = 6;
@@ -292,7 +316,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
             a->inv_qscale = 10;
     }
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         int index = ff_asv_scantab[i];
 
         a->intra_matrix[i] = 64 * scale * ff_mpeg1_default_intra_matrix[index] /
@@ -313,7 +338,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
 }
 
 #if CONFIG_ASV1_DECODER
-AVCodec ff_asv1_decoder = {
+AVCodec ff_asv1_decoder =
+{
     .name           = "asv1",
     .long_name      = NULL_IF_CONFIG_SMALL("ASUS V1"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -327,7 +353,8 @@ AVCodec ff_asv1_decoder = {
 #endif
 
 #if CONFIG_ASV2_DECODER
-AVCodec ff_asv2_decoder = {
+AVCodec ff_asv2_decoder =
+{
     .name           = "asv2",
     .long_name      = NULL_IF_CONFIG_SMALL("ASUS V2"),
     .type           = AVMEDIA_TYPE_VIDEO,

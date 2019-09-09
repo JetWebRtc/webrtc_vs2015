@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,46 +20,49 @@
 #include "webrtc/modules/audio_processing/level_controller/noise_spectrum_estimator.h"
 #include "webrtc/modules/audio_processing/utility/ooura_fft.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class ApmDataDumper;
 class AudioBuffer;
 
-class SignalClassifier {
- public:
-  enum class SignalType { kHighlyNonStationary, kNonStationary, kStationary };
+class SignalClassifier
+{
+public:
+    enum class SignalType { kHighlyNonStationary, kNonStationary, kStationary };
 
-  explicit SignalClassifier(ApmDataDumper* data_dumper);
-  ~SignalClassifier();
+    explicit SignalClassifier(ApmDataDumper* data_dumper);
+    ~SignalClassifier();
 
-  void Initialize(int sample_rate_hz);
-  void Analyze(const AudioBuffer& audio, SignalType* signal_type);
+    void Initialize(int sample_rate_hz);
+    void Analyze(const AudioBuffer& audio, SignalType* signal_type);
 
- private:
-  class FrameExtender {
-   public:
-    FrameExtender(size_t frame_size, size_t extended_frame_size);
-    ~FrameExtender();
+private:
+    class FrameExtender
+    {
+    public:
+        FrameExtender(size_t frame_size, size_t extended_frame_size);
+        ~FrameExtender();
 
-    void ExtendFrame(rtc::ArrayView<const float> x,
-                     rtc::ArrayView<float> x_extended);
+        void ExtendFrame(rtc::ArrayView<const float> x,
+                         rtc::ArrayView<float> x_extended);
 
-   private:
-    std::vector<float> x_old_;
+    private:
+        std::vector<float> x_old_;
 
-    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(FrameExtender);
-  };
+        RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(FrameExtender);
+    };
 
-  ApmDataDumper* const data_dumper_;
-  DownSampler down_sampler_;
-  std::unique_ptr<FrameExtender> frame_extender_;
-  NoiseSpectrumEstimator noise_spectrum_estimator_;
-  int sample_rate_hz_;
-  int initialization_frames_left_;
-  int consistent_classification_counter_;
-  SignalType last_signal_type_;
-  const OouraFft ooura_fft_;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(SignalClassifier);
+    ApmDataDumper* const data_dumper_;
+    DownSampler down_sampler_;
+    std::unique_ptr<FrameExtender> frame_extender_;
+    NoiseSpectrumEstimator noise_spectrum_estimator_;
+    int sample_rate_hz_;
+    int initialization_frames_left_;
+    int consistent_classification_counter_;
+    SignalType last_signal_type_;
+    const OouraFft ooura_fft_;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(SignalClassifier);
 };
 
 }  // namespace webrtc

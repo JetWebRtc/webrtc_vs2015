@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW muxers
  * Copyright (C) 2007  Aurelien Jacobs <aurel@gnuage.org>
  *

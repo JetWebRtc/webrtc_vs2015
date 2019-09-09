@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVR demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -52,11 +52,16 @@ static int avr_read_header(AVFormatContext *s)
     avio_skip(s->pb, 8); // sample_name
 
     chan = avio_rb16(s->pb);
-    if (!chan) {
+    if (!chan)
+    {
         st->codec->channels = 1;
-    } else if (chan == 0xFFFFu) {
+    }
+    else if (chan == 0xFFFFu)
+    {
         st->codec->channels = 2;
-    } else {
+    }
+    else
+    {
         avpriv_request_sample(s, "chan %d", chan);
         return AVERROR_PATCHWELCOME;
     }
@@ -76,7 +81,8 @@ static int avr_read_header(AVFormatContext *s)
     avio_skip(s->pb, 64);
 
     st->codec->codec_id = ff_get_pcm_codec_id(bps, 0, 1, sign);
-    if (st->codec->codec_id == AV_CODEC_ID_NONE) {
+    if (st->codec->codec_id == AV_CODEC_ID_NONE)
+    {
         avpriv_request_sample(s, "Bps %d and sign %d", bps, sign);
         return AVERROR_PATCHWELCOME;
     }
@@ -87,7 +93,8 @@ static int avr_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_avr_demuxer = {
+AVInputFormat ff_avr_demuxer =
+{
     .name           = "avr",
     .long_name      = NULL_IF_CONFIG_SMALL("AVR (Audio Visual Research)"),
     .read_probe     = avr_probe,

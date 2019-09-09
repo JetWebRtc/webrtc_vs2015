@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -103,26 +103,27 @@ amm-info@iis.fraunhofer.de
 #define FIXP_FFT_IDX_I(a)  ((a<<1) + 1)
 
 
-typedef enum {
+typedef enum
+{
 
-  HYBRID_2_REAL     = 2,
-  HYBRID_4_CPLX     = 4,
-  HYBRID_8_CPLX     = 8,
-  HYBRID_12_CPLX    = 12
+    HYBRID_2_REAL     = 2,
+    HYBRID_4_CPLX     = 4,
+    HYBRID_8_CPLX     = 8,
+    HYBRID_12_CPLX    = 12
 
 } HYBRID_RES;
 
 typedef struct
 {
-  SCHAR   nQmfBands;
-  SCHAR   frameSize;
-  SCHAR   qmfBufferMove;
+    SCHAR   nQmfBands;
+    SCHAR   frameSize;
+    SCHAR   qmfBufferMove;
 
-  UCHAR   pResolution[3];
+    UCHAR   pResolution[3];
 
-  FIXP_DBL mQmfBufferRealSlot[3][HYBRID_FILTER_LENGTH];   /**< Stores old Qmf samples. */
-  FIXP_DBL mQmfBufferImagSlot[3][HYBRID_FILTER_LENGTH];
-  SCHAR sf_mQmfBuffer;
+    FIXP_DBL mQmfBufferRealSlot[3][HYBRID_FILTER_LENGTH];   /**< Stores old Qmf samples. */
+    FIXP_DBL mQmfBufferImagSlot[3][HYBRID_FILTER_LENGTH];
+    SCHAR sf_mQmfBuffer;
 
 } HYBRID;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Musepack demuxer
  * Copyright (c) 2006 Konstantin Shishkov
  *
@@ -31,12 +31,14 @@
 #define DELAY_FRAMES   32
 
 static const int mpc_rate[4] = { 44100, 48000, 37800, 32000 };
-typedef struct MPCFrame {
+typedef struct MPCFrame
+{
     int64_t pos;
     int size, skip;
-}MPCFrame;
+} MPCFrame;
 
-typedef struct MPCContext {
+typedef struct MPCContext
+{
     int ver;
     uint32_t curframe, lastframe;
     uint32_t fcount;
@@ -58,27 +60,34 @@ static int mpc_read_header(AVFormatContext *s)
     MPCContext *c = s->priv_data;
     AVStream *st;
 
-    if(avio_rl24(s->pb) != MKTAG('M', 'P', '+', 0)){
+    if(avio_rl24(s->pb) != MKTAG('M', 'P', '+', 0))
+    {
         av_log(s, AV_LOG_ERROR, "Not a Musepack file\n");
         return AVERROR_INVALIDDATA;
     }
     c->ver = avio_r8(s->pb);
-    if(c->ver != 0x07 && c->ver != 0x17){
+    if(c->ver != 0x07 && c->ver != 0x17)
+    {
         av_log(s, AV_LOG_ERROR, "Can demux Musepack SV7, got version %02X\n", c->ver);
         return AVERROR_INVALIDDATA;
     }
     c->fcount = avio_rl32(s->pb);
-    if((int64_t)c->fcount * sizeof(MPCFrame) >= UINT_MAX){
+    if((int64_t)c->fcount * sizeof(MPCFrame) >= UINT_MAX)
+    {
         av_log(s, AV_LOG_ERROR, "Too many frames, seeking is not possible\n");
         return AVERROR_INVALIDDATA;
     }
-    if(c->fcount){
+    if(c->fcount)
+    {
         c->frames = av_malloc(c->fcount * sizeof(MPCFrame));
-        if(!c->frames){
+        if(!c->frames)
+        {
             av_log(s, AV_LOG_ERROR, "Cannot allocate seektable\n");
             return AVERROR(ENOMEM);
         }
-    }else{
+    }
+    else
+    {
         av_log(s, AV_LOG_WARNING, "Container reports no frames\n");
     }
     c->curframe = 0;
@@ -104,7 +113,8 @@ static int mpc_read_header(AVFormatContext *s)
     st->duration = c->fcount;
 
     /* try to read APE tags */
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         int64_t pos = avio_tell(s->pb);
         ff_ape_parse_tag(s);
         if (!av_dict_get(s->metadata, "", NULL, AV_DICT_IGNORE_SUFFIX))
@@ -125,7 +135,8 @@ static int mpc_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (c->curframe >= c->fcount && c->fcount)
         return AVERROR_EOF;
 
-    if(c->curframe != c->lastframe + 1){
+    if(c->curframe != c->lastframe + 1)
+    {
         avio_seek(s->pb, c->frames[c->curframe].pos, SEEK_SET);
         c->curbits = c->frames[c->curframe].skip;
     }
@@ -134,16 +145,20 @@ static int mpc_read_packet(AVFormatContext *s, AVPacket *pkt)
     curbits = c->curbits;
     pos = avio_tell(s->pb);
     tmp = avio_rl32(s->pb);
-    if(curbits <= 12){
+    if(curbits <= 12)
+    {
         size2 = (tmp >> (12 - curbits)) & 0xFFFFF;
-    }else{
+    }
+    else
+    {
         size2 = (tmp << (curbits - 12) | avio_rl32(s->pb) >> (44 - curbits)) & 0xFFFFF;
     }
     curbits += 20;
     avio_seek(s->pb, pos, SEEK_SET);
 
     size = ((size2 + curbits + 31) & ~31) >> 3;
-    if(cur == c->frames_noted && c->fcount){
+    if(cur == c->frames_noted && c->fcount)
+    {
         c->frames[cur].pos = pos;
         c->frames[cur].size = size;
         c->frames[cur].skip = curbits - 20;
@@ -165,7 +180,8 @@ static int mpc_read_packet(AVFormatContext *s, AVPacket *pkt)
     ret = avio_read(s->pb, pkt->data + 4, size);
     if(c->curbits)
         avio_seek(s->pb, -4, SEEK_CUR);
-    if(ret < size){
+    if(ret < size)
+    {
         av_free_packet(pkt);
         return ret < 0 ? ret : AVERROR(EIO);
     }
@@ -199,7 +215,8 @@ static int mpc_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
     uint32_t lastframe;
 
     /* if found, seek there */
-    if (index >= 0 && st->index_entries[st->nb_index_entries-1].timestamp >= timestamp - DELAY_FRAMES){
+    if (index >= 0 && st->index_entries[st->nb_index_entries-1].timestamp >= timestamp - DELAY_FRAMES)
+    {
         c->curframe = st->index_entries[index].pos;
         return 0;
     }
@@ -211,9 +228,11 @@ static int mpc_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
        we reach desired position */
     lastframe = c->curframe;
     if(c->frames_noted) c->curframe = c->frames_noted - 1;
-    while(c->curframe < timestamp){
+    while(c->curframe < timestamp)
+    {
         ret = av_read_frame(s, pkt);
-        if (ret < 0){
+        if (ret < 0)
+        {
             c->curframe = lastframe;
             return ret;
         }
@@ -223,7 +242,8 @@ static int mpc_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
 }
 
 
-AVInputFormat ff_mpc_demuxer = {
+AVInputFormat ff_mpc_demuxer =
+{
     .name           = "mpc",
     .long_name      = NULL_IF_CONFIG_SMALL("Musepack"),
     .priv_data_size = sizeof(MPCContext),

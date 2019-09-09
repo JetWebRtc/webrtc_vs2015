@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011-2012 Derek Buitenhuis
  *
  * This file is part of FFmpeg.
@@ -54,14 +54,16 @@
 #define UTV_BT709
 #endif
 
-typedef struct {
+typedef struct
+{
     uint32_t version;
     uint32_t original_format;
     uint32_t frameinfo_size;
     uint32_t flags;
 } UtVideoExtra;
 
-typedef struct {
+typedef struct
+{
     CCodec *codec;
     unsigned int buf_size;
     uint8_t *buffer;

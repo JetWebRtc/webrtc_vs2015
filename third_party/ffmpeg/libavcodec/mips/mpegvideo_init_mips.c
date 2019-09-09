@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -39,7 +39,7 @@ static av_cold void dct_unquantize_init_mmi(MpegEncContext *s)
     s->dct_unquantize_mpeg1_inter = ff_dct_unquantize_mpeg1_inter_mmi;
 
     if (!(s->avctx->flags & AV_CODEC_FLAG_BITEXACT))
-      s->dct_unquantize_mpeg2_intra = ff_dct_unquantize_mpeg2_intra_mmi;
+        s->dct_unquantize_mpeg2_intra = ff_dct_unquantize_mpeg2_intra_mmi;
 
     s->denoise_dct= ff_denoise_dct_mmi;
 }

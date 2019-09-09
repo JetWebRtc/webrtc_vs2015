@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DPX parser
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -29,7 +29,8 @@
 
 #include "parser.h"
 
-typedef struct DPXParseContext {
+typedef struct DPXParseContext
+{
     ParseContext pc;
     uint32_t index;
     uint32_t fsize;
@@ -52,11 +53,14 @@ static int dpx_parse(AVCodecParserContext *s, AVCodecContext *avctx,
     if (buf_size == 0)
         next = 0;
 
-    if (!d->pc.frame_start_found) {
-        for (; i < buf_size; i++) {
+    if (!d->pc.frame_start_found)
+    {
+        for (; i < buf_size; i++)
+        {
             state = (state << 8) | buf[i];
             if (state == MKBETAG('S','D','P','X') ||
-                state == MKTAG('S','D','P','X')) {
+                    state == MKTAG('S','D','P','X'))
+            {
                 d->pc.frame_start_found = 1;
                 d->is_be = state == MKBETAG('S','D','P','X');
                 d->index = 0;
@@ -64,8 +68,11 @@ static int dpx_parse(AVCodecParserContext *s, AVCodecContext *avctx,
             }
         }
         d->pc.state = state;
-    } else {
-        if (d->remaining_size) {
+    }
+    else
+    {
+        if (d->remaining_size)
+        {
             i = FFMIN(d->remaining_size, buf_size);
             d->remaining_size -= i;
             if (d->remaining_size)
@@ -73,12 +80,15 @@ static int dpx_parse(AVCodecParserContext *s, AVCodecContext *avctx,
         }
     }
 
-    for (; d->pc.frame_start_found && i < buf_size; i++) {
+    for (; d->pc.frame_start_found && i < buf_size; i++)
+    {
         d->pc.state = (d->pc.state << 8) | buf[i];
         d->index++;
-        if (d->index == 17) {
+        if (d->index == 17)
+        {
             d->fsize = d->is_be ? d->pc.state : av_bswap32(d->pc.state);
-            if (d->fsize <= 1664) {
+            if (d->fsize <= 1664)
+            {
                 d->pc.frame_start_found = 0;
                 goto flush;
             }
@@ -88,9 +98,12 @@ static int dpx_parse(AVCodecParserContext *s, AVCodecContext *avctx,
                 i += d->fsize - 19;
 
             break;
-        } else if (d->index > 17) {
+        }
+        else if (d->index > 17)
+        {
             if (d->pc.state == MKBETAG('S','D','P','X') ||
-                d->pc.state == MKTAG('S','D','P','X')) {
+                    d->pc.state == MKTAG('S','D','P','X'))
+            {
                 next = i - 3;
                 break;
             }
@@ -108,7 +121,8 @@ flush:
     return next;
 }
 
-AVCodecParser ff_dpx_parser = {
+AVCodecParser ff_dpx_parser =
+{
     .codec_ids      = { AV_CODEC_ID_DPX },
     .priv_data_size = sizeof(DPXParseContext),
     .parser_parse   = dpx_parse,

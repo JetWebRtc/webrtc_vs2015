@@ -1,4 +1,4 @@
-/*
+﻿/*
  * YUV4MPEG muxer
  * Copyright (c) 2001, 2002, 2003 Fabrice Bellard
  *
@@ -48,15 +48,23 @@ static int yuv4_generate_header(AVFormatContext *s, char* buf)
     if (aspectn == 0 && aspectd == 1)
         aspectd = 0;  // 0:0 means unknown
 
-    switch (st->codec->field_order) {
+    switch (st->codec->field_order)
+    {
     case AV_FIELD_TB:
-    case AV_FIELD_TT: inter = 't'; break;
+    case AV_FIELD_TT:
+        inter = 't';
+        break;
     case AV_FIELD_BT:
-    case AV_FIELD_BB: inter = 'b'; break;
-    default:          inter = 'p'; break;
+    case AV_FIELD_BB:
+        inter = 'b';
+        break;
+    default:
+        inter = 'p';
+        break;
     }
 
-    switch (st->codec->pix_fmt) {
+    switch (st->codec->pix_fmt)
+    {
     case AV_PIX_FMT_GRAY8:
         colorspace = " Cmono";
         break;
@@ -67,10 +75,17 @@ static int yuv4_generate_header(AVFormatContext *s, char* buf)
         colorspace = " C411 XYSCSS=411";
         break;
     case AV_PIX_FMT_YUV420P:
-        switch (st->codec->chroma_sample_location) {
-        case AVCHROMA_LOC_TOPLEFT: colorspace = " C420paldv XYSCSS=420PALDV"; break;
-        case AVCHROMA_LOC_LEFT:    colorspace = " C420mpeg2 XYSCSS=420MPEG2"; break;
-        default:                   colorspace = " C420jpeg XYSCSS=420JPEG";   break;
+        switch (st->codec->chroma_sample_location)
+        {
+        case AVCHROMA_LOC_TOPLEFT:
+            colorspace = " C420paldv XYSCSS=420PALDV";
+            break;
+        case AVCHROMA_LOC_LEFT:
+            colorspace = " C420mpeg2 XYSCSS=420MPEG2";
+            break;
+        default:
+            colorspace = " C420jpeg XYSCSS=420JPEG";
+            break;
         }
         break;
     case AV_PIX_FMT_YUV422P:
@@ -149,13 +164,17 @@ static int yuv4_write_packet(AVFormatContext *s, AVPacket *pkt)
     picture = &picture_tmp;
 
     /* for the first packet we have to output the header as well */
-    if (*first_pkt) {
+    if (*first_pkt)
+    {
         *first_pkt = 0;
-        if (yuv4_generate_header(s, buf2) < 0) {
+        if (yuv4_generate_header(s, buf2) < 0)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Error. YUV4MPEG stream header write failed.\n");
             return AVERROR(EIO);
-        } else {
+        }
+        else
+        {
             avio_write(pb, buf2, strlen(buf2));
         }
     }
@@ -169,7 +188,8 @@ static int yuv4_write_packet(AVFormatContext *s, AVPacket *pkt)
 
     ptr = picture->data[0];
 
-    switch (st->codec->pix_fmt) {
+    switch (st->codec->pix_fmt)
+    {
     case AV_PIX_FMT_GRAY8:
     case AV_PIX_FMT_YUV411P:
     case AV_PIX_FMT_YUV420P:
@@ -200,13 +220,15 @@ static int yuv4_write_packet(AVFormatContext *s, AVPacket *pkt)
         return AVERROR(EINVAL);
     }
 
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         avio_write(pb, ptr, width);
         ptr += picture->linesize[0];
     }
 
     if (st->codec->pix_fmt != AV_PIX_FMT_GRAY8 &&
-        st->codec->pix_fmt != AV_PIX_FMT_GRAY16) {
+            st->codec->pix_fmt != AV_PIX_FMT_GRAY16)
+    {
         // Adjust for smaller Cb and Cr planes
         av_pix_fmt_get_chroma_sub_sample(st->codec->pix_fmt, &h_chroma_shift,
                                          &v_chroma_shift);
@@ -215,11 +237,13 @@ static int yuv4_write_packet(AVFormatContext *s, AVPacket *pkt)
 
         ptr1 = picture->data[1];
         ptr2 = picture->data[2];
-        for (i = 0; i < height; i++) {     /* Cb */
+        for (i = 0; i < height; i++)       /* Cb */
+        {
             avio_write(pb, ptr1, width);
             ptr1 += picture->linesize[1];
         }
-        for (i = 0; i < height; i++) {     /* Cr */
+        for (i = 0; i < height; i++)       /* Cr */
+        {
             avio_write(pb, ptr2, width);
             ptr2 += picture->linesize[2];
         }
@@ -235,12 +259,14 @@ static int yuv4_write_header(AVFormatContext *s)
     if (s->nb_streams != 1)
         return AVERROR(EIO);
 
-    if (s->streams[0]->codec->codec_id != AV_CODEC_ID_RAWVIDEO) {
+    if (s->streams[0]->codec->codec_id != AV_CODEC_ID_RAWVIDEO)
+    {
         av_log(s, AV_LOG_ERROR, "ERROR: Only rawvideo supported.\n");
         return AVERROR_INVALIDDATA;
     }
 
-    switch (s->streams[0]->codec->pix_fmt) {
+    switch (s->streams[0]->codec->pix_fmt)
+    {
     case AV_PIX_FMT_YUV411P:
         av_log(s, AV_LOG_WARNING, "Warning: generating rarely used 4:1:1 YUV "
                "stream, some mjpegtools might not work.\n");
@@ -266,7 +292,8 @@ static int yuv4_write_header(AVFormatContext *s)
     case AV_PIX_FMT_YUV420P16:
     case AV_PIX_FMT_YUV422P16:
     case AV_PIX_FMT_YUV444P16:
-        if (s->strict_std_compliance >= FF_COMPLIANCE_NORMAL) {
+        if (s->strict_std_compliance >= FF_COMPLIANCE_NORMAL)
+        {
             av_log(s, AV_LOG_ERROR, "'%s' is not a official yuv4mpegpipe pixel format. "
                    "Use '-strict -1' to encode to this pixel format.\n",
                    av_get_pix_fmt_name(s->streams[0]->codec->pix_fmt));
@@ -292,7 +319,8 @@ static int yuv4_write_header(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_yuv4mpegpipe_muxer = {
+AVOutputFormat ff_yuv4mpegpipe_muxer =
+{
     .name              = "yuv4mpegpipe",
     .long_name         = NULL_IF_CONFIG_SMALL("YUV4MPEG pipe"),
     .extensions        = "y4m",

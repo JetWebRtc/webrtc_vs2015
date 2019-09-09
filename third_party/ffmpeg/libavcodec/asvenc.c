@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -44,9 +44,12 @@ static inline void asv1_put_level(PutBitContext *pb, int level)
 {
     unsigned int index = level + 3;
 
-    if (index <= 6) {
+    if (index <= 6)
+    {
         put_bits(pb, ff_asv_level_tab[index][1], ff_asv_level_tab[index][0]);
-    } else {
+    }
+    else
+    {
         put_bits(pb, ff_asv_level_tab[3][1], ff_asv_level_tab[3][0]);
         put_sbits(pb, 8, level);
     }
@@ -56,11 +59,15 @@ static inline void asv2_put_level(ASV1Context *a, PutBitContext *pb, int level)
 {
     unsigned int index = level + 31;
 
-    if (index <= 62) {
+    if (index <= 62)
+    {
         put_bits(pb, ff_asv2_level_tab[index][1], ff_asv2_level_tab[index][0]);
-    } else {
+    }
+    else
+    {
         put_bits(pb, ff_asv2_level_tab[31][1], ff_asv2_level_tab[31][0]);
-        if (level < -128 || level > 127) {
+        if (level < -128 || level > 127)
+        {
             av_log(a->avctx, AV_LOG_WARNING, "Cliping level %d, increase qscale\n", level);
             level = av_clip_int8(level);
         }
@@ -76,7 +83,8 @@ static inline void asv1_encode_block(ASV1Context *a, int16_t block[64])
     put_bits(&a->pb, 8, (block[0] + 32) >> 6);
     block[0] = 0;
 
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++)
+    {
         const int index = ff_asv_scantab[4 * i];
         int ccp         = 0;
 
@@ -93,7 +101,8 @@ static inline void asv1_encode_block(ASV1Context *a, int16_t block[64])
                                  a->q_intra_matrix[index + 9] + (1 << 15)) >> 16))
             ccp |= 1;
 
-        if (ccp) {
+        if (ccp)
+        {
             for (; nc_count; nc_count--)
                 put_bits(&a->pb, ff_asv_ccp_tab[0][1], ff_asv_ccp_tab[0][0]);
 
@@ -107,7 +116,9 @@ static inline void asv1_encode_block(ASV1Context *a, int16_t block[64])
                 asv1_put_level(&a->pb, block[index + 1]);
             if (ccp & 1)
                 asv1_put_level(&a->pb, block[index + 9]);
-        } else {
+        }
+        else
+        {
             nc_count++;
         }
     }
@@ -119,7 +130,8 @@ static inline void asv2_encode_block(ASV1Context *a, int16_t block[64])
     int i;
     int count = 0;
 
-    for (count = 63; count > 3; count--) {
+    for (count = 63; count > 3; count--)
+    {
         const int index = ff_asv_scantab[count];
         if ((block[index] * a->q_intra_matrix[index] + (1 << 15)) >> 16)
             break;
@@ -131,7 +143,8 @@ static inline void asv2_encode_block(ASV1Context *a, int16_t block[64])
     asv2_put_bits(&a->pb, 8, (block[0] + 32) >> 6);
     block[0] = 0;
 
-    for (i = 0; i <= count; i++) {
+    for (i = 0; i <= count; i++)
+    {
         const int index = ff_asv_scantab[4 * i];
         int ccp         = 0;
 
@@ -154,7 +167,8 @@ static inline void asv2_encode_block(ASV1Context *a, int16_t block[64])
         else
             put_bits(&a->pb, ff_asv_dc_ccp_tab[ccp][1], ff_asv_dc_ccp_tab[ccp][0]);
 
-        if (ccp) {
+        if (ccp)
+        {
             if (ccp & 8)
                 asv2_put_level(a, &a->pb, block[index + 0]);
             if (ccp & 4)
@@ -173,16 +187,21 @@ static inline int encode_mb(ASV1Context *a, int16_t block[6][64])
 {
     int i;
 
-    if (a->pb.buf_end - a->pb.buf - (put_bits_count(&a->pb) >> 3) < MAX_MB_SIZE) {
+    if (a->pb.buf_end - a->pb.buf - (put_bits_count(&a->pb) >> 3) < MAX_MB_SIZE)
+    {
         av_log(a->avctx, AV_LOG_ERROR, "encoded frame too large\n");
         return -1;
     }
 
-    if (a->avctx->codec_id == AV_CODEC_ID_ASV1) {
+    if (a->avctx->codec_id == AV_CODEC_ID_ASV1)
+    {
         for (i = 0; i < 6; i++)
             asv1_encode_block(a, block[i]);
-    } else {
-        for (i = 0; i < 6; i++) {
+    }
+    else
+    {
+        for (i = 0; i < 6; i++)
+        {
             asv2_encode_block(a, block[i]);
         }
     }
@@ -207,7 +226,8 @@ static inline void dct_get(ASV1Context *a, const AVFrame *frame,
     for (i = 0; i < 4; i++)
         a->fdsp.fdct(block[i]);
 
-    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(a->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         a->pdsp.get_pixels(block[4], ptr_cb, frame->linesize[1]);
         a->pdsp.get_pixels(block[5], ptr_cr, frame->linesize[2]);
         for (i = 4; i < 6; i++)
@@ -222,7 +242,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     int size, ret;
     int mb_x, mb_y;
 
-    if (pict->width % 16 || pict->height % 16) {
+    if (pict->width % 16 || pict->height % 16)
+    {
         AVFrame *clone = av_frame_alloc();
         int i;
 
@@ -232,18 +253,21 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
         clone->width  = FFALIGN(pict->width, 16);
         clone->height = FFALIGN(pict->height, 16);
         ret = av_frame_get_buffer(clone, 32);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_frame_free(&clone);
             return ret;
         }
 
         ret = av_frame_copy(clone, pict);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_frame_free(&clone);
             return ret;
         }
 
-        for (i = 0; i<3; i++) {
+        for (i = 0; i<3; i++)
+        {
             int x, y;
             int w  = FF_CEIL_RSHIFT(pict->width, !!i);
             int h  = FF_CEIL_RSHIFT(pict->height, !!i);
@@ -270,24 +294,30 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     init_put_bits(&a->pb, pkt->data, pkt->size);
 
-    for (mb_y = 0; mb_y < a->mb_height2; mb_y++) {
-        for (mb_x = 0; mb_x < a->mb_width2; mb_x++) {
+    for (mb_y = 0; mb_y < a->mb_height2; mb_y++)
+    {
+        for (mb_x = 0; mb_x < a->mb_width2; mb_x++)
+        {
             dct_get(a, pict, mb_x, mb_y);
             encode_mb(a, a->block);
         }
     }
 
-    if (a->mb_width2 != a->mb_width) {
+    if (a->mb_width2 != a->mb_width)
+    {
         mb_x = a->mb_width2;
-        for (mb_y = 0; mb_y < a->mb_height2; mb_y++) {
+        for (mb_y = 0; mb_y < a->mb_height2; mb_y++)
+        {
             dct_get(a, pict, mb_x, mb_y);
             encode_mb(a, a->block);
         }
     }
 
-    if (a->mb_height2 != a->mb_height) {
+    if (a->mb_height2 != a->mb_height)
+    {
         mb_y = a->mb_height2;
-        for (mb_x = 0; mb_x < a->mb_width; mb_x++) {
+        for (mb_x = 0; mb_x < a->mb_width; mb_x++)
+        {
             dct_get(a, pict, mb_x, mb_y);
             encode_mb(a, a->block);
         }
@@ -300,10 +330,13 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
 
     size = put_bits_count(&a->pb) / 32;
 
-    if (avctx->codec_id == AV_CODEC_ID_ASV1) {
+    if (avctx->codec_id == AV_CODEC_ID_ASV1)
+    {
         a->bbdsp.bswap_buf((uint32_t *) pkt->data,
                            (uint32_t *) pkt->data, size);
-    } else {
+    }
+    else
+    {
         int i;
         for (i = 0; i < 4 * size; i++)
             pkt->data[i] = ff_reverse[pkt->data[i]];
@@ -339,11 +372,15 @@ static av_cold int encode_init(AVCodecContext *avctx)
     ((uint32_t *) avctx->extradata)[0] = av_le2ne32(a->inv_qscale);
     ((uint32_t *) avctx->extradata)[1] = av_le2ne32(AV_RL32("ASUS"));
 
-    for (i = 0; i < 64; i++) {
-        if (a->fdsp.fdct == ff_fdct_ifast) {
+    for (i = 0; i < 64; i++)
+    {
+        if (a->fdsp.fdct == ff_fdct_ifast)
+        {
             int q = 32LL * scale * ff_mpeg1_default_intra_matrix[i] * ff_aanscales[i];
             a->q_intra_matrix[i] = (((int64_t)a->inv_qscale << 30) + q / 2) / q;
-        } else {
+        }
+        else
+        {
             int q = 32 * scale * ff_mpeg1_default_intra_matrix[i];
             a->q_intra_matrix[i] = ((a->inv_qscale << 16) + q / 2) / q;
         }
@@ -353,7 +390,8 @@ static av_cold int encode_init(AVCodecContext *avctx)
 }
 
 #if CONFIG_ASV1_ENCODER
-AVCodec ff_asv1_encoder = {
+AVCodec ff_asv1_encoder =
+{
     .name           = "asv1",
     .long_name      = NULL_IF_CONFIG_SMALL("ASUS V1"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -361,14 +399,17 @@ AVCodec ff_asv1_encoder = {
     .priv_data_size = sizeof(ASV1Context),
     .init           = encode_init,
     .encode2        = encode_frame,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE,
 };
 #endif
 
 #if CONFIG_ASV2_ENCODER
-AVCodec ff_asv2_encoder = {
+AVCodec ff_asv2_encoder =
+{
     .name           = "asv2",
     .long_name      = NULL_IF_CONFIG_SMALL("ASUS V2"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -376,8 +417,10 @@ AVCodec ff_asv2_encoder = {
     .priv_data_size = sizeof(ASV1Context),
     .init           = encode_init,
     .encode2        = encode_frame,
-    .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_YUV420P,
-                                                     AV_PIX_FMT_NONE },
+    .pix_fmts       = (const enum AVPixelFormat[]) {
+        AV_PIX_FMT_YUV420P,
+        AV_PIX_FMT_NONE
+    },
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE,
 };
 #endif

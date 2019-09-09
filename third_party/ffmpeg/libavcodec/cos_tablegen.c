@@ -37,14 +37,17 @@ static int clip_f15(int v)
 
 static void printval(double val, int fixed)
 {
-    if (fixed) {
+    if (fixed)
+    {
         /* lrint() isn't always available, so round and cast manually. */
         double new_val = val * (double) (1 << 15);
 
         new_val = new_val >= 0 ? floor(new_val + 0.5) : ceil(new_val - 0.5);
 
         printf(" "FIXEDFMT",", clip_f15((long int) new_val));
-    } else {
+    }
+    else
+    {
         printf(" "FLOATFMT",", val);
     }
 }
@@ -59,11 +62,13 @@ int main(int argc, char *argv[])
     printf("/* This file was automatically generated. */\n");
     printf("#define FFT_FLOAT %d\n", !fixed);
     printf("#include \"libavcodec/%s\"\n", do_sin ? "rdft.h" : "fft.h");
-    for (i = 4; i <= BITS; i++) {
+    for (i = 4; i <= BITS; i++)
+    {
         int m = 1 << i;
         double freq = 2*3.14159265358979323846/m;
         printf("%s(%i) = {\n   ", do_sin ? "SINTABLE" : "COSTABLE", m);
-        for (j = 0; j < m/2 - 1; j++) {
+        for (j = 0; j < m/2 - 1; j++)
+        {
             int idx = j > m/4 ? m/2 - j : j;
             if (do_sin && j >= m/4)
                 idx = m/4 - j;

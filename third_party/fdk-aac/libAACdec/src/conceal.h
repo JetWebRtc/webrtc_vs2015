@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -104,26 +104,26 @@ void CConcealment_InitChannelData (CConcealmentInfo *hConcealmentInfo,
                                    int  samplesPerFrame);
 
 CConcealmentMethod
-     CConcealment_GetMethod       (CConcealParams *pConcealCommonData);
+CConcealment_GetMethod       (CConcealParams *pConcealCommonData);
 
 UINT
-  CConcealment_GetDelay           (CConcealParams *pConcealCommonData);
+CConcealment_GetDelay           (CConcealParams *pConcealCommonData);
 
 AAC_DECODER_ERROR
-     CConcealment_SetParams       (CConcealParams *concealParams,
-                                   int  method,
-                                   int  fadeOutSlope,
-                                   int  fadeInSlope,
-                                   int  muteRelease,
-                                   int  comfNoiseLevel);
+CConcealment_SetParams       (CConcealParams *concealParams,
+                              int  method,
+                              int  fadeOutSlope,
+                              int  fadeInSlope,
+                              int  muteRelease,
+                              int  comfNoiseLevel);
 
 CConcealmentState
-     CConcealment_GetState        (CConcealmentInfo *hConcealmentInfo);
+CConcealment_GetState        (CConcealmentInfo *hConcealmentInfo);
 
 AAC_DECODER_ERROR
-     CConcealment_SetAttenuation  (CConcealParams *concealParams,
-                                   SHORT *fadeOutAttenuationVector,
-                                   SHORT *fadeInAttenuationVector);
+CConcealment_SetAttenuation  (CConcealParams *concealParams,
+                              SHORT *fadeOutAttenuationVector,
+                              SHORT *fadeInAttenuationVector);
 
 void CConcealment_Store           (CConcealmentInfo *hConcealmentInfo,
                                    CAacDecoderChannelInfo *pAacDecoderChannelInfo,
@@ -139,8 +139,8 @@ int  CConcealment_Apply           (CConcealmentInfo *hConcealmentInfo,
                                    const UINT flags);
 
 FIXP_DBL
-     CConcealment_GetFadeFactor   (CConcealmentInfo *hConcealmentInfo,
-                                   const int fPreviousFactor);
+CConcealment_GetFadeFactor   (CConcealmentInfo *hConcealmentInfo,
+                              const int fPreviousFactor);
 
 int  CConcealment_GetLastFrameOk  (CConcealmentInfo *hConcealmentInfo,
                                    const int fBeforeApply);

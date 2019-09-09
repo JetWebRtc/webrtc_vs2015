@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,42 +17,57 @@
 
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 
-class Bye : public RtcpPacket {
- public:
-  static constexpr uint8_t kPacketType = 203;
+class Bye : public RtcpPacket
+{
+public:
+    static constexpr uint8_t kPacketType = 203;
 
-  Bye();
-  ~Bye() override {}
+    Bye();
+    ~Bye() override {}
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& packet);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& packet);
 
-  void SetSenderSsrc(uint32_t ssrc) { sender_ssrc_ = ssrc; }
-  bool SetCsrcs(std::vector<uint32_t> csrcs);
-  void SetReason(std::string reason);
+    void SetSenderSsrc(uint32_t ssrc)
+    {
+        sender_ssrc_ = ssrc;
+    }
+    bool SetCsrcs(std::vector<uint32_t> csrcs);
+    void SetReason(std::string reason);
 
-  uint32_t sender_ssrc() const { return sender_ssrc_; }
-  const std::vector<uint32_t>& csrcs() const { return csrcs_; }
-  const std::string& reason() const { return reason_; }
+    uint32_t sender_ssrc() const
+    {
+        return sender_ssrc_;
+    }
+    const std::vector<uint32_t>& csrcs() const
+    {
+        return csrcs_;
+    }
+    const std::string& reason() const
+    {
+        return reason_;
+    }
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
- private:
-  static const int kMaxNumberOfCsrcs = 0x1f - 1;  // First item is sender SSRC.
+private:
+    static const int kMaxNumberOfCsrcs = 0x1f - 1;  // First item is sender SSRC.
 
-  size_t BlockLength() const override;
+    size_t BlockLength() const override;
 
-  uint32_t sender_ssrc_;
-  std::vector<uint32_t> csrcs_;
-  std::string reason_;
+    uint32_t sender_ssrc_;
+    std::vector<uint32_t> csrcs_;
+    std::string reason_;
 };
 
 }  // namespace rtcp

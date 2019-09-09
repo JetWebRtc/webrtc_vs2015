@@ -1,4 +1,4 @@
-/*
+﻿/*
  * arbitrary precision integers
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -33,7 +33,8 @@
 
 #define AV_INTEGER_SIZE 8
 
-typedef struct AVInteger{
+typedef struct AVInteger
+{
     uint16_t v[AV_INTEGER_SIZE];
 } AVInteger;
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Brian Foley
  * Copyright (c) 2002 Dieter Shirley
  * Copyright (c) 2003-2004 Romain Dolbeau <romain@dolbeau.org>
@@ -66,7 +66,8 @@ static int sad16_x2_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
     vector unsigned char perm1, perm2, pix2v, pix2iv;
 
     GET_PERM(perm1, perm2, pix2);
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read unaligned pixels into our vectors. The vectors are as follows:
          * pix1v: pix1[0] - pix1[15]
          * pix2v: pix2[0] - pix2[15]      pix2iv: pix2[1] - pix2[16] */
@@ -116,7 +117,8 @@ static int sad16_y2_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
      * Split the pixel vectors into shorts. */
     vector unsigned char pix2v = VEC_LD(0, pix2);
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read unaligned pixels into our vectors. The vectors are as follows:
          * pix1v: pix1[0] - pix1[15]
          * pix3v: pix3[0] - pix3[15] */
@@ -184,7 +186,8 @@ static int sad16_xy2_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
     vector unsigned short t2 = vec_add(pix2lv, pix2ilv);
     vector unsigned short t3, t4;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read unaligned pixels into our vectors. The vectors are as follows:
          * pix1v: pix1[0] - pix1[15]
          * pix3v: pix3[0] - pix3[15]      pix3iv: pix3[1] - pix3[16] */
@@ -243,7 +246,8 @@ static int sad16_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
     vector unsigned int sad = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumdiffs;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read potentially unaligned pixels into t1 and t2. */
         vector unsigned char t1 =vec_ld(0, pix1);
         vector unsigned char t2 = VEC_LD(0, pix2);
@@ -277,11 +281,14 @@ static int sad8_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
         (const vector unsigned int) vec_splat_u32(0);
     const vector unsigned char permclear =
         (vector unsigned char)
-        { 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0 };
+    {
+        255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0
+    };
     vector unsigned int sad = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumdiffs;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read potentially unaligned pixels into t1 and t2.
          * Since we're reading 16 pixels, and actually only want 8,
          * mask out the last 8 pixels. The 0s don't change the sum. */
@@ -321,11 +328,14 @@ static int sse8_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
         (const vector unsigned int) vec_splat_u32(0);
     const vector unsigned char permclear =
         (vector unsigned char)
-        { 255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0 };
+    {
+        255, 255, 255, 255, 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0
+    };
     vector unsigned int sum = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumsqr;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read potentially unaligned pixels into t1 and t2.
          * Since we're reading 16 pixels, and actually only want 8,
          * mask out the last 8 pixels. The 0s don't change the sum. */
@@ -367,7 +377,8 @@ static int sse16_altivec(MpegEncContext *v, uint8_t *pix1, uint8_t *pix2,
     vector unsigned int sum = (vector unsigned int) vec_splat_u32(0);
     vector signed int sumsqr;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         /* Read potentially unaligned pixels into t1 and t2. */
         vector unsigned char t1 = vec_ld(0, pix1);
         vector unsigned char t2 = VEC_LD(0, pix2);
@@ -402,26 +413,41 @@ static int hadamard8_diff8x8_altivec(MpegEncContext *s, uint8_t *dst,
     register const vector unsigned char vzero =
         (const vector unsigned char) vec_splat_u8(0);
     register vector signed short temp0, temp1, temp2, temp3, temp4,
-                                 temp5, temp6, temp7;
+             temp5, temp6, temp7;
     {
         register const vector signed short vprod1 =
-            (const vector signed short) { 1, -1, 1, -1, 1, -1, 1, -1 };
+            (const vector signed short)
+        {
+            1, -1, 1, -1, 1, -1, 1, -1
+        };
         register const vector signed short vprod2 =
-            (const vector signed short) { 1, 1, -1, -1, 1, 1, -1, -1 };
+            (const vector signed short)
+        {
+            1, 1, -1, -1, 1, 1, -1, -1
+        };
         register const vector signed short vprod3 =
-            (const vector signed short) { 1, 1, 1, 1, -1, -1, -1, -1 };
+            (const vector signed short)
+        {
+            1, 1, 1, 1, -1, -1, -1, -1
+        };
         register const vector unsigned char perm1 =
             (const vector unsigned char)
-            { 0x02, 0x03, 0x00, 0x01, 0x06, 0x07, 0x04, 0x05,
-              0x0A, 0x0B, 0x08, 0x09, 0x0E, 0x0F, 0x0C, 0x0D };
+        {
+            0x02, 0x03, 0x00, 0x01, 0x06, 0x07, 0x04, 0x05,
+                  0x0A, 0x0B, 0x08, 0x09, 0x0E, 0x0F, 0x0C, 0x0D
+        };
         register const vector unsigned char perm2 =
             (const vector unsigned char)
-            { 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-              0x0C, 0x0D, 0x0E, 0x0F, 0x08, 0x09, 0x0A, 0x0B };
+        {
+            0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
+                  0x0C, 0x0D, 0x0E, 0x0F, 0x08, 0x09, 0x0A, 0x0B
+        };
         register const vector unsigned char perm3 =
             (const vector unsigned char)
-            { 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-              0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
+        {
+            0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+        };
 
 
 #define ONEITERBUTTERFLY(i, res)                                            \
@@ -526,49 +552,64 @@ static int hadamard8_diff16x8_altivec(MpegEncContext *s, uint8_t *dst,
 {
     int __attribute__((aligned(16))) sum;
     register vector signed short
-        temp0 __asm__ ("v0"),
-        temp1 __asm__ ("v1"),
-        temp2 __asm__ ("v2"),
-        temp3 __asm__ ("v3"),
-        temp4 __asm__ ("v4"),
-        temp5 __asm__ ("v5"),
-        temp6 __asm__ ("v6"),
-        temp7 __asm__ ("v7");
+    temp0 __asm__ ("v0"),
+          temp1 __asm__ ("v1"),
+          temp2 __asm__ ("v2"),
+          temp3 __asm__ ("v3"),
+          temp4 __asm__ ("v4"),
+          temp5 __asm__ ("v5"),
+          temp6 __asm__ ("v6"),
+          temp7 __asm__ ("v7");
     register vector signed short
-        temp0S __asm__ ("v8"),
-        temp1S __asm__ ("v9"),
-        temp2S __asm__ ("v10"),
-        temp3S __asm__ ("v11"),
-        temp4S __asm__ ("v12"),
-        temp5S __asm__ ("v13"),
-        temp6S __asm__ ("v14"),
-        temp7S __asm__ ("v15");
+    temp0S __asm__ ("v8"),
+           temp1S __asm__ ("v9"),
+           temp2S __asm__ ("v10"),
+           temp3S __asm__ ("v11"),
+           temp4S __asm__ ("v12"),
+           temp5S __asm__ ("v13"),
+           temp6S __asm__ ("v14"),
+           temp7S __asm__ ("v15");
     register const vector unsigned char vzero __asm__ ("v31") =
         (const vector unsigned char) vec_splat_u8(0);
     {
         register const vector signed short vprod1 __asm__ ("v16") =
-            (const vector signed short) { 1, -1, 1, -1, 1, -1, 1, -1 };
+            (const vector signed short)
+        {
+            1, -1, 1, -1, 1, -1, 1, -1
+        };
 
         register const vector signed short vprod2 __asm__ ("v17") =
-            (const vector signed short) { 1, 1, -1, -1, 1, 1, -1, -1 };
+            (const vector signed short)
+        {
+            1, 1, -1, -1, 1, 1, -1, -1
+        };
 
         register const vector signed short vprod3 __asm__ ("v18") =
-            (const vector signed short) { 1, 1, 1, 1, -1, -1, -1, -1 };
+            (const vector signed short)
+        {
+            1, 1, 1, 1, -1, -1, -1, -1
+        };
 
         register const vector unsigned char perm1 __asm__ ("v19") =
             (const vector unsigned char)
-            { 0x02, 0x03, 0x00, 0x01, 0x06, 0x07, 0x04, 0x05,
-              0x0A, 0x0B, 0x08, 0x09, 0x0E, 0x0F, 0x0C, 0x0D };
+        {
+            0x02, 0x03, 0x00, 0x01, 0x06, 0x07, 0x04, 0x05,
+                  0x0A, 0x0B, 0x08, 0x09, 0x0E, 0x0F, 0x0C, 0x0D
+        };
 
         register const vector unsigned char perm2 __asm__ ("v20") =
             (const vector unsigned char)
-            { 0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
-              0x0C, 0x0D, 0x0E, 0x0F, 0x08, 0x09, 0x0A, 0x0B };
+        {
+            0x04, 0x05, 0x06, 0x07, 0x00, 0x01, 0x02, 0x03,
+                  0x0C, 0x0D, 0x0E, 0x0F, 0x08, 0x09, 0x0A, 0x0B
+        };
 
         register const vector unsigned char perm3 __asm__ ("v21") =
             (const vector unsigned char)
-            { 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
-              0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
+        {
+            0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+                  0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07
+        };
 
 #define ONEITERBUTTERFLY(i, res1, res2)                                     \
     {                                                                       \
@@ -717,7 +758,8 @@ static int hadamard8_diff16_altivec(MpegEncContext *s, uint8_t *dst,
 {
     int score = hadamard8_diff16x8_altivec(s, dst, src, stride, 8);
 
-    if (h == 16) {
+    if (h == 16)
+    {
         dst   += 8 * stride;
         src   += 8 * stride;
         score += hadamard8_diff16x8_altivec(s, dst, src, stride, 8);

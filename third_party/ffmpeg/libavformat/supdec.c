@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -57,7 +57,8 @@ static int sup_read_packet(AVFormatContext *s, AVPacket *pkt)
     // Many files have DTS set to 0 for all packets, so assume 0 means unset.
     pkt->dts = dts ? dts : AV_NOPTS_VALUE;
 
-    if (pkt->size >= 3) {
+    if (pkt->size >= 3)
+    {
         // The full packet size is stored as part of the packet.
         size_t len = AV_RB16(pkt->data + 1);
 
@@ -74,7 +75,8 @@ static int sup_probe(AVProbeData *p)
     size_t buf_size = p->buf_size;
     int nb_packets;
 
-    for (nb_packets = 0; nb_packets < 10; nb_packets++) {
+    for (nb_packets = 0; nb_packets < 10; nb_packets++)
+    {
         size_t full_packet_size;
         if (buf_size < 10 + 3)
             break;
@@ -97,7 +99,8 @@ static int sup_probe(AVProbeData *p)
     return AVPROBE_SCORE_MAX;
 }
 
-AVInputFormat ff_sup_demuxer = {
+AVInputFormat ff_sup_demuxer =
+{
     .name           = "sup",
     .long_name      = NULL_IF_CONFIG_SMALL("raw HDMV Presentation Graphic Stream subtitles"),
     .extensions     = "sup",

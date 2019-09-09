@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -289,13 +289,13 @@ void silk_insertion_sort_decreasing_int16(
 );
 
 void silk_insertion_sort_increasing_all_values_int16(
-     opus_int16                 *a,                 /* I/O   Unsorted / Sorted vector                                   */
-     const opus_int             L                   /* I     Vector length                                              */
+    opus_int16                 *a,                 /* I/O   Unsorted / Sorted vector                                   */
+    const opus_int             L                   /* I     Vector length                                              */
 );
 
 /* NLSF stabilizer, for a single input data vector */
 void silk_NLSF_stabilize(
-          opus_int16            *NLSF_Q15,          /* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
+    opus_int16            *NLSF_Q15,          /* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
     const opus_int16            *NDeltaMin_Q15,     /* I     Min distance vector, NDeltaMin_Q15[L] must be >= 1 [L+1]   */
     const opus_int              L                   /* I     Number of NLSF parameters in the input vector              */
 );
@@ -375,11 +375,16 @@ static OPUS_INLINE opus_int32 silk_ROR32( opus_int32 a32, opus_int rot )
     opus_uint32 x = (opus_uint32) a32;
     opus_uint32 r = (opus_uint32) rot;
     opus_uint32 m = (opus_uint32) -rot;
-    if( rot == 0 ) {
+    if( rot == 0 )
+    {
         return a32;
-    } else if( rot < 0 ) {
+    }
+    else if( rot < 0 )
+    {
         return (opus_int32) ((x << m) | (x >> (32 - m)));
-    } else {
+    }
+    else
+    {
         return (opus_int32) ((x << (32 - r)) | (x >> r));
     }
 }

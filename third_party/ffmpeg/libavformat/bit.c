@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.729 bit format muxer and demuxer
  * Copyright (c) 2007-2008 Vladimir Voroshilov
  *
@@ -36,7 +36,8 @@ static int probe(AVProbeData *p)
     if(p->buf_size < 0x40)
         return 0;
 
-    for(i=0; i+3<p->buf_size && i< 10*0x50; ){
+    for(i=0; i+3<p->buf_size && i< 10*0x50; )
+    {
         if(AV_RL16(&p->buf[0]) != SYNC_WORD)
             return 0;
         j=AV_RL16(&p->buf[2]);
@@ -66,7 +67,7 @@ static int read_header(AVFormatContext *s)
 }
 
 static int read_packet(AVFormatContext *s,
-                          AVPacket *pkt)
+                       AVPacket *pkt)
 {
     AVIOContext *pb = s->pb;
     PutBitContext pbo;
@@ -95,7 +96,7 @@ static int read_packet(AVFormatContext *s,
 
     init_put_bits(&pbo, pkt->data, packet_size);
     for(j=0; j < packet_size; j++)
-        for(i=0; i<8;i++)
+        for(i=0; i<8; i++)
             put_bits(&pbo,1, AV_RL16(src++) == BIT_1 ? 1 : 0);
 
     flush_put_bits(&pbo);
@@ -105,7 +106,8 @@ static int read_packet(AVFormatContext *s,
     return 0;
 }
 
-AVInputFormat ff_bit_demuxer = {
+AVInputFormat ff_bit_demuxer =
+{
     .name        = "bit",
     .long_name   = NULL_IF_CONFIG_SMALL("G.729 BIT file format"),
     .read_probe  = probe,
@@ -119,7 +121,8 @@ static int write_header(AVFormatContext *s)
 {
     AVCodecContext *enc = s->streams[0]->codec;
 
-    if ((enc->codec_id != AV_CODEC_ID_G729) || enc->channels != 1) {
+    if ((enc->codec_id != AV_CODEC_ID_G729) || enc->channels != 1)
+    {
         av_log(s, AV_LOG_ERROR,
                "only codec g729 with 1 channel is supported by this format\n");
         return AVERROR(EINVAL);
@@ -150,7 +153,8 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
     return 0;
 }
 
-AVOutputFormat ff_bit_muxer = {
+AVOutputFormat ff_bit_muxer =
+{
     .name         = "bit",
     .long_name    = NULL_IF_CONFIG_SMALL("G.729 BIT file format"),
     .mime_type    = "audio/bit",

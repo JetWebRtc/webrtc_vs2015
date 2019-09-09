@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2012 Jeremy Tran
  *
@@ -42,7 +42,8 @@
 #define THRESHOLD_MIN -30
 #define THRESHOLD_MAX 30
 
-typedef struct {
+typedef struct
+{
     float              radius;
     float              strength;
     int                threshold;
@@ -50,7 +51,8 @@ typedef struct {
     struct SwsContext *filter_context;
 } FilterParam;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     FilterParam  luma;
     FilterParam  chroma;
@@ -62,7 +64,8 @@ typedef struct {
 #define OFFSET(x) offsetof(SmartblurContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption smartblur_options[] = {
+static const AVOption smartblur_options[] =
+{
     { "luma_radius",    "set luma radius",    OFFSET(luma.radius),    AV_OPT_TYPE_FLOAT, {.dbl=1.0}, RADIUS_MIN, RADIUS_MAX, .flags=FLAGS },
     { "lr"         ,    "set luma radius",    OFFSET(luma.radius),    AV_OPT_TYPE_FLOAT, {.dbl=1.0}, RADIUS_MIN, RADIUS_MAX, .flags=FLAGS },
     { "luma_strength",  "set luma strength",  OFFSET(luma.strength),  AV_OPT_TYPE_FLOAT, {.dbl=1.0}, STRENGTH_MIN, STRENGTH_MAX, .flags=FLAGS },
@@ -116,7 +119,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,      AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,      AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV410P,      AV_PIX_FMT_YUV440P,
@@ -145,9 +149,9 @@ static int alloc_sws_context(FilterParam *f, int width, int height, unsigned int
     sws_filter.lumH = sws_filter.lumV = vec;
     sws_filter.chrH = sws_filter.chrV = NULL;
     f->filter_context = sws_getCachedContext(NULL,
-                                             width, height, AV_PIX_FMT_GRAY8,
-                                             width, height, AV_PIX_FMT_GRAY8,
-                                             flags, &sws_filter, NULL, NULL);
+                        width, height, AV_PIX_FMT_GRAY8,
+                        width, height, AV_PIX_FMT_GRAY8,
+                        flags, &sws_filter, NULL, NULL);
 
     sws_freeVec(vec);
 
@@ -191,20 +195,26 @@ static void blur(uint8_t       *dst, const int dst_linesize,
     sws_scale(filter_context, src_array, src_linesize_array,
               0, h, dst_array, dst_linesize_array);
 
-    if (threshold > 0) {
-        for (y = 0; y < h; ++y) {
-            for (x = 0; x < w; ++x) {
+    if (threshold > 0)
+    {
+        for (y = 0; y < h; ++y)
+        {
+            for (x = 0; x < w; ++x)
+            {
                 orig     = src[x + y * src_linesize];
                 filtered = dst[x + y * dst_linesize];
                 diff     = orig - filtered;
 
-                if (diff > 0) {
+                if (diff > 0)
+                {
                     if (diff > 2 * threshold)
                         dst[x + y * dst_linesize] = orig;
                     else if (diff > threshold)
                         /* add 'diff' and subtract 'threshold' from 'filtered' */
                         dst[x + y * dst_linesize] = orig - threshold;
-                } else {
+                }
+                else
+                {
                     if (-diff > 2 * threshold)
                         dst[x + y * dst_linesize] = orig;
                     else if (-diff > threshold)
@@ -213,20 +223,27 @@ static void blur(uint8_t       *dst, const int dst_linesize,
                 }
             }
         }
-    } else if (threshold < 0) {
-        for (y = 0; y < h; ++y) {
-            for (x = 0; x < w; ++x) {
+    }
+    else if (threshold < 0)
+    {
+        for (y = 0; y < h; ++y)
+        {
+            for (x = 0; x < w; ++x)
+            {
                 orig     = src[x + y * src_linesize];
                 filtered = dst[x + y * dst_linesize];
                 diff     = orig - filtered;
 
-                if (diff > 0) {
+                if (diff > 0)
+                {
                     if (diff <= -threshold)
                         dst[x + y * dst_linesize] = orig;
                     else if (diff <= -2 * threshold)
                         /* subtract 'diff' and 'threshold' from 'orig' */
                         dst[x + y * dst_linesize] = filtered - threshold;
-                } else {
+                }
+                else
+                {
                     if (diff >= threshold)
                         dst[x + y * dst_linesize] = orig;
                     else if (diff >= 2 * threshold)
@@ -247,7 +264,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     int ch = FF_CEIL_RSHIFT(inlink->h, s->vsub);
 
     outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!outpic) {
+    if (!outpic)
+    {
         av_frame_free(&inpic);
         return AVERROR(ENOMEM);
     }
@@ -258,7 +276,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
          inlink->w, inlink->h, s->luma.threshold,
          s->luma.filter_context);
 
-    if (inpic->data[2]) {
+    if (inpic->data[2])
+    {
         blur(outpic->data[1], outpic->linesize[1],
              inpic->data[1],  inpic->linesize[1],
              cw, ch, s->chroma.threshold,
@@ -273,7 +292,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     return ff_filter_frame(outlink, outpic);
 }
 
-static const AVFilterPad smartblur_inputs[] = {
+static const AVFilterPad smartblur_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -283,7 +303,8 @@ static const AVFilterPad smartblur_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad smartblur_outputs[] = {
+static const AVFilterPad smartblur_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -291,7 +312,8 @@ static const AVFilterPad smartblur_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_smartblur = {
+AVFilter ff_vf_smartblur =
+{
     .name          = "smartblur",
     .description   = NULL_IF_CONFIG_SMALL("Blur the input video without impacting the outlines."),
     .priv_size     = sizeof(SmartblurContext),

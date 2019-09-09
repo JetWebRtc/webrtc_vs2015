@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV40 decoder motion compensation functions
  * Copyright (c) 2008 Konstantin Shishkov
  *
@@ -284,7 +284,8 @@ static void avg_rv40_qpel8_mc33_c(uint8_t *dst, const uint8_t *src, ptrdiff_t st
     avg_pixels8_xy2_8_c(dst, src, stride, 8);
 }
 
-static const int rv40_bias[4][4] = {
+static const int rv40_bias[4][4] =
+{
     {  0, 16, 32, 16 },
     { 32, 28, 32, 28 },
     {  0, 32, 16, 32 },
@@ -404,7 +405,8 @@ RV40_WEIGHT_FUNC(8)
 /**
  * dither values for deblocking filter - left/top values
  */
-static const uint8_t rv40_dither_l[16] = {
+static const uint8_t rv40_dither_l[16] =
+{
     0x40, 0x50, 0x20, 0x60, 0x30, 0x50, 0x40, 0x30,
     0x50, 0x40, 0x50, 0x30, 0x60, 0x20, 0x50, 0x40
 };
@@ -412,7 +414,8 @@ static const uint8_t rv40_dither_l[16] = {
 /**
  * dither values for deblocking filter - right/bottom values
  */
-static const uint8_t rv40_dither_r[16] = {
+static const uint8_t rv40_dither_r[16] =
+{
     0x40, 0x30, 0x60, 0x20, 0x50, 0x30, 0x30, 0x40,
     0x40, 0x40, 0x50, 0x30, 0x20, 0x60, 0x30, 0x40
 };
@@ -422,20 +425,21 @@ static const uint8_t rv40_dither_r[16] = {
  * weaker deblocking very similar to the one described in 4.4.2 of JVT-A003r1
  */
 static av_always_inline void rv40_weak_loop_filter(uint8_t *src,
-                                                   const int step,
-                                                   const ptrdiff_t stride,
-                                                   const int filter_p1,
-                                                   const int filter_q1,
-                                                   const int alpha,
-                                                   const int beta,
-                                                   const int lim_p0q0,
-                                                   const int lim_q1,
-                                                   const int lim_p1)
+        const int step,
+        const ptrdiff_t stride,
+        const int filter_p1,
+        const int filter_q1,
+        const int alpha,
+        const int beta,
+        const int lim_p0q0,
+        const int lim_q1,
+        const int lim_p1)
 {
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int i, t, u, diff;
 
-    for (i = 0; i < 4; i++, src += stride) {
+    for (i = 0; i < 4; i++, src += stride)
+    {
         int diff_p1p0 = src[-2*step] - src[-1*step];
         int diff_q1q0 = src[ 1*step] - src[ 0*step];
         int diff_p1p2 = src[-2*step] - src[-3*step];
@@ -457,12 +461,14 @@ static av_always_inline void rv40_weak_loop_filter(uint8_t *src,
         src[-1*step] = cm[src[-1*step] + diff];
         src[ 0*step] = cm[src[ 0*step] - diff];
 
-        if (filter_p1 && FFABS(diff_p1p2) <= beta) {
+        if (filter_p1 && FFABS(diff_p1p2) <= beta)
+        {
             t = (diff_p1p0 + diff_p1p2 - diff) >> 1;
             src[-2*step] = cm[src[-2*step] - CLIP_SYMM(t, lim_p1)];
         }
 
-        if (filter_q1 && FFABS(diff_q1q2) <= beta) {
+        if (filter_q1 && FFABS(diff_q1q2) <= beta)
+        {
             t = (diff_q1q0 + diff_q1q2 + diff) >> 1;
             src[ 1*step] = cm[src[ 1*step] - CLIP_SYMM(t, lim_q1)];
         }
@@ -490,16 +496,17 @@ static void rv40_v_weak_loop_filter(uint8_t *src, const ptrdiff_t stride,
 }
 
 static av_always_inline void rv40_strong_loop_filter(uint8_t *src,
-                                                     const int step,
-                                                     const ptrdiff_t stride,
-                                                     const int alpha,
-                                                     const int lims,
-                                                     const int dmode,
-                                                     const int chroma)
+        const int step,
+        const ptrdiff_t stride,
+        const int alpha,
+        const int lims,
+        const int dmode,
+        const int chroma)
 {
     int i;
 
-    for(i = 0; i < 4; i++, src += stride){
+    for(i = 0; i < 4; i++, src += stride)
+    {
         int sflag, p0, q0, p1, q1;
         int t = src[0*step] - src[-1*step];
 
@@ -518,7 +525,8 @@ static av_always_inline void rv40_strong_loop_filter(uint8_t *src,
               26*src[ 1*step] + 25*src[ 2*step] +
               rv40_dither_r[dmode + i]) >> 7;
 
-        if (sflag) {
+        if (sflag)
+        {
             p0 = av_clip(p0, src[-1*step] - lims, src[-1*step] + lims);
             q0 = av_clip(q0, src[ 0*step] - lims, src[ 0*step] + lims);
         }
@@ -528,7 +536,8 @@ static av_always_inline void rv40_strong_loop_filter(uint8_t *src,
         q1 = (25*src[-1*step] + 26*q0 + 26*src[ 1*step] + 26*src[ 2*step] +
               25*src[ 3*step] + rv40_dither_r[dmode + i]) >> 7;
 
-        if (sflag) {
+        if (sflag)
+        {
             p1 = av_clip(p1, src[-2*step] - lims, src[-2*step] + lims);
             q1 = av_clip(q1, src[ 1*step] - lims, src[ 1*step] + lims);
         }
@@ -538,7 +547,8 @@ static av_always_inline void rv40_strong_loop_filter(uint8_t *src,
         src[ 0*step] = q0;
         src[ 1*step] = q1;
 
-        if(!chroma){
+        if(!chroma)
+        {
             src[-3*step] = (25*src[-1*step] + 26*src[-2*step] +
                             51*src[-3*step] + 26*src[-4*step] + 64) >> 7;
             src[ 2*step] = (25*src[ 0*step] + 26*src[ 1*step] +
@@ -562,17 +572,18 @@ static void rv40_v_strong_loop_filter(uint8_t *src, const ptrdiff_t stride,
 }
 
 static av_always_inline int rv40_loop_filter_strength(uint8_t *src,
-                                                      int step, ptrdiff_t stride,
-                                                      int beta, int beta2,
-                                                      int edge,
-                                                      int *p1, int *q1)
+        int step, ptrdiff_t stride,
+        int beta, int beta2,
+        int edge,
+        int *p1, int *q1)
 {
     int sum_p1p0 = 0, sum_q1q0 = 0, sum_p1p2 = 0, sum_q1q2 = 0;
     int strong0 = 0, strong1 = 0;
     uint8_t *ptr;
     int i;
 
-    for (i = 0, ptr = src; i < 4; i++, ptr += stride) {
+    for (i = 0, ptr = src; i < 4; i++, ptr += stride)
+    {
         sum_p1p0 += ptr[-2*step] - ptr[-1*step];
         sum_q1q0 += ptr[ 1*step] - ptr[ 0*step];
     }
@@ -586,7 +597,8 @@ static av_always_inline int rv40_loop_filter_strength(uint8_t *src,
     if (!edge)
         return 0;
 
-    for (i = 0, ptr = src; i < 4; i++, ptr += stride) {
+    for (i = 0, ptr = src; i < 4; i++, ptr += stride)
+    {
         sum_p1p2 += ptr[-2*step] - ptr[-3*step];
         sum_q1q2 += ptr[ 1*step] - ptr[ 2*step];
     }

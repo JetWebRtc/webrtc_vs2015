@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Interface to libgsm for GSM decoding
  * Copyright (c) 2005 Alban Bedel <albeu@free.fr>
  * Copyright (c) 2006, 2007 Michel Bardiaux <mbardiaux@mediaxim.be>
@@ -41,11 +41,13 @@
 #include "internal.h"
 #include "gsm.h"
 
-typedef struct LibGSMDecodeContext {
+typedef struct LibGSMDecodeContext
+{
     struct gsm_state *state;
 } LibGSMDecodeContext;
 
-static av_cold int libgsm_decode_init(AVCodecContext *avctx) {
+static av_cold int libgsm_decode_init(AVCodecContext *avctx)
+{
     LibGSMDecodeContext *s = avctx->priv_data;
 
     avctx->channels       = 1;
@@ -56,23 +58,26 @@ static av_cold int libgsm_decode_init(AVCodecContext *avctx) {
 
     s->state = gsm_create();
 
-    switch(avctx->codec_id) {
+    switch(avctx->codec_id)
+    {
     case AV_CODEC_ID_GSM:
         avctx->frame_size  = GSM_FRAME_SIZE;
         avctx->block_align = GSM_BLOCK_SIZE;
         break;
-    case AV_CODEC_ID_GSM_MS: {
+    case AV_CODEC_ID_GSM_MS:
+    {
         int one = 1;
         gsm_option(s->state, GSM_OPT_WAV49, &one);
         avctx->frame_size  = 2 * GSM_FRAME_SIZE;
         avctx->block_align = GSM_MS_BLOCK_SIZE;
-        }
+    }
     }
 
     return 0;
 }
 
-static av_cold int libgsm_decode_close(AVCodecContext *avctx) {
+static av_cold int libgsm_decode_close(AVCodecContext *avctx)
+{
     LibGSMDecodeContext *s = avctx->priv_data;
 
     gsm_destroy(s->state);
@@ -90,7 +95,8 @@ static int libgsm_decode_frame(AVCodecContext *avctx, void *data,
     int buf_size = avpkt->size;
     int16_t *samples;
 
-    if (buf_size < avctx->block_align) {
+    if (buf_size < avctx->block_align)
+    {
         av_log(avctx, AV_LOG_ERROR, "Packet is too small\n");
         return AVERROR_INVALIDDATA;
     }
@@ -101,7 +107,8 @@ static int libgsm_decode_frame(AVCodecContext *avctx, void *data,
         return ret;
     samples = (int16_t *)frame->data[0];
 
-    for (i = 0; i < avctx->frame_size / GSM_FRAME_SIZE; i++) {
+    for (i = 0; i < avctx->frame_size / GSM_FRAME_SIZE; i++)
+    {
         if ((ret = gsm_decode(s->state, buf, samples)) < 0)
             return -1;
         buf     += GSM_BLOCK_SIZE;
@@ -113,7 +120,8 @@ static int libgsm_decode_frame(AVCodecContext *avctx, void *data,
     return avctx->block_align;
 }
 
-static void libgsm_flush(AVCodecContext *avctx) {
+static void libgsm_flush(AVCodecContext *avctx)
+{
     LibGSMDecodeContext *s = avctx->priv_data;
     int one = 1;
 
@@ -124,7 +132,8 @@ static void libgsm_flush(AVCodecContext *avctx) {
 }
 
 #if CONFIG_LIBGSM_DECODER
-AVCodec ff_libgsm_decoder = {
+AVCodec ff_libgsm_decoder =
+{
     .name           = "libgsm",
     .long_name      = NULL_IF_CONFIG_SMALL("libgsm GSM"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -138,7 +147,8 @@ AVCodec ff_libgsm_decoder = {
 };
 #endif
 #if CONFIG_LIBGSM_MS_DECODER
-AVCodec ff_libgsm_ms_decoder = {
+AVCodec ff_libgsm_ms_decoder =
+{
     .name           = "libgsm_ms",
     .long_name      = NULL_IF_CONFIG_SMALL("libgsm GSM Microsoft variant"),
     .type           = AVMEDIA_TYPE_AUDIO,

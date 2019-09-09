@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,21 +16,25 @@
 #include <algorithm>
 #include <limits>
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace intelligibility {
+namespace intelligibility
+{
 
-namespace {
+namespace
+{
 
 const float kMinFactor = 0.01f;
 const float kMaxFactor = 100.f;
 
 // Return |current| changed towards |target|, with the relative change being at
 // most |limit|.
-float UpdateFactor(float target, float current, float limit) {
-  float gain = target / (current + std::numeric_limits<float>::epsilon());
-  gain = std::min(std::max(gain, 1.f - limit), 1.f + limit);
-  return std::min(std::max(current * gain, kMinFactor), kMaxFactor);;
+float UpdateFactor(float target, float current, float limit)
+{
+    float gain = target / (current + std::numeric_limits<float>::epsilon());
+    gain = std::min(std::max(gain, 1.f - limit), 1.f + limit);
+    return std::min(std::max(current * gain, kMinFactor), kMaxFactor);;
 }
 
 }  // namespace
@@ -40,11 +44,13 @@ PowerEstimator<T>::PowerEstimator(size_t num_freqs, float decay)
     : power_(num_freqs, 0.f), decay_(decay) {}
 
 template<typename T>
-void PowerEstimator<T>::Step(const T* data) {
-  for (size_t i = 0; i < power_.size(); ++i) {
-    power_[i] = decay_ * power_[i] +
-                (1.f - decay_) * std::abs(data[i]) * std::abs(data[i]);
-  }
+void PowerEstimator<T>::Step(const T* data)
+{
+    for (size_t i = 0; i < power_.size(); ++i)
+    {
+        power_[i] = decay_ * power_[i] +
+                    (1.f - decay_) * std::abs(data[i]) * std::abs(data[i]);
+    }
 }
 
 template class PowerEstimator<float>;
@@ -59,11 +65,13 @@ GainApplier::GainApplier(size_t freqs, float relative_change_limit)
 GainApplier::~GainApplier() {}
 
 void GainApplier::Apply(const std::complex<float>* in_block,
-                        std::complex<float>* out_block) {
-  for (size_t i = 0; i < num_freqs_; ++i) {
-    current_[i] = UpdateFactor(target_[i], current_[i], relative_change_limit_);
-    out_block[i] = sqrtf(fabsf(current_[i])) * in_block[i];
-  }
+                        std::complex<float>* out_block)
+{
+    for (size_t i = 0; i < num_freqs_; ++i)
+    {
+        current_[i] = UpdateFactor(target_[i], current_[i], relative_change_limit_);
+        out_block[i] = sqrtf(fabsf(current_[i])) * in_block[i];
+    }
 }
 
 DelayBuffer::DelayBuffer(size_t delay, size_t num_channels)
@@ -71,20 +79,24 @@ DelayBuffer::DelayBuffer(size_t delay, size_t num_channels)
 
 DelayBuffer::~DelayBuffer() {}
 
-void DelayBuffer::Delay(float* const* data, size_t length) {
-  size_t sample_index = read_index_;
-  for (size_t i = 0u; i < buffer_.size(); ++i) {
-    sample_index = read_index_;
-    for (size_t j = 0u; j < length; ++j) {
-      float swap = data[i][j];
-      data[i][j] = buffer_[i][sample_index];
-      buffer_[i][sample_index] = swap;
-      if (++sample_index == buffer_.size()) {
-        sample_index = 0u;
-      }
+void DelayBuffer::Delay(float* const* data, size_t length)
+{
+    size_t sample_index = read_index_;
+    for (size_t i = 0u; i < buffer_.size(); ++i)
+    {
+        sample_index = read_index_;
+        for (size_t j = 0u; j < length; ++j)
+        {
+            float swap = data[i][j];
+            data[i][j] = buffer_[i][sample_index];
+            buffer_[i][sample_index] = swap;
+            if (++sample_index == buffer_.size())
+            {
+                sample_index = 0u;
+            }
+        }
     }
-  }
-  read_index_ = sample_index;
+    read_index_ = sample_index;
 }
 
 }  // namespace intelligibility

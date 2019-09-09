@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -136,7 +136,8 @@
 
 #define SLICE_NUM_EXPAND_COEF           2
 
-enum {
+enum
+{
 BLOCK_16x16    = 0,
 BLOCK_16x8     = 1,
 BLOCK_8x16     = 2,
@@ -147,27 +148,30 @@ BLOCK_4x8      = 6,
 BLOCK_SIZE_ALL = 7
 };
 
-typedef enum {
-RECIEVE_UNKOWN = 0,
-RECIEVE_SUCCESS = 1,
-RECIEVE_FAILED = 2
+typedef enum
+{
+    RECIEVE_UNKOWN = 0,
+    RECIEVE_SUCCESS = 1,
+    RECIEVE_FAILED = 2
 } LTR_MARKING_RECEIVE_STATE;
 
-enum {
-  CUR_AU_IDX    = 0,                    // index symbol for current access unit
-  SUC_AU_IDX    = 1                     // index symbol for successive access unit
+enum
+{
+    CUR_AU_IDX    = 0,                    // index symbol for current access unit
+    SUC_AU_IDX    = 1                     // index symbol for successive access unit
 };
 
-enum {
-  ENC_RETURN_SUCCESS = 0,
-  ENC_RETURN_MEMALLOCERR = 0x01, //will free memory and uninit
-  ENC_RETURN_UNSUPPORTED_PARA = 0x02, //unsupported setting
-  ENC_RETURN_UNEXPECTED = 0x04, //unexpected value
-  ENC_RETURN_CORRECTED = 0x08, //unexpected value but corrected by encoder
-  ENC_RETURN_INVALIDINPUT = 0x10, //invalid input
-  ENC_RETURN_MEMOVERFLOWFOUND = 0x20,
-  ENC_RETURN_VLCOVERFLOWFOUND = 0x40,
-  ENC_RETURN_KNOWN_ISSUE = 0x80
+enum
+{
+    ENC_RETURN_SUCCESS = 0,
+    ENC_RETURN_MEMALLOCERR = 0x01, //will free memory and uninit
+    ENC_RETURN_UNSUPPORTED_PARA = 0x02, //unsupported setting
+    ENC_RETURN_UNEXPECTED = 0x04, //unexpected value
+    ENC_RETURN_CORRECTED = 0x08, //unexpected value but corrected by encoder
+    ENC_RETURN_INVALIDINPUT = 0x10, //invalid input
+    ENC_RETURN_MEMOVERFLOWFOUND = 0x20,
+    ENC_RETURN_VLCOVERFLOWFOUND = 0x40,
+    ENC_RETURN_KNOWN_ISSUE = 0x80
 };
 //TODO: need to complete the return checking in encoder and fill in more types if needed
 

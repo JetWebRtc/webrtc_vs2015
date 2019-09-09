@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -28,12 +28,14 @@ extern "C" {
 
 #include "coder.h"
 
-typedef struct {
+typedef struct
+{
     int is_present;
     int ms_used[MAX_SCFAC_BANDS];
 } MSInfo;
 
-typedef struct {
+typedef struct
+{
     int tag;
     int present;
     int ch_is_left;

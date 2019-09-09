@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2002 Krzysztof Nikiel
  *
@@ -61,13 +61,13 @@ extern "C"
 
 typedef struct
 {
-  FILE *f;
-  int channels;
-  int samplebytes;
-  int samplerate;
-  int samples;
-  int bigendian;
-  int isfloat;
+    FILE *f;
+    int channels;
+    int samplebytes;
+    int samplerate;
+    int samples;
+    int bigendian;
+    int isfloat;
 } pcmfile_t;
 
 pcmfile_t *wav_open_read(const char *path, int rawchans);

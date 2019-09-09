@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -115,8 +115,8 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           const FIXP_SGL  b_Re,
                           const FIXP_SGL  b_Im)
 {
-  *c_Re = fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
-  *c_Im = fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
+    *c_Re = fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
+    *c_Im = fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
 }
 #endif
 
@@ -129,7 +129,7 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           const FIXP_DBL a_Im,
                           const FIXP_SPK w )
 {
-  cplxMultDiv2(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
+    cplxMultDiv2(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
 }
 #endif
 
@@ -137,14 +137,14 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
 #define FUNCTION_cplxMultAddDiv2_32x16X2
 
 inline void cplxMultAddDiv2( FIXP_DBL *c_Re,
-                          FIXP_DBL *c_Im,
-                          const FIXP_DBL  a_Re,
-                          const FIXP_DBL  a_Im,
-                          const FIXP_SGL  b_Re,
-                          const FIXP_SGL  b_Im)
+                             FIXP_DBL *c_Im,
+                             const FIXP_DBL  a_Re,
+                             const FIXP_DBL  a_Im,
+                             const FIXP_SGL  b_Re,
+                             const FIXP_SGL  b_Im)
 {
-  *c_Re += fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
-  *c_Im += fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
+    *c_Re += fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
+    *c_Im += fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
 }
 #endif
 
@@ -158,8 +158,8 @@ inline void cplxMultSubDiv2( FIXP_DBL *c_Re,
                              const FIXP_SGL  b_Re,
                              const FIXP_SGL  b_Im)
 {
-  *c_Re -= fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
-  *c_Im -= fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
+    *c_Re -= fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
+    *c_Im -= fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
 }
 #endif
 
@@ -173,8 +173,8 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           const FIXP_DBL  b_Re,
                           const FIXP_DBL  b_Im)
 {
-  *c_Re = fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
-  *c_Im = fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
+    *c_Re = fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
+    *c_Im = fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
 }
 #endif
 
@@ -187,7 +187,7 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           const FIXP_DBL  a_Im,
                           const FIXP_DPK  w)
 {
-  cplxMultDiv2(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
+    cplxMultDiv2(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
 }
 #endif
 
@@ -201,8 +201,8 @@ inline void cplxMultSubDiv2( FIXP_DBL *c_Re,
                              const FIXP_DBL  b_Re,
                              const FIXP_DBL  b_Im)
 {
-  *c_Re -= fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
-  *c_Im -= fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
+    *c_Re -= fMultDiv2(a_Re,b_Re) - fMultDiv2(a_Im,b_Im);
+    *c_Im -= fMultDiv2(a_Re,b_Im) + fMultDiv2(a_Im,b_Re);
 }
 #endif
 
@@ -218,8 +218,8 @@ inline void cplxMult( FIXP_DBL *c_Re,
                       const FIXP_SGL  b_Re,
                       const FIXP_SGL  b_Im)
 {
-  *c_Re = fMult(a_Re,b_Re) - fMult(a_Im,b_Im);
-  *c_Im = fMult(a_Re,b_Im) + fMult(a_Im,b_Re);
+    *c_Re = fMult(a_Re,b_Re) - fMult(a_Im,b_Im);
+    *c_Im = fMult(a_Re,b_Im) + fMult(a_Im,b_Re);
 }
 #endif
 
@@ -232,7 +232,7 @@ inline void cplxMult( FIXP_DBL *c_Re,
                       const FIXP_DBL a_Im,
                       const FIXP_SPK w )
 {
-  cplxMult(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
+    cplxMult(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
 }
 #endif
 
@@ -246,8 +246,8 @@ inline void cplxMult( FIXP_DBL *c_Re,
                       const FIXP_DBL  b_Re,
                       const FIXP_DBL  b_Im)
 {
-  *c_Re = fMult(a_Re,b_Re) - fMult(a_Im,b_Im);
-  *c_Im = fMult(a_Re,b_Im) + fMult(a_Im,b_Re);
+    *c_Re = fMult(a_Re,b_Re) - fMult(a_Im,b_Im);
+    *c_Im = fMult(a_Re,b_Im) + fMult(a_Im,b_Re);
 }
 #endif
 
@@ -259,7 +259,7 @@ inline void cplxMult( FIXP_DBL *c_Re,
                       const FIXP_DBL  a_Im,
                       const FIXP_DPK  w)
 {
-  cplxMult(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
+    cplxMult(c_Re, c_Im, a_Re, a_Im, w.v.re, w.v.im);
 }
 #endif
 

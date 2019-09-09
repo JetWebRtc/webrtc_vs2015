@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -45,9 +45,11 @@ void silk_process_gains_FLP(
     silk_float   s, InvMaxSqrVal, gain, quant_offset;
 
     /* Gain reduction when LTP coding gain is high */
-    if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {
+    if( psEnc->sCmn.indices.signalType == TYPE_VOICED )
+    {
         s = 1.0f - 0.5f * silk_sigmoid( 0.25f * ( psEncCtrl->LTPredCodGain - 12.0f ) );
-        for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+        for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+        {
             psEncCtrl->Gains[ k ] *= s;
         }
     }
@@ -55,7 +57,8 @@ void silk_process_gains_FLP(
     /* Limit the quantized signal */
     InvMaxSqrVal = ( silk_float )( pow( 2.0f, 0.33f * ( 21.0f - psEnc->sCmn.SNR_dB_Q7 * ( 1 / 128.0f ) ) ) / psEnc->sCmn.subfr_length );
 
-    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+    {
         /* Soft limit on ratio residual energy and squared gains */
         gain = psEncCtrl->Gains[ k ];
         gain = ( silk_float )sqrt( gain * gain + psEncCtrl->ResNrg[ k ] * InvMaxSqrVal );
@@ -63,7 +66,8 @@ void silk_process_gains_FLP(
     }
 
     /* Prepare gains for noise shaping quantization */
-    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+    {
         pGains_Q16[ k ] = (opus_int32)( psEncCtrl->Gains[ k ] * 65536.0f );
     }
 
@@ -73,18 +77,23 @@ void silk_process_gains_FLP(
 
     /* Quantize gains */
     silk_gains_quant( psEnc->sCmn.indices.GainsIndices, pGains_Q16,
-            &psShapeSt->LastGainIndex, condCoding == CODE_CONDITIONALLY, psEnc->sCmn.nb_subfr );
+                      &psShapeSt->LastGainIndex, condCoding == CODE_CONDITIONALLY, psEnc->sCmn.nb_subfr );
 
     /* Overwrite unquantized gains with quantized gains and convert back to Q0 from Q16 */
-    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
+    for( k = 0; k < psEnc->sCmn.nb_subfr; k++ )
+    {
         psEncCtrl->Gains[ k ] = pGains_Q16[ k ] / 65536.0f;
     }
 
     /* Set quantizer offset for voiced signals. Larger offset when LTP coding gain is low or tilt is high (ie low-pass) */
-    if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {
-        if( psEncCtrl->LTPredCodGain + psEnc->sCmn.input_tilt_Q15 * ( 1.0f / 32768.0f ) > 1.0f ) {
+    if( psEnc->sCmn.indices.signalType == TYPE_VOICED )
+    {
+        if( psEncCtrl->LTPredCodGain + psEnc->sCmn.input_tilt_Q15 * ( 1.0f / 32768.0f ) > 1.0f )
+        {
             psEnc->sCmn.indices.quantOffsetType = 0;
-        } else {
+        }
+        else
+        {
             psEnc->sCmn.indices.quantOffsetType = 1;
         }
     }
@@ -92,11 +101,11 @@ void silk_process_gains_FLP(
     /* Quantizer boundary adjustment */
     quant_offset = silk_Quantization_Offsets_Q10[ psEnc->sCmn.indices.signalType >> 1 ][ psEnc->sCmn.indices.quantOffsetType ] / 1024.0f;
     psEncCtrl->Lambda = LAMBDA_OFFSET
-                      + LAMBDA_DELAYED_DECISIONS * psEnc->sCmn.nStatesDelayedDecision
-                      + LAMBDA_SPEECH_ACT        * psEnc->sCmn.speech_activity_Q8 * ( 1.0f /  256.0f )
-                      + LAMBDA_INPUT_QUALITY     * psEncCtrl->input_quality
-                      + LAMBDA_CODING_QUALITY    * psEncCtrl->coding_quality
-                      + LAMBDA_QUANT_OFFSET      * quant_offset;
+                        + LAMBDA_DELAYED_DECISIONS * psEnc->sCmn.nStatesDelayedDecision
+                        + LAMBDA_SPEECH_ACT        * psEnc->sCmn.speech_activity_Q8 * ( 1.0f /  256.0f )
+                        + LAMBDA_INPUT_QUALITY     * psEncCtrl->input_quality
+                        + LAMBDA_CODING_QUALITY    * psEncCtrl->coding_quality
+                        + LAMBDA_QUANT_OFFSET      * quant_offset;
 
     silk_assert( psEncCtrl->Lambda > 0.0f );
     silk_assert( psEncCtrl->Lambda < 2.0f );

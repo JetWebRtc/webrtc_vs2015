@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -41,19 +41,22 @@ static void roqvideo_decode_frame(RoqContext *ri)
     roq_qcell *qcell;
     int64_t chunk_start;
 
-    while (bytestream2_get_bytes_left(&ri->gb) >= 8) {
+    while (bytestream2_get_bytes_left(&ri->gb) >= 8)
+    {
         chunk_id   = bytestream2_get_le16(&ri->gb);
         chunk_size = bytestream2_get_le32(&ri->gb);
         chunk_arg  = bytestream2_get_le16(&ri->gb);
 
         if(chunk_id == RoQ_QUAD_VQ)
             break;
-        if(chunk_id == RoQ_QUAD_CODEBOOK) {
+        if(chunk_id == RoQ_QUAD_CODEBOOK)
+        {
             if((nv1 = chunk_arg >> 8) == 0)
                 nv1 = 256;
             if((nv2 = chunk_arg & 0xff) == 0 && nv1 * 6 < chunk_size)
                 nv2 = 256;
-            for(i = 0; i < nv1; i++) {
+            for(i = 0; i < nv1; i++)
+            {
                 ri->cb2x2[i].y[0] = bytestream2_get_byte(&ri->gb);
                 ri->cb2x2[i].y[1] = bytestream2_get_byte(&ri->gb);
                 ri->cb2x2[i].y[2] = bytestream2_get_byte(&ri->gb);
@@ -70,19 +73,24 @@ static void roqvideo_decode_frame(RoqContext *ri)
     chunk_start = bytestream2_tell(&ri->gb);
     xpos = ypos = 0;
 
-    if (chunk_size > bytestream2_get_bytes_left(&ri->gb)) {
+    if (chunk_size > bytestream2_get_bytes_left(&ri->gb))
+    {
         av_log(ri->avctx, AV_LOG_ERROR, "Chunk does not fit in input buffer\n");
         chunk_size = bytestream2_get_bytes_left(&ri->gb);
     }
 
-    while (bytestream2_tell(&ri->gb) < chunk_start + chunk_size) {
+    while (bytestream2_tell(&ri->gb) < chunk_start + chunk_size)
+    {
         for (yp = ypos; yp < ypos + 16; yp += 8)
-            for (xp = xpos; xp < xpos + 16; xp += 8) {
-                if (bytestream2_tell(&ri->gb) >= chunk_start + chunk_size) {
+            for (xp = xpos; xp < xpos + 16; xp += 8)
+            {
+                if (bytestream2_tell(&ri->gb) >= chunk_start + chunk_size)
+                {
                     av_log(ri->avctx, AV_LOG_VERBOSE, "Chunk is too short\n");
                     return;
                 }
-                if (vqflg_pos < 0) {
+                if (vqflg_pos < 0)
+                {
                     vqflg = bytestream2_get_le16(&ri->gb);
                     vqflg_pos = 7;
                 }
@@ -90,10 +98,12 @@ static void roqvideo_decode_frame(RoqContext *ri)
                 frame_stats[0][vqid]++;
                 vqflg_pos--;
 
-                switch(vqid) {
+                switch(vqid)
+                {
                 case RoQ_ID_MOT:
                     break;
-                case RoQ_ID_FCC: {
+                case RoQ_ID_FCC:
+                {
                     int byte = bytestream2_get_byte(&ri->gb);
                     mx = 8 - (byte >> 4) - ((signed char) (chunk_arg >> 8));
                     my = 8 - (byte & 0xf) - ((signed char) chunk_arg);
@@ -108,26 +118,32 @@ static void roqvideo_decode_frame(RoqContext *ri)
                     ff_apply_vector_4x4(ri, xp + 4, yp + 4, ri->cb2x2 + qcell->idx[3]);
                     break;
                 case RoQ_ID_CCC:
-                    for (k = 0; k < 4; k++) {
-                        x = xp; y = yp;
+                    for (k = 0; k < 4; k++)
+                    {
+                        x = xp;
+                        y = yp;
                         if(k & 0x01) x += 4;
                         if(k & 0x02) y += 4;
 
-                        if (bytestream2_tell(&ri->gb) >= chunk_start + chunk_size) {
+                        if (bytestream2_tell(&ri->gb) >= chunk_start + chunk_size)
+                        {
                             av_log(ri->avctx, AV_LOG_VERBOSE, "Chunk is too short\n");
                             return;
                         }
-                        if (vqflg_pos < 0) {
+                        if (vqflg_pos < 0)
+                        {
                             vqflg = bytestream2_get_le16(&ri->gb);
                             vqflg_pos = 7;
                         }
                         vqid = (vqflg >> (vqflg_pos * 2)) & 0x3;
                         frame_stats[1][vqid]++;
                         vqflg_pos--;
-                        switch(vqid) {
+                        switch(vqid)
+                        {
                         case RoQ_ID_MOT:
                             break;
-                        case RoQ_ID_FCC: {
+                        case RoQ_ID_FCC:
+                        {
                             int byte = bytestream2_get_byte(&ri->gb);
                             mx = 8 - (byte >> 4) - ((signed char) (chunk_arg >> 8));
                             my = 8 - (byte & 0xf) - ((signed char) chunk_arg);
@@ -152,11 +168,12 @@ static void roqvideo_decode_frame(RoqContext *ri)
                     break;
                 default:
                     av_assert2(0);
+                }
             }
-        }
 
         xpos += 16;
-        if (xpos >= ri->width) {
+        if (xpos >= ri->width)
+        {
             xpos -= ri->width;
             ypos += 16;
         }
@@ -172,7 +189,8 @@ static av_cold int roq_decode_init(AVCodecContext *avctx)
 
     s->avctx = avctx;
 
-    if (avctx->width % 16 || avctx->height % 16) {
+    if (avctx->width % 16 || avctx->height % 16)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Dimensions must be a multiple of 16\n");
         return AVERROR_PATCHWELCOME;
@@ -183,7 +201,8 @@ static av_cold int roq_decode_init(AVCodecContext *avctx)
 
     s->last_frame    = av_frame_alloc();
     s->current_frame = av_frame_alloc();
-    if (!s->current_frame || !s->last_frame) {
+    if (!s->current_frame || !s->last_frame)
+    {
         av_frame_free(&s->current_frame);
         av_frame_free(&s->last_frame);
         return AVERROR(ENOMEM);
@@ -235,7 +254,8 @@ static av_cold int roq_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_roq_decoder = {
+AVCodec ff_roq_decoder =
+{
     .name           = "roqvideo",
     .long_name      = NULL_IF_CONFIG_SMALL("id RoQ video"),
     .type           = AVMEDIA_TYPE_VIDEO,

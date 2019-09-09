@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW demuxers
  * Copyright (C) 2007  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -26,7 +26,8 @@
 #include "libavutil/log.h"
 #include "libavutil/opt.h"
 
-typedef struct FFRawVideoDemuxerContext {
+typedef struct FFRawVideoDemuxerContext
+{
     const AVClass *class;     /**< Class for private options. */
     char *video_size;         /**< String describing video size, set by a private option. */
     char *pixel_format;       /**< Set by a private option. */

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@ RTC_PUSH_IGNORING_WUNDEF()
 #include "webrtc/modules/audio_processing/debug.pb.h"
 RTC_POP_IGNORING_WUNDEF()
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Allocates new memory in the unique_ptr to fit the raw message and returns the
 // number of bytes read.

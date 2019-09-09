@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,11 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCIceCandidate : NSObject
 
-/**
- * If present, the identifier of the "media stream identification" for the media
- * component this candidate is associated with.
- */
-@property(nonatomic, readonly, nullable) NSString *sdpMid;
+    /**
+     * If present, the identifier of the "media stream identification" for the media
+     * component this candidate is associated with.
+     */
+    @property(nonatomic, readonly, nullable) NSString *sdpMid;
 
 /**
  * The index (starting at zero) of the media description this candidate is
@@ -41,8 +41,8 @@ RTC_EXPORT
  * Initialize an RTCIceCandidate from SDP.
  */
 - (instancetype)initWithSdp:(NSString *)sdp
-              sdpMLineIndex:(int)sdpMLineIndex
-                     sdpMid:(nullable NSString *)sdpMid
+    sdpMLineIndex:(int)sdpMLineIndex
+    sdpMid:(nullable NSString *)sdpMid
     NS_DESIGNATED_INITIALIZER;
 
 @end

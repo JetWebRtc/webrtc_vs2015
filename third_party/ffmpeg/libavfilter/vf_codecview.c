@@ -40,18 +40,20 @@
 #define MV_B_FOR  (1<<1)
 #define MV_B_BACK (1<<2)
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     unsigned mv;
 } CodecViewContext;
 
 #define OFFSET(x) offsetof(CodecViewContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption codecview_options[] = {
+static const AVOption codecview_options[] =
+{
     { "mv", "set motion vectors to visualize", OFFSET(mv), AV_OPT_TYPE_FLAGS, {.i64=0}, 0, INT_MAX, FLAGS, "mv" },
-        {"pf", "forward predicted MVs of P-frames",  0, AV_OPT_TYPE_CONST, {.i64 = MV_P_FOR },  INT_MIN, INT_MAX, FLAGS, "mv"},
-        {"bf", "forward predicted MVs of B-frames",  0, AV_OPT_TYPE_CONST, {.i64 = MV_B_FOR },  INT_MIN, INT_MAX, FLAGS, "mv"},
-        {"bb", "backward predicted MVs of B-frames", 0, AV_OPT_TYPE_CONST, {.i64 = MV_B_BACK }, INT_MIN, INT_MAX, FLAGS, "mv"},
+    {"pf", "forward predicted MVs of P-frames",  0, AV_OPT_TYPE_CONST, {.i64 = MV_P_FOR },  INT_MIN, INT_MAX, FLAGS, "mv"},
+    {"bf", "forward predicted MVs of B-frames",  0, AV_OPT_TYPE_CONST, {.i64 = MV_B_FOR },  INT_MIN, INT_MAX, FLAGS, "mv"},
+    {"bb", "backward predicted MVs of B-frames", 0, AV_OPT_TYPE_CONST, {.i64 = MV_B_BACK }, INT_MIN, INT_MAX, FLAGS, "mv"},
     { NULL }
 };
 
@@ -73,14 +75,16 @@ static int clip_line(int *sx, int *sy, int *ex, int *ey, int maxx)
     if(*sx > *ex)
         return clip_line(ex, ey, sx, sy, maxx);
 
-    if (*sx < 0) {
+    if (*sx < 0)
+    {
         if (*ex < 0)
             return 1;
         *sy = *ey + (*sy - *ey) * (int64_t)*ex / (*ex - *sx);
         *sx = 0;
     }
 
-    if (*ex > maxx) {
+    if (*ex > maxx)
+    {
         if (*sx > maxx)
             return 1;
         *ey = *sy + (*ey - *sy) * (int64_t)(maxx - *sx) / (*ex - *sx);
@@ -113,22 +117,28 @@ static void draw_line(uint8_t *buf, int sx, int sy, int ex, int ey,
 
     buf[sy * stride + sx] += color;
 
-    if (FFABS(ex - sx) > FFABS(ey - sy)) {
-        if (sx > ex) {
+    if (FFABS(ex - sx) > FFABS(ey - sy))
+    {
+        if (sx > ex)
+        {
             FFSWAP(int, sx, ex);
             FFSWAP(int, sy, ey);
         }
         buf += sx + sy * stride;
         ex  -= sx;
         f    = ((ey - sy) << 16) / ex;
-        for (x = 0; x <= ex; x++) {
+        for (x = 0; x <= ex; x++)
+        {
             y  = (x * f) >> 16;
             fr = (x * f) & 0xFFFF;
-                   buf[ y      * stride + x] += (color * (0x10000 - fr)) >> 16;
+            buf[ y      * stride + x] += (color * (0x10000 - fr)) >> 16;
             if(fr) buf[(y + 1) * stride + x] += (color *            fr ) >> 16;
         }
-    } else {
-        if (sy > ey) {
+    }
+    else
+    {
+        if (sy > ey)
+        {
             FFSWAP(int, sx, ex);
             FFSWAP(int, sy, ey);
         }
@@ -138,10 +148,11 @@ static void draw_line(uint8_t *buf, int sx, int sy, int ex, int ey,
             f = ((ex - sx) << 16) / ey;
         else
             f = 0;
-        for(y= 0; y <= ey; y++){
+        for(y= 0; y <= ey; y++)
+        {
             x  = (y*f) >> 16;
             fr = (y*f) & 0xFFFF;
-                   buf[y * stride + x    ] += (color * (0x10000 - fr)) >> 16;
+            buf[y * stride + x    ] += (color * (0x10000 - fr)) >> 16;
             if(fr) buf[y * stride + x + 1] += (color *            fr ) >> 16;
         }
     }
@@ -159,7 +170,8 @@ static void draw_arrow(uint8_t *buf, int sx, int sy, int ex,
 {
     int dx,dy;
 
-    if (direction) {
+    if (direction)
+    {
         FFSWAP(int, sx, ex);
         FFSWAP(int, sy, ey);
     }
@@ -172,7 +184,8 @@ static void draw_arrow(uint8_t *buf, int sx, int sy, int ex,
     dx = ex - sx;
     dy = ey - sy;
 
-    if (dx * dx + dy * dy > 3 * 3) {
+    if (dx * dx + dy * dy > 3 * 3)
+    {
         int rx =  dx + dy;
         int ry = -dx + dy;
         int length = sqrt((rx * rx + ry * ry) << 8);
@@ -181,7 +194,8 @@ static void draw_arrow(uint8_t *buf, int sx, int sy, int ex,
         rx = ROUNDED_DIV(rx * 3 << 4, length);
         ry = ROUNDED_DIV(ry * 3 << 4, length);
 
-        if (tail) {
+        if (tail)
+        {
             rx = -rx;
             ry = -ry;
         }
@@ -199,15 +213,17 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AVFilterLink *outlink = ctx->outputs[0];
 
     AVFrameSideData *sd = av_frame_get_side_data(frame, AV_FRAME_DATA_MOTION_VECTORS);
-    if (sd) {
+    if (sd)
+    {
         int i;
         const AVMotionVector *mvs = (const AVMotionVector *)sd->data;
-        for (i = 0; i < sd->size / sizeof(*mvs); i++) {
+        for (i = 0; i < sd->size / sizeof(*mvs); i++)
+        {
             const AVMotionVector *mv = &mvs[i];
             const int direction = mv->source > 0;
             if ((direction == 0 && (s->mv & MV_P_FOR)  && frame->pict_type == AV_PICTURE_TYPE_P) ||
-                (direction == 0 && (s->mv & MV_B_FOR)  && frame->pict_type == AV_PICTURE_TYPE_B) ||
-                (direction == 1 && (s->mv & MV_B_BACK) && frame->pict_type == AV_PICTURE_TYPE_B))
+                    (direction == 0 && (s->mv & MV_B_FOR)  && frame->pict_type == AV_PICTURE_TYPE_B) ||
+                    (direction == 1 && (s->mv & MV_B_BACK) && frame->pict_type == AV_PICTURE_TYPE_B))
                 draw_arrow(frame->data[0], mv->dst_x, mv->dst_y, mv->src_x, mv->src_y,
                            frame->width, frame->height, frame->linesize[0],
                            100, 0, mv->source > 0);
@@ -216,7 +232,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     return ff_filter_frame(outlink, frame);
 }
 
-static const AVFilterPad codecview_inputs[] = {
+static const AVFilterPad codecview_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_VIDEO,
@@ -226,7 +243,8 @@ static const AVFilterPad codecview_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad codecview_outputs[] = {
+static const AVFilterPad codecview_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -234,7 +252,8 @@ static const AVFilterPad codecview_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_codecview = {
+AVFilter ff_vf_codecview =
+{
     .name          = "codecview",
     .description   = NULL_IF_CONFIG_SMALL("Visualize information about some codecs"),
     .priv_size     = sizeof(CodecViewContext),

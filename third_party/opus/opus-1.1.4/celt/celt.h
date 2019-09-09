@@ -1,4 +1,4 @@
-/* Copyright (c) 2007-2008 CSIRO
+﻿/* Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Copyright (c) 2008 Gregory Maxwell
    Written by Jean-Marc Valin and Gregory Maxwell */
@@ -50,15 +50,16 @@ extern "C" {
 #define CELTDecoder OpusCustomDecoder
 #define CELTMode OpusCustomMode
 
-typedef struct {
-   int valid;
-   float tonality;
-   float tonality_slope;
-   float noisiness;
-   float activity;
-   float music_prob;
-   int        bandwidth;
-}AnalysisInfo;
+typedef struct
+{
+    int valid;
+    float tonality;
+    float tonality_slope;
+    float noisiness;
+    float activity;
+    float music_prob;
+    int        bandwidth;
+} AnalysisInfo;
 
 #define __celt_check_mode_ptr_ptr(ptr) ((ptr) + ((ptr) - (const CELTMode**)(ptr)))
 
@@ -135,7 +136,7 @@ int celt_decoder_get_size(int channels);
 int celt_decoder_init(CELTDecoder *st, opus_int32 sampling_rate, int channels);
 
 int celt_decode_with_ec(OpusCustomDecoder * OPUS_RESTRICT st, const unsigned char *data,
-      int len, opus_val16 * OPUS_RESTRICT pcm, int frame_size, ec_dec *dec, int accum);
+                        int len, opus_val16 * OPUS_RESTRICT pcm, int frame_size, ec_dec *dec, int accum);
 
 #define celt_encoder_ctl opus_custom_encoder_ctl
 #define celt_decoder_ctl opus_custom_decoder_ctl
@@ -151,41 +152,43 @@ static const unsigned char trim_icdf[11] = {126, 124, 119, 109, 87, 41, 19, 9, 4
 /* Probs: NONE: 21.875%, LIGHT: 6.25%, NORMAL: 65.625%, AGGRESSIVE: 6.25% */
 static const unsigned char spread_icdf[4] = {25, 23, 2, 0};
 
-static const unsigned char tapset_icdf[3]={2,1,0};
+static const unsigned char tapset_icdf[3]= {2,1,0};
 
 #ifdef CUSTOM_MODES
-static const unsigned char toOpusTable[20] = {
-      0xE0, 0xE8, 0xF0, 0xF8,
-      0xC0, 0xC8, 0xD0, 0xD8,
-      0xA0, 0xA8, 0xB0, 0xB8,
-      0x00, 0x00, 0x00, 0x00,
-      0x80, 0x88, 0x90, 0x98,
+static const unsigned char toOpusTable[20] =
+{
+    0xE0, 0xE8, 0xF0, 0xF8,
+    0xC0, 0xC8, 0xD0, 0xD8,
+    0xA0, 0xA8, 0xB0, 0xB8,
+    0x00, 0x00, 0x00, 0x00,
+    0x80, 0x88, 0x90, 0x98,
 };
 
-static const unsigned char fromOpusTable[16] = {
-      0x80, 0x88, 0x90, 0x98,
-      0x40, 0x48, 0x50, 0x58,
-      0x20, 0x28, 0x30, 0x38,
-      0x00, 0x08, 0x10, 0x18
+static const unsigned char fromOpusTable[16] =
+{
+    0x80, 0x88, 0x90, 0x98,
+    0x40, 0x48, 0x50, 0x58,
+    0x20, 0x28, 0x30, 0x38,
+    0x00, 0x08, 0x10, 0x18
 };
 
 static OPUS_INLINE int toOpus(unsigned char c)
 {
-   int ret=0;
-   if (c<0xA0)
-      ret = toOpusTable[c>>3];
-   if (ret == 0)
-      return -1;
-   else
-      return ret|(c&0x7);
+    int ret=0;
+    if (c<0xA0)
+        ret = toOpusTable[c>>3];
+    if (ret == 0)
+        return -1;
+    else
+        return ret|(c&0x7);
 }
 
 static OPUS_INLINE int fromOpus(unsigned char c)
 {
-   if (c<0x80)
-      return -1;
-   else
-      return fromOpusTable[(c>>3)-16] | (c&0x7);
+    if (c<0x80)
+        return -1;
+    else
+        return fromOpusTable[(c>>3)-16] | (c&0x7);
 }
 #endif /* CUSTOM_MODES */
 
@@ -197,11 +200,11 @@ extern const signed char tf_select_table[4][8];
 int resampling_factor(opus_int32 rate);
 
 void celt_preemphasis(const opus_val16 * OPUS_RESTRICT pcmp, celt_sig * OPUS_RESTRICT inp,
-                        int N, int CC, int upsample, const opus_val16 *coef, celt_sig *mem, int clip);
+                      int N, int CC, int upsample, const opus_val16 *coef, celt_sig *mem, int clip);
 
 void comb_filter(opus_val32 *y, opus_val32 *x, int T0, int T1, int N,
-      opus_val16 g0, opus_val16 g1, int tapset0, int tapset1,
-      const opus_val16 *window, int overlap, int arch);
+                 opus_val16 g0, opus_val16 g1, int tapset0, int tapset1,
+                 const opus_val16 *window, int overlap, int arch);
 
 #ifdef NON_STATIC_COMB_FILTER_CONST_C
 void comb_filter_const_c(opus_val32 *y, opus_val32 *x, int T, int N,
@@ -218,8 +221,8 @@ void init_caps(const CELTMode *m,int *cap,int LM,int C);
 #ifdef RESYNTH
 void deemphasis(celt_sig *in[], opus_val16 *pcm, int N, int C, int downsample, const opus_val16 *coef, celt_sig *mem);
 void celt_synthesis(const CELTMode *mode, celt_norm *X, celt_sig * out_syn[],
-      opus_val16 *oldBandE, int start, int effEnd, int C, int CC, int isTransient,
-      int LM, int downsample, int silence);
+                    opus_val16 *oldBandE, int start, int effEnd, int C, int CC, int isTransient,
+                    int LM, int downsample, int silence);
 #endif
 
 #ifdef __cplusplus

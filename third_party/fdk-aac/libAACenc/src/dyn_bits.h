@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -106,40 +106,40 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  INT codeBook;
-  INT sfbStart;
-  INT sfbCnt;
-  INT sectionBits;              /* huff + si ! */
+    INT codeBook;
+    INT sfbStart;
+    INT sfbCnt;
+    INT sectionBits;              /* huff + si ! */
 } SECTION_INFO;
 
 
 typedef struct
 {
-  INT blockType;
-  INT noOfGroups;
-  INT sfbCnt;
-  INT maxSfbPerGroup;
-  INT sfbPerGroup;
-  INT noOfSections;
-  SECTION_INFO huffsection[MAX_SECTIONS];
-  INT sideInfoBits;             /* sectioning bits       */
-  INT huffmanBits;              /* huffman    coded bits */
-  INT scalefacBits;             /* scalefac   coded bits */
-  INT noiseNrgBits;             /* noiseEnergy coded bits */
-  INT firstScf;                 /* first scf to be coded */
+    INT blockType;
+    INT noOfGroups;
+    INT sfbCnt;
+    INT maxSfbPerGroup;
+    INT sfbPerGroup;
+    INT noOfSections;
+    SECTION_INFO huffsection[MAX_SECTIONS];
+    INT sideInfoBits;             /* sectioning bits       */
+    INT huffmanBits;              /* huffman    coded bits */
+    INT scalefacBits;             /* scalefac   coded bits */
+    INT noiseNrgBits;             /* noiseEnergy coded bits */
+    INT firstScf;                 /* first scf to be coded */
 } SECTION_DATA;
 
 
 struct BITCNTR_STATE
 {
-  INT *bitLookUp;
-  INT *mergeGainLookUp;
+    INT *bitLookUp;
+    INT *mergeGainLookUp;
 };
 
 
 INT  FDKaacEnc_BCNew(BITCNTR_STATE **phBC
-          ,UCHAR* dynamic_RAM
-          );
+                     ,UCHAR* dynamic_RAM
+                    );
 
 void FDKaacEnc_BCClose(BITCNTR_STATE **phBC);
 
@@ -148,20 +148,20 @@ INT  noisePreCount(const INT *noiseNrg, INT maxSfb);
 #endif
 
 INT FDKaacEnc_dynBitCount(
-        BITCNTR_STATE* const         hBC,
-        const SHORT* const           quantSpectrum,
-        const UINT* const            maxValueInSfb,
-        const INT* const             scalefac,
-        const INT                    blockType,
-        const INT                    sfbCnt,
-        const INT                    maxSfbPerGroup,
-        const INT                    sfbPerGroup,
-        const INT* const             sfbOffset,
-        SECTION_DATA* const RESTRICT sectionData,
-        const INT* const             noiseNrg,
-        const INT* const             isBook,
-        const INT* const             isScale,
-        const UINT                   syntaxFlags
-        );
+    BITCNTR_STATE* const         hBC,
+    const SHORT* const           quantSpectrum,
+    const UINT* const            maxValueInSfb,
+    const INT* const             scalefac,
+    const INT                    blockType,
+    const INT                    sfbCnt,
+    const INT                    maxSfbPerGroup,
+    const INT                    sfbPerGroup,
+    const INT* const             sfbOffset,
+    SECTION_DATA* const RESTRICT sectionData,
+    const INT* const             noiseNrg,
+    const INT* const             isBook,
+    const INT* const             isScale,
+    const UINT                   syntaxFlags
+);
 
 #endif

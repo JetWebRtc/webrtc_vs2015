@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AMR Audio encoder stub
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -32,7 +32,8 @@
 
 #define MAX_PACKET_SIZE  (1 + (477 + 7) / 8)
 
-typedef struct AMRWBContext {
+typedef struct AMRWBContext
+{
     AVClass *av_class;
     void  *state;
     int    mode;
@@ -40,12 +41,14 @@ typedef struct AMRWBContext {
     int    allow_dtx;
 } AMRWBContext;
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "dtx", "Allow DTX (generate comfort noise)", offsetof(AMRWBContext, allow_dtx), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
     { NULL }
 };
 
-static const AVClass amrwb_class = {
+static const AVClass amrwb_class =
+{
     "libvo_amrwbenc", av_default_item_name, options, LIBAVUTIL_VERSION_INT
 };
 
@@ -53,14 +56,17 @@ static int get_wb_bitrate_mode(int bitrate, void *log_ctx)
 {
     /* make the correspondance between bitrate and mode */
     static const int rates[] = {  6600,  8850, 12650, 14250, 15850, 18250,
-                                 19850, 23050, 23850 };
+                                  19850, 23050, 23850
+                               };
     int i, best = -1, min_diff = 0;
     char log_buf[200];
 
-    for (i = 0; i < 9; i++) {
+    for (i = 0; i < 9; i++)
+    {
         if (rates[i] == bitrate)
             return i;
-        if (best < 0 || abs(rates[i] - bitrate) < min_diff) {
+        if (best < 0 || abs(rates[i] - bitrate) < min_diff)
+        {
             best     = i;
             min_diff = abs(rates[i] - bitrate);
         }
@@ -79,12 +85,14 @@ static av_cold int amr_wb_encode_init(AVCodecContext *avctx)
 {
     AMRWBContext *s = avctx->priv_data;
 
-    if (avctx->sample_rate != 16000 && avctx->strict_std_compliance > FF_COMPLIANCE_UNOFFICIAL) {
+    if (avctx->sample_rate != 16000 && avctx->strict_std_compliance > FF_COMPLIANCE_UNOFFICIAL)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only 16000Hz sample rate supported\n");
         return AVERROR(ENOSYS);
     }
 
-    if (avctx->channels != 1) {
+    if (avctx->channels != 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only mono supported\n");
         return AVERROR(ENOSYS);
     }
@@ -118,12 +126,14 @@ static int amr_wb_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     if ((ret = ff_alloc_packet2(avctx, avpkt, MAX_PACKET_SIZE, 0)) < 0)
         return ret;
 
-    if (s->last_bitrate != avctx->bit_rate) {
+    if (s->last_bitrate != avctx->bit_rate)
+    {
         s->mode         = get_wb_bitrate_mode(avctx->bit_rate, avctx);
         s->last_bitrate = avctx->bit_rate;
     }
     size = E_IF_encode(s->state, s->mode, samples, avpkt->data, s->allow_dtx);
-    if (size <= 0 || size > MAX_PACKET_SIZE) {
+    if (size <= 0 || size > MAX_PACKET_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error encoding frame\n");
         return AVERROR(EINVAL);
     }
@@ -136,17 +146,20 @@ static int amr_wb_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-AVCodec ff_libvo_amrwbenc_encoder = {
+AVCodec ff_libvo_amrwbenc_encoder =
+{
     .name           = "libvo_amrwbenc",
     .long_name      = NULL_IF_CONFIG_SMALL("Android VisualOn AMR-WB "
-                                           "(Adaptive Multi-Rate Wide-Band)"),
+    "(Adaptive Multi-Rate Wide-Band)"),
     .type           = AVMEDIA_TYPE_AUDIO,
     .id             = AV_CODEC_ID_AMR_WB,
     .priv_data_size = sizeof(AMRWBContext),
     .init           = amr_wb_encode_init,
     .encode2        = amr_wb_encode_frame,
     .close          = amr_wb_encode_close,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class     = &amrwb_class,
 };

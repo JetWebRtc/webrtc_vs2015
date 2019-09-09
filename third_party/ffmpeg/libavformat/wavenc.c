@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WAV muxer
  * Copyright (c) 2001, 2002 Fabrice Bellard
  *
@@ -52,18 +52,21 @@
 
 #define PEAK_BUFFER_SIZE   1024
 
-typedef enum {
+typedef enum
+{
     PEAK_OFF = 0,
     PEAK_ON,
     PEAK_ONLY
 } PeakType;
 
-typedef enum {
+typedef enum
+{
     PEAK_FORMAT_UINT8 = 1,
     PEAK_FORMAT_UINT16
 } PeakFormat;
 
-typedef struct WAVMuxContext {
+typedef struct WAVMuxContext
+{
     const AVClass *class;
     int64_t data;
     int64_t fact_pos;
@@ -94,7 +97,8 @@ static inline void bwf_write_bext_string(AVFormatContext *s, const char *key, in
     AVDictionaryEntry *tag;
     size_t len = 0;
 
-    if (tag = av_dict_get(s->metadata, key, NULL, 0)) {
+    if (tag = av_dict_get(s->metadata, key, NULL, 0))
+    {
         len = strlen(tag->value);
         len = FFMIN(len, maxlen);
         avio_write(s->pb, tag->value, len);
@@ -120,19 +124,22 @@ static void bwf_write_bext_chunk(AVFormatContext *s)
     avio_wl64(s->pb, time_reference);
     avio_wl16(s->pb, 1);  // set version to 1
 
-    if ((tmp_tag = av_dict_get(s->metadata, "umid", NULL, 0)) && strlen(tmp_tag->value) > 2) {
+    if ((tmp_tag = av_dict_get(s->metadata, "umid", NULL, 0)) && strlen(tmp_tag->value) > 2)
+    {
         unsigned char umidpart_str[17] = {0};
         int64_t i;
         uint64_t umidpart;
         size_t len = strlen(tmp_tag->value+2);
 
-        for (i = 0; i < len/16; i++) {
+        for (i = 0; i < len/16; i++)
+        {
             memcpy(umidpart_str, tmp_tag->value + 2 + (i*16), 16);
             umidpart = strtoll(umidpart_str, NULL, 16);
             avio_wb64(s->pb, umidpart);
         }
         ffio_fill(s->pb, 0, 64 - i*8);
-    } else
+    }
+    else
         ffio_fill(s->pb, 0, 64); // zero UMID
 
     ffio_fill(s->pb, 0, 190); // Reserved
@@ -158,9 +165,10 @@ static av_cold int peak_init_writer(AVFormatContext *s)
     AVCodecContext *enc = s->streams[0]->codec;
 
     if (enc->codec_id != AV_CODEC_ID_PCM_S8 &&
-        enc->codec_id != AV_CODEC_ID_PCM_S16LE &&
-        enc->codec_id != AV_CODEC_ID_PCM_U8 &&
-        enc->codec_id != AV_CODEC_ID_PCM_U16LE) {
+            enc->codec_id != AV_CODEC_ID_PCM_S16LE &&
+            enc->codec_id != AV_CODEC_ID_PCM_U8 &&
+            enc->codec_id != AV_CODEC_ID_PCM_U16LE)
+    {
         av_log(s, AV_LOG_ERROR, "%s codec not supported for Peak Chunk\n",
                s->streams[0]->codec->codec ? s->streams[0]->codec->codec->name : "NONE");
         return -1;
@@ -168,7 +176,8 @@ static av_cold int peak_init_writer(AVFormatContext *s)
 
     wav->peak_bps = av_get_bits_per_sample(enc->codec_id) / 8;
 
-    if (wav->peak_bps == 1 && wav->peak_format == PEAK_FORMAT_UINT16) {
+    if (wav->peak_bps == 1 && wav->peak_format == PEAK_FORMAT_UINT16)
+    {
         av_log(s, AV_LOG_ERROR,
                "Writing 16 bit peak for 8 bit audio does not make sense\n");
         return AVERROR(EINVAL);
@@ -200,10 +209,12 @@ static void peak_write_frame(AVFormatContext *s)
     if (!wav->peak_output)
         return;
 
-    for (c = 0; c < enc->channels; c++) {
+    for (c = 0; c < enc->channels; c++)
+    {
         wav->peak_maxneg[c] = -wav->peak_maxneg[c];
 
-        if (wav->peak_bps == 2 && wav->peak_format == PEAK_FORMAT_UINT8) {
+        if (wav->peak_bps == 2 && wav->peak_format == PEAK_FORMAT_UINT8)
+        {
             wav->peak_maxpos[c] = wav->peak_maxpos[c] / 256;
             wav->peak_maxneg[c] = wav->peak_maxneg[c] / 256;
         }
@@ -219,28 +230,35 @@ static void peak_write_frame(AVFormatContext *s)
         wav->peak_pop = peak_of_peaks;
 
         if (wav->peak_outbuf_size - wav->peak_outbuf_bytes <
-            wav->peak_format * wav->peak_ppv) {
+                wav->peak_format * wav->peak_ppv)
+        {
             wav->peak_outbuf_size += PEAK_BUFFER_SIZE;
             wav->peak_output = av_realloc(wav->peak_output,
                                           wav->peak_outbuf_size);
-            if (!wav->peak_output) {
+            if (!wav->peak_output)
+            {
                 av_log(s, AV_LOG_ERROR, "No memory for peak data\n");
                 return;
             }
         }
 
-        if (wav->peak_format == PEAK_FORMAT_UINT8) {
+        if (wav->peak_format == PEAK_FORMAT_UINT8)
+        {
             wav->peak_output[wav->peak_outbuf_bytes++] =
                 wav->peak_maxpos[c];
-            if (wav->peak_ppv == 2) {
+            if (wav->peak_ppv == 2)
+            {
                 wav->peak_output[wav->peak_outbuf_bytes++] =
                     wav->peak_maxneg[c];
             }
-        } else {
+        }
+        else
+        {
             AV_WL16(wav->peak_output + wav->peak_outbuf_bytes,
                     wav->peak_maxpos[c]);
             wav->peak_outbuf_bytes += 2;
-            if (wav->peak_ppv == 2) {
+            if (wav->peak_ppv == 2)
+            {
                 AV_WL16(wav->peak_output + wav->peak_outbuf_bytes,
                         wav->peak_maxneg[c]);
                 wav->peak_outbuf_bytes += 2;
@@ -267,14 +285,18 @@ static int peak_write_chunk(AVFormatContext *s)
         peak_write_frame(s);
 
     memset(timestamp, 0, sizeof(timestamp));
-    if (!(s->flags & AVFMT_FLAG_BITEXACT)) {
+    if (!(s->flags & AVFMT_FLAG_BITEXACT))
+    {
         struct tm tmpbuf;
         av_log(s, AV_LOG_INFO, "Writing local time and date to Peak Envelope Chunk\n");
         now0 = av_gettime();
         now_secs = now0 / 1000000;
-        if (strftime(timestamp, sizeof(timestamp), "%Y:%m:%d:%H:%M:%S:", localtime_r(&now_secs, &tmpbuf))) {
+        if (strftime(timestamp, sizeof(timestamp), "%Y:%m:%d:%H:%M:%S:", localtime_r(&now_secs, &tmpbuf)))
+        {
             av_strlcatf(timestamp, sizeof(timestamp), "%03d", (int)((now0 / 1000) % 1000));
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR, "Failed to write timestamp\n");
             return -1;
         }
@@ -307,22 +329,27 @@ static int wav_write_header(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     int64_t fmt;
 
-    if (s->nb_streams != 1) {
+    if (s->nb_streams != 1)
+    {
         av_log(s, AV_LOG_ERROR, "WAVE files have exactly one stream\n");
         return AVERROR(EINVAL);
     }
 
-    if (wav->rf64 == RF64_ALWAYS) {
+    if (wav->rf64 == RF64_ALWAYS)
+    {
         ffio_wfourcc(pb, "RF64");
         avio_wl32(pb, -1); /* RF64 chunk size: use size in ds64 */
-    } else {
+    }
+    else
+    {
         ffio_wfourcc(pb, "RIFF");
         avio_wl32(pb, -1); /* file length */
     }
 
     ffio_wfourcc(pb, "WAVE");
 
-    if (wav->rf64 != RF64_NEVER) {
+    if (wav->rf64 != RF64_NEVER)
+    {
         /* write empty ds64 chunk or JUNK chunk to reserve space for ds64 */
         ffio_wfourcc(pb, wav->rf64 == RF64_ALWAYS ? "ds64" : "JUNK");
         avio_wl32(pb, 28); /* chunk size */
@@ -330,10 +357,12 @@ static int wav_write_header(AVFormatContext *s)
         ffio_fill(pb, 0, 28);
     }
 
-    if (wav->write_peak != 2) {
+    if (wav->write_peak != 2)
+    {
         /* format header */
         fmt = ff_start_tag(pb, "fmt ");
-        if (ff_put_wav_header(pb, s->streams[0]->codec, 0) < 0) {
+        if (ff_put_wav_header(pb, s->streams[0]->codec, 0) < 0)
+        {
             const AVCodecDescriptor *desc = avcodec_descriptor_get(s->streams[0]->codec->codec_id);
             av_log(s, AV_LOG_ERROR, "%s codec not supported in WAVE format\n",
                    desc ? desc->name : "unknown");
@@ -343,7 +372,8 @@ static int wav_write_header(AVFormatContext *s)
     }
 
     if (s->streams[0]->codec->codec_tag != 0x01 /* hence for all other than PCM */
-        && s->pb->seekable) {
+            && s->pb->seekable)
+    {
         wav->fact_pos = ff_start_tag(pb, "fact");
         avio_wl32(pb, 0);
         ff_end_tag(pb, wav->fact_pos);
@@ -352,7 +382,8 @@ static int wav_write_header(AVFormatContext *s)
     if (wav->write_bext)
         bwf_write_bext_chunk(s);
 
-    if (wav->write_peak) {
+    if (wav->write_peak)
+    {
         int ret;
         if ((ret = peak_init_writer(s)) < 0)
             return ret;
@@ -362,7 +393,8 @@ static int wav_write_header(AVFormatContext *s)
     wav->maxpts = wav->last_duration = 0;
     wav->minpts = INT64_MAX;
 
-    if (wav->write_peak != 2) {
+    if (wav->write_peak != 2)
+    {
         /* info header */
         ff_riff_write_info(s);
 
@@ -383,20 +415,27 @@ static int wav_write_packet(AVFormatContext *s, AVPacket *pkt)
     if (wav->write_peak != 2)
         avio_write(pb, pkt->data, pkt->size);
 
-    if (wav->write_peak) {
+    if (wav->write_peak)
+    {
         int c = 0;
         int i;
-        for (i = 0; i < pkt->size; i += wav->peak_bps) {
-            if (wav->peak_bps == 1) {
+        for (i = 0; i < pkt->size; i += wav->peak_bps)
+        {
+            if (wav->peak_bps == 1)
+            {
                 wav->peak_maxpos[c] = FFMAX(wav->peak_maxpos[c], *(int8_t*)(pkt->data + i));
                 wav->peak_maxneg[c] = FFMIN(wav->peak_maxneg[c], *(int8_t*)(pkt->data + i));
-            } else {
+            }
+            else
+            {
                 wav->peak_maxpos[c] = FFMAX(wav->peak_maxpos[c], (int16_t)AV_RL16(pkt->data + i));
                 wav->peak_maxneg[c] = FFMIN(wav->peak_maxneg[c], (int16_t)AV_RL16(pkt->data + i));
             }
-            if (++c == s->streams[0]->codec->channels) {
+            if (++c == s->streams[0]->codec->channels)
+            {
                 c = 0;
-                if (++wav->peak_block_pos == wav->peak_block_size) {
+                if (++wav->peak_block_pos == wav->peak_block_size)
+                {
                     peak_write_frame(s);
                     wav->peak_block_pos = 0;
                 }
@@ -404,11 +443,13 @@ static int wav_write_packet(AVFormatContext *s, AVPacket *pkt)
         }
     }
 
-    if(pkt->pts != AV_NOPTS_VALUE) {
+    if(pkt->pts != AV_NOPTS_VALUE)
+    {
         wav->minpts        = FFMIN(wav->minpts, pkt->pts);
         wav->maxpts        = FFMAX(wav->maxpts, pkt->pts);
         wav->last_duration = pkt->duration;
-    } else
+    }
+    else
         av_log(s, AV_LOG_ERROR, "wav_write_packet: NOPTS\n");
     return 0;
 }
@@ -424,13 +465,16 @@ static int wav_write_trailer(AVFormatContext *s)
 
     avio_flush(pb);
 
-    if (s->pb->seekable) {
-        if (wav->write_peak != 2 && avio_tell(pb) - wav->data < UINT32_MAX) {
+    if (s->pb->seekable)
+    {
+        if (wav->write_peak != 2 && avio_tell(pb) - wav->data < UINT32_MAX)
+        {
             ff_end_tag(pb, wav->data);
             avio_flush(pb);
         }
 
-        if (wav->write_peak && wav->peak_output) {
+        if (wav->write_peak && wav->peak_output)
+        {
             ret = peak_write_chunk(s);
             avio_flush(pb);
         }
@@ -438,15 +482,20 @@ static int wav_write_trailer(AVFormatContext *s)
         /* update file size */
         file_size = avio_tell(pb);
         data_size = file_size - wav->data;
-        if (wav->rf64 == RF64_ALWAYS || (wav->rf64 == RF64_AUTO && file_size - 8 > UINT32_MAX)) {
+        if (wav->rf64 == RF64_ALWAYS || (wav->rf64 == RF64_AUTO && file_size - 8 > UINT32_MAX))
+        {
             rf64 = 1;
-        } else if (file_size - 8 <= UINT32_MAX) {
+        }
+        else if (file_size - 8 <= UINT32_MAX)
+        {
             avio_seek(pb, 4, SEEK_SET);
             avio_wl32(pb, (uint32_t)(file_size - 8));
             avio_seek(pb, file_size, SEEK_SET);
 
             avio_flush(pb);
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR,
                    "Filesize %"PRId64" invalid for wav, output file will be broken\n",
                    file_size);
@@ -456,20 +505,25 @@ static int wav_write_trailer(AVFormatContext *s)
                                        s->streams[0]->codec->sample_rate * (int64_t)s->streams[0]->time_base.num,
                                        s->streams[0]->time_base.den);
 
-        if(s->streams[0]->codec->codec_tag != 0x01) {
+        if(s->streams[0]->codec->codec_tag != 0x01)
+        {
             /* Update num_samps in fact chunk */
             avio_seek(pb, wav->fact_pos, SEEK_SET);
-            if (rf64 || (wav->rf64 == RF64_AUTO && number_of_samples > UINT32_MAX)) {
+            if (rf64 || (wav->rf64 == RF64_AUTO && number_of_samples > UINT32_MAX))
+            {
                 rf64 = 1;
                 avio_wl32(pb, -1);
-            } else {
+            }
+            else
+            {
                 avio_wl32(pb, number_of_samples);
                 avio_seek(pb, file_size, SEEK_SET);
                 avio_flush(pb);
             }
         }
 
-        if (rf64) {
+        if (rf64)
+        {
             /* overwrite RIFF with RF64 */
             avio_seek(pb, 0, SEEK_SET);
             ffio_wfourcc(pb, "RF64");
@@ -501,7 +555,8 @@ static int wav_write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(WAVMuxContext, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "write_bext", "Write BEXT chunk.", OFFSET(write_bext), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, ENC },
     { "write_peak", "Write Peak Envelope chunk.",            OFFSET(write_peak), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 2, ENC, "peak" },
     { "off",        "Do not write peak chunk.",              0,                  AV_OPT_TYPE_CONST, { .i64 = PEAK_OFF  }, 0, 0, ENC, "peak" },
@@ -517,14 +572,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass wav_muxer_class = {
+static const AVClass wav_muxer_class =
+{
     .class_name = "WAV muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_wav_muxer = {
+AVOutputFormat ff_wav_muxer =
+{
     .name              = "wav",
     .long_name         = NULL_IF_CONFIG_SMALL("WAV / WAVE (Waveform Audio)"),
     .mime_type         = "audio/x-wav",
@@ -574,7 +631,8 @@ static int w64_write_header(AVFormatContext *s)
     avio_wl64(pb, -1);
     avio_write(pb, ff_w64_guid_wave, sizeof(ff_w64_guid_wave));
     start_guid(pb, ff_w64_guid_fmt, &start);
-    if ((ret = ff_put_wav_header(pb, s->streams[0]->codec, 0)) < 0) {
+    if ((ret = ff_put_wav_header(pb, s->streams[0]->codec, 0)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "%s codec not supported\n",
                s->streams[0]->codec->codec ? s->streams[0]->codec->codec->name : "NONE");
         return ret;
@@ -582,7 +640,8 @@ static int w64_write_header(AVFormatContext *s)
     end_guid(pb, start);
 
     if (s->streams[0]->codec->codec_tag != 0x01 /* hence for all other than PCM */
-        && s->pb->seekable) {
+            && s->pb->seekable)
+    {
         start_guid(pb, ff_w64_guid_fact, &wav->fact_pos);
         avio_wl64(pb, 0);
         end_guid(pb, wav->fact_pos);
@@ -599,14 +658,16 @@ static int w64_write_trailer(AVFormatContext *s)
     WAVMuxContext *wav = s->priv_data;
     int64_t file_size;
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         end_guid(pb, wav->data);
 
         file_size = avio_tell(pb);
         avio_seek(pb, 16, SEEK_SET);
         avio_wl64(pb, file_size);
 
-        if (s->streams[0]->codec->codec_tag != 0x01) {
+        if (s->streams[0]->codec->codec_tag != 0x01)
+        {
             int64_t number_of_samples;
 
             number_of_samples = av_rescale(wav->maxpts - wav->minpts + wav->last_duration,
@@ -623,7 +684,8 @@ static int w64_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_w64_muxer = {
+AVOutputFormat ff_w64_muxer =
+{
     .name              = "w64",
     .long_name         = NULL_IF_CONFIG_SMALL("Sony Wave64"),
     .extensions        = "w64",

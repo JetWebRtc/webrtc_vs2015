@@ -30,7 +30,8 @@
 
 #include "libpostproc/postprocess.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     char *subfilters;
     int mode_id;
@@ -40,7 +41,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(PPFilterContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption pp_options[] = {
+static const AVOption pp_options[] =
+{
     { "subfilters", "set postprocess subfilters", OFFSET(subfilters), AV_OPT_TYPE_STRING, {.str="de"}, .flags = FLAGS },
     { NULL }
 };
@@ -52,7 +54,8 @@ static av_cold int pp_init(AVFilterContext *ctx)
     int i;
     PPFilterContext *pp = ctx->priv;
 
-    for (i = 0; i <= PP_QUALITY_MAX; i++) {
+    for (i = 0; i <= PP_QUALITY_MAX; i++)
+    {
         pp->modes[i] = pp_get_mode_by_name_and_quality(pp->subfilters, i);
         if (!pp->modes[i])
             return AVERROR_EXTERNAL;
@@ -66,7 +69,8 @@ static int pp_process_command(AVFilterContext *ctx, const char *cmd, const char 
 {
     PPFilterContext *pp = ctx->priv;
 
-    if (!strcmp(cmd, "quality")) {
+    if (!strcmp(cmd, "quality"))
+    {
         pp->mode_id = av_clip(strtol(args, NULL, 10), 0, PP_QUALITY_MAX);
         return 0;
     }
@@ -75,7 +79,8 @@ static int pp_process_command(AVFilterContext *ctx, const char *cmd, const char 
 
 static int pp_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUVJ420P,
         AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUVJ422P,
         AV_PIX_FMT_YUV411P,
@@ -97,19 +102,31 @@ static int pp_config_props(AVFilterLink *inlink)
     int flags = PP_CPU_CAPS_AUTO;
     PPFilterContext *pp = inlink->dst->priv;
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_PIX_FMT_GRAY8:
     case AV_PIX_FMT_YUVJ420P:
-    case AV_PIX_FMT_YUV420P: flags |= PP_FORMAT_420; break;
+    case AV_PIX_FMT_YUV420P:
+        flags |= PP_FORMAT_420;
+        break;
     case AV_PIX_FMT_YUVJ422P:
-    case AV_PIX_FMT_YUV422P: flags |= PP_FORMAT_422; break;
-    case AV_PIX_FMT_YUV411P: flags |= PP_FORMAT_411; break;
+    case AV_PIX_FMT_YUV422P:
+        flags |= PP_FORMAT_422;
+        break;
+    case AV_PIX_FMT_YUV411P:
+        flags |= PP_FORMAT_411;
+        break;
     case AV_PIX_FMT_GBRP:
     case AV_PIX_FMT_YUVJ444P:
-    case AV_PIX_FMT_YUV444P: flags |= PP_FORMAT_444; break;
+    case AV_PIX_FMT_YUV444P:
+        flags |= PP_FORMAT_444;
+        break;
     case AV_PIX_FMT_YUVJ440P:
-    case AV_PIX_FMT_YUV440P: flags |= PP_FORMAT_440; break;
-    default: av_assert0(0);
+    case AV_PIX_FMT_YUV440P:
+        flags |= PP_FORMAT_440;
+        break;
+    default:
+        av_assert0(0);
     }
 
     pp->pp_ctx = pp_get_context(inlink->w, inlink->h, flags);
@@ -130,7 +147,8 @@ static int pp_filter_frame(AVFilterLink *inlink, AVFrame *inbuf)
     int8_t *qp_table ;
 
     outbuf = ff_get_video_buffer(outlink, aligned_w, aligned_h);
-    if (!outbuf) {
+    if (!outbuf)
+    {
         av_frame_free(&inbuf);
         return AVERROR(ENOMEM);
     }
@@ -163,7 +181,8 @@ static av_cold void pp_uninit(AVFilterContext *ctx)
         pp_free_context(pp->pp_ctx);
 }
 
-static const AVFilterPad pp_inputs[] = {
+static const AVFilterPad pp_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -173,7 +192,8 @@ static const AVFilterPad pp_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad pp_outputs[] = {
+static const AVFilterPad pp_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -181,7 +201,8 @@ static const AVFilterPad pp_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_pp = {
+AVFilter ff_vf_pp =
+{
     .name            = "pp",
     .description     = NULL_IF_CONFIG_SMALL("Filter video using libpostproc."),
     .priv_size       = sizeof(PPFilterContext),

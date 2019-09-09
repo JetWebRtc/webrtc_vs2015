@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -31,6 +31,6 @@ void WebRtcIlbcfix_NearestNeighbor(
     const size_t* array, /* (i) data array (Q2) */
     size_t value, /* (i) value (Q2) */
     size_t arlength /* (i) dimension of data array (==ENH_NBLOCKS_TOT) */
-                                   );
+);
 
 #endif

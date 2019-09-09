@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW DTS demuxer
  * Copyright (c) 2008 Benjamin Larsson
  *
@@ -38,7 +38,8 @@ static int dts_probe(AVProbeData *p)
 
     buf = p->buf + FFMIN(4096, p->buf_size);
 
-    for(; buf < (p->buf+p->buf_size)-2; buf+=2) {
+    for(; buf < (p->buf+p->buf_size)-2; buf+=2)
+    {
         int marker, sample_blocks, sample_rate, sr_code, framesize;
         int lfe;
         GetBitContext gb;
@@ -51,7 +52,7 @@ static int dts_probe(AVProbeData *p)
 
         /* regular bitstream */
         if (state == DCA_SYNCWORD_CORE_BE &&
-            (bytestream_get_be16(&bufp) & 0xFC00) == 0xFC00)
+                (bytestream_get_be16(&bufp) & 0xFC00) == 0xFC00)
             marker = 0;
         else if (state == DCA_SYNCWORD_CORE_LE &&
                  (bytestream_get_be16(&bufp) & 0x00FC) == 0x00FC)
@@ -104,21 +105,23 @@ static int dts_probe(AVProbeData *p)
     }
 
     sum = max = 0;
-    for (i=0; i<FF_ARRAY_ELEMS(markers); i++) {
+    for (i=0; i<FF_ARRAY_ELEMS(markers); i++)
+    {
         sum += markers[i];
         if (markers[max] < markers[i])
             max = i;
     }
 
     if (markers[max] > 3 && p->buf_size / markers[max] < 32*1024 &&
-        markers[max] * 4 > sum * 3 &&
-        diff / p->buf_size > 200)
+            markers[max] * 4 > sum * 3 &&
+            diff / p->buf_size > 200)
         return AVPROBE_SCORE_EXTENSION + 1;
 
     return 0;
 }
 
-AVInputFormat ff_dts_demuxer = {
+AVInputFormat ff_dts_demuxer =
+{
     .name           = "dts",
     .long_name      = NULL_IF_CONFIG_SMALL("raw DTS"),
     .read_probe     = dts_probe,

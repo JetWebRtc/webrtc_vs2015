@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sony OpenMG (OMA) muxer
  *
  * Copyright (c) 2011 Michael Karcher
@@ -37,8 +37,10 @@ static av_cold int oma_write_header(AVFormatContext *s)
     format = s->streams[0]->codec;
     /* check for support of the format first */
 
-    for (srate_index = 0; ; srate_index++) {
-        if (ff_oma_srate_tab[srate_index] == 0) {
+    for (srate_index = 0; ; srate_index++)
+    {
+        if (ff_oma_srate_tab[srate_index] == 0)
+        {
             av_log(s, AV_LOG_ERROR, "Sample rate %d not supported in OpenMG audio\n",
                    format->sample_rate);
             return AVERROR(EINVAL);
@@ -58,9 +60,11 @@ static av_cold int oma_write_header(AVFormatContext *s)
     for (i = 0; i < 6; i++)
         avio_wl32(s->pb, 0);        /* Padding + DRM id */
 
-    switch(format->codec_tag) {
+    switch(format->codec_tag)
+    {
     case OMA_CODECID_ATRAC3:
-        if (format->channels != 2) {
+        if (format->channels != 2)
+        {
             av_log(s, AV_LOG_ERROR, "ATRAC3 in OMA is only supported with 2 channels\n");
             return AVERROR(EINVAL);
         }
@@ -68,20 +72,21 @@ static av_cold int oma_write_header(AVFormatContext *s)
             isjointstereo = format->extradata[6] != 0;
         else if(format->extradata_size == 10) /* RM format extradata */
             isjointstereo = format->extradata[8] == 0x12;
-        else {
+        else
+        {
             av_log(s, AV_LOG_ERROR, "ATRAC3: Unsupported extradata size\n");
             return AVERROR(EINVAL);
         }
         avio_wb32(s->pb, (OMA_CODECID_ATRAC3 << 24) |
-                         (isjointstereo << 17) |
-                         (srate_index << 13) |
-                         (format->block_align/8));
+                  (isjointstereo << 17) |
+                  (srate_index << 13) |
+                  (format->block_align/8));
         break;
     case OMA_CODECID_ATRAC3P:
         avio_wb32(s->pb, (OMA_CODECID_ATRAC3P << 24) |
-                         (srate_index << 13) |
-                         (format->channels << 10) |
-                         (format->block_align/8 - 1));
+                  (srate_index << 13) |
+                  (format->channels << 10) |
+                  (format->block_align/8 - 1));
         break;
     default:
         av_log(s, AV_LOG_ERROR, "unsupported codec tag %d for write\n",
@@ -94,7 +99,8 @@ static av_cold int oma_write_header(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_oma_muxer = {
+AVOutputFormat ff_oma_muxer =
+{
     .name              = "oma",
     .long_name         = NULL_IF_CONFIG_SMALL("Sony OpenMG audio"),
     .mime_type         = "audio/x-oma",

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,36 +24,39 @@ extern char mobileLogMsg[640];
 
 DECLARE_bool(include_timing_dependent_tests);
 
-namespace voetest {
+namespace voetest
+{
 
-class SubAPIManager {
- public:
-  SubAPIManager()
-    : _base(true),
-      _codec(false),
-      _file(false),
-      _hardware(false),
-      _netEqStats(false),
-      _network(false),
-      _rtp_rtcp(false),
-      _volumeControl(false),
-      _apm(false) {
-      _codec = true;
-      _file = true;
-      _hardware = true;
-      _netEqStats = true;
-      _network = true;
-      _rtp_rtcp = true;
-      _volumeControl = true;
-      _apm = true;
-  }
+class SubAPIManager
+{
+public:
+    SubAPIManager()
+        : _base(true),
+          _codec(false),
+          _file(false),
+          _hardware(false),
+          _netEqStats(false),
+          _network(false),
+          _rtp_rtcp(false),
+          _volumeControl(false),
+          _apm(false)
+    {
+        _codec = true;
+        _file = true;
+        _hardware = true;
+        _netEqStats = true;
+        _network = true;
+        _rtp_rtcp = true;
+        _volumeControl = true;
+        _apm = true;
+    }
 
-  void DisplayStatus() const;
+    void DisplayStatus() const;
 
- private:
-  bool _base, _codec;
-  bool _file, _hardware;
-  bool _netEqStats, _network, _rtp_rtcp, _volumeControl, _apm;
+private:
+    bool _base, _codec;
+    bool _file, _hardware;
+    bool _netEqStats, _network, _rtp_rtcp, _volumeControl, _apm;
 };
 
 }  // namespace voetest

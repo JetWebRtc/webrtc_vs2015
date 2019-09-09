@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MMX optimized discrete wavelet transform
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2010 David Conrad
@@ -124,7 +124,8 @@ static void horizontal_compose_dd97i_ssse3(IDWTELEM *b, IDWTELEM *tmp, int w)
     int x= w2 - (w2&7);
     ff_horizontal_compose_dd97i_ssse3(b, tmp, w);
 
-    for (; x < w2; x++) {
+    for (; x < w2; x++)
+    {
         b[2*x  ] = (tmp[x] + 1)>>1;
         b[2*x+1] = (COMPOSE_DD97iH0(tmp[x-1], tmp[x], b[x+w2], tmp[x+1], tmp[x+2]) + 1)>>1;
     }
@@ -134,13 +135,14 @@ static void horizontal_compose_dd97i_ssse3(IDWTELEM *b, IDWTELEM *tmp, int w)
 void ff_spatial_idwt_init_mmx(DWTContext *d, enum dwt_type type)
 {
 #if HAVE_YASM
-  int mm_flags = av_get_cpu_flags();
+    int mm_flags = av_get_cpu_flags();
 
 #if !ARCH_X86_64
     if (!(mm_flags & AV_CPU_FLAG_MMX))
         return;
 
-    switch (type) {
+    switch (type)
+    {
     case DWT_DIRAC_DD9_7:
         d->vertical_compose_l0 = (void*)vertical_compose53iL0_mmx;
         d->vertical_compose_h0 = (void*)vertical_compose_dd97iH0_mmx;
@@ -167,7 +169,8 @@ void ff_spatial_idwt_init_mmx(DWTContext *d, enum dwt_type type)
     if (!(mm_flags & AV_CPU_FLAG_SSE2))
         return;
 
-    switch (type) {
+    switch (type)
+    {
     case DWT_DIRAC_DD9_7:
         d->vertical_compose_l0 = (void*)vertical_compose53iL0_sse2;
         d->vertical_compose_h0 = (void*)vertical_compose_dd97iH0_sse2;
@@ -193,7 +196,8 @@ void ff_spatial_idwt_init_mmx(DWTContext *d, enum dwt_type type)
     if (!(mm_flags & AV_CPU_FLAG_SSSE3))
         return;
 
-    switch (type) {
+    switch (type)
+    {
     case DWT_DIRAC_DD9_7:
         d->horizontal_compose = horizontal_compose_dd97i_ssse3;
         break;

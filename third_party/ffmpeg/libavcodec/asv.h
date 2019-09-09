@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -39,7 +39,8 @@
 #include "pixblockdsp.h"
 #include "put_bits.h"
 
-typedef struct ASV1Context {
+typedef struct ASV1Context
+{
     AVCodecContext *avctx;
     BlockDSPContext bdsp;
     BswapDSPContext bbdsp;

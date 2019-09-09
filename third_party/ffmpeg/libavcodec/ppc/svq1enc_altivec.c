@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Luca Barbato <lu_zero@gentoo.org>
  *
  * This file is part of FFmpeg.
@@ -39,12 +39,14 @@ static int ssd_int8_vs_int16_altivec(const int8_t *pix1, const int16_t *pix2,
     int i, size16 = size >> 4;
     vector signed char vpix1;
     vector signed short vpix2, vdiff, vpix1l, vpix1h;
-    union {
+    union
+    {
         vector signed int vscore;
         int32_t score[4];
     } u = { .vscore = vec_splat_s32(0) };
 
-    while (size16) {
+    while (size16)
+    {
         // score += (pix1[i] - pix2[i]) * (pix1[i] - pix2[i]);
         // load pix1 and the first batch of pix2
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * cws2fws by Alex Beregszaszi
  * This file is placed in the public domain.
  * Use the program however you see fit.
@@ -33,35 +33,41 @@ int main(int argc, char *argv[])
     struct stat statbuf;
     int ret = 1;
 
-    if (argc < 3) {
+    if (argc < 3)
+    {
         printf("Usage: %s <infile.swf> <outfile.swf>\n", argv[0]);
         return 1;
     }
 
     fd_in = open(argv[1], O_RDONLY);
-    if (fd_in < 0) {
+    if (fd_in < 0)
+    {
         perror("Error opening input file");
         return 1;
     }
 
     fd_out = open(argv[2], O_WRONLY | O_CREAT, 00644);
-    if (fd_out < 0) {
+    if (fd_out < 0)
+    {
         perror("Error opening output file");
         close(fd_in);
         return 1;
     }
 
-    if (read(fd_in, &buf_in, 8) != 8) {
+    if (read(fd_in, &buf_in, 8) != 8)
+    {
         printf("Header error\n");
         goto out;
     }
 
-    if (buf_in[0] != 'C' || buf_in[1] != 'W' || buf_in[2] != 'S') {
+    if (buf_in[0] != 'C' || buf_in[1] != 'W' || buf_in[2] != 'S')
+    {
         printf("Not a compressed flash file\n");
         goto out;
     }
 
-    if (fstat(fd_in, &statbuf) < 0) {
+    if (fstat(fd_in, &statbuf) < 0)
+    {
         perror("fstat failed");
         return 1;
     }
@@ -73,7 +79,8 @@ int main(int argc, char *argv[])
 
     // write out modified header
     buf_in[0] = 'F';
-    if (write(fd_out, &buf_in, 8) < 8) {
+    if (write(fd_out, &buf_in, 8) < 8)
+    {
         perror("Error writing output file");
         goto out;
     }
@@ -81,12 +88,14 @@ int main(int argc, char *argv[])
     zstream.zalloc = NULL;
     zstream.zfree  = NULL;
     zstream.opaque = NULL;
-    if (inflateInit(&zstream) != Z_OK) {
+    if (inflateInit(&zstream) != Z_OK)
+    {
         fprintf(stderr, "inflateInit failed\n");
         return 1;
     }
 
-    for (i = 0; i < comp_len - 8;) {
+    for (i = 0; i < comp_len - 8;)
+    {
         int ret, len = read(fd_in, &buf_in, 1024);
 
         dbgprintf("read %d bytes\n", len);
@@ -99,7 +108,8 @@ int main(int argc, char *argv[])
         zstream.avail_out = 65536;
 
         ret = inflate(&zstream, Z_SYNC_FLUSH);
-        if (ret != Z_STREAM_END && ret != Z_OK) {
+        if (ret != Z_STREAM_END && ret != Z_OK)
+        {
             printf("Error while decompressing: %d\n", ret);
             inflateEnd(&zstream);
             goto out;
@@ -110,7 +120,8 @@ int main(int argc, char *argv[])
                   zstream.total_out, zstream.total_out - last_out);
 
         if (write(fd_out, &buf_out, zstream.total_out - last_out) <
-            zstream.total_out - last_out) {
+                zstream.total_out - last_out)
+        {
             perror("Error writing output file");
             inflateEnd(&zstream);
             goto out;
@@ -122,7 +133,8 @@ int main(int argc, char *argv[])
             break;
     }
 
-    if (zstream.total_out != uncomp_len - 8) {
+    if (zstream.total_out != uncomp_len - 8)
+    {
         printf("Size mismatch (%lu != %d), updating header...\n",
                zstream.total_out, uncomp_len - 8);
 
@@ -132,7 +144,8 @@ int main(int argc, char *argv[])
         buf_in[3] = ((zstream.total_out + 8) >> 24) & 0xff;
 
         if (   lseek(fd_out, 4, SEEK_SET) < 0
-            || write(fd_out, &buf_in, 4) < 4) {
+                || write(fd_out, &buf_in, 4) < 4)
+        {
             perror("Error writing output file");
             inflateEnd(&zstream);
             goto out;

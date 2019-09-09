@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,21 +14,24 @@
 #include "webrtc/base/md5.h"
 #include "webrtc/base/messagedigest.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // A simple wrapper for our MD5 implementation.
-class Md5Digest : public MessageDigest {
- public:
-  enum { kSize = 16 };
-  Md5Digest() {
-    MD5Init(&ctx_);
-  }
-  size_t Size() const override;
-  void Update(const void* buf, size_t len) override;
-  size_t Finish(void* buf, size_t len) override;
+class Md5Digest : public MessageDigest
+{
+public:
+    enum { kSize = 16 };
+    Md5Digest()
+    {
+        MD5Init(&ctx_);
+    }
+    size_t Size() const override;
+    void Update(const void* buf, size_t len) override;
+    size_t Finish(void* buf, size_t len) override;
 
- private:
-  MD5Context ctx_;
+private:
+    MD5Context ctx_;
 };
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_MODULES_AUDIO_DEVICE_ANDROID_AUDIO_COMMON_H_
 #define WEBRTC_MODULES_AUDIO_DEVICE_ANDROID_AUDIO_COMMON_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 const int kDefaultSampleRate = 44100;
 // Delay estimates for the two different supported modes. These values are based

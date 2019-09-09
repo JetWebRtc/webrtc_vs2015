@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -110,18 +110,20 @@ amm-info@iis.fraunhofer.de
 /**
  * \brief MDCT persistent data
  */
-typedef struct {
-  union {
-    FIXP_DBL *freq;
-    FIXP_DBL *time;
-  } overlap;                       /**< Pointer to overlap memory */
+typedef struct
+{
+    union
+    {
+        FIXP_DBL *freq;
+        FIXP_DBL *time;
+    } overlap;                       /**< Pointer to overlap memory */
 
-  const FIXP_WTP *prev_wrs;        /**< pointer to previous right window slope  */
-  int prev_tl;                     /**< previous tranform length */
-  int prev_nr;                     /**< previous right window offset */
-  int prev_fr;                     /**< previous right window slope length */
-  int ov_offset;                   /**< overlap time data fill level */
-  int ov_size;                     /**< Overlap buffer size in words */
+    const FIXP_WTP *prev_wrs;        /**< pointer to previous right window slope  */
+    int prev_tl;                     /**< previous tranform length */
+    int prev_nr;                     /**< previous right window offset */
+    int prev_fr;                     /**< previous right window slope length */
+    int ov_offset;                   /**< overlap time data fill level */
+    int ov_size;                     /**< Overlap buffer size in words */
 
 } mdct_t;
 
@@ -153,14 +155,14 @@ void mdct_init( H_MDCT hMdct,
  * \return number of input samples processed.
  */
 INT  mdct_block(
-        H_MDCT hMdct,
-        FIXP_DBL *spectrum,
-        INT *scalefactor,
-        INT_PCM *input,
-        INT tl,
-        INT nr,
-        INT fr,
-        const FIXP_WTB *wrs );
+    H_MDCT hMdct,
+    FIXP_DBL *spectrum,
+    INT *scalefactor,
+    INT_PCM *input,
+    INT tl,
+    INT nr,
+    INT fr,
+    const FIXP_WTB *wrs );
 
 
 /**
@@ -171,19 +173,19 @@ INT  mdct_block(
  * \param tl length of the IMDCT where the gain *pGain * (2 ^ *pExponent) will be applied to.
  */
 void imdct_gain(
-        FIXP_DBL *pGain,
-        int *pExponent,
-        int tl
-        );
+    FIXP_DBL *pGain,
+    int *pExponent,
+    int tl
+);
 
 /**
  * \brief drain buffered output samples into given buffer. Changes the MDCT state.
  */
 INT imdct_drain(
-        H_MDCT hMdct,
-        FIXP_DBL * pTimeData,
-        INT nrSamplesRoom
-        );
+    H_MDCT hMdct,
+    FIXP_DBL * pTimeData,
+    INT nrSamplesRoom
+);
 
 
 /**
@@ -191,10 +193,10 @@ INT imdct_drain(
  * \return number of actually copied samples (ov + nr).
  */
 INT imdct_copy_ov_and_nr(
-        H_MDCT hMdct,
-        FIXP_DBL * pTimeData,
-        INT nrSamples
-        );
+    H_MDCT hMdct,
+    FIXP_DBL * pTimeData,
+    INT nrSamples
+);
 
 /**
  * \brief Adapt MDCT parameters for non-matching window slopes.
@@ -226,18 +228,18 @@ void imdct_adapt_parameters(H_MDCT hMdct, int *pfl, int *pnl, int tl, const FIXP
  * \return number of output samples returned.
  */
 INT  imdct_block(
-        H_MDCT hMdct,
-        FIXP_DBL *output,
-        FIXP_DBL *spectrum,
-        const SHORT scalefactor[],
-        const INT nSpec,
-        const INT noOutSamples,
-        const INT tl,
-        const FIXP_WTP *wls,
-        INT fl,
-        const FIXP_WTP *wrs,
-        const INT fr,
-        FIXP_DBL gain );
+    H_MDCT hMdct,
+    FIXP_DBL *output,
+    FIXP_DBL *spectrum,
+    const SHORT scalefactor[],
+    const INT nSpec,
+    const INT noOutSamples,
+    const INT tl,
+    const FIXP_WTP *wls,
+    INT fl,
+    const FIXP_WTP *wrs,
+    const INT fr,
+    FIXP_DBL gain );
 
 
 #endif /* __MDCT_H__ */

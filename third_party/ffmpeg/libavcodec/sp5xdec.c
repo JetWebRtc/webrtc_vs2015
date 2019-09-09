@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sunplus JPEG decoder (SP5X)
  * Copyright (c) 2003 Alex Beregszaszi
  *
@@ -32,8 +32,8 @@
 
 
 static int sp5x_decode_frame(AVCodecContext *avctx,
-                              void *data, int *got_frame,
-                              AVPacket *avpkt)
+                             void *data, int *got_frame,
+                             AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
@@ -73,12 +73,12 @@ static int sp5x_decode_frame(AVCodecContext *avctx,
         for (i = 2; i < buf_size-2 && j < buf_size+1024-2; i++)
             recoded[j++] = buf[i];
     else
-    for (i = 14; i < buf_size && j < buf_size+1024-3; i++)
-    {
-        recoded[j++] = buf[i];
-        if (buf[i] == 0xff)
-            recoded[j++] = 0;
-    }
+        for (i = 14; i < buf_size && j < buf_size+1024-3; i++)
+        {
+            recoded[j++] = buf[i];
+            if (buf[i] == 0xff)
+                recoded[j++] = 0;
+        }
 
     /* EOI */
     recoded[j++] = 0xFF;
@@ -95,7 +95,8 @@ static int sp5x_decode_frame(AVCodecContext *avctx,
 }
 
 #if CONFIG_SP5X_DECODER
-AVCodec ff_sp5x_decoder = {
+AVCodec ff_sp5x_decoder =
+{
     .name           = "sp5x",
     .long_name      = NULL_IF_CONFIG_SMALL("Sunplus JPEG (SP5X)"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -110,7 +111,8 @@ AVCodec ff_sp5x_decoder = {
 };
 #endif
 #if CONFIG_AMV_DECODER
-AVCodec ff_amv_decoder = {
+AVCodec ff_amv_decoder =
+{
     .name           = "amv",
     .long_name      = NULL_IF_CONFIG_SMALL("AMV Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

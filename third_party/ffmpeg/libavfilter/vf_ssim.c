@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003-2013 Loren Merritt
  * Copyright (c) 2015 Paul B Mahol
  *
@@ -45,7 +45,8 @@
 #include "ssim.h"
 #include "video.h"
 
-typedef struct SSIMContext {
+typedef struct SSIMContext
+{
     const AVClass *class;
     FFDualInputContext dinput;
     FILE *stats_file;
@@ -66,7 +67,8 @@ typedef struct SSIMContext {
 #define OFFSET(x) offsetof(SSIMContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption ssim_options[] = {
+static const AVOption ssim_options[] =
+{
     {"stats_file", "Set file where to store per-frame difference information", OFFSET(stats_file_str), AV_OPT_TYPE_STRING, {.str=NULL}, 0, 0, FLAGS },
     {"f",          "Set file where to store per-frame difference information", OFFSET(stats_file_str), AV_OPT_TYPE_STRING, {.str=NULL}, 0, 0, FLAGS },
     { NULL }
@@ -78,11 +80,14 @@ static void set_meta(AVDictionary **metadata, const char *key, char comp, float 
 {
     char value[128];
     snprintf(value, sizeof(value), "%0.2f", d);
-    if (comp) {
+    if (comp)
+    {
         char key2[128];
         snprintf(key2, sizeof(key2), "%s%c", key, comp);
         av_dict_set(metadata, key2, value, 0);
-    } else {
+    }
+    else
+    {
         av_dict_set(metadata, key, value, 0);
     }
 }
@@ -93,11 +98,14 @@ static void ssim_4x4xn(const uint8_t *main, ptrdiff_t main_stride,
 {
     int x, y, z;
 
-    for (z = 0; z < width; z++) {
+    for (z = 0; z < width; z++)
+    {
         uint32_t s1 = 0, s2 = 0, ss = 0, s12 = 0;
 
-        for (y = 0; y < 4; y++) {
-            for (x = 0; x < 4; x++) {
+        for (y = 0; y < 4; y++)
+        {
+            for (x = 0; x < 4; x++)
+            {
                 int a = main[x + y * main_stride];
                 int b = ref[x + y * ref_stride];
 
@@ -131,7 +139,7 @@ static float ssim_end1(int s1, int s2, int ss, int s12)
     int covar = fs12 * 64 - fs1 * fs2;
 
     return (float)(2 * fs1 * fs2 + ssim_c1) * (float)(2 * covar + ssim_c2)
-         / ((float)(fs1 * fs1 + fs2 * fs2 + ssim_c1) * (float)(vars + ssim_c2));
+           / ((float)(fs1 * fs1 + fs2 * fs2 + ssim_c1) * (float)(vars + ssim_c2));
 }
 
 static float ssim_endn(const int (*sum0)[4], const int (*sum1)[4], int width)
@@ -160,8 +168,10 @@ static float ssim_plane(SSIMDSPContext *dsp,
     width >>= 2;
     height >>= 2;
 
-    for (y = 1; y < height; y++) {
-        for (; z <= y; z++) {
+    for (y = 1; y < height; y++)
+    {
+        for (; z <= y; z++)
+        {
             FFSWAP(void*, sum0, sum1);
             dsp->ssim_4x4_line(&main[4 * z * main_stride], main_stride,
                                &ref[4 * z * ref_stride], ref_stride,
@@ -189,14 +199,16 @@ static AVFrame *do_ssim(AVFilterContext *ctx, AVFrame *main,
 
     s->nb_frames++;
 
-    for (i = 0; i < s->nb_components; i++) {
+    for (i = 0; i < s->nb_components; i++)
+    {
         c[i] = ssim_plane(&s->dsp, main->data[i], main->linesize[i],
                           ref->data[i], ref->linesize[i],
                           s->planewidth[i], s->planeheight[i], s->temp);
         ssimv += s->coefs[i] * c[i];
         s->ssim[i] += c[i];
     }
-    for (i = 0; i < s->nb_components; i++) {
+    for (i = 0; i < s->nb_components; i++)
+    {
         int cidx = s->is_rgb ? s->rgba_map[i] : i;
         set_meta(metadata, "lavfi.ssim.", s->comps[i], c[cidx]);
     }
@@ -205,10 +217,12 @@ static AVFrame *do_ssim(AVFilterContext *ctx, AVFrame *main,
     set_meta(metadata, "lavfi.ssim.All", 0, ssimv);
     set_meta(metadata, "lavfi.ssim.dB", 0, ssim_db(ssimv, 1.0));
 
-    if (s->stats_file) {
+    if (s->stats_file)
+    {
         fprintf(s->stats_file, "n:%"PRId64" ", s->nb_frames);
 
-        for (i = 0; i < s->nb_components; i++) {
+        for (i = 0; i < s->nb_components; i++)
+        {
             int cidx = s->is_rgb ? s->rgba_map[i] : i;
             fprintf(s->stats_file, "%c:%f ", s->comps[i], c[cidx]);
         }
@@ -223,9 +237,11 @@ static av_cold int init(AVFilterContext *ctx)
 {
     SSIMContext *s = ctx->priv;
 
-    if (s->stats_file_str) {
+    if (s->stats_file_str)
+    {
         s->stats_file = fopen(s->stats_file_str, "w");
-        if (!s->stats_file) {
+        if (!s->stats_file)
+        {
             int err = AVERROR(errno);
             char buf[128];
             av_strerror(err, buf, sizeof(buf));
@@ -243,7 +259,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_GRAY8,
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV411P, AV_PIX_FMT_YUV410P,
@@ -269,11 +286,13 @@ static int config_input_ref(AVFilterLink *inlink)
     s->nb_components = desc->nb_components;
 
     if (ctx->inputs[0]->w != ctx->inputs[1]->w ||
-        ctx->inputs[0]->h != ctx->inputs[1]->h) {
+            ctx->inputs[0]->h != ctx->inputs[1]->h)
+    {
         av_log(ctx, AV_LOG_ERROR, "Width and height of input videos must be same.\n");
         return AVERROR(EINVAL);
     }
-    if (ctx->inputs[0]->format != ctx->inputs[1]->format) {
+    if (ctx->inputs[0]->format != ctx->inputs[1]->format)
+    {
         av_log(ctx, AV_LOG_ERROR, "Inputs must be of same pixel format.\n");
         return AVERROR(EINVAL);
     }
@@ -340,11 +359,13 @@ static av_cold void uninit(AVFilterContext *ctx)
 {
     SSIMContext *s = ctx->priv;
 
-    if (s->nb_frames > 0) {
+    if (s->nb_frames > 0)
+    {
         char buf[256];
         int i;
         buf[0] = 0;
-        for (i = 0; i < s->nb_components; i++) {
+        for (i = 0; i < s->nb_components; i++)
+        {
             int c = s->is_rgb ? s->rgba_map[i] : i;
             av_strlcatf(buf, sizeof(buf), " %c:%f", s->comps[i], s->ssim[c] / s->nb_frames);
         }
@@ -360,7 +381,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->temp);
 }
 
-static const AVFilterPad ssim_inputs[] = {
+static const AVFilterPad ssim_inputs[] =
+{
     {
         .name         = "main",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -374,7 +396,8 @@ static const AVFilterPad ssim_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad ssim_outputs[] = {
+static const AVFilterPad ssim_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -384,7 +407,8 @@ static const AVFilterPad ssim_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_ssim = {
+AVFilter ff_vf_ssim =
+{
     .name          = "ssim",
     .description   = NULL_IF_CONFIG_SMALL("Calculate the SSIM between two video streams."),
     .init          = init,

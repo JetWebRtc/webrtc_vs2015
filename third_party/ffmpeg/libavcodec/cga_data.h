@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CGA/EGA/VGA ROM data
  *
  * This file is part of FFmpeg.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 Ville Saari
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #include "internal.h"
 #include "video.h"
 
-enum PhaseMode {
+enum PhaseMode
+{
     PROGRESSIVE,
     TOP_FIRST,
     BOTTOM_FIRST,
@@ -39,7 +40,8 @@ enum PhaseMode {
     AUTO_ANALYZE
 };
 
-typedef struct PhaseContext {
+typedef struct PhaseContext
+{
     const AVClass *class;
     int mode;                   ///<PhaseMode
     AVFrame *frame; /* previous frame */
@@ -52,7 +54,8 @@ typedef struct PhaseContext {
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 #define CONST(name, help, val, unit) { name, help, 0, AV_OPT_TYPE_CONST, {.i64=val}, 0, 0, FLAGS, unit }
 
-static const AVOption phase_options[] = {
+static const AVOption phase_options[] =
+{
     { "mode", "set phase mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=AUTO_ANALYZE}, PROGRESSIVE, AUTO_ANALYZE, FLAGS, "mode" },
     CONST("p", "progressive",          PROGRESSIVE,          "mode"),
     CONST("t", "top first",            TOP_FIRST,            "mode"),
@@ -70,7 +73,8 @@ AVFILTER_DEFINE_CLASS(phase);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUVA444P, AV_PIX_FMT_YUVA422P, AV_PIX_FMT_YUVA420P,
         AV_PIX_FMT_YUVJ444P, AV_PIX_FMT_YUVJ440P, AV_PIX_FMT_YUVJ422P,AV_PIX_FMT_YUVJ420P, AV_PIX_FMT_YUVJ411P,
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV422P, AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV411P, AV_PIX_FMT_YUV410P,
@@ -125,17 +129,22 @@ static enum PhaseMode analyze_plane(void *ctx, enum PhaseMode mode, AVFrame *old
     const int w = new->width;
     int bdif, tdif, pdif;
 
-    if (mode == AUTO) {
+    if (mode == AUTO)
+    {
         mode = new->interlaced_frame ? new->top_field_first ?
-               TOP_FIRST : BOTTOM_FIRST : PROGRESSIVE;
-    } else if (mode == AUTO_ANALYZE) {
+        TOP_FIRST : BOTTOM_FIRST : PROGRESSIVE;
+    }
+    else if (mode == AUTO_ANALYZE)
+    {
         mode = new->interlaced_frame ? new->top_field_first ?
-               TOP_FIRST_ANALYZE : BOTTOM_FIRST_ANALYZE : FULL_ANALYZE;
+        TOP_FIRST_ANALYZE : BOTTOM_FIRST_ANALYZE : FULL_ANALYZE;
     }
 
-    if (mode <= BOTTOM_FIRST) {
+    if (mode <= BOTTOM_FIRST)
+    {
         bdiff = pdiff = tdiff = 65536.0;
-    } else {
+    }
+    else {
         int top = 0, t;
         const uint8_t *rend, *end = nptr + (h - 2) * ns;
 
@@ -143,58 +152,80 @@ static enum PhaseMode analyze_plane(void *ctx, enum PhaseMode mode, AVFrame *old
 
         nptr += ns;
         optr += os;
-        while (nptr < end) {
+        while (nptr < end)
+        {
             pdif = tdif = bdif = 0;
 
-            switch (mode) {
+            switch (mode)
+            {
             case TOP_FIRST_ANALYZE:
-                if (top) {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                if (top)
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         tdif += DIFF(nptr, ns, optr, os);
                     }
-                } else {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                }
+                else
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         tdif += DIFF(optr, os, nptr, ns);
                     }
                 }
                 break;
             case BOTTOM_FIRST_ANALYZE:
-                if (top) {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                if (top)
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         bdif += DIFF(optr, os, nptr, ns);
                     }
-                } else {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                }
+                else
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         bdif += DIFF(nptr, ns, optr, os);
                     }
                 }
                 break;
             case ANALYZE:
-                if (top) {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                if (top)
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         tdif += DIFF(nptr, ns, optr, os);
                         bdif += DIFF(optr, os, nptr, ns);
                     }
-                } else {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                }
+                else
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         bdif += DIFF(nptr, ns, optr, os);
                         tdif += DIFF(optr, os, nptr, ns);
                     }
                 }
                 break;
             case FULL_ANALYZE:
-                if (top) {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                if (top)
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         tdif += DIFF(nptr, ns, optr, os);
                         bdif += DIFF(optr, os, nptr, ns);
                     }
-                } else {
-                    for (rend = nptr + w; nptr < rend; nptr++, optr++) {
+                }
+                else
+                {
+                    for (rend = nptr + w; nptr < rend; nptr++, optr++)
+                    {
                         pdif += DIFF(nptr, ns, nptr, ns);
                         bdif += DIFF(nptr, ns, optr, os);
                         tdif += DIFF(optr, os, nptr, ns);
@@ -218,26 +249,35 @@ static enum PhaseMode analyze_plane(void *ctx, enum PhaseMode mode, AVFrame *old
         tdiff *= scale;
         bdiff *= scale;
 
-        if (mode == TOP_FIRST_ANALYZE) {
+        if (mode == TOP_FIRST_ANALYZE)
+        {
             bdiff = 65536.0;
-        } else if (mode == BOTTOM_FIRST_ANALYZE) {
+        }
+        else if (mode == BOTTOM_FIRST_ANALYZE)
+        {
             tdiff = 65536.0;
-        } else if (mode == ANALYZE) {
+        }
+        else if (mode == ANALYZE)
+        {
             pdiff = 65536.0;
         }
 
-        if (bdiff < pdiff && bdiff < tdiff) {
+        if (bdiff < pdiff && bdiff < tdiff)
+        {
             mode = BOTTOM_FIRST;
-        } else if (tdiff < pdiff && tdiff < bdiff) {
+        }
+        else if (tdiff < pdiff && tdiff < bdiff)
+        {
             mode = TOP_FIRST;
-        } else {
+        }
+        else {
             mode = PROGRESSIVE;
         }
     }
 
     av_log(ctx, AV_LOG_DEBUG, "mode=%c tdiff=%f bdiff=%f pdiff=%f\n",
-           mode == BOTTOM_FIRST ? 'b' : mode == TOP_FIRST ? 't' : 'p',
-           tdiff, bdiff, pdiff);
+    mode == BOTTOM_FIRST ? 'b' : mode == TOP_FIRST ? 't' : 'p',
+    tdiff, bdiff, pdiff);
     return mode;
 }
 
@@ -250,7 +290,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int plane, top, y;
     AVFrame *out;
 
-    if (ctx->is_disabled) {
+    if (ctx->is_disabled)
+    {
         av_frame_free(&s->frame);
         /* we keep a reference to the previous frame so the filter can start
          * being useful as soon as it's not disabled, avoiding the 1-frame
@@ -260,25 +301,31 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     }
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
     av_frame_copy_props(out, in);
 
-    if (!s->frame) {
+    if (!s->frame)
+    {
         s->frame = in;
         mode = PROGRESSIVE;
-    } else {
+    }
+    else
+    {
         mode = analyze_plane(ctx, s->mode, s->frame, in);
     }
 
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         const uint8_t *buf = s->frame->data[plane];
         const uint8_t *from = in->data[plane];
         uint8_t *to = out->data[plane];
 
-        for (y = 0, top = 1; y < s->planeheight[plane]; y++, top ^= 1) {
+        for (y = 0, top = 1; y < s->planeheight[plane]; y++, top ^= 1)
+        {
             memcpy(to, mode == (top ? BOTTOM_FIRST : TOP_FIRST) ? buf : from, s->linesize[plane]);
 
             buf += s->frame->linesize[plane];
@@ -300,7 +347,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->frame);
 }
 
-static const AVFilterPad phase_inputs[] = {
+static const AVFilterPad phase_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -310,7 +358,8 @@ static const AVFilterPad phase_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad phase_outputs[] = {
+static const AVFilterPad phase_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -318,7 +367,8 @@ static const AVFilterPad phase_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_phase = {
+AVFilter ff_vf_phase =
+{
     .name          = "phase",
     .description   = NULL_IF_CONFIG_SMALL("Phase shift fields."),
     .priv_size     = sizeof(PhaseContext),

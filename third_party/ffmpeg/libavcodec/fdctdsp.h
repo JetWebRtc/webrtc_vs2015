@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 
 #include "avcodec.h"
 
-typedef struct FDCTDSPContext {
+typedef struct FDCTDSPContext
+{
     void (*fdct)(int16_t *block /* align 16 */);
     void (*fdct248)(int16_t *block /* align 16 */);
 } FDCTDSPContext;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -22,7 +22,8 @@
 #endif
 
 #ifdef __cplusplus
-namespace webrtc {
+namespace webrtc
+{
 #endif
 
 extern ALIGN16_BEG const float ALIGN16_END WebRtcAec_sqrtHanning[65];

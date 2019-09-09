@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,13 +19,13 @@
 
 @interface ARDVideoCallViewController : UIViewController
 
-@property(nonatomic, weak) id<ARDVideoCallViewControllerDelegate> delegate;
+    @property(nonatomic, weak) id<ARDVideoCallViewControllerDelegate> delegate;
 
 - (instancetype)initForRoom:(NSString *)room
-                 isLoopback:(BOOL)isLoopback
-                isAudioOnly:(BOOL)isAudioOnly
-          shouldMakeAecDump:(BOOL)shouldMakeAecDump
-      shouldUseLevelControl:(BOOL)shouldUseLevelControl
-                   delegate:(id<ARDVideoCallViewControllerDelegate>)delegate;
+    isLoopback:(BOOL)isLoopback
+    isAudioOnly:(BOOL)isAudioOnly
+    shouldMakeAecDump:(BOOL)shouldMakeAecDump
+    shouldUseLevelControl:(BOOL)shouldUseLevelControl
+    delegate:(id<ARDVideoCallViewControllerDelegate>)delegate;
 
 @end

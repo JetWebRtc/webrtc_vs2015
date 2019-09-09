@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -137,26 +137,26 @@ extern "C" {
  */
 typedef struct WAV_HEADER
 {
-  char   riffType[4];
-  UINT   riffSize;
-  char   waveType[4];
-  char   formatType[4];
-  UINT   formatSize;
-  USHORT compressionCode;
-  USHORT numChannels;
-  UINT   sampleRate;
-  UINT   bytesPerSecond;
-  USHORT blockAlign;
-  USHORT bitsPerSample;
-  char   dataType[4];
-  UINT   dataSize;
+    char   riffType[4];
+    UINT   riffSize;
+    char   waveType[4];
+    char   formatType[4];
+    UINT   formatSize;
+    USHORT compressionCode;
+    USHORT numChannels;
+    UINT   sampleRate;
+    UINT   bytesPerSecond;
+    USHORT blockAlign;
+    USHORT bitsPerSample;
+    char   dataType[4];
+    UINT   dataSize;
 } WAV_HEADER;
 
 struct WAV
 {
-  WAV_HEADER header;
-  FDKFILE *fp;
-  UINT channelMask;
+    WAV_HEADER header;
+    FDKFILE *fp;
+    UINT channelMask;
 };
 
 typedef struct WAV *HANDLE_WAV;

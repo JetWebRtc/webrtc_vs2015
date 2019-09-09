@@ -1,4 +1,4 @@
-/*
+﻿/*
  * nut
  * Copyright (c) 2004-2007 Michael Niedermayer
  *
@@ -25,7 +25,8 @@
 #include "riff.h"
 #include "internal.h"
 
-const AVCodecTag ff_nut_subtitle_tags[] = {
+const AVCodecTag ff_nut_subtitle_tags[] =
+{
     { AV_CODEC_ID_TEXT,             MKTAG('U', 'T', 'F', '8') },
     { AV_CODEC_ID_SSA,              MKTAG('S', 'S', 'A',  0 ) },
     { AV_CODEC_ID_DVD_SUBTITLE,     MKTAG('D', 'V', 'D', 'S') },
@@ -34,12 +35,14 @@ const AVCodecTag ff_nut_subtitle_tags[] = {
     { AV_CODEC_ID_NONE,             0                         }
 };
 
-const AVCodecTag ff_nut_data_tags[] = {
+const AVCodecTag ff_nut_data_tags[] =
+{
     { AV_CODEC_ID_TEXT,             MKTAG('U', 'T', 'F', '8') },
     { AV_CODEC_ID_NONE,             0 }
 };
 
-const AVCodecTag ff_nut_video_tags[] = {
+const AVCodecTag ff_nut_video_tags[] =
+{
     { AV_CODEC_ID_GIF,              MKTAG('G', 'I', 'F',  0 ) },
     { AV_CODEC_ID_XFACE,            MKTAG('X', 'F', 'A', 'C') },
     { AV_CODEC_ID_VP9,              MKTAG('V', 'P', '9', '0') },
@@ -178,7 +181,8 @@ const AVCodecTag ff_nut_video_tags[] = {
     { AV_CODEC_ID_NONE,             0 }
 };
 
-const AVCodecTag ff_nut_audio_extra_tags[] = {
+const AVCodecTag ff_nut_audio_extra_tags[] =
+{
     { AV_CODEC_ID_COMFORT_NOISE,    MKTAG('3', '3', '8', '9') },
     { AV_CODEC_ID_PCM_ALAW,         MKTAG('A', 'L', 'A', 'W') },
     { AV_CODEC_ID_PCM_MULAW,        MKTAG('U', 'L', 'A', 'W') },
@@ -187,7 +191,8 @@ const AVCodecTag ff_nut_audio_extra_tags[] = {
     { AV_CODEC_ID_NONE,             0                         }
 };
 
-const AVCodecTag ff_nut_audio_tags[] = {
+const AVCodecTag ff_nut_audio_tags[] =
+{
     { AV_CODEC_ID_PCM_F32BE,        MKTAG(32 , 'D', 'F', 'P') },
     { AV_CODEC_ID_PCM_F32LE,        MKTAG('P', 'F', 'D', 32 ) },
     { AV_CODEC_ID_PCM_F64BE,        MKTAG(64 , 'D', 'F', 'P') },
@@ -214,7 +219,8 @@ const AVCodecTag ff_nut_audio_tags[] = {
     { AV_CODEC_ID_NONE,             0                         }
 };
 
-const AVCodecTag * const ff_nut_codec_tags[] = {
+const AVCodecTag * const ff_nut_codec_tags[] =
+{
     ff_nut_video_tags, ff_nut_audio_tags, ff_nut_subtitle_tags,
     ff_codec_bmp_tags, ff_codec_wav_tags, ff_nut_audio_extra_tags, ff_nut_data_tags, 0
 };
@@ -252,7 +258,8 @@ int ff_nut_add_sp(NUTContext *nut, int64_t pos, int64_t back_ptr, int64_t ts)
     Syncpoint *sp           = av_mallocz(sizeof(Syncpoint));
     struct AVTreeNode *node = av_tree_node_alloc();
 
-    if (!sp || !node) {
+    if (!sp || !node)
+    {
         av_freep(&sp);
         av_freep(&node);
         return AVERROR(ENOMEM);
@@ -264,7 +271,8 @@ int ff_nut_add_sp(NUTContext *nut, int64_t pos, int64_t back_ptr, int64_t ts)
     sp->back_ptr = back_ptr;
     sp->ts       = ts;
     av_tree_insert(&nut->syncpoints, sp, (void *) ff_nut_sp_pos_cmp, &node);
-    if (node) {
+    if (node)
+    {
         av_free(sp);
         av_free(node);
     }
@@ -284,7 +292,8 @@ void ff_nut_free_sp(NUTContext *nut)
     av_tree_destroy(nut->syncpoints);
 }
 
-const Dispositions ff_nut_dispositions[] = {
+const Dispositions ff_nut_dispositions[] =
+{
     { "default",        AV_DISPOSITION_DEFAULT  },
     { "dub",            AV_DISPOSITION_DUB      },
     { "original",       AV_DISPOSITION_ORIGINAL },
@@ -294,7 +303,8 @@ const Dispositions ff_nut_dispositions[] = {
     { "",               0                       }
 };
 
-const AVMetadataConv ff_nut_metadata_conv[] = {
+const AVMetadataConv ff_nut_metadata_conv[] =
+{
     { "Author",         "artist"      },
     { "X-CreationTime", "date"        },
     { "CreationTime",   "date"        },

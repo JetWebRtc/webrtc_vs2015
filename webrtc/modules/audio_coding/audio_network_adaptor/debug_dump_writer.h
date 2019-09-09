@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,20 +19,22 @@
 #include "webrtc/modules/audio_coding/audio_network_adaptor/include/audio_network_adaptor.h"
 #include "webrtc/system_wrappers/include/file_wrapper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class DebugDumpWriter {
- public:
-  static std::unique_ptr<DebugDumpWriter> Create(FILE* file_handle);
+class DebugDumpWriter
+{
+public:
+    static std::unique_ptr<DebugDumpWriter> Create(FILE* file_handle);
 
-  virtual ~DebugDumpWriter() = default;
+    virtual ~DebugDumpWriter() = default;
 
-  virtual void DumpEncoderRuntimeConfig(
-      const AudioNetworkAdaptor::EncoderRuntimeConfig& config,
-      int64_t timestamp) = 0;
+    virtual void DumpEncoderRuntimeConfig(
+        const AudioNetworkAdaptor::EncoderRuntimeConfig& config,
+        int64_t timestamp) = 0;
 
-  virtual void DumpNetworkMetrics(const Controller::NetworkMetrics& metrics,
-                                  int64_t timestamp) = 0;
+    virtual void DumpNetworkMetrics(const Controller::NetworkMetrics& metrics,
+                                    int64_t timestamp) = 0;
 };
 
 }  // namespace webrtc

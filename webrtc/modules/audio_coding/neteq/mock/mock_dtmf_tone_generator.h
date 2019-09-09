@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,20 +15,25 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockDtmfToneGenerator : public DtmfToneGenerator {
- public:
-  virtual ~MockDtmfToneGenerator() { Die(); }
-  MOCK_METHOD0(Die, void());
-  MOCK_METHOD3(Init,
-      int(int fs, int event, int attenuation));
-  MOCK_METHOD0(Reset,
-      void());
-  MOCK_METHOD2(Generate,
-      int(size_t num_samples, AudioMultiVector* output));
-  MOCK_CONST_METHOD0(initialized,
-      bool());
+class MockDtmfToneGenerator : public DtmfToneGenerator
+{
+public:
+    virtual ~MockDtmfToneGenerator()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
+    MOCK_METHOD3(Init,
+                 int(int fs, int event, int attenuation));
+    MOCK_METHOD0(Reset,
+                 void());
+    MOCK_METHOD2(Generate,
+                 int(size_t num_samples, AudioMultiVector* output));
+    MOCK_CONST_METHOD0(initialized,
+                       bool());
 };
 
 }  // namespace webrtc

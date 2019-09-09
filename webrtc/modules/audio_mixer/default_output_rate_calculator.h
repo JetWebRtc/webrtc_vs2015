@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,19 +15,21 @@
 
 #include "webrtc/modules/audio_mixer/output_rate_calculator.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class DefaultOutputRateCalculator : public OutputRateCalculator {
- public:
-  static const int kDefaultFrequency = 48000;
+class DefaultOutputRateCalculator : public OutputRateCalculator
+{
+public:
+    static const int kDefaultFrequency = 48000;
 
-  // Produces the least native rate greater or equal to the preferred
-  // sample rates. A native rate is one in
-  // AudioProcessing::NativeRate. If |preferred_sample_rates| is
-  // empty, returns |kDefaultFrequency|.
-  int CalculateOutputRate(
-      const std::vector<int>& preferred_sample_rates) override;
-  ~DefaultOutputRateCalculator() override {}
+    // Produces the least native rate greater or equal to the preferred
+    // sample rates. A native rate is one in
+    // AudioProcessing::NativeRate. If |preferred_sample_rates| is
+    // empty, returns |kDefaultFrequency|.
+    int CalculateOutputRate(
+        const std::vector<int>& preferred_sample_rates) override;
+    ~DefaultOutputRateCalculator() override {}
 };
 
 }  // namespace webrtc

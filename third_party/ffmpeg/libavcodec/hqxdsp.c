@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HQX DSP routines
  *
  * This file is part of FFmpeg.
@@ -116,8 +116,10 @@ static void hqx_idct_put(uint16_t *dst, ptrdiff_t stride,
     for (i = 0; i < 8; i++)
         idct_row(block + i * 8);
 
-    for (i = 0; i < 8; i++) {
-        for (j = 0; j < 8; j++) {
+    for (i = 0; i < 8; i++)
+    {
+        for (j = 0; j < 8; j++)
+        {
             int v = av_clip_uintp2(block[j + i * 8] + 0x800, 12);
             dst[j] = (v << 4) | (v >> 8);
         }

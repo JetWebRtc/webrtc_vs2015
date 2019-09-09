@@ -1,4 +1,4 @@
-/*
+﻿/*
  * IRCAM muxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -31,26 +31,32 @@ static int ircam_write_header(AVFormatContext *s)
     AVCodecContext *codec = s->streams[0]->codec;
     uint32_t tag;
 
-    if (s->nb_streams != 1) {
+    if (s->nb_streams != 1)
+    {
         av_log(s, AV_LOG_ERROR, "only one stream is supported\n");
         return AVERROR(EINVAL);
     }
 
     tag = ff_codec_get_tag(ff_codec_ircam_le_tags, codec->codec_id);
-    if (!tag) {
+    if (!tag)
+    {
         av_log(s, AV_LOG_ERROR, "unsupported codec\n");
         return AVERROR(EINVAL);
     }
 
     avio_wl32(s->pb, 0x0001A364);
-    avio_wl32(s->pb, av_q2intfloat((AVRational){codec->sample_rate, 1}));
+    avio_wl32(s->pb, av_q2intfloat((AVRational)
+    {
+        codec->sample_rate, 1
+    }));
     avio_wl32(s->pb, codec->channels);
     avio_wl32(s->pb, tag);
     ffio_fill(s->pb, 0, 1008);
     return 0;
 }
 
-AVOutputFormat ff_ircam_muxer = {
+AVOutputFormat ff_ircam_muxer =
+{
     .name           = "ircam",
     .extensions     = "sf,ircam",
     .long_name      = NULL_IF_CONFIG_SMALL("Berkeley/IRCAM/CARL Sound Format"),

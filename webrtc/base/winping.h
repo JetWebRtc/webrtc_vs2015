@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,14 +17,16 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/base/ipaddress.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // This class wraps a Win32 API for doing ICMP pinging.  This API, unlike the
 // the normal socket APIs (as implemented on Win9x), will return an error if
 // an ICMP packet with the dont-fragment bit set is too large.  This means this
 // class can be used to detect the MTU to a given address.
 
-typedef struct ip_option_information {
+typedef struct ip_option_information
+{
     UCHAR   Ttl;                // Time To Live
     UCHAR   Tos;                // Type Of Service
     UCHAR   Flags;              // IP header flags
@@ -65,17 +67,22 @@ typedef DWORD (WINAPI *PIcmp6SendEcho2)(
     DWORD Timeout
 );
 
-class WinPing {
+class WinPing
+{
 public:
     WinPing();
     ~WinPing();
 
     // Determines whether the class was initialized correctly.
-    bool IsValid() { return valid_; }
+    bool IsValid()
+    {
+        return valid_;
+    }
 
     // Attempts to send a ping with the given parameters.
     enum PingResult { PING_FAIL, PING_INVALID_PARAMS,
-                      PING_TOO_LARGE, PING_TIMEOUT, PING_SUCCESS };
+                      PING_TOO_LARGE, PING_TIMEOUT, PING_SUCCESS
+                    };
     PingResult Ping(IPAddress ip,
                     uint32_t data_size,
                     uint32_t timeout_millis,

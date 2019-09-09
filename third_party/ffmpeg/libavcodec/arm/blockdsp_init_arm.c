@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM optimized block operations
  *
  * This file is part of FFmpeg.

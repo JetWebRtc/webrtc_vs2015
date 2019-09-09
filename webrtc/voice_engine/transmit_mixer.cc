@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,8 +23,10 @@
 #include "webrtc/voice_engine/utility.h"
 #include "webrtc/voice_engine/voe_base_impl.h"
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 
 // TODO(ajm): The thread safety of this is dubious...
 void
@@ -37,24 +39,30 @@ TransmitMixer::OnPeriodicProcess()
     bool send_typing_noise_warning = false;
     bool typing_noise_detected = false;
     {
-      rtc::CritScope cs(&_critSect);
-      if (_typingNoiseWarningPending) {
-        send_typing_noise_warning = true;
-        typing_noise_detected = _typingNoiseDetected;
-        _typingNoiseWarningPending = false;
-      }
+        rtc::CritScope cs(&_critSect);
+        if (_typingNoiseWarningPending)
+        {
+            send_typing_noise_warning = true;
+            typing_noise_detected = _typingNoiseDetected;
+            _typingNoiseWarningPending = false;
+        }
     }
-    if (send_typing_noise_warning) {
+    if (send_typing_noise_warning)
+    {
         rtc::CritScope cs(&_callbackCritSect);
-        if (_voiceEngineObserverPtr) {
-            if (typing_noise_detected) {
+        if (_voiceEngineObserverPtr)
+        {
+            if (typing_noise_detected)
+            {
                 WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
                              "TransmitMixer::OnPeriodicProcess() => "
                              "CallbackOnError(VE_TYPING_NOISE_WARNING)");
                 _voiceEngineObserverPtr->CallbackOnError(
                     -1,
                     VE_TYPING_NOISE_WARNING);
-            } else {
+            }
+            else
+            {
                 WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
                              "TransmitMixer::OnPeriodicProcess() => "
                              "CallbackOnError(VE_TYPING_NOISE_OFF_WARNING)");
@@ -68,13 +76,13 @@ TransmitMixer::OnPeriodicProcess()
 
     bool saturationWarning = false;
     {
-      // Modify |_saturationWarning| under lock to avoid conflict with write op
-      // in ProcessAudio and also ensure that we don't hold the lock during the
-      // callback.
-      rtc::CritScope cs(&_critSect);
-      saturationWarning = _saturationWarning;
-      if (_saturationWarning)
-        _saturationWarning = false;
+        // Modify |_saturationWarning| under lock to avoid conflict with write op
+        // in ProcessAudio and also ensure that we don't hold the lock during the
+        // callback.
+        rtc::CritScope cs(&_critSect);
+        saturationWarning = _saturationWarning;
+        if (_saturationWarning)
+            _saturationWarning = false;
     }
 
     if (saturationWarning)
@@ -139,7 +147,8 @@ TransmitMixer::RecordFileEnded(int32_t id)
         WEBRTC_TRACE(kTraceStateInfo, kTraceVoice, VoEId(_instanceId, -1),
                      "TransmitMixer::RecordFileEnded() => fileRecorder module"
                      "is shutdown");
-    } else if (id == _fileCallRecorderId)
+    }
+    else if (id == _fileCallRecorderId)
     {
         rtc::CritScope cs(&_critSect);
         _fileCallRecording = false;
@@ -217,17 +226,20 @@ TransmitMixer::~TransmitMixer()
     }
     {
         rtc::CritScope cs(&_critSect);
-        if (file_recorder_) {
-          file_recorder_->RegisterModuleFileCallback(NULL);
-          file_recorder_->StopRecording();
+        if (file_recorder_)
+        {
+            file_recorder_->RegisterModuleFileCallback(NULL);
+            file_recorder_->StopRecording();
         }
-        if (file_call_recorder_) {
-          file_call_recorder_->RegisterModuleFileCallback(NULL);
-          file_call_recorder_->StopRecording();
+        if (file_call_recorder_)
+        {
+            file_call_recorder_->RegisterModuleFileCallback(NULL);
+            file_call_recorder_->StopRecording();
         }
-        if (file_player_) {
-          file_player_->RegisterModuleFileCallback(NULL);
-          file_player_->StopPlayingFile();
+        if (file_player_)
+        {
+            file_player_->RegisterModuleFileCallback(NULL);
+            file_player_->StopPlayingFile();
         }
     }
 }
@@ -280,19 +292,22 @@ TransmitMixer::SetAudioProcessingModule(AudioProcessing* audioProcessingModule)
 }
 
 void TransmitMixer::GetSendCodecInfo(int* max_sample_rate,
-                                     size_t* max_channels) {
-  *max_sample_rate = 8000;
-  *max_channels = 1;
-  for (ChannelManager::Iterator it(_channelManagerPtr); it.IsValid();
-       it.Increment()) {
-    Channel* channel = it.GetChannel();
-    if (channel->Sending()) {
-      CodecInst codec;
-      channel->GetSendCodec(codec);
-      *max_sample_rate = std::max(*max_sample_rate, codec.plfreq);
-      *max_channels = std::max(*max_channels, codec.channels);
+                                     size_t* max_channels)
+{
+    *max_sample_rate = 8000;
+    *max_channels = 1;
+    for (ChannelManager::Iterator it(_channelManagerPtr); it.IsValid();
+            it.Increment())
+    {
+        Channel* channel = it.GetChannel();
+        if (channel->Sending())
+        {
+            CodecInst codec;
+            channel->GetSendCodec(codec);
+            *max_sample_rate = std::max(*max_sample_rate, codec.plfreq);
+            *max_channels = std::max(*max_channels, codec.channels);
+        }
     }
-  }
 }
 
 int32_t
@@ -322,8 +337,8 @@ TransmitMixer::PrepareDemux(const void* audioSamples,
     ProcessAudio(totalDelayMS, clockDrift, currentMicLevel, keyPressed);
 
     if (swap_stereo_channels_ && stereo_codec_)
-      // Only bother swapping if we're using a stereo codec.
-      AudioFrameOperations::SwapStereoChannels(&_audioFrame);
+        // Only bother swapping if we're using a stereo codec.
+        AudioFrameOperations::SwapStereoChannels(&_audioFrame);
 
     // --- Annoying typing detection (utilizes the APM/VAD decision)
 #if WEBRTC_VOICE_ENGINE_TYPING_DETECTION
@@ -362,7 +377,7 @@ TransmitMixer::DemuxAndMix()
                  "TransmitMixer::DemuxAndMix()");
 
     for (ChannelManager::Iterator it(_channelManagerPtr); it.IsValid();
-         it.Increment())
+            it.Increment())
     {
         Channel* channelPtr = it.GetChannel();
         if (channelPtr->Sending())
@@ -376,18 +391,22 @@ TransmitMixer::DemuxAndMix()
 }
 
 void TransmitMixer::DemuxAndMix(const int voe_channels[],
-                                size_t number_of_voe_channels) {
-  for (size_t i = 0; i < number_of_voe_channels; ++i) {
-    voe::ChannelOwner ch = _channelManagerPtr->GetChannel(voe_channels[i]);
-    voe::Channel* channel_ptr = ch.channel();
-    if (channel_ptr) {
-      if (channel_ptr->Sending()) {
-        // Demultiplex makes a copy of its input.
-        channel_ptr->Demultiplex(_audioFrame);
-        channel_ptr->PrepareEncodeAndSend(_audioFrame.sample_rate_hz_);
-      }
+                                size_t number_of_voe_channels)
+{
+    for (size_t i = 0; i < number_of_voe_channels; ++i)
+    {
+        voe::ChannelOwner ch = _channelManagerPtr->GetChannel(voe_channels[i]);
+        voe::Channel* channel_ptr = ch.channel();
+        if (channel_ptr)
+        {
+            if (channel_ptr->Sending())
+            {
+                // Demultiplex makes a copy of its input.
+                channel_ptr->Demultiplex(_audioFrame);
+                channel_ptr->PrepareEncodeAndSend(_audioFrame.sample_rate_hz_);
+            }
+        }
     }
-  }
 }
 
 int32_t
@@ -397,7 +416,7 @@ TransmitMixer::EncodeAndSend()
                  "TransmitMixer::EncodeAndSend()");
 
     for (ChannelManager::Iterator it(_channelManagerPtr); it.IsValid();
-         it.Increment())
+            it.Increment())
     {
         Channel* channelPtr = it.GetChannel();
         if (channelPtr->Sending())
@@ -409,13 +428,15 @@ TransmitMixer::EncodeAndSend()
 }
 
 void TransmitMixer::EncodeAndSend(const int voe_channels[],
-                                  size_t number_of_voe_channels) {
-  for (size_t i = 0; i < number_of_voe_channels; ++i) {
-    voe::ChannelOwner ch = _channelManagerPtr->GetChannel(voe_channels[i]);
-    voe::Channel* channel_ptr = ch.channel();
-    if (channel_ptr && channel_ptr->Sending())
-      channel_ptr->EncodeAndSend();
-  }
+                                  size_t number_of_voe_channels)
+{
+    for (size_t i = 0; i < number_of_voe_channels; ++i)
+    {
+        voe::ChannelOwner ch = _channelManagerPtr->GetChannel(voe_channels[i]);
+        voe::Channel* channel_ptr = ch.channel();
+        if (channel_ptr && channel_ptr->Sending())
+            channel_ptr->EncodeAndSend();
+    }
 }
 
 uint32_t TransmitMixer::CaptureLevel() const
@@ -427,18 +448,18 @@ int32_t
 TransmitMixer::StopSend()
 {
     WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
-               "TransmitMixer::StopSend()");
+                 "TransmitMixer::StopSend()");
     _audioLevel.Clear();
     return 0;
 }
 
 int TransmitMixer::StartPlayingFileAsMicrophone(const char* fileName,
-                                                bool loop,
-                                                FileFormats format,
-                                                int startPosition,
-                                                float volumeScaling,
-                                                int stopPosition,
-                                                const CodecInst* codecInst)
+        bool loop,
+        FileFormats format,
+        int startPosition,
+        float volumeScaling,
+        int stopPosition,
+        const CodecInst* codecInst)
 {
     WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
                  "TransmitMixer::StartPlayingFileAsMicrophone("
@@ -457,33 +478,36 @@ int TransmitMixer::StartPlayingFileAsMicrophone(const char* fileName,
     rtc::CritScope cs(&_critSect);
 
     // Destroy the old instance
-    if (file_player_) {
-      file_player_->RegisterModuleFileCallback(NULL);
-      file_player_.reset();
+    if (file_player_)
+    {
+        file_player_->RegisterModuleFileCallback(NULL);
+        file_player_.reset();
     }
 
     // Dynamically create the instance
     file_player_ =
         FilePlayer::CreateFilePlayer(_filePlayerId, (const FileFormats)format);
 
-    if (!file_player_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartPlayingFileAsMicrophone() filePlayer format isnot correct");
-      return -1;
+    if (!file_player_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartPlayingFileAsMicrophone() filePlayer format isnot correct");
+        return -1;
     }
 
     const uint32_t notificationTime(0);
 
     if (file_player_->StartPlayingFile(
-            fileName, loop, startPosition, volumeScaling, notificationTime,
-            stopPosition, (const CodecInst*)codecInst) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartPlayingFile() failed to start file playout");
-      file_player_->StopPlayingFile();
-      file_player_.reset();
-      return -1;
+                fileName, loop, startPosition, volumeScaling, notificationTime,
+                stopPosition, (const CodecInst*)codecInst) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartPlayingFile() failed to start file playout");
+        file_player_->StopPlayingFile();
+        file_player_.reset();
+        return -1;
     }
 
     file_player_->RegisterModuleFileCallback(this);
@@ -493,11 +517,11 @@ int TransmitMixer::StartPlayingFileAsMicrophone(const char* fileName,
 }
 
 int TransmitMixer::StartPlayingFileAsMicrophone(InStream* stream,
-                                                FileFormats format,
-                                                int startPosition,
-                                                float volumeScaling,
-                                                int stopPosition,
-                                                const CodecInst* codecInst)
+        FileFormats format,
+        int startPosition,
+        float volumeScaling,
+        int stopPosition,
+        const CodecInst* codecInst)
 {
     WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId,-1),
                  "TransmitMixer::StartPlayingFileAsMicrophone(format=%d,"
@@ -523,33 +547,36 @@ int TransmitMixer::StartPlayingFileAsMicrophone(InStream* stream,
     rtc::CritScope cs(&_critSect);
 
     // Destroy the old instance
-    if (file_player_) {
-      file_player_->RegisterModuleFileCallback(NULL);
-      file_player_.reset();
+    if (file_player_)
+    {
+        file_player_->RegisterModuleFileCallback(NULL);
+        file_player_.reset();
     }
 
     // Dynamically create the instance
     file_player_ =
         FilePlayer::CreateFilePlayer(_filePlayerId, (const FileFormats)format);
 
-    if (!file_player_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceWarning,
-          "StartPlayingFileAsMicrophone() filePlayer format isnot correct");
-      return -1;
+    if (!file_player_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceWarning,
+            "StartPlayingFileAsMicrophone() filePlayer format isnot correct");
+        return -1;
     }
 
     const uint32_t notificationTime(0);
 
     if (file_player_->StartPlayingFile(stream, startPosition, volumeScaling,
                                        notificationTime, stopPosition,
-                                       (const CodecInst*)codecInst) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartPlayingFile() failed to start file playout");
-      file_player_->StopPlayingFile();
-      file_player_.reset();
-      return -1;
+                                       (const CodecInst*)codecInst) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartPlayingFile() failed to start file playout");
+        file_player_->StopPlayingFile();
+        file_player_.reset();
+        return -1;
     }
     file_player_->RegisterModuleFileCallback(this);
     _filePlaying = true;
@@ -569,11 +596,12 @@ int TransmitMixer::StopPlayingFileAsMicrophone()
 
     rtc::CritScope cs(&_critSect);
 
-    if (file_player_->StopPlayingFile() != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_CANNOT_STOP_PLAYOUT, kTraceError,
-          "StopPlayingFile() couldnot stop playing file");
-      return -1;
+    if (file_player_->StopPlayingFile() != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_CANNOT_STOP_PLAYOUT, kTraceError,
+            "StopPlayingFile() couldnot stop playing file");
+        return -1;
     }
 
     file_player_->RegisterModuleFileCallback(NULL);
@@ -591,7 +619,7 @@ int TransmitMixer::IsPlayingFileAsMicrophone() const
 }
 
 int TransmitMixer::StartRecordingMicrophone(const char* fileName,
-                                            const CodecInst* codecInst)
+        const CodecInst* codecInst)
 {
     WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
                  "TransmitMixer::StartRecordingMicrophone(fileName=%s)",
@@ -621,39 +649,44 @@ int TransmitMixer::StartRecordingMicrophone(const char* fileName,
     {
         format = kFileFormatPcm16kHzFile;
         codecInst = &dummyCodec;
-    } else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+    }
+    else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
-    } else
+    }
+    else
     {
         format = kFileFormatCompressedFile;
     }
 
     // Destroy the old instance
-    if (file_recorder_) {
-      file_recorder_->RegisterModuleFileCallback(NULL);
-      file_recorder_.reset();
+    if (file_recorder_)
+    {
+        file_recorder_->RegisterModuleFileCallback(NULL);
+        file_recorder_.reset();
     }
 
     file_recorder_ = FileRecorder::CreateFileRecorder(
-        _fileRecorderId, (const FileFormats)format);
-    if (!file_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingMicrophone() fileRecorder format isnot correct");
-      return -1;
+                         _fileRecorderId, (const FileFormats)format);
+    if (!file_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingMicrophone() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (file_recorder_->StartRecordingAudioFile(
-            fileName, (const CodecInst&)*codecInst, notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      file_recorder_->StopRecording();
-      file_recorder_.reset();
-      return -1;
+                fileName, (const CodecInst&)*codecInst, notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        file_recorder_->StopRecording();
+        file_recorder_.reset();
+        return -1;
     }
     file_recorder_->RegisterModuleFileCallback(this);
     _fileRecording = true;
@@ -662,17 +695,17 @@ int TransmitMixer::StartRecordingMicrophone(const char* fileName,
 }
 
 int TransmitMixer::StartRecordingMicrophone(OutStream* stream,
-                                            const CodecInst* codecInst)
+        const CodecInst* codecInst)
 {
     WEBRTC_TRACE(kTraceInfo, kTraceVoice, VoEId(_instanceId, -1),
-               "TransmitMixer::StartRecordingMicrophone()");
+                 "TransmitMixer::StartRecordingMicrophone()");
 
     rtc::CritScope cs(&_critSect);
 
     if (_fileRecording)
     {
         WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                   "StartRecordingMicrophone() is already recording");
+                     "StartRecordingMicrophone() is already recording");
         return 0;
     }
 
@@ -691,39 +724,44 @@ int TransmitMixer::StartRecordingMicrophone(OutStream* stream,
     {
         format = kFileFormatPcm16kHzFile;
         codecInst = &dummyCodec;
-    } else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+    }
+    else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
-    } else
+    }
+    else
     {
         format = kFileFormatCompressedFile;
     }
 
     // Destroy the old instance
-    if (file_recorder_) {
-      file_recorder_->RegisterModuleFileCallback(NULL);
-      file_recorder_.reset();
+    if (file_recorder_)
+    {
+        file_recorder_->RegisterModuleFileCallback(NULL);
+        file_recorder_.reset();
     }
 
     file_recorder_ = FileRecorder::CreateFileRecorder(
-        _fileRecorderId, (const FileFormats)format);
-    if (!file_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingMicrophone() fileRecorder format isnot correct");
-      return -1;
+                         _fileRecorderId, (const FileFormats)format);
+    if (!file_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingMicrophone() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (file_recorder_->StartRecordingAudioFile(stream, *codecInst,
-                                                notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      file_recorder_->StopRecording();
-      file_recorder_.reset();
-      return -1;
+            notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        file_recorder_->StopRecording();
+        file_recorder_.reset();
+        return -1;
     }
 
     file_recorder_->RegisterModuleFileCallback(this);
@@ -743,15 +781,16 @@ int TransmitMixer::StopRecordingMicrophone()
     if (!_fileRecording)
     {
         WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                   "StopRecordingMicrophone() isnot recording");
+                     "StopRecordingMicrophone() isnot recording");
         return 0;
     }
 
-    if (file_recorder_->StopRecording() != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_STOP_RECORDING_FAILED, kTraceError,
-          "StopRecording(), could not stop recording");
-      return -1;
+    if (file_recorder_->StopRecording() != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_STOP_RECORDING_FAILED, kTraceError,
+            "StopRecording(), could not stop recording");
+        return -1;
     }
     file_recorder_->RegisterModuleFileCallback(NULL);
     file_recorder_.reset();
@@ -788,12 +827,14 @@ int TransmitMixer::StartRecordingCall(const char* fileName,
     {
         format = kFileFormatPcm16kHzFile;
         codecInst = &dummyCodec;
-    } else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+    }
+    else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
-    } else
+    }
+    else
     {
         format = kFileFormatCompressedFile;
     }
@@ -801,28 +842,31 @@ int TransmitMixer::StartRecordingCall(const char* fileName,
     rtc::CritScope cs(&_critSect);
 
     // Destroy the old instance
-    if (file_call_recorder_) {
-      file_call_recorder_->RegisterModuleFileCallback(NULL);
-      file_call_recorder_.reset();
+    if (file_call_recorder_)
+    {
+        file_call_recorder_->RegisterModuleFileCallback(NULL);
+        file_call_recorder_.reset();
     }
 
     file_call_recorder_ = FileRecorder::CreateFileRecorder(
-        _fileCallRecorderId, (const FileFormats)format);
-    if (!file_call_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingCall() fileRecorder format isnot correct");
-      return -1;
+                              _fileCallRecorderId, (const FileFormats)format);
+    if (!file_call_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingCall() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (file_call_recorder_->StartRecordingAudioFile(
-            fileName, (const CodecInst&)*codecInst, notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      file_call_recorder_->StopRecording();
-      file_call_recorder_.reset();
-      return -1;
+                fileName, (const CodecInst&)*codecInst, notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        file_call_recorder_->StopRecording();
+        file_call_recorder_.reset();
+        return -1;
     }
     file_call_recorder_->RegisterModuleFileCallback(this);
     _fileCallRecording = true;
@@ -858,12 +902,14 @@ int TransmitMixer::StartRecordingCall(OutStream* stream,
     {
         format = kFileFormatPcm16kHzFile;
         codecInst = &dummyCodec;
-    } else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
-        (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
+    }
+    else if ((STR_CASE_CMP(codecInst->plname,"L16") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMU") == 0) ||
+             (STR_CASE_CMP(codecInst->plname,"PCMA") == 0))
     {
         format = kFileFormatWavFile;
-    } else
+    }
+    else
     {
         format = kFileFormatCompressedFile;
     }
@@ -871,28 +917,31 @@ int TransmitMixer::StartRecordingCall(OutStream* stream,
     rtc::CritScope cs(&_critSect);
 
     // Destroy the old instance
-    if (file_call_recorder_) {
-      file_call_recorder_->RegisterModuleFileCallback(NULL);
-      file_call_recorder_.reset();
+    if (file_call_recorder_)
+    {
+        file_call_recorder_->RegisterModuleFileCallback(NULL);
+        file_call_recorder_.reset();
     }
 
     file_call_recorder_ = FileRecorder::CreateFileRecorder(
-        _fileCallRecorderId, (const FileFormats)format);
-    if (!file_call_recorder_) {
-      _engineStatisticsPtr->SetLastError(
-          VE_INVALID_ARGUMENT, kTraceError,
-          "StartRecordingCall() fileRecorder format isnot correct");
-      return -1;
+                              _fileCallRecorderId, (const FileFormats)format);
+    if (!file_call_recorder_)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_INVALID_ARGUMENT, kTraceError,
+            "StartRecordingCall() fileRecorder format isnot correct");
+        return -1;
     }
 
     if (file_call_recorder_->StartRecordingAudioFile(stream, *codecInst,
-                                                     notificationTime) != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_BAD_FILE, kTraceError,
-          "StartRecordingAudioFile() failed to start file recording");
-      file_call_recorder_->StopRecording();
-      file_call_recorder_.reset();
-      return -1;
+            notificationTime) != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_BAD_FILE, kTraceError,
+            "StartRecordingAudioFile() failed to start file recording");
+        file_call_recorder_->StopRecording();
+        file_call_recorder_.reset();
+        return -1;
     }
 
     file_call_recorder_->RegisterModuleFileCallback(this);
@@ -915,11 +964,12 @@ int TransmitMixer::StopRecordingCall()
 
     rtc::CritScope cs(&_critSect);
 
-    if (file_call_recorder_->StopRecording() != 0) {
-      _engineStatisticsPtr->SetLastError(
-          VE_STOP_RECORDING_FAILED, kTraceError,
-          "StopRecording(), could not stop recording");
-      return -1;
+    if (file_call_recorder_->StopRecording() != 0)
+    {
+        _engineStatisticsPtr->SetLastError(
+            VE_STOP_RECORDING_FAILED, kTraceError,
+            "StopRecording(), could not stop recording");
+        return -1;
     }
 
     file_call_recorder_->RegisterModuleFileCallback(NULL);
@@ -976,42 +1026,47 @@ bool TransmitMixer::IsRecordingMic()
 void TransmitMixer::GenerateAudioFrame(const int16_t* audio,
                                        size_t samples_per_channel,
                                        size_t num_channels,
-                                       int sample_rate_hz) {
-  int codec_rate;
-  size_t num_codec_channels;
-  GetSendCodecInfo(&codec_rate, &num_codec_channels);
-  stereo_codec_ = num_codec_channels == 2;
+                                       int sample_rate_hz)
+{
+    int codec_rate;
+    size_t num_codec_channels;
+    GetSendCodecInfo(&codec_rate, &num_codec_channels);
+    stereo_codec_ = num_codec_channels == 2;
 
-  // We want to process at the lowest rate possible without losing information.
-  // Choose the lowest native rate at least equal to the input and codec rates.
-  const int min_processing_rate = std::min(sample_rate_hz, codec_rate);
-  for (size_t i = 0; i < AudioProcessing::kNumNativeSampleRates; ++i) {
-    _audioFrame.sample_rate_hz_ = AudioProcessing::kNativeSampleRatesHz[i];
-    if (_audioFrame.sample_rate_hz_ >= min_processing_rate) {
-      break;
+    // We want to process at the lowest rate possible without losing information.
+    // Choose the lowest native rate at least equal to the input and codec rates.
+    const int min_processing_rate = std::min(sample_rate_hz, codec_rate);
+    for (size_t i = 0; i < AudioProcessing::kNumNativeSampleRates; ++i)
+    {
+        _audioFrame.sample_rate_hz_ = AudioProcessing::kNativeSampleRatesHz[i];
+        if (_audioFrame.sample_rate_hz_ >= min_processing_rate)
+        {
+            break;
+        }
     }
-  }
-  _audioFrame.num_channels_ = std::min(num_channels, num_codec_channels);
-  RemixAndResample(audio, samples_per_channel, num_channels, sample_rate_hz,
-                   &resampler_, &_audioFrame);
+    _audioFrame.num_channels_ = std::min(num_channels, num_codec_channels);
+    RemixAndResample(audio, samples_per_channel, num_channels, sample_rate_hz,
+                     &resampler_, &_audioFrame);
 }
 
 int32_t TransmitMixer::RecordAudioToFile(
     uint32_t mixingFrequency)
 {
     rtc::CritScope cs(&_critSect);
-    if (!file_recorder_) {
-      WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                   "TransmitMixer::RecordAudioToFile() filerecorder doesnot"
-                   "exist");
-      return -1;
+    if (!file_recorder_)
+    {
+        WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
+                     "TransmitMixer::RecordAudioToFile() filerecorder doesnot"
+                     "exist");
+        return -1;
     }
 
-    if (file_recorder_->RecordAudioToFile(_audioFrame) != 0) {
-      WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                   "TransmitMixer::RecordAudioToFile() file recording"
-                   "failed");
-      return -1;
+    if (file_recorder_->RecordAudioToFile(_audioFrame) != 0)
+    {
+        WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
+                     "TransmitMixer::RecordAudioToFile() file recording"
+                     "failed");
+        return -1;
     }
 
     return 0;
@@ -1025,19 +1080,21 @@ int32_t TransmitMixer::MixOrReplaceAudioWithFile(
     size_t fileSamples(0);
     {
         rtc::CritScope cs(&_critSect);
-        if (!file_player_) {
-          WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                       "TransmitMixer::MixOrReplaceAudioWithFile()"
-                       "fileplayer doesnot exist");
-          return -1;
+        if (!file_player_)
+        {
+            WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
+                         "TransmitMixer::MixOrReplaceAudioWithFile()"
+                         "fileplayer doesnot exist");
+            return -1;
         }
 
         if (file_player_->Get10msAudioFromFile(fileBuffer.get(), &fileSamples,
-                                               mixingFrequency) == -1) {
-          WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
-                       "TransmitMixer::MixOrReplaceAudioWithFile() file"
-                       " mixing failed");
-          return -1;
+                                               mixingFrequency) == -1)
+        {
+            WEBRTC_TRACE(kTraceWarning, kTraceVoice, VoEId(_instanceId, -1),
+                         "TransmitMixer::MixOrReplaceAudioWithFile() file"
+                         " mixing failed");
+            return -1;
         }
     }
 
@@ -1052,7 +1109,8 @@ int32_t TransmitMixer::MixOrReplaceAudioWithFile(
                    fileBuffer.get(),
                    1,
                    fileSamples);
-    } else
+    }
+    else
     {
         // Replace ACM audio with file.
         // Currently file stream is always mono.
@@ -1070,61 +1128,71 @@ int32_t TransmitMixer::MixOrReplaceAudioWithFile(
 }
 
 void TransmitMixer::ProcessAudio(int delay_ms, int clock_drift,
-                                 int current_mic_level, bool key_pressed) {
-  if (audioproc_->set_stream_delay_ms(delay_ms) != 0) {
-    // Silently ignore this failure to avoid flooding the logs.
-  }
+                                 int current_mic_level, bool key_pressed)
+{
+    if (audioproc_->set_stream_delay_ms(delay_ms) != 0)
+    {
+        // Silently ignore this failure to avoid flooding the logs.
+    }
 
-  GainControl* agc = audioproc_->gain_control();
-  if (agc->set_stream_analog_level(current_mic_level) != 0) {
-    LOG(LS_ERROR) << "set_stream_analog_level failed: current_mic_level = "
-                  << current_mic_level;
-    assert(false);
-  }
+    GainControl* agc = audioproc_->gain_control();
+    if (agc->set_stream_analog_level(current_mic_level) != 0)
+    {
+        LOG(LS_ERROR) << "set_stream_analog_level failed: current_mic_level = "
+                      << current_mic_level;
+        assert(false);
+    }
 
-  EchoCancellation* aec = audioproc_->echo_cancellation();
-  if (aec->is_drift_compensation_enabled()) {
-    aec->set_stream_drift_samples(clock_drift);
-  }
+    EchoCancellation* aec = audioproc_->echo_cancellation();
+    if (aec->is_drift_compensation_enabled())
+    {
+        aec->set_stream_drift_samples(clock_drift);
+    }
 
-  audioproc_->set_stream_key_pressed(key_pressed);
+    audioproc_->set_stream_key_pressed(key_pressed);
 
-  int err = audioproc_->ProcessStream(&_audioFrame);
-  if (err != 0) {
-    LOG(LS_ERROR) << "ProcessStream() error: " << err;
-    assert(false);
-  }
+    int err = audioproc_->ProcessStream(&_audioFrame);
+    if (err != 0)
+    {
+        LOG(LS_ERROR) << "ProcessStream() error: " << err;
+        assert(false);
+    }
 
-  // Store new capture level. Only updated when analog AGC is enabled.
-  _captureLevel = agc->stream_analog_level();
+    // Store new capture level. Only updated when analog AGC is enabled.
+    _captureLevel = agc->stream_analog_level();
 
-  rtc::CritScope cs(&_critSect);
-  // Triggers a callback in OnPeriodicProcess().
-  _saturationWarning |= agc->stream_is_saturated();
+    rtc::CritScope cs(&_critSect);
+    // Triggers a callback in OnPeriodicProcess().
+    _saturationWarning |= agc->stream_is_saturated();
 }
 
 #if WEBRTC_VOICE_ENGINE_TYPING_DETECTION
 void TransmitMixer::TypingDetection(bool keyPressed)
 {
-  // We let the VAD determine if we're using this feature or not.
-  if (_audioFrame.vad_activity_ == AudioFrame::kVadUnknown) {
-    return;
-  }
-
-  bool vadActive = _audioFrame.vad_activity_ == AudioFrame::kVadActive;
-  if (_typingDetection.Process(keyPressed, vadActive)) {
-    rtc::CritScope cs(&_critSect);
-    _typingNoiseWarningPending = true;
-    _typingNoiseDetected = true;
-  } else {
-    rtc::CritScope cs(&_critSect);
-    // If there is already a warning pending, do not change the state.
-    // Otherwise set a warning pending if last callback was for noise detected.
-    if (!_typingNoiseWarningPending && _typingNoiseDetected) {
-      _typingNoiseWarningPending = true;
-      _typingNoiseDetected = false;
+    // We let the VAD determine if we're using this feature or not.
+    if (_audioFrame.vad_activity_ == AudioFrame::kVadUnknown)
+    {
+        return;
     }
-  }
+
+    bool vadActive = _audioFrame.vad_activity_ == AudioFrame::kVadActive;
+    if (_typingDetection.Process(keyPressed, vadActive))
+    {
+        rtc::CritScope cs(&_critSect);
+        _typingNoiseWarningPending = true;
+        _typingNoiseDetected = true;
+    }
+    else
+    {
+        rtc::CritScope cs(&_critSect);
+        // If there is already a warning pending, do not change the state.
+        // Otherwise set a warning pending if last callback was for noise detected.
+        if (!_typingNoiseWarningPending && _typingNoiseDetected)
+        {
+            _typingNoiseWarningPending = true;
+            _typingNoiseDetected = false;
+        }
+    }
 }
 #endif
 
@@ -1140,10 +1208,10 @@ int TransmitMixer::TimeSinceLastTyping(int &seconds)
 
 #if WEBRTC_VOICE_ENGINE_TYPING_DETECTION
 int TransmitMixer::SetTypingDetectionParameters(int timeWindow,
-                                                int costPerTyping,
-                                                int reportingThreshold,
-                                                int penaltyDecay,
-                                                int typeEventDelay)
+        int costPerTyping,
+        int reportingThreshold,
+        int penaltyDecay,
+        int typeEventDelay)
 {
     _typingDetection.SetParameters(timeWindow,
                                    costPerTyping,
@@ -1155,12 +1223,14 @@ int TransmitMixer::SetTypingDetectionParameters(int timeWindow,
 }
 #endif
 
-void TransmitMixer::EnableStereoChannelSwapping(bool enable) {
-  swap_stereo_channels_ = enable;
+void TransmitMixer::EnableStereoChannelSwapping(bool enable)
+{
+    swap_stereo_channels_ = enable;
 }
 
-bool TransmitMixer::IsStereoChannelSwappingEnabled() {
-  return swap_stereo_channels_;
+bool TransmitMixer::IsStereoChannelSwappingEnabled()
+{
+    return swap_stereo_channels_;
 }
 
 }  // namespace voe

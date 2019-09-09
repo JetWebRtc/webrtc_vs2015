@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -34,7 +34,8 @@ av_cold void ff_fft_init_aarch64(FFTContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->fft_permute  = ff_fft_permute_neon;
         s->fft_calc     = ff_fft_calc_neon;
 #if CONFIG_MDCT

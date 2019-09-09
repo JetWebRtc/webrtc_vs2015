@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@ static void h263_dct_unquantize_msa(int16_t *block, int16_t qmul,
 
     qmul_vec = __msa_fill_h(qmul);
     qadd_vec = __msa_fill_h(qadd);
-    for (cnt = 0; cnt < (n_coeffs >> 3); cnt++) {
+    for (cnt = 0; cnt < (n_coeffs >> 3); cnt++)
+    {
         block_vec = LD_SH(block_dup + loop_start);
         mask = __msa_clti_s_h(block_vec, 0);
         zero_mask = __msa_ceqi_h(block_vec, 0);
@@ -48,12 +49,17 @@ static void h263_dct_unquantize_msa(int16_t *block, int16_t qmul,
 
     cnt = ((n_coeffs >> 3) * 8) + loop_start;
 
-    for (; cnt <= n_coeffs; cnt++) {
+    for (; cnt <= n_coeffs; cnt++)
+    {
         level = block[cnt];
-        if (level) {
-            if (level < 0) {
+        if (level)
+        {
+            if (level < 0)
+            {
                 level = level * qmul - qadd;
-            } else {
+            }
+            else
+            {
                 level = level * qmul + qadd;
             }
             block[cnt] = level;
@@ -62,8 +68,8 @@ static void h263_dct_unquantize_msa(int16_t *block, int16_t qmul,
 }
 
 static int32_t mpeg2_dct_unquantize_inter_msa(int16_t *block,
-                                              int32_t qscale,
-                                              const int16_t *quant_matrix)
+        int32_t qscale,
+        const int16_t *quant_matrix)
 {
     int32_t cnt, sum_res = -1;
     v8i16 block_vec, block_neg, qscale_vec, mask;
@@ -74,7 +80,8 @@ static int32_t mpeg2_dct_unquantize_inter_msa(int16_t *block,
     v4i32 block_l, block_r, sad;
 
     qscale_vec = __msa_fill_h(qscale);
-    for (cnt = 0; cnt < 2; cnt++) {
+    for (cnt = 0; cnt < 2; cnt++)
+    {
         LD_SH4(block, 8, block_org0, block_org1, block_org2, block_org3);
         LD_SH4(quant_matrix, 8, quant_m0, quant_m1, quant_m2, quant_m3);
         mask = __msa_clti_s_h(block_org0, 0);
@@ -204,10 +211,13 @@ void ff_dct_unquantize_h263_intra_msa(MpegEncContext *s,
 
     qmul = qscale << 1;
 
-    if (!s->h263_aic) {
+    if (!s->h263_aic)
+    {
         block[0] *= index < 4 ? s->y_dc_scale : s->c_dc_scale;
         qadd = (qscale - 1) | 1;
-    } else {
+    }
+    else
+    {
         qadd = 0;
     }
     if (s->ac_pred)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,34 +18,35 @@
 // create a channel and prepare playing a file through the fake microphone
 // to simulate microphone input. The purpose is to make it convenient
 // to write tests that require microphone input.
-class BeforeStreamingFixture : public AfterInitializationFixture {
- public:
-  BeforeStreamingFixture();
-  virtual ~BeforeStreamingFixture();
+class BeforeStreamingFixture : public AfterInitializationFixture
+{
+public:
+    BeforeStreamingFixture();
+    virtual ~BeforeStreamingFixture();
 
- protected:
-  int             channel_;
-  std::string     fake_microphone_input_file_;
+protected:
+    int             channel_;
+    std::string     fake_microphone_input_file_;
 
-  // Shuts off the fake microphone for this test.
-  void SwitchToManualMicrophone();
+    // Shuts off the fake microphone for this test.
+    void SwitchToManualMicrophone();
 
-  // Restarts the fake microphone if it's been shut off earlier.
-  void RestartFakeMicrophone();
+    // Restarts the fake microphone if it's been shut off earlier.
+    void RestartFakeMicrophone();
 
-  // Stops all sending and playout.
-  void PausePlaying();
+    // Stops all sending and playout.
+    void PausePlaying();
 
-  // Resumes all sending and playout.
-  void ResumePlaying();
+    // Resumes all sending and playout.
+    void ResumePlaying();
 
-  // Waits until packet_count packetes have been processed by recipient.
-  void WaitForTransmittedPackets(int32_t packet_count);
+    // Waits until packet_count packetes have been processed by recipient.
+    void WaitForTransmittedPackets(int32_t packet_count);
 
- private:
-  void SetUpLocalPlayback();
+private:
+    void SetUpLocalPlayback();
 
-  LoopBackTransport* transport_;
+    LoopBackTransport* transport_;
 };
 
 

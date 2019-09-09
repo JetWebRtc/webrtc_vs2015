@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Xvid MPEG-4 IDCT
  *
  * Copyright (C) 2006-2011 Xvid Solutions GmbH
@@ -66,9 +66,11 @@ static int idct_row(short *in, const int *const tab, int rnd)
 
     const int right = in[5] | in[6] | in[7];
     const int left  = in[1] | in[2] | in[3];
-    if (!(right | in[4])) {
+    if (!(right | in[4]))
+    {
         const int k = c4 * in[0] + rnd;
-        if (left) {
+        if (left)
+        {
             const int a0 = k + c2 * in[2];
             const int a1 = k + c6 * in[2];
             const int a2 = k - c6 * in[2];
@@ -87,21 +89,27 @@ static int idct_row(short *in, const int *const tab, int rnd)
             in[5] = (a2 - b2) >> ROW_SHIFT;
             in[6] = (a1 - b1) >> ROW_SHIFT;
             in[7] = (a0 - b0) >> ROW_SHIFT;
-        } else {
+        }
+        else
+        {
             const int a0 = k >> ROW_SHIFT;
-            if (a0) {
+            if (a0)
+            {
                 in[0] =
-                in[1] =
-                in[2] =
-                in[3] =
-                in[4] =
-                in[5] =
-                in[6] =
-                in[7] = a0;
-            } else
+                    in[1] =
+                        in[2] =
+                            in[3] =
+                                in[4] =
+                                    in[5] =
+                                        in[6] =
+                                            in[7] = a0;
+            }
+            else
                 return 0;
         }
-    } else if (!(left | right)) {
+    }
+    else if (!(left | right))
+    {
         const int a0 = (rnd + c4 * (in[0] + in[4])) >> ROW_SHIFT;
         const int a1 = (rnd + c4 * (in[0] - in[4])) >> ROW_SHIFT;
 
@@ -113,7 +121,9 @@ static int idct_row(short *in, const int *const tab, int rnd)
         in[2] = a1;
         in[5] = a1;
         in[6] = a1;
-    } else {
+    }
+    else
+    {
         const int k  = c4 * in[0] + rnd;
         const int a0 = k + c2 * in[2] + c4 * in[4] + c6 * in[6];
         const int a1 = k + c6 * in[2] - c4 * in[4] - c2 * in[6];
@@ -179,7 +189,7 @@ static void idct_col_8(short *const in)
     mm5 = mm0 - mm1;
     mm5 = 2 * MULT(SQRT2, mm5, 16); // 2*sqrt2
     mm6 = 2 * MULT(SQRT2, mm6, 16); // Watch out: precision loss but done to match
-                                    // the pmulhw used in MMX/MMXEXT/SSE2 versions
+    // the pmulhw used in MMX/MMXEXT/SSE2 versions
 
     // even
 
@@ -306,13 +316,18 @@ void ff_xvid_idct(int16_t *const in)
     if (idct_row(in + 7 * 8, TAB17, RND7))
         rows |= 0x80;
 
-    if (rows & 0xF0) {
+    if (rows & 0xF0)
+    {
         for (i = 0; i < 8; i++)
             idct_col_8(in + i);
-    } else if (rows & 0x08) {
+    }
+    else if (rows & 0x08)
+    {
         for (i = 0; i < 8; i++)
             idct_col_4(in + i);
-    } else {
+    }
+    else
+    {
         for (i = 0; i < 8; i++)
             idct_col_3(in + i);
     }
@@ -335,11 +350,12 @@ av_cold void ff_xvid_idct_init(IDCTDSPContext *c, AVCodecContext *avctx)
     const unsigned high_bit_depth = avctx->bits_per_raw_sample > 8;
 
     if (high_bit_depth || avctx->lowres ||
-        !(avctx->idct_algo == FF_IDCT_AUTO ||
-          avctx->idct_algo == FF_IDCT_XVID))
+            !(avctx->idct_algo == FF_IDCT_AUTO ||
+              avctx->idct_algo == FF_IDCT_XVID))
         return;
 
-    if (avctx->idct_algo == FF_IDCT_XVID) {
+    if (avctx->idct_algo == FF_IDCT_XVID)
+    {
         c->idct_put  = xvid_idct_put;
         c->idct_add  = xvid_idct_add;
         c->idct      = ff_xvid_idct;

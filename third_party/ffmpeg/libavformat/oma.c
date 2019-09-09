@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Sony OpenMG (OMA) common data
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 
 const uint16_t ff_oma_srate_tab[8] = { 320, 441, 480, 882, 960, 0 };
 
-const AVCodecTag ff_oma_codec_tags[] = {
+const AVCodecTag ff_oma_codec_tags[] =
+{
     { AV_CODEC_ID_ATRAC3,      OMA_CODECID_ATRAC3  },
     { AV_CODEC_ID_ATRAC3P,     OMA_CODECID_ATRAC3P },
     { AV_CODEC_ID_MP3,         OMA_CODECID_MP3     },
@@ -34,7 +35,8 @@ const AVCodecTag ff_oma_codec_tags[] = {
 };
 
 /** map ATRAC-X channel id to internal channel layout */
-const uint64_t ff_oma_chid_to_native_layout[7] = {
+const uint64_t ff_oma_chid_to_native_layout[7] =
+{
     AV_CH_LAYOUT_MONO,
     AV_CH_LAYOUT_STEREO,
     AV_CH_LAYOUT_SURROUND,

@@ -26,7 +26,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-struct MD5Context {
+struct MD5Context
+{
     const AVClass *avclass;
     struct AVHashContext *hash;
     char *hash_name;
@@ -41,7 +42,8 @@ static void md5_finish(struct AVFormatContext *s, char *buf)
     int len = av_hash_get_size(c->hash);
     av_assert0(len > 0 && len <= sizeof(md5));
     av_hash_final(c->hash, md5);
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         snprintf(buf + offset, 3, "%02"PRIx8, md5[i]);
         offset += 2;
     }
@@ -54,13 +56,15 @@ static void md5_finish(struct AVFormatContext *s, char *buf)
 
 #define OFFSET(x) offsetof(struct MD5Context, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption hash_options[] = {
+static const AVOption hash_options[] =
+{
     { "hash", "set hash to use", OFFSET(hash_name), AV_OPT_TYPE_STRING, {.str = "md5"}, 0, 0, ENC },
     { "format_version", "file format version", OFFSET(format_version), AV_OPT_TYPE_INT, {.i64 = 1}, 1, 1, ENC },
     { NULL },
 };
 
-static const AVClass md5enc_class = {
+static const AVClass md5enc_class =
+{
     .class_name = "hash encoder class",
     .item_name  = av_default_item_name,
     .option     = hash_options,
@@ -98,7 +102,8 @@ static int write_trailer(struct AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_md5_muxer = {
+AVOutputFormat ff_md5_muxer =
+{
     .name              = "md5",
     .long_name         = NULL_IF_CONFIG_SMALL("MD5 testing"),
     .priv_data_size    = sizeof(struct MD5Context),
@@ -147,14 +152,16 @@ static int framemd5_write_trailer(struct AVFormatContext *s)
     return 0;
 }
 
-static const AVClass framemd5_class = {
+static const AVClass framemd5_class =
+{
     .class_name = "frame hash encoder class",
     .item_name  = av_default_item_name,
     .option     = hash_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_framemd5_muxer = {
+AVOutputFormat ff_framemd5_muxer =
+{
     .name              = "framemd5",
     .long_name         = NULL_IF_CONFIG_SMALL("Per-frame MD5 testing"),
     .priv_data_size    = sizeof(struct MD5Context),
@@ -164,7 +171,7 @@ AVOutputFormat ff_framemd5_muxer = {
     .write_packet      = framemd5_write_packet,
     .write_trailer     = framemd5_write_trailer,
     .flags             = AVFMT_VARIABLE_FPS | AVFMT_TS_NONSTRICT |
-                         AVFMT_TS_NEGATIVE,
+    AVFMT_TS_NEGATIVE,
     .priv_class        = &framemd5_class,
 };
 #endif

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Generate a synthetic stereo sound.
  * NOTE: No floats are used to guarantee bitexact output.
  *
@@ -34,9 +34,12 @@ static unsigned int myrnd(unsigned int *seed_ptr, int n)
 
     seed = *seed_ptr;
     seed = (seed * 314159) + 1;
-    if (n == 256) {
+    if (n == 256)
+    {
         val = seed >> 24;
-    } else {
+    }
+    else
+    {
         val = seed % n;
     }
     *seed_ptr = seed;
@@ -49,7 +52,8 @@ static unsigned int myrnd(unsigned int *seed_ptr, int n)
 #define COS_TABLE_BITS 7
 
 /* integer cosine */
-static const unsigned short cos_table[(1 << COS_TABLE_BITS) + 2] = {
+static const unsigned short cos_table[(1 << COS_TABLE_BITS) + 2] =
+{
     0x8000, 0x7ffe, 0x7ff6, 0x7fea, 0x7fd9, 0x7fc2, 0x7fa7, 0x7f87,
     0x7f62, 0x7f38, 0x7f0a, 0x7ed6, 0x7e9d, 0x7e60, 0x7e1e, 0x7dd6,
     0x7d8a, 0x7d3a, 0x7ce4, 0x7c89, 0x7c2a, 0x7bc6, 0x7b5d, 0x7aef,
@@ -80,7 +84,8 @@ static int int_cos(int a)
     if (a >= (FRAC_ONE / 2))
         a = FRAC_ONE - a;
     neg = 0;
-    if (a > (FRAC_ONE / 4)) {
+    if (a > (FRAC_ONE / 4))
+    {
         neg = -1;
         a   = (FRAC_ONE / 2) - a;
     }
@@ -144,7 +149,8 @@ int main(int argc, char **argv)
     int nb_channels = 2;
     char *ext;
 
-    if (argc < 2 || argc > 5) {
+    if (argc < 2 || argc > 5)
+    {
         printf("usage: %s file [<sample rate> [<channels>] [<random seed>]]\n"
                "generate a test raw 16 bit audio stream\n"
                "If the file extension is .wav a WAVE header will be added.\n"
@@ -152,17 +158,21 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    if (argc > 2) {
+    if (argc > 2)
+    {
         sample_rate = atoi(argv[2]);
-        if (sample_rate <= 0) {
+        if (sample_rate <= 0)
+        {
             fprintf(stderr, "invalid sample rate: %d\n", sample_rate);
             return 1;
         }
     }
 
-    if (argc > 3) {
+    if (argc > 3)
+    {
         nb_channels = atoi(argv[3]);
-        if (nb_channels < 1 || nb_channels > MAX_CHANNELS) {
+        if (nb_channels < 1 || nb_channels > MAX_CHANNELS)
+        {
             fprintf(stderr, "invalid number of channels: %d\n", nb_channels);
             return 1;
         }
@@ -172,7 +182,8 @@ int main(int argc, char **argv)
         seed = atoi(argv[4]);
 
     outfile = fopen(argv[1], "wb");
-    if (!outfile) {
+    if (!outfile)
+    {
         perror(argv[1]);
         return 1;
     }
@@ -182,7 +193,8 @@ int main(int argc, char **argv)
 
     /* 1 second of single freq sine at 1000 Hz */
     a = 0;
-    for (i = 0; i < 1 * sample_rate; i++) {
+    for (i = 0; i < 1 * sample_rate; i++)
+    {
         v = (int_cos(a) * 10000) >> FRAC_BITS;
         for (j = 0; j < nb_channels; j++)
             put16(v);
@@ -191,7 +203,8 @@ int main(int argc, char **argv)
 
     /* 1 second of varying frequency between 100 and 10000 Hz */
     a = 0;
-    for (i = 0; i < 1 * sample_rate; i++) {
+    for (i = 0; i < 1 * sample_rate; i++)
+    {
         v = (int_cos(a) * 10000) >> FRAC_BITS;
         for (j = 0; j < nb_channels; j++)
             put16(v);
@@ -200,27 +213,32 @@ int main(int argc, char **argv)
     }
 
     /* 0.5 second of low amplitude white noise */
-    for (i = 0; i < sample_rate / 2; i++) {
+    for (i = 0; i < sample_rate / 2; i++)
+    {
         v = myrnd(&seed, 20000) - 10000;
         for (j = 0; j < nb_channels; j++)
             put16(v);
     }
 
     /* 0.5 second of high amplitude white noise */
-    for (i = 0; i < sample_rate / 2; i++) {
+    for (i = 0; i < sample_rate / 2; i++)
+    {
         v = myrnd(&seed, 65535) - 32768;
         for (j = 0; j < nb_channels; j++)
             put16(v);
     }
 
     /* 1 second of unrelated ramps for each channel */
-    for (j = 0; j < nb_channels; j++) {
+    for (j = 0; j < nb_channels; j++)
+    {
         taba[j]  = 0;
         tabf1[j] = 100 + myrnd(&seed, 5000);
         tabf2[j] = 100 + myrnd(&seed, 5000);
     }
-    for (i = 0; i < 1 * sample_rate; i++) {
-        for (j = 0; j < nb_channels; j++) {
+    for (i = 0; i < 1 * sample_rate; i++)
+    {
+        for (j = 0; j < nb_channels; j++)
+        {
             v = (int_cos(taba[j]) * 10000) >> FRAC_BITS;
             put16(v);
             f        = tabf1[j] + (((tabf2[j] - tabf1[j]) * i) / sample_rate);
@@ -231,8 +249,10 @@ int main(int argc, char **argv)
     /* 2 seconds of 500 Hz with varying volume */
     a    = 0;
     ampa = 0;
-    for (i = 0; i < 2 * sample_rate; i++) {
-        for (j = 0; j < nb_channels; j++) {
+    for (i = 0; i < 2 * sample_rate; i++)
+    {
+        for (j = 0; j < nb_channels; j++)
+        {
             amp = ((FRAC_ONE + int_cos(ampa)) * 5000) >> FRAC_BITS;
             if (j & 1)
                 amp = 10000 - amp;

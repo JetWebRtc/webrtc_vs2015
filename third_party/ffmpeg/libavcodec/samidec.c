@@ -28,7 +28,8 @@
 #include "libavutil/avstring.h"
 #include "libavutil/bprint.h"
 
-typedef struct {
+typedef struct
+{
     AVBPrint source;
     AVBPrint content;
     AVBPrint full;
@@ -43,7 +44,8 @@ static int sami_paragraph_to_ass(AVCodecContext *avctx, const char *src)
     char *p = dupsrc;
 
     av_bprint_clear(&sami->content);
-    for (;;) {
+    for (;;)
+    {
         char *saveptr = NULL;
         int prev_chr_is_space = 0;
         AVBPrint *dst = &sami->content;
@@ -52,7 +54,8 @@ static int sami_paragraph_to_ass(AVCodecContext *avctx, const char *src)
         p = av_stristr(p, "<P");
         if (!p)
             break;
-        if (p[2] != '>' && !av_isspace(p[2])) { // avoid confusion with tags such as <PRE>
+        if (p[2] != '>' && !av_isspace(p[2]))   // avoid confusion with tags such as <PRE>
+        {
             p++;
             continue;
         }
@@ -64,7 +67,8 @@ static int sami_paragraph_to_ass(AVCodecContext *avctx, const char *src)
         p = saveptr;
 
         /* check if the current paragraph is the "source" (speaker name) */
-        if (av_stristr(tag, "ID=Source") || av_stristr(tag, "ID=\"Source\"")) {
+        if (av_stristr(tag, "ID=Source") || av_stristr(tag, "ID=\"Source\""))
+        {
             dst = &sami->source;
             av_bprint_clear(dst);
         }
@@ -72,14 +76,17 @@ static int sami_paragraph_to_ass(AVCodecContext *avctx, const char *src)
         /* if empty event -> skip subtitle */
         while (av_isspace(*p))
             p++;
-        if (!strncmp(p, "&nbsp;", 6)) {
+        if (!strncmp(p, "&nbsp;", 6))
+        {
             ret = -1;
             goto end;
         }
 
         /* extract the text, stripping most of the tags */
-        while (*p) {
-            if (*p == '<') {
+        while (*p)
+        {
+            if (*p == '<')
+            {
                 if (!av_strncasecmp(p, "<P", 2) && (p[2] == '>' || av_isspace(p[2])))
                     break;
                 if (!av_strncasecmp(p, "<BR", 3))
@@ -119,19 +126,26 @@ static int sami_decode_frame(AVCodecContext *avctx,
     const char *ptr = avpkt->data;
     SAMIContext *sami = avctx->priv_data;
 
-    if (ptr && avpkt->size > 0 && !sami_paragraph_to_ass(avctx, ptr)) {
-        int ts_start     = av_rescale_q(avpkt->pts, avctx->time_base, (AVRational){1,100});
+    if (ptr && avpkt->size > 0 && !sami_paragraph_to_ass(avctx, ptr))
+    {
+        int ts_start     = av_rescale_q(avpkt->pts, avctx->time_base, (AVRational)
+        {
+            1,100
+        });
         int ts_duration  = avpkt->duration != -1 ?
-                           av_rescale_q(avpkt->duration, avctx->time_base, (AVRational){1,100}) : -1;
-        int ret = ff_ass_add_rect_bprint(sub, &sami->full, ts_start, ts_duration);
-        if (ret < 0)
-            return ret;
+                           av_rescale_q(avpkt->duration, avctx->time_base, (AVRational)
+        {
+            1,100
+        }) : -1;
+            int ret = ff_ass_add_rect_bprint(sub, &sami->full, ts_start, ts_duration);
+            if (ret < 0)
+                return ret;
+        }
+        *got_sub_ptr = sub->num_rects > 0;
+        return avpkt->size;
     }
-    *got_sub_ptr = sub->num_rects > 0;
-    return avpkt->size;
-}
 
-static av_cold int sami_init(AVCodecContext *avctx)
+    static av_cold int sami_init(AVCodecContext *avctx)
 {
     SAMIContext *sami = avctx->priv_data;
     av_bprint_init(&sami->source,  0, 2048);
@@ -149,7 +163,8 @@ static av_cold int sami_close(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_sami_decoder = {
+AVCodec ff_sami_decoder =
+{
     .name           = "sami",
     .long_name      = NULL_IF_CONFIG_SMALL("SAMI subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

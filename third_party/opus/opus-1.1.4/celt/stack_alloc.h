@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2003 Jean-Marc Valin
+﻿/* Copyright (C) 2002-2003 Jean-Marc Valin
    Copyright (C) 2007-2009 Xiph.Org Foundation */
 /**
    @file stack_alloc.h
@@ -172,7 +172,10 @@ extern char *global_stack_top;
 
 #else
 
-static OPUS_INLINE int _opus_false(void) {return 0;}
+static OPUS_INLINE int _opus_false(void)
+{
+    return 0;
+}
 #define OPUS_CHECK_ARRAY(ptr, len) _opus_false()
 #define OPUS_CHECK_VALUE(value) _opus_false()
 #define OPUS_PRINT_INT(value) do{}while(0)

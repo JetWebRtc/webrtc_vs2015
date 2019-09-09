@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MicroDVD subtitle muxer
  * Copyright (c) 2010  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -28,12 +28,14 @@ static int microdvd_write_header(struct AVFormatContext *s)
     AVCodecContext *avctx = s->streams[0]->codec;
     AVRational tb = avctx->time_base;
 
-    if (s->nb_streams != 1 || avctx->codec_id != AV_CODEC_ID_MICRODVD) {
+    if (s->nb_streams != 1 || avctx->codec_id != AV_CODEC_ID_MICRODVD)
+    {
         av_log(s, AV_LOG_ERROR, "Exactly one MicroDVD stream is needed.\n");
         return -1;
     }
 
-    if (avctx->extradata && avctx->extradata_size > 0) {
+    if (avctx->extradata && avctx->extradata_size > 0)
+    {
         avio_write(s->pb, "{DEFAULT}{}", 11);
         avio_write(s->pb, avctx->extradata, avctx->extradata_size);
         avio_flush(s->pb);
@@ -55,7 +57,8 @@ static int microdvd_write_packet(AVFormatContext *avf, AVPacket *pkt)
     return 0;
 }
 
-AVOutputFormat ff_microdvd_muxer = {
+AVOutputFormat ff_microdvd_muxer =
+{
     .name           = "microdvd",
     .long_name      = NULL_IF_CONFIG_SMALL("MicroDVD subtitle format"),
     .mime_type      = "text/x-microdvd",

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2010 Gordon Schmidt <gordon.schmidt <at> s2000.tu-chemnitz.de>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -30,7 +30,8 @@
 #include "internal.h"
 #include "video.h"
 
-enum StereoCode {
+enum StereoCode
+{
     ANAGLYPH_RC_GRAY,   // anaglyph red/cyan gray
     ANAGLYPH_RC_HALF,   // anaglyph red/cyan half colored
     ANAGLYPH_RC_COLOR,  // anaglyph red/cyan colored
@@ -62,7 +63,8 @@ enum StereoCode {
     STEREO_CODE_COUNT   // TODO: needs autodetection
 };
 
-typedef struct StereoComponent {
+typedef struct StereoComponent
+{
     int format;                 ///< StereoCode
     int width, height;
     int off_left, off_right;
@@ -70,66 +72,82 @@ typedef struct StereoComponent {
     int row_left, row_right;
 } StereoComponent;
 
-static const int ana_coeff[][3][6] = {
-  [ANAGLYPH_RB_GRAY]   =
-    {{19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0,     0,     0,     0},
-     {    0,     0,     0, 19595, 38470,  7471}},
-  [ANAGLYPH_RG_GRAY]   =
-    {{19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0, 19595, 38470,  7471},
-     {    0,     0,     0,     0,     0,     0}},
-  [ANAGLYPH_RC_GRAY]   =
-    {{19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0, 19595, 38470,  7471},
-     {    0,     0,     0, 19595, 38470,  7471}},
-  [ANAGLYPH_RC_HALF]   =
-    {{19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0,     0, 65536,     0},
-     {    0,     0,     0,     0,     0, 65536}},
-  [ANAGLYPH_RC_COLOR]  =
-    {{65536,     0,     0,     0,     0,     0},
-     {    0,     0,     0,     0, 65536,     0},
-     {    0,     0,     0,     0,     0, 65536}},
-  [ANAGLYPH_RC_DUBOIS] =
-    {{29891, 32800, 11559, -2849, -5763,  -102},
-     {-2627, -2479, -1033, 24804, 48080, -1209},
-     { -997, -1350,  -358, -4729, -7403, 80373}},
-  [ANAGLYPH_GM_GRAY]   =
-    {{    0,     0,     0, 19595, 38470,  7471},
-     {19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0, 19595, 38470,  7471}},
-  [ANAGLYPH_GM_HALF]   =
-    {{    0,     0,     0, 65536,     0,     0},
-     {19595, 38470,  7471,     0,     0,     0},
-     {    0,     0,     0,     0,     0, 65536}},
-  [ANAGLYPH_GM_COLOR]  =
-    {{    0,     0,     0, 65536,     0,     0},
-     {    0, 65536,     0,     0,     0,     0},
-     {    0,     0,     0,     0,     0, 65536}},
-  [ANAGLYPH_GM_DUBOIS]  =
-    {{-4063,-10354, -2556, 34669, 46203,  1573},
-     {18612, 43778,  9372, -1049,  -983, -4260},
-     { -983, -1769,  1376,   590,  4915, 61407}},
-  [ANAGLYPH_YB_GRAY]   =
-    {{    0,     0,     0, 19595, 38470,  7471},
-     {    0,     0,     0, 19595, 38470,  7471},
-     {19595, 38470,  7471,     0,     0,     0}},
-  [ANAGLYPH_YB_HALF]   =
-    {{    0,     0,     0, 65536,     0,     0},
-     {    0,     0,     0,     0, 65536,     0},
-     {19595, 38470,  7471,     0,     0,     0}},
-  [ANAGLYPH_YB_COLOR]  =
-    {{    0,     0,     0, 65536,     0,     0},
-     {    0,     0,     0,     0, 65536,     0},
-     {    0,     0, 65536,     0,     0,     0}},
-  [ANAGLYPH_YB_DUBOIS] =
-    {{65535,-12650,18451,   -987, -7590, -1049},
-     {-1604, 56032, 4196,    370,  3826, -1049},
-     {-2345,-10676, 1358,   5801, 11416, 56217}},
+static const int ana_coeff[][3][6] =
+{
+    [ANAGLYPH_RB_GRAY]   =
+    {   {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0,     0,     0,     0},
+        {    0,     0,     0, 19595, 38470,  7471}
+    },
+    [ANAGLYPH_RG_GRAY]   =
+    {   {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0, 19595, 38470,  7471},
+        {    0,     0,     0,     0,     0,     0}
+    },
+    [ANAGLYPH_RC_GRAY]   =
+    {   {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0, 19595, 38470,  7471},
+        {    0,     0,     0, 19595, 38470,  7471}
+    },
+    [ANAGLYPH_RC_HALF]   =
+    {   {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0,     0, 65536,     0},
+        {    0,     0,     0,     0,     0, 65536}
+    },
+    [ANAGLYPH_RC_COLOR]  =
+    {   {65536,     0,     0,     0,     0,     0},
+        {    0,     0,     0,     0, 65536,     0},
+        {    0,     0,     0,     0,     0, 65536}
+    },
+    [ANAGLYPH_RC_DUBOIS] =
+    {   {29891, 32800, 11559, -2849, -5763,  -102},
+        {-2627, -2479, -1033, 24804, 48080, -1209},
+        { -997, -1350,  -358, -4729, -7403, 80373}
+    },
+    [ANAGLYPH_GM_GRAY]   =
+    {   {    0,     0,     0, 19595, 38470,  7471},
+        {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0, 19595, 38470,  7471}
+    },
+    [ANAGLYPH_GM_HALF]   =
+    {   {    0,     0,     0, 65536,     0,     0},
+        {19595, 38470,  7471,     0,     0,     0},
+        {    0,     0,     0,     0,     0, 65536}
+    },
+    [ANAGLYPH_GM_COLOR]  =
+    {   {    0,     0,     0, 65536,     0,     0},
+        {    0, 65536,     0,     0,     0,     0},
+        {    0,     0,     0,     0,     0, 65536}
+    },
+    [ANAGLYPH_GM_DUBOIS]  =
+    {   {-4063,-10354, -2556, 34669, 46203,  1573},
+        {18612, 43778,  9372, -1049,  -983, -4260},
+        { -983, -1769,  1376,   590,  4915, 61407}
+    },
+    [ANAGLYPH_YB_GRAY]   =
+    {   {    0,     0,     0, 19595, 38470,  7471},
+        {    0,     0,     0, 19595, 38470,  7471},
+        {19595, 38470,  7471,     0,     0,     0}
+    },
+    [ANAGLYPH_YB_HALF]   =
+    {   {    0,     0,     0, 65536,     0,     0},
+        {    0,     0,     0,     0, 65536,     0},
+        {19595, 38470,  7471,     0,     0,     0}
+    },
+    [ANAGLYPH_YB_COLOR]  =
+    {   {    0,     0,     0, 65536,     0,     0},
+        {    0,     0,     0,     0, 65536,     0},
+        {    0,     0, 65536,     0,     0,     0}
+    },
+    [ANAGLYPH_YB_DUBOIS] =
+    {   {65535,-12650,18451,   -987, -7590, -1049},
+        {-1604, 56032, 4196,    370,  3826, -1049},
+        {-2345,-10676, 1358,   5801, 11416, 56217}
+    },
 };
 
-typedef struct Stereo3DContext {
+typedef struct Stereo3DContext
+{
     const AVClass *class;
     StereoComponent in, out;
     int width, height;
@@ -148,7 +166,8 @@ typedef struct Stereo3DContext {
 #define OFFSET(x) offsetof(Stereo3DContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption stereo3d_options[] = {
+static const AVOption stereo3d_options[] =
+{
     { "in",    "set input format",  OFFSET(in.format),  AV_OPT_TYPE_INT, {.i64=SIDE_BY_SIDE_LR}, SIDE_BY_SIDE_LR, STEREO_CODE_COUNT-1, FLAGS, "in"},
     { "ab2l",  "above below half height left first",  0, AV_OPT_TYPE_CONST, {.i64=ABOVE_BELOW_2_LR},  0, 0, FLAGS, "in" },
     { "ab2r",  "above below half height right first", 0, AV_OPT_TYPE_CONST, {.i64=ABOVE_BELOW_2_RL},  0, 0, FLAGS, "in" },
@@ -194,12 +213,14 @@ static const AVOption stereo3d_options[] = {
 
 AVFILTER_DEFINE_CLASS(stereo3d);
 
-static const enum AVPixelFormat anaglyph_pix_fmts[] = {
+static const enum AVPixelFormat anaglyph_pix_fmts[] =
+{
     AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
     AV_PIX_FMT_NONE
 };
 
-static const enum AVPixelFormat other_pix_fmts[] = {
+static const enum AVPixelFormat other_pix_fmts[] =
+{
     AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
     AV_PIX_FMT_RGB48BE, AV_PIX_FMT_BGR48BE,
     AV_PIX_FMT_RGB48LE, AV_PIX_FMT_BGR48LE,
@@ -259,7 +280,8 @@ static int query_formats(AVFilterContext *ctx)
     const enum AVPixelFormat *pix_fmts;
     AVFilterFormats *fmts_list;
 
-    switch (s->out.format) {
+    switch (s->out.format)
+    {
     case ANAGLYPH_GM_COLOR:
     case ANAGLYPH_GM_DUBOIS:
     case ANAGLYPH_GM_GRAY:
@@ -297,12 +319,14 @@ static int config_output(AVFilterLink *outlink)
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(outlink->format);
     int ret;
 
-    switch (s->in.format) {
+    switch (s->in.format)
+    {
     case SIDE_BY_SIDE_2_LR:
     case SIDE_BY_SIDE_LR:
     case SIDE_BY_SIDE_2_RL:
     case SIDE_BY_SIDE_RL:
-        if (inlink->w & 1) {
+        if (inlink->w & 1)
+        {
             av_log(ctx, AV_LOG_ERROR, "width must be even\n");
             return AVERROR_INVALIDDATA;
         }
@@ -312,13 +336,16 @@ static int config_output(AVFilterLink *outlink)
     case ABOVE_BELOW_2_RL:
     case ABOVE_BELOW_RL:
         if (s->out.format == INTERLEAVE_ROWS_LR ||
-            s->out.format == INTERLEAVE_ROWS_RL) {
-            if (inlink->h & 3) {
+                s->out.format == INTERLEAVE_ROWS_RL)
+        {
+            if (inlink->h & 3)
+            {
                 av_log(ctx, AV_LOG_ERROR, "height must be multiple of 4\n");
                 return AVERROR_INVALIDDATA;
             }
         }
-        if (inlink->h & 1) {
+        if (inlink->h & 1)
+        {
             av_log(ctx, AV_LOG_ERROR, "height must be even\n");
             return AVERROR_INVALIDDATA;
         }
@@ -326,18 +353,19 @@ static int config_output(AVFilterLink *outlink)
     }
 
     s->in.width     =
-    s->width        = inlink->w;
+        s->width        = inlink->w;
     s->in.height    =
-    s->height       = inlink->h;
+        s->height       = inlink->h;
     s->row_step     = 1;
     s->in.off_lstep =
-    s->in.off_rstep =
-    s->in.off_left  =
-    s->in.off_right =
-    s->in.row_left  =
-    s->in.row_right = 0;
+        s->in.off_rstep =
+            s->in.off_left  =
+                s->in.off_right =
+                    s->in.row_left  =
+                        s->in.row_right = 0;
 
-    switch (s->in.format) {
+    switch (s->in.format)
+    {
     case SIDE_BY_SIDE_2_LR:
         aspect.num     *= 2;
     case SIDE_BY_SIDE_LR:
@@ -354,13 +382,13 @@ static int config_output(AVFilterLink *outlink)
         aspect.den     *= 2;
     case ABOVE_BELOW_LR:
         s->in.row_right =
-        s->height       = inlink->h / 2;
+            s->height       = inlink->h / 2;
         break;
     case ABOVE_BELOW_2_RL:
         aspect.den     *= 2;
     case ABOVE_BELOW_RL:
         s->in.row_left  =
-        s->height       = inlink->h / 2;
+            s->height       = inlink->h / 2;
         break;
     case ALTERNATING_RL:
     case ALTERNATING_LR:
@@ -376,13 +404,14 @@ static int config_output(AVFilterLink *outlink)
     s->out.width     = s->width;
     s->out.height    = s->height;
     s->out.off_lstep =
-    s->out.off_rstep =
-    s->out.off_left  =
-    s->out.off_right =
-    s->out.row_left  =
-    s->out.row_right = 0;
+        s->out.off_rstep =
+            s->out.off_left  =
+                s->out.off_right =
+                    s->out.row_left  =
+                        s->out.row_right = 0;
 
-    switch (s->out.format) {
+    switch (s->out.format)
+    {
     case ANAGLYPH_RB_GRAY:
     case ANAGLYPH_RG_GRAY:
     case ANAGLYPH_RC_GRAY:
@@ -396,7 +425,8 @@ static int config_output(AVFilterLink *outlink)
     case ANAGLYPH_YB_GRAY:
     case ANAGLYPH_YB_HALF:
     case ANAGLYPH_YB_COLOR:
-    case ANAGLYPH_YB_DUBOIS: {
+    case ANAGLYPH_YB_DUBOIS:
+    {
         uint8_t rgba_map[4];
 
         ff_fill_rgba_map(rgba_map, outlink->format);
@@ -433,13 +463,13 @@ static int config_output(AVFilterLink *outlink)
         s->row_step      = 2;
         s->height        = s->height / 2;
         s->out.off_rstep =
-        s->in.off_rstep  = 1;
+            s->in.off_rstep  = 1;
         break;
     case INTERLEAVE_ROWS_RL:
         s->row_step      = 2;
         s->height        = s->height / 2;
         s->out.off_lstep =
-        s->in.off_lstep  = 1;
+            s->in.off_lstep  = 1;
         break;
     case MONO_R:
         s->in.off_left   = s->in.off_right;
@@ -486,7 +516,8 @@ static inline uint8_t ana_convert(const int *coeff, const uint8_t *left, const u
     return av_clip_uint8(sum >> 16);
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *ileft, *iright;
     AVFrame *out;
 } ThreadData;
@@ -508,11 +539,13 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     const uint8_t *rsrc = iright->data[0];
     int out_width = s->out.width;
 
-    for (y = start; y < end; y++) {
+    for (y = start; y < end; y++)
+    {
         o   = out->linesize[0] * y;
         il  = s->in_off_left[0]  + y * ileft->linesize[0];
         ir  = s->in_off_right[0] + y * iright->linesize[0];
-        for (x = 0; x < out_width; x++, il += 3, ir += 3, o+= 3) {
+        for (x = 0; x < out_width; x++, il += 3, ir += 3, o+= 3)
+        {
             dst[o    ] = ana_convert(ana_matrix[0], lsrc + il, rsrc + ir);
             dst[o + 1] = ana_convert(ana_matrix[1], lsrc + il, rsrc + ir);
             dst[o + 2] = ana_convert(ana_matrix[2], lsrc + il, rsrc + ir);
@@ -531,10 +564,12 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     int out_off_left[4], out_off_right[4];
     int i;
 
-    switch (s->in.format) {
+    switch (s->in.format)
+    {
     case ALTERNATING_LR:
     case ALTERNATING_RL:
-        if (!s->prev) {
+        if (!s->prev)
+        {
             s->prev = inpicref;
             return 0;
         }
@@ -548,7 +583,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     };
 
     out = oleft = oright = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&s->prev);
         av_frame_free(&inpicref);
         return AVERROR(ENOMEM);
@@ -556,9 +592,11 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     av_frame_copy_props(out, inpicref);
 
     if (s->out.format == ALTERNATING_LR ||
-        s->out.format == ALTERNATING_RL) {
+            s->out.format == ALTERNATING_RL)
+    {
         oright = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!oright) {
+        if (!oright)
+        {
             av_frame_free(&oleft);
             av_frame_free(&s->prev);
             av_frame_free(&inpicref);
@@ -567,7 +605,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
         av_frame_copy_props(oright, inpicref);
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         int hsub = i == 1 || i == 2 ? s->hsub : 0;
         int vsub = i == 1 || i == 2 ? s->vsub : 0;
         s->in_off_left[i]   = (FF_CEIL_RSHIFT(s->in.row_left,   vsub) + s->in.off_lstep)  * ileft->linesize[i]  + FF_CEIL_RSHIFT(s->in.off_left   * s->pixstep[i], hsub);
@@ -576,7 +615,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
         out_off_right[i] = (FF_CEIL_RSHIFT(s->out.row_right, vsub) + s->out.off_rstep) * oright->linesize[i] + FF_CEIL_RSHIFT(s->out.off_right * s->pixstep[i], hsub);
     }
 
-    switch (s->out.format) {
+    switch (s->out.format)
+    {
     case ALTERNATING_LR:
     case ALTERNATING_RL:
     case SIDE_BY_SIDE_LR:
@@ -589,7 +629,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     case ABOVE_BELOW_2_RL:
     case INTERLEAVE_ROWS_LR:
     case INTERLEAVE_ROWS_RL:
-        for (i = 0; i < s->nb_planes; i++) {
+        for (i = 0; i < s->nb_planes; i++)
+        {
             av_image_copy_plane(oleft->data[i] + out_off_left[i],
                                 oleft->linesize[i] * s->row_step,
                                 ileft->data[i] + s->in_off_left[i],
@@ -605,7 +646,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     case MONO_L:
         iright = ileft;
     case MONO_R:
-        for (i = 0; i < s->nb_planes; i++) {
+        for (i = 0; i < s->nb_planes; i++)
+        {
             av_image_copy_plane(out->data[i], out->linesize[i],
                                 iright->data[i] + s->in_off_left[i],
                                 iright->linesize[i],
@@ -625,10 +667,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     case ANAGLYPH_YB_GRAY:
     case ANAGLYPH_YB_HALF:
     case ANAGLYPH_YB_COLOR:
-    case ANAGLYPH_YB_DUBOIS: {
+    case ANAGLYPH_YB_DUBOIS:
+    {
         ThreadData td;
 
-        td.ileft = ileft; td.iright = iright; td.out = out;
+        td.ileft = ileft;
+        td.iright = iright;
+        td.out = out;
         ctx->internal->execute(ctx, filter_slice, &td, NULL,
                                FFMIN(s->out.height, ctx->graph->nb_threads));
         break;
@@ -639,15 +684,18 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
 
     av_frame_free(&inpicref);
     av_frame_free(&s->prev);
-    if (oright != oleft) {
+    if (oright != oleft)
+    {
         if (s->out.format == ALTERNATING_LR)
             FFSWAP(AVFrame *, oleft, oright);
         oright->pts = outlink->frame_count * s->ts_unit;
         ff_filter_frame(outlink, oright);
         out = oleft;
         oleft->pts = outlink->frame_count * s->ts_unit;
-    } else if (s->in.format == ALTERNATING_LR ||
-               s->in.format == ALTERNATING_RL) {
+    }
+    else if (s->in.format == ALTERNATING_LR ||
+             s->in.format == ALTERNATING_RL)
+    {
         out->pts = outlink->frame_count * s->ts_unit;
     }
     return ff_filter_frame(outlink, out);
@@ -660,7 +708,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_frame_free(&s->prev);
 }
 
-static const AVFilterPad stereo3d_inputs[] = {
+static const AVFilterPad stereo3d_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -669,7 +718,8 @@ static const AVFilterPad stereo3d_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad stereo3d_outputs[] = {
+static const AVFilterPad stereo3d_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -678,7 +728,8 @@ static const AVFilterPad stereo3d_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_stereo3d = {
+AVFilter ff_vf_stereo3d =
+{
     .name          = "stereo3d",
     .description   = NULL_IF_CONFIG_SMALL("Convert video stereoscopic 3D view."),
     .priv_size     = sizeof(Stereo3DContext),

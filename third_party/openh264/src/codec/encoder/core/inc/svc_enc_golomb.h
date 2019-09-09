@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -45,7 +45,8 @@
 
 using namespace WelsCommon;
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /************************************************************************/
 /* GOLOMB CODIMG FOR WELS ENCODER ONLY                                  */
@@ -55,25 +56,31 @@ namespace WelsEnc {
 /*
  *  Get size of unsigned exp golomb codes
  */
-static inline uint32_t BsSizeUE (const uint32_t kiValue) {
-if (256 > kiValue) {
-  return g_kuiGolombUELength[kiValue];
-} else {
-  uint32_t n = 0;
-  uint32_t iTmpValue = kiValue + 1;
+static inline uint32_t BsSizeUE (const uint32_t kiValue)
+{
+if (256 > kiValue)
+{
+    return g_kuiGolombUELength[kiValue];
+}
+else
+{
+    uint32_t n = 0;
+    uint32_t iTmpValue = kiValue + 1;
 
-  if (iTmpValue & 0xffff0000) {
-    iTmpValue >>= 16;
-    n += 16;
-  }
-  if (iTmpValue & 0xff00) {
-    iTmpValue >>= 8;
-    n += 8;
-  }
+    if (iTmpValue & 0xffff0000)
+    {
+        iTmpValue >>= 16;
+        n += 16;
+    }
+    if (iTmpValue & 0xff00)
+    {
+        iTmpValue >>= 8;
+        n += 8;
+    }
 
-  //n += (g_kuiGolombUELength[iTmpValue] >> 1);
-  n += (g_kuiGolombUELength[iTmpValue - 1] >> 1);
-  return ((n << 1) + 1);
+    //n += (g_kuiGolombUELength[iTmpValue] >> 1);
+    n += (g_kuiGolombUELength[iTmpValue - 1] >> 1);
+    return ((n << 1) + 1);
 
 }
 }
@@ -81,43 +88,54 @@ if (256 > kiValue) {
 /*
  *  Get size of signed exp golomb codes
  */
-static inline uint32_t BsSizeSE (const int32_t kiValue) {
+static inline uint32_t BsSizeSE (const int32_t kiValue)
+{
 uint32_t iTmpValue;
-if (0 == kiValue) {
-  return 1;
-} else if (0 < kiValue) {
-  iTmpValue = (kiValue << 1) - 1;
-  return BsSizeUE (iTmpValue);
-} else {
-  iTmpValue = ((-kiValue) << 1);
-  return BsSizeUE (iTmpValue);
+if (0 == kiValue)
+{
+    return 1;
+}
+else if (0 < kiValue)
+{
+    iTmpValue = (kiValue << 1) - 1;
+    return BsSizeUE (iTmpValue);
+}
+else
+{
+    iTmpValue = ((-kiValue) << 1);
+    return BsSizeUE (iTmpValue);
 }
 }
 
 /*
  *  Write truncated exp golomb codes
  */
-static inline void BsWriteTE (SBitStringAux* pBs, const int32_t kiX, const uint32_t kuiValue) {
-if (1 == kiX) {
-  BsWriteOneBit (pBs, !kuiValue);
-} else {
-  BsWriteUE (pBs, kuiValue);
+static inline void BsWriteTE (SBitStringAux* pBs, const int32_t kiX, const uint32_t kuiValue)
+{
+if (1 == kiX)
+{
+    BsWriteOneBit (pBs, !kuiValue);
+}
+else
+{
+    BsWriteUE (pBs, kuiValue);
 }
 }
 
-static inline int32_t BsGetBitsPos (SBitStringAux* pBs) {
+static inline int32_t BsGetBitsPos (SBitStringAux* pBs)
+{
 return (int32_t) (((pBs->pCurBuf - pBs->pStartBuf) << 3) + 32 - pBs->iLeftBits);
 }
 
 static inline void BsAlign( SBitStringAux* pBs )
 {
-   if( pBs->iLeftBits&7 )
-   {
-      pBs->uiCurBits <<= pBs->iLeftBits&7;
-      pBs->uiCurBits |= (1 << (pBs->iLeftBits&7)) - 1;
-      pBs->iLeftBits &= ~7;
-   }
-   BsFlush(pBs );
+if( pBs->iLeftBits&7 )
+{
+    pBs->uiCurBits <<= pBs->iLeftBits&7;
+    pBs->uiCurBits |= (1 << (pBs->iLeftBits&7)) - 1;
+    pBs->iLeftBits &= ~7;
+}
+BsFlush(pBs );
 }
 }
 #endif//WELS_EXPONENTIAL_GOLOMB_ENTROPY_CODING_H__

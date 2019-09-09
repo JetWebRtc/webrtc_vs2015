@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,6 +28,6 @@
 void WebRtcIlbcfix_Lsf2Poly(
     int16_t *a,     /* (o) predictor coefficients (order = 10) in Q12 */
     int16_t *lsf    /* (i) line spectral frequencies in Q13 */
-                            );
+);
 
 #endif

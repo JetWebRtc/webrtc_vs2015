@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder wrapper
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -26,7 +26,8 @@
 #include "audio_frame_queue.h"
 #include "internal.h"
 
-typedef struct AACContext {
+typedef struct AACContext
+{
     const AVClass *class;
     HANDLE_AACENCODER handle;
     int afterburner;
@@ -39,7 +40,8 @@ typedef struct AACContext {
     AudioFrameQueue afq;
 } AACContext;
 
-static const AVOption aac_enc_options[] = {
+static const AVOption aac_enc_options[] =
+{
     { "afterburner", "Afterburner (improved quality)", offsetof(AACContext, afterburner), AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 1, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
     { "eld_sbr", "Enable SBR for ELD (for SBR in other configurations, use the -profile parameter)", offsetof(AACContext, eld_sbr), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
     { "signaling", "SBR/PS signaling style", offsetof(AACContext, signaling), AV_OPT_TYPE_INT, { .i64 = -1 }, -1, 2, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM, "signaling" },
@@ -53,13 +55,15 @@ static const AVOption aac_enc_options[] = {
     { NULL }
 };
 
-static const AVClass aac_enc_class = {
+static const AVClass aac_enc_class =
+{
     "libfdk_aac", av_default_item_name, aac_enc_options, LIBAVUTIL_VERSION_INT
 };
 
 static const char *aac_get_error(AACENC_ERROR err)
 {
-    switch (err) {
+    switch (err)
+    {
     case AACENC_OK:
         return "No error";
     case AACENC_INVALID_HANDLE:
@@ -111,7 +115,8 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     int aot = FF_PROFILE_AAC_LOW + 1;
     int sce = 0, cpe = 0;
 
-    if ((err = aacEncOpen(&s->handle, 0, avctx->channels)) != AACENC_OK) {
+    if ((err = aacEncOpen(&s->handle, 0, avctx->channels)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to open the encoder: %s\n",
                aac_get_error(err));
         goto error;
@@ -120,15 +125,18 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     if (avctx->profile != FF_PROFILE_UNKNOWN)
         aot = avctx->profile + 1;
 
-    if ((err = aacEncoder_SetParam(s->handle, AACENC_AOT, aot)) != AACENC_OK) {
+    if ((err = aacEncoder_SetParam(s->handle, AACENC_AOT, aot)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set the AOT %d: %s\n",
                aot, aac_get_error(err));
         goto error;
     }
 
-    if (aot == FF_PROFILE_AAC_ELD + 1 && s->eld_sbr) {
+    if (aot == FF_PROFILE_AAC_ELD + 1 && s->eld_sbr)
+    {
         if ((err = aacEncoder_SetParam(s->handle, AACENC_SBR_MODE,
-                                       1)) != AACENC_OK) {
+                                       1)) != AACENC_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unable to enable SBR for ELD: %s\n",
                    aac_get_error(err));
             goto error;
@@ -136,28 +144,57 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     }
 
     if ((err = aacEncoder_SetParam(s->handle, AACENC_SAMPLERATE,
-                                   avctx->sample_rate)) != AACENC_OK) {
+                                   avctx->sample_rate)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set the sample rate %d: %s\n",
                avctx->sample_rate, aac_get_error(err));
         goto error;
     }
 
-    switch (avctx->channels) {
-    case 1: mode = MODE_1;       sce = 1; cpe = 0; break;
-    case 2: mode = MODE_2;       sce = 0; cpe = 1; break;
-    case 3: mode = MODE_1_2;     sce = 1; cpe = 1; break;
-    case 4: mode = MODE_1_2_1;   sce = 2; cpe = 1; break;
-    case 5: mode = MODE_1_2_2;   sce = 1; cpe = 2; break;
-    case 6: mode = MODE_1_2_2_1; sce = 2; cpe = 2; break;
-/* The version macro is introduced the same time as the 7.1 support, so this
-   should suffice. */
+    switch (avctx->channels)
+    {
+    case 1:
+        mode = MODE_1;
+        sce = 1;
+        cpe = 0;
+        break;
+    case 2:
+        mode = MODE_2;
+        sce = 0;
+        cpe = 1;
+        break;
+    case 3:
+        mode = MODE_1_2;
+        sce = 1;
+        cpe = 1;
+        break;
+    case 4:
+        mode = MODE_1_2_1;
+        sce = 2;
+        cpe = 1;
+        break;
+    case 5:
+        mode = MODE_1_2_2;
+        sce = 1;
+        cpe = 2;
+        break;
+    case 6:
+        mode = MODE_1_2_2_1;
+        sce = 2;
+        cpe = 2;
+        break;
+        /* The version macro is introduced the same time as the 7.1 support, so this
+           should suffice. */
 #ifdef AACENCODER_LIB_VL0
     case 8:
         sce = 2;
         cpe = 3;
-        if (avctx->channel_layout == AV_CH_LAYOUT_7POINT1) {
+        if (avctx->channel_layout == AV_CH_LAYOUT_7POINT1)
+        {
             mode = MODE_7_1_REAR_SURROUND;
-        } else {
+        }
+        else
+        {
             // MODE_1_2_2_2_1 and MODE_7_1_FRONT_CENTER use the same channel layout
             mode = MODE_7_1_FRONT_CENTER;
         }
@@ -170,23 +207,27 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     }
 
     if ((err = aacEncoder_SetParam(s->handle, AACENC_CHANNELMODE,
-                                   mode)) != AACENC_OK) {
+                                   mode)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Unable to set channel mode %d: %s\n", mode, aac_get_error(err));
         goto error;
     }
 
     if ((err = aacEncoder_SetParam(s->handle, AACENC_CHANNELORDER,
-                                   1)) != AACENC_OK) {
+                                   1)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Unable to set wav channel order %d: %s\n",
                mode, aac_get_error(err));
         goto error;
     }
 
-    if (avctx->flags & AV_CODEC_FLAG_QSCALE || s->vbr) {
+    if (avctx->flags & AV_CODEC_FLAG_QSCALE || s->vbr)
+    {
         int mode = s->vbr ? s->vbr : avctx->global_quality;
-        if (mode <  1 || mode > 5) {
+        if (mode <  1 || mode > 5)
+        {
             av_log(avctx, AV_LOG_WARNING,
                    "VBR quality %d out of range, should be 1-5\n", mode);
             mode = av_clip(mode, 1, 5);
@@ -195,26 +236,32 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
                "Note, the VBR setting is unsupported and only works with "
                "some parameter combinations\n");
         if ((err = aacEncoder_SetParam(s->handle, AACENC_BITRATEMODE,
-                                       mode)) != AACENC_OK) {
+                                       mode)) != AACENC_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unable to set the VBR bitrate mode %d: %s\n",
                    mode, aac_get_error(err));
             goto error;
         }
-    } else {
-        if (avctx->bit_rate <= 0) {
-            if (avctx->profile == FF_PROFILE_AAC_HE_V2) {
+    }
+    else
+    {
+        if (avctx->bit_rate <= 0)
+        {
+            if (avctx->profile == FF_PROFILE_AAC_HE_V2)
+            {
                 sce = 1;
                 cpe = 0;
             }
             avctx->bit_rate = (96*sce + 128*cpe) * avctx->sample_rate / 44;
             if (avctx->profile == FF_PROFILE_AAC_HE ||
-                avctx->profile == FF_PROFILE_AAC_HE_V2 ||
-                avctx->profile == FF_PROFILE_MPEG2_AAC_HE ||
-                s->eld_sbr)
+                    avctx->profile == FF_PROFILE_AAC_HE_V2 ||
+                    avctx->profile == FF_PROFILE_MPEG2_AAC_HE ||
+                    s->eld_sbr)
                 avctx->bit_rate /= 2;
         }
         if ((err = aacEncoder_SetParam(s->handle, AACENC_BITRATE,
-                                       avctx->bit_rate)) != AACENC_OK) {
+                                       avctx->bit_rate)) != AACENC_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unable to set the bitrate %d: %s\n",
                    avctx->bit_rate, aac_get_error(err));
             goto error;
@@ -224,18 +271,21 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     /* Choose bitstream format - if global header is requested, use
      * raw access units, otherwise use ADTS. */
     if ((err = aacEncoder_SetParam(s->handle, AACENC_TRANSMUX,
-                                   avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER ? 0 : s->latm ? 10 : 2)) != AACENC_OK) {
+                                   avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER ? 0 : s->latm ? 10 : 2)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set the transmux format: %s\n",
                aac_get_error(err));
         goto error;
     }
 
-    if (s->latm && s->header_period) {
+    if (s->latm && s->header_period)
+    {
         if ((err = aacEncoder_SetParam(s->handle, AACENC_HEADER_PERIOD,
-                                       s->header_period)) != AACENC_OK) {
-             av_log(avctx, AV_LOG_ERROR, "Unable to set header period: %s\n",
-                    aac_get_error(err));
-             goto error;
+                                       s->header_period)) != AACENC_OK)
+        {
+            av_log(avctx, AV_LOG_ERROR, "Unable to set header period: %s\n",
+                   aac_get_error(err));
+            goto error;
         }
     }
 
@@ -246,40 +296,47 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
         s->signaling = avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER ? 2 : 0;
 
     if ((err = aacEncoder_SetParam(s->handle, AACENC_SIGNALING_MODE,
-                                   s->signaling)) != AACENC_OK) {
+                                   s->signaling)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set signaling mode %d: %s\n",
                s->signaling, aac_get_error(err));
         goto error;
     }
 
     if ((err = aacEncoder_SetParam(s->handle, AACENC_AFTERBURNER,
-                                   s->afterburner)) != AACENC_OK) {
+                                   s->afterburner)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to set afterburner to %d: %s\n",
                s->afterburner, aac_get_error(err));
         goto error;
     }
 
-    if (avctx->cutoff > 0) {
-        if (avctx->cutoff < (avctx->sample_rate + 255) >> 8 || avctx->cutoff > 20000) {
+    if (avctx->cutoff > 0)
+    {
+        if (avctx->cutoff < (avctx->sample_rate + 255) >> 8 || avctx->cutoff > 20000)
+        {
             av_log(avctx, AV_LOG_ERROR, "cutoff valid range is %d-20000\n",
                    (avctx->sample_rate + 255) >> 8);
             goto error;
         }
         if ((err = aacEncoder_SetParam(s->handle, AACENC_BANDWIDTH,
-                                       avctx->cutoff)) != AACENC_OK) {
+                                       avctx->cutoff)) != AACENC_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Unable to set the encoder bandwidth to %d: %s\n",
                    avctx->cutoff, aac_get_error(err));
             goto error;
         }
     }
 
-    if ((err = aacEncEncode(s->handle, NULL, NULL, NULL, NULL)) != AACENC_OK) {
+    if ((err = aacEncEncode(s->handle, NULL, NULL, NULL, NULL)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to initialize the encoder: %s\n",
                aac_get_error(err));
         return AVERROR(EINVAL);
     }
 
-    if ((err = aacEncInfo(s->handle, &info)) != AACENC_OK) {
+    if ((err = aacEncInfo(s->handle, &info)) != AACENC_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Unable to get encoder info: %s\n",
                aac_get_error(err));
         goto error;
@@ -289,11 +346,13 @@ static av_cold int aac_encode_init(AVCodecContext *avctx)
     avctx->initial_padding = info.encoderDelay;
     ff_af_queue_init(avctx, &s->afq);
 
-    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER) {
+    if (avctx->flags & AV_CODEC_FLAG_GLOBAL_HEADER)
+    {
         avctx->extradata_size = info.confSize;
         avctx->extradata      = av_mallocz(avctx->extradata_size +
                                            AV_INPUT_BUFFER_PADDING_SIZE);
-        if (!avctx->extradata) {
+        if (!avctx->extradata)
+        {
             ret = AVERROR(ENOMEM);
             goto error;
         }
@@ -322,9 +381,12 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     AACENC_ERROR err;
 
     /* handle end-of-stream small frame and flushing */
-    if (!frame) {
+    if (!frame)
+    {
         in_args.numInSamples = -1;
-    } else {
+    }
+    else
+    {
         in_ptr                   = frame->data[0];
         in_buffer_size           = 2 * avctx->channels * frame->nb_samples;
         in_buffer_element_size   = 2;
@@ -355,7 +417,8 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     out_buf.bufElSizes        = &out_buffer_element_size;
 
     if ((err = aacEncEncode(s->handle, &in_buf, &out_buf, &in_args,
-                            &out_args)) != AACENC_OK) {
+                            &out_args)) != AACENC_OK)
+    {
         if (!frame && err == AACENC_ENCODE_EOF)
             return 0;
         av_log(avctx, AV_LOG_ERROR, "Unable to encode frame: %s\n",
@@ -375,7 +438,8 @@ static int aac_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-static const AVProfile profiles[] = {
+static const AVProfile profiles[] =
+{
     { FF_PROFILE_AAC_LOW,   "LC"       },
     { FF_PROFILE_AAC_HE,    "HE-AAC"   },
     { FF_PROFILE_AAC_HE_V2, "HE-AACv2" },
@@ -384,12 +448,14 @@ static const AVProfile profiles[] = {
     { FF_PROFILE_UNKNOWN },
 };
 
-static const AVCodecDefault aac_encode_defaults[] = {
+static const AVCodecDefault aac_encode_defaults[] =
+{
     { "b", "0" },
     { NULL }
 };
 
-static const uint64_t aac_channel_layout[] = {
+static const uint64_t aac_channel_layout[] =
+{
     AV_CH_LAYOUT_MONO,
     AV_CH_LAYOUT_STEREO,
     AV_CH_LAYOUT_SURROUND,
@@ -403,12 +469,14 @@ static const uint64_t aac_channel_layout[] = {
     0,
 };
 
-static const int aac_sample_rates[] = {
+static const int aac_sample_rates[] =
+{
     96000, 88200, 64000, 48000, 44100, 32000,
     24000, 22050, 16000, 12000, 11025, 8000, 0
 };
 
-AVCodec ff_libfdk_aac_encoder = {
+AVCodec ff_libfdk_aac_encoder =
+{
     .name                  = "libfdk_aac",
     .long_name             = NULL_IF_CONFIG_SMALL("Fraunhofer FDK AAC"),
     .type                  = AVMEDIA_TYPE_AUDIO,
@@ -418,8 +486,10 @@ AVCodec ff_libfdk_aac_encoder = {
     .encode2               = aac_encode_frame,
     .close                 = aac_encode_close,
     .capabilities          = AV_CODEC_CAP_SMALL_LAST_FRAME | AV_CODEC_CAP_DELAY,
-    .sample_fmts           = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                            AV_SAMPLE_FMT_NONE },
+    .sample_fmts           = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class            = &aac_enc_class,
     .defaults              = aac_encode_defaults,
     .profiles              = profiles,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Martin Storsjo
  *
  * This file is part of FFmpeg.
@@ -25,11 +25,13 @@ static void test(const char *base, const char *rel)
     char buf[200], buf2[200];
     ff_make_absolute_url(buf, sizeof(buf), base, rel);
     printf("%s\n", buf);
-    if (base) {
+    if (base)
+    {
         /* Test in-buffer replacement */
         snprintf(buf2, sizeof(buf2), "%s", base);
         ff_make_absolute_url(buf2, sizeof(buf2), buf2, rel);
-        if (strcmp(buf, buf2)) {
+        if (strcmp(buf, buf2))
+        {
             printf("In-place handling of %s + %s failed\n", base, rel);
             exit(1);
         }

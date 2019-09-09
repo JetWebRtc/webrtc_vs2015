@@ -1,4 +1,4 @@
-/*
+﻿/*
  * quarterpel DSP functions
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -50,35 +50,35 @@ void ff_put_no_rnd_pixels16_l2_mmxext(uint8_t *dst,
                                       const uint8_t *src1, const uint8_t *src2,
                                       int dstStride, int src1Stride, int h);
 void ff_put_mpeg4_qpel16_h_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                          int dstStride, int srcStride, int h);
+        int dstStride, int srcStride, int h);
 void ff_avg_mpeg4_qpel16_h_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                          int dstStride, int srcStride, int h);
+        int dstStride, int srcStride, int h);
 void ff_put_no_rnd_mpeg4_qpel16_h_lowpass_mmxext(uint8_t *dst,
-                                                 const uint8_t *src,
-                                                 int dstStride, int srcStride,
-                                                 int h);
+        const uint8_t *src,
+        int dstStride, int srcStride,
+        int h);
 void ff_put_mpeg4_qpel8_h_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                         int dstStride, int srcStride, int h);
+        int dstStride, int srcStride, int h);
 void ff_avg_mpeg4_qpel8_h_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                         int dstStride, int srcStride, int h);
+        int dstStride, int srcStride, int h);
 void ff_put_no_rnd_mpeg4_qpel8_h_lowpass_mmxext(uint8_t *dst,
-                                                const uint8_t *src,
-                                                int dstStride, int srcStride,
-                                                int h);
+        const uint8_t *src,
+        int dstStride, int srcStride,
+        int h);
 void ff_put_mpeg4_qpel16_v_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                          int dstStride, int srcStride);
+        int dstStride, int srcStride);
 void ff_avg_mpeg4_qpel16_v_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                          int dstStride, int srcStride);
+        int dstStride, int srcStride);
 void ff_put_no_rnd_mpeg4_qpel16_v_lowpass_mmxext(uint8_t *dst,
-                                                 const uint8_t *src,
-                                                 int dstStride, int srcStride);
+        const uint8_t *src,
+        int dstStride, int srcStride);
 void ff_put_mpeg4_qpel8_v_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                         int dstStride, int srcStride);
+        int dstStride, int srcStride);
 void ff_avg_mpeg4_qpel8_v_lowpass_mmxext(uint8_t *dst, const uint8_t *src,
-                                         int dstStride, int srcStride);
+        int dstStride, int srcStride);
 void ff_put_no_rnd_mpeg4_qpel8_v_lowpass_mmxext(uint8_t *dst,
-                                                const uint8_t *src,
-                                                int dstStride, int srcStride);
+        const uint8_t *src,
+        int dstStride, int srcStride);
 #define ff_put_no_rnd_pixels16_mmxext ff_put_pixels16_mmx
 #define ff_put_no_rnd_pixels8_mmxext ff_put_pixels8_mmx
 
@@ -530,7 +530,8 @@ av_cold void ff_qpeldsp_init_x86(QpelDSPContext *c)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (X86_MMXEXT(cpu_flags)) {
+    if (X86_MMXEXT(cpu_flags))
+    {
 #if HAVE_MMXEXT_EXTERNAL
         SET_QPEL_FUNCS(avg_qpel,        0, 16, mmxext, );
         SET_QPEL_FUNCS(avg_qpel,        1,  8, mmxext, );

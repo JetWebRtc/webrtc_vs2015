@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,14 +21,16 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class AudioProcessing;
 class CriticalSectionWrapper;
 
-struct FrameAndMuteInfo {
-  FrameAndMuteInfo(AudioFrame* f, bool m) : frame(f), muted(m) {}
-  AudioFrame* frame;
-  bool muted;
+struct FrameAndMuteInfo
+{
+    FrameAndMuteInfo(AudioFrame* f, bool m) : frame(f), muted(m) {}
+    AudioFrame* frame;
+    bool muted;
 };
 
 typedef std::list<FrameAndMuteInfo> AudioFrameList;
@@ -86,7 +88,7 @@ public:
         const MixerParticipant& participant) const override;
 
 private:
-    enum{DEFAULT_AUDIO_FRAME_POOLSIZE = 50};
+    enum {DEFAULT_AUDIO_FRAME_POOLSIZE = 50};
 
     // Set/get mix frequency
     int32_t SetOutputFrequency(const Frequency& frequency);

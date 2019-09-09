@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,8 @@
 #ifndef WEBRTC_SYSTEM_WRAPPERS_INCLUDE_SLEEP_H_
 #define WEBRTC_SYSTEM_WRAPPERS_INCLUDE_SLEEP_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This function sleeps for the specified number of milliseconds.
 // It may return early if the thread is woken by some other event,

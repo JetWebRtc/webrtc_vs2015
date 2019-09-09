@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WebP encoding support via libwebp
  * Copyright (c) 2013 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -36,7 +36,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct LibWebPContextCommon {
+typedef struct LibWebPContextCommon
+{
     AVClass *class;         // class for AVOptions
     float quality;          // lossy quality 0 - 100
     int lossless;           // use lossless encoding
@@ -59,7 +60,8 @@ int ff_libwebp_get_frame(AVCodecContext *avctx, LibWebPContextCommon *s,
 
 #define OFFSET(x) offsetof(LibWebPContextCommon, x)
 #define VE AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "lossless",   "Use lossless mode",       OFFSET(lossless), AV_OPT_TYPE_INT,   { .i64 =  0 },  0, 1,                           VE           },
     { "preset",     "Configuration preset",    OFFSET(preset),   AV_OPT_TYPE_INT,   { .i64 = -1 }, -1, WEBP_PRESET_TEXT,            VE, "preset" },
     { "none",       "do not use a preset",                              0, AV_OPT_TYPE_CONST, { .i64 = -1                  }, 0, 0, VE, "preset" },
@@ -75,7 +77,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVCodecDefault libwebp_defaults[] = {
+static const AVCodecDefault libwebp_defaults[] =
+{
     { "compression_level",  "4"  },
     { "global_quality",     "-1" },
     { NULL },

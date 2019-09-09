@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,10 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCAudioSession ()
 
-/** Number of times setActive:YES has succeeded without a balanced call to
- *  setActive:NO.
- */
-@property(nonatomic, readonly) int activationCount;
+    /** Number of times setActive:YES has succeeded without a balanced call to
+     *  setActive:NO.
+     */
+    @property(nonatomic, readonly) int activationCount;
 
 /** The number of times |beginWebRTCSession| was called without a balanced call
  *  to |endWebRTCSession|.
@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Properties and methods for tests.
 @property(nonatomic, readonly)
-    std::vector<__weak id<RTCAudioSessionDelegate> > delegates;
+std::vector<__weak id<RTCAudioSessionDelegate> > delegates;
 
 - (void)notifyDidBeginInterruption;
 - (void)notifyDidEndInterruptionWithShouldResumeSession:

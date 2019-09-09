@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -31,7 +31,8 @@ static void add_bytes_c(uint8_t *dst, uint8_t *src, intptr_t w)
 {
     long i;
 
-    for (i = 0; i <= w - (int) sizeof(long); i += sizeof(long)) {
+    for (i = 0; i <= w - (int) sizeof(long); i += sizeof(long))
+    {
         long a = *(long *) (src + i);
         long b = *(long *) (dst + i);
         *(long *) (dst + i) = ((a & pb_7f) + (b & pb_7f)) ^ ((a ^ b) & pb_80);
@@ -50,7 +51,8 @@ static void add_hfyu_median_pred_c(uint8_t *dst, const uint8_t *src1,
     l  = *left;
     lt = *left_top;
 
-    for (i = 0; i < w; i++) {
+    for (i = 0; i < w; i++)
+    {
         l      = mid_pred(l, src1[i], (l + src1[i] - lt) & 0xFF) + diff[i];
         lt     = src1[i];
         dst[i] = l;
@@ -65,7 +67,8 @@ static int add_hfyu_left_pred_c(uint8_t *dst, const uint8_t *src, intptr_t w,
 {
     int i;
 
-    for (i = 0; i < w - 1; i++) {
+    for (i = 0; i < w - 1; i++)
+    {
         acc   += src[i];
         dst[i] = acc;
         i++;
@@ -73,7 +76,8 @@ static int add_hfyu_left_pred_c(uint8_t *dst, const uint8_t *src, intptr_t w,
         dst[i] = acc;
     }
 
-    for (; i < w; i++) {
+    for (; i < w; i++)
+    {
         acc   += src[i];
         dst[i] = acc;
     }
@@ -87,7 +91,8 @@ static void add_hfyu_left_pred_bgr32_c(uint8_t *dst, const uint8_t *src,
     int i;
     uint8_t r = left[R], g = left[G], b = left[B], a = left[A];
 
-    for (i = 0; i < w; i++) {
+    for (i = 0; i < w; i++)
+    {
         b += src[4 * i + B];
         g += src[4 * i + G];
         r += src[4 * i + R];

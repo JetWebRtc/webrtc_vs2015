@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 David Conrad <lessen42@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -48,7 +48,8 @@ av_cold void ff_vp3dsp_init_x86(VP3DSPContext *c, int flags)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_MMX(cpu_flags)) {
+    if (EXTERNAL_MMX(cpu_flags))
+    {
         c->put_no_rnd_pixels_l2 = ff_put_vp_no_rnd_pixels8_l2_mmx;
 #if ARCH_X86_32
         c->idct_put  = ff_vp3_idct_put_mmx;
@@ -56,16 +57,19 @@ av_cold void ff_vp3dsp_init_x86(VP3DSPContext *c, int flags)
 #endif
     }
 
-    if (EXTERNAL_MMXEXT(cpu_flags)) {
+    if (EXTERNAL_MMXEXT(cpu_flags))
+    {
         c->idct_dc_add = ff_vp3_idct_dc_add_mmxext;
 
-        if (!(flags & AV_CODEC_FLAG_BITEXACT)) {
+        if (!(flags & AV_CODEC_FLAG_BITEXACT))
+        {
             c->v_loop_filter = ff_vp3_v_loop_filter_mmxext;
             c->h_loop_filter = ff_vp3_h_loop_filter_mmxext;
         }
     }
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->idct_put  = ff_vp3_idct_put_sse2;
         c->idct_add  = ff_vp3_idct_add_sse2;
     }

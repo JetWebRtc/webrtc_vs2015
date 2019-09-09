@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LOCO codec
  * Copyright (c) 2005 Konstantin Shishkov
  *
@@ -30,7 +30,8 @@
 #include "internal.h"
 #include "mathops.h"
 
-enum LOCO_MODE {
+enum LOCO_MODE
+{
     LOCO_UNKN  =  0,
     LOCO_CYUY2 = -1,
     LOCO_CRGB  = -2,
@@ -43,13 +44,15 @@ enum LOCO_MODE {
     LOCO_YV12  =  5,
 };
 
-typedef struct LOCOContext {
+typedef struct LOCOContext
+{
     AVCodecContext *avctx;
     int lossy;
     enum LOCO_MODE mode;
 } LOCOContext;
 
-typedef struct RICEContext {
+typedef struct RICEContext
+{
     GetBitContext gb;
     int save, run, run2; /* internal rice decoder state */
     int sum, count; /* sum and count for getting rice parameter */
@@ -61,7 +64,8 @@ static int loco_get_rice_param(RICEContext *r)
     int cnt = 0;
     int val = r->count;
 
-    while (r->sum > val && cnt < 9) {
+    while (r->sum > val && cnt < 9)
+    {
         val <<= 1;
         cnt++;
     }
@@ -74,7 +78,8 @@ static inline void loco_update_rice_param(RICEContext *r, int val)
     r->sum += val;
     r->count++;
 
-    if (r->count == 16) {
+    if (r->count == 16)
+    {
         r->sum   >>= 1;
         r->count >>= 1;
     }
@@ -83,25 +88,32 @@ static inline void loco_update_rice_param(RICEContext *r, int val)
 static inline int loco_get_rice(RICEContext *r)
 {
     int v;
-    if (r->run > 0) { /* we have zero run */
+    if (r->run > 0)   /* we have zero run */
+    {
         r->run--;
         loco_update_rice_param(r, 0);
         return 0;
     }
     v = get_ur_golomb_jpegls(&r->gb, loco_get_rice_param(r), INT_MAX, 0);
     loco_update_rice_param(r, (v + 1) >> 1);
-    if (!v) {
-        if (r->save >= 0) {
+    if (!v)
+    {
+        if (r->save >= 0)
+        {
             r->run = get_ur_golomb_jpegls(&r->gb, 2, INT_MAX, 0);
             if (r->run > 1)
                 r->save += r->run + 1;
             else
                 r->save -= 3;
-        } else
+        }
+        else
             r->run2++;
-    } else {
+    }
+    else
+    {
         v = ((v >> 1) + r->lossy) ^ -(v & 1);
-        if (r->run2 > 0) {
+        if (r->run2 > 0)
+        {
             if (r->run2 > 2)
                 r->save += r->run2;
             else
@@ -151,17 +163,20 @@ static int loco_decode_plane(LOCOContext *l, uint8_t *data, int width, int heigh
     val     = loco_get_rice(&rc);
     data[0] = 128 + val;
     /* restore top line */
-    for (i = 1; i < width; i++) {
+    for (i = 1; i < width; i++)
+    {
         val = loco_get_rice(&rc);
         data[i * step] = data[i * step - step] + val;
     }
     data += stride;
-    for (j = 1; j < height; j++) {
+    for (j = 1; j < height; j++)
+    {
         /* restore left column */
         val = loco_get_rice(&rc);
         data[0] = data[-stride] + val;
         /* restore all other pixels */
-        for (i = 1; i < width; i++) {
+        for (i = 1; i < width; i++)
+        {
             val = loco_get_rice(&rc);
             data[i * step] = loco_predict(&data[i * step], stride, step) + val;
         }
@@ -175,8 +190,10 @@ static void rotate_faulty_loco(uint8_t *data, int width, int height, int stride,
 {
     int y;
 
-    for (y=1; y<height; y++) {
-        if (width>=y) {
+    for (y=1; y<height; y++)
+    {
+        if (width>=y)
+        {
             memmove(data + y*stride,
                     data + y*(stride + step),
                     step*(width-y));
@@ -206,8 +223,11 @@ static int decode_frame(AVCodecContext *avctx,
     if (decoded < 0 || decoded >= buf_size) goto buf_too_small; \
     buf += decoded; buf_size -= decoded; \
 } while(0)
-    switch(l->mode) {
-    case LOCO_CYUY2: case LOCO_YUY2: case LOCO_UYVY:
+    switch(l->mode)
+    {
+    case LOCO_CYUY2:
+    case LOCO_YUY2:
+    case LOCO_UYVY:
         decoded = loco_decode_plane(l, p->data[0], avctx->width, avctx->height,
                                     p->linesize[0], buf, buf_size, 1);
         ADVANCE_BY_DECODED;
@@ -217,7 +237,8 @@ static int decode_frame(AVCodecContext *avctx,
         decoded = loco_decode_plane(l, p->data[2], avctx->width / 2, avctx->height,
                                     p->linesize[2], buf, buf_size, 1);
         break;
-    case LOCO_CYV12: case LOCO_YV12:
+    case LOCO_CYV12:
+    case LOCO_YV12:
         decoded = loco_decode_plane(l, p->data[0], avctx->width, avctx->height,
                                     p->linesize[0], buf, buf_size, 1);
         ADVANCE_BY_DECODED;
@@ -227,7 +248,8 @@ static int decode_frame(AVCodecContext *avctx,
         decoded = loco_decode_plane(l, p->data[1], avctx->width / 2, avctx->height / 2,
                                     p->linesize[1], buf, buf_size, 1);
         break;
-    case LOCO_CRGB: case LOCO_RGB:
+    case LOCO_CRGB:
+    case LOCO_RGB:
         decoded = loco_decode_plane(l, p->data[0] + p->linesize[0]*(avctx->height-1), avctx->width, avctx->height,
                                     -p->linesize[0], buf, buf_size, 3);
         ADVANCE_BY_DECODED;
@@ -275,13 +297,15 @@ static av_cold int decode_init(AVCodecContext *avctx)
     int version;
 
     l->avctx = avctx;
-    if (avctx->extradata_size < 12) {
+    if (avctx->extradata_size < 12)
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata size must be >= 12 instead of %i\n",
                avctx->extradata_size);
         return AVERROR_INVALIDDATA;
     }
     version = AV_RL32(avctx->extradata);
-    switch (version) {
+    switch (version)
+    {
     case 1:
         l->lossy = 0;
         break;
@@ -294,7 +318,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     }
 
     l->mode = AV_RL32(avctx->extradata + 4);
-    switch (l->mode) {
+    switch (l->mode)
+    {
     case LOCO_CYUY2:
     case LOCO_YUY2:
     case LOCO_UYVY:
@@ -322,7 +347,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_loco_decoder = {
+AVCodec ff_loco_decoder =
+{
     .name           = "loco",
     .long_name      = NULL_IF_CONFIG_SMALL("LOCO"),
     .type           = AVMEDIA_TYPE_VIDEO,

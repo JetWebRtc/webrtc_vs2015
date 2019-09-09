@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTMP network protocol
  * Copyright (c) 2010 Howard Chu
  *
@@ -36,7 +36,8 @@
 #include <librtmp/rtmp.h>
 #include <librtmp/log.h>
 
-typedef struct LibRTMPContext {
+typedef struct LibRTMPContext
+{
     const AVClass *class;
     RTMP rtmp;
     char *app;
@@ -56,14 +57,27 @@ typedef struct LibRTMPContext {
 
 static void rtmp_log(int level, const char *fmt, va_list args)
 {
-    switch (level) {
+    switch (level)
+    {
     default:
-    case RTMP_LOGCRIT:    level = AV_LOG_FATAL;   break;
-    case RTMP_LOGERROR:   level = AV_LOG_ERROR;   break;
-    case RTMP_LOGWARNING: level = AV_LOG_WARNING; break;
-    case RTMP_LOGINFO:    level = AV_LOG_INFO;    break;
-    case RTMP_LOGDEBUG:   level = AV_LOG_VERBOSE; break;
-    case RTMP_LOGDEBUG2:  level = AV_LOG_DEBUG;   break;
+    case RTMP_LOGCRIT:
+        level = AV_LOG_FATAL;
+        break;
+    case RTMP_LOGERROR:
+        level = AV_LOG_ERROR;
+        break;
+    case RTMP_LOGWARNING:
+        level = AV_LOG_WARNING;
+        break;
+    case RTMP_LOGINFO:
+        level = AV_LOG_INFO;
+        break;
+    case RTMP_LOGDEBUG:
+        level = AV_LOG_VERBOSE;
+        break;
+    case RTMP_LOGDEBUG2:
+        level = AV_LOG_DEBUG;
+        break;
     }
 
     av_vlog(NULL, level, fmt, args);
@@ -100,14 +114,27 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     char *filename = s->filename;
     int len = strlen(s->filename) + 1;
 
-    switch (av_log_get_level()) {
+    switch (av_log_get_level())
+    {
     default:
-    case AV_LOG_FATAL:   level = RTMP_LOGCRIT;    break;
-    case AV_LOG_ERROR:   level = RTMP_LOGERROR;   break;
-    case AV_LOG_WARNING: level = RTMP_LOGWARNING; break;
-    case AV_LOG_INFO:    level = RTMP_LOGINFO;    break;
-    case AV_LOG_VERBOSE: level = RTMP_LOGDEBUG;   break;
-    case AV_LOG_DEBUG:   level = RTMP_LOGDEBUG2;  break;
+    case AV_LOG_FATAL:
+        level = RTMP_LOGCRIT;
+        break;
+    case AV_LOG_ERROR:
+        level = RTMP_LOGERROR;
+        break;
+    case AV_LOG_WARNING:
+        level = RTMP_LOGWARNING;
+        break;
+    case AV_LOG_INFO:
+        level = RTMP_LOGINFO;
+        break;
+    case AV_LOG_VERBOSE:
+        level = RTMP_LOGDEBUG;
+        break;
+    case AV_LOG_DEBUG:
+        level = RTMP_LOGDEBUG2;
+        break;
     }
     RTMP_LogSetLevel(level);
     RTMP_LogSetCallback(rtmp_log);
@@ -117,11 +144,13 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     if (ctx->pageurl)  len += strlen(ctx->pageurl)  + sizeof(" pageUrl=");
     if (ctx->flashver) len += strlen(ctx->flashver) + sizeof(" flashver=");
 
-    if (ctx->conn) {
+    if (ctx->conn)
+    {
         char *sep, *p = ctx->conn;
         int options = 0;
 
-        while (p) {
+        while (p)
+        {
             options++;
             p += strspn(p, " ");
             if (!*p)
@@ -146,7 +175,8 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     if (ctx->client_buffer_time)
         len += strlen(ctx->client_buffer_time) + sizeof(" buffer=");
 
-    if (ctx->swfurl || ctx->swfverify) {
+    if (ctx->swfurl || ctx->swfverify)
+    {
         len += sizeof(" swfUrl=");
 
         if (ctx->swfverify)
@@ -159,29 +189,36 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
         return AVERROR(ENOMEM);
 
     av_strlcpy(filename, s->filename, len);
-    if (ctx->app) {
+    if (ctx->app)
+    {
         av_strlcat(filename, " app=", len);
         av_strlcat(filename, ctx->app, len);
     }
-    if (ctx->tcurl) {
+    if (ctx->tcurl)
+    {
         av_strlcat(filename, " tcUrl=", len);
         av_strlcat(filename, ctx->tcurl, len);
     }
-    if (ctx->pageurl) {
+    if (ctx->pageurl)
+    {
         av_strlcat(filename, " pageUrl=", len);
         av_strlcat(filename, ctx->pageurl, len);
     }
-    if (ctx->swfurl) {
+    if (ctx->swfurl)
+    {
         av_strlcat(filename, " swfUrl=", len);
         av_strlcat(filename, ctx->swfurl, len);
     }
-    if (ctx->flashver) {
+    if (ctx->flashver)
+    {
         av_strlcat(filename, " flashVer=", len);
         av_strlcat(filename, ctx->flashver, len);
     }
-    if (ctx->conn) {
+    if (ctx->conn)
+    {
         char *sep, *p = ctx->conn;
-        while (p) {
+        while (p)
+        {
             av_strlcat(filename, " conn=", len);
             p += strspn(p, " ");
             if (!*p)
@@ -195,33 +232,41 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
                 p = sep + 1;
         }
     }
-    if (ctx->playpath) {
+    if (ctx->playpath)
+    {
         av_strlcat(filename, " playpath=", len);
         av_strlcat(filename, ctx->playpath, len);
     }
     if (ctx->live)
         av_strlcat(filename, " live=1", len);
-    if (ctx->subscribe) {
+    if (ctx->subscribe)
+    {
         av_strlcat(filename, " subscribe=", len);
         av_strlcat(filename, ctx->subscribe, len);
     }
-    if (ctx->client_buffer_time) {
+    if (ctx->client_buffer_time)
+    {
         av_strlcat(filename, " buffer=", len);
         av_strlcat(filename, ctx->client_buffer_time, len);
     }
-    if (ctx->swfurl || ctx->swfverify) {
+    if (ctx->swfurl || ctx->swfverify)
+    {
         av_strlcat(filename, " swfUrl=", len);
 
-        if (ctx->swfverify) {
+        if (ctx->swfverify)
+        {
             av_strlcat(filename, ctx->swfverify, len);
             av_strlcat(filename, " swfVfy=1", len);
-        } else {
+        }
+        else
+        {
             av_strlcat(filename, ctx->swfurl, len);
         }
     }
 
     RTMP_Init(r);
-    if (!RTMP_SetupURL(r, filename)) {
+    if (!RTMP_SetupURL(r, filename))
+    {
         rc = AVERROR_UNKNOWN;
         goto fail;
     }
@@ -229,13 +274,15 @@ static int rtmp_open(URLContext *s, const char *uri, int flags)
     if (flags & AVIO_FLAG_WRITE)
         RTMP_EnableWrite(r);
 
-    if (!RTMP_Connect(r, NULL) || !RTMP_ConnectStream(r, 0)) {
+    if (!RTMP_Connect(r, NULL) || !RTMP_ConnectStream(r, 0))
+    {
         rc = AVERROR_UNKNOWN;
         goto fail;
     }
 
 #if CONFIG_NETWORK
-    if (ctx->buffer_size >= 0 && (flags & AVIO_FLAG_WRITE)) {
+    if (ctx->buffer_size >= 0 && (flags & AVIO_FLAG_WRITE))
+    {
         int tmp = ctx->buffer_size;
         setsockopt(r->m_sb.sb_socket, SOL_SOCKET, SO_SNDBUF, &tmp, sizeof(tmp));
     }
@@ -289,7 +336,7 @@ static int64_t rtmp_read_seek(URLContext *s, int stream_index,
     /* seeks are in milliseconds */
     if (stream_index < 0)
         timestamp = av_rescale_rnd(timestamp, 1000, AV_TIME_BASE,
-            flags & AVSEEK_FLAG_BACKWARD ? AV_ROUND_DOWN : AV_ROUND_UP);
+                                   flags & AVSEEK_FLAG_BACKWARD ? AV_ROUND_DOWN : AV_ROUND_UP);
 
     if (!RTMP_SendSeek(r, timestamp))
         return AVERROR_UNKNOWN;
@@ -307,7 +354,8 @@ static int rtmp_get_file_handle(URLContext *s)
 #define OFFSET(x) offsetof(LibRTMPContext, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"rtmp_app", "Name of application to connect to on the RTMP server", OFFSET(app), AV_OPT_TYPE_STRING, {.str = NULL }, 0, 0, DEC|ENC},
     {"rtmp_buffer", "Set buffer time in milliseconds. The default is 3000.", OFFSET(client_buffer_time), AV_OPT_TYPE_STRING, {.str = "3000"}, 0, 0, DEC|ENC},
     {"rtmp_conn", "Append arbitrary AMF data to the Connect message", OFFSET(conn), AV_OPT_TYPE_STRING, {.str = NULL }, 0, 0, DEC|ENC},
@@ -337,7 +385,8 @@ static const AVClass lib ## flavor ## _class = {\
 };
 
 RTMP_CLASS(rtmp)
-URLProtocol ff_librtmp_protocol = {
+URLProtocol ff_librtmp_protocol =
+{
     .name                = "rtmp",
     .url_open            = rtmp_open,
     .url_read            = rtmp_read,
@@ -352,7 +401,8 @@ URLProtocol ff_librtmp_protocol = {
 };
 
 RTMP_CLASS(rtmpt)
-URLProtocol ff_librtmpt_protocol = {
+URLProtocol ff_librtmpt_protocol =
+{
     .name                = "rtmpt",
     .url_open            = rtmp_open,
     .url_read            = rtmp_read,
@@ -367,7 +417,8 @@ URLProtocol ff_librtmpt_protocol = {
 };
 
 RTMP_CLASS(rtmpe)
-URLProtocol ff_librtmpe_protocol = {
+URLProtocol ff_librtmpe_protocol =
+{
     .name                = "rtmpe",
     .url_open            = rtmp_open,
     .url_read            = rtmp_read,
@@ -382,7 +433,8 @@ URLProtocol ff_librtmpe_protocol = {
 };
 
 RTMP_CLASS(rtmpte)
-URLProtocol ff_librtmpte_protocol = {
+URLProtocol ff_librtmpte_protocol =
+{
     .name                = "rtmpte",
     .url_open            = rtmp_open,
     .url_read            = rtmp_read,
@@ -397,7 +449,8 @@ URLProtocol ff_librtmpte_protocol = {
 };
 
 RTMP_CLASS(rtmps)
-URLProtocol ff_librtmps_protocol = {
+URLProtocol ff_librtmps_protocol =
+{
     .name                = "rtmps",
     .url_open            = rtmp_open,
     .url_read            = rtmp_read,

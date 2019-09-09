@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  * Copyright (c) 2011 Mina Nagy Zaki
  *
@@ -33,7 +33,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct LADSPAContext {
+typedef struct LADSPAContext
+{
     const AVClass *class;
     char *dl_name;
     char *plugin;
@@ -67,7 +68,8 @@ typedef struct LADSPAContext {
 
 #define OFFSET(x) offsetof(LADSPAContext, x)
 #define FLAGS AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption ladspa_options[] = {
+static const AVOption ladspa_options[] =
+{
     { "file", "set library name or full path", OFFSET(dl_name), AV_OPT_TYPE_STRING, .flags = FLAGS },
     { "f",    "set library name or full path", OFFSET(dl_name), AV_OPT_TYPE_STRING, .flags = FLAGS },
     { "plugin", "set plugin name", OFFSET(plugin), AV_OPT_TYPE_STRING, .flags = FLAGS },
@@ -93,13 +95,17 @@ static void print_ctl_info(AVFilterContext *ctx, int level,
 
     av_log(ctx, level, "c%i: %s [", ctl, s->desc->PortNames[map[ctl]]);
 
-    if (LADSPA_IS_HINT_TOGGLED(h->HintDescriptor)) {
+    if (LADSPA_IS_HINT_TOGGLED(h->HintDescriptor))
+    {
         av_log(ctx, level, "toggled (1 or 0)");
 
         if (LADSPA_IS_HINT_HAS_DEFAULT(h->HintDescriptor))
             av_log(ctx, level, " (default %i)", (int)values[ctl]);
-    } else {
-        if (LADSPA_IS_HINT_INTEGER(h->HintDescriptor)) {
+    }
+    else
+    {
+        if (LADSPA_IS_HINT_INTEGER(h->HintDescriptor))
+        {
             av_log(ctx, level, "<int>");
 
             if (LADSPA_IS_HINT_BOUNDED_BELOW(h->HintDescriptor))
@@ -112,7 +118,9 @@ static void print_ctl_info(AVFilterContext *ctx, int level,
                 av_log(ctx, level, " (value %d)", (int)values[ctl]);
             else if (LADSPA_IS_HINT_HAS_DEFAULT(h->HintDescriptor))
                 av_log(ctx, level, " (default %d)", (int)values[ctl]);
-        } else {
+        }
+        else
+        {
             av_log(ctx, level, "<float>");
 
             if (LADSPA_IS_HINT_BOUNDED_BELOW(h->HintDescriptor))
@@ -145,25 +153,32 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int i, h;
 
     if (!s->nb_outputs ||
-        (av_frame_is_writable(in) && s->nb_inputs == s->nb_outputs &&
-        !(s->desc->Properties & LADSPA_PROPERTY_INPLACE_BROKEN))) {
+            (av_frame_is_writable(in) && s->nb_inputs == s->nb_outputs &&
+             !(s->desc->Properties & LADSPA_PROPERTY_INPLACE_BROKEN)))
+    {
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_audio_buffer(ctx->outputs[0], in->nb_samples);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
         av_frame_copy_props(out, in);
     }
 
-    for (h = 0; h < s->nb_handles; h++) {
-        for (i = 0; i < s->nb_inputs; i++) {
+    for (h = 0; h < s->nb_handles; h++)
+    {
+        for (i = 0; i < s->nb_inputs; i++)
+        {
             s->desc->connect_port(s->handles[h], s->ipmap[i],
                                   (LADSPA_Data*)in->extended_data[i]);
         }
 
-        for (i = 0; i < s->nb_outputs; i++) {
+        for (i = 0; i < s->nb_outputs; i++)
+        {
             s->desc->connect_port(s->handles[h], s->opmap[i],
                                   (LADSPA_Data*)out->extended_data[i]);
         }
@@ -201,7 +216,7 @@ static int request_frame(AVFilterLink *outlink)
 
     for (i = 0; i < s->nb_outputs; i++)
         s->desc->connect_port(s->handles[0], s->opmap[i],
-                (LADSPA_Data*)out->extended_data[i]);
+                              (LADSPA_Data*)out->extended_data[i]);
 
     s->desc->run(s->handles[0], s->nb_samples);
 
@@ -222,29 +237,46 @@ static void set_default_ctl_value(LADSPAContext *s, int ctl,
     const LADSPA_Data lower = h->LowerBound;
     const LADSPA_Data upper = h->UpperBound;
 
-    if (LADSPA_IS_HINT_DEFAULT_MINIMUM(h->HintDescriptor)) {
+    if (LADSPA_IS_HINT_DEFAULT_MINIMUM(h->HintDescriptor))
+    {
         values[ctl] = lower;
-    } else if (LADSPA_IS_HINT_DEFAULT_MAXIMUM(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_MAXIMUM(h->HintDescriptor))
+    {
         values[ctl] = upper;
-    } else if (LADSPA_IS_HINT_DEFAULT_0(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_0(h->HintDescriptor))
+    {
         values[ctl] = 0.0;
-    } else if (LADSPA_IS_HINT_DEFAULT_1(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_1(h->HintDescriptor))
+    {
         values[ctl] = 1.0;
-    } else if (LADSPA_IS_HINT_DEFAULT_100(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_100(h->HintDescriptor))
+    {
         values[ctl] = 100.0;
-    } else if (LADSPA_IS_HINT_DEFAULT_440(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_440(h->HintDescriptor))
+    {
         values[ctl] = 440.0;
-    } else if (LADSPA_IS_HINT_DEFAULT_LOW(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_LOW(h->HintDescriptor))
+    {
         if (LADSPA_IS_HINT_LOGARITHMIC(h->HintDescriptor))
             values[ctl] = exp(log(lower) * 0.75 + log(upper) * 0.25);
         else
             values[ctl] = lower * 0.75 + upper * 0.25;
-    } else if (LADSPA_IS_HINT_DEFAULT_MIDDLE(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_MIDDLE(h->HintDescriptor))
+    {
         if (LADSPA_IS_HINT_LOGARITHMIC(h->HintDescriptor))
             values[ctl] = exp(log(lower) * 0.5 + log(upper) * 0.5);
         else
             values[ctl] = lower * 0.5 + upper * 0.5;
-    } else if (LADSPA_IS_HINT_DEFAULT_HIGH(h->HintDescriptor)) {
+    }
+    else if (LADSPA_IS_HINT_DEFAULT_HIGH(h->HintDescriptor))
+    {
         if (LADSPA_IS_HINT_LOGARITHMIC(h->HintDescriptor))
             values[ctl] = exp(log(lower) * 0.25 + log(upper) * 0.75);
         else
@@ -262,9 +294,11 @@ static int connect_ports(AVFilterContext *ctx, AVFilterLink *link)
     if (!s->handles)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < s->nb_handles; i++) {
+    for (i = 0; i < s->nb_handles; i++)
+    {
         s->handles[i] = s->desc->instantiate(s->desc, link->sample_rate);
-        if (!s->handles[i]) {
+        if (!s->handles[i])
+        {
             av_log(ctx, AV_LOG_ERROR, "Could not instantiate plugin.\n");
             return AVERROR_EXTERNAL;
         }
@@ -298,18 +332,24 @@ static int config_output(AVFilterLink *outlink)
     AVFilterContext *ctx = outlink->src;
     int ret;
 
-    if (ctx->nb_inputs) {
+    if (ctx->nb_inputs)
+    {
         AVFilterLink *inlink = ctx->inputs[0];
 
         outlink->format      = inlink->format;
         outlink->sample_rate = inlink->sample_rate;
 
         ret = 0;
-    } else {
+    }
+    else
+    {
         LADSPAContext *s = ctx->priv;
 
         outlink->sample_rate = s->sample_rate;
-        outlink->time_base   = (AVRational){1, s->sample_rate};
+        outlink->time_base   = (AVRational)
+        {
+            1, s->sample_rate
+        };
 
         ret = connect_ports(ctx, outlink);
     }
@@ -323,13 +363,18 @@ static void count_ports(const LADSPA_Descriptor *desc,
     LADSPA_PortDescriptor pd;
     int i;
 
-    for (i = 0; i < desc->PortCount; i++) {
+    for (i = 0; i < desc->PortCount; i++)
+    {
         pd = desc->PortDescriptors[i];
 
-        if (LADSPA_IS_PORT_AUDIO(pd)) {
-            if (LADSPA_IS_PORT_INPUT(pd)) {
+        if (LADSPA_IS_PORT_AUDIO(pd))
+        {
+            if (LADSPA_IS_PORT_INPUT(pd))
+            {
                 (*nb_inputs)++;
-            } else if (LADSPA_IS_PORT_OUTPUT(pd)) {
+            }
+            else if (LADSPA_IS_PORT_OUTPUT(pd))
+            {
                 (*nb_outputs)++;
             }
         }
@@ -341,7 +386,8 @@ static void *try_load(const char *dir, const char *soname)
     char *path = av_asprintf("%s/%s.so", dir, soname);
     void *ret = NULL;
 
-    if (path) {
+    if (path)
+    {
         ret = dlopen(path, RTLD_LOCAL|RTLD_NOW);
         av_free(path);
     }
@@ -356,25 +402,28 @@ static int set_control(AVFilterContext *ctx, unsigned long port, LADSPA_Data val
     LADSPA_PortRangeHint *h = (LADSPA_PortRangeHint *)s->desc->PortRangeHints +
                               s->icmap[port];
 
-    if (port >= s->nb_inputcontrols) {
+    if (port >= s->nb_inputcontrols)
+    {
         av_log(ctx, AV_LOG_ERROR, "Control c%ld is out of range [0 - %lu].\n",
                port, s->nb_inputcontrols);
         return AVERROR(EINVAL);
     }
 
     if (LADSPA_IS_HINT_BOUNDED_BELOW(h->HintDescriptor) &&
-            value < h->LowerBound) {
+            value < h->LowerBound)
+    {
         av_log(ctx, AV_LOG_ERROR,
-                "%s: input control c%ld is below lower boundary of %0.4f.\n",
-                label, port, h->LowerBound);
+               "%s: input control c%ld is below lower boundary of %0.4f.\n",
+               label, port, h->LowerBound);
         return AVERROR(EINVAL);
     }
 
     if (LADSPA_IS_HINT_BOUNDED_ABOVE(h->HintDescriptor) &&
-            value > h->UpperBound) {
+            value > h->UpperBound)
+    {
         av_log(ctx, AV_LOG_ERROR,
-                "%s: input control c%ld is above upper boundary of %0.4f.\n",
-                label, port, h->UpperBound);
+               "%s: input control c%ld is above upper boundary of %0.4f.\n",
+               label, port, h->UpperBound);
         return AVERROR(EINVAL);
     }
 
@@ -394,29 +443,36 @@ static av_cold int init(AVFilterContext *ctx)
     unsigned long nb_ports;
     int i;
 
-    if (!s->dl_name) {
+    if (!s->dl_name)
+    {
         av_log(ctx, AV_LOG_ERROR, "No plugin name provided\n");
         return AVERROR(EINVAL);
     }
 
-    if (s->dl_name[0] == '/' || s->dl_name[0] == '.') {
+    if (s->dl_name[0] == '/' || s->dl_name[0] == '.')
+    {
         // argument is a path
         s->dl_handle = dlopen(s->dl_name, RTLD_LOCAL|RTLD_NOW);
-    } else {
+    }
+    else
+    {
         // argument is a shared object name
         char *paths = av_strdup(getenv("LADSPA_PATH"));
         const char *separator = ":";
 
-        if (paths) {
+        if (paths)
+        {
             p = paths;
-            while ((arg = av_strtok(p, separator, &saveptr)) && !s->dl_handle) {
+            while ((arg = av_strtok(p, separator, &saveptr)) && !s->dl_handle)
+            {
                 s->dl_handle = try_load(arg, s->dl_name);
                 p = NULL;
             }
         }
 
         av_free(paths);
-        if (!s->dl_handle && (paths = av_asprintf("%s/.ladspa/lib", getenv("HOME")))) {
+        if (!s->dl_handle && (paths = av_asprintf("%s/.ladspa/lib", getenv("HOME"))))
+        {
             s->dl_handle = try_load(paths, s->dl_name);
             av_free(paths);
         }
@@ -427,25 +483,29 @@ static av_cold int init(AVFilterContext *ctx)
         if (!s->dl_handle)
             s->dl_handle = try_load("/usr/lib/ladspa", s->dl_name);
     }
-    if (!s->dl_handle) {
+    if (!s->dl_handle)
+    {
         av_log(ctx, AV_LOG_ERROR, "Failed to load '%s'\n", s->dl_name);
         return AVERROR(EINVAL);
     }
 
     descriptor_fn = dlsym(s->dl_handle, "ladspa_descriptor");
-    if (!descriptor_fn) {
+    if (!descriptor_fn)
+    {
         av_log(ctx, AV_LOG_ERROR, "Could not find ladspa_descriptor: %s\n", dlerror());
         return AVERROR(EINVAL);
     }
 
     // Find the requested plugin, or list plugins
-    if (!s->plugin) {
+    if (!s->plugin)
+    {
         av_log(ctx, AV_LOG_INFO, "The '%s' library contains the following plugins:\n", s->dl_name);
         av_log(ctx, AV_LOG_INFO, "I = Input Channels\n");
         av_log(ctx, AV_LOG_INFO, "O = Output Channels\n");
         av_log(ctx, AV_LOG_INFO, "I:O %-25s %s\n", "Plugin", "Description");
         av_log(ctx, AV_LOG_INFO, "\n");
-        for (i = 0; desc = descriptor_fn(i); i++) {
+        for (i = 0; desc = descriptor_fn(i); i++)
+        {
             unsigned long inputs = 0, outputs = 0;
 
             count_ports(desc, &inputs, &outputs);
@@ -457,10 +517,14 @@ static av_cold int init(AVFilterContext *ctx)
                    (char *)av_x_if_null(desc->Copyright, "?"));
         }
         return AVERROR_EXIT;
-    } else {
-        for (i = 0;; i++) {
+    }
+    else
+    {
+        for (i = 0;; i++)
+        {
             desc = descriptor_fn(i);
-            if (!desc) {
+            if (!desc)
+            {
                 av_log(ctx, AV_LOG_ERROR, "Could not find plugin: %s\n", s->plugin);
                 return AVERROR(EINVAL);
             }
@@ -481,22 +545,30 @@ static av_cold int init(AVFilterContext *ctx)
     s->octlv = av_calloc(nb_ports, sizeof(*s->octlv));
     s->ctl_needs_value = av_calloc(nb_ports, sizeof(*s->ctl_needs_value));
     if (!s->ipmap || !s->opmap || !s->icmap ||
-        !s->ocmap || !s->ictlv || !s->octlv || !s->ctl_needs_value)
+            !s->ocmap || !s->ictlv || !s->octlv || !s->ctl_needs_value)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < nb_ports; i++) {
+    for (i = 0; i < nb_ports; i++)
+    {
         pd = desc->PortDescriptors[i];
 
-        if (LADSPA_IS_PORT_AUDIO(pd)) {
-            if (LADSPA_IS_PORT_INPUT(pd)) {
+        if (LADSPA_IS_PORT_AUDIO(pd))
+        {
+            if (LADSPA_IS_PORT_INPUT(pd))
+            {
                 s->ipmap[s->nb_inputs] = i;
                 s->nb_inputs++;
-            } else if (LADSPA_IS_PORT_OUTPUT(pd)) {
+            }
+            else if (LADSPA_IS_PORT_OUTPUT(pd))
+            {
                 s->opmap[s->nb_outputs] = i;
                 s->nb_outputs++;
             }
-        } else if (LADSPA_IS_PORT_CONTROL(pd)) {
-            if (LADSPA_IS_PORT_INPUT(pd)) {
+        }
+        else if (LADSPA_IS_PORT_CONTROL(pd))
+        {
+            if (LADSPA_IS_PORT_INPUT(pd))
+            {
                 s->icmap[s->nb_inputcontrols] = i;
 
                 if (LADSPA_IS_HINT_HAS_DEFAULT(desc->PortRangeHints[i].HintDescriptor))
@@ -505,7 +577,9 @@ static av_cold int init(AVFilterContext *ctx)
                     s->ctl_needs_value[s->nb_inputcontrols] = 1;
 
                 s->nb_inputcontrols++;
-            } else if (LADSPA_IS_PORT_OUTPUT(pd)) {
+            }
+            else if (LADSPA_IS_PORT_OUTPUT(pd))
+            {
                 s->ocmap[s->nb_outputcontrols] = i;
                 s->nb_outputcontrols++;
             }
@@ -513,12 +587,16 @@ static av_cold int init(AVFilterContext *ctx)
     }
 
     // List Control Ports if "help" is specified
-    if (s->options && !strcmp(s->options, "help")) {
-        if (!s->nb_inputcontrols) {
+    if (s->options && !strcmp(s->options, "help"))
+    {
+        if (!s->nb_inputcontrols)
+        {
             av_log(ctx, AV_LOG_INFO,
                    "The '%s' plugin does not have any input controls.\n",
                    desc->Label);
-        } else {
+        }
+        else
+        {
             av_log(ctx, AV_LOG_INFO,
                    "The '%s' plugin has the following input controls:\n",
                    desc->Label);
@@ -530,7 +608,8 @@ static av_cold int init(AVFilterContext *ctx)
 
     // Parse control parameters
     p = s->options;
-    while (s->options) {
+    while (s->options)
+    {
         LADSPA_Data val;
         int ret;
 
@@ -538,7 +617,8 @@ static av_cold int init(AVFilterContext *ctx)
             break;
         p = NULL;
 
-        if (sscanf(arg, "c%d=%f", &i, &val) != 2) {
+        if (sscanf(arg, "c%d=%f", &i, &val) != 2)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid syntax.\n");
             return AVERROR(EINVAL);
         }
@@ -549,8 +629,10 @@ static av_cold int init(AVFilterContext *ctx)
     }
 
     // Check if any controls are not set
-    for (i = 0; i < s->nb_inputcontrols; i++) {
-        if (s->ctl_needs_value[i]) {
+    for (i = 0; i < s->nb_inputcontrols; i++)
+    {
+        if (s->ctl_needs_value[i])
+        {
             av_log(ctx, AV_LOG_ERROR, "Control c%d must be set.\n", i);
             print_ctl_info(ctx, AV_LOG_ERROR, s, i, s->icmap, s->ictlv, 0);
             return AVERROR(EINVAL);
@@ -559,14 +641,16 @@ static av_cold int init(AVFilterContext *ctx)
 
     pad.type = AVMEDIA_TYPE_AUDIO;
 
-    if (s->nb_inputs) {
+    if (s->nb_inputs)
+    {
         pad.name = av_asprintf("in0:%s%lu", desc->Label, s->nb_inputs);
         if (!pad.name)
             return AVERROR(ENOMEM);
 
         pad.filter_frame = filter_frame;
         pad.config_props = config_input;
-        if (ff_insert_inpad(ctx, ctx->nb_inputs, &pad) < 0) {
+        if (ff_insert_inpad(ctx, ctx->nb_inputs, &pad) < 0)
+        {
             av_freep(&pad.name);
             return AVERROR(ENOMEM);
         }
@@ -574,9 +658,9 @@ static av_cold int init(AVFilterContext *ctx)
 
     av_log(ctx, AV_LOG_DEBUG, "ports: %lu\n", nb_ports);
     av_log(ctx, AV_LOG_DEBUG, "inputs: %lu outputs: %lu\n",
-                              s->nb_inputs, s->nb_outputs);
+           s->nb_inputs, s->nb_outputs);
     av_log(ctx, AV_LOG_DEBUG, "input controls: %lu output controls: %lu\n",
-                              s->nb_inputcontrols, s->nb_outputcontrols);
+           s->nb_inputcontrols, s->nb_outputcontrols);
 
     return 0;
 }
@@ -586,37 +670,46 @@ static int query_formats(AVFilterContext *ctx)
     LADSPAContext *s = ctx->priv;
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
-        AV_SAMPLE_FMT_FLTP, AV_SAMPLE_FMT_NONE };
+    static const enum AVSampleFormat sample_fmts[] =
+    {
+        AV_SAMPLE_FMT_FLTP, AV_SAMPLE_FMT_NONE
+    };
 
     formats = ff_make_format_list(sample_fmts);
     if (!formats)
         return AVERROR(ENOMEM);
     ff_set_common_formats(ctx, formats);
 
-    if (s->nb_inputs) {
+    if (s->nb_inputs)
+    {
         formats = ff_all_samplerates();
         if (!formats)
             return AVERROR(ENOMEM);
 
         ff_set_common_samplerates(ctx, formats);
-    } else {
+    }
+    else
+    {
         int sample_rates[] = { s->sample_rate, -1 };
 
         ff_set_common_samplerates(ctx, ff_make_format_list(sample_rates));
     }
 
-    if (s->nb_inputs == 1 && s->nb_outputs == 1) {
+    if (s->nb_inputs == 1 && s->nb_outputs == 1)
+    {
         // We will instantiate multiple LADSPA_Handle, one over each channel
         layouts = ff_all_channel_layouts();
         if (!layouts)
             return AVERROR(ENOMEM);
 
         ff_set_common_channel_layouts(ctx, layouts);
-    } else {
+    }
+    else
+    {
         AVFilterLink *outlink = ctx->outputs[0];
 
-        if (s->nb_inputs >= 1) {
+        if (s->nb_inputs >= 1)
+        {
             AVFilterLink *inlink = ctx->inputs[0];
             int64_t inlayout = FF_COUNT2LAYOUT(s->nb_inputs);
 
@@ -628,7 +721,8 @@ static int query_formats(AVFilterContext *ctx)
                 ff_channel_layouts_ref(layouts, &outlink->in_channel_layouts);
         }
 
-        if (s->nb_outputs >= 1) {
+        if (s->nb_outputs >= 1)
+        {
             int64_t outlayout = FF_COUNT2LAYOUT(s->nb_outputs);
 
             layouts = NULL;
@@ -645,7 +739,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     LADSPAContext *s = ctx->priv;
     int i;
 
-    for (i = 0; i < s->nb_handles; i++) {
+    for (i = 0; i < s->nb_handles; i++)
+    {
         if (s->desc->deactivate)
             s->desc->deactivate(s->handles[i]);
         if (s->desc->cleanup)
@@ -680,7 +775,8 @@ static int process_command(AVFilterContext *ctx, const char *cmd, const char *ar
     return set_control(ctx, port, value);
 }
 
-static const AVFilterPad ladspa_outputs[] = {
+static const AVFilterPad ladspa_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -690,7 +786,8 @@ static const AVFilterPad ladspa_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_ladspa = {
+AVFilter ff_af_ladspa =
+{
     .name          = "ladspa",
     .description   = NULL_IF_CONFIG_SMALL("Apply LADSPA effect."),
     .priv_size     = sizeof(LADSPAContext),

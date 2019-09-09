@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,98 +17,120 @@
 #include "webrtc/api/mediaconstraintsinterface.h"
 #include "webrtc/base/stringencode.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class FakeConstraints : public webrtc::MediaConstraintsInterface {
- public:
-  FakeConstraints() { }
-  virtual ~FakeConstraints() { }
+class FakeConstraints : public webrtc::MediaConstraintsInterface
+{
+public:
+    FakeConstraints() { }
+    virtual ~FakeConstraints() { }
 
-  virtual const Constraints& GetMandatory() const {
-    return mandatory_;
-  }
-
-  virtual const Constraints& GetOptional() const {
-    return optional_;
-  }
-
-  template <class T>
-  void AddMandatory(const std::string& key, const T& value) {
-    mandatory_.push_back(Constraint(key, rtc::ToString<T>(value)));
-  }
-
-  template <class T>
-  void SetMandatory(const std::string& key, const T& value) {
-    std::string value_str;
-    if (mandatory_.FindFirst(key, &value_str)) {
-      for (Constraints::iterator iter = mandatory_.begin();
-           iter != mandatory_.end(); ++iter) {
-        if (iter->key == key) {
-          mandatory_.erase(iter);
-          break;
-        }
-      }
+    virtual const Constraints& GetMandatory() const
+    {
+        return mandatory_;
     }
-    mandatory_.push_back(Constraint(key, rtc::ToString<T>(value)));
-  }
 
-  template <class T>
-  void AddOptional(const std::string& key, const T& value) {
-    optional_.push_back(Constraint(key, rtc::ToString<T>(value)));
-  }
+    virtual const Constraints& GetOptional() const
+    {
+        return optional_;
+    }
 
-  void SetMandatoryMinAspectRatio(double ratio) {
-    SetMandatory(MediaConstraintsInterface::kMinAspectRatio, ratio);
-  }
+    template <class T>
+    void AddMandatory(const std::string& key, const T& value)
+    {
+        mandatory_.push_back(Constraint(key, rtc::ToString<T>(value)));
+    }
 
-  void SetMandatoryMinWidth(int width) {
-    SetMandatory(MediaConstraintsInterface::kMinWidth, width);
-  }
+    template <class T>
+    void SetMandatory(const std::string& key, const T& value)
+    {
+        std::string value_str;
+        if (mandatory_.FindFirst(key, &value_str))
+        {
+            for (Constraints::iterator iter = mandatory_.begin();
+                    iter != mandatory_.end(); ++iter)
+            {
+                if (iter->key == key)
+                {
+                    mandatory_.erase(iter);
+                    break;
+                }
+            }
+        }
+        mandatory_.push_back(Constraint(key, rtc::ToString<T>(value)));
+    }
 
-  void SetMandatoryMinHeight(int height) {
-    SetMandatory(MediaConstraintsInterface::kMinHeight, height);
-  }
+    template <class T>
+    void AddOptional(const std::string& key, const T& value)
+    {
+        optional_.push_back(Constraint(key, rtc::ToString<T>(value)));
+    }
 
-  void SetOptionalMaxWidth(int width) {
-    AddOptional(MediaConstraintsInterface::kMaxWidth, width);
-  }
+    void SetMandatoryMinAspectRatio(double ratio)
+    {
+        SetMandatory(MediaConstraintsInterface::kMinAspectRatio, ratio);
+    }
 
-  void SetMandatoryMaxFrameRate(int frame_rate) {
-    SetMandatory(MediaConstraintsInterface::kMaxFrameRate, frame_rate);
-  }
+    void SetMandatoryMinWidth(int width)
+    {
+        SetMandatory(MediaConstraintsInterface::kMinWidth, width);
+    }
 
-  void SetMandatoryReceiveAudio(bool enable) {
-    SetMandatory(MediaConstraintsInterface::kOfferToReceiveAudio, enable);
-  }
+    void SetMandatoryMinHeight(int height)
+    {
+        SetMandatory(MediaConstraintsInterface::kMinHeight, height);
+    }
 
-  void SetMandatoryReceiveVideo(bool enable) {
-    SetMandatory(MediaConstraintsInterface::kOfferToReceiveVideo, enable);
-  }
+    void SetOptionalMaxWidth(int width)
+    {
+        AddOptional(MediaConstraintsInterface::kMaxWidth, width);
+    }
 
-  void SetMandatoryUseRtpMux(bool enable) {
-    SetMandatory(MediaConstraintsInterface::kUseRtpMux, enable);
-  }
+    void SetMandatoryMaxFrameRate(int frame_rate)
+    {
+        SetMandatory(MediaConstraintsInterface::kMaxFrameRate, frame_rate);
+    }
 
-  void SetMandatoryIceRestart(bool enable) {
-    SetMandatory(MediaConstraintsInterface::kIceRestart, enable);
-  }
+    void SetMandatoryReceiveAudio(bool enable)
+    {
+        SetMandatory(MediaConstraintsInterface::kOfferToReceiveAudio, enable);
+    }
 
-  void SetAllowRtpDataChannels() {
-    SetMandatory(MediaConstraintsInterface::kEnableRtpDataChannels, true);
-    SetMandatory(MediaConstraintsInterface::kEnableDtlsSrtp, false);
-  }
+    void SetMandatoryReceiveVideo(bool enable)
+    {
+        SetMandatory(MediaConstraintsInterface::kOfferToReceiveVideo, enable);
+    }
 
-  void SetOptionalVAD(bool enable) {
-    AddOptional(MediaConstraintsInterface::kVoiceActivityDetection, enable);
-  }
+    void SetMandatoryUseRtpMux(bool enable)
+    {
+        SetMandatory(MediaConstraintsInterface::kUseRtpMux, enable);
+    }
 
-  void SetAllowDtlsSctpDataChannels() {
-    SetMandatory(MediaConstraintsInterface::kEnableDtlsSrtp, true);
-  }
+    void SetMandatoryIceRestart(bool enable)
+    {
+        SetMandatory(MediaConstraintsInterface::kIceRestart, enable);
+    }
 
- private:
-  Constraints mandatory_;
-  Constraints optional_;
+    void SetAllowRtpDataChannels()
+    {
+        SetMandatory(MediaConstraintsInterface::kEnableRtpDataChannels, true);
+        SetMandatory(MediaConstraintsInterface::kEnableDtlsSrtp, false);
+    }
+
+    void SetOptionalVAD(bool enable)
+    {
+        AddOptional(MediaConstraintsInterface::kVoiceActivityDetection, enable);
+    }
+
+    void SetAllowDtlsSctpDataChannels()
+    {
+        SetMandatory(MediaConstraintsInterface::kEnableDtlsSrtp, true);
+    }
+
+private:
+    Constraints mandatory_;
+    Constraints optional_;
 };
 
 }  // namespace webrtc

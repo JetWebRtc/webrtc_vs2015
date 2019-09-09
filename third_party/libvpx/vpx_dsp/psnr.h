@@ -1,4 +1,4 @@
-/*
+﻿/*
 *  Copyright (c) 2016 The WebM project authors. All Rights Reserved.
 *
 *  Use of this source code is governed by a BSD-style license
@@ -19,10 +19,11 @@
 extern "C" {
 #endif
 
-typedef struct {
-  double psnr[4];       // total/y/u/v
-  uint64_t sse[4];      // total/y/u/v
-  uint32_t samples[4];  // total/y/u/v
+typedef struct
+{
+    double psnr[4];       // total/y/u/v
+    uint64_t sse[4];      // total/y/u/v
+    uint32_t samples[4];  // total/y/u/v
 } PSNR_STATS;
 
 // TODO(dkovalev) change vpx_sse_to_psnr signature: double -> int64_t

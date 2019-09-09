@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,26 +13,28 @@
 
 #include <string.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Finite Impulse Response filter using floating-point arithmetic.
-class FIRFilter {
- public:
-  // Creates a filter with the given coefficients. All initial state values will
-  // be zeros.
-  // The length of the chunks fed to the filter should never be greater than
-  // |max_input_length|. This is needed because, when vectorizing it is
-  // necessary to concatenate the input after the state, and resizing this array
-  // dynamically is expensive.
-  static FIRFilter* Create(const float* coefficients,
-                           size_t coefficients_length,
-                           size_t max_input_length);
+class FIRFilter
+{
+public:
+    // Creates a filter with the given coefficients. All initial state values will
+    // be zeros.
+    // The length of the chunks fed to the filter should never be greater than
+    // |max_input_length|. This is needed because, when vectorizing it is
+    // necessary to concatenate the input after the state, and resizing this array
+    // dynamically is expensive.
+    static FIRFilter* Create(const float* coefficients,
+                             size_t coefficients_length,
+                             size_t max_input_length);
 
-  virtual ~FIRFilter() {}
+    virtual ~FIRFilter() {}
 
-  // Filters the |in| data supplied.
-  // |out| must be previously allocated and it must be at least of |length|.
-  virtual void Filter(const float* in, size_t length, float* out) = 0;
+    // Filters the |in| data supplied.
+    // |out| must be previously allocated and it must be at least of |length|.
+    virtual void Filter(const float* in, size_t length, float* out) = 0;
 };
 
 }  // namespace webrtc

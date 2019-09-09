@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Work around the class() function in AIX math.h clashing with
  * identifiers named "class".
  *

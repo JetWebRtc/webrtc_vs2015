@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Electronic Arts Madcow Video Decoder
  * Copyright (c) 2007-2009 Peter Ross
  *
@@ -45,7 +45,8 @@
 #define MADm_TAG MKTAG('M', 'A', 'D', 'm')    /* MAD p-frame */
 #define MADe_TAG MKTAG('M', 'A', 'D', 'e')    /* MAD lqp-frame */
 
-typedef struct MadContext {
+typedef struct MadContext
+{
     AVCodecContext *avctx;
     BlockDSPContext bdsp;
     BswapDSPContext bbdsp;
@@ -93,7 +94,8 @@ static inline void comp_block(MadContext *t, AVFrame *frame,
                               int mb_x, int mb_y,
                               int j, int mv_x, int mv_y, int add)
 {
-    if (j < 4) {
+    if (j < 4)
+    {
         unsigned offset = (mb_y*16 + ((j&2)<<2) + mv_y)*t->last_frame->linesize[0] + mb_x*16 + ((j&1)<<3) + mv_x;
         if (offset >= (t->avctx->height - 7) * t->last_frame->linesize[0] - 7)
             return;
@@ -101,7 +103,9 @@ static inline void comp_block(MadContext *t, AVFrame *frame,
              frame->linesize[0],
              t->last_frame->data[0] + offset,
              t->last_frame->linesize[0], add);
-    } else if (!(t->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    }
+    else if (!(t->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         int index = j - 3;
         unsigned offset = (mb_y * 8 + (mv_y/2))*t->last_frame->linesize[index] + mb_x * 8 + (mv_x/2);
         if (offset >= (t->avctx->height/2 - 7) * t->last_frame->linesize[index] - 7)
@@ -116,11 +120,14 @@ static inline void comp_block(MadContext *t, AVFrame *frame,
 static inline void idct_put(MadContext *t, AVFrame *frame, int16_t *block,
                             int mb_x, int mb_y, int j)
 {
-    if (j < 4) {
+    if (j < 4)
+    {
         ff_ea_idct_put_c(
             frame->data[0] + (mb_y*16 + ((j&2)<<2))*frame->linesize[0] + mb_x*16 + ((j&1)<<3),
             frame->linesize[0], block);
-    } else if (!(t->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    }
+    else if (!(t->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         int index = j - 3;
         ff_ea_idct_put_c(
             frame->data[index] + (mb_y*8)*frame->linesize[index] + mb_x*8,
@@ -143,15 +150,20 @@ static inline int decode_block_intra(MadContext *s, int16_t * block)
     {
         OPEN_READER(re, &s->gb);
         /* now quantify & encode AC coefficients */
-        for (;;) {
+        for (;;)
+        {
             UPDATE_CACHE(re, &s->gb);
             GET_RL_VLC(level, run, re, &s->gb, rl->rl_vlc[0], TEX_VLC_BITS, 2, 0);
 
-            if (level == 127) {
+            if (level == 127)
+            {
                 break;
-            } else if (level != 0) {
+            }
+            else if (level != 0)
+            {
                 i += run;
-                if (i > 63) {
+                if (i > 63)
+                {
                     av_log(s->avctx, AV_LOG_ERROR,
                            "ac-tex damaged at %d %d\n", s->mb_x, s->mb_y);
                     return -1;
@@ -161,27 +173,35 @@ static inline int decode_block_intra(MadContext *s, int16_t * block)
                 level = (level-1)|1;
                 level = (level ^ SHOW_SBITS(re, &s->gb, 1)) - SHOW_SBITS(re, &s->gb, 1);
                 LAST_SKIP_BITS(re, &s->gb, 1);
-            } else {
+            }
+            else
+            {
                 /* escape */
                 UPDATE_CACHE(re, &s->gb);
-                level = SHOW_SBITS(re, &s->gb, 10); SKIP_BITS(re, &s->gb, 10);
+                level = SHOW_SBITS(re, &s->gb, 10);
+                SKIP_BITS(re, &s->gb, 10);
 
                 UPDATE_CACHE(re, &s->gb);
-                run = SHOW_UBITS(re, &s->gb, 6)+1; LAST_SKIP_BITS(re, &s->gb, 6);
+                run = SHOW_UBITS(re, &s->gb, 6)+1;
+                LAST_SKIP_BITS(re, &s->gb, 6);
 
                 i += run;
-                if (i > 63) {
+                if (i > 63)
+                {
                     av_log(s->avctx, AV_LOG_ERROR,
                            "ac-tex damaged at %d %d\n", s->mb_x, s->mb_y);
                     return -1;
                 }
                 j = scantable[i];
-                if (level < 0) {
+                if (level < 0)
+                {
                     level = -level;
                     level = (level*quant_matrix[j]) >> 4;
                     level = (level-1)|1;
                     level = -level;
-                } else {
+                }
+                else
+                {
                     level = (level*quant_matrix[j]) >> 4;
                     level = (level-1)|1;
                 }
@@ -197,7 +217,8 @@ static inline int decode_block_intra(MadContext *s, int16_t * block)
 static int decode_motion(GetBitContext *gb)
 {
     int value = 0;
-    if (get_bits1(gb)) {
+    if (get_bits1(gb))
+    {
         if (get_bits1(gb))
             value = -17;
         value += get_bits(gb, 4) + 1;
@@ -211,21 +232,27 @@ static int decode_mb(MadContext *s, AVFrame *frame, int inter)
     int av_uninit(mv_x), av_uninit(mv_y);
     int j;
 
-    if (inter) {
+    if (inter)
+    {
         int v = decode210(&s->gb);
-        if (v < 2) {
+        if (v < 2)
+        {
             mv_map = v ? get_bits(&s->gb, 6) : 63;
             mv_x = decode_motion(&s->gb);
             mv_y = decode_motion(&s->gb);
         }
     }
 
-    for (j=0; j<6; j++) {
-        if (mv_map & (1<<j)) {  // mv_x and mv_y are guarded by mv_map
+    for (j=0; j<6; j++)
+    {
+        if (mv_map & (1<<j))    // mv_x and mv_y are guarded by mv_map
+        {
             int add = 2*decode_motion(&s->gb);
             if (s->last_frame->data[0])
                 comp_block(s, frame, s->mb_x, s->mb_y, j, mv_x, mv_y, add);
-        } else {
+        }
+        else
+        {
             s->bdsp.clear_block(s->block);
             if(decode_block_intra(s, s->block) < 0)
                 return -1;
@@ -272,17 +299,20 @@ static int decode_frame(AVCodecContext *avctx,
     calc_quant_matrix(s, bytestream2_get_byte(&gb));
     bytestream2_skip(&gb, 2);
 
-    if (bytestream2_get_bytes_left(&gb) < 2) {
+    if (bytestream2_get_bytes_left(&gb) < 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Input data too small\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (width < 16 || height < 16) {
+    if (width < 16 || height < 16)
+    {
         av_log(avctx, AV_LOG_ERROR, "Dimensions too small\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (avctx->width != width || avctx->height != height) {
+    if (avctx->width != width || avctx->height != height)
+    {
         av_frame_unref(s->last_frame);
         if((width * height)/2048*7 > bytestream2_get_bytes_left(&gb))
             return AVERROR_INVALIDDATA;
@@ -293,7 +323,8 @@ static int decode_frame(AVCodecContext *avctx,
     if ((ret = ff_get_buffer(avctx, frame, AV_GET_BUFFER_FLAG_REF)) < 0)
         return ret;
 
-    if (inter && !s->last_frame->data[0]) {
+    if (inter && !s->last_frame->data[0])
+    {
         av_log(avctx, AV_LOG_WARNING, "Missing reference frame.\n");
         ret = ff_get_buffer(avctx, s->last_frame, AV_GET_BUFFER_FLAG_REF);
         if (ret < 0)
@@ -322,7 +353,8 @@ static int decode_frame(AVCodecContext *avctx,
 
     *got_frame = 1;
 
-    if (chunk_type != MADe_TAG) {
+    if (chunk_type != MADe_TAG)
+    {
         av_frame_unref(s->last_frame);
         if ((ret = av_frame_ref(s->last_frame, frame)) < 0)
             return ret;
@@ -339,7 +371,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_eamad_decoder = {
+AVCodec ff_eamad_decoder =
+{
     .name           = "eamad",
     .long_name      = NULL_IF_CONFIG_SMALL("Electronic Arts Madcow Video"),
     .type           = AVMEDIA_TYPE_VIDEO,

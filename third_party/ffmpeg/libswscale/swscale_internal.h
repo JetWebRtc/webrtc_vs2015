@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2001-2011 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -65,7 +65,8 @@
 
 struct SwsContext;
 
-typedef enum SwsDither {
+typedef enum SwsDither
+{
     SWS_DITHER_NONE = 0,
     SWS_DITHER_AUTO,
     SWS_DITHER_BAYER,
@@ -75,7 +76,8 @@ typedef enum SwsDither {
     NB_SWS_DITHER,
 } SwsDither;
 
-typedef enum SwsAlphaBlend {
+typedef enum SwsAlphaBlend
+{
     SWS_ALPHA_BLEND_NONE  = 0,
     SWS_ALPHA_BLEND_UNIFORM,
     SWS_ALPHA_BLEND_CHECKERBOARD,
@@ -280,7 +282,8 @@ struct SwsSlice;
 struct SwsFilterDescriptor;
 
 /* This struct should be aligned on at least a 32-byte boundary. */
-typedef struct SwsContext {
+typedef struct SwsContext
+{
     /**
      * info on struct for av_log
      */
@@ -511,7 +514,7 @@ typedef struct SwsContext {
 
     int use_mmx_vfilter;
 
-/* pre defined color-spaces gamma */
+    /* pre defined color-spaces gamma */
 #define XYZ_GAMMA (2.6f)
 #define RGB_GAMMA (2.2f)
     int16_t *xyzgamma;
@@ -640,7 +643,7 @@ void ff_yuv2rgb_init_tables_ppc(SwsContext *c, const int inv_table[4],
                                 int brightness, int contrast, int saturation);
 
 void ff_updateMMXDitherTables(SwsContext *c, int dstY, int lumBufIndex, int chrBufIndex,
-                           int lastInLumBuf, int lastInChrBuf);
+                              int lastInLumBuf, int lastInChrBuf);
 
 av_cold void ff_sws_init_range_convert(SwsContext *c);
 
@@ -819,7 +822,7 @@ static av_always_inline int isPacked(enum AVPixelFormat pix_fmt)
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(pix_fmt);
     av_assert0(desc);
     return ((desc->nb_components >= 2 && !(desc->flags & AV_PIX_FMT_FLAG_PLANAR)) ||
-            pix_fmt == AV_PIX_FMT_PAL8);
+    pix_fmt == AV_PIX_FMT_PAL8);
 }
 
 #endif
@@ -842,7 +845,7 @@ static av_always_inline int isPlanarRGB(enum AVPixelFormat pix_fmt)
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(pix_fmt);
     av_assert0(desc);
     return ((desc->flags & (AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_RGB)) ==
-            (AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_RGB));
+    (AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_RGB));
 }
 
 static av_always_inline int usePal(enum AVPixelFormat pix_fmt)
@@ -929,14 +932,18 @@ static inline void fillPlane16(uint8_t *plane, int stride, int width, int height
     int i, j;
     uint8_t *ptr = plane + stride * y;
     int v = alpha ? 0xFFFF>>(15-bits) : (1<<bits);
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
 #define FILL(wfunc) \
         for (j = 0; j < width; j++) {\
             wfunc(ptr+2*j, v);\
         }
-        if (big_endian) {
+        if (big_endian)
+        {
             FILL(AV_WB16);
-        } else {
+        }
+        else
+        {
             FILL(AV_WL16);
         }
         ptr += stride;
@@ -1050,8 +1057,8 @@ int ff_init_vscale(SwsContext *c, SwsFilterDescriptor *desc, SwsSlice *src, SwsS
 
 /// setup vertical scaler functions
 void ff_init_vscale_pfn(SwsContext *c, yuv2planar1_fn yuv2plane1, yuv2planarX_fn yuv2planeX,
-    yuv2interleavedX_fn yuv2nv12cX, yuv2packed1_fn yuv2packed1, yuv2packed2_fn yuv2packed2,
-    yuv2packedX_fn yuv2packedX, yuv2anyX_fn yuv2anyX, int use_mmx);
+                        yuv2interleavedX_fn yuv2nv12cX, yuv2packed1_fn yuv2packed1, yuv2packed2_fn yuv2packed2,
+                        yuv2packedX_fn yuv2packedX, yuv2anyX_fn yuv2anyX, int use_mmx);
 
 //number of extra lines to process
 #define MAX_LINES_AHEAD 4

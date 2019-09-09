@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,37 +14,41 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // A DesktopFrame that is a sub-rect of another DesktopFrame.
-class CroppedDesktopFrame : public DesktopFrame {
- public:
-  CroppedDesktopFrame(std::unique_ptr<DesktopFrame> frame,
-                      const DesktopRect& rect);
+class CroppedDesktopFrame : public DesktopFrame
+{
+public:
+    CroppedDesktopFrame(std::unique_ptr<DesktopFrame> frame,
+                        const DesktopRect& rect);
 
- private:
-  std::unique_ptr<DesktopFrame> frame_;
+private:
+    std::unique_ptr<DesktopFrame> frame_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(CroppedDesktopFrame);
+    RTC_DISALLOW_COPY_AND_ASSIGN(CroppedDesktopFrame);
 };
 
 std::unique_ptr<DesktopFrame> CreateCroppedDesktopFrame(
     std::unique_ptr<DesktopFrame> frame,
-    const DesktopRect& rect) {
-  if (!DesktopRect::MakeSize(frame->size()).ContainsRect(rect))
-    return nullptr;
+    const DesktopRect& rect)
+{
+    if (!DesktopRect::MakeSize(frame->size()).ContainsRect(rect))
+        return nullptr;
 
-  return std::unique_ptr<DesktopFrame>(
-      new CroppedDesktopFrame(std::move(frame), rect));
+    return std::unique_ptr<DesktopFrame>(
+               new CroppedDesktopFrame(std::move(frame), rect));
 }
 
 CroppedDesktopFrame::CroppedDesktopFrame(std::unique_ptr<DesktopFrame> frame,
-                                         const DesktopRect& rect)
+        const DesktopRect& rect)
     : DesktopFrame(rect.size(),
                    frame->stride(),
                    frame->GetFrameDataAtPos(rect.top_left()),
-                   frame->shared_memory()) {
-  frame_ = std::move(frame);
+                   frame->shared_memory())
+{
+    frame_ = std::move(frame);
 }
 
 }  // namespace webrtc

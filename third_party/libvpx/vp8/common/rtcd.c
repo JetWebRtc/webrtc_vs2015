@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,4 +12,7 @@
 #include "./vp8_rtcd.h"
 #include "vpx_ports/vpx_once.h"
 
-void vp8_rtcd() { once(setup_rtcd_internal); }
+void vp8_rtcd()
+{
+    once(setup_rtcd_internal);
+}

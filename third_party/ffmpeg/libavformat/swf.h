@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Flash Compatible Streaming Format common header.
  * Copyright (c) 2000 Fabrice Bellard
  * Copyright (c) 2003 Tinic Uro
@@ -38,7 +38,8 @@
 #define DUMMY_FILE_SIZE   (100 * 1024 * 1024)
 #define DUMMY_DURATION    600 /* in seconds */
 
-enum {
+enum
+{
     TAG_END                          =  0,
     TAG_SHOWFRAME                    =  1,
     TAG_DEFINESHAPE                  =  2,
@@ -120,7 +121,8 @@ enum {
 #define VIDEO_ID 0
 #define SHAPE_ID  1
 
-typedef struct SWFContext {
+typedef struct SWFContext
+{
     int64_t duration_pos;
     int64_t tag_pos;
     int64_t vframes_pos;

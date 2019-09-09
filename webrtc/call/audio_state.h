@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/base/refcount.h"
 #include "webrtc/base/scoped_ref_ptr.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VoiceEngine;
 
@@ -25,24 +26,26 @@ class VoiceEngine;
 
 // AudioState holds the state which must be shared between multiple instances of
 // webrtc::Call for audio processing purposes.
-class AudioState : public rtc::RefCountInterface {
- public:
-  struct Config {
-    // VoiceEngine used for audio streams and audio/video synchronization.
-    // AudioState will tickle the VoE refcount to keep it alive for as long as
-    // the AudioState itself.
-    VoiceEngine* voice_engine = nullptr;
+class AudioState : public rtc::RefCountInterface
+{
+public:
+    struct Config
+    {
+        // VoiceEngine used for audio streams and audio/video synchronization.
+        // AudioState will tickle the VoE refcount to keep it alive for as long as
+        // the AudioState itself.
+        VoiceEngine* voice_engine = nullptr;
 
-    // The audio mixer connected to active receive streams. One per
-    // AudioState.
-    rtc::scoped_refptr<AudioMixer> audio_mixer;
-  };
+        // The audio mixer connected to active receive streams. One per
+        // AudioState.
+        rtc::scoped_refptr<AudioMixer> audio_mixer;
+    };
 
-  // TODO(solenberg): Replace scoped_refptr with shared_ptr once we can use it.
-  static rtc::scoped_refptr<AudioState> Create(
-      const AudioState::Config& config);
+    // TODO(solenberg): Replace scoped_refptr with shared_ptr once we can use it.
+    static rtc::scoped_refptr<AudioState> Create(
+        const AudioState::Config& config);
 
-  virtual ~AudioState() {}
+    virtual ~AudioState() {}
 };
 }  // namespace webrtc
 

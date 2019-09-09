@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Range coder
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -42,7 +42,7 @@
 av_cold void ff_init_range_encoder(RangeCoder *c, uint8_t *buf, int buf_size)
 {
     c->bytestream_start  =
-    c->bytestream        = buf;
+        c->bytestream        = buf;
     c->bytestream_end    = buf + buf_size;
     c->low               = 0;
     c->range             = 0xFF00;
@@ -70,7 +70,8 @@ void ff_build_rac_states(RangeCoder *c, int factor, int max_p)
 
     last_p8 = 0;
     p       = one / 2;
-    for (i = 0; i < 128; i++) {
+    for (i = 0; i < 128; i++)
+    {
         p8 = (256 * p + one / 2) >> 32; // FIXME: try without the one
         if (p8 <= last_p8)
             p8 = last_p8 + 1;
@@ -81,7 +82,8 @@ void ff_build_rac_states(RangeCoder *c, int factor, int max_p)
         last_p8 = p8;
     }
 
-    for (i = 256 - max_p; i <= max_p; i++) {
+    for (i = 256 - max_p; i <= max_p; i++)
+    {
         if (c->one_state[i])
             continue;
 
@@ -150,7 +152,8 @@ int main(void)
     memset(state, 128, sizeof(state));
 
     for (i = 0; i < SIZE; i++)
-        if ((r[i] & 1) != get_rac(&c, state)) {
+        if ((r[i] & 1) != get_rac(&c, state))
+        {
             av_log(NULL, AV_LOG_ERROR, "rac failure at %d\n", i);
             return 1;
         }

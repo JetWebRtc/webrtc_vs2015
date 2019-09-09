@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,12 +44,14 @@ static OPUS_INLINE void silk_CNG_exc(
     opus_int   i, idx, exc_mask;
 
     exc_mask = CNG_BUF_MASK_MAX;
-    while( exc_mask > length ) {
+    while( exc_mask > length )
+    {
         exc_mask = silk_RSHIFT( exc_mask, 1 );
     }
 
     seed = *rand_seed;
-    for( i = 0; i < length; i++ ) {
+    for( i = 0; i < length; i++ )
+    {
         seed = silk_RAND( seed );
         idx = (opus_int)( silk_RSHIFT( seed, 24 ) & exc_mask );
         silk_assert( idx >= 0 );
@@ -67,7 +69,8 @@ void silk_CNG_Reset(
 
     NLSF_step_Q15 = silk_DIV32_16( silk_int16_MAX, psDec->LPC_order + 1 );
     NLSF_acc_Q15 = 0;
-    for( i = 0; i < psDec->LPC_order; i++ ) {
+    for( i = 0; i < psDec->LPC_order; i++ )
+    {
         NLSF_acc_Q15 += NLSF_step_Q15;
         psDec->sCNG.CNG_smth_NLSF_Q15[ i ] = NLSF_acc_Q15;
     }
@@ -89,24 +92,29 @@ void silk_CNG(
     silk_CNG_struct *psCNG = &psDec->sCNG;
     SAVE_STACK;
 
-    if( psDec->fs_kHz != psCNG->fs_kHz ) {
+    if( psDec->fs_kHz != psCNG->fs_kHz )
+    {
         /* Reset state */
         silk_CNG_Reset( psDec );
 
         psCNG->fs_kHz = psDec->fs_kHz;
     }
-    if( psDec->lossCnt == 0 && psDec->prevSignalType == TYPE_NO_VOICE_ACTIVITY ) {
+    if( psDec->lossCnt == 0 && psDec->prevSignalType == TYPE_NO_VOICE_ACTIVITY )
+    {
         /* Update CNG parameters */
 
         /* Smoothing of LSF's  */
-        for( i = 0; i < psDec->LPC_order; i++ ) {
+        for( i = 0; i < psDec->LPC_order; i++ )
+        {
             psCNG->CNG_smth_NLSF_Q15[ i ] += silk_SMULWB( (opus_int32)psDec->prevNLSF_Q15[ i ] - (opus_int32)psCNG->CNG_smth_NLSF_Q15[ i ], CNG_NLSF_SMTH_Q16 );
         }
         /* Find the subframe with the highest gain */
         max_Gain_Q16 = 0;
         subfr        = 0;
-        for( i = 0; i < psDec->nb_subfr; i++ ) {
-            if( psDecCtrl->Gains_Q16[ i ] > max_Gain_Q16 ) {
+        for( i = 0; i < psDec->nb_subfr; i++ )
+        {
+            if( psDecCtrl->Gains_Q16[ i ] > max_Gain_Q16 )
+            {
                 max_Gain_Q16 = psDecCtrl->Gains_Q16[ i ];
                 subfr        = i;
             }
@@ -116,29 +124,34 @@ void silk_CNG(
         silk_memcpy(   psCNG->CNG_exc_buf_Q14, &psDec->exc_Q14[ subfr * psDec->subfr_length ], psDec->subfr_length * sizeof( opus_int32 ) );
 
         /* Smooth gains */
-        for( i = 0; i < psDec->nb_subfr; i++ ) {
+        for( i = 0; i < psDec->nb_subfr; i++ )
+        {
             psCNG->CNG_smth_Gain_Q16 += silk_SMULWB( psDecCtrl->Gains_Q16[ i ] - psCNG->CNG_smth_Gain_Q16, CNG_GAIN_SMTH_Q16 );
         }
     }
 
     /* Add CNG when packet is lost or during DTX */
-    if( psDec->lossCnt ) {
+    if( psDec->lossCnt )
+    {
         VARDECL( opus_int32, CNG_sig_Q14 );
         ALLOC( CNG_sig_Q14, length + MAX_LPC_ORDER, opus_int32 );
 
         /* Generate CNG excitation */
         gain_Q16 = silk_SMULWW( psDec->sPLC.randScale_Q14, psDec->sPLC.prevGain_Q16[1] );
-        if( gain_Q16 >= (1 << 21) || psCNG->CNG_smth_Gain_Q16 > (1 << 23) ) {
+        if( gain_Q16 >= (1 << 21) || psCNG->CNG_smth_Gain_Q16 > (1 << 23) )
+        {
             gain_Q16 = silk_SMULTT( gain_Q16, gain_Q16 );
             gain_Q16 = silk_SUB_LSHIFT32(silk_SMULTT( psCNG->CNG_smth_Gain_Q16, psCNG->CNG_smth_Gain_Q16 ), gain_Q16, 5 );
             gain_Q16 = silk_LSHIFT32( silk_SQRT_APPROX( gain_Q16 ), 16 );
-        } else {
+        }
+        else
+        {
             gain_Q16 = silk_SMULWW( gain_Q16, gain_Q16 );
             gain_Q16 = silk_SUB_LSHIFT32(silk_SMULWW( psCNG->CNG_smth_Gain_Q16, psCNG->CNG_smth_Gain_Q16 ), gain_Q16, 5 );
             gain_Q16 = silk_LSHIFT32( silk_SQRT_APPROX( gain_Q16 ), 8 );
         }
         gain_Q10 = silk_RSHIFT( gain_Q16, 6 );
-        
+
         silk_CNG_exc( CNG_sig_Q14 + MAX_LPC_ORDER, psCNG->CNG_exc_buf_Q14, length, &psCNG->rand_seed );
 
         /* Convert CNG NLSF to filter representation */
@@ -146,7 +159,8 @@ void silk_CNG(
 
         /* Generate CNG signal, by synthesis filtering */
         silk_memcpy( CNG_sig_Q14, psCNG->CNG_synth_state, MAX_LPC_ORDER * sizeof( opus_int32 ) );
-        for( i = 0; i < length; i++ ) {
+        for( i = 0; i < length; i++ )
+        {
             silk_assert( psDec->LPC_order == 10 || psDec->LPC_order == 16 );
             /* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
             LPC_pred_Q10 = silk_RSHIFT( psDec->LPC_order, 1 );
@@ -160,7 +174,8 @@ void silk_CNG(
             LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i -  8 ], A_Q12[ 7 ] );
             LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i -  9 ], A_Q12[ 8 ] );
             LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i - 10 ], A_Q12[ 9 ] );
-            if( psDec->LPC_order == 16 ) {
+            if( psDec->LPC_order == 16 )
+            {
                 LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i - 11 ], A_Q12[ 10 ] );
                 LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i - 12 ], A_Q12[ 11 ] );
                 LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i - 13 ], A_Q12[ 12 ] );
@@ -171,13 +186,15 @@ void silk_CNG(
 
             /* Update states */
             CNG_sig_Q14[ MAX_LPC_ORDER + i ] = silk_ADD_LSHIFT( CNG_sig_Q14[ MAX_LPC_ORDER + i ], LPC_pred_Q10, 4 );
-            
+
             /* Scale with Gain and add to input signal */
             frame[ i ] = (opus_int16)silk_ADD_SAT16( frame[ i ], silk_SAT16( silk_RSHIFT_ROUND( silk_SMULWW( CNG_sig_Q14[ MAX_LPC_ORDER + i ], gain_Q10 ), 8 ) ) );
-            
+
         }
         silk_memcpy( psCNG->CNG_synth_state, &CNG_sig_Q14[ length ], MAX_LPC_ORDER * sizeof( opus_int32 ) );
-    } else {
+    }
+    else
+    {
         silk_memset( psCNG->CNG_synth_state, 0, psDec->LPC_order *  sizeof( opus_int32 ) );
     }
     RESTORE_STACK;

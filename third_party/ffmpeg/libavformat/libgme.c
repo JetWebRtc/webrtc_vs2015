@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -28,7 +28,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct GMEContext {
+typedef struct GMEContext
+{
     const AVClass *class;
     Music_Emu *music_emu;
     gme_info_t *info;   ///< selected track
@@ -42,7 +43,8 @@ typedef struct GMEContext {
 #define OFFSET(x) offsetof(GMEContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM
 #define D AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     {"track_index", "set track that should be played",        OFFSET(track_index), AV_OPT_TYPE_INT,   {.i64 = 0},                0,    INT_MAX,  A|D},
     {"sample_rate", "set sample rate",                        OFFSET(sample_rate), AV_OPT_TYPE_INT,   {.i64 = 44100},            1000, 999999,   A|D},
     {"max_size",    "set max file size supported (in bytes)", OFFSET(max_size),    AV_OPT_TYPE_INT64, {.i64 = 50 * 1024 * 1024}, 0,    SIZE_MAX, A|D},
@@ -86,10 +88,13 @@ static int read_header_gme(AVFormatContext *s)
     char *buf;
     char dummy;
 
-    if (sz < 0) {
+    if (sz < 0)
+    {
         av_log(s, AV_LOG_WARNING, "Could not determine file size\n");
         sz = gme->max_size;
-    } else if (gme->max_size && sz > gme->max_size) {
+    }
+    else if (gme->max_size && sz > gme->max_size)
+    {
         sz = gme->max_size;
     }
 
@@ -99,14 +104,16 @@ static int read_header_gme(AVFormatContext *s)
     sz = avio_read(pb, buf, sz);
 
     // Data left means our buffer (the max_size option) is too small
-    if (avio_read(pb, &dummy, 1) == 1) {
+    if (avio_read(pb, &dummy, 1) == 1)
+    {
         av_log(s, AV_LOG_ERROR, "File size is larger than max_size option "
                "value %"PRIi64", consider increasing the max_size option\n",
                gme->max_size);
         return AVERROR_BUFFER_TOO_SMALL;
     }
 
-    if (gme_open_data(buf, sz, &gme->music_emu, gme->sample_rate)) {
+    if (gme_open_data(buf, sz, &gme->music_emu, gme->sample_rate))
+    {
         av_freep(&buf);
         return AVERROR_INVALIDDATA;
     }
@@ -172,7 +179,8 @@ static int read_seek_gme(AVFormatContext *s, int stream_idx, int64_t ts, int fla
 static int probe_gme(AVProbeData *p)
 {
     // Reads 4 bytes - returns "" if unknown format.
-    if (gme_identify_header(p->buf)[0]) {
+    if (gme_identify_header(p->buf)[0])
+    {
         if (p->buf_size < 16384)
             return AVPROBE_SCORE_MAX / 4 ;
         else
@@ -181,14 +189,16 @@ static int probe_gme(AVProbeData *p)
     return 0;
 }
 
-static const AVClass class_gme = {
+static const AVClass class_gme =
+{
     .class_name = "Game Music Emu demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_libgme_demuxer = {
+AVInputFormat ff_libgme_demuxer =
+{
     .name           = "libgme",
     .long_name      = NULL_IF_CONFIG_SMALL("Game Music Emu demuxer"),
     .priv_data_size = sizeof(GMEContext),

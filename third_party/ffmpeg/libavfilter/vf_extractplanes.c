@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -34,7 +34,8 @@
 #define PLANE_U 0x20
 #define PLANE_V 0x40
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int requested_planes;
     int map[4];
@@ -46,7 +47,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(ExtractPlanesContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption extractplanes_options[] = {
+static const AVOption extractplanes_options[] =
+{
     { "planes", "set planes",  OFFSET(requested_planes), AV_OPT_TYPE_FLAGS, {.i64=1}, 1, 0xff, FLAGS, "flags"},
     {      "y", "set luma plane",  0, AV_OPT_TYPE_CONST, {.i64=PLANE_Y}, 0, 0, FLAGS, "flags"},
     {      "u", "set u plane",     0, AV_OPT_TYPE_CONST, {.i64=PLANE_U}, 0, 0, FLAGS, "flags"},
@@ -62,7 +64,8 @@ AVFILTER_DEFINE_CLASS(extractplanes);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat in_pixfmts[] = {
+    static const enum AVPixelFormat in_pixfmts[] =
+    {
         AV_PIX_FMT_YUV410P,
         AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV440P,
@@ -102,7 +105,8 @@ static int query_formats(AVFilterContext *ctx)
     int i, depth = 0, be = 0;
 
     if (!ctx->inputs[0]->in_formats ||
-        !ctx->inputs[0]->in_formats->nb_formats) {
+            !ctx->inputs[0]->in_formats->nb_formats)
+    {
         return AVERROR(EAGAIN);
     }
 
@@ -113,10 +117,12 @@ static int query_formats(AVFilterContext *ctx)
     desc = av_pix_fmt_desc_get(avff->formats[0]);
     depth = desc->comp[0].depth_minus1;
     be = desc->flags & AV_PIX_FMT_FLAG_BE;
-    for (i = 1; i < avff->nb_formats; i++) {
+    for (i = 1; i < avff->nb_formats; i++)
+    {
         desc = av_pix_fmt_desc_get(avff->formats[i]);
         if (depth != desc->comp[0].depth_minus1 ||
-            be    != (desc->flags & AV_PIX_FMT_FLAG_BE)) {
+                be    != (desc->flags & AV_PIX_FMT_FLAG_BE))
+        {
             return AVERROR(EAGAIN);
         }
     }
@@ -142,10 +148,11 @@ static int config_input(AVFilterLink *inlink)
     uint8_t rgba_map[4];
 
     plane_avail = ((desc->flags & AV_PIX_FMT_FLAG_RGB) ? PLANE_R|PLANE_G|PLANE_B :
-                                                 PLANE_Y |
-                                ((desc->nb_components > 2) ? PLANE_U|PLANE_V : 0)) |
+                   PLANE_Y |
+                   ((desc->nb_components > 2) ? PLANE_U|PLANE_V : 0)) |
                   ((desc->flags & AV_PIX_FMT_FLAG_ALPHA) ? PLANE_A : 0);
-    if (s->requested_planes & ~plane_avail) {
+    if (s->requested_planes & ~plane_avail)
+    {
         av_log(ctx, AV_LOG_ERROR, "Requested planes not available.\n");
         return AVERROR(EINVAL);
     }
@@ -155,8 +162,9 @@ static int config_input(AVFilterLink *inlink)
     s->depth = (desc->comp[0].depth_minus1 + 1) >> 3;
     s->step = av_get_padded_bits_per_pixel(desc) >> 3;
     s->is_packed = !(desc->flags & AV_PIX_FMT_FLAG_PLANAR) &&
-                    (desc->nb_components > 1);
-    if (desc->flags & AV_PIX_FMT_FLAG_RGB) {
+                   (desc->nb_components > 1);
+    if (desc->flags & AV_PIX_FMT_FLAG_RGB)
+    {
         ff_fill_rgba_map(rgba_map, inlink->format);
         for (i = 0; i < 4; i++)
             s->map[i] = rgba_map[s->map[i]];
@@ -173,7 +181,8 @@ static int config_output(AVFilterLink *outlink)
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(inlink->format);
     const int output = outlink->srcpad - ctx->output_pads;
 
-    if (s->map[output] == 1 || s->map[output] == 2) {
+    if (s->map[output] == 1 || s->map[output] == 2)
+    {
         outlink->h = FF_CEIL_RSHIFT(inlink->h, desc->log2_chroma_h);
         outlink->w = FF_CEIL_RSHIFT(inlink->w, desc->log2_chroma_w);
     }
@@ -188,14 +197,17 @@ static void extract_from_packed(uint8_t *dst, int dst_linesize,
 {
     int x, y;
 
-    for (y = 0; y < height; y++) {
-        switch (depth) {
+    for (y = 0; y < height; y++)
+    {
+        switch (depth)
+        {
         case 1:
             for (x = 0; x < width; x++)
                 dst[x] = src[x * step + comp];
             break;
         case 2:
-            for (x = 0; x < width; x++) {
+            for (x = 0; x < width; x++)
+            {
                 dst[x * 2    ] = src[x * step + comp * 2    ];
                 dst[x * 2 + 1] = src[x * step + comp * 2 + 1];
             }
@@ -212,7 +224,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     ExtractPlanesContext *s = ctx->priv;
     int i, eof = 0, ret = 0;
 
-    for (i = 0; i < ctx->nb_outputs; i++) {
+    for (i = 0; i < ctx->nb_outputs; i++)
+    {
         AVFilterLink *outlink = ctx->outputs[i];
         const int idx = s->map[i];
         AVFrame *out;
@@ -221,19 +234,23 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
             continue;
 
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             ret = AVERROR(ENOMEM);
             break;
         }
         av_frame_copy_props(out, frame);
 
-        if (s->is_packed) {
+        if (s->is_packed)
+        {
             extract_from_packed(out->data[0], out->linesize[0],
                                 frame->data[0], frame->linesize[0],
                                 outlink->w, outlink->h,
                                 s->depth,
                                 s->step, idx);
-        } else {
+        }
+        else
+        {
             av_image_copy_plane(out->data[0], out->linesize[0],
                                 frame->data[idx], frame->linesize[idx],
                                 s->linesize[idx], outlink->h);
@@ -260,7 +277,8 @@ static av_cold int init(AVFilterContext *ctx)
     int planes = (s->requested_planes & 0xf) | (s->requested_planes >> 4);
     int i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         char *name;
         AVFilterPad pad = { 0 };
 
@@ -289,7 +307,8 @@ static av_cold void uninit(AVFilterContext *ctx)
         av_freep(&ctx->output_pads[i].name);
 }
 
-static const AVFilterPad extractplanes_inputs[] = {
+static const AVFilterPad extractplanes_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -299,7 +318,8 @@ static const AVFilterPad extractplanes_inputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_extractplanes = {
+AVFilter ff_vf_extractplanes =
+{
     .name          = "extractplanes",
     .description   = NULL_IF_CONFIG_SMALL("Extract planes as grayscale frames."),
     .priv_size     = sizeof(ExtractPlanesContext),
@@ -323,10 +343,11 @@ static av_cold int init_alphaextract(AVFilterContext *ctx)
     return init(ctx);
 }
 
-AVFilter ff_vf_alphaextract = {
+AVFilter ff_vf_alphaextract =
+{
     .name           = "alphaextract",
     .description    = NULL_IF_CONFIG_SMALL("Extract an alpha channel as a "
-                      "grayscale image component."),
+    "grayscale image component."),
     .priv_size      = sizeof(ExtractPlanesContext),
     .init           = init_alphaextract,
     .uninit         = uninit,

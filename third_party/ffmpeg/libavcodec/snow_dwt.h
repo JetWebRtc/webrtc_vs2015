@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2004-2010 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@ typedef short IDWTELEM;
 
 #define MAX_DECOMPOSITIONS 8
 
-typedef struct DWTCompose {
+typedef struct DWTCompose
+{
     IDWTELEM *b0;
     IDWTELEM *b1;
     IDWTELEM *b2;
@@ -39,7 +40,8 @@ typedef struct DWTCompose {
 
 /** Used to minimize the amount of memory used in order to
  *  optimize cache performance. **/
-typedef struct slice_buffer_s {
+typedef struct slice_buffer_s
+{
     IDWTELEM **line;   ///< For use by idwt and predict_slices.
     IDWTELEM **data_stack;   ///< Used for internal purposes.
     int data_stack_top;
@@ -51,7 +53,8 @@ typedef struct slice_buffer_s {
 
 struct SnowDWTContext;
 
-typedef struct SnowDWTContext {
+typedef struct SnowDWTContext
+{
     void (*vertical_compose97i)(IDWTELEM *b0, IDWTELEM *b1, IDWTELEM *b2,
                                 IDWTELEM *b3, IDWTELEM *b4, IDWTELEM *b5,
                                 int width);

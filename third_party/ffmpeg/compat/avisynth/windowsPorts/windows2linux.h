@@ -1,4 +1,4 @@
-#ifndef __WINDOWS2LINUX_H__
+﻿#ifndef __WINDOWS2LINUX_H__
 #define __WINDOWS2LINUX_H__
 
 /*
@@ -12,7 +12,8 @@
 #include "basicDataTypeConversions.h"
 
 #ifdef __cplusplus
-namespace avxsynth {
+namespace avxsynth
+{
 #endif // __cplusplus
 //
 // purposefully define the following MSFT definitions

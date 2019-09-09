@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP parser for AC3 payload format (RFC 4184)
  * Copyright (c) 2015 Gilles Chanteperdrix <gch@xenomai.org>
  *
@@ -25,7 +25,8 @@
 
 #define RTP_AC3_PAYLOAD_HEADER_SIZE 2
 
-struct PayloadContext {
+struct PayloadContext
+{
     unsigned nr_frames;
     unsigned last_frame;
     uint32_t timestamp;
@@ -46,7 +47,8 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     unsigned nr_frames;
     int err;
 
-    if (len < RTP_AC3_PAYLOAD_HEADER_SIZE + 1) {
+    if (len < RTP_AC3_PAYLOAD_HEADER_SIZE + 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid %d bytes packet\n", len);
         return AVERROR_INVALIDDATA;
     }
@@ -56,13 +58,16 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     buf += RTP_AC3_PAYLOAD_HEADER_SIZE;
     len -= RTP_AC3_PAYLOAD_HEADER_SIZE;
 
-    switch (frame_type) {
+    switch (frame_type)
+    {
     case 0: /* One or more complete frames */
-        if (!nr_frames) {
+        if (!nr_frames)
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid AC3 packet data\n");
             return AVERROR_INVALIDDATA;
         }
-        if (av_new_packet(pkt, len)) {
+        if (av_new_packet(pkt, len))
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
             return AVERROR(ENOMEM);
         }
@@ -86,13 +91,15 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         return AVERROR(EAGAIN);
 
     case 3: /* Fragment other than first */
-        if (!data->fragment) {
+        if (!data->fragment)
+        {
             av_log(ctx, AV_LOG_WARNING,
                    "Received packet without a start fragment; dropping.\n");
             return AVERROR(EAGAIN);
         }
         if (nr_frames != data->nr_frames ||
-            data->timestamp != *timestamp) {
+                data->timestamp != *timestamp)
+        {
             ffio_free_dyn_buf(&data->fragment);
             av_log(ctx, AV_LOG_ERROR, "Invalid packet received\n");
             return AVERROR_INVALIDDATA;
@@ -105,7 +112,8 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     if (!(flags & RTP_FLAG_MARKER))
         return AVERROR(EAGAIN);
 
-    if (data->last_frame != data->nr_frames) {
+    if (data->last_frame != data->nr_frames)
+    {
         ffio_free_dyn_buf(&data->fragment);
         av_log(ctx, AV_LOG_ERROR, "Missed %d packets\n",
                data->nr_frames - data->last_frame);
@@ -113,7 +121,8 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     }
 
     err = ff_rtp_finalize_packet(pkt, &data->fragment, st->index);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Error occurred when getting fragment buffer.\n");
         return err;
@@ -122,7 +131,8 @@ static int ac3_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_ac3_dynamic_handler = {
+RTPDynamicProtocolHandler ff_ac3_dynamic_handler =
+{
     .enc_name           = "ac3",
     .codec_type         = AVMEDIA_TYPE_AUDIO,
     .codec_id           = AV_CODEC_ID_AC3,

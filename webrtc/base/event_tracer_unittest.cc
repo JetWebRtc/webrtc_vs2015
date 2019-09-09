@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,36 +14,46 @@
 #include "webrtc/system_wrappers/include/static_instance.h"
 #include "webrtc/test/gtest.h"
 
-namespace {
+namespace
+{
 
-class TestStatistics {
- public:
-  TestStatistics() : events_logged_(0) {
-  }
+class TestStatistics
+{
+public:
+    TestStatistics() : events_logged_(0)
+    {
+    }
 
-  void Reset() {
-    events_logged_ = 0;
-  }
+    void Reset()
+    {
+        events_logged_ = 0;
+    }
 
-  void Increment() {
-    ++events_logged_;
-  }
+    void Increment()
+    {
+        ++events_logged_;
+    }
 
-  int Count() const { return events_logged_; }
+    int Count() const
+    {
+        return events_logged_;
+    }
 
-  static TestStatistics* Get() {
-    static TestStatistics* test_stats = NULL;
-    if (!test_stats)
-      test_stats = new TestStatistics();
-    return test_stats;
-  }
+    static TestStatistics* Get()
+    {
+        static TestStatistics* test_stats = NULL;
+        if (!test_stats)
+            test_stats = new TestStatistics();
+        return test_stats;
+    }
 
- private:
-  int events_logged_;
+private:
+    int events_logged_;
 };
 
-static const unsigned char* GetCategoryEnabledHandler(const char* name) {
-  return reinterpret_cast<const unsigned char*>("test");
+static const unsigned char* GetCategoryEnabledHandler(const char* name)
+{
+    return reinterpret_cast<const unsigned char*>("test");
 }
 
 static void AddTraceEventHandler(char phase,
@@ -54,29 +64,33 @@ static void AddTraceEventHandler(char phase,
                                  const char** arg_names,
                                  const unsigned char* arg_types,
                                  const unsigned long long* arg_values,
-                                 unsigned char flags) {
-  TestStatistics::Get()->Increment();
+                                 unsigned char flags)
+{
+    TestStatistics::Get()->Increment();
 }
 
 }  // namespace
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(EventTracerTest, EventTracerDisabled) {
-  {
-    TRACE_EVENT0("test", "EventTracerDisabled");
-  }
-  EXPECT_FALSE(TestStatistics::Get()->Count());
-  TestStatistics::Get()->Reset();
+TEST(EventTracerTest, EventTracerDisabled)
+{
+    {
+        TRACE_EVENT0("test", "EventTracerDisabled");
+    }
+    EXPECT_FALSE(TestStatistics::Get()->Count());
+    TestStatistics::Get()->Reset();
 }
 
-TEST(EventTracerTest, ScopedTraceEvent) {
-  SetupEventTracer(&GetCategoryEnabledHandler, &AddTraceEventHandler);
-  {
-    TRACE_EVENT0("test", "ScopedTraceEvent");
-  }
-  EXPECT_EQ(2, TestStatistics::Get()->Count());
-  TestStatistics::Get()->Reset();
+TEST(EventTracerTest, ScopedTraceEvent)
+{
+    SetupEventTracer(&GetCategoryEnabledHandler, &AddTraceEventHandler);
+    {
+        TRACE_EVENT0("test", "ScopedTraceEvent");
+    }
+    EXPECT_EQ(2, TestStatistics::Get()->Count());
+    TestStatistics::Get()->Reset();
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Matroska common data
  * Copyright (c) 2003-2004 The FFmpeg Project
  *
@@ -26,7 +26,8 @@
 /* If you add a tag here that is not in ff_codec_bmp_tags[]
    or ff_codec_wav_tags[], add it also to additional_audio_tags[]
    or additional_video_tags[] in matroskaenc.c */
-const CodecTags ff_mkv_codec_tags[]={
+const CodecTags ff_mkv_codec_tags[]=
+{
     {"A_AAC"            , AV_CODEC_ID_AAC},
     {"A_AC3"            , AV_CODEC_ID_AC3},
     {"A_ALAC"           , AV_CODEC_ID_ALAC},
@@ -99,7 +100,8 @@ const CodecTags ff_mkv_codec_tags[]={
     {""                 , AV_CODEC_ID_NONE}
 };
 
-const CodecMime ff_mkv_image_mime_tags[] = {
+const CodecMime ff_mkv_image_mime_tags[] =
+{
     {"image/gif"                  , AV_CODEC_ID_GIF},
     {"image/jpeg"                 , AV_CODEC_ID_MJPEG},
     {"image/png"                  , AV_CODEC_ID_PNG},
@@ -108,7 +110,8 @@ const CodecMime ff_mkv_image_mime_tags[] = {
     {""                           , AV_CODEC_ID_NONE}
 };
 
-const CodecMime ff_mkv_mime_tags[] = {
+const CodecMime ff_mkv_mime_tags[] =
+{
     {"text/plain"                 , AV_CODEC_ID_TEXT},
     {"application/x-truetype-font", AV_CODEC_ID_TTF},
     {"application/x-font"         , AV_CODEC_ID_TTF},
@@ -118,13 +121,15 @@ const CodecMime ff_mkv_mime_tags[] = {
     {""                           , AV_CODEC_ID_NONE}
 };
 
-const AVMetadataConv ff_mkv_metadata_conv[] = {
+const AVMetadataConv ff_mkv_metadata_conv[] =
+{
     { "LEAD_PERFORMER", "performer" },
     { "PART_NUMBER"   , "track"  },
     { 0 }
 };
 
-const char * const ff_matroska_video_stereo_mode[MATROSKA_VIDEO_STEREOMODE_TYPE_NB] = {
+const char * const ff_matroska_video_stereo_mode[MATROSKA_VIDEO_STEREOMODE_TYPE_NB] =
+{
     "mono",
     "left_right",
     "bottom_top",
@@ -142,7 +147,8 @@ const char * const ff_matroska_video_stereo_mode[MATROSKA_VIDEO_STEREOMODE_TYPE_
     "block_rl",
 };
 
-const char * const ff_matroska_video_stereo_plane[MATROSKA_VIDEO_STEREO_PLANE_COUNT] = {
+const char * const ff_matroska_video_stereo_plane[MATROSKA_VIDEO_STEREO_PLANE_COUNT] =
+{
     "left",
     "right",
     "background",
@@ -158,7 +164,8 @@ int ff_mkv_stereo3d_conv(AVStream *st, MatroskaVideoStereoModeType stereo_mode)
         return AVERROR(ENOMEM);
 
     tmp = av_realloc_array(st->side_data, st->nb_side_data + 1, sizeof(*tmp));
-    if (!tmp) {
+    if (!tmp)
+    {
         av_freep(&stereo);
         return AVERROR(ENOMEM);
     }
@@ -171,7 +178,8 @@ int ff_mkv_stereo3d_conv(AVStream *st, MatroskaVideoStereoModeType stereo_mode)
     sd->size = sizeof(*stereo);
 
     // note: the missing breaks are intentional
-    switch (stereo_mode) {
+    switch (stereo_mode)
+    {
     case MATROSKA_VIDEO_STEREOMODE_TYPE_MONO:
         stereo->type = AV_STEREO3D_2D;
         break;

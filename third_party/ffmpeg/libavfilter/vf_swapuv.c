@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -55,13 +55,14 @@ static int is_planar_yuv(const AVPixFmtDescriptor *desc)
     int i;
 
     if (desc->flags & ~(AV_PIX_FMT_FLAG_BE | AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_ALPHA) ||
-        desc->nb_components < 3 ||
-        (desc->comp[1].depth_minus1 != desc->comp[2].depth_minus1))
+            desc->nb_components < 3 ||
+            (desc->comp[1].depth_minus1 != desc->comp[2].depth_minus1))
         return 0;
-    for (i = 0; i < desc->nb_components; i++) {
+    for (i = 0; i < desc->nb_components; i++)
+    {
         if (desc->comp[i].offset_plus1 != 1 ||
-            desc->comp[i].shift != 0 ||
-            desc->comp[i].plane != i)
+                desc->comp[i].shift != 0 ||
+                desc->comp[i].plane != i)
             return 0;
     }
 
@@ -73,7 +74,8 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (is_planar_yuv(desc))
             ff_add_format(&formats, fmt);
@@ -82,7 +84,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, formats);
 }
 
-static const AVFilterPad swapuv_inputs[] = {
+static const AVFilterPad swapuv_inputs[] =
+{
     {
         .name             = "default",
         .type             = AVMEDIA_TYPE_VIDEO,
@@ -92,7 +95,8 @@ static const AVFilterPad swapuv_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad swapuv_outputs[] = {
+static const AVFilterPad swapuv_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -100,7 +104,8 @@ static const AVFilterPad swapuv_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_swapuv = {
+AVFilter ff_vf_swapuv =
+{
     .name          = "swapuv",
     .description   = NULL_IF_CONFIG_SMALL("Swap U and V components."),
     .query_formats = query_formats,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,11 +14,13 @@
 
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(BackgroundNoise, CreateAndDestroy) {
-  size_t channels = 1;
-  BackgroundNoise bgn(channels);
+TEST(BackgroundNoise, CreateAndDestroy)
+{
+    size_t channels = 1;
+    BackgroundNoise bgn(channels);
 }
 
 // TODO(hlundin): Write more tests.

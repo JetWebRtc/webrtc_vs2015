@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libquicktime yuv4 decoder
  *
  * Copyright (c) 2011 Carl Eugen Hoyos
@@ -38,7 +38,8 @@ static int yuv4_decode_frame(AVCodecContext *avctx, void *data,
     uint8_t *y, *u, *v;
     int i, j, ret;
 
-    if (avpkt->size < 6 * (avctx->width + 1 >> 1) * (avctx->height + 1 >> 1)) {
+    if (avpkt->size < 6 * (avctx->width + 1 >> 1) * (avctx->height + 1 >> 1))
+    {
         av_log(avctx, AV_LOG_ERROR, "Insufficient input data.\n");
         return AVERROR(EINVAL);
     }
@@ -53,8 +54,10 @@ static int yuv4_decode_frame(AVCodecContext *avctx, void *data,
     u = pic->data[1];
     v = pic->data[2];
 
-    for (i = 0; i < (avctx->height + 1) >> 1; i++) {
-        for (j = 0; j < (avctx->width + 1) >> 1; j++) {
+    for (i = 0; i < (avctx->height + 1) >> 1; i++)
+    {
+        for (j = 0; j < (avctx->width + 1) >> 1; j++)
+        {
             u[j] = *src++ ^ 0x80;
             v[j] = *src++ ^ 0x80;
             y[                   2 * j    ] = *src++;
@@ -73,7 +76,8 @@ static int yuv4_decode_frame(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_yuv4_decoder = {
+AVCodec ff_yuv4_decoder =
+{
     .name         = "yuv4",
     .long_name    = NULL_IF_CONFIG_SMALL("Uncompressed packed 4:2:0"),
     .type         = AVMEDIA_TYPE_VIDEO,

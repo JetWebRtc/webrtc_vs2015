@@ -1,4 +1,4 @@
-/*
+﻿/*
  * V210 decoder
  *
  * Copyright (C) 2009 Michael Niedermayer <michaelni@gmx.at>
@@ -41,7 +41,8 @@ static void v210_planar_unpack_c(const uint32_t *src, uint16_t *y, uint16_t *u, 
     uint32_t val;
     int i;
 
-    for( i = 0; i < width-5; i += 6 ){
+    for( i = 0; i < width-5; i += 6 )
+    {
         READ_PIXELS(u, y, v);
         READ_PIXELS(y, u, y);
         READ_PIXELS(v, y, u);
@@ -53,7 +54,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
 {
     V210DecContext *s = avctx->priv_data;
 
-    if (avctx->width & 1) {
+    if (avctx->width & 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "v210 needs even width\n");
         return AVERROR_INVALIDDATA;
     }
@@ -80,25 +82,31 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     if (s->custom_stride )
         stride = s->custom_stride;
-    else {
+    else
+    {
         int aligned_width = ((avctx->width + 47) / 48) * 48;
         stride = aligned_width * 8 / 3;
     }
 
-    if (avpkt->size < stride * avctx->height) {
-        if ((((avctx->width + 23) / 24) * 24 * 8) / 3 * avctx->height == avpkt->size) {
+    if (avpkt->size < stride * avctx->height)
+    {
+        if ((((avctx->width + 23) / 24) * 24 * 8) / 3 * avctx->height == avpkt->size)
+        {
             stride = avpkt->size / avctx->height;
             if (!s->stride_warning_shown)
                 av_log(avctx, AV_LOG_WARNING, "Broken v210 with too small padding (64 byte) detected\n");
             s->stride_warning_shown = 1;
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_ERROR, "packet too small\n");
             return AVERROR_INVALIDDATA;
         }
     }
 
     aligned_input = !((uintptr_t)psrc & 0xf) && !(stride & 0xf);
-    if (aligned_input != s->aligned_input) {
+    if (aligned_input != s->aligned_input)
+    {
         s->aligned_input = aligned_input;
         if (HAVE_MMX)
             ff_v210_x86_init(s);
@@ -113,7 +121,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     pic->pict_type = AV_PICTURE_TYPE_I;
     pic->key_frame = 1;
 
-    for (h = 0; h < avctx->height; h++) {
+    for (h = 0; h < avctx->height; h++)
+    {
         const uint32_t *src = (const uint32_t*)psrc;
         uint32_t val;
 
@@ -125,12 +134,14 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         v += w >> 1;
         src += (w << 1) / 3;
 
-        if (w < avctx->width - 1) {
+        if (w < avctx->width - 1)
+        {
             READ_PIXELS(u, y, v);
 
             val  = av_le2ne32(*src++);
             *y++ =  val & 0x3FF;
-            if (w < avctx->width - 3) {
+            if (w < avctx->width - 3)
+            {
                 *u++ = (val >> 10) & 0x3FF;
                 *y++ = (val >> 20) & 0x3FF;
 
@@ -146,7 +157,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         v += pic->linesize[2] / 2 - avctx->width / 2;
     }
 
-    if (avctx->field_order > AV_FIELD_PROGRESSIVE) {
+    if (avctx->field_order > AV_FIELD_PROGRESSIVE)
+    {
         /* we have interlaced material flagged in container */
         pic->interlaced_frame = 1;
         if (avctx->field_order == AV_FIELD_TT || avctx->field_order == AV_FIELD_TB)
@@ -159,20 +171,25 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 }
 
 #define V210DEC_FLAGS AV_OPT_FLAG_DECODING_PARAM | AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption v210dec_options[] = {
-    {"custom_stride", "Custom V210 stride", offsetof(V210DecContext, custom_stride), AV_OPT_TYPE_INT,
-     {.i64 = 0}, INT_MIN, INT_MAX, V210DEC_FLAGS},
+static const AVOption v210dec_options[] =
+{
+    {
+        "custom_stride", "Custom V210 stride", offsetof(V210DecContext, custom_stride), AV_OPT_TYPE_INT,
+        {.i64 = 0}, INT_MIN, INT_MAX, V210DEC_FLAGS
+    },
     {NULL}
 };
 
-static const AVClass v210dec_class = {
+static const AVClass v210dec_class =
+{
     "V210 Decoder",
     av_default_item_name,
     v210dec_options,
     LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_v210_decoder = {
+AVCodec ff_v210_decoder =
+{
     .name           = "v210",
     .long_name      = NULL_IF_CONFIG_SMALL("Uncompressed 4:2:2 10-bit"),
     .type           = AVMEDIA_TYPE_VIDEO,

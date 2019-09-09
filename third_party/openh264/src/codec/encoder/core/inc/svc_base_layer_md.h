@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2010-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 #include "md.h"
 #include "mb_cache.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 void WelsMdIntraInit (sWelsEncCtx* pEncCtx, SMB* pCurMb, SMbCache* pMbCache, const int32_t kiSliceFirstMbXY);
 int32_t WelsMdI16x16 (SWelsFuncPtrList* pFunc, SDqLayer* pCurDqLayer, SMbCache* pMbCache, int32_t iLambda);
 int32_t WelsMdIntraChroma (SWelsFuncPtrList* pFunc, SDqLayer* pCurDqLayer, SMbCache* pMbCache, int32_t iLambda);
@@ -70,7 +71,7 @@ int32_t WelsMdP4x8 (SWelsFuncPtrList* pFunc, SDqLayer* pCurDqLayer, SWelsMD* pWe
 /*static*/ void WelsMdInterFinePartition (sWelsEncCtx* pEnc, SWelsMD* pMd, SSlice* pSlice, SMB* pCurMb, int32_t bestCost);
 /*static*/ void WelsMdInterFinePartitionVaa (sWelsEncCtx* pEnc, SWelsMD* pMd, SSlice* pSlice, SMB* pCurMb, int32_t bestCost);
 /*static*/ void WelsMdInterFinePartitionVaaOnScreen (sWelsEncCtx* pEnc, SWelsMD* pMd, SSlice* pSlice, SMB* pCurMb,
-    int32_t bestCost);
+        int32_t bestCost);
 void WelsMdInterMbRefinement (sWelsEncCtx* pEncCtx, SWelsMD* pWelsMd, SMB* pCurMb, SMbCache* pMbCache);
 bool WelsMdFirstIntraMode (sWelsEncCtx* pEnc, SWelsMD* pMd, SMB* pCurMb, SMbCache* pMbCache);
 //bool svc_md_first_intra_mode_constrained(sWelsEncCtx* pEnc, SWelsMD* pMd, SMB* pCurMb, SMbCache *pMbCache);

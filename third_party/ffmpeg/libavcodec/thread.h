@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 Alexander Strange <astrange@ithinksw.com>
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@
 #include "config.h"
 #include "avcodec.h"
 
-typedef struct ThreadFrame {
+typedef struct ThreadFrame
+{
     AVFrame *f;
     AVCodecContext *owner;
     // progress->data is an array of 2 ints holding progress for top/bottom

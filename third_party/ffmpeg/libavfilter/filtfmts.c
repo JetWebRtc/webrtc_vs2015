@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -79,7 +79,8 @@ int main(int argc, char **argv)
 
     av_log_set_level(AV_LOG_DEBUG);
 
-    if (argc < 2) {
+    if (argc < 2)
+    {
         fprintf(stderr, "Missing filter name as argument\n");
         return 1;
     }
@@ -96,27 +97,32 @@ int main(int argc, char **argv)
     avfilter_register_all();
 
     /* get a corresponding filter and open it */
-    if (!(filter = avfilter_get_by_name(filter_name))) {
+    if (!(filter = avfilter_get_by_name(filter_name)))
+    {
         fprintf(stderr, "Unrecognized filter with name '%s'\n", filter_name);
         return 1;
     }
 
     /* open filter and add it to the graph */
-    if (!(filter_ctx = avfilter_graph_alloc_filter(graph_ctx, filter, filter_name))) {
+    if (!(filter_ctx = avfilter_graph_alloc_filter(graph_ctx, filter, filter_name)))
+    {
         fprintf(stderr, "Impossible to open filter with name '%s'\n",
                 filter_name);
         return 1;
     }
-    if (avfilter_init_str(filter_ctx, filter_args) < 0) {
+    if (avfilter_init_str(filter_ctx, filter_args) < 0)
+    {
         fprintf(stderr, "Impossible to init filter '%s' with arguments '%s'\n",
                 filter_name, filter_args);
         return 1;
     }
 
     /* create a link for each of the input pads */
-    for (i = 0; i < filter_ctx->nb_inputs; i++) {
+    for (i = 0; i < filter_ctx->nb_inputs; i++)
+    {
         AVFilterLink *link = av_mallocz(sizeof(AVFilterLink));
-        if (!link) {
+        if (!link)
+        {
             fprintf(stderr, "Unable to allocate memory for filter input link\n");
             ret = 1;
             goto fail;
@@ -124,9 +130,11 @@ int main(int argc, char **argv)
         link->type = avfilter_pad_get_type(filter_ctx->input_pads, i);
         filter_ctx->inputs[i] = link;
     }
-    for (i = 0; i < filter_ctx->nb_outputs; i++) {
+    for (i = 0; i < filter_ctx->nb_outputs; i++)
+    {
         AVFilterLink *link = av_mallocz(sizeof(AVFilterLink));
-        if (!link) {
+        if (!link)
+        {
             fprintf(stderr, "Unable to allocate memory for filter output link\n");
             ret = 1;
             goto fail;

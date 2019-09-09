@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -47,7 +47,8 @@ int av_parse_ratio(AVRational *q, const char *str, int max,
     char c;
     int ret;
 
-    if (sscanf(str, "%d:%d%c", &q->num, &q->den, &c) != 2) {
+    if (sscanf(str, "%d:%d%c", &q->num, &q->den, &c) != 2)
+    {
         double d;
         ret = av_expr_parse_and_eval(&d, str, NULL, NULL,
                                      NULL, NULL, NULL, NULL,
@@ -55,24 +56,29 @@ int av_parse_ratio(AVRational *q, const char *str, int max,
         if (ret < 0)
             return ret;
         *q = av_d2q(d, max);
-    } else {
+    }
+    else
+    {
         av_reduce(&q->num, &q->den, q->num, q->den, max);
     }
 
     return 0;
 }
 
-typedef struct VideoSizeAbbr {
+typedef struct VideoSizeAbbr
+{
     const char *abbr;
     int width, height;
 } VideoSizeAbbr;
 
-typedef struct VideoRateAbbr {
+typedef struct VideoRateAbbr
+{
     const char *abbr;
     AVRational rate;
 } VideoRateAbbr;
 
-static const VideoSizeAbbr video_size_abbrs[] = {
+static const VideoSizeAbbr video_size_abbrs[] =
+{
     { "ntsc",      720, 480 },
     { "pal",       720, 576 },
     { "qntsc",     352, 240 }, /* VCD compliant NTSC */
@@ -128,7 +134,8 @@ static const VideoSizeAbbr video_size_abbrs[] = {
     { "uhd4320",  7680,4320 },
 };
 
-static const VideoRateAbbr video_rate_abbrs[]= {
+static const VideoRateAbbr video_rate_abbrs[]=
+{
     { "ntsc",      { 30000, 1001 } },
     { "pal",       {    25,    1 } },
     { "qntsc",     { 30000, 1001 } }, /* VCD compliant NTSC */
@@ -146,14 +153,17 @@ int av_parse_video_size(int *width_ptr, int *height_ptr, const char *str)
     const char *p;
     int width = 0, height = 0;
 
-    for (i = 0; i < n; i++) {
-        if (!strcmp(video_size_abbrs[i].abbr, str)) {
+    for (i = 0; i < n; i++)
+    {
+        if (!strcmp(video_size_abbrs[i].abbr, str))
+        {
             width  = video_size_abbrs[i].width;
             height = video_size_abbrs[i].height;
             break;
         }
     }
-    if (i == n) {
+    if (i == n)
+    {
         width = strtol(str, (void*)&p, 10);
         if (*p)
             p++;
@@ -177,7 +187,8 @@ int av_parse_video_rate(AVRational *rate, const char *arg)
 
     /* First, we check our abbreviation table */
     for (i = 0; i < n; ++i)
-        if (!strcmp(video_rate_abbrs[i].abbr, arg)) {
+        if (!strcmp(video_rate_abbrs[i].abbr, arg))
+        {
             *rate = video_rate_abbrs[i].rate;
             return 0;
         }
@@ -190,12 +201,14 @@ int av_parse_video_rate(AVRational *rate, const char *arg)
     return 0;
 }
 
-typedef struct ColorEntry {
+typedef struct ColorEntry
+{
     const char *name;            ///< a string representing the name of the color
     uint8_t     rgb_color[3];    ///< RGB values for the color
 } ColorEntry;
 
-static const ColorEntry color_table[] = {
+static const ColorEntry color_table[] =
+{
     { "AliceBlue",            { 0xF0, 0xF8, 0xFF } },
     { "AntiqueWhite",         { 0xFA, 0xEB, 0xD7 } },
     { "Aqua",                 { 0x00, 0xFF, 0xFF } },
@@ -352,9 +365,11 @@ int av_parse_color(uint8_t *rgba_color, const char *color_string, int slen,
     const ColorEntry *entry;
     int len, hex_offset = 0;
 
-    if (color_string[0] == '#') {
+    if (color_string[0] == '#')
+    {
         hex_offset = 1;
-    } else if (!strncmp(color_string, "0x", 2))
+    }
+    else if (!strncmp(color_string, "0x", 2))
         hex_offset = 2;
 
     if (slen < 0)
@@ -366,47 +381,59 @@ int av_parse_color(uint8_t *rgba_color, const char *color_string, int slen,
     len = strlen(color_string2);
     rgba_color[3] = 255;
 
-    if (!av_strcasecmp(color_string2, "random") || !av_strcasecmp(color_string2, "bikeshed")) {
+    if (!av_strcasecmp(color_string2, "random") || !av_strcasecmp(color_string2, "bikeshed"))
+    {
         int rgba = av_get_random_seed();
         rgba_color[0] = rgba >> 24;
         rgba_color[1] = rgba >> 16;
         rgba_color[2] = rgba >> 8;
         rgba_color[3] = rgba;
-    } else if (hex_offset ||
-               strspn(color_string2, "0123456789ABCDEFabcdef") == len) {
+    }
+    else if (hex_offset ||
+             strspn(color_string2, "0123456789ABCDEFabcdef") == len)
+    {
         char *tail;
         unsigned int rgba = strtoul(color_string2, &tail, 16);
 
-        if (*tail || (len != 6 && len != 8)) {
+        if (*tail || (len != 6 && len != 8))
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Invalid 0xRRGGBB[AA] color string: '%s'\n", color_string2);
             return AVERROR(EINVAL);
         }
-        if (len == 8) {
+        if (len == 8)
+        {
             rgba_color[3] = rgba;
             rgba >>= 8;
         }
         rgba_color[0] = rgba >> 16;
         rgba_color[1] = rgba >> 8;
         rgba_color[2] = rgba;
-    } else {
+    }
+    else
+    {
         entry = bsearch(color_string2,
                         color_table,
                         FF_ARRAY_ELEMS(color_table),
                         sizeof(ColorEntry),
                         color_table_compare);
-        if (!entry) {
+        if (!entry)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Cannot find color '%s'\n", color_string2);
             return AVERROR(EINVAL);
         }
         memcpy(rgba_color, entry->rgb_color, 3);
     }
 
-    if (tail) {
+    if (tail)
+    {
         double alpha;
         const char *alpha_string = tail;
-        if (!strncmp(alpha_string, "0x", 2)) {
+        if (!strncmp(alpha_string, "0x", 2))
+        {
             alpha = strtoul(alpha_string, &tail, 16);
-        } else {
+        }
+        else
+        {
             double norm_alpha = strtod(alpha_string, &tail);
             if (norm_alpha < 0.0 || norm_alpha > 1.0)
                 alpha = 256;
@@ -414,7 +441,8 @@ int av_parse_color(uint8_t *rgba_color, const char *color_string, int slen,
                 alpha = 255 * norm_alpha;
         }
 
-        if (tail == alpha_string || *tail || alpha > 255 || alpha < 0) {
+        if (tail == alpha_string || *tail || alpha > 255 || alpha < 0)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Invalid alpha value specifier '%s' in '%s'\n",
                    alpha_string, color_string);
             return AVERROR(EINVAL);
@@ -449,7 +477,8 @@ static int date_get_num(const char **pp,
 
     p = *pp;
     val = 0;
-    for(i = 0; i < len_max; i++) {
+    for(i = 0; i < len_max; i++)
+    {
         c = *p;
         if (!av_isdigit(c))
             break;
@@ -469,8 +498,10 @@ char *av_small_strptime(const char *p, const char *fmt, struct tm *dt)
 {
     int c, val;
 
-    while((c = *fmt++)) {
-        if (c != '%') {
+    while((c = *fmt++))
+    {
+        if (c != '%')
+        {
             if (av_isspace(c))
                 for (; *p && av_isspace(*p); p++);
             else if (*p != c)
@@ -480,7 +511,8 @@ char *av_small_strptime(const char *p, const char *fmt, struct tm *dt)
         }
 
         c = *fmt++;
-        switch(c) {
+        switch(c)
+        {
         case 'H':
         case 'J':
             val = date_get_num(&p, 0, c == 'H' ? 23 : INT_MAX, 2);
@@ -542,7 +574,8 @@ time_t av_timegm(struct tm *tm)
 
     int y = tm->tm_year + 1900, m = tm->tm_mon + 1, d = tm->tm_mday;
 
-    if (m < 3) {
+    if (m < 3)
+    {
         m += 12;
         y--;
     }
@@ -563,11 +596,13 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
     struct tm dt = { 0 }, tmbuf;
     int today = 0, negative = 0, microseconds = 0;
     int i;
-    static const char * const date_fmt[] = {
+    static const char * const date_fmt[] =
+    {
         "%Y-%m-%d",
         "%Y%m%d",
     };
-    static const char * const time_fmt[] = {
+    static const char * const time_fmt[] =
+    {
         "%H:%M:%S",
         "%H%M%S",
     };
@@ -575,16 +610,19 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
     p = timestr;
     q = NULL;
     *timeval = INT64_MIN;
-    if (!duration) {
+    if (!duration)
+    {
         now = time(0);
 
-        if (!av_strcasecmp(timestr, "now")) {
+        if (!av_strcasecmp(timestr, "now"))
+        {
             *timeval = (int64_t) now * 1000000;
             return 0;
         }
 
         /* parse the year-month-day part */
-        for (i = 0; i < FF_ARRAY_ELEMS(date_fmt); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(date_fmt); i++)
+        {
             q = av_small_strptime(p, date_fmt[i], &dt);
             if (q)
                 break;
@@ -592,7 +630,8 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
 
         /* if the year-month-day part is missing, then take the
          * current year-month-day time */
-        if (!q) {
+        if (!q)
+        {
             today = 1;
             q = p;
         }
@@ -602,25 +641,31 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
             p++;
 
         /* parse the hour-minute-second part */
-        for (i = 0; i < FF_ARRAY_ELEMS(time_fmt); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(time_fmt); i++)
+        {
             q = av_small_strptime(p, time_fmt[i], &dt);
             if (q)
                 break;
         }
-    } else {
+    }
+    else
+    {
         /* parse timestr as a duration */
-        if (p[0] == '-') {
+        if (p[0] == '-')
+        {
             negative = 1;
             ++p;
         }
         /* parse timestr as HH:MM:SS */
         q = av_small_strptime(p, "%J:%M:%S", &dt);
-        if (!q) {
+        if (!q)
+        {
             /* parse timestr as MM:SS */
             q = av_small_strptime(p, "%M:%S", &dt);
             dt.tm_hour = 0;
         }
-        if (!q) {
+        if (!q)
+        {
             char *o;
             /* parse timestr as S+ */
             dt.tm_sec = strtol(p, &o, 10);
@@ -637,10 +682,12 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
         return AVERROR(EINVAL);
 
     /* parse the .m... part */
-    if (*q == '.') {
+    if (*q == '.')
+    {
         int n;
         q++;
-        for (n = 100000; n >= 1; n /= 10, q++) {
+        for (n = 100000; n >= 1; n /= 10, q++)
+        {
             if (!av_isdigit(*q))
                 break;
             microseconds += n * (*q - '0');
@@ -649,12 +696,16 @@ int av_parse_time(int64_t *timeval, const char *timestr, int duration)
             q++;
     }
 
-    if (duration) {
+    if (duration)
+    {
         t = dt.tm_hour * 3600 + dt.tm_min * 60 + dt.tm_sec;
-    } else {
+    }
+    else
+    {
         int is_utc = *q == 'Z' || *q == 'z';
         q += is_utc;
-        if (today) { /* fill in today's date */
+        if (today)   /* fill in today's date */
+        {
             struct tm dt2 = is_utc ? *gmtime_r(&now, &tmbuf) : *localtime_r(&now, &tmbuf);
             dt2.tm_hour = dt.tm_hour;
             dt2.tm_min  = dt.tm_min;
@@ -682,19 +733,24 @@ int av_find_info_tag(char *arg, int arg_size, const char *tag1, const char *info
     p = info;
     if (*p == '?')
         p++;
-    for(;;) {
+    for(;;)
+    {
         q = tag;
-        while (*p != '\0' && *p != '=' && *p != '&') {
+        while (*p != '\0' && *p != '=' && *p != '&')
+        {
             if ((q - tag) < sizeof(tag) - 1)
                 *q++ = *p;
             p++;
         }
         *q = '\0';
         q = arg;
-        if (*p == '=') {
+        if (*p == '=')
+        {
             p++;
-            while (*p != '&' && *p != '\0') {
-                if ((q - arg) < arg_size - 1) {
+            while (*p != '&' && *p != '\0')
+            {
+                if ((q - arg) < arg_size - 1)
+                {
                     if (*p == '+')
                         *q++ = ' ';
                     else
@@ -727,7 +783,8 @@ int main(void)
     printf("Testing av_parse_video_rate()\n");
     {
         int i;
-        static const char *const rates[] = {
+        static const char *const rates[] =
+        {
             "-inf",
             "inf",
             "nan",
@@ -755,7 +812,8 @@ int main(void)
             " -21332.2324   ",
         };
 
-        for (i = 0; i < FF_ARRAY_ELEMS(rates); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(rates); i++)
+        {
             int ret;
             AVRational q = { 0, 0 };
             ret = av_parse_video_rate(&q, rates[i]);
@@ -768,7 +826,8 @@ int main(void)
     {
         int i;
         uint8_t rgba[4];
-        static const char *const color_names[] = {
+        static const char *const color_names[] =
+        {
             "bikeshed",
             "RaNdOm",
             "foo",
@@ -809,7 +868,8 @@ int main(void)
 
         av_log_set_level(AV_LOG_DEBUG);
 
-        for (i = 0;  i < FF_ARRAY_ELEMS(color_names); i++) {
+        for (i = 0;  i < FF_ARRAY_ELEMS(color_names); i++)
+        {
             if (av_parse_color(rgba, color_names[i], -1, NULL) >= 0)
                 printf("%s -> R(%d) G(%d) B(%d) A(%d)\n",
                        color_names[i], rgba[0], rgba[1], rgba[2], rgba[3]);
@@ -822,9 +882,11 @@ int main(void)
     {
         int i;
         struct tm tm = { 0 };
-        struct fmt_timespec_entry {
+        struct fmt_timespec_entry
+        {
             const char *fmt, *timespec;
-        } fmt_timespec_entries[] = {
+        } fmt_timespec_entries[] =
+        {
             { "%Y-%m-%d",                    "2012-12-21" },
             { "%Y - %m - %d",                "2012-12-21" },
             { "%Y-%m-%d %H:%M:%S",           "2012-12-21 20:12:21" },
@@ -832,16 +894,20 @@ int main(void)
         };
 
         av_log_set_level(AV_LOG_DEBUG);
-        for (i = 0;  i < FF_ARRAY_ELEMS(fmt_timespec_entries); i++) {
+        for (i = 0;  i < FF_ARRAY_ELEMS(fmt_timespec_entries); i++)
+        {
             char *p;
             struct fmt_timespec_entry *e = &fmt_timespec_entries[i];
             printf("fmt:'%s' spec:'%s' -> ", e->fmt, e->timespec);
             p = av_small_strptime(e->timespec, e->fmt, &tm);
-            if (p) {
+            if (p)
+            {
                 printf("%04d-%02d-%2d %02d:%02d:%02d\n",
                        1900+tm.tm_year, tm.tm_mon+1, tm.tm_mday,
                        tm.tm_hour, tm.tm_min, tm.tm_sec);
-            } else {
+            }
+            else
+            {
                 printf("error\n");
             }
         }
@@ -854,13 +920,15 @@ int main(void)
         time_t tvi;
         struct tm *tm;
         static char tzstr[] = "TZ=CET-1";
-        static const char * const time_string[] = {
+        static const char * const time_string[] =
+        {
             "now",
             "12:35:46",
             "2000-12-20 0:02:47.5z",
             "2000-12-20T010247.6",
         };
-        static const char * const duration_string[] = {
+        static const char * const duration_string[] =
+        {
             "2:34:56.79",
             "-1:23:45.67",
             "42.1729",
@@ -871,11 +939,15 @@ int main(void)
         av_log_set_level(AV_LOG_DEBUG);
         putenv(tzstr);
         printf("(now is 2012-03-17 09:14:13 +0100, local time is UTC+1)\n");
-        for (i = 0;  i < FF_ARRAY_ELEMS(time_string); i++) {
+        for (i = 0;  i < FF_ARRAY_ELEMS(time_string); i++)
+        {
             printf("%-24s -> ", time_string[i]);
-            if (av_parse_time(&tv, time_string[i], 0)) {
+            if (av_parse_time(&tv, time_string[i], 0))
+            {
                 printf("error\n");
-            } else {
+            }
+            else
+            {
                 tvi = tv / 1000000;
                 tm = gmtime(&tvi);
                 printf("%14"PRIi64".%06d = %04d-%02d-%02dT%02d:%02d:%02dZ\n",
@@ -884,11 +956,15 @@ int main(void)
                        tm->tm_hour, tm->tm_min, tm->tm_sec);
             }
         }
-        for (i = 0;  i < FF_ARRAY_ELEMS(duration_string); i++) {
+        for (i = 0;  i < FF_ARRAY_ELEMS(duration_string); i++)
+        {
             printf("%-24s -> ", duration_string[i]);
-            if (av_parse_time(&tv, duration_string[i], 1)) {
+            if (av_parse_time(&tv, duration_string[i], 1))
+            {
                 printf("error\n");
-            } else {
+            }
+            else
+            {
                 printf("%+21"PRIi64"\n", tv);
             }
         }

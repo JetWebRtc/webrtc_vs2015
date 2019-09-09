@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Nicolas George <nicolas.george@normalesup.org>
  * Copyright (c) 2011 Stefano Sabatini
  * Copyright (c) 2012 Paul B Mahol
@@ -47,7 +47,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct TestSourceContext {
+typedef struct TestSourceContext
+{
     const AVClass *class;
     int w, h;
     unsigned int nb_frame;
@@ -92,7 +93,8 @@ typedef struct TestSourceContext {
 
 #define COMMON_OPTIONS SIZE_OPTIONS COMMON_OPTIONS_NOSIZE
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     COMMON_OPTIONS
     { NULL }
 };
@@ -138,15 +140,18 @@ static int request_frame(AVFilterLink *outlink)
     AVFrame *frame;
 
     if (test->duration >= 0 &&
-        av_rescale_q(test->pts, test->time_base, AV_TIME_BASE_Q) >= test->duration)
+            av_rescale_q(test->pts, test->time_base, AV_TIME_BASE_Q) >= test->duration)
         return AVERROR_EOF;
 
-    if (test->draw_once) {
-        if (test->draw_once_reset) {
+    if (test->draw_once)
+    {
+        if (test->draw_once_reset)
+        {
             av_frame_free(&test->picref);
             test->draw_once_reset = 0;
         }
-        if (!test->picref) {
+        if (!test->picref)
+        {
             test->picref =
                 ff_get_video_buffer(outlink, test->w, test->h);
             if (!test->picref)
@@ -154,7 +159,8 @@ static int request_frame(AVFilterLink *outlink)
             test->fill_picture_fn(outlink->src, test->picref);
         }
         frame = av_frame_clone(test->picref);
-    } else
+    }
+    else
         frame = ff_get_video_buffer(outlink, test->w, test->h);
 
     if (!frame)
@@ -175,7 +181,8 @@ static int request_frame(AVFilterLink *outlink)
 
 #if CONFIG_COLOR_FILTER
 
-static const AVOption color_options[] = {
+static const AVOption color_options[] =
+{
     { "color", "set color", OFFSET(color_rgba), AV_OPT_TYPE_COLOR, {.str = "black"}, CHAR_MIN, CHAR_MAX, FLAGS },
     { "c",     "set color", OFFSET(color_rgba), AV_OPT_TYPE_COLOR, {.str = "black"}, CHAR_MIN, CHAR_MAX, FLAGS },
     COMMON_OPTIONS
@@ -231,7 +238,8 @@ static int color_process_command(AVFilterContext *ctx, const char *cmd, const ch
     TestSourceContext *test = ctx->priv;
     int ret;
 
-    if (!strcmp(cmd, "color") || !strcmp(cmd, "c")) {
+    if (!strcmp(cmd, "color") || !strcmp(cmd, "c"))
+    {
         uint8_t color_rgba[4];
 
         ret = av_parse_color(color_rgba, args, -1, ctx);
@@ -247,7 +255,8 @@ static int color_process_command(AVFilterContext *ctx, const char *cmd, const ch
     return AVERROR(ENOSYS);
 }
 
-static const AVFilterPad color_outputs[] = {
+static const AVFilterPad color_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -257,7 +266,8 @@ static const AVFilterPad color_outputs[] = {
     {  NULL }
 };
 
-AVFilter ff_vsrc_color = {
+AVFilter ff_vsrc_color =
+{
     .name            = "color",
     .description     = NULL_IF_CONFIG_SMALL("Provide an uniformly colored input."),
     .priv_class      = &color_class,
@@ -274,7 +284,8 @@ AVFilter ff_vsrc_color = {
 
 #if CONFIG_HALDCLUTSRC_FILTER
 
-static const AVOption haldclutsrc_options[] = {
+static const AVOption haldclutsrc_options[] =
+{
     { "level", "set level", OFFSET(level), AV_OPT_TYPE_INT, {.i64 = 6}, 2, 8, FLAGS },
     COMMON_OPTIONS_NOSIZE
     { NULL }
@@ -300,7 +311,8 @@ static void haldclutsrc_fill_picture(AVFilterContext *ctx, AVFrame *frame)
 
     ff_fill_rgba_map(rgba_map, frame->format);
 
-    switch (frame->format) {
+    switch (frame->format)
+    {
     case AV_PIX_FMT_RGB48:
     case AV_PIX_FMT_BGR48:
     case AV_PIX_FMT_RGBA64:
@@ -329,14 +341,18 @@ static void haldclutsrc_fill_picture(AVFilterContext *ctx, AVFrame *frame)
 } while (0)
 
     level *= level;
-    for (k = 0; k < level; k++) {
-        for (j = 0; j < level; j++) {
-            for (i = 0; i < level; i++) {
+    for (k = 0; k < level; k++)
+    {
+        for (j = 0; j < level; j++)
+        {
+            for (i = 0; i < level; i++)
+            {
                 if (!is16bit)
                     LOAD_CLUT(8);
                 else
                     LOAD_CLUT(16);
-                if (++x == w) {
+                if (++x == w)
+                {
                     x = 0;
                     y++;
                 }
@@ -355,7 +371,8 @@ static av_cold int haldclutsrc_init(AVFilterContext *ctx)
 
 static int haldclutsrc_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24,  AV_PIX_FMT_BGR24,
         AV_PIX_FMT_RGBA,   AV_PIX_FMT_BGRA,
         AV_PIX_FMT_ARGB,   AV_PIX_FMT_ABGR,
@@ -381,7 +398,8 @@ static int haldclutsrc_config_props(AVFilterLink *outlink)
     return config_props(outlink);
 }
 
-static const AVFilterPad haldclutsrc_outputs[] = {
+static const AVFilterPad haldclutsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -391,7 +409,8 @@ static const AVFilterPad haldclutsrc_outputs[] = {
     {  NULL }
 };
 
-AVFilter ff_vsrc_haldclutsrc = {
+AVFilter ff_vsrc_haldclutsrc =
+{
     .name          = "haldclutsrc",
     .description   = NULL_IF_CONFIG_SMALL("Provide an identity Hald CLUT."),
     .priv_class    = &haldclutsrc_class,
@@ -419,7 +438,8 @@ static av_cold int nullsrc_init(AVFilterContext *ctx)
     return init(ctx);
 }
 
-static const AVFilterPad nullsrc_outputs[] = {
+static const AVFilterPad nullsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -429,7 +449,8 @@ static const AVFilterPad nullsrc_outputs[] = {
     { NULL },
 };
 
-AVFilter ff_vsrc_nullsrc = {
+AVFilter ff_vsrc_nullsrc =
+{
     .name        = "nullsrc",
     .description = NULL_IF_CONFIG_SMALL("Null video source, return unprocessed video frames."),
     .init        = nullsrc_init,
@@ -444,7 +465,8 @@ AVFilter ff_vsrc_nullsrc = {
 
 #if CONFIG_TESTSRC_FILTER
 
-static const AVOption testsrc_options[] = {
+static const AVOption testsrc_options[] =
+{
     COMMON_OPTIONS
     { "decimals", "set number of decimals to show", OFFSET(nb_decimals), AV_OPT_TYPE_INT, {.i64=0},  0, 17, FLAGS },
     { "n",        "set number of decimals to show", OFFSET(nb_decimals), AV_OPT_TYPE_INT, {.i64=0},  0, 17, FLAGS },
@@ -474,7 +496,8 @@ static void draw_rectangle(unsigned val, uint8_t *dst, int dst_linesize, int seg
     dst += segment_width * (step * x + y * dst_linesize);
     w *= segment_width * step;
     h *= segment_width;
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         memset(dst, val, w);
         dst += dst_linesize;
     }
@@ -490,9 +513,11 @@ static void draw_digit(int digit, uint8_t *dst, int dst_linesize,
 #define LEFT_BOT_VBAR  16
 #define RIGHT_TOP_VBAR 32
 #define RIGHT_BOT_VBAR 64
-    struct segments {
+    struct segments
+    {
         int x, y, w, h;
-    } segments[] = {
+    } segments[] =
+    {
         { 1,  0, 5, 1 }, /* TOP_HBAR */
         { 1,  6, 5, 1 }, /* MID_HBAR */
         { 1, 12, 5, 1 }, /* BOT_HBAR */
@@ -501,7 +526,8 @@ static void draw_digit(int digit, uint8_t *dst, int dst_linesize,
         { 6,  1, 1, 5 }, /* RIGHT_TOP_VBAR */
         { 6,  7, 1, 5 }  /* RIGHT_BOT_VBAR */
     };
-    static const unsigned char masks[10] = {
+    static const unsigned char masks[10] =
+    {
         /* 0 */ TOP_HBAR         |BOT_HBAR|LEFT_TOP_VBAR|LEFT_BOT_VBAR|RIGHT_TOP_VBAR|RIGHT_BOT_VBAR,
         /* 1 */                                                        RIGHT_TOP_VBAR|RIGHT_BOT_VBAR,
         /* 2 */ TOP_HBAR|MID_HBAR|BOT_HBAR|LEFT_BOT_VBAR                             |RIGHT_TOP_VBAR,
@@ -548,13 +574,15 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
     quad0 = width * width / 4 + height * height / 4 - radius * radius;
     dquad_y = 1 - height;
     p0 = data;
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         p = p0;
         color = 0;
         color_rest = 0;
         quad = quad0;
         dquad_x = 1 - width;
-        for (x = 0; x < width; x++) {
+        for (x = 0; x < width; x++)
+        {
             icolor = color;
             if (quad < 0)
                 icolor ^= 7;
@@ -564,7 +592,8 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
             *(p++) = icolor & 2 ? 255 : 0;
             *(p++) = icolor & 4 ? 255 : 0;
             color_rest += 8;
-            if (color_rest >= width) {
+            if (color_rest >= width)
+            {
                 color_rest -= width;
                 color++;
             }
@@ -577,11 +606,12 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
     /* draw sliding color line */
     p0 = p = data + frame->linesize[0] * (height * 3/4);
     grad = (256 * test->nb_frame * test->time_base.num / test->time_base.den) %
-        GRADIENT_SIZE;
+           GRADIENT_SIZE;
     rgrad = 0;
     dgrad = GRADIENT_SIZE / width;
     drgrad = GRADIENT_SIZE % width;
-    for (x = 0; x < width; x++) {
+    for (x = 0; x < width; x++)
+    {
         *(p++) =
             grad < 256 || grad >= 5 * 256 ? 255 :
             grad >= 2 * 256 && grad < 4 * 256 ? 0 :
@@ -596,7 +626,8 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
             grad < 3 * 256 ? grad - 2 * 256 : 6 * 256 - 1 - grad;
         grad += dgrad;
         rgrad += drgrad;
-        if (rgrad >= GRADIENT_SIZE) {
+        if (rgrad >= GRADIENT_SIZE)
+        {
             grad++;
             rgrad -= GRADIENT_SIZE;
         }
@@ -604,14 +635,16 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
             grad -= GRADIENT_SIZE;
     }
     p = p0;
-    for (y = height / 8; y > 0; y--) {
+    for (y = height / 8; y > 0; y--)
+    {
         memcpy(p+frame->linesize[0], p, 3 * width);
         p += frame->linesize[0];
     }
 
     /* draw digits */
     seg_size = width / 80;
-    if (seg_size >= 1 && height >= 13 * seg_size) {
+    if (seg_size >= 1 && height >= 13 * seg_size)
+    {
         int64_t p10decimals = 1;
         double time = av_q2d(test->time_base) * test->nb_frame *
                       pow(10, test->nb_decimals);
@@ -625,7 +658,8 @@ static void test_fill_picture(AVFilterContext *ctx, AVFrame *frame)
         x = width - (width - seg_size * 64) / 2;
         y = (height - seg_size * 13) / 2;
         p = data + (x*3 + y * frame->linesize[0]);
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             p -= 3 * 8 * seg_size;
             draw_digit(second % 10, p, frame->linesize[0], seg_size);
             second /= 10;
@@ -645,7 +679,8 @@ static av_cold int test_init(AVFilterContext *ctx)
 
 static int test_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24, AV_PIX_FMT_NONE
     };
 
@@ -655,7 +690,8 @@ static int test_query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad avfilter_vsrc_testsrc_outputs[] = {
+static const AVFilterPad avfilter_vsrc_testsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -665,7 +701,8 @@ static const AVFilterPad avfilter_vsrc_testsrc_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_testsrc = {
+AVFilter ff_vsrc_testsrc =
+{
     .name          = "testsrc",
     .description   = NULL_IF_CONFIG_SMALL("Generate test pattern."),
     .priv_size     = sizeof(TestSourceContext),
@@ -696,13 +733,26 @@ static void rgbtest_put_pixel(uint8_t *dst, int dst_linesize,
     int32_t v;
     uint8_t *p;
 
-    switch (fmt) {
-    case AV_PIX_FMT_BGR444: ((uint16_t*)(dst + y*dst_linesize))[x] = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4); break;
-    case AV_PIX_FMT_RGB444: ((uint16_t*)(dst + y*dst_linesize))[x] = ((b >> 4) << 8) | ((g >> 4) << 4) | (r >> 4); break;
-    case AV_PIX_FMT_BGR555: ((uint16_t*)(dst + y*dst_linesize))[x] = ((r>>3)<<10) | ((g>>3)<<5) | (b>>3); break;
-    case AV_PIX_FMT_RGB555: ((uint16_t*)(dst + y*dst_linesize))[x] = ((b>>3)<<10) | ((g>>3)<<5) | (r>>3); break;
-    case AV_PIX_FMT_BGR565: ((uint16_t*)(dst + y*dst_linesize))[x] = ((r>>3)<<11) | ((g>>2)<<5) | (b>>3); break;
-    case AV_PIX_FMT_RGB565: ((uint16_t*)(dst + y*dst_linesize))[x] = ((b>>3)<<11) | ((g>>2)<<5) | (r>>3); break;
+    switch (fmt)
+    {
+    case AV_PIX_FMT_BGR444:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+        break;
+    case AV_PIX_FMT_RGB444:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((b >> 4) << 8) | ((g >> 4) << 4) | (r >> 4);
+        break;
+    case AV_PIX_FMT_BGR555:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((r>>3)<<10) | ((g>>3)<<5) | (b>>3);
+        break;
+    case AV_PIX_FMT_RGB555:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((b>>3)<<10) | ((g>>3)<<5) | (r>>3);
+        break;
+    case AV_PIX_FMT_BGR565:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((r>>3)<<11) | ((g>>2)<<5) | (b>>3);
+        break;
+    case AV_PIX_FMT_RGB565:
+        ((uint16_t*)(dst + y*dst_linesize))[x] = ((b>>3)<<11) | ((g>>2)<<5) | (r>>3);
+        break;
     case AV_PIX_FMT_RGB24:
     case AV_PIX_FMT_BGR24:
         v = (r << (rgba_map[R]*8)) + (g << (rgba_map[G]*8)) + (b << (rgba_map[B]*8));
@@ -725,19 +775,21 @@ static void rgbtest_fill_picture(AVFilterContext *ctx, AVFrame *frame)
     TestSourceContext *test = ctx->priv;
     int x, y, w = frame->width, h = frame->height;
 
-    for (y = 0; y < h; y++) {
-         for (x = 0; x < w; x++) {
-             int c = 256*x/w;
-             int r = 0, g = 0, b = 0;
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
+            int c = 256*x/w;
+            int r = 0, g = 0, b = 0;
 
-             if      (3*y < h  ) r = c;
-             else if (3*y < 2*h) g = c;
-             else                b = c;
+            if      (3*y < h  ) r = c;
+            else if (3*y < 2*h) g = c;
+            else                b = c;
 
-             rgbtest_put_pixel(frame->data[0], frame->linesize[0], x, y, r, g, b,
-                               ctx->outputs[0]->format, test->rgba_map);
-         }
-     }
+            rgbtest_put_pixel(frame->data[0], frame->linesize[0], x, y, r, g, b,
+                              ctx->outputs[0]->format, test->rgba_map);
+        }
+    }
 }
 
 static av_cold int rgbtest_init(AVFilterContext *ctx)
@@ -751,7 +803,8 @@ static av_cold int rgbtest_init(AVFilterContext *ctx)
 
 static int rgbtest_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGBA, AV_PIX_FMT_ARGB, AV_PIX_FMT_BGRA, AV_PIX_FMT_ABGR,
         AV_PIX_FMT_BGR24, AV_PIX_FMT_RGB24,
         AV_PIX_FMT_RGB444, AV_PIX_FMT_BGR444,
@@ -774,7 +827,8 @@ static int rgbtest_config_props(AVFilterLink *outlink)
     return config_props(outlink);
 }
 
-static const AVFilterPad avfilter_vsrc_rgbtestsrc_outputs[] = {
+static const AVFilterPad avfilter_vsrc_rgbtestsrc_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -784,7 +838,8 @@ static const AVFilterPad avfilter_vsrc_rgbtestsrc_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_rgbtestsrc = {
+AVFilter ff_vsrc_rgbtestsrc =
+{
     .name          = "rgbtestsrc",
     .description   = NULL_IF_CONFIG_SMALL("Generate RGB test pattern."),
     .priv_size     = sizeof(TestSourceContext),
@@ -800,7 +855,8 @@ AVFilter ff_vsrc_rgbtestsrc = {
 
 #if CONFIG_SMPTEBARS_FILTER || CONFIG_SMPTEHDBARS_FILTER
 
-static const uint8_t rainbow[7][4] = {
+static const uint8_t rainbow[7][4] =
+{
     { 180, 128, 128, 255 },     /* 75% white */
     { 161,  44, 141, 255 },     /* 75% yellow */
     { 131, 156,  44, 255 },     /* 75% cyan */
@@ -810,7 +866,8 @@ static const uint8_t rainbow[7][4] = {
     {  34, 212, 114, 255 },     /* 75% blue */
 };
 
-static const uint8_t rainbowhd[7][4] = {
+static const uint8_t rainbowhd[7][4] =
+{
     { 180, 128, 128, 255 },     /* 75% white */
     { 168,  44, 136, 255 },     /* 75% yellow */
     { 145, 147,  44, 255 },     /* 75% cyan */
@@ -820,7 +877,8 @@ static const uint8_t rainbowhd[7][4] = {
     {  28, 212, 120, 255 },     /* 75% blue */
 };
 
-static const uint8_t wobnair[7][4] = {
+static const uint8_t wobnair[7][4] =
+{
     {  34, 212, 114, 255 },     /* 75% blue */
     {  19, 128, 128, 255 },     /* 7.5% intensity black */
     {  83, 183, 198, 255 },     /* 75% magenta */
@@ -867,17 +925,21 @@ static void draw_bar(TestSourceContext *test, const uint8_t color[4],
     av_assert0(x + w <= test->w);
     av_assert0(y + h <= test->h);
 
-    for (plane = 0; frame->data[plane]; plane++) {
+    for (plane = 0; frame->data[plane]; plane++)
+    {
         const int c = color[plane];
         const int linesize = frame->linesize[plane];
         int i, px, py, pw, ph;
 
-        if (plane == 1 || plane == 2) {
+        if (plane == 1 || plane == 2)
+        {
             px = x >> desc->log2_chroma_w;
             pw = FF_CEIL_RSHIFT(w, desc->log2_chroma_w);
             py = y >> desc->log2_chroma_h;
             ph = FF_CEIL_RSHIFT(h, desc->log2_chroma_h);
-        } else {
+        }
+        else
+        {
             px = x;
             pw = w;
             py = y;
@@ -894,7 +956,8 @@ static void draw_bar(TestSourceContext *test, const uint8_t color[4],
 
 static int smptebars_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV444P,
         AV_PIX_FMT_YUV410P, AV_PIX_FMT_YUV411P,
@@ -907,7 +970,8 @@ static int smptebars_query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad smptebars_outputs[] = {
+static const AVFilterPad smptebars_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -936,7 +1000,8 @@ static void smptebars_fill_picture(AVFilterContext *ctx, AVFrame *picref)
     p_w = FFALIGN(r_w * 5 / 4, 1 << pixdesc->log2_chroma_w);
     p_h = test->h - w_h - r_h;
 
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++)
+    {
         draw_bar(test, rainbow[i], x, 0,   r_w, r_h, picref);
         draw_bar(test, wobnair[i], x, r_h, r_w, w_h, picref);
         x += r_w;
@@ -970,7 +1035,8 @@ static av_cold int smptebars_init(AVFilterContext *ctx)
     return init(ctx);
 }
 
-AVFilter ff_vsrc_smptebars = {
+AVFilter ff_vsrc_smptebars =
+{
     .name          = "smptebars",
     .description   = NULL_IF_CONFIG_SMALL("Generate SMPTE color bars."),
     .priv_size     = sizeof(TestSourceContext),
@@ -1003,7 +1069,8 @@ static void smptehdbars_fill_picture(AVFilterContext *ctx, AVFrame *picref)
     x += d_w;
 
     r_w = FFALIGN((((test->w + 3) / 4) * 3) / 7, 1 << pixdesc->log2_chroma_w);
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++)
+    {
         draw_bar(test, rainbowhd[i], x, 0, r_w, r_h, picref);
         x += r_w;
     }
@@ -1025,7 +1092,8 @@ static void smptehdbars_fill_picture(AVFilterContext *ctx, AVFrame *picref)
     draw_bar(test, q_pixel, x, y, r_w, r_h, picref);
     x += r_w;
 
-    for (i = 0; i < tmp; i += 1 << pixdesc->log2_chroma_w) {
+    for (i = 0; i < tmp; i += 1 << pixdesc->log2_chroma_w)
+    {
         uint8_t yramp[4] = {0};
 
         yramp[0] = i * 255 / tmp;
@@ -1075,7 +1143,8 @@ static av_cold int smptehdbars_init(AVFilterContext *ctx)
     return init(ctx);
 }
 
-AVFilter ff_vsrc_smptehdbars = {
+AVFilter ff_vsrc_smptehdbars =
+{
     .name          = "smptehdbars",
     .description   = NULL_IF_CONFIG_SMALL("Generate SMPTE HD color bars."),
     .priv_size     = sizeof(TestSourceContext),
@@ -1092,7 +1161,8 @@ AVFilter ff_vsrc_smptehdbars = {
 
 #if CONFIG_ALLYUV_FILTER
 
-static const AVOption allyuv_options[] = {
+static const AVOption allyuv_options[] =
+{
     COMMON_OPTIONS_NOSIZE
     { NULL }
 };
@@ -1106,14 +1176,18 @@ static void allyuv_fill_picture(AVFilterContext *ctx, AVFrame *frame)
     const int vs = frame->linesize[2];
     int x, y, j;
 
-    for (y = 0; y < 4096; y++) {
-        for (x = 0; x < 2048; x++) {
+    for (y = 0; y < 4096; y++)
+    {
+        for (x = 0; x < 2048; x++)
+        {
             frame->data[0][y * ys + x] = ((x / 8) % 256);
             frame->data[0][y * ys + 4095 - x] = ((x / 8) % 256);
         }
 
-        for (x = 0; x < 2048; x+=8) {
-            for (j = 0; j < 8; j++) {
+        for (x = 0; x < 2048; x+=8)
+        {
+            for (j = 0; j < 8; j++)
+            {
                 frame->data[1][vs * y + x + j]        = (y%16 + (j % 8) * 16);
                 frame->data[1][vs * y + 4095 - x - j] = (128 + y%16 + (j % 8) * 16);
             }
@@ -1136,7 +1210,8 @@ static av_cold int allyuv_init(AVFilterContext *ctx)
 
 static int allyuv_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P, AV_PIX_FMT_GBRP,
         AV_PIX_FMT_NONE
     };
@@ -1147,7 +1222,8 @@ static int allyuv_query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad avfilter_vsrc_allyuv_outputs[] = {
+static const AVFilterPad avfilter_vsrc_allyuv_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -1157,7 +1233,8 @@ static const AVFilterPad avfilter_vsrc_allyuv_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_allyuv = {
+AVFilter ff_vsrc_allyuv =
+{
     .name          = "allyuv",
     .description   = NULL_IF_CONFIG_SMALL("Generate all yuv colors."),
     .priv_size     = sizeof(TestSourceContext),
@@ -1173,7 +1250,8 @@ AVFilter ff_vsrc_allyuv = {
 
 #if CONFIG_ALLRGB_FILTER
 
-static const AVOption allrgb_options[] = {
+static const AVOption allrgb_options[] =
+{
     COMMON_OPTIONS_NOSIZE
     { NULL }
 };
@@ -1186,10 +1264,12 @@ static void allrgb_fill_picture(AVFilterContext *ctx, AVFrame *frame)
     const int linesize = frame->linesize[0];
     uint8_t *line = frame->data[0];
 
-    for (y = 0; y < 4096; y++) {
+    for (y = 0; y < 4096; y++)
+    {
         uint8_t *dst = line;
 
-        for (x = 0; x < 4096; x++) {
+        for (x = 0; x < 4096; x++)
+        {
             *dst++ = x;
             *dst++ = y;
             *dst++ = (x >> 8) | ((y >> 8) << 4);
@@ -1218,7 +1298,8 @@ static int allrgb_config_props(AVFilterLink *outlink)
 
 static int allrgb_query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_RGB24, AV_PIX_FMT_NONE
     };
 
@@ -1228,7 +1309,8 @@ static int allrgb_query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-static const AVFilterPad avfilter_vsrc_allrgb_outputs[] = {
+static const AVFilterPad avfilter_vsrc_allrgb_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -1238,7 +1320,8 @@ static const AVFilterPad avfilter_vsrc_allrgb_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vsrc_allrgb = {
+AVFilter ff_vsrc_allrgb =
+{
     .name          = "allrgb",
     .description   = NULL_IF_CONFIG_SMALL("Generate all RGB colors."),
     .priv_size     = sizeof(TestSourceContext),

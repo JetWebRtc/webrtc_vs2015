@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,10 +12,12 @@
 
 #include "webrtc/modules/audio_coding/codecs/builtin_audio_decoder_factory_internal.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-rtc::scoped_refptr<AudioDecoderFactory> CreateBuiltinAudioDecoderFactory() {
-  return CreateBuiltinAudioDecoderFactoryInternal();
+rtc::scoped_refptr<AudioDecoderFactory> CreateBuiltinAudioDecoderFactory()
+{
+    return CreateBuiltinAudioDecoderFactoryInternal();
 }
 
 }  // namespace webrtc

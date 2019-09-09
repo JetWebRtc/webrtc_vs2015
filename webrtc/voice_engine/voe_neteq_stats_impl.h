@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,21 +16,23 @@
 #include "webrtc/common_types.h"
 #include "webrtc/voice_engine/shared_data.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VoENetEqStatsImpl : public VoENetEqStats {
- public:
-  int GetNetworkStatistics(int channel, NetworkStatistics& stats) override;
+class VoENetEqStatsImpl : public VoENetEqStats
+{
+public:
+    int GetNetworkStatistics(int channel, NetworkStatistics& stats) override;
 
-  int GetDecodingCallStatistics(int channel,
-                                AudioDecodingCallStats* stats) const override;
+    int GetDecodingCallStatistics(int channel,
+                                  AudioDecodingCallStats* stats) const override;
 
- protected:
-  VoENetEqStatsImpl(voe::SharedData* shared);
-  ~VoENetEqStatsImpl() override;
+protected:
+    VoENetEqStatsImpl(voe::SharedData* shared);
+    ~VoENetEqStatsImpl() override;
 
- private:
-  voe::SharedData* _shared;
+private:
+    voe::SharedData* _shared;
 };
 
 }  // namespace webrtc

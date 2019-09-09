@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * Triangular with Noise Shaping is based on opusfile.
@@ -40,7 +40,8 @@
 #include "dither.h"
 #include "internal.h"
 
-typedef struct DitherState {
+typedef struct DitherState
+{
     int mute;
     unsigned int seed;
     AVLFG lfg;
@@ -51,7 +52,8 @@ typedef struct DitherState {
     float dither_b[4];
 } DitherState;
 
-struct DitherContext {
+struct DitherContext
+{
     DitherDSPContext  ddsp;
     enum AVResampleDitherMethod method;
     int apply_map;
@@ -86,19 +88,23 @@ struct DitherContext {
 
 /* noise shaping coefficients */
 
-static const float ns_48_coef_b[4] = {
+static const float ns_48_coef_b[4] =
+{
     2.2374f, -0.7339f, -0.1251f, -0.6033f
 };
 
-static const float ns_48_coef_a[4] = {
+static const float ns_48_coef_a[4] =
+{
     0.9030f, 0.0116f, -0.5853f, -0.2571f
 };
 
-static const float ns_44_coef_b[4] = {
+static const float ns_44_coef_b[4] =
+{
     2.2061f, -0.4707f, -0.2534f, -0.6213f
 };
 
-static const float ns_44_coef_a[4] = {
+static const float ns_44_coef_a[4] =
+{
     1.0587f, 0.0676f, -0.6054f, -0.2738f
 };
 
@@ -114,7 +120,8 @@ static void dither_int_to_float_triangular_c(float *dst, int *src0, int len)
     int i;
     int *src1  = src0 + len;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         float r = src0[i] * LFG_SCALE;
         r      += src1[i] * LFG_SCALE;
         dst[i]  = r;
@@ -179,25 +186,31 @@ static void quantize_triangular_ns(DitherContext *c, DitherState *state,
     if (state->mute > c->mute_reset_threshold)
         memset(state->dither_a, 0, sizeof(state->dither_a));
 
-    for (i = 0; i < nb_samples; i++) {
+    for (i = 0; i < nb_samples; i++)
+    {
         float err = 0;
         float sample = src[i] * S16_SCALE;
 
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < 4; j++)
+        {
             err += c->ns_coef_b[j] * state->dither_b[j] -
                    c->ns_coef_a[j] * state->dither_a[j];
         }
-        for (j = 3; j > 0; j--) {
+        for (j = 3; j > 0; j--)
+        {
             state->dither_a[j] = state->dither_a[j - 1];
             state->dither_b[j] = state->dither_b[j - 1];
         }
         state->dither_a[0] = err;
         sample -= err;
 
-        if (state->mute > c->mute_dither_threshold) {
+        if (state->mute > c->mute_dither_threshold)
+        {
             dst[i]             = av_clip_int16(lrintf(sample));
             state->dither_b[0] = 0;
-        } else {
+        }
+        else
+        {
             dst[i]             = av_clip_int16(lrintf(sample + dither[i]));
             state->dither_b[0] = av_clipf(dst[i] - sample, -1.5f, 1.5f);
         }
@@ -214,20 +227,27 @@ static int convert_samples(DitherContext *c, int16_t **dst, float * const *src,
     int ch, ret;
     int aligned_samples = FFALIGN(nb_samples, 16);
 
-    for (ch = 0; ch < channels; ch++) {
+    for (ch = 0; ch < channels; ch++)
+    {
         DitherState *state = &c->state[ch];
 
-        if (state->noise_buf_size < aligned_samples) {
+        if (state->noise_buf_size < aligned_samples)
+        {
             ret = generate_dither_noise(c, state, nb_samples);
             if (ret < 0)
                 return ret;
-        } else if (state->noise_buf_size - state->noise_buf_ptr < aligned_samples) {
+        }
+        else if (state->noise_buf_size - state->noise_buf_ptr < aligned_samples)
+        {
             state->noise_buf_ptr = 0;
         }
 
-        if (c->method == AV_RESAMPLE_DITHER_TRIANGULAR_NS) {
+        if (c->method == AV_RESAMPLE_DITHER_TRIANGULAR_NS)
+        {
             quantize_triangular_ns(c, state, dst[ch], src[ch], nb_samples);
-        } else {
+        }
+        else
+        {
             c->quantize(dst[ch], src[ch],
                         &state->noise_buf[state->noise_buf_ptr],
                         FFALIGN(nb_samples, c->samples_align));
@@ -247,14 +267,16 @@ int ff_convert_dither(DitherContext *c, AudioData *dst, AudioData *src)
     /* output directly to dst if it is planar */
     if (dst->sample_fmt == AV_SAMPLE_FMT_S16P)
         c->s16_data = dst;
-    else {
+    else
+    {
         /* make sure s16_data is large enough for the output */
         ret = ff_audio_data_realloc(c->s16_data, src->nb_samples);
         if (ret < 0)
             return ret;
     }
 
-    if (src->sample_fmt != AV_SAMPLE_FMT_FLTP || c->apply_map) {
+    if (src->sample_fmt != AV_SAMPLE_FMT_FLTP || c->apply_map)
+    {
         /* make sure flt_data is large enough for the input */
         ret = ff_audio_data_realloc(c->flt_data, src->nb_samples);
         if (ret < 0)
@@ -262,29 +284,38 @@ int ff_convert_dither(DitherContext *c, AudioData *dst, AudioData *src)
         flt_data = c->flt_data;
     }
 
-    if (src->sample_fmt != AV_SAMPLE_FMT_FLTP) {
+    if (src->sample_fmt != AV_SAMPLE_FMT_FLTP)
+    {
         /* convert input samples to fltp and scale to s16 range */
         ret = ff_audio_convert(c->ac_in, flt_data, src);
         if (ret < 0)
             return ret;
-    } else if (c->apply_map) {
+    }
+    else if (c->apply_map)
+    {
         ret = ff_audio_data_copy(flt_data, src, c->ch_map_info);
         if (ret < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         flt_data = src;
     }
 
     /* check alignment and padding constraints */
-    if (c->method != AV_RESAMPLE_DITHER_TRIANGULAR_NS) {
+    if (c->method != AV_RESAMPLE_DITHER_TRIANGULAR_NS)
+    {
         int ptr_align     = FFMIN(flt_data->ptr_align,     c->s16_data->ptr_align);
         int samples_align = FFMIN(flt_data->samples_align, c->s16_data->samples_align);
         int aligned_len   = FFALIGN(src->nb_samples, c->ddsp.samples_align);
 
-        if (!(ptr_align % c->ddsp.ptr_align) && samples_align >= aligned_len) {
+        if (!(ptr_align % c->ddsp.ptr_align) && samples_align >= aligned_len)
+        {
             c->quantize      = c->ddsp.quantize;
             c->samples_align = c->ddsp.samples_align;
-        } else {
+        }
+        else
+        {
             c->quantize      = quantize_c;
             c->samples_align = 1;
         }
@@ -299,11 +330,13 @@ int ff_convert_dither(DitherContext *c, AudioData *dst, AudioData *src)
     c->s16_data->nb_samples = src->nb_samples;
 
     /* interleave output to dst if needed */
-    if (dst->sample_fmt == AV_SAMPLE_FMT_S16) {
+    if (dst->sample_fmt == AV_SAMPLE_FMT_S16)
+    {
         ret = ff_audio_convert(c->ac_out, dst, c->s16_data);
         if (ret < 0)
             return ret;
-    } else
+    }
+    else
         c->s16_data = NULL;
 
     return 0;
@@ -352,9 +385,10 @@ DitherContext *ff_dither_alloc(AVAudioResampleContext *avr,
     int ch;
 
     if (av_get_packed_sample_fmt(out_fmt) != AV_SAMPLE_FMT_S16 ||
-        av_get_bytes_per_sample(in_fmt) <= 2) {
+    av_get_bytes_per_sample(in_fmt) <= 2)
+    {
         av_log(avr, AV_LOG_ERROR, "dithering %s to %s is not supported\n",
-               av_get_sample_fmt_name(in_fmt), av_get_sample_fmt_name(out_fmt));
+        av_get_sample_fmt_name(in_fmt), av_get_sample_fmt_name(out_fmt));
         return NULL;
     }
 
@@ -367,19 +401,24 @@ DitherContext *ff_dither_alloc(AVAudioResampleContext *avr,
         c->ch_map_info = &avr->ch_map_info;
 
     if (avr->dither_method == AV_RESAMPLE_DITHER_TRIANGULAR_NS &&
-        sample_rate != 48000 && sample_rate != 44100) {
+    sample_rate != 48000 && sample_rate != 44100)
+    {
         av_log(avr, AV_LOG_WARNING, "sample rate must be 48000 or 44100 Hz "
-               "for triangular_ns dither. using triangular_hp instead.\n");
+        "for triangular_ns dither. using triangular_hp instead.\n");
         avr->dither_method = AV_RESAMPLE_DITHER_TRIANGULAR_HP;
     }
     c->method = avr->dither_method;
     dither_init(&c->ddsp, c->method);
 
-    if (c->method == AV_RESAMPLE_DITHER_TRIANGULAR_NS) {
-        if (sample_rate == 48000) {
+    if (c->method == AV_RESAMPLE_DITHER_TRIANGULAR_NS)
+    {
+        if (sample_rate == 48000)
+        {
             c->ns_coef_b = ns_48_coef_b;
             c->ns_coef_a = ns_48_coef_a;
-        } else {
+        }
+        else
+        {
             c->ns_coef_b = ns_44_coef_b;
             c->ns_coef_a = ns_44_coef_a;
         }
@@ -388,7 +427,8 @@ DitherContext *ff_dither_alloc(AVAudioResampleContext *avr,
     /* Either s16 or s16p output format is allowed, but s16p is used
        internally, so we need to use a temp buffer and interleave if the output
        format is s16 */
-    if (out_fmt != AV_SAMPLE_FMT_S16P) {
+    if (out_fmt != AV_SAMPLE_FMT_S16P)
+    {
         c->s16_data = ff_audio_data_alloc(channels, 1024, AV_SAMPLE_FMT_S16P,
                                           "dither s16 buffer");
         if (!c->s16_data)
@@ -400,13 +440,15 @@ DitherContext *ff_dither_alloc(AVAudioResampleContext *avr,
             goto fail;
     }
 
-    if (in_fmt != AV_SAMPLE_FMT_FLTP || c->apply_map) {
+    if (in_fmt != AV_SAMPLE_FMT_FLTP || c->apply_map)
+    {
         c->flt_data = ff_audio_data_alloc(channels, 1024, AV_SAMPLE_FMT_FLTP,
                                           "dither flt buffer");
         if (!c->flt_data)
             goto fail;
     }
-    if (in_fmt != AV_SAMPLE_FMT_FLTP) {
+    if (in_fmt != AV_SAMPLE_FMT_FLTP)
+    {
         c->ac_in = ff_audio_convert_alloc(avr, AV_SAMPLE_FMT_FLTP, in_fmt,
                                           channels, sample_rate, c->apply_map);
         if (!c->ac_in)
@@ -425,7 +467,8 @@ DitherContext *ff_dither_alloc(AVAudioResampleContext *avr,
 
     /* initialize dither states */
     av_lfg_init(&seed_gen, 0xC0FFEE);
-    for (ch = 0; ch < channels; ch++) {
+    for (ch = 0; ch < channels; ch++)
+    {
         DitherState *state = &c->state[ch];
         state->mute = c->mute_reset_threshold + 1;
         state->seed = av_lfg_get(&seed_gen);

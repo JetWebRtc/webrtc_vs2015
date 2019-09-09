@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,30 +14,33 @@
 #include <winsock2.h>
 #include <windows.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
-class ConditionVariableEventWin {
- public:
-  ConditionVariableEventWin();
-  ~ConditionVariableEventWin();
+class ConditionVariableEventWin
+{
+public:
+    ConditionVariableEventWin();
+    ~ConditionVariableEventWin();
 
-  void SleepCS(CRITICAL_SECTION* crit_sect);
-  bool SleepCS(CRITICAL_SECTION* crit_sect, unsigned long max_time_inMS);
-  void Wake();
-  void WakeAll();
+    void SleepCS(CRITICAL_SECTION* crit_sect);
+    bool SleepCS(CRITICAL_SECTION* crit_sect, unsigned long max_time_inMS);
+    void Wake();
+    void WakeAll();
 
- private:
-  enum EventWakeUpType {
-    WAKEALL_0   = 0,
-    WAKEALL_1   = 1,
-    WAKE        = 2,
-    EVENT_COUNT = 3
-  };
+private:
+    enum EventWakeUpType
+    {
+        WAKEALL_0   = 0,
+        WAKEALL_1   = 1,
+        WAKE        = 2,
+        EVENT_COUNT = 3
+    };
 
-  unsigned int     num_waiters_[2];
-  EventWakeUpType  eventID_;
-  CRITICAL_SECTION num_waiters_crit_sect_;
-  HANDLE           events_[EVENT_COUNT];
+    unsigned int     num_waiters_[2];
+    EventWakeUpType  eventID_;
+    CRITICAL_SECTION num_waiters_crit_sect_;
+    HANDLE           events_[EVENT_COUNT];
 };
 
 }  // namespace webrtc

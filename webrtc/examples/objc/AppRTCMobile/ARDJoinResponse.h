@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,16 +10,17 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, ARDJoinResultType) {
-  kARDJoinResultTypeUnknown,
-  kARDJoinResultTypeSuccess,
-  kARDJoinResultTypeFull
+typedef NS_ENUM(NSInteger, ARDJoinResultType)
+{
+    kARDJoinResultTypeUnknown,
+    kARDJoinResultTypeSuccess,
+    kARDJoinResultTypeFull
 };
 
 // Result of joining a room on the room server.
 @interface ARDJoinResponse : NSObject
 
-@property(nonatomic, readonly) ARDJoinResultType result;
+    @property(nonatomic, readonly) ARDJoinResultType result;
 @property(nonatomic, readonly) BOOL isInitiator;
 @property(nonatomic, readonly) NSString *roomId;
 @property(nonatomic, readonly) NSString *clientId;

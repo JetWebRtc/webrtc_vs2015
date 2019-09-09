@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2014 Martin Storsjo
  *
  * This file is part of FFmpeg.
@@ -32,7 +32,8 @@ static int usage(const char *argv0, int ret)
     return ret;
 }
 
-struct Track {
+struct Track
+{
     const char *name;
     int64_t duration;
     int bitrate;
@@ -45,7 +46,8 @@ struct Track {
     int64_t sidx_start, sidx_length;
 };
 
-struct Tracks {
+struct Tracks
+{
     int nb_tracks;
     int64_t duration;
     struct Track **tracks;
@@ -54,17 +56,20 @@ struct Tracks {
 
 static void set_codec_str(AVCodecContext *codec, char *str, int size)
 {
-    switch (codec->codec_id) {
+    switch (codec->codec_id)
+    {
     case AV_CODEC_ID_H264:
         snprintf(str, size, "avc1");
-        if (codec->extradata_size >= 4 && codec->extradata[0] == 1) {
+        if (codec->extradata_size >= 4 && codec->extradata[0] == 1)
+        {
             av_strlcatf(str, size, ".%02x%02x%02x",
                         codec->extradata[1], codec->extradata[2], codec->extradata[3]);
         }
         break;
     case AV_CODEC_ID_AAC:
         snprintf(str, size, "mp4a.40"); // 0x40 is the mp4 object type for AAC
-        if (codec->extradata_size >= 2) {
+        if (codec->extradata_size >= 2)
+        {
             int aot = codec->extradata[0] >> 3;
             if (aot == 31)
                 aot = ((AV_RB16(codec->extradata) >> 5) & 0x3f) + 32;
@@ -84,7 +89,8 @@ static int find_sidx(struct Tracks *tracks, int start_index,
     if ((err = avio_open2(&f, file, AVIO_FLAG_READ, NULL, NULL)) < 0)
         goto fail;
 
-    while (!f->eof_reached) {
+    while (!f->eof_reached)
+    {
         int64_t pos = avio_tell(f);
         int32_t size, tag;
 
@@ -92,13 +98,18 @@ static int find_sidx(struct Tracks *tracks, int start_index,
         tag  = avio_rb32(f);
         if (size < 8)
             break;
-        if (tag == MKBETAG('s', 'i', 'd', 'x')) {
-            for (i = start_index; i < tracks->nb_tracks; i++) {
+        if (tag == MKBETAG('s', 'i', 'd', 'x'))
+        {
+            for (i = start_index; i < tracks->nb_tracks; i++)
+            {
                 struct Track *track = tracks->tracks[i];
-                if (!track->sidx_start) {
+                if (!track->sidx_start)
+                {
                     track->sidx_start  = pos;
                     track->sidx_length = size;
-                } else if (pos == track->sidx_start + track->sidx_length) {
+                }
+                else if (pos == track->sidx_start + track->sidx_length)
+                {
                     track->sidx_length = pos + size - track->sidx_start;
                 }
             }
@@ -121,44 +132,51 @@ static int handle_file(struct Tracks *tracks, const char *file)
     struct Track *track;
 
     err = avformat_open_input(&ctx, file, NULL, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_strerror(err, errbuf, sizeof(errbuf));
         fprintf(stderr, "Unable to open %s: %s\n", file, errbuf);
         return 1;
     }
 
     err = avformat_find_stream_info(ctx, NULL);
-    if (err < 0) {
+    if (err < 0)
+    {
         av_strerror(err, errbuf, sizeof(errbuf));
         fprintf(stderr, "Unable to identify %s: %s\n", file, errbuf);
         goto fail;
     }
 
-    if (ctx->nb_streams < 1) {
+    if (ctx->nb_streams < 1)
+    {
         fprintf(stderr, "No streams found in %s\n", file);
         goto fail;
     }
     if (ctx->nb_streams > 1)
         tracks->multiple_tracks_per_file = 1;
 
-    for (i = 0; i < ctx->nb_streams; i++) {
+    for (i = 0; i < ctx->nb_streams; i++)
+    {
         struct Track **temp;
         AVStream *st = ctx->streams[i];
 
-        if (st->codec->bit_rate == 0) {
+        if (st->codec->bit_rate == 0)
+        {
             fprintf(stderr, "Skipping track %d in %s as it has zero bitrate\n",
                     st->id, file);
             continue;
         }
 
         track = av_mallocz(sizeof(*track));
-        if (!track) {
+        if (!track)
+        {
             err = AVERROR(ENOMEM);
             goto fail;
         }
         temp = av_realloc_array(tracks->tracks, tracks->nb_tracks + 1,
                                 sizeof(*tracks->tracks));
-        if (!temp) {
+        if (!temp)
+        {
             av_free(track);
             err = AVERROR(ENOMEM);
             goto fail;
@@ -177,7 +195,8 @@ static int handle_file(struct Tracks *tracks, const char *file)
         track->is_audio  = st->codec->codec_type == AVMEDIA_TYPE_AUDIO;
         track->is_video  = st->codec->codec_type == AVMEDIA_TYPE_VIDEO;
 
-        if (!track->is_audio && !track->is_video) {
+        if (!track->is_audio && !track->is_video)
+        {
             fprintf(stderr,
                     "Track %d in %s is neither video nor audio, skipping\n",
                     track->track_id, file);
@@ -189,11 +208,13 @@ static int handle_file(struct Tracks *tracks, const char *file)
                                  av_rescale_rnd(track->duration, AV_TIME_BASE,
                                                 track->timescale, AV_ROUND_UP));
 
-        if (track->is_audio) {
+        if (track->is_audio)
+        {
             track->channels    = st->codec->channels;
             track->sample_rate = st->codec->sample_rate;
         }
-        if (track->is_video) {
+        if (track->is_video)
+        {
             track->width  = st->codec->width;
             track->height = st->codec->height;
         }
@@ -239,18 +260,22 @@ static int output_mpd(struct Tracks *tracks, const char *filename)
     int *nb_tracks;
     int set, nb_sets;
 
-    if (!tracks->multiple_tracks_per_file) {
+    if (!tracks->multiple_tracks_per_file)
+    {
         adaptation_sets = adaptation_sets_buf;
         nb_tracks = nb_tracks_buf;
         nb_sets = 2;
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 2; i++)
+        {
             adaptation_sets[i] = av_malloc_array(tracks->nb_tracks, sizeof(*adaptation_sets[i]));
-            if (!adaptation_sets[i]) {
+            if (!adaptation_sets[i])
+            {
                 ret = AVERROR(ENOMEM);
                 goto err;
             }
         }
-        for (i = 0; i < tracks->nb_tracks; i++) {
+        for (i = 0; i < tracks->nb_tracks; i++)
+        {
             int set_index = -1;
             if (tracks->tracks[i]->is_video)
                 set_index = 0;
@@ -260,25 +285,28 @@ static int output_mpd(struct Tracks *tracks, const char *filename)
                 continue;
             adaptation_sets[set_index][nb_tracks[set_index]++] = tracks->tracks[i];
         }
-    } else {
+    }
+    else
+    {
         adaptation_sets = &tracks->tracks;
         nb_tracks = &tracks->nb_tracks;
         nb_sets = 1;
     }
 
     out = fopen(filename, "w");
-    if (!out) {
+    if (!out)
+    {
         ret = AVERROR(errno);
         perror(filename);
         return ret;
     }
     fprintf(out, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
     fprintf(out, "<MPD xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                "\txmlns=\"urn:mpeg:dash:schema:mpd:2011\"\n"
-                "\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-                "\txsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd\"\n"
-                "\tprofiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
-                "\ttype=\"static\"\n");
+            "\txmlns=\"urn:mpeg:dash:schema:mpd:2011\"\n"
+            "\txmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+            "\txsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 http://standards.iso.org/ittf/PubliclyAvailableStandards/MPEG-DASH_schema_files/DASH-MPD.xsd\"\n"
+            "\tprofiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+            "\ttype=\"static\"\n");
     fprintf(out, "\tmediaPresentationDuration=\"");
     write_time(out, tracks->duration, 1, AV_ROUND_DOWN);
     fprintf(out, "\"\n");
@@ -286,12 +314,15 @@ static int output_mpd(struct Tracks *tracks, const char *filename)
 
     fprintf(out, "\t<Period start=\"PT0.0S\">\n");
 
-    for (set = 0; set < nb_sets; set++) {
+    for (set = 0; set < nb_sets; set++)
+    {
         if (nb_tracks[set] == 0)
             continue;
         fprintf(out, "\t\t<AdaptationSet segmentAlignment=\"true\">\n");
-        if (nb_sets == 1) {
-            for (i = 0; i < nb_tracks[set]; i++) {
+        if (nb_sets == 1)
+        {
+            for (i = 0; i < nb_tracks[set]; i++)
+            {
                 struct Track *track = adaptation_sets[set][i];
                 if (strcmp(track->name, adaptation_sets[set][0]->name))
                     break;
@@ -299,19 +330,23 @@ static int output_mpd(struct Tracks *tracks, const char *filename)
             }
         }
 
-        for (i = 0; i < nb_tracks[set]; ) {
+        for (i = 0; i < nb_tracks[set]; )
+        {
             struct Track *first_track = adaptation_sets[set][i];
             int width = 0, height = 0, sample_rate = 0, channels = 0, bitrate = 0;
             fprintf(out, "\t\t\t<Representation id=\"%d\" codecs=\"", i);
-            for (j = i; j < nb_tracks[set]; j++) {
+            for (j = i; j < nb_tracks[set]; j++)
+            {
                 struct Track *track = adaptation_sets[set][j];
                 if (strcmp(track->name, first_track->name))
                     break;
-                if (track->is_audio) {
+                if (track->is_audio)
+                {
                     sample_rate = track->sample_rate;
                     channels = track->channels;
                 }
-                if (track->is_video) {
+                if (track->is_video)
+                {
                     width = track->width;
                     height = track->height;
                 }
@@ -349,7 +384,8 @@ err:
 static void clean_tracks(struct Tracks *tracks)
 {
     int i;
-    for (i = 0; i < tracks->nb_tracks; i++) {
+    for (i = 0; i < tracks->nb_tracks; i++)
+    {
         av_freep(&tracks->tracks[i]);
     }
     av_freep(&tracks->tracks);
@@ -364,13 +400,19 @@ int main(int argc, char **argv)
 
     av_register_all();
 
-    for (i = 1; i < argc; i++) {
-        if (!strcmp(argv[i], "-out")) {
+    for (i = 1; i < argc; i++)
+    {
+        if (!strcmp(argv[i], "-out"))
+        {
             out = argv[i + 1];
             i++;
-        } else if (argv[i][0] == '-') {
+        }
+        else if (argv[i][0] == '-')
+        {
             return usage(argv[0], 1);
-        } else {
+        }
+        else
+        {
             if (handle_file(&tracks, argv[i]))
                 return 1;
         }

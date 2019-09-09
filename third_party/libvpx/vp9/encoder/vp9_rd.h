@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -43,79 +43,83 @@ extern "C" {
 
 // This enumerator type needs to be kept aligned with the mode order in
 // const MODE_DEFINITION vp9_mode_order[MAX_MODES] used in the rd code.
-typedef enum {
-  THR_NEARESTMV,
-  THR_NEARESTA,
-  THR_NEARESTG,
+typedef enum
+{
+    THR_NEARESTMV,
+    THR_NEARESTA,
+    THR_NEARESTG,
 
-  THR_DC,
+    THR_DC,
 
-  THR_NEWMV,
-  THR_NEWA,
-  THR_NEWG,
+    THR_NEWMV,
+    THR_NEWA,
+    THR_NEWG,
 
-  THR_NEARMV,
-  THR_NEARA,
-  THR_NEARG,
+    THR_NEARMV,
+    THR_NEARA,
+    THR_NEARG,
 
-  THR_ZEROMV,
-  THR_ZEROG,
-  THR_ZEROA,
+    THR_ZEROMV,
+    THR_ZEROG,
+    THR_ZEROA,
 
-  THR_COMP_NEARESTLA,
-  THR_COMP_NEARESTGA,
+    THR_COMP_NEARESTLA,
+    THR_COMP_NEARESTGA,
 
-  THR_TM,
+    THR_TM,
 
-  THR_COMP_NEARLA,
-  THR_COMP_NEWLA,
-  THR_COMP_NEARGA,
-  THR_COMP_NEWGA,
+    THR_COMP_NEARLA,
+    THR_COMP_NEWLA,
+    THR_COMP_NEARGA,
+    THR_COMP_NEWGA,
 
-  THR_COMP_ZEROLA,
-  THR_COMP_ZEROGA,
+    THR_COMP_ZEROLA,
+    THR_COMP_ZEROGA,
 
-  THR_H_PRED,
-  THR_V_PRED,
-  THR_D135_PRED,
-  THR_D207_PRED,
-  THR_D153_PRED,
-  THR_D63_PRED,
-  THR_D117_PRED,
-  THR_D45_PRED,
+    THR_H_PRED,
+    THR_V_PRED,
+    THR_D135_PRED,
+    THR_D207_PRED,
+    THR_D153_PRED,
+    THR_D63_PRED,
+    THR_D117_PRED,
+    THR_D45_PRED,
 } THR_MODES;
 
-typedef enum {
-  THR_LAST,
-  THR_GOLD,
-  THR_ALTR,
-  THR_COMP_LA,
-  THR_COMP_GA,
-  THR_INTRA,
+typedef enum
+{
+    THR_LAST,
+    THR_GOLD,
+    THR_ALTR,
+    THR_COMP_LA,
+    THR_COMP_GA,
+    THR_INTRA,
 } THR_MODES_SUB8X8;
 
-typedef struct RD_OPT {
-  // Thresh_mult is used to set a threshold for the rd score. A higher value
-  // means that we will accept the best mode so far more often. This number
-  // is used in combination with the current block size, and thresh_freq_fact
-  // to pick a threshold.
-  int thresh_mult[MAX_MODES];
-  int thresh_mult_sub8x8[MAX_REFS];
+typedef struct RD_OPT
+{
+    // Thresh_mult is used to set a threshold for the rd score. A higher value
+    // means that we will accept the best mode so far more often. This number
+    // is used in combination with the current block size, and thresh_freq_fact
+    // to pick a threshold.
+    int thresh_mult[MAX_MODES];
+    int thresh_mult_sub8x8[MAX_REFS];
 
-  int threshes[MAX_SEGMENTS][BLOCK_SIZES][MAX_MODES];
+    int threshes[MAX_SEGMENTS][BLOCK_SIZES][MAX_MODES];
 
-  int64_t prediction_type_threshes[MAX_REF_FRAMES][REFERENCE_MODES];
+    int64_t prediction_type_threshes[MAX_REF_FRAMES][REFERENCE_MODES];
 
-  int64_t filter_threshes[MAX_REF_FRAMES][SWITCHABLE_FILTER_CONTEXTS];
+    int64_t filter_threshes[MAX_REF_FRAMES][SWITCHABLE_FILTER_CONTEXTS];
 
-  int RDMULT;
-  int RDDIV;
+    int RDMULT;
+    int RDDIV;
 } RD_OPT;
 
-typedef struct RD_COST {
-  int rate;
-  int64_t dist;
-  int64_t rdcost;
+typedef struct RD_COST
+{
+    int rate;
+    int64_t dist;
+    int64_t rdcost;
 } RD_COST;
 
 // Reset the rate distortion cost values to maximum (invalid) value.
@@ -129,7 +133,7 @@ struct VP9_COMP;
 struct macroblock;
 
 int64_t vp9_compute_rd_mult_based_on_qindex(const struct VP9_COMP *cpi,
-                                            int qindex);
+        int qindex);
 
 int vp9_compute_rd_mult(const struct VP9_COMP *cpi, int qindex);
 
@@ -150,7 +154,7 @@ int16_t *vp9_raster_block_offset_int16(BLOCK_SIZE plane_bsize, int raster_block,
                                        int16_t *base);
 
 YV12_BUFFER_CONFIG *vp9_get_scaled_ref_frame(const struct VP9_COMP *cpi,
-                                             int ref_frame);
+        int ref_frame);
 
 void vp9_init_me_luts(void);
 
@@ -167,13 +171,15 @@ void vp9_update_rd_thresh_fact(int (*fact)[MAX_MODES], int rd_thresh, int bsize,
                                int best_mode_index);
 
 static INLINE int rd_less_than_thresh(int64_t best_rd, int thresh,
-                                      int thresh_fact) {
-  return best_rd < ((int64_t)thresh * thresh_fact >> 5) || thresh == INT_MAX;
+                                      int thresh_fact)
+{
+    return best_rd < ((int64_t)thresh * thresh_fact >> 5) || thresh == INT_MAX;
 }
 
-static INLINE void set_error_per_bit(MACROBLOCK *x, int rdmult) {
-  x->errorperbit = rdmult >> RD_EPB_SHIFT;
-  x->errorperbit += (x->errorperbit == 0);
+static INLINE void set_error_per_bit(MACROBLOCK *x, int rdmult)
+{
+    x->errorperbit = rdmult >> RD_EPB_SHIFT;
+    x->errorperbit += (x->errorperbit == 0);
 }
 
 void vp9_mv_pred(struct VP9_COMP *cpi, MACROBLOCK *x, uint8_t *ref_y_buffer,
@@ -189,12 +195,12 @@ int vp9_get_intra_cost_penalty(int qindex, int qdelta,
                                vpx_bit_depth_t bit_depth);
 
 unsigned int vp9_get_sby_perpixel_variance(struct VP9_COMP *cpi,
-                                           const struct buf_2d *ref,
-                                           BLOCK_SIZE bs);
+        const struct buf_2d *ref,
+        BLOCK_SIZE bs);
 #if CONFIG_VP9_HIGHBITDEPTH
 unsigned int vp9_high_get_sby_perpixel_variance(struct VP9_COMP *cpi,
-                                                const struct buf_2d *ref,
-                                                BLOCK_SIZE bs, int bd);
+        const struct buf_2d *ref,
+        BLOCK_SIZE bs, int bd);
 #endif
 
 #ifdef __cplusplus

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.264 IDCT
  * Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
  *

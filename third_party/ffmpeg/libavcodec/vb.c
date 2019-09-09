@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Beam Software VB decoder
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -31,7 +31,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-enum VBFlags {
+enum VBFlags
+{
     VB_HAS_GMC     = 0x01,
     VB_HAS_AUDIO   = 0x04,
     VB_HAS_VIDEO   = 0x08,
@@ -39,7 +40,8 @@ enum VBFlags {
     VB_HAS_LENGTH  = 0x20
 };
 
-typedef struct VBDecContext {
+typedef struct VBDecContext
+{
     AVCodecContext *avctx;
 
     uint8_t *frame, *prev_frame;
@@ -47,7 +49,8 @@ typedef struct VBDecContext {
     GetByteContext stream;
 } VBDecContext;
 
-static const uint16_t vb_patterns[64] = {
+static const uint16_t vb_patterns[64] =
+{
     0x0660, 0xFF00, 0xCCCC, 0xF000, 0x8888, 0x000F, 0x1111, 0xFEC8,
     0x8CEF, 0x137F, 0xF731, 0xC800, 0x008C, 0x0013, 0x3100, 0xCC00,
     0x00CC, 0x0033, 0x3300, 0x0FF0, 0x6666, 0x00F0, 0x0F00, 0x2222,
@@ -64,11 +67,13 @@ static void vb_decode_palette(VBDecContext *c, int data_size)
 
     start = bytestream2_get_byte(&c->stream);
     size  = (bytestream2_get_byte(&c->stream) - 1) & 0xFF;
-    if (start + size > 255) {
+    if (start + size > 255)
+    {
         av_log(c->avctx, AV_LOG_ERROR, "Palette change runs beyond entry 256\n");
         return;
     }
-    if (size*3+2 > data_size) {
+    if (size*3+2 > data_size)
+    {
         av_log(c->avctx, AV_LOG_ERROR, "Palette data runs beyond chunk size\n");
         return;
     }
@@ -105,11 +110,14 @@ static int vb_decode_framedata(VBDecContext *c, int offset)
 
     blocks = (c->avctx->width >> 2) * (c->avctx->height >> 2);
     blk2   = 0;
-    for (blk = 0; blk < blocks; blk++) {
-        if (!(blk & 3)) {
+    for (blk = 0; blk < blocks; blk++)
+    {
+        if (!(blk & 3))
+        {
             blocktypes = bytestream2_get_byte(&g);
         }
-        switch (blocktypes & 0xC0) {
+        switch (blocktypes & 0xC0)
+        {
         case 0x00: //skip
             for (y = 0; y < 4; y++)
                 if (check_line(prev + y*width, pstart, pend))
@@ -119,14 +127,18 @@ static int vb_decode_framedata(VBDecContext *c, int offset)
             break;
         case 0x40:
             t = bytestream2_get_byte(&g);
-            if (!t) { //raw block
-                if (bytestream2_get_bytes_left(&g) < 16) {
+            if (!t)   //raw block
+            {
+                if (bytestream2_get_bytes_left(&g) < 16)
+                {
                     av_log(c->avctx, AV_LOG_ERROR, "Insufficient data\n");
                     return AVERROR_INVALIDDATA;
                 }
                 for (y = 0; y < 4; y++)
                     bytestream2_get_buffer(&g, cur + y * width, 4);
-            } else { // motion compensation
+            }
+            else     // motion compensation
+            {
                 x = ((t & 0xF)^8) - 8;
                 y = ((t >> 4) ^8) - 8;
                 t = x + y*width;
@@ -146,7 +158,8 @@ static int vb_decode_framedata(VBDecContext *c, int offset)
             t       = bytestream2_get_byte(&g);
             pattype = t >> 6;
             pattern = vb_patterns[t & 0x3F];
-            switch (pattype) {
+            switch (pattype)
+            {
             case 0:
                 a = bytestream2_get_byte(&g);
                 b = bytestream2_get_byte(&g);
@@ -175,7 +188,8 @@ static int vb_decode_framedata(VBDecContext *c, int offset)
         cur  += 4;
         prev += 4;
         blk2++;
-        if (blk2 == (width >> 2)) {
+        if (blk2 == (width >> 2))
+        {
             blk2  = 0;
             cur  += width * 3;
             prev += width * 3;
@@ -202,21 +216,25 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     flags = bytestream2_get_le16(&c->stream);
 
-    if (flags & VB_HAS_GMC) {
+    if (flags & VB_HAS_GMC)
+    {
         i = (int16_t)bytestream2_get_le16(&c->stream);
         j = (int16_t)bytestream2_get_le16(&c->stream);
         offset = i + j * avctx->width;
     }
-    if (flags & VB_HAS_VIDEO) {
+    if (flags & VB_HAS_VIDEO)
+    {
         size = bytestream2_get_le32(&c->stream);
-        if(size > bytestream2_get_bytes_left(&c->stream)+4 || size<4){
+        if(size > bytestream2_get_bytes_left(&c->stream)+4 || size<4)
+        {
             av_log(avctx, AV_LOG_ERROR, "Frame size invalid\n");
             return -1;
         }
         vb_decode_framedata(c, offset);
         bytestream2_skip(&c->stream, size - 4);
     }
-    if (flags & VB_HAS_PALETTE) {
+    if (flags & VB_HAS_PALETTE)
+    {
         size = bytestream2_get_le32(&c->stream);
         vb_decode_palette(c, size);
     }
@@ -227,7 +245,8 @@ static int decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     outptr = frame->data[0];
     srcptr = c->frame;
 
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         memcpy(outptr, srcptr, avctx->width);
         srcptr += avctx->width;
         outptr += frame->linesize[0];
@@ -251,7 +270,8 @@ static av_cold int decode_init(AVCodecContext *avctx)
     c->frame      = av_mallocz(avctx->width * avctx->height);
     c->prev_frame = av_mallocz(avctx->width * avctx->height);
 
-    if (!c->frame || !c->prev_frame) {
+    if (!c->frame || !c->prev_frame)
+    {
         av_freep(&c->frame);
         av_freep(&c->prev_frame);
         return AVERROR(ENOMEM);
@@ -270,7 +290,8 @@ static av_cold int decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_vb_decoder = {
+AVCodec ff_vb_decoder =
+{
     .name           = "vb",
     .long_name      = NULL_IF_CONFIG_SMALL("Beam Software VB"),
     .type           = AVMEDIA_TYPE_VIDEO,

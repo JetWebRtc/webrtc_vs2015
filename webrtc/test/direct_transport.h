@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,46 +20,49 @@
 #include "webrtc/base/platform_thread.h"
 #include "webrtc/test/fake_network_pipe.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Call;
 class Clock;
 class PacketReceiver;
 
-namespace test {
+namespace test
+{
 
-class DirectTransport : public Transport {
- public:
-  explicit DirectTransport(Call* send_call);
-  DirectTransport(const FakeNetworkPipe::Config& config, Call* send_call);
-  ~DirectTransport();
+class DirectTransport : public Transport
+{
+public:
+    explicit DirectTransport(Call* send_call);
+    DirectTransport(const FakeNetworkPipe::Config& config, Call* send_call);
+    ~DirectTransport();
 
-  void SetConfig(const FakeNetworkPipe::Config& config);
+    void SetConfig(const FakeNetworkPipe::Config& config);
 
-  virtual void StopSending();
-  // TODO(holmer): Look into moving this to the constructor.
-  virtual void SetReceiver(PacketReceiver* receiver);
+    virtual void StopSending();
+    // TODO(holmer): Look into moving this to the constructor.
+    virtual void SetReceiver(PacketReceiver* receiver);
 
-  bool SendRtp(const uint8_t* data,
-               size_t length,
-               const PacketOptions& options) override;
-  bool SendRtcp(const uint8_t* data, size_t length) override;
+    bool SendRtp(const uint8_t* data,
+                 size_t length,
+                 const PacketOptions& options) override;
+    bool SendRtcp(const uint8_t* data, size_t length) override;
 
-  int GetAverageDelayMs();
+    int GetAverageDelayMs();
 
- private:
-  static bool NetworkProcess(void* transport);
-  bool SendPackets();
+private:
+    static bool NetworkProcess(void* transport);
+    bool SendPackets();
 
-  rtc::CriticalSection lock_;
-  Call* const send_call_;
-  rtc::Event packet_event_;
-  rtc::PlatformThread thread_;
-  Clock* const clock_;
+    rtc::CriticalSection lock_;
+    Call* const send_call_;
+    rtc::Event packet_event_;
+    rtc::PlatformThread thread_;
+    Clock* const clock_;
 
-  bool shutting_down_;
+    bool shutting_down_;
 
-  FakeNetworkPipe fake_network_;
+    FakeNetworkPipe fake_network_;
 };
 }  // namespace test
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,8 +21,10 @@
 #include "webrtc/system_wrappers/include/trace.h"
 #include "webrtc/voice_engine/test/channel_transport/udp_socket_posix.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 UdpSocketManagerPosix::UdpSocketManagerPosix()
     : UdpSocketManager(),
@@ -35,9 +37,11 @@ UdpSocketManagerPosix::UdpSocketManagerPosix()
 {
 }
 
-bool UdpSocketManagerPosix::Init(int32_t id, uint8_t& numOfWorkThreads) {
+bool UdpSocketManagerPosix::Init(int32_t id, uint8_t& numOfWorkThreads)
+{
     CriticalSectionScoped cs(_critSect);
-    if ((_id != -1) || (_numOfWorkThreads != 0)) {
+    if ((_id != -1) || (_numOfWorkThreads != 0))
+    {
         assert(_id != -1);
         assert(_numOfWorkThreads != 0);
         return false;
@@ -51,7 +55,7 @@ bool UdpSocketManagerPosix::Init(int32_t id, uint8_t& numOfWorkThreads) {
     {
         _numberOfSocketMgr = MAX_NUMBER_OF_SOCKET_MANAGERS_LINUX;
     }
-    for(int i = 0;i < _numberOfSocketMgr; i++)
+    for(int i = 0; i < _numberOfSocketMgr; i++)
     {
         _socketMgr[i] = new UdpSocketManagerPosixImpl();
     }
@@ -66,7 +70,7 @@ UdpSocketManagerPosix::~UdpSocketManagerPosix()
                  "UdpSocketManagerPosix(%d)::UdpSocketManagerPosix()",
                  _numberOfSocketMgr);
 
-    for(int i = 0;i < _numberOfSocketMgr; i++)
+    for(int i = 0; i < _numberOfSocketMgr; i++)
     {
         delete _socketMgr[i];
     }
@@ -81,7 +85,7 @@ bool UdpSocketManagerPosix::Start()
 
     _critSect->Enter();
     bool retVal = true;
-    for(int i = 0;i < _numberOfSocketMgr && retVal; i++)
+    for(int i = 0; i < _numberOfSocketMgr && retVal; i++)
     {
         retVal = _socketMgr[i]->Start();
     }
@@ -146,7 +150,9 @@ bool UdpSocketManagerPosix::AddSocket(UdpSocketWrapper* s)
     if(_incSocketMgrNextTime == 0)
     {
         _incSocketMgrNextTime++;
-    } else {
+    }
+    else
+    {
         _incSocketMgrNextTime = 0;
         _nextSocketMgrToAssign++;
         if(_nextSocketMgrToAssign >= _numberOfSocketMgr)
@@ -166,7 +172,7 @@ bool UdpSocketManagerPosix::RemoveSocket(UdpSocketWrapper* s)
 
     _critSect->Enter();
     bool retVal = false;
-    for(int i = 0;i < _numberOfSocketMgr && (retVal == false); i++)
+    for(int i = 0; i < _numberOfSocketMgr && (retVal == false); i++)
     {
         retVal = _socketMgr[i]->RemoveSocket(s);
     }
@@ -188,7 +194,8 @@ UdpSocketManagerPosixImpl::UdpSocketManagerPosixImpl()
     : _thread(UdpSocketManagerPosixImpl::Run,
               this,
               "UdpSocketManagerPosixImplThread"),
-      _critSectList(CriticalSectionWrapper::CreateCriticalSection()) {
+      _critSectList(CriticalSectionWrapper::CreateCriticalSection())
+{
     FD_ZERO(&_readFds);
     WEBRTC_TRACE(kTraceMemory,  kTraceTransport, -1,
                  "UdpSocketManagerPosix created");
@@ -202,10 +209,11 @@ UdpSocketManagerPosixImpl::~UdpSocketManagerPosixImpl()
 
         _critSectList->Enter();
         for (std::map<SOCKET, UdpSocketPosix*>::iterator it =
-                 _socketMap.begin();
-             it != _socketMap.end();
-             ++it) {
-          delete it->second;
+                    _socketMap.begin();
+                it != _socketMap.end();
+                ++it)
+        {
+            delete it->second;
         }
         _socketMap.clear();
         _critSectList->Leave();
@@ -248,12 +256,13 @@ bool UdpSocketManagerPosixImpl::Process()
 
     SOCKET maxFd = 0;
     for (std::map<SOCKET, UdpSocketPosix*>::iterator it = _socketMap.begin();
-         it != _socketMap.end();
-         ++it) {
-      doSelect = true;
-      if (it->first > maxFd)
-        maxFd = it->first;
-      FD_SET(it->first, &_readFds);
+            it != _socketMap.end();
+            ++it)
+    {
+        doSelect = true;
+        if (it->first > maxFd)
+            maxFd = it->first;
+        FD_SET(it->first, &_readFds);
     }
 
     int num = 0;
@@ -267,7 +276,8 @@ bool UdpSocketManagerPosixImpl::Process()
             SleepMs(10);
             return true;
         }
-    }else
+    }
+    else
     {
         // Timeout = 10 ms.
         SleepMs(10);
@@ -275,12 +285,14 @@ bool UdpSocketManagerPosixImpl::Process()
     }
 
     for (std::map<SOCKET, UdpSocketPosix*>::iterator it = _socketMap.begin();
-         it != _socketMap.end();
-         ++it) {
-      if (FD_ISSET(it->first, &_readFds)) {
-        it->second->HasIncoming();
-        --num;
-      }
+            it != _socketMap.end();
+            ++it)
+    {
+        if (FD_ISSET(it->first, &_readFds))
+        {
+            it->second->HasIncoming();
+            --num;
+        }
     }
 
     return true;
@@ -313,7 +325,8 @@ bool UdpSocketManagerPosixImpl::RemoveSocket(UdpSocketWrapper* s)
 
     // If the socket is in the add list it's safe to remove and delete it.
     for (SocketList::iterator iter = _addList.begin();
-         iter != _addList.end(); ++iter) {
+            iter != _addList.end(); ++iter)
+    {
         UdpSocketPosix* addSocket = static_cast<UdpSocketPosix*>(*iter);
         unsigned int addFD = addSocket->GetFd();
         unsigned int removeFD = static_cast<UdpSocketPosix*>(s)->GetFd();
@@ -328,10 +341,11 @@ bool UdpSocketManagerPosixImpl::RemoveSocket(UdpSocketWrapper* s)
     // Checking the socket map is safe since all Erase and Insert calls to this
     // map are also protected by _critSectList.
     if (_socketMap.find(static_cast<UdpSocketPosix*>(s)->GetFd()) !=
-        _socketMap.end()) {
-      _removeList.push_back(static_cast<UdpSocketPosix*>(s)->GetFd());
-      _critSectList->Leave();
-      return true;
+            _socketMap.end())
+    {
+        _removeList.push_back(static_cast<UdpSocketPosix*>(s)->GetFd());
+        _critSectList->Leave();
+        return true;
     }
     _critSectList->Leave();
     return false;
@@ -342,14 +356,16 @@ void UdpSocketManagerPosixImpl::UpdateSocketMap()
     // Remove items in remove list.
     _critSectList->Enter();
     for (FdList::iterator iter = _removeList.begin();
-         iter != _removeList.end(); ++iter) {
+            iter != _removeList.end(); ++iter)
+    {
         UdpSocketPosix* deleteSocket = NULL;
         SOCKET removeFD = *iter;
 
         // If the socket is in the add list it hasn't been added to the socket
         // map yet. Just remove the socket from the add list.
         for (SocketList::iterator iter = _addList.begin();
-             iter != _addList.end(); ++iter) {
+                iter != _addList.end(); ++iter)
+        {
             UdpSocketPosix* addSocket = static_cast<UdpSocketPosix*>(*iter);
             SOCKET addFD = addSocket->GetFd();
             if(removeFD == addFD)
@@ -365,8 +381,8 @@ void UdpSocketManagerPosixImpl::UpdateSocketMap()
             _socketMap.find(removeFD);
         if(it != _socketMap.end())
         {
-          deleteSocket = it->second;
-          _socketMap.erase(it);
+            deleteSocket = it->second;
+            _socketMap.erase(it);
         }
         if(deleteSocket)
         {
@@ -378,10 +394,12 @@ void UdpSocketManagerPosixImpl::UpdateSocketMap()
 
     // Add sockets from add list.
     for (SocketList::iterator iter = _addList.begin();
-         iter != _addList.end(); ++iter) {
+            iter != _addList.end(); ++iter)
+    {
         UdpSocketPosix* s = static_cast<UdpSocketPosix*>(*iter);
-        if(s) {
-          _socketMap[s->GetFd()] = s;
+        if(s)
+        {
+            _socketMap[s->GetFd()] = s;
         }
     }
     _addList.clear();

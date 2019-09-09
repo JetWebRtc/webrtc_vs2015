@@ -1,4 +1,4 @@
-/*
+﻿/*
  * American Laser Games MM Format Demuxer
  * Copyright (c) 2006 Peter Ross
  *
@@ -54,8 +54,9 @@
 #define MM_PALETTE_COUNT    128
 #define MM_PALETTE_SIZE     (MM_PALETTE_COUNT*3)
 
-typedef struct MmDemuxContext {
-  unsigned int audio_pts, video_pts;
+typedef struct MmDemuxContext
+{
+    unsigned int audio_pts, video_pts;
 } MmDemuxContext;
 
 static int probe(AVProbeData *p)
@@ -117,7 +118,8 @@ static int read_header(AVFormatContext *s)
     avpriv_set_pts_info(st, 64, 1, frame_rate);
 
     /* audio stream */
-    if (length == MM_HEADER_LEN_AV) {
+    if (length == MM_HEADER_LEN_AV)
+    {
         st = avformat_new_stream(s, NULL);
         if (!st)
             return AVERROR(ENOMEM);
@@ -136,23 +138,26 @@ static int read_header(AVFormatContext *s)
 }
 
 static int read_packet(AVFormatContext *s,
-                           AVPacket *pkt)
+                       AVPacket *pkt)
 {
     MmDemuxContext *mm = s->priv_data;
     AVIOContext *pb = s->pb;
     unsigned char preamble[MM_PREAMBLE_SIZE];
     unsigned int type, length;
 
-    while(1) {
+    while(1)
+    {
 
-        if (avio_read(pb, preamble, MM_PREAMBLE_SIZE) != MM_PREAMBLE_SIZE) {
+        if (avio_read(pb, preamble, MM_PREAMBLE_SIZE) != MM_PREAMBLE_SIZE)
+        {
             return AVERROR(EIO);
         }
 
         type = AV_RL16(&preamble[0]);
         length = AV_RL16(&preamble[2]);
 
-        switch(type) {
+        switch(type)
+        {
         case MM_TYPE_PALETTE :
         case MM_TYPE_INTER :
         case MM_TYPE_INTRA :
@@ -187,7 +192,8 @@ static int read_packet(AVFormatContext *s,
     }
 }
 
-AVInputFormat ff_mm_demuxer = {
+AVInputFormat ff_mm_demuxer =
+{
     .name           = "mm",
     .long_name      = NULL_IF_CONFIG_SMALL("American Laser Games MM"),
     .priv_data_size = sizeof(MmDemuxContext),

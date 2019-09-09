@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -47,9 +47,11 @@ void silk_NLSF_VQ(
     silk_assert( ( LPC_order & 1 ) == 0 );
 
     /* Loop over codebook */
-    for( i = 0; i < K; i++ ) {
+    for( i = 0; i < K; i++ )
+    {
         sum_error_Q26 = 0;
-        for( m = 0; m < LPC_order; m += 2 ) {
+        for( m = 0; m < LPC_order; m += 2 )
+        {
             /* Compute weighted squared quantization error for index m */
             diff_Q15 = silk_SUB_LSHIFT32( in_Q15[ m ], (opus_int32)*pCB_Q8++, 7 ); /* range: [ -32767 : 32767 ]*/
             sum_error_Q30 = silk_SMULBB( diff_Q15, diff_Q15 );

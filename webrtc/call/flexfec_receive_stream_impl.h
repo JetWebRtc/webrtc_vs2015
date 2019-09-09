@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/base/criticalsection.h"
 #include "webrtc/call/flexfec_receive_stream.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class FlexfecReceiver;
 class ProcessThread;
@@ -26,37 +27,41 @@ class RtcpRttStats;
 class RtpPacketReceived;
 class RtpRtcp;
 
-class FlexfecReceiveStreamImpl : public FlexfecReceiveStream {
- public:
-  FlexfecReceiveStreamImpl(const Config& config,
-                           RecoveredPacketReceiver* recovered_packet_receiver,
-                           RtcpRttStats* rtt_stats,
-                           ProcessThread* process_thread);
-  ~FlexfecReceiveStreamImpl() override;
+class FlexfecReceiveStreamImpl : public FlexfecReceiveStream
+{
+public:
+    FlexfecReceiveStreamImpl(const Config& config,
+                             RecoveredPacketReceiver* recovered_packet_receiver,
+                             RtcpRttStats* rtt_stats,
+                             ProcessThread* process_thread);
+    ~FlexfecReceiveStreamImpl() override;
 
-  const Config& GetConfig() const { return config_; }
+    const Config& GetConfig() const
+    {
+        return config_;
+    }
 
-  // TODO(nisse): Intended to be part of an RtpPacketReceiver interface.
-  void OnRtpPacket(const RtpPacketReceived& packet);
+    // TODO(nisse): Intended to be part of an RtpPacketReceiver interface.
+    void OnRtpPacket(const RtpPacketReceived& packet);
 
-  // Implements FlexfecReceiveStream.
-  void Start() override;
-  void Stop() override;
-  Stats GetStats() const override;
+    // Implements FlexfecReceiveStream.
+    void Start() override;
+    void Stop() override;
+    Stats GetStats() const override;
 
- private:
-  // Config.
-  const Config config_;
-  bool started_ GUARDED_BY(crit_);
-  rtc::CriticalSection crit_;
+private:
+    // Config.
+    const Config config_;
+    bool started_ GUARDED_BY(crit_);
+    rtc::CriticalSection crit_;
 
-  // Erasure code interfacing.
-  const std::unique_ptr<FlexfecReceiver> receiver_;
+    // Erasure code interfacing.
+    const std::unique_ptr<FlexfecReceiver> receiver_;
 
-  // RTCP reporting.
-  const std::unique_ptr<ReceiveStatistics> rtp_receive_statistics_;
-  const std::unique_ptr<RtpRtcp> rtp_rtcp_;
-  ProcessThread* process_thread_;
+    // RTCP reporting.
+    const std::unique_ptr<ReceiveStatistics> rtp_receive_statistics_;
+    const std::unique_ptr<RtpRtcp> rtp_rtcp_;
+    ProcessThread* process_thread_;
 };
 
 }  // namespace webrtc

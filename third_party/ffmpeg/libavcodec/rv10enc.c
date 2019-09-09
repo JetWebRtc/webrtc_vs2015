@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV10 encoder
  * Copyright (c) 2000,2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer
@@ -43,13 +43,16 @@ int ff_rv10_encode_picture_header(MpegEncContext *s, int picture_number)
 
     put_bits(&s->pb, 5, s->qscale);
 
-    if (s->pict_type == AV_PICTURE_TYPE_I) {
+    if (s->pict_type == AV_PICTURE_TYPE_I)
+    {
         /* specific MPEG like DC coding not used */
     }
     /* if multiple packets per frame are sent, the position at which
        to display the macroblocks is coded here */
-    if(!full_frame){
-        if (s->mb_width * s->mb_height >= (1U << 12)) {
+    if(!full_frame)
+    {
+        if (s->mb_width * s->mb_height >= (1U << 12))
+        {
             avpriv_report_missing_feature(s->avctx, "Encoding frames with %d (>= 4096) macroblocks",
                                           s->mb_width * s->mb_height);
             return AVERROR(ENOSYS);
@@ -63,14 +66,16 @@ int ff_rv10_encode_picture_header(MpegEncContext *s, int picture_number)
     return 0;
 }
 
-static const AVClass rv10_class = {
+static const AVClass rv10_class =
+{
     .class_name = "rv10 encoder",
     .item_name  = av_default_item_name,
     .option     = ff_mpv_generic_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_rv10_encoder = {
+AVCodec ff_rv10_encoder =
+{
     .name           = "rv10",
     .long_name      = NULL_IF_CONFIG_SMALL("RealVideo 1.0"),
     .type           = AVMEDIA_TYPE_VIDEO,

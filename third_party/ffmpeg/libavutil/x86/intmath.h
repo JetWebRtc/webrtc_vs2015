@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 James Almer
  *
  * This file is part of FFmpeg.
@@ -30,9 +30,9 @@
  * CPUs that don't support the popcnt instruction.
  */
 #if defined(__POPCNT__)
-    #define av_popcount   __builtin_popcount
+#define av_popcount   __builtin_popcount
 #if ARCH_X86_64
-    #define av_popcount64 __builtin_popcountll
+#define av_popcount64 __builtin_popcountll
 #endif
 
 #endif /* __POPCNT__ */
@@ -50,7 +50,8 @@ static av_always_inline av_const unsigned av_mod_uintp2_bmi2(unsigned a, unsigne
 {
     if (av_builtin_constant_p(p))
         return a & ((1 << p) - 1);
-    else {
+    else
+    {
         unsigned x;
         __asm__ ("bzhi %2, %1, %0 \n\t" : "=r"(x) : "rm"(a), "r"(p));
         return x;

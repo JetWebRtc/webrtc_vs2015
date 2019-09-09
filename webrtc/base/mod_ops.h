@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,25 +16,28 @@
 
 #include "webrtc/base/checks.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 template <unsigned long M>                                    // NOLINT
-inline unsigned long Add(unsigned long a, unsigned long b) {  // NOLINT
-  RTC_DCHECK_LT(a, M);
-  unsigned long t = M - b % M;  // NOLINT
-  unsigned long res = a - t;    // NOLINT
-  if (t > a)
-    return res + M;
-  return res;
+inline unsigned long Add(unsigned long a, unsigned long b)    // NOLINT
+{
+    RTC_DCHECK_LT(a, M);
+    unsigned long t = M - b % M;  // NOLINT
+    unsigned long res = a - t;    // NOLINT
+    if (t > a)
+        return res + M;
+    return res;
 }
 
 template <unsigned long M>                                         // NOLINT
-inline unsigned long Subtract(unsigned long a, unsigned long b) {  // NOLINT
-  RTC_DCHECK_LT(a, M);
-  unsigned long sub = b % M;  // NOLINT
-  if (a < sub)
-    return M - (sub - a);
-  return a - sub;
+inline unsigned long Subtract(unsigned long a, unsigned long b)    // NOLINT
+{
+    RTC_DCHECK_LT(a, M);
+    unsigned long sub = b % M;  // NOLINT
+    if (a < sub)
+        return M - (sub - a);
+    return a - sub;
 }
 
 // Calculates the forward difference between two wrapping numbers.
@@ -60,19 +63,21 @@ inline unsigned long Subtract(unsigned long a, unsigned long b) {  // NOLINT
 // -->----->                              |----->---
 //
 template <typename T, T M>
-inline T ForwardDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  RTC_DCHECK_LT(a, M);
-  RTC_DCHECK_LT(b, M);
-  return a <= b ? b - a : M - (a - b);
+inline T ForwardDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    RTC_DCHECK_LT(a, M);
+    RTC_DCHECK_LT(b, M);
+    return a <= b ? b - a : M - (a - b);
 }
 
 template <typename T>
-inline T ForwardDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  return b - a;
+inline T ForwardDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    return b - a;
 }
 
 // Calculates the reverse difference between two wrapping numbers.
@@ -98,36 +103,40 @@ inline T ForwardDiff(T a, T b) {
 // ---<-----|                             |<-----<--
 //
 template <typename T, T M>
-inline T ReverseDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  RTC_DCHECK_LT(a, M);
-  RTC_DCHECK_LT(b, M);
-  return b <= a ? a - b : M - (b - a);
+inline T ReverseDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    RTC_DCHECK_LT(a, M);
+    RTC_DCHECK_LT(b, M);
+    return b <= a ? a - b : M - (b - a);
 }
 
 template <typename T>
-inline T ReverseDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  return a - b;
+inline T ReverseDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    return a - b;
 }
 
 // Calculates the minimum distance between to wrapping numbers.
 //
 // The minimum distance is defined as min(ForwardDiff(a, b), ReverseDiff(a, b))
 template <typename T, T M>
-inline T MinDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  return std::min(ForwardDiff<T, M>(a, b), ReverseDiff<T, M>(a, b));
+inline T MinDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    return std::min(ForwardDiff<T, M>(a, b), ReverseDiff<T, M>(a, b));
 }
 
 template <typename T>
-inline T MinDiff(T a, T b) {
-  static_assert(std::is_unsigned<T>::value,
-                "Type must be an unsigned integer.");
-  return std::min(ForwardDiff(a, b), ReverseDiff(a, b));
+inline T MinDiff(T a, T b)
+{
+    static_assert(std::is_unsigned<T>::value,
+                  "Type must be an unsigned integer.");
+    return std::min(ForwardDiff(a, b), ReverseDiff(a, b));
 }
 
 }  // namespace webrtc

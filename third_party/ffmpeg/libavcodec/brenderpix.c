@@ -1,4 +1,4 @@
-/*
+﻿/*
  * BRender PIX (.pix) image decoder
  * Copyright (c) 2012 Aleksi Nurmi
  *
@@ -41,7 +41,8 @@
  * (black) to very light grey (white). The following colours are 32-element
  * ramps for six colours as shown below.
  */
-static const uint32_t std_pal_table[256] = {
+static const uint32_t std_pal_table[256] =
+{
     // gray
     0xFF000000, 0xFF030303, 0xFF060606, 0xFF090909, 0xFF0C0C0C, 0xFF0F0F0F,
     0xFF121212, 0xFF151515, 0xFF181818, 0xFF1B1B1B, 0xFF1E1E1E, 0xFF212121,
@@ -104,7 +105,8 @@ static const uint32_t std_pal_table[256] = {
     0xFFFAFACE, 0xFFFCFCE6,
 };
 
-typedef struct PixHeader {
+typedef struct PixHeader
+{
     int width;
     int height;
     int format;
@@ -153,25 +155,29 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     magic[3] = bytestream2_get_be32(&gb);
 
     if (magic[0] != 0x12 ||
-        magic[1] != 0x08 ||
-        magic[2] != 0x02 ||
-        magic[3] != 0x02) {
+            magic[1] != 0x08 ||
+            magic[2] != 0x02 ||
+            magic[3] != 0x02)
+    {
         av_log(avctx, AV_LOG_ERROR, "Not a BRender PIX file.\n");
         return AVERROR_INVALIDDATA;
     }
 
     chunk_type = bytestream2_get_be32(&gb);
-    if (chunk_type != HEADER1_CHUNK && chunk_type != HEADER2_CHUNK) {
+    if (chunk_type != HEADER1_CHUNK && chunk_type != HEADER2_CHUNK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid chunk type %d.\n", chunk_type);
         return AVERROR_INVALIDDATA;
     }
 
     ret = pix_decode_header(&hdr, &gb);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid header length.\n");
         return ret;
     }
-    switch (hdr.format) {
+    switch (hdr.format)
+    {
     case 3:
         avctx->pix_fmt = AV_PIX_FMT_PAL8;
         bytes_pp = 1;
@@ -214,14 +220,16 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     chunk_type = bytestream2_get_be32(&gb);
 
     if (avctx->pix_fmt == AV_PIX_FMT_PAL8 &&
-        (chunk_type == HEADER1_CHUNK ||
-         chunk_type == HEADER2_CHUNK)) {
+            (chunk_type == HEADER1_CHUNK ||
+             chunk_type == HEADER2_CHUNK))
+    {
         /* read palette data from data[1] */
         PixHeader palhdr;
         uint32_t *pal_out = (uint32_t *)frame->data[1];
 
         ret = pix_decode_header(&palhdr, &gb);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid palette header length.\n");
             return ret;
         }
@@ -232,7 +240,8 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         data_len = bytestream2_get_be32(&gb);
         bytestream2_skip(&gb, 8);
         if (chunk_type != IMAGE_DATA_CHUNK || data_len != 1032 ||
-            bytestream2_get_bytes_left(&gb) < 1032) {
+                bytestream2_get_bytes_left(&gb) < 1032)
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid palette data.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -245,7 +254,9 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         frame->palette_has_changed = 1;
 
         chunk_type = bytestream2_get_be32(&gb);
-    } else if (avctx->pix_fmt == AV_PIX_FMT_PAL8) {
+    }
+    else if (avctx->pix_fmt == AV_PIX_FMT_PAL8)
+    {
         /* no palette supplied, use the default one */
         uint32_t *pal_out = (uint32_t *)frame->data[1];
 
@@ -265,7 +276,8 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     bytes_left = bytestream2_get_bytes_left(&gb);
 
     if (chunk_type != IMAGE_DATA_CHUNK || data_len != bytes_left ||
-        bytes_left / bytes_per_scanline < hdr.height) {
+            bytes_left / bytes_per_scanline < hdr.height)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid image data.\n");
         return AVERROR_INVALIDDATA;
     }
@@ -282,7 +294,8 @@ static int pix_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     return avpkt->size;
 }
 
-AVCodec ff_brender_pix_decoder = {
+AVCodec ff_brender_pix_decoder =
+{
     .name         = "brender_pix",
     .long_name    = NULL_IF_CONFIG_SMALL("BRender PIX image"),
     .type         = AVMEDIA_TYPE_VIDEO,

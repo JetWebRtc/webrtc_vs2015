@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TCP protocol
  * Copyright (c) 2002 Fabrice Bellard
  *
@@ -32,7 +32,8 @@
 #include <poll.h>
 #endif
 
-typedef struct TCPContext {
+typedef struct TCPContext
+{
     const AVClass *class;
     int fd;
     int listen;
@@ -44,14 +45,16 @@ typedef struct TCPContext {
 #define OFFSET(x) offsetof(TCPContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "listen",          "Listen for incoming connections",  OFFSET(listen),         AV_OPT_TYPE_INT, { .i64 = 0 },     0,       2,       .flags = D|E },
     { "timeout",     "set timeout (in microseconds) of socket I/O operations", OFFSET(rw_timeout),     AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
     { "listen_timeout",  "Connection awaiting timeout (in milliseconds)",      OFFSET(listen_timeout), AV_OPT_TYPE_INT, { .i64 = -1 },         -1, INT_MAX, .flags = D|E },
     { NULL }
 };
 
-static const AVClass tcp_class = {
+static const AVClass tcp_class =
+{
     .class_name = "tcp",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -72,32 +75,38 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
     s->open_timeout = 5000000;
 
     av_url_split(proto, sizeof(proto), NULL, 0, hostname, sizeof(hostname),
-        &port, path, sizeof(path), uri);
+                 &port, path, sizeof(path), uri);
     if (strcmp(proto, "tcp"))
         return AVERROR(EINVAL);
-    if (port <= 0 || port >= 65536) {
+    if (port <= 0 || port >= 65536)
+    {
         av_log(h, AV_LOG_ERROR, "Port missing in uri\n");
         return AVERROR(EINVAL);
     }
     p = strchr(uri, '?');
-    if (p) {
-        if (av_find_info_tag(buf, sizeof(buf), "listen", p)) {
+    if (p)
+    {
+        if (av_find_info_tag(buf, sizeof(buf), "listen", p))
+        {
             char *endptr = NULL;
             s->listen = strtol(buf, &endptr, 10);
             /* assume if no digits were found it is a request to enable it */
             if (buf == endptr)
                 s->listen = 1;
         }
-        if (av_find_info_tag(buf, sizeof(buf), "timeout", p)) {
+        if (av_find_info_tag(buf, sizeof(buf), "timeout", p))
+        {
             s->rw_timeout = strtol(buf, NULL, 10);
         }
-        if (av_find_info_tag(buf, sizeof(buf), "listen_timeout", p)) {
+        if (av_find_info_tag(buf, sizeof(buf), "listen_timeout", p))
+        {
             s->listen_timeout = strtol(buf, NULL, 10);
         }
     }
-    if (s->rw_timeout >= 0) {
+    if (s->rw_timeout >= 0)
+    {
         s->open_timeout =
-        h->rw_timeout   = s->rw_timeout;
+            h->rw_timeout   = s->rw_timeout;
     }
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -108,7 +117,8 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
         ret = getaddrinfo(NULL, portstr, &hints, &ai);
     else
         ret = getaddrinfo(hostname, portstr, &hints, &ai);
-    if (ret) {
+    if (ret)
+    {
         av_log(h, AV_LOG_ERROR,
                "Failed to resolve hostname %s: %s\n",
                hostname, gai_strerror(ret));
@@ -117,29 +127,37 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
 
     cur_ai = ai;
 
- restart:
+restart:
     fd = ff_socket(cur_ai->ai_family,
                    cur_ai->ai_socktype,
                    cur_ai->ai_protocol);
-    if (fd < 0) {
+    if (fd < 0)
+    {
         ret = ff_neterrno();
         goto fail;
     }
 
-    if (s->listen == 2) {
+    if (s->listen == 2)
+    {
         // multi-client
         if ((ret = ff_listen(fd, cur_ai->ai_addr, cur_ai->ai_addrlen)) < 0)
             goto fail1;
-    } else if (s->listen == 1) {
+    }
+    else if (s->listen == 1)
+    {
         // single client
         if ((fd = ff_listen_bind(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
-                                 s->listen_timeout, h)) < 0) {
+                                 s->listen_timeout, h)) < 0)
+        {
             ret = fd;
             goto fail1;
         }
-    } else {
+    }
+    else
+    {
         if ((ret = ff_listen_connect(fd, cur_ai->ai_addr, cur_ai->ai_addrlen,
-                                     s->open_timeout / 1000, h, !!cur_ai->ai_next)) < 0) {
+                                     s->open_timeout / 1000, h, !!cur_ai->ai_next)) < 0)
+        {
 
             if (ret == AVERROR_EXIT)
                 goto fail1;
@@ -153,8 +171,9 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
     freeaddrinfo(ai);
     return 0;
 
- fail:
-    if (cur_ai->ai_next) {
+fail:
+    if (cur_ai->ai_next)
+    {
         /* Retry with the next sockaddr */
         cur_ai = cur_ai->ai_next;
         if (fd >= 0)
@@ -162,7 +181,7 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
         ret = 0;
         goto restart;
     }
- fail1:
+fail1:
     if (fd >= 0)
         closesocket(fd);
     freeaddrinfo(ai);
@@ -190,7 +209,8 @@ static int tcp_read(URLContext *h, uint8_t *buf, int size)
     TCPContext *s = h->priv_data;
     int ret;
 
-    if (!(h->flags & AVIO_FLAG_NONBLOCK)) {
+    if (!(h->flags & AVIO_FLAG_NONBLOCK))
+    {
         ret = ff_network_wait_fd_timeout(s->fd, 0, h->rw_timeout, &h->interrupt_callback);
         if (ret)
             return ret;
@@ -204,7 +224,8 @@ static int tcp_write(URLContext *h, const uint8_t *buf, int size)
     TCPContext *s = h->priv_data;
     int ret;
 
-    if (!(h->flags & AVIO_FLAG_NONBLOCK)) {
+    if (!(h->flags & AVIO_FLAG_NONBLOCK))
+    {
         ret = ff_network_wait_fd_timeout(s->fd, 1, h->rw_timeout, &h->interrupt_callback);
         if (ret)
             return ret;
@@ -218,11 +239,16 @@ static int tcp_shutdown(URLContext *h, int flags)
     TCPContext *s = h->priv_data;
     int how;
 
-    if (flags & AVIO_FLAG_WRITE && flags & AVIO_FLAG_READ) {
+    if (flags & AVIO_FLAG_WRITE && flags & AVIO_FLAG_READ)
+    {
         how = SHUT_RDWR;
-    } else if (flags & AVIO_FLAG_WRITE) {
+    }
+    else if (flags & AVIO_FLAG_WRITE)
+    {
         how = SHUT_WR;
-    } else {
+    }
+    else
+    {
         how = SHUT_RD;
     }
 
@@ -242,7 +268,8 @@ static int tcp_get_file_handle(URLContext *h)
     return s->fd;
 }
 
-URLProtocol ff_tcp_protocol = {
+URLProtocol ff_tcp_protocol =
+{
     .name                = "tcp",
     .url_open            = tcp_open,
     .url_accept          = tcp_accept,

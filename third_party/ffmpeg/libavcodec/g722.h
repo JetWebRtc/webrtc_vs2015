@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) CMU 1993 Computer Science, Speech Group
  *                        Chengxiang Lu and Alex Hauptmann
  * Copyright (c) 2005 Steve Underwood <steveu at coppice.org>
@@ -31,7 +31,8 @@
 
 #define PREV_SAMPLES_BUF_SIZE 1024
 
-typedef struct G722Context {
+typedef struct G722Context
+{
     const AVClass *class;
     int     bits_per_codeword;
     int16_t prev_samples[PREV_SAMPLES_BUF_SIZE]; ///< memory of past decoded samples
@@ -40,7 +41,8 @@ typedef struct G722Context {
     /**
      * The band[0] and band[1] correspond respectively to the lower band and higher band.
      */
-    struct G722Band {
+    struct G722Band
+    {
         int16_t s_predictor;         ///< predictor output value
         int32_t s_zero;              ///< previous output signal from zero predictor
         int8_t  part_reconst_mem[2]; ///< signs of previous partially reconstructed signals
@@ -52,13 +54,15 @@ typedef struct G722Context {
         int16_t scale_factor;        ///< delayed quantizer scale factor
     } band[2];
 
-    struct TrellisNode {
+    struct TrellisNode
+    {
         struct G722Band state;
         uint32_t ssd;
         int path;
     } *node_buf[2], **nodep_buf[2];
 
-    struct TrellisPath {
+    struct TrellisPath
+    {
         int value;
         int prev;
     } *paths[2];

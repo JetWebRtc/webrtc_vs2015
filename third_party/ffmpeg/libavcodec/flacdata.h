@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLAC data header
  * Copyright (c) 2003 Alex Beregszaszi
  *

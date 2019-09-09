@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,15 +25,16 @@ extern "C" {
 
 typedef enum noise_level { kLowLow, kLow, kMedium, kHigh } NOISE_LEVEL;
 
-typedef struct noise_estimate {
-  int enabled;
-  NOISE_LEVEL level;
-  int value;
-  int thresh;
-  int count;
-  int last_w;
-  int last_h;
-  int num_frames_estimate;
+typedef struct noise_estimate
+{
+    int enabled;
+    NOISE_LEVEL level;
+    int value;
+    int thresh;
+    int count;
+    int last_w;
+    int last_h;
+    int num_frames_estimate;
 } NOISE_ESTIMATE;
 
 struct VP9_COMP;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Aurelien Jacobs <aurel@gnuage.org>
  * Copyright (c) 2010 Mans Rullgard <mans@mansr.com>
  *
@@ -79,14 +79,17 @@ VP56_EDGE_FILTER(vp6, ver, stride, 1)
 
 av_cold void ff_vp56dsp_init(VP56DSPContext *s, enum AVCodecID codec)
 {
-    if (codec == AV_CODEC_ID_VP5) {
+    if (codec == AV_CODEC_ID_VP5)
+    {
         s->edge_filter_hor = vp5_edge_filter_hor;
         s->edge_filter_ver = vp5_edge_filter_ver;
-    } else {
+    }
+    else {
         s->edge_filter_hor = vp6_edge_filter_hor;
         s->edge_filter_ver = vp6_edge_filter_ver;
 
-        if (CONFIG_VP6_DECODER) {
+        if (CONFIG_VP6_DECODER)
+        {
             s->vp6_filter_diag4 = ff_vp6_filter_diag4_c;
 
             if (ARCH_ARM)

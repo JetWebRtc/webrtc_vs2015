@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_PC_TEST_ANDROIDTESTINITIALIZER_H_
 #define WEBRTC_PC_TEST_ANDROIDTESTINITIALIZER_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 void InitializeAndroidObjects();
 

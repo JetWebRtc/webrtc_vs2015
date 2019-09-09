@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 
 extern const uint8_t ff_h263_loop_filter_strength[32];
 
-typedef struct H263DSPContext {
+typedef struct H263DSPContext
+{
     void (*h263_h_loop_filter)(uint8_t *src, int stride, int qscale);
     void (*h263_v_loop_filter)(uint8_t *src, int stride, int qscale);
 } H263DSPContext;

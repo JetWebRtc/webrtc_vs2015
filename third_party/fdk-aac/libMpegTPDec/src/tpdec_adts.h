@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -101,42 +101,44 @@ amm-info@iis.fraunhofer.de
 #define ADTS_VARIABLE_HEADERLENGTH  ( ADTS_HEADERLENGTH - ADTS_FIXED_HEADERLENGTH )
 
 #ifdef CHECK_TWO_SYNCS
- #define ADTS_MIN_TP_BUF_SIZE       ( 8191 + 2 )
+#define ADTS_MIN_TP_BUF_SIZE       ( 8191 + 2 )
 #else
- #define ADTS_MIN_TP_BUF_SIZE       ( 8191 )
+#define ADTS_MIN_TP_BUF_SIZE       ( 8191 )
 #endif
 
 #include "FDK_crc.h"
 
-typedef struct {
-  /* ADTS header fields */
-  UCHAR mpeg_id;
-  UCHAR layer;
-  UCHAR protection_absent;
-  UCHAR profile;
-  UCHAR sample_freq_index;
-  UCHAR private_bit;
-  UCHAR channel_config;
-  UCHAR original;
-  UCHAR home;
-  UCHAR copyright_id;
-  UCHAR copyright_start;
-  USHORT frame_length;
-  USHORT adts_fullness;
-  UCHAR num_raw_blocks;
-  UCHAR num_pce_bits;
+typedef struct
+{
+    /* ADTS header fields */
+    UCHAR mpeg_id;
+    UCHAR layer;
+    UCHAR protection_absent;
+    UCHAR profile;
+    UCHAR sample_freq_index;
+    UCHAR private_bit;
+    UCHAR channel_config;
+    UCHAR original;
+    UCHAR home;
+    UCHAR copyright_id;
+    UCHAR copyright_start;
+    USHORT frame_length;
+    USHORT adts_fullness;
+    UCHAR num_raw_blocks;
+    UCHAR num_pce_bits;
 } STRUCT_ADTS_BS;
 
-struct STRUCT_ADTS {
+struct STRUCT_ADTS
+{
 
-  STRUCT_ADTS_BS bs;
+    STRUCT_ADTS_BS bs;
 
-  UCHAR decoderCanDoMpeg4;
-  UCHAR BufferFullnesStartFlag;
+    UCHAR decoderCanDoMpeg4;
+    UCHAR BufferFullnesStartFlag;
 
-  FDK_CRCINFO crcInfo;             /* CRC state info */
-  USHORT      crcReadValue;        /* CRC value read from bitstream data */
-  USHORT      rawDataBlockDist[4]; /* distance between each raw data block. Not the same as found in the bitstream */
+    FDK_CRCINFO crcInfo;             /* CRC state info */
+    USHORT      crcReadValue;        /* CRC value read from bitstream data */
+    USHORT      rawDataBlockDist[4]; /* distance between each raw data block. Not the same as found in the bitstream */
 } ;
 
 typedef struct STRUCT_ADTS *HANDLE_ADTS;
@@ -165,10 +167,10 @@ void adtsRead_CrcInit( HANDLE_ADTS pAdts );
  * \return  ID for the created region, -1 in case of an error
  */
 int adtsRead_CrcStartReg(
-        HANDLE_ADTS pAdts,
-        HANDLE_FDK_BITSTREAM hBs,
-        int mBits
-        );
+    HANDLE_ADTS pAdts,
+    HANDLE_FDK_BITSTREAM hBs,
+    int mBits
+);
 
 /**
  * \brief Ends CRC region identified by reg
@@ -180,10 +182,10 @@ int adtsRead_CrcStartReg(
  * \return  none
  */
 void adtsRead_CrcEndReg(
-        HANDLE_ADTS pAdts,
-        HANDLE_FDK_BITSTREAM hBs,
-        int reg
-        );
+    HANDLE_ADTS pAdts,
+    HANDLE_FDK_BITSTREAM hBs,
+    int reg
+);
 
 /**
  * \brief Check CRC
@@ -211,11 +213,11 @@ TRANSPORTDEC_ERROR adtsRead_CrcCheck( HANDLE_ADTS pAdts );
  * \return  error status
  */
 TRANSPORTDEC_ERROR adtsRead_DecodeHeader(
-        HANDLE_ADTS           pAdts,
-        CSAudioSpecificConfig *pAsc,
-        HANDLE_FDK_BITSTREAM  bs,
-        const INT             ignoreBufferFullness
-        );
+    HANDLE_ADTS           pAdts,
+    CSAudioSpecificConfig *pAsc,
+    HANDLE_FDK_BITSTREAM  bs,
+    const INT             ignoreBufferFullness
+);
 
 /**
  * \brief Get the raw data block length of the given block number.
@@ -228,9 +230,9 @@ TRANSPORTDEC_ERROR adtsRead_DecodeHeader(
  * \return  error status
  */
 int adtsRead_GetRawDataBlockLength(
-        HANDLE_ADTS pAdts,
-        INT         blockNum
-        );
+    HANDLE_ADTS pAdts,
+    INT         blockNum
+);
 
 
 #endif /* TPDEC_ADTS_H */

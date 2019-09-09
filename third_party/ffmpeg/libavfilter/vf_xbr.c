@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * Copyright (c) 2011, 2012 Hyllian/Jararaca <sergiogdb@gmail.com>
@@ -39,21 +39,24 @@
 
 typedef int (*xbrfunc_t)(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs);
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int n;
     xbrfunc_t func;
     uint32_t rgbtoyuv[1<<24];
 } XBRContext;
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
     const uint32_t *rgbtoyuv;
 } ThreadData;
 
 #define OFFSET(x) offsetof(XBRContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption xbr_options[] = {
+static const AVOption xbr_options[] =
+{
     { "n", "set scale factor", OFFSET(n), AV_OPT_TYPE_INT, {.i64 = 3}, 2, 4, .flags = FLAGS },
     { NULL }
 };
@@ -219,7 +222,8 @@ static av_always_inline void xbr_filter(const ThreadData *td, int jobnr, int nb_
     const int nl1 = nl + nl;
     const int nl2 = nl1 + nl;
 
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
 
         uint32_t *E = (uint32_t *)(output->data[0] + y * output->linesize[0] * n);
         const uint32_t *sa2 = (uint32_t *)(input->data[0] + y * input->linesize[0] - 8); /* center */
@@ -228,21 +232,26 @@ static av_always_inline void xbr_filter(const ThreadData *td, int jobnr, int nb_
         const uint32_t *sa3 = sa2 + (input->linesize[0]>>2); /* down x1 */
         const uint32_t *sa4 = sa3 + (input->linesize[0]>>2); /* down x2 */
 
-        if (y <= 1) {
+        if (y <= 1)
+        {
             sa0 = sa1;
-            if (y == 0) {
+            if (y == 0)
+            {
                 sa0 = sa1 = sa2;
             }
         }
 
-        if (y >= input->height - 2) {
+        if (y >= input->height - 2)
+        {
             sa4 = sa3;
-            if (y == input->height - 1) {
+            if (y == input->height - 1)
+            {
                 sa4 = sa3 = sa2;
             }
         }
 
-        for (x = 0; x < input->width; x++) {
+        for (x = 0; x < input->width; x++)
+        {
             const uint32_t B1 = sa0[2];
             const uint32_t PB = sa1[2];
             const uint32_t PE = sa2[2];
@@ -273,28 +282,33 @@ static av_always_inline void xbr_filter(const ThreadData *td, int jobnr, int nb_
             const uint32_t F4 = sa2[pnext2];
             const uint32_t I4 = sa3[pnext2];
 
-            if (n == 2) {
+            if (n == 2)
+            {
                 E[0]  = E[1]      =     // 0, 1
-                E[nl] = E[nl + 1] = PE; // 2, 3
+                            E[nl] = E[nl + 1] = PE; // 2, 3
 
                 FILT2(PE, PI, PH, PF, PG, PC, PD, PB, PA, G5, C4, G0, D0, C1, B1, F4, I4, H5, I5, A0, A1, 0, 1, nl, nl+1);
                 FILT2(PE, PC, PF, PB, PI, PA, PH, PD, PG, I4, A1, I5, H5, A0, D0, B1, C1, F4, C4, G5, G0, nl, 0, nl+1, 1);
                 FILT2(PE, PA, PB, PD, PC, PG, PF, PH, PI, C1, G0, C4, F4, G5, H5, D0, A0, B1, A1, I4, I5, nl+1, nl, 1, 0);
                 FILT2(PE, PG, PD, PH, PA, PI, PB, PF, PC, A0, I5, A1, B1, I4, F4, H5, G5, D0, G0, C1, C4, 1, nl+1, 0, nl);
-            } else if (n == 3) {
+            }
+            else if (n == 3)
+            {
                 E[0]   = E[1]     = E[2]     =     // 0, 1, 2
-                E[nl]  = E[nl+1]  = E[nl+2]  =     // 3, 4, 5
-                E[nl1] = E[nl1+1] = E[nl1+2] = PE; // 6, 7, 8
+                                        E[nl]  = E[nl+1]  = E[nl+2]  =     // 3, 4, 5
+                                                     E[nl1] = E[nl1+1] = E[nl1+2] = PE; // 6, 7, 8
 
                 FILT3(PE, PI, PH, PF, PG, PC, PD, PB, PA, G5, C4, G0, D0, C1, B1, F4, I4, H5, I5, A0, A1, 0, 1, 2, nl, nl+1, nl+2, nl1, nl1+1, nl1+2);
                 FILT3(PE, PC, PF, PB, PI, PA, PH, PD, PG, I4, A1, I5, H5, A0, D0, B1, C1, F4, C4, G5, G0, nl1, nl, 0, nl1+1, nl+1, 1, nl1+2, nl+2, 2);
                 FILT3(PE, PA, PB, PD, PC, PG, PF, PH, PI, C1, G0, C4, F4, G5, H5, D0, A0, B1, A1, I4, I5, nl1+2, nl1+1, nl1, nl+2, nl+1, nl, 2, 1, 0);
                 FILT3(PE, PG, PD, PH, PA, PI, PB, PF, PC, A0, I5, A1, B1, I4, F4, H5, G5, D0, G0, C1, C4, 2, nl+2, nl1+2, 1, nl+1, nl1+1, 0, nl, nl1);
-            } else if (n == 4) {
+            }
+            else if (n == 4)
+            {
                 E[0]   = E[1]     = E[2]     = E[3]     =     //  0,  1,  2,  3
-                E[nl]  = E[nl+1]  = E[nl+2]  = E[nl+3]  =     //  4,  5,  6,  7
-                E[nl1] = E[nl1+1] = E[nl1+2] = E[nl1+3] =     //  8,  9, 10, 11
-                E[nl2] = E[nl2+1] = E[nl2+2] = E[nl2+3] = PE; // 12, 13, 14, 15
+                                                   E[nl]  = E[nl+1]  = E[nl+2]  = E[nl+3]  =     //  4,  5,  6,  7
+                                                           E[nl1] = E[nl1+1] = E[nl1+2] = E[nl1+3] =     //  8,  9, 10, 11
+                                                                   E[nl2] = E[nl2+1] = E[nl2+2] = E[nl2+3] = PE; // 12, 13, 14, 15
 
                 FILT4(PE, PI, PH, PF, PG, PC, PD, PB, PA, G5, C4, G0, D0, C1, B1, F4, I4, H5, I5, A0, A1, nl2+3, nl2+2, nl1+3, 3, nl+3, nl1+2, nl2+1, nl2, nl1+1, nl+2, 2, 1, nl+1, nl1, nl, 0);
                 FILT4(PE, PC, PF, PB, PI, PA, PH, PD, PG, I4, A1, I5, H5, A0, D0, B1, C1, F4, C4, G5, G0, 3, nl+3, 2, 0, 1, nl+2, nl1+3, nl2+3, nl1+2, nl+1, nl, nl1, nl1+1, nl2+2, nl2+1, nl2);
@@ -338,7 +352,8 @@ static int config_output(AVFilterLink *outlink)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_0RGB32, AV_PIX_FMT_NONE,
     };
 
@@ -356,7 +371,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     ThreadData td;
 
     AVFrame *out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&in);
         return AVERROR(ENOMEM);
     }
@@ -383,15 +399,18 @@ static int init(AVFilterContext *ctx)
     uint32_t c;
     int bg, rg, g;
 
-    for (bg = -255; bg < 256; bg++) {
-        for (rg = -255; rg < 256; rg++) {
+    for (bg = -255; bg < 256; bg++)
+    {
+        for (rg = -255; rg < 256; rg++)
+        {
             const uint32_t u = (uint32_t)((-169*rg + 500*bg)/1000) + 128;
             const uint32_t v = (uint32_t)(( 500*rg -  81*bg)/1000) + 128;
             int startg = FFMAX3(-bg, -rg, 0);
             int endg = FFMIN3(255-bg, 255-rg, 255);
             uint32_t y = (uint32_t)(( 299*rg + 1000*startg + 114*bg)/1000);
             c = bg + (rg<<16) + 0x010101 * startg;
-            for (g = startg; g <= endg; g++) {
+            for (g = startg; g <= endg; g++)
+            {
                 xbr->rgbtoyuv[c] = ((y++) << 16) + (u << 8) + v;
                 c+= 0x010101;
             }
@@ -402,7 +421,8 @@ static int init(AVFilterContext *ctx)
     return 0;
 }
 
-static const AVFilterPad xbr_inputs[] = {
+static const AVFilterPad xbr_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -411,7 +431,8 @@ static const AVFilterPad xbr_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad xbr_outputs[] = {
+static const AVFilterPad xbr_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -420,7 +441,8 @@ static const AVFilterPad xbr_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_xbr = {
+AVFilter ff_vf_xbr =
+{
     .name          = "xbr",
     .description   = NULL_IF_CONFIG_SMALL("Scale the input using xBR algorithm."),
     .inputs        = xbr_inputs,

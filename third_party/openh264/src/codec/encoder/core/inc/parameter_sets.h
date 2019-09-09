@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -37,10 +37,12 @@
 #include "wels_const.h"
 #include "wels_common_basis.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /* Sequence Parameter Set, refer to Page 57 in JVT X201wcm */
-typedef struct TagWelsSPS {
+typedef struct TagWelsSPS
+{
 uint32_t        uiSpsId;
 int16_t         iMbWidth;
 int16_t         iMbHeight;
@@ -86,11 +88,11 @@ uint8_t	uiVideoFormat;				// EVideoFormatSPS; 3 bits in header; 0-5 => component
 bool	bFullRange;					// false => analog video data range [16, 235]; true => full data range [0,255]
 bool	bColorDescriptionPresent;	// false => do not write any of the following three items to the header
 uint8_t	uiColorPrimaries;			// EColorPrimaries; 8 bits in header; 0 - 9 => ???, bt709, undef, ???, bt470m, bt470bg,
-                                    //    smpte170m, smpte240m, film, bt2020
+//    smpte170m, smpte240m, film, bt2020
 uint8_t	uiTransferCharacteristics;	// ETransferCharacteristics; 8 bits in header; 0 - 15 => ???, bt709, undef, ???, bt470m, bt470bg, smpte170m,
-                                    //   smpte240m, linear, log100, log316, iec61966-2-4, bt1361e, iec61966-2-1, bt2020-10, bt2020-12
+//   smpte240m, linear, log100, log316, iec61966-2-4, bt1361e, iec61966-2-1, bt2020-10, bt2020-12
 uint8_t	uiColorMatrix;				// EColorMatrix; 8 bits in header (corresponds to FFmpeg "colorspace"); 0 - 10 => GBR, bt709,
-                                    //   undef, ???, fcc, bt470bg, smpte170m, smpte240m, YCgCo, bt2020nc, bt2020c
+//   undef, ???, fcc, bt470bg, smpte170m, smpte240m, YCgCo, bt2020nc, bt2020c
 
 bool            bConstraintSet0Flag;
 bool            bConstraintSet1Flag;
@@ -102,7 +104,8 @@ bool            bConstraintSet3Flag;
 
 
 /* Sequence Parameter Set SVC extension syntax, refer to Page 391 in JVT X201wcm */
-typedef struct TagSpsSvcExt {
+typedef struct TagSpsSvcExt
+{
 // SCropOffset     sSeqScaledRefLayer;
 
 uint8_t         iExtendedSpatialScalability;    // ESS
@@ -117,7 +120,8 @@ bool            bSliceHeaderRestrictionFlag;
 } SSpsSvcExt, *PSpsSvcExt;
 
 /* Subset sequence parameter set syntax, refer to Page 391 in JVT X201wcm */
-typedef struct TagSubsetSps {
+typedef struct TagSubsetSps
+{
 SWelsSPS                pSps;
 SSpsSvcExt      sSpsSvcExt;
 
@@ -127,7 +131,8 @@ SSpsSvcExt      sSpsSvcExt;
 } SSubsetSps, *PSubsetSps;
 
 /* Picture parameter set syntax, refer to Page 59 in JVT X201wcm */
-typedef struct TagWelsPPS {
+typedef struct TagWelsPPS
+{
 uint32_t        iSpsId;
 uint32_t        iPpsId;
 

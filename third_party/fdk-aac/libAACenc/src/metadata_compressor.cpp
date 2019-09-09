@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -112,7 +112,8 @@ amm-info@iis.fraunhofer.de
 /**
  *  Enum for channel assignment.
  */
-enum {
+enum
+{
     L   = 0,
     R   = 1,
     C   = 2,
@@ -129,7 +130,8 @@ enum {
 /**
  *  Structure holds weighting filter filter states.
  */
-struct WEIGHTING_STATES {
+struct WEIGHTING_STATES
+{
     FIXP_DBL x1;
     FIXP_DBL x2;
     FIXP_DBL y1;
@@ -139,7 +141,8 @@ struct WEIGHTING_STATES {
 /**
  *  Dynamic Range Control compressor structure.
  */
-struct DRC_COMP {
+struct DRC_COMP
+{
 
     FIXP_DBL     maxBoostThr[2];             /*!< Max boost threshold. */
     FIXP_DBL     boostThr[2];                /*!< Boost threshold. */
@@ -192,7 +195,8 @@ struct DRC_COMP {
 /**
  *  Profile tables.
  */
-static const FIXP_DBL tabMaxBoostThr[] = {
+static const FIXP_DBL tabMaxBoostThr[] =
+{
     (FIXP_DBL)(int)((unsigned)-43<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-53<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-55<<METADATA_FRACT_BITS),
@@ -200,7 +204,8 @@ static const FIXP_DBL tabMaxBoostThr[] = {
     (FIXP_DBL)(int)((unsigned)-50<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-40<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabBoostThr[] = {
+static const FIXP_DBL tabBoostThr[] =
+{
     (FIXP_DBL)(int)((unsigned)-31<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-41<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-31<<METADATA_FRACT_BITS),
@@ -208,7 +213,8 @@ static const FIXP_DBL tabBoostThr[] = {
     (FIXP_DBL)(int)((unsigned)-31<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-31<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabEarlyCutThr[] = {
+static const FIXP_DBL tabEarlyCutThr[] =
+{
     (FIXP_DBL)(int)((unsigned)-26<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-21<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-26<<METADATA_FRACT_BITS),
@@ -216,7 +222,8 @@ static const FIXP_DBL tabEarlyCutThr[] = {
     (FIXP_DBL)(int)((unsigned)-26<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-20<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabCutThr[]      = {
+static const FIXP_DBL tabCutThr[]      =
+{
     (FIXP_DBL)(int)((unsigned)-16<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-11<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-16<<METADATA_FRACT_BITS),
@@ -224,7 +231,8 @@ static const FIXP_DBL tabCutThr[]      = {
     (FIXP_DBL)(int)((unsigned)-16<<METADATA_FRACT_BITS),
     (FIXP_DBL)(int)((unsigned)-10<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabMaxCutThr[]   = {
+static const FIXP_DBL tabMaxCutThr[]   =
+{
     (FIXP_DBL)(4<<METADATA_FRACT_BITS),
     (FIXP_DBL)(9<<METADATA_FRACT_BITS),
     (FIXP_DBL)(4<<METADATA_FRACT_BITS),
@@ -232,7 +240,8 @@ static const FIXP_DBL tabMaxCutThr[]   = {
     (FIXP_DBL)(4<<METADATA_FRACT_BITS),
     (FIXP_DBL)(4<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabBoostRatio[] = {
+static const FIXP_DBL tabBoostRatio[] =
+{
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
@@ -240,7 +249,8 @@ static const FIXP_DBL tabBoostRatio[] = {
     FL2FXCONST_DBL( ((1.f/5.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/5.f) - 1.f) )
 };
-static const FIXP_DBL tabEarlyCutRatio[] = {
+static const FIXP_DBL tabEarlyCutRatio[] =
+{
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
@@ -248,7 +258,8 @@ static const FIXP_DBL tabEarlyCutRatio[] = {
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/2.f) - 1.f) )
 };
-static const FIXP_DBL tabCutRatio[]      = {
+static const FIXP_DBL tabCutRatio[]      =
+{
     FL2FXCONST_DBL( ((1.f/20.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/20.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/20.f) - 1.f) ),
@@ -256,7 +267,8 @@ static const FIXP_DBL tabCutRatio[]      = {
     FL2FXCONST_DBL( ((1.f/20.f) - 1.f) ),
     FL2FXCONST_DBL( ((1.f/20.f) - 1.f) )
 };
-static const FIXP_DBL tabMaxBoost[] = {
+static const FIXP_DBL tabMaxBoost[] =
+{
     (FIXP_DBL)( 6<<METADATA_FRACT_BITS),
     (FIXP_DBL)( 6<<METADATA_FRACT_BITS),
     (FIXP_DBL)(12<<METADATA_FRACT_BITS),
@@ -264,7 +276,8 @@ static const FIXP_DBL tabMaxBoost[] = {
     (FIXP_DBL)(15<<METADATA_FRACT_BITS),
     (FIXP_DBL)(15<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabMaxCut[]   = {
+static const FIXP_DBL tabMaxCut[]   =
+{
     (FIXP_DBL)(24<<METADATA_FRACT_BITS),
     (FIXP_DBL)(24<<METADATA_FRACT_BITS),
     (FIXP_DBL)(24<<METADATA_FRACT_BITS),
@@ -272,7 +285,8 @@ static const FIXP_DBL tabMaxCut[]   = {
     (FIXP_DBL)(24<<METADATA_FRACT_BITS),
     (FIXP_DBL)(24<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabFastAttack[] = {
+static const FIXP_DBL tabFastAttack[] =
+{
     FL2FXCONST_DBL((10.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((10.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((10.f/1000.f)/METADATA_INT_SCALE),
@@ -280,7 +294,8 @@ static const FIXP_DBL tabFastAttack[] = {
     FL2FXCONST_DBL((10.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL( (0.f/1000.f)/METADATA_INT_SCALE)
 };
-static const FIXP_DBL tabFastDecay[]  = {
+static const FIXP_DBL tabFastDecay[]  =
+{
     FL2FXCONST_DBL((1000.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((1000.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((1000.f/1000.f)/METADATA_INT_SCALE),
@@ -288,7 +303,8 @@ static const FIXP_DBL tabFastDecay[]  = {
     FL2FXCONST_DBL( (200.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL(   (0.f/1000.f)/METADATA_INT_SCALE)
 };
-static const FIXP_DBL tabSlowAttack[] = {
+static const FIXP_DBL tabSlowAttack[] =
+{
     FL2FXCONST_DBL((100.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((100.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((100.f/1000.f)/METADATA_INT_SCALE),
@@ -296,7 +312,8 @@ static const FIXP_DBL tabSlowAttack[] = {
     FL2FXCONST_DBL((100.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL(  (0.f/1000.f)/METADATA_INT_SCALE)
 };
-static const FIXP_DBL tabSlowDecay[]  = {
+static const FIXP_DBL tabSlowDecay[]  =
+{
     FL2FXCONST_DBL( (3000.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL( (3000.f/1000.f)/METADATA_INT_SCALE),
     FL2FXCONST_DBL((10000.f/1000.f)/METADATA_INT_SCALE),
@@ -307,7 +324,8 @@ static const FIXP_DBL tabSlowDecay[]  = {
 
 static const INT tabHoldOff[]    = { 10, 10, 10, 10, 10, 0 };
 
-static const FIXP_DBL tabAttackThr[] = {
+static const FIXP_DBL tabAttackThr[] =
+{
     (FIXP_DBL)(15<<METADATA_FRACT_BITS),
     (FIXP_DBL)(15<<METADATA_FRACT_BITS),
     (FIXP_DBL)(15<<METADATA_FRACT_BITS),
@@ -315,7 +333,8 @@ static const FIXP_DBL tabAttackThr[] = {
     (FIXP_DBL)(10<<METADATA_FRACT_BITS),
     (FIXP_DBL)(0<<METADATA_FRACT_BITS)
 };
-static const FIXP_DBL tabDecayThr[]  = {
+static const FIXP_DBL tabDecayThr[]  =
+{
     (FIXP_DBL)(20<<METADATA_FRACT_BITS),
     (FIXP_DBL)(20<<METADATA_FRACT_BITS),
     (FIXP_DBL)(20<<METADATA_FRACT_BITS),
@@ -341,11 +360,11 @@ static const FIXP_DBL a1 = FL2FXCONST_DBL(-0.95237983f), a2 = FL2FXCONST_DBL(-0.
  * \return    shiftFactor
  */
 static UINT getShiftFactor(
-        const UINT                length
-        )
+    const UINT                length
+)
 {
     UINT ldN;
-    for(ldN=1;(((UINT)1)<<ldN) < length;ldN++);
+    for(ldN=1; (((UINT)1)<<ldN) < length; ldN++);
 
     return ldN;
 }
@@ -361,22 +380,23 @@ static UINT getShiftFactor(
  * \return    void
  */
 static void fixpAdd(
-        const FIXP_DBL                  value1,
-        const int                       q1,
-        FIXP_DBL *const                 pValue2,
-        int *const                      pQ2
-        )
+    const FIXP_DBL                  value1,
+    const int                       q1,
+    FIXP_DBL *const                 pValue2,
+    int *const                      pQ2
+)
 {
-  const int headroom1 = fNormz(fixp_abs(value1))-1;
-  const int headroom2 = fNormz(fixp_abs(*pValue2))-1;
-  int resultScale = fixMax(q1-headroom1, (*pQ2)-headroom2);
+    const int headroom1 = fNormz(fixp_abs(value1))-1;
+    const int headroom2 = fNormz(fixp_abs(*pValue2))-1;
+    int resultScale = fixMax(q1-headroom1, (*pQ2)-headroom2);
 
-  if ( (value1!=FL2FXCONST_DBL(0.f)) && (*pValue2!=FL2FXCONST_DBL(0.f)) ) {
-    resultScale++;
-  }
+    if ( (value1!=FL2FXCONST_DBL(0.f)) && (*pValue2!=FL2FXCONST_DBL(0.f)) )
+    {
+        resultScale++;
+    }
 
-  *pValue2 = scaleValue(value1, q1-resultScale) + scaleValue(*pValue2, (*pQ2)-resultScale);
-  *pQ2 = (*pValue2!=(FIXP_DBL)0) ? resultScale : DFRACT_BITS-1;
+    *pValue2 = scaleValue(value1, q1-resultScale) + scaleValue(*pValue2, (*pQ2)-resultScale);
+    *pQ2 = (*pValue2!=(FIXP_DBL)0) ? resultScale : DFRACT_BITS-1;
 }
 
 /**
@@ -389,61 +409,63 @@ static void fixpAdd(
  * \return    result = 1.0 - exp(-1.0/((t) * (f)))
  */
 static FIXP_DBL tc2Coeff(
-        const FIXP_DBL            t,
-        const INT                 sampleRate,
-        const INT                 blockLength
-        )
+    const FIXP_DBL            t,
+    const INT                 sampleRate,
+    const INT                 blockLength
+)
 {
-   FIXP_DBL sampleRateFract;
-   FIXP_DBL blockLengthFract;
-   FIXP_DBL f, product;
-   FIXP_DBL exponent, result;
-   INT e_res;
+    FIXP_DBL sampleRateFract;
+    FIXP_DBL blockLengthFract;
+    FIXP_DBL f, product;
+    FIXP_DBL exponent, result;
+    INT e_res;
 
-   /* f = sampleRate/blockLength */
-   sampleRateFract = (FIXP_DBL)(sampleRate<<(DFRACT_BITS-1-METADATA_LINT_BITS));
-   blockLengthFract = (FIXP_DBL)(blockLength<<(DFRACT_BITS-1-METADATA_LINT_BITS));
-   f = fDivNorm(sampleRateFract, blockLengthFract, &e_res);
-   f = scaleValue(f, e_res-METADATA_INT_BITS); /* convert to METADATA_FRACT */
+    /* f = sampleRate/blockLength */
+    sampleRateFract = (FIXP_DBL)(sampleRate<<(DFRACT_BITS-1-METADATA_LINT_BITS));
+    blockLengthFract = (FIXP_DBL)(blockLength<<(DFRACT_BITS-1-METADATA_LINT_BITS));
+    f = fDivNorm(sampleRateFract, blockLengthFract, &e_res);
+    f = scaleValue(f, e_res-METADATA_INT_BITS); /* convert to METADATA_FRACT */
 
-   /* product = t*f */
-   product = fMultNorm(t, f, &e_res);
-   product = scaleValue(product, e_res+METADATA_INT_BITS); /* convert to METADATA_FRACT */
+    /* product = t*f */
+    product = fMultNorm(t, f, &e_res);
+    product = scaleValue(product, e_res+METADATA_INT_BITS); /* convert to METADATA_FRACT */
 
-   /* exponent = (-1.0/((t) * (f))) */
-   exponent = fDivNorm(METADATA_FRACT_SCALE, product, &e_res);
-   exponent = scaleValue(exponent, e_res-METADATA_INT_BITS); /* convert to METADATA_FRACT */
+    /* exponent = (-1.0/((t) * (f))) */
+    exponent = fDivNorm(METADATA_FRACT_SCALE, product, &e_res);
+    exponent = scaleValue(exponent, e_res-METADATA_INT_BITS); /* convert to METADATA_FRACT */
 
-   /* exponent * ld(e) */
-   exponent = fMult(exponent,FIXP_ILOG2_DIV2)<<1; /* e^(x) = 2^(x*ld(e)) */
+    /* exponent * ld(e) */
+    exponent = fMult(exponent,FIXP_ILOG2_DIV2)<<1; /* e^(x) = 2^(x*ld(e)) */
 
-   /* exp(-1.0/((t) * (f))) */
-   result = f2Pow(-exponent, DFRACT_BITS-1-METADATA_FRACT_BITS, &e_res);
+    /* exp(-1.0/((t) * (f))) */
+    result = f2Pow(-exponent, DFRACT_BITS-1-METADATA_FRACT_BITS, &e_res);
 
-   /* result = 1.0 - exp(-1.0/((t) * (f))) */
-   result = (FIXP_DBL)MAXVAL_DBL - scaleValue(result, e_res);
+    /* result = 1.0 - exp(-1.0/((t) * (f))) */
+    result = (FIXP_DBL)MAXVAL_DBL - scaleValue(result, e_res);
 
-   return result;
+    return result;
 }
 
 INT FDK_DRC_Generator_Open(
-        HDRC_COMP                      *phDrcComp
-        )
+    HDRC_COMP                      *phDrcComp
+)
 {
     INT err = 0;
     HDRC_COMP hDcComp = NULL;
 
-    if (phDrcComp == NULL) {
-      err = -1;
-      goto bail;
+    if (phDrcComp == NULL)
+    {
+        err = -1;
+        goto bail;
     }
 
     /* allocate memory */
     hDcComp = (HDRC_COMP)FDKcalloc(1, sizeof(DRC_COMP));
 
-    if (hDcComp == NULL) {
-      err = -1;
-      goto bail;
+    if (hDcComp == NULL)
+    {
+        err = -1;
+        goto bail;
     }
 
     FDKmemclear(hDcComp, sizeof(DRC_COMP));
@@ -457,30 +479,32 @@ bail:
 }
 
 INT FDK_DRC_Generator_Close(
-        HDRC_COMP                      *phDrcComp
-        )
+    HDRC_COMP                      *phDrcComp
+)
 {
-    if (phDrcComp == NULL) {
-      return -1;
+    if (phDrcComp == NULL)
+    {
+        return -1;
     }
-    if (*phDrcComp != NULL) {
-      FDKfree(*phDrcComp);
-      *phDrcComp = NULL;
+    if (*phDrcComp != NULL)
+    {
+        FDKfree(*phDrcComp);
+        *phDrcComp = NULL;
     }
     return 0;
 }
 
 
 INT FDK_DRC_Generator_Initialize(
-        HDRC_COMP                       drcComp,
-        const DRC_PROFILE               profileLine,
-        const DRC_PROFILE               profileRF,
-        const INT                       blockLength,
-        const UINT                      sampleRate,
-        const CHANNEL_MODE              channelMode,
-        const CHANNEL_ORDER             channelOrder,
-        const UCHAR                     useWeighting
-        )
+    HDRC_COMP                       drcComp,
+    const DRC_PROFILE               profileLine,
+    const DRC_PROFILE               profileRF,
+    const INT                       blockLength,
+    const UINT                      sampleRate,
+    const CHANNEL_MODE              channelMode,
+    const CHANNEL_ORDER             channelOrder,
+    const UCHAR                     useWeighting
+)
 {
     int i;
     CHANNEL_MAPPING channelMapping;
@@ -493,18 +517,21 @@ INT FDK_DRC_Generator_Initialize(
     drcComp->chanConfig = channelMode;
     drcComp->useWeighting = useWeighting;
 
-    if (FDK_DRC_Generator_setDrcProfile(drcComp, profileLine, profileRF)!=0) { /* expects initialized blockLength and sampleRate */
-      return (-1);
+    if (FDK_DRC_Generator_setDrcProfile(drcComp, profileLine, profileRF)!=0)   /* expects initialized blockLength and sampleRate */
+    {
+        return (-1);
     }
 
     /* Set number of channels and channel offsets. */
-    if (FDKaacEnc_InitChannelMapping(channelMode, channelOrder, &channelMapping)!=AAC_ENC_OK) {
-      return (-2);
+    if (FDKaacEnc_InitChannelMapping(channelMode, channelOrder, &channelMapping)!=AAC_ENC_OK)
+    {
+        return (-2);
     }
 
     for (i = 0; i < 9; i++) drcComp->channelIdx[i] = -1;
 
-    switch (channelMode) {
+    switch (channelMode)
+    {
     case MODE_1: /* mono */
         drcComp->channelIdx[C]   = channelMapping.elInfo[0].ChannelIndex[0];
         break;
@@ -589,31 +616,47 @@ INT FDK_DRC_Generator_Initialize(
 
 
 INT FDK_DRC_Generator_setDrcProfile(
-        HDRC_COMP                       drcComp,
-        const DRC_PROFILE               profileLine,
-        const DRC_PROFILE               profileRF
-        )
+    HDRC_COMP                       drcComp,
+    const DRC_PROFILE               profileLine,
+    const DRC_PROFILE               profileRF
+)
 {
     int profileIdx, i;
 
     drcComp->profile[0] = profileLine;
     drcComp->profile[1] = profileRF;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* get profile index */
-        switch (drcComp->profile[i]) {
-            case DRC_NONE:
-            case DRC_FILMSTANDARD:  profileIdx = 0; break;
-            case DRC_FILMLIGHT:     profileIdx = 1; break;
-            case DRC_MUSICSTANDARD: profileIdx = 2; break;
-            case DRC_MUSICLIGHT:    profileIdx = 3; break;
-            case DRC_SPEECH:        profileIdx = 4; break;
-            case DRC_DELAY_TEST:    profileIdx = 5; break;
-            default: return (-1);
+        switch (drcComp->profile[i])
+        {
+        case DRC_NONE:
+        case DRC_FILMSTANDARD:
+            profileIdx = 0;
+            break;
+        case DRC_FILMLIGHT:
+            profileIdx = 1;
+            break;
+        case DRC_MUSICSTANDARD:
+            profileIdx = 2;
+            break;
+        case DRC_MUSICLIGHT:
+            profileIdx = 3;
+            break;
+        case DRC_SPEECH:
+            profileIdx = 4;
+            break;
+        case DRC_DELAY_TEST:
+            profileIdx = 5;
+            break;
+        default:
+            return (-1);
         }
 
         /* get parameters for selected profile */
-        if (profileIdx >= 0) {
+        if (profileIdx >= 0)
+        {
             drcComp->maxBoostThr[i] = tabMaxBoostThr[profileIdx];
             drcComp->boostThr[i]    = tabBoostThr[profileIdx];
             drcComp->earlyCutThr[i] = tabEarlyCutThr[profileIdx];
@@ -645,16 +688,16 @@ INT FDK_DRC_Generator_setDrcProfile(
 
 
 INT FDK_DRC_Generator_Calc(
-        HDRC_COMP                       drcComp,
-        const INT_PCM * const           inSamples,
-        const INT                       dialnorm,
-        const INT                       drc_TargetRefLevel,
-        const INT                       comp_TargetRefLevel,
-        FIXP_DBL                        clev,
-        FIXP_DBL                        slev,
-        INT * const                     pDynrng,
-        INT * const                     pCompr
-        )
+    HDRC_COMP                       drcComp,
+    const INT_PCM * const           inSamples,
+    const INT                       dialnorm,
+    const INT                       drc_TargetRefLevel,
+    const INT                       comp_TargetRefLevel,
+    FIXP_DBL                        clev,
+    FIXP_DBL                        slev,
+    INT * const                     pDynrng,
+    INT * const                     pCompr
+)
 {
     int i, c;
     FIXP_DBL peak[2];
@@ -663,7 +706,8 @@ INT FDK_DRC_Generator_Calc(
     /**************************************************************************
     * compressor
     **************************************************************************/
-      if ((drcComp->profile[0] != DRC_NONE) || (drcComp->profile[1] != DRC_NONE)) {
+    if ((drcComp->profile[0] != DRC_NONE) || (drcComp->profile[1] != DRC_NONE))
+    {
         /* Calc loudness level */
         FIXP_DBL level_b = FL2FXCONST_DBL(0.f);
         int      level_e = DFRACT_BITS-1;
@@ -671,18 +715,21 @@ INT FDK_DRC_Generator_Calc(
         /* Increase energy time resolution with shorter processing blocks. 32 is an empiric value. */
         const int granuleLength = fixMin(32, drcComp->blockLength);
 
-        if (drcComp->useWeighting) {
+        if (drcComp->useWeighting)
+        {
             FIXP_DBL x1, x2, y, y1, y2;
             /* sum of filter coefficients about 2.5 -> squared value is 6.25
                WEIGHTING_FILTER_SHIFT is 2 -> scaling about 16, therefore reduce granuleShift by 1.
              */
             const int granuleShift = getShiftFactor(granuleLength)-1;
 
-            for (c = 0; c < (int)drcComp->channels; c++) {
+            for (c = 0; c < (int)drcComp->channels; c++)
+            {
                 const INT_PCM* pSamples = &inSamples[c];
 
-                if (c == drcComp->channelIdx[LFE]) {
-                  continue;  /* skip LFE */
+                if (c == drcComp->channelIdx[LFE])
+                {
+                    continue;  /* skip LFE */
                 }
 
                 /* get filter states */
@@ -693,29 +740,32 @@ INT FDK_DRC_Generator_Calc(
 
                 i = 0;
 
-                do {
+                do
+                {
 
-                  int offset = i;
-                  FIXP_DBL accu = FL2FXCONST_DBL(0.f);
+                    int offset = i;
+                    FIXP_DBL accu = FL2FXCONST_DBL(0.f);
 
-                  for (i=offset; i < fixMin(offset+granuleLength,drcComp->blockLength); i++) {
-                    /* apply weighting filter */
-                    FIXP_DBL x = FX_PCM2FX_DBL((FIXP_PCM)pSamples[i*drcComp->channels]) >> WEIGHTING_FILTER_SHIFT;
+                    for (i=offset; i < fixMin(offset+granuleLength,drcComp->blockLength); i++)
+                    {
+                        /* apply weighting filter */
+                        FIXP_DBL x = FX_PCM2FX_DBL((FIXP_PCM)pSamples[i*drcComp->channels]) >> WEIGHTING_FILTER_SHIFT;
 
-                    /* y = b0 * (x - x2) - a1 * y1 - a2 * y2; */
-                    y = fMult(b0,x-x2) - fMult(a1,y1) - fMult(a2,y2);
+                        /* y = b0 * (x - x2) - a1 * y1 - a2 * y2; */
+                        y = fMult(b0,x-x2) - fMult(a1,y1) - fMult(a2,y2);
 
-                    x2 = x1;
-                    x1 = x;
-                    y2 = y1;
-                    y1 = y;
+                        x2 = x1;
+                        x1 = x;
+                        y2 = y1;
+                        y1 = y;
 
-                    accu += fPow2Div2(y)>>(granuleShift-1);     /* partial energy */
-                  } /* i */
+                        accu += fPow2Div2(y)>>(granuleShift-1);     /* partial energy */
+                    } /* i */
 
-                  fixpAdd(accu, granuleShift+2*WEIGHTING_FILTER_SHIFT, &level_b, &level_e); /* sup up partial energies */
+                    fixpAdd(accu, granuleShift+2*WEIGHTING_FILTER_SHIFT, &level_b, &level_e); /* sup up partial energies */
 
-                } while ( i < drcComp->blockLength );
+                }
+                while ( i < drcComp->blockLength );
 
 
                 /* save filter states */
@@ -725,30 +775,36 @@ INT FDK_DRC_Generator_Calc(
                 drcComp->filter[c].y2 = y2;
             } /* c */
         } /* weighting */
-        else {
+        else
+        {
             const int granuleShift = getShiftFactor(granuleLength);
 
-            for (c = 0; c < (int)drcComp->channels; c++) {
+            for (c = 0; c < (int)drcComp->channels; c++)
+            {
                 const INT_PCM* pSamples = &inSamples[c];
 
-                if ((int)c == drcComp->channelIdx[LFE]) {
-                  continue;  /* skip LFE */
+                if ((int)c == drcComp->channelIdx[LFE])
+                {
+                    continue;  /* skip LFE */
                 }
 
                 i = 0;
 
-                do {
-                  int offset = i;
-                  FIXP_DBL accu = FL2FXCONST_DBL(0.f);
+                do
+                {
+                    int offset = i;
+                    FIXP_DBL accu = FL2FXCONST_DBL(0.f);
 
-                  for (i=offset; i < fixMin(offset+granuleLength,drcComp->blockLength); i++) {
-                    /* partial energy */
-                    accu += fPow2Div2((FIXP_PCM)pSamples[i*drcComp->channels])>>(granuleShift-1);
-                  } /* i */
+                    for (i=offset; i < fixMin(offset+granuleLength,drcComp->blockLength); i++)
+                    {
+                        /* partial energy */
+                        accu += fPow2Div2((FIXP_PCM)pSamples[i*drcComp->channels])>>(granuleShift-1);
+                    } /* i */
 
-                  fixpAdd(accu, granuleShift, &level_b, &level_e); /* sup up partial energies */
+                    fixpAdd(accu, granuleShift, &level_b, &level_e); /* sup up partial energies */
 
-                } while ( i < drcComp->blockLength );
+                }
+                while ( i < drcComp->blockLength );
             }
         } /* weighting */
 
@@ -779,67 +835,83 @@ INT FDK_DRC_Generator_Calc(
         /* level -= dialnorm + 31 */   /* this is fixed to Dolby-ReferenceLevel as compressor profiles are defined relative to this */
         level -= ((FIXP_DBL)(dialnorm<<(METADATA_FRACT_BITS-16))  + (FIXP_DBL)(31<<METADATA_FRACT_BITS));
 
-        for (i = 0; i < 2; i++) {
-            if (drcComp->profile[i] == DRC_NONE) {
+        for (i = 0; i < 2; i++)
+        {
+            if (drcComp->profile[i] == DRC_NONE)
+            {
                 /* no compression */
                 drcComp->smoothGain[i] = FL2FXCONST_DBL(0.f);
             }
-            else {
+            else
+            {
                 FIXP_DBL gain, alpha, lvl2smthlvl;
 
                 /* calc static gain */
-                if (level <= drcComp->maxBoostThr[i]) {
+                if (level <= drcComp->maxBoostThr[i])
+                {
                     /* max boost */
                     gain = drcComp->maxBoost[i];
                 }
-                else if (level < drcComp->boostThr[i]) {
+                else if (level < drcComp->boostThr[i])
+                {
                     /* boost range */
                     gain = fMult((level - drcComp->boostThr[i]),drcComp->boostFac[i]);
                 }
-                else if (level <= drcComp->earlyCutThr[i]) {
+                else if (level <= drcComp->earlyCutThr[i])
+                {
                     /* null band */
                     gain = FL2FXCONST_DBL(0.f);
                 }
-                else if (level <= drcComp->cutThr[i]) {
+                else if (level <= drcComp->cutThr[i])
+                {
                     /* early cut range */
                     gain = fMult((level - drcComp->earlyCutThr[i]), drcComp->earlyCutFac[i]);
                 }
-                else if (level < drcComp->maxCutThr[i]) {
+                else if (level < drcComp->maxCutThr[i])
+                {
                     /* cut range */
                     gain = fMult((level - drcComp->cutThr[i]), drcComp->cutFac[i]) - drcComp->maxEarlyCut[i];
                 }
-                else {
+                else
+                {
                     /* max cut */
                     gain = -drcComp->maxCut[i];
                 }
 
                 /* choose time constant */
                 lvl2smthlvl = level - drcComp->smoothLevel[i];
-                if (gain < drcComp->smoothGain[i]) {
+                if (gain < drcComp->smoothGain[i])
+                {
                     /* attack */
-                    if (lvl2smthlvl > drcComp->attackThr[i]) {
+                    if (lvl2smthlvl > drcComp->attackThr[i])
+                    {
                         /* fast attack */
                         alpha = drcComp->fastAttack[i];
                     }
-                    else {
+                    else
+                    {
                         /* slow attack */
                         alpha = drcComp->slowAttack[i];
                     }
                 }
-                else {
+                else
+                {
                     /* release */
-                    if (lvl2smthlvl < -drcComp->decayThr[i]) {
+                    if (lvl2smthlvl < -drcComp->decayThr[i])
+                    {
                         /* fast release */
                         alpha = drcComp->fastDecay[i];
                     }
-                    else {
+                    else
+                    {
                         /* slow release */
                         alpha = drcComp->slowDecay[i];
                     }
                 }
 
                 /* smooth gain & level */
-                if ((gain < drcComp->smoothGain[i]) || (drcComp->holdCnt[i] == 0)) { /* hold gain unless we have an attack or hold period is over */
+                if ((gain < drcComp->smoothGain[i]) || (drcComp->holdCnt[i] == 0))   /* hold gain unless we have an attack or hold period is over */
+                {
                     FIXP_DBL accu;
 
                     /* drcComp->smoothLevel[i] = (1-alpha) * drcComp->smoothLevel[i] + alpha * level; */
@@ -854,19 +926,23 @@ INT FDK_DRC_Generator_Calc(
                 }
 
                 /* hold counter */
-                if (drcComp->holdCnt[i]) {
-                  drcComp->holdCnt[i]--;
+                if (drcComp->holdCnt[i])
+                {
+                    drcComp->holdCnt[i]--;
                 }
-                if (gain < drcComp->smoothGain[i]) {
-                  drcComp->holdCnt[i] = drcComp->holdOff[i];
+                if (gain < drcComp->smoothGain[i])
+                {
+                    drcComp->holdCnt[i] = drcComp->holdOff[i];
                 }
             } /* profile != DRC_NONE */
         } /* for i=1..2 */
-      } else {
+    }
+    else
+    {
         /* no compression */
         drcComp->smoothGain[0] = FL2FXCONST_DBL(0.f);
         drcComp->smoothGain[1] = FL2FXCONST_DBL(0.f);
-      }
+    }
 
     /**************************************************************************
     * limiter
@@ -874,19 +950,22 @@ INT FDK_DRC_Generator_Calc(
 
     /* find peak level */
     peak[0] = peak[1] = FL2FXCONST_DBL(0.f);
-    for (i = 0; i < drcComp->blockLength; i++) {
+    for (i = 0; i < drcComp->blockLength; i++)
+    {
         FIXP_DBL tmp;
         const INT_PCM* pSamples = &inSamples[i*drcComp->channels];
         INT_PCM maxSample = 0;
 
         /* single channels */
-        for (c = 0; c < (int)drcComp->channels; c++) {
+        for (c = 0; c < (int)drcComp->channels; c++)
+        {
             maxSample = FDKmax(maxSample, fAbs(pSamples[c]));
         }
         peak[0] = fixMax(peak[0], FX_PCM2FX_DBL(maxSample)>>DOWNMIX_SHIFT);
 
         /* Lt/Rt downmix */
-        if (drcComp->fullChannels > 2) {
+        if (drcComp->fullChannels > 2)
+        {
             /* Lt */
             tmp = FL2FXCONST_DBL(0.f);
 
@@ -916,7 +995,8 @@ INT FDK_DRC_Generator_Calc(
         }
 
         /* Lo/Ro downmix */
-        if (drcComp->fullChannels > 2) {
+        if (drcComp->fullChannels > 2)
+        {
             /* Lo */
             tmp = FL2FXCONST_DBL(0.f);
             if (drcComp->channelIdx[LS] >= 0) tmp += fMultDiv2(slev, (FIXP_PCM)pSamples[drcComp->channelIdx[LS]])>>(DOWNMIX_SHIFT-1);                            /* Ls */
@@ -943,7 +1023,8 @@ INT FDK_DRC_Generator_Calc(
         peak[1] = fixMax(peak[0], peak[1]);
 
         /* Mono Downmix - for comp_val only */
-        if (drcComp->fullChannels > 1) {
+        if (drcComp->fullChannels > 1)
+        {
             tmp = FL2FXCONST_DBL(0.f);
             if (drcComp->channelIdx[LS] >= 0) tmp += fMultDiv2(slev, (FIXP_PCM)pSamples[drcComp->channelIdx[LS]])>>(DOWNMIX_SHIFT-1);                            /* Ls */
             if (drcComp->channelIdx[LS2] >= 0) tmp += fMultDiv2(slev, (FIXP_PCM)pSamples[drcComp->channelIdx[LS2]])>>(DOWNMIX_SHIFT-1);                          /* Ls2 */
@@ -960,32 +1041,33 @@ INT FDK_DRC_Generator_Calc(
         }
     }
 
-    for (i=0; i<2; i++) {
-      FIXP_DBL tmp = drcComp->prevPeak[i];
-      drcComp->prevPeak[i] = peak[i];
-      peak[i] = fixMax(peak[i], tmp);
+    for (i=0; i<2; i++)
+    {
+        FIXP_DBL tmp = drcComp->prevPeak[i];
+        drcComp->prevPeak[i] = peak[i];
+        peak[i] = fixMax(peak[i], tmp);
 
-      /*
-       * Convert to dBFS, apply dialnorm
-       */
-      /* descaled peak in ld64 representation */
-      FIXP_DBL ld_peak = CalcLdData(peak[i]) + (FIXP_DBL)((LONG)DOWNMIX_SHIFT<<(DFRACT_BITS-1-LD_DATA_SHIFT));
+        /*
+         * Convert to dBFS, apply dialnorm
+         */
+        /* descaled peak in ld64 representation */
+        FIXP_DBL ld_peak = CalcLdData(peak[i]) + (FIXP_DBL)((LONG)DOWNMIX_SHIFT<<(DFRACT_BITS-1-LD_DATA_SHIFT));
 
-      /* if (peak < 1e-6) level = 1e-6f; */
-      ld_peak = FDKmax(ld_peak, FL2FXCONST_DBL(-0.31143075889569022011284244651463f));
+        /* if (peak < 1e-6) level = 1e-6f; */
+        ld_peak = FDKmax(ld_peak, FL2FXCONST_DBL(-0.31143075889569022011284244651463f));
 
-      /* peak[i] = 20 * log(peak[i])/log(10) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
-       * peak[i] = 20 * log(2)/log(10) * ld(peak[i]) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
-       * peak[i] = 10 * 2*0.30102999566398119521373889472449 * ld(peak[i]) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
-       *
-       *    additional scaling with METADATA_FRACT_BITS:
-       * peak[i] = (10 * 2*0.30102999566398119521373889472449 * ld64(peak[i]) * 64 + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS))*2^(-METADATA_FRACT_BITS)
-       * peak[i] = 10*2^(METADATA_FRACT_BITS+LD_DATA_SHIFT) * 2*0.30102999566398119521373889472449 * ld64(peak[i])
-       *         + 0.2f*2^(-METADATA_FRACT_BITS) + drcComp->smoothGain[i]
-       */
-      peak[i] = fMult((FIXP_DBL)(10<<(METADATA_FRACT_BITS+LD_DATA_SHIFT)), fMult( FL2FX_DBL(2*0.30102999566398119521373889472449f), ld_peak));
-      peak[i] += (FL2FX_DBL(0.5f)>>METADATA_INT_BITS);           /* add a little bit headroom */
-      peak[i] +=  drcComp->smoothGain[i];
+        /* peak[i] = 20 * log(peak[i])/log(10) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
+         * peak[i] = 20 * log(2)/log(10) * ld(peak[i]) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
+         * peak[i] = 10 * 2*0.30102999566398119521373889472449 * ld(peak[i]) + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS)
+         *
+         *    additional scaling with METADATA_FRACT_BITS:
+         * peak[i] = (10 * 2*0.30102999566398119521373889472449 * ld64(peak[i]) * 64 + 0.2f + (drcComp->smoothGain[i]*2^METADATA_FRACT_BITS))*2^(-METADATA_FRACT_BITS)
+         * peak[i] = 10*2^(METADATA_FRACT_BITS+LD_DATA_SHIFT) * 2*0.30102999566398119521373889472449 * ld64(peak[i])
+         *         + 0.2f*2^(-METADATA_FRACT_BITS) + drcComp->smoothGain[i]
+         */
+        peak[i] = fMult((FIXP_DBL)(10<<(METADATA_FRACT_BITS+LD_DATA_SHIFT)), fMult( FL2FX_DBL(2*0.30102999566398119521373889472449f), ld_peak));
+        peak[i] += (FL2FX_DBL(0.5f)>>METADATA_INT_BITS);           /* add a little bit headroom */
+        peak[i] +=  drcComp->smoothGain[i];
     }
 
     /* peak -= dialnorm + 31; */  /* this is Dolby style only */
@@ -1009,14 +1091,16 @@ INT FDK_DRC_Generator_Calc(
         FIXP_DBL tmp;
 
         tmp = drcComp->smoothGain[0];
-        if (drcComp->limGain[0] < FL2FXCONST_DBL(0.f)) {
-          tmp += drcComp->limGain[0];
+        if (drcComp->limGain[0] < FL2FXCONST_DBL(0.f))
+        {
+            tmp += drcComp->limGain[0];
         }
         *pDynrng = (LONG) scaleValue(tmp, -(METADATA_FRACT_BITS-16));
 
         tmp = drcComp->smoothGain[1];
-        if (drcComp->limGain[1] < FL2FXCONST_DBL(0.f)) {
-          tmp += drcComp->limGain[1];
+        if (drcComp->limGain[1] < FL2FXCONST_DBL(0.f))
+        {
+            tmp += drcComp->limGain[1];
         }
         *pCompr  = (LONG) scaleValue(tmp, -(METADATA_FRACT_BITS-16));
     }

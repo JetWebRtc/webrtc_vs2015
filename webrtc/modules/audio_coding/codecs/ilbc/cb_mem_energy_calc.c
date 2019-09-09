@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,36 +30,37 @@ void WebRtcIlbcfix_CbMemEnergyCalc(
     int16_t *energyShifts, /* (o) Shift value of the energy */
     int scale,   /* (i) The scaling of all energy values */
     size_t base_size  /* (i) Index to where energy values should be stored */
-                                   )
+)
 {
-  size_t j;
-  int16_t shft;
-  int32_t tmp;
-  int16_t *eSh_ptr;
-  int16_t *eW16_ptr;
+    size_t j;
+    int16_t shft;
+    int32_t tmp;
+    int16_t *eSh_ptr;
+    int16_t *eW16_ptr;
 
 
-  eSh_ptr  = &energyShifts[1+base_size];
-  eW16_ptr = &energyW16[1+base_size];
+    eSh_ptr  = &energyShifts[1+base_size];
+    eW16_ptr = &energyW16[1+base_size];
 
-  for (j = 0; j + 1 < range; j++) {
+    for (j = 0; j + 1 < range; j++)
+    {
 
-    /* Calculate next energy by a +/-
-       operation on the edge samples */
-    tmp = (*ppi) * (*ppi) - (*ppo) * (*ppo);
-    energy += tmp >> scale;
-    energy = WEBRTC_SPL_MAX(energy, 0);
+        /* Calculate next energy by a +/-
+           operation on the edge samples */
+        tmp = (*ppi) * (*ppi) - (*ppo) * (*ppo);
+        energy += tmp >> scale;
+        energy = WEBRTC_SPL_MAX(energy, 0);
 
-    ppi--;
-    ppo--;
+        ppi--;
+        ppo--;
 
-    /* Normalize the energy into a int16_t and store
-       the number of shifts */
+        /* Normalize the energy into a int16_t and store
+           the number of shifts */
 
-    shft = (int16_t)WebRtcSpl_NormW32(energy);
-    *eSh_ptr++ = shft;
+        shft = (int16_t)WebRtcSpl_NormW32(energy);
+        *eSh_ptr++ = shft;
 
-    tmp = energy << shft;
-    *eW16_ptr++ = (int16_t)(tmp >> 16);
-  }
+        tmp = energy << shft;
+        *eW16_ptr++ = (int16_t)(tmp >> 16);
+    }
 }

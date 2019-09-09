@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -348,13 +348,16 @@ void ff_loop_filter_v_8_8_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         p1_d = __msa_copy_u_d((v2i64) p1_out, 0);
         p0_d = __msa_copy_u_d((v2i64) p0_out, 0);
         q0_d = __msa_copy_u_d((v2i64) q0_out, 0);
         q1_d = __msa_copy_u_d((v2i64) q1_out, 0);
         SD4(p1_d, p0_d, q0_d, q1_d, (src - 2 * pitch), pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r,
                    q2_r, q3_r);
@@ -431,9 +434,12 @@ void ff_loop_filter_v_88_16_msa(uint8_t *src, int32_t pitch,
                        q1_out);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ST_UB4(p1_out, p0_out, q0_out, q1_out, (src - 2 * pitch), pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r,
                    q2_r, q3_r);
@@ -509,9 +515,12 @@ void ff_loop_filter_v_84_16_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ST_UB4(p1_out, p0_out, q0_out, q1_out, (src - 2 * pitch), pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r,
                    q2_r, q3_r);
@@ -580,9 +589,12 @@ void ff_loop_filter_v_48_16_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_insve_d((v2i64) flat, 0, (v2i64) zero);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ST_UB4(p1_out, p0_out, q0_out, q1_out, (src - 2 * pitch), pitch);
-    } else {
+    }
+    else
+    {
         ILVL_B4_UH(zero, p3, zero, p2, zero, p1, zero, p0, p3_l, p2_l, p1_l,
                    p0_l);
         ILVL_B4_UH(zero, q0, zero, q1, zero, q2, zero, q3, q0_l, q1_l, q2_l,
@@ -646,11 +658,14 @@ static int32_t vp9_hz_lpf_t4_and_t8_16w(uint8_t *src, int32_t pitch,
                        q1_out);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ST_UB4(p1_out, p0_out, q0_out, q1_out, (src - 2 * pitch), pitch);
 
         return 1;
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r,
                    q2_r, q3_r);
@@ -712,7 +727,8 @@ static void vp9_hz_lpf_t16_16w(uint8_t *src, int32_t pitch, uint8_t *filter48)
     VP9_FLAT5(p7, p6, p5, p4, p0, q0, q4, q5, q6, q7, flat, flat2);
 
     /* if flat2 is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat2)) {
+    if (__msa_test_bz_v(flat2))
+    {
         LD_UB4(filter48, 16, p2, p1, p0, q0);
         LD_UB2(filter48 + 4 * 16, 16, q1, q2);
 
@@ -720,7 +736,9 @@ static void vp9_hz_lpf_t16_16w(uint8_t *src, int32_t pitch, uint8_t *filter48)
         ST_UB4(p2, p1, p0, q0, src, pitch);
         src += (4 * pitch);
         ST_UB2(q1, q2, src, pitch);
-    } else {
+    }
+    else
+    {
         src -= 7 * pitch;
 
         ILVR_B8_UH(zero, p7, zero, p6, zero, p5, zero, p4, zero, p3, zero, p2,
@@ -1032,7 +1050,8 @@ void ff_loop_filter_v_16_16_msa(uint8_t *src, int32_t pitch,
     early_exit = vp9_hz_lpf_t4_and_t8_16w(src, pitch, &filter48[0],
                                           b_limit_ptr, limit_ptr, thresh_ptr);
 
-    if (0 == early_exit) {
+    if (0 == early_exit)
+    {
         vp9_hz_lpf_t16_16w(src, pitch, filter48);
     }
 }
@@ -1071,13 +1090,16 @@ void ff_loop_filter_v_16_8_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         p1_d = __msa_copy_u_d((v2i64) p1_out, 0);
         p0_d = __msa_copy_u_d((v2i64) p0_out, 0);
         q0_d = __msa_copy_u_d((v2i64) q0_out, 0);
         q1_d = __msa_copy_u_d((v2i64) q1_out, 0);
         SD4(p1_d, p0_d, q0_d, q1_d, src - 2 * pitch, pitch);
-    } else {
+    }
+    else
+    {
         /* convert 8 bit input data into 16 bit */
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero,
                    q1, zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r,
@@ -1108,7 +1130,8 @@ void ff_loop_filter_v_16_8_msa(uint8_t *src, int32_t pitch,
         VP9_FLAT5(p7, p6, p5, p4, p0, q0, q4, q5, q6, q7, flat, flat2);
 
         /* if flat2 is zero for all pixels, then no need to calculate other filter */
-        if (__msa_test_bz_v(flat2)) {
+        if (__msa_test_bz_v(flat2))
+        {
             p2_d = __msa_copy_u_d((v2i64) p2_out, 0);
             p1_d = __msa_copy_u_d((v2i64) p1_out, 0);
             p0_d = __msa_copy_u_d((v2i64) p0_out, 0);
@@ -1119,7 +1142,9 @@ void ff_loop_filter_v_16_8_msa(uint8_t *src, int32_t pitch,
             SD4(p2_d, p1_d, p0_d, q0_d, src - 3 * pitch, pitch);
             SD(q1_d, src + pitch);
             SD(q2_d, src + 2 * pitch);
-        } else {
+        }
+        else
+        {
             /* LSB(right) 8 pixel operation */
             ILVR_B8_UH(zero, p7, zero, p6, zero, p5, zero, p4, zero, q4,
                        zero, q5, zero, q6, zero, q7, p7_r, p6_r, p5_r, p4_r,
@@ -1373,7 +1398,8 @@ void ff_loop_filter_h_8_8_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         /* Store 4 pixels p1-_q1 */
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
@@ -1382,7 +1408,9 @@ void ff_loop_filter_h_8_8_msa(uint8_t *src, int32_t pitch,
         ST4x4_UB(vec2, vec2, 0, 1, 2, 3, src, pitch);
         src += 4 * pitch;
         ST4x4_UB(vec3, vec3, 0, 1, 2, 3, src, pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r, q2_r,
                    q3_r);
@@ -1469,7 +1497,8 @@ void ff_loop_filter_h_88_16_msa(uint8_t *src, int32_t pitch,
                        q1_out);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
         ILVL_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
@@ -1479,7 +1508,9 @@ void ff_loop_filter_h_88_16_msa(uint8_t *src, int32_t pitch,
         ST4x8_UB(vec2, vec3, src, pitch);
         src += 8 * pitch;
         ST4x8_UB(vec4, vec5, src, pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r, q2_r,
                    q3_r);
@@ -1582,7 +1613,8 @@ void ff_loop_filter_h_84_16_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
         ILVL_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
@@ -1592,7 +1624,9 @@ void ff_loop_filter_h_84_16_msa(uint8_t *src, int32_t pitch,
         ST4x8_UB(vec2, vec3, src, pitch);
         src += 8 * pitch;
         ST4x8_UB(vec4, vec5, src, pitch);
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r, q2_r,
                    q3_r);
@@ -1686,7 +1720,8 @@ void ff_loop_filter_h_48_16_msa(uint8_t *src, int32_t pitch,
     flat = (v16u8) __msa_insve_d((v2i64) flat, 0, (v2i64) zero);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
         ILVL_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
@@ -1696,7 +1731,9 @@ void ff_loop_filter_h_48_16_msa(uint8_t *src, int32_t pitch,
         ST4x8_UB(vec2, vec3, src, pitch);
         src += 8 * pitch;
         ST4x8_UB(vec4, vec5, src, pitch);
-    } else {
+    }
+    else
+    {
         ILVL_B4_UH(zero, p3, zero, p2, zero, p1, zero, p0, p3_l, p2_l, p1_l,
                    p0_l);
         ILVL_B4_UH(zero, q0, zero, q1, zero, q2, zero, q3, q0_l, q1_l, q2_l,
@@ -1874,12 +1911,15 @@ static int32_t vp9_vt_lpf_t4_and_t8_8w(uint8_t *src, uint8_t *filter48,
     flat = (v16u8) __msa_ilvr_d((v2i64) zero, (v2i64) flat);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
         ST4x8_UB(vec2, vec3, (src_org - 2), pitch_org);
         return 1;
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r, q2_r,
                    q3_r);
@@ -1933,7 +1973,8 @@ static int32_t vp9_vt_lpf_t16_8w(uint8_t *src, uint8_t *src_org, int32_t pitch,
     VP9_FLAT5(p7, p6, p5, p4, p0, q0, q4, q5, q6, q7, flat, flat2);
 
     /* if flat2 is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat2)) {
+    if (__msa_test_bz_v(flat2))
+    {
         v8i16 vec0, vec1, vec2, vec3, vec4;
 
         LD_UB4(filter48, 16, p2, p1, p0, q0);
@@ -1951,7 +1992,9 @@ static int32_t vp9_vt_lpf_t16_8w(uint8_t *src, uint8_t *src_org, int32_t pitch,
         ST2x4_UB(vec2, 4, (src_org + 4), pitch);
 
         return 1;
-    } else {
+    }
+    else
+    {
         src -= 7 * 16;
 
         ILVR_B8_UH(zero, p7, zero, p6, zero, p5, zero, p4, zero, p3, zero, p2,
@@ -2151,11 +2194,13 @@ void ff_loop_filter_h_16_8_msa(uint8_t *src, int32_t pitch,
                                          &filter48[0], src, pitch,
                                          b_limit_ptr, limit_ptr, thresh_ptr);
 
-    if (0 == early_exit) {
+    if (0 == early_exit)
+    {
         early_exit = vp9_vt_lpf_t16_8w((transposed_input + 16 * 8), src, pitch,
                                        &filter48[0]);
 
-        if (0 == early_exit) {
+        if (0 == early_exit)
+        {
             vp9_transpose_8x16_to_16x8(transposed_input, 16, src - 8, pitch);
         }
     }
@@ -2196,7 +2241,8 @@ static int32_t vp9_vt_lpf_t4_and_t8_16w(uint8_t *src, uint8_t *filter48,
                        q1_out);
 
     /* if flat is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat)) {
+    if (__msa_test_bz_v(flat))
+    {
         ILVR_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
         ILVRL_H2_SH(vec1, vec0, vec2, vec3);
         ILVL_B2_SH(p0_out, p1_out, q1_out, q0_out, vec0, vec1);
@@ -2208,7 +2254,9 @@ static int32_t vp9_vt_lpf_t4_and_t8_16w(uint8_t *src, uint8_t *filter48,
         ST4x8_UB(vec4, vec5, src_org, pitch);
 
         return 1;
-    } else {
+    }
+    else
+    {
         ILVR_B8_UH(zero, p3, zero, p2, zero, p1, zero, p0, zero, q0, zero, q1,
                    zero, q2, zero, q3, p3_r, p2_r, p1_r, p0_r, q0_r, q1_r, q2_r,
                    q3_r);
@@ -2271,7 +2319,8 @@ static int32_t vp9_vt_lpf_t16_16w(uint8_t *src, uint8_t *src_org, int32_t pitch,
     VP9_FLAT5(p7, p6, p5, p4, p0, q0, q4, q5, q6, q7, flat, flat2);
 
     /* if flat2 is zero for all pixels, then no need to calculate other filter */
-    if (__msa_test_bz_v(flat2)) {
+    if (__msa_test_bz_v(flat2))
+    {
         v8i16 vec0, vec1, vec2, vec3, vec4, vec5, vec6, vec7;
 
         LD_UB4(filter48, 16, p2, p1, p0, q0);
@@ -2297,7 +2346,9 @@ static int32_t vp9_vt_lpf_t16_16w(uint8_t *src, uint8_t *src_org, int32_t pitch,
         ST2x4_UB(vec5, 4, (src_org + 4), pitch);
 
         return 1;
-    } else {
+    }
+    else
+    {
         src -= 7 * 16;
 
         ILVR_B8_UH(zero, p7, zero, p6, zero, p5, zero, p4, zero, p3, zero, p2,
@@ -2588,11 +2639,13 @@ void ff_loop_filter_h_16_16_msa(uint8_t *src, int32_t pitch,
                                           &filter48[0], src, pitch,
                                           b_limit_ptr, limit_ptr, thresh_ptr);
 
-    if (0 == early_exit) {
+    if (0 == early_exit)
+    {
         early_exit = vp9_vt_lpf_t16_16w((transposed_input + 16 * 8), src, pitch,
                                         &filter48[0]);
 
-        if (0 == early_exit) {
+        if (0 == early_exit)
+        {
             vp9_transpose_16x16(transposed_input, 16, (src - 8), pitch);
         }
     }

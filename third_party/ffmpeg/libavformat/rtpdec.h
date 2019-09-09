@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RTP demuxer definitions
  * Copyright (c) 2002 Fabrice Bellard
  * Copyright (c) 2006 Ryan Martell <rdm4@martellventures.com>
@@ -76,7 +76,8 @@ int ff_rtp_send_rtcp_feedback(RTPDemuxContext *s, URLContext *fd,
                               AVIOContext *avio);
 
 // these statistics are used for rtcp receiver reports...
-typedef struct RTPStatistics {
+typedef struct RTPStatistics
+{
     uint16_t max_seq;           ///< highest sequence number seen
     uint32_t cycles;            ///< shifted count of sequence number cycles
     uint32_t base_seq;          ///< base sequence number
@@ -106,13 +107,14 @@ typedef struct RTPStatistics {
  * @param flags flags from the RTP packet header (RTP_FLAG_*)
  */
 typedef int (*DynamicPayloadPacketHandlerProc)(AVFormatContext *ctx,
-                                               PayloadContext *s,
-                                               AVStream *st, AVPacket *pkt,
-                                               uint32_t *timestamp,
-                                               const uint8_t * buf,
-                                               int len, uint16_t seq, int flags);
+        PayloadContext *s,
+        AVStream *st, AVPacket *pkt,
+        uint32_t *timestamp,
+        const uint8_t * buf,
+        int len, uint16_t seq, int flags);
 
-struct RTPDynamicProtocolHandler {
+struct RTPDynamicProtocolHandler
+{
     const char *enc_name;
     enum AVMediaType codec_type;
     enum AVCodecID codec_id;
@@ -138,7 +140,8 @@ struct RTPDynamicProtocolHandler {
     struct RTPDynamicProtocolHandler *next;
 };
 
-typedef struct RTPPacket {
+typedef struct RTPPacket
+{
     uint16_t seq;
     uint8_t *buf;
     int len;
@@ -146,7 +149,8 @@ typedef struct RTPPacket {
     struct RTPPacket *next;
 } RTPPacket;
 
-struct RTPDemuxContext {
+struct RTPDemuxContext
+{
     AVFormatContext *ic;
     AVStream *st;
     int payload_type;
@@ -194,9 +198,9 @@ struct RTPDemuxContext {
 
 void ff_register_dynamic_payload_handler(RTPDynamicProtocolHandler *handler);
 RTPDynamicProtocolHandler *ff_rtp_handler_find_by_name(const char *name,
-                                                  enum AVMediaType codec_type);
+        enum AVMediaType codec_type);
 RTPDynamicProtocolHandler *ff_rtp_handler_find_by_id(int id,
-                                                enum AVMediaType codec_type);
+        enum AVMediaType codec_type);
 
 /* from rtsp.c, but used by rtp dynamic protocol handlers. */
 int ff_rtsp_next_attr_and_value(const char **p, char *attr, int attr_size,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MJPEG decoder
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2003 Alex Beregszaszi
@@ -41,7 +41,8 @@
 
 #define MAX_COMPONENTS 4
 
-typedef struct MJpegDecodeContext {
+typedef struct MJpegDecodeContext
+{
     AVClass *class;
     AVCodecContext *avctx;
     GetBitContext gb;

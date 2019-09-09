@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC Spectral Band Replication decoding functions
  * Copyright (c) 2008-2009 Robert Swain ( rob opendot cl )
  * Copyright (c) 2009-2010 Alex Converse <alex.converse@gmail.com>
@@ -37,7 +37,8 @@ static SoftFloat sbr_sum_square_c(int (*x)[2], int n)
     int64_t accu = 0;
     int i, nz, round;
 
-    for (i = 0; i < n; i += 2) {
+    for (i = 0; i < n; i += 2)
+    {
         accu += (int64_t)x[i + 0][0] * x[i + 0][0];
         accu += (int64_t)x[i + 0][1] * x[i + 0][1];
         accu += (int64_t)x[i + 1][0] * x[i + 1][0];
@@ -45,11 +46,15 @@ static SoftFloat sbr_sum_square_c(int (*x)[2], int n)
     }
 
     i = (int)(accu >> 32);
-    if (i == 0) {
+    if (i == 0)
+    {
         nz = 1;
-    } else {
+    }
+    else
+    {
         nz = 0;
-        while (FFABS(i) < 0x40000000) {
+        while (FFABS(i) < 0x40000000)
+        {
             i <<= 1;
             nz++;
         }
@@ -76,7 +81,8 @@ static void sbr_qmf_pre_shuffle_c(int *z)
     int k;
     z[64] = z[0];
     z[65] = z[1];
-    for (k = 1; k < 32; k++) {
+    for (k = 1; k < 32; k++)
+    {
         z[64+2*k  ] = -z[64 - k];
         z[64+2*k+1] =  z[ k + 1];
     }
@@ -85,7 +91,8 @@ static void sbr_qmf_pre_shuffle_c(int *z)
 static void sbr_qmf_post_shuffle_c(int W[32][2], const int *z)
 {
     int k;
-    for (k = 0; k < 32; k++) {
+    for (k = 0; k < 32; k++)
+    {
         W[k][0] = -z[63-k];
         W[k][1] = z[k];
     }
@@ -94,7 +101,8 @@ static void sbr_qmf_post_shuffle_c(int W[32][2], const int *z)
 static void sbr_qmf_deint_neg_c(int *v, const int *src)
 {
     int i;
-    for (i = 0; i < 32; i++) {
+    for (i = 0; i < 32; i++)
+    {
         v[     i] = ( src[63 - 2*i    ] + 0x10) >> 5;
         v[63 - i] = (-src[63 - 2*i - 1] + 0x10) >> 5;
     }
@@ -102,25 +110,29 @@ static void sbr_qmf_deint_neg_c(int *v, const int *src)
 
 static av_always_inline SoftFloat autocorr_calc(int64_t accu)
 {
-        int nz, mant, expo, round;
-        int i = (int)(accu >> 32);
-        if (i == 0) {
-            nz = 1;
-        } else {
-            nz = 0;
-            while (FFABS(i) < 0x40000000) {
-                i <<= 1;
-                nz++;
-            }
-            nz = 32-nz;
+    int nz, mant, expo, round;
+    int i = (int)(accu >> 32);
+    if (i == 0)
+    {
+        nz = 1;
+    }
+    else
+    {
+        nz = 0;
+        while (FFABS(i) < 0x40000000)
+        {
+            i <<= 1;
+            nz++;
         }
+        nz = 32-nz;
+    }
 
-        round = 1 << (nz-1);
-        mant = (int)((accu + round) >> nz);
-        mant = (mant + 0x40)>>7;
-        mant <<= 6;
-        expo = nz + 15;
-        return av_int2sf(mant, 30 - expo);
+    round = 1 << (nz-1);
+    mant = (int)((accu + round) >> nz);
+    mant = (mant + 0x40)>>7;
+    mant <<= 6;
+    expo = nz + 15;
+    return av_int2sf(mant, 30 - expo);
 }
 
 static av_always_inline void autocorrelate(const int x[40][2], SoftFloat phi[3][2][2], int lag)
@@ -129,8 +141,10 @@ static av_always_inline void autocorrelate(const int x[40][2], SoftFloat phi[3][
     int64_t real_sum, imag_sum;
     int64_t accu_re = 0, accu_im = 0;
 
-    if (lag) {
-        for (i = 1; i < 38; i++) {
+    if (lag)
+    {
+        for (i = 1; i < 38; i++)
+        {
             accu_re += (int64_t)x[i][0] * x[i+lag][0];
             accu_re += (int64_t)x[i][1] * x[i+lag][1];
             accu_im += (int64_t)x[i][0] * x[i+lag][1];
@@ -148,7 +162,8 @@ static av_always_inline void autocorrelate(const int x[40][2], SoftFloat phi[3][
         phi[2-lag][1][0] = autocorr_calc(accu_re);
         phi[2-lag][1][1] = autocorr_calc(accu_im);
 
-        if (lag == 1) {
+        if (lag == 1)
+        {
             accu_re = real_sum;
             accu_im = imag_sum;
             accu_re += (int64_t)x[38][0] * x[39][0];
@@ -159,8 +174,11 @@ static av_always_inline void autocorrelate(const int x[40][2], SoftFloat phi[3][
             phi[0][0][0] = autocorr_calc(accu_re);
             phi[0][0][1] = autocorr_calc(accu_im);
         }
-    } else {
-        for (i = 1; i < 38; i++) {
+    }
+    else
+    {
+        for (i = 1; i < 38; i++)
+        {
             accu_re += (int64_t)x[i][0] * x[i][0];
             accu_re += (int64_t)x[i][1] * x[i][1];
         }
@@ -186,8 +204,8 @@ static void sbr_autocorrelate_c(const int x[40][2], SoftFloat phi[3][2][2])
 }
 
 static void sbr_hf_gen_c(int (*X_high)[2], const int (*X_low)[2],
-                       const int alpha0[2], const int alpha1[2],
-                       int bw, int start, int end)
+                         const int alpha0[2], const int alpha1[2],
+                         int bw, int start, int end)
 {
     int alpha[4];
     int i;
@@ -204,7 +222,8 @@ static void sbr_hf_gen_c(int (*X_high)[2], const int (*X_low)[2],
     accu = (int64_t)alpha1[1] * bw;
     alpha[1] = (int)((accu + 0x40000000) >> 31);
 
-    for (i = start; i < end; i++) {
+    for (i = start; i < end; i++)
+    {
         accu  = (int64_t)X_low[i][0] * 0x20000000;
         accu += (int64_t)X_low[i - 2][0] * alpha[0];
         accu -= (int64_t)X_low[i - 2][1] * alpha[1];
@@ -222,12 +241,13 @@ static void sbr_hf_gen_c(int (*X_high)[2], const int (*X_low)[2],
 }
 
 static void sbr_hf_g_filt_c(int (*Y)[2], const int (*X_high)[40][2],
-                          const SoftFloat *g_filt, int m_max, intptr_t ixh)
+                            const SoftFloat *g_filt, int m_max, intptr_t ixh)
 {
     int m, r;
     int64_t accu;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
         r = 1 << (22-g_filt[m].exp);
         accu = (int64_t)X_high[m][ixh][0] * ((g_filt[m].mant + 0x40)>>7);
         Y[m][0] = (int)((accu + r) >> (23-g_filt[m].exp));
@@ -238,34 +258,40 @@ static void sbr_hf_g_filt_c(int (*Y)[2], const int (*X_high)[40][2],
 }
 
 static av_always_inline void sbr_hf_apply_noise(int (*Y)[2],
-                                                const SoftFloat *s_m,
-                                                const SoftFloat *q_filt,
-                                                int noise,
-                                                int phi_sign0,
-                                                int phi_sign1,
-                                                int m_max)
+        const SoftFloat *s_m,
+        const SoftFloat *q_filt,
+        int noise,
+        int phi_sign0,
+        int phi_sign1,
+        int m_max)
 {
     int m;
 
-    for (m = 0; m < m_max; m++) {
+    for (m = 0; m < m_max; m++)
+    {
         int y0 = Y[m][0];
         int y1 = Y[m][1];
         noise = (noise + 1) & 0x1ff;
-        if (s_m[m].mant) {
+        if (s_m[m].mant)
+        {
             int shift, round;
 
             shift = 22 - s_m[m].exp;
-            if (shift < 30) {
+            if (shift < 30)
+            {
                 round = 1 << (shift-1);
                 y0 += (s_m[m].mant * phi_sign0 + round) >> shift;
                 y1 += (s_m[m].mant * phi_sign1 + round) >> shift;
             }
-        } else {
+        }
+        else
+        {
             int shift, round, tmp;
             int64_t accu;
 
             shift = 22 - q_filt[m].exp;
-            if (shift < 30) {
+            if (shift < 30)
+            {
                 round = 1 << (shift-1);
 
                 accu = (int64_t)q_filt[m].mant * ff_sbr_noise_table_fixed[noise][0];

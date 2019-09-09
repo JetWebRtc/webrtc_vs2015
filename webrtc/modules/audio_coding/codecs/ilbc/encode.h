@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -30,6 +30,6 @@ void WebRtcIlbcfix_EncodeImpl(
     const int16_t *block, /* (i) speech vector to encode */
     IlbcEncoder *iLBCenc_inst /* (i/o) the general encoder
                                            state */
-                          );
+);
 
 #endif

@@ -24,7 +24,8 @@
 #ifndef AVCODEC_VP9_H
 #define AVCODEC_VP9_H
 
-enum TxfmMode {
+enum TxfmMode
+{
     TX_4X4,
     TX_8X8,
     TX_16X16,
@@ -34,7 +35,8 @@ enum TxfmMode {
     N_TXFM_MODES
 };
 
-enum TxfmType {
+enum TxfmType
+{
     DCT_DCT,
     DCT_ADST,
     ADST_DCT,
@@ -42,7 +44,8 @@ enum TxfmType {
     N_TXFM_TYPES
 };
 
-enum IntraPredMode {
+enum IntraPredMode
+{
     VERT_PRED,
     HOR_PRED,
     DC_PRED,
@@ -61,7 +64,8 @@ enum IntraPredMode {
     N_INTRA_PRED_MODES
 };
 
-enum FilterMode {
+enum FilterMode
+{
     FILTER_8TAP_SMOOTH,
     FILTER_8TAP_REGULAR,
     FILTER_8TAP_SHARP,

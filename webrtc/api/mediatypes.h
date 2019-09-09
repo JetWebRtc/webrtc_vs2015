@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,12 +13,14 @@
 
 #include <string>
 
-namespace cricket {
+namespace cricket
+{
 
-enum MediaType {
-  MEDIA_TYPE_AUDIO,
-  MEDIA_TYPE_VIDEO,
-  MEDIA_TYPE_DATA
+enum MediaType
+{
+    MEDIA_TYPE_AUDIO,
+    MEDIA_TYPE_VIDEO,
+    MEDIA_TYPE_DATA
 };
 
 std::string MediaTypeToString(MediaType type);

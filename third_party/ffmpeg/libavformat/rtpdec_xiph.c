@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Xiph RTP Protocols
  * Copyright (c) 2009 Colin McQuillian
  * Copyright (c) 2010 Josh Allmann
@@ -41,7 +41,8 @@
 /**
  * RTP/Xiph specific private data.
  */
-struct PayloadContext {
+struct PayloadContext
+{
     unsigned ident;             ///< 24-bit stream configuration identifier
     uint32_t timestamp;
     AVIOContext* fragment;    ///< buffer for split payloads
@@ -65,19 +66,23 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
 
     int ident, fragmented, tdt, num_pkts, pkt_len;
 
-    if (!buf) {
+    if (!buf)
+    {
         if (!data->split_buf || data->split_pos + 2 > data->split_buf_len ||
-            data->split_pkts <= 0) {
+                data->split_pkts <= 0)
+        {
             av_log(ctx, AV_LOG_ERROR, "No more data to return\n");
             return AVERROR_INVALIDDATA;
         }
         pkt_len = AV_RB16(data->split_buf + data->split_pos);
         data->split_pos += 2;
-        if (pkt_len > data->split_buf_len - data->split_pos) {
+        if (pkt_len > data->split_buf_len - data->split_pos)
+        {
             av_log(ctx, AV_LOG_ERROR, "Not enough data to return\n");
             return AVERROR_INVALIDDATA;
         }
-        if (av_new_packet(pkt, pkt_len)) {
+        if (av_new_packet(pkt, pkt_len))
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
             return AVERROR(ENOMEM);
         }
@@ -88,7 +93,8 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         return data->split_pkts > 0;
     }
 
-    if (len < 6 || len > INT_MAX/2) {
+    if (len < 6 || len > INT_MAX/2)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid %d byte packet\n", len);
         return AVERROR_INVALIDDATA;
     }
@@ -100,20 +106,23 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     num_pkts    = buf[3] & 0xf;
     pkt_len     = AV_RB16(buf + 4);
 
-    if (pkt_len > len - 6) {
+    if (pkt_len > len - 6)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Invalid packet length %d in %d byte packet\n", pkt_len,
                len);
         return AVERROR_INVALIDDATA;
     }
 
-    if (ident != data->ident) {
+    if (ident != data->ident)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Unimplemented Xiph SDP configuration change detected\n");
         return AVERROR_PATCHWELCOME;
     }
 
-    if (tdt) {
+    if (tdt)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Unimplemented RTP Xiph packet settings (%d,%d,%d)\n",
                fragmented, tdt, num_pkts);
@@ -123,8 +132,10 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
     buf += 6; // move past header bits
     len -= 6;
 
-    if (fragmented == 0) {
-        if (av_new_packet(pkt, pkt_len)) {
+    if (fragmented == 0)
+    {
+        if (av_new_packet(pkt, pkt_len))
+        {
             av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
             return AVERROR(ENOMEM);
         }
@@ -134,12 +145,15 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         len -= pkt_len;
         num_pkts--;
 
-        if (num_pkts > 0) {
-            if (len > data->split_buf_size || !data->split_buf) {
+        if (num_pkts > 0)
+        {
+            if (len > data->split_buf_size || !data->split_buf)
+            {
                 av_freep(&data->split_buf);
                 data->split_buf_size = 2 * len;
                 data->split_buf = av_malloc(data->split_buf_size);
-                if (!data->split_buf) {
+                if (!data->split_buf)
+                {
                     av_log(ctx, AV_LOG_ERROR, "Out of memory.\n");
                     av_free_packet(pkt);
                     return AVERROR(ENOMEM);
@@ -154,7 +168,9 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
 
         return 0;
 
-    } else if (fragmented == 1) {
+    }
+    else if (fragmented == 1)
+    {
         // start of xiph data fragment
         int res;
 
@@ -167,16 +183,20 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         avio_write(data->fragment, buf, pkt_len);
         data->timestamp = *timestamp;
 
-    } else {
+    }
+    else
+    {
         av_assert1(fragmented < 4);
-        if (data->timestamp != *timestamp) {
+        if (data->timestamp != *timestamp)
+        {
             // skip if fragmented timestamp is incorrect;
             // a start packet has been lost somewhere
             ffio_free_dyn_buf(&data->fragment);
             av_log(ctx, AV_LOG_ERROR, "RTP timestamps don't match!\n");
             return AVERROR_INVALIDDATA;
         }
-        if (!data->fragment) {
+        if (!data->fragment)
+        {
             av_log(ctx, AV_LOG_WARNING,
                    "Received packet without a start fragment; dropping.\n");
             return AVERROR(EAGAIN);
@@ -185,10 +205,12 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         // copy data to fragment buffer
         avio_write(data->fragment, buf, pkt_len);
 
-        if (fragmented == 3) {
+        if (fragmented == 3)
+        {
             // end of xiph data packet
             int ret = ff_rtp_finalize_packet(pkt, &data->fragment, st->index);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(ctx, AV_LOG_ERROR,
                        "Error occurred when getting fragment buffer.");
                 return ret;
@@ -198,7 +220,7 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
         }
     }
 
-   return AVERROR(EAGAIN);
+    return AVERROR(EAGAIN);
 }
 
 /**
@@ -207,10 +229,12 @@ static int xiph_handle_packet(AVFormatContext *ctx, PayloadContext *data,
 static int get_base128(const uint8_t ** buf, const uint8_t * buf_end)
 {
     int n = 0;
-    for (; *buf < buf_end; ++*buf) {
+    for (; *buf < buf_end; ++*buf)
+    {
         n <<= 7;
         n += **buf & 0x7f;
-        if (!(**buf & 0x80)) {
+        if (!(**buf & 0x80))
+        {
             ++*buf;
             return n;
         }
@@ -230,7 +254,8 @@ parse_packed_headers(const uint8_t * packed_headers,
     unsigned num_packed, num_headers, length, length1, length2, extradata_alloc;
     uint8_t *ptr;
 
-    if (packed_headers_end - packed_headers < 9) {
+    if (packed_headers_end - packed_headers < 9)
+    {
         av_log(codec, AV_LOG_ERROR,
                "Invalid %"PTRDIFF_SPECIFIER" byte packed header.",
                packed_headers_end - packed_headers);
@@ -244,7 +269,8 @@ parse_packed_headers(const uint8_t * packed_headers,
     length1            = get_base128(&packed_headers, packed_headers_end);
     length2            = get_base128(&packed_headers, packed_headers_end);
 
-    if (num_packed != 1 || num_headers > 3) {
+    if (num_packed != 1 || num_headers > 3)
+    {
         av_log(codec, AV_LOG_ERROR,
                "Unimplemented number of headers: %d packed headers, %d headers\n",
                num_packed, num_headers);
@@ -252,7 +278,8 @@ parse_packed_headers(const uint8_t * packed_headers,
     }
 
     if (packed_headers_end - packed_headers != length ||
-        length1 > length || length2 > length - length1) {
+            length1 > length || length2 > length - length1)
+    {
         av_log(codec, AV_LOG_ERROR,
                "Bad packed header lengths (%d,%d,%"PTRDIFF_SPECIFIER",%d)\n", length1,
                length2, packed_headers_end - packed_headers, length);
@@ -265,7 +292,8 @@ parse_packed_headers(const uint8_t * packed_headers,
      * -- AV_INPUT_BUFFER_PADDING_SIZE required */
     extradata_alloc = length + length/255 + 3 + AV_INPUT_BUFFER_PADDING_SIZE;
 
-    if (ff_alloc_extradata(codec, extradata_alloc)) {
+    if (ff_alloc_extradata(codec, extradata_alloc))
+    {
         av_log(codec, AV_LOG_ERROR, "Out of memory\n");
         return AVERROR(ENOMEM);
     }
@@ -290,58 +318,82 @@ static int xiph_parse_fmtp_pair(AVFormatContext *s,
     AVCodecContext *codec = stream->codec;
     int result = 0;
 
-    if (!strcmp(attr, "sampling")) {
-        if (!strcmp(value, "YCbCr-4:2:0")) {
+    if (!strcmp(attr, "sampling"))
+    {
+        if (!strcmp(value, "YCbCr-4:2:0"))
+        {
             codec->pix_fmt = AV_PIX_FMT_YUV420P;
-        } else if (!strcmp(value, "YCbCr-4:4:2")) {
+        }
+        else if (!strcmp(value, "YCbCr-4:4:2"))
+        {
             codec->pix_fmt = AV_PIX_FMT_YUV422P;
-        } else if (!strcmp(value, "YCbCr-4:4:4")) {
+        }
+        else if (!strcmp(value, "YCbCr-4:4:4"))
+        {
             codec->pix_fmt = AV_PIX_FMT_YUV444P;
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR,
                    "Unsupported pixel format %s\n", attr);
             return AVERROR_INVALIDDATA;
         }
-    } else if (!strcmp(attr, "width")) {
+    }
+    else if (!strcmp(attr, "width"))
+    {
         /* This is an integer between 1 and 1048561
          * and MUST be in multiples of 16. */
         codec->width = atoi(value);
         return 0;
-    } else if (!strcmp(attr, "height")) {
+    }
+    else if (!strcmp(attr, "height"))
+    {
         /* This is an integer between 1 and 1048561
          * and MUST be in multiples of 16. */
         codec->height = atoi(value);
         return 0;
-    } else if (!strcmp(attr, "delivery-method")) {
+    }
+    else if (!strcmp(attr, "delivery-method"))
+    {
         /* Possible values are: inline, in_band, out_band/specific_name. */
         return AVERROR_PATCHWELCOME;
-    } else if (!strcmp(attr, "configuration-uri")) {
+    }
+    else if (!strcmp(attr, "configuration-uri"))
+    {
         /* NOTE: configuration-uri is supported only under 2 conditions:
          *--after the delivery-method tag
          * --with a delivery-method value of out_band */
         return AVERROR_PATCHWELCOME;
-    } else if (!strcmp(attr, "configuration")) {
+    }
+    else if (!strcmp(attr, "configuration"))
+    {
         /* NOTE: configuration is supported only AFTER the delivery-method tag
          * The configuration value is a base64 encoded packed header */
         uint8_t *decoded_packet = NULL;
         int packet_size;
         size_t decoded_alloc = strlen(value) / 4 * 3 + 4;
 
-        if (decoded_alloc <= INT_MAX) {
+        if (decoded_alloc <= INT_MAX)
+        {
             decoded_packet = av_malloc(decoded_alloc);
-            if (decoded_packet) {
+            if (decoded_packet)
+            {
                 packet_size =
                     av_base64_decode(decoded_packet, value, decoded_alloc);
 
                 result = parse_packed_headers
-                    (decoded_packet, decoded_packet + packet_size, codec,
-                    xiph_data);
-            } else {
+                         (decoded_packet, decoded_packet + packet_size, codec,
+                          xiph_data);
+            }
+            else
+            {
                 av_log(s, AV_LOG_ERROR,
                        "Out of memory while decoding SDP configuration.\n");
                 result = AVERROR(ENOMEM);
             }
-        } else {
+        }
+        else
+        {
             av_log(s, AV_LOG_ERROR, "Packet too large\n");
             result = AVERROR_INVALIDDATA;
         }
@@ -358,7 +410,8 @@ static int xiph_parse_sdp_line(AVFormatContext *s, int st_index,
     if (st_index < 0)
         return 0;
 
-    if (av_strstart(line, "fmtp:", &p)) {
+    if (av_strstart(line, "fmtp:", &p))
+    {
         return ff_parse_fmtp(s, s->streams[st_index], data, p,
                              xiph_parse_fmtp_pair);
     }
@@ -366,7 +419,8 @@ static int xiph_parse_sdp_line(AVFormatContext *s, int st_index,
     return 0;
 }
 
-RTPDynamicProtocolHandler ff_theora_dynamic_handler = {
+RTPDynamicProtocolHandler ff_theora_dynamic_handler =
+{
     .enc_name         = "theora",
     .codec_type       = AVMEDIA_TYPE_VIDEO,
     .codec_id         = AV_CODEC_ID_THEORA,
@@ -376,7 +430,8 @@ RTPDynamicProtocolHandler ff_theora_dynamic_handler = {
     .parse_packet     = xiph_handle_packet,
 };
 
-RTPDynamicProtocolHandler ff_vorbis_dynamic_handler = {
+RTPDynamicProtocolHandler ff_vorbis_dynamic_handler =
+{
     .enc_name         = "vorbis",
     .codec_type       = AVMEDIA_TYPE_AUDIO,
     .codec_id         = AV_CODEC_ID_VORBIS,

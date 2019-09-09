@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -52,7 +52,7 @@
 #define ST_SW(...) ST_W(v4i32, __VA_ARGS__)
 
 #if (__mips_isa_rev >= 6)
-    #define LW(psrc)                           \
+#define LW(psrc)                           \
     ( {                                        \
         uint8_t *psrc_m = (uint8_t *) (psrc);  \
         uint32_t val_m;                        \
@@ -67,8 +67,8 @@
         val_m;                                 \
     } )
 
-    #if (__mips == 64)
-        #define LD(psrc)                           \
+#if (__mips == 64)
+#define LD(psrc)                           \
         ( {                                        \
             uint8_t *psrc_m = (uint8_t *) (psrc);  \
             uint64_t val_m = 0;                    \
@@ -82,8 +82,8 @@
                                                    \
             val_m;                                 \
         } )
-    #else  // !(__mips == 64)
-        #define LD(psrc)                                              \
+#else  // !(__mips == 64)
+#define LD(psrc)                                              \
         ( {                                                           \
             uint8_t *psrc_m = (uint8_t *) (psrc);                     \
             uint32_t val0_m, val1_m;                                  \
@@ -98,9 +98,9 @@
                                                                       \
             val_m;                                                    \
         } )
-    #endif  // (__mips == 64)
+#endif  // (__mips == 64)
 
-    #define SH(val, pdst)                      \
+#define SH(val, pdst)                      \
     {                                          \
         uint8_t *pdst_m = (uint8_t *) (pdst);  \
         uint16_t val_m = (val);                \
@@ -113,7 +113,7 @@
         );                                     \
     }
 
-    #define SW(val, pdst)                      \
+#define SW(val, pdst)                      \
     {                                          \
         uint8_t *pdst_m = (uint8_t *) (pdst);  \
         uint32_t val_m = (val);                \
@@ -126,7 +126,7 @@
         );                                     \
     }
 
-    #define SD(val, pdst)                      \
+#define SD(val, pdst)                      \
     {                                          \
         uint8_t *pdst_m = (uint8_t *) (pdst);  \
         uint64_t val_m = (val);                \
@@ -139,7 +139,7 @@
         );                                     \
     }
 #else  // !(__mips_isa_rev >= 6)
-    #define LW(psrc)                           \
+#define LW(psrc)                           \
     ( {                                        \
         uint8_t *psrc_m = (uint8_t *) (psrc);  \
         uint32_t val_m;                        \
@@ -154,8 +154,8 @@
         val_m;                                 \
     } )
 
-    #if (__mips == 64)
-        #define LD(psrc)                           \
+#if (__mips == 64)
+#define LD(psrc)                           \
         ( {                                        \
             uint8_t *psrc_m = (uint8_t *) (psrc);  \
             uint64_t val_m = 0;                    \
@@ -169,8 +169,8 @@
                                                    \
             val_m;                                 \
         } )
-    #else  // !(__mips == 64)
-        #define LD(psrc)                                              \
+#else  // !(__mips == 64)
+#define LD(psrc)                                              \
         ( {                                                           \
             uint8_t *psrc_m1 = (uint8_t *) (psrc);                    \
             uint32_t val0_m, val1_m;                                  \
@@ -185,9 +185,9 @@
                                                                       \
             val_m;                                                    \
         } )
-    #endif  // (__mips == 64)
+#endif  // (__mips == 64)
 
-    #define SH(val, pdst)                      \
+#define SH(val, pdst)                      \
     {                                          \
         uint8_t *pdst_m = (uint8_t *) (pdst);  \
         uint16_t val_m = (val);                \
@@ -200,7 +200,7 @@
         );                                     \
     }
 
-    #define SW(val, pdst)                      \
+#define SW(val, pdst)                      \
     {                                          \
         uint8_t *pdst_m = (uint8_t *) (pdst);  \
         uint32_t val_m = (val);                \
@@ -213,7 +213,7 @@
         );                                     \
     }
 
-    #define SD(val, pdst)                                          \
+#define SD(val, pdst)                                          \
     {                                                              \
         uint8_t *pdst_m1 = (uint8_t *) (pdst);                     \
         uint32_t val0_m, val1_m;                                   \

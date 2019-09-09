@@ -1,4 +1,4 @@
-//===========================================================================
+ï»¿//===========================================================================
 //
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
 // KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
@@ -18,9 +18,9 @@
 // 1-30-98:
 //   New constant added for DVCR: ED_BASE+900L -> ED_BASE+1000L
 // 7-15-03:
-//   Add new constants for device transports and device types: 
+//   Add new constants for device transports and device types:
 //       ED_BASE+1001L..ED_BASE+1037L
-// 
+//
 
 #ifndef __XPRTDEFS__
 #define __XPRTDEFS__
@@ -43,13 +43,13 @@
 #define DEV_PORT_MAX     DEV_PORT_USB
 
 
-// IAMExtDevice Capability Items:  unless otherwise specified, these items return 
+// IAMExtDevice Capability Items:  unless otherwise specified, these items return
 //    OATRUE or OAFALSE.  All return values are in pdwValue unless otherwise specified:
 
 #define ED_DEVCAP_CAN_RECORD           ED_BASE+1L
 #define ED_DEVCAP_CAN_RECORD_STROBE    ED_BASE+2L    // for multitrack devices: 
-                                                     // switches currently recording tracks off 
-                                                     // and selected non-recording tracks into record
+// switches currently recording tracks off
+// and selected non-recording tracks into record
 #define ED_DEVCAP_HAS_AUDIO            ED_BASE+3L
 #define ED_DEVCAP_HAS_VIDEO            ED_BASE+4L
 #define ED_DEVCAP_USES_FILES           ED_BASE+5L
@@ -88,13 +88,13 @@
 // returns device postroll time in current time format
 #define ED_DEVCAP_POSTROLL             ED_BASE+30L
 
-// returns indication of device’s synchronization accuracy.
+// returns indication of deviceâ€™s synchronization accuracy.
 #define ED_DEVCAP_SYNC_ACCURACY        ED_BASE+31L    // returns one of the following:
 #define ED_SYNCACC_PRECISE             ED_BASE+32L
 #define ED_SYNCACC_FRAME               ED_BASE+33L
 #define ED_SYNCACC_ROUGH               ED_BASE+34L
 
-// returns device’s normal framerate.
+// returns deviceâ€™s normal framerate.
 #define ED_DEVCAP_NORMAL_RATE          ED_BASE+35L    // returns one of the following:
 #define ED_RATE_24                     ED_BASE+36L
 #define ED_RATE_25                     ED_BASE+37L
@@ -108,7 +108,7 @@
 // setting the hi bit of a parm that makes sense - see individual methods
 // for details.
 #define ED_DEVCAP_CAN_TEST             ED_BASE+42L
-    
+
 // indicates device accepts video as an input.
 #define ED_DEVCAP_VIDEO_INPUTS         ED_BASE+43L
 
@@ -119,10 +119,10 @@
 
 #define ED_DEVCAP_SEEK_TYPE            ED_BASE+46L    // returns one of the following:
 #define ED_SEEK_PERFECT                ED_BASE+47L    // indicates device can execute seek 
-                                                      // within 1 video frames without signal 
-                                                      //    break (like a DDR)
+// within 1 video frames without signal
+//    break (like a DDR)
 #define ED_SEEK_FAST                   ED_BASE+48L    // indicates device can move pretty quick 
-                                                //  with short break in signal
+//  with short break in signal
 #define ED_SEEK_SLOW                   ED_BASE+49L    // seeks like a tape transport
 
 #define ED_POWER_ON                    ED_BASE+50L
@@ -136,43 +136,43 @@
 #define ED_ALL                         ED_BASE+55L
 #define ED_TEST                        ED_BASE+56L
 
-//    IAMExtTransport Capability Items:  unless otherwise specified, these items return 
+//    IAMExtTransport Capability Items:  unless otherwise specified, these items return
 //       OATRUE or OAFALSE.  All return values are in pdwValue unless otherwise specified:
 
 #define ED_TRANSCAP_CAN_EJECT          ED_BASE+100L
 #define ED_TRANSCAP_CAN_BUMP_PLAY      ED_BASE+101L    // variable speed for synchronizing
 #define ED_TRANSCAP_CAN_PLAY_BACKWARDS ED_BASE+102L    // servo locked for use during an edit
-#define ED_TRANSCAP_CAN_SET_EE         ED_BASE+103L    // show device’s input on its output
-#define ED_TRANSCAP_CAN_SET_PB         ED_BASE+104L    // show media playback on device’s output
+#define ED_TRANSCAP_CAN_SET_EE         ED_BASE+103L    // show deviceâ€™s input on its output
+#define ED_TRANSCAP_CAN_SET_PB         ED_BASE+104L    // show media playback on deviceâ€™s output
 #define ED_TRANSCAP_CAN_DELAY_VIDEO_IN ED_BASE+105L    // transport can do delayed-in video edits
 #define ED_TRANSCAP_CAN_DELAY_VIDEO_OUT ED_BASE+106L   // transport can do delayed-out video edits
 #define ED_TRANSCAP_CAN_DELAY_AUDIO_IN ED_BASE+107L    // transport can do delayed-in audio edits
 #define ED_TRANSCAP_CAN_DELAY_AUDIO_OUT ED_BASE+108L   // transport can do delayed-out audio edits
 #define ED_TRANSCAP_FWD_VARIABLE_MAX   ED_BASE+109L    // max forward speed (multiple of play speed) 
-                                                       //  in pdblValue
+//  in pdblValue
 #define ED_TRANSCAP_FWD_VARIABLE_MIN   ED_BASE+800L    // min forward speed (multiple of play speed) 
-                                                       //  in pdblValue
+//  in pdblValue
 #define ED_TRANSCAP_REV_VARIABLE_MAX   ED_BASE+110L    // max reverse speed (multiple of play speed) in
-                                                       //  pdblValue
+//  pdblValue
 #define ED_TRANSCAP_REV_VARIABLE_MIN   ED_BASE+801L    // min reverse speed (multiple of play speed)
-                                                       //  in pdblValue
+//  in pdblValue
 #define ED_TRANSCAP_FWD_SHUTTLE_MAX    ED_BASE+802L    // max forward speed in Shuttle mode (multiple
-                                                       //  of play speed) in pdblValue
+//  of play speed) in pdblValue
 #define ED_TRANSCAP_FWD_SHUTTLE_MIN    ED_BASE+803L    // min forward speed in Shuttle mode (multiple
-                                                       //  of play speed) in pdblValue
+//  of play speed) in pdblValue
 #define ED_TRANSCAP_REV_SHUTTLE_MAX    ED_BASE+804L    // max reverse speed in Shuttle mode (multiple
-                                                       //  of play speed) in pdblValue
+//  of play speed) in pdblValue
 #define ED_TRANSCAP_REV_SHUTTLE_MIN    ED_BASE+805L    // min reverse speed in Shuttle mode (multiple
-                                                       //  of play speed) in pdblValue
+//  of play speed) in pdblValue
 #define ED_TRANSCAP_NUM_AUDIO_TRACKS   ED_BASE+111L    // returns number of audio tracks
 #define ED_TRANSCAP_LTC_TRACK          ED_BASE+112L    // returns track number of LTC timecode track.
-                                                       //  ED_ALL means no dedicated timecode track
-#define ED_TRANSCAP_NEEDS_TBC          ED_BASE+113L    // device’s output not stable
+//  ED_ALL means no dedicated timecode track
+#define ED_TRANSCAP_NEEDS_TBC          ED_BASE+113L    // deviceâ€™s output not stable
 #define ED_TRANSCAP_NEEDS_CUEING       ED_BASE+114L    // device must be cued prior to performing edit
 #define ED_TRANSCAP_CAN_INSERT         ED_BASE+115L
 #define ED_TRANSCAP_CAN_ASSEMBLE       ED_BASE+116L
 #define ED_TRANSCAP_FIELD_STEP         ED_BASE+117L    // device responds to Frame Advance command by 
-                                                       //  advancing one field
+//  advancing one field
 #define ED_TRANSCAP_CLOCK_INC_RATE     ED_BASE+118L    // VISCA command - keep for compatibility
 #define ED_TRANSCAP_CAN_DETECT_LENGTH  ED_BASE+119L
 #define ED_TRANSCAP_CAN_FREEZE         ED_BASE+120L
@@ -180,10 +180,10 @@
 #define ED_TRANSCAP_HAS_TIMER          ED_BASE+122L
 #define ED_TRANSCAP_HAS_CLOCK          ED_BASE+123L
 #define ED_TRANSCAP_MULTIPLE_EDITS     ED_BASE+806L    // OATRUE means device/filter can support
-                                                       //  multiple edit events
+//  multiple edit events
 #define ED_TRANSCAP_IS_MASTER          ED_BASE+807L    // OATRUE means device is the master clock
-                                                       //  for synchronizing (this sets timecode-to-
-                                                       //  reference clock offset for editing)
+//  for synchronizing (this sets timecode-to-
+//  reference clock offset for editing)
 #define ED_TRANSCAP_HAS_DT             ED_BASE+814L    // OATRUE means device has Dynamic Tracking
 
 //    IAMExtTransport Media States
@@ -237,8 +237,8 @@
 #define ED_TCG_FREE                    ED_BASE+413L
 
 #define ED_TCG_REFERENCE_SOURCE        ED_BASE+414L    // can have one these values:
-                                                       //    ED_TCG_FREE || ED_TCG_READER 
-                                                       //    (for regen/jamsync)
+//    ED_TCG_FREE || ED_TCG_READER
+//    (for regen/jamsync)
 
 // TimeCodeReader Mode params and values:
 #define ED_TCR_SOURCE                  ED_BASE+416L    // can be one of the following:
@@ -247,12 +247,12 @@
 #define ED_TCR_VITC                    ED_BASE+418L
 #define ED_TCR_CT                      ED_BASE+419L    // Control Track
 #define ED_TCR_FTC                     ED_BASE+420L    // File TimeCode - for file-based devices
-                                                //  that wish they were transports
+//  that wish they were transports
 // ED_MODE_NOTIFY_ENABLE can be OATRUE or OAFALSE (defined in transport mode
-//  section of this file).  
+//  section of this file).
 #define ED_TCR_LAST_VALUE              ED_BASE+421L    // for notification mode - 
-                                                //  successive calls to GetTimecode
-                                                //  return the last read value
+//  successive calls to GetTimecode
+//  return the last read value
 // TimeCode Display Mode params and values:
 //
 #define ED_TCD_SOURCE                  ED_BASE+422L    // can be one of the following:
@@ -267,7 +267,7 @@
 #define ED_TCD_POSITION                ED_BASE+429L    // can be one of the following:
 #define ED_TOP                         0x0001
 #define ED_MIDDLE                      0x0002
-#define ED_BOTTOM                      0x0004          // or’d  with
+#define ED_BOTTOM                      0x0004          // orâ€™d  with
 #define ED_LEFT                        0x0100
 #define ED_CENTER                      0x0200
 #define ED_RIGHT                       0x0400
@@ -279,7 +279,7 @@
 #define ED_TCD_TRANSPARENCY            ED_BASE+439L    // 0-4, 0 is opaque
 
 #define ED_TCD_INVERT                  ED_BASE+440L    // OATRUE=black on white
-                                                       // OAFALSE=white on black
+// OAFALSE=white on black
 //    IAMExtTransport defines
 //
 // Transport status, params and values
@@ -323,8 +323,8 @@
 #define ED_MEDIA_MICROMV               ED_MEDIA_NEO
 
 #define ED_LINK_MODE                   ED_BASE+530L    // OATRUE if transport controls
-                                                       // are linked to graph's RUN, 
-                                                       // STOP, and PAUSE methods
+// are linked to graph's RUN,
+// STOP, and PAUSE methods
 
 // IAMExtTransport Basic Parms
 #define ED_TRANSBASIC_TIME_FORMAT      ED_BASE+540L    // can be one of the following:
@@ -342,7 +342,7 @@
 
 #define ED_TRANSBASIC_SUPERIMPOSE      ED_BASE+553L    // enable/disable onscreen display
 #define ED_TRANSBASIC_END_STOP_ACTION  ED_BASE+554L    // can be one of: ED_MODE_STOP |
-                                                        //    ED_MODE_REWIND | ED_MODE_FREEZE
+//    ED_MODE_REWIND | ED_MODE_FREEZE
 #define ED_TRANSBASIC_RECORD_FORMAT    ED_BASE+555L    // can be one of the following:
 #define ED_RECORD_FORMAT_SP            ED_BASE+556L
 #define ED_RECORD_FORMAT_LP            ED_BASE+557L
@@ -461,7 +461,7 @@
 
 // Edit Property Set-related defs
 
-// The following values reflect (and control) the state of an 
+// The following values reflect (and control) the state of an
 // edit property set
 #define ED_INVALID                     ED_BASE+652L
 #define ED_EXECUTING                   ED_BASE+653L
@@ -470,13 +470,13 @@
 
 // Edit property set parameters and values
 #define ED_EDIT_HEVENT                 ED_BASE+656L    // event handle to signal event 
-                                                       // completion
+// completion
 #define ED_EDIT_TEST                   ED_BASE+657L    // returns OAFALSE if filter thinks
-                                                       //  edit can be done, OATRUE if not
+//  edit can be done, OATRUE if not
 #define ED_EDIT_IMMEDIATE              ED_BASE+658L    // OATRUE means start put the 
-                                                       // device into edit mode (editing
-                                                       // "on the fly") immediately upon
-                                                       //  execution of Mode(ED_MODE_EDIT_CUE)
+// device into edit mode (editing
+// "on the fly") immediately upon
+//  execution of Mode(ED_MODE_EDIT_CUE)
 #define ED_EDIT_MODE                   ED_BASE+659L
 // can be one of the following values:
 #define ED_EDIT_MODE_ASSEMBLE          ED_BASE+660L
@@ -486,7 +486,7 @@
 #define ED_EDIT_MODE_BOOKMARK_CHAPTER  ED_BASE+664L    // laserdisks
 
 #define ED_EDIT_MASTER                 ED_BASE+666L    // OATRUE causes device 
-                                                       //  not to synchronize
+//  not to synchronize
 
 #define ED_EDIT_TRACK        ED_BASE+667L
 // can be one of the following possible OR'd values:
@@ -500,11 +500,11 @@
 #define ED_EDIT_REHEARSE_MODE          ED_BASE+672L
 // can be one of the following possible values:
 #define ED_EDIT_BVB                    ED_BASE+673L    // means rehearse the edit with 
-                                                       //  "black-video-black"
+//  "black-video-black"
 #define ED_EDIT_VBV                    ED_BASE+674L
 #define ED_EDIT_VVV                    ED_BASE+675L
 #define ED_EDIT_PERFORM                ED_BASE+676L    // means perform the edit with no 
-                                                       //  rehearsal.
+//  rehearsal.
 
 // Set this property to OATRUE to kill the edit if in progress
 #define ED_EDIT_ABORT                  ED_BASE+677L
@@ -519,14 +519,14 @@
 #define ED_EDIT_SEEK_EDIT_IN           ED_BASE+681L    // seek to edit's inpoint
 #define ED_EDIT_SEEK_EDIT_OUT          ED_BASE+682L    // seek to edit's outpoint
 #define ED_EDIT_SEEK_PREROLL           ED_BASE+683L    // seek to edit's 
-                                                       //  inpoint-preroll
+//  inpoint-preroll
 #define ED_EDIT_SEEK_PREROLL_CT        ED_BASE+684L    // seek to preroll point 
-                                                       // using control track (used for tapes with 
-                                                       // discontinuoustimecode before edit point: seek
-                                                       // to inpoint using timecode, then backup to 
-                                                       // preroll point using control track)
+// using control track (used for tapes with
+// discontinuoustimecode before edit point: seek
+// to inpoint using timecode, then backup to
+// preroll point using control track)
 #define ED_EDIT_SEEK_BOOKMARK          ED_BASE+685L    // seek to bookmark (just like 
-                                                       //  timecode search)
+//  timecode search)
 // This property is used for multiple-VCR systems where each machine must
 // cue to a different location relative to the graph's reference clock.  The
 // basic idea is that an edit event is setup with an ED_EDIT_OFFSET property
@@ -535,12 +535,12 @@
 #define ED_EDIT_OFFSET                 ED_BASE+686L    // in current time format
 
 #define ED_EDIT_PREREAD                ED_BASE+815L    // OATRUE means device supports
-                                                       //  pre-read (recorder can also be
-                                                       //  player
+//  pre-read (recorder can also be
+//  player
 
 //
 // Some error codes:
-// 
+//
 // device could be in local mode
 #define ED_ERR_DEVICE_NOT_READY        ED_BASE+700L
 
@@ -551,7 +551,7 @@
 
 // **************************************************
 //
-// New constants 
+// New constants
 //
 // **************************************************
 
@@ -576,7 +576,7 @@
 
 
 //
-// Unknownn capability 
+// Unknownn capability
 //     Instead of return E_NOTIMPL, or S_OK with OAFALSE, it may return S_OK with _UNKNOWN
 //
 #define ED_CAPABILITY_UNKNOWN          ED_BASE+910L
@@ -594,7 +594,7 @@
 //
 #define ED_MEDIA_VHSC                  ED_BASE+925L  // New media type
 #define ED_MEDIA_UNKNOWN               ED_BASE+926L  // Unknown media
-#define ED_MEDIA_NOT_PRESENT           ED_BASE+927L  
+#define ED_MEDIA_NOT_PRESENT           ED_BASE+927L
 
 
 //
@@ -619,7 +619,7 @@
 #define ED_MODE_PLAY_FASTEST_REV       ED_BASE+935L
 #define ED_MODE_PLAY_SLOWEST_REV       ED_BASE+936L
 
-#define ED_MODE_WIND                   ED_BASE+937L  
+#define ED_MODE_WIND                   ED_BASE+937L
 #define ED_MODE_REW_FASTEST            ED_BASE+938L  // High speed rewind
 
 #define ED_MODE_REV_PLAY               ED_BASE+939L  // x1 speed reverse play
@@ -729,13 +729,13 @@
 //
 
 #ifndef OUR_GUID_ENTRY
-    #define OUR_GUID_ENTRY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
+#define OUR_GUID_ENTRY(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8) \
     DEFINE_GUID(name, l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8);
 #endif
 
 // 8C0F6AF2-0EDB-44c1-8AEB-59040BD830ED  MSTapeDeviceGUID
 OUR_GUID_ENTRY(MSTapeDeviceGUID,
-0x8C0F6AF2, 0x0EDB, 0x44c1, 0x8A, 0xEB, 0x59, 0x04, 0x0B, 0xD8, 0x30, 0xED)
+               0x8C0F6AF2, 0x0EDB, 0x44c1, 0x8A, 0xEB, 0x59, 0x04, 0x0B, 0xD8, 0x30, 0xED)
 
 #endif // __XPRTDEFS__
 

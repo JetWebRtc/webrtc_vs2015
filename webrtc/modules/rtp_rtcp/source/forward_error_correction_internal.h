@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,7 +14,8 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Maximum number of media packets that can be protected
 // by these packet masks.
@@ -28,22 +29,28 @@ constexpr size_t kUlpfecPacketMaskSizeLBitSet = 6;
 constexpr size_t kUlpfecMinPacketMaskSize = kUlpfecPacketMaskSizeLBitClear;
 constexpr size_t kUlpfecMaxPacketMaskSize = kUlpfecPacketMaskSizeLBitSet;
 
-namespace internal {
+namespace internal
+{
 
-class PacketMaskTable {
- public:
-  PacketMaskTable(FecMaskType fec_mask_type, int num_media_packets);
-  ~PacketMaskTable() {}
-  FecMaskType fec_mask_type() const { return fec_mask_type_; }
-  const uint8_t*** fec_packet_mask_table() const {
-    return fec_packet_mask_table_;
-  }
+class PacketMaskTable
+{
+public:
+    PacketMaskTable(FecMaskType fec_mask_type, int num_media_packets);
+    ~PacketMaskTable() {}
+    FecMaskType fec_mask_type() const
+    {
+        return fec_mask_type_;
+    }
+    const uint8_t*** fec_packet_mask_table() const
+    {
+        return fec_packet_mask_table_;
+    }
 
- private:
-  FecMaskType InitMaskType(FecMaskType fec_mask_type, int num_media_packets);
-  const uint8_t*** InitMaskTable(FecMaskType fec_mask_type_);
-  const FecMaskType fec_mask_type_;
-  const uint8_t*** fec_packet_mask_table_;
+private:
+    FecMaskType InitMaskType(FecMaskType fec_mask_type, int num_media_packets);
+    const uint8_t*** InitMaskTable(FecMaskType fec_mask_type_);
+    const FecMaskType fec_mask_type_;
+    const uint8_t*** fec_packet_mask_table_;
 };
 
 // Returns an array of packet masks. The mask of a single FEC packet

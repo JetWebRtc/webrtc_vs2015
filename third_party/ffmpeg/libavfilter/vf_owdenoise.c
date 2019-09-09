@@ -34,7 +34,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     double luma_strength;
     double chroma_strength;
@@ -46,7 +47,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(OWDenoiseContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption owdenoise_options[] = {
+static const AVOption owdenoise_options[] =
+{
     { "depth",           "set depth",           OFFSET(depth),           AV_OPT_TYPE_INT,    {.i64 =   8}, 8,   16, FLAGS },
     { "luma_strength",   "set luma strength",   OFFSET(luma_strength),   AV_OPT_TYPE_DOUBLE, {.dbl = 1.0}, 0, 1000, FLAGS },
     { "ls",              "set luma strength",   OFFSET(luma_strength),   AV_OPT_TYPE_DOUBLE, {.dbl = 1.0}, 0, 1000, FLAGS },
@@ -57,7 +59,8 @@ static const AVOption owdenoise_options[] = {
 
 AVFILTER_DEFINE_CLASS(owdenoise);
 
-DECLARE_ALIGNED(8, static const uint8_t, dither)[8][8] = {
+DECLARE_ALIGNED(8, static const uint8_t, dither)[8][8] =
+{
     {  0,  48,  12,  60,   3,  51,  15,  63 },
     { 32,  16,  44,  28,  35,  19,  47,  31 },
     {  8,  56,   4,  52,  11,  59,   7,  55 },
@@ -68,33 +71,35 @@ DECLARE_ALIGNED(8, static const uint8_t, dither)[8][8] = {
     { 42,  26,  38,  22,  41,  25,  37,  21 },
 };
 
-static const double coeff[2][5] = {
+static const double coeff[2][5] =
+{
     {
-         0.6029490182363579  * M_SQRT2,
-         0.2668641184428723  * M_SQRT2,
+        0.6029490182363579  * M_SQRT2,
+        0.2668641184428723  * M_SQRT2,
         -0.07822326652898785 * M_SQRT2,
         -0.01686411844287495 * M_SQRT2,
-         0.02674875741080976 * M_SQRT2,
+        0.02674875741080976 * M_SQRT2,
     },{
-         1.115087052456994   / M_SQRT2,
+        1.115087052456994   / M_SQRT2,
         -0.5912717631142470  / M_SQRT2,
         -0.05754352622849957 / M_SQRT2,
-         0.09127176311424948 / M_SQRT2,
+        0.09127176311424948 / M_SQRT2,
     }
 };
 
-static const double icoeff[2][5] = {
+static const double icoeff[2][5] =
+{
     {
-         1.115087052456994   / M_SQRT2,
-         0.5912717631142470  / M_SQRT2,
+        1.115087052456994   / M_SQRT2,
+        0.5912717631142470  / M_SQRT2,
         -0.05754352622849957 / M_SQRT2,
         -0.09127176311424948 / M_SQRT2,
     },{
-         0.6029490182363579  * M_SQRT2,
+        0.6029490182363579  * M_SQRT2,
         -0.2668641184428723  * M_SQRT2,
         -0.07822326652898785 * M_SQRT2,
-         0.01686411844287495 * M_SQRT2,
-         0.02674875741080976 * M_SQRT2,
+        0.01686411844287495 * M_SQRT2,
+        0.02674875741080976 * M_SQRT2,
     }
 };
 
@@ -103,12 +108,14 @@ static inline void decompose(float *dst_l, float *dst_h, const float *src,
                              int linesize, int w)
 {
     int x, i;
-    for (x = 0; x < w; x++) {
+    for (x = 0; x < w; x++)
+    {
         double sum_l = src[x * linesize] * coeff[0][0];
         double sum_h = src[x * linesize] * coeff[1][0];
-        for (i = 1; i <= 4; i++) {
+        for (i = 1; i <= 4; i++)
+        {
             const double s = src[avpriv_mirror(x - i, w - 1) * linesize]
-                           + src[avpriv_mirror(x + i, w - 1) * linesize];
+                             + src[avpriv_mirror(x + i, w - 1) * linesize];
 
             sum_l += coeff[0][i] * s;
             sum_h += coeff[1][i] * s;
@@ -122,10 +129,12 @@ static inline void compose(float *dst, const float *src_l, const float *src_h,
                            int linesize, int w)
 {
     int x, i;
-    for (x = 0; x < w; x++) {
+    for (x = 0; x < w; x++)
+    {
         double sum_l = src_l[x * linesize] * icoeff[0][0];
         double sum_h = src_h[x * linesize] * icoeff[1][0];
-        for (i = 1; i <= 4; i++) {
+        for (i = 1; i <= 4; i++)
+        {
             const int x0 = avpriv_mirror(x - i, w - 1) * linesize;
             const int x1 = avpriv_mirror(x + i, w - 1) * linesize;
 
@@ -195,10 +204,14 @@ static void filter(OWDenoiseContext *s,
     for (i = 0; i < depth; i++)
         decompose2D2(s->plane[i + 1], s->plane[i][0], s->plane[0] + 1, s->linesize, 1<<i, width, height);
 
-    for (i = 0; i < depth; i++) {
-        for (j = 1; j < 4; j++) {
-            for (y = 0; y < height; y++) {
-                for (x = 0; x < width; x++) {
+    for (i = 0; i < depth; i++)
+    {
+        for (j = 1; j < 4; j++)
+        {
+            for (y = 0; y < height; y++)
+            {
+                for (x = 0; x < width; x++)
+                {
                     double v = s->plane[i + 1][j][y*s->linesize + x];
                     if      (v >  strength) v -= strength;
                     else if (v < -strength) v += strength;
@@ -211,8 +224,10 @@ static void filter(OWDenoiseContext *s,
     for (i = depth-1; i >= 0; i--)
         compose2D2(s->plane[i][0], s->plane[i + 1], s->plane[0] + 1, s->linesize, 1<<i, width, height);
 
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x++)
+        {
             i = s->plane[0][0][y*s->linesize + x] + dither[x&7][y&7]*(1.0/64) + 1.0/128; // yes the rounding is insane but optimal :)
             if ((unsigned)i > 255U) i = ~(i >> 31);
             dst[y*dst_linesize + x] = i;
@@ -230,12 +245,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     const int cw = FF_CEIL_RSHIFT(inlink->w, s->hsub);
     const int ch = FF_CEIL_RSHIFT(inlink->h, s->vsub);
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         direct = 1;
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -246,7 +265,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     filter(s, out->data[1], out->linesize[1], in->data[1], in->linesize[1], cw,        ch,        s->chroma_strength);
     filter(s, out->data[2], out->linesize[2], in->data[2], in->linesize[2], cw,        ch,        s->chroma_strength);
 
-    if (!direct) {
+    if (!direct)
+    {
         if (in->data[3])
             av_image_copy_plane(out->data[3], out->linesize[3],
                                 in ->data[3], in ->linesize[3],
@@ -259,7 +279,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,      AV_PIX_FMT_YUV422P,
         AV_PIX_FMT_YUV420P,      AV_PIX_FMT_YUV411P,
         AV_PIX_FMT_YUV410P,      AV_PIX_FMT_YUV440P,
@@ -284,8 +305,10 @@ static int config_input(AVFilterLink *inlink)
     s->vsub = desc->log2_chroma_h;
 
     s->linesize = FFALIGN(inlink->w, 16);
-    for (j = 0; j < 4; j++) {
-        for (i = 0; i <= s->depth; i++) {
+    for (j = 0; j < 4; j++)
+    {
+        for (i = 0; i <= s->depth; i++)
+        {
             s->plane[i][j] = av_malloc_array(s->linesize, h * sizeof(s->plane[0][0][0]));
             if (!s->plane[i][j])
                 return AVERROR(ENOMEM);
@@ -304,7 +327,8 @@ static av_cold void uninit(AVFilterContext *ctx)
             av_freep(&s->plane[i][j]);
 }
 
-static const AVFilterPad owdenoise_inputs[] = {
+static const AVFilterPad owdenoise_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -314,7 +338,8 @@ static const AVFilterPad owdenoise_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad owdenoise_outputs[] = {
+static const AVFilterPad owdenoise_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -322,7 +347,8 @@ static const AVFilterPad owdenoise_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_owdenoise = {
+AVFilter ff_vf_owdenoise =
+{
     .name          = "owdenoise",
     .description   = NULL_IF_CONFIG_SMALL("Denoise using wavelets."),
     .priv_size     = sizeof(OWDenoiseContext),

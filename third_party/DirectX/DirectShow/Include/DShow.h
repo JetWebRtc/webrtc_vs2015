@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: DShow.h
 //
 // Desc: DirectShow top-level include file
@@ -38,11 +38,11 @@
 
 #ifndef NO_DSHOW_STRSAFE
 #define NO_SHLWAPI_STRFCNS
-#include <strsafe.h>  
+#include <strsafe.h>
 #endif
 
 #ifndef NUMELMS
-   #define NUMELMS(aa) (sizeof(aa)/sizeof((aa)[0]))
+#define NUMELMS(aa) (sizeof(aa)/sizeof((aa)[0]))
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@
 #ifndef InterlockedExchangePointer
 #define InterlockedExchangePointer(Target, Value) \
    (PVOID)InterlockedExchange((PLONG)(Target), (LONG)(Value))
-#endif 
+#endif
 
 
 #endif // __DSHOW_INCLUDED__

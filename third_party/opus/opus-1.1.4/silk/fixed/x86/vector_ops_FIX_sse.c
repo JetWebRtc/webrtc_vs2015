@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,8 @@ opus_int64 silk_inner_prod16_aligned_64_sse4_1(
     acc1 = _mm_setzero_si128();
     acc2 = _mm_setzero_si128();
 
-    for( i = 0; i < dataSize8; i += 8 ) {
+    for( i = 0; i < dataSize8; i += 8 )
+    {
         inVec1_76543210 = _mm_loadu_si128( (__m128i *)(&inVec1[i + 0] ) );
         inVec2_76543210 = _mm_loadu_si128( (__m128i *)(&inVec2[i + 0] ) );
 
@@ -80,7 +81,8 @@ opus_int64 silk_inner_prod16_aligned_64_sse4_1(
 
     _mm_storel_epi64( (__m128i *)&sum, acc1 );
 
-    for( ; i < len; i++ ) {
+    for( ; i < len; i++ )
+    {
         sum = silk_SMLABB( sum, inVec1[ i ], inVec2[ i ] );
     }
 

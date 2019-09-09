@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,15 +18,17 @@
 extern "C" {
 #endif
 
-typedef struct InternalFrameBuffer {
-  uint8_t *data;
-  size_t size;
-  int in_use;
+typedef struct InternalFrameBuffer
+{
+    uint8_t *data;
+    size_t size;
+    int in_use;
 } InternalFrameBuffer;
 
-typedef struct InternalFrameBufferList {
-  int num_internal_frame_buffers;
-  InternalFrameBuffer *int_fb;
+typedef struct InternalFrameBufferList
+{
+    int num_internal_frame_buffers;
+    InternalFrameBuffer *int_fb;
 } InternalFrameBufferList;
 
 // Initializes |list|. Returns 0 on success.

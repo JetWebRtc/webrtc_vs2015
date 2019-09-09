@@ -1,4 +1,4 @@
-/*
+﻿/*
  * WavPack muxer
  * Copyright (c) 2013 Konstantin Shishkov <kostya.shishkov@gmail.com>
  * Copyright (c) 2012 Paul B Mahol
@@ -26,14 +26,16 @@
 #include "avformat.h"
 #include "wv.h"
 
-typedef struct WvMuxContext {
+typedef struct WvMuxContext
+{
     int64_t samples;
 } WvMuxContext;
 
 static av_cold int wv_write_header(AVFormatContext *ctx)
 {
     if (ctx->nb_streams > 1 ||
-        ctx->streams[0]->codec->codec_id != AV_CODEC_ID_WAVPACK) {
+            ctx->streams[0]->codec->codec_id != AV_CODEC_ID_WAVPACK)
+    {
         av_log(ctx, AV_LOG_ERROR, "This muxer only supports a single WavPack stream.\n");
         return AVERROR(EINVAL);
     }
@@ -48,7 +50,8 @@ static int wv_write_packet(AVFormatContext *ctx, AVPacket *pkt)
     int ret;
 
     if (pkt->size < WV_HEADER_SIZE ||
-        (ret = ff_wv_parse_header(&header, pkt->data)) < 0) {
+            (ret = ff_wv_parse_header(&header, pkt->data)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid WavPack packet.\n");
         return AVERROR(EINVAL);
     }
@@ -65,7 +68,8 @@ static av_cold int wv_write_trailer(AVFormatContext *ctx)
 
     /* update total number of samples in the first block */
     if (ctx->pb->seekable && s->samples &&
-        s->samples < UINT32_MAX) {
+            s->samples < UINT32_MAX)
+    {
         int64_t pos = avio_tell(ctx->pb);
         avio_seek(ctx->pb, 12, SEEK_SET);
         avio_wl32(ctx->pb, s->samples);
@@ -76,7 +80,8 @@ static av_cold int wv_write_trailer(AVFormatContext *ctx)
     return 0;
 }
 
-AVOutputFormat ff_wv_muxer = {
+AVOutputFormat ff_wv_muxer =
+{
     .name              = "wv",
     .long_name         = NULL_IF_CONFIG_SMALL("raw WavPack"),
     .mime_type         = "audio/x-wavpack",

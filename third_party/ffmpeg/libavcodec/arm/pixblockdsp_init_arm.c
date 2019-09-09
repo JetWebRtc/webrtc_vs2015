@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -34,7 +34,8 @@ av_cold void ff_pixblockdsp_init_arm(PixblockDSPContext *c,
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_armv6(cpu_flags)) {
+    if (have_armv6(cpu_flags))
+    {
         if (!high_bit_depth)
             c->get_pixels = ff_get_pixels_armv6;
         c->diff_pixels = ff_diff_pixels_armv6;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 BBC, Anuradha Suraparaju <asuraparaju at gmail dot com >
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #include "libavutil/mem.h"
 #include "libschroedinger.h"
 
-static const SchroVideoFormatInfo ff_schro_video_format_info[] = {
+static const SchroVideoFormatInfo ff_schro_video_format_info[] =
+{
     { 640,  480,  24000, 1001},
     { 176,  120,  15000, 1001},
     { 176,  144,  25,    2   },
@@ -54,13 +55,15 @@ static unsigned int get_video_format_idx(AVCodecContext *avctx)
     unsigned int num_formats = sizeof(ff_schro_video_format_info) /
                                sizeof(ff_schro_video_format_info[0]);
 
-    for (idx = 1; idx < num_formats; ++idx) {
+    for (idx = 1; idx < num_formats; ++idx)
+    {
         const SchroVideoFormatInfo *vf = &ff_schro_video_format_info[idx];
         if (avctx->width  == vf->width &&
-            avctx->height == vf->height) {
+                avctx->height == vf->height)
+        {
             ret_idx = idx;
             if (avctx->time_base.den == vf->frame_rate_num &&
-                avctx->time_base.num == vf->frame_rate_denom)
+                    avctx->time_base.num == vf->frame_rate_denom)
                 return idx;
         }
     }
@@ -102,7 +105,8 @@ void *ff_schro_queue_pop(FFSchroQueue *queue)
 {
     FFSchroQueueElement *top = queue->p_head;
 
-    if (top) {
+    if (top)
+    {
         void *data = top->data;
         queue->p_head = queue->p_head->next;
         --queue->size;
@@ -117,7 +121,8 @@ void *ff_schro_queue_pop(FFSchroQueue *queue)
 * Schroedinger video preset table. Ensure that this tables matches up correctly
 * with the ff_schro_video_format_info table.
 */
-static const SchroVideoFormatEnum ff_schro_video_formats[]={
+static const SchroVideoFormatEnum ff_schro_video_formats[]=
+{
     SCHRO_VIDEO_FORMAT_CUSTOM     ,
     SCHRO_VIDEO_FORMAT_QSIF       ,
     SCHRO_VIDEO_FORMAT_QCIF       ,
@@ -145,7 +150,7 @@ SchroVideoFormatEnum ff_get_schro_video_format_preset(AVCodecContext *avctx)
     unsigned int idx = get_video_format_idx(avctx);
 
     return (idx < num_formats) ? ff_schro_video_formats[idx] :
-                                 SCHRO_VIDEO_FORMAT_CUSTOM;
+           SCHRO_VIDEO_FORMAT_CUSTOM;
 }
 
 int ff_get_schro_frame_format (SchroChromaFormat schro_pix_fmt,
@@ -156,8 +161,10 @@ int ff_get_schro_frame_format (SchroChromaFormat schro_pix_fmt,
 
     int idx;
 
-    for (idx = 0; idx < num_formats; ++idx) {
-        if (schro_pixel_format_map[idx].schro_pix_fmt == schro_pix_fmt) {
+    for (idx = 0; idx < num_formats; ++idx)
+    {
+        if (schro_pixel_format_map[idx].schro_pix_fmt == schro_pix_fmt)
+        {
             *schro_frame_fmt = schro_pixel_format_map[idx].schro_frame_fmt;
             return 0;
         }
@@ -191,7 +198,8 @@ SchroFrame *ff_create_schro_frame(AVCodecContext *avctx,
     uv_height = y_height >> (SCHRO_FRAME_FORMAT_V_SHIFT(schro_frame_fmt));
 
     p_pic = av_mallocz(sizeof(AVPicture));
-    if (!p_pic || avpicture_alloc(p_pic, avctx->pix_fmt, y_width, y_height) < 0) {
+    if (!p_pic || avpicture_alloc(p_pic, avctx->pix_fmt, y_width, y_height) < 0)
+    {
         av_free(p_pic);
         return NULL;
     }
@@ -202,15 +210,17 @@ SchroFrame *ff_create_schro_frame(AVCodecContext *avctx,
     p_frame->height = y_height;
     schro_frame_set_free_callback(p_frame, free_schro_frame, (void *)p_pic);
 
-    for (i = 0; i < 3; ++i) {
+    for (i = 0; i < 3; ++i)
+    {
         p_frame->components[i].width  = i ? uv_width : y_width;
         p_frame->components[i].stride = p_pic->linesize[i];
         p_frame->components[i].height = i ? uv_height : y_height;
         p_frame->components[i].length =
-                 p_frame->components[i].stride * p_frame->components[i].height;
+            p_frame->components[i].stride * p_frame->components[i].height;
         p_frame->components[i].data   = p_pic->data[i];
 
-        if (i) {
+        if (i)
+        {
             p_frame->components[i].v_shift =
                 SCHRO_FRAME_FORMAT_V_SHIFT(p_frame->format);
             p_frame->components[i].h_shift =

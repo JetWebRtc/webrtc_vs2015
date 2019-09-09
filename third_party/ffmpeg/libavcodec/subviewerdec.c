@@ -30,11 +30,15 @@
 
 static int subviewer_event_to_ass(AVBPrint *buf, const char *p)
 {
-    while (*p) {
-        if (!strncmp(p, "[br]", 4)) {
+    while (*p)
+    {
+        if (!strncmp(p, "[br]", 4))
+        {
             av_bprintf(buf, "\\N");
             p += 4;
-        } else {
+        }
+        else
+        {
             if (p[0] == '\n' && p[1])
                 av_bprintf(buf, "\\N");
             else if (*p != '\n' && *p != '\r')
@@ -66,7 +70,8 @@ static int subviewer_decode_frame(AVCodecContext *avctx,
     return avpkt->size;
 }
 
-AVCodec ff_subviewer_decoder = {
+AVCodec ff_subviewer_decoder =
+{
     .name           = "subviewer",
     .long_name      = NULL_IF_CONFIG_SMALL("SubViewer subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

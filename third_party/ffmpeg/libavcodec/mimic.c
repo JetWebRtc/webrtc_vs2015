@@ -35,7 +35,8 @@
 
 #define MIMIC_HEADER_SIZE   20
 
-typedef struct MimicContext {
+typedef struct MimicContext
+{
     AVCodecContext *avctx;
 
     int             num_vblocks[3];
@@ -65,7 +66,8 @@ typedef struct MimicContext {
     int             next_prev_index;
 } MimicContext;
 
-static const uint32_t huffcodes[] = {
+static const uint32_t huffcodes[] =
+{
     0x0000000a, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
     0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x0000000b,
@@ -90,22 +92,24 @@ static const uint32_t huffcodes[] = {
     0x3ffffffa,
 };
 
-static const uint8_t huffbits[] = {
-     4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-     0,  0,  0,  0,  2,  4,  5,  6,  7,  7,  7,  8,
-     8, 10, 11, 11, 11, 11, 12, 12,  2,  6,  7,  8,
-     9,  9, 12, 12, 13, 13, 13, 13, 14, 14, 14,  0,
-     3,  6,  9, 14, 15, 15, 15, 15, 16, 16, 16, 16,
+static const uint8_t huffbits[] =
+{
+    4,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+    0,  0,  0,  0,  2,  4,  5,  6,  7,  7,  7,  8,
+    8, 10, 11, 11, 11, 11, 12, 12,  2,  6,  7,  8,
+    9,  9, 12, 12, 13, 13, 13, 13, 14, 14, 14,  0,
+    3,  6,  9, 14, 15, 15, 15, 15, 16, 16, 16, 16,
     17, 17, 17,  0,  4,  8,  9, 17, 18, 18, 18, 18,
     19, 19, 19, 19, 20, 20, 20,  0,  5, 10, 20, 21,
     21, 21, 21, 22, 22, 22, 22, 23, 23, 23, 23,  0,
-     6, 10, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26,
+    6, 10, 24, 24, 24, 24, 25, 25, 25, 25, 26, 26,
     26, 26, 27,  0, 10, 27, 27, 27, 28, 28, 28, 28,
     29, 29, 29, 29, 30, 30, 30,
 };
 
-static const uint8_t col_zag[64] = {
-     0,  8,  1,  2,  9, 16, 24, 17,
+static const uint8_t col_zag[64] =
+{
+    0,  8,  1,  2,  9, 16, 24, 17,
     10,  3,  4, 11, 18, 25, 32, 40,
     33, 26, 19, 12,  5,  6, 13, 20,
     27, 34, 41, 48, 56, 49, 42, 35,
@@ -123,7 +127,8 @@ static av_cold int mimic_decode_end(AVCodecContext *avctx)
     av_freep(&ctx->swap_buf);
     ctx->swap_buf_size = 0;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++)
+    {
         if (ctx->frames[i].f)
             ff_thread_release_buffer(avctx, &ctx->frames[i]);
         av_frame_free(&ctx->frames[i].f);
@@ -146,7 +151,8 @@ static av_cold int mimic_decode_init(AVCodecContext *avctx)
     ctx->cur_index  = 15;
 
     if ((ret = init_vlc(&ctx->vlc, 11, FF_ARRAY_ELEMS(huffbits),
-                        huffbits, 1, 1, huffcodes, 4, 4, 0)) < 0) {
+                        huffbits, 1, 1, huffcodes, 4, 4, 0)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "error initializing vlc table\n");
         return ret;
     }
@@ -156,9 +162,11 @@ static av_cold int mimic_decode_init(AVCodecContext *avctx)
     ff_idctdsp_init(&ctx->idsp, avctx);
     ff_init_scantable(ctx->idsp.idct_permutation, &ctx->scantable, col_zag);
 
-    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++)
+    {
         ctx->frames[i].f = av_frame_alloc();
-        if (!ctx->frames[i].f) {
+        if (!ctx->frames[i].f)
+        {
             mimic_decode_end(avctx);
             return AVERROR(ENOMEM);
         }
@@ -180,9 +188,11 @@ static int mimic_decode_update_thread_context(AVCodecContext *avctx, const AVCod
 
     memcpy(dst->flipped_ptrs, src->flipped_ptrs, sizeof(src->flipped_ptrs));
 
-    for (i = 0; i < FF_ARRAY_ELEMS(dst->frames); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(dst->frames); i++)
+    {
         ff_thread_release_buffer(avctx, &dst->frames[i]);
-        if (i != src->next_cur_index && src->frames[i].f->data[0]) {
+        if (i != src->next_cur_index && src->frames[i].f->data[0])
+        {
             ret = ff_thread_ref_frame(&dst->frames[i], &src->frames[i]);
             if (ret < 0)
                 return ret;
@@ -192,41 +202,52 @@ static int mimic_decode_update_thread_context(AVCodecContext *avctx, const AVCod
     return 0;
 }
 
-static const int8_t vlcdec_lookup[9][64] = {
+static const int8_t vlcdec_lookup[9][64] =
+{
     {    0, },
     {   -1,   1, },
     {   -3,   3,   -2,   2, },
     {   -7,   7,   -6,   6,   -5,   5,   -4,   4, },
-    {  -15,  15,  -14,  14,  -13,  13,  -12,  12,
-       -11,  11,  -10,  10,   -9,   9,   -8,   8, },
-    {  -31,  31,  -30,  30,  -29,  29,  -28,  28,
-       -27,  27,  -26,  26,  -25,  25,  -24,  24,
-       -23,  23,  -22,  22,  -21,  21,  -20,  20,
-       -19,  19,  -18,  18,  -17,  17,  -16,  16, },
-    {  -63,  63,  -62,  62,  -61,  61,  -60,  60,
-       -59,  59,  -58,  58,  -57,  57,  -56,  56,
-       -55,  55,  -54,  54,  -53,  53,  -52,  52,
-       -51,  51,  -50,  50,  -49,  49,  -48,  48,
-       -47,  47,  -46,  46,  -45,  45,  -44,  44,
-       -43,  43,  -42,  42,  -41,  41,  -40,  40,
-       -39,  39,  -38,  38,  -37,  37,  -36,  36,
-       -35,  35,  -34,  34,  -33,  33,  -32,  32, },
-    { -127, 127, -126, 126, -125, 125, -124, 124,
-      -123, 123, -122, 122, -121, 121, -120, 120,
-      -119, 119, -118, 118, -117, 117, -116, 116,
-      -115, 115, -114, 114, -113, 113, -112, 112,
-      -111, 111, -110, 110, -109, 109, -108, 108,
-      -107, 107, -106, 106, -105, 105, -104, 104,
-      -103, 103, -102, 102, -101, 101, -100, 100,
-       -99,  99,  -98,  98,  -97,  97,  -96,  96, },
-    {  -95,  95,  -94,  94,  -93,  93,  -92,  92,
-       -91,  91,  -90,  90,  -89,  89,  -88,  88,
-       -87,  87,  -86,  86,  -85,  85,  -84,  84,
-       -83,  83,  -82,  82,  -81,  81,  -80,  80,
-       -79,  79,  -78,  78,  -77,  77,  -76,  76,
-       -75,  75,  -74,  74,  -73,  73,  -72,  72,
-       -71,  71,  -70,  70,  -69,  69,  -68,  68,
-       -67,  67,  -66,  66,  -65,  65,  -64,  64, },
+    {
+        -15,  15,  -14,  14,  -13,  13,  -12,  12,
+        -11,  11,  -10,  10,   -9,   9,   -8,   8,
+    },
+    {
+        -31,  31,  -30,  30,  -29,  29,  -28,  28,
+        -27,  27,  -26,  26,  -25,  25,  -24,  24,
+        -23,  23,  -22,  22,  -21,  21,  -20,  20,
+        -19,  19,  -18,  18,  -17,  17,  -16,  16,
+    },
+    {
+        -63,  63,  -62,  62,  -61,  61,  -60,  60,
+        -59,  59,  -58,  58,  -57,  57,  -56,  56,
+        -55,  55,  -54,  54,  -53,  53,  -52,  52,
+        -51,  51,  -50,  50,  -49,  49,  -48,  48,
+        -47,  47,  -46,  46,  -45,  45,  -44,  44,
+        -43,  43,  -42,  42,  -41,  41,  -40,  40,
+        -39,  39,  -38,  38,  -37,  37,  -36,  36,
+        -35,  35,  -34,  34,  -33,  33,  -32,  32,
+    },
+    {
+        -127, 127, -126, 126, -125, 125, -124, 124,
+        -123, 123, -122, 122, -121, 121, -120, 120,
+        -119, 119, -118, 118, -117, 117, -116, 116,
+        -115, 115, -114, 114, -113, 113, -112, 112,
+        -111, 111, -110, 110, -109, 109, -108, 108,
+        -107, 107, -106, 106, -105, 105, -104, 104,
+        -103, 103, -102, 102, -101, 101, -100, 100,
+        -99,  99,  -98,  98,  -97,  97,  -96,  96,
+    },
+    {
+        -95,  95,  -94,  94,  -93,  93,  -92,  92,
+        -91,  91,  -90,  90,  -89,  89,  -88,  88,
+        -87,  87,  -86,  86,  -85,  85,  -84,  84,
+        -83,  83,  -82,  82,  -81,  81,  -80,  80,
+        -79,  79,  -78,  78,  -77,  77,  -76,  76,
+        -75,  75,  -74,  74,  -73,  73,  -72,  72,
+        -71,  71,  -70,  70,  -69,  69,  -68,  68,
+        -67,  67,  -66,  66,  -65,  65,  -64,  64,
+    },
 };
 
 static int vlc_decode_block(MimicContext *ctx, int num_coeffs, int qscale)
@@ -238,7 +259,8 @@ static int vlc_decode_block(MimicContext *ctx, int num_coeffs, int qscale)
 
     block[0] = get_bits(&ctx->gb, 8) << 3;
 
-    for (pos = 1; pos < num_coeffs; pos++) {
+    for (pos = 1; pos < num_coeffs; pos++)
+    {
         uint32_t vlc, num_bits;
         int value;
         int coeff;
@@ -278,7 +300,8 @@ static int decode(MimicContext *ctx, int quality, int num_coeffs,
 {
     int ret, y, x, plane, cur_row = 0;
 
-    for (plane = 0; plane < 3; plane++) {
+    for (plane = 0; plane < 3; plane++)
+    {
         const int is_chroma = !!plane;
         const int qscale    = av_clip(10000 - quality, is_chroma ? 1000 : 2000,
                                       10000) << 2;
@@ -286,41 +309,53 @@ static int decode(MimicContext *ctx, int quality, int num_coeffs,
         const uint8_t *src  = ctx->flipped_ptrs[ctx->prev_index].data[plane];
         uint8_t       *dst  = ctx->flipped_ptrs[ctx->cur_index ].data[plane];
 
-        for (y = 0; y < ctx->num_vblocks[plane]; y++) {
-            for (x = 0; x < ctx->num_hblocks[plane]; x++) {
+        for (y = 0; y < ctx->num_vblocks[plane]; y++)
+        {
+            for (x = 0; x < ctx->num_hblocks[plane]; x++)
+            {
                 /* Check for a change condition in the current block.
                  * - iframes always change.
                  * - Luma plane changes on get_bits1 == 0
                  * - Chroma planes change on get_bits1 == 1 */
-                if (is_iframe || get_bits1(&ctx->gb) == is_chroma) {
+                if (is_iframe || get_bits1(&ctx->gb) == is_chroma)
+                {
                     /* Luma planes may use a backreference from the 15 last
                      * frames preceding the previous. (get_bits1 == 1)
                      * Chroma planes don't use backreferences. */
-                    if (is_chroma || is_iframe || !get_bits1(&ctx->gb)) {
+                    if (is_chroma || is_iframe || !get_bits1(&ctx->gb))
+                    {
                         if ((ret = vlc_decode_block(ctx, num_coeffs,
-                                                    qscale)) < 0) {
+                                                    qscale)) < 0)
+                        {
                             av_log(ctx->avctx, AV_LOG_ERROR, "Error decoding "
                                    "block.\n");
                             return ret;
                         }
                         ctx->idsp.idct_put(dst, stride, ctx->dct_block);
-                    } else {
+                    }
+                    else
+                    {
                         unsigned int backref = get_bits(&ctx->gb, 4);
                         int index            = (ctx->cur_index + backref) & 15;
                         uint8_t *p           = ctx->flipped_ptrs[index].data[0];
 
-                        if (index != ctx->cur_index && p) {
+                        if (index != ctx->cur_index && p)
+                        {
                             ff_thread_await_progress(&ctx->frames[index],
                                                      cur_row, 0);
                             p += src -
                                  ctx->flipped_ptrs[ctx->prev_index].data[plane];
                             ctx->hdsp.put_pixels_tab[1][0](dst, p, stride, 8);
-                        } else {
+                        }
+                        else
+                        {
                             av_log(ctx->avctx, AV_LOG_ERROR,
-                                     "No such backreference! Buggy sample.\n");
+                                   "No such backreference! Buggy sample.\n");
                         }
                     }
-                } else {
+                }
+                else
+                {
                     ff_thread_await_progress(&ctx->frames[ctx->prev_index],
                                              cur_row, 0);
                     ctx->hdsp.put_pixels_tab[1][0](dst, src, stride, 8);
@@ -366,7 +401,8 @@ static int mimic_decode_frame(AVCodecContext *avctx, void *data,
     int quality, num_coeffs;
     int res;
 
-    if (buf_size <= MIMIC_HEADER_SIZE) {
+    if (buf_size <= MIMIC_HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "insufficient data\n");
         return AVERROR_INVALIDDATA;
     }
@@ -381,11 +417,13 @@ static int mimic_decode_frame(AVCodecContext *avctx, void *data,
     num_coeffs = bytestream2_get_byteu(&gb);
     bytestream2_skip(&gb, 3); /* some constant */
 
-    if (!ctx->avctx) {
+    if (!ctx->avctx)
+    {
         int i;
 
         if (!(width == 160 && height == 120) &&
-            !(width == 320 && height == 240)) {
+                !(width == 320 && height == 240))
+        {
             av_log(avctx, AV_LOG_ERROR, "invalid width/height!\n");
             return AVERROR_INVALIDDATA;
         }
@@ -394,23 +432,27 @@ static int mimic_decode_frame(AVCodecContext *avctx, void *data,
         avctx->width   = width;
         avctx->height  = height;
         avctx->pix_fmt = AV_PIX_FMT_YUV420P;
-        for (i = 0; i < 3; i++) {
+        for (i = 0; i < 3; i++)
+        {
             ctx->num_vblocks[i] = FF_CEIL_RSHIFT(height,   3 + !!i);
             ctx->num_hblocks[i] =                width >> (3 + !!i);
         }
-    } else if (width != ctx->avctx->width || height != ctx->avctx->height) {
+    }
+    else if (width != ctx->avctx->width || height != ctx->avctx->height)
+    {
         avpriv_request_sample(avctx, "Resolution changing");
         return AVERROR_PATCHWELCOME;
     }
 
-    if (is_pframe && !ctx->frames[ctx->prev_index].f->data[0]) {
+    if (is_pframe && !ctx->frames[ctx->prev_index].f->data[0])
+    {
         av_log(avctx, AV_LOG_ERROR, "decoding must start with keyframe\n");
         return AVERROR_INVALIDDATA;
     }
 
     ff_thread_release_buffer(avctx, &ctx->frames[ctx->cur_index]);
     ctx->frames[ctx->cur_index].f->pict_type = is_pframe ? AV_PICTURE_TYPE_P :
-                                                           AV_PICTURE_TYPE_I;
+            AV_PICTURE_TYPE_I;
     if ((res = ff_thread_get_buffer(avctx, &ctx->frames[ctx->cur_index],
                                     AV_GET_BUFFER_FLAG_REF)) < 0)
         return res;
@@ -434,8 +476,10 @@ static int mimic_decode_frame(AVCodecContext *avctx, void *data,
 
     res = decode(ctx, quality, num_coeffs, !is_pframe);
     ff_thread_report_progress(&ctx->frames[ctx->cur_index], INT_MAX, 0);
-    if (res < 0) {
-        if (!(avctx->active_thread_type & FF_THREAD_FRAME)) {
+    if (res < 0)
+    {
+        if (!(avctx->active_thread_type & FF_THREAD_FRAME))
+        {
             ff_thread_release_buffer(avctx, &ctx->frames[ctx->cur_index]);
             return res;
         }
@@ -459,9 +503,11 @@ static av_cold int mimic_init_thread_copy(AVCodecContext *avctx)
     MimicContext *ctx = avctx->priv_data;
     int i;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(ctx->frames); i++)
+    {
         ctx->frames[i].f = av_frame_alloc();
-        if (!ctx->frames[i].f) {
+        if (!ctx->frames[i].f)
+        {
             mimic_decode_end(avctx);
             return AVERROR(ENOMEM);
         }
@@ -470,7 +516,8 @@ static av_cold int mimic_init_thread_copy(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_mimic_decoder = {
+AVCodec ff_mimic_decoder =
+{
     .name                  = "mimic",
     .long_name             = NULL_IF_CONFIG_SMALL("Mimic"),
     .type                  = AVMEDIA_TYPE_VIDEO,

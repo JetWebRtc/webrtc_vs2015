@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC video decoder
  *
  * Copyright (C) 2012 - 2013 Guillaume Martres
@@ -29,7 +29,8 @@
 
 #define MAX_PB_SIZE 64
 
-typedef struct SAOParams {
+typedef struct SAOParams
+{
     int offset_abs[3][4];   ///< sao_offset_abs
     int offset_sign[3][4];  ///< sao_offset_sign
 
@@ -42,7 +43,8 @@ typedef struct SAOParams {
     uint8_t type_idx[3];    ///< sao_type_idx
 } SAOParams;
 
-typedef struct HEVCDSPContext {
+typedef struct HEVCDSPContext
+{
     void (*put_pcm)(uint8_t *_dst, ptrdiff_t _stride, int width, int height,
                     struct GetBitContext *gb, int pcm_bit_depth);
 

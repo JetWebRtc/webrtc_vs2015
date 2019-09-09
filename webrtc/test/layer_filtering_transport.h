@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,32 +16,35 @@
 
 #include <map>
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace test {
+namespace test
+{
 
-class LayerFilteringTransport : public test::DirectTransport {
- public:
-  LayerFilteringTransport(const FakeNetworkPipe::Config& config,
-                          Call* send_call,
-                          uint8_t vp8_video_payload_type,
-                          uint8_t vp9_video_payload_type,
-                          int selected_tl,
-                          int selected_sl);
-  bool DiscardedLastPacket() const;
-  bool SendRtp(const uint8_t* data,
-               size_t length,
-               const PacketOptions& options) override;
+class LayerFilteringTransport : public test::DirectTransport
+{
+public:
+    LayerFilteringTransport(const FakeNetworkPipe::Config& config,
+                            Call* send_call,
+                            uint8_t vp8_video_payload_type,
+                            uint8_t vp9_video_payload_type,
+                            int selected_tl,
+                            int selected_sl);
+    bool DiscardedLastPacket() const;
+    bool SendRtp(const uint8_t* data,
+                 size_t length,
+                 const PacketOptions& options) override;
 
- private:
-  // Used to distinguish between VP8 and VP9.
-  const uint8_t vp8_video_payload_type_;
-  const uint8_t vp9_video_payload_type_;
-  // Discard or invalidate all temporal/spatial layers with id greater than the
-  // selected one. -1 to disable filtering.
-  const int selected_tl_;
-  const int selected_sl_;
-  bool discarded_last_packet_;
+private:
+    // Used to distinguish between VP8 and VP9.
+    const uint8_t vp8_video_payload_type_;
+    const uint8_t vp9_video_payload_type_;
+    // Discard or invalidate all temporal/spatial layers with id greater than the
+    // selected one. -1 to disable filtering.
+    const int selected_tl_;
+    const int selected_sl_;
+    bool discarded_last_packet_;
 };
 
 }  // namespace test

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,12 +18,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCVideoRendererAdapter ()
 
-/**
- * The Objective-C video renderer passed to this adapter during construction.
- * Calls made to the webrtc::VideoRenderInterface will be adapted and passed to
- * this video renderer.
- */
-@property(nonatomic, readonly) id<RTCVideoRenderer> videoRenderer;
+    /**
+     * The Objective-C video renderer passed to this adapter during construction.
+     * Calls made to the webrtc::VideoRenderInterface will be adapted and passed to
+     * this video renderer.
+     */
+    @property(nonatomic, readonly) id<RTCVideoRenderer> videoRenderer;
 
 /**
  * The native VideoSinkInterface surface exposed by this adapter. Calls made
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
  * during construction. This pointer is unsafe and owned by this class.
  */
 @property(nonatomic, readonly)
-    rtc::VideoSinkInterface<webrtc::VideoFrame> *nativeVideoRenderer;
+rtc::VideoSinkInterface<webrtc::VideoFrame> *nativeVideoRenderer;
 
 /** Initialize an RTCVideoRendererAdapter with an RTCVideoRenderer. */
 - (instancetype)initWithNativeRenderer:(id<RTCVideoRenderer>)videoRenderer

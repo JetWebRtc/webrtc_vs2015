@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,8 @@ av_cold void ff_mpv_common_init_arm(MpegEncContext *s)
     if (have_armv5te(cpu_flags))
         ff_mpv_common_init_armv5te(s);
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->dct_unquantize_h263_intra = ff_dct_unquantize_h263_intra_neon;
         s->dct_unquantize_h263_inter = ff_dct_unquantize_h263_inter_neon;
     }

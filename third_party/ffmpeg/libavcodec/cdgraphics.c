@@ -1,4 +1,4 @@
-/*
+﻿/*
  * CD Graphics Video Decoder
  * Copyright (c) 2009 Michael Tison
  *
@@ -63,7 +63,8 @@
 #define CDG_HEADER_SIZE            8
 #define CDG_PALETTE_SIZE          16
 
-typedef struct CDGraphicsContext {
+typedef struct CDGraphicsContext
+{
     AVFrame *frame;
     int hscroll;
     int vscroll;
@@ -91,14 +92,16 @@ static void cdg_border_preset(CDGraphicsContext *cc, uint8_t *data)
     uint8_t *buf = cc->frame->data[0];
     int color    = data[0] & 0x0F;
 
-    if (!(data[1] & 0x0F)) {
+    if (!(data[1] & 0x0F))
+    {
         /// fill the top and bottom borders
         memset(buf, color, CDG_BORDER_HEIGHT * lsize);
         memset(buf + (CDG_FULL_HEIGHT - CDG_BORDER_HEIGHT) * lsize,
                color, CDG_BORDER_HEIGHT * lsize);
 
         /// fill the side borders
-        for (y = CDG_BORDER_HEIGHT; y < CDG_FULL_HEIGHT - CDG_BORDER_HEIGHT; y++) {
+        for (y = CDG_BORDER_HEIGHT; y < CDG_FULL_HEIGHT - CDG_BORDER_HEIGHT; y++)
+        {
             memset(buf + y * lsize, color, CDG_BORDER_WIDTH);
             memset(buf + CDG_FULL_WIDTH - CDG_BORDER_WIDTH + y * lsize,
                    color, CDG_BORDER_WIDTH);
@@ -114,7 +117,8 @@ static void cdg_load_palette(CDGraphicsContext *cc, uint8_t *data, int low)
     int array_offset  = low ? 0 : 8;
     uint32_t *palette = (uint32_t *) cc->frame->data[1];
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         color = (data[2 * i] << 6) + (data[2 * i + 1] & 0x3F);
         r = ((color >> 8) & 0x000F) * 17;
         g = ((color >> 4) & 0x000F) * 17;
@@ -141,8 +145,10 @@ static int cdg_tile_block(CDGraphicsContext *cc, uint8_t *data, int b)
     if (ci > (CDG_FULL_WIDTH - CDG_TILE_WIDTH))
         return AVERROR(EINVAL);
 
-    for (y = 0; y < CDG_TILE_HEIGHT; y++) {
-        for (x = 0; x < CDG_TILE_WIDTH; x++) {
+    for (y = 0; y < CDG_TILE_HEIGHT; y++)
+    {
+        for (x = 0; x < CDG_TILE_WIDTH; x++)
+        {
             if (!((data[4 + y] >> (5 - x)) & 0x01))
                 color = data[0] & 0x0F;
             else
@@ -188,10 +194,13 @@ static void cdg_fill_wrapper(int out_tl_x, int out_tl_y, uint8_t *out,
                              int in_tl_x, int in_tl_y, uint8_t *in,
                              int color, int w, int h, int stride, int roll)
 {
-    if (roll) {
+    if (roll)
+    {
         cdg_copy_rect_buf(out_tl_x, out_tl_y, out, in_tl_x, in_tl_y,
                           in, w, h, stride);
-    } else {
+    }
+    else
+    {
         cdg_fill_rect_preset(out_tl_x, out_tl_y, out, color, w, h, stride);
     }
 }
@@ -269,11 +278,13 @@ static int cdg_decode_frame(AVCodecContext *avctx,
     AVFrame *frame = data;
     CDGraphicsContext *cc = avctx->priv_data;
 
-    if (buf_size < CDG_MINIMUM_PKT_SIZE) {
+    if (buf_size < CDG_MINIMUM_PKT_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "buffer too small for decoder\n");
         return AVERROR(EINVAL);
     }
-    if (buf_size > CDG_HEADER_SIZE + CDG_DATA_SIZE) {
+    if (buf_size > CDG_HEADER_SIZE + CDG_DATA_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR, "buffer too big for decoder\n");
         return AVERROR(EINVAL);
     }
@@ -282,7 +293,8 @@ static int cdg_decode_frame(AVCodecContext *avctx,
 
     if ((ret = ff_reget_buffer(avctx, cc->frame)) < 0)
         return ret;
-    if (!avctx->frame_number) {
+    if (!avctx->frame_number)
+    {
         memset(cc->frame->data[0], 0, cc->frame->linesize[0] * avctx->height);
         memset(cc->frame->data[1], 0, AVPALETTE_SIZE);
     }
@@ -293,8 +305,10 @@ static int cdg_decode_frame(AVCodecContext *avctx,
     bytestream2_skip(&gb, 2);
     bytestream2_get_buffer(&gb, cdg_data, sizeof(cdg_data));
 
-    if ((command & CDG_MASK) == CDG_COMMAND) {
-        switch (inst) {
+    if ((command & CDG_MASK) == CDG_COMMAND)
+    {
+        switch (inst)
+        {
         case CDG_INST_MEMORY_PRESET:
             if (!(cdg_data[1] & 0x0F))
                 memset(cc->frame->data[0], cdg_data[0] & 0x0F,
@@ -302,7 +316,8 @@ static int cdg_decode_frame(AVCodecContext *avctx,
             break;
         case CDG_INST_LOAD_PAL_LO:
         case CDG_INST_LOAD_PAL_HIGH:
-            if (buf_size - CDG_HEADER_SIZE < CDG_DATA_SIZE) {
+            if (buf_size - CDG_HEADER_SIZE < CDG_DATA_SIZE)
+            {
                 av_log(avctx, AV_LOG_ERROR, "buffer too small for loading palette\n");
                 return AVERROR(EINVAL);
             }
@@ -314,20 +329,23 @@ static int cdg_decode_frame(AVCodecContext *avctx,
             break;
         case CDG_INST_TILE_BLOCK_XOR:
         case CDG_INST_TILE_BLOCK:
-            if (buf_size - CDG_HEADER_SIZE < CDG_DATA_SIZE) {
+            if (buf_size - CDG_HEADER_SIZE < CDG_DATA_SIZE)
+            {
                 av_log(avctx, AV_LOG_ERROR, "buffer too small for drawing tile\n");
                 return AVERROR(EINVAL);
             }
 
             ret = cdg_tile_block(cc, cdg_data, inst == CDG_INST_TILE_BLOCK_XOR);
-            if (ret) {
+            if (ret)
+            {
                 av_log(avctx, AV_LOG_ERROR, "tile is out of range\n");
                 return ret;
             }
             break;
         case CDG_INST_SCROLL_PRESET:
         case CDG_INST_SCROLL_COPY:
-            if (buf_size - CDG_HEADER_SIZE < CDG_MINIMUM_SCROLL_SIZE) {
+            if (buf_size - CDG_HEADER_SIZE < CDG_MINIMUM_SCROLL_SIZE)
+            {
                 av_log(avctx, AV_LOG_ERROR, "buffer too small for scrolling\n");
                 return AVERROR(EINVAL);
             }
@@ -345,13 +363,16 @@ static int cdg_decode_frame(AVCodecContext *avctx,
             break;
         }
 
-        if (!frame->data[0]) {
+        if (!frame->data[0])
+        {
             ret = av_frame_ref(frame, cc->frame);
             if (ret < 0)
                 return ret;
         }
         *got_frame = 1;
-    } else {
+    }
+    else
+    {
         *got_frame = 0;
     }
 
@@ -367,7 +388,8 @@ static av_cold int cdg_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_cdgraphics_decoder = {
+AVCodec ff_cdgraphics_decoder =
+{
     .name           = "cdgraphics",
     .long_name      = NULL_IF_CONFIG_SMALL("CD Graphics video"),
     .type           = AVMEDIA_TYPE_VIDEO,

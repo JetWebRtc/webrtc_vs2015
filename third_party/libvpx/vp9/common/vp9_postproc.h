@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,16 +21,17 @@
 extern "C" {
 #endif
 
-struct postproc_state {
-  int last_q;
-  int last_noise;
-  int last_base_qindex;
-  int last_frame_valid;
-  MODE_INFO *prev_mip;
-  MODE_INFO *prev_mi;
-  int clamp;
-  uint8_t *limits;
-  int8_t *generated_noise;
+struct postproc_state
+{
+    int last_q;
+    int last_noise;
+    int last_base_qindex;
+    int last_frame_valid;
+    MODE_INFO *prev_mip;
+    MODE_INFO *prev_mi;
+    int clamp;
+    uint8_t *limits;
+    int8_t *generated_noise;
 };
 
 struct VP9Common;

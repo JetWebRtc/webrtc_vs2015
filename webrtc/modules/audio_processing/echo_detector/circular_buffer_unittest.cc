@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,42 +11,47 @@
 #include "webrtc/modules/audio_processing/echo_detector/circular_buffer.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-TEST(CircularBufferTests, LessThanMaxTest) {
-  CircularBuffer test_buffer(3);
-  test_buffer.Push(1.f);
-  test_buffer.Push(2.f);
-  EXPECT_EQ(rtc::Optional<float>(1.f), test_buffer.Pop());
-  EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
+TEST(CircularBufferTests, LessThanMaxTest)
+{
+    CircularBuffer test_buffer(3);
+    test_buffer.Push(1.f);
+    test_buffer.Push(2.f);
+    EXPECT_EQ(rtc::Optional<float>(1.f), test_buffer.Pop());
+    EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
 }
 
-TEST(CircularBufferTests, FillTest) {
-  CircularBuffer test_buffer(3);
-  test_buffer.Push(1.f);
-  test_buffer.Push(2.f);
-  test_buffer.Push(3.f);
-  EXPECT_EQ(rtc::Optional<float>(1.f), test_buffer.Pop());
-  EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
-  EXPECT_EQ(rtc::Optional<float>(3.f), test_buffer.Pop());
+TEST(CircularBufferTests, FillTest)
+{
+    CircularBuffer test_buffer(3);
+    test_buffer.Push(1.f);
+    test_buffer.Push(2.f);
+    test_buffer.Push(3.f);
+    EXPECT_EQ(rtc::Optional<float>(1.f), test_buffer.Pop());
+    EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
+    EXPECT_EQ(rtc::Optional<float>(3.f), test_buffer.Pop());
 }
 
-TEST(CircularBufferTests, OverflowTest) {
-  CircularBuffer test_buffer(3);
-  test_buffer.Push(1.f);
-  test_buffer.Push(2.f);
-  test_buffer.Push(3.f);
-  test_buffer.Push(4.f);
-  // Because the circular buffer has a size of 3, the first insert should have
-  // been forgotten.
-  EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
-  EXPECT_EQ(rtc::Optional<float>(3.f), test_buffer.Pop());
-  EXPECT_EQ(rtc::Optional<float>(4.f), test_buffer.Pop());
+TEST(CircularBufferTests, OverflowTest)
+{
+    CircularBuffer test_buffer(3);
+    test_buffer.Push(1.f);
+    test_buffer.Push(2.f);
+    test_buffer.Push(3.f);
+    test_buffer.Push(4.f);
+    // Because the circular buffer has a size of 3, the first insert should have
+    // been forgotten.
+    EXPECT_EQ(rtc::Optional<float>(2.f), test_buffer.Pop());
+    EXPECT_EQ(rtc::Optional<float>(3.f), test_buffer.Pop());
+    EXPECT_EQ(rtc::Optional<float>(4.f), test_buffer.Pop());
 }
 
-TEST(CircularBufferTests, ReadFromEmpty) {
-  CircularBuffer test_buffer(3);
-  EXPECT_EQ(rtc::Optional<float>(), test_buffer.Pop());
+TEST(CircularBufferTests, ReadFromEmpty)
+{
+    CircularBuffer test_buffer(3);
+    EXPECT_EQ(rtc::Optional<float>(), test_buffer.Pop());
 }
 
 }  // namespace webrtc

@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: VideoCtl.cpp
 //
 // Desc: DirectShow base classes.
@@ -17,7 +17,8 @@
 
 TCHAR *WINAPI StringFromResource(TCHAR *pBuffer, int iResourceID)
 {
-    if (LoadString(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH) == 0) {
+    if (LoadString(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH) == 0)
+    {
         return TEXT("");
     }
     return pBuffer;
@@ -26,7 +27,8 @@ TCHAR *WINAPI StringFromResource(TCHAR *pBuffer, int iResourceID)
 #ifdef UNICODE
 char *WINAPI StringFromResource(char *pBuffer, int iResourceID)
 {
-    if (LoadStringA(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH) == 0) {
+    if (LoadStringA(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH) == 0)
+    {
         return "";
     }
     return pBuffer;
@@ -48,17 +50,21 @@ WCHAR * WINAPI WideStringFromResource(WCHAR *pBuffer, int iResourceID)
 {
     *pBuffer = 0;
 
-    if (g_amPlatform == VER_PLATFORM_WIN32_NT) {
-	LoadStringW(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH);
-    } else {
+    if (g_amPlatform == VER_PLATFORM_WIN32_NT)
+    {
+        LoadStringW(g_hInst,iResourceID,pBuffer,STR_MAX_LENGTH);
+    }
+    else
+    {
 
-	CHAR szBuffer[STR_MAX_LENGTH];
-	DWORD dwStringLength = LoadString(g_hInst,iResourceID,szBuffer,STR_MAX_LENGTH);
-	// if we loaded a string convert it to wide characters, ensuring
-	// that we also null terminate the result.
-	if (dwStringLength++) {
-	    MultiByteToWideChar(CP_ACP,0,szBuffer,dwStringLength,pBuffer,STR_MAX_LENGTH);
-	}
+        CHAR szBuffer[STR_MAX_LENGTH];
+        DWORD dwStringLength = LoadString(g_hInst,iResourceID,szBuffer,STR_MAX_LENGTH);
+        // if we loaded a string convert it to wide characters, ensuring
+        // that we also null terminate the result.
+        if (dwStringLength++)
+        {
+            MultiByteToWideChar(CP_ACP,0,szBuffer,dwStringLength,pBuffer,STR_MAX_LENGTH);
+        }
     }
     return pBuffer;
 }
@@ -83,7 +89,8 @@ BOOL WINAPI GetDialogSize(int iResourceID,
                              GetDesktopWindow(),
                              pDlgProc,
                              lParam);
-    if (hwnd == NULL) {
+    if (hwnd == NULL)
+    {
         return FALSE;
     }
 
@@ -110,9 +117,12 @@ STDMETHODIMP CAggDirectDraw::NonDelegatingQueryInterface(REFIID riid, void **ppv
 
     // Do we have this interface
 
-    if (riid == IID_IDirectDraw) {
+    if (riid == IID_IDirectDraw)
+    {
         return GetInterface((IDirectDraw *)this,ppv);
-    } else {
+    }
+    else
+    {
         return CUnknown::NonDelegatingQueryInterface(riid,ppv);
     }
 }
@@ -272,9 +282,12 @@ STDMETHODIMP CAggDrawSurface::NonDelegatingQueryInterface(REFIID riid, void **pp
 
     // Do we have this interface
 
-    if (riid == IID_IDirectDrawSurface) {
+    if (riid == IID_IDirectDrawSurface)
+    {
         return GetInterface((IDirectDrawSurface *)this,ppv);
-    } else {
+    }
+    else
+    {
         return CUnknown::NonDelegatingQueryInterface(riid,ppv);
     }
 }
@@ -430,7 +443,8 @@ STDMETHODIMP CAggDrawSurface::GetSurfaceDesc(LPDDSURFACEDESC lpDDSurfaceDesc)
     // First call down to the underlying DirectDraw
 
     HRESULT hr = m_pDirectDrawSurface->GetSurfaceDesc(lpDDSurfaceDesc);
-    if (FAILED(hr)) {
+    if (FAILED(hr))
+    {
         return hr;
     }
 
@@ -550,7 +564,8 @@ CLoadDirectDraw::~CLoadDirectDraw()
 {
     ReleaseDirectDraw();
 
-    if (m_hDirectDraw) {
+    if (m_hDirectDraw)
+    {
         NOTE("Unloading library");
         FreeLibrary(m_hDirectDraw);
     }
@@ -578,7 +593,8 @@ HRESULT CLoadDirectDraw::LoadDirectDraw(LPSTR szDevice)
 
     // Is DirectDraw already loaded
 
-    if (m_pDirectDraw) {
+    if (m_pDirectDraw)
+    {
         NOTE("Already loaded");
         ASSERT(m_hDirectDraw);
         return NOERROR;
@@ -592,7 +608,8 @@ HRESULT CLoadDirectDraw::LoadDirectDraw(LPSTR szDevice)
         m_hDirectDraw = LoadLibrary(TEXT("DDRAW.DLL"));
         SetErrorMode(ErrorMode);
 
-        if (m_hDirectDraw == NULL) {
+        if (m_hDirectDraw == NULL)
+        {
             DbgLog((LOG_ERROR,1,TEXT("Can't load DDRAW.DLL")));
             NOTE("No library");
             return E_NOINTERFACE;
@@ -605,34 +622,36 @@ HRESULT CLoadDirectDraw::LoadDirectDraw(LPSTR szDevice)
     // force ANSI, we assume it
     pDrawEnum = (PDRAWENUM)GetProcAddress(m_hDirectDraw,"DirectDrawEnumerateA");
     pDrawEnumEx = (LPDIRECTDRAWENUMERATEEXA)GetProcAddress(m_hDirectDraw,
-						"DirectDrawEnumerateExA");
+                  "DirectDrawEnumerateExA");
 
     // We don't NEED DirectDrawEnumerateEx, that's just for multimon stuff
-    if (pDrawCreate == NULL || pDrawEnum == NULL) {
+    if (pDrawCreate == NULL || pDrawEnum == NULL)
+    {
         DbgLog((LOG_ERROR,1,TEXT("Can't get functions: Create=%x Enum=%x"),
-			pDrawCreate, pDrawEnum));
+                pDrawCreate, pDrawEnum));
         NOTE("No entry point");
         ReleaseDirectDraw();
         return E_NOINTERFACE;
     }
 
     DbgLog((LOG_TRACE,3,TEXT("Creating DDraw for device %s"),
-					szDevice ? szDevice : "<NULL>"));
+            szDevice ? szDevice : "<NULL>"));
 
     // Create a DirectDraw display provider for this device, using the fancy
     // multimon-aware version, if it exists
     if (pDrawEnumEx)
         m_pDirectDraw = DirectDrawCreateFromDeviceEx(szDevice, pDrawCreate,
-								pDrawEnumEx);
+                        pDrawEnumEx);
     else
         m_pDirectDraw = DirectDrawCreateFromDevice(szDevice, pDrawCreate,
-								pDrawEnum);
+                        pDrawEnum);
 
-    if (m_pDirectDraw == NULL) {
-            DbgLog((LOG_ERROR,1,TEXT("Can't create DDraw")));
-            NOTE("No instance");
-            ReleaseDirectDraw();
-            return E_NOINTERFACE;
+    if (m_pDirectDraw == NULL)
+    {
+        DbgLog((LOG_ERROR,1,TEXT("Can't create DDraw")));
+        NOTE("No instance");
+        ReleaseDirectDraw();
+        return E_NOINTERFACE;
     }
     return NOERROR;
 }
@@ -650,7 +669,8 @@ void CLoadDirectDraw::ReleaseDirectDraw()
 
     // Release any DirectDraw provider interface
 
-    if (m_pDirectDraw) {
+    if (m_pDirectDraw)
+    {
         NOTE("Releasing instance");
         m_pDirectDraw->Release();
         m_pDirectDraw = NULL;
@@ -665,7 +685,8 @@ HRESULT CLoadDirectDraw::IsDirectDrawLoaded()
 {
     NOTE("Entering IsDirectDrawLoaded");
 
-    if (m_pDirectDraw == NULL) {
+    if (m_pDirectDraw == NULL)
+    {
         NOTE("DirectDraw not loaded");
         return S_FALSE;
     }
@@ -679,7 +700,8 @@ LPDIRECTDRAW CLoadDirectDraw::GetDirectDraw()
 {
     NOTE("Entering GetDirectDraw");
 
-    if (m_pDirectDraw == NULL) {
+    if (m_pDirectDraw == NULL)
+    {
         NOTE("No DirectDraw");
         return NULL;
     }
@@ -699,17 +721,20 @@ BOOL CLoadDirectDraw::IsDirectDrawVersion1()
 {
 
     if (m_pDirectDraw == NULL)
-	return FALSE;
+        return FALSE;
 
     IDirectDraw2 *p = NULL;
     HRESULT hr = m_pDirectDraw->QueryInterface(IID_IDirectDraw2, (void **)&p);
     if (p)
-	p->Release();
-    if (hr == NOERROR) {
+        p->Release();
+    if (hr == NOERROR)
+    {
         DbgLog((LOG_TRACE,3,TEXT("Direct Draw Version 2 or greater")));
-	return FALSE;
-    } else {
+        return FALSE;
+    }
+    else
+    {
         DbgLog((LOG_TRACE,3,TEXT("Direct Draw Version 1")));
-	return TRUE;
+        return TRUE;
     }
 }

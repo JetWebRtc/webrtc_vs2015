@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/system_wrappers/include/critical_section_wrapper.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 template<class MemoryType>
 class MemoryPoolImpl
 {
@@ -75,7 +76,8 @@ int32_t MemoryPoolImpl<MemoryType>::PopMemory(MemoryType*& memory)
         memory = NULL;
         return -1;
     }
-    if (_memoryPool.empty()) {
+    if (_memoryPool.empty())
+    {
         // _memoryPool empty create new memory.
         CreateMemory(_initialPoolSize);
         if(_memoryPool.empty())

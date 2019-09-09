@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Various pretty-printing functions for use within FFmpeg
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
@@ -47,19 +47,22 @@ static void hex_dump_internal(void *avcl, FILE *f, int level,
 {
     int len, i, j, c;
 
-    for (i = 0; i < size; i += 16) {
+    for (i = 0; i < size; i += 16)
+    {
         len = size - i;
         if (len > 16)
             len = 16;
         HEXDUMP_PRINT("%08x ", i);
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < 16; j++)
+        {
             if (j < len)
                 HEXDUMP_PRINT(" %02x", buf[i + j]);
             else
                 HEXDUMP_PRINT("   ");
         }
         HEXDUMP_PRINT(" ");
-        for (j = 0; j < len; j++) {
+        for (j = 0; j < len; j++)
+        {
             c = buf[i + j];
             if (c < ' ' || c > '~')
                 c = '.';
@@ -130,16 +133,19 @@ static void print_fps(double d, const char *postfix)
 
 static void dump_metadata(void *ctx, AVDictionary *m, const char *indent)
 {
-    if (m && !(av_dict_count(m) == 1 && av_dict_get(m, "language", NULL, 0))) {
+    if (m && !(av_dict_count(m) == 1 && av_dict_get(m, "language", NULL, 0)))
+    {
         AVDictionaryEntry *tag = NULL;
 
         av_log(ctx, AV_LOG_INFO, "%sMetadata:\n", indent);
         while ((tag = av_dict_get(m, "", tag, AV_DICT_IGNORE_SUFFIX)))
-            if (strcmp("language", tag->key)) {
+            if (strcmp("language", tag->key))
+            {
                 const char *p = tag->value;
                 av_log(ctx, AV_LOG_INFO,
                        "%s  %-16s: ", indent, tag->key);
-                while (*p) {
+                while (*p)
+                {
                     char tmp[256];
                     size_t len = strcspn(p, "\x8\xa\xb\xc\xd");
                     av_strlcpy(tmp, p, FFMIN(sizeof(tmp), len+1));
@@ -169,7 +175,8 @@ static void dump_paramchange(void *ctx, AVPacketSideData *sd)
     data += 4;
     size -= 4;
 
-    if (flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT) {
+    if (flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_COUNT)
+    {
         if (size < 4)
             goto fail;
         channels = AV_RL32(data);
@@ -177,7 +184,8 @@ static void dump_paramchange(void *ctx, AVPacketSideData *sd)
         size -= 4;
         av_log(ctx, AV_LOG_INFO, "channel count %"PRIu32", ", channels);
     }
-    if (flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_LAYOUT) {
+    if (flags & AV_SIDE_DATA_PARAM_CHANGE_CHANNEL_LAYOUT)
+    {
         if (size < 8)
             goto fail;
         layout = AV_RL64(data);
@@ -186,7 +194,8 @@ static void dump_paramchange(void *ctx, AVPacketSideData *sd)
         av_log(ctx, AV_LOG_INFO,
                "channel layout: %s, ", av_get_channel_name(layout));
     }
-    if (flags & AV_SIDE_DATA_PARAM_CHANGE_SAMPLE_RATE) {
+    if (flags & AV_SIDE_DATA_PARAM_CHANGE_SAMPLE_RATE)
+    {
         if (size < 4)
             goto fail;
         sample_rate = AV_RL32(data);
@@ -194,7 +203,8 @@ static void dump_paramchange(void *ctx, AVPacketSideData *sd)
         size -= 4;
         av_log(ctx, AV_LOG_INFO, "sample_rate %"PRIu32", ", sample_rate);
     }
-    if (flags & AV_SIDE_DATA_PARAM_CHANGE_DIMENSIONS) {
+    if (flags & AV_SIDE_DATA_PARAM_CHANGE_DIMENSIONS)
+    {
         if (size < 8)
             goto fail;
         width = AV_RL32(data);
@@ -236,7 +246,8 @@ static void dump_replaygain(void *ctx, AVPacketSideData *sd)
 {
     AVReplayGain *rg;
 
-    if (sd->size < sizeof(*rg)) {
+    if (sd->size < sizeof(*rg))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
@@ -252,14 +263,16 @@ static void dump_stereo3d(void *ctx, AVPacketSideData *sd)
 {
     AVStereo3D *stereo;
 
-    if (sd->size < sizeof(*stereo)) {
+    if (sd->size < sizeof(*stereo))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
 
     stereo = (AVStereo3D *)sd->data;
 
-    switch (stereo->type) {
+    switch (stereo->type)
+    {
     case AV_STEREO3D_2D:
         av_log(ctx, AV_LOG_INFO, "2D");
         break;
@@ -297,12 +310,14 @@ static void dump_audioservicetype(void *ctx, AVPacketSideData *sd)
 {
     enum AVAudioServiceType *ast = (enum AVAudioServiceType *)sd->data;
 
-    if (sd->size < sizeof(*ast)) {
+    if (sd->size < sizeof(*ast))
+    {
         av_log(ctx, AV_LOG_INFO, "invalid data");
         return;
     }
 
-    switch (*ast) {
+    switch (*ast)
+    {
     case AV_AUDIO_SERVICE_TYPE_MAIN:
         av_log(ctx, AV_LOG_INFO, "main");
         break;
@@ -343,11 +358,13 @@ static void dump_sidedata(void *ctx, AVStream *st, const char *indent)
     if (st->nb_side_data)
         av_log(ctx, AV_LOG_INFO, "%sSide data:\n", indent);
 
-    for (i = 0; i < st->nb_side_data; i++) {
+    for (i = 0; i < st->nb_side_data; i++)
+    {
         AVPacketSideData sd = st->side_data[i];
         av_log(ctx, AV_LOG_INFO, "%s  ", indent);
 
-        switch (sd.type) {
+        switch (sd.type)
+        {
         case AV_PKT_DATA_PALETTE:
             av_log(ctx, AV_LOG_INFO, "palette");
             break;
@@ -420,7 +437,8 @@ static void dump_stream_format(AVFormatContext *ic, int i,
     av_log(NULL, AV_LOG_INFO, ": %s", buf);
 
     if (st->sample_aspect_ratio.num && // default
-        av_cmp_q(st->sample_aspect_ratio, st->codec->sample_aspect_ratio)) {
+            av_cmp_q(st->sample_aspect_ratio, st->codec->sample_aspect_ratio))
+    {
         AVRational display_aspect_ratio;
         av_reduce(&display_aspect_ratio.num, &display_aspect_ratio.den,
                   st->codec->width  * (int64_t)st->sample_aspect_ratio.num,
@@ -431,7 +449,8 @@ static void dump_stream_format(AVFormatContext *ic, int i,
                display_aspect_ratio.num, display_aspect_ratio.den);
     }
 
-    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+    if (st->codec->codec_type == AVMEDIA_TYPE_VIDEO)
+    {
         int fps = st->avg_frame_rate.den && st->avg_frame_rate.num;
         int tbr = st->r_frame_rate.den && st->r_frame_rate.num;
         int tbn = st->time_base.den && st->time_base.num;
@@ -492,9 +511,11 @@ void av_dump_format(AVFormatContext *ic, int index,
            is_output ? "to" : "from", url);
     dump_metadata(NULL, ic->metadata, "  ");
 
-    if (!is_output) {
+    if (!is_output)
+    {
         av_log(NULL, AV_LOG_INFO, "  Duration: ");
-        if (ic->duration != AV_NOPTS_VALUE) {
+        if (ic->duration != AV_NOPTS_VALUE)
+        {
             int hours, mins, secs, us;
             int64_t duration = ic->duration + 5000;
             secs  = duration / AV_TIME_BASE;
@@ -505,10 +526,13 @@ void av_dump_format(AVFormatContext *ic, int index,
             mins %= 60;
             av_log(NULL, AV_LOG_INFO, "%02d:%02d:%02d.%02d", hours, mins, secs,
                    (100 * us) / AV_TIME_BASE);
-        } else {
+        }
+        else
+        {
             av_log(NULL, AV_LOG_INFO, "N/A");
         }
-        if (ic->start_time != AV_NOPTS_VALUE) {
+        if (ic->start_time != AV_NOPTS_VALUE)
+        {
             int secs, us;
             av_log(NULL, AV_LOG_INFO, ", start: ");
             secs = ic->start_time / AV_TIME_BASE;
@@ -524,7 +548,8 @@ void av_dump_format(AVFormatContext *ic, int index,
         av_log(NULL, AV_LOG_INFO, "\n");
     }
 
-    for (i = 0; i < ic->nb_chapters; i++) {
+    for (i = 0; i < ic->nb_chapters; i++)
+    {
         AVChapter *ch = ic->chapters[i];
         av_log(NULL, AV_LOG_INFO, "    Chapter #%d:%d: ", index, i);
         av_log(NULL, AV_LOG_INFO,
@@ -535,15 +560,18 @@ void av_dump_format(AVFormatContext *ic, int index,
         dump_metadata(NULL, ch->metadata, "    ");
     }
 
-    if (ic->nb_programs) {
+    if (ic->nb_programs)
+    {
         int j, k, total = 0;
-        for (j = 0; j < ic->nb_programs; j++) {
+        for (j = 0; j < ic->nb_programs; j++)
+        {
             AVDictionaryEntry *name = av_dict_get(ic->programs[j]->metadata,
                                                   "name", NULL, 0);
             av_log(NULL, AV_LOG_INFO, "  Program %d %s\n", ic->programs[j]->id,
                    name ? name->value : "");
             dump_metadata(NULL, ic->programs[j]->metadata, "    ");
-            for (k = 0; k < ic->programs[j]->nb_stream_indexes; k++) {
+            for (k = 0; k < ic->programs[j]->nb_stream_indexes; k++)
+            {
                 dump_stream_format(ic, ic->programs[j]->stream_index[k],
                                    index, is_output);
                 printed[ic->programs[j]->stream_index[k]] = 1;

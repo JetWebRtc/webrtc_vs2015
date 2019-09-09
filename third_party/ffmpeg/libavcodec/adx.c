@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011  Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -52,7 +52,8 @@ int ff_adx_decode_header(AVCodecContext *avctx, const uint8_t *buf,
         return AVERROR_INVALIDDATA;
 
     /* check for encoding=3 block_size=18, sample_size=4 */
-    if (buf[4] != 3 || buf[5] != 18 || buf[6] != 4) {
+    if (buf[4] != 3 || buf[5] != 18 || buf[6] != 4)
+    {
         avpriv_request_sample(avctx, "Support for this ADX format");
         return AVERROR_PATCHWELCOME;
     }
@@ -65,14 +66,15 @@ int ff_adx_decode_header(AVCodecContext *avctx, const uint8_t *buf,
     /* sample rate */
     avctx->sample_rate = AV_RB32(buf + 8);
     if (avctx->sample_rate < 1 ||
-        avctx->sample_rate > INT_MAX / (avctx->channels * BLOCK_SIZE * 8))
+            avctx->sample_rate > INT_MAX / (avctx->channels * BLOCK_SIZE * 8))
         return AVERROR_INVALIDDATA;
 
     /* bit rate */
     avctx->bit_rate = avctx->sample_rate * avctx->channels * BLOCK_SIZE * 8 / BLOCK_SAMPLES;
 
     /* LPC coefficients */
-    if (coeff) {
+    if (coeff)
+    {
         cutoff = AV_RB16(buf + 16);
         ff_adx_calculate_coeffs(cutoff, avctx->sample_rate, COEFF_BITS, coeff);
     }

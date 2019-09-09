@@ -53,19 +53,22 @@ static int open_input_file(const char *filename)
     int ret;
     AVCodec *dec;
 
-    if ((ret = avformat_open_input(&fmt_ctx, filename, NULL, NULL)) < 0) {
+    if ((ret = avformat_open_input(&fmt_ctx, filename, NULL, NULL)) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot open input file\n");
         return ret;
     }
 
-    if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0) {
+    if ((ret = avformat_find_stream_info(fmt_ctx, NULL)) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot find stream information\n");
         return ret;
     }
 
     /* select the audio stream */
     ret = av_find_best_stream(fmt_ctx, AVMEDIA_TYPE_AUDIO, -1, -1, &dec, 0);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot find a audio stream in the input file\n");
         return ret;
     }
@@ -74,7 +77,8 @@ static int open_input_file(const char *filename)
     av_opt_set_int(dec_ctx, "refcounted_frames", 1, 0);
 
     /* init the audio decoder */
-    if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0) {
+    if ((ret = avcodec_open2(dec_ctx, dec, NULL)) < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot open audio decoder\n");
         return ret;
     }
@@ -97,7 +101,8 @@ static int init_filters(const char *filters_descr)
     AVRational time_base = fmt_ctx->streams[audio_stream_index]->time_base;
 
     filter_graph = avfilter_graph_alloc();
-    if (!outputs || !inputs || !filter_graph) {
+    if (!outputs || !inputs || !filter_graph)
+    {
         ret = AVERROR(ENOMEM);
         goto end;
     }
@@ -106,12 +111,13 @@ static int init_filters(const char *filters_descr)
     if (!dec_ctx->channel_layout)
         dec_ctx->channel_layout = av_get_default_channel_layout(dec_ctx->channels);
     snprintf(args, sizeof(args),
-            "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%"PRIx64,
+             "time_base=%d/%d:sample_rate=%d:sample_fmt=%s:channel_layout=0x%"PRIx64,
              time_base.num, time_base.den, dec_ctx->sample_rate,
              av_get_sample_fmt_name(dec_ctx->sample_fmt), dec_ctx->channel_layout);
     ret = avfilter_graph_create_filter(&buffersrc_ctx, abuffersrc, "in",
                                        args, NULL, filter_graph);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer source\n");
         goto end;
     }
@@ -119,28 +125,32 @@ static int init_filters(const char *filters_descr)
     /* buffer audio sink: to terminate the filter chain. */
     ret = avfilter_graph_create_filter(&buffersink_ctx, abuffersink, "out",
                                        NULL, NULL, filter_graph);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot create audio buffer sink\n");
         goto end;
     }
 
     ret = av_opt_set_int_list(buffersink_ctx, "sample_fmts", out_sample_fmts, -1,
                               AV_OPT_SEARCH_CHILDREN);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot set output sample format\n");
         goto end;
     }
 
     ret = av_opt_set_int_list(buffersink_ctx, "channel_layouts", out_channel_layouts, -1,
                               AV_OPT_SEARCH_CHILDREN);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot set output channel layout\n");
         goto end;
     }
 
     ret = av_opt_set_int_list(buffersink_ctx, "sample_rates", out_sample_rates, -1,
                               AV_OPT_SEARCH_CHILDREN);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(NULL, AV_LOG_ERROR, "Cannot set output sample rate\n");
         goto end;
     }
@@ -201,7 +211,8 @@ static void print_frame(const AVFrame *frame)
     const uint16_t *p     = (uint16_t*)frame->data[0];
     const uint16_t *p_end = p + n;
 
-    while (p < p_end) {
+    while (p < p_end)
+    {
         fputc(*p    & 0xff, stdout);
         fputc(*p>>8 & 0xff, stdout);
         p++;
@@ -217,11 +228,13 @@ int main(int argc, char **argv)
     AVFrame *filt_frame = av_frame_alloc();
     int got_frame;
 
-    if (!frame || !filt_frame) {
+    if (!frame || !filt_frame)
+    {
         perror("Could not allocate frame");
         exit(1);
     }
-    if (argc != 2) {
+    if (argc != 2)
+    {
         fprintf(stderr, "Usage: %s file | %s\n", argv[0], player);
         exit(1);
     }
@@ -237,32 +250,39 @@ int main(int argc, char **argv)
     /* read all packets */
     packet0.data = NULL;
     packet.data = NULL;
-    while (1) {
-        if (!packet0.data) {
+    while (1)
+    {
+        if (!packet0.data)
+        {
             if ((ret = av_read_frame(fmt_ctx, &packet)) < 0)
                 break;
             packet0 = packet;
         }
 
-        if (packet.stream_index == audio_stream_index) {
+        if (packet.stream_index == audio_stream_index)
+        {
             got_frame = 0;
             ret = avcodec_decode_audio4(dec_ctx, frame, &got_frame, &packet);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_log(NULL, AV_LOG_ERROR, "Error decoding audio\n");
                 continue;
             }
             packet.size -= ret;
             packet.data += ret;
 
-            if (got_frame) {
+            if (got_frame)
+            {
                 /* push the audio data from decoded frame into the filtergraph */
-                if (av_buffersrc_add_frame_flags(buffersrc_ctx, frame, 0) < 0) {
+                if (av_buffersrc_add_frame_flags(buffersrc_ctx, frame, 0) < 0)
+                {
                     av_log(NULL, AV_LOG_ERROR, "Error while feeding the audio filtergraph\n");
                     break;
                 }
 
                 /* pull filtered audio from the filtergraph */
-                while (1) {
+                while (1)
+                {
                     ret = av_buffersink_get_frame(buffersink_ctx, filt_frame);
                     if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF)
                         break;
@@ -275,7 +295,9 @@ int main(int argc, char **argv)
 
             if (packet.size <= 0)
                 av_free_packet(&packet0);
-        } else {
+        }
+        else
+        {
             /* discard non-wanted packets */
             av_free_packet(&packet0);
         }
@@ -287,7 +309,8 @@ end:
     av_frame_free(&frame);
     av_frame_free(&filt_frame);
 
-    if (ret < 0 && ret != AVERROR_EOF) {
+    if (ret < 0 && ret != AVERROR_EOF)
+    {
         fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
         exit(1);
     }

@@ -29,10 +29,12 @@
 #include "ass.h"
 #include "libavutil/bprint.h"
 
-static const struct {
+static const struct
+{
     const char *from;
     const char *to;
-} webvtt_tag_replace[] = {
+} webvtt_tag_replace[] =
+{
     {"<i>", "{\\i1}"}, {"</i>", "{\\i0}"},
     {"<b>", "{\\b1}"}, {"</b>", "{\\b0}"},
     {"<u>", "{\\u1}"}, {"</u>", "{\\u0}"},
@@ -43,12 +45,15 @@ static int webvtt_event_to_ass(AVBPrint *buf, const char *p)
 {
     int i, skip = 0;
 
-    while (*p) {
+    while (*p)
+    {
 
-        for (i = 0; i < FF_ARRAY_ELEMS(webvtt_tag_replace); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(webvtt_tag_replace); i++)
+        {
             const char *from = webvtt_tag_replace[i].from;
             const size_t len = strlen(from);
-            if (!strncmp(p, from, len)) {
+            if (!strncmp(p, from, len))
+            {
                 av_bprintf(buf, "%s", webvtt_tag_replace[i].to);
                 p += len;
                 break;
@@ -79,20 +84,28 @@ static int webvtt_decode_frame(AVCodecContext *avctx,
     AVBPrint buf;
 
     av_bprint_init(&buf, 0, AV_BPRINT_SIZE_UNLIMITED);
-    if (ptr && avpkt->size > 0 && !webvtt_event_to_ass(&buf, ptr)) {
-        int ts_start     = av_rescale_q(avpkt->pts, avctx->time_base, (AVRational){1,100});
+    if (ptr && avpkt->size > 0 && !webvtt_event_to_ass(&buf, ptr))
+    {
+        int ts_start     = av_rescale_q(avpkt->pts, avctx->time_base, (AVRational)
+        {
+            1,100
+        });
         int ts_duration  = avpkt->duration != -1 ?
-                           av_rescale_q(avpkt->duration, avctx->time_base, (AVRational){1,100}) : -1;
-        ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_duration);
+                           av_rescale_q(avpkt->duration, avctx->time_base, (AVRational)
+        {
+            1,100
+        }) : -1;
+            ret = ff_ass_add_rect_bprint(sub, &buf, ts_start, ts_duration);
+        }
+        av_bprint_finalize(&buf, NULL);
+        if (ret < 0)
+            return ret;
+        *got_sub_ptr = sub->num_rects > 0;
+        return avpkt->size;
     }
-    av_bprint_finalize(&buf, NULL);
-    if (ret < 0)
-        return ret;
-    *got_sub_ptr = sub->num_rects > 0;
-    return avpkt->size;
-}
 
-AVCodec ff_webvtt_decoder = {
+    AVCodec ff_webvtt_decoder =
+{
     .name           = "webvtt",
     .long_name      = NULL_IF_CONFIG_SMALL("WebVTT subtitle"),
     .type           = AVMEDIA_TYPE_SUBTITLE,

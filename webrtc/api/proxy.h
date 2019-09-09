@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -58,297 +58,359 @@
 #include "webrtc/base/event.h"
 #include "webrtc/base/thread.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 template <typename R>
-class ReturnType {
- public:
-  template<typename C, typename M>
-  void Invoke(C* c, M m) { r_ = (c->*m)(); }
-  template <typename C, typename M, typename T1>
-  void Invoke(C* c, M m, T1 a1) {
-    r_ = (c->*m)(std::move(a1));
-  }
-  template <typename C, typename M, typename T1, typename T2>
-  void Invoke(C* c, M m, T1 a1, T2 a2) {
-    r_ = (c->*m)(std::move(a1), std::move(a2));
-  }
-  template <typename C, typename M, typename T1, typename T2, typename T3>
-  void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3) {
-    r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3));
-  }
-  template<typename C, typename M, typename T1, typename T2, typename T3,
-      typename T4>
-  void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3, T4 a4) {
-    r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3), std::move(a4));
-  }
-  template<typename C, typename M, typename T1, typename T2, typename T3,
-     typename T4, typename T5>
-  void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5) {
-    r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3), std::move(a4),
-                 std::move(a5));
-  }
+class ReturnType
+{
+public:
+    template<typename C, typename M>
+    void Invoke(C* c, M m)
+    {
+        r_ = (c->*m)();
+    }
+    template <typename C, typename M, typename T1>
+    void Invoke(C* c, M m, T1 a1)
+    {
+        r_ = (c->*m)(std::move(a1));
+    }
+    template <typename C, typename M, typename T1, typename T2>
+    void Invoke(C* c, M m, T1 a1, T2 a2)
+    {
+        r_ = (c->*m)(std::move(a1), std::move(a2));
+    }
+    template <typename C, typename M, typename T1, typename T2, typename T3>
+    void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3)
+    {
+        r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3));
+    }
+    template<typename C, typename M, typename T1, typename T2, typename T3,
+             typename T4>
+    void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3, T4 a4)
+    {
+        r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3), std::move(a4));
+    }
+    template<typename C, typename M, typename T1, typename T2, typename T3,
+             typename T4, typename T5>
+    void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+    {
+        r_ = (c->*m)(std::move(a1), std::move(a2), std::move(a3), std::move(a4),
+                     std::move(a5));
+    }
 
-  R moved_result() { return std::move(r_); }
+    R moved_result()
+    {
+        return std::move(r_);
+    }
 
- private:
-  R r_;
+private:
+    R r_;
 };
 
 template <>
-class ReturnType<void> {
- public:
-  template<typename C, typename M>
-  void Invoke(C* c, M m) { (c->*m)(); }
-  template <typename C, typename M, typename T1>
-  void Invoke(C* c, M m, T1 a1) {
-    (c->*m)(std::move(a1));
-  }
-  template <typename C, typename M, typename T1, typename T2>
-  void Invoke(C* c, M m, T1 a1, T2 a2) {
-    (c->*m)(std::move(a1), std::move(a2));
-  }
-  template <typename C, typename M, typename T1, typename T2, typename T3>
-  void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3) {
-    (c->*m)(std::move(a1), std::move(a2), std::move(a3));
-  }
+class ReturnType<void>
+{
+public:
+    template<typename C, typename M>
+    void Invoke(C* c, M m)
+    {
+        (c->*m)();
+    }
+    template <typename C, typename M, typename T1>
+    void Invoke(C* c, M m, T1 a1)
+    {
+        (c->*m)(std::move(a1));
+    }
+    template <typename C, typename M, typename T1, typename T2>
+    void Invoke(C* c, M m, T1 a1, T2 a2)
+    {
+        (c->*m)(std::move(a1), std::move(a2));
+    }
+    template <typename C, typename M, typename T1, typename T2, typename T3>
+    void Invoke(C* c, M m, T1 a1, T2 a2, T3 a3)
+    {
+        (c->*m)(std::move(a1), std::move(a2), std::move(a3));
+    }
 
-  void moved_result() {}
+    void moved_result() {}
 };
 
-namespace internal {
+namespace internal
+{
 
 class SynchronousMethodCall
     : public rtc::MessageData,
-      public rtc::MessageHandler {
- public:
-  explicit SynchronousMethodCall(rtc::MessageHandler* proxy)
-      : e_(), proxy_(proxy) {}
-  ~SynchronousMethodCall() {}
+      public rtc::MessageHandler
+{
+public:
+    explicit SynchronousMethodCall(rtc::MessageHandler* proxy)
+        : e_(), proxy_(proxy) {}
+    ~SynchronousMethodCall() {}
 
-  void Invoke(const rtc::Location& posted_from, rtc::Thread* t) {
-    if (t->IsCurrent()) {
-      proxy_->OnMessage(NULL);
-    } else {
-      e_.reset(new rtc::Event(false, false));
-      t->Post(posted_from, this, 0);
-      e_->Wait(rtc::Event::kForever);
+    void Invoke(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        if (t->IsCurrent())
+        {
+            proxy_->OnMessage(NULL);
+        }
+        else
+        {
+            e_.reset(new rtc::Event(false, false));
+            t->Post(posted_from, this, 0);
+            e_->Wait(rtc::Event::kForever);
+        }
     }
-  }
 
- private:
-  void OnMessage(rtc::Message*) { proxy_->OnMessage(NULL); e_->Set(); }
-  std::unique_ptr<rtc::Event> e_;
-  rtc::MessageHandler* proxy_;
+private:
+    void OnMessage(rtc::Message*)
+    {
+        proxy_->OnMessage(NULL);
+        e_->Set();
+    }
+    std::unique_ptr<rtc::Event> e_;
+    rtc::MessageHandler* proxy_;
 };
 
 }  // namespace internal
 
 template <typename C, typename R>
 class MethodCall0 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)();
-  MethodCall0(C* c, Method m) : c_(c), m_(m) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)();
+    MethodCall0(C* c, Method m) : c_(c), m_(m) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) {  r_.Invoke(c_, m_); }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_);
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
 };
 
 template <typename C, typename R>
 class ConstMethodCall0 : public rtc::Message,
-                         public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)() const;
-  ConstMethodCall0(C* c, Method m) : c_(c), m_(m) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)() const;
+    ConstMethodCall0(C* c, Method m) : c_(c), m_(m) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) { r_.Invoke(c_, m_); }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_);
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
 };
 
 template <typename C, typename R,  typename T1>
 class MethodCall1 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1);
-  MethodCall1(C* c, Method m, T1 a1) : c_(c), m_(m), a1_(std::move(a1)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1);
+    MethodCall1(C* c, Method m, T1 a1) : c_(c), m_(m), a1_(std::move(a1)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) { r_.Invoke(c_, m_, std::move(a1_)); }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
 };
 
 template <typename C, typename R,  typename T1>
 class ConstMethodCall1 : public rtc::Message,
-                         public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1) const;
-  ConstMethodCall1(C* c, Method m, T1 a1) : c_(c), m_(m), a1_(std::move(a1)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1) const;
+    ConstMethodCall1(C* c, Method m, T1 a1) : c_(c), m_(m), a1_(std::move(a1)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) { r_.Invoke(c_, m_, std::move(a1_)); }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
 };
 
 template <typename C, typename R, typename T1, typename T2>
 class MethodCall2 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1, T2 a2);
-  MethodCall2(C* c, Method m, T1 a1, T2 a2)
-      : c_(c), m_(m), a1_(std::move(a1)), a2_(std::move(a2)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1, T2 a2);
+    MethodCall2(C* c, Method m, T1 a1, T2 a2)
+        : c_(c), m_(m), a1_(std::move(a1)), a2_(std::move(a2)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) {
-    r_.Invoke(c_, m_, std::move(a1_), std::move(a2_));
-  }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_), std::move(a2_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
-  T2 a2_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
+    T2 a2_;
 };
 
 template <typename C, typename R, typename T1, typename T2, typename T3>
 class MethodCall3 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1, T2 a2, T3 a3);
-  MethodCall3(C* c, Method m, T1 a1, T2 a2, T3 a3)
-      : c_(c),
-        m_(m),
-        a1_(std::move(a1)),
-        a2_(std::move(a2)),
-        a3_(std::move(a3)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1, T2 a2, T3 a3);
+    MethodCall3(C* c, Method m, T1 a1, T2 a2, T3 a3)
+        : c_(c),
+          m_(m),
+          a1_(std::move(a1)),
+          a2_(std::move(a2)),
+          a3_(std::move(a3)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) {
-    r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_));
-  }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
-  T2 a2_;
-  T3 a3_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
+    T2 a2_;
+    T3 a3_;
 };
 
 template <typename C, typename R, typename T1, typename T2, typename T3,
-    typename T4>
+          typename T4>
 class MethodCall4 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1, T2 a2, T3 a3, T4 a4);
-  MethodCall4(C* c, Method m, T1 a1, T2 a2, T3 a3, T4 a4)
-      : c_(c),
-        m_(m),
-        a1_(std::move(a1)),
-        a2_(std::move(a2)),
-        a3_(std::move(a3)),
-        a4_(std::move(a4)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1, T2 a2, T3 a3, T4 a4);
+    MethodCall4(C* c, Method m, T1 a1, T2 a2, T3 a3, T4 a4)
+        : c_(c),
+          m_(m),
+          a1_(std::move(a1)),
+          a2_(std::move(a2)),
+          a3_(std::move(a3)),
+          a4_(std::move(a4)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) {
-    r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_),
-              std::move(a4_));
-  }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_),
+                  std::move(a4_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
-  T2 a2_;
-  T3 a3_;
-  T4 a4_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
+    T2 a2_;
+    T3 a3_;
+    T4 a4_;
 };
 
 template <typename C, typename R, typename T1, typename T2, typename T3,
-    typename T4, typename T5>
+          typename T4, typename T5>
 class MethodCall5 : public rtc::Message,
-                    public rtc::MessageHandler {
- public:
-  typedef R (C::*Method)(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
-  MethodCall5(C* c, Method m, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
-      : c_(c),
-        m_(m),
-        a1_(std::move(a1)),
-        a2_(std::move(a2)),
-        a3_(std::move(a3)),
-        a4_(std::move(a4)),
-        a5_(std::move(a5)) {}
+    public rtc::MessageHandler
+{
+public:
+    typedef R (C::*Method)(T1 a1, T2 a2, T3 a3, T4 a4, T5 a5);
+    MethodCall5(C* c, Method m, T1 a1, T2 a2, T3 a3, T4 a4, T5 a5)
+        : c_(c),
+          m_(m),
+          a1_(std::move(a1)),
+          a2_(std::move(a2)),
+          a3_(std::move(a3)),
+          a4_(std::move(a4)),
+          a5_(std::move(a5)) {}
 
-  R Marshal(const rtc::Location& posted_from, rtc::Thread* t) {
-    internal::SynchronousMethodCall(this).Invoke(posted_from, t);
-    return r_.moved_result();
-  }
+    R Marshal(const rtc::Location& posted_from, rtc::Thread* t)
+    {
+        internal::SynchronousMethodCall(this).Invoke(posted_from, t);
+        return r_.moved_result();
+    }
 
- private:
-  void OnMessage(rtc::Message*) {
-    r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_),
-              std::move(a4_), std::move(a5_));
-  }
+private:
+    void OnMessage(rtc::Message*)
+    {
+        r_.Invoke(c_, m_, std::move(a1_), std::move(a2_), std::move(a3_),
+                  std::move(a4_), std::move(a5_));
+    }
 
-  C* c_;
-  Method m_;
-  ReturnType<R> r_;
-  T1 a1_;
-  T2 a2_;
-  T3 a3_;
-  T4 a4_;
-  T5 a5_;
+    C* c_;
+    Method m_;
+    ReturnType<R> r_;
+    T1 a1_;
+    T2 a2_;
+    T3 a3_;
+    T4 a4_;
+    T5 a5_;
 };
 
 

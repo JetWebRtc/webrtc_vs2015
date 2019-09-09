@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,54 +20,65 @@
 #include "webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "webrtc/modules/desktop_capture/resolution_change_detector.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class DesktopRegion;
 
 // A texture copied or mapped from a DXGI_OUTDUPL_FRAME_INFO and IDXGIResource.
-class DxgiTexture {
- public:
-  // Creates a DxgiTexture instance, which represents the |desktop_size| area of
-  // entire screen -- usually a monitor on the system.
-  DxgiTexture();
+class DxgiTexture
+{
+public:
+    // Creates a DxgiTexture instance, which represents the |desktop_size| area of
+    // entire screen -- usually a monitor on the system.
+    DxgiTexture();
 
-  virtual ~DxgiTexture();
+    virtual ~DxgiTexture();
 
-  // Copies selected regions of a frame represented by frame_info and resource.
-  // Returns false if anything wrong.
-  bool CopyFrom(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
-                IDXGIResource* resource);
+    // Copies selected regions of a frame represented by frame_info and resource.
+    // Returns false if anything wrong.
+    bool CopyFrom(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
+                  IDXGIResource* resource);
 
-  const DesktopSize& desktop_size() const { return desktop_size_; }
+    const DesktopSize& desktop_size() const
+    {
+        return desktop_size_;
+    }
 
-  uint8_t* bits() const { return static_cast<uint8_t*>(rect_.pBits); }
+    uint8_t* bits() const
+    {
+        return static_cast<uint8_t*>(rect_.pBits);
+    }
 
-  int pitch() const { return static_cast<int>(rect_.Pitch); }
+    int pitch() const
+    {
+        return static_cast<int>(rect_.Pitch);
+    }
 
-  // Releases the resource currently holds by this instance. Returns false if
-  // anything wrong, and this instance should be deprecated in this state. bits,
-  // pitch and AsDesktopFrame are only valid after a success CopyFrom() call,
-  // but before Release() call.
-  bool Release();
+    // Releases the resource currently holds by this instance. Returns false if
+    // anything wrong, and this instance should be deprecated in this state. bits,
+    // pitch and AsDesktopFrame are only valid after a success CopyFrom() call,
+    // but before Release() call.
+    bool Release();
 
-  // Returns a DesktopFrame snapshot of a DxgiTexture instance. This
-  // DesktopFrame is used to copy a DxgiTexture content to another DesktopFrame
-  // only. And it should not outlive its DxgiTexture instance.
-  const DesktopFrame& AsDesktopFrame();
+    // Returns a DesktopFrame snapshot of a DxgiTexture instance. This
+    // DesktopFrame is used to copy a DxgiTexture content to another DesktopFrame
+    // only. And it should not outlive its DxgiTexture instance.
+    const DesktopFrame& AsDesktopFrame();
 
- protected:
-  DXGI_MAPPED_RECT* rect();
+protected:
+    DXGI_MAPPED_RECT* rect();
 
-  virtual bool CopyFromTexture(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
-                               ID3D11Texture2D* texture) = 0;
+    virtual bool CopyFromTexture(const DXGI_OUTDUPL_FRAME_INFO& frame_info,
+                                 ID3D11Texture2D* texture) = 0;
 
-  virtual bool DoRelease() = 0;
+    virtual bool DoRelease() = 0;
 
- private:
-  DXGI_MAPPED_RECT rect_ = {0};
-  DesktopSize desktop_size_;
-  std::unique_ptr<DesktopFrame> frame_;
-  ResolutionChangeDetector resolution_change_detector_;
+private:
+    DXGI_MAPPED_RECT rect_ = {0};
+    DesktopSize desktop_size_;
+    std::unique_ptr<DesktopFrame> frame_;
+    ResolutionChangeDetector resolution_change_detector_;
 };
 
 }  // namespace webrtc

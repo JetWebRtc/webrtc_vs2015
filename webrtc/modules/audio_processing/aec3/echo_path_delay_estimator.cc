@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,9 +17,11 @@
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 #include "webrtc/modules/audio_processing/logging/apm_data_dumper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
 constexpr size_t kNumMatchedFilters = 4;
 constexpr size_t kMatchedFilterWindowSizeSubBlocks = 32;
@@ -36,44 +38,46 @@ EchoPathDelayEstimator::EchoPathDelayEstimator(ApmDataDumper* data_dumper)
                       kNumMatchedFilters,
                       kMatchedFilterAlignmentShiftSizeSubBlocks),
       matched_filter_lag_aggregator_(data_dumper_,
-                                     matched_filter_.NumLagEstimates()) {
-  RTC_DCHECK(data_dumper);
+                                     matched_filter_.NumLagEstimates())
+{
+    RTC_DCHECK(data_dumper);
 }
 
 EchoPathDelayEstimator::~EchoPathDelayEstimator() = default;
 
 rtc::Optional<size_t> EchoPathDelayEstimator::EstimateDelay(
     rtc::ArrayView<const float> render,
-    rtc::ArrayView<const float> capture) {
-  RTC_DCHECK_EQ(kBlockSize, capture.size());
-  RTC_DCHECK_EQ(render.size(), capture.size());
+    rtc::ArrayView<const float> capture)
+{
+    RTC_DCHECK_EQ(kBlockSize, capture.size());
+    RTC_DCHECK_EQ(render.size(), capture.size());
 
-  std::array<float, kSubBlockSize> downsampled_render;
-  std::array<float, kSubBlockSize> downsampled_capture;
+    std::array<float, kSubBlockSize> downsampled_render;
+    std::array<float, kSubBlockSize> downsampled_capture;
 
-  render_decimator_.Decimate(render, &downsampled_render);
-  capture_decimator_.Decimate(capture, &downsampled_capture);
+    render_decimator_.Decimate(render, &downsampled_render);
+    capture_decimator_.Decimate(capture, &downsampled_capture);
 
-  matched_filter_.Update(downsampled_render, downsampled_capture);
+    matched_filter_.Update(downsampled_render, downsampled_capture);
 
-  rtc::Optional<size_t> aggregated_matched_filter_lag =
-      matched_filter_lag_aggregator_.Aggregate(
-          matched_filter_.GetLagEstimates());
+    rtc::Optional<size_t> aggregated_matched_filter_lag =
+        matched_filter_lag_aggregator_.Aggregate(
+            matched_filter_.GetLagEstimates());
 
-  // TODO(peah): Move this logging outside of this class once EchoCanceller3
-  // development is done.
-  data_dumper_->DumpRaw("aec3_echo_path_delay_estimator_delay",
-                        aggregated_matched_filter_lag
-                            ? static_cast<int>(*aggregated_matched_filter_lag *
-                                               kDownSamplingFactor)
-                            : -1);
+    // TODO(peah): Move this logging outside of this class once EchoCanceller3
+    // development is done.
+    data_dumper_->DumpRaw("aec3_echo_path_delay_estimator_delay",
+                          aggregated_matched_filter_lag
+                          ? static_cast<int>(*aggregated_matched_filter_lag *
+                                  kDownSamplingFactor)
+                          : -1);
 
-  // Return the detected delay in samples as the aggregated matched filter lag
-  // compensated by the down sampling factor for the signal being correlated.
-  return aggregated_matched_filter_lag
-             ? rtc::Optional<size_t>(*aggregated_matched_filter_lag *
-                                     kDownSamplingFactor)
-             : rtc::Optional<size_t>();
+    // Return the detected delay in samples as the aggregated matched filter lag
+    // compensated by the down sampling factor for the signal being correlated.
+    return aggregated_matched_filter_lag
+           ? rtc::Optional<size_t>(*aggregated_matched_filter_lag *
+                                   kDownSamplingFactor)
+           : rtc::Optional<size_t>();
 }
 
 }  // namespace webrtc

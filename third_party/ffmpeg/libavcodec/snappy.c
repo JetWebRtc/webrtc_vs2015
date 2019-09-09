@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Snappy decompression algorithm
  * Copyright (c) 2015 Luca Barbato
  *
@@ -24,7 +24,8 @@
 #include "bytestream.h"
 #include "snappy.h"
 
-enum {
+enum
+{
     SNAPPY_LITERAL,
     SNAPPY_COPY_1,
     SNAPPY_COPY_2,
@@ -37,11 +38,13 @@ static int64_t bytestream2_get_levarint(GetByteContext *gb)
     int shift = 0;
     int tmp;
 
-    do {
+    do
+    {
         tmp = bytestream2_get_byte(gb);
         val |= (tmp & 127) << shift;
         shift += 7;
-    } while (tmp & 128);
+    }
+    while (tmp & 128);
 
     return val;
 }
@@ -50,7 +53,8 @@ static int snappy_literal(GetByteContext *gb, uint8_t *p, int size, int val)
 {
     unsigned int len = 1;
 
-    switch (val) {
+    switch (val)
+    {
     case 63:
         len += bytestream2_get_le32(gb);
         break;
@@ -153,11 +157,13 @@ int ff_snappy_uncompress(GetByteContext *gb, uint8_t *buf, int64_t *size)
     *size = len;
     p     = buf;
 
-    while (bytestream2_get_bytes_left(gb) > 0) {
+    while (bytestream2_get_bytes_left(gb) > 0)
+    {
         uint8_t s = bytestream2_get_byte(gb);
         int val   = s >> 2;
 
-        switch (s & 0x03) {
+        switch (s & 0x03)
+        {
         case SNAPPY_LITERAL:
             ret = snappy_literal(gb, p, len, val);
             break;

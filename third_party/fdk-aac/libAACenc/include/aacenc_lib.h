@@ -712,7 +712,8 @@ the encoder deactivates PNS calculation internally.
 /**
  *  AAC encoder error codes.
  */
-typedef enum {
+typedef enum
+{
     AACENC_OK                     = 0x0000,  /*!< No error happened. All fine. */
 
     AACENC_INVALID_HANDLE         = 0x0020,  /*!< Handle passed to function call was invalid. */
@@ -737,7 +738,8 @@ typedef enum {
  *  AAC encoder buffer descriptors identifier.
  *  This identifier are used within buffer descriptors AACENC_BufDesc::bufferIdentifiers.
  */
-typedef enum {
+typedef enum
+{
     /* Input buffer identifier. */
     IN_AUDIO_DATA      = 0,                  /*!< Audio input buffer, interleaved INT_PCM samples. */
     IN_ANCILLRY_DATA   = 1,                  /*!< Ancillary data to be embedded into bitstream. */
@@ -760,7 +762,8 @@ typedef struct AACENCODER *HANDLE_AACENCODER;
 /**
  *  Provides some info about the encoder configuration.
  */
-typedef struct {
+typedef struct
+{
 
     UINT                maxOutBufBytes;      /*!< Maximum number of encoder bitstream bytes within one frame.
                                                   Size depends on maximum number of supported channels in encoder instance.
@@ -791,7 +794,8 @@ typedef struct {
 /**
  *  Describes the input and output buffers for an aacEncEncode() call.
  */
-typedef struct {
+typedef struct
+{
     INT                 numBufs;             /*!< Number of buffers. */
     void              **bufs;                /*!< Pointer to vector containing buffer addresses. */
     INT                *bufferIdentifiers;   /*!< Identifier of each buffer element. See ::AACENC_BufferIdentifier. */
@@ -804,7 +808,8 @@ typedef struct {
 /**
  *  Defines the input arguments for an aacEncEncode() call.
  */
-typedef struct {
+typedef struct
+{
     INT                 numInSamples;        /*!< Number of valid input audio samples (multiple of input channels). */
     INT                 numAncBytes;         /*!< Number of ancillary data bytes to be encoded. */
 
@@ -814,7 +819,8 @@ typedef struct {
 /**
  *  Defines the output arguments for an aacEncEncode() call.
  */
-typedef struct {
+typedef struct
+{
     INT                 numOutBytes;         /*!< Number of valid bitstream bytes generated during aacEncEncode(). */
     INT                 numInSamples;        /*!< Number of input audio samples consumed by the encoder. */
     INT                 numAncBytes;         /*!< Number of ancillary data bytes consumed by the encoder. */
@@ -825,7 +831,8 @@ typedef struct {
 /**
  *  Meta Data Compression Profiles.
  */
-typedef enum {
+typedef enum
+{
     AACENC_METADATA_DRC_NONE          = 0,   /*!< None. */
     AACENC_METADATA_DRC_FILMSTANDARD  = 1,   /*!< Film standard. */
     AACENC_METADATA_DRC_FILMLIGHT     = 2,   /*!< Film light. */
@@ -839,28 +846,29 @@ typedef enum {
 /**
  *  Meta Data setup structure.
  */
-typedef struct {
+typedef struct
+{
 
-  AACENC_METADATA_DRC_PROFILE drc_profile;             /*!< MPEG DRC compression profile. See ::AACENC_METADATA_DRC_PROFILE. */
-  AACENC_METADATA_DRC_PROFILE comp_profile;            /*!< ETSI heavy compression profile. See ::AACENC_METADATA_DRC_PROFILE. */
+    AACENC_METADATA_DRC_PROFILE drc_profile;             /*!< MPEG DRC compression profile. See ::AACENC_METADATA_DRC_PROFILE. */
+    AACENC_METADATA_DRC_PROFILE comp_profile;            /*!< ETSI heavy compression profile. See ::AACENC_METADATA_DRC_PROFILE. */
 
-  INT                         drc_TargetRefLevel;      /*!< Used to define expected level to:
+    INT                         drc_TargetRefLevel;      /*!< Used to define expected level to:
                                                             Scaled with 16 bit. x*2^16. */
-  INT                         comp_TargetRefLevel;     /*!< Adjust limiter to avoid overload.
+    INT                         comp_TargetRefLevel;     /*!< Adjust limiter to avoid overload.
                                                             Scaled with 16 bit. x*2^16. */
 
-  INT                         prog_ref_level_present;  /*!< Flag, if prog_ref_level is present */
-  INT                         prog_ref_level;          /*!< Programme Reference Level = Dialogue Level:
+    INT                         prog_ref_level_present;  /*!< Flag, if prog_ref_level is present */
+    INT                         prog_ref_level;          /*!< Programme Reference Level = Dialogue Level:
                                                             -31.75dB .. 0 dB ; stepsize: 0.25dB
                                                             Scaled with 16 bit. x*2^16.*/
 
-  UCHAR                       PCE_mixdown_idx_present; /*!< Flag, if dmx-idx should be written in programme config element */
-  UCHAR                       ETSI_DmxLvl_present;     /*!< Flag, if dmx-lvl should be written in ETSI-ancData */
+    UCHAR                       PCE_mixdown_idx_present; /*!< Flag, if dmx-idx should be written in programme config element */
+    UCHAR                       ETSI_DmxLvl_present;     /*!< Flag, if dmx-lvl should be written in ETSI-ancData */
 
-  SCHAR                       centerMixLevel;          /*!< Center downmix level (0...7, according to table) */
-  SCHAR                       surroundMixLevel;        /*!< Surround downmix level (0...7, according to table) */
+    SCHAR                       centerMixLevel;          /*!< Center downmix level (0...7, according to table) */
+    SCHAR                       surroundMixLevel;        /*!< Surround downmix level (0...7, according to table) */
 
-  UCHAR                       dolbySurroundMode;       /*!< Indication for Dolby Surround Encoding Mode.
+    UCHAR                       dolbySurroundMode;       /*!< Indication for Dolby Surround Encoding Mode.
                                                             - 0: Dolby Surround mode not indicated
                                                             - 1: 2-ch audio part is not Dolby surround encoded
                                                             - 2: 2-ch audio part is Dolby surround encoded */
@@ -893,7 +901,7 @@ AACENC_CTRLFLAGS;
  */
 typedef enum
 {
-  AACENC_AOT                      = 0x0100,  /*!< Audio object type. See ::AUDIO_OBJECT_TYPE in FDK_audio.h.
+    AACENC_AOT                      = 0x0100,  /*!< Audio object type. See ::AUDIO_OBJECT_TYPE in FDK_audio.h.
                                                   - 2: MPEG-4 AAC Low Complexity.
                                                   - 5: MPEG-4 AAC Low Complexity with Spectral Band Replication (HE-AAC).
                                                   - 29: MPEG-4 AAC Low Complexity with Spectral Band Replication and Parametric Stereo (HE-AAC v2).
@@ -902,38 +910,38 @@ typedef enum
                                                   - 39: MPEG-4 AAC Enhanced Low-Delay. Since there is no ::AUDIO_OBJECT_TYPE for ELD in
                                                         combination with SBR defined, enable SBR explicitely by ::AACENC_SBR_MODE parameter. */
 
-  AACENC_BITRATE                  = 0x0101,  /*!< Total encoder bitrate. This parameter is mandatory and interacts with ::AACENC_BITRATEMODE.
+    AACENC_BITRATE                  = 0x0101,  /*!< Total encoder bitrate. This parameter is mandatory and interacts with ::AACENC_BITRATEMODE.
                                                   - CBR: Bitrate in bits/second.
                                                     See \ref suppBitrates for details. */
 
-  AACENC_BITRATEMODE              = 0x0102,  /*!< Bitrate mode. Configuration can be different kind of bitrate configurations:
+    AACENC_BITRATEMODE              = 0x0102,  /*!< Bitrate mode. Configuration can be different kind of bitrate configurations:
                                                   - 0: Constant bitrate, use bitrate according to ::AACENC_BITRATE. (default)
                                                        Within none LD/ELD ::AUDIO_OBJECT_TYPE, the CBR mode makes use of full allowed bitreservoir.
                                                        In contrast, at Low-Delay ::AUDIO_OBJECT_TYPE the bitreservoir is kept very small.
                                                   - 8: LD/ELD full bitreservoir for packet based transmission. */
 
-  AACENC_SAMPLERATE               = 0x0103,  /*!< Audio input data sampling rate. Encoder supports following sampling rates:
+    AACENC_SAMPLERATE               = 0x0103,  /*!< Audio input data sampling rate. Encoder supports following sampling rates:
                                                   8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000, 64000, 88200, 96000 */
 
-  AACENC_SBR_MODE                 = 0x0104,  /*!< Configure SBR independently of the chosen Audio Object Type ::AUDIO_OBJECT_TYPE.
+    AACENC_SBR_MODE                 = 0x0104,  /*!< Configure SBR independently of the chosen Audio Object Type ::AUDIO_OBJECT_TYPE.
                                                   This parameter is for ELD audio object type only.
                                                   - -1: Use ELD SBR auto configurator (default).
                                                   - 0: Disable Spectral Band Replication.
                                                   - 1: Enable Spectral Band Replication. */
 
-  AACENC_GRANULE_LENGTH           = 0x0105,  /*!< Core encoder (AAC) audio frame length in samples:
+    AACENC_GRANULE_LENGTH           = 0x0105,  /*!< Core encoder (AAC) audio frame length in samples:
                                                   - 1024: Default configuration.
                                                   - 512: Default LD/ELD configuration.
                                                   - 480: Optional length in LD/ELD configuration. */
 
-  AACENC_CHANNELMODE              = 0x0106,  /*!< Set explicit channel mode. Channel mode must match with number of input channels.
+    AACENC_CHANNELMODE              = 0x0106,  /*!< Set explicit channel mode. Channel mode must match with number of input channels.
                                                   - 1-7 and 33,34: MPEG channel modes supported, see ::CHANNEL_MODE in FDK_audio.h. */
 
-  AACENC_CHANNELORDER             = 0x0107,  /*!< Input audio data channel ordering scheme:
+    AACENC_CHANNELORDER             = 0x0107,  /*!< Input audio data channel ordering scheme:
                                                   - 0: MPEG channel ordering (e. g. 5.1: C, L, R, SL, SR, LFE). (default)
                                                   - 1: WAVE file format channel ordering (e. g. 5.1: L, R, C, LFE, SL, SR). */
 
-  AACENC_SBR_RATIO                = 0x0108,  /*!<  Controls activation of downsampled SBR. With downsampled SBR, the delay will be
+    AACENC_SBR_RATIO                = 0x0108,  /*!<  Controls activation of downsampled SBR. With downsampled SBR, the delay will be
                                                    shorter. On the other hand, for achieving the same quality level, downsampled SBR
                                                    needs more bits than dual-rate SBR.
                                                    With downsampled SBR, the AAC encoder will work at the same sampling rate as the
@@ -942,7 +950,7 @@ typedef enum
                                                    - 1: Downsampled SBR (default for ELD).
                                                    - 2: Dual-rate SBR   (default for HE-AAC). */
 
-  AACENC_AFTERBURNER              = 0x0200,  /*!< This parameter controls the use of the afterburner feature.
+    AACENC_AFTERBURNER              = 0x0200,  /*!< This parameter controls the use of the afterburner feature.
                                                   The afterburner is a type of analysis by synthesis algorithm which increases the
                                                   audio quality but also the required processing power. It is recommended to always
                                                   activate this if additional memory consumption and processing power consumption
@@ -952,12 +960,12 @@ typedef enum
                                                   - 0: Disable afterburner (default).
                                                   - 1: Enable afterburner. */
 
-  AACENC_BANDWIDTH                = 0x0203,  /*!< Core encoder audio bandwidth:
+    AACENC_BANDWIDTH                = 0x0203,  /*!< Core encoder audio bandwidth:
                                                   - 0: Determine bandwidth internally (default, see chapter \ref BEHAVIOUR_BANDWIDTH).
                                                   - 1 to fs/2: Frequency bandwidth in Hertz. (Experts only, better do not
                                                                touch this value to avoid degraded audio quality) */
 
-  AACENC_PEAK_BITRATE             = 0x0207,  /*!< Peak bitrate configuration parameter to adjust maximum bits per audio frame. Bitrate is in bits/second. 
+    AACENC_PEAK_BITRATE             = 0x0207,  /*!< Peak bitrate configuration parameter to adjust maximum bits per audio frame. Bitrate is in bits/second.
                                                   The peak bitrate will internally be limited to the chosen bitrate ::AACENC_BITRATE as lower limit
                                                   and the number_of_effective_channels*6144 bit as upper limit.
 
@@ -967,7 +975,7 @@ typedef enum
                                                   the peak pitrate to ::AACENC_BITRATE - it would disable the bitreservoir, which would affect the
                                                   audio quality by a large amount. */
 
-  AACENC_TRANSMUX                 = 0x0300,  /*!< Transport type to be used. See ::TRANSPORT_TYPE in FDK_audio.h. Following
+    AACENC_TRANSMUX                 = 0x0300,  /*!< Transport type to be used. See ::TRANSPORT_TYPE in FDK_audio.h. Following
                                                   types can be configured in encoder library:
                                                   - 0: raw access units
                                                   - 1: ADIF bitstream format
@@ -976,13 +984,13 @@ typedef enum
                                                   - 7: Audio Mux Elements (LATM) with muxConfigPresent = 0, out of band StreamMuxConfig
                                                   - 10: Audio Sync Stream (LOAS) */
 
-  AACENC_HEADER_PERIOD            = 0x0301,  /*!< Frame count period for sending in-band configuration buffers within LATM/LOAS
+    AACENC_HEADER_PERIOD            = 0x0301,  /*!< Frame count period for sending in-band configuration buffers within LATM/LOAS
                                                   transport layer. Additionally this parameter configures the PCE repetition period
                                                   in raw_data_block(). See \ref encPCE.
                                                   - 0xFF: auto-mode default 10 for TT_MP4_ADTS, TT_MP4_LOAS and TT_MP4_LATM_MCP1, otherwise 0.
                                                   - n: Frame count period. */
 
-  AACENC_SIGNALING_MODE           = 0x0302,  /*!< Signaling mode of the extension AOT:
+    AACENC_SIGNALING_MODE           = 0x0302,  /*!< Signaling mode of the extension AOT:
                                                   - 0: Implicit backward compatible signaling (default for non-MPEG-4 based
                                                        AOT's and for the transport formats ADIF and ADTS)
                                                        - A stream that uses implicit signaling can be decoded by every AAC decoder, even AAC-LC-only decoders
@@ -1028,34 +1036,34 @@ typedef enum
                                                    For AAC-ELD, the SBR information is transmitted in the ELDSpecific Config, which is part of the
                                                    AudioSpecificConfig. Therefore, the settings here will have no effect on AAC-ELD.*/
 
-  AACENC_TPSUBFRAMES              = 0x0303,  /*!< Number of sub frames in a transport frame for LOAS/LATM or ADTS (default 1).
+    AACENC_TPSUBFRAMES              = 0x0303,  /*!< Number of sub frames in a transport frame for LOAS/LATM or ADTS (default 1).
                                                   - ADTS: Maximum number of sub frames restricted to 4.
                                                   - LOAS/LATM: Maximum number of sub frames restricted to 2.*/
 
-  AACENC_AUDIOMUXVER              = 0x0304,  /*!< AudioMuxVersion to be used for LATM. (AudioMuxVersionA, currently not implemented):
+    AACENC_AUDIOMUXVER              = 0x0304,  /*!< AudioMuxVersion to be used for LATM. (AudioMuxVersionA, currently not implemented):
                                                   - 0: Default, no transmission of tara Buffer fullness, no ASC length and including actual latm Buffer fullnes.
                                                   - 1: Transmission of tara Buffer fullness, ASC length and actual latm Buffer fullness.
                                                   - 2: Transmission of tara Buffer fullness, ASC length and maximum level of latm Buffer fullness. */
 
-  AACENC_PROTECTION               = 0x0306,  /*!< Configure protection in tranpsort layer:
+    AACENC_PROTECTION               = 0x0306,  /*!< Configure protection in tranpsort layer:
                                                   - 0: No protection. (default)
                                                   - 1: CRC active for ADTS bitstream format. */
 
-  AACENC_ANCILLARY_BITRATE        = 0x0500,  /*!< Constant ancillary data bitrate in bits/second.
+    AACENC_ANCILLARY_BITRATE        = 0x0500,  /*!< Constant ancillary data bitrate in bits/second.
                                                   - 0: Either no ancillary data or insert exact number of bytes, denoted via
                                                        input parameter, numAncBytes in AACENC_InArgs.
                                                   - else: Insert ancillary data with specified bitrate. */
 
-  AACENC_METADATA_MODE            = 0x0600,  /*!< Configure Meta Data. See ::AACENC_MetaData for further details:
+    AACENC_METADATA_MODE            = 0x0600,  /*!< Configure Meta Data. See ::AACENC_MetaData for further details:
                                                   - 0: Do not embed any metadata.
                                                   - 1: Embed MPEG defined metadata only.
                                                   - 2: Embed all metadata. */
 
-  AACENC_CONTROL_STATE            = 0xFF00,  /*!< There is an automatic process which internally reconfigures the encoder instance
+    AACENC_CONTROL_STATE            = 0xFF00,  /*!< There is an automatic process which internally reconfigures the encoder instance
                                                   when a configuration parameter changed or an error occured. This paramerter allows
                                                   overwriting or getting the control status of this process. See ::AACENC_CTRLFLAGS. */
 
-  AACENC_NONE                     = 0xFFFF   /*!< ------ */
+    AACENC_NONE                     = 0xFFFF   /*!< ------ */
 
 } AACENC_PARAM;
 
@@ -1089,10 +1097,10 @@ extern "C" {
  *          - AACENC_INVALID_HANDLE, AACENC_MEMORY_ERROR, AACENC_INVALID_CONFIG, on failure.
  */
 AACENC_ERROR aacEncOpen(
-        HANDLE_AACENCODER        *phAacEncoder,
-        const UINT                encModules,
-        const UINT                maxChannels
-        );
+    HANDLE_AACENCODER        *phAacEncoder,
+    const UINT                encModules,
+    const UINT                maxChannels
+);
 
 
 /**
@@ -1107,8 +1115,8 @@ AACENC_ERROR aacEncOpen(
  *          - AACENC_INVALID_HANDLE, on failure.
  */
 AACENC_ERROR aacEncClose(
-        HANDLE_AACENCODER        *phAacEncoder
-        );
+    HANDLE_AACENCODER        *phAacEncoder
+);
 
 
 /**
@@ -1147,12 +1155,12 @@ AACENC_ERROR aacEncClose(
  *          - AACENC_ENCODE_EOF, when flushing fully concluded.
  */
 AACENC_ERROR aacEncEncode(
-        const HANDLE_AACENCODER   hAacEncoder,
-        const AACENC_BufDesc     *inBufDesc,
-        const AACENC_BufDesc     *outBufDesc,
-        const AACENC_InArgs      *inargs,
-        AACENC_OutArgs           *outargs
-        );
+    const HANDLE_AACENCODER   hAacEncoder,
+    const AACENC_BufDesc     *inBufDesc,
+    const AACENC_BufDesc     *outBufDesc,
+    const AACENC_InArgs      *inargs,
+    AACENC_OutArgs           *outargs
+);
 
 
 /**
@@ -1172,9 +1180,9 @@ AACENC_ERROR aacEncEncode(
  *          - AACENC_INIT_ERROR, on failure.
  */
 AACENC_ERROR aacEncInfo(
-        const HANDLE_AACENCODER   hAacEncoder,
-        AACENC_InfoStruct        *pInfo
-        );
+    const HANDLE_AACENCODER   hAacEncoder,
+    AACENC_InfoStruct        *pInfo
+);
 
 
 /**
@@ -1193,10 +1201,10 @@ AACENC_ERROR aacEncInfo(
  *          - AACENC_INVALID_HANDLE, AACENC_UNSUPPORTED_PARAMETER, AACENC_INVALID_CONFIG, on failure.
  */
 AACENC_ERROR aacEncoder_SetParam(
-        const HANDLE_AACENCODER   hAacEncoder,
-        const AACENC_PARAM        param,
-        const UINT                value
-        );
+    const HANDLE_AACENCODER   hAacEncoder,
+    const AACENC_PARAM        param,
+    const UINT                value
+);
 
 
 /**
@@ -1211,9 +1219,9 @@ AACENC_ERROR aacEncoder_SetParam(
  * \return  Internal configuration value of specifed parameter ::AACENC_PARAM.
  */
 UINT aacEncoder_GetParam(
-        const HANDLE_AACENCODER   hAacEncoder,
-        const AACENC_PARAM        param
-        );
+    const HANDLE_AACENCODER   hAacEncoder,
+    const AACENC_PARAM        param
+);
 
 
 /**
@@ -1228,8 +1236,8 @@ UINT aacEncoder_GetParam(
  *          - AACENC_INVALID_HANDLE, AACENC_INIT_ERROR, on failure.
  */
 AACENC_ERROR aacEncGetLibInfo(
-        LIB_INFO                 *info
-        );
+    LIB_INFO                 *info
+);
 
 
 #ifdef __cplusplus

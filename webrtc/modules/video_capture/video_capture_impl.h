@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -25,7 +25,8 @@ namespace webrtc
 {
 class CriticalSectionWrapper;
 
-namespace videocapturemodule {
+namespace videocapturemodule
+{
 // Class definitions
 class VideoCaptureImpl: public VideoCaptureModule, public VideoCaptureExternal
 {
@@ -37,8 +38,8 @@ public:
      *   id              - unique identifier of this video capture module object
      *   deviceUniqueIdUTF8 -  name of the device. Available names can be found by using GetDeviceName
      */
-   static rtc::scoped_refptr<VideoCaptureModule> Create(
-       const char* deviceUniqueIdUTF8);
+    static rtc::scoped_refptr<VideoCaptureModule> Create(
+        const char* deviceUniqueIdUTF8);
 
     /*
      *   Create a video capture module object used for external capture.
@@ -46,8 +47,8 @@ public:
      *   id              - unique identifier of this video capture module object
      *   externalCapture - [out] interface to call when a new frame is captured.
      */
-   static rtc::scoped_refptr<VideoCaptureModule> Create(
-       VideoCaptureExternal*& externalCapture);
+    static rtc::scoped_refptr<VideoCaptureModule> Create(
+        VideoCaptureExternal*& externalCapture);
 
     static DeviceInfo* CreateDeviceInfo();
 
@@ -63,8 +64,9 @@ public:
 
     int32_t SetCaptureRotation(VideoRotation rotation) override;
     bool SetApplyRotation(bool enable) override;
-    bool GetApplyRotation() override {
-      return apply_rotation_;
+    bool GetApplyRotation() override
+    {
+        return apply_rotation_;
     }
 
     const char* CurrentDeviceName() const override;
@@ -82,10 +84,18 @@ public:
         _requestedCapability = capability;
         return -1;
     }
-    int32_t StopCapture() override { return -1; }
-    bool CaptureStarted() override {return false; }
+    int32_t StopCapture() override
+    {
+        return -1;
+    }
+    bool CaptureStarted() override
+    {
+        return false;
+    }
     int32_t CaptureSettings(VideoCaptureCapability& /*settings*/) override
-    { return -1; }
+    {
+        return -1;
+    }
 
 protected:
     VideoCaptureImpl();
@@ -111,7 +121,7 @@ private:
     // timestamp for local captured frames
     int64_t _incomingFrameTimesNanos[kFrameRateCountHistorySize];
     VideoRotation _rotateFrame;  // Set if the frame should be rotated by the
-                                 // capture module.
+    // capture module.
 
     // Indicate whether rotation should be applied before delivered externally.
     bool apply_rotation_;

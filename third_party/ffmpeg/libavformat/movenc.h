@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MOV, 3GP, MP4 muxer
  * Copyright (c) 2003 Thomas Raivio
  * Copyright (c) 2004 Gildas Bazin <gbazin at videolan dot org>
@@ -42,7 +42,8 @@
 #define MODE_ISM  0x40
 #define MODE_F4V  0x80
 
-typedef struct MOVIentry {
+typedef struct MOVIentry
+{
     uint64_t     pos;
     int64_t      dts;
     unsigned int size;
@@ -55,7 +56,8 @@ typedef struct MOVIentry {
     uint32_t     flags;
 } MOVIentry;
 
-typedef struct HintSample {
+typedef struct HintSample
+{
     uint8_t *data;
     int size;
     int sample_number;
@@ -63,13 +65,15 @@ typedef struct HintSample {
     int own_data;
 } HintSample;
 
-typedef struct HintSampleQueue {
+typedef struct HintSampleQueue
+{
     int size;
     int len;
     HintSample *samples;
 } HintSampleQueue;
 
-typedef struct MOVFragmentInfo {
+typedef struct MOVFragmentInfo
+{
     int64_t offset;
     int64_t time;
     int64_t duration;
@@ -77,7 +81,8 @@ typedef struct MOVFragmentInfo {
     int size;
 } MOVFragmentInfo;
 
-typedef struct MOVTrack {
+typedef struct MOVTrack
+{
     int         mode;
     int         entry;
     unsigned    timescale;
@@ -138,7 +143,8 @@ typedef struct MOVTrack {
     MOVFragmentInfo *frag_info;
     unsigned    frag_info_capacity;
 
-    struct {
+    struct
+    {
         int     first_packet_seq;
         int     first_packet_entry;
         int     first_packet_seen;
@@ -151,7 +157,8 @@ typedef struct MOVTrack {
     void       *eac3_priv;
 } MOVTrack;
 
-typedef struct MOVMuxContext {
+typedef struct MOVMuxContext
+{
     const AVClass *av_class;
     int     mode;
     int64_t time;

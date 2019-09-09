@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,20 +15,25 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockDelayPeakDetector : public DelayPeakDetector {
- public:
-  MockDelayPeakDetector(const TickTimer* tick_timer)
-      : DelayPeakDetector(tick_timer) {}
-  virtual ~MockDelayPeakDetector() { Die(); }
-  MOCK_METHOD0(Die, void());
-  MOCK_METHOD0(Reset, void());
-  MOCK_METHOD1(SetPacketAudioLength, void(int length_ms));
-  MOCK_METHOD0(peak_found, bool());
-  MOCK_CONST_METHOD0(MaxPeakHeight, int());
-  MOCK_CONST_METHOD0(MaxPeakPeriod, uint64_t());
-  MOCK_METHOD2(Update, bool(int inter_arrival_time, int target_level));
+class MockDelayPeakDetector : public DelayPeakDetector
+{
+public:
+    MockDelayPeakDetector(const TickTimer* tick_timer)
+        : DelayPeakDetector(tick_timer) {}
+    virtual ~MockDelayPeakDetector()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
+    MOCK_METHOD0(Reset, void());
+    MOCK_METHOD1(SetPacketAudioLength, void(int length_ms));
+    MOCK_METHOD0(peak_found, bool());
+    MOCK_CONST_METHOD0(MaxPeakHeight, int());
+    MOCK_CONST_METHOD0(MaxPeakPeriod, uint64_t());
+    MOCK_METHOD2(Update, bool(int inter_arrival_time, int target_level));
 };
 
 }  // namespace webrtc

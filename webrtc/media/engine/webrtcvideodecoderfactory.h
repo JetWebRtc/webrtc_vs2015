@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,30 +14,35 @@
 #include "webrtc/base/refcount.h"
 #include "webrtc/common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 class VideoDecoder;
 }
 
-namespace cricket {
+namespace cricket
+{
 
-struct VideoDecoderParams {
-  std::string receive_stream_id;
+struct VideoDecoderParams
+{
+    std::string receive_stream_id;
 };
 
-class WebRtcVideoDecoderFactory {
- public:
-  // Caller takes the ownership of the returned object and it should be released
-  // by calling DestroyVideoDecoder().
-  virtual webrtc::VideoDecoder* CreateVideoDecoder(
-      webrtc::VideoCodecType type) = 0;
-  virtual webrtc::VideoDecoder* CreateVideoDecoderWithParams(
-      webrtc::VideoCodecType type,
-      VideoDecoderParams params) {
-    return CreateVideoDecoder(type);
-  }
-  virtual ~WebRtcVideoDecoderFactory() {}
+class WebRtcVideoDecoderFactory
+{
+public:
+    // Caller takes the ownership of the returned object and it should be released
+    // by calling DestroyVideoDecoder().
+    virtual webrtc::VideoDecoder* CreateVideoDecoder(
+        webrtc::VideoCodecType type) = 0;
+    virtual webrtc::VideoDecoder* CreateVideoDecoderWithParams(
+        webrtc::VideoCodecType type,
+        VideoDecoderParams params)
+    {
+        return CreateVideoDecoder(type);
+    }
+    virtual ~WebRtcVideoDecoderFactory() {}
 
-  virtual void DestroyVideoDecoder(webrtc::VideoDecoder* decoder) = 0;
+    virtual void DestroyVideoDecoder(webrtc::VideoDecoder* decoder) = 0;
 };
 
 }  // namespace cricket

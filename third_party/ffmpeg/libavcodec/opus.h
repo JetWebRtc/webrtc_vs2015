@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Opus decoder/demuxer common functions
  * Copyright (c) 2012 Andrew D'Addesio
  * Copyright (c) 2013-2014 Mozilla Corporation
@@ -64,19 +64,22 @@
 #define OPUS_TS_HEADER     0x7FE0        // 0x3ff (11 bits)
 #define OPUS_TS_MASK       0xFFE0        // top 11 bits
 
-static const uint8_t opus_default_extradata[30] = {
+static const uint8_t opus_default_extradata[30] =
+{
     'O', 'p', 'u', 's', 'H', 'e', 'a', 'd',
     1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-enum OpusMode {
+enum OpusMode
+{
     OPUS_MODE_SILK,
     OPUS_MODE_HYBRID,
     OPUS_MODE_CELT
 };
 
-enum OpusBandwidth {
+enum OpusBandwidth
+{
     OPUS_BANDWIDTH_NARROWBAND,
     OPUS_BANDWIDTH_MEDIUMBAND,
     OPUS_BANDWIDTH_WIDEBAND,
@@ -84,14 +87,16 @@ enum OpusBandwidth {
     OPUS_BANDWIDTH_FULLBAND
 };
 
-typedef struct RawBitsContext {
+typedef struct RawBitsContext
+{
     const uint8_t *position;
     unsigned int bytes;
     unsigned int cachelen;
     unsigned int cacheval;
 } RawBitsContext;
 
-typedef struct OpusRangeCoder {
+typedef struct OpusRangeCoder
+{
     GetBitContext gb;
     RawBitsContext rb;
     unsigned int range;
@@ -103,7 +108,8 @@ typedef struct SilkContext SilkContext;
 
 typedef struct CeltContext CeltContext;
 
-typedef struct OpusPacket {
+typedef struct OpusPacket
+{
     int packet_size;                /**< packet size */
     int data_size;                  /**< size of the useful data -- packet size - padding */
     int code;                       /**< packet code: specifies the frame layout */
@@ -119,7 +125,8 @@ typedef struct OpusPacket {
     enum OpusBandwidth bandwidth;   /**< bandwidth */
 } OpusPacket;
 
-typedef struct OpusStreamContext {
+typedef struct OpusStreamContext
+{
     AVCodecContext *avctx;
     int output_channels;
 
@@ -156,7 +163,8 @@ typedef struct OpusStreamContext {
 } OpusStreamContext;
 
 // a mapping between an opus stream and an output channel
-typedef struct ChannelMap {
+typedef struct ChannelMap
+{
     int stream_idx;
     int channel_idx;
 
@@ -171,7 +179,8 @@ typedef struct ChannelMap {
     int silence;
 } ChannelMap;
 
-typedef struct OpusContext {
+typedef struct OpusContext
+{
     OpusStreamContext *streams;
 
     /* current output buffers for each streams */
@@ -195,7 +204,8 @@ typedef struct OpusContext {
 
 static av_always_inline void opus_rc_normalize(OpusRangeCoder *rc)
 {
-    while (rc->range <= 1<<23) {
+    while (rc->range <= 1<<23)
+    {
         rc->value = ((rc->value << 8) | (get_bits(&rc->gb, 8) ^ 0xFF)) & ((1u << 31) - 1);
         rc->range          <<= 8;
         rc->total_read_bits += 8;
@@ -203,12 +213,12 @@ static av_always_inline void opus_rc_normalize(OpusRangeCoder *rc)
 }
 
 static av_always_inline void opus_rc_update(OpusRangeCoder *rc, unsigned int scale,
-                                          unsigned int low, unsigned int high,
-                                          unsigned int total)
+        unsigned int low, unsigned int high,
+        unsigned int total)
 {
     rc->value -= scale * (total - high);
     rc->range  = low ? scale * (high - low)
-                      : rc->range - scale * (total - high);
+                 : rc->range - scale * (total - high);
     opus_rc_normalize(rc);
 }
 
@@ -236,11 +246,14 @@ static av_always_inline unsigned int opus_rc_p2model(OpusRangeCoder *rc, unsigne
     unsigned int k, scale;
     scale = rc->range >> bits; // in this case, scale = symbol
 
-    if (rc->value >= scale) {
+    if (rc->value >= scale)
+    {
         rc->value -= scale;
         rc->range -= scale;
         k = 0;
-    } else {
+    }
+    else
+    {
         rc->range = scale;
         k = 1;
     }
@@ -265,7 +278,8 @@ static av_always_inline unsigned int opus_rc_tell_frac(const OpusRangeCoder *rc)
     rcbuffer   = av_log2(rc->range) + 1;
     range      = rc->range >> (rcbuffer-16);
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         int bit;
         range = range * range >> 15;
         bit = range >> 16;
@@ -283,7 +297,8 @@ static av_always_inline unsigned int opus_getrawbits(OpusRangeCoder *rc, unsigne
 {
     unsigned int value = 0;
 
-    while (rc->rb.bytes && rc->rb.cachelen < count) {
+    while (rc->rb.bytes && rc->rb.cachelen < count)
+    {
         rc->rb.cacheval |= *--rc->rb.position << rc->rb.cachelen;
         rc->rb.cachelen += 8;
         rc->rb.bytes--;
@@ -312,10 +327,12 @@ static av_always_inline unsigned int opus_rc_unimodel(OpusRangeCoder *rc, unsign
     k      = total - FFMIN(k, total);
     opus_rc_update(rc, scale, k, k + 1, total);
 
-    if (bits > 8) {
+    if (bits > 8)
+    {
         k = k << (bits - 8) | opus_getrawbits(rc, bits - 8);
         return FFMIN(k, size - 1);
-    } else
+    }
+    else
         return k;
 }
 
@@ -329,19 +346,22 @@ static av_always_inline int opus_rc_laplace(OpusRangeCoder *rc, unsigned int sym
     center = rc->value / scale + 1;
     center = (1 << 15) - FFMIN(center, 1 << 15);
 
-    if (center >= symbol) {
+    if (center >= symbol)
+    {
         value++;
         low = symbol;
         symbol = 1 + ((32768 - 32 - symbol) * (16384-decay) >> 15);
 
-        while (symbol > 1 && center >= low + 2 * symbol) {
+        while (symbol > 1 && center >= low + 2 * symbol)
+        {
             value++;
             symbol *= 2;
             low    += symbol;
             symbol  = (((symbol - 2) * decay) >> 15) + 1;
         }
 
-        if (symbol <= 1) {
+        if (symbol <= 1)
+        {
             int distance = (center - low) >> 1;
             value += distance;
             low   += 2 * distance;
@@ -382,11 +402,14 @@ static av_always_inline unsigned int opus_rc_trimodel(OpusRangeCoder *rc, int qn
     center = rc->value / scale + 1;
     center = total - FFMIN(center, total);
 
-    if (center < total >> 1) {
+    if (center < total >> 1)
+    {
         k      = (ff_sqrt(8 * center + 1) - 1) >> 1;
         low    = k * (k + 1) >> 1;
         symbol = k + 1;
-    } else {
+    }
+    else
+    {
         k      = (2*(qn + 1) - ff_sqrt(8*(total - center - 1) + 1)) >> 1;
         low    = total - ((qn + 1 - k) * (qn + 2 - k) >> 1);
         symbol = qn + 1 - k;

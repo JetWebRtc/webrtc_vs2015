@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -128,28 +128,28 @@ void dit_fft(FIXP_DBL *x, const INT ldn, const FIXP_STP *trigdata, const INT tri
      * 1+2 stage radix 4
      */
 
-    for (i=0;i<n*2;i+=8)
+    for (i=0; i<n*2; i+=8)
     {
-      FIXP_DBL a00, a10, a20, a30;
-      a00 = (x[i + 0] + x[i + 2])>>1;  /* Re A + Re B */
-      a10 = (x[i + 4] + x[i + 6])>>1;  /* Re C + Re D */
-      a20 = (x[i + 1] + x[i + 3])>>1;  /* Im A + Im B */
-      a30 = (x[i + 5] + x[i + 7])>>1;  /* Im C + Im D */
+        FIXP_DBL a00, a10, a20, a30;
+        a00 = (x[i + 0] + x[i + 2])>>1;  /* Re A + Re B */
+        a10 = (x[i + 4] + x[i + 6])>>1;  /* Re C + Re D */
+        a20 = (x[i + 1] + x[i + 3])>>1;  /* Im A + Im B */
+        a30 = (x[i + 5] + x[i + 7])>>1;  /* Im C + Im D */
 
-      x[i + 0] = a00 + a10;       /* Re A' = Re A + Re B + Re C + Re D */
-      x[i + 4] = a00 - a10;       /* Re C' = Re A + Re B - Re C - Re D */
-      x[i + 1] = a20 + a30;       /* Im A' = Im A + Im B + Im C + Im D */
-      x[i + 5] = a20 - a30;       /* Im C' = Im A + Im B - Im C - Im D */
+        x[i + 0] = a00 + a10;       /* Re A' = Re A + Re B + Re C + Re D */
+        x[i + 4] = a00 - a10;       /* Re C' = Re A + Re B - Re C - Re D */
+        x[i + 1] = a20 + a30;       /* Im A' = Im A + Im B + Im C + Im D */
+        x[i + 5] = a20 - a30;       /* Im C' = Im A + Im B - Im C - Im D */
 
-      a00 = a00 - x[i + 2];       /* Re A - Re B */
-      a10 = a10 - x[i + 6];       /* Re C - Re D */
-      a20 = a20 - x[i + 3];       /* Im A - Im B */
-      a30 = a30 - x[i + 7];       /* Im C - Im D */
+        a00 = a00 - x[i + 2];       /* Re A - Re B */
+        a10 = a10 - x[i + 6];       /* Re C - Re D */
+        a20 = a20 - x[i + 3];       /* Im A - Im B */
+        a30 = a30 - x[i + 7];       /* Im C - Im D */
 
-      x[i + 2] = a00 + a30;       /* Re B' = Re A - Re B + Im C - Im D */
-      x[i + 6] = a00 - a30;       /* Re D' = Re A - Re B - Im C + Im D */
-      x[i + 3] = a20 - a10;       /* Im B' = Im A - Im B - Re C + Re D */
-      x[i + 7] = a20 + a10;       /* Im D' = Im A - Im B + Re C - Re D */
+        x[i + 2] = a00 + a30;       /* Re B' = Re A - Re B + Im C - Im D */
+        x[i + 6] = a00 - a30;       /* Re D' = Re A - Re B - Im C + Im D */
+        x[i + 3] = a20 - a10;       /* Im B' = Im A - Im B - Re C + Re D */
+        x[i + 7] = a20 + a10;       /* Im D' = Im A - Im B + Re C - Re D */
     }
 
     for(ldm=3; ldm<=ldn; ++ldm)
@@ -334,27 +334,27 @@ void dit_ifft(FIXP_DBL *x, const INT ldn, const FIXP_STP *trigdata, const INT tr
       1+2 stage radix 4
     */
 
-    for (i=0;i<n*2;i+=8)
+    for (i=0; i<n*2; i+=8)
     {
-      FIXP_DBL a0, a1, a2, a3, a00, a10, a20, a30;
+        FIXP_DBL a0, a1, a2, a3, a00, a10, a20, a30;
 
-      a00 = (x[i + 0] + x[i + 2])>>1;   /* Re A + Re B */
-      a10 = (x[i + 4] + x[i + 6])>>1;   /* Re C + Re D */
-      a20 = (x[i + 1] + x[i + 3])>>1;   /* Im A + Im B */
-      a30 = (x[i + 5] + x[i + 7])>>1;   /* Im C + Im D */
-      a0  = (x[i + 0] - x[i + 2])>>1;   /* Re A - Re B */
-      a2  = (x[i + 4] - x[i + 6])>>1;   /* Re C - Re D */
-      a3  = (x[i + 1] - x[i + 3])>>1;   /* Im A - Im B */
-      a1  = (x[i + 5] - x[i + 7])>>1;   /* Im C - Im D */
+        a00 = (x[i + 0] + x[i + 2])>>1;   /* Re A + Re B */
+        a10 = (x[i + 4] + x[i + 6])>>1;   /* Re C + Re D */
+        a20 = (x[i + 1] + x[i + 3])>>1;   /* Im A + Im B */
+        a30 = (x[i + 5] + x[i + 7])>>1;   /* Im C + Im D */
+        a0  = (x[i + 0] - x[i + 2])>>1;   /* Re A - Re B */
+        a2  = (x[i + 4] - x[i + 6])>>1;   /* Re C - Re D */
+        a3  = (x[i + 1] - x[i + 3])>>1;   /* Im A - Im B */
+        a1  = (x[i + 5] - x[i + 7])>>1;   /* Im C - Im D */
 
-      x[i + 0] = a00 + a10;    /* Re A' = Re A + Re B + Re C + Re D */
-      x[i + 4] = a00 - a10;    /* Re C' = Re A + Re B - Re C - Re D */
-      x[i + 1] = a20 + a30;    /* Im A' = Im A + Im B + Im C + Im D */
-      x[i + 5] = a20 - a30;    /* Im C' = Im A + Im B - Im C - Im D */
-      x[i + 2] = a0 - a1;      /* Re B' = Re A - Re B - Im C + Im D */
-      x[i + 6] = a0 + a1;      /* Re D' = Re A - Re B + Im C - Im D */
-      x[i + 3] = a3 + a2;      /* Im B' = Im A - Im B + Re C - Re D */
-      x[i + 7] = a3 - a2;      /* Im D' = Im A - Im B - Re C + Re D */
+        x[i + 0] = a00 + a10;    /* Re A' = Re A + Re B + Re C + Re D */
+        x[i + 4] = a00 - a10;    /* Re C' = Re A + Re B - Re C - Re D */
+        x[i + 1] = a20 + a30;    /* Im A' = Im A + Im B + Im C + Im D */
+        x[i + 5] = a20 - a30;    /* Im C' = Im A + Im B - Im C - Im D */
+        x[i + 2] = a0 - a1;      /* Re B' = Re A - Re B - Im C + Im D */
+        x[i + 6] = a0 + a1;      /* Re D' = Re A - Re B + Im C - Im D */
+        x[i + 3] = a3 + a2;      /* Im B' = Im A - Im B + Re C - Re D */
+        x[i + 7] = a3 - a2;      /* Im D' = Im A - Im B - Re C + Re D */
     }
 
     for(ldm=3; ldm<=ldn; ++ldm)

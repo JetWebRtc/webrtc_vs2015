@@ -1,4 +1,4 @@
-/*
+﻿/*
  * APE tag handling
  * Copyright (c) 2007 Benjamin Zores <ben@geexbox.org>
  *  based upon libdemac from Dave Chapman.

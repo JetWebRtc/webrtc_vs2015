@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -122,11 +122,11 @@ void CRvlc_Decode (CAacDecoderChannelInfo  *pAacDecoderChannelInfo,
  * \param elChannels amount of channels of the channel element.
  */
 void CRvlc_ElementCheck (
-        CAacDecoderChannelInfo *pAacDecoderChannelInfo[],
-        CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
-        const UINT flags,
-        const INT elChannels
-        );
+    CAacDecoderChannelInfo *pAacDecoderChannelInfo[],
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
+    const UINT flags,
+    const INT elChannels
+);
 
 
 

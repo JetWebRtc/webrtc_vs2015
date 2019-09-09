@@ -38,7 +38,8 @@ enum { VAR_C, VAR_VARS_NB };
 
 #define MAX_THREADS 8
 
-typedef struct DCTdnoizContext {
+typedef struct DCTdnoizContext
+{
     const AVClass *class;
 
     /* coefficient factor expression */
@@ -76,7 +77,8 @@ typedef struct DCTdnoizContext {
 
 #define OFFSET(x) offsetof(DCTdnoizContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption dctdnoiz_options[] = {
+static const AVOption dctdnoiz_options[] =
+{
     { "sigma",   "set noise sigma constant",               OFFSET(sigma),    AV_OPT_TYPE_FLOAT,  {.dbl=0},            0, 999,          .flags = FLAGS },
     { "s",       "set noise sigma constant",               OFFSET(sigma),    AV_OPT_TYPE_FLOAT,  {.dbl=0},            0, 999,          .flags = FLAGS },
     { "overlap", "set number of block overlapping pixels", OFFSET(overlap),  AV_OPT_TYPE_INT,    {.i64=-1}, -1, (1<<MAX_NBITS)-1, .flags = FLAGS },
@@ -94,7 +96,8 @@ static void av_always_inline fdct8_1d(float *dst, const float *src,
 {
     int i;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         const float x00 = src[0*src_stridea] + src[7*src_stridea];
         const float x01 = src[1*src_stridea] + src[6*src_stridea];
         const float x02 = src[2*src_stridea] + src[5*src_stridea];
@@ -133,7 +136,8 @@ static void av_always_inline idct8_1d(float *dst, const float *src,
 {
     int i;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         const float x00 =  1.4142135623731f  *src[0*src_stridea];
         const float x01 =  1.38703984532215f *src[1*src_stridea] + 0.275899379282943f*src[7*src_stridea];
         const float x02 =  1.30656296487638f *src[2*src_stridea] + 0.541196100146197f*src[6*src_stridea];
@@ -176,7 +180,8 @@ static void av_always_inline fdct16_1d(float *dst, const float *src,
 {
     int i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         const float x00 = src[ 0*src_stridea] + src[15*src_stridea];
         const float x01 = src[ 1*src_stridea] + src[14*src_stridea];
         const float x02 = src[ 2*src_stridea] + src[13*src_stridea];
@@ -261,7 +266,8 @@ static void av_always_inline idct16_1d(float *dst, const float *src,
 {
     int i;
 
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         const float x00 =  1.4142135623731f  *src[ 0*src_stridea];
         const float x01 =  1.40740373752638f *src[ 1*src_stridea] + 0.138617169199091f*src[15*src_stridea];
         const float x02 =  1.38703984532215f *src[ 2*src_stridea] + 0.275899379282943f*src[14*src_stridea];
@@ -408,19 +414,21 @@ DEF_FILTER_FREQ_FUNCS(16)
 #define DCT3X3_2_2  0.4082482904638631f /*  1/sqrt(6) */
 
 static av_always_inline void color_decorrelation(float **dst, int dst_linesize,
-                                                 const uint8_t *src, int src_linesize,
-                                                 int w, int h,
-                                                 int r, int g, int b)
+        const uint8_t *src, int src_linesize,
+        int w, int h,
+        int r, int g, int b)
 {
     int x, y;
     float *dstp_r = dst[0];
     float *dstp_g = dst[1];
     float *dstp_b = dst[2];
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         const uint8_t *srcp = src;
 
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             dstp_r[x] = srcp[r] * DCT3X3_0_0 + srcp[g] * DCT3X3_0_1 + srcp[b] * DCT3X3_0_2;
             dstp_g[x] = srcp[r] * DCT3X3_1_0 +                        srcp[b] * DCT3X3_1_2;
             dstp_b[x] = srcp[r] * DCT3X3_2_0 + srcp[g] * DCT3X3_2_1 + srcp[b] * DCT3X3_2_2;
@@ -434,19 +442,21 @@ static av_always_inline void color_decorrelation(float **dst, int dst_linesize,
 }
 
 static av_always_inline void color_correlation(uint8_t *dst, int dst_linesize,
-                                               float **src, int src_linesize,
-                                               int w, int h,
-                                               int r, int g, int b)
+        float **src, int src_linesize,
+        int w, int h,
+        int r, int g, int b)
 {
     int x, y;
     const float *src_r = src[0];
     const float *src_g = src[1];
     const float *src_b = src[2];
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         uint8_t *dstp = dst;
 
-        for (x = 0; x < w; x++) {
+        for (x = 0; x < w; x++)
+        {
             dstp[r] = av_clip_uint8(src_r[x] * DCT3X3_0_0 + src_g[x] * DCT3X3_1_0 + src_b[x] * DCT3X3_2_0);
             dstp[g] = av_clip_uint8(src_r[x] * DCT3X3_0_1 +                         src_b[x] * DCT3X3_2_1);
             dstp[b] = av_clip_uint8(src_r[x] * DCT3X3_0_2 + src_g[x] * DCT3X3_1_2 + src_b[x] * DCT3X3_2_2);
@@ -484,7 +494,8 @@ static int config_input(AVFilterLink *inlink)
     int i, x, y, bx, by, linesize, *iweights, max_slice_h, slice_h;
     const int bsize = 1 << s->n;
 
-    switch (inlink->format) {
+    switch (inlink->format)
+    {
     case AV_PIX_FMT_BGR24:
         s->color_decorrelation = color_decorrelation_bgr;
         s->color_correlation   = color_correlation_bgr;
@@ -512,7 +523,8 @@ static int config_input(AVFilterLink *inlink)
            MAX_THREADS, max_slice_h, ctx->graph->nb_threads, s->nb_threads);
 
     s->p_linesize = linesize = FFALIGN(s->pr_width, 32);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         s->cbuf[i][0] = av_malloc_array(linesize * s->pr_height, sizeof(*s->cbuf[i][0]));
         s->cbuf[i][1] = av_malloc_array(linesize * s->pr_height, sizeof(*s->cbuf[i][1]));
         s->cbuf[i][2] = av_malloc_array(linesize * s->pr_height, sizeof(*s->cbuf[i][2]));
@@ -522,8 +534,10 @@ static int config_input(AVFilterLink *inlink)
 
     /* eval expressions are probably not thread safe when the eval internal
      * state can be changed (typically through load & store operations) */
-    if (s->expr_str) {
-        for (i = 0; i < s->nb_threads; i++) {
+    if (s->expr_str)
+    {
+        for (i = 0; i < s->nb_threads; i++)
+        {
             int ret = av_expr_parse(&s->expr[i], s->expr_str, var_names,
                                     NULL, NULL, NULL, NULL, 0, ctx);
             if (ret < 0)
@@ -535,7 +549,8 @@ static int config_input(AVFilterLink *inlink)
      * the previous one in in addition to its processing area. This is because
      * each pixel is averaged by all the surrounding blocks */
     slice_h = (int)ceilf(s->pr_height / (float)s->nb_threads) + (s->bsize - 1) * 2;
-    for (i = 0; i < s->nb_threads; i++) {
+    for (i = 0; i < s->nb_threads; i++)
+    {
         s->slices[i] = av_malloc_array(linesize, slice_h * sizeof(*s->slices[i]));
         if (!s->slices[i])
             return AVERROR(ENOMEM);
@@ -568,24 +583,40 @@ static av_cold int init(AVFilterContext *ctx)
     if (s->overlap == -1)
         s->overlap = s->bsize - 1;
 
-    if (s->overlap > s->bsize - 1) {
+    if (s->overlap > s->bsize - 1)
+    {
         av_log(s, AV_LOG_ERROR, "Overlap value can not except %d "
                "with a block size of %dx%d\n",
                s->bsize - 1, s->bsize, s->bsize);
         return AVERROR(EINVAL);
     }
 
-    if (s->expr_str) {
-        switch (s->n) {
-        case 3: s->filter_freq_func = filter_freq_expr_8;  break;
-        case 4: s->filter_freq_func = filter_freq_expr_16; break;
-        default: av_assert0(0);
+    if (s->expr_str)
+    {
+        switch (s->n)
+        {
+        case 3:
+            s->filter_freq_func = filter_freq_expr_8;
+            break;
+        case 4:
+            s->filter_freq_func = filter_freq_expr_16;
+            break;
+        default:
+            av_assert0(0);
         }
-    } else {
-        switch (s->n) {
-        case 3: s->filter_freq_func = filter_freq_sigma_8;  break;
-        case 4: s->filter_freq_func = filter_freq_sigma_16; break;
-        default: av_assert0(0);
+    }
+    else
+    {
+        switch (s->n)
+        {
+        case 3:
+            s->filter_freq_func = filter_freq_sigma_8;
+            break;
+        case 4:
+            s->filter_freq_func = filter_freq_sigma_16;
+            break;
+        default:
+            av_assert0(0);
         }
     }
 
@@ -596,7 +627,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_BGR24, AV_PIX_FMT_RGB24,
         AV_PIX_FMT_NONE
     };
@@ -606,7 +638,8 @@ static int query_formats(AVFilterContext *ctx)
     return ff_set_common_formats(ctx, fmts_list);
 }
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     float *src, *dst;
 } ThreadData;
 
@@ -635,7 +668,8 @@ static int filter_slice(AVFilterContext *ctx,
     memset(slice, 0, (slice_h + s->bsize - 1) * dst_linesize * sizeof(*slice));
 
     // block dct sums
-    for (y = 0; y < slice_h; y += s->step) {
+    for (y = 0; y < slice_h; y += s->step)
+    {
         for (x = 0; x < w - s->bsize + 1; x += s->step)
             s->filter_freq_func(s, src + x, src_linesize,
                                 slice + x, slice_linesize,
@@ -647,7 +681,8 @@ static int filter_slice(AVFilterContext *ctx,
     // average blocks
     slice = s->slices[jobnr] + (slice_start - slice_start_ctx) * slice_linesize;
     dst = td->dst + slice_start * dst_linesize;
-    for (y = slice_start; y < slice_end; y++) {
+    for (y = slice_start; y < slice_end; y++)
+    {
         for (x = 0; x < w; x++)
             dst[x] = slice[x] * weights[x];
         slice += slice_linesize;
@@ -666,13 +701,17 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int direct, plane;
     AVFrame *out;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         direct = 1;
         out = in;
-    } else {
+    }
+    else
+    {
         direct = 0;
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -682,8 +721,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     s->color_decorrelation(s->cbuf[0], s->p_linesize,
                            in->data[0], in->linesize[0],
                            s->pr_width, s->pr_height);
-    for (plane = 0; plane < 3; plane++) {
-        ThreadData td = {
+    for (plane = 0; plane < 3; plane++)
+    {
+        ThreadData td =
+        {
             .src = s->cbuf[0][plane],
             .dst = s->cbuf[1][plane],
         };
@@ -693,7 +734,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
                          s->cbuf[1], s->p_linesize,
                          s->pr_width, s->pr_height);
 
-    if (!direct) {
+    if (!direct)
+    {
         int y;
         uint8_t *dst = out->data[0];
         const uint8_t *src = in->data[0];
@@ -702,21 +744,25 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         const int hpad = (inlink->w - s->pr_width) * 3;
         const int vpad = (inlink->h - s->pr_height);
 
-        if (hpad) {
+        if (hpad)
+        {
             uint8_t       *dstp = dst + s->pr_width * 3;
             const uint8_t *srcp = src + s->pr_width * 3;
 
-            for (y = 0; y < s->pr_height; y++) {
+            for (y = 0; y < s->pr_height; y++)
+            {
                 memcpy(dstp, srcp, hpad);
                 dstp += dst_linesize;
                 srcp += src_linesize;
             }
         }
-        if (vpad) {
+        if (vpad)
+        {
             uint8_t       *dstp = dst + s->pr_height * dst_linesize;
             const uint8_t *srcp = src + s->pr_height * src_linesize;
 
-            for (y = 0; y < vpad; y++) {
+            for (y = 0; y < vpad; y++)
+            {
                 memcpy(dstp, srcp, inlink->w * 3);
                 dstp += dst_linesize;
                 srcp += src_linesize;
@@ -735,18 +781,21 @@ static av_cold void uninit(AVFilterContext *ctx)
     DCTdnoizContext *s = ctx->priv;
 
     av_freep(&s->weights);
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_freep(&s->cbuf[i][0]);
         av_freep(&s->cbuf[i][1]);
         av_freep(&s->cbuf[i][2]);
     }
-    for (i = 0; i < s->nb_threads; i++) {
+    for (i = 0; i < s->nb_threads; i++)
+    {
         av_freep(&s->slices[i]);
         av_expr_free(s->expr[i]);
     }
 }
 
-static const AVFilterPad dctdnoiz_inputs[] = {
+static const AVFilterPad dctdnoiz_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -756,7 +805,8 @@ static const AVFilterPad dctdnoiz_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad dctdnoiz_outputs[] = {
+static const AVFilterPad dctdnoiz_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -764,7 +814,8 @@ static const AVFilterPad dctdnoiz_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_dctdnoiz = {
+AVFilter ff_vf_dctdnoiz =
+{
     .name          = "dctdnoiz",
     .description   = NULL_IF_CONFIG_SMALL("Denoise frames using 2D DCT."),
     .priv_size     = sizeof(DCTdnoizContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,7 +21,8 @@
 #include "webrtc/media/base/videosinkinterface.h"
 #include "webrtc/media/base/videosourcebase.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // VideoBroadcaster broadcast video frames to sinks and combines
 // VideoSinkWants from its sinks. It does that by implementing
@@ -30,37 +31,38 @@ namespace rtc {
 // Video frames can be broadcasted on any thread. I.e VideoBroadcaster::OnFrame
 // can be called on any thread.
 class VideoBroadcaster : public VideoSourceBase,
-                         public VideoSinkInterface<webrtc::VideoFrame> {
- public:
-  VideoBroadcaster();
-  void AddOrUpdateSink(VideoSinkInterface<webrtc::VideoFrame>* sink,
-                       const VideoSinkWants& wants) override;
-  void RemoveSink(VideoSinkInterface<webrtc::VideoFrame>* sink) override;
+    public VideoSinkInterface<webrtc::VideoFrame>
+{
+public:
+    VideoBroadcaster();
+    void AddOrUpdateSink(VideoSinkInterface<webrtc::VideoFrame>* sink,
+                         const VideoSinkWants& wants) override;
+    void RemoveSink(VideoSinkInterface<webrtc::VideoFrame>* sink) override;
 
-  // Returns true if the next frame will be delivered to at least one sink.
-  bool frame_wanted() const;
+    // Returns true if the next frame will be delivered to at least one sink.
+    bool frame_wanted() const;
 
-  // Returns VideoSinkWants a source is requested to fulfill. They are
-  // aggregated by all VideoSinkWants from all sinks.
-  VideoSinkWants wants() const;
+    // Returns VideoSinkWants a source is requested to fulfill. They are
+    // aggregated by all VideoSinkWants from all sinks.
+    VideoSinkWants wants() const;
 
-  // This method ensures that if a sink sets rotation_applied == true,
-  // it will never receive a frame with pending rotation. Our caller
-  // may pass in frames without precise synchronization with changes
-  // to the VideoSinkWants.
-  void OnFrame(const webrtc::VideoFrame& frame) override;
+    // This method ensures that if a sink sets rotation_applied == true,
+    // it will never receive a frame with pending rotation. Our caller
+    // may pass in frames without precise synchronization with changes
+    // to the VideoSinkWants.
+    void OnFrame(const webrtc::VideoFrame& frame) override;
 
- protected:
-  void UpdateWants() EXCLUSIVE_LOCKS_REQUIRED(sinks_and_wants_lock_);
-  const rtc::scoped_refptr<webrtc::VideoFrameBuffer>& GetBlackFrameBuffer(
-      int width, int height)
-      EXCLUSIVE_LOCKS_REQUIRED(sinks_and_wants_lock_);
+protected:
+    void UpdateWants() EXCLUSIVE_LOCKS_REQUIRED(sinks_and_wants_lock_);
+    const rtc::scoped_refptr<webrtc::VideoFrameBuffer>& GetBlackFrameBuffer(
+        int width, int height)
+    EXCLUSIVE_LOCKS_REQUIRED(sinks_and_wants_lock_);
 
-  ThreadChecker thread_checker_;
-  rtc::CriticalSection sinks_and_wants_lock_;
+    ThreadChecker thread_checker_;
+    rtc::CriticalSection sinks_and_wants_lock_;
 
-  VideoSinkWants current_wants_ GUARDED_BY(sinks_and_wants_lock_);
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> black_frame_buffer_;
+    VideoSinkWants current_wants_ GUARDED_BY(sinks_and_wants_lock_);
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> black_frame_buffer_;
 };
 
 }  // namespace rtc

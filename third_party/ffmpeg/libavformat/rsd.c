@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RSD demuxer
  * Copyright (c) 2013 James Almer
  *
@@ -25,7 +25,8 @@
 #include "avio.h"
 #include "internal.h"
 
-static const AVCodecTag rsd_tags[] = {
+static const AVCodecTag rsd_tags[] =
+{
     { AV_CODEC_ID_ADPCM_THP,       MKTAG('G','A','D','P') },
     { AV_CODEC_ID_ADPCM_IMA_RAD,   MKTAG('R','A','D','P') },
     { AV_CODEC_ID_PCM_S16BE,       MKTAG('P','C','M','B') },
@@ -33,7 +34,8 @@ static const AVCodecTag rsd_tags[] = {
     { AV_CODEC_ID_NONE, 0 },
 };
 
-static const uint32_t rsd_unsupported_tags[] = {
+static const uint32_t rsd_unsupported_tags[] =
+{
     MKTAG('O','G','G',' '),
     MKTAG('V','A','G',' '),
     MKTAG('W','A','D','P'),
@@ -69,12 +71,15 @@ static int rsd_read_header(AVFormatContext *s)
     codec->codec_type = AVMEDIA_TYPE_AUDIO;
     codec->codec_tag  = avio_rl32(pb);
     codec->codec_id   = ff_codec_get_id(rsd_tags, codec->codec_tag);
-    if (!codec->codec_id) {
+    if (!codec->codec_id)
+    {
         char tag_buf[32];
 
         av_get_codec_tag_string(tag_buf, sizeof(tag_buf), codec->codec_tag);
-        for (i=0; i < FF_ARRAY_ELEMS(rsd_unsupported_tags); i++) {
-            if (codec->codec_tag == rsd_unsupported_tags[i]) {
+        for (i=0; i < FF_ARRAY_ELEMS(rsd_unsupported_tags); i++)
+        {
+            if (codec->codec_tag == rsd_unsupported_tags[i])
+            {
                 avpriv_request_sample(s, "Codec tag: %s", tag_buf);
                 return AVERROR_PATCHWELCOME;
             }
@@ -94,7 +99,8 @@ static int rsd_read_header(AVFormatContext *s)
 
     avio_skip(pb, 4); // Unknown
 
-    switch (codec->codec_id) {
+    switch (codec->codec_id)
+    {
     case AV_CODEC_ID_ADPCM_IMA_RAD:
         codec->block_align = 20 * codec->channels;
         if (pb->seekable)
@@ -145,8 +151,10 @@ static int rsd_read_packet(AVFormatContext *s, AVPacket *pkt)
     else
         ret = av_get_packet(s->pb, pkt, size);
 
-    if (ret != size) {
-        if (ret < 0) {
+    if (ret != size)
+    {
+        if (ret < 0)
+        {
             av_free_packet(pkt);
             return ret;
         }
@@ -157,7 +165,8 @@ static int rsd_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_rsd_demuxer = {
+AVInputFormat ff_rsd_demuxer =
+{
     .name           =   "rsd",
     .long_name      =   NULL_IF_CONFIG_SMALL("GameCube RSD"),
     .read_probe     =   rsd_probe,

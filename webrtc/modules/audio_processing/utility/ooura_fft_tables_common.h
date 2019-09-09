@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,13 +13,15 @@
 
 #include "webrtc/modules/audio_processing/utility/ooura_fft.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // This tables used to be computed at run-time. For example, refer to:
 // https://code.google.com/p/webrtc/source/browse/trunk/webrtc/modules/audio_processing/utility/apm_rdft.c?r=6564
 // to see the initialization code.
 // Constants shared by all paths (C, SSE2, NEON).
-const float rdft_w[64] = {
+const float rdft_w[64] =
+{
     1.0000000000f, 0.0000000000f, 0.7071067691f, 0.7071067691f, 0.9238795638f,
     0.3826834559f, 0.3826834559f, 0.9238795638f, 0.9807852507f, 0.1950903237f,
     0.5555702448f, 0.8314695954f, 0.8314695954f, 0.5555702448f, 0.1950903237f,
@@ -36,13 +38,15 @@ const float rdft_w[64] = {
 };
 
 // Constants used by the C and MIPS paths.
-const float rdft_wk3ri_first[16] = {
+const float rdft_wk3ri_first[16] =
+{
     1.000000000f, 0.000000000f, 0.382683456f,  0.923879564f,
     0.831469536f, 0.555570245f, -0.195090353f, 0.980785251f,
     0.956940353f, 0.290284693f, 0.098017156f,  0.995184720f,
     0.634393334f, 0.773010492f, -0.471396863f, 0.881921172f,
 };
-const float rdft_wk3ri_second[16] = {
+const float rdft_wk3ri_second[16] =
+{
     -0.707106769f, 0.707106769f,  -0.923879564f, -0.382683456f,
     -0.980785251f, 0.195090353f,  -0.555570245f, -0.831469536f,
     -0.881921172f, 0.471396863f,  -0.773010492f, -0.634393334f,

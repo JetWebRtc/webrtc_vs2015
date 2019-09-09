@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -105,15 +105,16 @@ extern "C" {
 #endif
 
 
-typedef enum {
-  TDLIMIT_OK = 0,
+typedef enum
+{
+    TDLIMIT_OK = 0,
 
-  __error_codes_start = -100,
+    __error_codes_start = -100,
 
-  TDLIMIT_INVALID_HANDLE,
-  TDLIMIT_INVALID_PARAMETER,
+    TDLIMIT_INVALID_HANDLE,
+    TDLIMIT_INVALID_PARAMETER,
 
-  __error_codes_end
+    __error_codes_end
 } TDLIMITER_ERROR;
 
 struct TDLimiter;
@@ -171,12 +172,12 @@ TDLIMITER_ERROR destroyLimiter(TDLimiterPtr limiter);
 * returns:    error code                                                      *
 ******************************************************************************/
 TDLIMITER_ERROR applyLimiter(TDLimiterPtr limiter,
-                 INT_PCM*    samples,
-                 FIXP_DBL*    pGain,
-                 const INT*   gain_scale,
-                 const UINT   gain_size,
-                 const UINT   gain_delay,
-                 const UINT   nSamples);
+                             INT_PCM*    samples,
+                             FIXP_DBL*    pGain,
+                             const INT*   gain_scale,
+                             const UINT   gain_size,
+                             const UINT   gain_delay,
+                             const UINT   nSamples);
 
 /******************************************************************************
 * getLimiterDelay                                                             *

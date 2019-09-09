@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,60 +24,67 @@
 #if defined(WEBRTC_ARCH_ARM_FAMILY)
 #include <asm/hwcap.h>
 
-uint64_t WebRtc_GetCPUFeaturesARM(void) {
-  uint64_t result = 0;
-  int architecture = 0;
-  unsigned long hwcap = 0;
-  const char* platform = NULL;
+uint64_t WebRtc_GetCPUFeaturesARM(void)
+{
+    uint64_t result = 0;
+    int architecture = 0;
+    unsigned long hwcap = 0;
+    const char* platform = NULL;
 #if __GLIBC_PREREQ(2, 16)
-  hwcap = getauxval(AT_HWCAP);
-  platform = (const char*)getauxval(AT_PLATFORM);
+    hwcap = getauxval(AT_HWCAP);
+    platform = (const char*)getauxval(AT_PLATFORM);
 #else
-  ElfW(auxv_t) auxv;
-  int fd = open("/proc/self/auxv", O_RDONLY);
-  if (fd >= 0) {
-    while (hwcap == 0 || platform == NULL) {
-      if (read(fd, &auxv, sizeof(auxv)) < (ssize_t)sizeof(auxv)) {
-        if (errno == EINTR)
-          continue;
-        break;
-      }
-      switch (auxv.a_type) {
-        case AT_HWCAP:
-          hwcap = auxv.a_un.a_val;
-          break;
-        case AT_PLATFORM:
-          platform = (const char*)auxv.a_un.a_val;
-          break;
-      }
+    ElfW(auxv_t) auxv;
+    int fd = open("/proc/self/auxv", O_RDONLY);
+    if (fd >= 0)
+    {
+        while (hwcap == 0 || platform == NULL)
+        {
+            if (read(fd, &auxv, sizeof(auxv)) < (ssize_t)sizeof(auxv))
+            {
+                if (errno == EINTR)
+                    continue;
+                break;
+            }
+            switch (auxv.a_type)
+            {
+            case AT_HWCAP:
+                hwcap = auxv.a_un.a_val;
+                break;
+            case AT_PLATFORM:
+                platform = (const char*)auxv.a_un.a_val;
+                break;
+            }
+        }
+        close(fd);
     }
-    close(fd);
-  }
 #endif  // __GLIBC_PREREQ(2,16)
 #if defined(__aarch64__)
-  architecture = 8;
-  if ((hwcap & HWCAP_FP) != 0)
-    result |= kCPUFeatureVFPv3;
-  if ((hwcap & HWCAP_ASIMD) != 0)
-    result |= kCPUFeatureNEON;
+    architecture = 8;
+    if ((hwcap & HWCAP_FP) != 0)
+        result |= kCPUFeatureVFPv3;
+    if ((hwcap & HWCAP_ASIMD) != 0)
+        result |= kCPUFeatureNEON;
 #else
-  if (platform != NULL) {
-    /* expect a string in the form "v6l" or "v7l", etc.
-     */
-    if (platform[0] == 'v' && '0' <= platform[1] && platform[1] <= '9' &&
-        (platform[2] == 'l' || platform[2] == 'b')) {
-      architecture = platform[1] - '0';
+    if (platform != NULL)
+    {
+        /* expect a string in the form "v6l" or "v7l", etc.
+         */
+        if (platform[0] == 'v' && '0' <= platform[1] && platform[1] <= '9' &&
+                (platform[2] == 'l' || platform[2] == 'b'))
+        {
+            architecture = platform[1] - '0';
+        }
     }
-  }
-  if ((hwcap & HWCAP_VFPv3) != 0)
-    result |= kCPUFeatureVFPv3;
-  if ((hwcap & HWCAP_NEON) != 0)
-    result |= kCPUFeatureNEON;
+    if ((hwcap & HWCAP_VFPv3) != 0)
+        result |= kCPUFeatureVFPv3;
+    if ((hwcap & HWCAP_NEON) != 0)
+        result |= kCPUFeatureNEON;
 #endif
-  if (architecture >= 7)
-    result |= kCPUFeatureARMv7;
-  if (architecture >= 6)
-    result |= kCPUFeatureLDREXSTREX;
-  return result;
+    if (architecture >= 7)
+        result |= kCPUFeatureARMv7;
+    if (architecture >= 6)
+        result |= kCPUFeatureLDREXSTREX;
+    return result;
 }
 #endif  // WEBRTC_ARCH_ARM_FAMILY

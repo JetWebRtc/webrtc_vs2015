@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,6 +29,6 @@ void WebRtcIlbcfix_InterpolateSamples(
     int16_t *interpSamples, /* (o) The interpolated samples */
     int16_t *CBmem,   /* (i) The CB memory */
     size_t lMem    /* (i) Length of the CB memory */
-                                      );
+);
 
 #endif

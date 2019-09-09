@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,11 +12,13 @@
 
 #include "Mmsystem.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // static
-EventTimerWrapper* EventTimerWrapper::Create() {
-  return new EventTimerWin();
+EventTimerWrapper* EventTimerWrapper::Create()
+{
+    return new EventTimerWin();
 }
 
 EventTimerWin::EventTimerWin()
@@ -24,55 +26,67 @@ EventTimerWin::EventTimerWin()
                            FALSE,   // manual reset
                            FALSE,   // initial state
                            NULL)),  // name of event
-    timerID_(NULL) {
+      timerID_(NULL)
+{
 }
 
-EventTimerWin::~EventTimerWin() {
-  StopTimer();
-  CloseHandle(event_);
+EventTimerWin::~EventTimerWin()
+{
+    StopTimer();
+    CloseHandle(event_);
 }
 
-bool EventTimerWin::Set() {
-  // Note: setting an event that is already set has no effect.
-  return SetEvent(event_) == 1;
+bool EventTimerWin::Set()
+{
+    // Note: setting an event that is already set has no effect.
+    return SetEvent(event_) == 1;
 }
 
-EventTypeWrapper EventTimerWin::Wait(unsigned long max_time) {
-  unsigned long res = WaitForSingleObject(event_, max_time);
-  switch (res) {
+EventTypeWrapper EventTimerWin::Wait(unsigned long max_time)
+{
+    unsigned long res = WaitForSingleObject(event_, max_time);
+    switch (res)
+    {
     case WAIT_OBJECT_0:
-      return kEventSignaled;
+        return kEventSignaled;
     case WAIT_TIMEOUT:
-      return kEventTimeout;
+        return kEventTimeout;
     default:
-      return kEventError;
-  }
+        return kEventError;
+    }
 }
 
-bool EventTimerWin::StartTimer(bool periodic, unsigned long time) {
-  if (timerID_ != NULL) {
-    timeKillEvent(timerID_);
-    timerID_ = NULL;
-  }
+bool EventTimerWin::StartTimer(bool periodic, unsigned long time)
+{
+    if (timerID_ != NULL)
+    {
+        timeKillEvent(timerID_);
+        timerID_ = NULL;
+    }
 
-  if (periodic) {
-    timerID_ = timeSetEvent(time, 0, (LPTIMECALLBACK)HANDLE(event_), 0,
-                            TIME_PERIODIC | TIME_CALLBACK_EVENT_PULSE);
-  } else {
-    timerID_ = timeSetEvent(time, 0, (LPTIMECALLBACK)HANDLE(event_), 0,
-                            TIME_ONESHOT | TIME_CALLBACK_EVENT_SET);
-  }
+    if (periodic)
+    {
+        timerID_ = timeSetEvent(time, 0, (LPTIMECALLBACK)HANDLE(event_), 0,
+                                TIME_PERIODIC | TIME_CALLBACK_EVENT_PULSE);
+    }
+    else
+    {
+        timerID_ = timeSetEvent(time, 0, (LPTIMECALLBACK)HANDLE(event_), 0,
+                                TIME_ONESHOT | TIME_CALLBACK_EVENT_SET);
+    }
 
-  return timerID_ != NULL;
+    return timerID_ != NULL;
 }
 
-bool EventTimerWin::StopTimer() {
-  if (timerID_ != NULL) {
-    timeKillEvent(timerID_);
-    timerID_ = NULL;
-  }
+bool EventTimerWin::StopTimer()
+{
+    if (timerID_ != NULL)
+    {
+        timeKillEvent(timerID_);
+        timerID_ = NULL;
+    }
 
-  return true;
+    return true;
 }
 
 }  // namespace webrtc

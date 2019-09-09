@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Mina Nagy Zaki
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct AFormatContext {
+typedef struct AFormatContext
+{
     const AVClass   *class;
 
     AVFilterFormats *formats;
@@ -48,7 +49,8 @@ typedef struct AFormatContext {
 #define OFFSET(x) offsetof(AFormatContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM
 #define F AV_OPT_FLAG_FILTERING_PARAM
-static const AVOption aformat_options[] = {
+static const AVOption aformat_options[] =
+{
     { "sample_fmts",     "A comma-separated list of sample formats.",  OFFSET(formats_str),         AV_OPT_TYPE_STRING, .flags = A|F },
     { "sample_rates",    "A comma-separated list of sample rates.",    OFFSET(sample_rates_str),    AV_OPT_TYPE_STRING, .flags = A|F },
     { "channel_layouts", "A comma-separated list of channel layouts.", OFFSET(channel_layouts_str), AV_OPT_TYPE_STRING, .flags = A|F },
@@ -111,18 +113,19 @@ static int query_formats(AVFilterContext *ctx)
     int ret;
 
     ret = ff_set_common_formats(ctx, s->formats ? s->formats :
-                                            ff_all_formats(AVMEDIA_TYPE_AUDIO));
+                                ff_all_formats(AVMEDIA_TYPE_AUDIO));
     if (ret < 0)
         return ret;
     ret = ff_set_common_samplerates(ctx, s->sample_rates ? s->sample_rates :
-                                                     ff_all_samplerates());
+                                    ff_all_samplerates());
     if (ret < 0)
         return ret;
     return ff_set_common_channel_layouts(ctx, s->channel_layouts ? s->channel_layouts :
-                                                            ff_all_channel_counts());
+                                         ff_all_channel_counts());
 }
 
-static const AVFilterPad avfilter_af_aformat_inputs[] = {
+static const AVFilterPad avfilter_af_aformat_inputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -130,7 +133,8 @@ static const AVFilterPad avfilter_af_aformat_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_aformat_outputs[] = {
+static const AVFilterPad avfilter_af_aformat_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO
@@ -138,7 +142,8 @@ static const AVFilterPad avfilter_af_aformat_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_aformat = {
+AVFilter ff_af_aformat =
+{
     .name          = "aformat",
     .description   = NULL_IF_CONFIG_SMALL("Convert the input audio to one of the specified formats."),
     .init          = init,

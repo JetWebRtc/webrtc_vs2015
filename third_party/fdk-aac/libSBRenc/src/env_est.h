@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Envelope estimation structs and prototypes  
+  \brief  Envelope estimation structs and prototypes
 */
 #ifndef __ENV_EST_H
 #define __ENV_EST_H
@@ -99,48 +99,48 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  FIXP_DBL  *rBuffer[QMF_MAX_TIME_SLOTS];
-  FIXP_DBL  *iBuffer[QMF_MAX_TIME_SLOTS];
+    FIXP_DBL  *rBuffer[QMF_MAX_TIME_SLOTS];
+    FIXP_DBL  *iBuffer[QMF_MAX_TIME_SLOTS];
 
-  FIXP_DBL  *p_YBuffer;
+    FIXP_DBL  *p_YBuffer;
 
-  FIXP_DBL  *YBuffer[QMF_MAX_TIME_SLOTS];
-  int        YBufferScale[2];
+    FIXP_DBL  *YBuffer[QMF_MAX_TIME_SLOTS];
+    int        YBufferScale[2];
 
-  UCHAR envelopeCompensation[MAX_FREQ_COEFFS];
-  UCHAR pre_transient_info[2];
+    UCHAR envelopeCompensation[MAX_FREQ_COEFFS];
+    UCHAR pre_transient_info[2];
 
 
-  int YBufferWriteOffset;
-  int YBufferSzShift;
-  int rBufferReadOffset;
+    int YBufferWriteOffset;
+    int YBufferSzShift;
+    int rBufferReadOffset;
 
-  int no_cols;
-  int no_rows;
-  int start_index;
+    int no_cols;
+    int no_rows;
+    int start_index;
 
-  int time_slots;
-  int time_step;
+    int time_slots;
+    int time_step;
 }
 SBR_EXTRACT_ENVELOPE;
 typedef SBR_EXTRACT_ENVELOPE *HANDLE_SBR_EXTRACT_ENVELOPE;
 
 struct ENV_CHANNEL
 {
-  FAST_TRAN_DETECTOR sbrFastTransientDetector;
-  SBR_TRANSIENT_DETECTOR sbrTransientDetector;
-  SBR_CODE_ENVELOPE sbrCodeEnvelope;
-  SBR_CODE_ENVELOPE sbrCodeNoiseFloor;
-  SBR_EXTRACT_ENVELOPE sbrExtractEnvelope;
+    FAST_TRAN_DETECTOR sbrFastTransientDetector;
+    SBR_TRANSIENT_DETECTOR sbrTransientDetector;
+    SBR_CODE_ENVELOPE sbrCodeEnvelope;
+    SBR_CODE_ENVELOPE sbrCodeNoiseFloor;
+    SBR_EXTRACT_ENVELOPE sbrExtractEnvelope;
 
 
-  SBR_ENVELOPE_FRAME SbrEnvFrame;
-  SBR_TON_CORR_EST   TonCorr;
+    SBR_ENVELOPE_FRAME SbrEnvFrame;
+    SBR_TON_CORR_EST   TonCorr;
 
-  struct SBR_ENV_DATA encEnvData;
+    struct SBR_ENV_DATA encEnvData;
 
-  int qmfScale;
-  UCHAR fLevelProtect;
+    int qmfScale;
+    UCHAR fLevelProtect;
 };
 typedef struct ENV_CHANNEL *HANDLE_ENV_CHANNEL;
 
@@ -149,33 +149,35 @@ typedef struct ENV_CHANNEL *HANDLE_ENV_CHANNEL;
 INT
 FDKsbrEnc_CreateExtractSbrEnvelope (HANDLE_SBR_EXTRACT_ENVELOPE  hSbrCut,
                                     INT channel
-                                   ,INT chInEl
-                                   ,UCHAR* dynamic_RAM
-                         );
+                                    ,INT chInEl
+                                    ,UCHAR* dynamic_RAM
+                                   );
 
 
 INT
 FDKsbrEnc_InitExtractSbrEnvelope (
-                          HANDLE_SBR_EXTRACT_ENVELOPE hSbr,
-                          int no_cols,
-                          int no_rows,
-                          int start_index,
-                          int time_slots, int time_step, int tran_off,
-                          ULONG statesInitFlag
-                         ,int chInEl
-                         ,UCHAR* dynamic_RAM
-                         ,UINT sbrSyntaxFlags
-                         );
+    HANDLE_SBR_EXTRACT_ENVELOPE hSbr,
+    int no_cols,
+    int no_rows,
+    int start_index,
+    int time_slots, int time_step, int tran_off,
+    ULONG statesInitFlag
+    ,int chInEl
+    ,UCHAR* dynamic_RAM
+    ,UINT sbrSyntaxFlags
+);
 
 void FDKsbrEnc_deleteExtractSbrEnvelope (HANDLE_SBR_EXTRACT_ENVELOPE hSbrCut);
 
-typedef struct {
+typedef struct
+{
     FREQ_RES res[MAX_NUM_NOISE_VALUES];
     int maxQuantError;
 
 } SBR_FRAME_TEMP_DATA;
 
-typedef struct {
+typedef struct
+{
     const SBR_FRAME_INFO *frame_info;
     FIXP_DBL noiseFloor[MAX_NUM_NOISE_VALUES];
     SCHAR sfb_nrg_coupling[MAX_NUM_ENVELOPE_VALUES]; /* only used if stereomode = SWITCH_L_R_C */
@@ -191,14 +193,14 @@ typedef struct {
  */
 void
 FDKsbrEnc_extractSbrEnvelope1(
-                   HANDLE_SBR_CONFIG_DATA    h_con,
-                   HANDLE_SBR_HEADER_DATA    sbrHeaderData,
-                   HANDLE_SBR_BITSTREAM_DATA sbrBitstreamData,
-                   HANDLE_ENV_CHANNEL        h_envChan,
-                   HANDLE_COMMON_DATA        cmonData,
-                   SBR_ENV_TEMP_DATA   *eData,
-                   SBR_FRAME_TEMP_DATA *fData
-                    );
+    HANDLE_SBR_CONFIG_DATA    h_con,
+    HANDLE_SBR_HEADER_DATA    sbrHeaderData,
+    HANDLE_SBR_BITSTREAM_DATA sbrBitstreamData,
+    HANDLE_ENV_CHANNEL        h_envChan,
+    HANDLE_COMMON_DATA        cmonData,
+    SBR_ENV_TEMP_DATA   *eData,
+    SBR_FRAME_TEMP_DATA *fData
+);
 
 
 /*
@@ -207,17 +209,17 @@ FDKsbrEnc_extractSbrEnvelope1(
  */
 void
 FDKsbrEnc_extractSbrEnvelope2(
-                   HANDLE_SBR_CONFIG_DATA     h_con,
-                   HANDLE_SBR_HEADER_DATA     sbrHeaderData,
-                   HANDLE_PARAMETRIC_STEREO   hParametricStereo,
-                   HANDLE_SBR_BITSTREAM_DATA  sbrBitstreamData,
-                   HANDLE_ENV_CHANNEL         sbrEnvChannel0,
-                   HANDLE_ENV_CHANNEL         sbrEnvChannel1,
-                   HANDLE_COMMON_DATA         cmonData,
-                   SBR_ENV_TEMP_DATA         *eData,
-                   SBR_FRAME_TEMP_DATA       *fData,
-                   int                        clearOutput
-                   );
+    HANDLE_SBR_CONFIG_DATA     h_con,
+    HANDLE_SBR_HEADER_DATA     sbrHeaderData,
+    HANDLE_PARAMETRIC_STEREO   hParametricStereo,
+    HANDLE_SBR_BITSTREAM_DATA  sbrBitstreamData,
+    HANDLE_ENV_CHANNEL         sbrEnvChannel0,
+    HANDLE_ENV_CHANNEL         sbrEnvChannel1,
+    HANDLE_COMMON_DATA         cmonData,
+    SBR_ENV_TEMP_DATA         *eData,
+    SBR_FRAME_TEMP_DATA       *fData,
+    int                        clearOutput
+);
 
 INT
 FDKsbrEnc_GetEnvEstDelay(HANDLE_SBR_EXTRACT_ENVELOPE hSbr);

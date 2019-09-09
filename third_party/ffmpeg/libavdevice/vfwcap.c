@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VFW capture interface
  * Copyright (c) 2006-2008 Ramiro Polla
  *
@@ -39,7 +39,8 @@
 #define HWND_MESSAGE ((HWND) -3)
 #endif
 
-struct vfw_ctx {
+struct vfw_ctx
+{
     const AVClass *class;
     HWND hwnd;
     HANDLE mutex;
@@ -53,27 +54,29 @@ struct vfw_ctx {
 
 static enum AVPixelFormat vfw_pixfmt(DWORD biCompression, WORD biBitCount)
 {
-    switch(biCompression) {
+    switch(biCompression)
+    {
     case MKTAG('U', 'Y', 'V', 'Y'):
-        return AV_PIX_FMT_UYVY422;
-    case MKTAG('Y', 'U', 'Y', '2'):
-        return AV_PIX_FMT_YUYV422;
-    case MKTAG('I', '4', '2', '0'):
-        return AV_PIX_FMT_YUV420P;
-    case BI_RGB:
-        switch(biBitCount) { /* 1-8 are untested */
-            case 1:
-                return AV_PIX_FMT_MONOWHITE;
-            case 4:
-                return AV_PIX_FMT_RGB4;
-            case 8:
-                return AV_PIX_FMT_RGB8;
-            case 16:
-                return AV_PIX_FMT_RGB555;
-            case 24:
-                return AV_PIX_FMT_BGR24;
-            case 32:
-                return AV_PIX_FMT_RGB32;
+                return AV_PIX_FMT_UYVY422;
+        case MKTAG('Y', 'U', 'Y', '2'):
+            return AV_PIX_FMT_YUYV422;
+        case MKTAG('I', '4', '2', '0'):
+            return AV_PIX_FMT_YUV420P;
+        case BI_RGB:
+            switch(biBitCount)   /* 1-8 are untested */
+        {
+        case 1:
+            return AV_PIX_FMT_MONOWHITE;
+        case 4:
+            return AV_PIX_FMT_RGB4;
+        case 8:
+            return AV_PIX_FMT_RGB8;
+        case 16:
+            return AV_PIX_FMT_RGB555;
+        case 24:
+            return AV_PIX_FMT_BGR24;
+        case 32:
+            return AV_PIX_FMT_RGB32;
         }
     }
     return AV_PIX_FMT_NONE;
@@ -81,20 +84,21 @@ static enum AVPixelFormat vfw_pixfmt(DWORD biCompression, WORD biBitCount)
 
 static enum AVCodecID vfw_codecid(DWORD biCompression)
 {
-    switch(biCompression) {
+    switch(biCompression)
+    {
     case MKTAG('d', 'v', 's', 'd'):
-        return AV_CODEC_ID_DVVIDEO;
-    case MKTAG('M', 'J', 'P', 'G'):
-    case MKTAG('m', 'j', 'p', 'g'):
-        return AV_CODEC_ID_MJPEG;
+                return AV_CODEC_ID_DVVIDEO;
+        case MKTAG('M', 'J', 'P', 'G'):
+        case MKTAG('m', 'j', 'p', 'g'):
+            return AV_CODEC_ID_MJPEG;
+        }
+        return AV_CODEC_ID_NONE;
     }
-    return AV_CODEC_ID_NONE;
-}
 
 #define dstruct(pctx, sname, var, type) \
     av_log(pctx, AV_LOG_DEBUG, #var":\t%"type"\n", sname->var)
 
-static void dump_captureparms(AVFormatContext *s, CAPTUREPARMS *cparms)
+    static void dump_captureparms(AVFormatContext *s, CAPTUREPARMS *cparms)
 {
     av_log(s, AV_LOG_DEBUG, "CAPTUREPARMS\n");
     dstruct(s, cparms, dwRequestMicroSecPerFrame, "lu");
@@ -150,7 +154,7 @@ static void dump_bih(AVFormatContext *s, BITMAPINFOHEADER *bih)
     dstruct(s, bih, biBitCount, "d");
     dstruct(s, bih, biCompression, "lu");
     av_log(s, AV_LOG_DEBUG, "    biCompression:\t\"%.4s\"\n",
-                   (char*) &bih->biCompression);
+           (char*) &bih->biCompression);
     dstruct(s, bih, biSizeImage, "lu");
     dstruct(s, bih, biXPelsPerMeter, "lu");
     dstruct(s, bih, biYPelsPerMeter, "lu");
@@ -165,9 +169,10 @@ static int shall_we_drop(AVFormatContext *s)
     const int ndropscores = FF_ARRAY_ELEMS(dropscore);
     unsigned int buffer_fullness = (ctx->curbufsize*100)/s->max_picture_buffer;
 
-    if(dropscore[++ctx->frame_num%ndropscores] <= buffer_fullness) {
+    if(dropscore[++ctx->frame_num%ndropscores] <= buffer_fullness)
+    {
         av_log(s, AV_LOG_ERROR,
-              "real-time buffer %d%% full! frame dropped!\n", buffer_fullness);
+               "real-time buffer %d%% full! frame dropped!\n", buffer_fullness);
         return 1;
     }
 
@@ -194,7 +199,8 @@ static LRESULT CALLBACK videostream_cb(HWND hwnd, LPVIDEOHDR vdhdr)
     if(!pktl_next)
         goto fail;
 
-    if(av_new_packet(&pktl_next->pkt, vdhdr->dwBytesUsed) < 0) {
+    if(av_new_packet(&pktl_next->pkt, vdhdr->dwBytesUsed) < 0)
+    {
         av_free(pktl_next);
         goto fail;
     }
@@ -221,7 +227,8 @@ static int vfw_read_close(AVFormatContext *s)
     struct vfw_ctx *ctx = s->priv_data;
     AVPacketList *pktl;
 
-    if(ctx->hwnd) {
+    if(ctx->hwnd)
+    {
         SendMessage(ctx->hwnd, WM_CAP_SET_CALLBACK_VIDEOSTREAM, 0, 0);
         SendMessage(ctx->hwnd, WM_CAP_DRIVER_DISCONNECT, 0, 0);
         DestroyWindow(ctx->hwnd);
@@ -232,7 +239,8 @@ static int vfw_read_close(AVFormatContext *s)
         CloseHandle(ctx->event);
 
     pktl = ctx->pktl;
-    while (pktl) {
+    while (pktl)
+    {
         AVPacketList *next = pktl->next;
         av_free_packet(&pktl->pkt);
         av_free(pktl);
@@ -256,14 +264,17 @@ static int vfw_read_header(AVFormatContext *s)
     int ret;
     AVRational framerate_q;
 
-    if (!strcmp(s->filename, "list")) {
-        for (devnum = 0; devnum <= 9; devnum++) {
+    if (!strcmp(s->filename, "list"))
+    {
+        for (devnum = 0; devnum <= 9; devnum++)
+        {
             char driver_name[256];
             char driver_ver[256];
             ret = capGetDriverDescription(devnum,
                                           driver_name, sizeof(driver_name),
                                           driver_ver, sizeof(driver_ver));
-            if (ret) {
+            if (ret)
+            {
                 av_log(s, AV_LOG_INFO, "Driver %d\n", devnum);
                 av_log(s, AV_LOG_INFO, " %s\n", driver_name);
                 av_log(s, AV_LOG_INFO, " %s\n", driver_ver);
@@ -273,7 +284,8 @@ static int vfw_read_header(AVFormatContext *s)
     }
 
     ctx->hwnd = capCreateCaptureWindow(NULL, 0, 0, 0, 0, 0, HWND_MESSAGE, 0);
-    if(!ctx->hwnd) {
+    if(!ctx->hwnd)
+    {
         av_log(s, AV_LOG_ERROR, "Could not create capture window.\n");
         return AVERROR(EIO);
     }
@@ -282,7 +294,8 @@ static int vfw_read_header(AVFormatContext *s)
     devnum = atoi(s->filename);
 
     ret = SendMessage(ctx->hwnd, WM_CAP_DRIVER_CONNECT, devnum, 0);
-    if(!ret) {
+    if(!ret)
+    {
         av_log(s, AV_LOG_ERROR, "Could not connect to device.\n");
         DestroyWindow(ctx->hwnd);
         return AVERROR(ENODEV);
@@ -293,7 +306,8 @@ static int vfw_read_header(AVFormatContext *s)
 
     ret = SendMessage(ctx->hwnd, WM_CAP_SET_CALLBACK_VIDEOSTREAM, 0,
                       (LPARAM) videostream_cb);
-    if(!ret) {
+    if(!ret)
+    {
         av_log(s, AV_LOG_ERROR, "Could not set video stream callback.\n");
         goto fail;
     }
@@ -301,7 +315,8 @@ static int vfw_read_header(AVFormatContext *s)
     SetWindowLongPtr(ctx->hwnd, GWLP_USERDATA, (LONG_PTR) s);
 
     st = avformat_new_stream(s, NULL);
-    if(!st) {
+    if(!st)
+    {
         vfw_read_close(s);
         return AVERROR(ENOMEM);
     }
@@ -311,7 +326,8 @@ static int vfw_read_header(AVFormatContext *s)
     if(!bisize)
         goto fail;
     bi = av_malloc(bisize);
-    if(!bi) {
+    if(!bi)
+    {
         vfw_read_close(s);
         return AVERROR(ENOMEM);
     }
@@ -322,20 +338,24 @@ static int vfw_read_header(AVFormatContext *s)
     dump_bih(s, &bi->bmiHeader);
 
     ret = av_parse_video_rate(&framerate_q, ctx->framerate);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Could not parse framerate '%s'.\n", ctx->framerate);
         goto fail;
     }
 
-    if (ctx->video_size) {
+    if (ctx->video_size)
+    {
         ret = av_parse_video_size(&bi->bmiHeader.biWidth, &bi->bmiHeader.biHeight, ctx->video_size);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(s, AV_LOG_ERROR, "Couldn't parse video size.\n");
             goto fail;
         }
     }
 
-    if (0) {
+    if (0)
+    {
         /* For testing yet unsupported compressions
          * Copy these values from user-supplied verbose information */
         bi->bmiHeader.biWidth       = 320;
@@ -348,7 +368,8 @@ static int vfw_read_header(AVFormatContext *s)
     }
 
     ret = SendMessage(ctx->hwnd, WM_CAP_SET_VIDEOFORMAT, bisize, (LPARAM) bi);
-    if(!ret) {
+    if(!ret)
+    {
         av_log(s, AV_LOG_ERROR, "Could not set Video Format.\n");
         goto fail;
     }
@@ -366,7 +387,7 @@ static int vfw_read_header(AVFormatContext *s)
 
     cparms.fYield = 1; // Spawn a background thread
     cparms.dwRequestMicroSecPerFrame =
-                               (framerate_q.den*1000000) / framerate_q.num;
+        (framerate_q.den*1000000) / framerate_q.num;
     cparms.fAbortLeftMouse = 0;
     cparms.fAbortRightMouse = 0;
     cparms.fCaptureAudio = 0;
@@ -383,21 +404,27 @@ static int vfw_read_header(AVFormatContext *s)
     codec->width  = bi->bmiHeader.biWidth;
     codec->height = bi->bmiHeader.biHeight;
     codec->pix_fmt = vfw_pixfmt(biCompression, biBitCount);
-    if(codec->pix_fmt == AV_PIX_FMT_NONE) {
+    if(codec->pix_fmt == AV_PIX_FMT_NONE)
+    {
         codec->codec_id = vfw_codecid(biCompression);
-        if(codec->codec_id == AV_CODEC_ID_NONE) {
+        if(codec->codec_id == AV_CODEC_ID_NONE)
+        {
             av_log(s, AV_LOG_ERROR, "Unknown compression type. "
-                             "Please report verbose (-v 9) debug information.\n");
+                   "Please report verbose (-v 9) debug information.\n");
             vfw_read_close(s);
             return AVERROR_PATCHWELCOME;
         }
         codec->bits_per_coded_sample = biBitCount;
-    } else {
+    }
+    else
+    {
         codec->codec_id = AV_CODEC_ID_RAWVIDEO;
-        if(biCompression == BI_RGB) {
+        if(biCompression == BI_RGB)
+        {
             codec->bits_per_coded_sample = biBitCount;
             codec->extradata = av_malloc(9 + AV_INPUT_BUFFER_PADDING_SIZE);
-            if (codec->extradata) {
+            if (codec->extradata)
+            {
                 codec->extradata_size = 9;
                 memcpy(codec->extradata, "BottomUp", 9);
             }
@@ -409,18 +436,21 @@ static int vfw_read_header(AVFormatContext *s)
     avpriv_set_pts_info(st, 32, 1, 1000);
 
     ctx->mutex = CreateMutex(NULL, 0, NULL);
-    if(!ctx->mutex) {
+    if(!ctx->mutex)
+    {
         av_log(s, AV_LOG_ERROR, "Could not create Mutex.\n" );
         goto fail;
     }
     ctx->event = CreateEvent(NULL, 1, 0, NULL);
-    if(!ctx->event) {
+    if(!ctx->event)
+    {
         av_log(s, AV_LOG_ERROR, "Could not create Event.\n" );
         goto fail;
     }
 
     ret = SendMessage(ctx->hwnd, WM_CAP_SEQUENCE_NOFILE, 0, 0);
-    if(!ret) {
+    if(!ret)
+    {
         av_log(s, AV_LOG_ERROR, "Could not start capture sequence.\n" );
         goto fail;
     }
@@ -438,20 +468,26 @@ static int vfw_read_packet(AVFormatContext *s, AVPacket *pkt)
     struct vfw_ctx *ctx = s->priv_data;
     AVPacketList *pktl = NULL;
 
-    while(!pktl) {
+    while(!pktl)
+    {
         WaitForSingleObject(ctx->mutex, INFINITE);
         pktl = ctx->pktl;
-        if(ctx->pktl) {
+        if(ctx->pktl)
+        {
             *pkt = ctx->pktl->pkt;
             ctx->pktl = ctx->pktl->next;
             av_free(pktl);
         }
         ResetEvent(ctx->event);
         ReleaseMutex(ctx->mutex);
-        if(!pktl) {
-            if(s->flags & AVFMT_FLAG_NONBLOCK) {
+        if(!pktl)
+        {
+            if(s->flags & AVFMT_FLAG_NONBLOCK)
+            {
                 return AVERROR(EAGAIN);
-            } else {
+            }
+            else
+            {
                 WaitForSingleObject(ctx->event, INFINITE);
             }
         }
@@ -464,13 +500,15 @@ static int vfw_read_packet(AVFormatContext *s, AVPacket *pkt)
 
 #define OFFSET(x) offsetof(struct vfw_ctx, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "video_size", "A string describing frame size, such as 640x480 or hd720.", OFFSET(video_size), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, DEC },
     { "framerate", "", OFFSET(framerate), AV_OPT_TYPE_STRING, {.str = "ntsc"}, 0, 0, DEC },
     { NULL },
 };
 
-static const AVClass vfw_class = {
+static const AVClass vfw_class =
+{
     .class_name = "VFW indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -478,7 +516,8 @@ static const AVClass vfw_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT
 };
 
-AVInputFormat ff_vfwcap_demuxer = {
+AVInputFormat ff_vfwcap_demuxer =
+{
     .name           = "vfwcap",
     .long_name      = NULL_IF_CONFIG_SMALL("VfW video capture"),
     .priv_data_size = sizeof(struct vfw_ctx),

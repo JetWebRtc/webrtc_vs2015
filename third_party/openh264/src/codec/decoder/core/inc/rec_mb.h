@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -47,28 +47,30 @@
 
 #include "decoder_context.h"
 
-namespace WelsDec {
-typedef struct TagMCRefMember {
-  uint8_t* pDstY;
-  uint8_t* pDstU;
-  uint8_t* pDstV;
+namespace WelsDec
+{
+typedef struct TagMCRefMember
+{
+uint8_t* pDstY;
+uint8_t* pDstU;
+uint8_t* pDstV;
 
-  uint8_t* pSrcY;
-  uint8_t* pSrcU;
-  uint8_t* pSrcV;
+uint8_t* pSrcY;
+uint8_t* pSrcU;
+uint8_t* pSrcV;
 
-  int32_t iSrcLineLuma;
-  int32_t iSrcLineChroma;
+int32_t iSrcLineLuma;
+int32_t iSrcLineChroma;
 
-  int32_t iDstLineLuma;
-  int32_t iDstLineChroma;
+int32_t iDstLineLuma;
+int32_t iDstLineChroma;
 
-  int32_t iPicWidth;
-  int32_t iPicHeight;
+int32_t iPicWidth;
+int32_t iPicHeight;
 } sMCRefMember;
 
 void BaseMC (sMCRefMember* pMCRefMem, int32_t iXOffset, int32_t iYOffset, SMcFunc* pMCFunc,
-                           int32_t iBlkWidth, int32_t iBlkHeight, int16_t iMVs[2]);
+             int32_t iBlkWidth, int32_t iBlkHeight, int16_t iMVs[2]);
 
 void WelsFillRecNeededMbInfo (PWelsDecoderContext pCtx, bool bOutput, PDqLayer pCurLayer);
 

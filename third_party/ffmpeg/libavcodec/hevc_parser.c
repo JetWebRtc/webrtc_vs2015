@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC Annex B format parser
  *
  * Copyright (C) 2012 - 2013 Guillaume Martres
@@ -32,7 +32,8 @@
 
 #define ADVANCED_PARSER CONFIG_HEVC_DECODER
 
-typedef struct HEVCParserContext {
+typedef struct HEVCParserContext
+{
     ParseContext pc;
 
     HEVCPacket pkt;
@@ -61,7 +62,8 @@ static int hevc_parse_slice_header(AVCodecParserContext *s, HEVCNAL *nal,
         get_bits1(gb);      // no output of prior pics
 
     pps_id = get_ue_golomb_long(gb);
-    if (pps_id >= MAX_PPS_COUNT || !ctx->ps.pps_list[pps_id]) {
+    if (pps_id >= MAX_PPS_COUNT || !ctx->ps.pps_list[pps_id])
+    {
         av_log(avctx, AV_LOG_ERROR, "PPS id out of range: %d\n", pps_id);
         return AVERROR_INVALIDDATA;
     }
@@ -92,14 +94,22 @@ static int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
     if (ret < 0)
         return ret;
 
-    for (i = 0; i < ctx->pkt.nb_nals; i++) {
+    for (i = 0; i < ctx->pkt.nb_nals; i++)
+    {
         HEVCNAL *nal = &ctx->pkt.nals[i];
 
         /* ignore everything except parameter sets and VCL NALUs */
-        switch (nal->type) {
-        case NAL_VPS: ff_hevc_decode_nal_vps(&nal->gb, avctx, &ctx->ps);    break;
-        case NAL_SPS: ff_hevc_decode_nal_sps(&nal->gb, avctx, &ctx->ps, 1); break;
-        case NAL_PPS: ff_hevc_decode_nal_pps(&nal->gb, avctx, &ctx->ps);    break;
+        switch (nal->type)
+        {
+        case NAL_VPS:
+            ff_hevc_decode_nal_vps(&nal->gb, avctx, &ctx->ps);
+            break;
+        case NAL_SPS:
+            ff_hevc_decode_nal_sps(&nal->gb, avctx, &ctx->ps, 1);
+            break;
+        case NAL_PPS:
+            ff_hevc_decode_nal_pps(&nal->gb, avctx, &ctx->ps);
+            break;
         case NAL_TRAIL_R:
         case NAL_TRAIL_N:
         case NAL_TSA_N:
@@ -116,7 +126,8 @@ static int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
         case NAL_RADL_R:
         case NAL_RASL_N:
         case NAL_RASL_R:
-            if (buf == avctx->extradata) {
+            if (buf == avctx->extradata)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Invalid NAL unit: %d\n", nal->type);
                 return AVERROR_INVALIDDATA;
             }
@@ -139,7 +150,8 @@ static int hevc_find_frame_end(AVCodecParserContext *s, const uint8_t *buf,
     int i;
     ParseContext *pc = s->priv_data;
 
-    for (i = 0; i < buf_size; i++) {
+    for (i = 0; i < buf_size; i++)
+    {
         int nut;
 
         pc->state64 = (pc->state64 << 8) | buf[i];
@@ -150,18 +162,26 @@ static int hevc_find_frame_end(AVCodecParserContext *s, const uint8_t *buf,
         nut = (pc->state64 >> 2 * 8 + 1) & 0x3F;
         // Beginning of access unit
         if ((nut >= NAL_VPS && nut <= NAL_AUD) || nut == NAL_SEI_PREFIX ||
-            (nut >= 41 && nut <= 44) || (nut >= 48 && nut <= 55)) {
-            if (pc->frame_start_found) {
+                (nut >= 41 && nut <= 44) || (nut >= 48 && nut <= 55))
+        {
+            if (pc->frame_start_found)
+            {
                 pc->frame_start_found = 0;
                 return i - 5;
             }
-        } else if (nut <= NAL_RASL_R ||
-                   (nut >= NAL_BLA_W_LP && nut <= NAL_CRA_NUT)) {
+        }
+        else if (nut <= NAL_RASL_R ||
+                 (nut >= NAL_BLA_W_LP && nut <= NAL_CRA_NUT))
+        {
             int first_slice_segment_in_pic_flag = buf[i] >> 7;
-            if (first_slice_segment_in_pic_flag) {
-                if (!pc->frame_start_found) {
+            if (first_slice_segment_in_pic_flag)
+            {
+                if (!pc->frame_start_found)
+                {
                     pc->frame_start_found = 1;
-                } else { // First slice of next frame found
+                }
+                else     // First slice of next frame found
+                {
                     pc->frame_start_found = 0;
                     return i - 5;
                 }
@@ -182,7 +202,7 @@ static int hevc_find_frame_end(AVCodecParserContext *s, const uint8_t *buf,
  * @param buf_size size of the buffer.
  */
 static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
-                           int buf_size, AVCodecContext *avctx)
+                                  int buf_size, AVCodecContext *avctx)
 {
     HEVCParserContext *ctx = s->priv_data;
     HEVCContext       *h   = &ctx->h;
@@ -212,7 +232,8 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
     if (!buf_size)
         return 0;
 
-    if (pkt->nals_allocated < 1) {
+    if (pkt->nals_allocated < 1)
+    {
         HEVCNAL *tmp = av_realloc_array(pkt->nals, 1, sizeof(*tmp));
         if (!tmp)
             return AVERROR(ENOMEM);
@@ -223,7 +244,8 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
 
     nal = &pkt->nals[0];
 
-    for (;;) {
+    for (;;)
+    {
         int src_length, consumed;
         int ret;
         buf = avpriv_find_start_code(buf, buf_end, &state);
@@ -233,7 +255,8 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
 
         h->nal_unit_type = (*buf >> 1) & 0x3f;
         h->temporal_id   = (*(buf + 1) & 0x07) - 1;
-        if (h->nal_unit_type <= NAL_CRA_NUT) {
+        if (h->nal_unit_type <= NAL_CRA_NUT)
+        {
             // Do not walk the whole buffer just to decode slice segment header
             if (src_length > 20)
                 src_length = 20;
@@ -247,7 +270,8 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
         if (ret < 0)
             return ret;
 
-        switch (h->nal_unit_type) {
+        switch (h->nal_unit_type)
+        {
         case NAL_VPS:
             ff_hevc_decode_nal_vps(gb, avctx, ps);
             break;
@@ -278,7 +302,8 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
         case NAL_IDR_N_LP:
         case NAL_CRA_NUT:
 
-            if (is_global) {
+            if (is_global)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Invalid NAL unit: %d\n", h->nal_unit_type);
                 return AVERROR_INVALIDDATA;
             }
@@ -287,28 +312,33 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
             s->picture_structure = h->picture_struct;
             s->field_order = h->picture_struct;
 
-            if (IS_IRAP(h)) {
+            if (IS_IRAP(h))
+            {
                 s->key_frame = 1;
                 sh->no_output_of_prior_pics_flag = get_bits1(gb);
             }
 
             sh->pps_id = get_ue_golomb(gb);
-            if (sh->pps_id >= MAX_PPS_COUNT || !ps->pps_list[sh->pps_id]) {
+            if (sh->pps_id >= MAX_PPS_COUNT || !ps->pps_list[sh->pps_id])
+            {
                 av_log(avctx, AV_LOG_ERROR, "PPS id out of range: %d\n", sh->pps_id);
                 return AVERROR_INVALIDDATA;
             }
             ps->pps = (HEVCPPS*)ps->pps_list[sh->pps_id]->data;
 
-            if (ps->pps->sps_id >= MAX_SPS_COUNT || !ps->sps_list[ps->pps->sps_id]) {
+            if (ps->pps->sps_id >= MAX_SPS_COUNT || !ps->sps_list[ps->pps->sps_id])
+            {
                 av_log(avctx, AV_LOG_ERROR, "SPS id out of range: %d\n", ps->pps->sps_id);
                 return AVERROR_INVALIDDATA;
             }
-            if (ps->sps != (HEVCSPS*)ps->sps_list[ps->pps->sps_id]->data) {
+            if (ps->sps != (HEVCSPS*)ps->sps_list[ps->pps->sps_id]->data)
+            {
                 ps->sps = (HEVCSPS*)ps->sps_list[ps->pps->sps_id]->data;
                 ps->vps = (HEVCVPS*)ps->vps_list[ps->sps->vps_id]->data;
             }
 
-            if (!sh->first_slice_in_pic_flag) {
+            if (!sh->first_slice_in_pic_flag)
+            {
                 int slice_address_length;
 
                 if (ps->pps->dependent_slice_segments_enabled_flag)
@@ -319,12 +349,14 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
                 slice_address_length = av_ceil_log2_c(ps->sps->ctb_width *
                                                       ps->sps->ctb_height);
                 sh->slice_segment_addr = slice_address_length ? get_bits(gb, slice_address_length) : 0;
-                if (sh->slice_segment_addr >= ps->sps->ctb_width * ps->sps->ctb_height) {
+                if (sh->slice_segment_addr >= ps->sps->ctb_width * ps->sps->ctb_height)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Invalid slice segment address: %u.\n",
                            sh->slice_segment_addr);
                     return AVERROR_INVALIDDATA;
                 }
-            } else
+            }
+            else
                 sh->dependent_slice_segment_flag = 0;
 
             if (sh->dependent_slice_segment_flag)
@@ -335,14 +367,15 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
 
             sh->slice_type = get_ue_golomb(gb);
             if (!(sh->slice_type == I_SLICE || sh->slice_type == P_SLICE ||
-                  sh->slice_type == B_SLICE)) {
+                    sh->slice_type == B_SLICE))
+            {
                 av_log(avctx, AV_LOG_ERROR, "Unknown slice type: %d.\n",
                        sh->slice_type);
                 return AVERROR_INVALIDDATA;
             }
             s->pict_type = sh->slice_type == B_SLICE ? AV_PICTURE_TYPE_B :
                            sh->slice_type == P_SLICE ? AV_PICTURE_TYPE_P :
-                                                       AV_PICTURE_TYPE_I;
+                           AV_PICTURE_TYPE_I;
 
             if (ps->pps->output_flag_present_flag)
                 sh->pic_output_flag = get_bits1(gb);
@@ -350,20 +383,22 @@ static inline int parse_nal_units(AVCodecParserContext *s, const uint8_t *buf,
             if (ps->sps->separate_colour_plane_flag)
                 sh->colour_plane_id = get_bits(gb, 2);
 
-            if (!IS_IDR(h)) {
+            if (!IS_IDR(h))
+            {
                 sh->pic_order_cnt_lsb = get_bits(gb, ps->sps->log2_max_poc_lsb);
                 s->output_picture_number = h->poc = ff_hevc_compute_poc(h, sh->pic_order_cnt_lsb);
-            } else
+            }
+            else
                 s->output_picture_number = h->poc = 0;
 
             if (h->temporal_id == 0 &&
-                h->nal_unit_type != NAL_TRAIL_N &&
-                h->nal_unit_type != NAL_TSA_N &&
-                h->nal_unit_type != NAL_STSA_N &&
-                h->nal_unit_type != NAL_RADL_N &&
-                h->nal_unit_type != NAL_RASL_N &&
-                h->nal_unit_type != NAL_RADL_R &&
-                h->nal_unit_type != NAL_RASL_R)
+                    h->nal_unit_type != NAL_TRAIL_N &&
+                    h->nal_unit_type != NAL_TSA_N &&
+                    h->nal_unit_type != NAL_STSA_N &&
+                    h->nal_unit_type != NAL_RADL_N &&
+                    h->nal_unit_type != NAL_RASL_N &&
+                    h->nal_unit_type != NAL_RADL_R &&
+                    h->nal_unit_type != NAL_RASL_R)
                 h->pocTid0 = h->poc;
 
             return 0; /* no need to evaluate the rest */
@@ -386,16 +421,21 @@ static int hevc_parse(AVCodecParserContext *s,
     HEVCParserContext *ctx = s->priv_data;
     ParseContext *pc = &ctx->pc;
 
-    if (avctx->extradata && !ctx->parsed_extradata) {
+    if (avctx->extradata && !ctx->parsed_extradata)
+    {
         parse_nal_units(s, avctx->extradata, avctx->extradata_size, avctx);
         ctx->parsed_extradata = 1;
     }
 
-    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES) {
+    if (s->flags & PARSER_FLAG_COMPLETE_FRAMES)
+    {
         next = buf_size;
-    } else {
+    }
+    else
+    {
         next = hevc_find_frame_end(s, buf, buf_size);
-        if (ff_combine_frame(pc, next, &buf, &buf_size) < 0) {
+        if (ff_combine_frame(pc, next, &buf, &buf_size) < 0)
+        {
             *poutbuf      = NULL;
             *poutbuf_size = 0;
             return buf_size;
@@ -419,7 +459,8 @@ static int hevc_split(AVCodecContext *avctx, const uint8_t *buf, int buf_size)
     int has_pps = 0;
     int nut;
 
-    while (ptr < end) {
+    while (ptr < end)
+    {
         ptr = avpriv_find_start_code(ptr, end, &state);
         if ((state >> 8) != START_CODE)
             break;
@@ -431,8 +472,10 @@ static int hevc_split(AVCodecContext *avctx, const uint8_t *buf, int buf_size)
         else if (nut == NAL_PPS)
             has_pps = 1;
         else if ((nut != NAL_SEI_PREFIX || has_pps) &&
-                  nut != NAL_AUD) {
-            if (has_vps && has_sps) {
+                 nut != NAL_AUD)
+        {
+            if (has_vps && has_sps)
+            {
                 while (ptr - 4 > buf && ptr[-5] == 0)
                     ptr--;
                 return ptr - 4 - buf;
@@ -471,7 +514,8 @@ static void hevc_parser_close(AVCodecParserContext *s)
 
     ctx->ps.sps = NULL;
 
-    for (i = 0; i < ctx->pkt.nals_allocated; i++) {
+    for (i = 0; i < ctx->pkt.nals_allocated; i++)
+    {
         av_freep(&ctx->pkt.nals[i].rbsp_buffer);
         av_freep(&ctx->pkt.nals[i].skipped_bytes_pos);
     }
@@ -481,7 +525,8 @@ static void hevc_parser_close(AVCodecParserContext *s)
     av_freep(&ctx->pc.buffer);
 }
 
-AVCodecParser ff_hevc_parser = {
+AVCodecParser ff_hevc_parser =
+{
     .codec_ids      = { AV_CODEC_ID_HEVC },
     .priv_data_size = sizeof(HEVCParserContext),
     .parser_parse   = hevc_parse,

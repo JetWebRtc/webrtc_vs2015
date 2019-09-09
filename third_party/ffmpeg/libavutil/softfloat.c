@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@ static const SoftFloat FLOAT_1374_40625 = {0xabcd, 25};
 static const SoftFloat FLOAT_0_1249694824218 = {0xFFF, 15};
 
 
-int main(void){
+int main(void)
+{
     SoftFloat one= av_int2sf(1, 0);
     SoftFloat sf1, sf2, sf3;
     double d1, d2, d3;
@@ -39,34 +40,40 @@ int main(void){
     av_log_set_level(AV_LOG_DEBUG);
 
     d1= 1;
-    for(i= 0; i<10; i++){
+    for(i= 0; i<10; i++)
+    {
         d1= 1/(d1+1);
     }
     printf("test1 double=%d\n", (int)(d1 * (1<<24)));
 
     sf1= one;
-    for(i= 0; i<10; i++){
+    for(i= 0; i<10; i++)
+    {
         sf1= av_div_sf(one, av_normalize_sf(av_add_sf(one, sf1)));
     }
     printf("test1 sf    =%d\n", av_sf2int(sf1, 24));
 
 
-    for(i= 0; i<100; i++){
+    for(i= 0; i<100; i++)
+    {
         START_TIMER
         d1= i;
         d2= i/100.0;
-        for(j= 0; j<1000; j++){
+        for(j= 0; j<1000; j++)
+        {
             d1= (d1+1)*d2;
         }
         STOP_TIMER("float add mul")
     }
     printf("test2 double=%d\n", (int)(d1 * (1<<24)));
 
-    for(i= 0; i<100; i++){
+    for(i= 0; i<100; i++)
+    {
         START_TIMER
         sf1= av_int2sf(i, 0);
         sf2= av_div_sf(av_int2sf(i, 2), av_int2sf(200, 3));
-        for(j= 0; j<1000; j++){
+        for(j= 0; j<1000; j++)
+        {
             sf1= av_mul_sf(av_add_sf(sf1, one),sf2);
         }
         STOP_TIMER("softfloat add mul")
@@ -97,14 +104,16 @@ int main(void){
     sf1 = av_int2sf(0xE0000001, 0);
     printf("test4 softfloat: %.10lf (0x%08x %d)\n", (double)av_sf2double(sf1), sf1.mant, sf1.exp);
 
-    for(i= 0; i<4*36; i++){
+    for(i= 0; i<4*36; i++)
+    {
         int s, c;
         double errs, errc;
 
         av_sincos_sf(i*(1ULL<<32)/36/4, &s, &c);
         errs = (double)s/ (1<<30) - sin(i*M_PI/36);
         errc = (double)c/ (1<<30) - cos(i*M_PI/36);
-        if (fabs(errs) > 0.00000002 || fabs(errc) >0.001) {
+        if (fabs(errs) > 0.00000002 || fabs(errc) >0.001)
+        {
             printf("sincos FAIL %d %f %f %f %f\n", i, (float)s/ (1<<30), (float)c/ (1<<30), sin(i*M_PI/36), cos(i*M_PI/36));
         }
 

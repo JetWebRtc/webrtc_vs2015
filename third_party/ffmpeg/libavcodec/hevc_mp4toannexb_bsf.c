@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC MP4 to Annex B byte stream format filter
  * copyright (c) 2015 Anton Khirnov
  *
@@ -30,7 +30,8 @@
 
 #define MIN_HEVCC_LENGTH 23
 
-typedef struct HEVCBSFContext {
+typedef struct HEVCBSFContext
+{
     uint8_t  length_size;
     int      extradata_parsed;
 
@@ -64,22 +65,26 @@ static int hevc_extradata_to_annexb(HEVCBSFContext* ctx, AVCodecContext *avctx)
     length_size = (bytestream2_get_byte(&gb) & 3) + 1;
     num_arrays  = bytestream2_get_byte(&gb);
 
-    for (i = 0; i < num_arrays; i++) {
+    for (i = 0; i < num_arrays; i++)
+    {
         int type = bytestream2_get_byte(&gb) & 0x3f;
         int cnt  = bytestream2_get_be16(&gb);
 
         if (!(type == NAL_VPS || type == NAL_SPS || type == NAL_PPS ||
-              type == NAL_SEI_PREFIX || type == NAL_SEI_SUFFIX)) {
+                type == NAL_SEI_PREFIX || type == NAL_SEI_SUFFIX))
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid NAL unit type in extradata: %d\n",
                    type);
             ret = AVERROR_INVALIDDATA;
             goto fail;
         }
 
-        for (j = 0; j < cnt; j++) {
+        for (j = 0; j < cnt; j++)
+        {
             int nalu_len = bytestream2_get_be16(&gb);
 
-            if (4 + AV_INPUT_BUFFER_PADDING_SIZE + nalu_len > SIZE_MAX - new_extradata_size) {
+            if (4 + AV_INPUT_BUFFER_PADDING_SIZE + nalu_len > SIZE_MAX - new_extradata_size)
+            {
                 ret = AVERROR_INVALIDDATA;
                 goto fail;
             }
@@ -94,7 +99,8 @@ static int hevc_extradata_to_annexb(HEVCBSFContext* ctx, AVCodecContext *avctx)
         }
     }
 
-    if (!ctx->private_spspps) {
+    if (!ctx->private_spspps)
+    {
         av_freep(&avctx->extradata);
         avctx->extradata      = new_extradata;
         avctx->extradata_size = new_extradata_size;
@@ -125,11 +131,14 @@ static int hevc_mp4toannexb_filter(AVBitStreamFilterContext *bsfc,
     int got_irap = 0;
     int i, ret = 0;
 
-    if (!ctx->extradata_parsed) {
+    if (!ctx->extradata_parsed)
+    {
         if (avctx->extradata_size < MIN_HEVCC_LENGTH ||
-            AV_RB24(avctx->extradata) == 1           ||
-            AV_RB32(avctx->extradata) == 1) {
-            if (!ctx->logged_nonmp4_warning) {
+                AV_RB24(avctx->extradata) == 1           ||
+                AV_RB32(avctx->extradata) == 1)
+        {
+            if (!ctx->logged_nonmp4_warning)
+            {
                 av_log(avctx, AV_LOG_VERBOSE,
                        "The input looks like it is Annex B already\n");
                 ctx->logged_nonmp4_warning = 1;
@@ -153,7 +162,8 @@ static int hevc_mp4toannexb_filter(AVBitStreamFilterContext *bsfc,
 
     bytestream2_init(&gb, buf, buf_size);
 
-    while (bytestream2_get_bytes_left(&gb)) {
+    while (bytestream2_get_bytes_left(&gb))
+    {
         uint32_t nalu_size = 0;
         int      nalu_type;
         int is_irap, add_extradata, extra_size;
@@ -170,8 +180,9 @@ static int hevc_mp4toannexb_filter(AVBitStreamFilterContext *bsfc,
         got_irap     |= is_irap;
 
         if (SIZE_MAX - out_size < 4             ||
-            SIZE_MAX - out_size - 4 < nalu_size ||
-            SIZE_MAX - out_size - 4 - nalu_size < extra_size) {
+                SIZE_MAX - out_size - 4 < nalu_size ||
+                SIZE_MAX - out_size - 4 - nalu_size < extra_size)
+        {
             ret = AVERROR_INVALIDDATA;
             goto fail;
         }
@@ -204,7 +215,8 @@ static void hevc_mp4toannexb_close(AVBitStreamFilterContext *bsfc)
         av_freep(&ctx->spspps_buf);
 }
 
-AVBitStreamFilter ff_hevc_mp4toannexb_bsf = {
+AVBitStreamFilter ff_hevc_mp4toannexb_bsf =
+{
     "hevc_mp4toannexb",
     sizeof(HEVCBSFContext),
     hevc_mp4toannexb_filter,

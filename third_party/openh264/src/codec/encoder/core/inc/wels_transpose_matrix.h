@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -34,24 +34,25 @@
 
 #include "typedefs.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 #ifdef X86_ASM
 extern "C"
 {
-  void TransposeMatrixBlocksx16_sse2 (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride,
+    void TransposeMatrixBlocksx16_sse2 (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride,
+                                        const int32_t kiBlocksNum);
+    void TransposeMatrixBlock16x16_sse2 (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride);
+    void TransposeMatrixBlocksx8_mmx (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride,
                                       const int32_t kiBlocksNum);
-  void TransposeMatrixBlock16x16_sse2 (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride);
-  void TransposeMatrixBlocksx8_mmx (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride,
-                                    const int32_t kiBlocksNum);
-  void TransposeMatrixBlock8x8_mmx (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride);
+    void TransposeMatrixBlock8x8_mmx (void* pDst, const int32_t kiDstStride, void* pSrc, const int32_t kiSrcStride);
 }
 #endif
 
 typedef void (*PTransposeMatrixBlockFunc) (void* pDst, const int32_t kiDstStride, void* pSrc,
-    const int32_t kiSrcStride);
+        const int32_t kiSrcStride);
 typedef void (*PTransposeMatrixBlocksFunc) (void* pDst, const int32_t kiDstStride, void* pSrc,
-    const int32_t kiSrcStride, const int32_t kiBlocksNum);
+        const int32_t kiSrcStride, const int32_t kiBlocksNum);
 
 }// end of namespace declaration
 

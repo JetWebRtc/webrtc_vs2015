@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,37 +17,41 @@
 
 #include "webrtc/base/constructormagic.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Used to perform an audio processing simulation from wav files.
-class WavBasedSimulator final : public AudioProcessingSimulator {
- public:
-  explicit WavBasedSimulator(const SimulationSettings& settings);
-  ~WavBasedSimulator() override;
+class WavBasedSimulator final : public AudioProcessingSimulator
+{
+public:
+    explicit WavBasedSimulator(const SimulationSettings& settings);
+    ~WavBasedSimulator() override;
 
-  // Processes the WAV input.
-  void Process() override;
+    // Processes the WAV input.
+    void Process() override;
 
- private:
-  enum SimulationEventType {
-    kProcessStream,
-    kProcessReverseStream,
-  };
+private:
+    enum SimulationEventType
+    {
+        kProcessStream,
+        kProcessReverseStream,
+    };
 
-  void Initialize();
-  bool HandleProcessStreamCall();
-  bool HandleProcessReverseStreamCall();
-  void PrepareProcessStreamCall();
-  void PrepareReverseProcessStreamCall();
-  static std::vector<SimulationEventType> GetDefaultEventChain();
-  static std::vector<SimulationEventType> GetCustomEventChain(
-      const std::string& filename);
+    void Initialize();
+    bool HandleProcessStreamCall();
+    bool HandleProcessReverseStreamCall();
+    void PrepareProcessStreamCall();
+    void PrepareReverseProcessStreamCall();
+    static std::vector<SimulationEventType> GetDefaultEventChain();
+    static std::vector<SimulationEventType> GetCustomEventChain(
+        const std::string& filename);
 
-  std::vector<SimulationEventType> call_chain_;
-  int last_specified_microphone_level_ = 100;
+    std::vector<SimulationEventType> call_chain_;
+    int last_specified_microphone_level_ = 100;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WavBasedSimulator);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(WavBasedSimulator);
 };
 
 }  // namespace test

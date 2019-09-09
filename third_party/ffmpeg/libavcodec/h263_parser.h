@@ -1,4 +1,4 @@
-/*
+﻿/*
  * H.263 parser
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  *

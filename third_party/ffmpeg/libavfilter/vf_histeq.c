@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Jeremy Tran
  * Copyright (c) 2001 Donald A. Graft
  *
@@ -47,14 +47,16 @@
 #define LCG(x) (((x) * LCG_A + LCG_C) % LCG_M)
 #define LCG_SEED 739187
 
-enum HisteqAntibanding {
+enum HisteqAntibanding
+{
     HISTEQ_ANTIBANDING_NONE   = 0,
     HISTEQ_ANTIBANDING_WEAK   = 1,
     HISTEQ_ANTIBANDING_STRONG = 2,
     HISTEQ_ANTIBANDING_NB,
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     float strength;
     float intensity;
@@ -70,7 +72,8 @@ typedef struct {
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 #define CONST(name, help, val, unit) { name, help, 0, AV_OPT_TYPE_CONST, {.i64=val}, INT_MIN, INT_MAX, FLAGS, unit }
 
-static const AVOption histeq_options[] = {
+static const AVOption histeq_options[] =
+{
     { "strength",    "set the strength", OFFSET(strength), AV_OPT_TYPE_FLOAT, {.dbl=0.2}, 0, 1, FLAGS },
     { "intensity",   "set the intensity", OFFSET(intensity), AV_OPT_TYPE_FLOAT, {.dbl=0.21}, 0, 1, FLAGS },
     { "antibanding", "set the antibanding level", OFFSET(antibanding), AV_OPT_TYPE_INT, {.i64=HISTEQ_ANTIBANDING_NONE}, 0, HISTEQ_ANTIBANDING_NB-1, FLAGS, "antibanding" },
@@ -95,7 +98,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_ARGB, AV_PIX_FMT_RGBA, AV_PIX_FMT_ABGR, AV_PIX_FMT_BGRA,
         AV_PIX_FMT_RGB24, AV_PIX_FMT_BGR24,
         AV_PIX_FMT_NONE
@@ -142,7 +146,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     uint8_t *src, *dst;
 
     outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!outpic) {
+    if (!outpic)
+    {
         av_frame_free(&inpic);
         return AVERROR(ENOMEM);
     }
@@ -156,8 +161,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     memset(histeq->in_histogram, 0, sizeof(histeq->in_histogram));
     src = inpic->data[0];
     dst = outpic->data[0];
-    for (y = 0; y < inlink->h; y++) {
-        for (x = 0; x < inlink->w * histeq->bpp; x += histeq->bpp) {
+    for (y = 0; y < inlink->h; y++)
+    {
+        for (x = 0; x < inlink->w * histeq->bpp; x += histeq->bpp)
+        {
             GET_RGB_VALUES(r, g, b, src, histeq->rgba_map);
             luma = (55 * r + 182 * g + 19 * b) >> 8;
             dst[x + histeq->rgba_map[A]] = luma;
@@ -193,42 +200,56 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
 
     src = inpic->data[0];
     dst = outpic->data[0];
-    for (y = 0; y < inlink->h; y++) {
-        for (x = 0; x < inlink->w * histeq->bpp; x += histeq->bpp) {
+    for (y = 0; y < inlink->h; y++)
+    {
+        for (x = 0; x < inlink->w * histeq->bpp; x += histeq->bpp)
+        {
             luma = dst[x + histeq->rgba_map[A]];
-            if (luma == 0) {
+            if (luma == 0)
+            {
                 for (i = 0; i < histeq->bpp; ++i)
                     dst[x + i] = 0;
                 histeq->out_histogram[0]++;
-            } else {
+            }
+            else
+            {
                 lut = histeq->LUT[luma];
-                if (histeq->antibanding != HISTEQ_ANTIBANDING_NONE) {
-                    if (luma > 0) {
+                if (histeq->antibanding != HISTEQ_ANTIBANDING_NONE)
+                {
+                    if (luma > 0)
+                    {
                         lutlo = histeq->antibanding == HISTEQ_ANTIBANDING_WEAK ?
                                 (histeq->LUT[luma] + histeq->LUT[luma - 1]) / 2 :
-                                 histeq->LUT[luma - 1];
-                    } else
+                                histeq->LUT[luma - 1];
+                    }
+                    else
                         lutlo = lut;
 
-                    if (luma < 255) {
+                    if (luma < 255)
+                    {
                         luthi = (histeq->antibanding == HISTEQ_ANTIBANDING_WEAK) ?
-                            (histeq->LUT[luma] + histeq->LUT[luma + 1]) / 2 :
-                             histeq->LUT[luma + 1];
-                    } else
+                                (histeq->LUT[luma] + histeq->LUT[luma + 1]) / 2 :
+                                histeq->LUT[luma + 1];
+                    }
+                    else
                         luthi = lut;
 
-                    if (lutlo != luthi) {
+                    if (lutlo != luthi)
+                    {
                         jran = LCG(jran);
                         lut = lutlo + ((luthi - lutlo + 1) * jran) / LCG_M;
                     }
                 }
 
                 GET_RGB_VALUES(r, g, b, src, histeq->rgba_map);
-                if (((m = FFMAX3(r, g, b)) * lut) / luma > 255) {
+                if (((m = FFMAX3(r, g, b)) * lut) / luma > 255)
+                {
                     r = (r * 255) / m;
                     g = (g * 255) / m;
                     b = (b * 255) / m;
-                } else {
+                }
+                else
+                {
                     r = (r * lut) / luma;
                     g = (g * lut) / luma;
                     b = (b * lut) / luma;
@@ -252,7 +273,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     return ff_filter_frame(outlink, outpic);
 }
 
-static const AVFilterPad histeq_inputs[] = {
+static const AVFilterPad histeq_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -262,7 +284,8 @@ static const AVFilterPad histeq_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad histeq_outputs[] = {
+static const AVFilterPad histeq_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -270,7 +293,8 @@ static const AVFilterPad histeq_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_histeq = {
+AVFilter ff_vf_histeq =
+{
     .name          = "histeq",
     .description   = NULL_IF_CONFIG_SMALL("Apply global color histogram equalization."),
     .priv_size     = sizeof(HisteqContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AVS demuxer.
  * Copyright (c) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -23,7 +23,8 @@
 #include "voc.h"
 
 
-typedef struct avs_format {
+typedef struct avs_format
+{
     VocDecContext voc;
     AVStream *st_video;
     AVStream *st_audio;
@@ -36,7 +37,8 @@ typedef struct avs_format {
     int remaining_audio_size;
 } AvsFormat;
 
-typedef enum avs_block_type {
+typedef enum avs_block_type
+{
     AVS_NONE      = 0x00,
     AVS_VIDEO     = 0x01,
     AVS_AUDIO     = 0x02,
@@ -94,7 +96,8 @@ avs_read_video_packet(AVFormatContext * s, AVPacket * pkt,
     if (ret < 0)
         return ret;
 
-    if (palette_size) {
+    if (palette_size)
+    {
         pkt->data[0] = 0x00;
         pkt->data[1] = 0x03;
         pkt->data[2] = palette_size & 0xFF;
@@ -107,7 +110,8 @@ avs_read_video_packet(AVFormatContext * s, AVPacket * pkt,
     pkt->data[palette_size + 2] = size & 0xFF;
     pkt->data[palette_size + 3] = (size >> 8) & 0xFF;
     ret = avio_read(s->pb, pkt->data + palette_size + 4, size - 4) + 4;
-    if (ret < size) {
+    if (ret < size)
+    {
         av_free_packet(pkt);
         return AVERROR(EIO);
     }
@@ -154,14 +158,17 @@ static int avs_read_packet(AVFormatContext * s, AVPacket * pkt)
         if (avs_read_audio_packet(s, pkt) > 0)
             return 0;
 
-    while (1) {
-        if (avs->remaining_frame_size <= 0) {
+    while (1)
+    {
+        if (avs->remaining_frame_size <= 0)
+        {
             if (!avio_rl16(s->pb))    /* found EOF */
                 return AVERROR(EIO);
             avs->remaining_frame_size = avio_rl16(s->pb) - 4;
         }
 
-        while (avs->remaining_frame_size > 0) {
+        while (avs->remaining_frame_size > 0)
+        {
             sub_type = avio_r8(s->pb);
             type = avio_r8(s->pb);
             size = avio_rl16(s->pb);
@@ -169,7 +176,8 @@ static int avs_read_packet(AVFormatContext * s, AVPacket * pkt)
                 return AVERROR_INVALIDDATA;
             avs->remaining_frame_size -= size;
 
-            switch (type) {
+            switch (type)
+            {
             case AVS_PALETTE:
                 if (size - 4 > sizeof(palette))
                     return AVERROR_INVALIDDATA;
@@ -180,7 +188,8 @@ static int avs_read_packet(AVFormatContext * s, AVPacket * pkt)
                 break;
 
             case AVS_VIDEO:
-                if (!avs->st_video) {
+                if (!avs->st_video)
+                {
                     avs->st_video = avformat_new_stream(s, NULL);
                     if (!avs->st_video)
                         return AVERROR(ENOMEM);
@@ -193,13 +202,17 @@ static int avs_read_packet(AVFormatContext * s, AVPacket * pkt)
 #if FF_API_R_FRAME_RATE
                     avs->st_video->r_frame_rate =
 #endif
-                    avs->st_video->avg_frame_rate = (AVRational){avs->fps, 1};
+                        avs->st_video->avg_frame_rate = (AVRational)
+                    {
+                        avs->fps, 1
+                    };
                 }
                 return avs_read_video_packet(s, pkt, type, sub_type, size,
                                              palette, palette_size);
 
             case AVS_AUDIO:
-                if (!avs->st_audio) {
+                if (!avs->st_audio)
+                {
                     avs->st_audio = avformat_new_stream(s, NULL);
                     if (!avs->st_audio)
                         return AVERROR(ENOMEM);
@@ -223,7 +236,8 @@ static int avs_read_close(AVFormatContext * s)
     return 0;
 }
 
-AVInputFormat ff_avs_demuxer = {
+AVInputFormat ff_avs_demuxer =
+{
     .name           = "avs",
     .long_name      = NULL_IF_CONFIG_SMALL("AVS"),
     .priv_data_size = sizeof(AvsFormat),

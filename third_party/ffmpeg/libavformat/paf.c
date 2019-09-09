@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Packed Animation File demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -26,7 +26,8 @@
 
 #define MAGIC "Packed Animation File V1.0\n(c) 1992-96 Amazing Studio\x0a\x1a"
 
-typedef struct PAFDemuxContext {
+typedef struct PAFDemuxContext
+{
     uint32_t buffer_size;
     uint32_t frame_blks;
     uint32_t nb_frames;
@@ -56,7 +57,7 @@ typedef struct PAFDemuxContext {
 static int read_probe(AVProbeData *p)
 {
     if ((p->buf_size >= strlen(MAGIC)) &&
-        !memcmp(p->buf, MAGIC, strlen(MAGIC)))
+            !memcmp(p->buf, MAGIC, strlen(MAGIC)))
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -100,8 +101,8 @@ static int read_header(AVFormatContext *s)
 
     vst->start_time = 0;
     vst->nb_frames  =
-    vst->duration   =
-    p->nb_frames    = avio_rl32(pb);
+        vst->duration   =
+            p->nb_frames    = avio_rl32(pb);
     avio_skip(pb, 4);
 
     vst->codec->width  = avio_rl32(pb);
@@ -133,16 +134,16 @@ static int read_header(AVFormatContext *s)
     p->max_video_blks = avio_rl32(pb);
     p->max_audio_blks = avio_rl32(pb);
     if (p->buffer_size    < 175  ||
-        p->max_audio_blks < 2    ||
-        p->max_video_blks < 1    ||
-        p->frame_blks     < 1    ||
-        p->nb_frames      < 1    ||
-        p->preload_count  < 1    ||
-        p->buffer_size    > 2048 ||
-        p->max_video_blks > 2048 ||
-        p->max_audio_blks > 2048 ||
-        p->nb_frames      > INT_MAX / sizeof(uint32_t) ||
-        p->frame_blks     > INT_MAX / sizeof(uint32_t))
+            p->max_audio_blks < 2    ||
+            p->max_video_blks < 1    ||
+            p->frame_blks     < 1    ||
+            p->nb_frames      < 1    ||
+            p->preload_count  < 1    ||
+            p->buffer_size    > 2048 ||
+            p->max_video_blks > 2048 ||
+            p->max_audio_blks > 2048 ||
+            p->nb_frames      > INT_MAX / sizeof(uint32_t) ||
+            p->frame_blks     > INT_MAX / sizeof(uint32_t))
         return AVERROR_INVALIDDATA;
 
     p->blocks_count_table  = av_mallocz(p->nb_frames *
@@ -160,11 +161,12 @@ static int read_header(AVFormatContext *s)
     p->temp_audio_frame = av_mallocz(p->audio_size);
 
     if (!p->blocks_count_table  ||
-        !p->frames_offset_table ||
-        !p->blocks_offset_table ||
-        !p->video_frame         ||
-        !p->audio_frame         ||
-        !p->temp_audio_frame) {
+            !p->frames_offset_table ||
+            !p->blocks_offset_table ||
+            !p->video_frame         ||
+            !p->audio_frame         ||
+            !p->temp_audio_frame)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
@@ -202,7 +204,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     if (avio_feof(pb))
         return AVERROR_EOF;
 
-    if (p->got_audio) {
+    if (p->got_audio)
+    {
         if (av_new_packet(pkt, p->audio_size) < 0)
             return AVERROR(ENOMEM);
 
@@ -215,22 +218,27 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     }
 
     count = (p->current_frame == 0) ? p->preload_count
-                                    : p->blocks_count_table[p->current_frame - 1];
-    for (i = 0; i < count; i++) {
+            : p->blocks_count_table[p->current_frame - 1];
+    for (i = 0; i < count; i++)
+    {
         if (p->current_frame_block >= p->frame_blks)
             return AVERROR_INVALIDDATA;
 
         offset = p->blocks_offset_table[p->current_frame_block] & ~(1U << 31);
-        if (p->blocks_offset_table[p->current_frame_block] & (1U << 31)) {
+        if (p->blocks_offset_table[p->current_frame_block] & (1U << 31))
+        {
             if (offset > p->audio_size - p->buffer_size)
                 return AVERROR_INVALIDDATA;
 
             avio_read(pb, p->audio_frame + offset, p->buffer_size);
-            if (offset == (p->max_audio_blks - 2) * p->buffer_size) {
+            if (offset == (p->max_audio_blks - 2) * p->buffer_size)
+            {
                 memcpy(p->temp_audio_frame, p->audio_frame, p->audio_size);
                 p->got_audio = 1;
             }
-        } else {
+        }
+        else
+        {
             if (offset > p->video_size - p->buffer_size)
                 return AVERROR_INVALIDDATA;
 
@@ -257,7 +265,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return pkt->size;
 }
 
-AVInputFormat ff_paf_demuxer = {
+AVInputFormat ff_paf_demuxer =
+{
     .name           = "paf",
     .long_name      = NULL_IF_CONFIG_SMALL("Amazing Studio Packed Animation File"),
     .priv_data_size = sizeof(PAFDemuxContext),

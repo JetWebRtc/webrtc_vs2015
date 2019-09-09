@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,9 +15,10 @@
 
 extern void vp8_dequantize_b_impl_mmx(short *sq, short *dq, short *q);
 
-void vp8_dequantize_b_mmx(BLOCKD *d, short *DQC) {
-  short *sq = (short *)d->qcoeff;
-  short *dq = (short *)d->dqcoeff;
+void vp8_dequantize_b_mmx(BLOCKD *d, short *DQC)
+{
+    short *sq = (short *)d->qcoeff;
+    short *dq = (short *)d->dqcoeff;
 
-  vp8_dequantize_b_impl_mmx(sq, dq, DQC);
+    vp8_dequantize_b_impl_mmx(sq, dq, DQC);
 }

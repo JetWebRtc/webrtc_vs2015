@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -82,11 +82,14 @@ int ff_get_cpu_flags_ppc(void)
     if (fd < 0)
         return 0;
 
-    while ((count = read(fd, buf, sizeof(buf))) > 0) {
-        for (i = 0; i < count / sizeof(*buf); i += 2) {
+    while ((count = read(fd, buf, sizeof(buf))) > 0)
+    {
+        for (i = 0; i < count / sizeof(*buf); i += 2)
+        {
             if (buf[i] == AT_NULL)
                 goto out;
-            if (buf[i] == AT_HWCAP) {
+            if (buf[i] == AT_HWCAP)
+            {
                 if (buf[i + 1] & PPC_FEATURE_HAS_ALTIVEC)
                     ret = AV_CPU_FLAG_ALTIVEC;
 #ifdef PPC_FEATURE_HAS_VSX
@@ -123,18 +126,18 @@ out:
     __asm__ volatile("mfspr %0, 287" : "=r" (proc_ver));
     proc_ver >>= 16;
     if (proc_ver  & 0x8000 ||
-        proc_ver == PVR_G4_7400  ||
-        proc_ver == PVR_G5_970   ||
-        proc_ver == PVR_G5_970FX ||
-        proc_ver == PVR_G5_970MP ||
-        proc_ver == PVR_G5_970GX ||
-        proc_ver == PVR_POWER6   ||
-        proc_ver == PVR_POWER7   ||
-        proc_ver == PVR_POWER8   ||
-        proc_ver == PVR_CELL_PPU)
+            proc_ver == PVR_G4_7400  ||
+            proc_ver == PVR_G5_970   ||
+            proc_ver == PVR_G5_970FX ||
+            proc_ver == PVR_G5_970MP ||
+            proc_ver == PVR_G5_970GX ||
+            proc_ver == PVR_POWER6   ||
+            proc_ver == PVR_POWER7   ||
+            proc_ver == PVR_POWER8   ||
+            proc_ver == PVR_CELL_PPU)
         ret = AV_CPU_FLAG_ALTIVEC;
     if (proc_ver == PVR_POWER7 ||
-        proc_ver == PVR_POWER8)
+            proc_ver == PVR_POWER8)
         ret |= AV_CPU_FLAG_VSX;
     if (proc_ver == PVR_POWER8)
         ret |= AV_CPU_FLAG_POWER8;

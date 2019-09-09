@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Gopher protocol
  *
  * Copyright (c) 2009 Toshimitsu Kimura
@@ -28,7 +28,8 @@
 #include "network.h"
 #include "url.h"
 
-typedef struct GopherContext {
+typedef struct GopherContext
+{
     URLContext *hd;
 } GopherContext;
 
@@ -43,17 +44,18 @@ static int gopher_connect(URLContext *h, const char *path)
     char buffer[1024];
 
     if (!*path) return AVERROR(EINVAL);
-    switch (*++path) {
-        case '5':
-        case '9':
-            path = strchr(path, '/');
-            if (!path) return AVERROR(EINVAL);
-            break;
-        default:
-            av_log(h, AV_LOG_WARNING,
-                   "Gopher protocol type '%c' not supported yet!\n",
-                   *path);
-            return AVERROR(EINVAL);
+    switch (*++path)
+    {
+    case '5':
+    case '9':
+        path = strchr(path, '/');
+        if (!path) return AVERROR(EINVAL);
+        break;
+    default:
+        av_log(h, AV_LOG_WARNING,
+               "Gopher protocol type '%c' not supported yet!\n",
+               *path);
+        return AVERROR(EINVAL);
     }
 
     /* send gopher sector */
@@ -68,7 +70,8 @@ static int gopher_connect(URLContext *h, const char *path)
 static int gopher_close(URLContext *h)
 {
     GopherContext *s = h->priv_data;
-    if (s->hd) {
+    if (s->hd)
+    {
         ffurl_close(s->hd);
         s->hd = NULL;
     }
@@ -101,7 +104,7 @@ static int gopher_open(URLContext *h, const char *uri, int flags)
     if ((err = gopher_connect(h, path)) < 0)
         goto fail;
     return 0;
- fail:
+fail:
     gopher_close(h);
     return err;
 }
@@ -114,7 +117,8 @@ static int gopher_read(URLContext *h, uint8_t *buf, int size)
 }
 
 
-URLProtocol ff_gopher_protocol = {
+URLProtocol ff_gopher_protocol =
+{
     .name           = "gopher",
     .url_open       = gopher_open,
     .url_read       = gopher_read,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -86,7 +86,7 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
 
     // Calculate Alpha in Q31
     temp1W32 = (R_hi[0] * tmp_hi + (R_hi[0] * tmp_low >> 15) +
-        (R_low[0] * tmp_hi >> 15)) << 1;
+                (R_low[0] * tmp_hi >> 15)) << 1;
 
     // Normalize Alpha and put it in hi and low format
 
@@ -110,15 +110,15 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
 
         for (j = 1; j < i; j++)
         {
-          // temp1W32 is in Q31
-          temp1W32 += (R_hi[j] * A_hi[i - j] * 2) +
-              (((R_hi[j] * A_low[i - j] >> 15) +
-              (R_low[j] * A_hi[i - j] >> 15)) * 2);
+            // temp1W32 is in Q31
+            temp1W32 += (R_hi[j] * A_hi[i - j] * 2) +
+                        (((R_hi[j] * A_low[i - j] >> 15) +
+                          (R_low[j] * A_hi[i - j] >> 15)) * 2);
         }
 
         temp1W32 = temp1W32 * 16;
         temp1W32 += ((int32_t)R_hi[i] * 65536)
-                + WEBRTC_SPL_LSHIFT_W32((int32_t)R_low[i], 1);
+                    + WEBRTC_SPL_LSHIFT_W32((int32_t)R_low[i], 1);
 
         // K = -temp1W32 / Alpha
         temp2W32 = WEBRTC_SPL_ABS_W32(temp1W32); // abs(temp1W32)
@@ -135,12 +135,14 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
         if ((Alpha_exp <= norm) || (temp3W32 == 0))
         {
             temp3W32 = temp3W32 * (1 << Alpha_exp);
-        } else
+        }
+        else
         {
             if (temp3W32 > 0)
             {
                 temp3W32 = (int32_t)0x7fffffffL;
-            } else
+            }
+            else
             {
                 temp3W32 = (int32_t)0x80000000L;
             }
@@ -171,16 +173,16 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
         {
             // temp1W32 = A[j] in Q27
             temp1W32 = (int32_t)A_hi[j] * 65536
-                    + WEBRTC_SPL_LSHIFT_W32((int32_t)A_low[j],1);
+                       + WEBRTC_SPL_LSHIFT_W32((int32_t)A_low[j],1);
 
             // temp1W32 += K*A[i-j] in Q27
             temp1W32 += (K_hi * A_hi[i - j] + (K_hi * A_low[i - j] >> 15) +
-                (K_low * A_hi[i - j] >> 15)) * 2;
+                         (K_low * A_hi[i - j] >> 15)) * 2;
 
             // Put Anew in hi and low format
             A_upd_hi[j] = (int16_t)(temp1W32 >> 16);
             A_upd_low[j] = (int16_t)(
-                (temp1W32 - ((int32_t)A_upd_hi[j] * 65536)) >> 1);
+                               (temp1W32 - ((int32_t)A_upd_hi[j] * 65536)) >> 1);
         }
 
         // temp3W32 = K in Q27 (Convert from Q31 to Q27)
@@ -189,7 +191,7 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
         // Store Anew in hi and low format
         A_upd_hi[i] = (int16_t)(temp3W32 >> 16);
         A_upd_low[i] = (int16_t)(
-            (temp3W32 - ((int32_t)A_upd_hi[i] * 65536)) >> 1);
+                           (temp3W32 - ((int32_t)A_upd_hi[i] * 65536)) >> 1);
 
         // Alpha = Alpha * (1-K^2)
 
@@ -204,7 +206,7 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
 
         // Calculate Alpha = Alpha * (1-K^2) in Q31
         temp1W32 = (Alpha_hi * tmp_hi + (Alpha_hi * tmp_low >> 15) +
-            (Alpha_low * tmp_hi >> 15)) << 1;
+                    (Alpha_low * tmp_hi >> 15)) << 1;
 
         // Normalize Alpha and store it on hi and low format
 
@@ -237,7 +239,7 @@ int16_t WebRtcSpl_LevinsonDurbin(const int32_t* R, int16_t* A, int16_t* K,
     {
         // temp1W32 in Q27
         temp1W32 = (int32_t)A_hi[i] * 65536
-                + WEBRTC_SPL_LSHIFT_W32((int32_t)A_low[i], 1);
+                   + WEBRTC_SPL_LSHIFT_W32((int32_t)A_low[i], 1);
         // Round and store upper word
         A[i] = (int16_t)(((temp1W32 * 2) + 32768) >> 16);
     }

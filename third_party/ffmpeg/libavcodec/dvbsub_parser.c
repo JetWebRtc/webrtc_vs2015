@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DVB subtitle parser for FFmpeg
  * Copyright (c) 2005 Ian Caulfield
  *
@@ -28,7 +28,8 @@
 
 
 /* parser definition */
-typedef struct DVBSubParseContext {
+typedef struct DVBSubParseContext
+{
     uint8_t *packet_buf;
     int packet_start;
     int packet_index;
@@ -81,7 +82,8 @@ static int dvbsub_parse(AVCodecParserContext *s,
         pc->packet_start = 0;
         pc->packet_index = 0;
 
-        if (buf_size < 2 || buf[0] != 0x20 || buf[1] != 0x00) {
+        if (buf_size < 2 || buf[0] != 0x20 || buf[1] != 0x00)
+        {
             ff_dlog(avctx, "Bad packet header\n");
             return -1;
         }
@@ -89,17 +91,21 @@ static int dvbsub_parse(AVCodecParserContext *s,
         buf_pos = 2;
 
         pc->in_packet = 1;
-    } else {
+    }
+    else
+    {
         if (pc->packet_start != 0)
         {
             if (pc->packet_index != pc->packet_start)
             {
                 memmove(pc->packet_buf, pc->packet_buf + pc->packet_start,
-                            pc->packet_index - pc->packet_start);
+                        pc->packet_index - pc->packet_start);
 
                 pc->packet_index -= pc->packet_start;
                 pc->packet_start = 0;
-            } else {
+            }
+            else
+            {
                 pc->packet_start = 0;
                 pc->packet_index = 0;
             }
@@ -109,7 +115,7 @@ static int dvbsub_parse(AVCodecParserContext *s,
     if (buf_size - buf_pos + pc->packet_index > PARSE_BUF_SIZE)
         return -1;
 
-/* if not currently in a packet, discard data */
+    /* if not currently in a packet, discard data */
     if (pc->in_packet == 0)
         return buf_size;
 
@@ -132,11 +138,15 @@ static int dvbsub_parse(AVCodecParserContext *s,
                     *poutbuf_size += len + 6;
 
                     p += len + 6;
-                } else
+                }
+                else
                     break;
-            } else
+            }
+            else
                 break;
-        } else if (*p == 0xff) {
+        }
+        else if (*p == 0xff)
+        {
             if (1 < p_end - p)
             {
                 ff_dlog(avctx, "Junk at end of packet\n");
@@ -144,7 +154,9 @@ static int dvbsub_parse(AVCodecParserContext *s,
             pc->packet_index = p - pc->packet_buf;
             pc->in_packet = 0;
             break;
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_ERROR, "Junk in packet\n");
 
             pc->packet_index = p - pc->packet_buf;
@@ -171,7 +183,8 @@ static av_cold void dvbsub_parse_close(AVCodecParserContext *s)
     av_freep(&pc->packet_buf);
 }
 
-AVCodecParser ff_dvbsub_parser = {
+AVCodecParser ff_dvbsub_parser =
+{
     .codec_ids      = { AV_CODEC_ID_DVB_SUBTITLE },
     .priv_data_size = sizeof(DVBSubParseContext),
     .parser_init    = dvbsub_parse_init,

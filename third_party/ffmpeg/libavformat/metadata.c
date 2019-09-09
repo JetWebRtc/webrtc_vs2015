@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2009 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,7 @@
 #include "libavutil/avstring.h"
 
 void ff_metadata_conv(AVDictionary **pm, const AVMetadataConv *d_conv,
-                                       const AVMetadataConv *s_conv)
+                      const AVMetadataConv *s_conv)
 {
     /* TODO: use binary search to look up the two conversion tables
        if the tables are getting big enough that it would matter speed wise */
@@ -36,17 +36,20 @@ void ff_metadata_conv(AVDictionary **pm, const AVMetadataConv *d_conv,
     if (d_conv == s_conv || !pm)
         return;
 
-    while ((mtag = av_dict_get(*pm, "", mtag, AV_DICT_IGNORE_SUFFIX))) {
+    while ((mtag = av_dict_get(*pm, "", mtag, AV_DICT_IGNORE_SUFFIX)))
+    {
         key = mtag->key;
         if (s_conv)
             for (sc=s_conv; sc->native; sc++)
-                if (!av_strcasecmp(key, sc->native)) {
+                if (!av_strcasecmp(key, sc->native))
+                {
                     key = sc->generic;
                     break;
                 }
         if (d_conv)
             for (dc=d_conv; dc->native; dc++)
-                if (!av_strcasecmp(key, dc->generic)) {
+                if (!av_strcasecmp(key, dc->generic))
+                {
                     key = dc->native;
                     break;
                 }
@@ -57,7 +60,7 @@ void ff_metadata_conv(AVDictionary **pm, const AVMetadataConv *d_conv,
 }
 
 void ff_metadata_conv_ctx(AVFormatContext *ctx, const AVMetadataConv *d_conv,
-                                                const AVMetadataConv *s_conv)
+                          const AVMetadataConv *s_conv)
 {
     int i;
     ff_metadata_conv(&ctx->metadata, d_conv, s_conv);

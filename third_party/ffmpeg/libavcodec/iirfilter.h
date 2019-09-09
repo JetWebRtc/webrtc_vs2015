@@ -1,4 +1,4 @@
-/*
+﻿/*
  * IIR filter
  * Copyright (c) 2008 Konstantin Shishkov
  *
@@ -32,7 +32,8 @@
 struct FFIIRFilterCoeffs;
 struct FFIIRFilterState;
 
-enum IIRFilterType{
+enum IIRFilterType
+{
     FF_FILTER_TYPE_BESSEL,
     FF_FILTER_TYPE_BIQUAD,
     FF_FILTER_TYPE_BUTTERWORTH,
@@ -40,14 +41,16 @@ enum IIRFilterType{
     FF_FILTER_TYPE_ELLIPTIC,
 };
 
-enum IIRFilterMode{
+enum IIRFilterMode
+{
     FF_FILTER_MODE_LOWPASS,
     FF_FILTER_MODE_HIGHPASS,
     FF_FILTER_MODE_BANDPASS,
     FF_FILTER_MODE_BANDSTOP,
 };
 
-typedef struct FFIIRFilterContext {
+typedef struct FFIIRFilterContext
+{
     /**
     * Perform IIR filtering on floating-point input samples.
     *
@@ -60,8 +63,8 @@ typedef struct FFIIRFilterContext {
     * @param dstep  destination stride
     */
     void (*filter_flt)(const struct FFIIRFilterCoeffs *coeffs,
-                        struct FFIIRFilterState *state, int size,
-                        const float *src, int sstep, float *dst, int dstep);
+                       struct FFIIRFilterState *state, int size,
+                       const float *src, int sstep, float *dst, int dstep);
 } FFIIRFilterContext;
 
 /**
@@ -85,10 +88,10 @@ void ff_iir_filter_init_mips(FFIIRFilterContext *f);
  * @return pointer to filter coefficients structure or NULL if filter cannot be created
  */
 struct FFIIRFilterCoeffs* ff_iir_filter_init_coeffs(void *avc,
-                                                enum IIRFilterType filt_type,
-                                                enum IIRFilterMode filt_mode,
-                                                int order, float cutoff_ratio,
-                                                float stopband, float ripple);
+        enum IIRFilterType filt_type,
+        enum IIRFilterMode filt_mode,
+        int order, float cutoff_ratio,
+        float stopband, float ripple);
 
 /**
  * Create new filter state.

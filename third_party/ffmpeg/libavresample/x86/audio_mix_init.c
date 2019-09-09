@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -175,13 +175,15 @@ av_cold void ff_audio_mix_init_x86(AudioMix *am)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_FLTP, AV_MIX_COEFF_TYPE_FLT,
                               2, 1, 16, 8, "SSE", ff_mix_2_to_1_fltp_flt_sse);
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_FLTP, AV_MIX_COEFF_TYPE_FLT,
                               1, 2, 16, 4, "SSE", ff_mix_1_to_2_fltp_flt_sse);
     }
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_FLT,
                               2, 1, 16, 8, "SSE2", ff_mix_2_to_1_s16p_flt_sse2);
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_Q8,
@@ -189,19 +191,22 @@ av_cold void ff_audio_mix_init_x86(AudioMix *am)
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_FLT,
                               1, 2, 16, 8, "SSE2", ff_mix_1_to_2_s16p_flt_sse2);
     }
-    if (EXTERNAL_SSE4(cpu_flags)) {
+    if (EXTERNAL_SSE4(cpu_flags))
+    {
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_FLT,
                               2, 1, 16, 8, "SSE4", ff_mix_2_to_1_s16p_flt_sse4);
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_FLT,
                               1, 2, 16, 8, "SSE4", ff_mix_1_to_2_s16p_flt_sse4);
     }
-    if (EXTERNAL_AVX_FAST(cpu_flags)) {
+    if (EXTERNAL_AVX_FAST(cpu_flags))
+    {
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_FLTP, AV_MIX_COEFF_TYPE_FLT,
                               2, 1, 32, 16, "AVX", ff_mix_2_to_1_fltp_flt_avx);
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_FLTP, AV_MIX_COEFF_TYPE_FLT,
                               1, 2, 32, 8, "AVX", ff_mix_1_to_2_fltp_flt_avx);
     }
-    if (EXTERNAL_AVX(cpu_flags)) {
+    if (EXTERNAL_AVX(cpu_flags))
+    {
         ff_audio_mix_set_func(am, AV_SAMPLE_FMT_S16P, AV_MIX_COEFF_TYPE_FLT,
                               1, 2, 16, 8, "AVX", ff_mix_1_to_2_s16p_flt_avx);
     }

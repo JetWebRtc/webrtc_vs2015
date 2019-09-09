@@ -35,20 +35,23 @@
 
 #define VP9_SYNCCODE 0x498342
 
-enum CompPredMode {
+enum CompPredMode
+{
     PRED_SINGLEREF,
     PRED_COMPREF,
     PRED_SWITCHABLE,
 };
 
-enum BlockLevel {
+enum BlockLevel
+{
     BL_64X64,
     BL_32X32,
     BL_16X16,
     BL_8X8,
 };
 
-enum BlockSize {
+enum BlockSize
+{
     BS_64x64,
     BS_64x32,
     BS_32x64,
@@ -65,12 +68,14 @@ enum BlockSize {
     N_BS_SIZES,
 };
 
-struct VP9mvrefPair {
+struct VP9mvrefPair
+{
     VP56mv mv[2];
     int8_t ref[2];
 };
 
-typedef struct VP9Frame {
+typedef struct VP9Frame
+{
     ThreadFrame tf;
     AVBufferRef *extradata;
     uint8_t *segmentation_map;
@@ -78,13 +83,15 @@ typedef struct VP9Frame {
     int uses_2pass;
 } VP9Frame;
 
-struct VP9Filter {
+struct VP9Filter
+{
     uint8_t level[8 * 8];
     uint8_t /* bit=col */ mask[2 /* 0=y, 1=uv */][2 /* 0=col, 1=row */]
-                              [8 /* rows */][4 /* 0=16, 1=8, 2=4, 3=inner4 */];
+    [8 /* rows */][4 /* 0=16, 1=8, 2=4, 3=inner4 */];
 };
 
-typedef struct VP9Block {
+typedef struct VP9Block
+{
     uint8_t seg_id, intra, comp, ref[2], mode[4], uvmode, skip;
     enum FilterMode filter;
     VP56mv mv[4 /* b_idx */][2 /* ref */];
@@ -94,7 +101,8 @@ typedef struct VP9Block {
     enum BlockPartition bp;
 } VP9Block;
 
-typedef struct VP9Context {
+typedef struct VP9Context
+{
     VP9DSPContext dsp;
     VideoDSPContext vdsp;
     GetBitContext gb;
@@ -133,13 +141,15 @@ typedef struct VP9Context {
 #define REF_FRAME_SEGMAP 2
     VP9Frame frames[3];
 
-    struct {
+    struct
+    {
         uint8_t level;
         int8_t sharpness;
         uint8_t lim_lut[64];
         uint8_t mblim_lut[64];
     } filter;
-    struct {
+    struct
+    {
         uint8_t enabled;
         int8_t mode[2];
         int8_t ref[4];
@@ -148,13 +158,15 @@ typedef struct VP9Context {
     int8_t ydc_qdelta, uvdc_qdelta, uvac_qdelta;
     uint8_t lossless;
 #define MAX_SEGMENT 8
-    struct {
+    struct
+    {
         uint8_t enabled;
         uint8_t temporal;
         uint8_t absolute_vals;
         uint8_t update_map;
         uint8_t ignore_refmap;
-        struct {
+        struct
+        {
             uint8_t q_enabled;
             uint8_t lf_enabled;
             uint8_t ref_enabled;
@@ -166,23 +178,27 @@ typedef struct VP9Context {
             uint8_t lflvl[4][2];
         } feat[MAX_SEGMENT];
     } segmentation;
-    struct {
+    struct
+    {
         unsigned log2_tile_cols, log2_tile_rows;
         unsigned tile_cols, tile_rows;
         unsigned tile_row_start, tile_row_end, tile_col_start, tile_col_end;
     } tiling;
     unsigned sb_cols, sb_rows, rows, cols;
-    struct {
+    struct
+    {
         prob_context p;
         uint8_t coef[4][2][2][6][6][3];
     } prob_ctx[4];
-    struct {
+    struct
+    {
         prob_context p;
         uint8_t coef[4][2][2][6][6][11];
         uint8_t seg[7];
         uint8_t segpred[3];
     } prob;
-    struct {
+    struct
+    {
         unsigned y_mode[4][10];
         unsigned uv_mode[10][10];
         unsigned filter[4][3];
@@ -196,7 +212,8 @@ typedef struct VP9Context {
         unsigned tx8p[2][2];
         unsigned skip[3][2];
         unsigned mv_joint[4];
-        struct {
+        struct
+        {
             unsigned sign[2];
             unsigned classes[11];
             unsigned class0[2];
@@ -249,14 +266,18 @@ typedef struct VP9Context {
     int block_alloc_using_2pass;
     int16_t *block_base, *block, *uvblock_base[2], *uvblock[2];
     uint8_t *eob_base, *uveob_base[2], *eob, *uveob[2];
-    struct { int x, y; } min_mv, max_mv;
+    struct
+    {
+        int x, y;
+    } min_mv, max_mv;
     DECLARE_ALIGNED(32, uint8_t, tmp_y)[64 * 64 * 2];
     DECLARE_ALIGNED(32, uint8_t, tmp_uv)[2][64 * 64 * 2];
     uint16_t mvscale[3][2];
     uint8_t mvstep[3][2];
 } VP9Context;
 
-static const uint8_t bwh_tab[2][N_BS_SIZES][2] = {
+static const uint8_t bwh_tab[2][N_BS_SIZES][2] =
+{
     {
         { 16, 16 }, { 16, 8 }, { 8, 16 }, { 8, 8 }, { 8, 4 }, { 4, 8 },
         { 4, 4 }, { 4, 2 }, { 2, 4 }, { 2, 2 }, { 2, 1 }, { 1, 2 }, { 1, 1 },
@@ -274,7 +295,8 @@ static int vp9_alloc_frame(AVCodecContext *ctx, VP9Frame *f)
     if ((ret = ff_thread_get_buffer(ctx, &f->tf, AV_GET_BUFFER_FLAG_REF)) < 0)
         return ret;
     sz = 64 * s->sb_cols * s->sb_rows;
-    if (!(f->extradata = av_buffer_allocz(sz * (1 + sizeof(struct VP9mvrefPair))))) {
+    if (!(f->extradata = av_buffer_allocz(sz * (1 + sizeof(struct VP9mvrefPair)))))
+    {
         ff_thread_release_buffer(ctx, &f->tf);
         return AVERROR(ENOMEM);
     }
@@ -296,9 +318,12 @@ static int vp9_ref_frame(AVCodecContext *ctx, VP9Frame *dst, VP9Frame *src)
 {
     int res;
 
-    if ((res = ff_thread_ref_frame(&dst->tf, &src->tf)) < 0) {
+    if ((res = ff_thread_ref_frame(&dst->tf, &src->tf)) < 0)
+    {
         return res;
-    } else if (!(dst->extradata = av_buffer_ref(src->extradata))) {
+    }
+    else if (!(dst->extradata = av_buffer_ref(src->extradata)))
+    {
         vp9_unref_frame(ctx, dst);
         return AVERROR(ENOMEM);
     }
@@ -334,7 +359,7 @@ static int update_size(AVCodecContext *ctx, int w, int h, enum AVPixelFormat fmt
     // FIXME we slightly over-allocate here for subsampled chroma, but a little
     // bit of padding shouldn't affect performance...
     p = av_malloc(s->sb_cols * (128 + 192 * bytesperpixel +
-                                sizeof(*s->lflvl) + 16 * sizeof(*s->above_mv_ctx)));
+    sizeof(*s->lflvl) + 16 * sizeof(*s->above_mv_ctx)));
     if (!p)
         return AVERROR(ENOMEM);
     assign(s->intra_pred_data[0],  uint8_t *,             64 * bytesperpixel);
@@ -360,7 +385,8 @@ static int update_size(AVCodecContext *ctx, int w, int h, enum AVPixelFormat fmt
     av_freep(&s->b_base);
     av_freep(&s->block_base);
 
-    if (s->bpp != s->last_bpp) {
+    if (s->bpp != s->last_bpp)
+    {
         ff_vp9dsp_init(&s->dsp, s->bpp);
         ff_videodsp_init(&s->vdsp, s->bpp);
         s->last_bpp = s->bpp;
@@ -381,7 +407,8 @@ static int update_block_buffers(AVCodecContext *ctx)
     av_free(s->block_base);
     chroma_blocks = 64 * 64 >> (s->ss_h + s->ss_v);
     chroma_eobs   = 16 * 16 >> (s->ss_h + s->ss_v);
-    if (s->frames[CUR_FRAME].uses_2pass) {
+    if (s->frames[CUR_FRAME].uses_2pass)
+    {
         int sbs = s->sb_cols * s->sb_rows;
 
         s->b_base = av_malloc_array(s->cols * s->rows, sizeof(VP9Block));
@@ -394,7 +421,9 @@ static int update_block_buffers(AVCodecContext *ctx)
         s->eob_base = (uint8_t *) (s->uvblock_base[1] + sbs * chroma_blocks * bytesperpixel);
         s->uveob_base[0] = s->eob_base + 16 * 16 * sbs;
         s->uveob_base[1] = s->uveob_base[0] + chroma_eobs * sbs;
-    } else {
+    }
+    else
+    {
         s->b_base = av_malloc(sizeof(VP9Block));
         s->block_base = av_mallocz((64 * 64 + 2 * chroma_blocks) * bytesperpixel * sizeof(int16_t) +
                                    16 * 16 + 2 * chroma_eobs);
@@ -426,15 +455,16 @@ static av_always_inline int inv_recenter_nonneg(int v, int m)
 // differential forward probability updates
 static int update_prob(VP56RangeCoder *c, int p)
 {
-    static const int inv_map_table[255] = {
-          7,  20,  33,  46,  59,  72,  85,  98, 111, 124, 137, 150, 163, 176,
+    static const int inv_map_table[255] =
+    {
+        7,  20,  33,  46,  59,  72,  85,  98, 111, 124, 137, 150, 163, 176,
         189, 202, 215, 228, 241, 254,   1,   2,   3,   4,   5,   6,   8,   9,
-         10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  21,  22,  23,  24,
-         25,  26,  27,  28,  29,  30,  31,  32,  34,  35,  36,  37,  38,  39,
-         40,  41,  42,  43,  44,  45,  47,  48,  49,  50,  51,  52,  53,  54,
-         55,  56,  57,  58,  60,  61,  62,  63,  64,  65,  66,  67,  68,  69,
-         70,  71,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,  84,
-         86,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  99, 100,
+        10,  11,  12,  13,  14,  15,  16,  17,  18,  19,  21,  22,  23,  24,
+        25,  26,  27,  28,  29,  30,  31,  32,  34,  35,  36,  37,  38,  39,
+        40,  41,  42,  43,  44,  45,  47,  48,  49,  50,  51,  52,  53,  54,
+        55,  56,  57,  58,  60,  61,  62,  63,  64,  65,  66,  67,  68,  69,
+        70,  71,  73,  74,  75,  76,  77,  78,  79,  80,  81,  82,  83,  84,
+        86,  87,  88,  89,  90,  91,  92,  93,  94,  95,  96,  97,  99, 100,
         101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 112, 113, 114, 115,
         116, 117, 118, 119, 120, 121, 122, 123, 125, 126, 127, 128, 129, 130,
         131, 132, 133, 134, 135, 136, 138, 139, 140, 141, 142, 143, 144, 145,
@@ -464,13 +494,20 @@ static int update_prob(VP56RangeCoder *c, int p)
      * updates vs. the 'fine, exact' updates further down the range, which
      * adds one extra dimension to this differential update model. */
 
-    if (!vp8_rac_get(c)) {
+    if (!vp8_rac_get(c))
+    {
         d = vp8_rac_get_uint(c, 4) + 0;
-    } else if (!vp8_rac_get(c)) {
+    }
+    else if (!vp8_rac_get(c))
+    {
         d = vp8_rac_get_uint(c, 4) + 16;
-    } else if (!vp8_rac_get(c)) {
+    }
+    else if (!vp8_rac_get(c))
+    {
         d = vp8_rac_get_uint(c, 5) + 32;
-    } else {
+    }
+    else
+    {
         d = vp8_rac_get_uint(c, 7);
         if (d >= 65)
             d = (d << 1) - 65 + vp8_rac_get(c);
@@ -479,7 +516,7 @@ static int update_prob(VP56RangeCoder *c, int p)
     }
 
     return p <= 128 ? 1 + inv_recenter_nonneg(inv_map_table[d], p - 1) :
-                    255 - inv_recenter_nonneg(inv_map_table[d], 255 - p);
+           255 - inv_recenter_nonneg(inv_map_table[d], 255 - p);
 }
 
 static enum AVPixelFormat read_colorspace_details(AVCodecContext *ctx)
@@ -496,46 +533,61 @@ static enum AVPixelFormat read_colorspace_details(AVCodecContext *ctx)
     s->bpp = 8 + bits * 2;
     s->bytesperpixel = (7 + s->bpp) >> 3;
     ctx->colorspace = colorspaces[get_bits(&s->gb, 3)];
-    if (ctx->colorspace == AVCOL_SPC_RGB) { // RGB = profile 1
-        static const enum AVPixelFormat pix_fmt_rgb[3] = {
+    if (ctx->colorspace == AVCOL_SPC_RGB)   // RGB = profile 1
+    {
+        static const enum AVPixelFormat pix_fmt_rgb[3] =
+        {
             AV_PIX_FMT_GBRP, AV_PIX_FMT_GBRP10, AV_PIX_FMT_GBRP12
         };
-        if (ctx->profile & 1) {
+        if (ctx->profile & 1)
+        {
             s->ss_h = s->ss_v = 0;
             res = pix_fmt_rgb[bits];
             ctx->color_range = AVCOL_RANGE_JPEG;
-            if (get_bits1(&s->gb)) {
+            if (get_bits1(&s->gb))
+            {
                 av_log(ctx, AV_LOG_ERROR, "Reserved bit set in RGB\n");
                 return AVERROR_INVALIDDATA;
             }
-        } else {
+        }
+        else
+        {
             av_log(ctx, AV_LOG_ERROR, "RGB not supported in profile %d\n",
                    ctx->profile);
             return AVERROR_INVALIDDATA;
         }
-    } else {
+    }
+    else {
         static const enum AVPixelFormat pix_fmt_for_ss[3][2 /* v */][2 /* h */] = {
-            { { AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV422P },
-              { AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV420P } },
-            { { AV_PIX_FMT_YUV444P10, AV_PIX_FMT_YUV422P10 },
-              { AV_PIX_FMT_YUV440P10, AV_PIX_FMT_YUV420P10 } },
-            { { AV_PIX_FMT_YUV444P12, AV_PIX_FMT_YUV422P12 },
-              { AV_PIX_FMT_YUV440P12, AV_PIX_FMT_YUV420P12 } }
+            {   { AV_PIX_FMT_YUV444P, AV_PIX_FMT_YUV422P },
+                { AV_PIX_FMT_YUV440P, AV_PIX_FMT_YUV420P }
+            },
+            {   { AV_PIX_FMT_YUV444P10, AV_PIX_FMT_YUV422P10 },
+                { AV_PIX_FMT_YUV440P10, AV_PIX_FMT_YUV420P10 }
+            },
+            {   { AV_PIX_FMT_YUV444P12, AV_PIX_FMT_YUV422P12 },
+                { AV_PIX_FMT_YUV440P12, AV_PIX_FMT_YUV420P12 }
+            }
         };
         ctx->color_range = get_bits1(&s->gb) ? AVCOL_RANGE_JPEG : AVCOL_RANGE_MPEG;
-        if (ctx->profile & 1) {
+        if (ctx->profile & 1)
+        {
             s->ss_h = get_bits1(&s->gb);
             s->ss_v = get_bits1(&s->gb);
-            if ((res = pix_fmt_for_ss[bits][s->ss_v][s->ss_h]) == AV_PIX_FMT_YUV420P) {
+            if ((res = pix_fmt_for_ss[bits][s->ss_v][s->ss_h]) == AV_PIX_FMT_YUV420P)
+            {
                 av_log(ctx, AV_LOG_ERROR, "YUV 4:2:0 not supported in profile %d\n",
                        ctx->profile);
                 return AVERROR_INVALIDDATA;
-            } else if (get_bits1(&s->gb)) {
+            }
+            else if (get_bits1(&s->gb))
+            {
                 av_log(ctx, AV_LOG_ERROR, "Profile %d color details reserved bit set\n",
                        ctx->profile);
                 return AVERROR_INVALIDDATA;
             }
-        } else {
+        }
+        else {
             s->ss_h = s->ss_v = 1;
             res = pix_fmt_for_ss[bits][1][1];
         }
@@ -554,22 +606,26 @@ static int decode_frame_header(AVCodecContext *ctx,
     const uint8_t *data2;
 
     /* general header */
-    if ((res = init_get_bits8(&s->gb, data, size)) < 0) {
+    if ((res = init_get_bits8(&s->gb, data, size)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Failed to initialize bitstream reader\n");
         return res;
     }
-    if (get_bits(&s->gb, 2) != 0x2) { // frame marker
+    if (get_bits(&s->gb, 2) != 0x2)   // frame marker
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid frame marker\n");
         return AVERROR_INVALIDDATA;
     }
     ctx->profile  = get_bits1(&s->gb);
     ctx->profile |= get_bits1(&s->gb) << 1;
     if (ctx->profile == 3) ctx->profile += get_bits1(&s->gb);
-    if (ctx->profile > 3) {
+    if (ctx->profile > 3)
+    {
         av_log(ctx, AV_LOG_ERROR, "Profile %d is not yet supported\n", ctx->profile);
         return AVERROR_INVALIDDATA;
     }
-    if (get_bits1(&s->gb)) {
+    if (get_bits1(&s->gb))
+    {
         *ref = get_bits(&s->gb, 3);
         return 0;
     }
@@ -579,8 +635,10 @@ static int decode_frame_header(AVCodecContext *ctx,
     s->invisible      = !get_bits1(&s->gb);
     s->errorres       = get_bits1(&s->gb);
     s->use_last_frame_mvs = !s->errorres && !last_invisible;
-    if (s->keyframe) {
-        if (get_bits_long(&s->gb, 24) != VP9_SYNCCODE) { // synccode
+    if (s->keyframe)
+    {
+        if (get_bits_long(&s->gb, 24) != VP9_SYNCCODE)   // synccode
+        {
             av_log(ctx, AV_LOG_ERROR, "Invalid sync code\n");
             return AVERROR_INVALIDDATA;
         }
@@ -592,18 +650,25 @@ static int decode_frame_header(AVCodecContext *ctx,
         h = get_bits(&s->gb, 16) + 1;
         if (get_bits1(&s->gb)) // display size
             skip_bits(&s->gb, 32);
-    } else {
+    }
+    else
+    {
         s->intraonly  = s->invisible ? get_bits1(&s->gb) : 0;
         s->resetctx   = s->errorres ? 0 : get_bits(&s->gb, 2);
-        if (s->intraonly) {
-            if (get_bits_long(&s->gb, 24) != VP9_SYNCCODE) { // synccode
+        if (s->intraonly)
+        {
+            if (get_bits_long(&s->gb, 24) != VP9_SYNCCODE)   // synccode
+            {
                 av_log(ctx, AV_LOG_ERROR, "Invalid sync code\n");
                 return AVERROR_INVALIDDATA;
             }
-            if (ctx->profile >= 1) {
+            if (ctx->profile >= 1)
+            {
                 if ((fmt = read_colorspace_details(ctx)) < 0)
                     return fmt;
-            } else {
+            }
+            else
+            {
                 s->ss_h = s->ss_v = 1;
                 s->bpp = 8;
                 s->bpp_index = 0;
@@ -617,7 +682,9 @@ static int decode_frame_header(AVCodecContext *ctx,
             h = get_bits(&s->gb, 16) + 1;
             if (get_bits1(&s->gb)) // display size
                 skip_bits(&s->gb, 32);
-        } else {
+        }
+        else
+        {
             s->refreshrefmask = get_bits(&s->gb, 8);
             s->refidx[0]      = get_bits(&s->gb, 3);
             s->signbias[0]    = get_bits1(&s->gb) && !s->errorres;
@@ -626,21 +693,29 @@ static int decode_frame_header(AVCodecContext *ctx,
             s->refidx[2]      = get_bits(&s->gb, 3);
             s->signbias[2]    = get_bits1(&s->gb) && !s->errorres;
             if (!s->refs[s->refidx[0]].f->data[0] ||
-                !s->refs[s->refidx[1]].f->data[0] ||
-                !s->refs[s->refidx[2]].f->data[0]) {
+                    !s->refs[s->refidx[1]].f->data[0] ||
+                    !s->refs[s->refidx[2]].f->data[0])
+            {
                 av_log(ctx, AV_LOG_ERROR, "Not all references are available\n");
                 return AVERROR_INVALIDDATA;
             }
-            if (get_bits1(&s->gb)) {
+            if (get_bits1(&s->gb))
+            {
                 w = s->refs[s->refidx[0]].f->width;
                 h = s->refs[s->refidx[0]].f->height;
-            } else if (get_bits1(&s->gb)) {
+            }
+            else if (get_bits1(&s->gb))
+            {
                 w = s->refs[s->refidx[1]].f->width;
                 h = s->refs[s->refidx[1]].f->height;
-            } else if (get_bits1(&s->gb)) {
+            }
+            else if (get_bits1(&s->gb))
+            {
                 w = s->refs[s->refidx[2]].f->width;
                 h = s->refs[s->refidx[2]].f->height;
-            } else {
+            }
+            else
+            {
                 w = get_bits(&s->gb, 16) + 1;
                 h = get_bits(&s->gb, 16) + 1;
             }
@@ -653,39 +728,52 @@ static int decode_frame_header(AVCodecContext *ctx,
                 skip_bits(&s->gb, 32);
             s->highprecisionmvs = get_bits1(&s->gb);
             s->filtermode = get_bits1(&s->gb) ? FILTER_SWITCHABLE :
-                                                get_bits(&s->gb, 2);
+                            get_bits(&s->gb, 2);
             s->allowcompinter = (s->signbias[0] != s->signbias[1] ||
                                  s->signbias[0] != s->signbias[2]);
-            if (s->allowcompinter) {
-                if (s->signbias[0] == s->signbias[1]) {
+            if (s->allowcompinter)
+            {
+                if (s->signbias[0] == s->signbias[1])
+                {
                     s->fixcompref    = 2;
                     s->varcompref[0] = 0;
                     s->varcompref[1] = 1;
-                } else if (s->signbias[0] == s->signbias[2]) {
+                }
+                else if (s->signbias[0] == s->signbias[2])
+                {
                     s->fixcompref    = 1;
                     s->varcompref[0] = 0;
                     s->varcompref[1] = 2;
-                } else {
+                }
+                else
+                {
                     s->fixcompref    = 0;
                     s->varcompref[0] = 1;
                     s->varcompref[1] = 2;
                 }
             }
 
-            for (i = 0; i < 3; i++) {
+            for (i = 0; i < 3; i++)
+            {
                 AVFrame *ref = s->refs[s->refidx[i]].f;
                 int refw = ref->width, refh = ref->height;
 
-                if (ref->format != fmt) {
+                if (ref->format != fmt)
+                {
                     av_log(ctx, AV_LOG_ERROR,
                            "Ref pixfmt (%s) did not match current frame (%s)",
                            av_get_pix_fmt_name(ref->format),
                            av_get_pix_fmt_name(fmt));
                     return AVERROR_INVALIDDATA;
-                } else if (refw == w && refh == h) {
+                }
+                else if (refw == w && refh == h)
+                {
                     s->mvscale[i][0] = s->mvscale[i][1] = 0;
-                } else {
-                    if (w * 2 < refw || h * 2 < refh || w > 16 * refw || h > 16 * refh) {
+                }
+                else
+                {
+                    if (w * 2 < refw || h * 2 < refh || w > 16 * refw || h > 16 * refh)
+                    {
                         av_log(ctx, AV_LOG_ERROR,
                                "Invalid ref frame dimensions %dx%d for frame size %dx%d\n",
                                refw, refh, w, h);
@@ -704,7 +792,8 @@ static int decode_frame_header(AVCodecContext *ctx,
     s->framectxid   = c = get_bits(&s->gb, 2);
 
     /* loopfilter header data */
-    if (s->keyframe || s->errorres || s->intraonly) {
+    if (s->keyframe || s->errorres || s->intraonly)
+    {
         // reset loopfilter defaults
         s->lf_delta.ref[0] = 1;
         s->lf_delta.ref[1] = 0;
@@ -721,8 +810,10 @@ static int decode_frame_header(AVCodecContext *ctx,
     if (s->filter.sharpness != sharp)
         memset(s->filter.lim_lut, 0, sizeof(s->filter.lim_lut));
     s->filter.sharpness = sharp;
-    if ((s->lf_delta.enabled = get_bits1(&s->gb))) {
-        if (get_bits1(&s->gb)) {
+    if ((s->lf_delta.enabled = get_bits1(&s->gb)))
+    {
+        if (get_bits1(&s->gb))
+        {
             for (i = 0; i < 4; i++)
                 if (get_bits1(&s->gb))
                     s->lf_delta.ref[i] = get_sbits_inv(&s->gb, 6);
@@ -744,20 +835,24 @@ static int decode_frame_header(AVCodecContext *ctx,
 
     /* segmentation header info */
     s->segmentation.ignore_refmap = 0;
-    if ((s->segmentation.enabled = get_bits1(&s->gb))) {
-        if ((s->segmentation.update_map = get_bits1(&s->gb))) {
+    if ((s->segmentation.enabled = get_bits1(&s->gb)))
+    {
+        if ((s->segmentation.update_map = get_bits1(&s->gb)))
+        {
             for (i = 0; i < 7; i++)
                 s->prob.seg[i] = get_bits1(&s->gb) ?
                                  get_bits(&s->gb, 8) : 255;
-            if ((s->segmentation.temporal = get_bits1(&s->gb))) {
+            if ((s->segmentation.temporal = get_bits1(&s->gb)))
+            {
                 for (i = 0; i < 3; i++)
                     s->prob.segpred[i] = get_bits1(&s->gb) ?
                                          get_bits(&s->gb, 8) : 255;
             }
         }
         if ((!s->segmentation.update_map || s->segmentation.temporal) &&
-            (w != s->frames[CUR_FRAME].tf.f->width ||
-             h != s->frames[CUR_FRAME].tf.f->height)) {
+                (w != s->frames[CUR_FRAME].tf.f->width ||
+                 h != s->frames[CUR_FRAME].tf.f->height))
+        {
             av_log(ctx, AV_LOG_WARNING,
                    "Reference segmap (temp=%d,update=%d) enabled on size-change!\n",
                    s->segmentation.temporal, s->segmentation.update_map);
@@ -765,9 +860,11 @@ static int decode_frame_header(AVCodecContext *ctx,
             //return AVERROR_INVALIDDATA;
         }
 
-        if (get_bits1(&s->gb)) {
+        if (get_bits1(&s->gb))
+        {
             s->segmentation.absolute_vals = get_bits1(&s->gb);
-            for (i = 0; i < 8; i++) {
+            for (i = 0; i < 8; i++)
+            {
                 if ((s->segmentation.feat[i].q_enabled = get_bits1(&s->gb)))
                     s->segmentation.feat[i].q_val = get_sbits_inv(&s->gb, 8);
                 if ((s->segmentation.feat[i].lf_enabled = get_bits1(&s->gb)))
@@ -780,15 +877,19 @@ static int decode_frame_header(AVCodecContext *ctx,
     }
 
     // set qmul[] based on Y/UV, AC/DC and segmentation Q idx deltas
-    for (i = 0; i < (s->segmentation.enabled ? 8 : 1); i++) {
+    for (i = 0; i < (s->segmentation.enabled ? 8 : 1); i++)
+    {
         int qyac, qydc, quvac, quvdc, lflvl, sh;
 
-        if (s->segmentation.enabled && s->segmentation.feat[i].q_enabled) {
+        if (s->segmentation.enabled && s->segmentation.feat[i].q_enabled)
+        {
             if (s->segmentation.absolute_vals)
                 qyac = av_clip_uintp2(s->segmentation.feat[i].q_val, 8);
             else
                 qyac = av_clip_uintp2(s->yac_qi + s->segmentation.feat[i].q_val, 8);
-        } else {
+        }
+        else
+        {
             qyac  = s->yac_qi;
         }
         qydc  = av_clip_uintp2(qyac + s->ydc_qdelta, 8);
@@ -802,19 +903,24 @@ static int decode_frame_header(AVCodecContext *ctx,
         s->segmentation.feat[i].qmul[1][1] = vp9_ac_qlookup[s->bpp_index][quvac];
 
         sh = s->filter.level >= 32;
-        if (s->segmentation.enabled && s->segmentation.feat[i].lf_enabled) {
+        if (s->segmentation.enabled && s->segmentation.feat[i].lf_enabled)
+        {
             if (s->segmentation.absolute_vals)
                 lflvl = av_clip_uintp2(s->segmentation.feat[i].lf_val, 6);
             else
                 lflvl = av_clip_uintp2(s->filter.level + s->segmentation.feat[i].lf_val, 6);
-        } else {
+        }
+        else
+        {
             lflvl  = s->filter.level;
         }
-        if (s->lf_delta.enabled) {
+        if (s->lf_delta.enabled)
+        {
             s->segmentation.feat[i].lflvl[0][0] =
-            s->segmentation.feat[i].lflvl[0][1] =
-                av_clip_uintp2(lflvl + (s->lf_delta.ref[0] << sh), 6);
-            for (j = 1; j < 4; j++) {
+                s->segmentation.feat[i].lflvl[0][1] =
+                    av_clip_uintp2(lflvl + (s->lf_delta.ref[0] << sh), 6);
+            for (j = 1; j < 4; j++)
+            {
                 s->segmentation.feat[i].lflvl[j][0] =
                     av_clip_uintp2(lflvl + ((s->lf_delta.ref[j] +
                                              s->lf_delta.mode[0]) * (1 << sh)), 6);
@@ -822,23 +928,27 @@ static int decode_frame_header(AVCodecContext *ctx,
                     av_clip_uintp2(lflvl + ((s->lf_delta.ref[j] +
                                              s->lf_delta.mode[1]) * (1 << sh)), 6);
             }
-        } else {
+        }
+        else
+        {
             memset(s->segmentation.feat[i].lflvl, lflvl,
                    sizeof(s->segmentation.feat[i].lflvl));
         }
     }
 
     /* tiling info */
-    if ((res = update_size(ctx, w, h, fmt)) < 0) {
+    if ((res = update_size(ctx, w, h, fmt)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "Failed to initialize decoder for %dx%d @ %d\n", w, h, fmt);
         return res;
     }
     for (s->tiling.log2_tile_cols = 0;
-         (s->sb_cols >> s->tiling.log2_tile_cols) > 64;
-         s->tiling.log2_tile_cols++) ;
+            (s->sb_cols >> s->tiling.log2_tile_cols) > 64;
+            s->tiling.log2_tile_cols++) ;
     for (max = 0; (s->sb_cols >> max) >= 4; max++) ;
     max = FFMAX(0, max - 1);
-    while (max > s->tiling.log2_tile_cols) {
+    while (max > s->tiling.log2_tile_cols)
+    {
         if (get_bits1(&s->gb))
             s->tiling.log2_tile_cols++;
         else
@@ -846,19 +956,22 @@ static int decode_frame_header(AVCodecContext *ctx,
     }
     s->tiling.log2_tile_rows = decode012(&s->gb);
     s->tiling.tile_rows = 1 << s->tiling.log2_tile_rows;
-    if (s->tiling.tile_cols != (1 << s->tiling.log2_tile_cols)) {
+    if (s->tiling.tile_cols != (1 << s->tiling.log2_tile_cols))
+    {
         s->tiling.tile_cols = 1 << s->tiling.log2_tile_cols;
         s->c_b = av_fast_realloc(s->c_b, &s->c_b_size,
                                  sizeof(VP56RangeCoder) * s->tiling.tile_cols);
-        if (!s->c_b) {
+        if (!s->c_b)
+        {
             av_log(ctx, AV_LOG_ERROR, "Ran out of memory during range coder init\n");
             return AVERROR(ENOMEM);
         }
     }
 
-    if (s->keyframe || s->errorres || (s->intraonly && s->resetctx == 3)) {
+    if (s->keyframe || s->errorres || (s->intraonly && s->resetctx == 3))
+    {
         s->prob_ctx[0].p = s->prob_ctx[1].p = s->prob_ctx[2].p =
-                           s->prob_ctx[3].p = vp9_default_probs;
+                s->prob_ctx[3].p = vp9_default_probs;
         memcpy(s->prob_ctx[0].coef, vp9_default_coef_probs,
                sizeof(vp9_default_coef_probs));
         memcpy(s->prob_ctx[1].coef, vp9_default_coef_probs,
@@ -867,7 +980,9 @@ static int decode_frame_header(AVCodecContext *ctx,
                sizeof(vp9_default_coef_probs));
         memcpy(s->prob_ctx[3].coef, vp9_default_coef_probs,
                sizeof(vp9_default_coef_probs));
-    } else if (s->intraonly && s->resetctx == 2) {
+    }
+    else if (s->intraonly && s->resetctx == 2)
+    {
         s->prob_ctx[c].p = vp9_default_probs;
         memcpy(s->prob_ctx[c].coef, vp9_default_coef_probs,
                sizeof(vp9_default_coef_probs));
@@ -876,20 +991,25 @@ static int decode_frame_header(AVCodecContext *ctx,
     // next 16 bits is size of the rest of the header (arith-coded)
     size2 = get_bits(&s->gb, 16);
     data2 = align_get_bits(&s->gb);
-    if (size2 > size - (data2 - data)) {
+    if (size2 > size - (data2 - data))
+    {
         av_log(ctx, AV_LOG_ERROR, "Invalid compressed header size\n");
         return AVERROR_INVALIDDATA;
     }
     ff_vp56_init_range_decoder(&s->c, data2, size2);
-    if (vp56_rac_get_prob_branchy(&s->c, 128)) { // marker bit
+    if (vp56_rac_get_prob_branchy(&s->c, 128))   // marker bit
+    {
         av_log(ctx, AV_LOG_ERROR, "Marker bit was set\n");
         return AVERROR_INVALIDDATA;
     }
 
-    if (s->keyframe || s->intraonly) {
+    if (s->keyframe || s->intraonly)
+    {
         memset(s->counts.coef, 0, sizeof(s->counts.coef));
         memset(s->counts.eob,  0, sizeof(s->counts.eob));
-    } else {
+    }
+    else
+    {
         memset(&s->counts, 0, sizeof(s->counts));
     }
     // FIXME is it faster to not copy here, but do it down in the fw updates
@@ -898,14 +1018,18 @@ static int decode_frame_header(AVCodecContext *ctx,
     s->prob.p = s->prob_ctx[c].p;
 
     // txfm updates
-    if (s->lossless) {
+    if (s->lossless)
+    {
         s->txfmmode = TX_4X4;
-    } else {
+    }
+    else
+    {
         s->txfmmode = vp8_rac_get_uint(&s->c, 2);
         if (s->txfmmode == 3)
             s->txfmmode += vp8_rac_get(&s->c);
 
-        if (s->txfmmode == TX_SWITCHABLE) {
+        if (s->txfmmode == TX_SWITCHABLE)
+        {
             for (i = 0; i < 2; i++)
                 if (vp56_rac_get_prob_branchy(&s->c, 252))
                     s->prob.p.tx8p[i] = update_prob(&s->c, s->prob.p.tx8p[i]);
@@ -923,31 +1047,41 @@ static int decode_frame_header(AVCodecContext *ctx,
     }
 
     // coef updates
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         uint8_t (*ref)[2][6][6][3] = s->prob_ctx[c].coef[i];
-        if (vp8_rac_get(&s->c)) {
+        if (vp8_rac_get(&s->c))
+        {
             for (j = 0; j < 2; j++)
                 for (k = 0; k < 2; k++)
                     for (l = 0; l < 6; l++)
-                        for (m = 0; m < 6; m++) {
+                        for (m = 0; m < 6; m++)
+                        {
                             uint8_t *p = s->prob.coef[i][j][k][l][m];
                             uint8_t *r = ref[j][k][l][m];
                             if (m >= 3 && l == 0) // dc only has 3 pt
                                 break;
-                            for (n = 0; n < 3; n++) {
-                                if (vp56_rac_get_prob_branchy(&s->c, 252)) {
+                            for (n = 0; n < 3; n++)
+                            {
+                                if (vp56_rac_get_prob_branchy(&s->c, 252))
+                                {
                                     p[n] = update_prob(&s->c, r[n]);
-                                } else {
+                                }
+                                else
+                                {
                                     p[n] = r[n];
                                 }
                             }
                             p[3] = 0;
                         }
-        } else {
+        }
+        else
+        {
             for (j = 0; j < 2; j++)
                 for (k = 0; k < 2; k++)
                     for (l = 0; l < 6; l++)
-                        for (m = 0; m < 6; m++) {
+                        for (m = 0; m < 6; m++)
+                        {
                             uint8_t *p = s->prob.coef[i][j][k][l][m];
                             uint8_t *r = ref[j][k][l][m];
                             if (m > 3 && l == 0) // dc only has 3 pt
@@ -964,7 +1098,8 @@ static int decode_frame_header(AVCodecContext *ctx,
     for (i = 0; i < 3; i++)
         if (vp56_rac_get_prob_branchy(&s->c, 252))
             s->prob.p.skip[i] = update_prob(&s->c, s->prob.p.skip[i]);
-    if (!s->keyframe && !s->intraonly) {
+    if (!s->keyframe && !s->intraonly)
+    {
         for (i = 0; i < 7; i++)
             for (j = 0; j < 3; j++)
                 if (vp56_rac_get_prob_branchy(&s->c, 252))
@@ -982,7 +1117,8 @@ static int decode_frame_header(AVCodecContext *ctx,
             if (vp56_rac_get_prob_branchy(&s->c, 252))
                 s->prob.p.intra[i] = update_prob(&s->c, s->prob.p.intra[i]);
 
-        if (s->allowcompinter) {
+        if (s->allowcompinter)
+        {
             s->comppredmode = vp8_rac_get(&s->c);
             if (s->comppredmode)
                 s->comppredmode += vp8_rac_get(&s->c);
@@ -991,12 +1127,16 @@ static int decode_frame_header(AVCodecContext *ctx,
                     if (vp56_rac_get_prob_branchy(&s->c, 252))
                         s->prob.p.comp[i] =
                             update_prob(&s->c, s->prob.p.comp[i]);
-        } else {
+        }
+        else
+        {
             s->comppredmode = PRED_SINGLEREF;
         }
 
-        if (s->comppredmode != PRED_COMPREF) {
-            for (i = 0; i < 5; i++) {
+        if (s->comppredmode != PRED_COMPREF)
+        {
+            for (i = 0; i < 5; i++)
+            {
                 if (vp56_rac_get_prob_branchy(&s->c, 252))
                     s->prob.p.single_ref[i][0] =
                         update_prob(&s->c, s->prob.p.single_ref[i][0]);
@@ -1006,7 +1146,8 @@ static int decode_frame_header(AVCodecContext *ctx,
             }
         }
 
-        if (s->comppredmode != PRED_SINGLEREF) {
+        if (s->comppredmode != PRED_SINGLEREF)
+        {
             for (i = 0; i < 5; i++)
                 if (vp56_rac_get_prob_branchy(&s->c, 252))
                     s->prob.p.comp_ref[i] =
@@ -1031,7 +1172,8 @@ static int decode_frame_header(AVCodecContext *ctx,
             if (vp56_rac_get_prob_branchy(&s->c, 252))
                 s->prob.p.mv_joint[i] = (vp8_rac_get_uint(&s->c, 7) << 1) | 1;
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 2; i++)
+        {
             if (vp56_rac_get_prob_branchy(&s->c, 252))
                 s->prob.p.mv_comp[i].sign = (vp8_rac_get_uint(&s->c, 7) << 1) | 1;
 
@@ -1049,7 +1191,8 @@ static int decode_frame_header(AVCodecContext *ctx,
                         (vp8_rac_get_uint(&s->c, 7) << 1) | 1;
         }
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 2; i++)
+        {
             for (j = 0; j < 2; j++)
                 for (k = 0; k < 3; k++)
                     if (vp56_rac_get_prob_branchy(&s->c, 252))
@@ -1062,8 +1205,10 @@ static int decode_frame_header(AVCodecContext *ctx,
                         (vp8_rac_get_uint(&s->c, 7) << 1) | 1;
         }
 
-        if (s->highprecisionmvs) {
-            for (i = 0; i < 2; i++) {
+        if (s->highprecisionmvs)
+        {
+            for (i = 0; i < 2; i++)
+            {
                 if (vp56_rac_get_prob_branchy(&s->c, 252))
                     s->prob.p.mv_comp[i].class0_hp =
                         (vp8_rac_get_uint(&s->c, 7) << 1) | 1;
@@ -1088,33 +1233,47 @@ static av_always_inline void clamp_mv(VP56mv *dst, const VP56mv *src,
 static void find_ref_mvs(VP9Context *s,
                          VP56mv *pmv, int ref, int z, int idx, int sb)
 {
-    static const int8_t mv_ref_blk_off[N_BS_SIZES][8][2] = {
+    static const int8_t mv_ref_blk_off[N_BS_SIZES][8][2] =
+    {
         [BS_64x64] = {{  3, -1 }, { -1,  3 }, {  4, -1 }, { -1,  4 },
-                      { -1, -1 }, {  0, -1 }, { -1,  0 }, {  6, -1 }},
+            { -1, -1 }, {  0, -1 }, { -1,  0 }, {  6, -1 }
+        },
         [BS_64x32] = {{  0, -1 }, { -1,  0 }, {  4, -1 }, { -1,  2 },
-                      { -1, -1 }, {  0, -3 }, { -3,  0 }, {  2, -1 }},
+            { -1, -1 }, {  0, -3 }, { -3,  0 }, {  2, -1 }
+        },
         [BS_32x64] = {{ -1,  0 }, {  0, -1 }, { -1,  4 }, {  2, -1 },
-                      { -1, -1 }, { -3,  0 }, {  0, -3 }, { -1,  2 }},
+            { -1, -1 }, { -3,  0 }, {  0, -3 }, { -1,  2 }
+        },
         [BS_32x32] = {{  1, -1 }, { -1,  1 }, {  2, -1 }, { -1,  2 },
-                      { -1, -1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }},
+            { -1, -1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }
+        },
         [BS_32x16] = {{  0, -1 }, { -1,  0 }, {  2, -1 }, { -1, -1 },
-                      { -1,  1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }},
+            { -1,  1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }
+        },
         [BS_16x32] = {{ -1,  0 }, {  0, -1 }, { -1,  2 }, { -1, -1 },
-                      {  1, -1 }, { -3,  0 }, {  0, -3 }, { -3, -3 }},
+            {  1, -1 }, { -3,  0 }, {  0, -3 }, { -3, -3 }
+        },
         [BS_16x16] = {{  0, -1 }, { -1,  0 }, {  1, -1 }, { -1,  1 },
-                      { -1, -1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }},
+            { -1, -1 }, {  0, -3 }, { -3,  0 }, { -3, -3 }
+        },
         [BS_16x8]  = {{  0, -1 }, { -1,  0 }, {  1, -1 }, { -1, -1 },
-                      {  0, -2 }, { -2,  0 }, { -2, -1 }, { -1, -2 }},
+            {  0, -2 }, { -2,  0 }, { -2, -1 }, { -1, -2 }
+        },
         [BS_8x16]  = {{ -1,  0 }, {  0, -1 }, { -1,  1 }, { -1, -1 },
-                      { -2,  0 }, {  0, -2 }, { -1, -2 }, { -2, -1 }},
+            { -2,  0 }, {  0, -2 }, { -1, -2 }, { -2, -1 }
+        },
         [BS_8x8]   = {{  0, -1 }, { -1,  0 }, { -1, -1 }, {  0, -2 },
-                      { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }},
+            { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }
+        },
         [BS_8x4]   = {{  0, -1 }, { -1,  0 }, { -1, -1 }, {  0, -2 },
-                      { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }},
+            { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }
+        },
         [BS_4x8]   = {{  0, -1 }, { -1,  0 }, { -1, -1 }, {  0, -2 },
-                      { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }},
+            { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }
+        },
         [BS_4x4]   = {{  0, -1 }, { -1,  0 }, { -1, -1 }, {  0, -2 },
-                      { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }},
+            { -2,  0 }, { -1, -2 }, { -2, -1 }, { -2, -2 }
+        },
     };
     VP9Block *b = s->b;
     int row = s->row, col = s->col, row7 = s->row7;
@@ -1137,10 +1296,14 @@ static void find_ref_mvs(VP9Context *s,
         } \
     } while (0)
 
-    if (sb >= 0) {
-        if (sb == 2 || sb == 1) {
+    if (sb >= 0)
+    {
+        if (sb == 2 || sb == 1)
+        {
             RETURN_DIRECT_MV(b->mv[0][z]);
-        } else if (sb == 3) {
+        }
+        else if (sb == 3)
+        {
             RETURN_DIRECT_MV(b->mv[2][z]);
             RETURN_DIRECT_MV(b->mv[1][z]);
             RETURN_DIRECT_MV(b->mv[0][z]);
@@ -1186,51 +1349,70 @@ static void find_ref_mvs(VP9Context *s,
         } \
     } while (0)
 
-        if (row > 0) {
+        if (row > 0)
+        {
             struct VP9mvrefPair *mv = &s->frames[CUR_FRAME].mv[(row - 1) * s->sb_cols * 8 + col];
-            if (mv->ref[0] == ref) {
+            if (mv->ref[0] == ref)
+            {
                 RETURN_MV(s->above_mv_ctx[2 * col + (sb & 1)][0]);
-            } else if (mv->ref[1] == ref) {
+            }
+            else if (mv->ref[1] == ref)
+            {
                 RETURN_MV(s->above_mv_ctx[2 * col + (sb & 1)][1]);
             }
         }
-        if (col > s->tiling.tile_col_start) {
+        if (col > s->tiling.tile_col_start)
+        {
             struct VP9mvrefPair *mv = &s->frames[CUR_FRAME].mv[row * s->sb_cols * 8 + col - 1];
-            if (mv->ref[0] == ref) {
+            if (mv->ref[0] == ref)
+            {
                 RETURN_MV(s->left_mv_ctx[2 * row7 + (sb >> 1)][0]);
-            } else if (mv->ref[1] == ref) {
+            }
+            else if (mv->ref[1] == ref)
+            {
                 RETURN_MV(s->left_mv_ctx[2 * row7 + (sb >> 1)][1]);
             }
         }
         i = 2;
-    } else {
+    }
+    else
+    {
         i = 0;
     }
 
     // previously coded MVs in this neighbourhood, using same reference frame
-    for (; i < 8; i++) {
+    for (; i < 8; i++)
+    {
         int c = p[i][0] + col, r = p[i][1] + row;
 
-        if (c >= s->tiling.tile_col_start && c < s->cols && r >= 0 && r < s->rows) {
+        if (c >= s->tiling.tile_col_start && c < s->cols && r >= 0 && r < s->rows)
+        {
             struct VP9mvrefPair *mv = &s->frames[CUR_FRAME].mv[r * s->sb_cols * 8 + c];
 
-            if (mv->ref[0] == ref) {
+            if (mv->ref[0] == ref)
+            {
                 RETURN_MV(mv->mv[0]);
-            } else if (mv->ref[1] == ref) {
+            }
+            else if (mv->ref[1] == ref)
+            {
                 RETURN_MV(mv->mv[1]);
             }
         }
     }
 
     // MV at this position in previous frame, using same reference frame
-    if (s->use_last_frame_mvs) {
+    if (s->use_last_frame_mvs)
+    {
         struct VP9mvrefPair *mv = &s->frames[REF_FRAME_MVPAIR].mv[row * s->sb_cols * 8 + col];
 
         if (!s->frames[REF_FRAME_MVPAIR].uses_2pass)
             ff_thread_await_progress(&s->frames[REF_FRAME_MVPAIR].tf, row >> 3, 0);
-        if (mv->ref[0] == ref) {
+        if (mv->ref[0] == ref)
+        {
             RETURN_MV(mv->mv[0]);
-        } else if (mv->ref[1] == ref) {
+        }
+        else if (mv->ref[1] == ref)
+        {
             RETURN_MV(mv->mv[1]);
         }
     }
@@ -1246,36 +1428,43 @@ static void find_ref_mvs(VP9Context *s,
     } while (0)
 
     // previously coded MVs in this neighbourhood, using different reference frame
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         int c = p[i][0] + col, r = p[i][1] + row;
 
-        if (c >= s->tiling.tile_col_start && c < s->cols && r >= 0 && r < s->rows) {
+        if (c >= s->tiling.tile_col_start && c < s->cols && r >= 0 && r < s->rows)
+        {
             struct VP9mvrefPair *mv = &s->frames[CUR_FRAME].mv[r * s->sb_cols * 8 + c];
 
-            if (mv->ref[0] != ref && mv->ref[0] >= 0) {
+            if (mv->ref[0] != ref && mv->ref[0] >= 0)
+            {
                 RETURN_SCALE_MV(mv->mv[0], s->signbias[mv->ref[0]] != s->signbias[ref]);
             }
             if (mv->ref[1] != ref && mv->ref[1] >= 0 &&
-                // BUG - libvpx has this condition regardless of whether
-                // we used the first ref MV and pre-scaling
-                AV_RN32A(&mv->mv[0]) != AV_RN32A(&mv->mv[1])) {
+                    // BUG - libvpx has this condition regardless of whether
+                    // we used the first ref MV and pre-scaling
+                    AV_RN32A(&mv->mv[0]) != AV_RN32A(&mv->mv[1]))
+            {
                 RETURN_SCALE_MV(mv->mv[1], s->signbias[mv->ref[1]] != s->signbias[ref]);
             }
         }
     }
 
     // MV at this position in previous frame, using different reference frame
-    if (s->use_last_frame_mvs) {
+    if (s->use_last_frame_mvs)
+    {
         struct VP9mvrefPair *mv = &s->frames[REF_FRAME_MVPAIR].mv[row * s->sb_cols * 8 + col];
 
         // no need to await_progress, because we already did that above
-        if (mv->ref[0] != ref && mv->ref[0] >= 0) {
+        if (mv->ref[0] != ref && mv->ref[0] >= 0)
+        {
             RETURN_SCALE_MV(mv->mv[0], s->signbias[mv->ref[0]] != s->signbias[ref]);
         }
         if (mv->ref[1] != ref && mv->ref[1] >= 0 &&
-            // BUG - libvpx has this condition regardless of whether
-            // we used the first ref MV and pre-scaling
-            AV_RN32A(&mv->mv[0]) != AV_RN32A(&mv->mv[1])) {
+                // BUG - libvpx has this condition regardless of whether
+                // we used the first ref MV and pre-scaling
+                AV_RN32A(&mv->mv[0]) != AV_RN32A(&mv->mv[1]))
+        {
             RETURN_SCALE_MV(mv->mv[1], s->signbias[mv->ref[1]] != s->signbias[ref]);
         }
     }
@@ -1295,10 +1484,12 @@ static av_always_inline int read_mv_component(VP9Context *s, int idx, int hp)
 
     s->counts.mv_comp[idx].sign[sign]++;
     s->counts.mv_comp[idx].classes[c]++;
-    if (c) {
+    if (c)
+    {
         int m;
 
-        for (n = 0, m = 0; m < c; m++) {
+        for (n = 0, m = 0; m < c; m++)
+        {
             bit = vp56_rac_get_prob(&s->c, s->prob.p.mv_comp[idx].bits[m]);
             n |= bit << m;
             s->counts.mv_comp[idx].bits[m][bit]++;
@@ -1307,29 +1498,37 @@ static av_always_inline int read_mv_component(VP9Context *s, int idx, int hp)
         bit = vp8_rac_get_tree(&s->c, vp9_mv_fp_tree, s->prob.p.mv_comp[idx].fp);
         n |= bit << 1;
         s->counts.mv_comp[idx].fp[bit]++;
-        if (hp) {
+        if (hp)
+        {
             bit = vp56_rac_get_prob(&s->c, s->prob.p.mv_comp[idx].hp);
             s->counts.mv_comp[idx].hp[bit]++;
             n |= bit;
-        } else {
+        }
+        else
+        {
             n |= 1;
             // bug in libvpx - we count for bw entropy purposes even if the
             // bit wasn't coded
             s->counts.mv_comp[idx].hp[1]++;
         }
         n += 8 << c;
-    } else {
+    }
+    else
+    {
         n = vp56_rac_get_prob(&s->c, s->prob.p.mv_comp[idx].class0);
         s->counts.mv_comp[idx].class0[n]++;
         bit = vp8_rac_get_tree(&s->c, vp9_mv_fp_tree,
                                s->prob.p.mv_comp[idx].class0_fp[n]);
         s->counts.mv_comp[idx].class0_fp[n][bit]++;
         n = (n << 3) | (bit << 1);
-        if (hp) {
+        if (hp)
+        {
             bit = vp56_rac_get_prob(&s->c, s->prob.p.mv_comp[idx].class0_hp);
             s->counts.mv_comp[idx].class0_hp[bit]++;
             n |= bit;
-        } else {
+        }
+        else
+        {
             n |= 1;
             // bug in libvpx - we count for bw entropy purposes even if the
             // bit wasn't coded
@@ -1345,9 +1544,12 @@ static void fill_mv(VP9Context *s,
 {
     VP9Block *b = s->b;
 
-    if (mode == ZEROMV) {
+    if (mode == ZEROMV)
+    {
         AV_ZERO64(mv);
-    } else {
+    }
+    else
+    {
         int hp;
 
         // FIXME cache this value and reuse for other subblocks
@@ -1355,21 +1557,25 @@ static void fill_mv(VP9Context *s,
                      mode == NEWMV ? -1 : sb);
         // FIXME maybe move this code into find_ref_mvs()
         if ((mode == NEWMV || sb == -1) &&
-            !(hp = s->highprecisionmvs && abs(mv[0].x) < 64 && abs(mv[0].y) < 64)) {
-            if (mv[0].y & 1) {
+                !(hp = s->highprecisionmvs && abs(mv[0].x) < 64 && abs(mv[0].y) < 64))
+        {
+            if (mv[0].y & 1)
+            {
                 if (mv[0].y < 0)
                     mv[0].y++;
                 else
                     mv[0].y--;
             }
-            if (mv[0].x & 1) {
+            if (mv[0].x & 1)
+            {
                 if (mv[0].x < 0)
                     mv[0].x++;
                 else
                     mv[0].x--;
             }
         }
-        if (mode == NEWMV) {
+        if (mode == NEWMV)
+        {
             enum MVJoint j = vp8_rac_get_tree(&s->c, vp9_mv_joint_tree,
                                               s->prob.p.mv_joint);
 
@@ -1380,26 +1586,31 @@ static void fill_mv(VP9Context *s,
                 mv[0].x += read_mv_component(s, 1, hp);
         }
 
-        if (b->comp) {
+        if (b->comp)
+        {
             // FIXME cache this value and reuse for other subblocks
             find_ref_mvs(s, &mv[1], b->ref[1], 1, mode == NEARMV,
                          mode == NEWMV ? -1 : sb);
             if ((mode == NEWMV || sb == -1) &&
-                !(hp = s->highprecisionmvs && abs(mv[1].x) < 64 && abs(mv[1].y) < 64)) {
-                if (mv[1].y & 1) {
+                    !(hp = s->highprecisionmvs && abs(mv[1].x) < 64 && abs(mv[1].y) < 64))
+            {
+                if (mv[1].y & 1)
+                {
                     if (mv[1].y < 0)
                         mv[1].y++;
                     else
                         mv[1].y--;
                 }
-                if (mv[1].x & 1) {
+                if (mv[1].x & 1)
+                {
                     if (mv[1].x < 0)
                         mv[1].x++;
                     else
                         mv[1].x--;
                 }
             }
-            if (mode == NEWMV) {
+            if (mode == NEWMV)
+            {
                 enum MVJoint j = vp8_rac_get_tree(&s->c, vp9_mv_joint_tree,
                                                   s->prob.p.mv_joint);
 
@@ -1416,43 +1627,57 @@ static void fill_mv(VP9Context *s,
 static av_always_inline void setctx_2d(uint8_t *ptr, int w, int h,
                                        ptrdiff_t stride, int v)
 {
-    switch (w) {
+    switch (w)
+    {
     case 1:
-        do {
+        do
+        {
             *ptr = v;
             ptr += stride;
-        } while (--h);
+        }
+        while (--h);
         break;
-    case 2: {
+    case 2:
+    {
         int v16 = v * 0x0101;
-        do {
+        do
+        {
             AV_WN16A(ptr, v16);
             ptr += stride;
-        } while (--h);
+        }
+        while (--h);
         break;
     }
-    case 4: {
+    case 4:
+    {
         uint32_t v32 = v * 0x01010101;
-        do {
+        do
+        {
             AV_WN32A(ptr, v32);
             ptr += stride;
-        } while (--h);
+        }
+        while (--h);
         break;
     }
-    case 8: {
+    case 8:
+    {
 #if HAVE_FAST_64BIT
         uint64_t v64 = v * 0x0101010101010101ULL;
-        do {
+        do
+        {
             AV_WN64A(ptr, v64);
             ptr += stride;
-        } while (--h);
+        }
+        while (--h);
 #else
         uint32_t v32 = v * 0x01010101;
-        do {
+        do
+        {
             AV_WN32A(ptr,     v32);
             AV_WN32A(ptr + 4, v32);
             ptr += stride;
-        } while (--h);
+        }
+        while (--h);
 #endif
         break;
     }
@@ -1461,13 +1686,16 @@ static av_always_inline void setctx_2d(uint8_t *ptr, int w, int h,
 
 static void decode_mode(AVCodecContext *ctx)
 {
-    static const uint8_t left_ctx[N_BS_SIZES] = {
+    static const uint8_t left_ctx[N_BS_SIZES] =
+    {
         0x0, 0x8, 0x0, 0x8, 0xc, 0x8, 0xc, 0xe, 0xc, 0xe, 0xf, 0xe, 0xf
     };
-    static const uint8_t above_ctx[N_BS_SIZES] = {
+    static const uint8_t above_ctx[N_BS_SIZES] =
+    {
         0x0, 0x0, 0x8, 0x8, 0x8, 0xc, 0xc, 0xc, 0xe, 0xe, 0xe, 0xf, 0xf
     };
-    static const uint8_t max_tx_for_bl_bp[N_BS_SIZES] = {
+    static const uint8_t max_tx_for_bl_bp[N_BS_SIZES] =
+    {
         TX_32X32, TX_32X32, TX_32X32, TX_32X32, TX_16X16, TX_16X16,
         TX_16X16, TX_8X8, TX_8X8, TX_8X8, TX_4X4, TX_4X4, TX_4X4
     };
@@ -1480,36 +1708,47 @@ static void decode_mode(AVCodecContext *ctx)
     int have_a = row > 0, have_l = col > s->tiling.tile_col_start;
     int vref, filter_id;
 
-    if (!s->segmentation.enabled) {
+    if (!s->segmentation.enabled)
+    {
         b->seg_id = 0;
-    } else if (s->keyframe || s->intraonly) {
+    }
+    else if (s->keyframe || s->intraonly)
+    {
         b->seg_id = !s->segmentation.update_map ? 0 :
                     vp8_rac_get_tree(&s->c, vp9_segmentation_tree, s->prob.seg);
-    } else if (!s->segmentation.update_map ||
-               (s->segmentation.temporal &&
-                vp56_rac_get_prob_branchy(&s->c,
-                    s->prob.segpred[s->above_segpred_ctx[col] +
-                                    s->left_segpred_ctx[row7]]))) {
-        if (!s->errorres && !s->segmentation.ignore_refmap) {
+    }
+    else if (!s->segmentation.update_map ||
+             (s->segmentation.temporal &&
+              vp56_rac_get_prob_branchy(&s->c,
+                                        s->prob.segpred[s->above_segpred_ctx[col] +
+                                                s->left_segpred_ctx[row7]])))
+    {
+        if (!s->errorres && !s->segmentation.ignore_refmap)
+        {
             int pred = 8, x;
             uint8_t *refsegmap = s->frames[REF_FRAME_SEGMAP].segmentation_map;
 
             if (!s->frames[REF_FRAME_SEGMAP].uses_2pass)
                 ff_thread_await_progress(&s->frames[REF_FRAME_SEGMAP].tf, row >> 3, 0);
-            for (y = 0; y < h4; y++) {
+            for (y = 0; y < h4; y++)
+            {
                 int idx_base = (y + row) * 8 * s->sb_cols + col;
                 for (x = 0; x < w4; x++)
                     pred = FFMIN(pred, refsegmap[idx_base + x]);
             }
             av_assert1(pred < 8);
             b->seg_id = pred;
-        } else {
+        }
+        else
+        {
             b->seg_id = 0;
         }
 
         memset(&s->above_segpred_ctx[col], 1, w4);
         memset(&s->left_segpred_ctx[row7], 1, h4);
-    } else {
+    }
+    else
+    {
         b->seg_id = vp8_rac_get_tree(&s->c, vp9_segmentation_tree,
                                      s->prob.seg);
 
@@ -1517,30 +1756,40 @@ static void decode_mode(AVCodecContext *ctx)
         memset(&s->left_segpred_ctx[row7], 0, h4);
     }
     if (s->segmentation.enabled &&
-        (s->segmentation.update_map || s->keyframe || s->intraonly)) {
+            (s->segmentation.update_map || s->keyframe || s->intraonly))
+    {
         setctx_2d(&s->frames[CUR_FRAME].segmentation_map[row * 8 * s->sb_cols + col],
                   bw4, bh4, 8 * s->sb_cols, b->seg_id);
     }
 
     b->skip = s->segmentation.enabled &&
-        s->segmentation.feat[b->seg_id].skip_enabled;
-    if (!b->skip) {
+              s->segmentation.feat[b->seg_id].skip_enabled;
+    if (!b->skip)
+    {
         int c = s->left_skip_ctx[row7] + s->above_skip_ctx[col];
         b->skip = vp56_rac_get_prob(&s->c, s->prob.p.skip[c]);
         s->counts.skip[c][b->skip]++;
     }
 
-    if (s->keyframe || s->intraonly) {
+    if (s->keyframe || s->intraonly)
+    {
         b->intra = 1;
-    } else if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].ref_enabled) {
+    }
+    else if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].ref_enabled)
+    {
         b->intra = !s->segmentation.feat[b->seg_id].ref_val;
-    } else {
+    }
+    else
+    {
         int c, bit;
 
-        if (have_a && have_l) {
+        if (have_a && have_l)
+        {
             c = s->above_intra_ctx[col] + s->left_intra_ctx[row7];
             c += (c == 2);
-        } else {
+        }
+        else
+        {
             c = have_a ? 2 * s->above_intra_ctx[col] :
                 have_l ? 2 * s->left_intra_ctx[row7] : 0;
         }
@@ -1549,28 +1798,39 @@ static void decode_mode(AVCodecContext *ctx)
         b->intra = !bit;
     }
 
-    if ((b->intra || !b->skip) && s->txfmmode == TX_SWITCHABLE) {
+    if ((b->intra || !b->skip) && s->txfmmode == TX_SWITCHABLE)
+    {
         int c;
-        if (have_a) {
-            if (have_l) {
+        if (have_a)
+        {
+            if (have_l)
+            {
                 c = (s->above_skip_ctx[col] ? max_tx :
                      s->above_txfm_ctx[col]) +
                     (s->left_skip_ctx[row7] ? max_tx :
                      s->left_txfm_ctx[row7]) > max_tx;
-            } else {
+            }
+            else
+            {
                 c = s->above_skip_ctx[col] ? 1 :
                     (s->above_txfm_ctx[col] * 2 > max_tx);
             }
-        } else if (have_l) {
+        }
+        else if (have_l)
+        {
             c = s->left_skip_ctx[row7] ? 1 :
                 (s->left_txfm_ctx[row7] * 2 > max_tx);
-        } else {
+        }
+        else
+        {
             c = 1;
         }
-        switch (max_tx) {
+        switch (max_tx)
+        {
         case TX_32X32:
             b->tx = vp56_rac_get_prob(&s->c, s->prob.p.tx32p[c][0]);
-            if (b->tx) {
+            if (b->tx)
+            {
                 b->tx += vp56_rac_get_prob(&s->c, s->prob.p.tx32p[c][1]);
                 if (b->tx == 2)
                     b->tx += vp56_rac_get_prob(&s->c, s->prob.p.tx32p[c][2]);
@@ -1591,43 +1851,58 @@ static void decode_mode(AVCodecContext *ctx)
             b->tx = TX_4X4;
             break;
         }
-    } else {
+    }
+    else
+    {
         b->tx = FFMIN(max_tx, s->txfmmode);
     }
 
-    if (s->keyframe || s->intraonly) {
+    if (s->keyframe || s->intraonly)
+    {
         uint8_t *a = &s->above_mode_ctx[col * 2];
         uint8_t *l = &s->left_mode_ctx[(row7) << 1];
 
         b->comp = 0;
-        if (b->bs > BS_8x8) {
+        if (b->bs > BS_8x8)
+        {
             // FIXME the memory storage intermediates here aren't really
             // necessary, they're just there to make the code slightly
             // simpler for now
             b->mode[0] = a[0] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
-                                    vp9_default_kf_ymode_probs[a[0]][l[0]]);
-            if (b->bs != BS_8x4) {
+                                                 vp9_default_kf_ymode_probs[a[0]][l[0]]);
+            if (b->bs != BS_8x4)
+            {
                 b->mode[1] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
-                                 vp9_default_kf_ymode_probs[a[1]][b->mode[0]]);
+                                              vp9_default_kf_ymode_probs[a[1]][b->mode[0]]);
                 l[0] = a[1] = b->mode[1];
-            } else {
+            }
+            else
+            {
                 l[0] = a[1] = b->mode[1] = b->mode[0];
             }
-            if (b->bs != BS_4x8) {
+            if (b->bs != BS_4x8)
+            {
                 b->mode[2] = a[0] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
-                                        vp9_default_kf_ymode_probs[a[0]][l[1]]);
-                if (b->bs != BS_8x4) {
+                                                     vp9_default_kf_ymode_probs[a[0]][l[1]]);
+                if (b->bs != BS_8x4)
+                {
                     b->mode[3] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
-                                  vp9_default_kf_ymode_probs[a[1]][b->mode[2]]);
+                                                  vp9_default_kf_ymode_probs[a[1]][b->mode[2]]);
                     l[1] = a[1] = b->mode[3];
-                } else {
+                }
+                else
+                {
                     l[1] = a[1] = b->mode[3] = b->mode[2];
                 }
-            } else {
+            }
+            else
+            {
                 b->mode[2] = b->mode[0];
                 l[1] = a[1] = b->mode[3] = b->mode[1];
             }
-        } else {
+        }
+        else
+        {
             b->mode[0] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                           vp9_default_kf_ymode_probs[*a][*l]);
             b->mode[3] = b->mode[2] = b->mode[1] = b->mode[0];
@@ -1637,36 +1912,51 @@ static void decode_mode(AVCodecContext *ctx)
         }
         b->uvmode = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                      vp9_default_kf_uvmode_probs[b->mode[3]]);
-    } else if (b->intra) {
+    }
+    else if (b->intra)
+    {
         b->comp = 0;
-        if (b->bs > BS_8x8) {
+        if (b->bs > BS_8x8)
+        {
             b->mode[0] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                           s->prob.p.y_mode[0]);
             s->counts.y_mode[0][b->mode[0]]++;
-            if (b->bs != BS_8x4) {
+            if (b->bs != BS_8x4)
+            {
                 b->mode[1] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                               s->prob.p.y_mode[0]);
                 s->counts.y_mode[0][b->mode[1]]++;
-            } else {
+            }
+            else
+            {
                 b->mode[1] = b->mode[0];
             }
-            if (b->bs != BS_4x8) {
+            if (b->bs != BS_4x8)
+            {
                 b->mode[2] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                               s->prob.p.y_mode[0]);
                 s->counts.y_mode[0][b->mode[2]]++;
-                if (b->bs != BS_8x4) {
+                if (b->bs != BS_8x4)
+                {
                     b->mode[3] = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                                   s->prob.p.y_mode[0]);
                     s->counts.y_mode[0][b->mode[3]]++;
-                } else {
+                }
+                else
+                {
                     b->mode[3] = b->mode[2];
                 }
-            } else {
+            }
+            else
+            {
                 b->mode[2] = b->mode[0];
                 b->mode[3] = b->mode[1];
             }
-        } else {
-            static const uint8_t size_group[10] = {
+        }
+        else
+        {
+            static const uint8_t size_group[10] =
+            {
                 3, 3, 3, 3, 2, 2, 2, 1, 1, 1
             };
             int sz = size_group[b->bs];
@@ -1679,8 +1969,11 @@ static void decode_mode(AVCodecContext *ctx)
         b->uvmode = vp8_rac_get_tree(&s->c, vp9_intramode_tree,
                                      s->prob.p.uv_mode[b->mode[3]]);
         s->counts.uv_mode[b->mode[3]][b->uvmode]++;
-    } else {
-        static const uint8_t inter_mode_ctx_lut[14][14] = {
+    }
+    else
+    {
+        static const uint8_t inter_mode_ctx_lut[14][14] =
+        {
             { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5 },
             { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5 },
             { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 5, 5, 5, 5 },
@@ -1697,42 +1990,63 @@ static void decode_mode(AVCodecContext *ctx)
             { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 3, 3, 3, 4 },
         };
 
-        if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].ref_enabled) {
+        if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].ref_enabled)
+        {
             av_assert2(s->segmentation.feat[b->seg_id].ref_val != 0);
             b->comp = 0;
             b->ref[0] = s->segmentation.feat[b->seg_id].ref_val - 1;
-        } else {
+        }
+        else
+        {
             // read comp_pred flag
-            if (s->comppredmode != PRED_SWITCHABLE) {
+            if (s->comppredmode != PRED_SWITCHABLE)
+            {
                 b->comp = s->comppredmode == PRED_COMPREF;
-            } else {
+            }
+            else
+            {
                 int c;
 
                 // FIXME add intra as ref=0xff (or -1) to make these easier?
-                if (have_a) {
-                    if (have_l) {
-                        if (s->above_comp_ctx[col] && s->left_comp_ctx[row7]) {
+                if (have_a)
+                {
+                    if (have_l)
+                    {
+                        if (s->above_comp_ctx[col] && s->left_comp_ctx[row7])
+                        {
                             c = 4;
-                        } else if (s->above_comp_ctx[col]) {
+                        }
+                        else if (s->above_comp_ctx[col])
+                        {
                             c = 2 + (s->left_intra_ctx[row7] ||
                                      s->left_ref_ctx[row7] == s->fixcompref);
-                        } else if (s->left_comp_ctx[row7]) {
+                        }
+                        else if (s->left_comp_ctx[row7])
+                        {
                             c = 2 + (s->above_intra_ctx[col] ||
                                      s->above_ref_ctx[col] == s->fixcompref);
-                        } else {
+                        }
+                        else
+                        {
                             c = (!s->above_intra_ctx[col] &&
                                  s->above_ref_ctx[col] == s->fixcompref) ^
-                            (!s->left_intra_ctx[row7] &&
-                             s->left_ref_ctx[row & 7] == s->fixcompref);
+                                (!s->left_intra_ctx[row7] &&
+                                 s->left_ref_ctx[row & 7] == s->fixcompref);
                         }
-                    } else {
-                        c = s->above_comp_ctx[col] ? 3 :
-                        (!s->above_intra_ctx[col] && s->above_ref_ctx[col] == s->fixcompref);
                     }
-                } else if (have_l) {
+                    else
+                    {
+                        c = s->above_comp_ctx[col] ? 3 :
+                            (!s->above_intra_ctx[col] && s->above_ref_ctx[col] == s->fixcompref);
+                    }
+                }
+                else if (have_l)
+                {
                     c = s->left_comp_ctx[row7] ? 3 :
-                    (!s->left_intra_ctx[row7] && s->left_ref_ctx[row7] == s->fixcompref);
-                } else {
+                        (!s->left_intra_ctx[row7] && s->left_ref_ctx[row7] == s->fixcompref);
+                }
+                else
+                {
                     c = 1;
                 }
                 b->comp = vp56_rac_get_prob(&s->c, s->prob.p.comp[c]);
@@ -1742,196 +2056,330 @@ static void decode_mode(AVCodecContext *ctx)
             // read actual references
             // FIXME probably cache a few variables here to prevent repetitive
             // memory accesses below
-            if (b->comp) /* two references */ {
+            if (b->comp) /* two references */
+            {
                 int fix_idx = s->signbias[s->fixcompref], var_idx = !fix_idx, c, bit;
 
                 b->ref[fix_idx] = s->fixcompref;
                 // FIXME can this codeblob be replaced by some sort of LUT?
-                if (have_a) {
-                    if (have_l) {
-                        if (s->above_intra_ctx[col]) {
-                            if (s->left_intra_ctx[row7]) {
+                if (have_a)
+                {
+                    if (have_l)
+                    {
+                        if (s->above_intra_ctx[col])
+                        {
+                            if (s->left_intra_ctx[row7])
+                            {
                                 c = 2;
-                            } else {
+                            }
+                            else
+                            {
                                 c = 1 + 2 * (s->left_ref_ctx[row7] != s->varcompref[1]);
                             }
-                        } else if (s->left_intra_ctx[row7]) {
+                        }
+                        else if (s->left_intra_ctx[row7])
+                        {
                             c = 1 + 2 * (s->above_ref_ctx[col] != s->varcompref[1]);
-                        } else {
+                        }
+                        else
+                        {
                             int refl = s->left_ref_ctx[row7], refa = s->above_ref_ctx[col];
 
-                            if (refl == refa && refa == s->varcompref[1]) {
+                            if (refl == refa && refa == s->varcompref[1])
+                            {
                                 c = 0;
-                            } else if (!s->left_comp_ctx[row7] && !s->above_comp_ctx[col]) {
+                            }
+                            else if (!s->left_comp_ctx[row7] && !s->above_comp_ctx[col])
+                            {
                                 if ((refa == s->fixcompref && refl == s->varcompref[0]) ||
-                                    (refl == s->fixcompref && refa == s->varcompref[0])) {
+                                        (refl == s->fixcompref && refa == s->varcompref[0]))
+                                {
                                     c = 4;
-                                } else {
+                                }
+                                else
+                                {
                                     c = (refa == refl) ? 3 : 1;
                                 }
-                            } else if (!s->left_comp_ctx[row7]) {
-                                if (refa == s->varcompref[1] && refl != s->varcompref[1]) {
+                            }
+                            else if (!s->left_comp_ctx[row7])
+                            {
+                                if (refa == s->varcompref[1] && refl != s->varcompref[1])
+                                {
                                     c = 1;
-                                } else {
+                                }
+                                else
+                                {
                                     c = (refl == s->varcompref[1] &&
                                          refa != s->varcompref[1]) ? 2 : 4;
                                 }
-                            } else if (!s->above_comp_ctx[col]) {
-                                if (refl == s->varcompref[1] && refa != s->varcompref[1]) {
+                            }
+                            else if (!s->above_comp_ctx[col])
+                            {
+                                if (refl == s->varcompref[1] && refa != s->varcompref[1])
+                                {
                                     c = 1;
-                                } else {
+                                }
+                                else
+                                {
                                     c = (refa == s->varcompref[1] &&
                                          refl != s->varcompref[1]) ? 2 : 4;
                                 }
-                            } else {
+                            }
+                            else
+                            {
                                 c = (refl == refa) ? 4 : 2;
                             }
                         }
-                    } else {
-                        if (s->above_intra_ctx[col]) {
+                    }
+                    else
+                    {
+                        if (s->above_intra_ctx[col])
+                        {
                             c = 2;
-                        } else if (s->above_comp_ctx[col]) {
+                        }
+                        else if (s->above_comp_ctx[col])
+                        {
                             c = 4 * (s->above_ref_ctx[col] != s->varcompref[1]);
-                        } else {
+                        }
+                        else
+                        {
                             c = 3 * (s->above_ref_ctx[col] != s->varcompref[1]);
                         }
                     }
-                } else if (have_l) {
-                    if (s->left_intra_ctx[row7]) {
+                }
+                else if (have_l)
+                {
+                    if (s->left_intra_ctx[row7])
+                    {
                         c = 2;
-                    } else if (s->left_comp_ctx[row7]) {
+                    }
+                    else if (s->left_comp_ctx[row7])
+                    {
                         c = 4 * (s->left_ref_ctx[row7] != s->varcompref[1]);
-                    } else {
+                    }
+                    else
+                    {
                         c = 3 * (s->left_ref_ctx[row7] != s->varcompref[1]);
                     }
-                } else {
+                }
+                else
+                {
                     c = 2;
                 }
                 bit = vp56_rac_get_prob(&s->c, s->prob.p.comp_ref[c]);
                 b->ref[var_idx] = s->varcompref[bit];
                 s->counts.comp_ref[c][bit]++;
-            } else /* single reference */ {
+            }
+            else /* single reference */
+            {
                 int bit, c;
 
-                if (have_a && !s->above_intra_ctx[col]) {
-                    if (have_l && !s->left_intra_ctx[row7]) {
-                        if (s->left_comp_ctx[row7]) {
-                            if (s->above_comp_ctx[col]) {
+                if (have_a && !s->above_intra_ctx[col])
+                {
+                    if (have_l && !s->left_intra_ctx[row7])
+                    {
+                        if (s->left_comp_ctx[row7])
+                        {
+                            if (s->above_comp_ctx[col])
+                            {
                                 c = 1 + (!s->fixcompref || !s->left_ref_ctx[row7] ||
                                          !s->above_ref_ctx[col]);
-                            } else {
+                            }
+                            else
+                            {
                                 c = (3 * !s->above_ref_ctx[col]) +
                                     (!s->fixcompref || !s->left_ref_ctx[row7]);
                             }
-                        } else if (s->above_comp_ctx[col]) {
+                        }
+                        else if (s->above_comp_ctx[col])
+                        {
                             c = (3 * !s->left_ref_ctx[row7]) +
                                 (!s->fixcompref || !s->above_ref_ctx[col]);
-                        } else {
+                        }
+                        else
+                        {
                             c = 2 * !s->left_ref_ctx[row7] + 2 * !s->above_ref_ctx[col];
                         }
-                    } else if (s->above_intra_ctx[col]) {
+                    }
+                    else if (s->above_intra_ctx[col])
+                    {
                         c = 2;
-                    } else if (s->above_comp_ctx[col]) {
+                    }
+                    else if (s->above_comp_ctx[col])
+                    {
                         c = 1 + (!s->fixcompref || !s->above_ref_ctx[col]);
-                    } else {
+                    }
+                    else
+                    {
                         c = 4 * (!s->above_ref_ctx[col]);
                     }
-                } else if (have_l && !s->left_intra_ctx[row7]) {
-                    if (s->left_intra_ctx[row7]) {
+                }
+                else if (have_l && !s->left_intra_ctx[row7])
+                {
+                    if (s->left_intra_ctx[row7])
+                    {
                         c = 2;
-                    } else if (s->left_comp_ctx[row7]) {
+                    }
+                    else if (s->left_comp_ctx[row7])
+                    {
                         c = 1 + (!s->fixcompref || !s->left_ref_ctx[row7]);
-                    } else {
+                    }
+                    else
+                    {
                         c = 4 * (!s->left_ref_ctx[row7]);
                     }
-                } else {
+                }
+                else
+                {
                     c = 2;
                 }
                 bit = vp56_rac_get_prob(&s->c, s->prob.p.single_ref[c][0]);
                 s->counts.single_ref[c][0][bit]++;
-                if (!bit) {
+                if (!bit)
+                {
                     b->ref[0] = 0;
-                } else {
+                }
+                else
+                {
                     // FIXME can this codeblob be replaced by some sort of LUT?
-                    if (have_a) {
-                        if (have_l) {
-                            if (s->left_intra_ctx[row7]) {
-                                if (s->above_intra_ctx[col]) {
+                    if (have_a)
+                    {
+                        if (have_l)
+                        {
+                            if (s->left_intra_ctx[row7])
+                            {
+                                if (s->above_intra_ctx[col])
+                                {
                                     c = 2;
-                                } else if (s->above_comp_ctx[col]) {
+                                }
+                                else if (s->above_comp_ctx[col])
+                                {
                                     c = 1 + 2 * (s->fixcompref == 1 ||
                                                  s->above_ref_ctx[col] == 1);
-                                } else if (!s->above_ref_ctx[col]) {
+                                }
+                                else if (!s->above_ref_ctx[col])
+                                {
                                     c = 3;
-                                } else {
+                                }
+                                else
+                                {
                                     c = 4 * (s->above_ref_ctx[col] == 1);
                                 }
-                            } else if (s->above_intra_ctx[col]) {
-                                if (s->left_intra_ctx[row7]) {
+                            }
+                            else if (s->above_intra_ctx[col])
+                            {
+                                if (s->left_intra_ctx[row7])
+                                {
                                     c = 2;
-                                } else if (s->left_comp_ctx[row7]) {
+                                }
+                                else if (s->left_comp_ctx[row7])
+                                {
                                     c = 1 + 2 * (s->fixcompref == 1 ||
                                                  s->left_ref_ctx[row7] == 1);
-                                } else if (!s->left_ref_ctx[row7]) {
+                                }
+                                else if (!s->left_ref_ctx[row7])
+                                {
                                     c = 3;
-                                } else {
+                                }
+                                else
+                                {
                                     c = 4 * (s->left_ref_ctx[row7] == 1);
                                 }
-                            } else if (s->above_comp_ctx[col]) {
-                                if (s->left_comp_ctx[row7]) {
-                                    if (s->left_ref_ctx[row7] == s->above_ref_ctx[col]) {
+                            }
+                            else if (s->above_comp_ctx[col])
+                            {
+                                if (s->left_comp_ctx[row7])
+                                {
+                                    if (s->left_ref_ctx[row7] == s->above_ref_ctx[col])
+                                    {
                                         c = 3 * (s->fixcompref == 1 ||
                                                  s->left_ref_ctx[row7] == 1);
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         c = 2;
                                     }
-                                } else if (!s->left_ref_ctx[row7]) {
+                                }
+                                else if (!s->left_ref_ctx[row7])
+                                {
                                     c = 1 + 2 * (s->fixcompref == 1 ||
                                                  s->above_ref_ctx[col] == 1);
-                                } else {
-                                    c = 3 * (s->left_ref_ctx[row7] == 1) +
-                                    (s->fixcompref == 1 || s->above_ref_ctx[col] == 1);
                                 }
-                            } else if (s->left_comp_ctx[row7]) {
-                                if (!s->above_ref_ctx[col]) {
+                                else
+                                {
+                                    c = 3 * (s->left_ref_ctx[row7] == 1) +
+                                        (s->fixcompref == 1 || s->above_ref_ctx[col] == 1);
+                                }
+                            }
+                            else if (s->left_comp_ctx[row7])
+                            {
+                                if (!s->above_ref_ctx[col])
+                                {
                                     c = 1 + 2 * (s->fixcompref == 1 ||
                                                  s->left_ref_ctx[row7] == 1);
-                                } else {
-                                    c = 3 * (s->above_ref_ctx[col] == 1) +
-                                    (s->fixcompref == 1 || s->left_ref_ctx[row7] == 1);
                                 }
-                            } else if (!s->above_ref_ctx[col]) {
-                                if (!s->left_ref_ctx[row7]) {
+                                else
+                                {
+                                    c = 3 * (s->above_ref_ctx[col] == 1) +
+                                        (s->fixcompref == 1 || s->left_ref_ctx[row7] == 1);
+                                }
+                            }
+                            else if (!s->above_ref_ctx[col])
+                            {
+                                if (!s->left_ref_ctx[row7])
+                                {
                                     c = 3;
-                                } else {
+                                }
+                                else
+                                {
                                     c = 4 * (s->left_ref_ctx[row7] == 1);
                                 }
-                            } else if (!s->left_ref_ctx[row7]) {
-                                c = 4 * (s->above_ref_ctx[col] == 1);
-                            } else {
-                                c = 2 * (s->left_ref_ctx[row7] == 1) +
-                                2 * (s->above_ref_ctx[col] == 1);
                             }
-                        } else {
+                            else if (!s->left_ref_ctx[row7])
+                            {
+                                c = 4 * (s->above_ref_ctx[col] == 1);
+                            }
+                            else
+                            {
+                                c = 2 * (s->left_ref_ctx[row7] == 1) +
+                                    2 * (s->above_ref_ctx[col] == 1);
+                            }
+                        }
+                        else
+                        {
                             if (s->above_intra_ctx[col] ||
-                                (!s->above_comp_ctx[col] && !s->above_ref_ctx[col])) {
+                                    (!s->above_comp_ctx[col] && !s->above_ref_ctx[col]))
+                            {
                                 c = 2;
-                            } else if (s->above_comp_ctx[col]) {
+                            }
+                            else if (s->above_comp_ctx[col])
+                            {
                                 c = 3 * (s->fixcompref == 1 || s->above_ref_ctx[col] == 1);
-                            } else {
+                            }
+                            else
+                            {
                                 c = 4 * (s->above_ref_ctx[col] == 1);
                             }
                         }
-                    } else if (have_l) {
+                    }
+                    else if (have_l)
+                    {
                         if (s->left_intra_ctx[row7] ||
-                            (!s->left_comp_ctx[row7] && !s->left_ref_ctx[row7])) {
+                                (!s->left_comp_ctx[row7] && !s->left_ref_ctx[row7]))
+                        {
                             c = 2;
-                        } else if (s->left_comp_ctx[row7]) {
+                        }
+                        else if (s->left_comp_ctx[row7])
+                        {
                             c = 3 * (s->fixcompref == 1 || s->left_ref_ctx[row7] == 1);
-                        } else {
+                        }
+                        else
+                        {
                             c = 4 * (s->left_ref_ctx[row7] == 1);
                         }
-                    } else {
+                    }
+                    else
+                    {
                         c = 2;
                     }
                     bit = vp56_rac_get_prob(&s->c, s->prob.p.single_ref[c][1]);
@@ -1941,18 +2389,23 @@ static void decode_mode(AVCodecContext *ctx)
             }
         }
 
-        if (b->bs <= BS_8x8) {
-            if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].skip_enabled) {
+        if (b->bs <= BS_8x8)
+        {
+            if (s->segmentation.enabled && s->segmentation.feat[b->seg_id].skip_enabled)
+            {
                 b->mode[0] = b->mode[1] = b->mode[2] = b->mode[3] = ZEROMV;
-            } else {
-                static const uint8_t off[10] = {
+            }
+            else
+            {
+                static const uint8_t off[10] =
+                {
                     3, 0, 0, 1, 0, 0, 0, 0, 0, 0
                 };
 
                 // FIXME this needs to use the LUT tables from find_ref_mvs
                 // because not all are -1,0/0,-1
                 int c = inter_mode_ctx_lut[s->above_mode_ctx[col + off[b->bs]]]
-                                          [s->left_mode_ctx[row7 + off[b->bs]]];
+                        [s->left_mode_ctx[row7 + off[b->bs]]];
 
                 b->mode[0] = vp8_rac_get_tree(&s->c, vp9_inter_mode_tree,
                                               s->prob.p.mv_mode[c]);
@@ -1961,19 +2414,28 @@ static void decode_mode(AVCodecContext *ctx)
             }
         }
 
-        if (s->filtermode == FILTER_SWITCHABLE) {
+        if (s->filtermode == FILTER_SWITCHABLE)
+        {
             int c;
 
-            if (have_a && s->above_mode_ctx[col] >= NEARESTMV) {
-                if (have_l && s->left_mode_ctx[row7] >= NEARESTMV) {
+            if (have_a && s->above_mode_ctx[col] >= NEARESTMV)
+            {
+                if (have_l && s->left_mode_ctx[row7] >= NEARESTMV)
+                {
                     c = s->above_filter_ctx[col] == s->left_filter_ctx[row7] ?
                         s->left_filter_ctx[row7] : 3;
-                } else {
+                }
+                else
+                {
                     c = s->above_filter_ctx[col];
                 }
-            } else if (have_l && s->left_mode_ctx[row7] >= NEARESTMV) {
+            }
+            else if (have_l && s->left_mode_ctx[row7] >= NEARESTMV)
+            {
                 c = s->left_filter_ctx[row7];
-            } else {
+            }
+            else
+            {
                 c = 3;
             }
 
@@ -1981,11 +2443,14 @@ static void decode_mode(AVCodecContext *ctx)
                                          s->prob.p.filter[c]);
             s->counts.filter[c][filter_id]++;
             b->filter = vp9_filter_lut[filter_id];
-        } else {
+        }
+        else
+        {
             b->filter = s->filtermode;
         }
 
-        if (b->bs > BS_8x8) {
+        if (b->bs > BS_8x8)
+        {
             int c = inter_mode_ctx_lut[s->above_mode_ctx[col]][s->left_mode_ctx[row7]];
 
             b->mode[0] = vp8_rac_get_tree(&s->c, vp9_inter_mode_tree,
@@ -1993,34 +2458,43 @@ static void decode_mode(AVCodecContext *ctx)
             s->counts.mv_mode[c][b->mode[0] - 10]++;
             fill_mv(s, b->mv[0], b->mode[0], 0);
 
-            if (b->bs != BS_8x4) {
+            if (b->bs != BS_8x4)
+            {
                 b->mode[1] = vp8_rac_get_tree(&s->c, vp9_inter_mode_tree,
                                               s->prob.p.mv_mode[c]);
                 s->counts.mv_mode[c][b->mode[1] - 10]++;
                 fill_mv(s, b->mv[1], b->mode[1], 1);
-            } else {
+            }
+            else
+            {
                 b->mode[1] = b->mode[0];
                 AV_COPY32(&b->mv[1][0], &b->mv[0][0]);
                 AV_COPY32(&b->mv[1][1], &b->mv[0][1]);
             }
 
-            if (b->bs != BS_4x8) {
+            if (b->bs != BS_4x8)
+            {
                 b->mode[2] = vp8_rac_get_tree(&s->c, vp9_inter_mode_tree,
                                               s->prob.p.mv_mode[c]);
                 s->counts.mv_mode[c][b->mode[2] - 10]++;
                 fill_mv(s, b->mv[2], b->mode[2], 2);
 
-                if (b->bs != BS_8x4) {
+                if (b->bs != BS_8x4)
+                {
                     b->mode[3] = vp8_rac_get_tree(&s->c, vp9_inter_mode_tree,
                                                   s->prob.p.mv_mode[c]);
                     s->counts.mv_mode[c][b->mode[3] - 10]++;
                     fill_mv(s, b->mv[3], b->mode[3], 3);
-                } else {
+                }
+                else
+                {
                     b->mode[3] = b->mode[2];
                     AV_COPY32(&b->mv[3][0], &b->mv[2][0]);
                     AV_COPY32(&b->mv[3][1], &b->mv[2][1]);
                 }
-            } else {
+            }
+            else
+            {
                 b->mode[2] = b->mode[0];
                 AV_COPY32(&b->mv[2][0], &b->mv[0][0]);
                 AV_COPY32(&b->mv[2][1], &b->mv[0][1]);
@@ -2028,7 +2502,9 @@ static void decode_mode(AVCodecContext *ctx)
                 AV_COPY32(&b->mv[3][0], &b->mv[1][0]);
                 AV_COPY32(&b->mv[3][1], &b->mv[1][1]);
             }
-        } else {
+        }
+        else
+        {
             fill_mv(s, b->mv[0], b->mode[0], -1);
             AV_COPY32(&b->mv[1][0], &b->mv[0][0]);
             AV_COPY32(&b->mv[2][0], &b->mv[0][0]);
@@ -2078,7 +2554,8 @@ static void decode_mode(AVCodecContext *ctx)
     }
 #endif
 
-    switch (bwh_tab[1][b->bs][0]) {
+    switch (bwh_tab[1][b->bs][0])
+    {
 #define SET_CTXS(dir, off, n) \
     do { \
         SPLAT_CTX(s->dir##_skip_ctx[off],      b->skip,          n); \
@@ -2096,22 +2573,41 @@ static void decode_mode(AVCodecContext *ctx)
             } \
         } \
     } while (0)
-    case 1: SET_CTXS(above, col, 1); break;
-    case 2: SET_CTXS(above, col, 2); break;
-    case 4: SET_CTXS(above, col, 4); break;
-    case 8: SET_CTXS(above, col, 8); break;
+    case 1:
+        SET_CTXS(above, col, 1);
+        break;
+    case 2:
+        SET_CTXS(above, col, 2);
+        break;
+    case 4:
+        SET_CTXS(above, col, 4);
+        break;
+    case 8:
+        SET_CTXS(above, col, 8);
+        break;
     }
-    switch (bwh_tab[1][b->bs][1]) {
-    case 1: SET_CTXS(left, row7, 1); break;
-    case 2: SET_CTXS(left, row7, 2); break;
-    case 4: SET_CTXS(left, row7, 4); break;
-    case 8: SET_CTXS(left, row7, 8); break;
+    switch (bwh_tab[1][b->bs][1])
+    {
+    case 1:
+        SET_CTXS(left, row7, 1);
+        break;
+    case 2:
+        SET_CTXS(left, row7, 2);
+        break;
+    case 4:
+        SET_CTXS(left, row7, 4);
+        break;
+    case 8:
+        SET_CTXS(left, row7, 8);
+        break;
     }
 #undef SPLAT_CTX
 #undef SET_CTXS
 
-    if (!s->keyframe && !s->intraonly) {
-        if (b->bs > BS_8x8) {
+    if (!s->keyframe && !s->intraonly)
+    {
+        if (b->bs > BS_8x8)
+        {
             int mv0 = AV_RN32A(&b->mv[3][0]), mv1 = AV_RN32A(&b->mv[3][1]);
 
             AV_COPY32(&s->left_mv_ctx[row7 * 2 + 0][0], &b->mv[1][0]);
@@ -2122,14 +2618,18 @@ static void decode_mode(AVCodecContext *ctx)
             AV_COPY32(&s->above_mv_ctx[col * 2 + 0][1], &b->mv[2][1]);
             AV_WN32A(&s->above_mv_ctx[col * 2 + 1][0], mv0);
             AV_WN32A(&s->above_mv_ctx[col * 2 + 1][1], mv1);
-        } else {
+        }
+        else
+        {
             int n, mv0 = AV_RN32A(&b->mv[3][0]), mv1 = AV_RN32A(&b->mv[3][1]);
 
-            for (n = 0; n < w4 * 2; n++) {
+            for (n = 0; n < w4 * 2; n++)
+            {
                 AV_WN32A(&s->above_mv_ctx[col * 2 + n][0], mv0);
                 AV_WN32A(&s->above_mv_ctx[col * 2 + n][1], mv1);
             }
-            for (n = 0; n < h4 * 2; n++) {
+            for (n = 0; n < h4 * 2; n++)
+            {
                 AV_WN32A(&s->left_mv_ctx[row7 * 2 + n][0], mv0);
                 AV_WN32A(&s->left_mv_ctx[row7 * 2 + n][1], mv1);
             }
@@ -2137,24 +2637,33 @@ static void decode_mode(AVCodecContext *ctx)
     }
 
     // FIXME kinda ugly
-    for (y = 0; y < h4; y++) {
+    for (y = 0; y < h4; y++)
+    {
         int x, o = (row + y) * s->sb_cols * 8 + col;
         struct VP9mvrefPair *mv = &s->frames[CUR_FRAME].mv[o];
 
-        if (b->intra) {
-            for (x = 0; x < w4; x++) {
+        if (b->intra)
+        {
+            for (x = 0; x < w4; x++)
+            {
                 mv[x].ref[0] =
-                mv[x].ref[1] = -1;
+                    mv[x].ref[1] = -1;
             }
-        } else if (b->comp) {
-            for (x = 0; x < w4; x++) {
+        }
+        else if (b->comp)
+        {
+            for (x = 0; x < w4; x++)
+            {
                 mv[x].ref[0] = b->ref[0];
                 mv[x].ref[1] = b->ref[1];
                 AV_COPY32(&mv[x].mv[0], &b->mv[3][0]);
                 AV_COPY32(&mv[x].mv[1], &b->mv[3][1]);
             }
-        } else {
-            for (x = 0; x < w4; x++) {
+        }
+        else
+        {
+            for (x = 0; x < w4; x++)
+            {
                 mv[x].ref[0] = b->ref[0];
                 mv[x].ref[1] = -1;
                 AV_COPY32(&mv[x].mv[0], &b->mv[3][0]);
@@ -2175,7 +2684,8 @@ decode_coeffs_b_generic(VP56RangeCoder *c, int16_t *coef, int n_coeffs,
     uint8_t *tp = p[0][nnz];
     uint8_t cache[1024];
 
-    do {
+    do
+    {
         int val, rc;
 
         val = vp56_rac_get_prob_branchy(c, tp[0]); // eob
@@ -2183,8 +2693,9 @@ decode_coeffs_b_generic(VP56RangeCoder *c, int16_t *coef, int n_coeffs,
         if (!val)
             break;
 
-    skip_eob:
-        if (!vp56_rac_get_prob_branchy(c, tp[1])) { // zero
+skip_eob:
+        if (!vp56_rac_get_prob_branchy(c, tp[1]))   // zero
+        {
             cnt[band][nnz][0]++;
             if (!--band_left)
                 band_left = band_counts[++band];
@@ -2197,54 +2708,78 @@ decode_coeffs_b_generic(VP56RangeCoder *c, int16_t *coef, int n_coeffs,
         }
 
         rc = scan[i];
-        if (!vp56_rac_get_prob_branchy(c, tp[2])) { // one
+        if (!vp56_rac_get_prob_branchy(c, tp[2]))   // one
+        {
             cnt[band][nnz][1]++;
             val = 1;
             cache[rc] = 1;
-        } else {
+        }
+        else
+        {
             // fill in p[3-10] (model fill) - only once per frame for each pos
             if (!tp[3])
                 memcpy(&tp[3], vp9_model_pareto8[tp[2]], 8);
 
             cnt[band][nnz][2]++;
-            if (!vp56_rac_get_prob_branchy(c, tp[3])) { // 2, 3, 4
-                if (!vp56_rac_get_prob_branchy(c, tp[4])) {
+            if (!vp56_rac_get_prob_branchy(c, tp[3]))   // 2, 3, 4
+            {
+                if (!vp56_rac_get_prob_branchy(c, tp[4]))
+                {
                     cache[rc] = val = 2;
-                } else {
+                }
+                else
+                {
                     val = 3 + vp56_rac_get_prob(c, tp[5]);
                     cache[rc] = 3;
                 }
-            } else if (!vp56_rac_get_prob_branchy(c, tp[6])) { // cat1/2
+            }
+            else if (!vp56_rac_get_prob_branchy(c, tp[6]))     // cat1/2
+            {
                 cache[rc] = 4;
-                if (!vp56_rac_get_prob_branchy(c, tp[7])) {
+                if (!vp56_rac_get_prob_branchy(c, tp[7]))
+                {
                     val = 5 + vp56_rac_get_prob(c, 159);
-                } else {
+                }
+                else
+                {
                     val  = 7 + (vp56_rac_get_prob(c, 165) << 1);
                     val +=      vp56_rac_get_prob(c, 145);
                 }
-            } else { // cat 3-6
+            }
+            else     // cat 3-6
+            {
                 cache[rc] = 5;
-                if (!vp56_rac_get_prob_branchy(c, tp[8])) {
-                    if (!vp56_rac_get_prob_branchy(c, tp[9])) {
+                if (!vp56_rac_get_prob_branchy(c, tp[8]))
+                {
+                    if (!vp56_rac_get_prob_branchy(c, tp[9]))
+                    {
                         val  = 11 + (vp56_rac_get_prob(c, 173) << 2);
                         val +=      (vp56_rac_get_prob(c, 148) << 1);
                         val +=       vp56_rac_get_prob(c, 140);
-                    } else {
+                    }
+                    else
+                    {
                         val  = 19 + (vp56_rac_get_prob(c, 176) << 3);
                         val +=      (vp56_rac_get_prob(c, 155) << 2);
                         val +=      (vp56_rac_get_prob(c, 140) << 1);
                         val +=       vp56_rac_get_prob(c, 135);
                     }
-                } else if (!vp56_rac_get_prob_branchy(c, tp[10])) {
+                }
+                else if (!vp56_rac_get_prob_branchy(c, tp[10]))
+                {
                     val  = 35 + (vp56_rac_get_prob(c, 180) << 4);
                     val +=      (vp56_rac_get_prob(c, 157) << 3);
                     val +=      (vp56_rac_get_prob(c, 141) << 2);
                     val +=      (vp56_rac_get_prob(c, 134) << 1);
                     val +=       vp56_rac_get_prob(c, 130);
-                } else {
+                }
+                else
+                {
                     val = 67;
-                    if (!is8bitsperpixel) {
-                        if (bpp == 12) {
+                    if (!is8bitsperpixel)
+                    {
+                        if (bpp == 12)
+                        {
                             val += vp56_rac_get_prob(c, 255) << 17;
                             val += vp56_rac_get_prob(c, 255) << 16;
                         }
@@ -2283,7 +2818,8 @@ decode_coeffs_b_generic(VP56RangeCoder *c, int16_t *coef, int n_coeffs,
             STORE_COEF(coef, rc, (vp8_rac_get(c) ? -val : val) * qmul[!!i]);
         nnz = (1 + cache[nb[i][0]] + cache[nb[i][1]]) >> 1;
         tp = p[band][nnz];
-    } while (++i < n_coeffs);
+    }
+    while (++i < n_coeffs);
 
     return i;
 }
@@ -2348,7 +2884,8 @@ static av_always_inline int decode_coeffs(AVCodecContext *ctx, int is8bitsperpix
     const int16_t (*uvnb)[2] = vp9_scans_nb[b->uvtx][DCT_DCT];
     uint8_t *a = &s->above_y_nnz_ctx[col * 2];
     uint8_t *l = &s->left_y_nnz_ctx[(row & 7) << 1];
-    static const int16_t band_counts[4][8] = {
+    static const int16_t band_counts[4][8] =
+    {
         { 1, 2, 3, 4,  3,   16 - 13 },
         { 1, 2, 3, 4, 11,   64 - 21 },
         { 1, 2, 3, 4, 11,  256 - 21 },
@@ -2422,7 +2959,8 @@ static av_always_inline int decode_coeffs(AVCodecContext *ctx, int is8bitsperpix
     } while (0)
 
     /* y tokens */
-    switch (b->tx) {
+    switch (b->tx)
+    {
     case TX_4X4:
         DECODE_Y_COEF_LOOP(1, b->bs > BS_8x8 ? n : 0,);
         break;
@@ -2467,10 +3005,12 @@ static av_always_inline int decode_coeffs(AVCodecContext *ctx, int is8bitsperpix
     end_x >>= s->ss_h;
     h4 >>= s->ss_v;
     end_y >>= s->ss_v;
-    for (pl = 0; pl < 2; pl++) {
+    for (pl = 0; pl < 2; pl++)
+    {
         a = &s->above_uv_nnz_ctx[pl][col << !s->ss_h];
         l = &s->left_uv_nnz_ctx[pl][(row & 7) << !s->ss_v];
-        switch (b->uvtx) {
+        switch (b->uvtx)
+        {
         case TX_4X4:
             DECODE_UV_COEF_LOOP(1,);
             break;
@@ -2506,11 +3046,11 @@ static int decode_coeffs_16bpp(AVCodecContext *ctx)
 }
 
 static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **a,
-                                             uint8_t *dst_edge, ptrdiff_t stride_edge,
-                                             uint8_t *dst_inner, ptrdiff_t stride_inner,
-                                             uint8_t *l, int col, int x, int w,
-                                             int row, int y, enum TxfmMode tx,
-                                             int p, int ss_h, int ss_v, int bytesperpixel)
+        uint8_t *dst_edge, ptrdiff_t stride_edge,
+        uint8_t *dst_inner, ptrdiff_t stride_inner,
+        uint8_t *l, int col, int x, int w,
+        int row, int y, enum TxfmMode tx,
+        int p, int ss_h, int ss_v, int bytesperpixel)
 {
     int have_top = row > 0 || y > 0;
     int have_left = col > s->tiling.tile_col_start || x > 0;
@@ -2518,25 +3058,35 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
     int bpp = s->bpp;
     static const uint8_t mode_conv[10][2 /* have_left */][2 /* have_top */] = {
         [VERT_PRED]            = { { DC_127_PRED,          VERT_PRED },
-                                   { DC_127_PRED,          VERT_PRED } },
+            { DC_127_PRED,          VERT_PRED }
+        },
         [HOR_PRED]             = { { DC_129_PRED,          DC_129_PRED },
-                                   { HOR_PRED,             HOR_PRED } },
+            { HOR_PRED,             HOR_PRED }
+        },
         [DC_PRED]              = { { DC_128_PRED,          TOP_DC_PRED },
-                                   { LEFT_DC_PRED,         DC_PRED } },
+            { LEFT_DC_PRED,         DC_PRED }
+        },
         [DIAG_DOWN_LEFT_PRED]  = { { DC_127_PRED,          DIAG_DOWN_LEFT_PRED },
-                                   { DC_127_PRED,          DIAG_DOWN_LEFT_PRED } },
+            { DC_127_PRED,          DIAG_DOWN_LEFT_PRED }
+        },
         [DIAG_DOWN_RIGHT_PRED] = { { DIAG_DOWN_RIGHT_PRED, DIAG_DOWN_RIGHT_PRED },
-                                   { DIAG_DOWN_RIGHT_PRED, DIAG_DOWN_RIGHT_PRED } },
+            { DIAG_DOWN_RIGHT_PRED, DIAG_DOWN_RIGHT_PRED }
+        },
         [VERT_RIGHT_PRED]      = { { VERT_RIGHT_PRED,      VERT_RIGHT_PRED },
-                                   { VERT_RIGHT_PRED,      VERT_RIGHT_PRED } },
+            { VERT_RIGHT_PRED,      VERT_RIGHT_PRED }
+        },
         [HOR_DOWN_PRED]        = { { HOR_DOWN_PRED,        HOR_DOWN_PRED },
-                                   { HOR_DOWN_PRED,        HOR_DOWN_PRED } },
+            { HOR_DOWN_PRED,        HOR_DOWN_PRED }
+        },
         [VERT_LEFT_PRED]       = { { DC_127_PRED,          VERT_LEFT_PRED },
-                                   { DC_127_PRED,          VERT_LEFT_PRED } },
+            { DC_127_PRED,          VERT_LEFT_PRED }
+        },
         [HOR_UP_PRED]          = { { DC_129_PRED,          DC_129_PRED },
-                                   { HOR_UP_PRED,          HOR_UP_PRED } },
+            { HOR_UP_PRED,          HOR_UP_PRED }
+        },
         [TM_VP8_PRED]          = { { DC_129_PRED,          VERT_PRED },
-                                   { HOR_PRED,             TM_VP8_PRED } },
+            { HOR_PRED,             TM_VP8_PRED }
+        },
     };
     static const struct {
         uint8_t needs_left:1;
@@ -2564,7 +3114,8 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
 
     av_assert2(mode >= 0 && mode < 10);
     mode = mode_conv[mode][have_left][have_top];
-    if (edges[mode].needs_top) {
+    if (edges[mode].needs_top)
+    {
         uint8_t *top, *topleft;
         int n_px_need = 4 << tx, n_px_have = (((s->cols - col) << !ss_h) - x) * 4;
         int n_px_need_tr = 0;
@@ -2575,27 +3126,35 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
         // if top of sb64-row, use s->intra_pred_data[] instead of
         // dst[-stride] for intra prediction (it contains pre- instead of
         // post-loopfilter data)
-        if (have_top) {
+        if (have_top)
+        {
             top = !(row & 7) && !y ?
-                s->intra_pred_data[p] + (col * (8 >> ss_h) + x * 4) * bytesperpixel :
-                y == 0 ? &dst_edge[-stride_edge] : &dst_inner[-stride_inner];
+                  s->intra_pred_data[p] + (col * (8 >> ss_h) + x * 4) * bytesperpixel :
+                  y == 0 ? &dst_edge[-stride_edge] : &dst_inner[-stride_inner];
             if (have_left)
                 topleft = !(row & 7) && !y ?
-                    s->intra_pred_data[p] + (col * (8 >> ss_h) + x * 4) * bytesperpixel :
-                    y == 0 || x == 0 ? &dst_edge[-stride_edge] :
-                    &dst_inner[-stride_inner];
+                          s->intra_pred_data[p] + (col * (8 >> ss_h) + x * 4) * bytesperpixel :
+                          y == 0 || x == 0 ? &dst_edge[-stride_edge] :
+                          &dst_inner[-stride_inner];
         }
 
         if (have_top &&
-            (!edges[mode].needs_topleft || (have_left && top == topleft)) &&
-            (tx != TX_4X4 || !edges[mode].needs_topright || have_right) &&
-            n_px_need + n_px_need_tr <= n_px_have) {
+                (!edges[mode].needs_topleft || (have_left && top == topleft)) &&
+                (tx != TX_4X4 || !edges[mode].needs_topright || have_right) &&
+                n_px_need + n_px_need_tr <= n_px_have)
+        {
             *a = top;
-        } else {
-            if (have_top) {
-                if (n_px_need <= n_px_have) {
+        }
+        else
+        {
+            if (have_top)
+            {
+                if (n_px_need <= n_px_have)
+                {
                     memcpy(*a, top, n_px_need * bytesperpixel);
-                } else {
+                }
+                else
+                {
 #define memset_bpp(c, i1, v, i2, num) do { \
     if (bytesperpixel == 1) { \
         memset(&(c)[(i1)], (v)[(i2)], (num)); \
@@ -2609,7 +3168,9 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
                     memcpy(*a, top, n_px_have * bytesperpixel);
                     memset_bpp(*a, n_px_have, (*a), n_px_have - 1, n_px_need - n_px_have);
                 }
-            } else {
+            }
+            else
+            {
 #define memset_val(c, val, num) do { \
     if (bytesperpixel == 1) { \
         memset((c), (val), (num)); \
@@ -2622,8 +3183,10 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
 } while (0)
                 memset_val(*a, (128 << (bpp - 8)) - 1, n_px_need);
             }
-            if (edges[mode].needs_topleft) {
-                if (have_left && have_top) {
+            if (edges[mode].needs_topleft)
+            {
+                if (have_left && have_top)
+                {
 #define assign_bpp(c, i1, v, i2) do { \
     if (bytesperpixel == 1) { \
         (c)[(i1)] = (v)[(i2)]; \
@@ -2632,7 +3195,9 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
     } \
 } while (0)
                     assign_bpp(*a, -1, topleft, -1);
-                } else {
+                }
+                else
+                {
 #define assign_val(c, i, v) do { \
     if (bytesperpixel == 1) { \
         (c)[(i)] = (v); \
@@ -2643,42 +3208,59 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
                     assign_val((*a), -1, (128 << (bpp - 8)) + (have_top ? +1 : -1));
                 }
             }
-            if (tx == TX_4X4 && edges[mode].needs_topright) {
+            if (tx == TX_4X4 && edges[mode].needs_topright)
+            {
                 if (have_top && have_right &&
-                    n_px_need + n_px_need_tr <= n_px_have) {
+                        n_px_need + n_px_need_tr <= n_px_have)
+                {
                     memcpy(&(*a)[4 * bytesperpixel], &top[4 * bytesperpixel], 4 * bytesperpixel);
-                } else {
+                }
+                else
+                {
                     memset_bpp(*a, 4, *a, 3, 4);
                 }
             }
         }
     }
-    if (edges[mode].needs_left) {
-        if (have_left) {
+    if (edges[mode].needs_left)
+    {
+        if (have_left)
+        {
             int n_px_need = 4 << tx, i, n_px_have = (((s->rows - row) << !ss_v) - y) * 4;
             uint8_t *dst = x == 0 ? dst_edge : dst_inner;
             ptrdiff_t stride = x == 0 ? stride_edge : stride_inner;
 
-            if (edges[mode].invert_left) {
-                if (n_px_need <= n_px_have) {
+            if (edges[mode].invert_left)
+            {
+                if (n_px_need <= n_px_have)
+                {
                     for (i = 0; i < n_px_need; i++)
                         assign_bpp(l, i, &dst[i * stride], -1);
-                } else {
+                }
+                else
+                {
                     for (i = 0; i < n_px_have; i++)
                         assign_bpp(l, i, &dst[i * stride], -1);
                     memset_bpp(l, n_px_have, l, n_px_have - 1, n_px_need - n_px_have);
                 }
-            } else {
-                if (n_px_need <= n_px_have) {
+            }
+            else
+            {
+                if (n_px_need <= n_px_have)
+                {
                     for (i = 0; i < n_px_need; i++)
                         assign_bpp(l, n_px_need - 1 - i, &dst[i * stride], -1);
-                } else {
+                }
+                else
+                {
                     for (i = 0; i < n_px_have; i++)
                         assign_bpp(l, n_px_need - 1 - i, &dst[i * stride], -1);
                     memset_bpp(l, 0, l, n_px_need - n_px_have, n_px_need - n_px_have);
                 }
             }
-        } else {
+        }
+        else
+        {
             memset_val(l, (128 << (bpp - 8)) + 1, 4 << tx);
         }
     }
@@ -2687,7 +3269,7 @@ static av_always_inline int check_intra_mode(VP9Context *s, int mode, uint8_t **
 }
 
 static av_always_inline void intra_recon(AVCodecContext *ctx, ptrdiff_t y_off,
-                                         ptrdiff_t uv_off, int bytesperpixel)
+        ptrdiff_t uv_off, int bytesperpixel)
 {
     VP9Context *s = ctx->priv_data;
     VP9Block *b = s->b;
@@ -2702,10 +3284,12 @@ static av_always_inline void intra_recon(AVCodecContext *ctx, ptrdiff_t y_off,
     LOCAL_ALIGNED_32(uint8_t, a_buf, [96]);
     LOCAL_ALIGNED_32(uint8_t, l, [64]);
 
-    for (n = 0, y = 0; y < end_y; y += step1d) {
+    for (n = 0, y = 0; y < end_y; y += step1d)
+    {
         uint8_t *ptr = dst, *ptr_r = dst_r;
         for (x = 0; x < end_x; x += step1d, ptr += 4 * step1d * bytesperpixel,
-                               ptr_r += 4 * step1d * bytesperpixel, n += step) {
+                ptr_r += 4 * step1d * bytesperpixel, n += step)
+        {
             int mode = b->mode[b->bs > BS_8x8 && b->tx == TX_4X4 ?
                                y * 2 + x : 0];
             uint8_t *a = &a_buf[32];
@@ -2730,13 +3314,16 @@ static av_always_inline void intra_recon(AVCodecContext *ctx, ptrdiff_t y_off,
     end_x >>= s->ss_h;
     end_y >>= s->ss_v;
     step = 1 << (b->uvtx * 2);
-    for (p = 0; p < 2; p++) {
+    for (p = 0; p < 2; p++)
+    {
         dst   = s->dst[1 + p];
         dst_r = s->frames[CUR_FRAME].tf.f->data[1 + p] + uv_off;
-        for (n = 0, y = 0; y < end_y; y += uvstep1d) {
+        for (n = 0, y = 0; y < end_y; y += uvstep1d)
+        {
             uint8_t *ptr = dst, *ptr_r = dst_r;
             for (x = 0; x < end_x; x += uvstep1d, ptr += 4 * uvstep1d * bytesperpixel,
-                                   ptr_r += 4 * uvstep1d * bytesperpixel, n += step) {
+                    ptr_r += 4 * uvstep1d * bytesperpixel, n += step)
+            {
                 int mode = b->uvmode;
                 uint8_t *a = &a_buf[32];
                 int eob = b->skip ? 0 : b->uvtx > TX_8X8 ? AV_RN16A(&s->uveob[p][n]) : s->uveob[p][n];
@@ -2767,13 +3354,13 @@ static void intra_recon_16bpp(AVCodecContext *ctx, ptrdiff_t y_off, ptrdiff_t uv
 }
 
 static av_always_inline void mc_luma_scaled(VP9Context *s, vp9_scaled_mc_func smc,
-                                            uint8_t *dst, ptrdiff_t dst_stride,
-                                            const uint8_t *ref, ptrdiff_t ref_stride,
-                                            ThreadFrame *ref_frame,
-                                            ptrdiff_t y, ptrdiff_t x, const VP56mv *in_mv,
-                                            int px, int py, int pw, int ph,
-                                            int bw, int bh, int w, int h, int bytesperpixel,
-                                            const uint16_t *scale, const uint8_t *step)
+        uint8_t *dst, ptrdiff_t dst_stride,
+        const uint8_t *ref, ptrdiff_t ref_stride,
+        ThreadFrame *ref_frame,
+        ptrdiff_t y, ptrdiff_t x, const VP56mv *in_mv,
+        int px, int py, int pw, int ph,
+        int bw, int bh, int w, int h, int bytesperpixel,
+        const uint16_t *scale, const uint8_t *step)
 {
 #define scale_mv(n, dim) (((int64_t)(n) * scale[dim]) >> 14)
     int mx, my;
@@ -2801,7 +3388,8 @@ static av_always_inline void mc_luma_scaled(VP9Context *s, vp9_scaled_mc_func sm
     // the longest loopfilter of the next sbrow
     th = (y + refbh_m1 + 4 + 7) >> 6;
     ff_thread_await_progress(ref_frame, FFMAX(th, 0), 0);
-    if (x < 3 || y < 3 || x + 4 >= w - refbw_m1 || y + 4 >= h - refbh_m1) {
+    if (x < 3 || y < 3 || x + 4 >= w - refbw_m1 || y + 4 >= h - refbh_m1)
+    {
         s->vdsp.emulated_edge_mc(s->edge_emu_buffer,
                                  ref - 3 * ref_stride - 3 * bytesperpixel,
                                  288, ref_stride,
@@ -2814,34 +3402,40 @@ static av_always_inline void mc_luma_scaled(VP9Context *s, vp9_scaled_mc_func sm
 }
 
 static av_always_inline void mc_chroma_scaled(VP9Context *s, vp9_scaled_mc_func smc,
-                                              uint8_t *dst_u, uint8_t *dst_v,
-                                              ptrdiff_t dst_stride,
-                                              const uint8_t *ref_u, ptrdiff_t src_stride_u,
-                                              const uint8_t *ref_v, ptrdiff_t src_stride_v,
-                                              ThreadFrame *ref_frame,
-                                              ptrdiff_t y, ptrdiff_t x, const VP56mv *in_mv,
-                                              int px, int py, int pw, int ph,
-                                              int bw, int bh, int w, int h, int bytesperpixel,
-                                              const uint16_t *scale, const uint8_t *step)
+        uint8_t *dst_u, uint8_t *dst_v,
+        ptrdiff_t dst_stride,
+        const uint8_t *ref_u, ptrdiff_t src_stride_u,
+        const uint8_t *ref_v, ptrdiff_t src_stride_v,
+        ThreadFrame *ref_frame,
+        ptrdiff_t y, ptrdiff_t x, const VP56mv *in_mv,
+        int px, int py, int pw, int ph,
+        int bw, int bh, int w, int h, int bytesperpixel,
+        const uint16_t *scale, const uint8_t *step)
 {
     int mx, my;
     int refbw_m1, refbh_m1;
     int th;
     VP56mv mv;
 
-    if (s->ss_h) {
+    if (s->ss_h)
+    {
         // BUG https://code.google.com/p/webm/issues/detail?id=820
         mv.x = av_clip(in_mv->x, -(x + pw - px + 4) << 4, (s->cols * 4 - x + px + 3) << 4);
         mx = scale_mv(mv.x, 0) + (scale_mv(x * 16, 0) & ~15) + (scale_mv(x * 32, 0) & 15);
-    } else {
+    }
+    else
+    {
         mv.x = av_clip(in_mv->x, -(x + pw - px + 4) << 3, (s->cols * 8 - x + px + 3) << 3);
         mx = scale_mv(mv.x << 1, 0) + scale_mv(x * 16, 0);
     }
-    if (s->ss_v) {
+    if (s->ss_v)
+    {
         // BUG https://code.google.com/p/webm/issues/detail?id=820
         mv.y = av_clip(in_mv->y, -(y + ph - py + 4) << 4, (s->rows * 4 - y + py + 3) << 4);
         my = scale_mv(mv.y, 1) + (scale_mv(y * 16, 1) & ~15) + (scale_mv(y * 32, 1) & 15);
-    } else {
+    }
+    else
+    {
         mv.y = av_clip(in_mv->y, -(y + ph - py + 4) << 3, (s->rows * 8 - y + py + 3) << 3);
         my = scale_mv(mv.y << 1, 1) + scale_mv(y * 16, 1);
     }
@@ -2859,7 +3453,8 @@ static av_always_inline void mc_chroma_scaled(VP9Context *s, vp9_scaled_mc_func 
     // the longest loopfilter of the next sbrow
     th = (y + refbh_m1 + 4 + 7) >> (6 - s->ss_v);
     ff_thread_await_progress(ref_frame, FFMAX(th, 0), 0);
-    if (x < 3 || y < 3 || x + 4 >= w - refbw_m1 || y + 4 >= h - refbh_m1) {
+    if (x < 3 || y < 3 || x + 4 >= w - refbw_m1 || y + 4 >= h - refbh_m1)
+    {
         s->vdsp.emulated_edge_mc(s->edge_emu_buffer,
                                  ref_u - 3 * src_stride_u - 3 * bytesperpixel,
                                  288, src_stride_u,
@@ -2875,7 +3470,9 @@ static av_always_inline void mc_chroma_scaled(VP9Context *s, vp9_scaled_mc_func 
                                  x - 3, y - 3, w, h);
         ref_v = s->edge_emu_buffer + 3 * 288 + 3 * bytesperpixel;
         smc(dst_v, dst_stride, ref_v, 288, bh, mx, my, step[0], step[1]);
-    } else {
+    }
+    else
+    {
         smc(dst_u, dst_stride, ref_u, src_stride_u, bh, mx, my, step[0], step[1]);
         smc(dst_v, dst_stride, ref_v, src_stride_v, bh, mx, my, step[0], step[1]);
     }
@@ -2907,11 +3504,11 @@ static av_always_inline void mc_chroma_scaled(VP9Context *s, vp9_scaled_mc_func 
 #undef SCALED
 
 static av_always_inline void mc_luma_unscaled(VP9Context *s, vp9_mc_func (*mc)[2],
-                                              uint8_t *dst, ptrdiff_t dst_stride,
-                                              const uint8_t *ref, ptrdiff_t ref_stride,
-                                              ThreadFrame *ref_frame,
-                                              ptrdiff_t y, ptrdiff_t x, const VP56mv *mv,
-                                              int bw, int bh, int w, int h, int bytesperpixel)
+        uint8_t *dst, ptrdiff_t dst_stride,
+        const uint8_t *ref, ptrdiff_t ref_stride,
+        ThreadFrame *ref_frame,
+        ptrdiff_t y, ptrdiff_t x, const VP56mv *mv,
+        int bw, int bh, int w, int h, int bytesperpixel)
 {
     int mx = mv->x, my = mv->y, th;
 
@@ -2926,7 +3523,8 @@ static av_always_inline void mc_luma_unscaled(VP9Context *s, vp9_mc_func (*mc)[2
     th = (y + bh + 4 * !!my + 7) >> 6;
     ff_thread_await_progress(ref_frame, FFMAX(th, 0), 0);
     if (x < !!mx * 3 || y < !!my * 3 ||
-        x + !!mx * 4 > w - bw || y + !!my * 4 > h - bh) {
+            x + !!mx * 4 > w - bw || y + !!my * 4 > h - bh)
+    {
         s->vdsp.emulated_edge_mc(s->edge_emu_buffer,
                                  ref - !!my * 3 * ref_stride - !!mx * 3 * bytesperpixel,
                                  160, ref_stride,
@@ -2939,13 +3537,13 @@ static av_always_inline void mc_luma_unscaled(VP9Context *s, vp9_mc_func (*mc)[2
 }
 
 static av_always_inline void mc_chroma_unscaled(VP9Context *s, vp9_mc_func (*mc)[2],
-                                                uint8_t *dst_u, uint8_t *dst_v,
-                                                ptrdiff_t dst_stride,
-                                                const uint8_t *ref_u, ptrdiff_t src_stride_u,
-                                                const uint8_t *ref_v, ptrdiff_t src_stride_v,
-                                                ThreadFrame *ref_frame,
-                                                ptrdiff_t y, ptrdiff_t x, const VP56mv *mv,
-                                                int bw, int bh, int w, int h, int bytesperpixel)
+        uint8_t *dst_u, uint8_t *dst_v,
+        ptrdiff_t dst_stride,
+        const uint8_t *ref_u, ptrdiff_t src_stride_u,
+        const uint8_t *ref_v, ptrdiff_t src_stride_v,
+        ThreadFrame *ref_frame,
+        ptrdiff_t y, ptrdiff_t x, const VP56mv *mv,
+        int bw, int bh, int w, int h, int bytesperpixel)
 {
     int mx = mv->x << !s->ss_h, my = mv->y << !s->ss_v, th;
 
@@ -2961,7 +3559,8 @@ static av_always_inline void mc_chroma_unscaled(VP9Context *s, vp9_mc_func (*mc)
     th = (y + bh + 4 * !!my + 7) >> (6 - s->ss_v);
     ff_thread_await_progress(ref_frame, FFMAX(th, 0), 0);
     if (x < !!mx * 3 || y < !!my * 3 ||
-        x + !!mx * 4 > w - bw || y + !!my * 4 > h - bh) {
+            x + !!mx * 4 > w - bw || y + !!my * 4 > h - bh)
+    {
         s->vdsp.emulated_edge_mc(s->edge_emu_buffer,
                                  ref_u - !!my * 3 * src_stride_u - !!mx * 3 * bytesperpixel,
                                  160, src_stride_u,
@@ -2977,7 +3576,9 @@ static av_always_inline void mc_chroma_unscaled(VP9Context *s, vp9_mc_func (*mc)
                                  x - !!mx * 3, y - !!my * 3, w, h);
         ref_v = s->edge_emu_buffer + !!my * 3 * 160 + !!mx * 3 * bytesperpixel;
         mc[!!mx][!!my](dst_v, dst_stride, ref_v, 160, bh, mx, my);
-    } else {
+    }
+    else
+    {
         mc[!!mx][!!my](dst_u, dst_stride, ref_u, src_stride_u, bh, mx, my);
         mc[!!mx][!!my](dst_v, dst_stride, ref_v, src_stride_v, bh, mx, my);
     }
@@ -3012,20 +3613,30 @@ static av_always_inline void inter_recon(AVCodecContext *ctx, int bytesperpixel)
     VP9Block *b = s->b;
     int row = s->row, col = s->col;
 
-    if (s->mvscale[b->ref[0]][0] || (b->comp && s->mvscale[b->ref[1]][0])) {
-        if (bytesperpixel == 1) {
+    if (s->mvscale[b->ref[0]][0] || (b->comp && s->mvscale[b->ref[1]][0]))
+    {
+        if (bytesperpixel == 1)
+        {
             inter_pred_scaled_8bpp(ctx);
-        } else {
+        }
+        else
+        {
             inter_pred_scaled_16bpp(ctx);
         }
-    } else {
-        if (bytesperpixel == 1) {
+    }
+    else
+    {
+        if (bytesperpixel == 1)
+        {
             inter_pred_8bpp(ctx);
-        } else {
+        }
+        else
+        {
             inter_pred_16bpp(ctx);
         }
     }
-    if (!b->skip) {
+    if (!b->skip)
+    {
         /* mostly copied intra_recon() */
 
         int w4 = bwh_tab[1][b->bs][0] << 1, step1d = 1 << b->tx, n;
@@ -3037,10 +3648,12 @@ static av_always_inline void inter_recon(AVCodecContext *ctx, int bytesperpixel)
         uint8_t *dst = s->dst[0];
 
         // y itxfm add
-        for (n = 0, y = 0; y < end_y; y += step1d) {
+        for (n = 0, y = 0; y < end_y; y += step1d)
+        {
             uint8_t *ptr = dst;
             for (x = 0; x < end_x; x += step1d,
-                 ptr += 4 * step1d * bytesperpixel, n += step) {
+                    ptr += 4 * step1d * bytesperpixel, n += step)
+            {
                 int eob = b->tx > TX_8X8 ? AV_RN16A(&s->eob[n]) : s->eob[n];
 
                 if (eob)
@@ -3054,12 +3667,15 @@ static av_always_inline void inter_recon(AVCodecContext *ctx, int bytesperpixel)
         end_x >>= s->ss_h;
         end_y >>= s->ss_v;
         step = 1 << (b->uvtx * 2);
-        for (p = 0; p < 2; p++) {
+        for (p = 0; p < 2; p++)
+        {
             dst = s->dst[p + 1];
-            for (n = 0, y = 0; y < end_y; y += uvstep1d) {
+            for (n = 0, y = 0; y < end_y; y += uvstep1d)
+            {
                 uint8_t *ptr = dst;
                 for (x = 0; x < end_x; x += uvstep1d,
-                     ptr += 4 * uvstep1d * bytesperpixel, n += step) {
+                        ptr += 4 * uvstep1d * bytesperpixel, n += step)
+                {
                     int eob = b->uvtx > TX_8X8 ? AV_RN16A(&s->uveob[p][n]) : s->uveob[p][n];
 
                     if (eob)
@@ -3100,14 +3716,17 @@ static av_always_inline void mask_edges(uint8_t (*mask)[8][4], int ss_h, int ss_
     // a time, and we only use the topleft block's mode information to set
     // things like block strength. Thus, for any block size smaller than
     // 16x16, ignore the odd portion of the block.
-    if (tx == TX_4X4 && (ss_v | ss_h)) {
-        if (h == ss_v) {
+    if (tx == TX_4X4 && (ss_v | ss_h))
+    {
+        if (h == ss_v)
+        {
             if (row_and_7 & 1)
                 return;
             if (!row_end)
                 h += 1;
         }
-        if (w == ss_h) {
+        if (w == ss_h)
+        {
             if (col_and_7 & 1)
                 return;
             if (!col_end)
@@ -3115,12 +3734,14 @@ static av_always_inline void mask_edges(uint8_t (*mask)[8][4], int ss_h, int ss_
         }
     }
 
-    if (tx == TX_4X4 && !skip_inter) {
+    if (tx == TX_4X4 && !skip_inter)
+    {
         int t = 1 << col_and_7, m_col = (t << w) - t, y;
         // on 32-px edges, use the 8-px wide loopfilter; else, use 4-px wide
         int m_row_8 = m_col & wide_filter_col_mask[ss_h], m_row_4 = m_col - m_row_8;
 
-        for (y = row_and_7; y < h + row_and_7; y++) {
+        for (y = row_and_7; y < h + row_and_7; y++)
+        {
             int col_mask_id = 2 - !(y & wide_filter_row_mask[ss_v]);
 
             mask[0][y][1] |= m_row_8;
@@ -3135,24 +3756,30 @@ static av_always_inline void mask_edges(uint8_t (*mask)[8][4], int ss_h, int ss_
             //
             // if a/c are even row/col and b/d are odd, and d is skipped,
             // e.g. right edge of size-66x66.webm, then skip b also (bug)
-            if ((ss_h & ss_v) && (col_end & 1) && (y & 1)) {
+            if ((ss_h & ss_v) && (col_end & 1) && (y & 1))
+            {
                 mask[1][y][col_mask_id] |= (t << (w - 1)) - t;
-            } else {
+            }
+            else
+            {
                 mask[1][y][col_mask_id] |= m_col;
             }
             if (!ss_h)
                 mask[0][y][3] |= m_col;
-            if (!ss_v) {
+            if (!ss_v)
+            {
                 if (ss_h && (col_end & 1))
                     mask[1][y][3] |= (t << (w - 1)) - t;
                 else
                     mask[1][y][3] |= m_col;
             }
         }
-    } else {
+    }
+    else {
         int y, t = 1 << col_and_7, m_col = (t << w) - t;
 
-        if (!skip_inter) {
+        if (!skip_inter)
+        {
             int mask_id = (tx == TX_8X8);
             static const unsigned masks[4] = { 0xff, 0x55, 0x11, 0x01 };
             int l2 = tx + ss_h - 1, step1d;
@@ -3160,31 +3787,40 @@ static av_always_inline void mask_edges(uint8_t (*mask)[8][4], int ss_h, int ss_
 
             // at odd UV col/row edges tx16/tx32 loopfilter edges, force
             // 8wd loopfilter to prevent going off the visible edge.
-            if (ss_h && tx > TX_8X8 && (w ^ (w - 1)) == 1) {
+            if (ss_h && tx > TX_8X8 && (w ^ (w - 1)) == 1)
+            {
                 int m_row_16 = ((t << (w - 1)) - t) & masks[l2];
                 int m_row_8 = m_row - m_row_16;
 
-                for (y = row_and_7; y < h + row_and_7; y++) {
+                for (y = row_and_7; y < h + row_and_7; y++)
+                {
                     mask[0][y][0] |= m_row_16;
                     mask[0][y][1] |= m_row_8;
                 }
-            } else {
+            }
+            else
+            {
                 for (y = row_and_7; y < h + row_and_7; y++)
                     mask[0][y][mask_id] |= m_row;
             }
 
             l2 = tx + ss_v - 1;
             step1d = 1 << l2;
-            if (ss_v && tx > TX_8X8 && (h ^ (h - 1)) == 1) {
+            if (ss_v && tx > TX_8X8 && (h ^ (h - 1)) == 1)
+            {
                 for (y = row_and_7; y < h + row_and_7 - 1; y += step1d)
                     mask[1][y][0] |= m_col;
                 if (y - row_and_7 == h - 1)
                     mask[1][y][1] |= m_col;
-            } else {
+            }
+            else
+            {
                 for (y = row_and_7; y < h + row_and_7; y += step1d)
                     mask[1][y][mask_id] |= m_col;
             }
-        } else if (tx != TX_4X4) {
+        }
+        else if (tx != TX_4X4)
+        {
             int mask_id;
 
             mask_id = (tx == TX_8X8) || (h == ss_v);
@@ -3192,10 +3828,12 @@ static av_always_inline void mask_edges(uint8_t (*mask)[8][4], int ss_h, int ss_
             mask_id = (tx == TX_8X8) || (w == ss_h);
             for (y = row_and_7; y < h + row_and_7; y++)
                 mask[0][y][mask_id] |= t;
-        } else {
+        }
+        else {
             int t8 = t & wide_filter_col_mask[ss_h], t4 = t - t8;
 
-            for (y = row_and_7; y < h + row_and_7; y++) {
+            for (y = row_and_7; y < h + row_and_7; y++)
+            {
                 mask[0][y][2] |= t4;
                 mask[0][y][1] |= t8;
             }
@@ -3224,28 +3862,36 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
     s->min_mv.y = -(128 + row * 64);
     s->max_mv.x = 128 + (s->cols - col - w4) * 64;
     s->max_mv.y = 128 + (s->rows - row - h4) * 64;
-    if (s->pass < 2) {
+    if (s->pass < 2)
+    {
         b->bs = bs;
         b->bl = bl;
         b->bp = bp;
         decode_mode(ctx);
         b->uvtx = b->tx - ((s->ss_h && w4 * 2 == (1 << b->tx)) ||
-                           (s->ss_v && h4 * 2 == (1 << b->tx)));
+        (s->ss_v && h4 * 2 == (1 << b->tx)));
 
-        if (!b->skip) {
+        if (!b->skip)
+        {
             int has_coeffs;
 
-            if (bytesperpixel == 1) {
+            if (bytesperpixel == 1)
+            {
                 has_coeffs = decode_coeffs_8bpp(ctx);
-            } else {
+            }
+            else
+            {
                 has_coeffs = decode_coeffs_16bpp(ctx);
             }
-            if (!has_coeffs && b->bs <= BS_8x8 && !b->intra) {
+            if (!has_coeffs && b->bs <= BS_8x8 && !b->intra)
+            {
                 b->skip = 1;
                 memset(&s->above_skip_ctx[col], 1, w4);
                 memset(&s->left_skip_ctx[s->row7], 1, h4);
             }
-        } else {
+        }
+        else
+        {
             int row7 = s->row7;
 
 #define SPLAT_ZERO_CTX(v, n) \
@@ -3268,20 +3914,39 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
         } \
     } while (0)
 
-            switch (w4) {
-            case 1: SPLAT_ZERO_YUV(above, nnz_ctx, col, 1, h); break;
-            case 2: SPLAT_ZERO_YUV(above, nnz_ctx, col, 2, h); break;
-            case 4: SPLAT_ZERO_YUV(above, nnz_ctx, col, 4, h); break;
-            case 8: SPLAT_ZERO_YUV(above, nnz_ctx, col, 8, h); break;
+            switch (w4)
+            {
+            case 1:
+                SPLAT_ZERO_YUV(above, nnz_ctx, col, 1, h);
+                break;
+            case 2:
+                SPLAT_ZERO_YUV(above, nnz_ctx, col, 2, h);
+                break;
+            case 4:
+                SPLAT_ZERO_YUV(above, nnz_ctx, col, 4, h);
+                break;
+            case 8:
+                SPLAT_ZERO_YUV(above, nnz_ctx, col, 8, h);
+                break;
             }
-            switch (h4) {
-            case 1: SPLAT_ZERO_YUV(left, nnz_ctx, row7, 1, v); break;
-            case 2: SPLAT_ZERO_YUV(left, nnz_ctx, row7, 2, v); break;
-            case 4: SPLAT_ZERO_YUV(left, nnz_ctx, row7, 4, v); break;
-            case 8: SPLAT_ZERO_YUV(left, nnz_ctx, row7, 8, v); break;
+            switch (h4)
+            {
+            case 1:
+                SPLAT_ZERO_YUV(left, nnz_ctx, row7, 1, v);
+                break;
+            case 2:
+                SPLAT_ZERO_YUV(left, nnz_ctx, row7, 2, v);
+                break;
+            case 4:
+                SPLAT_ZERO_YUV(left, nnz_ctx, row7, 4, v);
+                break;
+            case 8:
+                SPLAT_ZERO_YUV(left, nnz_ctx, row7, 8, v);
+                break;
             }
         }
-        if (s->pass == 1) {
+        if (s->pass == 1)
+        {
             s->b++;
             s->block += w4 * h4 * 64 * bytesperpixel;
             s->uvblock[0] += w4 * h4 * 64 * bytesperpixel >> (s->ss_h + s->ss_v);
@@ -3301,58 +3966,75 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
              (row + h4) > s->rows;
     emu[1] = (col + w4) * 4 > f->linesize[1] ||
              (row + h4) > s->rows;
-    if (emu[0]) {
+    if (emu[0])
+    {
         s->dst[0] = s->tmp_y;
         s->y_stride = 128;
-    } else {
+    }
+    else {
         s->dst[0] = f->data[0] + yoff;
         s->y_stride = f->linesize[0];
     }
-    if (emu[1]) {
+    if (emu[1])
+    {
         s->dst[1] = s->tmp_uv[0];
         s->dst[2] = s->tmp_uv[1];
         s->uv_stride = 128;
-    } else {
+    }
+    else {
         s->dst[1] = f->data[1] + uvoff;
         s->dst[2] = f->data[2] + uvoff;
         s->uv_stride = f->linesize[1];
     }
-    if (b->intra) {
-        if (s->bpp > 8) {
+    if (b->intra)
+    {
+        if (s->bpp > 8)
+        {
             intra_recon_16bpp(ctx, yoff, uvoff);
-        } else {
+        }
+        else
+        {
             intra_recon_8bpp(ctx, yoff, uvoff);
         }
-    } else {
-        if (s->bpp > 8) {
+    }
+    else {
+        if (s->bpp > 8)
+        {
             inter_recon_16bpp(ctx);
-        } else {
+        }
+        else {
             inter_recon_8bpp(ctx);
         }
     }
-    if (emu[0]) {
+    if (emu[0])
+    {
         int w = FFMIN(s->cols - col, w4) * 8, h = FFMIN(s->rows - row, h4) * 8, n, o = 0;
 
-        for (n = 0; o < w; n++) {
+        for (n = 0; o < w; n++)
+        {
             int bw = 64 >> n;
 
             av_assert2(n <= 4);
-            if (w & bw) {
+            if (w & bw)
+            {
                 s->dsp.mc[n][0][0][0][0](f->data[0] + yoff + o, f->linesize[0],
-                                         s->tmp_y + o, 128, h, 0, 0);
+                s->tmp_y + o, 128, h, 0, 0);
                 o += bw * bytesperpixel;
             }
         }
     }
-    if (emu[1]) {
+    if (emu[1])
+    {
         int w = FFMIN(s->cols - col, w4) * 8 >> s->ss_h;
         int h = FFMIN(s->rows - row, h4) * 8 >> s->ss_v, n, o = 0;
 
-        for (n = s->ss_h; o < w; n++) {
+        for (n = s->ss_h; o < w; n++)
+        {
             int bw = 64 >> n;
 
             av_assert2(n <= 4);
-            if (w & bw) {
+            if (w & bw)
+            {
                 s->dsp.mc[n][0][0][0][0](f->data[1] + uvoff + o, f->linesize[1],
                                          s->tmp_uv[0] + o, 128, h, 0, 0);
                 s->dsp.mc[n][0][0][0][0](f->data[2] + uvoff + o, f->linesize[2],
@@ -3364,8 +4046,9 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
 
     // pick filter level and find edges to apply filter to
     if (s->filter.level &&
-        (lvl = s->segmentation.feat[b->seg_id].lflvl[b->intra ? 0 : b->ref[0] + 1]
-                                                    [b->mode[3] != ZEROMV]) > 0) {
+            (lvl = s->segmentation.feat[b->seg_id].lflvl[b->intra ? 0 : b->ref[0] + 1]
+                   [b->mode[3] != ZEROMV]) > 0)
+    {
         int x_end = FFMIN(s->cols - col, w4), y_end = FFMIN(s->rows - row, h4);
         int skip_inter = !b->intra && b->skip, col7 = s->col7, row7 = s->row7;
 
@@ -3377,11 +4060,13 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
                        s->rows & 1 && row + h4 >= s->rows ? s->rows & 7 : 0,
                        b->uvtx, skip_inter);
 
-        if (!s->filter.lim_lut[lvl]) {
+        if (!s->filter.lim_lut[lvl])
+        {
             int sharp = s->filter.sharpness;
             int limit = lvl;
 
-            if (sharp > 0) {
+            if (sharp > 0)
+            {
                 limit >>= (sharp + 3) >> 2;
                 limit = FFMIN(limit, 9 - sharp);
             }
@@ -3392,7 +4077,8 @@ static void decode_b(AVCodecContext *ctx, int row, int col,
         }
     }
 
-    if (s->pass == 2) {
+    if (s->pass == 2)
+    {
         s->b++;
         s->block += w4 * h4 * 64 * bytesperpixel;
         s->uvblock[0] += w4 * h4 * 64 * bytesperpixel >> (s->ss_v + s->ss_h);
@@ -3408,22 +4094,27 @@ static void decode_sb(AVCodecContext *ctx, int row, int col, struct VP9Filter *l
 {
     VP9Context *s = ctx->priv_data;
     int c = ((s->above_partition_ctx[col] >> (3 - bl)) & 1) |
-            (((s->left_partition_ctx[row & 0x7] >> (3 - bl)) & 1) << 1);
+    (((s->left_partition_ctx[row & 0x7] >> (3 - bl)) & 1) << 1);
     const uint8_t *p = s->keyframe || s->intraonly ? vp9_default_kf_partition_probs[bl][c] :
-                                                     s->prob.p.partition[bl][c];
+    s->prob.p.partition[bl][c];
     enum BlockPartition bp;
     ptrdiff_t hbs = 4 >> bl;
     AVFrame *f = s->frames[CUR_FRAME].tf.f;
     ptrdiff_t y_stride = f->linesize[0], uv_stride = f->linesize[1];
     int bytesperpixel = s->bytesperpixel;
 
-    if (bl == BL_8X8) {
+    if (bl == BL_8X8)
+    {
         bp = vp8_rac_get_tree(&s->c, vp9_partition_tree, p);
         decode_b(ctx, row, col, lflvl, yoff, uvoff, bl, bp);
-    } else if (col + hbs < s->cols) { // FIXME why not <=?
-        if (row + hbs < s->rows) { // FIXME why not <=?
+    }
+    else if (col + hbs < s->cols)     // FIXME why not <=?
+    {
+        if (row + hbs < s->rows)   // FIXME why not <=?
+        {
             bp = vp8_rac_get_tree(&s->c, vp9_partition_tree, p);
-            switch (bp) {
+            switch (bp)
+            {
             case PARTITION_NONE:
                 decode_b(ctx, row, col, lflvl, yoff, uvoff, bl, bp);
                 break;
@@ -3442,40 +4133,50 @@ static void decode_sb(AVCodecContext *ctx, int row, int col, struct VP9Filter *l
             case PARTITION_SPLIT:
                 decode_sb(ctx, row, col, lflvl, yoff, uvoff, bl + 1);
                 decode_sb(ctx, row, col + hbs, lflvl,
-                          yoff + 8 * hbs * bytesperpixel,
-                          uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
+                yoff + 8 * hbs * bytesperpixel,
+                uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
                 yoff  += hbs * 8 * y_stride;
                 uvoff += hbs * 8 * uv_stride >> s->ss_v;
                 decode_sb(ctx, row + hbs, col, lflvl, yoff, uvoff, bl + 1);
                 decode_sb(ctx, row + hbs, col + hbs, lflvl,
-                          yoff + 8 * hbs * bytesperpixel,
-                          uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
+                yoff + 8 * hbs * bytesperpixel,
+                uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
                 break;
             default:
                 av_assert0(0);
             }
-        } else if (vp56_rac_get_prob_branchy(&s->c, p[1])) {
+        }
+        else if (vp56_rac_get_prob_branchy(&s->c, p[1]))
+        {
             bp = PARTITION_SPLIT;
             decode_sb(ctx, row, col, lflvl, yoff, uvoff, bl + 1);
             decode_sb(ctx, row, col + hbs, lflvl,
                       yoff + 8 * hbs * bytesperpixel,
                       uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
-        } else {
+        }
+        else
+        {
             bp = PARTITION_H;
             decode_b(ctx, row, col, lflvl, yoff, uvoff, bl, bp);
         }
-    } else if (row + hbs < s->rows) { // FIXME why not <=?
-        if (vp56_rac_get_prob_branchy(&s->c, p[2])) {
+    }
+    else if (row + hbs < s->rows)     // FIXME why not <=?
+    {
+        if (vp56_rac_get_prob_branchy(&s->c, p[2]))
+        {
             bp = PARTITION_SPLIT;
             decode_sb(ctx, row, col, lflvl, yoff, uvoff, bl + 1);
             yoff  += hbs * 8 * y_stride;
             uvoff += hbs * 8 * uv_stride >> s->ss_v;
             decode_sb(ctx, row + hbs, col, lflvl, yoff, uvoff, bl + 1);
-        } else {
+        }
+        else
+        {
             bp = PARTITION_V;
             decode_b(ctx, row, col, lflvl, yoff, uvoff, bl, bp);
         }
-    } else {
+    }
+    else {
         bp = PARTITION_SPLIT;
         decode_sb(ctx, row, col, lflvl, yoff, uvoff, bl + 1);
     }
@@ -3492,38 +4193,51 @@ static void decode_sb_mem(AVCodecContext *ctx, int row, int col, struct VP9Filte
     ptrdiff_t y_stride = f->linesize[0], uv_stride = f->linesize[1];
     int bytesperpixel = s->bytesperpixel;
 
-    if (bl == BL_8X8) {
+    if (bl == BL_8X8)
+    {
         av_assert2(b->bl == BL_8X8);
         decode_b(ctx, row, col, lflvl, yoff, uvoff, b->bl, b->bp);
-    } else if (s->b->bl == bl) {
+    }
+    else if (s->b->bl == bl)
+    {
         decode_b(ctx, row, col, lflvl, yoff, uvoff, b->bl, b->bp);
-        if (b->bp == PARTITION_H && row + hbs < s->rows) {
+        if (b->bp == PARTITION_H && row + hbs < s->rows)
+        {
             yoff  += hbs * 8 * y_stride;
             uvoff += hbs * 8 * uv_stride >> s->ss_v;
             decode_b(ctx, row + hbs, col, lflvl, yoff, uvoff, b->bl, b->bp);
-        } else if (b->bp == PARTITION_V && col + hbs < s->cols) {
+        }
+        else if (b->bp == PARTITION_V && col + hbs < s->cols)
+        {
             yoff  += hbs * 8 * bytesperpixel;
             uvoff += hbs * 8 * bytesperpixel >> s->ss_h;
             decode_b(ctx, row, col + hbs, lflvl, yoff, uvoff, b->bl, b->bp);
         }
-    } else {
+    }
+    else {
         decode_sb_mem(ctx, row, col, lflvl, yoff, uvoff, bl + 1);
-        if (col + hbs < s->cols) { // FIXME why not <=?
-            if (row + hbs < s->rows) {
+        if (col + hbs < s->cols)   // FIXME why not <=?
+        {
+            if (row + hbs < s->rows)
+            {
                 decode_sb_mem(ctx, row, col + hbs, lflvl, yoff + 8 * hbs * bytesperpixel,
-                              uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
+                uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
                 yoff  += hbs * 8 * y_stride;
                 uvoff += hbs * 8 * uv_stride >> s->ss_v;
                 decode_sb_mem(ctx, row + hbs, col, lflvl, yoff, uvoff, bl + 1);
                 decode_sb_mem(ctx, row + hbs, col + hbs, lflvl,
-                              yoff + 8 * hbs * bytesperpixel,
-                              uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
-            } else {
+                yoff + 8 * hbs * bytesperpixel,
+                uvoff + (8 * hbs * bytesperpixel >> s->ss_h), bl + 1);
+            }
+            else
+            {
                 yoff  += hbs * 8 * bytesperpixel;
                 uvoff += hbs * 8 * bytesperpixel >> s->ss_h;
                 decode_sb_mem(ctx, row, col + hbs, lflvl, yoff, uvoff, bl + 1);
             }
-        } else if (row + hbs < s->rows) {
+        }
+        else if (row + hbs < s->rows)
+        {
             yoff  += hbs * 8 * y_stride;
             uvoff += hbs * 8 * uv_stride >> s->ss_v;
             decode_sb_mem(ctx, row + hbs, col, lflvl, yoff, uvoff, bl + 1);
@@ -3532,69 +4246,92 @@ static void decode_sb_mem(AVCodecContext *ctx, int row, int col, struct VP9Filte
 }
 
 static av_always_inline void filter_plane_cols(VP9Context *s, int col, int ss_h, int ss_v,
-                                               uint8_t *lvl, uint8_t (*mask)[4],
-                                               uint8_t *dst, ptrdiff_t ls)
+        uint8_t *lvl, uint8_t (*mask)[4],
+        uint8_t *dst, ptrdiff_t ls)
 {
     int y, x, bytesperpixel = s->bytesperpixel;
 
     // filter edges between columns (e.g. block1 | block2)
-    for (y = 0; y < 8; y += 2 << ss_v, dst += 16 * ls, lvl += 16 << ss_v) {
+    for (y = 0; y < 8; y += 2 << ss_v, dst += 16 * ls, lvl += 16 << ss_v)
+    {
         uint8_t *ptr = dst, *l = lvl, *hmask1 = mask[y], *hmask2 = mask[y + 1 + ss_v];
         unsigned hm1 = hmask1[0] | hmask1[1] | hmask1[2], hm13 = hmask1[3];
         unsigned hm2 = hmask2[1] | hmask2[2], hm23 = hmask2[3];
         unsigned hm = hm1 | hm2 | hm13 | hm23;
 
-        for (x = 1; hm & ~(x - 1); x <<= 1, ptr += 8 * bytesperpixel >> ss_h) {
-            if (col || x > 1) {
-                if (hm1 & x) {
+        for (x = 1; hm & ~(x - 1); x <<= 1, ptr += 8 * bytesperpixel >> ss_h)
+        {
+            if (col || x > 1)
+            {
+                if (hm1 & x)
+                {
                     int L = *l, H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
-                    if (hmask1[0] & x) {
-                        if (hmask2[0] & x) {
+                    if (hmask1[0] & x)
+                    {
+                        if (hmask2[0] & x)
+                        {
                             av_assert2(l[8 << ss_v] == L);
                             s->dsp.loop_filter_16[0](ptr, ls, E, I, H);
-                        } else {
+                        }
+                        else
+                        {
                             s->dsp.loop_filter_8[2][0](ptr, ls, E, I, H);
                         }
-                    } else if (hm2 & x) {
+                    }
+                    else if (hm2 & x)
+                    {
                         L = l[8 << ss_v];
                         H |= (L >> 4) << 8;
                         E |= s->filter.mblim_lut[L] << 8;
                         I |= s->filter.lim_lut[L] << 8;
                         s->dsp.loop_filter_mix2[!!(hmask1[1] & x)]
-                                               [!!(hmask2[1] & x)]
-                                               [0](ptr, ls, E, I, H);
-                    } else {
-                        s->dsp.loop_filter_8[!!(hmask1[1] & x)]
-                                            [0](ptr, ls, E, I, H);
+                        [!!(hmask2[1] & x)]
+                        [0](ptr, ls, E, I, H);
                     }
-                } else if (hm2 & x) {
+                    else
+                    {
+                        s->dsp.loop_filter_8[!!(hmask1[1] & x)]
+                        [0](ptr, ls, E, I, H);
+                    }
+                }
+                else if (hm2 & x)
+                {
                     int L = l[8 << ss_v], H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
                     s->dsp.loop_filter_8[!!(hmask2[1] & x)]
-                                        [0](ptr + 8 * ls, ls, E, I, H);
+                    [0](ptr + 8 * ls, ls, E, I, H);
                 }
             }
-            if (ss_h) {
+            if (ss_h)
+            {
                 if (x & 0xAA)
                     l += 2;
-            } else {
-                if (hm13 & x) {
+            }
+            else
+            {
+                if (hm13 & x)
+                {
                     int L = *l, H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
-                    if (hm23 & x) {
+                    if (hm23 & x)
+                    {
                         L = l[8 << ss_v];
                         H |= (L >> 4) << 8;
                         E |= s->filter.mblim_lut[L] << 8;
                         I |= s->filter.lim_lut[L] << 8;
                         s->dsp.loop_filter_mix2[0][0][0](ptr + 4 * bytesperpixel, ls, E, I, H);
-                    } else {
+                    }
+                    else
+                    {
                         s->dsp.loop_filter_8[0][0](ptr + 4 * bytesperpixel, ls, E, I, H);
                     }
-                } else if (hm23 & x) {
+                }
+                else if (hm23 & x)
+                {
                     int L = l[8 << ss_v], H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
@@ -3607,66 +4344,87 @@ static av_always_inline void filter_plane_cols(VP9Context *s, int col, int ss_h,
 }
 
 static av_always_inline void filter_plane_rows(VP9Context *s, int row, int ss_h, int ss_v,
-                                               uint8_t *lvl, uint8_t (*mask)[4],
-                                               uint8_t *dst, ptrdiff_t ls)
+        uint8_t *lvl, uint8_t (*mask)[4],
+        uint8_t *dst, ptrdiff_t ls)
 {
     int y, x, bytesperpixel = s->bytesperpixel;
 
     //                                 block1
     // filter edges between rows (e.g. ------)
     //                                 block2
-    for (y = 0; y < 8; y++, dst += 8 * ls >> ss_v) {
+    for (y = 0; y < 8; y++, dst += 8 * ls >> ss_v)
+    {
         uint8_t *ptr = dst, *l = lvl, *vmask = mask[y];
         unsigned vm = vmask[0] | vmask[1] | vmask[2], vm3 = vmask[3];
 
-        for (x = 1; vm & ~(x - 1); x <<= (2 << ss_h), ptr += 16 * bytesperpixel, l += 2 << ss_h) {
-            if (row || y) {
-                if (vm & x) {
+        for (x = 1; vm & ~(x - 1); x <<= (2 << ss_h), ptr += 16 * bytesperpixel, l += 2 << ss_h)
+        {
+            if (row || y)
+            {
+                if (vm & x)
+                {
                     int L = *l, H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
-                    if (vmask[0] & x) {
-                        if (vmask[0] & (x << (1 + ss_h))) {
+                    if (vmask[0] & x)
+                    {
+                        if (vmask[0] & (x << (1 + ss_h)))
+                        {
                             av_assert2(l[1 + ss_h] == L);
                             s->dsp.loop_filter_16[1](ptr, ls, E, I, H);
-                        } else {
+                        }
+                        else
+                        {
                             s->dsp.loop_filter_8[2][1](ptr, ls, E, I, H);
                         }
-                    } else if (vm & (x << (1 + ss_h))) {
+                    }
+                    else if (vm & (x << (1 + ss_h)))
+                    {
                         L = l[1 + ss_h];
                         H |= (L >> 4) << 8;
                         E |= s->filter.mblim_lut[L] << 8;
                         I |= s->filter.lim_lut[L] << 8;
                         s->dsp.loop_filter_mix2[!!(vmask[1] &  x)]
-                                               [!!(vmask[1] & (x << (1 + ss_h)))]
-                                               [1](ptr, ls, E, I, H);
-                    } else {
-                        s->dsp.loop_filter_8[!!(vmask[1] & x)]
-                                            [1](ptr, ls, E, I, H);
+                        [!!(vmask[1] & (x << (1 + ss_h)))]
+                        [1](ptr, ls, E, I, H);
                     }
-                } else if (vm & (x << (1 + ss_h))) {
+                    else
+                    {
+                        s->dsp.loop_filter_8[!!(vmask[1] & x)]
+                        [1](ptr, ls, E, I, H);
+                    }
+                }
+                else if (vm & (x << (1 + ss_h)))
+                {
                     int L = l[1 + ss_h], H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
                     s->dsp.loop_filter_8[!!(vmask[1] & (x << (1 + ss_h)))]
-                                        [1](ptr + 8 * bytesperpixel, ls, E, I, H);
+                    [1](ptr + 8 * bytesperpixel, ls, E, I, H);
                 }
             }
-            if (!ss_v) {
-                if (vm3 & x) {
+            if (!ss_v)
+            {
+                if (vm3 & x)
+                {
                     int L = *l, H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
-                    if (vm3 & (x << (1 + ss_h))) {
+                    if (vm3 & (x << (1 + ss_h)))
+                    {
                         L = l[1 + ss_h];
                         H |= (L >> 4) << 8;
                         E |= s->filter.mblim_lut[L] << 8;
                         I |= s->filter.lim_lut[L] << 8;
                         s->dsp.loop_filter_mix2[0][0][1](ptr + ls * 4, ls, E, I, H);
-                    } else {
+                    }
+                    else
+                    {
                         s->dsp.loop_filter_8[0][1](ptr + ls * 4, ls, E, I, H);
                     }
-                } else if (vm3 & (x << (1 + ss_h))) {
+                }
+                else if (vm3 & (x << (1 + ss_h)))
+                {
                     int L = l[1 + ss_h], H = L >> 4;
                     int E = s->filter.mblim_lut[L], I = s->filter.lim_lut[L];
 
@@ -3674,10 +4432,13 @@ static av_always_inline void filter_plane_rows(VP9Context *s, int row, int ss_h,
                 }
             }
         }
-        if (ss_v) {
+        if (ss_v)
+        {
             if (y & 1)
                 lvl += 16;
-        } else {
+        }
+        else
+        {
             lvl += 8;
         }
     }
@@ -3702,7 +4463,8 @@ static void loopfilter_sb(AVCodecContext *ctx, struct VP9Filter *lflvl,
     filter_plane_cols(s, col, 0, 0, lflvl->level, lflvl->mask[0][0], dst, ls_y);
     filter_plane_rows(s, row, 0, 0, lflvl->level, lflvl->mask[0][1], dst, ls_y);
 
-    for (p = 0; p < 2; p++) {
+    for (p = 0; p < 2; p++)
+    {
         dst = f->data[1 + p] + uvoff;
         filter_plane_cols(s, col, s->ss_h, s->ss_v, lflvl->level, uv_masks[0], dst, ls_uv);
         filter_plane_rows(s, row, s->ss_h, s->ss_v, lflvl->level, uv_masks[1], dst, ls_uv);
@@ -3746,7 +4508,8 @@ static void adapt_probs(VP9Context *s)
         for (j = 0; j < 2; j++)
             for (k = 0; k < 2; k++)
                 for (l = 0; l < 6; l++)
-                    for (m = 0; m < 6; m++) {
+                    for (m = 0; m < 6; m++)
+                    {
                         uint8_t *pp = s->prob_ctx[s->framectxid].coef[i][j][k][l][m];
                         unsigned *e = s->counts.eob[i][j][k][l][m];
                         unsigned *c = s->counts.coef[i][j][k][l][m];
@@ -3759,7 +4522,8 @@ static void adapt_probs(VP9Context *s)
                         adapt_prob(&pp[2], c[1], c[2], 24, uf);
                     }
 
-    if (s->keyframe || s->intraonly) {
+    if (s->keyframe || s->intraonly)
+    {
         memcpy(p->skip,  s->prob.p.skip,  sizeof(p->skip));
         memcpy(p->tx32p, s->prob.p.tx32p, sizeof(p->tx32p));
         memcpy(p->tx16p, s->prob.p.tx16p, sizeof(p->tx16p));
@@ -3776,31 +4540,36 @@ static void adapt_probs(VP9Context *s)
         adapt_prob(&p->intra[i], s->counts.intra[i][0], s->counts.intra[i][1], 20, 128);
 
     // comppred flag
-    if (s->comppredmode == PRED_SWITCHABLE) {
-      for (i = 0; i < 5; i++)
-          adapt_prob(&p->comp[i], s->counts.comp[i][0], s->counts.comp[i][1], 20, 128);
+    if (s->comppredmode == PRED_SWITCHABLE)
+    {
+        for (i = 0; i < 5; i++)
+            adapt_prob(&p->comp[i], s->counts.comp[i][0], s->counts.comp[i][1], 20, 128);
     }
 
     // reference frames
-    if (s->comppredmode != PRED_SINGLEREF) {
-      for (i = 0; i < 5; i++)
-          adapt_prob(&p->comp_ref[i], s->counts.comp_ref[i][0],
-                     s->counts.comp_ref[i][1], 20, 128);
+    if (s->comppredmode != PRED_SINGLEREF)
+    {
+        for (i = 0; i < 5; i++)
+            adapt_prob(&p->comp_ref[i], s->counts.comp_ref[i][0],
+                       s->counts.comp_ref[i][1], 20, 128);
     }
 
-    if (s->comppredmode != PRED_COMPREF) {
-      for (i = 0; i < 5; i++) {
-          uint8_t *pp = p->single_ref[i];
-          unsigned (*c)[2] = s->counts.single_ref[i];
+    if (s->comppredmode != PRED_COMPREF)
+    {
+        for (i = 0; i < 5; i++)
+        {
+            uint8_t *pp = p->single_ref[i];
+            unsigned (*c)[2] = s->counts.single_ref[i];
 
-          adapt_prob(&pp[0], c[0][0], c[0][1], 20, 128);
-          adapt_prob(&pp[1], c[1][0], c[1][1], 20, 128);
-      }
+            adapt_prob(&pp[0], c[0][0], c[0][1], 20, 128);
+            adapt_prob(&pp[1], c[1][0], c[1][1], 20, 128);
+        }
     }
 
     // block partitioning
     for (i = 0; i < 4; i++)
-        for (j = 0; j < 4; j++) {
+        for (j = 0; j < 4; j++)
+        {
             uint8_t *pp = p->partition[i][j];
             unsigned *c = s->counts.partition[i][j];
 
@@ -3810,22 +4579,26 @@ static void adapt_probs(VP9Context *s)
         }
 
     // tx size
-    if (s->txfmmode == TX_SWITCHABLE) {
-      for (i = 0; i < 2; i++) {
-          unsigned *c16 = s->counts.tx16p[i], *c32 = s->counts.tx32p[i];
+    if (s->txfmmode == TX_SWITCHABLE)
+    {
+        for (i = 0; i < 2; i++)
+        {
+            unsigned *c16 = s->counts.tx16p[i], *c32 = s->counts.tx32p[i];
 
-          adapt_prob(&p->tx8p[i], s->counts.tx8p[i][0], s->counts.tx8p[i][1], 20, 128);
-          adapt_prob(&p->tx16p[i][0], c16[0], c16[1] + c16[2], 20, 128);
-          adapt_prob(&p->tx16p[i][1], c16[1], c16[2], 20, 128);
-          adapt_prob(&p->tx32p[i][0], c32[0], c32[1] + c32[2] + c32[3], 20, 128);
-          adapt_prob(&p->tx32p[i][1], c32[1], c32[2] + c32[3], 20, 128);
-          adapt_prob(&p->tx32p[i][2], c32[2], c32[3], 20, 128);
-      }
+            adapt_prob(&p->tx8p[i], s->counts.tx8p[i][0], s->counts.tx8p[i][1], 20, 128);
+            adapt_prob(&p->tx16p[i][0], c16[0], c16[1] + c16[2], 20, 128);
+            adapt_prob(&p->tx16p[i][1], c16[1], c16[2], 20, 128);
+            adapt_prob(&p->tx32p[i][0], c32[0], c32[1] + c32[2] + c32[3], 20, 128);
+            adapt_prob(&p->tx32p[i][1], c32[1], c32[2] + c32[3], 20, 128);
+            adapt_prob(&p->tx32p[i][2], c32[2], c32[3], 20, 128);
+        }
     }
 
     // interpolation filter
-    if (s->filtermode == FILTER_SWITCHABLE) {
-        for (i = 0; i < 4; i++) {
+    if (s->filtermode == FILTER_SWITCHABLE)
+    {
+        for (i = 0; i < 4; i++)
+        {
             uint8_t *pp = p->filter[i];
             unsigned *c = s->counts.filter[i];
 
@@ -3835,7 +4608,8 @@ static void adapt_probs(VP9Context *s)
     }
 
     // inter modes
-    for (i = 0; i < 7; i++) {
+    for (i = 0; i < 7; i++)
+    {
         uint8_t *pp = p->mv_mode[i];
         unsigned *c = s->counts.mv_mode[i];
 
@@ -3855,7 +4629,8 @@ static void adapt_probs(VP9Context *s)
     }
 
     // mv components
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         uint8_t *pp;
         unsigned *c, (*c2)[2], sum;
 
@@ -3887,7 +4662,8 @@ static void adapt_probs(VP9Context *s)
         for (j = 0; j < 10; j++)
             adapt_prob(&pp[j], c2[j][0], c2[j][1], 20, 128);
 
-        for (j = 0; j < 2; j++) {
+        for (j = 0; j < 2; j++)
+        {
             pp = p->mv_comp[i].class0_fp[j];
             c = s->counts.mv_comp[i].class0_fp[j];
             adapt_prob(&pp[0], c[0], c[1] + c[2] + c[3], 20, 128);
@@ -3900,7 +4676,8 @@ static void adapt_probs(VP9Context *s)
         adapt_prob(&pp[1], c[1], c[2] + c[3], 20, 128);
         adapt_prob(&pp[2], c[2], c[3], 20, 128);
 
-        if (s->highprecisionmvs) {
+        if (s->highprecisionmvs)
+        {
             adapt_prob(&p->mv_comp[i].class0_hp, s->counts.mv_comp[i].class0_hp[0],
                        s->counts.mv_comp[i].class0_hp[1], 20, 128);
             adapt_prob(&p->mv_comp[i].hp, s->counts.mv_comp[i].hp[0],
@@ -3909,7 +4686,8 @@ static void adapt_probs(VP9Context *s)
     }
 
     // y intra modes
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         uint8_t *pp = p->y_mode[i];
         unsigned *c = s->counts.y_mode[i], sum, s2;
 
@@ -3933,7 +4711,8 @@ static void adapt_probs(VP9Context *s)
     }
 
     // uv intra modes
-    for (i = 0; i < 10; i++) {
+    for (i = 0; i < 10; i++)
+    {
         uint8_t *pp = p->uv_mode[i];
         unsigned *c = s->counts.uv_mode[i], sum, s2;
 
@@ -3969,12 +4748,14 @@ static av_cold int vp9_decode_free(AVCodecContext *ctx)
     VP9Context *s = ctx->priv_data;
     int i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         if (s->frames[i].tf.f->data[0])
             vp9_unref_frame(ctx, &s->frames[i]);
         av_frame_free(&s->frames[i].tf.f);
     }
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         if (s->refs[i].f->data[0])
             ff_thread_release_buffer(ctx, &s->refs[i]);
         av_frame_free(&s->refs[i].f);
@@ -4003,10 +4784,14 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
     AVFrame *f;
     int bytesperpixel;
 
-    if ((res = decode_frame_header(ctx, data, size, &ref)) < 0) {
+    if ((res = decode_frame_header(ctx, data, size, &ref)) < 0)
+    {
         return res;
-    } else if (res == 0) {
-        if (!s->refs[ref].f->data[0]) {
+    }
+    else if (res == 0)
+    {
+        if (!s->refs[ref].f->data[0])
+        {
             av_log(ctx, AV_LOG_ERROR, "Requested reference %d not available\n", ref);
             return AVERROR_INVALIDDATA;
         }
@@ -4014,11 +4799,12 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
             return res;
         ((AVFrame *)frame)->pkt_pts = pkt->pts;
         ((AVFrame *)frame)->pkt_dts = pkt->dts;
-        for (i = 0; i < 8; i++) {
+        for (i = 0; i < 8; i++)
+        {
             if (s->next_refs[i].f->data[0])
                 ff_thread_release_buffer(ctx, &s->next_refs[i]);
             if (s->refs[i].f->data[0] &&
-                (res = ff_thread_ref_frame(&s->next_refs[i], &s->refs[i])) < 0)
+                    (res = ff_thread_ref_frame(&s->next_refs[i], &s->refs[i])) < 0)
                 return res;
         }
         *got_frame = 1;
@@ -4027,17 +4813,18 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
     data += res;
     size -= res;
 
-    if (!retain_segmap_ref || s->keyframe || s->intraonly) {
+    if (!retain_segmap_ref || s->keyframe || s->intraonly)
+    {
         if (s->frames[REF_FRAME_SEGMAP].tf.f->data[0])
             vp9_unref_frame(ctx, &s->frames[REF_FRAME_SEGMAP]);
         if (!s->keyframe && !s->intraonly && !s->errorres && s->frames[CUR_FRAME].tf.f->data[0] &&
-            (res = vp9_ref_frame(ctx, &s->frames[REF_FRAME_SEGMAP], &s->frames[CUR_FRAME])) < 0)
+                (res = vp9_ref_frame(ctx, &s->frames[REF_FRAME_SEGMAP], &s->frames[CUR_FRAME])) < 0)
             return res;
     }
     if (s->frames[REF_FRAME_MVPAIR].tf.f->data[0])
         vp9_unref_frame(ctx, &s->frames[REF_FRAME_MVPAIR]);
     if (!s->intraonly && !s->keyframe && !s->errorres && s->frames[CUR_FRAME].tf.f->data[0] &&
-        (res = vp9_ref_frame(ctx, &s->frames[REF_FRAME_MVPAIR], &s->frames[CUR_FRAME])) < 0)
+            (res = vp9_ref_frame(ctx, &s->frames[REF_FRAME_MVPAIR], &s->frames[CUR_FRAME])) < 0)
         return res;
     if (s->frames[CUR_FRAME].tf.f->data[0])
         vp9_unref_frame(ctx, &s->frames[CUR_FRAME]);
@@ -4050,12 +4837,16 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
     ls_uv =f->linesize[1];
 
     // ref frame setup
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         if (s->next_refs[i].f->data[0])
             ff_thread_release_buffer(ctx, &s->next_refs[i]);
-        if (s->refreshrefmask & (1 << i)) {
+        if (s->refreshrefmask & (1 << i))
+        {
             res = ff_thread_ref_frame(&s->next_refs[i], &s->frames[CUR_FRAME].tf);
-        } else if (s->refs[i].f->data[0]) {
+        }
+        else if (s->refs[i].f->data[0])
+        {
             res = ff_thread_ref_frame(&s->next_refs[i], &s->refs[i]);
         }
         if (res < 0)
@@ -4066,9 +4857,12 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
     bytesperpixel = s->bytesperpixel;
     memset(s->above_partition_ctx, 0, s->cols);
     memset(s->above_skip_ctx, 0, s->cols);
-    if (s->keyframe || s->intraonly) {
+    if (s->keyframe || s->intraonly)
+    {
         memset(s->above_mode_ctx, DC_PRED, s->cols * 2);
-    } else {
+    }
+    else
+    {
         memset(s->above_mode_ctx, NEARESTMV, s->cols);
     }
     memset(s->above_y_nnz_ctx, 0, s->sb_cols * 16);
@@ -4076,16 +4870,19 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
     memset(s->above_uv_nnz_ctx[1], 0, s->sb_cols * 16 >> s->ss_h);
     memset(s->above_segpred_ctx, 0, s->cols);
     s->pass = s->frames[CUR_FRAME].uses_2pass =
-        ctx->active_thread_type == FF_THREAD_FRAME && s->refreshctx && !s->parallelmode;
-    if ((res = update_block_buffers(ctx)) < 0) {
+                  ctx->active_thread_type == FF_THREAD_FRAME && s->refreshctx && !s->parallelmode;
+    if ((res = update_block_buffers(ctx)) < 0)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Failed to allocate block buffers\n");
         return res;
     }
-    if (s->refreshctx && s->parallelmode) {
+    if (s->refreshctx && s->parallelmode)
+    {
         int j, k, l, m;
 
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i++)
+        {
             for (j = 0; j < 2; j++)
                 for (k = 0; k < 2; k++)
                     for (l = 0; l < 6; l++)
@@ -4097,11 +4894,14 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
         }
         s->prob_ctx[s->framectxid].p = s->prob.p;
         ff_thread_finish_setup(ctx);
-    } else if (!s->refreshctx) {
+    }
+    else if (!s->refreshctx)
+    {
         ff_thread_finish_setup(ctx);
     }
 
-    do {
+    do
+    {
         yoff = uvoff = 0;
         s->b = s->b_base;
         s->block = s->block_base;
@@ -4111,27 +4911,35 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
         s->uveob[0] = s->uveob_base[0];
         s->uveob[1] = s->uveob_base[1];
 
-        for (tile_row = 0; tile_row < s->tiling.tile_rows; tile_row++) {
+        for (tile_row = 0; tile_row < s->tiling.tile_rows; tile_row++)
+        {
             set_tile_offset(&s->tiling.tile_row_start, &s->tiling.tile_row_end,
                             tile_row, s->tiling.log2_tile_rows, s->sb_rows);
-            if (s->pass != 2) {
-                for (tile_col = 0; tile_col < s->tiling.tile_cols; tile_col++) {
+            if (s->pass != 2)
+            {
+                for (tile_col = 0; tile_col < s->tiling.tile_cols; tile_col++)
+                {
                     int64_t tile_size;
 
                     if (tile_col == s->tiling.tile_cols - 1 &&
-                        tile_row == s->tiling.tile_rows - 1) {
+                            tile_row == s->tiling.tile_rows - 1)
+                    {
                         tile_size = size;
-                    } else {
+                    }
+                    else
+                    {
                         tile_size = AV_RB32(data);
                         data += 4;
                         size -= 4;
                     }
-                    if (tile_size > size) {
+                    if (tile_size > size)
+                    {
                         ff_thread_report_progress(&s->frames[CUR_FRAME].tf, INT_MAX, 0);
                         return AVERROR_INVALIDDATA;
                     }
                     ff_vp56_init_range_decoder(&s->c_b[tile_col], data, tile_size);
-                    if (vp56_rac_get_prob_branchy(&s->c_b[tile_col], 128)) { // marker bit
+                    if (vp56_rac_get_prob_branchy(&s->c_b[tile_col], 128))   // marker bit
+                    {
                         ff_thread_report_progress(&s->frames[CUR_FRAME].tf, INT_MAX, 0);
                         return AVERROR_INVALIDDATA;
                     }
@@ -4141,20 +4949,26 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
             }
 
             for (row = s->tiling.tile_row_start; row < s->tiling.tile_row_end;
-                 row += 8, yoff += ls_y * 64, uvoff += ls_uv * 64 >> s->ss_v) {
+                    row += 8, yoff += ls_y * 64, uvoff += ls_uv * 64 >> s->ss_v)
+            {
                 struct VP9Filter *lflvl_ptr = s->lflvl;
                 ptrdiff_t yoff2 = yoff, uvoff2 = uvoff;
 
-                for (tile_col = 0; tile_col < s->tiling.tile_cols; tile_col++) {
+                for (tile_col = 0; tile_col < s->tiling.tile_cols; tile_col++)
+                {
                     set_tile_offset(&s->tiling.tile_col_start, &s->tiling.tile_col_end,
                                     tile_col, s->tiling.log2_tile_cols, s->sb_cols);
 
-                    if (s->pass != 2) {
+                    if (s->pass != 2)
+                    {
                         memset(s->left_partition_ctx, 0, 8);
                         memset(s->left_skip_ctx, 0, 8);
-                        if (s->keyframe || s->intraonly) {
+                        if (s->keyframe || s->intraonly)
+                        {
                             memset(s->left_mode_ctx, DC_PRED, 16);
-                        } else {
+                        }
+                        else
+                        {
                             memset(s->left_mode_ctx, NEARESTMV, 8);
                         }
                         memset(s->left_y_nnz_ctx, 0, 16);
@@ -4165,35 +4979,43 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
                     }
 
                     for (col = s->tiling.tile_col_start;
-                         col < s->tiling.tile_col_end;
-                         col += 8, yoff2 += 64 * bytesperpixel,
-                         uvoff2 += 64 * bytesperpixel >> s->ss_h, lflvl_ptr++) {
+                            col < s->tiling.tile_col_end;
+                            col += 8, yoff2 += 64 * bytesperpixel,
+                            uvoff2 += 64 * bytesperpixel >> s->ss_h, lflvl_ptr++)
+                    {
                         // FIXME integrate with lf code (i.e. zero after each
                         // use, similar to invtxfm coefficients, or similar)
-                        if (s->pass != 1) {
+                        if (s->pass != 1)
+                        {
                             memset(lflvl_ptr->mask, 0, sizeof(lflvl_ptr->mask));
                         }
 
-                        if (s->pass == 2) {
+                        if (s->pass == 2)
+                        {
                             decode_sb_mem(ctx, row, col, lflvl_ptr,
                                           yoff2, uvoff2, BL_64X64);
-                        } else {
+                        }
+                        else
+                        {
                             decode_sb(ctx, row, col, lflvl_ptr,
                                       yoff2, uvoff2, BL_64X64);
                         }
                     }
-                    if (s->pass != 2) {
+                    if (s->pass != 2)
+                    {
                         memcpy(&s->c_b[tile_col], &s->c, sizeof(s->c));
                     }
                 }
 
-                if (s->pass == 1) {
+                if (s->pass == 1)
+                {
                     continue;
                 }
 
                 // backup pre-loopfilter reconstruction data for intra
                 // prediction of next row of sb64s
-                if (row + 8 < s->rows) {
+                if (row + 8 < s->rows)
+                {
                     memcpy(s->intra_pred_data[0],
                            f->data[0] + yoff + 63 * ls_y,
                            8 * s->cols * bytesperpixel);
@@ -4206,13 +5028,15 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
                 }
 
                 // loopfilter one row
-                if (s->filter.level) {
+                if (s->filter.level)
+                {
                     yoff2 = yoff;
                     uvoff2 = uvoff;
                     lflvl_ptr = s->lflvl;
                     for (col = 0; col < s->cols;
-                         col += 8, yoff2 += 64 * bytesperpixel,
-                         uvoff2 += 64 * bytesperpixel >> s->ss_h, lflvl_ptr++) {
+                            col += 8, yoff2 += 64 * bytesperpixel,
+                            uvoff2 += 64 * bytesperpixel >> s->ss_h, lflvl_ptr++)
+                    {
                         loopfilter_sb(ctx, lflvl_ptr, row, col, yoff2, uvoff2);
                     }
                 }
@@ -4224,21 +5048,25 @@ static int vp9_decode_frame(AVCodecContext *ctx, void *frame,
             }
         }
 
-        if (s->pass < 2 && s->refreshctx && !s->parallelmode) {
+        if (s->pass < 2 && s->refreshctx && !s->parallelmode)
+        {
             adapt_probs(s);
             ff_thread_finish_setup(ctx);
         }
-    } while (s->pass++ == 1);
+    }
+    while (s->pass++ == 1);
     ff_thread_report_progress(&s->frames[CUR_FRAME].tf, INT_MAX, 0);
 
     // ref frame setup
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         if (s->refs[i].f->data[0])
             ff_thread_release_buffer(ctx, &s->refs[i]);
         ff_thread_ref_frame(&s->refs[i], &s->next_refs[i]);
     }
 
-    if (!s->invisible) {
+    if (!s->invisible)
+    {
         if ((res = av_frame_ref(frame, s->frames[CUR_FRAME].tf.f)) < 0)
             return res;
         *got_frame = 1;
@@ -4263,18 +5091,22 @@ static int init_frames(AVCodecContext *ctx)
     VP9Context *s = ctx->priv_data;
     int i;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         s->frames[i].tf.f = av_frame_alloc();
-        if (!s->frames[i].tf.f) {
+        if (!s->frames[i].tf.f)
+        {
             vp9_decode_free(ctx);
             av_log(ctx, AV_LOG_ERROR, "Failed to allocate frame buffer %d\n", i);
             return AVERROR(ENOMEM);
         }
     }
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         s->refs[i].f = av_frame_alloc();
         s->next_refs[i].f = av_frame_alloc();
-        if (!s->refs[i].f || !s->next_refs[i].f) {
+        if (!s->refs[i].f || !s->next_refs[i].f)
+        {
             vp9_decode_free(ctx);
             av_log(ctx, AV_LOG_ERROR, "Failed to allocate frame buffer %d\n", i);
             return AVERROR(ENOMEM);
@@ -4307,22 +5139,27 @@ static int vp9_decode_update_thread_context(AVCodecContext *dst, const AVCodecCo
 
     // detect size changes in other threads
     if (s->intra_pred_data[0] &&
-        (!ssrc->intra_pred_data[0] || s->cols != ssrc->cols || s->rows != ssrc->rows)) {
+            (!ssrc->intra_pred_data[0] || s->cols != ssrc->cols || s->rows != ssrc->rows))
+    {
         free_buffers(s);
     }
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         if (s->frames[i].tf.f->data[0])
             vp9_unref_frame(dst, &s->frames[i]);
-        if (ssrc->frames[i].tf.f->data[0]) {
+        if (ssrc->frames[i].tf.f->data[0])
+        {
             if ((res = vp9_ref_frame(dst, &s->frames[i], &ssrc->frames[i])) < 0)
                 return res;
         }
     }
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         if (s->refs[i].f->data[0])
             ff_thread_release_buffer(dst, &s->refs[i]);
-        if (ssrc->next_refs[i].f->data[0]) {
+        if (ssrc->next_refs[i].f->data[0])
+        {
             if ((res = ff_thread_ref_frame(&s->refs[i], &ssrc->next_refs[i])) < 0)
                 return res;
         }
@@ -4340,7 +5177,8 @@ static int vp9_decode_update_thread_context(AVCodecContext *dst, const AVCodecCo
     s->bpp_index = ssrc->bpp_index;
     memcpy(&s->prob_ctx, &ssrc->prob_ctx, sizeof(s->prob_ctx));
     memcpy(&s->lf_delta, &ssrc->lf_delta, sizeof(s->lf_delta));
-    if (ssrc->segmentation.enabled) {
+    if (ssrc->segmentation.enabled)
+    {
         memcpy(&s->segmentation.feat, &ssrc->segmentation.feat,
                sizeof(s->segmentation.feat));
     }
@@ -4348,7 +5186,8 @@ static int vp9_decode_update_thread_context(AVCodecContext *dst, const AVCodecCo
     return 0;
 }
 
-static const AVProfile profiles[] = {
+static const AVProfile profiles[] =
+{
     { FF_PROFILE_VP9_0, "Profile 0" },
     { FF_PROFILE_VP9_1, "Profile 1" },
     { FF_PROFILE_VP9_2, "Profile 2" },
@@ -4356,7 +5195,8 @@ static const AVProfile profiles[] = {
     { FF_PROFILE_UNKNOWN },
 };
 
-AVCodec ff_vp9_decoder = {
+AVCodec ff_vp9_decoder =
+{
     .name                  = "vp9",
     .long_name             = NULL_IF_CONFIG_SMALL("Google VP9"),
     .type                  = AVMEDIA_TYPE_VIDEO,

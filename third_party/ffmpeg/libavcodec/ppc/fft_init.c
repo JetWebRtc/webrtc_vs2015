@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FFT/IFFT transforms
  * AltiVec-enabled
  * Copyright (c) 2009 Loren Merritt
@@ -60,7 +60,8 @@ static void imdct_half_altivec(FFTContext *s, FFTSample *output, const FFTSample
 
     /* pre rotation */
     k = n32-1;
-    do {
+    do
+    {
         vec_f cos,sin,cos0,sin0,cos1,sin1,re,im,r0,i0,r1,i1,a,b,c,d;
 #define CMULA(p,o0,o1,o2,o3)\
         a = pin[ k*2+p];                       /* { z[k].re,    z[k].im,    z[k+1].re,  z[k+1].im  } */\
@@ -96,7 +97,8 @@ static void imdct_half_altivec(FFTContext *s, FFTSample *output, const FFTSample
         revtabj += 4;
         revtabk -= 4;
         k--;
-    } while(k >= 0);
+    }
+    while(k >= 0);
 
 #if HAVE_VSX
     ff_fft_calc_vsx(s, (FFTComplex*)output);
@@ -107,7 +109,8 @@ static void imdct_half_altivec(FFTContext *s, FFTSample *output, const FFTSample
     /* post rotation + reordering */
     j = -n32;
     k = n32-1;
-    do {
+    do
+    {
         vec_f cos,sin,re,im,a,b,c,d;
 #define CMULB(d0,d1,o)\
         re = pout[o*2];\
@@ -125,7 +128,8 @@ static void imdct_half_altivec(FFTContext *s, FFTSample *output, const FFTSample
         pout[2*k+1] = vec_perm(c, b, vcprm(2,s1,3,s0));
         j++;
         k--;
-    } while(k >= 0);
+    }
+    while(k >= 0);
 }
 
 static void imdct_calc_altivec(FFTContext *s, FFTSample *output, const FFTSample *input)
@@ -140,7 +144,8 @@ static void imdct_calc_altivec(FFTContext *s, FFTSample *output, const FFTSample
 
     imdct_half_altivec(s, output + n4, input);
 
-    for (k = 0; k < n16; k++) {
+    for (k = 0; k < n16; k++)
+    {
         vec_u32 a = p0[k] ^ sign;
         vec_u32 b = p1[-k-1];
         p0[-k-1] = vec_perm(a, a, vcprm(3,2,1,0));
@@ -160,7 +165,8 @@ av_cold void ff_fft_init_ppc(FFTContext *s)
 #else
     s->fft_calc   = ff_fft_calc_interleave_altivec;
 #endif
-    if (s->mdct_bits >= 5) {
+    if (s->mdct_bits >= 5)
+    {
         s->imdct_calc = imdct_calc_altivec;
         s->imdct_half = imdct_half_altivec;
     }

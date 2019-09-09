@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,31 +14,35 @@
 #include "webrtc/base/basictypes.h"
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/rtpfb.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 
 // draft-perkins-avt-rapid-rtp-sync-03
-class RapidResyncRequest : public Rtpfb {
- public:
-  static constexpr uint8_t kFeedbackMessageType = 5;
+class RapidResyncRequest : public Rtpfb
+{
+public:
+    static constexpr uint8_t kFeedbackMessageType = 5;
 
-  RapidResyncRequest() {}
-  ~RapidResyncRequest() override {}
+    RapidResyncRequest() {}
+    ~RapidResyncRequest() override {}
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& header);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& header);
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
- private:
-  size_t BlockLength() const override {
-    return kHeaderLength + kCommonFeedbackLength;
-  }
+private:
+    size_t BlockLength() const override
+    {
+        return kHeaderLength + kCommonFeedbackLength;
+    }
 };
 }  // namespace rtcp
 }  // namespace webrtc

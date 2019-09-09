@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SpanDSP - a series of DSP components for telephony
  *
  * g722_encode.c - The ITU G.722 codec, encode part.
@@ -148,8 +148,9 @@ static void block4(G722EncoderState *s, int band, int d)
 /*- End of function --------------------------------------------------------*/
 
 G722EncoderState* WebRtc_g722_encode_init(G722EncoderState* s,
-                                          int rate,
-                                          int options) {
+        int rate,
+        int options)
+{
     if (s == NULL)
     {
         if ((s = (G722EncoderState *) malloc(sizeof(*s))) == NULL)
@@ -203,21 +204,21 @@ size_t WebRtc_g722_encode(G722EncoderState *s, uint8_t g722_data[],
 {
     static const int q6[32] =
     {
-           0,   35,   72,  110,  150,  190,  233,  276,
-         323,  370,  422,  473,  530,  587,  650,  714,
-         786,  858,  940, 1023, 1121, 1219, 1339, 1458,
+        0,   35,   72,  110,  150,  190,  233,  276,
+        323,  370,  422,  473,  530,  587,  650,  714,
+        786,  858,  940, 1023, 1121, 1219, 1339, 1458,
         1612, 1765, 1980, 2195, 2557, 2919,    0,    0
     };
     static const int iln[32] =
     {
-         0, 63, 62, 31, 30, 29, 28, 27,
+        0, 63, 62, 31, 30, 29, 28, 27,
         26, 25, 24, 23, 22, 21, 20, 19,
         18, 17, 16, 15, 14, 13, 12, 11,
         10,  9,  8,  7,  6,  5,  4,  0
     };
     static const int ilp[32] =
     {
-         0, 61, 60, 59, 58, 57, 56, 55,
+        0, 61, 60, 59, 58, 57, 56, 55,
         54, 53, 52, 51, 50, 49, 48, 47,
         46, 45, 44, 43, 42, 41, 40, 39,
         38, 37, 36, 35, 34, 33, 32,  0
@@ -240,10 +241,10 @@ size_t WebRtc_g722_encode(G722EncoderState *s, uint8_t g722_data[],
     };
     static const int qm4[16] =
     {
-             0, -20456, -12896, -8968,
-         -6288,  -4240,  -2584, -1200,
-         20456,  12896,   8968,  6288,
-          4240,   2584,   1200,     0
+        0, -20456, -12896, -8968,
+        -6288,  -4240,  -2584, -1200,
+        20456,  12896,   8968,  6288,
+        4240,   2584,   1200,     0
     };
     static const int qm2[4] =
     {
@@ -251,7 +252,7 @@ size_t WebRtc_g722_encode(G722EncoderState *s, uint8_t g722_data[],
     };
     static const int qmf_coeffs[12] =
     {
-           3,  -11,   12,   32, -210,  951, 3876, -805,  362, -156,   53,  -11,
+        3,  -11,   12,   32, -210,  951, 3876, -805,  362, -156,   53,  -11,
     };
     static const int ihn[3] = {0, 1, 0};
     static const int ihp[3] = {0, 3, 2};
@@ -290,7 +291,7 @@ size_t WebRtc_g722_encode(G722EncoderState *s, uint8_t g722_data[],
         if (s->itu_test_mode)
         {
             xlow =
-            xhigh = amp[j++] >> 1;
+                xhigh = amp[j++] >> 1;
         }
         else
         {

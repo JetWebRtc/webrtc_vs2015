@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Linux Media Labs MPEG-4 demuxer
  * Copyright (c) 2008 Ivo van Poorten
  *
@@ -44,14 +44,18 @@ static int lmlm4_probe(AVProbeData *pd)
     packet_size = AV_RB32(buf + 4);
 
     if (!AV_RB16(buf) && frame_type <= LMLM4_MPEG1L2 && packet_size &&
-        frame_type != LMLM4_INVALID && packet_size <= LMLM4_MAX_PACKET_SIZE) {
-        if (frame_type == LMLM4_MPEG1L2) {
+            frame_type != LMLM4_INVALID && packet_size <= LMLM4_MAX_PACKET_SIZE)
+    {
+        if (frame_type == LMLM4_MPEG1L2)
+        {
             if ((AV_RB16(buf + 8) & 0xfffe) != 0xfffc)
                 return 0;
             /* I could calculate the audio framesize and compare with
              * packet_size-8, but that seems overkill */
             return AVPROBE_SCORE_MAX / 3;
-        } else if (AV_RB24(buf + 8) == 0x000001) {    /* PES Signal */
+        }
+        else if (AV_RB24(buf + 8) == 0x000001)        /* PES Signal */
+        {
             return AVPROBE_SCORE_MAX / 5;
         }
     }
@@ -92,11 +96,13 @@ static int lmlm4_read_packet(AVFormatContext *s, AVPacket *pkt)
     padding     = -packet_size & 511;
     frame_size  = packet_size - 8;
 
-    if (frame_type > LMLM4_MPEG1L2 || frame_type == LMLM4_INVALID) {
+    if (frame_type > LMLM4_MPEG1L2 || frame_type == LMLM4_INVALID)
+    {
         av_log(s, AV_LOG_ERROR, "invalid or unsupported frame_type\n");
         return AVERROR(EIO);
     }
-    if (packet_size > LMLM4_MAX_PACKET_SIZE || packet_size<=8) {
+    if (packet_size > LMLM4_MAX_PACKET_SIZE || packet_size<=8)
+    {
         av_log(s, AV_LOG_ERROR, "packet size %d is invalid\n", packet_size);
         return AVERROR(EIO);
     }
@@ -106,7 +112,8 @@ static int lmlm4_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     avio_skip(pb, padding);
 
-    switch (frame_type) {
+    switch (frame_type)
+    {
     case LMLM4_I_FRAME:
         pkt->flags = AV_PKT_FLAG_KEY;
     case LMLM4_P_FRAME:
@@ -121,7 +128,8 @@ static int lmlm4_read_packet(AVFormatContext *s, AVPacket *pkt)
     return ret;
 }
 
-AVInputFormat ff_lmlm4_demuxer = {
+AVInputFormat ff_lmlm4_demuxer =
+{
     .name           = "lmlm4",
     .long_name      = NULL_IF_CONFIG_SMALL("raw lmlm4"),
     .read_probe     = lmlm4_probe,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,8 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 RTC_EXPORT
 @interface RTCRtpEncodingParameters : NSObject
 
-/** Controls whether the encoding is currently transmitted. */
-@property(nonatomic, assign) BOOL isActive;
+    /** Controls whether the encoding is currently transmitted. */
+    @property(nonatomic, assign) BOOL isActive;
 
 /** The maximum bitrate to use for the encoding, or nil if there is no
  *  limit.

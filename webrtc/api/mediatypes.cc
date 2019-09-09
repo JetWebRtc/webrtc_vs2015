@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,25 +11,28 @@
 #include "webrtc/api/mediatypes.h"
 #include "webrtc/base/checks.h"
 
-namespace cricket {
+namespace cricket
+{
 
-std::string MediaTypeToString(MediaType type) {
-  std::string type_str;
-  switch (type) {
+std::string MediaTypeToString(MediaType type)
+{
+    std::string type_str;
+    switch (type)
+    {
     case MEDIA_TYPE_AUDIO:
-      type_str = "audio";
-      break;
+        type_str = "audio";
+        break;
     case MEDIA_TYPE_VIDEO:
-      type_str = "video";
-      break;
+        type_str = "video";
+        break;
     case MEDIA_TYPE_DATA:
-      type_str = "data";
-      break;
+        type_str = "data";
+        break;
     default:
-      RTC_NOTREACHED();
-      break;
-  }
-  return type_str;
+        RTC_NOTREACHED();
+        break;
+    }
+    return type_str;
 }
 
 }  // namespace cricket

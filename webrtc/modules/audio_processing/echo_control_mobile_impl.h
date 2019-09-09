@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,64 +20,66 @@
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 #include "webrtc/modules/audio_processing/render_queue_item_verifier.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioBuffer;
 
-class EchoControlMobileImpl : public EchoControlMobile {
- public:
-  EchoControlMobileImpl(rtc::CriticalSection* crit_render,
-                        rtc::CriticalSection* crit_capture);
+class EchoControlMobileImpl : public EchoControlMobile
+{
+public:
+    EchoControlMobileImpl(rtc::CriticalSection* crit_render,
+                          rtc::CriticalSection* crit_capture);
 
-  ~EchoControlMobileImpl() override;
+    ~EchoControlMobileImpl() override;
 
-  void ProcessRenderAudio(rtc::ArrayView<const int16_t> packed_render_audio);
-  int ProcessCaptureAudio(AudioBuffer* audio, int stream_delay_ms);
+    void ProcessRenderAudio(rtc::ArrayView<const int16_t> packed_render_audio);
+    int ProcessCaptureAudio(AudioBuffer* audio, int stream_delay_ms);
 
-  // EchoControlMobile implementation.
-  bool is_enabled() const override;
-  RoutingMode routing_mode() const override;
-  bool is_comfort_noise_enabled() const override;
+    // EchoControlMobile implementation.
+    bool is_enabled() const override;
+    RoutingMode routing_mode() const override;
+    bool is_comfort_noise_enabled() const override;
 
-  void Initialize(int sample_rate_hz,
-                  size_t num_reverse_channels,
-                  size_t num_output_channels);
+    void Initialize(int sample_rate_hz,
+                    size_t num_reverse_channels,
+                    size_t num_output_channels);
 
-  static void PackRenderAudioBuffer(const AudioBuffer* audio,
-                                    size_t num_output_channels,
-                                    size_t num_channels,
-                                    std::vector<int16_t>* packed_buffer);
+    static void PackRenderAudioBuffer(const AudioBuffer* audio,
+                                      size_t num_output_channels,
+                                      size_t num_channels,
+                                      std::vector<int16_t>* packed_buffer);
 
-  static size_t NumCancellersRequired(size_t num_output_channels,
-                                      size_t num_reverse_channels);
+    static size_t NumCancellersRequired(size_t num_output_channels,
+                                        size_t num_reverse_channels);
 
- private:
-  class Canceller;
-  struct StreamProperties;
+private:
+    class Canceller;
+    struct StreamProperties;
 
-  // EchoControlMobile implementation.
-  int Enable(bool enable) override;
-  int set_routing_mode(RoutingMode mode) override;
-  int enable_comfort_noise(bool enable) override;
-  int SetEchoPath(const void* echo_path, size_t size_bytes) override;
-  int GetEchoPath(void* echo_path, size_t size_bytes) const override;
+    // EchoControlMobile implementation.
+    int Enable(bool enable) override;
+    int set_routing_mode(RoutingMode mode) override;
+    int enable_comfort_noise(bool enable) override;
+    int SetEchoPath(const void* echo_path, size_t size_bytes) override;
+    int GetEchoPath(void* echo_path, size_t size_bytes) const override;
 
-  int Configure();
+    int Configure();
 
-  rtc::CriticalSection* const crit_render_ ACQUIRED_BEFORE(crit_capture_);
-  rtc::CriticalSection* const crit_capture_;
+    rtc::CriticalSection* const crit_render_ ACQUIRED_BEFORE(crit_capture_);
+    rtc::CriticalSection* const crit_capture_;
 
-  bool enabled_ = false;
+    bool enabled_ = false;
 
-  RoutingMode routing_mode_ GUARDED_BY(crit_capture_);
-  bool comfort_noise_enabled_ GUARDED_BY(crit_capture_);
-  unsigned char* external_echo_path_ GUARDED_BY(crit_render_)
-      GUARDED_BY(crit_capture_);
+    RoutingMode routing_mode_ GUARDED_BY(crit_capture_);
+    bool comfort_noise_enabled_ GUARDED_BY(crit_capture_);
+    unsigned char* external_echo_path_ GUARDED_BY(crit_render_)
+    GUARDED_BY(crit_capture_);
 
-  std::vector<std::unique_ptr<Canceller>> cancellers_;
-  std::unique_ptr<StreamProperties> stream_properties_;
+    std::vector<std::unique_ptr<Canceller>> cancellers_;
+    std::unique_ptr<StreamProperties> stream_properties_;
 
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(EchoControlMobileImpl);
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(EchoControlMobileImpl);
 };
 }  // namespace webrtc
 

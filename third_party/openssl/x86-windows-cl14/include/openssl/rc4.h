@@ -1,4 +1,4 @@
-/* crypto/rc4/rc4.h */
+﻿/* crypto/rc4/rc4.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -70,7 +70,8 @@
 extern "C" {
 #endif
 
-typedef struct rc4_key_st {
+typedef struct rc4_key_st
+{
     RC4_INT x, y;
     RC4_INT data[256];
 } RC4_KEY;

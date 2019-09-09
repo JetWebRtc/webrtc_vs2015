@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,7 +21,8 @@ extern "C" {
 #include "webrtc/modules/audio_processing/aec/aec_core.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Errors
 #define AEC_UNSPECIFIED_ERROR 12000
@@ -37,80 +38,84 @@ enum { kAecNlpConservative = 0, kAecNlpModerate, kAecNlpAggressive };
 
 enum { kAecFalse = 0, kAecTrue };
 
-typedef struct {
-  int16_t nlpMode;      // default kAecNlpModerate
-  int16_t skewMode;     // default kAecFalse
-  int16_t metricsMode;  // default kAecFalse
-  int delay_logging;    // default kAecFalse
-  // float realSkew;
+typedef struct
+{
+    int16_t nlpMode;      // default kAecNlpModerate
+    int16_t skewMode;     // default kAecFalse
+    int16_t metricsMode;  // default kAecFalse
+    int delay_logging;    // default kAecFalse
+    // float realSkew;
 } AecConfig;
 
-typedef struct {
-  int instant;
-  int average;
-  int max;
-  int min;
+typedef struct
+{
+    int instant;
+    int average;
+    int max;
+    int min;
 } AecLevel;
 
-typedef struct {
-  AecLevel rerl;
-  AecLevel erl;
-  AecLevel erle;
-  AecLevel aNlp;
-  float divergent_filter_fraction;
+typedef struct
+{
+    AecLevel rerl;
+    AecLevel erl;
+    AecLevel erle;
+    AecLevel aNlp;
+    float divergent_filter_fraction;
 } AecMetrics;
 
 struct AecCore;
 
 class ApmDataDumper;
 
-typedef struct Aec {
-  Aec();
-  ~Aec();
+typedef struct Aec
+{
+    Aec();
+    ~Aec();
 
-  std::unique_ptr<ApmDataDumper> data_dumper;
+    std::unique_ptr<ApmDataDumper> data_dumper;
 
-  int delayCtr;
-  int sampFreq;
-  int splitSampFreq;
-  int scSampFreq;
-  float sampFactor;  // scSampRate / sampFreq
-  short skewMode;
-  int bufSizeStart;
-  int knownDelay;
-  int rate_factor;
+    int delayCtr;
+    int sampFreq;
+    int splitSampFreq;
+    int scSampFreq;
+    float sampFactor;  // scSampRate / sampFreq
+    short skewMode;
+    int bufSizeStart;
+    int knownDelay;
+    int rate_factor;
 
-  short initFlag;  // indicates if AEC has been initialized
+    short initFlag;  // indicates if AEC has been initialized
 
-  // Variables used for averaging far end buffer size
-  short counter;
-  int sum;
-  short firstVal;
-  short checkBufSizeCtr;
+    // Variables used for averaging far end buffer size
+    short counter;
+    int sum;
+    short firstVal;
+    short checkBufSizeCtr;
 
-  // Variables used for delay shifts
-  short msInSndCardBuf;
-  short filtDelay;  // Filtered delay estimate.
-  int timeForDelayChange;
-  int startup_phase;
-  int checkBuffSize;
-  short lastDelayDiff;
+    // Variables used for delay shifts
+    short msInSndCardBuf;
+    short filtDelay;  // Filtered delay estimate.
+    int timeForDelayChange;
+    int startup_phase;
+    int checkBuffSize;
+    short lastDelayDiff;
 
-  // Structures
-  void* resampler;
+    // Structures
+    void* resampler;
 
-  int skewFrCtr;
-  int resample;  // if the skew is small enough we don't resample
-  int highSkewCtr;
-  float skew;
+    int skewFrCtr;
+    int resample;  // if the skew is small enough we don't resample
+    int highSkewCtr;
+    float skew;
 
-  RingBuffer* far_pre_buf;  // Time domain far-end pre-buffer.
+    RingBuffer* far_pre_buf;  // Time domain far-end pre-buffer.
 
-  int farend_started;
+    int farend_started;
 
-  // Aec instance counter.
-  static int instance_count;
-  AecCore* aec;
+    // Aec instance counter.
+    static int instance_count;
+    AecCore* aec;
 } Aec;
 
 /*

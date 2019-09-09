@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Linux video grab interface
  * Copyright (c) 2000,2001 Fabrice Bellard
  *
@@ -39,7 +39,8 @@
 #include <linux/videodev.h>
 #include <time.h>
 
-typedef struct {
+typedef struct
+{
     AVClass *class;
     int fd;
     int frame_format; /* see VIDEO_PALETTE_xxx */
@@ -57,11 +58,13 @@ typedef struct {
     int standard;
 } VideoData;
 
-static const struct {
+static const struct
+{
     int palette;
     int depth;
     enum AVPixelFormat pix_fmt;
-} video_formats [] = {
+} video_formats [] =
+{
     {.palette = VIDEO_PALETTE_YUV420P, .depth = 12, .pix_fmt = AV_PIX_FMT_YUV420P },
     {.palette = VIDEO_PALETTE_YUV422,  .depth = 16, .pix_fmt = AV_PIX_FMT_YUYV422 },
     {.palette = VIDEO_PALETTE_UYVY,    .depth = 16, .pix_fmt = AV_PIX_FMT_UYVY422 },
@@ -87,7 +90,8 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
 
     av_log(s1, AV_LOG_WARNING, "V4L input device is deprecated and will be removed in the next release.");
 
-    if (ap->time_base.den <= 0) {
+    if (ap->time_base.den <= 0)
+    {
         av_log(s1, AV_LOG_ERROR, "Wrong time base (%d)\n", ap->time_base.den);
         return -1;
     }
@@ -102,24 +106,29 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
     avpriv_set_pts_info(st, 64, 1, 1000000); /* 64 bits pts in us */
 
     video_fd = open(s1->filename, O_RDWR);
-    if (video_fd < 0) {
+    if (video_fd < 0)
+    {
         av_log(s1, AV_LOG_ERROR, "%s: %s\n", s1->filename, strerror(errno));
         goto fail;
     }
 
-    if (ioctl(video_fd, VIDIOCGCAP, &s->video_cap) < 0) {
+    if (ioctl(video_fd, VIDIOCGCAP, &s->video_cap) < 0)
+    {
         av_log(s1, AV_LOG_ERROR, "VIDIOCGCAP: %s\n", strerror(errno));
         goto fail;
     }
 
-    if (!(s->video_cap.type & VID_TYPE_CAPTURE)) {
+    if (!(s->video_cap.type & VID_TYPE_CAPTURE))
+    {
         av_log(s1, AV_LOG_ERROR, "Fatal: grab device does not handle capture\n");
         goto fail;
     }
 
     /* no values set, autodetect them */
-    if (s->video_win.width <= 0 || s->video_win.height <= 0) {
-        if (ioctl(video_fd, VIDIOCGWIN, &s->video_win, sizeof(s->video_win)) < 0) {
+    if (s->video_win.width <= 0 || s->video_win.height <= 0)
+    {
+        if (ioctl(video_fd, VIDIOCGWIN, &s->video_win, sizeof(s->video_win)) < 0)
+        {
             av_log(s1, AV_LOG_ERROR, "VIDIOCGWIN: %s\n", strerror(errno));
             goto fail;
         }
@@ -130,8 +139,10 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
 
     desired_palette = -1;
     desired_depth = -1;
-    for (j = 0; j < vformat_num; j++) {
-        if (ap->pix_fmt == video_formats[j].pix_fmt) {
+    for (j = 0; j < vformat_num; j++)
+    {
+        if (ap->pix_fmt == video_formats[j].pix_fmt)
+        {
             desired_palette = video_formats[j].palette;
             desired_depth = video_formats[j].depth;
             break;
@@ -139,7 +150,8 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
     }
 
     /* set tv standard */
-    if (!ioctl(video_fd, VIDIOCGTUNER, &tuner)) {
+    if (!ioctl(video_fd, VIDIOCGTUNER, &tuner))
+    {
         tuner.mode = s->standard;
         ioctl(video_fd, VIDIOCSTUNER, &tuner);
     }
@@ -157,8 +169,10 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
     /* try to choose a suitable video format */
     pict.palette = desired_palette;
     pict.depth= desired_depth;
-    if (desired_palette == -1 || ioctl(video_fd, VIDIOCSPICT, &pict) < 0) {
-        for (j = 0; j < vformat_num; j++) {
+    if (desired_palette == -1 || ioctl(video_fd, VIDIOCSPICT, &pict) < 0)
+    {
+        for (j = 0; j < vformat_num; j++)
+        {
             pict.palette = video_formats[j].palette;
             pict.depth = video_formats[j].depth;
             if (-1 != ioctl(video_fd, VIDIOCSPICT, &pict))
@@ -168,7 +182,8 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
             goto fail1;
     }
 
-    if (ioctl(video_fd, VIDIOCGMBUF, &s->gb_buffers) < 0) {
+    if (ioctl(video_fd, VIDIOCGMBUF, &s->gb_buffers) < 0)
+    {
         /* try to use read based access */
         int val;
 
@@ -177,7 +192,8 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
         s->video_win.chromakey = -1;
         s->video_win.flags = 0;
 
-        if (ioctl(video_fd, VIDIOCSWIN, s->video_win) < 0) {
+        if (ioctl(video_fd, VIDIOCSWIN, s->video_win) < 0)
+        {
             av_log(s1, AV_LOG_ERROR, "VIDIOCSWIN: %s\n", strerror(errno));
             goto fail;
         }
@@ -185,18 +201,23 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
         s->frame_format = pict.palette;
 
         val = 1;
-        if (ioctl(video_fd, VIDIOCCAPTURE, &val) < 0) {
+        if (ioctl(video_fd, VIDIOCCAPTURE, &val) < 0)
+        {
             av_log(s1, AV_LOG_ERROR, "VIDIOCCAPTURE: %s\n", strerror(errno));
             goto fail;
         }
 
         s->time_frame = av_gettime() * s->time_base.den / s->time_base.num;
         s->use_mmap = 0;
-    } else {
+    }
+    else
+    {
         s->video_buf = mmap(0, s->gb_buffers.size, PROT_READ|PROT_WRITE, MAP_SHARED, video_fd, 0);
-        if ((unsigned char*)-1 == s->video_buf) {
+        if ((unsigned char*)-1 == s->video_buf)
+        {
             s->video_buf = mmap(0, s->gb_buffers.size, PROT_READ|PROT_WRITE, MAP_PRIVATE, video_fd, 0);
-            if ((unsigned char*)-1 == s->video_buf) {
+            if ((unsigned char*)-1 == s->video_buf)
+            {
                 av_log(s1, AV_LOG_ERROR, "mmap: %s\n", strerror(errno));
                 goto fail;
             }
@@ -210,25 +231,32 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
         s->gb_buf.width = s->video_win.width;
         s->gb_buf.format = pict.palette;
 
-        if (ioctl(video_fd, VIDIOCMCAPTURE, &s->gb_buf) < 0) {
-            if (errno != EAGAIN) {
-            fail1:
+        if (ioctl(video_fd, VIDIOCMCAPTURE, &s->gb_buf) < 0)
+        {
+            if (errno != EAGAIN)
+            {
+fail1:
                 av_log(s1, AV_LOG_ERROR, "VIDIOCMCAPTURE: %s\n", strerror(errno));
-            } else {
+            }
+            else
+            {
                 av_log(s1, AV_LOG_ERROR, "Fatal: grab device does not receive any video signal\n");
             }
             goto fail;
         }
-        for (j = 1; j < s->gb_buffers.frames; j++) {
-          s->gb_buf.frame = j;
-          ioctl(video_fd, VIDIOCMCAPTURE, &s->gb_buf);
+        for (j = 1; j < s->gb_buffers.frames; j++)
+        {
+            s->gb_buf.frame = j;
+            ioctl(video_fd, VIDIOCMCAPTURE, &s->gb_buf);
         }
         s->frame_format = s->gb_buf.format;
         s->use_mmap = 1;
     }
 
-    for (j = 0; j < vformat_num; j++) {
-        if (s->frame_format == video_formats[j].palette) {
+    for (j = 0; j < vformat_num; j++)
+    {
+        if (s->frame_format == video_formats[j].palette)
+        {
             s->frame_size = s->video_win.width * s->video_win.height * video_formats[j].depth / 8;
             st->codec->pix_fmt = video_formats[j].pix_fmt;
             break;
@@ -248,7 +276,7 @@ static int grab_read_header(AVFormatContext *s1, AVFormatParameters *ap)
     st->codec->bit_rate = s->frame_size * 1/av_q2d(st->codec->time_base) * 8;
 
     return 0;
- fail:
+fail:
     if (video_fd >= 0)
         close(video_fd);
     return AVERROR(EIO);
@@ -259,14 +287,15 @@ static int v4l_mm_read_picture(VideoData *s, uint8_t *buf)
     uint8_t *ptr;
 
     while (ioctl(s->fd, VIDIOCSYNC, &s->gb_frame) < 0 &&
-           (errno == EAGAIN || errno == EINTR));
+            (errno == EAGAIN || errno == EINTR));
 
     ptr = s->video_buf + s->gb_buffers.offsets[s->gb_frame];
     memcpy(buf, ptr, s->frame_size);
 
     /* Setup to capture the next frame */
     s->gb_buf.frame = s->gb_frame;
-    if (ioctl(s->fd, VIDIOCMCAPTURE, &s->gb_buf) < 0) {
+    if (ioctl(s->fd, VIDIOCMCAPTURE, &s->gb_buf) < 0)
+    {
         if (errno == EAGAIN)
             av_log(NULL, AV_LOG_ERROR, "Cannot Sync\n");
         else
@@ -290,11 +319,14 @@ static int grab_read_packet(AVFormatContext *s1, AVPacket *pkt)
     s->time_frame += INT64_C(1000000);
 
     /* wait based on the frame rate */
-    for(;;) {
+    for(;;)
+    {
         curtime = av_gettime();
         delay = s->time_frame * s->time_base.num / s->time_base.den - curtime;
-        if (delay <= 0) {
-            if (delay < INT64_C(-1000000) * s->time_base.num / s->time_base.den) {
+        if (delay <= 0)
+        {
+            if (delay < INT64_C(-1000000) * s->time_base.num / s->time_base.den)
+            {
                 /* printf("grabbing is %d frames late (dropping)\n", (int) -(delay / 16666)); */
                 s->time_frame += INT64_C(1000000);
             }
@@ -311,9 +343,12 @@ static int grab_read_packet(AVFormatContext *s1, AVPacket *pkt)
     pkt->pts = curtime;
 
     /* read one frame */
-    if (s->use_mmap) {
+    if (s->use_mmap)
+    {
         return v4l_mm_read_picture(s, pkt->data);
-    } else {
+    }
+    else
+    {
         if (read(s->fd, pkt->data, pkt->size) != pkt->size)
             return AVERROR(EIO);
         return s->frame_size;
@@ -336,7 +371,8 @@ static int grab_read_close(AVFormatContext *s1)
     return 0;
 }
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "standard", "", offsetof(VideoData, standard), AV_OPT_TYPE_INT, {.i64 = VIDEO_MODE_NTSC}, VIDEO_MODE_PAL, VIDEO_MODE_NTSC, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "PAL",   "", 0, AV_OPT_TYPE_CONST, {.i64 = VIDEO_MODE_PAL},   0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
     { "SECAM", "", 0, AV_OPT_TYPE_CONST, {.i64 = VIDEO_MODE_SECAM}, 0, 0, AV_OPT_FLAG_DECODING_PARAM, "standard" },
@@ -344,7 +380,8 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass v4l_class = {
+static const AVClass v4l_class =
+{
     .class_name = "V4L indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -352,7 +389,8 @@ static const AVClass v4l_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
 };
 
-AVInputFormat ff_v4l_demuxer = {
+AVInputFormat ff_v4l_demuxer =
+{
     .name           = "video4linux,v4l",
     .long_name      = NULL_IF_CONFIG_SMALL("Video4Linux device grab"),
     .priv_data_size = sizeof(VideoData),

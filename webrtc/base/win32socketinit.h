@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2009 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_BASE_WIN32SOCKETINIT_H_
 #define WEBRTC_BASE_WIN32SOCKETINIT_H_
 
-namespace rtc {
+namespace rtc
+{
 
 void EnsureWinsockInit();
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -36,6 +36,6 @@ void WebRtcIlbcfix_DoThePlc(
     size_t inlag,    /* (i) pitch lag */
     IlbcDecoder *iLBCdec_inst
     /* (i/o) decoder instance */
-                            );
+);
 
 #endif

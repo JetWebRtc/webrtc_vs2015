@@ -1,4 +1,4 @@
-/* crypto/buffer/buffer.h */
+﻿/* crypto/buffer/buffer.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -74,7 +74,8 @@ extern "C" {
 /* Already declared in ossl_typ.h */
 /* typedef struct buf_mem_st BUF_MEM; */
 
-struct buf_mem_st {
+struct buf_mem_st
+{
     size_t length;              /* current number of bytes */
     char *data;
     size_t max;                 /* size of buffer */

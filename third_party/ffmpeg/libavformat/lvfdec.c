@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LVF demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -44,19 +44,22 @@ static int lvf_read_header(AVFormatContext *s)
     nb_streams = avio_rl32(s->pb);
     if (!nb_streams)
         return AVERROR_INVALIDDATA;
-    if (nb_streams > 2) {
+    if (nb_streams > 2)
+    {
         avpriv_request_sample(s, "%d streams", nb_streams);
         return AVERROR_PATCHWELCOME;
     }
 
     avio_skip(s->pb, 1012);
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         id          = avio_rl32(s->pb);
         size        = avio_rl32(s->pb);
         next_offset = avio_tell(s->pb) + size;
 
-        switch (id) {
+        switch (id)
+        {
         case MKTAG('0', '0', 'f', 'm'):
             st = avformat_new_stream(s, 0);
             if (!st)
@@ -84,7 +87,7 @@ static int lvf_read_header(AVFormatContext *s)
             avio_skip(s->pb, 8);
             st->codec->bits_per_coded_sample = avio_r8(s->pb);
             st->codec->codec_id    = ff_codec_get_id(ff_codec_wav_tags,
-                                                     st->codec->codec_tag);
+                                     st->codec->codec_tag);
             avpriv_set_pts_info(st, 32, 1, 1000);
             break;
         case 0:
@@ -108,14 +111,16 @@ static int lvf_read_packet(AVFormatContext *s, AVPacket *pkt)
     int ret, is_video = 0;
 
     pos = avio_tell(s->pb);
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         id    = avio_rl32(s->pb);
         size  = avio_rl32(s->pb);
 
         if (size == 0xFFFFFFFFu)
             return AVERROR_EOF;
 
-        switch (id) {
+        switch (id)
+        {
         case MKTAG('0', '0', 'd', 'c'):
             is_video = 1;
         case MKTAG('0', '1', 'w', 'b'):
@@ -141,7 +146,8 @@ static int lvf_read_packet(AVFormatContext *s, AVPacket *pkt)
     return AVERROR_EOF;
 }
 
-AVInputFormat ff_lvf_demuxer = {
+AVInputFormat ff_lvf_demuxer =
+{
     .name        = "lvf",
     .long_name   = NULL_IF_CONFIG_SMALL("LVF"),
     .read_probe  = lvf_probe,

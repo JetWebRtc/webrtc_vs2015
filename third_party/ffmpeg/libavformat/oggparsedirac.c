@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2008  David Conrad
  *
  * This file is part of FFmpeg.
@@ -103,7 +103,8 @@ static uint64_t old_dirac_gptopts(AVFormatContext *s, int idx, uint64_t gp,
     return iframe + pframe;
 }
 
-const struct ogg_codec ff_dirac_codec = {
+const struct ogg_codec ff_dirac_codec =
+{
     .magic = "BBCD\0",
     .magicsize = 5,
     .header = dirac_header,
@@ -112,7 +113,8 @@ const struct ogg_codec ff_dirac_codec = {
     .nb_header = 1,
 };
 
-const struct ogg_codec ff_old_dirac_codec = {
+const struct ogg_codec ff_old_dirac_codec =
+{
     .magic = "KW-DIRAC",
     .magicsize = 8,
     .header = old_dirac_header,

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * reference discrete cosine transform (double precision)
  * Copyright (C) 2009 Dylan Yudaken
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,19 +16,22 @@
 #include "webrtc/modules/audio_processing/aec3/block_processor.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class MockBlockProcessor : public BlockProcessor {
- public:
-  virtual ~MockBlockProcessor() {}
+class MockBlockProcessor : public BlockProcessor
+{
+public:
+    virtual ~MockBlockProcessor() {}
 
-  MOCK_METHOD3(ProcessCapture,
-               void(bool level_change,
-                    bool saturated_microphone_signal,
-                    std::vector<std::vector<float>>* capture_block));
-  MOCK_METHOD1(BufferRender, bool(std::vector<std::vector<float>>* block));
-  MOCK_METHOD1(UpdateEchoLeakageStatus, void(bool leakage_detected));
+    MOCK_METHOD3(ProcessCapture,
+                 void(bool level_change,
+                      bool saturated_microphone_signal,
+                      std::vector<std::vector<float>>* capture_block));
+    MOCK_METHOD1(BufferRender, bool(std::vector<std::vector<float>>* block));
+    MOCK_METHOD1(UpdateEchoLeakageStatus, void(bool leakage_detected));
 };
 
 }  // namespace test

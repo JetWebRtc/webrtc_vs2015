@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,13 +15,15 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioDecoder;
 
-enum class DecoderFunctionType {
-  kNormalDecode,
-  kRedundantDecode,
+enum class DecoderFunctionType
+{
+    kNormalDecode,
+    kRedundantDecode,
 };
 
 void FuzzAudioDecoder(DecoderFunctionType decode_type,

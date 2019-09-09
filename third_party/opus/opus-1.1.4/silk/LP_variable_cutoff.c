@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -47,47 +47,60 @@ static OPUS_INLINE void silk_LP_interpolate_filter_taps(
 {
     opus_int nb, na;
 
-    if( ind < TRANSITION_INT_NUM - 1 ) {
-        if( fac_Q16 > 0 ) {
-            if( fac_Q16 < 32768 ) { /* fac_Q16 is in range of a 16-bit int */
+    if( ind < TRANSITION_INT_NUM - 1 )
+    {
+        if( fac_Q16 > 0 )
+        {
+            if( fac_Q16 < 32768 )   /* fac_Q16 is in range of a 16-bit int */
+            {
                 /* Piece-wise linear interpolation of B and A */
-                for( nb = 0; nb < TRANSITION_NB; nb++ ) {
+                for( nb = 0; nb < TRANSITION_NB; nb++ )
+                {
                     B_Q28[ nb ] = silk_SMLAWB(
-                        silk_Transition_LP_B_Q28[ ind     ][ nb ],
-                        silk_Transition_LP_B_Q28[ ind + 1 ][ nb ] -
-                        silk_Transition_LP_B_Q28[ ind     ][ nb ],
-                        fac_Q16 );
+                                      silk_Transition_LP_B_Q28[ ind     ][ nb ],
+                                      silk_Transition_LP_B_Q28[ ind + 1 ][ nb ] -
+                                      silk_Transition_LP_B_Q28[ ind     ][ nb ],
+                                      fac_Q16 );
                 }
-                for( na = 0; na < TRANSITION_NA; na++ ) {
+                for( na = 0; na < TRANSITION_NA; na++ )
+                {
                     A_Q28[ na ] = silk_SMLAWB(
-                        silk_Transition_LP_A_Q28[ ind     ][ na ],
-                        silk_Transition_LP_A_Q28[ ind + 1 ][ na ] -
-                        silk_Transition_LP_A_Q28[ ind     ][ na ],
-                        fac_Q16 );
-                }
-            } else { /* ( fac_Q16 - ( 1 << 16 ) ) is in range of a 16-bit int */
-                silk_assert( fac_Q16 - ( 1 << 16 ) == silk_SAT16( fac_Q16 - ( 1 << 16 ) ) );
-                /* Piece-wise linear interpolation of B and A */
-                for( nb = 0; nb < TRANSITION_NB; nb++ ) {
-                    B_Q28[ nb ] = silk_SMLAWB(
-                        silk_Transition_LP_B_Q28[ ind + 1 ][ nb ],
-                        silk_Transition_LP_B_Q28[ ind + 1 ][ nb ] -
-                        silk_Transition_LP_B_Q28[ ind     ][ nb ],
-                        fac_Q16 - ( (opus_int32)1 << 16 ) );
-                }
-                for( na = 0; na < TRANSITION_NA; na++ ) {
-                    A_Q28[ na ] = silk_SMLAWB(
-                        silk_Transition_LP_A_Q28[ ind + 1 ][ na ],
-                        silk_Transition_LP_A_Q28[ ind + 1 ][ na ] -
-                        silk_Transition_LP_A_Q28[ ind     ][ na ],
-                        fac_Q16 - ( (opus_int32)1 << 16 ) );
+                                      silk_Transition_LP_A_Q28[ ind     ][ na ],
+                                      silk_Transition_LP_A_Q28[ ind + 1 ][ na ] -
+                                      silk_Transition_LP_A_Q28[ ind     ][ na ],
+                                      fac_Q16 );
                 }
             }
-        } else {
+            else     /* ( fac_Q16 - ( 1 << 16 ) ) is in range of a 16-bit int */
+            {
+                silk_assert( fac_Q16 - ( 1 << 16 ) == silk_SAT16( fac_Q16 - ( 1 << 16 ) ) );
+                /* Piece-wise linear interpolation of B and A */
+                for( nb = 0; nb < TRANSITION_NB; nb++ )
+                {
+                    B_Q28[ nb ] = silk_SMLAWB(
+                                      silk_Transition_LP_B_Q28[ ind + 1 ][ nb ],
+                                      silk_Transition_LP_B_Q28[ ind + 1 ][ nb ] -
+                                      silk_Transition_LP_B_Q28[ ind     ][ nb ],
+                                      fac_Q16 - ( (opus_int32)1 << 16 ) );
+                }
+                for( na = 0; na < TRANSITION_NA; na++ )
+                {
+                    A_Q28[ na ] = silk_SMLAWB(
+                                      silk_Transition_LP_A_Q28[ ind + 1 ][ na ],
+                                      silk_Transition_LP_A_Q28[ ind + 1 ][ na ] -
+                                      silk_Transition_LP_A_Q28[ ind     ][ na ],
+                                      fac_Q16 - ( (opus_int32)1 << 16 ) );
+                }
+            }
+        }
+        else
+        {
             silk_memcpy( B_Q28, silk_Transition_LP_B_Q28[ ind ], TRANSITION_NB * sizeof( opus_int32 ) );
             silk_memcpy( A_Q28, silk_Transition_LP_A_Q28[ ind ], TRANSITION_NA * sizeof( opus_int32 ) );
         }
-    } else {
+    }
+    else
+    {
         silk_memcpy( B_Q28, silk_Transition_LP_B_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NB * sizeof( opus_int32 ) );
         silk_memcpy( A_Q28, silk_Transition_LP_A_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NA * sizeof( opus_int32 ) );
     }
@@ -109,7 +122,8 @@ void silk_LP_variable_cutoff(
     silk_assert( psLP->transition_frame_no >= 0 && psLP->transition_frame_no <= TRANSITION_FRAMES );
 
     /* Run filter if needed */
-    if( psLP->mode != 0 ) {
+    if( psLP->mode != 0 )
+    {
         /* Calculate index and interpolation factor for interpolation */
 #if( TRANSITION_INT_STEPS == 64 )
         fac_Q16 = silk_LSHIFT( TRANSITION_FRAMES - psLP->transition_frame_no, 16 - 6 );

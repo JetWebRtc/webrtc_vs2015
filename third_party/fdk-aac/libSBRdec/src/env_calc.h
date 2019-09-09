@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Envelope calculation prototypes  
+  \brief  Envelope calculation prototypes
 */
 #ifndef __ENV_CALC_H
 #define __ENV_CALC_H
@@ -95,18 +95,18 @@ amm-info@iis.fraunhofer.de
 
 typedef struct
 {
-  FIXP_DBL  filtBuffer[MAX_FREQ_COEFFS];          /*!< previous gains (required for smoothing) */
-  FIXP_DBL  filtBufferNoise[MAX_FREQ_COEFFS];     /*!< previous noise levels (required for smoothing) */
-  SCHAR     filtBuffer_e[MAX_FREQ_COEFFS];        /*!< Exponents of previous gains */
-  SCHAR     filtBufferNoise_e;                    /*!< Common exponent of previous noise levels */
+    FIXP_DBL  filtBuffer[MAX_FREQ_COEFFS];          /*!< previous gains (required for smoothing) */
+    FIXP_DBL  filtBufferNoise[MAX_FREQ_COEFFS];     /*!< previous noise levels (required for smoothing) */
+    SCHAR     filtBuffer_e[MAX_FREQ_COEFFS];        /*!< Exponents of previous gains */
+    SCHAR     filtBufferNoise_e;                    /*!< Common exponent of previous noise levels */
 
-  int startUp;               /*!< flag to signal initial conditions in buffers */
-  int phaseIndex;            /*!< Index for randomPase array */
-  int prevTranEnv;           /*!< The transient envelope of the previous frame. */
+    int startUp;               /*!< flag to signal initial conditions in buffers */
+    int phaseIndex;            /*!< Index for randomPase array */
+    int prevTranEnv;           /*!< The transient envelope of the previous frame. */
 
-  int harmFlagsPrev[(MAX_FREQ_COEFFS+15)/16];
-  /*!< Words with 16 flags each indicating where a sine was added in the previous frame.*/
-  UCHAR harmIndex;            /*!< Current phase of synthetic sine */
+    int harmFlagsPrev[(MAX_FREQ_COEFFS+15)/16];
+    /*!< Words with 16 flags each indicating where a sine was added in the previous frame.*/
+    UCHAR harmIndex;            /*!< Current phase of synthetic sine */
 
 }
 SBR_CALCULATE_ENVELOPE;
@@ -126,7 +126,7 @@ calculateSbrEnvelope (QMF_SCALE_FACTOR  *sbrScaleFactor,
                       FIXP_DBL *degreeAlias,                       /*!< Estimated aliasing for each QMF channel */
                       const UINT flags,
                       const int frameErrorFlag
-                      );
+                     );
 
 SBR_ERROR
 createSbrEnvelopeCalc (HANDLE_SBR_CALCULATE_ENVELOPE hSbrCalculateEnvelope,

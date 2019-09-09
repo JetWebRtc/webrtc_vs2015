@@ -1,4 +1,4 @@
-/*
+﻿/*
  * JPEG 2000 DSP functions
  * Copyright (c) 2007 Kamil Nowosad
  * Copyright (c) 2013 Nicolas Bertrand <nicoinattendu@gmail.com>
@@ -26,17 +26,19 @@
 
 /* Inverse ICT parameters in float and integer.
  * int value = (float value) * (1<<16) */
-static const float f_ict_params[4] = {
+static const float f_ict_params[4] =
+{
     1.402f,
     0.34413f,
     0.71414f,
     1.772f
 };
 
-static const int i_ict_params[4] = {
-     91881,
-     22553,
-     46802,
+static const int i_ict_params[4] =
+{
+    91881,
+    22553,
+    46802,
     116130
 };
 
@@ -46,10 +48,11 @@ static void ict_float(void *_src0, void *_src1, void *_src2, int csize)
     float i0f, i1f, i2f;
     int i;
 
-    for (i = 0; i < csize; i++) {
+    for (i = 0; i < csize; i++)
+    {
         i0f = *src0 + (f_ict_params[0] * *src2);
         i1f = *src0 - (f_ict_params[1] * *src1)
-                    - (f_ict_params[2] * *src2);
+              - (f_ict_params[2] * *src2);
         i2f = *src0 + (f_ict_params[3] * *src1);
         *src0++ = i0f;
         *src1++ = i1f;
@@ -63,10 +66,11 @@ static void ict_int(void *_src0, void *_src1, void *_src2, int csize)
     int32_t i0, i1, i2;
     int i;
 
-    for (i = 0; i < csize; i++) {
+    for (i = 0; i < csize; i++)
+    {
         i0 = *src0 + (((i_ict_params[0] * *src2) + (1 << 15)) >> 16);
         i1 = *src0 - (((i_ict_params[1] * *src1) + (1 << 15)) >> 16)
-                   - (((i_ict_params[2] * *src2) + (1 << 15)) >> 16);
+             - (((i_ict_params[2] * *src2) + (1 << 15)) >> 16);
         i2 = *src0 + (((i_ict_params[3] * *src1) + (1 << 15)) >> 16);
         *src0++ = i0;
         *src1++ = i1;
@@ -80,7 +84,8 @@ static void rct_int(void *_src0, void *_src1, void *_src2, int csize)
     int32_t i0, i1, i2;
     int i;
 
-    for (i = 0; i < csize; i++) {
+    for (i = 0; i < csize; i++)
+    {
         i1 = *src0 - (*src2 + *src1 >> 2);
         i0 = i1 + *src2;
         i2 = i1 + *src1;

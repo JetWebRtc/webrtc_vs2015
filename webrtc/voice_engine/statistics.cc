@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,9 +15,11 @@
 
 #include "webrtc/system_wrappers/include/trace.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace voe {
+namespace voe
+{
 
 Statistics::Statistics(uint32_t instanceId) :
     _instanceId(instanceId),

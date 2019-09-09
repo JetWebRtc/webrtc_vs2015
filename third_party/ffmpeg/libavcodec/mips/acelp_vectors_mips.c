@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -58,8 +58,8 @@
 
 #if HAVE_INLINE_ASM
 static void ff_weighted_vector_sumf_mips(
-                  float *out, const float *in_a, const float *in_b,
-                  float weight_coeff_a, float weight_coeff_b, int length)
+    float *out, const float *in_a, const float *in_b,
+    float weight_coeff_a, float weight_coeff_b, int length)
 {
     const float *a_end = in_a + length;
 
@@ -87,8 +87,8 @@ static void ff_weighted_vector_sumf_mips(
 
         : [out] "+r" (out), [in_a] "+r" (in_a),   [in_b] "+r" (in_b)
         : [weight_coeff_a] "f" (weight_coeff_a),
-          [weight_coeff_b] "f" (weight_coeff_b),
-          [length] "r" (length), [a_end]"r"(a_end)
+        [weight_coeff_b] "f" (weight_coeff_b),
+        [length] "r" (length), [a_end]"r"(a_end)
         : "$f0", "$f1", "$f2", "$f3", "$f4", "$f5", "memory"
     );
 }

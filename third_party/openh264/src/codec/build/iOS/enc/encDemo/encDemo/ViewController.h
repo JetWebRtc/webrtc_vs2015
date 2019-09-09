@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -32,8 +32,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController {
-  UILabel* statusText_;
+@interface ViewController : UIViewController
+{
+    UILabel* statusText_;
 }
 
 @property (retain, nonatomic) IBOutlet UILabel* statusText;

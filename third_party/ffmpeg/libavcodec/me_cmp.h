@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -50,7 +50,8 @@ typedef int (*me_cmp_func)(struct MpegEncContext *c,
                            uint8_t *blk2 /* align 1 */, ptrdiff_t stride,
                            int h);
 
-typedef struct MECmpContext {
+typedef struct MECmpContext
+{
     int (*sum_abs_dctelem)(int16_t *block /* align 16 */);
 
     me_cmp_func sad[6]; /* identical to pix_absAxA except additional void * */

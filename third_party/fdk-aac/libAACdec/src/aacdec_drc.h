@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -105,13 +105,13 @@ amm-info@iis.fraunhofer.de
  */
 typedef enum
 {
-  DRC_CUT_SCALE = 0,
-  DRC_BOOST_SCALE,
-  TARGET_REF_LEVEL,
-  DRC_BS_DELAY,
-  DRC_DATA_EXPIRY_FRAME,
-  APPLY_NORMALIZATION,
-  APPLY_HEAVY_COMPRESSION
+    DRC_CUT_SCALE = 0,
+    DRC_BOOST_SCALE,
+    TARGET_REF_LEVEL,
+    DRC_BS_DELAY,
+    DRC_DATA_EXPIRY_FRAME,
+    APPLY_NORMALIZATION,
+    APPLY_HEAVY_COMPRESSION
 
 } AACDEC_DRC_PARAM;
 
@@ -120,28 +120,28 @@ typedef enum
  * \brief DRC module interface functions
  */
 void aacDecoder_drcInit (
-        HANDLE_AAC_DRC  self );
+    HANDLE_AAC_DRC  self );
 
 void aacDecoder_drcInitChannelData (
-        CDrcChannelData *pDrcChannel );
+    CDrcChannelData *pDrcChannel );
 
 AAC_DECODER_ERROR aacDecoder_drcSetParam (
-        HANDLE_AAC_DRC    self,
-        AACDEC_DRC_PARAM  param,
-        INT               value );
+    HANDLE_AAC_DRC    self,
+    AACDEC_DRC_PARAM  param,
+    INT               value );
 
 int aacDecoder_drcMarkPayload (
-        HANDLE_AAC_DRC  self,
-        HANDLE_FDK_BITSTREAM  hBs,
-        AACDEC_DRC_PAYLOAD_TYPE  type );
+    HANDLE_AAC_DRC  self,
+    HANDLE_FDK_BITSTREAM  hBs,
+    AACDEC_DRC_PAYLOAD_TYPE  type );
 
 int aacDecoder_drcProlog (
-        HANDLE_AAC_DRC  self,
-        HANDLE_FDK_BITSTREAM hBs,
-        CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
-        UCHAR  pceInstanceTag,
-        UCHAR  channelMapping[],
-        int    numChannels );
+    HANDLE_AAC_DRC  self,
+    HANDLE_FDK_BITSTREAM hBs,
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
+    UCHAR  pceInstanceTag,
+    UCHAR  channelMapping[],
+    int    numChannels );
 
 /**
  * \brief Apply DRC. If SBR is present, DRC data is handed over to the SBR decoder.
@@ -156,22 +156,22 @@ int aacDecoder_drcProlog (
  * \param bSbrPresent flag indicating that SBR is present, in which case DRC is handed over to the SBR instance pSbrDec
  */
 void aacDecoder_drcApply (
-        HANDLE_AAC_DRC          self,
-        void                   *pSbrDec,
-        CAacDecoderChannelInfo *pAacDecoderChannelInfo,
-        CDrcChannelData        *pDrcDat,
-        FIXP_DBL               *extGain,
-        int  ch,
-        int  aacFrameSize,
-        int  bSbrPresent );
+    HANDLE_AAC_DRC          self,
+    void                   *pSbrDec,
+    CAacDecoderChannelInfo *pAacDecoderChannelInfo,
+    CDrcChannelData        *pDrcDat,
+    FIXP_DBL               *extGain,
+    int  ch,
+    int  aacFrameSize,
+    int  bSbrPresent );
 
 int aacDecoder_drcEpilog (
-        HANDLE_AAC_DRC  self,
-        HANDLE_FDK_BITSTREAM hBs,
-        CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
-        UCHAR  pceInstanceTag,
-        UCHAR  channelMapping[],
-        int    validChannels );
+    HANDLE_AAC_DRC  self,
+    HANDLE_FDK_BITSTREAM hBs,
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[],
+    UCHAR  pceInstanceTag,
+    UCHAR  channelMapping[],
+    int    validChannels );
 
 /**
  * \brief Get metadata information found in bitstream.
@@ -181,9 +181,9 @@ int aacDecoder_drcEpilog (
  * \return Nothing.
  */
 void aacDecoder_drcGetInfo (
-        HANDLE_AAC_DRC  self,
-        SCHAR  *pPresMode,
-        SCHAR  *pProgRefLevel );
+    HANDLE_AAC_DRC  self,
+    SCHAR  *pPresMode,
+    SCHAR  *pProgRefLevel );
 
 
 #endif  /* AACDEC_DRC_H */

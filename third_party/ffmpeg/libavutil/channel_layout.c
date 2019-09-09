@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -31,22 +31,24 @@
 #include "bprint.h"
 #include "common.h"
 
-struct channel_name {
+struct channel_name
+{
     const char *name;
     const char *description;
 };
 
-static const struct channel_name channel_names[] = {
-     [0] = { "FL",        "front left"            },
-     [1] = { "FR",        "front right"           },
-     [2] = { "FC",        "front center"          },
-     [3] = { "LFE",       "low frequency"         },
-     [4] = { "BL",        "back left"             },
-     [5] = { "BR",        "back right"            },
-     [6] = { "FLC",       "front left-of-center"  },
-     [7] = { "FRC",       "front right-of-center" },
-     [8] = { "BC",        "back center"           },
-     [9] = { "SL",        "side left"             },
+static const struct channel_name channel_names[] =
+{
+    [0] = { "FL",        "front left"            },
+    [1] = { "FR",        "front right"           },
+    [2] = { "FC",        "front center"          },
+    [3] = { "LFE",       "low frequency"         },
+    [4] = { "BL",        "back left"             },
+    [5] = { "BR",        "back right"            },
+    [6] = { "FLC",       "front left-of-center"  },
+    [7] = { "FRC",       "front right-of-center" },
+    [8] = { "BC",        "back center"           },
+    [9] = { "SL",        "side left"             },
     [10] = { "SR",        "side right"            },
     [11] = { "TC",        "top center"            },
     [12] = { "TFL",       "top front left"        },
@@ -71,11 +73,13 @@ static const char *get_channel_name(int channel_id)
     return channel_names[channel_id].name;
 }
 
-static const struct {
+static const struct
+{
     const char *name;
     int         nb_channels;
     uint64_t     layout;
-} channel_layout_map[] = {
+} channel_layout_map[] =
+{
     { "mono",        1,  AV_CH_LAYOUT_MONO },
     { "stereo",      2,  AV_CH_LAYOUT_STEREO },
     { "2.1",         3,  AV_CH_LAYOUT_2POINT1 },
@@ -116,24 +120,28 @@ static uint64_t get_channel_layout_single(const char *name, int name_len)
     char *end;
     int64_t layout;
 
-    for (i = 0; i < FF_ARRAY_ELEMS(channel_layout_map); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(channel_layout_map); i++)
+    {
         if (strlen(channel_layout_map[i].name) == name_len &&
-            !memcmp(channel_layout_map[i].name, name, name_len))
+                !memcmp(channel_layout_map[i].name, name, name_len))
             return channel_layout_map[i].layout;
     }
     for (i = 0; i < FF_ARRAY_ELEMS(channel_names); i++)
         if (channel_names[i].name &&
-            strlen(channel_names[i].name) == name_len &&
-            !memcmp(channel_names[i].name, name, name_len))
+                strlen(channel_names[i].name) == name_len &&
+                !memcmp(channel_names[i].name, name, name_len))
             return (int64_t)1 << i;
     i = strtol(name, &end, 10);
 
 #if FF_API_GET_CHANNEL_LAYOUT_COMPAT
-    if (compat) {
+    if (compat)
+    {
         if (end - name == name_len ||
-            (end + 1 - name == name_len && *end  == 'c')) {
+                (end + 1 - name == name_len && *end  == 'c'))
+        {
             layout = av_get_default_channel_layout(i);
-            if (end - name == name_len) {
+            if (end - name == name_len)
+            {
                 av_log(NULL, AV_LOG_WARNING,
                        "Single channel layout '%.*s' is interpreted as a number of channels, "
                        "switch to the syntax '%.*sc' otherwise it will be interpreted as a "
@@ -142,10 +150,12 @@ static uint64_t get_channel_layout_single(const char *name, int name_len)
             }
             return layout;
         }
-    } else {
+    }
+    else
+    {
 #endif
-    if ((end + 1 - name == name_len && *end  == 'c'))
-        return av_get_default_channel_layout(i);
+        if ((end + 1 - name == name_len && *end  == 'c'))
+            return av_get_default_channel_layout(i);
 #if FF_API_GET_CHANNEL_LAYOUT_COMPAT
     }
 #endif
@@ -166,7 +176,8 @@ uint64_t av_get_channel_layout(const char *name)
     const char *name_end = name + strlen(name);
     int64_t layout = 0, layout_single;
 
-    for (n = name; n < name_end; n = e + 1) {
+    for (n = name; n < name_end; n = e + 1)
+    {
         for (e = n; e < name_end && *e != '+' && *e != '|'; e++);
 #if FF_API_GET_CHANNEL_LAYOUT_COMPAT
         layout_single = get_channel_layout_single(n, e - n, compat);
@@ -197,19 +208,24 @@ void av_bprint_channel_layout(struct AVBPrint *bp,
 
     for (i = 0; i < FF_ARRAY_ELEMS(channel_layout_map); i++)
         if (nb_channels    == channel_layout_map[i].nb_channels &&
-            channel_layout == channel_layout_map[i].layout) {
+                channel_layout == channel_layout_map[i].layout)
+        {
             av_bprintf(bp, "%s", channel_layout_map[i].name);
             return;
         }
 
     av_bprintf(bp, "%d channels", nb_channels);
-    if (channel_layout) {
+    if (channel_layout)
+    {
         int i, ch;
         av_bprintf(bp, " (");
-        for (i = 0, ch = 0; i < 64; i++) {
-            if ((channel_layout & (UINT64_C(1) << i))) {
+        for (i = 0, ch = 0; i < 64; i++)
+        {
+            if ((channel_layout & (UINT64_C(1) << i)))
+            {
                 const char *name = get_channel_name(i);
-                if (name) {
+                if (name)
+                {
                     if (ch > 0)
                         av_bprintf(bp, "+");
                     av_bprintf(bp, "%s", name);
@@ -235,7 +251,8 @@ int av_get_channel_layout_nb_channels(uint64_t channel_layout)
     return av_popcount64(channel_layout);
 }
 
-int64_t av_get_default_channel_layout(int nb_channels) {
+int64_t av_get_default_channel_layout(int nb_channels)
+{
     int i;
     for (i = 0; i < FF_ARRAY_ELEMS(channel_layout_map); i++)
         if (nb_channels == channel_layout_map[i].nb_channels)
@@ -247,7 +264,7 @@ int av_get_channel_layout_channel_index(uint64_t channel_layout,
                                         uint64_t channel)
 {
     if (!(channel_layout & channel) ||
-        av_get_channel_layout_nb_channels(channel) != 1)
+            av_get_channel_layout_nb_channels(channel) != 1)
         return AVERROR(EINVAL);
     channel_layout &= channel - 1;
     return av_get_channel_layout_nb_channels(channel_layout);
@@ -282,7 +299,8 @@ uint64_t av_channel_layout_extract_channel(uint64_t channel_layout, int index)
     if (av_get_channel_layout_nb_channels(channel_layout) <= index)
         return 0;
 
-    for (i = 0; i < 64; i++) {
+    for (i = 0; i < 64; i++)
+    {
         if ((1ULL << i) & channel_layout && !index--)
             return 1ULL << i;
     }

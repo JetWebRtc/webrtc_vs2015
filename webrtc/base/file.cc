@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,13 +12,16 @@
 
 #include <utility>
 
-namespace rtc {
+namespace rtc
+{
 
-namespace {
+namespace
+{
 
-std::string NormalizePathname(Pathname&& path) {
-  path.Normalize();
-  return path.pathname();
+std::string NormalizePathname(Pathname&& path)
+{
+    path.Normalize();
+    return path.pathname();
 }
 
 }  // namespace
@@ -27,68 +30,81 @@ File::File(PlatformFile file) : file_(file) {}
 
 File::File() : file_(kInvalidPlatformFileValue) {}
 
-File::~File() {
-  Close();
+File::~File()
+{
+    Close();
 }
 
 // static
-File File::Open(const std::string& path) {
-  return File(OpenPlatformFile(path));
+File File::Open(const std::string& path)
+{
+    return File(OpenPlatformFile(path));
 }
 
 // static
-File File::Open(Pathname&& path) {
-  return Open(NormalizePathname(std::move(path)));
+File File::Open(Pathname&& path)
+{
+    return Open(NormalizePathname(std::move(path)));
 }
 
 // static
-File File::Open(const Pathname& path) {
-  return Open(Pathname(path));
+File File::Open(const Pathname& path)
+{
+    return Open(Pathname(path));
 }
 
 // static
-File File::Create(const std::string& path) {
-  return File(CreatePlatformFile(path));
+File File::Create(const std::string& path)
+{
+    return File(CreatePlatformFile(path));
 }
 
 // static
-File File::Create(Pathname&& path) {
-  return Create(NormalizePathname(std::move(path)));
+File File::Create(Pathname&& path)
+{
+    return Create(NormalizePathname(std::move(path)));
 }
 
 // static
-File File::Create(const Pathname& path) {
-  return Create(Pathname(path));
+File File::Create(const Pathname& path)
+{
+    return Create(Pathname(path));
 }
 
 // static
-bool File::Remove(const std::string& path) {
-  return RemoveFile(path);
+bool File::Remove(const std::string& path)
+{
+    return RemoveFile(path);
 }
 
 // static
-bool File::Remove(Pathname&& path) {
-  return Remove(NormalizePathname(std::move(path)));
+bool File::Remove(Pathname&& path)
+{
+    return Remove(NormalizePathname(std::move(path)));
 }
 
 // static
-bool File::Remove(const Pathname& path) {
-  return Remove(Pathname(path));
+bool File::Remove(const Pathname& path)
+{
+    return Remove(Pathname(path));
 }
 
-File::File(File&& other) : file_(other.file_) {
-  other.file_ = kInvalidPlatformFileValue;
+File::File(File&& other) : file_(other.file_)
+{
+    other.file_ = kInvalidPlatformFileValue;
 }
 
-File& File::operator=(File&& other) {
-  Close();
-  file_ = other.file_;
-  other.file_ = kInvalidPlatformFileValue;
-  return *this;
+File& File::operator=(File&& other)
+{
+    Close();
+    file_ = other.file_;
+    other.file_ = kInvalidPlatformFileValue;
+    return *this;
 }
 
-bool File::IsOpen() {
-  return file_ != kInvalidPlatformFileValue;
+bool File::IsOpen()
+{
+    return file_ != kInvalidPlatformFileValue;
 }
 
 }  // namespace rtc

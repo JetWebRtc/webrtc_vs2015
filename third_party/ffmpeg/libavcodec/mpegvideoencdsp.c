@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -35,7 +35,8 @@ static int try_8x8basis_c(int16_t rem[64], int16_t weight[64],
     int i;
     unsigned int sum = 0;
 
-    for (i = 0; i < 8 * 8; i++) {
+    for (i = 0; i < 8 * 8; i++)
+    {
         int b = rem[i] + ((basis[i] * scale +
                            (1 << (BASIS_SHIFT - RECON_SHIFT - 1))) >>
                           (BASIS_SHIFT - RECON_SHIFT));
@@ -62,8 +63,10 @@ static int pix_sum_c(uint8_t *pix, int line_size)
 {
     int s = 0, i, j;
 
-    for (i = 0; i < 16; i++) {
-        for (j = 0; j < 16; j += 8) {
+    for (i = 0; i < 16; i++)
+    {
+        for (j = 0; j < 16; j += 8)
+        {
             s   += pix[0];
             s   += pix[1];
             s   += pix[2];
@@ -84,8 +87,10 @@ static int pix_norm1_c(uint8_t *pix, int line_size)
     int s = 0, i, j;
     uint32_t *sq = ff_square_tab + 256;
 
-    for (i = 0; i < 16; i++) {
-        for (j = 0; j < 16; j += 8) {
+    for (i = 0; i < 16; i++)
+    {
+        for (j = 0; j < 16; j += 8)
+        {
 #if 0
             s += sq[pix[0]];
             s += sq[pix[1]];
@@ -135,7 +140,8 @@ static void draw_edges_8_c(uint8_t *buf, int wrap, int width, int height,
     int i;
 
     /* left and right */
-    for (i = 0; i < height; i++) {
+    for (i = 0; i < height; i++)
+    {
         memset(ptr - w, ptr[0], w);
         memset(ptr + width, ptr[width - 1], w);
         ptr += wrap;

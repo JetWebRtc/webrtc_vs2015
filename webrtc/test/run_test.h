@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -10,8 +10,10 @@
 #ifndef WEBRTC_TEST_RUN_TEST_H
 #define WEBRTC_TEST_RUN_TEST_H
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Running a test function on a separate thread, if required by the OS.
 void RunTest(void(*test)());

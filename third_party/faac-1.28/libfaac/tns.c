@@ -1,4 +1,4 @@
-/**********************************************************************
+﻿/**********************************************************************
 
 This software module was originally developed by Texas Instruments
 and edited by         in the course of
@@ -64,14 +64,14 @@ static unsigned short tnsMaxOrderShortMainLow = 7;
 /* Function prototypes   */
 /*************************/
 static void Autocorrelation(int maxOrder,        /* Maximum autocorr order */
-                     int dataSize,        /* Size of the data array */
-                     double* data,        /* Data array */
-                     double* rArray);     /* Autocorrelation array */
+                            int dataSize,        /* Size of the data array */
+                            double* data,        /* Data array */
+                            double* rArray);     /* Autocorrelation array */
 
 static double LevinsonDurbin(int maxOrder,        /* Maximum filter order */
-                      int dataSize,        /* Size of the data array */
-                      double* data,        /* Data array */
-                      double* kArray);     /* Reflection coeff array */
+                             int dataSize,        /* Size of the data array */
+                             double* data,        /* Data array */
+                             double* kArray);     /* Reflection coeff array */
 
 static void StepUp(int fOrder, double* kArray, double* aArray);
 
@@ -90,17 +90,22 @@ void TnsInit(faacEncHandle hEncoder)
     int fsIndex = hEncoder->sampleRateIdx;
     int profile = hEncoder->config.aacObjectType;
 
-    for (channel = 0; channel < hEncoder->numChannels; channel++) {
+    for (channel = 0; channel < hEncoder->numChannels; channel++)
+    {
         TnsInfo *tnsInfo = &hEncoder->coderInfo[channel].tnsInfo;
 
-        switch( profile ) {
+        switch( profile )
+        {
         case MAIN:
         case LTP:
             tnsInfo->tnsMaxBandsLong = tnsMaxBandsLongMainLow[fsIndex];
             tnsInfo->tnsMaxBandsShort = tnsMaxBandsShortMainLow[fsIndex];
-            if (hEncoder->config.mpegVersion == 1) { /* MPEG2 */
+            if (hEncoder->config.mpegVersion == 1)   /* MPEG2 */
+            {
                 tnsInfo->tnsMaxOrderLong = tnsMaxOrderLongMain;
-            } else { /* MPEG4 */
+            }
+            else     /* MPEG4 */
+            {
                 if (fsIndex <= 5) /* fs > 32000Hz */
                     tnsInfo->tnsMaxOrderLong = 12;
                 else
@@ -111,9 +116,12 @@ void TnsInit(faacEncHandle hEncoder)
         case LOW :
             tnsInfo->tnsMaxBandsLong = tnsMaxBandsLongMainLow[fsIndex];
             tnsInfo->tnsMaxBandsShort = tnsMaxBandsShortMainLow[fsIndex];
-            if (hEncoder->config.mpegVersion == 1) { /* MPEG2 */
+            if (hEncoder->config.mpegVersion == 1)   /* MPEG2 */
+            {
                 tnsInfo->tnsMaxOrderLong = tnsMaxOrderLongLow;
-            } else { /* MPEG4 */
+            }
+            else     /* MPEG4 */
+            {
                 if (fsIndex <= 5) /* fs > 32000Hz */
                     tnsInfo->tnsMaxOrderLong = 12;
                 else
@@ -145,7 +153,8 @@ void TnsEncode(TnsInfo* tnsInfo,       /* TNS info */
     int startIndex,length;
     double gain;
 
-    switch( blockType ) {
+    switch( blockType )
+    {
     case ONLY_SHORT_WINDOW :
 
         /* TNS not used for short blocks currently */
@@ -184,7 +193,8 @@ void TnsEncode(TnsInfo* tnsInfo,       /* TNS info */
     tnsInfo->tnsDataPresent = 0;     /* default TNS not used */
 
     /* Perform analysis and filtering for each window */
-    for (w=0;w<numberOfWindows;w++) {
+    for (w=0; w<numberOfWindows; w++)
+    {
 
         TnsWindowData* windowData = &tnsInfo->windowData[w];
         TnsFilterData* tnsFilter = windowData->tnsFilter;
@@ -197,7 +207,8 @@ void TnsEncode(TnsInfo* tnsInfo,       /* TNS info */
         length = sfbOffsetTable[stopBand] - sfbOffsetTable[startBand];
         gain = LevinsonDurbin(order,length,&spec[startIndex],k);
 
-        if (gain>DEF_TNS_GAIN_THRESH) {  /* Use TNS */
+        if (gain>DEF_TNS_GAIN_THRESH)    /* Use TNS */
+        {
             int truncatedOrder;
             windowData->numFilters++;
             tnsInfo->tnsDataPresent=1;
@@ -231,7 +242,8 @@ void TnsEncodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
     int w;
     int startIndex,length;
 
-    switch( blockType ) {
+    switch( blockType )
+    {
     case ONLY_SHORT_WINDOW :
         numberOfWindows = MAX_SHORT_WINDOWS;
         windowSize = BLOCK_LEN_SHORT;
@@ -260,7 +272,7 @@ void TnsEncodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
 
 
     /* Perform filtering for each window */
-    for(w=0;w<numberOfWindows;w++)
+    for(w=0; w<numberOfWindows; w++)
     {
         TnsWindowData* windowData = &tnsInfo->windowData[w];
         TnsFilterData* tnsFilter = windowData->tnsFilter;
@@ -268,7 +280,8 @@ void TnsEncodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
         startIndex = w * windowSize + sfbOffsetTable[startBand];
         length = sfbOffsetTable[stopBand] - sfbOffsetTable[startBand];
 
-        if (tnsInfo->tnsDataPresent  &&  windowData->numFilters) {  /* Use TNS */
+        if (tnsInfo->tnsDataPresent  &&  windowData->numFilters)    /* Use TNS */
+        {
             TnsInvFilter(length,&spec[startIndex],tnsFilter);
         }
     }
@@ -292,7 +305,8 @@ void TnsDecodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
     int w;
     int startIndex,length;
 
-    switch( blockType ) {
+    switch( blockType )
+    {
     case ONLY_SHORT_WINDOW :
         numberOfWindows = MAX_SHORT_WINDOWS;
         windowSize = BLOCK_LEN_SHORT;
@@ -321,7 +335,7 @@ void TnsDecodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
 
 
     /* Perform filtering for each window */
-    for(w=0;w<numberOfWindows;w++)
+    for(w=0; w<numberOfWindows; w++)
     {
         TnsWindowData* windowData = &tnsInfo->windowData[w];
         TnsFilterData* tnsFilter = windowData->tnsFilter;
@@ -329,7 +343,8 @@ void TnsDecodeFilterOnly(TnsInfo* tnsInfo,           /* TNS info */
         startIndex = w * windowSize + sfbOffsetTable[startBand];
         length = sfbOffsetTable[stopBand] - sfbOffsetTable[startBand];
 
-        if (tnsInfo->tnsDataPresent  &&  windowData->numFilters) {  /* Use TNS */
+        if (tnsInfo->tnsDataPresent  &&  windowData->numFilters)    /* Use TNS */
+        {
             TnsFilter(length,&spec[startIndex],tnsFilter);
         }
     }
@@ -350,36 +365,47 @@ static void TnsFilter(int length,double* spec,TnsFilterData* filter)
     double* a=filter->aCoeffs;
 
     /* Determine loop parameters for given direction */
-    if (filter->direction) {
+    if (filter->direction)
+    {
 
         /* Startup, initial state is zero */
-        for (i=length-2;i>(length-1-order);i--) {
+        for (i=length-2; i>(length-1-order); i--)
+        {
             k++;
-            for (j=1;j<=k;j++) {
+            for (j=1; j<=k; j++)
+            {
                 spec[i]-=spec[i+j]*a[j];
             }
         }
 
         /* Now filter completely inplace */
-        for (i=length-1-order;i>=0;i--) {
-            for (j=1;j<=order;j++) {
+        for (i=length-1-order; i>=0; i--)
+        {
+            for (j=1; j<=order; j++)
+            {
                 spec[i]-=spec[i+j]*a[j];
             }
         }
 
 
-    } else {
+    }
+    else
+    {
 
         /* Startup, initial state is zero */
-        for (i=1;i<order;i++) {
-            for (j=1;j<=i;j++) {
+        for (i=1; i<order; i++)
+        {
+            for (j=1; j<=i; j++)
+            {
                 spec[i]-=spec[i-j]*a[j];
             }
         }
 
         /* Now filter completely inplace */
-        for (i=order;i<length;i++) {
-            for (j=1;j<=order;j++) {
+        for (i=order; i<length; i++)
+        {
+            for (j=1; j<=order; j++)
+            {
                 spec[i]-=spec[i-j]*a[j];
             }
         }
@@ -404,42 +430,53 @@ static void TnsInvFilter(int length,double* spec,TnsFilterData* filter)
     temp = (double *)AllocMemory(length * sizeof (double));
 
     /* Determine loop parameters for given direction */
-    if (filter->direction) {
+    if (filter->direction)
+    {
 
         /* Startup, initial state is zero */
         temp[length-1]=spec[length-1];
-        for (i=length-2;i>(length-1-order);i--) {
+        for (i=length-2; i>(length-1-order); i--)
+        {
             temp[i]=spec[i];
             k++;
-            for (j=1;j<=k;j++) {
+            for (j=1; j<=k; j++)
+            {
                 spec[i]+=temp[i+j]*a[j];
             }
         }
 
         /* Now filter the rest */
-        for (i=length-1-order;i>=0;i--) {
+        for (i=length-1-order; i>=0; i--)
+        {
             temp[i]=spec[i];
-            for (j=1;j<=order;j++) {
+            for (j=1; j<=order; j++)
+            {
                 spec[i]+=temp[i+j]*a[j];
             }
         }
 
 
-    } else {
+    }
+    else
+    {
 
         /* Startup, initial state is zero */
         temp[0]=spec[0];
-        for (i=1;i<order;i++) {
+        for (i=1; i<order; i++)
+        {
             temp[i]=spec[i];
-            for (j=1;j<=i;j++) {
+            for (j=1; j<=i; j++)
+            {
                 spec[i]+=temp[i-j]*a[j];
             }
         }
 
         /* Now filter the rest */
-        for (i=order;i<length;i++) {
+        for (i=order; i<length; i++)
+        {
             temp[i]=spec[i];
-            for (j=1;j<=order;j++) {
+            for (j=1; j<=order; j++)
+            {
                 spec[i]+=temp[i-j]*a[j];
             }
         }
@@ -462,7 +499,8 @@ static int TruncateCoeffs(int fOrder,double threshold,double* kArray)
 {
     int i;
 
-    for (i = fOrder; i >= 0; i--) {
+    for (i = fOrder; i >= 0; i--)
+    {
         kArray[i] = (fabs(kArray[i])>threshold) ? kArray[i] : 0.0;
         if (kArray[i]!=0.0) return i;
     }
@@ -476,9 +514,9 @@ static int TruncateCoeffs(int fOrder,double threshold,double* kArray)
 /*   to the specified resolution in bits.            */
 /*****************************************************/
 static void QuantizeReflectionCoeffs(int fOrder,
-                              int coeffRes,
-                              double* kArray,
-                              int* indexArray)
+                                     int coeffRes,
+                                     double* kArray,
+                                     int* indexArray)
 {
     double iqfac,iqfac_m;
     int i;
@@ -487,7 +525,8 @@ static void QuantizeReflectionCoeffs(int fOrder,
     iqfac_m = ((1<<(coeffRes-1))+0.5)/(M_PI/2);
 
     /* Quantize and inverse quantize */
-    for (i=1;i<=fOrder;i++) {
+    for (i=1; i<=fOrder; i++)
+    {
         indexArray[i] = (int)(0.5+(asin(kArray[i])*((kArray[i]>=0)?iqfac:iqfac_m)));
         kArray[i] = sin((double)indexArray[i]/((indexArray[i]>=0)?iqfac:iqfac_m));
     }
@@ -499,15 +538,17 @@ static void QuantizeReflectionCoeffs(int fOrder,
 /*   estimate for the given data.                    */
 /*****************************************************/
 static void Autocorrelation(int maxOrder,        /* Maximum autocorr order */
-                     int dataSize,        /* Size of the data array */
-                     double* data,        /* Data array */
-                     double* rArray)      /* Autocorrelation array */
+                            int dataSize,        /* Size of the data array */
+                            double* data,        /* Data array */
+                            double* rArray)      /* Autocorrelation array */
 {
     int order,index;
 
-    for (order=0;order<=maxOrder;order++) {
+    for (order=0; order<=maxOrder; order++)
+    {
         rArray[order]=0.0;
-        for (index=0;index<dataSize;index++) {
+        for (index=0; index<dataSize; index++)
+        {
             rArray[order]+=data[index]*data[index+order];
         }
         dataSize--;
@@ -523,9 +564,9 @@ static void Autocorrelation(int maxOrder,        /* Maximum autocorr order */
 /*   Return the prediction gain.                     */
 /*****************************************************/
 static double LevinsonDurbin(int fOrder,          /* Filter order */
-                      int dataSize,        /* Size of the data array */
-                      double* data,        /* Data array */
-                      double* kArray)      /* Reflection coeff array */
+                             int dataSize,        /* Size of the data array */
+                             double* data,        /* Data array */
+                             double* kArray)      /* Reflection coeff array */
 {
     int order,i;
     double signal;
@@ -546,14 +587,18 @@ static double LevinsonDurbin(int fOrder,          /* Filter order */
     aPtr = aArray1;
     aLastPtr = aArray2;
     /* If there is no signal energy, return */
-    if (!signal) {
+    if (!signal)
+    {
         kArray[0]=1.0;
-        for (order=1;order<=fOrder;order++) {
+        for (order=1; order<=fOrder; order++)
+        {
             kArray[order]=0.0;
         }
         return 0;
 
-    } else {
+    }
+    else
+    {
 
         /* Set up first iteration */
         kArray[0]=1.0;
@@ -562,15 +607,18 @@ static double LevinsonDurbin(int fOrder,          /* Filter order */
         error=rArray[0];
 
         /* Now perform recursion */
-        for (order=1;order<=fOrder;order++) {
+        for (order=1; order<=fOrder; order++)
+        {
             kTemp = aLastPtr[0]*rArray[order-0];
-            for (i=1;i<order;i++) {
+            for (i=1; i<order; i++)
+            {
                 kTemp += aLastPtr[i]*rArray[order-i];
             }
             kTemp = -kTemp/error;
             kArray[order]=kTemp;
             aPtr[order]=kTemp;
-            for (i=1;i<order;i++) {
+            for (i=1; i<order; i++)
+            {
                 aPtr[i] = aLastPtr[i] + kTemp*aLastPtr[order-i];
             }
             error = error * (1 - kTemp*kTemp);
@@ -597,12 +645,15 @@ static void StepUp(int fOrder,double* kArray,double* aArray)
 
     aArray[0]=1.0;
     aTemp[0]=1.0;
-    for (order=1;order<=fOrder;order++) {
+    for (order=1; order<=fOrder; order++)
+    {
         aArray[order]=0.0;
-        for (i=1;i<=order;i++) {
+        for (i=1; i<=order; i++)
+        {
             aTemp[i] = aArray[i] + kArray[order]*aArray[order-i];
         }
-        for (i=1;i<=order;i++) {
+        for (i=1; i<=order; i++)
+        {
             aArray[i]=aTemp[i];
         }
     }

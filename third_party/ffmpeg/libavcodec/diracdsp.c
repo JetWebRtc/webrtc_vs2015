@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2009 David Conrad
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@ static void dirac_hpel_filter(uint8_t *dsth, uint8_t *dstv, uint8_t *dstc, const
 {
     int x, y;
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         for (x = -3; x < width+5; x++)
             dstv[x] = av_clip_uint8(FILTER(src+x, stride));
 
@@ -138,8 +139,10 @@ ADD_OBMC(32)
 static void put_signed_rect_clamped_c(uint8_t *dst, int dst_stride, const int16_t *src, int src_stride, int width, int height)
 {
     int x, y;
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x+=4) {
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x+=4)
+        {
             dst[x  ] = av_clip_uint8(src[x  ] + 128);
             dst[x+1] = av_clip_uint8(src[x+1] + 128);
             dst[x+2] = av_clip_uint8(src[x+2] + 128);
@@ -156,8 +159,10 @@ static void add_rect_clamped_c(uint8_t *dst, const uint16_t *src, int stride,
 {
     int x, y;
 
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x+=2) {
+    for (y = 0; y < height; y++)
+    {
+        for (x = 0; x < width; x+=2)
+        {
             dst[x  ] = av_clip_uint8(((src[x  ]+32)>>6) + idwt[x  ]);
             dst[x+1] = av_clip_uint8(((src[x+1]+32)>>6) + idwt[x+1]);
         }

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -83,7 +83,7 @@ amm-info@iis.fraunhofer.de
 
 /*!
   \file
-  \brief  Envelope extraction prototypes  
+  \brief  Envelope extraction prototypes
 */
 
 #ifndef __ENVELOPE_EXTRACTION_H
@@ -124,50 +124,50 @@ amm-info@iis.fraunhofer.de
 
 typedef enum
 {
-  HEADER_NOT_PRESENT,
-  HEADER_ERROR,
-  HEADER_OK,
-  HEADER_RESET
+    HEADER_NOT_PRESENT,
+    HEADER_ERROR,
+    HEADER_OK,
+    HEADER_RESET
 }
 SBR_HEADER_STATUS;
 
 typedef enum
 {
-  SBR_NOT_INITIALIZED = 0,
-  UPSAMPLING = 1,
-  SBR_HEADER = 2,
-  SBR_ACTIVE = 3
+    SBR_NOT_INITIALIZED = 0,
+    UPSAMPLING = 1,
+    SBR_HEADER = 2,
+    SBR_ACTIVE = 3
 }
 SBR_SYNC_STATE;
 
 
 typedef enum
 {
-  COUPLING_OFF = 0,
-  COUPLING_LEVEL,
-  COUPLING_BAL
+    COUPLING_OFF = 0,
+    COUPLING_LEVEL,
+    COUPLING_BAL
 }
 COUPLING_MODE;
 
 typedef struct
 {
-  UCHAR nSfb[2];           /*!< Number of SBR-bands for low and high freq-resolution */
-  UCHAR nNfb;              /*!< Actual number of noise bands to read from the bitstream*/
-  UCHAR numMaster;         /*!< Number of SBR-bands in v_k_master */
-  UCHAR lowSubband;        /*!< QMF-band where SBR frequency range starts */
-  UCHAR highSubband;       /*!< QMF-band where SBR frequency range ends */
-  UCHAR limiterBandTable[MAX_NUM_LIMITERS+1]; /*!< Limiter band table. */
-  UCHAR noLimiterBands;    /*!< Number of limiter bands. */
-  UCHAR nInvfBands;        /*!< Number of bands for inverse filtering */
-  UCHAR *freqBandTable[2]; /*!< Pointers to freqBandTableLo and freqBandTableHi */
-  UCHAR freqBandTableLo[MAX_FREQ_COEFFS/2+1];
-                                   /*!< Mapping of SBR bands to QMF bands for low frequency resolution */
-  UCHAR freqBandTableHi[MAX_FREQ_COEFFS+1];
-                                   /*!< Mapping of SBR bands to QMF bands for high frequency resolution */
-  UCHAR freqBandTableNoise[MAX_NOISE_COEFFS+1];
-                                   /*!< Mapping of SBR noise bands to QMF bands */
-  UCHAR v_k_master[MAX_FREQ_COEFFS+1];
-                                   /*!< Master BandTable which freqBandTable is derived from */
+    UCHAR nSfb[2];           /*!< Number of SBR-bands for low and high freq-resolution */
+    UCHAR nNfb;              /*!< Actual number of noise bands to read from the bitstream*/
+    UCHAR numMaster;         /*!< Number of SBR-bands in v_k_master */
+    UCHAR lowSubband;        /*!< QMF-band where SBR frequency range starts */
+    UCHAR highSubband;       /*!< QMF-band where SBR frequency range ends */
+    UCHAR limiterBandTable[MAX_NUM_LIMITERS+1]; /*!< Limiter band table. */
+    UCHAR noLimiterBands;    /*!< Number of limiter bands. */
+    UCHAR nInvfBands;        /*!< Number of bands for inverse filtering */
+    UCHAR *freqBandTable[2]; /*!< Pointers to freqBandTableLo and freqBandTableHi */
+    UCHAR freqBandTableLo[MAX_FREQ_COEFFS/2+1];
+    /*!< Mapping of SBR bands to QMF bands for low frequency resolution */
+    UCHAR freqBandTableHi[MAX_FREQ_COEFFS+1];
+    /*!< Mapping of SBR bands to QMF bands for high frequency resolution */
+    UCHAR freqBandTableNoise[MAX_NOISE_COEFFS+1];
+    /*!< Mapping of SBR noise bands to QMF bands */
+    UCHAR v_k_master[MAX_FREQ_COEFFS+1];
+    /*!< Master BandTable which freqBandTable is derived from */
 }
 FREQ_BAND_DATA;
 
@@ -188,45 +188,47 @@ typedef FREQ_BAND_DATA *HANDLE_FREQ_BAND_DATA;
 #define SBRDEC_HDR_STAT_RESET  1
 #define SBRDEC_HDR_STAT_UPDATE 2
 
-typedef struct {
-  UCHAR ampResolution;       /*!< Amplitude resolution of envelope values (0: 1.5dB, 1: 3dB) */
-  UCHAR xover_band;          /*!< Start index in #v_k_master[] used for dynamic crossover frequency */
-  UCHAR sbr_preprocessing;   /*!< SBR prewhitening flag. */
+typedef struct
+{
+    UCHAR ampResolution;       /*!< Amplitude resolution of envelope values (0: 1.5dB, 1: 3dB) */
+    UCHAR xover_band;          /*!< Start index in #v_k_master[] used for dynamic crossover frequency */
+    UCHAR sbr_preprocessing;   /*!< SBR prewhitening flag. */
 } SBR_HEADER_DATA_BS_INFO;
 
-typedef struct {
-  /* Changes in these variables causes a reset of the decoder */
-  UCHAR startFreq;           /*!< Index for SBR start frequency */
-  UCHAR stopFreq;            /*!< Index for SBR highest frequency */
-  UCHAR freqScale;           /*!< 0: linear scale,  1-3 logarithmic scales */
-  UCHAR alterScale;          /*!< Flag for coarser frequency resolution */
-  UCHAR noise_bands;         /*!< Noise bands per octave, read from bitstream*/
+typedef struct
+{
+    /* Changes in these variables causes a reset of the decoder */
+    UCHAR startFreq;           /*!< Index for SBR start frequency */
+    UCHAR stopFreq;            /*!< Index for SBR highest frequency */
+    UCHAR freqScale;           /*!< 0: linear scale,  1-3 logarithmic scales */
+    UCHAR alterScale;          /*!< Flag for coarser frequency resolution */
+    UCHAR noise_bands;         /*!< Noise bands per octave, read from bitstream*/
 
-  /* don't require reset */
-  UCHAR limiterBands;        /*!< Index for number of limiter bands per octave */
-  UCHAR limiterGains;        /*!< Index to select gain limit */
-  UCHAR interpolFreq;        /*!< Select gain calculation method (1: per QMF channel, 0: per SBR band) */
-  UCHAR smoothingLength;     /*!< Smoothing of gains over time (0: on  1: off) */
+    /* don't require reset */
+    UCHAR limiterBands;        /*!< Index for number of limiter bands per octave */
+    UCHAR limiterGains;        /*!< Index to select gain limit */
+    UCHAR interpolFreq;        /*!< Select gain calculation method (1: per QMF channel, 0: per SBR band) */
+    UCHAR smoothingLength;     /*!< Smoothing of gains over time (0: on  1: off) */
 
 } SBR_HEADER_DATA_BS;
 
 typedef struct
 {
-  SBR_SYNC_STATE syncState;    /*!< The current initialization status of the header */
+    SBR_SYNC_STATE syncState;    /*!< The current initialization status of the header */
 
-  UCHAR status;                /*!< Flags field used for signaling a reset right before the processing starts and an update from config (e.g. ASC). */
-  UCHAR frameErrorFlag;        /*!< Frame data valid flag. CAUTION: This variable will be overwritten by the flag stored in the element structure.
+    UCHAR status;                /*!< Flags field used for signaling a reset right before the processing starts and an update from config (e.g. ASC). */
+    UCHAR frameErrorFlag;        /*!< Frame data valid flag. CAUTION: This variable will be overwritten by the flag stored in the element structure.
                                     This is necessary because of the frame delay. There it might happen that different slots use the same header. */
-  UCHAR numberTimeSlots;       /*!< AAC: 16,15 */
-  UCHAR numberOfAnalysisBands; /*!< Number of QMF analysis bands */
-  UCHAR timeStep;              /*!< Time resolution of SBR in QMF-slots */
-  UINT  sbrProcSmplRate;       /*!< SBR processing sampling frequency (!= OutputSamplingRate)
+    UCHAR numberTimeSlots;       /*!< AAC: 16,15 */
+    UCHAR numberOfAnalysisBands; /*!< Number of QMF analysis bands */
+    UCHAR timeStep;              /*!< Time resolution of SBR in QMF-slots */
+    UINT  sbrProcSmplRate;       /*!< SBR processing sampling frequency (!= OutputSamplingRate)
                                      (always: CoreSamplingRate * UpSamplingFactor; even in single rate mode) */
 
-  SBR_HEADER_DATA_BS      bs_data;  /*!< current SBR header. */
-  SBR_HEADER_DATA_BS_INFO bs_info;  /*!< SBR info. */
+    SBR_HEADER_DATA_BS      bs_data;  /*!< current SBR header. */
+    SBR_HEADER_DATA_BS_INFO bs_info;  /*!< SBR info. */
 
-  FREQ_BAND_DATA freqBandData;  /*!< Pointer to struct #FREQ_BAND_DATA */
+    FREQ_BAND_DATA freqBandData;  /*!< Pointer to struct #FREQ_BAND_DATA */
 }
 SBR_HEADER_DATA;
 
@@ -235,26 +237,26 @@ typedef SBR_HEADER_DATA *HANDLE_SBR_HEADER_DATA;
 
 typedef struct
 {
-  UCHAR frameClass;               /*!< Select grid type */
-  UCHAR nEnvelopes;               /*!< Number of envelopes */
-  UCHAR borders[MAX_ENVELOPES+1]; /*!< Envelope borders (in SBR-timeslots, e.g. mp3PRO: 0..11) */
-  UCHAR freqRes[MAX_ENVELOPES];   /*!< Frequency resolution for each envelope (0=low, 1=high) */
-  SCHAR  tranEnv;                 /*!< Transient envelope, -1 if none */
-  UCHAR nNoiseEnvelopes;          /*!< Number of noise envelopes */
-  UCHAR bordersNoise[MAX_NOISE_ENVELOPES+1];/*!< borders of noise envelopes */
+    UCHAR frameClass;               /*!< Select grid type */
+    UCHAR nEnvelopes;               /*!< Number of envelopes */
+    UCHAR borders[MAX_ENVELOPES+1]; /*!< Envelope borders (in SBR-timeslots, e.g. mp3PRO: 0..11) */
+    UCHAR freqRes[MAX_ENVELOPES];   /*!< Frequency resolution for each envelope (0=low, 1=high) */
+    SCHAR  tranEnv;                 /*!< Transient envelope, -1 if none */
+    UCHAR nNoiseEnvelopes;          /*!< Number of noise envelopes */
+    UCHAR bordersNoise[MAX_NOISE_ENVELOPES+1];/*!< borders of noise envelopes */
 }
 FRAME_INFO;
 
 
 typedef struct
 {
-  FIXP_SGL sfb_nrg_prev[MAX_FREQ_COEFFS];    /*!< Previous envelope (required for differential-coded values) */
-  FIXP_SGL prevNoiseLevel[MAX_NOISE_COEFFS]; /*!< Previous noise envelope (required for differential-coded values) */
-  COUPLING_MODE coupling;                    /*!< Stereo-mode of previous frame */
-  INVF_MODE sbr_invf_mode[MAX_INVF_BANDS];   /*!< Previous strength of filtering in transposer */
-  UCHAR ampRes;                              /*!< Previous amplitude resolution (0: 1.5dB, 1: 3dB) */
-  UCHAR stopPos;                             /*!< Position in time where last envelope ended */
-  UCHAR frameErrorFlag;                      /*!< Previous frame status */
+    FIXP_SGL sfb_nrg_prev[MAX_FREQ_COEFFS];    /*!< Previous envelope (required for differential-coded values) */
+    FIXP_SGL prevNoiseLevel[MAX_NOISE_COEFFS]; /*!< Previous noise envelope (required for differential-coded values) */
+    COUPLING_MODE coupling;                    /*!< Stereo-mode of previous frame */
+    INVF_MODE sbr_invf_mode[MAX_INVF_BANDS];   /*!< Previous strength of filtering in transposer */
+    UCHAR ampRes;                              /*!< Previous amplitude resolution (0: 1.5dB, 1: 3dB) */
+    UCHAR stopPos;                             /*!< Position in time where last envelope ended */
+    UCHAR frameErrorFlag;                      /*!< Previous frame status */
 }
 SBR_PREV_FRAME_DATA;
 
@@ -263,20 +265,20 @@ typedef SBR_PREV_FRAME_DATA *HANDLE_SBR_PREV_FRAME_DATA;
 
 typedef struct
 {
-  int nScaleFactors;                    /*!< total number of scalefactors in frame */
+    int nScaleFactors;                    /*!< total number of scalefactors in frame */
 
-  FRAME_INFO frameInfo;                 /*!< time grid for current frame */
-  UCHAR domain_vec[MAX_ENVELOPES];      /*!< Bitfield containing direction of delta-coding for each envelope (0:frequency, 1:time) */
-  UCHAR domain_vec_noise[MAX_NOISE_ENVELOPES]; /*!< Same as above, but for noise envelopes */
+    FRAME_INFO frameInfo;                 /*!< time grid for current frame */
+    UCHAR domain_vec[MAX_ENVELOPES];      /*!< Bitfield containing direction of delta-coding for each envelope (0:frequency, 1:time) */
+    UCHAR domain_vec_noise[MAX_NOISE_ENVELOPES]; /*!< Same as above, but for noise envelopes */
 
-  INVF_MODE sbr_invf_mode[MAX_INVF_BANDS]; /*!< Strength of filtering in transposer */
-  COUPLING_MODE coupling;                  /*!< Stereo-mode */
-  int ampResolutionCurrentFrame;           /*!< Amplitude resolution of envelope values (0: 1.5dB, 1: 3dB) */
+    INVF_MODE sbr_invf_mode[MAX_INVF_BANDS]; /*!< Strength of filtering in transposer */
+    COUPLING_MODE coupling;                  /*!< Stereo-mode */
+    int ampResolutionCurrentFrame;           /*!< Amplitude resolution of envelope values (0: 1.5dB, 1: 3dB) */
 
-  UCHAR addHarmonics[MAX_FREQ_COEFFS];     /*!< Flags for synthetic sine addition */
+    UCHAR addHarmonics[MAX_FREQ_COEFFS];     /*!< Flags for synthetic sine addition */
 
-  FIXP_SGL iEnvelope[MAX_NUM_ENVELOPE_VALUES];       /*!< Envelope data */
-  FIXP_SGL sbrNoiseFloorLevel[MAX_NUM_NOISE_VALUES]; /*!< Noise envelope data */
+    FIXP_SGL iEnvelope[MAX_NUM_ENVELOPE_VALUES];       /*!< Envelope data */
+    FIXP_SGL sbrNoiseFloorLevel[MAX_NUM_NOISE_VALUES]; /*!< Noise envelope data */
 }
 SBR_FRAME_DATA;
 
@@ -315,10 +317,10 @@ sbrGetHeaderData (HANDLE_SBR_HEADER_DATA headerData,
 */
 SBR_ERROR
 initHeaderData (
-        HANDLE_SBR_HEADER_DATA  hHeaderData,
-        const int               sampleRateIn,
-        const int               sampleRateOut,
-        const int               samplesPerFrame,
-        const UINT              flags
-        );
+    HANDLE_SBR_HEADER_DATA  hHeaderData,
+    const int               sampleRateIn,
+    const int               sampleRateOut,
+    const int               samplesPerFrame,
+    const UINT              flags
+);
 #endif

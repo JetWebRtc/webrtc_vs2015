@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,14 @@
 #include "webrtc/modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockRtcpRttStats : public RtcpRttStats {
- public:
-  MOCK_METHOD1(OnRttUpdate, void(int64_t rtt));
-  MOCK_CONST_METHOD0(LastProcessedRtt, int64_t());
+class MockRtcpRttStats : public RtcpRttStats
+{
+public:
+    MOCK_METHOD1(OnRttUpdate, void(int64_t rtt));
+    MOCK_CONST_METHOD0(LastProcessedRtt, int64_t());
 };
 }  // namespace webrtc
 #endif  // WEBRTC_MODULES_RTP_RTCP_MOCKS_MOCK_RTCP_RTT_STATS_H_

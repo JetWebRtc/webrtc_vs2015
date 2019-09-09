@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,7 +17,8 @@
 #include "webrtc/common_audio/fir_filter.h"
 #include "webrtc/modules/audio_processing/transient/dyadic_decimator.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 WPDNode::WPDNode(size_t length,
                  const float* coefficients,
@@ -28,45 +29,52 @@ WPDNode::WPDNode(size_t length,
       length_(length),
       filter_(FIRFilter::Create(coefficients,
                                 coefficients_length,
-                                2 * length + 1)) {
-  RTC_DCHECK_GT(length, 0);
-  RTC_DCHECK(coefficients);
-  RTC_DCHECK_GT(coefficients_length, 0);
-  memset(data_.get(), 0.f, (2 * length + 1) * sizeof(data_[0]));
+                                2 * length + 1))
+{
+    RTC_DCHECK_GT(length, 0);
+    RTC_DCHECK(coefficients);
+    RTC_DCHECK_GT(coefficients_length, 0);
+    memset(data_.get(), 0.f, (2 * length + 1) * sizeof(data_[0]));
 }
 
 WPDNode::~WPDNode() {}
 
-int WPDNode::Update(const float* parent_data, size_t parent_data_length) {
-  if (!parent_data || (parent_data_length / 2) != length_) {
-    return -1;
-  }
+int WPDNode::Update(const float* parent_data, size_t parent_data_length)
+{
+    if (!parent_data || (parent_data_length / 2) != length_)
+    {
+        return -1;
+    }
 
-  // Filter data.
-  filter_->Filter(parent_data, parent_data_length, data_.get());
+    // Filter data.
+    filter_->Filter(parent_data, parent_data_length, data_.get());
 
-  // Decimate data.
-  const bool kOddSequence = true;
-  size_t output_samples = DyadicDecimate(
-      data_.get(), parent_data_length, kOddSequence, data_.get(), length_);
-  if (output_samples != length_) {
-    return -1;
-  }
+    // Decimate data.
+    const bool kOddSequence = true;
+    size_t output_samples = DyadicDecimate(
+                                data_.get(), parent_data_length, kOddSequence, data_.get(), length_);
+    if (output_samples != length_)
+    {
+        return -1;
+    }
 
-  // Get abs to all values.
-  for (size_t i = 0; i < length_; ++i) {
-    data_[i] = fabs(data_[i]);
-  }
+    // Get abs to all values.
+    for (size_t i = 0; i < length_; ++i)
+    {
+        data_[i] = fabs(data_[i]);
+    }
 
-  return 0;
+    return 0;
 }
 
-int WPDNode::set_data(const float* new_data, size_t length) {
-  if (!new_data || length != length_) {
-    return -1;
-  }
-  memcpy(data_.get(), new_data, length * sizeof(data_[0]));
-  return 0;
+int WPDNode::set_data(const float* new_data, size_t length)
+{
+    if (!new_data || length != length_)
+    {
+        return -1;
+    }
+    memcpy(data_.get(), new_data, length * sizeof(data_[0]));
+    return 0;
 }
 
 }  // namespace webrtc

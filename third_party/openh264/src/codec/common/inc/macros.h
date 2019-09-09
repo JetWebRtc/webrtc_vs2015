@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -135,42 +135,46 @@
   nC += (uint8_t)(nA == -1 && nB == -1);                \
 }
 
-static inline int32_t CeilLog2 (int32_t i) {
-  int32_t s = 0;
-  i--;
-  while (i > 0) {
-    s++;
-    i >>= 1;
-  }
-  return s;
+static inline int32_t CeilLog2 (int32_t i)
+{
+    int32_t s = 0;
+    i--;
+    while (i > 0)
+    {
+        s++;
+        i >>= 1;
+    }
+    return s;
 }
 /*
 the second path will degrades the performance
 */
 #if 1
-static inline int32_t WelsMedian (int32_t iX,  int32_t iY, int32_t iZ) {
-  int32_t iMin = iX, iMax = iX;
+static inline int32_t WelsMedian (int32_t iX,  int32_t iY, int32_t iZ)
+{
+    int32_t iMin = iX, iMax = iX;
 
-  if (iY < iMin)
-    iMin = iY;
-  else
-    iMax = iY;
+    if (iY < iMin)
+        iMin = iY;
+    else
+        iMax = iY;
 
-  if (iZ < iMin)
-    iMin = iZ;
-  else if (iZ > iMax)
-    iMax = iZ;
+    if (iZ < iMin)
+        iMin = iZ;
+    else if (iZ > iMax)
+        iMax = iZ;
 
-  return (iX + iY + iZ) - (iMin + iMax);
+    return (iX + iY + iZ) - (iMin + iMax);
 }
 #else
-static inline int32_t WelsMedian (int32_t iX,  int32_t iY, int32_t iZ) {
-  int32_t iTmp = (iX - iY) & ((iX - iY) >> 31);
-  iX -= iTmp;
-  iY += iTmp;
-  iY -= (iY - iZ) & ((iY - iZ) >> 31);
-  iY += (iX - iY) & ((iX - iY) >> 31);
-  return iY;
+static inline int32_t WelsMedian (int32_t iX,  int32_t iY, int32_t iZ)
+{
+    int32_t iTmp = (iX - iY) & ((iX - iY) >> 31);
+    iX -= iTmp;
+    iY += iTmp;
+    iY -= (iY - iZ) & ((iY - iZ) >> 31);
+    iY += (iX - iY) & ((iX - iY) >> 31);
+    return iY;
 }
 
 #endif
@@ -180,9 +184,10 @@ static inline int32_t WelsMedian (int32_t iX,  int32_t iY, int32_t iZ) {
 #define NEG_NUM(iX) (1+(~(iX)))
 #endif// NEG_NUM
 
-static inline uint8_t WelsClip1 (int32_t iX) {
-  uint8_t uiTmp = (uint8_t) (((iX) & ~255) ? (- (iX) >> 31) : (iX));
-  return uiTmp;
+static inline uint8_t WelsClip1 (int32_t iX)
+{
+    uint8_t uiTmp = (uint8_t) (((iX) & ~255) ? (- (iX) >> 31) : (iX));
+    return uiTmp;
 }
 
 #ifndef WELS_SIGN
@@ -197,12 +202,13 @@ static inline uint8_t WelsClip1 (int32_t iX) {
 #define WELS_CLIP3(iX, iY, iZ) ((iX) < (iY) ? (iY) : ((iX) > (iZ) ? (iZ) : (iX)))
 #endif //WELS_CLIP3
 
-template<typename T> T WelsClip3(T iX, T iY, T iZ) {
-  if (iX < iY)
-    return iY;
-  if (iX > iZ)
-    return iZ;
-  return iX;
+template<typename T> T WelsClip3(T iX, T iY, T iZ)
+{
+    if (iX < iY)
+        return iY;
+    if (iX > iZ)
+        return iZ;
+    return iX;
 }
 
 #define DISALLOW_COPY_AND_ASSIGN(cclass) \
@@ -249,12 +255,14 @@ cclass& operator=(const cclass &);
   }
 #endif//#if WELS_VERIFY_RETURN_PROC_IF
 
-static inline int32_t WELS_LOG2 (uint32_t v) {
-  int32_t r = 0;
-  while (v >>= 1) {
-    ++r;
-  }
-  return r;
+static inline int32_t WELS_LOG2 (uint32_t v)
+{
+    int32_t r = 0;
+    while (v >>= 1)
+    {
+        ++r;
+    }
+    return r;
 
 }
 
@@ -276,8 +284,9 @@ static inline int32_t WELS_LOG2 (uint32_t v) {
 #define BUTTERFLY4x8(dw) (((uint64_t)(dw)<<32) | (dw))
 #endif//BUTTERFLY4x8
 
-static inline bool WELS_POWER2_IF (uint32_t v) {
-  return (v && ! (v & (v - 1)));
+static inline bool WELS_POWER2_IF (uint32_t v)
+{
+    return (v && ! (v & (v - 1)));
 }
 
 #if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4)
@@ -286,37 +295,51 @@ static inline bool WELS_POWER2_IF (uint32_t v) {
 #define WELS_GCC_UNUSED
 #endif
 
-inline bool CheckInRangeCloseOpen (const int16_t kiCurrent, const int16_t kiMin, const int16_t kiMax) {
-  return ((kiCurrent >= kiMin) && (kiCurrent < kiMax));
+inline bool CheckInRangeCloseOpen (const int16_t kiCurrent, const int16_t kiMin, const int16_t kiMax)
+{
+    return ((kiCurrent >= kiMin) && (kiCurrent < kiMax));
 }
 
-static inline void WelsSetMemUint32_c (uint32_t* pDst, uint32_t iValue, int32_t iSizeOfData) {
-  for (int i = 0; i < iSizeOfData; i++) {
-    pDst[i] = iValue;
-  }
-}
-
-static inline void WelsSetMemUint16_c (uint16_t* pDst, uint16_t iValue, int32_t iSizeOfData) {
-  for (int i = 0; i < iSizeOfData; i++) {
-    pDst[i] = iValue;
-  }
-}
-
-inline void WelsSetMemMultiplebytes_c (void* pDst, uint32_t iValue, int32_t iSizeOfData, int32_t iDataLengthOfData) {
-  assert (4 == iDataLengthOfData || 2 == iDataLengthOfData || 1 == iDataLengthOfData);
-
-  // TODO: consider add assembly for these functions
-  if (0 != iValue) {
-    if (4 == iDataLengthOfData) {
-      WelsSetMemUint32_c (static_cast<uint32_t*> (pDst), static_cast<uint32_t> (iValue), iSizeOfData);
-    } else if (2 == iDataLengthOfData) {
-      WelsSetMemUint16_c (static_cast<uint16_t*> (pDst), static_cast<uint16_t> (iValue), iSizeOfData);
-    } else {
-      memset (static_cast<uint8_t*> (pDst), static_cast<uint8_t> (iValue), iSizeOfData);
+static inline void WelsSetMemUint32_c (uint32_t* pDst, uint32_t iValue, int32_t iSizeOfData)
+{
+    for (int i = 0; i < iSizeOfData; i++)
+    {
+        pDst[i] = iValue;
     }
-  } else {
-    memset (static_cast<uint8_t*> (pDst), 0, iSizeOfData * iDataLengthOfData);
-  }
+}
+
+static inline void WelsSetMemUint16_c (uint16_t* pDst, uint16_t iValue, int32_t iSizeOfData)
+{
+    for (int i = 0; i < iSizeOfData; i++)
+    {
+        pDst[i] = iValue;
+    }
+}
+
+inline void WelsSetMemMultiplebytes_c (void* pDst, uint32_t iValue, int32_t iSizeOfData, int32_t iDataLengthOfData)
+{
+    assert (4 == iDataLengthOfData || 2 == iDataLengthOfData || 1 == iDataLengthOfData);
+
+    // TODO: consider add assembly for these functions
+    if (0 != iValue)
+    {
+        if (4 == iDataLengthOfData)
+        {
+            WelsSetMemUint32_c (static_cast<uint32_t*> (pDst), static_cast<uint32_t> (iValue), iSizeOfData);
+        }
+        else if (2 == iDataLengthOfData)
+        {
+            WelsSetMemUint16_c (static_cast<uint16_t*> (pDst), static_cast<uint16_t> (iValue), iSizeOfData);
+        }
+        else
+        {
+            memset (static_cast<uint8_t*> (pDst), static_cast<uint8_t> (iValue), iSizeOfData);
+        }
+    }
+    else
+    {
+        memset (static_cast<uint8_t*> (pDst), 0, iSizeOfData * iDataLengthOfData);
+    }
 }
 
 #endif//WELS_MACRO_UTILIZATIONS_H__

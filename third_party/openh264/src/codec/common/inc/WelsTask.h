@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2015, Cisco Systems
  *     All rights reserved.
@@ -43,29 +43,34 @@
 
 #include "codec_def.h"
 
-namespace WelsCommon {
+namespace WelsCommon
+{
 
-class IWelsTaskSink {
- public:
-  virtual int OnTaskExecuted() = 0;
-  virtual int OnTaskCancelled() = 0;
+class IWelsTaskSink
+{
+public:
+    virtual int OnTaskExecuted() = 0;
+    virtual int OnTaskCancelled() = 0;
 };
 
-class IWelsTask {
- public:
-  IWelsTask (IWelsTaskSink* pSink) {
-    m_pSink = pSink;
-  };
-  virtual ~IWelsTask() { }
+class IWelsTask
+{
+public:
+    IWelsTask (IWelsTaskSink* pSink)
+    {
+        m_pSink = pSink;
+    };
+    virtual ~IWelsTask() { }
 
-  virtual int Execute() = 0;
+    virtual int Execute() = 0;
 
-  IWelsTaskSink* GetSink() {
-    return m_pSink;
-  };
+    IWelsTaskSink* GetSink()
+    {
+        return m_pSink;
+    };
 
- protected:
-  IWelsTaskSink*   m_pSink;
+protected:
+    IWelsTaskSink*   m_pSink;
 };
 
 }

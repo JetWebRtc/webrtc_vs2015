@@ -23,7 +23,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     int cur_stream;
     int num_streams;
     int audio_packets;
@@ -32,9 +33,10 @@ typedef struct {
     int packet_sizes_alloc;
 } PMPContext;
 
-static int pmp_probe(AVProbeData *p) {
+static int pmp_probe(AVProbeData *p)
+{
     if (AV_RN32(p->buf) == AV_RN32("pmpm") &&
-        AV_RL32(p->buf + 4) == 1)
+            AV_RL32(p->buf + 4) == 1)
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -56,7 +58,8 @@ static int pmp_header(AVFormatContext *s)
         return AVERROR(ENOMEM);
     vst->codec->codec_type = AVMEDIA_TYPE_VIDEO;
     avio_skip(pb, 8);
-    switch (avio_rl32(pb)) {
+    switch (avio_rl32(pb))
+    {
     case 0:
         vst->codec->codec_id = AV_CODEC_ID_MPEG4;
         break;
@@ -77,7 +80,8 @@ static int pmp_header(AVFormatContext *s)
     vst->nb_frames = index_cnt;
     vst->duration = index_cnt;
 
-    switch (avio_rl32(pb)) {
+    switch (avio_rl32(pb))
+    {
     case 0:
         audio_codec_id = AV_CODEC_ID_MP3;
         break;
@@ -94,26 +98,31 @@ static int pmp_header(AVFormatContext *s)
     srate = avio_rl32(pb);
     channels = avio_rl32(pb) + 1;
     pos = avio_tell(pb) + 4LL*index_cnt;
-    for (i = 0; i < index_cnt; i++) {
+    for (i = 0; i < index_cnt; i++)
+    {
         uint32_t size = avio_rl32(pb);
         int flags = size & 1 ? AVINDEX_KEYFRAME : 0;
-        if (avio_feof(pb)) {
+        if (avio_feof(pb))
+        {
             av_log(s, AV_LOG_FATAL, "Encountered EOF while reading index.\n");
             return AVERROR_INVALIDDATA;
         }
         size >>= 1;
-        if (size < 9 + 4*pmp->num_streams) {
+        if (size < 9 + 4*pmp->num_streams)
+        {
             av_log(s, AV_LOG_ERROR, "Packet too small\n");
             return AVERROR_INVALIDDATA;
         }
         av_add_index_entry(vst, pos, i, size, 0, flags);
         pos += size;
-        if (fsize > 0 && i == 0 && pos > fsize) {
+        if (fsize > 0 && i == 0 && pos > fsize)
+        {
             av_log(s, AV_LOG_ERROR, "File ends before first packet\n");
             return AVERROR_INVALIDDATA;
         }
     }
-    for (i = 1; i < pmp->num_streams; i++) {
+    for (i = 1; i < pmp->num_streams; i++)
+    {
         AVStream *ast = avformat_new_stream(s, NULL);
         if (!ast)
             return AVERROR(ENOMEM);
@@ -135,11 +144,13 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt)
 
     if (avio_feof(pb))
         return AVERROR_EOF;
-    if (pmp->cur_stream == 0) {
+    if (pmp->cur_stream == 0)
+    {
         int num_packets;
         pmp->audio_packets = avio_r8(pb);
 
-        if (!pmp->audio_packets) {
+        if (!pmp->audio_packets)
+        {
             av_log(s, AV_LOG_ERROR, "No audio packets.\n");
             return AVERROR_INVALIDDATA;
         }
@@ -150,7 +161,8 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt)
         av_fast_malloc(&pmp->packet_sizes,
                        &pmp->packet_sizes_alloc,
                        num_packets * sizeof(*pmp->packet_sizes));
-        if (!pmp->packet_sizes_alloc) {
+        if (!pmp->packet_sizes_alloc)
+        {
             av_log(s, AV_LOG_ERROR, "Cannot (re)allocate packet buffer\n");
             return AVERROR(ENOMEM);
         }
@@ -158,7 +170,8 @@ static int pmp_packet(AVFormatContext *s, AVPacket *pkt)
             pmp->packet_sizes[i] = avio_rl32(pb);
     }
     ret = av_get_packet(pb, pkt, pmp->packet_sizes[pmp->current_packet]);
-    if (ret >= 0) {
+    if (ret >= 0)
+    {
         ret = 0;
         pkt->stream_index = pmp->cur_stream;
     }
@@ -183,7 +196,8 @@ static int pmp_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_pmp_demuxer = {
+AVInputFormat ff_pmp_demuxer =
+{
     .name           = "pmp",
     .long_name      = NULL_IF_CONFIG_SMALL("Playstation Portable PMP"),
     .priv_data_size = sizeof(PMPContext),

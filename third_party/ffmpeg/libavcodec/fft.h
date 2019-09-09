@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -59,7 +59,8 @@ typedef int16_t FFTSample;
 
 #endif /* FFT_FIXED_32 */
 
-typedef struct FFTComplex {
+typedef struct FFTComplex
+{
     FFTSample re, im;
 } FFTComplex;
 
@@ -68,24 +69,28 @@ typedef struct FFTContext FFTContext;
 
 #endif /* FFT_FLOAT */
 
-typedef struct FFTDComplex {
+typedef struct FFTDComplex
+{
     FFTDouble re, im;
 } FFTDComplex;
 
 /* FFT computation */
 
-enum fft_permutation_type {
+enum fft_permutation_type
+{
     FF_FFT_PERM_DEFAULT,
     FF_FFT_PERM_SWAP_LSBS,
     FF_FFT_PERM_AVX,
 };
 
-enum mdct_permutation_type {
+enum mdct_permutation_type
+{
     FF_MDCT_PERM_NONE,
     FF_MDCT_PERM_INTERLEAVE,
 };
 
-struct FFTContext {
+struct FFTContext
+{
     int nbits;
     int inverse;
     uint16_t *revtab;

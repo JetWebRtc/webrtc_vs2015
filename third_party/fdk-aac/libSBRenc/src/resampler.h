@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -85,7 +85,7 @@ amm-info@iis.fraunhofer.de
 #define __RESAMPLER_H
 /*!
   \file
-  \brief  Fixed Point Resampler Tool Box  
+  \brief  Fixed Point Resampler Tool Box
 */
 
 #include "common_fix.h"
@@ -105,12 +105,12 @@ typedef FIXP_DBL FIXP_BQS;
 
 typedef struct
 {
-  FIXP_BQS states[MAXNR_SECTIONS+1][2];   /*! state buffer */
-  const FIXP_SGL *coeffa;               /*! pointer to filter coeffs */
-  FIXP_DBL gain;                        /*! overall gain factor */
-  int Wc;                               /*! normalized cutoff freq * 1000 */
-  int noCoeffs;                         /*! number of filter coeffs sets */
-  int ptr;                              /*! index to rinbuffers */
+    FIXP_BQS states[MAXNR_SECTIONS+1][2];   /*! state buffer */
+    const FIXP_SGL *coeffa;               /*! pointer to filter coeffs */
+    FIXP_DBL gain;                        /*! overall gain factor */
+    int Wc;                               /*! normalized cutoff freq * 1000 */
+    int noCoeffs;                         /*! number of filter coeffs sets */
+    int ptr;                              /*! index to rinbuffers */
 } LP_FILTER;
 
 
@@ -120,10 +120,10 @@ typedef struct
 
 typedef struct
 {
-  LP_FILTER downFilter;           /*! filter instance */
-  int ratio;                      /*! downsampling ration */
-  int delay;                      /*! downsampling delay (source fs)   */
-  int pending;                    /*! number of pending output samples */
+    LP_FILTER downFilter;           /*! filter instance */
+    int ratio;                      /*! downsampling ration */
+    int delay;                      /*! downsampling delay (source fs)   */
+    int pending;                    /*! number of pending output samples */
 } DOWNSAMPLER;
 
 

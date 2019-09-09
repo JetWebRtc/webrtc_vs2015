@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Blackmagic DeckLink output
  * Copyright (c) 2014 Deti Fliegl
  *
@@ -28,14 +28,16 @@
 #define OFFSET(x) offsetof(struct decklink_cctx, x)
 #define DEC AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "list_devices", "list available devices"  , OFFSET(list_devices), AV_OPT_TYPE_INT   , { .i64 = 0   }, 0, 1, DEC },
     { "list_formats", "list supported formats"  , OFFSET(list_formats), AV_OPT_TYPE_INT   , { .i64 = 0   }, 0, 1, DEC },
     { "bm_v210",      "v210 10 bit per channel" , OFFSET(v210),         AV_OPT_TYPE_INT   , { .i64 = 0   }, 0, 1, DEC },
     { NULL },
 };
 
-static const AVClass decklink_demuxer_class = {
+static const AVClass decklink_demuxer_class =
+{
     .class_name = "Blackmagic DeckLink demuxer",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -43,7 +45,8 @@ static const AVClass decklink_demuxer_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT,
 };
 
-AVInputFormat ff_decklink_demuxer = {
+AVInputFormat ff_decklink_demuxer =
+{
     .name           = "decklink",
     .long_name      = NULL_IF_CONFIG_SMALL("Blackmagic DeckLink input"),
     .flags          = AVFMT_NOFILE | AVFMT_RAWPICTURE,

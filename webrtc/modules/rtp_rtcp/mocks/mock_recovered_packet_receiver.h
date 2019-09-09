@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,11 +15,13 @@
 #include "webrtc/modules/rtp_rtcp/include/flexfec_receiver.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockRecoveredPacketReceiver : public RecoveredPacketReceiver {
- public:
-  MOCK_METHOD2(OnRecoveredPacket, bool(const uint8_t* packet, size_t length));
+class MockRecoveredPacketReceiver : public RecoveredPacketReceiver
+{
+public:
+    MOCK_METHOD2(OnRecoveredPacket, bool(const uint8_t* packet, size_t length));
 };
 
 }  // namespace webrtc

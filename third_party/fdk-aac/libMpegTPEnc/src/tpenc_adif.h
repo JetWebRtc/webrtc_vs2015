@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,14 +96,15 @@ amm-info@iis.fraunhofer.de
 
 #include "tp_data.h"
 
-typedef struct {
-  CHANNEL_MODE cm;
-  INT samplingRate;
-  INT bitRate;
-  int profile;
-  int bVariableRate;
-  int instanceTag;
-  int headerWritten;
+typedef struct
+{
+    CHANNEL_MODE cm;
+    INT samplingRate;
+    INT bitRate;
+    int profile;
+    int bVariableRate;
+    int instanceTag;
+    int headerWritten;
 } ADIF_INFO;
 
 /**
@@ -116,10 +117,10 @@ typedef struct {
  * \return 0 on success
  */
 int adifWrite_EncodeHeader(
-        ADIF_INFO           *adif,
-        HANDLE_FDK_BITSTREAM hBitStream,
-        INT                  adif_buffer_fullness
-        );
+    ADIF_INFO           *adif,
+    HANDLE_FDK_BITSTREAM hBitStream,
+    INT                  adif_buffer_fullness
+);
 
 /**
  * \brief Get bit demand of a ADIF header

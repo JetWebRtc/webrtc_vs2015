@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Jindrich Makovicka <makovick@gmail.com>
  * Copyright (c) 2011 Stefano Sabatini
  * Copyright (c) 2013 Jean Delvare <khali@linux-fr.org>
@@ -89,7 +89,8 @@ static void apply_delogo(uint8_t *dst, int dst_linesize,
     dst += (logo_y1 + 1) * dst_linesize;
     src += (logo_y1 + 1) * src_linesize;
 
-    for (y = logo_y1+1; y < logo_y2-1; y++) {
+    for (y = logo_y1+1; y < logo_y2-1; y++)
+    {
         left_sample = topleft[src_linesize*(y-logo_y1)]   +
                       topleft[src_linesize*(y-logo_y1-1)] +
                       topleft[src_linesize*(y-logo_y1+1)];
@@ -98,8 +99,9 @@ static void apply_delogo(uint8_t *dst, int dst_linesize,
                        topright[src_linesize*(y-logo_y1+1)];
 
         for (x = logo_x1+1,
-             xdst = dst+logo_x1+1,
-             xsrc = src+logo_x1+1; x < logo_x2-1; x++, xdst++, xsrc++) {
+                xdst = dst+logo_x1+1,
+                xsrc = src+logo_x1+1; x < logo_x2-1; x++, xdst++, xsrc++)
+        {
 
             /* Weighted interpolation based on relative distances, taking SAR into account */
             weightl = (uint64_t)              (logo_x2-1-x) * (y-logo_y1) * (logo_y2-1-y) * sar.den;
@@ -122,9 +124,12 @@ static void apply_delogo(uint8_t *dst, int dst_linesize,
             interp /= (weightl + weightr + weightt + weightb) * 3U;
 
             if (y >= logo_y+band && y < logo_y+logo_h-band &&
-                x >= logo_x+band && x < logo_x+logo_w-band) {
+                    x >= logo_x+band && x < logo_x+logo_w-band)
+            {
                 *xdst = interp;
-            } else {
+            }
+            else
+            {
                 unsigned dist = 0;
 
                 if      (x < logo_x+band)
@@ -148,7 +153,8 @@ static void apply_delogo(uint8_t *dst, int dst_linesize,
     }
 }
 
-typedef struct DelogoContext {
+typedef struct DelogoContext
+{
     const AVClass *class;
     int x, y, w, h, band, show;
 }  DelogoContext;
@@ -156,7 +162,8 @@ typedef struct DelogoContext {
 #define OFFSET(x) offsetof(DelogoContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption delogo_options[]= {
+static const AVOption delogo_options[]=
+{
     { "x",    "set logo x position",       OFFSET(x),    AV_OPT_TYPE_INT, { .i64 = -1 }, -1, INT_MAX, FLAGS },
     { "y",    "set logo y position",       OFFSET(y),    AV_OPT_TYPE_INT, { .i64 = -1 }, -1, INT_MAX, FLAGS },
     { "w",    "set logo width",            OFFSET(w),    AV_OPT_TYPE_INT, { .i64 = -1 }, -1, INT_MAX, FLAGS },
@@ -171,7 +178,8 @@ AVFILTER_DEFINE_CLASS(delogo);
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV444P,  AV_PIX_FMT_YUV422P,  AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV411P,  AV_PIX_FMT_YUV410P,  AV_PIX_FMT_YUV440P,
         AV_PIX_FMT_YUVA420P, AV_PIX_FMT_GRAY8,
@@ -220,12 +228,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     int plane;
     AVRational sar;
 
-    if (av_frame_is_writable(in)) {
+    if (av_frame_is_writable(in))
+    {
         direct = 1;
         out = in;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&in);
             return AVERROR(ENOMEM);
         }
@@ -238,7 +250,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     if (!sar.num)
         sar.num = sar.den = 1;
 
-    for (plane = 0; plane < 4 && in->data[plane] && in->linesize[plane]; plane++) {
+    for (plane = 0; plane < 4 && in->data[plane] && in->linesize[plane]; plane++)
+    {
         int hsub = plane == 1 || plane == 2 ? hsub0 : 0;
         int vsub = plane == 1 || plane == 2 ? vsub0 : 0;
 
@@ -261,7 +274,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad avfilter_vf_delogo_inputs[] = {
+static const AVFilterPad avfilter_vf_delogo_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -270,7 +284,8 @@ static const AVFilterPad avfilter_vf_delogo_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_vf_delogo_outputs[] = {
+static const AVFilterPad avfilter_vf_delogo_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -278,7 +293,8 @@ static const AVFilterPad avfilter_vf_delogo_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_delogo = {
+AVFilter ff_vf_delogo =
+{
     .name          = "delogo",
     .description   = NULL_IF_CONFIG_SMALL("Remove logo from input video."),
     .priv_size     = sizeof(DelogoContext),

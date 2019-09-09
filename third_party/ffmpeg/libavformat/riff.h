@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RIFF common functions and data
  * copyright (c) 2000 Fabrice Bellard
  *
@@ -83,7 +83,8 @@ void ff_riff_write_info_tag(AVIOContext *pb, const char *tag, const char *str);
 
 typedef uint8_t ff_asf_guid[16];
 
-typedef struct AVCodecGuid {
+typedef struct AVCodecGuid
+{
     enum AVCodecID id;
     ff_asf_guid guid;
 } AVCodecGuid;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Image format
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  * Copyright (c) 2004 Michael Niedermayer
@@ -31,7 +31,8 @@
 #include "avio_internal.h"
 #include "internal.h"
 
-typedef struct VideoMuxData {
+typedef struct VideoMuxData
+{
     const AVClass *class;  /**< Class for private options. */
     int img_number;
     int is_pipe;
@@ -56,16 +57,19 @@ static int write_header(AVFormatContext *s)
     else
         img->is_pipe = 1;
 
-    if (st->codec->codec_id == AV_CODEC_ID_GIF) {
+    if (st->codec->codec_id == AV_CODEC_ID_GIF)
+    {
         img->muxer = "gif";
-    } else if (st->codec->codec_id == AV_CODEC_ID_RAWVIDEO) {
+    }
+    else if (st->codec->codec_id == AV_CODEC_ID_RAWVIDEO)
+    {
         const char *str = strrchr(img->path, '.');
         img->split_planes =     str
-                             && !av_strcasecmp(str + 1, "y")
-                             && s->nb_streams == 1
-                             && desc
-                             &&(desc->flags & AV_PIX_FMT_FLAG_PLANAR)
-                             && desc->nb_components >= 3;
+                                && !av_strcasecmp(str + 1, "y")
+                                && s->nb_streams == 1
+                                && desc
+                                &&(desc->flags & AV_PIX_FMT_FLAG_PLANAR)
+                                && desc->nb_components >= 3;
     }
     return 0;
 }
@@ -79,28 +83,37 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(codec->pix_fmt);
     int i;
 
-    if (!img->is_pipe) {
-        if (img->update) {
+    if (!img->is_pipe)
+    {
+        if (img->update)
+        {
             av_strlcpy(filename, img->path, sizeof(filename));
-        } else if (img->use_strftime) {
+        }
+        else if (img->use_strftime)
+        {
             time_t now0;
             struct tm *tm, tmpbuf;
             time(&now0);
             tm = localtime_r(&now0, &tmpbuf);
-            if (!strftime(filename, sizeof(filename), img->path, tm)) {
+            if (!strftime(filename, sizeof(filename), img->path, tm))
+            {
                 av_log(s, AV_LOG_ERROR, "Could not get frame filename with strftime\n");
                 return AVERROR(EINVAL);
             }
-        } else if (av_get_frame_filename(filename, sizeof(filename), img->path, img->img_number) < 0 &&
-                   img->img_number > 1) {
+        }
+        else if (av_get_frame_filename(filename, sizeof(filename), img->path, img->img_number) < 0 &&
+                 img->img_number > 1)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Could not get frame filename number %d from pattern '%s' (either set updatefirst or use a pattern like %%03d within the filename pattern)\n",
                    img->img_number, img->path);
             return AVERROR(EINVAL);
         }
-        for (i = 0; i < 4; i++) {
+        for (i = 0; i < 4; i++)
+        {
             if (avio_open2(&pb[i], filename, AVIO_FLAG_WRITE,
-                           &s->interrupt_callback, NULL) < 0) {
+                           &s->interrupt_callback, NULL) < 0)
+            {
                 av_log(s, AV_LOG_ERROR, "Could not open file : %s\n", filename);
                 return AVERROR(EIO);
             }
@@ -109,14 +122,18 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
                 break;
             filename[strlen(filename) - 1] = "UVAx"[i];
         }
-    } else {
+    }
+    else
+    {
         pb[0] = s->pb;
     }
 
-    if (img->split_planes) {
+    if (img->split_planes)
+    {
         int ysize = codec->width * codec->height;
         int usize = FF_CEIL_RSHIFT(codec->width, desc->log2_chroma_w) * FF_CEIL_RSHIFT(codec->height, desc->log2_chroma_h);
-        if (desc->comp[0].depth_minus1 >= 8) {
+        if (desc->comp[0].depth_minus1 >= 8)
+        {
             ysize *= 2;
             usize *= 2;
         }
@@ -125,11 +142,14 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
         avio_write(pb[2], pkt->data + ysize + usize, usize);
         avio_closep(&pb[1]);
         avio_closep(&pb[2]);
-        if (desc->nb_components > 3) {
+        if (desc->nb_components > 3)
+        {
             avio_write(pb[3], pkt->data + ysize + 2*usize, ysize);
             avio_closep(&pb[3]);
         }
-    } else if (img->muxer) {
+    }
+    else if (img->muxer)
+    {
         int ret;
         AVStream *st;
         AVPacket pkt2 = {0};
@@ -141,7 +161,8 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
         if (ret < 0)
             return ret;
         st = avformat_new_stream(fmt, NULL);
-        if (!st) {
+        if (!st)
+        {
             avformat_free_context(fmt);
             return AVERROR(ENOMEM);
         }
@@ -149,22 +170,26 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
 
         fmt->pb = pb[0];
         if ((ret = av_copy_packet(&pkt2, pkt))                            < 0 ||
-            (ret = av_dup_packet(&pkt2))                                  < 0 ||
-            (ret = avcodec_copy_context(st->codec, s->streams[0]->codec)) < 0 ||
-            (ret = avformat_write_header(fmt, NULL))                      < 0 ||
-            (ret = av_interleaved_write_frame(fmt, &pkt2))                < 0 ||
-            (ret = av_write_trailer(fmt))                                 < 0) {
+                (ret = av_dup_packet(&pkt2))                                  < 0 ||
+                (ret = avcodec_copy_context(st->codec, s->streams[0]->codec)) < 0 ||
+                (ret = avformat_write_header(fmt, NULL))                      < 0 ||
+                (ret = av_interleaved_write_frame(fmt, &pkt2))                < 0 ||
+                (ret = av_write_trailer(fmt))                                 < 0)
+        {
             av_free_packet(&pkt2);
             avformat_free_context(fmt);
             return ret;
         }
         av_free_packet(&pkt2);
         avformat_free_context(fmt);
-    } else {
+    }
+    else
+    {
         avio_write(pb[0], pkt->data, pkt->size);
     }
     avio_flush(pb[0]);
-    if (!img->is_pipe) {
+    if (!img->is_pipe)
+    {
         avio_closep(&pb[0]);
     }
 
@@ -174,7 +199,8 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
 
 #define OFFSET(x) offsetof(VideoMuxData, x)
 #define ENC AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption muxoptions[] = {
+static const AVOption muxoptions[] =
+{
     { "updatefirst",  "continuously overwrite one file", OFFSET(update),  AV_OPT_TYPE_INT, { .i64 = 0 }, 0,       1, ENC },
     { "update",       "continuously overwrite one file", OFFSET(update),  AV_OPT_TYPE_INT, { .i64 = 0 }, 0,       1, ENC },
     { "start_number", "set first number in the sequence", OFFSET(img_number), AV_OPT_TYPE_INT,  { .i64 = 1 }, 0, INT_MAX, ENC },
@@ -183,19 +209,21 @@ static const AVOption muxoptions[] = {
 };
 
 #if CONFIG_IMAGE2_MUXER
-static const AVClass img2mux_class = {
+static const AVClass img2mux_class =
+{
     .class_name = "image2 muxer",
     .item_name  = av_default_item_name,
     .option     = muxoptions,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_image2_muxer = {
+AVOutputFormat ff_image2_muxer =
+{
     .name           = "image2",
     .long_name      = NULL_IF_CONFIG_SMALL("image2 sequence"),
     .extensions     = "bmp,dpx,jls,jpeg,jpg,ljpg,pam,pbm,pcx,pgm,pgmyuv,png,"
-                      "ppm,sgi,tga,tif,tiff,jp2,j2c,j2k,xwd,sun,ras,rs,im1,im8,im24,"
-                      "sunras,xbm,xface,pix,y",
+    "ppm,sgi,tga,tif,tiff,jp2,j2c,j2k,xwd,sun,ras,rs,im1,im8,im24,"
+    "sunras,xbm,xface,pix,y",
     .priv_data_size = sizeof(VideoMuxData),
     .video_codec    = AV_CODEC_ID_MJPEG,
     .write_header   = write_header,
@@ -205,7 +233,8 @@ AVOutputFormat ff_image2_muxer = {
 };
 #endif
 #if CONFIG_IMAGE2PIPE_MUXER
-AVOutputFormat ff_image2pipe_muxer = {
+AVOutputFormat ff_image2pipe_muxer =
+{
     .name           = "image2pipe",
     .long_name      = NULL_IF_CONFIG_SMALL("piped image2 sequence"),
     .priv_data_size = sizeof(VideoMuxData),

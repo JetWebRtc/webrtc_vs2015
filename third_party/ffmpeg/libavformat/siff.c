@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Beam Software SIFF demuxer
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -26,7 +26,8 @@
 #include "internal.h"
 #include "avio_internal.h"
 
-enum SIFFTags {
+enum SIFFTags
+{
     TAG_SIFF = MKTAG('S', 'I', 'F', 'F'),
     TAG_BODY = MKTAG('B', 'O', 'D', 'Y'),
     TAG_VBHD = MKTAG('V', 'B', 'H', 'D'),
@@ -35,7 +36,8 @@ enum SIFFTags {
     TAG_SOUN = MKTAG('S', 'O', 'U', 'N'),
 };
 
-enum VBFlags {
+enum VBFlags
+{
     VB_HAS_GMC     = 0x01,
     VB_HAS_AUDIO   = 0x04,
     VB_HAS_VIDEO   = 0x08,
@@ -43,7 +45,8 @@ enum VBFlags {
     VB_HAS_LENGTH  = 0x20
 };
 
-typedef struct SIFFContext {
+typedef struct SIFFContext
+{
     int frames;
     int cur_frame;
     int rate;
@@ -67,7 +70,7 @@ static int siff_probe(AVProbeData *p)
     uint32_t tag = AV_RL32(p->buf + 8);
     /* check file header */
     if (AV_RL32(p->buf) != TAG_SIFF ||
-        (tag != TAG_VBV1 && tag != TAG_SOUN))
+            (tag != TAG_VBV1 && tag != TAG_SOUN))
         return 0;
     return AVPROBE_SCORE_MAX;
 }
@@ -94,15 +97,18 @@ static int siff_parse_vbv1(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
     AVStream *st;
     int width, height;
 
-    if (avio_rl32(pb) != TAG_VBHD) {
+    if (avio_rl32(pb) != TAG_VBHD)
+    {
         av_log(s, AV_LOG_ERROR, "Header chunk is missing\n");
         return AVERROR_INVALIDDATA;
     }
-    if (avio_rb32(pb) != 32) {
+    if (avio_rb32(pb) != 32)
+    {
         av_log(s, AV_LOG_ERROR, "Header chunk size is incorrect\n");
         return AVERROR_INVALIDDATA;
     }
-    if (avio_rl16(pb) != 1) {
+    if (avio_rl16(pb) != 1)
+    {
         av_log(s, AV_LOG_ERROR, "Incorrect header version\n");
         return AVERROR_INVALIDDATA;
     }
@@ -110,7 +116,8 @@ static int siff_parse_vbv1(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
     height = avio_rl16(pb);
     avio_skip(pb, 4);
     c->frames = avio_rl16(pb);
-    if (!c->frames) {
+    if (!c->frames)
+    {
         av_log(s, AV_LOG_ERROR, "File contains no frames ???\n");
         return AVERROR_INVALIDDATA;
     }
@@ -130,7 +137,7 @@ static int siff_parse_vbv1(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
     st->codec->height     = height;
     st->codec->pix_fmt    = AV_PIX_FMT_PAL8;
     st->nb_frames         =
-    st->duration          = c->frames;
+        st->duration          = c->frames;
     avpriv_set_pts_info(st, 16, 1, 12);
 
     c->cur_frame = 0;
@@ -144,11 +151,13 @@ static int siff_parse_vbv1(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
 
 static int siff_parse_soun(AVFormatContext *s, SIFFContext *c, AVIOContext *pb)
 {
-    if (avio_rl32(pb) != TAG_SHDR) {
+    if (avio_rl32(pb) != TAG_SHDR)
+    {
         av_log(s, AV_LOG_ERROR, "Header chunk is missing\n");
         return AVERROR_INVALIDDATA;
     }
-    if (avio_rb32(pb) != 8) {
+    if (avio_rb32(pb) != 8)
+    {
         av_log(s, AV_LOG_ERROR, "Header chunk size is incorrect\n");
         return AVERROR_INVALIDDATA;
     }
@@ -171,7 +180,8 @@ static int siff_read_header(AVFormatContext *s)
     avio_skip(pb, 4); // ignore size
     tag = avio_rl32(pb);
 
-    if (tag != TAG_VBV1 && tag != TAG_SOUN) {
+    if (tag != TAG_VBV1 && tag != TAG_SOUN)
+    {
         av_log(s, AV_LOG_ERROR, "Not a VBV file\n");
         return AVERROR_INVALIDDATA;
     }
@@ -180,7 +190,8 @@ static int siff_read_header(AVFormatContext *s)
         return ret;
     if (tag == TAG_SOUN && (ret = siff_parse_soun(s, c, pb)) < 0)
         return ret;
-    if (avio_rl32(pb) != MKTAG('B', 'O', 'D', 'Y')) {
+    if (avio_rl32(pb) != MKTAG('B', 'O', 'D', 'Y'))
+    {
         av_log(s, AV_LOG_ERROR, "'BODY' chunk is missing\n");
         return AVERROR_INVALIDDATA;
     }
@@ -193,11 +204,13 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
 {
     SIFFContext *c = s->priv_data;
 
-    if (c->has_video) {
+    if (c->has_video)
+    {
         unsigned int size;
         if (c->cur_frame >= c->frames)
             return AVERROR_EOF;
-        if (c->curstrm == -1) {
+        if (c->curstrm == -1)
+        {
             c->pktsize = avio_rl32(s->pb) - 4;
             c->flags   = avio_rl16(s->pb);
             c->gmcsize = (c->flags & VB_HAS_GMC) ? 4 : 0;
@@ -207,7 +220,8 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
             c->curstrm = !!(c->flags & VB_HAS_AUDIO);
         }
 
-        if (!c->curstrm) {
+        if (!c->curstrm)
+        {
             if (c->pktsize < 2LL + c->sndsize + c->gmcsize)
                 return AVERROR_INVALIDDATA;
 
@@ -218,13 +232,16 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
             AV_WL16(pkt->data, c->flags);
             if (c->gmcsize)
                 memcpy(pkt->data + 2, c->gmc, c->gmcsize);
-            if (avio_read(s->pb, pkt->data + 2 + c->gmcsize, size) != size) {
+            if (avio_read(s->pb, pkt->data + 2 + c->gmcsize, size) != size)
+            {
                 av_free_packet(pkt);
                 return AVERROR_INVALIDDATA;
             }
             pkt->stream_index = 0;
             c->curstrm        = -1;
-        } else {
+        }
+        else
+        {
             int pktsize = av_get_packet(s->pb, pkt, c->sndsize - 4);
             if (pktsize < 0)
                 return AVERROR(EIO);
@@ -236,7 +253,9 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
             pkt->flags |= AV_PKT_FLAG_KEY;
         if (c->curstrm == -1)
             c->cur_frame++;
-    } else {
+    }
+    else
+    {
         int pktsize = av_get_packet(s->pb, pkt, c->block_align);
         if (!pktsize)
             return AVERROR_EOF;
@@ -247,7 +266,8 @@ static int siff_read_packet(AVFormatContext *s, AVPacket *pkt)
     return pkt->size;
 }
 
-AVInputFormat ff_siff_demuxer = {
+AVInputFormat ff_siff_demuxer =
+{
     .name           = "siff",
     .long_name      = NULL_IF_CONFIG_SMALL("Beam Software SIFF"),
     .priv_data_size = sizeof(SIFFContext),

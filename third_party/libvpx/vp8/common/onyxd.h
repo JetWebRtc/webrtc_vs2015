@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -23,13 +23,14 @@ extern "C" {
 
 struct VP8D_COMP;
 
-typedef struct {
-  int Width;
-  int Height;
-  int Version;
-  int postprocess;
-  int max_threads;
-  int error_concealment;
+typedef struct
+{
+    int Width;
+    int Height;
+    int Version;
+    int postprocess;
+    int max_threads;
+    int error_concealment;
 } VP8D_CONFIG;
 
 typedef enum { VP8D_OK = 0 } VP8D_SETTING;

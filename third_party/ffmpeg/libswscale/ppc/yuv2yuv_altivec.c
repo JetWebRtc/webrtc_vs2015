@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AltiVec-enhanced yuv-to-yuv conversion routines.
  *
  * Copyright (C) 2004 Romain Dolbeau <romain@dolbeau.org>
@@ -59,9 +59,11 @@ static int yv12toyuy2_unscaled_altivec(SwsContext *c, const uint8_t *src[],
      * 4) lum & chrom stride are multiples of 8
      */
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         int i;
-        for (i = 0; i < width - 31; i += 32) {
+        for (i = 0; i < width - 31; i += 32)
+        {
             const unsigned int j          = i >> 1;
             vector unsigned char v_yA     = vec_ld(i, ysrc);
             vector unsigned char v_yB     = vec_ld(i + 16, ysrc);
@@ -85,7 +87,8 @@ static int yv12toyuy2_unscaled_altivec(SwsContext *c, const uint8_t *src[],
             vec_st(v_yuy2_2, (i << 1) + 32, dst);
             vec_st(v_yuy2_3, (i << 1) + 48, dst);
         }
-        if (i < width) {
+        if (i < width)
+        {
             const unsigned int j          = i >> 1;
             vector unsigned char v_y1     = vec_ld(i, ysrc);
             vector unsigned char v_u      = vec_ld(j, usrc);
@@ -96,7 +99,8 @@ static int yv12toyuy2_unscaled_altivec(SwsContext *c, const uint8_t *src[],
             vec_st(v_yuy2_0, (i << 1), dst);
             vec_st(v_yuy2_1, (i << 1) + 16, dst);
         }
-        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1) {
+        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1)
+        {
             usrc += chromStride;
             vsrc += chromStride;
         }
@@ -135,9 +139,11 @@ static int yv12touyvy_unscaled_altivec(SwsContext *c, const uint8_t *src[],
      * 4) lum & chrom stride are multiples of 8
      */
 
-    for (y = 0; y < height; y++) {
+    for (y = 0; y < height; y++)
+    {
         int i;
-        for (i = 0; i < width - 31; i += 32) {
+        for (i = 0; i < width - 31; i += 32)
+        {
             const unsigned int j          = i >> 1;
             vector unsigned char v_yA     = vec_ld(i, ysrc);
             vector unsigned char v_yB     = vec_ld(i + 16, ysrc);
@@ -161,7 +167,8 @@ static int yv12touyvy_unscaled_altivec(SwsContext *c, const uint8_t *src[],
             vec_st(v_uyvy_2, (i << 1) + 32, dst);
             vec_st(v_uyvy_3, (i << 1) + 48, dst);
         }
-        if (i < width) {
+        if (i < width)
+        {
             const unsigned int j          = i >> 1;
             vector unsigned char v_y1     = vec_ld(i, ysrc);
             vector unsigned char v_u      = vec_ld(j, usrc);
@@ -172,7 +179,8 @@ static int yv12touyvy_unscaled_altivec(SwsContext *c, const uint8_t *src[],
             vec_st(v_uyvy_0, (i << 1), dst);
             vec_st(v_uyvy_1, (i << 1) + 16, dst);
         }
-        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1) {
+        if ((y & (vertLumPerChroma - 1)) == vertLumPerChroma - 1)
+        {
             usrc += chromStride;
             vsrc += chromStride;
         }
@@ -191,7 +199,8 @@ av_cold void ff_get_unscaled_swscale_ppc(SwsContext *c)
         return;
 
     if (!(c->srcW & 15) && !(c->flags & SWS_BITEXACT) &&
-        c->srcFormat == AV_PIX_FMT_YUV420P) {
+            c->srcFormat == AV_PIX_FMT_YUV420P)
+    {
         enum AVPixelFormat dstFormat = c->dstFormat;
 
         // unscaled YV12 -> packed YUV, we want speed

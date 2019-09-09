@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Mans Rullgard <mans@mansr.com>
  *
  * This file is part of FFmpeg.
@@ -70,8 +70,8 @@ static av_always_inline uint32_t AV_RB24(const void *p)
              "ldins.b  %0:u, %1  \n\t"
              : "=&r"(v)
              : "RKs12"(* (const uint8_t*)p),
-               "RKs12"(*((const uint8_t*)p+1)),
-               "m"    (*((const uint8_t*)p+2)));
+             "RKs12"(*((const uint8_t*)p+1)),
+             "m"    (*((const uint8_t*)p+2)));
     return v;
 }
 
@@ -84,8 +84,8 @@ static av_always_inline uint32_t AV_RL24(const void *p)
              "ldins.b  %0:u, %3  \n\t"
              : "=&r"(v)
              : "m"    (* (const uint8_t*)p),
-               "RKs12"(*((const uint8_t*)p+1)),
-               "RKs12"(*((const uint8_t*)p+2)));
+             "RKs12"(*((const uint8_t*)p+1)),
+             "RKs12"(*((const uint8_t*)p+2)));
     return v;
 }
 
@@ -112,7 +112,11 @@ static av_always_inline void AV_WB32(void *p, uint32_t v)
 #define AV_WB64 AV_WB64
 static av_always_inline void AV_WB64(void *p, uint64_t v)
 {
-    union { uint64_t v; uint32_t hl[2]; } vv = { v };
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } vv = { v };
     AV_WB32(p, vv.hl[0]);
     AV_WB32((uint32_t*)p+1, vv.hl[1]);
 }
@@ -120,7 +124,11 @@ static av_always_inline void AV_WB64(void *p, uint64_t v)
 #define AV_WL64 AV_WL64
 static av_always_inline void AV_WL64(void *p, uint64_t v)
 {
-    union { uint64_t v; uint32_t hl[2]; } vv = { v };
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } vv = { v };
     AV_WL32(p, vv.hl[1]);
     AV_WL32((uint32_t*)p+1, vv.hl[0]);
 }
@@ -137,9 +145,9 @@ static av_always_inline uint32_t AV_RB32(const void *p)
              "ldins.b  %0:t, %1  \n\t"
              : "=&r"(v)
              : "RKs12"(* (const uint8_t*)p),
-               "RKs12"(*((const uint8_t*)p+1)),
-               "RKs12"(*((const uint8_t*)p+2)),
-               "m"    (*((const uint8_t*)p+3)));
+             "RKs12"(*((const uint8_t*)p+1)),
+             "RKs12"(*((const uint8_t*)p+2)),
+             "m"    (*((const uint8_t*)p+3)));
     return v;
 }
 
@@ -153,9 +161,9 @@ static av_always_inline uint32_t AV_RL32(const void *p)
              "ldins.b  %0:t, %4  \n\t"
              : "=&r"(v)
              : "m"    (* (const uint8_t*)p),
-               "RKs12"(*((const uint8_t*)p+1)),
-               "RKs12"(*((const uint8_t*)p+2)),
-               "RKs12"(*((const uint8_t*)p+3)));
+             "RKs12"(*((const uint8_t*)p+1)),
+             "RKs12"(*((const uint8_t*)p+2)),
+             "RKs12"(*((const uint8_t*)p+3)));
     return v;
 }
 
@@ -164,7 +172,11 @@ static av_always_inline uint32_t AV_RL32(const void *p)
 #define AV_RB64 AV_RB64
 static av_always_inline uint64_t AV_RB64(const void *p)
 {
-    union { uint64_t v; uint32_t hl[2]; } v;
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } v;
     v.hl[0] = AV_RB32(p);
     v.hl[1] = AV_RB32((const uint32_t*)p+1);
     return v.v;
@@ -173,7 +185,11 @@ static av_always_inline uint64_t AV_RB64(const void *p)
 #define AV_RL64 AV_RL64
 static av_always_inline uint64_t AV_RL64(const void *p)
 {
-    union { uint64_t v; uint32_t hl[2]; } v;
+    union
+    {
+        uint64_t v;
+        uint32_t hl[2];
+    } v;
     v.hl[1] = AV_RL32(p);
     v.hl[0] = AV_RL32((const uint32_t*)p+1);
     return v.v;

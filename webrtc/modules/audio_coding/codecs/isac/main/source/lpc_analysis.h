@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -24,7 +24,7 @@
 double WebRtcIsac_LevDurb(double *a, double *k, double *r, size_t order);
 
 void WebRtcIsac_GetVars(const double *input, const int16_t *pitchGains_Q12,
-                       double *oldEnergy, double *varscale);
+                        double *oldEnergy, double *varscale);
 
 void WebRtcIsac_GetLpcCoefLb(double *inLo, double *inHi, MaskFiltstr *maskdata,
                              double signal_noise_ratio, const int16_t *pitchGains_Q12,

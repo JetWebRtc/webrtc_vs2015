@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011, Luca Barbato
  *
  * This file is part of FFmpeg.
@@ -43,7 +43,8 @@
 #include "libavutil/time_internal.h"
 #include "libavutil/timestamp.h"
 
-typedef struct SegmentListEntry {
+typedef struct SegmentListEntry
+{
     int index;
     double start_time, end_time;
     int64_t start_pts;
@@ -53,7 +54,8 @@ typedef struct SegmentListEntry {
     int64_t last_duration;
 } SegmentListEntry;
 
-typedef enum {
+typedef enum
+{
     LIST_TYPE_UNDEFINED = -1,
     LIST_TYPE_FLAT = 0,
     LIST_TYPE_CSV,
@@ -66,7 +68,8 @@ typedef enum {
 #define SEGMENT_LIST_FLAG_CACHE 1
 #define SEGMENT_LIST_FLAG_LIVE  2
 
-typedef struct SegmentContext {
+typedef struct SegmentContext
+{
     const AVClass *class;  /**< Class for private options. */
     int segment_idx;       ///< index of the segment file to write, starting from 0
     int segment_idx_wrap;  ///< number after which the index wraps
@@ -129,7 +132,8 @@ static void print_csv_escaped_str(AVIOContext *ctx, const char *str)
     if (needs_quoting)
         avio_w8(ctx, '"');
 
-    for (; *str; str++) {
+    for (; *str; str++)
+    {
         if (*str == '"')
             avio_w8(ctx, '"');
         avio_w8(ctx, *str);
@@ -154,7 +158,8 @@ static int segment_mux_init(AVFormatContext *s)
     oc->max_delay          = s->max_delay;
     av_dict_copy(&oc->metadata, s->metadata, 0);
 
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *st;
         AVCodecContext *icodec, *ocodec;
 
@@ -164,10 +169,13 @@ static int segment_mux_init(AVFormatContext *s)
         ocodec = st->codec;
         avcodec_copy_context(ocodec, icodec);
         if (!oc->oformat->codec_tag ||
-            av_codec_get_id (oc->oformat->codec_tag, icodec->codec_tag) == ocodec->codec_id ||
-            av_codec_get_tag(oc->oformat->codec_tag, icodec->codec_id) <= 0) {
+                av_codec_get_id (oc->oformat->codec_tag, icodec->codec_tag) == ocodec->codec_id ||
+                av_codec_get_tag(oc->oformat->codec_tag, icodec->codec_id) <= 0)
+        {
             ocodec->codec_tag = icodec->codec_tag;
-        } else {
+        }
+        else
+        {
             ocodec->codec_tag = 0;
         }
         st->sample_aspect_ratio = s->streams[i]->sample_aspect_ratio;
@@ -186,17 +194,21 @@ static int set_segment_filename(AVFormatContext *s)
 
     if (seg->segment_idx_wrap)
         seg->segment_idx %= seg->segment_idx_wrap;
-    if (seg->use_strftime) {
+    if (seg->use_strftime)
+    {
         time_t now0;
         struct tm *tm, tmpbuf;
         time(&now0);
         tm = localtime_r(&now0, &tmpbuf);
-        if (!strftime(oc->filename, sizeof(oc->filename), s->filename, tm)) {
+        if (!strftime(oc->filename, sizeof(oc->filename), s->filename, tm))
+        {
             av_log(oc, AV_LOG_ERROR, "Could not get segment filename with strftime\n");
             return AVERROR(EINVAL);
         }
-    } else if (av_get_frame_filename(oc->filename, sizeof(oc->filename),
-                                     s->filename, seg->segment_idx) < 0) {
+    }
+    else if (av_get_frame_filename(oc->filename, sizeof(oc->filename),
+                                   s->filename, seg->segment_idx) < 0)
+    {
         av_log(oc, AV_LOG_ERROR, "Invalid segment filename template '%s'\n", s->filename);
         return AVERROR(EINVAL);
     }
@@ -222,7 +234,8 @@ static int segment_start(AVFormatContext *s, int write_header)
     AVFormatContext *oc = seg->avf;
     int err = 0;
 
-    if (write_header) {
+    if (write_header)
+    {
         avformat_free_context(oc);
         seg->avf = NULL;
         if ((err = segment_mux_init(s)) < 0)
@@ -238,7 +251,8 @@ static int segment_start(AVFormatContext *s, int write_header)
         return err;
 
     if ((err = avio_open2(&oc->pb, oc->filename, AVIO_FLAG_WRITE,
-                          &s->interrupt_callback, NULL)) < 0) {
+                          &s->interrupt_callback, NULL)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Failed to open segment '%s'\n", oc->filename);
         return err;
     }
@@ -248,7 +262,8 @@ static int segment_start(AVFormatContext *s, int write_header)
     if (oc->oformat->priv_class && oc->priv_data)
         av_opt_set(oc->priv_data, "mpegts_flags", "+resend_headers", 0);
 
-    if (write_header) {
+    if (write_header)
+    {
         if ((err = avformat_write_header(oc, NULL)) < 0)
             return err;
     }
@@ -265,12 +280,14 @@ static int segment_list_open(AVFormatContext *s)
     snprintf(seg->temp_list_filename, sizeof(seg->temp_list_filename), seg->use_rename ? "%s.tmp" : "%s", seg->list);
     ret = avio_open2(&seg->list_pb, seg->temp_list_filename, AVIO_FLAG_WRITE,
                      &s->interrupt_callback, NULL);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Failed to open segment list '%s'\n", seg->list);
         return ret;
     }
 
-    if (seg->list_type == LIST_TYPE_M3U8 && seg->segment_list_entries) {
+    if (seg->list_type == LIST_TYPE_M3U8 && seg->segment_list_entries)
+    {
         SegmentListEntry *entry;
         double max_duration = 0;
 
@@ -286,7 +303,9 @@ static int segment_list_open(AVFormatContext *s)
         for (entry = seg->segment_list_entries; entry; entry = entry->next)
             max_duration = FFMAX(max_duration, entry->end_time - entry->start_time);
         avio_printf(seg->list_pb, "#EXT-X-TARGETDURATION:%"PRId64"\n", (int64_t)ceil(max_duration));
-    } else if (seg->list_type == LIST_TYPE_FFCONCAT) {
+    }
+    else if (seg->list_type == LIST_TYPE_FFCONCAT)
+    {
         avio_printf(seg->list_pb, "ffconcat version 1.0\n");
     }
 
@@ -298,7 +317,8 @@ static void segment_list_print_entry(AVIOContext      *list_ioctx,
                                      const SegmentListEntry *list_entry,
                                      void *log_ctx)
 {
-    switch (list_type) {
+    switch (list_type)
+    {
     case LIST_TYPE_FLAT:
         avio_printf(list_ioctx, "%s\n", list_entry->filename);
         break;
@@ -314,7 +334,8 @@ static void segment_list_print_entry(AVIOContext      *list_ioctx,
     case LIST_TYPE_FFCONCAT:
     {
         char *buf;
-        if (av_escape(&buf, list_entry->filename, NULL, AV_ESCAPE_MODE_AUTO, AV_ESCAPE_FLAG_WHITESPACE) < 0) {
+        if (av_escape(&buf, list_entry->filename, NULL, AV_ESCAPE_MODE_AUTO, AV_ESCAPE_FLAG_WHITESPACE) < 0)
+        {
             av_log(log_ctx, AV_LOG_WARNING,
                    "Error writing list entry '%s' in list file\n", list_entry->filename);
             return;
@@ -342,10 +363,13 @@ static int segment_end(AVFormatContext *s, int write_trailer, int is_last)
         av_log(s, AV_LOG_ERROR, "Failure occurred when ending segment '%s'\n",
                oc->filename);
 
-    if (seg->list) {
-        if (seg->list_size || seg->list_type == LIST_TYPE_M3U8) {
+    if (seg->list)
+    {
+        if (seg->list_size || seg->list_type == LIST_TYPE_M3U8)
+        {
             SegmentListEntry *entry = av_mallocz(sizeof(*entry));
-            if (!entry) {
+            if (!entry)
+            {
                 ret = AVERROR(ENOMEM);
                 goto end;
             }
@@ -360,7 +384,8 @@ static int segment_end(AVFormatContext *s, int write_trailer, int is_last)
             seg->segment_list_entries_end = entry;
 
             /* drop first item */
-            if (seg->list_size && seg->segment_count >= seg->list_size) {
+            if (seg->list_size && seg->segment_count >= seg->list_size)
+            {
                 entry = seg->segment_list_entries;
                 seg->segment_list_entries = seg->segment_list_entries->next;
                 av_freep(&entry->filename);
@@ -376,7 +401,9 @@ static int segment_end(AVFormatContext *s, int write_trailer, int is_last)
             avio_closep(&seg->list_pb);
             if (seg->use_rename)
                 ff_rename(seg->temp_list_filename, seg->list, s);
-        } else {
+        }
+        else
+        {
             segment_list_print_entry(seg->list_pb, seg->list_type, &seg->cur_entry, s);
             avio_flush(seg->list_pb);
         }
@@ -411,25 +438,29 @@ static int parse_times(void *log_ctx, int64_t **times, int *nb_times,
             (*nb_times)++;
 
     *times = av_malloc_array(*nb_times, sizeof(**times));
-    if (!*times) {
+    if (!*times)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Could not allocate forced times array\n");
         FAIL(AVERROR(ENOMEM));
     }
 
     p = times_str1;
-    for (i = 0; i < *nb_times; i++) {
+    for (i = 0; i < *nb_times; i++)
+    {
         int64_t t;
         char *tstr = av_strtok(p, ",", &saveptr);
         p = NULL;
 
-        if (!tstr || !tstr[0]) {
+        if (!tstr || !tstr[0])
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Empty time specification in times list %s\n",
                    times_str);
             FAIL(AVERROR(EINVAL));
         }
 
         ret = av_parse_time(&t, tstr, 1);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Invalid time duration specification '%s' in times list %s\n", tstr, times_str);
             FAIL(AVERROR(EINVAL));
@@ -437,7 +468,8 @@ static int parse_times(void *log_ctx, int64_t **times, int *nb_times,
         (*times)[i] = t;
 
         /* check on monotonicity */
-        if (i && (*times)[i-1] > (*times)[i]) {
+        if (i && (*times)[i-1] > (*times)[i])
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Specified time %f is greater than the following time %f\n",
                    (float)((*times)[i])/1000000, (float)((*times)[i-1])/1000000);
@@ -469,25 +501,29 @@ static int parse_frames(void *log_ctx, int **frames, int *nb_frames,
             (*nb_frames)++;
 
     *frames = av_malloc_array(*nb_frames, sizeof(**frames));
-    if (!*frames) {
+    if (!*frames)
+    {
         av_log(log_ctx, AV_LOG_ERROR, "Could not allocate forced frames array\n");
         FAIL(AVERROR(ENOMEM));
     }
 
     p = frames_str1;
-    for (i = 0; i < *nb_frames; i++) {
+    for (i = 0; i < *nb_frames; i++)
+    {
         long int f;
         char *tailptr;
         char *fstr = av_strtok(p, ",", &saveptr);
 
         p = NULL;
-        if (!fstr) {
+        if (!fstr)
+        {
             av_log(log_ctx, AV_LOG_ERROR, "Empty frame specification in frame list %s\n",
                    frames_str);
             FAIL(AVERROR(EINVAL));
         }
         f = strtol(fstr, &tailptr, 10);
-        if (*tailptr || f <= 0 || f >= INT_MAX) {
+        if (*tailptr || f <= 0 || f >= INT_MAX)
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Invalid argument '%s', must be a positive integer <= INT64_MAX\n",
                    fstr);
@@ -496,7 +532,8 @@ static int parse_frames(void *log_ctx, int **frames, int *nb_frames,
         (*frames)[i] = f;
 
         /* check on monotonicity */
-        if (i && (*frames)[i-1] > (*frames)[i]) {
+        if (i && (*frames)[i-1] > (*frames)[i])
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Specified frame %d is greater than the following frame %d\n",
                    (*frames)[i], (*frames)[i-1]);
@@ -516,7 +553,8 @@ static int open_null_ctx(AVIOContext **ctx)
     if (!buf)
         return AVERROR(ENOMEM);
     *ctx = avio_alloc_context(buf, buf_size, AVIO_FLAG_WRITE, NULL, NULL, NULL, NULL);
-    if (!*ctx) {
+    if (!*ctx)
+    {
         av_free(buf);
         return AVERROR(ENOMEM);
     }
@@ -535,10 +573,12 @@ static int select_reference_stream(AVFormatContext *s)
     int ret, i;
 
     seg->reference_stream_index = -1;
-    if (!strcmp(seg->reference_stream_specifier, "auto")) {
+    if (!strcmp(seg->reference_stream_specifier, "auto"))
+    {
         /* select first index of type with highest priority */
         int type_index_map[AVMEDIA_TYPE_NB];
-        static const enum AVMediaType type_priority_list[] = {
+        static const enum AVMediaType type_priority_list[] =
+        {
             AVMEDIA_TYPE_VIDEO,
             AVMEDIA_TYPE_AUDIO,
             AVMEDIA_TYPE_SUBTITLE,
@@ -551,33 +591,40 @@ static int select_reference_stream(AVFormatContext *s)
             type_index_map[i] = -1;
 
         /* select first index for each type */
-        for (i = 0; i < s->nb_streams; i++) {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             type = s->streams[i]->codec->codec_type;
             if ((unsigned)type < AVMEDIA_TYPE_NB && type_index_map[type] == -1
-                /* ignore attached pictures/cover art streams */
-                && !(s->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC))
+                    /* ignore attached pictures/cover art streams */
+                    && !(s->streams[i]->disposition & AV_DISPOSITION_ATTACHED_PIC))
                 type_index_map[type] = i;
         }
 
-        for (i = 0; i < FF_ARRAY_ELEMS(type_priority_list); i++) {
+        for (i = 0; i < FF_ARRAY_ELEMS(type_priority_list); i++)
+        {
             type = type_priority_list[i];
             if ((seg->reference_stream_index = type_index_map[type]) >= 0)
                 break;
         }
-    } else {
-        for (i = 0; i < s->nb_streams; i++) {
+    }
+    else
+    {
+        for (i = 0; i < s->nb_streams; i++)
+        {
             ret = avformat_match_stream_specifier(s, s->streams[i],
                                                   seg->reference_stream_specifier);
             if (ret < 0)
                 return ret;
-            if (ret > 0) {
+            if (ret > 0)
+            {
                 seg->reference_stream_index = i;
                 break;
             }
         }
     }
 
-    if (seg->reference_stream_index < 0) {
+    if (seg->reference_stream_index < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Could not select stream matching identifier '%s'\n",
                seg->reference_stream_specifier);
         return AVERROR(EINVAL);
@@ -605,29 +652,37 @@ static int seg_write_header(AVFormatContext *s)
     if (!seg->write_header_trailer)
         seg->individual_header_trailer = 0;
 
-    if (seg->header_filename) {
+    if (seg->header_filename)
+    {
         seg->write_header_trailer = 1;
         seg->individual_header_trailer = 0;
     }
 
-    if (!!seg->time_str + !!seg->times_str + !!seg->frames_str > 1) {
+    if (!!seg->time_str + !!seg->times_str + !!seg->frames_str > 1)
+    {
         av_log(s, AV_LOG_ERROR,
                "segment_time, segment_times, and segment_frames options "
                "are mutually exclusive, select just one of them\n");
         return AVERROR(EINVAL);
     }
 
-    if (seg->times_str) {
+    if (seg->times_str)
+    {
         if ((ret = parse_times(s, &seg->times, &seg->nb_times, seg->times_str)) < 0)
             return ret;
-    } else if (seg->frames_str) {
+    }
+    else if (seg->frames_str)
+    {
         if ((ret = parse_frames(s, &seg->frames, &seg->nb_frames, seg->frames_str)) < 0)
             return ret;
-    } else {
+    }
+    else
+    {
         /* set default value if not specified */
         if (!seg->time_str)
             seg->time_str = av_strdup("2");
-        if ((ret = av_parse_time(&seg->time, seg->time_str, 1)) < 0) {
+        if ((ret = av_parse_time(&seg->time, seg->time_str, 1)) < 0)
+        {
             av_log(s, AV_LOG_ERROR,
                    "Invalid time duration specification '%s' for segment_time option\n",
                    seg->time_str);
@@ -635,27 +690,34 @@ static int seg_write_header(AVFormatContext *s)
         }
     }
 
-    if (seg->format_options_str) {
+    if (seg->format_options_str)
+    {
         ret = av_dict_parse_string(&seg->format_options, seg->format_options_str, "=", ":", 0);
-        if (ret < 0) {
+        if (ret < 0)
+        {
             av_log(s, AV_LOG_ERROR, "Could not parse format options list '%s'\n",
                    seg->format_options_str);
             goto fail;
         }
     }
 
-    if (seg->list) {
-        if (seg->list_type == LIST_TYPE_UNDEFINED) {
+    if (seg->list)
+    {
+        if (seg->list_type == LIST_TYPE_UNDEFINED)
+        {
             if      (av_match_ext(seg->list, "csv" )) seg->list_type = LIST_TYPE_CSV;
             else if (av_match_ext(seg->list, "ext" )) seg->list_type = LIST_TYPE_EXT;
             else if (av_match_ext(seg->list, "m3u8")) seg->list_type = LIST_TYPE_M3U8;
             else if (av_match_ext(seg->list, "ffcat,ffconcat")) seg->list_type = LIST_TYPE_FFCONCAT;
             else                                      seg->list_type = LIST_TYPE_FLAT;
         }
-        if (!seg->list_size && seg->list_type != LIST_TYPE_M3U8) {
+        if (!seg->list_size && seg->list_type != LIST_TYPE_M3U8)
+        {
             if ((ret = segment_list_open(s)) < 0)
                 goto fail;
-        } else {
+        }
+        else
+        {
             const char *proto = avio_find_protocol_name(s->filename);
             seg->use_rename = proto && !strcmp(proto, "file");
         }
@@ -671,11 +733,13 @@ static int seg_write_header(AVFormatContext *s)
 
     seg->oformat = av_guess_format(seg->format, s->filename, NULL);
 
-    if (!seg->oformat) {
+    if (!seg->oformat)
+    {
         ret = AVERROR_MUXER_NOT_FOUND;
         goto fail;
     }
-    if (seg->oformat->flags & AVFMT_NOFILE) {
+    if (seg->oformat->flags & AVFMT_NOFILE)
+    {
         av_log(s, AV_LOG_ERROR, "format %s not supported.\n",
                seg->oformat->name);
         ret = AVERROR(EINVAL);
@@ -689,36 +753,43 @@ static int seg_write_header(AVFormatContext *s)
     if ((ret = set_segment_filename(s)) < 0)
         goto fail;
 
-    if (seg->write_header_trailer) {
+    if (seg->write_header_trailer)
+    {
         if ((ret = avio_open2(&oc->pb, seg->header_filename ? seg->header_filename : oc->filename, AVIO_FLAG_WRITE,
-                              &s->interrupt_callback, NULL)) < 0) {
+                              &s->interrupt_callback, NULL)) < 0)
+        {
             av_log(s, AV_LOG_ERROR, "Failed to open segment '%s'\n", oc->filename);
             goto fail;
         }
         if (!seg->individual_header_trailer)
             oc->pb->seekable = 0;
-    } else {
+    }
+    else
+    {
         if ((ret = open_null_ctx(&oc->pb)) < 0)
             goto fail;
     }
 
     av_dict_copy(&options, seg->format_options, 0);
     ret = avformat_write_header(oc, &options);
-    if (av_dict_count(options)) {
+    if (av_dict_count(options))
+    {
         av_log(s, AV_LOG_ERROR,
                "Some of the provided format options in '%s' are not recognized\n", seg->format_options_str);
         ret = AVERROR(EINVAL);
         goto fail;
     }
 
-    if (ret < 0) {
+    if (ret < 0)
+    {
         avio_closep(&oc->pb);
         goto fail;
     }
     seg->segment_frame_count = 0;
 
     av_assert0(s->nb_streams == oc->nb_streams);
-    for (i = 0; i < s->nb_streams; i++) {
+    for (i = 0; i < s->nb_streams; i++)
+    {
         AVStream *inner_st  = oc->streams[i];
         AVStream *outer_st = s->streams[i];
         avpriv_set_pts_info(outer_st, inner_st->pts_wrap_bits, inner_st->time_base.num, inner_st->time_base.den);
@@ -727,11 +798,15 @@ static int seg_write_header(AVFormatContext *s)
     if (oc->avoid_negative_ts > 0 && s->avoid_negative_ts < 0)
         s->avoid_negative_ts = 1;
 
-    if (!seg->write_header_trailer || seg->header_filename) {
-        if (seg->header_filename) {
+    if (!seg->write_header_trailer || seg->header_filename)
+    {
+        if (seg->header_filename)
+        {
             av_write_frame(oc, NULL);
             avio_closep(&oc->pb);
-        } else {
+        }
+        else
+        {
             close_null_ctxp(&oc->pb);
         }
         if ((ret = avio_open2(&oc->pb, oc->filename, AVIO_FLAG_WRITE,
@@ -763,25 +838,34 @@ static int seg_write_packet(AVFormatContext *s, AVPacket *pkt)
     if (!seg->avf)
         return AVERROR(EINVAL);
 
-    if (seg->times) {
+    if (seg->times)
+    {
         end_pts = seg->segment_count < seg->nb_times ?
-            seg->times[seg->segment_count] : INT64_MAX;
-    } else if (seg->frames) {
+                  seg->times[seg->segment_count] : INT64_MAX;
+    }
+    else if (seg->frames)
+    {
         start_frame = seg->segment_count < seg->nb_frames ?
-            seg->frames[seg->segment_count] : INT_MAX;
-    } else {
-        if (seg->use_clocktime) {
+                      seg->frames[seg->segment_count] : INT_MAX;
+    }
+    else
+    {
+        if (seg->use_clocktime)
+        {
             int64_t avgt = av_gettime();
             time_t sec = avgt / 1000000;
             localtime_r(&sec, &ti);
             usecs = (int64_t)(ti.tm_hour * 3600 + ti.tm_min * 60 + ti.tm_sec) * 1000000 + (avgt % 1000000);
             wrapped_val = usecs % seg->time;
-            if (seg->last_cut != usecs && wrapped_val < seg->last_val) {
+            if (seg->last_cut != usecs && wrapped_val < seg->last_val)
+            {
                 seg->cut_pending = 1;
                 seg->last_cut = usecs;
             }
             seg->last_val = wrapped_val;
-        } else {
+        }
+        else
+        {
             end_pts = seg->time * (seg->segment_count + 1);
         }
     }
@@ -793,12 +877,13 @@ static int seg_write_packet(AVFormatContext *s, AVPacket *pkt)
             pkt->stream_index == seg->reference_stream_index ? seg->frame_count : -1);
 
     if (pkt->stream_index == seg->reference_stream_index &&
-        (pkt->flags & AV_PKT_FLAG_KEY || seg->break_non_keyframes) &&
-        seg->segment_frame_count > 0 &&
-        (seg->cut_pending || seg->frame_count >= start_frame ||
-         (pkt->pts != AV_NOPTS_VALUE &&
-          av_compare_ts(pkt->pts, st->time_base,
-                        end_pts-seg->time_delta, AV_TIME_BASE_Q) >= 0))) {
+            (pkt->flags & AV_PKT_FLAG_KEY || seg->break_non_keyframes) &&
+            seg->segment_frame_count > 0 &&
+            (seg->cut_pending || seg->frame_count >= start_frame ||
+             (pkt->pts != AV_NOPTS_VALUE &&
+              av_compare_ts(pkt->pts, st->time_base,
+                            end_pts-seg->time_delta, AV_TIME_BASE_Q) >= 0)))
+    {
         /* sanitize end time in case last packet didn't have a defined duration */
         if (seg->cur_entry.last_duration == 0)
             seg->cur_entry.end_time = (double)pkt->pts * av_q2d(st->time_base);
@@ -814,14 +899,17 @@ static int seg_write_packet(AVFormatContext *s, AVPacket *pkt)
         seg->cur_entry.start_time = (double)pkt->pts * av_q2d(st->time_base);
         seg->cur_entry.start_pts = av_rescale_q(pkt->pts, st->time_base, AV_TIME_BASE_Q);
         seg->cur_entry.end_time = seg->cur_entry.start_time +
-            pkt->pts != AV_NOPTS_VALUE ? (double)(pkt->pts + pkt->duration) * av_q2d(st->time_base) : 0;
-    } else if (pkt->pts != AV_NOPTS_VALUE && pkt->stream_index == seg->reference_stream_index) {
+                                  pkt->pts != AV_NOPTS_VALUE ? (double)(pkt->pts + pkt->duration) * av_q2d(st->time_base) : 0;
+    }
+    else if (pkt->pts != AV_NOPTS_VALUE && pkt->stream_index == seg->reference_stream_index)
+    {
         seg->cur_entry.end_time =
             FFMAX(seg->cur_entry.end_time, (double)(pkt->pts + pkt->duration) * av_q2d(st->time_base));
         seg->cur_entry.last_duration = pkt->duration;
     }
 
-    if (seg->segment_frame_count == 0) {
+    if (seg->segment_frame_count == 0)
+    {
         av_log(s, AV_LOG_VERBOSE, "segment:'%s' starts with packet stream:%d pts:%s pts_time:%s frame:%d\n",
                seg->avf->filename, pkt->stream_index,
                av_ts2str(pkt->pts), av_ts2timestr(pkt->pts, &st->time_base), seg->frame_count);
@@ -848,7 +936,8 @@ static int seg_write_packet(AVFormatContext *s, AVPacket *pkt)
     ret = ff_write_chained(seg->avf, pkt->stream_index, pkt, s, seg->initial_offset || seg->reset_timestamps);
 
 fail:
-    if (pkt->stream_index == seg->reference_stream_index) {
+    if (pkt->stream_index == seg->reference_stream_index)
+    {
         seg->frame_count++;
         seg->segment_frame_count++;
     }
@@ -869,14 +958,17 @@ static int seg_write_trailer(struct AVFormatContext *s)
     if (!oc)
         goto fail;
 
-    if (!seg->write_header_trailer) {
+    if (!seg->write_header_trailer)
+    {
         if ((ret = segment_end(s, 0, 1)) < 0)
             goto fail;
         if ((ret = open_null_ctx(&oc->pb)) < 0)
             goto fail;
         ret = av_write_trailer(oc);
         close_null_ctxp(&oc->pb);
-    } else {
+    }
+    else
+    {
         ret = segment_end(s, 1, 1);
     }
 fail:
@@ -890,7 +982,8 @@ fail:
     av_freep(&seg->cur_entry.filename);
 
     cur = seg->segment_list_entries;
-    while (cur) {
+    while (cur)
+    {
         next = cur->next;
         av_freep(&cur->filename);
         av_free(cur);
@@ -904,7 +997,8 @@ fail:
 
 #define OFFSET(x) offsetof(SegmentContext, x)
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "reference_stream",  "set reference stream", OFFSET(reference_stream_specifier), AV_OPT_TYPE_STRING, {.str = "auto"}, CHAR_MIN, CHAR_MAX, E },
     { "segment_format",    "set container format used for the segments", OFFSET(format),  AV_OPT_TYPE_STRING, {.str = NULL},  0, 0,       E },
     { "segment_format_options", "set list of options for the container format used for the segments", OFFSET(format_options_str), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, E },
@@ -944,14 +1038,16 @@ static const AVOption options[] = {
     { NULL },
 };
 
-static const AVClass seg_class = {
+static const AVClass seg_class =
+{
     .class_name = "segment muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_segment_muxer = {
+AVOutputFormat ff_segment_muxer =
+{
     .name           = "segment",
     .long_name      = NULL_IF_CONFIG_SMALL("segment"),
     .priv_data_size = sizeof(SegmentContext),
@@ -962,14 +1058,16 @@ AVOutputFormat ff_segment_muxer = {
     .priv_class     = &seg_class,
 };
 
-static const AVClass sseg_class = {
+static const AVClass sseg_class =
+{
     .class_name = "stream_segment muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_stream_segment_muxer = {
+AVOutputFormat ff_stream_segment_muxer =
+{
     .name           = "stream_segment,ssegment",
     .long_name      = NULL_IF_CONFIG_SMALL("streaming segment muxer"),
     .priv_data_size = sizeof(SegmentContext),

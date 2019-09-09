@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -31,7 +31,8 @@
 
 #if CONFIG_DVPROFILE
 
-static const uint8_t dv_audio_shuffle525[10][9] = {
+static const uint8_t dv_audio_shuffle525[10][9] =
+{
     {  0, 30, 60, 20, 50, 80, 10, 40, 70 }, /* 1st channel */
     {  6, 36, 66, 26, 56, 86, 16, 46, 76 },
     { 12, 42, 72,  2, 32, 62, 22, 52, 82 },
@@ -45,7 +46,8 @@ static const uint8_t dv_audio_shuffle525[10][9] = {
     { 25, 55, 85, 15, 45, 75,  5, 35, 65 },
 };
 
-static const uint8_t dv_audio_shuffle625[12][9] = {
+static const uint8_t dv_audio_shuffle625[12][9] =
+{
     {  0, 36,  72, 26, 62,  98, 16, 52,  88 }, /* 1st channel */
     {  6, 42,  78, 32, 68, 104, 22, 58,  94 },
     { 12, 48,  84,  2, 38,  74, 28, 64, 100 },
@@ -62,191 +64,215 @@ static const uint8_t dv_audio_shuffle625[12][9] = {
 };
 
 /* macroblock bit budgets */
-static const uint8_t block_sizes_dv2550[8] = {
+static const uint8_t block_sizes_dv2550[8] =
+{
     112, 112, 112, 112, 80, 80, 0, 0,
 };
 
-static const uint8_t block_sizes_dv100[8] = {
+static const uint8_t block_sizes_dv100[8] =
+{
     80, 80, 80, 80, 80, 80, 64, 64,
 };
 
-static const AVDVProfile dv_profiles[] = {
-    { .dsf                = 0,
-      .video_stype        = 0x0,
-      .frame_size         = 120000, /* IEC 61834, SMPTE-314M - 525/60 (NTSC) */
-      .difseg_size        = 10,
-      .n_difchan          = 1,
-      .time_base          = { 1001, 30000 },
-      .ltc_divisor        = 30,
-      .height             = 480,
-      .width              = 720,
-      .sar                = { { 8, 9 }, { 32, 27 } },
-      .pix_fmt            = AV_PIX_FMT_YUV411P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 90,
-      .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
-      .audio_shuffle      = dv_audio_shuffle525, },
-    { .dsf                = 1,
-      .video_stype        = 0x0,
-      .frame_size         = 144000, /* IEC 61834 - 625/50 (PAL) */
-      .difseg_size        = 12,
-      .n_difchan          = 1,
-      .time_base          = { 1, 25 },
-      .ltc_divisor        = 25,
-      .height             = 576,
-      .width              = 720,
-      .sar                = { { 16, 15 }, { 64, 45 } },
-      .pix_fmt            = AV_PIX_FMT_YUV420P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 108,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, },
-    { .dsf                = 1,
-      .video_stype        = 0x0,
-      .frame_size         = 144000, /* SMPTE-314M - 625/50 (PAL) */
-      .difseg_size        = 12,
-      .n_difchan          = 1,
-      .time_base          = { 1, 25 },
-      .ltc_divisor        = 25,
-      .height             = 576,
-      .width              = 720,
-      .sar                = { { 16, 15 }, { 64, 45 } },
-      .pix_fmt            = AV_PIX_FMT_YUV411P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 108,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, },
-    { .dsf                = 0,
-      .video_stype        = 0x4,
-      .frame_size         = 240000, /* SMPTE-314M - 525/60 (NTSC) 50 Mbps */
-      .difseg_size        = 10,    /* also known as "DVCPRO50" */
-      .n_difchan          = 2,
-      .time_base          = { 1001, 30000 },
-      .ltc_divisor        = 30,
-      .height             = 480,
-      .width              = 720,
-      .sar                = { { 8, 9 }, { 32, 27 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 90,
-      .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
-      .audio_shuffle      = dv_audio_shuffle525, },
-    { .dsf                = 1,
-      .video_stype        = 0x4,
-      .frame_size         = 288000, /* SMPTE-314M - 625/50 (PAL) 50 Mbps */
-      .difseg_size        = 12,    /* also known as "DVCPRO50" */
-      .n_difchan          = 2,
-      .time_base          = { 1, 25 },
-      .ltc_divisor        = 25,
-      .height             = 576,
-      .width              = 720,
-      .sar                = { { 16, 15 }, { 64, 45 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 108,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, },
-    { .dsf                = 0,
-      .video_stype        = 0x14,
-      .frame_size         = 480000, /* SMPTE-370M - 1080i60 100 Mbps */
-      .difseg_size        = 10,    /* also known as "DVCPRO HD" */
-      .n_difchan          = 4,
-      .time_base          = { 1001, 30000 },
-      .ltc_divisor        = 30,
-      .height             = 1080,
-      .width              = 1280,
-      .sar                = { { 1, 1 }, { 3, 2 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 8,
-      .block_sizes        = block_sizes_dv100,
-      .audio_stride       = 90,
-      .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
-      .audio_shuffle      = dv_audio_shuffle525, },
-    { .dsf                = 1,
-      .video_stype        = 0x14,
-      .frame_size         = 576000, /* SMPTE-370M - 1080i50 100 Mbps */
-      .difseg_size        = 12,    /* also known as "DVCPRO HD" */
-      .n_difchan          = 4,
-      .time_base          = { 1, 25 },
-      .ltc_divisor        = 25,
-      .height             = 1080,
-      .width              = 1440,
-      .sar                = { { 1, 1 }, { 4, 3 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 8,
-      .block_sizes        = block_sizes_dv100,
-      .audio_stride       = 108,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, },
-    { .dsf                = 0,
-      .video_stype        = 0x18,
-      .frame_size         = 240000, /* SMPTE-370M - 720p60 100 Mbps */
-      .difseg_size        = 10,    /* also known as "DVCPRO HD" */
-      .n_difchan          = 2,
-      .time_base          = { 1001, 60000 },
-      .ltc_divisor        = 60,
-      .height             = 720,
-      .width              = 960,
-      .sar                = { { 1, 1 }, { 4, 3 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 8,
-      .block_sizes        = block_sizes_dv100,
-      .audio_stride       = 90,
-      .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
-      .audio_shuffle      = dv_audio_shuffle525, },
-    { .dsf                = 1,
-      .video_stype        = 0x18,
-      .frame_size         = 288000, /* SMPTE-370M - 720p50 100 Mbps */
-      .difseg_size        = 12,    /* also known as "DVCPRO HD" */
-      .n_difchan          = 2,
-      .time_base          = { 1, 50 },
-      .ltc_divisor        = 50,
-      .height             = 720,
-      .width              = 960,
-      .sar                = { { 1, 1 }, { 4, 3 } },
-      .pix_fmt            = AV_PIX_FMT_YUV422P,
-      .bpm                = 8,
-      .block_sizes        = block_sizes_dv100,
-      .audio_stride       = 90,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, },
-    { .dsf                = 1,
-      .video_stype        = 0x1,
-      .frame_size         = 144000, /* IEC 61883-5 - 625/50 (PAL) */
-      .difseg_size        = 12,
-      .n_difchan          = 1,
-      .time_base          = { 1, 25 },
-      .ltc_divisor        = 25,
-      .height             = 576,
-      .width              = 720,
-      .sar                = { { 16, 15 }, { 64, 45 } },
-      .pix_fmt            = AV_PIX_FMT_YUV420P,
-      .bpm                = 6,
-      .block_sizes        = block_sizes_dv2550,
-      .audio_stride       = 108,
-      .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
-      .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
-      .audio_shuffle      = dv_audio_shuffle625, }
+static const AVDVProfile dv_profiles[] =
+{
+    {
+        .dsf                = 0,
+        .video_stype        = 0x0,
+        .frame_size         = 120000, /* IEC 61834, SMPTE-314M - 525/60 (NTSC) */
+        .difseg_size        = 10,
+        .n_difchan          = 1,
+        .time_base          = { 1001, 30000 },
+        .ltc_divisor        = 30,
+        .height             = 480,
+        .width              = 720,
+        .sar                = { { 8, 9 }, { 32, 27 } },
+        .pix_fmt            = AV_PIX_FMT_YUV411P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 90,
+        .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
+        .audio_shuffle      = dv_audio_shuffle525,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x0,
+        .frame_size         = 144000, /* IEC 61834 - 625/50 (PAL) */
+        .difseg_size        = 12,
+        .n_difchan          = 1,
+        .time_base          = { 1, 25 },
+        .ltc_divisor        = 25,
+        .height             = 576,
+        .width              = 720,
+        .sar                = { { 16, 15 }, { 64, 45 } },
+        .pix_fmt            = AV_PIX_FMT_YUV420P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 108,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x0,
+        .frame_size         = 144000, /* SMPTE-314M - 625/50 (PAL) */
+        .difseg_size        = 12,
+        .n_difchan          = 1,
+        .time_base          = { 1, 25 },
+        .ltc_divisor        = 25,
+        .height             = 576,
+        .width              = 720,
+        .sar                = { { 16, 15 }, { 64, 45 } },
+        .pix_fmt            = AV_PIX_FMT_YUV411P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 108,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    },
+    {
+        .dsf                = 0,
+        .video_stype        = 0x4,
+        .frame_size         = 240000, /* SMPTE-314M - 525/60 (NTSC) 50 Mbps */
+        .difseg_size        = 10,    /* also known as "DVCPRO50" */
+        .n_difchan          = 2,
+        .time_base          = { 1001, 30000 },
+        .ltc_divisor        = 30,
+        .height             = 480,
+        .width              = 720,
+        .sar                = { { 8, 9 }, { 32, 27 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 90,
+        .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
+        .audio_shuffle      = dv_audio_shuffle525,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x4,
+        .frame_size         = 288000, /* SMPTE-314M - 625/50 (PAL) 50 Mbps */
+        .difseg_size        = 12,    /* also known as "DVCPRO50" */
+        .n_difchan          = 2,
+        .time_base          = { 1, 25 },
+        .ltc_divisor        = 25,
+        .height             = 576,
+        .width              = 720,
+        .sar                = { { 16, 15 }, { 64, 45 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 108,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    },
+    {
+        .dsf                = 0,
+        .video_stype        = 0x14,
+        .frame_size         = 480000, /* SMPTE-370M - 1080i60 100 Mbps */
+        .difseg_size        = 10,    /* also known as "DVCPRO HD" */
+        .n_difchan          = 4,
+        .time_base          = { 1001, 30000 },
+        .ltc_divisor        = 30,
+        .height             = 1080,
+        .width              = 1280,
+        .sar                = { { 1, 1 }, { 3, 2 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 8,
+        .block_sizes        = block_sizes_dv100,
+        .audio_stride       = 90,
+        .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
+        .audio_shuffle      = dv_audio_shuffle525,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x14,
+        .frame_size         = 576000, /* SMPTE-370M - 1080i50 100 Mbps */
+        .difseg_size        = 12,    /* also known as "DVCPRO HD" */
+        .n_difchan          = 4,
+        .time_base          = { 1, 25 },
+        .ltc_divisor        = 25,
+        .height             = 1080,
+        .width              = 1440,
+        .sar                = { { 1, 1 }, { 4, 3 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 8,
+        .block_sizes        = block_sizes_dv100,
+        .audio_stride       = 108,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    },
+    {
+        .dsf                = 0,
+        .video_stype        = 0x18,
+        .frame_size         = 240000, /* SMPTE-370M - 720p60 100 Mbps */
+        .difseg_size        = 10,    /* also known as "DVCPRO HD" */
+        .n_difchan          = 2,
+        .time_base          = { 1001, 60000 },
+        .ltc_divisor        = 60,
+        .height             = 720,
+        .width              = 960,
+        .sar                = { { 1, 1 }, { 4, 3 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 8,
+        .block_sizes        = block_sizes_dv100,
+        .audio_stride       = 90,
+        .audio_min_samples  = { 1580, 1452, 1053 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1600, 1602, 1602, 1602, 1602 },  /* per SMPTE-314M */
+        .audio_shuffle      = dv_audio_shuffle525,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x18,
+        .frame_size         = 288000, /* SMPTE-370M - 720p50 100 Mbps */
+        .difseg_size        = 12,    /* also known as "DVCPRO HD" */
+        .n_difchan          = 2,
+        .time_base          = { 1, 50 },
+        .ltc_divisor        = 50,
+        .height             = 720,
+        .width              = 960,
+        .sar                = { { 1, 1 }, { 4, 3 } },
+        .pix_fmt            = AV_PIX_FMT_YUV422P,
+        .bpm                = 8,
+        .block_sizes        = block_sizes_dv100,
+        .audio_stride       = 90,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    },
+    {
+        .dsf                = 1,
+        .video_stype        = 0x1,
+        .frame_size         = 144000, /* IEC 61883-5 - 625/50 (PAL) */
+        .difseg_size        = 12,
+        .n_difchan          = 1,
+        .time_base          = { 1, 25 },
+        .ltc_divisor        = 25,
+        .height             = 576,
+        .width              = 720,
+        .sar                = { { 16, 15 }, { 64, 45 } },
+        .pix_fmt            = AV_PIX_FMT_YUV420P,
+        .bpm                = 6,
+        .block_sizes        = block_sizes_dv2550,
+        .audio_stride       = 108,
+        .audio_min_samples  = { 1896, 1742, 1264 }, /* for 48, 44.1 and 32kHz */
+        .audio_samples_dist = { 1920, 1920, 1920, 1920, 1920 },
+        .audio_shuffle      = dv_audio_shuffle625,
+    }
 };
 
 void ff_dv_print_profiles(void *logctx, int loglevel)
 {
     int i;
-    for (i = 0; i < FF_ARRAY_ELEMS(dv_profiles); i++) {
+    for (i = 0; i < FF_ARRAY_ELEMS(dv_profiles); i++)
+    {
         const AVDVProfile *p = &dv_profiles[i];
         av_log(logctx, loglevel,
                "Frame size: %dx%d; pixel format: %s, framerate: %d/%d\n",
@@ -271,14 +297,14 @@ const AVDVProfile* ff_dv_frame_profile(AVCodecContext* codec, const AVDVProfile 
 
     /* 576i50 25Mbps 4:1:1 is a special case */
     if ((dsf == 1 && stype == 0 && frame[4] & 0x07 /* the APT field */) ||
-        (stype == 31 && codec && codec->codec_tag==AV_RL32("SL25") && codec->coded_width==720 && codec->coded_height==576))
+            (stype == 31 && codec && codec->codec_tag==AV_RL32("SL25") && codec->coded_width==720 && codec->coded_height==576))
         return &dv_profiles[2];
 
     if(   stype == 0
-       && codec
-       && (codec->codec_tag==AV_RL32("dvsd") || codec->codec_tag==AV_RL32("CDVC"))
-       && codec->coded_width ==720
-       && codec->coded_height==576)
+            && codec
+            && (codec->codec_tag==AV_RL32("dvsd") || codec->codec_tag==AV_RL32("CDVC"))
+            && codec->coded_width ==720
+            && codec->coded_height==576)
         return &dv_profiles[1];
 
     for (i = 0; i < FF_ARRAY_ELEMS(dv_profiles); i++)
@@ -299,7 +325,7 @@ const AVDVProfile* ff_dv_frame_profile(AVCodecContext* codec, const AVDVProfile 
 
 #if FF_API_DV_FRAME_PROFILE
 const AVDVProfile* avpriv_dv_frame_profile2(AVCodecContext* codec, const AVDVProfile *sys,
-                                            const uint8_t *frame, unsigned buf_size)
+        const uint8_t *frame, unsigned buf_size)
 {
     return ff_dv_frame_profile(codec, sys, frame, buf_size);
 }
@@ -315,15 +341,18 @@ const AVDVProfile *av_dv_codec_profile(int width, int height,
                                        enum AVPixelFormat pix_fmt)
 {
 #if CONFIG_DVPROFILE
-    return av_dv_codec_profile2(width, height, pix_fmt, (AVRational){0, 0});
+    return av_dv_codec_profile2(width, height, pix_fmt, (AVRational)
+    {
+        0, 0
+    });
 #endif
 
     return NULL;
 }
 
 const AVDVProfile *av_dv_codec_profile2(int width, int height,
-                                       enum AVPixelFormat pix_fmt,
-                                       AVRational frame_rate)
+                                        enum AVPixelFormat pix_fmt,
+                                        AVRational frame_rate)
 {
     const AVDVProfile *p = NULL;
 #if CONFIG_DVPROFILE
@@ -333,8 +362,8 @@ const AVDVProfile *av_dv_codec_profile2(int width, int height,
 
     for (i = 0; i < FF_ARRAY_ELEMS(dv_profiles); i++)
         if (height  == dv_profiles[i].height  &&
-            pix_fmt == dv_profiles[i].pix_fmt &&
-            width   == dv_profiles[i].width)
+        pix_fmt == dv_profiles[i].pix_fmt &&
+        width   == dv_profiles[i].width)
         {
             if( invalid_framerate || av_div_q(dv_profiles[i].time_base, frame_rate).num == 1 )
                 return &dv_profiles[i];

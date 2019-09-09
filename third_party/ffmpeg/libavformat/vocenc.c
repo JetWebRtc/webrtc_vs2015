@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Creative Voice File muxer.
  * Copyright (c) 2006  Aurelien Jacobs <aurel@gnuage.org>
  *
@@ -23,7 +23,8 @@
 #include "internal.h"
 
 
-typedef struct voc_enc_context {
+typedef struct voc_enc_context
+{
     int param_written;
 } VocEncContext;
 
@@ -35,10 +36,11 @@ static int voc_write_header(AVFormatContext *s)
     const int version = 0x0114;
 
     if (s->nb_streams != 1
-        || s->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
+            || s->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
         return AVERROR_PATCHWELCOME;
 
-    if (!enc->codec_tag && enc->codec_id != AV_CODEC_ID_PCM_U8) {
+    if (!enc->codec_tag && enc->codec_id != AV_CODEC_ID_PCM_U8)
+    {
         av_log(s, AV_LOG_ERROR, "unsupported codec\n");
         return AVERROR(EINVAL);
     }
@@ -57,8 +59,10 @@ static int voc_write_packet(AVFormatContext *s, AVPacket *pkt)
     AVCodecContext *enc = s->streams[0]->codec;
     AVIOContext *pb = s->pb;
 
-    if (!voc->param_written) {
-        if (enc->codec_tag > 3) {
+    if (!voc->param_written)
+    {
+        if (enc->codec_tag > 3)
+        {
             avio_w8(pb, VOC_TYPE_NEW_VOICE_DATA);
             avio_wl24(pb, pkt->size + 12);
             avio_wl32(pb, enc->sample_rate);
@@ -66,8 +70,11 @@ static int voc_write_packet(AVFormatContext *s, AVPacket *pkt)
             avio_w8(pb, enc->channels);
             avio_wl16(pb, enc->codec_tag);
             avio_wl32(pb, 0);
-        } else {
-            if (s->streams[0]->codec->channels > 1) {
+        }
+        else
+        {
+            if (s->streams[0]->codec->channels > 1)
+            {
                 avio_w8(pb, VOC_TYPE_EXTENDED);
                 avio_wl24(pb, 4);
                 avio_wl16(pb, 65536-(256000000 + enc->sample_rate*enc->channels/2)/(enc->sample_rate*enc->channels));
@@ -80,7 +87,9 @@ static int voc_write_packet(AVFormatContext *s, AVPacket *pkt)
             avio_w8(pb, enc->codec_tag);
         }
         voc->param_written = 1;
-    } else {
+    }
+    else
+    {
         avio_w8(pb, VOC_TYPE_VOICE_DATA_CONT);
         avio_wl24(pb, pkt->size);
     }
@@ -95,7 +104,8 @@ static int voc_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_voc_muxer = {
+AVOutputFormat ff_voc_muxer =
+{
     .name              = "voc",
     .long_name         = NULL_IF_CONFIG_SMALL("Creative Voice"),
     .mime_type         = "audio/x-voc",

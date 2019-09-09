@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,18 +18,20 @@
 #include "webrtc/api/audio_codecs/audio_format.h"
 #include "webrtc/base/refcount.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // A factory that creates AudioDecoders.
 // NOTE: This class is still under development and may change without notice.
-class AudioDecoderFactory : public rtc::RefCountInterface {
- public:
-  virtual std::vector<AudioCodecSpec> GetSupportedDecoders() = 0;
+class AudioDecoderFactory : public rtc::RefCountInterface
+{
+public:
+    virtual std::vector<AudioCodecSpec> GetSupportedDecoders() = 0;
 
-  virtual bool IsSupportedDecoder(const SdpAudioFormat& format) = 0;
+    virtual bool IsSupportedDecoder(const SdpAudioFormat& format) = 0;
 
-  virtual std::unique_ptr<AudioDecoder> MakeAudioDecoder(
-      const SdpAudioFormat& format) = 0;
+    virtual std::unique_ptr<AudioDecoder> MakeAudioDecoder(
+        const SdpAudioFormat& format) = 0;
 };
 
 }  // namespace webrtc

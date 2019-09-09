@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AST common code
  * Copyright (c) 2012 James Almer
  *

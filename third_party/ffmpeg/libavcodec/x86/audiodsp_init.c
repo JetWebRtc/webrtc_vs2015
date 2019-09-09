@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -54,7 +54,8 @@ av_cold void ff_audiodsp_init_x86(AudioDSPContext *c)
     if (EXTERNAL_SSE(cpu_flags))
         c->vector_clipf = ff_vector_clipf_sse;
 
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->scalarproduct_int16 = ff_scalarproduct_int16_sse2;
         if (cpu_flags & AV_CPU_FLAG_ATOM)
             c->vector_clip_int32 = ff_vector_clip_int32_int_sse2;

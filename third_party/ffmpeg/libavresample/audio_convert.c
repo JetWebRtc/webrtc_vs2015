@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2012 Justin Ruggles <justin.ruggles@gmail.com>
  *
@@ -31,7 +31,8 @@
 #include "audio_data.h"
 #include "dither.h"
 
-enum ConvFuncType {
+enum ConvFuncType
+{
     CONV_FUNC_TYPE_FLAT,
     CONV_FUNC_TYPE_INTERLEAVE,
     CONV_FUNC_TYPE_DEINTERLEAVE,
@@ -45,7 +46,8 @@ typedef void (conv_func_interleave)(uint8_t *out, uint8_t *const *in,
 typedef void (conv_func_deinterleave)(uint8_t **out, const uint8_t *in, int len,
                                       int channels);
 
-struct AudioConvert {
+struct AudioConvert
+{
     AVAudioResampleContext *avr;
     DitherContext *dc;
     enum AVSampleFormat in_fmt;
@@ -74,18 +76,23 @@ void ff_audio_convert_set_func(AudioConvert *ac, enum AVSampleFormat out_fmt,
 {
     int found = 0;
 
-    switch (ac->func_type) {
+    switch (ac->func_type)
+    {
     case CONV_FUNC_TYPE_FLAT:
         if (av_get_packed_sample_fmt(ac->in_fmt)  == in_fmt &&
-            av_get_packed_sample_fmt(ac->out_fmt) == out_fmt) {
+        av_get_packed_sample_fmt(ac->out_fmt) == out_fmt)
+        {
             ac->conv_flat     = conv;
             ac->func_descr    = descr;
             ac->ptr_align     = ptr_align;
             ac->samples_align = samples_align;
-            if (ptr_align == 1 && samples_align == 1) {
+            if (ptr_align == 1 && samples_align == 1)
+            {
                 ac->conv_flat_generic  = conv;
                 ac->func_descr_generic = descr;
-            } else {
+            }
+            else
+            {
                 ac->has_optimized_func = 1;
             }
             found = 1;
@@ -93,15 +100,19 @@ void ff_audio_convert_set_func(AudioConvert *ac, enum AVSampleFormat out_fmt,
         break;
     case CONV_FUNC_TYPE_INTERLEAVE:
         if (ac->in_fmt == in_fmt && ac->out_fmt == out_fmt &&
-            (!channels || ac->channels == channels)) {
+                (!channels || ac->channels == channels))
+        {
             ac->conv_interleave = conv;
             ac->func_descr      = descr;
             ac->ptr_align       = ptr_align;
             ac->samples_align   = samples_align;
-            if (ptr_align == 1 && samples_align == 1) {
+            if (ptr_align == 1 && samples_align == 1)
+            {
                 ac->conv_interleave_generic = conv;
                 ac->func_descr_generic      = descr;
-            } else {
+            }
+            else
+            {
                 ac->has_optimized_func = 1;
             }
             found = 1;
@@ -109,22 +120,27 @@ void ff_audio_convert_set_func(AudioConvert *ac, enum AVSampleFormat out_fmt,
         break;
     case CONV_FUNC_TYPE_DEINTERLEAVE:
         if (ac->in_fmt == in_fmt && ac->out_fmt == out_fmt &&
-            (!channels || ac->channels == channels)) {
+                (!channels || ac->channels == channels))
+        {
             ac->conv_deinterleave = conv;
             ac->func_descr        = descr;
             ac->ptr_align         = ptr_align;
             ac->samples_align     = samples_align;
-            if (ptr_align == 1 && samples_align == 1) {
+            if (ptr_align == 1 && samples_align == 1)
+            {
                 ac->conv_deinterleave_generic = conv;
                 ac->func_descr_generic        = descr;
-            } else {
+            }
+            else
+            {
                 ac->has_optimized_func = 1;
             }
             found = 1;
         }
         break;
     }
-    if (found) {
+    if (found)
+    {
         av_log(ac->avr, AV_LOG_DEBUG, "audio_convert: found function: %-4s "
                "to %-4s (%s)\n", av_get_sample_fmt_name(ac->in_fmt),
                av_get_sample_fmt_name(ac->out_fmt), descr);
@@ -277,11 +293,13 @@ AudioConvert *ff_audio_convert_alloc(AVAudioResampleContext *avr,
     ac->apply_map = apply_map;
 
     if (avr->dither_method != AV_RESAMPLE_DITHER_NONE          &&
-        av_get_packed_sample_fmt(out_fmt) == AV_SAMPLE_FMT_S16 &&
-        av_get_bytes_per_sample(in_fmt) > 2) {
+    av_get_packed_sample_fmt(out_fmt) == AV_SAMPLE_FMT_S16 &&
+    av_get_bytes_per_sample(in_fmt) > 2)
+    {
         ac->dc = ff_dither_alloc(avr, out_fmt, in_fmt, channels, sample_rate,
-                                 apply_map);
-        if (!ac->dc) {
+        apply_map);
+        if (!ac->dc)
+        {
             av_free(ac);
             return NULL;
         }
@@ -291,10 +309,12 @@ AudioConvert *ff_audio_convert_alloc(AVAudioResampleContext *avr,
     in_planar  = ff_sample_fmt_is_planar(in_fmt, channels);
     out_planar = ff_sample_fmt_is_planar(out_fmt, channels);
 
-    if (in_planar == out_planar) {
+    if (in_planar == out_planar)
+    {
         ac->func_type = CONV_FUNC_TYPE_FLAT;
         ac->planes    = in_planar ? ac->channels : 1;
-    } else if (in_planar)
+    }
+    else if (in_planar)
         ac->func_type = CONV_FUNC_TYPE_INTERLEAVE;
     else
         ac->func_type = CONV_FUNC_TYPE_DEINTERLEAVE;
@@ -317,48 +337,57 @@ int ff_audio_convert(AudioConvert *ac, AudioData *out, AudioData *in)
     int len         = in->nb_samples;
     int p;
 
-    if (ac->dc) {
+    if (ac->dc)
+    {
         /* dithered conversion */
         av_log(ac->avr, AV_LOG_TRACE, "%d samples - audio_convert: %s to %s (dithered)\n",
-                len, av_get_sample_fmt_name(ac->in_fmt),
-                av_get_sample_fmt_name(ac->out_fmt));
+               len, av_get_sample_fmt_name(ac->in_fmt),
+               av_get_sample_fmt_name(ac->out_fmt));
 
         return ff_convert_dither(ac->dc, out, in);
     }
 
     /* determine whether to use the optimized function based on pointer and
        samples alignment in both the input and output */
-    if (ac->has_optimized_func) {
+    if (ac->has_optimized_func)
+    {
         int ptr_align     = FFMIN(in->ptr_align,     out->ptr_align);
         int samples_align = FFMIN(in->samples_align, out->samples_align);
         int aligned_len   = FFALIGN(len, ac->samples_align);
-        if (!(ptr_align % ac->ptr_align) && samples_align >= aligned_len) {
+        if (!(ptr_align % ac->ptr_align) && samples_align >= aligned_len)
+        {
             len = aligned_len;
             use_generic = 0;
         }
     }
     av_log(ac->avr, AV_LOG_TRACE, "%d samples - audio_convert: %s to %s (%s)\n", len,
-            av_get_sample_fmt_name(ac->in_fmt),
-            av_get_sample_fmt_name(ac->out_fmt),
-            use_generic ? ac->func_descr_generic : ac->func_descr);
+           av_get_sample_fmt_name(ac->in_fmt),
+           av_get_sample_fmt_name(ac->out_fmt),
+           use_generic ? ac->func_descr_generic : ac->func_descr);
 
-    if (ac->apply_map) {
+    if (ac->apply_map)
+    {
         ChannelMapInfo *map = &ac->avr->ch_map_info;
 
-        if (!ff_sample_fmt_is_planar(ac->out_fmt, ac->channels)) {
+        if (!ff_sample_fmt_is_planar(ac->out_fmt, ac->channels))
+        {
             av_log(ac->avr, AV_LOG_ERROR, "cannot remap packed format during conversion\n");
             return AVERROR(EINVAL);
         }
 
-        if (map->do_remap) {
-            if (ff_sample_fmt_is_planar(ac->in_fmt, ac->channels)) {
+        if (map->do_remap)
+        {
+            if (ff_sample_fmt_is_planar(ac->in_fmt, ac->channels))
+            {
                 conv_func_flat *convert = use_generic ? ac->conv_flat_generic :
-                                                        ac->conv_flat;
+                                          ac->conv_flat;
 
                 for (p = 0; p < ac->planes; p++)
                     if (map->channel_map[p] >= 0)
                         convert(out->data[p], in->data[map->channel_map[p]], len);
-            } else {
+            }
+            else
+            {
                 uint8_t *data[AVRESAMPLE_MAX_CHANNELS];
                 conv_func_deinterleave *convert = use_generic ?
                                                   ac->conv_deinterleave_generic :
@@ -370,8 +399,10 @@ int ff_audio_convert(AudioConvert *ac, AudioData *out, AudioData *in)
                 convert(data, in->data[0], len, ac->channels);
             }
         }
-        if (map->do_copy || map->do_zero) {
-            for (p = 0; p < ac->planes; p++) {
+        if (map->do_copy || map->do_zero)
+        {
+            for (p = 0; p < ac->planes; p++)
+            {
                 if (map->channel_copy[p])
                     memcpy(out->data[p], out->data[map->channel_copy[p]],
                            len * out->stride);
@@ -379,15 +410,22 @@ int ff_audio_convert(AudioConvert *ac, AudioData *out, AudioData *in)
                     av_samples_set_silence(&out->data[p], 0, len, 1, ac->out_fmt);
             }
         }
-    } else {
-        switch (ac->func_type) {
-        case CONV_FUNC_TYPE_FLAT: {
+    }
+    else
+    {
+        switch (ac->func_type)
+        {
+        case CONV_FUNC_TYPE_FLAT:
+        {
             if (!in->is_planar)
                 len *= in->channels;
-            if (use_generic) {
+            if (use_generic)
+            {
                 for (p = 0; p < ac->planes; p++)
                     ac->conv_flat_generic(out->data[p], in->data[p], len);
-            } else {
+            }
+            else
+            {
                 for (p = 0; p < ac->planes; p++)
                     ac->conv_flat(out->data[p], in->data[p], len);
             }

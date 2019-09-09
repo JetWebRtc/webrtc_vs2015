@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Intel MediaSDK QSV based MPEG2 video decoder
  *
  * This file is part of FFmpeg.
@@ -27,7 +27,8 @@
 #include "avcodec.h"
 #include "qsvdec.h"
 
-typedef struct QSVMPEG2Context {
+typedef struct QSVMPEG2Context
+{
     AVClass *class;
     QSVContext qsv;
 } QSVMPEG2Context;
@@ -59,7 +60,8 @@ static void qsv_decode_flush(AVCodecContext *avctx)
 {
 }
 
-AVHWAccel ff_mpeg2_qsv_hwaccel = {
+AVHWAccel ff_mpeg2_qsv_hwaccel =
+{
     .name           = "mpeg2_qsv",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG2VIDEO,
@@ -68,19 +70,22 @@ AVHWAccel ff_mpeg2_qsv_hwaccel = {
 
 #define OFFSET(x) offsetof(QSVMPEG2Context, x)
 #define VD AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "async_depth", "Internal parallelization depth, the higher the value the higher the latency.", OFFSET(qsv.async_depth), AV_OPT_TYPE_INT, { .i64 = ASYNC_DEPTH_DEFAULT }, 0, INT_MAX, VD },
     { NULL },
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "mpeg2_qsv",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVCodec ff_mpeg2_qsv_decoder = {
+AVCodec ff_mpeg2_qsv_decoder =
+{
     .name           = "mpeg2_qsv",
     .long_name      = NULL_IF_CONFIG_SMALL("MPEG-2 video (Intel Quick Sync Video acceleration)"),
     .priv_data_size = sizeof(QSVMPEG2Context),

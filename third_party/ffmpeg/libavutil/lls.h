@@ -1,4 +1,4 @@
-/*
+﻿/*
  * linear least squares model
  *
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
@@ -35,7 +35,8 @@
 /**
  * Linear least squares model.
  */
-typedef struct LLSModel {
+typedef struct LLSModel
+{
     DECLARE_ALIGNED(32, double, covariance[MAX_VARS_ALIGN][MAX_VARS_ALIGN]);
     DECLARE_ALIGNED(32, double, coeff[MAX_VARS][MAX_VARS]);
     double variance[MAX_VARS];

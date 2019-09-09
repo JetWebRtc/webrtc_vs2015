@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013-2015 Paul B Mahol
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "avfilter.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int type;
     int curve, curve2;
@@ -61,7 +62,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_S16P,
         AV_SAMPLE_FMT_S32, AV_SAMPLE_FMT_S32P,
         AV_SAMPLE_FMT_FLT, AV_SAMPLE_FMT_FLTP,
@@ -96,7 +98,8 @@ static double fade_gain(int curve, int64_t index, int range)
 
     gain = av_clipd(1.0 * index / range, 0, 1.0);
 
-    switch (curve) {
+    switch (curve)
+    {
     case QSIN:
         gain = sin(gain * M_PI / 2.0);
         break;
@@ -196,15 +199,32 @@ static int config_output(AVFilterLink *outlink)
     AVFilterContext *ctx = outlink->src;
     AudioFadeContext *s  = ctx->priv;
 
-    switch (outlink->format) {
-    case AV_SAMPLE_FMT_DBL:  s->fade_samples = fade_samples_dbl;  break;
-    case AV_SAMPLE_FMT_DBLP: s->fade_samples = fade_samples_dblp; break;
-    case AV_SAMPLE_FMT_FLT:  s->fade_samples = fade_samples_flt;  break;
-    case AV_SAMPLE_FMT_FLTP: s->fade_samples = fade_samples_fltp; break;
-    case AV_SAMPLE_FMT_S16:  s->fade_samples = fade_samples_s16;  break;
-    case AV_SAMPLE_FMT_S16P: s->fade_samples = fade_samples_s16p; break;
-    case AV_SAMPLE_FMT_S32:  s->fade_samples = fade_samples_s32;  break;
-    case AV_SAMPLE_FMT_S32P: s->fade_samples = fade_samples_s32p; break;
+    switch (outlink->format)
+    {
+    case AV_SAMPLE_FMT_DBL:
+        s->fade_samples = fade_samples_dbl;
+        break;
+    case AV_SAMPLE_FMT_DBLP:
+        s->fade_samples = fade_samples_dblp;
+        break;
+    case AV_SAMPLE_FMT_FLT:
+        s->fade_samples = fade_samples_flt;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->fade_samples = fade_samples_fltp;
+        break;
+    case AV_SAMPLE_FMT_S16:
+        s->fade_samples = fade_samples_s16;
+        break;
+    case AV_SAMPLE_FMT_S16P:
+        s->fade_samples = fade_samples_s16p;
+        break;
+    case AV_SAMPLE_FMT_S32:
+        s->fade_samples = fade_samples_s32;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->fade_samples = fade_samples_s32p;
+        break;
     }
 
     if (s->duration)
@@ -217,7 +237,8 @@ static int config_output(AVFilterLink *outlink)
 
 #if CONFIG_AFADE_FILTER
 
-static const AVOption afade_options[] = {
+static const AVOption afade_options[] =
+{
     { "type",         "set the fade direction",                      OFFSET(type),         AV_OPT_TYPE_INT,    {.i64 = 0    }, 0, 1, FLAGS, "type" },
     { "t",            "set the fade direction",                      OFFSET(type),         AV_OPT_TYPE_INT,    {.i64 = 0    }, 0, 1, FLAGS, "type" },
     { "in",           "fade-in",                                     0,                    AV_OPT_TYPE_CONST,  {.i64 = 0    }, 0, 0, FLAGS, "type" },
@@ -269,15 +290,21 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     AVFilterLink *outlink   = inlink->dst->outputs[0];
     int nb_samples          = buf->nb_samples;
     AVFrame *out_buf;
-    int64_t cur_sample = av_rescale_q(buf->pts, inlink->time_base, (AVRational){1, inlink->sample_rate});
+    int64_t cur_sample = av_rescale_q(buf->pts, inlink->time_base, (AVRational)
+    {
+        1, inlink->sample_rate
+    });
 
     if ((!s->type && (s->start_sample + s->nb_samples < cur_sample)) ||
-        ( s->type && (cur_sample + s->nb_samples < s->start_sample)))
+            ( s->type && (cur_sample + s->nb_samples < s->start_sample)))
         return ff_filter_frame(outlink, buf);
 
-    if (av_frame_is_writable(buf)) {
+    if (av_frame_is_writable(buf))
+    {
         out_buf = buf;
-    } else {
+    }
+    else
+    {
         out_buf = ff_get_audio_buffer(inlink, nb_samples);
         if (!out_buf)
             return AVERROR(ENOMEM);
@@ -285,10 +312,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     }
 
     if ((!s->type && (cur_sample + nb_samples < s->start_sample)) ||
-        ( s->type && (s->start_sample + s->nb_samples < cur_sample))) {
+            ( s->type && (s->start_sample + s->nb_samples < cur_sample)))
+    {
         av_samples_set_silence(out_buf->extended_data, 0, nb_samples,
                                av_frame_get_channels(out_buf), out_buf->format);
-    } else {
+    }
+    else
+    {
         int64_t start;
 
         if (!s->type)
@@ -308,7 +338,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *buf)
     return ff_filter_frame(outlink, out_buf);
 }
 
-static const AVFilterPad avfilter_af_afade_inputs[] = {
+static const AVFilterPad avfilter_af_afade_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -317,7 +348,8 @@ static const AVFilterPad avfilter_af_afade_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_afade_outputs[] = {
+static const AVFilterPad avfilter_af_afade_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -326,7 +358,8 @@ static const AVFilterPad avfilter_af_afade_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_afade = {
+AVFilter ff_af_afade =
+{
     .name          = "afade",
     .description   = NULL_IF_CONFIG_SMALL("Fade in/out input audio."),
     .query_formats = query_formats,
@@ -342,7 +375,8 @@ AVFilter ff_af_afade = {
 
 #if CONFIG_ACROSSFADE_FILTER
 
-static const AVOption acrossfade_options[] = {
+static const AVOption acrossfade_options[] =
+{
     { "nb_samples",   "set number of samples for cross fade duration", OFFSET(nb_samples),   AV_OPT_TYPE_INT,    {.i64 = 44100}, 1, INT32_MAX/10, FLAGS },
     { "ns",           "set number of samples for cross fade duration", OFFSET(nb_samples),   AV_OPT_TYPE_INT,    {.i64 = 44100}, 1, INT32_MAX/10, FLAGS },
     { "duration",     "set cross fade duration",                       OFFSET(duration),     AV_OPT_TYPE_DURATION, {.i64 = 0. }, 0, 60, FLAGS },
@@ -448,34 +482,49 @@ static int acrossfade_filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFrame *out, *cf[2] = { NULL };
     int ret = 0, nb_samples;
 
-    if (s->crossfade_is_over) {
+    if (s->crossfade_is_over)
+    {
         in->pts = s->pts;
         s->pts += av_rescale_q(in->nb_samples,
-            (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                               (AVRational)
+        {
+            1, outlink->sample_rate
+        }, outlink->time_base);
         return ff_filter_frame(outlink, in);
-    } else if (inlink == ctx->inputs[0]) {
+    }
+    else if (inlink == ctx->inputs[0])
+    {
         av_audio_fifo_write(s->fifo[0], (void **)in->extended_data, in->nb_samples);
 
         nb_samples = av_audio_fifo_size(s->fifo[0]) - s->nb_samples;
-        if (nb_samples > 0) {
+        if (nb_samples > 0)
+        {
             out = ff_get_audio_buffer(outlink, nb_samples);
-            if (!out) {
+            if (!out)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
             av_audio_fifo_read(s->fifo[0], (void **)out->extended_data, nb_samples);
             out->pts = s->pts;
             s->pts += av_rescale_q(nb_samples,
-                (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                                   (AVRational)
+            {
+                1, outlink->sample_rate
+            }, outlink->time_base);
             ret = ff_filter_frame(outlink, out);
         }
-    } else if (av_audio_fifo_size(s->fifo[1]) < s->nb_samples) {
-        if (!s->overlap && av_audio_fifo_size(s->fifo[0]) > 0) {
+    }
+    else if (av_audio_fifo_size(s->fifo[1]) < s->nb_samples)
+    {
+        if (!s->overlap && av_audio_fifo_size(s->fifo[0]) > 0)
+        {
             nb_samples = av_audio_fifo_size(s->fifo[0]);
 
             cf[0] = ff_get_audio_buffer(outlink, nb_samples);
             out = ff_get_audio_buffer(outlink, nb_samples);
-            if (!out || !cf[0]) {
+            if (!out || !cf[0])
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -485,19 +534,26 @@ static int acrossfade_filter_frame(AVFilterLink *inlink, AVFrame *in)
                             outlink->channels, -1, nb_samples - 1, nb_samples, s->curve);
             out->pts = s->pts;
             s->pts += av_rescale_q(nb_samples,
-                (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                                   (AVRational)
+            {
+                1, outlink->sample_rate
+            }, outlink->time_base);
             ret = ff_filter_frame(outlink, out);
             if (ret < 0)
                 goto fail;
         }
 
         av_audio_fifo_write(s->fifo[1], (void **)in->extended_data, in->nb_samples);
-    } else if (av_audio_fifo_size(s->fifo[1]) >= s->nb_samples) {
-        if (s->overlap) {
+    }
+    else if (av_audio_fifo_size(s->fifo[1]) >= s->nb_samples)
+    {
+        if (s->overlap)
+        {
             cf[0] = ff_get_audio_buffer(outlink, s->nb_samples);
             cf[1] = ff_get_audio_buffer(outlink, s->nb_samples);
             out = ff_get_audio_buffer(outlink, s->nb_samples);
-            if (!out || !cf[0] || !cf[1]) {
+            if (!out || !cf[0] || !cf[1])
+            {
                 av_frame_free(&out);
                 ret = AVERROR(ENOMEM);
                 goto fail;
@@ -512,14 +568,20 @@ static int acrossfade_filter_frame(AVFilterLink *inlink, AVFrame *in)
                                  s->curve, s->curve2);
             out->pts = s->pts;
             s->pts += av_rescale_q(s->nb_samples,
-                (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                                   (AVRational)
+            {
+                1, outlink->sample_rate
+            }, outlink->time_base);
             ret = ff_filter_frame(outlink, out);
             if (ret < 0)
                 goto fail;
-        } else {
+        }
+        else
+        {
             out = ff_get_audio_buffer(outlink, s->nb_samples);
             cf[1] = ff_get_audio_buffer(outlink, s->nb_samples);
-            if (!out || !cf[1]) {
+            if (!out || !cf[1])
+            {
                 ret = AVERROR(ENOMEM);
                 av_frame_free(&out);
                 goto fail;
@@ -531,16 +593,21 @@ static int acrossfade_filter_frame(AVFilterLink *inlink, AVFrame *in)
                             outlink->channels, 1, 0, s->nb_samples, s->curve2);
             out->pts = s->pts;
             s->pts += av_rescale_q(s->nb_samples,
-                (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                                   (AVRational)
+            {
+                1, outlink->sample_rate
+            }, outlink->time_base);
             ret = ff_filter_frame(outlink, out);
             if (ret < 0)
                 goto fail;
         }
 
         nb_samples = av_audio_fifo_size(s->fifo[1]);
-        if (nb_samples > 0) {
+        if (nb_samples > 0)
+        {
             out = ff_get_audio_buffer(outlink, nb_samples);
-            if (!out) {
+            if (!out)
+            {
                 ret = AVERROR(ENOMEM);
                 goto fail;
             }
@@ -548,7 +615,10 @@ static int acrossfade_filter_frame(AVFilterLink *inlink, AVFrame *in)
             av_audio_fifo_read(s->fifo[1], (void **)out->extended_data, nb_samples);
             out->pts = s->pts;
             s->pts += av_rescale_q(nb_samples,
-                (AVRational){ 1, outlink->sample_rate }, outlink->time_base);
+                                   (AVRational)
+            {
+                1, outlink->sample_rate
+            }, outlink->time_base);
             ret = ff_filter_frame(outlink, out);
         }
         s->crossfade_is_over = 1;
@@ -567,21 +637,26 @@ static int acrossfade_request_frame(AVFilterLink *outlink)
     AudioFadeContext *s = ctx->priv;
     int ret = 0;
 
-    if (!s->cf0_eof) {
+    if (!s->cf0_eof)
+    {
         AVFilterLink *cf0 = ctx->inputs[0];
         ret = ff_request_frame(cf0);
         if (ret < 0 && ret != AVERROR_EOF)
             return ret;
-        if (ret == AVERROR_EOF) {
+        if (ret == AVERROR_EOF)
+        {
             s->cf0_eof = 1;
             ret = 0;
         }
-    } else {
+    }
+    else
+    {
         AVFilterLink *cf1 = ctx->inputs[1];
         int nb_samples = av_audio_fifo_size(s->fifo[1]);
 
         ret = ff_request_frame(cf1);
-        if (ret == AVERROR_EOF && nb_samples > 0) {
+        if (ret == AVERROR_EOF && nb_samples > 0)
+        {
             AVFrame *out = ff_get_audio_buffer(outlink, nb_samples);
             if (!out)
                 return AVERROR(ENOMEM);
@@ -599,7 +674,8 @@ static int acrossfade_config_output(AVFilterLink *outlink)
     AVFilterContext *ctx = outlink->src;
     AudioFadeContext *s  = ctx->priv;
 
-    if (ctx->inputs[0]->sample_rate != ctx->inputs[1]->sample_rate) {
+    if (ctx->inputs[0]->sample_rate != ctx->inputs[1]->sample_rate)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "Inputs must have the same sample rate "
                "%d for in0 vs %d for in1\n",
@@ -613,15 +689,32 @@ static int acrossfade_config_output(AVFilterLink *outlink)
     outlink->channels = ctx->inputs[0]->channels;
     outlink->flags |= FF_LINK_FLAG_REQUEST_LOOP;
 
-    switch (outlink->format) {
-    case AV_SAMPLE_FMT_DBL:  s->crossfade_samples = crossfade_samples_dbl;  break;
-    case AV_SAMPLE_FMT_DBLP: s->crossfade_samples = crossfade_samples_dblp; break;
-    case AV_SAMPLE_FMT_FLT:  s->crossfade_samples = crossfade_samples_flt;  break;
-    case AV_SAMPLE_FMT_FLTP: s->crossfade_samples = crossfade_samples_fltp; break;
-    case AV_SAMPLE_FMT_S16:  s->crossfade_samples = crossfade_samples_s16;  break;
-    case AV_SAMPLE_FMT_S16P: s->crossfade_samples = crossfade_samples_s16p; break;
-    case AV_SAMPLE_FMT_S32:  s->crossfade_samples = crossfade_samples_s32;  break;
-    case AV_SAMPLE_FMT_S32P: s->crossfade_samples = crossfade_samples_s32p; break;
+    switch (outlink->format)
+    {
+    case AV_SAMPLE_FMT_DBL:
+        s->crossfade_samples = crossfade_samples_dbl;
+        break;
+    case AV_SAMPLE_FMT_DBLP:
+        s->crossfade_samples = crossfade_samples_dblp;
+        break;
+    case AV_SAMPLE_FMT_FLT:
+        s->crossfade_samples = crossfade_samples_flt;
+        break;
+    case AV_SAMPLE_FMT_FLTP:
+        s->crossfade_samples = crossfade_samples_fltp;
+        break;
+    case AV_SAMPLE_FMT_S16:
+        s->crossfade_samples = crossfade_samples_s16;
+        break;
+    case AV_SAMPLE_FMT_S16P:
+        s->crossfade_samples = crossfade_samples_s16p;
+        break;
+    case AV_SAMPLE_FMT_S32:
+        s->crossfade_samples = crossfade_samples_s32;
+        break;
+    case AV_SAMPLE_FMT_S32P:
+        s->crossfade_samples = crossfade_samples_s32p;
+        break;
     }
 
     config_output(outlink);
@@ -642,7 +735,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_audio_fifo_free(s->fifo[1]);
 }
 
-static const AVFilterPad avfilter_af_acrossfade_inputs[] = {
+static const AVFilterPad avfilter_af_acrossfade_inputs[] =
+{
     {
         .name         = "crossfade0",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -656,7 +750,8 @@ static const AVFilterPad avfilter_af_acrossfade_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_acrossfade_outputs[] = {
+static const AVFilterPad avfilter_af_acrossfade_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -666,7 +761,8 @@ static const AVFilterPad avfilter_af_acrossfade_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_acrossfade = {
+AVFilter ff_af_acrossfade =
+{
     .name          = "acrossfade",
     .description   = NULL_IF_CONFIG_SMALL("Cross fade two input audio streams."),
     .query_formats = query_formats,

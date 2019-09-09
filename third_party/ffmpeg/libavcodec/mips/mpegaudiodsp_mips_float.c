@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -59,7 +59,7 @@
 #include "libavcodec/mpegaudiodsp.h"
 
 static void ff_mpadsp_apply_window_mips_float(float *synth_buf, float *window,
-                               int *dither_state, float *samples, int incr)
+        int *dither_state, float *samples, int incr)
 {
     register const float *w, *w2, *p;
     int j;
@@ -264,16 +264,16 @@ static void ff_mpadsp_apply_window_mips_float(float *synth_buf, float *window,
         "swc1    %[sum],      0(%[samples])                                 \t\n"
 
         : [sum] "=&f" (sum), [sum2] "=&f" (sum2),
-          [w2] "=&r" (w2),   [w] "=&r" (w),
-          [p] "=&r" (p), [p2] "=&r" (p2), [j] "=&r" (j),
-          [samples] "+r" (samples), [samples2] "=&r" (samples2),
-          [in1] "=&f" (in1), [in2] "=&f" (in2),
-          [in3] "=&f" (in3), [in4] "=&f" (in4),
-          [in5] "=&f" (in5), [in6] "=&f" (in6),
-          [in7] "=&f" (in7), [in8] "=&f" (in8),
-          [t_sample] "=&r" (t_sample)
+        [w2] "=&r" (w2),   [w] "=&r" (w),
+        [p] "=&r" (p), [p2] "=&r" (p2), [j] "=&r" (j),
+        [samples] "+r" (samples), [samples2] "=&r" (samples2),
+        [in1] "=&f" (in1), [in2] "=&f" (in2),
+        [in3] "=&f" (in3), [in4] "=&f" (in4),
+        [in5] "=&f" (in5), [in6] "=&f" (in6),
+        [in7] "=&f" (in7), [in8] "=&f" (in8),
+        [t_sample] "=&r" (t_sample)
         : [synth_buf] "r" (synth_buf), [window] "r" (window),
-          [dither_state] "r" (dither_state), [incr1] "r" (incr1)
+        [dither_state] "r" (dither_state), [incr1] "r" (incr1)
         : "memory"
     );
 }
@@ -342,13 +342,13 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val31],       %[fTmp1],       %[fTmp4]                \n\t"
 
         : [fTmp1]  "=&f" (fTmp1),  [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3),
-          [fTmp4]  "=&f" (fTmp4),  [fTmp5] "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
-          [fTmp7]  "=&f" (fTmp7),  [fTmp8] "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
-          [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
-          [val0]  "=f" (val0),  [val7]  "=f" (val7),
-          [val8]  "=f" (val8),  [val15] "=f" (val15),
-          [val16] "=f" (val16), [val23] "=f" (val23),
-          [val24] "=f" (val24), [val31] "=f" (val31)
+        [fTmp4]  "=&f" (fTmp4),  [fTmp5] "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
+        [fTmp7]  "=&f" (fTmp7),  [fTmp8] "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
+        [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
+        [val0]  "=f" (val0),  [val7]  "=f" (val7),
+        [val8]  "=f" (val8),  [val15] "=f" (val15),
+        [val16] "=f" (val16), [val23] "=f" (val23),
+        [val24] "=f" (val24), [val31] "=f" (val31)
         : [tab] "r" (tab)
         : "memory"
     );
@@ -405,13 +405,13 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val28],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp1]  "=&f" (fTmp1),  [fTmp2]  "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3),
-          [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
-          [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
-          [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
-          [val3]  "=f" (val3),  [val4]  "=f" (val4),
-          [val11] "=f" (val11), [val12] "=f" (val12),
-          [val19] "=f" (val19), [val20] "=f" (val20),
-          [val27] "=f" (val27), [val28] "=f" (val28)
+        [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
+        [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
+        [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
+        [val3]  "=f" (val3),  [val4]  "=f" (val4),
+        [val11] "=f" (val11), [val12] "=f" (val12),
+        [val19] "=f" (val19), [val20] "=f" (val20),
+        [val27] "=f" (val27), [val28] "=f" (val28)
         : [tab] "r" (tab)
         : "memory"
     );
@@ -432,11 +432,11 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val15],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [val0]  "+f" (val0),   [val3] "+f" (val3),
-          [val4]  "+f" (val4),   [val7] "+f" (val7),
-          [val8]  "+f" (val8),   [val11] "+f" (val11),
-          [val12] "+f" (val12),  [val15] "+f" (val15),
-          [fTmp1] "=f"  (fTmp1), [fTmp2] "=&f" (fTmp2),
-          [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4)
+        [val4]  "+f" (val4),   [val7] "+f" (val7),
+        [val8]  "+f" (val8),   [val11] "+f" (val11),
+        [val12] "+f" (val12),  [val15] "+f" (val15),
+        [fTmp1] "=f"  (fTmp1), [fTmp2] "=&f" (fTmp2),
+        [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4)
         :
     );
 
@@ -455,9 +455,9 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val31],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val16] "+f" (val16), [val19] "+f" (val19), [val20] "+f" (val20),
-          [val23] "+f" (val23), [val24] "+f" (val24), [val27] "+f" (val27),
-          [val28] "+f" (val28), [val31] "+f" (val31)
+        [val16] "+f" (val16), [val19] "+f" (val19), [val20] "+f" (val20),
+        [val23] "+f" (val23), [val24] "+f" (val24), [val27] "+f" (val27),
+        [val28] "+f" (val28), [val31] "+f" (val31)
         : [fTmp1] "f" (fTmp1)
     );
 
@@ -513,13 +513,13 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val30],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp1]  "=&f" (fTmp1),  [fTmp2]  "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3),
-          [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
-          [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
-          [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
-          [val1]  "=f" (val1),  [val6]  "=f" (val6),
-          [val9]  "=f" (val9),  [val14] "=f" (val14),
-          [val17] "=f" (val17), [val22] "=f" (val22),
-          [val25] "=f" (val25), [val30] "=f" (val30)
+        [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
+        [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
+        [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
+        [val1]  "=f" (val1),  [val6]  "=f" (val6),
+        [val9]  "=f" (val9),  [val14] "=f" (val14),
+        [val17] "=f" (val17), [val22] "=f" (val22),
+        [val25] "=f" (val25), [val30] "=f" (val30)
         : [tab] "r" (tab)
         : "memory"
     );
@@ -576,13 +576,13 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val29],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp1]  "=&f" (fTmp1),  [fTmp2]  "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3),
-          [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
-          [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
-          [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
-          [val2]  "=f" (val2),  [val5]  "=f" (val5),
-          [val10] "=f" (val10), [val13] "=f" (val13),
-          [val18] "=f" (val18), [val21] "=f" (val21),
-          [val26] "=f" (val26), [val29] "=f" (val29)
+        [fTmp4]  "=&f" (fTmp4),  [fTmp5]  "=&f" (fTmp5), [fTmp6] "=&f" (fTmp6),
+        [fTmp7]  "=&f" (fTmp7),  [fTmp8]  "=&f" (fTmp8), [fTmp9] "=&f" (fTmp9),
+        [fTmp10] "=&f" (fTmp10), [fTmp11] "=&f" (fTmp11),
+        [val2]  "=f" (val2),  [val5]  "=f" (val5),
+        [val10] "=f" (val10), [val13] "=f" (val13),
+        [val18] "=f" (val18), [val21] "=f" (val21),
+        [val26] "=f" (val26), [val29] "=f" (val29)
         : [tab] "r" (tab)
         : "memory"
     );
@@ -603,11 +603,11 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val14],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp1] "=f"  (fTmp1), [fTmp2] "=&f" (fTmp2),
-          [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val1]  "+f" (val1),  [val2]  "+f" (val2),
-          [val5]  "+f" (val5),  [val6]  "+f" (val6),
-          [val9]  "+f" (val9),  [val10] "+f" (val10),
-          [val13] "+f" (val13), [val14] "+f" (val14)
+        [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
+        [val1]  "+f" (val1),  [val2]  "+f" (val2),
+        [val5]  "+f" (val5),  [val6]  "+f" (val6),
+        [val9]  "+f" (val9),  [val10] "+f" (val10),
+        [val13] "+f" (val13), [val14] "+f" (val14)
         :
     );
 
@@ -626,9 +626,9 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "mul.s      %[val30],       %[fTmp1],       %[fTmp2]                \n\t"
 
         : [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val17] "+f" (val17), [val18] "+f" (val18), [val21] "+f" (val21),
-          [val22] "+f" (val22), [val25] "+f" (val25), [val26] "+f" (val26),
-          [val29] "+f" (val29), [val30] "+f" (val30)
+        [val17] "+f" (val17), [val18] "+f" (val18), [val21] "+f" (val21),
+        [val22] "+f" (val22), [val25] "+f" (val25), [val26] "+f" (val26),
+        [val29] "+f" (val29), [val30] "+f" (val30)
         : [fTmp1] "f" (fTmp1)
     );
 
@@ -661,11 +661,11 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "swc1       %[val6],        12*4(%[out])                            \n\t"
 
         : [fTmp1] "=f"  (fTmp1), [fTmp2] "=&f" (fTmp2),
-          [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val0] "+f" (val0), [val1] "+f" (val1),
-          [val2] "+f" (val2), [val3] "+f" (val3),
-          [val4] "+f" (val4), [val5] "+f" (val5),
-          [val6] "+f" (val6), [val7] "+f" (val7)
+        [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
+        [val0] "+f" (val0), [val1] "+f" (val1),
+        [val2] "+f" (val2), [val3] "+f" (val3),
+        [val4] "+f" (val4), [val5] "+f" (val5),
+        [val6] "+f" (val6), [val7] "+f" (val7)
         : [out] "r" (out)
     );
 
@@ -704,9 +704,9 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "swc1       %[val15],       30*4(%[out])                            \n\t"
 
         : [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val8]  "+f" (val8),  [val9]  "+f" (val9),  [val10] "+f" (val10),
-          [val11] "+f" (val11), [val12] "+f" (val12), [val13] "+f" (val13),
-          [val14] "+f" (val14), [val15] "+f" (val15)
+        [val8]  "+f" (val8),  [val9]  "+f" (val9),  [val10] "+f" (val10),
+        [val11] "+f" (val11), [val12] "+f" (val12), [val13] "+f" (val13),
+        [val14] "+f" (val14), [val15] "+f" (val15)
         : [fTmp1] "f" (fTmp1), [out] "r" (out)
     );
 
@@ -730,9 +730,9 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "add.s      %[val21],       %[val21],       %[val23]                \n\t"
 
         : [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val16] "+f" (val16), [val17] "+f" (val17), [val18] "+f" (val18),
-          [val19] "+f" (val19), [val20] "+f" (val20), [val21] "+f" (val21),
-          [val22] "+f" (val22), [val23] "+f" (val23)
+        [val16] "+f" (val16), [val17] "+f" (val17), [val18] "+f" (val18),
+        [val19] "+f" (val19), [val20] "+f" (val20), [val21] "+f" (val21),
+        [val22] "+f" (val22), [val23] "+f" (val23)
         : [fTmp1] "f" (fTmp1)
     );
 
@@ -763,9 +763,9 @@ static void ff_dct32_mips_float(float *out, const float *tab)
         "add.s      %[val27],       %[val27],       %[val31]                \n\t"
 
         : [fTmp2] "=&f" (fTmp2), [fTmp3] "=&f" (fTmp3), [fTmp4] "=&f" (fTmp4),
-          [val24] "+f" (val24), [val25] "+f" (val25), [val26] "+f" (val26),
-          [val27] "+f" (val27), [val28] "+f" (val28), [val29] "+f" (val29),
-          [val30] "+f" (val30), [val31] "+f" (val31)
+        [val24] "+f" (val24), [val25] "+f" (val25), [val26] "+f" (val26),
+        [val27] "+f" (val27), [val28] "+f" (val28), [val29] "+f" (val29),
+        [val30] "+f" (val30), [val31] "+f" (val31)
         : [fTmp1] "f" (fTmp1)
     );
 
@@ -868,11 +868,11 @@ static void imdct36_mips_float(float *out, float *buf, float *in, float *win)
         "swc1   %[out5], 3*4(%[in])                                     \t\n"
 
         : [in1] "=&f" (in1), [in2] "=&f" (in2),
-          [in3] "=&f" (in3), [in4] "=&f" (in4),
-          [in5] "=&f" (in5), [in6] "=&f" (in6),
-          [out1] "=&f" (out1), [out2] "=&f" (out2),
-          [out3] "=&f" (out3), [out4] "=&f" (out4),
-          [out5] "=&f" (out5)
+        [in3] "=&f" (in3), [in4] "=&f" (in4),
+        [in5] "=&f" (in5), [in6] "=&f" (in6),
+        [out1] "=&f" (out1), [out2] "=&f" (out2),
+        [out3] "=&f" (out3), [out4] "=&f" (out4),
+        [out5] "=&f" (out5)
         : [in] "r" (in)
         : "memory"
     );
@@ -994,17 +994,17 @@ static void imdct36_mips_float(float *out, float *buf, float *in, float *win)
         "swc1    %[out3], 9*4(%[tmp])                                   \t\n"
 
         : [t0] "=&f" (t0), [t1] "=&f" (t1),
-          [t2] "=&f" (t2), [t3] "=&f" (t3),
-          [in1] "=&f" (in1), [in2] "=&f" (in2),
-          [in3] "=&f" (in3), [in4] "=&f" (in4),
-          [in5] "=&f" (in5),
-          [out1] "=&f" (out1), [out2] "=&f" (out2),
-          [out3] "=&f" (out3),
-          [c1] "=&f" (c1), [c2] "=&f" (c2),
-          [c3] "=&f" (c3), [c4] "=&f" (c4),
-          [c5] "=&f" (c5), [c6] "=&f" (c6),
-          [c7] "=&f" (c7), [c8] "=&f" (c8),
-          [c9] "=&f" (c9)
+        [t2] "=&f" (t2), [t3] "=&f" (t3),
+        [in1] "=&f" (in1), [in2] "=&f" (in2),
+        [in3] "=&f" (in3), [in4] "=&f" (in4),
+        [in5] "=&f" (in5),
+        [out1] "=&f" (out1), [out2] "=&f" (out2),
+        [out3] "=&f" (out3),
+        [c1] "=&f" (c1), [c2] "=&f" (c2),
+        [c3] "=&f" (c3), [c4] "=&f" (c4),
+        [c5] "=&f" (c5), [c6] "=&f" (c6),
+        [c7] "=&f" (c7), [c8] "=&f" (c8),
+        [c9] "=&f" (c9)
         : [in] "r" (in), [tmp] "r" (tmp)
         : "memory"
     );
@@ -1209,26 +1209,27 @@ static void imdct36_mips_float(float *out, float *buf, float *in, float *win)
         "swc1   %[out4], 4*4*4(%[buf])                                  \t\n"
 
         : [c1] "=&f" (c1), [c2] "=&f" (c2),
-          [in1] "=&f" (in1), [in2] "=&f" (in2),
-          [in3] "=&f" (in3), [in4] "=&f" (in4),
-          [in5] "=&f" (in5), [in6] "=&f" (in6),
-          [out1] "=&f" (out1), [out2] "=&f" (out2),
-          [out3] "=&f" (out3), [out4] "=&f" (out4),
-          [t0] "=&f" (t0), [t1] "=&f" (t1),
-          [t2] "=&f" (t2), [t3] "=&f" (t3),
-          [s0] "=&f" (s0), [s1] "=&f" (s1),
-          [s2] "=&f" (s2), [s3] "=&f" (s3)
+        [in1] "=&f" (in1), [in2] "=&f" (in2),
+        [in3] "=&f" (in3), [in4] "=&f" (in4),
+        [in5] "=&f" (in5), [in6] "=&f" (in6),
+        [out1] "=&f" (out1), [out2] "=&f" (out2),
+        [out3] "=&f" (out3), [out4] "=&f" (out4),
+        [t0] "=&f" (t0), [t1] "=&f" (t1),
+        [t2] "=&f" (t2), [t3] "=&f" (t3),
+        [s0] "=&f" (s0), [s1] "=&f" (s1),
+        [s2] "=&f" (s2), [s3] "=&f" (s3)
         : [tmp] "r" (tmp), [win] "r" (win),
-          [buf] "r" (buf), [out] "r" (out)
+        [buf] "r" (buf), [out] "r" (out)
         : "memory"
     );
 }
 
 static void ff_imdct36_blocks_mips_float(float *out, float *buf, float *in,
-                               int count, int switch_point, int block_type)
+        int count, int switch_point, int block_type)
 {
     int j;
-    for (j=0 ; j < count; j++) {
+    for (j=0 ; j < count; j++)
+    {
         /* apply window & overlap with previous buffer */
 
         /* select window */

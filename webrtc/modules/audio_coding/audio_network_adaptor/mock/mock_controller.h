@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,16 +14,21 @@
 #include "webrtc/modules/audio_coding/audio_network_adaptor/controller.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockController : public Controller {
- public:
-  virtual ~MockController() { Die(); }
-  MOCK_METHOD0(Die, void());
-  MOCK_METHOD1(UpdateNetworkMetrics,
-               void(const NetworkMetrics& network_metrics));
-  MOCK_METHOD1(MakeDecision,
-               void(AudioNetworkAdaptor::EncoderRuntimeConfig* config));
+class MockController : public Controller
+{
+public:
+    virtual ~MockController()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
+    MOCK_METHOD1(UpdateNetworkMetrics,
+                 void(const NetworkMetrics& network_metrics));
+    MOCK_METHOD1(MakeDecision,
+                 void(AudioNetworkAdaptor::EncoderRuntimeConfig* config));
 };
 
 }  // namespace webrtc

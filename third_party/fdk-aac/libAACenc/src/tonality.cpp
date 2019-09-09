@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -94,56 +94,57 @@ amm-info@iis.fraunhofer.de
 static const FIXP_DBL normlog = (FIXP_DBL)0xd977d949; /*FL2FXCONST_DBL(-0.4342944819f * FDKlog(2.0)/FDKlog(2.7182818)); */
 
 static void FDKaacEnc_CalcSfbTonality(FIXP_DBL      *RESTRICT spectrum,
-							INT           *RESTRICT sfbMaxScaleSpec,
-                            FIXP_DBL      *RESTRICT chaosMeasure,
-                            FIXP_SGL      *RESTRICT sfbTonality,
-                            INT           sfbCnt,
-                            const INT     *RESTRICT sfbOffset,
-                            FIXP_DBL      *RESTRICT sfbEnergyLD64 );
+                                      INT           *RESTRICT sfbMaxScaleSpec,
+                                      FIXP_DBL      *RESTRICT chaosMeasure,
+                                      FIXP_SGL      *RESTRICT sfbTonality,
+                                      INT           sfbCnt,
+                                      const INT     *RESTRICT sfbOffset,
+                                      FIXP_DBL      *RESTRICT sfbEnergyLD64 );
 
 
 void FDKaacEnc_CalculateFullTonality(FIXP_DBL      *RESTRICT spectrum,
-						             INT           *RESTRICT sfbMaxScaleSpec,
+                                     INT           *RESTRICT sfbMaxScaleSpec,
                                      FIXP_DBL      *RESTRICT sfbEnergyLD64,
                                      FIXP_SGL      *RESTRICT sfbTonality,
                                      INT            sfbCnt,
                                      const INT     *sfbOffset,
                                      INT            usePns)
 {
-  INT j;
+    INT j;
 #if defined(ARCH_PREFER_MULT_32x16)
-  FIXP_SGL alpha_0 = FL2FXCONST_SGL(0.25f);       /* used in smooth ChaosMeasure */
-  FIXP_SGL alpha_1 = FL2FXCONST_SGL(1.0f-0.25f);  /* used in smooth ChaosMeasure */
+    FIXP_SGL alpha_0 = FL2FXCONST_SGL(0.25f);       /* used in smooth ChaosMeasure */
+    FIXP_SGL alpha_1 = FL2FXCONST_SGL(1.0f-0.25f);  /* used in smooth ChaosMeasure */
 #else
-  FIXP_DBL alpha_0 = FL2FXCONST_DBL(0.25f);       /* used in smooth ChaosMeasure */
-  FIXP_DBL alpha_1 = FL2FXCONST_DBL(1.0f-0.25f);  /* used in smooth ChaosMeasure */
+    FIXP_DBL alpha_0 = FL2FXCONST_DBL(0.25f);       /* used in smooth ChaosMeasure */
+    FIXP_DBL alpha_1 = FL2FXCONST_DBL(1.0f-0.25f);  /* used in smooth ChaosMeasure */
 #endif
-  INT numberOfLines = sfbOffset[sfbCnt];
+    INT numberOfLines = sfbOffset[sfbCnt];
 
-  if (!usePns)
-    return;
+    if (!usePns)
+        return;
 
-  C_ALLOC_SCRATCH_START(chaosMeasurePerLine, FIXP_DBL, (1024));
-  /* calculate chaos measure */
-  FDKaacEnc_CalculateChaosMeasure(spectrum,
-                        numberOfLines,
-                        chaosMeasurePerLine);
+    C_ALLOC_SCRATCH_START(chaosMeasurePerLine, FIXP_DBL, (1024));
+    /* calculate chaos measure */
+    FDKaacEnc_CalculateChaosMeasure(spectrum,
+                                    numberOfLines,
+                                    chaosMeasurePerLine);
 
-  /* smooth ChaosMeasure */
-  for (j=1;j<numberOfLines;j++) {
-    FIXP_DBL tmp = fMultDiv2(alpha_1, chaosMeasurePerLine[j]);
-    chaosMeasurePerLine[j] = fMultAdd(tmp, alpha_0, chaosMeasurePerLine[j-1]);
-  }
+    /* smooth ChaosMeasure */
+    for (j=1; j<numberOfLines; j++)
+    {
+        FIXP_DBL tmp = fMultDiv2(alpha_1, chaosMeasurePerLine[j]);
+        chaosMeasurePerLine[j] = fMultAdd(tmp, alpha_0, chaosMeasurePerLine[j-1]);
+    }
 
-  FDKaacEnc_CalcSfbTonality(spectrum,
-                  sfbMaxScaleSpec,
-                  chaosMeasurePerLine,
-                  sfbTonality,
-                  sfbCnt,
-                  sfbOffset,
-                  sfbEnergyLD64);
+    FDKaacEnc_CalcSfbTonality(spectrum,
+                              sfbMaxScaleSpec,
+                              chaosMeasurePerLine,
+                              sfbTonality,
+                              sfbCnt,
+                              sfbOffset,
+                              sfbEnergyLD64);
 
-  C_ALLOC_SCRATCH_END(chaosMeasurePerLine, FIXP_DBL, (1024));
+    C_ALLOC_SCRATCH_END(chaosMeasurePerLine, FIXP_DBL, (1024));
 }
 
 
@@ -159,46 +160,48 @@ void FDKaacEnc_CalculateFullTonality(FIXP_DBL      *RESTRICT spectrum,
 
 *****************************************************************************/
 static void FDKaacEnc_CalcSfbTonality(FIXP_DBL      *RESTRICT spectrum,
-                            INT           *RESTRICT sfbMaxScaleSpec,
-                            FIXP_DBL      *RESTRICT chaosMeasure,
-                            FIXP_SGL      *RESTRICT sfbTonality,
-                            INT           sfbCnt,
-                            const INT     *RESTRICT sfbOffset,
-                            FIXP_DBL      *RESTRICT sfbEnergyLD64 )
+                                      INT           *RESTRICT sfbMaxScaleSpec,
+                                      FIXP_DBL      *RESTRICT chaosMeasure,
+                                      FIXP_SGL      *RESTRICT sfbTonality,
+                                      INT           sfbCnt,
+                                      const INT     *RESTRICT sfbOffset,
+                                      FIXP_DBL      *RESTRICT sfbEnergyLD64 )
 {
     INT i, j;
 
-    for (i=0; i<sfbCnt; i++) {
-      FIXP_DBL chaosMeasureSfbLD64;
-      INT shiftBits = fixMax(0,sfbMaxScaleSpec[i] - 4);  /* max sfbWidth = 96 ; 2^7=128 => 7/2 = 4 (spc*spc) */
+    for (i=0; i<sfbCnt; i++)
+    {
+        FIXP_DBL chaosMeasureSfbLD64;
+        INT shiftBits = fixMax(0,sfbMaxScaleSpec[i] - 4);  /* max sfbWidth = 96 ; 2^7=128 => 7/2 = 4 (spc*spc) */
 
-      FIXP_DBL chaosMeasureSfb = FL2FXCONST_DBL(0.0);
+        FIXP_DBL chaosMeasureSfb = FL2FXCONST_DBL(0.0);
 
-      /* calc chaosMeasurePerSfb */
-      for (j=(sfbOffset[i+1]-sfbOffset[i])-1; j>=0; j--) {
-        FIXP_DBL tmp = (*spectrum++)<<shiftBits;
-        FIXP_DBL lineNrg = fMultDiv2(tmp, tmp);
-        chaosMeasureSfb = fMultAddDiv2(chaosMeasureSfb, lineNrg, *chaosMeasure++);
-      }
-
-      /* calc tonalityPerSfb */
-      if (chaosMeasureSfb != FL2FXCONST_DBL(0.0))
-      {
-        /* add ld(convtone)/64 and 2/64 bec.fMultDiv2 */
-        chaosMeasureSfbLD64 = CalcLdData((chaosMeasureSfb)) - sfbEnergyLD64[i];
-        chaosMeasureSfbLD64 += FL2FXCONST_DBL(3.0f/64) - ((FIXP_DBL)(shiftBits)<<(DFRACT_BITS-6));
-
-        if (chaosMeasureSfbLD64 > FL2FXCONST_DBL(-0.0519051) )     /* > ld(0.05)+ld(2) */
+        /* calc chaosMeasurePerSfb */
+        for (j=(sfbOffset[i+1]-sfbOffset[i])-1; j>=0; j--)
         {
-          if (chaosMeasureSfbLD64 <= FL2FXCONST_DBL(0.0) )
-		    sfbTonality[i] = FX_DBL2FX_SGL(fMultDiv2( chaosMeasureSfbLD64 , normlog ) << 7);
-          else
-            sfbTonality[i] = FL2FXCONST_SGL(0.0);
+            FIXP_DBL tmp = (*spectrum++)<<shiftBits;
+            FIXP_DBL lineNrg = fMultDiv2(tmp, tmp);
+            chaosMeasureSfb = fMultAddDiv2(chaosMeasureSfb, lineNrg, *chaosMeasure++);
+        }
+
+        /* calc tonalityPerSfb */
+        if (chaosMeasureSfb != FL2FXCONST_DBL(0.0))
+        {
+            /* add ld(convtone)/64 and 2/64 bec.fMultDiv2 */
+            chaosMeasureSfbLD64 = CalcLdData((chaosMeasureSfb)) - sfbEnergyLD64[i];
+            chaosMeasureSfbLD64 += FL2FXCONST_DBL(3.0f/64) - ((FIXP_DBL)(shiftBits)<<(DFRACT_BITS-6));
+
+            if (chaosMeasureSfbLD64 > FL2FXCONST_DBL(-0.0519051) )     /* > ld(0.05)+ld(2) */
+            {
+                if (chaosMeasureSfbLD64 <= FL2FXCONST_DBL(0.0) )
+                    sfbTonality[i] = FX_DBL2FX_SGL(fMultDiv2( chaosMeasureSfbLD64 , normlog ) << 7);
+                else
+                    sfbTonality[i] = FL2FXCONST_SGL(0.0);
+            }
+            else
+                sfbTonality[i] = (FIXP_SGL)MAXVAL_SGL;
         }
         else
-          sfbTonality[i] = (FIXP_SGL)MAXVAL_SGL;
-      }
-      else
-        sfbTonality[i] = (FIXP_SGL)MAXVAL_SGL;
+            sfbTonality[i] = (FIXP_SGL)MAXVAL_SGL;
     }
 }

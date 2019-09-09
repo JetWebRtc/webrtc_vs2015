@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -40,7 +40,8 @@ void ff_imdct15_init_aarch64(IMDCT15Context *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->imdct_half = ff_celt_imdct_half_neon;
     }
 }

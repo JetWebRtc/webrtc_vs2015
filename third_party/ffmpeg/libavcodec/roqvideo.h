@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2003 Mike Melanson
  * Copyright (C) 2003 Dr. Tim Ferguson
  *
@@ -26,22 +26,26 @@
 #include "avcodec.h"
 #include "bytestream.h"
 
-typedef struct roq_cell {
+typedef struct roq_cell
+{
     unsigned char y[4];
     unsigned char u, v;
 } roq_cell;
 
-typedef struct roq_qcell {
+typedef struct roq_qcell
+{
     int idx[4];
 } roq_qcell;
 
-typedef struct motion_vect {
+typedef struct motion_vect
+{
     int d[2];
 } motion_vect;
 
 struct RoqTempData;
 
-typedef struct RoqContext {
+typedef struct RoqContext
+{
 
     const AVClass *class;
     AVCodecContext *avctx;

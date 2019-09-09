@@ -1,4 +1,4 @@
-/*
+﻿/*
  * tables and functions for demuxing SIPR audio muxed RealMedia style
  *
  * This file is part of FFmpeg.

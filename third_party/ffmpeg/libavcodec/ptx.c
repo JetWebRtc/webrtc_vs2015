@@ -1,4 +1,4 @@
-/*
+﻿/*
  * V.Flash PTX (.ptx) image decoder
  * Copyright (c) 2007 Ivo van Poorten
  *
@@ -26,7 +26,8 @@
 #include "internal.h"
 
 static int ptx_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
-                            AVPacket *avpkt) {
+                            AVPacket *avpkt)
+{
     const uint8_t *buf = avpkt->data;
     const uint8_t *buf_end = avpkt->data + avpkt->size;
     AVFrame * const p = data;
@@ -41,7 +42,8 @@ static int ptx_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     h               = AV_RL16(buf+10);
     bytes_per_pixel = AV_RL16(buf+12) >> 3;
 
-    if (bytes_per_pixel != 2) {
+    if (bytes_per_pixel != 2)
+    {
         avpriv_request_sample(avctx, "Image format not RGB15");
         return AVERROR_PATCHWELCOME;
     }
@@ -66,7 +68,8 @@ static int ptx_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     ptr    = p->data[0];
     stride = p->linesize[0];
 
-    for (y = 0; y < h && buf_end - buf >= w * bytes_per_pixel; y++) {
+    for (y = 0; y < h && buf_end - buf >= w * bytes_per_pixel; y++)
+    {
         memcpy(ptr, buf, w*bytes_per_pixel);
         ptr += stride;
         buf += w*bytes_per_pixel;
@@ -74,7 +77,8 @@ static int ptx_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
 
     *got_frame = 1;
 
-    if (y < h) {
+    if (y < h)
+    {
         av_log(avctx, AV_LOG_WARNING, "incomplete packet\n");
         return avpkt->size;
     }
@@ -82,7 +86,8 @@ static int ptx_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     return offset + w*h*bytes_per_pixel;
 }
 
-AVCodec ff_ptx_decoder = {
+AVCodec ff_ptx_decoder =
+{
     .name           = "ptx",
     .long_name      = NULL_IF_CONFIG_SMALL("V.Flash PTX image"),
     .type           = AVMEDIA_TYPE_VIDEO,

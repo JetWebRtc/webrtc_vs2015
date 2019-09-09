@@ -32,7 +32,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } SubViewerContext;
 
@@ -57,7 +58,8 @@ static int read_ts(const char *s, int64_t *start, int *duration)
     int hh2, mm2, ss2, ms2;
 
     if (sscanf(s, "%u:%u:%u.%u,%u:%u:%u.%u",
-               &hh1, &mm1, &ss1, &ms1, &hh2, &mm2, &ss2, &ms2) == 8) {
+               &hh1, &mm1, &ss1, &ms1, &hh2, &mm2, &ss2, &ms2) == 8)
+    {
         end    = (hh2*3600LL + mm2*60LL + ss2) * 100LL + ms2;
         *start = (hh1*3600LL + mm1*60LL + ss1) * 100LL + ms1;
         *duration = end - *start;
@@ -84,7 +86,8 @@ static int subviewer_read_header(AVFormatContext *s)
 
     av_bprint_init(&header, 0, AV_BPRINT_SIZE_UNLIMITED);
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[2048];
         int64_t pos = 0;
         int len = ff_get_line(s->pb, line, sizeof(line));
@@ -94,21 +97,26 @@ static int subviewer_read_header(AVFormatContext *s)
 
         line[strcspn(line, "\r\n")] = 0;
 
-        if (line[0] == '[' && strncmp(line, "[br]", 4)) {
+        if (line[0] == '[' && strncmp(line, "[br]", 4))
+        {
 
             /* ignore event style, XXX: add to side_data? */
             if (strstr(line, "[COLF]") || strstr(line, "[SIZE]") ||
-                strstr(line, "[FONT]") || strstr(line, "[STYLE]"))
+                    strstr(line, "[FONT]") || strstr(line, "[STYLE]"))
                 continue;
 
-            if (!st->codec->extradata) { // header not finalized yet
+            if (!st->codec->extradata)   // header not finalized yet
+            {
                 av_bprintf(&header, "%s\n", line);
-                if (!strncmp(line, "[END INFORMATION]", 17) || !strncmp(line, "[SUBTITLE]", 10)) {
+                if (!strncmp(line, "[END INFORMATION]", 17) || !strncmp(line, "[SUBTITLE]", 10))
+                {
                     /* end of header */
                     res = avpriv_bprint_to_extradata(st->codec, &header);
                     if (res < 0)
                         goto end;
-                } else if (strncmp(line, "[INFORMATION]", 13)) {
+                }
+                else if (strncmp(line, "[INFORMATION]", 13))
+                {
                     /* assume file metadata at this point */
                     int i, j = 0;
                     char key[32], value[128];
@@ -128,23 +136,31 @@ static int subviewer_read_header(AVFormatContext *s)
                     av_dict_set(&s->metadata, key, value, 0);
                 }
             }
-        } else if (read_ts(line, &pts_start, &duration) >= 0) {
+        }
+        else if (read_ts(line, &pts_start, &duration) >= 0)
+        {
             new_event = 1;
             pos = avio_tell(s->pb);
-        } else if (*line) {
-            if (!new_event) {
+        }
+        else if (*line)
+        {
+            if (!new_event)
+            {
                 sub = ff_subtitles_queue_insert(&subviewer->q, "\n", 1, 1);
-                if (!sub) {
+                if (!sub)
+                {
                     res = AVERROR(ENOMEM);
                     goto end;
                 }
             }
             sub = ff_subtitles_queue_insert(&subviewer->q, line, strlen(line), !new_event);
-            if (!sub) {
+            if (!sub)
+            {
                 res = AVERROR(ENOMEM);
                 goto end;
             }
-            if (new_event) {
+            if (new_event)
+            {
                 sub->pos = pos;
                 sub->pts = pts_start;
                 sub->duration = duration;
@@ -181,7 +197,8 @@ static int subviewer_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_subviewer_demuxer = {
+AVInputFormat ff_subviewer_demuxer =
+{
     .name           = "subviewer",
     .long_name      = NULL_IF_CONFIG_SMALL("SubViewer subtitle format"),
     .priv_data_size = sizeof(SubViewerContext),

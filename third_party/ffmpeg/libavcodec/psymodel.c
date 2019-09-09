@@ -1,4 +1,4 @@
-/*
+﻿/*
  * audio encoder psychoacoustic model
  * Copyright (C) 2008 Konstantin Shishkov
  *
@@ -40,7 +40,8 @@ av_cold int ff_psy_init(FFPsyContext *ctx, AVCodecContext *avctx, int num_lens,
     ctx->bands     = av_malloc_array (sizeof(ctx->bands[0]),      num_lens);
     ctx->num_bands = av_malloc_array (sizeof(ctx->num_bands[0]),  num_lens);
 
-    if (!ctx->ch || !ctx->group || !ctx->bands || !ctx->num_bands) {
+    if (!ctx->ch || !ctx->group || !ctx->bands || !ctx->num_bands)
+    {
         ff_psy_end(ctx);
         return AVERROR(ENOMEM);
     }
@@ -49,7 +50,8 @@ av_cold int ff_psy_init(FFPsyContext *ctx, AVCodecContext *avctx, int num_lens,
     memcpy(ctx->num_bands, num_bands, sizeof(ctx->num_bands[0]) *  num_lens);
 
     /* assign channels to groups (with virtual channels for coupling) */
-    for (i = 0; i < num_groups; i++) {
+    for (i = 0; i < num_groups; i++)
+    {
         /* NOTE: Add 1 to handle the AAC chan_config without modification.
          *       This has the side effect of allowing an array of 0s to map
          *       to one channel per group.
@@ -59,7 +61,8 @@ av_cold int ff_psy_init(FFPsyContext *ctx, AVCodecContext *avctx, int num_lens,
             ctx->group[i].ch[j]  = &ctx->ch[k++];
     }
 
-    switch (ctx->avctx->codec_id) {
+    switch (ctx->avctx->codec_id)
+    {
     case AV_CODEC_ID_AAC:
         ctx->model = &ff_aac_psy_model;
         break;
@@ -89,13 +92,14 @@ av_cold void ff_psy_end(FFPsyContext *ctx)
     av_freep(&ctx->ch);
 }
 
-typedef struct FFPsyPreprocessContext{
+typedef struct FFPsyPreprocessContext
+{
     AVCodecContext *avctx;
     float stereo_att;
     struct FFIIRFilterCoeffs *fcoeffs;
     struct FFIIRFilterState **fstate;
     struct FFIIRFilterContext fiir;
-}FFPsyPreprocessContext;
+} FFPsyPreprocessContext;
 
 #define FILT_ORDER 4
 
@@ -116,12 +120,14 @@ av_cold struct FFPsyPreprocessContext* ff_psy_preprocess_init(AVCodecContext *av
         cutoff_coeff = 2.0 * AAC_CUTOFF(avctx) / avctx->sample_rate;
 
     if (cutoff_coeff && cutoff_coeff < 0.98)
-    ctx->fcoeffs = ff_iir_filter_init_coeffs(avctx, FF_FILTER_TYPE_BUTTERWORTH,
-                                             FF_FILTER_MODE_LOWPASS, FILT_ORDER,
-                                             cutoff_coeff, 0.0, 0.0);
-    if (ctx->fcoeffs) {
+        ctx->fcoeffs = ff_iir_filter_init_coeffs(avctx, FF_FILTER_TYPE_BUTTERWORTH,
+                       FF_FILTER_MODE_LOWPASS, FILT_ORDER,
+                       cutoff_coeff, 0.0, 0.0);
+    if (ctx->fcoeffs)
+    {
         ctx->fstate = av_mallocz_array(sizeof(ctx->fstate[0]), avctx->channels);
-        if (!ctx->fstate) {
+        if (!ctx->fstate)
+        {
             av_free(ctx);
             return NULL;
         }
@@ -140,7 +146,8 @@ void ff_psy_preprocess(struct FFPsyPreprocessContext *ctx, float **audio, int ch
     int frame_size = ctx->avctx->frame_size;
     FFIIRFilterContext *iir = &ctx->fiir;
 
-    if (ctx->fstate) {
+    if (ctx->fstate)
+    {
         for (ch = 0; ch < channels; ch++)
             iir->filter_flt(ctx->fcoeffs, ctx->fstate[ch], frame_size,
                             &audio[ch][frame_size], 1, &audio[ch][frame_size], 1);

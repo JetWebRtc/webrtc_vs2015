@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alpha optimized DSP utils
  * Copyright (c) 2002 Falk Hueffner <falk@debian.org>
  *
@@ -40,14 +40,14 @@ static inline uint64_t avg2(uint64_t a, uint64_t b)
 static inline uint64_t avg4(uint64_t l1, uint64_t l2, uint64_t l3, uint64_t l4)
 {
     uint64_t r1 = ((l1 & ~BYTE_VEC(0x03)) >> 2)
-                + ((l2 & ~BYTE_VEC(0x03)) >> 2)
-                + ((l3 & ~BYTE_VEC(0x03)) >> 2)
-                + ((l4 & ~BYTE_VEC(0x03)) >> 2);
+                  + ((l2 & ~BYTE_VEC(0x03)) >> 2)
+                  + ((l3 & ~BYTE_VEC(0x03)) >> 2)
+                  + ((l4 & ~BYTE_VEC(0x03)) >> 2);
     uint64_t r2 = ((  (l1 & BYTE_VEC(0x03))
-                    + (l2 & BYTE_VEC(0x03))
-                    + (l3 & BYTE_VEC(0x03))
-                    + (l4 & BYTE_VEC(0x03))
-                    + BYTE_VEC(0x02)) >> 2) & BYTE_VEC(0x03);
+                      + (l2 & BYTE_VEC(0x03))
+                      + (l3 & BYTE_VEC(0x03))
+                      + (l4 & BYTE_VEC(0x03))
+                      + BYTE_VEC(0x02)) >> 2) & BYTE_VEC(0x03);
     return r1 + r2;
 }
 #endif

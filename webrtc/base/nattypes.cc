@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,50 +12,93 @@
 
 #include "webrtc/base/checks.h"
 
-namespace rtc {
+namespace rtc
+{
 
-class SymmetricNAT : public NAT {
+class SymmetricNAT : public NAT
+{
 public:
- bool IsSymmetric() override { return true; }
- bool FiltersIP() override { return true; }
- bool FiltersPort() override { return true; }
+    bool IsSymmetric() override
+    {
+        return true;
+    }
+    bool FiltersIP() override
+    {
+        return true;
+    }
+    bool FiltersPort() override
+    {
+        return true;
+    }
 };
 
-class OpenConeNAT : public NAT {
+class OpenConeNAT : public NAT
+{
 public:
- bool IsSymmetric() override { return false; }
- bool FiltersIP() override { return false; }
- bool FiltersPort() override { return false; }
+    bool IsSymmetric() override
+    {
+        return false;
+    }
+    bool FiltersIP() override
+    {
+        return false;
+    }
+    bool FiltersPort() override
+    {
+        return false;
+    }
 };
 
-class AddressRestrictedNAT : public NAT {
+class AddressRestrictedNAT : public NAT
+{
 public:
- bool IsSymmetric() override { return false; }
- bool FiltersIP() override { return true; }
- bool FiltersPort() override { return false; }
+    bool IsSymmetric() override
+    {
+        return false;
+    }
+    bool FiltersIP() override
+    {
+        return true;
+    }
+    bool FiltersPort() override
+    {
+        return false;
+    }
 };
 
-class PortRestrictedNAT : public NAT {
+class PortRestrictedNAT : public NAT
+{
 public:
- bool IsSymmetric() override { return false; }
- bool FiltersIP() override { return true; }
- bool FiltersPort() override { return true; }
+    bool IsSymmetric() override
+    {
+        return false;
+    }
+    bool FiltersIP() override
+    {
+        return true;
+    }
+    bool FiltersPort() override
+    {
+        return true;
+    }
 };
 
-NAT* NAT::Create(NATType type) {
-  switch (type) {
+NAT* NAT::Create(NATType type)
+{
+    switch (type)
+    {
     case NAT_OPEN_CONE:
-      return new OpenConeNAT();
+        return new OpenConeNAT();
     case NAT_ADDR_RESTRICTED:
-      return new AddressRestrictedNAT();
+        return new AddressRestrictedNAT();
     case NAT_PORT_RESTRICTED:
-      return new PortRestrictedNAT();
+        return new PortRestrictedNAT();
     case NAT_SYMMETRIC:
-      return new SymmetricNAT();
+        return new SymmetricNAT();
     default:
-      RTC_NOTREACHED();
-      return 0;
-  }
+        RTC_NOTREACHED();
+        return 0;
+    }
 }
 
 } // namespace rtc

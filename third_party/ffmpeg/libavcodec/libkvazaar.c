@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libkvazaar encoder
  *
  * Copyright (c) 2015 Tampere University of Technology
@@ -29,7 +29,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-typedef struct LibkvazaarContext {
+typedef struct LibkvazaarContext
+{
     const AVClass *class;
 
     const kvz_api *api;
@@ -49,20 +50,23 @@ static av_cold int libkvazaar_init(AVCodecContext *avctx)
     LibkvazaarContext *const ctx = avctx->priv_data;
 
     // Kvazaar requires width and height to be multiples of eight.
-    if (avctx->width % 8 || avctx->height % 8) {
+    if (avctx->width % 8 || avctx->height % 8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Video dimensions are not a multiple of 8.\n");
         retval = AVERROR_INVALIDDATA;
         goto done;
     }
 
     cfg = api->config_alloc();
-    if (!cfg) {
+    if (!cfg)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not allocate kvazaar config structure.\n");
         retval = AVERROR(ENOMEM);
         goto done;
     }
 
-    if (!api->config_init(cfg)) {
+    if (!api->config_init(cfg))
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not initialize kvazaar config structure.\n");
         retval = AVERROR_EXTERNAL;
         goto done;
@@ -71,18 +75,22 @@ static av_cold int libkvazaar_init(AVCodecContext *avctx)
     cfg->width = avctx->width;
     cfg->height = avctx->height;
     cfg->framerate =
-      (double)(avctx->time_base.num * avctx->ticks_per_frame) / avctx->time_base.den;
+        (double)(avctx->time_base.num * avctx->ticks_per_frame) / avctx->time_base.den;
     cfg->threads = avctx->thread_count;
     cfg->target_bitrate = avctx->bit_rate;
     cfg->vui.sar_width = avctx->sample_aspect_ratio.num;
     cfg->vui.sar_height = avctx->sample_aspect_ratio.den;
 
-    if (ctx->kvz_params) {
+    if (ctx->kvz_params)
+    {
         AVDictionary *dict = NULL;
-        if (!av_dict_parse_string(&dict, ctx->kvz_params, "=", ",", 0)) {
+        if (!av_dict_parse_string(&dict, ctx->kvz_params, "=", ",", 0))
+        {
             AVDictionaryEntry *entry = NULL;
-            while ((entry = av_dict_get(dict, "", entry, AV_DICT_IGNORE_SUFFIX))) {
-                if (!api->config_parse(cfg, entry->key, entry->value)) {
+            while ((entry = av_dict_get(dict, "", entry, AV_DICT_IGNORE_SUFFIX)))
+            {
+                if (!api->config_parse(cfg, entry->key, entry->value))
+                {
                     av_log(avctx, AV_LOG_WARNING,
                            "Invalid option: %s=%s.\n",
                            entry->key, entry->value);
@@ -93,7 +101,8 @@ static av_cold int libkvazaar_init(AVCodecContext *avctx)
     }
 
     enc = api->encoder_open(cfg);
-    if (!enc) {
+    if (!enc)
+    {
         av_log(avctx, AV_LOG_ERROR, "Could not open kvazaar encoder.\n");
         retval = AVERROR_EXTERNAL;
         goto done;
@@ -117,12 +126,14 @@ static av_cold int libkvazaar_close(AVCodecContext *avctx)
     LibkvazaarContext *ctx = avctx->priv_data;
     if (!ctx->api) return 0;
 
-    if (ctx->encoder) {
+    if (ctx->encoder)
+    {
         ctx->api->encoder_close(ctx->encoder);
         ctx->encoder = NULL;
     }
 
-    if (ctx->config) {
+    if (ctx->config)
+    {
         ctx->api->config_destroy(ctx->config);
         ctx->config = NULL;
     }
@@ -143,7 +154,8 @@ static int libkvazaar_encode(AVCodecContext *avctx,
 
     *got_packet_ptr = 0;
 
-    if (frame) {
+    if (frame)
+    {
         int i = 0;
 
         av_assert0(frame->width == ctx->config->width);
@@ -152,20 +164,23 @@ static int libkvazaar_encode(AVCodecContext *avctx,
 
         // Allocate input picture for kvazaar.
         img_in = ctx->api->picture_alloc(frame->width, frame->height);
-        if (!img_in) {
+        if (!img_in)
+        {
             av_log(avctx, AV_LOG_ERROR, "Failed to allocate picture.\n");
             retval = AVERROR(ENOMEM);
             goto done;
         }
 
         // Copy pixels from frame to img_in.
-        for (i = 0; i < 3; ++i) {
+        for (i = 0; i < 3; ++i)
+        {
             uint8_t *dst = img_in->data[i];
             uint8_t *src = frame->data[i];
             int width = (i == 0) ? frame->width : (frame->width / 2);
             int height = (i == 0) ? frame->height : (frame->height / 2);
             int y = 0;
-            for (y = 0; y < height; ++y) {
+            for (y = 0; y < height; ++y)
+            {
                 memcpy(dst, src, width);
                 src += frame->linesize[i];
                 dst += width;
@@ -173,23 +188,27 @@ static int libkvazaar_encode(AVCodecContext *avctx,
         }
     }
 
-    if (!ctx->api->encoder_encode(ctx->encoder, img_in, &data_out, &len_out, NULL)) {
+    if (!ctx->api->encoder_encode(ctx->encoder, img_in, &data_out, &len_out, NULL))
+    {
         av_log(avctx, AV_LOG_ERROR, "Failed to encode frame.\n");
         retval = AVERROR_EXTERNAL;
         goto done;
     }
 
-    if (data_out) {
+    if (data_out)
+    {
         kvz_data_chunk *chunk = NULL;
         uint64_t written = 0;
 
         retval = ff_alloc_packet(avpkt, len_out);
-        if (retval < 0) {
+        if (retval < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "Failed to allocate output packet.\n");
             goto done;
         }
 
-        for (chunk = data_out; chunk != NULL; chunk = chunk->next) {
+        for (chunk = data_out; chunk != NULL; chunk = chunk->next)
+        {
             av_assert0(written + chunk->len <= len_out);
             memcpy(avpkt->data + written, chunk->data, chunk->len);
             written += chunk->len;
@@ -206,31 +225,38 @@ done:
     return retval;
 }
 
-static const enum AVPixelFormat pix_fmts[] = {
+static const enum AVPixelFormat pix_fmts[] =
+{
     AV_PIX_FMT_YUV420P,
     AV_PIX_FMT_NONE
 };
 
-static const AVOption options[] = {
-    { "kvazaar-params", "Set kvazaar parameters as a comma-separated list of name=value pairs.",
-      offsetof(LibkvazaarContext, kvz_params), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0,
-      AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
+static const AVOption options[] =
+{
+    {
+        "kvazaar-params", "Set kvazaar parameters as a comma-separated list of name=value pairs.",
+        offsetof(LibkvazaarContext, kvz_params), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0,
+        AV_OPT_FLAG_VIDEO_PARAM | AV_OPT_FLAG_ENCODING_PARAM
+    },
     { NULL },
 };
 
-static const AVClass class = {
+static const AVClass class =
+{
     .class_name = "libkvazaar",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-static const AVCodecDefault defaults[] = {
+static const AVCodecDefault defaults[] =
+{
     { "b", "0" },
     { NULL },
 };
 
-AVCodec ff_libkvazaar_encoder = {
+AVCodec ff_libkvazaar_encoder =
+{
     .name             = "libkvazaar",
     .long_name        = NULL_IF_CONFIG_SMALL("libkvazaar H.265 / HEVC"),
     .type             = AVMEDIA_TYPE_VIDEO,

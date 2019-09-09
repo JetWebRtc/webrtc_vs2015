@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -53,7 +53,8 @@ PR_WRAP(avx)
 
 #endif
 
-static const struct algo fdct_tab_arch[] = {
+static const struct algo fdct_tab_arch[] =
+{
 #if HAVE_MMX_INLINE
     { "MMX",    ff_fdct_mmx,    FF_IDCT_PERM_NONE, AV_CPU_FLAG_MMX },
 #endif
@@ -66,7 +67,8 @@ static const struct algo fdct_tab_arch[] = {
     { 0 }
 };
 
-static const struct algo idct_tab_arch[] = {
+static const struct algo idct_tab_arch[] =
+{
 #if HAVE_MMX_INLINE
     { "SIMPLE-MMX",  ff_simple_idct_mmx,  FF_IDCT_PERM_SIMPLE, AV_CPU_FLAG_MMX },
 #endif
@@ -88,7 +90,8 @@ static const struct algo idct_tab_arch[] = {
     { 0 }
 };
 
-static const uint8_t idct_simple_mmx_perm[64] = {
+static const uint8_t idct_simple_mmx_perm[64] =
+{
     0x00, 0x08, 0x04, 0x09, 0x01, 0x0C, 0x05, 0x0D,
     0x10, 0x18, 0x14, 0x19, 0x11, 0x1C, 0x15, 0x1D,
     0x20, 0x28, 0x24, 0x29, 0x21, 0x2C, 0x25, 0x2D,
@@ -106,7 +109,8 @@ static int permute_x86(int16_t dst[64], const int16_t src[64],
 {
     int i;
 
-    switch (perm_type) {
+    switch (perm_type)
+    {
     case FF_IDCT_PERM_SIMPLE:
         for (i = 0; i < 64; i++)
             dst[idct_simple_mmx_perm[i]] = src[i];

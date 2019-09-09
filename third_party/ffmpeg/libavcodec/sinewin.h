@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2008 Robert Swain
  *
  * This file is part of FFmpeg.

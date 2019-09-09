@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Audio Frame Queue
  * Copyright (c) 2012 Justin Ruggles
  *
@@ -52,14 +52,20 @@ int ff_af_queue_add(AudioFrameQueue *afq, const AVFrame *f)
     /* get frame parameters */
     new->duration = f->nb_samples;
     new->duration += afq->remaining_delay;
-    if (f->pts != AV_NOPTS_VALUE) {
+    if (f->pts != AV_NOPTS_VALUE)
+    {
         new->pts = av_rescale_q(f->pts,
-                                      afq->avctx->time_base,
-                                      (AVRational){ 1, afq->avctx->sample_rate });
+                                afq->avctx->time_base,
+                                (AVRational)
+        {
+            1, afq->avctx->sample_rate
+        });
         new->pts -= afq->remaining_delay;
         if(afq->frame_count && new[-1].pts >= new->pts)
             av_log(afq->avctx, AV_LOG_WARNING, "Queue input is backward in time\n");
-    } else {
+    }
+    else
+    {
         new->pts = AV_NOPTS_VALUE;
     }
     afq->remaining_delay = 0;
@@ -79,7 +85,8 @@ void ff_af_queue_remove(AudioFrameQueue *afq, int nb_samples, int64_t *pts,
     int removed_samples = 0;
     int i;
 
-    if (afq->frame_count || afq->frame_alloc) {
+    if (afq->frame_count || afq->frame_alloc)
+    {
         if (afq->frames->pts != AV_NOPTS_VALUE)
             out_pts = afq->frames->pts;
     }
@@ -88,7 +95,8 @@ void ff_af_queue_remove(AudioFrameQueue *afq, int nb_samples, int64_t *pts,
     if (pts)
         *pts = ff_samples_to_time_base(afq->avctx, out_pts);
 
-    for(i=0; nb_samples && i<afq->frame_count; i++){
+    for(i=0; nb_samples && i<afq->frame_count; i++)
+    {
         int n= FFMIN(afq->frames[i].duration, nb_samples);
         afq->frames[i].duration -= n;
         nb_samples              -= n;
@@ -101,7 +109,8 @@ void ff_af_queue_remove(AudioFrameQueue *afq, int nb_samples, int64_t *pts,
     memmove(afq->frames, afq->frames + i, sizeof(*afq->frames) * (afq->frame_count - i));
     afq->frame_count -= i;
 
-    if(nb_samples){
+    if(nb_samples)
+    {
         av_assert0(!afq->frame_count);
         av_assert0(afq->remaining_samples == afq->remaining_delay);
         if(afq->frames && afq->frames[0].pts != AV_NOPTS_VALUE)

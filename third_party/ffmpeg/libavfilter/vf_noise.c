@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -35,7 +35,8 @@
 #include "vf_noise.h"
 #include "video.h"
 
-typedef struct ThreadData {
+typedef struct ThreadData
+{
     AVFrame *in, *out;
 } ThreadData;
 
@@ -53,13 +54,16 @@ typedef struct ThreadData {
     {"t", "temporal noise", 0, AV_OPT_TYPE_CONST, {.i64=NOISE_TEMPORAL}, 0, 0, FLAGS, #name"_flags"},                            \
     {"u", "uniform noise",  0, AV_OPT_TYPE_CONST, {.i64=NOISE_UNIFORM},  0, 0, FLAGS, #name"_flags"},
 
-static const AVOption noise_options[] = {
+static const AVOption noise_options[] =
+{
     NOISE_PARAMS(all, 0, all)
     NOISE_PARAMS(c0,  0, param[0])
     NOISE_PARAMS(c1,  1, param[1])
     NOISE_PARAMS(c2,  2, param[2])
     NOISE_PARAMS(c3,  3, param[3])
-    {NULL}
+    {
+        NULL
+    }
 };
 
 AVFILTER_DEFINE_CLASS(noise);
@@ -81,35 +85,51 @@ static av_cold int init_noise(NoiseContext *n, int comp)
 
     av_lfg_init(&fp->lfg, fp->seed + comp*31415U);
 
-    for (i = 0, j = 0; i < MAX_NOISE; i++, j++) {
-        if (flags & NOISE_UNIFORM) {
-            if (flags & NOISE_AVERAGED) {
-                if (flags & NOISE_PATTERN) {
+    for (i = 0, j = 0; i < MAX_NOISE; i++, j++)
+    {
+        if (flags & NOISE_UNIFORM)
+        {
+            if (flags & NOISE_AVERAGED)
+            {
+                if (flags & NOISE_PATTERN)
+                {
                     noise[i] = (RAND_N(strength) - strength / 2) / 6
-                        + patt[j % 4] * strength * 0.25 / 3;
-                } else {
+                               + patt[j % 4] * strength * 0.25 / 3;
+                }
+                else
+                {
                     noise[i] = (RAND_N(strength) - strength / 2) / 3;
                 }
-            } else {
-                if (flags & NOISE_PATTERN) {
+            }
+            else
+            {
+                if (flags & NOISE_PATTERN)
+                {
                     noise[i] = (RAND_N(strength) - strength / 2) / 2
-                        + patt[j % 4] * strength * 0.25;
-                } else {
+                               + patt[j % 4] * strength * 0.25;
+                }
+                else
+                {
                     noise[i] = RAND_N(strength) - strength / 2;
                 }
             }
-        } else {
+        }
+        else
+        {
             double x1, x2, w, y1;
-            do {
+            do
+            {
                 x1 = 2.0 * av_lfg_get(lfg) / (float)UINT_MAX - 1.0;
                 x2 = 2.0 * av_lfg_get(lfg) / (float)UINT_MAX - 1.0;
                 w = x1 * x1 + x2 * x2;
-            } while (w >= 1.0);
+            }
+            while (w >= 1.0);
 
             w   = sqrt((-2.0 * log(w)) / w);
             y1  = x1 * w;
             y1 *= strength / sqrt(3.0);
-            if (flags & NOISE_PATTERN) {
+            if (flags & NOISE_PATTERN)
+            {
                 y1 /= 2;
                 y1 += patt[j % 4] * strength * 0.35;
             }
@@ -135,7 +155,8 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (desc->flags & AV_PIX_FMT_FLAG_PLANAR && !((desc->comp[0].depth_minus1 + 1) & 7))
             ff_add_format(&formats, fmt);
@@ -167,7 +188,8 @@ void ff_line_noise_c(uint8_t *dst, const uint8_t *src, const int8_t *noise,
     int i;
 
     noise += shift;
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         int v = src[i] + noise[i];
 
         dst[i] = av_clip_uint8(v);
@@ -180,7 +202,8 @@ void ff_line_noise_avg_c(uint8_t *dst, const uint8_t *src,
     int i;
     const int8_t *src2 = (const int8_t*)src;
 
-    for (i = 0; i < len; i++) {
+    for (i = 0; i < len; i++)
+    {
         const int n = shift[0][i] + shift[1][i] + shift[2][i];
         dst[i] = src2[i] + ((n * src2[i]) >> 7);
     }
@@ -195,23 +218,29 @@ static void noise(uint8_t *dst, const uint8_t *src,
     const int flags = p->flags;
     int y;
 
-    if (!noise) {
+    if (!noise)
+    {
         if (dst != src)
             av_image_copy_plane(dst, dst_linesize, src, src_linesize, width, end - start);
         return;
     }
 
-    for (y = start; y < end; y++) {
+    for (y = start; y < end; y++)
+    {
         const int ix = y & (MAX_RES - 1);
         int x;
-        for (x=0; x < width; x+= MAX_RES) {
+        for (x=0; x < width; x+= MAX_RES)
+        {
             int w = FFMIN(width - x, MAX_RES);
             int shift = p->rand_shift[ix];
 
-            if (flags & NOISE_AVERAGED) {
+            if (flags & NOISE_AVERAGED)
+            {
                 n->line_noise_avg(dst + x, src + x, w, (const int8_t**)p->prev_shift[ix]);
                 p->prev_shift[ix][shift & 3] = noise + shift;
-            } else {
+            }
+            else
+            {
                 n->line_noise(dst + x, src + x, noise, w, shift);
             }
         }
@@ -226,7 +255,8 @@ static int filter_slice(AVFilterContext *ctx, void *arg, int jobnr, int nb_jobs)
     ThreadData *td = arg;
     int plane;
 
-    for (plane = 0; plane < s->nb_planes; plane++) {
+    for (plane = 0; plane < s->nb_planes; plane++)
+    {
         const int height = s->height[plane];
         const int start  = (height *  jobnr   ) / nb_jobs;
         const int end    = (height * (jobnr+1)) / nb_jobs;
@@ -247,30 +277,38 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     AVFrame *out;
     int comp, i;
 
-    if (av_frame_is_writable(inpicref)) {
+    if (av_frame_is_writable(inpicref))
+    {
         out = inpicref;
-    } else {
+    }
+    else
+    {
         out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-        if (!out) {
+        if (!out)
+        {
             av_frame_free(&inpicref);
             return AVERROR(ENOMEM);
         }
         av_frame_copy_props(out, inpicref);
     }
 
-    for (comp = 0; comp < 4; comp++) {
+    for (comp = 0; comp < 4; comp++)
+    {
         FilterParams *fp = &n->param[comp];
 
-        if ((!fp->rand_shift_init || (fp->flags & NOISE_TEMPORAL)) && fp->strength) {
+        if ((!fp->rand_shift_init || (fp->flags & NOISE_TEMPORAL)) && fp->strength)
+        {
 
-            for (i = 0; i < MAX_RES; i++) {
+            for (i = 0; i < MAX_RES; i++)
+            {
                 fp->rand_shift[i] = av_lfg_get(&fp->lfg) & (MAX_SHIFT - 1);
             }
             fp->rand_shift_init = 1;
         }
     }
 
-    td.in = inpicref; td.out = out;
+    td.in = inpicref;
+    td.out = out;
     ctx->internal->execute(ctx, filter_slice, &td, NULL, FFMIN(n->height[0], ctx->graph->nb_threads));
     emms_c();
 
@@ -284,7 +322,8 @@ static av_cold int init(AVFilterContext *ctx)
     NoiseContext *n = ctx->priv;
     int ret, i;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         if (n->all.seed >= 0)
             n->param[i].seed = n->all.seed;
         else
@@ -295,7 +334,8 @@ static av_cold int init(AVFilterContext *ctx)
             n->param[i].flags = n->all.flags;
     }
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         if (n->param[i].strength && ((ret = init_noise(n, i)) < 0))
             return ret;
     }
@@ -318,7 +358,8 @@ static av_cold void uninit(AVFilterContext *ctx)
         av_freep(&n->param[i].noise);
 }
 
-static const AVFilterPad noise_inputs[] = {
+static const AVFilterPad noise_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -328,7 +369,8 @@ static const AVFilterPad noise_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad noise_outputs[] = {
+static const AVFilterPad noise_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -336,7 +378,8 @@ static const AVFilterPad noise_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_noise = {
+AVFilter ff_vf_noise =
+{
     .name          = "noise",
     .description   = NULL_IF_CONFIG_SMALL("Add noise."),
     .priv_size     = sizeof(NoiseContext),

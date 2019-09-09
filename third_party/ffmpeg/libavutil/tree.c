@@ -1,4 +1,4 @@
-/*
+﻿/*
  * copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -23,7 +23,8 @@
 #include "mem.h"
 #include "tree.h"
 
-typedef struct AVTreeNode {
+typedef struct AVTreeNode
+{
     struct AVTreeNode *child[2];
     void *elem;
     int state;
@@ -39,14 +40,19 @@ struct AVTreeNode *av_tree_node_alloc(void)
 void *av_tree_find(const AVTreeNode *t, void *key,
                    int (*cmp)(void *key, const void *b), void *next[2])
 {
-    if (t) {
+    if (t)
+    {
         unsigned int v = cmp(key, t->elem);
-        if (v) {
+        if (v)
+        {
             if (next)
                 next[v >> 31] = t->elem;
             return av_tree_find(t->child[(v >> 31) ^ 1], key, cmp, next);
-        } else {
-            if (next) {
+        }
+        else
+        {
+            if (next)
+            {
                 av_tree_find(t->child[0], key, cmp, next);
                 av_tree_find(t->child[1], key, cmp, next);
             }
@@ -60,32 +66,40 @@ void *av_tree_insert(AVTreeNode **tp, void *key,
                      int (*cmp)(void *key, const void *b), AVTreeNode **next)
 {
     AVTreeNode *t = *tp;
-    if (t) {
+    if (t)
+    {
         unsigned int v = cmp(t->elem, key);
         void *ret;
-        if (!v) {
+        if (!v)
+        {
             if (*next)
                 return t->elem;
-            else if (t->child[0] || t->child[1]) {
+            else if (t->child[0] || t->child[1])
+            {
                 int i = !t->child[0];
                 void *next_elem[2];
                 av_tree_find(t->child[i], key, cmp, next_elem);
                 key = t->elem = next_elem[i];
                 v   = -i;
-            } else {
+            }
+            else
+            {
                 *next = t;
                 *tp   = NULL;
                 return NULL;
             }
         }
         ret = av_tree_insert(&t->child[v >> 31], key, cmp, next);
-        if (!ret) {
+        if (!ret)
+        {
             int i              = (v >> 31) ^ !!*next;
             AVTreeNode **child = &t->child[i];
             t->state += 2 * i - 1;
 
-            if (!(t->state & 1)) {
-                if (t->state) {
+            if (!(t->state & 1))
+            {
+                if (t->state)
+                {
                     /* The following code is equivalent to
                      * if ((*child)->state * 2 == -t->state)
                      *     rotate(child, i ^ 1);
@@ -106,7 +120,8 @@ void *av_tree_insert(AVTreeNode **tp, void *key,
                      * }
                      * but such a rotate function is both bigger and slower
                      */
-                    if ((*child)->state * 2 == -t->state) {
+                    if ((*child)->state * 2 == -t->state)
+                    {
                         *tp                    = (*child)->child[i ^ 1];
                         (*child)->child[i ^ 1] = (*tp)->child[i];
                         (*tp)->child[i]        = *child;
@@ -116,7 +131,9 @@ void *av_tree_insert(AVTreeNode **tp, void *key,
                         (*tp)->child[0]->state = -((*tp)->state > 0);
                         (*tp)->child[1]->state = (*tp)->state < 0;
                         (*tp)->state           = 0;
-                    } else {
+                    }
+                    else
+                    {
                         *tp                 = *child;
                         *child              = (*child)->child[i ^ 1];
                         (*tp)->child[i ^ 1] = t;
@@ -132,20 +149,25 @@ void *av_tree_insert(AVTreeNode **tp, void *key,
                 return key;
         }
         return ret;
-    } else {
+    }
+    else
+    {
         *tp   = *next;
         *next = NULL;
-        if (*tp) {
+        if (*tp)
+        {
             (*tp)->elem = key;
             return NULL;
-        } else
+        }
+        else
             return key;
     }
 }
 
 void av_tree_destroy(AVTreeNode *t)
 {
-    if (t) {
+    if (t)
+    {
         av_tree_destroy(t->child[0]);
         av_tree_destroy(t->child[1]);
         av_free(t);
@@ -156,7 +178,8 @@ void av_tree_enumerate(AVTreeNode *t, void *opaque,
                        int (*cmp)(void *opaque, void *elem),
                        int (*enu)(void *opaque, void *elem))
 {
-    if (t) {
+    if (t)
+    {
         int v = cmp ? cmp(opaque, t->elem) : 0;
         if (v >= 0)
             av_tree_enumerate(t->child[0], opaque, cmp, enu);
@@ -174,7 +197,8 @@ void av_tree_enumerate(AVTreeNode *t, void *opaque,
 
 static int check(AVTreeNode *t)
 {
-    if (t) {
+    if (t)
+    {
         int left  = check(t->child[0]);
         int right = check(t->child[1]);
 
@@ -194,11 +218,13 @@ static void print(AVTreeNode *t, int depth)
     int i;
     for (i = 0; i < depth * 4; i++)
         av_log(NULL, AV_LOG_ERROR, " ");
-    if (t) {
+    if (t)
+    {
         av_log(NULL, AV_LOG_ERROR, "Node %p %2d %p\n", t, t->state, t->elem);
         print(t->child[0], depth + 1);
         print(t->child[1], depth + 1);
-    } else
+    }
+    else
         av_log(NULL, AV_LOG_ERROR, "NULL\n");
 }
 
@@ -219,10 +245,12 @@ int main(int argc, char **argv)
 
     av_lfg_init(&prng, 1);
 
-    for (i = 0; i < 10000; i++) {
+    for (i = 0; i < 10000; i++)
+    {
         intptr_t j = av_lfg_get(&prng) % 86294;
 
-        if (check(root) > 999) {
+        if (check(root) > 999)
+        {
             av_log(NULL, AV_LOG_ERROR, "FATAL error %d\n", i);
             print(root, 0);
             return 1;
@@ -231,7 +259,8 @@ int main(int argc, char **argv)
 
         if (!node)
             node = av_tree_node_alloc();
-        if (!node) {
+        if (!node)
+        {
             av_log(NULL, AV_LOG_ERROR, "Memory allocation failure.\n");
             return 1;
         }

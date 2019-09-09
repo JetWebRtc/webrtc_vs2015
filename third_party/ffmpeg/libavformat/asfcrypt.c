@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ASF decryption
  * Copyright (c) 2007 Reimar Doeffinger
  * This is a rewrite of code contained in freeme/freeme2
@@ -76,7 +76,8 @@ static uint32_t multiswap_step(const uint32_t keys[12], uint32_t v)
 {
     int i;
     v *= keys[0];
-    for (i = 1; i < 5; i++) {
+    for (i = 1; i < 5; i++)
+    {
         v  = (v >> 16) | (v << 16);
         v *= keys[i];
     }
@@ -88,7 +89,8 @@ static uint32_t multiswap_inv_step(const uint32_t keys[12], uint32_t v)
 {
     int i;
     v -= keys[5];
-    for (i = 4; i > 0; i--) {
+    for (i = 4; i > 0; i--)
+    {
         v *= keys[i];
         v  = (v >> 16) | (v << 16);
     }
@@ -155,7 +157,8 @@ void ff_asfcrypt_dec(const uint8_t key[20], uint8_t *data, int len)
     uint32_t ms_keys[12];
     uint64_t ms_state;
     int i;
-    if (len < 16) {
+    if (len < 16)
+    {
         for (i = 0; i < len; i++)
             data[i] ^= key[i];
         return;

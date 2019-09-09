@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DXVA2 HW acceleration
  *
  * copyright (c) 2010 Laurent Aimar
@@ -52,7 +52,8 @@
 
 typedef void DECODER_BUFFER_DESC;
 
-typedef union {
+typedef union
+{
 #if CONFIG_D3D11VA
     struct AVD3D11VAContext  d3d11va;
 #endif
@@ -116,7 +117,7 @@ int ff_dxva2_common_end_frame(AVCodecContext *, AVFrame *,
                               const void *pp, unsigned pp_size,
                               const void *qm, unsigned qm_size,
                               int (*commit_bs_si)(AVCodecContext *,
-                                                  DECODER_BUFFER_DESC *bs,
-                                                  DECODER_BUFFER_DESC *slice));
+                                      DECODER_BUFFER_DESC *bs,
+                                      DECODER_BUFFER_DESC *slice));
 
 #endif /* AVCODEC_DXVA_INTERNAL_H */

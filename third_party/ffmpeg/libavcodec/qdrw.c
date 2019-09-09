@@ -1,4 +1,4 @@
-/*
+﻿/*
  * QuickDraw (qdrw) codec
  * Copyright (c) 2004 Konstantin Shishkov
  * Copyright (c) 2015 Vittorio Giovara
@@ -32,7 +32,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-enum QuickdrawOpcodes {
+enum QuickdrawOpcodes
+{
     PACKBITSRECT = 0x0098,
     PACKBITSRGN,
     DIRECTBITSRECT,
@@ -46,10 +47,12 @@ static int parse_palette(AVCodecContext *avctx, GetByteContext *gbc,
 {
     int i;
 
-    for (i = 0; i <= colors; i++) {
+    for (i = 0; i <= colors; i++)
+    {
         uint8_t r, g, b;
         unsigned int idx = bytestream2_get_be16(gbc); /* color index */
-        if (idx > 255) {
+        if (idx > 255)
+        {
             av_log(avctx, AV_LOG_WARNING,
                    "Palette index out of range: %u\n", idx);
             bytestream2_skip(gbc, 6);
@@ -73,7 +76,8 @@ static int decode_rle(AVCodecContext *avctx, AVFrame *p, GetByteContext *gbc,
     int offset = avctx->width * step;
     uint8_t *outdata = p->data[0];
 
-    for (i = 0; i < avctx->height; i++) {
+    for (i = 0; i < avctx->height; i++)
+    {
         int size, left, code, pix;
         uint8_t *out = outdata;
         int pos = 0;
@@ -84,14 +88,18 @@ static int decode_rle(AVCodecContext *avctx, AVFrame *p, GetByteContext *gbc,
             return AVERROR_INVALIDDATA;
 
         /* decode line */
-        while (left > 0) {
+        while (left > 0)
+        {
             code = bytestream2_get_byte(gbc);
-            if (code & 0x80 ) { /* run */
+            if (code & 0x80 )   /* run */
+            {
                 pix = bytestream2_get_byte(gbc);
-                for (j = 0; j < 257 - code; j++) {
+                for (j = 0; j < 257 - code; j++)
+                {
                     out[pos] = pix;
                     pos += step;
-                    if (pos >= offset) {
+                    if (pos >= offset)
+                    {
                         pos -= offset;
                         pos++;
                     }
@@ -99,11 +107,15 @@ static int decode_rle(AVCodecContext *avctx, AVFrame *p, GetByteContext *gbc,
                         return AVERROR_INVALIDDATA;
                 }
                 left  -= 2;
-            } else { /* copy */
-                for (j = 0; j < code + 1; j++) {
+            }
+            else     /* copy */
+            {
+                for (j = 0; j < code + 1; j++)
+                {
                     out[pos] = bytestream2_get_byte(gbc);
                     pos += step;
-                    if (pos >= offset) {
+                    if (pos >= offset)
+                    {
                         pos -= offset;
                         pos++;
                     }
@@ -153,14 +165,15 @@ static int decode_frame(AVCodecContext *avctx,
 
     bytestream2_init(&gbc, avpkt->data, avpkt->size);
     if (   bytestream2_get_bytes_left(&gbc) >= 552
-           &&  check_header(gbc.buffer + 512, bytestream2_get_bytes_left(&gbc) - 512)
+            &&  check_header(gbc.buffer + 512, bytestream2_get_bytes_left(&gbc) - 512)
        )
         bytestream2_skip(&gbc, 512);
 
     ver = check_header(gbc.buffer, bytestream2_get_bytes_left(&gbc));
 
     /* smallest PICT header */
-    if (bytestream2_get_bytes_left(&gbc) < 40) {
+    if (bytestream2_get_bytes_left(&gbc) < 40)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small %d\n",
                bytestream2_get_bytes_left(&gbc));
         return AVERROR_INVALIDDATA;
@@ -176,22 +189,27 @@ static int decode_frame(AVCodecContext *avctx,
 
     /* version 1 is identified by 0x1101
      * it uses byte-aligned opcodes rather than word-aligned */
-    if (ver == 1) {
+    if (ver == 1)
+    {
         avpriv_request_sample(avctx, "QuickDraw version 1");
         return AVERROR_PATCHWELCOME;
-    } else if (ver != 2) {
+    }
+    else if (ver != 2)
+    {
         avpriv_request_sample(avctx, "QuickDraw version unknown (%X)", bytestream2_get_be32(&gbc));
         return AVERROR_PATCHWELCOME;
     }
 
     bytestream2_skip(&gbc, 4+26);
 
-    while (bytestream2_get_bytes_left(&gbc) >= 4) {
+    while (bytestream2_get_bytes_left(&gbc) >= 4)
+    {
         int bppcnt, bpp;
         int rowbytes, pack_type;
         int opcode = bytestream2_get_be16(&gbc);
 
-        switch(opcode) {
+        switch(opcode)
+        {
         case PACKBITSRECT:
         case PACKBITSRGN:
             av_log(avctx, AV_LOG_DEBUG, "Parsing Packbit opcode\n");
@@ -201,9 +219,12 @@ static int decode_frame(AVCodecContext *avctx,
             bpp    = bytestream2_get_be16(&gbc); /* cmpSize */
 
             av_log(avctx, AV_LOG_DEBUG, "bppcount %d bpp %d\n", bppcnt, bpp);
-            if (bppcnt == 1 && bpp == 8) {
+            if (bppcnt == 1 && bpp == 8)
+            {
                 avctx->pix_fmt = AV_PIX_FMT_PAL8;
-            } else {
+            }
+            else
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Invalid pixel format (bppcnt %d bpp %d) in Packbit\n",
                        bppcnt, bpp);
@@ -214,12 +235,14 @@ static int decode_frame(AVCodecContext *avctx,
             bytestream2_skip(&gbc, 18);
             colors = bytestream2_get_be16(&gbc);
 
-            if (colors < 0 || colors > 256) {
+            if (colors < 0 || colors > 256)
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Error color count - %i(0x%X)\n", colors, colors);
                 return AVERROR_INVALIDDATA;
             }
-            if (bytestream2_get_bytes_left(&gbc) < (colors + 1) * 8) {
+            if (bytestream2_get_bytes_left(&gbc) < (colors + 1) * 8)
+            {
                 av_log(avctx, AV_LOG_ERROR, "Palette is too small %d\n",
                        bytestream2_get_bytes_left(&gbc));
                 return AVERROR_INVALIDDATA;
@@ -233,7 +256,8 @@ static int decode_frame(AVCodecContext *avctx,
             /* jump to image data */
             bytestream2_skip(&gbc, 18);
 
-            if (opcode == PACKBITSRGN) {
+            if (opcode == PACKBITSRGN)
+            {
                 bytestream2_skip(&gbc, 2 + 8); /* size + rect */
                 avpriv_report_missing_feature(avctx, "Packbit mask region");
             }
@@ -249,7 +273,8 @@ static int decode_frame(AVCodecContext *avctx,
 
             bytestream2_skip(&gbc, 4);
             rowbytes = bytestream2_get_be16(&gbc) & 0x3FFF;
-            if (rowbytes <= 250) {
+            if (rowbytes <= 250)
+            {
                 avpriv_report_missing_feature(avctx, "Short rowbytes");
                 return AVERROR_PATCHWELCOME;
             }
@@ -262,11 +287,16 @@ static int decode_frame(AVCodecContext *avctx,
             bpp    = bytestream2_get_be16(&gbc); /* cmpSize */
 
             av_log(avctx, AV_LOG_DEBUG, "bppcount %d bpp %d\n", bppcnt, bpp);
-            if (bppcnt == 3 && bpp == 8) {
+            if (bppcnt == 3 && bpp == 8)
+            {
                 avctx->pix_fmt = AV_PIX_FMT_RGB24;
-            } else if (bppcnt == 4 && bpp == 8) {
+            }
+            else if (bppcnt == 4 && bpp == 8)
+            {
                 avctx->pix_fmt = AV_PIX_FMT_ARGB;
-            } else {
+            }
+            else
+            {
                 av_log(avctx, AV_LOG_ERROR,
                        "Invalid pixel format (bppcnt %d bpp %d) in Directbit\n",
                        bppcnt, bpp);
@@ -277,11 +307,13 @@ static int decode_frame(AVCodecContext *avctx,
             if (pack_type == 0)
                 pack_type = bppcnt;
 
-            if (pack_type != 3 && pack_type != 4) {
+            if (pack_type != 3 && pack_type != 4)
+            {
                 avpriv_request_sample(avctx, "Pack type %d", pack_type);
                 return AVERROR_PATCHWELCOME;
             }
-            if ((ret = ff_get_buffer(avctx, p, 0)) < 0) {
+            if ((ret = ff_get_buffer(avctx, p, 0)) < 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "get_buffer() failed\n");
                 return ret;
             }
@@ -289,7 +321,8 @@ static int decode_frame(AVCodecContext *avctx,
             /* jump to data */
             bytestream2_skip(&gbc, 30);
 
-            if (opcode == DIRECTBITSRGN) {
+            if (opcode == DIRECTBITSRGN)
+            {
                 bytestream2_skip(&gbc, 2 + 8); /* size + rect */
                 avpriv_report_missing_feature(avctx, "DirectBit mask region");
             }
@@ -304,7 +337,8 @@ static int decode_frame(AVCodecContext *avctx,
             break;
         }
         /* exit the loop when a known pixel block has been found */
-        if (*got_frame) {
+        if (*got_frame)
+        {
             int eop, trail;
 
             /* re-align to a word */
@@ -321,19 +355,23 @@ static int decode_frame(AVCodecContext *avctx,
         }
     }
 
-    if (*got_frame) {
+    if (*got_frame)
+    {
         p->pict_type = AV_PICTURE_TYPE_I;
         p->key_frame = 1;
 
         return avpkt->size;
-    } else {
+    }
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame contained no usable data\n");
 
         return AVERROR_INVALIDDATA;
     }
 }
 
-AVCodec ff_qdraw_decoder = {
+AVCodec ff_qdraw_decoder =
+{
     .name           = "qdraw",
     .long_name      = NULL_IF_CONFIG_SMALL("Apple QuickDraw"),
     .type           = AVMEDIA_TYPE_VIDEO,

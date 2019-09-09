@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Delay Locked Loop based time filter prototypes and declarations
  * Copyright (c) 2009 Samalyse
  * Copyright (c) 2009 Michael Niedermayer

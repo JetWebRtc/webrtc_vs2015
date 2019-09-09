@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,21 +13,25 @@
 
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class NullRenderer : public VideoRenderer {
-  void OnFrame(const VideoFrame& video_frame) override {}
+class NullRenderer : public VideoRenderer
+{
+    void OnFrame(const VideoFrame& video_frame) override {}
 };
 
 VideoRenderer* VideoRenderer::Create(const char* window_title,
                                      size_t width,
-                                     size_t height) {
-  VideoRenderer* renderer = CreatePlatformRenderer(window_title, width, height);
-  if (renderer != nullptr)
-    return renderer;
+                                     size_t height)
+{
+    VideoRenderer* renderer = CreatePlatformRenderer(window_title, width, height);
+    if (renderer != nullptr)
+        return renderer;
 
-  return new NullRenderer();
+    return new NullRenderer();
 }
 }  // namespace test
 }  // namespace webrtc

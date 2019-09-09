@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -47,7 +47,8 @@ void av_fft_calc(FFTContext *s, FFTComplex *z)
 
 av_cold void av_fft_end(FFTContext *s)
 {
-    if (s) {
+    if (s)
+    {
         ff_fft_end(s);
         av_free(s);
     }
@@ -82,7 +83,8 @@ void av_mdct_calc(FFTContext *s, FFTSample *output, const FFTSample *input)
 
 av_cold void av_mdct_end(FFTContext *s)
 {
-    if (s) {
+    if (s)
+    {
         ff_mdct_end(s);
         av_free(s);
     }
@@ -109,7 +111,8 @@ void av_rdft_calc(RDFTContext *s, FFTSample *data)
 
 av_cold void av_rdft_end(RDFTContext *s)
 {
-    if (s) {
+    if (s)
+    {
         ff_rdft_end(s);
         av_free(s);
     }
@@ -136,7 +139,8 @@ void av_dct_calc(DCTContext *s, FFTSample *data)
 
 av_cold void av_dct_end(DCTContext *s)
 {
-    if (s) {
+    if (s)
+    {
         ff_dct_end(s);
         av_free(s);
     }
@@ -154,14 +158,17 @@ int main(int argc, char **argv)
 
     if (!ref || !data || !rdft_context || !irdft_context)
         return 2;
-    for (i=0; i<LEN; i++) {
+    for (i=0; i<LEN; i++)
+    {
         ref[i] = data[i] = i*456 + 123 + i*i;
     }
     av_rdft_calc(rdft_context, data);
     av_rdft_calc(irdft_context, data);
 
-    for (i=0; i<LEN; i++) {
-        if (fabs(ref[i] - data[i]/LEN*2) > 1) {
+    for (i=0; i<LEN; i++)
+    {
+        if (fabs(ref[i] - data[i]/LEN*2) > 1)
+        {
             fprintf(stderr, "Failed at %d (%f %f)\n", i, ref[i], data[i]/LEN*2);
             return 1;
         }

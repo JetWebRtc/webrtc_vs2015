@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -43,8 +43,10 @@ static inline char *make_command_flags_str(AVBPrint *pbuf, int flags)
     int i, is_first = 1;
 
     av_bprint_init(pbuf, 0, AV_BPRINT_SIZE_AUTOMATIC);
-    for (i = 0; i < FF_ARRAY_ELEMS(flag_strings); i++) {
-        if (flags & 1<<i) {
+    for (i = 0; i < FF_ARRAY_ELEMS(flag_strings); i++)
+    {
+        if (flags & 1<<i)
+        {
             if (!is_first)
                 av_bprint_chars(pbuf, '+', 1);
             av_bprintf(pbuf, "%s", flag_strings[i]);
@@ -55,13 +57,15 @@ static inline char *make_command_flags_str(AVBPrint *pbuf, int flags)
     return pbuf->str;
 }
 
-typedef struct {
+typedef struct
+{
     int flags;
     char *target, *command, *arg;
     int index;
 } Command;
 
-typedef struct {
+typedef struct
+{
     int64_t start_ts;          ///< start timestamp expressed as microseconds units
     int64_t end_ts;            ///< end   timestamp expressed as microseconds units
     int index;                 ///< unique index for these interval commands
@@ -70,7 +74,8 @@ typedef struct {
     int enabled;               ///< current time detected inside this interval
 } Interval;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     Interval *intervals;
     int   nb_intervals;
@@ -81,7 +86,8 @@ typedef struct {
 
 #define OFFSET(x) offsetof(SendCmdContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM | AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_VIDEO_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "commands", "set commands", OFFSET(commands_str), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "c",        "set commands", OFFSET(commands_str), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
     { "filename", "set commands file",  OFFSET(commands_filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, FLAGS },
@@ -93,7 +99,8 @@ static const AVOption options[] = {
 
 static void skip_comments(const char **buf)
 {
-    while (**buf) {
+    while (**buf)
+    {
         /* skip leading spaces */
         *buf += strspn(*buf, SPACES);
         if (**buf != '#')
@@ -122,15 +129,18 @@ static int parse_command(Command *cmd, int cmd_count, int interval_count,
     *buf += strspn(*buf, SPACES);
 
     /* parse flags */
-    if (**buf == '[') {
+    if (**buf == '[')
+    {
         (*buf)++; /* skip "[" */
 
-        while (**buf) {
+        while (**buf)
+        {
             int len = strcspn(*buf, "|+]");
 
             if      (!strncmp(*buf, "enter", strlen("enter"))) cmd->flags |= COMMAND_FLAG_ENTER;
             else if (!strncmp(*buf, "leave", strlen("leave"))) cmd->flags |= COMMAND_FLAG_LEAVE;
-            else {
+            else
+            {
                 char flag_buf[64];
                 av_strlcpy(flag_buf, *buf, sizeof(flag_buf));
                 av_log(log_ctx, AV_LOG_ERROR,
@@ -141,7 +151,8 @@ static int parse_command(Command *cmd, int cmd_count, int interval_count,
             *buf += len;
             if (**buf == ']')
                 break;
-            if (!strspn(*buf, "+|")) {
+            if (!strspn(*buf, "+|"))
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Invalid flags char '%c' in interval #%d, command #%d\n",
                        **buf, interval_count, cmd_count);
@@ -151,20 +162,24 @@ static int parse_command(Command *cmd, int cmd_count, int interval_count,
                 (*buf)++;
         }
 
-        if (**buf != ']') {
+        if (**buf != ']')
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Missing flag terminator or extraneous data found at the end of flags "
                    "in interval #%d, command #%d\n", interval_count, cmd_count);
             return AVERROR(EINVAL);
         }
         (*buf)++; /* skip "]" */
-    } else {
+    }
+    else
+    {
         cmd->flags = COMMAND_FLAG_ENTER;
     }
 
     *buf += strspn(*buf, SPACES);
     cmd->target = av_get_token(buf, COMMAND_DELIMS);
-    if (!cmd->target || !cmd->target[0]) {
+    if (!cmd->target || !cmd->target[0])
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "No target specified in interval #%d, command #%d\n",
                interval_count, cmd_count);
@@ -174,7 +189,8 @@ static int parse_command(Command *cmd, int cmd_count, int interval_count,
 
     *buf += strspn(*buf, SPACES);
     cmd->command = av_get_token(buf, COMMAND_DELIMS);
-    if (!cmd->command || !cmd->command[0]) {
+    if (!cmd->command || !cmd->command[0])
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "No command specified in interval #%d, command #%d\n",
                interval_count, cmd_count);
@@ -204,7 +220,8 @@ static int parse_commands(Command **cmds, int *nb_cmds, int interval_count,
     *cmds = NULL;
     *nb_cmds = 0;
 
-    while (**buf) {
+    while (**buf)
+    {
         Command cmd;
 
         if ((ret = parse_command(&cmd, cmd_count, interval_count, buf, log_ctx)) < 0)
@@ -212,10 +229,12 @@ static int parse_commands(Command **cmds, int *nb_cmds, int interval_count,
         cmd_count++;
 
         /* (re)allocate commands array if required */
-        if (*nb_cmds == n) {
+        if (*nb_cmds == n)
+        {
             n = FFMAX(16, 2*n); /* first allocation = 16, or double the number */
             *cmds = av_realloc_f(*cmds, n, 2*sizeof(Command));
-            if (!*cmds) {
+            if (!*cmds)
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Could not (re)allocate command array\n");
                 return AVERROR(ENOMEM);
@@ -225,7 +244,8 @@ static int parse_commands(Command **cmds, int *nb_cmds, int interval_count,
         (*cmds)[(*nb_cmds)++] = cmd;
 
         *buf += strspn(*buf, SPACES);
-        if (**buf && **buf != ';' && **buf != ',') {
+        if (**buf && **buf != ';' && **buf != ',')
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Missing separator or extraneous data found at the end of "
                    "interval #%d, in command #%d\n",
@@ -264,28 +284,35 @@ static int parse_interval(Interval *interval, int interval_count,
 
     /* parse interval */
     intervalstr = av_get_token(buf, DELIMS);
-    if (intervalstr && intervalstr[0]) {
+    if (intervalstr && intervalstr[0])
+    {
         char *start, *end;
 
         start = av_strtok(intervalstr, "-", &end);
-        if ((ret = av_parse_time(&interval->start_ts, start, 1)) < 0) {
+        if ((ret = av_parse_time(&interval->start_ts, start, 1)) < 0)
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Invalid start time specification '%s' in interval #%d\n",
                    start, interval_count);
             goto end;
         }
 
-        if (end) {
-            if ((ret = av_parse_time(&interval->end_ts, end, 1)) < 0) {
+        if (end)
+        {
+            if ((ret = av_parse_time(&interval->end_ts, end, 1)) < 0)
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Invalid end time specification '%s' in interval #%d\n",
                        end, interval_count);
                 goto end;
             }
-        } else {
+        }
+        else
+        {
             interval->end_ts = INT64_MAX;
         }
-        if (interval->end_ts < interval->start_ts) {
+        if (interval->end_ts < interval->start_ts)
+        {
             av_log(log_ctx, AV_LOG_ERROR,
                    "Invalid end time '%s' in interval #%d: "
                    "cannot be lesser than start time '%s'\n",
@@ -293,7 +320,9 @@ static int parse_interval(Interval *interval, int interval_count,
             ret = AVERROR(EINVAL);
             goto end;
         }
-    } else {
+    }
+    else
+    {
         av_log(log_ctx, AV_LOG_ERROR,
                "No interval specified for interval #%d\n", interval_count);
         ret = AVERROR(EINVAL);
@@ -321,7 +350,8 @@ static int parse_intervals(Interval **intervals, int *nb_intervals,
     if (!buf)
         return 0;
 
-    while (1) {
+    while (1)
+    {
         Interval interval;
 
         skip_comments(&buf);
@@ -332,8 +362,10 @@ static int parse_intervals(Interval **intervals, int *nb_intervals,
             return ret;
 
         buf += strspn(buf, SPACES);
-        if (*buf) {
-            if (*buf != ';') {
+        if (*buf)
+        {
+            if (*buf != ';')
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Missing terminator or extraneous data found at the end of interval #%d\n",
                        interval_count);
@@ -344,10 +376,12 @@ static int parse_intervals(Interval **intervals, int *nb_intervals,
         interval_count++;
 
         /* (re)allocate commands array if required */
-        if (*nb_intervals == n) {
+        if (*nb_intervals == n)
+        {
             n = FFMAX(16, 2*n); /* first allocation = 16, or double the number */
             *intervals = av_realloc_f(*intervals, n, 2*sizeof(Interval));
-            if (!*intervals) {
+            if (!*intervals)
+            {
                 av_log(log_ctx, AV_LOG_ERROR,
                        "Could not (re)allocate intervals array\n");
                 return AVERROR(ENOMEM);
@@ -376,13 +410,15 @@ static av_cold int init(AVFilterContext *ctx)
     SendCmdContext *sendcmd = ctx->priv;
     int ret, i, j;
 
-    if ((!!sendcmd->commands_filename + !!sendcmd->commands_str) != 1) {
+    if ((!!sendcmd->commands_filename + !!sendcmd->commands_str) != 1)
+    {
         av_log(ctx, AV_LOG_ERROR,
                "One and only one of the filename or commands options must be specified\n");
         return AVERROR(EINVAL);
     }
 
-    if (sendcmd->commands_filename) {
+    if (sendcmd->commands_filename)
+    {
         uint8_t *file_buf, *buf;
         size_t file_bufsize;
         ret = av_file_map(sendcmd->commands_filename,
@@ -392,7 +428,8 @@ static av_cold int init(AVFilterContext *ctx)
 
         /* create a 0-terminated string based on the read file */
         buf = av_malloc(file_bufsize + 1);
-        if (!buf) {
+        if (!buf)
+        {
             av_file_unmap(file_buf, file_bufsize);
             return AVERROR(ENOMEM);
         }
@@ -406,7 +443,8 @@ static av_cold int init(AVFilterContext *ctx)
                                sendcmd->commands_str, ctx)) < 0)
         return ret;
 
-    if (sendcmd->nb_intervals == 0) {
+    if (sendcmd->nb_intervals == 0)
+    {
         av_log(ctx, AV_LOG_ERROR, "No commands were specified\n");
         return AVERROR(EINVAL);
     }
@@ -414,12 +452,14 @@ static av_cold int init(AVFilterContext *ctx)
     qsort(sendcmd->intervals, sendcmd->nb_intervals, sizeof(Interval), cmp_intervals);
 
     av_log(ctx, AV_LOG_DEBUG, "Parsed commands:\n");
-    for (i = 0; i < sendcmd->nb_intervals; i++) {
+    for (i = 0; i < sendcmd->nb_intervals; i++)
+    {
         AVBPrint pbuf;
         Interval *interval = &sendcmd->intervals[i];
         av_log(ctx, AV_LOG_VERBOSE, "start_time:%f end_time:%f index:%d\n",
                (double)interval->start_ts/1000000, (double)interval->end_ts/1000000, interval->index);
-        for (j = 0; j < interval->nb_commands; j++) {
+        for (j = 0; j < interval->nb_commands; j++)
+        {
             Command *cmd = &interval->commands[j];
             av_log(ctx, AV_LOG_VERBOSE,
                    "    [%s] target:%s command:%s arg:%s index:%d\n",
@@ -435,9 +475,11 @@ static av_cold void uninit(AVFilterContext *ctx)
     SendCmdContext *sendcmd = ctx->priv;
     int i, j;
 
-    for (i = 0; i < sendcmd->nb_intervals; i++) {
+    for (i = 0; i < sendcmd->nb_intervals; i++)
+    {
         Interval *interval = &sendcmd->intervals[i];
-        for (j = 0; j < interval->nb_commands; j++) {
+        for (j = 0; j < interval->nb_commands; j++)
+        {
             Command *cmd = &interval->commands[j];
             av_freep(&cmd->target);
             av_freep(&cmd->command);
@@ -462,20 +504,24 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *ref)
 
 #define WITHIN_INTERVAL(ts, start_ts, end_ts) ((ts) >= (start_ts) && (ts) < (end_ts))
 
-    for (i = 0; i < sendcmd->nb_intervals; i++) {
+    for (i = 0; i < sendcmd->nb_intervals; i++)
+    {
         Interval *interval = &sendcmd->intervals[i];
         int flags = 0;
 
-        if (!interval->enabled && WITHIN_INTERVAL(ts, interval->start_ts, interval->end_ts)) {
+        if (!interval->enabled && WITHIN_INTERVAL(ts, interval->start_ts, interval->end_ts))
+        {
             flags += COMMAND_FLAG_ENTER;
             interval->enabled = 1;
         }
-        if (interval->enabled && !WITHIN_INTERVAL(ts, interval->start_ts, interval->end_ts)) {
+        if (interval->enabled && !WITHIN_INTERVAL(ts, interval->start_ts, interval->end_ts))
+        {
             flags += COMMAND_FLAG_LEAVE;
             interval->enabled = 0;
         }
 
-        if (flags) {
+        if (flags)
+        {
             AVBPrint pbuf;
             av_log(ctx, AV_LOG_VERBOSE,
                    "[%s] interval #%d start_ts:%f end_ts:%f ts:%f\n",
@@ -483,11 +529,13 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *ref)
                    (double)interval->start_ts/1000000, (double)interval->end_ts/1000000,
                    (double)ts/1000000);
 
-            for (j = 0; flags && j < interval->nb_commands; j++) {
+            for (j = 0; flags && j < interval->nb_commands; j++)
+            {
                 Command *cmd = &interval->commands[j];
                 char buf[1024];
 
-                if (cmd->flags & flags) {
+                if (cmd->flags & flags)
+                {
                     av_log(ctx, AV_LOG_VERBOSE,
                            "Processing command #%d target:%s command:%s arg:%s\n",
                            cmd->index, cmd->target, cmd->command, cmd->arg);
@@ -504,7 +552,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *ref)
     }
 
 end:
-    switch (inlink->type) {
+    switch (inlink->type)
+    {
     case AVMEDIA_TYPE_VIDEO:
     case AVMEDIA_TYPE_AUDIO:
         return ff_filter_frame(inlink->dst->outputs[0], ref);
@@ -518,7 +567,8 @@ end:
 #define sendcmd_options options
 AVFILTER_DEFINE_CLASS(sendcmd);
 
-static const AVFilterPad sendcmd_inputs[] = {
+static const AVFilterPad sendcmd_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -527,7 +577,8 @@ static const AVFilterPad sendcmd_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad sendcmd_outputs[] = {
+static const AVFilterPad sendcmd_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -535,7 +586,8 @@ static const AVFilterPad sendcmd_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_sendcmd = {
+AVFilter ff_vf_sendcmd =
+{
     .name        = "sendcmd",
     .description = NULL_IF_CONFIG_SMALL("Send commands to filters."),
     .init        = init,
@@ -553,7 +605,8 @@ AVFilter ff_vf_sendcmd = {
 #define asendcmd_options options
 AVFILTER_DEFINE_CLASS(asendcmd);
 
-static const AVFilterPad asendcmd_inputs[] = {
+static const AVFilterPad asendcmd_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -562,7 +615,8 @@ static const AVFilterPad asendcmd_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad asendcmd_outputs[] = {
+static const AVFilterPad asendcmd_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_AUDIO,
@@ -570,7 +624,8 @@ static const AVFilterPad asendcmd_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_asendcmd = {
+AVFilter ff_af_asendcmd =
+{
     .name        = "asendcmd",
     .description = NULL_IF_CONFIG_SMALL("Send commands to filters."),
     .init        = init,

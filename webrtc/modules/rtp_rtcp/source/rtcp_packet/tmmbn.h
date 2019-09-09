@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,43 +17,50 @@
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/rtpfb.h"
 #include "webrtc/modules/rtp_rtcp/source/rtcp_packet/tmmb_item.h"
 
-namespace webrtc {
-namespace rtcp {
+namespace webrtc
+{
+namespace rtcp
+{
 class CommonHeader;
 
 // Temporary Maximum Media Stream Bit Rate Notification (TMMBN).
 // RFC 5104, Section 4.2.2.
-class Tmmbn : public Rtpfb {
- public:
-  static constexpr uint8_t kFeedbackMessageType = 4;
+class Tmmbn : public Rtpfb
+{
+public:
+    static constexpr uint8_t kFeedbackMessageType = 4;
 
-  Tmmbn() {}
-  ~Tmmbn() override {}
+    Tmmbn() {}
+    ~Tmmbn() override {}
 
-  // Parse assumes header is already parsed and validated.
-  bool Parse(const CommonHeader& packet);
+    // Parse assumes header is already parsed and validated.
+    bool Parse(const CommonHeader& packet);
 
-  void AddTmmbr(const TmmbItem& item);
+    void AddTmmbr(const TmmbItem& item);
 
-  const std::vector<TmmbItem>& items() const { return items_; }
+    const std::vector<TmmbItem>& items() const
+    {
+        return items_;
+    }
 
- protected:
-  bool Create(uint8_t* packet,
-              size_t* index,
-              size_t max_length,
-              RtcpPacket::PacketReadyCallback* callback) const override;
+protected:
+    bool Create(uint8_t* packet,
+                size_t* index,
+                size_t max_length,
+                RtcpPacket::PacketReadyCallback* callback) const override;
 
- private:
-  size_t BlockLength() const override {
-    return kHeaderLength + kCommonFeedbackLength +
-           TmmbItem::kLength * items_.size();
-  }
+private:
+    size_t BlockLength() const override
+    {
+        return kHeaderLength + kCommonFeedbackLength +
+               TmmbItem::kLength * items_.size();
+    }
 
-  // Media ssrc is unused, shadow base class setter and getter.
-  void SetMediaSsrc(uint32_t ssrc);
-  uint32_t media_ssrc() const;
+    // Media ssrc is unused, shadow base class setter and getter.
+    void SetMediaSsrc(uint32_t ssrc);
+    uint32_t media_ssrc() const;
 
-  std::vector<TmmbItem> items_;
+    std::vector<TmmbItem> items_;
 };
 }  // namespace rtcp
 }  // namespace webrtc

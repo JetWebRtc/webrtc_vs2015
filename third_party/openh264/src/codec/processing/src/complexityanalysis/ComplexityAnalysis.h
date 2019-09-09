@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2011-2013, Cisco Systems
  *     All rights reserved.
@@ -58,47 +58,49 @@ typedef GOMSadFunc*   PGOMSadFunc;
 GOMSadFunc      GomSampleSad;
 GOMSadFunc      GomSampleSadExceptBackground;
 
-class CComplexityAnalysis : public IStrategy {
- public:
-  CComplexityAnalysis (int32_t iCpuFlag);
-  ~CComplexityAnalysis();
+class CComplexityAnalysis : public IStrategy
+{
+public:
+    CComplexityAnalysis (int32_t iCpuFlag);
+    ~CComplexityAnalysis();
 
-  EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pRef);
-  EResult Set (int32_t iType, void* pParam);
-  EResult Get (int32_t iType, void* pParam);
+    EResult Process (int32_t iType, SPixMap* pSrc, SPixMap* pRef);
+    EResult Set (int32_t iType, void* pParam);
+    EResult Get (int32_t iType, void* pParam);
 
- private:
-  void AnalyzeFrameComplexityViaSad (SPixMap* pSrc, SPixMap* pRef);
-  int32_t GetFrameSadExcludeBackground (SPixMap* pSrc, SPixMap* pRef);
+private:
+    void AnalyzeFrameComplexityViaSad (SPixMap* pSrc, SPixMap* pRef);
+    int32_t GetFrameSadExcludeBackground (SPixMap* pSrc, SPixMap* pRef);
 
-  void AnalyzeGomComplexityViaSad (SPixMap* pSrc, SPixMap* pRef);
-  void AnalyzeGomComplexityViaVar (SPixMap* pSrc, SPixMap* pRef);
+    void AnalyzeGomComplexityViaSad (SPixMap* pSrc, SPixMap* pRef);
+    void AnalyzeGomComplexityViaVar (SPixMap* pSrc, SPixMap* pRef);
 
- private:
-  PGOMSadFunc m_pfGomSad;
-  SComplexityAnalysisParam m_sComplexityAnalysisParam;
+private:
+    PGOMSadFunc m_pfGomSad;
+    SComplexityAnalysisParam m_sComplexityAnalysisParam;
 };
 
 
 //for screen content
 
-class CComplexityAnalysisScreen : public IStrategy {
- public:
-  CComplexityAnalysisScreen (int32_t cpu_flag);
-  ~CComplexityAnalysisScreen();
+class CComplexityAnalysisScreen : public IStrategy
+{
+public:
+    CComplexityAnalysisScreen (int32_t cpu_flag);
+    ~CComplexityAnalysisScreen();
 
-  EResult Process (int32_t nType, SPixMap* src, SPixMap* ref);
-  EResult Set (int32_t nType, void* pParam);
-  EResult Get (int32_t nType, void* pParam);
+    EResult Process (int32_t nType, SPixMap* src, SPixMap* ref);
+    EResult Set (int32_t nType, void* pParam);
+    EResult Get (int32_t nType, void* pParam);
 
- private:
-  void GomComplexityAnalysisIntra (SPixMap* pSrc);
-  void GomComplexityAnalysisInter (SPixMap* pSrc, SPixMap* pRef, bool bScrollFlag);
+private:
+    void GomComplexityAnalysisIntra (SPixMap* pSrc);
+    void GomComplexityAnalysisInter (SPixMap* pSrc, SPixMap* pRef, bool bScrollFlag);
 
- private:
-  PSad16x16Func m_pSadFunc;
-  GetIntraPredPtr m_pIntraFunc[2];
-  SComplexityAnalysisScreenParam m_ComplexityAnalysisParam;
+private:
+    PSad16x16Func m_pSadFunc;
+    GetIntraPredPtr m_pIntraFunc[2];
+    SComplexityAnalysisScreenParam m_ComplexityAnalysisParam;
 };
 
 

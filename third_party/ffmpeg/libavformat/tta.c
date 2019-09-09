@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TTA demuxer
  * Copyright (c) 2006 Alex Beregszaszi
  *
@@ -28,7 +28,8 @@
 #include "libavutil/crc.h"
 #include "libavutil/dict.h"
 
-typedef struct TTAContext {
+typedef struct TTAContext
+{
     int totalframes, currentframe;
     int frame_size;
     int last_frame_size;
@@ -43,10 +44,10 @@ static unsigned long tta_check_crc(unsigned long checksum, const uint8_t *buf,
 static int tta_probe(AVProbeData *p)
 {
     if (AV_RL32(&p->buf[0]) == MKTAG('T', 'T', 'A', '1') &&
-        (AV_RL16(&p->buf[4]) == 1 || AV_RL16(&p->buf[4]) == 2) &&
-        AV_RL16(&p->buf[6]) > 0 &&
-        AV_RL16(&p->buf[8]) > 0 &&
-        AV_RL32(&p->buf[10]) > 0)
+            (AV_RL16(&p->buf[4]) == 1 || AV_RL16(&p->buf[4]) == 2) &&
+            AV_RL16(&p->buf[6]) > 0 &&
+            AV_RL16(&p->buf[8]) > 0 &&
+            AV_RL32(&p->buf[10]) > 0)
         return AVPROBE_SCORE_EXTENSION + 30;
     return 0;
 }
@@ -72,19 +73,22 @@ static int tta_read_header(AVFormatContext *s)
     channels = avio_rl16(s->pb);
     bps = avio_rl16(s->pb);
     samplerate = avio_rl32(s->pb);
-    if(samplerate <= 0 || samplerate > 1000000){
+    if(samplerate <= 0 || samplerate > 1000000)
+    {
         av_log(s, AV_LOG_ERROR, "nonsense samplerate\n");
         return AVERROR_INVALIDDATA;
     }
 
     nb_samples = avio_rl32(s->pb);
-    if (!nb_samples) {
+    if (!nb_samples)
+    {
         av_log(s, AV_LOG_ERROR, "invalid number of samples\n");
         return AVERROR_INVALIDDATA;
     }
 
     crc = ffio_get_checksum(s->pb) ^ UINT32_MAX;
-    if (crc != avio_rl32(s->pb) && s->error_recognition & AV_EF_CRCCHECK) {
+    if (crc != avio_rl32(s->pb) && s->error_recognition & AV_EF_CRCCHECK)
+    {
         av_log(s, AV_LOG_ERROR, "Header CRC error\n");
         return AVERROR_INVALIDDATA;
     }
@@ -96,7 +100,8 @@ static int tta_read_header(AVFormatContext *s)
     c->totalframes = nb_samples / c->frame_size + (c->last_frame_size < c->frame_size);
     c->currentframe = 0;
 
-    if(c->totalframes >= UINT_MAX/sizeof(uint32_t) || c->totalframes <= 0){
+    if(c->totalframes >= UINT_MAX/sizeof(uint32_t) || c->totalframes <= 0)
+    {
         av_log(s, AV_LOG_ERROR, "totalframes %d invalid\n", c->totalframes);
         return AVERROR_INVALIDDATA;
     }
@@ -121,7 +126,8 @@ static int tta_read_header(AVFormatContext *s)
     avio_read(s->pb, st->codec->extradata, st->codec->extradata_size);
 
     ffio_init_checksum(s->pb, tta_check_crc, UINT32_MAX);
-    for (i = 0; i < c->totalframes; i++) {
+    for (i = 0; i < c->totalframes; i++)
+    {
         uint32_t size = avio_rl32(s->pb);
         int r;
         if ((r = av_add_index_entry(st, framepos, i * c->frame_size, size, 0,
@@ -130,7 +136,8 @@ static int tta_read_header(AVFormatContext *s)
         framepos += size;
     }
     crc = ffio_get_checksum(s->pb) ^ UINT32_MAX;
-    if (crc != avio_rl32(s->pb) && s->error_recognition & AV_EF_CRCCHECK) {
+    if (crc != avio_rl32(s->pb) && s->error_recognition & AV_EF_CRCCHECK)
+    {
         av_log(s, AV_LOG_ERROR, "Seek table CRC error\n");
         return AVERROR_INVALIDDATA;
     }
@@ -141,7 +148,8 @@ static int tta_read_header(AVFormatContext *s)
     st->codec->sample_rate = samplerate;
     st->codec->bits_per_coded_sample = bps;
 
-    if (s->pb->seekable) {
+    if (s->pb->seekable)
+    {
         int64_t pos = avio_tell(s->pb);
         ff_ape_parse_tag(s);
         avio_seek(s->pb, pos, SEEK_SET);
@@ -160,7 +168,8 @@ static int tta_read_packet(AVFormatContext *s, AVPacket *pkt)
     if (c->currentframe >= c->totalframes)
         return AVERROR_EOF;
 
-    if (st->nb_index_entries < c->totalframes) {
+    if (st->nb_index_entries < c->totalframes)
+    {
         av_log(s, AV_LOG_ERROR, "Index entry disappeared\n");
         return AVERROR_INVALIDDATA;
     }
@@ -170,7 +179,7 @@ static int tta_read_packet(AVFormatContext *s, AVPacket *pkt)
     ret = av_get_packet(s->pb, pkt, size);
     pkt->dts = st->index_entries[c->currentframe++].timestamp;
     pkt->duration = c->currentframe == c->totalframes ? c->last_frame_size :
-                                                        c->frame_size;
+                    c->frame_size;
     return ret;
 }
 
@@ -189,7 +198,8 @@ static int tta_read_seek(AVFormatContext *s, int stream_index, int64_t timestamp
     return 0;
 }
 
-AVInputFormat ff_tta_demuxer = {
+AVInputFormat ff_tta_demuxer =
+{
     .name           = "tta",
     .long_name      = NULL_IF_CONFIG_SMALL("TTA (True Audio)"),
     .priv_data_size = sizeof(TTAContext),

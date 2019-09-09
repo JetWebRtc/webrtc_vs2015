@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Electronic Arts TGQ Video Decoder
  * Copyright (c) 2007-2008 Peter Ross <pross@xvid.org>
  *
@@ -37,7 +37,8 @@
 #include "eaidct.h"
 #include "internal.h"
 
-typedef struct TgqContext {
+typedef struct TgqContext
+{
     AVCodecContext *avctx;
     int width, height;
     ScanTable scantable;
@@ -53,7 +54,10 @@ static av_cold int tgq_decode_init(AVCodecContext *avctx)
     s->avctx = avctx;
     ff_init_scantable_permutation(idct_permutation, FF_IDCT_PERM_NONE);
     ff_init_scantable(idct_permutation, &s->scantable, ff_zigzag_direct);
-    avctx->framerate = (AVRational){ 15, 1 };
+    avctx->framerate = (AVRational)
+    {
+        15, 1
+    };
     avctx->pix_fmt   = AV_PIX_FMT_YUV420P;
     return 0;
 }
@@ -63,8 +67,10 @@ static void tgq_decode_block(TgqContext *s, int16_t block[64], GetBitContext *gb
     uint8_t *perm = s->scantable.permutated;
     int i, j, value;
     block[0] = get_sbits(gb, 8) * s->qtable[0];
-    for (i = 1; i < 64;) {
-        switch (show_bits(gb, 3)) {
+    for (i = 1; i < 64;)
+    {
+        switch (show_bits(gb, 3))
+        {
         case 4:
             block[perm[i++]] = 0;
         case 0:
@@ -91,10 +97,13 @@ static void tgq_decode_block(TgqContext *s, int16_t block[64], GetBitContext *gb
         case 7: // 111b
         case 3: // 011b
             skip_bits(gb, 2);
-            if (show_bits(gb, 6) == 0x3F) {
+            if (show_bits(gb, 6) == 0x3F)
+            {
                 skip_bits(gb, 6);
                 block[perm[i]] = get_sbits(gb, 8) * s->qtable[perm[i]];
-            } else {
+            }
+            else
+            {
                 block[perm[i]] = get_sbits(gb, 6) * s->qtable[perm[i]];
             }
             i++;
@@ -116,9 +125,10 @@ static void tgq_idct_put_mb(TgqContext *s, int16_t (*block)[64], AVFrame *frame,
     ff_ea_idct_put_c(dest_y                + 8, linesize, block[1]);
     ff_ea_idct_put_c(dest_y + 8 * linesize    , linesize, block[2]);
     ff_ea_idct_put_c(dest_y + 8 * linesize + 8, linesize, block[3]);
-    if (!(s->avctx->flags & AV_CODEC_FLAG_GRAY)) {
-         ff_ea_idct_put_c(dest_cb, frame->linesize[1], block[4]);
-         ff_ea_idct_put_c(dest_cr, frame->linesize[2], block[5]);
+    if (!(s->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
+        ff_ea_idct_put_c(dest_cb, frame->linesize[1], block[4]);
+        ff_ea_idct_put_c(dest_cr, frame->linesize[2], block[5]);
     }
 }
 
@@ -142,7 +152,8 @@ static void tgq_idct_put_mb_dconly(TgqContext *s, AVFrame *frame,
     tgq_dconly(s, dest_y                + 8, linesize, dc[1]);
     tgq_dconly(s, dest_y + 8 * linesize,     linesize, dc[2]);
     tgq_dconly(s, dest_y + 8 * linesize + 8, linesize, dc[3]);
-    if (!(s->avctx->flags & AV_CODEC_FLAG_GRAY)) {
+    if (!(s->avctx->flags & AV_CODEC_FLAG_GRAY))
+    {
         tgq_dconly(s, dest_cb, frame->linesize[1], dc[4]);
         tgq_dconly(s, dest_cr, frame->linesize[2], dc[5]);
     }
@@ -155,7 +166,8 @@ static int tgq_decode_mb(TgqContext *s, AVFrame *frame, int mb_y, int mb_x)
     int8_t dc[6];
 
     mode = bytestream2_get_byte(&s->gb);
-    if (mode > 12) {
+    if (mode > 12)
+    {
         GetBitContext gb;
         int ret = init_get_bits8(&gb, s->gb.buffer, FFMIN(bytestream2_get_bytes_left(&s->gb), mode));
         if (ret < 0)
@@ -165,19 +177,29 @@ static int tgq_decode_mb(TgqContext *s, AVFrame *frame, int mb_y, int mb_x)
             tgq_decode_block(s, s->block[i], &gb);
         tgq_idct_put_mb(s, s->block, frame, mb_x, mb_y);
         bytestream2_skip(&s->gb, mode);
-    } else {
-        if (mode == 3) {
+    }
+    else
+    {
+        if (mode == 3)
+        {
             memset(dc, bytestream2_get_byte(&s->gb), 4);
             dc[4] = bytestream2_get_byte(&s->gb);
             dc[5] = bytestream2_get_byte(&s->gb);
-        } else if (mode == 6) {
+        }
+        else if (mode == 6)
+        {
             bytestream2_get_buffer(&s->gb, dc, 6);
-        } else if (mode == 12) {
-            for (i = 0; i < 6; i++) {
+        }
+        else if (mode == 12)
+        {
+            for (i = 0; i < 6; i++)
+            {
                 dc[i] = bytestream2_get_byte(&s->gb);
                 bytestream2_skip(&s->gb, 1);
             }
-        } else {
+        }
+        else
+        {
             av_log(s->avctx, AV_LOG_ERROR, "unsupported mb mode %i\n", mode);
             return -1;
         }
@@ -208,16 +230,20 @@ static int tgq_decode_frame(AVCodecContext *avctx,
     int x, y, ret;
     int big_endian;
 
-    if (buf_size < 16) {
+    if (buf_size < 16)
+    {
         av_log(avctx, AV_LOG_WARNING, "truncated header\n");
         return AVERROR_INVALIDDATA;
     }
     big_endian = AV_RL32(&buf[4]) > 0x000FFFFF;
     bytestream2_init(&s->gb, buf + 8, buf_size - 8);
-    if (big_endian) {
+    if (big_endian)
+    {
         s->width  = bytestream2_get_be16u(&s->gb);
         s->height = bytestream2_get_be16u(&s->gb);
-    } else {
+    }
+    else
+    {
         s->width  = bytestream2_get_le16u(&s->gb);
         s->height = bytestream2_get_le16u(&s->gb);
     }
@@ -244,7 +270,8 @@ static int tgq_decode_frame(AVCodecContext *avctx,
     return avpkt->size;
 }
 
-AVCodec ff_eatgq_decoder = {
+AVCodec ff_eatgq_decoder =
+{
     .name           = "eatgq",
     .long_name      = NULL_IF_CONFIG_SMALL("Electronic Arts TGQ video"),
     .type           = AVMEDIA_TYPE_VIDEO,

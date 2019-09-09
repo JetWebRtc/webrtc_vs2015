@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2014 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,7 +12,7 @@
 
 @interface ARDJoinResponse ()
 
-@property(nonatomic, assign) ARDJoinResultType result;
+    @property(nonatomic, assign) ARDJoinResultType result;
 @property(nonatomic, assign) BOOL isInitiator;
 @property(nonatomic, strong) NSString *roomId;
 @property(nonatomic, strong) NSString *clientId;

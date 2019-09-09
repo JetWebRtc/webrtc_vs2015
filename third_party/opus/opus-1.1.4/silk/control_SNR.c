@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,28 +44,37 @@ opus_int silk_control_SNR(
 
     /* Set bitrate/coding quality */
     TargetRate_bps = silk_LIMIT( TargetRate_bps, MIN_TARGET_RATE_BPS, MAX_TARGET_RATE_BPS );
-    if( TargetRate_bps != psEncC->TargetRate_bps ) {
+    if( TargetRate_bps != psEncC->TargetRate_bps )
+    {
         psEncC->TargetRate_bps = TargetRate_bps;
 
         /* If new TargetRate_bps, translate to SNR_dB value */
-        if( psEncC->fs_kHz == 8 ) {
+        if( psEncC->fs_kHz == 8 )
+        {
             rateTable = silk_TargetRate_table_NB;
-        } else if( psEncC->fs_kHz == 12 ) {
+        }
+        else if( psEncC->fs_kHz == 12 )
+        {
             rateTable = silk_TargetRate_table_MB;
-        } else {
+        }
+        else
+        {
             rateTable = silk_TargetRate_table_WB;
         }
 
         /* Reduce bitrate for 10 ms modes in these calculations */
-        if( psEncC->nb_subfr == 2 ) {
+        if( psEncC->nb_subfr == 2 )
+        {
             TargetRate_bps -= REDUCE_BITRATE_10_MS_BPS;
         }
 
         /* Find bitrate interval in table and interpolate */
-        for( k = 1; k < TARGET_RATE_TAB_SZ; k++ ) {
-            if( TargetRate_bps <= rateTable[ k ] ) {
+        for( k = 1; k < TARGET_RATE_TAB_SZ; k++ )
+        {
+            if( TargetRate_bps <= rateTable[ k ] )
+            {
                 frac_Q6 = silk_DIV32( silk_LSHIFT( TargetRate_bps - rateTable[ k - 1 ], 6 ),
-                                                 rateTable[ k ] - rateTable[ k - 1 ] );
+                                      rateTable[ k ] - rateTable[ k - 1 ] );
                 psEncC->SNR_dB_Q7 = silk_LSHIFT( silk_SNR_table_Q1[ k - 1 ], 6 ) + silk_MUL( frac_Q6, silk_SNR_table_Q1[ k ] - silk_SNR_table_Q1[ k - 1 ] );
                 break;
             }

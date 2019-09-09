@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Binary text demuxer
  * eXtended BINary text (XBIN) demuxer
  * Artworx Data Format demuxer
@@ -38,7 +38,8 @@
 #include "sauce.h"
 #include "libavcodec/bintext.h"
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int chars_per_frame; /**< characters to send decoder per frame;
                               set by private options as characters per second, and then
@@ -57,7 +58,8 @@ static AVStream * init_stream(AVFormatContext *s)
     st->codec->codec_tag   = 0;
     st->codec->codec_type  = AVMEDIA_TYPE_VIDEO;
 
-    if (!bin->width) {
+    if (!bin->width)
+    {
         st->codec->width  = (80<<3);
         st->codec->height = (25<<4);
     }
@@ -81,7 +83,8 @@ static void calculate_height(AVCodecContext *avctx, uint64_t fsize)
 #endif
 
 #if CONFIG_BINTEXT_DEMUXER
-static const uint8_t next_magic[]={
+static const uint8_t next_magic[]=
+{
     0x1A, 0x1B, '[', '0', ';', '3', '0', ';', '4', '0', 'm', 'N', 'E', 'X', 'T', 0x00
 };
 
@@ -141,12 +144,14 @@ static int bintext_read_header(AVFormatContext *s)
     st->codec->extradata[0] = 16;
     st->codec->extradata[1] = 0;
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         int got_width = 0;
         bin->fsize = avio_size(pb);
         if (ff_sauce_read(s, &bin->fsize, &got_width, 0) < 0)
             next_tag_read(s, &bin->fsize);
-        if (!bin->width) {
+        if (!bin->width)
+        {
             predict_width(st->codec, bin->fsize, got_width);
             calculate_height(st->codec, bin->fsize);
         }
@@ -162,8 +167,8 @@ static int xbin_probe(AVProbeData *p)
     const uint8_t *d = p->buf;
 
     if (AV_RL32(d) == MKTAG('X','B','I','N') && d[4] == 0x1A &&
-        AV_RL16(d+5) > 0 && AV_RL16(d+5) <= 160 &&
-        d[9] > 0 && d[9] <= 32)
+            AV_RL16(d+5) > 0 && AV_RL16(d+5) <= 160 &&
+            d[9] > 0 && d[9] <= 32)
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -199,7 +204,8 @@ static int xbin_read_header(AVFormatContext *s)
     if (avio_read(pb, st->codec->extradata + 2, st->codec->extradata_size - 2) < 0)
         return AVERROR(EIO);
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         bin->fsize = avio_size(pb) - 9 - st->codec->extradata_size;
         ff_sauce_read(s, &bin->fsize, NULL, 0);
         avio_seek(pb, 9 + st->codec->extradata_size, SEEK_SET);
@@ -237,7 +243,8 @@ static int adf_read_header(AVFormatContext *s)
     if (avio_read(pb, st->codec->extradata + 2 + 48, 4096) < 0)
         return AVERROR(EIO);
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         int got_width = 0;
         bin->fsize = avio_size(pb) - 1 - 192 - 4096;
         st->codec->width = 80<<3;
@@ -251,7 +258,8 @@ static int adf_read_header(AVFormatContext *s)
 #endif /* CONFIG_ADF_DEMUXER */
 
 #if CONFIG_IDF_DEMUXER
-static const uint8_t idf_magic[] = {
+static const uint8_t idf_magic[] =
+{
     0x04, 0x31, 0x2e, 0x34, 0x00, 0x00, 0x00, 0x00, 0x4f, 0x00, 0x15, 0x00
 };
 
@@ -301,20 +309,25 @@ static int idf_read_header(AVFormatContext *s)
 #endif /* CONFIG_IDF_DEMUXER */
 
 static int read_packet(AVFormatContext *s,
-                           AVPacket *pkt)
+                       AVPacket *pkt)
 {
     BinDemuxContext *bin = s->priv_data;
 
-    if (bin->fsize > 0) {
+    if (bin->fsize > 0)
+    {
         if (av_get_packet(s->pb, pkt, bin->fsize) < 0)
             return AVERROR(EIO);
         bin->fsize = -1; /* done */
-    } else if (!bin->fsize) {
+    }
+    else if (!bin->fsize)
+    {
         if (avio_feof(s->pb))
             return AVERROR(EIO);
         if (av_get_packet(s->pb, pkt, bin->chars_per_frame) < 0)
             return AVERROR(EIO);
-    } else {
+    }
+    else
+    {
         return AVERROR(EIO);
     }
 
@@ -323,7 +336,8 @@ static int read_packet(AVFormatContext *s,
 }
 
 #define OFFSET(x) offsetof(BinDemuxContext, x)
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "linespeed", "set simulated line speed (bytes per second)", OFFSET(chars_per_frame), AV_OPT_TYPE_INT, {.i64 = 6000}, 1, INT_MAX, AV_OPT_FLAG_DECODING_PARAM},
     { "video_size", "set video size, such as 640x480 or hd720.", OFFSET(width), AV_OPT_TYPE_IMAGE_SIZE, {.str = NULL}, 0, 0, AV_OPT_FLAG_DECODING_PARAM },
     { "framerate", "set framerate (frames per second)", OFFSET(framerate), AV_OPT_TYPE_VIDEO_RATE, {.str = "25"}, 0, 0, AV_OPT_FLAG_DECODING_PARAM },
@@ -339,7 +353,8 @@ static const AVOption options[] = {
 }}
 
 #if CONFIG_BINTEXT_DEMUXER
-AVInputFormat ff_bintext_demuxer = {
+AVInputFormat ff_bintext_demuxer =
+{
     .name           = "bin",
     .long_name      = NULL_IF_CONFIG_SMALL("Binary text"),
     .priv_data_size = sizeof(BinDemuxContext),
@@ -351,7 +366,8 @@ AVInputFormat ff_bintext_demuxer = {
 #endif
 
 #if CONFIG_XBIN_DEMUXER
-AVInputFormat ff_xbin_demuxer = {
+AVInputFormat ff_xbin_demuxer =
+{
     .name           = "xbin",
     .long_name      = NULL_IF_CONFIG_SMALL("eXtended BINary text (XBIN)"),
     .priv_data_size = sizeof(BinDemuxContext),
@@ -363,7 +379,8 @@ AVInputFormat ff_xbin_demuxer = {
 #endif
 
 #if CONFIG_ADF_DEMUXER
-AVInputFormat ff_adf_demuxer = {
+AVInputFormat ff_adf_demuxer =
+{
     .name           = "adf",
     .long_name      = NULL_IF_CONFIG_SMALL("Artworx Data Format"),
     .priv_data_size = sizeof(BinDemuxContext),
@@ -375,7 +392,8 @@ AVInputFormat ff_adf_demuxer = {
 #endif
 
 #if CONFIG_IDF_DEMUXER
-AVInputFormat ff_idf_demuxer = {
+AVInputFormat ff_idf_demuxer =
+{
     .name           = "idf",
     .long_name      = NULL_IF_CONFIG_SMALL("iCE Draw File"),
     .priv_data_size = sizeof(BinDemuxContext),

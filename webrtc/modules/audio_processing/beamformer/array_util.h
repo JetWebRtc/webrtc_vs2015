@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 
 #include "webrtc/base/optional.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Coordinates in meters. The convention used is:
 // x: the horizontal dimension, with positive to the right from the camera's
@@ -25,21 +26,33 @@ namespace webrtc {
 //    perspective.
 // z: the vertical dimension, with positive upwards.
 template<typename T>
-struct CartesianPoint {
-  CartesianPoint() {
-    c[0] = 0;
-    c[1] = 0;
-    c[2] = 0;
-  }
-  CartesianPoint(T x, T y, T z) {
-    c[0] = x;
-    c[1] = y;
-    c[2] = z;
-  }
-  T x() const { return c[0]; }
-  T y() const { return c[1]; }
-  T z() const { return c[2]; }
-  T c[3];
+struct CartesianPoint
+{
+    CartesianPoint()
+    {
+        c[0] = 0;
+        c[1] = 0;
+        c[2] = 0;
+    }
+    CartesianPoint(T x, T y, T z)
+    {
+        c[0] = x;
+        c[1] = y;
+        c[2] = z;
+    }
+    T x() const
+    {
+        return c[0];
+    }
+    T y() const
+    {
+        return c[1];
+    }
+    T z() const
+    {
+        return c[2];
+    }
+    T c[3];
 };
 
 using Point = CartesianPoint<float>;
@@ -75,10 +88,11 @@ rtc::Optional<Point> GetArrayNormalIfExists(
 Point AzimuthToPoint(float azimuth);
 
 template<typename T>
-float Distance(CartesianPoint<T> a, CartesianPoint<T> b) {
-  return std::sqrt((a.x() - b.x()) * (a.x() - b.x()) +
-                   (a.y() - b.y()) * (a.y() - b.y()) +
-                   (a.z() - b.z()) * (a.z() - b.z()));
+float Distance(CartesianPoint<T> a, CartesianPoint<T> b)
+{
+    return std::sqrt((a.x() - b.x()) * (a.x() - b.x()) +
+                     (a.y() - b.y()) * (a.y() - b.y()) +
+                     (a.z() - b.z()) * (a.z() - b.z()));
 }
 
 // The convention used:
@@ -87,29 +101,42 @@ float Distance(CartesianPoint<T> a, CartesianPoint<T> b) {
 // elevation: zero is horizontal, with positive angles in radians upwards.
 // radius: distance from the camera in meters.
 template <typename T>
-struct SphericalPoint {
-  SphericalPoint(T azimuth, T elevation, T radius) {
-    s[0] = azimuth;
-    s[1] = elevation;
-    s[2] = radius;
-  }
-  T azimuth() const { return s[0]; }
-  T elevation() const { return s[1]; }
-  T distance() const { return s[2]; }
-  T s[3];
+struct SphericalPoint
+{
+    SphericalPoint(T azimuth, T elevation, T radius)
+    {
+        s[0] = azimuth;
+        s[1] = elevation;
+        s[2] = radius;
+    }
+    T azimuth() const
+    {
+        return s[0];
+    }
+    T elevation() const
+    {
+        return s[1];
+    }
+    T distance() const
+    {
+        return s[2];
+    }
+    T s[3];
 };
 
 using SphericalPointf = SphericalPoint<float>;
 
 // Helper functions to transform degrees to radians and the inverse.
 template <typename T>
-T DegreesToRadians(T angle_degrees) {
-  return M_PI * angle_degrees / 180;
+T DegreesToRadians(T angle_degrees)
+{
+    return M_PI * angle_degrees / 180;
 }
 
 template <typename T>
-T RadiansToDegrees(T angle_radians) {
-  return 180 * angle_radians / M_PI;
+T RadiansToDegrees(T angle_radians)
+{
+    return 180 * angle_radians / M_PI;
 }
 
 }  // namespace webrtc

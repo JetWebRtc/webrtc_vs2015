@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,17 +13,21 @@
 #include "webrtc/modules/audio_coding/codecs/isac/main/include/audio_encoder_isac.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace {
+namespace
+{
 
-void TestBadConfig(const AudioEncoderIsac::Config& config) {
-  EXPECT_FALSE(config.IsOk());
+void TestBadConfig(const AudioEncoderIsac::Config& config)
+{
+    EXPECT_FALSE(config.IsOk());
 }
 
-void TestGoodConfig(const AudioEncoderIsac::Config& config) {
-  EXPECT_TRUE(config.IsOk());
-  AudioEncoderIsac aei(config);
+void TestGoodConfig(const AudioEncoderIsac::Config& config)
+{
+    EXPECT_TRUE(config.IsOk());
+    AudioEncoderIsac aei(config);
 }
 
 // Wrap subroutine calls that test things in this, so that the error messages
@@ -33,24 +37,25 @@ void TestGoodConfig(const AudioEncoderIsac::Config& config) {
 
 }  // namespace
 
-TEST(AudioEncoderIsacTest, TestConfigBitrate) {
-  AudioEncoderIsac::Config config;
+TEST(AudioEncoderIsacTest, TestConfigBitrate)
+{
+    AudioEncoderIsac::Config config;
 
-  // The default value is some real, positive value.
-  EXPECT_GT(config.bit_rate, 1);
-  S(TestGoodConfig(config));
+    // The default value is some real, positive value.
+    EXPECT_GT(config.bit_rate, 1);
+    S(TestGoodConfig(config));
 
-  // 0 is another way to ask for the default value.
-  config.bit_rate = 0;
-  S(TestGoodConfig(config));
+    // 0 is another way to ask for the default value.
+    config.bit_rate = 0;
+    S(TestGoodConfig(config));
 
-  // Try some unreasonable values and watch them fail.
-  config.bit_rate = -1;
-  S(TestBadConfig(config));
-  config.bit_rate = 1;
-  S(TestBadConfig(config));
-  config.bit_rate = std::numeric_limits<int>::max();
-  S(TestBadConfig(config));
+    // Try some unreasonable values and watch them fail.
+    config.bit_rate = -1;
+    S(TestBadConfig(config));
+    config.bit_rate = 1;
+    S(TestBadConfig(config));
+    config.bit_rate = std::numeric_limits<int>::max();
+    S(TestBadConfig(config));
 }
 
 }  // namespace webrtc

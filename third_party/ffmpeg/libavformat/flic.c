@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FLI/FLC Animation File Demuxer
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -51,7 +51,8 @@
 #define FLIC_HEADER_SIZE 128
 #define FLIC_PREAMBLE_SIZE 6
 
-typedef struct FlicDemuxContext {
+typedef struct FlicDemuxContext
+{
     int video_stream_index;
     int audio_stream_index;
     int frame_number;
@@ -66,17 +67,18 @@ static int flic_probe(AVProbeData *p)
 
     magic_number = AV_RL16(&p->buf[4]);
     if ((magic_number != FLIC_FILE_MAGIC_1) &&
-        (magic_number != FLIC_FILE_MAGIC_2) &&
-        (magic_number != FLIC_FILE_MAGIC_3))
+            (magic_number != FLIC_FILE_MAGIC_2) &&
+            (magic_number != FLIC_FILE_MAGIC_3))
         return 0;
 
-    if(AV_RL16(&p->buf[0x10]) != FLIC_CHUNK_MAGIC_1){
+    if(AV_RL16(&p->buf[0x10]) != FLIC_CHUNK_MAGIC_1)
+    {
         if(AV_RL32(&p->buf[0x10]) > 2000)
             return 0;
     }
 
     if(   AV_RL16(&p->buf[0x08]) > 4096
-       || AV_RL16(&p->buf[0x0A]) > 4096)
+            || AV_RL16(&p->buf[0x0A]) > 4096)
         return 0;
 
 
@@ -115,7 +117,8 @@ static int flic_read_header(AVFormatContext *s)
     st->codec->width = AV_RL16(&header[0x08]);
     st->codec->height = AV_RL16(&header[0x0A]);
 
-    if (!st->codec->width || !st->codec->height) {
+    if (!st->codec->width || !st->codec->height)
+    {
         /* Ugly hack needed for the following sample: */
         /* http://samples.mplayerhq.hu/fli-flc/fli-bugs/specular.flc */
         av_log(s, AV_LOG_WARNING,
@@ -130,7 +133,8 @@ static int flic_read_header(AVFormatContext *s)
     memcpy(st->codec->extradata, header, FLIC_HEADER_SIZE);
 
     /* peek at the preamble to detect TFTD videos - they seem to always start with an audio chunk */
-    if (avio_read(pb, preamble, FLIC_PREAMBLE_SIZE) != FLIC_PREAMBLE_SIZE) {
+    if (avio_read(pb, preamble, FLIC_PREAMBLE_SIZE) != FLIC_PREAMBLE_SIZE)
+    {
         av_log(s, AV_LOG_ERROR, "Failed to peek at preamble\n");
         return AVERROR(EIO);
     }
@@ -143,7 +147,8 @@ static int flic_read_header(AVFormatContext *s)
      * magic number at offset 0x10 assume this file is from Magic Carpet instead.
      * If neither of the above is true then this is a normal FLIC file.
      */
-    if (AV_RL16(&preamble[4]) == FLIC_TFTD_CHUNK_AUDIO) {
+    if (AV_RL16(&preamble[4]) == FLIC_TFTD_CHUNK_AUDIO)
+    {
         /* TFTD videos have an extra 22050 Hz 8-bit mono audio stream */
         ast = avformat_new_stream(s, NULL);
         if (!ast)
@@ -168,7 +173,9 @@ static int flic_read_header(AVFormatContext *s)
          * We usually have two cases: 2205 -> 10 fps and 1470 -> 15 fps */
         avpriv_set_pts_info(st, 64, ast->codec->block_align, FLIC_TFTD_SAMPLE_RATE);
         avpriv_set_pts_info(ast, 64, 1, FLIC_TFTD_SAMPLE_RATE);
-    } else if (AV_RL16(&header[0x10]) == FLIC_CHUNK_MAGIC_1) {
+    }
+    else if (AV_RL16(&header[0x10]) == FLIC_CHUNK_MAGIC_1)
+    {
         avpriv_set_pts_info(st, 64, FLIC_MC_SPEED, 70);
 
         /* rewind the stream since the first chunk is at offset 12 */
@@ -180,12 +187,18 @@ static int flic_read_header(AVFormatContext *s)
             return AVERROR(ENOMEM);
         memcpy(st->codec->extradata, header, 12);
 
-    } else if (magic_number == FLIC_FILE_MAGIC_1) {
+    }
+    else if (magic_number == FLIC_FILE_MAGIC_1)
+    {
         avpriv_set_pts_info(st, 64, speed, 70);
-    } else if ((magic_number == FLIC_FILE_MAGIC_2) ||
-               (magic_number == FLIC_FILE_MAGIC_3)) {
+    }
+    else if ((magic_number == FLIC_FILE_MAGIC_2) ||
+             (magic_number == FLIC_FILE_MAGIC_3))
+    {
         avpriv_set_pts_info(st, 64, speed, 1000);
-    } else {
+    }
+    else
+    {
         av_log(s, AV_LOG_ERROR, "Invalid or unsupported magic chunk in file\n");
         return AVERROR_INVALIDDATA;
     }
@@ -204,10 +217,12 @@ static int flic_read_packet(AVFormatContext *s,
     int ret = 0;
     unsigned char preamble[FLIC_PREAMBLE_SIZE];
 
-    while (!packet_read) {
+    while (!packet_read)
+    {
 
         if ((ret = avio_read(pb, preamble, FLIC_PREAMBLE_SIZE)) !=
-            FLIC_PREAMBLE_SIZE) {
+                FLIC_PREAMBLE_SIZE)
+        {
             ret = AVERROR(EIO);
             break;
         }
@@ -215,8 +230,10 @@ static int flic_read_packet(AVFormatContext *s,
         size = AV_RL32(&preamble[0]);
         magic = AV_RL16(&preamble[4]);
 
-        if (((magic == FLIC_CHUNK_MAGIC_1) || (magic == FLIC_CHUNK_MAGIC_2)) && size > FLIC_PREAMBLE_SIZE) {
-            if (av_new_packet(pkt, size)) {
+        if (((magic == FLIC_CHUNK_MAGIC_1) || (magic == FLIC_CHUNK_MAGIC_2)) && size > FLIC_PREAMBLE_SIZE)
+        {
+            if (av_new_packet(pkt, size))
+            {
                 ret = AVERROR(EIO);
                 break;
             }
@@ -225,14 +242,18 @@ static int flic_read_packet(AVFormatContext *s,
             pkt->pos = avio_tell(pb);
             memcpy(pkt->data, preamble, FLIC_PREAMBLE_SIZE);
             ret = avio_read(pb, pkt->data + FLIC_PREAMBLE_SIZE,
-                size - FLIC_PREAMBLE_SIZE);
-            if (ret != size - FLIC_PREAMBLE_SIZE) {
+                            size - FLIC_PREAMBLE_SIZE);
+            if (ret != size - FLIC_PREAMBLE_SIZE)
+            {
                 av_free_packet(pkt);
                 ret = AVERROR(EIO);
             }
             packet_read = 1;
-        } else if (magic == FLIC_TFTD_CHUNK_AUDIO) {
-            if (av_new_packet(pkt, size)) {
+        }
+        else if (magic == FLIC_TFTD_CHUNK_AUDIO)
+        {
+            if (av_new_packet(pkt, size))
+            {
                 ret = AVERROR(EIO);
                 break;
             }
@@ -244,13 +265,16 @@ static int flic_read_packet(AVFormatContext *s,
             pkt->pos = avio_tell(pb);
             ret = avio_read(pb, pkt->data, size);
 
-            if (ret != size) {
+            if (ret != size)
+            {
                 av_free_packet(pkt);
                 ret = AVERROR(EIO);
             }
 
             packet_read = 1;
-        } else {
+        }
+        else
+        {
             /* not interested in this chunk */
             avio_skip(pb, size - 6);
         }
@@ -259,7 +283,8 @@ static int flic_read_packet(AVFormatContext *s,
     return ret;
 }
 
-AVInputFormat ff_flic_demuxer = {
+AVInputFormat ff_flic_demuxer =
+{
     .name           = "flic",
     .long_name      = NULL_IF_CONFIG_SMALL("FLI/FLC/FLX animation"),
     .priv_data_size = sizeof(FlicDemuxContext),

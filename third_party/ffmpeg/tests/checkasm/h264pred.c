@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Henrik Gramner
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 
 static const int codec_ids[4] = { AV_CODEC_ID_H264, AV_CODEC_ID_VP8, AV_CODEC_ID_RV40, AV_CODEC_ID_SVQ3 };
 
-static const char * const pred4x4_modes[4][15] = {
+static const char * const pred4x4_modes[4][15] =
+{
     { /* H264 */
         [VERT_PRED           ] = "vertical",
         [HOR_PRED            ] = "horizontal",
@@ -64,7 +65,8 @@ static const char * const pred4x4_modes[4][15] = {
     },
 };
 
-static const char * const pred8x8_modes[4][11] = {
+static const char * const pred8x8_modes[4][11] =
+{
     { /* H264 */
         [DC_PRED8x8              ] = "dc",
         [HOR_PRED8x8             ] = "horizontal",
@@ -91,7 +93,8 @@ static const char * const pred8x8_modes[4][11] = {
     /* nothing for SVQ3 */
 };
 
-static const char * const pred16x16_modes[4][9] = {
+static const char * const pred16x16_modes[4][9] =
+{
     { /* H264 */
         [DC_PRED8x8     ] = "dc",
         [HOR_PRED8x8    ] = "horizontal",
@@ -141,13 +144,16 @@ static const uint32_t pixel_mask[3] = { 0xffffffff, 0x01ff01ff, 0x03ff03ff };
 static void check_pred4x4(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
                           int codec, int chroma_format, int bit_depth)
 {
-    if (chroma_format == 1) {
+    if (chroma_format == 1)
+    {
         uint8_t *topright = buf0 + 2*16;
         int pred_mode;
         declare_func(void, uint8_t *src, const uint8_t *topright, ptrdiff_t stride);
 
-        for (pred_mode = 0; pred_mode < 15; pred_mode++) {
-            if (check_pred_func(h->pred4x4[pred_mode], "4x4", pred4x4_modes[codec][pred_mode])) {
+        for (pred_mode = 0; pred_mode < 15; pred_mode++)
+        {
+            if (check_pred_func(h->pred4x4[pred_mode], "4x4", pred4x4_modes[codec][pred_mode]))
+            {
                 randomize_buffers();
                 call_ref(src0, topright, 12*SIZEOF_PIXEL);
                 call_new(src1, topright, 12*SIZEOF_PIXEL);
@@ -165,9 +171,11 @@ static void check_pred8x8(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
     int pred_mode;
     declare_func(void, uint8_t *src, ptrdiff_t stride);
 
-    for (pred_mode = 0; pred_mode < 11; pred_mode++) {
+    for (pred_mode = 0; pred_mode < 11; pred_mode++)
+    {
         if (check_pred_func(h->pred8x8[pred_mode], (chroma_format == 2) ? "8x16" : "8x8",
-                            pred8x8_modes[codec][pred_mode])) {
+                            pred8x8_modes[codec][pred_mode]))
+        {
             randomize_buffers();
             call_ref(src0, 24*SIZEOF_PIXEL);
             call_new(src1, 24*SIZEOF_PIXEL);
@@ -181,12 +189,15 @@ static void check_pred8x8(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
 static void check_pred16x16(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
                             int codec, int chroma_format, int bit_depth)
 {
-    if (chroma_format == 1) {
+    if (chroma_format == 1)
+    {
         int pred_mode;
         declare_func(void, uint8_t *src, ptrdiff_t stride);
 
-        for (pred_mode = 0; pred_mode < 9; pred_mode++) {
-            if (check_pred_func(h->pred16x16[pred_mode], "16x16", pred16x16_modes[codec][pred_mode])) {
+        for (pred_mode = 0; pred_mode < 9; pred_mode++)
+        {
+            if (check_pred_func(h->pred16x16[pred_mode], "16x16", pred16x16_modes[codec][pred_mode]))
+            {
                 randomize_buffers();
                 call_ref(src0, 48);
                 call_new(src1, 48);
@@ -201,14 +212,18 @@ static void check_pred16x16(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
 static void check_pred8x8l(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
                            int codec, int chroma_format, int bit_depth)
 {
-    if (chroma_format == 1 && codec_ids[codec] == AV_CODEC_ID_H264) {
+    if (chroma_format == 1 && codec_ids[codec] == AV_CODEC_ID_H264)
+    {
         int pred_mode;
         declare_func(void, uint8_t *src, int topleft, int topright, ptrdiff_t stride);
 
-        for (pred_mode = 0; pred_mode < 12; pred_mode++) {
-            if (check_pred_func(h->pred8x8l[pred_mode], "8x8l", pred4x4_modes[codec][pred_mode])) {
+        for (pred_mode = 0; pred_mode < 12; pred_mode++)
+        {
+            if (check_pred_func(h->pred8x8l[pred_mode], "8x8l", pred4x4_modes[codec][pred_mode]))
+            {
                 int neighbors;
-                for (neighbors = 0; neighbors <= 0xc000; neighbors += 0x4000) {
+                for (neighbors = 0; neighbors <= 0xc000; neighbors += 0x4000)
+                {
                     int has_topleft  = neighbors & 0x8000;
                     int has_topright = neighbors & 0x4000;
 
@@ -231,10 +246,12 @@ static void check_pred8x8l(H264PredContext *h, uint8_t *buf0, uint8_t *buf1,
 
 void checkasm_check_h264pred(void)
 {
-    static const struct {
+    static const struct
+    {
         void (*func)(H264PredContext*, uint8_t*, uint8_t*, int, int, int);
         const char *name;
-    } tests[] = {
+    } tests[] =
+    {
         { check_pred4x4,   "pred4x4"   },
         { check_pred8x8,   "pred8x8"   },
         { check_pred16x16, "pred16x16" },
@@ -246,11 +263,14 @@ void checkasm_check_h264pred(void)
     H264PredContext h;
     int test, codec, chroma_format, bit_depth;
 
-    for (test = 0; test < FF_ARRAY_ELEMS(tests); test++) {
-        for (codec = 0; codec < 4; codec++) {
+    for (test = 0; test < FF_ARRAY_ELEMS(tests); test++)
+    {
+        for (codec = 0; codec < 4; codec++)
+        {
             int codec_id = codec_ids[codec];
             for (bit_depth = 8; bit_depth <= (codec_id == AV_CODEC_ID_H264 ? 10 : 8); bit_depth++)
-                for (chroma_format = 1; chroma_format <= (codec_id == AV_CODEC_ID_H264 ? 2 : 1); chroma_format++) {
+                for (chroma_format = 1; chroma_format <= (codec_id == AV_CODEC_ID_H264 ? 2 : 1); chroma_format++)
+                {
                     ff_h264_pred_init(&h, codec_id, bit_depth, chroma_format);
                     tests[test].func(&h, buf0, buf1, codec, chroma_format, bit_depth);
                 }

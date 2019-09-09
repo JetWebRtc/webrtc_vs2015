@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -69,7 +69,8 @@
 #define FMT "%6d"
 #endif
 
-static struct {
+static struct
+{
     float re, im;
 } *exptab;
 
@@ -81,7 +82,8 @@ static int fft_ref_init(int nbits, int inverse)
     if (!exptab)
         return AVERROR(ENOMEM);
 
-    for (i = 0; i < (n / 2); i++) {
+    for (i = 0; i < (n / 2); i++)
+    {
         double alpha = 2 * M_PI * (float) i / (float) n;
         double c1 = cos(alpha), s1 = sin(alpha);
         if (!inverse)
@@ -98,16 +100,21 @@ static void fft_ref(FFTComplex *tabr, FFTComplex *tab, int nbits)
     int n  = 1 << nbits;
     int n2 = n >> 1;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         double tmp_re = 0, tmp_im = 0;
         FFTComplex *q = tab;
-        for (j = 0; j < n; j++) {
+        for (j = 0; j < n; j++)
+        {
             double s, c;
             int k = (i * j) & (n - 1);
-            if (k >= n2) {
+            if (k >= n2)
+            {
                 c = -exptab[k - n2].re;
                 s = -exptab[k - n2].im;
-            } else {
+            }
+            else
+            {
                 c = exptab[k].re;
                 s = exptab[k].im;
             }
@@ -124,9 +131,11 @@ static void imdct_ref(FFTSample *out, FFTSample *in, int nbits)
 {
     int i, k, n = 1 << nbits;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         double sum = 0;
-        for (k = 0; k < n / 2; k++) {
+        for (k = 0; k < n / 2; k++)
+        {
             int a = (2 * i + 1 + (n / 2)) * (2 * k + 1);
             double f = cos(M_PI * a / (double) (2 * n));
             sum += f * in[k];
@@ -141,9 +150,11 @@ static void mdct_ref(FFTSample *output, FFTSample *input, int nbits)
     int i, k, n = 1 << nbits;
 
     /* do it by hand */
-    for (k = 0; k < n / 2; k++) {
+    for (k = 0; k < n / 2; k++)
+    {
         double s = 0;
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; i++)
+        {
             double a = (2 * M_PI * (2 * i + 1 + n / 2) * (2 * k + 1) / (4 * n));
             s += input[i] * cos(a);
         }
@@ -159,9 +170,11 @@ static void idct_ref(FFTSample *output, FFTSample *input, int nbits)
     int i, k, n = 1 << nbits;
 
     /* do it by hand */
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         double s = 0.5 * input[0];
-        for (k = 1; k < n; k++) {
+        for (k = 1; k < n; k++)
+        {
             double a = M_PI * k * (i + 0.5) / n;
             s += input[k] * cos(a);
         }
@@ -174,9 +187,11 @@ static void dct_ref(FFTSample *output, FFTSample *input, int nbits)
     int i, k, n = 1 << nbits;
 
     /* do it by hand */
-    for (k = 0; k < n; k++) {
+    for (k = 0; k < n; k++)
+    {
         double s = 0;
-        for (i = 0; i < n; i++) {
+        for (i = 0; i < n; i++)
+        {
             double a = M_PI * k * (i + 0.5) / n;
             s += input[i] * cos(a);
         }
@@ -196,9 +211,11 @@ static int check_diff(FFTSample *tab1, FFTSample *tab2, int n, double scale)
     int i, err = 0;
     double error = 0, max = 0;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         double e = fabs(tab1[i] - (tab2[i] / scale)) / RANGE;
-        if (e >= 1e-3) {
+        if (e >= 1e-3)
+        {
             av_log(NULL, AV_LOG_ERROR, "ERROR %5d: "FMT" "FMT"\n",
                    i, tab1[i], tab2[i]);
             err = 1;
@@ -225,7 +242,8 @@ static void help(void)
            "-f x   set scale factor for output data of (I)MDCT to x\n");
 }
 
-enum tf_transform {
+enum tf_transform
+{
     TRANSFORM_FFT,
     TRANSFORM_MDCT,
     TRANSFORM_RDFT,
@@ -254,11 +272,13 @@ int main(int argc, char **argv)
 
     av_lfg_init(&prng, 1);
 
-    for (;;) {
+    for (;;)
+    {
         int c = getopt(argc, argv, "hsimrdn:f:c:");
         if (c == -1)
             break;
-        switch (c) {
+        switch (c)
+        {
         case 'h':
             help();
             return 1;
@@ -305,7 +325,8 @@ int main(int argc, char **argv)
     if (!(tab && tab1 && tab_ref && tab2))
         goto cleanup;
 
-    switch (transform) {
+    switch (transform)
+    {
 #if CONFIG_MDCT
     case TRANSFORM_MDCT:
         av_log(NULL, AV_LOG_INFO, "Scale factor is set to %f\n", scale);
@@ -355,7 +376,8 @@ int main(int argc, char **argv)
 
     /* generate random data */
 
-    for (i = 0; i < fft_size; i++) {
+    for (i = 0; i < fft_size; i++)
+    {
         tab1[i].re = frandom(&prng);
         tab1[i].im = frandom(&prng);
     }
@@ -363,14 +385,18 @@ int main(int argc, char **argv)
     /* checking result */
     av_log(NULL, AV_LOG_INFO, "Checking...\n");
 
-    switch (transform) {
+    switch (transform)
+    {
 #if CONFIG_MDCT
     case TRANSFORM_MDCT:
-        if (do_inverse) {
+        if (do_inverse)
+        {
             imdct_ref(&tab_ref->re, &tab1->re, fft_nbits);
             m.imdct_calc(&m, tab2, &tab1->re);
             err = check_diff(&tab_ref->re, tab2, fft_size, scale);
-        } else {
+        }
+        else
+        {
             mdct_ref(&tab_ref->re, &tab1->re, fft_nbits);
             m.mdct_calc(&m, tab2, &tab1->re);
             err = check_diff(&tab_ref->re, tab2, fft_size / 2, scale);
@@ -390,10 +416,12 @@ int main(int argc, char **argv)
     case TRANSFORM_RDFT:
     {
         int fft_size_2 = fft_size >> 1;
-        if (do_inverse) {
+        if (do_inverse)
+        {
             tab1[0].im          = 0;
             tab1[fft_size_2].im = 0;
-            for (i = 1; i < fft_size_2; i++) {
+            for (i = 1; i < fft_size_2; i++)
+            {
                 tab1[fft_size_2 + i].re =  tab1[fft_size_2 - i].re;
                 tab1[fft_size_2 + i].im = -tab1[fft_size_2 - i].im;
             }
@@ -403,13 +431,17 @@ int main(int argc, char **argv)
 
             r.rdft_calc(&r, tab2);
             fft_ref(tab_ref, tab1, fft_nbits);
-            for (i = 0; i < fft_size; i++) {
+            for (i = 0; i < fft_size; i++)
+            {
                 tab[i].re = tab2[i];
                 tab[i].im = 0;
             }
             err = check_diff(&tab_ref->re, &tab->re, fft_size * 2, 0.5);
-        } else {
-            for (i = 0; i < fft_size; i++) {
+        }
+        else
+        {
+            for (i = 0; i < fft_size; i++)
+            {
                 tab2[i]    = tab1[i].re;
                 tab1[i].im = 0;
             }
@@ -437,17 +469,21 @@ int main(int argc, char **argv)
 
     /* do a speed test */
 
-    if (do_speed) {
+    if (do_speed)
+    {
         int64_t time_start, duration;
         int nb_its;
 
         av_log(NULL, AV_LOG_INFO, "Speed test...\n");
         /* we measure during about 1 seconds */
         nb_its = 1;
-        for (;;) {
+        for (;;)
+        {
             time_start = av_gettime_relative();
-            for (it = 0; it < nb_its; it++) {
-                switch (transform) {
+            for (it = 0; it < nb_its; it++)
+            {
+                switch (transform)
+                {
                 case TRANSFORM_MDCT:
                     if (do_inverse)
                         m.imdct_calc(&m, &tab->re, &tab1->re);
@@ -482,7 +518,8 @@ int main(int argc, char **argv)
                nb_its);
     }
 
-    switch (transform) {
+    switch (transform)
+    {
 #if CONFIG_MDCT
     case TRANSFORM_MDCT:
         ff_mdct_end(&m);

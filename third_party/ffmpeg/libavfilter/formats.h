@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -61,7 +61,8 @@
  * get updated as well. Therefore, we have the format list structure store a
  * pointer to each of the pointers to itself.
  */
-struct AVFilterFormats {
+struct AVFilterFormats
+{
     unsigned nb_formats;        ///< number of formats
     int *formats;               ///< list of media formats
 
@@ -82,7 +83,8 @@ struct AVFilterFormats {
  *   channel count with unknown disposition with the same number of channels
  *   (e.g. AV_CH_LAYOUT_STEREO and FF_COUNT2LAYOUT(2).
  */
-typedef struct AVFilterChannelLayouts {
+typedef struct AVFilterChannelLayouts
+{
     uint64_t *channel_layouts;  ///< list of channel layouts
     int    nb_channel_layouts;  ///< number of channel layouts
     char all_layouts;           ///< accept any known channel layout
@@ -117,7 +119,7 @@ typedef struct AVFilterChannelLayouts {
  * is returned.
  */
 AVFilterChannelLayouts *ff_merge_channel_layouts(AVFilterChannelLayouts *a,
-                                                 AVFilterChannelLayouts *b);
+        AVFilterChannelLayouts *b);
 AVFilterFormats *ff_merge_samplerates(AVFilterFormats *a,
                                       AVFilterFormats *b);
 

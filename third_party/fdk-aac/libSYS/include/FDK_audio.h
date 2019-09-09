@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -107,15 +107,15 @@ extern "C"
  */
 typedef enum
 {
-  FF_UNKNOWN           = -1, /**< Unknown format.        */
-  FF_RAW               = 0,  /**< No container, bit stream data conveyed "as is". */
+    FF_UNKNOWN           = -1, /**< Unknown format.        */
+    FF_RAW               = 0,  /**< No container, bit stream data conveyed "as is". */
 
-  FF_MP4_3GPP          = 3,  /**< 3GPP file format.      */
-  FF_MP4_MP4F          = 4,  /**< MPEG-4 File format.     */
+    FF_MP4_3GPP          = 3,  /**< 3GPP file format.      */
+    FF_MP4_MP4F          = 4,  /**< MPEG-4 File format.     */
 
-  FF_RAWPACKETS        = 5,  /**< Proprietary raw packet file. */
+    FF_RAWPACKETS        = 5,  /**< Proprietary raw packet file. */
 
-  FF_DRMCT             = 12  /**< Digital Radio Mondial (DRM30/DRM+) CT proprietary file format. */
+    FF_DRMCT             = 12  /**< Digital Radio Mondial (DRM30/DRM+) CT proprietary file format. */
 
 } FILE_FORMAT;
 
@@ -124,17 +124,17 @@ typedef enum
  */
 typedef enum
 {
-  TT_UNKNOWN           = -1, /**< Unknown format.            */
-  TT_MP4_RAW           = 0,  /**< "as is" access units (packet based since there is obviously no sync layer) */
-  TT_MP4_ADIF          = 1,  /**< ADIF bitstream format.     */
-  TT_MP4_ADTS          = 2,  /**< ADTS bitstream format.     */
+    TT_UNKNOWN           = -1, /**< Unknown format.            */
+    TT_MP4_RAW           = 0,  /**< "as is" access units (packet based since there is obviously no sync layer) */
+    TT_MP4_ADIF          = 1,  /**< ADIF bitstream format.     */
+    TT_MP4_ADTS          = 2,  /**< ADTS bitstream format.     */
 
-  TT_MP4_LATM_MCP1     = 6,  /**< Audio Mux Elements with muxConfigPresent = 1 */
-  TT_MP4_LATM_MCP0     = 7,  /**< Audio Mux Elements with muxConfigPresent = 0, out of band StreamMuxConfig */
+    TT_MP4_LATM_MCP1     = 6,  /**< Audio Mux Elements with muxConfigPresent = 1 */
+    TT_MP4_LATM_MCP0     = 7,  /**< Audio Mux Elements with muxConfigPresent = 0, out of band StreamMuxConfig */
 
-  TT_MP4_LOAS          = 10, /**< Audio Sync Stream.         */
+    TT_MP4_LOAS          = 10, /**< Audio Sync Stream.         */
 
-  TT_DRM               = 12  /**< Digital Radio Mondial (DRM30/DRM+) bitstream format. */
+    TT_DRM               = 12  /**< Digital Radio Mondial (DRM30/DRM+) bitstream format. */
 
 } TRANSPORT_TYPE;
 
@@ -149,58 +149,58 @@ typedef enum
  */
 typedef enum
 {
-  AOT_NONE             = -1,
-  AOT_NULL_OBJECT      = 0,
-  AOT_AAC_MAIN         = 1, /**< Main profile                              */
-  AOT_AAC_LC           = 2, /**< Low Complexity object                     */
-  AOT_AAC_SSR          = 3,
-  AOT_AAC_LTP          = 4,
-  AOT_SBR              = 5,
-  AOT_AAC_SCAL         = 6,
-  AOT_TWIN_VQ          = 7,
-  AOT_CELP             = 8,
-  AOT_HVXC             = 9,
-  AOT_RSVD_10          = 10, /**< (reserved)                                */
-  AOT_RSVD_11          = 11, /**< (reserved)                                */
-  AOT_TTSI             = 12, /**< TTSI Object                               */
-  AOT_MAIN_SYNTH       = 13, /**< Main Synthetic object                     */
-  AOT_WAV_TAB_SYNTH    = 14, /**< Wavetable Synthesis object                */
-  AOT_GEN_MIDI         = 15, /**< General MIDI object                       */
-  AOT_ALG_SYNTH_AUD_FX = 16, /**< Algorithmic Synthesis and Audio FX object */
-  AOT_ER_AAC_LC        = 17, /**< Error Resilient(ER) AAC Low Complexity    */
-  AOT_RSVD_18          = 18, /**< (reserved)                                */
-  AOT_ER_AAC_LTP       = 19, /**< Error Resilient(ER) AAC LTP object        */
-  AOT_ER_AAC_SCAL      = 20, /**< Error Resilient(ER) AAC Scalable object   */
-  AOT_ER_TWIN_VQ       = 21, /**< Error Resilient(ER) TwinVQ object         */
-  AOT_ER_BSAC          = 22, /**< Error Resilient(ER) BSAC object           */
-  AOT_ER_AAC_LD        = 23, /**< Error Resilient(ER) AAC LowDelay object   */
-  AOT_ER_CELP          = 24, /**< Error Resilient(ER) CELP object           */
-  AOT_ER_HVXC          = 25, /**< Error Resilient(ER) HVXC object           */
-  AOT_ER_HILN          = 26, /**< Error Resilient(ER) HILN object           */
-  AOT_ER_PARA          = 27, /**< Error Resilient(ER) Parametric object     */
-  AOT_RSVD_28          = 28, /**< might become SSC                          */
-  AOT_PS               = 29, /**< PS, Parametric Stereo (includes SBR)      */
-  AOT_MPEGS            = 30, /**< MPEG Surround                             */
+    AOT_NONE             = -1,
+    AOT_NULL_OBJECT      = 0,
+    AOT_AAC_MAIN         = 1, /**< Main profile                              */
+    AOT_AAC_LC           = 2, /**< Low Complexity object                     */
+    AOT_AAC_SSR          = 3,
+    AOT_AAC_LTP          = 4,
+    AOT_SBR              = 5,
+    AOT_AAC_SCAL         = 6,
+    AOT_TWIN_VQ          = 7,
+    AOT_CELP             = 8,
+    AOT_HVXC             = 9,
+    AOT_RSVD_10          = 10, /**< (reserved)                                */
+    AOT_RSVD_11          = 11, /**< (reserved)                                */
+    AOT_TTSI             = 12, /**< TTSI Object                               */
+    AOT_MAIN_SYNTH       = 13, /**< Main Synthetic object                     */
+    AOT_WAV_TAB_SYNTH    = 14, /**< Wavetable Synthesis object                */
+    AOT_GEN_MIDI         = 15, /**< General MIDI object                       */
+    AOT_ALG_SYNTH_AUD_FX = 16, /**< Algorithmic Synthesis and Audio FX object */
+    AOT_ER_AAC_LC        = 17, /**< Error Resilient(ER) AAC Low Complexity    */
+    AOT_RSVD_18          = 18, /**< (reserved)                                */
+    AOT_ER_AAC_LTP       = 19, /**< Error Resilient(ER) AAC LTP object        */
+    AOT_ER_AAC_SCAL      = 20, /**< Error Resilient(ER) AAC Scalable object   */
+    AOT_ER_TWIN_VQ       = 21, /**< Error Resilient(ER) TwinVQ object         */
+    AOT_ER_BSAC          = 22, /**< Error Resilient(ER) BSAC object           */
+    AOT_ER_AAC_LD        = 23, /**< Error Resilient(ER) AAC LowDelay object   */
+    AOT_ER_CELP          = 24, /**< Error Resilient(ER) CELP object           */
+    AOT_ER_HVXC          = 25, /**< Error Resilient(ER) HVXC object           */
+    AOT_ER_HILN          = 26, /**< Error Resilient(ER) HILN object           */
+    AOT_ER_PARA          = 27, /**< Error Resilient(ER) Parametric object     */
+    AOT_RSVD_28          = 28, /**< might become SSC                          */
+    AOT_PS               = 29, /**< PS, Parametric Stereo (includes SBR)      */
+    AOT_MPEGS            = 30, /**< MPEG Surround                             */
 
-  AOT_ESCAPE           = 31, /**< Signal AOT uses more than 5 bits          */
+    AOT_ESCAPE           = 31, /**< Signal AOT uses more than 5 bits          */
 
-  AOT_MP3ONMP4_L1      = 32, /**< MPEG-Layer1 in mp4                        */
-  AOT_MP3ONMP4_L2      = 33, /**< MPEG-Layer2 in mp4                        */
-  AOT_MP3ONMP4_L3      = 34, /**< MPEG-Layer3 in mp4                        */
-  AOT_RSVD_35          = 35, /**< might become DST                          */
-  AOT_RSVD_36          = 36, /**< might become ALS                          */
-  AOT_AAC_SLS          = 37, /**< AAC + SLS                                 */
-  AOT_SLS              = 38, /**< SLS                                       */
-  AOT_ER_AAC_ELD       = 39, /**< AAC Enhanced Low Delay                    */
+    AOT_MP3ONMP4_L1      = 32, /**< MPEG-Layer1 in mp4                        */
+    AOT_MP3ONMP4_L2      = 33, /**< MPEG-Layer2 in mp4                        */
+    AOT_MP3ONMP4_L3      = 34, /**< MPEG-Layer3 in mp4                        */
+    AOT_RSVD_35          = 35, /**< might become DST                          */
+    AOT_RSVD_36          = 36, /**< might become ALS                          */
+    AOT_AAC_SLS          = 37, /**< AAC + SLS                                 */
+    AOT_SLS              = 38, /**< SLS                                       */
+    AOT_ER_AAC_ELD       = 39, /**< AAC Enhanced Low Delay                    */
 
-  AOT_USAC             = 42, /**< USAC                                      */
-  AOT_SAOC             = 43, /**< SAOC                                      */
-  AOT_LD_MPEGS         = 44, /**< Low Delay MPEG Surround                   */
+    AOT_USAC             = 42, /**< USAC                                      */
+    AOT_SAOC             = 43, /**< SAOC                                      */
+    AOT_LD_MPEGS         = 44, /**< Low Delay MPEG Surround                   */
 
-  /* Pseudo AOTs */
-  AOT_DRM_AAC          = 143, /**< Virtual AOT for DRM (ER-AAC-SCAL without SBR)          */
-  AOT_DRM_SBR          = 144, /**< Virtual AOT for DRM (ER-AAC-SCAL with SBR)             */
-  AOT_DRM_MPEG_PS      = 145  /**< Virtual AOT for DRM (ER-AAC-SCAL with SBR and MPEG-PS) */
+    /* Pseudo AOTs */
+    AOT_DRM_AAC          = 143, /**< Virtual AOT for DRM (ER-AAC-SCAL without SBR)          */
+    AOT_DRM_SBR          = 144, /**< Virtual AOT for DRM (ER-AAC-SCAL with SBR)             */
+    AOT_DRM_MPEG_PS      = 145  /**< Virtual AOT for DRM (ER-AAC-SCAL with SBR and MPEG-PS) */
 
 } AUDIO_OBJECT_TYPE;
 
@@ -219,33 +219,34 @@ typedef enum
 || (aot) == AOT_ER_AAC_ELD)
 
 /** Channel Mode ( 1-7 equals MPEG channel configurations, others are arbitrary). */
-typedef enum {
-  MODE_INVALID                  = -1,
-  MODE_UNKNOWN                  =  0,
-  MODE_1                        =  1,       /**< C */
-  MODE_2                        =  2,       /**< L+R */
-  MODE_1_2                      =  3,       /**< C, L+R */
-  MODE_1_2_1                    =  4,       /**< C, L+R, Rear */
-  MODE_1_2_2                    =  5,       /**< C, L+R, LS+RS */
-  MODE_1_2_2_1                  =  6,       /**< C, L+R, LS+RS, LFE */
-  MODE_1_2_2_2_1                =  7,       /**< C, LC+RC, L+R, LS+RS, LFE */
+typedef enum
+{
+    MODE_INVALID                  = -1,
+    MODE_UNKNOWN                  =  0,
+    MODE_1                        =  1,       /**< C */
+    MODE_2                        =  2,       /**< L+R */
+    MODE_1_2                      =  3,       /**< C, L+R */
+    MODE_1_2_1                    =  4,       /**< C, L+R, Rear */
+    MODE_1_2_2                    =  5,       /**< C, L+R, LS+RS */
+    MODE_1_2_2_1                  =  6,       /**< C, L+R, LS+RS, LFE */
+    MODE_1_2_2_2_1                =  7,       /**< C, LC+RC, L+R, LS+RS, LFE */
 
 
-  MODE_1_1                      = 16,       /**< 2 SCEs (dual mono) */
-  MODE_1_1_1_1                  = 17,       /**< 4 SCEs */
-  MODE_1_1_1_1_1_1              = 18,       /**< 6 SCEs */
-  MODE_1_1_1_1_1_1_1_1          = 19,       /**< 8 SCEs */
-  MODE_1_1_1_1_1_1_1_1_1_1_1_1  = 20,       /**< 12 SCEs */
+    MODE_1_1                      = 16,       /**< 2 SCEs (dual mono) */
+    MODE_1_1_1_1                  = 17,       /**< 4 SCEs */
+    MODE_1_1_1_1_1_1              = 18,       /**< 6 SCEs */
+    MODE_1_1_1_1_1_1_1_1          = 19,       /**< 8 SCEs */
+    MODE_1_1_1_1_1_1_1_1_1_1_1_1  = 20,       /**< 12 SCEs */
 
-  MODE_2_2                      = 21,       /**< 2 CPEs */
-  MODE_2_2_2                    = 22,       /**< 3 CPEs */
-  MODE_2_2_2_2                  = 23,       /**< 4 CPEs */
-  MODE_2_2_2_2_2_2              = 24,       /**< 6 CPEs */
+    MODE_2_2                      = 21,       /**< 2 CPEs */
+    MODE_2_2_2                    = 22,       /**< 3 CPEs */
+    MODE_2_2_2_2                  = 23,       /**< 4 CPEs */
+    MODE_2_2_2_2_2_2              = 24,       /**< 6 CPEs */
 
-  MODE_2_1                      = 30,       /**< CPE,SCE (ARIB standard B32) */
+    MODE_2_1                      = 30,       /**< CPE,SCE (ARIB standard B32) */
 
-  MODE_7_1_REAR_SURROUND        = 33,       /**< C, L+R, LS+RS, Lrear+Rrear, LFE */
-  MODE_7_1_FRONT_CENTER         = 34        /**< C, LC+RC, L+R, LS+RS, LFE */
+    MODE_7_1_REAR_SURROUND        = 33,       /**< C, L+R, LS+RS, Lrear+Rrear, LFE */
+    MODE_7_1_FRONT_CENTER         = 34        /**< C, LC+RC, L+R, LS+RS, LFE */
 
 } CHANNEL_MODE;
 
@@ -255,31 +256,32 @@ typedef enum {
  * - Bit 0-3: Horizontal postion (0: none, 1: front, 2: side, 3: back, 4: lfe)
  * - Bit 4-7: Vertical position (0: normal, 1: top, 2: bottom)
  */
-typedef enum {
-  ACT_NONE         = 0x00,
-  ACT_FRONT        = 0x01,  /*!< Front speaker position (at normal height) */
-  ACT_SIDE         = 0x02,  /*!< Side speaker position (at normal height) */
-  ACT_BACK         = 0x03,  /*!< Back speaker position (at normal height) */
-  ACT_LFE          = 0x04,  /*!< Low frequency effect speaker postion (front) */
+typedef enum
+{
+    ACT_NONE         = 0x00,
+    ACT_FRONT        = 0x01,  /*!< Front speaker position (at normal height) */
+    ACT_SIDE         = 0x02,  /*!< Side speaker position (at normal height) */
+    ACT_BACK         = 0x03,  /*!< Back speaker position (at normal height) */
+    ACT_LFE          = 0x04,  /*!< Low frequency effect speaker postion (front) */
 
-  ACT_TOP          = 0x10,  /*!< Top speaker area (for combination with speaker positions) */
-  ACT_FRONT_TOP    = 0x11,  /*!< Top front speaker = (ACT_FRONT|ACT_TOP) */
-  ACT_SIDE_TOP     = 0x12,  /*!< Top side speaker  = (ACT_SIDE |ACT_TOP) */
-  ACT_BACK_TOP     = 0x13,  /*!< Top back speaker  = (ACT_BACK |ACT_TOP) */
+    ACT_TOP          = 0x10,  /*!< Top speaker area (for combination with speaker positions) */
+    ACT_FRONT_TOP    = 0x11,  /*!< Top front speaker = (ACT_FRONT|ACT_TOP) */
+    ACT_SIDE_TOP     = 0x12,  /*!< Top side speaker  = (ACT_SIDE |ACT_TOP) */
+    ACT_BACK_TOP     = 0x13,  /*!< Top back speaker  = (ACT_BACK |ACT_TOP) */
 
-  ACT_BOTTOM       = 0x20,  /*!< Bottom speaker area (for combination with speaker positions) */
-  ACT_FRONT_BOTTOM = 0x21,  /*!< Bottom front speaker = (ACT_FRONT|ACT_BOTTOM) */
-  ACT_SIDE_BOTTOM  = 0x22,  /*!< Bottom side speaker  = (ACT_SIDE |ACT_BOTTOM) */
-  ACT_BACK_BOTTOM  = 0x23   /*!< Bottom back speaker  = (ACT_BACK |ACT_BOTTOM) */
+    ACT_BOTTOM       = 0x20,  /*!< Bottom speaker area (for combination with speaker positions) */
+    ACT_FRONT_BOTTOM = 0x21,  /*!< Bottom front speaker = (ACT_FRONT|ACT_BOTTOM) */
+    ACT_SIDE_BOTTOM  = 0x22,  /*!< Bottom side speaker  = (ACT_SIDE |ACT_BOTTOM) */
+    ACT_BACK_BOTTOM  = 0x23   /*!< Bottom back speaker  = (ACT_BACK |ACT_BOTTOM) */
 
 } AUDIO_CHANNEL_TYPE;
 
 typedef enum
 {
-  SIG_UNKNOWN                 = -1,
-  SIG_IMPLICIT                =  0,
-  SIG_EXPLICIT_BW_COMPATIBLE  =  1,
-  SIG_EXPLICIT_HIERARCHICAL   =  2
+    SIG_UNKNOWN                 = -1,
+    SIG_IMPLICIT                =  0,
+    SIG_EXPLICIT_BW_COMPATIBLE  =  1,
+    SIG_EXPLICIT_HIERARCHICAL   =  2
 
 } SBR_PS_SIGNALING;
 
@@ -325,47 +327,48 @@ typedef enum
 #define CC_USAC_HBE        0x40000000
 
 /** Generic audio coder configuration structure. */
-typedef struct {
-  AUDIO_OBJECT_TYPE aot;         /**< Audio Object Type (AOT).           */
-  AUDIO_OBJECT_TYPE extAOT;      /**< Extension Audio Object Type (SBR). */
-  CHANNEL_MODE channelMode;      /**< Channel mode.                      */
-  INT        samplingRate;       /**< Sampling rate.                     */
-  INT        extSamplingRate;    /**< Extended samplerate (SBR).         */
-  INT        bitRate;            /**< Average bitrate.                   */
-  int        samplesPerFrame;    /**< Number of PCM samples per codec frame and audio channel. */
-  int        noChannels;         /**< Number of audio channels.          */
-  int        bitsFrame;
-  int        nSubFrames;         /**< Amount of encoder subframes. 1 means no subframing.                                     */
-  int        BSACnumOfSubFrame;  /**< The number of the sub-frames which are grouped and transmitted in a super-frame (BSAC). */
-  int        BSAClayerLength;    /**< The average length of the large-step layers in bytes (BSAC).                            */
-  UINT       flags;              /**< flags */
-  UCHAR      matrixMixdownA;     /**< Matrix mixdown index to put into PCE. Default value 0 means no mixdown coefficient,
+typedef struct
+{
+    AUDIO_OBJECT_TYPE aot;         /**< Audio Object Type (AOT).           */
+    AUDIO_OBJECT_TYPE extAOT;      /**< Extension Audio Object Type (SBR). */
+    CHANNEL_MODE channelMode;      /**< Channel mode.                      */
+    INT        samplingRate;       /**< Sampling rate.                     */
+    INT        extSamplingRate;    /**< Extended samplerate (SBR).         */
+    INT        bitRate;            /**< Average bitrate.                   */
+    int        samplesPerFrame;    /**< Number of PCM samples per codec frame and audio channel. */
+    int        noChannels;         /**< Number of audio channels.          */
+    int        bitsFrame;
+    int        nSubFrames;         /**< Amount of encoder subframes. 1 means no subframing.                                     */
+    int        BSACnumOfSubFrame;  /**< The number of the sub-frames which are grouped and transmitted in a super-frame (BSAC). */
+    int        BSAClayerLength;    /**< The average length of the large-step layers in bytes (BSAC).                            */
+    UINT       flags;              /**< flags */
+    UCHAR      matrixMixdownA;     /**< Matrix mixdown index to put into PCE. Default value 0 means no mixdown coefficient,
                                       valid values are 1-4 which correspond to matrix_mixdown_idx 0-3. */
-  UCHAR      headerPeriod;       /**< Frame period for sending in band configuration buffers in the transport layer. */
+    UCHAR      headerPeriod;       /**< Frame period for sending in band configuration buffers in the transport layer. */
 
-  UCHAR      stereoConfigIndex; /**< USAC MPS stereo mode */
-  UCHAR      sbrMode;           /**< USAC SBR mode */
-  SBR_PS_SIGNALING sbrSignaling;/**< 0: implicit signaling, 1: backwards compatible explicit signaling, 2: hierarcical explicit signaling */
+    UCHAR      stereoConfigIndex; /**< USAC MPS stereo mode */
+    UCHAR      sbrMode;           /**< USAC SBR mode */
+    SBR_PS_SIGNALING sbrSignaling;/**< 0: implicit signaling, 1: backwards compatible explicit signaling, 2: hierarcical explicit signaling */
 
-  UCHAR      sbrPresent;
-  UCHAR      psPresent;
+    UCHAR      sbrPresent;
+    UCHAR      psPresent;
 } CODER_CONFIG;
 
 /** MP4 Element IDs. */
 typedef enum
 {
-  ID_NONE = -1,   /**< Invalid Element helper ID.             */
-  ID_SCE = 0,     /**< Single Channel Element.                */
-  ID_CPE = 1,     /**< Channel Pair Element.                  */
-  ID_CCE = 2,     /**< Coupling Channel Element.              */
-  ID_LFE = 3,     /**< LFE Channel Element.                   */
-  ID_DSE = 4,     /**< Currently one Data Stream Element for ancillary data is supported. */
-  ID_PCE = 5,     /**< Program Config Element.                */
-  ID_FIL = 6,     /**< Fill Element.                          */
-  ID_END = 7,     /**< Arnie (End Element = Terminator).      */
-  ID_EXT = 8,     /**< Extension Payload (ER only).           */
-  ID_SCAL = 9,    /**< AAC scalable element (ER only).        */
-  ID_LAST
+    ID_NONE = -1,   /**< Invalid Element helper ID.             */
+    ID_SCE = 0,     /**< Single Channel Element.                */
+    ID_CPE = 1,     /**< Channel Pair Element.                  */
+    ID_CCE = 2,     /**< Coupling Channel Element.              */
+    ID_LFE = 3,     /**< LFE Channel Element.                   */
+    ID_DSE = 4,     /**< Currently one Data Stream Element for ancillary data is supported. */
+    ID_PCE = 5,     /**< Program Config Element.                */
+    ID_FIL = 6,     /**< Fill Element.                          */
+    ID_END = 7,     /**< Arnie (End Element = Terminator).      */
+    ID_EXT = 8,     /**< Extension Payload (ER only).           */
+    ID_SCAL = 9,    /**< AAC scalable element (ER only).        */
+    ID_LAST
 } MP4_ELEMENT_ID;
 
 #define IS_CHANNEL_ELEMENT(elementId) \
@@ -376,17 +379,18 @@ typedef enum
 #define EXT_ID_BITS 4  /**< Size in bits of extension payload type tags. */
 
 /** Extension payload types. */
-typedef enum {
-  EXT_FIL           = 0x00,
-  EXT_FILL_DATA     = 0x01,
-  EXT_DATA_ELEMENT  = 0x02,
-  EXT_DATA_LENGTH   = 0x03,
-  EXT_LDSAC_DATA    = 0x09,
-  EXT_SAOC_DATA     = 0x0a,
-  EXT_DYNAMIC_RANGE = 0x0b,
-  EXT_SAC_DATA      = 0x0c,
-  EXT_SBR_DATA      = 0x0d,
-  EXT_SBR_DATA_CRC  = 0x0e
+typedef enum
+{
+    EXT_FIL           = 0x00,
+    EXT_FILL_DATA     = 0x01,
+    EXT_DATA_ELEMENT  = 0x02,
+    EXT_DATA_LENGTH   = 0x03,
+    EXT_LDSAC_DATA    = 0x09,
+    EXT_SAOC_DATA     = 0x0a,
+    EXT_DYNAMIC_RANGE = 0x0b,
+    EXT_SAC_DATA      = 0x0c,
+    EXT_SBR_DATA      = 0x0d,
+    EXT_SBR_DATA_CRC  = 0x0e
 } EXT_PAYLOAD_TYPE;
 
 
@@ -395,10 +399,10 @@ typedef enum {
  */
 typedef enum
 {
-  TC_NOTHING = 0,     /* No configuration available -> in-band configuration.   */
-  TC_RAW_ASC,         /* Configuration data field is a raw AudioSpecificConfig. */
-  TC_RAW_SMC,         /* Configuration data field is a raw StreamMuxConfig.     */
-  TC_RAW_SDC          /* Configuration data field is a raw Drm SDC.             */
+    TC_NOTHING = 0,     /* No configuration available -> in-band configuration.   */
+    TC_RAW_ASC,         /* Configuration data field is a raw AudioSpecificConfig. */
+    TC_RAW_SMC,         /* Configuration data field is a raw StreamMuxConfig.     */
+    TC_RAW_SDC          /* Configuration data field is a raw Drm SDC.             */
 
 } TP_CONFIG_TYPE;
 
@@ -411,41 +415,42 @@ typedef enum
 #define MODULE_ID_MASK  (0x000000ff)
 #define MODULE_ID_SHIFT (24)
 
-typedef enum {
-  FDK_NONE   = 0,
-  FDK_TOOLS  = 1,
-  FDK_SYSLIB = 2,
-  FDK_AACDEC = 3,
-  FDK_AACENC = 4,
-  FDK_SBRDEC = 5,
-  FDK_SBRENC = 6,
-  FDK_TPDEC  = 7,
-  FDK_TPENC  = 8,
-  FDK_MPSDEC = 9,
-  FDK_MPEGFILEREAD  = 10,
-  FDK_MPEGFILEWRITE = 11,
-  FDK_MP2DEC = 12,
-  FDK_DABDEC = 13,
-  FDK_DABPARSE = 14,
-  FDK_DRMDEC = 15,
-  FDK_DRMPARSE = 16,
-  FDK_AACLDENC = 17,
-  FDK_MP2ENC = 18,
-  FDK_MP3ENC = 19,
-  FDK_MP3DEC = 20,
-  FDK_MP3HEADPHONE = 21,
-  FDK_MP3SDEC = 22,
-  FDK_MP3SENC = 23,
-  FDK_EAEC    = 24,
-  FDK_DABENC  = 25,
-  FDK_DMBDEC  = 26,
-  FDK_FDREVERB = 27,
-  FDK_DRMENC  = 28,
-  FDK_METADATATRANSCODER = 29,
-  FDK_AC3DEC = 30,
-  FDK_PCMDMX = 31,
+typedef enum
+{
+    FDK_NONE   = 0,
+    FDK_TOOLS  = 1,
+    FDK_SYSLIB = 2,
+    FDK_AACDEC = 3,
+    FDK_AACENC = 4,
+    FDK_SBRDEC = 5,
+    FDK_SBRENC = 6,
+    FDK_TPDEC  = 7,
+    FDK_TPENC  = 8,
+    FDK_MPSDEC = 9,
+    FDK_MPEGFILEREAD  = 10,
+    FDK_MPEGFILEWRITE = 11,
+    FDK_MP2DEC = 12,
+    FDK_DABDEC = 13,
+    FDK_DABPARSE = 14,
+    FDK_DRMDEC = 15,
+    FDK_DRMPARSE = 16,
+    FDK_AACLDENC = 17,
+    FDK_MP2ENC = 18,
+    FDK_MP3ENC = 19,
+    FDK_MP3DEC = 20,
+    FDK_MP3HEADPHONE = 21,
+    FDK_MP3SDEC = 22,
+    FDK_MP3SENC = 23,
+    FDK_EAEC    = 24,
+    FDK_DABENC  = 25,
+    FDK_DMBDEC  = 26,
+    FDK_FDREVERB = 27,
+    FDK_DRMENC  = 28,
+    FDK_METADATATRANSCODER = 29,
+    FDK_AC3DEC = 30,
+    FDK_PCMDMX = 31,
 
-  FDK_MODULE_LAST
+    FDK_MODULE_LAST
 
 } FDK_MODULE_ID;
 
@@ -538,53 +543,57 @@ typedef enum {
  */
 typedef struct LIB_INFO
 {
-  const char* title;
-  const char* build_date;
-  const char* build_time;
-  FDK_MODULE_ID module_id;
-  INT version;
-  UINT  flags;
-  char versionStr[32];
+    const char* title;
+    const char* build_date;
+    const char* build_time;
+    FDK_MODULE_ID module_id;
+    INT version;
+    UINT  flags;
+    char versionStr[32];
 } LIB_INFO;
 
 /** Initialize library info. */
 static inline void FDKinitLibInfo( LIB_INFO* info )
 {
-  int i;
+    int i;
 
-  for (i = 0; i < FDK_MODULE_LAST; i++) {
-    info[i].module_id = FDK_NONE;
-  }
+    for (i = 0; i < FDK_MODULE_LAST; i++)
+    {
+        info[i].module_id = FDK_NONE;
+    }
 }
 
 /** Aquire supported features of library. */
 static inline UINT FDKlibInfo_getCapabilities( const LIB_INFO* info, FDK_MODULE_ID module_id )
 {
-  int i;
+    int i;
 
-  for (i=0; i<FDK_MODULE_LAST; i++) {
-    if (info[i].module_id == module_id) {
-      return info[i].flags;
+    for (i=0; i<FDK_MODULE_LAST; i++)
+    {
+        if (info[i].module_id == module_id)
+        {
+            return info[i].flags;
+        }
     }
-  }
-  return 0;
+    return 0;
 }
 
 /** Search for next free tab. */
 static inline INT FDKlibInfo_lookup( const LIB_INFO* info, FDK_MODULE_ID module_id )
 {
-  int i = -1;
+    int i = -1;
 
-  for (i = 0; i < FDK_MODULE_LAST; i++) {
-    if (info[i].module_id == module_id)
-      return -1;
-    if (info[i].module_id == FDK_NONE)
-      break;
-  }
-  if (i == FDK_MODULE_LAST)
-    return -1;
+    for (i = 0; i < FDK_MODULE_LAST; i++)
+    {
+        if (info[i].module_id == module_id)
+            return -1;
+        if (info[i].module_id == FDK_NONE)
+            break;
+    }
+    if (i == FDK_MODULE_LAST)
+        return -1;
 
-  return i;
+    return i;
 }
 
 
@@ -599,16 +608,16 @@ static inline INT FDKlibInfo_lookup( const LIB_INFO* info, FDK_MODULE_ID module_
  */
 typedef struct FDK_bufDescr
 {
-  void  **ppBase;     /*!< Pointer to an array containing buffer base addresses.
+    void  **ppBase;     /*!< Pointer to an array containing buffer base addresses.
                            Set to NULL for buffer requirement info. */
-  UINT   *pBufSize;   /*!< Pointer to an array containing the number of elements that can
+    UINT   *pBufSize;   /*!< Pointer to an array containing the number of elements that can
                            be placed in the specific buffer. */
-  UINT   *pEleSize;   /*!< Pointer to an array containing the element size for each buffer
+    UINT   *pEleSize;   /*!< Pointer to an array containing the element size for each buffer
                            in bytes. That is mostly the number returned by the sizeof()
                            operator for the data type used for the specific buffer. */
-  UINT   *pBufType;   /*!< Pointer to an array of bit fields containing a description
+    UINT   *pBufType;   /*!< Pointer to an array of bit fields containing a description
                            for each buffer. See XXX below for more details.  */
-  UINT    numBufs;    /*!< Total number of buffers. */
+    UINT    numBufs;    /*!< Total number of buffers. */
 
 } FDK_bufDescr;
 

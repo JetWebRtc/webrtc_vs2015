@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -113,57 +113,57 @@ amm-info@iis.fraunhofer.de
 
 
 #ifdef WIN32
-  #include <tchar.h>
-  #ifndef _tstof  /* For Visual Studio 6 */
-    #ifdef _UNICODE
-      #include <wchar.h>
-      #define _tstof(x)   (float) wcstod(x, NULL)  /* For Visual Studio 6 */
-    #else
-      #define _tstof      atof
-    #endif
-  #endif
+#include <tchar.h>
+#ifndef _tstof  /* For Visual Studio 6 */
+#ifdef _UNICODE
+#include <wchar.h>
+#define _tstof(x)   (float) wcstod(x, NULL)  /* For Visual Studio 6 */
+#else
+#define _tstof      atof
+#endif
+#endif
 
-  #ifndef _tstol  /* For Visual Studio 6 */
-    #ifdef _UNICODE
-      #define _tstol      _wtol
-    #else
-      #define _tstol      atol
-    #endif
-  #endif
+#ifndef _tstol  /* For Visual Studio 6 */
+#ifdef _UNICODE
+#define _tstol      _wtol
+#else
+#define _tstol      atol
+#endif
+#endif
 
-  #ifndef _tstoi  /* For Visual Studio 6 */
-    #ifdef _UNICODE
-      #define _tstoi      _wtoi
-    #else
-      #define _tstoi      atoi
-    #endif
-  #endif
+#ifndef _tstoi  /* For Visual Studio 6 */
+#ifdef _UNICODE
+#define _tstoi      _wtoi
+#else
+#define _tstoi      atoi
+#endif
+#endif
 
-  #ifndef TEXTCHAR
-    #define TEXTCHAR char
-  #endif
+#ifndef TEXTCHAR
+#define TEXTCHAR char
+#endif
 
-  #ifndef _TEXT
-    #define _TEXT
-  #endif
+#ifndef _TEXT
+#define _TEXT
+#endif
 
 #else /* WIN32 */
 
-    #define TEXTCHAR char
-    #define _tcslen(a)  FDKstrlen(a)
-    #define _tcscpy     strcpy
-    #define _tcscmp     FDKstrcmp
-    #define _tcsncmp    FDKstrncmp
-    #define _tscanf     scanf
-    #define _TEXT(x)    x
-    #define _tfopen     fopen
-    #define _ftprintf   fprintf
-    #define _tcsncpy    FDKstrncpy
-    #define _tstof      FDKatof
-    #define _tstol      FDKatol
-    #define _tstoi      FDKatoi
-    #define _tcstol     strtol
-    #define _istdigit   isdigit
+#define TEXTCHAR char
+#define _tcslen(a)  FDKstrlen(a)
+#define _tcscpy     strcpy
+#define _tcscmp     FDKstrcmp
+#define _tcsncmp    FDKstrncmp
+#define _tscanf     scanf
+#define _TEXT(x)    x
+#define _tfopen     fopen
+#define _ftprintf   fprintf
+#define _tcsncpy    FDKstrncpy
+#define _tstof      FDKatof
+#define _tstol      FDKatol
+#define _tstoi      FDKatoi
+#define _tcstol     strtol
+#define _istdigit   isdigit
 #endif /* WIN32 */
 
 /* \endcond */

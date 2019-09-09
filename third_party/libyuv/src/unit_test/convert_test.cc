@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The LibYuv Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,7 +26,8 @@
 #include "libyuv/rotate.h"
 #include "libyuv/video_common.h"
 
-namespace libyuv {
+namespace libyuv
+{
 
 #define SUBSAMPLE(v, a) ((((v) + (a)-1)) / (a))
 
@@ -1236,117 +1237,128 @@ TESTSYM(ARGBToABGR, 4, 4, 1)
 TESTSYM(BGRAToARGB, 4, 4, 1)
 TESTSYM(ABGRToARGB, 4, 4, 1)
 
-TEST_F(LibYUVConvertTest, Test565) {
-  SIMD_ALIGNED(uint8 orig_pixels[256][4]);
-  SIMD_ALIGNED(uint8 pixels565[256][2]);
+TEST_F(LibYUVConvertTest, Test565)
+{
+SIMD_ALIGNED(uint8 orig_pixels[256][4]);
+SIMD_ALIGNED(uint8 pixels565[256][2]);
 
-  for (int i = 0; i < 256; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      orig_pixels[i][j] = i;
+for (int i = 0; i < 256; ++i)
+{
+    for (int j = 0; j < 4; ++j)
+    {
+        orig_pixels[i][j] = i;
     }
-  }
-  ARGBToRGB565(&orig_pixels[0][0], 0, &pixels565[0][0], 0, 256, 1);
-  uint32 checksum = HashDjb2(&pixels565[0][0], sizeof(pixels565), 5381);
-  EXPECT_EQ(610919429u, checksum);
+}
+ARGBToRGB565(&orig_pixels[0][0], 0, &pixels565[0][0], 0, 256, 1);
+uint32 checksum = HashDjb2(&pixels565[0][0], sizeof(pixels565), 5381);
+EXPECT_EQ(610919429u, checksum);
 }
 
 #ifdef HAVE_JPEG
-TEST_F(LibYUVConvertTest, ValidateJpeg) {
-  const int kOff = 10;
-  const int kMinJpeg = 64;
-  const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
-                             ? benchmark_width_ * benchmark_height_
-                             : kMinJpeg;
-  const int kSize = kImageSize + kOff;
-  align_buffer_page_end(orig_pixels, kSize);
+TEST_F(LibYUVConvertTest, ValidateJpeg)
+{
+const int kOff = 10;
+const int kMinJpeg = 64;
+const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
+                       ? benchmark_width_ * benchmark_height_
+                       : kMinJpeg;
+const int kSize = kImageSize + kOff;
+align_buffer_page_end(orig_pixels, kSize);
 
-  // No SOI or EOI. Expect fail.
-  memset(orig_pixels, 0, kSize);
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
+// No SOI or EOI. Expect fail.
+memset(orig_pixels, 0, kSize);
+EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
 
-  // Test special value that matches marker start.
-  memset(orig_pixels, 0xff, kSize);
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
+// Test special value that matches marker start.
+memset(orig_pixels, 0xff, kSize);
+EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
 
-  // EOI, SOI. Expect pass.
-  orig_pixels[0] = 0xff;
-  orig_pixels[1] = 0xd8;  // SOI.
-  orig_pixels[kSize - kOff + 0] = 0xff;
-  orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+// EOI, SOI. Expect pass.
+orig_pixels[0] = 0xff;
+orig_pixels[1] = 0xd8;  // SOI.
+orig_pixels[kSize - kOff + 0] = 0xff;
+orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     EXPECT_TRUE(ValidateJpeg(orig_pixels, kSize));
-  }
-  free_aligned_buffer_page_end(orig_pixels);
+}
+free_aligned_buffer_page_end(orig_pixels);
 }
 
-TEST_F(LibYUVConvertTest, ValidateJpegLarge) {
-  const int kOff = 10;
-  const int kMinJpeg = 64;
-  const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
-                             ? benchmark_width_ * benchmark_height_
-                             : kMinJpeg;
-  const int kSize = kImageSize + kOff;
-  const int kMultiple = 10;
-  const int kBufSize = kImageSize * kMultiple + kOff;
-  align_buffer_page_end(orig_pixels, kBufSize);
+TEST_F(LibYUVConvertTest, ValidateJpegLarge)
+{
+const int kOff = 10;
+const int kMinJpeg = 64;
+const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
+                       ? benchmark_width_ * benchmark_height_
+                       : kMinJpeg;
+const int kSize = kImageSize + kOff;
+const int kMultiple = 10;
+const int kBufSize = kImageSize * kMultiple + kOff;
+align_buffer_page_end(orig_pixels, kBufSize);
 
-  // No SOI or EOI. Expect fail.
-  memset(orig_pixels, 0, kBufSize);
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, kBufSize));
+// No SOI or EOI. Expect fail.
+memset(orig_pixels, 0, kBufSize);
+EXPECT_FALSE(ValidateJpeg(orig_pixels, kBufSize));
 
-  // EOI, SOI. Expect pass.
-  orig_pixels[0] = 0xff;
-  orig_pixels[1] = 0xd8;  // SOI.
-  orig_pixels[kSize - kOff + 0] = 0xff;
-  orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+// EOI, SOI. Expect pass.
+orig_pixels[0] = 0xff;
+orig_pixels[1] = 0xd8;  // SOI.
+orig_pixels[kSize - kOff + 0] = 0xff;
+orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     EXPECT_TRUE(ValidateJpeg(orig_pixels, kBufSize));
-  }
-  free_aligned_buffer_page_end(orig_pixels);
+}
+free_aligned_buffer_page_end(orig_pixels);
 }
 
-TEST_F(LibYUVConvertTest, InvalidateJpeg) {
-  const int kOff = 10;
-  const int kMinJpeg = 64;
-  const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
-                             ? benchmark_width_ * benchmark_height_
-                             : kMinJpeg;
-  const int kSize = kImageSize + kOff;
-  align_buffer_page_end(orig_pixels, kSize);
+TEST_F(LibYUVConvertTest, InvalidateJpeg)
+{
+const int kOff = 10;
+const int kMinJpeg = 64;
+const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
+                       ? benchmark_width_ * benchmark_height_
+                       : kMinJpeg;
+const int kSize = kImageSize + kOff;
+align_buffer_page_end(orig_pixels, kSize);
 
-  // NULL pointer. Expect fail.
-  EXPECT_FALSE(ValidateJpeg(NULL, kSize));
+// NULL pointer. Expect fail.
+EXPECT_FALSE(ValidateJpeg(NULL, kSize));
 
-  // Negative size. Expect fail.
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, -1));
+// Negative size. Expect fail.
+EXPECT_FALSE(ValidateJpeg(orig_pixels, -1));
 
-  // Too large size. Expect fail.
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, 0xfb000000ull));
+// Too large size. Expect fail.
+EXPECT_FALSE(ValidateJpeg(orig_pixels, 0xfb000000ull));
 
-  // No SOI or EOI. Expect fail.
-  memset(orig_pixels, 0, kSize);
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
+// No SOI or EOI. Expect fail.
+memset(orig_pixels, 0, kSize);
+EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
 
-  // SOI but no EOI. Expect fail.
-  orig_pixels[0] = 0xff;
-  orig_pixels[1] = 0xd8;  // SOI.
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+// SOI but no EOI. Expect fail.
+orig_pixels[0] = 0xff;
+orig_pixels[1] = 0xd8;  // SOI.
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
-  }
-
-  // EOI but no SOI. Expect fail.
-  orig_pixels[0] = 0;
-  orig_pixels[1] = 0;
-  orig_pixels[kSize - kOff + 0] = 0xff;
-  orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
-  EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
-
-  free_aligned_buffer_page_end(orig_pixels);
 }
 
-TEST_F(LibYUVConvertTest, FuzzJpeg) {
-  // SOI but no EOI. Expect fail.
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+// EOI but no SOI. Expect fail.
+orig_pixels[0] = 0;
+orig_pixels[1] = 0;
+orig_pixels[kSize - kOff + 0] = 0xff;
+orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+EXPECT_FALSE(ValidateJpeg(orig_pixels, kSize));
+
+free_aligned_buffer_page_end(orig_pixels);
+}
+
+TEST_F(LibYUVConvertTest, FuzzJpeg)
+{
+// SOI but no EOI. Expect fail.
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     const int kSize = fastrand() % 5000 + 2;
     align_buffer_page_end(orig_pixels, kSize);
     MemRandomize(orig_pixels, kSize);
@@ -1357,31 +1369,33 @@ TEST_F(LibYUVConvertTest, FuzzJpeg) {
     orig_pixels[kSize - 1] = 0xff;
     ValidateJpeg(orig_pixels, kSize);  // Failure normally expected.
     free_aligned_buffer_page_end(orig_pixels);
-  }
+}
 }
 
-TEST_F(LibYUVConvertTest, MJPGToI420) {
-  const int kOff = 10;
-  const int kMinJpeg = 64;
-  const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
-                             ? benchmark_width_ * benchmark_height_
-                             : kMinJpeg;
-  const int kSize = kImageSize + kOff;
-  align_buffer_page_end(orig_pixels, kSize);
-  align_buffer_page_end(dst_y_opt, benchmark_width_ * benchmark_height_);
-  align_buffer_page_end(dst_u_opt, SUBSAMPLE(benchmark_width_, 2) *
-                                       SUBSAMPLE(benchmark_height_, 2));
-  align_buffer_page_end(dst_v_opt, SUBSAMPLE(benchmark_width_, 2) *
-                                       SUBSAMPLE(benchmark_height_, 2));
+TEST_F(LibYUVConvertTest, MJPGToI420)
+{
+const int kOff = 10;
+const int kMinJpeg = 64;
+const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
+                       ? benchmark_width_ * benchmark_height_
+                       : kMinJpeg;
+const int kSize = kImageSize + kOff;
+align_buffer_page_end(orig_pixels, kSize);
+align_buffer_page_end(dst_y_opt, benchmark_width_ * benchmark_height_);
+align_buffer_page_end(dst_u_opt, SUBSAMPLE(benchmark_width_, 2) *
+                      SUBSAMPLE(benchmark_height_, 2));
+align_buffer_page_end(dst_v_opt, SUBSAMPLE(benchmark_width_, 2) *
+                      SUBSAMPLE(benchmark_height_, 2));
 
-  // EOI, SOI to make MJPG appear valid.
-  memset(orig_pixels, 0, kSize);
-  orig_pixels[0] = 0xff;
-  orig_pixels[1] = 0xd8;  // SOI.
-  orig_pixels[kSize - kOff + 0] = 0xff;
-  orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+// EOI, SOI to make MJPG appear valid.
+memset(orig_pixels, 0, kSize);
+orig_pixels[0] = 0xff;
+orig_pixels[1] = 0xd8;  // SOI.
+orig_pixels[kSize - kOff + 0] = 0xff;
+orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
 
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     int ret =
         MJPGToI420(orig_pixels, kSize, dst_y_opt, benchmark_width_, dst_u_opt,
                    SUBSAMPLE(benchmark_width_, 2), dst_v_opt,
@@ -1389,206 +1403,227 @@ TEST_F(LibYUVConvertTest, MJPGToI420) {
                    benchmark_height_, benchmark_width_, benchmark_height_);
     // Expect failure because image is not really valid.
     EXPECT_EQ(1, ret);
-  }
-
-  free_aligned_buffer_page_end(dst_y_opt);
-  free_aligned_buffer_page_end(dst_u_opt);
-  free_aligned_buffer_page_end(dst_v_opt);
-  free_aligned_buffer_page_end(orig_pixels);
 }
 
-TEST_F(LibYUVConvertTest, MJPGToARGB) {
-  const int kOff = 10;
-  const int kMinJpeg = 64;
-  const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
-                             ? benchmark_width_ * benchmark_height_
-                             : kMinJpeg;
-  const int kSize = kImageSize + kOff;
-  align_buffer_page_end(orig_pixels, kSize);
-  align_buffer_page_end(dst_argb_opt, benchmark_width_ * benchmark_height_ * 4);
+free_aligned_buffer_page_end(dst_y_opt);
+free_aligned_buffer_page_end(dst_u_opt);
+free_aligned_buffer_page_end(dst_v_opt);
+free_aligned_buffer_page_end(orig_pixels);
+}
 
-  // EOI, SOI to make MJPG appear valid.
-  memset(orig_pixels, 0, kSize);
-  orig_pixels[0] = 0xff;
-  orig_pixels[1] = 0xd8;  // SOI.
-  orig_pixels[kSize - kOff + 0] = 0xff;
-  orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+TEST_F(LibYUVConvertTest, MJPGToARGB)
+{
+const int kOff = 10;
+const int kMinJpeg = 64;
+const int kImageSize = benchmark_width_ * benchmark_height_ >= kMinJpeg
+                       ? benchmark_width_ * benchmark_height_
+                       : kMinJpeg;
+const int kSize = kImageSize + kOff;
+align_buffer_page_end(orig_pixels, kSize);
+align_buffer_page_end(dst_argb_opt, benchmark_width_ * benchmark_height_ * 4);
 
-  for (int times = 0; times < benchmark_iterations_; ++times) {
+// EOI, SOI to make MJPG appear valid.
+memset(orig_pixels, 0, kSize);
+orig_pixels[0] = 0xff;
+orig_pixels[1] = 0xd8;  // SOI.
+orig_pixels[kSize - kOff + 0] = 0xff;
+orig_pixels[kSize - kOff + 1] = 0xd9;  // EOI.
+
+for (int times = 0; times < benchmark_iterations_; ++times)
+{
     int ret = MJPGToARGB(orig_pixels, kSize, dst_argb_opt, benchmark_width_ * 4,
                          benchmark_width_, benchmark_height_, benchmark_width_,
                          benchmark_height_);
     // Expect failure because image is not really valid.
     EXPECT_EQ(1, ret);
-  }
+}
 
-  free_aligned_buffer_page_end(dst_argb_opt);
-  free_aligned_buffer_page_end(orig_pixels);
+free_aligned_buffer_page_end(dst_argb_opt);
+free_aligned_buffer_page_end(orig_pixels);
 }
 
 #endif  // HAVE_JPEG
 
-TEST_F(LibYUVConvertTest, NV12Crop) {
-  const int SUBSAMP_X = 2;
-  const int SUBSAMP_Y = 2;
-  const int kWidth = benchmark_width_;
-  const int kHeight = benchmark_height_;
-  const int crop_y =
-      ((benchmark_height_ - (benchmark_height_ * 360 / 480)) / 2 + 1) & ~1;
-  const int kDestWidth = benchmark_width_;
-  const int kDestHeight = benchmark_height_ - crop_y * 2;
-  const int kStrideUV = SUBSAMPLE(kWidth, SUBSAMP_X);
-  const int sample_size =
-      kWidth * kHeight + kStrideUV * SUBSAMPLE(kHeight, SUBSAMP_Y) * 2;
-  align_buffer_page_end(src_y, sample_size);
-  uint8* src_uv = src_y + kWidth * kHeight;
+TEST_F(LibYUVConvertTest, NV12Crop)
+{
+const int SUBSAMP_X = 2;
+const int SUBSAMP_Y = 2;
+const int kWidth = benchmark_width_;
+const int kHeight = benchmark_height_;
+const int crop_y =
+    ((benchmark_height_ - (benchmark_height_ * 360 / 480)) / 2 + 1) & ~1;
+const int kDestWidth = benchmark_width_;
+const int kDestHeight = benchmark_height_ - crop_y * 2;
+const int kStrideUV = SUBSAMPLE(kWidth, SUBSAMP_X);
+const int sample_size =
+    kWidth * kHeight + kStrideUV * SUBSAMPLE(kHeight, SUBSAMP_Y) * 2;
+align_buffer_page_end(src_y, sample_size);
+uint8* src_uv = src_y + kWidth * kHeight;
 
-  align_buffer_page_end(dst_y, kDestWidth * kDestHeight);
-  align_buffer_page_end(dst_u, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
-                                   SUBSAMPLE(kDestHeight, SUBSAMP_Y));
-  align_buffer_page_end(dst_v, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
-                                   SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+align_buffer_page_end(dst_y, kDestWidth * kDestHeight);
+align_buffer_page_end(dst_u, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
+                      SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+align_buffer_page_end(dst_v, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
+                      SUBSAMPLE(kDestHeight, SUBSAMP_Y));
 
-  align_buffer_page_end(dst_y_2, kDestWidth * kDestHeight);
-  align_buffer_page_end(dst_u_2, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
-                                     SUBSAMPLE(kDestHeight, SUBSAMP_Y));
-  align_buffer_page_end(dst_v_2, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
-                                     SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+align_buffer_page_end(dst_y_2, kDestWidth * kDestHeight);
+align_buffer_page_end(dst_u_2, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
+                      SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+align_buffer_page_end(dst_v_2, SUBSAMPLE(kDestWidth, SUBSAMP_X) *
+                      SUBSAMPLE(kDestHeight, SUBSAMP_Y));
 
-  for (int i = 0; i < kHeight * kWidth; ++i) {
+for (int i = 0; i < kHeight * kWidth; ++i)
+{
     src_y[i] = (fastrand() & 0xff);
-  }
-  for (int i = 0; i < (SUBSAMPLE(kHeight, SUBSAMP_Y) * kStrideUV) * 2; ++i) {
+}
+for (int i = 0; i < (SUBSAMPLE(kHeight, SUBSAMP_Y) * kStrideUV) * 2; ++i)
+{
     src_uv[i] = (fastrand() & 0xff);
-  }
-  memset(dst_y, 1, kDestWidth * kDestHeight);
-  memset(dst_u, 2,
-         SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
-  memset(dst_v, 3,
-         SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
-  memset(dst_y_2, 1, kDestWidth * kDestHeight);
-  memset(dst_u_2, 2,
-         SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
-  memset(dst_v_2, 3,
-         SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+}
+memset(dst_y, 1, kDestWidth * kDestHeight);
+memset(dst_u, 2,
+       SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+memset(dst_v, 3,
+       SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+memset(dst_y_2, 1, kDestWidth * kDestHeight);
+memset(dst_u_2, 2,
+       SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
+memset(dst_v_2, 3,
+       SUBSAMPLE(kDestWidth, SUBSAMP_X) * SUBSAMPLE(kDestHeight, SUBSAMP_Y));
 
-  ConvertToI420(src_y, sample_size, dst_y_2, kDestWidth, dst_u_2,
-                SUBSAMPLE(kDestWidth, SUBSAMP_X), dst_v_2,
-                SUBSAMPLE(kDestWidth, SUBSAMP_X), 0, crop_y, kWidth, kHeight,
-                kDestWidth, kDestHeight, libyuv::kRotate0, libyuv::FOURCC_NV12);
+ConvertToI420(src_y, sample_size, dst_y_2, kDestWidth, dst_u_2,
+              SUBSAMPLE(kDestWidth, SUBSAMP_X), dst_v_2,
+              SUBSAMPLE(kDestWidth, SUBSAMP_X), 0, crop_y, kWidth, kHeight,
+              kDestWidth, kDestHeight, libyuv::kRotate0, libyuv::FOURCC_NV12);
 
-  NV12ToI420(src_y + crop_y * kWidth, kWidth,
-             src_uv + (crop_y / 2) * kStrideUV * 2, kStrideUV * 2, dst_y,
-             kDestWidth, dst_u, SUBSAMPLE(kDestWidth, SUBSAMP_X), dst_v,
-             SUBSAMPLE(kDestWidth, SUBSAMP_X), kDestWidth, kDestHeight);
+NV12ToI420(src_y + crop_y * kWidth, kWidth,
+           src_uv + (crop_y / 2) * kStrideUV * 2, kStrideUV * 2, dst_y,
+           kDestWidth, dst_u, SUBSAMPLE(kDestWidth, SUBSAMP_X), dst_v,
+           SUBSAMPLE(kDestWidth, SUBSAMP_X), kDestWidth, kDestHeight);
 
-  for (int i = 0; i < kDestHeight; ++i) {
-    for (int j = 0; j < kDestWidth; ++j) {
-      EXPECT_EQ(dst_y[i * kWidth + j], dst_y_2[i * kWidth + j]);
+for (int i = 0; i < kDestHeight; ++i)
+{
+    for (int j = 0; j < kDestWidth; ++j)
+    {
+        EXPECT_EQ(dst_y[i * kWidth + j], dst_y_2[i * kWidth + j]);
     }
-  }
-  for (int i = 0; i < SUBSAMPLE(kDestHeight, SUBSAMP_Y); ++i) {
-    for (int j = 0; j < SUBSAMPLE(kDestWidth, SUBSAMP_X); ++j) {
-      EXPECT_EQ(dst_u[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j],
-                dst_u_2[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j]);
+}
+for (int i = 0; i < SUBSAMPLE(kDestHeight, SUBSAMP_Y); ++i)
+{
+    for (int j = 0; j < SUBSAMPLE(kDestWidth, SUBSAMP_X); ++j)
+    {
+        EXPECT_EQ(dst_u[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j],
+                  dst_u_2[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j]);
     }
-  }
-  for (int i = 0; i < SUBSAMPLE(kDestHeight, SUBSAMP_Y); ++i) {
-    for (int j = 0; j < SUBSAMPLE(kDestWidth, SUBSAMP_X); ++j) {
-      EXPECT_EQ(dst_v[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j],
-                dst_v_2[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j]);
+}
+for (int i = 0; i < SUBSAMPLE(kDestHeight, SUBSAMP_Y); ++i)
+{
+    for (int j = 0; j < SUBSAMPLE(kDestWidth, SUBSAMP_X); ++j)
+    {
+        EXPECT_EQ(dst_v[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j],
+                  dst_v_2[i * SUBSAMPLE(kDestWidth, SUBSAMP_X) + j]);
     }
-  }
-  free_aligned_buffer_page_end(dst_y);
-  free_aligned_buffer_page_end(dst_u);
-  free_aligned_buffer_page_end(dst_v);
-  free_aligned_buffer_page_end(dst_y_2);
-  free_aligned_buffer_page_end(dst_u_2);
-  free_aligned_buffer_page_end(dst_v_2);
-  free_aligned_buffer_page_end(src_y);
+}
+free_aligned_buffer_page_end(dst_y);
+free_aligned_buffer_page_end(dst_u);
+free_aligned_buffer_page_end(dst_v);
+free_aligned_buffer_page_end(dst_y_2);
+free_aligned_buffer_page_end(dst_u_2);
+free_aligned_buffer_page_end(dst_v_2);
+free_aligned_buffer_page_end(src_y);
 }
 
-TEST_F(LibYUVConvertTest, TestYToARGB) {
-  uint8 y[32];
-  uint8 expectedg[32];
-  for (int i = 0; i < 32; ++i) {
+TEST_F(LibYUVConvertTest, TestYToARGB)
+{
+uint8 y[32];
+uint8 expectedg[32];
+for (int i = 0; i < 32; ++i)
+{
     y[i] = i * 5 + 17;
     expectedg[i] = static_cast<int>((y[i] - 16) * 1.164f + 0.5f);
-  }
-  uint8 argb[32 * 4];
-  YToARGB(y, 0, argb, 0, 32, 1);
+}
+uint8 argb[32 * 4];
+YToARGB(y, 0, argb, 0, 32, 1);
 
-  for (int i = 0; i < 32; ++i) {
+for (int i = 0; i < 32; ++i)
+{
     printf("%2d %d: %d <-> %d,%d,%d,%d\n", i, y[i], expectedg[i],
            argb[i * 4 + 0], argb[i * 4 + 1], argb[i * 4 + 2], argb[i * 4 + 3]);
-  }
-  for (int i = 0; i < 32; ++i) {
+}
+for (int i = 0; i < 32; ++i)
+{
     EXPECT_EQ(expectedg[i], argb[i * 4 + 0]);
-  }
+}
 }
 
-static const uint8 kNoDither4x4[16] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+static const uint8 kNoDither4x4[16] =
+{
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-TEST_F(LibYUVConvertTest, TestNoDither) {
-  align_buffer_page_end(src_argb, benchmark_width_ * benchmark_height_ * 4);
-  align_buffer_page_end(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
-  align_buffer_page_end(dst_rgb565dither,
-                        benchmark_width_ * benchmark_height_ * 2);
-  MemRandomize(src_argb, benchmark_width_ * benchmark_height_ * 4);
-  MemRandomize(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
-  MemRandomize(dst_rgb565dither, benchmark_width_ * benchmark_height_ * 2);
-  ARGBToRGB565(src_argb, benchmark_width_ * 4, dst_rgb565, benchmark_width_ * 2,
-               benchmark_width_, benchmark_height_);
-  ARGBToRGB565Dither(src_argb, benchmark_width_ * 4, dst_rgb565dither,
-                     benchmark_width_ * 2, kNoDither4x4, benchmark_width_,
-                     benchmark_height_);
-  for (int i = 0; i < benchmark_width_ * benchmark_height_ * 2; ++i) {
+TEST_F(LibYUVConvertTest, TestNoDither)
+{
+align_buffer_page_end(src_argb, benchmark_width_ * benchmark_height_ * 4);
+align_buffer_page_end(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
+align_buffer_page_end(dst_rgb565dither,
+                      benchmark_width_ * benchmark_height_ * 2);
+MemRandomize(src_argb, benchmark_width_ * benchmark_height_ * 4);
+MemRandomize(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
+MemRandomize(dst_rgb565dither, benchmark_width_ * benchmark_height_ * 2);
+ARGBToRGB565(src_argb, benchmark_width_ * 4, dst_rgb565, benchmark_width_ * 2,
+             benchmark_width_, benchmark_height_);
+ARGBToRGB565Dither(src_argb, benchmark_width_ * 4, dst_rgb565dither,
+                   benchmark_width_ * 2, kNoDither4x4, benchmark_width_,
+                   benchmark_height_);
+for (int i = 0; i < benchmark_width_ * benchmark_height_ * 2; ++i)
+{
     EXPECT_EQ(dst_rgb565[i], dst_rgb565dither[i]);
-  }
+}
 
-  free_aligned_buffer_page_end(src_argb);
-  free_aligned_buffer_page_end(dst_rgb565);
-  free_aligned_buffer_page_end(dst_rgb565dither);
+free_aligned_buffer_page_end(src_argb);
+free_aligned_buffer_page_end(dst_rgb565);
+free_aligned_buffer_page_end(dst_rgb565dither);
 }
 
 // Ordered 4x4 dither for 888 to 565.  Values from 0 to 7.
-static const uint8 kDither565_4x4[16] = {
-    0, 4, 1, 5, 6, 2, 7, 3, 1, 5, 0, 4, 7, 3, 6, 2,
+static const uint8 kDither565_4x4[16] =
+{
+0, 4, 1, 5, 6, 2, 7, 3, 1, 5, 0, 4, 7, 3, 6, 2,
 };
 
-TEST_F(LibYUVConvertTest, TestDither) {
-  align_buffer_page_end(src_argb, benchmark_width_ * benchmark_height_ * 4);
-  align_buffer_page_end(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
-  align_buffer_page_end(dst_rgb565dither,
-                        benchmark_width_ * benchmark_height_ * 2);
-  align_buffer_page_end(dst_argb, benchmark_width_ * benchmark_height_ * 4);
-  align_buffer_page_end(dst_argbdither,
-                        benchmark_width_ * benchmark_height_ * 4);
-  MemRandomize(src_argb, benchmark_width_ * benchmark_height_ * 4);
-  MemRandomize(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
-  MemRandomize(dst_rgb565dither, benchmark_width_ * benchmark_height_ * 2);
-  MemRandomize(dst_argb, benchmark_width_ * benchmark_height_ * 4);
-  MemRandomize(dst_argbdither, benchmark_width_ * benchmark_height_ * 4);
-  ARGBToRGB565(src_argb, benchmark_width_ * 4, dst_rgb565, benchmark_width_ * 2,
-               benchmark_width_, benchmark_height_);
-  ARGBToRGB565Dither(src_argb, benchmark_width_ * 4, dst_rgb565dither,
-                     benchmark_width_ * 2, kDither565_4x4, benchmark_width_,
-                     benchmark_height_);
-  RGB565ToARGB(dst_rgb565, benchmark_width_ * 2, dst_argb, benchmark_width_ * 4,
-               benchmark_width_, benchmark_height_);
-  RGB565ToARGB(dst_rgb565dither, benchmark_width_ * 2, dst_argbdither,
-               benchmark_width_ * 4, benchmark_width_, benchmark_height_);
+TEST_F(LibYUVConvertTest, TestDither)
+{
+align_buffer_page_end(src_argb, benchmark_width_ * benchmark_height_ * 4);
+align_buffer_page_end(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
+align_buffer_page_end(dst_rgb565dither,
+                      benchmark_width_ * benchmark_height_ * 2);
+align_buffer_page_end(dst_argb, benchmark_width_ * benchmark_height_ * 4);
+align_buffer_page_end(dst_argbdither,
+                      benchmark_width_ * benchmark_height_ * 4);
+MemRandomize(src_argb, benchmark_width_ * benchmark_height_ * 4);
+MemRandomize(dst_rgb565, benchmark_width_ * benchmark_height_ * 2);
+MemRandomize(dst_rgb565dither, benchmark_width_ * benchmark_height_ * 2);
+MemRandomize(dst_argb, benchmark_width_ * benchmark_height_ * 4);
+MemRandomize(dst_argbdither, benchmark_width_ * benchmark_height_ * 4);
+ARGBToRGB565(src_argb, benchmark_width_ * 4, dst_rgb565, benchmark_width_ * 2,
+             benchmark_width_, benchmark_height_);
+ARGBToRGB565Dither(src_argb, benchmark_width_ * 4, dst_rgb565dither,
+                   benchmark_width_ * 2, kDither565_4x4, benchmark_width_,
+                   benchmark_height_);
+RGB565ToARGB(dst_rgb565, benchmark_width_ * 2, dst_argb, benchmark_width_ * 4,
+             benchmark_width_, benchmark_height_);
+RGB565ToARGB(dst_rgb565dither, benchmark_width_ * 2, dst_argbdither,
+             benchmark_width_ * 4, benchmark_width_, benchmark_height_);
 
-  for (int i = 0; i < benchmark_width_ * benchmark_height_ * 4; ++i) {
+for (int i = 0; i < benchmark_width_ * benchmark_height_ * 4; ++i)
+{
     EXPECT_NEAR(dst_argb[i], dst_argbdither[i], 9);
-  }
-  free_aligned_buffer_page_end(src_argb);
-  free_aligned_buffer_page_end(dst_rgb565);
-  free_aligned_buffer_page_end(dst_rgb565dither);
-  free_aligned_buffer_page_end(dst_argb);
-  free_aligned_buffer_page_end(dst_argbdither);
+}
+free_aligned_buffer_page_end(src_argb);
+free_aligned_buffer_page_end(dst_rgb565);
+free_aligned_buffer_page_end(dst_rgb565dither);
+free_aligned_buffer_page_end(dst_argb);
+free_aligned_buffer_page_end(dst_argbdither);
 }
 
 #define TESTPLANARTOBID(FMT_PLANAR, SUBSAMP_X, SUBSAMP_Y, FMT_B, BPP_B, ALIGN, \
@@ -1885,39 +1920,40 @@ TESTPLANARTOE(I422, 2, 1, UYVY, 2, 4, ARGB, 4)
 TESTQPLANARTOE(I420Alpha, 2, 2, ARGB, 1, 4, ABGR, 4)
 TESTQPLANARTOE(I420Alpha, 2, 2, ABGR, 1, 4, ARGB, 4)
 
-TEST_F(LibYUVConvertTest, RotateWithARGBSource) {
-  // 2x2 frames
-  uint32_t src[4];
-  uint32_t dst[4];
-  // some random input
-  src[0] = 0x11000000;
-  src[1] = 0x00450000;
-  src[2] = 0x00009f00;
-  src[3] = 0x000000ff;
-  // zeros on destination
-  dst[0] = 0x00000000;
-  dst[1] = 0x00000000;
-  dst[2] = 0x00000000;
-  dst[3] = 0x00000000;
+TEST_F(LibYUVConvertTest, RotateWithARGBSource)
+{
+// 2x2 frames
+uint32_t src[4];
+uint32_t dst[4];
+// some random input
+src[0] = 0x11000000;
+src[1] = 0x00450000;
+src[2] = 0x00009f00;
+src[3] = 0x000000ff;
+// zeros on destination
+dst[0] = 0x00000000;
+dst[1] = 0x00000000;
+dst[2] = 0x00000000;
+dst[3] = 0x00000000;
 
-  int r = ConvertToARGB(reinterpret_cast<uint8_t*>(src),
-                        16,  // input size
-                        reinterpret_cast<uint8_t*>(dst),
-                        8,  // destination stride
-                        0,  // crop_x
-                        0,  // crop_y
-                        2,  // width
-                        2,  // height
-                        2,  // crop width
-                        2,  // crop height
-                        kRotate90, FOURCC_ARGB);
+int r = ConvertToARGB(reinterpret_cast<uint8_t*>(src),
+                      16,  // input size
+                      reinterpret_cast<uint8_t*>(dst),
+                      8,  // destination stride
+                      0,  // crop_x
+                      0,  // crop_y
+                      2,  // width
+                      2,  // height
+                      2,  // crop width
+                      2,  // crop height
+                      kRotate90, FOURCC_ARGB);
 
-  EXPECT_EQ(r, 0);
-  // 90 degrees rotation, no conversion
-  EXPECT_EQ(dst[0], src[2]);
-  EXPECT_EQ(dst[1], src[0]);
-  EXPECT_EQ(dst[2], src[3]);
-  EXPECT_EQ(dst[3], src[1]);
+EXPECT_EQ(r, 0);
+// 90 degrees rotation, no conversion
+EXPECT_EQ(dst[0], src[2]);
+EXPECT_EQ(dst[1], src[0]);
+EXPECT_EQ(dst[2], src[3]);
+EXPECT_EQ(dst[3], src[1]);
 }
 
 }  // namespace libyuv

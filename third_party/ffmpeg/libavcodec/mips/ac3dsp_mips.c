@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -70,7 +70,8 @@ static void ac3_bit_alloc_calc_bap_mips(int16_t *mask, int16_t *psd,
     int16_t *psd1, *psd_end;
     uint8_t *bap1;
 
-    if (snr_offset == -960) {
+    if (snr_offset == -960)
+    {
         memset(bap, 0, AC3_MAX_COEFS);
         return;
     }
@@ -79,7 +80,8 @@ static void ac3_bit_alloc_calc_bap_mips(int16_t *mask, int16_t *psd,
     bap1 = &bap[start];
     band = ff_ac3_bin_to_band_tab[start];
 
-    do {
+    do
+    {
         m = (FFMAX(mask[band] - snr_offset - floor, 0) & 0x1FE0) + floor;
         band_end = ff_ac3_band_start_tab[++band];
         band_end = FFMIN(band_end, end);
@@ -129,12 +131,13 @@ static void ac3_bit_alloc_calc_bap_mips(int16_t *mask, int16_t *psd,
             "3:                                                     \n\t"
 
             : [address1]"=&r"(address1), [address2]"=&r"(address2),
-              [cond]"=&r"(cond), [bap1]"+r"(bap1),
-              [psd1]"+r"(psd1), [psd_end]"+r"(psd_end)
+            [cond]"=&r"(cond), [bap1]"+r"(bap1),
+            [psd1]"+r"(psd1), [psd_end]"+r"(psd_end)
             : [m]"r"(m), [bap_tab]"r"(bap_tab)
             : "memory"
         );
-    } while (end > band_end);
+    }
+    while (end > band_end);
 }
 
 static void ac3_update_bap_counts_mips(uint16_t mant_cnt[16], uint8_t *bap,
@@ -190,11 +193,11 @@ static void ac3_update_bap_counts_mips(uint16_t mant_cnt[16], uint8_t *bap,
         "2:                                                 \n\t"
 
         : [temp0] "=&r" (temp0), [temp1] "=&r" (temp1),
-          [temp2] "=&r" (temp2), [temp3] "=&r" (temp3),
-          [temp4] "=&r" (temp4), [temp5] "=&r" (temp5),
-          [temp6] "=&r" (temp6), [temp7] "=&r" (temp7)
+        [temp2] "=&r" (temp2), [temp3] "=&r" (temp3),
+        [temp4] "=&r" (temp4), [temp5] "=&r" (temp5),
+        [temp6] "=&r" (temp6), [temp7] "=&r" (temp7)
         : [len] "r" (len), [bap] "r" (bap),
-          [mant_cnt] "r" (mant_cnt)
+        [mant_cnt] "r" (mant_cnt)
         : "memory"
     );
 }
@@ -207,7 +210,8 @@ static void float_to_fixed24_mips(int32_t *dst, const float *src, unsigned int l
     float src0, src1, src2, src3, src4, src5, src6, src7;
     int temp0, temp1, temp2, temp3, temp4, temp5, temp6, temp7;
 
-    do {
+    do
+    {
         __asm__ volatile (
             "lwc1       %[src0],    0(%[src])               \n\t"
             "lwc1       %[src1],    4(%[src])               \n\t"
@@ -251,25 +255,26 @@ static void float_to_fixed24_mips(int32_t *dst, const float *src, unsigned int l
             "sw         %[temp7],   28(%[dst])              \n\t"
 
             : [dst] "+r" (dst), [src] "+r" (src),
-              [src0] "=&f" (src0), [src1] "=&f" (src1),
-              [src2] "=&f" (src2), [src3] "=&f" (src3),
-              [src4] "=&f" (src4), [src5] "=&f" (src5),
-              [src6] "=&f" (src6), [src7] "=&f" (src7),
-              [temp0] "=r" (temp0), [temp1] "=r" (temp1),
-              [temp2] "=r" (temp2), [temp3] "=r" (temp3),
-              [temp4] "=r" (temp4), [temp5] "=r" (temp5),
-              [temp6] "=r" (temp6), [temp7] "=r" (temp7)
+            [src0] "=&f" (src0), [src1] "=&f" (src1),
+            [src2] "=&f" (src2), [src3] "=&f" (src3),
+            [src4] "=&f" (src4), [src5] "=&f" (src5),
+            [src6] "=&f" (src6), [src7] "=&f" (src7),
+            [temp0] "=r" (temp0), [temp1] "=r" (temp1),
+            [temp2] "=r" (temp2), [temp3] "=r" (temp3),
+            [temp4] "=r" (temp4), [temp5] "=r" (temp5),
+            [temp6] "=r" (temp6), [temp7] "=r" (temp7)
             : [scale] "f" (scale)
             : "memory"
         );
         src = src + 8;
         dst = dst + 8;
         len -= 8;
-    } while (len > 0);
+    }
+    while (len > 0);
 }
 
 static void ac3_downmix_mips(float **samples, float (*matrix)[2],
-                          int out_ch, int in_ch, int len)
+                             int out_ch, int in_ch, int len)
 {
     int i, j, i1, i2, i3;
     float v0, v1, v2, v3;
@@ -382,23 +387,24 @@ static void ac3_downmix_mips(float **samples, float (*matrix)[2],
 
         ".set   pop"
         :[samples_p]"=&r"(samples_p), [matrix_j]"=&f"(matrix_j), [matrix_j2]"=&f"(matrix_j2),
-         [samples0]"=&f"(samples0), [samples1]"=&f"(samples1),
-         [samples2]"=&f"(samples2), [samples3]"=&f"(samples3),
-         [v0]"=&f"(v0), [v1]"=&f"(v1), [v2]"=&f"(v2), [v3]"=&f"(v3),
-         [v4]"=&f"(v4), [v5]"=&f"(v5), [v6]"=&f"(v6), [v7]"=&f"(v7),
-         [samples_x]"=&r"(samples_x), [matrix_p]"=&r"(matrix_p),
-         [samples_end]"=&r"(samples_end), [samples_sw]"=&r"(samples_sw),
-         [i1]"=&r"(i1), [i2]"=&r"(i2), [i3]"=&r"(i3), [i]"=&r"(i),
-         [j]"=&r"(j), [len]"+r"(len)
+        [samples0]"=&f"(samples0), [samples1]"=&f"(samples1),
+        [samples2]"=&f"(samples2), [samples3]"=&f"(samples3),
+        [v0]"=&f"(v0), [v1]"=&f"(v1), [v2]"=&f"(v2), [v3]"=&f"(v3),
+        [v4]"=&f"(v4), [v5]"=&f"(v5), [v6]"=&f"(v6), [v7]"=&f"(v7),
+        [samples_x]"=&r"(samples_x), [matrix_p]"=&r"(matrix_p),
+        [samples_end]"=&r"(samples_end), [samples_sw]"=&r"(samples_sw),
+        [i1]"=&r"(i1), [i2]"=&r"(i2), [i3]"=&r"(i3), [i]"=&r"(i),
+        [j]"=&r"(j), [len]"+r"(len)
         :[samples]"r"(samples), [matrix]"r"(matrix),
-         [in_ch]"r"(in_ch), [out_ch]"r"(out_ch)
+        [in_ch]"r"(in_ch), [out_ch]"r"(out_ch)
         :"memory"
     );
 }
 #endif
 #endif /* HAVE_INLINE_ASM */
 
-void ff_ac3dsp_init_mips(AC3DSPContext *c, int bit_exact) {
+void ff_ac3dsp_init_mips(AC3DSPContext *c, int bit_exact)
+{
 #if HAVE_INLINE_ASM
 #if HAVE_MIPSDSPR1
     c->bit_alloc_calc_bap = ac3_bit_alloc_calc_bap_mips;

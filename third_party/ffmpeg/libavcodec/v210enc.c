@@ -1,4 +1,4 @@
-/*
+﻿/*
  * V210 encoder
  *
  * Copyright (C) 2009 Michael Niedermayer <michaelni@gmx.at>
@@ -55,7 +55,8 @@ static void v210_planar_pack_8_c(const uint8_t *y, const uint8_t *u,
     int i;
 
     /* unroll this to match the assembly */
-    for (i = 0; i < width - 11; i += 12) {
+    for (i = 0; i < width - 11; i += 12)
+    {
         WRITE_PIXELS8(u, y, v);
         WRITE_PIXELS8(y, u, y);
         WRITE_PIXELS8(v, y, u);
@@ -74,7 +75,8 @@ static void v210_planar_pack_10_c(const uint16_t *y, const uint16_t *u,
     uint32_t val;
     int i;
 
-    for (i = 0; i < width - 5; i += 6) {
+    for (i = 0; i < width - 5; i += 6)
+    {
         WRITE_PIXELS(u, y, v);
         WRITE_PIXELS(y, u, y);
         WRITE_PIXELS(v, y, u);
@@ -86,15 +88,16 @@ static av_cold int encode_init(AVCodecContext *avctx)
 {
     V210EncContext *s = avctx->priv_data;
 
-    if (avctx->width & 1) {
+    if (avctx->width & 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "v210 needs even width\n");
         return AVERROR(EINVAL);
     }
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     s->pack_line_8  = v210_planar_pack_8_c;
@@ -117,17 +120,20 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     uint8_t *dst;
 
     ret = ff_alloc_packet2(avctx, pkt, avctx->height * stride, avctx->height * stride);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Error getting output packet.\n");
         return ret;
     }
     dst = pkt->data;
 
-    if (pic->format == AV_PIX_FMT_YUV422P10) {
+    if (pic->format == AV_PIX_FMT_YUV422P10)
+    {
         const uint16_t *y = (const uint16_t *)pic->data[0];
         const uint16_t *u = (const uint16_t *)pic->data[1];
         const uint16_t *v = (const uint16_t *)pic->data[2];
-        for (h = 0; h < avctx->height; h++) {
+        for (h = 0; h < avctx->height; h++)
+        {
             uint32_t val;
             w = (avctx->width / 6) * 6;
             s->pack_line_10(y, u, v, dst, w);
@@ -136,16 +142,19 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
             u += w >> 1;
             v += w >> 1;
             dst += (w / 6) * 16;
-            if (w < avctx->width - 1) {
+            if (w < avctx->width - 1)
+            {
                 WRITE_PIXELS(u, y, v);
 
                 val = CLIP(*y++);
-                if (w == avctx->width - 2) {
+                if (w == avctx->width - 2)
+                {
                     AV_WL32(dst, val);
                     dst += 4;
                 }
             }
-            if (w < avctx->width - 3) {
+            if (w < avctx->width - 3)
+            {
                 val |= (CLIP(*u++) << 10) | (CLIP(*y++) << 20);
                 AV_WL32(dst, val);
                 dst += 4;
@@ -161,11 +170,14 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
             u += pic->linesize[1] / 2 - avctx->width / 2;
             v += pic->linesize[2] / 2 - avctx->width / 2;
         }
-    } else if(pic->format == AV_PIX_FMT_YUV422P) {
+    }
+    else if(pic->format == AV_PIX_FMT_YUV422P)
+    {
         const uint8_t *y = pic->data[0];
         const uint8_t *u = pic->data[1];
         const uint8_t *v = pic->data[2];
-        for (h = 0; h < avctx->height; h++) {
+        for (h = 0; h < avctx->height; h++)
+        {
             uint32_t val;
             w = (avctx->width / 12) * 12;
             s->pack_line_8(y, u, v, dst, w);
@@ -175,22 +187,26 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
             v += w >> 1;
             dst += (w / 12) * 32;
 
-            for (; w < avctx->width - 5; w += 6) {
+            for (; w < avctx->width - 5; w += 6)
+            {
                 WRITE_PIXELS8(u, y, v);
                 WRITE_PIXELS8(y, u, y);
                 WRITE_PIXELS8(v, y, u);
                 WRITE_PIXELS8(y, v, y);
             }
-            if (w < avctx->width - 1) {
+            if (w < avctx->width - 1)
+            {
                 WRITE_PIXELS8(u, y, v);
 
                 val = CLIP8(*y++) << 2;
-                if (w == avctx->width - 2) {
+                if (w == avctx->width - 2)
+                {
                     AV_WL32(dst, val);
                     dst += 4;
                 }
             }
-            if (w < avctx->width - 3) {
+            if (w < avctx->width - 3)
+            {
                 val |= (CLIP8(*u++) << 12) | (CLIP8(*y++) << 22);
                 AV_WL32(dst, val);
                 dst += 4;
@@ -213,7 +229,8 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     return 0;
 }
 
-AVCodec ff_v210_encoder = {
+AVCodec ff_v210_encoder =
+{
     .name           = "v210",
     .long_name      = NULL_IF_CONFIG_SMALL("Uncompressed 4:2:2 10-bit"),
     .type           = AVMEDIA_TYPE_VIDEO,

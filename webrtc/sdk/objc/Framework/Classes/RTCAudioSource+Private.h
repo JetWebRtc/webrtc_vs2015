@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,11 +14,11 @@
 
 @interface RTCAudioSource ()
 
-/**
- * The AudioSourceInterface object passed to this RTCAudioSource during
- * construction.
- */
-@property(nonatomic, readonly) rtc::scoped_refptr<webrtc::AudioSourceInterface> nativeAudioSource;
+    /**
+     * The AudioSourceInterface object passed to this RTCAudioSource during
+     * construction.
+     */
+    @property(nonatomic, readonly) rtc::scoped_refptr<webrtc::AudioSourceInterface> nativeAudioSource;
 
 /** Initialize an RTCAudioSource from a native AudioSourceInterface. */
 - (instancetype)initWithNativeAudioSource:
@@ -27,6 +27,6 @@
 
 - (instancetype)initWithNativeMediaSource:
     (rtc::scoped_refptr<webrtc::MediaSourceInterface>)nativeMediaSource
-                                     type:(RTCMediaSourceType)type NS_UNAVAILABLE;
+    type:(RTCMediaSourceType)type NS_UNAVAILABLE;
 
 @end

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,16 +20,18 @@ extern "C" {
 
 void vp8_tokenize_initialize();
 
-typedef struct {
-  short Token;
-  short Extra;
+typedef struct
+{
+    short Token;
+    short Extra;
 } TOKENVALUE;
 
-typedef struct {
-  const vp8_prob *context_tree;
-  short Extra;
-  unsigned char Token;
-  unsigned char skip_eob_node;
+typedef struct
+{
+    const vp8_prob *context_tree;
+    short Extra;
+    unsigned char Token;
+    unsigned char skip_eob_node;
 } TOKENEXTRA;
 
 int rd_cost_mby(MACROBLOCKD *);
@@ -39,7 +41,7 @@ void init_context_counters();
 void print_context_counters();
 
 extern _int64 context_counters[BLOCK_TYPES][COEF_BANDS][PREV_COEF_CONTEXTS]
-                              [MAX_ENTROPY_TOKENS];
+[MAX_ENTROPY_TOKENS];
 #endif
 
 extern const short *const vp8_dct_value_cost_ptr;

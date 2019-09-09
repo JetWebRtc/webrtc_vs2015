@@ -34,7 +34,8 @@
 #include "libavutil/bprint.h"
 #include "libavutil/intreadwrite.h"
 
-typedef struct {
+typedef struct
+{
     int shift;
     unsigned timeres;
     FFDemuxSubtitlesQueue q;
@@ -56,10 +57,12 @@ static int jacosub_probe(AVProbeData *p)
     if (AV_RB24(ptr) == 0xEFBBBF)
         ptr += 3; /* skip UTF-8 BOM */
 
-    while (ptr < ptr_end) {
+    while (ptr < ptr_end)
+    {
         while (jss_whitespace(*ptr))
             ptr++;
-        if (*ptr != '#' && *ptr != '\n') {
+        if (*ptr != '#' && *ptr != '\n')
+        {
             if (timed_line(ptr))
                 return AVPROBE_SCORE_EXTENSION + 1;
             return 0;
@@ -69,7 +72,8 @@ static int jacosub_probe(AVProbeData *p)
     return 0;
 }
 
-static const char * const cmds[] = {
+static const char * const cmds[] =
+{
     "CLOCKPAUSE",
     "DIRECTIVE",
     "FONT",
@@ -111,7 +115,8 @@ static const char *read_ts(JACOsubContext *jacosub, const char *buf,
     /* timed format */
     if (sscanf(buf, "%u:%u:%u.%u %u:%u:%u.%u %n",
                &hs, &ms, &ss, &fs,
-               &he, &me, &se, &fe, &len) == 8) {
+               &he, &me, &se, &fe, &len) == 8)
+    {
         ts_start = (hs*3600 + ms*60 + ss) * jacosub->timeres + fs;
         ts_end   = (he*3600 + me*60 + se) * jacosub->timeres + fe;
         goto shift_and_ret;
@@ -139,15 +144,20 @@ static int get_shift(int timeres, const char *buf)
     int n = sscanf(buf, "%d"SSEP"%d"SSEP"%d"SSEP"%d", &a, &b, &c, &d);
 #undef SSEP
 
-    if (*buf == '-' || a < 0) {
+    if (*buf == '-' || a < 0)
+    {
         sign = -1;
         a = FFABS(a);
     }
 
-    switch (n) {
-    case 4: return sign * ((a*3600 + b*60 + c) * timeres + d);
-    case 3: return sign * ((         a*60 + b) * timeres + c);
-    case 2: return sign * ((                a) * timeres + b);
+    switch (n)
+    {
+    case 4:
+        return sign * ((a*3600 + b*60 + c) * timeres + d);
+    case 3:
+        return sign * ((         a*60 + b) * timeres + c);
+    case 2:
+        return sign * ((                a) * timeres + b);
     }
 
     return 0;
@@ -174,7 +184,8 @@ static int jacosub_read_header(AVFormatContext *s)
 
     av_bprint_init(&header, 1024+AV_INPUT_BUFFER_PADDING_SIZE, 4096);
 
-    while (!avio_feof(pb)) {
+    while (!avio_feof(pb))
+    {
         int cmd_len;
         const char *p = line;
         int64_t pos = avio_tell(pb);
@@ -183,7 +194,8 @@ static int jacosub_read_header(AVFormatContext *s)
         p = jss_skip_whitespace(p);
 
         /* queue timed line */
-        if (merge_line || timed_line(p)) {
+        if (merge_line || timed_line(p))
+        {
             AVPacket *sub;
 
             sub = ff_subtitles_queue_insert(&jacosub->q, line, len, merge_line);
@@ -211,9 +223,11 @@ static int jacosub_read_header(AVFormatContext *s)
         p = jss_skip_whitespace(p);
 
         /* handle commands which affect the whole script */
-        switch (cmds[i][0]) {
+        switch (cmds[i][0])
+        {
         case 'S': // SHIFT command affect the whole script...
-            if (!shift_set) {
+            if (!shift_set)
+            {
                 jacosub->shift = get_shift(jacosub->timeres, p);
                 shift_set = 1;
             }
@@ -236,7 +250,8 @@ static int jacosub_read_header(AVFormatContext *s)
 
     /* SHIFT and TIMERES affect the whole script so packet timing can only be
      * done in a second pass */
-    for (i = 0; i < jacosub->q.nb_subs; i++) {
+    for (i = 0; i < jacosub->q.nb_subs; i++)
+    {
         AVPacket *sub = &jacosub->q.subs[i];
         read_ts(jacosub, sub->data, &sub->pts, &sub->duration);
     }
@@ -262,7 +277,8 @@ static int jacosub_read_seek(AVFormatContext *s, int stream_index,
                                    min_ts, ts, max_ts, flags);
 }
 
-AVInputFormat ff_jacosub_demuxer = {
+AVInputFormat ff_jacosub_demuxer =
+{
     .name           = "jacosub",
     .long_name      = NULL_IF_CONFIG_SMALL("JACOsub subtitle format"),
     .priv_data_size = sizeof(JACOsubContext),

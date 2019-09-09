@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007-2008 Ian Caulfield
  *               2009 Ramiro Polla
  *
@@ -35,7 +35,8 @@ static void mlp_filter_channel(int32_t *state, const int32_t *coeff,
     const int32_t *iircoeff = coeff + MAX_FIR_ORDER;
     int i;
 
-    for (i = 0; i < blocksize; i++) {
+    for (i = 0; i < blocksize; i++)
+    {
         int32_t residual = *sample_buffer;
         unsigned int order;
         int64_t accum = 0;
@@ -71,13 +72,15 @@ void ff_mlp_rematrix_channel(int32_t *samples,
 {
     unsigned int src_ch, i;
     int index2 = 2 * index + 1;
-    for (i = 0; i < blockpos; i++) {
+    for (i = 0; i < blockpos; i++)
+    {
         int64_t accum = 0;
 
         for (src_ch = 0; src_ch <= maxchan; src_ch++)
             accum += (int64_t) samples[src_ch] * coeffs[src_ch];
 
-        if (matrix_noise_shift) {
+        if (matrix_noise_shift)
+        {
             index &= access_unit_size_pow2 - 1;
             accum += noise_buffer[index] << (matrix_noise_shift + 7);
             index += index2;
@@ -110,11 +113,13 @@ int32_t ff_mlp_pack_output(int32_t lossless_check_data,
     int32_t *data_32 = data;
     int16_t *data_16 = data;
 
-    for (i = 0; i < blockpos; i++) {
-        for (out_ch = 0; out_ch <= max_matrix_channel; out_ch++) {
+    for (i = 0; i < blockpos; i++)
+    {
+        for (out_ch = 0; out_ch <= max_matrix_channel; out_ch++)
+        {
             int mat_ch = ch_assign[out_ch];
             int32_t sample = sample_buffer[i][mat_ch]
-                          << output_shift[mat_ch];
+                             << output_shift[mat_ch];
             lossless_check_data ^= (sample & 0xffffff) << mat_ch;
             if (is32)
                 *data_32++ = sample << 8;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,34 +17,37 @@
 #include "webrtc/modules/video_capture/video_capture.h"
 #include "webrtc/test/video_capturer.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class VcmCapturer
     : public VideoCapturer,
-      public rtc::VideoSinkInterface<VideoFrame> {
- public:
-  static VcmCapturer* Create(size_t width, size_t height, size_t target_fps);
-  virtual ~VcmCapturer();
+      public rtc::VideoSinkInterface<VideoFrame>
+{
+public:
+    static VcmCapturer* Create(size_t width, size_t height, size_t target_fps);
+    virtual ~VcmCapturer();
 
-  void Start() override;
-  void Stop() override;
-  void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
-                       const rtc::VideoSinkWants& wants) override;
-  void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override;
+    void Start() override;
+    void Stop() override;
+    void AddOrUpdateSink(rtc::VideoSinkInterface<VideoFrame>* sink,
+                         const rtc::VideoSinkWants& wants) override;
+    void RemoveSink(rtc::VideoSinkInterface<VideoFrame>* sink) override;
 
-  void OnFrame(const VideoFrame& frame) override;
+    void OnFrame(const VideoFrame& frame) override;
 
- private:
-  VcmCapturer();
-  bool Init(size_t width, size_t height, size_t target_fps);
-  void Destroy();
+private:
+    VcmCapturer();
+    bool Init(size_t width, size_t height, size_t target_fps);
+    void Destroy();
 
-  rtc::CriticalSection crit_;
-  bool started_ GUARDED_BY(crit_);
-  rtc::VideoSinkInterface<VideoFrame>* sink_ GUARDED_BY(crit_);
-  rtc::scoped_refptr<VideoCaptureModule> vcm_;
-  VideoCaptureCapability capability_;
+    rtc::CriticalSection crit_;
+    bool started_ GUARDED_BY(crit_);
+    rtc::VideoSinkInterface<VideoFrame>* sink_ GUARDED_BY(crit_);
+    rtc::scoped_refptr<VideoCaptureModule> vcm_;
+    VideoCaptureCapability capability_;
 };
 
 }  // test

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed  by a BSD-style license that can be
@@ -39,12 +39,13 @@ extern "C" {
 #endif
 
 // Simple structure for storing images
-struct MATX_8U {
-  int rows;
-  int cols;
-  int stride;
+struct MATX_8U
+{
+    int rows;
+    int cols;
+    int stride;
 
-  uint8_t *data;
+    uint8_t *data;
 };
 
 struct VP9_COMP;

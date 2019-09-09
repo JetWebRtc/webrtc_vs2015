@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCRtpCodecParameters ()
 
-/** Returns the equivalent native RtpCodecParameters structure. */
-@property(nonatomic, readonly) webrtc::RtpCodecParameters nativeParameters;
+    /** Returns the equivalent native RtpCodecParameters structure. */
+    @property(nonatomic, readonly) webrtc::RtpCodecParameters nativeParameters;
 
 /** Initialize the object with a native RtpCodecParameters structure. */
 - (instancetype)initWithNativeParameters:

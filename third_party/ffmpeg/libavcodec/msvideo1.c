@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Video-1 Decoder
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -44,7 +44,8 @@
     return; \
   }
 
-typedef struct Msvideo1Context {
+typedef struct Msvideo1Context
+{
 
     AVCodecContext *avctx;
     AVFrame *frame;
@@ -64,12 +65,15 @@ static av_cold int msvideo1_decode_init(AVCodecContext *avctx)
     s->avctx = avctx;
 
     /* figure out the colorspace based on the presence of a palette */
-    if (s->avctx->bits_per_coded_sample == 8) {
+    if (s->avctx->bits_per_coded_sample == 8)
+    {
         s->mode_8bit = 1;
         avctx->pix_fmt = AV_PIX_FMT_PAL8;
         if (avctx->extradata_size >= AVPALETTE_SIZE)
             memcpy(s->pal, avctx->extradata, AVPALETTE_SIZE);
-    } else {
+    }
+    else
+    {
         s->mode_8bit = 0;
         avctx->pix_fmt = AV_PIX_FMT_RGB555;
     }
@@ -108,11 +112,14 @@ static void msvideo1_decode_8bit(Msvideo1Context *s)
     block_inc = 4;
     row_dec = stride + 4;
 
-    for (block_y = blocks_high; block_y > 0; block_y--) {
+    for (block_y = blocks_high; block_y > 0; block_y--)
+    {
         block_ptr = ((block_y * 4) - 1) * stride;
-        for (block_x = blocks_wide; block_x > 0; block_x--) {
+        for (block_x = blocks_wide; block_x > 0; block_x--)
+        {
             /* check if this block should be skipped */
-            if (skip_blocks) {
+            if (skip_blocks)
+            {
                 block_ptr += block_inc;
                 skip_blocks--;
                 total_blocks--;
@@ -129,10 +136,13 @@ static void msvideo1_decode_8bit(Msvideo1Context *s)
             /* check if the decode is finished */
             if ((byte_a == 0) && (byte_b == 0) && (total_blocks == 0))
                 return;
-            else if ((byte_b & 0xFC) == 0x84) {
+            else if ((byte_b & 0xFC) == 0x84)
+            {
                 /* skip code, but don't count the current block */
                 skip_blocks = ((byte_b - 0x84) << 8) + byte_a - 1;
-            } else if (byte_b < 0x80) {
+            }
+            else if (byte_b < 0x80)
+            {
                 /* 2-color encoding */
                 flags = (byte_b << 8) | byte_a;
 
@@ -140,12 +150,15 @@ static void msvideo1_decode_8bit(Msvideo1Context *s)
                 colors[0] = s->buf[stream_ptr++];
                 colors[1] = s->buf[stream_ptr++];
 
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     for (pixel_x = 0; pixel_x < 4; pixel_x++, flags >>= 1)
                         pixels[pixel_ptr++] = colors[(flags & 0x1) ^ 1];
                     pixel_ptr -= row_dec;
                 }
-            } else if (byte_b >= 0x90) {
+            }
+            else if (byte_b >= 0x90)
+            {
                 /* 8-color encoding */
                 flags = (byte_b << 8) | byte_a;
 
@@ -153,18 +166,22 @@ static void msvideo1_decode_8bit(Msvideo1Context *s)
                 memcpy(colors, &s->buf[stream_ptr], 8);
                 stream_ptr += 8;
 
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     for (pixel_x = 0; pixel_x < 4; pixel_x++, flags >>= 1)
                         pixels[pixel_ptr++] =
                             colors[((pixel_y & 0x2) << 1) +
-                                (pixel_x & 0x2) + ((flags & 0x1) ^ 1)];
+                                   (pixel_x & 0x2) + ((flags & 0x1) ^ 1)];
                     pixel_ptr -= row_dec;
                 }
-            } else {
+            }
+            else
+            {
                 /* 1-color encoding */
                 colors[0] = byte_a;
 
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     for (pixel_x = 0; pixel_x < 4; pixel_x++)
                         pixels[pixel_ptr++] = colors[0];
                     pixel_ptr -= row_dec;
@@ -208,11 +225,14 @@ static void msvideo1_decode_16bit(Msvideo1Context *s)
     block_inc = 4;
     row_dec = stride + 4;
 
-    for (block_y = blocks_high; block_y > 0; block_y--) {
+    for (block_y = blocks_high; block_y > 0; block_y--)
+    {
         block_ptr = ((block_y * 4) - 1) * stride;
-        for (block_x = blocks_wide; block_x > 0; block_x--) {
+        for (block_x = blocks_wide; block_x > 0; block_x--)
+        {
             /* check if this block should be skipped */
-            if (skip_blocks) {
+            if (skip_blocks)
+            {
                 block_ptr += block_inc;
                 skip_blocks--;
                 total_blocks--;
@@ -227,12 +247,17 @@ static void msvideo1_decode_16bit(Msvideo1Context *s)
             byte_b = s->buf[stream_ptr++];
 
             /* check if the decode is finished */
-            if ((byte_a == 0) && (byte_b == 0) && (total_blocks == 0)) {
+            if ((byte_a == 0) && (byte_b == 0) && (total_blocks == 0))
+            {
                 return;
-            } else if ((byte_b & 0xFC) == 0x84) {
+            }
+            else if ((byte_b & 0xFC) == 0x84)
+            {
                 /* skip code, but don't count the current block */
                 skip_blocks = ((byte_b - 0x84) << 8) + byte_a - 1;
-            } else if (byte_b < 0x80) {
+            }
+            else if (byte_b < 0x80)
+            {
                 /* 2- or 8-color encoding modes */
                 flags = (byte_b << 8) | byte_a;
 
@@ -242,7 +267,8 @@ static void msvideo1_decode_16bit(Msvideo1Context *s)
                 colors[1] = AV_RL16(&s->buf[stream_ptr]);
                 stream_ptr += 2;
 
-                if (colors[0] & 0x8000) {
+                if (colors[0] & 0x8000)
+                {
                     /* 8-color encoding */
                     CHECK_STREAM_PTR(12);
                     colors[2] = AV_RL16(&s->buf[stream_ptr]);
@@ -258,26 +284,33 @@ static void msvideo1_decode_16bit(Msvideo1Context *s)
                     colors[7] = AV_RL16(&s->buf[stream_ptr]);
                     stream_ptr += 2;
 
-                    for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                    for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                    {
                         for (pixel_x = 0; pixel_x < 4; pixel_x++, flags >>= 1)
                             pixels[pixel_ptr++] =
                                 colors[((pixel_y & 0x2) << 1) +
-                                    (pixel_x & 0x2) + ((flags & 0x1) ^ 1)];
+                                       (pixel_x & 0x2) + ((flags & 0x1) ^ 1)];
                         pixel_ptr -= row_dec;
                     }
-                } else {
+                }
+                else
+                {
                     /* 2-color encoding */
-                    for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                    for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                    {
                         for (pixel_x = 0; pixel_x < 4; pixel_x++, flags >>= 1)
                             pixels[pixel_ptr++] = colors[(flags & 0x1) ^ 1];
                         pixel_ptr -= row_dec;
                     }
                 }
-            } else {
+            }
+            else
+            {
                 /* otherwise, it's a 1-color block */
                 colors[0] = (byte_b << 8) | byte_a;
 
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     for (pixel_x = 0; pixel_x < 4; pixel_x++)
                         pixels[pixel_ptr++] = colors[0];
                     pixel_ptr -= row_dec;
@@ -291,8 +324,8 @@ static void msvideo1_decode_16bit(Msvideo1Context *s)
 }
 
 static int msvideo1_decode_frame(AVCodecContext *avctx,
-                                void *data, int *got_frame,
-                                AVPacket *avpkt)
+                                 void *data, int *got_frame,
+                                 AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
@@ -305,10 +338,12 @@ static int msvideo1_decode_frame(AVCodecContext *avctx,
     if ((ret = ff_reget_buffer(avctx, s->frame)) < 0)
         return ret;
 
-    if (s->mode_8bit) {
+    if (s->mode_8bit)
+    {
         const uint8_t *pal = av_packet_get_side_data(avpkt, AV_PKT_DATA_PALETTE, NULL);
 
-        if (pal) {
+        if (pal)
+        {
             memcpy(s->pal, pal, AVPALETTE_SIZE);
             s->frame->palette_has_changed = 1;
         }
@@ -337,7 +372,8 @@ static av_cold int msvideo1_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_msvideo1_decoder = {
+AVCodec ff_msvideo1_decoder =
+{
     .name           = "msvideo1",
     .long_name      = NULL_IF_CONFIG_SMALL("Microsoft Video 1"),
     .type           = AVMEDIA_TYPE_VIDEO,

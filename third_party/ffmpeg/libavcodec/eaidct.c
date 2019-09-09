@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Electronic Arts TGQ/TQI/MAD IDCT algorithm
  * Copyright (c) 2007-2008 Peter Ross <pross@xvid.org>
  *
@@ -63,21 +63,25 @@
 #define MUNGE_8BIT(x) av_clip_uint8((x)>>4)
 #define IDCT_ROW(dest,src) IDCT_TRANSFORM(dest,0,1,2,3,4,5,6,7,0,1,2,3,4,5,6,7,MUNGE_8BIT,src)
 
-static inline void ea_idct_col(int16_t *dest, const int16_t *src) {
-    if ((src[8]|src[16]|src[24]|src[32]|src[40]|src[48]|src[56])==0) {
+static inline void ea_idct_col(int16_t *dest, const int16_t *src)
+{
+    if ((src[8]|src[16]|src[24]|src[32]|src[40]|src[48]|src[56])==0)
+    {
         dest[0]  =
-        dest[8]  =
-        dest[16] =
-        dest[24] =
-        dest[32] =
-        dest[40] =
-        dest[48] =
-        dest[56] = src[0];
-    }else
+            dest[8]  =
+                dest[16] =
+                    dest[24] =
+                        dest[32] =
+                            dest[40] =
+                                dest[48] =
+                                    dest[56] = src[0];
+    }
+    else
         IDCT_COL(dest, src);
 }
 
-void ff_ea_idct_put_c(uint8_t *dest, int linesize, int16_t *block) {
+void ff_ea_idct_put_c(uint8_t *dest, int linesize, int16_t *block)
+{
     int i;
     int16_t temp[64];
     block[0] += 4;

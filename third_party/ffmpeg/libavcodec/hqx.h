@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Canopus HQX decoder
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 #include "get_bits.h"
 #include "hqxdsp.h"
 
-enum HQXACMode {
+enum HQXACMode
+{
     HQX_AC_Q0 = 0,
     HQX_AC_Q8,
     HQX_AC_Q16,
@@ -38,13 +39,15 @@ enum HQXACMode {
     NUM_HQX_AC
 };
 
-typedef struct HQXLUT {
+typedef struct HQXLUT
+{
     int16_t lev;
     uint8_t run;
     int8_t  bits;
 } HQXLUT;
 
-typedef struct HQXAC {
+typedef struct HQXAC
+{
     int lut_bits, extra_bits;
     const HQXLUT *lut;
 } HQXAC;
@@ -54,12 +57,14 @@ struct HQXContext;
 typedef int (*mb_decode_func)(struct HQXContext *ctx,
                               int slice_no, int x, int y);
 
-typedef struct HQXSlice {
+typedef struct HQXSlice
+{
     GetBitContext gb;
     DECLARE_ALIGNED(16, int16_t, block)[16][64];
 } HQXSlice;
 
-typedef struct HQXContext {
+typedef struct HQXContext
+{
     HQXDSPContext hqxdsp;
     HQXSlice slice[16];
 

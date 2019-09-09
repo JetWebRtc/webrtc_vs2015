@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -60,9 +60,9 @@ int ff_network_init(void)
 
     if (!ff_network_inited_globally)
         av_log(NULL, AV_LOG_WARNING, "Using network protocols without global "
-                                     "network initialization. Please use "
-                                     "avformat_network_init(), this will "
-                                     "become mandatory later.\n");
+               "network initialization. Please use "
+               "avformat_network_init(), this will "
+               "become mandatory later.\n");
 #if HAVE_WINSOCK2_H
     if (WSAStartup(MAKEWORD(1,1), &wsaData))
         return 0;
@@ -84,13 +84,15 @@ int ff_network_wait_fd_timeout(int fd, int write, int64_t timeout, AVIOInterrupt
     int ret;
     int64_t wait_start = 0;
 
-    while (1) {
+    while (1)
+    {
         if (ff_check_interrupt(int_cb))
             return AVERROR_EXIT;
         ret = ff_network_wait_fd(fd, write);
         if (ret != AVERROR(EAGAIN))
             return ret;
-        if (timeout > 0) {
+        if (timeout > 0)
+        {
             if (!wait_start)
                 wait_start = av_gettime_relative();
             else if (av_gettime_relative() - wait_start > timeout)
@@ -110,7 +112,8 @@ void ff_network_close(void)
 int ff_neterrno(void)
 {
     int err = WSAGetLastError();
-    switch (err) {
+    switch (err)
+    {
     case WSAEWOULDBLOCK:
         return AVERROR(EAGAIN);
     case WSAEINTR:
@@ -130,11 +133,13 @@ int ff_neterrno(void)
 
 int ff_is_multicast_address(struct sockaddr *addr)
 {
-    if (addr->sa_family == AF_INET) {
+    if (addr->sa_family == AF_INET)
+    {
         return IN_MULTICAST(ntohl(((struct sockaddr_in *)addr)->sin_addr.s_addr));
     }
 #if HAVE_STRUCT_SOCKADDR_IN6
-    if (addr->sa_family == AF_INET6) {
+    if (addr->sa_family == AF_INET6)
+    {
         return IN6_IS_ADDR_MULTICAST(&((struct sockaddr_in6 *)addr)->sin6_addr);
     }
 #endif
@@ -148,13 +153,15 @@ static int ff_poll_interrupt(struct pollfd *p, nfds_t nfds, int timeout,
     int runs = timeout / POLLING_TIME;
     int ret = 0;
 
-    do {
+    do
+    {
         if (ff_check_interrupt(cb))
             return AVERROR_EXIT;
         ret = poll(p, nfds, POLLING_TIME);
         if (ret != 0)
             break;
-    } while (timeout <= 0 || runs-- > 0);
+    }
+    while (timeout <= 0 || runs-- > 0);
 
     if (!ret)
         return AVERROR(ETIMEDOUT);
@@ -174,7 +181,8 @@ int ff_socket(int af, int type, int proto)
     {
         fd = socket(af, type, proto);
 #if HAVE_FCNTL
-        if (fd != -1) {
+        if (fd != -1)
+        {
             if (fcntl(fd, F_SETFD, FD_CLOEXEC) == -1)
                 av_log(NULL, AV_LOG_DEBUG, "Failed to set close on exec\n");
         }
@@ -182,7 +190,10 @@ int ff_socket(int af, int type, int proto)
     }
 #ifdef SO_NOSIGPIPE
     if (fd != -1)
-        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &(int){1}, sizeof(int));
+        setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &(int)
+    {
+        1
+    }, sizeof(int));
 #endif
     return fd;
 }
@@ -192,7 +203,8 @@ int ff_listen(int fd, const struct sockaddr *addr,
 {
     int ret;
     int reuse = 1;
-    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse))) {
+    if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &reuse, sizeof(reuse)))
+    {
         av_log(NULL, AV_LOG_WARNING, "setsockopt(SO_REUSEADDR) failed\n");
     }
     ret = bind(fd, addr, addrlen);
@@ -246,9 +258,11 @@ int ff_listen_connect(int fd, const struct sockaddr *addr,
     if (ff_socket_nonblock(fd, 1) < 0)
         av_log(NULL, AV_LOG_DEBUG, "ff_socket_nonblock failed\n");
 
-    while ((ret = connect(fd, addr, addrlen))) {
+    while ((ret = connect(fd, addr, addrlen)))
+    {
         ret = ff_neterrno();
-        switch (ret) {
+        switch (ret)
+        {
         case AVERROR(EINTR):
             if (ff_check_interrupt(&h->interrupt_callback))
                 return AVERROR_EXIT;
@@ -261,7 +275,8 @@ int ff_listen_connect(int fd, const struct sockaddr *addr,
             optlen = sizeof(ret);
             if (getsockopt (fd, SOL_SOCKET, SO_ERROR, &ret, &optlen))
                 ret = AVUNERROR(ff_neterrno());
-            if (ret != 0) {
+            if (ret != 0)
+            {
                 char errbuf[100];
                 ret = AVERROR(ret);
                 av_strerror(ret, errbuf, sizeof(errbuf));
@@ -295,7 +310,8 @@ static int match_host_pattern(const char *pattern, const char *hostname)
     if (len_p > len_h)
         return 0;
     // Simply check if the end of hostname is equal to 'pattern'
-    if (!strcmp(pattern, &hostname[len_h - len_p])) {
+    if (!strcmp(pattern, &hostname[len_h - len_p]))
+    {
         if (len_h == len_p)
             return 1; // Exact match
         if (hostname[len_h - len_p - 1] == '.')
@@ -316,15 +332,18 @@ int ff_http_match_no_proxy(const char *no_proxy, const char *hostname)
     if (!buf)
         return 0;
     start = buf;
-    while (start) {
+    while (start)
+    {
         char *sep, *next = NULL;
         start += strspn(start, " ,");
         sep = start + strcspn(start, " ,");
-        if (*sep) {
+        if (*sep)
+        {
             next = sep + 1;
             *sep = '\0';
         }
-        if (match_host_pattern(start, hostname)) {
+        if (match_host_pattern(start, hostname))
+        {
             ret = 1;
             break;
         }

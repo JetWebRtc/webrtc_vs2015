@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,20 +21,22 @@
 #include "webrtc/modules/video_coding/test/test_util.h"
 #include "webrtc/typedefs.h"
 
-class RtpDataCallback : public webrtc::NullRtpData {
- public:
-  explicit RtpDataCallback(webrtc::VideoCodingModule* vcm) : vcm_(vcm) {}
-  virtual ~RtpDataCallback() {}
+class RtpDataCallback : public webrtc::NullRtpData
+{
+public:
+    explicit RtpDataCallback(webrtc::VideoCodingModule* vcm) : vcm_(vcm) {}
+    virtual ~RtpDataCallback() {}
 
-  int32_t OnReceivedPayloadData(
-      const uint8_t* payload_data,
-      size_t payload_size,
-      const webrtc::WebRtcRTPHeader* rtp_header) override {
-    return vcm_->IncomingPacket(payload_data, payload_size, *rtp_header);
-  }
+    int32_t OnReceivedPayloadData(
+        const uint8_t* payload_data,
+        size_t payload_size,
+        const webrtc::WebRtcRTPHeader* rtp_header) override
+    {
+        return vcm_->IncomingPacket(payload_data, payload_size, *rtp_header);
+    }
 
- private:
-  webrtc::VideoCodingModule* vcm_;
+private:
+    webrtc::VideoCodingModule* vcm_;
 };
 
 int RtpPlay(const CmdArgs& args);

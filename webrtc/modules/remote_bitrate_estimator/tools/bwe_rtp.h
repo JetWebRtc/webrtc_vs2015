@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,12 +13,14 @@
 
 #include <string>
 
-namespace webrtc {
+namespace webrtc
+{
 class Clock;
 class RemoteBitrateEstimator;
 class RemoteBitrateObserver;
 class RtpHeaderParser;
-namespace test {
+namespace test
+{
 class RtpFileReader;
 }
 }

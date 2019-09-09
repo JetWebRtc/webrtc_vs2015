@@ -1,4 +1,4 @@
-/*
+﻿/*
  * libdcadec decoder wrapper
  * Copyright (C) 2015 Hendrik Leppkes
  *
@@ -30,7 +30,8 @@
 #include "dca_syncwords.h"
 #include "internal.h"
 
-typedef struct DCADecContext {
+typedef struct DCADecContext
+{
     struct dcadec_context *ctx;
     uint8_t *buffer;
     int buffer_size;
@@ -50,12 +51,14 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
     int input_size = avpkt->size;
 
     /* convert bytestream syntax to RAW BE format if required */
-    if (input_size < 8) {
+    if (input_size < 8)
+    {
         av_log(avctx, AV_LOG_ERROR, "Input size too small\n");
         return AVERROR_INVALIDDATA;
     }
     mrk = AV_RB32(input);
-    if (mrk != DCA_SYNCWORD_CORE_BE && mrk != DCA_SYNCWORD_SUBSTREAM) {
+    if (mrk != DCA_SYNCWORD_CORE_BE && mrk != DCA_SYNCWORD_SUBSTREAM)
+    {
         s->buffer = av_fast_realloc(s->buffer, &s->buffer_size, avpkt->size + AV_INPUT_BUFFER_PADDING_SIZE);
         if (!s->buffer)
             return AVERROR(ENOMEM);
@@ -70,12 +73,14 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
         input_size = ret;
     }
 
-    if ((ret = dcadec_context_parse(s->ctx, input, input_size)) < 0) {
+    if ((ret = dcadec_context_parse(s->ctx, input, input_size)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "dcadec_context_parse() failed: %d (%s)\n", -ret, dcadec_strerror(ret));
         return AVERROR_EXTERNAL;
     }
     if ((ret = dcadec_context_filter(s->ctx, &samples, &nsamples, &channel_mask,
-                                     &sample_rate, &bits_per_sample, &profile)) < 0) {
+                                     &sample_rate, &bits_per_sample, &profile)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "dcadec_context_filter() failed: %d (%s)\n", -ret, dcadec_strerror(ret));
         return AVERROR_EXTERNAL;
     }
@@ -88,7 +93,8 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
         avctx->sample_fmt = AV_SAMPLE_FMT_S16P;
     else if (bits_per_sample > 16 && bits_per_sample <= 24)
         avctx->sample_fmt = AV_SAMPLE_FMT_S32P;
-    else {
+    else
+    {
         av_log(avctx, AV_LOG_ERROR, "Unsupported number of bits per sample: %d\n",
                bits_per_sample);
         return AVERROR(ENOSYS);
@@ -96,7 +102,8 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
 
     avctx->bits_per_raw_sample = bits_per_sample;
 
-    switch (profile) {
+    switch (profile)
+    {
     case DCADEC_PROFILE_DS:
         avctx->profile = FF_PROFILE_DTS;
         break;
@@ -122,29 +129,34 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
     }
 
     /* bitrate is only meaningful if there are no HD extensions, as they distort the bitrate */
-    if (profile == DCADEC_PROFILE_DS || profile == DCADEC_PROFILE_DS_96_24 || profile == DCADEC_PROFILE_DS_ES) {
+    if (profile == DCADEC_PROFILE_DS || profile == DCADEC_PROFILE_DS_96_24 || profile == DCADEC_PROFILE_DS_ES)
+    {
         struct dcadec_core_info *info = dcadec_context_get_core_info(s->ctx);
         avctx->bit_rate = info->bit_rate;
         dcadec_context_free_core_info(info);
-    } else
+    }
+    else
         avctx->bit_rate = 0;
 
 #if HAVE_STRUCT_DCADEC_EXSS_INFO_MATRIX_ENCODING
-    if (exss = dcadec_context_get_exss_info(s->ctx)) {
+    if (exss = dcadec_context_get_exss_info(s->ctx))
+    {
         enum AVMatrixEncoding matrix_encoding = AV_MATRIX_ENCODING_NONE;
 
-        if (!s->downmix_warned) {
+        if (!s->downmix_warned)
+        {
             uint64_t layout = avctx->request_channel_layout;
 
             if (((layout == AV_CH_LAYOUT_STEREO_DOWNMIX || layout == AV_CH_LAYOUT_STEREO) && !exss->embedded_stereo) ||
-                ( layout == AV_CH_LAYOUT_5POINT1 && !exss->embedded_6ch))
+                    ( layout == AV_CH_LAYOUT_5POINT1 && !exss->embedded_6ch))
                 av_log(avctx, AV_LOG_WARNING, "%s downmix was requested but no custom coefficients are available, "
-                                              "this may result in clipping\n",
-                                              layout == AV_CH_LAYOUT_5POINT1 ? "5.1" : "Stereo");
+                       "this may result in clipping\n",
+                       layout == AV_CH_LAYOUT_5POINT1 ? "5.1" : "Stereo");
             s->downmix_warned = 1;
         }
 
-        switch(exss->matrix_encoding) {
+        switch(exss->matrix_encoding)
+        {
         case DCADEC_MATRIX_ENCODING_SURROUND:
             matrix_encoding = AV_MATRIX_ENCODING_DOLBY;
             break;
@@ -155,7 +167,7 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
         dcadec_context_free_exss_info(exss);
 
         if (matrix_encoding != AV_MATRIX_ENCODING_NONE &&
-            (ret = ff_side_data_update_matrix_encoding(frame, matrix_encoding)) < 0)
+                (ret = ff_side_data_update_matrix_encoding(frame, matrix_encoding)) < 0)
             return ret;
     }
 #endif
@@ -164,12 +176,16 @@ static int dcadec_decode_frame(AVCodecContext *avctx, void *data,
     if ((ret = ff_get_buffer(avctx, frame, 0)) < 0)
         return ret;
 
-    for (i = 0; i < avctx->channels; i++) {
-        if (frame->format == AV_SAMPLE_FMT_S16P) {
+    for (i = 0; i < avctx->channels; i++)
+    {
+        if (frame->format == AV_SAMPLE_FMT_S16P)
+        {
             int16_t *plane = (int16_t *)frame->extended_data[i];
             for (k = 0; k < nsamples; k++)
                 plane[k] = samples[i][k];
-        } else {
+        }
+        else
+        {
             int32_t *plane = (int32_t *)frame->extended_data[i];
             int shift = 32 - bits_per_sample;
             for (k = 0; k < nsamples; k++)
@@ -209,8 +225,10 @@ static av_cold int dcadec_init(AVCodecContext *avctx)
     if (avctx->flags & AV_CODEC_FLAG_BITEXACT)
         flags |= DCADEC_FLAG_CORE_BIT_EXACT;
 
-    if (avctx->request_channel_layout > 0 && avctx->request_channel_layout != AV_CH_LAYOUT_NATIVE) {
-        switch (avctx->request_channel_layout) {
+    if (avctx->request_channel_layout > 0 && avctx->request_channel_layout != AV_CH_LAYOUT_NATIVE)
+    {
+        switch (avctx->request_channel_layout)
+        {
         case AV_CH_LAYOUT_STEREO:
         case AV_CH_LAYOUT_STEREO_DOWNMIX:
             /* libdcadec ignores the 2ch flag if used alone when no custom downmix coefficients
@@ -240,7 +258,8 @@ static av_cold int dcadec_init(AVCodecContext *avctx)
     return 0;
 }
 
-static const AVProfile profiles[] = {
+static const AVProfile profiles[] =
+{
     { FF_PROFILE_DTS,         "DTS"         },
     { FF_PROFILE_DTS_ES,      "DTS-ES"      },
     { FF_PROFILE_DTS_96_24,   "DTS 96/24"   },
@@ -250,7 +269,8 @@ static const AVProfile profiles[] = {
     { FF_PROFILE_UNKNOWN },
 };
 
-AVCodec ff_libdcadec_decoder = {
+AVCodec ff_libdcadec_decoder =
+{
     .name           = "libdcadec",
     .long_name      = NULL_IF_CONFIG_SMALL("dcadec DCA decoder"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -261,7 +281,9 @@ AVCodec ff_libdcadec_decoder = {
     .close          = dcadec_close,
     .flush          = dcadec_flush,
     .capabilities   = AV_CODEC_CAP_DR1 | AV_CODEC_CAP_CHANNEL_CONF,
-    .sample_fmts    = (const enum AVSampleFormat[]) { AV_SAMPLE_FMT_S32P, AV_SAMPLE_FMT_S16P,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]) {
+        AV_SAMPLE_FMT_S32P, AV_SAMPLE_FMT_S16P,
+        AV_SAMPLE_FMT_NONE
+    },
     .profiles       = NULL_IF_CONFIG_SMALL(profiles),
 };

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,12 +21,14 @@
 #include "webrtc/test/testsupport/fileutils.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 static const int kSampleRatesHz[] = {ts::kSampleRate8kHz,
                                      ts::kSampleRate16kHz,
                                      ts::kSampleRate32kHz,
-                                     ts::kSampleRate48kHz};
+                                     ts::kSampleRate48kHz
+                                    };
 static const size_t kNumberOfSampleRates =
     sizeof(kSampleRatesHz) / sizeof(*kSampleRatesHz);
 
@@ -37,68 +39,72 @@ static const size_t kNumberOfSampleRates =
 // The audio files used with different sample rates are stored in the same
 // directory.
 #if defined(WEBRTC_IOS)
-TEST(TransientDetectorTest, DISABLED_CorrectnessBasedOnFiles) {
+TEST(TransientDetectorTest, DISABLED_CorrectnessBasedOnFiles)
+{
 #else
-TEST(TransientDetectorTest, CorrectnessBasedOnFiles) {
+TEST(TransientDetectorTest, CorrectnessBasedOnFiles)
+{
 #endif
-  for (size_t i = 0; i < kNumberOfSampleRates; ++i) {
-    int sample_rate_hz = kSampleRatesHz[i];
+    for (size_t i = 0; i < kNumberOfSampleRates; ++i)
+    {
+        int sample_rate_hz = kSampleRatesHz[i];
 
-    // Prepare detect file.
-    std::stringstream detect_file_name;
-    detect_file_name << "audio_processing/transient/detect"
-                     << (sample_rate_hz / 1000) << "kHz";
+        // Prepare detect file.
+        std::stringstream detect_file_name;
+        detect_file_name << "audio_processing/transient/detect"
+                         << (sample_rate_hz / 1000) << "kHz";
 
-    std::unique_ptr<FileWrapper> detect_file(FileWrapper::Create());
+        std::unique_ptr<FileWrapper> detect_file(FileWrapper::Create());
 
-    detect_file->OpenFile(
-        test::ResourcePath(detect_file_name.str(), "dat").c_str(),
-        true);  // Read only.
+        detect_file->OpenFile(
+            test::ResourcePath(detect_file_name.str(), "dat").c_str(),
+            true);  // Read only.
 
-    bool file_opened = detect_file->is_open();
-    ASSERT_TRUE(file_opened) << "File could not be opened.\n"
-          << detect_file_name.str().c_str();
+        bool file_opened = detect_file->is_open();
+        ASSERT_TRUE(file_opened) << "File could not be opened.\n"
+                                 << detect_file_name.str().c_str();
 
-    // Prepare audio file.
-    std::stringstream audio_file_name;
-    audio_file_name << "audio_processing/transient/audio"
-                    << (sample_rate_hz / 1000) << "kHz";
+        // Prepare audio file.
+        std::stringstream audio_file_name;
+        audio_file_name << "audio_processing/transient/audio"
+                        << (sample_rate_hz / 1000) << "kHz";
 
-    std::unique_ptr<FileWrapper> audio_file(FileWrapper::Create());
+        std::unique_ptr<FileWrapper> audio_file(FileWrapper::Create());
 
-    audio_file->OpenFile(
-        test::ResourcePath(audio_file_name.str(), "pcm").c_str(),
-        true);  // Read only.
+        audio_file->OpenFile(
+            test::ResourcePath(audio_file_name.str(), "pcm").c_str(),
+            true);  // Read only.
 
-    // Create detector.
-    TransientDetector detector(sample_rate_hz);
+        // Create detector.
+        TransientDetector detector(sample_rate_hz);
 
-    const size_t buffer_length = sample_rate_hz * ts::kChunkSizeMs / 1000;
-    std::unique_ptr<float[]> buffer(new float[buffer_length]);
+        const size_t buffer_length = sample_rate_hz * ts::kChunkSizeMs / 1000;
+        std::unique_ptr<float[]> buffer(new float[buffer_length]);
 
-    const float kTolerance = 0.02f;
+        const float kTolerance = 0.02f;
 
-    size_t frames_read = 0;
+        size_t frames_read = 0;
 
-    while (ReadInt16FromFileToFloatBuffer(audio_file.get(),
-                                          buffer_length,
-                                          buffer.get()) == buffer_length) {
-      ++frames_read;
+        while (ReadInt16FromFileToFloatBuffer(audio_file.get(),
+                                              buffer_length,
+                                              buffer.get()) == buffer_length)
+        {
+            ++frames_read;
 
-      float detector_value =
-          detector.Detect(buffer.get(), buffer_length, NULL, 0);
-      double file_value;
-      ASSERT_EQ(1u, ReadDoubleBufferFromFile(detect_file.get(), 1, &file_value))
-          << "Detect test file is malformed.\n";
+            float detector_value =
+                detector.Detect(buffer.get(), buffer_length, NULL, 0);
+            double file_value;
+            ASSERT_EQ(1u, ReadDoubleBufferFromFile(detect_file.get(), 1, &file_value))
+                    << "Detect test file is malformed.\n";
 
-      // Compare results with data from the matlab test file.
-      EXPECT_NEAR(file_value, detector_value, kTolerance) << "Frame: "
-          << frames_read;
+            // Compare results with data from the matlab test file.
+            EXPECT_NEAR(file_value, detector_value, kTolerance) << "Frame: "
+                    << frames_read;
+        }
+
+        detect_file->CloseFile();
+        audio_file->CloseFile();
     }
-
-    detect_file->CloseFile();
-    audio_file->CloseFile();
-  }
 }
 
 }  // namespace webrtc

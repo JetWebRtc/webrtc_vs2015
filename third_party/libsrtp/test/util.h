@@ -1,4 +1,4 @@
-/*
+﻿/*
  * util.h
  *
  * Utilities used by the test apps

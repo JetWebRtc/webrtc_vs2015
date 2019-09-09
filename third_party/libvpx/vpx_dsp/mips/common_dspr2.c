@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,17 +14,19 @@
 uint8_t vpx_ff_cropTbl_a[256 + 2 * CROP_WIDTH];
 uint8_t *vpx_ff_cropTbl;
 
-void vpx_dsputil_static_init(void) {
-  int i;
+void vpx_dsputil_static_init(void)
+{
+    int i;
 
-  for (i = 0; i < 256; i++) vpx_ff_cropTbl_a[i + CROP_WIDTH] = i;
+    for (i = 0; i < 256; i++) vpx_ff_cropTbl_a[i + CROP_WIDTH] = i;
 
-  for (i = 0; i < CROP_WIDTH; i++) {
-    vpx_ff_cropTbl_a[i] = 0;
-    vpx_ff_cropTbl_a[i + CROP_WIDTH + 256] = 255;
-  }
+    for (i = 0; i < CROP_WIDTH; i++)
+    {
+        vpx_ff_cropTbl_a[i] = 0;
+        vpx_ff_cropTbl_a[i + CROP_WIDTH + 256] = 255;
+    }
 
-  vpx_ff_cropTbl = &vpx_ff_cropTbl_a[CROP_WIDTH];
+    vpx_ff_cropTbl = &vpx_ff_cropTbl_a[CROP_WIDTH];
 }
 
 #endif

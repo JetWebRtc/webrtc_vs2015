@@ -1,4 +1,4 @@
-/*
+﻿/*
  * AAC encoder
  * Copyright (C) 2008 Konstantin Shishkov
  *
@@ -32,16 +32,18 @@
 
 #include "lpc.h"
 
-typedef enum AACCoder {
+typedef enum AACCoder
+{
     AAC_CODER_FAAC = 0,
     AAC_CODER_ANMR,
     AAC_CODER_TWOLOOP,
     AAC_CODER_FAST,
 
     AAC_CODER_NB,
-}AACCoder;
+} AACCoder;
 
-typedef struct AACEncOptions {
+typedef struct AACEncOptions
+{
     int stereo_mode;
     int aac_coder;
     int pns;
@@ -52,7 +54,8 @@ typedef struct AACEncOptions {
 
 struct AACEncContext;
 
-typedef struct AACCoefficientsEncoder {
+typedef struct AACCoefficientsEncoder
+{
     void (*search_for_quantizers)(AVCodecContext *avctx, struct AACEncContext *s,
                                   SingleChannelElement *sce, const float lambda);
     void (*encode_window_bands_info)(struct AACEncContext *s, SingleChannelElement *sce,
@@ -77,7 +80,8 @@ extern AACCoefficientsEncoder ff_aac_coders[];
 /**
  * AAC encoder context
  */
-typedef struct AACEncContext {
+typedef struct AACEncContext
+{
     AVClass *av_class;
     AACEncOptions options;                       ///< encoding options
     PutBitContext pb;
@@ -103,7 +107,8 @@ typedef struct AACEncContext {
     DECLARE_ALIGNED(16, int,   qcoefs)[96];      ///< quantized coefficients
     DECLARE_ALIGNED(32, float, scoefs)[1024];    ///< scaled coefficients
 
-    struct {
+    struct
+    {
         float *samples;
     } buffer;
 } AACEncContext;

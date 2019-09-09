@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2012 Ronald S. Bultje
  *
  * This file is part of FFmpeg.
@@ -38,9 +38,12 @@ static void just_return(uint8_t *buf, ptrdiff_t stride, int h)
 av_cold void ff_videodsp_init(VideoDSPContext *ctx, int bpc)
 {
     ctx->prefetch = just_return;
-    if (bpc <= 8) {
+    if (bpc <= 8)
+    {
         ctx->emulated_edge_mc = ff_emulated_edge_mc_8;
-    } else {
+    }
+    else
+    {
         ctx->emulated_edge_mc = ff_emulated_edge_mc_16;
     }
 

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SRTP encryption/decryption
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -27,7 +27,8 @@
 struct AVAES;
 struct AVHMAC;
 
-struct SRTPContext {
+struct SRTPContext
+{
     struct AVAES *aes;
     struct AVHMAC *hmac;
     int rtp_hmac_size, rtcp_hmac_size;

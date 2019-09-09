@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Manojkumar Bhosale (Manojkumar.Bhosale@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -21,18 +21,21 @@
 #include "libavutil/mips/generic_macros_msa.h"
 #include "libavcodec/mips/hevcdsp_mips.h"
 
-static const int16_t gt8x8_cnst[16] = {
+static const int16_t gt8x8_cnst[16] =
+{
     64, 64, 83, 36, 89, 50, 18, 75, 64, -64, 36, -83, 75, -89, -50, -18
 };
 
-static const int16_t gt16x16_cnst[64] = {
+static const int16_t gt16x16_cnst[64] =
+{
     64, 83, 64, 36, 89, 75, 50, 18, 90, 80, 57, 25, 70, 87, 9, 43,
     64, 36, -64, -83, 75, -18, -89, -50, 87, 9, -80, -70, -43, 57, -25, -90,
     64, -36, -64, 83, 50, -89, 18, 75, 80, -70, -25, 90, -87, 9, 43, 57,
     64, -83, 64, -36, 18, -50, 75, -89, 70, -87, 90, -80, 9, -43, -57, 25
 };
 
-static const int16_t gt32x32_cnst0[256] = {
+static const int16_t gt32x32_cnst0[256] =
+{
     90, 90, 88, 85, 82, 78, 73, 67, 61, 54, 46, 38, 31, 22, 13, 4,
     90, 82, 67, 46, 22, -4, -31, -54, -73, -85, -90, -88, -78, -61, -38, -13,
     88, 67, 31, -13, -54, -82, -90, -78, -46, -4, 38, 73, 90, 85, 61, 22,
@@ -51,18 +54,21 @@ static const int16_t gt32x32_cnst0[256] = {
     4, -13, 22, -31, 38, -46, 54, -61, 67, -73, 78, -82, 85, -88, 90, -90
 };
 
-static const int16_t gt32x32_cnst1[64] = {
+static const int16_t gt32x32_cnst1[64] =
+{
     90, 87, 80, 70, 57, 43, 25, 9, 87, 57, 9, -43, -80, -90, -70, -25,
     80, 9, -70, -87, -25, 57, 90, 43, 70, -43, -87, 9, 90, 25, -80, -57,
     57, -80, -25, 90, -9, -87, 43, 70, 43, -90, 57, 25, -87, 70, 9, -80,
     25, -70, 90, -80, 43, 9, -57, 87, 9, -25, 43, -57, 70, -80, 87, -90
 };
 
-static const int16_t gt32x32_cnst2[16] = {
+static const int16_t gt32x32_cnst2[16] =
+{
     89, 75, 50, 18, 75, -18, -89, -50, 50, -89, 18, 75, 18, -50, 75, -89
 };
 
-static const int16_t gt32x32_cnst3[16] = {
+static const int16_t gt32x32_cnst3[16] =
+{
     64, 64, 64, 64, 83, 36, -36, -83, 64, -64, -64, 64, 36, -83, 83, -36
 };
 
@@ -356,7 +362,8 @@ static void hevc_idct_16x16_msa(int16_t *coeffs)
     v8i16 src0_r, src1_r, src2_r, src3_r, src4_r, src5_r, src6_r, src7_r;
     v8i16 src0_l, src1_l, src2_l, src3_l, src4_l, src5_l, src6_l, src7_l;
 
-    for (i = 2; i--;) {
+    for (i = 2; i--;)
+    {
         LD_SH16(src, 16, in0, in1, in2, in3, in4, in5, in6, in7,
                 in8, in9, in10, in11, in12, in13, in14, in15);
 
@@ -381,7 +388,8 @@ static void hevc_idct_16x16_msa(int16_t *coeffs)
     buf_ptr = coeffs;
     filter = &gt16x16_cnst[0];
 
-    for (i = 2; i--;) {
+    for (i = 2; i--;)
+    {
         LD_SH16(src, 8, in0, in8, in1, in9, in2, in10, in3, in11,
                 in4, in12, in5, in13, in6, in14, in7, in15);
         TRANSPOSE8x8_SH_SH(in0, in1, in2, in3, in4, in5, in6, in7,
@@ -452,7 +460,8 @@ static void hevc_idct_8x32_column_msa(int16_t *coeffs, uint8_t buf_pitch,
     ILVL_H2_SH(in1, in0, in3, in2, src0_l, src1_l);
 
     /* loop for all columns of constants */
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         /* processing single column of constants */
         cnst0 = LW(filter_ptr2);
         cnst1 = LW(filter_ptr2 + 2);
@@ -475,7 +484,8 @@ static void hevc_idct_8x32_column_msa(int16_t *coeffs, uint8_t buf_pitch,
     ILVL_H2_SH(in2, in0, in3, in1, src0_l, src1_l);
 
     /* loop for all columns of constants */
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         /* processing first column of filter constants */
         cnst0 = LW(filter_ptr3);
         cnst1 = LW(filter_ptr3 + 4);
@@ -508,7 +518,8 @@ static void hevc_idct_8x32_column_msa(int16_t *coeffs, uint8_t buf_pitch,
                src0_l, src1_l, src2_l, src3_l);
 
     /* loop for all columns of constants */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         /* processing single column of constants */
         filt0 = LD_SH(filter_ptr1);
         SPLATI_W4_SH(filt0, filter0, filter1, filter2, filter3);
@@ -545,7 +556,8 @@ static void hevc_idct_8x32_column_msa(int16_t *coeffs, uint8_t buf_pitch,
                src4_l, src5_l, src6_l, src7_l);
 
     /* loop for all columns of filter constants */
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 16; i++)
+    {
         /* processing single column of constants */
         filt0 = LD_SH(filter_ptr0);
         SPLATI_W4_SH(filt0, filter0, filter1, filter2, filter3);
@@ -593,7 +605,8 @@ static void hevc_idct_transpose_32x8_to_8x32(int16_t *coeffs, int16_t *tmp_buf)
     uint8_t i;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         LD_SH8(coeffs + i * 8, 32, in0, in1, in2, in3, in4, in5, in6, in7);
         TRANSPOSE8x8_SH_SH(in0, in1, in2, in3, in4, in5, in6, in7,
                            in0, in1, in2, in3, in4, in5, in6, in7);
@@ -606,7 +619,8 @@ static void hevc_idct_transpose_8x32_to_32x8(int16_t *tmp_buf, int16_t *coeffs)
     uint8_t i;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         LD_SH8(tmp_buf + i * 8 * 8, 8, in0, in1, in2, in3, in4, in5, in6, in7);
         TRANSPOSE8x8_SH_SH(in0, in1, in2, in3, in4, in5, in6, in7,
                            in0, in1, in2, in3, in4, in5, in6, in7);
@@ -626,7 +640,8 @@ static void hevc_idct_32x32_msa(int16_t *coeffs)
     /* column transform */
     round = 7;
     buf_pitch = 32;
-    for (col_cnt = 0; col_cnt < 4; col_cnt++) {
+    for (col_cnt = 0; col_cnt < 4; col_cnt++)
+    {
         /* process 8x32 blocks */
         hevc_idct_8x32_column_msa((coeffs + col_cnt * 8), buf_pitch, round);
     }
@@ -634,7 +649,8 @@ static void hevc_idct_32x32_msa(int16_t *coeffs)
     /* row transform */
     round = 12;
     buf_pitch = 8;
-    for (row_cnt = 0; row_cnt < 4; row_cnt++) {
+    for (row_cnt = 0; row_cnt < 4; row_cnt++)
+    {
         /* process 32x8 blocks */
         src = (coeffs + 32 * 8 * row_cnt);
 
@@ -678,7 +694,8 @@ static void hevc_idct_dc_16x16_msa(int16_t *coeffs)
     val = (val + 32) >> 6;
     dst = __msa_fill_h(val);
 
-    for (loop = 4; loop--;) {
+    for (loop = 4; loop--;)
+    {
         ST_SH8(dst, dst, dst, dst, dst, dst, dst, dst, coeffs, 8);
         coeffs += 8 * 8;
     }
@@ -694,7 +711,8 @@ static void hevc_idct_dc_32x32_msa(int16_t *coeffs)
     val = (val + 32) >> 6;
     dst = __msa_fill_h(val);
 
-    for (loop = 16; loop--;) {
+    for (loop = 16; loop--;)
+    {
         ST_SH8(dst, dst, dst, dst, dst, dst, dst, dst, coeffs, 8);
         coeffs += 8 * 8;
     }
@@ -762,7 +780,8 @@ static void hevc_addblk_16x16_msa(int16_t *coeffs, uint8_t *dst, int32_t stride)
     v8i16 dst_r0, dst_l0, dst_r1, dst_l1, dst_r2, dst_l2, dst_r3, dst_l3;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
-    for (loop_cnt = 4; loop_cnt--;) {
+    for (loop_cnt = 4; loop_cnt--;)
+    {
         LD_SH4(coeffs, 16, in0, in2, in4, in6);
         LD_SH4((coeffs + 8), 16, in1, in3, in5, in7);
         coeffs += 64;
@@ -800,7 +819,8 @@ static void hevc_addblk_32x32_msa(int16_t *coeffs, uint8_t *dst, int32_t stride)
     v8i16 dst_r0, dst_l0, dst_r1, dst_l1, dst_r2, dst_l2, dst_r3, dst_l3;
     v8i16 in0, in1, in2, in3, in4, in5, in6, in7;
 
-    for (loop_cnt = 8; loop_cnt--;) {
+    for (loop_cnt = 8; loop_cnt--;)
+    {
         LD_SH4(coeffs, 32, in0, in2, in4, in6);
         LD_SH4((coeffs + 8), 32, in1, in3, in5, in7);
         LD_UB4(temp_dst, stride, dst0, dst1, dst2, dst3);

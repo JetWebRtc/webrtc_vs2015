@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,66 +17,74 @@
 #include "webrtc/modules/audio_coding/neteq/tools/neteq_input.h"
 #include "webrtc/modules/rtp_rtcp/include/rtp_rtcp_defines.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 class RtpFileSource;
 class RtcEventLogSource;
 
 // An adapter class to dress up a PacketSource object as a NetEqInput.
-class NetEqPacketSourceInput : public NetEqInput {
- public:
-  using RtpHeaderExtensionMap = std::map<int, webrtc::RTPExtensionType>;
+class NetEqPacketSourceInput : public NetEqInput
+{
+public:
+    using RtpHeaderExtensionMap = std::map<int, webrtc::RTPExtensionType>;
 
-  NetEqPacketSourceInput();
-  rtc::Optional<int64_t> NextPacketTime() const override;
-  std::unique_ptr<PacketData> PopPacket() override;
-  rtc::Optional<RTPHeader> NextHeader() const override;
-  bool ended() const override { return !next_output_event_ms_; }
+    NetEqPacketSourceInput();
+    rtc::Optional<int64_t> NextPacketTime() const override;
+    std::unique_ptr<PacketData> PopPacket() override;
+    rtc::Optional<RTPHeader> NextHeader() const override;
+    bool ended() const override
+    {
+        return !next_output_event_ms_;
+    }
 
- protected:
-  virtual PacketSource* source() = 0;
-  void LoadNextPacket();
+protected:
+    virtual PacketSource* source() = 0;
+    void LoadNextPacket();
 
-  rtc::Optional<int64_t> next_output_event_ms_;
+    rtc::Optional<int64_t> next_output_event_ms_;
 
- private:
-  std::unique_ptr<Packet> packet_;
+private:
+    std::unique_ptr<Packet> packet_;
 };
 
 // Implementation of NetEqPacketSourceInput to be used with an RtpFileSource.
-class NetEqRtpDumpInput final : public NetEqPacketSourceInput {
- public:
-  NetEqRtpDumpInput(const std::string& file_name,
-                    const RtpHeaderExtensionMap& hdr_ext_map);
+class NetEqRtpDumpInput final : public NetEqPacketSourceInput
+{
+public:
+    NetEqRtpDumpInput(const std::string& file_name,
+                      const RtpHeaderExtensionMap& hdr_ext_map);
 
-  rtc::Optional<int64_t> NextOutputEventTime() const override;
-  void AdvanceOutputEvent() override;
+    rtc::Optional<int64_t> NextOutputEventTime() const override;
+    void AdvanceOutputEvent() override;
 
- protected:
-  PacketSource* source() override;
+protected:
+    PacketSource* source() override;
 
- private:
-  static constexpr int64_t kOutputPeriodMs = 10;
+private:
+    static constexpr int64_t kOutputPeriodMs = 10;
 
-  std::unique_ptr<RtpFileSource> source_;
+    std::unique_ptr<RtpFileSource> source_;
 };
 
 // Implementation of NetEqPacketSourceInput to be used with an
 // RtcEventLogSource.
-class NetEqEventLogInput final : public NetEqPacketSourceInput {
- public:
-  NetEqEventLogInput(const std::string& file_name,
-                     const RtpHeaderExtensionMap& hdr_ext_map);
+class NetEqEventLogInput final : public NetEqPacketSourceInput
+{
+public:
+    NetEqEventLogInput(const std::string& file_name,
+                       const RtpHeaderExtensionMap& hdr_ext_map);
 
-  rtc::Optional<int64_t> NextOutputEventTime() const override;
-  void AdvanceOutputEvent() override;
+    rtc::Optional<int64_t> NextOutputEventTime() const override;
+    void AdvanceOutputEvent() override;
 
- protected:
-  PacketSource* source() override;
+protected:
+    PacketSource* source() override;
 
- private:
-  std::unique_ptr<RtcEventLogSource> source_;
+private:
+    std::unique_ptr<RtcEventLogSource> source_;
 };
 
 }  // namespace test

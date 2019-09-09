@@ -1,4 +1,4 @@
-//------------------------------------------------------------------------------
+﻿//------------------------------------------------------------------------------
 // File: WXUtil.cpp
 //
 // Desc: DirectShow base classes - implements helper classes for building
@@ -29,12 +29,12 @@ EnlargedUnsignedDivide (
     IN ULARGE_INTEGER Dividend,
     IN ULONG Divisor,
     IN PULONG Remainder
-    )
+)
 {
-        // return remainder if necessary
-        if (Remainder != NULL)
-                *Remainder = (ULONG)(LLtoU64(Dividend) % Divisor);
-        return (ULONG)(LLtoU64(Dividend) / Divisor);
+    // return remainder if necessary
+    if (Remainder != NULL)
+        *Remainder = (ULONG)(LLtoU64(Dividend) % Divisor);
+    return (ULONG)(LLtoU64(Dividend) / Divisor);
 }
 
 #else
@@ -45,10 +45,11 @@ EnlargedUnsignedDivide (
     IN ULARGE_INTEGER Dividend,
     IN ULONG Divisor,
     IN PULONG Remainder
-    )
+)
 {
     ULONG ulResult;
-    _asm {
+    _asm
+    {
         mov eax,Dividend.LowPart
         mov edx,Dividend.HighPart
         mov ecx,Remainder
@@ -56,7 +57,7 @@ EnlargedUnsignedDivide (
         or  ecx,ecx
         jz  short label
         mov [ecx],edx
-label:
+        label:
         mov ulResult,eax
     }
     return ulResult;
@@ -71,8 +72,9 @@ CAMEvent::CAMEvent(BOOL fManualReset)
 
 CAMEvent::~CAMEvent()
 {
-    if (m_hEvent) {
-	EXECUTE_ASSERT(CloseHandle(m_hEvent));
+    if (m_hEvent)
+    {
+        EXECUTE_ASSERT(CloseHandle(m_hEvent));
     }
 }
 
@@ -94,30 +96,35 @@ BOOL CAMMsgEvent::WaitMsg(DWORD dwTimeout)
     // the timeout will eventually run down as we iterate
     // processing messages.  grab the start time so that
     // we can calculate elapsed times.
-    if (dwWaitTime != INFINITE) {
+    if (dwWaitTime != INFINITE)
+    {
         dwStartTime = timeGetTime();
     }
 
-    do {
+    do
+    {
         dwWait = MsgWaitForMultipleObjects(1,&m_hEvent,FALSE, dwWaitTime, QS_SENDMESSAGE);
-        if (dwWait == WAIT_OBJECT_0 + 1) {
-	    MSG Message;
+        if (dwWait == WAIT_OBJECT_0 + 1)
+        {
+            MSG Message;
             PeekMessage(&Message,NULL,0,0,PM_NOREMOVE);
 
-	    // If we have an explicit length of time to wait calculate
-	    // the next wake up point - which might be now.
-	    // If dwTimeout is INFINITE, it stays INFINITE
-	    if (dwWaitTime != INFINITE) {
+            // If we have an explicit length of time to wait calculate
+            // the next wake up point - which might be now.
+            // If dwTimeout is INFINITE, it stays INFINITE
+            if (dwWaitTime != INFINITE)
+            {
 
-		DWORD dwElapsed = timeGetTime()-dwStartTime;
+                DWORD dwElapsed = timeGetTime()-dwStartTime;
 
-		dwWaitTime =
-		    (dwElapsed >= dwTimeout)
-			? 0  // wake up with WAIT_TIMEOUT
-			: dwTimeout-dwElapsed;
-	    }
+                dwWaitTime =
+                    (dwElapsed >= dwTimeout)
+                    ? 0  // wake up with WAIT_TIMEOUT
+                    : dwTimeout-dwElapsed;
+            }
         }
-    } while (dwWait == WAIT_OBJECT_0 + 1);
+    }
+    while (dwWait == WAIT_OBJECT_0 + 1);
 
     // return TRUE if we woke on the event handle,
     //        FALSE if we timed out.
@@ -133,7 +140,8 @@ CAMThread::CAMThread()
     m_hThread = NULL;
 }
 
-CAMThread::~CAMThread() {
+CAMThread::~CAMThread()
+{
     Close();
 }
 
@@ -144,7 +152,8 @@ DWORD WINAPI
 CAMThread::InitialThreadProc(LPVOID pv)
 {
     HRESULT hrCoInit = CAMThread::CoInitializeHelper();
-    if(FAILED(hrCoInit)) {
+    if(FAILED(hrCoInit))
+    {
         DbgLog((LOG_ERROR, 1, TEXT("CoInitializeEx failed.")));
     }
 
@@ -152,7 +161,8 @@ CAMThread::InitialThreadProc(LPVOID pv)
 
     HRESULT hr = pThread->ThreadProc();
 
-    if(SUCCEEDED(hrCoInit)) {
+    if(SUCCEEDED(hrCoInit))
+    {
         CoUninitialize();
     }
 
@@ -166,20 +176,22 @@ CAMThread::Create()
 
     CAutoLock lock(&m_AccessLock);
 
-    if (ThreadExists()) {
-	return FALSE;
+    if (ThreadExists())
+    {
+        return FALSE;
     }
 
     m_hThread = CreateThread(
-		    NULL,
-		    0,
-		    CAMThread::InitialThreadProc,
-		    this,
-		    0,
-		    &threadid);
+                    NULL,
+                    0,
+                    CAMThread::InitialThreadProc,
+                    this,
+                    0,
+                    &threadid);
 
-    if (!m_hThread) {
-	return FALSE;
+    if (!m_hThread)
+    {
+        return FALSE;
     }
 
     return TRUE;
@@ -191,8 +203,9 @@ CAMThread::CallWorker(DWORD dwParam)
     // lock access to the worker thread for scope of this object
     CAutoLock lock(&m_AccessLock);
 
-    if (!ThreadExists()) {
-	return (DWORD) E_FAIL;
+    if (!ThreadExists())
+    {
+        return (DWORD) E_FAIL;
     }
 
     // set the parameter
@@ -220,13 +233,17 @@ CAMThread::GetRequest()
 BOOL
 CAMThread::CheckRequest(DWORD * pParam)
 {
-    if (!m_EventSend.Check()) {
-	return FALSE;
-    } else {
-	if (pParam) {
-	    *pParam = m_dwParam;
-	}
-	return TRUE;
+    if (!m_EventSend.Check())
+    {
+        return FALSE;
+    }
+    else
+    {
+        if (pParam)
+        {
+            *pParam = m_dwParam;
+        }
+        return TRUE;
     }
 }
 
@@ -291,34 +308,38 @@ HRESULT CAMThread::CoInitializeHelper()
 // queue when the thread exited
 CMsgThread::~CMsgThread()
 {
-    if (m_hThread != NULL) {
+    if (m_hThread != NULL)
+    {
         WaitForSingleObject(m_hThread, INFINITE);
         EXECUTE_ASSERT(CloseHandle(m_hThread));
     }
 
     POSITION pos = m_ThreadQueue.GetHeadPosition();
-    while (pos) {
+    while (pos)
+    {
         CMsg * pMsg = m_ThreadQueue.GetNext(pos);
         delete pMsg;
     }
     m_ThreadQueue.RemoveAll();
 
-    if (m_hSem != NULL) {
+    if (m_hSem != NULL)
+    {
         EXECUTE_ASSERT(CloseHandle(m_hSem));
     }
 }
 
 BOOL
 CMsgThread::CreateThread(
-    )
+)
 {
     m_hSem = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL);
-    if (m_hSem == NULL) {
+    if (m_hSem == NULL)
+    {
         return FALSE;
     }
 
     m_hThread = ::CreateThread(NULL, 0, DefaultThreadProc,
-			       (LPVOID)this, 0, &m_ThreadId);
+                               (LPVOID)this, 0, &m_ThreadId);
     return m_hThread != NULL;
 }
 
@@ -331,7 +352,7 @@ CMsgThread::CreateThread(
 DWORD WINAPI
 CMsgThread::DefaultThreadProc(
     LPVOID lpParam
-    )
+)
 {
     CMsgThread *lpThis = (CMsgThread *)lpParam;
     CMsg msg;
@@ -343,11 +364,13 @@ CMsgThread::DefaultThreadProc(
     // allow a derived class to handle thread startup
     lpThis->OnThreadInit();
 
-    do {
-	lpThis->GetThreadMsg(&msg);
-	lResult = lpThis->ThreadMessageProc(msg.uMsg,msg.dwFlags,
-					    msg.lpParam, msg.pEvent);
-    } while (lResult == 0L);
+    do
+    {
+        lpThis->GetThreadMsg(&msg);
+        lResult = lpThis->ThreadMessageProc(msg.uMsg,msg.dwFlags,
+                                            msg.lpParam, msg.pEvent);
+    }
+    while (lResult == 0L);
 
     // !!!
     CoUninitialize();
@@ -364,13 +387,17 @@ CMsgThread::GetThreadMsg(CMsg *msg)
     CMsg * pmsg = NULL;
 
     // keep trying until a message appears
-    while (TRUE) {
+    while (TRUE)
+    {
         {
             CAutoLock lck(&m_Lock);
             pmsg = m_ThreadQueue.RemoveHead();
-            if (pmsg == NULL) {
+            if (pmsg == NULL)
+            {
                 m_lWaiting++;
-            } else {
+            }
+            else
+            {
                 break;
             }
         }
@@ -412,11 +439,12 @@ lstrcpynWInternal(
     LPWSTR lpString1,
     LPCWSTR lpString2,
     int     iMaxLength
-    )
+)
 {
     ASSERT(iMaxLength);
     LPWSTR  lpReturn = lpString1;
-    if (iMaxLength) {
+    if (iMaxLength)
+    {
         while (--iMaxLength && (*lpString1++ = *lpString2++));
 
         // If we ran out of room (which will be the case if
@@ -432,14 +460,16 @@ WINAPI
 lstrcmpWInternal(
     LPCWSTR lpString1,
     LPCWSTR lpString2
-    )
+)
 {
-    do {
-	WCHAR c1 = *lpString1;
-	WCHAR c2 = *lpString2;
-	if (c1 != c2)
-	    return (int) c1 - (int) c2;
-    } while (*lpString1++ && *lpString2++);
+    do
+    {
+        WCHAR c1 = *lpString1;
+        WCHAR c2 = *lpString2;
+        if (c1 != c2)
+            return (int) c1 - (int) c2;
+    }
+    while (*lpString1++ && *lpString2++);
     return 0;
 }
 
@@ -449,19 +479,21 @@ WINAPI
 lstrcmpiWInternal(
     LPCWSTR lpString1,
     LPCWSTR lpString2
-    )
+)
 {
-    do {
-	WCHAR c1 = *lpString1;
-	WCHAR c2 = *lpString2;
-	if (c1 >= L'A' && c1 <= L'Z')
-	    c1 -= (WCHAR) (L'A' - L'a');
-	if (c2 >= L'A' && c2 <= L'Z')
-	    c2 -= (WCHAR) (L'A' - L'a');
-	
-	if (c1 != c2)
-	    return (int) c1 - (int) c2;
-    } while (*lpString1++ && *lpString2++);
+    do
+    {
+        WCHAR c1 = *lpString1;
+        WCHAR c2 = *lpString2;
+        if (c1 >= L'A' && c1 <= L'Z')
+            c1 -= (WCHAR) (L'A' - L'a');
+        if (c2 >= L'A' && c2 <= L'Z')
+            c2 -= (WCHAR) (L'A' - L'a');
+
+        if (c1 != c2)
+            return (int) c1 - (int) c2;
+    }
+    while (*lpString1++ && *lpString2++);
 
     return 0;
 }
@@ -471,7 +503,7 @@ int
 WINAPI
 lstrlenWInternal(
     LPCWSTR lpString
-    )
+)
 {
     int i = -1;
     while (*(lpString+(++i)))
@@ -513,7 +545,7 @@ LPWSTR WINAPI lstrcpynWInternal(
     LPWSTR lpString1,
     LPCWSTR lpString2,
     int     iMaxLength
-    )
+)
 {
     return lstrcpynW(lpString1, lpString2, iMaxLength);
 }
@@ -521,7 +553,7 @@ LPWSTR WINAPI lstrcpynWInternal(
 int WINAPI lstrcmpWInternal(
     LPCWSTR lpString1,
     LPCWSTR lpString2
-    )
+)
 {
     return lstrcmpW(lpString1, lpString2);
 }
@@ -530,7 +562,7 @@ int WINAPI lstrcmpWInternal(
 int WINAPI lstrcmpiWInternal(
     LPCWSTR lpString1,
     LPCWSTR lpString2
-    )
+)
 {
     return lstrcmpiW(lpString1, lpString2);
 }
@@ -538,7 +570,7 @@ int WINAPI lstrcmpiWInternal(
 
 int WINAPI lstrlenWInternal(
     LPCWSTR lpString
-    )
+)
 {
     return lstrlenW(lpString);
 }
@@ -573,10 +605,11 @@ void WINAPI IntToWstr(int i, LPWSTR wstr, size_t len)
 void * memchrInternal(const void *pv, int c, size_t sz)
 {
     BYTE *pb = (BYTE *) pv;
-    while (sz--) {
-	if (*pb == c)
-	    return (void *) pb;
-	pb++;
+    while (sz--)
+    {
+        if (*pb == c)
+            return (void *) pb;
+        pb++;
     }
     return NULL;
 }
@@ -592,13 +625,15 @@ void * __stdcall memmoveInternal(void * dst, const void * src, size_t count)
     void * ret = dst;
 
 #ifdef _X86_
-    if (dst <= src || (char *)dst >= ((char *)src + count)) {
+    if (dst <= src || (char *)dst >= ((char *)src + count))
+    {
 
         /*
          * Non-Overlapping Buffers
          * copy from lower addresses to higher addresses
          */
-        _asm {
+        _asm
+        {
             mov     esi,src
             mov     edi,dst
             mov     ecx,count
@@ -610,16 +645,18 @@ void * __stdcall memmoveInternal(void * dst, const void * src, size_t count)
             or      ecx,edx
             jz      memmove_done
             rep     movsb
-memmove_done:
+            memmove_done:
         }
     }
-    else {
+    else
+    {
 
         /*
          * Overlapping Buffers
          * copy from higher addresses to lower addresses
          */
-        _asm {
+        _asm
+        {
             mov     esi,src
             mov     edi,dst
             mov     ecx,count
@@ -683,21 +720,31 @@ LONGLONG WINAPI llMulDiv(LONGLONG a, LONGLONG b, LONGLONG c, LONGLONG d)
     p[0].HighPart  = x.LowPart;
     p[1].QuadPart  = UInt32x32To64(ua.HighPart, ub.HighPart) + x.HighPart;
 
-    if (d != 0) {
+    if (d != 0)
+    {
         ULARGE_INTEGER ud[2];
-        if (bSign) {
+        if (bSign)
+        {
             ud[0].QuadPart = (DWORDLONG)(-d);
-            if (d > 0) {
+            if (d > 0)
+            {
                 /*  -d < 0 */
                 ud[1].QuadPart = (DWORDLONG)(LONGLONG)-1;
-            } else {
+            }
+            else
+            {
                 ud[1].QuadPart = (DWORDLONG)0;
             }
-        } else {
+        }
+        else
+        {
             ud[0].QuadPart = (DWORDLONG)d;
-            if (d < 0) {
+            if (d < 0)
+            {
                 ud[1].QuadPart = (DWORDLONG)(LONGLONG)-1;
-            } else {
+            }
+            else
+            {
                 ud[1].QuadPart = (DWORDLONG)0;
             }
         }
@@ -724,7 +771,8 @@ LONGLONG WINAPI llMulDiv(LONGLONG a, LONGLONG b, LONGLONG c, LONGLONG d)
         p[1].QuadPart     += ud[1].QuadPart + uliTotal.QuadPart;
 
         /*  Now see if we got a sign change from the addition */
-        if ((LONG)p[1].HighPart < 0) {
+        if ((LONG)p[1].HighPart < 0)
+        {
             bSign = !bSign;
 
             /*  Negate the current value (ugh!) */
@@ -736,22 +784,25 @@ LONGLONG WINAPI llMulDiv(LONGLONG a, LONGLONG b, LONGLONG c, LONGLONG d)
     }
 
     /*  Now for the division */
-    if (c < 0) {
+    if (c < 0)
+    {
         bSign = !bSign;
     }
 
 
     /*  This will catch c == 0 and overflow */
-    if (uc <= p[1].QuadPart) {
+    if (uc <= p[1].QuadPart)
+    {
         return bSign ? (LONGLONG)0x8000000000000000 :
-                       (LONGLONG)0x7FFFFFFFFFFFFFFF;
+               (LONGLONG)0x7FFFFFFFFFFFFFFF;
     }
 
     DWORDLONG ullResult;
 
     /*  Do the division */
     /*  If the dividend is a DWORD_LONG use the compiler */
-    if (p[1].QuadPart == 0) {
+    if (p[1].QuadPart == 0)
+    {
         ullResult = p[0].QuadPart / uc;
         return bSign ? -(LONGLONG)ullResult : (LONGLONG)ullResult;
     }
@@ -759,7 +810,8 @@ LONGLONG WINAPI llMulDiv(LONGLONG a, LONGLONG b, LONGLONG c, LONGLONG d)
     /*  If the divisor is a DWORD then its simpler */
     ULARGE_INTEGER ulic;
     ulic.QuadPart = uc;
-    if (ulic.HighPart == 0) {
+    if (ulic.HighPart == 0)
+    {
         ULARGE_INTEGER uliDividend;
         ULARGE_INTEGER uliResult;
         DWORD dwDivisor = (DWORD)uc;
@@ -775,39 +827,45 @@ LONGLONG WINAPI llMulDiv(LONGLONG a, LONGLONG b, LONGLONG c, LONGLONG d)
         /*  NOTE - this routine will take exceptions if
             the result does not fit in a DWORD
         */
-        if (uliDividend.QuadPart >= (DWORDLONG)dwDivisor) {
+        if (uliDividend.QuadPart >= (DWORDLONG)dwDivisor)
+        {
             uliResult.HighPart = EnlargedUnsignedDivide(
                                      uliDividend,
                                      dwDivisor,
                                      &p[0].HighPart);
-        } else {
+        }
+        else
+        {
             uliResult.HighPart = 0;
         }
         uliResult.LowPart = EnlargedUnsignedDivide(
-                                 p[0],
-                                 dwDivisor,
-                                 NULL);
+                                p[0],
+                                dwDivisor,
+                                NULL);
 #endif
         return bSign ? -(LONGLONG)uliResult.QuadPart :
-                        (LONGLONG)uliResult.QuadPart;
+               (LONGLONG)uliResult.QuadPart;
     }
 
 
     ullResult = 0;
 
     /*  OK - do long division */
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < 64; i++)
+    {
         ullResult <<= 1;
 
         /*  Shift 128 bit p left 1 */
         p[1].QuadPart <<= 1;
-        if ((p[0].HighPart & 0x80000000) != 0) {
+        if ((p[0].HighPart & 0x80000000) != 0)
+        {
             p[1].LowPart++;
         }
         p[0].QuadPart <<= 1;
 
         /*  Compare */
-        if (uc <= p[1].QuadPart) {
+        if (uc <= p[1].QuadPart)
+        {
             p[1].QuadPart -= uc;
             ullResult += 1;
         }
@@ -833,36 +891,49 @@ LONGLONG WINAPI Int64x32Div32(LONGLONG a, LONG b, LONG c, LONG d)
     DWORD p1;
     p0.QuadPart  = UInt32x32To64(ua.LowPart, ub);
 
-    if (ua.HighPart != 0) {
+    if (ua.HighPart != 0)
+    {
         ULARGE_INTEGER x;
         x.QuadPart     = UInt32x32To64(ua.HighPart, ub) + p0.HighPart;
         p0.HighPart  = x.LowPart;
         p1   = x.HighPart;
-    } else {
+    }
+    else
+    {
         p1 = 0;
     }
 
-    if (d != 0) {
+    if (d != 0)
+    {
         ULARGE_INTEGER ud0;
         DWORD ud1;
 
-        if (bSign) {
+        if (bSign)
+        {
             //
             //  Cast d to LONGLONG first otherwise -0x80000000 sign extends
             //  incorrectly
             //
             ud0.QuadPart = (DWORDLONG)(-(LONGLONG)d);
-            if (d > 0) {
+            if (d > 0)
+            {
                 /*  -d < 0 */
                 ud1 = (DWORD)-1;
-            } else {
+            }
+            else
+            {
                 ud1 = (DWORD)0;
             }
-        } else {
+        }
+        else
+        {
             ud0.QuadPart = (DWORDLONG)d;
-            if (d < 0) {
+            if (d < 0)
+            {
                 ud1 = (DWORD)-1;
-            } else {
+            }
+            else
+            {
                 ud1 = (DWORD)0;
             }
         }
@@ -885,7 +956,8 @@ LONGLONG WINAPI Int64x32Div32(LONGLONG a, LONG b, LONG c, LONG d)
         p1 += ud1 + uliTotal.HighPart;
 
         /*  Now see if we got a sign change from the addition */
-        if ((LONG)p1 < 0) {
+        if ((LONG)p1 < 0)
+        {
             bSign = !bSign;
 
             /*  Negate the current value (ugh!) */
@@ -897,15 +969,17 @@ LONGLONG WINAPI Int64x32Div32(LONGLONG a, LONG b, LONG c, LONG d)
     }
 
     /*  Now for the division */
-    if (c < 0) {
+    if (c < 0)
+    {
         bSign = !bSign;
     }
 
 
     /*  This will catch c == 0 and overflow */
-    if (uc <= p1) {
+    if (uc <= p1)
+    {
         return bSign ? (LONGLONG)0x8000000000000000 :
-                       (LONGLONG)0x7FFFFFFFFFFFFFFF;
+               (LONGLONG)0x7FFFFFFFFFFFFFFF;
     }
 
     /*  Do the division */
@@ -919,20 +993,23 @@ LONGLONG WINAPI Int64x32Div32(LONGLONG a, LONG b, LONG c, LONG d)
     /*  NOTE - this routine will take exceptions if
         the result does not fit in a DWORD
     */
-    if (uliDividend.QuadPart >= (DWORDLONG)dwDivisor) {
+    if (uliDividend.QuadPart >= (DWORDLONG)dwDivisor)
+    {
         uliResult.HighPart = EnlargedUnsignedDivide(
                                  uliDividend,
                                  dwDivisor,
                                  &p0.HighPart);
-    } else {
+    }
+    else
+    {
         uliResult.HighPart = 0;
     }
     uliResult.LowPart = EnlargedUnsignedDivide(
-                             p0,
-                             dwDivisor,
-                             NULL);
+                            p0,
+                            dwDivisor,
+                            NULL);
     return bSign ? -(LONGLONG)uliResult.QuadPart :
-                    (LONGLONG)uliResult.QuadPart;
+           (LONGLONG)uliResult.QuadPart;
 }
 
 #ifdef DEBUG
@@ -964,32 +1041,39 @@ void CCritSec::Lock()
     UINT tracelevel=3;
     DWORD us = GetCurrentThreadId();
     DWORD currentOwner = m_currentOwner;
-    if (currentOwner && (currentOwner != us)) {
+    if (currentOwner && (currentOwner != us))
+    {
         // already owned, but not by us
-        if (m_fTrace) {
+        if (m_fTrace)
+        {
             DbgLog((LOG_LOCKING, 2, TEXT("Thread %d about to wait for lock %x owned by %d"),
-                GetCurrentThreadId(), &m_CritSec, currentOwner));
+                    GetCurrentThreadId(), &m_CritSec, currentOwner));
             tracelevel=2;
-	        // if we saw the message about waiting for the critical
-	        // section we ensure we see the message when we get the
-	        // critical section
+            // if we saw the message about waiting for the critical
+            // section we ensure we see the message when we get the
+            // critical section
         }
     }
     EnterCriticalSection(&m_CritSec);
-    if (0 == m_lockCount++) {
+    if (0 == m_lockCount++)
+    {
         // we now own it for the first time.  Set owner information
         m_currentOwner = us;
 
-        if (m_fTrace) {
+        if (m_fTrace)
+        {
             DbgLog((LOG_LOCKING, tracelevel, TEXT("Thread %d now owns lock %x"), m_currentOwner, &m_CritSec));
         }
     }
 }
 
-void CCritSec::Unlock() {
-    if (0 == --m_lockCount) {
+void CCritSec::Unlock()
+{
+    if (0 == --m_lockCount)
+    {
         // about to be unowned
-        if (m_fTrace) {
+        if (m_fTrace)
+        {
             DbgLog((LOG_LOCKING, 3, TEXT("Thread %d releasing lock %x"), m_currentOwner, &m_CritSec));
         }
 
@@ -1052,8 +1136,9 @@ STDAPI AMGetWideString(LPCWSTR psz, LPWSTR *ppszReturn)
     ValidateReadWritePtr(ppszReturn, sizeof(LPWSTR));
     DWORD nameLen = sizeof(WCHAR) * (lstrlenW(psz)+1);
     *ppszReturn = (LPWSTR)CoTaskMemAlloc(nameLen);
-    if (*ppszReturn == NULL) {
-       return E_OUTOFMEMORY;
+    if (*ppszReturn == NULL)
+    {
+        return E_OUTOFMEMORY;
     }
     CopyMemory(*ppszReturn, psz, nameLen);
     return NOERROR;
@@ -1079,35 +1164,42 @@ DWORD WINAPI WaitDispatchingMessages(
     static UINT uMsgId = 0;
 
     HANDLE hObjects[2] = { hObject, hEvent };
-    if (dwWait != INFINITE && dwWait != 0) {
+    if (dwWait != INFINITE && dwWait != 0)
+    {
         dwStart = GetTickCount();
     }
-    for (; ; ) {
+    for (; ; )
+    {
         DWORD nCount = NULL != hEvent ? 2 : 1;
 
         //  Minimize the chance of actually dispatching any messages
         //  by seeing if we can lock immediately.
         dwResult = WaitForMultipleObjects(nCount, hObjects, FALSE, 0);
-        if (dwResult < WAIT_OBJECT_0 + nCount) {
+        if (dwResult < WAIT_OBJECT_0 + nCount)
+        {
             break;
         }
 
         DWORD dwTimeOut = dwWait;
-        if (dwTimeOut > 10) {
+        if (dwTimeOut > 10)
+        {
             dwTimeOut = 10;
         }
         dwResult = MsgWaitForMultipleObjects(
-                             nCount,
-                             hObjects,
-                             FALSE,
-                             dwTimeOut,
-                             hwnd == NULL ? QS_SENDMESSAGE :
-                                            QS_SENDMESSAGE + QS_POSTMESSAGE);
+                       nCount,
+                       hObjects,
+                       FALSE,
+                       dwTimeOut,
+                       hwnd == NULL ? QS_SENDMESSAGE :
+                       QS_SENDMESSAGE + QS_POSTMESSAGE);
         if (dwResult == WAIT_OBJECT_0 + nCount ||
-            dwResult == WAIT_TIMEOUT && dwTimeOut != dwWait) {
+                dwResult == WAIT_TIMEOUT && dwTimeOut != dwWait)
+        {
             MSG msg;
-            if (hwnd != NULL) {
-                while (PeekMessage(&msg, hwnd, uMsg, uMsg, PM_REMOVE)) {
+            if (hwnd != NULL)
+            {
+                while (PeekMessage(&msg, hwnd, uMsg, uMsg, PM_REMOVE))
+                {
                     DispatchMessage(&msg);
                 }
             }
@@ -1115,41 +1207,54 @@ DWORD WINAPI WaitDispatchingMessages(
             // messages
             PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);
 
-            if (dwWait != INFINITE && dwWait != 0) {
+            if (dwWait != INFINITE && dwWait != 0)
+            {
                 DWORD dwNow = GetTickCount();
 
                 // Working with differences handles wrap-around
                 DWORD dwDiff = dwNow - dwStart;
-                if (dwDiff > dwWait) {
+                if (dwDiff > dwWait)
+                {
                     dwWait = 0;
-                } else {
+                }
+                else
+                {
                     dwWait -= dwDiff;
                 }
                 dwStart = dwNow;
             }
-            if (!bPeeked) {
+            if (!bPeeked)
+            {
                 //  Raise our priority to prevent our message queue
                 //  building up
                 dwThreadPriority = GetThreadPriority(GetCurrentThread());
-                if (dwThreadPriority < THREAD_PRIORITY_HIGHEST) {
+                if (dwThreadPriority < THREAD_PRIORITY_HIGHEST)
+                {
                     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_HIGHEST);
                 }
                 bPeeked = TRUE;
             }
-        } else {
+        }
+        else
+        {
             break;
         }
     }
-    if (bPeeked) {
+    if (bPeeked)
+    {
         SetThreadPriority(GetCurrentThread(), dwThreadPriority);
-        if (HIWORD(GetQueueStatus(QS_POSTMESSAGE)) & QS_POSTMESSAGE) {
-            if (uMsgId == 0) {
+        if (HIWORD(GetQueueStatus(QS_POSTMESSAGE)) & QS_POSTMESSAGE)
+        {
+            if (uMsgId == 0)
+            {
                 uMsgId = RegisterWindowMessage(TEXT("AMUnblock"));
             }
-            if (uMsgId != 0) {
+            if (uMsgId != 0)
+            {
                 MSG msg;
                 //  Remove old ones
-                while (PeekMessage(&msg, (HWND)-1, uMsgId, uMsgId, PM_REMOVE)) {
+                while (PeekMessage(&msg, (HWND)-1, uMsgId, uMsgId, PM_REMOVE))
+                {
                 }
             }
             PostThreadMessage(GetCurrentThreadId(), uMsgId, 0, 0);
@@ -1190,31 +1295,33 @@ timeSetEvent() if the current operating system supports it.  TIME_KILL_SYNCHRONO
 is supported on Windows XP and later operating systems.
 
 Parameters:
-- The same parameters as timeSetEvent().  See timeSetEvent()'s documentation in 
+- The same parameters as timeSetEvent().  See timeSetEvent()'s documentation in
 the Platform SDK for more information.
 
 Return Value:
-- The same return value as timeSetEvent().  See timeSetEvent()'s documentation in 
+- The same return value as timeSetEvent().  See timeSetEvent()'s documentation in
 the Platform SDK for more information.
 
 ******************************************************************************/
 MMRESULT CompatibleTimeSetEvent( UINT uDelay, UINT uResolution, LPTIMECALLBACK lpTimeProc, DWORD_PTR dwUser, UINT fuEvent )
 {
-    #if WINVER >= 0x0501
+#if WINVER >= 0x0501
     {
         static bool fCheckedVersion = false;
-        static bool fTimeKillSynchronousFlagAvailable = false; 
+        static bool fTimeKillSynchronousFlagAvailable = false;
 
-        if( !fCheckedVersion ) {
+        if( !fCheckedVersion )
+        {
             fTimeKillSynchronousFlagAvailable = TimeKillSynchronousFlagAvailable();
             fCheckedVersion = true;
         }
 
-        if( fTimeKillSynchronousFlagAvailable ) {
+        if( fTimeKillSynchronousFlagAvailable )
+        {
             fuEvent = fuEvent | TIME_KILL_SYNCHRONOUS;
         }
     }
-    #endif // WINVER >= 0x0501
+#endif // WINVER >= 0x0501
 
     return timeSetEvent( uDelay, uResolution, lpTimeProc, dwUser, fuEvent );
 }
@@ -1225,13 +1332,15 @@ bool TimeKillSynchronousFlagAvailable( void )
 
     osverinfo.dwOSVersionInfoSize = sizeof(osverinfo);
 
-    if( GetVersionEx( &osverinfo ) ) {
-        
+    if( GetVersionEx( &osverinfo ) )
+    {
+
         // Windows XP's major version is 5 and its' minor version is 1.
         // timeSetEvent() started supporting the TIME_KILL_SYNCHRONOUS flag
         // in Windows XP.
-        if( (osverinfo.dwMajorVersion > 5) || 
-            ( (osverinfo.dwMajorVersion == 5) && (osverinfo.dwMinorVersion >= 1) ) ) {
+        if( (osverinfo.dwMajorVersion > 5) ||
+                ( (osverinfo.dwMajorVersion == 5) && (osverinfo.dwMinorVersion >= 1) ) )
+        {
             return true;
         }
     }

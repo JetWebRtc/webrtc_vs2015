@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -109,21 +109,39 @@ void dit_fft(FIXP_DBL *x, const INT ldn, const FIXP_STP *trigdata, const INT tri
     int32c scratch[1024];
     int32c *twiddles;
 
-    switch (ldn) {
-            case 4:  twiddles = (int32c*)__twiddles_mips_fft32_16;   break;
-            case 5:  twiddles = (int32c*)__twiddles_mips_fft32_32;   break;
-            case 6:  twiddles = (int32c*)__twiddles_mips_fft32_64;   break;
-            case 7:  twiddles = (int32c*)__twiddles_mips_fft32_128;  break;
-            case 8:  twiddles = (int32c*)__twiddles_mips_fft32_256;  break;
-            case 9:  twiddles = (int32c*)__twiddles_mips_fft32_512;  break;
-            case 10: twiddles = (int32c*)__twiddles_mips_fft32_1024; break;
-            //case 11: twiddles = (int32c*)__twiddles_mips_fft32_2048; break;
-            default: FDK_ASSERT(0); break;
+    switch (ldn)
+    {
+    case 4:
+        twiddles = (int32c*)__twiddles_mips_fft32_16;
+        break;
+    case 5:
+        twiddles = (int32c*)__twiddles_mips_fft32_32;
+        break;
+    case 6:
+        twiddles = (int32c*)__twiddles_mips_fft32_64;
+        break;
+    case 7:
+        twiddles = (int32c*)__twiddles_mips_fft32_128;
+        break;
+    case 8:
+        twiddles = (int32c*)__twiddles_mips_fft32_256;
+        break;
+    case 9:
+        twiddles = (int32c*)__twiddles_mips_fft32_512;
+        break;
+    case 10:
+        twiddles = (int32c*)__twiddles_mips_fft32_1024;
+        break;
+    //case 11: twiddles = (int32c*)__twiddles_mips_fft32_2048; break;
+    default:
+        FDK_ASSERT(0);
+        break;
     }
 
     mips_fft32(dout, din, twiddles, scratch, ldn);
 
-    for(i=0;i<(1<<ldn);i++) {
+    for(i=0; i<(1<<ldn); i++)
+    {
         x[2*i]   = dout[i].re<<1;
         x[2*i+1] = dout[i].im<<1;
     }

@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -43,7 +43,8 @@ extern "C"
 /***********************************************/
 /* Structure for controlling encoder operation */
 /***********************************************/
-typedef struct {
+typedef struct
+{
     /* I:   Number of channels; 1/2                                                         */
     opus_int32 nChannelsAPI;
 
@@ -115,7 +116,8 @@ typedef struct {
 /**************************************************************************/
 /* Structure for controlling decoder operation and reading decoder status */
 /**************************************************************************/
-typedef struct {
+typedef struct
+{
     /* I:   Number of channels; 1/2                                                         */
     opus_int32 nChannelsAPI;
 

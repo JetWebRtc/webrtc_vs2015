@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,29 +33,30 @@ void WebRtcIlbcfix_SplitVq(
     int16_t *CB,  /* (i) the quantizer codebook in Q13 */
     int16_t *dim, /* (i) the dimension of X and qX */
     int16_t *cbsize /* (i) the number of vectors in the codebook */
-                           ) {
+)
+{
 
-  int16_t *qXPtr, *indexPtr, *CBPtr, *XPtr;
+    int16_t *qXPtr, *indexPtr, *CBPtr, *XPtr;
 
-  /* Quantize X with the 3 vectror quantization tables */
+    /* Quantize X with the 3 vectror quantization tables */
 
-  qXPtr=qX;
-  indexPtr=index;
-  CBPtr=CB;
-  XPtr=X;
-  WebRtcIlbcfix_Vq3(qXPtr, indexPtr, CBPtr, XPtr, cbsize[0]);
+    qXPtr=qX;
+    indexPtr=index;
+    CBPtr=CB;
+    XPtr=X;
+    WebRtcIlbcfix_Vq3(qXPtr, indexPtr, CBPtr, XPtr, cbsize[0]);
 
-  qXPtr+=3;
-  indexPtr+=1;
-  CBPtr+=(dim[0]*cbsize[0]);
-  XPtr+=3;
-  WebRtcIlbcfix_Vq3(qXPtr, indexPtr, CBPtr, XPtr, cbsize[1]);
+    qXPtr+=3;
+    indexPtr+=1;
+    CBPtr+=(dim[0]*cbsize[0]);
+    XPtr+=3;
+    WebRtcIlbcfix_Vq3(qXPtr, indexPtr, CBPtr, XPtr, cbsize[1]);
 
-  qXPtr+=3;
-  indexPtr+=1;
-  CBPtr+=(dim[1]*cbsize[1]);
-  XPtr+=3;
-  WebRtcIlbcfix_Vq4(qXPtr, indexPtr, CBPtr, XPtr, cbsize[2]);
+    qXPtr+=3;
+    indexPtr+=1;
+    CBPtr+=(dim[1]*cbsize[1]);
+    XPtr+=3;
+    WebRtcIlbcfix_Vq4(qXPtr, indexPtr, CBPtr, XPtr, cbsize[2]);
 
-  return;
+    return;
 }

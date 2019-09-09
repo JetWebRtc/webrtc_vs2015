@@ -1,4 +1,4 @@
-/*
+﻿/*
  * gain code, gain pitch and pitch delay decoding
  *
  * Copyright (c) 2008 Vladimir Voroshilov
@@ -38,8 +38,8 @@ int ff_acelp_decode_8bit_to_1st_delay3(int ac_index)
 }
 
 int ff_acelp_decode_4bit_to_2nd_delay3(
-        int ac_index,
-        int pitch_delay_min)
+    int ac_index,
+    int pitch_delay_min)
 {
     if(ac_index < 4)
         return 3 * (ac_index + pitch_delay_min);
@@ -50,10 +50,10 @@ int ff_acelp_decode_4bit_to_2nd_delay3(
 }
 
 int ff_acelp_decode_5_6_bit_to_2nd_delay3(
-        int ac_index,
-        int pitch_delay_min)
+    int ac_index,
+    int pitch_delay_min)
 {
-        return 3 * pitch_delay_min + ac_index - 2;
+    return 3 * pitch_delay_min + ac_index - 2;
 }
 
 int ff_acelp_decode_9bit_to_1st_delay6(int ac_index)
@@ -64,8 +64,8 @@ int ff_acelp_decode_9bit_to_1st_delay6(int ac_index)
         return 6 * (ac_index - 368);
 }
 int ff_acelp_decode_6bit_to_2nd_delay6(
-        int ac_index,
-        int pitch_delay_min)
+    int ac_index,
+    int pitch_delay_min)
 {
     return 6 * pitch_delay_min + ac_index - 3;
 }
@@ -132,10 +132,10 @@ float ff_amr_set_fixed_gain(float fixed_gain_factor, float fixed_mean_energy,
     // ^g_c = ^gamma_gc * 100.05 (predicted dB + mean dB - dB of fixed vector)
     // Note 10^(0.05 * -10log(average x2)) = 1/sqrt((average x2)).
     float val = fixed_gain_factor *
-        exp2f(M_LOG2_10 * 0.05 *
-              (avpriv_scalarproduct_float_c(pred_table, prediction_error, 4) +
-               energy_mean)) /
-        sqrtf(fixed_mean_energy);
+                exp2f(M_LOG2_10 * 0.05 *
+                      (avpriv_scalarproduct_float_c(pred_table, prediction_error, 4) +
+                       energy_mean)) /
+                sqrtf(fixed_mean_energy);
 
     // update quantified prediction error energy history
     memmove(&prediction_error[0], &prediction_error[1],
@@ -150,37 +150,50 @@ void ff_decode_pitch_lag(int *lag_int, int *lag_frac, int pitch_index,
                          int third_as_first, int resolution)
 {
     /* Note n * 10923 >> 15 is floor(x/3) for 0 <= n <= 32767 */
-    if (subframe == 0 || (subframe == 2 && third_as_first)) {
+    if (subframe == 0 || (subframe == 2 && third_as_first))
+    {
 
         if (pitch_index < 197)
             pitch_index += 59;
         else
             pitch_index = 3 * pitch_index - 335;
 
-    } else {
-        if (resolution == 4) {
+    }
+    else
+    {
+        if (resolution == 4)
+        {
             int search_range_min = av_clip(prev_lag_int - 5, PITCH_DELAY_MIN,
                                            PITCH_DELAY_MAX - 9);
 
             // decoding with 4-bit resolution
-            if (pitch_index < 4) {
+            if (pitch_index < 4)
+            {
                 // integer only precision for [search_range_min, search_range_min+3]
                 pitch_index = 3 * (pitch_index + search_range_min) + 1;
-            } else if (pitch_index < 12) {
+            }
+            else if (pitch_index < 12)
+            {
                 // 1/3 fractional precision for [search_range_min+3 1/3, search_range_min+5 2/3]
                 pitch_index += 3 * search_range_min + 7;
-            } else {
+            }
+            else
+            {
                 // integer only precision for [search_range_min+6, search_range_min+9]
                 pitch_index = 3 * (pitch_index + search_range_min - 6) + 1;
             }
-        } else {
+        }
+        else
+        {
             // decoding with 5 or 6 bit resolution, 1/3 fractional precision
             pitch_index--;
 
-            if (resolution == 5) {
+            if (resolution == 5)
+            {
                 pitch_index += 3 * av_clip(prev_lag_int - 10, PITCH_DELAY_MIN,
                                            PITCH_DELAY_MAX - 19);
-            } else
+            }
+            else
                 pitch_index += 3 * av_clip(prev_lag_int - 5, PITCH_DELAY_MIN,
                                            PITCH_DELAY_MAX - 9);
         }

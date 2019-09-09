@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,31 +18,37 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/audio_coding/neteq/tools/audio_sink.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-class OutputAudioFile : public AudioSink {
- public:
-  // Creates an OutputAudioFile, opening a file named |file_name| for writing.
-  // The file format is 16-bit signed host-endian PCM.
-  explicit OutputAudioFile(const std::string& file_name) {
-    out_file_ = fopen(file_name.c_str(), "wb");
-  }
+class OutputAudioFile : public AudioSink
+{
+public:
+    // Creates an OutputAudioFile, opening a file named |file_name| for writing.
+    // The file format is 16-bit signed host-endian PCM.
+    explicit OutputAudioFile(const std::string& file_name)
+    {
+        out_file_ = fopen(file_name.c_str(), "wb");
+    }
 
-  virtual ~OutputAudioFile() {
-    if (out_file_)
-      fclose(out_file_);
-  }
+    virtual ~OutputAudioFile()
+    {
+        if (out_file_)
+            fclose(out_file_);
+    }
 
-  bool WriteArray(const int16_t* audio, size_t num_samples) override {
-    assert(out_file_);
-    return fwrite(audio, sizeof(*audio), num_samples, out_file_) == num_samples;
-  }
+    bool WriteArray(const int16_t* audio, size_t num_samples) override
+    {
+        assert(out_file_);
+        return fwrite(audio, sizeof(*audio), num_samples, out_file_) == num_samples;
+    }
 
- private:
-  FILE* out_file_;
+private:
+    FILE* out_file_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(OutputAudioFile);
+    RTC_DISALLOW_COPY_AND_ASSIGN(OutputAudioFile);
 };
 
 }  // namespace test

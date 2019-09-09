@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,9 +16,11 @@
 
 #include "webrtc/base/buffer.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-namespace H264 {
+namespace H264
+{
 // The size of a full NALU start sequence {0 0 0 1}, used for the first NALU
 // of an access unit, and for SPS and PPS blocks.
 const size_t kNaluLongStartSequenceSize = 4;
@@ -30,29 +32,31 @@ const size_t kNaluShortStartSequenceSize = 3;
 // The size of the NALU type byte (1).
 const size_t kNaluTypeSize = 1;
 
-enum NaluType : uint8_t {
-  kSlice = 1,
-  kIdr = 5,
-  kSei = 6,
-  kSps = 7,
-  kPps = 8,
-  kAud = 9,
-  kEndOfSequence = 10,
-  kEndOfStream = 11,
-  kFiller = 12,
-  kStapA = 24,
-  kFuA = 28
+enum NaluType : uint8_t
+{
+    kSlice = 1,
+    kIdr = 5,
+    kSei = 6,
+    kSps = 7,
+    kPps = 8,
+    kAud = 9,
+    kEndOfSequence = 10,
+    kEndOfStream = 11,
+    kFiller = 12,
+    kStapA = 24,
+    kFuA = 28
 };
 
 enum SliceType : uint8_t { kP = 0, kB = 1, kI = 2, kSp = 3, kSi = 4 };
 
-struct NaluIndex {
-  // Start index of NALU, including start sequence.
-  size_t start_offset;
-  // Start index of NALU payload, typically type header.
-  size_t payload_start_offset;
-  // Length of NALU payload, in bytes, counting from payload_start_offset.
-  size_t payload_size;
+struct NaluIndex
+{
+    // Start index of NALU, including start sequence.
+    size_t start_offset;
+    // Start index of NALU payload, typically type header.
+    size_t payload_start_offset;
+    // Length of NALU payload, in bytes, counting from payload_start_offset.
+    size_t payload_size;
 };
 
 // Returns a vector of the NALU indices in the given buffer.

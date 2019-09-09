@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/test/gtest.h"
 #include "webrtc/typedefs.h"
 
-namespace {
+namespace
+{
 
 // Modes we support
 const int kModes[] = { 0, 1, 2, 3 };
@@ -29,19 +30,21 @@ const size_t kRatesSize = sizeof(kRates) / sizeof(*kRates);
 // Frame lengths we support.
 const size_t kMaxFrameLength = 1440;
 const size_t kFrameLengths[] = { 80, 120, 160, 240, 320, 480, 640, 960,
-    kMaxFrameLength };
+                                 kMaxFrameLength
+                               };
 const size_t kFrameLengthsSize = sizeof(kFrameLengths) / sizeof(*kFrameLengths);
 
 }  // namespace
 
-class VadTest : public ::testing::Test {
- protected:
-  VadTest();
-  virtual void SetUp();
-  virtual void TearDown();
+class VadTest : public ::testing::Test
+{
+protected:
+    VadTest();
+    virtual void SetUp();
+    virtual void TearDown();
 
-  // Returns true if the rate and frame length combination is valid.
-  bool ValidRatesAndFrameLengths(int rate, size_t frame_length);
+    // Returns true if the rate and frame length combination is valid.
+    bool ValidRatesAndFrameLengths(int rate, size_t frame_length);
 };
 
 #endif  // WEBRTC_COMMON_AUDIO_VAD_VAD_UNITTEST_H

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Rich Felker
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -31,7 +31,8 @@
 
 enum FieldType { FIELD_TYPE_TOP = 0, FIELD_TYPE_BOTTOM };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int type;                   ///< FieldType
     int nb_planes;              ///< number of planes of the current format
@@ -40,7 +41,8 @@ typedef struct {
 #define OFFSET(x) offsetof(FieldContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption field_options[] = {
+static const AVOption field_options[] =
+{
     {"type", "set field type (top or bottom)", OFFSET(type), AV_OPT_TYPE_INT, {.i64=FIELD_TYPE_TOP}, 0, 1, FLAGS, "field_type" },
     {"top",    "select top field",    0, AV_OPT_TYPE_CONST, {.i64=FIELD_TYPE_TOP},    INT_MIN, INT_MAX, FLAGS, "field_type"},
     {"bottom", "select bottom field", 0, AV_OPT_TYPE_CONST, {.i64=FIELD_TYPE_BOTTOM}, INT_MIN, INT_MAX, FLAGS, "field_type"},
@@ -75,7 +77,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     inpicref->height = outlink->h;
     inpicref->interlaced_frame = 0;
 
-    for (i = 0; i < field->nb_planes; i++) {
+    for (i = 0; i < field->nb_planes; i++)
+    {
         if (field->type == FIELD_TYPE_BOTTOM)
             inpicref->data[i] = inpicref->data[i] + inpicref->linesize[i];
         inpicref->linesize[i] = 2 * inpicref->linesize[i];
@@ -83,7 +86,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     return ff_filter_frame(outlink, inpicref);
 }
 
-static const AVFilterPad field_inputs[] = {
+static const AVFilterPad field_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -92,7 +96,8 @@ static const AVFilterPad field_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad field_outputs[] = {
+static const AVFilterPad field_outputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -101,7 +106,8 @@ static const AVFilterPad field_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_field = {
+AVFilter ff_vf_field =
+{
     .name        = "field",
     .description = NULL_IF_CONFIG_SMALL("Extract a field from the input video."),
     .priv_size   = sizeof(FieldContext),

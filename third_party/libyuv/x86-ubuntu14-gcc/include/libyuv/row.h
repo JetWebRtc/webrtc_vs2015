@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2011 The LibYuv Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,8 +16,10 @@
 #include "libyuv/basic_types.h"
 
 #ifdef __cplusplus
-namespace libyuv {
-extern "C" {
+namespace libyuv
+{
+extern "C"
+{
 #endif
 
 #define IS_ALIGNED(p, a) (!((uintptr_t)(p) & ((a) - 1)))
@@ -420,31 +422,31 @@ typedef uint8 ulvec8[32];
 #if defined(__aarch64__)
 // This struct is for Arm64 color conversion.
 struct YuvConstants {
-  uvec16 kUVToRB;
-  uvec16 kUVToRB2;
-  uvec16 kUVToG;
-  uvec16 kUVToG2;
-  vec16 kUVBiasBGR;
-  vec32 kYToRgb;
+    uvec16 kUVToRB;
+    uvec16 kUVToRB2;
+    uvec16 kUVToG;
+    uvec16 kUVToG2;
+    vec16 kUVBiasBGR;
+    vec32 kYToRgb;
 };
 #elif defined(__arm__)
 // This struct is for ArmV7 color conversion.
 struct YuvConstants {
-  uvec8 kUVToRB;
-  uvec8 kUVToG;
-  vec16 kUVBiasBGR;
-  vec32 kYToRgb;
+    uvec8 kUVToRB;
+    uvec8 kUVToG;
+    vec16 kUVBiasBGR;
+    vec32 kYToRgb;
 };
 #else
 // This struct is for Intel color conversion.
 struct YuvConstants {
-  lvec8 kUVToB;
-  lvec8 kUVToG;
-  lvec8 kUVToR;
-  lvec16 kUVBiasB;
-  lvec16 kUVBiasG;
-  lvec16 kUVBiasR;
-  lvec16 kYToRgb;
+    lvec8 kUVToB;
+    lvec8 kUVToG;
+    lvec8 kUVToR;
+    lvec16 kUVBiasB;
+    lvec16 kUVBiasG;
+    lvec16 kUVBiasR;
+    lvec16 kYToRgb;
 };
 
 // Offsets into YuvConstants structure

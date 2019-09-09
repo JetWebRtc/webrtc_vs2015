@@ -1,4 +1,4 @@
-/*
+﻿/*
  * NIST Sphere demuxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -51,25 +51,34 @@ static int nist_read_header(AVFormatContext *s)
     if (header_size <= 0)
         return AVERROR_INVALIDDATA;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         ff_get_line(s->pb, buffer, sizeof(buffer));
 
         if (avio_tell(s->pb) >= header_size)
             return AVERROR_INVALIDDATA;
 
-        if (!memcmp(buffer, "end_head", 8)) {
+        if (!memcmp(buffer, "end_head", 8))
+        {
             if (!st->codec->bits_per_coded_sample)
                 st->codec->bits_per_coded_sample = bps << 3;
 
-            if (!av_strcasecmp(coding, "pcm")) {
+            if (!av_strcasecmp(coding, "pcm"))
+            {
                 st->codec->codec_id = ff_get_pcm_codec_id(st->codec->bits_per_coded_sample,
-                                                          0, be, 0xFFFF);
-            } else if (!av_strcasecmp(coding, "alaw")) {
+                                      0, be, 0xFFFF);
+            }
+            else if (!av_strcasecmp(coding, "alaw"))
+            {
                 st->codec->codec_id = AV_CODEC_ID_PCM_ALAW;
-            } else if (!av_strcasecmp(coding, "ulaw") ||
-                       !av_strcasecmp(coding, "mu-law")) {
+            }
+            else if (!av_strcasecmp(coding, "ulaw") ||
+                     !av_strcasecmp(coding, "mu-law"))
+            {
                 st->codec->codec_id = AV_CODEC_ID_PCM_MULAW;
-            } else {
+            }
+            else
+            {
                 avpriv_request_sample(s, "coding %s", coding);
             }
 
@@ -83,34 +92,58 @@ static int nist_read_header(AVFormatContext *s)
             avio_skip(s->pb, header_size - avio_tell(s->pb));
 
             return 0;
-        } else if (!memcmp(buffer, "channel_count", 13)) {
+        }
+        else if (!memcmp(buffer, "channel_count", 13))
+        {
             sscanf(buffer, "%*s %*s %"SCNd32, &st->codec->channels);
-        } else if (!memcmp(buffer, "sample_byte_format", 18)) {
+        }
+        else if (!memcmp(buffer, "sample_byte_format", 18))
+        {
             sscanf(buffer, "%*s %*s %31s", format);
 
-            if (!av_strcasecmp(format, "01")) {
+            if (!av_strcasecmp(format, "01"))
+            {
                 be = 0;
-            } else if (!av_strcasecmp(format, "10")) {
+            }
+            else if (!av_strcasecmp(format, "10"))
+            {
                 be = 1;
-            } else if (av_strcasecmp(format, "1")) {
+            }
+            else if (av_strcasecmp(format, "1"))
+            {
                 avpriv_request_sample(s, "sample byte format %s", format);
                 return AVERROR_PATCHWELCOME;
             }
-        } else if (!memcmp(buffer, "sample_coding", 13)) {
+        }
+        else if (!memcmp(buffer, "sample_coding", 13))
+        {
             sscanf(buffer, "%*s %*s %31s", coding);
-        } else if (!memcmp(buffer, "sample_count", 12)) {
+        }
+        else if (!memcmp(buffer, "sample_count", 12))
+        {
             sscanf(buffer, "%*s %*s %"SCNd64, &st->duration);
-        } else if (!memcmp(buffer, "sample_n_bytes", 14)) {
+        }
+        else if (!memcmp(buffer, "sample_n_bytes", 14))
+        {
             sscanf(buffer, "%*s %*s %"SCNd32, &bps);
-        } else if (!memcmp(buffer, "sample_rate", 11)) {
+        }
+        else if (!memcmp(buffer, "sample_rate", 11))
+        {
             sscanf(buffer, "%*s %*s %"SCNd32, &st->codec->sample_rate);
-        } else if (!memcmp(buffer, "sample_sig_bits", 15)) {
+        }
+        else if (!memcmp(buffer, "sample_sig_bits", 15))
+        {
             sscanf(buffer, "%*s %*s %"SCNd32, &st->codec->bits_per_coded_sample);
-        } else {
+        }
+        else
+        {
             char key[32], value[32];
-            if (sscanf(buffer, "%31s %*s %31s", key, value) == 3) {
+            if (sscanf(buffer, "%31s %*s %31s", key, value) == 3)
+            {
                 av_dict_set(&s->metadata, key, value, AV_DICT_APPEND);
-            } else {
+            }
+            else
+            {
                 av_log(s, AV_LOG_ERROR, "Failed to parse '%s' as metadata\n", buffer);
             }
         }
@@ -119,7 +152,8 @@ static int nist_read_header(AVFormatContext *s)
     return AVERROR_EOF;
 }
 
-AVInputFormat ff_nistsphere_demuxer = {
+AVInputFormat ff_nistsphere_demuxer =
+{
     .name           = "nistsphere",
     .long_name      = NULL_IF_CONFIG_SMALL("NIST SPeech HEader REsources"),
     .read_probe     = nist_probe,

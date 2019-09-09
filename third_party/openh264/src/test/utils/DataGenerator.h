@@ -1,4 +1,4 @@
-#ifndef DATA_GENERATOR_H__
+﻿#ifndef DATA_GENERATOR_H__
 #define DATA_GENERATOR_H__
 
 #include "typedefs.h"

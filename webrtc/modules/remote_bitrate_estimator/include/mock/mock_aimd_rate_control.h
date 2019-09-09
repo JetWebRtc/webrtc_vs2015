@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,12 +14,14 @@
 #include "webrtc/modules/remote_bitrate_estimator/aimd_rate_control.h"
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockAimdRateControl : public AimdRateControl {
- public:
-  MOCK_CONST_METHOD0(GetNearMaxIncreaseRateBps, int());
-  MOCK_CONST_METHOD0(GetLastBitrateDecreaseBps, rtc::Optional<int>());
+class MockAimdRateControl : public AimdRateControl
+{
+public:
+    MOCK_CONST_METHOD0(GetNearMaxIncreaseRateBps, int());
+    MOCK_CONST_METHOD0(GetLastBitrateDecreaseBps, rtc::Optional<int>());
 };
 
 }  // namespace webrtc

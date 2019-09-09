@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Simple free lossless/lossy audio codec
  * Copyright (c) 2004 Alex Beregszaszi
  *
@@ -46,7 +46,8 @@
 #define LEFT_SIDE 1
 #define RIGHT_SIDE 2
 
-typedef struct SonicContext {
+typedef struct SonicContext
+{
     int version;
     int minor_version;
     int lossless, decorrelation;
@@ -89,7 +90,8 @@ static inline int shift_down(int a,int b)
     return (a>>b)+(a<0);
 }
 
-static av_always_inline av_flatten void put_symbol(RangeCoder *c, uint8_t *state, int v, int is_signed, uint64_t rc_stat[256][2], uint64_t rc_stat2[32][2]){
+static av_always_inline av_flatten void put_symbol(RangeCoder *c, uint8_t *state, int v, int is_signed, uint64_t rc_stat[256][2], uint64_t rc_stat2[32][2])
+{
     int i;
 
 #define put_rac(C,S,B) \
@@ -101,53 +103,67 @@ do{\
     put_rac(C,S,B);\
 }while(0)
 
-    if(v){
+    if(v)
+    {
         const int a= FFABS(v);
         const int e= av_log2(a);
         put_rac(c, state+0, 0);
-        if(e<=9){
-            for(i=0; i<e; i++){
+        if(e<=9)
+        {
+            for(i=0; i<e; i++)
+            {
                 put_rac(c, state+1+i, 1);  //1..10
             }
             put_rac(c, state+1+i, 0);
 
-            for(i=e-1; i>=0; i--){
+            for(i=e-1; i>=0; i--)
+            {
                 put_rac(c, state+22+i, (a>>i)&1); //22..31
             }
 
             if(is_signed)
                 put_rac(c, state+11 + e, v < 0); //11..21
-        }else{
-            for(i=0; i<e; i++){
+        }
+        else
+        {
+            for(i=0; i<e; i++)
+            {
                 put_rac(c, state+1+FFMIN(i,9), 1);  //1..10
             }
             put_rac(c, state+1+9, 0);
 
-            for(i=e-1; i>=0; i--){
+            for(i=e-1; i>=0; i--)
+            {
                 put_rac(c, state+22+FFMIN(i,9), (a>>i)&1); //22..31
             }
 
             if(is_signed)
                 put_rac(c, state+11 + 10, v < 0); //11..21
         }
-    }else{
+    }
+    else
+    {
         put_rac(c, state+0, 1);
     }
 #undef put_rac
 }
 
-static inline av_flatten int get_symbol(RangeCoder *c, uint8_t *state, int is_signed){
+static inline av_flatten int get_symbol(RangeCoder *c, uint8_t *state, int is_signed)
+{
     if(get_rac(c, state+0))
         return 0;
-    else{
+    else
+    {
         int i, e, a;
         e= 0;
-        while(get_rac(c, state+1 + FFMIN(e,9))){ //1..10
+        while(get_rac(c, state+1 + FFMIN(e,9)))  //1..10
+        {
             e++;
         }
 
         a= 1;
-        for(i=e-1; i>=0; i--){
+        for(i=e-1; i>=0; i--)
+        {
             a += a + get_rac(c, state+22 + FFMIN(i,9)); //22..31
         }
 
@@ -454,7 +470,7 @@ static void predictor_init_state(int *k, int *state, int order)
         int j, p, x = state[i];
 
         for (j = 0, p = i+1; p < order; j++,p++)
-            {
+        {
             int tmp = x + shift_down(k[j] * state[p], LATTICE_SHIFT);
             state[p] += shift_down(k[j]*x, LATTICE_SHIFT);
             x = tmp;
@@ -468,7 +484,7 @@ static int predictor_calc_error(int *k, int *state, int order, int error)
 
 #if 1
     int *k_ptr = &(k[order-2]),
-        *state_ptr = &(state[order-2]);
+         *state_ptr = &(state[order-2]);
     for (i = order-2; i >= 0; i--, k_ptr--, state_ptr--)
     {
         int k_value = *k_ptr, state_value = *state_ptr;
@@ -498,7 +514,7 @@ static int predictor_calc_error(int *k, int *state, int order, int error)
 // actual whitened result as it goes.
 
 static int modified_levinson_durbin(int *window, int window_entries,
-        int *out, int out_entries, int channels, int *tap_quant)
+                                    int *out, int out_entries, int channels, int *tap_quant)
 {
     int i;
     int *state = av_calloc(window_entries, sizeof(*state));
@@ -516,7 +532,7 @@ static int modified_levinson_durbin(int *window, int window_entries,
         int *x_ptr = &(window[step]);
         int *state_ptr = &(state[0]);
         j = window_entries - step;
-        for (;j>0;j--,x_ptr++,state_ptr++)
+        for (; j>0; j--,x_ptr++,state_ptr++)
         {
             double x_value = *x_ptr;
             double state_value = *state_ptr;
@@ -551,7 +567,7 @@ static int modified_levinson_durbin(int *window, int window_entries,
         x_ptr = &(window[step]);
         state_ptr = &(state[0]);
         j = window_entries - step;
-        for (;j>0;j--,x_ptr++,state_ptr++)
+        for (; j>0; j--,x_ptr++,state_ptr++)
         {
             int x_value = *x_ptr;
             int state_value = *state_ptr;
@@ -577,15 +593,24 @@ static inline int code_samplerate(int samplerate)
 {
     switch (samplerate)
     {
-        case 44100: return 0;
-        case 22050: return 1;
-        case 11025: return 2;
-        case 96000: return 3;
-        case 48000: return 4;
-        case 32000: return 5;
-        case 24000: return 6;
-        case 16000: return 7;
-        case 8000: return 8;
+    case 44100:
+        return 0;
+    case 22050:
+        return 1;
+    case 11025:
+        return 2;
+    case 96000:
+        return 3;
+    case 48000:
+        return 4;
+    case 32000:
+        return 5;
+    case 24000:
+        return 6;
+    case 16000:
+        return 7;
+    case 8000:
+        return 8;
     }
     return AVERROR(EINVAL);
 }
@@ -624,7 +649,8 @@ static av_cold int sonic_encode_init(AVCodecContext *avctx)
     }
 
     // max tap 2048
-    if (s->num_taps < 32 || s->num_taps > 1024 || s->num_taps % 32) {
+    if (s->num_taps < 32 || s->num_taps > 1024 || s->num_taps % 32)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid number of taps\n");
         return AVERROR_INVALIDDATA;
     }
@@ -674,7 +700,8 @@ static av_cold int sonic_encode_init(AVCodecContext *avctx)
     put_bits(&pb, 2, s->version); // version
     if (s->version >= 1)
     {
-        if (s->version >= 2) {
+        if (s->version >= 2)
+        {
             put_bits(&pb, 8, s->version);
             put_bits(&pb, 8, s->minor_version);
         }
@@ -693,7 +720,7 @@ static av_cold int sonic_encode_init(AVCodecContext *avctx)
     avctx->extradata_size = put_bits_count(&pb)/8;
 
     av_log(avctx, AV_LOG_INFO, "Sonic: ver: %d.%d ls: %d dr: %d taps: %d block: %d frame: %d downsamp: %d\n",
-        s->version, s->minor_version, s->lossless, s->decorrelation, s->num_taps, s->block_align, s->frame_size, s->downsampling);
+           s->version, s->minor_version, s->lossless, s->decorrelation, s->num_taps, s->block_align, s->frame_size, s->downsampling);
 
     avctx->frame_size = s->block_align*s->downsampling;
 
@@ -744,21 +771,21 @@ static int sonic_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
     switch(s->decorrelation)
     {
-        case MID_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-            {
-                s->int_samples[i] += s->int_samples[i+1];
-                s->int_samples[i+1] -= shift(s->int_samples[i], 1);
-            }
-            break;
-        case LEFT_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-                s->int_samples[i+1] -= s->int_samples[i];
-            break;
-        case RIGHT_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-                s->int_samples[i] -= s->int_samples[i+1];
-            break;
+    case MID_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+        {
+            s->int_samples[i] += s->int_samples[i+1];
+            s->int_samples[i+1] -= shift(s->int_samples[i], 1);
+        }
+        break;
+    case LEFT_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+            s->int_samples[i+1] -= s->int_samples[i];
+        break;
+    case RIGHT_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+            s->int_samples[i] -= s->int_samples[i+1];
+        break;
     }
 
     memset(s->window, 0, 4* s->window_size);
@@ -777,7 +804,7 @@ static int sonic_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
     // generate taps
     ret = modified_levinson_durbin(s->window, s->window_size,
-                s->predictor_k, s->num_taps, s->channels, s->tap_quant);
+                                   s->predictor_k, s->num_taps, s->channels, s->tap_quant);
     if (ret < 0)
         return ret;
 
@@ -851,7 +878,7 @@ static int sonic_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
 
 #if CONFIG_SONIC_DECODER
 static const int samplerate_table[] =
-    { 44100, 22050, 11025, 96000, 48000, 32000, 24000, 16000, 8000 };
+{ 44100, 22050, 11025, 96000, 48000, 32000, 24000, 16000, 8000 };
 
 static av_cold int sonic_decode_init(AVCodecContext *avctx)
 {
@@ -874,7 +901,8 @@ static av_cold int sonic_decode_init(AVCodecContext *avctx)
         return ret;
 
     s->version = get_bits(&gb, 2);
-    if (s->version >= 2) {
+    if (s->version >= 2)
+    {
         s->version       = get_bits(&gb, 8);
         s->minor_version = get_bits(&gb, 8);
     }
@@ -889,13 +917,14 @@ static av_cold int sonic_decode_init(AVCodecContext *avctx)
         int sample_rate_index;
         s->channels = get_bits(&gb, 2);
         sample_rate_index = get_bits(&gb, 4);
-        if (sample_rate_index >= FF_ARRAY_ELEMS(samplerate_table)) {
+        if (sample_rate_index >= FF_ARRAY_ELEMS(samplerate_table))
+        {
             av_log(avctx, AV_LOG_ERROR, "Invalid sample_rate_index %d\n", sample_rate_index);
             return AVERROR_INVALIDDATA;
         }
         s->samplerate = samplerate_table[sample_rate_index];
         av_log(avctx, AV_LOG_INFO, "Sonicv2 chans: %d samprate: %d\n",
-            s->channels, s->samplerate);
+               s->channels, s->samplerate);
     }
 
     if (s->channels > MAX_CHANNELS || s->channels < 1)
@@ -909,13 +938,15 @@ static av_cold int sonic_decode_init(AVCodecContext *avctx)
     if (!s->lossless)
         skip_bits(&gb, 3); // XXX FIXME
     s->decorrelation = get_bits(&gb, 2);
-    if (s->decorrelation != 3 && s->channels != 2) {
+    if (s->decorrelation != 3 && s->channels != 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid decorrelation %d\n", s->decorrelation);
         return AVERROR_INVALIDDATA;
     }
 
     s->downsampling = get_bits(&gb, 2);
-    if (!s->downsampling) {
+    if (!s->downsampling)
+    {
         av_log(avctx, AV_LOG_ERROR, "invalid downsampling value\n");
         return AVERROR_INVALIDDATA;
     }
@@ -929,7 +960,7 @@ static av_cold int sonic_decode_init(AVCodecContext *avctx)
 //    avctx->frame_size = s->block_align;
 
     av_log(avctx, AV_LOG_INFO, "Sonic: ver: %d.%d ls: %d dr: %d taps: %d block: %d frame: %d downsamp: %d\n",
-        s->version, s->minor_version, s->lossless, s->decorrelation, s->num_taps, s->block_align, s->frame_size, s->downsampling);
+           s->version, s->minor_version, s->lossless, s->decorrelation, s->num_taps, s->block_align, s->frame_size, s->downsampling);
 
     // generate taps
     s->tap_quant = av_calloc(s->num_taps, sizeof(*s->tap_quant));
@@ -981,8 +1012,8 @@ static av_cold int sonic_decode_close(AVCodecContext *avctx)
 }
 
 static int sonic_decode_frame(AVCodecContext *avctx,
-                            void *data, int *got_frame_ptr,
-                            AVPacket *avpkt)
+                              void *data, int *got_frame_ptr,
+                              AVPacket *avpkt)
 {
     const uint8_t *buf = avpkt->data;
     int buf_size = avpkt->size;
@@ -1045,21 +1076,21 @@ static int sonic_decode_frame(AVCodecContext *avctx,
 
     switch(s->decorrelation)
     {
-        case MID_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-            {
-                s->int_samples[i+1] += shift(s->int_samples[i], 1);
-                s->int_samples[i] -= s->int_samples[i+1];
-            }
-            break;
-        case LEFT_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-                s->int_samples[i+1] += s->int_samples[i];
-            break;
-        case RIGHT_SIDE:
-            for (i = 0; i < s->frame_size; i += s->channels)
-                s->int_samples[i] += s->int_samples[i+1];
-            break;
+    case MID_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+        {
+            s->int_samples[i+1] += shift(s->int_samples[i], 1);
+            s->int_samples[i] -= s->int_samples[i+1];
+        }
+        break;
+    case LEFT_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+            s->int_samples[i+1] += s->int_samples[i];
+        break;
+    case RIGHT_SIDE:
+        for (i = 0; i < s->frame_size; i += s->channels)
+            s->int_samples[i] += s->int_samples[i+1];
+        break;
     }
 
     if (!s->lossless)
@@ -1075,7 +1106,8 @@ static int sonic_decode_frame(AVCodecContext *avctx,
     return buf_size;
 }
 
-AVCodec ff_sonic_decoder = {
+AVCodec ff_sonic_decoder =
+{
     .name           = "sonic",
     .long_name      = NULL_IF_CONFIG_SMALL("Sonic"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -1089,7 +1121,8 @@ AVCodec ff_sonic_decoder = {
 #endif /* CONFIG_SONIC_DECODER */
 
 #if CONFIG_SONIC_ENCODER
-AVCodec ff_sonic_encoder = {
+AVCodec ff_sonic_encoder =
+{
     .name           = "sonic",
     .long_name      = NULL_IF_CONFIG_SMALL("Sonic"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -1104,7 +1137,8 @@ AVCodec ff_sonic_encoder = {
 #endif
 
 #if CONFIG_SONIC_LS_ENCODER
-AVCodec ff_sonic_ls_encoder = {
+AVCodec ff_sonic_ls_encoder =
+{
     .name           = "sonicls",
     .long_name      = NULL_IF_CONFIG_SMALL("Sonic lossless"),
     .type           = AVMEDIA_TYPE_AUDIO,

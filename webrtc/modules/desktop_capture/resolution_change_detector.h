@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2017 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -13,16 +13,18 @@
 
 #include "webrtc/modules/desktop_capture/desktop_geometry.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class ResolutionChangeDetector {
- public:
-  bool IsChanged(DesktopSize size);
-  void Reset();
+class ResolutionChangeDetector
+{
+public:
+    bool IsChanged(DesktopSize size);
+    void Reset();
 
- private:
-  DesktopSize last_size_;
-  bool initialized_ = false;
+private:
+    DesktopSize last_size_;
+    bool initialized_ = false;
 };
 
 }  // namespace webrtc

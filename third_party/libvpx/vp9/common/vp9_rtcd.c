@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -12,8 +12,9 @@
 #include "./vp9_rtcd.h"
 #include "vpx_ports/vpx_once.h"
 
-void vp9_rtcd() {
-  // TODO(JBB): Remove this once, by insuring that both the encoder and
-  // decoder setup functions are protected by once();
-  once(setup_rtcd_internal);
+void vp9_rtcd()
+{
+    // TODO(JBB): Remove this once, by insuring that both the encoder and
+    // decoder setup functions are protected by once();
+    once(setup_rtcd_internal);
 }

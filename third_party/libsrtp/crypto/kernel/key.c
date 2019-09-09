@@ -1,4 +1,4 @@
-/*
+﻿/*
  * key.c
  *
  * key usage limits enforcement
@@ -43,7 +43,7 @@
  */
 
 #ifdef HAVE_CONFIG_H
-    #include <config.h>
+#include <config.h>
 #endif
 
 #include "key.h"
@@ -53,11 +53,13 @@
 srtp_err_status_t srtp_key_limit_set (srtp_key_limit_t key, const srtp_xtd_seq_num_t s)
 {
 #ifdef NO_64BIT_MATH
-    if (high32(s) == 0 && low32(s) < soft_limit) {
+    if (high32(s) == 0 && low32(s) < soft_limit)
+    {
         return srtp_err_status_bad_param;
     }
 #else
-    if (s < soft_limit) {
+    if (s < soft_limit)
+    {
         return srtp_err_status_bad_param;
     }
 #endif
@@ -68,7 +70,8 @@ srtp_err_status_t srtp_key_limit_set (srtp_key_limit_t key, const srtp_xtd_seq_n
 
 srtp_err_status_t srtp_key_limit_clone (srtp_key_limit_t original, srtp_key_limit_t *new_key)
 {
-    if (original == NULL) {
+    if (original == NULL)
+    {
         return srtp_err_status_bad_param;
     }
     *new_key = original;
@@ -77,7 +80,8 @@ srtp_err_status_t srtp_key_limit_clone (srtp_key_limit_t original, srtp_key_limi
 
 srtp_err_status_t srtp_key_limit_check (const srtp_key_limit_t key)
 {
-    if (key->state == srtp_key_state_expired) {
+    if (key->state == srtp_key_state_expired)
+    {
         return srtp_err_status_key_expired;
     }
     return srtp_err_status_ok;
@@ -86,23 +90,29 @@ srtp_err_status_t srtp_key_limit_check (const srtp_key_limit_t key)
 srtp_key_event_t srtp_key_limit_update (srtp_key_limit_t key)
 {
 #ifdef NO_64BIT_MATH
-    if (low32(key->num_left) == 0) {
+    if (low32(key->num_left) == 0)
+    {
         // carry
         key->num_left = make64(high32(key->num_left) - 1, low32(key->num_left) - 1);
-    }else  {
+    }
+    else
+    {
         // no carry
         key->num_left = make64(high32(key->num_left), low32(key->num_left) - 1);
     }
-    if (high32(key->num_left) != 0 || low32(key->num_left) >= soft_limit) {
+    if (high32(key->num_left) != 0 || low32(key->num_left) >= soft_limit)
+    {
         return srtp_key_event_normal; /* we're above the soft limit */
     }
 #else
     key->num_left--;
-    if (key->num_left >= soft_limit) {
+    if (key->num_left >= soft_limit)
+    {
         return srtp_key_event_normal; /* we're above the soft limit */
     }
 #endif
-    if (key->state == srtp_key_state_normal) {
+    if (key->state == srtp_key_state_normal)
+    {
         /* we just passed the soft limit, so change the state */
         key->state = srtp_key_state_past_soft_limit;
     }
@@ -111,7 +121,8 @@ srtp_key_event_t srtp_key_limit_update (srtp_key_limit_t key)
 #else
     if (key->num_left < 1)
 #endif
-    {   /* we just hit the hard limit */
+    {
+        /* we just hit the hard limit */
         key->state = srtp_key_state_expired;
         return srtp_key_event_hard_limit;
     }

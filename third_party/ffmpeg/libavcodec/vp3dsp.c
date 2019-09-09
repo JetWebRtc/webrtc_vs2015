@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2004 The FFmpeg Project
  *
  * This file is part of FFmpeg.
@@ -54,10 +54,12 @@ static av_always_inline void idct(uint8_t *dst, int stride,
     int i;
 
     /* Inverse DCT on the rows now */
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         /* Check for non-zero values */
         if (ip[0 * 8] | ip[1 * 8] | ip[2 * 8] | ip[3 * 8] |
-            ip[4 * 8] | ip[5 * 8] | ip[6 * 8] | ip[7 * 8]) {
+                ip[4 * 8] | ip[5 * 8] | ip[6 * 8] | ip[7 * 8])
+        {
             A = M(xC1S7, ip[1 * 8]) + M(xC7S1, ip[7 * 8]);
             B = M(xC7S1, ip[1 * 8]) - M(xC1S7, ip[7 * 8]);
             C = M(xC3S5, ip[3 * 8]) + M(xC5S3, ip[5 * 8]);
@@ -103,10 +105,12 @@ static av_always_inline void idct(uint8_t *dst, int stride,
 
     ip = input;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         /* Check for non-zero values (bitwise or faster than ||) */
         if (ip[1] | ip[2] | ip[3] |
-            ip[4] | ip[5] | ip[6] | ip[7]) {
+                ip[4] | ip[5] | ip[6] | ip[7])
+        {
             A = M(xC1S7, ip[1]) + M(xC7S1, ip[7]);
             B = M(xC7S1, ip[1]) - M(xC1S7, ip[7]);
             C = M(xC3S5, ip[3]) + M(xC5S3, ip[5]);
@@ -121,7 +125,8 @@ static av_always_inline void idct(uint8_t *dst, int stride,
             E = M(xC4S4, (ip[0] + ip[4])) + 8;
             F = M(xC4S4, (ip[0] - ip[4])) + 8;
 
-            if (type == 1) { // HACK
+            if (type == 1)   // HACK
+            {
                 E += 16 * 128;
                 F += 16 * 128;
             }
@@ -139,7 +144,8 @@ static av_always_inline void idct(uint8_t *dst, int stride,
             Hd = Bd + H;
 
             /* Final sequence of operations over-write original inputs. */
-            if (type == 1) {
+            if (type == 1)
+            {
                 dst[0 * stride] = av_clip_uint8((Gd + Cd) >> 4);
                 dst[7 * stride] = av_clip_uint8((Gd - Cd) >> 4);
 
@@ -151,7 +157,9 @@ static av_always_inline void idct(uint8_t *dst, int stride,
 
                 dst[5 * stride] = av_clip_uint8((Fd + Bdd) >> 4);
                 dst[6 * stride] = av_clip_uint8((Fd - Bdd) >> 4);
-            } else {
+            }
+            else
+            {
                 dst[0 * stride] = av_clip_uint8(dst[0 * stride] + ((Gd + Cd) >> 4));
                 dst[7 * stride] = av_clip_uint8(dst[7 * stride] + ((Gd - Cd) >> 4));
 
@@ -164,18 +172,24 @@ static av_always_inline void idct(uint8_t *dst, int stride,
                 dst[5 * stride] = av_clip_uint8(dst[5 * stride] + ((Fd + Bdd) >> 4));
                 dst[6 * stride] = av_clip_uint8(dst[6 * stride] + ((Fd - Bdd) >> 4));
             }
-        } else {
-            if (type == 1) {
+        }
+        else
+        {
+            if (type == 1)
+            {
                 dst[0*stride] =
-                dst[1*stride] =
-                dst[2*stride] =
-                dst[3*stride] =
-                dst[4*stride] =
-                dst[5*stride] =
-                dst[6*stride] =
-                dst[7*stride] = av_clip_uint8(128 + ((xC4S4 * ip[0] + (IdctAdjustBeforeShift << 16)) >> 20));
-            } else {
-                if (ip[0]) {
+                    dst[1*stride] =
+                        dst[2*stride] =
+                            dst[3*stride] =
+                                dst[4*stride] =
+                                    dst[5*stride] =
+                                        dst[6*stride] =
+                                            dst[7*stride] = av_clip_uint8(128 + ((xC4S4 * ip[0] + (IdctAdjustBeforeShift << 16)) >> 20));
+            }
+            else
+            {
+                if (ip[0])
+                {
                     int v = (xC4S4 * ip[0] + (IdctAdjustBeforeShift << 16)) >> 20;
                     dst[0 * stride] = av_clip_uint8(dst[0 * stride] + v);
                     dst[1 * stride] = av_clip_uint8(dst[1 * stride] + v);
@@ -213,7 +227,8 @@ static void vp3_idct_dc_add_c(uint8_t *dest /* align 8 */, int line_size,
 {
     int i, dc = (block[0] + 15) >> 5;
 
-    for (i = 0; i < 8; i++) {
+    for (i = 0; i < 8; i++)
+    {
         dest[0] = av_clip_uint8(dest[0] + dc);
         dest[1] = av_clip_uint8(dest[1] + dc);
         dest[2] = av_clip_uint8(dest[2] + dc);
@@ -234,7 +249,8 @@ static void vp3_v_loop_filter_c(uint8_t *first_pixel, int stride,
     int filter_value;
     const int nstride = -stride;
 
-    for (end = first_pixel + 8; first_pixel < end; first_pixel++) {
+    for (end = first_pixel + 8; first_pixel < end; first_pixel++)
+    {
         filter_value = (first_pixel[2 * nstride] - first_pixel[stride]) +
                        (first_pixel[0] - first_pixel[nstride]) * 3;
         filter_value = bounding_values[(filter_value + 4) >> 3];
@@ -250,7 +266,8 @@ static void vp3_h_loop_filter_c(uint8_t *first_pixel, int stride,
     unsigned char *end;
     int filter_value;
 
-    for (end = first_pixel + 8 * stride; first_pixel != end; first_pixel += stride) {
+    for (end = first_pixel + 8 * stride; first_pixel != end; first_pixel += stride)
+    {
         filter_value = (first_pixel[-2] - first_pixel[1]) +
                        (first_pixel[ 0] - first_pixel[-1]) * 3;
         filter_value = bounding_values[(filter_value + 4) >> 3];
@@ -265,7 +282,8 @@ static void put_no_rnd_pixels_l2(uint8_t *dst, const uint8_t *src1,
 {
     int i;
 
-    for (i = 0; i < h; i++) {
+    for (i = 0; i < h; i++)
+    {
         uint32_t a, b;
 
         a = AV_RN32(&src1[i * stride]);

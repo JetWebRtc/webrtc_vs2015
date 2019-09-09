@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The simplest mpeg encoder (well, it was the simplest!)
  * Copyright (c) 2000,2001 Fabrice Bellard
  *
@@ -86,7 +86,8 @@ DECLARE_ALIGNED(16, static uint16_t, inv_zigzag_direct16)[64];
 #endif /* HAVE_6REGS */
 
 #if HAVE_INLINE_ASM
-static void  denoise_dct_mmx(MpegEncContext *s, int16_t *block){
+static void  denoise_dct_mmx(MpegEncContext *s, int16_t *block)
+{
     const int intra= s->mb_intra;
     int *sum= s->dct_error_sum[intra];
     uint16_t *offset= s->dct_offset[intra];
@@ -134,13 +135,14 @@ static void  denoise_dct_mmx(MpegEncContext *s, int16_t *block){
         "add $32, %1                            \n\t"
         "add $16, %2                            \n\t"
         "cmp %3, %0                             \n\t"
-            " jb 1b                             \n\t"
+        " jb 1b                             \n\t"
         : "+r" (block), "+r" (sum), "+r" (offset)
         : "r"(block+64)
     );
 }
 
-static void  denoise_dct_sse2(MpegEncContext *s, int16_t *block){
+static void  denoise_dct_sse2(MpegEncContext *s, int16_t *block)
+{
     const int intra= s->mb_intra;
     int *sum= s->dct_error_sum[intra];
     uint16_t *offset= s->dct_offset[intra];
@@ -188,11 +190,11 @@ static void  denoise_dct_sse2(MpegEncContext *s, int16_t *block){
         "add $64, %1                            \n\t"
         "add $32, %2                            \n\t"
         "cmp %3, %0                             \n\t"
-            " jb 1b                             \n\t"
+        " jb 1b                             \n\t"
         : "+r" (block), "+r" (sum), "+r" (offset)
         : "r"(block+64)
-          XMM_CLOBBERS_ONLY("%xmm0", "%xmm1", "%xmm2", "%xmm3",
-                            "%xmm4", "%xmm5", "%xmm6", "%xmm7")
+        XMM_CLOBBERS_ONLY("%xmm0", "%xmm1", "%xmm2", "%xmm3",
+                          "%xmm4", "%xmm5", "%xmm6", "%xmm7")
     );
 }
 #endif /* HAVE_INLINE_ASM */
@@ -205,10 +207,12 @@ av_cold void ff_dct_encode_init_x86(MpegEncContext *s)
     for (i = 0; i < 64; i++)
         inv_zigzag_direct16[ff_zigzag_direct[i]] = i + 1;
 
-    if (dct_algo == FF_DCT_AUTO || dct_algo == FF_DCT_MMX) {
+    if (dct_algo == FF_DCT_AUTO || dct_algo == FF_DCT_MMX)
+    {
 #if HAVE_MMX_INLINE
         int cpu_flags = av_get_cpu_flags();
-        if (INLINE_MMX(cpu_flags)) {
+        if (INLINE_MMX(cpu_flags))
+        {
 #if HAVE_6REGS
             s->dct_quantize = dct_quantize_mmx;
 #endif
@@ -220,7 +224,8 @@ av_cold void ff_dct_encode_init_x86(MpegEncContext *s)
             s->dct_quantize = dct_quantize_mmxext;
 #endif
 #if HAVE_SSE2_INLINE
-        if (INLINE_SSE2(cpu_flags)) {
+        if (INLINE_SSE2(cpu_flags))
+        {
 #if HAVE_6REGS
             s->dct_quantize = dct_quantize_sse2;
 #endif

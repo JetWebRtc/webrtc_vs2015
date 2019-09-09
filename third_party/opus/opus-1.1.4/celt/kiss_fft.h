@@ -1,4 +1,4 @@
-/*Copyright (c) 2003-2004, Mark Borgerding
+﻿/*Copyright (c) 2003-2004, Mark Borgerding
   Lots of modifications by Jean-Marc Valin
   Copyright (c) 2005-2007, Xiph.Org Foundation
   Copyright (c) 2008,      Xiph.Org Foundation, CSIRO
@@ -62,15 +62,17 @@ extern "C" {
 # endif
 #endif
 
-typedef struct {
+typedef struct
+{
     kiss_fft_scalar r;
     kiss_fft_scalar i;
-}kiss_fft_cpx;
+} kiss_fft_cpx;
 
-typedef struct {
-   kiss_twiddle_scalar r;
-   kiss_twiddle_scalar i;
-}kiss_twiddle_cpx;
+typedef struct
+{
+    kiss_twiddle_scalar r;
+    kiss_twiddle_scalar i;
+} kiss_twiddle_cpx;
 
 #define MAXFACTORS 8
 /* e.g. an fft of length 128 has 4 factors
@@ -78,12 +80,14 @@ typedef struct {
  4*4*4*2
  */
 
-typedef struct arch_fft_state{
-   int is_supported;
-   void *priv;
+typedef struct arch_fft_state
+{
+    int is_supported;
+    void *priv;
 } arch_fft_state;
 
-typedef struct kiss_fft_state{
+typedef struct kiss_fft_state
+{
     int nfft;
     opus_val16 scale;
 #ifdef FIXED_POINT
@@ -156,23 +160,23 @@ int opus_fft_alloc_arch_c(kiss_fft_state *st);
 #if defined(OPUS_HAVE_RTCD) && (defined(HAVE_ARM_NE10))
 
 extern int (*const OPUS_FFT_ALLOC_ARCH_IMPL[OPUS_ARCHMASK+1])(
- kiss_fft_state *st);
+    kiss_fft_state *st);
 
 #define opus_fft_alloc_arch(_st, arch) \
          ((*OPUS_FFT_ALLOC_ARCH_IMPL[(arch)&OPUS_ARCHMASK])(_st))
 
 extern void (*const OPUS_FFT_FREE_ARCH_IMPL[OPUS_ARCHMASK+1])(
- kiss_fft_state *st);
+    kiss_fft_state *st);
 #define opus_fft_free_arch(_st, arch) \
          ((*OPUS_FFT_FREE_ARCH_IMPL[(arch)&OPUS_ARCHMASK])(_st))
 
 extern void (*const OPUS_FFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
- const kiss_fft_cpx *fin, kiss_fft_cpx *fout);
+        const kiss_fft_cpx *fin, kiss_fft_cpx *fout);
 #define opus_fft(_cfg, _fin, _fout, arch) \
    ((*OPUS_FFT[(arch)&OPUS_ARCHMASK])(_cfg, _fin, _fout))
 
 extern void (*const OPUS_IFFT[OPUS_ARCHMASK+1])(const kiss_fft_state *cfg,
- const kiss_fft_cpx *fin, kiss_fft_cpx *fout);
+        const kiss_fft_cpx *fin, kiss_fft_cpx *fout);
 #define opus_ifft(_cfg, _fin, _fout, arch) \
    ((*OPUS_IFFT[(arch)&OPUS_ARCHMASK])(_cfg, _fin, _fout))
 

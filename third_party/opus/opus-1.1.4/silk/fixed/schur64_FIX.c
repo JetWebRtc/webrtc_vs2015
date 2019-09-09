@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -46,25 +46,32 @@ opus_int32 silk_schur64(                            /* O    returns residual ene
     silk_assert( order==6||order==8||order==10||order==12||order==14||order==16 );
 
     /* Check for invalid input */
-    if( c[ 0 ] <= 0 ) {
+    if( c[ 0 ] <= 0 )
+    {
         silk_memset( rc_Q16, 0, order * sizeof( opus_int32 ) );
         return 0;
     }
 
-    for( k = 0; k < order + 1; k++ ) {
+    for( k = 0; k < order + 1; k++ )
+    {
         C[ k ][ 0 ] = C[ k ][ 1 ] = c[ k ];
     }
 
-    for( k = 0; k < order; k++ ) {
+    for( k = 0; k < order; k++ )
+    {
         /* Check that we won't be getting an unstable rc, otherwise stop here. */
-        if (silk_abs_int32(C[ k + 1 ][ 0 ]) >= C[ 0 ][ 1 ]) {
-           if ( C[ k + 1 ][ 0 ] > 0 ) {
-              rc_Q16[ k ] = -SILK_FIX_CONST( .99f, 16 );
-           } else {
-              rc_Q16[ k ] = SILK_FIX_CONST( .99f, 16 );
-           }
-           k++;
-           break;
+        if (silk_abs_int32(C[ k + 1 ][ 0 ]) >= C[ 0 ][ 1 ])
+        {
+            if ( C[ k + 1 ][ 0 ] > 0 )
+            {
+                rc_Q16[ k ] = -SILK_FIX_CONST( .99f, 16 );
+            }
+            else
+            {
+                rc_Q16[ k ] = SILK_FIX_CONST( .99f, 16 );
+            }
+            k++;
+            break;
         }
 
         /* Get reflection coefficient: divide two Q30 values and get result in Q31 */
@@ -74,7 +81,8 @@ opus_int32 silk_schur64(                            /* O    returns residual ene
         rc_Q16[ k ] = silk_RSHIFT_ROUND( rc_tmp_Q31, 15 );
 
         /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
+        for( n = 0; n < order - k; n++ )
+        {
             Ctmp1_Q30 = C[ n + k + 1 ][ 0 ];
             Ctmp2_Q30 = C[ n ][ 1 ];
 
@@ -84,8 +92,9 @@ opus_int32 silk_schur64(                            /* O    returns residual ene
         }
     }
 
-    for(; k < order; k++ ) {
-       rc_Q16[ k ] = 0;
+    for(; k < order; k++ )
+    {
+        rc_Q16[ k ] = 0;
     }
 
     return silk_max_32( 1, C[ 0 ][ 1 ] );

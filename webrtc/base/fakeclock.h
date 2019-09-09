@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,55 +15,61 @@
 #include "webrtc/base/timedelta.h"
 #include "webrtc/base/timeutils.h"
 
-namespace rtc {
+namespace rtc
+{
 
 // Fake clock for use with unit tests, which does not tick on its own.
 // Starts at time 0.
 //
 // TODO(deadbeef): Unify with webrtc::SimulatedClock.
-class FakeClock : public ClockInterface {
- public:
-  ~FakeClock() override {}
+class FakeClock : public ClockInterface
+{
+public:
+    ~FakeClock() override {}
 
-  // ClockInterface implementation.
-  int64_t TimeNanos() const override;
+    // ClockInterface implementation.
+    int64_t TimeNanos() const override;
 
-  // Methods that can be used by the test to control the time.
+    // Methods that can be used by the test to control the time.
 
-  // Should only be used to set a time in the future.
-  void SetTimeNanos(int64_t nanos);
-  void SetTimeMicros(int64_t micros) {
-    SetTimeNanos(kNumNanosecsPerMicrosec * micros);
-  }
+    // Should only be used to set a time in the future.
+    void SetTimeNanos(int64_t nanos);
+    void SetTimeMicros(int64_t micros)
+    {
+        SetTimeNanos(kNumNanosecsPerMicrosec * micros);
+    }
 
-  void AdvanceTime(TimeDelta delta);
-  void AdvanceTimeMicros(int64_t micros) {
-    AdvanceTime(rtc::TimeDelta::FromMicroseconds(micros));
-  }
- private:
-  CriticalSection lock_;
-  int64_t time_ GUARDED_BY(lock_) = 0;
+    void AdvanceTime(TimeDelta delta);
+    void AdvanceTimeMicros(int64_t micros)
+    {
+        AdvanceTime(rtc::TimeDelta::FromMicroseconds(micros));
+    }
+private:
+    CriticalSection lock_;
+    int64_t time_ GUARDED_BY(lock_) = 0;
 };
 
 // Helper class that sets itself as the global clock in its constructor and
 // unsets it in its destructor.
-class ScopedFakeClock : public FakeClock {
- public:
-  ScopedFakeClock();
-  ~ScopedFakeClock() override;
+class ScopedFakeClock : public FakeClock
+{
+public:
+    ScopedFakeClock();
+    ~ScopedFakeClock() override;
 
- private:
-  ClockInterface* prev_clock_;
+private:
+    ClockInterface* prev_clock_;
 };
 
 // Helper class to "undo" the fake clock temporarily.
-class ScopedRealClock {
- public:
-  ScopedRealClock();
-  ~ScopedRealClock();
+class ScopedRealClock
+{
+public:
+    ScopedRealClock();
+    ~ScopedRealClock();
 
- private:
-  ClockInterface* prev_clock_;
+private:
+    ClockInterface* prev_clock_;
 };
 
 }  // namespace rtc

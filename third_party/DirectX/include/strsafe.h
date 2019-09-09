@@ -1,4 +1,4 @@
-/******************************************************************
+﻿/******************************************************************
 *                                                                 *
 *  strsafe.h -- This module defines safer C library string        *
 *               routine replacements. These are meant to make C   *
@@ -91,14 +91,14 @@ typedef unsigned long DWORD;
 #endif
 
 #if defined(STRSAFE_LIB_IMPL) || defined(STRSAFE_LIB)
-#define STRSAFEWORKERAPI    EXTERN_C HRESULT __stdcall 
+#define STRSAFEWORKERAPI    EXTERN_C HRESULT __stdcall
 #else
 #define STRSAFEWORKERAPI    static STRSAFEAPI
 #endif
 
 #ifdef STRSAFE_LOCALE_FUNCTIONS
 #if defined(STRSAFE_LOCALE_LIB_IMPL) || defined(STRSAFE_LIB)
-#define STRSAFELOCALEWORKERAPI  EXTERN_C HRESULT __stdcall 
+#define STRSAFELOCALEWORKERAPI  EXTERN_C HRESULT __stdcall
 #else
 #define STRSAFELOCALEWORKERAPI  static STRSAFEAPI
 #endif
@@ -170,7 +170,7 @@ StringLengthWorkerW(
     __in STRSAFE_LPCWSTR psz,
     __in size_t cchMax,
     __out_opt size_t* pcchLength);
-    
+
 #ifdef ALIGNMENT_MACHINE
 STRSAFEWORKERAPI
 UnalignedStringLengthWorkerW(
@@ -291,7 +291,7 @@ StringGetsWorkerW(
     __out_ecount(cchDest) STRSAFE_LPWSTR pszDest,
     __in size_t cchDest,
     __out_opt size_t* pcchNewDestLength);
-    
+
 #endif  // !STRSAFE_LIB_IMPL
 
 STRSAFEWORKERAPI
@@ -415,7 +415,7 @@ StringCchCopyA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringCopyWorkerA(pszDest,
@@ -435,7 +435,7 @@ StringCchCopyW(
     __in STRSAFE_LPCWSTR pszSrc)
 {
     HRESULT hr;
-    
+
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
 
     if (SUCCEEDED(hr))
@@ -695,13 +695,13 @@ StringCchCopyExA(
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcA(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -734,13 +734,13 @@ StringCchCopyExA(
 
                 pszDestEnd = pszDest + cchCopied;
                 cchRemaining = cchDest - cchCopied;
-                
+
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -758,8 +758,8 @@ StringCchCopyExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -774,14 +774,14 @@ StringCchCopyExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -815,13 +815,13 @@ StringCchCopyExW(
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcW(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -856,11 +856,11 @@ StringCchCopyExW(
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -878,8 +878,8 @@ StringCchCopyExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -894,14 +894,14 @@ StringCchCopyExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -1037,13 +1037,13 @@ StringCbCopyExA(
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcA(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -1078,11 +1078,11 @@ StringCbCopyExA(
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -1100,8 +1100,8 @@ StringCbCopyExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -1111,7 +1111,7 @@ StringCbCopyExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
@@ -1154,13 +1154,13 @@ StringCbCopyExW(
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcW(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -1190,14 +1190,14 @@ StringCbCopyExW(
                                        &cchCopied,
                                        pszSrc,
                                        STRSAFE_MAX_LENGTH);
-                
+
                 pszDestEnd = pszDest + cchCopied;
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -1215,8 +1215,8 @@ StringCbCopyExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -1226,14 +1226,14 @@ StringCbCopyExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -1332,13 +1332,13 @@ StringCchCopyNA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         if (cchToCopy > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             *pszDest = '\0';
         }
         else
@@ -1364,13 +1364,13 @@ StringCchCopyNW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         if (cchToCopy > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             *pszDest = L'\0';
         }
         else
@@ -1474,7 +1474,7 @@ StringCbCopyNA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         size_t cchToCopy = cbToCopy / sizeof(char);
@@ -1482,7 +1482,7 @@ StringCbCopyNA(
         if (cchToCopy > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             *pszDest = '\0';
         }
         else
@@ -1509,7 +1509,7 @@ StringCbCopyNW(
     size_t cchDest = cbDest / sizeof(wchar_t);
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         size_t cchToCopy = cbToCopy / sizeof(wchar_t);
@@ -1517,7 +1517,7 @@ StringCbCopyNW(
         if (cchToCopy > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             *pszDest = L'\0';
         }
         else
@@ -1655,12 +1655,12 @@ StringCchCopyNExA(
 {
     HRESULT hr;
 
-    hr = StringExValidateDestA(&pszDest, 
+    hr = StringExValidateDestA(&pszDest,
                                &cchDest,
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -1673,7 +1673,7 @@ StringCchCopyNExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -1708,11 +1708,11 @@ StringCchCopyNExA(
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -1730,8 +1730,8 @@ StringCchCopyNExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -1746,14 +1746,14 @@ StringCchCopyNExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -1781,7 +1781,7 @@ StringCchCopyNExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -1794,7 +1794,7 @@ StringCchCopyNExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -1829,11 +1829,11 @@ StringCchCopyNExW(
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -1851,8 +1851,8 @@ StringCchCopyNExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -1874,7 +1874,7 @@ StringCchCopyNExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -2011,7 +2011,7 @@ StringCbCopyNExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -2025,7 +2025,7 @@ StringCbCopyNExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -2060,11 +2060,11 @@ StringCbCopyNExA(
                 cchRemaining = cchDest - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -2082,8 +2082,8 @@ StringCbCopyNExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -2093,14 +2093,14 @@ StringCbCopyNExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -2130,7 +2130,7 @@ StringCbCopyNExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -2144,7 +2144,7 @@ StringCbCopyNExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -2181,7 +2181,7 @@ StringCbCopyNExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -2199,8 +2199,8 @@ StringCbCopyNExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -2210,7 +2210,7 @@ StringCbCopyNExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
@@ -2307,7 +2307,7 @@ StringCchCatA(
     size_t cchDestLength;
 
     hr = StringValidateDestA(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringCopyWorkerA(pszDest + cchDestLength,
@@ -2330,7 +2330,7 @@ StringCchCatW(
     size_t cchDestLength;
 
     hr = StringValidateDestW(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringCopyWorkerW(pszDest + cchDestLength,
@@ -2422,7 +2422,7 @@ StringCbCatA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringCopyWorkerA(pszDest + cchDestLength,
@@ -2446,7 +2446,7 @@ StringCbCatW(
     size_t cchDest = cbDest / sizeof(wchar_t);
 
     hr = StringValidateDestW(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringCopyWorkerW(pszDest + cchDestLength,
@@ -2587,7 +2587,7 @@ StringCchCatExA(
         size_t cchRemaining = cchDest - cchDestLength;
 
         hr = StringExValidateSrcA(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
@@ -2621,13 +2621,13 @@ StringCchCatExA(
 
                 pszDestEnd = pszDestEnd + cchCopied;
                 cchRemaining = cchRemaining - cchCopied;
-            
+
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -2638,14 +2638,14 @@ StringCchCatExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
             // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
             cbDest = cchDest * sizeof(char);
-            
+
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
                                       cbDest,
@@ -2654,14 +2654,14 @@ StringCchCatExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -2696,7 +2696,7 @@ StringCchCatExW(
         size_t cchRemaining = cchDest - cchDestLength;
 
         hr = StringExValidateSrcW(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
@@ -2732,11 +2732,11 @@ StringCchCatExW(
                 cchRemaining = cchRemaining - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -2747,14 +2747,14 @@ StringCchCatExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
             // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
             cbDest = cchDest * sizeof(wchar_t);
-            
+
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
                                       cbDest,
@@ -2763,14 +2763,14 @@ StringCchCatExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -2910,7 +2910,7 @@ StringCbCatExA(
         size_t cchRemaining = cchDest - cchDestLength;
 
         hr = StringExValidateSrcA(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
@@ -2946,11 +2946,11 @@ StringCbCatExA(
                 cchRemaining = cchRemaining - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -2961,8 +2961,8 @@ StringCbCatExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -2972,14 +2972,14 @@ StringCbCatExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -3016,7 +3016,7 @@ StringCbCatExW(
         size_t cchRemaining = cchDest - cchDestLength;
 
         hr = StringExValidateSrcW(&pszSrc, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
@@ -3054,7 +3054,7 @@ StringCbCatExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -3065,8 +3065,8 @@ StringCbCatExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -3076,14 +3076,14 @@ StringCbCatExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -3180,7 +3180,7 @@ StringCchCatNA(
     size_t cchDestLength;
 
     hr = StringValidateDestA(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         if (cchToAppend > STRSAFE_MAX_LENGTH)
@@ -3211,7 +3211,7 @@ StringCchCatNW(
     size_t cchDestLength;
 
     hr = StringValidateDestW(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         if (cchToAppend > STRSAFE_MAX_LENGTH)
@@ -3317,11 +3317,11 @@ StringCbCatNA(
     size_t cchDestLength;
 
     hr = StringValidateDestA(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         size_t cchToAppend = cbToAppend / sizeof(char);
-        
+
         if (cchToAppend > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
@@ -3351,11 +3351,11 @@ StringCbCatNW(
     size_t cchDestLength;
 
     hr = StringValidateDestW(pszDest, cchDest, &cchDestLength, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         size_t cchToAppend = cbToAppend / sizeof(wchar_t);
-        
+
         if (cchToAppend > STRSAFE_MAX_LENGTH)
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
@@ -3498,7 +3498,7 @@ StringCchCatNExA(
                                &cchDestLength,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest + cchDestLength;
@@ -3541,11 +3541,11 @@ StringCchCatNExA(
                 cchRemaining = cchRemaining - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -3556,8 +3556,8 @@ StringCchCatNExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -3572,14 +3572,14 @@ StringCchCatNExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -3608,7 +3608,7 @@ StringCchCatNExW(
                                &cchDestLength,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest + cchDestLength;
@@ -3646,16 +3646,16 @@ StringCchCatNExW(
                                        &cchCopied,
                                        pszSrc,
                                        cchToAppend);
-                
+
                 pszDestEnd = pszDestEnd + cchCopied;
                 cchRemaining = cchRemaining - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -3666,8 +3666,8 @@ StringCchCatNExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -3682,14 +3682,14 @@ StringCchCatNExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -3826,7 +3826,7 @@ StringCbCatNExA(
                                &cchDestLength,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest + cchDestLength;
@@ -3870,11 +3870,11 @@ StringCbCatNExA(
                 cchRemaining = cchRemaining - cchCopied;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -3885,8 +3885,8 @@ StringCbCatNExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -3896,14 +3896,14 @@ StringCbCatNExA(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -3980,7 +3980,7 @@ StringCbCatNExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -3991,8 +3991,8 @@ StringCbCatNExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -4002,14 +4002,14 @@ StringCbCatNExW(
                                       &cchRemaining,
                                       dwFlags);
         }
-                                     
+
         if (SUCCEEDED(hr) || (hr == STRSAFE_E_INSUFFICIENT_BUFFER))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -4103,7 +4103,7 @@ StringCchVPrintfA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintfWorkerA(pszDest,
@@ -4126,7 +4126,7 @@ StringCchVPrintfW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintfWorkerW(pszDest,
@@ -4176,7 +4176,7 @@ StringCchVPrintf_lA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintf_lWorkerA(pszDest,
@@ -4201,7 +4201,7 @@ StringCchVPrintf_lW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintf_lWorkerW(pszDest,
@@ -4299,7 +4299,7 @@ StringCbVPrintfA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintfWorkerA(pszDest,
@@ -4321,9 +4321,9 @@ StringCbVPrintfW(
 {
     HRESULT hr;
     size_t cchDest = cbDest / sizeof(wchar_t);
- 
+
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintfWorkerW(pszDest,
@@ -4374,7 +4374,7 @@ StringCbVPrintf_lA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintf_lWorkerA(pszDest,
@@ -4398,9 +4398,9 @@ StringCbVPrintf_lW(
 {
     HRESULT hr;
     size_t cchDest = cbDest / sizeof(wchar_t);
- 
+
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringVPrintf_lWorkerW(pszDest,
@@ -4498,7 +4498,7 @@ StringCchPrintfA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4527,7 +4527,7 @@ StringCchPrintfW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4583,7 +4583,7 @@ StringCchPrintf_lA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4614,7 +4614,7 @@ StringCchPrintf_lW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4718,7 +4718,7 @@ StringCbPrintfA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4748,7 +4748,7 @@ StringCbPrintfW(
     size_t cchDest = cbDest / sizeof(wchar_t);
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4805,7 +4805,7 @@ StringCbPrintf_lA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4837,7 +4837,7 @@ StringCbPrintf_lW(
     size_t cchDest = cbDest / sizeof(wchar_t);
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         va_list argList;
@@ -4979,7 +4979,7 @@ StringCchPrintfExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -4992,7 +4992,7 @@ StringCchPrintfExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -5032,11 +5032,11 @@ StringCchPrintfExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -5054,12 +5054,12 @@ StringCchPrintfExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
-             // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
+            // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
             cbDest = cchDest * sizeof(char);
 
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
@@ -5077,7 +5077,7 @@ StringCchPrintfExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -5105,7 +5105,7 @@ StringCchPrintfExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -5118,7 +5118,7 @@ StringCchPrintfExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -5158,11 +5158,11 @@ StringCchPrintfExW(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -5180,8 +5180,8 @@ StringCchPrintfExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -5203,7 +5203,7 @@ StringCchPrintfExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -5261,7 +5261,7 @@ StringCchPrintf_lExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -5274,7 +5274,7 @@ StringCchPrintf_lExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -5315,11 +5315,11 @@ StringCchPrintf_lExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -5337,12 +5337,12 @@ StringCchPrintf_lExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
-             // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
+            // safe to multiply cchDest * sizeof(char) since cchDest < STRSAFE_MAX_CCH and sizeof(char) is 1
             cbDest = cchDest * sizeof(char);
 
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
@@ -5360,7 +5360,7 @@ StringCchPrintf_lExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -5389,7 +5389,7 @@ StringCchPrintf_lExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -5402,7 +5402,7 @@ StringCchPrintf_lExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -5443,11 +5443,11 @@ StringCchPrintf_lExW(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -5465,8 +5465,8 @@ StringCchPrintf_lExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -5488,7 +5488,7 @@ StringCchPrintf_lExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -5622,7 +5622,7 @@ StringCbPrintfExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -5635,7 +5635,7 @@ StringCbPrintfExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -5675,11 +5675,11 @@ StringCbPrintfExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -5697,8 +5697,8 @@ StringCbPrintfExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -5715,7 +5715,7 @@ StringCbPrintfExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -5745,7 +5745,7 @@ StringCbPrintfExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -5758,7 +5758,7 @@ StringCbPrintfExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -5800,7 +5800,7 @@ StringCbPrintfExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -5818,8 +5818,8 @@ StringCbPrintfExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -5836,7 +5836,7 @@ StringCbPrintfExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -5896,7 +5896,7 @@ StringCbPrintf_lExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -5909,7 +5909,7 @@ StringCbPrintf_lExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -5950,11 +5950,11 @@ StringCbPrintf_lExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -5972,8 +5972,8 @@ StringCbPrintf_lExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -5990,7 +5990,7 @@ StringCbPrintf_lExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -6021,7 +6021,7 @@ StringCbPrintf_lExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -6034,7 +6034,7 @@ StringCbPrintf_lExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -6077,7 +6077,7 @@ StringCbPrintf_lExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -6095,8 +6095,8 @@ StringCbPrintf_lExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -6113,7 +6113,7 @@ StringCbPrintf_lExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -6250,20 +6250,20 @@ StringCchVPrintfExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcA(&pszFormat, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -6298,11 +6298,11 @@ StringCchVPrintfExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -6320,8 +6320,8 @@ StringCchVPrintfExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -6343,7 +6343,7 @@ StringCchVPrintfExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -6371,7 +6371,7 @@ StringCchVPrintfExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -6384,7 +6384,7 @@ StringCchVPrintfExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -6419,11 +6419,11 @@ StringCchVPrintfExW(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -6441,8 +6441,8 @@ StringCchVPrintfExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -6464,7 +6464,7 @@ StringCchVPrintfExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -6522,20 +6522,20 @@ StringCchVPrintf_lExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
         size_t cchRemaining = cchDest;
 
         hr = StringExValidateSrcA(&pszFormat, NULL, STRSAFE_MAX_CCH, dwFlags);
-        
+
         if (SUCCEEDED(hr))
         {
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -6571,11 +6571,11 @@ StringCchVPrintf_lExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = cchRemaining * sizeof(char);
 
@@ -6593,8 +6593,8 @@ StringCchVPrintf_lExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -6616,7 +6616,7 @@ StringCchVPrintf_lExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -6645,7 +6645,7 @@ StringCchVPrintf_lExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -6658,7 +6658,7 @@ StringCchVPrintf_lExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -6694,11 +6694,11 @@ StringCchVPrintf_lExW(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -6716,8 +6716,8 @@ StringCchVPrintf_lExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -6739,7 +6739,7 @@ StringCchVPrintf_lExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -6873,7 +6873,7 @@ StringCbVPrintfExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -6886,7 +6886,7 @@ StringCbVPrintfExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -6921,11 +6921,11 @@ StringCbVPrintfExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -6943,8 +6943,8 @@ StringCbVPrintfExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -6961,7 +6961,7 @@ StringCbVPrintfExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -6991,7 +6991,7 @@ StringCbVPrintfExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -7004,7 +7004,7 @@ StringCbVPrintfExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -7041,7 +7041,7 @@ StringCbVPrintfExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -7059,8 +7059,8 @@ StringCbVPrintfExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -7077,7 +7077,7 @@ StringCbVPrintfExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -7137,7 +7137,7 @@ StringCbVPrintf_lExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -7150,7 +7150,7 @@ StringCbVPrintf_lExA(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = '\0';
@@ -7186,11 +7186,11 @@ StringCbVPrintf_lExA(
                 cchRemaining = cchDest - cchNewDestLength;
 
                 if (SUCCEEDED(hr)                           &&
-                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                    (cchRemaining > 1))
+                        (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                        (cchRemaining > 1))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                     cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -7208,8 +7208,8 @@ StringCbVPrintf_lExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -7226,7 +7226,7 @@ StringCbVPrintf_lExA(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -7257,7 +7257,7 @@ StringCbVPrintf_lExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -7270,7 +7270,7 @@ StringCbVPrintf_lExW(
             if (dwFlags & (~STRSAFE_VALID_FLAGS))
             {
                 hr = STRSAFE_E_INVALID_PARAMETER;
-                
+
                 if (cchDest != 0)
                 {
                     *pszDest = L'\0';
@@ -7308,7 +7308,7 @@ StringCbVPrintf_lExW(
                 if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
                 {
                     size_t cbRemaining;
-                    
+
                     // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                     cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -7326,8 +7326,8 @@ StringCbVPrintf_lExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -7344,7 +7344,7 @@ StringCbVPrintf_lExW(
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -7433,7 +7433,7 @@ StringCchGetsA(
     HRESULT hr;
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringGetsWorkerA(pszDest, cchDest, NULL);
@@ -7450,7 +7450,7 @@ StringCchGetsW(
     HRESULT hr;
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringGetsWorkerW(pszDest, cchDest, NULL);
@@ -7535,7 +7535,7 @@ StringCbGetsA(
     size_t cchDest = cbDest / sizeof(char);
 
     hr = StringValidateDestA(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringGetsWorkerA(pszDest, cchDest, NULL);
@@ -7553,7 +7553,7 @@ StringCbGetsW(
     size_t cchDest = cbDest / sizeof(wchar_t);
 
     hr = StringValidateDestW(pszDest, cchDest, NULL, STRSAFE_MAX_CCH);
-    
+
     if (SUCCEEDED(hr))
     {
         hr = StringGetsWorkerW(pszDest, cchDest, NULL);
@@ -7671,7 +7671,7 @@ StringCchGetsExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -7680,7 +7680,7 @@ StringCchGetsExA(
         if (dwFlags & (~STRSAFE_VALID_FLAGS))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             if (cchDest != 0)
             {
                 *pszDest = '\0';
@@ -7707,11 +7707,11 @@ StringCchGetsExA(
             cchRemaining = cchDest - cchNewDestLength;
 
             if (SUCCEEDED(hr)                           &&
-                (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                (cchRemaining > 1))
+                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                    (cchRemaining > 1))
             {
                 size_t cbRemaining;
-                
+
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                 cbRemaining = cchRemaining * sizeof(char);
 
@@ -7721,8 +7721,8 @@ StringCchGetsExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -7739,14 +7739,14 @@ StringCchGetsExA(
         }
 
         if (SUCCEEDED(hr)                           ||
-            (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
-            (hr == STRSAFE_E_END_OF_FILE))
+                (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
+                (hr == STRSAFE_E_END_OF_FILE))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -7772,7 +7772,7 @@ StringCchGetsExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -7781,7 +7781,7 @@ StringCchGetsExW(
         if (dwFlags & (~STRSAFE_VALID_FLAGS))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             if (cchDest != 0)
             {
                 *pszDest = L'\0';
@@ -7808,11 +7808,11 @@ StringCchGetsExW(
             cchRemaining = cchDest - cchNewDestLength;
 
             if (SUCCEEDED(hr)                           &&
-                (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                (cchRemaining > 1))
+                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                    (cchRemaining > 1))
             {
                 size_t cbRemaining;
-                
+
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                 cbRemaining = cchRemaining * sizeof(wchar_t);
 
@@ -7822,8 +7822,8 @@ StringCchGetsExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cchDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cchDest != 0))
         {
             size_t cbDest;
 
@@ -7840,14 +7840,14 @@ StringCchGetsExW(
         }
 
         if (SUCCEEDED(hr)                           ||
-            (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
-            (hr == STRSAFE_E_END_OF_FILE))
+                (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
+                (hr == STRSAFE_E_END_OF_FILE))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-        
+
             if (pcchRemaining)
             {
                 *pcchRemaining = cchRemaining;
@@ -7968,7 +7968,7 @@ StringCbGetsExA(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPSTR pszDestEnd = pszDest;
@@ -7977,7 +7977,7 @@ StringCbGetsExA(
         if (dwFlags & (~STRSAFE_VALID_FLAGS))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             if (cchDest != 0)
             {
                 *pszDest = '\0';
@@ -8002,13 +8002,13 @@ StringCbGetsExA(
 
             pszDestEnd = pszDest + cchNewDestLength;
             cchRemaining = cchDest - cchNewDestLength;
-            
+
             if (SUCCEEDED(hr)                           &&
-                (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
-                (cchRemaining > 1))
+                    (dwFlags & STRSAFE_FILL_BEHIND_NULL)    &&
+                    (cchRemaining > 1))
             {
                 size_t cbRemaining;
-                
+
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
                 cbRemaining = (cchRemaining * sizeof(char)) + (cbDest % sizeof(char));
 
@@ -8018,8 +8018,8 @@ StringCbGetsExA(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsA(pszDest,
@@ -8031,14 +8031,14 @@ StringCbGetsExA(
         }
 
         if (SUCCEEDED(hr)                           ||
-            (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
-            (hr == STRSAFE_E_END_OF_FILE))
+                (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
+                (hr == STRSAFE_E_END_OF_FILE))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(char) since cchRemaining < STRSAFE_MAX_CCH and sizeof(char) is 1
@@ -8066,7 +8066,7 @@ StringCbGetsExW(
                                NULL,
                                STRSAFE_MAX_CCH,
                                dwFlags);
-    
+
     if (SUCCEEDED(hr))
     {
         STRSAFE_LPWSTR pszDestEnd = pszDest;
@@ -8075,7 +8075,7 @@ StringCbGetsExW(
         if (dwFlags & (~STRSAFE_VALID_FLAGS))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
-            
+
             if (cchDest != 0)
             {
                 *pszDest = L'\0';
@@ -8104,7 +8104,7 @@ StringCbGetsExW(
             if (SUCCEEDED(hr) && (dwFlags & STRSAFE_FILL_BEHIND_NULL))
             {
                 size_t cbRemaining;
-                
+
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
                 cbRemaining = (cchRemaining * sizeof(wchar_t)) + (cbDest % sizeof(wchar_t));
 
@@ -8114,8 +8114,8 @@ StringCbGetsExW(
         }
 
         if (FAILED(hr)                                                                              &&
-            (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
-            (cbDest != 0))
+                (dwFlags & (STRSAFE_NO_TRUNCATION | STRSAFE_FILL_ON_FAILURE | STRSAFE_NULL_ON_FAILURE)) &&
+                (cbDest != 0))
         {
             // handle the STRSAFE_FILL_ON_FAILURE, STRSAFE_NULL_ON_FAILURE, and STRSAFE_NO_TRUNCATION flags
             StringExHandleOtherFlagsW(pszDest,
@@ -8127,14 +8127,14 @@ StringCbGetsExW(
         }
 
         if (SUCCEEDED(hr)                           ||
-            (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
-            (hr == STRSAFE_E_END_OF_FILE))
+                (hr == STRSAFE_E_INSUFFICIENT_BUFFER)   ||
+                (hr == STRSAFE_E_END_OF_FILE))
         {
             if (ppszDestEnd)
             {
                 *ppszDestEnd = pszDestEnd;
             }
-            
+
             if (pcbRemaining)
             {
                 // safe to multiply cchRemaining * sizeof(wchar_t) since cchRemaining < STRSAFE_MAX_CCH and sizeof(wchar_t) is 2
@@ -8220,7 +8220,7 @@ StringCchLengthA(
     {
         hr = StringLengthWorkerA(psz, cchMax, pcchLength);
     }
-    
+
     if (FAILED(hr) && pcchLength)
     {
         *pcchLength = 0;
@@ -8245,7 +8245,7 @@ StringCchLengthW(
     {
         hr = StringLengthWorkerW(psz, cchMax, pcchLength);
     }
-    
+
     if (FAILED(hr) && pcchLength)
     {
         *pcchLength = 0;
@@ -8334,7 +8334,7 @@ StringCbLengthA(
     {
         if (SUCCEEDED(hr))
         {
-             // safe to multiply cchLength * sizeof(char) since cchLength < STRSAFE_MAX_CCH and sizeof(char) is 1
+            // safe to multiply cchLength * sizeof(char) since cchLength < STRSAFE_MAX_CCH and sizeof(char) is 1
             *pcbLength = cchLength * sizeof(char);
         }
         else
@@ -8451,7 +8451,7 @@ UnalignedStringCchLengthW(
     {
         hr = UnalignedStringLengthWorkerW(psz, cchMax, pcchLength);
     }
-    
+
     if (FAILED(hr) && pcchLength)
     {
         *pcchLength = 0;
@@ -8696,7 +8696,7 @@ StringExValidateSrcA(
             *pcchToRead = 0;
         }
     }
-    
+
     return hr;
 }
 
@@ -8716,7 +8716,7 @@ StringExValidateSrcW(
     else if ((dwFlags & STRSAFE_IGNORE_NULLS) && (*ppszSrc == NULL))
     {
         *ppszSrc = L"";
-        
+
         if (pcchToRead)
         {
             *pcchToRead = 0;
@@ -8793,15 +8793,15 @@ StringExValidateDestA(
     __in DWORD dwFlags)
 {
     HRESULT hr = S_OK;
-    
+
     if (dwFlags & STRSAFE_IGNORE_NULLS)
     {
         if (((*ppszDest == NULL) && (*pcchDest != 0))   ||
-            (*pcchDest > cchMax))
+                (*pcchDest > cchMax))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
         }
-        
+
         if (pcchDestLength)
         {
             if (FAILED(hr) || (*pcchDest == 0))
@@ -8831,15 +8831,15 @@ StringExValidateDestW(
     __in DWORD dwFlags)
 {
     HRESULT hr = S_OK;
-    
+
     if (dwFlags & STRSAFE_IGNORE_NULLS)
     {
         if (((*ppszDest == NULL) && (*pcchDest != 0))   ||
-            (*pcchDest > cchMax))
+                (*pcchDest > cchMax))
         {
             hr = STRSAFE_E_INVALID_PARAMETER;
         }
-        
+
         if (pcchDestLength)
         {
             if (FAILED(hr) || (*pcchDest == 0))
@@ -8870,7 +8870,7 @@ StringCopyWorkerA(
 {
     HRESULT hr = S_OK;
     size_t cchNewDestLength = 0;
-    
+
     // ASSERT(cchDest != 0);
 
     while (cchDest && cchToCopy && (*pszSrc != '\0'))
@@ -8911,7 +8911,7 @@ StringCopyWorkerW(
 {
     HRESULT hr = S_OK;
     size_t cchNewDestLength = 0;
-    
+
     // ASSERT(cchDest != 0);
 
     while (cchDest && cchToCopy && (*pszSrc != L'\0'))
@@ -9196,7 +9196,7 @@ StringGetsWorkerA(
         {
             char ch;
             int i = getc(stdin);
-            
+
             if (i == EOF)
             {
                 if (cchNewDestLength == 0)
@@ -9207,7 +9207,7 @@ StringGetsWorkerA(
 
                 break;
             }
-            
+
             ch = (char)i;
 
             if (ch == '\n')
@@ -9253,7 +9253,7 @@ StringGetsWorkerW(
         {
             wchar_t ch = getwc(stdin);
             // ASSERT(sizeof(wchar_t) == sizeof(wint_t));
-            
+
             if (ch == WEOF)
             {
                 if (cchNewDestLength == 0)
@@ -9264,7 +9264,7 @@ StringGetsWorkerW(
 
                 break;
             }
-            
+
             if (ch == L'\n')
             {
                 break;
@@ -9301,7 +9301,7 @@ StringExHandleFillBehindNullA(
     {
         memset(pszDestEnd + 1, STRSAFE_GET_FILL_PATTERN(dwFlags), cbRemaining - sizeof(char));
     }
-    
+
     return S_OK;
 }
 
@@ -9315,7 +9315,7 @@ StringExHandleFillBehindNullW(
     {
         memset(pszDestEnd + 1, STRSAFE_GET_FILL_PATTERN(dwFlags), cbRemaining - sizeof(wchar_t));
     }
-    
+
     return S_OK;
 }
 
@@ -9329,7 +9329,7 @@ StringExHandleOtherFlagsA(
     __in DWORD dwFlags)
 {
     size_t cchDest = cbDest / sizeof(char);
-    
+
     if ((cchDest > 0) && (dwFlags & STRSAFE_NO_TRUNCATION))
     {
         char* pszOriginalDestEnd;
@@ -9355,7 +9355,7 @@ StringExHandleOtherFlagsA(
         else if (cchDest > 0)
         {
             char* pszDestEnd;
-            
+
             pszDestEnd = pszDest + cchDest - 1;
 
             *ppszDestEnd = pszDestEnd;
@@ -9388,7 +9388,7 @@ StringExHandleOtherFlagsW(
     __in DWORD dwFlags)
 {
     size_t cchDest = cbDest / sizeof(wchar_t);
-    
+
     if ((cchDest > 0) && (dwFlags & STRSAFE_NO_TRUNCATION))
     {
         wchar_t* pszOriginalDestEnd;
@@ -9414,7 +9414,7 @@ StringExHandleOtherFlagsW(
         else if (cchDest > 0)
         {
             wchar_t* pszDestEnd;
-            
+
             pszDestEnd = pszDest + cchDest - 1;
 
             *ppszDestEnd = pszDestEnd;

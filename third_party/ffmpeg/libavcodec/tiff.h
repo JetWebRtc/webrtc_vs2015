@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Konstantin Shishkov
  *
  * This file is part of FFmpeg.
@@ -34,7 +34,8 @@
 #include "tiff_common.h"
 
 /** abridged list of TIFF tags */
-enum TiffTags {
+enum TiffTags
+{
     TIFF_SUBFILE            = 0xfe,
     TIFF_WIDTH              = 0x100,
     TIFF_HEIGHT,
@@ -85,7 +86,8 @@ enum TiffTags {
 };
 
 /** list of TIFF compression types */
-enum TiffCompr {
+enum TiffCompr
+{
     TIFF_RAW = 1,
     TIFF_CCITT_RLE,
     TIFF_G3,
@@ -99,7 +101,8 @@ enum TiffCompr {
     TIFF_LZMA     = 0x886D,
 };
 
-enum TiffGeoTagKey {
+enum TiffGeoTagKey
+{
     TIFF_GT_MODEL_TYPE_GEOKEY                = 1024,
     TIFF_GT_RASTER_TYPE_GEOKEY               = 1025,
     TIFF_GT_CITATION_GEOKEY                  = 1026,
@@ -147,7 +150,8 @@ enum TiffGeoTagKey {
     TIFF_VERTICAL_UNITS_GEOKEY               = 4099
 };
 
-enum TiffPhotometric {
+enum TiffPhotometric
+{
     TIFF_PHOTOMETRIC_NONE       = -1,
     TIFF_PHOTOMETRIC_WHITE_IS_ZERO,      /* mono or grayscale, 0 is white */
     TIFF_PHOTOMETRIC_BLACK_IS_ZERO,      /* mono or grayscale, 0 is black */
@@ -165,13 +169,15 @@ enum TiffPhotometric {
     TIFF_PHOTOMETRIC_LINEAR_RAW = 34892, /* Linear Raw (DNG) */
 };
 
-enum TiffGeoTagType {
+enum TiffGeoTagType
+{
     GEOTIFF_SHORT  = 0,
     GEOTIFF_DOUBLE = 34736,
     GEOTIFF_STRING = 34737
 };
 
-typedef struct TiffGeoTag {
+typedef struct TiffGeoTag
+{
     enum TiffGeoTagKey key;
     enum TiffTags type;
     int count;
@@ -179,12 +185,14 @@ typedef struct TiffGeoTag {
     char *val;
 } TiffGeoTag;
 
-typedef struct TiffGeoTagKeyName {
+typedef struct TiffGeoTagKeyName
+{
     const enum TiffGeoTagKey key;
     const char *const name;
 } TiffGeoTagKeyName;
 
-typedef struct TiffGeoTagNameType {
+typedef struct TiffGeoTagNameType
+{
     const char *const name;
     const enum TiffGeoTagType type;
 } TiffGeoTagNameType;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This is the header file for the MD5 message-digest algorithm.
  * The algorithm is due to Ron Rivest.  This code was
  * written by Colin Plumb in 1993, no copyright is claimed.
@@ -31,10 +31,11 @@ extern "C" {
 #define UWORD32 unsigned int
 
 typedef struct MD5Context MD5Context;
-struct MD5Context {
-  UWORD32 buf[4];
-  UWORD32 bytes[2];
-  UWORD32 in[16];
+struct MD5Context
+{
+    UWORD32 buf[4];
+    UWORD32 bytes[2];
+    UWORD32 in[16];
 };
 
 void MD5Init(struct MD5Context *context);

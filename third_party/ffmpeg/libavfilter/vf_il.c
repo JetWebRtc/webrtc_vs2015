@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  * Copyright (c) 2013 Paul B Mahol
  *
@@ -30,13 +30,15 @@
 #include "avfilter.h"
 #include "internal.h"
 
-enum FilterMode {
+enum FilterMode
+{
     MODE_NONE,
     MODE_INTERLEAVE,
     MODE_DEINTERLEAVE
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int luma_mode, chroma_mode, alpha_mode; ///<FilterMode
     int luma_swap, chroma_swap, alpha_swap;
@@ -48,7 +50,8 @@ typedef struct {
 #define OFFSET(x) offsetof(IlContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption il_options[] = {
+static const AVOption il_options[] =
+{
     {"luma_mode",   "select luma mode", OFFSET(luma_mode), AV_OPT_TYPE_INT, {.i64=MODE_NONE}, MODE_NONE, MODE_DEINTERLEAVE, FLAGS, "luma_mode"},
     {"l",           "select luma mode", OFFSET(luma_mode), AV_OPT_TYPE_INT, {.i64=MODE_NONE}, MODE_NONE, MODE_DEINTERLEAVE, FLAGS, "luma_mode"},
     {"none",         NULL, 0, AV_OPT_TYPE_CONST, {.i64=MODE_NONE},         0, 0, FLAGS, "luma_mode"},
@@ -86,7 +89,8 @@ static int query_formats(AVFilterContext *ctx)
     AVFilterFormats *formats = NULL;
     int fmt;
 
-    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++) {
+    for (fmt = 0; av_pix_fmt_desc_get(fmt); fmt++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(fmt);
         if (!(desc->flags & AV_PIX_FMT_FLAG_PAL) && !(desc->flags & AV_PIX_FMT_FLAG_HWACCEL))
             ff_add_format(&formats, fmt);
@@ -121,21 +125,25 @@ static void interleave(uint8_t *dst, uint8_t *src, int w, int h,
     const int m = h >> 1;
     int y;
 
-    switch (mode) {
+    switch (mode)
+    {
     case MODE_DEINTERLEAVE:
-        for (y = 0; y < m; y++) {
+        for (y = 0; y < m; y++)
+        {
             memcpy(dst + dst_linesize *  y     , src + src_linesize * (y * 2 + a), w);
             memcpy(dst + dst_linesize * (y + m), src + src_linesize * (y * 2 + b), w);
         }
         break;
     case MODE_NONE:
-        for (y = 0; y < m; y++) {
+        for (y = 0; y < m; y++)
+        {
             memcpy(dst + dst_linesize *  y * 2     , src + src_linesize * (y * 2 + a), w);
             memcpy(dst + dst_linesize * (y * 2 + 1), src + src_linesize * (y * 2 + b), w);
         }
         break;
     case MODE_INTERLEAVE:
-        for (y = 0; y < m; y++) {
+        for (y = 0; y < m; y++)
+        {
             memcpy(dst + dst_linesize * (y * 2 + a), src + src_linesize *  y     , w);
             memcpy(dst + dst_linesize * (y * 2 + b), src + src_linesize * (y + m), w);
         }
@@ -151,7 +159,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     int comp;
 
     out = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!out) {
+    if (!out)
+    {
         av_frame_free(&inpicref);
         return AVERROR(ENOMEM);
     }
@@ -162,14 +171,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
                out->linesize[0], inpicref->linesize[0],
                s->luma_mode, s->luma_swap);
 
-    for (comp = 1; comp < (s->nb_planes - s->has_alpha); comp++) {
+    for (comp = 1; comp < (s->nb_planes - s->has_alpha); comp++)
+    {
         interleave(out->data[comp], inpicref->data[comp],
                    s->linesize[comp], s->chroma_height,
                    out->linesize[comp], inpicref->linesize[comp],
                    s->chroma_mode, s->chroma_swap);
     }
 
-    if (s->has_alpha) {
+    if (s->has_alpha)
+    {
         comp = s->nb_planes - 1;
         interleave(out->data[comp], inpicref->data[comp],
                    s->linesize[comp], inlink->h,
@@ -181,7 +192,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpicref)
     return ff_filter_frame(outlink, out);
 }
 
-static const AVFilterPad inputs[] = {
+static const AVFilterPad inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -191,7 +203,8 @@ static const AVFilterPad inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad outputs[] = {
+static const AVFilterPad outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -199,7 +212,8 @@ static const AVFilterPad outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_il = {
+AVFilter ff_vf_il =
+{
     .name          = "il",
     .description   = NULL_IF_CONFIG_SMALL("Deinterleave or interleave fields."),
     .priv_size     = sizeof(IlContext),

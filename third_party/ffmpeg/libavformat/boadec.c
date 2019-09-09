@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Black ops audio demuxer
  * Copyright (c) 2013 Michael Niedermayer
  *
@@ -28,13 +28,13 @@ static int probe(AVProbeData *p)
     if (p->buf_size < 2096)
         return 0;
     if (   AV_RL32(p->buf     ) != 1
-        || AV_RL32(p->buf +  8) > 100000
-        || AV_RL32(p->buf + 12) > 8
-        || AV_RL32(p->buf + 16) != 2096
-        ||!AV_RL32(p->buf + 21)
-        || AV_RL16(p->buf + 25) != 2096
-        || AV_RL32(p->buf + 48) % AV_RL32(p->buf + 21)
-        )
+            || AV_RL32(p->buf +  8) > 100000
+            || AV_RL32(p->buf + 12) > 8
+            || AV_RL32(p->buf + 16) != 2096
+            ||!AV_RL32(p->buf + 21)
+            || AV_RL16(p->buf + 25) != 2096
+            || AV_RL32(p->buf + 48) % AV_RL32(p->buf + 21)
+       )
         return 0;
     return AVPROBE_SCORE_EXTENSION;
 }
@@ -69,7 +69,8 @@ static int read_packet(AVFormatContext *s, AVPacket *pkt)
     return av_get_packet(s->pb, pkt, st->codec->block_align);
 }
 
-AVInputFormat ff_boa_demuxer = {
+AVInputFormat ff_boa_demuxer =
+{
     .name           = "boa",
     .long_name      = NULL_IF_CONFIG_SMALL("Black Ops Audio"),
     .read_probe     = probe,

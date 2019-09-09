@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2003 Daniel Moreno <comac AT comac DOT darktech DOT org>
  * Copyright (c) 2010 Baptiste Coudurier
  * Copyright (c) 2012 Loren Merritt
@@ -28,7 +28,8 @@
 
 #include "libavutil/opt.h"
 
-typedef struct HQDN3DContext {
+typedef struct HQDN3DContext
+{
     const AVClass *class;
     int16_t *coefs[4];
     uint16_t *line;

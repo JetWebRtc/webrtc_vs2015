@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SSA/ASS muxer
  * Copyright (c) 2008 Michael Niedermayer
  *
@@ -25,13 +25,15 @@
 
 #include "libavutil/opt.h"
 
-typedef struct DialogueLine {
+typedef struct DialogueLine
+{
     int readorder;
     char *line;
     struct DialogueLine *prev, *next;
 } DialogueLine;
 
-typedef struct ASSContext {
+typedef struct ASSContext
+{
     const AVClass *class;
     int write_ts; // 0: ssa (timing in payload), 1: ass (matroska like)
     int expected_readorder;
@@ -50,13 +52,15 @@ static int write_header(AVFormatContext *s)
     AVCodecContext *avctx = s->streams[0]->codec;
 
     if (s->nb_streams != 1 || (avctx->codec_id != AV_CODEC_ID_SSA &&
-                               avctx->codec_id != AV_CODEC_ID_ASS)) {
+                               avctx->codec_id != AV_CODEC_ID_ASS))
+    {
         av_log(s, AV_LOG_ERROR, "Exactly one ASS/SSA stream is needed.\n");
         return AVERROR(EINVAL);
     }
     ass->write_ts = avctx->codec_id == AV_CODEC_ID_ASS;
     avpriv_set_pts_info(s->streams[0], 64, 1, 100);
-    if (avctx->extradata_size > 0) {
+    if (avctx->extradata_size > 0)
+    {
         size_t header_size = avctx->extradata_size;
         uint8_t *trailer = strstr(avctx->extradata, "\n[Events]");
 
@@ -65,7 +69,8 @@ static int write_header(AVFormatContext *s)
         if (trailer)
             trailer = strstr(trailer, "\n");
 
-        if (trailer++) {
+        if (trailer++)
+        {
             header_size = (trailer - avctx->extradata);
             ass->trailer_size = avctx->extradata_size - header_size;
             if (ass->trailer_size)
@@ -91,9 +96,11 @@ static void purge_dialogues(AVFormatContext *s, int force)
     ASSContext *ass = s->priv_data;
     DialogueLine *dialogue = ass->dialogue_cache;
 
-    while (dialogue && (dialogue->readorder == ass->expected_readorder || force)) {
+    while (dialogue && (dialogue->readorder == ass->expected_readorder || force))
+    {
         DialogueLine *next = dialogue->next;
-        if (dialogue->readorder != ass->expected_readorder) {
+        if (dialogue->readorder != ass->expected_readorder)
+        {
             av_log(s, AV_LOG_WARNING, "ReadOrder gap found between %d and %d\n",
                    ass->expected_readorder, dialogue->readorder);
             ass->expected_readorder = dialogue->readorder;
@@ -120,8 +127,10 @@ static void insert_dialogue(ASSContext *ass, DialogueLine *dialogue)
     DialogueLine *cur, *next = NULL, *prev = NULL;
 
     /* from the last added to the end of the list */
-    if (ass->last_added_dialogue) {
-        for (cur = ass->last_added_dialogue; cur; cur = cur->next) {
+    if (ass->last_added_dialogue)
+    {
+        for (cur = ass->last_added_dialogue; cur; cur = cur->next)
+        {
             if (cur->readorder > dialogue->readorder)
                 break;
             prev = cur;
@@ -130,9 +139,11 @@ static void insert_dialogue(ASSContext *ass, DialogueLine *dialogue)
     }
 
     /* from the beginning to the last one added */
-    if (!prev) {
+    if (!prev)
+    {
         next = ass->dialogue_cache;
-        for (cur = next; cur != ass->last_added_dialogue; cur = cur->next) {
+        for (cur = next; cur != ass->last_added_dialogue; cur = cur->next)
+        {
             if (cur->readorder > dialogue->readorder)
                 break;
             prev = cur;
@@ -140,14 +151,18 @@ static void insert_dialogue(ASSContext *ass, DialogueLine *dialogue)
         }
     }
 
-    if (prev) {
+    if (prev)
+    {
         prev->next = dialogue;
         dialogue->prev = prev;
-    } else {
+    }
+    else
+    {
         dialogue->prev = ass->dialogue_cache;
         ass->dialogue_cache = dialogue;
     }
-    if (next) {
+    if (next)
+    {
         next->prev = dialogue;
         dialogue->next = next;
     }
@@ -159,7 +174,8 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
 {
     ASSContext *ass = s->priv_data;
 
-    if (ass->write_ts) {
+    if (ass->write_ts)
+    {
         long int layer;
         char *p = pkt->data;
         int64_t start = pkt->pts;
@@ -184,23 +200,30 @@ static int write_packet(AVFormatContext *s, AVPacket *pkt)
         layer = strtol(p, &p, 10);
         if (*p == ',')
             p++;
-        hh1 = (int)(start / 360000);    mm1 = (int)(start / 6000) % 60;
-        hh2 = (int)(end   / 360000);    mm2 = (int)(end   / 6000) % 60;
-        ss1 = (int)(start / 100) % 60;  ms1 = (int)(start % 100);
-        ss2 = (int)(end   / 100) % 60;  ms2 = (int)(end   % 100);
+        hh1 = (int)(start / 360000);
+        mm1 = (int)(start / 6000) % 60;
+        hh2 = (int)(end   / 360000);
+        mm2 = (int)(end   / 6000) % 60;
+        ss1 = (int)(start / 100) % 60;
+        ms1 = (int)(start % 100);
+        ss2 = (int)(end   / 100) % 60;
+        ms2 = (int)(end   % 100);
         if (hh1 > 9) hh1 = 9, mm1 = 59, ss1 = 59, ms1 = 99;
         if (hh2 > 9) hh2 = 9, mm2 = 59, ss2 = 59, ms2 = 99;
 
         dialogue->line = av_asprintf("%s%ld,%d:%02d:%02d.%02d,%d:%02d:%02d.%02d,%s",
                                      ass->ssa_mode ? "Marked=" : "",
                                      layer, hh1, mm1, ss1, ms1, hh2, mm2, ss2, ms2, p);
-        if (!dialogue->line) {
+        if (!dialogue->line)
+        {
             av_free(dialogue);
             return AVERROR(ENOMEM);
         }
         insert_dialogue(ass, dialogue);
         purge_dialogues(s, ass->ignore_readorder);
-    } else {
+    }
+    else
+    {
         avio_write(s->pb, pkt->data, pkt->size);
     }
 
@@ -213,7 +236,8 @@ static int write_trailer(AVFormatContext *s)
 
     purge_dialogues(s, 1);
 
-    if (ass->trailer) {
+    if (ass->trailer)
+    {
         avio_write(s->pb, ass->trailer, ass->trailer_size);
     }
 
@@ -222,19 +246,22 @@ static int write_trailer(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(ASSContext, x)
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "ignore_readorder", "write events immediately, even if they're out-of-order", OFFSET(ignore_readorder), AV_OPT_TYPE_INT, {.i64 = 0}, 0, 1, E },
     { NULL },
 };
 
-static const AVClass ass_class = {
+static const AVClass ass_class =
+{
     .class_name = "ass muxer",
     .item_name  = av_default_item_name,
     .option     = options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVOutputFormat ff_ass_muxer = {
+AVOutputFormat ff_ass_muxer =
+{
     .name           = "ass",
     .long_name      = NULL_IF_CONFIG_SMALL("SSA (SubStation Alpha) subtitle"),
     .mime_type      = "text/x-ssa",

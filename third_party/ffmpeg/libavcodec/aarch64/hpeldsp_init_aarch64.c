@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ARM NEON optimised DSP functions
  * Copyright (c) 2008 Mans Rullgard <mans@mansr.com>
  *
@@ -87,7 +87,8 @@ av_cold void ff_hpeldsp_init_aarch64(HpelDSPContext *c, int flags)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         c->put_pixels_tab[0][0] = ff_put_pixels16_neon;
         c->put_pixels_tab[0][1] = ff_put_pixels16_x2_neon;
         c->put_pixels_tab[0][2] = ff_put_pixels16_y2_neon;

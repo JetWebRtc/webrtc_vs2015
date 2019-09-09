@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,7 +11,8 @@
 #ifndef WEBRTC_MODULES_VIDEO_PROCESSING_UTIL_SKIN_DETECTION_H_
 #define WEBRTC_MODULES_VIDEO_PROCESSING_UTIL_SKIN_DETECTION_H_
 
-namespace webrtc {
+namespace webrtc
+{
 
 #define MODEL_MODE 0
 

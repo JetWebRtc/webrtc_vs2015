@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Texture block compression
  * Copyright (C) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  * Based on public domain code by Fabian Giesen, Sean Barrett and Yann Collet.
@@ -32,22 +32,25 @@
 
 #include "texturedsp.h"
 
-const static uint8_t expand5[32] = {
-      0,   8,  16,  24,  33,  41,  49,  57,  66,  74,  82,  90,
-     99, 107, 115, 123, 132, 140, 148, 156, 165, 173, 181, 189,
+const static uint8_t expand5[32] =
+{
+    0,   8,  16,  24,  33,  41,  49,  57,  66,  74,  82,  90,
+    99, 107, 115, 123, 132, 140, 148, 156, 165, 173, 181, 189,
     198, 206, 214, 222, 231, 239, 247, 255,
 };
 
-const static uint8_t expand6[64] = {
-      0,   4,   8,  12,  16,  20,  24,  28,  32,  36,  40,  44,
-     48,  52,  56,  60,  65,  69,  73,  77,  81,  85,  89,  93,
-     97, 101, 105, 109, 113, 117, 121, 125, 130, 134, 138, 142,
+const static uint8_t expand6[64] =
+{
+    0,   4,   8,  12,  16,  20,  24,  28,  32,  36,  40,  44,
+    48,  52,  56,  60,  65,  69,  73,  77,  81,  85,  89,  93,
+    97, 101, 105, 109, 113, 117, 121, 125, 130, 134, 138, 142,
     146, 150, 154, 158, 162, 166, 170, 174, 178, 182, 186, 190,
     195, 199, 203, 207, 211, 215, 219, 223, 227, 231, 235, 239,
     243, 247, 251, 255,
 };
 
-const static uint8_t match5[256][2] = {
+const static uint8_t match5[256][2] =
+{
     {  0,  0 }, {  0,  0 }, {  0,  1 }, {  0,  1 }, {  1,  0 }, {  1,  0 },
     {  1,  0 }, {  1,  1 }, {  1,  1 }, {  2,  0 }, {  2,  0 }, {  0,  4 },
     {  2,  1 }, {  2,  1 }, {  2,  1 }, {  3,  0 }, {  3,  0 }, {  3,  0 },
@@ -93,7 +96,8 @@ const static uint8_t match5[256][2] = {
     { 31, 30 }, { 31, 30 }, { 31, 31 }, { 31, 31 },
 };
 
-const static uint8_t match6[256][2] = {
+const static uint8_t match6[256][2] =
+{
     {  0,  0 }, {  0,  1 }, {  1,  0 }, {  1,  0 }, {  1,  1 }, {  2,  0 },
     {  2,  1 }, {  3,  0 }, {  3,  0 }, {  3,  1 }, {  4,  0 }, {  4,  0 },
     {  4,  1 }, {  5,  0 }, {  5,  1 }, {  6,  0 }, {  6,  0 }, {  6,  1 },
@@ -181,7 +185,8 @@ static unsigned int match_colors(const uint8_t *block, ptrdiff_t stride,
     int x, y, k = 0;
     int c0_point, half_point, c3_point;
     uint8_t color[16];
-    const int indexMap[8] = {
+    const int indexMap[8] =
+    {
         0 << 30, 2 << 30, 0 << 30, 2 << 30,
         3 << 30, 3 << 30, 1 << 30, 1 << 30,
     };
@@ -196,7 +201,8 @@ static unsigned int match_colors(const uint8_t *block, ptrdiff_t stride,
     dirg = color[0 * 4 + 1] - color[1 * 4 + 1];
     dirb = color[0 * 4 + 2] - color[1 * 4 + 2];
 
-    for (y = 0; y < 4; y++) {
+    for (y = 0; y < 4; y++)
+    {
         for (x = 0; x < 4; x++)
             dots[k++] = block[0 + x * 4 + y * stride] * dirr +
                         block[1 + x * 4 + y * stride] * dirg +
@@ -220,7 +226,8 @@ static unsigned int match_colors(const uint8_t *block, ptrdiff_t stride,
     half_point = (stops[3] + stops[2]) >> 1;
     c3_point   = (stops[2] + stops[0]) >> 1;
 
-    for (x = 0; x < 16; x++) {
+    for (x = 0; x < 16; x++)
+    {
         int dot  = dots[x];
         int bits = (dot < half_point ? 4 : 0) |
                    (dot < c0_point   ? 2 : 0) |
@@ -249,13 +256,16 @@ static void optimize_colors(const uint8_t *block, ptrdiff_t stride,
     int ch, iter, x, y;
 
     /* Determine color distribution */
-    for (ch = 0; ch < 3; ch++) {
+    for (ch = 0; ch < 3; ch++)
+    {
         const uint8_t *bp = &block[ch];
         int muv, minv, maxv;
 
         muv = minv = maxv = bp[0];
-        for (y = 0; y < 4; y++) {
-            for (x = 4; x < 4; x += 4) {
+        for (y = 0; y < 4; y++)
+        {
+            for (x = 4; x < 4; x += 4)
+            {
                 muv += bp[x * 4 + y * stride];
                 if (bp[x] < minv)
                     minv = bp[x * 4 + y * stride];
@@ -270,8 +280,10 @@ static void optimize_colors(const uint8_t *block, ptrdiff_t stride,
     }
 
     /* Determine covariance matrix */
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int r = block[x * 4 + stride * y + 0] - mu[0];
             int g = block[x * 4 + stride * y + 1] - mu[1];
             int b = block[x * 4 + stride * y + 2] - mu[2];
@@ -293,7 +305,8 @@ static void optimize_colors(const uint8_t *block, ptrdiff_t stride,
     vfg = (float) (max[1] - min[1]);
     vfb = (float) (max[2] - min[2]);
 
-    for (iter = 0; iter < iter_power; iter++) {
+    for (iter = 0; iter < iter_power; iter++)
+    {
         float r = vfr * covf[0] + vfg * covf[1] + vfb * covf[2];
         float g = vfr * covf[1] + vfg * covf[3] + vfb * covf[4];
         float b = vfr * covf[2] + vfg * covf[4] + vfb * covf[5];
@@ -310,12 +323,15 @@ static void optimize_colors(const uint8_t *block, ptrdiff_t stride,
         magn = fabs(vfb);
 
     /* if magnitudo is too small, default to luminance */
-    if (magn < 4.0f) {
+    if (magn < 4.0f)
+    {
         /* JPEG YCbCr luma coefs, scaled by 1000 */
         v_r = 299;
         v_g = 587;
         v_b = 114;
-    } else {
+    }
+    else
+    {
         magn = 512.0 / magn;
         v_r  = (int) (vfr * magn);
         v_g  = (int) (vfg * magn);
@@ -325,16 +341,21 @@ static void optimize_colors(const uint8_t *block, ptrdiff_t stride,
     /* Pick colors at extreme points */
     mind = maxd = block[0] * v_r + block[1] * v_g + block[2] * v_b;
     minp = maxp = block;
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int dot = block[x * 4 + y * stride + 0] * v_r +
                       block[x * 4 + y * stride + 1] * v_g +
                       block[x * 4 + y * stride + 2] * v_b;
 
-            if (dot < mind) {
+            if (dot < mind)
+            {
                 mind = dot;
                 minp = block + x * 4 + y * stride;
-            } else if (dot > maxd) {
+            }
+            else if (dot > maxd)
+            {
                 maxd = dot;
                 maxp = block + x * 4 + y * stride;
             }
@@ -363,12 +384,15 @@ static int refine_colors(const uint8_t *block, ptrdiff_t stride,
     const int prods[4] = { 0x090000, 0x000900, 0x040102, 0x010402 };
 
     /* Check if all pixels have the same index */
-    if ((mask ^ (mask << 2)) < 4) {
+    if ((mask ^ (mask << 2)) < 4)
+    {
         /* If so, linear system would be singular; solve using optimal
          * single-color match on average color. */
         int r = 8, g = 8, b = 8;
-        for (y = 0; y < 4; y++) {
-            for (x = 0; x < 4; x++) {
+        for (y = 0; y < 4; y++)
+        {
+            for (x = 0; x < 4; x++)
+            {
                 r += block[0 + x * 4 + y * stride];
                 g += block[1 + x * 4 + y * stride];
                 b += block[2 + x * 4 + y * stride];
@@ -381,15 +405,19 @@ static int refine_colors(const uint8_t *block, ptrdiff_t stride,
 
         max16 = (match5[r][0] << 11) | (match6[g][0] << 5) | match5[b][0];
         min16 = (match5[r][1] << 11) | (match6[g][1] << 5) | match5[b][1];
-    } else {
+    }
+    else
+    {
         float fr, fg, fb;
         int at1_r = 0, at1_g = 0, at1_b = 0;
         int at2_r = 0, at2_g = 0, at2_b = 0;
         int akku = 0;
         int xx, xy, yy;
 
-        for (y = 0; y < 4; y++) {
-            for (x = 0; x < 4; x++) {
+        for (y = 0; y < 4; y++)
+        {
+            for (x = 0; x < 4; x++)
+            {
                 int step = cm & 3;
                 int w1 = w1tab[step];
                 int r = block[0 + x * 4 + y * stride];
@@ -457,14 +485,17 @@ static void compress_color(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
     int constant = constant_color(block, stride);
 
     /* Constant color will load values from tables */
-    if (constant) {
+    if (constant)
+    {
         int r = block[0];
         int g = block[1];
         int b = block[2];
         mask  = 0xAAAAAAAA;
         max16 = (match5[r][0] << 11) | (match6[g][0] << 5) | match5[b][0];
         min16 = (match5[r][1] << 11) | (match6[g][1] << 5) | match5[b][1];
-    } else {
+    }
+    else
+    {
         int refine;
 
         /* Otherwise find pca and map along principal axis */
@@ -476,7 +507,8 @@ static void compress_color(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
 
         /* One pass refinement */
         refine  = refine_colors(block, stride, &max16, &min16, mask);
-        if (refine) {
+        if (refine)
+        {
             if (max16 != min16)
                 mask = match_colors(block, stride, max16, min16);
             else
@@ -485,7 +517,8 @@ static void compress_color(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
     }
 
     /* Finally write the color block */
-    if (max16 < min16) {
+    if (max16 < min16)
+    {
         FFSWAP(uint16_t, min16, max16);
         mask ^= 0x55555555;
     }
@@ -508,8 +541,10 @@ static void compress_alpha(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
 
     /* Find min/max color */
     mn = mx = block[3];
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int val = block[3 + x * 4 + y * stride];
             if (val < mn)
                 mn = val;
@@ -539,8 +574,10 @@ static void compress_alpha(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
     else
         bias = dist / 2 + 2 - mn * 7;
 
-    for (y = 0; y < 4; y++) {
-        for (x = 0; x < 4; x++) {
+    for (y = 0; y < 4; y++)
+    {
+        for (x = 0; x < 4; x++)
+        {
             int alp = block[3 + x * 4 + y * stride] * 7 + bias;
             int ind, tmp;
 
@@ -561,7 +598,8 @@ static void compress_alpha(uint8_t *dst, ptrdiff_t stride, const uint8_t *block)
             /* Write index */
             mask |= ind << bits;
             bits += 3;
-            if (bits >= 8) {
+            if (bits >= 8)
+            {
                 *dst++ = mask;
                 mask >>= 8;
                 bits  -= 8;

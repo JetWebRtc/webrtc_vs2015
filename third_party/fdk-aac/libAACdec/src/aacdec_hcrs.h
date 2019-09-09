@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -96,7 +96,7 @@ amm-info@iis.fraunhofer.de
 
 #include "FDK_bitstream.h"
 #include "aacdec_hcr_types.h"
-                                                    /* The four different kinds of types of states are:                     */
+/* The four different kinds of types of states are:                     */
 /* different states are defined as constants */     /* start   middle=self   next   stop                                    */
 #define  STOP_THIS_STATE             0              /*                                                                      */
 #define  BODY_ONLY                   1              /*   X          X                X                                      */

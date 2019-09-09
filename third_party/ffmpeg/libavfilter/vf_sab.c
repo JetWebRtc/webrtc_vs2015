@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2002 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -31,7 +31,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct {
+typedef struct
+{
     float radius;
     float pre_filter_radius;
     float strength;
@@ -46,7 +47,8 @@ typedef struct {
     int color_diff_coeff[COLOR_DIFF_COEFF_SIZE];
 } FilterParam;
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     FilterParam  luma;
     FilterParam  chroma;
@@ -57,7 +59,8 @@ typedef struct {
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P,
         AV_PIX_FMT_YUV410P,
         AV_PIX_FMT_YUV444P,
@@ -83,7 +86,8 @@ static int query_formats(AVFilterContext *ctx)
 #define OFFSET(x) offsetof(SabContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption sab_options[] = {
+static const AVOption sab_options[] =
+{
     { "luma_radius",            "set luma radius", OFFSET(luma.radius), AV_OPT_TYPE_FLOAT, {.dbl=1.0}, RADIUS_MIN, RADIUS_MAX, .flags=FLAGS },
     { "lr"         ,            "set luma radius", OFFSET(luma.radius), AV_OPT_TYPE_FLOAT, {.dbl=1.0}, RADIUS_MIN, RADIUS_MAX, .flags=FLAGS },
     { "luma_pre_filter_radius", "set luma pre-filter radius", OFFSET(luma.pre_filter_radius), AV_OPT_TYPE_FLOAT, {.dbl=1.0}, PRE_FILTER_RADIUS_MIN, PRE_FILTER_RADIUS_MAX, .flags=FLAGS },
@@ -93,10 +97,14 @@ static const AVOption sab_options[] = {
 
     { "chroma_radius",            "set chroma radius", OFFSET(chroma.radius), AV_OPT_TYPE_FLOAT, {.dbl=RADIUS_MIN-1}, RADIUS_MIN-1, RADIUS_MAX, .flags=FLAGS },
     { "cr",                       "set chroma radius", OFFSET(chroma.radius), AV_OPT_TYPE_FLOAT, {.dbl=RADIUS_MIN-1}, RADIUS_MIN-1, RADIUS_MAX, .flags=FLAGS },
-    { "chroma_pre_filter_radius", "set chroma pre-filter radius",  OFFSET(chroma.pre_filter_radius), AV_OPT_TYPE_FLOAT, {.dbl=PRE_FILTER_RADIUS_MIN-1},
-                                  PRE_FILTER_RADIUS_MIN-1, PRE_FILTER_RADIUS_MAX, .flags=FLAGS },
-    { "cpfr",                     "set chroma pre-filter radius",  OFFSET(chroma.pre_filter_radius), AV_OPT_TYPE_FLOAT, {.dbl=PRE_FILTER_RADIUS_MIN-1},
-                                  PRE_FILTER_RADIUS_MIN-1, PRE_FILTER_RADIUS_MAX, .flags=FLAGS },
+    {
+        "chroma_pre_filter_radius", "set chroma pre-filter radius",  OFFSET(chroma.pre_filter_radius), AV_OPT_TYPE_FLOAT, {.dbl=PRE_FILTER_RADIUS_MIN-1},
+        PRE_FILTER_RADIUS_MIN-1, PRE_FILTER_RADIUS_MAX, .flags=FLAGS
+    },
+    {
+        "cpfr",                     "set chroma pre-filter radius",  OFFSET(chroma.pre_filter_radius), AV_OPT_TYPE_FLOAT, {.dbl=PRE_FILTER_RADIUS_MIN-1},
+        PRE_FILTER_RADIUS_MIN-1, PRE_FILTER_RADIUS_MAX, .flags=FLAGS
+    },
     { "chroma_strength",          "set chroma strength", OFFSET(chroma.strength), AV_OPT_TYPE_FLOAT, {.dbl=STRENGTH_MIN-1}, STRENGTH_MIN-1, STRENGTH_MAX, .flags=FLAGS },
     { "cs",                       "set chroma strength", OFFSET(chroma.strength), AV_OPT_TYPE_FLOAT, {.dbl=STRENGTH_MIN-1}, STRENGTH_MIN-1, STRENGTH_MAX, .flags=FLAGS },
 
@@ -130,7 +138,8 @@ static av_cold int init(AVFilterContext *ctx)
 
 static void close_filter_param(FilterParam *f)
 {
-    if (f->pre_filter_context) {
+    if (f->pre_filter_context)
+    {
         sws_freeContext(f->pre_filter_context);
         f->pre_filter_context = NULL;
     }
@@ -167,7 +176,8 @@ static int open_filter_param(FilterParam *f, int width, int height, unsigned int
     sws_freeVec(vec);
 
     vec = sws_getGaussianVec(f->strength, 5.0);
-    for (i = 0; i < COLOR_DIFF_COEFF_SIZE; i++) {
+    for (i = 0; i < COLOR_DIFF_COEFF_SIZE; i++)
+    {
         double d;
         int index = i-COLOR_DIFF_COEFF_SIZE/2 + vec->length/2;
 
@@ -182,13 +192,16 @@ static int open_filter_param(FilterParam *f, int width, int height, unsigned int
     f->dist_width    = vec->length;
     f->dist_linesize = FFALIGN(vec->length, 8);
     f->dist_coeff    = av_malloc_array(f->dist_width, f->dist_linesize * sizeof(*f->dist_coeff));
-    if (!f->dist_coeff) {
+    if (!f->dist_coeff)
+    {
         sws_freeVec(vec);
         return AVERROR(ENOMEM);
     }
 
-    for (y = 0; y < vec->length; y++) {
-        for (x = 0; x < vec->length; x++) {
+    for (y = 0; y < vec->length; y++)
+    {
+        for (x = 0; x < vec->length; x++)
+        {
             double d = vec->coeff[x] * vec->coeff[y];
             f->dist_coeff[x + y*f->dist_linesize] = (int)(d*(1<<10) + 0.5);
         }
@@ -244,30 +257,39 @@ static void blur(uint8_t       *dst, const int dst_linesize,
         div += factor;                                                  \
     } while (0)
 
-    for (y = 0; y < h; y++) {
-        for (x = 0; x < w; x++) {
+    for (y = 0; y < h; y++)
+    {
+        for (x = 0; x < w; x++)
+        {
             int sum = 0;
             int div = 0;
             int dy;
             const int pre_val = f.pre_filter_buf[x + y*f.pre_filter_linesize];
-            if (x >= radius && x < w - radius) {
-                for (dy = 0; dy < radius*2 + 1; dy++) {
+            if (x >= radius && x < w - radius)
+            {
+                for (dy = 0; dy < radius*2 + 1; dy++)
+                {
                     int dx;
                     int iy = y+dy - radius;
                     iy = avpriv_mirror(iy, h-1);
 
-                    for (dx = 0; dx < radius*2 + 1; dx++) {
+                    for (dx = 0; dx < radius*2 + 1; dx++)
+                    {
                         const int ix = x+dx - radius;
                         UPDATE_FACTOR;
                     }
                 }
-            } else {
-                for (dy = 0; dy < radius*2+1; dy++) {
+            }
+            else
+            {
+                for (dy = 0; dy < radius*2+1; dy++)
+                {
                     int dx;
                     int iy = y+dy - radius;
                     iy = avpriv_mirror(iy, h-1);
 
-                    for (dx = 0; dx < radius*2 + 1; dx++) {
+                    for (dx = 0; dx < radius*2 + 1; dx++)
+                    {
                         int ix = x+dx - radius;
                         ix = avpriv_mirror(ix, w-1);
                         UPDATE_FACTOR;
@@ -286,7 +308,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     AVFrame *outpic;
 
     outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!outpic) {
+    if (!outpic)
+    {
         av_frame_free(&inpic);
         return AVERROR(ENOMEM);
     }
@@ -294,7 +317,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
 
     blur(outpic->data[0], outpic->linesize[0], inpic->data[0],  inpic->linesize[0],
          inlink->w, inlink->h, &s->luma);
-    if (inpic->data[2]) {
+    if (inpic->data[2])
+    {
         int cw = FF_CEIL_RSHIFT(inlink->w, s->hsub);
         int ch = FF_CEIL_RSHIFT(inlink->h, s->vsub);
         blur(outpic->data[1], outpic->linesize[1], inpic->data[1], inpic->linesize[1], cw, ch, &s->chroma);
@@ -305,7 +329,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     return ff_filter_frame(outlink, outpic);
 }
 
-static const AVFilterPad sab_inputs[] = {
+static const AVFilterPad sab_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -315,7 +340,8 @@ static const AVFilterPad sab_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad sab_outputs[] = {
+static const AVFilterPad sab_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -323,7 +349,8 @@ static const AVFilterPad sab_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_sab = {
+AVFilter ff_vf_sab =
+{
     .name          = "sab",
     .description   = NULL_IF_CONFIG_SMALL("Apply shape adaptive blur."),
     .priv_size     = sizeof(SabContext),

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -18,7 +18,8 @@
 
 #include "v4l2-common.h"
 
-const struct fmt_map ff_fmt_conversion_table[] = {
+const struct fmt_map ff_fmt_conversion_table[] =
+{
     //ff_fmt              codec_id              v4l2_fmt
     { AV_PIX_FMT_YUV420P, AV_CODEC_ID_RAWVIDEO, V4L2_PIX_FMT_YUV420  },
     { AV_PIX_FMT_YUV420P, AV_CODEC_ID_RAWVIDEO, V4L2_PIX_FMT_YVU420  },
@@ -65,11 +66,13 @@ uint32_t ff_fmt_ff2v4l(enum AVPixelFormat pix_fmt, enum AVCodecID codec_id)
 {
     int i;
 
-    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++) {
+    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++)
+    {
         if ((codec_id == AV_CODEC_ID_NONE ||
-             ff_fmt_conversion_table[i].codec_id == codec_id) &&
-            (pix_fmt == AV_PIX_FMT_NONE ||
-             ff_fmt_conversion_table[i].ff_fmt == pix_fmt)) {
+        ff_fmt_conversion_table[i].codec_id == codec_id) &&
+        (pix_fmt == AV_PIX_FMT_NONE ||
+        ff_fmt_conversion_table[i].ff_fmt == pix_fmt))
+        {
             return ff_fmt_conversion_table[i].v4l2_fmt;
         }
     }
@@ -81,9 +84,11 @@ enum AVPixelFormat ff_fmt_v4l2ff(uint32_t v4l2_fmt, enum AVCodecID codec_id)
 {
     int i;
 
-    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++) {
+    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++)
+    {
         if (ff_fmt_conversion_table[i].v4l2_fmt == v4l2_fmt &&
-            ff_fmt_conversion_table[i].codec_id == codec_id) {
+        ff_fmt_conversion_table[i].codec_id == codec_id)
+        {
             return ff_fmt_conversion_table[i].ff_fmt;
         }
     }
@@ -95,8 +100,10 @@ enum AVCodecID ff_fmt_v4l2codec(uint32_t v4l2_fmt)
 {
     int i;
 
-    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++) {
-        if (ff_fmt_conversion_table[i].v4l2_fmt == v4l2_fmt) {
+    for (i = 0; ff_fmt_conversion_table[i].codec_id != AV_CODEC_ID_NONE; i++)
+    {
+        if (ff_fmt_conversion_table[i].v4l2_fmt == v4l2_fmt)
+        {
             return ff_fmt_conversion_table[i].codec_id;
         }
     }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2000, 2001, 2002 Fabrice Bellard
  *
  * This file is part of FFmpeg.
@@ -28,18 +28,21 @@
 #define FFSERVER_MAX_STREAMS 20
 
 /* each generated stream is described here */
-enum FFServerStreamType {
+enum FFServerStreamType
+{
     STREAM_TYPE_LIVE,
     STREAM_TYPE_STATUS,
     STREAM_TYPE_REDIRECT,
 };
 
-enum FFServerIPAddressAction {
+enum FFServerIPAddressAction
+{
     IP_ALLOW = 1,
     IP_DENY,
 };
 
-typedef struct FFServerIPAddressACL {
+typedef struct FFServerIPAddressACL
+{
     struct FFServerIPAddressACL *next;
     enum FFServerIPAddressAction action;
     /* These are in host order */
@@ -48,7 +51,8 @@ typedef struct FFServerIPAddressACL {
 } FFServerIPAddressACL;
 
 /* description of each stream of the ffserver.conf file */
-typedef struct FFServerStream {
+typedef struct FFServerStream
+{
     enum FFServerStreamType stream_type;
     char filename[1024];          /* stream filename */
     struct FFServerStream *feed;  /* feed we are using (can be null if coming from file) */
@@ -94,7 +98,8 @@ typedef struct FFServerStream {
     struct FFServerStream *next_feed;
 } FFServerStream;
 
-typedef struct FFServerConfig {
+typedef struct FFServerConfig
+{
     char *filename;
     FFServerStream *first_feed;   /* contains only feeds */
     FFServerStream *first_stream; /* contains all streams, including feeds */

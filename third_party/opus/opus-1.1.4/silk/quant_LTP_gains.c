@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -60,7 +60,8 @@ void silk_quant_LTP_gains(
     /***************************************************/
     min_rate_dist_Q14 = silk_int32_MAX;
     best_sum_log_gain_Q7 = 0;
-    for( k = 0; k < 3; k++ ) {
+    for( k = 0; k < 3; k++ )
+    {
         /* Safety margin for pitch gain control, to take into account factors
            such as state rescaling/rewhitening. */
         opus_int32 gain_safety = SILK_FIX_CONST( 0.4, 7 );
@@ -76,7 +77,8 @@ void silk_quant_LTP_gains(
 
         rate_dist_Q14 = 0;
         sum_log_gain_tmp_Q7 = *sum_log_gain_Q7;
-        for( j = 0; j < nb_subfr; j++ ) {
+        for( j = 0; j < nb_subfr; j++ )
+        {
             max_gain_Q7 = silk_log2lin( ( SILK_FIX_CONST( MAX_SUM_LOG_GAIN_DB / 6.0, 7 ) - sum_log_gain_tmp_Q7 )
                                         + SILK_FIX_CONST( 7, 7 ) ) - gain_safety;
 
@@ -97,7 +99,7 @@ void silk_quant_LTP_gains(
 
             rate_dist_Q14 = silk_ADD_POS_SAT32( rate_dist_Q14, rate_dist_Q14_subfr );
             sum_log_gain_tmp_Q7 = silk_max(0, sum_log_gain_tmp_Q7
-                                + silk_lin2log( gain_safety + gain_Q7 ) - SILK_FIX_CONST( 7, 7 ));
+                                           + silk_lin2log( gain_safety + gain_Q7 ) - SILK_FIX_CONST( 7, 7 ));
 
             b_Q14_ptr += LTP_ORDER;
             W_Q18_ptr += LTP_ORDER * LTP_ORDER;
@@ -106,7 +108,8 @@ void silk_quant_LTP_gains(
         /* Avoid never finding a codebook */
         rate_dist_Q14 = silk_min( silk_int32_MAX - 1, rate_dist_Q14 );
 
-        if( rate_dist_Q14 < min_rate_dist_Q14 ) {
+        if( rate_dist_Q14 < min_rate_dist_Q14 )
+        {
             min_rate_dist_Q14 = rate_dist_Q14;
             *periodicity_index = (opus_int8)k;
             silk_memcpy( cbk_index, temp_idx, nb_subfr * sizeof( opus_int8 ) );
@@ -114,14 +117,17 @@ void silk_quant_LTP_gains(
         }
 
         /* Break early in low-complexity mode if rate distortion is below threshold */
-        if( lowComplexity && ( rate_dist_Q14 < silk_LTP_gain_middle_avg_RD_Q14 ) ) {
+        if( lowComplexity && ( rate_dist_Q14 < silk_LTP_gain_middle_avg_RD_Q14 ) )
+        {
             break;
         }
     }
 
     cbk_ptr_Q7 = silk_LTP_vq_ptrs_Q7[ *periodicity_index ];
-    for( j = 0; j < nb_subfr; j++ ) {
-        for( k = 0; k < LTP_ORDER; k++ ) {
+    for( j = 0; j < nb_subfr; j++ )
+    {
+        for( k = 0; k < LTP_ORDER; k++ )
+        {
             B_Q14[ j * LTP_ORDER + k ] = silk_LSHIFT( cbk_ptr_Q7[ cbk_index[ j ] * LTP_ORDER + k ], 7 );
         }
     }

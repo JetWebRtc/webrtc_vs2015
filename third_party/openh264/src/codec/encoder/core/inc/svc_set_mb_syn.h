@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -49,7 +49,8 @@
 #include "set_mb_syn_cavlc.h"
 #include "set_mb_syn_cabac.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 
 

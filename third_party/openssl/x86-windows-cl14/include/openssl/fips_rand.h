@@ -1,4 +1,4 @@
-/* ====================================================================
+﻿/* ====================================================================
  * Copyright (c) 2003 The OpenSSL Project.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -6,7 +6,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -83,30 +83,30 @@ typedef struct drbg_ctx_st DRBG_CTX;
 DRBG_CTX *FIPS_drbg_new(int type, unsigned int flags);
 int FIPS_drbg_init(DRBG_CTX *dctx, int type, unsigned int flags);
 int FIPS_drbg_instantiate(DRBG_CTX *dctx,
-				const unsigned char *pers, size_t perslen);
+                          const unsigned char *pers, size_t perslen);
 int FIPS_drbg_reseed(DRBG_CTX *dctx, const unsigned char *adin, size_t adinlen);
 int FIPS_drbg_generate(DRBG_CTX *dctx, unsigned char *out, size_t outlen,
-			int prediction_resistance,
-			const unsigned char *adin, size_t adinlen);
+                       int prediction_resistance,
+                       const unsigned char *adin, size_t adinlen);
 
 int FIPS_drbg_uninstantiate(DRBG_CTX *dctx);
 void FIPS_drbg_free(DRBG_CTX *dctx);
 
 int FIPS_drbg_set_callbacks(DRBG_CTX *dctx,
-	size_t (*get_entropy)(DRBG_CTX *ctx, unsigned char **pout,
-				int entropy, size_t min_len, size_t max_len),
-	void (*cleanup_entropy)(DRBG_CTX *ctx, unsigned char *out, size_t olen),
-	size_t entropy_blocklen,
-	size_t (*get_nonce)(DRBG_CTX *ctx, unsigned char **pout,
-				int entropy, size_t min_len, size_t max_len),
-	void (*cleanup_nonce)(DRBG_CTX *ctx, unsigned char *out, size_t olen));
+                            size_t (*get_entropy)(DRBG_CTX *ctx, unsigned char **pout,
+                                    int entropy, size_t min_len, size_t max_len),
+                            void (*cleanup_entropy)(DRBG_CTX *ctx, unsigned char *out, size_t olen),
+                            size_t entropy_blocklen,
+                            size_t (*get_nonce)(DRBG_CTX *ctx, unsigned char **pout,
+                                    int entropy, size_t min_len, size_t max_len),
+                            void (*cleanup_nonce)(DRBG_CTX *ctx, unsigned char *out, size_t olen));
 
 int FIPS_drbg_set_rand_callbacks(DRBG_CTX *dctx,
-	size_t (*get_adin)(DRBG_CTX *ctx, unsigned char **pout),
-	void (*cleanup_adin)(DRBG_CTX *ctx, unsigned char *out, size_t olen),
-	int (*rand_seed_cb)(DRBG_CTX *ctx, const void *buf, int num),
-	int (*rand_add_cb)(DRBG_CTX *ctx,
-				const void *buf, int num, double entropy));
+                                 size_t (*get_adin)(DRBG_CTX *ctx, unsigned char **pout),
+                                 void (*cleanup_adin)(DRBG_CTX *ctx, unsigned char *out, size_t olen),
+                                 int (*rand_seed_cb)(DRBG_CTX *ctx, const void *buf, int num),
+                                 int (*rand_add_cb)(DRBG_CTX *ctx,
+                                         const void *buf, int num, double entropy));
 
 void *FIPS_drbg_get_app_data(DRBG_CTX *ctx);
 void FIPS_drbg_set_app_data(DRBG_CTX *ctx, void *app_data);

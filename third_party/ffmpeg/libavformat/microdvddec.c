@@ -29,7 +29,8 @@
 #define MAX_LINESIZE 2048
 
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     FFDemuxSubtitlesQueue q;
     AVRational frame_rate;
@@ -45,10 +46,11 @@ static int microdvd_probe(AVProbeData *p)
     if (AV_RB24(ptr) == 0xEFBBBF)
         ptr += 3;  /* skip UTF-8 BOM */
 
-    for (i=0; i<3; i++) {
+    for (i=0; i<3; i++)
+    {
         if (sscanf(ptr, "{%*d}{}%c",     &c) != 1 &&
-            sscanf(ptr, "{%*d}{%*d}%c",  &c) != 1 &&
-            sscanf(ptr, "{DEFAULT}{}%c", &c) != 1)
+                sscanf(ptr, "{%*d}{%*d}%c",  &c) != 1 &&
+                sscanf(ptr, "{DEFAULT}{}%c", &c) != 1)
             return 0;
         ptr += ff_subtitles_next_line(ptr);
     }
@@ -78,7 +80,10 @@ static const char *bom = "\xEF\xBB\xBF";
 
 static int microdvd_read_header(AVFormatContext *s)
 {
-    AVRational pts_info = (AVRational){ 2997, 125 };  /* default: 23.976 fps */
+    AVRational pts_info = (AVRational)
+    {
+        2997, 125
+    };  /* default: 23.976 fps */
     MicroDVDContext *microdvd = s->priv_data;
     AVStream *st = avformat_new_stream(s, NULL);
     int i = 0;
@@ -88,7 +93,8 @@ static int microdvd_read_header(AVFormatContext *s)
     if (!st)
         return AVERROR(ENOMEM);
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char *p;
         AVPacket *sub;
         int64_t pos = avio_tell(s->pb);
@@ -102,19 +108,22 @@ static int microdvd_read_header(AVFormatContext *s)
         if (!len)
             break;
         line[strcspn(line, "\r\n")] = 0;
-        if (i++ < 3) {
+        if (i++ < 3)
+        {
             int frame;
             double fps;
             char c;
 
             if ((sscanf(line, "{%d}{}%6lf",    &frame, &fps) == 2 ||
-                 sscanf(line, "{%d}{%*d}%6lf", &frame, &fps) == 2)
-                && frame <= 1 && fps > 3 && fps < 100) {
+                    sscanf(line, "{%d}{%*d}%6lf", &frame, &fps) == 2)
+                    && frame <= 1 && fps > 3 && fps < 100)
+            {
                 pts_info = av_d2q(fps, 100000);
                 has_real_fps = 1;
                 continue;
             }
-            if (!st->codec->extradata && sscanf(line, "{DEFAULT}{}%c", &c) == 1) {
+            if (!st->codec->extradata && sscanf(line, "{DEFAULT}{}%c", &c) == 1)
+            {
                 st->codec->extradata = av_strdup(line + 11);
                 if (!st->codec->extradata)
                     return AVERROR(ENOMEM);
@@ -142,10 +151,13 @@ static int microdvd_read_header(AVFormatContext *s)
         sub->duration = get_duration(line);
     }
     ff_subtitles_queue_finalize(&microdvd->q);
-    if (has_real_fps) {
+    if (has_real_fps)
+    {
         /* export the FPS info only if set in the file */
         microdvd->frame_rate = pts_info;
-    } else if (microdvd->frame_rate.num) {
+    }
+    else if (microdvd->frame_rate.num)
+    {
         /* fallback on user specified frame rate */
         pts_info = microdvd->frame_rate;
     }
@@ -162,7 +174,7 @@ static int microdvd_read_packet(AVFormatContext *s, AVPacket *pkt)
 }
 
 static int microdvd_read_seek(AVFormatContext *s, int stream_index,
-                             int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
+                              int64_t min_ts, int64_t ts, int64_t max_ts, int flags)
 {
     MicroDVDContext *microdvd = s->priv_data;
     return ff_subtitles_queue_seek(&microdvd->q, s, stream_index,
@@ -179,19 +191,22 @@ static int microdvd_read_close(AVFormatContext *s)
 
 #define OFFSET(x) offsetof(MicroDVDContext, x)
 #define SD AV_OPT_FLAG_SUBTITLE_PARAM|AV_OPT_FLAG_DECODING_PARAM
-static const AVOption microdvd_options[] = {
+static const AVOption microdvd_options[] =
+{
     { "subfps", "set the movie frame rate fallback", OFFSET(frame_rate), AV_OPT_TYPE_RATIONAL, {.dbl=0}, 0, INT_MAX, SD },
     { NULL }
 };
 
-static const AVClass microdvd_class = {
+static const AVClass microdvd_class =
+{
     .class_name = "microdvddec",
     .item_name  = av_default_item_name,
     .option     = microdvd_options,
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_microdvd_demuxer = {
+AVInputFormat ff_microdvd_demuxer =
+{
     .name           = "microdvd",
     .long_name      = NULL_IF_CONFIG_SMALL("MicroDVD subtitle format"),
     .priv_data_size = sizeof(MicroDVDContext),

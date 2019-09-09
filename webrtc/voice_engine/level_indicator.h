@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,10 +14,12 @@
 #include "webrtc/base/criticalsection.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AudioFrame;
-namespace voe {
+namespace voe
+{
 
 class AudioLevel
 {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -69,7 +69,8 @@ inline void RtcUnused(const void*) {}
 // macro is provided, this can still be used for explicit runtime asserts
 // and allow applications to override the assert behavior.
 
-namespace rtc {
+namespace rtc
+{
 
 
 // If a debugger is attached, triggers a debugger breakpoint. If a debugger is
@@ -102,24 +103,28 @@ bool IsEven(int n);
 
 #if ENABLE_DEBUG
 
-namespace rtc {
+namespace rtc
+{
 
 inline bool Assert(bool result, const char* function, const char* file,
-                   int line, const char* expression) {
-  if (!result) {
-    LogAssert(function, file, line, expression);
-    Break();
-  }
-  return result;
+                   int line, const char* expression)
+{
+    if (!result)
+    {
+        LogAssert(function, file, line, expression);
+        Break();
+    }
+    return result;
 }
 
 // Same as Assert above, but does not call Break().  Used in assert macros
 // that implement their own breaking.
 inline bool AssertNoBreak(bool result, const char* function, const char* file,
-                          int line, const char* expression) {
-  if (!result)
-    LogAssert(function, file, line, expression);
-  return result;
+                          int line, const char* expression)
+{
+    if (!result)
+        LogAssert(function, file, line, expression);
+    return result;
 }
 
 }  // namespace rtc
@@ -154,9 +159,13 @@ inline bool AssertNoBreak(bool result, const char* function, const char* file,
 
 #else  // !ENABLE_DEBUG
 
-namespace rtc {
+namespace rtc
+{
 
-inline bool ImplicitCastToBool(bool result) { return result; }
+inline bool ImplicitCastToBool(bool result)
+{
+    return result;
+}
 
 }  // namespace rtc
 

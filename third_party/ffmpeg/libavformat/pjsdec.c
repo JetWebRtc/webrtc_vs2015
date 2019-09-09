@@ -29,7 +29,8 @@
 #include "internal.h"
 #include "subtitles.h"
 
-typedef struct {
+typedef struct
+{
     FFDemuxSubtitlesQueue q;
 } PJSContext;
 
@@ -39,7 +40,8 @@ static int pjs_probe(AVProbeData *p)
     int64_t start, end;
     const unsigned char *ptr = p->buf;
 
-    if (sscanf(ptr, "%"SCNd64",%"SCNd64",%c", &start, &end, &c) == 3) {
+    if (sscanf(ptr, "%"SCNd64",%"SCNd64",%c", &start, &end, &c) == 3)
+    {
         size_t q1pos = strcspn(ptr, "\"");
         size_t q2pos = q1pos + strcspn(ptr + q1pos + 1, "\"") + 1;
         if (strcspn(ptr, "\r\n") > q2pos)
@@ -52,7 +54,8 @@ static int64_t read_ts(char **line, int *duration)
 {
     int64_t start, end;
 
-    if (sscanf(*line, "%"SCNd64",%"SCNd64, &start, &end) == 2) {
+    if (sscanf(*line, "%"SCNd64",%"SCNd64, &start, &end) == 2)
+    {
         *line += strcspn(*line, "\"");
         *line += !!**line;
         *duration = end - start;
@@ -73,7 +76,8 @@ static int pjs_read_header(AVFormatContext *s)
     st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
     st->codec->codec_id   = AV_CODEC_ID_PJS;
 
-    while (!avio_feof(s->pb)) {
+    while (!avio_feof(s->pb))
+    {
         char line[4096];
         char *p = line;
         const int64_t pos = avio_tell(s->pb);
@@ -87,7 +91,8 @@ static int pjs_read_header(AVFormatContext *s)
         line[strcspn(line, "\r\n")] = 0;
 
         pts_start = read_ts(&p, &duration);
-        if (pts_start != AV_NOPTS_VALUE) {
+        if (pts_start != AV_NOPTS_VALUE)
+        {
             AVPacket *sub;
 
             p[strcspn(p, "\"")] = 0;
@@ -125,7 +130,8 @@ static int pjs_read_close(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_pjs_demuxer = {
+AVInputFormat ff_pjs_demuxer =
+{
     .name           = "pjs",
     .long_name      = NULL_IF_CONFIG_SMALL("PJS (Phoenix Japanimation Society) subtitles"),
     .priv_data_size = sizeof(PJSContext),

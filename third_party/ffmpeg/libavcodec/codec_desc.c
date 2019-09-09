@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * This table was generated from the long and short names of AVCodecs
@@ -28,7 +28,8 @@
 
 #define MT(...) (const char *const[]){ __VA_ARGS__, NULL }
 
-static const AVCodecDescriptor codec_descriptors[] = {
+static const AVCodecDescriptor codec_descriptors[] =
+{
     /* video codecs */
     {
         .id        = AV_CODEC_ID_MPEG1VIDEO,
@@ -600,7 +601,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "jpeg2000",
         .long_name = NULL_IF_CONFIG_SMALL("JPEG 2000"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
         .mime_types= MT("image/jp2"),
     },
     {
@@ -1288,7 +1289,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "dds",
         .long_name = NULL_IF_CONFIG_SMALL("DirectDraw Surface image decoder"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
     },
     {
         .id        = AV_CODEC_ID_DPX,
@@ -1303,7 +1304,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "exr",
         .long_name = NULL_IF_CONFIG_SMALL("OpenEXR image"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
     },
     {
         .id        = AV_CODEC_ID_GIF,
@@ -1319,7 +1320,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "jpegls",
         .long_name = NULL_IF_CONFIG_SMALL("JPEG-LS"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
     },
     {
         .id        = AV_CODEC_ID_LJPEG,
@@ -1451,7 +1452,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "webp",
         .long_name = NULL_IF_CONFIG_SMALL("WebP"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
         .mime_types= MT("image/webp"),
     },
     {
@@ -2826,7 +2827,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "exr_deprecated",
         .long_name = NULL_IF_CONFIG_SMALL("OpenEXR image (deprecated id)"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
     },
     {
         .id        = AV_CODEC_ID_G2M_DEPRECATED,
@@ -2869,7 +2870,7 @@ static const AVCodecDescriptor codec_descriptors[] = {
         .name      = "webp_deprecated",
         .long_name = NULL_IF_CONFIG_SMALL("WebP (deprecated id)"),
         .props     = AV_CODEC_PROP_INTRA_ONLY | AV_CODEC_PROP_LOSSY |
-                     AV_CODEC_PROP_LOSSLESS,
+        AV_CODEC_PROP_LOSSLESS,
     },
 
 #if FF_API_VIMA_DECODER

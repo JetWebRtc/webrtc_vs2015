@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -35,7 +35,8 @@
 #include "formats.h"
 #include "internal.h"
 
-typedef struct ResampleContext {
+typedef struct ResampleContext
+{
     const AVClass *class;
     AVAudioResampleContext *avr;
     AVDictionary *options;
@@ -54,7 +55,8 @@ static av_cold int init(AVFilterContext *ctx, AVDictionary **opts)
     const AVClass *avr_class = avresample_get_class();
     AVDictionaryEntry *e = NULL;
 
-    while ((e = av_dict_get(*opts, "", e, AV_DICT_IGNORE_SUFFIX))) {
+    while ((e = av_dict_get(*opts, "", e, AV_DICT_IGNORE_SUFFIX)))
+    {
         if (av_opt_find(&avr_class, e->key, NULL, 0,
                         AV_OPT_SEARCH_FAKE_OBJ | AV_OPT_SEARCH_CHILDREN))
             av_dict_set(&s->options, e->key, e->value, 0);
@@ -79,7 +81,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 {
     ResampleContext *s = ctx->priv;
 
-    if (s->avr) {
+    if (s->avr)
+    {
         avresample_close(s->avr);
         avresample_free(&s->avr);
     }
@@ -120,24 +123,26 @@ static int config_output(AVFilterLink *outlink)
 
     int64_t resampling_forced;
 
-    if (s->avr) {
+    if (s->avr)
+    {
         avresample_close(s->avr);
         avresample_free(&s->avr);
     }
 
     if (inlink->channel_layout == outlink->channel_layout &&
-        inlink->sample_rate    == outlink->sample_rate    &&
-        (inlink->format        == outlink->format ||
-        (av_get_channel_layout_nb_channels(inlink->channel_layout)  == 1 &&
-         av_get_channel_layout_nb_channels(outlink->channel_layout) == 1 &&
-         av_get_planar_sample_fmt(inlink->format) ==
-         av_get_planar_sample_fmt(outlink->format))))
+            inlink->sample_rate    == outlink->sample_rate    &&
+            (inlink->format        == outlink->format ||
+             (av_get_channel_layout_nb_channels(inlink->channel_layout)  == 1 &&
+              av_get_channel_layout_nb_channels(outlink->channel_layout) == 1 &&
+              av_get_planar_sample_fmt(inlink->format) ==
+              av_get_planar_sample_fmt(outlink->format))))
         return 0;
 
     if (!(s->avr = avresample_alloc_context()))
         return AVERROR(ENOMEM);
 
-    if (s->options) {
+    if (s->options)
+    {
         int ret;
         AVDictionaryEntry *e = NULL;
         while ((e = av_dict_get(s->options, "", e, AV_DICT_IGNORE_SUFFIX)))
@@ -161,11 +166,16 @@ static int config_output(AVFilterLink *outlink)
     av_opt_get_int(s->avr, "force_resampling", 0, &resampling_forced);
     s->resampling = resampling_forced || (inlink->sample_rate != outlink->sample_rate);
 
-    if (s->resampling) {
-        outlink->time_base = (AVRational){ 1, outlink->sample_rate };
+    if (s->resampling)
+    {
+        outlink->time_base = (AVRational)
+        {
+            1, outlink->sample_rate
+        };
         s->next_pts        = AV_NOPTS_VALUE;
         s->next_in_pts     = AV_NOPTS_VALUE;
-    } else
+    }
+    else
         outlink->time_base = inlink->time_base;
 
     av_get_channel_layout_string(buf1, sizeof(buf1),
@@ -191,7 +201,8 @@ static int request_frame(AVFilterLink *outlink)
         ret = ff_request_frame(ctx->inputs[0]);
 
     /* flush the lavr delay buffer */
-    if (ret == AVERROR_EOF && s->avr) {
+    if (ret == AVERROR_EOF && s->avr)
+    {
         AVFrame *frame;
         int nb_samples = avresample_get_out_samples(s->avr, 0);
 
@@ -205,7 +216,8 @@ static int request_frame(AVFilterLink *outlink)
         ret = avresample_convert(s->avr, frame->extended_data,
                                  frame->linesize[0], nb_samples,
                                  NULL, 0, 0);
-        if (ret <= 0) {
+        if (ret <= 0)
+        {
             av_frame_free(&frame);
             return (ret == 0) ? AVERROR_EOF : ret;
         }
@@ -224,7 +236,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     AVFilterLink *outlink = ctx->outputs[0];
     int ret;
 
-    if (s->avr) {
+    if (s->avr)
+    {
         AVFrame *out;
         int delay, nb_samples;
 
@@ -233,7 +246,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         nb_samples = avresample_get_out_samples(s->avr, in->nb_samples);
 
         out = ff_get_audio_buffer(outlink, nb_samples);
-        if (!out) {
+        if (!out)
+        {
             ret = AVERROR(ENOMEM);
             goto fail;
         }
@@ -241,7 +255,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         ret = avresample_convert(s->avr, out->extended_data, out->linesize[0],
                                  nb_samples, in->extended_data, in->linesize[0],
                                  in->nb_samples);
-        if (ret <= 0) {
+        if (ret <= 0)
+        {
             av_frame_free(&out);
             if (ret < 0)
                 goto fail;
@@ -249,43 +264,52 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
         av_assert0(!avresample_available(s->avr));
 
-        if (s->resampling && s->next_pts == AV_NOPTS_VALUE) {
-            if (in->pts == AV_NOPTS_VALUE) {
+        if (s->resampling && s->next_pts == AV_NOPTS_VALUE)
+        {
+            if (in->pts == AV_NOPTS_VALUE)
+            {
                 av_log(ctx, AV_LOG_WARNING, "First timestamp is missing, "
                        "assuming 0.\n");
                 s->next_pts = 0;
-            } else
+            }
+            else
                 s->next_pts = av_rescale_q(in->pts, inlink->time_base,
                                            outlink->time_base);
         }
 
-        if (ret > 0) {
+        if (ret > 0)
+        {
             out->nb_samples = ret;
 
             ret = av_frame_copy_props(out, in);
-            if (ret < 0) {
+            if (ret < 0)
+            {
                 av_frame_free(&out);
                 goto fail;
             }
 
-            if (s->resampling) {
+            if (s->resampling)
+            {
                 out->sample_rate = outlink->sample_rate;
                 /* Only convert in->pts if there is a discontinuous jump.
                    This ensures that out->pts tracks the number of samples actually
                    output by the resampler in the absence of such a jump.
                    Otherwise, the rounding in av_rescale_q() and av_rescale()
                    causes off-by-1 errors. */
-                if (in->pts != AV_NOPTS_VALUE && in->pts != s->next_in_pts) {
+                if (in->pts != AV_NOPTS_VALUE && in->pts != s->next_in_pts)
+                {
                     out->pts = av_rescale_q(in->pts, inlink->time_base,
-                                                outlink->time_base) -
-                                   av_rescale(delay, outlink->sample_rate,
-                                              inlink->sample_rate);
-                } else
+                                            outlink->time_base) -
+                               av_rescale(delay, outlink->sample_rate,
+                                          inlink->sample_rate);
+                }
+                else
                     out->pts = s->next_pts;
 
                 s->next_pts = out->pts + out->nb_samples;
                 s->next_in_pts = in->pts + in->nb_samples;
-            } else
+            }
+            else
                 out->pts = in->pts;
 
             ret = ff_filter_frame(outlink, out);
@@ -294,7 +318,9 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
 
 fail:
         av_frame_free(&in);
-    } else {
+    }
+    else
+    {
         in->format = outlink->format;
         ret = ff_filter_frame(outlink, in);
         s->got_output = 1;
@@ -314,7 +340,8 @@ static void *resample_child_next(void *obj, void *prev)
     return prev ? NULL : s->avr;
 }
 
-static const AVClass resample_class = {
+static const AVClass resample_class =
+{
     .class_name       = "resample",
     .item_name        = av_default_item_name,
     .version          = LIBAVUTIL_VERSION_INT,
@@ -322,7 +349,8 @@ static const AVClass resample_class = {
     .child_next       = resample_child_next,
 };
 
-static const AVFilterPad avfilter_af_resample_inputs[] = {
+static const AVFilterPad avfilter_af_resample_inputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -331,7 +359,8 @@ static const AVFilterPad avfilter_af_resample_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad avfilter_af_resample_outputs[] = {
+static const AVFilterPad avfilter_af_resample_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -341,7 +370,8 @@ static const AVFilterPad avfilter_af_resample_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_resample = {
+AVFilter ff_af_resample =
+{
     .name          = "resample",
     .description   = NULL_IF_CONFIG_SMALL("Audio resampling and conversion."),
     .priv_size     = sizeof(ResampleContext),

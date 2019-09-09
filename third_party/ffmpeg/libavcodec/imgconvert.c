@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Misc image conversion routines
  * Copyright (c) 2001, 2002, 2003 Fabrice Bellard
  *
@@ -56,28 +56,30 @@ int avcodec_get_pix_fmt_loss(enum AVPixelFormat dst_pix_fmt,
 }
 
 enum AVPixelFormat avcodec_find_best_pix_fmt_of_2(enum AVPixelFormat dst_pix_fmt1, enum AVPixelFormat dst_pix_fmt2,
-                                            enum AVPixelFormat src_pix_fmt, int has_alpha, int *loss_ptr)
+        enum AVPixelFormat src_pix_fmt, int has_alpha, int *loss_ptr)
 {
     return av_find_best_pix_fmt_of_2(dst_pix_fmt1, dst_pix_fmt2, src_pix_fmt, has_alpha, loss_ptr);
 }
 
 #if AV_HAVE_INCOMPATIBLE_LIBAV_ABI
 enum AVPixelFormat avcodec_find_best_pix_fmt2(const enum AVPixelFormat *pix_fmt_list,
-                                            enum AVPixelFormat src_pix_fmt,
-                                            int has_alpha, int *loss_ptr){
+        enum AVPixelFormat src_pix_fmt,
+        int has_alpha, int *loss_ptr)
+{
     return avcodec_find_best_pix_fmt_of_list(pix_fmt_list, src_pix_fmt, has_alpha, loss_ptr);
 }
 #else
 enum AVPixelFormat avcodec_find_best_pix_fmt2(enum AVPixelFormat dst_pix_fmt1, enum AVPixelFormat dst_pix_fmt2,
-                                            enum AVPixelFormat src_pix_fmt, int has_alpha, int *loss_ptr)
+        enum AVPixelFormat src_pix_fmt, int has_alpha, int *loss_ptr)
 {
     return avcodec_find_best_pix_fmt_of_2(dst_pix_fmt1, dst_pix_fmt2, src_pix_fmt, has_alpha, loss_ptr);
 }
 #endif
 
 enum AVPixelFormat avcodec_find_best_pix_fmt_of_list(const enum AVPixelFormat *pix_fmt_list,
-                                            enum AVPixelFormat src_pix_fmt,
-                                            int has_alpha, int *loss_ptr){
+        enum AVPixelFormat src_pix_fmt,
+        int has_alpha, int *loss_ptr)
+{
     int i;
 
     enum AVPixelFormat best = AV_PIX_FMT_NONE;
@@ -90,18 +92,20 @@ enum AVPixelFormat avcodec_find_best_pix_fmt_of_list(const enum AVPixelFormat *p
 
 /* 2x2 -> 1x1 */
 void ff_shrink22(uint8_t *dst, int dst_wrap,
-                     const uint8_t *src, int src_wrap,
-                     int width, int height)
+                 const uint8_t *src, int src_wrap,
+                 int width, int height)
 {
     int w;
     const uint8_t *s1, *s2;
     uint8_t *d;
 
-    for(;height > 0; height--) {
+    for(; height > 0; height--)
+    {
         s1 = src;
         s2 = s1 + src_wrap;
         d = dst;
-        for(w = width;w >= 4; w-=4) {
+        for(w = width; w >= 4; w-=4)
+        {
             d[0] = (s1[0] + s1[1] + s2[0] + s2[1] + 2) >> 2;
             d[1] = (s1[2] + s1[3] + s2[2] + s2[3] + 2) >> 2;
             d[2] = (s1[4] + s1[5] + s2[4] + s2[5] + 2) >> 2;
@@ -110,7 +114,8 @@ void ff_shrink22(uint8_t *dst, int dst_wrap,
             s2 += 8;
             d += 4;
         }
-        for(;w > 0; w--) {
+        for(; w > 0; w--)
+        {
             d[0] = (s1[0] + s1[1] + s2[0] + s2[1] + 2) >> 2;
             s1 += 2;
             s2 += 2;
@@ -123,20 +128,22 @@ void ff_shrink22(uint8_t *dst, int dst_wrap,
 
 /* 4x4 -> 1x1 */
 void ff_shrink44(uint8_t *dst, int dst_wrap,
-                     const uint8_t *src, int src_wrap,
-                     int width, int height)
+                 const uint8_t *src, int src_wrap,
+                 int width, int height)
 {
     int w;
     const uint8_t *s1, *s2, *s3, *s4;
     uint8_t *d;
 
-    for(;height > 0; height--) {
+    for(; height > 0; height--)
+    {
         s1 = src;
         s2 = s1 + src_wrap;
         s3 = s2 + src_wrap;
         s4 = s3 + src_wrap;
         d = dst;
-        for(w = width;w > 0; w--) {
+        for(w = width; w > 0; w--)
+        {
             d[0] = (s1[0] + s1[1] + s1[2] + s1[3] +
                     s2[0] + s2[1] + s2[2] + s2[3] +
                     s3[0] + s3[1] + s3[2] + s3[3] +
@@ -154,15 +161,18 @@ void ff_shrink44(uint8_t *dst, int dst_wrap,
 
 /* 8x8 -> 1x1 */
 void ff_shrink88(uint8_t *dst, int dst_wrap,
-                     const uint8_t *src, int src_wrap,
-                     int width, int height)
+                 const uint8_t *src, int src_wrap,
+                 int width, int height)
 {
     int w, i;
 
-    for(;height > 0; height--) {
-        for(w = width;w > 0; w--) {
+    for(; height > 0; height--)
+    {
+        for(w = width; w > 0; w--)
+        {
             int tmp=0;
-            for(i=0; i<8; i++){
+            for(i=0; i<8; i++)
+            {
                 tmp += src[0] + src[1] + src[2] + src[3] + src[4] + src[5] + src[6] + src[7];
                 src += src_wrap;
             }
@@ -181,7 +191,7 @@ static inline int is_yuv_planar(const AVPixFmtDescriptor *desc)
     int planes[4] = { 0 };
 
     if (     desc->flags & AV_PIX_FMT_FLAG_RGB
-        || !(desc->flags & AV_PIX_FMT_FLAG_PLANAR))
+             || !(desc->flags & AV_PIX_FMT_FLAG_PLANAR))
         return 0;
 
     /* set the used planes */
@@ -210,11 +220,13 @@ int av_picture_crop(AVPicture *dst, const AVPicture *src,
     x_shift = desc->log2_chroma_w;
     av_image_fill_max_pixsteps(max_step, NULL, desc);
 
-    if (is_yuv_planar(desc)) {
-    dst->data[0] = src->data[0] + (top_band * src->linesize[0]) + left_band;
-    dst->data[1] = src->data[1] + ((top_band >> y_shift) * src->linesize[1]) + (left_band >> x_shift);
-    dst->data[2] = src->data[2] + ((top_band >> y_shift) * src->linesize[2]) + (left_band >> x_shift);
-    } else{
+    if (is_yuv_planar(desc))
+    {
+        dst->data[0] = src->data[0] + (top_band * src->linesize[0]) + left_band;
+        dst->data[1] = src->data[1] + ((top_band >> y_shift) * src->linesize[1]) + (left_band >> x_shift);
+        dst->data[2] = src->data[2] + ((top_band >> y_shift) * src->linesize[2]) + (left_band >> x_shift);
+    }
+    else{
         if(top_band % (1<<y_shift) || left_band % (1<<x_shift))
             return -1;
         dst->data[0] = src->data[0] + (top_band * src->linesize[0]) + (left_band * max_step[0]);
@@ -228,7 +240,7 @@ int av_picture_crop(AVPicture *dst, const AVPicture *src,
 
 int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width,
                    enum AVPixelFormat pix_fmt, int padtop, int padbottom, int padleft, int padright,
-            int *color)
+                   int *color)
 {
     const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(pix_fmt);
     uint8_t *optr;
@@ -238,37 +250,43 @@ int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width,
     int i, y;
 
     if (pix_fmt < 0 || pix_fmt >= AV_PIX_FMT_NB ||
-        !is_yuv_planar(desc)) return -1;
+    !is_yuv_planar(desc)) return -1;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         x_shift = i ? desc->log2_chroma_w : 0;
         y_shift = i ? desc->log2_chroma_h : 0;
 
-        if (padtop || padleft) {
+        if (padtop || padleft)
+        {
             memset(dst->data[i], color[i],
-                dst->linesize[i] * (padtop >> y_shift) + (padleft >> x_shift));
+            dst->linesize[i] * (padtop >> y_shift) + (padleft >> x_shift));
         }
 
-        if (padleft || padright) {
+        if (padleft || padright)
+        {
             optr = dst->data[i] + dst->linesize[i] * (padtop >> y_shift) +
-                (dst->linesize[i] - (padright >> x_shift));
+                   (dst->linesize[i] - (padright >> x_shift));
             yheight = (height - 1 - (padtop + padbottom)) >> y_shift;
-            for (y = 0; y < yheight; y++) {
+            for (y = 0; y < yheight; y++)
+            {
                 memset(optr, color[i], (padleft + padright) >> x_shift);
                 optr += dst->linesize[i];
             }
         }
 
-        if (src) { /* first line */
+        if (src)   /* first line */
+        {
             uint8_t *iptr = src->data[i];
             optr = dst->data[i] + dst->linesize[i] * (padtop >> y_shift) +
-                    (padleft >> x_shift);
+                   (padleft >> x_shift);
             memcpy(optr, iptr, (width - padleft - padright) >> x_shift);
             iptr += src->linesize[i];
             optr = dst->data[i] + dst->linesize[i] * (padtop >> y_shift) +
-                (dst->linesize[i] - (padright >> x_shift));
+                   (dst->linesize[i] - (padright >> x_shift));
             yheight = (height - 1 - (padtop + padbottom)) >> y_shift;
-            for (y = 0; y < yheight; y++) {
+            for (y = 0; y < yheight; y++)
+            {
                 memset(optr, color[i], (padleft + padright) >> x_shift);
                 memcpy(optr + ((padleft + padright) >> x_shift), iptr,
                        (width - padleft - padright) >> x_shift);
@@ -277,11 +295,12 @@ int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width,
             }
         }
 
-        if (padbottom || padright) {
+        if (padbottom || padright)
+        {
             optr = dst->data[i] + dst->linesize[i] *
-                ((height - padbottom) >> y_shift) - (padright >> x_shift);
+                   ((height - padbottom) >> y_shift) - (padright >> x_shift);
             memset(optr, color[i],dst->linesize[i] *
-                (padbottom >> y_shift) + (padright >> x_shift));
+                   (padbottom >> y_shift) + (padright >> x_shift));
         }
     }
     return 0;
@@ -298,15 +317,16 @@ int av_picture_pad(AVPicture *dst, const AVPicture *src, int height, int width,
 
 /* filter parameters: [-1 4 2 4 -1] // 8 */
 static void deinterlace_line_c(uint8_t *dst,
-                             const uint8_t *lum_m4, const uint8_t *lum_m3,
-                             const uint8_t *lum_m2, const uint8_t *lum_m1,
-                             const uint8_t *lum,
-                             int size)
+                               const uint8_t *lum_m4, const uint8_t *lum_m3,
+                               const uint8_t *lum_m2, const uint8_t *lum_m1,
+                               const uint8_t *lum,
+                               int size)
 {
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int sum;
 
-    for(;size > 0;size--) {
+    for(; size > 0; size--)
+    {
         sum = -lum_m4[0];
         sum += lum_m3[0] << 2;
         sum += lum_m2[0] << 1;
@@ -329,7 +349,8 @@ static void deinterlace_line_inplace_c(uint8_t *lum_m4, uint8_t *lum_m3,
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int sum;
 
-    for(;size > 0;size--) {
+    for(; size > 0; size--)
+    {
         sum = -lum_m4[0];
         sum += lum_m3[0] << 2;
         sum += lum_m2[0] << 1;
@@ -350,8 +371,8 @@ static void deinterlace_line_inplace_c(uint8_t *lum_m4, uint8_t *lum_m3,
    top field is copied as is, but the bottom field is deinterlaced
    against the top field. */
 static void deinterlace_bottom_field(uint8_t *dst, int dst_wrap,
-                                    const uint8_t *src1, int src_wrap,
-                                    int width, int height)
+                                     const uint8_t *src1, int src_wrap,
+                                     int width, int height)
 {
     const uint8_t *src_m2, *src_m1, *src_0, *src_p1, *src_p2;
     int y;
@@ -361,7 +382,8 @@ static void deinterlace_bottom_field(uint8_t *dst, int dst_wrap,
     src_0=&src_m1[src_wrap];
     src_p1=&src_0[src_wrap];
     src_p2=&src_p1[src_wrap];
-    for(y=0;y<(height-2);y+=2) {
+    for(y=0; y<(height-2); y+=2)
+    {
         memcpy(dst,src_m1,width);
         dst += dst_wrap;
         deinterlace_line(dst,src_m2,src_m1,src_0,src_p1,src_p2,width);
@@ -379,7 +401,7 @@ static void deinterlace_bottom_field(uint8_t *dst, int dst_wrap,
 }
 
 static int deinterlace_bottom_field_inplace(uint8_t *src1, int src_wrap,
-                                            int width, int height)
+        int width, int height)
 {
     uint8_t *src_m1, *src_0, *src_p1, *src_p2;
     int y;
@@ -393,7 +415,8 @@ static int deinterlace_bottom_field_inplace(uint8_t *src1, int src_wrap,
     src_0=&src_m1[src_wrap];
     src_p1=&src_0[src_wrap];
     src_p2=&src_p1[src_wrap];
-    for(y=0;y<(height-2);y+=2) {
+    for(y=0; y<(height-2); y+=2)
+    {
         deinterlace_line_inplace(buf,src_m1,src_0,src_p1,src_p2,width);
         src_m1 = src_p1;
         src_0 = src_p2;
@@ -412,19 +435,22 @@ int avpicture_deinterlace(AVPicture *dst, const AVPicture *src,
     int i, ret;
 
     if (pix_fmt != AV_PIX_FMT_YUV420P &&
-        pix_fmt != AV_PIX_FMT_YUVJ420P &&
-        pix_fmt != AV_PIX_FMT_YUV422P &&
-        pix_fmt != AV_PIX_FMT_YUVJ422P &&
-        pix_fmt != AV_PIX_FMT_YUV444P &&
-        pix_fmt != AV_PIX_FMT_YUV411P &&
-        pix_fmt != AV_PIX_FMT_GRAY8)
+    pix_fmt != AV_PIX_FMT_YUVJ420P &&
+    pix_fmt != AV_PIX_FMT_YUV422P &&
+    pix_fmt != AV_PIX_FMT_YUVJ422P &&
+    pix_fmt != AV_PIX_FMT_YUV444P &&
+    pix_fmt != AV_PIX_FMT_YUV411P &&
+    pix_fmt != AV_PIX_FMT_GRAY8)
         return -1;
     if ((width & 3) != 0 || (height & 3) != 0)
         return -1;
 
-    for(i=0;i<3;i++) {
-        if (i == 1) {
-            switch(pix_fmt) {
+    for(i=0; i<3; i++)
+    {
+        if (i == 1)
+        {
+            switch(pix_fmt)
+            {
             case AV_PIX_FMT_YUVJ420P:
             case AV_PIX_FMT_YUV420P:
                 width >>= 1;
@@ -440,20 +466,24 @@ int avpicture_deinterlace(AVPicture *dst, const AVPicture *src,
             default:
                 break;
             }
-            if (pix_fmt == AV_PIX_FMT_GRAY8) {
+            if (pix_fmt == AV_PIX_FMT_GRAY8)
+            {
                 break;
             }
         }
-        if (src == dst) {
+        if (src == dst)
+        {
             ret = deinterlace_bottom_field_inplace(dst->data[i],
                                                    dst->linesize[i],
                                                    width, height);
             if (ret < 0)
                 return ret;
-        } else {
+        }
+        else
+        {
             deinterlace_bottom_field(dst->data[i],dst->linesize[i],
-                                        src->data[i], src->linesize[i],
-                                        width, height);
+                                     src->data[i], src->linesize[i],
+                                     width, height);
         }
     }
     emms_c();
@@ -464,23 +494,28 @@ int avpicture_deinterlace(AVPicture *dst, const AVPicture *src,
 
 #ifdef TEST
 
-int main(void){
+int main(void)
+{
     int i;
     int err=0;
     int skip = 0;
 
-    for (i=0; i<AV_PIX_FMT_NB*2; i++) {
+    for (i=0; i<AV_PIX_FMT_NB*2; i++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(i);
-        if(!desc || !desc->name) {
+        if(!desc || !desc->name)
+        {
             skip ++;
             continue;
         }
-        if (skip) {
+        if (skip)
+        {
             av_log(NULL, AV_LOG_INFO, "%3d unused pixel format values\n", skip);
             skip = 0;
         }
         av_log(NULL, AV_LOG_INFO, "pix fmt %s yuv_plan:%d avg_bpp:%d\n", desc->name, is_yuv_planar(desc), av_get_padded_bits_per_pixel(desc));
-        if ((!(desc->flags & AV_PIX_FMT_FLAG_ALPHA)) != (desc->nb_components != 2 && desc->nb_components != 4)) {
+        if ((!(desc->flags & AV_PIX_FMT_FLAG_ALPHA)) != (desc->nb_components != 2 && desc->nb_components != 4))
+        {
             av_log(NULL, AV_LOG_ERROR, "Alpha flag mismatch\n");
             err = 1;
         }

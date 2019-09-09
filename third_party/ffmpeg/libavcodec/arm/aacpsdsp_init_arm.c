@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012 Mans Rullgard
  *
  * This file is part of FFmpeg.
@@ -47,7 +47,8 @@ av_cold void ff_psdsp_init_arm(PSDSPContext *s)
 {
     int cpu_flags = av_get_cpu_flags();
 
-    if (have_neon(cpu_flags)) {
+    if (have_neon(cpu_flags))
+    {
         s->add_squares            = ff_ps_add_squares_neon;
         s->mul_pair_single        = ff_ps_mul_pair_single_neon;
         s->hybrid_synthesis_deint = ff_ps_hybrid_synthesis_deint_neon;

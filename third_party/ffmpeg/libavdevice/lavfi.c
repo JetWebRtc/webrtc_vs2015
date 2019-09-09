@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Stefano Sabatini
  *
  * This file is part of FFmpeg.
@@ -42,7 +42,8 @@
 #include "libavformat/internal.h"
 #include "avdevice.h"
 
-typedef struct {
+typedef struct
+{
     AVClass *class;          ///< class for private options
     char          *graph_str;
     char          *graph_filename;
@@ -62,7 +63,8 @@ static int *create_all_formats(int n)
 {
     int i, j, *fmts, count = 0;
 
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n; i++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(i);
         if (!(desc->flags & AV_PIX_FMT_FLAG_HWACCEL))
             count++;
@@ -70,7 +72,8 @@ static int *create_all_formats(int n)
 
     if (!(fmts = av_malloc((count+1) * sizeof(int))))
         return NULL;
-    for (j = 0, i = 0; i < n; i++) {
+    for (j = 0, i = 0; i < n; i++)
+    {
         const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(i);
         if (!(desc->flags & AV_PIX_FMT_FLAG_HWACCEL))
             fmts[j++] = i;
@@ -100,15 +103,19 @@ static int create_subcc_streams(AVFormatContext *avctx)
     AVStream *st;
     int stream_idx, sink_idx;
 
-    for (stream_idx = 0; stream_idx < lavfi->nb_sinks; stream_idx++) {
+    for (stream_idx = 0; stream_idx < lavfi->nb_sinks; stream_idx++)
+    {
         sink_idx = lavfi->stream_sink_map[stream_idx];
-        if (lavfi->sink_stream_subcc_map[sink_idx]) {
+        if (lavfi->sink_stream_subcc_map[sink_idx])
+        {
             lavfi->sink_stream_subcc_map[sink_idx] = avctx->nb_streams;
             if (!(st = avformat_new_stream(avctx, NULL)))
                 return AVERROR(ENOMEM);
             st->codec->codec_id = AV_CODEC_ID_EIA_608;
             st->codec->codec_type = AVMEDIA_TYPE_SUBTITLE;
-        } else {
+        }
+        else
+        {
             lavfi->sink_stream_subcc_map[sink_idx] = -1;
         }
     }
@@ -134,13 +141,15 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
     buffersink = avfilter_get_by_name("buffersink");
     abuffersink = avfilter_get_by_name("abuffersink");
 
-    if (lavfi->graph_filename && lavfi->graph_str) {
+    if (lavfi->graph_filename && lavfi->graph_str)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Only one of the graph or graph_file options must be specified\n");
         FAIL(AVERROR(EINVAL));
     }
 
-    if (lavfi->graph_filename) {
+    if (lavfi->graph_filename)
+    {
         AVBPrint graph_file_pb;
         AVIOContext *avio = NULL;
         ret = avio_open(&avio, lavfi->graph_filename, AVIO_FLAG_READ);
@@ -152,7 +161,8 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
         av_bprint_chars(&graph_file_pb, '\0', 1);
         if (!ret && !av_bprint_is_complete(&graph_file_pb))
             ret = AVERROR(ENOMEM);
-        if (ret) {
+        if (ret)
+        {
             av_bprint_finalize(&graph_file_pb, NULL);
             goto end;
         }
@@ -168,10 +178,11 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
         FAIL(AVERROR(ENOMEM));
 
     if ((ret = avfilter_graph_parse_ptr(lavfi->graph, lavfi->graph_str,
-                                    &input_links, &output_links, avctx)) < 0)
+                                        &input_links, &output_links, avctx)) < 0)
         goto end;
 
-    if (input_links) {
+    if (input_links)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Open inputs in the filtergraph are not acceptable\n");
         FAIL(AVERROR(EINVAL));
@@ -195,25 +206,32 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
 
     /* parse the output link names - they need to be of the form out0, out1, ...
      * create a mapping between them and the streams */
-    for (i = 0, inout = output_links; inout; i++, inout = inout->next) {
+    for (i = 0, inout = output_links; inout; i++, inout = inout->next)
+    {
         int stream_idx = 0, suffix = 0, use_subcc = 0;
         sscanf(inout->name, "out%n%d%n", &suffix, &stream_idx, &suffix);
-        if (!suffix) {
+        if (!suffix)
+        {
             av_log(avctx,  AV_LOG_ERROR,
                    "Invalid outpad name '%s'\n", inout->name);
             FAIL(AVERROR(EINVAL));
         }
-        if (inout->name[suffix]) {
-            if (!strcmp(inout->name + suffix, "+subcc")) {
+        if (inout->name[suffix])
+        {
+            if (!strcmp(inout->name + suffix, "+subcc"))
+            {
                 use_subcc = 1;
-            } else {
+            }
+            else
+            {
                 av_log(avctx,  AV_LOG_ERROR,
                        "Invalid outpad suffix '%s'\n", inout->name);
                 FAIL(AVERROR(EINVAL));
             }
         }
 
-        if ((unsigned)stream_idx >= n) {
+        if ((unsigned)stream_idx >= n)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Invalid index was specified in output '%s', "
                    "must be a non-negative value < %d\n",
@@ -221,7 +239,8 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
             FAIL(AVERROR(EINVAL));
         }
 
-        if (lavfi->stream_sink_map[stream_idx] != -1) {
+        if (lavfi->stream_sink_map[stream_idx] != -1)
+        {
             av_log(avctx,  AV_LOG_ERROR,
                    "An output with stream index %d was already specified\n",
                    stream_idx);
@@ -233,7 +252,8 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
     }
 
     /* for each open output create a corresponding stream */
-    for (i = 0, inout = output_links; inout; i++, inout = inout->next) {
+    for (i = 0, inout = output_links; inout; i++, inout = inout->next)
+    {
         AVStream *st;
         if (!(st = avformat_new_stream(avctx, NULL)))
             FAIL(AVERROR(ENOMEM));
@@ -245,18 +265,21 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
     if (!lavfi->sinks)
         FAIL(AVERROR(ENOMEM));
 
-    for (i = 0, inout = output_links; inout; i++, inout = inout->next) {
+    for (i = 0, inout = output_links; inout; i++, inout = inout->next)
+    {
         AVFilterContext *sink;
 
         type = avfilter_pad_get_type(inout->filter_ctx->output_pads, inout->pad_idx);
 
         if (type == AVMEDIA_TYPE_VIDEO && ! buffersink ||
-            type == AVMEDIA_TYPE_AUDIO && ! abuffersink) {
-                av_log(avctx, AV_LOG_ERROR, "Missing required buffersink filter, aborting.\n");
-                FAIL(AVERROR_FILTER_NOT_FOUND);
+                type == AVMEDIA_TYPE_AUDIO && ! abuffersink)
+        {
+            av_log(avctx, AV_LOG_ERROR, "Missing required buffersink filter, aborting.\n");
+            FAIL(AVERROR_FILTER_NOT_FOUND);
         }
 
-        if (type == AVMEDIA_TYPE_VIDEO) {
+        if (type == AVMEDIA_TYPE_VIDEO)
+        {
             ret = avfilter_graph_create_filter(&sink, buffersink,
                                                inout->name, NULL,
                                                NULL, lavfi->graph);
@@ -264,12 +287,15 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
                 ret = av_opt_set_int_list(sink, "pix_fmts", pix_fmts,  AV_PIX_FMT_NONE, AV_OPT_SEARCH_CHILDREN);
             if (ret < 0)
                 goto end;
-        } else if (type == AVMEDIA_TYPE_AUDIO) {
+        }
+        else if (type == AVMEDIA_TYPE_AUDIO)
+        {
             enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_U8,
                                                   AV_SAMPLE_FMT_S16,
                                                   AV_SAMPLE_FMT_S32,
                                                   AV_SAMPLE_FMT_FLT,
-                                                  AV_SAMPLE_FMT_DBL, -1 };
+                                                  AV_SAMPLE_FMT_DBL, -1
+                                                };
 
             ret = avfilter_graph_create_filter(&sink, abuffersink,
                                                inout->name, NULL,
@@ -282,7 +308,9 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
                                  AV_OPT_SEARCH_CHILDREN);
             if (ret < 0)
                 goto end;
-        } else {
+        }
+        else
+        {
             av_log(avctx,  AV_LOG_ERROR,
                    "Output '%s' is not a video or audio output, not yet supported\n", inout->name);
             FAIL(AVERROR(EINVAL));
@@ -297,7 +325,8 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
     if ((ret = avfilter_graph_config(lavfi->graph, avctx)) < 0)
         goto end;
 
-    if (lavfi->dump_graph) {
+    if (lavfi->dump_graph)
+    {
         char *dump = avfilter_graph_dump(lavfi->graph, lavfi->dump_graph);
         fputs(dump, stderr);
         fflush(stderr);
@@ -305,24 +334,28 @@ av_cold static int lavfi_read_header(AVFormatContext *avctx)
     }
 
     /* fill each stream with the information in the corresponding sink */
-    for (i = 0; i < lavfi->nb_sinks; i++) {
+    for (i = 0; i < lavfi->nb_sinks; i++)
+    {
         AVFilterLink *link = lavfi->sinks[lavfi->stream_sink_map[i]]->inputs[0];
         AVStream *st = avctx->streams[i];
         st->codec->codec_type = link->type;
         avpriv_set_pts_info(st, 64, link->time_base.num, link->time_base.den);
-        if (link->type == AVMEDIA_TYPE_VIDEO) {
+        if (link->type == AVMEDIA_TYPE_VIDEO)
+        {
             st->codec->codec_id   = AV_CODEC_ID_RAWVIDEO;
             st->codec->pix_fmt    = link->format;
             st->codec->time_base  = link->time_base;
             st->codec->width      = link->w;
             st->codec->height     = link->h;
             st       ->sample_aspect_ratio =
-            st->codec->sample_aspect_ratio = link->sample_aspect_ratio;
+                st->codec->sample_aspect_ratio = link->sample_aspect_ratio;
             avctx->probesize = FFMAX(avctx->probesize,
                                      link->w * link->h *
                                      av_get_padded_bits_per_pixel(av_pix_fmt_desc_get(link->format)) *
                                      30);
-        } else if (link->type == AVMEDIA_TYPE_AUDIO) {
+        }
+        else if (link->type == AVMEDIA_TYPE_AUDIO)
+        {
             st->codec->codec_id    = av_get_pcm_codec(link->format, -1);
             st->codec->channels    = avfilter_link_get_channels(link);
             st->codec->sample_fmt  = link->format;
@@ -386,7 +419,8 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     int ret, i;
     int size = 0;
 
-    if (lavfi->subcc_packet.size) {
+    if (lavfi->subcc_packet.size)
+    {
         *pkt = lavfi->subcc_packet;
         av_init_packet(&lavfi->subcc_packet);
         lavfi->subcc_packet.size = 0;
@@ -396,7 +430,8 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
     /* iterate through all the graph sinks. Select the sink with the
      * minimum PTS */
-    for (i = 0; i < lavfi->nb_sinks; i++) {
+    for (i = 0; i < lavfi->nb_sinks; i++)
+    {
         AVRational tb = lavfi->sinks[i]->inputs[0]->time_base;
         double d;
         int ret;
@@ -406,17 +441,20 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
         ret = av_buffersink_get_frame_flags(lavfi->sinks[i], frame,
                                             AV_BUFFERSINK_FLAG_PEEK);
-        if (ret == AVERROR_EOF) {
+        if (ret == AVERROR_EOF)
+        {
             ff_dlog(avctx, "EOF sink_idx:%d\n", i);
             lavfi->sink_eof[i] = 1;
             continue;
-        } else if (ret < 0)
+        }
+        else if (ret < 0)
             return ret;
         d = av_rescale_q_rnd(frame->pts, tb, AV_TIME_BASE_Q, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
         ff_dlog(avctx, "sink_idx:%d time:%f\n", i, d);
         av_frame_unref(frame);
 
-        if (d < min_pts) {
+        if (d < min_pts)
+        {
             min_pts = d;
             min_pts_sink_idx = i;
         }
@@ -429,7 +467,8 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     av_buffersink_get_frame_flags(lavfi->sinks[min_pts_sink_idx], frame, 0);
     stream_idx = lavfi->sink_stream_map[min_pts_sink_idx];
 
-    if (frame->width /* FIXME best way of testing a video */) {
+    if (frame->width /* FIXME best way of testing a video */)
+    {
         size = avpicture_get_size(frame->format, frame->width, frame->height);
         if ((ret = av_new_packet(pkt, size)) < 0)
             return ret;
@@ -439,30 +478,35 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
         avpicture_layout(&pict, frame->format, frame->width, frame->height,
                          pkt->data, size);
-    } else if (av_frame_get_channels(frame) /* FIXME test audio */) {
+    }
+    else if (av_frame_get_channels(frame) /* FIXME test audio */)
+    {
         size = frame->nb_samples * av_get_bytes_per_sample(frame->format) *
-                                   av_frame_get_channels(frame);
+               av_frame_get_channels(frame);
         if ((ret = av_new_packet(pkt, size)) < 0)
             return ret;
         memcpy(pkt->data, frame->data[0], size);
     }
 
     frame_metadata = av_frame_get_metadata(frame);
-    if (frame_metadata) {
+    if (frame_metadata)
+    {
         uint8_t *metadata;
         AVDictionaryEntry *e = NULL;
         AVBPrint meta_buf;
 
         av_bprint_init(&meta_buf, 0, AV_BPRINT_SIZE_UNLIMITED);
-        while ((e = av_dict_get(frame_metadata, "", e, AV_DICT_IGNORE_SUFFIX))) {
+        while ((e = av_dict_get(frame_metadata, "", e, AV_DICT_IGNORE_SUFFIX)))
+        {
             av_bprintf(&meta_buf, "%s", e->key);
             av_bprint_chars(&meta_buf, '\0', 1);
             av_bprintf(&meta_buf, "%s", e->value);
             av_bprint_chars(&meta_buf, '\0', 1);
         }
         if (!av_bprint_is_complete(&meta_buf) ||
-            !(metadata = av_packet_new_side_data(pkt, AV_PKT_DATA_STRINGS_METADATA,
-                                                 meta_buf.len))) {
+                !(metadata = av_packet_new_side_data(pkt, AV_PKT_DATA_STRINGS_METADATA,
+                             meta_buf.len)))
+        {
             av_bprint_finalize(&meta_buf, NULL);
             return AVERROR(ENOMEM);
         }
@@ -470,7 +514,8 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
         av_bprint_finalize(&meta_buf, NULL);
     }
 
-    if ((ret = create_subcc_packet(avctx, frame, min_pts_sink_idx)) < 0) {
+    if ((ret = create_subcc_packet(avctx, frame, min_pts_sink_idx)) < 0)
+    {
         av_frame_unref(frame);
         av_packet_unref(pkt);
         return ret;
@@ -488,14 +533,16 @@ static int lavfi_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
 #define DEC AV_OPT_FLAG_DECODING_PARAM
 
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "graph",     "set libavfilter graph", OFFSET(graph_str),  AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, DEC },
     { "graph_file","set libavfilter graph filename", OFFSET(graph_filename), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, DEC},
     { "dumpgraph", "dump graph to stderr",  OFFSET(dump_graph), AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, DEC },
     { NULL },
 };
 
-static const AVClass lavfi_class = {
+static const AVClass lavfi_class =
+{
     .class_name = "lavfi indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -503,7 +550,8 @@ static const AVClass lavfi_class = {
     .category   = AV_CLASS_CATEGORY_DEVICE_INPUT,
 };
 
-AVInputFormat ff_lavfi_demuxer = {
+AVInputFormat ff_lavfi_demuxer =
+{
     .name           = "lavfi",
     .long_name      = NULL_IF_CONFIG_SMALL("Libavfilter virtual input device"),
     .priv_data_size = sizeof(LavfiContext),

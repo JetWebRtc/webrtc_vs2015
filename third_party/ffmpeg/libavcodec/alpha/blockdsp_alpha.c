@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Alpha optimised block operations
  * Copyright (c) 2002 Falk Hueffner <falk@debian.org>
  *
@@ -25,11 +25,13 @@
 #include "libavcodec/blockdsp.h"
 #include "asm.h"
 
-static void clear_blocks_axp(int16_t *blocks) {
+static void clear_blocks_axp(int16_t *blocks)
+{
     uint64_t *p = (uint64_t *) blocks;
     int n = sizeof(int16_t) * 6 * 64;
 
-    do {
+    do
+    {
         p[0] = 0;
         p[1] = 0;
         p[2] = 0;
@@ -40,12 +42,14 @@ static void clear_blocks_axp(int16_t *blocks) {
         p[7] = 0;
         p += 8;
         n -= 8 * 8;
-    } while (n);
+    }
+    while (n);
 }
 
 av_cold void ff_blockdsp_init_alpha(BlockDSPContext *c, unsigned high_bit_depth)
 {
-    if (!high_bit_depth) {
+    if (!high_bit_depth)
+    {
         c->clear_blocks = clear_blocks_axp;
     }
 }

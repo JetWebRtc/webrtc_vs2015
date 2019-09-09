@@ -1,4 +1,4 @@
-/*
+﻿/*
  * The simplest AC-3 encoder
  * Copyright (c) 2000 Fabrice Bellard
  * Copyright (c) 2006-2010 Justin Ruggles <justin.ruggles@gmail.com>
@@ -36,7 +36,8 @@
 
 #define AC3ENC_TYPE AC3ENC_TYPE_AC3
 #include "ac3enc_opts_template.c"
-static const AVClass ac3enc_class = {
+static const AVClass ac3enc_class =
+{
     .class_name = "AC-3 Encoder",
     .item_name  = av_default_item_name,
     .option     = ac3_options,
@@ -73,7 +74,8 @@ av_cold int ff_ac3_float_mdct_init(AC3EncodeContext *s)
     n2 = n >> 1;
 
     window = av_malloc_array(n, sizeof(*window));
-    if (!window) {
+    if (!window)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Cannot allocate memory.\n");
         return AVERROR(ENOMEM);
     }
@@ -145,7 +147,8 @@ av_cold int ff_ac3_float_encode_init(AVCodecContext *avctx)
     return ff_ac3_encode_init(avctx);
 }
 
-AVCodec ff_ac3_encoder = {
+AVCodec ff_ac3_encoder =
+{
     .name            = "ac3",
     .long_name       = NULL_IF_CONFIG_SMALL("ATSC A/52A (AC-3)"),
     .type            = AVMEDIA_TYPE_AUDIO,
@@ -154,8 +157,10 @@ AVCodec ff_ac3_encoder = {
     .init            = ff_ac3_float_encode_init,
     .encode2         = ff_ac3_float_encode_frame,
     .close           = ff_ac3_encode_close,
-    .sample_fmts     = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_FLTP,
-                                                      AV_SAMPLE_FMT_NONE },
+    .sample_fmts     = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_FLTP,
+        AV_SAMPLE_FMT_NONE
+    },
     .priv_class      = &ac3enc_class,
     .channel_layouts = ff_ac3_channel_layouts,
     .defaults        = ac3_defaults,

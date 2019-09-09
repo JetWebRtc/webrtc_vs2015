@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Compute the Adler-32 checksum of a data stream.
  * This is a modified version based on adler32.c from the zlib library.
  *
@@ -47,17 +47,20 @@ unsigned long av_adler32_update(unsigned long adler, const uint8_t * buf,
     unsigned long s1 = adler & 0xffff;
     unsigned long s2 = adler >> 16;
 
-    while (len > 0) {
+    while (len > 0)
+    {
 #if HAVE_FAST_64BIT && HAVE_FAST_UNALIGNED && !CONFIG_SMALL
         unsigned len2 = FFMIN((len-1) & ~7, 23*8);
-        if (len2) {
+        if (len2)
+        {
             uint64_t a1= 0;
             uint64_t a2= 0;
             uint64_t b1= 0;
             uint64_t b2= 0;
             len -= len2;
             s2 += s1*len2;
-            while (len2 >= 8) {
+            while (len2 >= 8)
+            {
                 uint64_t v = AV_RN64(buf);
                 a2 += a1;
                 b2 += b1;
@@ -74,22 +77,24 @@ unsigned long av_adler32_update(unsigned long adler, const uint8_t * buf,
             s1 += ((a1+b1)*0x1000100010001)>>48;
             s2 += ((((a2&0xFFFF0000FFFF)+(b2&0xFFFF0000FFFF)+((a2>>16)&0xFFFF0000FFFF)+((b2>>16)&0xFFFF0000FFFF))*0x800000008)>>32)
 #if HAVE_BIGENDIAN
-                 + 2*((b1*0x1000200030004)>>48)
-                 +   ((a1*0x1000100010001)>>48)
-                 + 2*((a1*0x0000100020003)>>48);
+                  + 2*((b1*0x1000200030004)>>48)
+                  +   ((a1*0x1000100010001)>>48)
+                  + 2*((a1*0x0000100020003)>>48);
 #else
-                 + 2*((a1*0x4000300020001)>>48)
-                 +   ((b1*0x1000100010001)>>48)
-                 + 2*((b1*0x3000200010000)>>48);
+                  + 2*((a1*0x4000300020001)>>48)
+                  +   ((b1*0x1000100010001)>>48)
+                  + 2*((b1*0x3000200010000)>>48);
 #endif
         }
 #else
-        while (len > 4  && s2 < (1U << 31)) {
+        while (len > 4  && s2 < (1U << 31))
+        {
             DO4(buf);
             len -= 4;
         }
 #endif
-        DO1(buf); len--;
+        DO1(buf);
+        len--;
         s1 %= BASE;
         s2 %= BASE;
     }
@@ -115,13 +120,17 @@ int main(int argc, char **argv)
     for (i = 0; i < LEN; i++)
         data[i] = ((i * i) >> 3) + 123 * i;
 
-    if (argc > 1 && !strcmp(argv[1], "-t")) {
-        for (i = 0; i < 1000; i++) {
+    if (argc > 1 && !strcmp(argv[1], "-t"))
+    {
+        for (i = 0; i < 1000; i++)
+        {
             START_TIMER;
             checksum = av_adler32_update(1, data, LEN);
             STOP_TIMER("adler");
         }
-    } else {
+    }
+    else
+    {
         checksum = av_adler32_update(1, data, LEN);
     }
 

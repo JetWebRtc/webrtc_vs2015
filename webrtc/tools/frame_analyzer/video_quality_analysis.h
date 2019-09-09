@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,25 +18,29 @@
 #include "libyuv/compare.h"  // NOLINT
 #include "libyuv/convert.h"  // NOLINT
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-struct AnalysisResult {
-  AnalysisResult() {}
-  AnalysisResult(int frame_number, double psnr_value, double ssim_value)
-      : frame_number(frame_number),
-        psnr_value(psnr_value),
-        ssim_value(ssim_value) {}
-  int frame_number;
-  double psnr_value;
-  double ssim_value;
+struct AnalysisResult
+{
+    AnalysisResult() {}
+    AnalysisResult(int frame_number, double psnr_value, double ssim_value)
+        : frame_number(frame_number),
+          psnr_value(psnr_value),
+          ssim_value(ssim_value) {}
+    int frame_number;
+    double psnr_value;
+    double ssim_value;
 };
 
-struct ResultsContainer {
-  ResultsContainer();
-  ~ResultsContainer();
+struct ResultsContainer
+{
+    ResultsContainer();
+    ~ResultsContainer();
 
-  std::vector<AnalysisResult> frames;
+    std::vector<AnalysisResult> frames;
 };
 
 enum VideoAnalysisMetricsType {kPSNR, kSSIM};

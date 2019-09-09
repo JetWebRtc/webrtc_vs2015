@@ -1,4 +1,4 @@
-/*
+﻿/*
  * PNG image format
  * Copyright (c) 2008 Loren Merrit <lorenm@u.washington.edu>
  *
@@ -24,7 +24,8 @@
 
 #include <stdint.h>
 
-typedef struct PNGDSPContext {
+typedef struct PNGDSPContext
+{
     void (*add_bytes_l2)(uint8_t *dst,
                          uint8_t *src1 /* align 16 */,
                          uint8_t *src2, int w);

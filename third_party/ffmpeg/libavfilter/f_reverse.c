@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Derek Buitenhuis
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 
 #define DEFAULT_LENGTH 300
 
-typedef struct ReverseContext {
+typedef struct ReverseContext
+{
     int nb_frames;
     AVFrame **frames;
     unsigned int frames_size;
@@ -46,7 +47,8 @@ static av_cold int init(AVFilterContext *ctx)
 
     s->frames = av_fast_realloc(NULL, &s->frames_size,
                                 DEFAULT_LENGTH * sizeof(*(s->frames)));
-    if (!s->frames) {
+    if (!s->frames)
+    {
         av_freep(&s->pts);
         return AVERROR(ENOMEM);
     }
@@ -74,14 +76,16 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     ReverseContext *s    = ctx->priv;
     void *ptr;
 
-    if (s->nb_frames + 1 > s->pts_size / sizeof(*(s->pts))) {
+    if (s->nb_frames + 1 > s->pts_size / sizeof(*(s->pts)))
+    {
         ptr = av_fast_realloc(s->pts, &s->pts_size, s->pts_size * 2);
         if (!ptr)
             return AVERROR(ENOMEM);
         s->pts = ptr;
     }
 
-    if (s->nb_frames + 1 > s->frames_size / sizeof(*(s->frames))) {
+    if (s->nb_frames + 1 > s->frames_size / sizeof(*(s->frames)))
+    {
         ptr = av_fast_realloc(s->frames, &s->frames_size, s->frames_size * 2);
         if (!ptr)
             return AVERROR(ENOMEM);
@@ -105,7 +109,8 @@ static int request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && s->nb_frames > 0) {
+    if (ret == AVERROR_EOF && s->nb_frames > 0)
+    {
         AVFrame *out = s->frames[s->nb_frames - 1];
         out->pts     = s->pts[s->flush_idx++];
         ret          = ff_filter_frame(outlink, out);
@@ -115,7 +120,8 @@ static int request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad reverse_inputs[] = {
+static const AVFilterPad reverse_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -124,7 +130,8 @@ static const AVFilterPad reverse_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad reverse_outputs[] = {
+static const AVFilterPad reverse_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_VIDEO,
@@ -134,7 +141,8 @@ static const AVFilterPad reverse_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_reverse = {
+AVFilter ff_vf_reverse =
+{
     .name        = "reverse",
     .description = NULL_IF_CONFIG_SMALL("Reverse a clip."),
     .priv_size   = sizeof(ReverseContext),
@@ -179,42 +187,50 @@ static int areverse_request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && s->nb_frames > 0) {
+    if (ret == AVERROR_EOF && s->nb_frames > 0)
+    {
         AVFrame *out = s->frames[s->nb_frames - 1];
         out->pts     = s->pts[s->flush_idx++];
 
-        for (p = 0; p < outlink->channels; p++) {
-            switch (outlink->format) {
-            case AV_SAMPLE_FMT_U8P: {
+        for (p = 0; p < outlink->channels; p++)
+        {
+            switch (outlink->format)
+            {
+            case AV_SAMPLE_FMT_U8P:
+            {
                 uint8_t *dst = (uint8_t *)out->extended_data[p];
                 for (i = 0, j = out->nb_samples - 1; i < j; i++, j--)
                     FFSWAP(uint8_t, dst[i], dst[j]);
             }
-                break;
-            case AV_SAMPLE_FMT_S16P: {
+            break;
+            case AV_SAMPLE_FMT_S16P:
+            {
                 int16_t *dst = (int16_t *)out->extended_data[p];
                 for (i = 0, j = out->nb_samples - 1; i < j; i++, j--)
                     FFSWAP(int16_t, dst[i], dst[j]);
             }
-                break;
-            case AV_SAMPLE_FMT_S32P: {
+            break;
+            case AV_SAMPLE_FMT_S32P:
+            {
                 int32_t *dst = (int32_t *)out->extended_data[p];
                 for (i = 0, j = out->nb_samples - 1; i < j; i++, j--)
                     FFSWAP(int32_t, dst[i], dst[j]);
             }
-                break;
-            case AV_SAMPLE_FMT_FLTP: {
+            break;
+            case AV_SAMPLE_FMT_FLTP:
+            {
                 float *dst = (float *)out->extended_data[p];
                 for (i = 0, j = out->nb_samples - 1; i < j; i++, j--)
                     FFSWAP(float, dst[i], dst[j]);
             }
-                break;
-            case AV_SAMPLE_FMT_DBLP: {
+            break;
+            case AV_SAMPLE_FMT_DBLP:
+            {
                 double *dst = (double *)out->extended_data[p];
                 for (i = 0, j = out->nb_samples - 1; i < j; i++, j--)
                     FFSWAP(double, dst[i], dst[j]);
             }
-                break;
+            break;
             }
         }
 
@@ -225,7 +241,8 @@ static int areverse_request_frame(AVFilterLink *outlink)
     return ret;
 }
 
-static const AVFilterPad areverse_inputs[] = {
+static const AVFilterPad areverse_inputs[] =
+{
     {
         .name           = "default",
         .type           = AVMEDIA_TYPE_AUDIO,
@@ -235,7 +252,8 @@ static const AVFilterPad areverse_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad areverse_outputs[] = {
+static const AVFilterPad areverse_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -245,7 +263,8 @@ static const AVFilterPad areverse_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_areverse = {
+AVFilter ff_af_areverse =
+{
     .name          = "areverse",
     .description   = NULL_IF_CONFIG_SMALL("Reverse an audio clip."),
     .query_formats = query_formats,

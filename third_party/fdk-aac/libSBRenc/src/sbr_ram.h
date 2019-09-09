@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -84,7 +84,7 @@ amm-info@iis.fraunhofer.de
 /*!
 \file
 \brief Memory layout
- 
+
 */
 #ifndef __SBR_RAM_H
 #define __SBR_RAM_H
@@ -102,9 +102,9 @@ amm-info@iis.fraunhofer.de
 
 #define ENV_TRANSIENTS_BYTE  ( (sizeof(FIXP_DBL)*(MAX_NUM_CHANNELS*3*QMF_MAX_TIME_SLOTS)) )
 
-  #define ENV_R_BUFF_BYTE      ( (sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
-  #define ENV_I_BUFF_BYTE      ( (sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
-  #define Y_BUF_CH_BYTE        ( (2*sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
+#define ENV_R_BUFF_BYTE      ( (sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
+#define ENV_I_BUFF_BYTE      ( (sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
+#define Y_BUF_CH_BYTE        ( (2*sizeof(FIXP_DBL)*((QMF_MAX_TIME_SLOTS) * MAX_HYBRID_BANDS)) )
 
 
 #define ENV_R_BUF_PS_BYTE    ( (sizeof(FIXP_DBL)*QMF_MAX_TIME_SLOTS * QMF_CHANNELS / 2) )
@@ -127,59 +127,59 @@ amm-info@iis.fraunhofer.de
   ------------------------- -------------------------
 
 */
-  #define BUF_NRG_SIZE   ( (MAX_NUM_CHANNELS * Y_2_BUF_BYTE) )
-  #define BUF_QMF_SIZE  (ENV_R_BUFF_BYTE + ENV_I_BUFF_BYTE)
+#define BUF_NRG_SIZE   ( (MAX_NUM_CHANNELS * Y_2_BUF_BYTE) )
+#define BUF_QMF_SIZE  (ENV_R_BUFF_BYTE + ENV_I_BUFF_BYTE)
 
-  /* Size of the shareable memory region than can be reused */
-  #define SBR_ENC_DYN_RAM_SIZE  ( BUF_QMF_SIZE + BUF_NRG_SIZE )
+/* Size of the shareable memory region than can be reused */
+#define SBR_ENC_DYN_RAM_SIZE  ( BUF_QMF_SIZE + BUF_NRG_SIZE )
 
-  #define OFFSET_QMF         ( 0 )
-  #define OFFSET_NRG         ( OFFSET_QMF + BUF_QMF_SIZE )
+#define OFFSET_QMF         ( 0 )
+#define OFFSET_NRG         ( OFFSET_QMF + BUF_QMF_SIZE )
 
 
 /*
  *****************************************************************************************************
  */
 
-  H_ALLOC_MEM(Ram_SbrDynamic_RAM, FIXP_DBL)
+H_ALLOC_MEM(Ram_SbrDynamic_RAM, FIXP_DBL)
 
-  H_ALLOC_MEM(Ram_SbrEncoder, SBR_ENCODER)
-  H_ALLOC_MEM(Ram_SbrChannel, SBR_CHANNEL)
-  H_ALLOC_MEM(Ram_SbrElement, SBR_ELEMENT)
+H_ALLOC_MEM(Ram_SbrEncoder, SBR_ENCODER)
+H_ALLOC_MEM(Ram_SbrChannel, SBR_CHANNEL)
+H_ALLOC_MEM(Ram_SbrElement, SBR_ELEMENT)
 
-  H_ALLOC_MEM(Ram_Sbr_quotaMatrix, FIXP_DBL)
-  H_ALLOC_MEM(Ram_Sbr_signMatrix, INT)
+H_ALLOC_MEM(Ram_Sbr_quotaMatrix, FIXP_DBL)
+H_ALLOC_MEM(Ram_Sbr_signMatrix, INT)
 
-  H_ALLOC_MEM(Ram_Sbr_QmfStatesAnalysis, FIXP_QAS)
+H_ALLOC_MEM(Ram_Sbr_QmfStatesAnalysis, FIXP_QAS)
 
-  H_ALLOC_MEM(Ram_Sbr_freqBandTableLO, UCHAR)
-  H_ALLOC_MEM(Ram_Sbr_freqBandTableHI, UCHAR)
-  H_ALLOC_MEM(Ram_Sbr_v_k_master, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_freqBandTableLO, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_freqBandTableHI, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_v_k_master, UCHAR)
 
-  H_ALLOC_MEM(Ram_Sbr_detectionVectors, UCHAR)
-  H_ALLOC_MEM(Ram_Sbr_prevEnvelopeCompensation, UCHAR)
-  H_ALLOC_MEM(Ram_Sbr_guideScfb, UCHAR)
-  H_ALLOC_MEM(Ram_Sbr_guideVectorDetected, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_detectionVectors, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_prevEnvelopeCompensation, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_guideScfb, UCHAR)
+H_ALLOC_MEM(Ram_Sbr_guideVectorDetected, UCHAR)
 
-  /* Dynamic Memory Allocation */
+/* Dynamic Memory Allocation */
 
-  H_ALLOC_MEM(Ram_Sbr_envYBuffer, FIXP_DBL)
-  FIXP_DBL* GetRam_Sbr_envYBuffer (int n, UCHAR* dynamic_RAM);
-  FIXP_DBL* GetRam_Sbr_envRBuffer (int n, UCHAR* dynamic_RAM);
-  FIXP_DBL* GetRam_Sbr_envIBuffer (int n, UCHAR* dynamic_RAM);
+H_ALLOC_MEM(Ram_Sbr_envYBuffer, FIXP_DBL)
+FIXP_DBL* GetRam_Sbr_envYBuffer (int n, UCHAR* dynamic_RAM);
+FIXP_DBL* GetRam_Sbr_envRBuffer (int n, UCHAR* dynamic_RAM);
+FIXP_DBL* GetRam_Sbr_envIBuffer (int n, UCHAR* dynamic_RAM);
 
-  H_ALLOC_MEM(Ram_Sbr_guideVectorDiff, FIXP_DBL)
-  H_ALLOC_MEM(Ram_Sbr_guideVectorOrig, FIXP_DBL)
+H_ALLOC_MEM(Ram_Sbr_guideVectorDiff, FIXP_DBL)
+H_ALLOC_MEM(Ram_Sbr_guideVectorOrig, FIXP_DBL)
 
 
-  H_ALLOC_MEM(Ram_PsQmfStatesSynthesis, FIXP_DBL)
+H_ALLOC_MEM(Ram_PsQmfStatesSynthesis, FIXP_DBL)
 
-  H_ALLOC_MEM(Ram_PsEncode, PS_ENCODE)
+H_ALLOC_MEM(Ram_PsEncode, PS_ENCODE)
 
-  FIXP_DBL* FDKsbrEnc_SliceRam_PsRqmf (FIXP_DBL* rQmfData, UCHAR* dynamic_RAM, int n, int i, int qmfSlots);
-  FIXP_DBL* FDKsbrEnc_SliceRam_PsIqmf (FIXP_DBL* iQmfData, UCHAR* dynamic_RAM, int n, int i, int qmfSlots);
+FIXP_DBL* FDKsbrEnc_SliceRam_PsRqmf (FIXP_DBL* rQmfData, UCHAR* dynamic_RAM, int n, int i, int qmfSlots);
+FIXP_DBL* FDKsbrEnc_SliceRam_PsIqmf (FIXP_DBL* iQmfData, UCHAR* dynamic_RAM, int n, int i, int qmfSlots);
 
-  H_ALLOC_MEM(Ram_ParamStereo, PARAMETRIC_STEREO)
+H_ALLOC_MEM(Ram_ParamStereo, PARAMETRIC_STEREO)
 
 
 

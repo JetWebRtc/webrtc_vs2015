@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2012
  *      MIPS Technologies, Inc., California.
  *
@@ -62,7 +62,7 @@
 
 #if HAVE_INLINE_ASM && HAVE_MIPSFPU
 static inline float *VMUL2_mips(float *dst, const float *v, unsigned idx,
-                           const float *scale)
+                                const float *scale)
 {
     float temp0, temp1, temp2;
     int temp3, temp4;
@@ -83,17 +83,17 @@ static inline float *VMUL2_mips(float *dst, const float *v, unsigned idx,
         "swc1    %[temp1],  4(%[dst])                  \n\t"
 
         : [temp0]"=&f"(temp0), [temp1]"=&f"(temp1),
-          [temp2]"=&f"(temp2), [temp3]"=&r"(temp3),
-          [temp4]"=&r"(temp4), [ret]"=&r"(ret)
+        [temp2]"=&f"(temp2), [temp3]"=&r"(temp3),
+        [temp4]"=&r"(temp4), [ret]"=&r"(ret)
         : [idx]"r"(idx), [scale]"r"(scale), [v]"r"(v),
-          [dst]"r"(dst)
+        [dst]"r"(dst)
         : "memory"
     );
     return ret;
 }
 
 static inline float *VMUL4_mips(float *dst, const float *v, unsigned idx,
-                           const float *scale)
+                                const float *scale)
 {
     int temp0, temp1, temp2, temp3;
     float temp4, temp5, temp6, temp7, temp8;
@@ -123,19 +123,19 @@ static inline float *VMUL4_mips(float *dst, const float *v, unsigned idx,
         "swc1    %[temp8],  12(%[dst])                \n\t"
 
         : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-          [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-          [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
-          [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
-          [temp8]"=&f"(temp8), [ret]"=&r"(ret)
+        [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+        [temp4]"=&f"(temp4), [temp5]"=&f"(temp5),
+        [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
+        [temp8]"=&f"(temp8), [ret]"=&r"(ret)
         : [idx]"r"(idx), [scale]"r"(scale), [v]"r"(v),
-          [dst]"r"(dst)
+        [dst]"r"(dst)
         : "memory"
     );
     return ret;
 }
 
 static inline float *VMUL2S_mips(float *dst, const float *v, unsigned idx,
-                            unsigned sign, const float *scale)
+                                 unsigned sign, const float *scale)
 {
     int temp0, temp1, temp2, temp3, temp4, temp5;
     float temp6, temp7, temp8, temp9;
@@ -163,20 +163,20 @@ static inline float *VMUL2S_mips(float *dst, const float *v, unsigned idx,
         "swc1    %[temp9],  4(%[dst])                \n\t"
 
         : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-          [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-          [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
-          [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
-          [temp8]"=&f"(temp8), [temp9]"=&f"(temp9),
-          [ret]"=&r"(ret)
+        [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+        [temp4]"=&r"(temp4), [temp5]"=&r"(temp5),
+        [temp6]"=&f"(temp6), [temp7]"=&f"(temp7),
+        [temp8]"=&f"(temp8), [temp9]"=&f"(temp9),
+        [ret]"=&r"(ret)
         : [idx]"r"(idx), [scale]"r"(scale), [v]"r"(v),
-          [dst]"r"(dst), [sign]"r"(sign)
+        [dst]"r"(dst), [sign]"r"(sign)
         : "memory"
     );
     return ret;
 }
 
 static inline float *VMUL4S_mips(float *dst, const float *v, unsigned idx,
-                            unsigned sign, const float *scale)
+                                 unsigned sign, const float *scale)
 {
     int temp0, temp1, temp2, temp3, temp4;
     float temp10, temp11, temp12, temp13, temp14, temp15, temp16, temp17;
@@ -228,15 +228,15 @@ static inline float *VMUL4S_mips(float *dst, const float *v, unsigned idx,
         "swc1    %[temp13],  12(%[dst])                \n\t"
 
         : [temp0]"=&r"(temp0), [temp1]"=&r"(temp1),
-          [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
-          [temp4]"=&r"(temp4), [temp10]"=&f"(temp10),
-          [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
-          [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
-          [temp15]"=&f"(temp15), [temp16]"=&f"(temp16),
-          [temp17]"=&f"(temp17), [ret]"=&r"(ret),
-          [sign]"+r"(sign)
+        [temp2]"=&r"(temp2), [temp3]"=&r"(temp3),
+        [temp4]"=&r"(temp4), [temp10]"=&f"(temp10),
+        [temp11]"=&f"(temp11), [temp12]"=&f"(temp12),
+        [temp13]"=&f"(temp13), [temp14]"=&f"(temp14),
+        [temp15]"=&f"(temp15), [temp16]"=&f"(temp16),
+        [temp17]"=&f"(temp17), [ret]"=&r"(ret),
+        [sign]"+r"(sign)
         : [idx]"r"(idx), [scale]"r"(scale), [v]"r"(v),
-          [dst]"r"(dst), [mask]"r"(mask)
+        [dst]"r"(dst), [mask]"r"(mask)
         : "memory"
     );
     return ret;

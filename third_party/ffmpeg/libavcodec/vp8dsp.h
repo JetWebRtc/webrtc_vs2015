@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2010 David Conrad
  * Copyright (C) 2010 Ronald S. Bultje
  *
@@ -34,7 +34,8 @@ typedef void (*vp8_mc_func)(uint8_t *dst /* align 8 */, ptrdiff_t dstStride,
                             uint8_t *src /* align 1 */, ptrdiff_t srcStride,
                             int h, int x, int y);
 
-typedef struct VP8DSPContext {
+typedef struct VP8DSPContext
+{
     void (*vp8_luma_dc_wht)(int16_t block[4][4][16], int16_t dc[16]);
     void (*vp8_luma_dc_wht_dc)(int16_t block[4][4][16], int16_t dc[16]);
     void (*vp8_idct_add)(uint8_t *dst, int16_t block[16], ptrdiff_t stride);

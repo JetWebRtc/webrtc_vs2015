@@ -28,7 +28,8 @@
 #include "avformat.h"
 #include "metadata.h"
 
-struct ogg_codec {
+struct ogg_codec
+{
     const int8_t *magic;
     uint8_t magicsize;
     const int8_t *name;
@@ -58,7 +59,8 @@ struct ogg_codec {
     void (*cleanup)(AVFormatContext *s, int idx);
 };
 
-struct ogg_stream {
+struct ogg_stream
+{
     uint8_t *buf;
     unsigned int bufsize;
     unsigned int bufpos;
@@ -90,7 +92,8 @@ struct ogg_stream {
     void *private;
 };
 
-struct ogg_state {
+struct ogg_state
+{
     uint64_t pos;
     int curidx;
     struct ogg_state *next;
@@ -98,7 +101,8 @@ struct ogg_state {
     struct ogg_stream streams[1];
 };
 
-struct ogg {
+struct ogg
+{
     struct ogg_stream *streams;
     int nstreams;
     int headers;
@@ -154,9 +158,12 @@ ogg_gptopts (AVFormatContext * s, int i, uint64_t gp, int64_t *dts)
     struct ogg_stream *os = ogg->streams + i;
     uint64_t pts = AV_NOPTS_VALUE;
 
-    if(os->codec && os->codec->gptopts){
+    if(os->codec && os->codec->gptopts)
+    {
         pts = os->codec->gptopts(s, i, gp, dts);
-    } else {
+    }
+    else
+    {
         pts = gp;
         if (dts)
             *dts = pts;

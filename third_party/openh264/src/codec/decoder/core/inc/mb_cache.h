@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -36,7 +36,8 @@
 
 #include "typedefs.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 #define REF_NOT_AVAIL    -2
 #define REF_NOT_IN_LIST  -1  //intra
@@ -59,7 +60,8 @@ namespace WelsDec {
 
 extern const uint8_t g_kuiScan4[16];
 
-typedef struct TagNeighborAvail {
+typedef struct TagNeighborAvail
+{
 int32_t iTopAvail;
 int32_t iLeftAvail;
 int32_t iRightTopAvail;

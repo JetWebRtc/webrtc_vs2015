@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,49 +15,56 @@
 
 #include "webrtc/test/gmock.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockExpand : public Expand {
- public:
-  MockExpand(BackgroundNoise* background_noise,
-             SyncBuffer* sync_buffer,
-             RandomVector* random_vector,
-             StatisticsCalculator* statistics,
-             int fs,
-             size_t num_channels)
-      : Expand(background_noise,
-               sync_buffer,
-               random_vector,
-               statistics,
-               fs,
-               num_channels) {}
-  virtual ~MockExpand() { Die(); }
-  MOCK_METHOD0(Die, void());
-  MOCK_METHOD0(Reset,
-      void());
-  MOCK_METHOD1(Process,
-      int(AudioMultiVector* output));
-  MOCK_METHOD0(SetParametersForNormalAfterExpand,
-      void());
-  MOCK_METHOD0(SetParametersForMergeAfterExpand,
-      void());
-  MOCK_CONST_METHOD0(overlap_length,
-      size_t());
+class MockExpand : public Expand
+{
+public:
+    MockExpand(BackgroundNoise* background_noise,
+               SyncBuffer* sync_buffer,
+               RandomVector* random_vector,
+               StatisticsCalculator* statistics,
+               int fs,
+               size_t num_channels)
+        : Expand(background_noise,
+                 sync_buffer,
+                 random_vector,
+                 statistics,
+                 fs,
+                 num_channels) {}
+    virtual ~MockExpand()
+    {
+        Die();
+    }
+    MOCK_METHOD0(Die, void());
+    MOCK_METHOD0(Reset,
+                 void());
+    MOCK_METHOD1(Process,
+                 int(AudioMultiVector* output));
+    MOCK_METHOD0(SetParametersForNormalAfterExpand,
+                 void());
+    MOCK_METHOD0(SetParametersForMergeAfterExpand,
+                 void());
+    MOCK_CONST_METHOD0(overlap_length,
+                       size_t());
 };
 
 }  // namespace webrtc
 
-namespace webrtc {
+namespace webrtc
+{
 
-class MockExpandFactory : public ExpandFactory {
- public:
-  MOCK_CONST_METHOD6(Create,
-                     Expand*(BackgroundNoise* background_noise,
-                             SyncBuffer* sync_buffer,
-                             RandomVector* random_vector,
-                             StatisticsCalculator* statistics,
-                             int fs,
-                             size_t num_channels));
+class MockExpandFactory : public ExpandFactory
+{
+public:
+    MOCK_CONST_METHOD6(Create,
+                       Expand*(BackgroundNoise* background_noise,
+                               SyncBuffer* sync_buffer,
+                               RandomVector* random_vector,
+                               StatisticsCalculator* statistics,
+                               int fs,
+                               size_t num_channels));
 };
 
 }  // namespace webrtc

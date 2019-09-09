@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,31 +18,34 @@
 #include "webrtc/modules/audio_coding/neteq/tools/packet.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Interface class for an object delivering RTP packets to test applications.
-class PacketSource {
- public:
-  PacketSource();
-  virtual ~PacketSource();
+class PacketSource
+{
+public:
+    PacketSource();
+    virtual ~PacketSource();
 
-  // Returns next packet. Returns nullptr if the source is depleted, or if an
-  // error occurred.
-  virtual std::unique_ptr<Packet> NextPacket() = 0;
+    // Returns next packet. Returns nullptr if the source is depleted, or if an
+    // error occurred.
+    virtual std::unique_ptr<Packet> NextPacket() = 0;
 
-  virtual void FilterOutPayloadType(uint8_t payload_type);
+    virtual void FilterOutPayloadType(uint8_t payload_type);
 
-  virtual void SelectSsrc(uint32_t ssrc);
+    virtual void SelectSsrc(uint32_t ssrc);
 
- protected:
-  std::bitset<128> filter_;  // Payload type is 7 bits in the RFC.
-  // If SSRC filtering discards all packet that do not match the SSRC.
-  bool use_ssrc_filter_;  // True when SSRC filtering is active.
-  uint32_t ssrc_;  // The selected SSRC. All other SSRCs will be discarded.
+protected:
+    std::bitset<128> filter_;  // Payload type is 7 bits in the RFC.
+    // If SSRC filtering discards all packet that do not match the SSRC.
+    bool use_ssrc_filter_;  // True when SSRC filtering is active.
+    uint32_t ssrc_;  // The selected SSRC. All other SSRCs will be discarded.
 
- private:
-  RTC_DISALLOW_COPY_AND_ASSIGN(PacketSource);
+private:
+    RTC_DISALLOW_COPY_AND_ASSIGN(PacketSource);
 };
 
 }  // namespace test

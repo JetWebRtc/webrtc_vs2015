@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RAW PCM muxers
  * Copyright (c) 2002 Fabrice Bellard
  *

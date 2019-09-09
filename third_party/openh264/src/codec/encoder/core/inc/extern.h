@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 #include "typedefs.h"
 #include "encoder_context.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 
 /*!
  * \brief   initialize source picture body

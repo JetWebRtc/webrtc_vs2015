@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -44,7 +44,8 @@ void silk_resampler_private_AR2(
     opus_int32    k;
     opus_int32    out32;
 
-    for( k = 0; k < len; k++ ) {
+    for( k = 0; k < len; k++ )
+    {
         out32       = silk_ADD_LSHIFT32( S[ 0 ], (opus_int32)in[ k ], 8 );
         out_Q8[ k ] = out32;
         out32       = silk_LSHIFT( out32, 2 );

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2012 The LibYuv Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,8 +15,10 @@
 #include "libyuv/basic_types.h"
 
 #ifdef __cplusplus
-namespace libyuv {
-extern "C" {
+namespace libyuv
+{
+extern "C"
+{
 #endif
 
 // memset for temp is meant to clear the source buffer (not dest) so that
@@ -670,35 +672,35 @@ ANY11B(ARGBCopyYToAlphaRow_Any_SSE2, ARGBCopyYToAlphaRow_SSE2, 0, 1, 4, 7)
 
 #if defined(HAS_ARGBTORGB565DITHERROW_SSE2)
 ANY11P(ARGBToRGB565DitherRow_Any_SSE2,
-       ARGBToRGB565DitherRow_SSE2,
-       const uint32,
-       4,
-       2,
-       3)
+ARGBToRGB565DitherRow_SSE2,
+const uint32,
+4,
+2,
+3)
 #endif
 #if defined(HAS_ARGBTORGB565DITHERROW_AVX2)
 ANY11P(ARGBToRGB565DitherRow_Any_AVX2,
-       ARGBToRGB565DitherRow_AVX2,
-       const uint32,
-       4,
-       2,
-       7)
+ARGBToRGB565DitherRow_AVX2,
+const uint32,
+4,
+2,
+7)
 #endif
 #if defined(HAS_ARGBTORGB565DITHERROW_NEON)
 ANY11P(ARGBToRGB565DitherRow_Any_NEON,
-       ARGBToRGB565DitherRow_NEON,
-       const uint32,
-       4,
-       2,
-       7)
+ARGBToRGB565DitherRow_NEON,
+const uint32,
+4,
+2,
+7)
 #endif
 #if defined(HAS_ARGBTORGB565DITHERROW_MSA)
 ANY11P(ARGBToRGB565DitherRow_Any_MSA,
-       ARGBToRGB565DitherRow_MSA,
-       const uint32,
-       4,
-       2,
-       7)
+ARGBToRGB565DitherRow_MSA,
+const uint32,
+4,
+2,
+7)
 #endif
 #ifdef HAS_ARGBSHUFFLEROW_SSE2
 ANY11P(ARGBShuffleRow_Any_SSE2, ARGBShuffleRow_SSE2, const uint8*, 4, 4, 3)

@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -91,10 +91,10 @@ amm-info@iis.fraunhofer.de
 #if defined(__arm__) && defined(__GNUC__)	/* cppp replaced: elif */
 
 #if defined(__ARM_ARCH_5TE__) || defined(__ARM_ARCH_6__)
-  #define FUNCTION_cplxMultDiv2_32x16
-  #define FUNCTION_cplxMultDiv2_32x16X2
-  //#define FUNCTION_cplxMult_32x16
-  //#define FUNCTION_cplxMult_32x16X2
+#define FUNCTION_cplxMultDiv2_32x16
+#define FUNCTION_cplxMultDiv2_32x16X2
+//#define FUNCTION_cplxMult_32x16
+//#define FUNCTION_cplxMult_32x16X2
 #endif
 
 #define FUNCTION_cplxMultDiv2_32x32X2
@@ -107,16 +107,16 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
                           const FIXP_DBL a_Im,
                           const FIXP_SPK wpk )
 {
-   LONG tmp1,tmp2;
-   const LONG w = wpk.w;
+    LONG tmp1,tmp2;
+    const LONG w = wpk.w;
 
-   asm("smulwt %0, %3, %4;\n"
-       "rsb %1,%0,#0;\n"
-       "smlawb %0, %2, %4, %1;\n"
-       "smulwt %1, %2, %4;\n"
-       "smlawb %1, %3, %4, %1;\n"
-       : "=&r"(tmp1), "=&r"(tmp2)
-       : "r"(a_Re), "r"(a_Im), "r"(w)
+    asm("smulwt %0, %3, %4;\n"
+        "rsb %1,%0,#0;\n"
+        "smlawb %0, %2, %4, %1;\n"
+        "smulwt %1, %2, %4;\n"
+        "smlawb %1, %3, %4, %1;\n"
+        : "=&r"(tmp1), "=&r"(tmp2)
+        : "r"(a_Re), "r"(a_Im), "r"(w)
        );
 
     *c_Re = tmp1;
@@ -141,10 +141,10 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
         "smlawb %1, %3, %4, %1;\n" /* tmp2 =  a_Im * b_Re + a_Re * b_Im */
         : "=&r"(tmp1), "=&r"(tmp2)
         : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im)
-        );
+       );
 
-     *c_Re = tmp1;
-     *c_Im = tmp2;
+    *c_Re = tmp1;
+    *c_Im = tmp2;
 }
 #endif /* FUNCTION_cplxMultDiv2_32x16X2 */
 
@@ -165,10 +165,10 @@ inline void cplxMultAddDiv2( FIXP_DBL *c_Re,
         "smlawb %1, %3, %4, %1;\n"
         : "=&r"(tmp1), "=&r"(tmp2)
         : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im)
-        );
+       );
 
-     *c_Re += tmp1;
-     *c_Im += tmp2;
+    *c_Re += tmp1;
+    *c_Im += tmp2;
 }
 #endif /* FUNCTION_cplxMultAddDiv2_32x16X2 */
 
@@ -185,25 +185,25 @@ inline void cplxMultDiv2( FIXP_DBL *c_Re,
 
 #ifdef __ARM_ARCH_6__
     asm(
-       "smmul %0, %2, %4;\n"     /* tmp1  = a_Re * b_Re */
-       "smmls %0, %3, %5, %0;\n" /* tmp1 -= a_Im * b_Im */
-       "smmul %1, %2, %5;\n"     /* tmp2  = a_Re * b_Im */
-       "smmla %1, %3, %4, %1;\n" /* tmp2 += a_Im * b_Re */
-       : "=&r"(tmp1), "=&r"(tmp2)
-       : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im)
-       : "r0"
-       );
+        "smmul %0, %2, %4;\n"     /* tmp1  = a_Re * b_Re */
+        "smmls %0, %3, %5, %0;\n" /* tmp1 -= a_Im * b_Im */
+        "smmul %1, %2, %5;\n"     /* tmp2  = a_Re * b_Im */
+        "smmla %1, %3, %4, %1;\n" /* tmp2 += a_Im * b_Re */
+        : "=&r"(tmp1), "=&r"(tmp2)
+        : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im)
+        : "r0"
+    );
 #else
     LONG discard;
     asm(
-       "smull %2, %0, %7, %6;\n" /* tmp1  = -a_Im * b_Im */
-       "smlal %2, %0, %3, %5;\n" /* tmp1 +=  a_Re * b_Re */
-       "smull %2, %1, %3, %6;\n" /* tmp2  =  a_Re * b_Im */
-       "smlal %2, %1, %4, %5;\n" /* tmp2 +=  a_Im * b_Re */
-       : "=&r"(tmp1), "=&r"(tmp2), "=&r"(discard)
-       : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im), "r"(-a_Im)
-       );
- #endif
+        "smull %2, %0, %7, %6;\n" /* tmp1  = -a_Im * b_Im */
+        "smlal %2, %0, %3, %5;\n" /* tmp1 +=  a_Re * b_Re */
+        "smull %2, %1, %3, %6;\n" /* tmp2  =  a_Re * b_Im */
+        "smlal %2, %1, %4, %5;\n" /* tmp2 +=  a_Im * b_Re */
+        : "=&r"(tmp1), "=&r"(tmp2), "=&r"(discard)
+        : "r"(a_Re), "r"(a_Im), "r"(b_Re), "r"(b_Im), "r"(-a_Im)
+    );
+#endif
     *c_Re = tmp1;
     *c_Im = tmp2;
 }

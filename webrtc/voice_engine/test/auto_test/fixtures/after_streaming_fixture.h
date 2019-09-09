@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,13 +18,14 @@
 
 // This fixture will, in addition to the work done by its superclasses,
 // start play back on construction.
-class AfterStreamingFixture : public BeforeStreamingFixture {
- public:
-  AfterStreamingFixture();
-  virtual ~AfterStreamingFixture() {}
+class AfterStreamingFixture : public BeforeStreamingFixture
+{
+public:
+    AfterStreamingFixture();
+    virtual ~AfterStreamingFixture() {}
 
- protected:
-  std::unique_ptr<webrtc::voe::ChannelProxy> channel_proxy_;
+protected:
+    std::unique_ptr<webrtc::voe::ChannelProxy> channel_proxy_;
 };
 
 #endif  // SRC_VOICE_ENGINE_MAIN_TEST_AUTO_TEST_STANDARD_AFTER_STREAMING_H_

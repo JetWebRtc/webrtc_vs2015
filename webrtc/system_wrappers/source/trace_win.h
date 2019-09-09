@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,19 +17,21 @@
 
 #include "webrtc/system_wrappers/source/trace_impl.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class TraceWindows : public TraceImpl {
- public:
-  TraceWindows();
-  virtual ~TraceWindows();
+class TraceWindows : public TraceImpl
+{
+public:
+    TraceWindows();
+    virtual ~TraceWindows();
 
-  virtual int32_t AddTime(char* trace_message, const TraceLevel level) const;
+    virtual int32_t AddTime(char* trace_message, const TraceLevel level) const;
 
-  virtual int32_t AddDateTimeInfo(char* trace_message) const;
- private:
-  volatile mutable uint32_t prev_api_tick_count_;
-  volatile mutable uint32_t prev_tick_count_;
+    virtual int32_t AddDateTimeInfo(char* trace_message) const;
+private:
+    volatile mutable uint32_t prev_api_tick_count_;
+    volatile mutable uint32_t prev_tick_count_;
 };
 
 }  // namespace webrtc

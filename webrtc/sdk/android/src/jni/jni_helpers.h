@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -34,7 +34,8 @@
 #define CHECK_RELEASE(ptr) \
   RTC_CHECK_EQ(0, (ptr)->Release()) << "Unexpected refcount."
 
-namespace webrtc_jni {
+namespace webrtc_jni
+{
 
 jint InitGlobalJniVariables(JavaVM *jvm);
 
@@ -109,29 +110,33 @@ void DeleteGlobalRef(JNIEnv* jni, jobject o);
 // Scope Java local references to the lifetime of this object.  Use in all C++
 // callbacks (i.e. entry points that don't originate in a Java callstack
 // through a "native" method call).
-class ScopedLocalRefFrame {
- public:
-  explicit ScopedLocalRefFrame(JNIEnv* jni);
-  ~ScopedLocalRefFrame();
+class ScopedLocalRefFrame
+{
+public:
+    explicit ScopedLocalRefFrame(JNIEnv* jni);
+    ~ScopedLocalRefFrame();
 
- private:
-  JNIEnv* jni_;
+private:
+    JNIEnv* jni_;
 };
 
 // Scoped holder for global Java refs.
 template<class T>  // T is jclass, jobject, jintArray, etc.
-class ScopedGlobalRef {
- public:
-  ScopedGlobalRef(JNIEnv* jni, T obj)
-      : obj_(static_cast<T>(jni->NewGlobalRef(obj))) {}
-  ~ScopedGlobalRef() {
-    DeleteGlobalRef(AttachCurrentThreadIfNeeded(), obj_);
-  }
-  T operator*() const {
-    return obj_;
-  }
- private:
-  T obj_;
+class ScopedGlobalRef
+{
+public:
+    ScopedGlobalRef(JNIEnv* jni, T obj)
+        : obj_(static_cast<T>(jni->NewGlobalRef(obj))) {}
+    ~ScopedGlobalRef()
+    {
+        DeleteGlobalRef(AttachCurrentThreadIfNeeded(), obj_);
+    }
+    T operator*() const
+    {
+        return obj_;
+    }
+private:
+    T obj_;
 };
 
 // Provides a convenient way to iterate over a Java Iterable using the
@@ -140,57 +145,68 @@ class ScopedGlobalRef {
 // Note: Since Java iterators cannot be duplicated, the iterator class is not
 // copyable to prevent creating multiple C++ iterators that refer to the same
 // Java iterator.
-class Iterable {
- public:
-  Iterable(JNIEnv* jni, jobject iterable) : jni_(jni), iterable_(iterable) {}
+class Iterable
+{
+public:
+    Iterable(JNIEnv* jni, jobject iterable) : jni_(jni), iterable_(iterable) {}
 
-  class Iterator {
-   public:
-    // Creates an iterator representing the end of any collection.
-    Iterator();
-    // Creates an iterator pointing to the beginning of the specified
-    // collection.
-    Iterator(JNIEnv* jni, jobject iterable);
+    class Iterator
+    {
+    public:
+        // Creates an iterator representing the end of any collection.
+        Iterator();
+        // Creates an iterator pointing to the beginning of the specified
+        // collection.
+        Iterator(JNIEnv* jni, jobject iterable);
 
-    // Move constructor - necessary to be able to return iterator types from
-    // functions.
-    Iterator(Iterator&& other);
+        // Move constructor - necessary to be able to return iterator types from
+        // functions.
+        Iterator(Iterator&& other);
 
-    // Move assignment should not be used.
-    Iterator& operator=(Iterator&&) = delete;
+        // Move assignment should not be used.
+        Iterator& operator=(Iterator&&) = delete;
 
-    // Advances the iterator one step.
-    Iterator& operator++();
+        // Advances the iterator one step.
+        Iterator& operator++();
 
-    // Provides a way to compare the iterator with itself and with the end
-    // iterator.
-    // Note: all other comparison results are undefined, just like for C++ input
-    // iterators.
-    bool operator==(const Iterator& other);
-    bool operator!=(const Iterator& other) { return !(*this == other); }
-    jobject operator*();
+        // Provides a way to compare the iterator with itself and with the end
+        // iterator.
+        // Note: all other comparison results are undefined, just like for C++ input
+        // iterators.
+        bool operator==(const Iterator& other);
+        bool operator!=(const Iterator& other)
+        {
+            return !(*this == other);
+        }
+        jobject operator*();
 
-   private:
-    bool AtEnd() const;
+    private:
+        bool AtEnd() const;
 
-    JNIEnv* jni_ = nullptr;
-    jobject iterator_ = nullptr;
-    jobject value_ = nullptr;
-    jmethodID has_next_id_ = nullptr;
-    jmethodID next_id_ = nullptr;
-    rtc::ThreadChecker thread_checker_;
+        JNIEnv* jni_ = nullptr;
+        jobject iterator_ = nullptr;
+        jobject value_ = nullptr;
+        jmethodID has_next_id_ = nullptr;
+        jmethodID next_id_ = nullptr;
+        rtc::ThreadChecker thread_checker_;
 
-    RTC_DISALLOW_COPY_AND_ASSIGN(Iterator);
-  };
+        RTC_DISALLOW_COPY_AND_ASSIGN(Iterator);
+    };
 
-  Iterable::Iterator begin() { return Iterable::Iterator(jni_, iterable_); }
-  Iterable::Iterator end() { return Iterable::Iterator(); }
+    Iterable::Iterator begin()
+    {
+        return Iterable::Iterator(jni_, iterable_);
+    }
+    Iterable::Iterator end()
+    {
+        return Iterable::Iterator();
+    }
 
- private:
-  JNIEnv* jni_;
-  jobject iterable_;
+private:
+    JNIEnv* jni_;
+    jobject iterable_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(Iterable);
+    RTC_DISALLOW_COPY_AND_ASSIGN(Iterable);
 };
 
 }  // namespace webrtc_jni

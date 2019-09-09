@@ -1,4 +1,4 @@
-/*
+﻿/*
  * MPEG-4 Parametric Stereo definitions and declarations
  * Copyright (c) 2010 Alex Converse <alex.converse@gmail.com>
  *
@@ -38,7 +38,8 @@
 #define PS_AP_LINKS 3
 #define PS_MAX_AP_DELAY 5
 
-typedef struct PSContext {
+typedef struct PSContext
+{
     int    start;
     int    enable_iid;
     int    iid_quant;

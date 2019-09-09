@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2004 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -21,40 +21,43 @@
 // TODO(pthatcher): Move these to connectionmonitor.h and
 // connectionmonitor.cc, or just move them into channel.cc
 
-namespace cricket {
+namespace cricket
+{
 
-class ConnectionStatsGetter {
- public:
-  virtual ~ConnectionStatsGetter() {}
-  virtual bool GetConnectionStats(ConnectionInfos* infos) = 0;
+class ConnectionStatsGetter
+{
+public:
+    virtual ~ConnectionStatsGetter() {}
+    virtual bool GetConnectionStats(ConnectionInfos* infos) = 0;
 };
 
 class ConnectionMonitor : public rtc::MessageHandler,
-                          public sigslot::has_slots<> {
+    public sigslot::has_slots<>
+{
 public:
-  ConnectionMonitor(ConnectionStatsGetter* stats_getter,
-                    rtc::Thread* network_thread,
-                    rtc::Thread* monitoring_thread);
-  ~ConnectionMonitor();
+    ConnectionMonitor(ConnectionStatsGetter* stats_getter,
+                      rtc::Thread* network_thread,
+                      rtc::Thread* monitoring_thread);
+    ~ConnectionMonitor();
 
-  void Start(int cms);
-  void Stop();
+    void Start(int cms);
+    void Stop();
 
-  sigslot::signal2<ConnectionMonitor*,
-                   const std::vector<ConnectionInfo>&> SignalUpdate;
+    sigslot::signal2<ConnectionMonitor*,
+            const std::vector<ConnectionInfo>&> SignalUpdate;
 
- protected:
-  void OnMessage(rtc::Message* message);
- private:
-  void PollConnectionStats_w();
+protected:
+    void OnMessage(rtc::Message* message);
+private:
+    void PollConnectionStats_w();
 
-  std::vector<ConnectionInfo> connection_infos_;
-  ConnectionStatsGetter* stats_getter_;
-  rtc::Thread* network_thread_;
-  rtc::Thread* monitoring_thread_;
-  rtc::CriticalSection crit_;
-  uint32_t rate_;
-  bool monitoring_;
+    std::vector<ConnectionInfo> connection_infos_;
+    ConnectionStatsGetter* stats_getter_;
+    rtc::Thread* network_thread_;
+    rtc::Thread* monitoring_thread_;
+    rtc::CriticalSection crit_;
+    uint32_t rate_;
+    bool monitoring_;
 };
 
 }  // namespace cricket

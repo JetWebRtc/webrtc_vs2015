@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,23 +17,28 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class ScopedPixelBufferObject {
- public:
-  ScopedPixelBufferObject();
-  ~ScopedPixelBufferObject();
+class ScopedPixelBufferObject
+{
+public:
+    ScopedPixelBufferObject();
+    ~ScopedPixelBufferObject();
 
-  bool Init(CGLContextObj cgl_context, int size_in_bytes);
-  void Release();
+    bool Init(CGLContextObj cgl_context, int size_in_bytes);
+    void Release();
 
-  GLuint get() const { return pixel_buffer_object_; }
+    GLuint get() const
+    {
+        return pixel_buffer_object_;
+    }
 
- private:
-  CGLContextObj cgl_context_;
-  GLuint pixel_buffer_object_;
+private:
+    CGLContextObj cgl_context_;
+    GLuint pixel_buffer_object_;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(ScopedPixelBufferObject);
+    RTC_DISALLOW_COPY_AND_ASSIGN(ScopedPixelBufferObject);
 };
 
 }  // namespace webrtc

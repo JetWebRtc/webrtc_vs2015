@@ -1,4 +1,4 @@
-/*
+﻿/*
  * RV30 decoder
  * Copyright (c) 2007 Konstantin Shishkov
  *
@@ -52,13 +52,16 @@ static int rv30_parse_slice_header(RV34DecContext *r, GetBitContext *gb, SliceIn
     skip_bits1(gb);
     si->pts = get_bits(gb, 13);
     rpr = get_bits(gb, av_log2(r->max_rpr) + 1);
-    if(rpr){
-        if (rpr > r->max_rpr) {
+    if(rpr)
+    {
+        if (rpr > r->max_rpr)
+        {
             av_log(avctx, AV_LOG_ERROR, "rpr too large\n");
             return AVERROR_INVALIDDATA;
         }
 
-        if (avctx->extradata_size < rpr * 2 + 8) {
+        if (avctx->extradata_size < rpr * 2 + 8)
+        {
             av_log(avctx, AV_LOG_ERROR,
                    "Insufficient extradata - need at least %d bytes, got %d\n",
                    8 + rpr * 2, avctx->extradata_size);
@@ -67,7 +70,9 @@ static int rv30_parse_slice_header(RV34DecContext *r, GetBitContext *gb, SliceIn
 
         w = r->s.avctx->extradata[6 + rpr*2] << 2;
         h = r->s.avctx->extradata[7 + rpr*2] << 2;
-    } else {
+    }
+    else
+    {
         w = r->orig_width;
         h = r->orig_height;
     }
@@ -87,18 +92,23 @@ static int rv30_decode_intra_types(RV34DecContext *r, GetBitContext *gb, int8_t 
 {
     int i, j, k;
 
-    for(i = 0; i < 4; i++, dst += r->intra_types_stride - 4){
-        for(j = 0; j < 4; j+= 2){
+    for(i = 0; i < 4; i++, dst += r->intra_types_stride - 4)
+    {
+        for(j = 0; j < 4; j+= 2)
+        {
             unsigned code = svq3_get_ue_golomb(gb) << 1;
-            if (code > 80U*2U) {
+            if (code > 80U*2U)
+            {
                 av_log(r->s.avctx, AV_LOG_ERROR, "Incorrect intra prediction code\n");
                 return -1;
             }
-            for(k = 0; k < 2; k++){
+            for(k = 0; k < 2; k++)
+            {
                 int A = dst[-r->intra_types_stride] + 1;
                 int B = dst[-1] + 1;
                 *dst++ = rv30_itype_from_context[A * 90 + B * 9 + rv30_itype_code[code + k]];
-                if(dst[-1] == 9){
+                if(dst[-1] == 9)
+                {
                     av_log(r->s.avctx, AV_LOG_ERROR, "Incorrect intra prediction mode\n");
                     return -1;
                 }
@@ -119,11 +129,13 @@ static int rv30_decode_mb_info(RV34DecContext *r)
     GetBitContext *gb = &s->gb;
     unsigned code     = svq3_get_ue_golomb(gb);
 
-    if (code > 11) {
+    if (code > 11)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Incorrect MB type code\n");
         return -1;
     }
-    if(code > 5){
+    if(code > 5)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "dquant needed\n");
         code -= 6;
     }
@@ -134,12 +146,13 @@ static int rv30_decode_mb_info(RV34DecContext *r)
 }
 
 static inline void rv30_weak_loop_filter(uint8_t *src, const int step,
-                                         const int stride, const int lim)
+        const int stride, const int lim)
 {
     const uint8_t *cm = ff_crop_tab + MAX_NEG_CROP;
     int i, diff;
 
-    for(i = 0; i < 4; i++){
+    for(i = 0; i < 4; i++)
+    {
         diff = ((src[-2*step] - src[1*step]) - (src[-1*step] - src[0*step])*4) >> 3;
         diff = av_clip(diff, -lim, lim);
         src[-1*step] = cm[src[-1*step] + diff];
@@ -157,7 +170,8 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
     int loc_lim, cur_lim, left_lim = 0, top_lim = 0;
 
     mb_pos = row * s->mb_stride;
-    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++){
+    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++)
+    {
         int mbtype = s->current_picture_ptr->mb_type[mb_pos];
         if(IS_INTRA(mbtype) || IS_SEPARATE_DC(mbtype))
             r->deblock_coefs[mb_pos] = 0xFFFF;
@@ -169,13 +183,16 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
      * and horizontal edges are filtered on the next iteration
      */
     mb_pos = row * s->mb_stride;
-    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++){
+    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++)
+    {
         cur_lim = rv30_loop_filt_lim[s->current_picture_ptr->qscale_table[mb_pos]];
         if(mb_x)
             left_lim = rv30_loop_filt_lim[s->current_picture_ptr->qscale_table[mb_pos - 1]];
-        for(j = 0; j < 16; j += 4){
+        for(j = 0; j < 16; j += 4)
+        {
             Y = s->current_picture_ptr->f->data[0] + mb_x*16 + (row*16 + j) * s->linesize + 4 * !mb_x;
-            for(i = !mb_x; i < 4; i++, Y += 4){
+            for(i = !mb_x; i < 4; i++, Y += 4)
+            {
                 int ij = i + j;
                 loc_lim = 0;
                 if(r->deblock_coefs[mb_pos] & (1 << ij))
@@ -188,14 +205,17 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
                     rv30_weak_loop_filter(Y, 1, s->linesize, loc_lim);
             }
         }
-        for(k = 0; k < 2; k++){
+        for(k = 0; k < 2; k++)
+        {
             int cur_cbp, left_cbp = 0;
             cur_cbp = (r->cbp_chroma[mb_pos] >> (k*4)) & 0xF;
             if(mb_x)
                 left_cbp = (r->cbp_chroma[mb_pos - 1] >> (k*4)) & 0xF;
-            for(j = 0; j < 8; j += 4){
+            for(j = 0; j < 8; j += 4)
+            {
                 C = s->current_picture_ptr->f->data[k + 1] + mb_x*8 + (row*8 + j) * s->uvlinesize + 4 * !mb_x;
-                for(i = !mb_x; i < 2; i++, C += 4){
+                for(i = !mb_x; i < 2; i++, C += 4)
+                {
                     int ij = i + (j >> 1);
                     loc_lim = 0;
                     if (cur_cbp & (1 << ij))
@@ -211,13 +231,16 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
         }
     }
     mb_pos = row * s->mb_stride;
-    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++){
+    for(mb_x = 0; mb_x < s->mb_width; mb_x++, mb_pos++)
+    {
         cur_lim = rv30_loop_filt_lim[s->current_picture_ptr->qscale_table[mb_pos]];
         if(row)
             top_lim = rv30_loop_filt_lim[s->current_picture_ptr->qscale_table[mb_pos - s->mb_stride]];
-        for(j = 4*!row; j < 16; j += 4){
+        for(j = 4*!row; j < 16; j += 4)
+        {
             Y = s->current_picture_ptr->f->data[0] + mb_x*16 + (row*16 + j) * s->linesize;
-            for(i = 0; i < 4; i++, Y += 4){
+            for(i = 0; i < 4; i++, Y += 4)
+            {
                 int ij = i + j;
                 loc_lim = 0;
                 if(r->deblock_coefs[mb_pos] & (1 << ij))
@@ -230,14 +253,17 @@ static void rv30_loop_filter(RV34DecContext *r, int row)
                     rv30_weak_loop_filter(Y, s->linesize, 1, loc_lim);
             }
         }
-        for(k = 0; k < 2; k++){
+        for(k = 0; k < 2; k++)
+        {
             int cur_cbp, top_cbp = 0;
             cur_cbp = (r->cbp_chroma[mb_pos] >> (k*4)) & 0xF;
             if(row)
                 top_cbp = (r->cbp_chroma[mb_pos - s->mb_stride] >> (k*4)) & 0xF;
-            for(j = 4*!row; j < 8; j += 4){
+            for(j = 4*!row; j < 8; j += 4)
+            {
                 C = s->current_picture_ptr->f->data[k+1] + mb_x*8 + (row*8 + j) * s->uvlinesize;
-                for(i = 0; i < 2; i++, C += 4){
+                for(i = 0; i < 2; i++, C += 4)
+                {
                     int ij = i + (j >> 1);
                     loc_lim = 0;
                     if (r->cbp_chroma[mb_pos] & (1 << ij))
@@ -265,7 +291,8 @@ static av_cold int rv30_decode_init(AVCodecContext *avctx)
     r->orig_width  = avctx->coded_width;
     r->orig_height = avctx->coded_height;
 
-    if (avctx->extradata_size < 2) {
+    if (avctx->extradata_size < 2)
+    {
         av_log(avctx, AV_LOG_ERROR, "Extradata is too small.\n");
         return AVERROR(EINVAL);
     }
@@ -274,7 +301,8 @@ static av_cold int rv30_decode_init(AVCodecContext *avctx)
         return ret;
 
     r->max_rpr = avctx->extradata[1] & 7;
-    if(avctx->extradata_size < 2*r->max_rpr + 8){
+    if(avctx->extradata_size < 2*r->max_rpr + 8)
+    {
         av_log(avctx, AV_LOG_WARNING, "Insufficient extradata - need at least %d bytes, got %d\n",
                2*r->max_rpr + 8, avctx->extradata_size);
     }
@@ -288,7 +316,8 @@ static av_cold int rv30_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_rv30_decoder = {
+AVCodec ff_rv30_decoder =
+{
     .name                  = "rv30",
     .long_name             = NULL_IF_CONFIG_SMALL("RealVideo 3.0"),
     .type                  = AVMEDIA_TYPE_VIDEO,
@@ -298,7 +327,7 @@ AVCodec ff_rv30_decoder = {
     .close                 = ff_rv34_decode_end,
     .decode                = ff_rv34_decode_frame,
     .capabilities          = AV_CODEC_CAP_DR1 | AV_CODEC_CAP_DELAY |
-                             AV_CODEC_CAP_FRAME_THREADS,
+    AV_CODEC_CAP_FRAME_THREADS,
     .flush                 = ff_mpeg_flush,
     .pix_fmts              = (const enum AVPixelFormat[]) {
         AV_PIX_FMT_YUV420P,

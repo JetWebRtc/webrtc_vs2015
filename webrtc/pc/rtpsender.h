@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -27,223 +27,266 @@
 #include "webrtc/pc/dtmfsender.h"
 #include "webrtc/pc/statscollector.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Internal interface used by PeerConnection.
-class RtpSenderInternal : public RtpSenderInterface {
- public:
-  // Used to set the SSRC of the sender, once a local description has been set.
-  // If |ssrc| is 0, this indiates that the sender should disconnect from the
-  // underlying transport (this occurs if the sender isn't seen in a local
-  // description).
-  virtual void SetSsrc(uint32_t ssrc) = 0;
+class RtpSenderInternal : public RtpSenderInterface
+{
+public:
+    // Used to set the SSRC of the sender, once a local description has been set.
+    // If |ssrc| is 0, this indiates that the sender should disconnect from the
+    // underlying transport (this occurs if the sender isn't seen in a local
+    // description).
+    virtual void SetSsrc(uint32_t ssrc) = 0;
 
-  // TODO(deadbeef): Support one sender having multiple stream ids.
-  virtual void set_stream_id(const std::string& stream_id) = 0;
-  virtual std::string stream_id() const = 0;
+    // TODO(deadbeef): Support one sender having multiple stream ids.
+    virtual void set_stream_id(const std::string& stream_id) = 0;
+    virtual std::string stream_id() const = 0;
 
-  virtual void Stop() = 0;
+    virtual void Stop() = 0;
 };
 
 // LocalAudioSinkAdapter receives data callback as a sink to the local
 // AudioTrack, and passes the data to the sink of AudioSource.
 class LocalAudioSinkAdapter : public AudioTrackSinkInterface,
-                              public cricket::AudioSource {
- public:
-  LocalAudioSinkAdapter();
-  virtual ~LocalAudioSinkAdapter();
+    public cricket::AudioSource
+{
+public:
+    LocalAudioSinkAdapter();
+    virtual ~LocalAudioSinkAdapter();
 
- private:
-  // AudioSinkInterface implementation.
-  void OnData(const void* audio_data,
-              int bits_per_sample,
-              int sample_rate,
-              size_t number_of_channels,
-              size_t number_of_frames) override;
+private:
+    // AudioSinkInterface implementation.
+    void OnData(const void* audio_data,
+                int bits_per_sample,
+                int sample_rate,
+                size_t number_of_channels,
+                size_t number_of_frames) override;
 
-  // cricket::AudioSource implementation.
-  void SetSink(cricket::AudioSource::Sink* sink) override;
+    // cricket::AudioSource implementation.
+    void SetSink(cricket::AudioSource::Sink* sink) override;
 
-  cricket::AudioSource::Sink* sink_;
-  // Critical section protecting |sink_|.
-  rtc::CriticalSection lock_;
+    cricket::AudioSource::Sink* sink_;
+    // Critical section protecting |sink_|.
+    rtc::CriticalSection lock_;
 };
 
 class AudioRtpSender : public DtmfProviderInterface,
-                       public ObserverInterface,
-                       public rtc::RefCountedObject<RtpSenderInternal> {
- public:
-  // StatsCollector provided so that Add/RemoveLocalAudioTrack can be called
-  // at the appropriate times.
-  // |channel| can be null if one does not exist yet.
-  AudioRtpSender(AudioTrackInterface* track,
-                 const std::string& stream_id,
-                 cricket::VoiceChannel* channel,
-                 StatsCollector* stats);
+    public ObserverInterface,
+    public rtc::RefCountedObject<RtpSenderInternal>
+{
+public:
+    // StatsCollector provided so that Add/RemoveLocalAudioTrack can be called
+    // at the appropriate times.
+    // |channel| can be null if one does not exist yet.
+    AudioRtpSender(AudioTrackInterface* track,
+                   const std::string& stream_id,
+                   cricket::VoiceChannel* channel,
+                   StatsCollector* stats);
 
-  // Randomly generates stream_id.
-  // |channel| can be null if one does not exist yet.
-  AudioRtpSender(AudioTrackInterface* track,
-                 cricket::VoiceChannel* channel,
-                 StatsCollector* stats);
+    // Randomly generates stream_id.
+    // |channel| can be null if one does not exist yet.
+    AudioRtpSender(AudioTrackInterface* track,
+                   cricket::VoiceChannel* channel,
+                   StatsCollector* stats);
 
-  // Randomly generates id and stream_id.
-  // |channel| can be null if one does not exist yet.
-  AudioRtpSender(cricket::VoiceChannel* channel, StatsCollector* stats);
+    // Randomly generates id and stream_id.
+    // |channel| can be null if one does not exist yet.
+    AudioRtpSender(cricket::VoiceChannel* channel, StatsCollector* stats);
 
-  virtual ~AudioRtpSender();
+    virtual ~AudioRtpSender();
 
-  // DtmfSenderProvider implementation.
-  bool CanInsertDtmf() override;
-  bool InsertDtmf(int code, int duration) override;
-  sigslot::signal0<>* GetOnDestroyedSignal() override;
+    // DtmfSenderProvider implementation.
+    bool CanInsertDtmf() override;
+    bool InsertDtmf(int code, int duration) override;
+    sigslot::signal0<>* GetOnDestroyedSignal() override;
 
-  // ObserverInterface implementation.
-  void OnChanged() override;
+    // ObserverInterface implementation.
+    void OnChanged() override;
 
-  // RtpSenderInterface implementation.
-  bool SetTrack(MediaStreamTrackInterface* track) override;
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
-    return track_;
-  }
+    // RtpSenderInterface implementation.
+    bool SetTrack(MediaStreamTrackInterface* track) override;
+    rtc::scoped_refptr<MediaStreamTrackInterface> track() const override
+    {
+        return track_;
+    }
 
-  uint32_t ssrc() const override { return ssrc_; }
+    uint32_t ssrc() const override
+    {
+        return ssrc_;
+    }
 
-  cricket::MediaType media_type() const override {
-    return cricket::MEDIA_TYPE_AUDIO;
-  }
+    cricket::MediaType media_type() const override
+    {
+        return cricket::MEDIA_TYPE_AUDIO;
+    }
 
-  std::string id() const override { return id_; }
+    std::string id() const override
+    {
+        return id_;
+    }
 
-  std::vector<std::string> stream_ids() const override {
-    std::vector<std::string> ret = {stream_id_};
-    return ret;
-  }
+    std::vector<std::string> stream_ids() const override
+    {
+        std::vector<std::string> ret = {stream_id_};
+        return ret;
+    }
 
-  RtpParameters GetParameters() const override;
-  bool SetParameters(const RtpParameters& parameters) override;
+    RtpParameters GetParameters() const override;
+    bool SetParameters(const RtpParameters& parameters) override;
 
-  rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
+    rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
 
-  // RtpSenderInternal implementation.
-  void SetSsrc(uint32_t ssrc) override;
+    // RtpSenderInternal implementation.
+    void SetSsrc(uint32_t ssrc) override;
 
-  void set_stream_id(const std::string& stream_id) override {
-    stream_id_ = stream_id;
-  }
-  std::string stream_id() const override { return stream_id_; }
+    void set_stream_id(const std::string& stream_id) override
+    {
+        stream_id_ = stream_id;
+    }
+    std::string stream_id() const override
+    {
+        return stream_id_;
+    }
 
-  void Stop() override;
+    void Stop() override;
 
-  // Does not take ownership.
-  // Should call SetChannel(nullptr) before |channel| is destroyed.
-  void SetChannel(cricket::VoiceChannel* channel) { channel_ = channel; }
+    // Does not take ownership.
+    // Should call SetChannel(nullptr) before |channel| is destroyed.
+    void SetChannel(cricket::VoiceChannel* channel)
+    {
+        channel_ = channel;
+    }
 
- private:
-  // TODO(nisse): Since SSRC == 0 is technically valid, figure out
-  // some other way to test if we have a valid SSRC.
-  bool can_send_track() const { return track_ && ssrc_; }
-  // Helper function to construct options for
-  // AudioProviderInterface::SetAudioSend.
-  void SetAudioSend();
-  // Helper function to call SetAudioSend with "stop sending" parameters.
-  void ClearAudioSend();
+private:
+    // TODO(nisse): Since SSRC == 0 is technically valid, figure out
+    // some other way to test if we have a valid SSRC.
+    bool can_send_track() const
+    {
+        return track_ && ssrc_;
+    }
+    // Helper function to construct options for
+    // AudioProviderInterface::SetAudioSend.
+    void SetAudioSend();
+    // Helper function to call SetAudioSend with "stop sending" parameters.
+    void ClearAudioSend();
 
-  void CreateDtmfSender();
+    void CreateDtmfSender();
 
-  sigslot::signal0<> SignalDestroyed;
+    sigslot::signal0<> SignalDestroyed;
 
-  std::string id_;
-  std::string stream_id_;
-  cricket::VoiceChannel* channel_ = nullptr;
-  StatsCollector* stats_;
-  rtc::scoped_refptr<AudioTrackInterface> track_;
-  rtc::scoped_refptr<DtmfSenderInterface> dtmf_sender_proxy_;
-  uint32_t ssrc_ = 0;
-  bool cached_track_enabled_ = false;
-  bool stopped_ = false;
+    std::string id_;
+    std::string stream_id_;
+    cricket::VoiceChannel* channel_ = nullptr;
+    StatsCollector* stats_;
+    rtc::scoped_refptr<AudioTrackInterface> track_;
+    rtc::scoped_refptr<DtmfSenderInterface> dtmf_sender_proxy_;
+    uint32_t ssrc_ = 0;
+    bool cached_track_enabled_ = false;
+    bool stopped_ = false;
 
-  // Used to pass the data callback from the |track_| to the other end of
-  // cricket::AudioSource.
-  std::unique_ptr<LocalAudioSinkAdapter> sink_adapter_;
+    // Used to pass the data callback from the |track_| to the other end of
+    // cricket::AudioSource.
+    std::unique_ptr<LocalAudioSinkAdapter> sink_adapter_;
 };
 
 class VideoRtpSender : public ObserverInterface,
-                       public rtc::RefCountedObject<RtpSenderInternal> {
- public:
-  // |channel| can be null if one does not exist yet.
-  VideoRtpSender(VideoTrackInterface* track,
-                 const std::string& stream_id,
-                 cricket::VideoChannel* channel);
+    public rtc::RefCountedObject<RtpSenderInternal>
+{
+public:
+    // |channel| can be null if one does not exist yet.
+    VideoRtpSender(VideoTrackInterface* track,
+                   const std::string& stream_id,
+                   cricket::VideoChannel* channel);
 
-  // Randomly generates stream_id.
-  // |channel| can be null if one does not exist yet.
-  VideoRtpSender(VideoTrackInterface* track, cricket::VideoChannel* channel);
+    // Randomly generates stream_id.
+    // |channel| can be null if one does not exist yet.
+    VideoRtpSender(VideoTrackInterface* track, cricket::VideoChannel* channel);
 
-  // Randomly generates id and stream_id.
-  // |channel| can be null if one does not exist yet.
-  explicit VideoRtpSender(cricket::VideoChannel* channel);
+    // Randomly generates id and stream_id.
+    // |channel| can be null if one does not exist yet.
+    explicit VideoRtpSender(cricket::VideoChannel* channel);
 
-  virtual ~VideoRtpSender();
+    virtual ~VideoRtpSender();
 
-  // ObserverInterface implementation
-  void OnChanged() override;
+    // ObserverInterface implementation
+    void OnChanged() override;
 
-  // RtpSenderInterface implementation
-  bool SetTrack(MediaStreamTrackInterface* track) override;
-  rtc::scoped_refptr<MediaStreamTrackInterface> track() const override {
-    return track_;
-  }
+    // RtpSenderInterface implementation
+    bool SetTrack(MediaStreamTrackInterface* track) override;
+    rtc::scoped_refptr<MediaStreamTrackInterface> track() const override
+    {
+        return track_;
+    }
 
-  uint32_t ssrc() const override { return ssrc_; }
+    uint32_t ssrc() const override
+    {
+        return ssrc_;
+    }
 
-  cricket::MediaType media_type() const override {
-    return cricket::MEDIA_TYPE_VIDEO;
-  }
+    cricket::MediaType media_type() const override
+    {
+        return cricket::MEDIA_TYPE_VIDEO;
+    }
 
-  std::string id() const override { return id_; }
+    std::string id() const override
+    {
+        return id_;
+    }
 
-  std::vector<std::string> stream_ids() const override {
-    std::vector<std::string> ret = {stream_id_};
-    return ret;
-  }
+    std::vector<std::string> stream_ids() const override
+    {
+        std::vector<std::string> ret = {stream_id_};
+        return ret;
+    }
 
-  RtpParameters GetParameters() const override;
-  bool SetParameters(const RtpParameters& parameters) override;
+    RtpParameters GetParameters() const override;
+    bool SetParameters(const RtpParameters& parameters) override;
 
-  rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
+    rtc::scoped_refptr<DtmfSenderInterface> GetDtmfSender() const override;
 
-  // RtpSenderInternal implementation.
-  void SetSsrc(uint32_t ssrc) override;
+    // RtpSenderInternal implementation.
+    void SetSsrc(uint32_t ssrc) override;
 
-  void set_stream_id(const std::string& stream_id) override {
-    stream_id_ = stream_id;
-  }
-  std::string stream_id() const override { return stream_id_; }
+    void set_stream_id(const std::string& stream_id) override
+    {
+        stream_id_ = stream_id;
+    }
+    std::string stream_id() const override
+    {
+        return stream_id_;
+    }
 
-  void Stop() override;
+    void Stop() override;
 
-  // Does not take ownership.
-  // Should call SetChannel(nullptr) before |channel| is destroyed.
-  void SetChannel(cricket::VideoChannel* channel) { channel_ = channel; }
+    // Does not take ownership.
+    // Should call SetChannel(nullptr) before |channel| is destroyed.
+    void SetChannel(cricket::VideoChannel* channel)
+    {
+        channel_ = channel;
+    }
 
- private:
-  bool can_send_track() const { return track_ && ssrc_; }
-  // Helper function to construct options for
-  // VideoProviderInterface::SetVideoSend.
-  void SetVideoSend();
-  // Helper function to call SetVideoSend with "stop sending" parameters.
-  void ClearVideoSend();
+private:
+    bool can_send_track() const
+    {
+        return track_ && ssrc_;
+    }
+    // Helper function to construct options for
+    // VideoProviderInterface::SetVideoSend.
+    void SetVideoSend();
+    // Helper function to call SetVideoSend with "stop sending" parameters.
+    void ClearVideoSend();
 
-  std::string id_;
-  std::string stream_id_;
-  cricket::VideoChannel* channel_ = nullptr;
-  rtc::scoped_refptr<VideoTrackInterface> track_;
-  uint32_t ssrc_ = 0;
-  bool cached_track_enabled_ = false;
-  VideoTrackInterface::ContentHint cached_track_content_hint_ =
-      VideoTrackInterface::ContentHint::kNone;
-  bool stopped_ = false;
+    std::string id_;
+    std::string stream_id_;
+    cricket::VideoChannel* channel_ = nullptr;
+    rtc::scoped_refptr<VideoTrackInterface> track_;
+    uint32_t ssrc_ = 0;
+    bool cached_track_enabled_ = false;
+    VideoTrackInterface::ContentHint cached_track_content_hint_ =
+        VideoTrackInterface::ContentHint::kNone;
+    bool stopped_ = false;
 };
 
 }  // namespace webrtc

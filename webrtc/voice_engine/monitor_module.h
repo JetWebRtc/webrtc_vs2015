@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -26,8 +26,10 @@ protected:
 };
 
 
-namespace webrtc {
-namespace voe {
+namespace webrtc
+{
+namespace voe
+{
 
 class MonitorModule : public Module
 {
@@ -40,9 +42,9 @@ public:
 
     virtual ~MonitorModule();
 public:	// module
- int64_t TimeUntilNextProcess() override;
+    int64_t TimeUntilNextProcess() override;
 
- void Process() override;
+    void Process() override;
 
 private:
     rtc::CriticalSection _callbackCritSect;

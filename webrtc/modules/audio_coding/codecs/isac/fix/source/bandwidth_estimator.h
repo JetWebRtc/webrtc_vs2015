@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -58,12 +58,12 @@ int32_t WebRtcIsacfix_InitBandwidthEstimator(BwEstimatorstr *bwest_str);
  */
 
 int32_t WebRtcIsacfix_UpdateUplinkBwImpl(BwEstimatorstr       *bwest_str,
-                                         const uint16_t        rtp_number,
-                                         const int16_t         frameSize,
-                                         const uint32_t        send_ts,
-                                         const uint32_t        arr_ts,
-                                         const size_t          pksize,
-                                         const uint16_t        Index);
+        const uint16_t        rtp_number,
+        const int16_t         frameSize,
+        const uint32_t        send_ts,
+        const uint32_t        arr_ts,
+        const size_t          pksize,
+        const uint16_t        Index);
 
 /* Update receiving estimates. Used when we only receive BWE index, no iSAC data packet. */
 int16_t WebRtcIsacfix_UpdateUplinkBwRec(BwEstimatorstr *bwest_str,

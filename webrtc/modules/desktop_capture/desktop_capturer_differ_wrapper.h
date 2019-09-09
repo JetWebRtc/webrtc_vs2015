@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // DesktopCapturer wrapper that calculates updated_region() by comparing frames
 // content. This class always expects the underlying DesktopCapturer
@@ -27,33 +28,34 @@ namespace webrtc {
 // This class marks entire frame as updated if the frame size or frame stride
 // has been changed.
 class DesktopCapturerDifferWrapper : public DesktopCapturer,
-                                     public DesktopCapturer::Callback {
- public:
-  // Creates a DesktopCapturerDifferWrapper with a DesktopCapturer
-  // implementation, and takes its ownership.
-  explicit DesktopCapturerDifferWrapper(
-      std::unique_ptr<DesktopCapturer> base_capturer);
+    public DesktopCapturer::Callback
+{
+public:
+    // Creates a DesktopCapturerDifferWrapper with a DesktopCapturer
+    // implementation, and takes its ownership.
+    explicit DesktopCapturerDifferWrapper(
+        std::unique_ptr<DesktopCapturer> base_capturer);
 
-  ~DesktopCapturerDifferWrapper() override;
+    ~DesktopCapturerDifferWrapper() override;
 
-  // DesktopCapturer interface.
-  void Start(DesktopCapturer::Callback* callback) override;
-  void SetSharedMemoryFactory(
-      std::unique_ptr<SharedMemoryFactory> shared_memory_factory) override;
-  void CaptureFrame() override;
-  void SetExcludedWindow(WindowId window) override;
-  bool GetSourceList(SourceList* screens) override;
-  bool SelectSource(SourceId id) override;
-  bool FocusOnSelectedSource() override;
+    // DesktopCapturer interface.
+    void Start(DesktopCapturer::Callback* callback) override;
+    void SetSharedMemoryFactory(
+        std::unique_ptr<SharedMemoryFactory> shared_memory_factory) override;
+    void CaptureFrame() override;
+    void SetExcludedWindow(WindowId window) override;
+    bool GetSourceList(SourceList* screens) override;
+    bool SelectSource(SourceId id) override;
+    bool FocusOnSelectedSource() override;
 
- private:
-  // DesktopCapturer::Callback interface.
-  void OnCaptureResult(Result result,
-                       std::unique_ptr<DesktopFrame> frame) override;
+private:
+    // DesktopCapturer::Callback interface.
+    void OnCaptureResult(Result result,
+                         std::unique_ptr<DesktopFrame> frame) override;
 
-  const std::unique_ptr<DesktopCapturer> base_capturer_;
-  DesktopCapturer::Callback* callback_;
-  std::unique_ptr<SharedDesktopFrame> last_frame_;
+    const std::unique_ptr<DesktopCapturer> base_capturer_;
+    DesktopCapturer::Callback* callback_;
+    std::unique_ptr<SharedDesktopFrame> last_frame_;
 };
 
 }  // namespace webrtc

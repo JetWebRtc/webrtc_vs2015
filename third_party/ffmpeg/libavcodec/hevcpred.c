@@ -1,4 +1,4 @@
-/*
+﻿/*
  * HEVC video Decoder
  *
  * Copyright (C) 2012 - 2013 Guillaume Martres
@@ -60,7 +60,8 @@ void ff_hevc_pred_init(HEVCPredContext *hpc, int bit_depth)
     hpc->pred_angular[2] = FUNC(pred_angular_2, depth); \
     hpc->pred_angular[3] = FUNC(pred_angular_3, depth);
 
-    switch (bit_depth) {
+    switch (bit_depth)
+    {
     case 9:
         HEVC_PRED(9);
         break;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * iLBC decoder/encoder stub
  * Copyright (c) 2012 Martin Storsjo
  *
@@ -39,18 +39,21 @@ static int get_mode(AVCodecContext *avctx)
         return -1;
 }
 
-typedef struct ILBCDecContext {
+typedef struct ILBCDecContext
+{
     const AVClass *class;
     iLBC_Dec_Inst_t decoder;
     int enhance;
 } ILBCDecContext;
 
-static const AVOption ilbc_dec_options[] = {
+static const AVOption ilbc_dec_options[] =
+{
     { "enhance", "Enhance the decoded audio (adds delay)", offsetof(ILBCDecContext, enhance), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_DECODING_PARAM },
     { NULL }
 };
 
-static const AVClass ilbc_dec_class = {
+static const AVClass ilbc_dec_class =
+{
     .class_name = "libilbc",
     .item_name  = av_default_item_name,
     .option     = ilbc_dec_options,
@@ -62,7 +65,8 @@ static av_cold int ilbc_decode_init(AVCodecContext *avctx)
     ILBCDecContext *s  = avctx->priv_data;
     int mode;
 
-    if ((mode = get_mode(avctx)) < 0) {
+    if ((mode = get_mode(avctx)) < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "iLBC frame mode not indicated\n");
         return AVERROR(EINVAL);
     }
@@ -86,7 +90,8 @@ static int ilbc_decode_frame(AVCodecContext *avctx, void *data,
     AVFrame *frame     = data;
     int ret;
 
-    if (s->decoder.no_of_bytes > buf_size) {
+    if (s->decoder.no_of_bytes > buf_size)
+    {
         av_log(avctx, AV_LOG_ERROR, "iLBC frame too short (%u, should be %u)\n",
                buf_size, s->decoder.no_of_bytes);
         return AVERROR_INVALIDDATA;
@@ -103,7 +108,8 @@ static int ilbc_decode_frame(AVCodecContext *avctx, void *data,
     return s->decoder.no_of_bytes;
 }
 
-AVCodec ff_libilbc_decoder = {
+AVCodec ff_libilbc_decoder =
+{
     .name           = "libilbc",
     .long_name      = NULL_IF_CONFIG_SMALL("iLBC (Internet Low Bitrate Codec)"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -115,18 +121,21 @@ AVCodec ff_libilbc_decoder = {
     .priv_class     = &ilbc_dec_class,
 };
 
-typedef struct ILBCEncContext {
+typedef struct ILBCEncContext
+{
     const AVClass *class;
     iLBC_Enc_Inst_t encoder;
     int mode;
 } ILBCEncContext;
 
-static const AVOption ilbc_enc_options[] = {
+static const AVOption ilbc_enc_options[] =
+{
     { "mode", "iLBC mode (20 or 30 ms frames)", offsetof(ILBCEncContext, mode), AV_OPT_TYPE_INT, { .i64 = 20 }, 20, 30, AV_OPT_FLAG_AUDIO_PARAM | AV_OPT_FLAG_ENCODING_PARAM },
     { NULL }
 };
 
-static const AVClass ilbc_enc_class = {
+static const AVClass ilbc_enc_class =
+{
     .class_name = "libilbc",
     .item_name  = av_default_item_name,
     .option     = ilbc_enc_options,
@@ -138,12 +147,14 @@ static av_cold int ilbc_encode_init(AVCodecContext *avctx)
     ILBCEncContext *s = avctx->priv_data;
     int mode;
 
-    if (avctx->sample_rate != 8000) {
+    if (avctx->sample_rate != 8000)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only 8000Hz sample rate supported\n");
         return AVERROR(EINVAL);
     }
 
-    if (avctx->channels != 1) {
+    if (avctx->channels != 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "Only mono supported\n");
         return AVERROR(EINVAL);
     }
@@ -176,12 +187,14 @@ static int ilbc_encode_frame(AVCodecContext *avctx, AVPacket *avpkt,
     return 0;
 }
 
-static const AVCodecDefault ilbc_encode_defaults[] = {
+static const AVCodecDefault ilbc_encode_defaults[] =
+{
     { "b", "0" },
     { NULL }
 };
 
-AVCodec ff_libilbc_encoder = {
+AVCodec ff_libilbc_encoder =
+{
     .name           = "libilbc",
     .long_name      = NULL_IF_CONFIG_SMALL("iLBC (Internet Low Bitrate Codec)"),
     .type           = AVMEDIA_TYPE_AUDIO,
@@ -189,8 +202,10 @@ AVCodec ff_libilbc_encoder = {
     .priv_data_size = sizeof(ILBCEncContext),
     .init           = ilbc_encode_init,
     .encode2        = ilbc_encode_frame,
-    .sample_fmts    = (const enum AVSampleFormat[]){ AV_SAMPLE_FMT_S16,
-                                                     AV_SAMPLE_FMT_NONE },
+    .sample_fmts    = (const enum AVSampleFormat[]){
+        AV_SAMPLE_FMT_S16,
+        AV_SAMPLE_FMT_NONE
+    },
     .defaults       = ilbc_encode_defaults,
     .priv_class     = &ilbc_enc_class,
 };

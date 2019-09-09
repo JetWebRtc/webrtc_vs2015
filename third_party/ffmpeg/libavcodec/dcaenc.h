@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DCA encoder tables
  * Copyright (C) 2008-2012 Alexander E. Patrakov
  *
@@ -24,12 +24,14 @@
 
 #include <stdint.h>
 
-typedef struct {
+typedef struct
+{
     int32_t m;
     int32_t e;
 } softfloat;
 
-static const int sample_rates[] = {
+static const int sample_rates[] =
+{
     8000, 16000, 32000, 11025, 22050, 44100, 12000, 24000, 48000, 0,
 };
 
@@ -38,17 +40,20 @@ static const uint8_t bitstream_sfreq[] = { 1, 2, 3, 6, 7, 8, 11, 12, 13 };
 /* Auditory filter center frequencies and bandwidths, in Hz.
  * The last two are made up, because there is no scientific data.
  */
-static const uint16_t fc[] = {
+static const uint16_t fc[] =
+{
     50, 150, 250, 350, 450, 570, 700, 840, 1000, 1170, 1370, 1600, 1850, 2150,
     2500, 2900, 3400, 4000, 4800, 5800, 7000, 8500, 10500, 13500, 17000
 };
 
-static const uint16_t erb[] = {
+static const uint16_t erb[] =
+{
     80, 100, 100, 100, 110, 120, 140, 150, 160, 190, 210, 240, 280,
     320, 380, 450, 550, 700, 900, 1100, 1300, 1800, 2500, 3500, 4500
 };
 
-static const softfloat stepsize_inv[27] = {
+static const softfloat stepsize_inv[27] =
+{
     {0, 0}, {1342177360, 21}, {2147483647, 21}, {1342177360, 20},
     {1819901661, 20}, {2147483647, 20}, {1278263843, 19}, {1579032492, 19},
     {1412817763, 18}, {1220162327, 17}, {1118482133, 16}, {1917391412, 16},
@@ -58,7 +63,8 @@ static const softfloat stepsize_inv[27] = {
     {1636178017, 5}, {1636178017, 4}, {1636178017, 3},
 };
 
-static const softfloat scalefactor_inv[128] = {
+static const softfloat scalefactor_inv[128] =
+{
     {2147483647, 1}, {2147483647, 1}, {2147483647, 2}, {2147483647, 2},
     {2147483647, 2}, {2147483647, 2}, {1431655765, 2}, {1431655765, 2},
     {1431655765, 2}, {2147483647, 3}, {2147483647, 3}, {1717986918, 3},
@@ -97,14 +103,16 @@ static const softfloat scalefactor_inv[128] = {
  * Table B.5: Selection of quantization levels and codebooks
  * FIXME: will become invalid when Huffman codes are introduced.
  */
-static const int bit_consumption[27] = {
+static const int bit_consumption[27] =
+{
     -8, 28, 40, 48, 52, 60, 68, 76, 80, 96,
     112, 128, 144, 160, 176, 192, 208, 224, 240, 256,
     272, 288, 304, 320, 336, 352, 368,
 };
 
 /* Table B.5: Selection of quantization levels and codebooks */
-static const int quant_levels[27] = {
+static const int quant_levels[27] =
+{
     1, 3, 5, 7, 9, 13, 17, 25, 32, 64,
     128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536,
     131072, 262144, 524288, 1048576, 2097152, 4194304, 8388608,

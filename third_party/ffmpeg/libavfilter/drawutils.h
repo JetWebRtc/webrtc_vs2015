@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -45,7 +45,8 @@ void ff_copy_rectangle(uint8_t *dst[4], int dst_linesize[4],
 
 #define MAX_PLANES 4
 
-typedef struct FFDrawContext {
+typedef struct FFDrawContext
+{
     const struct AVPixFmtDescriptor *desc;
     enum AVPixelFormat format;
     unsigned nb_planes;
@@ -57,9 +58,11 @@ typedef struct FFDrawContext {
     uint8_t vsub_max;
 } FFDrawContext;
 
-typedef struct FFDrawColor {
+typedef struct FFDrawColor
+{
     uint8_t rgba[4];
-    union {
+    union
+    {
         uint32_t u32;
         uint16_t u16;
         uint8_t  u8[4];

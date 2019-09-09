@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 1990 James Ashton - Sydney University
  * Copyright (c) 2012 Stefano Sabatini
  *
@@ -55,7 +55,8 @@
 
 /* Portable, very large unsigned integer arithmetic is needed.
  * Implementation uses arrays of WORDs. */
-typedef struct {
+typedef struct
+{
     int nb_words;
     uint8_t words[XFACE_MAX_WORDS];
 } BigInt;
@@ -84,7 +85,8 @@ enum XFaceColor { XFACE_COLOR_BLACK = 0, XFACE_COLOR_GREY, XFACE_COLOR_WHITE };
 /* Data of varying probabilities are encoded by a value in the range 0 - 255.
  * The probability of the data determines the range of possible encodings.
  * Offset gives the first possible encoding of the range. */
-typedef struct {
+typedef struct
+{
     uint8_t range;
     uint8_t offset;
 } ProbRange;

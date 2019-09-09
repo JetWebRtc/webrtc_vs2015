@@ -1,4 +1,4 @@
-/*
+﻿/*
  * XCB input grabber
  * Copyright (C) 2014 Luca Barbato <lu_zero@gentoo.org>
  *
@@ -46,7 +46,8 @@
 #include "libavformat/avformat.h"
 #include "libavformat/internal.h"
 
-typedef struct XCBGrabContext {
+typedef struct XCBGrabContext
+{
     const AVClass *class;
 
     xcb_connection_t *conn;
@@ -79,7 +80,8 @@ typedef struct XCBGrabContext {
 
 #define OFFSET(x) offsetof(XCBGrabContext, x)
 #define D AV_OPT_FLAG_DECODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "x", "Initial x coordinate.", OFFSET(x), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, D },
     { "y", "Initial y coordinate.", OFFSET(y), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, D },
     { "grab_x", "Initial x coordinate.", OFFSET(x), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, INT_MAX, D },
@@ -87,15 +89,18 @@ static const AVOption options[] = {
     { "video_size", "A string describing frame size, such as 640x480 or hd720.", OFFSET(video_size), AV_OPT_TYPE_STRING, {.str = "vga" }, 0, 0, D },
     { "framerate", "", OFFSET(framerate), AV_OPT_TYPE_STRING, {.str = "ntsc" }, 0, 0, D },
     { "draw_mouse", "Draw the mouse pointer.", OFFSET(draw_mouse), AV_OPT_TYPE_INT, { .i64 = 1 }, 0, 1, D },
-    { "follow_mouse", "Move the grabbing region when the mouse pointer reaches within specified amount of pixels to the edge of region.",
-      OFFSET(follow_mouse), AV_OPT_TYPE_INT, { .i64 = 0 },  FOLLOW_CENTER, INT_MAX, D, "follow_mouse" },
+    {
+        "follow_mouse", "Move the grabbing region when the mouse pointer reaches within specified amount of pixels to the edge of region.",
+        OFFSET(follow_mouse), AV_OPT_TYPE_INT, { .i64 = 0 },  FOLLOW_CENTER, INT_MAX, D, "follow_mouse"
+    },
     { "centered", "Keep the mouse pointer at the center of grabbing region when following.", 0, AV_OPT_TYPE_CONST, { .i64 = -1 }, INT_MIN, INT_MAX, D, "follow_mouse" },
     { "show_region", "Show the grabbing region.", OFFSET(show_region), AV_OPT_TYPE_INT, { .i64 = 0 }, 0, 1, D },
     { "region_border", "Set the region border thickness.", OFFSET(region_border), AV_OPT_TYPE_INT, { .i64 = 3 }, 1, 128, D },
     { NULL },
 };
 
-static const AVClass xcbgrab_class = {
+static const AVClass xcbgrab_class =
+{
     .class_name = "xcbgrab indev",
     .item_name  = av_default_item_name,
     .option     = options,
@@ -118,22 +123,31 @@ static int xcbgrab_reposition(AVFormatContext *s,
     p_x = p->win_x;
     p_y = p->win_y;
 
-    if (f == FOLLOW_CENTER) {
+    if (f == FOLLOW_CENTER)
+    {
         x = p_x - w / 2;
         y = p_y - h / 2;
-    } else {
+    }
+    else
+    {
         int left   = x + f;
         int right  = x + w - f;
         int top    = y + f;
         int bottom = y + h + f;
-        if (p_x > right) {
+        if (p_x > right)
+        {
             x += p_x - right;
-        } else if (p_x < left) {
+        }
+        else if (p_x < left)
+        {
             x -= left - p_x;
         }
-        if (p_y > bottom) {
+        if (p_y > bottom)
+        {
             y += p_y - bottom;
-        } else if (p_y < top) {
+        }
+        else if (p_y < top)
+        {
             y -= top - p_y;
         }
     }
@@ -159,7 +173,8 @@ static int xcbgrab_frame(AVFormatContext *s, AVPacket *pkt)
 
     img = xcb_get_image_reply(c->conn, iq, &e);
 
-    if (e) {
+    if (e)
+    {
         av_log(s, AV_LOG_ERROR,
                "Cannot get the image data "
                "event_error: response_type:%u error_code:%u "
@@ -193,7 +208,8 @@ static void wait_frame(AVFormatContext *s, AVPacket *pkt)
 
     c->time_frame += frame_time;
 
-    for (;;) {
+    for (;;)
+    {
         curtime = av_gettime();
         delay   = c->time_frame - curtime;
         if (delay <= 0)
@@ -211,7 +227,8 @@ static int check_shm(xcb_connection_t *conn)
     xcb_shm_query_version_reply_t *reply;
 
     reply = xcb_shm_query_version_reply(conn, cookie, NULL);
-    if (reply) {
+    if (reply)
+    {
         free(reply);
         return 1;
     }
@@ -235,7 +252,8 @@ static int xcbgrab_frame_shm(AVFormatContext *s, AVPacket *pkt)
     int id   = shmget(IPC_PRIVATE, size, IPC_CREAT | 0777);
     xcb_generic_error_t *e = NULL;
 
-    if (id == -1) {
+    if (id == -1)
+    {
         char errbuf[1024];
         int err = AVERROR(errno);
         av_strerror(err, errbuf, sizeof(errbuf));
@@ -256,7 +274,8 @@ static int xcbgrab_frame_shm(AVFormatContext *s, AVPacket *pkt)
 
     xcb_flush(c->conn);
 
-    if (e) {
+    if (e)
+    {
         av_log(s, AV_LOG_ERROR,
                "Cannot get the image data "
                "event_error: response_type:%u error_code:%u "
@@ -277,7 +296,8 @@ static int xcbgrab_frame_shm(AVFormatContext *s, AVPacket *pkt)
         return AVERROR(errno);
 
     pkt->buf = av_buffer_create(data, size, dealloc_shm, NULL, 0);
-    if (!pkt->buf) {
+    if (!pkt->buf)
+    {
         shmdt(data);
         return AVERROR(ENOMEM);
     }
@@ -299,7 +319,8 @@ static int check_xfixes(xcb_connection_t *conn)
                                       XCB_XFIXES_MINOR_VERSION);
     reply  = xcb_xfixes_query_version_reply(conn, cookie, NULL);
 
-    if (reply) {
+    if (reply)
+    {
         free(reply);
         return 1;
     }
@@ -345,10 +366,12 @@ static void xcbgrab_draw_mouse(AVFormatContext *s, AVPacket *pkt,
     cursor += (y - cy) * ci->width;
     image  += (y - gr->y) * gr->width * stride;
 
-    for (y = 0; y < h; y++) {
+    for (y = 0; y < h; y++)
+    {
         cursor += c_off;
         image  += i_off * stride;
-        for (x = 0; x < w; x++, cursor++, image += stride) {
+        for (x = 0; x < w; x++, cursor++, image += stride)
+        {
             int r, g, b, a;
 
             r =  *cursor        & 0xff;
@@ -359,11 +382,14 @@ static void xcbgrab_draw_mouse(AVFormatContext *s, AVPacket *pkt,
             if (!a)
                 continue;
 
-            if (a == 255) {
+            if (a == 255)
+            {
                 image[0] = r;
                 image[1] = g;
                 image[2] = b;
-            } else {
+            }
+            else
+            {
                 image[0] = BLEND(r, image[0], a);
                 image[1] = BLEND(g, image[1], a);
                 image[2] = BLEND(b, image[2], a);
@@ -382,7 +408,8 @@ static void xcbgrab_update_region(AVFormatContext *s)
 {
     XCBGrabContext *c     = s->priv_data;
     const uint32_t args[] = { c->x - c->region_border,
-                              c->y - c->region_border };
+                              c->y - c->region_border
+                            };
 
     xcb_configure_window(c->conn,
                          c->window,
@@ -401,7 +428,8 @@ static int xcbgrab_read_packet(AVFormatContext *s, AVPacket *pkt)
 
     wait_frame(s, pkt);
 
-    if (c->follow_mouse || c->draw_mouse) {
+    if (c->follow_mouse || c->draw_mouse)
+    {
         pc  = xcb_query_pointer(c->conn, c->screen->root);
         gc  = xcb_get_geometry(c->conn, c->screen->root);
         p   = xcb_query_pointer_reply(c->conn, pc, NULL);
@@ -446,8 +474,10 @@ static xcb_screen_t *get_screen(const xcb_setup_t *setup, int screen_num)
     xcb_screen_iterator_t it = xcb_setup_roots_iterator(setup);
     xcb_screen_t *screen     = NULL;
 
-    for (; it.rem > 0; xcb_screen_next (&it)) {
-        if (!screen_num) {
+    for (; it.rem > 0; xcb_screen_next (&it))
+    {
+        if (!screen_num)
+        {
             screen = it.data;
             break;
         }
@@ -468,9 +498,12 @@ static int pixfmt_from_pixmap_format(AVFormatContext *s, int depth,
 
     *pix_fmt = 0;
 
-    while (length--) {
-        if (fmt->depth == depth) {
-            switch (depth) {
+    while (length--)
+    {
+        if (fmt->depth == depth)
+        {
+            switch (depth)
+            {
             case 32:
                 if (fmt->bits_per_pixel == 32)
                     *pix_fmt = AV_PIX_FMT_0RGB;
@@ -496,7 +529,8 @@ static int pixfmt_from_pixmap_format(AVFormatContext *s, int depth,
             }
         }
 
-        if (*pix_fmt) {
+        if (*pix_fmt)
+        {
             c->bpp        = fmt->bits_per_pixel;
             c->frame_size = c->width * c->height * fmt->bits_per_pixel / 8;
             return 0;
@@ -534,7 +568,8 @@ static int create_stream(AVFormatContext *s)
     geo = xcb_get_geometry_reply(c->conn, gc, NULL);
 
     if (c->x + c->width > geo->width ||
-        c->y + c->height > geo->height) {
+            c->y + c->height > geo->height)
+    {
         av_log(s, AV_LOG_ERROR,
                "Capture area %dx%d at position %d.%d "
                "outside the screen size %dx%d\n",
@@ -544,8 +579,11 @@ static int create_stream(AVFormatContext *s)
         return AVERROR(EINVAL);
     }
 
-    c->time_base  = (AVRational){ st->avg_frame_rate.den,
-                                  st->avg_frame_rate.num };
+    c->time_base  = (AVRational)
+    {
+        st->avg_frame_rate.den,
+        st->avg_frame_rate.num
+    };
     c->time_frame = av_gettime();
 
     st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
@@ -574,10 +612,12 @@ static void draw_rectangle(AVFormatContext *s)
                           c->screen->white_pixel,
                           c->region_border,
                           XCB_LINE_STYLE_DOUBLE_DASH,
-                          XCB_FILL_STYLE_SOLID };
+                          XCB_FILL_STYLE_SOLID
+                        };
     xcb_rectangle_t r = { 1, 1,
                           c->width  + c->region_border * 2 - 3,
-                          c->height + c->region_border * 2 - 3 };
+                          c->height + c->region_border * 2 - 3
+                        };
 
     xcb_create_gc(c->conn, gc, c->window, mask, values);
 
@@ -590,7 +630,8 @@ static void setup_window(AVFormatContext *s)
     uint32_t mask     = XCB_CW_OVERRIDE_REDIRECT | XCB_CW_EVENT_MASK;
     uint32_t values[] = { 1,
                           XCB_EVENT_MASK_EXPOSURE |
-                          XCB_EVENT_MASK_STRUCTURE_NOTIFY };
+                          XCB_EVENT_MASK_STRUCTURE_NOTIFY
+                        };
     xcb_rectangle_t rect = { 0, 0, c->width, c->height };
 
     c->window = xcb_generate_id(c->conn);
@@ -630,7 +671,8 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
     if (!display_name)
         return AVERROR(ENOMEM);
 
-    if (!sscanf(s->filename, "%[^+]+%d,%d", display_name, &c->x, &c->y)) {
+    if (!sscanf(s->filename, "%[^+]+%d,%d", display_name, &c->x, &c->y))
+    {
         *display_name = 0;
         sscanf(s->filename, "+%d,%d", &c->x, &c->y);
     }
@@ -638,7 +680,8 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
     c->conn = xcb_connect(display_name[0] ? display_name : NULL, &screen_num);
     av_freep(&display_name);
 
-    if ((ret = xcb_connection_has_error(c->conn))) {
+    if ((ret = xcb_connection_has_error(c->conn)))
+    {
         av_log(s, AV_LOG_ERROR, "Cannot open display %s, error %d.\n",
                s->filename[0] ? s->filename : "default", ret);
         return AVERROR(EIO);
@@ -647,7 +690,8 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
     setup = xcb_get_setup(c->conn);
 
     c->screen = get_screen(setup, screen_num);
-    if (!c->screen) {
+    if (!c->screen)
+    {
         av_log(s, AV_LOG_ERROR, "The screen %d does not exist.\n",
                screen_num);
         xcbgrab_read_close(s);
@@ -656,7 +700,8 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
 
     ret = create_stream(s);
 
-    if (ret < 0) {
+    if (ret < 0)
+    {
         xcbgrab_read_close(s);
         return ret;
     }
@@ -667,12 +712,15 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
 #endif
 
 #if CONFIG_LIBXCB_XFIXES
-    if (c->draw_mouse) {
-        if (!(c->draw_mouse = check_xfixes(c->conn))) {
+    if (c->draw_mouse)
+    {
+        if (!(c->draw_mouse = check_xfixes(c->conn)))
+        {
             av_log(s, AV_LOG_WARNING,
                    "XFixes not available, cannot draw the mouse.\n");
         }
-        if (c->bpp < 24) {
+        if (c->bpp < 24)
+        {
             avpriv_report_missing_feature(s, "%d bits per pixel screen",
                                           c->bpp);
             c->draw_mouse = 0;
@@ -686,7 +734,8 @@ static av_cold int xcbgrab_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_x11grab_xcb_demuxer = {
+AVInputFormat ff_x11grab_xcb_demuxer =
+{
     .name           = "x11grab",
     .long_name      = NULL_IF_CONFIG_SMALL("X11 screen capture, using XCB"),
     .priv_data_size = sizeof(XCBGrabContext),

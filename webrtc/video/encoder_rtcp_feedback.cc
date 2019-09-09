@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,63 +15,74 @@
 
 static const int kMinKeyFrameRequestIntervalMs = 300;
 
-namespace webrtc {
+namespace webrtc
+{
 
 EncoderRtcpFeedback::EncoderRtcpFeedback(Clock* clock,
-                                         const std::vector<uint32_t>& ssrcs,
-                                         ViEEncoder* encoder)
+        const std::vector<uint32_t>& ssrcs,
+        ViEEncoder* encoder)
     : clock_(clock),
       ssrcs_(ssrcs),
       vie_encoder_(encoder),
-      time_last_intra_request_ms_(ssrcs.size(), -1) {
-  RTC_DCHECK(!ssrcs.empty());
+      time_last_intra_request_ms_(ssrcs.size(), -1)
+{
+    RTC_DCHECK(!ssrcs.empty());
 }
 
-bool EncoderRtcpFeedback::HasSsrc(uint32_t ssrc) {
-  for (uint32_t registered_ssrc : ssrcs_) {
-    if (registered_ssrc == ssrc) {
-      return true;
+bool EncoderRtcpFeedback::HasSsrc(uint32_t ssrc)
+{
+    for (uint32_t registered_ssrc : ssrcs_)
+    {
+        if (registered_ssrc == ssrc)
+        {
+            return true;
+        }
     }
-  }
-  return false;
+    return false;
 }
 
-size_t EncoderRtcpFeedback::GetStreamIndex(uint32_t ssrc) {
-  for (size_t i = 0; i < ssrcs_.size(); ++i) {
-    if (ssrcs_[i] == ssrc)
-      return i;
-  }
-  RTC_NOTREACHED() << "Unknown ssrc " << ssrc;
-  return 0;
-}
-
-void EncoderRtcpFeedback::OnReceivedIntraFrameRequest(uint32_t ssrc) {
-  RTC_DCHECK(HasSsrc(ssrc));
-  size_t index = GetStreamIndex(ssrc);
-  {
-    // TODO(mflodman): Move to ViEEncoder after some more changes making it
-    // easier to test there.
-    int64_t now_ms = clock_->TimeInMilliseconds();
-    rtc::CritScope lock(&crit_);
-    if (time_last_intra_request_ms_[index] + kMinKeyFrameRequestIntervalMs >
-        now_ms) {
-      return;
+size_t EncoderRtcpFeedback::GetStreamIndex(uint32_t ssrc)
+{
+    for (size_t i = 0; i < ssrcs_.size(); ++i)
+    {
+        if (ssrcs_[i] == ssrc)
+            return i;
     }
-    time_last_intra_request_ms_[index] = now_ms;
-  }
-
-  vie_encoder_->OnReceivedIntraFrameRequest(index);
+    RTC_NOTREACHED() << "Unknown ssrc " << ssrc;
+    return 0;
 }
 
-void EncoderRtcpFeedback::OnReceivedSLI(uint32_t ssrc, uint8_t picture_id) {
-  RTC_DCHECK(HasSsrc(ssrc));
+void EncoderRtcpFeedback::OnReceivedIntraFrameRequest(uint32_t ssrc)
+{
+    RTC_DCHECK(HasSsrc(ssrc));
+    size_t index = GetStreamIndex(ssrc);
+    {
+        // TODO(mflodman): Move to ViEEncoder after some more changes making it
+        // easier to test there.
+        int64_t now_ms = clock_->TimeInMilliseconds();
+        rtc::CritScope lock(&crit_);
+        if (time_last_intra_request_ms_[index] + kMinKeyFrameRequestIntervalMs >
+                now_ms)
+        {
+            return;
+        }
+        time_last_intra_request_ms_[index] = now_ms;
+    }
 
-  vie_encoder_->OnReceivedSLI(picture_id);
+    vie_encoder_->OnReceivedIntraFrameRequest(index);
 }
 
-void EncoderRtcpFeedback::OnReceivedRPSI(uint32_t ssrc, uint64_t picture_id) {
-  RTC_DCHECK(HasSsrc(ssrc));
+void EncoderRtcpFeedback::OnReceivedSLI(uint32_t ssrc, uint8_t picture_id)
+{
+    RTC_DCHECK(HasSsrc(ssrc));
 
-  vie_encoder_->OnReceivedRPSI(picture_id);
+    vie_encoder_->OnReceivedSLI(picture_id);
+}
+
+void EncoderRtcpFeedback::OnReceivedRPSI(uint32_t ssrc, uint64_t picture_id)
+{
+    RTC_DCHECK(HasSsrc(ssrc));
+
+    vie_encoder_->OnReceivedRPSI(picture_id);
 }
 }  // namespace webrtc

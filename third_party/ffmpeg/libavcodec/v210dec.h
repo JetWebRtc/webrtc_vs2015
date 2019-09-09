@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This file is part of FFmpeg.
  *
  * FFmpeg is free software; you can redistribute it and/or
@@ -23,7 +23,8 @@
 #include "libavutil/opt.h"
 
 
-typedef struct {
+typedef struct
+{
     AVClass *av_class;
     int custom_stride;
     int aligned_input;

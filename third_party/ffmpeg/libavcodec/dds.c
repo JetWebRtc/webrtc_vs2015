@@ -1,4 +1,4 @@
-/*
+﻿/*
  * DirectDraw Surface image decoder
  * Copyright (C) 2015 Vittorio Giovara <vittorio.giovara@gmail.com>
  *
@@ -40,7 +40,8 @@
 #define DDPF_PALETTE   (1 <<  5)
 #define DDPF_NORMALMAP (1 << 31)
 
-enum DDSPostProc {
+enum DDSPostProc
+{
     DDS_NONE = 0,
     DDS_ALPHA_EXP,
     DDS_NORMAL_MAP,
@@ -56,7 +57,8 @@ enum DDSPostProc {
     DDS_SWIZZLE_XGXR,
 };
 
-enum DDSDXGIFormat {
+enum DDSDXGIFormat
+{
     DXGI_FORMAT_R16G16B16A16_TYPELESS       =  9,
     DXGI_FORMAT_R16G16B16A16_FLOAT          = 10,
     DXGI_FORMAT_R16G16B16A16_UNORM          = 11,
@@ -95,7 +97,8 @@ enum DDSDXGIFormat {
     DXGI_FORMAT_B8G8R8X8_UNORM_SRGB         = 93,
 };
 
-typedef struct DDSContext {
+typedef struct DDSContext
+{
     TextureDSPContext texdsp;
     GetByteContext gbc;
 
@@ -131,7 +134,8 @@ static int parse_pixel_format(AVCodecContext *avctx)
 
     /* Now the real DDPF starts. */
     size = bytestream2_get_le32(gbc);
-    if (size != 32) {
+    if (size != 32)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid pixel format header %d.\n", size);
         return AVERROR_INVALIDDATA;
     }
@@ -156,7 +160,8 @@ static int parse_pixel_format(AVCodecContext *avctx)
     av_get_codec_tag_string(buf, sizeof(buf), fourcc);
     av_log(avctx, AV_LOG_VERBOSE, "fourcc %s bpp %d "
            "r 0x%x g 0x%x b 0x%x a 0x%x\n", buf, bpp, r, g, b, a);
-    if (gimp_tag) {
+    if (gimp_tag)
+    {
         av_get_codec_tag_string(buf, sizeof(buf), gimp_tag);
         av_log(avctx, AV_LOG_VERBOSE, "and GIMP-DDS tag %s\n", buf);
     }
@@ -164,8 +169,10 @@ static int parse_pixel_format(AVCodecContext *avctx)
     if (ctx->compressed)
         avctx->pix_fmt = AV_PIX_FMT_RGBA;
 
-    if (ctx->compressed) {
-        switch (fourcc) {
+    if (ctx->compressed)
+    {
+        switch (fourcc)
+        {
         case MKTAG('D', 'X', 'T', '1'):
             ctx->tex_ratio = 8;
             ctx->tex_funct = ctx->texdsp.dxt1a_block;
@@ -251,7 +258,8 @@ static int parse_pixel_format(AVCodecContext *avctx)
             ctx->compressed = (dxgi >= 70) && (dxgi <= 84);
 
             av_log(avctx, AV_LOG_VERBOSE, "DXGI format %d.\n", dxgi);
-            switch (dxgi) {
+            switch (dxgi)
+            {
             /* RGB types. */
             case DXGI_FORMAT_R16G16B16A16_TYPELESS:
             case DXGI_FORMAT_R16G16B16A16_FLOAT:
@@ -335,14 +343,21 @@ static int parse_pixel_format(AVCodecContext *avctx)
             av_log(avctx, AV_LOG_ERROR, "Unsupported %s fourcc.\n", buf);
             return AVERROR_INVALIDDATA;
         }
-    } else if (ctx->paletted) {
-        if (bpp == 8) {
+    }
+    else if (ctx->paletted)
+    {
+        if (bpp == 8)
+        {
             avctx->pix_fmt = AV_PIX_FMT_PAL8;
-        } else {
+        }
+        else
+        {
             av_log(avctx, AV_LOG_ERROR, "Unsupported palette bpp %d.\n", bpp);
             return AVERROR_INVALIDDATA;
         }
-    } else {
+    }
+    else
+    {
         /*  8 bpp */
         if (bpp == 8 && r == 0xff && g == 0 && b == 0 && a == 0)
             avctx->pix_fmt = AV_PIX_FMT_GRAY8;
@@ -366,7 +381,8 @@ static int parse_pixel_format(AVCodecContext *avctx)
         else if (bpp == 32 && r == 0xff && g == 0xff00 && b == 0xff0000 && a == 0xff000000)
             avctx->pix_fmt = AV_PIX_FMT_RGBA;
         /* give up */
-        else {
+        else
+        {
             av_log(avctx, AV_LOG_ERROR, "Unknown pixel format "
                    "[bpp %d r 0x%x g 0x%x b 0x%x a 0x%x].\n", bpp, r, g, b, a);
             return AVERROR_INVALIDDATA;
@@ -384,7 +400,8 @@ static int parse_pixel_format(AVCodecContext *avctx)
         ctx->postproc = DDS_SWAP_ALPHA;
 
     /* ATI/NVidia variants sometimes add swizzling in bpp. */
-    switch (bpp) {
+    switch (bpp)
+    {
     case MKTAG('A', '2', 'X', 'Y'):
         ctx->postproc = DDS_SWIZZLE_A2XY;
         break;
@@ -439,10 +456,12 @@ static int decompress_texture_thread(AVCodecContext *avctx, void *arg,
     if (slice < remainder_blocks)
         end_slice++;
 
-    for (y = start_slice; y < end_slice; y++) {
+    for (y = start_slice; y < end_slice; y++)
+    {
         uint8_t *p = frame->data[0] + y * frame->linesize[0] * TEXTURE_BLOCK_H;
         int off  = y * w_block;
-        for (x = 0; x < w_block; x++) {
+        for (x = 0; x < w_block; x++)
+        {
             ctx->tex_funct(p + x * 16, frame->linesize[0],
                            d + (off + x) * ctx->tex_ratio);
         }
@@ -454,7 +473,8 @@ static int decompress_texture_thread(AVCodecContext *avctx, void *arg,
 static void do_swizzle(AVFrame *frame, int x, int y)
 {
     int i;
-    for (i = 0; i < frame->linesize[0] * frame->height; i += 4) {
+    for (i = 0; i < frame->linesize[0] * frame->height; i += 4)
+    {
         uint8_t *src = frame->data[0] + i;
         FFSWAP(uint8_t, src[x], src[y]);
     }
@@ -465,14 +485,16 @@ static void run_postproc(AVCodecContext *avctx, AVFrame *frame)
     DDSContext *ctx = avctx->priv_data;
     int i, x_off;
 
-    switch (ctx->postproc) {
+    switch (ctx->postproc)
+    {
     case DDS_ALPHA_EXP:
         /* Alpha-exponential mode divides each channel by the maximum
          * R, G or B value, and stores the multiplying factor in the
          * alpha channel. */
         av_log(avctx, AV_LOG_DEBUG, "Post-processing alpha exponent.\n");
 
-        for (i = 0; i < frame->linesize[0] * frame->height; i += 4) {
+        for (i = 0; i < frame->linesize[0] * frame->height; i += 4)
+        {
             uint8_t *src = frame->data[0] + i;
             int r = src[0];
             int g = src[1];
@@ -494,7 +516,8 @@ static void run_postproc(AVCodecContext *avctx, AVFrame *frame)
         av_log(avctx, AV_LOG_DEBUG, "Post-processing normal map.\n");
 
         x_off = ctx->tex_ratio == 8 ? 0 : 3;
-        for (i = 0; i < frame->linesize[0] * frame->height; i += 4) {
+        for (i = 0; i < frame->linesize[0] * frame->height; i += 4)
+        {
             uint8_t *src = frame->data[0] + i;
             int x = src[x_off];
             int y = src[1];
@@ -515,7 +538,8 @@ static void run_postproc(AVCodecContext *avctx, AVFrame *frame)
          * with the same masks in the DDPF header. */
         av_log(avctx, AV_LOG_DEBUG, "Post-processing raw YCoCg.\n");
 
-        for (i = 0; i < frame->linesize[0] * frame->height; i += 4) {
+        for (i = 0; i < frame->linesize[0] * frame->height; i += 4)
+        {
             uint8_t *src = frame->data[0] + i;
             int a  = src[0];
             int cg = src[1] - 128;
@@ -532,7 +556,8 @@ static void run_postproc(AVCodecContext *avctx, AVFrame *frame)
         /* Alpha and Luma are stored swapped. */
         av_log(avctx, AV_LOG_DEBUG, "Post-processing swapped Luma/Alpha.\n");
 
-        for (i = 0; i < frame->linesize[0] * frame->height; i += 2) {
+        for (i = 0; i < frame->linesize[0] * frame->height; i += 2)
+        {
             uint8_t *src = frame->data[0] + i;
             FFSWAP(uint8_t, src[0], src[1]);
         }
@@ -598,14 +623,16 @@ static int dds_decode(AVCodecContext *avctx, void *data,
     ff_texturedsp_init(&ctx->texdsp);
     bytestream2_init(gbc, avpkt->data, avpkt->size);
 
-    if (bytestream2_get_bytes_left(gbc) < 128) {
+    if (bytestream2_get_bytes_left(gbc) < 128)
+    {
         av_log(avctx, AV_LOG_ERROR, "Frame is too small (%d).",
                bytestream2_get_bytes_left(gbc));
         return AVERROR_INVALIDDATA;
     }
 
     if (bytestream2_get_le32(gbc) != MKTAG('D', 'D', 'S', ' ') ||
-        bytestream2_get_le32(gbc) != 124) { // header size
+            bytestream2_get_le32(gbc) != 124)   // header size
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid DDS header.");
         return AVERROR_INVALIDDATA;
     }
@@ -615,7 +642,8 @@ static int dds_decode(AVCodecContext *avctx, void *data,
     avctx->height = bytestream2_get_le32(gbc);
     avctx->width  = bytestream2_get_le32(gbc);
     ret = av_image_check_size(avctx->width, avctx->height, 0, avctx);
-    if (ret < 0) {
+    if (ret < 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid image size %dx%d.\n",
                avctx->width, avctx->height);
         return ret;
@@ -641,17 +669,21 @@ static int dds_decode(AVCodecContext *avctx, void *data,
     if (ret < 0)
         return ret;
 
-    if (ctx->compressed) {
+    if (ctx->compressed)
+    {
         ctx->slice_count = av_clip(avctx->thread_count, 1,
                                    avctx->coded_height / TEXTURE_BLOCK_H);
 
         /* Use the decompress function on the texture, one block per thread. */
         ctx->tex_data = gbc->buffer;
         avctx->execute2(avctx, decompress_texture_thread, frame, NULL, ctx->slice_count);
-    } else {
+    }
+    else
+    {
         int linesize = av_image_get_linesize(avctx->pix_fmt, frame->width, 0);
 
-        if (ctx->paletted) {
+        if (ctx->paletted)
+        {
             int i;
             /* Use the first 1024 bytes as palette, then copy the rest. */
             bytestream2_get_buffer(gbc, frame->data[1], 256 * 4);
@@ -661,7 +693,7 @@ static int dds_decode(AVCodecContext *avctx, void *data,
                         (frame->data[1][1+i*4]<<8)+
                         (frame->data[1][0+i*4]<<16)+
                         (frame->data[1][3+i*4]<<24)
-                );
+                       );
 
             frame->palette_has_changed = 1;
         }
@@ -673,10 +705,10 @@ static int dds_decode(AVCodecContext *avctx, void *data,
 
     /* Run any post processing here if needed. */
     if (avctx->pix_fmt == AV_PIX_FMT_BGRA ||
-        avctx->pix_fmt == AV_PIX_FMT_RGBA ||
-        avctx->pix_fmt == AV_PIX_FMT_RGB0 ||
-        avctx->pix_fmt == AV_PIX_FMT_BGR0 ||
-        avctx->pix_fmt == AV_PIX_FMT_YA8)
+            avctx->pix_fmt == AV_PIX_FMT_RGBA ||
+            avctx->pix_fmt == AV_PIX_FMT_RGB0 ||
+            avctx->pix_fmt == AV_PIX_FMT_BGR0 ||
+            avctx->pix_fmt == AV_PIX_FMT_YA8)
         run_postproc(avctx, frame);
 
     /* Frame is ready to be output. */
@@ -687,7 +719,8 @@ static int dds_decode(AVCodecContext *avctx, void *data,
     return avpkt->size;
 }
 
-AVCodec ff_dds_decoder = {
+AVCodec ff_dds_decoder =
+{
     .name           = "dds",
     .long_name      = NULL_IF_CONFIG_SMALL("DirectDraw Surface image decoder"),
     .type           = AVMEDIA_TYPE_VIDEO,

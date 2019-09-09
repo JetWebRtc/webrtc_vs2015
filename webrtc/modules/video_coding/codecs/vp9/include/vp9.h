@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -14,22 +14,25 @@
 
 #include "webrtc/modules/video_coding/include/video_codec_interface.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
-class VP9Encoder : public VideoEncoder {
- public:
-  static bool IsSupported();
-  static VP9Encoder* Create();
+class VP9Encoder : public VideoEncoder
+{
+public:
+    static bool IsSupported();
+    static VP9Encoder* Create();
 
-  virtual ~VP9Encoder() {}
+    virtual ~VP9Encoder() {}
 };
 
-class VP9Decoder : public VideoDecoder {
- public:
-  static bool IsSupported();
-  static VP9Decoder* Create();
+class VP9Decoder : public VideoDecoder
+{
+public:
+    static bool IsSupported();
+    static VP9Decoder* Create();
 
-  virtual ~VP9Decoder() {}
+    virtual ~VP9Decoder() {}
 };
 }  // namespace webrtc
 

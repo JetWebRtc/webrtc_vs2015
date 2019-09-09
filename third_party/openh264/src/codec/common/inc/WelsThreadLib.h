@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -94,8 +94,9 @@ typedef   sem_t*                    WELS_EVENT;
 typedef    int32_t        WELS_THREAD_ERROR_CODE;
 typedef    int32_t        WELS_THREAD_ATTR;
 
-typedef  struct _WelsLogicalProcessorInfo {
-  int32_t    ProcessorCount;
+typedef  struct _WelsLogicalProcessorInfo
+{
+    int32_t    ProcessorCount;
 } WelsLogicalProcessInfo;
 
 #define    WELS_THREAD_ERROR_OK                                 0
@@ -116,10 +117,10 @@ WELS_THREAD_ERROR_CODE    WelsEventSignal (WELS_EVENT* event);
 WELS_THREAD_ERROR_CODE    WelsEventWait (WELS_EVENT* event,WELS_MUTEX *pMutex = NULL);
 WELS_THREAD_ERROR_CODE    WelsEventWaitWithTimeOut (WELS_EVENT* event, uint32_t dwMilliseconds,WELS_MUTEX *pMutex = NULL);
 WELS_THREAD_ERROR_CODE    WelsMultipleEventsWaitSingleBlocking (uint32_t nCount, WELS_EVENT* event_list,
-    WELS_EVENT* master_event = NULL,WELS_MUTEX *pMutex = NULL);
+        WELS_EVENT* master_event = NULL,WELS_MUTEX *pMutex = NULL);
 
 WELS_THREAD_ERROR_CODE    WelsThreadCreate (WELS_THREAD_HANDLE* thread,  LPWELS_THREAD_ROUTINE  routine,
-    void* arg, WELS_THREAD_ATTR attr);
+        void* arg, WELS_THREAD_ATTR attr);
 
 WELS_THREAD_ERROR_CODE    WelsThreadSetName (const char* thread_name);
 

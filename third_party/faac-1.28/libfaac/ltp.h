@@ -1,4 +1,4 @@
-/*
+﻿/*
  * FAAC - Freeware Advanced Audio Coder
  * Copyright (C) 2001 Menno Bakker
  *
@@ -29,14 +29,14 @@
 void LtpInit(faacEncHandle hEncoder);
 void LtpEnd(faacEncHandle hEncoder);
 int LtpEncode(faacEncHandle hEncoder,
-                CoderInfo *coderInfo,
-                LtpInfo *ltpInfo,
-                TnsInfo *tnsInfo,
-                double *p_spectrum,
-                double *p_time_signal);
+              CoderInfo *coderInfo,
+              LtpInfo *ltpInfo,
+              TnsInfo *tnsInfo,
+              double *p_spectrum,
+              double *p_time_signal);
 void LtpReconstruct(CoderInfo *coderInfo, LtpInfo *ltpInfo, double *p_spectrum);
 void  LtpUpdate(LtpInfo *ltpInfo, double *time_signal,
-                     double *overlap_signal, int block_size_long);
+                double *overlap_signal, int block_size_long);
 
 #endif /* not defined LTP_H */
 

@@ -1,4 +1,4 @@
-/* Copyright (c) 2014, Cisco Systems, INC
+﻿/* Copyright (c) 2014, Cisco Systems, INC
    Written by XiangMingZhu WeiZhou MinPeng YanWang
 
    Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ static void cpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 {
 #if defined(CPU_INFO_BY_ASM)
 #if defined(__i386__) && defined(__PIC__)
-/* %ebx is PIC register in 32-bit, so mustn't clobber it. */
+    /* %ebx is PIC register in 32-bit, so mustn't clobber it. */
     __asm__ __volatile__ (
         "xchg %%ebx, %1\n"
         "cpuid\n"
@@ -87,7 +87,8 @@ static void cpuid(unsigned int CPUInfo[4], unsigned int InfoType)
 
 #endif
 
-typedef struct CPU_Feature{
+typedef struct CPU_Feature
+{
     /*  SIMD: 128-bit */
     int HW_SSE;
     int HW_SSE2;
@@ -104,14 +105,16 @@ static void opus_cpu_feature_check(CPU_Feature *cpu_feature)
     cpuid(info, 0);
     nIds = info[0];
 
-    if (nIds >= 1){
+    if (nIds >= 1)
+    {
         cpuid(info, 1);
         cpu_feature->HW_SSE = (info[3] & (1 << 25)) != 0;
         cpu_feature->HW_SSE2 = (info[3] & (1 << 26)) != 0;
         cpu_feature->HW_SSE41 = (info[2] & (1 << 19)) != 0;
         cpu_feature->HW_AVX = (info[2] & (1 << 28)) != 0;
     }
-    else {
+    else
+    {
         cpu_feature->HW_SSE = 0;
         cpu_feature->HW_SSE2 = 0;
         cpu_feature->HW_SSE41 = 0;
@@ -129,13 +132,13 @@ int opus_select_arch(void)
     arch = 0;
     if (!cpu_feature.HW_SSE)
     {
-       return arch;
+        return arch;
     }
     arch++;
 
     if (!cpu_feature.HW_SSE2)
     {
-       return arch;
+        return arch;
     }
     arch++;
 

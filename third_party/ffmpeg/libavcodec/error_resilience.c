@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Error resilience / concealment
  *
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -44,11 +44,14 @@
  */
 static void set_mv_strides(ERContext *s, int *mv_step, int *stride)
 {
-    if (s->avctx->codec_id == AV_CODEC_ID_H264) {
+    if (s->avctx->codec_id == AV_CODEC_ID_H264)
+    {
         av_assert0(s->quarter_sample);
         *mv_step = 4;
         *stride  = s->mb_width * 4;
-    } else {
+    }
+    else
+    {
         *mv_step = 2;
         *stride  = s->b8_stride;
     }
@@ -62,13 +65,15 @@ static void put_dc(ERContext *s, uint8_t *dest_y, uint8_t *dest_cb,
 {
     int *linesize = s->cur_pic.f->linesize;
     int dc, dcu, dcv, y, i;
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 4; i++)
+    {
         dc = s->dc_val[0][mb_x * 2 + (i &  1) + (mb_y * 2 + (i >> 1)) * s->b8_stride];
         if (dc < 0)
             dc = 0;
         else if (dc > 2040)
             dc = 2040;
-        for (y = 0; y < 8; y++) {
+        for (y = 0; y < 8; y++)
+        {
             int x;
             for (x = 0; x < 8; x++)
                 dest_y[x + (i &  1) * 8 + (y + (i >> 1) * 8) * linesize[0]] = dc / 8;
@@ -86,13 +91,15 @@ static void put_dc(ERContext *s, uint8_t *dest_y, uint8_t *dest_cb,
         dcv = 2040;
 
     if (dest_cr)
-    for (y = 0; y < 8; y++) {
-        int x;
-        for (x = 0; x < 8; x++) {
-            dest_cb[x + y * linesize[1]] = dcu / 8;
-            dest_cr[x + y * linesize[2]] = dcv / 8;
+        for (y = 0; y < 8; y++)
+        {
+            int x;
+            for (x = 0; x < 8; x++)
+            {
+                dest_cb[x + y * linesize[1]] = dcu / 8;
+                dest_cr[x + y * linesize[2]] = dcv / 8;
+            }
         }
-    }
 }
 
 static void filter181(int16_t *data, int width, int height, int stride)
@@ -100,10 +107,12 @@ static void filter181(int16_t *data, int width, int height, int stride)
     int x, y;
 
     /* horizontal filter */
-    for (y = 1; y < height - 1; y++) {
+    for (y = 1; y < height - 1; y++)
+    {
         int prev_dc = data[0 + y * stride];
 
-        for (x = 1; x < width - 1; x++) {
+        for (x = 1; x < width - 1; x++)
+        {
             int dc;
             dc = -prev_dc +
                  data[x     + y * stride] * 8 -
@@ -115,10 +124,12 @@ static void filter181(int16_t *data, int width, int height, int stride)
     }
 
     /* vertical filter */
-    for (x = 1; x < width - 1; x++) {
+    for (x = 1; x < width - 1; x++)
+    {
         int prev_dc = data[x];
 
-        for (y = 1; y < height - 1; y++) {
+        for (y = 1; y < height - 1; y++)
+        {
             int dc;
 
             dc = -prev_dc +
@@ -143,19 +154,23 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
     int16_t  (*col )[4] = av_malloc_array(stride, h*sizeof( int16_t)*4);
     uint32_t (*dist)[4] = av_malloc_array(stride, h*sizeof(uint32_t)*4);
 
-    if(!col || !dist) {
+    if(!col || !dist)
+    {
         av_log(s->avctx, AV_LOG_ERROR, "guess_dc() is out of memory\n");
         goto fail;
     }
 
-    for(b_y=0; b_y<h; b_y++){
+    for(b_y=0; b_y<h; b_y++)
+    {
         int color= 1024;
         int distance= -1;
-        for(b_x=0; b_x<w; b_x++){
+        for(b_x=0; b_x<w; b_x++)
+        {
             int mb_index_j= (b_x>>is_luma) + (b_y>>is_luma)*s->mb_stride;
             int error_j= s->error_status_table[mb_index_j];
             int intra_j = IS_INTRA(s->cur_pic.mb_type[mb_index_j]);
-            if(intra_j==0 || !(error_j&ER_DC_ERROR)){
+            if(intra_j==0 || !(error_j&ER_DC_ERROR))
+            {
                 color= dc[b_x + b_y*stride];
                 distance= b_x;
             }
@@ -164,11 +179,13 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
         }
         color= 1024;
         distance= -1;
-        for(b_x=w-1; b_x>=0; b_x--){
+        for(b_x=w-1; b_x>=0; b_x--)
+        {
             int mb_index_j= (b_x>>is_luma) + (b_y>>is_luma)*s->mb_stride;
             int error_j= s->error_status_table[mb_index_j];
             int intra_j = IS_INTRA(s->cur_pic.mb_type[mb_index_j]);
-            if(intra_j==0 || !(error_j&ER_DC_ERROR)){
+            if(intra_j==0 || !(error_j&ER_DC_ERROR))
+            {
                 color= dc[b_x + b_y*stride];
                 distance= b_x;
             }
@@ -176,14 +193,17 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
             dist[b_x + b_y*stride][0]= distance >= 0 ? distance-b_x : 9999;
         }
     }
-    for(b_x=0; b_x<w; b_x++){
+    for(b_x=0; b_x<w; b_x++)
+    {
         int color= 1024;
         int distance= -1;
-        for(b_y=0; b_y<h; b_y++){
+        for(b_y=0; b_y<h; b_y++)
+        {
             int mb_index_j= (b_x>>is_luma) + (b_y>>is_luma)*s->mb_stride;
             int error_j= s->error_status_table[mb_index_j];
             int intra_j = IS_INTRA(s->cur_pic.mb_type[mb_index_j]);
-            if(intra_j==0 || !(error_j&ER_DC_ERROR)){
+            if(intra_j==0 || !(error_j&ER_DC_ERROR))
+            {
                 color= dc[b_x + b_y*stride];
                 distance= b_y;
             }
@@ -192,11 +212,13 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
         }
         color= 1024;
         distance= -1;
-        for(b_y=h-1; b_y>=0; b_y--){
+        for(b_y=h-1; b_y>=0; b_y--)
+        {
             int mb_index_j= (b_x>>is_luma) + (b_y>>is_luma)*s->mb_stride;
             int error_j= s->error_status_table[mb_index_j];
             int intra_j = IS_INTRA(s->cur_pic.mb_type[mb_index_j]);
-            if(intra_j==0 || !(error_j&ER_DC_ERROR)){
+            if(intra_j==0 || !(error_j&ER_DC_ERROR))
+            {
                 color= dc[b_x + b_y*stride];
                 distance= b_y;
             }
@@ -205,8 +227,10 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
         }
     }
 
-    for (b_y = 0; b_y < h; b_y++) {
-        for (b_x = 0; b_x < w; b_x++) {
+    for (b_y = 0; b_y < h; b_y++)
+    {
+        for (b_x = 0; b_x < w; b_x++)
+        {
             int mb_index, error, j;
             int64_t guess, weight_sum;
             mb_index = (b_x >> is_luma) + (b_y >> is_luma) * s->mb_stride;
@@ -219,7 +243,8 @@ static void guess_dc(ERContext *s, int16_t *dc, int w,
 
             weight_sum = 0;
             guess      = 0;
-            for (j = 0; j < 4; j++) {
+            for (j = 0; j < 4; j++)
+            {
                 int64_t weight  = 256 * 256 * 256 * 16 / FFMAX(dist[b_x + b_y*stride][j], 1);
                 guess          += weight*(int64_t)col[b_x + b_y*stride][j];
                 weight_sum     += weight;
@@ -248,8 +273,10 @@ static void h_block_filter(ERContext *s, uint8_t *dst, int w,
     mvx_stride >>= is_luma;
     mvy_stride *= mvx_stride;
 
-    for (b_y = 0; b_y < h; b_y++) {
-        for (b_x = 0; b_x < w - 1; b_x++) {
+    for (b_y = 0; b_y < h; b_y++)
+    {
+        for (b_x = 0; b_x < w - 1; b_x++)
+        {
             int y;
             int left_status  = s->error_status_table[( b_x      >> is_luma) + (b_y >> is_luma) * s->mb_stride];
             int right_status = s->error_status_table[((b_x + 1) >> is_luma) + (b_y >> is_luma) * s->mb_stride];
@@ -263,11 +290,12 @@ static void h_block_filter(ERContext *s, uint8_t *dst, int w,
             if (!(left_damage || right_damage))
                 continue; // both undamaged
             if ((!left_intra) && (!right_intra) &&
-                FFABS(left_mv[0] - right_mv[0]) +
-                FFABS(left_mv[1] + right_mv[1]) < 2)
+                    FFABS(left_mv[0] - right_mv[0]) +
+                    FFABS(left_mv[1] + right_mv[1]) < 2)
                 continue;
 
-            for (y = 0; y < 8; y++) {
+            for (y = 0; y < 8; y++)
+            {
                 int a, b, c, d;
 
                 a = dst[offset + 7 + y * stride] - dst[offset + 6 + y * stride];
@@ -285,13 +313,15 @@ static void h_block_filter(ERContext *s, uint8_t *dst, int w,
                 if (!(left_damage && right_damage))
                     d = d * 16 / 9;
 
-                if (left_damage) {
+                if (left_damage)
+                {
                     dst[offset + 7 + y * stride] = cm[dst[offset + 7 + y * stride] + ((d * 7) >> 4)];
                     dst[offset + 6 + y * stride] = cm[dst[offset + 6 + y * stride] + ((d * 5) >> 4)];
                     dst[offset + 5 + y * stride] = cm[dst[offset + 5 + y * stride] + ((d * 3) >> 4)];
                     dst[offset + 4 + y * stride] = cm[dst[offset + 4 + y * stride] + ((d * 1) >> 4)];
                 }
-                if (right_damage) {
+                if (right_damage)
+                {
                     dst[offset + 8 + y * stride] = cm[dst[offset +  8 + y * stride] - ((d * 7) >> 4)];
                     dst[offset + 9 + y * stride] = cm[dst[offset +  9 + y * stride] - ((d * 5) >> 4)];
                     dst[offset + 10+ y * stride] = cm[dst[offset + 10 + y * stride] - ((d * 3) >> 4)];
@@ -316,8 +346,10 @@ static void v_block_filter(ERContext *s, uint8_t *dst, int w, int h,
     mvx_stride >>= is_luma;
     mvy_stride *= mvx_stride;
 
-    for (b_y = 0; b_y < h - 1; b_y++) {
-        for (b_x = 0; b_x < w; b_x++) {
+    for (b_y = 0; b_y < h - 1; b_y++)
+    {
+        for (b_x = 0; b_x < w; b_x++)
+        {
             int x;
             int top_status    = s->error_status_table[(b_x >> is_luma) +  (b_y      >> is_luma) * s->mb_stride];
             int bottom_status = s->error_status_table[(b_x >> is_luma) + ((b_y + 1) >> is_luma) * s->mb_stride];
@@ -334,11 +366,12 @@ static void v_block_filter(ERContext *s, uint8_t *dst, int w, int h,
                 continue; // both undamaged
 
             if ((!top_intra) && (!bottom_intra) &&
-                FFABS(top_mv[0] - bottom_mv[0]) +
-                FFABS(top_mv[1] + bottom_mv[1]) < 2)
+                    FFABS(top_mv[0] - bottom_mv[0]) +
+                    FFABS(top_mv[1] + bottom_mv[1]) < 2)
                 continue;
 
-            for (x = 0; x < 8; x++) {
+            for (x = 0; x < 8; x++)
+            {
                 int a, b, c, d;
 
                 a = dst[offset + x + 7 * stride] - dst[offset + x + 6 * stride];
@@ -356,13 +389,15 @@ static void v_block_filter(ERContext *s, uint8_t *dst, int w, int h,
                 if (!(top_damage && bottom_damage))
                     d = d * 16 / 9;
 
-                if (top_damage) {
+                if (top_damage)
+                {
                     dst[offset + x +  7 * stride] = cm[dst[offset + x +  7 * stride] + ((d * 7) >> 4)];
                     dst[offset + x +  6 * stride] = cm[dst[offset + x +  6 * stride] + ((d * 5) >> 4)];
                     dst[offset + x +  5 * stride] = cm[dst[offset + x +  5 * stride] + ((d * 3) >> 4)];
                     dst[offset + x +  4 * stride] = cm[dst[offset + x +  4 * stride] + ((d * 1) >> 4)];
                 }
-                if (bottom_damage) {
+                if (bottom_damage)
+                {
                     dst[offset + x +  8 * stride] = cm[dst[offset + x +  8 * stride] - ((d * 7) >> 4)];
                     dst[offset + x +  9 * stride] = cm[dst[offset + x +  9 * stride] - ((d * 5) >> 4)];
                     dst[offset + x + 10 * stride] = cm[dst[offset + x + 10 * stride] - ((d * 3) >> 4)];
@@ -388,7 +423,8 @@ static void guess_mv(ERContext *s)
     set_mv_strides(s, &mot_step, &mot_stride);
 
     num_avail = 0;
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         int f = 0;
         int error = s->error_status_table[mb_xy];
@@ -401,7 +437,8 @@ static void guess_mv(ERContext *s)
         fixed[mb_xy] = f;
         if (f == MV_FROZEN)
             num_avail++;
-        else if(s->last_pic.f->data[0] && s->last_pic.motion_val[0]){
+        else if(s->last_pic.f->data[0] && s->last_pic.motion_val[0])
+        {
             const int mb_y= mb_xy / s->mb_stride;
             const int mb_x= mb_xy % s->mb_stride;
             const int mot_index= (mb_x + mb_y*mot_stride) * mot_step;
@@ -412,9 +449,12 @@ static void guess_mv(ERContext *s)
     }
 
     if ((!(s->avctx->error_concealment&FF_EC_GUESS_MVS)) ||
-        num_avail <= mb_width / 2) {
-        for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-            for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+            num_avail <= mb_width / 2)
+    {
+        for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+        {
+            for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+            {
                 const int mb_xy = mb_x + mb_y * s->mb_stride;
                 int mv_dir = (s->last_pic.f && s->last_pic.f->data[0]) ? MV_DIR_FORWARD : MV_DIR_BACKWARD;
 
@@ -432,18 +472,22 @@ static void guess_mv(ERContext *s)
         return;
     }
 
-    for (depth = 0; ; depth++) {
+    for (depth = 0; ; depth++)
+    {
         int changed, pass, none_left;
 
         none_left = 1;
         changed   = 1;
-        for (pass = 0; (changed || pass < 2) && pass < 10; pass++) {
+        for (pass = 0; (changed || pass < 2) && pass < 10; pass++)
+        {
             int mb_x, mb_y;
             int score_sum = 0;
 
             changed = 0;
-            for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-                for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+            for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+            {
+                for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+                {
                     const int mb_xy        = mb_x + mb_y * s->mb_stride;
                     int mv_predictor[8][2] = { { 0 } };
                     int ref[8]             = { 0 };
@@ -488,7 +532,8 @@ static void guess_mv(ERContext *s)
 
                     none_left = 0;
 
-                    if (mb_x > 0 && fixed[mb_xy - 1]) {
+                    if (mb_x > 0 && fixed[mb_xy - 1])
+                    {
                         mv_predictor[pred_count][0] =
                             s->cur_pic.motion_val[0][mot_index - mot_step][0];
                         mv_predictor[pred_count][1] =
@@ -497,7 +542,8 @@ static void guess_mv(ERContext *s)
                             s->cur_pic.ref_index[0][4 * (mb_xy - 1)];
                         pred_count++;
                     }
-                    if (mb_x + 1 < mb_width && fixed[mb_xy + 1]) {
+                    if (mb_x + 1 < mb_width && fixed[mb_xy + 1])
+                    {
                         mv_predictor[pred_count][0] =
                             s->cur_pic.motion_val[0][mot_index + mot_step][0];
                         mv_predictor[pred_count][1] =
@@ -506,7 +552,8 @@ static void guess_mv(ERContext *s)
                             s->cur_pic.ref_index[0][4 * (mb_xy + 1)];
                         pred_count++;
                     }
-                    if (mb_y > 0 && fixed[mb_xy - mb_stride]) {
+                    if (mb_y > 0 && fixed[mb_xy - mb_stride])
+                    {
                         mv_predictor[pred_count][0] =
                             s->cur_pic.motion_val[0][mot_index - mot_stride * mot_step][0];
                         mv_predictor[pred_count][1] =
@@ -515,7 +562,8 @@ static void guess_mv(ERContext *s)
                             s->cur_pic.ref_index[0][4 * (mb_xy - s->mb_stride)];
                         pred_count++;
                     }
-                    if (mb_y + 1<mb_height && fixed[mb_xy + mb_stride]) {
+                    if (mb_y + 1<mb_height && fixed[mb_xy + mb_stride])
+                    {
                         mv_predictor[pred_count][0] =
                             s->cur_pic.motion_val[0][mot_index + mot_stride * mot_step][0];
                         mv_predictor[pred_count][1] =
@@ -527,11 +575,13 @@ static void guess_mv(ERContext *s)
                     if (pred_count == 0)
                         continue;
 
-                    if (pred_count > 1) {
+                    if (pred_count > 1)
+                    {
                         int sum_x = 0, sum_y = 0, sum_r = 0;
                         int max_x, max_y, min_x, min_y, max_r, min_r;
 
-                        for (j = 0; j < pred_count; j++) {
+                        for (j = 0; j < pred_count; j++)
+                        {
                             sum_x += mv_predictor[j][0];
                             sum_y += mv_predictor[j][1];
                             sum_r += ref[j];
@@ -542,16 +592,20 @@ static void guess_mv(ERContext *s)
                         /* mean */
                         mv_predictor[pred_count][0] = sum_x / j;
                         mv_predictor[pred_count][1] = sum_y / j;
-                                 ref[pred_count]    = sum_r / j;
+                        ref[pred_count]    = sum_r / j;
 
                         /* median */
-                        if (pred_count >= 3) {
+                        if (pred_count >= 3)
+                        {
                             min_y = min_x = min_r =  99999;
                             max_y = max_x = max_r = -99999;
-                        } else {
+                        }
+                        else
+                        {
                             min_x = min_y = max_x = max_y = min_r = max_r = 0;
                         }
-                        for (j = 0; j < pred_count; j++) {
+                        for (j = 0; j < pred_count; j++)
+                        {
                             max_x = FFMAX(max_x, mv_predictor[j][0]);
                             max_y = FFMAX(max_y, mv_predictor[j][1]);
                             max_r = FFMAX(max_r, ref[j]);
@@ -561,12 +615,13 @@ static void guess_mv(ERContext *s)
                         }
                         mv_predictor[pred_count + 1][0] = sum_x - max_x - min_x;
                         mv_predictor[pred_count + 1][1] = sum_y - max_y - min_y;
-                                 ref[pred_count + 1]    = sum_r - max_r - min_r;
+                        ref[pred_count + 1]    = sum_r - max_r - min_r;
 
-                        if (pred_count == 4) {
+                        if (pred_count == 4)
+                        {
                             mv_predictor[pred_count + 1][0] /= 2;
                             mv_predictor[pred_count + 1][1] /= 2;
-                                     ref[pred_count + 1]    /= 2;
+                            ref[pred_count + 1]    /= 2;
                         }
                         pred_count += 2;
                     }
@@ -575,20 +630,26 @@ skip_mean_and_median:
                     /* zero MV */
                     pred_count++;
 
-                    if (!fixed[mb_xy] && 0) {
-                        if (s->avctx->codec_id == AV_CODEC_ID_H264) {
+                    if (!fixed[mb_xy] && 0)
+                    {
+                        if (s->avctx->codec_id == AV_CODEC_ID_H264)
+                        {
                             // FIXME
-                        } else {
+                        }
+                        else
+                        {
                             ff_thread_await_progress(s->last_pic.tf,
                                                      mb_y, 0);
                         }
                         if (!s->last_pic.motion_val[0] ||
-                            !s->last_pic.ref_index[0])
+                                !s->last_pic.ref_index[0])
                             goto skip_last_mv;
                         prev_x   = s->last_pic.motion_val[0][mot_index][0];
                         prev_y   = s->last_pic.motion_val[0][mot_index][1];
                         prev_ref = s->last_pic.ref_index[0][4 * mb_xy];
-                    } else {
+                    }
+                    else
+                    {
                         prev_x   = s->cur_pic.motion_val[0][mot_index][0];
                         prev_y   = s->cur_pic.motion_val[0][mot_index][1];
                         prev_ref = s->cur_pic.ref_index[0][4 * mb_xy];
@@ -597,12 +658,13 @@ skip_mean_and_median:
                     /* last MV */
                     mv_predictor[pred_count][0] = prev_x;
                     mv_predictor[pred_count][1] = prev_y;
-                             ref[pred_count]    = prev_ref;
+                    ref[pred_count]    = prev_ref;
                     pred_count++;
 
 skip_last_mv:
 
-                    for (j = 0; j < pred_count; j++) {
+                    for (j = 0; j < pred_count; j++)
+                    {
                         int *linesize = s->cur_pic.f->linesize;
                         int score = 0;
                         uint8_t *src = s->cur_pic.f->data[0] +
@@ -620,31 +682,36 @@ skip_last_mv:
                         s->decode_mb(s->opaque, ref[j], MV_DIR_FORWARD,
                                      MV_TYPE_16X16, &s->mv, mb_x, mb_y, 0, 0);
 
-                        if (mb_x > 0 && fixed[mb_xy - 1]) {
+                        if (mb_x > 0 && fixed[mb_xy - 1])
+                        {
                             int k;
                             for (k = 0; k < 16; k++)
                                 score += FFABS(src[k * linesize[0] - 1] -
                                                src[k * linesize[0]]);
                         }
-                        if (mb_x + 1 < mb_width && fixed[mb_xy + 1]) {
+                        if (mb_x + 1 < mb_width && fixed[mb_xy + 1])
+                        {
                             int k;
                             for (k = 0; k < 16; k++)
                                 score += FFABS(src[k * linesize[0] + 15] -
                                                src[k * linesize[0] + 16]);
                         }
-                        if (mb_y > 0 && fixed[mb_xy - mb_stride]) {
+                        if (mb_y > 0 && fixed[mb_xy - mb_stride])
+                        {
                             int k;
                             for (k = 0; k < 16; k++)
                                 score += FFABS(src[k - linesize[0]] - src[k]);
                         }
-                        if (mb_y + 1 < mb_height && fixed[mb_xy + mb_stride]) {
+                        if (mb_y + 1 < mb_height && fixed[mb_xy + mb_stride])
+                        {
                             int k;
                             for (k = 0; k < 16; k++)
                                 score += FFABS(src[k + linesize[0] * 15] -
                                                src[k + linesize[0] * 16]);
                         }
 
-                        if (score <= best_score) { // <= will favor the last MV
+                        if (score <= best_score)   // <= will favor the last MV
+                        {
                             best_score = score;
                             best_pred  = j;
                         }
@@ -654,7 +721,8 @@ skip_last_mv:
                     s->mv[0][0][1] = mv_predictor[best_pred][1];
 
                     for (i = 0; i < mot_step; i++)
-                        for (j = 0; j < mot_step; j++) {
+                        for (j = 0; j < mot_step; j++)
+                        {
                             s->cur_pic.motion_val[0][mot_index + i + j * mot_stride][0] = s->mv[0][0][0];
                             s->cur_pic.motion_val[0][mot_index + i + j * mot_stride][1] = s->mv[0][0][1];
                         }
@@ -663,10 +731,12 @@ skip_last_mv:
                                  MV_TYPE_16X16, &s->mv, mb_x, mb_y, 0, 0);
 
 
-                    if (s->mv[0][0][0] != prev_x || s->mv[0][0][1] != prev_y) {
+                    if (s->mv[0][0][0] != prev_x || s->mv[0][0][1] != prev_y)
+                    {
                         fixed[mb_xy] = MV_CHANGED;
                         changed++;
-                    } else
+                    }
+                    else
                         fixed[mb_xy] = MV_UNCHANGED;
                 }
             }
@@ -675,7 +745,8 @@ skip_last_mv:
         if (none_left)
             return;
 
-        for (i = 0; i < s->mb_num; i++) {
+        for (i = 0; i < s->mb_num; i++)
+        {
             int mb_xy = s->mb_index2xy[i];
             if (fixed[mb_xy])
                 fixed[mb_xy] = MV_FROZEN;
@@ -694,7 +765,8 @@ static int is_intra_more_likely(ERContext *s)
         return 0;
 
     undamaged_count = 0;
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         const int error = s->error_status_table[mb_xy];
         if (!((error & ER_DC_ERROR) && (error & ER_MV_ERROR)))
@@ -706,16 +778,18 @@ static int is_intra_more_likely(ERContext *s)
 
     // prevent dsp.sad() check, that requires access to the image
     if (CONFIG_XVMC    &&
-        s->avctx->hwaccel && s->avctx->hwaccel->decode_mb &&
-        s->cur_pic.f->pict_type == AV_PICTURE_TYPE_I)
+            s->avctx->hwaccel && s->avctx->hwaccel->decode_mb &&
+            s->cur_pic.f->pict_type == AV_PICTURE_TYPE_I)
         return 1;
 
     skip_amount     = FFMAX(undamaged_count / 50, 1); // check only up to 50 MBs
     is_intra_likely = 0;
 
     j = 0;
-    for (mb_y = 0; mb_y < s->mb_height - 1; mb_y++) {
-        for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    for (mb_y = 0; mb_y < s->mb_height - 1; mb_y++)
+    {
+        for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+        {
             int error;
             const int mb_xy = mb_x + mb_y * s->mb_stride;
 
@@ -728,16 +802,20 @@ static int is_intra_more_likely(ERContext *s)
             if ((j % skip_amount) != 0)
                 continue;
 
-            if (s->cur_pic.f->pict_type == AV_PICTURE_TYPE_I) {
+            if (s->cur_pic.f->pict_type == AV_PICTURE_TYPE_I)
+            {
                 int *linesize = s->cur_pic.f->linesize;
                 uint8_t *mb_ptr      = s->cur_pic.f->data[0] +
                                        mb_x * 16 + mb_y * 16 * linesize[0];
                 uint8_t *last_mb_ptr = s->last_pic.f->data[0] +
                                        mb_x * 16 + mb_y * 16 * linesize[0];
 
-                if (s->avctx->codec_id == AV_CODEC_ID_H264) {
+                if (s->avctx->codec_id == AV_CODEC_ID_H264)
+                {
                     // FIXME
-                } else {
+                }
+                else
+                {
                     ff_thread_await_progress(s->last_pic.tf, mb_y, 0);
                 }
                 is_intra_likely += s->mecc.sad[0](NULL, last_mb_ptr, mb_ptr,
@@ -746,11 +824,13 @@ static int is_intra_more_likely(ERContext *s)
                 is_intra_likely -= s->mecc.sad[0](NULL, last_mb_ptr,
                                                   last_mb_ptr + linesize[0] * 16,
                                                   linesize[0], 16);
-            } else {
+            }
+            else
+            {
                 if (IS_INTRA(s->cur_pic.mb_type[mb_xy]))
-                   is_intra_likely++;
+                    is_intra_likely++;
                 else
-                   is_intra_likely--;
+                    is_intra_likely--;
             }
         }
     }
@@ -763,7 +843,8 @@ void ff_er_frame_start(ERContext *s)
     if (!s->avctx->error_concealment)
         return;
 
-    if (!s->mecc_inited) {
+    if (!s->mecc_inited)
+    {
         ff_me_cmp_init(&s->mecc, s->avctx);
         s->mecc_inited = 1;
     }
@@ -778,11 +859,11 @@ static int er_supported(ERContext *s)
 {
     if(s->avctx->hwaccel && s->avctx->hwaccel->decode_slice           ||
 #if FF_API_CAP_VDPAU
-       s->avctx->codec->capabilities&AV_CODEC_CAP_HWACCEL_VDPAU          ||
+            s->avctx->codec->capabilities&AV_CODEC_CAP_HWACCEL_VDPAU          ||
 #endif
-       !s->cur_pic.f                                                  ||
-       s->cur_pic.field_picture
-    )
+            !s->cur_pic.f                                                  ||
+            s->cur_pic.field_picture
+      )
         return 0;
     return 1;
 }
@@ -806,7 +887,8 @@ void ff_er_add_slice(ERContext *s, int startx, int starty,
     if (s->avctx->hwaccel && s->avctx->hwaccel->decode_slice)
         return;
 
-    if (start_i > end_i || start_xy > end_xy) {
+    if (start_i > end_i || start_xy > end_xy)
+    {
         av_log(s->avctx, AV_LOG_ERROR,
                "internal error, slice end before start\n");
         return;
@@ -816,28 +898,35 @@ void ff_er_add_slice(ERContext *s, int startx, int starty,
         return;
 
     mask &= ~VP_START;
-    if (status & (ER_AC_ERROR | ER_AC_END)) {
+    if (status & (ER_AC_ERROR | ER_AC_END))
+    {
         mask           &= ~(ER_AC_ERROR | ER_AC_END);
         avpriv_atomic_int_add_and_fetch(&s->error_count, start_i - end_i - 1);
     }
-    if (status & (ER_DC_ERROR | ER_DC_END)) {
+    if (status & (ER_DC_ERROR | ER_DC_END))
+    {
         mask           &= ~(ER_DC_ERROR | ER_DC_END);
         avpriv_atomic_int_add_and_fetch(&s->error_count, start_i - end_i - 1);
     }
-    if (status & (ER_MV_ERROR | ER_MV_END)) {
+    if (status & (ER_MV_ERROR | ER_MV_END))
+    {
         mask           &= ~(ER_MV_ERROR | ER_MV_END);
         avpriv_atomic_int_add_and_fetch(&s->error_count, start_i - end_i - 1);
     }
 
-    if (status & ER_MB_ERROR) {
+    if (status & ER_MB_ERROR)
+    {
         s->error_occurred = 1;
         avpriv_atomic_int_set(&s->error_count, INT_MAX);
     }
 
-    if (mask == ~0x7F) {
+    if (mask == ~0x7F)
+    {
         memset(&s->error_status_table[start_xy], 0,
                (end_xy - start_xy) * sizeof(uint8_t));
-    } else {
+    }
+    else
+    {
         int i;
         for (i = start_xy; i < end_xy; i++)
             s->error_status_table[i] &= mask;
@@ -845,7 +934,8 @@ void ff_er_add_slice(ERContext *s, int startx, int starty,
 
     if (end_i == s->mb_num)
         avpriv_atomic_int_set(&s->error_count, INT_MAX);
-    else {
+    else
+    {
         s->error_status_table[end_xy] &= mask;
         s->error_status_table[end_xy] |= status;
     }
@@ -853,11 +943,13 @@ void ff_er_add_slice(ERContext *s, int startx, int starty,
     s->error_status_table[start_xy] |= VP_START;
 
     if (start_xy > 0 && !(s->avctx->active_thread_type & FF_THREAD_SLICE) &&
-        er_supported(s) && s->avctx->skip_top * s->mb_width < start_i) {
+            er_supported(s) && s->avctx->skip_top * s->mb_width < start_i)
+    {
         int prev_status = s->error_status_table[s->mb_index2xy[start_i - 1]];
 
         prev_status &= ~ VP_START;
-        if (prev_status != (ER_MV_END | ER_DC_END | ER_AC_END)) {
+        if (prev_status != (ER_MV_END | ER_DC_END | ER_AC_END))
+        {
             s->error_occurred = 1;
             avpriv_atomic_int_set(&s->error_count, INT_MAX);
         }
@@ -877,49 +969,58 @@ void ff_er_frame_end(ERContext *s)
     /* We do not support ER of field pictures yet,
      * though it should not crash if enabled. */
     if (!s->avctx->error_concealment || s->error_count == 0            ||
-        s->avctx->lowres                                               ||
-        !er_supported(s)                                               ||
-        s->error_count == 3 * s->mb_width *
-                          (s->avctx->skip_top + s->avctx->skip_bottom)) {
+            s->avctx->lowres                                               ||
+            !er_supported(s)                                               ||
+            s->error_count == 3 * s->mb_width *
+            (s->avctx->skip_top + s->avctx->skip_bottom))
+    {
         return;
     }
     linesize = s->cur_pic.f->linesize;
-    for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+    {
         int status = s->error_status_table[mb_x + (s->mb_height - 1) * s->mb_stride];
         if (status != 0x7F)
             break;
     }
 
     if (   mb_x == s->mb_width
-        && s->avctx->codec_id == AV_CODEC_ID_MPEG2VIDEO
-        && (s->avctx->height&16)
-        && s->error_count == 3 * s->mb_width * (s->avctx->skip_top + s->avctx->skip_bottom + 1)
-    ) {
+            && s->avctx->codec_id == AV_CODEC_ID_MPEG2VIDEO
+            && (s->avctx->height&16)
+            && s->error_count == 3 * s->mb_width * (s->avctx->skip_top + s->avctx->skip_bottom + 1)
+       )
+    {
         av_log(s->avctx, AV_LOG_DEBUG, "ignoring last missing slice\n");
         return;
     }
 
-    if (s->last_pic.f) {
+    if (s->last_pic.f)
+    {
         if (s->last_pic.f->width  != s->cur_pic.f->width  ||
-            s->last_pic.f->height != s->cur_pic.f->height ||
-            s->last_pic.f->format != s->cur_pic.f->format) {
+                s->last_pic.f->height != s->cur_pic.f->height ||
+                s->last_pic.f->format != s->cur_pic.f->format)
+        {
             av_log(s->avctx, AV_LOG_WARNING, "Cannot use previous picture in error concealment\n");
             memset(&s->last_pic, 0, sizeof(s->last_pic));
         }
     }
-    if (s->next_pic.f) {
+    if (s->next_pic.f)
+    {
         if (s->next_pic.f->width  != s->cur_pic.f->width  ||
-            s->next_pic.f->height != s->cur_pic.f->height ||
-            s->next_pic.f->format != s->cur_pic.f->format) {
+                s->next_pic.f->height != s->cur_pic.f->height ||
+                s->next_pic.f->format != s->cur_pic.f->format)
+        {
             av_log(s->avctx, AV_LOG_WARNING, "Cannot use next picture in error concealment\n");
             memset(&s->next_pic, 0, sizeof(s->next_pic));
         }
     }
 
-    if (!s->cur_pic.motion_val[0] || !s->cur_pic.ref_index[0]) {
+    if (!s->cur_pic.motion_val[0] || !s->cur_pic.ref_index[0])
+    {
         av_log(s->avctx, AV_LOG_ERROR, "Warning MVs not available\n");
 
-        for (i = 0; i < 2; i++) {
+        for (i = 0; i < 2; i++)
+        {
             s->ref_index_buf[i]  = av_buffer_allocz(s->mb_stride * s->mb_height * 4 * sizeof(uint8_t));
             s->motion_val_buf[i] = av_buffer_allocz((size + 4) * 2 * sizeof(uint16_t));
             if (!s->ref_index_buf[i] || !s->motion_val_buf[i])
@@ -927,8 +1028,10 @@ void ff_er_frame_end(ERContext *s)
             s->cur_pic.ref_index[i]  = s->ref_index_buf[i]->data;
             s->cur_pic.motion_val[i] = (int16_t (*)[2])s->motion_val_buf[i]->data + 4;
         }
-        if (i < 2) {
-            for (i = 0; i < 2; i++) {
+        if (i < 2)
+        {
+            for (i = 0; i < 2; i++)
+            {
                 av_buffer_unref(&s->ref_index_buf[i]);
                 av_buffer_unref(&s->motion_val_buf[i]);
                 s->cur_pic.ref_index[i]  = NULL;
@@ -938,9 +1041,12 @@ void ff_er_frame_end(ERContext *s)
         }
     }
 
-    if (s->avctx->debug & FF_DEBUG_ER) {
-        for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-            for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    if (s->avctx->debug & FF_DEBUG_ER)
+    {
+        for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+        {
+            for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+            {
                 int status = s->error_status_table[mb_x + mb_y * s->mb_stride];
 
                 av_log(s->avctx, AV_LOG_DEBUG, "%2X ", status);
@@ -951,10 +1057,12 @@ void ff_er_frame_end(ERContext *s)
 
 #if 1
     /* handle overlapping slices */
-    for (error_type = 1; error_type <= 3; error_type++) {
+    for (error_type = 1; error_type <= 3; error_type++)
+    {
         int end_ok = 0;
 
-        for (i = s->mb_num - 1; i >= 0; i--) {
+        for (i = s->mb_num - 1; i >= 0; i--)
+        {
             const int mb_xy = s->mb_index2xy[i];
             int error       = s->error_status_table[mb_xy];
 
@@ -973,18 +1081,20 @@ void ff_er_frame_end(ERContext *s)
 #endif
 #if 1
     /* handle slices with partitions of different length */
-    if (s->partitioned_frame) {
+    if (s->partitioned_frame)
+    {
         int end_ok = 0;
 
-        for (i = s->mb_num - 1; i >= 0; i--) {
+        for (i = s->mb_num - 1; i >= 0; i--)
+        {
             const int mb_xy = s->mb_index2xy[i];
             int error       = s->error_status_table[mb_xy];
 
             if (error & ER_AC_END)
                 end_ok = 0;
             if ((error & ER_MV_END) ||
-                (error & ER_DC_END) ||
-                (error & ER_AC_ERROR))
+                    (error & ER_DC_END) ||
+                    (error & ER_AC_ERROR))
                 end_ok = 1;
 
             if (!end_ok)
@@ -996,11 +1106,13 @@ void ff_er_frame_end(ERContext *s)
     }
 #endif
     /* handle missing slices */
-    if (s->avctx->err_recognition & AV_EF_EXPLODE) {
+    if (s->avctx->err_recognition & AV_EF_EXPLODE)
+    {
         int end_ok = 1;
 
         // FIXME + 100 hack
-        for (i = s->mb_num - 2; i >= s->mb_width + 100; i--) {
+        for (i = s->mb_num - 2; i >= s->mb_width + 100; i--)
+        {
             const int mb_xy = s->mb_index2xy[i];
             int error1 = s->error_status_table[mb_xy];
             int error2 = s->error_status_table[s->mb_index2xy[i + 1]];
@@ -1009,9 +1121,10 @@ void ff_er_frame_end(ERContext *s)
                 end_ok = 1;
 
             if (error2 == (VP_START | ER_MB_ERROR | ER_MB_END) &&
-                error1 != (VP_START | ER_MB_ERROR | ER_MB_END) &&
-                ((error1 & ER_AC_END) || (error1 & ER_DC_END) ||
-                (error1 & ER_MV_END))) {
+                    error1 != (VP_START | ER_MB_ERROR | ER_MB_END) &&
+                    ((error1 & ER_AC_END) || (error1 & ER_DC_END) ||
+                     (error1 & ER_MV_END)))
+            {
                 // end & uninit
                 end_ok = 0;
             }
@@ -1024,8 +1137,10 @@ void ff_er_frame_end(ERContext *s)
 #if 1
     /* backward mark errors */
     distance = 9999999;
-    for (error_type = 1; error_type <= 3; error_type++) {
-        for (i = s->mb_num - 1; i >= 0; i--) {
+    for (error_type = 1; error_type <= 3; error_type++)
+    {
+        for (i = s->mb_num - 1; i >= 0; i--)
+        {
             const int mb_xy = s->mb_index2xy[i];
             int       error = s->error_status_table[mb_xy];
 
@@ -1034,10 +1149,13 @@ void ff_er_frame_end(ERContext *s)
             if (error & (1 << error_type))
                 distance = 0;
 
-            if (s->partitioned_frame) {
+            if (s->partitioned_frame)
+            {
                 if (distance < threshold_part[error_type - 1])
                     s->error_status_table[mb_xy] |= 1 << error_type;
-            } else {
+            }
+            else
+            {
                 if (distance < threshold)
                     s->error_status_table[mb_xy] |= 1 << error_type;
             }
@@ -1050,21 +1168,27 @@ void ff_er_frame_end(ERContext *s)
 
     /* forward mark errors */
     error = 0;
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         int old_error   = s->error_status_table[mb_xy];
 
-        if (old_error & VP_START) {
+        if (old_error & VP_START)
+        {
             error = old_error & ER_MB_ERROR;
-        } else {
+        }
+        else
+        {
             error |= old_error & ER_MB_ERROR;
             s->error_status_table[mb_xy] |= error;
         }
     }
 #if 1
     /* handle not partitioned case */
-    if (!s->partitioned_frame) {
-        for (i = 0; i < s->mb_num; i++) {
+    if (!s->partitioned_frame)
+    {
+        for (i = 0; i < s->mb_num; i++)
+        {
             const int mb_xy = s->mb_index2xy[i];
             int error = s->error_status_table[mb_xy];
             if (error & ER_MB_ERROR)
@@ -1075,7 +1199,8 @@ void ff_er_frame_end(ERContext *s)
 #endif
 
     dc_error = ac_error = mv_error = 0;
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         int error = s->error_status_table[mb_xy];
         if (error & ER_DC_ERROR)
@@ -1091,7 +1216,8 @@ void ff_er_frame_end(ERContext *s)
     is_intra_likely = is_intra_more_likely(s);
 
     /* set unknown mb-type to most likely */
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         int error = s->error_status_table[mb_xy];
         if (!((error & ER_DC_ERROR) && (error & ER_MV_ERROR)))
@@ -1105,16 +1231,19 @@ void ff_er_frame_end(ERContext *s)
 
     // change inter to intra blocks if no reference frames are available
     if (!(s->last_pic.f && s->last_pic.f->data[0]) &&
-        !(s->next_pic.f && s->next_pic.f->data[0]))
-        for (i = 0; i < s->mb_num; i++) {
+            !(s->next_pic.f && s->next_pic.f->data[0]))
+        for (i = 0; i < s->mb_num; i++)
+        {
             const int mb_xy = s->mb_index2xy[i];
             if (!IS_INTRA(s->cur_pic.mb_type[mb_xy]))
                 s->cur_pic.mb_type[mb_xy] = MB_TYPE_INTRA4x4;
         }
 
     /* handle inter blocks with damaged AC */
-    for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-        for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+    {
+        for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+        {
             const int mb_xy   = mb_x + mb_y * s->mb_stride;
             const int mb_type = s->cur_pic.mb_type[mb_xy];
             const int dir     = !(s->last_pic.f && s->last_pic.f->data[0]);
@@ -1130,15 +1259,19 @@ void ff_er_frame_end(ERContext *s)
             if (!(error & ER_AC_ERROR))
                 continue; // undamaged inter
 
-            if (IS_8X8(mb_type)) {
+            if (IS_8X8(mb_type))
+            {
                 int mb_index = mb_x * 2 + mb_y * 2 * s->b8_stride;
                 int j;
                 mv_type = MV_TYPE_8X8;
-                for (j = 0; j < 4; j++) {
+                for (j = 0; j < 4; j++)
+                {
                     s->mv[0][j][0] = s->cur_pic.motion_val[dir][mb_index + (j & 1) + (j >> 1) * s->b8_stride][0];
                     s->mv[0][j][1] = s->cur_pic.motion_val[dir][mb_index + (j & 1) + (j >> 1) * s->b8_stride][1];
                 }
-            } else {
+            }
+            else
+            {
                 mv_type     = MV_TYPE_16X16;
                 s->mv[0][0][0] = s->cur_pic.motion_val[dir][mb_x * 2 + mb_y * 2 * s->b8_stride][0];
                 s->mv[0][0][1] = s->cur_pic.motion_val[dir][mb_x * 2 + mb_y * 2 * s->b8_stride][1];
@@ -1150,9 +1283,12 @@ void ff_er_frame_end(ERContext *s)
     }
 
     /* guess MVs */
-    if (s->cur_pic.f->pict_type == AV_PICTURE_TYPE_B) {
-        for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-            for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    if (s->cur_pic.f->pict_type == AV_PICTURE_TYPE_B)
+    {
+        for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+        {
+            for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+            {
                 int       xy      = mb_x * 2 + mb_y * 2 * s->b8_stride;
                 const int mb_xy   = mb_x + mb_y * s->mb_stride;
                 const int mb_type = s->cur_pic.mb_type[mb_xy];
@@ -1172,7 +1308,8 @@ void ff_er_frame_end(ERContext *s)
                 if (!(s->next_pic.f && s->next_pic.f->data[0]))
                     mv_dir &= ~MV_DIR_BACKWARD;
 
-                if (s->pp_time) {
+                if (s->pp_time)
+                {
                     int time_pp = s->pp_time;
                     int time_pb = s->pb_time;
 
@@ -1183,7 +1320,9 @@ void ff_er_frame_end(ERContext *s)
                     s->mv[0][0][1] = s->next_pic.motion_val[0][xy][1] *  time_pb            / time_pp;
                     s->mv[1][0][0] = s->next_pic.motion_val[0][xy][0] * (time_pb - time_pp) / time_pp;
                     s->mv[1][0][1] = s->next_pic.motion_val[0][xy][1] * (time_pb - time_pp) / time_pp;
-                } else {
+                }
+                else
+                {
                     s->mv[0][0][0] = 0;
                     s->mv[0][0][1] = 0;
                     s->mv[1][0][0] = 0;
@@ -1194,15 +1333,18 @@ void ff_er_frame_end(ERContext *s)
                              mb_x, mb_y, 0, 0);
             }
         }
-    } else
+    }
+    else
         guess_mv(s);
 
     /* the filters below manipulate raw image, skip them */
     if (CONFIG_XVMC && s->avctx->hwaccel && s->avctx->hwaccel->decode_mb)
         goto ec_clean;
     /* fill DC for inter blocks */
-    for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-        for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+    {
+        for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+        {
             int dc, dcu, dcv, y, n;
             int16_t *dc_ptr;
             uint8_t *dest_y, *dest_cb, *dest_cr;
@@ -1221,13 +1363,15 @@ void ff_er_frame_end(ERContext *s)
             dest_cr = s->cur_pic.f->data[2] + mb_x *  8 + mb_y *  8 * linesize[2];
 
             dc_ptr = &s->dc_val[0][mb_x * 2 + mb_y * 2 * s->b8_stride];
-            for (n = 0; n < 4; n++) {
+            for (n = 0; n < 4; n++)
+            {
                 dc = 0;
-                for (y = 0; y < 8; y++) {
+                for (y = 0; y < 8; y++)
+                {
                     int x;
                     for (x = 0; x < 8; x++)
-                       dc += dest_y[x + (n & 1) * 8 +
-                             (y + (n >> 1) * 8) * linesize[0]];
+                        dc += dest_y[x + (n & 1) * 8 +
+                                     (y + (n >> 1) * 8) * linesize[0]];
                 }
                 dc_ptr[(n & 1) + (n >> 1) * s->b8_stride] = (dc + 4) >> 3;
             }
@@ -1236,9 +1380,11 @@ void ff_er_frame_end(ERContext *s)
                 continue;
 
             dcu = dcv = 0;
-            for (y = 0; y < 8; y++) {
+            for (y = 0; y < 8; y++)
+            {
                 int x;
-                for (x = 0; x < 8; x++) {
+                for (x = 0; x < 8; x++)
+                {
                     dcu += dest_cb[x + y * linesize[1]];
                     dcv += dest_cr[x + y * linesize[2]];
                 }
@@ -1259,8 +1405,10 @@ void ff_er_frame_end(ERContext *s)
 
 #if 1
     /* render DC only intra */
-    for (mb_y = 0; mb_y < s->mb_height; mb_y++) {
-        for (mb_x = 0; mb_x < s->mb_width; mb_x++) {
+    for (mb_y = 0; mb_y < s->mb_height; mb_y++)
+    {
+        for (mb_x = 0; mb_x < s->mb_width; mb_x++)
+        {
             uint8_t *dest_y, *dest_cb, *dest_cr;
             const int mb_xy   = mb_x + mb_y * s->mb_stride;
             const int mb_type = s->cur_pic.mb_type[mb_xy];
@@ -1283,7 +1431,8 @@ void ff_er_frame_end(ERContext *s)
     }
 #endif
 
-    if (s->avctx->error_concealment & FF_EC_DEBLOCK) {
+    if (s->avctx->error_concealment & FF_EC_DEBLOCK)
+    {
         /* filter horizontal block boundaries */
         h_block_filter(s, s->cur_pic.f->data[0], s->mb_width * 2,
                        s->mb_height * 2, linesize[0], 1);
@@ -1292,33 +1441,37 @@ void ff_er_frame_end(ERContext *s)
         v_block_filter(s, s->cur_pic.f->data[0], s->mb_width * 2,
                        s->mb_height * 2, linesize[0], 1);
 
-        if (s->cur_pic.f->data[2]) {
+        if (s->cur_pic.f->data[2])
+        {
             h_block_filter(s, s->cur_pic.f->data[1], s->mb_width,
-                        s->mb_height, linesize[1], 0);
+                           s->mb_height, linesize[1], 0);
             h_block_filter(s, s->cur_pic.f->data[2], s->mb_width,
-                        s->mb_height, linesize[2], 0);
+                           s->mb_height, linesize[2], 0);
             v_block_filter(s, s->cur_pic.f->data[1], s->mb_width,
-                        s->mb_height, linesize[1], 0);
+                           s->mb_height, linesize[1], 0);
             v_block_filter(s, s->cur_pic.f->data[2], s->mb_width,
-                        s->mb_height, linesize[2], 0);
+                           s->mb_height, linesize[2], 0);
         }
     }
 
 ec_clean:
     /* clean a few tables */
-    for (i = 0; i < s->mb_num; i++) {
+    for (i = 0; i < s->mb_num; i++)
+    {
         const int mb_xy = s->mb_index2xy[i];
         int       error = s->error_status_table[mb_xy];
 
         if (s->mbskip_table && s->cur_pic.f->pict_type != AV_PICTURE_TYPE_B &&
-            (error & (ER_DC_ERROR | ER_MV_ERROR | ER_AC_ERROR))) {
+                (error & (ER_DC_ERROR | ER_MV_ERROR | ER_AC_ERROR)))
+        {
             s->mbskip_table[mb_xy] = 0;
         }
         if (s->mbintra_table)
             s->mbintra_table[mb_xy] = 1;
     }
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         av_buffer_unref(&s->ref_index_buf[i]);
         av_buffer_unref(&s->motion_val_buf[i]);
         s->cur_pic.ref_index[i]  = NULL;

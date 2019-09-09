@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Microsoft Screen 4 (aka Microsoft Expression Encoder Screen) decoder
  * Copyright (c) 2012 Konstantin Shishkov
  *
@@ -34,97 +34,111 @@
 
 #define HEADER_SIZE 8
 
-enum FrameType {
+enum FrameType
+{
     INTRA_FRAME = 0,
     INTER_FRAME,
     SKIP_FRAME
 };
 
-enum BlockType {
+enum BlockType
+{
     SKIP_BLOCK = 0,
     DCT_BLOCK,
     IMAGE_BLOCK,
 };
 
-enum CachePos {
+enum CachePos
+{
     LEFT = 0,
     TOP_LEFT,
     TOP,
 };
 
-static const uint8_t mss4_dc_vlc_lens[2][16] = {
+static const uint8_t mss4_dc_vlc_lens[2][16] =
+{
     { 0, 1, 5, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 3, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 0 }
 };
 
-static const uint8_t mss4_ac_vlc_lens[2][16] = {
+static const uint8_t mss4_ac_vlc_lens[2][16] =
+{
     { 0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 125 },
     { 0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 119 }
 };
 
-static const uint8_t mss4_ac_vlc_syms[2][162] = {
-  { 0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
-    0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
-    0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08,
-    0x23, 0x42, 0xB1, 0xC1, 0x15, 0x52, 0xD1, 0xF0,
-    0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16,
-    0x17, 0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28,
-    0x29, 0x2A, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
-    0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
-    0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
-    0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
-    0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
-    0x7A, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,
-    0x8A, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
-    0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
-    0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6,
-    0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3, 0xC4, 0xC5,
-    0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4,
-    0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2,
-    0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA,
-    0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
-    0xF9, 0xFA  },
-  { 0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
-    0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
-    0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
-    0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33, 0x52, 0xF0,
-    0x15, 0x62, 0x72, 0xD1, 0x0A, 0x16, 0x24, 0x34,
-    0xE1, 0x25, 0xF1, 0x17, 0x18, 0x19, 0x1A, 0x26,
-    0x27, 0x28, 0x29, 0x2A, 0x35, 0x36, 0x37, 0x38,
-    0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
-    0x49, 0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
-    0x59, 0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
-    0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
-    0x79, 0x7A, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
-    0x88, 0x89, 0x8A, 0x92, 0x93, 0x94, 0x95, 0x96,
-    0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5,
-    0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4,
-    0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3,
-    0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2,
-    0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA,
-    0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9,
-    0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
-    0xF9, 0xFA  }
+static const uint8_t mss4_ac_vlc_syms[2][162] =
+{
+    {
+        0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12,
+        0x21, 0x31, 0x41, 0x06, 0x13, 0x51, 0x61, 0x07,
+        0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08,
+        0x23, 0x42, 0xB1, 0xC1, 0x15, 0x52, 0xD1, 0xF0,
+        0x24, 0x33, 0x62, 0x72, 0x82, 0x09, 0x0A, 0x16,
+        0x17, 0x18, 0x19, 0x1A, 0x25, 0x26, 0x27, 0x28,
+        0x29, 0x2A, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39,
+        0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49,
+        0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59,
+        0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69,
+        0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79,
+        0x7A, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89,
+        0x8A, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98,
+        0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7,
+        0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6,
+        0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3, 0xC4, 0xC5,
+        0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2, 0xD3, 0xD4,
+        0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xE1, 0xE2,
+        0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA,
+        0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
+        0xF9, 0xFA
+    },
+    {
+        0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21,
+        0x31, 0x06, 0x12, 0x41, 0x51, 0x07, 0x61, 0x71,
+        0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
+        0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33, 0x52, 0xF0,
+        0x15, 0x62, 0x72, 0xD1, 0x0A, 0x16, 0x24, 0x34,
+        0xE1, 0x25, 0xF1, 0x17, 0x18, 0x19, 0x1A, 0x26,
+        0x27, 0x28, 0x29, 0x2A, 0x35, 0x36, 0x37, 0x38,
+        0x39, 0x3A, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48,
+        0x49, 0x4A, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58,
+        0x59, 0x5A, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68,
+        0x69, 0x6A, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78,
+        0x79, 0x7A, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87,
+        0x88, 0x89, 0x8A, 0x92, 0x93, 0x94, 0x95, 0x96,
+        0x97, 0x98, 0x99, 0x9A, 0xA2, 0xA3, 0xA4, 0xA5,
+        0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xB2, 0xB3, 0xB4,
+        0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xC2, 0xC3,
+        0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xD2,
+        0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA,
+        0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9,
+        0xEA, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8,
+        0xF9, 0xFA
+    }
 };
 
-static const uint8_t vec_len_syms[2][4] = {
+static const uint8_t vec_len_syms[2][4] =
+{
     { 4, 2, 3, 1 },
     { 4, 1, 2, 3 }
 };
 
-static const uint8_t mss4_vec_entry_vlc_lens[2][16] = {
+static const uint8_t mss4_vec_entry_vlc_lens[2][16] =
+{
     { 0, 2, 2, 3, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
     { 0, 1, 5, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
-static const uint8_t mss4_vec_entry_vlc_syms[2][9] = {
+static const uint8_t mss4_vec_entry_vlc_syms[2][9] =
+{
     { 0, 7, 6, 5, 8, 4, 3, 1, 2 },
     { 0, 2, 3, 4, 5, 6, 7, 1, 8 }
 };
 
 #define MAX_ENTRIES  162
 
-typedef struct MSS4Context {
+typedef struct MSS4Context
+{
     AVFrame    *pic;
 
     VLC        dc_vlc[2], ac_vlc[2];
@@ -150,8 +164,10 @@ static av_cold int mss4_init_vlc(VLC *vlc, const uint8_t *lens,
     int i, j;
     int prefix = 0, max_bits = 0, idx = 0;
 
-    for (i = 0; i < 16; i++) {
-        for (j = 0; j < lens[i]; j++) {
+    for (i = 0; i < 16; i++)
+    {
+        for (j = 0; j < lens[i]; j++)
+        {
             bits[idx]  = i + 1;
             codes[idx] = prefix++;
             max_bits   = i + 1;
@@ -168,7 +184,8 @@ static av_cold int mss4_init_vlcs(MSS4Context *ctx)
 {
     int ret, i;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         ret = mss4_init_vlc(&ctx->dc_vlc[i], mss4_dc_vlc_lens[i], NULL, 12);
         if (ret)
             return ret;
@@ -188,7 +205,8 @@ static av_cold void mss4_free_vlcs(MSS4Context *ctx)
 {
     int i;
 
-    for (i = 0; i < 2; i++) {
+    for (i = 0; i < 2; i++)
+    {
         ff_free_vlc(&ctx->dc_vlc[i]);
         ff_free_vlc(&ctx->ac_vlc[i]);
         ff_free_vlc(&ctx->vec_entry_vlc[i]);
@@ -233,8 +251,10 @@ static int mss4_decode_dct(GetBitContext *gb, VLC *dc_vlc, VLC *ac_vlc,
 
     dc = get_coeff(gb, dc_vlc);
     // DC prediction is the same as in MSS3
-    if (by) {
-        if (bx) {
+    if (by)
+    {
+        if (bx)
+        {
             int l, tl, t;
 
             l  = dc_cache[LEFT];
@@ -245,22 +265,28 @@ static int mss4_decode_dct(GetBitContext *gb, VLC *dc_vlc, VLC *ac_vlc,
                 dc += l;
             else
                 dc += t;
-        } else {
+        }
+        else
+        {
             dc += dc_cache[TOP];
         }
-    } else if (bx) {
+    }
+    else if (bx)
+    {
         dc += dc_cache[LEFT];
     }
     dc_cache[LEFT] = dc;
     block[0]       = dc * quant_mat[0];
 
-    while (pos < 64) {
+    while (pos < 64)
+    {
         val = get_vlc2(gb, ac_vlc->table, 9, 2);
         if (!val)
             return 0;
         if (val == -1)
             return -1;
-        if (val == 0xF0) {
+        if (val == 0xF0)
+        {
             pos += 16;
             continue;
         }
@@ -284,8 +310,10 @@ static int mss4_decode_dct_block(MSS4Context *c, GetBitContext *gb,
     int i, j, k, ret;
     uint8_t *out = dst[0];
 
-    for (j = 0; j < 2; j++) {
-        for (i = 0; i < 2; i++) {
+    for (j = 0; j < 2; j++)
+    {
+        for (i = 0; i < 2; i++)
+        {
             int xpos = mb_x * 2 + i;
             c->dc_cache[j][TOP_LEFT] = c->dc_cache[j][TOP];
             c->dc_cache[j][TOP]      = c->prev_dc[0][mb_x * 2 + i];
@@ -302,7 +330,8 @@ static int mss4_decode_dct_block(MSS4Context *c, GetBitContext *gb,
         out += 8 * c->pic->linesize[0];
     }
 
-    for (i = 1; i < 3; i++) {
+    for (i = 1; i < 3; i++)
+    {
         c->dc_cache[i + 1][TOP_LEFT] = c->dc_cache[i + 1][TOP];
         c->dc_cache[i + 1][TOP]      = c->prev_dc[i][mb_x];
         ret = mss4_decode_dct(gb, c->dc_vlc + 1, c->ac_vlc + 1,
@@ -316,7 +345,8 @@ static int mss4_decode_dct_block(MSS4Context *c, GetBitContext *gb,
         out = dst[i] + mb_x * 16;
         // Since the DCT block is coded as YUV420 and the whole frame as YUV444,
         // we need to scale chroma.
-        for (j = 0; j < 16; j++) {
+        for (j = 0; j < 16; j++)
+        {
             for (k = 0; k < 8; k++)
                 AV_WN16A(out + k * 2, c->imgbuf[i][k + (j & ~1) * 4] * 0x101);
             out += c->pic->linesize[i];
@@ -331,22 +361,30 @@ static void read_vec_pos(GetBitContext *gb, int *vec_pos, int *sel_flag,
 {
     int i, y_flag = 0;
 
-    for (i = 2; i >= 0; i--) {
-        if (!sel_flag[i]) {
+    for (i = 2; i >= 0; i--)
+    {
+        if (!sel_flag[i])
+        {
             vec_pos[i] = 0;
             continue;
         }
-        if ((!i && !y_flag) || get_bits1(gb)) {
-            if (sel_len[i] > 0) {
+        if ((!i && !y_flag) || get_bits1(gb))
+        {
+            if (sel_len[i] > 0)
+            {
                 int pval = prev[i];
                 vec_pos[i] = get_bits(gb, sel_len[i]);
                 if (vec_pos[i] >= pval)
                     vec_pos[i]++;
-            } else {
+            }
+            else
+            {
                 vec_pos[i] = !prev[i];
             }
             y_flag = 1;
-        } else {
+        }
+        else
+        {
             vec_pos[i] = prev[i];
         }
     }
@@ -394,9 +432,11 @@ static int mss4_decode_image_block(MSS4Context *ctx, GetBitContext *gb,
     for (i = 0; i < 3; i++)
         dst[i] = ctx->imgbuf[i];
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         vec_len[i] = vec_len_syms[!!i][get_unary(gb, 0, 3)];
-        for (j = 0; j < vec_len[i]; j++) {
+        for (j = 0; j < vec_len[i]; j++)
+        {
             vec[i][j]  = get_coeff(gb, &ctx->vec_entry_vlc[!!i]);
             vec[i][j] += ctx->prev_vec[i][j];
             ctx->prev_vec[i][j] = vec[i][j];
@@ -405,27 +445,37 @@ static int mss4_decode_image_block(MSS4Context *ctx, GetBitContext *gb,
         sel_len[i]  = vec_len[i] > 2 ? vec_len[i] - 2 : 0;
     }
 
-    for (j = 0; j < 16; j++) {
-        if (get_bits1(gb)) {
+    for (j = 0; j < 16; j++)
+    {
+        if (get_bits1(gb))
+        {
             split = 0;
-            if (get_bits1(gb)) {
+            if (get_bits1(gb))
+            {
                 prev_mode[0] = 0;
                 vals[0] = vals[1] = vals[2] = 0;
                 mode = 2;
-            } else {
+            }
+            else
+            {
                 mode = get_bits1(gb);
                 if (mode)
                     split = get_bits(gb, 4);
             }
-            for (i = 0; i < 16; i++) {
-                if (mode <= 1) {
+            for (i = 0; i < 16; i++)
+            {
+                if (mode <= 1)
+                {
                     vals[0] =  prev_mode[i]       & 7;
                     vals[1] = (prev_mode[i] >> 3) & 7;
                     vals[2] =  prev_mode[i] >> 6;
-                    if (mode == 1 && i == split) {
+                    if (mode == 1 && i == split)
+                    {
                         read_vec_pos(gb, vals, sel_flag, sel_len, vals);
                     }
-                } else if (mode == 2) {
+                }
+                else if (mode == 2)
+                {
                     if (get_bits1(gb))
                         read_vec_pos(gb, vals, sel_flag, sel_len, vals);
                 }
@@ -435,21 +485,29 @@ static int mss4_decode_image_block(MSS4Context *ctx, GetBitContext *gb,
                                                  val_shift, prev_pix);
                 prev_mode[i] = MKVAL(vals);
             }
-        } else {
-            if (get_bits1(gb)) {
+        }
+        else
+        {
+            if (get_bits1(gb))
+            {
                 split = get_bits(gb, 4);
                 if (split >= prev_split)
                     split++;
                 prev_split = split;
-            } else {
+            }
+            else
+            {
                 split = prev_split;
             }
-            if (split) {
+            if (split)
+            {
                 vals[0] =  prev_mode[0]       & 7;
                 vals[1] = (prev_mode[0] >> 3) & 7;
                 vals[2] =  prev_mode[0] >> 6;
-                for (i = 0; i < 3; i++) {
-                    for (k = 0; k < split; k++) {
+                for (i = 0; i < 3; i++)
+                {
+                    for (k = 0; k < split; k++)
+                    {
                         *dst[i]++ = get_value_cached(gb, vals[i], vec[i],
                                                      vec_len[i], i, val_shift,
                                                      prev_pix);
@@ -458,16 +516,20 @@ static int mss4_decode_image_block(MSS4Context *ctx, GetBitContext *gb,
                 }
             }
 
-            if (split != 16) {
+            if (split != 16)
+            {
                 vals[0] =  prev_vec1       & 7;
                 vals[1] = (prev_vec1 >> 3) & 7;
                 vals[2] =  prev_vec1 >> 6;
-                if (get_bits1(gb)) {
+                if (get_bits1(gb))
+                {
                     read_vec_pos(gb, vals, sel_flag, sel_len, vals);
                     prev_vec1 = MKVAL(vals);
                 }
-                for (i = 0; i < 3; i++) {
-                    for (k = 0; k < 16 - split; k++) {
+                for (i = 0; i < 3; i++)
+                {
+                    for (k = 0; k < 16 - split; k++)
+                    {
                         *dst[i]++ = get_value_cached(gb, vals[i], vec[i],
                                                      vec_len[i], i, val_shift,
                                                      prev_pix);
@@ -498,7 +560,8 @@ static inline void mss4_update_dc_cache(MSS4Context *c, int mb_x)
     for (i = 0; i < 2; i++)
         c->prev_dc[0][mb_x * 2 + i] = 0;
 
-    for (i = 1; i < 3; i++) {
+    for (i = 1; i < 3; i++)
+    {
         c->dc_cache[i + 1][TOP]  = c->prev_dc[i][mb_x];
         c->dc_cache[i + 1][LEFT] = 0;
         c->prev_dc[i][mb_x]      = 0;
@@ -518,7 +581,8 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     int x, y, i, mb_width, mb_height, blk_type;
     int ret;
 
-    if (buf_size < HEADER_SIZE) {
+    if (buf_size < HEADER_SIZE)
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Frame should have at least %d bytes, got %d instead\n",
                HEADER_SIZE, buf_size);
@@ -533,21 +597,25 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     frame_type = bytestream2_get_byte(&bc);
 
     if (width > avctx->width ||
-        height != avctx->height) {
+            height != avctx->height)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid frame dimensions %dx%d\n",
                width, height);
         return AVERROR_INVALIDDATA;
     }
-    if (quality < 1 || quality > 100) {
+    if (quality < 1 || quality > 100)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid quality setting %d\n", quality);
         return AVERROR_INVALIDDATA;
     }
-    if ((frame_type & ~3) || frame_type == 3) {
+    if ((frame_type & ~3) || frame_type == 3)
+    {
         av_log(avctx, AV_LOG_ERROR, "Invalid frame type %d\n", frame_type);
         return AVERROR_INVALIDDATA;
     }
 
-    if (frame_type != SKIP_FRAME && !bytestream2_get_bytes_left(&bc)) {
+    if (frame_type != SKIP_FRAME && !bytestream2_get_bytes_left(&bc))
+    {
         av_log(avctx, AV_LOG_ERROR,
                "Empty frame found but it is not a skip frame.\n");
         return AVERROR_INVALIDDATA;
@@ -557,8 +625,9 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         return ret;
     c->pic->key_frame = (frame_type == INTRA_FRAME);
     c->pic->pict_type = (frame_type == INTRA_FRAME) ? AV_PICTURE_TYPE_I
-                                                   : AV_PICTURE_TYPE_P;
-    if (frame_type == SKIP_FRAME) {
+                        : AV_PICTURE_TYPE_P;
+    if (frame_type == SKIP_FRAME)
+    {
         *got_frame      = 1;
         if ((ret = av_frame_ref(data, c->pic)) < 0)
             return ret;
@@ -566,7 +635,8 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
         return buf_size;
     }
 
-    if (c->quality != quality) {
+    if (c->quality != quality)
+    {
         c->quality = quality;
         for (i = 0; i < 2; i++)
             ff_mss34_gen_quant_mat(c->quant_mat[i], quality, !i);
@@ -582,13 +652,17 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
     dst[2] = c->pic->data[2];
 
     memset(c->prev_vec, 0, sizeof(c->prev_vec));
-    for (y = 0; y < mb_height; y++) {
+    for (y = 0; y < mb_height; y++)
+    {
         memset(c->dc_cache, 0, sizeof(c->dc_cache));
-        for (x = 0; x < mb_width; x++) {
+        for (x = 0; x < mb_width; x++)
+        {
             blk_type = decode012(&gb);
-            switch (blk_type) {
+            switch (blk_type)
+            {
             case DCT_BLOCK:
-                if (mss4_decode_dct_block(c, &gb, dst, x, y) < 0) {
+                if (mss4_decode_dct_block(c, &gb, dst, x, y) < 0)
+                {
                     av_log(avctx, AV_LOG_ERROR,
                            "Error decoding DCT block %d,%d\n",
                            x, y);
@@ -596,7 +670,8 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
                 }
                 break;
             case IMAGE_BLOCK:
-                if (mss4_decode_image_block(c, &gb, dst, x, y) < 0) {
+                if (mss4_decode_image_block(c, &gb, dst, x, y) < 0)
+                {
                     av_log(avctx, AV_LOG_ERROR,
                            "Error decoding VQ block %d,%d\n",
                            x, y);
@@ -604,7 +679,8 @@ static int mss4_decode_frame(AVCodecContext *avctx, void *data, int *got_frame,
                 }
                 break;
             case SKIP_BLOCK:
-                if (frame_type == INTRA_FRAME) {
+                if (frame_type == INTRA_FRAME)
+                {
                     av_log(avctx, AV_LOG_ERROR, "Skip block in intra frame\n");
                     return AVERROR_INVALIDDATA;
                 }
@@ -644,15 +720,18 @@ static av_cold int mss4_decode_init(AVCodecContext *avctx)
     MSS4Context * const c = avctx->priv_data;
     int i;
 
-    if (mss4_init_vlcs(c)) {
+    if (mss4_init_vlcs(c))
+    {
         av_log(avctx, AV_LOG_ERROR, "Cannot initialise VLCs\n");
         mss4_free_vlcs(c);
         return AVERROR(ENOMEM);
     }
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         c->dc_stride[i] = FFALIGN(avctx->width, 16) >> (2 + !!i);
         c->prev_dc[i]   = av_malloc_array(c->dc_stride[i], sizeof(**c->prev_dc));
-        if (!c->prev_dc[i]) {
+        if (!c->prev_dc[i])
+        {
             av_log(avctx, AV_LOG_ERROR, "Cannot allocate buffer\n");
             mss4_free_vlcs(c);
             return AVERROR(ENOMEM);
@@ -660,7 +739,8 @@ static av_cold int mss4_decode_init(AVCodecContext *avctx)
     }
 
     c->pic = av_frame_alloc();
-    if (!c->pic) {
+    if (!c->pic)
+    {
         mss4_decode_end(avctx);
         return AVERROR(ENOMEM);
     }
@@ -670,7 +750,8 @@ static av_cold int mss4_decode_init(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_mts2_decoder = {
+AVCodec ff_mts2_decoder =
+{
     .name           = "mts2",
     .long_name      = NULL_IF_CONFIG_SMALL("MS Expression Encoder Screen"),
     .type           = AVMEDIA_TYPE_VIDEO,

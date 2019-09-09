@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -50,17 +50,18 @@
 // wels log output
 typedef void (*PWelsLogCallbackFunc) (void* pCtx, const int32_t iLevel, const char* kpFmt, va_list argv);
 
-typedef struct TagLogContext {
-  PWelsLogCallbackFunc pfLog;
-  void* pLogCtx;
-  void* pCodecInstance;
+typedef struct TagLogContext
+{
+    PWelsLogCallbackFunc pfLog;
+    void* pLogCtx;
+    void* pCodecInstance;
 } SLogContext;
 
 
 #ifdef __GNUC__
 extern void WelsLog (SLogContext* pCtx, int32_t iLevel, const char* kpFmt, ...) __attribute__ ((__format__ (__printf__,
-    3,
-    4)));
+        3,
+        4)));
 #else
 extern void WelsLog (SLogContext* pCtx, int32_t iLevel, const char* kpFmt, ...);
 #endif

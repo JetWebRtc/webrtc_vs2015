@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 
 #include "webrtc/typedefs.h"
 
-enum {
+enum
+{
     AecmFalse = 0,
     AecmTrue
 };
@@ -30,7 +31,8 @@ enum {
 // Warnings
 #define AECM_BAD_PARAMETER_WARNING       12100
 
-typedef struct {
+typedef struct
+{
     int16_t cngMode;            // AECM_FALSE, AECM_TRUE (default)
     int16_t echoMode;           // 0, 1, 2, 3 (default), 4
 } AecmConfig;

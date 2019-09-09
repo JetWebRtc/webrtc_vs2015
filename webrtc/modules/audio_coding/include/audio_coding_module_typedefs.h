@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/modules/include/module_common_types.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 ///////////////////////////////////////////////////////////////////////////
 // enum ACMVADMode
@@ -27,11 +28,12 @@ namespace webrtc {
 // -VADAggr                  : an aggressive mode.
 // -VADVeryAggr              : the most agressive mode.
 //
-enum ACMVADMode {
-  VADNormal = 0,
-  VADLowBitrate = 1,
-  VADAggr = 2,
-  VADVeryAggr = 3
+enum ACMVADMode
+{
+    VADNormal = 0,
+    VADLowBitrate = 1,
+    VADAggr = 2,
+    VADVeryAggr = 3
 };
 
 ///////////////////////////////////////////////////////////////////////////
@@ -41,9 +43,10 @@ enum ACMVADMode {
 // kVoip              : optimized for voice signals.
 // kAudio             : optimized for non-voice signals like music.
 //
-enum OpusApplicationMode {
- kVoip = 0,
- kAudio = 1,
+enum OpusApplicationMode
+{
+    kVoip = 0,
+    kAudio = 1,
 };
 
 }  // namespace webrtc

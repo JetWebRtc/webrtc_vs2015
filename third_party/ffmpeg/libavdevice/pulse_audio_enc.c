@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2013 Lukasz Marek <lukasz.m.luki@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -29,7 +29,8 @@
 #include "libavutil/attributes.h"
 #include "pulse_audio_common.h"
 
-typedef struct PulseData {
+typedef struct PulseData
+{
     AVClass *class;
     const char *server;
     const char *name;
@@ -58,9 +59,12 @@ static void pulse_audio_sink_device_cb(pa_context *ctx, const pa_sink_info *dev,
     if (s->ctx != ctx)
         return;
 
-    if (eol) {
+    if (eol)
+    {
         pa_threaded_mainloop_signal(s->mainloop, 0);
-    } else {
+    }
+    else
+    {
         if (dev->flags & PA_SINK_FLAT_VOLUME)
             s->base_volume = dev->base_volume;
         else
@@ -75,7 +79,8 @@ static int pulse_update_sink_info(AVFormatContext *h)
     PulseData *s = h->priv_data;
     pa_operation *op;
     if (!(op = pa_context_get_sink_info_by_name(s->ctx, s->device,
-                                                pulse_audio_sink_device_cb, s))) {
+               pulse_audio_sink_device_cb, s)))
+    {
         av_log(s, AV_LOG_ERROR, "pa_context_get_sink_info_by_name failed.\n");
         return AVERROR_EXTERNAL;
     }
@@ -94,16 +99,19 @@ static void pulse_audio_sink_input_cb(pa_context *ctx, const pa_sink_input_info 
     if (s->ctx != ctx)
         return;
 
-    if (!eol) {
+    if (!eol)
+    {
         double val;
         pa_volume_t vol = pa_cvolume_avg(&i->volume);
-        if (s->mute < 0 || (s->mute && !i->mute) || (!s->mute && i->mute)) {
+        if (s->mute < 0 || (s->mute && !i->mute) || (!s->mute && i->mute))
+        {
             s->mute = i->mute;
             avdevice_dev_to_app_control_message(h, AV_DEV_TO_APP_MUTE_STATE_CHANGED, &s->mute, sizeof(s->mute));
         }
 
         vol = pa_sw_volume_divide(vol, s->base_volume);
-        if (s->last_volume != vol) {
+        if (s->last_volume != vol)
+        {
             val = (double)vol / PA_VOLUME_NORM;
             avdevice_dev_to_app_control_message(h, AV_DEV_TO_APP_VOLUME_LEVEL_CHANGED, &val, sizeof(val));
             s->last_volume = vol;
@@ -126,7 +134,8 @@ static int pulse_update_sink_input_info(AVFormatContext *h)
         return ret;
 
     if (!(op = pa_context_get_sink_input_info(ctx, pa_stream_get_index(s->stream),
-                                              pulse_audio_sink_input_cb, h))) {
+               pulse_audio_sink_input_cb, h)))
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
@@ -134,12 +143,13 @@ static int pulse_update_sink_input_info(AVFormatContext *h)
     while ((op_state = pa_operation_get_state(op)) == PA_OPERATION_RUNNING)
         pa_mainloop_iterate(ml, 1, NULL);
     pa_operation_unref(op);
-    if (op_state != PA_OPERATION_DONE) {
+    if (op_state != PA_OPERATION_DONE)
+    {
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
 
-  fail:
+fail:
     ff_pulse_audio_disconnect_context(&ml, &ctx);
     if (ret)
         av_log(s, AV_LOG_ERROR, "pa_context_get_sink_input_info failed.\n");
@@ -155,7 +165,8 @@ static void pulse_event(pa_context *ctx, pa_subscription_event_type_t t,
     if (s->ctx != ctx)
         return;
 
-    if ((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK_INPUT) {
+    if ((t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) == PA_SUBSCRIPTION_EVENT_SINK_INPUT)
+    {
         if ((t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_CHANGE)
             // Calling from mainloop callback. No need to lock mainloop.
             pulse_update_sink_input_info(h);
@@ -194,13 +205,14 @@ static void pulse_stream_state(pa_stream *stream, void *userdata)
     if (stream != s->stream)
         return;
 
-    switch (pa_stream_get_state(s->stream)) {
-        case PA_STREAM_READY:
-        case PA_STREAM_FAILED:
-        case PA_STREAM_TERMINATED:
-            pa_threaded_mainloop_signal(s->mainloop, 0);
-        default:
-            break;
+    switch (pa_stream_get_state(s->stream))
+    {
+    case PA_STREAM_READY:
+    case PA_STREAM_FAILED:
+    case PA_STREAM_TERMINATED:
+        pa_threaded_mainloop_signal(s->mainloop, 0);
+    default:
+        break;
     }
 }
 
@@ -208,7 +220,8 @@ static int pulse_stream_wait(PulseData *s)
 {
     pa_stream_state_t state;
 
-    while ((state = pa_stream_get_state(s->stream)) != PA_STREAM_READY) {
+    while ((state = pa_stream_get_state(s->stream)) != PA_STREAM_READY)
+    {
         if (state == PA_STREAM_FAILED || state == PA_STREAM_TERMINATED)
             return AVERROR_EXTERNAL;
         pa_threaded_mainloop_wait(s->mainloop);
@@ -223,13 +236,14 @@ static void pulse_context_state(pa_context *ctx, void *userdata)
     if (s->ctx != ctx)
         return;
 
-    switch (pa_context_get_state(ctx)) {
-        case PA_CONTEXT_READY:
-        case PA_CONTEXT_FAILED:
-        case PA_CONTEXT_TERMINATED:
-            pa_threaded_mainloop_signal(s->mainloop, 0);
-        default:
-            break;
+    switch (pa_context_get_state(ctx))
+    {
+    case PA_CONTEXT_READY:
+    case PA_CONTEXT_FAILED:
+    case PA_CONTEXT_TERMINATED:
+        pa_threaded_mainloop_signal(s->mainloop, 0);
+    default:
+        break;
     }
 }
 
@@ -237,7 +251,8 @@ static int pulse_context_wait(PulseData *s)
 {
     pa_context_state_t state;
 
-    while ((state = pa_context_get_state(s->ctx)) != PA_CONTEXT_READY) {
+    while ((state = pa_context_get_state(s->ctx)) != PA_CONTEXT_READY)
+    {
         if (state == PA_CONTEXT_FAILED || state == PA_CONTEXT_TERMINATED)
             return AVERROR_EXTERNAL;
         pa_threaded_mainloop_wait(s->mainloop);
@@ -258,7 +273,8 @@ static void pulse_stream_result(pa_stream *stream, int success, void *userdata)
 
 static int pulse_finish_stream_operation(PulseData *s, pa_operation *op, const char *name)
 {
-    if (!op) {
+    if (!op)
+    {
         pa_threaded_mainloop_unlock(s->mainloop);
         av_log(s, AV_LOG_ERROR, "%s failed.\n", name);
         return AVERROR_EXTERNAL;
@@ -302,7 +318,8 @@ static void pulse_context_result(pa_context *ctx, int success, void *userdata)
 
 static int pulse_finish_context_operation(PulseData *s, pa_operation *op, const char *name)
 {
-    if (!op) {
+    if (!op)
+    {
         pa_threaded_mainloop_unlock(s->mainloop);
         av_log(s, AV_LOG_ERROR, "%s failed.\n", name);
         return AVERROR_EXTERNAL;
@@ -410,9 +427,11 @@ static av_cold int pulse_write_trailer(AVFormatContext *h)
 {
     PulseData *s = h->priv_data;
 
-    if (s->mainloop) {
+    if (s->mainloop)
+    {
         pa_threaded_mainloop_lock(s->mainloop);
-        if (s->stream) {
+        if (s->stream)
+        {
             pa_stream_disconnect(s->stream);
             pa_stream_set_state_callback(s->stream, NULL, NULL);
             pa_stream_set_write_callback(s->stream, NULL, NULL);
@@ -421,7 +440,8 @@ static av_cold int pulse_write_trailer(AVFormatContext *h)
             pa_stream_unref(s->stream);
             s->stream = NULL;
         }
-        if (s->ctx) {
+        if (s->ctx)
+        {
             pa_context_disconnect(s->ctx);
             pa_context_set_state_callback(s->ctx, NULL, NULL);
             pa_context_set_subscribe_callback(s->ctx, NULL, NULL);
@@ -448,16 +468,18 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     pa_mainloop_api *mainloop_api;
     const char *stream_name = s->stream_name;
     static const pa_stream_flags_t stream_flags = PA_STREAM_INTERPOLATE_TIMING |
-                                                  PA_STREAM_AUTO_TIMING_UPDATE |
-                                                  PA_STREAM_NOT_MONOTONIC;
+            PA_STREAM_AUTO_TIMING_UPDATE |
+            PA_STREAM_NOT_MONOTONIC;
 
-    if (h->nb_streams != 1 || h->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO) {
+    if (h->nb_streams != 1 || h->streams[0]->codec->codec_type != AVMEDIA_TYPE_AUDIO)
+    {
         av_log(s, AV_LOG_ERROR, "Only a single audio stream is supported.\n");
         return AVERROR(EINVAL);
     }
     st = h->streams[0];
 
-    if (!stream_name) {
+    if (!stream_name)
+    {
         if (h->filename[0])
             stream_name = h->filename;
         else
@@ -465,7 +487,8 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     }
     s->nonblocking = (h->flags & AVFMT_FLAG_NONBLOCK);
 
-    if (s->buffer_duration) {
+    if (s->buffer_duration)
+    {
         int64_t bytes = s->buffer_duration;
         bytes *= st->codec->channels * st->codec->sample_rate *
                  av_get_bytes_per_sample(st->codec->sample_fmt);
@@ -475,7 +498,8 @@ static av_cold int pulse_write_header(AVFormatContext *h)
                "Buffer duration: %ums recalculated into %"PRId64" bytes buffer.\n",
                s->buffer_duration, bytes);
         av_log(s, AV_LOG_DEBUG, "Real buffer length is %u bytes\n", buffer_attributes.tlength);
-    } else if (s->buffer_size)
+    }
+    else if (s->buffer_size)
         buffer_attributes.tlength = s->buffer_size;
     if (s->prebuf)
         buffer_attributes.prebuf = s->prebuf;
@@ -485,40 +509,49 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     sample_spec.format = ff_codec_id_to_pulse_format(st->codec->codec_id);
     sample_spec.rate = st->codec->sample_rate;
     sample_spec.channels = st->codec->channels;
-    if (!pa_sample_spec_valid(&sample_spec)) {
+    if (!pa_sample_spec_valid(&sample_spec))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid sample spec.\n");
         return AVERROR(EINVAL);
     }
 
-    if (sample_spec.channels == 1) {
+    if (sample_spec.channels == 1)
+    {
         channel_map.channels = 1;
         channel_map.map[0] = PA_CHANNEL_POSITION_MONO;
-    } else if (st->codec->channel_layout) {
+    }
+    else if (st->codec->channel_layout)
+    {
         if (av_get_channel_layout_nb_channels(st->codec->channel_layout) != st->codec->channels)
             return AVERROR(EINVAL);
         pulse_map_channels_to_pulse(st->codec->channel_layout, &channel_map);
         /* Unknown channel is present in channel_layout, let PulseAudio use its default. */
-        if (channel_map.channels != sample_spec.channels) {
+        if (channel_map.channels != sample_spec.channels)
+        {
             av_log(s, AV_LOG_WARNING, "Unknown channel. Using defaul channel map.\n");
             channel_map.channels = 0;
         }
-    } else
+    }
+    else
         channel_map.channels = 0;
 
     if (!channel_map.channels)
         av_log(s, AV_LOG_WARNING, "Using PulseAudio's default channel map.\n");
-    else if (!pa_channel_map_valid(&channel_map)) {
+    else if (!pa_channel_map_valid(&channel_map))
+    {
         av_log(s, AV_LOG_ERROR, "Invalid channel map.\n");
         return AVERROR(EINVAL);
     }
 
     /* start main loop */
     s->mainloop = pa_threaded_mainloop_new();
-    if (!s->mainloop) {
+    if (!s->mainloop)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot create threaded mainloop.\n");
         return AVERROR(ENOMEM);
     }
-    if ((ret = pa_threaded_mainloop_start(s->mainloop)) < 0) {
+    if ((ret = pa_threaded_mainloop_start(s->mainloop)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot start threaded mainloop: %s.\n", pa_strerror(ret));
         pa_threaded_mainloop_free(s->mainloop);
         s->mainloop = NULL;
@@ -528,14 +561,16 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     pa_threaded_mainloop_lock(s->mainloop);
 
     mainloop_api = pa_threaded_mainloop_get_api(s->mainloop);
-    if (!mainloop_api) {
+    if (!mainloop_api)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot get mainloop API.\n");
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
 
     s->ctx = pa_context_new(mainloop_api, s->name);
-    if (!s->ctx) {
+    if (!s->ctx)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot create context.\n");
         ret = AVERROR(ENOMEM);
         goto fail;
@@ -543,13 +578,15 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     pa_context_set_state_callback(s->ctx, pulse_context_state, s);
     pa_context_set_subscribe_callback(s->ctx, pulse_event, h);
 
-    if ((ret = pa_context_connect(s->ctx, s->server, 0, NULL)) < 0) {
+    if ((ret = pa_context_connect(s->ctx, s->server, 0, NULL)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot connect context: %s.\n", pa_strerror(ret));
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
 
-    if ((ret = pulse_context_wait(s)) < 0) {
+    if ((ret = pulse_context_wait(s)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Context failed.\n");
         goto fail;
     }
@@ -557,12 +594,14 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     s->stream = pa_stream_new(s->ctx, stream_name, &sample_spec,
                               channel_map.channels ? &channel_map : NULL);
 
-    if ((ret = pulse_update_sink_info(h)) < 0) {
+    if ((ret = pulse_update_sink_info(h)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Updating sink info failed.\n");
         goto fail;
     }
 
-    if (!s->stream) {
+    if (!s->stream)
+    {
         av_log(s, AV_LOG_ERROR, "Cannot create stream.\n");
         ret = AVERROR(ENOMEM);
         goto fail;
@@ -573,13 +612,15 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     pa_stream_set_underflow_callback(s->stream, pulse_underflow, h);
 
     if ((ret = pa_stream_connect_playback(s->stream, s->device, &buffer_attributes,
-                                          stream_flags, NULL, NULL)) < 0) {
+                                          stream_flags, NULL, NULL)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "pa_stream_connect_playback failed: %s.\n", pa_strerror(ret));
         ret = AVERROR_EXTERNAL;
         goto fail;
     }
 
-    if ((ret = pulse_stream_wait(s)) < 0) {
+    if ((ret = pulse_stream_wait(s)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Stream failed.\n");
         goto fail;
     }
@@ -594,7 +635,8 @@ static av_cold int pulse_write_header(AVFormatContext *h)
 
     pa_threaded_mainloop_unlock(s->mainloop);
 
-    if ((ret = pulse_subscribe_events(s)) < 0) {
+    if ((ret = pulse_subscribe_events(s)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Event subscription failed.\n");
         /* a bit ugly but the simplest to lock here*/
         pa_threaded_mainloop_lock(s->mainloop);
@@ -605,7 +647,8 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     s->mute = -1;
     s->last_volume = PA_VOLUME_INVALID;
     pa_threaded_mainloop_lock(s->mainloop);
-    if ((ret = pulse_update_sink_input_info(h)) < 0) {
+    if ((ret = pulse_update_sink_input_info(h)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "Updating sink input info failed.\n");
         goto fail;
     }
@@ -614,7 +657,7 @@ static av_cold int pulse_write_header(AVFormatContext *h)
     avpriv_set_pts_info(st, 64, 1, 1000000);  /* 64 bits pts in us */
 
     return 0;
-  fail:
+fail:
     pa_threaded_mainloop_unlock(s->mainloop);
     pulse_write_trailer(h);
     return ret;
@@ -632,9 +675,12 @@ static int pulse_write_packet(AVFormatContext *h, AVPacket *pkt)
     if (pkt->dts != AV_NOPTS_VALUE)
         s->timestamp = pkt->dts;
 
-    if (pkt->duration) {
+    if (pkt->duration)
+    {
         s->timestamp += pkt->duration;
-    } else {
+    }
+    else
+    {
         AVStream *st = h->streams[0];
         AVCodecContext *codec_ctx = st->codec;
         AVRational r = { 1, codec_ctx->sample_rate };
@@ -643,19 +689,24 @@ static int pulse_write_packet(AVFormatContext *h, AVPacket *pkt)
     }
 
     pa_threaded_mainloop_lock(s->mainloop);
-    if (!PA_STREAM_IS_GOOD(pa_stream_get_state(s->stream))) {
+    if (!PA_STREAM_IS_GOOD(pa_stream_get_state(s->stream)))
+    {
         av_log(s, AV_LOG_ERROR, "PulseAudio stream is in invalid state.\n");
         goto fail;
     }
-    while (pa_stream_writable_size(s->stream) < s->minreq) {
-        if (s->nonblocking) {
+    while (pa_stream_writable_size(s->stream) < s->minreq)
+    {
+        if (s->nonblocking)
+        {
             pa_threaded_mainloop_unlock(s->mainloop);
             return AVERROR(EAGAIN);
-        } else
+        }
+        else
             pa_threaded_mainloop_wait(s->mainloop);
     }
 
-    if ((ret = pa_stream_write(s->stream, pkt->data, pkt->size, NULL, 0, PA_SEEK_RELATIVE)) < 0) {
+    if ((ret = pa_stream_write(s->stream, pkt->data, pkt->size, NULL, 0, PA_SEEK_RELATIVE)) < 0)
+    {
         av_log(s, AV_LOG_ERROR, "pa_stream_write failed: %s\n", pa_strerror(ret));
         goto fail;
     }
@@ -665,7 +716,7 @@ static int pulse_write_packet(AVFormatContext *h, AVPacket *pkt)
     pa_threaded_mainloop_unlock(s->mainloop);
 
     return 0;
-  fail:
+fail:
     pa_threaded_mainloop_unlock(s->mainloop);
     return AVERROR_EXTERNAL;
 }
@@ -714,7 +765,8 @@ static int pulse_control_message(AVFormatContext *h, int type,
     PulseData *s = h->priv_data;
     int ret;
 
-    switch(type) {
+    switch(type)
+    {
     case AV_APP_TO_DEV_PAUSE:
         return pulse_set_pause(s, 1);
     case AV_APP_TO_DEV_PLAY:
@@ -722,13 +774,15 @@ static int pulse_control_message(AVFormatContext *h, int type,
     case AV_APP_TO_DEV_TOGGLE_PAUSE:
         return pulse_set_pause(s, !pa_stream_is_corked(s->stream));
     case AV_APP_TO_DEV_MUTE:
-        if (!s->mute) {
+        if (!s->mute)
+        {
             s->mute = 1;
             return pulse_set_mute(s);
         }
         return 0;
     case AV_APP_TO_DEV_UNMUTE:
-        if (s->mute) {
+        if (s->mute)
+        {
             s->mute = 0;
             return pulse_set_mute(s);
         }
@@ -758,7 +812,8 @@ static int pulse_control_message(AVFormatContext *h, int type,
 
 #define OFFSET(a) offsetof(PulseData, a)
 #define E AV_OPT_FLAG_ENCODING_PARAM
-static const AVOption options[] = {
+static const AVOption options[] =
+{
     { "server",          "set PulseAudio server",            OFFSET(server),          AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, E },
     { "name",            "set application name",             OFFSET(name),            AV_OPT_TYPE_STRING, {.str = LIBAVFORMAT_IDENT},  0, 0, E },
     { "stream_name",     "set stream description",           OFFSET(stream_name),     AV_OPT_TYPE_STRING, {.str = NULL}, 0, 0, E },
@@ -770,7 +825,8 @@ static const AVOption options[] = {
     { NULL }
 };
 
-static const AVClass pulse_muxer_class = {
+static const AVClass pulse_muxer_class =
+{
     .class_name     = "PulseAudio muxer",
     .item_name      = av_default_item_name,
     .option         = options,
@@ -778,7 +834,8 @@ static const AVClass pulse_muxer_class = {
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
 };
 
-AVOutputFormat ff_pulse_muxer = {
+AVOutputFormat ff_pulse_muxer =
+{
     .name                 = "pulse",
     .long_name            = NULL_IF_CONFIG_SMALL("Pulse audio output"),
     .priv_data_size       = sizeof(PulseData),

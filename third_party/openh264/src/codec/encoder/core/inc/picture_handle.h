@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2009-2013, Cisco Systems
  *     All rights reserved.
@@ -43,7 +43,8 @@
 #include "typedefs.h"
 #include "memory_align.h"
 
-namespace WelsEnc {
+namespace WelsEnc
+{
 /*!
  * \brief   alloc picture pData with borders for each plane based width and height of picture
  * \param   kiWidth                 width of picture in pixels

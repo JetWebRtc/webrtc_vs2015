@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2015 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -110,8 +110,8 @@ amm-info@iis.fraunhofer.de
 
 #include "aacdec_drc.h"
 
- #include "pcmutils_lib.h"
- #include "limiter.h"
+#include "pcmutils_lib.h"
+#include "limiter.h"
 
 
 /* Capabilities flags */
@@ -137,96 +137,100 @@ typedef struct AAC_DECODER_INSTANCE *HANDLE_AACDECODER;
 
 enum
 {
-  L = 0,
-  R = 1
+    L = 0,
+    R = 1
 };
 
-typedef struct {
+typedef struct
+{
     unsigned char *buffer;
     int bufferSize;
     int offset[8];
     int nrElements;
 } CAncData;
 
-typedef enum {
-  NOT_DEFINED = -1,
-  MODE_HQ     =  0,
-  MODE_LP     =  1
+typedef enum
+{
+    NOT_DEFINED = -1,
+    MODE_HQ     =  0,
+    MODE_LP     =  1
 } QMF_MODE;
 
-typedef struct {
-  int        bsDelay;
+typedef struct
+{
+    int        bsDelay;
 } SBR_PARAMS;
 
 
 /* AAC decoder (opaque toward userland) struct declaration */
-struct AAC_DECODER_INSTANCE {
-  INT                   aacChannels;                 /*!< Amount of AAC decoder channels allocated.        */
-  INT                   ascChannels;                 /*!< Amount of AAC decoder channels signalled in ASC. */
-  INT                   blockNumber;                 /*!< frame counter                                    */
+struct AAC_DECODER_INSTANCE
+{
+    INT                   aacChannels;                 /*!< Amount of AAC decoder channels allocated.        */
+    INT                   ascChannels;                 /*!< Amount of AAC decoder channels signalled in ASC. */
+    INT                   blockNumber;                 /*!< frame counter                                    */
 
-  INT                   nrOfLayers;
+    INT                   nrOfLayers;
 
-  INT                   outputInterleaved;           /*!< PCM output format (interleaved/none interleaved). */
+    INT                   outputInterleaved;           /*!< PCM output format (interleaved/none interleaved). */
 
-  HANDLE_TRANSPORTDEC   hInput;                      /*!< Transport layer handle. */
+    HANDLE_TRANSPORTDEC   hInput;                      /*!< Transport layer handle. */
 
-  SamplingRateInfo      samplingRateInfo;            /*!< Sampling Rate information table */
+    SamplingRateInfo      samplingRateInfo;            /*!< Sampling Rate information table */
 
-  UCHAR                 frameOK;                     /*!< Will be unset if a consistency check, e.g. CRC etc. fails */
+    UCHAR                 frameOK;                     /*!< Will be unset if a consistency check, e.g. CRC etc. fails */
 
-  UINT                  flags;                       /*!< Flags for internal decoder use. DO NOT USE self::streaminfo::flags ! */
+    UINT                  flags;                       /*!< Flags for internal decoder use. DO NOT USE self::streaminfo::flags ! */
 
-  MP4_ELEMENT_ID        elements[(8)]; /*!< Table where the element Id's are listed          */
-  UCHAR                 elTags[(8)];   /*!< Table where the elements id Tags are listed      */
-  UCHAR                 chMapping[(8)];   /*!< Table of MPEG canonical order to bitstream channel order mapping. */
+    MP4_ELEMENT_ID        elements[(8)]; /*!< Table where the element Id's are listed          */
+    UCHAR                 elTags[(8)];   /*!< Table where the elements id Tags are listed      */
+    UCHAR                 chMapping[(8)];   /*!< Table of MPEG canonical order to bitstream channel order mapping. */
 
-  AUDIO_CHANNEL_TYPE    channelType[(8)];    /*!< Audio channel type of each output audio channel (from 0 upto numChannels).           */
-  UCHAR                 channelIndices[(8)]; /*!< Audio channel index for each output audio channel (from 0 upto numChannels).         */
-                                                             /* See ISO/IEC 13818-7:2005(E), 8.5.3.2 Explicit channel mapping using a program_config_element() */
+    AUDIO_CHANNEL_TYPE    channelType[(8)];    /*!< Audio channel type of each output audio channel (from 0 upto numChannels).           */
+    UCHAR                 channelIndices[(8)]; /*!< Audio channel index for each output audio channel (from 0 upto numChannels).         */
+    /* See ISO/IEC 13818-7:2005(E), 8.5.3.2 Explicit channel mapping using a program_config_element() */
 
 
-  const UCHAR         (*channelOutputMapping)[8];    /*!< Table for MPEG canonical order to output channel order mapping. */
-  UCHAR                 chMapIndex;                  /*!< Index to access one line of the channelOutputMapping table. This is required
+    const UCHAR         (*channelOutputMapping)[8];    /*!< Table for MPEG canonical order to output channel order mapping. */
+    UCHAR                 chMapIndex;                  /*!< Index to access one line of the channelOutputMapping table. This is required
                                                           because not all 8 channel configurations have the same output mapping. */
 
-  CProgramConfig                pce;
-  CStreamInfo                   streamInfo;         /*!< pointer to StreamInfo data (read from the bitstream) */
-  CAacDecoderChannelInfo       *pAacDecoderChannelInfo[(8)];       /*!< Temporal channel memory */
-  CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[(8)]; /*!< Persistent channel memory */
+    CProgramConfig                pce;
+    CStreamInfo                   streamInfo;         /*!< pointer to StreamInfo data (read from the bitstream) */
+    CAacDecoderChannelInfo       *pAacDecoderChannelInfo[(8)];       /*!< Temporal channel memory */
+    CAacDecoderStaticChannelInfo *pAacDecoderStaticChannelInfo[(8)]; /*!< Persistent channel memory */
 
-  CAacDecoderCommonData         aacCommonData;             /*!< Temporal shared data for all channels hooked into pAacDecoderChannelInfo */
+    CAacDecoderCommonData         aacCommonData;             /*!< Temporal shared data for all channels hooked into pAacDecoderChannelInfo */
 
-  CConcealParams                concealCommonData;
+    CConcealParams                concealCommonData;
 
-  INT                   aacChannelsPrev;                          /*!< The amount of AAC core channels of the last successful decode call.         */
-  AUDIO_CHANNEL_TYPE    channelTypePrev[(8)];     /*!< Array holding the channelType values of the last successful decode call.    */
-  UCHAR                 channelIndicesPrev[(8)];  /*!< Array holding the channelIndices values of the last successful decode call. */
-
-
-  HANDLE_SBRDECODER   hSbrDecoder;                   /*!< SBR decoder handle.                        */
-  UCHAR               sbrEnabled;                    /*!< flag to store if SBR has been detected     */
-  UCHAR               sbrEnabledPrev;                /*!< flag to store if SBR has been detected from previous frame */
-  UCHAR               psPossible;                    /*!< flag to store if PS is possible            */
-  SBR_PARAMS          sbrParams;                     /*!< struct to store all sbr parameters         */
-
-  QMF_MODE   qmfModeCurr;                            /*!< The current QMF mode                       */
-  QMF_MODE   qmfModeUser;                            /*!< The QMF mode requested by the library user */
-
-  HANDLE_AAC_DRC  hDrcInfo;                          /*!< handle to DRC data structure               */
+    INT                   aacChannelsPrev;                          /*!< The amount of AAC core channels of the last successful decode call.         */
+    AUDIO_CHANNEL_TYPE    channelTypePrev[(8)];     /*!< Array holding the channelType values of the last successful decode call.    */
+    UCHAR                 channelIndicesPrev[(8)];  /*!< Array holding the channelIndices values of the last successful decode call. */
 
 
-  CAncData      ancData;                             /*!< structure to handle ancillary data         */
+    HANDLE_SBRDECODER   hSbrDecoder;                   /*!< SBR decoder handle.                        */
+    UCHAR               sbrEnabled;                    /*!< flag to store if SBR has been detected     */
+    UCHAR               sbrEnabledPrev;                /*!< flag to store if SBR has been detected from previous frame */
+    UCHAR               psPossible;                    /*!< flag to store if PS is possible            */
+    SBR_PARAMS          sbrParams;                     /*!< struct to store all sbr parameters         */
 
-  HANDLE_PCM_DOWNMIX  hPcmUtils;                     /*!< privat data for the PCM utils.             */
-  TDLimiterPtr hLimiter;                             /*!< Handle of time domain limiter.             */
-  UCHAR        limiterEnableUser;                    /*!< The limiter configuration requested by the library user */
-  UCHAR        limiterEnableCurr;                    /*!< The current limiter configuration.         */
+    QMF_MODE   qmfModeCurr;                            /*!< The current QMF mode                       */
+    QMF_MODE   qmfModeUser;                            /*!< The QMF mode requested by the library user */
 
-  FIXP_DBL     extGain[1];                           /*!< Gain that must be applied to the output signal. */
-  UINT         extGainDelay;                         /*!< Delay that must be accounted for extGain. */
+    HANDLE_AAC_DRC  hDrcInfo;                          /*!< handle to DRC data structure               */
 
-  INT_PCM      pcmOutputBuffer[(8)*(2048)];
+
+    CAncData      ancData;                             /*!< structure to handle ancillary data         */
+
+    HANDLE_PCM_DOWNMIX  hPcmUtils;                     /*!< privat data for the PCM utils.             */
+    TDLimiterPtr hLimiter;                             /*!< Handle of time domain limiter.             */
+    UCHAR        limiterEnableUser;                    /*!< The limiter configuration requested by the library user */
+    UCHAR        limiterEnableCurr;                    /*!< The current limiter configuration.         */
+
+    FIXP_DBL     extGain[1];                           /*!< Gain that must be applied to the output signal. */
+    UINT         extGainDelay;                         /*!< Delay that must be accounted for extGain. */
+
+    INT_PCM      pcmOutputBuffer[(8)*(2048)];
 
 };
 
@@ -292,7 +296,7 @@ LINKSPEC_H HANDLE_AACDECODER CAacDecoder_Open(TRANSPORT_TYPE bsFormat);
 
 /* Initialization of stream-info elements */
 LINKSPEC_H AAC_DECODER_ERROR CAacDecoder_Init(HANDLE_AACDECODER self,
-                                              const CSAudioSpecificConfig *asc);
+        const CSAudioSpecificConfig *asc);
 
 /*!
   \brief Decodes one aac frame
@@ -308,12 +312,12 @@ LINKSPEC_H AAC_DECODER_ERROR CAacDecoder_Init(HANDLE_AACDECODER self,
   \return  error status
 */
 LINKSPEC_H AAC_DECODER_ERROR CAacDecoder_DecodeFrame(
-        HANDLE_AACDECODER self,
-        const UINT flags,
-        INT_PCM *pTimeData,
-        const INT  timeDataSize,
-        const INT interleaved
-        );
+    HANDLE_AACDECODER self,
+    const UINT flags,
+    INT_PCM *pTimeData,
+    const INT  timeDataSize,
+    const INT interleaved
+);
 
 /* Destroy aac decoder */
 LINKSPEC_H void CAacDecoder_Close ( HANDLE_AACDECODER self );

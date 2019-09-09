@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -32,7 +32,8 @@
 
 static const size_t kMaxPacketSizeByte = 1500;
 
-namespace voetest {
+namespace voetest
+{
 
 // This class is to simulate a conference call. There are two Voice Engines, one
 // for local channels and the other for remote channels. There is a simulated
@@ -42,121 +43,125 @@ namespace voetest {
 // receive channel. The remote sender channel plays a file as microphone in a
 // looped fashion. Received streams are mixed and played.
 
-class ConferenceTransport: public webrtc::Transport {
- public:
-  ConferenceTransport();
-  virtual ~ConferenceTransport();
+class ConferenceTransport: public webrtc::Transport
+{
+public:
+    ConferenceTransport();
+    virtual ~ConferenceTransport();
 
-  /* SetRtt()
-   * Set RTT between local channels and reflector.
-   *
-   * Input:
-   *   rtt_ms : RTT in milliseconds.
-   */
-  void SetRtt(unsigned int rtt_ms);
+    /* SetRtt()
+     * Set RTT between local channels and reflector.
+     *
+     * Input:
+     *   rtt_ms : RTT in milliseconds.
+     */
+    void SetRtt(unsigned int rtt_ms);
 
-  /* AddStream()
-   * Adds a stream in the conference.
-   *
-   * Input:
-   *   file_name : name of the file to be added as microphone input.
-   *   format    : format of the input file.
-   *
-   * Returns stream id.
-   */
-  unsigned int AddStream(std::string file_name, webrtc::FileFormats format);
+    /* AddStream()
+     * Adds a stream in the conference.
+     *
+     * Input:
+     *   file_name : name of the file to be added as microphone input.
+     *   format    : format of the input file.
+     *
+     * Returns stream id.
+     */
+    unsigned int AddStream(std::string file_name, webrtc::FileFormats format);
 
-  /* RemoveStream()
-   * Removes a stream with specified ID from the conference.
-   *
-   * Input:
-   *   id : stream id.
-   *
-   * Returns false if the specified stream does not exist, true if succeeds.
-   */
-  bool RemoveStream(unsigned int id);
+    /* RemoveStream()
+     * Removes a stream with specified ID from the conference.
+     *
+     * Input:
+     *   id : stream id.
+     *
+     * Returns false if the specified stream does not exist, true if succeeds.
+     */
+    bool RemoveStream(unsigned int id);
 
-  /* StartPlayout()
-   * Starts playing out the stream with specified ID, using the default device.
-   *
-   * Input:
-   *   id : stream id.
-   *
-   * Returns false if the specified stream does not exist, true if succeeds.
-   */
-  bool StartPlayout(unsigned int id);
+    /* StartPlayout()
+     * Starts playing out the stream with specified ID, using the default device.
+     *
+     * Input:
+     *   id : stream id.
+     *
+     * Returns false if the specified stream does not exist, true if succeeds.
+     */
+    bool StartPlayout(unsigned int id);
 
-  /* GetReceiverStatistics()
-   * Gets RTCP statistics of the stream with specified ID.
-   *
-   * Input:
-   *   id : stream id;
-   *   stats : pointer to a CallStatistics to store the result.
-   *
-   * Returns false if the specified stream does not exist, true if succeeds.
-   */
-  bool GetReceiverStatistics(unsigned int id, webrtc::CallStatistics* stats);
+    /* GetReceiverStatistics()
+     * Gets RTCP statistics of the stream with specified ID.
+     *
+     * Input:
+     *   id : stream id;
+     *   stats : pointer to a CallStatistics to store the result.
+     *
+     * Returns false if the specified stream does not exist, true if succeeds.
+     */
+    bool GetReceiverStatistics(unsigned int id, webrtc::CallStatistics* stats);
 
-  // Inherit from class webrtc::Transport.
-  bool SendRtp(const uint8_t* data,
-               size_t len,
-               const webrtc::PacketOptions& options) override;
-  bool SendRtcp(const uint8_t *data, size_t len) override;
+    // Inherit from class webrtc::Transport.
+    bool SendRtp(const uint8_t* data,
+                 size_t len,
+                 const webrtc::PacketOptions& options) override;
+    bool SendRtcp(const uint8_t *data, size_t len) override;
 
- private:
-  struct Packet {
-    enum Type { Rtp, Rtcp, } type_;
+private:
+    struct Packet
+    {
+        enum Type { Rtp, Rtcp, } type_;
 
-    Packet() : len_(0) {}
-    Packet(Type type, const void* data, size_t len, int64_t time_ms)
-        : type_(type), len_(len), send_time_ms_(time_ms) {
-      EXPECT_LE(len_, kMaxPacketSizeByte);
-      memcpy(data_, data, len_);
+        Packet() : len_(0) {}
+        Packet(Type type, const void* data, size_t len, int64_t time_ms)
+            : type_(type), len_(len), send_time_ms_(time_ms)
+        {
+            EXPECT_LE(len_, kMaxPacketSizeByte);
+            memcpy(data_, data, len_);
+        }
+
+        uint8_t data_[kMaxPacketSizeByte];
+        size_t len_;
+        int64_t send_time_ms_;
+    };
+
+    static bool Run(void* transport)
+    {
+        return static_cast<ConferenceTransport*>(transport)->DispatchPackets();
     }
 
-    uint8_t data_[kMaxPacketSizeByte];
-    size_t len_;
-    int64_t send_time_ms_;
-  };
+    int GetReceiverChannelForSsrc(unsigned int sender_ssrc) const;
+    void StorePacket(Packet::Type type, const void* data, size_t len);
+    void SendPacket(const Packet& packet);
+    bool DispatchPackets();
 
-  static bool Run(void* transport) {
-    return static_cast<ConferenceTransport*>(transport)->DispatchPackets();
-  }
+    rtc::CriticalSection pq_crit_;
+    rtc::CriticalSection stream_crit_;
+    const std::unique_ptr<webrtc::EventWrapper> packet_event_;
+    rtc::PlatformThread thread_;
 
-  int GetReceiverChannelForSsrc(unsigned int sender_ssrc) const;
-  void StorePacket(Packet::Type type, const void* data, size_t len);
-  void SendPacket(const Packet& packet);
-  bool DispatchPackets();
+    unsigned int rtt_ms_;
+    unsigned int stream_count_;
 
-  rtc::CriticalSection pq_crit_;
-  rtc::CriticalSection stream_crit_;
-  const std::unique_ptr<webrtc::EventWrapper> packet_event_;
-  rtc::PlatformThread thread_;
+    std::map<unsigned int, std::pair<int, int>> streams_ GUARDED_BY(stream_crit_);
+    std::deque<Packet> packet_queue_ GUARDED_BY(pq_crit_);
 
-  unsigned int rtt_ms_;
-  unsigned int stream_count_;
+    int local_sender_;  // Channel Id of local sender
+    int reflector_;
 
-  std::map<unsigned int, std::pair<int, int>> streams_ GUARDED_BY(stream_crit_);
-  std::deque<Packet> packet_queue_ GUARDED_BY(pq_crit_);
+    webrtc::VoiceEngine* local_voe_;
+    webrtc::VoEBase* local_base_;
+    webrtc::VoERTP_RTCP* local_rtp_rtcp_;
+    webrtc::VoENetwork* local_network_;
 
-  int local_sender_;  // Channel Id of local sender
-  int reflector_;
+    webrtc::VoiceEngine* remote_voe_;
+    webrtc::VoEBase* remote_base_;
+    webrtc::VoECodec* remote_codec_;
+    webrtc::VoERTP_RTCP* remote_rtp_rtcp_;
+    webrtc::VoENetwork* remote_network_;
+    webrtc::VoEFile* remote_file_;
 
-  webrtc::VoiceEngine* local_voe_;
-  webrtc::VoEBase* local_base_;
-  webrtc::VoERTP_RTCP* local_rtp_rtcp_;
-  webrtc::VoENetwork* local_network_;
+    LoudestFilter loudest_filter_;
 
-  webrtc::VoiceEngine* remote_voe_;
-  webrtc::VoEBase* remote_base_;
-  webrtc::VoECodec* remote_codec_;
-  webrtc::VoERTP_RTCP* remote_rtp_rtcp_;
-  webrtc::VoENetwork* remote_network_;
-  webrtc::VoEFile* remote_file_;
-
-  LoudestFilter loudest_filter_;
-
-  const std::unique_ptr<webrtc::RtpHeaderParser> rtp_header_parser_;
+    const std::unique_ptr<webrtc::RtpHeaderParser> rtp_header_parser_;
 };
 }  // namespace voetest
 

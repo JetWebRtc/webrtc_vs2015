@@ -42,12 +42,13 @@ static int vdpau_mpeg_start_frame(AVCodecContext *avctx,
     info->forward_reference  = VDP_INVALID_HANDLE;
     info->backward_reference = VDP_INVALID_HANDLE;
 
-    switch (s->pict_type) {
+    switch (s->pict_type)
+    {
     case AV_PICTURE_TYPE_B:
         ref = ff_vdpau_get_surface_id(s->next_picture.f);
         assert(ref != VDP_INVALID_HANDLE);
         info->backward_reference = ref;
-        /* fall through to forward prediction */
+    /* fall through to forward prediction */
     case AV_PICTURE_TYPE_P:
         ref = ff_vdpau_get_surface_id(s->last_picture.f);
         info->forward_reference  = ref;
@@ -71,7 +72,8 @@ static int vdpau_mpeg_start_frame(AVCodecContext *avctx,
     info->f_code[0][1]               = s->mpeg_f_code[0][1];
     info->f_code[1][0]               = s->mpeg_f_code[1][0];
     info->f_code[1][1]               = s->mpeg_f_code[1][1];
-    for (i = 0; i < 64; ++i) {
+    for (i = 0; i < 64; ++i)
+    {
         info->intra_quantizer_matrix[i]     = s->intra_matrix[i];
         info->non_intra_quantizer_matrix[i] = s->inter_matrix[i];
     }
@@ -102,7 +104,8 @@ static int vdpau_mpeg1_init(AVCodecContext *avctx)
                                 VDP_DECODER_LEVEL_MPEG1_NA);
 }
 
-AVHWAccel ff_mpeg1_vdpau_hwaccel = {
+AVHWAccel ff_mpeg1_vdpau_hwaccel =
+{
     .name           = "mpeg1_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG1VIDEO,
@@ -122,7 +125,8 @@ static int vdpau_mpeg2_init(AVCodecContext *avctx)
 {
     VdpDecoderProfile profile;
 
-    switch (avctx->profile) {
+    switch (avctx->profile)
+    {
     case FF_PROFILE_MPEG2_MAIN:
         profile = VDP_DECODER_PROFILE_MPEG2_MAIN;
         break;
@@ -136,7 +140,8 @@ static int vdpau_mpeg2_init(AVCodecContext *avctx)
     return ff_vdpau_common_init(avctx, profile, VDP_DECODER_LEVEL_MPEG2_HL);
 }
 
-AVHWAccel ff_mpeg2_vdpau_hwaccel = {
+AVHWAccel ff_mpeg2_vdpau_hwaccel =
+{
     .name           = "mpeg2_vdpau",
     .type           = AVMEDIA_TYPE_VIDEO,
     .id             = AV_CODEC_ID_MPEG2VIDEO,

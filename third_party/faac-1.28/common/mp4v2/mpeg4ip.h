@@ -1,21 +1,21 @@
-/*
+﻿/*
  * The contents of this file are subject to the Mozilla Public
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- * 
+ *
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- * 
+ *
  * The Original Code is MPEG4IP.
- * 
+ *
  * The Initial Developer of the Original Code is Cisco Systems Inc.
  * Portions created by Cisco Systems Inc. are
  * Copyright (C) Cisco Systems Inc. 2000-2005.  All Rights Reserved.
- * 
- * Contributor(s): 
+ *
+ * Contributor(s):
  *		Dave Mackie		dmackie@cisco.com
  *              Bill May                wmay@cisco.com
  */
@@ -55,7 +55,7 @@
 #endif
 
 // the mpeg4ip_package and mpeg4ip_version are always in this
-// file 
+// file
 #include "mpeg4ip_version.h"
 
 #ifdef _WIN32
@@ -74,7 +74,7 @@
 #else
 #ifndef sun
 #if _FILE_OFFSET_BITS < 64
- #error File offset bits is already set to non-64 value
+#error File offset bits is already set to non-64 value
 #endif
 #endif
 #endif
@@ -129,7 +129,7 @@ char *strcasestr(const char *haystack, const char *needle);
 #endif
 
 #define OPEN_RDWR O_RDWR
-#define OPEN_CREAT O_CREAT 
+#define OPEN_CREAT O_CREAT
 #define OPEN_RDONLY O_RDONLY
 
 #define closesocket close
@@ -179,13 +179,13 @@ char *strcasestr(const char *haystack, const char *needle);
 
 #include <stdarg.h>
 typedef void (*error_msg_func_t)(int loglevel,
-				 const char *lib,
-				 const char *fmt,
-				 va_list ap);
+                                 const char *lib,
+                                 const char *fmt,
+                                 va_list ap);
 typedef void (*lib_message_func_t)(int loglevel,
-				   const char *lib,
-				   const char *fmt,
-				   ...);
+                                   const char *lib,
+                                   const char *fmt,
+                                   ...);
 #ifndef HAVE_IN_PORT_T
 typedef uint16_t in_port_t;
 #endif
@@ -207,7 +207,7 @@ typedef unsigned int socklen_t;
 #ifdef __cplusplus
 extern "C" {
 #endif
-char *strsep(char **strp, const char *delim); 
+char *strsep(char **strp, const char *delim);
 #ifdef __cplusplus
 }
 #endif
@@ -272,25 +272,25 @@ typedef int8_t gint8;
 #ifndef __cplusplus
 
 #ifndef bool
- #if SIZEOF_BOOL == 8
-  typedef uint64_t bool;
- #else
-   #if SIZEOF_BOOL == 4
-    typedef uint32_t bool;
-   #else
-     #if SIZEOF_BOOL == 2
-      typedef uint16_t bool;
-     #else
-      typedef unsigned char bool;
-     #endif
-   #endif
- #endif
- #ifndef false
- #define false FALSE
- #endif
- #ifndef true
- #define true TRUE
- #endif
+#if SIZEOF_BOOL == 8
+typedef uint64_t bool;
+#else
+#if SIZEOF_BOOL == 4
+typedef uint32_t bool;
+#else
+#if SIZEOF_BOOL == 2
+typedef uint16_t bool;
+#else
+typedef unsigned char bool;
+#endif
+#endif
+#endif
+#ifndef false
+#define false FALSE
+#endif
+#ifndef true
+#define true TRUE
+#endif
 #endif
 
 #endif
@@ -306,9 +306,9 @@ typedef int8_t gint8;
 #ifndef INT16_MAX
 # define INT16_MAX (32767)
 #endif
-#ifndef INT16_MIN 
+#ifndef INT16_MIN
 # define INT16_MIN (-32767-1)
-#endif 
+#endif
 
 #ifndef UINT32_MAX
 # define UINT32_MAX             (4294967295U)
@@ -318,17 +318,18 @@ typedef int8_t gint8;
 # define UINT64_MAX TO_U64(0xffffffffffffffff)
 #endif
 
-typedef enum audio_format_t {
-  AUDIO_FMT_U8 = 0,
-  AUDIO_FMT_S8,
-  AUDIO_FMT_U16LSB,
-  AUDIO_FMT_S16LSB,
-  AUDIO_FMT_U16MSB,
-  AUDIO_FMT_S16MSB,
-  AUDIO_FMT_U16,
-  AUDIO_FMT_S16,
-  AUDIO_FMT_FLOAT,
-  AUDIO_FMT_HW_AC3,
+typedef enum audio_format_t
+{
+    AUDIO_FMT_U8 = 0,
+    AUDIO_FMT_S8,
+    AUDIO_FMT_U16LSB,
+    AUDIO_FMT_S16LSB,
+    AUDIO_FMT_U16MSB,
+    AUDIO_FMT_S16MSB,
+    AUDIO_FMT_U16,
+    AUDIO_FMT_S16,
+    AUDIO_FMT_FLOAT,
+    AUDIO_FMT_HW_AC3,
 } audio_format_t;
 
 #endif /* __MPEG4IP_INCLUDED__ */

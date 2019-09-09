@@ -1,4 +1,4 @@
-
+﻿
 /*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
@@ -18,8 +18,10 @@
 #include "webrtc/modules/audio_coding/neteq/tools/input_audio_file.h"
 #include "webrtc/test/gtest.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 // Returns test vector to use for the render signal in an
 // APM bitexactness test.

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Wei Gao <weigao@multicorewareinc.com>
  * Copyright (C) 2013 Lenny Wang
  *
@@ -33,7 +33,8 @@
 
 #if CONFIG_OPENCL
 
-typedef struct {
+typedef struct
+{
     cl_command_queue command_queue;
     cl_program program;
     cl_kernel kernel_default;
@@ -57,7 +58,8 @@ typedef struct {
 
 #endif
 
-typedef struct UnsharpFilterParam {
+typedef struct UnsharpFilterParam
+{
     int msize_x;                             ///< matrix width
     int msize_y;                             ///< matrix height
     int amount;                              ///< effect amount
@@ -68,7 +70,8 @@ typedef struct UnsharpFilterParam {
     uint32_t *sc[MAX_MATRIX_SIZE - 1];       ///< finite state machine storage
 } UnsharpFilterParam;
 
-typedef struct UnsharpContext {
+typedef struct UnsharpContext
+{
     const AVClass *class;
     int lmsize_x, lmsize_y, cmsize_x, cmsize_y;
     float lamount, camount;

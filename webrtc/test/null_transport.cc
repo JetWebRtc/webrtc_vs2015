@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -9,17 +9,21 @@
  */
 #include "webrtc/test/null_transport.h"
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
 bool NullTransport::SendRtp(const uint8_t* packet,
                             size_t length,
-                            const PacketOptions& options) {
-  return true;
+                            const PacketOptions& options)
+{
+    return true;
 }
 
-bool NullTransport::SendRtcp(const uint8_t* packet, size_t length) {
-  return true;
+bool NullTransport::SendRtcp(const uint8_t* packet, size_t length)
+{
+    return true;
 }
 
 }  // namespace test

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,7 +15,8 @@
 #include "webrtc/modules/audio_processing/include/audio_processing.h"
 #include "webrtc/modules/audio_processing/logging/apm_data_dumper.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 int GainControlForExperimentalAgc::instance_counter_ = 0;
 
@@ -25,96 +26,116 @@ GainControlForExperimentalAgc::GainControlForExperimentalAgc(
     : data_dumper_(new ApmDataDumper(instance_counter_)),
       real_gain_control_(gain_control),
       volume_(0),
-      crit_capture_(crit_capture) {
-  instance_counter_++;
+      crit_capture_(crit_capture)
+{
+    instance_counter_++;
 }
 
 GainControlForExperimentalAgc::~GainControlForExperimentalAgc() = default;
 
-int GainControlForExperimentalAgc::Enable(bool enable) {
-  return real_gain_control_->Enable(enable);
+int GainControlForExperimentalAgc::Enable(bool enable)
+{
+    return real_gain_control_->Enable(enable);
 }
 
-bool GainControlForExperimentalAgc::is_enabled() const {
-  return real_gain_control_->is_enabled();
+bool GainControlForExperimentalAgc::is_enabled() const
+{
+    return real_gain_control_->is_enabled();
 }
 
-int GainControlForExperimentalAgc::set_stream_analog_level(int level) {
-  rtc::CritScope cs_capture(crit_capture_);
-  data_dumper_->DumpRaw("experimental_gain_control_set_stream_analog_level", 1,
-                        &level);
-  volume_ = level;
-  return AudioProcessing::kNoError;
+int GainControlForExperimentalAgc::set_stream_analog_level(int level)
+{
+    rtc::CritScope cs_capture(crit_capture_);
+    data_dumper_->DumpRaw("experimental_gain_control_set_stream_analog_level", 1,
+                          &level);
+    volume_ = level;
+    return AudioProcessing::kNoError;
 }
 
-int GainControlForExperimentalAgc::stream_analog_level() {
-  rtc::CritScope cs_capture(crit_capture_);
-  data_dumper_->DumpRaw("experimental_gain_control_stream_analog_level", 1,
-                        &volume_);
-  return volume_;
+int GainControlForExperimentalAgc::stream_analog_level()
+{
+    rtc::CritScope cs_capture(crit_capture_);
+    data_dumper_->DumpRaw("experimental_gain_control_stream_analog_level", 1,
+                          &volume_);
+    return volume_;
 }
 
-int GainControlForExperimentalAgc::set_mode(Mode mode) {
-  return AudioProcessing::kNoError;
+int GainControlForExperimentalAgc::set_mode(Mode mode)
+{
+    return AudioProcessing::kNoError;
 }
 
-GainControl::Mode GainControlForExperimentalAgc::mode() const {
-  return GainControl::kAdaptiveAnalog;
+GainControl::Mode GainControlForExperimentalAgc::mode() const
+{
+    return GainControl::kAdaptiveAnalog;
 }
 
-int GainControlForExperimentalAgc::set_target_level_dbfs(int level) {
-  return AudioProcessing::kNoError;
+int GainControlForExperimentalAgc::set_target_level_dbfs(int level)
+{
+    return AudioProcessing::kNoError;
 }
 
-int GainControlForExperimentalAgc::target_level_dbfs() const {
-  return real_gain_control_->target_level_dbfs();
+int GainControlForExperimentalAgc::target_level_dbfs() const
+{
+    return real_gain_control_->target_level_dbfs();
 }
 
-int GainControlForExperimentalAgc::set_compression_gain_db(int gain) {
-  return AudioProcessing::kNoError;
+int GainControlForExperimentalAgc::set_compression_gain_db(int gain)
+{
+    return AudioProcessing::kNoError;
 }
 
-int GainControlForExperimentalAgc::compression_gain_db() const {
-  return real_gain_control_->compression_gain_db();
+int GainControlForExperimentalAgc::compression_gain_db() const
+{
+    return real_gain_control_->compression_gain_db();
 }
 
-int GainControlForExperimentalAgc::enable_limiter(bool enable) {
-  return AudioProcessing::kNoError;
+int GainControlForExperimentalAgc::enable_limiter(bool enable)
+{
+    return AudioProcessing::kNoError;
 }
 
-bool GainControlForExperimentalAgc::is_limiter_enabled() const {
-  return real_gain_control_->is_limiter_enabled();
+bool GainControlForExperimentalAgc::is_limiter_enabled() const
+{
+    return real_gain_control_->is_limiter_enabled();
 }
 
 int GainControlForExperimentalAgc::set_analog_level_limits(int minimum,
-                                                           int maximum) {
-  return AudioProcessing::kNoError;
+        int maximum)
+{
+    return AudioProcessing::kNoError;
 }
 
-int GainControlForExperimentalAgc::analog_level_minimum() const {
-  return real_gain_control_->analog_level_minimum();
+int GainControlForExperimentalAgc::analog_level_minimum() const
+{
+    return real_gain_control_->analog_level_minimum();
 }
 
-int GainControlForExperimentalAgc::analog_level_maximum() const {
-  return real_gain_control_->analog_level_maximum();
+int GainControlForExperimentalAgc::analog_level_maximum() const
+{
+    return real_gain_control_->analog_level_maximum();
 }
 
-bool GainControlForExperimentalAgc::stream_is_saturated() const {
-  return real_gain_control_->stream_is_saturated();
+bool GainControlForExperimentalAgc::stream_is_saturated() const
+{
+    return real_gain_control_->stream_is_saturated();
 }
 
-void GainControlForExperimentalAgc::SetMicVolume(int volume) {
-  rtc::CritScope cs_capture(crit_capture_);
-  volume_ = volume;
+void GainControlForExperimentalAgc::SetMicVolume(int volume)
+{
+    rtc::CritScope cs_capture(crit_capture_);
+    volume_ = volume;
 }
 
-int GainControlForExperimentalAgc::GetMicVolume() {
-  rtc::CritScope cs_capture(crit_capture_);
-  return volume_;
+int GainControlForExperimentalAgc::GetMicVolume()
+{
+    rtc::CritScope cs_capture(crit_capture_);
+    return volume_;
 }
 
-void GainControlForExperimentalAgc::Initialize() {
-  data_dumper_->InitiateNewSetOfRecordings();
+void GainControlForExperimentalAgc::Initialize()
+{
+    data_dumper_->InitiateNewSetOfRecordings();
 }
 
 }  // namespace webrtc

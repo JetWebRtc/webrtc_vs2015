@@ -1,4 +1,4 @@
-//
+﻿//
 // Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
 //
 // Use of this source code is governed by a BSD-style license
@@ -53,8 +53,10 @@
 //
 // TODO(andresp): find out how to get bots to run tests with trials enabled.
 
-namespace webrtc {
-namespace field_trial {
+namespace webrtc
+{
+namespace field_trial
+{
 
 // Returns the group name chosen for the named trial, or the empty string
 // if the trial does not exists.

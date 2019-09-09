@@ -1,4 +1,4 @@
-/*
+﻿/*
  * TechSmith Screen Codec 2 (aka Dora) decoder
  * Copyright (c) 2012 Konstantin Shishkov
  *
@@ -24,16 +24,18 @@
 
 #include <stdint.h>
 
-static const uint8_t tscc2_zigzag[16] = {
-   0,  1,  4,  8,
-   5,  2,  3,  6,
-   9, 12, 13, 10,
-   7, 11, 14, 15
+static const uint8_t tscc2_zigzag[16] =
+{
+    0,  1,  4,  8,
+    5,  2,  3,  6,
+    9, 12, 13, 10,
+    7, 11, 14, 15
 };
 
 #define NUM_VLC_SETS 13
 
-static const uint16_t tscc2_quants[NUM_VLC_SETS][3] = {
+static const uint16_t tscc2_quants[NUM_VLC_SETS][3] =
+{
     {  655,  861, 1130 }, {  983, 1291, 1695 }, { 1311, 1721, 2260 },
     { 1638, 2151, 2825 }, { 1966, 2582, 3390 }, { 2294, 3012, 3955 },
     { 2621, 3442, 4520 }, { 2949, 3872, 5085 }, { 3277, 4303, 5650 },
@@ -43,8 +45,9 @@ static const uint16_t tscc2_quants[NUM_VLC_SETS][3] = {
 
 #define DC_VLC_COUNT 47
 
-static const uint16_t tscc2_dc_vlc_syms[DC_VLC_COUNT] = {
-   0x100, 0xFF, 0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9,
+static const uint16_t tscc2_dc_vlc_syms[DC_VLC_COUNT] =
+{
+    0x100, 0xFF, 0xFE, 0xFD, 0xFC, 0xFB, 0xFA, 0xF9,
     0xF8, 0xF7, 0xF6, 0xF5, 0xF4, 0xF3, 0xF2, 0xF1,
     0xF0, 0xEF, 0xEE, 0xED, 0xEC, 0xEB, 0xEA, 0x17,
     0x16, 0x15, 0x14, 0x13, 0x12, 0x11, 0x10, 0x0F,
@@ -52,7 +55,8 @@ static const uint16_t tscc2_dc_vlc_syms[DC_VLC_COUNT] = {
     0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00,
 };
 
-static const uint16_t tscc2_dc_vlc_codes[DC_VLC_COUNT] = {
+static const uint16_t tscc2_dc_vlc_codes[DC_VLC_COUNT] =
+{
     0x000A, 0x0000, 0x0006, 0x002E, 0x0002, 0x000E, 0x001A, 0x007E,
     0x004E, 0x005A, 0x00E2, 0x01BE, 0x01BA, 0x00BA, 0x0072, 0x0022,
     0x02BE, 0x00BE, 0x033A, 0x03F2, 0x01F2, 0x03A2, 0x0122, 0x0322,
@@ -61,50 +65,80 @@ static const uint16_t tscc2_dc_vlc_codes[DC_VLC_COUNT] = {
     0x0032, 0x007A, 0x0012, 0x001E, 0x0016, 0x0004, 0x0001,
 };
 
-static const uint8_t tscc2_dc_vlc_bits[DC_VLC_COUNT] = {
-     5,  3,  5,  6,  6,  7,  7,  8,
-     8,  8,  8,  9,  9,  9,  9,  9,
+static const uint8_t tscc2_dc_vlc_bits[DC_VLC_COUNT] =
+{
+    5,  3,  5,  6,  6,  7,  7,  8,
+    8,  8,  8,  9,  9,  9,  9,  9,
     10, 10, 10, 10, 10, 10, 10, 10,
     10, 10, 10, 10, 10, 10, 10, 10,
-     9,  9,  9,  9,  9,  8,  8,  8,
-     7,  7,  6,  6,  5,  3,  1,
+    9,  9,  9,  9,  9,  8,  8,  8,
+    7,  7,  6,  6,  5,  3,  1,
 };
 
-static const uint8_t tscc2_nc_vlc_syms[16] = {
+static const uint8_t tscc2_nc_vlc_syms[16] =
+{
     0x0F, 0x0E, 0x0D, 0x0C, 0x0B, 0x0A, 0x09, 0x08,
     0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00,
 };
 
-static const uint16_t tscc2_nc_vlc_codes[NUM_VLC_SETS][16] = {
-    { 0x0023, 0x0003, 0x0031, 0x0021, 0x0011, 0x0053, 0x0013, 0x0001,
-      0x0009, 0x0029, 0x0033, 0x0019, 0x000B, 0x0005, 0x0007, 0x0000, },
-    { 0x0030, 0x0022, 0x0028, 0x0020, 0x0008, 0x0000, 0x0032, 0x0072,
-      0x0010, 0x0002, 0x0012, 0x0018, 0x000A, 0x0004, 0x0006, 0x0001, },
-    { 0x0032, 0x0038, 0x0020, 0x0008, 0x0002, 0x0018, 0x0072, 0x0000,
-      0x0028, 0x0022, 0x0012, 0x0010, 0x000A, 0x0004, 0x0006, 0x0001, },
-    { 0x0032, 0x0010, 0x0072, 0x0030, 0x0022, 0x0038, 0x0008, 0x0028,
-      0x0018, 0x0002, 0x0012, 0x0000, 0x000A, 0x0004, 0x0006, 0x0001, },
-    { 0x0012, 0x0052, 0x0000, 0x0020, 0x0018, 0x0022, 0x0008, 0x0028,
-      0x0038, 0x0002, 0x0032, 0x0010, 0x000A, 0x0004, 0x0006, 0x0001, },
-    { 0x0016, 0x0096, 0x0006, 0x0046, 0x0056, 0x0002, 0x0036, 0x0076,
-      0x0012, 0x0022, 0x0032, 0x0026, 0x000A, 0x000E, 0x0000, 0x0001, },
-    { 0x001A, 0x009A, 0x0032, 0x0072, 0x005A, 0x007A, 0x003A, 0x0002,
-      0x0012, 0x0022, 0x000A, 0x002A, 0x0006, 0x000E, 0x0000, 0x0001, },
-    { 0x002A, 0x00AA, 0x0002, 0x0042, 0x006A, 0x003A, 0x007A, 0x0022,
-      0x0032, 0x0012, 0x000A, 0x001A, 0x0006, 0x000E, 0x0000, 0x0001, },
-    { 0x0042, 0x00C2, 0x0002, 0x000A, 0x004A, 0x003A, 0x007A, 0x0022,
-      0x0012, 0x0032, 0x002A, 0x001A, 0x0006, 0x000E, 0x0000, 0x0001, },
-    { 0x00BA, 0x01BA, 0x003A, 0x0012, 0x0052, 0x007A, 0x0002, 0x0022,
-      0x0032, 0x000A, 0x002A, 0x001A, 0x0000, 0x0004, 0x0006, 0x0001, },
-    { 0x00AA, 0x01AA, 0x002A, 0x0022, 0x0062, 0x006A, 0x0002, 0x0012,
-      0x0032, 0x000A, 0x001A, 0x003A, 0x0000, 0x0004, 0x0006, 0x0001, },
-    { 0x00AA, 0x01AA, 0x002A, 0x0022, 0x0062, 0x006A, 0x0002, 0x0012,
-      0x0032, 0x000A, 0x003A, 0x001A, 0x0000, 0x0004, 0x0006, 0x0001, },
-    { 0x008A, 0x018A, 0x000A, 0x0022, 0x0062, 0x004A, 0x0002, 0x0012,
-      0x0032, 0x002A, 0x001A, 0x003A, 0x0000, 0x0004, 0x0006, 0x0001, },
+static const uint16_t tscc2_nc_vlc_codes[NUM_VLC_SETS][16] =
+{
+    {
+        0x0023, 0x0003, 0x0031, 0x0021, 0x0011, 0x0053, 0x0013, 0x0001,
+        0x0009, 0x0029, 0x0033, 0x0019, 0x000B, 0x0005, 0x0007, 0x0000,
+    },
+    {
+        0x0030, 0x0022, 0x0028, 0x0020, 0x0008, 0x0000, 0x0032, 0x0072,
+        0x0010, 0x0002, 0x0012, 0x0018, 0x000A, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x0032, 0x0038, 0x0020, 0x0008, 0x0002, 0x0018, 0x0072, 0x0000,
+        0x0028, 0x0022, 0x0012, 0x0010, 0x000A, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x0032, 0x0010, 0x0072, 0x0030, 0x0022, 0x0038, 0x0008, 0x0028,
+        0x0018, 0x0002, 0x0012, 0x0000, 0x000A, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x0012, 0x0052, 0x0000, 0x0020, 0x0018, 0x0022, 0x0008, 0x0028,
+        0x0038, 0x0002, 0x0032, 0x0010, 0x000A, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x0016, 0x0096, 0x0006, 0x0046, 0x0056, 0x0002, 0x0036, 0x0076,
+        0x0012, 0x0022, 0x0032, 0x0026, 0x000A, 0x000E, 0x0000, 0x0001,
+    },
+    {
+        0x001A, 0x009A, 0x0032, 0x0072, 0x005A, 0x007A, 0x003A, 0x0002,
+        0x0012, 0x0022, 0x000A, 0x002A, 0x0006, 0x000E, 0x0000, 0x0001,
+    },
+    {
+        0x002A, 0x00AA, 0x0002, 0x0042, 0x006A, 0x003A, 0x007A, 0x0022,
+        0x0032, 0x0012, 0x000A, 0x001A, 0x0006, 0x000E, 0x0000, 0x0001,
+    },
+    {
+        0x0042, 0x00C2, 0x0002, 0x000A, 0x004A, 0x003A, 0x007A, 0x0022,
+        0x0012, 0x0032, 0x002A, 0x001A, 0x0006, 0x000E, 0x0000, 0x0001,
+    },
+    {
+        0x00BA, 0x01BA, 0x003A, 0x0012, 0x0052, 0x007A, 0x0002, 0x0022,
+        0x0032, 0x000A, 0x002A, 0x001A, 0x0000, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x00AA, 0x01AA, 0x002A, 0x0022, 0x0062, 0x006A, 0x0002, 0x0012,
+        0x0032, 0x000A, 0x001A, 0x003A, 0x0000, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x00AA, 0x01AA, 0x002A, 0x0022, 0x0062, 0x006A, 0x0002, 0x0012,
+        0x0032, 0x000A, 0x003A, 0x001A, 0x0000, 0x0004, 0x0006, 0x0001,
+    },
+    {
+        0x008A, 0x018A, 0x000A, 0x0022, 0x0062, 0x004A, 0x0002, 0x0012,
+        0x0032, 0x002A, 0x001A, 0x003A, 0x0000, 0x0004, 0x0006, 0x0001,
+    },
 };
 
-static const uint8_t tscc2_nc_vlc_bits[NUM_VLC_SETS][16] = {
+static const uint8_t tscc2_nc_vlc_bits[NUM_VLC_SETS][16] =
+{
     { 6, 6, 6, 6, 6, 7, 7, 6, 6, 6, 6, 5, 4, 3, 3, 1 },
     { 6, 6, 6, 6, 6, 6, 7, 7, 6, 6, 6, 5, 4, 3, 3, 1 },
     { 7, 6, 6, 6, 6, 6, 7, 6, 6, 6, 6, 5, 4, 3, 3, 1 },
@@ -120,8 +154,9 @@ static const uint8_t tscc2_nc_vlc_bits[NUM_VLC_SETS][16] = {
     { 9, 9, 8, 7, 7, 7, 6, 6, 6, 6, 6, 6, 3, 3, 3, 1 },
 };
 
-static const uint16_t ac_vlc_desc0_syms[172] = {
-   0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
+static const uint16_t ac_vlc_desc0_syms[172] =
+{
+    0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
     0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1, 0xFE0,
     0xFD6, 0xFD5, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB5, 0xFB3, 0xFB2, 0xFB1,
@@ -145,7 +180,8 @@ static const uint16_t ac_vlc_desc0_syms[172] = {
     0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc0_codes[172] = {
+static const uint16_t ac_vlc_desc0_codes[172] =
+{
     0x001F, 0x0D71, 0x013F, 0x006C, 0x00A7, 0x0067, 0x001C, 0x0008,
     0x0005, 0x06F1, 0x002C, 0x04BA, 0x0072, 0x01AA, 0x0002, 0x0006,
     0x06AC, 0x02AF, 0x06EF, 0x018F, 0x000A, 0x0009, 0x02AC, 0x042A,
@@ -170,15 +206,16 @@ static const uint16_t ac_vlc_desc0_codes[172] = {
     0x004F, 0x001A, 0x0004, 0x0003,
 };
 
-static const uint8_t ac_vlc_desc0_bits[172] = {
-     6, 12,  9,  7,  8,  7,  6,  4,
-     3, 11,  9, 11,  9,  9,  6,  4,
+static const uint8_t ac_vlc_desc0_bits[172] =
+{
+    6, 12,  9,  7,  8,  7,  6,  4,
+    3, 11,  9, 11,  9,  9,  6,  4,
     11, 11, 11, 11,  7,  5, 11, 11,
     11, 12,  8,  5, 12, 12, 12,  9,
-     6, 12, 12,  9,  6, 12, 10,  7,
+    6, 12, 12,  9,  6, 12, 10,  7,
     12, 10,  7, 12, 11,  7, 11,  8,
     11,  8, 12, 11,  8, 12,  8, 12,
-     9,  9,  9,  9,  9, 12, 12, 10,
+    9,  9,  9,  9,  9, 12, 12, 10,
     10, 10, 10, 10, 10, 10, 11, 11,
     11, 11, 11, 11, 11, 12, 12, 12,
     12, 11, 12, 12, 12, 12, 12, 12,
@@ -187,16 +224,17 @@ static const uint8_t ac_vlc_desc0_bits[172] = {
     10, 10, 10, 10,  9, 10, 12,  9,
     12,  9, 12,  9, 12,  9, 12,  9,
     12,  8, 11,  8, 11,  8, 11, 11,
-     8, 10,  7, 10,  7, 12, 10,  7,
+    8, 10,  7, 10,  7, 12, 10,  7,
     11, 12,  9,  6, 11, 12, 12,  9,
-     6, 12, 11, 11, 12,  8,  5, 12,
+    6, 12, 11, 11, 12,  8,  5, 12,
     10, 11, 11,  7,  5, 11, 10, 11,
-     9,  9,  6,  4, 12,  9,  7,  8,
-     7,  6,  4,  3,
+    9,  9,  6,  4, 12,  9,  7,  8,
+    7,  6,  4,  3,
 };
 
-static const uint16_t ac_vlc_desc1_syms[169] = {
-   0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
+static const uint16_t ac_vlc_desc1_syms[169] =
+{
+    0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
     0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1, 0xFE0,
     0xFD6, 0xFD5, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3, 0xFB2,
@@ -220,7 +258,8 @@ static const uint16_t ac_vlc_desc1_syms[169] = {
     0x010,
 };
 
-static const uint16_t ac_vlc_desc1_codes[169] = {
+static const uint16_t ac_vlc_desc1_codes[169] =
+{
     0x0019, 0x027D, 0x0084, 0x0044, 0x009D, 0x003D, 0x000A, 0x0002,
     0x0003, 0x00EA, 0x02FD, 0x017A, 0x01C6, 0x00B6, 0x0026, 0x000E,
     0x0095, 0x0260, 0x032A, 0x0360, 0x0006, 0x0005, 0x05B6, 0x036A,
@@ -245,33 +284,35 @@ static const uint16_t ac_vlc_desc1_codes[169] = {
     0x0007,
 };
 
-static const uint8_t ac_vlc_desc1_bits[169] = {
-     6, 12,  8,  7,  8,  7,  6,  4,
-     3, 10, 10, 11,  9,  9,  6,  4,
+static const uint8_t ac_vlc_desc1_bits[169] =
+{
+    6, 12,  8,  7,  8,  7,  6,  4,
+    3, 10, 10, 11,  9,  9,  6,  4,
     11, 10, 10, 10,  7,  5, 12, 11,
     11, 11,  8,  5, 12, 11, 11, 12,
-     9,  6, 12, 12, 11,  9,  6, 12,
+    9,  6, 12, 12, 11,  9,  6, 12,
     12, 10,  7, 11, 10,  7, 11,  7,
     11,  8, 11,  8, 11, 11,  8, 11,
-     9, 12,  9, 12,  9, 12,  9, 12,
-     9, 12, 10, 10, 12, 10, 12, 10,
+    9, 12,  9, 12,  9, 12,  9, 12,
+    9, 12, 10, 10, 12, 10, 12, 10,
     11, 11, 10, 11, 11, 11, 12, 12,
     12, 12, 12, 12, 12, 12, 11, 12,
     12, 12, 12, 12, 12, 12, 12, 12,
     12, 12, 11, 11, 11, 11, 10, 10,
     10, 10, 10, 11, 10, 12,  9, 12,
-     9, 12,  9, 11,  8, 12, 11,  8,
+    9, 12,  9, 11,  8, 12, 11,  8,
     11,  8, 11,  8, 12, 10,  7, 12,
     10,  7, 11, 10,  7, 12, 11,  9,
-     6, 11, 11, 12,  8,  6, 12, 10,
+    6, 11, 11, 12,  8,  6, 12, 10,
     11, 11,  8,  5, 11, 10, 10, 10,
-     7,  5, 10,  9, 11,  9,  9,  6,
-     4, 12,  8,  7,  8,  7,  6,  4,
-     3,
+    7,  5, 10,  9, 11,  9,  9,  6,
+    4, 12,  8,  7,  8,  7,  6,  4,
+    3,
 };
 
-static const uint16_t ac_vlc_desc2_syms[165] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc2_syms[165] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD6, 0xFD5, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6,
     0xFC5, 0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3,
@@ -294,7 +335,8 @@ static const uint16_t ac_vlc_desc2_syms[165] = {
     0x014, 0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc2_codes[165] = {
+static const uint16_t ac_vlc_desc2_codes[165] =
+{
     0x0034, 0x059C, 0x0280, 0x001C, 0x004C, 0x00BD, 0x0020, 0x003C,
     0x000A, 0x0003, 0x00FD, 0x008C, 0x0332, 0x01D5, 0x0055, 0x003E,
     0x0001, 0x07E4, 0x0264, 0x00B2, 0x00A2, 0x005C, 0x0005, 0x02A2,
@@ -318,15 +360,16 @@ static const uint16_t ac_vlc_desc2_codes[165] = {
     0x003D, 0x0008, 0x0002, 0x0006, 0x0007,
 };
 
-static const uint8_t ac_vlc_desc2_bits[165] = {
-     6, 12, 12,  8,  7,  8,  6,  6,
-     4,  3, 10,  9, 11,  9,  9,  6,
-     4, 11, 10, 10, 10,  7,  5, 11,
+static const uint8_t ac_vlc_desc2_bits[165] =
+{
+    6, 12, 12,  8,  7,  8,  6,  6,
+    4,  3, 10,  9, 11,  9,  9,  6,
+    4, 11, 10, 10, 10,  7,  5, 11,
     11, 10, 11,  8,  5, 11, 11, 11,
     12,  9,  6, 11, 12,  9,  6, 12,
     12, 10,  7, 10,  7, 11, 10,  8,
     11,  8, 11,  8, 11,  8, 12, 12,
-     9, 12, 12,  9, 11, 12,  9, 12,
+    9, 12, 12,  9, 11, 12,  9, 12,
     12, 10, 12, 10, 12, 10, 10, 11,
     12, 12, 11, 12, 11, 11, 11, 12,
     11, 11, 11, 12, 12, 12, 11, 11,
@@ -339,11 +382,12 @@ static const uint8_t ac_vlc_desc2_bits[165] = {
     12,  8,  6, 11, 10, 11,  8,  5,
     11,  9, 10, 10,  7,  5, 10,  9,
     11,  9,  9,  6,  4, 12,  8,  7,
-     8,  6,  6,  4,  3,
+    8,  6,  6,  4,  3,
 };
 
-static const uint16_t ac_vlc_desc3_syms[162] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc3_syms[162] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD6, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0,
     0xFC6, 0xFC5, 0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB5, 0xFB3,
@@ -366,7 +410,8 @@ static const uint16_t ac_vlc_desc3_syms[162] = {
     0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc3_codes[162] = {
+static const uint16_t ac_vlc_desc3_codes[162] =
+{
     0x001D, 0x087C, 0x0AE8, 0x003A, 0x001C, 0x0008, 0x000C, 0x0032,
     0x0006, 0x0003, 0x03A5, 0x01EC, 0x01A5, 0x0080, 0x0030, 0x0005,
     0x0001, 0x0040, 0x03FC, 0x02D4, 0x0154, 0x02FC, 0x003C, 0x0015,
@@ -390,32 +435,34 @@ static const uint16_t ac_vlc_desc3_codes[162] = {
     0x000E, 0x0007,
 };
 
-static const uint8_t ac_vlc_desc3_bits[162] = {
-     7, 12, 12,  8,  7,  7,  6,  6,
-     4,  3, 10,  9, 11,  8,  8,  6,
-     4, 10, 10, 12,  9, 10,  7,  5,
+static const uint8_t ac_vlc_desc3_bits[162] =
+{
+    7, 12, 12,  8,  7,  7,  6,  6,
+    4,  3, 10,  9, 11,  8,  8,  6,
+    4, 10, 10, 12,  9, 10,  7,  5,
     11, 10, 10, 11,  8,  5, 10, 11,
     12,  9,  6, 12, 12,  9,  6, 12,
     12, 10,  7, 11, 12, 10,  7, 10,
-     8, 12, 11,  8, 12, 11,  8, 11,
+    8, 12, 11,  8, 12, 11,  8, 11,
     11,  9, 11, 11,  9, 12, 11,  9,
     12,  9, 12, 10, 11, 11, 10, 12,
     12, 11, 12, 12, 11, 10, 11, 12,
     11, 11, 11, 12, 11, 12, 12, 12,
     12, 12, 12, 12, 11, 12, 11, 11,
     11, 11, 12, 11, 12, 10, 10, 10,
-     9, 12,  9, 12,  9, 12,  8, 10,
-     8, 12, 10,  8, 11, 10,  7, 11,
+    9, 12,  9, 12,  9, 12,  8, 10,
+    8, 12, 10,  8, 11, 10,  7, 11,
     11, 12,  9,  7, 12, 11, 12,  9,
-     6, 11, 11, 12,  9,  6, 10, 10,
+    6, 11, 11, 12,  9,  6, 10, 10,
     11,  8,  5, 12, 10, 12,  9, 10,
-     7,  5, 10,  9, 11,  8,  8,  6,
-     4, 12, 12,  8,  7,  8,  6,  6,
-     4,  3,
+    7,  5, 10,  9, 11,  8,  8,  6,
+    4, 12, 12,  8,  7,  8,  6,  6,
+    4,  3,
 };
 
-static const uint16_t ac_vlc_desc4_syms[131] = {
-   0x1000, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1, 0xFF0,
+static const uint16_t ac_vlc_desc4_syms[131] =
+{
+    0x1000, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1, 0xFF0,
     0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1, 0xFE0, 0xFD6,
     0xFD5, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC5, 0xFC3, 0xFC2,
     0xFC1, 0xFC0, 0xFB5, 0xFB3, 0xFB1, 0xFB0, 0xFA5, 0xFA3,
@@ -434,7 +481,8 @@ static const uint16_t ac_vlc_desc4_syms[131] = {
     0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc4_codes[131] = {
+static const uint16_t ac_vlc_desc4_codes[131] =
+{
     0x006B, 0x00BE, 0x0052, 0x00F3, 0x005B, 0x003A, 0x0009, 0x0007,
     0x00DA, 0x03FB, 0x0123, 0x00B3, 0x01B3, 0x002E, 0x0006, 0x030A,
     0x005A, 0x004A, 0x034A, 0x0072, 0x0005, 0x02DA, 0x0173, 0x04FB,
@@ -454,11 +502,12 @@ static const uint16_t ac_vlc_desc4_codes[131] = {
     0x000E, 0x000D, 0x0000,
 };
 
-static const uint8_t ac_vlc_desc4_bits[131] = {
-     7,  8,  7,  8,  7,  6,  4,  3,
+static const uint8_t ac_vlc_desc4_bits[131] =
+{
+    7,  8,  7,  8,  7,  6,  4,  3,
     10, 10, 11,  9,  9,  6,  4, 10,
     10,  9, 10,  7,  5, 10, 11, 12,
-     8,  6, 12, 12,  9,  6, 11, 12,
+    8,  6, 12, 12,  9,  6, 11, 12,
     10,  7, 12, 10,  8, 11,  8, 12,
     11,  8, 11, 11,  9, 12, 11,  9,
     11,  9, 12, 10, 12, 11, 10, 12,
@@ -466,16 +515,17 @@ static const uint8_t ac_vlc_desc4_bits[131] = {
     11, 12, 12, 12, 12, 12, 12, 12,
     12, 11, 12, 11, 12, 11, 12, 11,
     10, 10, 10, 12,  9, 12,  9, 10,
-     8, 12, 10,  8, 12, 10,  7, 11,
+    8, 12, 10,  8, 12, 10,  7, 11,
     11, 12, 10,  7, 12, 11, 12,  9,
-     6, 11, 11, 12,  8,  6, 12, 10,
+    6, 11, 11, 12,  8,  6, 12, 10,
     10, 10,  7,  5, 11,  9, 11,  9,
-     9,  6,  4, 12,  8,  7,  8,  7,
-     6,  4,  2,
+    9,  6,  4, 12,  8,  7,  8,  7,
+    6,  4,  2,
 };
 
-static const uint16_t ac_vlc_desc5_syms[132] = {
-   0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
+static const uint16_t ac_vlc_desc5_syms[132] =
+{
+    0x1000, 0xFF8, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2, 0xFF1,
     0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1, 0xFE0,
     0xFD6, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB5, 0xFB3, 0xFB1, 0xFB0,
@@ -494,7 +544,8 @@ static const uint16_t ac_vlc_desc5_syms[132] = {
     0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc5_codes[132] = {
+static const uint16_t ac_vlc_desc5_codes[132] =
+{
     0x0001, 0x0D62, 0x00BD, 0x0022, 0x009B, 0x0032, 0x0019, 0x0005,
     0x0007, 0x034D, 0x009A, 0x012B, 0x0052, 0x006B, 0x003A, 0x0006,
     0x06FD, 0x017D, 0x081A, 0x031B, 0x031A, 0x0012, 0x0011, 0x0202,
@@ -514,9 +565,10 @@ static const uint16_t ac_vlc_desc5_codes[132] = {
     0x000A, 0x0039, 0x0003, 0x0000,
 };
 
-static const uint8_t ac_vlc_desc5_bits[132] = {
-     7, 12,  8,  7,  8,  6,  6,  4,
-     3, 10,  9, 11,  8,  9,  6,  4,
+static const uint8_t ac_vlc_desc5_bits[132] =
+{
+    7, 12,  8,  7,  8,  6,  6,  4,
+    3, 10,  9, 11,  8,  9,  6,  4,
     11, 10, 12, 10, 10,  7,  5, 10,
     11, 12,  8,  6, 10, 11,  9,  7,
     12, 10,  7, 12, 12, 10,  8, 11,
@@ -526,16 +578,17 @@ static const uint8_t ac_vlc_desc5_bits[132] = {
     11, 11, 12, 12, 12, 11, 11, 12,
     12, 12, 12, 12, 12, 11, 11, 11,
     11, 10, 12, 12, 10, 12, 10, 12,
-     9, 12,  9, 11,  8, 12,  9,  8,
+    9, 12,  9, 11,  8, 12,  9,  8,
     11,  9,  7, 11, 11, 12, 12,  9,
-     7, 11, 10, 11, 11,  8,  6,  9,
+    7, 11, 10, 11, 11,  8,  6,  9,
     12, 10, 10,  7,  5, 11,  9, 11,
-     8,  9,  6,  4, 12,  8,  7,  8,
-     6,  6,  4,  2,
+    8,  9,  6,  4, 12,  8,  7,  8,
+    6,  6,  4,  2,
 };
 
-static const uint16_t ac_vlc_desc6_syms[130] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc6_syms[130] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD6, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0,
     0xFC5, 0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB5, 0xFB3, 0xFB1,
@@ -554,7 +607,8 @@ static const uint16_t ac_vlc_desc6_syms[130] = {
     0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc6_codes[130] = {
+static const uint16_t ac_vlc_desc6_codes[130] =
+{
     0x0022, 0x0BB2, 0x0942, 0x002B, 0x0072, 0x0002, 0x001A, 0x0039,
     0x000D, 0x0007, 0x007B, 0x008E, 0x06DB, 0x00EA, 0x015B, 0x002E,
     0x0006, 0x0959, 0x027B, 0x0A0E, 0x01AB, 0x008A, 0x0012, 0x001E,
@@ -574,28 +628,30 @@ static const uint16_t ac_vlc_desc6_codes[130] = {
     0x0003, 0x0000,
 };
 
-static const uint8_t ac_vlc_desc6_bits[130] = {
-     7, 12, 12,  8,  7,  7,  6,  6,
-     4,  3, 10,  9, 11,  8,  9,  6,
-     4, 12, 10, 12, 10, 10,  7,  5,
+static const uint8_t ac_vlc_desc6_bits[130] =
+{
+    7, 12, 12,  8,  7,  7,  6,  6,
+    4,  3, 10,  9, 11,  8,  9,  6,
+    4, 12, 10, 12, 10, 10,  7,  5,
     11, 11, 12,  8,  6, 10, 11,  9,
-     7, 12, 12, 10,  7, 10, 12, 12,
+    7, 12, 12, 10,  7, 10, 12, 12,
     10,  8, 10, 12, 10,  8, 12, 10,
-     9, 12, 11,  9, 11, 10, 10, 11,
+    9, 12, 11,  9, 11, 10, 10, 11,
     11, 10, 10, 10, 10, 11, 11, 12,
     12, 12, 11, 11, 11, 12, 12, 12,
     12, 11, 11, 12, 10, 12, 11, 12,
     10, 11, 12, 10, 12,  9, 12,  9,
     11,  8, 12, 11,  8, 12, 12,  9,
-     7, 11, 11, 12,  9,  7, 11, 10,
+    7, 11, 11, 12,  9,  7, 11, 10,
     11, 11,  8,  6, 12,  9, 12, 10,
     10,  7,  5, 11,  9, 11,  8,  9,
-     6,  4, 12,  8,  7,  8,  6,  6,
-     4,  2,
+    6,  4, 12,  8,  7,  8,  6,  6,
+    4,  2,
 };
 
-static const uint16_t ac_vlc_desc7_syms[125] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc7_syms[125] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB5, 0xFB3, 0xFB1, 0xFB0,
@@ -613,7 +669,8 @@ static const uint16_t ac_vlc_desc7_syms[125] = {
     0x014, 0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc7_codes[125] = {
+static const uint16_t ac_vlc_desc7_codes[125] =
+{
     0x0053, 0x009A, 0x0EE2, 0x00D3, 0x006A, 0x0052, 0x003A, 0x0035,
     0x000D, 0x0007, 0x0062, 0x0125, 0x0142, 0x0019, 0x01F3, 0x0029,
     0x000E, 0x0082, 0x0ADA, 0x02E3, 0x00E2, 0x0022, 0x0006, 0x0065,
@@ -632,10 +689,11 @@ static const uint16_t ac_vlc_desc7_codes[125] = {
     0x0012, 0x0009, 0x0003, 0x000B, 0x0000,
 };
 
-static const uint8_t ac_vlc_desc7_bits[125] = {
-     8, 11, 12,  8,  7,  7,  6,  6,
-     4,  3,  9,  9, 10,  8,  9,  6,
-     4,  9, 12, 10, 10,  7,  5, 10,
+static const uint8_t ac_vlc_desc7_bits[125] =
+{
+    8, 11, 12,  8,  7,  7,  6,  6,
+    4,  3,  9,  9, 10,  8,  9,  6,
+    4,  9, 12, 10, 10,  7,  5, 10,
     11, 12,  8,  6, 12, 11,  9,  7,
     10, 12, 12, 10,  7, 10, 11, 12,
     10,  8, 11, 10,  8, 12, 10,  9,
@@ -647,12 +705,13 @@ static const uint8_t ac_vlc_desc7_bits[125] = {
     12,  9,  7, 11, 12, 12,  9,  7,
     10, 10, 11, 11,  8,  6, 11, 10,
     12, 10, 10,  7,  5, 11,  8, 10,
-     8,  8,  6,  4, 12, 12,  8,  7,
-     7,  6,  6,  4,  2,
+    8,  8,  6,  4, 12, 12,  8,  7,
+    7,  6,  6,  4,  2,
 };
 
-static const uint16_t ac_vlc_desc8_syms[121] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc8_syms[121] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3, 0xFB1,
@@ -670,7 +729,8 @@ static const uint16_t ac_vlc_desc8_syms[121] = {
     0x010,
 };
 
-static const uint16_t ac_vlc_desc8_codes[121] = {
+static const uint16_t ac_vlc_desc8_codes[121] =
+{
     0x00F6, 0x0676, 0x0EB6, 0x00F3, 0x0056, 0x006A, 0x0039, 0x0003,
     0x000D, 0x0007, 0x00A2, 0x0173, 0x00CA, 0x0025, 0x0082, 0x0019,
     0x0001, 0x00B6, 0x0276, 0x02E3, 0x00B2, 0x0062, 0x001A, 0x0175,
@@ -689,27 +749,29 @@ static const uint16_t ac_vlc_desc8_codes[121] = {
     0x0000,
 };
 
-static const uint8_t ac_vlc_desc8_bits[121] = {
-     8, 11, 12,  8,  7,  7,  6,  6,
-     4,  3,  9,  9, 10,  8,  8,  6,
-     4, 10, 12, 10, 10,  7,  5, 10,
+static const uint8_t ac_vlc_desc8_bits[121] =
+{
+    8, 11, 12,  8,  7,  7,  6,  6,
+    4,  3,  9,  9, 10,  8,  8,  6,
+    4, 10, 12, 10, 10,  7,  5, 10,
     11, 12,  8,  6, 11, 12, 11,  9,
-     7,  9, 11, 12,  9,  7, 11, 12,
+    7,  9, 11, 12,  9,  7, 11, 12,
     12, 10,  8, 12, 12, 10,  9, 10,
     10,  9, 12, 10,  9, 12,  9, 12,
     10, 11, 12, 12, 12, 12, 11, 10,
     11, 11, 12, 11, 11, 11, 12, 10,
     12, 12, 10, 10, 12,  9, 12, 11,
-     9, 12, 11,  8, 12, 12, 10,  7,
+    9, 12, 11,  8, 12, 12, 10,  7,
     11, 12,  9,  7, 10, 10, 11, 11,
-     8,  6, 10, 10, 12, 10, 10,  7,
-     5, 11,  8, 10,  8,  8,  6,  4,
+    8,  6, 10, 10, 12, 10, 10,  7,
+    5, 11,  8, 10,  8,  8,  6,  4,
     11, 12,  8,  7,  7,  6,  6,  4,
-     2,
+    2,
 };
 
-static const uint16_t ac_vlc_desc9_syms[114] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_desc9_syms[114] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC5,
     0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3, 0xFB2,
@@ -726,7 +788,8 @@ static const uint16_t ac_vlc_desc9_syms[114] = {
     0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_desc9_codes[114] = {
+static const uint16_t ac_vlc_desc9_codes[114] =
+{
     0x0061, 0x0403, 0x0DB1, 0x0012, 0x0071, 0x0056, 0x0035, 0x0023,
     0x000D, 0x0007, 0x0243, 0x01D3, 0x026A, 0x00A1, 0x00A2, 0x0011,
     0x000E, 0x01AA, 0x0531, 0x0093, 0x0222, 0x0032, 0x0006, 0x07F2,
@@ -744,26 +807,28 @@ static const uint16_t ac_vlc_desc9_codes[114] = {
     0x000B, 0x0000,
 };
 
-static const uint8_t ac_vlc_desc9_bits[114] = {
-     8, 11, 12,  7,  7,  7,  6,  6,
-     4,  3, 10,  9, 10,  8,  8,  6,
-     4,  9, 12, 10, 10,  7,  5, 11,
+static const uint8_t ac_vlc_desc9_bits[114] =
+{
+    8, 11, 12,  7,  7,  7,  6,  6,
+    4,  3, 10,  9, 10,  8,  8,  6,
+    4,  9, 12, 10, 10,  7,  5, 11,
     11, 12,  8,  6, 10, 11, 11, 12,
-     9,  7, 10, 11, 12,  9,  8, 12,
+    9,  7, 10, 11, 12,  9,  8, 12,
     12, 10,  8, 10, 10,  9, 11,  9,
-     9, 11,  9, 12, 10, 11, 11, 12,
+    9, 11,  9, 12, 10, 11, 11, 12,
     12, 12, 12, 11, 10, 11, 11, 11,
     11, 10, 11, 12, 10, 12, 11, 10,
     10, 11,  9, 12, 11,  8, 12, 12,
     10,  8, 11, 12,  9,  7, 10, 11,
     11,  8,  6,  9, 10, 12, 10, 10,
-     7,  5, 11,  8, 10,  8,  8,  6,
-     4, 11, 12,  8,  6,  7,  6,  6,
-     4,  2,
+    7,  5, 11,  8, 10,  8,  8,  6,
+    4, 11, 12,  8,  6,  7,  6,  6,
+    4,  2,
 };
 
-static const uint16_t ac_vlc_descA_syms[110] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_descA_syms[110] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6,
     0xFC5, 0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3,
@@ -779,7 +844,8 @@ static const uint16_t ac_vlc_descA_syms[110] = {
     0x015, 0x014, 0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_descA_codes[110] = {
+static const uint16_t ac_vlc_descA_codes[110] =
+{
     0x002A, 0x04C5, 0x02A3, 0x004A, 0x0015, 0x0005, 0x0003, 0x0013,
     0x000D, 0x0007, 0x0171, 0x0032, 0x0371, 0x0076, 0x0042, 0x0011,
     0x000E, 0x00AA, 0x04D5, 0x03A3, 0x06A3, 0x0062, 0x001A, 0x06D5,
@@ -796,10 +862,11 @@ static const uint16_t ac_vlc_descA_codes[110] = {
     0x0012, 0x0031, 0x0035, 0x0033, 0x000B, 0x0000,
 };
 
-static const uint8_t ac_vlc_descA_bits[110] = {
-     8, 11, 12,  7,  7,  7,  6,  6,
-     4,  3, 10,  8, 10,  8,  8,  6,
-     4,  9, 12, 10, 11,  7,  5, 11,
+static const uint8_t ac_vlc_descA_bits[110] =
+{
+    8, 11, 12,  7,  7,  7,  6,  6,
+    4,  3, 10,  8, 10,  8,  8,  6,
+    4,  9, 12, 10, 11,  7,  5, 11,
     11, 11, 12,  8,  6,  9, 11, 11,
     12,  9,  7, 11, 12, 12,  9,  8,
     12, 10,  9,  8, 11,  9,  9, 12,
@@ -807,14 +874,15 @@ static const uint8_t ac_vlc_descA_bits[110] = {
     12, 12, 11, 10, 11, 10, 11, 10,
     10, 11, 11,  9, 11, 11,  9, 10,
     11,  9, 12, 10,  8, 11, 11,  9,
-     7, 11, 12, 11, 12,  8,  6, 10,
-     9, 12, 10, 10,  7,  5, 10,  8,
+    7, 11, 12, 11, 12,  8,  6, 10,
+    9, 12, 10, 10,  7,  5, 10,  8,
     10,  8,  8,  6,  4, 11, 12,  8,
-     6,  7,  6,  6,  4,  2,
+    6,  7,  6,  6,  4,  2,
 };
 
-static const uint16_t ac_vlc_descB_syms[101] = {
-   0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
+static const uint16_t ac_vlc_descB_syms[101] =
+{
+    0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6,
     0xFC5, 0xFC3, 0xFC2, 0xFC1, 0xFC0, 0xFB6, 0xFB5, 0xFB3,
@@ -829,7 +897,8 @@ static const uint16_t ac_vlc_descB_syms[101] = {
     0x014, 0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_descB_codes[101] = {
+static const uint16_t ac_vlc_descB_codes[101] =
+{
     0x00EE, 0x03A5, 0x0B73, 0x004E, 0x0035, 0x0015, 0x0023, 0x0013,
     0x000D, 0x0007, 0x0673, 0x01F3, 0x02FE, 0x0096, 0x0133, 0x001E,
     0x0001, 0x0116, 0x00F5, 0x03F5, 0x0473, 0x0052, 0x001A, 0x01D5,
@@ -845,23 +914,25 @@ static const uint16_t ac_vlc_descB_codes[101] = {
     0x0065, 0x0003, 0x0002, 0x000B, 0x0000,
 };
 
-static const uint8_t ac_vlc_descB_bits[101] = {
-     8, 11, 12,  7,  7,  7,  6,  6,
-     4,  3, 11,  9, 10,  8,  9,  6,
-     4,  9, 12, 10, 11,  7,  5, 10,
+static const uint8_t ac_vlc_descB_bits[101] =
+{
+    8, 11, 12,  7,  7,  7,  6,  6,
+    4,  3, 11,  9, 10,  8,  9,  6,
+    4,  9, 12, 10, 11,  7,  5, 10,
     11, 11, 12,  8,  6,  9, 11, 11,
-     9,  7, 11, 11,  9,  8, 10,  9,
-     9, 12,  9,  9, 11,  9, 12, 10,
+    9,  7, 11, 11,  9,  8, 10,  9,
+    9, 12,  9,  9, 11,  9, 12, 10,
     11, 12, 12, 12, 12, 11, 10, 11,
     10, 11, 10, 10, 11, 11,  9, 10,
     11,  9, 11, 10,  8, 12, 12, 10,
-     7, 11, 11, 12,  8,  6, 10, 10,
+    7, 11, 11, 12,  8,  6, 10, 10,
     12, 10, 10,  7,  5, 10,  8, 10,
-     8,  9,  6,  4, 11, 12,  8,  6,
-     7,  6,  5,  4,  2,
+    8,  9,  6,  4, 11, 12,  8,  6,
+    7,  6,  5,  4,  2,
 };
 
-static const uint16_t ac_vlc_descC_syms[96] = {
+static const uint16_t ac_vlc_descC_syms[96] =
+{
     0x1000, 0xFF8, 0xFF7, 0xFF6, 0xFF5, 0xFF4, 0xFF3, 0xFF2,
     0xFF1, 0xFF0, 0xFE6, 0xFE5, 0xFE4, 0xFE3, 0xFE2, 0xFE1,
     0xFE0, 0xFD5, 0xFD4, 0xFD3, 0xFD2, 0xFD1, 0xFD0, 0xFC6,
@@ -876,7 +947,8 @@ static const uint16_t ac_vlc_descC_syms[96] = {
     0x017, 0x016, 0x015, 0x014, 0x013, 0x012, 0x011, 0x010,
 };
 
-static const uint16_t ac_vlc_descC_codes[96] = {
+static const uint16_t ac_vlc_descC_codes[96] =
+{
     0x00DE, 0x072E, 0x0576, 0x006E, 0x0075, 0x0055, 0x0013, 0x0033,
     0x000D, 0x0007, 0x07D2, 0x0052, 0x0065, 0x00CE, 0x0183, 0x003E,
     0x0001, 0x002E, 0x0F35, 0x0003, 0x0243, 0x001A, 0x0006, 0x01A5,
@@ -891,33 +963,37 @@ static const uint16_t ac_vlc_descC_codes[96] = {
     0x0076, 0x00C3, 0x003A, 0x0015, 0x0023, 0x0002, 0x000B, 0x0000,
 };
 
-static const uint8_t ac_vlc_descC_bits[96] = {
-     8, 11, 11,  7,  7,  7,  6,  6,
-     4,  3, 11,  8, 10,  8,  9,  6,
-     4,  9, 12, 10, 11,  7,  5,  9,
+static const uint8_t ac_vlc_descC_bits[96] =
+{
+    8, 11, 11,  7,  7,  7,  6,  6,
+    4,  3, 11,  8, 10,  8,  9,  6,
+    4,  9, 12, 10, 11,  7,  5,  9,
     11, 10, 12,  8,  6, 10, 11, 12,
-     9,  7, 12, 10,  9,  8, 10,  9,
-     9, 11,  9, 12, 10, 11, 11, 12,
+    9,  7, 12, 10,  9,  8, 10,  9,
+    9, 11,  9, 12, 10, 11, 11, 12,
     12, 11, 10,  9, 10, 10, 10, 11,
     11,  9, 11, 11,  9, 10, 10,  8,
     12, 11, 10,  7, 11, 11, 12,  8,
-     6, 10, 10, 12, 10, 10,  7,  5,
+    6, 10, 10, 12, 10, 10,  7,  5,
     10,  9, 10,  8,  8,  6,  4, 11,
     11,  8,  6,  7,  6,  5,  4,  2,
 };
 
-static const int tscc2_ac_vlc_sizes[NUM_VLC_SETS] = {
+static const int tscc2_ac_vlc_sizes[NUM_VLC_SETS] =
+{
     172, 169, 165, 162, 131, 132, 130, 125, 121, 114, 110, 101, 96
 };
 
-static const uint16_t *tscc2_ac_vlc_syms[NUM_VLC_SETS] = {
+static const uint16_t *tscc2_ac_vlc_syms[NUM_VLC_SETS] =
+{
     ac_vlc_desc0_syms, ac_vlc_desc1_syms, ac_vlc_desc2_syms, ac_vlc_desc3_syms,
     ac_vlc_desc4_syms, ac_vlc_desc5_syms, ac_vlc_desc6_syms, ac_vlc_desc7_syms,
     ac_vlc_desc8_syms, ac_vlc_desc9_syms, ac_vlc_descA_syms, ac_vlc_descB_syms,
     ac_vlc_descC_syms,
 };
 
-static const uint16_t *tscc2_ac_vlc_codes[NUM_VLC_SETS] = {
+static const uint16_t *tscc2_ac_vlc_codes[NUM_VLC_SETS] =
+{
     ac_vlc_desc0_codes, ac_vlc_desc1_codes, ac_vlc_desc2_codes,
     ac_vlc_desc3_codes, ac_vlc_desc4_codes, ac_vlc_desc5_codes,
     ac_vlc_desc6_codes, ac_vlc_desc7_codes, ac_vlc_desc8_codes,
@@ -925,7 +1001,8 @@ static const uint16_t *tscc2_ac_vlc_codes[NUM_VLC_SETS] = {
     ac_vlc_descC_codes,
 };
 
-static const uint8_t *tscc2_ac_vlc_bits[NUM_VLC_SETS] = {
+static const uint8_t *tscc2_ac_vlc_bits[NUM_VLC_SETS] =
+{
     ac_vlc_desc0_bits, ac_vlc_desc1_bits, ac_vlc_desc2_bits, ac_vlc_desc3_bits,
     ac_vlc_desc4_bits, ac_vlc_desc5_bits, ac_vlc_desc6_bits, ac_vlc_desc7_bits,
     ac_vlc_desc8_bits, ac_vlc_desc9_bits, ac_vlc_descA_bits, ac_vlc_descB_bits,

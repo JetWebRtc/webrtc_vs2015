@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,14 +16,16 @@
 #include "webrtc/media/base/mediachannel.h"
 #include "webrtc/media/base/mediaengine.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class Call;
 
 }  // namespace webrtc
 
 
-namespace cricket {
+namespace cricket
+{
 
 class VideoMediaChannel;
 class WebRtcVideoDecoderFactory;
@@ -31,33 +33,37 @@ class WebRtcVideoEncoderFactory;
 
 // Video engine implementation that does nothing and can be used in
 // CompositeMediaEngine.
-class NullWebRtcVideoEngine {
- public:
-  NullWebRtcVideoEngine() {}
-  ~NullWebRtcVideoEngine() {}
+class NullWebRtcVideoEngine
+{
+public:
+    NullWebRtcVideoEngine() {}
+    ~NullWebRtcVideoEngine() {}
 
-  void SetExternalDecoderFactory(WebRtcVideoDecoderFactory* decoder_factory) {}
-  void SetExternalEncoderFactory(WebRtcVideoEncoderFactory* encoder_factory) {}
+    void SetExternalDecoderFactory(WebRtcVideoDecoderFactory* decoder_factory) {}
+    void SetExternalEncoderFactory(WebRtcVideoEncoderFactory* encoder_factory) {}
 
-  void Init() {}
+    void Init() {}
 
-  const std::vector<VideoCodec>& codecs() {
-    return codecs_;
-  }
+    const std::vector<VideoCodec>& codecs()
+    {
+        return codecs_;
+    }
 
-  RtpCapabilities GetCapabilities() {
-    RtpCapabilities capabilities;
-    return capabilities;
-  }
+    RtpCapabilities GetCapabilities()
+    {
+        RtpCapabilities capabilities;
+        return capabilities;
+    }
 
-  VideoMediaChannel* CreateChannel(webrtc::Call* call,
-                                   const MediaConfig& config,
-                                   const VideoOptions& options) {
-    return nullptr;
-  }
+    VideoMediaChannel* CreateChannel(webrtc::Call* call,
+                                     const MediaConfig& config,
+                                     const VideoOptions& options)
+    {
+        return nullptr;
+    }
 
- private:
-  std::vector<VideoCodec> codecs_;
+private:
+    std::vector<VideoCodec> codecs_;
 };
 
 }  // namespace cricket

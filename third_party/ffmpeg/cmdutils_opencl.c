@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2013 Lenny Wang
  *
  * This file is part of FFmpeg.
@@ -25,7 +25,8 @@
 #include "libavutil/avstring.h"
 #include "cmdutils.h"
 
-typedef struct {
+typedef struct
+{
     int platform_idx;
     int device_idx;
     char device_name[64];
@@ -33,7 +34,7 @@ typedef struct {
 } OpenCLDeviceBenchmark;
 
 const char *ocl_bench_source = AV_OPENCL_KERNEL(
-inline unsigned char clip_uint8(int a)
+                                   inline unsigned char clip_uint8(int a)
 {
     if (a & (~0xFF))
         return (-a)>>31;
@@ -42,11 +43,11 @@ inline unsigned char clip_uint8(int a)
 }
 
 kernel void unsharp_bench(
-                    global unsigned char *src,
-                    global unsigned char *dst,
-                    global int *mask,
-                    int width,
-                    int height)
+    global unsigned char *src,
+    global unsigned char *dst,
+    global int *mask,
+    int width,
+    int height)
 {
     int i, j, local_idx, lc_idx, sum = 0;
     int2 thread_idx, block_idx, global_idx, lm_idx;
@@ -59,11 +60,13 @@ kernel void unsharp_bench(
     local uchar data[32][32];
     local int lc[128];
 
-    for (i = 0; i <= 1; i++) {
+    for (i = 0; i <= 1; i++)
+    {
         lm_idx.y = -8 + (block_idx.y + i) * 16 + thread_idx.y;
         lm_idx.y = lm_idx.y < 0 ? 0 : lm_idx.y;
         lm_idx.y = lm_idx.y >= height ? height - 1: lm_idx.y;
-        for (j = 0; j <= 1; j++) {
+        for (j = 0; j <= 1; j++)
+        {
             lm_idx.x = -8 + (block_idx.x + j) * 16 + thread_idx.x;
             lm_idx.x = lm_idx.x < 0 ? 0 : lm_idx.x;
             lm_idx.x = lm_idx.x >= width ? width - 1: lm_idx.x;
@@ -76,10 +79,12 @@ kernel void unsharp_bench(
     barrier(CLK_LOCAL_MEM_FENCE);
 
     \n#pragma unroll\n
-    for (i = -4; i <= 4; i++) {
+    for (i = -4; i <= 4; i++)
+    {
         lm_idx.y = 8 + i + thread_idx.y;
         \n#pragma unroll\n
-        for (j = -4; j <= 4; j++) {
+        for (j = -4; j <= 4; j++)
+        {
             lm_idx.x = 8 + j + thread_idx.x;
             lc_idx = (i + 4)*8 + j + 4;
             sum += (int)data[lm_idx.y][lm_idx.x] * lc[lc_idx];
@@ -90,7 +95,7 @@ kernel void unsharp_bench(
     if (global_idx.x < width && global_idx.y < height)
         dst[global_idx.x + global_idx.y*width] = clip_uint8(res);
 }
-);
+                               );
 
 #define OCLCHECK(method, ... )                                                 \
 do {                                                                           \
@@ -139,7 +144,8 @@ static int64_t run_opencl_bench(AVOpenCLExternalEnv *ext_opencl_env)
     size_t local_work_size_2d[2] = {16, 16};
     size_t global_work_size_2d[2] = {(size_t)width, (size_t)height};
 
-    if (!(inbuf = av_malloc(buf_size)) || !(mask = av_malloc(mask_size))) {
+    if (!(inbuf = av_malloc(buf_size)) || !(mask = av_malloc(mask_size)))
+    {
         av_log(NULL, AV_LOG_ERROR, "Out of memory\n");
         ret = AVERROR(ENOMEM);
         goto end;
@@ -154,19 +160,22 @@ static int64_t run_opencl_bench(AVOpenCLExternalEnv *ext_opencl_env)
     kernel_len = strlen(ocl_bench_source);
     program = clCreateProgramWithSource(ext_opencl_env->context, 1, &ocl_bench_source,
                                         &kernel_len, &status);
-    if (status != CL_SUCCESS || !program) {
+    if (status != CL_SUCCESS || !program)
+    {
         av_log(NULL, AV_LOG_ERROR, "OpenCL unable to create benchmark program\n");
         ret = AVERROR_EXTERNAL;
         goto end;
     }
     status = clBuildProgram(program, 1, &(ext_opencl_env->device_id), NULL, NULL, NULL);
-    if (status != CL_SUCCESS) {
+    if (status != CL_SUCCESS)
+    {
         av_log(NULL, AV_LOG_ERROR, "OpenCL unable to build benchmark program\n");
         ret = AVERROR_EXTERNAL;
         goto end;
     }
     kernel = clCreateKernel(program, "unsharp_bench", &status);
-    if (status != CL_SUCCESS) {
+    if (status != CL_SUCCESS)
+    {
         av_log(NULL, AV_LOG_ERROR, "OpenCL unable to create benchmark kernel\n");
         ret = AVERROR_EXTERNAL;
         goto end;
@@ -221,21 +230,26 @@ int opt_opencl_bench(void *optctx, const char *opt, const char *arg)
     av_opencl_get_device_list(&device_list);
     for (i = 0; i < device_list->platform_num; i++)
         nb_devices += device_list->platform_node[i]->device_num;
-    if (!nb_devices) {
+    if (!nb_devices)
+    {
         av_log(NULL, AV_LOG_ERROR, "No OpenCL device detected!\n");
         return AVERROR(EINVAL);
     }
-    if (!(devices = av_malloc_array(nb_devices, sizeof(OpenCLDeviceBenchmark)))) {
+    if (!(devices = av_malloc_array(nb_devices, sizeof(OpenCLDeviceBenchmark))))
+    {
         av_log(NULL, AV_LOG_ERROR, "Could not allocate buffer\n");
         return AVERROR(ENOMEM);
     }
 
-    for (i = 0; i < device_list->platform_num; i++) {
-        for (j = 0; j < device_list->platform_node[i]->device_num; j++) {
+    for (i = 0; i < device_list->platform_num; i++)
+    {
+        for (j = 0; j < device_list->platform_node[i]->device_num; j++)
+        {
             device_node = device_list->platform_node[i]->device_node[j];
             platform = device_list->platform_node[i]->platform_id;
             score = av_opencl_benchmark(device_node, platform, run_opencl_bench);
-            if (score > 0) {
+            if (score > 0)
+            {
                 devices[count].platform_idx = i;
                 devices[count].device_idx = j;
                 devices[count].runtime = score;
@@ -262,7 +276,8 @@ int opt_opencl(void *optctx, const char *opt, const char *arg)
     char *key, *value;
     const char *opts = arg;
     int ret = 0;
-    while (*opts) {
+    while (*opts)
+    {
         ret = av_opt_get_key_value(&opts, "=", ":", 0, &key, &value);
         if (ret < 0)
             return ret;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2012 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -28,7 +28,8 @@
 
 #include <stdio.h>
 
-namespace webrtc {
+namespace webrtc
+{
 
 typedef const unsigned char* (*GetCategoryEnabledPtr)(const char* name);
 typedef void (*AddTraceEventPtr)(char phase,
@@ -51,27 +52,30 @@ void SetupEventTracer(
 
 // This class defines interface for the event tracing system to call
 // internally. Do not call these methods directly.
-class EventTracer {
- public:
-  static const unsigned char* GetCategoryEnabled(
-      const char* name);
+class EventTracer
+{
+public:
+    static const unsigned char* GetCategoryEnabled(
+        const char* name);
 
-  static void AddTraceEvent(
-      char phase,
-      const unsigned char* category_enabled,
-      const char* name,
-      unsigned long long id,
-      int num_args,
-      const char** arg_names,
-      const unsigned char* arg_types,
-      const unsigned long long* arg_values,
-      unsigned char flags);
+    static void AddTraceEvent(
+        char phase,
+        const unsigned char* category_enabled,
+        const char* name,
+        unsigned long long id,
+        int num_args,
+        const char** arg_names,
+        const unsigned char* arg_types,
+        const unsigned long long* arg_values,
+        unsigned char flags);
 };
 
 }  // namespace webrtc
 
-namespace rtc {
-namespace tracing {
+namespace rtc
+{
+namespace tracing
+{
 // Set up internal event tracer.
 void SetupInternalTracer();
 bool StartInternalCapture(const char* filename);

@@ -1,4 +1,4 @@
-/***************************************************************************
+﻿/***************************************************************************
  *
  *  Copyright (C) 1998-1999 Microsoft Corporation.  All Rights Reserved.
  *
@@ -29,16 +29,18 @@ typedef DWORD DXFILELOADOPTIONS;
 #define DXFILELOAD_FROMSTREAM 0x04L
 #define DXFILELOAD_FROMURL 0x08L
 
-typedef struct _DXFILELOADRESOURCE {
+typedef struct _DXFILELOADRESOURCE
+{
     HMODULE hModule;
     LPCTSTR lpName;
     LPCTSTR lpType;
-}DXFILELOADRESOURCE, *LPDXFILELOADRESOURCE;
+} DXFILELOADRESOURCE, *LPDXFILELOADRESOURCE;
 
-typedef struct _DXFILELOADMEMORY {
+typedef struct _DXFILELOADMEMORY
+{
     LPVOID lpMemory;
     DWORD dSize;
-}DXFILELOADMEMORY, *LPDXFILELOADMEMORY;
+} DXFILELOADMEMORY, *LPDXFILELOADMEMORY;
 
 /*
  * DirectX File object types.

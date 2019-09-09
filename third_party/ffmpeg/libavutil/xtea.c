@@ -1,4 +1,4 @@
-/*
+﻿/*
  * A 32-bit implementation of the XTEA algorithm
  * Copyright (c) 2012 Samuel Pitoiset
  *
@@ -61,12 +61,14 @@ static void xtea_crypt_ecb(AVXTEA *ctx, uint8_t *dst, const uint8_t *src,
     v0 = AV_RB32(src);
     v1 = AV_RB32(src + 4);
 
-    if (decrypt) {
+    if (decrypt)
+    {
 #if CONFIG_SMALL
         int i;
         uint32_t delta = 0x9E3779B9U, sum = delta * 32;
 
-        for (i = 0; i < 32; i++) {
+        for (i = 0; i < 32; i++)
+        {
             v1 -= (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sum + ctx->key[(sum >> 11) & 3]);
             sum -= delta;
             v0 -= (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sum + ctx->key[sum & 3]);
@@ -109,17 +111,21 @@ static void xtea_crypt_ecb(AVXTEA *ctx, uint8_t *dst, const uint8_t *src,
         DSTEP(0x3C6EF372U, k2, k1);
         DSTEP(0x9E3779B9U, k3, k0);
 #endif
-        if (iv) {
+        if (iv)
+        {
             v0 ^= AV_RB32(iv);
             v1 ^= AV_RB32(iv + 4);
             memcpy(iv, src, 8);
         }
-    } else {
+    }
+    else
+    {
 #if CONFIG_SMALL
         int i;
         uint32_t sum = 0, delta = 0x9E3779B9U;
 
-        for (i = 0; i < 32; i++) {
+        for (i = 0; i < 32; i++)
+        {
             v0 += (((v1 << 4) ^ (v1 >> 5)) + v1) ^ (sum + ctx->key[sum & 3]);
             sum += delta;
             v1 += (((v0 << 4) ^ (v0 >> 5)) + v0) ^ (sum + ctx->key[(sum >> 11) & 3]);
@@ -172,21 +178,29 @@ void av_xtea_crypt(AVXTEA *ctx, uint8_t *dst, const uint8_t *src, int count,
 {
     int i;
 
-    if (decrypt) {
-        while (count--) {
+    if (decrypt)
+    {
+        while (count--)
+        {
             xtea_crypt_ecb(ctx, dst, src, decrypt, iv);
 
             src   += 8;
             dst   += 8;
         }
-    } else {
-        while (count--) {
-            if (iv) {
+    }
+    else
+    {
+        while (count--)
+        {
+            if (iv)
+            {
                 for (i = 0; i < 8; i++)
                     dst[i] = src[i] ^ iv[i];
                 xtea_crypt_ecb(ctx, dst, dst, decrypt, NULL);
                 memcpy(iv, dst, 8);
-            } else {
+            }
+            else
+            {
                 xtea_crypt_ecb(ctx, dst, src, decrypt, NULL);
             }
             src   += 8;
@@ -200,22 +214,36 @@ void av_xtea_crypt(AVXTEA *ctx, uint8_t *dst, const uint8_t *src, int count,
 
 #define XTEA_NUM_TESTS 6
 
-static const uint8_t xtea_test_key[XTEA_NUM_TESTS][16] = {
-    { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
-    { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
-    { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-      0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f },
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 },
-    { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 }
+static const uint8_t xtea_test_key[XTEA_NUM_TESTS][16] =
+{
+    {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    },
+    {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    },
+    {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    },
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    },
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    },
+    {
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+    }
 };
 
-static const uint8_t xtea_test_pt[XTEA_NUM_TESTS][8] = {
+static const uint8_t xtea_test_pt[XTEA_NUM_TESTS][8] =
+{
     { 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48 },
     { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 },
     { 0x5a, 0x5b, 0x6e, 0x27, 0x89, 0x48, 0xd7, 0x7f },
@@ -224,7 +252,8 @@ static const uint8_t xtea_test_pt[XTEA_NUM_TESTS][8] = {
     { 0x70, 0xe1, 0x22, 0x5d, 0x6e, 0x4e, 0x76, 0x55 }
 };
 
-static const uint8_t xtea_test_ct[XTEA_NUM_TESTS][8] = {
+static const uint8_t xtea_test_ct[XTEA_NUM_TESTS][8] =
+{
     { 0x49, 0x7d, 0xf3, 0xd0, 0x72, 0x61, 0x2c, 0xb5 },
     { 0xe7, 0x8f, 0x2d, 0x13, 0x74, 0x43, 0x41, 0xd8 },
     { 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41, 0x41 },
@@ -238,7 +267,8 @@ static void test_xtea(AVXTEA *ctx, uint8_t *dst, const uint8_t *src,
                       const char *test)
 {
     av_xtea_crypt(ctx, dst, src, len, iv, dir);
-    if (memcmp(dst, ref, 8*len)) {
+    if (memcmp(dst, ref, 8*len))
+    {
         int i;
         printf("%s failed\ngot      ", test);
         for (i = 0; i < 8*len; i++)
@@ -260,7 +290,8 @@ int main(void)
     uint8_t ct[32];
     uint8_t pl[32];
 
-    for (i = 0; i < XTEA_NUM_TESTS; i++) {
+    for (i = 0; i < XTEA_NUM_TESTS; i++)
+    {
         av_xtea_init(&ctx, xtea_test_key[i]);
 
         test_xtea(&ctx, buf, xtea_test_pt[i], xtea_test_ct[i], 1, NULL, 0, "encryption");

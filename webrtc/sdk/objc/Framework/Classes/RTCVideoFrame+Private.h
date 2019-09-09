@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,13 +17,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RTCVideoFrame ()
 
-@property(nonatomic, readonly)
+    @property(nonatomic, readonly)
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> i420Buffer;
 
 - (instancetype)initWithVideoBuffer:
-                    (rtc::scoped_refptr<webrtc::VideoFrameBuffer>)videoBuffer
-                           rotation:(webrtc::VideoRotation)rotation
-                        timeStampNs:(int64_t)timeStampNs
+    (rtc::scoped_refptr<webrtc::VideoFrameBuffer>)videoBuffer
+    rotation:(webrtc::VideoRotation)rotation
+    timeStampNs:(int64_t)timeStampNs
     NS_DESIGNATED_INITIALIZER;
 
 @end

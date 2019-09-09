@@ -1,4 +1,4 @@
-/*!
+﻿/*!
  * \copy
  *     Copyright (c)  2013, Cisco Systems
  *     All rights reserved.
@@ -40,16 +40,19 @@
 #include "picture.h"
 #include "parameter_sets.h"
 
-namespace WelsDec {
+namespace WelsDec
+{
 
 /*
  *  Reference picture list reordering syntax, refer to page 64 in JVT X201wcm
  */
-typedef struct TagRefPicListReorderSyntax {
-struct {
-  uint32_t    uiAbsDiffPicNumMinus1;
-  uint16_t    uiLongTermPicNum;
-  uint16_t    uiReorderingOfPicNumsIdc;
+typedef struct TagRefPicListReorderSyntax
+{
+struct
+{
+    uint32_t    uiAbsDiffPicNumMinus1;
+    uint16_t    uiLongTermPicNum;
+    uint16_t    uiReorderingOfPicNumsIdc;
 } sReorderingSyn[LIST_A][MAX_REF_PIC_COUNT];
 bool          bRefPicListReorderingFlag[LIST_A];
 } SRefPicListReorderSyn, *PRefPicListReorderSyn;
@@ -57,28 +60,32 @@ bool          bRefPicListReorderingFlag[LIST_A];
 /*
  *  Prediction weight table syntax, refer to page 65 in JVT X201wcm
  */
-typedef struct TagPredWeightTabSyntax {
+typedef struct TagPredWeightTabSyntax
+{
 uint32_t  uiLumaLog2WeightDenom;
 uint32_t  uiChromaLog2WeightDenom;
-struct {
-  int32_t iLumaWeight[MAX_REF_PIC_COUNT];
-  int32_t iLumaOffset[MAX_REF_PIC_COUNT];
-  int32_t iChromaWeight[MAX_REF_PIC_COUNT][2];
-  int32_t iChromaOffset[MAX_REF_PIC_COUNT][2];
-  bool    bLumaWeightFlag;
-  bool    bChromaWeightFlag;
+struct
+{
+    int32_t iLumaWeight[MAX_REF_PIC_COUNT];
+    int32_t iLumaOffset[MAX_REF_PIC_COUNT];
+    int32_t iChromaWeight[MAX_REF_PIC_COUNT][2];
+    int32_t iChromaOffset[MAX_REF_PIC_COUNT][2];
+    bool    bLumaWeightFlag;
+    bool    bChromaWeightFlag;
 } sPredList[LIST_A];
 } SPredWeightTabSyn,*PPredWeightTabSyn;
 
 /* Decoded reference picture marking syntax, refer to Page 66 in JVT X201wcm */
-typedef struct TagRefPicMarking {
-struct {
-  uint32_t    uiMmcoType;
-  int32_t     iShortFrameNum;
-  int32_t     iDiffOfPicNum;
-  uint32_t    uiLongTermPicNum;
-  int32_t     iLongTermFrameIdx;
-  int32_t     iMaxLongTermFrameIdx;
+typedef struct TagRefPicMarking
+{
+struct
+{
+    uint32_t    uiMmcoType;
+    int32_t     iShortFrameNum;
+    int32_t     iDiffOfPicNum;
+    uint32_t    uiLongTermPicNum;
+    int32_t     iLongTermFrameIdx;
+    int32_t     iMaxLongTermFrameIdx;
 } sMmcoRef[MAX_MMCO_COUNT];
 
 bool          bNoOutputOfPriorPicsFlag;
@@ -87,19 +94,22 @@ bool          bAdaptiveRefPicMarkingModeFlag;
 } SRefPicMarking, *PRefPicMarking;
 
 /* Decode reference base picture marking syntax in Page 396 of JVT X201wcm */
-typedef struct TagRefBasePicMarkingSyn {
-struct {
-  uint32_t      uiMmcoType;
-  int32_t       iShortFrameNum;
-  uint32_t      uiDiffOfPicNums;
-  uint32_t      uiLongTermPicNum; //should uint32_t, cover larger range of iFrameNum.
+typedef struct TagRefBasePicMarkingSyn
+{
+struct
+{
+    uint32_t      uiMmcoType;
+    int32_t       iShortFrameNum;
+    uint32_t      uiDiffOfPicNums;
+    uint32_t      uiLongTermPicNum; //should uint32_t, cover larger range of iFrameNum.
 } mmco_base[MAX_MMCO_COUNT];    // MAX_REF_PIC for reference picture based on frame
 
 bool            bAdaptiveRefBasePicMarkingModeFlag;
 } SRefBasePicMarking, *PRefBasePicMarking;
 
 /* Header of slice syntax elements, refer to Page 63 in JVT X201wcm */
-typedef struct TagSliceHeaders {
+typedef struct TagSliceHeaders
+{
 /*****************************slice header syntax and generated****************************/
 int32_t         iFirstMbInSlice;
 int32_t         iFrameNum;
@@ -142,7 +152,8 @@ int16_t         iPadding2Bytes;
 
 
 /* Slice header in scalable extension syntax, refer to Page 394 in JVT X201wcm */
-typedef struct TagSliceHeaderExt {
+typedef struct TagSliceHeaderExt
+{
 SSliceHeader    sSliceHeader;
 PSubsetSps      pSubsetSps;
 
@@ -176,7 +187,8 @@ uint8_t         uiScanIdxEnd;
 } SSliceHeaderExt, *PSliceHeaderExt;
 
 
-typedef struct TagSlice {
+typedef struct TagSlice
+{
 /*******************************slice_header****************************/
 SSliceHeaderExt sSliceHeaderExt;
 

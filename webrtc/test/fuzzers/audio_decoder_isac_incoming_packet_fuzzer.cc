@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -11,9 +11,11 @@
 #include "webrtc/modules/audio_coding/codecs/isac/main/include/audio_decoder_isac.h"
 #include "webrtc/test/fuzzers/audio_decoder_fuzzer.h"
 
-namespace webrtc {
-void FuzzOneInput(const uint8_t* data, size_t size) {
-  AudioDecoderIsac dec(16000);
-  FuzzAudioDecoderIncomingPacket(data, size, &dec);
+namespace webrtc
+{
+void FuzzOneInput(const uint8_t* data, size_t size)
+{
+    AudioDecoderIsac dec(16000);
+    FuzzAudioDecoderIncomingPacket(data, size, &dec);
 }
 }  // namespace webrtc

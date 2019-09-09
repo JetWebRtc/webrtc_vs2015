@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,29 +17,32 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class AggregatedCounter;
 class Clock;
 class Samples;
 
 // |StatsCounterObserver| is called periodically when a metric is updated.
-class StatsCounterObserver {
- public:
-  virtual void OnMetricUpdated(int sample) = 0;
+class StatsCounterObserver
+{
+public:
+    virtual void OnMetricUpdated(int sample) = 0;
 
-  virtual ~StatsCounterObserver() {}
+    virtual ~StatsCounterObserver() {}
 };
 
-struct AggregatedStats {
-  std::string ToString() const;
-  std::string ToStringWithMultiplier(int multiplier) const;
+struct AggregatedStats
+{
+    std::string ToString() const;
+    std::string ToStringWithMultiplier(int multiplier) const;
 
-  int64_t num_samples = 0;
-  int min = -1;
-  int max = -1;
-  int average = -1;
-  // TODO(asapersson): Consider adding median/percentiles.
+    int64_t num_samples = 0;
+    int min = -1;
+    int max = -1;
+    int average = -1;
+    // TODO(asapersson): Consider adding median/percentiles.
 };
 
 // Classes which periodically computes a metric.
@@ -79,65 +82,66 @@ struct AggregatedStats {
 
 // Note: StatsCounter takes ownership of |observer|.
 
-class StatsCounter {
- public:
-  virtual ~StatsCounter();
+class StatsCounter
+{
+public:
+    virtual ~StatsCounter();
 
-  // Gets metric within an interval. Returns true on success false otherwise.
-  virtual bool GetMetric(int* metric) const = 0;
+    // Gets metric within an interval. Returns true on success false otherwise.
+    virtual bool GetMetric(int* metric) const = 0;
 
-  // Gets the value to use for an interval without samples.
-  virtual int GetValueForEmptyInterval() const = 0;
+    // Gets the value to use for an interval without samples.
+    virtual int GetValueForEmptyInterval() const = 0;
 
-  // Gets aggregated stats (i.e. aggregate of periodically computed metrics).
-  AggregatedStats GetStats();
+    // Gets aggregated stats (i.e. aggregate of periodically computed metrics).
+    AggregatedStats GetStats();
 
-  // Reports metrics for elapsed intervals to AggregatedCounter and GetStats.
-  AggregatedStats ProcessAndGetStats();
+    // Reports metrics for elapsed intervals to AggregatedCounter and GetStats.
+    AggregatedStats ProcessAndGetStats();
 
-  // Reports metrics for elapsed intervals to AggregatedCounter and pauses stats
-  // (i.e. empty intervals will be discarded until next sample is added).
-  void ProcessAndPause();
+    // Reports metrics for elapsed intervals to AggregatedCounter and pauses stats
+    // (i.e. empty intervals will be discarded until next sample is added).
+    void ProcessAndPause();
 
-  // As above with a minimum pause time. Added samples within this interval will
-  // not resume the stats (i.e. stop the pause).
-  void ProcessAndPauseForDuration(int64_t min_pause_time_ms);
+    // As above with a minimum pause time. Added samples within this interval will
+    // not resume the stats (i.e. stop the pause).
+    void ProcessAndPauseForDuration(int64_t min_pause_time_ms);
 
-  // Reports metrics for elapsed intervals to AggregatedCounter and stops pause.
-  void ProcessAndStopPause();
+    // Reports metrics for elapsed intervals to AggregatedCounter and stops pause.
+    void ProcessAndStopPause();
 
-  // Checks if a sample has been added (i.e. Add or Set called).
-  bool HasSample() const;
+    // Checks if a sample has been added (i.e. Add or Set called).
+    bool HasSample() const;
 
- protected:
-  StatsCounter(Clock* clock,
-               int64_t process_intervals_ms,
-               bool include_empty_intervals,
-               StatsCounterObserver* observer);
+protected:
+    StatsCounter(Clock* clock,
+                 int64_t process_intervals_ms,
+                 bool include_empty_intervals,
+                 StatsCounterObserver* observer);
 
-  void Add(int sample);
-  void Set(int64_t sample, uint32_t stream_id);
-  void SetLast(int64_t sample, uint32_t stream_id);
+    void Add(int sample);
+    void Set(int64_t sample, uint32_t stream_id);
+    void SetLast(int64_t sample, uint32_t stream_id);
 
-  const bool include_empty_intervals_;
-  const int64_t process_intervals_ms_;
-  const std::unique_ptr<AggregatedCounter> aggregated_counter_;
-  const std::unique_ptr<Samples> samples_;
+    const bool include_empty_intervals_;
+    const int64_t process_intervals_ms_;
+    const std::unique_ptr<AggregatedCounter> aggregated_counter_;
+    const std::unique_ptr<Samples> samples_;
 
- private:
-  bool TimeToProcess(int* num_elapsed_intervals);
-  void TryProcess();
-  void ReportMetricToAggregatedCounter(int value, int num_values_to_add) const;
-  bool IncludeEmptyIntervals() const;
-  void Resume();
-  void ResumeIfMinTimePassed();
+private:
+    bool TimeToProcess(int* num_elapsed_intervals);
+    void TryProcess();
+    void ReportMetricToAggregatedCounter(int value, int num_values_to_add) const;
+    bool IncludeEmptyIntervals() const;
+    void Resume();
+    void ResumeIfMinTimePassed();
 
-  Clock* const clock_;
-  const std::unique_ptr<StatsCounterObserver> observer_;
-  int64_t last_process_time_ms_;
-  bool paused_;
-  int64_t pause_time_ms_;
-  int64_t min_pause_time_ms_;
+    Clock* const clock_;
+    const std::unique_ptr<StatsCounterObserver> observer_;
+    int64_t last_process_time_ms_;
+    bool paused_;
+    int64_t pause_time_ms_;
+    int64_t min_pause_time_ms_;
 };
 
 // AvgCounter: average of samples
@@ -150,22 +154,23 @@ class StatsCounter {
 //                            in the stats. The value for an interval is
 //                            determined by GetValueForEmptyInterval().
 //
-class AvgCounter : public StatsCounter {
- public:
-  AvgCounter(Clock* clock,
-             StatsCounterObserver* observer,
-             bool include_empty_intervals);
-  ~AvgCounter() override {}
+class AvgCounter : public StatsCounter
+{
+public:
+    AvgCounter(Clock* clock,
+               StatsCounterObserver* observer,
+               bool include_empty_intervals);
+    ~AvgCounter() override {}
 
-  void Add(int sample);
+    void Add(int sample);
 
- private:
-  bool GetMetric(int* metric) const override;
+private:
+    bool GetMetric(int* metric) const override;
 
-  // Returns the last computed metric (i.e. from GetMetric).
-  int GetValueForEmptyInterval() const override;
+    // Returns the last computed metric (i.e. from GetMetric).
+    int GetValueForEmptyInterval() const override;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(AvgCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(AvgCounter);
 };
 
 // MaxCounter: maximum of samples
@@ -174,20 +179,21 @@ class AvgCounter : public StatsCounter {
 //           | Add(5) Add(1) Add(6) | Add(5)      Add(5)  |
 // GetMetric | max: (5, 1, 6)       | max: (5, 5)         |
 //
-class MaxCounter : public StatsCounter {
- public:
-  MaxCounter(Clock* clock,
-             StatsCounterObserver* observer,
-             int64_t process_intervals_ms);
-  ~MaxCounter() override {}
+class MaxCounter : public StatsCounter
+{
+public:
+    MaxCounter(Clock* clock,
+               StatsCounterObserver* observer,
+               int64_t process_intervals_ms);
+    ~MaxCounter() override {}
 
-  void Add(int sample);
+    void Add(int sample);
 
- private:
-  bool GetMetric(int* metric) const override;
-  int GetValueForEmptyInterval() const override;
+private:
+    bool GetMetric(int* metric) const override;
+    int GetValueForEmptyInterval() const override;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(MaxCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(MaxCounter);
 };
 
 // PercentCounter: percentage of samples
@@ -196,18 +202,19 @@ class MaxCounter : public StatsCounter {
 //           | Add(T) Add(F) Add(T) | Add(F)      Add(T)  |
 // GetMetric | 100 * 2 / 3          | 100 * 1 / 2         |
 //
-class PercentCounter : public StatsCounter {
- public:
-  PercentCounter(Clock* clock, StatsCounterObserver* observer);
-  ~PercentCounter() override {}
+class PercentCounter : public StatsCounter
+{
+public:
+    PercentCounter(Clock* clock, StatsCounterObserver* observer);
+    ~PercentCounter() override {}
 
-  void Add(bool sample);
+    void Add(bool sample);
 
- private:
-  bool GetMetric(int* metric) const override;
-  int GetValueForEmptyInterval() const override;
+private:
+    bool GetMetric(int* metric) const override;
+    int GetValueForEmptyInterval() const override;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(PercentCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(PercentCounter);
 };
 
 // PermilleCounter: permille of samples
@@ -216,18 +223,19 @@ class PercentCounter : public StatsCounter {
 //           | Add(T) Add(F) Add(T) | Add(F)    Add(T)    |
 // GetMetric | 1000 *  2 / 3        | 1000 * 1 / 2        |
 //
-class PermilleCounter : public StatsCounter {
- public:
-  PermilleCounter(Clock* clock, StatsCounterObserver* observer);
-  ~PermilleCounter() override {}
+class PermilleCounter : public StatsCounter
+{
+public:
+    PermilleCounter(Clock* clock, StatsCounterObserver* observer);
+    ~PermilleCounter() override {}
 
-  void Add(bool sample);
+    void Add(bool sample);
 
- private:
-  bool GetMetric(int* metric) const override;
-  int GetValueForEmptyInterval() const override;
+private:
+    bool GetMetric(int* metric) const override;
+    int GetValueForEmptyInterval() const override;
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(PermilleCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(PermilleCounter);
 };
 
 // RateCounter: units per second
@@ -241,20 +249,21 @@ class PermilleCounter : public StatsCounter {
 //                            in the stats. The value for an interval is
 //                            determined by GetValueForEmptyInterval().
 //
-class RateCounter : public StatsCounter {
- public:
-  RateCounter(Clock* clock,
-              StatsCounterObserver* observer,
-              bool include_empty_intervals);
-  ~RateCounter() override {}
+class RateCounter : public StatsCounter
+{
+public:
+    RateCounter(Clock* clock,
+                StatsCounterObserver* observer,
+                bool include_empty_intervals);
+    ~RateCounter() override {}
 
-  void Add(int sample);
+    void Add(int sample);
 
- private:
-  bool GetMetric(int* metric) const override;
-  int GetValueForEmptyInterval() const override;  // Returns zero.
+private:
+    bool GetMetric(int* metric) const override;
+    int GetValueForEmptyInterval() const override;  // Returns zero.
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RateCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(RateCounter);
 };
 
 // RateAccCounter: units per second (used for counters)
@@ -268,24 +277,25 @@ class RateCounter : public StatsCounter {
 //                            in the stats. The value for an interval is
 //                            determined by GetValueForEmptyInterval().
 //
-class RateAccCounter : public StatsCounter {
- public:
-  RateAccCounter(Clock* clock,
-                 StatsCounterObserver* observer,
-                 bool include_empty_intervals);
-  ~RateAccCounter() override {}
+class RateAccCounter : public StatsCounter
+{
+public:
+    RateAccCounter(Clock* clock,
+                   StatsCounterObserver* observer,
+                   bool include_empty_intervals);
+    ~RateAccCounter() override {}
 
-  void Set(int64_t sample, uint32_t stream_id);
+    void Set(int64_t sample, uint32_t stream_id);
 
-  // Sets the value for previous interval.
-  // To be used if a value other than zero is initially required.
-  void SetLast(int64_t sample, uint32_t stream_id);
+    // Sets the value for previous interval.
+    // To be used if a value other than zero is initially required.
+    void SetLast(int64_t sample, uint32_t stream_id);
 
- private:
-  bool GetMetric(int* metric) const override;
-  int GetValueForEmptyInterval() const override;  // Returns zero.
+private:
+    bool GetMetric(int* metric) const override;
+    int GetValueForEmptyInterval() const override;  // Returns zero.
 
-  RTC_DISALLOW_COPY_AND_ASSIGN(RateAccCounter);
+    RTC_DISALLOW_COPY_AND_ASSIGN(RateAccCounter);
 };
 
 }  // namespace webrtc

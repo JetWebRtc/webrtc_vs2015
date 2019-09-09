@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LOAS AudioSyncStream demuxer
  * Copyright (c) 2008 Michael Niedermayer <michaelni@gmx.at>
  *
@@ -37,10 +37,12 @@ static int loas_probe(AVProbeData *p)
     const uint8_t *end = buf0 + p->buf_size - 3;
     buf = buf0;
 
-    for (; buf < end; buf = buf2 + 1) {
+    for (; buf < end; buf = buf2 + 1)
+    {
         buf2 = buf;
 
-        for (frames = 0; buf2 < end; frames++) {
+        for (frames = 0; buf2 < end; frames++)
+        {
             uint32_t header = AV_RB24(buf2);
             if ((header >> 13) != LOAS_SYNC_WORD)
                 break;
@@ -83,7 +85,8 @@ static int loas_read_header(AVFormatContext *s)
     return 0;
 }
 
-AVInputFormat ff_loas_demuxer = {
+AVInputFormat ff_loas_demuxer =
+{
     .name           = "loas",
     .long_name      = NULL_IF_CONFIG_SMALL("LOAS AudioSyncStream"),
     .read_probe     = loas_probe,

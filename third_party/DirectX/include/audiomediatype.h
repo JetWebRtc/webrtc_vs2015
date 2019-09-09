@@ -1,14 +1,14 @@
-
+﻿
 
 /* this ALWAYS GENERATED file contains the definitions for the interfaces */
 
 
- /* File created by MIDL compiler version 7.00.0499 */
+/* File created by MIDL compiler version 7.00.0499 */
 /* Compiler settings for audiomediatype.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)
     protocol : dce , ms_ext, c_ext, robust
-    error checks: allocation ref bounds_check enum stub_data 
-    VC __declspec() decoration level: 
+    error checks: allocation ref bounds_check enum stub_data
+    VC __declspec() decoration level:
          __declspec(uuid()), __declspec(selectany), __declspec(novtable)
          DECLSPEC_UUID(), MIDL_INTERFACE()
 */
@@ -46,7 +46,7 @@
 #pragma once
 #endif
 
-/* Forward Declarations */ 
+/* Forward Declarations */
 
 #ifndef __IAudioMediaType_FWD_DEFINED__
 #define __IAudioMediaType_FWD_DEFINED__
@@ -59,19 +59,19 @@ typedef interface IAudioMediaType IAudioMediaType;
 #include "ocidl.h"
 
 #ifdef __cplusplus
-extern "C"{
-#endif 
+extern "C" {
+#endif
 
 
 /* interface __MIDL_itf_audiomediatype_0000_0000 */
-/* [local] */ 
+/* [local] */
 
 #include <mmreg.h>
 #if 0
 
 #pragma pack(push, 1)
 typedef struct tWAVEFORMATEX
-    {
+{
     WORD wFormatTag;
     WORD nChannels;
     DWORD nSamplesPerSec;
@@ -80,7 +80,7 @@ typedef struct tWAVEFORMATEX
     WORD wBitsPerSample;
     WORD cbSize;
     BYTE pExtraBytes[ 1 ];
-    } 	WAVEFORMATEX;
+} 	WAVEFORMATEX;
 
 typedef struct tWAVEFORMATEX *PWAVEFORMATEX;
 
@@ -89,7 +89,7 @@ typedef struct tWAVEFORMATEX *NPWAVEFORMATEX;
 typedef struct tWAVEFORMATEX *LPWAVEFORMATEX;
 
 typedef /* [public] */ struct __MIDL___MIDL_itf_audiomediatype_0000_0000_0001
-    {
+{
     WORD wFormatTag;
     WORD nChannels;
     DWORD nSamplesPerSec;
@@ -100,7 +100,7 @@ typedef /* [public] */ struct __MIDL___MIDL_itf_audiomediatype_0000_0000_0001
     WORD wValidBitsPerSample;
     DWORD dwChannelMask;
     GUID SubFormat;
-    } 	WAVEFORMATEXTENSIBLE;
+} 	WAVEFORMATEXTENSIBLE;
 
 typedef struct __MIDL___MIDL_itf_audiomediatype_0000_0000_0001 *PWAVEFORMATEXTENSIBLE;
 
@@ -110,14 +110,14 @@ typedef struct __MIDL___MIDL_itf_audiomediatype_0000_0000_0001 *PWAVEFORMATEXTEN
 #if !defined( _UNCOMPRESSEDAUDIOFORMAT_ )
 #define _UNCOMPRESSEDAUDIOFORMAT_
 typedef struct _UNCOMPRESSEDAUDIOFORMAT
-    {
+{
     GUID guidFormatType;
     DWORD dwSamplesPerFrame;
     DWORD dwBytesPerSampleContainer;
     DWORD dwValidBitsPerSample;
     FLOAT fFramesPerSecond;
     DWORD dwChannelMask;
-    } 	UNCOMPRESSEDAUDIOFORMAT;
+} 	UNCOMPRESSEDAUDIOFORMAT;
 
 #endif
 
@@ -130,99 +130,100 @@ extern RPC_IF_HANDLE __MIDL_itf_audiomediatype_0000_0000_v0_0_s_ifspec;
 #define __IAudioMediaType_INTERFACE_DEFINED__
 
 /* interface IAudioMediaType */
-/* [local][uuid][object] */ 
+/* [local][uuid][object] */
 
 
 EXTERN_C const IID IID_IAudioMediaType;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
-    
-    MIDL_INTERFACE("4E997F73-B71F-4798-873B-ED7DFCF15B4D")
-    IAudioMediaType : public IUnknown
-    {
-    public:
-        virtual HRESULT STDMETHODCALLTYPE IsCompressedFormat( 
-            /* [out] */ BOOL *pfCompressed) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE IsEqual( 
-            /* [in] */ IAudioMediaType *pIAudioType,
-            /* [out] */ DWORD *pdwFlags) = 0;
-        
-        virtual const WAVEFORMATEX *STDMETHODCALLTYPE GetAudioFormat( void) = 0;
-        
-        virtual HRESULT STDMETHODCALLTYPE GetUncompressedAudioFormat( 
-            /* [out] */ UNCOMPRESSEDAUDIOFORMAT *pUncompressedAudioFormat) = 0;
-        
-    };
-    
+
+MIDL_INTERFACE("4E997F73-B71F-4798-873B-ED7DFCF15B4D")
+IAudioMediaType :
+public IUnknown
+{
+public:
+    virtual HRESULT STDMETHODCALLTYPE IsCompressedFormat(
+        /* [out] */ BOOL *pfCompressed) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE IsEqual(
+        /* [in] */ IAudioMediaType *pIAudioType,
+        /* [out] */ DWORD *pdwFlags) = 0;
+
+    virtual const WAVEFORMATEX *STDMETHODCALLTYPE GetAudioFormat( void) = 0;
+
+    virtual HRESULT STDMETHODCALLTYPE GetUncompressedAudioFormat(
+        /* [out] */ UNCOMPRESSEDAUDIOFORMAT *pUncompressedAudioFormat) = 0;
+
+};
+
 #else 	/* C style interface */
 
-    typedef struct IAudioMediaTypeVtbl
-    {
-        BEGIN_INTERFACE
-        
-        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
-            IAudioMediaType * This,
-            /* [in] */ REFIID riid,
-            /* [iid_is][out] */ 
-            __RPC__deref_out  void **ppvObject);
-        
-        ULONG ( STDMETHODCALLTYPE *AddRef )( 
-            IAudioMediaType * This);
-        
-        ULONG ( STDMETHODCALLTYPE *Release )( 
-            IAudioMediaType * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *IsCompressedFormat )( 
-            IAudioMediaType * This,
-            /* [out] */ BOOL *pfCompressed);
-        
-        HRESULT ( STDMETHODCALLTYPE *IsEqual )( 
-            IAudioMediaType * This,
-            /* [in] */ IAudioMediaType *pIAudioType,
-            /* [out] */ DWORD *pdwFlags);
-        
-        const WAVEFORMATEX *( STDMETHODCALLTYPE *GetAudioFormat )( 
-            IAudioMediaType * This);
-        
-        HRESULT ( STDMETHODCALLTYPE *GetUncompressedAudioFormat )( 
-            IAudioMediaType * This,
-            /* [out] */ UNCOMPRESSEDAUDIOFORMAT *pUncompressedAudioFormat);
-        
-        END_INTERFACE
-    } IAudioMediaTypeVtbl;
+typedef struct IAudioMediaTypeVtbl
+{
+    BEGIN_INTERFACE
 
-    interface IAudioMediaType
-    {
-        CONST_VTBL struct IAudioMediaTypeVtbl *lpVtbl;
-    };
+    HRESULT ( STDMETHODCALLTYPE *QueryInterface )(
+        IAudioMediaType * This,
+        /* [in] */ REFIID riid,
+        /* [iid_is][out] */
+        __RPC__deref_out  void **ppvObject);
 
-    
+    ULONG ( STDMETHODCALLTYPE *AddRef )(
+        IAudioMediaType * This);
+
+    ULONG ( STDMETHODCALLTYPE *Release )(
+        IAudioMediaType * This);
+
+    HRESULT ( STDMETHODCALLTYPE *IsCompressedFormat )(
+        IAudioMediaType * This,
+        /* [out] */ BOOL *pfCompressed);
+
+    HRESULT ( STDMETHODCALLTYPE *IsEqual )(
+        IAudioMediaType * This,
+        /* [in] */ IAudioMediaType *pIAudioType,
+        /* [out] */ DWORD *pdwFlags);
+
+    const WAVEFORMATEX *( STDMETHODCALLTYPE *GetAudioFormat )(
+        IAudioMediaType * This);
+
+    HRESULT ( STDMETHODCALLTYPE *GetUncompressedAudioFormat )(
+        IAudioMediaType * This,
+        /* [out] */ UNCOMPRESSEDAUDIOFORMAT *pUncompressedAudioFormat);
+
+    END_INTERFACE
+} IAudioMediaTypeVtbl;
+
+interface IAudioMediaType
+{
+    CONST_VTBL struct IAudioMediaTypeVtbl *lpVtbl;
+};
+
+
 
 #ifdef COBJMACROS
 
 
 #define IAudioMediaType_QueryInterface(This,riid,ppvObject)	\
-    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) )
 
 #define IAudioMediaType_AddRef(This)	\
-    ( (This)->lpVtbl -> AddRef(This) ) 
+    ( (This)->lpVtbl -> AddRef(This) )
 
 #define IAudioMediaType_Release(This)	\
-    ( (This)->lpVtbl -> Release(This) ) 
+    ( (This)->lpVtbl -> Release(This) )
 
 
 #define IAudioMediaType_IsCompressedFormat(This,pfCompressed)	\
-    ( (This)->lpVtbl -> IsCompressedFormat(This,pfCompressed) ) 
+    ( (This)->lpVtbl -> IsCompressedFormat(This,pfCompressed) )
 
 #define IAudioMediaType_IsEqual(This,pIAudioType,pdwFlags)	\
-    ( (This)->lpVtbl -> IsEqual(This,pIAudioType,pdwFlags) ) 
+    ( (This)->lpVtbl -> IsEqual(This,pIAudioType,pdwFlags) )
 
 #define IAudioMediaType_GetAudioFormat(This)	\
-    ( (This)->lpVtbl -> GetAudioFormat(This) ) 
+    ( (This)->lpVtbl -> GetAudioFormat(This) )
 
 #define IAudioMediaType_GetUncompressedAudioFormat(This,pUncompressedAudioFormat)	\
-    ( (This)->lpVtbl -> GetUncompressedAudioFormat(This,pUncompressedAudioFormat) ) 
+    ( (This)->lpVtbl -> GetUncompressedAudioFormat(This,pUncompressedAudioFormat) )
 
 #endif /* COBJMACROS */
 
@@ -236,7 +237,7 @@ EXTERN_C const IID IID_IAudioMediaType;
 
 
 /* interface __MIDL_itf_audiomediatype_0000_0001 */
-/* [local] */ 
+/* [local] */
 
 //
 // CreateAudioMediaType
@@ -245,14 +246,14 @@ STDAPI CreateAudioMediaType(
     const WAVEFORMATEX* pAudioFormat,
     UINT32 cbAudioFormatSize,
     IAudioMediaType** ppIAudioMediaType
-    );
+);
 //
 // CreateAudioMediaTypeFromUncompressedAudioFormat
 //
 STDAPI CreateAudioMediaTypeFromUncompressedAudioFormat(
     const UNCOMPRESSEDAUDIOFORMAT* pUncompressedAudioFormat,
     IAudioMediaType** ppIAudioMediaType
-    );
+);
 #define AUDIOMEDIATYPE_EQUAL_FORMAT_TYPES 0x00000002
 #define AUDIOMEDIATYPE_EQUAL_FORMAT_DATA  0x00000004
 #define AUDIOMEDIATYPE_EQUAL_FORMAT_USER_DATA  0x00000008

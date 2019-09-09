@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Audio Frame Queue
  * Copyright (c) 2012 Justin Ruggles
  *
@@ -24,12 +24,14 @@
 
 #include "avcodec.h"
 
-typedef struct AudioFrame {
+typedef struct AudioFrame
+{
     int64_t pts;
     int duration;
 } AudioFrame;
 
-typedef struct AudioFrameQueue {
+typedef struct AudioFrameQueue
+{
     AVCodecContext *avctx;
     int remaining_delay;
     int remaining_samples;

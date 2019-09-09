@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2006 Michael Niedermayer <michaelni@gmx.at>
  *
  * FFmpeg is free software; you can redistribute it and/or modify
@@ -54,7 +54,8 @@
 #include "formats.h"
 #include "internal.h"
 
-enum MCDeintMode {
+enum MCDeintMode
+{
     MODE_FAST = 0,
     MODE_MEDIUM,
     MODE_SLOW,
@@ -62,12 +63,14 @@ enum MCDeintMode {
     MODE_NB,
 };
 
-enum MCDeintParity {
+enum MCDeintParity
+{
     PARITY_TFF  =  0, ///< top field first
     PARITY_BFF  =  1, ///< bottom field first
 };
 
-typedef struct {
+typedef struct
+{
     const AVClass *class;
     int mode;           ///< MCDeintMode
     int parity;         ///< MCDeintParity
@@ -79,7 +82,8 @@ typedef struct {
 #define FLAGS AV_OPT_FLAG_VIDEO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 #define CONST(name, help, val, unit) { name, help, 0, AV_OPT_TYPE_CONST, {.i64=val}, INT_MIN, INT_MAX, FLAGS, unit }
 
-static const AVOption mcdeint_options[] = {
+static const AVOption mcdeint_options[] =
+{
     { "mode", "set mode", OFFSET(mode), AV_OPT_TYPE_INT, {.i64=MODE_FAST}, 0, MODE_NB-1, FLAGS, .unit="mode" },
     CONST("fast",       NULL, MODE_FAST,       "mode"),
     CONST("medium",     NULL, MODE_MEDIUM,     "mode"),
@@ -105,7 +109,8 @@ static int config_props(AVFilterLink *inlink)
     AVDictionary *opts = NULL;
     int ret;
 
-    if (!(enc = avcodec_find_encoder(AV_CODEC_ID_SNOW))) {
+    if (!(enc = avcodec_find_encoder(AV_CODEC_ID_SNOW)))
+    {
         av_log(ctx, AV_LOG_ERROR, "Snow encoder is not enabled in libavcodec\n");
         return AVERROR(EINVAL);
     }
@@ -116,7 +121,10 @@ static int config_props(AVFilterLink *inlink)
     enc_ctx = mcdeint->enc_ctx;
     enc_ctx->width  = inlink->w;
     enc_ctx->height = inlink->h;
-    enc_ctx->time_base = (AVRational){1,25};  // meaningless
+    enc_ctx->time_base = (AVRational)
+    {
+        1,25
+    };  // meaningless
     enc_ctx->gop_size = INT_MAX;
     enc_ctx->max_b_frames = 0;
     enc_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
@@ -128,7 +136,8 @@ static int config_props(AVFilterLink *inlink)
     av_dict_set(&opts, "memc_only", "1", 0);
     av_dict_set(&opts, "no_bitstream", "1", 0);
 
-    switch (mcdeint->mode) {
+    switch (mcdeint->mode)
+    {
     case MODE_EXTRA_SLOW:
         enc_ctx->refs = 3;
     case MODE_SLOW:
@@ -152,7 +161,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 {
     MCDeintContext *mcdeint = ctx->priv;
 
-    if (mcdeint->enc_ctx) {
+    if (mcdeint->enc_ctx)
+    {
         avcodec_close(mcdeint->enc_ctx);
         av_freep(&mcdeint->enc_ctx);
     }
@@ -160,7 +170,8 @@ static av_cold void uninit(AVFilterContext *ctx)
 
 static int query_formats(AVFilterContext *ctx)
 {
-    static const enum AVPixelFormat pix_fmts[] = {
+    static const enum AVPixelFormat pix_fmts[] =
+    {
         AV_PIX_FMT_YUV420P, AV_PIX_FMT_NONE
     };
     AVFilterFormats *fmts_list = ff_make_format_list(pix_fmts);
@@ -178,7 +189,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
     int x, y, i, ret, got_frame = 0;
 
     outpic = ff_get_video_buffer(outlink, outlink->w, outlink->h);
-    if (!outpic) {
+    if (!outpic)
+    {
         av_frame_free(&inpic);
         return AVERROR(ENOMEM);
     }
@@ -193,7 +205,8 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
 
     frame_dec = mcdeint->enc_ctx->coded_frame;
 
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < 3; i++)
+    {
         int is_chroma = !!i;
         int w = FF_CEIL_RSHIFT(inlink->w, is_chroma);
         int h = FF_CEIL_RSHIFT(inlink->h, is_chroma);
@@ -201,14 +214,18 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
         int srcs = inpic    ->linesize[i];
         int dsts = outpic   ->linesize[i];
 
-        for (y = 0; y < h; y++) {
-            if ((y ^ mcdeint->parity) & 1) {
-                for (x = 0; x < w; x++) {
+        for (y = 0; y < h; y++)
+        {
+            if ((y ^ mcdeint->parity) & 1)
+            {
+                for (x = 0; x < w; x++)
+                {
                     uint8_t *filp = &frame_dec->data[i][x + y*fils];
                     uint8_t *srcp = &inpic    ->data[i][x + y*srcs];
                     uint8_t *dstp = &outpic   ->data[i][x + y*dsts];
 
-                    if (y > 0 && y < h-1){
+                    if (y > 0 && y < h-1)
+                    {
                         int is_edge = x < 3 || x > w-4;
                         int diff0 = filp[-fils] - srcp[-srcs];
                         int diff1 = filp[+fils] - srcp[+srcs];
@@ -240,51 +257,75 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *inpic)
             diff0 = filp[-fils+(j)] - srcp[-srcs+(j)];\
             diff1 = filp[+fils-(j)] - srcp[+srcs-(j)];\
 
-                        if (is_edge) {
+                        if (is_edge)
+                        {
                             int spatial_score = GET_SCORE_EDGE(0) - 1;
-                            CHECK_EDGE(-1) CHECK_EDGE(-2) }} }}
-                            CHECK_EDGE( 1) CHECK_EDGE( 2) }} }}
-                        } else {
-                            int spatial_score = GET_SCORE(0) - 1;
-                            CHECK(-1) CHECK(-2) }} }}
-                            CHECK( 1) CHECK( 2) }} }}
+                            CHECK_EDGE(-1) CHECK_EDGE(-2)
                         }
-
-
-                        if (diff0 + diff1 > 0)
-                            temp -= (diff0 + diff1 - FFABS(FFABS(diff0) - FFABS(diff1)) / 2) / 2;
-                        else
-                            temp -= (diff0 + diff1 + FFABS(FFABS(diff0) - FFABS(diff1)) / 2) / 2;
-                        *filp = *dstp = temp > 255U ? ~(temp>>31) : temp;
-                    } else {
-                        *dstp = *filp;
                     }
                 }
             }
-        }
-
-        for (y = 0; y < h; y++) {
-            if (!((y ^ mcdeint->parity) & 1)) {
-                for (x = 0; x < w; x++) {
-                    frame_dec->data[i][x + y*fils] =
-                    outpic   ->data[i][x + y*dsts] = inpic->data[i][x + y*srcs];
-                }
-            }
+            CHECK_EDGE( 1) CHECK_EDGE( 2)
         }
     }
-    mcdeint->parity ^= 1;
-
-end:
-    av_free_packet(&pkt);
-    av_frame_free(&inpic);
-    if (ret < 0) {
-        av_frame_free(&outpic);
-        return ret;
-    }
-    return ff_filter_frame(outlink, outpic);
+}
+}
+} else
+{
+    int spatial_score = GET_SCORE(0) - 1;
+    CHECK(-1) CHECK(-2)
+}
+}
+}
+}
+CHECK( 1) CHECK( 2)
+}
+}
+}
+}
 }
 
-static const AVFilterPad mcdeint_inputs[] = {
+
+if (diff0 + diff1 > 0)
+    temp -= (diff0 + diff1 - FFABS(FFABS(diff0) - FFABS(diff1)) / 2) / 2;
+else
+    temp -= (diff0 + diff1 + FFABS(FFABS(diff0) - FFABS(diff1)) / 2) / 2;
+*filp = *dstp = temp > 255U ? ~(temp>>31) : temp;
+} else
+{
+    *dstp = *filp;
+}
+}
+}
+}
+
+for (y = 0; y < h; y++)
+{
+    if (!((y ^ mcdeint->parity) & 1))
+    {
+        for (x = 0; x < w; x++)
+        {
+            frame_dec->data[i][x + y*fils] =
+                outpic   ->data[i][x + y*dsts] = inpic->data[i][x + y*srcs];
+        }
+    }
+}
+}
+mcdeint->parity ^= 1;
+
+end:
+av_free_packet(&pkt);
+av_frame_free(&inpic);
+if (ret < 0)
+{
+    av_frame_free(&outpic);
+    return ret;
+}
+return ff_filter_frame(outlink, outpic);
+}
+
+static const AVFilterPad mcdeint_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -294,7 +335,8 @@ static const AVFilterPad mcdeint_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad mcdeint_outputs[] = {
+static const AVFilterPad mcdeint_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -302,7 +344,8 @@ static const AVFilterPad mcdeint_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_mcdeint = {
+AVFilter ff_vf_mcdeint =
+{
     .name          = "mcdeint",
     .description   = NULL_IF_CONFIG_SMALL("Apply motion compensating deinterlacing."),
     .priv_size     = sizeof(MCDeintContext),

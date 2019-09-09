@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -29,28 +29,31 @@ extern "C" {
 #define FIXED_GF_INTERVAL 8  // Used in some testing modes only
 #define ONEHALFONLY_RESIZE 0
 
-typedef enum {
-  INTER_NORMAL = 0,
-  INTER_HIGH = 1,
-  GF_ARF_LOW = 2,
-  GF_ARF_STD = 3,
-  KF_STD = 4,
-  RATE_FACTOR_LEVELS = 5
+typedef enum
+{
+    INTER_NORMAL = 0,
+    INTER_HIGH = 1,
+    GF_ARF_LOW = 2,
+    GF_ARF_STD = 3,
+    KF_STD = 4,
+    RATE_FACTOR_LEVELS = 5
 } RATE_FACTOR_LEVEL;
 
 // Internal frame scaling level.
-typedef enum {
-  UNSCALED = 0,     // Frame is unscaled.
-  SCALE_STEP1 = 1,  // First-level down-scaling.
-  FRAME_SCALE_STEPS
+typedef enum
+{
+    UNSCALED = 0,     // Frame is unscaled.
+    SCALE_STEP1 = 1,  // First-level down-scaling.
+    FRAME_SCALE_STEPS
 } FRAME_SCALE_LEVEL;
 
-typedef enum {
-  NO_RESIZE = 0,
-  DOWN_THREEFOUR = 1,  // From orig to 3/4.
-  DOWN_ONEHALF = 2,    // From orig or 3/4 to 1/2.
-  UP_THREEFOUR = -1,   // From 1/2 to 3/4.
-  UP_ORIG = -2,        // From 1/2 or 3/4 to orig.
+typedef enum
+{
+    NO_RESIZE = 0,
+    DOWN_THREEFOUR = 1,  // From orig to 3/4.
+    DOWN_ONEHALF = 2,    // From orig or 3/4 to 1/2.
+    UP_THREEFOUR = -1,   // From 1/2 to 3/4.
+    UP_ORIG = -2,        // From 1/2 or 3/4 to orig.
 } RESIZE_ACTION;
 
 typedef enum { ORIG = 0, THREE_QUARTER = 1, ONE_HALF = 2 } RESIZE_STATE;
@@ -69,103 +72,104 @@ static const double rate_thresh_mult[FRAME_SCALE_STEPS] = { 1.0, 2.0 };
 // greater number of bits per pixel generated in down-scaled frames.
 static const double rcf_mult[FRAME_SCALE_STEPS] = { 1.0, 2.0 };
 
-typedef struct {
-  // Rate targetting variables
-  int base_frame_target;  // A baseline frame target before adjustment
-                          // for previous under or over shoot.
-  int this_frame_target;  // Actual frame target after rc adjustment.
-  int projected_frame_size;
-  int sb64_target_rate;
-  int last_q[FRAME_TYPES];  // Separate values for Intra/Inter
-  int last_boosted_qindex;  // Last boosted GF/KF/ARF q
-  int last_kf_qindex;       // Q index of the last key frame coded.
+typedef struct
+{
+    // Rate targetting variables
+    int base_frame_target;  // A baseline frame target before adjustment
+    // for previous under or over shoot.
+    int this_frame_target;  // Actual frame target after rc adjustment.
+    int projected_frame_size;
+    int sb64_target_rate;
+    int last_q[FRAME_TYPES];  // Separate values for Intra/Inter
+    int last_boosted_qindex;  // Last boosted GF/KF/ARF q
+    int last_kf_qindex;       // Q index of the last key frame coded.
 
-  int gfu_boost;
-  int last_boost;
-  int kf_boost;
+    int gfu_boost;
+    int last_boost;
+    int kf_boost;
 
-  double rate_correction_factors[RATE_FACTOR_LEVELS];
+    double rate_correction_factors[RATE_FACTOR_LEVELS];
 
-  int frames_since_golden;
-  int frames_till_gf_update_due;
-  int min_gf_interval;
-  int max_gf_interval;
-  int static_scene_max_gf_interval;
-  int baseline_gf_interval;
-  int constrained_gf_group;
-  int frames_to_key;
-  int frames_since_key;
-  int this_key_frame_forced;
-  int next_key_frame_forced;
-  int source_alt_ref_pending;
-  int source_alt_ref_active;
-  int is_src_frame_alt_ref;
+    int frames_since_golden;
+    int frames_till_gf_update_due;
+    int min_gf_interval;
+    int max_gf_interval;
+    int static_scene_max_gf_interval;
+    int baseline_gf_interval;
+    int constrained_gf_group;
+    int frames_to_key;
+    int frames_since_key;
+    int this_key_frame_forced;
+    int next_key_frame_forced;
+    int source_alt_ref_pending;
+    int source_alt_ref_active;
+    int is_src_frame_alt_ref;
 
-  int avg_frame_bandwidth;  // Average frame size target for clip
-  int min_frame_bandwidth;  // Minimum allocation used for any frame
-  int max_frame_bandwidth;  // Maximum burst rate allowed for a frame.
+    int avg_frame_bandwidth;  // Average frame size target for clip
+    int min_frame_bandwidth;  // Minimum allocation used for any frame
+    int max_frame_bandwidth;  // Maximum burst rate allowed for a frame.
 
-  int ni_av_qi;
-  int ni_tot_qi;
-  int ni_frames;
-  int avg_frame_qindex[FRAME_TYPES];
-  double tot_q;
-  double avg_q;
+    int ni_av_qi;
+    int ni_tot_qi;
+    int ni_frames;
+    int avg_frame_qindex[FRAME_TYPES];
+    double tot_q;
+    double avg_q;
 
-  int64_t buffer_level;
-  int64_t bits_off_target;
-  int64_t vbr_bits_off_target;
-  int64_t vbr_bits_off_target_fast;
+    int64_t buffer_level;
+    int64_t bits_off_target;
+    int64_t vbr_bits_off_target;
+    int64_t vbr_bits_off_target_fast;
 
-  int decimation_factor;
-  int decimation_count;
+    int decimation_factor;
+    int decimation_count;
 
-  int rolling_target_bits;
-  int rolling_actual_bits;
+    int rolling_target_bits;
+    int rolling_actual_bits;
 
-  int long_rolling_target_bits;
-  int long_rolling_actual_bits;
+    int long_rolling_target_bits;
+    int long_rolling_actual_bits;
 
-  int rate_error_estimate;
+    int rate_error_estimate;
 
-  int64_t total_actual_bits;
-  int64_t total_target_bits;
-  int64_t total_target_vs_actual;
+    int64_t total_actual_bits;
+    int64_t total_target_bits;
+    int64_t total_target_vs_actual;
 
-  int worst_quality;
-  int best_quality;
+    int worst_quality;
+    int best_quality;
 
-  int64_t starting_buffer_level;
-  int64_t optimal_buffer_level;
-  int64_t maximum_buffer_size;
+    int64_t starting_buffer_level;
+    int64_t optimal_buffer_level;
+    int64_t maximum_buffer_size;
 
-  // rate control history for last frame(1) and the frame before(2).
-  // -1: undershot
-  //  1: overshoot
-  //  0: not initialized.
-  int rc_1_frame;
-  int rc_2_frame;
-  int q_1_frame;
-  int q_2_frame;
+    // rate control history for last frame(1) and the frame before(2).
+    // -1: undershot
+    //  1: overshoot
+    //  0: not initialized.
+    int rc_1_frame;
+    int rc_2_frame;
+    int q_1_frame;
+    int q_2_frame;
 
-  // Auto frame-scaling variables.
-  FRAME_SCALE_LEVEL frame_size_selector;
-  FRAME_SCALE_LEVEL next_frame_size_selector;
-  int frame_width[FRAME_SCALE_STEPS];
-  int frame_height[FRAME_SCALE_STEPS];
-  int rf_level_maxq[RATE_FACTOR_LEVELS];
+    // Auto frame-scaling variables.
+    FRAME_SCALE_LEVEL frame_size_selector;
+    FRAME_SCALE_LEVEL next_frame_size_selector;
+    int frame_width[FRAME_SCALE_STEPS];
+    int frame_height[FRAME_SCALE_STEPS];
+    int rf_level_maxq[RATE_FACTOR_LEVELS];
 
-  int fac_active_worst_inter;
-  int fac_active_worst_gf;
-  uint64_t avg_source_sad[MAX_LAG_BUFFERS];
-  uint64_t prev_avg_source_sad_lag;
-  int high_source_sad_lagindex;
-  int alt_ref_gf_group;
-  int high_source_sad;
-  int count_last_scene_change;
-  int avg_frame_low_motion;
-  int af_ratio_onepass_vbr;
-  int force_qpmin;
+    int fac_active_worst_inter;
+    int fac_active_worst_gf;
+    uint64_t avg_source_sad[MAX_LAG_BUFFERS];
+    uint64_t prev_avg_source_sad_lag;
+    int high_source_sad_lagindex;
+    int alt_ref_gf_group;
+    int high_source_sad;
+    int count_last_scene_change;
+    int avg_frame_low_motion;
+    int af_ratio_onepass_vbr;
+    int force_qpmin;
 } RATE_CONTROL;
 
 struct VP9_COMP;

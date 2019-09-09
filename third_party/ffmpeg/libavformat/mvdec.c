@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Silicon Graphics Movie demuxer
  * Copyright (c) 2012 Peter Ross
  *
@@ -32,7 +32,8 @@
 #include "avformat.h"
 #include "internal.h"
 
-typedef struct MvContext {
+typedef struct MvContext
+{
     int nb_video_tracks;
     int nb_audio_tracks;
 
@@ -49,7 +50,7 @@ typedef struct MvContext {
 static int mv_probe(AVProbeData *p)
 {
     if (AV_RB32(p->buf) == MKBETAG('M', 'O', 'V', 'I') &&
-        AV_RB16(p->buf + 4) < 3)
+            AV_RB16(p->buf + 4) < 3)
         return AVPROBE_SCORE_MAX;
     return 0;
 }
@@ -87,7 +88,10 @@ static AVRational var_read_float(AVIOContext *pb, int size)
     AVRational v;
     char *s = var_read_string(pb, size);
     if (!s)
-        return (AVRational) { 0, 0 };
+        return (AVRational)
+    {
+        0, 0
+    };
     v = av_d2q(av_strtod(s, NULL), INT_MAX);
     av_free(s);
     return v;
@@ -102,13 +106,14 @@ static void var_read_metadata(AVFormatContext *avctx, const char *tag, int size)
 
 static int set_channels(AVFormatContext *avctx, AVStream *st, int channels)
 {
-    if (channels <= 0) {
+    if (channels <= 0)
+    {
         av_log(avctx, AV_LOG_ERROR, "Channel count %d invalid.\n", channels);
         return AVERROR_INVALIDDATA;
     }
     st->codec->channels       = channels;
     st->codec->channel_layout = (st->codec->channels == 1) ? AV_CH_LAYOUT_MONO
-                                                           : AV_CH_LAYOUT_STEREO;
+                                : AV_CH_LAYOUT_STEREO;
     return 0;
 }
 
@@ -121,16 +126,24 @@ static int parse_global_var(AVFormatContext *avctx, AVStream *st,
 {
     MvContext *mv = avctx->priv_data;
     AVIOContext *pb = avctx->pb;
-    if (!strcmp(name, "__NUM_I_TRACKS")) {
+    if (!strcmp(name, "__NUM_I_TRACKS"))
+    {
         mv->nb_video_tracks = var_read_int(pb, size);
-    } else if (!strcmp(name, "__NUM_A_TRACKS")) {
+    }
+    else if (!strcmp(name, "__NUM_A_TRACKS"))
+    {
         mv->nb_audio_tracks = var_read_int(pb, size);
-    } else if (!strcmp(name, "COMMENT") || !strcmp(name, "TITLE")) {
+    }
+    else if (!strcmp(name, "COMMENT") || !strcmp(name, "TITLE"))
+    {
         var_read_metadata(avctx, name, size);
-    } else if (!strcmp(name, "LOOP_MODE") || !strcmp(name, "NUM_LOOPS") ||
-               !strcmp(name, "OPTIMIZED")) {
+    }
+    else if (!strcmp(name, "LOOP_MODE") || !strcmp(name, "NUM_LOOPS") ||
+             !strcmp(name, "OPTIMIZED"))
+    {
         avio_skip(pb, size); // ignore
-    } else
+    }
+    else
         return AVERROR_INVALIDDATA;
 
     return 0;
@@ -145,22 +158,36 @@ static int parse_audio_var(AVFormatContext *avctx, AVStream *st,
 {
     MvContext *mv = avctx->priv_data;
     AVIOContext *pb = avctx->pb;
-    if (!strcmp(name, "__DIR_COUNT")) {
+    if (!strcmp(name, "__DIR_COUNT"))
+    {
         st->nb_frames = var_read_int(pb, size);
-    } else if (!strcmp(name, "AUDIO_FORMAT")) {
+    }
+    else if (!strcmp(name, "AUDIO_FORMAT"))
+    {
         mv->aformat = var_read_int(pb, size);
-    } else if (!strcmp(name, "COMPRESSION")) {
+    }
+    else if (!strcmp(name, "COMPRESSION"))
+    {
         mv->acompression = var_read_int(pb, size);
-    } else if (!strcmp(name, "DEFAULT_VOL")) {
+    }
+    else if (!strcmp(name, "DEFAULT_VOL"))
+    {
         var_read_metadata(avctx, name, size);
-    } else if (!strcmp(name, "NUM_CHANNELS")) {
+    }
+    else if (!strcmp(name, "NUM_CHANNELS"))
+    {
         return set_channels(avctx, st, var_read_int(pb, size));
-    } else if (!strcmp(name, "SAMPLE_RATE")) {
+    }
+    else if (!strcmp(name, "SAMPLE_RATE"))
+    {
         st->codec->sample_rate = var_read_int(pb, size);
         avpriv_set_pts_info(st, 33, 1, st->codec->sample_rate);
-    } else if (!strcmp(name, "SAMPLE_WIDTH")) {
+    }
+    else if (!strcmp(name, "SAMPLE_WIDTH"))
+    {
         st->codec->bits_per_coded_sample = var_read_int(pb, size) * 8;
-    } else
+    }
+    else
         return AVERROR_INVALIDDATA;
 
     return 0;
@@ -174,75 +201,108 @@ static int parse_video_var(AVFormatContext *avctx, AVStream *st,
                            const char *name, int size)
 {
     AVIOContext *pb = avctx->pb;
-    if (!strcmp(name, "__DIR_COUNT")) {
+    if (!strcmp(name, "__DIR_COUNT"))
+    {
         st->nb_frames = st->duration = var_read_int(pb, size);
-    } else if (!strcmp(name, "COMPRESSION")) {
+    }
+    else if (!strcmp(name, "COMPRESSION"))
+    {
         char *str = var_read_string(pb, size);
         if (!str)
             return AVERROR_INVALIDDATA;
-        if (!strcmp(str, "1")) {
+        if (!strcmp(str, "1"))
+        {
             st->codec->codec_id = AV_CODEC_ID_MVC1;
-        } else if (!strcmp(str, "2")) {
+        }
+        else if (!strcmp(str, "2"))
+        {
             st->codec->pix_fmt  = AV_PIX_FMT_ABGR;
             st->codec->codec_id = AV_CODEC_ID_RAWVIDEO;
-        } else if (!strcmp(str, "3")) {
+        }
+        else if (!strcmp(str, "3"))
+        {
             st->codec->codec_id = AV_CODEC_ID_SGIRLE;
-        } else if (!strcmp(str, "10")) {
+        }
+        else if (!strcmp(str, "10"))
+        {
             st->codec->codec_id = AV_CODEC_ID_MJPEG;
-        } else if (!strcmp(str, "MVC2")) {
+        }
+        else if (!strcmp(str, "MVC2"))
+        {
             st->codec->codec_id = AV_CODEC_ID_MVC2;
-        } else {
+        }
+        else
+        {
             avpriv_request_sample(avctx, "Video compression %s", str);
         }
         av_free(str);
-    } else if (!strcmp(name, "FPS")) {
+    }
+    else if (!strcmp(name, "FPS"))
+    {
         AVRational fps = var_read_float(pb, size);
         avpriv_set_pts_info(st, 64, fps.den, fps.num);
         st->avg_frame_rate = fps;
-    } else if (!strcmp(name, "HEIGHT")) {
+    }
+    else if (!strcmp(name, "HEIGHT"))
+    {
         st->codec->height = var_read_int(pb, size);
-    } else if (!strcmp(name, "PIXEL_ASPECT")) {
+    }
+    else if (!strcmp(name, "PIXEL_ASPECT"))
+    {
         st->sample_aspect_ratio = var_read_float(pb, size);
         av_reduce(&st->sample_aspect_ratio.num, &st->sample_aspect_ratio.den,
                   st->sample_aspect_ratio.num, st->sample_aspect_ratio.den,
                   INT_MAX);
-    } else if (!strcmp(name, "WIDTH")) {
+    }
+    else if (!strcmp(name, "WIDTH"))
+    {
         st->codec->width = var_read_int(pb, size);
-    } else if (!strcmp(name, "ORIENTATION")) {
-        if (var_read_int(pb, size) == 1101) {
+    }
+    else if (!strcmp(name, "ORIENTATION"))
+    {
+        if (var_read_int(pb, size) == 1101)
+        {
             st->codec->extradata      = av_strdup("BottomUp");
             st->codec->extradata_size = 9;
         }
-    } else if (!strcmp(name, "Q_SPATIAL") || !strcmp(name, "Q_TEMPORAL")) {
+    }
+    else if (!strcmp(name, "Q_SPATIAL") || !strcmp(name, "Q_TEMPORAL"))
+    {
         var_read_metadata(avctx, name, size);
-    } else if (!strcmp(name, "INTERLACING") || !strcmp(name, "PACKING")) {
+    }
+    else if (!strcmp(name, "INTERLACING") || !strcmp(name, "PACKING"))
+    {
         avio_skip(pb, size); // ignore
-    } else
+    }
+    else
         return AVERROR_INVALIDDATA;
 
     return 0;
 }
 
 static int read_table(AVFormatContext *avctx, AVStream *st,
-                       int (*parse)(AVFormatContext *avctx, AVStream *st,
-                                    const char *name, int size))
+                      int (*parse)(AVFormatContext *avctx, AVStream *st,
+                                   const char *name, int size))
 {
     int count, i;
     AVIOContext *pb = avctx->pb;
     avio_skip(pb, 4);
     count = avio_rb32(pb);
     avio_skip(pb, 4);
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count; i++)
+    {
         char name[17];
         int size;
         avio_read(pb, name, 16);
         name[sizeof(name) - 1] = 0;
         size = avio_rb32(pb);
-        if (size < 0) {
+        if (size < 0)
+        {
             av_log(avctx, AV_LOG_ERROR, "entry size %d is invalid\n", size);
             return AVERROR_INVALIDDATA;
         }
-        if (parse(avctx, st, name, size) < 0) {
+        if (parse(avctx, st, name, size) < 0)
+        {
             avpriv_request_sample(avctx, "Variable %s", name);
             avio_skip(pb, size);
         }
@@ -254,14 +314,18 @@ static void read_index(AVIOContext *pb, AVStream *st)
 {
     uint64_t timestamp = 0;
     int i;
-    for (i = 0; i < st->nb_frames; i++) {
+    for (i = 0; i < st->nb_frames; i++)
+    {
         uint32_t pos  = avio_rb32(pb);
         uint32_t size = avio_rb32(pb);
         avio_skip(pb, 8);
         av_add_index_entry(st, pos, timestamp, size, 0, AVINDEX_KEYFRAME);
-        if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (st->codec->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             timestamp += size / (st->codec->channels * 2);
-        } else {
+        }
+        else
+        {
             timestamp++;
         }
     }
@@ -278,7 +342,8 @@ static int mv_read_header(AVFormatContext *avctx)
     avio_skip(pb, 4);
 
     version = avio_rb16(pb);
-    if (version == 2) {
+    if (version == 2)
+    {
         uint64_t timestamp;
         int v;
         avio_skip(pb, 22);
@@ -297,7 +362,8 @@ static int mv_read_header(AVFormatContext *avctx)
         vst->avg_frame_rate    = av_inv_q(vst->time_base);
         vst->nb_frames         = avio_rb32(pb);
         v = avio_rb32(pb);
-        switch (v) {
+        switch (v)
+        {
         case 1:
             vst->codec->codec_id = AV_CODEC_ID_MVC1;
             break;
@@ -322,9 +388,12 @@ static int mv_read_header(AVFormatContext *avctx)
             return AVERROR_INVALIDDATA;
 
         v = avio_rb32(pb);
-        if (v == AUDIO_FORMAT_SIGNED) {
+        if (v == AUDIO_FORMAT_SIGNED)
+        {
             ast->codec->codec_id = AV_CODEC_ID_PCM_S16BE;
-        } else {
+        }
+        else
+        {
             avpriv_request_sample(avctx, "Audio compression (format %i)", v);
         }
 
@@ -334,7 +403,8 @@ static int mv_read_header(AVFormatContext *avctx)
         avio_skip(pb, 0x80);
 
         timestamp = 0;
-        for (i = 0; i < vst->nb_frames; i++) {
+        for (i = 0; i < vst->nb_frames; i++)
+        {
             uint32_t pos   = avio_rb32(pb);
             uint32_t asize = avio_rb32(pb);
             uint32_t vsize = avio_rb32(pb);
@@ -343,16 +413,21 @@ static int mv_read_header(AVFormatContext *avctx)
             av_add_index_entry(vst, pos + asize, i, vsize, 0, AVINDEX_KEYFRAME);
             timestamp += asize / (ast->codec->channels * 2);
         }
-    } else if (!version && avio_rb16(pb) == 3) {
+    }
+    else if (!version && avio_rb16(pb) == 3)
+    {
         avio_skip(pb, 4);
 
         if ((ret = read_table(avctx, NULL, parse_global_var)) < 0)
             return ret;
 
-        if (mv->nb_audio_tracks > 1) {
+        if (mv->nb_audio_tracks > 1)
+        {
             avpriv_request_sample(avctx, "Multiple audio streams support");
             return AVERROR_PATCHWELCOME;
-        } else if (mv->nb_audio_tracks) {
+        }
+        else if (mv->nb_audio_tracks)
+        {
             ast = avformat_new_stream(avctx, NULL);
             if (!ast)
                 return AVERROR(ENOMEM);
@@ -360,26 +435,33 @@ static int mv_read_header(AVFormatContext *avctx)
             if ((read_table(avctx, ast, parse_audio_var)) < 0)
                 return ret;
             if (mv->acompression == 100 &&
-                mv->aformat == AUDIO_FORMAT_SIGNED &&
-                ast->codec->bits_per_coded_sample == 16) {
+                    mv->aformat == AUDIO_FORMAT_SIGNED &&
+                    ast->codec->bits_per_coded_sample == 16)
+            {
                 ast->codec->codec_id = AV_CODEC_ID_PCM_S16BE;
-            } else {
+            }
+            else
+            {
                 avpriv_request_sample(avctx,
                                       "Audio compression %i (format %i, sr %i)",
                                       mv->acompression, mv->aformat,
                                       ast->codec->bits_per_coded_sample);
                 ast->codec->codec_id = AV_CODEC_ID_NONE;
             }
-            if (ast->codec->channels <= 0) {
+            if (ast->codec->channels <= 0)
+            {
                 av_log(avctx, AV_LOG_ERROR, "No valid channel count found.\n");
                 return AVERROR_INVALIDDATA;
             }
         }
 
-        if (mv->nb_video_tracks > 1) {
+        if (mv->nb_video_tracks > 1)
+        {
             avpriv_request_sample(avctx, "Multiple video streams support");
             return AVERROR_PATCHWELCOME;
-        } else if (mv->nb_video_tracks) {
+        }
+        else if (mv->nb_video_tracks)
+        {
             vst = avformat_new_stream(avctx, NULL);
             if (!vst)
                 return AVERROR(ENOMEM);
@@ -393,7 +475,9 @@ static int mv_read_header(AVFormatContext *avctx)
 
         if (mv->nb_video_tracks)
             read_index(pb, vst);
-    } else {
+    }
+    else
+    {
         avpriv_request_sample(avctx, "Version %i", version);
         return AVERROR_PATCHWELCOME;
     }
@@ -411,12 +495,14 @@ static int mv_read_packet(AVFormatContext *avctx, AVPacket *pkt)
     int64_t ret;
     uint64_t pos;
 
-    if (frame < st->nb_index_entries) {
+    if (frame < st->nb_index_entries)
+    {
         index = &st->index_entries[frame];
         pos   = avio_tell(pb);
         if (index->pos > pos)
             avio_skip(pb, index->pos - pos);
-        else if (index->pos < pos) {
+        else if (index->pos < pos)
+        {
             if (!pb->seekable)
                 return AVERROR(EIO);
             ret = avio_seek(pb, index->pos, SEEK_SET);
@@ -433,7 +519,9 @@ static int mv_read_packet(AVFormatContext *avctx, AVPacket *pkt)
 
         mv->frame[mv->stream_index]++;
         mv->eof_count = 0;
-    } else {
+    }
+    else
+    {
         mv->eof_count++;
         if (mv->eof_count >= avctx->nb_streams)
             return AVERROR_EOF;
@@ -471,7 +559,8 @@ static int mv_read_seek(AVFormatContext *avctx, int stream_index,
     return 0;
 }
 
-AVInputFormat ff_mv_demuxer = {
+AVInputFormat ff_mv_demuxer =
+{
     .name           = "mv",
     .long_name      = NULL_IF_CONFIG_SMALL("Silicon Graphics Movie"),
     .priv_data_size = sizeof(MvContext),

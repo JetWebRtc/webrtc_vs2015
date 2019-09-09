@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2004 Michael Niedermayer <michaelni@gmx.at>
  *
  * This file is part of FFmpeg.
@@ -28,7 +28,8 @@
 #include "internal.h"
 #include "video.h"
 
-typedef struct QPContext {
+typedef struct QPContext
+{
     const AVClass *class;
     char *qp_expr_str;
     int8_t lut[257];
@@ -39,7 +40,8 @@ typedef struct QPContext {
 #define OFFSET(x) offsetof(QPContext, x)
 #define FLAGS AV_OPT_FLAG_FILTERING_PARAM|AV_OPT_FLAG_VIDEO_PARAM
 
-static const AVOption qp_options[] = {
+static const AVOption qp_options[] =
+{
     { "qp", "set qp expression", OFFSET(qp_expr_str), AV_OPT_TYPE_STRING, {.str=NULL}, 0, 0, FLAGS },
     { NULL }
 };
@@ -64,14 +66,17 @@ static int config_input(AVFilterLink *inlink)
 
     s->h       = (inlink->h + 15) >> 4;
     s->qstride = (inlink->w + 15) >> 4;
-    for (i = -129; i < 128; i++) {
+    for (i = -129; i < 128; i++)
+    {
         double var_values[] = { i != -129, i, NAN, NAN, s->qstride, s->h, 0};
         double temp_val = av_expr_eval(e, var_values, NULL);
 
-        if (isnan(temp_val)) {
+        if (isnan(temp_val))
+        {
             if(strchr(s->qp_expr_str, 'x') || strchr(s->qp_expr_str, 'y'))
                 s->evaluate_per_mb = 1;
-            else {
+            else
+            {
                 av_expr_free(e);
                 return AVERROR(EINVAL);
             }
@@ -98,13 +103,15 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
         return ff_filter_frame(outlink, in);
 
     out_qp_table_buf = av_buffer_alloc(s->h * s->qstride);
-    if (!out_qp_table_buf) {
+    if (!out_qp_table_buf)
+    {
         ret = AVERROR(ENOMEM);
         goto fail;
     }
 
     out = av_frame_clone(in);
-    if (!out) {
+    if (!out)
+    {
         av_buffer_unref(&out_qp_table_buf);
         ret = AVERROR(ENOMEM);
         goto fail;
@@ -114,31 +121,37 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *in)
     av_frame_set_qp_table(out, out_qp_table_buf, s->qstride, type);
 
 
-    if (s->evaluate_per_mb) {
+    if (s->evaluate_per_mb)
+    {
         int y, x;
 
         for (y = 0; y < s->h; y++)
-            for (x = 0; x < s->qstride; x++) {
+            for (x = 0; x < s->qstride; x++)
+            {
                 int qp = in_qp_table ? in_qp_table[x + stride * y] : NAN;
                 double var_values[] = { !!in_qp_table, qp, x, y, s->qstride, s->h, 0};
                 static const char *var_names[] = { "known", "qp", "x", "y", "w", "h", NULL };
                 double temp_val;
 
                 ret = av_expr_parse_and_eval(&temp_val, s->qp_expr_str,
-                                            var_names, var_values,
-                                            NULL, NULL, NULL, NULL, 0, 0, ctx);
+                                             var_names, var_values,
+                                             NULL, NULL, NULL, NULL, 0, 0, ctx);
                 if (ret < 0)
                     goto fail;
                 out_qp_table_buf->data[x + s->qstride * y] = lrintf(temp_val);
             }
-    } else if (in_qp_table) {
+    }
+    else if (in_qp_table)
+    {
         int y, x;
 
         for (y = 0; y < s->h; y++)
             for (x = 0; x < s->qstride; x++)
                 out_qp_table_buf->data[x + s->qstride * y] = s->lut[129 +
-                    ((int8_t)in_qp_table[x + stride * y])];
-    } else {
+                        ((int8_t)in_qp_table[x + stride * y])];
+    }
+    else
+    {
         int y, x, qp = s->lut[0];
 
         for (y = 0; y < s->h; y++)
@@ -154,7 +167,8 @@ fail:
     return ret;
 }
 
-static const AVFilterPad qp_inputs[] = {
+static const AVFilterPad qp_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_VIDEO,
@@ -164,7 +178,8 @@ static const AVFilterPad qp_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad qp_outputs[] = {
+static const AVFilterPad qp_outputs[] =
+{
     {
         .name = "default",
         .type = AVMEDIA_TYPE_VIDEO,
@@ -172,7 +187,8 @@ static const AVFilterPad qp_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_vf_qp = {
+AVFilter ff_vf_qp =
+{
     .name          = "qp",
     .description   = NULL_IF_CONFIG_SMALL("Change video quantization parameters."),
     .priv_size     = sizeof(QPContext),

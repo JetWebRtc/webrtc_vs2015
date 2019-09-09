@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SMJPEG muxer
  * Copyright (c) 2012 Paul B Mahol
  *
@@ -28,7 +28,8 @@
 #include "internal.h"
 #include "smjpeg.h"
 
-typedef struct SMJPEGMuxContext {
+typedef struct SMJPEGMuxContext
+{
     uint32_t duration;
 } SMJPEGMuxContext;
 
@@ -38,7 +39,8 @@ static int smjpeg_write_header(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     int n, tag;
 
-    if (s->nb_streams > 2) {
+    if (s->nb_streams > 2)
+    {
         av_log(s, AV_LOG_ERROR, "more than >2 streams are not supported\n");
         return AVERROR(EINVAL);
     }
@@ -46,7 +48,8 @@ static int smjpeg_write_header(AVFormatContext *s)
     avio_wb32(pb, 0);
     avio_wb32(pb, 0);
 
-    while ((t = av_dict_get(s->metadata, "", t, AV_DICT_IGNORE_SUFFIX))) {
+    while ((t = av_dict_get(s->metadata, "", t, AV_DICT_IGNORE_SUFFIX)))
+    {
         avio_wl32(pb, SMJPEG_TXT);
         avio_wb32(pb, strlen(t->key) + strlen(t->value) + 3);
         avio_write(pb, t->key, strlen(t->key));
@@ -54,12 +57,15 @@ static int smjpeg_write_header(AVFormatContext *s)
         avio_write(pb, t->value, strlen(t->value));
     }
 
-    for (n = 0; n < s->nb_streams; n++) {
+    for (n = 0; n < s->nb_streams; n++)
+    {
         AVStream *st = s->streams[n];
         AVCodecContext *codec = st->codec;
-        if (codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+        if (codec->codec_type == AVMEDIA_TYPE_AUDIO)
+        {
             tag = ff_codec_get_tag(ff_codec_smjpeg_audio_tags, codec->codec_id);
-            if (!tag) {
+            if (!tag)
+            {
                 av_log(s, AV_LOG_ERROR, "unsupported audio codec\n");
                 return AVERROR(EINVAL);
             }
@@ -70,9 +76,12 @@ static int smjpeg_write_header(AVFormatContext *s)
             avio_w8(pb, codec->channels);
             avio_wl32(pb, tag);
             avpriv_set_pts_info(st, 32, 1, 1000);
-        } else if (codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+        }
+        else if (codec->codec_type == AVMEDIA_TYPE_VIDEO)
+        {
             tag = ff_codec_get_tag(ff_codec_smjpeg_video_tags, codec->codec_id);
-            if (!tag) {
+            if (!tag)
+            {
                 av_log(s, AV_LOG_ERROR, "unsupported video codec\n");
                 return AVERROR(EINVAL);
             }
@@ -120,7 +129,8 @@ static int smjpeg_write_trailer(AVFormatContext *s)
     AVIOContext *pb = s->pb;
     int64_t currentpos;
 
-    if (pb->seekable) {
+    if (pb->seekable)
+    {
         currentpos = avio_tell(pb);
         avio_seek(pb, 12, SEEK_SET);
         avio_wb32(pb, smc->duration);
@@ -132,7 +142,8 @@ static int smjpeg_write_trailer(AVFormatContext *s)
     return 0;
 }
 
-AVOutputFormat ff_smjpeg_muxer = {
+AVOutputFormat ff_smjpeg_muxer =
+{
     .name           = "smjpeg",
     .long_name      = NULL_IF_CONFIG_SMALL("Loki SDL MJPEG"),
     .priv_data_size = sizeof(SMJPEGMuxContext),

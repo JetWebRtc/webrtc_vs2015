@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Discworld II BMV audio decoder
  * Copyright (c) 2011 Konstantin Shishkov
  *
@@ -25,7 +25,8 @@
 #include "avcodec.h"
 #include "internal.h"
 
-static const int bmv_aud_mults[16] = {
+static const int bmv_aud_mults[16] =
+{
     16512, 8256, 4128, 2064, 1032, 516, 258, 192, 129, 88, 64, 56, 48, 40, 36, 32
 };
 
@@ -50,7 +51,8 @@ static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data,
     int scale[2];
 
     total_blocks = *buf++;
-    if (buf_size < total_blocks * 65 + 1) {
+    if (buf_size < total_blocks * 65 + 1)
+    {
         av_log(avctx, AV_LOG_ERROR, "expected %d bytes, got %d\n",
                total_blocks * 65 + 1, buf_size);
         return AVERROR_INVALIDDATA;
@@ -62,12 +64,14 @@ static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data,
         return ret;
     output_samples = (int16_t *)frame->data[0];
 
-    for (blocks = 0; blocks < total_blocks; blocks++) {
+    for (blocks = 0; blocks < total_blocks; blocks++)
+    {
         uint8_t code = *buf++;
         code = (code >> 1) | (code << 7);
         scale[0] = bmv_aud_mults[code & 0xF];
         scale[1] = bmv_aud_mults[code >> 4];
-        for (i = 0; i < 32; i++) {
+        for (i = 0; i < 32; i++)
+        {
             *output_samples++ = av_clip_int16((scale[0] * (int8_t)*buf++) >> 5);
             *output_samples++ = av_clip_int16((scale[1] * (int8_t)*buf++) >> 5);
         }
@@ -78,7 +82,8 @@ static int bmv_aud_decode_frame(AVCodecContext *avctx, void *data,
     return buf_size;
 }
 
-AVCodec ff_bmv_audio_decoder = {
+AVCodec ff_bmv_audio_decoder =
+{
     .name           = "bmv_audio",
     .long_name      = NULL_IF_CONFIG_SMALL("Discworld II BMV audio"),
     .type           = AVMEDIA_TYPE_AUDIO,

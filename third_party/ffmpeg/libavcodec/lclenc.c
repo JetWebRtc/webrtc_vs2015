@@ -1,4 +1,4 @@
-/*
+﻿/*
  * LCL (LossLess Codec Library) Codec
  * Copyright (c) 2002-2004 Roberto Togni
  *
@@ -53,7 +53,8 @@
 /*
  * Decoder context
  */
-typedef struct LclEncContext {
+typedef struct LclEncContext
+{
 
     AVCodecContext *avctx;
 
@@ -82,30 +83,35 @@ static int encode_frame(AVCodecContext *avctx, AVPacket *pkt,
     if ((ret = ff_alloc_packet2(avctx, pkt, max_size, 0)) < 0)
         return ret;
 
-    if(avctx->pix_fmt != AV_PIX_FMT_BGR24){
+    if(avctx->pix_fmt != AV_PIX_FMT_BGR24)
+    {
         av_log(avctx, AV_LOG_ERROR, "Format not supported!\n");
         return -1;
     }
 
     zret = deflateReset(&c->zstream);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Deflate reset error: %d\n", zret);
         return -1;
     }
     c->zstream.next_out  = pkt->data;
     c->zstream.avail_out = pkt->size;
 
-    for(i = avctx->height - 1; i >= 0; i--) {
+    for(i = avctx->height - 1; i >= 0; i--)
+    {
         c->zstream.next_in = p->data[0]+p->linesize[0]*i;
         c->zstream.avail_in = avctx->width*3;
         zret = deflate(&c->zstream, Z_NO_FLUSH);
-        if (zret != Z_OK) {
+        if (zret != Z_OK)
+        {
             av_log(avctx, AV_LOG_ERROR, "Deflate error: %d\n", zret);
             return -1;
         }
     }
     zret = deflate(&c->zstream, Z_FINISH);
-    if (zret != Z_STREAM_END) {
+    if (zret != Z_STREAM_END)
+    {
         av_log(avctx, AV_LOG_ERROR, "Deflate error: %d\n", zret);
         return -1;
     }
@@ -136,15 +142,15 @@ static av_cold int encode_init(AVCodecContext *avctx)
         return AVERROR(ENOMEM);
 
 #if FF_API_CODED_FRAME
-FF_DISABLE_DEPRECATION_WARNINGS
+    FF_DISABLE_DEPRECATION_WARNINGS
     avctx->coded_frame->pict_type = AV_PICTURE_TYPE_I;
     avctx->coded_frame->key_frame = 1;
-FF_ENABLE_DEPRECATION_WARNINGS
+    FF_ENABLE_DEPRECATION_WARNINGS
 #endif
 
     c->compression = avctx->compression_level == FF_COMPRESSION_DEFAULT ?
-                            COMP_ZLIB_NORMAL :
-                            av_clip(avctx->compression_level, 0, 9);
+                     COMP_ZLIB_NORMAL :
+                     av_clip(avctx->compression_level, 0, 9);
     c->flags = 0;
     c->imgtype = IMGTYPE_RGB24;
     avctx->bits_per_coded_sample= 24;
@@ -163,7 +169,8 @@ FF_ENABLE_DEPRECATION_WARNINGS
     c->zstream.zfree = Z_NULL;
     c->zstream.opaque = Z_NULL;
     zret = deflateInit(&c->zstream, c->compression);
-    if (zret != Z_OK) {
+    if (zret != Z_OK)
+    {
         av_log(avctx, AV_LOG_ERROR, "Deflate init error: %d\n", zret);
         return AVERROR_UNKNOWN;
     }
@@ -186,7 +193,8 @@ static av_cold int encode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_zlib_encoder = {
+AVCodec ff_zlib_encoder =
+{
     .name           = "zlib",
     .long_name      = NULL_IF_CONFIG_SMALL("LCL (LossLess Codec Library) ZLIB"),
     .type           = AVMEDIA_TYPE_VIDEO,
@@ -198,5 +206,5 @@ AVCodec ff_zlib_encoder = {
     .capabilities   = AV_CODEC_CAP_FRAME_THREADS | AV_CODEC_CAP_INTRA_ONLY,
     .pix_fmts       = (const enum AVPixelFormat[]) { AV_PIX_FMT_BGR24, AV_PIX_FMT_NONE },
     .caps_internal  = FF_CODEC_CAP_INIT_THREADSAFE |
-                      FF_CODEC_CAP_INIT_CLEANUP,
+    FF_CODEC_CAP_INIT_CLEANUP,
 };

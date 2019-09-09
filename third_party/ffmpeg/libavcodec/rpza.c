@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Quicktime Video (RPZA) Video Decoder
  * Copyright (c) 2003 The FFmpeg Project
  *
@@ -44,7 +44,8 @@
 #include "bytestream.h"
 #include "internal.h"
 
-typedef struct RpzaContext {
+typedef struct RpzaContext
+{
 
     AVCodecContext *avctx;
     AVFrame *frame;
@@ -105,16 +106,19 @@ static void rpza_decode_stream(RpzaContext *s)
     total_blocks = ((s->avctx->width + 3) / 4) * ((s->avctx->height + 3) / 4);
 
     /* Process chunk data */
-    while (bytestream2_get_bytes_left(&s->gb)) {
+    while (bytestream2_get_bytes_left(&s->gb))
+    {
         uint8_t opcode = bytestream2_get_byte(&s->gb); /* Get opcode */
 
         int n_blocks = (opcode & 0x1f) + 1; /* Extract block counter from opcode */
 
         /* If opcode MSbit is 0, we need more data to decide what to do */
-        if ((opcode & 0x80) == 0) {
+        if ((opcode & 0x80) == 0)
+        {
             colorA = (opcode << 8) | bytestream2_get_byte(&s->gb);
             opcode = 0;
-            if ((bytestream2_peek_byte(&s->gb) & 0x80) != 0) {
+            if ((bytestream2_peek_byte(&s->gb) & 0x80) != 0)
+            {
                 /* Must behave as opcode 110xxxxx, using colorA computed
                  * above. Use fake opcode 0x20 to enter switch block at
                  * the right place */
@@ -125,23 +129,28 @@ static void rpza_decode_stream(RpzaContext *s)
 
         n_blocks = FFMIN(n_blocks, total_blocks);
 
-        switch (opcode & 0xe0) {
+        switch (opcode & 0xe0)
+        {
 
         /* Skip blocks */
         case 0x80:
-            while (n_blocks--) {
-              ADVANCE_BLOCK();
+            while (n_blocks--)
+            {
+                ADVANCE_BLOCK();
             }
             break;
 
         /* Fill blocks with one color */
         case 0xa0:
             colorA = bytestream2_get_be16(&s->gb);
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 ADVANCE_BLOCK()
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++){
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         pixels[block_ptr] = colorA;
                         block_ptr++;
                     }
@@ -182,12 +191,15 @@ static void rpza_decode_stream(RpzaContext *s)
 
             if (bytestream2_get_bytes_left(&s->gb) < n_blocks * 4)
                 return;
-            while (n_blocks--) {
+            while (n_blocks--)
+            {
                 ADVANCE_BLOCK();
                 block_ptr = row_ptr + pixel_ptr;
-                for (pixel_y = 0; pixel_y < 4; pixel_y++) {
+                for (pixel_y = 0; pixel_y < 4; pixel_y++)
+                {
                     uint8_t index = bytestream2_get_byteu(&s->gb);
-                    for (pixel_x = 0; pixel_x < 4; pixel_x++){
+                    for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                    {
                         uint8_t idx = (index >> (2 * (3 - pixel_x))) & 0x03;
                         pixels[block_ptr] = color4[idx];
                         block_ptr++;
@@ -203,8 +215,10 @@ static void rpza_decode_stream(RpzaContext *s)
                 return;
             ADVANCE_BLOCK();
             block_ptr = row_ptr + pixel_ptr;
-            for (pixel_y = 0; pixel_y < 4; pixel_y++) {
-                for (pixel_x = 0; pixel_x < 4; pixel_x++){
+            for (pixel_y = 0; pixel_y < 4; pixel_y++)
+            {
+                for (pixel_x = 0; pixel_x < 4; pixel_x++)
+                {
                     /* We already have color of upper left pixel */
                     if ((pixel_y != 0) || (pixel_x != 0))
                         colorA = bytestream2_get_be16u(&s->gb);
@@ -218,8 +232,8 @@ static void rpza_decode_stream(RpzaContext *s)
         /* Unknown opcode */
         default:
             av_log(s->avctx, AV_LOG_ERROR, "Unknown opcode %d in rpza chunk."
-                 " Skip remaining %d bytes of chunk data.\n", opcode,
-                 bytestream2_get_bytes_left(&s->gb));
+                   " Skip remaining %d bytes of chunk data.\n", opcode,
+                   bytestream2_get_bytes_left(&s->gb));
             return;
         } /* Opcode switch */
     }
@@ -271,7 +285,8 @@ static av_cold int rpza_decode_end(AVCodecContext *avctx)
     return 0;
 }
 
-AVCodec ff_rpza_decoder = {
+AVCodec ff_rpza_decoder =
+{
     .name           = "rpza",
     .long_name      = NULL_IF_CONFIG_SMALL("QuickTime video (RPZA)"),
     .type           = AVMEDIA_TYPE_VIDEO,

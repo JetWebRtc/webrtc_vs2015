@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Loongson SIMD optimized h264chroma
  *
  * Copyright (c) 2015 Loongson Technology Corporation Limited
@@ -25,7 +25,7 @@
 #include "h264chroma_mips.h"
 
 void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y)
+                                int h, int x, int y)
 {
     const int A = (8 - x) * (8 - y);
     const int B = x * (8 - y);
@@ -36,8 +36,10 @@ void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
 
     av_assert2(x<8 && y<8 && x>=0 && y>=0);
 
-    if (D) {
-        for (i=0; i<h; i++) {
+    if (D)
+    {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -103,19 +105,22 @@ void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "sdc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*src),"m"(*(src+7)),"m"(*(src+1)),"m"(*(src+8)),
-                  "m"(*(src+stride)),"m"(*(src+stride+7)),
-                  "m"(*(src+stride+1)),"m"(*(src+stride+8)),
-                  "r"(A),"r"(B),"r"(C),"r"(D)
+                "m"(*(src+stride)),"m"(*(src+stride+7)),
+                "m"(*(src+stride+1)),"m"(*(src+stride+8)),
+                "r"(A),"r"(B),"r"(C),"r"(D)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else if (E) {
+    }
+    else if (E)
+    {
         const int step = C ? stride : 1;
 
-        for (i=0; i<h; i++) {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "daddiu $6, $0, 32          \r\n"
                 "ldl $2, %2                 \r\n"
@@ -155,16 +160,19 @@ void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "sdc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),
-                  "m"(*(src+step)),"m"(*(src+step+7)),
-                  "r"(A),"r"(E)
+                "m"(*(src+step)),"m"(*(src+step+7)),
+                "r"(A),"r"(E)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else {
-        for (i = 0; i < h; i++) {
+    }
+    else
+    {
+        for (i = 0; i < h; i++)
+        {
             __asm__ volatile (
                 "daddiu $6, $0, 32          \r\n"
                 "ldl $2, %2                 \r\n"
@@ -201,7 +209,7 @@ void ff_put_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
 }
 
 void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y)
+                                int h, int x, int y)
 {
     const int A = (8 - x) * (8 - y);
     const int B = x * (8 - y);
@@ -212,8 +220,10 @@ void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
 
     av_assert2(x<8 && y<8 && x>=0 && y>=0);
 
-    if (D) {
-        for (i=0; i<h; i++) {
+    if (D)
+    {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -281,19 +291,22 @@ void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "sdc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),"m"(*(src+1)),"m"(*(src+8)),
-                  "m"(*(src+stride)),"m"(*(src+stride+7)),
-                  "m"(*(src+stride+1)),"m"(*(src+stride+8)),
-                  "r"(A),"r"(B),"r"(C),"r"(D)
+                "m"(*(src+stride)),"m"(*(src+stride+7)),
+                "m"(*(src+stride+1)),"m"(*(src+stride+8)),
+                "r"(A),"r"(B),"r"(C),"r"(D)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else {
+    }
+    else
+    {
         const int step = C ? stride : 1;
 
-        for (i=0; i<h; i++) {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "daddiu $6, $0, 32          \r\n"
                 "ldl $2, %2                 \r\n"
@@ -335,7 +348,7 @@ void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "sdc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),
-                  "m"(*(src+step)),"m"(*(src+step+7)),"r"(A),"r"(E)
+                "m"(*(src+step)),"m"(*(src+step+7)),"r"(A),"r"(E)
                 : "$2","$3","$4","$5","$6"
             );
 
@@ -346,7 +359,7 @@ void ff_avg_h264_chroma_mc8_mmi(uint8_t *dst, uint8_t *src, int stride,
 }
 
 void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y)
+                                int h, int x, int y)
 {
     const int A = (8 - x) * (8 - y);
     const int B = x * (8 - y);
@@ -357,8 +370,10 @@ void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
 
     av_assert2(x<8 && y<8 && x>=0 && y>=0);
 
-    if (D) {
-        for (i=0; i<h; i++) {
+    if (D)
+    {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -403,19 +418,22 @@ void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "swc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),"m"(*(src+1)),"m"(*(src+8)),
-                  "m"(*(src+stride)),"m"(*(src+stride+7)),
-                  "m"(*(src+stride+1)),"m"(*(src+stride+8)),
-                  "r"(A),"r"(B),"r"(C),"r"(D)
+                "m"(*(src+stride)),"m"(*(src+stride+7)),
+                "m"(*(src+stride+1)),"m"(*(src+stride+8)),
+                "r"(A),"r"(B),"r"(C),"r"(D)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else if (E) {
+    }
+    else if (E)
+    {
         const int step = C ? stride : 1;
 
-        for (i=0; i<h; i++) {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -444,15 +462,18 @@ void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "swc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),"m"(*(src+step)),
-                  "m"(*(src+step+7)),"r"(A),"r"(E)
+                "m"(*(src+step+7)),"r"(A),"r"(E)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else {
-        for (i=0; i<h; i++) {
+    }
+    else
+    {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "lwl $2, %2                 \r\n"
                 "lwr $2, %1                 \r\n"
@@ -469,7 +490,7 @@ void ff_put_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
 }
 
 void ff_avg_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
-        int h, int x, int y)
+                                int h, int x, int y)
 {
     const int A = (8 - x) *(8 - y);
     const int B = x * (8 - y);
@@ -479,8 +500,10 @@ void ff_avg_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
 
     av_assert2(x<8 && y<8 && x>=0 && y>=0);
 
-    if (D) {
-        for (i=0; i<h; i++) {
+    if (D)
+    {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -527,20 +550,23 @@ void ff_avg_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "swc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),"m"(*(src+1)),"m"(*(src+8)),
-                  "m"(*(src+stride)),"m"(*(src+stride+7)),
-                  "m"(*(src+stride+1)),"m"(*(src+stride+8)),
-                  "r"(A),"r"(B),"r"(C),"r"(D)
+                "m"(*(src+stride)),"m"(*(src+stride+7)),
+                "m"(*(src+stride+1)),"m"(*(src+stride+8)),
+                "r"(A),"r"(B),"r"(C),"r"(D)
                 : "$2","$3","$4","$5","$6"
             );
 
             dst += stride;
             src += stride;
         }
-    } else {
+    }
+    else
+    {
         const int E = B + C;
         const int step = C ? stride : 1;
 
-        for (i=0; i<h; i++) {
+        for (i=0; i<h; i++)
+        {
             __asm__ volatile (
                 "ldl $2, %2                 \r\n"
                 "ldr $2, %1                 \r\n"
@@ -571,7 +597,7 @@ void ff_avg_h264_chroma_mc4_mmi(uint8_t *dst, uint8_t *src, int stride,
                 "swc1 $f2, %0               \r\n"
                 : "=m"(*dst)
                 : "m"(*(src)),"m"(*(src+7)),"m"(*(src+step)),
-                  "m"(*(src+step+7)),"r"(A),"r"(E)
+                "m"(*(src+step+7)),"r"(A),"r"(E)
                 : "$2","$3","$4","$5","$6"
             );
 

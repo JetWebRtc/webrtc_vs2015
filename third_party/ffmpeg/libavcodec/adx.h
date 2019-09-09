@@ -1,4 +1,4 @@
-/*
+﻿/*
  * ADX ADPCM codecs
  * Copyright (c) 2001,2003 BERO
  *
@@ -35,11 +35,13 @@
 
 #include "avcodec.h"
 
-typedef struct ADXChannelState {
+typedef struct ADXChannelState
+{
     int s1,s2;
 } ADXChannelState;
 
-typedef struct ADXContext {
+typedef struct ADXContext
+{
     int channels;
     ADXChannelState prev[2];
     int header_parsed;

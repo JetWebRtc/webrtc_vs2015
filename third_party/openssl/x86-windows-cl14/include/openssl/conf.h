@@ -1,4 +1,4 @@
-/* crypto/conf/conf.h */
+﻿/* crypto/conf/conf.h */
 /* Copyright (C) 1995-1998 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -71,7 +71,8 @@
 extern "C" {
 #endif
 
-typedef struct {
+typedef struct
+{
     char *section;
     char *name;
     char *value;
@@ -84,7 +85,8 @@ struct conf_st;
 struct conf_method_st;
 typedef struct conf_method_st CONF_METHOD;
 
-struct conf_method_st {
+struct conf_method_st
+{
     const char *name;
     CONF *(*create) (CONF_METHOD *meth);
     int (*init) (CONF *conf);
@@ -144,7 +146,8 @@ void OPENSSL_no_config(void);
  * that wasn't the case, the above functions would have been replaced
  */
 
-struct conf_st {
+struct conf_st
+{
     CONF_METHOD *meth;
     void *meth_data;
     LHASH_OF(CONF_VALUE) *data;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2007 Michael Niedermayer
  *
  * This file is part of FFmpeg.
@@ -33,7 +33,8 @@ static uint32_t ran(void)
 static void checked_seek(FILE *stream, int64_t offset, int whence)
 {
     offset = fseek(stream, offset, whence);
-    if (offset < 0) {
+    if (offset < 0)
+    {
         fprintf(stderr, "seek failed\n");
         exit(1);
     }
@@ -44,13 +45,15 @@ int main(int argc, char **argv)
     FILE *f;
     int count, maxburst, length;
 
-    if (argc < 5) {
+    if (argc < 5)
+    {
         printf("USAGE: trasher <filename> <count> <maxburst> <seed>\n");
         return 1;
     }
 
     f = fopen(argv[1], "rb+");
-    if (!f) {
+    if (!f)
+    {
         perror(argv[1]);
         return 2;
     }
@@ -62,7 +65,8 @@ int main(int argc, char **argv)
     length = ftell(f);
     checked_seek(f, 0, SEEK_SET);
 
-    while (count--) {
+    while (count--)
+    {
         int burst = 1 + ran() * (uint64_t) (abs(maxburst) - 1) / UINT32_MAX;
         int pos   = ran() * (uint64_t) length / UINT32_MAX;
         checked_seek(f, pos, SEEK_SET);
@@ -73,7 +77,8 @@ int main(int argc, char **argv)
         if (pos + burst > length)
             continue;
 
-        while (burst--) {
+        while (burst--)
+        {
             int val = ran() * 256ULL / UINT32_MAX;
 
             if (maxburst < 0)

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * G.729, G729 Annex D postfilter
  * Copyright (c) 2008 Vladimir Voroshilov
  *
@@ -37,40 +37,44 @@
  * short interpolation filter (of length 33, according to spec)
  * for computing signal with non-integer delay
  */
-static const int16_t ff_g729_interp_filt_short[(ANALYZED_FRAC_DELAYS+1)*SHORT_INT_FILT_LEN] = {
-      0, 31650, 28469, 23705, 18050, 12266,  7041,  2873,
-      0, -1597, -2147, -1992, -1492,  -933,  -484,  -188,
+static const int16_t ff_g729_interp_filt_short[(ANALYZED_FRAC_DELAYS+1)*SHORT_INT_FILT_LEN] =
+{
+    0, 31650, 28469, 23705, 18050, 12266,  7041,  2873,
+    0, -1597, -2147, -1992, -1492,  -933,  -484,  -188,
 };
 
 /**
  * long interpolation filter (of length 129, according to spec)
  * for computing signal with non-integer delay
  */
-static const int16_t ff_g729_interp_filt_long[(ANALYZED_FRAC_DELAYS+1)*LONG_INT_FILT_LEN] = {
-   0, 31915, 29436, 25569, 20676, 15206,  9639,  4439,
-   0, -3390, -5579, -6549, -6414, -5392, -3773, -1874,
-   0,  1595,  2727,  3303,  3319,  2850,  2030,  1023,
-   0,  -887, -1527, -1860, -1876, -1614, -1150,  -579,
-   0,   501,   859,  1041,  1044,   892,   631,   315,
-   0,  -266,  -453,  -543,  -538,  -455,  -317,  -156,
-   0,   130,   218,   258,   253,   212,   147,    72,
-   0,   -59,  -101,  -122,  -123,  -106,   -77,   -40,
+static const int16_t ff_g729_interp_filt_long[(ANALYZED_FRAC_DELAYS+1)*LONG_INT_FILT_LEN] =
+{
+    0, 31915, 29436, 25569, 20676, 15206,  9639,  4439,
+    0, -3390, -5579, -6549, -6414, -5392, -3773, -1874,
+    0,  1595,  2727,  3303,  3319,  2850,  2030,  1023,
+    0,  -887, -1527, -1860, -1876, -1614, -1150,  -579,
+    0,   501,   859,  1041,  1044,   892,   631,   315,
+    0,  -266,  -453,  -543,  -538,  -455,  -317,  -156,
+    0,   130,   218,   258,   253,   212,   147,    72,
+    0,   -59,  -101,  -122,  -123,  -106,   -77,   -40,
 };
 
 /**
  * formant_pp_factor_num_pow[i] = FORMANT_PP_FACTOR_NUM^(i+1)
  */
-static const int16_t formant_pp_factor_num_pow[10]= {
-  /* (0.15) */
-  18022, 9912, 5451, 2998, 1649, 907, 499, 274, 151, 83
+static const int16_t formant_pp_factor_num_pow[10]=
+{
+    /* (0.15) */
+    18022, 9912, 5451, 2998, 1649, 907, 499, 274, 151, 83
 };
 
 /**
  * formant_pp_factor_den_pow[i] = FORMANT_PP_FACTOR_DEN^(i+1)
  */
-static const int16_t formant_pp_factor_den_pow[10] = {
-  /* (0.15) */
-  22938, 16057, 11240, 7868, 5508, 3856, 2699, 1889, 1322, 925
+static const int16_t formant_pp_factor_den_pow[10] =
+{
+    /* (0.15) */
+    22938, 16057, 11240, 7868, 5508, 3856, 2699, 1889, 1322, 925
 };
 
 /**
@@ -88,7 +92,8 @@ static void residual_filter(int16_t* out, const int16_t* filter_coeffs, const in
 {
     int i, n;
 
-    for (n = subframe_size - 1; n >= 0; n--) {
+    for (n = subframe_size - 1; n >= 0; n--)
+    {
         int sum = 0x800;
         for (i = 0; i < 10; i++)
             sum += filter_coeffs[i] * in[n - i - 1];
@@ -162,9 +167,10 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
     gain_num = 0;
 
     ener = adsp->scalarproduct_int16(sig_scaled + RES_PREV_DATA_SIZE,
-                                    sig_scaled + RES_PREV_DATA_SIZE,
-                                    subframe_size);
-    if (ener) {
+                                     sig_scaled + RES_PREV_DATA_SIZE,
+                                     subframe_size);
+    if (ener)
+    {
         sh_ener = FFMAX(av_log2(ener) - 14, 0);
         ener >>= sh_ener;
         /* Search for best pitch delay.
@@ -189,27 +195,31 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
            precision around best_delay. */
         corr_int_num = 0;
         best_delay_int = pitch_delay_int - 1;
-        for (i = pitch_delay_int - 1; i <= pitch_delay_int + 1; i++) {
+        for (i = pitch_delay_int - 1; i <= pitch_delay_int + 1; i++)
+        {
             sum = adsp->scalarproduct_int16(sig_scaled + RES_PREV_DATA_SIZE,
-                                           sig_scaled + RES_PREV_DATA_SIZE - i,
-                                           subframe_size);
-            if (sum > corr_int_num) {
+                                            sig_scaled + RES_PREV_DATA_SIZE - i,
+                                            subframe_size);
+            if (sum > corr_int_num)
+            {
                 corr_int_num = sum;
                 best_delay_int = i;
             }
         }
-        if (corr_int_num) {
+        if (corr_int_num)
+        {
             /* Compute denominator of pseudo-normalized correlation R'(0). */
             corr_int_den = adsp->scalarproduct_int16(sig_scaled - best_delay_int + RES_PREV_DATA_SIZE,
-                                                    sig_scaled - best_delay_int + RES_PREV_DATA_SIZE,
-                                                    subframe_size);
+                           sig_scaled - best_delay_int + RES_PREV_DATA_SIZE,
+                           subframe_size);
 
             /* Compute signals with non-integer delay k (with 1/8 precision),
                where k is in [0;6] range.
                Entire delay is qual to best_delay+(k+1)/8
                This is archieved by applying an interpolation filter of
                legth 33 to source signal. */
-            for (k = 0; k < ANALYZED_FRAC_DELAYS; k++) {
+            for (k = 0; k < ANALYZED_FRAC_DELAYS; k++)
+            {
                 ff_acelp_interpolate(&delayed_signal[k][0],
                                      &sig_scaled[RES_PREV_DATA_SIZE - best_delay_int],
                                      ff_g729_interp_filt_short,
@@ -226,10 +236,11 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
 
               Also compute maximum value of above denominators over all k. */
             tmp = corr_int_den;
-            for (k = 0; k < ANALYZED_FRAC_DELAYS; k++) {
+            for (k = 0; k < ANALYZED_FRAC_DELAYS; k++)
+            {
                 sum = adsp->scalarproduct_int16(&delayed_signal[k][1],
-                                               &delayed_signal[k][1],
-                                               subframe_size - 1);
+                                                &delayed_signal[k][1],
+                                                subframe_size - 1);
                 corr_den[k][0] = sum + delayed_signal[k][0            ] * delayed_signal[k][0            ];
                 corr_den[k][1] = sum + delayed_signal[k][subframe_size] * delayed_signal[k][subframe_size];
 
@@ -237,7 +248,8 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
             }
 
             sh_gain_den = av_log2(tmp) - 14;
-            if (sh_gain_den >= 0) {
+            if (sh_gain_den >= 0)
+            {
 
                 sh_gain_num =  FFMAX(sh_gain_den, sh_ener);
                 /* Loop through all k and find delay that maximizes
@@ -249,15 +261,17 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
                 gain_den = corr_int_den >> sh_gain_den;
                 gain_num = corr_int_num >> sh_gain_num;
                 gain_num_square = gain_num * gain_num;
-                for (k = 0; k < ANALYZED_FRAC_DELAYS; k++) {
-                    for (i = 0; i < 2; i++) {
+                for (k = 0; k < ANALYZED_FRAC_DELAYS; k++)
+                {
+                    for (i = 0; i < 2; i++)
+                    {
                         int16_t gain_num_short, gain_den_short;
                         int gain_num_short_square;
                         /* Compute numerator of pseudo-normalized
                            correlation R'(k). */
                         sum = adsp->scalarproduct_int16(&delayed_signal[k][i],
-                                                       sig_scaled + RES_PREV_DATA_SIZE,
-                                                       subframe_size);
+                                                        sig_scaled + RES_PREV_DATA_SIZE,
+                                                        subframe_size);
                         gain_num_short = FFMAX(sum >> sh_gain_num, 0);
 
                         /*
@@ -272,7 +286,8 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
                         tmp2 = MULL(gain_num_square, gain_den_short, FRAC_BITS);
 
                         // R'(T)^2 > max R'(T)^2
-                        if (tmp > tmp2) {
+                        if (tmp > tmp2)
+                        {
                             gain_num = gain_num_short;
                             gain_den = gain_den_short;
                             gain_num_square = gain_num_short_square;
@@ -296,13 +311,15 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
     } // if(ener)
     /* End of best delay searching code  */
 
-    if (!gain_num) {
+    if (!gain_num)
+    {
         memcpy(residual_filt, residual + RES_PREV_DATA_SIZE, subframe_size * sizeof(int16_t));
 
         /* Long-term prediction gain is less than 3dB. Long-term postfilter is disabled. */
         return 0;
     }
-    if (best_delay_frac) {
+    if (best_delay_frac)
+    {
         /* Recompute delayed signal with an interpolation filter of length 129. */
         ff_acelp_interpolate(residual_filt,
                              &sig_scaled[RES_PREV_DATA_SIZE - best_delay_int + delayed_signal_offset],
@@ -313,13 +330,16 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
                              subframe_size + 1);
         /* Compute R'(k) correlation's numerator. */
         sum = adsp->scalarproduct_int16(residual_filt,
-                                       sig_scaled + RES_PREV_DATA_SIZE,
-                                       subframe_size);
+                                        sig_scaled + RES_PREV_DATA_SIZE,
+                                        subframe_size);
 
-        if (sum < 0) {
+        if (sum < 0)
+        {
             gain_long_num = 0;
             sh_gain_long_num = 0;
-        } else {
+        }
+        else
+        {
             tmp = FFMAX(av_log2(sum) - 14, 0);
             sum >>= tmp;
             gain_long_num = sum;
@@ -350,14 +370,16 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
             L_temp1 >>= -tmp;
 
         /* Check if longer filter increases the values of R'(k). */
-        if (L_temp1 > L_temp0) {
+        if (L_temp1 > L_temp0)
+        {
             /* Select long filter. */
             selected_signal = residual_filt;
             gain_num = gain_long_num;
             gain_den = gain_long_den;
             sh_gain_num = sh_gain_long_num;
             sh_gain_den = sh_gain_long_den;
-        } else
+        }
+        else
             /* Select short filter. */
             selected_signal = &delayed_signal[best_delay_frac-1][delayed_signal_offset];
 
@@ -383,7 +405,8 @@ static int16_t long_term_filter(AudioDSPContext *adsp, int pitch_delay_int,
 
     if (gain_num > gain_den)
         lt_filt_factor_a = MIN_LT_FILT_FACTOR_A;
-    else {
+    else
+    {
         gain_num >>= 2;
         gain_den >>= 1;
         lt_filt_factor_a = (gain_den << 15) / (gain_den + gain_num);
@@ -442,7 +465,8 @@ static int16_t get_tilt_comp(AudioDSPContext *adsp, int16_t *lp_gn,
 
     /* downscale to avoid overflow */
     temp = av_log2(rh0) - 14;
-    if (temp > 0) {
+    if (temp > 0)
+    {
         rh0 >>= temp;
         rh1 >>= temp;
     }
@@ -455,7 +479,8 @@ static int16_t get_tilt_comp(AudioDSPContext *adsp, int16_t *lp_gn,
         gain_term += FFABS(lp_gn[i + 10]);
     gain_term >>= 2; // (3.12) -> (5.10)
 
-    if (gain_term > 0x400) { // 1.0 in (5.10)
+    if (gain_term > 0x400)   // 1.0 in (5.10)
+    {
         temp = 0x2000000 / gain_term; // 1.0/gain_term in (0.15)
         for (i = 0; i < subframe_size; i++)
             speech[i] = (speech[i] * temp + 0x4000) >> 15;
@@ -481,11 +506,14 @@ static int16_t apply_tilt_comp(int16_t* out, int16_t* res_pst, int refl_coeff,
     int gt, ga;
     int fact, sh_fact;
 
-    if (refl_coeff > 0) {
+    if (refl_coeff > 0)
+    {
         gt = (refl_coeff * G729_TILT_FACTOR_PLUS + 0x4000) >> 15;
         fact = 0x4000; // 0.5 in (0.15)
         sh_fact = 15;
-    } else {
+    }
+    else
+    {
         gt = (refl_coeff * G729_TILT_FACTOR_MINUS + 0x4000) >> 15;
         fact = 0x800; // 0.5 in (3.12)
         sh_fact = 12;
@@ -496,7 +524,8 @@ static int16_t apply_tilt_comp(int16_t* out, int16_t* res_pst, int refl_coeff,
     /* Apply tilt compensation filter to signal. */
     tmp = res_pst[subframe_size - 1];
 
-    for (i = subframe_size - 1; i >= 1; i--) {
+    for (i = subframe_size - 1; i >= 1; i--)
+    {
         tmp2 = (res_pst[i] << 15) + ((gt * res_pst[i-1]) << 1);
         tmp2 = (tmp2 + 0x4000) >> 15;
 
@@ -512,9 +541,9 @@ static int16_t apply_tilt_comp(int16_t* out, int16_t* res_pst, int refl_coeff,
 }
 
 void ff_g729_postfilter(AudioDSPContext *adsp, int16_t* ht_prev_data, int* voicing,
-                     const int16_t *lp_filter_coeffs, int pitch_delay_int,
-                     int16_t* residual, int16_t* res_filter_data,
-                     int16_t* pos_filter_data, int16_t *speech, int subframe_size)
+                        const int16_t *lp_filter_coeffs, int pitch_delay_int,
+                        int16_t* residual, int16_t* res_filter_data,
+                        int16_t* pos_filter_data, int16_t *speech, int subframe_size)
 {
     int16_t residual_filt_buf[SUBFRAME_SIZE+11];
     int16_t lp_gn[33]; // (3.12)
@@ -542,8 +571,8 @@ void ff_g729_postfilter(AudioDSPContext *adsp, int16_t* ht_prev_data, int* voici
     /* long-term filter. If long-term prediction gain is larger than 3dB (returned value is
        nonzero) then declare current subframe as periodic. */
     *voicing = FFMAX(*voicing, long_term_filter(adsp, pitch_delay_int,
-                                                residual, residual_filt_buf + 10,
-                                                subframe_size));
+                     residual, residual_filt_buf + 10,
+                     subframe_size));
 
     /* shift residual for using in next subframe */
     memmove(residual, residual + subframe_size, RES_PREV_DATA_SIZE * sizeof(int16_t));
@@ -572,7 +601,7 @@ void ff_g729_postfilter(AudioDSPContext *adsp, int16_t* ht_prev_data, int* voici
  * \return (3.12) last value of gain coefficient
  */
 int16_t ff_g729_adaptive_gain_control(int gain_before, int gain_after, int16_t *speech,
-                                   int subframe_size, int16_t gain_prev)
+                                      int subframe_size, int16_t gain_prev)
 {
     int gain; // (3.12)
     int n;
@@ -581,7 +610,8 @@ int16_t ff_g729_adaptive_gain_control(int gain_before, int gain_after, int16_t *
     if(!gain_after && gain_before)
         return 0;
 
-    if (gain_before) {
+    if (gain_before)
+    {
 
         exp_before  = 14 - av_log2(gain_before);
         gain_before = bidir_sal(gain_before, exp_before);
@@ -589,18 +619,23 @@ int16_t ff_g729_adaptive_gain_control(int gain_before, int gain_after, int16_t *
         exp_after  = 14 - av_log2(gain_after);
         gain_after = bidir_sal(gain_after, exp_after);
 
-        if (gain_before < gain_after) {
+        if (gain_before < gain_after)
+        {
             gain = (gain_before << 15) / gain_after;
             gain = bidir_sal(gain, exp_after - exp_before - 1);
-        } else {
+        }
+        else
+        {
             gain = ((gain_before - gain_after) << 14) / gain_after + 0x4000;
             gain = bidir_sal(gain, exp_after - exp_before);
         }
         gain = (gain * G729_AGC_FAC1 + 0x4000) >> 15; // gain * (1-0.9875)
-    } else
+    }
+    else
         gain = 0;
 
-    for (n = 0; n < subframe_size; n++) {
+    for (n = 0; n < subframe_size; n++)
+    {
         // gain_prev = gain + 0.9875 * gain_prev
         gain_prev = (G729_AGC_FACTOR * gain_prev + 0x4000) >> 15;
         gain_prev = av_clip_int16(gain + gain_prev);

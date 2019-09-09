@@ -1,8 +1,8 @@
-
+ï»¿
 /* -----------------------------------------------------------------------------------------------------------
 Software License for The Fraunhofer FDK AAC Codec Library for Android
 
-© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur Förderung der angewandten Forschung e.V.
+Â© Copyright  1995 - 2013 Fraunhofer-Gesellschaft zur FÃ¶rderung der angewandten Forschung e.V.
   All rights reserved.
 
  1.    INTRODUCTION
@@ -108,11 +108,11 @@ UINT  HcrDecoder (H_HCR_INFO hHcr,
                   const SamplingRateInfo *pSamplingRateInfo,
                   HANDLE_FDK_BITSTREAM bs);
 void  CarryBitToBranchValue(
-        UCHAR  carryBit,
-        UINT   treeNode,
-        UINT  *branchValue,
-        UINT  *branchNode
-        );
+    UCHAR  carryBit,
+    UINT   treeNode,
+    UINT  *branchValue,
+    UINT  *branchNode
+);
 
 void  CHcr_Read  (HANDLE_FDK_BITSTREAM bs,
                   CAacDecoderChannelInfo *pAacDecoderChannelInfo);

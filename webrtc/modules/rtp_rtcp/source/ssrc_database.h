@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #include "webrtc/system_wrappers/include/static_instance.h"
 #include "webrtc/typedefs.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // TODO(tommi, holmer): Look into whether we can eliminate locking in this
 // class or the class itself completely once voice engine doesn't rely on it.
@@ -28,34 +29,38 @@ namespace webrtc {
 // the best design performance wise.
 // If we do decide to keep the class, we should at least get rid of using
 // StaticInstance.
-class SSRCDatabase {
- public:
-  static SSRCDatabase* GetSSRCDatabase();
-  static void ReturnSSRCDatabase();
+class SSRCDatabase
+{
+public:
+    static SSRCDatabase* GetSSRCDatabase();
+    static void ReturnSSRCDatabase();
 
-  uint32_t CreateSSRC();
-  void RegisterSSRC(uint32_t ssrc);
-  void ReturnSSRC(uint32_t ssrc);
+    uint32_t CreateSSRC();
+    void RegisterSSRC(uint32_t ssrc);
+    void ReturnSSRC(uint32_t ssrc);
 
- protected:
-  SSRCDatabase();
-  ~SSRCDatabase();
+protected:
+    SSRCDatabase();
+    ~SSRCDatabase();
 
-  static SSRCDatabase* CreateInstance() { return new SSRCDatabase(); }
+    static SSRCDatabase* CreateInstance()
+    {
+        return new SSRCDatabase();
+    }
 
-  // Friend function to allow the SSRC destructor to be accessed from the
-  // template class.
-  friend SSRCDatabase* GetStaticInstance<SSRCDatabase>(
-      CountOperation count_operation);
+    // Friend function to allow the SSRC destructor to be accessed from the
+    // template class.
+    friend SSRCDatabase* GetStaticInstance<SSRCDatabase>(
+        CountOperation count_operation);
 
- private:
-  rtc::CriticalSection crit_;
-  Random random_ GUARDED_BY(crit_);
-  std::set<uint32_t> ssrcs_ GUARDED_BY(crit_);
-  // TODO(tommi): Use a thread checker to ensure the object is created and
-  // deleted on the same thread.  At the moment this isn't possible due to
-  // voe::ChannelOwner in voice engine.  To reproduce, run:
-  // voe_auto_test --automated --gtest_filter=*MixManyChannelsForStressOpus
+private:
+    rtc::CriticalSection crit_;
+    Random random_ GUARDED_BY(crit_);
+    std::set<uint32_t> ssrcs_ GUARDED_BY(crit_);
+    // TODO(tommi): Use a thread checker to ensure the object is created and
+    // deleted on the same thread.  At the moment this isn't possible due to
+    // voe::ChannelOwner in voice engine.  To reproduce, run:
+    // voe_auto_test --automated --gtest_filter=*MixManyChannelsForStressOpus
 };
 }  // namespace webrtc
 

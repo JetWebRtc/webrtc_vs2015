@@ -1,4 +1,4 @@
-/*
+﻿/*
  * SIMD-optimized HuffYUV encoding functions
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -36,21 +36,21 @@ static void diff_bytes_mmx(uint8_t *dst, const uint8_t *src1, const uint8_t *src
     x86_reg i = 0;
 
     if (w >= 16)
-    __asm__ volatile (
-        "1:                             \n\t"
-        "movq  (%2, %0), %%mm0          \n\t"
-        "movq  (%1, %0), %%mm1          \n\t"
-        "psubb %%mm0, %%mm1             \n\t"
-        "movq %%mm1, (%3, %0)           \n\t"
-        "movq 8(%2, %0), %%mm0          \n\t"
-        "movq 8(%1, %0), %%mm1          \n\t"
-        "psubb %%mm0, %%mm1             \n\t"
-        "movq %%mm1, 8(%3, %0)          \n\t"
-        "add $16, %0                    \n\t"
-        "cmp %4, %0                     \n\t"
-        " jb 1b                         \n\t"
-        : "+r" (i)
-        : "r" (src1), "r" (src2), "r" (dst), "r" ((x86_reg) w - 15));
+        __asm__ volatile (
+            "1:                             \n\t"
+            "movq  (%2, %0), %%mm0          \n\t"
+            "movq  (%1, %0), %%mm1          \n\t"
+            "psubb %%mm0, %%mm1             \n\t"
+            "movq %%mm1, (%3, %0)           \n\t"
+            "movq 8(%2, %0), %%mm0          \n\t"
+            "movq 8(%1, %0), %%mm1          \n\t"
+            "psubb %%mm0, %%mm1             \n\t"
+            "movq %%mm1, 8(%3, %0)          \n\t"
+            "add $16, %0                    \n\t"
+            "cmp %4, %0                     \n\t"
+            " jb 1b                         \n\t"
+            : "+r" (i)
+            : "r" (src1), "r" (src2), "r" (dst), "r" ((x86_reg) w - 15));
 
     for (; i < w; i++)
         dst[i + 0] = src1[i + 0] - src2[i + 0];
@@ -103,11 +103,13 @@ av_cold void ff_huffyuvencdsp_init_x86(HuffYUVEncDSPContext *c)
 #if HAVE_INLINE_ASM
     int cpu_flags = av_get_cpu_flags();
 
-    if (INLINE_MMX(cpu_flags)) {
+    if (INLINE_MMX(cpu_flags))
+    {
         c->diff_bytes = diff_bytes_mmx;
     }
 
-    if (INLINE_MMXEXT(cpu_flags)) {
+    if (INLINE_MMXEXT(cpu_flags))
+    {
         c->sub_hfyu_median_pred = sub_hfyu_median_pred_mmxext;
     }
 #endif /* HAVE_INLINE_ASM */

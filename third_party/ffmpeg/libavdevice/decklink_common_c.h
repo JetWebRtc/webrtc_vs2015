@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Blackmagic DeckLink common code
  * Copyright (c) 2013-2014 Ramiro Polla
  *
@@ -19,7 +19,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-struct decklink_cctx {
+struct decklink_cctx
+{
     const AVClass *cclass;
 
     void *ctx;

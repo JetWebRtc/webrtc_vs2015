@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2014 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -16,7 +16,8 @@
 #include "webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "webrtc/modules/desktop_capture/mac/desktop_configuration.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Another helper function to get the on-screen windows.
 bool GetWindowList(DesktopCapturer::SourceList* windows, bool ignore_minimized);

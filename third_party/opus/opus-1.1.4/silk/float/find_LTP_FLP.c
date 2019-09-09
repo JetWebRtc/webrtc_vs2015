@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -55,7 +55,8 @@ void silk_find_LTP_FLP(
     b_ptr    = b;
     WLTP_ptr = WLTP;
     r_ptr    = &r_lpc[ mem_offset ];
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         lag_ptr = r_ptr - ( lag[ k ] + LTP_ORDER / 2 );
 
         silk_corrMatrix_FLP( lag_ptr, subfr_length, LTP_ORDER, WLTP_ptr );
@@ -63,8 +64,8 @@ void silk_find_LTP_FLP(
 
         rr[ k ] = ( silk_float )silk_energy_FLP( r_ptr, subfr_length );
         regu = 1.0f + rr[ k ] +
-            matrix_ptr( WLTP_ptr, 0, 0, LTP_ORDER ) +
-            matrix_ptr( WLTP_ptr, LTP_ORDER-1, LTP_ORDER-1, LTP_ORDER );
+               matrix_ptr( WLTP_ptr, 0, 0, LTP_ORDER ) +
+               matrix_ptr( WLTP_ptr, LTP_ORDER-1, LTP_ORDER-1, LTP_ORDER );
         regu *= LTP_DAMPING / 3;
         silk_regularize_correlations_FLP( WLTP_ptr, &rr[ k ], regu, LTP_ORDER );
         silk_solve_LDL_FLP( WLTP_ptr, LTP_ORDER, Rr, b_ptr );
@@ -82,10 +83,12 @@ void silk_find_LTP_FLP(
     }
 
     /* Compute LTP coding gain */
-    if( LTPredCodGain != NULL ) {
+    if( LTPredCodGain != NULL )
+    {
         LPC_LTP_res_nrg = 1e-6f;
         LPC_res_nrg     = 0.0f;
-        for( k = 0; k < nb_subfr; k++ ) {
+        for( k = 0; k < nb_subfr; k++ )
+        {
             LPC_res_nrg     += rr[  k ] * Wght[ k ];
             LPC_LTP_res_nrg += nrg[ k ] * Wght[ k ];
         }
@@ -97,34 +100,41 @@ void silk_find_LTP_FLP(
     /* Smoothing */
     /* d = sum( B, 1 ); */
     b_ptr = b;
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         d[ k ] = 0;
-        for( i = 0; i < LTP_ORDER; i++ ) {
+        for( i = 0; i < LTP_ORDER; i++ )
+        {
             d[ k ] += b_ptr[ i ];
         }
         b_ptr += LTP_ORDER;
     }
     /* m = ( w * d' ) / ( sum( w ) + 1e-3 ); */
     temp = 1e-3f;
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         temp += w[ k ];
     }
     m = 0;
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         m += d[ k ] * w[ k ];
     }
     m = m / temp;
 
     b_ptr = b;
-    for( k = 0; k < nb_subfr; k++ ) {
+    for( k = 0; k < nb_subfr; k++ )
+    {
         g = LTP_SMOOTHING / ( LTP_SMOOTHING + w[ k ] ) * ( m - d[ k ] );
         temp = 0;
-        for( i = 0; i < LTP_ORDER; i++ ) {
+        for( i = 0; i < LTP_ORDER; i++ )
+        {
             delta_b[ i ] = silk_max_float( b_ptr[ i ], 0.1f );
             temp += delta_b[ i ];
         }
         temp = g / temp;
-        for( i = 0; i < LTP_ORDER; i++ ) {
+        for( i = 0; i < LTP_ORDER; i++ )
+        {
             b_ptr[ i ] = b_ptr[ i ] + delta_b[ i ] * temp;
         }
         b_ptr += LTP_ORDER;

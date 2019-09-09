@@ -1,4 +1,4 @@
-/*
+﻿/*
  * x86 PNG optimizations.
  * Copyright (c) 2008 Loren Merrit <lorenm@u.washington.edu>
  *

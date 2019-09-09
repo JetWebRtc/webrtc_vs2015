@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Floating point AAN DCT
  * this implementation is based upon the IJG integer AAN DCT (see jfdctfst.c)
  *
@@ -52,15 +52,16 @@ for(i=0; i<8; i++){
 #define A5 0.38268343236508977170 // cos(pi*6/16)
 #define A4 1.30656296487637652774 // cos(pi*2/16)sqrt(2)
 
-static const FLOAT postscale[64]={
-B0*B0, B0*B1, B0*B2, B0*B3, B0*B4, B0*B5, B0*B6, B0*B7,
-B1*B0, B1*B1, B1*B2, B1*B3, B1*B4, B1*B5, B1*B6, B1*B7,
-B2*B0, B2*B1, B2*B2, B2*B3, B2*B4, B2*B5, B2*B6, B2*B7,
-B3*B0, B3*B1, B3*B2, B3*B3, B3*B4, B3*B5, B3*B6, B3*B7,
-B4*B0, B4*B1, B4*B2, B4*B3, B4*B4, B4*B5, B4*B6, B4*B7,
-B5*B0, B5*B1, B5*B2, B5*B3, B5*B4, B5*B5, B5*B6, B5*B7,
-B6*B0, B6*B1, B6*B2, B6*B3, B6*B4, B6*B5, B6*B6, B6*B7,
-B7*B0, B7*B1, B7*B2, B7*B3, B7*B4, B7*B5, B7*B6, B7*B7,
+static const FLOAT postscale[64]=
+{
+    B0*B0, B0*B1, B0*B2, B0*B3, B0*B4, B0*B5, B0*B6, B0*B7,
+    B1*B0, B1*B1, B1*B2, B1*B3, B1*B4, B1*B5, B1*B6, B1*B7,
+    B2*B0, B2*B1, B2*B2, B2*B3, B2*B4, B2*B5, B2*B6, B2*B7,
+    B3*B0, B3*B1, B3*B2, B3*B3, B3*B4, B3*B5, B3*B6, B3*B7,
+    B4*B0, B4*B1, B4*B2, B4*B3, B4*B4, B4*B5, B4*B6, B4*B7,
+    B5*B0, B5*B1, B5*B2, B5*B3, B5*B4, B5*B5, B5*B6, B5*B7,
+    B6*B0, B6*B1, B6*B2, B6*B3, B6*B4, B6*B5, B6*B6, B6*B7,
+    B7*B0, B7*B1, B7*B2, B7*B3, B7*B4, B7*B5, B7*B6, B7*B7,
 };
 
 static av_always_inline void row_fdct(FLOAT temp[64], int16_t *data)
@@ -70,7 +71,8 @@ static av_always_inline void row_fdct(FLOAT temp[64], int16_t *data)
     FLOAT z2, z4, z11, z13;
     int i;
 
-    for (i=0; i<8*8; i+=8) {
+    for (i=0; i<8*8; i+=8)
+    {
         tmp0= data[0 + i] + data[7 + i];
         tmp7= data[0 + i] - data[7 + i];
         tmp1= data[1 + i] + data[6 + i];
@@ -132,7 +134,8 @@ void ff_faandct(int16_t *data)
 
     row_fdct(temp, data);
 
-    for (i=0; i<8; i++) {
+    for (i=0; i<8; i++)
+    {
         tmp0= temp[8*0 + i] + temp[8*7 + i];
         tmp7= temp[8*0 + i] - temp[8*7 + i];
         tmp1= temp[8*1 + i] + temp[8*6 + i];
@@ -193,7 +196,8 @@ void ff_faandct248(int16_t *data)
 
     row_fdct(temp, data);
 
-    for (i=0; i<8; i++) {
+    for (i=0; i<8; i++)
+    {
         tmp0 = temp[8*0 + i] + temp[8*1 + i];
         tmp1 = temp[8*2 + i] + temp[8*3 + i];
         tmp2 = temp[8*4 + i] + temp[8*5 + i];

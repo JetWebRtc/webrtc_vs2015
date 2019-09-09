@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -50,9 +50,11 @@ static opus_int32 LPC_inverse_pred_gain_QA(                 /* O   Returns inver
     Anew_QA = A_QA[ order & 1 ];
 
     invGain_Q30 = (opus_int32)1 << 30;
-    for( k = order - 1; k > 0; k-- ) {
+    for( k = order - 1; k > 0; k-- )
+    {
         /* Check for stability */
-        if( ( Anew_QA[ k ] > A_LIMIT ) || ( Anew_QA[ k ] < -A_LIMIT ) ) {
+        if( ( Anew_QA[ k ] > A_LIMIT ) || ( Anew_QA[ k ] < -A_LIMIT ) )
+        {
             return 0;
         }
 
@@ -79,14 +81,16 @@ static opus_int32 LPC_inverse_pred_gain_QA(                 /* O   Returns inver
         Anew_QA = A_QA[ k & 1 ];
 
         /* Update AR coefficient */
-        for( n = 0; n < k; n++ ) {
+        for( n = 0; n < k; n++ )
+        {
             tmp_QA = Aold_QA[ n ] - MUL32_FRAC_Q( Aold_QA[ k - n - 1 ], rc_Q31, 31 );
             Anew_QA[ n ] = MUL32_FRAC_Q( tmp_QA, rc_mult2 , mult2Q );
         }
     }
 
     /* Check for stability */
-    if( ( Anew_QA[ 0 ] > A_LIMIT ) || ( Anew_QA[ 0 ] < -A_LIMIT ) ) {
+    if( ( Anew_QA[ 0 ] > A_LIMIT ) || ( Anew_QA[ 0 ] < -A_LIMIT ) )
+    {
         return 0;
     }
 
@@ -119,12 +123,14 @@ opus_int32 silk_LPC_inverse_pred_gain(              /* O   Returns inverse predi
     Anew_QA = Atmp_QA[ order & 1 ];
 
     /* Increase Q domain of the AR coefficients */
-    for( k = 0; k < order; k++ ) {
+    for( k = 0; k < order; k++ )
+    {
         DC_resp += (opus_int32)A_Q12[ k ];
         Anew_QA[ k ] = silk_LSHIFT32( (opus_int32)A_Q12[ k ], QA - 12 );
     }
     /* If the DC is unstable, we don't even need to do the full calculations */
-    if( DC_resp >= 4096 ) {
+    if( DC_resp >= 4096 )
+    {
         return 0;
     }
     return LPC_inverse_pred_gain_QA( Atmp_QA, order );
@@ -145,7 +151,8 @@ opus_int32 silk_LPC_inverse_pred_gain_Q24(          /* O    Returns inverse pred
     Anew_QA = Atmp_QA[ order & 1 ];
 
     /* Increase Q domain of the AR coefficients */
-    for( k = 0; k < order; k++ ) {
+    for( k = 0; k < order; k++ )
+    {
         Anew_QA[ k ] = silk_RSHIFT32( A_Q24[ k ], 24 - QA );
     }
 

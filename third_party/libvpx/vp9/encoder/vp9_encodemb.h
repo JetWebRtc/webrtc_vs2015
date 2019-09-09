@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2010 The WebM project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,12 +18,13 @@
 extern "C" {
 #endif
 
-struct encode_b_args {
-  MACROBLOCK *x;
-  int enable_coeff_opt;
-  ENTROPY_CONTEXT *ta;
-  ENTROPY_CONTEXT *tl;
-  int8_t *skip;
+struct encode_b_args
+{
+    MACROBLOCK *x;
+    int enable_coeff_opt;
+    ENTROPY_CONTEXT *ta;
+    ENTROPY_CONTEXT *tl;
+    int8_t *skip;
 };
 int vp9_optimize_b(MACROBLOCK *mb, int plane, int block, TX_SIZE tx_size,
                    int ctx);

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * VC-1 and WMV3 decoder - DSP functions
  * Copyright (c) 2006 Konstantin Shishkov
  *
@@ -33,7 +33,8 @@
 
 typedef void (*vc1op_pixels_func)(uint8_t *block/*align width (8 or 16)*/, const uint8_t *pixels/*align 1*/, ptrdiff_t line_size, int h);
 
-typedef struct VC1DSPContext {
+typedef struct VC1DSPContext
+{
     /* vc1 functions */
     void (*vc1_inv_trans_8x8)(int16_t *b);
     void (*vc1_inv_trans_8x4)(uint8_t *dest, int line_size, int16_t *block);
@@ -69,9 +70,9 @@ typedef struct VC1DSPContext {
     void (*sprite_v_single)(uint8_t *dst, const uint8_t *src1a, const uint8_t *src1b, int offset, int width);
     void (*sprite_v_double_noscale)(uint8_t *dst, const uint8_t *src1a, const uint8_t *src2a, int alpha, int width);
     void (*sprite_v_double_onescale)(uint8_t *dst, const uint8_t *src1a, const uint8_t *src1b, int offset1,
-                                                   const uint8_t *src2a, int alpha, int width);
+                                     const uint8_t *src2a, int alpha, int width);
     void (*sprite_v_double_twoscale)(uint8_t *dst, const uint8_t *src1a, const uint8_t *src1b, int offset1,
-                                                   const uint8_t *src2a, const uint8_t *src2b, int offset2,
+                                     const uint8_t *src2a, const uint8_t *src2b, int offset2,
                                      int alpha, int width);
 
     /**

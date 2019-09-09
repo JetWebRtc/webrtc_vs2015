@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Realmedia RTSP (RDT) definitions
  * Copyright (c) 2007 Ronald S. Bultje <rbultje@ronald.bitfreak.net>
  *

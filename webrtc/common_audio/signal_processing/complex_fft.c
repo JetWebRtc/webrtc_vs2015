@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -83,7 +83,8 @@ int WebRtcSpl_ComplexFFT(int16_t frfi[], int stages, int mode)
 
         }
 
-    } else
+    }
+    else
     {
         // mode==1: High-complexity and High-accuracy mode
         while (l < n)
@@ -104,7 +105,7 @@ int WebRtcSpl_ComplexFFT(int16_t frfi[], int stages, int mode)
 #ifdef WEBRTC_ARCH_ARM_V7
                 int32_t wri = 0;
                 __asm __volatile("pkhbt %0, %1, %2, lsl #16" : "=r"(wri) :
-                    "r"((int32_t)wr), "r"((int32_t)wi));
+                                 "r"((int32_t)wr), "r"((int32_t)wi));
 #endif
 
                 for (i = m; i < n; i += istep)
@@ -119,12 +120,12 @@ int WebRtcSpl_ComplexFFT(int16_t frfi[], int stages, int mode)
                         "smlsd %[tr32], %[wri], %[frfi_r], %[cfftrnd]\n\t"
                         "smladx %[ti32], %[wri], %[frfi_r], %[cfftrnd]\n\t"
                         :[frfi_r]"=&r"(frfi_r),
-                         [tr32]"=&r"(tr32),
-                         [ti32]"=r"(ti32)
+                        [tr32]"=&r"(tr32),
+                        [ti32]"=r"(ti32)
                         :[frfi_even]"r"((int32_t)frfi[2*j]),
-                         [frfi_odd]"r"((int32_t)frfi[2*j +1]),
-                         [wri]"r"(wri),
-                         [cfftrnd]"r"(CFFTRND));
+                        [frfi_odd]"r"((int32_t)frfi[2*j +1]),
+                        [wri]"r"(wri),
+                        [cfftrnd]"r"(CFFTRND));
 #else
                     tr32 = wr * frfi[2 * j] - wi * frfi[2 * j + 1] + CFFTRND;
 
@@ -138,13 +139,13 @@ int WebRtcSpl_ComplexFFT(int16_t frfi[], int stages, int mode)
                     qi32 = ((int32_t)frfi[2 * i + 1]) << CFFTSFT;
 
                     frfi[2 * j] = (int16_t)(
-                        (qr32 - tr32 + CFFTRND2) >> (1 + CFFTSFT));
+                                      (qr32 - tr32 + CFFTRND2) >> (1 + CFFTSFT));
                     frfi[2 * j + 1] = (int16_t)(
-                        (qi32 - ti32 + CFFTRND2) >> (1 + CFFTSFT));
+                                          (qi32 - ti32 + CFFTRND2) >> (1 + CFFTSFT));
                     frfi[2 * i] = (int16_t)(
-                        (qr32 + tr32 + CFFTRND2) >> (1 + CFFTSFT));
+                                      (qr32 + tr32 + CFFTRND2) >> (1 + CFFTSFT));
                     frfi[2 * i + 1] = (int16_t)(
-                        (qi32 + ti32 + CFFTRND2) >> (1 + CFFTSFT));
+                                          (qi32 + ti32 + CFFTRND2) >> (1 + CFFTSFT));
                 }
             }
 
@@ -228,7 +229,8 @@ int WebRtcSpl_ComplexIFFT(int16_t frfi[], int stages, int mode)
                     frfi[2 * i + 1] = (int16_t)((qi32 + ti32) >> shift);
                 }
             }
-        } else
+        }
+        else
         {
             // mode==1: High-complexity and High-accuracy mode
 
@@ -246,7 +248,7 @@ int WebRtcSpl_ComplexIFFT(int16_t frfi[], int stages, int mode)
 #ifdef WEBRTC_ARCH_ARM_V7
                 int32_t wri = 0;
                 __asm __volatile("pkhbt %0, %1, %2, lsl #16" : "=r"(wri) :
-                    "r"((int32_t)wr), "r"((int32_t)wi));
+                                 "r"((int32_t)wr), "r"((int32_t)wi));
 #endif
 
                 for (i = m; i < n; i += istep)
@@ -256,16 +258,16 @@ int WebRtcSpl_ComplexIFFT(int16_t frfi[], int stages, int mode)
 #ifdef WEBRTC_ARCH_ARM_V7
                     register int32_t frfi_r;
                     __asm __volatile(
-                      "pkhbt %[frfi_r], %[frfi_even], %[frfi_odd], lsl #16\n\t"
-                      "smlsd %[tr32], %[wri], %[frfi_r], %[cifftrnd]\n\t"
-                      "smladx %[ti32], %[wri], %[frfi_r], %[cifftrnd]\n\t"
-                      :[frfi_r]"=&r"(frfi_r),
-                       [tr32]"=&r"(tr32),
-                       [ti32]"=r"(ti32)
-                      :[frfi_even]"r"((int32_t)frfi[2*j]),
-                       [frfi_odd]"r"((int32_t)frfi[2*j +1]),
-                       [wri]"r"(wri),
-                       [cifftrnd]"r"(CIFFTRND)
+                        "pkhbt %[frfi_r], %[frfi_even], %[frfi_odd], lsl #16\n\t"
+                        "smlsd %[tr32], %[wri], %[frfi_r], %[cifftrnd]\n\t"
+                        "smladx %[ti32], %[wri], %[frfi_r], %[cifftrnd]\n\t"
+                        :[frfi_r]"=&r"(frfi_r),
+                        [tr32]"=&r"(tr32),
+                        [ti32]"=r"(ti32)
+                        :[frfi_even]"r"((int32_t)frfi[2*j]),
+                        [frfi_odd]"r"((int32_t)frfi[2*j +1]),
+                        [wri]"r"(wri),
+                        [cifftrnd]"r"(CIFFTRND)
                     );
 #else
 
@@ -280,13 +282,13 @@ int WebRtcSpl_ComplexIFFT(int16_t frfi[], int stages, int mode)
                     qi32 = ((int32_t)frfi[2 * i + 1]) << CIFFTSFT;
 
                     frfi[2 * j] = (int16_t)(
-                        (qr32 - tr32 + round2) >> (shift + CIFFTSFT));
+                                      (qr32 - tr32 + round2) >> (shift + CIFFTSFT));
                     frfi[2 * j + 1] = (int16_t)(
-                        (qi32 - ti32 + round2) >> (shift + CIFFTSFT));
+                                          (qi32 - ti32 + round2) >> (shift + CIFFTSFT));
                     frfi[2 * i] = (int16_t)(
-                        (qr32 + tr32 + round2) >> (shift + CIFFTSFT));
+                                      (qr32 + tr32 + round2) >> (shift + CIFFTSFT));
                     frfi[2 * i + 1] = (int16_t)(
-                        (qi32 + ti32 + round2) >> (shift + CIFFTSFT));
+                                          (qi32 + ti32 + round2) >> (shift + CIFFTSFT));
                 }
             }
 

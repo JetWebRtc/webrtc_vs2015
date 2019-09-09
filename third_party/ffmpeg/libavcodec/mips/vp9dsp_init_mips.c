@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Shivraj Patil (Shivraj.Patil@imgtec.com)
  *
  * This file is part of FFmpeg.
@@ -26,7 +26,8 @@
 #if HAVE_MSA
 static av_cold void vp9dsp_intrapred_init_msa(VP9DSPContext *dsp, int bpp)
 {
-    if (bpp == 8) {
+    if (bpp == 8)
+    {
 #define init_intra_pred_msa(tx, sz)                             \
     dsp->intra_pred[tx][VERT_PRED]    = ff_vert_##sz##_msa;     \
     dsp->intra_pred[tx][HOR_PRED]     = ff_hor_##sz##_msa;      \
@@ -38,8 +39,8 @@ static av_cold void vp9dsp_intrapred_init_msa(VP9DSPContext *dsp, int bpp)
     dsp->intra_pred[tx][DC_129_PRED]  = ff_dc_129_##sz##_msa;   \
     dsp->intra_pred[tx][TM_VP8_PRED]  = ff_tm_##sz##_msa;       \
 
-    init_intra_pred_msa(TX_16X16, 16x16);
-    init_intra_pred_msa(TX_32X32, 32x32);
+        init_intra_pred_msa(TX_16X16, 16x16);
+        init_intra_pred_msa(TX_32X32, 32x32);
 #undef init_intra_pred_msa
 
 #define init_intra_pred_msa(tx, sz)                             \
@@ -48,15 +49,16 @@ static av_cold void vp9dsp_intrapred_init_msa(VP9DSPContext *dsp, int bpp)
     dsp->intra_pred[tx][TOP_DC_PRED]  = ff_dc_top_##sz##_msa;   \
     dsp->intra_pred[tx][TM_VP8_PRED]  = ff_tm_##sz##_msa;       \
 
-    init_intra_pred_msa(TX_4X4, 4x4);
-    init_intra_pred_msa(TX_8X8, 8x8);
+        init_intra_pred_msa(TX_4X4, 4x4);
+        init_intra_pred_msa(TX_8X8, 8x8);
 #undef init_intra_pred_msa
     }
 }
 
 static av_cold void vp9dsp_itxfm_init_msa(VP9DSPContext *dsp, int bpp)
 {
-    if (bpp == 8) {
+    if (bpp == 8)
+    {
 #define init_itxfm(tx, sz)                                         \
     dsp->itxfm_add[tx][DCT_DCT]   = ff_idct_idct_##sz##_add_msa;   \
     dsp->itxfm_add[tx][DCT_ADST]  = ff_iadst_idct_##sz##_add_msa;  \
@@ -69,10 +71,10 @@ static av_cold void vp9dsp_itxfm_init_msa(VP9DSPContext *dsp, int bpp)
     dsp->itxfm_add[tx][DCT_ADST]  =              \
     dsp->itxfm_add[tx][ADST_ADST] = nm##_add_msa
 
-    init_itxfm(TX_4X4, 4x4);
-    init_itxfm(TX_8X8, 8x8);
-    init_itxfm(TX_16X16, 16x16);
-    init_idct(TX_32X32, ff_idct_idct_32x32);
+        init_itxfm(TX_4X4, 4x4);
+        init_itxfm(TX_8X8, 8x8);
+        init_itxfm(TX_16X16, 16x16);
+        init_idct(TX_32X32, ff_idct_idct_32x32);
 #undef init_itxfm
 #undef init_idct
     }
@@ -80,7 +82,8 @@ static av_cold void vp9dsp_itxfm_init_msa(VP9DSPContext *dsp, int bpp)
 
 static av_cold void vp9dsp_mc_init_msa(VP9DSPContext *dsp, int bpp)
 {
-    if (bpp == 8) {
+    if (bpp == 8)
+    {
 #define init_fpel(idx1, idx2, sz, type)                                    \
     dsp->mc[idx1][FILTER_8TAP_SMOOTH ][idx2][0][0] = ff_##type##sz##_msa;  \
     dsp->mc[idx1][FILTER_8TAP_REGULAR][idx2][0][0] = ff_##type##sz##_msa;  \
@@ -94,11 +97,11 @@ static av_cold void vp9dsp_mc_init_msa(VP9DSPContext *dsp, int bpp)
 #define init_avg(idx, sz)  \
     init_fpel(idx, 1, sz, avg)
 
-    init_copy_avg(0, 64);
-    init_copy_avg(1, 32);
-    init_copy_avg(2, 16);
-    init_copy_avg(3,  8);
-    init_avg(4,  4);
+        init_copy_avg(0, 64);
+        init_copy_avg(1, 32);
+        init_copy_avg(2, 16);
+        init_copy_avg(3,  8);
+        init_avg(4,  4);
 
 #undef init_copy_avg
 #undef init_avg
@@ -126,8 +129,8 @@ static av_cold void vp9dsp_mc_init_msa(VP9DSPContext *dsp, int bpp)
     init_subpel2(idx, 0, 1, v, type);   \
     init_subpel2(idx, 1, 0, h, type)
 
-    init_subpel3(0, put);
-    init_subpel3(1, avg);
+        init_subpel3(0, put);
+        init_subpel3(1, avg);
 
 #undef init_subpel1
 #undef init_subpel2
@@ -137,7 +140,8 @@ static av_cold void vp9dsp_mc_init_msa(VP9DSPContext *dsp, int bpp)
 
 static av_cold void vp9dsp_loopfilter_init_msa(VP9DSPContext *dsp, int bpp)
 {
-    if (bpp == 8) {
+    if (bpp == 8)
+    {
         dsp->loop_filter_8[0][0] = ff_loop_filter_h_4_8_msa;
         dsp->loop_filter_8[0][1] = ff_loop_filter_v_4_8_msa;
         dsp->loop_filter_8[1][0] = ff_loop_filter_h_8_8_msa;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2016 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,35 +18,40 @@
 
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
+namespace webrtc
+{
 
 class VCMPacket;
 
-namespace video_coding {
+namespace video_coding
+{
 
-class H264SpsPpsTracker {
- public:
-  enum PacketAction { kInsert, kDrop, kRequestKeyframe };
+class H264SpsPpsTracker
+{
+public:
+    enum PacketAction { kInsert, kDrop, kRequestKeyframe };
 
-  PacketAction CopyAndFixBitstream(VCMPacket* packet);
+    PacketAction CopyAndFixBitstream(VCMPacket* packet);
 
-  void InsertSpsPpsNalus(const std::vector<uint8_t>& sps,
-                         const std::vector<uint8_t>& pps);
+    void InsertSpsPpsNalus(const std::vector<uint8_t>& sps,
+                           const std::vector<uint8_t>& pps);
 
- private:
-  struct PpsInfo {
-    int sps_id = -1;
-    size_t size = 0;
-    std::unique_ptr<uint8_t[]> data;
-  };
+private:
+    struct PpsInfo
+    {
+        int sps_id = -1;
+        size_t size = 0;
+        std::unique_ptr<uint8_t[]> data;
+    };
 
-  struct SpsInfo {
-    size_t size = 0;
-    std::unique_ptr<uint8_t[]> data;
-  };
+    struct SpsInfo
+    {
+        size_t size = 0;
+        std::unique_ptr<uint8_t[]> data;
+    };
 
-  std::map<uint32_t, PpsInfo> pps_data_;
-  std::map<uint32_t, SpsInfo> sps_data_;
+    std::map<uint32_t, PpsInfo> pps_data_;
+    std::map<uint32_t, SpsInfo> sps_data_;
 };
 
 }  // namespace video_coding

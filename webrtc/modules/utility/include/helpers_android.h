@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -20,7 +20,8 @@
   RTC_CHECK(!jni->ExceptionCheck()) \
       << (jni->ExceptionDescribe(), jni->ExceptionClear(), "")
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Return a |JNIEnv*| usable on this thread or NULL if this thread is detached.
 JNIEnv* GetEnv(JavaVM* jvm);
@@ -53,33 +54,37 @@ std::string GetThreadInfo();
 
 // Attach thread to JVM if necessary and detach at scope end if originally
 // attached.
-class AttachThreadScoped {
- public:
-  explicit AttachThreadScoped(JavaVM* jvm);
-  ~AttachThreadScoped();
-  JNIEnv* env();
+class AttachThreadScoped
+{
+public:
+    explicit AttachThreadScoped(JavaVM* jvm);
+    ~AttachThreadScoped();
+    JNIEnv* env();
 
- private:
-  bool attached_;
-  JavaVM* jvm_;
-  JNIEnv* env_;
+private:
+    bool attached_;
+    JavaVM* jvm_;
+    JNIEnv* env_;
 };
 
 // Scoped holder for global Java refs.
 template<class T>  // T is jclass, jobject, jintArray, etc.
-class ScopedGlobalRef {
- public:
-  ScopedGlobalRef(JNIEnv* jni, T obj)
-      : jni_(jni), obj_(static_cast<T>(NewGlobalRef(jni, obj))) {}
-  ~ScopedGlobalRef() {
-    DeleteGlobalRef(jni_, obj_);
-  }
-  T operator*() const {
-    return obj_;
-  }
- private:
-  JNIEnv* jni_;
-  T obj_;
+class ScopedGlobalRef
+{
+public:
+    ScopedGlobalRef(JNIEnv* jni, T obj)
+        : jni_(jni), obj_(static_cast<T>(NewGlobalRef(jni, obj))) {}
+    ~ScopedGlobalRef()
+    {
+        DeleteGlobalRef(jni_, obj_);
+    }
+    T operator*() const
+    {
+        return obj_;
+    }
+private:
+    JNIEnv* jni_;
+    T obj_;
 };
 
 }  // namespace webrtc

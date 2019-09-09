@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2015 Ronald S. Bultje <rsbultje@gmail.com>
  *
  * This file is part of FFmpeg.
@@ -24,7 +24,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-typedef struct PSNRDSPContext {
+typedef struct PSNRDSPContext
+{
     uint64_t (*sse_line)(const uint8_t *buf, const uint8_t *ref, int w);
 } PSNRDSPContext;
 

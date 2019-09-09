@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -19,7 +19,8 @@
 #include "webrtc/base/refcount.h"
 #include "webrtc/base/scoped_ref_ptr.h"
 
-namespace webrtc_jni {
+namespace webrtc_jni
+{
 
 // Helper class to create and synchronize access to an Android SurfaceTexture.
 // It is used for creating webrtc::VideoFrameBuffers from a SurfaceTexture when
@@ -38,29 +39,30 @@ namespace webrtc_jni {
 // 3. Register a listener to the Java SurfaceListener and start producing
 // new buffers.
 // 4. Call CreateTextureFrame to wrap the Java texture in a VideoFrameBuffer.
-class SurfaceTextureHelper : public rtc::RefCountInterface {
- public:
-  // Might return null if creating the Java SurfaceTextureHelper fails.
-  static rtc::scoped_refptr<SurfaceTextureHelper> create(
-      JNIEnv* jni, const char* thread_name, jobject j_egl_context);
+class SurfaceTextureHelper : public rtc::RefCountInterface
+{
+public:
+    // Might return null if creating the Java SurfaceTextureHelper fails.
+    static rtc::scoped_refptr<SurfaceTextureHelper> create(
+        JNIEnv* jni, const char* thread_name, jobject j_egl_context);
 
-  jobject GetJavaSurfaceTextureHelper() const;
+    jobject GetJavaSurfaceTextureHelper() const;
 
-  rtc::scoped_refptr<webrtc::VideoFrameBuffer> CreateTextureFrame(
-      int width,
-      int height,
-      const NativeHandleImpl& native_handle);
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> CreateTextureFrame(
+        int width,
+        int height,
+        const NativeHandleImpl& native_handle);
 
-  // May be called on arbitrary thread.
-  void ReturnTextureFrame() const;
+    // May be called on arbitrary thread.
+    void ReturnTextureFrame() const;
 
- protected:
-  ~SurfaceTextureHelper();
-  SurfaceTextureHelper(JNIEnv* jni, jobject j_surface_texture_helper);
+protected:
+    ~SurfaceTextureHelper();
+    SurfaceTextureHelper(JNIEnv* jni, jobject j_surface_texture_helper);
 
- private:
-  const ScopedGlobalRef<jobject> j_surface_texture_helper_;
-  const jmethodID j_return_texture_method_;
+private:
+    const ScopedGlobalRef<jobject> j_surface_texture_helper_;
+    const jmethodID j_return_texture_method_;
 };
 
 }  // namespace webrtc_jni

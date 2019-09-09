@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright 2015 The WebRTC Project Authors. All rights reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -15,38 +15,42 @@
 #include "webrtc/base/sigslot.h"
 #include "webrtc/base/thread.h"
 
-namespace rtc {
+namespace rtc
+{
 
 class IPAddress;
 
-enum class NetworkBindingResult {
-  SUCCESS = 0,   // No error
-  FAILURE = -1,  // Generic error
-  NOT_IMPLEMENTED = -2,
-  ADDRESS_NOT_FOUND = -3,
-  NETWORK_CHANGED = -4
+enum class NetworkBindingResult
+{
+    SUCCESS = 0,   // No error
+    FAILURE = -1,  // Generic error
+    NOT_IMPLEMENTED = -2,
+    ADDRESS_NOT_FOUND = -3,
+    NETWORK_CHANGED = -4
 };
 
-enum AdapterType {
-  // This enum resembles the one in Chromium net::ConnectionType.
-  ADAPTER_TYPE_UNKNOWN = 0,
-  ADAPTER_TYPE_ETHERNET = 1 << 0,
-  ADAPTER_TYPE_WIFI = 1 << 1,
-  ADAPTER_TYPE_CELLULAR = 1 << 2,
-  ADAPTER_TYPE_VPN = 1 << 3,
-  ADAPTER_TYPE_LOOPBACK = 1 << 4
+enum AdapterType
+{
+    // This enum resembles the one in Chromium net::ConnectionType.
+    ADAPTER_TYPE_UNKNOWN = 0,
+    ADAPTER_TYPE_ETHERNET = 1 << 0,
+    ADAPTER_TYPE_WIFI = 1 << 1,
+    ADAPTER_TYPE_CELLULAR = 1 << 2,
+    ADAPTER_TYPE_VPN = 1 << 3,
+    ADAPTER_TYPE_LOOPBACK = 1 << 4
 };
 
-class NetworkBinderInterface {
- public:
-  // Binds a socket to the network that is attached to |address| so that all
-  // packets on the socket |socket_fd| will be sent via that network.
-  // This is needed because some operating systems (like Android) require a
-  // special bind call to put packets on a non-default network interface.
-  virtual NetworkBindingResult BindSocketToNetwork(
-      int socket_fd,
-      const IPAddress& address) = 0;
-  virtual ~NetworkBinderInterface() {}
+class NetworkBinderInterface
+{
+public:
+    // Binds a socket to the network that is attached to |address| so that all
+    // packets on the socket |socket_fd| will be sent via that network.
+    // This is needed because some operating systems (like Android) require a
+    // special bind call to put packets on a non-default network interface.
+    virtual NetworkBindingResult BindSocketToNetwork(
+        int socket_fd,
+        const IPAddress& address) = 0;
+    virtual ~NetworkBinderInterface() {}
 };
 
 /*
@@ -68,59 +72,65 @@ class NetworkBinderInterface {
  */
 // Generic network monitor interface. It starts and stops monitoring network
 // changes, and fires the SignalNetworksChanged event when networks change.
-class NetworkMonitorInterface {
- public:
-  NetworkMonitorInterface();
-  virtual ~NetworkMonitorInterface();
+class NetworkMonitorInterface
+{
+public:
+    NetworkMonitorInterface();
+    virtual ~NetworkMonitorInterface();
 
-  sigslot::signal0<> SignalNetworksChanged;
+    sigslot::signal0<> SignalNetworksChanged;
 
-  virtual void Start() = 0;
-  virtual void Stop() = 0;
+    virtual void Start() = 0;
+    virtual void Stop() = 0;
 
-  // Implementations should call this method on the base when networks change,
-  // and the base will fire SignalNetworksChanged on the right thread.
-  virtual void OnNetworksChanged() = 0;
+    // Implementations should call this method on the base when networks change,
+    // and the base will fire SignalNetworksChanged on the right thread.
+    virtual void OnNetworksChanged() = 0;
 
-  virtual AdapterType GetAdapterType(const std::string& interface_name) = 0;
+    virtual AdapterType GetAdapterType(const std::string& interface_name) = 0;
 };
 
 class NetworkMonitorBase : public NetworkMonitorInterface,
-                           public MessageHandler,
-                           public sigslot::has_slots<> {
- public:
-  NetworkMonitorBase();
-  ~NetworkMonitorBase() override;
+    public MessageHandler,
+    public sigslot::has_slots<>
+{
+public:
+    NetworkMonitorBase();
+    ~NetworkMonitorBase() override;
 
-  void OnNetworksChanged() override;
+    void OnNetworksChanged() override;
 
-  void OnMessage(Message* msg) override;
+    void OnMessage(Message* msg) override;
 
- protected:
-  Thread* worker_thread() { return worker_thread_; }
+protected:
+    Thread* worker_thread()
+    {
+        return worker_thread_;
+    }
 
- private:
-  Thread* worker_thread_;
+private:
+    Thread* worker_thread_;
 };
 
 /*
  * NetworkMonitorFactory creates NetworkMonitors.
  */
-class NetworkMonitorFactory {
- public:
-  // This is not thread-safe; it should be called once (or once per audio/video
-  // call) during the call initialization.
-  static void SetFactory(NetworkMonitorFactory* factory);
+class NetworkMonitorFactory
+{
+public:
+    // This is not thread-safe; it should be called once (or once per audio/video
+    // call) during the call initialization.
+    static void SetFactory(NetworkMonitorFactory* factory);
 
-  static void ReleaseFactory(NetworkMonitorFactory* factory);
-  static NetworkMonitorFactory* GetFactory();
+    static void ReleaseFactory(NetworkMonitorFactory* factory);
+    static NetworkMonitorFactory* GetFactory();
 
-  virtual NetworkMonitorInterface* CreateNetworkMonitor() = 0;
+    virtual NetworkMonitorInterface* CreateNetworkMonitor() = 0;
 
-  virtual ~NetworkMonitorFactory();
+    virtual ~NetworkMonitorFactory();
 
- protected:
-  NetworkMonitorFactory();
+protected:
+    NetworkMonitorFactory();
 };
 
 }  // namespace rtc

@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2011 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -33,6 +33,6 @@ size_t WebRtcIlbcfix_XcorrCoef(
     size_t searchLen, /* (i) the search lenght */
     size_t offset,  /* (i) samples offset between arrays */
     int16_t step   /* (i) +1 or -1 */
-                            );
+);
 
 #endif

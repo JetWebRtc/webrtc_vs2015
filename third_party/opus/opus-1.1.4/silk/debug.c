@@ -1,4 +1,4 @@
-/***********************************************************************
+﻿/***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
@@ -88,7 +88,8 @@ void silk_TimerSave(char *file_name)
         int del = 0x7FFFFFFF;
         double avg, sum_avg;
         /* estimate overhead of calling performance counters */
-        for( k = 0; k < 1000; k++ ) {
+        for( k = 0; k < 1000; k++ )
+        {
             QueryPerformanceCounter(&lpPerformanceCount1);
             QueryPerformanceCounter(&lpPerformanceCount2);
             lpPerformanceCount2.QuadPart -= lpPerformanceCount1.QuadPart;
@@ -98,23 +99,35 @@ void silk_TimerSave(char *file_name)
         QueryPerformanceFrequency(&lpFrequency);
         /* print results to file */
         sum_avg = 0.0f;
-        for( k = 0; k < silk_Timer_nTimers; k++ ) {
-            if (silk_Timer_depth[k] == 0) {
+        for( k = 0; k < silk_Timer_nTimers; k++ )
+        {
+            if (silk_Timer_depth[k] == 0)
+            {
                 sum_avg += (1e6 * silk_Timer_sum[k] / silk_Timer_cnt[k] - del) / lpFrequency.QuadPart * silk_Timer_cnt[k];
             }
         }
         fp = fopen(file_name, "w");
         fprintf(fp, "                                min         avg     %%         max      count\n");
-        for( k = 0; k < silk_Timer_nTimers; k++ ) {
-            if (silk_Timer_depth[k] == 0) {
+        for( k = 0; k < silk_Timer_nTimers; k++ )
+        {
+            if (silk_Timer_depth[k] == 0)
+            {
                 fprintf(fp, "%-28s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 1) {
+            }
+            else if (silk_Timer_depth[k] == 1)
+            {
                 fprintf(fp, " %-27s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 2) {
+            }
+            else if (silk_Timer_depth[k] == 2)
+            {
                 fprintf(fp, "  %-26s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 3) {
+            }
+            else if (silk_Timer_depth[k] == 3)
+            {
                 fprintf(fp, "   %-25s", silk_Timer_tags[k]);
-            } else {
+            }
+            else
+            {
                 fprintf(fp, "    %-24s", silk_Timer_tags[k]);
             }
             avg = (1e6 * silk_Timer_sum[k] / silk_Timer_cnt[k] - del) / lpFrequency.QuadPart;
@@ -139,15 +152,24 @@ void silk_TimerSave(char *file_name)
         fprintf(fp, "                                min         avg         max      count\n");
         for( k = 0; k < silk_Timer_nTimers; k++ )
         {
-            if (silk_Timer_depth[k] == 0) {
+            if (silk_Timer_depth[k] == 0)
+            {
                 fprintf(fp, "%-28s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 1) {
+            }
+            else if (silk_Timer_depth[k] == 1)
+            {
                 fprintf(fp, " %-27s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 2) {
+            }
+            else if (silk_Timer_depth[k] == 2)
+            {
                 fprintf(fp, "  %-26s", silk_Timer_tags[k]);
-            } else if (silk_Timer_depth[k] == 3) {
+            }
+            else if (silk_Timer_depth[k] == 3)
+            {
                 fprintf(fp, "   %-25s", silk_Timer_tags[k]);
-            } else {
+            }
+            else
+            {
                 fprintf(fp, "    %-24s", silk_Timer_tags[k]);
             }
             fprintf(fp, "%d ", silk_Timer_min[k]);

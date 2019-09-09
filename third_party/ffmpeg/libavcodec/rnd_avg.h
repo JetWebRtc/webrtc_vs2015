@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2001-2003 BERO <bero@geocities.co.jp>
  * Copyright (c) 2011 Oskar Arvidsson
  *

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2011 Justin Ruggles
  *
  * This file is part of FFmpeg.
@@ -44,7 +44,8 @@
  *           "These identifiers specify the channels included in a layout but
  *            do not specify a particular ordering of those channels."
  */
-enum MovChannelLayoutTag {
+enum MovChannelLayoutTag
+{
     MOV_CH_LAYOUT_UNKNOWN               = 0xFFFF0000,
     MOV_CH_LAYOUT_USE_DESCRIPTIONS      = (  0 << 16) | 0,
     MOV_CH_LAYOUT_USE_BITMAP            = (  1 << 16) | 0,
@@ -133,32 +134,36 @@ enum MovChannelLayoutTag {
     MOV_CH_LAYOUT_DTS_8_1_B             = (181 << 16) | 9,
 };
 
-struct MovChannelLayoutMap {
+struct MovChannelLayoutMap
+{
     uint32_t tag;
     uint64_t layout;
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_misc[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_misc[] =
+{
     { MOV_CH_LAYOUT_USE_DESCRIPTIONS,   0 },
     { MOV_CH_LAYOUT_USE_BITMAP,         0 },
     { MOV_CH_LAYOUT_DISCRETEINORDER,    0 },
     { MOV_CH_LAYOUT_UNKNOWN,            0 },
     { MOV_CH_LAYOUT_TMH_10_2_STD,       0 }, // L,   R,  C,    Vhc, Lsd, Rsd,
-                                             // Ls,  Rs, Vhl,  Vhr, Lw,  Rw,
-                                             // Csd, Cs, LFE1, LFE2
+    // Ls,  Rs, Vhl,  Vhr, Lw,  Rw,
+    // Csd, Cs, LFE1, LFE2
     { MOV_CH_LAYOUT_TMH_10_2_FULL,      0 }, // L,   R,  C,    Vhc,  Lsd, Rsd,
-                                             // Ls,  Rs, Vhl,  Vhr,  Lw,  Rw,
-                                             // Csd, Cs, LFE1, LFE2, Lc,  Rc,
-                                             // HI,  VI, Haptic
+    // Ls,  Rs, Vhl,  Vhr,  Lw,  Rw,
+    // Csd, Cs, LFE1, LFE2, Lc,  Rc,
+    // HI,  VI, Haptic
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_1ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_1ch[] =
+{
     { MOV_CH_LAYOUT_MONO,               AV_CH_LAYOUT_MONO }, // C
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_2ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_2ch[] =
+{
     { MOV_CH_LAYOUT_STEREO,             AV_CH_LAYOUT_STEREO         }, // L, R
     { MOV_CH_LAYOUT_STEREOHEADPHONES,   AV_CH_LAYOUT_STEREO         }, // L, R
     { MOV_CH_LAYOUT_BINAURAL,           AV_CH_LAYOUT_STEREO         }, // L, R
@@ -167,12 +172,15 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_2ch[] = {
 
     { MOV_CH_LAYOUT_MATRIXSTEREO,       AV_CH_LAYOUT_STEREO_DOWNMIX }, // Lt, Rt
 
-    { MOV_CH_LAYOUT_AC3_1_0_1,          AV_CH_LAYOUT_MONO |            // C, LFE
-                                        AV_CH_LOW_FREQUENCY         },
+    {
+        MOV_CH_LAYOUT_AC3_1_0_1,          AV_CH_LAYOUT_MONO |            // C, LFE
+        AV_CH_LOW_FREQUENCY
+    },
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_3ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_3ch[] =
+{
     { MOV_CH_LAYOUT_MPEG_3_0_A,         AV_CH_LAYOUT_SURROUND }, // L, R, C
     { MOV_CH_LAYOUT_MPEG_3_0_B,         AV_CH_LAYOUT_SURROUND }, // C, L, R
     { MOV_CH_LAYOUT_AC3_3_0,            AV_CH_LAYOUT_SURROUND }, // L, C, R
@@ -183,7 +191,8 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_3ch[] = {
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_4ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_4ch[] =
+{
     { MOV_CH_LAYOUT_AMBISONIC_B_FORMAT, 0 },                    // W, X, Y, Z
 
     { MOV_CH_LAYOUT_QUADRAPHONIC,       AV_CH_LAYOUT_QUAD    }, // L, R, Rls, Rrs
@@ -194,10 +203,14 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_4ch[] = {
 
     { MOV_CH_LAYOUT_ITU_2_2,            AV_CH_LAYOUT_2_2     }, // L, R, Ls, Rs
 
-    { MOV_CH_LAYOUT_DVD_5,              AV_CH_LAYOUT_2_1 |      // L, R, LFE, Cs
-                                        AV_CH_LOW_FREQUENCY  },
-    { MOV_CH_LAYOUT_AC3_2_1_1,          AV_CH_LAYOUT_2_1 |      // L, R, Cs, LFE
-                                        AV_CH_LOW_FREQUENCY  },
+    {
+        MOV_CH_LAYOUT_DVD_5,              AV_CH_LAYOUT_2_1 |      // L, R, LFE, Cs
+        AV_CH_LOW_FREQUENCY
+    },
+    {
+        MOV_CH_LAYOUT_AC3_2_1_1,          AV_CH_LAYOUT_2_1 |      // L, R, Cs, LFE
+        AV_CH_LOW_FREQUENCY
+    },
 
     { MOV_CH_LAYOUT_DVD_10,             AV_CH_LAYOUT_3POINT1 }, // L, R, C, LFE
     { MOV_CH_LAYOUT_AC3_3_0_1,          AV_CH_LAYOUT_3POINT1 }, // L, C, R, LFE
@@ -205,7 +218,8 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_4ch[] = {
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_5ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_5ch[] =
+{
     { MOV_CH_LAYOUT_PENTAGONAL,         AV_CH_LAYOUT_5POINT0_BACK }, // L, R, Rls, Rrs, C
 
     { MOV_CH_LAYOUT_MPEG_5_0_A,         AV_CH_LAYOUT_5POINT0 },      // L, R, C,  Ls, Rs
@@ -213,10 +227,14 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_5ch[] = {
     { MOV_CH_LAYOUT_MPEG_5_0_C,         AV_CH_LAYOUT_5POINT0 },      // L, C, R,  Ls, Rs
     { MOV_CH_LAYOUT_MPEG_5_0_D,         AV_CH_LAYOUT_5POINT0 },      // C, L, R,  Ls, Rs
 
-    { MOV_CH_LAYOUT_DVD_6,              AV_CH_LAYOUT_2_2 |           // L, R, LFE, Ls, Rs
-                                        AV_CH_LOW_FREQUENCY },
-    { MOV_CH_LAYOUT_DVD_18,             AV_CH_LAYOUT_2_2 |           // L, R, Ls, Rs, LFE
-                                        AV_CH_LOW_FREQUENCY },
+    {
+        MOV_CH_LAYOUT_DVD_6,              AV_CH_LAYOUT_2_2 |           // L, R, LFE, Ls, Rs
+        AV_CH_LOW_FREQUENCY
+    },
+    {
+        MOV_CH_LAYOUT_DVD_18,             AV_CH_LAYOUT_2_2 |           // L, R, Ls, Rs, LFE
+        AV_CH_LOW_FREQUENCY
+    },
 
     { MOV_CH_LAYOUT_DVD_11,             AV_CH_LAYOUT_4POINT1 },      // L, R, C, LFE, Cs
     { MOV_CH_LAYOUT_AC3_3_1_1,          AV_CH_LAYOUT_4POINT1 },      // L, C, R, Cs,  LFE
@@ -224,7 +242,8 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_5ch[] = {
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_6ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_6ch[] =
+{
     { MOV_CH_LAYOUT_HEXAGONAL,          AV_CH_LAYOUT_HEXAGONAL },      // L, R,  Rls, Rrs, C,   Cs
     { MOV_CH_LAYOUT_DTS_6_0_C,          AV_CH_LAYOUT_HEXAGONAL },      // C, Cs, L,   R,   Rls, Rrs
 
@@ -239,12 +258,15 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_6ch[] = {
 
     { MOV_CH_LAYOUT_DTS_6_0_A,          AV_CH_LAYOUT_6POINT0_FRONT },  // Lc, Rc, L, R, Ls, Rs
 
-    { MOV_CH_LAYOUT_DTS_6_0_B,          AV_CH_LAYOUT_5POINT0_BACK |    // C, L, R, Rls, Rrs, Ts
-                                        AV_CH_TOP_CENTER },
+    {
+        MOV_CH_LAYOUT_DTS_6_0_B,          AV_CH_LAYOUT_5POINT0_BACK |    // C, L, R, Rls, Rrs, Ts
+        AV_CH_TOP_CENTER
+    },
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_7ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_7ch[] =
+{
     { MOV_CH_LAYOUT_MPEG_6_1_A,          AV_CH_LAYOUT_6POINT1 },        // L, R, C, LFE, Ls, Rs,  Cs
     { MOV_CH_LAYOUT_AAC_6_1,             AV_CH_LAYOUT_6POINT1 },        // C, L, R, Ls,  Rs, Cs,  LFE
     { MOV_CH_LAYOUT_EAC3_6_1_A,          AV_CH_LAYOUT_6POINT1 },        // L, C, R, Ls,  Rs, LFE, Cs
@@ -257,30 +279,39 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_7ch[] = {
     { MOV_CH_LAYOUT_AUDIOUNIT_7_0_FRONT, AV_CH_LAYOUT_7POINT0_FRONT },  // L,  R, Ls, Rs, C, Lc, Rc
     { MOV_CH_LAYOUT_DTS_7_0,             AV_CH_LAYOUT_7POINT0_FRONT },  // Lc, C, Rc, L,  R, Ls, Rs
 
-    { MOV_CH_LAYOUT_EAC3_6_1_B,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Ts
-                                         AV_CH_TOP_CENTER },
+    {
+        MOV_CH_LAYOUT_EAC3_6_1_B,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Ts
+        AV_CH_TOP_CENTER
+    },
 
-    { MOV_CH_LAYOUT_EAC3_6_1_C,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Vhc
-                                         AV_CH_TOP_FRONT_CENTER },
+    {
+        MOV_CH_LAYOUT_EAC3_6_1_C,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Vhc
+        AV_CH_TOP_FRONT_CENTER
+    },
 
     { MOV_CH_LAYOUT_DTS_6_1_A,           AV_CH_LAYOUT_6POINT1_FRONT },  // Lc, Rc, L, R, Ls, Rs, LFE
 
-    { MOV_CH_LAYOUT_DTS_6_1_B,           AV_CH_LAYOUT_5POINT1_BACK |    // C, L, R, Rls, Rrs, Ts, LFE
-                                         AV_CH_TOP_CENTER },
+    {
+        MOV_CH_LAYOUT_DTS_6_1_B,           AV_CH_LAYOUT_5POINT1_BACK |    // C, L, R, Rls, Rrs, Ts, LFE
+        AV_CH_TOP_CENTER
+    },
 
     { MOV_CH_LAYOUT_DTS_6_1_C,           AV_CH_LAYOUT_6POINT1_BACK },   // C, Cs, L, R, Rls, Rrs, LFE
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_8ch[] = {
+static const struct MovChannelLayoutMap mov_ch_layout_map_8ch[] =
+{
     { MOV_CH_LAYOUT_OCTAGONAL,           AV_CH_LAYOUT_OCTAGONAL },      // L, R, Rls, Rrs, C,  Cs,  Ls,  Rs
     { MOV_CH_LAYOUT_AAC_OCTAGONAL,       AV_CH_LAYOUT_OCTAGONAL },      // C, L, R,   Ls,  Rs, Rls, Rrs, Cs
 
-    { MOV_CH_LAYOUT_CUBE,                AV_CH_LAYOUT_QUAD     |        // L, R, Rls, Rrs, Vhl, Vhr, Rlt, Rrt
-                                         AV_CH_TOP_FRONT_LEFT  |
-                                         AV_CH_TOP_FRONT_RIGHT |
-                                         AV_CH_TOP_BACK_LEFT   |
-                                         AV_CH_TOP_BACK_RIGHT },
+    {
+        MOV_CH_LAYOUT_CUBE,                AV_CH_LAYOUT_QUAD     |        // L, R, Rls, Rrs, Vhl, Vhr, Rlt, Rrt
+        AV_CH_TOP_FRONT_LEFT  |
+        AV_CH_TOP_FRONT_RIGHT |
+        AV_CH_TOP_BACK_LEFT   |
+        AV_CH_TOP_BACK_RIGHT
+    },
 
     { MOV_CH_LAYOUT_MPEG_7_1_A,          AV_CH_LAYOUT_7POINT1_WIDE },   // L,  R,  C,  LFE, Ls, Rs,  Lc, Rc
     { MOV_CH_LAYOUT_MPEG_7_1_B,          AV_CH_LAYOUT_7POINT1_WIDE },   // C,  Lc, Rc, L,   R,  Ls,  Rs, LFE
@@ -291,60 +322,84 @@ static const struct MovChannelLayoutMap mov_ch_layout_map_8ch[] = {
     { MOV_CH_LAYOUT_MPEG_7_1_C,          AV_CH_LAYOUT_7POINT1 },        // L, R, C, LFE, Ls, Rs,  Rls, Rrs
     { MOV_CH_LAYOUT_EAC3_7_1_A,          AV_CH_LAYOUT_7POINT1 },        // L, C, R, Ls,  Rs, LFE, Rls, Rrs
 
-    { MOV_CH_LAYOUT_SMPTE_DTV,           AV_CH_LAYOUT_5POINT1 |         // L, R, C, LFE, Ls, Rs, Lt, Rt
-                                         AV_CH_LAYOUT_STEREO_DOWNMIX },
+    {
+        MOV_CH_LAYOUT_SMPTE_DTV,           AV_CH_LAYOUT_5POINT1 |         // L, R, C, LFE, Ls, Rs, Lt, Rt
+        AV_CH_LAYOUT_STEREO_DOWNMIX
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_C,          AV_CH_LAYOUT_5POINT1        |  // L, C, R, Ls, Rs, LFE, Lsd, Rsd
-                                         AV_CH_SURROUND_DIRECT_LEFT  |
-                                         AV_CH_SURROUND_DIRECT_RIGHT },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_C,          AV_CH_LAYOUT_5POINT1        |  // L, C, R, Ls, Rs, LFE, Lsd, Rsd
+        AV_CH_SURROUND_DIRECT_LEFT  |
+        AV_CH_SURROUND_DIRECT_RIGHT
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_D,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Lw, Rw
-                                         AV_CH_WIDE_LEFT      |
-                                         AV_CH_WIDE_RIGHT },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_D,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Lw, Rw
+        AV_CH_WIDE_LEFT      |
+        AV_CH_WIDE_RIGHT
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_E,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Vhl, Vhr
-                                         AV_CH_TOP_FRONT_LEFT |
-                                         AV_CH_TOP_FRONT_RIGHT },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_E,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Vhl, Vhr
+        AV_CH_TOP_FRONT_LEFT |
+        AV_CH_TOP_FRONT_RIGHT
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_F,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Cs, Ts
-                                         AV_CH_BACK_CENTER    |
-                                         AV_CH_TOP_CENTER },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_F,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Cs, Ts
+        AV_CH_BACK_CENTER    |
+        AV_CH_TOP_CENTER
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_G,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Cs, Vhc
-                                         AV_CH_BACK_CENTER    |
-                                         AV_CH_TOP_FRONT_CENTER },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_G,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Cs, Vhc
+        AV_CH_BACK_CENTER    |
+        AV_CH_TOP_FRONT_CENTER
+    },
 
-    { MOV_CH_LAYOUT_EAC3_7_1_H,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Ts, Vhc
-                                         AV_CH_TOP_CENTER     |
-                                         AV_CH_TOP_FRONT_CENTER },
+    {
+        MOV_CH_LAYOUT_EAC3_7_1_H,          AV_CH_LAYOUT_5POINT1 |         // L, C, R, Ls, Rs, LFE, Ts, Vhc
+        AV_CH_TOP_CENTER     |
+        AV_CH_TOP_FRONT_CENTER
+    },
 
-    { MOV_CH_LAYOUT_DTS_8_0_A,           AV_CH_LAYOUT_2_2           |   // Lc, Rc, L, R, Ls, Rs, Rls, Rrs
-                                         AV_CH_BACK_LEFT            |
-                                         AV_CH_BACK_RIGHT           |
-                                         AV_CH_FRONT_LEFT_OF_CENTER |
-                                         AV_CH_FRONT_RIGHT_OF_CENTER },
+    {
+        MOV_CH_LAYOUT_DTS_8_0_A,           AV_CH_LAYOUT_2_2           |   // Lc, Rc, L, R, Ls, Rs, Rls, Rrs
+        AV_CH_BACK_LEFT            |
+        AV_CH_BACK_RIGHT           |
+        AV_CH_FRONT_LEFT_OF_CENTER |
+        AV_CH_FRONT_RIGHT_OF_CENTER
+    },
 
-    { MOV_CH_LAYOUT_DTS_8_0_B,           AV_CH_LAYOUT_5POINT0        |  // Lc, C, Rc, L, R, Ls, Cs, Rs
-                                         AV_CH_FRONT_LEFT_OF_CENTER  |
-                                         AV_CH_FRONT_RIGHT_OF_CENTER |
-                                         AV_CH_BACK_CENTER },
+    {
+        MOV_CH_LAYOUT_DTS_8_0_B,           AV_CH_LAYOUT_5POINT0        |  // Lc, C, Rc, L, R, Ls, Cs, Rs
+        AV_CH_FRONT_LEFT_OF_CENTER  |
+        AV_CH_FRONT_RIGHT_OF_CENTER |
+        AV_CH_BACK_CENTER
+    },
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap mov_ch_layout_map_9ch[] = {
-    { MOV_CH_LAYOUT_DTS_8_1_A,           AV_CH_LAYOUT_2_2            | // Lc, Rc, L, R, Ls, Rs, Rls, Rrs, LFE
-                                         AV_CH_BACK_LEFT             |
-                                         AV_CH_BACK_RIGHT            |
-                                         AV_CH_FRONT_LEFT_OF_CENTER  |
-                                         AV_CH_FRONT_RIGHT_OF_CENTER |
-                                         AV_CH_LOW_FREQUENCY },
+static const struct MovChannelLayoutMap mov_ch_layout_map_9ch[] =
+{
+    {
+        MOV_CH_LAYOUT_DTS_8_1_A,           AV_CH_LAYOUT_2_2            | // Lc, Rc, L, R, Ls, Rs, Rls, Rrs, LFE
+        AV_CH_BACK_LEFT             |
+        AV_CH_BACK_RIGHT            |
+        AV_CH_FRONT_LEFT_OF_CENTER  |
+        AV_CH_FRONT_RIGHT_OF_CENTER |
+        AV_CH_LOW_FREQUENCY
+    },
 
-    { MOV_CH_LAYOUT_DTS_8_1_B,           AV_CH_LAYOUT_7POINT1_WIDE   | // Lc, C, Rc, L, R, Ls, Cs, Rs, LFE
-                                         AV_CH_BACK_CENTER },
+    {
+        MOV_CH_LAYOUT_DTS_8_1_B,           AV_CH_LAYOUT_7POINT1_WIDE   | // Lc, C, Rc, L, R, Ls, Cs, Rs, LFE
+        AV_CH_BACK_CENTER
+    },
     { 0, 0 },
 };
 
-static const struct MovChannelLayoutMap * const mov_ch_layout_map[] = {
+static const struct MovChannelLayoutMap * const mov_ch_layout_map[] =
+{
     mov_ch_layout_map_misc,
     mov_ch_layout_map_1ch,
     mov_ch_layout_map_2ch,
@@ -357,7 +412,8 @@ static const struct MovChannelLayoutMap * const mov_ch_layout_map[] = {
     mov_ch_layout_map_9ch,
 };
 
-static const enum MovChannelLayoutTag mov_ch_layouts_aac[] = {
+static const enum MovChannelLayoutTag mov_ch_layouts_aac[] =
+{
     MOV_CH_LAYOUT_MONO,
     MOV_CH_LAYOUT_STEREO,
     MOV_CH_LAYOUT_AC3_1_0_1,
@@ -384,7 +440,8 @@ static const enum MovChannelLayoutTag mov_ch_layouts_aac[] = {
     0,
 };
 
-static const enum MovChannelLayoutTag mov_ch_layouts_ac3[] = {
+static const enum MovChannelLayoutTag mov_ch_layouts_ac3[] =
+{
     MOV_CH_LAYOUT_MONO,
     MOV_CH_LAYOUT_STEREO,
     MOV_CH_LAYOUT_AC3_1_0_1,
@@ -402,7 +459,8 @@ static const enum MovChannelLayoutTag mov_ch_layouts_ac3[] = {
     0,
 };
 
-static const enum MovChannelLayoutTag mov_ch_layouts_alac[] = {
+static const enum MovChannelLayoutTag mov_ch_layouts_alac[] =
+{
     MOV_CH_LAYOUT_MONO,
     MOV_CH_LAYOUT_STEREO,
     MOV_CH_LAYOUT_MPEG_3_0_B,
@@ -414,7 +472,8 @@ static const enum MovChannelLayoutTag mov_ch_layouts_alac[] = {
     0,
 };
 
-static const enum MovChannelLayoutTag mov_ch_layouts_wav[] = {
+static const enum MovChannelLayoutTag mov_ch_layouts_wav[] =
+{
     MOV_CH_LAYOUT_MONO,
     MOV_CH_LAYOUT_STEREO,
     MOV_CH_LAYOUT_MATRIXSTEREO,
@@ -429,10 +488,12 @@ static const enum MovChannelLayoutTag mov_ch_layouts_wav[] = {
     0,
 };
 
-static const struct {
+static const struct
+{
     enum AVCodecID codec_id;
     const enum MovChannelLayoutTag *layouts;
-} mov_codec_ch_layouts[] = {
+} mov_codec_ch_layouts[] =
+{
     { AV_CODEC_ID_AAC,     mov_ch_layouts_aac      },
     { AV_CODEC_ID_AC3,     mov_ch_layouts_ac3      },
     { AV_CODEC_ID_ALAC,    mov_ch_layouts_alac     },
@@ -471,7 +532,8 @@ uint64_t ff_mov_get_channel_layout(uint32_t tag, uint32_t bitmap)
     layout_map = mov_ch_layout_map[channels];
 
     /* find the channel layout for the specified layout tag */
-    for (i = 0; layout_map[i].tag != 0; i++) {
+    for (i = 0; layout_map[i].tag != 0; i++)
+    {
         if (layout_map[i].tag == tag)
             break;
     }
@@ -500,14 +562,16 @@ uint32_t ff_mov_get_channel_layout_tag(enum AVCodecID codec_id,
     const enum MovChannelLayoutTag *layouts = NULL;
 
     /* find the layout list for the specified codec */
-    for (i = 0; mov_codec_ch_layouts[i].codec_id != AV_CODEC_ID_NONE; i++) {
+    for (i = 0; mov_codec_ch_layouts[i].codec_id != AV_CODEC_ID_NONE; i++)
+    {
         if (mov_codec_ch_layouts[i].codec_id == codec_id)
             break;
     }
     if (mov_codec_ch_layouts[i].codec_id != AV_CODEC_ID_NONE)
         layouts = mov_codec_ch_layouts[i].layouts;
 
-    if (layouts) {
+    if (layouts)
+    {
         int channels;
         const struct MovChannelLayoutMap *layout_map;
 
@@ -518,12 +582,14 @@ uint32_t ff_mov_get_channel_layout_tag(enum AVCodecID codec_id,
         layout_map = mov_ch_layout_map[channels];
 
         /* find the layout tag for the specified channel layout */
-        for (i = 0; layouts[i] != 0; i++) {
+        for (i = 0; layouts[i] != 0; i++)
+        {
             if ((layouts[i] & 0xFFFF) != channels)
                 continue;
-            for (j = 0; layout_map[j].tag != 0; j++) {
+            for (j = 0; layout_map[j].tag != 0; j++)
+            {
                 if (layout_map[j].tag    == layouts[i] &&
-                    layout_map[j].layout == channel_layout)
+                layout_map[j].layout == channel_layout)
                     break;
             }
             if (layout_map[j].tag)
@@ -533,10 +599,12 @@ uint32_t ff_mov_get_channel_layout_tag(enum AVCodecID codec_id,
     }
 
     /* if no tag was found, use channel bitmap as a backup if possible */
-    if (tag == 0 && channel_layout > 0 && channel_layout < 0x40000) {
+    if (tag == 0 && channel_layout > 0 && channel_layout < 0x40000)
+    {
         tag     = MOV_CH_LAYOUT_USE_BITMAP;
         *bitmap = (uint32_t)channel_layout;
-    } else
+    }
+    else
         *bitmap = 0;
 
     /* TODO: set channel descriptions as a secondary backup */
@@ -558,15 +626,17 @@ int ff_mov_read_chan(AVFormatContext *s, AVIOContext *pb, AVStream *st,
     num_descr  = avio_rb32(pb);
 
     av_log(s, AV_LOG_TRACE, "chan: layout=%u bitmap=%u num_descr=%u\n",
-            layout_tag, bitmap, num_descr);
+           layout_tag, bitmap, num_descr);
 
     if (size < 12ULL + num_descr * 20ULL)
         return 0;
 
     label_mask = 0;
-    for (i = 0; i < num_descr; i++) {
+    for (i = 0; i < num_descr; i++)
+    {
         uint32_t label;
-        if (pb->eof_reached) {
+        if (pb->eof_reached)
+        {
             av_log(s, AV_LOG_ERROR,
                    "reached EOF while reading channel layout\n");
             return AVERROR_INVALIDDATA;
@@ -577,19 +647,23 @@ int ff_mov_read_chan(AVFormatContext *s, AVIOContext *pb, AVStream *st,
         avio_rl32(pb);                      // mCoordinates[1]
         avio_rl32(pb);                      // mCoordinates[2]
         size -= 20;
-        if (layout_tag == 0) {
+        if (layout_tag == 0)
+        {
             uint32_t mask_incr = mov_get_channel_label(label);
-            if (mask_incr == 0) {
+            if (mask_incr == 0)
+            {
                 label_mask = 0;
                 break;
             }
             label_mask |= mask_incr;
         }
     }
-    if (layout_tag == 0) {
+    if (layout_tag == 0)
+    {
         if (label_mask)
             st->codec->channel_layout = label_mask;
-    } else
+    }
+    else
         st->codec->channel_layout = ff_mov_get_channel_layout(layout_tag, bitmap);
     avio_skip(pb, size - 12);
 

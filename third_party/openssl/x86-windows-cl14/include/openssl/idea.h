@@ -1,4 +1,4 @@
-/* crypto/idea/idea.h */
+﻿/* crypto/idea/idea.h */
 /* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
  * All rights reserved.
  *
@@ -75,7 +75,8 @@
 extern "C" {
 #endif
 
-typedef struct idea_key_st {
+typedef struct idea_key_st
+{
     IDEA_INT data[9][6];
 } IDEA_KEY_SCHEDULE;
 

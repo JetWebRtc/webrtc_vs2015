@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2009 Mans Rullgard <mans@mansr.com>
  * Copyright (c) 2015 Zhou Xiaoyong <zhouxiaoyong@loongson.cn>
  *

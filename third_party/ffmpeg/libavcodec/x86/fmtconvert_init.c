@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Format Conversion Utils
  * Copyright (c) 2000, 2001 Fabrice Bellard
  * Copyright (c) 2002-2004 Michael Niedermayer <michaelni@gmx.at>
@@ -44,11 +44,13 @@ av_cold void ff_fmt_convert_init_x86(FmtConvertContext *c, AVCodecContext *avctx
 #if HAVE_YASM
     int cpu_flags = av_get_cpu_flags();
 
-    if (EXTERNAL_SSE(cpu_flags)) {
+    if (EXTERNAL_SSE(cpu_flags))
+    {
         c->int32_to_float_fmul_scalar = ff_int32_to_float_fmul_scalar_sse;
         c->int32_to_float_fmul_array8 = ff_int32_to_float_fmul_array8_sse;
     }
-    if (EXTERNAL_SSE2(cpu_flags)) {
+    if (EXTERNAL_SSE2(cpu_flags))
+    {
         c->int32_to_float_fmul_scalar = ff_int32_to_float_fmul_scalar_sse2;
         c->int32_to_float_fmul_array8 = ff_int32_to_float_fmul_array8_sse2;
     }

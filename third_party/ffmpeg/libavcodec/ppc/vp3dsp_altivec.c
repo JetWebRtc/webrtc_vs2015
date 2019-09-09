@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2009 David Conrad
  *
  * This file is part of FFmpeg.
@@ -31,13 +31,13 @@
 #if HAVE_ALTIVEC
 
 static const vec_s16 constants =
-    {0, 64277, 60547, 54491, 46341, 36410, 25080, 12785};
+{0, 64277, 60547, 54491, 46341, 36410, 25080, 12785};
 #if HAVE_BIGENDIAN
 static const vec_u8 interleave_high =
-    {0, 1, 16, 17, 4, 5, 20, 21, 8, 9, 24, 25, 12, 13, 28, 29};
+{0, 1, 16, 17, 4, 5, 20, 21, 8, 9, 24, 25, 12, 13, 28, 29};
 #else
 static const vec_u8 interleave_high =
-    {2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
+{2, 3, 18, 19, 6, 7, 22, 23, 10, 11, 26, 27, 14, 15, 30, 31};
 #endif
 
 #define IDCT_START \

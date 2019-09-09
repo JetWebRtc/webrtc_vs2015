@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 1998 Juergen Mueller And Sundry Contributors
  * This source code is freely redistributable and may be used for
  * any purpose.  This copyright notice must be maintained.
@@ -36,7 +36,8 @@
 #include "internal.h"
 #include "generate_wave_table.h"
 
-typedef struct ChorusContext {
+typedef struct ChorusContext
+{
     const AVClass *class;
     float in_gain, out_gain;
     char *delays_str;
@@ -63,7 +64,8 @@ typedef struct ChorusContext {
 #define OFFSET(x) offsetof(ChorusContext, x)
 #define A AV_OPT_FLAG_AUDIO_PARAM|AV_OPT_FLAG_FILTERING_PARAM
 
-static const AVOption chorus_options[] = {
+static const AVOption chorus_options[] =
+{
     { "in_gain",  "set input gain",  OFFSET(in_gain),    AV_OPT_TYPE_FLOAT,  {.dbl=.4}, 0, 1, A },
     { "out_gain", "set output gain", OFFSET(out_gain),   AV_OPT_TYPE_FLOAT,  {.dbl=.4}, 0, 1, A },
     { "delays",   "set delays",      OFFSET(delays_str), AV_OPT_TYPE_STRING, {.str=NULL}, 0, 0, A },
@@ -80,7 +82,8 @@ static void count_items(char *item_str, int *nb_items)
     char *p;
 
     *nb_items = 1;
-    for (p = item_str; *p; p++) {
+    for (p = item_str; *p; p++)
+    {
         if (*p == '|')
             (*nb_items)++;
     }
@@ -93,7 +96,8 @@ static void fill_items(char *item_str, int *nb_items, float *items)
     int i, new_nb_items = 0;
 
     p = item_str;
-    for (i = 0; i < *nb_items; i++) {
+    for (i = 0; i < *nb_items; i++)
+    {
         char *tstr = av_strtok(p, "|", &saveptr);
         p = NULL;
         new_nb_items += sscanf(tstr, "%f", &items[i]) == 1;
@@ -107,7 +111,8 @@ static av_cold int init(AVFilterContext *ctx)
     ChorusContext *s = ctx->priv;
     int nb_delays, nb_decays, nb_speeds, nb_depths;
 
-    if (!s->delays_str || !s->decays_str || !s->speeds_str || !s->depths_str) {
+    if (!s->delays_str || !s->decays_str || !s->speeds_str || !s->depths_str)
+    {
         av_log(ctx, AV_LOG_ERROR, "Both delays & decays & speeds & depths must be set.\n");
         return AVERROR(EINVAL);
     }
@@ -130,14 +135,16 @@ static av_cold int init(AVFilterContext *ctx)
     fill_items(s->speeds_str, &nb_speeds, s->speeds);
     fill_items(s->depths_str, &nb_depths, s->depths);
 
-    if (nb_delays != nb_decays && nb_delays != nb_speeds && nb_delays != nb_depths) {
+    if (nb_delays != nb_decays && nb_delays != nb_speeds && nb_delays != nb_depths)
+    {
         av_log(ctx, AV_LOG_ERROR, "Number of delays & decays & speeds & depths given must be same.\n");
         return AVERROR(EINVAL);
     }
 
     s->num_chorus = nb_delays;
 
-    if (s->num_chorus < 1) {
+    if (s->num_chorus < 1)
+    {
         av_log(ctx, AV_LOG_ERROR, "At least one delay & decay & speed & depth must be set.\n");
         return AVERROR(EINVAL);
     }
@@ -157,7 +164,8 @@ static int query_formats(AVFilterContext *ctx)
 {
     AVFilterFormats *formats;
     AVFilterChannelLayouts *layouts;
-    static const enum AVSampleFormat sample_fmts[] = {
+    static const enum AVSampleFormat sample_fmts[] =
+    {
         AV_SAMPLE_FMT_FLTP, AV_SAMPLE_FMT_NONE
     };
     int ret;
@@ -191,7 +199,8 @@ static int config_output(AVFilterLink *outlink)
 
     s->channels = outlink->channels;
 
-    for (n = 0; n < s->num_chorus; n++) {
+    for (n = 0; n < s->num_chorus; n++)
+    {
         int samples = (int) ((s->delays[n] + s->depths[n]) * outlink->sample_rate / 1000.0);
         int depth_samples = (int) (s->depths[n] * outlink->sample_rate / 1000.0);
 
@@ -220,7 +229,8 @@ static int config_output(AVFilterLink *outlink)
     if (!s->phase)
         return AVERROR(ENOMEM);
 
-    for (n = 0; n < outlink->channels; n++) {
+    for (n = 0; n < outlink->channels; n++)
+    {
         s->phase[n] = av_calloc(s->num_chorus, sizeof(int));
         if (!s->phase[n])
             return AVERROR(ENOMEM);
@@ -229,9 +239,9 @@ static int config_output(AVFilterLink *outlink)
     s->fade_out = s->max_samples;
 
     return av_samples_alloc_array_and_samples(&s->chorusbuf, NULL,
-                                              outlink->channels,
-                                              s->max_samples,
-                                              outlink->format, 0);
+            outlink->channels,
+            s->max_samples,
+            outlink->format, 0);
 }
 
 #define MOD(a, b) (((a) >= (b)) ? (a) - (b) : (a))
@@ -243,27 +253,33 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
     AVFrame *out_frame;
     int c, i, n;
 
-    if (av_frame_is_writable(frame)) {
+    if (av_frame_is_writable(frame))
+    {
         out_frame = frame;
-    } else {
+    }
+    else
+    {
         out_frame = ff_get_audio_buffer(inlink, frame->nb_samples);
         if (!out_frame)
             return AVERROR(ENOMEM);
         av_frame_copy_props(out_frame, frame);
     }
 
-    for (c = 0; c < inlink->channels; c++) {
+    for (c = 0; c < inlink->channels; c++)
+    {
         const float *src = (const float *)frame->extended_data[c];
         float *dst = (float *)out_frame->extended_data[c];
         float *chorusbuf = (float *)s->chorusbuf[c];
         int *phase = s->phase[c];
 
-        for (i = 0; i < frame->nb_samples; i++) {
+        for (i = 0; i < frame->nb_samples; i++)
+        {
             float out, in = src[i];
 
             out = in * s->in_gain;
 
-            for (n = 0; n < s->num_chorus; n++) {
+            for (n = 0; n < s->num_chorus; n++)
+            {
                 out += chorusbuf[MOD(s->max_samples + s->counter[c] -
                                      s->lookup_table[n][phase[n]],
                                      s->max_samples)] * s->decays[n];
@@ -279,7 +295,10 @@ static int filter_frame(AVFilterLink *inlink, AVFrame *frame)
         }
     }
 
-    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational){1, inlink->sample_rate}, inlink->time_base);
+    s->next_pts = frame->pts + av_rescale_q(frame->nb_samples, (AVRational)
+    {
+        1, inlink->sample_rate
+    }, inlink->time_base);
 
     if (frame != out_frame)
         av_frame_free(&frame);
@@ -295,7 +314,8 @@ static int request_frame(AVFilterLink *outlink)
 
     ret = ff_request_frame(ctx->inputs[0]);
 
-    if (ret == AVERROR_EOF && !ctx->is_disabled && s->fade_out) {
+    if (ret == AVERROR_EOF && !ctx->is_disabled && s->fade_out)
+    {
         int nb_samples = FFMIN(s->fade_out, 2048);
         AVFrame *frame;
 
@@ -311,7 +331,10 @@ static int request_frame(AVFilterLink *outlink)
 
         frame->pts = s->next_pts;
         if (s->next_pts != AV_NOPTS_VALUE)
-            s->next_pts += av_rescale_q(nb_samples, (AVRational){1, outlink->sample_rate}, outlink->time_base);
+            s->next_pts += av_rescale_q(nb_samples, (AVRational)
+        {
+            1, outlink->sample_rate
+        }, outlink->time_base);
 
         ret = filter_frame(ctx->inputs[0], frame);
     }
@@ -347,7 +370,8 @@ static av_cold void uninit(AVFilterContext *ctx)
     av_freep(&s->lookup_table);
 }
 
-static const AVFilterPad chorus_inputs[] = {
+static const AVFilterPad chorus_inputs[] =
+{
     {
         .name         = "default",
         .type         = AVMEDIA_TYPE_AUDIO,
@@ -356,7 +380,8 @@ static const AVFilterPad chorus_inputs[] = {
     { NULL }
 };
 
-static const AVFilterPad chorus_outputs[] = {
+static const AVFilterPad chorus_outputs[] =
+{
     {
         .name          = "default",
         .type          = AVMEDIA_TYPE_AUDIO,
@@ -366,7 +391,8 @@ static const AVFilterPad chorus_outputs[] = {
     { NULL }
 };
 
-AVFilter ff_af_chorus = {
+AVFilter ff_af_chorus =
+{
     .name          = "chorus",
     .description   = NULL_IF_CONFIG_SMALL("Add a chorus effect to the audio."),
     .query_formats = query_formats,

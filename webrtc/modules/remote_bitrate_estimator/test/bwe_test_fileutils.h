@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -18,39 +18,44 @@
 #include "webrtc/base/constructormagic.h"
 #include "webrtc/modules/include/module_common_types.h"
 
-namespace webrtc {
-namespace testing {
-namespace bwe {
+namespace webrtc
+{
+namespace testing
+{
+namespace bwe
+{
 
-class ResourceFileReader {
- public:
-  ~ResourceFileReader();
+class ResourceFileReader
+{
+public:
+    ~ResourceFileReader();
 
-  bool IsAtEnd();
-  bool Read(uint32_t* out);
+    bool IsAtEnd();
+    bool Read(uint32_t* out);
 
-  static ResourceFileReader* Create(const std::string& filename,
-                                    const std::string& extension);
+    static ResourceFileReader* Create(const std::string& filename,
+                                      const std::string& extension);
 
- private:
-  explicit ResourceFileReader(FILE* file) : file_(file) {}
-  FILE* file_;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(ResourceFileReader);
+private:
+    explicit ResourceFileReader(FILE* file) : file_(file) {}
+    FILE* file_;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(ResourceFileReader);
 };
 
-class OutputFileWriter {
- public:
-  ~OutputFileWriter();
+class OutputFileWriter
+{
+public:
+    ~OutputFileWriter();
 
-  bool Write(uint32_t value);
+    bool Write(uint32_t value);
 
-  static OutputFileWriter* Create(const std::string& filename,
-                                  const std::string& extension);
+    static OutputFileWriter* Create(const std::string& filename,
+                                    const std::string& extension);
 
- private:
-  explicit OutputFileWriter(FILE* file) : file_(file) {}
-  FILE* file_;
-  RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(OutputFileWriter);
+private:
+    explicit OutputFileWriter(FILE* file) : file_(file) {}
+    FILE* file_;
+    RTC_DISALLOW_IMPLICIT_CONSTRUCTORS(OutputFileWriter);
 };
 }  // namespace bwe
 }  // namespace testing

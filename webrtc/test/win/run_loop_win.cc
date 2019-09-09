@@ -15,19 +15,23 @@
 #include <stdio.h>
 #include <Windows.h>
 
-namespace webrtc {
-namespace test {
+namespace webrtc
+{
+namespace test
+{
 
-void PressEnterToContinue() {
-  puts(">> Press ENTER to continue...");
+void PressEnterToContinue()
+{
+    puts(">> Press ENTER to continue...");
 
-  MSG msg;
-  BOOL ret;
-  while ((ret = GetMessage(&msg, NULL, 0, 0)) != 0) {
-    assert(ret != -1);
-    TranslateMessage(&msg);
-    DispatchMessage(&msg);
-  }
+    MSG msg;
+    BOOL ret;
+    while ((ret = GetMessage(&msg, NULL, 0, 0)) != 0)
+    {
+        assert(ret != -1);
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
 }
 }  // namespace test
 }  // namespace webrtc

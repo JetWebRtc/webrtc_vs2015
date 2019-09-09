@@ -1,4 +1,4 @@
-/*
+﻿/*
  *  Copyright (c) 2013 The WebRTC project authors. All Rights Reserved.
  *
  *  Use of this source code is governed by a BSD-style license
@@ -17,17 +17,19 @@
 #error This file only makes sense to include on Android!
 #endif
 
-namespace webrtc {
+namespace webrtc
+{
 
 // Scoped helper class for directing Traces to Android's logcat facility.  While
 // this object lives, Trace output will be sent to logcat.
-class LogcatTraceContext : public webrtc::TraceCallback {
- public:
-  LogcatTraceContext();
-  ~LogcatTraceContext() override;
+class LogcatTraceContext : public webrtc::TraceCallback
+{
+public:
+    LogcatTraceContext();
+    ~LogcatTraceContext() override;
 
-  // TraceCallback impl.
-  void Print(TraceLevel level, const char* message, int length) override;
+    // TraceCallback impl.
+    void Print(TraceLevel level, const char* message, int length) override;
 };
 
 }  // namespace webrtc
